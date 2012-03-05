@@ -1,0 +1,29 @@
+// NumConfigs
+13
+// X
+-1
+// Y
+-1
+// Width
+800
+// Height
+600
+// Maximized
+false
+// RootDir
+/home/michi/Projekte/x9_(unity!)/
+// Language
+Deutsch
+// WorldScriptVarFile
+scriptvars_fantasy_world.txt
+// ObjectScriptVarFile
+scriptvars_fantasy_item.txt
+// ItemScriptVarFile
+scriptvars_fantasy_item.txt
+// UpdateNormalMaxTime (ms)
+0
+// LocalDocumentation
+false
+// DocumentationDir
+%shelp/
+#

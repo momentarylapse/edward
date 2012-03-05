@@ -1,0 +1,16 @@
+// IDs
+enum{
+	HMM_WELCOME_DIALOG,
+	HMM_WELCOME_LIST
+};
+
+
+
+	// dialog
+	WelcomeDialog=HuiCreateDialog("Edward hei&st Sie willkommen.",640,360,MainWin,false,&DlgFunc);
+	WelcomeDialog->SetID(HMM_WELCOME_DIALOG);
+	WelcomeDialog->AddListView("!icons",0,0,640,360,HMM_WELCOME_LIST);
+	WelcomeDialog->Update();
+
+
+

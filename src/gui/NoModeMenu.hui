@@ -1,0 +1,26 @@
+// IDs
+enum{
+	HMM_MENU_NOMODE,
+	HMM_CURRENT_MODE_NONE,
+	HMM_MENU_HELP,
+	HMM_HELP,
+	HMM_KILL,
+	HMM_WHAT_THE_FUCK
+};
+
+
+
+	// menu
+	CHuiMenu *NoModeMenu=new CHuiMenu();
+		NoModeMenu->SetID(HMM_MENU_NOMODE);
+	NoModeMenu->AddEntry("-Leerer-Modus-",HMM_CURRENT_MODE_NONE);
+	NoModeMenu->EnableItem(HMM_CURRENT_MODE_NONE,false);
+		CHuiMenu *sub_menu_help=new CHuiMenu();
+		sub_menu_help->AddEntryImage("Hilfe...",HuiImageHelp,HMM_HELP);
+		sub_menu_help->AddEntry("alle...umbringen",HMM_KILL);
+		sub_menu_help->AddSeparator();
+		sub_menu_help->AddEntryImage("\"&uber\"",HuiImageAbout,HMM_WHAT_THE_FUCK);
+	NoModeMenu->AddSubMenu("?",HMM_MENU_HELP,sub_menu_help);
+
+
+

@@ -1,0 +1,122 @@
+// IDs
+enum{
+	HMM_MATERIAL_DIALOG,
+	HMM_OK,
+	HMM_CANCEL,
+	HMM_SET,
+	HMM_MATERIAL_DIALOG_TAB_CONTROL,
+	HMM_AMBIENT,
+	HMM_DIFFUSE,
+	HMM_SPECULAR,
+	HMM_EMISSION,
+	HMM_SHININESS,
+	HMM_MAT_SHININESS,
+	HMM_MAT_AM,
+	HMM_MAT_DI,
+	HMM_MAT_SP,
+	HMM_MAT_EM,
+	HMM_MAT_DELETE_TEXTURE_LEVEL,
+	HMM_MAT_TEXTURES,
+	HMM_MAT_ADD_TEXTURE_LEVEL,
+	HMM_MAT_EMPTY_TEXTURE_LEVEL,
+	HMM_ALPHA_SOURCE,
+	HMM_ALPHA_DEST,
+	HMM_TRANSPARENCY_MODE,
+	HMM_MATERIAL_DIALOG_T_TRANS_TYPE,
+	HMM_MATERIAL_DIALOG_T_TRANS_SOURCE,
+	HMM_MATERIAL_DIALOG_T_TRANS_DEST,
+	HMM_MATERIAL_DIALOG_T_TRANS_FACTOR,
+	HMM_ALPHA_FACTOR,
+	HMM_PERCENT,
+	HMM_ALPHA_Z_BUFFER,
+	HMM_MATERIAL_DIALOG_FUNC_GRP,
+	HMM_ALPHA_SLIDER,
+	HMM_SHINING,
+	HMM_MATERIAL_DIALOG_T_SHINING_DENSITY,
+	HMM_SHINING_LENGTH,
+	HMM_MATERIAL_DIALOG_T_SHINING_LENGTH,
+	HMM_MATERIAL_DIALOG_T_EFFECTSFILE,
+	HMM_EFFECT_FILE,
+	HMM_WATER,
+	HMM_FIND_EFFECT,
+	HMM_MATERIAL_DIALOG_SHINING_GRP,
+	HMM_LU,
+	HMM_REFLECTION,
+	HMM_MATERIAL_DIALOG_T_REFL_TYPE,
+	HMM_MATERIAL_DIALOG_T_REFL_DENSITY,
+	HMM_REFLECTION_DENSITY,
+	HMM_REFLECTION_TEXTURES,
+	HMM_MATERIAL_DIALOG_T_REFL_TEXTURESIZE,
+	HMM_REFLECTION_SIZE
+};
+
+
+	// dialog
+	AppearanceDialog=HuiCreateDialog("Material-Aussehen",365,320,MainWin,true,&AppearanceDialogFunc);
+	AppearanceDialog->SetID(HMM_MATERIAL_DIALOG);
+	AppearanceDialog->AddDefButton("OK",260,280,95,25,HMM_OK);
+	AppearanceDialog->SetImage(HMM_OK,HuiImageOk);
+	AppearanceDialog->AddButton("Abbrechen",160,280,95,25,HMM_CANCEL);
+	AppearanceDialog->SetImage(HMM_CANCEL,HuiImageCancel);
+	AppearanceDialog->AddButton("&Ubernehmen",60,280,95,25,HMM_SET);
+	AppearanceDialog->SetImage(HMM_SET,HuiImageApply);
+	AppearanceDialog->AddTabControl("Farben\\Texturen\\Transparenz\\Reflexion\\Extras",5,5,355,260,HMM_MATERIAL_DIALOG_TAB_CONTROL);
+	AppearanceDialog->SetTabCreationPage(HMM_MATERIAL_DIALOG_TAB_CONTROL,0);
+	AppearanceDialog->AddText("Ambient",25,10,65,25,HMM_AMBIENT);
+	AppearanceDialog->AddText("Diffuse",25,40,65,25,HMM_DIFFUSE);
+	AppearanceDialog->AddText("Specular",25,70,65,25,HMM_SPECULAR);
+	AppearanceDialog->AddText("Emission",25,100,65,25,HMM_EMISSION);
+	AppearanceDialog->AddText("Shininess",200,70,65,25,HMM_SHININESS);
+	AppearanceDialog->AddSpinButton("\\0\\10000\\0.1",270,70,65,25,HMM_MAT_SHININESS);
+	AppearanceDialog->AddColorButton("",90,10,100,25,HMM_MAT_AM);
+	AppearanceDialog->AddColorButton("!alpha",90,40,100,25,HMM_MAT_DI);
+	AppearanceDialog->AddColorButton("",90,70,100,25,HMM_MAT_SP);
+	AppearanceDialog->AddColorButton("",90,100,100,25,HMM_MAT_EM);
+	AppearanceDialog->SetTabCreationPage(HMM_MATERIAL_DIALOG_TAB_CONTROL,1);
+	AppearanceDialog->AddButton("L&oschen",130,190,105,25,HMM_MAT_DELETE_TEXTURE_LEVEL);
+	AppearanceDialog->SetImage(HMM_MAT_DELETE_TEXTURE_LEVEL,HuiImageDelete);
+	AppearanceDialog->AddListView("!format=tit\\Ebene\\\\Textur",5,5,345,180,HMM_MAT_TEXTURES);
+	AppearanceDialog->AddButton("neue Ebene",5,190,120,25,HMM_MAT_ADD_TEXTURE_LEVEL);
+	AppearanceDialog->SetImage(HMM_MAT_ADD_TEXTURE_LEVEL,HuiImageNew);
+	AppearanceDialog->AddButton("Leeren",240,190,105,25,HMM_MAT_EMPTY_TEXTURE_LEVEL);
+	AppearanceDialog->SetImage(HMM_MAT_EMPTY_TEXTURE_LEVEL,HuiImageClear);
+	AppearanceDialog->SetTabCreationPage(HMM_MATERIAL_DIALOG_TAB_CONTROL,2);
+	AppearanceDialog->AddComboBox("AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha",90,100,255,25,HMM_ALPHA_SOURCE);
+	AppearanceDialog->AddComboBox("AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha",90,130,255,25,HMM_ALPHA_DEST);
+	AppearanceDialog->AddComboBox("  --keine--\\Color-Key (weich)\\Color-Key (hart)\\Faktor\\Funktion",60,10,285,25,HMM_TRANSPARENCY_MODE);
+	AppearanceDialog->AddText("Art:",30,10,30,25,HMM_MATERIAL_DIALOG_T_TRANS_TYPE);
+	AppearanceDialog->AddText("Quelle",30,100,60,25,HMM_MATERIAL_DIALOG_T_TRANS_SOURCE);
+	AppearanceDialog->AddText("Ziel",30,130,60,25,HMM_MATERIAL_DIALOG_T_TRANS_DEST);
+	AppearanceDialog->AddText("Faktor:",30,195,60,25,HMM_MATERIAL_DIALOG_T_TRANS_FACTOR);
+	AppearanceDialog->AddSpinButton("\\0\\100\\1",265,195,50,25,HMM_ALPHA_FACTOR);
+	AppearanceDialog->AddText("%",320,195,25,25,HMM_PERCENT);
+	AppearanceDialog->AddCheckBox("Z-Buffer aktiviert",30,40,315,25,HMM_ALPHA_Z_BUFFER);
+	AppearanceDialog->AddText("!bold\\Funktion",10,75,335,25,HMM_MATERIAL_DIALOG_FUNC_GRP);
+	AppearanceDialog->AddText("!bold\\Faktor",10,170,335,25,-1);
+	AppearanceDialog->AddSlider("",90,195,170,25,HMM_ALPHA_SLIDER);
+	AppearanceDialog->Enable(HMM_ALPHA_SLIDER,false);
+	AppearanceDialog->SetTabCreationPage(HMM_MATERIAL_DIALOG_TAB_CONTROL,4);
+	AppearanceDialog->AddEdit("",85,90,235,25,HMM_SHINING);
+	AppearanceDialog->AddText("Intens.:",30,90,55,25,HMM_MATERIAL_DIALOG_T_SHINING_DENSITY);
+	AppearanceDialog->AddText("%",325,90,20,25,HMM_PERCENT);
+	AppearanceDialog->AddEdit("",85,120,235,25,HMM_SHINING_LENGTH);
+	AppearanceDialog->AddText("L&ange:",30,120,55,25,HMM_MATERIAL_DIALOG_T_SHINING_LENGTH);
+	AppearanceDialog->AddText("!bold\\DirectX9 Effekt Datei",10,155,335,25,HMM_MATERIAL_DIALOG_T_EFFECTSFILE);
+	AppearanceDialog->AddEdit("",25,180,290,25,HMM_EFFECT_FILE);
+	AppearanceDialog->AddCheckBox("Wasser",30,25,315,25,HMM_WATER);
+	AppearanceDialog->AddButton("",320,180,25,25,HMM_FIND_EFFECT);
+	AppearanceDialog->SetImage(HMM_FIND_EFFECT,HuiImageOpen);
+	AppearanceDialog->AddText("!bold\\Shining",10,65,335,25,HMM_MATERIAL_DIALOG_SHINING_GRP);
+	AppearanceDialog->AddText("le",325,120,20,25,HMM_LU);
+	AppearanceDialog->SetTabCreationPage(HMM_MATERIAL_DIALOG_TAB_CONTROL,3);
+	AppearanceDialog->AddComboBox("  --keine--\\Metall\\Spiegel (flach)\\CubeMap statisch\\CubeMap dynamisch",40,10,305,25,HMM_REFLECTION);
+	AppearanceDialog->AddText("Art:",10,10,30,25,HMM_MATERIAL_DIALOG_T_REFL_TYPE);
+	AppearanceDialog->AddText("Intensit&at:",10,40,75,25,HMM_MATERIAL_DIALOG_T_REFL_DENSITY);
+	AppearanceDialog->AddSpinButton("\\0\\100\\1",85,40,40,25,HMM_REFLECTION_DENSITY);
+	AppearanceDialog->AddText("%",130,40,15,25,HMM_PERCENT);
+	AppearanceDialog->AddListView("Seite\\Textur",10,70,335,155,HMM_REFLECTION_TEXTURES);
+	AppearanceDialog->AddText("Texturgr&o&se:",200,40,90,25,HMM_MATERIAL_DIALOG_T_REFL_TEXTURESIZE);
+	AppearanceDialog->AddSpinButton("\\1\\10000\\1",290,40,55,25,HMM_REFLECTION_SIZE);
+	AppearanceDialog->Update();
+
+

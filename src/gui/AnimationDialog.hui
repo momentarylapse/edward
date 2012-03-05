@@ -1,0 +1,82 @@
+// IDs
+enum{
+	HMM_ANIMATION_DIALOG,
+	HMM_ANIMATION_DIALOG_TAB_CONTROL,
+	HMM_ANIMATION_DIALOG_GRP_ANIMINTERPOLATE,
+	HMM_ANIMATION_DIALOG__GRP_ANIMPROPERTIES,
+	HMM_ANIMATION_DIALOG_T_ANIMFRAMEINDEX,
+	HMM_FRAME,
+	HMM_FRAME_INC,
+	HMM_FRAME_DEC,
+	HMM_NEW_FRAME,
+	HMM_DELETE_FRAME,
+	HMM_ANIMATION_DIALOG_T_ANIMNUMFRAMES,
+	HMM_NUM_FRAMES_WANTED,
+	HMM_NUM_FRAMES_SET,
+	HMM_ANIMATION_DIALOG_T_ANIMNAME,
+	HMM_NAME,
+	HMM_ANIMATION_DIALOG_T_ANIMFPSCONST,
+	HMM_FPS_CONST,
+	HMM_ANIMATION_DIALOG_T_ANIMFPS_FACTOR,
+	HMM_FPS_FACTOR,
+	HMM_INTERPOLATE_QUAD,
+	HMM_INTERPOLATE_LOOP,
+	HMM_L,
+	HMM_ANIMATION_LIST,
+	HMM_ANIMATION_NEW,
+	HMM_ANIMATION_DELETE,
+	HMM_SPEED,
+	HMM_ANIMATION_DIALOG_T_SIMSPEED,
+	HMM_PERCENT,
+	HMM_PARAMETER,
+	HMM_ANIMATION_DIALOG_T_SIMPARAM
+};
+
+
+
+	// dialog
+	AnimationDialog=HuiCreateDialog("Animations-Kontrolle",260,385,MainWin,true,&AnimationDialogFunc);
+	AnimationDialog->SetID(HMM_ANIMATION_DIALOG);
+	AnimationDialog->AddTabControl("&Ubersicht\\Animation\\Sim\\Import",5,5,250,375,HMM_ANIMATION_DIALOG_TAB_CONTROL);
+	AnimationDialog->SetTabCreationPage(HMM_ANIMATION_DIALOG_TAB_CONTROL,1);
+	AnimationDialog->AddText("!bold\\Streckung",10,190,230,25,HMM_ANIMATION_DIALOG_GRP_ANIMINTERPOLATE);
+	AnimationDialog->AddText("!bold\\Eigenschaften",10,10,230,25,HMM_ANIMATION_DIALOG__GRP_ANIMPROPERTIES);
+	AnimationDialog->AddText("!bold\\Frame nr.",10,250,230,25,HMM_ANIMATION_DIALOG_T_ANIMFRAMEINDEX);
+	AnimationDialog->AddEdit("",25,275,155,25,HMM_FRAME);
+	AnimationDialog->AddButton("",215,275,25,25,HMM_FRAME_INC);
+	AnimationDialog->SetImage(HMM_FRAME_INC,HuiImageForward);
+	AnimationDialog->AddButton("",185,275,25,25,HMM_FRAME_DEC);
+	AnimationDialog->SetImage(HMM_FRAME_DEC,HuiImageBack);
+	AnimationDialog->AddButton("neuer Frame",10,310,110,25,HMM_NEW_FRAME);
+	AnimationDialog->SetImage(HMM_NEW_FRAME,HuiImageAdd);
+	AnimationDialog->AddButton("Frame l&oschen",130,310,110,25,HMM_DELETE_FRAME);
+	AnimationDialog->SetImage(HMM_DELETE_FRAME,HuiImageRemove);
+	AnimationDialog->AddText("Num.Frames",25,215,75,25,HMM_ANIMATION_DIALOG_T_ANIMNUMFRAMES);
+	AnimationDialog->AddEdit("",100,215,85,25,HMM_NUM_FRAMES_WANTED);
+	AnimationDialog->AddButton("",190,215,45,25,HMM_NUM_FRAMES_SET);
+	AnimationDialog->SetImage(HMM_NUM_FRAMES_SET,HuiImageRefresh);
+	AnimationDialog->AddText("Name",25,35,50,25,HMM_ANIMATION_DIALOG_T_ANIMNAME);
+	AnimationDialog->AddEdit("",80,35,155,25,HMM_NAME);
+	AnimationDialog->AddText("Frames/s const",25,65,100,25,HMM_ANIMATION_DIALOG_T_ANIMFPSCONST);
+	AnimationDialog->AddEdit("",130,65,105,25,HMM_FPS_CONST);
+	AnimationDialog->AddText("Frames/s factor",25,95,100,25,HMM_ANIMATION_DIALOG_T_ANIMFPS_FACTOR);
+	AnimationDialog->AddEdit("",130,95,105,25,HMM_FPS_FACTOR);
+	AnimationDialog->AddCheckBox("quadrat. Interpolation",25,125,210,25,HMM_INTERPOLATE_QUAD);
+	AnimationDialog->AddCheckBox("f&ur Schleife optimieren",45,155,190,25,HMM_INTERPOLATE_LOOP);
+	AnimationDialog->AddText("L",30,150,15,25,HMM_L);
+	AnimationDialog->SetTabCreationPage(HMM_ANIMATION_DIALOG_TAB_CONTROL,0);
+	AnimationDialog->AddListView("#\\Typ\\Frames\\Name",5,5,240,300,HMM_ANIMATION_LIST);
+	AnimationDialog->AddButton("Neu",10,310,110,25,HMM_ANIMATION_NEW);
+	AnimationDialog->SetImage(HMM_ANIMATION_NEW,HuiImageAdd);
+	AnimationDialog->AddButton("L&oschen",130,310,110,25,HMM_ANIMATION_DELETE);
+	AnimationDialog->SetImage(HMM_ANIMATION_DELETE,HuiImageDelete);
+	AnimationDialog->SetTabCreationPage(HMM_ANIMATION_DIALOG_TAB_CONTROL,2);
+	AnimationDialog->AddEdit("",120,95,80,25,HMM_SPEED);
+	AnimationDialog->AddText("Geschwindigkeit",15,95,100,25,HMM_ANIMATION_DIALOG_T_SIMSPEED);
+	AnimationDialog->AddText("%",205,95,20,25,HMM_PERCENT);
+	AnimationDialog->AddEdit("",120,125,80,25,HMM_PARAMETER);
+	AnimationDialog->AddText("Parameter",15,125,100,25,HMM_ANIMATION_DIALOG_T_SIMPARAM);
+	AnimationDialog->Update();
+
+
+

@@ -1,0 +1,121 @@
+// IDs
+enum{
+	HMM_WORLD_DIALOG,
+	HMM_OK,
+	HMM_CANCEL,
+	HMM_WORLD_DIALOG_TAB_CONTROL,
+	HMM_APPLY,
+	HMM_WORLD_DIALOG_GRP_BG_COLOR,
+	HMM_WORLD_DIALOG_T_BG_DESCRIPTION,
+	HMM_SKYBOX,
+	HMM_REMOVE_SKYBOX,
+	HMM_WORLD_DIALOG_T_SELECTION,
+	HMM_BGC,
+	HMM_WORLD_DIALOG_GRP_GRAVITATION,
+	HMM_WORLD_DIALOG_GRP_FOG,
+	HMM_MUSIC,
+	HMM_X,
+	HMM_GRAVITATION_X,
+	HMM_LUSS,
+	HMM_Y,
+	HMM_GRAVITATION_Y,
+	HMM_Z,
+	HMM_GRAVITATION_Z,
+	HMM_FOG_ENABLED,
+	HMM_FOG_MODE,
+	HMM_WORLD_DIALOG_T_FOG_DENSITY,
+	HMM_FOG_DENSITY,
+	HMM_WORLD_DIALOG_T_FOG_START,
+	HMM_FOG_START,
+	HMM_WORLD_DIALOG_T_FOG_END,
+	HMM_FOG_END,
+	HMM_WORLD_DIALOG_T_FOG_MODE,
+	HMM_WORLD_DIALOG_T_FOG_COLOR,
+	HMM_FOG_COLOR,
+	HMM_SCRIPT_VARS,
+	HMM_WORLD_DIALOG_T_MAX_SCRIPT_VARS,
+	HMM_MAX_SCRIPT_VARS,
+	HMM_WORLD_DIALOG_GRP_SUN_COLOR,
+	HMM_WORLD_DIALOG_GRP_AMBIENT,
+	HMM_SUN_ENABLED,
+	HMM_WORLD_DIALOG_T_SUN_ANG_X,
+	HMM_SUN_ANG_X,
+	HMM_DEGREE,
+	HMM_WORLD_DIALOG_T_SUN_ANG_Y,
+	HMM_SUN_ANG_Y,
+	HMM_AMBIENT,
+	HMM_DIFFUSE,
+	HMM_SPECULAR,
+	HMM_SUN_AM,
+	HMM_SUN_DI,
+	HMM_SUN_SP
+};
+
+
+	// dialog
+	WorldDialog=HuiCreateDialog("Welt-Eigenschaften",410,360,MainWin,false,&WorldDialogFunction);
+	WorldDialog->SetID(HMM_WORLD_DIALOG);
+	WorldDialog->AddDefButton("OK",300,320,100,25,HMM_OK);
+	WorldDialog->SetImage(HMM_OK,HuiImageOk);
+	WorldDialog->AddButton("Abbrechen",195,320,100,25,HMM_CANCEL);
+	WorldDialog->SetImage(HMM_CANCEL,HuiImageCancel);
+	WorldDialog->AddTabControl("Generell\\Himmel\\Sonne\\Script-Variablen",5,5,400,305,HMM_WORLD_DIALOG_TAB_CONTROL);
+	WorldDialog->AddButton("&Ubernehmen",80,320,110,25,HMM_APPLY);
+	WorldDialog->SetImage(HMM_APPLY,HuiImageOk);
+	WorldDialog->SetTabCreationPage(HMM_WORLD_DIALOG_TAB_CONTROL,1);
+	WorldDialog->AddGroup("Hintergrund-Farbe",10,10,380,55,HMM_WORLD_DIALOG_GRP_BG_COLOR);
+	WorldDialog->AddText("(zuerst wird der Hintergrund eingef&arbt, dann wird das Modell dar&uber gerendert. Sollen Farbe und Modell einander &uberlagern, muss das Modell transparent sein)",10,220,380,55,HMM_WORLD_DIALOG_T_BG_DESCRIPTION);
+	WorldDialog->AddListView("#\\Modell ('SkyBox')",10,70,300,145,HMM_SKYBOX);
+	WorldDialog->AddButton("Entfernen",315,155,75,25,HMM_REMOVE_SKYBOX);
+	WorldDialog->SetImage(HMM_REMOVE_SKYBOX,HuiImageDelete);
+	WorldDialog->AddText("Markiertes",315,125,75,25,HMM_WORLD_DIALOG_T_SELECTION);
+	WorldDialog->AddColorButton("!alpha",155,30,100,25,HMM_BGC);
+	WorldDialog->SetTabCreationPage(HMM_WORLD_DIALOG_TAB_CONTROL,0);
+	WorldDialog->AddGroup("Gravitation",10,10,145,115,HMM_WORLD_DIALOG_GRP_GRAVITATION);
+	WorldDialog->AddGroup("Nebel",160,10,230,230,HMM_WORLD_DIALOG_GRP_FOG);
+	WorldDialog->AddButton("Musik...",40,160,100,25,HMM_MUSIC);
+	WorldDialog->Enable(HMM_MUSIC,false);
+	WorldDialog->AddText("X",20,30,20,25,HMM_X);
+	WorldDialog->AddEdit("",40,30,60,25,HMM_GRAVITATION_X);
+	WorldDialog->AddText("le/s^2",100,30,45,25,HMM_LUSS);
+	WorldDialog->AddText("Y",20,60,20,25,HMM_Y);
+	WorldDialog->AddEdit("",40,60,60,25,HMM_GRAVITATION_Y);
+	WorldDialog->AddText("le/s^2",100,60,45,25,HMM_LUSS);
+	WorldDialog->AddText("Z",20,90,20,25,HMM_Z);
+	WorldDialog->AddEdit("",40,90,60,25,HMM_GRAVITATION_Z);
+	WorldDialog->AddText("le/s^2",100,90,45,25,HMM_LUSS);
+	WorldDialog->AddCheckBox("aktiviert",210,30,100,25,HMM_FOG_ENABLED);
+	WorldDialog->AddComboBox("Linear\\Exp\\Exp2",300,60,80,25,HMM_FOG_MODE);
+	WorldDialog->AddText("Dichte (Density)",170,150,130,25,HMM_WORLD_DIALOG_T_FOG_DENSITY);
+	WorldDialog->AddEdit("",300,150,80,25,HMM_FOG_DENSITY);
+	WorldDialog->AddText("Nahe Kante (Start)",170,90,130,25,HMM_WORLD_DIALOG_T_FOG_START);
+	WorldDialog->AddEdit("",300,90,80,25,HMM_FOG_START);
+	WorldDialog->AddText("Ferne Kante (End)",170,120,130,25,HMM_WORLD_DIALOG_T_FOG_END);
+	WorldDialog->AddEdit("",300,120,80,25,HMM_FOG_END);
+	WorldDialog->AddText("Typ (Mode)",170,60,130,25,HMM_WORLD_DIALOG_T_FOG_MODE);
+	WorldDialog->AddText("Farbe (Color)",170,180,130,25,HMM_WORLD_DIALOG_T_FOG_COLOR);
+	WorldDialog->AddColorButton("",300,180,80,25,HMM_FOG_COLOR);
+	WorldDialog->SetTabCreationPage(HMM_WORLD_DIALOG_TAB_CONTROL,3);
+	WorldDialog->AddListView("!format=ttT\\#\\Name\\Wert",10,40,380,230,HMM_SCRIPT_VARS);
+	WorldDialog->AddText("maximale Anzahl:",10,10,125,25,HMM_WORLD_DIALOG_T_MAX_SCRIPT_VARS);
+	WorldDialog->AddSpinButton("\\0",135,10,100,25,HMM_MAX_SCRIPT_VARS);
+	WorldDialog->SetTabCreationPage(HMM_WORLD_DIALOG_TAB_CONTROL,2);
+	WorldDialog->AddGroup("Sonne",10,10,380,170,HMM_WORLD_DIALOG_GRP_SUN_COLOR);
+	WorldDialog->AddGroup("Ambient",10,185,380,65,HMM_WORLD_DIALOG_GRP_AMBIENT);
+	WorldDialog->AddCheckBox("aktiviert",35,45,100,25,HMM_SUN_ENABLED);
+	WorldDialog->AddText("X: H&ohe &uber dem Horizont (X-Z-Ebene)",20,115,275,25,HMM_WORLD_DIALOG_T_SUN_ANG_X);
+	WorldDialog->AddSpinButton("",295,115,60,25,HMM_SUN_ANG_X);
+	WorldDialog->AddText("°",360,115,20,25,HMM_DEGREE);
+	WorldDialog->AddText("Y: Richtung (Abweichung von der Z-Achse)",20,145,275,25,HMM_WORLD_DIALOG_T_SUN_ANG_Y);
+	WorldDialog->AddSpinButton("",295,145,60,25,HMM_SUN_ANG_Y);
+	WorldDialog->AddText("°",360,145,20,25,HMM_DEGREE);
+	WorldDialog->AddText("Ambient",160,25,65,25,HMM_AMBIENT);
+	WorldDialog->AddText("Diffuse",160,55,65,25,HMM_DIFFUSE);
+	WorldDialog->AddText("Specular",160,85,65,25,HMM_SPECULAR);
+	WorldDialog->AddColorButton("",225,25,100,25,HMM_SUN_AM);
+	WorldDialog->AddColorButton("",225,55,100,25,HMM_SUN_DI);
+	WorldDialog->AddColorButton("",225,85,100,25,HMM_SUN_SP);
+	WorldDialog->AddColorButton("",150,205,100,25,HMM_AMBIENT);
+	WorldDialog->Update();
+
+

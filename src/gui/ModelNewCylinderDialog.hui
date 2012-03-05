@@ -1,0 +1,24 @@
+// IDs
+enum{
+	HMM_NEW_CYLINDER_DIALOG,
+	HMM_NEW_CYLINDER_DIALOG_T_RINGS,
+	HMM_NCY_RINGS,
+	HMM_NEW_CYLINDER_DIALOG_T_EDGES,
+	HMM_NCY_EDGES,
+	HMM_NCY_ENDINGS,
+	HMM_NCY_TEXTURE_CLOSED
+};
+
+
+	// dialog
+	NewCylinderDialog=HuiCreateDialog("neuer Zylinder",180,135,MainWin,true,NULL);
+	NewCylinderDialog->SetID(HMM_NEW_CYLINDER_DIALOG);
+	NewCylinderDialog->AddText("Ringe",10,10,55,25,HMM_NEW_CYLINDER_DIALOG_T_RINGS);
+	NewCylinderDialog->AddSpinButton("\\1",65,10,60,25,HMM_NCY_RINGS);
+	NewCylinderDialog->AddText("Kanten",10,40,55,25,HMM_NEW_CYLINDER_DIALOG_T_EDGES);
+	NewCylinderDialog->AddSpinButton("\\2",65,40,60,25,HMM_NCY_EDGES);
+	NewCylinderDialog->AddCheckBox("Geschlossene Enden",10,70,160,25,HMM_NCY_ENDINGS);
+	NewCylinderDialog->AddCheckBox("Geschlossene Textur",10,100,160,25,HMM_NCY_TEXTURE_CLOSED);
+	NewCylinderDialog->Update();
+
+

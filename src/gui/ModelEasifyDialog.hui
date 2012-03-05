@@ -1,0 +1,42 @@
+// IDs
+enum{
+	HMM_EASIFY_DIALOG,
+	HMM_EAT_VERTICES,
+	HMM_EAT_TRIANGLES,
+	HMM_EAT_QUALITY,
+	HMM_NUM_VERTICES,
+	HMM_NUM_TRIANGLES,
+	HMM_NUM_VERTICES_WANTED,
+	HMM_NUM_TRIANGLES_WANTED,
+	HMM_QUALITY_FACTOR,
+	HMM_PERCENT,
+	HMM_OK,
+	HMM_CANCEL,
+	HMM_RARROW
+};
+
+
+	// dialog
+	EasifyDialog=HuiCreateDialog("Oberfl&ache vereinfachen",300,150,MainWin,false,&EasifyDialogFunc);
+	EasifyDialog->SetID(HMM_EASIFY_DIALOG);
+	EasifyDialog->AddText("Vertexpunkte",10,10,90,25,HMM_EAT_VERTICES);
+	EasifyDialog->AddText("Dreiecke:",10,40,90,25,HMM_EAT_TRIANGLES);
+	EasifyDialog->AddText("Qualit&atsfaktor:",10,70,90,25,HMM_EAT_QUALITY);
+	EasifyDialog->AddEdit("",100,10,70,25,HMM_NUM_VERTICES);
+	EasifyDialog->Enable(HMM_NUM_VERTICES,false);
+	EasifyDialog->AddEdit("",100,40,70,25,HMM_NUM_TRIANGLES);
+	EasifyDialog->Enable(HMM_NUM_TRIANGLES,false);
+	EasifyDialog->AddSpinButton("\\0",205,10,70,25,HMM_NUM_VERTICES_WANTED);
+	EasifyDialog->AddEdit("",205,40,70,25,HMM_NUM_TRIANGLES_WANTED);
+	EasifyDialog->Enable(HMM_NUM_TRIANGLES_WANTED,false);
+	EasifyDialog->AddSpinButton("\\0\\100\\0.1",205,70,70,25,HMM_QUALITY_FACTOR);
+	EasifyDialog->AddText("%",280,70,15,25,HMM_PERCENT);
+	EasifyDialog->AddDefButton("OK",190,110,100,25,HMM_OK);
+	EasifyDialog->SetImage(HMM_OK,HuiImageOk);
+	EasifyDialog->AddButton("Abbrechen",85,110,100,25,HMM_CANCEL);
+	EasifyDialog->SetImage(HMM_CANCEL,HuiImageCancel);
+	EasifyDialog->AddText("->",175,10,30,25,HMM_RARROW);
+	EasifyDialog->AddText("->",175,40,30,25,HMM_RARROW);
+	EasifyDialog->Update();
+
+

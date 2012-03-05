@@ -1,0 +1,64 @@
+// IDs
+enum{
+	HMM_NEW_TERRAIN_DIALOG,
+	HMM_OK,
+	HMM_CANCEL,
+	HMM_TERRAIN_DIALOG_T_RASTER,
+	HMM_LU,
+	HMM_PATTERN_X,
+	HMM_PATTERN_Z,
+	HMM_TERRAIN_DIALOG_T_STRIPES,
+	HMM_X,
+	HMM_NUM_X,
+	HMM_Z,
+	HMM_NUM_Z,
+	HMM_TERRAIN_DIALOG_GRP_HEIGHTMAP,
+	HMM_TERRAIN_DIALOG_T_HEIGHTMAP,
+	HMM_HEIGHT_IMAGE,
+	HMM_HEIGHT_IMAGE_FIND,
+	HMM_TERRAIN_DIALOG_T_GRAY,
+	HMM_HEIGHT_FACTOR,
+	HMM_TERRAIN_DIALOG_T_TERRAINSIZE,
+	HMM_TERRAIN_X,
+	HMM_TERRAIN_Z,
+	HMM_TERRAIN_DIALOG_GRP_SIZE
+};
+
+
+	// dialog
+	TerrainDialog=HuiCreateDialog("neues Terrain",405,280,MainWin,false,&TerrainDialogFunction);
+	TerrainDialog->SetID(HMM_NEW_TERRAIN_DIALOG);
+	TerrainDialog->AddDefButton("OK",295,240,100,25,HMM_OK);
+	TerrainDialog->SetImage(HMM_OK,HuiImageOk);
+	TerrainDialog->AddButton("Abbrechen",190,240,100,25,HMM_CANCEL);
+	TerrainDialog->SetImage(HMM_CANCEL,HuiImageCancel);
+	TerrainDialog->AddGroup("Raster-Gr&o&se",140,140,125,85,HMM_TERRAIN_DIALOG_T_RASTER);
+	TerrainDialog->AddText("le",240,160,20,25,HMM_LU);
+	TerrainDialog->AddEdit("",150,160,85,25,HMM_PATTERN_X);
+	TerrainDialog->Enable(HMM_PATTERN_X,false);
+	TerrainDialog->AddEdit("",150,190,85,25,HMM_PATTERN_Z);
+	TerrainDialog->Enable(HMM_PATTERN_Z,false);
+	TerrainDialog->AddText("le",240,190,20,25,HMM_LU);
+	TerrainDialog->AddGroup("Streifen-Zahl",30,140,105,85,HMM_TERRAIN_DIALOG_T_STRIPES);
+	TerrainDialog->AddText("X",40,160,20,25,HMM_X);
+	TerrainDialog->AddSpinButton("\\1",60,160,60,25,HMM_NUM_X);
+	TerrainDialog->AddText("Z",40,190,20,25,HMM_Z);
+	TerrainDialog->AddSpinButton("\\1",60,190,60,25,HMM_NUM_Z);
+	TerrainDialog->AddText("!bold\\H&ohen aus Graustufen einer Bilddatei",10,10,385,25,HMM_TERRAIN_DIALOG_GRP_HEIGHTMAP);
+	TerrainDialog->AddText("H&ohenkarte",30,40,100,25,HMM_TERRAIN_DIALOG_T_HEIGHTMAP);
+	TerrainDialog->AddEdit("",130,40,235,25,HMM_HEIGHT_IMAGE);
+	TerrainDialog->Enable(HMM_HEIGHT_IMAGE,false);
+	TerrainDialog->AddButton("",370,40,25,25,HMM_HEIGHT_IMAGE_FIND);
+	TerrainDialog->SetImage(HMM_HEIGHT_IMAGE_FIND,HuiImageOpen);
+	TerrainDialog->AddText("1 Graustufe =",30,70,100,25,HMM_TERRAIN_DIALOG_T_GRAY);
+	TerrainDialog->AddEdit("",130,70,235,25,HMM_HEIGHT_FACTOR);
+	TerrainDialog->AddText("le",370,70,25,25,HMM_LU);
+	TerrainDialog->AddGroup("Terrain-Gr&o&se",270,140,125,85,HMM_TERRAIN_DIALOG_T_TERRAINSIZE);
+	TerrainDialog->AddText("le",370,160,20,25,HMM_LU);
+	TerrainDialog->AddEdit("",280,160,85,25,HMM_TERRAIN_X);
+	TerrainDialog->AddEdit("",280,190,85,25,HMM_TERRAIN_Z);
+	TerrainDialog->AddText("le",370,190,20,25,HMM_LU);
+	TerrainDialog->AddText("!bold\\Abmessungen",10,110,385,25,HMM_TERRAIN_DIALOG_GRP_SIZE);
+	TerrainDialog->Update();
+
+

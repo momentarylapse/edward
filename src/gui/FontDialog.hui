@@ -1,0 +1,70 @@
+// IDs
+enum{
+	HMM_FONT_DIALOG,
+	HMM_FONT_DIALOG_TAB_CONTROL,
+	HMM_FONT_DIALOG_T_NUMGLYPHS,
+	HMM_FONT_DIALOG_T_GLYPHHEIGHT,
+	HMM_FONT_DIALOG_T_FACTOR_X,
+	HMM_FONT_DIALOG_T_FAKTOR_Y,
+	HMM_NUM,
+	HMM_HEIGHT,
+	HMM_FACTORX,
+	HMM_FACTORY,
+	HMM_FONT_DIALOG_T_Y1,
+	HMM_FONT_DIALOG_T_Y2,
+	HMM_Y1,
+	HMM_Y2,
+	HMM_FONT_DIALOG_T_UNKNOWNCHAR,
+	HMM_UNKNOWN,
+	HMM_PERCENT,
+	HMM_FONT_DIALOG_T_GLYPH,
+	HMM_FONT_DIALOG_T_X1,
+	HMM_NAME,
+	HMM_X1,
+	HMM_FONT_DIALOG_T_X2,
+	HMM_X2,
+	HMM_FONT_DIALOG_T_GLYPHWIDTH,
+	HMM_WIDTH,
+	HMM_FONT_DIALOG_T_TEXT,
+	HMM_TEXT
+};
+
+
+
+	// dialog
+	FontDialog=HuiCreateDialog("Font Eigenschaften",210,255,MainWin,true,&FontDialogFunc);
+	FontDialog->SetID(HMM_FONT_DIALOG);
+	FontDialog->AddTabControl("Font\\Zeichen\\Beispiel",5,5,200,245,HMM_FONT_DIALOG_TAB_CONTROL);
+	FontDialog->SetTabCreationPage(HMM_FONT_DIALOG_TAB_CONTROL,0);
+	FontDialog->AddText("Zeichenzahl",10,10,100,25,HMM_FONT_DIALOG_T_NUMGLYPHS);
+	FontDialog->AddText("Zeichenh&ohe",10,40,100,25,HMM_FONT_DIALOG_T_GLYPHHEIGHT);
+	FontDialog->AddText("Gr&o&senfaktor X",10,130,100,25,HMM_FONT_DIALOG_T_FACTOR_X);
+	FontDialog->AddText("Gr&o&senfaktor Y",10,160,100,25,HMM_FONT_DIALOG_T_FAKTOR_Y);
+	FontDialog->AddEdit("",110,10,80,25,HMM_NUM);
+	FontDialog->AddEdit("",110,40,80,25,HMM_HEIGHT);
+	FontDialog->AddEdit("",110,130,60,25,HMM_FACTORX);
+	FontDialog->AddEdit("",110,160,60,25,HMM_FACTORY);
+	FontDialog->AddText("Y1",10,70,100,25,HMM_FONT_DIALOG_T_Y1);
+	FontDialog->AddText("Y2",10,100,100,25,HMM_FONT_DIALOG_T_Y2);
+	FontDialog->AddEdit("",110,70,80,25,HMM_Y1);
+	FontDialog->AddEdit("",110,100,80,25,HMM_Y2);
+	FontDialog->AddText("unbek. Zeichen",10,190,100,25,HMM_FONT_DIALOG_T_UNKNOWNCHAR);
+	FontDialog->AddEdit("",110,190,80,25,HMM_UNKNOWN);
+	FontDialog->AddText("%",175,130,20,25,HMM_PERCENT);
+	FontDialog->AddText("%",175,160,20,25,HMM_PERCENT);
+	FontDialog->SetTabCreationPage(HMM_FONT_DIALOG_TAB_CONTROL,1);
+	FontDialog->AddText("Zeichen",10,40,100,25,HMM_FONT_DIALOG_T_GLYPH);
+	FontDialog->AddText("X1",10,70,100,25,HMM_FONT_DIALOG_T_X1);
+	FontDialog->AddEdit("",110,40,80,25,HMM_NAME);
+	FontDialog->AddEdit("",110,70,80,25,HMM_X1);
+	FontDialog->AddText("X2",10,100,100,25,HMM_FONT_DIALOG_T_X2);
+	FontDialog->AddEdit("",110,100,80,25,HMM_X2);
+	FontDialog->AddText("Breite",10,130,100,25,HMM_FONT_DIALOG_T_GLYPHWIDTH);
+	FontDialog->AddEdit("",110,130,80,25,HMM_WIDTH);
+	FontDialog->SetTabCreationPage(HMM_FONT_DIALOG_TAB_CONTROL,2);
+	FontDialog->AddText("Text:",10,50,100,25,HMM_FONT_DIALOG_T_TEXT);
+	FontDialog->AddEdit("",10,80,180,25,HMM_TEXT);
+	FontDialog->Update();
+
+
+

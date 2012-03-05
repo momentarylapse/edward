@@ -1,0 +1,72 @@
+// IDs
+enum{
+	HMM_TERRAIN_DIALOG,
+	HMM_OK,
+	HMM_CANCEL,
+	HMM_TERRAIN_DIALOG_TAB_CONTROL,
+	HMM_APPLY,
+	HMM_TERRAIN_DIALOG_T_STRIPES,
+	HMM_TERRAIN_DIALOG_T_RASTER,
+	HMM_X,
+	HMM_NUM_X,
+	HMM_Z,
+	HMM_NUM_Z,
+	HMM_LU,
+	HMM_TERRAIN_DIALOG_T_FILENAME,
+	HMM_FILENAME,
+	HMM_PATTERN_X,
+	HMM_PATTERN_Z,
+	HMM_TERRAIN_SAVE_AS,
+	HMM_DELETE_TEXTURE_LEVEL,
+	HMM_TEXTURE_MAP_COMPLETE,
+	HMM_TEXTURES,
+	HMM_TERRAIN_DIALOG_T_MATERIAL,
+	HMM_MATERIAL,
+	HMM_MATERIAL_FIND,
+	HMM_DEFAULT_MATERIAL
+};
+
+
+	// dialog
+	TerrainDialog=HuiCreateDialog("Terrain-Eigenschaften",435,275,MainWin,false,&TerrainDialogFunction);
+	TerrainDialog->SetID(HMM_TERRAIN_DIALOG);
+	TerrainDialog->AddDefButton("OK",325,235,100,25,HMM_OK);
+	TerrainDialog->SetImage(HMM_OK,HuiImageOk);
+	TerrainDialog->AddButton("Abbrechen",220,235,100,25,HMM_CANCEL);
+	TerrainDialog->SetImage(HMM_CANCEL,HuiImageCancel);
+	TerrainDialog->AddTabControl("Eigenschaften\\Texturen\\Material",5,5,425,215,HMM_TERRAIN_DIALOG_TAB_CONTROL);
+	TerrainDialog->AddButton("&Ubernehmen",105,235,110,25,HMM_APPLY);
+	TerrainDialog->SetImage(HMM_APPLY,HuiImageApply);
+	TerrainDialog->SetTabCreationPage(HMM_TERRAIN_DIALOG_TAB_CONTROL,0);
+	TerrainDialog->AddGroup("Streifen-Zahl",85,65,105,85,HMM_TERRAIN_DIALOG_T_STRIPES);
+	TerrainDialog->AddGroup("Raster-Gr&o&se",195,65,125,85,HMM_TERRAIN_DIALOG_T_RASTER);
+	TerrainDialog->AddText("X",95,85,20,25,HMM_X);
+	TerrainDialog->AddSpinButton("\\1",115,85,60,25,HMM_NUM_X);
+	TerrainDialog->AddText("Z",95,115,20,25,HMM_Z);
+	TerrainDialog->AddSpinButton("\\1",115,115,60,25,HMM_NUM_Z);
+	TerrainDialog->AddText("le",290,85,25,25,HMM_LU);
+	TerrainDialog->AddText("Terrain-Datei:",10,10,100,25,HMM_TERRAIN_DIALOG_T_FILENAME);
+	TerrainDialog->AddEdit("",115,10,200,25,HMM_FILENAME);
+	TerrainDialog->Enable(HMM_FILENAME,false);
+	TerrainDialog->AddText("X",205,85,20,25,HMM_X);
+	TerrainDialog->AddEdit("",225,85,60,25,HMM_PATTERN_X);
+	TerrainDialog->AddText("Z",205,115,20,25,HMM_Z);
+	TerrainDialog->AddEdit("",225,115,60,25,HMM_PATTERN_Z);
+	TerrainDialog->AddText("le",290,115,25,25,HMM_LU);
+	TerrainDialog->AddButton("Speichern...",320,10,95,25,HMM_TERRAIN_SAVE_AS);
+	TerrainDialog->SetImage(HMM_TERRAIN_SAVE_AS,HuiImageSaveAs);
+	TerrainDialog->SetTabCreationPage(HMM_TERRAIN_DIALOG_TAB_CONTROL,1);
+	TerrainDialog->AddButton("Ebene l&oschen",115,155,130,25,HMM_DELETE_TEXTURE_LEVEL);
+	TerrainDialog->SetImage(HMM_DELETE_TEXTURE_LEVEL,HuiImageDelete);
+	TerrainDialog->AddButton("auf ganzes Terrain",250,155,165,25,HMM_TEXTURE_MAP_COMPLETE);
+	TerrainDialog->SetImage(HMM_TEXTURE_MAP_COMPLETE,HuiImageZoomFit);
+	TerrainDialog->AddListView("!format=tTTit\\Ebene\\Gr&o&se X\\Gr&o&se Z\\\\Datei",5,5,415,140,HMM_TEXTURES);
+	TerrainDialog->SetTabCreationPage(HMM_TERRAIN_DIALOG_TAB_CONTROL,2);
+	TerrainDialog->AddText("Material",45,40,55,25,HMM_TERRAIN_DIALOG_T_MATERIAL);
+	TerrainDialog->AddEdit("",100,40,275,25,HMM_MATERIAL);
+	TerrainDialog->AddButton("",380,40,25,25,HMM_MATERIAL_FIND);
+	TerrainDialog->SetImage(HMM_MATERIAL_FIND,HuiImageOpen);
+	TerrainDialog->AddCheckBox("Standart Material benutzen",10,10,210,25,HMM_DEFAULT_MATERIAL);
+	TerrainDialog->Update();
+
+

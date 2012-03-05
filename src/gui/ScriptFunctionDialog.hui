@@ -1,0 +1,40 @@
+// IDs
+enum{
+	HMM_WORLD_SCRIPTFUNC_DIALOG,
+	HMM_WORLD_SCRIPTFUNC_DIALOG_T_NAME,
+	HMM_FUNCTION,
+	HMM_LOCATION,
+	HMM_WORLD_SCRIPTFUNC_DIALOG_T_CALLED_BY,
+	HMM_WORLD_SCRIPTFUNC_DIALOG_T_DELAY,
+	HMM_LEVEL,
+	HMM_OK,
+	HMM_CANCEL,
+	HMM_DELETE,
+	HMM_WORLD_SCRIPTFUNC_DIALOG_T_DELAYDESC,
+	HMM_FIND
+};
+
+
+
+	// dialog
+	ScriptDialog=HuiCreateDialog("Script-Funktion",335,145,MainWin,false,&ScriptDialogFunction);
+	ScriptDialog->SetID(HMM_WORLD_SCRIPTFUNC_DIALOG);
+	ScriptDialog->AddText("Name der Funktion:",10,10,140,25,HMM_WORLD_SCRIPTFUNC_DIALOG_T_NAME);
+	ScriptDialog->AddEdit("",150,10,140,25,HMM_FUNCTION);
+	ScriptDialog->AddComboBox("CalcMove 1\\CalcMove 2\\Render 1\\Render 2\\Render 3\\GetInput 1\\GetInput 2",150,40,175,25,HMM_LOCATION);
+	ScriptDialog->AddText("Aufruf durch:",10,40,140,25,HMM_WORLD_SCRIPTFUNC_DIALOG_T_CALLED_BY);
+	ScriptDialog->AddText("Pseudo-Verz&ogerung:",10,70,140,25,HMM_WORLD_SCRIPTFUNC_DIALOG_T_DELAY);
+	ScriptDialog->AddEdit("0",150,70,60,25,HMM_LEVEL);
+	ScriptDialog->AddDefButton("OK",225,105,100,25,HMM_OK);
+	ScriptDialog->SetImage(HMM_OK,HuiImageOk);
+	ScriptDialog->AddButton("Abbrechen",120,105,100,25,HMM_CANCEL);
+	ScriptDialog->SetImage(HMM_CANCEL,HuiImageCancel);
+	ScriptDialog->AddButton("L&oschen",10,105,100,25,HMM_DELETE);
+	ScriptDialog->SetImage(HMM_DELETE,HuiImageDelete);
+	ScriptDialog->AddText("(f&ur Reihenfolge)",215,70,115,25,HMM_WORLD_SCRIPTFUNC_DIALOG_T_DELAYDESC);
+	ScriptDialog->AddButton("",295,10,30,25,HMM_FIND);
+	ScriptDialog->SetImage(HMM_FIND,HuiImageOpen);
+	ScriptDialog->Update();
+
+
+

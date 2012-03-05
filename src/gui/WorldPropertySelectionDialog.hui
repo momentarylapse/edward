@@ -1,0 +1,16 @@
+// IDs
+enum{
+	HMM_WORLD_PS_DIALOG,
+	HMM_PROPERTY_LIST
+};
+
+
+
+	// dialog
+	PropertySeletcionDialog=HuiCreateSizableDialog("Zu bearbeitende Eigenschaften w&ahlen",370,380,MainWin,false,&PropertySelectionDialogFunction);
+	PropertySeletcionDialog->SetID(HMM_WORLD_PS_DIALOG);
+	PropertySeletcionDialog->AddListView("Typ\\Index\\Name",-1,0,0,0,HMM_PROPERTY_LIST);
+	PropertySeletcionDialog->Update();
+
+
+

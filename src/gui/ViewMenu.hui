@@ -1,0 +1,33 @@
+// IDs
+enum{
+	HMM_MENU_VIEW,
+	HMM_VIEW_MENU_SIGN,
+	HMM_VIEW_RIGHT,
+	HMM_VIEW_LEFT,
+	HMM_VIEW_FRONT,
+	HMM_VIEW_BACK,
+	HMM_VIEW_TOP,
+	HMM_VIEW_BOTTOM,
+	HMM_VIEW_ISOMETRIC,
+	HMM_VIEW_PERSPECTIVE
+};
+
+
+
+	// menu
+	CHuiMenu *ViewMenu=new CHuiMenu();
+		ViewMenu->SetID(HMM_MENU_VIEW);
+	ViewMenu->AddEntry("Ansicht",HMM_VIEW_MENU_SIGN);
+	ViewMenu->EnableItem(HMM_VIEW_MENU_SIGN,false);
+	ViewMenu->AddSeparator();
+	ViewMenu->AddEntry("Rechts (-x)",HMM_VIEW_RIGHT);
+	ViewMenu->AddEntry("Links (x)",HMM_VIEW_LEFT);
+	ViewMenu->AddEntry("Vorne (z)",HMM_VIEW_FRONT);
+	ViewMenu->AddEntry("Hinten (-z)",HMM_VIEW_BACK);
+	ViewMenu->AddEntry("Oben (-y)",HMM_VIEW_TOP);
+	ViewMenu->AddEntry("Unten (y)",HMM_VIEW_BOTTOM);
+	ViewMenu->AddEntry("Isometrisch",HMM_VIEW_ISOMETRIC);
+	ViewMenu->AddEntry("Perspektive",HMM_VIEW_PERSPECTIVE);
+
+
+

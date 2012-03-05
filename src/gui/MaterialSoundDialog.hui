@@ -1,0 +1,22 @@
+// IDs
+enum{
+	HMM_MATERIAL_SOUND_DIALOG,
+	HMM_OK,
+	HMM_CANCEL,
+	HMM_SOUND_LIST
+};
+
+
+
+	// dialog
+	TerrainDialog=HuiCreateDialog("Ger&ausche",595,345,MainWin,false,&TerrainDialogFunction);
+	TerrainDialog->SetID(HMM_MATERIAL_SOUND_DIALOG);
+	TerrainDialog->AddDefButton("OK",485,305,100,25,HMM_OK);
+	TerrainDialog->SetImage(HMM_OK,HuiImageOk);
+	TerrainDialog->AddButton("Abbrechen",380,305,100,25,HMM_CANCEL);
+	TerrainDialog->SetImage(HMM_CANCEL,HuiImageCancel);
+	TerrainDialog->AddListView("Sound-Datei\\Material\\v min\\v max",5,5,585,290,HMM_SOUND_LIST);
+	TerrainDialog->Update();
+
+
+

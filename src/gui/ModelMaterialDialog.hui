@@ -1,0 +1,98 @@
+// IDs
+enum{
+	HMM_MODEL_MATERIAL_DIALOG,
+	HMM_OK,
+	HMM_CANCEL,
+	HMM_SET,
+	HMM_MODEL_MATERIAL_DIALOG_TAB_CONTROL,
+	HMM_DEFAULT_TRANSPARENCY,
+	HMM_ALPHA_SOURCE,
+	HMM_ALPHA_DEST,
+	HMM_TRANSPARENCY_MODE,
+	HMM_MATERIAL_DIALOG_T_TRANS_TYPE,
+	HMM_MATERIAL_DIALOG_T_TRANS_SOURCE,
+	HMM_MATERIAL_DIALOG_T_TRANS_DEST,
+	HMM_MATERIAL_DIALOG_T_TRANS_FACTOR,
+	HMM_ALPHA_FACTOR,
+	HMM_PERCENT,
+	HMM_ALPHA_Z_BUFFER,
+	HMM_MATERIAL_DIALOG_FUNC_GRP,
+	HMM_DEFAULT_COLORS,
+	HMM_AMBIENT,
+	HMM_DIFFUSE,
+	HMM_SPECULAR,
+	HMM_EMISSION,
+	HMM_SHININESS,
+	HMM_MAT_SHININESS,
+	HMM_MAT_AM,
+	HMM_MAT_DI,
+	HMM_MAT_SP,
+	HMM_MAT_EM,
+	HMM_MATERIAL_FILE,
+	HMM_FIND_MATERIAL,
+	HMM_EDIT_MATERIAL,
+	HMM_DEFAULT_MATERIAL,
+	HMM_MODEL_DIALOG_GRP_MATERIAL_FILE,
+	HMM_MODEL_DIALOG_T_COMMENT,
+	HMM_MAT_DELETE_TEXTURE_LEVEL,
+	HMM_MAT_TEXTURES,
+	HMM_MAT_ADD_TEXTURE_LEVEL,
+	HMM_MAT_EMPTY_TEXTURE_LEVEL
+};
+
+
+	// dialog
+	AppearanceDialog=HuiCreateDialog("Material",365,310,MainWin,true,&AppearanceDialogFunc);
+	AppearanceDialog->SetID(HMM_MODEL_MATERIAL_DIALOG);
+	AppearanceDialog->AddDefButton("OK",260,270,95,25,HMM_OK);
+	AppearanceDialog->SetImage(HMM_OK,HuiImageOk);
+	AppearanceDialog->AddButton("Abbrechen",160,270,95,25,HMM_CANCEL);
+	AppearanceDialog->SetImage(HMM_CANCEL,HuiImageCancel);
+	AppearanceDialog->AddButton("&Ubernehmen",50,270,105,25,HMM_SET);
+	AppearanceDialog->SetImage(HMM_SET,HuiImageApply);
+	AppearanceDialog->AddTabControl("Generell\\Texturen\\Farben\\Transparenz",5,5,355,255,HMM_MODEL_MATERIAL_DIALOG_TAB_CONTROL);
+	AppearanceDialog->SetTabCreationPage(HMM_MODEL_MATERIAL_DIALOG_TAB_CONTROL,3);
+	AppearanceDialog->AddCheckBox("Transparenz aus dem Material verwenden",10,10,335,25,HMM_DEFAULT_TRANSPARENCY);
+	AppearanceDialog->AddComboBox("AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha",75,120,255,25,HMM_ALPHA_SOURCE);
+	AppearanceDialog->AddComboBox("AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha",75,150,255,25,HMM_ALPHA_DEST);
+	AppearanceDialog->AddComboBox("  --keine--\\Color-Key (weich)\\Color-Key (hart)\\Faktor\\Funktion",75,40,255,25,HMM_TRANSPARENCY_MODE);
+	AppearanceDialog->AddText("Art:",10,40,65,25,HMM_MATERIAL_DIALOG_T_TRANS_TYPE);
+	AppearanceDialog->AddText("Quelle",30,120,45,25,HMM_MATERIAL_DIALOG_T_TRANS_SOURCE);
+	AppearanceDialog->AddText("Ziel",30,150,45,25,HMM_MATERIAL_DIALOG_T_TRANS_DEST);
+	AppearanceDialog->AddText("Faktor:",10,195,100,25,HMM_MATERIAL_DIALOG_T_TRANS_FACTOR);
+	AppearanceDialog->AddSpinButton("\\0\\100",110,195,150,25,HMM_ALPHA_FACTOR);
+	AppearanceDialog->AddText("%",265,195,25,25,HMM_PERCENT);
+	AppearanceDialog->AddCheckBox("Z-Buffer aktiviert",10,70,335,25,HMM_ALPHA_Z_BUFFER);
+	AppearanceDialog->AddGroup("Funktion",10,100,335,85,HMM_MATERIAL_DIALOG_FUNC_GRP);
+	AppearanceDialog->SetTabCreationPage(HMM_MODEL_MATERIAL_DIALOG_TAB_CONTROL,2);
+	AppearanceDialog->AddCheckBox("Farben aus dem Material verwenden",10,10,335,25,HMM_DEFAULT_COLORS);
+	AppearanceDialog->AddText("Ambient",35,70,65,25,HMM_AMBIENT);
+	AppearanceDialog->AddText("Diffuse",35,100,65,25,HMM_DIFFUSE);
+	AppearanceDialog->AddText("Specular",35,130,65,25,HMM_SPECULAR);
+	AppearanceDialog->AddText("Emission",35,160,65,25,HMM_EMISSION);
+	AppearanceDialog->AddText("Shininess",205,130,65,25,HMM_SHININESS);
+	AppearanceDialog->AddSpinButton("\\0\\10000\\0.1",270,130,65,25,HMM_MAT_SHININESS);
+	AppearanceDialog->AddColorButton("",100,70,100,25,HMM_MAT_AM);
+	AppearanceDialog->AddColorButton("!alpha",100,100,100,25,HMM_MAT_DI);
+	AppearanceDialog->AddColorButton("",100,130,100,25,HMM_MAT_SP);
+	AppearanceDialog->AddColorButton("",100,160,100,25,HMM_MAT_EM);
+	AppearanceDialog->SetTabCreationPage(HMM_MODEL_MATERIAL_DIALOG_TAB_CONTROL,0);
+	AppearanceDialog->AddEdit("",20,85,205,25,HMM_MATERIAL_FILE);
+	AppearanceDialog->AddButton("",230,85,25,25,HMM_FIND_MATERIAL);
+	AppearanceDialog->SetImage(HMM_FIND_MATERIAL,HuiImageOpen);
+	AppearanceDialog->AddButton("Bearb.",260,85,70,25,HMM_EDIT_MATERIAL);
+	AppearanceDialog->SetImage(HMM_EDIT_MATERIAL,HuiImageEdit);
+	AppearanceDialog->AddCheckBox("Standard-Material verwenden",10,10,335,25,HMM_DEFAULT_MATERIAL);
+	AppearanceDialog->AddText("!bold\\Material-Datei",10,60,330,25,HMM_MODEL_DIALOG_GRP_MATERIAL_FILE);
+	AppearanceDialog->AddText("Die Eigenschaften dieser Material-Datei k&onnen in den folgenden Tab-Seiten &uberschrieben werden.",10,135,330,85,HMM_MODEL_DIALOG_T_COMMENT);
+	AppearanceDialog->SetTabCreationPage(HMM_MODEL_MATERIAL_DIALOG_TAB_CONTROL,1);
+	AppearanceDialog->AddButton("L&oschen",130,195,105,25,HMM_MAT_DELETE_TEXTURE_LEVEL);
+	AppearanceDialog->SetImage(HMM_MAT_DELETE_TEXTURE_LEVEL,HuiImageDelete);
+	AppearanceDialog->AddListView("!format=tit\\Ebene\\\\Textur",5,5,345,185,HMM_MAT_TEXTURES);
+	AppearanceDialog->AddButton("neue Ebene",5,195,120,25,HMM_MAT_ADD_TEXTURE_LEVEL);
+	AppearanceDialog->SetImage(HMM_MAT_ADD_TEXTURE_LEVEL,HuiImageNew);
+	AppearanceDialog->AddButton("Leeren",240,195,105,25,HMM_MAT_EMPTY_TEXTURE_LEVEL);
+	AppearanceDialog->SetImage(HMM_MAT_EMPTY_TEXTURE_LEVEL,HuiImageClear);
+	AppearanceDialog->Update();
+
+

@@ -1,0 +1,28 @@
+// IDs
+enum{
+	HMM_ROTATION_DIALOG,
+	HMM_X,
+	HMM_ROT_X,
+	HMM_DEGREE,
+	HMM_Z,
+	HMM_ROT_Z
+};
+
+
+
+	// dialog
+	RotationDialog=HuiCreateDialog("Rotation",155,105,MainWin,true,NULL);
+	RotationDialog->SetID(HMM_ROTATION_DIALOG);
+	RotationDialog->AddText("X",10,10,20,25,HMM_X);
+	RotationDialog->AddEdit("",30,10,100,25,HMM_ROT_X);
+	RotationDialog->AddText("°",135,10,15,25,HMM_DEGREE);
+	RotationDialog->AddText("X",10,40,20,25,HMM_X);
+	RotationDialog->AddEdit("",30,40,100,25,HMM_ROT_X);
+	RotationDialog->AddText("°",135,40,15,25,HMM_DEGREE);
+	RotationDialog->AddText("Z",10,70,20,25,HMM_Z);
+	RotationDialog->AddEdit("",30,70,100,25,HMM_ROT_Z);
+	RotationDialog->AddText("°",135,70,15,25,HMM_DEGREE);
+	RotationDialog->Update();
+
+
+

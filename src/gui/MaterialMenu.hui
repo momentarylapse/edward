@@ -1,0 +1,98 @@
+// IDs
+enum{
+	HMM_MENU_MATERIAL,
+	HMM_MENU_FILE,
+	HMM_NEW,
+	HMM_OPEN,
+	HMM_SAVE,
+	HMM_SAVE_AS,
+	HMM_EXECUTE_PLUGIN,
+	HMM_MENU_MODEL,
+	HMM_MODEL_NEW,
+	HMM_MODEL_OPEN,
+	HMM_MENU_OBJECT,
+	HMM_OBJECT_NEW,
+	HMM_OBJECT_OPEN,
+	HMM_MENU_ITEM,
+	HMM_ITEM_NEW,
+	HMM_ITEM_OPEN,
+	HMM_MENU_FONT,
+	HMM_FONT_NEW,
+	HMM_FONT_OPEN,
+	HMM_MATERIAL_NEW,
+	HMM_MATERIAL_OPEN,
+	HMM_MENU_WORLD,
+	HMM_WORLD_NEW,
+	HMM_WORLD_OPEN,
+	HMM_ADMINISTRATE,
+	HMM_SETTINGS,
+	HMM_EXIT,
+	HMM_CURRENT_MODE_MATERIAL,
+	HMM_MENU_MATERIAL_PROPERTIES,
+	HMM_APPEARANCE,
+	HMM_PHYSICS,
+	HMM_SOUNDS,
+	HMM_MENU_HELP,
+	HMM_HELP,
+	HMM_SEND_BUG_REPORT,
+	HMM_WHAT_THE_FUCK
+};
+
+
+
+	// menu
+	CHuiMenu *Menu=new CHuiMenu();
+		Menu->SetID(HMM_MENU_MATERIAL);
+		CHuiMenu *sub_menu_file=new CHuiMenu();
+		sub_menu_file->AddEntryImage("Neu",HuiImageNew,HMM_NEW);
+		sub_menu_file->AddEntryImage("&Offnen...",HuiImageOpen,HMM_OPEN);
+		sub_menu_file->AddEntryImage("Speichern",HuiImageSave,HMM_SAVE);
+		sub_menu_file->AddEntryImage("Speichern unter...",HuiImageSaveAs,HMM_SAVE_AS);
+		sub_menu_file->AddSeparator();
+		sub_menu_file->AddEntry("Plugin ausf&uhren...",HMM_EXECUTE_PLUGIN);
+		sub_menu_file->AddSeparator();
+			CHuiMenu *sub_menu_model=new CHuiMenu();
+			sub_menu_model->AddEntryImage("Neu",HuiImageNew,HMM_MODEL_NEW);
+			sub_menu_model->AddEntryImage("&Offnen...",HuiImageOpen,HMM_MODEL_OPEN);
+		sub_menu_file->AddSubMenu("Modell",HMM_MENU_MODEL,sub_menu_model);
+			CHuiMenu *sub_menu_object=new CHuiMenu();
+			sub_menu_object->AddEntryImage("Neu",HuiImageNew,HMM_OBJECT_NEW);
+			sub_menu_object->AddEntryImage("&Offnen...",HuiImageOpen,HMM_OBJECT_OPEN);
+		sub_menu_file->AddSubMenu("Objekt",HMM_MENU_OBJECT,sub_menu_object);
+			CHuiMenu *sub_menu_item=new CHuiMenu();
+			sub_menu_item->AddEntryImage("Neu",HuiImageNew,HMM_ITEM_NEW);
+			sub_menu_item->AddEntryImage("&Offnen...",HuiImageOpen,HMM_ITEM_OPEN);
+		sub_menu_file->AddSubMenu("Item",HMM_MENU_ITEM,sub_menu_item);
+			CHuiMenu *sub_menu_font=new CHuiMenu();
+			sub_menu_font->AddEntryImage("Neu",HuiImageNew,HMM_FONT_NEW);
+			sub_menu_font->AddEntryImage("&Offnen...",HuiImageOpen,HMM_FONT_OPEN);
+		sub_menu_file->AddSubMenu("Font",HMM_MENU_FONT,sub_menu_font);
+			CHuiMenu *sub_menu_material=new CHuiMenu();
+			sub_menu_material->AddEntryImage("Neu",HuiImageNew,HMM_MATERIAL_NEW);
+			sub_menu_material->AddEntryImage("&Offnen...",HuiImageOpen,HMM_MATERIAL_OPEN);
+		sub_menu_file->AddSubMenu("Material",HMM_MENU_MATERIAL,sub_menu_material);
+			CHuiMenu *sub_menu_world=new CHuiMenu();
+			sub_menu_world->AddEntryImage("Neu",HuiImageNew,HMM_WORLD_NEW);
+			sub_menu_world->AddEntryImage("&Offnen...",HuiImageOpen,HMM_WORLD_OPEN);
+		sub_menu_file->AddSubMenu("Welt",HMM_MENU_WORLD,sub_menu_world);
+		sub_menu_file->AddEntryImage("Verwalten",HuiImagePreferences,HMM_ADMINISTRATE);
+		sub_menu_file->AddEntryImage("Einstellungen...",HuiImagePreferences,HMM_SETTINGS);
+		sub_menu_file->AddSeparator();
+		sub_menu_file->AddEntryImage("Beenden",HuiImageQuit,HMM_EXIT);
+	Menu->AddSubMenu("Datei",HMM_MENU_FILE,sub_menu_file);
+	Menu->AddEntry("-Material-Modus-",HMM_CURRENT_MODE_MATERIAL);
+	Menu->EnableItem(HMM_CURRENT_MODE_MATERIAL,false);
+		CHuiMenu *sub_menu_prop=new CHuiMenu();
+		sub_menu_prop->AddEntryImage("Aussehen...",HuiImagePreferences,HMM_APPEARANCE);
+		sub_menu_prop->AddEntryImage("Physik...",HuiImagePreferences,HMM_PHYSICS);
+		sub_menu_prop->AddEntryImage("Ger&ausche...",HuiImagePreferences,HMM_SOUNDS);
+	Menu->AddSubMenu("Eigenschaften",HMM_MENU_MATERIAL_PROPERTIES,sub_menu_prop);
+		CHuiMenu *sub_menu_help=new CHuiMenu();
+		sub_menu_help->AddEntryImage("Hilfe...",HuiImageHelp,HMM_HELP);
+		sub_menu_help->AddSeparator();
+		sub_menu_help->AddEntry("Fehler berichten",HMM_SEND_BUG_REPORT);
+		sub_menu_help->AddEntryImage("\"&uber\"",HuiImageAbout,HMM_WHAT_THE_FUCK);
+	Menu->AddSubMenu("?",HMM_MENU_HELP,sub_menu_help);
+
+
+

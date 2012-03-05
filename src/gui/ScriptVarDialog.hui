@@ -1,0 +1,31 @@
+// IDs
+enum{
+	HMM_SCRIPTVAR_DIALOG,
+	HMM_INDEX,
+	HMM_SCRIPTVAR_T_INDEX,
+	HMM_SCRIPTVAR_T_VALUE,
+	HMM_VALUE,
+	HMM_SCRIPTVAR_T_TYPE,
+	HMM_OK,
+	HMM_CANCEL
+};
+
+
+
+	// dialog
+	ScriptVarDialog=HuiCreateDialog("Script-Variable",260,115,MainWin,false,&ScriptVarDialogFunc);
+	ScriptVarDialog->SetID(HMM_SCRIPTVAR_DIALOG);
+	ScriptVarDialog->AddEdit("",65,10,140,25,HMM_INDEX);
+	ScriptVarDialog->Enable(HMM_INDEX,false);
+	ScriptVarDialog->AddText("Index:",10,10,55,25,HMM_SCRIPTVAR_T_INDEX);
+	ScriptVarDialog->AddText("Wert:",10,40,55,25,HMM_SCRIPTVAR_T_VALUE);
+	ScriptVarDialog->AddEdit("",65,40,140,25,HMM_VALUE);
+	ScriptVarDialog->AddText("",210,40,40,25,HMM_SCRIPTVAR_T_TYPE);
+	ScriptVarDialog->AddDefButton("OK",150,75,100,25,HMM_OK);
+	ScriptVarDialog->SetImage(HMM_OK,HuiImageOk);
+	ScriptVarDialog->AddButton("Abbrechen",45,75,100,25,HMM_CANCEL);
+	ScriptVarDialog->SetImage(HMM_CANCEL,HuiImageCancel);
+	ScriptVarDialog->Update();
+
+
+

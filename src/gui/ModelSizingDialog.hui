@@ -1,0 +1,28 @@
+// IDs
+enum{
+	HMM_SCALING_DIALOG,
+	HMM_X,
+	HMM_SCALE_X,
+	HMM_PERCENT,
+	HMM_Z,
+	HMM_SCALE_Z
+};
+
+
+
+	// dialog
+	ScalingDialog=HuiCreateDialog("Skalierung",155,105,MainWin,true,NULL);
+	ScalingDialog->SetID(HMM_SCALING_DIALOG);
+	ScalingDialog->AddText("X",10,10,20,25,HMM_X);
+	ScalingDialog->AddEdit("",30,10,100,25,HMM_SCALE_X);
+	ScalingDialog->AddText("%",135,10,15,25,HMM_PERCENT);
+	ScalingDialog->AddText("X",10,40,20,25,HMM_X);
+	ScalingDialog->AddEdit("",30,40,100,25,HMM_SCALE_X);
+	ScalingDialog->AddText("%",135,40,15,25,HMM_PERCENT);
+	ScalingDialog->AddText("Z",10,70,20,25,HMM_Z);
+	ScalingDialog->AddEdit("",30,70,100,25,HMM_SCALE_Z);
+	ScalingDialog->AddText("%",135,70,15,25,HMM_PERCENT);
+	ScalingDialog->Update();
+
+
+

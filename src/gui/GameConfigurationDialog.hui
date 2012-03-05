@@ -1,0 +1,65 @@
+// IDs
+enum{
+	HMM_RC_DIALOG,
+	HMM_GED_GROUP,
+	HMM_GED_T_WORLD,
+	HMM_DEFAULT_WORLD,
+	HMM_FIND_DEFAULT_WORLD,
+	HMM_GED_T_SCRIPT,
+	HMM_DEFAULT_SCRIPT,
+	HMM_FIND_DEFAULT_SCRIPT,
+	HMM_GED_T_MATERIAL,
+	HMM_DEFAULT_MATERIAL,
+	HMM_FIND_DEFAULT_MATERIAL,
+	HMM_GED_T_FONT,
+	HMM_DEFAULT_FONT,
+	HMM_FIND_DEFAULT_FONT,
+	HMM_CANCEL,
+	HMM_OK,
+	HMM_GED_T_ROOTDIR,
+	HMM_ROOTDIR,
+	HMM_FIND_ROOTDIR,
+	HMM_GED_T_SECOND_WORLD,
+	HMM_DEFAULT_SECOND_WORLD,
+	HMM_FIND_DEFAULT_SECOND_WORLD
+};
+
+
+
+	// dialog
+	GameConfigurationDialog=HuiCreateDialog("Grundeinstellungen des Spieles",365,310,Dialog,false,&ConfigurationDialogFunction);
+	GameConfigurationDialog->SetID(HMM_RC_DIALOG);
+	GameConfigurationDialog->AddText("!bold\\Standartwerte des Spiels",10,80,345,25,HMM_GED_GROUP);
+	GameConfigurationDialog->AddText("Welt:",30,110,95,25,HMM_GED_T_WORLD);
+	GameConfigurationDialog->AddEdit("",125,110,200,25,HMM_DEFAULT_WORLD);
+	GameConfigurationDialog->AddButton("",330,110,25,25,HMM_FIND_DEFAULT_WORLD);
+	GameConfigurationDialog->SetImage(HMM_FIND_DEFAULT_WORLD,HuiImageOpen);
+	GameConfigurationDialog->AddText("Haupt-Script:",30,170,95,25,HMM_GED_T_SCRIPT);
+	GameConfigurationDialog->AddEdit("",125,170,200,25,HMM_DEFAULT_SCRIPT);
+	GameConfigurationDialog->AddButton("",330,170,25,25,HMM_FIND_DEFAULT_SCRIPT);
+	GameConfigurationDialog->SetImage(HMM_FIND_DEFAULT_SCRIPT,HuiImageOpen);
+	GameConfigurationDialog->AddText("Material:",30,200,95,25,HMM_GED_T_MATERIAL);
+	GameConfigurationDialog->AddEdit("",125,200,200,25,HMM_DEFAULT_MATERIAL);
+	GameConfigurationDialog->AddButton("",330,200,25,25,HMM_FIND_DEFAULT_MATERIAL);
+	GameConfigurationDialog->SetImage(HMM_FIND_DEFAULT_MATERIAL,HuiImageOpen);
+	GameConfigurationDialog->AddText("Font:",30,230,95,25,HMM_GED_T_FONT);
+	GameConfigurationDialog->AddEdit("",125,230,200,25,HMM_DEFAULT_FONT);
+	GameConfigurationDialog->AddButton("",330,230,25,25,HMM_FIND_DEFAULT_FONT);
+	GameConfigurationDialog->SetImage(HMM_FIND_DEFAULT_FONT,HuiImageOpen);
+	GameConfigurationDialog->AddButton("Abbrechen",145,270,100,25,HMM_CANCEL);
+	GameConfigurationDialog->SetImage(HMM_CANCEL,HuiImageCancel);
+	GameConfigurationDialog->AddDefButton("OK",250,270,100,25,HMM_OK);
+	GameConfigurationDialog->SetImage(HMM_OK,HuiImageOk);
+	GameConfigurationDialog->AddText("!bold\\Verzeichnis",10,10,345,25,HMM_GED_T_ROOTDIR);
+	GameConfigurationDialog->AddEdit("",30,40,295,25,HMM_ROOTDIR);
+	GameConfigurationDialog->Enable(HMM_ROOTDIR,false);
+	GameConfigurationDialog->AddButton("",330,40,25,25,HMM_FIND_ROOTDIR);
+	GameConfigurationDialog->SetImage(HMM_FIND_ROOTDIR,HuiImageOpen);
+	GameConfigurationDialog->AddText("Zweite Welt:",30,140,95,25,HMM_GED_T_SECOND_WORLD);
+	GameConfigurationDialog->AddEdit("",125,140,200,25,HMM_DEFAULT_SECOND_WORLD);
+	GameConfigurationDialog->AddButton("",330,140,25,25,HMM_FIND_DEFAULT_SECOND_WORLD);
+	GameConfigurationDialog->SetImage(HMM_FIND_DEFAULT_SECOND_WORLD,HuiImageOpen);
+	GameConfigurationDialog->Update();
+
+
+

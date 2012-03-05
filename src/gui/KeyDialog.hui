@@ -1,0 +1,28 @@
+// IDs
+enum{
+	HMM_KEY_DIALOG,
+	HMM_KEY_DIALOG_T_KEY,
+	HMM_KEY,
+	HMM_OK,
+	HMM_CANCEL,
+	HMM_KEY_RESET
+};
+
+
+
+	// dialog
+	KeyDialog=HuiCreateDialog("Tasten Kombination",350,85,EditorDialog,true,&KeyDialogFunction);
+	KeyDialog->SetID(HMM_KEY_DIALOG);
+	KeyDialog->AddText("Tastenkombination:",10,10,130,25,HMM_KEY_DIALOG_T_KEY);
+	KeyDialog->AddEdit("",140,10,170,25,HMM_KEY);
+	KeyDialog->Enable(HMM_KEY,false);
+	KeyDialog->AddDefButton("OK",240,45,100,25,HMM_OK);
+	KeyDialog->SetImage(HMM_OK,HuiImageOk);
+	KeyDialog->AddButton("Abbrechen",135,45,100,25,HMM_CANCEL);
+	KeyDialog->SetImage(HMM_CANCEL,HuiImageCancel);
+	KeyDialog->AddButton("",315,10,25,25,HMM_KEY_RESET);
+	KeyDialog->SetImage(HMM_KEY_RESET,HuiImageClear);
+	KeyDialog->Update();
+
+
+

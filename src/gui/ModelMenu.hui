@@ -1,0 +1,305 @@
+// IDs
+enum{
+	HMM_MENU_MODEL,
+	HMM_MENU_MODEL_FILE,
+	HMM_NEW,
+	HMM_OPEN,
+	HMM_SAVE,
+	HMM_SAVE_AS,
+	HMM_MENU_MODEL_IMPORT,
+	HMM_IMPORT_FROM_GAMESTUDIO,
+	HMM_IMPORT_FROM_3DS,
+	HMM_IMPORT_FROM_LINEAGE2,
+	HMM_MENU_MODEL_EXPORT,
+	HMM_EXPORT_TO_GAMESTUDIO,
+	HMM_EXECUTE_PLUGIN,
+	HMM_MODEL_NEW,
+	HMM_MODEL_OPEN,
+	HMM_MENU_OBJECT,
+	HMM_OBJECT_NEW,
+	HMM_OBJECT_OPEN,
+	HMM_MENU_ITEM,
+	HMM_ITEM_NEW,
+	HMM_ITEM_OPEN,
+	HMM_MENU_FONT,
+	HMM_FONT_NEW,
+	HMM_FONT_OPEN,
+	HMM_MENU_MATERIAL,
+	HMM_MATERIAL_NEW,
+	HMM_MATERIAL_OPEN,
+	HMM_MENU_WORLD,
+	HMM_WORLD_NEW,
+	HMM_WORLD_OPEN,
+	HMM_ADMINISTRATE,
+	HMM_SETTINGS,
+	HMM_EXIT,
+	HMM_CURRENT_MODE_MODEL,
+	HMM_MENU_MODEL_MODE,
+	HMM_MODE_MODEL_MESH,
+	HMM_MODE_MODEL_SKELETON,
+	HMM_MODE_MODEL_ANIMATION,
+	HMM_MODE_MODEL_VERTEX,
+	HMM_MODE_MODEL_EDGE,
+	HMM_MODE_MODEL_TRIANGLE,
+	HMM_MODE_MODEL_SURFACE,
+	HMM_MODE_MODEL_TEXTURE_COORD,
+	HMM_MODE_PROPERTIES,
+	HMM_MENU_MODEL_CREATION,
+	HMM_NEEDS_VERTICES,
+	HMM_NEW_TRIA,
+	HMM_NEW_TRIA_U,
+	HMM_SELFISH,
+	HMM_NEW_POINT,
+	HMM_NEW_PLANE,
+	HMM_NEW_CUBE,
+	HMM_NEW_BALL,
+	HMM_NEW_CYLINDER,
+	HMM_NEW_OUTLINE,
+	HMM_NEW_EXTRACT,
+	HMM_JUST_PHYSICAL,
+	HMM_NEW_KONV_POLY,
+	HMM_NEW_SPAT,
+	HMM_MENU_MODEL_SELECTION,
+	HMM_SELECT_RECURSIVE,
+	HMM_SELECT_CW,
+	HMM_INVERT_TRIAS,
+	HMM_CONNECT,
+	HMM_NEARIFY,
+	HMM_CUT_OUT,
+	HMM_END_OF_ORDER,
+	HMM_ALIGN_TO_GRID,
+	HMM_TEXT_FROM_BG,
+	HMM_CREATE_NEW_MATERIAL,
+	HMM_CHOOSE_MATERIAL,
+	HMM_COPY,
+	HMM_PASTE,
+	HMM_DELETE,
+	HMM_MENU_MODEL_APPEARANCE,
+	HMM_MENU_MODEL_NORMALS,
+	HMM_JUST_SELECTION,
+	HMM_NORMAL_THIS_SMOOTH,
+	HMM_NORMAL_THIS_HARD,
+	HMM_NORMAL_THIS_SMOOTH_EDGES,
+	HMM_NORMAL_THIS_ANGULAR,
+	HMM_ALL,
+	HMM_NORMAL_ALL_SMOOTH,
+	HMM_NORMAL_ALL_HARD,
+	HMM_NORMAL_ALL_SMOOTH_EDGES,
+	HMM_NORMAL_ALL_ANGULAR,
+	HMM_NORMAL_ALL_PER_VERTEX,
+	HMM_MENU_MODEL_FX,
+	HMM_FX_HEADLINE,
+	HMM_FX_NEW,
+	HMM_FX_NONE,
+	HMM_CURRENT_MATERIAL,
+	HMM_MODE_MODEL_MATERIAL,
+	HMM_TRANSPARENCY,
+	HMM_MODEL_COLORS,
+	HMM_MODE_MODEL_TEXTURE,
+	HMM_MODE_MODEL_MATERIALS,
+	HMM_MENU_MODEL_FUNCTIONS,
+	HMM_MENU_RIGHTMOUSE_SIGN,
+	HMM_ROTATE,
+	HMM_SCALE,
+	HMM_SCALE_2D,
+	HMM_MIRROR,
+	HMM_CUTTING_LINE,
+	HMM_EASIFY_SKIN,
+	HMM_MENU_MODEL_VIEW,
+	HMM_MENU_MODEL_VIEWSTAGE,
+	HMM_VIEW_PUSH,
+	HMM_VIEW_POP,
+	HMM_MENU_MODEL_SKIN,
+	HMM_DETAIL_0,
+	HMM_DETAIL_1,
+	HMM_DETAIL_2,
+	HMM_DETAIL_3,
+	HMM_WIRE,
+	HMM_GRID,
+	HMM_LIGHT,
+	HMM_OPT_VIEW,
+	HMM_WHOLE_WINDOW,
+	HMM_MENU_HELP,
+	HMM_HELP,
+	HMM_SEND_BUG_REPORT,
+	HMM_WHAT_THE_FUCK
+};
+
+
+	// menu
+	CHuiMenu *Menu=new CHuiMenu();
+		Menu->SetID(HMM_MENU_MODEL);
+		CHuiMenu *sub_menu_file=new CHuiMenu();
+		sub_menu_file->AddEntryImage("Neu",HuiImageNew,HMM_NEW);
+		sub_menu_file->AddEntryImage("&Offnen...",HuiImageOpen,HMM_OPEN);
+		sub_menu_file->AddEntryImage("Speichern",HuiImageSave,HMM_SAVE);
+		sub_menu_file->AddEntryImage("Speichern unter...",HuiImageSaveAs,HMM_SAVE_AS);
+		sub_menu_file->AddSeparator();
+			CHuiMenu *sub_menu_123=new CHuiMenu();
+			sub_menu_123->AddEntryImage("Aus GameStudio...",HuiImageOpen,HMM_IMPORT_FROM_GAMESTUDIO);
+			sub_menu_123->AddEntryImage("3D Studio Max...",HuiImageOpen,HMM_IMPORT_FROM_3DS);
+			sub_menu_123->AddEntryImage("Lineage II...",HuiImageOpen,HMM_IMPORT_FROM_LINEAGE2);
+		sub_menu_file->AddSubMenu("Importieren",HMM_MENU_MODEL_IMPORT,sub_menu_123);
+			CHuiMenu *sub_menu_123=new CHuiMenu();
+			sub_menu_123->AddEntry("Nach GameStudio...",HMM_EXPORT_TO_GAMESTUDIO);
+		sub_menu_file->AddSubMenu("Exportieren",HMM_MENU_MODEL_EXPORT,sub_menu_123);
+		sub_menu_file->AddSeparator();
+		sub_menu_file->AddEntry("Plugin ausf&uhren...",HMM_EXECUTE_PLUGIN);
+		sub_menu_file->AddSeparator();
+			CHuiMenu *sub_menu_model=new CHuiMenu();
+			sub_menu_model->AddEntryImage("Neu",HuiImageNew,HMM_MODEL_NEW);
+			sub_menu_model->AddEntryImage("&Offnen...",HuiImageOpen,HMM_MODEL_OPEN);
+		sub_menu_file->AddSubMenu("Modell",HMM_MENU_MODEL,sub_menu_model);
+			CHuiMenu *sub_menu_object=new CHuiMenu();
+			sub_menu_object->AddEntryImage("Neu",HuiImageNew,HMM_OBJECT_NEW);
+			sub_menu_object->AddEntryImage("&Offnen...",HuiImageOpen,HMM_OBJECT_OPEN);
+		sub_menu_file->AddSubMenu("Objekt",HMM_MENU_OBJECT,sub_menu_object);
+			CHuiMenu *sub_menu_item=new CHuiMenu();
+			sub_menu_item->AddEntryImage("Neu",HuiImageNew,HMM_ITEM_NEW);
+			sub_menu_item->AddEntryImage("&Offnen...",HuiImageOpen,HMM_ITEM_OPEN);
+		sub_menu_file->AddSubMenu("Item",HMM_MENU_ITEM,sub_menu_item);
+			CHuiMenu *sub_menu_font=new CHuiMenu();
+			sub_menu_font->AddEntryImage("Neu",HuiImageNew,HMM_FONT_NEW);
+			sub_menu_font->AddEntryImage("&Offnen...",HuiImageOpen,HMM_FONT_OPEN);
+		sub_menu_file->AddSubMenu("Font",HMM_MENU_FONT,sub_menu_font);
+			CHuiMenu *sub_menu_material=new CHuiMenu();
+			sub_menu_material->AddEntryImage("Neu",HuiImageNew,HMM_MATERIAL_NEW);
+			sub_menu_material->AddEntryImage("&Offnen...",HuiImageOpen,HMM_MATERIAL_OPEN);
+		sub_menu_file->AddSubMenu("Material",HMM_MENU_MATERIAL,sub_menu_material);
+			CHuiMenu *sub_menu_world=new CHuiMenu();
+			sub_menu_world->AddEntryImage("Neu",HuiImageNew,HMM_WORLD_NEW);
+			sub_menu_world->AddEntryImage("&Offnen...",HuiImageOpen,HMM_WORLD_OPEN);
+		sub_menu_file->AddSubMenu("Welt",HMM_MENU_WORLD,sub_menu_world);
+		sub_menu_file->AddEntryImage("Verwalten",HuiImagePreferences,HMM_ADMINISTRATE);
+		sub_menu_file->AddEntryImage("Einstellungen...",HuiImagePreferences,HMM_SETTINGS);
+		sub_menu_file->AddSeparator();
+		sub_menu_file->AddEntryImage("Beenden",HuiImageQuit,HMM_EXIT);
+	Menu->AddSubMenu("Datei",HMM_MENU_MODEL_FILE,sub_menu_file);
+	Menu->AddEntry("-Modell-Modus-",HMM_CURRENT_MODE_MODEL);
+	Menu->EnableItem(HMM_CURRENT_MODE_MODEL,false);
+		CHuiMenu *sub_menu_585=new CHuiMenu();
+		sub_menu_585->AddEntryCheckable("Mesh",HMM_MODE_MODEL_MESH);
+		sub_menu_585->AddEntryCheckable("Skelett",HMM_MODE_MODEL_SKELETON);
+		sub_menu_585->AddEntryCheckable("Animation",HMM_MODE_MODEL_ANIMATION);
+		sub_menu_585->AddSeparator();
+		sub_menu_585->AddEntryCheckable("Vertex-Punkte",HMM_MODE_MODEL_VERTEX);
+		sub_menu_585->AddEntryCheckable("Kanten",HMM_MODE_MODEL_EDGE);
+		sub_menu_585->AddEntryCheckable("Dreiecke",HMM_MODE_MODEL_TRIANGLE);
+		sub_menu_585->AddEntryCheckable("Oberfl&achen",HMM_MODE_MODEL_SURFACE);
+		sub_menu_585->AddEntryCheckable("Textur-Koordinaten",HMM_MODE_MODEL_TEXTURE_COORD);
+		sub_menu_585->AddSeparator();
+		sub_menu_585->AddEntryImage("Eigenschaften...",HuiImagePreferences,HMM_MODE_PROPERTIES);
+	Menu->AddSubMenu("Bearbeitungsmodus",HMM_MENU_MODEL_MODE,sub_menu_585);
+		CHuiMenu *sub_menu_350=new CHuiMenu();
+		sub_menu_350->AddEntry("Auf Vertex-Punkten",HMM_NEEDS_VERTICES);
+		sub_menu_350->EnableItem(HMM_NEEDS_VERTICES,false);
+		sub_menu_350->AddEntry("Neues Dreieck",HMM_NEW_TRIA);
+		sub_menu_350->AddEntry("Neue Dreiecke \"U\"",HMM_NEW_TRIA_U);
+		sub_menu_350->AddSeparator();
+		sub_menu_350->AddEntry("Selbst&andig",HMM_SELFISH);
+		sub_menu_350->EnableItem(HMM_SELFISH,false);
+		sub_menu_350->AddEntry("Vertex-Punkte",HMM_NEW_POINT);
+		sub_menu_350->AddEntry("Ebene",HMM_NEW_PLANE);
+		sub_menu_350->AddEntry("Quader",HMM_NEW_CUBE);
+		sub_menu_350->AddEntry("Kugel",HMM_NEW_BALL);
+		sub_menu_350->AddEntry("Zylinder...",HMM_NEW_CYLINDER);
+		sub_menu_350->AddEntry("Umriss",HMM_NEW_OUTLINE);
+		sub_menu_350->AddSeparator();
+		sub_menu_350->AddEntry("Extrahieren",HMM_NEW_EXTRACT);
+		sub_menu_350->AddSeparator();
+		sub_menu_350->AddEntry("Phys. Oberfl&ache",HMM_JUST_PHYSICAL);
+		sub_menu_350->EnableItem(HMM_JUST_PHYSICAL,false);
+		sub_menu_350->AddEntry("Konv. Polyeder",HMM_NEW_KONV_POLY);
+		sub_menu_350->AddEntry("Spat",HMM_NEW_SPAT);
+	Menu->AddSubMenu("Erstellen",HMM_MENU_MODEL_CREATION,sub_menu_350);
+		CHuiMenu *sub_menu_966=new CHuiMenu();
+		sub_menu_966->AddEntry("Zusammenh&angendes markieren",HMM_SELECT_RECURSIVE);
+		sub_menu_966->AddEntryCheckable("Dreiecke nur im Uhrzeigersinn",HMM_SELECT_CW);
+		sub_menu_966->AddSeparator();
+		sub_menu_966->AddEntry("Dreiecke umkehren",HMM_INVERT_TRIAS);
+		sub_menu_966->AddEntry("Punkte vereinen",HMM_CONNECT);
+		sub_menu_966->AddEntry("Punkte ann&ahern",HMM_NEARIFY);
+		sub_menu_966->AddEntryImage("Ausschneiden",HuiImageCut,HMM_CUT_OUT);
+		sub_menu_966->AddEntry("Ans Ende der Reihenfolge",HMM_END_OF_ORDER);
+		sub_menu_966->AddEntry("Am Raster ausrichten",HMM_ALIGN_TO_GRID);
+		sub_menu_966->AddEntry("TexKoord aus Hintergrund",HMM_TEXT_FROM_BG);
+		sub_menu_966->AddSeparator();
+		sub_menu_966->AddEntryImage("Mit neuem Material belegen...",HuiImageNew,HMM_CREATE_NEW_MATERIAL);
+		sub_menu_966->AddEntryImage("Material w&ahlen...",HuiImageOpen,HMM_CHOOSE_MATERIAL);
+		sub_menu_966->AddSeparator();
+		sub_menu_966->AddEntryImage("Kopieren",HuiImageCopy,HMM_COPY);
+		sub_menu_966->AddEntryImage("Einf&ugen",HuiImagePaste,HMM_PASTE);
+		sub_menu_966->AddEntryImage("L&oschen",HuiImageDelete,HMM_DELETE);
+	Menu->AddSubMenu("Auswahl",HMM_MENU_MODEL_SELECTION,sub_menu_966);
+		CHuiMenu *sub_menu_895=new CHuiMenu();
+			CHuiMenu *sub_menu_746=new CHuiMenu();
+			sub_menu_746->AddEntry("Auswahl",HMM_JUST_SELECTION);
+			sub_menu_746->EnableItem(HMM_JUST_SELECTION,false);
+			sub_menu_746->AddEntry("Rund",HMM_NORMAL_THIS_SMOOTH);
+			sub_menu_746->AddEntry("Eckig",HMM_NORMAL_THIS_HARD);
+			sub_menu_746->AddEntry("Kanten rund",HMM_NORMAL_THIS_SMOOTH_EDGES);
+			sub_menu_746->AddEntry("Winkelabh&angig",HMM_NORMAL_THIS_ANGULAR);
+			sub_menu_746->AddSeparator();
+			sub_menu_746->AddEntry("Alles",HMM_ALL);
+			sub_menu_746->EnableItem(HMM_ALL,false);
+			sub_menu_746->AddEntryCheckable("Rund",HMM_NORMAL_ALL_SMOOTH);
+			sub_menu_746->AddEntryCheckable("Eckig",HMM_NORMAL_ALL_HARD);
+			sub_menu_746->AddEntryCheckable("Kanten rund",HMM_NORMAL_ALL_SMOOTH_EDGES);
+			sub_menu_746->AddEntryCheckable("Winkelabh&angig",HMM_NORMAL_ALL_ANGULAR);
+			sub_menu_746->AddEntryCheckable("Per Vertex",HMM_NORMAL_ALL_PER_VERTEX);
+			sub_menu_746->EnableItem(HMM_NORMAL_ALL_PER_VERTEX,false);
+		sub_menu_895->AddSubMenu("Normalenart",HMM_MENU_MODEL_NORMALS,sub_menu_746);
+			CHuiMenu *sub_menu_688=new CHuiMenu();
+			sub_menu_688->AddEntry("Markierte Punkte",HMM_FX_HEADLINE);
+			sub_menu_688->EnableItem(HMM_FX_HEADLINE,false);
+			sub_menu_688->AddEntryImage("Neu...",HuiImageNew,HMM_FX_NEW);
+			sub_menu_688->AddEntryImage("-keinerlei-",HuiImageDelete,HMM_FX_NONE);
+		sub_menu_895->AddSubMenu("Effekte",HMM_MENU_MODEL_FX,sub_menu_688);
+		sub_menu_895->AddSeparator();
+		sub_menu_895->AddEntry("Aktuelles Material",HMM_CURRENT_MATERIAL);
+		sub_menu_895->EnableItem(HMM_CURRENT_MATERIAL,false);
+		sub_menu_895->AddEntry("Material...",HMM_MODE_MODEL_MATERIAL);
+		sub_menu_895->AddEntry("Transparenz...",HMM_TRANSPARENCY);
+		sub_menu_895->AddEntry("Farben...",HMM_MODEL_COLORS);
+		sub_menu_895->AddEntry("Texturen...",HMM_MODE_MODEL_TEXTURE);
+		sub_menu_895->AddSeparator();
+		sub_menu_895->AddEntry("Materialien...",HMM_MODE_MODEL_MATERIALS);
+	Menu->AddSubMenu("Aussehen",HMM_MENU_MODEL_APPEARANCE,sub_menu_895);
+		CHuiMenu *sub_menu_858=new CHuiMenu();
+		sub_menu_858->AddEntry("Rechte Maustaste",HMM_MENU_RIGHTMOUSE_SIGN);
+		sub_menu_858->EnableItem(HMM_MENU_RIGHTMOUSE_SIGN,false);
+		sub_menu_858->AddEntryCheckable("Rotieren",HMM_ROTATE);
+		sub_menu_858->AddEntryCheckable("Skalieren X=Y=Z",HMM_SCALE);
+		sub_menu_858->AddEntryCheckable("Skalieren 2D",HMM_SCALE_2D);
+		sub_menu_858->AddEntryCheckable("Spiegeln",HMM_MIRROR);
+		sub_menu_858->AddSeparator();
+		sub_menu_858->AddEntryImage("Schnittlinie",HuiImageCut,HMM_CUTTING_LINE);
+		sub_menu_858->AddEntry("Vereinfachen",HMM_EASIFY_SKIN);
+	Menu->AddSubMenu("Funktionen",HMM_MENU_MODEL_FUNCTIONS,sub_menu_858);
+		CHuiMenu *sub_menu_513=new CHuiMenu();
+			CHuiMenu *sub_menu_303=new CHuiMenu();
+			sub_menu_303->AddEntry("hinein-pushen",HMM_VIEW_PUSH);
+			sub_menu_303->AddEntry("heraus-poppen",HMM_VIEW_POP);
+		sub_menu_513->AddSubMenu("Ansichts-Schicht",HMM_MENU_MODEL_VIEWSTAGE,sub_menu_303);
+			CHuiMenu *sub_menu_14=new CHuiMenu();
+			sub_menu_14->AddEntryCheckable("Physik. Oberfl&ache",HMM_DETAIL_0);
+			sub_menu_14->AddEntryCheckable("hohe Detailstufe",HMM_DETAIL_1);
+			sub_menu_14->AddEntryCheckable("mittlere Detailstufe",HMM_DETAIL_2);
+			sub_menu_14->AddEntryCheckable("niedere Detailstufe",HMM_DETAIL_3);
+		sub_menu_513->AddSubMenu("Oberfl&ache",HMM_MENU_MODEL_SKIN,sub_menu_14);
+		sub_menu_513->AddSeparator();
+		sub_menu_513->AddEntryCheckable("Drahtgitter",HMM_WIRE);
+		sub_menu_513->AddEntryCheckable("Raster",HMM_GRID);
+		sub_menu_513->AddEntryCheckable("Beleuchtung",HMM_LIGHT);
+		sub_menu_513->AddSeparator();
+		sub_menu_513->AddEntryImage("Optimal",HuiImageZoomFit,HMM_OPT_VIEW);
+		sub_menu_513->AddEntryCheckable("Ganzes Fenster",HMM_WHOLE_WINDOW);
+	Menu->AddSubMenu("Ansicht",HMM_MENU_MODEL_VIEW,sub_menu_513);
+		CHuiMenu *sub_menu_help=new CHuiMenu();
+		sub_menu_help->AddEntryImage("Hilfe...",HuiImageHelp,HMM_HELP);
+		sub_menu_help->AddSeparator();
+		sub_menu_help->AddEntry("Fehler berichten",HMM_SEND_BUG_REPORT);
+		sub_menu_help->AddEntryImage("\"&uber\"",HuiImageAbout,HMM_WHAT_THE_FUCK);
+	Menu->AddSubMenu("?",HMM_MENU_HELP,sub_menu_help);
+
+
