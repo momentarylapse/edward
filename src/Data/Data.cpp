@@ -37,4 +37,25 @@ bool Data::SaveAs()
 	return true;
 }
 
+void Data::Redo()
+{
+	action_manager->redo();
+}
+
+
+
+void Data::Undo()
+{
+	action_manager->undo();
+}
+
+
+
+void Data::Execute(Action *a)
+{
+	action_manager->execute(a);
+}
+
+
+
 

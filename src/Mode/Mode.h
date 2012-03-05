@@ -30,6 +30,7 @@ public:
 	virtual void OnKeyDown() = 0;
 	virtual void OnKeyUp() = 0;
 	virtual void OnCommand(const string &id) = 0;
+	virtual void OnDataChange() = 0;
 
 	virtual void Draw() = 0;
 

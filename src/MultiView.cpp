@@ -20,6 +20,9 @@ const float SPEED_MOVE = 0.05f;
 const float SPEED_ZOOM_KEY = 1.15f;
 const float SPEED_ZOOM_WHEEL = 1.15f;
 
+const int PointRadius = 2;
+const int PointRadiusMouseOver = 4;
+
 #define update_zoom		if (mode3d) \
 							zoom = ((float)NixScreenHeight / (whole_window ? 1.0f : 2.0f) / radius); \
 						else \
@@ -55,6 +58,7 @@ MultiView::MultiView(bool _mode3d)
 		view[0].type = View2D;
 		light = -1;
 	}
+	mx = my = 0;
 
 	Reset();
 }
@@ -73,7 +77,34 @@ void MultiView::Reset()
 	grid_enabled = true;
 	light_enabled = true;
 	ignore_radius = false;
+
+	view_stage = 0;
 }
+
+void MultiView::ResetData()
+{
+	data.clear();
+}
+
+void MultiView::SetData(int type, const DynamicArray & a, void *user_data, int mode, t_is_mouse_over_func *is_mouse_over_func, t_is_in_rect_func *is_in_rect_func)
+{
+	MultiViewData d;
+
+	d.Num = a.num;
+	d.Type = type;
+	d.data = a.data;
+	d.user_data = user_data;
+	d.MVSelectable = (mode & FlagSelect)>0;
+	d.Drawable = (mode & FlagDraw)>0;
+	d.Indexable = (mode & FlagIndex)>0;
+	d.Movable = (mode & FlagMove)>0;
+	d.IsMouseOver = is_mouse_over_func;
+	d.IsInRect = is_in_rect_func;
+	d.DataSingleSize = a.element_size;
+	data.add(d);
+}
+
+
 
 void MultiView::DoZoom(float factor)
 {
@@ -109,6 +140,25 @@ void MultiView::ToggleWholeWindow()
 {
 	whole_window = !whole_window;
 	view[4].type = view[mouse_win].type;
+	ed->ForceRedraw();
+}
+
+void MultiView::ToggleGrid()
+{
+	grid_enabled = !grid_enabled;
+	ed->ForceRedraw();
+}
+
+void MultiView::ToggleLight()
+{
+	light_enabled = !light_enabled;
+	ed->ForceRedraw();
+}
+
+void MultiView::ToggleWire()
+{
+	wire_mode = !wire_mode;
+	ed->ForceRedraw();
 }
 
 void MultiView::OnCommand(const string & id)
@@ -136,11 +186,11 @@ void MultiView::OnCommand(const string & id)
 	if (id == "whole_window")
 		ToggleWholeWindow();
 	if (id == "grid")
-		grid_enabled = !grid_enabled;
+		ToggleGrid();
 	if (id == "light")
-		light_enabled = !light_enabled;
+		ToggleLight();
 	if (id == "wire")
-		wire_mode = !wire_mode;
+		ToggleWire();
 
 	// mouse wheel -> zoom
 	if (e->dz > 0)
@@ -435,6 +485,9 @@ void MultiView::DrawMousePos()
 }
 
 
+
+#define MVGetSingleData(d, index)	((MultiViewSingleData*) ((char*)(d).data + (d).DataSingleSize * index))
+
 void MultiView::DrawWin(int win, irect dest)
 {
 	msg_db_r("MultiView.DrawWin",2);
@@ -517,33 +570,33 @@ void MultiView::DrawWin(int win, irect dest)
 
 	// draw multiview data
 	NixSetWire(false);
-/*	for (int d=0;d<MultiViewData.num;d++){
-		if ((MultiViewData[d].Drawable)||(MultiViewData[d].Indexable)){
-			for (int i=0;i<MultiViewData[d].Num;i++){
+	foreachi(data, d, di){
+		if ((d.Drawable)||(d.Indexable)){
+			for (int i=0;i<d.Num;i++){
 
-				sMultiViewSingleData *sd = MVGetSingleData(d,i);
-				if (sd->ViewStage<ViewStage)
+				MultiViewSingleData *sd = MVGetSingleData(d, i);
+				if (sd->view_stage < view_stage)
 					continue;
 
-				bool di=((MultiViewData[d].Indexable)&&(sd->IsSelected)&&(NixGetKey(KEY_I)));
-				if ((!MultiViewData[d].Drawable) && (!di))
+				bool di = ((d.Indexable) && (sd->is_selected) && (NixGetKey(KEY_I)));
+				if ((!d.Drawable) && (!di))
 					continue;
-				vector p=CModeAll::VecProject(sd->Pos,win);
+				vector p = VecProject(sd->pos,win);
 				if ((p.x<dest.x1)||(p.y<dest.y1)||(p.x>dest.x2)||(p.y>dest.y2)||(p.z<=0)||(p.z>=1))
 					continue;
 				if (di)
 					NixDrawInt((int)p.x+3,(int)p.y,i);
-				if (MultiViewData[d].Drawable){
+				if (d.Drawable){
 					color c=Blue;
 					float radius=(float)PointRadius;
 					float z=0.1f;
-					if (sd->IsSelected){
+					if (sd->is_selected){
 						c=Red;
 						z=0.05f;
 					}
-					if (sd->IsSpecial)
-						c=Green;
-					if ((MouseOverSet==d)&&(i==MouseOver)){
+					if (sd->is_special)
+						c = Green;
+					if ((MouseOverSet==di)&&(i==MouseOver)){
 						c=color(c.a,c.r+0.4f,c.g+0.4f,c.b+0.4f);
 						z=0.0f;
 						radius=(float)PointRadiusMouseOver;
@@ -556,7 +609,7 @@ void MultiView::DrawWin(int win, irect dest)
 				}
 			}
 		}
-	}*/
+	}
 
 	// DEBUG!
 	//NixSetZ(false,false);
@@ -624,7 +677,7 @@ void MultiView::Draw()
 		NixSetZ(true, true);
 	}*/
 
-	DrawMousePos();
+	//DrawMousePos();
 
 	/*if (PostDrawMultiView)
 		PostDrawMultiView();*/

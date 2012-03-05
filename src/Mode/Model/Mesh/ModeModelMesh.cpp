@@ -100,3 +100,8 @@ void ModeModelMesh::OnMiddleButtonDown()
 }
 
 
+
+void ModeModelMesh::OnDataChange()
+{
+}
+

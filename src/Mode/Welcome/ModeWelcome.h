@@ -28,6 +28,7 @@ public:
 	virtual void OnKeyDown();
 	virtual void OnKeyUp();
 	virtual void OnCommand(const string &id);
+	virtual void OnDataChange();
 
 	virtual void Draw();
 

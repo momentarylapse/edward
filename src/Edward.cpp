@@ -182,6 +182,8 @@ Edward::Edward(Array<string> arg)
 
 	SetMode(mode_welcome);
 
+	LoadKeyCodes();
+
 	HuiSetIdleFunction(&IdleFunction);
 
 	msg_db_l(1);
@@ -250,6 +252,13 @@ bool Edward::OpenFont()
 	return true;
 }
 
+void Edward::OnDataChange()
+{
+	if (cur_mode)
+		cur_mode->OnDataChange();
+	ForceRedraw();
+}
+
 void Edward::ForceRedraw()
 {
 	force_redraw = true;
@@ -274,6 +283,23 @@ void Edward::Draw()
 		NixDrawStr(100, 100, "no mode...");
 	}
 	NixEnd();
+}
+
+
+
+void Edward::LoadKeyCodes()
+{
+	msg_db_r("LoadKeyCodes", 1);
+	CFile *f = OpenFile(HuiAppDirectory + "Data/keys.txt");
+	if (!f)
+		f = OpenFile(HuiAppDirectoryStatic + "Data/keys.txt");
+	int nk = f->ReadIntC();
+	f->ReadComment();
+	for (int i=0;i<nk;i++){
+		string id = f->ReadStr();
+		int key_code = f->ReadInt();
+		HuiAddKeyCode(id, key_code);
+	}
 }
 
 int Edward::Run()

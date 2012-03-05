@@ -13,11 +13,49 @@
 #include "Mode/Welcome/ModeWelcome.h"
 #include "Mode/Model/ModeModel.h"
 
+
+
+// file types
+enum{
+	FDModel,
+	FDObject,
+	FDItem,
+	FDTexture,
+	FDSound,
+	FDMaterial,
+	FDTerrain,
+	FDWorld,
+	FDShaderFile,
+	FDFont,
+	FDScript,
+	FDCameraFlight,
+	FDFile, // any file
+	NumFDs
+};
+
+// multiview data
+enum{
+	MVDModelSurface,
+	MVDModelVertex,
+	MVDModelSkinVertex,
+	MVDModelTriangle,
+	MVDModelBall,
+	MVDModelPolyhedron,
+	MVDSkeletonPoint,
+	MVDWorldObject,
+	MVDWorldTerrain,
+	MVDWorldTerrainVertex,
+	MVDWorldCamPoint,
+	MVDWorldCamPointVel,
+};
+
 class Edward
 {
 public:
 	Edward(Array<string> arg);
 	virtual ~Edward();
+
+	void LoadKeyCodes();
 	int Run();
 
 	void About();
@@ -30,6 +68,8 @@ public:
 	bool OpenFont();
 	void NewWorld();
 	bool OpenWorld();
+
+	void OnDataChange(); // TODO relocate?
 
 	void Draw();
 	void DrawStr(int x, int y, const string &str);

@@ -29,14 +29,19 @@ void ActionAddVertex::execute(Data *d)
 
 void ActionAddVertex::undo(Data *d)
 {
+	msg_write("add vertex undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	m->Skin[skin].Vertex.pop();
+	/*if (skin >= 0)
+		m->Skin[skin].Vertex.pop();
+	else*/
+		m->Vertex.pop();
 }
 
 
 
 void ActionAddVertex::redo(Data *d)
 {
+	msg_write("add vertex do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	ModeModelVertex vv;
 	vv.pos = v;
@@ -46,6 +51,7 @@ void ActionAddVertex::redo(Data *d)
 	vv.Surface = -1;
 	vv.is_selected = vv.is_special = false;
 	vv.view_stage = 0;
-	m->Skin[skin].Vertex.add(vv);
+	//m->Skin[skin].Vertex.add(vv);
+	m->Vertex.add(vv);
 }
 

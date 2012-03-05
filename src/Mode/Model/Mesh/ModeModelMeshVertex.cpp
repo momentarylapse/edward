@@ -26,6 +26,8 @@ ModeModelMeshVertex::~ModeModelMeshVertex()
 void ModeModelMeshVertex::Start()
 {
 	msg_write("model mesh vert start");
+
+	OnDataChange();
 }
 
 void ModeModelMeshVertex::End()
@@ -110,6 +112,23 @@ void ModeModelMeshVertex::OnKeyUp()
 void ModeModelMeshVertex::OnCommand(const string & id)
 {
 	mv3d->OnCommand(id);
+
+	if (id == "undo")
+		data->Undo();
+	if (id == "redo")
+		data->Redo();
+}
+
+void ModeModelMeshVertex::OnDataChange()
+{
+	mv3d->ResetData();
+	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
+	//CModeAll::SetMultiViewFunctions(&StartChanging, &EndChanging, &Change);
+	mv3d->SetData(	MVDModelVertex,
+					data->Vertex,
+					NULL,
+					mv3d->FlagDraw | mv3d->FlagIndex | mv3d->FlagSelect | mv3d->FlagMove,
+					NULL, NULL);
 }
 
 

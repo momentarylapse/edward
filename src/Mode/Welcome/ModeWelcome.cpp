@@ -115,6 +115,10 @@ void ModeWelcome::OnRightButtonDown()
 {
 }
 
+void ModeWelcome::OnDataChange()
+{
+}
+
 
 void ModeWelcome::DrawIcon(int x, int y, int index, const string &name)
 {

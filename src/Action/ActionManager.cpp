@@ -8,6 +8,7 @@
 #include "ActionManager.h"
 #include "Action.h"
 #include "../Data/Data.h"
+#include "../Edward.h"
 
 ActionManager::ActionManager(Data *_data)
 {
@@ -40,22 +41,27 @@ void ActionManager::execute(Action *a)
 {
 	add(a);
 	a->execute(data);
+	ed->OnDataChange();
 }
 
 
 
 void ActionManager::undo()
 {
-	if (cur_action > 0)
+	if (cur_action > 0){
 		action[-- cur_action]->undo(data);
+		ed->OnDataChange();
+	}
 }
 
 
 
 void ActionManager::redo()
 {
-	if (cur_action < action.num)
+	if (cur_action < action.num){
 		action[cur_action ++]->redo(data);
+		ed->OnDataChange();
+	}
 }
 
 
