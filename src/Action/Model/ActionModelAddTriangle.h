@@ -1,0 +1,31 @@
+/*
+ * ActionAddTriangle.h
+ *
+ *  Created on: 05.03.2012
+ *      Author: michi
+ */
+
+#ifndef ACTIONMODELADDTRIANGLE_H_
+#define ACTIONMODELADDTRIANGLE_H_
+
+#include "../Action.h"
+
+class ActionModelAddTriangle: public Action
+{
+public:
+	ActionModelAddTriangle(int _a, int _b, int _c);
+	virtual ~ActionModelAddTriangle();
+
+	bool is_atom();
+	bool needs_preparation();
+
+	void prepare(Data *d);
+	void *execute(Data *d);
+	void undo(Data *d);
+	void redo(Data *d);
+
+private:
+	int a, b, c;
+};
+
+#endif /* ACTIONMODELADDTRIANGLE_H_ */
