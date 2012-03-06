@@ -67,20 +67,6 @@ void PlaneInverse(plane &pl)
 	pl.c=-pl.c;
 }
 
-// which one is the largest coordinate of this vector
-int ImportantPlane(const vector &v)
-{
-	vector w;
-	w.x=fabs(v.x);
-	w.y=fabs(v.y);
-	w.z=fabs(v.z);
-	if ((w.x<=w.y)&&(w.x<=w.z))
-		return 1;	// Y-Z-Ebene
-	if (w.y<=w.z)
-		return 2;	// X-Z-Ebene
-	return 3;		// X-Y-Ebene
-}
-
 // P = A + f*( B - A ) + g*( C - A )
 void GetBaryCentric(const vector &P,const vector &A,const vector &B,const vector &C,float &f,float &g)
 {

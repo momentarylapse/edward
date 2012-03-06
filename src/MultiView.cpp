@@ -79,6 +79,7 @@ void MultiView::Reset()
 	grid_enabled = true;
 	light_enabled = true;
 	ignore_radius = false;
+	wire_mode = false;
 	MVRectable = MVRect = false;
 
 	ViewMoving = -1;
@@ -637,6 +638,8 @@ void MultiView::DrawWin(int win, irect dest)
 	NixSetZ(true,true);
 	NixSetWire(false);
 	DrawGrid(win,dest);
+
+	NixSetWire(wire_mode);
 	NixEnableLighting(light_enabled);
 	NixSetMaterial(Black,White,Black,0,Black);
 

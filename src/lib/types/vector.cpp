@@ -197,6 +197,29 @@ vector VecRotate(const vector &v, const vector &ang)
 	return r;
 }
 
+// which one is the largest coordinate of this vector
+int VecImportantPlane(const vector &v)
+{
+	vector w;
+	w.x=fabs(v.x);
+	w.y=fabs(v.y);
+	w.z=fabs(v.z);
+	if ((w.x<=w.y)&&(w.x<=w.z))
+		return 1;	// Y-Z-Ebene
+	if (w.y<=w.z)
+		return 2;	// X-Z-Ebene
+	return 3;		// X-Y-Ebene
+}
+
+// finds an orthogonal vector to v
+vector _cdecl VecOrtho(const vector &v)
+{
+	int p = VecImportantPlane(v);
+	if (p == 0)
+		return vector(v.y, - v.x, v.z);
+	return vector(v.x, v.z, - v.y);
+}
+
 // kuerzeste Entfernung von p zur Geraden(l1,l2)
 float VecLineDistance(const vector &p,const vector &l1,const vector &l2)
 {

@@ -12,6 +12,9 @@
 #include "../../Action/Model/ActionModelAddVertex.h"
 #include "../../Action/Model/ActionModelAddTriangle.h"
 #include "../../Action/Model/ActionModelAddCube.h"
+#include "../../Action/Model/ActionModelAddPlane.h"
+#include "../../Action/Model/ActionModelAddCylinder.h"
+#include "../../Action/Model/ActionModelAddBall.h"
 
 #include "../../lib/nix/nix.h"
 
@@ -206,7 +209,11 @@ void DataModel::Reset()
 
 	AddTriangle(0, 2, 1);
 	AddTriangle(0, 3, 2);*/
-	Execute(new ActionModelAddCube(v0, e_x * 20, e_y * 20, e_z * 20, 0));
+	Execute(new ActionModelAddCube(v0, e_x * 20, e_y * 20, e_z * 20, Vertex.num));
+	/*Execute(new ActionModelAddPlane(e_y * 10, e_x * 200, e_z * 200, 4, 4, Vertex.num));
+	Execute(new ActionModelAddBall(vector(-200, 0, 0), 100, 16, 16, false, Vertex.num));
+	Execute(new ActionModelAddBall(vector(-200, 0, 200), 100, 16, 16, true, Vertex.num));
+	Execute(new ActionModelAddCylinder(vector(200, 0, 0), e_z * 100, 40, 3, 16, true, Vertex.num));*/
 
 	msg_write("------------");
 	msg_write(Vertex.num);

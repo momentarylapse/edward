@@ -54,6 +54,8 @@ vector _cdecl VecDir2Ang2(const vector &dir, const vector &up);
 vector _cdecl VecAngAdd(const vector &ang1, const vector &ang2);
 vector _cdecl VecAngInterpolate(const vector &ang1, const vector &ang2, float t);
 vector _cdecl VecRotate(const vector &v, const vector &ang);
+vector _cdecl VecOrtho(const vector &v);
+int VecImportantPlane(const vector &v);
 float VecLineDistance(const vector &p, const vector &l1, const vector &l2);
 vector VecLineNearestPoint(vector &p, vector &l1,vector &l2);
 void _cdecl VecTransform(vector &vo, const matrix &m, const vector &vi);
