@@ -18,8 +18,15 @@ ActionManager::ActionManager(Data *_data)
 
 ActionManager::~ActionManager()
 {
+	reset();
+}
+
+void ActionManager::reset()
+{
 	foreach(action, a)
 		delete(a);
+	action.clear();
+	cur_action = 0;
 }
 
 
@@ -37,11 +44,12 @@ void ActionManager::add(Action *a)
 
 
 
-void ActionManager::execute(Action *a)
+void *ActionManager::execute(Action *a)
 {
 	add(a);
-	a->execute(data);
+	void *r = a->execute(data);
 	ed->OnDataChange();
+	return r;
 }
 
 

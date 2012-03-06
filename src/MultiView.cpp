@@ -563,9 +563,8 @@ void MultiView::DrawWin(int win, irect dest)
 
 	// draw the actual data
 	//msg_db_r("sub",2);
-/*	CDummy *dummy=(CDummy*)instance;
-	if ((dummy)&&(draw_win))
-		(dummy->*draw_win)(win,dest);*/
+	if (ed->cur_mode)
+		ed->cur_mode->DrawWin(win, dest);
 	//msg_db_l(2);
 
 	// draw multiview data

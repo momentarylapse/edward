@@ -20,8 +20,9 @@ class ActionManager
 public:
 	ActionManager(Data *_data);
 	virtual ~ActionManager();
+	void reset();
 
-	void execute(Action *a);
+	void *execute(Action *a);
 	void add(Action *a);
 	void undo();
 	void redo();

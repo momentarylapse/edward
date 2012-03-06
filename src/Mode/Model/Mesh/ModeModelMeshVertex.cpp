@@ -8,6 +8,7 @@
 #include "../../../Edward.h"
 #include "../../../MultiView.h"
 #include "ModeModelMeshVertex.h"
+#include "ModeModelMeshSkin.h"
 #include "../../../lib/nix/nix.h"
 
 ModeModelMeshVertex *mode_model_mesh_vertex = NULL;
@@ -37,10 +38,16 @@ void ModeModelMeshVertex::End()
 
 
 
+void ModeModelMeshVertex::DrawWin(int win, irect dest)
+{
+	mode_model_mesh_skin->DrawWin(win, dest);
+}
+
+
+
 void ModeModelMeshVertex::Draw()
 {
 	mv3d->Draw();
-	//NixResetToColor(Black);
 	NixDrawStr(100, 100, "model");
 }
 
@@ -113,6 +120,7 @@ void ModeModelMeshVertex::OnCommand(const string & id)
 {
 	mv3d->OnCommand(id);
 
+	// TODO -> edward?
 	if (id == "undo")
 		data->Undo();
 	if (id == "redo")

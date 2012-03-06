@@ -13,6 +13,8 @@
 #include "../../lib/types/types.h"
 #include "../../lib/x/x.h"
 
+class DataModel;
+
 
 #define TransparencyModeDefault			-1
 #define TransparencyModeNone			0
@@ -74,6 +76,8 @@ struct ModeModelPolyhedronFace
 	plane Plane;
 };
 
+
+// TODO: dynamical!
 struct ModeModelPolyhedron: MultiViewSingleData
 {
 	int NumFaces;
@@ -137,6 +141,11 @@ struct ModeModelMaterial{
 	bool UserColor;
 	int Color[4][4];
 	int Shininess;
+
+	ModeModelMaterial();
+	void reset();
+	void CheckTextures();
+	void Apply();
 };
 
 struct ModeModelSkeletonBone: MultiViewSingleData
@@ -188,6 +197,13 @@ struct ModeModelSurface: MultiViewSingleData
 	Set<int> Vertex;
 	bool IsPhysical, IsVisible;
 	bool IsClosed;
+
+	void AddVertex(int v, DataModel *m);
+	void AddTriangle(int a, int b, int c, const vector &sa, const vector &sb, const vector &sc, DataModel *m);
+	int AddEdgeForNewTriangle(int a, int b);
+	void RemoveObsoleteEdge(int index);
+	void MergeEdges();
+	void UpdateClosed();
 };
 
 
@@ -198,9 +214,36 @@ public:
 	virtual ~DataModel();
 
 	void Reset();
-	void Load(const string &_filename, bool deep = true);
+	bool Load(const string &_filename, bool deep = true);
 	void Save(const string &_filename);
 
+
+	void UpdateNormals();
+
+
+
+	void ResetAutoTexturing();
+	void ApplyAutoTexturing(int a, int b, int c, vector *sv);
+
+
+	struct sAutoTexturingData
+	{
+		bool enabled;
+		// linear
+		vector p0, dir_u, dir_v;
+
+		int prev_material;
+	};
+	sAutoTexturingData AutoTexturingData;
+
+	// low level (un-action'ed)
+	//void LowLevelAddVertex(const vector &vd);
+	ModeModelSurface *AddSurface();
+	ModeModelSurface *SurfaceJoin(ModeModelSurface *a, ModeModelSurface *b);
+
+	// high level (actions)
+	void AddVertex(const vector &v);
+	ModeModelTriangle *AddTriangle(int a, int b, int c);
 
 
 	// properties

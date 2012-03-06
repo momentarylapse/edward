@@ -18,9 +18,13 @@ public:
 	Action();
 	virtual ~Action();
 
-	virtual void execute(Data *d) = 0;
+	virtual bool is_atom() = 0;
+	virtual bool needs_preparation() = 0;
+
+	virtual void *execute(Data *d) = 0;
 	virtual void undo(Data *d) = 0;
 	virtual void redo(Data *d) = 0;
+	virtual void prepare(Data *d) = 0;
 };
 
 #endif /* ACTION_H_ */

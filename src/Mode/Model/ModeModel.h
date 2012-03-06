@@ -11,28 +11,32 @@
 #include "../Mode.h"
 #include "../../Data/Model/DataModel.h"
 
+class Mode;
+class DataModel;
+
 class ModeModel: public Mode
 {
 public:
 	ModeModel();
 	virtual ~ModeModel();
 
-	virtual void Start();
-	virtual void End();
+	void Start();
+	void End();
 
-	virtual void OnMouseMove();
-	virtual void OnLeftButtonDown();
-	virtual void OnLeftButtonUp();
-	virtual void OnMiddleButtonDown();
-	virtual void OnMiddleButtonUp();
-	virtual void OnRightButtonDown();
-	virtual void OnRightButtonUp();
-	virtual void OnKeyDown();
-	virtual void OnKeyUp();
-	virtual void OnCommand(const string &id);
-	virtual void OnDataChange();
+	void OnMouseMove();
+	void OnLeftButtonDown();
+	void OnLeftButtonUp();
+	void OnMiddleButtonDown();
+	void OnMiddleButtonUp();
+	void OnRightButtonDown();
+	void OnRightButtonUp();
+	void OnKeyDown();
+	void OnKeyUp();
+	void OnCommand(const string &id);
+	void OnDataChange();
 
-	virtual void Draw();
+	void Draw();
+	void DrawWin(int win, irect dest);
 
 	DataModel *data;
 };

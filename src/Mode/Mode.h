@@ -33,6 +33,7 @@ public:
 	virtual void OnDataChange() = 0;
 
 	virtual void Draw() = 0;
+	virtual void DrawWin(int win, irect dest) = 0;
 
 	Mode *parent;
 

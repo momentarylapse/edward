@@ -26,14 +26,17 @@ public:
 	bool SaveAs();
 
 	virtual void Reset() = 0;
-	virtual void Load(const string &_filename, bool deep = true) = 0;
+	virtual bool Load(const string &_filename, bool deep = true) = 0;
 	virtual void Save(const string &_filename) = 0;
 
-	void Execute(Action *a);
+	void ResetHistory();
+	void *Execute(Action *a);
 	void Undo();
 	void Redo();
 
 	string filename;
+	int file_time;
+	bool binary_file_format;
 
 	ActionManager *action_manager;
 };

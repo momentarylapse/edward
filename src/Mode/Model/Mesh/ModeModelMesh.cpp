@@ -8,6 +8,7 @@
 #include "../../../Edward.h"
 #include "ModeModelMesh.h"
 #include "ModeModelMeshVertex.h"
+#include "ModeModelMeshSkin.h"
 
 ModeModelMesh *mode_model_mesh = NULL;
 
@@ -18,6 +19,7 @@ ModeModelMesh::ModeModelMesh(Mode *_parent, DataModel *_data)
 	menu = NULL;
 
 	mode_model_mesh_vertex = new ModeModelMeshVertex(this, data);
+	mode_model_mesh_skin = new ModeModelMeshSkin(this, data);
 }
 
 ModeModelMesh::~ModeModelMesh()
@@ -78,6 +80,12 @@ void ModeModelMesh::OnCommand(const string & id)
 
 
 void ModeModelMesh::OnRightButtonDown()
+{
+}
+
+
+
+void ModeModelMesh::DrawWin(int win, irect dest)
 {
 }
 

@@ -49,6 +49,11 @@ enum{
 	MVDWorldCamPointVel,
 };
 
+
+void read_color_4(CFile *f,int *c);
+void write_color_4(CFile *f,int *c);
+color i42c(int *c);
+
 class Edward
 {
 public:
@@ -71,12 +76,27 @@ public:
 
 	void OnDataChange(); // TODO relocate?
 
+	void SetMessage(const string &message);
+	void ErrorBox(const string &message);
+
+
+	void SetRootDirectory(const string &directory);
+	void UpdateDialogDir(int kind);
+	void MakeDirs(const string &original_dir, bool as_root_dir = false);
+
 	void Draw();
 	void DrawStr(int x, int y, const string &str);
 	void ForceRedraw();
 	bool force_redraw;
 
 	Mode *cur_mode;
+
+	string RootDir;
+	bool RootDirCorrect;
+
+	string DialogDir[NumFDs], RootDirKind[NumFDs];
+	string DialogFile, DialogFileComplete, DialogFileNoEnding;
+	Array<string> PossibleSubDir;
 
 	CHuiWindow *win;
 };

@@ -37,6 +37,8 @@ bool Data::SaveAs()
 	return true;
 }
 
+
+
 void Data::Redo()
 {
 	action_manager->redo();
@@ -51,9 +53,16 @@ void Data::Undo()
 
 
 
-void Data::Execute(Action *a)
+void *Data::Execute(Action *a)
 {
-	action_manager->execute(a);
+	return action_manager->execute(a);
+}
+
+
+
+void Data::ResetHistory()
+{
+	action_manager->reset();
 }
 
 

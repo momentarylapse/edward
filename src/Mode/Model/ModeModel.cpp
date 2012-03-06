@@ -9,7 +9,6 @@
 #include "ModeModel.h"
 #include "../../Data/Model/DataModel.h"
 #include "Mesh/ModeModelMesh.h"
-#include "../../Action/Model/ActionAddVertex.h"
 
 ModeModel *mode_model = NULL;
 
@@ -21,12 +20,6 @@ ModeModel::ModeModel()
 	data = new DataModel;
 
 	mode_model_mesh = new ModeModelMesh(this, data);
-
-	data->Execute(new ActionAddVertex(vector(0, 0, 0), -1));
-	data->Execute(new ActionAddVertex(vector(20, 0, 0), -1));
-	data->Execute(new ActionAddVertex(vector(20, 20, 0), -1));
-	data->Execute(new ActionAddVertex(vector(0, 20, 0), -1));
-	data->Execute(new ActionAddVertex(vector(0, 0, 10), -1));
 }
 
 ModeModel::~ModeModel()
@@ -50,6 +43,12 @@ void ModeModel::Start()
 void ModeModel::End()
 {
 	msg_write("model end");
+}
+
+
+
+void ModeModel::DrawWin(int win, irect dest)
+{
 }
 
 

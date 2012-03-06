@@ -165,6 +165,12 @@ void ModeWelcome::DrawIcon(int x, int y, int index, const string &name)
 	msg_db_l(2);
 }
 
+
+
+void ModeWelcome::DrawWin(int win, irect dest)
+{
+}
+
 void ModeWelcome::Draw()
 {
 	msg_db_r("Welcome.Draw", 1);

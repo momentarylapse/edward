@@ -15,6 +15,32 @@
 
 Edward *ed = NULL;
 
+string SoundDir;
+
+
+void read_color_4(CFile *f,int *c)
+{
+	// argb (file) -> rgba (editor)
+	c[3]=f->ReadInt();
+	c[0]=f->ReadInt();
+	c[1]=f->ReadInt();
+	c[2]=f->ReadInt();
+}
+
+void write_color_4(CFile *f,int *c)
+{
+	// rgba (editor) -> argb (file)
+	f->WriteInt(c[3]);
+	f->WriteInt(c[0]);
+	f->WriteInt(c[1]);
+	f->WriteInt(c[2]);
+}
+
+color i42c(int *c)
+{
+	return color(float(c[3])/255.0f,float(c[0])/255.0f,float(c[1])/255.0f,float(c[2])/255.0f);
+}
+
 static void OnClose()
 {
 	msg_write("beende...");
@@ -78,15 +104,22 @@ Edward::Edward(Array<string> arg)
 	cur_mode = NULL;
 	force_redraw = false;
 
+	PossibleSubDir.add("Maps");
+	PossibleSubDir.add("Materials");
+	PossibleSubDir.add("Objects");
+	PossibleSubDir.add("Scripts");
+	PossibleSubDir.add("Sounds");
+	PossibleSubDir.add("Textures");
+
 	// configuration
 	int x = HuiConfigReadInt("X", -1);
 	int y = HuiConfigReadInt("Y", -1);
 	int w = HuiConfigReadInt("Width", 800);
 	int h = HuiConfigReadInt("Height", 600);
 	bool maximized = HuiConfigReadBool("Maximized", false);
-	/*RootDir = HuiConfigReadStr("RootDir", "");
+	RootDir = HuiConfigReadStr("RootDir", "");
 	//HuiConfigReadInt("Api", api, NIX_API_OPENGL);
-	bool LocalDocumentation = HuiConfigReadBool("LocalDocumentation", false);
+	/*bool LocalDocumentation = HuiConfigReadBool("LocalDocumentation", false);
 	WorldScriptVarFile = HuiConfigReadStr("WorldScriptVarFile", "");
 	ObjectScriptVarFile = HuiConfigReadStr("ObjectScriptVarFile", "");
 	ItemScriptVarFile = HuiConfigReadStr("ItemScriptVarFile", "");
@@ -254,9 +287,11 @@ bool Edward::OpenFont()
 
 void Edward::OnDataChange()
 {
+	msg_db_r("Edward.OnDataChange", 2);
 	if (cur_mode)
 		cur_mode->OnDataChange();
 	ForceRedraw();
+	msg_db_l(2);
 }
 
 void Edward::ForceRedraw()
@@ -300,6 +335,101 @@ void Edward::LoadKeyCodes()
 		int key_code = f->ReadInt();
 		HuiAddKeyCode(id, key_code);
 	}
+	FileClose(f);
+	msg_db_l(1);
+}
+
+
+void Edward::UpdateDialogDir(int kind)
+{
+	if (kind==FDModel)			RootDirKind[kind] = ObjectDir;
+	if (kind==FDModel)			RootDirKind[kind] = ObjectDir;
+	if (kind==FDObject)			RootDirKind[kind] = ObjectDir;
+	if (kind==FDItem)			RootDirKind[kind] = ObjectDir;
+	if (kind==FDTexture)		RootDirKind[kind] = NixTextureDir;
+	if (kind==FDSound)			RootDirKind[kind] = SoundDir;
+	if (kind==FDMaterial)		RootDirKind[kind] = MaterialDir;
+	if (kind==FDTerrain)		RootDirKind[kind] = MapDir;
+	if (kind==FDWorld)			RootDirKind[kind] = MapDir;
+	if (kind==FDShaderFile)		RootDirKind[kind] = MaterialDir;
+	if (kind==FDFont)			RootDirKind[kind] = MaterialDir;
+	if (kind==FDScript)			RootDirKind[kind] = ScriptDir;
+	if (kind==FDCameraFlight)	RootDirKind[kind] = ScriptDir;
+	if (kind==FDFile)			RootDirKind[kind] = RootDir;
+}
+
+
+void Edward::SetRootDirectory(const string &directory)
+{
+	string object_dir, map_dir, texture_dir, sound_dir, script_dir, material_dir;
+	bool ufd = (RootDir.find(directory) < 0) && (directory.find(RootDir) < 0);
+	RootDir = directory;
+	dir_ensure_ending(RootDir, true);
+	if (RootDirCorrect){
+		map_dir = RootDir + "Maps/";
+		dir_create(map_dir);
+		object_dir = RootDir + "Objects/";
+		dir_create(object_dir);
+		texture_dir = RootDir + "Textures/";
+		dir_create(texture_dir);
+		sound_dir = RootDir + "Sounds/";
+		dir_create(sound_dir);
+		script_dir = RootDir + "Scripts/";
+		dir_create(script_dir);
+		material_dir = RootDir + "Materials/";
+		dir_create(material_dir);
+	}else{
+		map_dir = RootDir;
+		object_dir = RootDir;
+		texture_dir = RootDir;
+		sound_dir = RootDir;
+		script_dir = RootDir;
+		material_dir = RootDir;
+	}
+	MetaSetDirs(texture_dir,map_dir,object_dir,sound_dir,script_dir,material_dir);
+	if (ufd)
+		for (int i=0;i<NumFDs;i++){
+			DialogDir[i] = "";
+			UpdateDialogDir(i);
+		}
+}
+
+
+void Edward::MakeDirs(const string &original_dir, bool as_root_dir)
+{
+	msg_db_r("MakeDirs", 1);
+	string dir = original_dir;
+	if (dir.num > 0)
+		dir = dirname(dir);
+	bool sub_dir=false;
+	if (!as_root_dir){
+		// we are in a sub dir?
+		sub_dir=false;
+		foreach(PossibleSubDir, p){
+			if (dir.find(p) >= 0){
+				dir = dir.substr(0, dir.find(p));
+				sub_dir=true;
+				break;
+			}
+		}
+		RootDirCorrect = sub_dir;
+		RootDirCorrect &= file_test_existence(dir + "game.ini");
+	}else{
+		RootDirCorrect = file_test_existence(dir + "game.ini");
+	}
+	SetRootDirectory(dir);
+	msg_db_l(1);
+}
+
+void Edward::SetMessage(const string &message)
+{
+	msg_write(message);
+}
+
+
+void Edward::ErrorBox(const string &message)
+{
+	HuiErrorBox(win, _("Fehler"), message);
 }
 
 int Edward::Run()
