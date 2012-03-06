@@ -9,14 +9,15 @@
 #define ACTIONMODELADDTRIANGLE_H_
 
 #include "../Action.h"
+#include "../ActionAtom.h"
+#include "../../lib/types/types.h"
 
-class ActionModelAddTriangle: public Action
+class ActionModelAddTriangle: public ActionAtom
 {
 public:
-	ActionModelAddTriangle(int _a, int _b, int _c);
+	ActionModelAddTriangle(int _a, int _b, int _c, const vector &_sva, const vector &_svb, const vector &_svc);
 	virtual ~ActionModelAddTriangle();
 
-	bool is_atom();
 	bool needs_preparation();
 
 	void prepare(Data *d);
@@ -26,6 +27,7 @@ public:
 
 private:
 	int a, b, c;
+	vector sv[3];
 };
 
 #endif /* ACTIONMODELADDTRIANGLE_H_ */

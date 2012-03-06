@@ -11,6 +11,7 @@
 #include "../../Edward.h"
 #include "../../Action/Model/ActionModelAddVertex.h"
 #include "../../Action/Model/ActionModelAddTriangle.h"
+#include "../../Action/Model/ActionModelAddCube.h"
 
 #include "../../lib/nix/nix.h"
 
@@ -197,14 +198,21 @@ void DataModel::Reset()
 
 	ResetHistory();
 
-	AddVertex(vector(0, 0, 0));
+	/*AddVertex(vector(0, 0, 0));
 	AddVertex(vector(20, 0, 0));
 	AddVertex(vector(20, 20, 0));
 	AddVertex(vector(0, 20, 0));
 	AddVertex(vector(0, 0, 10));
 
 	AddTriangle(0, 2, 1);
-	AddTriangle(0, 3, 2);
+	AddTriangle(0, 3, 2);*/
+	Execute(new ActionModelAddCube(v0, e_x * 20, e_y * 20, e_z * 20, 0));
+
+	msg_write("------------");
+	msg_write(Vertex.num);
+	msg_write(Surface.num);
+	foreach(Surface, s)
+		msg_write(s.Triangle.num);
 }
 
 
@@ -894,7 +902,11 @@ void DataModel::AddVertex(const vector &v)
 {	Execute(new ActionModelAddVertex(v));	}
 
 ModeModelTriangle *DataModel::AddTriangle(int a, int b, int c)
-{	return (ModeModelTriangle*) Execute(new ActionModelAddTriangle(a, b, c));	}
+{
+	vector sv[3] = {e_y, v0, e_x};
+	//ApplyAutoTexturing(this, a, b, c, sv);
+	return (ModeModelTriangle*) Execute(new ActionModelAddTriangle(a, b, c, sv[0], sv[1], sv[2]));
+}
 
 
 

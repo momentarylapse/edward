@@ -110,6 +110,8 @@ void ModeModel::OnLeftButtonUp()
 
 void ModeModel::OnCommand(const string & id)
 {
+	if (id == "new")
+		data->Reset();
 }
 
 

@@ -9,15 +9,15 @@
 #define ACTIONMODELADDVERTEX_H_
 
 #include "../Action.h"
+#include "../ActionAtom.h"
 #include "../../lib/types/types.h"
 
-class ActionModelAddVertex: public Action
+class ActionModelAddVertex: public ActionAtom
 {
 public:
 	ActionModelAddVertex(const vector &_v);
 	virtual ~ActionModelAddVertex();
 
-	bool is_atom();
 	bool needs_preparation();
 
 	void prepare(Data *d);

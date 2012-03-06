@@ -17,6 +17,7 @@ ModeModelMesh::ModeModelMesh(Mode *_parent, DataModel *_data)
 	parent = _parent;
 	data = _data;
 	menu = NULL;
+	multi_view = NULL;
 
 	mode_model_mesh_vertex = new ModeModelMeshVertex(this, data);
 	mode_model_mesh_skin = new ModeModelMeshSkin(this, data);

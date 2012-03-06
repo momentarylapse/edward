@@ -8,19 +8,19 @@
 #include "ActionModelAddTriangle.h"
 #include "../../Data/Model/DataModel.h"
 
-ActionModelAddTriangle::ActionModelAddTriangle(int _a, int _b, int _c)
+ActionModelAddTriangle::ActionModelAddTriangle(int _a, int _b, int _c, const vector &_sva, const vector &_svb, const vector &_svc)
 {
 	a = _a;
 	b = _b;
 	c = _c;
+	sv[0] = _sva;
+	sv[1] = _svb;
+	sv[2] = _svc;
 }
 
 ActionModelAddTriangle::~ActionModelAddTriangle()
 {
 }
-
-bool ActionModelAddTriangle::is_atom()
-{	return true;	}
 
 bool ActionModelAddTriangle::needs_preparation()
 {	return false;	}
@@ -43,10 +43,6 @@ void *ActionModelAddTriangle::execute(Data *d)
 		if (m->Vertex[vv].Surface >= 0)
 			surf.add(m->Vertex[vv].Surface);
 	}
-
-	// texture coordinates
-	vector sv[3] = {e_y, v0, e_x};
-	m->ApplyAutoTexturing(a, b, c, sv); // TODO... redo...
 
 	if (surf.num == 0){
 		// new surface

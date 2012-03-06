@@ -8,7 +8,7 @@
 #include "ActionModelAddVertex.h"
 #include "../../Data/Model/DataModel.h"
 
-ActionModelAddVertex::ActionModelAddVertex(const vector & _v)
+ActionModelAddVertex::ActionModelAddVertex(const vector &_v)
 {
 	v = _v;
 }
@@ -16,9 +16,6 @@ ActionModelAddVertex::ActionModelAddVertex(const vector & _v)
 ActionModelAddVertex::~ActionModelAddVertex()
 {
 }
-
-bool ActionModelAddVertex::is_atom()
-{	return true;	}
 
 bool ActionModelAddVertex::needs_preparation()
 {	return false;	}
