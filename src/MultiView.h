@@ -104,6 +104,12 @@ public:
 	void EndRect();
 
 
+	void GetMouseOver();
+	void UnselectAll();
+	void GetSelected();
+	void SelectAllInRectangle();
+
+
 	vector VecProject(vector p, int win);
 	vector VecUnProject(vector p, int win);
 	vector VecUnProject2(vector p, vector o, int win);
@@ -136,7 +142,15 @@ public:
 	vector MouseOverTP,SelectedTP,MovingDPos,RFPos,LFPos;
 	bool EditingStart, EditingEnd, DataChanged, Changed;
 
+	int ViewMoving;
+
 	int mx, my, mouse_win;
+	int vx, vy;
+	bool HoldingCursor;
+	bool MVRect,MVRectable;
+	int RectX,RectY,RectWin;
+
+	bool MultiViewSelectionChanged;
 
 	CHuiMenu *menu;
 };

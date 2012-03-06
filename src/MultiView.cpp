@@ -20,6 +20,9 @@ const float SPEED_MOVE = 0.05f;
 const float SPEED_ZOOM_KEY = 1.15f;
 const float SPEED_ZOOM_WHEEL = 1.15f;
 
+const int MinMouseMoveToInteract = 5;
+const float MouseRotationSpeed = 0.0033f;
+
 const int PointRadius = 2;
 const int PointRadiusMouseOver = 4;
 
@@ -27,6 +30,7 @@ const int PointRadiusMouseOver = 4;
 							zoom = ((float)NixScreenHeight / (whole_window ? 1.0f : 2.0f) / radius); \
 						else \
 							zoom = (float)NixScreenHeight * 0.8f;
+#define MVGetSingleData(d, index)	((MultiViewSingleData*) ((char*)(d).data + (d).DataSingleSize * index))
 
 MultiView::MultiView(bool _mode3d)
 {
@@ -59,6 +63,7 @@ MultiView::MultiView(bool _mode3d)
 		light = -1;
 	}
 	mx = my = 0;
+	HoldingCursor = false;
 
 	Reset();
 }
@@ -77,6 +82,9 @@ void MultiView::Reset()
 	grid_enabled = true;
 	light_enabled = true;
 	ignore_radius = false;
+	MVRectable = MVRect = false;
+
+	ViewMoving = -1;
 
 	view_stage = 0;
 }
@@ -233,24 +241,50 @@ void MultiView::OnLeftButtonDown()
 
 void MultiView::OnMiddleButtonDown()
 {
+	bool allow = true;
+	if ((MouseOverType >= 0) && (MouseOver >= 0))
+		if (MVGetSingleData(data[MouseOverSet], MouseOver)->is_selected)
+			allow = false;
+	if (allow){
+// move camera?
+		HoldCursor(true);
+		ViewMoving = mouse_win;
+	}
 }
 
 
 
 void MultiView::OnRightButtonDown()
 {
+	bool allow = true;
+	if ((MouseOverType >= 0) && (MouseOver >= 0))
+		if (MVGetSingleData(data[MouseOverSet], MouseOver)->is_selected)
+			allow = false;
+	if (allow){
+// move camera?
+		HoldCursor(true);
+		ViewMoving = mouse_win;
+	}
 }
 
 
 
 void MultiView::OnMiddleButtonUp()
 {
+	if (ViewMoving >= 0){
+		ViewMoving = -1;
+		HoldCursor(false);
+	}
 }
 
 
 
 void MultiView::OnRightButtonUp()
 {
+	if (ViewMoving >= 0){
+		ViewMoving = -1;
+		HoldCursor(false);
+	}
 }
 
 
@@ -271,6 +305,8 @@ void MultiView::OnMouseMove()
 {
 	mx = HuiGetEvent()->mx;
 	my = HuiGetEvent()->my;
+	vx = HuiGetEvent()->dx;
+	vy = HuiGetEvent()->dy;
 
 
 	// which window is the cursor in?
@@ -286,6 +322,55 @@ void MultiView::OnMouseMove()
 		mouse_win=4;
 	if (!mode3d)
 		mouse_win = 0;
+
+
+	// hover
+	if ((!NixGetButton(0)) && (!NixGetButton(1)) && (!NixGetButton(2)))
+		GetMouseOver();
+
+	if (MVRect)
+		SelectAllInRectangle();
+
+	// left button -> move data
+	/*if (NixGetButton(0)){
+		MouseMovedSinceClick += abs(vx) + abs(vy);
+		if ( MouseMovedSinceClick >= MinMouseMoveToInteract ){
+			MultiViewEditing = true;
+			if (Selected >= 0)
+				MoveSelection();
+		}
+	}*/
+
+
+	if (ViewMoving >= 0){
+		int t = view[ViewMoving].type;
+		if ((t == ViewPerspective) || (t == ViewIsometric)){
+// camera rotation
+			bool RotatingOwn = (NixGetButton(1) || (NixGetKey(KEY_CONTROL)));
+			if (RotatingOwn)
+				pos -= radius * VecAng2Dir(ang);
+			vector dang = vector((float)vy, (float)vx, 0) * MouseRotationSpeed;
+			ang = VecAngAdd(dang, ang);
+			if (RotatingOwn)
+				pos += radius * VecAng2Dir(ang);
+		}else{
+// camera translation
+			if (t == View2D)
+				pos += float(vx) / zoom * GetDirectionRight(ViewMoving) + float(vy) / zoom * GetDirectionUp(ViewMoving);
+			else
+				pos += float(vx) / zoom * GetDirectionRight(ViewMoving) + float(vy) / zoom * GetDirectionUp(ViewMoving);
+		}
+	}
+
+	// ignore mouse, while "holding"
+	if (HoldingCursor){
+//		ed->win->SetCursorPos(mx - vx, my - vy);
+		// evil hack... nix doesn't get nur pos data...
+		/*NixInputDataCurrent.x -= vx;
+		NixInputDataCurrent.y -= vy;
+		NixInputDataCurrent.dx = 0;
+		NixInputDataCurrent.dy = 0;*/
+	}
 
 	ed->ForceRedraw();
 }
@@ -485,9 +570,6 @@ void MultiView::DrawMousePos()
 }
 
 
-
-#define MVGetSingleData(d, index)	((MultiViewSingleData*) ((char*)(d).data + (d).DataSingleSize * index))
-
 void MultiView::DrawWin(int win, irect dest)
 {
 	msg_db_r("MultiView.DrawWin",2);
@@ -662,7 +744,7 @@ void MultiView::Draw()
 	cur_view = -1;
 	cur_view_rect = -1;
 
-	/*if ((MVRectable)&&(MVRect)){
+	if ((MVRectable)&&(MVRect)){
 		NixSetZ(false, false);
 		NixSetAlphaM(AlphaMaterial);
 		color c=color(0.2f,0,0,1);
@@ -674,7 +756,7 @@ void MultiView::Draw()
 		NixDrawLineH(RectX	,mx		,my		,c,0);
 		NixSetAlphaM(AlphaNone);
 		NixSetZ(true, true);
-	}*/
+	}
 
 	//DrawMousePos();
 
@@ -892,3 +974,147 @@ vector MultiView::GetCursor3D()
 }
 
 
+void MultiView::GetMouseOver()
+{
+	msg_db_r("GetMouseOver",6);
+	MouseOver=MouseOverType=MouseOverSet=-1;
+	/*if (!MVSelectable)
+		return;*/
+	float _radius=(float)PointRadiusMouseOver;
+	float z_min=1;
+	foreachi(data, d, di)
+		if (d.MVSelectable)
+			for (int i=0;i<d.Num;i++){
+				MultiViewSingleData* sd=MVGetSingleData(d,i);
+				if (sd->view_stage < view_stage)
+					continue;
+				bool mo=false;
+				vector mop;
+				if (d.Drawable){
+					vector p=VecProject(sd->pos,cur_view);
+					if ((p.z<=0)||(p.z>=1))
+						continue;
+					mo=((mx>=p.x-_radius)&&(mx<=p.x+_radius)&&(my>=p.y-_radius)&&(my<=p.y+_radius));
+					if (mo){
+						mop=sd->pos;
+						z_min=0;
+					}
+				}
+				if ((!mo)&&(d.IsMouseOver)){
+					vector tp;
+					mo=d.IsMouseOver(i, d.user_data, cur_view, tp);
+					if (mo){
+						float z=VecProject(tp, cur_view).z;
+						if (z<z_min){
+							z_min=z;
+							mop=tp;
+						}else{
+							if (sd->is_selected){
+								mop=tp;
+							}else
+								continue;
+						}
+					}
+				}
+				if (mo){
+					MouseOver=i;
+					MouseOverSet=di;
+					MouseOverType=d.Type;
+					MouseOverTP=mop;
+					if (sd->is_selected){
+						msg_db_l(6);
+						return;
+					}
+				}
+			}
+	msg_db_l(6);
+}
+
+void MultiView::UnselectAll()
+{
+	foreach(data, d)
+		if (d.MVSelectable)
+			for (int i=0;i<d.Num;i++){
+				MultiViewSingleData* sd = MVGetSingleData(d,i);
+				sd->is_selected = false;
+			}
+	MultiViewSelectionChanged = true;
+}
+
+void MultiView::GetSelected()
+{
+	msg_db_r("GetSelected",4);
+	Selected=MouseOver;
+	SelectedType=MouseOverType;
+	SelectedSet=MouseOverSet;
+	SelectedTP=MouseOverTP;
+	if ((Selected<0)||(SelectedType<0)){
+		if ((!NixGetKey(KEY_CONTROL))&&(!NixGetKey(KEY_SHIFT)))
+			UnselectAll();
+	}else{
+		MultiViewSingleData* sd=MVGetSingleData(data[SelectedSet],Selected);
+		if (sd->is_selected){
+			if (NixGetKey(KEY_SHIFT)){
+				sd->is_selected=false;
+				Selected=SelectedType=-1;
+			}
+		}else{
+			if ((NixGetKey(KEY_CONTROL))||(NixGetKey(KEY_SHIFT)))
+				sd->is_selected=true;
+			else{
+				UnselectAll();
+				sd->is_selected=true;
+			}
+		}
+	}
+	MultiViewSelectionChanged=true;
+	msg_db_l(4);
+}
+
+void MultiView::SelectAllInRectangle()
+{
+	msg_db_r("SelAllInRect",4);
+	int x1=RectX,y1=RectY,x2=mx,y2=my,a;
+	// reset data
+	UnselectAll();
+	// normalize rectangle
+	if (x2<x1){		a=x2;	x2=x1;	x1=a;	}
+	if (y2<y1){		a=y2;	y2=y1;	y1=a;	}
+	irect r=irect(x1,x2,y1,y2);
+
+	// select
+	foreach(data, d)
+		if (d.MVSelectable)
+			for (int i=0;i<d.Num;i++){
+				MultiViewSingleData* sd=MVGetSingleData(d,i);
+				if (sd->view_stage<view_stage)
+					continue;
+
+				// selected?
+				sd->m_delta=false;
+				if (d.IsInRect)
+					sd->m_delta=d.IsInRect(i,d.user_data, RectWin,&r);
+				else{// if (!sd->m_delta){
+					vector p=VecProject(sd->pos,RectWin);
+					sd->m_delta=((x2>=p.x)&&(x1<=p.x)&&(y2>=p.y)&&(y1<=p.y)&&(p.z>0)&&(p.z<1));
+				}
+
+				// add the selection layers
+				if (NixGetKey(KEY_SHIFT))
+					sd->is_selected=(sd->m_old && !sd->m_delta) || (!sd->m_old && sd->m_delta);
+				else
+					if (NixGetKey(KEY_CONTROL))
+						sd->is_selected=(sd->m_old || sd->m_delta);
+					else
+						sd->is_selected=sd->m_delta;
+			}
+	MultiViewSelectionChanged=true;
+	msg_db_l(4);
+}
+
+
+void MultiView::HoldCursor(bool holding)
+{
+	HoldingCursor = holding;
+	ed->win->ShowCursor(!holding);
+}
