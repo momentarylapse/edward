@@ -8,9 +8,6 @@
 #include "Edward.h"
 #include "MultiView.h"
 
-MultiView *mv3d = NULL;
-MultiView *mv2d = NULL;
-
 
 const color ColorBackGround3D = color(1,0,0,0.15f);
 const color ColorBackGround2D = color(1,0,0,0.10f);

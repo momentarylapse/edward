@@ -18,6 +18,7 @@ ModeModel::ModeModel()
 
 	menu = NULL;
 	data = new DataModel;
+	multi_view = NULL;
 
 	mode_model_mesh = new ModeModelMesh(this, data);
 }

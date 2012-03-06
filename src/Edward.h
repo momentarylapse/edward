@@ -99,6 +99,9 @@ public:
 	Array<string> PossibleSubDir;
 
 	CHuiWindow *win;
+
+	MultiView *multi_view_2d;
+	MultiView *multi_view_3d;
 };
 
 extern Edward *ed;

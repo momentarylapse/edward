@@ -51,34 +51,34 @@ static void OnDraw()
 {	ed->Draw();	}
 
 static void OnKeyDown()
-{	if (ed->cur_mode)	ed->cur_mode->OnKeyDown();	}
+{	if (ed->cur_mode)	ed->cur_mode->OnPreKeyDown();	}
 
 static void OnKeyUp()
-{	if (ed->cur_mode)	ed->cur_mode->OnKeyUp();	}
+{	if (ed->cur_mode)	ed->cur_mode->OnPreKeyUp();	}
 
 static void OnMouseMove()
-{	if (ed->cur_mode)	ed->cur_mode->OnMouseMove();	}
+{	if (ed->cur_mode)	ed->cur_mode->OnPreMouseMove();	}
 
 static void OnLeftButtonDown()
-{	if (ed->cur_mode)	ed->cur_mode->OnLeftButtonDown();	}
+{	if (ed->cur_mode)	ed->cur_mode->OnPreLeftButtonDown();	}
 
 static void OnLeftButtonUp()
-{	if (ed->cur_mode)	ed->cur_mode->OnLeftButtonUp();	}
+{	if (ed->cur_mode)	ed->cur_mode->OnPreLeftButtonUp();	}
 
 static void OnMiddleButtonDown()
-{	if (ed->cur_mode)	ed->cur_mode->OnMiddleButtonDown();	}
+{	if (ed->cur_mode)	ed->cur_mode->OnPreMiddleButtonDown();	}
 
 static void OnMiddleButtonUp()
-{	if (ed->cur_mode)	ed->cur_mode->OnMiddleButtonUp();	}
+{	if (ed->cur_mode)	ed->cur_mode->OnPreMiddleButtonUp();	}
 
 static void OnRightButtonDown()
-{	if (ed->cur_mode)	ed->cur_mode->OnRightButtonDown();	}
+{	if (ed->cur_mode)	ed->cur_mode->OnPreRightButtonDown();	}
 
 static void OnRightButtonUp()
-{	if (ed->cur_mode)	ed->cur_mode->OnRightButtonUp();	}
+{	if (ed->cur_mode)	ed->cur_mode->OnPreRightButtonUp();	}
 
 static void OnEvent()
-{	if (ed->cur_mode)	ed->cur_mode->OnCommand(HuiGetEvent()->id);	}
+{	if (ed->cur_mode)	ed->cur_mode->OnPreCommand(HuiGetEvent()->id);	}
 
 static void OnAbout()
 {	ed->About();	}
@@ -188,8 +188,8 @@ Edward::Edward(Array<string> arg)
 	}
 
 	msg_db_r("init modes", 1);*/
-	mv3d = new MultiView(true);
-	mv2d = new MultiView(false);
+	multi_view_3d = new MultiView(true);
+	multi_view_2d = new MultiView(false);
 	mode_welcome = new ModeWelcome;
 	mode_model = new ModeModel;
 	/*mobject = new CModeObject();

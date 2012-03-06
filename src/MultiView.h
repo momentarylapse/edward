@@ -155,7 +155,4 @@ public:
 	CHuiMenu *menu;
 };
 
-extern MultiView *mv3d;
-extern MultiView *mv2d;
-
 #endif /* MULTIVIEW_H_ */

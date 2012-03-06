@@ -17,6 +17,7 @@ ModeModelMeshVertex::ModeModelMeshVertex(Mode *_parent, DataModel *_data)
 {
 	parent = _parent;
 	data = _data;
+	multi_view = ed->multi_view_3d;
 	menu = HuiCreateResourceMenu("menu_model");
 }
 
@@ -47,7 +48,7 @@ void ModeModelMeshVertex::DrawWin(int win, irect dest)
 
 void ModeModelMeshVertex::Draw()
 {
-	mv3d->Draw();
+	multi_view->Draw();
 	NixDrawStr(100, 100, "model");
 }
 
@@ -55,71 +56,60 @@ void ModeModelMeshVertex::Draw()
 
 void ModeModelMeshVertex::OnMouseMove()
 {
-	mv3d->OnMouseMove();
 }
 
 
 
 void ModeModelMeshVertex::OnLeftButtonDown()
 {
-	mv3d->OnLeftButtonDown();
 }
 
 
 
 void ModeModelMeshVertex::OnLeftButtonUp()
 {
-	mv3d->OnLeftButtonUp();
 }
 
 
 
 void ModeModelMeshVertex::OnMiddleButtonDown()
 {
-	mv3d->OnMiddleButtonDown();
 }
 
 
 
 void ModeModelMeshVertex::OnMiddleButtonUp()
 {
-	mv3d->OnMiddleButtonUp();
 }
 
 
 
 void ModeModelMeshVertex::OnRightButtonDown()
 {
-	mv3d->OnRightButtonDown();
 }
 
 
 
 void ModeModelMeshVertex::OnRightButtonUp()
 {
-	mv3d->OnRightButtonUp();
 }
 
 
 
 void ModeModelMeshVertex::OnKeyDown()
 {
-	mv3d->OnKeyDown();
 }
 
 
 
 void ModeModelMeshVertex::OnKeyUp()
 {
-	mv3d->OnKeyUp();
 }
 
 
 
 void ModeModelMeshVertex::OnCommand(const string & id)
 {
-	mv3d->OnCommand(id);
-
 	// TODO -> edward?
 	if (id == "undo")
 		data->Undo();
@@ -129,14 +119,14 @@ void ModeModelMeshVertex::OnCommand(const string & id)
 
 void ModeModelMeshVertex::OnDataChange()
 {
-	mv3d->ResetData();
+	multi_view->ResetData();
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	//CModeAll::SetMultiViewFunctions(&StartChanging, &EndChanging, &Change);
-	mv3d->SetData(	MVDModelVertex,
-					data->Vertex,
-					NULL,
-					mv3d->FlagDraw | mv3d->FlagIndex | mv3d->FlagSelect | mv3d->FlagMove,
-					NULL, NULL);
+	multi_view->SetData(	MVDModelVertex,
+			data->Vertex,
+			NULL,
+			multi_view->FlagDraw | multi_view->FlagIndex | multi_view->FlagSelect | multi_view->FlagMove,
+			NULL, NULL);
 }
 
 

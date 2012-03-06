@@ -15,6 +15,7 @@ ModeWelcome::ModeWelcome()
 {
 	parent = NULL;
 	menu = NULL;
+	multi_view = NULL;
 	tex_icons = NixLoadTexture(HuiAppDirectoryStatic + "Data/icons/icons.tga");
 	tex_logo = NixLoadTexture(HuiAppDirectoryStatic + "Data/edward.jpg");
 }
