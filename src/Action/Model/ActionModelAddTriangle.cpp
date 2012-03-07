@@ -48,7 +48,7 @@ void *ActionModelAddTriangle::execute(Data *d)
 		// new surface
 		ModeModelSurface *s = m->AddSurface();
 
-		s->AddTriangle(a, b, c, sv[0], sv[1], sv[2], m);
+		s->AddTriangle(a, b, c, sv[0], sv[1], sv[2]);
 		r = &s->Triangle.back();
 	}else{
 		// main surface?
@@ -59,7 +59,7 @@ void *ActionModelAddTriangle::execute(Data *d)
 			m->SurfaceJoin(s, &m->Surface[surf[i]]);
 
 		// add triangle
-		s->AddTriangle(a, b, c, sv[0], sv[1], sv[2], m);
+		s->AddTriangle(a, b, c, sv[0], sv[1], sv[2]);
 		r = &s->Triangle.back();
 	}
 

@@ -6,6 +6,7 @@
  */
 
 #include "DataModel.h"
+#include "ModeModelSurface.h"
 #include "../../Action/Action.h"
 #include "../../Action/ActionManager.h"
 #include "../../Edward.h"
@@ -16,101 +17,7 @@
 #include "../../Action/Model/ActionModelAddCylinder.h"
 #include "../../Action/Model/ActionModelAddBall.h"
 
-#include "../../lib/nix/nix.h"
 
-
-
-ModeModelMaterial::ModeModelMaterial()
-{	reset();	}
-
-void ModeModelMaterial::reset()
-{
-	TransparencyMode = TransparencyModeDefault;
-	AlphaDestination = 0;
-	AlphaSource = 0;
-	AlphaFactor = 0;
-	AlphaZBuffer = true;
-	Shininess = 0;
-	for (int i=0;i<8;i++)
-		Color[i/4][i%4] = 255; // ambient, diffuse
-	for (int i=0;i<8;i++)
-		Color[i/4+2][i%4] = 0; // specular, emissive
-	UserColor = false;
-	MaterialFile = "";
-	material = MetaLoadMaterial("");
-	NumTextures = 1;
-	TextureFile[0] = "";
-	Texture[0] = -1;
-}
-
-void ModeModelMaterial::CheckTextures()
-{
-	if (material->num_textures > NumTextures){
-		for (int i=NumTextures;i<material->num_textures;i++){
-			TextureFile[i] = "";
-			Texture[i] = -1;
-		}
-		NumTextures = material->num_textures;
-		//Change();
-		ed->SetMessage(_("Anzahl der Texturen wurde an das Material angepasst!"));
-	}
-	for (int i=0;i<material->num_textures;i++)
-		if (Texture[i] < 0)
-			if (TextureFile[i].num == 0)
-				Texture[i] = material->texture[i];
-}
-
-void ModeModelMaterial::Apply()
-{
-	NixSetAlpha(AlphaNone);
-	NixSetShader(-1);
-	color c;
-	color am=material->ambient;
-	color di=material->diffuse;
-	color sp=material->specular;
-	color em=material->emission;
-	float sh=material->shininess;
-	if (UserColor){
-		am=i42c(Color[0]);
-		di=i42c(Color[1]);
-		sp=i42c(Color[2]);
-		em=i42c(Color[3]);
-		sh=(float)Shininess;
-	}
-	em=ColorInterpolate(em,White,0.1f);
-	NixSetMaterial(am,di,sp,sh,em);
-	if (false){//MVFXEnabled){
-		int tm,as,ad;
-		bool az;
-		float af;
-		if (TransparencyMode==TransparencyModeDefault){
-			tm=material->transparency_mode;
-			as=material->alpha_source;
-			ad=material->alpha_destination;
-			af=material->alpha_factor;
-			az=material->alpha_z_buffer;
-		}else{
-			tm=TransparencyMode;
-			as=AlphaSource;
-			ad=AlphaDestination;
-			af=(float)AlphaFactor*0.01f;
-			az=AlphaZBuffer;
-		}
-		NixSetZ(az,az);
-		if (tm==TransparencyModeColorKeyHard)
-			NixSetAlpha(AlphaColorKeyHard);
-		else if (tm==TransparencyModeColorKeySmooth)
-			NixSetAlpha(AlphaColorKeySmooth);
-		else if (tm==TransparencyModeFunctions){
-			NixSetAlpha(as,ad);
-			//NixSetZ(false,false);
-		}else if (tm==TransparencyModeFactor){
-			NixSetAlpha(af);
-			//NixSetZ(false,false);
-		}
-		NixSetShader(material->shader);
-	}
-}
 
 
 DataModel::DataModel()
@@ -894,14 +801,15 @@ void DataModel::UpdateNormals()
 
 ModeModelSurface *DataModel::AddSurface()
 {
-	Surface.resize(Surface.num + 1);
-	ModeModelSurface *s = &Surface.back();
-	s->view_stage = ViewStage;
-	s->is_selected = false;
-	s->IsClosed = false;
-	s->IsVisible = true;
-	s->IsPhysical = true;
-	return s;
+	ModeModelSurface s;
+	s.model = this;
+	s.view_stage = ViewStage;
+	s.is_selected = false;
+	s.IsClosed = false;
+	s.IsVisible = true;
+	s.IsPhysical = true;
+	Surface.add(s);
+	return &Surface.back();
 }
 
 
@@ -917,25 +825,9 @@ ModeModelTriangle *DataModel::AddTriangle(int a, int b, int c)
 
 
 
-
-
-void SurfaceTestSanity(ModeModelSurface *s, const string &loc)
+int DataModel::get_surf_no(ModeModelSurface *s)
 {
-	foreach(s->Triangle, t)
-		if ((t.Vertex[0] == t.Vertex[1]) || (t.Vertex[1] == t.Vertex[2]) || (t.Vertex[2] == t.Vertex[0])){
-			msg_error(loc + ": surf broken!   tria");
-			return;
-		}
-	foreach(s->Edge, e)
-		if (e.Vertex[0] == e.Vertex[1]){
-			msg_error(loc + ": surf broken!   edge");
-			return;
-		}
-}
-
-int get_surf_no(DataModel *m, ModeModelSurface *s)
-{
-	foreachi(m->Surface, ss, i)
+	foreachi(Surface, ss, i)
 		if (&ss == s)
 			return i;
 	return -1;
@@ -945,11 +837,11 @@ ModeModelSurface *DataModel::SurfaceJoin(ModeModelSurface *a, ModeModelSurface *
 {
 	msg_db_r("SurfJoin", 1);
 
-	SurfaceTestSanity(a, "Join prae a");
-	SurfaceTestSanity(b, "Join prae b");
+	a->TestSanity("Join prae a");
+	b->TestSanity("Join prae b");
 
-	int ai = get_surf_no(this, a);
-	int bi = get_surf_no(this, b);
+	int ai = get_surf_no(a);
+	int bi = get_surf_no(b);
 
 	// correct edge data of b
 	foreach(b->Edge, e){
@@ -977,182 +869,10 @@ ModeModelSurface *DataModel::SurfaceJoin(ModeModelSurface *a, ModeModelSurface *
 	if (bi >= 0)
 		Surface.erase(bi);
 	a = &Surface[ai];
-	SurfaceTestSanity(a, "Join post a");
+	a->TestSanity("Join post a");
 
 	msg_db_l(1);
 	return a;
-}
-
-void ModeModelSurface::AddVertex(int v, DataModel *m)
-{
-	// set -> unique
-	Vertex.add(v);
-
-	// back reference
-	m->Vertex[v].Surface = get_surf_no(m, this);
-	if (m->Vertex[v].Surface < 0)
-		msg_error("SurfaceAddVertex ...surface not found");
-}
-
-void ModeModelSurface::AddTriangle(int a, int b, int c, const vector &sa, const vector &sb, const vector &sc, DataModel *m)
-{
-	msg_db_r("Surf.AddTria", 1);
-
-	ModeModelTriangle t;
-	t.Vertex[0] = a;
-	t.Vertex[1] = b;
-	t.Vertex[2] = c;
-	for (int i=0;i<m->Material[m->CurrentMaterial].NumTextures;i++){
-		t.SkinVertex[i][0] = sa;
-		t.SkinVertex[i][1] = sb;
-		t.SkinVertex[i][2] = sc;
-	}
-	for (int k=0;k<3;k++)
-		t.Edge[k] = AddEdgeForNewTriangle(t.Vertex[k], t.Vertex[(k + 1) % 3]);
-	AddVertex(a, m);
-	AddVertex(b, m);
-	AddVertex(c, m);
-
-	// closed?
-	UpdateClosed();
-
-	// ref count
-	m->Vertex[a].RefCount ++;
-	m->Vertex[b].RefCount ++;
-	m->Vertex[c].RefCount ++;
-
-	t.is_selected = false;
-	t.Material = m->CurrentMaterial;
-	t.view_stage = m->ViewStage;
-	t.NormalDirty = true;
-	Triangle.add(t);
-	msg_db_l(1);
-}
-
-int ModeModelSurface::AddEdgeForNewTriangle(int a, int b)
-{
-	int tria = Triangle.num;
-	foreachi(Edge, e, i){
-		if ((e.Vertex[0] == a) && (e.Vertex[1] == b)){
-			e.RefCount ++;
-			msg_error("surface error? inverse edge");
-			e.Triangle[1] = tria;
-			return i;
-		}
-		if ((e.Vertex[0] == b) && (e.Vertex[1] == a)){
-			e.RefCount ++;
-			if (e.RefCount > 2)
-				msg_error("surface error? edge refcount > 2");
-			e.Triangle[1] = tria;
-			return i;
-		}
-	}
-	ModeModelEdge ee;
-	ee.Vertex[0] = a;
-	ee.Vertex[1] = b;
-	ee.is_selected = false;
-	ee.is_special = false;
-	ee.IsRound = false;
-	ee.NormalMode = NormalModeAngular;
-	ee.RefCount = 1;
-	ee.Triangle[0] = tria;
-	ee.Triangle[1] = -1;
-	Edge.add(ee);
-	return Edge.num - 1;
-}
-
-
-inline bool edge_equal(ModeModelEdge *e, int a, int b)
-{
-	return (((e->Vertex[0] == a) && (e->Vertex[1] == b)) || ((e->Vertex[0] == b) && (e->Vertex[1] == a)));
-}
-
-inline int find_other_tria_from_edge(ModeModelSurface *s, int e, int t)
-{
-	if (s->Edge[e].Triangle[0] == t)
-		return s->Edge[e].Triangle[1];
-	return s->Edge[e].Triangle[0];
-}
-
-// return: closed circle... don't run again to the left
-inline bool find_tria_top(ModeModelSurface *s, const Array<int> &ti, const Array<int> &tv, Set<int> &used, bool to_the_right)
-{
-	int t0 = 0;
-	while(true){
-		int ne = tv[t0];
-		if (!to_the_right)
-			ne = (ne + 2) % 3;
-		int e = s->Triangle[ti[t0]].Edge[ne];
-		if (!s->Edge[e].IsRound)
-			return false;
-		int tt = find_other_tria_from_edge(s, e, ti[t0]);
-		if (tt < 0)
-			return false;
-		t0 = -1;
-		for (int i=0;i<ti.num;i++)
-			if (ti[i] == tt)
-				t0 = i;
-		if (t0 <= 0)
-			return (t0 == 0);
-		used.add(t0);
-	}
-}
-
-
-void ModeModelSurface::UpdateClosed()
-{
-	// closed?
-	IsClosed = true;
-	foreach(Edge, e)
-		if (e.RefCount != 2){
-			IsClosed = false;
-			break;
-		}
-}
-
-void ModeModelSurface::RemoveObsoleteEdge(int index)
-{
-	msg_db_r("Surf.RemoveObsoleteEdge", 2);
-	// correct triangle references
-	foreach(Triangle, t)
-		for (int k=0;k<3;k++)
-			if (t.Edge[k] > index)
-				t.Edge[k] --;
-			else if (t.Edge[k] == index)
-				msg_error(format("surf rm edge: edge not really obsolete  rc=%d (%d,%d) (%d,%d)", Edge[index].RefCount, t.Vertex[k], t.Vertex[(k+1)%3], Edge[index].Vertex[0], Edge[index].Vertex[1]));
-
-	// delete
-	Edge.erase(index);
-	msg_db_l(2);
-}
-
-void ModeModelSurface::MergeEdges()
-{
-	msg_db_r("Surf.MergeEdges", 1);
-
-	SurfaceTestSanity(this, "MergeEdges prae");
-
-	foreachi(Edge, e, i){
-		for (int j=i+1;j<Edge.num;j++){
-			ModeModelEdge &f = Edge[j];
-			if (edge_equal(&e, f.Vertex[0], f.Vertex[1])){
-				if (e.RefCount + f.RefCount > 2)
-					msg_error(format("SurfMergeEdges: edge(%d,%d).RefCount...  %d + %d    tria=(%d,%d,%d,%d)", f.Vertex[0], f.Vertex[1], e.RefCount, f.RefCount, e.Triangle[0], e.Triangle[1], f.Triangle[0], f.Triangle[1]));
-
-				e.RefCount ++;
-				e.Triangle[1] = f.Triangle[0];
-
-				// relink triangles
-				for (int k=0;k<3;k++)
-					if (Triangle[e.Triangle[1]].Edge[k] == j)
-						Triangle[e.Triangle[1]].Edge[k] = i;
-				RemoveObsoleteEdge(j);
-				break;
-			}
-		}
-	}
-	SurfaceTestSanity(this, "MergeEdges post");
-	msg_db_l(1);
 }
 
 void DataModel::ResetAutoTexturing()

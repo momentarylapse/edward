@@ -10,10 +10,13 @@
 
 #include "../Data.h"
 #include "../../MultiView.h"
-#include "../../lib/types/types.h"
 #include "../../lib/x/x.h"
+#include "ModeModelSurface.h"
+#include "ModeModelMaterial.h"
 
 class DataModel;
+class ModeModelSurface;
+class ModeModelMaterial;
 
 
 #define TransparencyModeDefault			-1
@@ -128,26 +131,6 @@ struct ModeModelSkin
 	ModeModelTriangle *Triangle;
 };*/
 
-struct ModeModelMaterial{
-	string MaterialFile;
-	Material *material;
-	int NumTextures;
-	int Texture[MODEL_MAX_TEXTURES];
-	string TextureFile[MODEL_MAX_TEXTURES];
-
-	int TransparencyMode;
-	int AlphaFactor,AlphaSource,AlphaDestination;
-	bool AlphaZBuffer;
-	bool UserColor;
-	int Color[4][4];
-	int Shininess;
-
-	ModeModelMaterial();
-	void reset();
-	void CheckTextures();
-	void Apply();
-};
-
 struct ModeModelSkeletonBone: MultiViewSingleData
 {
 	int Parent;
@@ -190,22 +173,6 @@ struct ModeModelEdge: MultiViewSingleData
 	bool IsRound; // for editing
 };
 
-struct ModeModelSurface: MultiViewSingleData
-{
-	Array<ModeModelTriangle> Triangle;
-	Array<ModeModelEdge> Edge;
-	Set<int> Vertex;
-	bool IsPhysical, IsVisible;
-	bool IsClosed;
-
-	void AddVertex(int v, DataModel *m);
-	void AddTriangle(int a, int b, int c, const vector &sa, const vector &sb, const vector &sc, DataModel *m);
-	int AddEdgeForNewTriangle(int a, int b);
-	void RemoveObsoleteEdge(int index);
-	void MergeEdges();
-	void UpdateClosed();
-};
-
 
 class DataModel: public Data
 {
@@ -240,6 +207,7 @@ public:
 	//void LowLevelAddVertex(const vector &vd);
 	ModeModelSurface *AddSurface();
 	ModeModelSurface *SurfaceJoin(ModeModelSurface *a, ModeModelSurface *b);
+	int get_surf_no(ModeModelSurface *s);
 
 	// high level (actions)
 	void AddVertex(const vector &v);

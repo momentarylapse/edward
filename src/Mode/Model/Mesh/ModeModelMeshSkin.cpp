@@ -40,6 +40,7 @@ void ModeModelMeshSkin::DrawTrias()
 
 	// draw all materials separately
 	foreachi(data->Material, m, mi){
+		m.ApplyForRendering();
 
 		// single texture
 		if (m.NumTextures == 1){
@@ -59,7 +60,6 @@ void ModeModelMeshSkin::DrawTrias()
 					}
 
 			// draw
-			m.Apply();
 			NixDraw3D(m.Texture[0], VBModel, m_id); // TODO:  alle Texturen, nicht nur die erste....
 
 		// multi texture
@@ -96,7 +96,6 @@ void ModeModelMeshSkin::DrawTrias()
 					}
 
 			// draw
-			m.Apply();
 			NixDraw3DM(m.Texture, *vb, m_id);
 		}
 	}
