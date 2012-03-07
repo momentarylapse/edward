@@ -323,7 +323,7 @@ void Edward::OnDataChange()
 {
 	msg_db_r("Edward.OnDataChange", 2);
 	if (cur_mode)
-		cur_mode->OnDataChange();
+		cur_mode->OnPreDataChange();
 	ForceRedraw();
 	msg_db_l(2);
 }

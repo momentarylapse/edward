@@ -121,6 +121,7 @@ void DataModel::Reset()
 	Execute(new ActionModelAddBall(vector(-200, 0, 0), 100, 16, 16, false, Vertex.num));
 	Execute(new ActionModelAddBall(vector(-200, 0, 200), 100, 16, 16, true, Vertex.num));
 	Execute(new ActionModelAddCylinder(vector(200, 0, 0), e_z * 100, 40, 3, 16, true, Vertex.num));*/
+	UpdateNormals();
 
 	msg_write("------------");
 	msg_write(Vertex.num);
@@ -797,6 +798,8 @@ void DataModel::Save(const string & _filename)
 
 void DataModel::UpdateNormals()
 {
+	foreach(Surface, s)
+		s.UpdateNormals();
 }
 
 ModeModelSurface *DataModel::AddSurface()

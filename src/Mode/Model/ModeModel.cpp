@@ -122,6 +122,7 @@ void ModeModel::OnCommand(const string & id)
 
 void ModeModel::OnDataChange()
 {
+	data->UpdateNormals();
 }
 
 

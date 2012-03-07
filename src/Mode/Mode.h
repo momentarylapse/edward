@@ -46,6 +46,7 @@ public:
 	void OnPreKeyDown();
 	void OnPreKeyUp();
 	void OnPreCommand(const string &id);
+	void OnPreDataChange();
 
 	virtual void Draw() = 0;
 	virtual void DrawWin(int win, irect dest) = 0;
