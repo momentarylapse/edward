@@ -43,8 +43,8 @@ color i42c(int *c)
 
 static void OnClose()
 {
-	msg_write("beende...");
-	HuiEnd();
+	if (ed->AllowTermination())
+		HuiEnd();
 }
 
 static void OnDraw()
@@ -442,6 +442,8 @@ void Edward::OnCommand(const string &id)
 		mode_model->New();
 	if (id == "open_model")
 		mode_model->Open();
+	if (id == "exit")
+		OnClose();
 }
 
 static string NoEnding(const string &filename)
@@ -535,7 +537,6 @@ bool Edward::AllowTermination()
 	if (d->action_manager->IsSave())
 		return true;
 	string answer = HuiQuestionBox(win,_("Dem&utige aber h&ofliche Frage"),_("Sie haben die Entropie erh&oht. Wollen Sie Ihr Werk speichern?"),true);
-	msg_write(answer);
 	if (answer == "hui:cancel")
 		return false;
 	if (answer == "hui:no")

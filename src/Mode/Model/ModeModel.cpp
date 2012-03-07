@@ -113,6 +113,12 @@ void ModeModel::OnCommand(const string & id)
 {
 	if (id == "new")
 		New();
+	if (id == "open")
+		Open();
+	if (id == "save")
+		Save();
+	if (id == "save_as")
+		SaveAs();
 
 	// TODO -> edward?
 	if (id == "undo")
