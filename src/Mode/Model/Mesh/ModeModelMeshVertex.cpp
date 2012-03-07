@@ -15,6 +15,7 @@ ModeModelMeshVertex *mode_model_mesh_vertex = NULL;
 
 ModeModelMeshVertex::ModeModelMeshVertex(Mode *_parent, DataModel *_data)
 {
+	name = "ModelMeshVertex";
 	parent = _parent;
 	data = _data;
 	multi_view = ed->multi_view_3d;
@@ -27,14 +28,11 @@ ModeModelMeshVertex::~ModeModelMeshVertex()
 
 void ModeModelMeshVertex::Start()
 {
-	msg_write("model mesh vert start");
-
 	OnDataChange();
 }
 
 void ModeModelMeshVertex::End()
 {
-	msg_write("model mesh vert end");
 }
 
 
@@ -115,6 +113,7 @@ void ModeModelMeshVertex::OnCommand(const string & id)
 void ModeModelMeshVertex::OnDataChange()
 {
 	multi_view->ResetData();
+	multi_view->MVRectable = true;
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	//CModeAll::SetMultiViewFunctions(&StartChanging, &EndChanging, &Change);
 	multi_view->SetData(	MVDModelVertex,

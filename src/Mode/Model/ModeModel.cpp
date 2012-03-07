@@ -14,6 +14,7 @@ ModeModel *mode_model = NULL;
 
 ModeModel::ModeModel()
 {
+	name = "Model";
 	parent = NULL;
 
 	menu = NULL;
@@ -35,7 +36,6 @@ void ModeModel::OnLeftButtonDown()
 
 void ModeModel::Start()
 {
-	msg_write("model start");
 	ed->SetMode(mode_model_mesh);
 }
 
@@ -43,7 +43,6 @@ void ModeModel::Start()
 
 void ModeModel::End()
 {
-	msg_write("model end");
 }
 
 

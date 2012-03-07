@@ -50,35 +50,32 @@ static void OnClose()
 static void OnDraw()
 {	ed->Draw();	}
 
-static void OnKeyDown()
-{	if (ed->cur_mode)	ed->cur_mode->OnPreKeyDown();	}
+#define IMPLEMENT_EVENT(event, pre_event, param_list, param)	\
+static void event() \
+{ \
+	if (ed->cur_mode) \
+		ed->cur_mode->pre_event(); \
+	if (ed->creation_mode) \
+		ed->creation_mode->event(); \
+}
 
-static void OnKeyUp()
-{	if (ed->cur_mode)	ed->cur_mode->OnPreKeyUp();	}
-
-static void OnMouseMove()
-{	if (ed->cur_mode)	ed->cur_mode->OnPreMouseMove();	}
-
-static void OnLeftButtonDown()
-{	if (ed->cur_mode)	ed->cur_mode->OnPreLeftButtonDown();	}
-
-static void OnLeftButtonUp()
-{	if (ed->cur_mode)	ed->cur_mode->OnPreLeftButtonUp();	}
-
-static void OnMiddleButtonDown()
-{	if (ed->cur_mode)	ed->cur_mode->OnPreMiddleButtonDown();	}
-
-static void OnMiddleButtonUp()
-{	if (ed->cur_mode)	ed->cur_mode->OnPreMiddleButtonUp();	}
-
-static void OnRightButtonDown()
-{	if (ed->cur_mode)	ed->cur_mode->OnPreRightButtonDown();	}
-
-static void OnRightButtonUp()
-{	if (ed->cur_mode)	ed->cur_mode->OnPreRightButtonUp();	}
+IMPLEMENT_EVENT(OnKeyDown, OnPreKeyDown, , )
+IMPLEMENT_EVENT(OnKeyUp, OnPreKeyUp, , )
+IMPLEMENT_EVENT(OnMouseMove, OnPreMouseMove, , )
+IMPLEMENT_EVENT(OnLeftButtonDown, OnPreLeftButtonDown, , )
+IMPLEMENT_EVENT(OnLeftButtonUp, OnPreLeftButtonUp, , )
+IMPLEMENT_EVENT(OnMiddleButtonDown, OnPreMiddleButtonDown, , )
+IMPLEMENT_EVENT(OnMiddleButtonUp, OnPreMiddleButtonUp, , )
+IMPLEMENT_EVENT(OnRightButtonDown, OnPreRightButtonDown, , )
+IMPLEMENT_EVENT(OnRightButtonUp, OnPreRightButtonUp, , )
 
 static void OnEvent()
-{	if (ed->cur_mode)	ed->cur_mode->OnPreCommand(HuiGetEvent()->id);	}
+{
+	if (ed->cur_mode)
+		ed->cur_mode->OnPreCommand(HuiGetEvent()->id);
+	if (ed->creation_mode)
+		ed->creation_mode->OnCommand(HuiGetEvent()->id);
+}
 
 static void OnAbout()
 {	ed->About();	}
@@ -102,6 +99,7 @@ Edward::Edward(Array<string> arg)
 
 	ed = this;
 	cur_mode = NULL;
+	creation_mode = NULL;
 	force_redraw = false;
 
 	PossibleSubDir.add("Maps");
@@ -230,11 +228,43 @@ Edward::~Edward()
 void Edward::SetMode(Mode *m)
 {
 	msg_db_r("SetMode", 1);
-	if (cur_mode)
+
+	// close current creation_mode
+	SetCreationMode(NULL);
+
+	// close current mode
+	if (cur_mode){
+		msg_write("end" + cur_mode->name);
 		cur_mode->End();
+	}
+
+	// start new mode
 	cur_mode = m;
 	cur_mode->Start();
+	msg_write("start " + m->name);
 	win->SetMenu(cur_mode->menu);
+
+	ForceRedraw();
+	msg_db_l(1);
+}
+
+void Edward::SetCreationMode(ModeCreation *m)
+{
+	msg_db_r("SetCreationMode", 1);
+
+	// close current creation_mode
+	if (creation_mode){
+		msg_write("end (creation) " + creation_mode->name);
+		creation_mode->End();
+		delete(creation_mode);
+	}
+
+	// start new creation mode
+	creation_mode = m;
+	if (creation_mode){
+		msg_write("start (creation) " + creation_mode->name);
+		creation_mode->Start();
+	}
 
 	ForceRedraw();
 	msg_db_l(1);
@@ -317,6 +347,12 @@ void Edward::Draw()
 		NixResetToColor(Black);
 		NixDrawStr(100, 100, "no mode...");
 	}
+
+	if (creation_mode){
+		creation_mode->PostDraw();
+		DrawStr(MaxX / 2, MaxY - 20, creation_mode->message);
+	}
+
 	NixEnd();
 }
 

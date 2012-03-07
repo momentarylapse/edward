@@ -13,6 +13,7 @@ ModeModelMeshSkin *mode_model_mesh_skin = NULL;
 
 ModeModelMeshSkin::ModeModelMeshSkin(Mode *_parent, DataModel *_data)
 {
+	name = "ModelMeshSkin";
 	parent = _parent;
 	data = _data;
 	menu = HuiCreateResourceMenu("menu_model");
@@ -166,7 +167,6 @@ void ModeModelMeshSkin::OnMiddleButtonDown()
 
 void ModeModelMeshSkin::End()
 {
-	msg_write("model mesh end start");
 }
 
 
@@ -179,8 +179,6 @@ void ModeModelMeshSkin::OnKeyDown()
 
 void ModeModelMeshSkin::Start()
 {
-	msg_write("model mesh skin start");
-
 	OnDataChange();
 }
 

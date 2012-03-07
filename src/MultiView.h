@@ -152,6 +152,13 @@ public:
 
 	bool MultiViewSelectionChanged;
 
+
+	int MouseMovedSinceClick;
+	bool Moved;
+	int MovingWin;
+	vector MovingStart, MovingDP;
+	bool MultiViewEditing;
+
 	CHuiMenu *menu;
 };
 

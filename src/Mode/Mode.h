@@ -50,6 +50,8 @@ public:
 	virtual void Draw() = 0;
 	virtual void DrawWin(int win, irect dest) = 0;
 
+	string name;
+
 	Mode *parent;
 	MultiView *multi_view;
 

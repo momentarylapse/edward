@@ -234,6 +234,19 @@ void MultiView::OnKeyDown()
 
 void MultiView::OnLeftButtonDown()
 {
+	MouseMovedSinceClick = 0;
+	Moved = false;
+	vx = vy = 0;
+	GetSelected();
+
+	if (Selected<0){
+		if (MVRectable)
+			StartRect();
+	}else{
+		MovingWin = mouse_win;
+		MovingStart = MouseOverTP;
+		MovingDP = MVGetSingleData(data[SelectedSet], Selected)->pos - MouseOverTP;
+	}
 }
 
 
@@ -296,6 +309,8 @@ void MultiView::OnKeyUp()
 
 void MultiView::OnLeftButtonUp()
 {
+	EndRect();
+	MultiViewEditing=false;
 }
 
 
@@ -376,6 +391,36 @@ void MultiView::OnMouseMove()
 }
 
 
+
+
+void MultiView::StartRect()
+{
+	MVRect=true;
+	RectWin=mouse_win;
+	RectX=mx;
+	RectY=my;
+
+	// reset selection data
+	foreach(data, d)
+		if (d.MVSelectable)
+			for (int i=0;i<d.Num;i++){
+				MultiViewSingleData* sd = MVGetSingleData(d,i);
+				sd->m_old = sd->is_selected;
+			}
+
+	ed->ForceRedraw();
+}
+
+void MultiView::EndRect()
+{
+	/*if (PostEndRect)
+		PostEndRect();*/
+
+	MVRect=false;
+	RectWin=-1;
+
+	ed->ForceRedraw();
+}
 
 
 #define GridConst	5.0f
@@ -649,6 +694,8 @@ void MultiView::DrawWin(int win, irect dest)
 	//msg_db_r("sub",2);
 	if (ed->cur_mode)
 		ed->cur_mode->DrawWin(win, dest);
+	if (ed->creation_mode)
+		ed->creation_mode->PostDrawWin(win, dest);
 	//msg_db_l(2);
 
 	// draw multiview data

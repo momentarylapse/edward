@@ -10,6 +10,7 @@
 
 #include "lib/hui/hui.h"
 #include "Mode/Mode.h"
+#include "Mode/ModeCreation.h"
 #include "Mode/Welcome/ModeWelcome.h"
 #include "Mode/Model/ModeModel.h"
 
@@ -65,6 +66,7 @@ public:
 
 	void About();
 	void SetMode(Mode *m);
+	void SetCreationMode(ModeCreation *m);
 	void NewModel();
 	bool OpenModel();
 	void NewMaterial();
@@ -90,6 +92,7 @@ public:
 	bool force_redraw;
 
 	Mode *cur_mode;
+	ModeCreation *creation_mode;
 
 	string RootDir;
 	bool RootDirCorrect;

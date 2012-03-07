@@ -9,11 +9,14 @@
 #include "ModeModelMesh.h"
 #include "ModeModelMeshVertex.h"
 #include "ModeModelMeshSkin.h"
+#include "../../ModeCreation.h"
+#include "Creation/ModeModelMeshCreateVertex.h"
 
 ModeModelMesh *mode_model_mesh = NULL;
 
 ModeModelMesh::ModeModelMesh(Mode *_parent, DataModel *_data)
 {
+	name = "ModelMesh";
 	parent = _parent;
 	data = _data;
 	menu = NULL;
@@ -29,13 +32,11 @@ ModeModelMesh::~ModeModelMesh()
 
 void ModeModelMesh::Start()
 {
-	msg_write("model mesh start");
 	ed->SetMode(mode_model_mesh_vertex);
 }
 
 void ModeModelMesh::End()
 {
-	msg_write("model mesh end");
 }
 
 void ModeModelMesh::OnMiddleButtonUp()
@@ -76,6 +77,8 @@ void ModeModelMesh::OnKeyUp()
 
 void ModeModelMesh::OnCommand(const string & id)
 {
+	if (id == "new_point")
+		ed->SetCreationMode(new ModeModelMeshCreateVertex(this, data));
 }
 
 

@@ -13,6 +13,7 @@ ModeWelcome *mode_welcome = NULL;
 
 ModeWelcome::ModeWelcome()
 {
+	name = "Welcome";
 	parent = NULL;
 	menu = NULL;
 	multi_view = NULL;
