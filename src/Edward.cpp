@@ -109,6 +109,9 @@ Edward::Edward(Array<string> arg)
 	creation_mode = NULL;
 	force_redraw = false;
 
+
+	LoadKeyCodes();
+
 	PossibleSubDir.add("Maps");
 	PossibleSubDir.add("Materials");
 	PossibleSubDir.add("Objects");
@@ -219,8 +222,6 @@ Edward::Edward(Array<string> arg)
 	msg_write("--");
 
 	SetMode(mode_welcome);
-
-	LoadKeyCodes();
 
 	HuiSetIdleFunction(&IdleFunction);
 
