@@ -16,7 +16,7 @@ ModeModelMeshCreateTriangles::ModeModelMeshCreateTriangles(Mode *_parent, DataMo
 	data = _data;
 	multi_view = parent->multi_view;
 
-	message = format(_("Dreiecke w&ahlen: %d ->Return"), 0);
+	message = format(_("Dreiecke w&ahlen: %d -> Shift + Return"), 0);
 }
 
 ModeModelMeshCreateTriangles::~ModeModelMeshCreateTriangles()
@@ -65,7 +65,7 @@ void ModeModelMeshCreateTriangles::PostDrawWin(int win, irect dest)
 
 void ModeModelMeshCreateTriangles::OnKeyDown()
 {
-	if (HuiGetEvent()->key_code == KEY_RETURN){
+	if (HuiGetEvent()->key_code == KEY_SHIFT + KEY_RETURN){
 		data->Execute(new ActionModelAddTrianglesByOutline(selection, data));
 		ed->SetCreationMode(NULL);
 	}
