@@ -1,5 +1,5 @@
 // NumConfigs
-13
+17
 // X
 -1
 // Y
@@ -26,4 +26,12 @@ scriptvars_fantasy_item.txt
 false
 // DocumentationDir
 %shelp/
+// NewBallNumX
+8
+// NewBallNumY
+16
+// NewBallComplexity
+4
+// NewBallSphere
+false
 #

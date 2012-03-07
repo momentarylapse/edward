@@ -35,6 +35,7 @@ public:
 	virtual void PostDrawWin(int win, irect dest) = 0;
 
 	string message;
+	CHuiWindow *dialog;
 
 private:
 	// dummy

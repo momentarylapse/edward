@@ -13,6 +13,10 @@
 #include "../../ModeCreation.h"
 #include "Creation/ModeModelMeshCreateVertex.h"
 #include "Creation/ModeModelMeshCreateTriangles.h"
+#include "Creation/ModeModelMeshCreateBall.h"
+#include "Creation/ModeModelMeshCreateCube.h"
+#include "Creation/ModeModelMeshCreateCylinder.h"
+#include "Creation/ModeModelMeshCreatePlane.h"
 
 ModeModelMeshVertex *mode_model_mesh_vertex = NULL;
 
@@ -115,6 +119,14 @@ void ModeModelMeshVertex::OnCommand(const string & id)
 		ed->SetCreationMode(new ModeModelMeshCreateVertex(this, data));
 	if (id == "new_tria")
 		ed->SetCreationMode(new ModeModelMeshCreateTriangles(this, data));
+	if (id == "new_ball")
+		ed->SetCreationMode(new ModeModelMeshCreateBall(this, data));
+	if (id == "new_cube")
+		ed->SetCreationMode(new ModeModelMeshCreateCube(this, data));
+	if (id == "new_cylinder")
+		ed->SetCreationMode(new ModeModelMeshCreateCylinder(this, data));
+	if (id == "new_plane")
+		ed->SetCreationMode(new ModeModelMeshCreatePlane(this, data));
 }
 
 void ModeModelMeshVertex::OnDataChange()

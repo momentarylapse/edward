@@ -126,3 +126,22 @@ void ModeModel::OnDataChange()
 }
 
 
+
+void ModeModel::SetMaterialSelected()
+{
+	NixSetAlpha(AlphaMaterial);
+	NixSetMaterial(Black,color(0.3f,0,0,0),Black,0,Red);
+}
+
+void ModeModel::SetMaterialMouseOver()
+{
+	NixSetAlpha(AlphaMaterial);
+	NixSetMaterial(Black,color(0.3f,0,0,0),Black,0,White);
+}
+
+void ModeModel::SetMaterialCreation()
+{
+	NixSetAlpha(AlphaMaterial);
+	NixSetMaterial(Black, color(0.3f,0.3f,1,0.3f), Black, 0, color(1,0.1f,0.4f,0.1f));
+}
+

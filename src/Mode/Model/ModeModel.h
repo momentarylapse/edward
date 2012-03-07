@@ -38,6 +38,12 @@ public:
 	void Draw();
 	void DrawWin(int win, irect dest);
 
+
+
+	void SetMaterialSelected();
+	void SetMaterialMouseOver();
+	void SetMaterialCreation();
+
 	DataModel *data;
 };
 
