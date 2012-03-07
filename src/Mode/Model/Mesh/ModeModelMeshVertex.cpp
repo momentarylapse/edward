@@ -12,6 +12,7 @@
 #include "../../../lib/nix/nix.h"
 #include "../../ModeCreation.h"
 #include "Creation/ModeModelMeshCreateVertex.h"
+#include "Creation/ModeModelMeshCreateTriangles.h"
 
 ModeModelMeshVertex *mode_model_mesh_vertex = NULL;
 
@@ -112,6 +113,8 @@ void ModeModelMeshVertex::OnCommand(const string & id)
 {
 	if (id == "new_point")
 		ed->SetCreationMode(new ModeModelMeshCreateVertex(this, data));
+	if (id == "new_tria")
+		ed->SetCreationMode(new ModeModelMeshCreateTriangles(this, data));
 }
 
 void ModeModelMeshVertex::OnDataChange()

@@ -13,6 +13,7 @@ ModeModelMeshCreateVertex::ModeModelMeshCreateVertex(Mode *_parent, DataModel *_
 	name = "ModelMeshCreateVertex";
 	parent = _parent;
 	data = _data;
+	multi_view = parent->multi_view;
 
 	message = _("neue Punkte setzen");
 }
@@ -65,11 +66,7 @@ void ModeModelMeshCreateVertex::OnMiddleButtonDown()
 
 void ModeModelMeshCreateVertex::OnLeftButtonDown()
 {
-	msg_write(p2s(this));
-	msg_write(p2s(parent));
-	msg_write(parent->name);
-	msg_write(p2s(parent->multi_view));
-	data->AddVertex(parent->multi_view->GetCursor3d());
+	data->AddVertex(multi_view->GetCursor3d());
 	ed->SetCreationMode(NULL);
 }
 
