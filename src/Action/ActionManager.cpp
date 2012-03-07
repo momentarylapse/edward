@@ -13,20 +13,22 @@
 ActionManager::ActionManager(Data *_data)
 {
 	data = _data;
-	cur_action = 0;
+	cur_pos = 0;
+	save_pos = 0;
 }
 
 ActionManager::~ActionManager()
 {
-	reset();
+	Reset();
 }
 
-void ActionManager::reset()
+void ActionManager::Reset()
 {
 	foreach(action, a)
 		delete(a);
 	action.clear();
-	cur_action = 0;
+	cur_pos = 0;
+	save_pos = 0;
 }
 
 
@@ -34,17 +36,17 @@ void ActionManager::reset()
 void ActionManager::add(Action *a)
 {
 	// truncate history
-	for (int i=cur_action;i<action.num;i++)
+	for (int i=cur_pos;i<action.num;i++)
 		delete(action[i]);
-	action.resize(cur_action);
+	action.resize(cur_pos);
 
 	action.add(a);
-	cur_action ++;
+	cur_pos ++;
 }
 
 
 
-void *ActionManager::execute(Action *a)
+void *ActionManager::Execute(Action *a)
 {
 	add(a);
 	void *r = a->execute(data);
@@ -54,22 +56,50 @@ void *ActionManager::execute(Action *a)
 
 
 
-void ActionManager::undo()
+void ActionManager::Undo()
 {
-	if (cur_action > 0){
-		action[-- cur_action]->undo(data);
+	if (Undoable()){
+		action[-- cur_pos]->undo(data);
 		ed->OnDataChange();
 	}
 }
 
 
 
-void ActionManager::redo()
+void ActionManager::Redo()
 {
-	if (cur_action < action.num){
-		action[cur_action ++]->redo(data);
+	if (Redoable()){
+		action[cur_pos ++]->redo(data);
 		ed->OnDataChange();
 	}
 }
+
+bool ActionManager::Undoable()
+{
+	return (cur_pos > 0);
+}
+
+
+
+bool ActionManager::Redoable()
+{
+	return (cur_pos < action.num);
+}
+
+
+
+void ActionManager::MarkCurrentAsSave()
+{
+	save_pos = cur_pos;
+}
+
+
+
+bool ActionManager::IsSave()
+{
+	return (cur_pos == save_pos);
+}
+
+
 
 

@@ -21,13 +21,9 @@ public:
 	Data();
 	virtual ~Data();
 
-	bool Open();
-	bool Save();
-	bool SaveAs();
-
 	virtual void Reset() = 0;
 	virtual bool Load(const string &_filename, bool deep = true) = 0;
-	virtual void Save(const string &_filename) = 0;
+	virtual bool Save(const string &_filename) = 0;
 
 	void ResetHistory();
 	void *Execute(Action *a);

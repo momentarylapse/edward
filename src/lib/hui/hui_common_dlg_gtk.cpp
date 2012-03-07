@@ -111,11 +111,11 @@ string HuiQuestionBox(CHuiWindow *win,const string &title,const string &text,boo
 	gtk_widget_destroy(dlg);
 	switch (result){
 		case GTK_RESPONSE_YES:
-			return "yes";
+			return "hui:yes";
 		case GTK_RESPONSE_NO:
-			return "no";
+			return "hui:no";
     }
-	return "cancel";
+	return "hui:cancel";
 }
 
 void HuiInfoBox(CHuiWindow *win,const string &title,const string &text)

@@ -67,16 +67,9 @@ public:
 	void About();
 	void SetMode(Mode *m);
 	void SetCreationMode(ModeCreation *m);
-	void NewModel();
-	bool OpenModel();
-	void NewMaterial();
-	bool OpenMaterial();
-	void NewFont();
-	bool OpenFont();
-	void NewWorld();
-	bool OpenWorld();
 
 	void OnDataChange(); // TODO relocate?
+	void OnCommand(const string &id);
 
 	void SetMessage(const string &message);
 	void ErrorBox(const string &message);
@@ -85,6 +78,9 @@ public:
 	void SetRootDirectory(const string &directory);
 	void UpdateDialogDir(int kind);
 	void MakeDirs(const string &original_dir, bool as_root_dir = false);
+
+	bool FileDialog(int kind, bool save, bool force_in_root_dir);
+	bool AllowTermination();
 
 	void Draw();
 	void DrawStr(int x, int y, const string &str);

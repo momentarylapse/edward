@@ -20,17 +20,23 @@ class ActionManager
 public:
 	ActionManager(Data *_data);
 	virtual ~ActionManager();
-	void reset();
+	void Reset();
 
-	void *execute(Action *a);
+	void *Execute(Action *a);
 	void add(Action *a);
-	void undo();
-	void redo();
+	void Undo();
+	void Redo();
+
+	bool Undoable();
+	bool Redoable();
+	bool IsSave();
+	void MarkCurrentAsSave();
 
 	Data *data;
 
 	Array<Action*> action;
-	int cur_action;
+	int cur_pos;
+	int save_pos;
 };
 
 #endif /* ACTIONMANAGER_H_ */

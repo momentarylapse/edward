@@ -71,10 +71,14 @@ IMPLEMENT_EVENT(OnRightButtonUp, OnPreRightButtonUp, , )
 
 static void OnEvent()
 {
+	string id = HuiGetEvent()->id;
+	if (id.num == 0)
+		id = HuiGetEvent()->message;
 	if (ed->cur_mode)
-		ed->cur_mode->OnPreCommand(HuiGetEvent()->id);
+		ed->cur_mode->OnPreCommand(id);
 	if (ed->creation_mode)
-		ed->creation_mode->OnCommand(HuiGetEvent()->id);
+		ed->creation_mode->OnCommand(id);
+	ed->OnCommand(id);
 }
 
 static void OnAbortCreationMode()
@@ -210,10 +214,9 @@ Edward::Edward(Array<string> arg)
 	mmaterial->New();
 	mworld->New(false);
 	mfont->New();
-	mmodel->New();
-//	TestHistoryAbility();
+	mmodel->New();*/
 	MakeDirs(RootDir,true);
-	msg_write("--");*/
+	msg_write("--");
 
 	SetMode(mode_welcome);
 
@@ -274,50 +277,8 @@ void Edward::SetCreationMode(ModeCreation *m)
 	msg_db_l(1);
 }
 
-void Edward::NewWorld()
-{
-}
-
-void Edward::NewFont()
-{
-}
-
-bool Edward::OpenModel()
-{
-	if (mode_model->data->Open()){
-		SetMode(mode_model);
-		return true;
-	}
-	return false;
-}
-
-void Edward::NewModel()
-{
-	mode_model->data->Reset();
-	SetMode(mode_model);
-}
-
-bool Edward::OpenWorld()
-{
-	return true;
-}
-
-bool Edward::OpenMaterial()
-{
-	return true;
-}
-
 void Edward::About()
 {	HuiAboutBox(win);	}
-
-void Edward::NewMaterial()
-{
-}
-
-bool Edward::OpenFont()
-{
-	return true;
-}
 
 void Edward::OnDataChange()
 {
@@ -472,6 +433,121 @@ void Edward::SetMessage(const string &message)
 void Edward::ErrorBox(const string &message)
 {
 	HuiErrorBox(win, _("Fehler"), message);
+}
+
+void Edward::OnCommand(const string &id)
+{
+	if (id == "new_model")
+		mode_model->New();
+	if (id == "open_model")
+		mode_model->Open();
+}
+
+static string NoEnding(const string &filename)
+{
+	int p = filename.rfind(".");
+	if (p >= 0)
+		return filename.substr(0, p);
+	return filename;
+}
+
+bool Edward::FileDialog(int kind,bool save,bool force_in_root_dir)
+{
+	int done;
+
+	UpdateDialogDir(kind);
+	if (DialogDir[kind].num < 1)
+		DialogDir[kind] = RootDirKind[kind];
+
+
+	string title, show_filter, filter;
+	if (kind==FDModel){		title=_("Modell-Datei");	show_filter=_("Modelle (*.model)");			filter="*.model";	}
+	if (kind==FDObject){	title=_("Objekte-Datei");	show_filter=_("Objekte (*.object)");		filter="*.object";	}
+	if (kind==FDItem){		title=_("Item-Datei");		show_filter=_("Items (*.item)");			filter="*.item";	}
+	if (kind==FDTexture){	title=_("Textur-Datei");	show_filter=_("Texturen (bmp,jpg,tga,avi)");filter="*.jpg;*.bmp;*.tga;*.avi";	}
+	if (kind==FDSound){		title=_("Sound-Datei");		show_filter=_("Sounds (wav,mp3,midi)");		filter="*.wav;*.mp3;*.midi";	}
+	if (kind==FDMaterial){	title=_("Material-Datei");	show_filter=_("Materialien (*.material)");	filter="*.material";	}
+	if (kind==FDTerrain){	title=_("Karten-Datei");	show_filter=_("Karten (*.map)");			filter="*.map";	}
+	if (kind==FDWorld){		title=_("Welt-Datei");		show_filter=_("Welten (*.world)");			filter="*.world";	}
+	if (kind==FDShaderFile){title=_("Shader-Datei");	show_filter=_("Shader-Dateien (*.fx)");		filter="*.fx";	}
+	if (kind==FDFont){		title=_("Font-Datei");		show_filter=_("Font-Dateien (*.xfont)");	filter="*.xfont";	}
+	if (kind==FDScript){	title=_("Script-Datei");	show_filter=_("Script-Dateien (*.kaba)");	filter="*.kaba";	}
+	if (kind==FDCameraFlight){title=_("Kamera-Datei");	show_filter=_("Kamera-Dateien (*.camera)");	filter="*.camera";	}
+	if (kind==FDFile){		title=_("beliebige Datei");	show_filter=_("Dateien (*.*)");				filter="*";	}
+
+	if (save)	done=HuiFileDialogSave(win,title,DialogDir[kind],show_filter,filter);
+	else		done=HuiFileDialogOpen(win,title,DialogDir[kind],show_filter,filter);
+	if (done){
+
+		bool in_root_dir = (SysFileName(HuiFilename).find(SysFileName(RootDirKind[kind])) >= 0);
+
+		if (force_in_root_dir){
+			if (!in_root_dir){
+				ErrorBox(SysFileName(HuiFilename));
+				ErrorBox(format(_("Datei liegt nicht im vorgesehenen Verzeichnis: \"%s\"\noder in dessen Unterverzeichnis"), SysFileName(RootDirKind[kind]).c_str()));
+				return false;
+			}
+		}//else
+			//CModeAll::MakeDirs(HuiFileDialogPath);
+
+		if (in_root_dir){
+			UpdateDialogDir(kind);
+			DialogDir[kind] = dirname(HuiFilename);
+		}
+		DialogFileComplete = HuiFilename;
+		DialogFile = DialogFileComplete.substr(RootDirKind[kind].num, -1);
+		DialogFileNoEnding = NoEnding(DialogFile);
+
+		return true;
+	}
+	return false;
+}
+
+Mode *get_cur_root_mode()
+{
+	Mode *m;
+	Mode *p = ed->cur_mode;
+	while(p){
+		m = p;
+		p = m->parent;
+	}
+	return m;
+}
+
+Data *get_cur_data()
+{
+	Mode *m = get_cur_root_mode();
+	if (m == mode_model)
+		return mode_model->data;
+	/*if (m == mode_model)
+		return mode_model->data;*/
+	return NULL;
+}
+
+bool Edward::AllowTermination()
+{
+	if (!cur_mode)
+		return true;
+	Data *d = get_cur_data();
+	if (!d)
+		return true;
+	if (d->action_manager->IsSave())
+		return true;
+	string answer = HuiQuestionBox(win,_("Dem&utige aber h&ofliche Frage"),_("Sie haben die Entropie erh&oht. Wollen Sie Ihr Werk speichern?"),true);
+	msg_write(answer);
+	if (answer == "hui:cancel")
+		return false;
+	if (answer == "hui:no")
+		return true;
+	//if (answer == "hui:no")
+	bool saved = true;
+	Mode *root = get_cur_root_mode();
+	if (root == mode_model)		saved = mode_model->Save();
+	/*if (Mode==ModeObject)		saved=mobject->Save();
+	if (Mode==ModeItem)			saved=mitem->Save();
+	if (Mode==ModeMaterial)		saved=mmaterial->Save();
+	if (Mode==ModeWorld)		saved=mworld->Save();*/
+	return saved;
 }
 
 int Edward::Run()

@@ -112,7 +112,7 @@ void ModeModel::OnLeftButtonUp()
 void ModeModel::OnCommand(const string & id)
 {
 	if (id == "new")
-		data->Reset();
+		New();
 
 	// TODO -> edward?
 	if (id == "undo")
@@ -151,5 +151,44 @@ void ModeModel::SetMaterialCreation()
 {
 	NixSetAlpha(AlphaMaterial);
 	NixSetMaterial(Black, color(0.3f,0.3f,1,0.3f), Black, 0, color(1,0.1f,0.4f,0.1f));
+}
+
+void ModeModel::New()
+{
+	if (!ed->AllowTermination())
+		return;
+	data->Reset();
+	ed->multi_view_2d->Reset();
+	ed->multi_view_3d->Reset();
+	ed->SetMode(mode_model);
+}
+
+bool ModeModel::Open()
+{
+	if (!ed->AllowTermination())
+		return false;
+	if (!ed->FileDialog(FDModel, false, false))
+		return false;
+	if (!data->Load(ed->DialogFileComplete))
+		return false;
+
+	ed->multi_view_2d->Reset();
+	ed->multi_view_3d->Reset();
+	ed->SetMode(mode_model);
+	return true;
+}
+
+bool ModeModel::Save()
+{
+	if (data->filename == "")
+		return SaveAs();
+	return data->Save(data->filename);
+}
+
+bool ModeModel::SaveAs()
+{
+	if (ed->FileDialog(FDModel, true, false))
+		return data->Save(ed->DialogFileComplete);
+	return false;
 }
 

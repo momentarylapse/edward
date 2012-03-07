@@ -182,7 +182,7 @@ public:
 
 	void Reset();
 	bool Load(const string &_filename, bool deep = true);
-	void Save(const string &_filename);
+	bool Save(const string &_filename);
 
 
 	void UpdateNormals();

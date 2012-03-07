@@ -15,54 +15,32 @@ Data::~Data()
 {
 }
 
-bool Data::Save()
-{
-	msg_todo("Data.Save");
-	return true;
-}
-
-
-
-bool Data::Open()
-{
-	msg_todo("Data.Open");
-	return true;
-}
-
-
-
-bool Data::SaveAs()
-{
-	msg_todo("Data.SaveAs");
-	return true;
-}
-
 
 
 void Data::Redo()
 {
-	action_manager->redo();
+	action_manager->Redo();
 }
 
 
 
 void Data::Undo()
 {
-	action_manager->undo();
+	action_manager->Undo();
 }
 
 
 
 void *Data::Execute(Action *a)
 {
-	return action_manager->execute(a);
+	return action_manager->Execute(a);
 }
 
 
 
 void Data::ResetHistory()
 {
-	action_manager->reset();
+	action_manager->Reset();
 }
 
 

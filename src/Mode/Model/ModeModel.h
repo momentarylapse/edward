@@ -39,6 +39,10 @@ public:
 	void DrawWin(int win, irect dest);
 
 
+	void New();
+	bool Open();
+	bool Save();
+	bool SaveAs();
 
 	void SetMaterialSelected();
 	void SetMaterialMouseOver();

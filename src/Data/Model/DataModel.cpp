@@ -108,26 +108,18 @@ void DataModel::Reset()
 
 	ResetHistory();
 
-	/*AddVertex(vector(0, 0, 0));
-	AddVertex(vector(20, 0, 0));
-	AddVertex(vector(20, 20, 0));
-	AddVertex(vector(0, 20, 0));
-	AddVertex(vector(0, 0, 10));
-
-	AddTriangle(0, 2, 1);
-	AddTriangle(0, 3, 2);*/
-	Execute(new ActionModelAddCube(v0, e_x * 20, e_y * 20, e_z * 20, Vertex.num));
+//	Execute(new ActionModelAddCube(v0, e_x * 20, e_y * 20, e_z * 20, Vertex.num));
 	/*Execute(new ActionModelAddPlane(e_y * 10, e_x * 200, e_z * 200, 4, 4, Vertex.num));
 	Execute(new ActionModelAddBall(vector(-200, 0, 0), 100, 16, 16, false, Vertex.num));
 	Execute(new ActionModelAddBall(vector(-200, 0, 200), 100, 16, 16, true, Vertex.num));
-	Execute(new ActionModelAddCylinder(vector(200, 0, 0), e_z * 100, 40, 3, 16, true, Vertex.num));*/
+	Execute(new ActionModelAddCylinder(vector(200, 0, 0), e_z * 100, 40, 3, 16, true, Vertex.num));
 	UpdateNormals();
 
 	msg_write("------------");
 	msg_write(Vertex.num);
 	msg_write(Surface.num);
 	foreach(Surface, s)
-		msg_write(s.Triangle.num);
+		msg_write(s.Triangle.num);*/
 }
 
 
@@ -791,8 +783,9 @@ bool DataModel::Load(const string & _filename, bool deep)
 
 
 
-void DataModel::Save(const string & _filename)
+bool DataModel::Save(const string & _filename)
 {
+	return false;
 }
 
 

@@ -7,6 +7,8 @@
 
 #include "../../Edward.h"
 #include "ModeWelcome.h"
+#include "../Model/ModeModel.h"
+//#include "../Material/ModeMaterial.h"
 #include "../../lib/nix/nix.h"
 
 ModeWelcome *mode_welcome = NULL;
@@ -50,27 +52,27 @@ void ModeWelcome::OnLeftButtonUp()
 {
 	if (mouse_over == 0){
 		if (mouse_over_cmd == 0)
-			ed->NewModel();
+			mode_model->New();
 		else
-			ed->OpenModel();
-	}else if (mouse_over == 1){
+			mode_model->Open();
+	}/*else if (mouse_over == 1){
 		if (mouse_over_cmd == 0)
-			ed->NewMaterial();
+			mode_material->New();
 		else
-			ed->OpenMaterial();
+			mode_material->Open();
 	}else if (mouse_over == 2){
 		if (mouse_over_cmd == 0)
-			ed->NewWorld();
+			mode_world->New();
 		else
-			ed->OpenWorld();
+			mode_world->Open();
 	}else if (mouse_over == 3){
 		if (mouse_over_cmd == 0)
-			ed->NewFont();
+			mode_font->New();
 		else
-			ed->OpenFont();
+			mode_font->Open();
 	}else if (mouse_over == 4){
-		//SetMode(ModeAdministration);
-	}
+		SetMode(ModeAdministration);
+	}*/
 }
 
 void ModeWelcome::OnRightButtonUp()
@@ -80,9 +82,9 @@ void ModeWelcome::OnRightButtonUp()
 void ModeWelcome::OnCommand(const string & id)
 {
 	if (id == "new")
-		ed->NewModel();
+		mode_model->New();
 	if (id == "open")
-		ed->OpenModel();
+		mode_model->Open();
 }
 
 bool mouse_in_rect(irect r, int mx, int my)
