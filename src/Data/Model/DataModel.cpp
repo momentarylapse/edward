@@ -7,6 +7,7 @@
 
 #include "DataModel.h"
 #include "ModeModelSurface.h"
+#include "../../Mode/Model/ModeModel.h"
 #include "../../Action/Action.h"
 #include "../../Action/ActionManager.h"
 #include "../../Edward.h"

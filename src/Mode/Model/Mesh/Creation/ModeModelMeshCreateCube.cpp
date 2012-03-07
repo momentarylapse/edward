@@ -5,6 +5,7 @@
  *      Author: michi
  */
 
+#include "../../ModeModel.h"
 #include "ModeModelMeshCreateCube.h"
 #include "../../../../Edward.h"
 #include "../../../../Action/Model/ActionModelAddCube.h"

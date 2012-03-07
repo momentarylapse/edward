@@ -8,7 +8,9 @@
 #include "../../Edward.h"
 #include "ModeWelcome.h"
 #include "../Model/ModeModel.h"
-//#include "../Material/ModeMaterial.h"
+#include "../Material/ModeMaterial.h"
+#include "../World/ModeWorld.h"
+#include "../Font/ModeFont.h"
 #include "../../lib/nix/nix.h"
 
 ModeWelcome *mode_welcome = NULL;
@@ -55,7 +57,7 @@ void ModeWelcome::OnLeftButtonUp()
 			mode_model->New();
 		else
 			mode_model->Open();
-	}/*else if (mouse_over == 1){
+	}else if (mouse_over == 1){
 		if (mouse_over_cmd == 0)
 			mode_material->New();
 		else
@@ -70,7 +72,7 @@ void ModeWelcome::OnLeftButtonUp()
 			mode_font->New();
 		else
 			mode_font->Open();
-	}else if (mouse_over == 4){
+	}/*else if (mouse_over == 4){
 		SetMode(ModeAdministration);
 	}*/
 }

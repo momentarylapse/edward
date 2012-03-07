@@ -8,6 +8,11 @@
 #include "lib/hui/hui.h"
 
 #include "Edward.h"
+#include "Mode/Model/ModeModel.h"
+#include "Mode/Material/ModeMaterial.h"
+#include "Mode/World/ModeWorld.h"
+#include "Mode/Font/ModeFont.h"
+#include "Mode/Welcome/ModeWelcome.h"
 #include "MultiView.h"
 #include "lib/x/x.h"
 #include "lib/script/script.h"
@@ -201,23 +206,15 @@ Edward::Edward(Array<string> arg)
 	multi_view_2d = new MultiView(false);
 	mode_welcome = new ModeWelcome;
 	mode_model = new ModeModel;
-	/*mobject = new CModeObject();
-	mitem = new CModeItem();
-	mmaterial = new CModeMaterial();
-	mworld = new CModeWorld();
-	mfont = new CModeFont();
-	madmin = new CModeAdministration();*/
+	mode_material = new ModeMaterial;
+	mode_world = new ModeWorld;
+	mode_font = new ModeFont;
+	//madmin = new ModeAdministration;
 	msg_db_m("              \\(^_^)/", 1);
 
 	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;
-	mworld->FFVBinaryMap = true;
+	mworld->FFVBinaryMap = true;*/
 
-	mobject->New();
-	mitem->New();
-	mmaterial->New();
-	mworld->New(false);
-	mfont->New();
-	mmodel->New();*/
 	MakeDirs(RootDir,true);
 	msg_write("--");
 
@@ -438,10 +435,22 @@ void Edward::ErrorBox(const string &message)
 
 void Edward::OnCommand(const string &id)
 {
-	if (id == "new_model")
+	if (id == "model_new")
 		mode_model->New();
-	if (id == "open_model")
+	if (id == "model_open")
 		mode_model->Open();
+	if (id == "material_new")
+		mode_material->New();
+	if (id == "material_open")
+		mode_material->Open();
+	if (id == "world_new")
+		mode_world->New();
+	if (id == "world_open")
+		mode_world->Open();
+	if (id == "font_new")
+		mode_font->New();
+	if (id == "font_open")
+		mode_font->Open();
 	if (id == "exit")
 		OnClose();
 }

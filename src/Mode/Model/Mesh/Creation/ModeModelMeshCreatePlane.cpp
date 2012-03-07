@@ -5,6 +5,7 @@
  *      Author: michi
  */
 
+#include "../../ModeModel.h"
 #include "ModeModelMeshCreatePlane.h"
 #include "../../../../Edward.h"
 #include "../../../../Action/Model/ActionModelAddPlane.h"

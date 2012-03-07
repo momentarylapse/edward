@@ -11,8 +11,6 @@
 #include "lib/hui/hui.h"
 #include "Mode/Mode.h"
 #include "Mode/ModeCreation.h"
-#include "Mode/Welcome/ModeWelcome.h"
-#include "Mode/Model/ModeModel.h"
 
 
 
