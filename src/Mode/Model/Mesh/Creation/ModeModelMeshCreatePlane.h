@@ -35,6 +35,12 @@ public:
 	void PostDrawWin(int win, irect dest);
 
 	DataModel *data;
+
+private:
+	vector pos, pos2;
+	vector length[2];
+	bool pos_chosen;
+	bool invert;
 };
 
 #endif /* MODEMODELMESHCREATEPLANE_H_ */

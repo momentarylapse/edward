@@ -5,6 +5,8 @@
  *      Author: michi
  */
 
+#include "../../../Edward.h"
+#include "../../../MultiView.h"
 #include "ModeModelMeshSkin.h"
 
 
@@ -17,6 +19,7 @@ ModeModelMeshSkin::ModeModelMeshSkin(Mode *_parent, DataModel *_data)
 	parent = _parent;
 	data = _data;
 	menu = HuiCreateResourceMenu("menu_model");
+	multi_view = ed->multi_view_3d;
 
 	// vertex buffers
 	VBMarked = NixCreateVB(65536);
@@ -185,6 +188,8 @@ void ModeModelMeshSkin::Start()
 
 void ModeModelMeshSkin::OnDataChange()
 {
+	multi_view->ResetData();
+	multi_view->MVRectable = true;
 }
 
 

@@ -9,6 +9,8 @@
 #include "ModeModel.h"
 #include "../../Data/Model/DataModel.h"
 #include "Mesh/ModeModelMesh.h"
+#include "Mesh/ModeModelMeshVertex.h"
+#include "Mesh/ModeModelMeshSkin.h"
 
 ModeModel *mode_model = NULL;
 
@@ -111,11 +113,17 @@ void ModeModel::OnCommand(const string & id)
 {
 	if (id == "new")
 		data->Reset();
+
 	// TODO -> edward?
 	if (id == "undo")
 		data->Undo();
 	if (id == "redo")
 		data->Redo();
+
+	if (id == "mode_model_vertex")
+		ed->SetMode(mode_model_mesh_vertex);
+	if (id == "mode_model_skin")
+		ed->SetMode(mode_model_mesh_skin);
 }
 
 

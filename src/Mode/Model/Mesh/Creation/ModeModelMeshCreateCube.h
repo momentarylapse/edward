@@ -35,6 +35,11 @@ public:
 	void PostDrawWin(int win, irect dest);
 
 	DataModel *data;
+
+private:
+	vector pos, pos2;
+	float depth;
+	bool pos_chosen;
 };
 
 #endif /* MODEMODELMESHCREATECUBE_H_ */

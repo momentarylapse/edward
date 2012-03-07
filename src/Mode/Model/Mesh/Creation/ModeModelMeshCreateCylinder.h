@@ -35,6 +35,11 @@ public:
 	void PostDrawWin(int win, irect dest);
 
 	DataModel *data;
+
+private:
+	vector pos, pos2, length;
+	float radius;
+	bool pos_chosen;
 };
 
 #endif /* MODEMODELMESHCREATECYLINDER_H_ */

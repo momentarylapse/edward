@@ -238,14 +238,14 @@ void Edward::SetMode(Mode *m)
 
 	// close current mode
 	if (cur_mode){
-		msg_write("end" + cur_mode->name);
+		msg_write("end " + cur_mode->name);
 		cur_mode->End();
 	}
 
 	// start new mode
 	cur_mode = m;
+	msg_write("start " + cur_mode->name);
 	cur_mode->Start();
-	msg_write("start " + m->name);
 	win->SetMenu(cur_mode->menu);
 
 	ForceRedraw();
@@ -345,9 +345,11 @@ void Edward::DrawStr(int x, int y, const string &str)
 void Edward::Draw()
 {
 	NixStart();
-	if (cur_mode)
+	if (cur_mode){
+		if (cur_mode->multi_view)
+			cur_mode->multi_view->Draw();
 		cur_mode->Draw();
-	else{
+	}else{
 		NixResetToColor(Black);
 		NixDrawStr(100, 100, "no mode...");
 	}

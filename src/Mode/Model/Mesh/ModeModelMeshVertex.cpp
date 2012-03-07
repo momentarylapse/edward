@@ -53,8 +53,6 @@ void ModeModelMeshVertex::DrawWin(int win, irect dest)
 
 void ModeModelMeshVertex::Draw()
 {
-	multi_view->Draw();
-	NixDrawStr(100, 100, "model");
 }
 
 

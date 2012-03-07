@@ -33,6 +33,7 @@ ModeModelMeshCreateBall::ModeModelMeshCreateBall(Mode *_parent, DataModel *_data
 	dialog->SetInt("nb_tab_control", HuiConfigReadBool("NewBallSphere", false) ? 1 : 0);
 	dialog->SetPositionSpecial(ed->win, HuiRight | HuiTop);
 	dialog->Update();
+	dialog->Event("hui:close", &HuiFuncIgnore);
 
 	ed->win->Activate();
 }

@@ -33,6 +33,7 @@ ModeModelMesh::~ModeModelMesh()
 void ModeModelMesh::Start()
 {
 	ed->SetMode(mode_model_mesh_vertex);
+	//ed->SetMode(mode_model_mesh_skin);
 }
 
 void ModeModelMesh::End()
