@@ -77,6 +77,9 @@ static void OnEvent()
 		ed->creation_mode->OnCommand(HuiGetEvent()->id);
 }
 
+static void OnAbortCreationMode()
+{	ed->SetCreationMode(NULL);	}
+
 static void OnAbout()
 {	ed->About();	}
 
@@ -157,6 +160,7 @@ Edward::Edward(Array<string> arg)
 	win->Event("hui:right-button-up", &OnRightButtonUp);
 	win->Event("*", &OnEvent);
 	win->Event("what_the_fuck", &OnAbout);
+	HuiAddCommand("abort_creation_mode", "hui:cancel", KEY_ESCAPE, &OnAbortCreationMode);
 
 	MetaInit();
 	FxInit("", "", "");

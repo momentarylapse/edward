@@ -10,6 +10,8 @@
 #include "ModeModelMeshVertex.h"
 #include "ModeModelMeshSkin.h"
 #include "../../../lib/nix/nix.h"
+#include "../../ModeCreation.h"
+#include "Creation/ModeModelMeshCreateVertex.h"
 
 ModeModelMeshVertex *mode_model_mesh_vertex = NULL;
 
@@ -108,6 +110,8 @@ void ModeModelMeshVertex::OnKeyUp()
 
 void ModeModelMeshVertex::OnCommand(const string & id)
 {
+	if (id == "new_point")
+		ed->SetCreationMode(new ModeModelMeshCreateVertex(this, data));
 }
 
 void ModeModelMeshVertex::OnDataChange()

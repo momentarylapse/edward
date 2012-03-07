@@ -77,8 +77,6 @@ void ModeModelMesh::OnKeyUp()
 
 void ModeModelMesh::OnCommand(const string & id)
 {
-	if (id == "new_point")
-		ed->SetCreationMode(new ModeModelMeshCreateVertex(this, data));
 }
 
 
