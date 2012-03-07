@@ -112,6 +112,11 @@ void ModeModel::OnCommand(const string & id)
 {
 	if (id == "new")
 		data->Reset();
+	// TODO -> edward?
+	if (id == "undo")
+		data->Undo();
+	if (id == "redo")
+		data->Redo();
 }
 
 

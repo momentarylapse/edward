@@ -81,6 +81,7 @@ void MultiView::Reset()
 	ignore_radius = false;
 	wire_mode = false;
 	MVRectable = MVRect = false;
+	mouse_win = 0;
 
 	ViewMoving = -1;
 
@@ -302,9 +303,10 @@ void MultiView::OnLeftButtonUp()
 void MultiView::OnMouseMove()
 {
 	mx = HuiGetEvent()->mx;
-	my = HuiGetEvent()->my;
+	my = HuiGetEvent()->my - 27;
 	vx = HuiGetEvent()->dx;
 	vy = HuiGetEvent()->dy;
+	msg_todo("hui liefert falsche Maus");
 
 
 	// which window is the cursor in?
@@ -510,10 +512,10 @@ void MultiView::DrawGrid(int win, irect dest)
 
 void MultiView::DrawMousePos()
 {
-	vector M=VecUnProject2(vector((float)mx,(float)my,0),pos,mouse_win);
-	float l=GetGridD(zoom)*10.1f;
+	vector m = GetCursor3d();
+	float l = GetGridD(zoom) * 10.1f;
 	string unit;
-	float f=1.0f;
+	float f = 1.0f;
 
 
 	/*float z=Zoom3D,d=1.0f;
@@ -549,10 +551,10 @@ void MultiView::DrawMousePos()
 	if (l>1000000000000000.0f){		unit = "P";	f=0.000000000000001f;	}
 	//if (l>1000000000000000000.0f){
 	//}
-	M*=f;
-	string sx = f2s(M.x,2) + " " + unit;
-	string sy = f2s(M.y,2) + " " + unit;
-	string sz = f2s(M.z,2) + " " + unit;
+	m *= f;
+	string sx = f2s(m.x,2) + " " + unit;
+	string sy = f2s(m.y,2) + " " + unit;
+	string sz = f2s(m.z,2) + " " + unit;
 	int slx = NixGetStrWidth(sx, -1, -1);
 	int sly = NixGetStrWidth(sy, -1, -1);
 	int slz = NixGetStrWidth(sz, -1, -1);
@@ -758,7 +760,7 @@ void MultiView::Draw()
 		NixSetZ(true, true);
 	}
 
-	//DrawMousePos();
+	DrawMousePos();
 
 	/*if (PostDrawMultiView)
 		PostDrawMultiView();*/
@@ -968,9 +970,10 @@ vector MultiView::GetDirectionRight(int win)
 	return VecCrossProduct(d,u);
 }
 
-vector MultiView::GetCursor3D()
+vector MultiView::GetCursor3d()
 {
-	return VecUnProject(vector((float)mx,(float)my,0), mouse_win);
+	//return VecUnProject(vector((float)mx,(float)my,0), mouse_win);
+	return VecUnProject2(vector((float)mx, (float)my, 0), pos, mouse_win);
 }
 
 
@@ -991,7 +994,7 @@ void MultiView::GetMouseOver()
 				bool mo=false;
 				vector mop;
 				if (d.Drawable){
-					vector p=VecProject(sd->pos,cur_view);
+					vector p=VecProject(sd->pos, mouse_win);
 					if ((p.z<=0)||(p.z>=1))
 						continue;
 					mo=((mx>=p.x-_radius)&&(mx<=p.x+_radius)&&(my>=p.y-_radius)&&(my<=p.y+_radius));
@@ -1002,9 +1005,9 @@ void MultiView::GetMouseOver()
 				}
 				if ((!mo)&&(d.IsMouseOver)){
 					vector tp;
-					mo=d.IsMouseOver(i, d.user_data, cur_view, tp);
+					mo=d.IsMouseOver(i, d.user_data, mouse_win, tp);
 					if (mo){
-						float z=VecProject(tp, cur_view).z;
+						float z=VecProject(tp, mouse_win).z;
 						if (z<z_min){
 							z_min=z;
 							mop=tp;

@@ -116,7 +116,7 @@ public:
 	vector GetDirection(int win);
 	vector GetDirectionUp(int win);
 	vector GetDirectionRight(int win);
-	vector GetCursor3D();
+	vector GetCursor3d();
 
 	bool mode3d;
 

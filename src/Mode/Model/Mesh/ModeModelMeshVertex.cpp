@@ -110,11 +110,6 @@ void ModeModelMeshVertex::OnKeyUp()
 
 void ModeModelMeshVertex::OnCommand(const string & id)
 {
-	// TODO -> edward?
-	if (id == "undo")
-		data->Undo();
-	if (id == "redo")
-		data->Redo();
 }
 
 void ModeModelMeshVertex::OnDataChange()
@@ -125,7 +120,7 @@ void ModeModelMeshVertex::OnDataChange()
 	multi_view->SetData(	MVDModelVertex,
 			data->Vertex,
 			NULL,
-			multi_view->FlagDraw | multi_view->FlagIndex | multi_view->FlagSelect | multi_view->FlagMove,
+			MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
 			NULL, NULL);
 }
 
