@@ -11,7 +11,8 @@
 
 const color ColorBackGround3D = color(1,0,0,0.15f);
 const color ColorBackGround2D = color(1,0,0,0.10f);
-const color GridColor = color(1,0.7f,0.7f,0.7f);
+const color ColorGrid = color(1,0.7f,0.7f,0.7f);
+const color ColorText = White;
 
 const float SPEED_MOVE = 0.05f;
 const float SPEED_ZOOM_KEY = 1.15f;
@@ -28,6 +29,11 @@ const int PointRadiusMouseOver = 4;
 						else \
 							zoom = (float)NixScreenHeight * 0.8f;
 #define MVGetSingleData(d, index)	((MultiViewSingleData*) ((char*)(d).data + (d).DataSingleSize * index))
+
+bool pos_in_irect(int x, int y, irect r)
+{
+	return ((x >= r.x1) and (x <= r.x2) && (y >= r.y1) and (y <= r.y2));
+}
 
 MultiView::MultiView(bool _mode3d)
 {
@@ -234,6 +240,12 @@ void MultiView::OnKeyDown()
 
 void MultiView::OnLeftButtonDown()
 {
+	// menu for selection of view type
+	if (pos_in_irect(mx, my, view[mouse_win].name_dest)){
+		menu->OpenPopup(ed->win, mx, my);
+		return;
+	}
+
 	MouseMovedSinceClick = 0;
 	Moved = false;
 	vx = vy = 0;
@@ -495,7 +507,7 @@ void MultiView::DrawGrid(int win, irect dest)
 			for (int i=0;i<64;i++){
 				vector pa=VecAng2Dir(vector(float(j)/32*pi,float(i  )/32*pi,0))*r-PerspectiveViewPos;
 				vector pb=VecAng2Dir(vector(float(j)/32*pi,float(i+1)/32*pi,0))*r-PerspectiveViewPos;
-				color c=ColorInterpolate(ColorBackGround2D,GridColor,j==0?0.6f:0.1f);
+				color c=ColorInterpolate(ColorBackGround2D,ColorGrid,j==0?0.6f:0.1f);
 				NixDrawLine3D(pa,pb,c);
 			}
 		// vertikale
@@ -503,7 +515,7 @@ void MultiView::DrawGrid(int win, irect dest)
 			for (int i=0;i<64;i++){
 				vector pa=VecAng2Dir(vector(float(i  )/32*pi,float(j)/32*pi,0))*r-PerspectiveViewPos;
 				vector pb=VecAng2Dir(vector(float(i+1)/32*pi,float(j)/32*pi,0))*r-PerspectiveViewPos;
-				color c=ColorInterpolate(ColorBackGround2D,GridColor,(j%16)==0?0.6f:0.1f);
+				color c=ColorInterpolate(ColorBackGround2D,ColorGrid,(j%16)==0?0.6f:0.1f);
 				NixDrawLine3D(pa,pb,c);
 			}
 		//NixSetZ(true,true);
@@ -533,7 +545,7 @@ void MultiView::DrawGrid(int win, irect dest)
 	b=(int)fb+1;
 	for (int i=a;i<b;i++){
 		int x=(int)VecProject(vector((float)i*D,(float)i*D,(float)i*D),win).x;
-		color c=ColorInterpolate(ColorBackGround2D,GridColor,GetDensity(i,(float)MaxX/(fb-fa)));
+		color c=ColorInterpolate(ColorBackGround2D,ColorGrid,GetDensity(i,(float)MaxX/(fb-fa)));
 		NixDrawLineV(x,dest.y1,dest.y2,c,0.99998f-GetDensity(i,(float)MaxX/(fb-fa))*0.00005f);
 	}
 
@@ -549,7 +561,7 @@ void MultiView::DrawGrid(int win, irect dest)
 	b=(int)fb+1;
 	for (int i=a;i<b;i++){
 		int y=(int)VecProject(vector((float)i*D,(float)i*D,(float)i*D),win).y;
-		color c=ColorInterpolate(ColorBackGround2D,GridColor,GetDensity(i,(float)MaxX/(fb-fa)));
+		color c=ColorInterpolate(ColorBackGround2D,ColorGrid,GetDensity(i,(float)MaxX/(fb-fa)));
 		NixDrawLineH(dest.x1,dest.x2,y,c,0.99998f-GetDensity(i,(float)MaxX/(fb-fa))*0.00005f);
 	}
 }
@@ -746,7 +758,12 @@ void MultiView::DrawWin(int win, irect dest)
 	//NixDrawLine3D(MouseOverTP,MouseOverTP+vector(0,ViewRadius/3,0),Green);
 
 	// type of view
-	ed->DrawStr(dest.x1,dest.y1,view_kind);
+
+	view[win].name_dest = irect(dest.x1 + 3, dest.x1 + 3 + NixGetStrWidth(view_kind, -1, -1), dest.y1, dest.y1 + 20);
+	if (pos_in_irect(mx, my, view[win].name_dest))
+		NixSetFontColor(Red);
+	ed->DrawStr(dest.x1 + 3, dest.y1, view_kind);
+	NixSetFontColor(ColorText);
 	msg_db_l(2);
 }
 
@@ -767,6 +784,7 @@ void MultiView::Draw()
 	NixEnableLight(light,true);
 	NixSetAmbientLight(Black);
 	NixSetZ(true,true);
+	NixSetFontColor(ColorText);
 
 	if (!mode3d)
 		DrawWin(0,irect(0,MaxX,0,MaxY));

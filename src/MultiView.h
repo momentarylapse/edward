@@ -38,6 +38,7 @@ struct MultiViewView
 	int type;
 	matrix mat;
 	irect dest;
+	irect name_dest;
 };
 
 

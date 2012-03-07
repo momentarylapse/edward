@@ -94,7 +94,7 @@ void ModeModelMeshCreateTriangles::OnLeftButtonDown()
 		selection.add(data->Vertex.num - 1);
 	}
 	data->Vertex[selection.back()].is_special = true;
-	message = format(_("Dreiecke w&ahlen: %d ->Return"), selection.num);
+	message = format(_("Dreiecke w&ahlen: %d -> Shift + Return"), selection.num);
 }
 
 
