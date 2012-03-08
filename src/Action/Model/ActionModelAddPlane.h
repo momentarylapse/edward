@@ -17,9 +17,6 @@ class ActionModelAddPlane: public ActionGroup
 public:
 	ActionModelAddPlane(const vector &_pos, const vector &_dv1, const vector &_dv2, int _num_x, int _num_y, int nv);
 	virtual ~ActionModelAddPlane();
-
-	bool needs_preparation();
-	void prepare(Data *d);
 };
 
 #endif /* ACTIONMODELADDPLANE_H_ */

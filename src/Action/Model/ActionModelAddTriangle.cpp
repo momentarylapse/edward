@@ -22,9 +22,6 @@ ActionModelAddTriangle::~ActionModelAddTriangle()
 {
 }
 
-bool ActionModelAddTriangle::needs_preparation()
-{	return false;	}
-
 
 
 void *ActionModelAddTriangle::execute(Data *d)
@@ -111,12 +108,6 @@ void ActionModelAddTriangle::undo(Data *d)
 				s.Triangle.erase(i);
 			}
 	msg_todo("ActionModelAddTriangle.undo...");
-}
-
-
-
-void ActionModelAddTriangle::prepare(Data *d)
-{
 }
 
 

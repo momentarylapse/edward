@@ -216,7 +216,13 @@ Edward::Edward(Array<string> arg)
 	mworld->FFVBinaryMap = true;*/
 
 	MakeDirs(RootDir,true);
-	msg_write("--");
+
+	// subscribe to all data to automatically redraw...
+	Subscribe(mode_model->data);
+	Subscribe(mode_material->data);
+	Subscribe(mode_world->data);
+	Subscribe(mode_font->data);
+
 
 	SetMode(mode_welcome);
 
@@ -281,8 +287,6 @@ void Edward::About()
 void Edward::OnUpdate(Observable *o)
 {
 	msg_db_r("Edward.OnUpdate", 2);
-	/*if (cur_mode)
-		cur_mode->OnPreDataChange();*/
 	ForceRedraw();
 	msg_db_l(2);
 }

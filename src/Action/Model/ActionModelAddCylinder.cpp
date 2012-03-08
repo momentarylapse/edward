@@ -70,10 +70,3 @@ ActionModelAddCylinder::ActionModelAddCylinder(const vector &pos, const vector &
 ActionModelAddCylinder::~ActionModelAddCylinder()
 {
 }
-
-bool ActionModelAddCylinder::needs_preparation()
-{	return false;	}
-
-void ActionModelAddCylinder::prepare(Data *d)
-{
-}

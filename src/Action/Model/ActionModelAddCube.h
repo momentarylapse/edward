@@ -17,9 +17,6 @@ class ActionModelAddCube: public ActionGroup
 public:
 	ActionModelAddCube(const vector &_pos, const vector &_dv1, const vector &_dv2, const vector &_dv3, int nv);
 	virtual ~ActionModelAddCube();
-
-	bool needs_preparation();
-	void prepare(Data *d);
 };
 
 #endif /* ACTIONMODELADDCUBE_H_ */

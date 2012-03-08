@@ -41,10 +41,3 @@ ActionModelAddPlane::ActionModelAddPlane(const vector &_pos, const vector &_dv1,
 ActionModelAddPlane::~ActionModelAddPlane()
 {
 }
-
-bool ActionModelAddPlane::needs_preparation()
-{	return false;	}
-
-void ActionModelAddPlane::prepare(Data *d)
-{
-}

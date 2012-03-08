@@ -18,9 +18,6 @@ class ActionModelAddTrianglesByOutline: public ActionGroup
 public:
 	ActionModelAddTrianglesByOutline(Array<int> vertex, DataModel *data);
 	virtual ~ActionModelAddTrianglesByOutline();
-
-	bool needs_preparation();
-	void prepare(Data *d);
 };
 
 #endif /* ACTIONMODELADDTRIANGLESBYOUTLINE_H_ */

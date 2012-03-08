@@ -17,9 +17,6 @@ ActionModelAddVertex::~ActionModelAddVertex()
 {
 }
 
-bool ActionModelAddVertex::needs_preparation()
-{	return false;	}
-
 
 
 void *ActionModelAddVertex::execute(Data *d)
@@ -45,12 +42,6 @@ void *ActionModelAddVertex::execute(Data *d)
 			foreach(move.Frame, f)
 				f.VertexDPos.resize(m->Vertex.num);
 	return &m->Vertex.back();
-}
-
-
-
-void ActionModelAddVertex::prepare(Data *d)
-{
 }
 
 

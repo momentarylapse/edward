@@ -17,9 +17,6 @@ class ActionModelAddCylinder: public ActionGroup
 public:
 	ActionModelAddCylinder(const vector &pos, const vector &length, float radius, int rings, int edges, bool closed, int nv);
 	virtual ~ActionModelAddCylinder();
-
-	bool needs_preparation();
-	void prepare(Data *d);
 };
 
 #endif /* ACTIONMODELADDCYLINDER_H_ */

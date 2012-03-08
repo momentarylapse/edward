@@ -55,11 +55,4 @@ ActionModelAddCube::~ActionModelAddCube()
 {
 }
 
-bool ActionModelAddCube::needs_preparation()
-{	return false;	}
-
-void ActionModelAddCube::prepare(Data *d)
-{
-}
-
 

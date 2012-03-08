@@ -130,6 +130,8 @@ void ModeModelMeshVertex::OnCommand(const string & id)
 
 void ModeModelMeshVertex::OnUpdate(Observable *o)
 {
+	if (this != ed->cur_mode)
+		return;
 	msg_write("vert on up");
 	multi_view->ResetData();
 	multi_view->MVRectable = true;

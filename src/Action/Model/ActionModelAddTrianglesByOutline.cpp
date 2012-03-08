@@ -117,10 +117,3 @@ ActionModelAddTrianglesByOutline::ActionModelAddTrianglesByOutline(Array<int> ve
 ActionModelAddTrianglesByOutline::~ActionModelAddTrianglesByOutline()
 {
 }
-
-bool ActionModelAddTrianglesByOutline::needs_preparation()
-{	return false;	}
-
-void ActionModelAddTrianglesByOutline::prepare(Data *d)
-{
-}

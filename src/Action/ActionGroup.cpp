@@ -18,9 +18,6 @@ ActionGroup::~ActionGroup()
 	action.clear();
 }
 
-bool ActionGroup::is_atom()
-{	return true;	}
-
 
 void *ActionGroup::execute(Data *d)
 {

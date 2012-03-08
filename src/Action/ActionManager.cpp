@@ -8,7 +8,6 @@
 #include "ActionManager.h"
 #include "Action.h"
 #include "../Data/Data.h"
-#include "../Edward.h"
 
 ActionManager::ActionManager(Data *_data)
 {

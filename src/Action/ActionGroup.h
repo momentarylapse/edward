@@ -19,13 +19,9 @@ public:
 	ActionGroup();
 	virtual ~ActionGroup();
 
-	bool is_atom();
-	virtual bool needs_preparation() = 0;
-
 	void *execute(Data *d);
 	void undo(Data *d);
 	void redo(Data *d);
-	virtual void prepare(Data *d) = 0;
 
 protected:
 	Array<Action*> action;

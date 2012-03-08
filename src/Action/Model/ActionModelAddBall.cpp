@@ -91,10 +91,3 @@ ActionModelAddBall::ActionModelAddBall(const vector &_pos, float _radius, int _n
 ActionModelAddBall::~ActionModelAddBall()
 {
 }
-
-bool ActionModelAddBall::needs_preparation()
-{	return false;	}
-
-void ActionModelAddBall::prepare(Data *d)
-{
-}
