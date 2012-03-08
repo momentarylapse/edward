@@ -104,9 +104,9 @@ int NixLoadShader(const string &filename)
 	return NixShader.num - 1;
 }
 
-void NixDeleteShaderFile(int index)
+void NixDeleteShader(int index)
 {
-	msg_todo("NixDeleteShaderFile for OpenGL");
+	msg_todo("NixDeleteShader");
 }
 
 void NixSetShader(int index)
@@ -127,7 +127,7 @@ void NixSetShaderData(int index, const string &var_name, const void *data, int s
 	sShaderFile *s = &NixShader[index];
 	if (!OGLShaderSupport)
 		return;
-	//msg_todo("NixSetShaderData for OpenGL");
+	//msg_todo("NixSetShaderData");
 	NixSetShader(index);
 
 	int loc = glGetUniformLocation(s->glShader, var_name.c_str());

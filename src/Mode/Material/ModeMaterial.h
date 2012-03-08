@@ -45,6 +45,8 @@ public:
 	bool SaveAs();
 
 	DataMaterial *data;
+
+	int MaterialVB[MATERIAL_MAX_TEXTURE_LEVELS];
 };
 
 extern ModeMaterial* mode_material;
