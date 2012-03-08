@@ -238,6 +238,9 @@ Edward::~Edward()
 
 void Edward::SetMode(Mode *m)
 {
+	if (cur_mode == m)
+		return;
+
 	msg_db_r("SetMode", 1);
 
 	// close current creation_mode

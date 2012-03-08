@@ -11,6 +11,11 @@
 #include "ModeModelMeshSkin.h"
 #include "../../ModeCreation.h"
 #include "Creation/ModeModelMeshCreateVertex.h"
+#include "Creation/ModeModelMeshCreateTriangles.h"
+#include "Creation/ModeModelMeshCreateBall.h"
+#include "Creation/ModeModelMeshCreateCube.h"
+#include "Creation/ModeModelMeshCreateCylinder.h"
+#include "Creation/ModeModelMeshCreatePlane.h"
 
 ModeModelMesh *mode_model_mesh = NULL;
 
@@ -79,6 +84,22 @@ void ModeModelMesh::OnKeyUp()
 
 void ModeModelMesh::OnCommand(const string & id)
 {
+	if (id == "new_point"){
+		ed->SetMode(mode_model_mesh_vertex);
+		ed->SetCreationMode(new ModeModelMeshCreateVertex(ed->cur_mode, data));
+	}
+	if (id == "new_tria"){
+		ed->SetMode(mode_model_mesh_vertex);
+		ed->SetCreationMode(new ModeModelMeshCreateTriangles(ed->cur_mode, data));
+	}
+	if (id == "new_ball")
+		ed->SetCreationMode(new ModeModelMeshCreateBall(ed->cur_mode, data));
+	if (id == "new_cube")
+		ed->SetCreationMode(new ModeModelMeshCreateCube(ed->cur_mode, data));
+	if (id == "new_cylinder")
+		ed->SetCreationMode(new ModeModelMeshCreateCylinder(ed->cur_mode, data));
+	if (id == "new_plane")
+		ed->SetCreationMode(new ModeModelMeshCreatePlane(ed->cur_mode, data));
 }
 
 
