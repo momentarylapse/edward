@@ -20,12 +20,14 @@ DataWorld::~DataWorld()
 
 bool DataWorld::Save(const string & _filename)
 {
+	return false;
 }
 
 
 
 bool DataWorld::Load(const string & _filename, bool deep)
 {
+	return false;
 }
 
 

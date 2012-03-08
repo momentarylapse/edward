@@ -18,7 +18,7 @@ int hui_main(Array<string> arg)
 	HuiSetProperty("version", AppVersion);
 	HuiSetProperty("copyright", "© 2006-2012 by MichiSoft TM"); // ??? min=2004 (objectmaker) max=2006
 	HuiSetProperty("comment", _("Editor f&ur Spiele-Daten der x9-Engine"));
-	HuiSetProperty("website", "http://michisoft.michi.is-a-geek.org");
+	HuiSetProperty("website", "http://michi.is-a-geek.org/michisoft");
 	HuiSetProperty("author", "Michael Ankele <michi@lupina.de>");
 
 	msg_db_r("main",1);

@@ -25,6 +25,10 @@ public:
 	virtual void undo(Data *d) = 0;
 	virtual void redo(Data *d) = 0;
 	virtual void prepare(Data *d) = 0;
+
+	void *execute_and_notify(Data *d);
+	void undo_and_notify(Data *d);
+	void redo_and_notify(Data *d);
 };
 
 #endif /* ACTION_H_ */

@@ -11,11 +11,13 @@
 #include "../lib/file/file.h"
 #include "../Action/Action.h"
 #include "../Action/ActionManager.h"
+#include "../Stuff/Observable.h"
 
 class ActionManager;
 class Action;
+class Observable;
 
-class Data
+class Data : public Observable
 {
 public:
 	Data();

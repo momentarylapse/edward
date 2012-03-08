@@ -121,7 +121,7 @@ void ModeWelcome::OnRightButtonDown()
 {
 }
 
-void ModeWelcome::OnDataChange()
+void ModeWelcome::OnUpdate(Observable *o)
 {
 }
 

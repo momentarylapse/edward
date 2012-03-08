@@ -24,6 +24,7 @@ ModeModel::ModeModel()
 	multi_view = NULL;
 
 	mode_model_mesh = new ModeModelMesh(this, data);
+	Subscribe(data);
 }
 
 ModeModel::~ModeModel()
@@ -134,7 +135,7 @@ void ModeModel::OnCommand(const string & id)
 
 
 
-void ModeModel::OnDataChange()
+void ModeModel::OnUpdate(Observable *o)
 {
 	data->UpdateNormals();
 }

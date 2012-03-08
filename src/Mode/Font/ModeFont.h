@@ -33,7 +33,7 @@ public:
 	void OnKeyDown();
 	void OnKeyUp();
 	void OnCommand(const string &id);
-	void OnDataChange();
+	void OnUpdate(Observable *o);
 
 	void Draw();
 	void DrawWin(int win, irect dest);

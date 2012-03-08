@@ -106,12 +106,12 @@ void Mode::OnPreRightButtonDown()
 	OnRightButtonDown();
 }
 
-void Mode::OnPreDataChange()
+/*void Mode::OnPreDataChange()
 {
 	if (parent)
 		parent->OnPreDataChange();
 	OnDataChange();
-}
+}*/
 
 
 

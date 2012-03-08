@@ -20,6 +20,7 @@ DataFont::~DataFont()
 
 bool DataFont::Load(const string & _filename, bool deep)
 {
+	return false;
 }
 
 
@@ -32,6 +33,7 @@ void DataFont::Reset()
 
 bool DataFont::Save(const string & _filename)
 {
+	return false;
 }
 
 

@@ -10,13 +10,13 @@
 #include "../../lib/nix/nix.h"
 
 
-static void write_color(CFile *f, const color &c)
+/*static void write_color(CFile *f, const color &c)
 {
 	f->WriteInt((int)(c.r * 255.0f));
 	f->WriteInt((int)(c.g * 255.0f));
 	f->WriteInt((int)(c.b * 255.0f));
 	f->WriteInt((int)(c.a * 255.0f));
-}
+}*/
 
 static void read_color(CFile *f, color &c)
 {
@@ -37,6 +37,7 @@ DataMaterial::~DataMaterial()
 
 bool DataMaterial::Save(const string & _filename)
 {
+	return false;
 }
 
 
@@ -245,7 +246,6 @@ void DataMaterial::Reset()
 
 void DataMaterial::ApplyForRendering()
 {
-	color am = ColorAmbient;
 	NixSetMaterial(ColorAmbient, ColorDiffuse, ColorSpecular,(float)ColorShininess, ColorEmissive);
 
 	NixSetAlpha(AlphaNone);

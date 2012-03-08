@@ -23,8 +23,9 @@ ModeMaterial::ModeMaterial()
 	menu = HuiCreateResourceMenu("menu_material");
 	data = new DataMaterial;
 	multi_view = ed->multi_view_3d;
+	Subscribe(data);
 
-	for (int i=2;i<=MATERIAL_MAX_TEXTURE_LEVELS;i++)
+	for (int i=2;i<MATERIAL_MAX_TEXTURE_LEVELS;i++)
 		MaterialVB[i] = NixCreateVBM(MATERIAL_BALL_NUMX * MATERIAL_BALL_NUMY * 2, i);
 }
 
@@ -63,7 +64,7 @@ void ModeMaterial::Draw()
 
 
 
-void ModeMaterial::OnDataChange()
+void ModeMaterial::OnUpdate(Observable *o)
 {
 }
 

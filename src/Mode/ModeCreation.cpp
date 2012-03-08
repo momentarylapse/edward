@@ -18,7 +18,7 @@ ModeCreation::~ModeCreation()
 	// TODO Auto-generated destructor stub
 }
 
-void ModeCreation::OnDataChange()
+void ModeCreation::OnUpdate(Observable *o)
 {
 }
 

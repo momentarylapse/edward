@@ -39,7 +39,7 @@ public:
 
 private:
 	// dummy
-	void OnDataChange();
+	void OnUpdate(Observable *o);
 	void Draw();
 	void DrawWin(int win, irect dest);
 };

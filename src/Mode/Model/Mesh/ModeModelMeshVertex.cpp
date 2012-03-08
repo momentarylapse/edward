@@ -27,6 +27,7 @@ ModeModelMeshVertex::ModeModelMeshVertex(Mode *_parent, DataModel *_data)
 	data = _data;
 	multi_view = ed->multi_view_3d;
 	menu = HuiCreateResourceMenu("menu_model");
+	Subscribe(data);
 }
 
 ModeModelMeshVertex::~ModeModelMeshVertex()
@@ -35,7 +36,7 @@ ModeModelMeshVertex::~ModeModelMeshVertex()
 
 void ModeModelMeshVertex::Start()
 {
-	OnDataChange();
+	OnUpdate(data);
 }
 
 void ModeModelMeshVertex::End()
@@ -127,8 +128,9 @@ void ModeModelMeshVertex::OnCommand(const string & id)
 		ed->SetCreationMode(new ModeModelMeshCreatePlane(this, data));
 }
 
-void ModeModelMeshVertex::OnDataChange()
+void ModeModelMeshVertex::OnUpdate(Observable *o)
 {
+	msg_write("vert on up");
 	multi_view->ResetData();
 	multi_view->MVRectable = true;
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);

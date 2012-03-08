@@ -11,8 +11,9 @@
 #include "../lib/hui/hui.h"
 #include "../Data/Data.h"
 #include "../MultiView.h"
+#include "../Stuff/Observer.h"
 
-class Mode
+class Mode : public Observer
 {
 public:
 	Mode();
@@ -32,7 +33,6 @@ public:
 	virtual void OnKeyDown() = 0;
 	virtual void OnKeyUp() = 0;
 	virtual void OnCommand(const string &id) = 0;
-	virtual void OnDataChange() = 0;
 
 	// send events to multi_view first, then call derived event handlers
 	//   (to be called by edward)
@@ -46,7 +46,7 @@ public:
 	void OnPreKeyDown();
 	void OnPreKeyUp();
 	void OnPreCommand(const string &id);
-	void OnPreDataChange();
+	//void OnPreDataChange();
 
 	virtual void Draw() = 0;
 	virtual void DrawWin(int win, irect dest) = 0;

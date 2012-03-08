@@ -20,6 +20,7 @@ ModeFont::ModeFont()
 	menu = HuiCreateResourceMenu("menu_font");
 	data = new DataFont;
 	multi_view = ed->multi_view_2d;
+	Subscribe(data);
 }
 
 ModeFont::~ModeFont()
@@ -52,6 +53,7 @@ void ModeFont::Draw()
 
 bool ModeFont::SaveAs()
 {
+	return false;
 }
 
 
@@ -70,6 +72,7 @@ void ModeFont::OnMiddleButtonUp()
 
 bool ModeFont::Save()
 {
+	return false;
 }
 
 
@@ -85,6 +88,7 @@ bool ModeFont::Open()
 	data->Reset();
 	multi_view->Reset();
 	ed->SetMode(mode_font);
+	return false;
 }
 
 
@@ -116,7 +120,7 @@ void ModeFont::OnMouseMove()
 
 
 
-void ModeFont::OnDataChange()
+void ModeFont::OnUpdate(Observable *o)
 {
 }
 

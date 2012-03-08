@@ -21,6 +21,7 @@ ModeModelMesh::ModeModelMesh(Mode *_parent, DataModel *_data)
 	data = _data;
 	menu = NULL;
 	multi_view = NULL;
+	Subscribe(data);
 
 	mode_model_mesh_vertex = new ModeModelMeshVertex(this, data);
 	mode_model_mesh_skin = new ModeModelMeshSkin(this, data);
@@ -112,7 +113,7 @@ void ModeModelMesh::OnMiddleButtonDown()
 
 
 
-void ModeModelMesh::OnDataChange()
+void ModeModelMesh::OnUpdate(Observable *o)
 {
 }
 

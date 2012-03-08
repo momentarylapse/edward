@@ -11,6 +11,7 @@
 #include "lib/hui/hui.h"
 #include "Mode/Mode.h"
 #include "Mode/ModeCreation.h"
+#include "Stuff/Observer.h"
 
 
 
@@ -53,7 +54,7 @@ void read_color_4(CFile *f,int *c);
 void write_color_4(CFile *f,int *c);
 color i42c(int *c);
 
-class Edward
+class Edward : public Observer
 {
 public:
 	Edward(Array<string> arg);
@@ -66,7 +67,7 @@ public:
 	void SetMode(Mode *m);
 	void SetCreationMode(ModeCreation *m);
 
-	void OnDataChange(); // TODO relocate?
+	void OnUpdate(Observable *o);
 	void OnCommand(const string &id);
 
 	void SetMessage(const string &message);

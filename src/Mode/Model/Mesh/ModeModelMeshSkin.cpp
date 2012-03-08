@@ -20,6 +20,7 @@ ModeModelMeshSkin::ModeModelMeshSkin(Mode *_parent, DataModel *_data)
 	data = _data;
 	menu = HuiCreateResourceMenu("menu_model");
 	multi_view = ed->multi_view_3d;
+	Subscribe(data);
 
 	// vertex buffers
 	VBMarked = NixCreateVB(65536);
@@ -181,12 +182,12 @@ void ModeModelMeshSkin::OnKeyDown()
 
 void ModeModelMeshSkin::Start()
 {
-	OnDataChange();
+	OnUpdate(data);
 }
 
 
 
-void ModeModelMeshSkin::OnDataChange()
+void ModeModelMeshSkin::OnUpdate(Observable *o)
 {
 	multi_view->ResetData();
 	multi_view->MVRectable = true;

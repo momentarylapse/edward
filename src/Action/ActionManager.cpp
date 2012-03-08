@@ -49,29 +49,23 @@ void ActionManager::add(Action *a)
 void *ActionManager::Execute(Action *a)
 {
 	add(a);
-	void *r = a->execute(data);
-	ed->OnDataChange();
-	return r;
+	return a->execute_and_notify(data);
 }
 
 
 
 void ActionManager::Undo()
 {
-	if (Undoable()){
-		action[-- cur_pos]->undo(data);
-		ed->OnDataChange();
-	}
+	if (Undoable())
+		action[-- cur_pos]->undo_and_notify(data);
 }
 
 
 
 void ActionManager::Redo()
 {
-	if (Redoable()){
-		action[cur_pos ++]->redo(data);
-		ed->OnDataChange();
-	}
+	if (Redoable())
+		action[cur_pos ++]->redo_and_notify(data);
 }
 
 bool ActionManager::Undoable()

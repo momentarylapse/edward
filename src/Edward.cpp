@@ -278,11 +278,11 @@ void Edward::SetCreationMode(ModeCreation *m)
 void Edward::About()
 {	HuiAboutBox(win);	}
 
-void Edward::OnDataChange()
+void Edward::OnUpdate(Observable *o)
 {
-	msg_db_r("Edward.OnDataChange", 2);
-	if (cur_mode)
-		cur_mode->OnPreDataChange();
+	msg_db_r("Edward.OnUpdate", 2);
+	/*if (cur_mode)
+		cur_mode->OnPreDataChange();*/
 	ForceRedraw();
 	msg_db_l(2);
 }

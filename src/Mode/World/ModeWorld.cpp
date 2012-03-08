@@ -19,6 +19,7 @@ ModeWorld::ModeWorld()
 	menu = HuiCreateResourceMenu("menu_world");
 	data = new DataWorld;
 	multi_view = ed->multi_view_3d;
+	Subscribe(data);
 }
 
 ModeWorld::~ModeWorld()
@@ -28,6 +29,7 @@ ModeWorld::~ModeWorld()
 
 bool ModeWorld::SaveAs()
 {
+	return false;
 }
 
 
@@ -46,6 +48,7 @@ void ModeWorld::OnLeftButtonDown()
 
 bool ModeWorld::Save()
 {
+	return false;
 }
 
 
@@ -62,7 +65,7 @@ void ModeWorld::OnMouseMove()
 
 
 
-void ModeWorld::OnDataChange()
+void ModeWorld::OnUpdate(Observable *o)
 {
 }
 
@@ -142,6 +145,7 @@ bool ModeWorld::Open()
 	data->Reset();
 	multi_view->Reset();
 	ed->SetMode(mode_world);
+	return false;
 }
 
 
