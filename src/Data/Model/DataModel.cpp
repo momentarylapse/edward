@@ -23,7 +23,6 @@
 
 DataModel::DataModel()
 {
-	action_manager = new ActionManager(this);
 	AutoTexturingData.enabled = false;
 
 	ViewStage = 0; // TODO: mode...?

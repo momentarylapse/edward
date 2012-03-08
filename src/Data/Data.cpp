@@ -9,10 +9,12 @@
 
 Data::Data()
 {
+	action_manager = new ActionManager(this);
 }
 
 Data::~Data()
 {
+	delete(action_manager);
 }
 
 

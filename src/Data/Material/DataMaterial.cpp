@@ -28,7 +28,6 @@ static void read_color(CFile *f, color &c)
 
 DataMaterial::DataMaterial()
 {
-	action_manager = new ActionManager(this);
 	Reset();
 }
 
