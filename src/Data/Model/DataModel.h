@@ -185,6 +185,7 @@ public:
 	bool Save(const string &_filename);
 
 
+	void SetNormalsDirtyByVertices(const Array<int> &index);
 	void UpdateNormals();
 
 

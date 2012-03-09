@@ -48,6 +48,7 @@ void ActionModelMVMoveVertices::undo(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii)
 		m->Vertex[i].pos = old_data[ii];
+	m->SetNormalsDirtyByVertices(index);
 }
 
 
@@ -57,6 +58,7 @@ void *ActionModelMVMoveVertices::execute(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii)
 		m->Vertex[i].pos = old_data[ii] + param;
+	m->SetNormalsDirtyByVertices(index);
 	return NULL;
 }
 

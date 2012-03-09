@@ -788,6 +788,19 @@ bool DataModel::Save(const string & _filename)
 	return false;
 }
 
+void DataModel::SetNormalsDirtyByVertices(const Array<int> &index)
+{
+	foreach(Surface, s)
+		foreach(s.Triangle, t)
+			for (int k=0;k<3;k++)
+				if (!t.NormalDirty)
+					for (int i=0;i<index.num;i++)
+						if (t.Vertex[k] == index[i]){
+							t.NormalDirty = true;
+							break;
+						}
+}
+
 
 void DataModel::UpdateNormals()
 {

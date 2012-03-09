@@ -247,6 +247,8 @@ void MultiView::OnKeyDown()
 		DoMove( e_z);
 	if (k == KEY_SHIFT + KEY_DOWN)
 		DoMove(-e_z);
+	if (k == KEY_ESCAPE)
+		MouseActionEnd(false);
 }
 
 
@@ -379,13 +381,11 @@ void MultiView::OnMouseMove()
 	// left button -> move data
 	//msg_write(lbut);
 	if (lbut){
-		msg_write(MouseMovedSinceClick);
 		int d = abs(vx) + abs(vy);
 		MouseMovedSinceClick += d;
 		if ((MouseMovedSinceClick >= MinMouseMoveToInteract) and (MouseMovedSinceClick - d < MinMouseMoveToInteract)){
 			MultiViewEditing = true;
 			if (Selected >= 0){
-				msg_error("mouse action start");
 				MouseActionStart(0);
 			}
 		}
@@ -1061,8 +1061,6 @@ vector MultiView::GetDirectionRight(int win)
 
 void MultiView::SetMouseAction(int button, const string & name, int mode)
 {
-	msg_write("set " + name);
-	msg_write(button);
 	action[button].name = name;
 	action[button].mode = mode;
 }
@@ -1234,15 +1232,14 @@ void MultiView::MouseActionStart(int button)
 {
 	if (cur_action)
 		MouseActionEnd(false);
-	msg_error("mouse action start <" + action[button].name + ">");
 	if (action[button].name != ""){
+		msg_error("mouse action start <" + action[button].name + ">");
 		Array<int> index;
 		for (int i=0;i<data[0].Num;i++)
 			if (MVGetSingleData(data[0], i)->is_selected)
 				index.add(i);
 
 		cur_action = ActionMultiViewFactory(action[button].name, _data_, 0, index);
-		msg_write(p2s(cur_action));
 		active_mouse_action = button;
 		mouse_action_pos0 = GetCursor3d();
 		//ed->ForceRedraw();
@@ -1253,7 +1250,6 @@ void MultiView::MouseActionStart(int button)
 
 void MultiView::MouseActionUpdate()
 {
-	msg_write(p2s(cur_action) + " up");
 	if (cur_action){
 		msg_write("mouse action update");
 		mouse_action_param = GetCursor3d() - mouse_action_pos0;
@@ -1266,7 +1262,6 @@ void MultiView::MouseActionUpdate()
 
 void MultiView::MouseActionEnd(bool set)
 {
-	msg_write(p2s(cur_action) + " end");
 	if (cur_action){
 		msg_error("mouse action end");
 		if (set)

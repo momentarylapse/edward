@@ -33,7 +33,7 @@ false
 // NewBallComplexity
 4
 // NewBallSphere
-false
+true
 // NewPlaneNumX
 4
 // NewPlaneNumY
