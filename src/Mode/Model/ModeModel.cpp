@@ -182,6 +182,7 @@ bool ModeModel::Open()
 	ed->multi_view_2d->Reset();
 	ed->multi_view_3d->Reset();
 	ed->SetMode(mode_model);
+	mode_model_mesh->OptimizeView();
 	return true;
 }
 

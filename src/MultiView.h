@@ -116,6 +116,7 @@ public:
 	void SetData(int type, const DynamicArray &a, void *user_data, int mode, t_is_mouse_over_func *is_mouse_over_func, t_is_in_rect_func *is_in_rect_func);
 	//void DoMultiViewStuff(bool rect_able);
 	void Reset();
+	void ResetView();
 	void ResetData(Data *_data);
 	void ViewStagePush();
 	void ViewStagePop();

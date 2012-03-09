@@ -77,6 +77,18 @@ MultiView::~MultiView()
 
 void MultiView::Reset()
 {
+	MVRectable = MVRect = false;
+	mouse_win = 0;
+
+	ViewMoving = -1;
+
+	ResetData(NULL);
+	ResetMouseAction();
+	ResetView();
+}
+
+void MultiView::ResetView()
+{
 	pos = v0;
 	ang = v0;
 	radius = 100;
@@ -86,14 +98,8 @@ void MultiView::Reset()
 	light_enabled = true;
 	ignore_radius = false;
 	wire_mode = false;
-	MVRectable = MVRect = false;
-	mouse_win = 0;
-
-	ViewMoving = -1;
 
 	view_stage = 0;
-	ResetData(NULL);
-	ResetMouseAction();
 }
 
 void MultiView::ResetMouseAction()

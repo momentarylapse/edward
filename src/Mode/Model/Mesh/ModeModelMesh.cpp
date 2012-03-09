@@ -84,6 +84,9 @@ void ModeModelMesh::OnKeyUp()
 
 void ModeModelMesh::OnCommand(const string & id)
 {
+	if (id == "opt_view")
+		OptimizeView();
+
 	if (id == "new_point"){
 		ed->SetMode(mode_model_mesh_vertex);
 		ed->SetCreationMode(new ModeModelMeshCreateVertex(ed->cur_mode, data));
@@ -137,4 +140,30 @@ void ModeModelMesh::OnMiddleButtonDown()
 void ModeModelMesh::OnUpdate(Observable *o)
 {
 }
+
+void ModeModelMesh::OptimizeView()
+{
+	msg_db_r("OptimizeView", 1);
+	MultiView *mv = ed->multi_view_3d;
+	bool ww = mv->whole_window;
+	mv->ResetView();
+	mv->whole_window = ww;
+	if (data->Vertex.num > 0){
+		vector min = data->Vertex[0].pos, max = data->Vertex[0].pos;
+		foreach(data->Vertex, v){
+			VecMin(min, v.pos);
+			VecMax(max, v.pos);
+		}
+		mv->pos = (min + max) / 2;
+		if (data->Vertex.num > 1)
+			mv->radius = VecLengthFuzzy(max - min) * 1.3f * ((float)NixScreenWidth / (float)NixTargetWidth);
+	}
+	/*if ((Bone.num > 0) && (Vertex.num <= 0))
+		SetSubMode(SubModeSkeleton);
+	if (SubMode == SubModeSkeleton)
+		SkeletonOptimizeView();*/
+	msg_db_l(1);
+}
+
+
 

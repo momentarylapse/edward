@@ -38,6 +38,8 @@ public:
 	void Draw();
 	void DrawWin(int win, irect dest);
 
+	void OptimizeView();
+
 	DataModel *data;
 };
 
