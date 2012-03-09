@@ -92,11 +92,24 @@ void MultiView::Reset()
 	ViewMoving = -1;
 
 	view_stage = 0;
+	ResetData(NULL);
+	ResetMouseAction();
 }
 
-void MultiView::ResetData()
+void MultiView::ResetMouseAction()
+{
+	cur_action = NULL;
+}
+
+void MultiView::ResetData(Data *_data)
 {
 	data.clear();
+
+	action[0].reset();
+	action[1].reset();
+	action[2].reset();
+	active_mouse_action = -1;
+	_data_ = _data;
 }
 
 void MultiView::SetData(int type, const DynamicArray & a, void *user_data, int mode, t_is_mouse_over_func *is_mouse_over_func, t_is_in_rect_func *is_in_rect_func)
@@ -322,7 +335,8 @@ void MultiView::OnKeyUp()
 void MultiView::OnLeftButtonUp()
 {
 	EndRect();
-	MultiViewEditing=false;
+	MultiViewEditing = false;
+	MouseActionEnd(true);
 }
 
 
@@ -334,6 +348,10 @@ void MultiView::OnMouseMove()
 	vx = HuiGetEvent()->dx;
 	vy = HuiGetEvent()->dy;
 	msg_todo("hui liefert falsche Maus");
+
+	bool lbut = HuiGetEvent()->lbut;
+	bool mbut = HuiGetEvent()->mbut;
+	bool rbut = HuiGetEvent()->rbut;
 
 
 	// which window is the cursor in?
@@ -352,28 +370,34 @@ void MultiView::OnMouseMove()
 
 
 	// hover
-	if ((!NixGetButton(0)) && (!NixGetButton(1)) && (!NixGetButton(2)))
+	if ((!lbut) && (!mbut) && (!rbut))
 		GetMouseOver();
 
 	if (MVRect)
 		SelectAllInRectangle();
 
 	// left button -> move data
-	/*if (NixGetButton(0)){
-		MouseMovedSinceClick += abs(vx) + abs(vy);
-		if ( MouseMovedSinceClick >= MinMouseMoveToInteract ){
+	//msg_write(lbut);
+	if (lbut){
+		msg_write(MouseMovedSinceClick);
+		int d = abs(vx) + abs(vy);
+		MouseMovedSinceClick += d;
+		if ((MouseMovedSinceClick >= MinMouseMoveToInteract) and (MouseMovedSinceClick - d < MinMouseMoveToInteract)){
 			MultiViewEditing = true;
-			if (Selected >= 0)
-				MoveSelection();
+			if (Selected >= 0){
+				msg_error("mouse action start");
+				MouseActionStart(0);
+			}
 		}
-	}*/
+		MouseActionUpdate();
+	}
 
 
 	if (ViewMoving >= 0){
 		int t = view[ViewMoving].type;
 		if ((t == ViewPerspective) || (t == ViewIsometric)){
 // camera rotation
-			bool RotatingOwn = (NixGetButton(1) || (NixGetKey(KEY_CONTROL)));
+			bool RotatingOwn = (mbut || (NixGetKey(KEY_CONTROL)));
 			if (RotatingOwn)
 				pos -= radius * VecAng2Dir(ang);
 			vector dang = vector((float)vy, (float)vx, 0) * MouseRotationSpeed;
@@ -1035,6 +1059,25 @@ vector MultiView::GetDirectionRight(int win)
 	return VecCrossProduct(d,u);
 }
 
+void MultiView::SetMouseAction(int button, const string & name, int mode)
+{
+	msg_write("set " + name);
+	msg_write(button);
+	action[button].name = name;
+	action[button].mode = mode;
+}
+
+void MultiView::InvertSelection()
+{
+	foreach(data, d)
+		for (int i=0;i<d.Num;i++){
+			MultiViewSingleData* sd = MVGetSingleData(d, i);
+			if (sd->view_stage >= view_stage)
+				sd->is_selected = !sd->is_selected;
+		}
+	ed->ForceRedraw();
+}
+
 vector MultiView::GetCursor3d()
 {
 	//return VecUnProject(vector((float)mx,(float)my,0), mouse_win);
@@ -1186,3 +1229,55 @@ void MultiView::HoldCursor(bool holding)
 	HoldingCursor = holding;
 	ed->win->ShowCursor(!holding);
 }
+
+void MultiView::MouseActionStart(int button)
+{
+	if (cur_action)
+		MouseActionEnd(false);
+	msg_error("mouse action start <" + action[button].name + ">");
+	if (action[button].name != ""){
+		Array<int> index;
+		for (int i=0;i<data[0].Num;i++)
+			if (MVGetSingleData(data[0], i)->is_selected)
+				index.add(i);
+
+		cur_action = ActionMultiViewFactory(action[button].name, _data_, 0, index);
+		msg_write(p2s(cur_action));
+		active_mouse_action = button;
+		mouse_action_pos0 = GetCursor3d();
+		//ed->ForceRedraw();
+	}
+}
+
+
+
+void MultiView::MouseActionUpdate()
+{
+	msg_write(p2s(cur_action) + " up");
+	if (cur_action){
+		msg_write("mouse action update");
+		mouse_action_param = GetCursor3d() - mouse_action_pos0;
+		//ed->ForceRedraw();
+		cur_action->set_param_and_notify(_data_, mouse_action_param);
+	}
+}
+
+
+
+void MultiView::MouseActionEnd(bool set)
+{
+	msg_write(p2s(cur_action) + " end");
+	if (cur_action){
+		msg_error("mouse action end");
+		if (set)
+			_data_->Execute(cur_action);
+		else{
+			cur_action->abort_and_notify(_data_);
+			ed->ForceRedraw();
+		}
+	}
+	cur_action = NULL;
+	active_mouse_action = -1;
+}
+
+

@@ -191,7 +191,7 @@ void ModeModelMeshSkin::OnUpdate(Observable *o)
 {
 	if (this != ed->cur_mode)
 		return;
-	multi_view->ResetData();
+	multi_view->ResetData(data);
 	multi_view->MVRectable = true;
 }
 

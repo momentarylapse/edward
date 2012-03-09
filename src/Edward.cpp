@@ -251,6 +251,8 @@ void Edward::SetMode(Mode *m)
 		msg_write("end " + cur_mode->name);
 		cur_mode->End();
 	}
+	multi_view_3d->ResetMouseAction();
+	multi_view_2d->ResetMouseAction();
 
 	// start new mode
 	cur_mode = m;

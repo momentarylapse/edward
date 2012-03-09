@@ -10,6 +10,11 @@
 
 #include "lib/file/file.h"
 #include "lib/nix/nix.h"
+#include "Action/ActionMultiView.h"
+#include "Data/Data.h"
+
+class ActionMultiView;
+class Data;
 
 
 enum
@@ -55,6 +60,21 @@ struct MultiViewData{
 	t_is_in_rect_func *IsInRect;
 };
 
+struct MultiViewMouseAction
+{
+	string name;
+	int mode;
+	bool active;
+
+	void reset()
+	{
+		name = "";
+		mode = 0;
+		active = false;
+	}
+};
+
+// TODO refactor me!!!
 class MultiView
 {
 public:
@@ -95,7 +115,7 @@ public:
 	void SetData(int type, const DynamicArray &a, void *user_data, int mode, t_is_mouse_over_func *is_mouse_over_func, t_is_in_rect_func *is_in_rect_func);
 	//void DoMultiViewStuff(bool rect_able);
 	void Reset();
-	void ResetData();
+	void ResetData(Data *_data);
 	void ViewStagePush();
 	void ViewStagePop();
 	void InvertSelection();
@@ -136,6 +156,17 @@ public:
 	MultiViewView view[5];
 	int cur_view, cur_view_rect;
 	int view_stage;
+
+	MultiViewMouseAction action[3];
+	int active_mouse_action;
+	ActionMultiView *cur_action;
+	Data *_data_;
+	vector mouse_action_param, mouse_action_pos0;
+	void ResetMouseAction();
+	void SetMouseAction(int button, const string &name, int mode);
+	void MouseActionStart(int button);
+	void MouseActionEnd(bool set);
+	void MouseActionUpdate();
 
 	Array<MultiViewData> data;
 	bool AllowViewStage, AllowViewStageHandling;

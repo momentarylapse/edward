@@ -12,7 +12,7 @@
 
 
 
-static float w_all;
+//static float w_all;
 static vector flat_n;
 
 float get_ang(DataModel *m, int a, int b, int c)

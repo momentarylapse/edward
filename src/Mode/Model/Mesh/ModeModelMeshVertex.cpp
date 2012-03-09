@@ -113,7 +113,8 @@ void ModeModelMeshVertex::OnUpdate(Observable *o)
 {
 	if (this != ed->cur_mode)
 		return;
-	multi_view->ResetData();
+	multi_view->ResetData(data);
+	multi_view->SetMouseAction(0, "ActionModelMVMoveVertices", 0);
 	multi_view->MVRectable = true;
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	//CModeAll::SetMultiViewFunctions(&StartChanging, &EndChanging, &Change);
