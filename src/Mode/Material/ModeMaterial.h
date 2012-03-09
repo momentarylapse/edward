@@ -10,9 +10,11 @@
 
 #include "../Mode.h"
 #include "../../Data/Material/DataMaterial.h"
+#include "Dialog/MaterialPropertiesDialog.h"
 
 class Mode;
 class DataMaterial;
+class MaterialPropertiesDialog;
 
 class ModeMaterial: public Mode
 {
@@ -44,9 +46,12 @@ public:
 	bool Save();
 	bool SaveAs();
 
+	void ExecuteAppearanceDialog();
+
 	DataMaterial *data;
 
 	int MaterialVB[MATERIAL_MAX_TEXTURE_LEVELS];
+	MaterialPropertiesDialog *AppearanceDialog;
 };
 
 extern ModeMaterial* mode_material;

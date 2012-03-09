@@ -25,17 +25,17 @@ ModeModelMeshCreateBall::ModeModelMeshCreateBall(Mode *_parent, DataModel *_data
 
 
 	// Dialog
-	dialog = HuiCreateResourceDialog("new_ball_dialog", ed->win);
+	dialog = HuiCreateResourceDialog("new_ball_dialog", ed);
 
 	dialog->SetInt("nb_x", HuiConfigReadInt("NewBallNumX", 8));
 	dialog->SetInt("nb_y",HuiConfigReadInt("NewBallNumY", 16));
 	dialog->SetInt("nb_complexity", HuiConfigReadInt("NewBallComplexity", 8));
 	dialog->SetInt("nb_tab_control", HuiConfigReadBool("NewBallSphere", false) ? 1 : 0);
-	dialog->SetPositionSpecial(ed->win, HuiRight | HuiTop);
+	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
 	dialog->Update();
 	dialog->Event("hui:close", &HuiFuncIgnore);
 
-	ed->win->Activate();
+	ed->Activate();
 }
 
 ModeModelMeshCreateBall::~ModeModelMeshCreateBall()

@@ -204,6 +204,8 @@ void CHuiWindow::Event(const string &id, hui_callback *function)
 	e.id = id;
 	e.message = "*";
 	e.function = function;
+	e.object = NULL;
+	e.member_function = NULL;
 	event.add(e);
 	
 }
@@ -214,8 +216,32 @@ void CHuiWindow::EventX(const string &id, const string &msg, hui_callback *funct
 	e.id = id;
 	e.message = msg;
 	e.function = function;
+	e.object = NULL;
+	e.member_function = NULL;
 	event.add(e);
 	
+}
+
+void CHuiWindow::EventM(const string &id, CHuiWindow *object, void (CHuiWindow::*function)())
+{
+	HuiWinEvent e;
+	e.id = id;
+	e.message = "*";
+	e.function = NULL;
+	e.object = object;
+	e.member_function = function;
+	event.add(e);
+}
+
+void CHuiWindow::EventMX(const string &id, const string &msg, CHuiWindow *object, void (CHuiWindow::*function)())
+{
+	HuiWinEvent e;
+	e.id = id;
+	e.message = msg;
+	e.function = NULL;
+	e.object = object;
+	e.member_function = function;
+	event.add(e);
 }
 
 bool CHuiWindow::_SendEvent_(HuiEvent *e)
@@ -268,6 +294,12 @@ bool CHuiWindow::_SendEvent_(HuiEvent *e)
 		// send the event
 		if ((send) && (ee.function)){
 			ee.function();
+			sent = true;
+		}
+
+		// send the event (member)
+		if ((send) && (ee.object) && (ee.member_function)){
+			(ee.object->*ee.member_function)();
 			sent = true;
 		}
 
@@ -334,6 +366,56 @@ void HuiWindowAddControl(CHuiWindow *win, const string &type, const string &titl
 		win->AddControlTable(title, x, y, width, height, id);
 	else if (type == "SpinButton")
 		win->AddSpinButton(title, x, y, width, height, id);
+}
+
+void CHuiWindow::FromResource(const string &id)
+{
+	msg_db_r("Window.FromResource",1);
+	HuiResource *res = HuiGetResource(id);
+	if (!res)
+		msg_db_l(1);
+
+	SetTitle(HuiGetLanguage(res->id));
+
+
+	// dialog
+	/*CHuiWindow *dlg
+	if (res->type == "SizableDialog")
+		dlg = HuiCreateSizableDialog(HuiGetLanguage(res->id), res->i_param[0], res->i_param[1], root, res->b_param[0]);
+	else
+		dlg = HuiCreateDialog(HuiGetLanguage(res->id), res->i_param[0], res->i_param[1], root, res->b_param[0]);*/
+
+	// menu?
+	if (res->s_param[0].num > 0)
+		SetMenu(HuiCreateResourceMenu(res->s_param[0]));
+
+	// toolbar?
+	if (res->s_param[1].num > 0)
+		ToolbarSetByID(res->s_param[1]);
+
+	// controls
+	foreach(res->cmd, cmd){
+		//msg_db_m(format("%d:  %d / %d",j,(cmd->type & 1023),(cmd->type >> 10)).c_str(),4);
+		if (res->type == "Dialog"){
+			SetTarget(cmd.s_param[0], cmd.i_param[4]);
+			HuiWindowAddControl( this, cmd.type, HuiGetLanguage(cmd.id),
+								cmd.i_param[0], cmd.i_param[1],
+								cmd.i_param[2], cmd.i_param[3],
+								cmd.id);
+		}else if (res->type == "SizableDialog"){
+			//msg_write("insert " + cmd.id + " (" + cmd.type + ") into " + cmd.s_param[0]);
+			SetTarget(cmd.s_param[0], cmd.i_param[4]);
+			HuiWindowAddControl( this, cmd.type, HuiGetLanguage(cmd.id),
+								cmd.i_param[4], 0,
+								cmd.i_param[2], cmd.i_param[3],
+								cmd.id);
+		}
+		Enable(cmd.id, cmd.enabled);
+		if (cmd.image.num > 0)
+			SetImage(cmd.id, cmd.image);
+	}
+	msg_db_m("  \\(^_^)/",1);
+	msg_db_l(1);
 }
 
 CHuiWindow *HuiCreateWindow(const string &title,int x,int y,int width,int height)

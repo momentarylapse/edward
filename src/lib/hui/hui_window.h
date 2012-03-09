@@ -13,6 +13,7 @@
 
 class CHuiMenu;
 class HuiEvent;
+class CHuiWindow;
 
 
 struct HuiCompleteWindowMessage
@@ -97,6 +98,8 @@ struct HuiWinEvent
 {
 	string id, message;
 	hui_callback *function;
+	void (CHuiWindow::*member_function)();
+	CHuiWindow *object;
 };
 
 class HuiDrawingContext
@@ -154,6 +157,7 @@ public:
 	CHuiMenu *GetMenu();
 	void _cdecl SetBorderWidth(int width);
 	CHuiWindow *GetParent();
+	void FromResource(const string &id);
 
 
 	void _cdecl SetCursorPos(int x,int y);
@@ -183,6 +187,8 @@ public:
 	void _cdecl AllowEvents(const string &msg);
 	void _cdecl Event(const string &id, hui_callback *function);
 	void _cdecl EventX(const string &id, const string &msg, hui_callback *function);
+	void EventM(const string &id, CHuiWindow *object, void (CHuiWindow::*function)());
+	void EventMX(const string &id, const string &msg, CHuiWindow *object, void (CHuiWindow::*function)());
 	bool _SendEvent_(HuiEvent *e);
 
 	// creating controls

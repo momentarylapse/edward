@@ -25,6 +25,8 @@ ModeMaterial::ModeMaterial()
 	multi_view = ed->multi_view_3d;
 	Subscribe(data);
 
+	AppearanceDialog = NULL;
+
 	for (int i=2;i<MATERIAL_MAX_TEXTURE_LEVELS;i++)
 		MaterialVB[i] = NixCreateVBM(MATERIAL_BALL_NUMX * MATERIAL_BALL_NUMY * 2, i);
 }
@@ -81,7 +83,9 @@ void ModeMaterial::OnCommand(const string & id)
 	if (id == "save_as")
 		SaveAs();
 
-	// TODO -> edward?
+	if (id == "appearance")
+		ExecuteAppearanceDialog();
+
 	if (id == "undo")
 		data->Undo();
 	if (id == "redo")
@@ -92,6 +96,17 @@ void ModeMaterial::OnCommand(const string & id)
 
 void ModeMaterial::OnRightButtonUp()
 {
+}
+
+void ModeMaterial::ExecuteAppearanceDialog()
+{
+	if (AppearanceDialog)
+		return;
+
+	AppearanceDialog = new MaterialPropertiesDialog(ed, false, data);
+
+	AppearanceDialog->Update();
+	HuiWaitTillWindowClosed(AppearanceDialog);
 }
 
 

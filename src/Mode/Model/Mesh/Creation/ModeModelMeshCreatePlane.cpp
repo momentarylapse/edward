@@ -23,14 +23,14 @@ ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(Mode *_parent, DataModel *_da
 
 
 	// Dialog
-	dialog = HuiCreateResourceDialog("new_plane_dialog", ed->win);
+	dialog = HuiCreateResourceDialog("new_plane_dialog", ed);
 	dialog->SetInt("np_num_x", HuiConfigReadInt("NewPlaneNumX", 4));
 	dialog->SetInt("np_num_y",HuiConfigReadInt("NewPlaneNumY", 4));
-	dialog->SetPositionSpecial(ed->win, HuiRight | HuiTop);
+	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
 	dialog->Update();
 	dialog->Event("hui:close", &HuiFuncIgnore);
 
-	ed->win->Activate();
+	ed->Activate();
 }
 
 ModeModelMeshCreatePlane::~ModeModelMeshCreatePlane()

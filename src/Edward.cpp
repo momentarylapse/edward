@@ -46,22 +46,19 @@ color i42c(int *c)
 	return color(float(c[3])/255.0f,float(c[0])/255.0f,float(c[1])/255.0f,float(c[2])/255.0f);
 }
 
-static void OnClose()
+void Edward::OnClose()
 {
-	if (ed->AllowTermination())
+	if (AllowTermination())
 		HuiEnd();
 }
 
-static void OnDraw()
-{	ed->Draw();	}
-
 #define IMPLEMENT_EVENT(event, pre_event, param_list, param)	\
-static void event() \
+void Edward::event() \
 { \
-	if (ed->cur_mode) \
-		ed->cur_mode->pre_event(); \
-	if (ed->creation_mode) \
-		ed->creation_mode->event(); \
+	if (cur_mode) \
+		cur_mode->pre_event(); \
+	if (creation_mode) \
+		creation_mode->event(); \
 }
 
 IMPLEMENT_EVENT(OnKeyDown, OnPreKeyDown, , )
@@ -74,30 +71,27 @@ IMPLEMENT_EVENT(OnMiddleButtonUp, OnPreMiddleButtonUp, , )
 IMPLEMENT_EVENT(OnRightButtonDown, OnPreRightButtonDown, , )
 IMPLEMENT_EVENT(OnRightButtonUp, OnPreRightButtonUp, , )
 
-static void OnEvent()
+void Edward::OnEvent()
 {
 	string id = HuiGetEvent()->id;
 	if (id.num == 0)
 		id = HuiGetEvent()->message;
-	if (ed->cur_mode)
-		ed->cur_mode->OnPreCommand(id);
-	if (ed->creation_mode)
-		ed->creation_mode->OnCommand(id);
-	ed->OnCommand(id);
+	if (cur_mode)
+		cur_mode->OnPreCommand(id);
+	if (creation_mode)
+		creation_mode->OnCommand(id);
+	OnCommand(id);
 }
 
 static void OnAbortCreationMode()
 {	ed->SetCreationMode(NULL);	}
-
-static void OnAbout()
-{	ed->About();	}
 
 static void IdleFunction()
 {
 	msg_db_r("Idle", 3);
 
 	if (ed->force_redraw){
-		ed->Draw();
+		ed->OnDraw();
 		ed->force_redraw = false;
 	}else
 		HuiSleep(10);
@@ -105,7 +99,8 @@ static void IdleFunction()
 	msg_db_l(3);
 }
 
-Edward::Edward(Array<string> arg)
+Edward::Edward(Array<string> arg) :
+	CHuiWindow("", -1, -1, 800, 600, NULL, false, HuiWinModeResizable | HuiWinModeNix, true)
 {
 	msg_db_r("Init", 1);
 
@@ -149,29 +144,29 @@ Edward::Edward(Array<string> arg)
 	LoadScriptVarNames(2, "");*/
 
 	// create the main window
-	win = HuiCreateNixWindow(AppName, x, y, w, h);
-	win->SetMaximized(maximized);
+	HuiCreateNixWindow(AppName, x, y, w, h);
+	SetMaximized(maximized);
 	/*if (WelcomeUseDialog)
-		MainWin->Hide(true);*/
-	win->Update();
+		Hide(true);*/
+	Update();
 
 	// initialize engine
-	NixInit("OpenGL", 1024, 768, 32, false, win);
+	NixInit("OpenGL", 1024, 768, 32, false, this);
 	NixTextureIconSize = 32;
 
-	win->Event("hui:close", &OnClose);
-	win->Event("hui:redraw", &OnDraw);
-	win->Event("hui:key-down", &OnKeyDown);
-	win->Event("hui:key-up", &OnKeyUp);
-	win->Event("hui:mouse-move", &OnMouseMove);
-	win->Event("hui:left-button-down", &OnLeftButtonDown);
-	win->Event("hui:left-button-up", &OnLeftButtonUp);
-	win->Event("hui:middle-button-down", &OnMiddleButtonDown);
-	win->Event("hui:middle-button-up", &OnMiddleButtonUp);
-	win->Event("hui:right-button-down", &OnRightButtonDown);
-	win->Event("hui:right-button-up", &OnRightButtonUp);
-	win->Event("*", &OnEvent);
-	win->Event("what_the_fuck", &OnAbout);
+	EventM("hui:close", this, (void(CHuiWindow::*)())&Edward::OnClose);
+	EventM("hui:redraw", this, (void(CHuiWindow::*)())&Edward::OnDraw);
+	EventM("hui:key-down", this, (void(CHuiWindow::*)())&Edward::OnKeyDown);
+	EventM("hui:key-up", this, (void(CHuiWindow::*)())&Edward::OnKeyUp);
+	EventM("hui:mouse-move", this, (void(CHuiWindow::*)())&Edward::OnMouseMove);
+	EventM("hui:left-button-down", this, (void(CHuiWindow::*)())&Edward::OnLeftButtonDown);
+	EventM("hui:left-button-up", this, (void(CHuiWindow::*)())&Edward::OnLeftButtonUp);
+	EventM("hui:middle-button-down", this, (void(CHuiWindow::*)())&Edward::OnMiddleButtonDown);
+	EventM("hui:middle-button-up", this, (void(CHuiWindow::*)())&Edward::OnMiddleButtonUp);
+	EventM("hui:right-button-down", this, (void(CHuiWindow::*)())&Edward::OnRightButtonDown);
+	EventM("hui:right-button-up", this, (void(CHuiWindow::*)())&Edward::OnRightButtonUp);
+	EventM("*", this, (void(CHuiWindow::*)())&Edward::OnEvent);
+	EventM("what_the_fuck", this, (void(CHuiWindow::*)())&Edward::OnAbout);
 	HuiAddCommand("abort_creation_mode", "hui:cancel", KEY_ESCAPE, &OnAbortCreationMode);
 
 	MetaInit();
@@ -272,7 +267,7 @@ void Edward::SetMode(Mode *m)
 	cur_mode = m;
 	msg_write("start " + cur_mode->name);
 	cur_mode->Start();
-	win->SetMenu(cur_mode->menu);
+	SetMenu(cur_mode->menu);
 
 	ForceRedraw();
 	msg_db_l(1);
@@ -300,8 +295,8 @@ void Edward::SetCreationMode(ModeCreation *m)
 	msg_db_l(1);
 }
 
-void Edward::About()
-{	HuiAboutBox(win);	}
+void Edward::OnAbout()
+{	HuiAboutBox(this);	}
 
 void Edward::OnUpdate(Observable *o)
 {
@@ -324,7 +319,7 @@ void Edward::DrawStr(int x, int y, const string &str)
 	NixDrawStr(x,y,str);//SysStr(str));
 }
 
-void Edward::Draw()
+void Edward::OnDraw()
 {
 	NixStart();
 	if (cur_mode){
@@ -453,7 +448,7 @@ void Edward::SetMessage(const string &message)
 
 void Edward::ErrorBox(const string &message)
 {
-	HuiErrorBox(win, _("Fehler"), message);
+	HuiErrorBox(this, _("Fehler"), message);
 }
 
 void Edward::OnCommand(const string &id)
@@ -510,8 +505,8 @@ bool Edward::FileDialog(int kind,bool save,bool force_in_root_dir)
 	if (kind==FDCameraFlight){title=_("Kamera-Datei");	show_filter=_("Kamera-Dateien (*.camera)");	filter="*.camera";	}
 	if (kind==FDFile){		title=_("beliebige Datei");	show_filter=_("Dateien (*.*)");				filter="*";	}
 
-	if (save)	done=HuiFileDialogSave(win,title,DialogDir[kind],show_filter,filter);
-	else		done=HuiFileDialogOpen(win,title,DialogDir[kind],show_filter,filter);
+	if (save)	done=HuiFileDialogSave(this,title,DialogDir[kind],show_filter,filter);
+	else		done=HuiFileDialogOpen(this,title,DialogDir[kind],show_filter,filter);
 	if (done){
 
 		bool in_root_dir = (SysFileName(HuiFilename).find(SysFileName(RootDirKind[kind])) >= 0);
@@ -572,7 +567,7 @@ bool Edward::AllowTermination()
 		return true;
 	if (d->action_manager->IsSave())
 		return true;
-	string answer = HuiQuestionBox(win,_("Dem&utige aber h&ofliche Frage"),_("Sie haben die Entropie erh&oht. Wollen Sie Ihr Werk speichern?"),true);
+	string answer = HuiQuestionBox(this,_("Dem&utige aber h&ofliche Frage"),_("Sie haben die Entropie erh&oht. Wollen Sie Ihr Werk speichern?"),true);
 	if (answer == "hui:cancel")
 		return false;
 	if (answer == "hui:no")

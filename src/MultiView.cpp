@@ -270,7 +270,7 @@ void MultiView::OnLeftButtonDown()
 {
 	// menu for selection of view type
 	if (pos_in_irect(mx, my, view[mouse_win].name_dest)){
-		menu->OpenPopup(ed->win, mx, my);
+		menu->OpenPopup(ed, mx, my);
 		return;
 	}
 
@@ -1261,7 +1261,7 @@ void MultiView::SelectAllInRectangle(int mode)
 void MultiView::HoldCursor(bool holding)
 {
 	HoldingCursor = holding;
-	ed->win->ShowCursor(!holding);
+	ed->ShowCursor(!holding);
 }
 
 void MultiView::MouseActionStart(int button)
