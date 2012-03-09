@@ -375,7 +375,11 @@ void CHuiWindow::FromResource(const string &id)
 	if (!res)
 		msg_db_l(1);
 
+	// title
 	SetTitle(HuiGetLanguage(res->id));
+
+	// size
+	SetSize(res->i_param[0], res->i_param[1]);
 
 
 	// dialog

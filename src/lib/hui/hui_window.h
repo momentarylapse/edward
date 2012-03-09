@@ -144,8 +144,9 @@ public:
 	void _cdecl SetID(const string &id);
 	void _cdecl SetFullscreen(bool fullscreen);
 	void _cdecl SetTitle(const string &title);
-	void _cdecl SetPosition(int x,int y);
-	void _cdecl SetPositionSpecial(CHuiWindow *win,int mode);
+	void _cdecl SetPosition(int x, int y);
+	void _cdecl SetPositionSpecial(CHuiWindow *win, int mode);
+	void _cdecl SetSize(int width, int height);
 	void _cdecl SetOuterior(irect rect);
 	irect _cdecl GetOuterior();
 	void _cdecl SetOuteriorDesired(irect rect);

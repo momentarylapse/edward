@@ -103,10 +103,10 @@ void ModeMaterial::ExecuteAppearanceDialog()
 	if (AppearanceDialog)
 		return;
 
-	AppearanceDialog = new MaterialPropertiesDialog(ed, false, data);
+	AppearanceDialog = new MaterialPropertiesDialog(ed, true, data);
 
 	AppearanceDialog->Update();
-	HuiWaitTillWindowClosed(AppearanceDialog);
+	//HuiWaitTillWindowClosed(AppearanceDialog);
 }
 
 
@@ -233,6 +233,9 @@ void ModeMaterial::OnLeftButtonUp()
 
 void ModeMaterial::End()
 {
+	if (AppearanceDialog)
+		delete(AppearanceDialog);
+	AppearanceDialog = NULL;
 }
 
 

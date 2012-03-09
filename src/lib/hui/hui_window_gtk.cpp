@@ -694,9 +694,15 @@ void CHuiWindow::SetTitle(const string &title)
 }
 
 // set the upper left corner of the window in screen corrdinates
-void CHuiWindow::SetPosition(int x,int y)
+void CHuiWindow::SetPosition(int x, int y)
 {
 	gtk_window_move(GTK_WINDOW(window),x,y);
+}
+
+void CHuiWindow::SetSize(int width, int height)
+{
+	//gtk_window_resize(GTK_WINDOW(window), width, height);
+	gtk_widget_set_size_request(window, width, height);
 }
 
 // set the current window position and size (including the frame and menu/toolbars...)
