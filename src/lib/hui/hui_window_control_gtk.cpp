@@ -178,6 +178,8 @@ HuiControl *CHuiWindow ::_GetControl_(const string &id)
 		if (control[i]->id == id)
 			return control[i];
 	}
+	if (id.num != 0)
+		msg_error("hui: unknown id: '" + id + "'");
 	return NULL;
 }
 
@@ -186,6 +188,7 @@ HuiControl *CHuiWindow::_GetControlByWidget_(GtkWidget *widget)
 	for (int j=0;j<control.num;j++)
 		if (control[j]->widget == widget)
 			return control[j];
+	return NULL;
 }
 
 string CHuiWindow::_GetIDByWidget_(GtkWidget *widget)
@@ -1319,7 +1322,6 @@ string CHuiWindow::GetCell(const string &_id, int row, int column)
 	if (!c)
 		return "";
 	string r;
-	GtkTreeIter iter;
 	if (c->type==HuiKindTreeView){
 		GtkTreeModel *store = gtk_tree_view_get_model(GTK_TREE_VIEW(c->widget));
 		return tree_get_cell(store, c->_item_[row], column);
@@ -1457,7 +1459,6 @@ color CHuiWindow::GetColor(const string &_id)
 	if (c->type == HuiKindColorButton){
 		GdkColor gcol;
 		gtk_color_button_get_color(GTK_COLOR_BUTTON(c->widget), &gcol);
-		color col;
 		col.r = col_i16_to_f(gcol.red);
 		col.g = col_i16_to_f(gcol.green);
 		col.b = col_i16_to_f(gcol.blue);
@@ -1520,6 +1521,7 @@ bool CHuiWindow::IsChecked(const string &_id)
 		return _ToolbarIsChecked_(_id);
 	if (c->type == HuiKindCheckBox)
 		return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(c->widget));
+	return false;
 }
 
 // which lines are selected?
@@ -1556,7 +1558,7 @@ void CHuiWindow::Reset(const string &_id)
 		GtkListStore *store=GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(c->widget)));
 		gtk_list_store_clear(store);
 	}else if (c->type==HuiKindIconView){
-		GtkTreeModel *model=gtk_icon_view_get_model(GTK_ICON_VIEW(c->widget));
+		//GtkTreeModel *model=gtk_icon_view_get_model(GTK_ICON_VIEW(c->widget));
 		//gtk_tree_store_clear(store);
 		msg_write("Todo:  CHuiWindow::ResetControl (IconView)  (Linux)");
 	}else if (c->type==HuiKindComboBox){

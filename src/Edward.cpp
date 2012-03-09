@@ -586,3 +586,18 @@ int Edward::Run()
 {
 	return HuiRun();
 }
+
+string Edward::get_tex_image(int tex)
+{
+	if (tex < 0)
+		return "";
+	if (tex < icon_image.num)
+		if (icon_image[tex] != "")
+			return icon_image[tex];
+
+	string img = HuiSetImage(NixTexture[tex].Icon);
+	for (int i=icon_image.num;i<tex;i++)
+		icon_image.add("");
+	icon_image[tex] = img;
+	return img;
+}

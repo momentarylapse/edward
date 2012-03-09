@@ -20,6 +20,8 @@ ModeModelMeshCreateCube::ModeModelMeshCreateCube(Mode *_parent, DataModel *_data
 	message = _("cube...");
 	pos_chosen = false;
 	pos2_chosen = false;
+	for (int i=0;i<3;i++)
+		length[i] = v0;
 }
 
 ModeModelMeshCreateCube::~ModeModelMeshCreateCube()

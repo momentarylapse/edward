@@ -112,6 +112,11 @@ public:
 
 	MultiView *multi_view_2d;
 	MultiView *multi_view_3d;
+
+
+
+	Array<string> icon_image;
+	string get_tex_image(int tex);
 };
 
 extern Edward *ed;

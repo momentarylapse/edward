@@ -20,6 +20,7 @@ ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(Mode *_parent, DataModel *_da
 
 	message = _("Ebene: erster Punkt");
 	pos_chosen = false;
+	length[0] = length[1] = v0;
 
 
 	// Dialog
