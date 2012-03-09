@@ -114,7 +114,11 @@ void ModeModelMeshVertex::OnUpdate(Observable *o)
 	if (this != ed->cur_mode)
 		return;
 	multi_view->ResetData(data);
-	multi_view->SetMouseAction(0, "ActionModelMVMoveVertices", 0);
+	multi_view->SetMouseAction(0, "ActionModelMVMoveVertices", MultiView::ActionMove);
+	multi_view->SetMouseAction(1, "ActionModelMVRotateVertices", MultiView::ActionRotate2d);
+	multi_view->SetMouseAction(2, "ActionModelMVRotateVertices", MultiView::ActionRotate);
+	/*multi_view->SetMouseAction(1, "ActionModelMVMirrorVertices", MultiView::ActionOnce);
+	multi_view->SetMouseAction(2, "ActionModelMVScaleVertices", MultiView::ActionScale);*/
 	multi_view->MVRectable = true;
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	//CModeAll::SetMultiViewFunctions(&StartChanging, &EndChanging, &Change);

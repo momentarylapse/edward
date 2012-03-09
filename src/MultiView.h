@@ -44,6 +44,7 @@ struct MultiViewView
 	matrix mat;
 	irect dest;
 	irect name_dest;
+	vector ang;
 };
 
 
@@ -127,8 +128,13 @@ public:
 
 	void GetMouseOver();
 	void UnselectAll();
-	void GetSelected();
-	void SelectAllInRectangle();
+	enum{
+		SelectSet,
+		SelectAdd,
+		SelectInvert
+	};
+	void GetSelected(int mode = SelectSet);
+	void SelectAllInRectangle(int mode = SelectSet);
 
 
 	vector VecProject(vector p, int win);
@@ -162,6 +168,14 @@ public:
 	ActionMultiView *cur_action;
 	Data *_data_;
 	vector mouse_action_param, mouse_action_pos0;
+	enum{
+		ActionMove,
+		ActionRotate,
+		ActionRotate2d,
+		ActionScale,
+		ActionScale2d,
+		ActionOnce
+	};
 	void ResetMouseAction();
 	void SetMouseAction(int button, const string &name, int mode);
 	void MouseActionStart(int button);

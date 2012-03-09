@@ -10,8 +10,8 @@
 #include "../../lib/file/file.h"
 #include "../../lib/types/types.h"
 
-ActionModelMVMoveVertices::ActionModelMVMoveVertices(Data *d, int _set_no, const Array<int> &_index) :
-	ActionMultiView(d, _set_no, _index)
+ActionModelMVMoveVertices::ActionModelMVMoveVertices(Data *d, int _set_no, const Array<int> &_index, const vector &_pos0) :
+	ActionMultiView(d, _set_no, _index, _pos0)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
@@ -35,7 +35,7 @@ void ActionModelMVMoveVertices::abort(Data *d)
 
 void ActionModelMVMoveVertices::set_param(Data *d, const vector &_param)
 {
-	msg_write("move vert set param");
+	//msg_write("move vert set param");
 	param = _param;
 	execute(d);
 }
@@ -55,6 +55,7 @@ void ActionModelMVMoveVertices::undo(Data *d)
 
 void *ActionModelMVMoveVertices::execute(Data *d)
 {
+	msg_write("move vert do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii)
 		m->Vertex[i].pos = old_data[ii] + param;

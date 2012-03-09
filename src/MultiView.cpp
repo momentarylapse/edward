@@ -99,16 +99,15 @@ void MultiView::Reset()
 void MultiView::ResetMouseAction()
 {
 	cur_action = NULL;
+	action[0].reset();
+	action[1].reset();
+	action[2].reset();
+	active_mouse_action = -1;
 }
 
 void MultiView::ResetData(Data *_data)
 {
 	data.clear();
-
-	action[0].reset();
-	action[1].reset();
-	action[2].reset();
-	active_mouse_action = -1;
 	_data_ = _data;
 }
 
@@ -252,6 +251,14 @@ void MultiView::OnKeyDown()
 }
 
 
+int get_select_mode()
+{
+	if (NixGetKey(KEY_CONTROL))
+		return MultiView::SelectAdd;
+	if (NixGetKey(KEY_SHIFT))
+		return MultiView::SelectInvert;
+	return MultiView::SelectSet;
+}
 
 void MultiView::OnLeftButtonDown()
 {
@@ -264,15 +271,12 @@ void MultiView::OnLeftButtonDown()
 	MouseMovedSinceClick = 0;
 	Moved = false;
 	vx = vy = 0;
-	GetSelected();
+	GetSelected(get_select_mode());
 
 	if (Selected<0){
 		if (MVRectable)
 			StartRect();
 	}else{
-		MovingWin = mouse_win;
-		MovingStart = MouseOverTP;
-		MovingDP = MVGetSingleData(data[SelectedSet], Selected)->pos - MouseOverTP;
 	}
 }
 
@@ -303,6 +307,9 @@ void MultiView::OnRightButtonDown()
 // move camera?
 		HoldCursor(true);
 		ViewMoving = mouse_win;
+	}else{
+		MouseMovedSinceClick = 0;
+		GetSelected();
 	}
 }
 
@@ -314,6 +321,7 @@ void MultiView::OnMiddleButtonUp()
 		ViewMoving = -1;
 		HoldCursor(false);
 	}
+	MouseActionEnd(true);
 }
 
 
@@ -324,6 +332,7 @@ void MultiView::OnRightButtonUp()
 		ViewMoving = -1;
 		HoldCursor(false);
 	}
+	MouseActionEnd(true);
 }
 
 
@@ -357,36 +366,39 @@ void MultiView::OnMouseMove()
 
 
 	// which window is the cursor in?
-	if ((mx<MaxX/2)&&(my<MaxY/2))
-		mouse_win=0;
-	if ((mx>MaxX/2)&&(my<MaxY/2))
-		mouse_win=1;
-	if ((mx<MaxX/2)&&(my>MaxY/2))
-		mouse_win=2;
-	if ((mx>MaxX/2)&&(my>MaxY/2))
-		mouse_win=3;
-	if (whole_window)
-		mouse_win=4;
-	if (!mode3d)
-		mouse_win = 0;
+	if (!cur_action){
+		if ((mx<MaxX/2)&&(my<MaxY/2))
+			mouse_win=0;
+		if ((mx>MaxX/2)&&(my<MaxY/2))
+			mouse_win=1;
+		if ((mx<MaxX/2)&&(my>MaxY/2))
+			mouse_win=2;
+		if ((mx>MaxX/2)&&(my>MaxY/2))
+			mouse_win=3;
+		if (whole_window)
+			mouse_win=4;
+		if (!mode3d)
+			mouse_win = 0;
+	}
 
 
 	// hover
 	if ((!lbut) && (!mbut) && (!rbut))
 		GetMouseOver();
 
+	// rectangle
 	if (MVRect)
-		SelectAllInRectangle();
+		SelectAllInRectangle(get_select_mode());
 
 	// left button -> move data
 	//msg_write(lbut);
-	if (lbut){
+	if ((lbut) or (mbut) or (rbut)){
 		int d = abs(vx) + abs(vy);
 		MouseMovedSinceClick += d;
 		if ((MouseMovedSinceClick >= MinMouseMoveToInteract) and (MouseMovedSinceClick - d < MinMouseMoveToInteract)){
 			MultiViewEditing = true;
 			if (Selected >= 0){
-				MouseActionStart(0);
+				MouseActionStart(rbut ? (NixGetKey(KEY_SHIFT) ? 1 : 2) : 0);
 			}
 		}
 		MouseActionUpdate();
@@ -590,10 +602,9 @@ void MultiView::DrawGrid(int win, irect dest)
 	}
 }
 
-
-void MultiView::DrawMousePos()
+string GetMVScaleByZoom(vector &v, float zoom)
 {
-	vector m = GetCursor3d();
+
 	float l = GetGridD(zoom) * 10.1f;
 	string unit;
 	float f = 1.0f;
@@ -632,7 +643,14 @@ void MultiView::DrawMousePos()
 	if (l>1000000000000000.0f){		unit = "P";	f=0.000000000000001f;	}
 	//if (l>1000000000000000000.0f){
 	//}
-	m *= f;
+	v *= f;
+	return unit;
+}
+
+void MultiView::DrawMousePos()
+{
+	vector m = GetCursor3d();
+	string unit = GetMVScaleByZoom(m, zoom);
 	string sx = f2s(m.x,2) + " " + unit;
 	string sy = f2s(m.y,2) + " " + unit;
 	string sz = f2s(m.z,2) + " " + unit;
@@ -680,41 +698,40 @@ void MultiView::DrawWin(int win, irect dest)
 	MatrixTranslation(t,vt);
 	if (view[win].type == ViewFront){
 		view_kind = _("Vorne");
-		MatrixRotationY(r,pi);
+		view[win].ang = - e_y * pi;
 	}else if (view[win].type == ViewBack){
 		view_kind = _("Hinten");
-		MatrixIdentity(r);
+		view[win].ang = v0;
 	}else if (view[win].type == ViewRight){
 		view_kind = _("Rechts");
-		MatrixRotationY(r,pi/2);
+		view[win].ang = - e_y * pi / 2;
 	}else if (view[win].type == ViewLeft){
 		view_kind = _("Links");
-		MatrixRotationY(r,-pi/2);
+		view[win].ang = e_y * pi / 2;
 	}else if (view[win].type == ViewTop){
 		view_kind = _("Oben");
-		MatrixRotationX(r,-pi/2);
+		view[win].ang = e_x * pi / 2;
 	}else if (view[win].type == ViewBottom){
 		view_kind = _("Unten");
-		MatrixRotationX(r,pi/2);
+		view[win].ang = - e_x * pi / 2;
 	}else if (view[win].type == ViewPerspective){
 		view_kind = _("Perspektive");
-		float _radius=ignore_radius ? 0 : radius;
-		vector PerspectiveViewPos=_radius*VecAng2Dir(ang)+vt;
-		MatrixTranslation(t,PerspectiveViewPos);
-		MatrixRotationView(r,ang);
+		float _radius = ignore_radius ? 0 : radius;
+		MatrixTranslation(t, _radius * VecAng2Dir(ang) + vt);
+		view[win].ang = ang;
 	}else if (view[win].type == ViewIsometric){
 		view_kind = _("Isometrisch");
 		float _radius = ignore_radius? 0 : radius;
-		vector PerspectiveViewPos=_radius*VecAng2Dir(ang)+vt;
-		MatrixTranslation(t,PerspectiveViewPos);
-		MatrixRotationView(r,ang);
+		MatrixTranslation(t, _radius * VecAng2Dir(ang) + vt);
+		view[win].ang = ang;
 	}else if (view[win].type == View2D){
 		view_kind = _("2D");
 		vt=-pos;
 		MatrixTranslation(t,vt);
-		MatrixRotationY(r,pi);
+		view[win].ang = - pi * e_y;
 	}
-	MatrixMultiply(view[win].mat,r,t);
+	MatrixRotationView(r, view[win].ang);
+	MatrixMultiply(view[win].mat, r, t);
 	cur_view = cur_view_rect = win;
 	NixSetViewM((view[win].type == ViewPerspective), view[win].mat);
 	//NixSetView(true,vector(0,0,-200),vector(0,0,0));
@@ -851,8 +868,23 @@ void MultiView::Draw()
 
 	DrawMousePos();
 
-	/*if (PostDrawMultiView)
-		PostDrawMultiView();*/
+	if (cur_action){
+		int mode = action[active_mouse_action].mode;
+		if (mode == ActionMove){
+			vector t = mouse_action_param;
+			string unit = GetMVScaleByZoom(t, zoom);
+			ed->DrawStr(100, 100, f2s(t.x, 2) + " " + unit);
+			ed->DrawStr(100, 120, f2s(t.y, 2) + " " + unit);
+			ed->DrawStr(100, 140, f2s(t.z, 2) + " " + unit);
+		}else if ((mode == ActionRotate) or (mode == ActionRotate2d)){
+			vector r = mouse_action_param * 180.0f / pi;
+			ed->DrawStr(100, 100, f2s(r.x, 2) + "°");
+			ed->DrawStr(100, 120, f2s(r.y, 2) + "°");
+			ed->DrawStr(100, 140, f2s(r.z, 2) + "°");
+		}else if ((mode == ActionScale) or (mode == ActionScale2d)){
+			ed->DrawStr(100, 100, f2s(mouse_action_param.x * 100.0f, 2) + "%");
+		}
+	}
 
 	msg_db_l(2);
 }
@@ -1078,7 +1110,6 @@ void MultiView::InvertSelection()
 
 vector MultiView::GetCursor3d()
 {
-	//return VecUnProject(vector((float)mx,(float)my,0), mouse_win);
 	return VecUnProject2(vector((float)mx, (float)my, 0), pos, mouse_win);
 }
 
@@ -1150,7 +1181,7 @@ void MultiView::UnselectAll()
 	MultiViewSelectionChanged = true;
 }
 
-void MultiView::GetSelected()
+void MultiView::GetSelected(int mode)
 {
 	msg_db_r("GetSelected",4);
 	Selected=MouseOver;
@@ -1158,20 +1189,20 @@ void MultiView::GetSelected()
 	SelectedSet=MouseOverSet;
 	SelectedTP=MouseOverTP;
 	if ((Selected<0)||(SelectedType<0)){
-		if ((!NixGetKey(KEY_CONTROL))&&(!NixGetKey(KEY_SHIFT)))
+		if (mode == SelectSet)
 			UnselectAll();
 	}else{
 		MultiViewSingleData* sd=MVGetSingleData(data[SelectedSet],Selected);
 		if (sd->is_selected){
-			if (NixGetKey(KEY_SHIFT)){
+			if (mode == SelectInvert){
 				sd->is_selected=false;
 				Selected=SelectedType=-1;
 			}
 		}else{
-			if ((NixGetKey(KEY_CONTROL))||(NixGetKey(KEY_SHIFT)))
-				sd->is_selected=true;
-			else{
+			if (mode == SelectSet){
 				UnselectAll();
+				sd->is_selected=true;
+			}else{
 				sd->is_selected=true;
 			}
 		}
@@ -1180,7 +1211,7 @@ void MultiView::GetSelected()
 	msg_db_l(4);
 }
 
-void MultiView::SelectAllInRectangle()
+void MultiView::SelectAllInRectangle(int mode)
 {
 	msg_db_r("SelAllInRect",4);
 	int x1=RectX,y1=RectY,x2=mx,y2=my,a;
@@ -1189,7 +1220,7 @@ void MultiView::SelectAllInRectangle()
 	// normalize rectangle
 	if (x2<x1){		a=x2;	x2=x1;	x1=a;	}
 	if (y2<y1){		a=y2;	y2=y1;	y1=a;	}
-	irect r=irect(x1,x2,y1,y2);
+	irect r = irect(x1,x2,y1,y2);
 
 	// select
 	foreach(data, d)
@@ -1202,20 +1233,19 @@ void MultiView::SelectAllInRectangle()
 				// selected?
 				sd->m_delta=false;
 				if (d.IsInRect)
-					sd->m_delta=d.IsInRect(i,d.user_data, RectWin,&r);
+					sd->m_delta = d.IsInRect(i, d.user_data, RectWin, &r);
 				else{// if (!sd->m_delta){
-					vector p=VecProject(sd->pos,RectWin);
-					sd->m_delta=((x2>=p.x)&&(x1<=p.x)&&(y2>=p.y)&&(y1<=p.y)&&(p.z>0)&&(p.z<1));
+					vector p = VecProject(sd->pos,RectWin);
+					sd->m_delta = pos_in_irect(p.x, p.y, r);
 				}
 
 				// add the selection layers
-				if (NixGetKey(KEY_SHIFT))
-					sd->is_selected=(sd->m_old && !sd->m_delta) || (!sd->m_old && sd->m_delta);
+				if (mode == SelectInvert)
+					sd->is_selected = (sd->m_old && !sd->m_delta) || (!sd->m_old && sd->m_delta);
+				else if (mode == SelectAdd)
+					sd->is_selected = (sd->m_old || sd->m_delta);
 				else
-					if (NixGetKey(KEY_CONTROL))
-						sd->is_selected=(sd->m_old || sd->m_delta);
-					else
-						sd->is_selected=sd->m_delta;
+					sd->is_selected = sd->m_delta;
 			}
 	MultiViewSelectionChanged=true;
 	msg_db_l(4);
@@ -1239,21 +1269,48 @@ void MultiView::MouseActionStart(int button)
 			if (MVGetSingleData(data[0], i)->is_selected)
 				index.add(i);
 
-		cur_action = ActionMultiViewFactory(action[button].name, _data_, 0, index);
 		active_mouse_action = button;
-		mouse_action_pos0 = GetCursor3d();
-		//ed->ForceRedraw();
+		mouse_action_pos0 = MouseOverTP;
+		cur_action = ActionMultiViewFactory(action[button].name, _data_, 0, index, mouse_action_pos0);
 	}
 }
 
 
+vector transform_ang(MultiView *mv, const vector &ang)
+{
+	quaternion qmv, mqmv, qang, q;
+	QuaternionRotationV(qmv,  mv->view[mv->mouse_win].ang);
+	QuaternionRotationV(qang, ang);
+	QuaternionInverse(mqmv, qmv);
+	QuaternionMultiply(q, qang, mqmv);
+	QuaternionMultiply(q, qmv, q);
+	return QuaternionToAngle(q);
+}
 
 void MultiView::MouseActionUpdate()
 {
 	if (cur_action){
-		msg_write("mouse action update");
-		mouse_action_param = GetCursor3d() - mouse_action_pos0;
-		//ed->ForceRedraw();
+		//msg_write("mouse action update");
+
+		vector v2p = vector((float)mx, (float)my, 0);
+		vector v2  = VecUnProject2(v2p, mouse_action_pos0, mouse_win);
+		vector v1  = mouse_action_pos0;
+		vector v1p = VecProject(v1, mouse_win);
+		int mode = action[active_mouse_action].mode;
+		if (mode == ActionMove)
+			mouse_action_param = v2 - v1;
+		else if (mode == ActionRotate)
+			mouse_action_param = transform_ang(this, vector(v1p.y - v2p.y, v1p.x - v2p.x, 0) * 0.003f);
+		else if (mode == ActionRotate2d)
+			mouse_action_param = transform_ang(this, e_z * (v2p.x - v1p.x) * 0.003f);
+		else if (mode == ActionScale)
+			mouse_action_param = e_x + (v2p - v1p) * 0.01f;
+		else if (mode == ActionScale2d)
+			mouse_action_param = e_x + (v2p - v1p) * 0.01f;
+		else if (mode == ActionOnce)
+			mouse_action_param = GetDirectionRight(mouse_win);
+		else
+			mouse_action_param = v0;
 		cur_action->set_param_and_notify(_data_, mouse_action_param);
 	}
 }

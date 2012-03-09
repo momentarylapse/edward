@@ -46,7 +46,7 @@ string Observable::GetName()
 void Observable::Notify()
 {
 	if (notify_level == 0){
-		msg_write("notify ==");
+		//msg_write("notify ==");
 		foreach(observer, o)
 			o->OnUpdate(this);
 		has_to_notify = false;
@@ -57,13 +57,13 @@ void Observable::Notify()
 void Observable::NotifyBegin()
 {
 	notify_level ++;
-	msg_write("notify ++");
+	//msg_write("notify ++");
 }
 
 void Observable::NotifyEnd()
 {
 	notify_level --;
-	msg_write("notify --");
+	//msg_write("notify --");
 	if ((notify_level == 0) && (has_to_notify))
 		Notify();
 }
