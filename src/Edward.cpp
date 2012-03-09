@@ -236,9 +236,23 @@ Edward::~Edward()
 	HuiEnd();
 }
 
+bool mode_switch_allowed(Mode *m)
+{
+	Mode *root_cur = NULL;
+	if (ed->cur_mode)
+		root_cur = ed->cur_mode->GetRootMode();
+	Mode *root_new = m->GetRootMode();
+
+	if (root_cur == root_new)
+		return true;
+	return ed->AllowTermination();
+}
+
 void Edward::SetMode(Mode *m)
 {
 	if (cur_mode == m)
+		return;
+	if (!mode_switch_allowed(m))
 		return;
 
 	msg_db_r("SetMode", 1);
@@ -535,13 +549,16 @@ Mode *get_cur_root_mode()
 	return m;
 }
 
-Data *get_cur_data()
+Data *get_mode_data(Mode *m)
 {
-	Mode *m = get_cur_root_mode();
 	if (m == mode_model)
 		return mode_model->data;
-	/*if (m == mode_model)
-		return mode_model->data;*/
+	if (m == mode_material)
+		return mode_material->data;
+	if (m == mode_world)
+		return mode_world->data;
+	if (m == mode_font)
+		return mode_font->data;
 	return NULL;
 }
 
@@ -549,7 +566,8 @@ bool Edward::AllowTermination()
 {
 	if (!cur_mode)
 		return true;
-	Data *d = get_cur_data();
+	Mode *root = cur_mode->GetRootMode();
+	Data *d = get_mode_data(root);
 	if (!d)
 		return true;
 	if (d->action_manager->IsSave())
@@ -561,7 +579,6 @@ bool Edward::AllowTermination()
 		return true;
 	//if (answer == "hui:no")
 	bool saved = true;
-	Mode *root = get_cur_root_mode();
 	if (root == mode_model)		saved = mode_model->Save();
 	/*if (Mode==ModeObject)		saved=mobject->Save();
 	if (Mode==ModeItem)			saved=mitem->Save();

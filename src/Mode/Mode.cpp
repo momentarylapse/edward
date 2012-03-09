@@ -106,12 +106,12 @@ void Mode::OnPreRightButtonDown()
 	OnRightButtonDown();
 }
 
-/*void Mode::OnPreDataChange()
+Mode *Mode::GetRootMode()
 {
 	if (parent)
-		parent->OnPreDataChange();
-	OnDataChange();
-}*/
+		return parent->GetRootMode();
+	return this;
+}
 
 
 
