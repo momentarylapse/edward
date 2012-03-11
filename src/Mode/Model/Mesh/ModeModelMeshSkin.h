@@ -39,6 +39,8 @@ public:
 	void DrawWin(int win, irect dest);
 	void DrawTrias();
 
+	void FillSelectionBuffers();
+
 	DataModel *data;
 
 	int VBModel, VBModel2, VBModel3, VBModel4;

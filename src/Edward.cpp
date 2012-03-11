@@ -125,6 +125,7 @@ Edward::Edward(Array<string> arg) :
 	int w = HuiConfigReadInt("Width", 800);
 	int h = HuiConfigReadInt("Height", 600);
 	bool maximized = HuiConfigReadBool("Maximized", false);
+	SetSize(w, h);
 	RootDir = HuiConfigReadStr("RootDir", "");
 	//HuiConfigReadInt("Api", api, NIX_API_OPENGL);
 	/*bool LocalDocumentation = HuiConfigReadBool("LocalDocumentation", false);
@@ -146,8 +147,6 @@ Edward::Edward(Array<string> arg) :
 	// create the main window
 	HuiCreateNixWindow(AppName, x, y, w, h);
 	SetMaximized(maximized);
-	/*if (WelcomeUseDialog)
-		Hide(true);*/
 	Update();
 
 	// initialize engine
@@ -178,17 +177,8 @@ Edward::Edward(Array<string> arg) :
 	ScriptInit();
 //	ScriptLinkDynamicExternalData();
 
-	/*CModeAll();
-	RegisterFileTypes();
+	/*RegisterFileTypes();
 
-	// callback functions for CModeAll...
-	PostRender = &EdwardPostRender;
-	PostGetInput = &EdwardPostGetInput;
-	PostDrawMultiView = &EdwardPostDrawMultiView;
-	PostDoMultiViewStuff = &EdwardPostDoMultiViewStuff;
-	PostEndRect = &EdwardPostEndRect;
-
-	Mode = ModeNone;
 	for (int i=0;i<NumFDs;i++)
 		DialogDir[i] = "";
 	for (int i=0;i<4;i++){
