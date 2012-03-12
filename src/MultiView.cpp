@@ -303,6 +303,7 @@ void MultiView::OnMiddleButtonDown()
 // move camera?
 		HoldCursor(true);
 		ViewMoving = mouse_win;
+		Selected = -1;
 	}
 }
 
@@ -318,6 +319,7 @@ void MultiView::OnRightButtonDown()
 // move camera?
 		HoldCursor(true);
 		ViewMoving = mouse_win;
+		Selected = -1;
 	}else{
 		MouseMovedSinceClick = 0;
 		GetSelected();
