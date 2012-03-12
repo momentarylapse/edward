@@ -39,7 +39,7 @@ public:
 private:
 	vector pos, pos2, length;
 	float radius;
-	bool pos_chosen;
+	bool pos_chosen, pos2_chosen;
 };
 
 #endif /* MODEMODELMESHCREATECYLINDER_H_ */

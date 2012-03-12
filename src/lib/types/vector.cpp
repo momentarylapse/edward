@@ -216,8 +216,8 @@ vector _cdecl VecOrtho(const vector &v)
 {
 	int p = VecImportantPlane(v);
 	if (p == 0)
-		return vector(v.y, - v.x, v.z);
-	return vector(v.x, v.z, - v.y);
+		return vector(v.y, - v.x, 0);
+	return vector(0, v.z, - v.y);
 }
 
 // kuerzeste Entfernung von p zur Geraden(l1,l2)

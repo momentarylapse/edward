@@ -1,5 +1,5 @@
 // NumConfigs
-19
+22
 // X
 -1
 // Y
@@ -38,4 +38,10 @@ true
 4
 // NewPlaneNumY
 4
+// NewCylinderRings
+4
+// NewCylinderEdges
+8
+// NewCylinderClosedEndings
+true
 #
