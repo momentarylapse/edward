@@ -21,6 +21,7 @@ ModeModelMeshSkin::ModeModelMeshSkin(Mode *_parent, DataModel *_data)
 	menu = HuiCreateResourceMenu("menu_model");
 	multi_view = ed->multi_view_3d;
 	Subscribe(data);
+	Subscribe(&multi_view->selection);
 
 	// vertex buffers
 	VBMarked = NixCreateVB(65536);
@@ -300,21 +301,33 @@ void ModeModelMeshSkin::OnUpdate(Observable *o)
 {
 	if (this != ed->cur_mode)
 		return;
-	multi_view->ResetData(data);
-/*	multi_view->SetMouseAction(0, "ActionModelMVMoveVertices", MultiView::ActionMove);
-	multi_view->SetMouseAction(1, "ActionModelMVRotateVertices", MultiView::ActionRotate2d);
-	multi_view->SetMouseAction(2, "ActionModelMVRotateVertices", MultiView::ActionRotate);*/
-	/*multi_view->SetMouseAction(1, "ActionModelMVMirrorVertices", MultiView::ActionOnce);
-	multi_view->SetMouseAction(2, "ActionModelMVScaleVertices", MultiView::ActionScale);*/
-	multi_view->MVRectable = true;
-	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	//CModeAll::SetMultiViewFunctions(&StartChanging, &EndChanging, &Change);
-	foreach(data->Surface, s)
+	if (o->GetName() == "Data"){
+		multi_view->ResetData(data);
+/*		multi_view->SetMouseAction(0, "ActionModelMVMoveVertices", MultiView::ActionMove);
+		multi_view->SetMouseAction(1, "ActionModelMVRotateVertices", MultiView::ActionRotate2d);
+		multi_view->SetMouseAction(2, "ActionModelMVRotateVertices", MultiView::ActionRotate);*/
+		/*multi_view->SetMouseAction(1, "ActionModelMVMirrorVertices", MultiView::ActionOnce);
+		multi_view->SetMouseAction(2, "ActionModelMVScaleVertices", MultiView::ActionScale);*/
+		multi_view->MVRectable = true;
+		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
+		//CModeAll::SetMultiViewFunctions(&StartChanging, &EndChanging, &Change);
+		foreach(data->Surface, s)
 		multi_view->SetData(	MVDModelTriangle,
-			s.Triangle,
-			&s,
-			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
-			&TriangleIsMouseOver, &TriangleInRect);
+				s.Triangle,
+				&s,
+				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
+				&TriangleIsMouseOver, &TriangleInRect);
+	}else if (o->GetName() == "MultiViewSelection"){
+		// vertex selection from trias
+		foreach(data->Vertex, v)
+			v.is_selected = false;
+		foreach(data->Surface, s)
+			foreach(s.Triangle, t)
+				if (t.is_selected)
+					for (int k=0;k<3;k++)
+						data->Vertex[t.Vertex[k]].is_selected = true;
+		FillSelectionBuffers();
+	}
 }
 
 

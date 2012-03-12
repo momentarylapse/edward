@@ -12,9 +12,12 @@
 #include "lib/nix/nix.h"
 #include "Action/ActionMultiView.h"
 #include "Data/Data.h"
+#include "MultiView.h"
+#include "Stuff/Observable.h"
 
 class ActionMultiView;
 class Data;
+class Observable;
 
 
 enum
@@ -73,6 +76,12 @@ struct MultiViewMouseAction
 		mode = 0;
 		active = false;
 	}
+};
+
+class MultiViewSelection : public Observable
+{
+public:
+	MultiViewSelection();
 };
 
 // TODO refactor me!!!
@@ -188,6 +197,7 @@ public:
 	int MouseOver,MouseOverType,MouseOverSet,Selected,SelectedType,SelectedSet;
 	vector MouseOverTP,SelectedTP,MovingDPos,RFPos,LFPos;
 	bool EditingStart, EditingEnd, DataChanged, Changed;
+	MultiViewSelection selection;
 
 	int ViewMoving;
 
