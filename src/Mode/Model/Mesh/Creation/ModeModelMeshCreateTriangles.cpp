@@ -95,7 +95,14 @@ void ModeModelMeshCreateTriangles::OnMiddleButtonUp()
 void ModeModelMeshCreateTriangles::OnLeftButtonDown()
 {
 	if (multi_view->Selected >= 0){
+		if (selection.num > 0)
+			if (multi_view->Selected == selection[0]){
+				data->Execute(new ActionModelAddTrianglesByOutline(selection, data));
+				ed->SetCreationMode(NULL);
+				return;
+			}
 		selection.add(multi_view->Selected);
+
 	}else{
 		data->AddVertex(multi_view->GetCursor3d());
 		selection.add(data->Vertex.num - 1);
