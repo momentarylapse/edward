@@ -10,15 +10,17 @@
 #include "../../lib/file/file.h"
 #include "../../lib/types/types.h"
 
-ActionModelMVScaleVertices::ActionModelMVScaleVertices(Data *d, int _set_no, const Array<int> &_index, const vector &_pos0) :
-	ActionMultiView(d, _set_no, _index, _pos0)
+ActionModelMVScaleVertices::ActionModelMVScaleVertices(Data *d, const vector &_pos0) :
+	ActionMultiView(d, _pos0)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	// save old pos
-	old_data.resize(_index.num);
-	foreachi(index, i, ii)
-		old_data[ii] = m->Vertex[i].pos;
+	// list of selected vertices and save old pos
+	foreachi(m->Vertex, v, i)
+		if (v.is_selected){
+			index.add(i);
+			old_data.add(m->Vertex[i].pos);
+		}
 }
 
 ActionModelMVScaleVertices::~ActionModelMVScaleVertices()

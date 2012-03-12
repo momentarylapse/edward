@@ -18,7 +18,7 @@ class Data;
 class ActionModelMVRotateVertices: public ActionMultiView
 {
 public:
-	ActionModelMVRotateVertices(Data *d, int _set_no, const Array<int> &_index, const vector &_pos0);
+	ActionModelMVRotateVertices(Data *d, const vector &_pos0);
 	virtual ~ActionModelMVRotateVertices();
 
 	void *execute(Data *d);

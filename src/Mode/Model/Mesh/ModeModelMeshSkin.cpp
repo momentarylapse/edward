@@ -303,9 +303,9 @@ void ModeModelMeshSkin::OnUpdate(Observable *o)
 		return;
 	if (o->GetName() == "Data"){
 		multi_view->ResetData(data);
-/*		multi_view->SetMouseAction(0, "ActionModelMVMoveVertices", MultiView::ActionMove);
+		multi_view->SetMouseAction(0, "ActionModelMVMoveVertices", MultiView::ActionMove);
 		multi_view->SetMouseAction(1, "ActionModelMVRotateVertices", MultiView::ActionRotate2d);
-		multi_view->SetMouseAction(2, "ActionModelMVRotateVertices", MultiView::ActionRotate);*/
+		multi_view->SetMouseAction(2, "ActionModelMVRotateVertices", MultiView::ActionRotate);
 		/*multi_view->SetMouseAction(1, "ActionModelMVMirrorVertices", MultiView::ActionOnce);
 		multi_view->SetMouseAction(2, "ActionModelMVScaleVertices", MultiView::ActionScale);*/
 		multi_view->MVRectable = true;

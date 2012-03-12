@@ -18,7 +18,7 @@ class Data;
 class ActionModelMVMirrorVertices: public ActionMultiView
 {
 public:
-	ActionModelMVMirrorVertices(Data *d, int _set_no, const Array<int> &_index, const vector &_pos0);
+	ActionModelMVMirrorVertices(Data *d, const vector &_pos0);
 	virtual ~ActionModelMVMirrorVertices();
 
 	void *execute(Data *d);

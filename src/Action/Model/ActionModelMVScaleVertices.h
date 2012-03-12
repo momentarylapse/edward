@@ -18,7 +18,7 @@ class Data;
 class ActionModelMVScaleVertices: public ActionMultiView
 {
 public:
-	ActionModelMVScaleVertices(Data *d, int _set_no, const Array<int> &_index, const vector &_pos0);
+	ActionModelMVScaleVertices(Data *d, const vector &_pos0);
 	virtual ~ActionModelMVScaleVertices();
 
 	void *execute(Data *d);
@@ -28,6 +28,9 @@ public:
 	// continuous editing
 	void abort(Data *d);
 	void set_param(Data *d, const vector &_param);
+	void set_axis(const vector &_e1, const vector &_e2, const vector &_e3);
+private:
+	vector e[3];
 };
 
 #endif /* ACTIONMODELMVSCALEVERTICES_H_ */

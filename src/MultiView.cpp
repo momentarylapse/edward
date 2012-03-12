@@ -1281,14 +1281,10 @@ void MultiView::MouseActionStart(int button)
 		MouseActionEnd(false);
 	if (action[button].name != ""){
 		msg_error("mouse action start <" + action[button].name + ">");
-		Array<int> index;
-		for (int i=0;i<data[0].Num;i++)
-			if (MVGetSingleData(data[0], i)->is_selected)
-				index.add(i);
 
 		active_mouse_action = button;
 		mouse_action_pos0 = MouseOverTP;
-		cur_action = ActionMultiViewFactory(action[button].name, _data_, 0, index, mouse_action_pos0);
+		cur_action = ActionMultiViewFactory(action[button].name, _data_, mouse_action_pos0);
 	}
 }
 

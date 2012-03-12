@@ -18,7 +18,7 @@ class Data;
 class ActionMultiView: public Action
 {
 public:
-	ActionMultiView(Data *d, int _set_no, const Array<int> &_index, const vector &_pos0);
+	ActionMultiView(Data *d, const vector &_pos0);
 	virtual ~ActionMultiView();
 
 	virtual void *execute(Data *d) = 0;
@@ -32,12 +32,11 @@ public:
 	void set_param_and_notify(Data *d, const vector &_param);
 
 protected:
-	int set_no;
 	Array<int> index;
 	vector pos0, param;
 	Array<vector> old_data;
 };
 
-ActionMultiView *ActionMultiViewFactory(const string &name, Data *d, int _set_no, const Array<int> &_index, const vector &_pos0);
+ActionMultiView *ActionMultiViewFactory(const string &name, Data *d, const vector &_pos0);
 
 #endif /* ACTIONMULTIVIEW_H_ */
