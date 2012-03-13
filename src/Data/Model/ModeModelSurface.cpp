@@ -294,9 +294,12 @@ void ModeModelSurface::BuildFromTriangles()
 	// clear
 	Edge.clear();
 	Vertex.clear();
-	foreach(Triangle, t)
-		for (int k=0;k<3;k++)
-			model->Vertex[t.Vertex[k]].RefCount = 0;
+	int n = model->get_surf_no(this);
+	foreach(model->Vertex, v)
+		if (v.Surface == n){
+			v.Surface = -1;
+			v.RefCount = 0;
+		}
 
 	// add all triangles
 	foreach(Triangle, t){

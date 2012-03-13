@@ -112,14 +112,18 @@ void DataModel::Reset()
 	/*Execute(new ActionModelAddPlane(e_y * 10, e_x * 200, e_z * 200, 4, 4, Vertex.num));
 	Execute(new ActionModelAddBall(vector(-200, 0, 0), 100, 16, 16, false, Vertex.num));
 	Execute(new ActionModelAddBall(vector(-200, 0, 200), 100, 16, 16, true, Vertex.num));
-	Execute(new ActionModelAddCylinder(vector(200, 0, 0), e_z * 100, 40, 3, 16, true, Vertex.num));
-	UpdateNormals();
+	Execute(new ActionModelAddCylinder(vector(200, 0, 0), e_z * 100, 40, 3, 16, true, Vertex.num));*/
+}
 
+void DataModel::DebugShow()
+{
 	msg_write("------------");
 	msg_write(Vertex.num);
 	msg_write(Surface.num);
-	foreach(Surface, s)
-		msg_write(s.Triangle.num);*/
+	foreach(Surface, s){
+		msg_write(s.Triangle.num);
+		s.TestSanity("Model.DebugShow");
+	}
 }
 
 
@@ -829,7 +833,7 @@ ModeModelTriangle *DataModel::AddTriangle(int a, int b, int c)
 {
 	vector sv[3] = {e_y, v0, e_x};
 	//ApplyAutoTexturing(this, a, b, c, sv);
-	return (ModeModelTriangle*) Execute(new ActionModelAddTriangle(a, b, c, sv[0], sv[1], sv[2]));
+	return (ModeModelTriangle*) Execute(new ActionModelAddTriangle(this, a, b, c, sv[0], sv[1], sv[2]));
 }
 
 

@@ -106,7 +106,7 @@ void ModeModelMeshCreatePlane::OnLeftButtonDown()
 			length[0] = -length[0];
 		}
 
-		data->Execute(new ActionModelAddPlane(pos, length[0], length[1], nx, ny, data->Vertex.num));
+		data->Execute(new ActionModelAddPlane(data, pos, length[0], length[1], nx, ny));
 
 		ed->SetCreationMode(NULL);
 	}else{

@@ -11,11 +11,12 @@
 #include "../Action.h"
 #include "../ActionGroup.h"
 #include "../../lib/types/types.h"
+#include "../../Data/Model/DataModel.h"
 
 class ActionModelAddCylinder: public ActionGroup
 {
 public:
-	ActionModelAddCylinder(const vector &pos, const vector &length, float radius, int rings, int edges, bool closed, int nv);
+	ActionModelAddCylinder(DataModel *m, const vector &pos, const vector &length, float radius, int rings, int edges, bool closed);
 	virtual ~ActionModelAddCylinder();
 };
 

@@ -7,34 +7,19 @@
 
 #include "ActionModelAddTriangle.h"
 #include "../../Data/Model/DataModel.h"
+#include "ActionModel__AddSurface.h"
+#include "ActionModel__SurfaceAddTriangle.h"
+#include "ActionModel__JoinSurfaces.h"
+#include <assert.h>
 
-ActionModelAddTriangle::ActionModelAddTriangle(int _a, int _b, int _c, const vector &_sva, const vector &_svb, const vector &_svc)
+ActionModelAddTriangle::ActionModelAddTriangle(DataModel *m, int _a, int _b, int _c, const vector &_sva, const vector &_svb, const vector &_svc)
 {
-	a = _a;
-	b = _b;
-	c = _c;
-	sv[0] = _sva;
-	sv[1] = _svb;
-	sv[2] = _svc;
-}
-
-ActionModelAddTriangle::~ActionModelAddTriangle()
-{
-}
-
-
-
-void *ActionModelAddTriangle::execute(Data *d)
-{
-	msg_write("add tria do");
-	DataModel *m = dynamic_cast<DataModel*>(d);
-
-	ModeModelTriangle *r;
-
+	assert(_a >= 0 && _b >= 0 && _c >= 0);
+	assert(_a != _b && _b != _c && _c != _a);
 	Array<int> v;
-	v.add(a);
-	v.add(b);
-	v.add(c);
+	v.add(_a);
+	v.add(_b);
+	v.add(_c);
 	Set<int> surf;
 	foreach(v, vv){
 		if (m->Vertex[vv].Surface >= 0)
@@ -43,22 +28,18 @@ void *ActionModelAddTriangle::execute(Data *d)
 
 	if (surf.num == 0){
 		// new surface
-		ModeModelSurface *s = m->AddSurface();
-
-		s->AddTriangle(a, b, c, sv[0], sv[1], sv[2]);
-		r = &s->Triangle.back();
+		AddSubAction(new ActionModel__AddSurface(), m);
+		surf_no = m->Surface.num - 1;
 	}else{
 		// main surface?
-		ModeModelSurface *s = &m->Surface[surf[0]];
+		surf_no = surf[0];
 
-		// join surfaces
-		for (int i=1;i<surf.num;i++)
-			m->SurfaceJoin(s, &m->Surface[surf[i]]);
-
-		// add triangle
-		s->AddTriangle(a, b, c, sv[0], sv[1], sv[2]);
-		r = &s->Triangle.back();
+		// join other surfaces into surf_no
+		for (int i=surf.num-1;i>0;i--)
+			AddSubAction(new ActionModel__JoinSurfaces(surf_no, surf[i]), m);
 	}
+	// add triangle
+	AddSubAction(new ActionModel__SurfaceAddTriangle(surf_no, _a, _b, _c, _sva, _svb, _svc), m);
 
 	/*sModeModelSubSkin *sub = &skin->Sub[CurrentMaterial];
 	sModeModelTriangle t;
@@ -88,34 +69,16 @@ void *ActionModelAddTriangle::execute(Data *d)
 	t.ViewStage = skin->ViewStage;
 	t.NormalDirty = true;
 	sub->Triangle.add(t);*/
+}
 
-	return r;
+ActionModelAddTriangle::~ActionModelAddTriangle()
+{
 }
 
 
 
-void ActionModelAddTriangle::undo(Data *d)
+void *ActionModelAddTriangle::execute_return(Data *d)
 {
-	msg_write("add tria undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
-
-	foreach(m->Surface, s)
-		foreachi(s.Triangle, t, i)
-			if ((t.Vertex[0] == a) and (t.Vertex[1] == b) and (t.Vertex[2] == c)){
-				m->Vertex[a].RefCount --;
-				m->Vertex[b].RefCount --;
-				m->Vertex[c].RefCount --;
-				s.Triangle.erase(i);
-			}
-	msg_todo("ActionModelAddTriangle.undo...");
+	return &m->Surface[surf_no].Triangle.back();
 }
-
-
-
-void ActionModelAddTriangle::redo(Data *d)
-{
-	execute(d);
-}
-
-
-

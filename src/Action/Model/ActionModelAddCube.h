@@ -11,11 +11,12 @@
 #include "../Action.h"
 #include "../ActionGroup.h"
 #include "../../lib/types/types.h"
+#include "../../Data/Model/DataModel.h"
 
 class ActionModelAddCube: public ActionGroup
 {
 public:
-	ActionModelAddCube(const vector &_pos, const vector &_dv1, const vector &_dv2, const vector &_dv3, int nv);
+	ActionModelAddCube(DataModel *m, const vector &_pos, const vector &_dv1, const vector &_dv2, const vector &_dv3);
 	virtual ~ActionModelAddCube();
 };
 

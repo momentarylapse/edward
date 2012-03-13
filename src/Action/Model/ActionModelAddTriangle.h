@@ -8,22 +8,20 @@
 #ifndef ACTIONMODELADDTRIANGLE_H_
 #define ACTIONMODELADDTRIANGLE_H_
 
-#include "../Action.h"
+#include "../ActionGroup.h"
+#include "../../Data/Model/DataModel.h"
 #include "../../lib/types/types.h"
 
-class ActionModelAddTriangle: public Action
+class ActionModelAddTriangle: public ActionGroup
 {
 public:
-	ActionModelAddTriangle(int _a, int _b, int _c, const vector &_sva, const vector &_svb, const vector &_svc);
+	ActionModelAddTriangle(DataModel *m, int _a, int _b, int _c, const vector &_sva, const vector &_svb, const vector &_svc);
 	virtual ~ActionModelAddTriangle();
 
-	void *execute(Data *d);
-	void undo(Data *d);
-	void redo(Data *d);
+	void *execute_return(Data *d);
 
 private:
-	int a, b, c;
-	vector sv[3];
+	int surf_no; // needed for execute_return()
 };
 
 #endif /* ACTIONMODELADDTRIANGLE_H_ */

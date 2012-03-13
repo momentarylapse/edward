@@ -50,10 +50,10 @@ vector get_cloud_normal(DataModel *m, const Array<int> &v)
 	return v0;
 }
 
-void CreateTrianglesFlat(Array<Action*> *action, DataModel *m, Array<int> &v)
+void ActionModelAddTrianglesByOutline::CreateTrianglesFlat(DataModel *m, Array<int> &v)
 {
 	if (v.num == 3){
-		action->add(new ActionModelAddTriangle(v[0], v[1], v[2], v0, e_x, e_y));
+		AddSubAction(new ActionModelAddTriangle(m, v[0], v[1], v[2], v0, e_x, e_y), m);
 	}else if (v.num > 3){
 
 		flat_n = get_cloud_normal(m, v);
@@ -102,16 +102,16 @@ void CreateTrianglesFlat(Array<Action*> *action, DataModel *m, Array<int> &v)
 			}
 		}
 
-		action->add(new ActionModelAddTriangle(v[i_max], v[(i_max+1) % v.num], v[(i_max+2) % v.num], v0, e_x, e_y));
+		AddSubAction(new ActionModelAddTriangle(m, v[i_max], v[(i_max+1) % v.num], v[(i_max+2) % v.num], v0, e_x, e_y), m);
 
 		v.erase((i_max+1) % v.num);
-		CreateTrianglesFlat(action, m, v);
+		CreateTrianglesFlat(m, v);
 	}
 }
 
 ActionModelAddTrianglesByOutline::ActionModelAddTrianglesByOutline(Array<int> vertex, DataModel *data)
 {
-	CreateTrianglesFlat(&action, data, vertex);
+	CreateTrianglesFlat(data, vertex);
 }
 
 ActionModelAddTrianglesByOutline::~ActionModelAddTrianglesByOutline()

@@ -139,6 +139,7 @@ void ModeModelMesh::OnMiddleButtonDown()
 
 void ModeModelMesh::OnUpdate(Observable *o)
 {
+	data->DebugShow();
 }
 
 void ModeModelMesh::OptimizeView()

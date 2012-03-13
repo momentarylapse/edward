@@ -9,7 +9,7 @@
 #include "ActionModelAddVertex.h"
 #include "ActionModelAddTriangle.h"
 
-ActionModelAddCube::ActionModelAddCube(const vector &_pos, const vector &_dv1, const vector &_dv2, const vector &_dv3, int nv)
+ActionModelAddCube::ActionModelAddCube(DataModel *m, const vector &_pos, const vector &_dv1, const vector &_dv2, const vector &_dv3)
 {
 	// check orientation
 	vector dv1 = _dv1;
@@ -19,35 +19,36 @@ ActionModelAddCube::ActionModelAddCube(const vector &_pos, const vector &_dv1, c
 		dv1 = _dv2;
 		dv2 = _dv1;
 	}
+	int nv = m->Vertex.num;
 
 	// 8 vertices
-	action.add(new ActionModelAddVertex(vector(_pos                  )));
-	action.add(new ActionModelAddVertex(vector(_pos + dv1            )));
-	action.add(new ActionModelAddVertex(vector(_pos       + dv2      )));
-	action.add(new ActionModelAddVertex(vector(_pos + dv1 + dv2      )));
-	action.add(new ActionModelAddVertex(vector(_pos             + dv3)));
-	action.add(new ActionModelAddVertex(vector(_pos + dv1       + dv3)));
-	action.add(new ActionModelAddVertex(vector(_pos       + dv2 + dv3)));
-	action.add(new ActionModelAddVertex(vector(_pos + dv1 + dv2 + dv3)));
+	AddSubAction(new ActionModelAddVertex(vector(_pos                  )), m);
+	AddSubAction(new ActionModelAddVertex(vector(_pos + dv1            )), m);
+	AddSubAction(new ActionModelAddVertex(vector(_pos       + dv2      )), m);
+	AddSubAction(new ActionModelAddVertex(vector(_pos + dv1 + dv2      )), m);
+	AddSubAction(new ActionModelAddVertex(vector(_pos             + dv3)), m);
+	AddSubAction(new ActionModelAddVertex(vector(_pos + dv1       + dv3)), m);
+	AddSubAction(new ActionModelAddVertex(vector(_pos       + dv2 + dv3)), m);
+	AddSubAction(new ActionModelAddVertex(vector(_pos + dv1 + dv2 + dv3)), m);
 
 	// front
-	action.add(new ActionModelAddTriangle(nv + 0, nv + 2, nv + 3, vector(0,1,0), vector(0,0,0), vector(1,0,0)));
-	action.add(new ActionModelAddTriangle(nv + 0, nv + 3, nv + 1, vector(0,1,0), vector(1,0,0), vector(1,1,0)));
+	AddSubAction(new ActionModelAddTriangle(m, nv + 0, nv + 2, nv + 3, vector(0,1,0), vector(0,0,0), vector(1,0,0)), m);
+	AddSubAction(new ActionModelAddTriangle(m, nv + 0, nv + 3, nv + 1, vector(0,1,0), vector(1,0,0), vector(1,1,0)), m);
 	// top
-	action.add(new ActionModelAddTriangle(nv + 2, nv + 6, nv + 7, vector(0,1,0), vector(0,0,0), vector(1,0,0)));
-	action.add(new ActionModelAddTriangle(nv + 2, nv + 7, nv + 3, vector(0,1,0), vector(1,0,0), vector(1,1,0)));
+	AddSubAction(new ActionModelAddTriangle(m, nv + 2, nv + 6, nv + 7, vector(0,1,0), vector(0,0,0), vector(1,0,0)), m);
+	AddSubAction(new ActionModelAddTriangle(m, nv + 2, nv + 7, nv + 3, vector(0,1,0), vector(1,0,0), vector(1,1,0)), m);
 	// bottom
-	action.add(new ActionModelAddTriangle(nv + 4, nv + 0, nv + 1, vector(0,1,0), vector(0,0,0), vector(1,0,0)));
-	action.add(new ActionModelAddTriangle(nv + 4, nv + 1, nv + 5, vector(0,1,0), vector(1,0,0), vector(1,1,0)));
+	AddSubAction(new ActionModelAddTriangle(m, nv + 4, nv + 0, nv + 1, vector(0,1,0), vector(0,0,0), vector(1,0,0)), m);
+	AddSubAction(new ActionModelAddTriangle(m, nv + 4, nv + 1, nv + 5, vector(0,1,0), vector(1,0,0), vector(1,1,0)), m);
 	// left
-	action.add(new ActionModelAddTriangle(nv + 4, nv + 6, nv + 2, vector(0,1,0), vector(0,0,0), vector(1,0,0)));
-	action.add(new ActionModelAddTriangle(nv + 4, nv + 2, nv + 0, vector(0,1,0), vector(1,0,0), vector(1,1,0)));
+	AddSubAction(new ActionModelAddTriangle(m, nv + 4, nv + 6, nv + 2, vector(0,1,0), vector(0,0,0), vector(1,0,0)), m);
+	AddSubAction(new ActionModelAddTriangle(m, nv + 4, nv + 2, nv + 0, vector(0,1,0), vector(1,0,0), vector(1,1,0)), m);
 	// right
-	action.add(new ActionModelAddTriangle(nv + 1, nv + 3, nv + 7, vector(0,1,0), vector(0,0,0), vector(1,0,0)));
-	action.add(new ActionModelAddTriangle(nv + 1, nv + 7, nv + 5, vector(0,1,0), vector(1,0,0), vector(1,1,0)));
+	AddSubAction(new ActionModelAddTriangle(m, nv + 1, nv + 3, nv + 7, vector(0,1,0), vector(0,0,0), vector(1,0,0)), m);
+	AddSubAction(new ActionModelAddTriangle(m, nv + 1, nv + 7, nv + 5, vector(0,1,0), vector(1,0,0), vector(1,1,0)), m);
 	// back
-	action.add(new ActionModelAddTriangle(nv + 5, nv + 7, nv + 6, vector(0,1,0), vector(0,0,0), vector(1,0,0)));
-	action.add(new ActionModelAddTriangle(nv + 5, nv + 6, nv + 4, vector(0,1,0), vector(1,0,0), vector(1,1,0)));
+	AddSubAction(new ActionModelAddTriangle(m, nv + 5, nv + 7, nv + 6, vector(0,1,0), vector(0,0,0), vector(1,0,0)), m);
+	AddSubAction(new ActionModelAddTriangle(m, nv + 5, nv + 6, nv + 4, vector(0,1,0), vector(1,0,0), vector(1,1,0)), m);
 
 }
 

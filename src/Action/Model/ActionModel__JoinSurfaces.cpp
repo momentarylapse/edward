@@ -7,11 +7,15 @@
 
 #include "ActionModel__JoinSurfaces.h"
 #include "../../Data/Model/DataModel.h"
+#include <assert.h>
 
 
 
 ActionModel__JoinSurfaces::ActionModel__JoinSurfaces(int _surface1, int _surface2)
 {
+	assert(_surface1 >= 0);
+	assert(_surface2 >= 0);
+	assert(_surface1 != _surface2);
 	if (_surface1 > _surface2){
 		surface1 = _surface2;
 		surface2 = _surface1;
@@ -67,8 +71,7 @@ void *ActionModel__JoinSurfaces::execute(Data *d)
 	a->Triangle.append(b->Triangle);
 
 	// remove surface
-	if (surface1 >= 0)
-		m->Surface.erase(surface2);
+	m->Surface.erase(surface2);
 	a = &m->Surface[surface1];
 	a->TestSanity("Join post a");
 

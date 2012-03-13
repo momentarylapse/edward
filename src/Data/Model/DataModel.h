@@ -184,6 +184,7 @@ public:
 	bool Load(const string &_filename, bool deep = true);
 	bool Save(const string &_filename);
 
+	void DebugShow();
 
 	void SetNormalsDirtyByVertices(const Array<int> &index);
 	void UpdateNormals();

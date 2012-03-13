@@ -39,7 +39,7 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 	if (pos_chosen){
 		if (pos2_chosen){
 
-			data->Execute(new ActionModelAddCube(pos, length[0], length[1], length[2], data->Vertex.num));
+			data->Execute(new ActionModelAddCube(data, pos, length[0], length[1], length[2]));
 
 			ed->SetCreationMode(NULL);
 		}else{
