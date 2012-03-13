@@ -821,8 +821,13 @@ ModeModelSurface *DataModel::AddSurface(int surf_no)
 	s.IsClosed = false;
 	s.IsVisible = true;
 	s.IsPhysical = true;
-	Surface.add(s);
-	return &Surface.back();
+	if (surf_no >= 0){
+		Surface.insert(s, surf_no);
+		return &Surface[surf_no];
+	}else{
+		Surface.add(s);
+		return &Surface.back();
+	}
 }
 
 

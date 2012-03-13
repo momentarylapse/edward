@@ -16,23 +16,51 @@ ActionModel__SurfaceDeleteTriangle::ActionModel__SurfaceDeleteTriangle(int _surf
 
 ActionModel__SurfaceDeleteTriangle::~ActionModel__SurfaceDeleteTriangle()
 {
-	// TODO Auto-generated destructor stub
 }
 
 void ActionModel__SurfaceDeleteTriangle::undo(Data *d)
 {
+	msg_write("__surf del tria undo");
+	DataModel *m = dynamic_cast<DataModel*>(d);
+
+	ModeModelSurface *s = &m->Surface[surface];
+
+	// add triangle
+	s->AddTriangle(vertex[0], vertex[1], vertex[2], skin[0], skin[1], skin[2], index);
+	for (int l=1;l<m->Material[material].NumTextures;l++)
+			for (int k=0;k<3;k++)
+				s->Triangle[index].SkinVertex[l][k] = skin[l * 3 + k];
+	s->BuildFromTriangles();
 }
 
 
 
 void *ActionModel__SurfaceDeleteTriangle::execute(Data *d)
 {
+	msg_write("__surf del tria do");
+	DataModel *m = dynamic_cast<DataModel*>(d);
+
+	ModeModelSurface *s = &m->Surface[surface];
+	ModeModelTriangle *t = &s->Triangle[index];
+
+	// save old data
+	material = t->Material;
+	for (int k=0;k<3;k++)
+		vertex[k] = t->Vertex[k];
+	skin.clear();
+	for (int l=0;l<m->Material[material].NumTextures;l++)
+		for (int k=0;k<3;k++)
+			skin.add(t->SkinVertex[l][k]);
+
+	// erase
+	s->Triangle.erase(index);
+	s->BuildFromTriangles();
+	return NULL;
 }
 
 
 
 void ActionModel__SurfaceDeleteTriangle::redo(Data *d)
-{
-}
+{	execute(d);	}
 
 

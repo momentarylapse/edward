@@ -30,7 +30,7 @@ void ModeModelSurface::AddVertex(int v)
 		msg_error("SurfaceAddVertex ...surface not found");
 }
 
-void ModeModelSurface::AddTriangle(int a, int b, int c, const vector &sa, const vector &sb, const vector &sc)
+void ModeModelSurface::AddTriangle(int a, int b, int c, const vector &sa, const vector &sb, const vector &sc, int index)
 {
 	msg_db_r("Surf.AddTria", 1);
 
@@ -56,7 +56,10 @@ void ModeModelSurface::AddTriangle(int a, int b, int c, const vector &sa, const 
 	t.Material = model->CurrentMaterial;
 	t.view_stage = model->ViewStage;
 	t.NormalDirty = true;
-	Triangle.add(t);
+	if (index >= 0)
+		Triangle.insert(t, index);
+	else
+		Triangle.add(t);
 	msg_db_l(1);
 }
 

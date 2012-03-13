@@ -23,6 +23,8 @@ public:
 
 private:
 	int surface, index;
+	int material, vertex[3];
+	Array<vector> skin;
 };
 
 #endif /* ACTIONMODEL__SURFACEDELETETRIANGLE_H_ */

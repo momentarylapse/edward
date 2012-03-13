@@ -7,6 +7,7 @@
 
 #include "ActionModel__AddSurface.h"
 #include "../../Data/Model/DataModel.h"
+#include <assert.h>
 
 ActionModel__AddSurface::ActionModel__AddSurface()
 {
@@ -20,6 +21,7 @@ void ActionModel__AddSurface::undo(Data *d)
 {
 	msg_write("__add surf undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
+	assert(m->Surface.back().Vertex.num + m->Surface.back().Edge.num + m->Surface.back().Triangle.num == 0);
 
 	// should be empty at this point
 	m->Surface.pop();

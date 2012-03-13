@@ -7,6 +7,7 @@
 
 #include "ActionModelAddVertex.h"
 #include "../../Data/Model/DataModel.h"
+#include <assert.h>
 
 ActionModelAddVertex::ActionModelAddVertex(const vector &_v)
 {
@@ -50,13 +51,17 @@ void ActionModelAddVertex::undo(Data *d)
 {
 	msg_write("add vertex undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	m->Vertex.pop();
+	assert(m->Vertex.back().RefCount == 0);
+	assert(m->Vertex.back().Surface < 0);
 
 	// correct animations
 	foreach(m->Move, move)
 		if (move.Type == MoveTypeVertex)
 			foreach(move.Frame, f)
 				f.VertexDPos.resize(m->Vertex.num);
+
+	// delete
+	m->Vertex.pop();
 }
 
 

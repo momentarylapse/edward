@@ -14,7 +14,7 @@
 class ActionModel__DeleteSurface: public Action
 {
 public:
-	ActionModel__DeleteSurface();
+	ActionModel__DeleteSurface(int _surface);
 	virtual ~ActionModel__DeleteSurface();
 
 	void *execute(Data *d);
@@ -22,6 +22,8 @@ public:
 	void redo(Data *d);
 
 private:
+	int surface;
+	bool is_physical, is_visible;
 };
 
 #endif /* ACTIONMODEL__DELETESURFACE_H_ */

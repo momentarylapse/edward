@@ -11,11 +11,12 @@
 #include "../Action.h"
 #include "../ActionGroup.h"
 #include "../../lib/types/types.h"
+#include "../../Data/Model/DataModel.h"
 
 class ActionModelDeleteSelection: public ActionGroup
 {
 public:
-	ActionModelDeleteSelection();
+	ActionModelDeleteSelection(DataModel *m, bool greedy);
 	virtual ~ActionModelDeleteSelection();
 };
 

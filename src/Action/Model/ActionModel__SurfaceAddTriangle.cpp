@@ -30,6 +30,7 @@ void ActionModel__SurfaceAddTriangle::undo(Data *d)
 
 	ModeModelSurface *s = &m->Surface[surface];
 	s->Triangle.pop();
+	s->BuildFromTriangles();
 }
 
 

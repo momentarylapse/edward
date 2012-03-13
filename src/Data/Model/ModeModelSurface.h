@@ -32,7 +32,7 @@ public:
 	DataModel *model;
 
 	void AddVertex(int v);
-	void AddTriangle(int a, int b, int c, const vector &sa, const vector &sb, const vector &sc);
+	void AddTriangle(int a, int b, int c, const vector &sa, const vector &sb, const vector &sc, int index = -1);
 	int AddEdgeForNewTriangle(int a, int b);
 	void RemoveObsoleteEdge(int index);
 	void MergeEdges();

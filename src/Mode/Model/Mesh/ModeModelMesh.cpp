@@ -16,6 +16,7 @@
 #include "Creation/ModeModelMeshCreateCube.h"
 #include "Creation/ModeModelMeshCreateCylinder.h"
 #include "Creation/ModeModelMeshCreatePlane.h"
+#include "../../../Action/Model/ActionModelDeleteSelection.h"
 
 ModeModelMesh *mode_model_mesh = NULL;
 
@@ -86,6 +87,9 @@ void ModeModelMesh::OnCommand(const string & id)
 {
 	if (id == "opt_view")
 		OptimizeView();
+
+	if (id == "delete")
+		data->Execute(new ActionModelDeleteSelection(data, (ed->cur_mode == mode_model_mesh_vertex)));
 
 	if (id == "new_point"){
 		ed->SetMode(mode_model_mesh_vertex);

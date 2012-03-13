@@ -8,9 +8,12 @@
 #include "ActionModelAddPlane.h"
 #include "ActionModelAddVertex.h"
 #include "ActionModelAddTriangle.h"
+#include <assert.h>
 
 ActionModelAddPlane::ActionModelAddPlane(DataModel *m, const vector &_pos, const vector &_dv1, const vector &_dv2, int _num_x, int _num_y)
 {
+	assert(_num_x * _num_y > 0);
+
 	/// vertices
 	int nv = m->Vertex.num;
 	vector dx = _dv1 / _num_x;

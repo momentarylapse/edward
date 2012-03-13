@@ -6,14 +6,36 @@
  */
 
 #include "ActionModelDeleteSelection.h"
+#include "ActionModel__SurfaceDeleteTriangle.h"
+#include "ActionModel__DeleteVertex.h"
+#include "ActionModel__SurfaceDeleteTriangle.h"
+#include "ActionModel__DeleteSurface.h"
 
-ActionModelDeleteSelection::ActionModelDeleteSelection()
+ActionModelDeleteSelection::ActionModelDeleteSelection(DataModel *m, bool greedy)
 {
-	// TODO Auto-generated constructor stub
+	foreachbi(m->Surface, s, si){
+		foreachbi(s.Triangle, t, ti){
+			bool del = false;
+			if (greedy){
+				for (int k=0;k<3;k++)
+					del |= m->Vertex[t.Vertex[k]].is_selected;
+			}else{
+				del = t.is_selected;
+			}
+			if (del)
+				AddSubAction(new ActionModel__SurfaceDeleteTriangle(si, ti), m);
+		}
 
+		if (s.Triangle.num == 0)
+			AddSubAction(new ActionModel__DeleteSurface(si), m);
+	}
+
+	foreachbi(m->Vertex, v, i)
+		if (v.is_selected)
+			if (v.RefCount == 0)
+				AddSubAction(new ActionModel__DeleteVertex(i), m);
 }
 
 ActionModelDeleteSelection::~ActionModelDeleteSelection()
 {
-	// TODO Auto-generated destructor stub
 }
