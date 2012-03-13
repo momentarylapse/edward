@@ -21,7 +21,7 @@ ModeModelMeshVertex::ModeModelMeshVertex(Mode *_parent, DataModel *_data)
 	multi_view = ed->multi_view_3d;
 	menu = HuiCreateResourceMenu("menu_model");
 	Subscribe(data);
-	Subscribe(&multi_view->selection);
+	Subscribe(multi_view, "SelectionChange");
 }
 
 ModeModelMeshVertex::~ModeModelMeshVertex()
@@ -130,7 +130,7 @@ void ModeModelMeshVertex::OnUpdate(Observable *o)
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
 				NULL, NULL);
 		mode_model_mesh_skin->FillSelectionBuffers();
-	}else if (o->GetName() == "MultiViewSelection"){
+	}else if (o->GetName() == "MultiView"){
 		// tria selection from vertices
 		foreach(data->Surface, s)
 			foreach(s.Triangle, t)

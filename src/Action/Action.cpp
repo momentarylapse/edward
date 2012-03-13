@@ -22,7 +22,7 @@ void Action::undo_and_notify(Data *d)
 {
 	d->NotifyBegin();
 	undo(d);
-	d->Notify();
+	d->Notify("Change");
 	d->NotifyEnd();
 }
 
@@ -32,7 +32,7 @@ void *Action::execute_and_notify(Data *d)
 {
 	d->NotifyBegin();
 	void *r = execute(d);
-	d->Notify();
+	d->Notify("Change");
 	d->NotifyEnd();
 	return r;
 }
@@ -43,7 +43,7 @@ void Action::redo_and_notify(Data *d)
 {
 	d->NotifyBegin();
 	redo(d);
-	d->Notify();
+	d->Notify("Change");
 	d->NotifyEnd();
 }
 

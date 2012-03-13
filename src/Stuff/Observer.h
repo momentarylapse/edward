@@ -9,6 +9,7 @@
 #define OBSERVER_H_
 
 #include "Observable.h"
+#include "../lib/file/file.h"
 
 class Observable;
 
@@ -19,6 +20,7 @@ public:
 	virtual ~Observer();
 
 	void Subscribe(Observable *o);
+	void Subscribe(Observable *o, const string &message);
 	void Unsubscribe(Observable *o);
 
 	virtual void OnUpdate(Observable *o) = 0;

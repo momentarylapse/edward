@@ -17,6 +17,11 @@ Observer::~Observer()
 
 
 
+void Observer::Subscribe(Observable *o, const string &message)
+{
+	o->Subscribe(this, message);
+}
+
 void Observer::Subscribe(Observable *o)
 {
 	o->Subscribe(this);

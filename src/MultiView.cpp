@@ -35,12 +35,8 @@ bool pos_in_irect(int x, int y, irect r)
 	return ((x >= r.x1) and (x <= r.x2) && (y >= r.y1) and (y <= r.y2));
 }
 
-MultiViewSelection::MultiViewSelection() :
-	Observable("MultiViewSelection")
-{
-}
-
-MultiView::MultiView(bool _mode3d)
+MultiView::MultiView(bool _mode3d) :
+	Observable("MultiView")
 {
 	mode3d = _mode3d;
 
@@ -1118,7 +1114,7 @@ void MultiView::InvertSelection()
 			if (sd->view_stage >= view_stage)
 				sd->is_selected = !sd->is_selected;
 		}
-	selection.Notify();
+	Notify("SelectionChange");
 }
 
 vector MultiView::GetCursor3d()
@@ -1192,13 +1188,13 @@ void MultiView::UnselectAll()
 				sd->is_selected = false;
 			}
 	MultiViewSelectionChanged = true;
-	selection.Notify();
+	Notify("SelectionChange");
 }
 
 void MultiView::GetSelected(int mode)
 {
 	msg_db_r("GetSelected",4);
-	selection.NotifyBegin();
+	NotifyBegin();
 	Selected=MouseOver;
 	SelectedType=MouseOverType;
 	SelectedSet=MouseOverSet;
@@ -1223,15 +1219,15 @@ void MultiView::GetSelected(int mode)
 		}
 	}
 	MultiViewSelectionChanged=true;
-	selection.Notify();
-	selection.NotifyEnd();
+	Notify("SelectionChange");
+	NotifyEnd();
 	msg_db_l(4);
 }
 
 void MultiView::SelectAllInRectangle(int mode)
 {
 	msg_db_r("SelAllInRect",4);
-	selection.NotifyBegin();
+	NotifyBegin();
 	int x1=RectX,y1=RectY,x2=mx,y2=my,a;
 	// reset data
 	UnselectAll();
@@ -1265,8 +1261,8 @@ void MultiView::SelectAllInRectangle(int mode)
 				else
 					sd->is_selected = sd->m_delta;
 			}
-	MultiViewSelectionChanged=true;
-	selection.NotifyEnd();
+	Notify("SelectionChange");
+	NotifyEnd();
 	msg_db_l(4);
 }
 
@@ -1287,6 +1283,7 @@ void MultiView::MouseActionStart(int button)
 		active_mouse_action = button;
 		mouse_action_pos0 = MouseOverTP;
 		cur_action = ActionMultiViewFactory(action[button].name, _data_, mouse_action_pos0);
+		Notify("ActionStart");
 	}
 }
 
@@ -1327,6 +1324,8 @@ void MultiView::MouseActionUpdate()
 		else
 			mouse_action_param = v0;
 		cur_action->set_param_and_notify(_data_, mouse_action_param);
+
+		Notify("ActionUpdate");
 	}
 }
 
@@ -1336,11 +1335,13 @@ void MultiView::MouseActionEnd(bool set)
 {
 	if (cur_action){
 		msg_error("mouse action end");
-		if (set)
+		if (set){
 			_data_->Execute(cur_action);
-		else{
+			Notify("ActionExecute");
+		}else{
 			cur_action->abort_and_notify(_data_);
 			ed->ForceRedraw();
+			Notify("ActionAbort");
 		}
 	}
 	cur_action = NULL;

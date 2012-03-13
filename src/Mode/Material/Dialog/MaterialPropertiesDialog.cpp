@@ -211,7 +211,7 @@ void MaterialPropertiesDialog::ApplyData()
 
 		data->EffectIndex = NixLoadShader(MaterialDir + data->EffectFile + ".fx");
 	}
-	data->Notify();
+	data->Notify("Change");
 }
 
 void MaterialPropertiesDialog::OnOk()

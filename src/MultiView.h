@@ -78,14 +78,8 @@ struct MultiViewMouseAction
 	}
 };
 
-class MultiViewSelection : public Observable
-{
-public:
-	MultiViewSelection();
-};
-
 // TODO refactor me!!!
-class MultiView
+class MultiView : public Observable
 {
 public:
 	MultiView(bool _mode3d);
@@ -197,7 +191,6 @@ public:
 	int MouseOver,MouseOverType,MouseOverSet,Selected,SelectedType,SelectedSet;
 	vector MouseOverTP,SelectedTP,MovingDPos,RFPos,LFPos;
 	bool EditingStart, EditingEnd, DataChanged, Changed;
-	MultiViewSelection selection;
 
 	int ViewMoving;
 

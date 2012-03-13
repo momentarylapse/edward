@@ -20,18 +20,29 @@ public:
 	virtual ~Observable();
 
 	void Subscribe(Observer *o);
+	void Subscribe(Observer *o, const string &message);
 	void Unsubscribe(Observer *o);
 	string GetName();
+	string GetMessage();
 
 	void NotifyBegin();
-	void Notify();
+	void Notify(const string &message);
 	void NotifyEnd();
+private:
+	void NotifyEnqueue(const string &message);
+	void NotifySend();
 
 private:
 	string observable_name;
+
+	// observers
 	Array<Observer*> observer;
+	Array<string> observer_message;
+
+	// current notifies
+	Array<string> message_queue;
+	string cur_message;
 	int notify_level;
-	bool has_to_notify;
 };
 
 #endif /* OBSERVABLE_H_ */

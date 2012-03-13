@@ -39,9 +39,9 @@ true
 // NewPlaneNumY
 4
 // NewCylinderRings
-4
+2
 // NewCylinderEdges
-8
+16
 // NewCylinderClosedEndings
 true
 #

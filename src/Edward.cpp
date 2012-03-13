@@ -207,8 +207,8 @@ Edward::Edward(Array<string> arg) :
 	Subscribe(mode_material->data);
 	Subscribe(mode_world->data);
 	Subscribe(mode_font->data);
-	Subscribe(&multi_view_2d->selection);
-	Subscribe(&multi_view_3d->selection);
+	Subscribe(multi_view_2d, "SelectionChange");
+	Subscribe(multi_view_3d, "SelectionChange");
 
 
 	SetMode(mode_welcome);

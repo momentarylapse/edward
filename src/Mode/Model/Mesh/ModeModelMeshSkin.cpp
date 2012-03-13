@@ -21,7 +21,7 @@ ModeModelMeshSkin::ModeModelMeshSkin(Mode *_parent, DataModel *_data)
 	menu = HuiCreateResourceMenu("menu_model");
 	multi_view = ed->multi_view_3d;
 	Subscribe(data);
-	Subscribe(&multi_view->selection);
+	Subscribe(multi_view, "SelectionChange");
 
 	// vertex buffers
 	VBMarked = NixCreateVB(65536);
@@ -317,7 +317,7 @@ void ModeModelMeshSkin::OnUpdate(Observable *o)
 				&s,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
 				&TriangleIsMouseOver, &TriangleInRect);
-	}else if (o->GetName() == "MultiViewSelection"){
+	}else if (o->GetName() == "MultiView"){
 		// vertex selection from trias
 		foreach(data->Vertex, v)
 			v.is_selected = false;

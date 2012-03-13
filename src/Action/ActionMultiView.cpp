@@ -23,7 +23,7 @@ ActionMultiView::~ActionMultiView()
 void ActionMultiView::set_param_and_notify(Data *d, const vector & _param)
 {
 	set_param(d, _param);
-	d->Notify();
+	d->Notify("Change");
 }
 
 
@@ -31,7 +31,7 @@ void ActionMultiView::set_param_and_notify(Data *d, const vector & _param)
 void ActionMultiView::abort_and_notify(Data *d)
 {
 	abort(d);
-	d->Notify();
+	d->Notify("Change");
 }
 
 ActionMultiView *ActionMultiViewFactory(const string &name, Data *d, const vector &_pos0)
