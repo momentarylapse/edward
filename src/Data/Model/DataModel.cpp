@@ -911,3 +911,135 @@ void DataModel::ApplyAutoTexturing(int a, int b, int c, vector *sv)
 			sv[k] = vector( (v[k] - AutoTexturingData.p0) * AutoTexturingData.dir_u, (v[k] - AutoTexturingData.p0) * AutoTexturingData.dir_v, 0);
 	}
 }
+
+void DataModel::CreateSkin(ModeModelSkin *src, ModeModelSkin *dst, float quality_factor)
+{
+	msg_todo("DataModel::CreateSkin");
+}
+
+
+
+
+float DataModel::GetDiameter()
+{
+	float Diameter=0;
+	foreach(Vertex, v){
+		float d = VecLength(v.pos) * 2;
+		if (d > Diameter)
+			Diameter = d;
+	}
+			/*for (int p2=p1+1;p2<Skin[m].Vertex.num;p2++){
+				float d=VecLength(GetVertex(&Skin[m],p1)-GetVertex(&Skin[m],p2));
+				if (d>Diameter)
+					Diameter=d;
+			}*/
+	return Diameter;
+}
+
+float DetailDistTemp1,DetailDistTemp2,DetailDistTemp3;
+
+int get_num_trias(DataModel *m, ModeModelSkin *s)
+{
+	int n = 0;
+	for (int i=0;i<m->Material.num;i++)
+		n += s->Sub[i].Triangle.num;
+	return n;
+}
+
+void DataModel::GenerateDetailDists(bool just_temp)
+{
+	msg_db_r("GenerateDetailDists", 3);
+	float Diameter = GetDiameter();
+	DetailDistTemp1 = Diameter * 5;
+	DetailDistTemp2 = Diameter * 20;
+	DetailDistTemp3 = Diameter * 40;
+	if (get_num_trias(this, &Skin[3]) == 0)
+		DetailDistTemp2 = DetailDistTemp3;
+	if (get_num_trias(this, &Skin[2]) == 0)
+		DetailDistTemp1 = DetailDistTemp2;
+	if (!just_temp){
+		DetailDist[0] = DetailDistTemp1;
+		DetailDist[1] = DetailDistTemp2;
+		DetailDist[2] = DetailDistTemp3;
+	}
+	msg_db_l(3);
+}
+
+
+
+static matrix3 InertiaTensorTemp;
+
+#define n_theta		64
+
+void DataModel::GenerateInertiaTensor(float mass, bool just_temp)
+{
+	msg_db_r("GenerateInertiaTensor", 3);
+//	sModeModelSkin *p = &Skin[0];
+
+	// estimate size
+	vector min = v0, max = v0;
+	foreach(Vertex, v){
+		VecMin(min, v.pos);
+		VecMax(max, v.pos);
+	}
+	/*for (int i=0;i<Ball.num;i++){
+		sModeModelBall *b = &Ball[i];
+		vector b_min = p->Vertex[b->Index].Pos - vector(1,1,1) * b->Radius;
+		vector b_max = p->Vertex[b->Index].Pos + vector(1,1,1) * b->Radius;
+		VecMin(min, b_min);
+		VecMax(max, b_max);
+	}*/
+	//msg_write(string2("	min= %f	%f	%f",min.x,min.y,min.z));
+	//msg_write(string2("	max= %f	%f	%f",max.x,max.y,max.z));
+
+
+	//float dv=(max.x-min.x)/n_theta*(max.y-min.y)/n_theta*(max.z-min.z)/n_theta;
+	float t_xx=0,t_yy=0,t_zz=0,t_xy=0,t_yz=0,t_zx=0;
+	int num_ds=0;
+
+
+	for (int i=0;i<n_theta;i++){
+		float x=min.x+(float(i)+0.5f)*(max.x-min.x)/n_theta;
+		for (int j=0;j<n_theta;j++){
+			float y=min.y+(float(j)+0.5f)*(max.y-min.y)/n_theta;
+			for (int k=0;k<n_theta;k++){
+				float z=min.z+(float(k)+0.5f)*(max.z-min.z)/n_theta;
+				vector r=vector(x,y,z);
+				//msg_write(string2("%f		%f		%f",r.x,r.y,r.z));
+
+				bool inside=false;
+				/*for (int n=0;n<Ball.num;n++){
+					sModeModelBall *b=&Ball[n];
+					if (VecLength(r-p->Vertex[b->Index].Pos)<b->Radius)
+						inside=true;
+				}*/
+				foreach(Surface, s)
+					if (s.IsInside(r))
+						inside = true;
+				if (inside){
+					//msg_write("in");
+					num_ds++;
+					t_xx+=y*y+z*z;
+					t_yy+=z*z+x*x;
+					t_zz+=x*x+y*y;
+					t_xy-=x*y;
+					t_yz-=y*z;
+					t_zx-=z*x;
+				}
+			}
+		}
+	}
+
+	Matrix3Identity(InertiaTensorTemp);
+	if (num_ds>0){
+		float f = mass / num_ds;
+		InertiaTensorTemp._00=t_xx*f;	InertiaTensorTemp._01=t_xy*f;	InertiaTensorTemp._02=t_zx*f;
+		InertiaTensorTemp._10=t_xy*f;	InertiaTensorTemp._11=t_yy*f;	InertiaTensorTemp._12=t_yz*f;
+		InertiaTensorTemp._20=t_zx*f;	InertiaTensorTemp._21=t_yz*f;	InertiaTensorTemp._22=t_zz*f;
+	}
+
+	if (!just_temp)
+		InertiaTensor = InertiaTensorTemp;
+
+	msg_db_l(3);
+}

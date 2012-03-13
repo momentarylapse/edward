@@ -41,6 +41,9 @@ public:
 
 	void BuildFromTriangles();
 
+
+	bool IsInside(const vector &p);
+
 	void TestSanity(const string &loc);
 };
 

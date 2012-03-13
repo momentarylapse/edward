@@ -10,6 +10,7 @@
 
 #include "../Mode.h"
 #include "../../Data/Model/DataModel.h"
+#include "Dialog/ModelPropertiesDialog.h"
 
 class Mode;
 class DataModel;
@@ -48,7 +49,11 @@ public:
 	void SetMaterialMouseOver();
 	void SetMaterialCreation();
 
+	void ExecutePropertiesDialog(int initial_tab_page = 0);
+	void ExecuteMaterialDialog(int initial_tab_page = 0);
+
 	DataModel *data;
+	ModelPropertiesDialog *PropertiesDialog;
 };
 
 extern ModeModel* mode_model;

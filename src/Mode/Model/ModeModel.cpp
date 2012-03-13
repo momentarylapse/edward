@@ -22,6 +22,7 @@ ModeModel::ModeModel()
 	menu = NULL;
 	data = new DataModel;
 	multi_view = NULL;
+	PropertiesDialog = NULL;
 
 	mode_model_mesh = new ModeModelMesh(this, data);
 	Subscribe(data);
@@ -131,6 +132,19 @@ void ModeModel::OnCommand(const string & id)
 		ed->SetMode(mode_model_mesh_vertex);
 	if (id == "mode_model_skin")
 		ed->SetMode(mode_model_mesh_skin);
+	/*if (id == "mode_model_texture")
+		ExecuteMaterialDialog(1);*/
+		//SetSubMode(SubModeTextures);
+	if (id == "mode_model_properties")
+		ExecutePropertiesDialog(0);
+	/*if (id == "mode_model_material")
+		ExecuteMaterialDialog(0);*/
+	if (id == "mode_model_materials")
+		ExecutePropertiesDialog(1);
+	/*if (id == "create_new_material")
+		CreateNewMaterialForSelection();
+	if (id == "choose_material")
+		ChooseMaterialForSelection();*/
 }
 
 
@@ -198,5 +212,29 @@ bool ModeModel::SaveAs()
 	if (ed->FileDialog(FDModel, true, false))
 		return data->Save(ed->DialogFileComplete);
 	return false;
+}
+
+void ModeModel::ExecutePropertiesDialog(int initial_tab_page)
+{
+	if (PropertiesDialog)
+		return;
+
+	PropertiesDialog = new ModelPropertiesDialog(ed, true, data);
+	PropertiesDialog->SetInt("model_dialog_tab_control", initial_tab_page);
+
+	PropertiesDialog->Update();
+	//HuiWaitTillWindowClosed(PropertiesDialog);
+}
+
+void ModeModel::ExecuteMaterialDialog(int initial_tab_page)
+{
+	/*if (PropertiesDialog)
+		return;
+
+	PropertiesDialog = new ModelPropertiesDialog(ed, true, data);
+	PropertiesDialog->SetInt("model_dialog_tab_control", initial_tab_page);
+
+	PropertiesDialog->Update();
+	//HuiWaitTillWindowClosed(PropertiesDialog);*/
 }
 

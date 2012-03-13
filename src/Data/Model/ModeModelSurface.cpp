@@ -332,3 +332,10 @@ void ModeModelSurface::TestSanity(const string &loc)
 			return;
 		}
 }
+
+bool ModeModelSurface::IsInside(const vector &p)
+{
+	if (!IsClosed)
+		return false;
+	return false;
+}
