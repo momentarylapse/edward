@@ -808,7 +808,7 @@ void DataModel::UpdateNormals()
 		s.UpdateNormals();
 }
 
-ModeModelSurface *DataModel::AddSurface()
+ModeModelSurface *DataModel::AddSurface(int surf_no)
 {
 	ModeModelSurface s;
 	s.model = this;

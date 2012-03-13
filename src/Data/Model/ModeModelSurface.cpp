@@ -21,6 +21,9 @@ void ModeModelSurface::AddVertex(int v)
 	// set -> unique
 	Vertex.add(v);
 
+	// ref count
+	model->Vertex[v].RefCount ++;
+
 	// back reference
 	model->Vertex[v].Surface = model->get_surf_no(this);
 	if (model->Vertex[v].Surface < 0)
@@ -48,11 +51,6 @@ void ModeModelSurface::AddTriangle(int a, int b, int c, const vector &sa, const 
 
 	// closed?
 	UpdateClosed();
-
-	// ref count
-	model->Vertex[a].RefCount ++;
-	model->Vertex[b].RefCount ++;
-	model->Vertex[c].RefCount ++;
 
 	t.is_selected = false;
 	t.Material = model->CurrentMaterial;
@@ -290,6 +288,29 @@ void ModeModelSurface::UpdateNormals()
 	msg_db_l(2);
 }
 
+
+void ModeModelSurface::BuildFromTriangles()
+{
+	// clear
+	Edge.clear();
+	Vertex.clear();
+	foreach(Triangle, t)
+		for (int k=0;k<3;k++)
+			model->Vertex[t.Vertex[k]].RefCount = 0;
+
+	// add all triangles
+	foreach(Triangle, t){
+		// vertices
+		for (int k=0;k<3;k++)
+			AddVertex(t.Vertex[k]);
+
+		// edges
+		for (int k=0;k<3;k++)
+			t.Edge[k] = AddEdgeForNewTriangle(t.Vertex[k], t.Vertex[(k + 1) % 3]);
+	}
+
+	UpdateClosed();
+}
 
 
 void ModeModelSurface::TestSanity(const string &loc)

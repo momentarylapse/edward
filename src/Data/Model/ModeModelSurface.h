@@ -39,6 +39,8 @@ public:
 	void UpdateClosed();
 	void UpdateNormals();
 
+	void BuildFromTriangles();
+
 	void TestSanity(const string &loc);
 };
 

@@ -206,7 +206,7 @@ public:
 
 	// low level (un-action'ed)
 	//void LowLevelAddVertex(const vector &vd);
-	ModeModelSurface *AddSurface();
+	ModeModelSurface *AddSurface(int surf_no = -1);
 	ModeModelSurface *SurfaceJoin(ModeModelSurface *a, ModeModelSurface *b);
 	int get_surf_no(ModeModelSurface *s);
 
