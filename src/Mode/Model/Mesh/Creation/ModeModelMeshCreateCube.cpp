@@ -39,9 +39,8 @@ void set_dpos3(vector *length, const vector &dpos)
 	VecNormalize(n);
 	length[2] = n * (n * dpos);
 	float min_thick = 10 / ed->multi_view_3d->zoom; // 10 px
-	float mean = (VecLength(length[0]) + VecLength(length[1])) / 2;
 	if (VecLength(length[2]) < min_thick)
-		length[2] = n * mean / 4;
+		length[2] = n * min_thick;
 }
 
 
