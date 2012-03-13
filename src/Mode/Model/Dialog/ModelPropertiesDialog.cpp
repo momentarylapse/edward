@@ -143,7 +143,7 @@ void ModelPropertiesDialog::FillMaterialList()
 			if (t.Material == i)
 				nt ++;
 		string im = render_material(&data->Material[i]);
-		AddString("material_list", format("%d%s\\%d\\%d\\%s", i, (i == data->CurrentMaterial) ? "(*)" : "", nt, im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
+		AddString("material_list", format("%d%s\\%d\\%s\\%s", i, (i == data->CurrentMaterial) ? "(*)" : "", nt, im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
 	}
 }
 

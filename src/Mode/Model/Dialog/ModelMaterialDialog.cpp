@@ -26,6 +26,16 @@ ModelMaterialDialog::ModelMaterialDialog(CHuiWindow *_parent, bool _allow_parent
 	EventM("hui:close", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnClose);
 	EventM("set", this, (void(CHuiWindow::*)())&ModelMaterialDialog::ApplyData);
 	EventM("ok", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnOk);
+	EventM("transparency_mode", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnTransparencyMode);
+	EventM("default_transparency", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnDefaultTransparency);
+	EventM("mat_add_texture_level", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnMatAddTextureLevel);
+	EventM("mat_textures", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnMatTextures);
+	EventM("mat_delete_texture_level", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnMatDeleteTextureLevel);
+	EventM("mat_empty_texture_level", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnMatEmptyTextureLevel);
+	EventM("default_material", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnDefaultMaterial);
+	EventM("find_material", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnFindMaterial);
+	EventM("edit_material", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnEditMaterial);
+	EventM("default_colors", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnDefaultColors);
 
 	mat = &data->Material[data->CurrentMaterial];
 	LoadData();
@@ -82,11 +92,9 @@ void ModelMaterialDialog::LoadData()
 	SetInt("alpha_factor", mat->AlphaFactor);
 
 	/*if (for_creation)
-		Enable("apply", false);
-	TempMaterial=cur_mat;*/
+		Enable("apply", false);*/
+	TempMaterial = *mat;
 	FillTextureList();
-	//Update();
-	//SetInt(HMM_MODEL_MATERIAL_DIALOG_TAB_CONTROL, initial_tab_page);
 }
 
 
@@ -95,7 +103,7 @@ void ModelMaterialDialog::FillTextureList()
 	Reset("mat_textures");
 	for (int i=0;i<TempMaterial.NumTextures;i++){
 		string img = ed->get_tex_image(NixLoadTexture(TempMaterial.TextureFile[i]));
-		AddString("mat_textures", i2s(i) + "\\" + img + file_secure(TempMaterial.TextureFile[i]));
+		AddString("mat_textures", i2s(i) + "\\" + img + "\\" + file_secure(TempMaterial.TextureFile[i]));
 	}
 }
 
@@ -224,12 +232,12 @@ void ModelMaterialDialog::ApplyData()
 		mat->MaterialFile = "";
 	else
 		mat->MaterialFile = GetString("material_file");
-	mat->Color[0] = GetColor("mat_ma");
+	mat->Color[0] = GetColor("mat_am");
 	mat->Color[1] = GetColor("mat_di");
 	mat->Color[2] = GetColor("mat_sp");
 	mat->Color[3] = GetColor("mat_em");
 	mat->Shininess = GetInt("mat_shininess");
-	mat->UserColor = !IsChecked("default_color");
+	mat->UserColor = !IsChecked("default_colors");
 	mat->material = MetaLoadMaterial(mat->MaterialFile);
 // transparency
 	int s = GetInt("transparency_mode");
