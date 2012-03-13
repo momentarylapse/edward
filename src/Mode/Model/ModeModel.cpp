@@ -23,6 +23,7 @@ ModeModel::ModeModel()
 	data = new DataModel;
 	multi_view = NULL;
 	PropertiesDialog = NULL;
+	MaterialDialog = NULL;
 
 	mode_model_mesh = new ModeModelMesh(this, data);
 	Subscribe(data);
@@ -228,13 +229,13 @@ void ModeModel::ExecutePropertiesDialog(int initial_tab_page)
 
 void ModeModel::ExecuteMaterialDialog(int initial_tab_page)
 {
-	/*if (PropertiesDialog)
+	if (MaterialDialog)
 		return;
 
-	PropertiesDialog = new ModelPropertiesDialog(ed, true, data);
-	PropertiesDialog->SetInt("model_dialog_tab_control", initial_tab_page);
+	MaterialDialog = new ModelMaterialDialog(ed, true, data);
+	MaterialDialog->SetInt("model_material_dialog_tab_control", initial_tab_page);
 
-	PropertiesDialog->Update();
-	//HuiWaitTillWindowClosed(PropertiesDialog);*/
+	MaterialDialog->Update();
+	//HuiWaitTillWindowClosed(MaterialDialog);
 }
 

@@ -154,6 +154,23 @@ vector get_normal_by_index(int index)
 
 
 
+/*static void write_color(CFile *f, const color &c)
+{
+	f->WriteInt((int)(c.r * 255.0f));
+	f->WriteInt((int)(c.g * 255.0f));
+	f->WriteInt((int)(c.b * 255.0f));
+	f->WriteInt((int)(c.a * 255.0f));
+}*/
+
+static void read_color(CFile *f, color &c)
+{
+	c.r = (float)f->ReadInt() / 255.0f;
+	c.g = (float)f->ReadInt() / 255.0f;
+	c.b = (float)f->ReadInt() / 255.0f;
+	c.a = (float)f->ReadInt() / 255.0f;
+}
+
+
 bool DataModel::Load(const string & _filename, bool deep)
 {
 	msg_db_r("Model::LoadFromFile",1);
@@ -194,7 +211,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 			Material[i].UserColor = f->ReadBool();
 			if (Material[i].UserColor){
 				for (int j=0;j<4;j++)
-					read_color_4(f,Material[i].Color[j]);
+					read_color(f, Material[i].Color[j]);
 				Material[i].Shininess = f->ReadInt();
 			}
 			Material[i].TransparencyMode = f->ReadInt();
@@ -452,7 +469,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 			Material[i].MaterialFile = f->ReadStr();
 			Material[i].UserColor = f->ReadBool();
 			for (int j=0;j<4;j++)
-				read_color_4(f,Material[i].Color[j]);
+				read_color(f, Material[i].Color[j]);
 			Material[i].Shininess = f->ReadInt();
 			Material[i].TransparencyMode = f->ReadInt();
 			Material[i].AlphaSource = f->ReadInt();

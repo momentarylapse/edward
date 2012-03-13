@@ -11,6 +11,7 @@
 #include "../Mode.h"
 #include "../../Data/Model/DataModel.h"
 #include "Dialog/ModelPropertiesDialog.h"
+#include "Dialog/ModelMaterialDialog.h"
 
 class Mode;
 class DataModel;
@@ -54,6 +55,7 @@ public:
 
 	DataModel *data;
 	ModelPropertiesDialog *PropertiesDialog;
+	ModelMaterialDialog *MaterialDialog;
 };
 
 extern ModeModel* mode_model;

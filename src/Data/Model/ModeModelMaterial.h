@@ -30,7 +30,7 @@ public:
 	int AlphaFactor,AlphaSource,AlphaDestination;
 	bool AlphaZBuffer;
 	bool UserColor;
-	int Color[4][4];
+	color Color[4];
 	int Shininess;
 };
 

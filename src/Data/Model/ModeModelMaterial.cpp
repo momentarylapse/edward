@@ -25,10 +25,10 @@ void ModeModelMaterial::reset()
 	AlphaFactor = 0;
 	AlphaZBuffer = true;
 	Shininess = 0;
-	for (int i=0;i<8;i++)
-		Color[i/4][i%4] = 255; // ambient, diffuse
-	for (int i=0;i<8;i++)
-		Color[i/4+2][i%4] = 0; // specular, emissive
+	Color[0] = White; // ambient
+	Color[1] = White; // diffuse
+	Color[2] = Black; // specular
+	Color[3] = Black; // emissive
 	UserColor = false;
 	MaterialFile = "";
 	material = MetaLoadMaterial("");
@@ -58,18 +58,17 @@ void ModeModelMaterial::ApplyForRendering()
 {
 	NixSetAlpha(AlphaNone);
 	NixSetShader(-1);
-	color c;
-	color am=material->ambient;
-	color di=material->diffuse;
-	color sp=material->specular;
-	color em=material->emission;
-	float sh=material->shininess;
+	color am = material->ambient;
+	color di = material->diffuse;
+	color sp = material->specular;
+	color em = material->emission;
+	float sh = material->shininess;
 	if (UserColor){
-		am=i42c(Color[0]);
-		di=i42c(Color[1]);
-		sp=i42c(Color[2]);
-		em=i42c(Color[3]);
-		sh=(float)Shininess;
+		am = Color[0];
+		di = Color[1];
+		sp = Color[2];
+		em = Color[3];
+		sh = (float)Shininess;
 	}
 	em=ColorInterpolate(em,White,0.1f);
 	NixSetMaterial(am,di,sp,sh,em);

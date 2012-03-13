@@ -108,10 +108,9 @@ void ModelPropertiesDialog::LoadData()
 
 color mat_get_col(ModeModelMaterial *m)
 {
-	color c = m->material->diffuse;
 	if (m->UserColor)
-		c = i42c(m->Color[1]);
-	return c;
+		return m->Color[1];
+	return m->material->diffuse;
 }
 
 string render_material(ModeModelMaterial *m)
