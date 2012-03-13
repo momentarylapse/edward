@@ -88,6 +88,9 @@ void ModeModelMeshCreateCylinder::OnMouseMove()
 		if (pos2_chosen){
 			vector p = multi_view->GetCursor3d();
 			radius = VecLength(p - pos2);
+			float min_rad = 10 / multi_view->zoom; // 10 px
+			if (radius < min_rad)
+				radius = VecLength(pos2 - pos) / 8;
 		}else{
 			pos2 = multi_view->GetCursor3d();
 		}
@@ -130,6 +133,7 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 				pos2 = multi_view->GetCursor3d();
 			message = _("Zylinder: Radius");
 			pos2_chosen = true;
+			radius = VecLength(pos2 - pos) / 8;
 		}
 	}else{
 		if (multi_view->Selected >= 0)

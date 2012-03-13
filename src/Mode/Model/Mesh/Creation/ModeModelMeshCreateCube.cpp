@@ -33,6 +33,18 @@ void ModeModelMeshCreateCube::PostDraw()
 }
 
 
+void set_dpos3(vector *length, const vector &dpos)
+{
+	vector n = length[0] ^ length[1];
+	VecNormalize(n);
+	length[2] = n * (n * dpos);
+	float min_thick = 10 / ed->multi_view_3d->zoom; // 10 px
+	float mean = (VecLength(length[0]) + VecLength(length[1])) / 2;
+	if (VecLength(length[2]) < min_thick)
+		length[2] = n * mean / 4;
+}
+
+
 
 void ModeModelMeshCreateCube::OnLeftButtonDown()
 {
@@ -49,6 +61,7 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 				pos2 = multi_view->GetCursor3d();
 			message = _("Wuerfel: dritter Punkt");
 			pos2_chosen = true;
+			set_dpos3(length, v0);
 		}
 	}else{
 		if (multi_view->Selected >= 0)
@@ -103,7 +116,6 @@ void ModeModelMeshCreateCube::End()
 }
 
 
-
 void ModeModelMeshCreateCube::OnMouseMove()
 {
 	if (pos_chosen){
@@ -116,10 +128,7 @@ void ModeModelMeshCreateCube::OnMouseMove()
 			length[1] = dir2 * VecDotProduct(dir2, pos2 - pos);
 			invert = (((length[0] ^ length[1]) * dir0) > 0);
 		}else{
-			vector pos3 = multi_view->GetCursor3d();
-			vector n = length[0] ^ length[1];
-			VecNormalize(n);
-			length[2] = n * (n * (pos3 - pos));
+			set_dpos3(length, multi_view->GetCursor3d() - pos);
 		}
 	}
 }
