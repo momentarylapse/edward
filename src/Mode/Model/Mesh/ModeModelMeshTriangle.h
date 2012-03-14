@@ -14,11 +14,11 @@
 class Mode;
 class DataModel;
 
-class ModeModelMeshSkin: public Mode
+class ModeModelMeshTriangle: public Mode
 {
 public:
-	ModeModelMeshSkin(Mode *_parent, DataModel *_data);
-	virtual ~ModeModelMeshSkin();
+	ModeModelMeshTriangle(Mode *_parent, DataModel *_data);
+	virtual ~ModeModelMeshTriangle();
 
 	void Start();
 	void End();
@@ -48,6 +48,6 @@ public:
 	int VBMarked, VBMouseOver, VBCreation;
 };
 
-extern ModeModelMeshSkin *mode_model_mesh_skin;
+extern ModeModelMeshTriangle *mode_model_mesh_triangle;
 
 #endif /* MODEMODELMESHSKIN_H_ */

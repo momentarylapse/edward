@@ -7,14 +7,14 @@
 
 #include "../../../Edward.h"
 #include "../../../MultiView.h"
-#include "ModeModelMeshSkin.h"
+#include "ModeModelMeshTriangle.h"
 #include "ModeModelMesh.h"
 
 
 
-ModeModelMeshSkin *mode_model_mesh_skin = NULL;
+ModeModelMeshTriangle *mode_model_mesh_triangle = NULL;
 
-ModeModelMeshSkin::ModeModelMeshSkin(Mode *_parent, DataModel *_data)
+ModeModelMeshTriangle::ModeModelMeshTriangle(Mode *_parent, DataModel *_data)
 {
 	name = "ModelMeshSkin";
 	parent = _parent;
@@ -34,7 +34,7 @@ ModeModelMeshSkin::ModeModelMeshSkin(Mode *_parent, DataModel *_data)
 	VBCreation = NixCreateVB(1024);
 }
 
-ModeModelMeshSkin::~ModeModelMeshSkin()
+ModeModelMeshTriangle::~ModeModelMeshTriangle()
 {
 }
 
@@ -51,7 +51,7 @@ inline void add_tria(int vb, const DataModel *data, const ModeModelTriangle &t)
 					GetVertex(t.Vertex[2]), t.Normal[2], tv3.x, tv3.y);
 }
 
-void ModeModelMeshSkin::DrawTrias()
+void ModeModelMeshTriangle::DrawTrias()
 {
 	msg_db_r("ModelSkin.DrawTrias",2);
 
@@ -111,7 +111,7 @@ void ModeModelMeshSkin::DrawTrias()
 	msg_db_l(2);
 }
 
-void ModeModelMeshSkin::FillSelectionBuffers()
+void ModeModelMeshTriangle::FillSelectionBuffers()
 {
 	msg_db_r("SkinFillSelBuf", 4);
 	NixVBClear(VBMarked);
@@ -174,7 +174,7 @@ void SetMaterialCreation()
 	NixSetMaterial(Black,color(0.3f,0.3f,1,0.3f),Black,0,color(1,0.1f,0.4f,0.1f));
 }
 
-void ModeModelMeshSkin::DrawWin(int win, irect dest)
+void ModeModelMeshTriangle::DrawWin(int win, irect dest)
 {
 	msg_db_r("skin.DrawWin",4);
 
@@ -204,31 +204,31 @@ void ModeModelMeshSkin::DrawWin(int win, irect dest)
 
 
 
-void ModeModelMeshSkin::OnMiddleButtonDown()
+void ModeModelMeshTriangle::OnMiddleButtonDown()
 {
 }
 
 
 
-void ModeModelMeshSkin::OnUpdateMenu()
+void ModeModelMeshTriangle::OnUpdateMenu()
 {
 }
 
 
 
-void ModeModelMeshSkin::End()
+void ModeModelMeshTriangle::End()
 {
 }
 
 
 
-void ModeModelMeshSkin::OnKeyDown()
+void ModeModelMeshTriangle::OnKeyDown()
 {
 }
 
 
 
-void ModeModelMeshSkin::Start()
+void ModeModelMeshTriangle::Start()
 {
 	OnUpdate(data);
 }
@@ -243,9 +243,9 @@ bool TriangleIsMouseOver(int index, void *user_data, int win, vector &tp)
 	int a = t->Vertex[0];
 	int b = t->Vertex[1];
 	int c = t->Vertex[2];
-	vector va = mode_model_mesh_skin->data->Vertex[a].pos;//mmodel->GetVertex(a);
-	vector vb = mode_model_mesh_skin->data->Vertex[b].pos;//mmodel->GetVertex(b);
-	vector vc = mode_model_mesh_skin->data->Vertex[c].pos;//mmodel->GetVertex(c);
+	vector va = mode_model_mesh_triangle->data->Vertex[a].pos;//mmodel->GetVertex(a);
+	vector vb = mode_model_mesh_triangle->data->Vertex[b].pos;//mmodel->GetVertex(b);
+	vector vc = mode_model_mesh_triangle->data->Vertex[c].pos;//mmodel->GetVertex(c);
 	vector pa = ed->multi_view_3d->VecProject(va, win);
 	vector pb = ed->multi_view_3d->VecProject(vb, win);
 	vector pc = ed->multi_view_3d->VecProject(vc, win);
@@ -279,9 +279,9 @@ bool TriangleInRect(int index, void *user_data, int win, irect *r)
 	int ib=t->Vertex[1];
 	int ic=t->Vertex[2];
 	vector A,B,C;
-	A = ed->multi_view_3d->VecProject(mode_model_mesh_skin->data->Vertex[ia].pos, win); // mmodel->GetVertex(ia)
-	B = ed->multi_view_3d->VecProject(mode_model_mesh_skin->data->Vertex[ib].pos, win);
-	C = ed->multi_view_3d->VecProject(mode_model_mesh_skin->data->Vertex[ic].pos, win);
+	A = ed->multi_view_3d->VecProject(mode_model_mesh_triangle->data->Vertex[ia].pos, win); // mmodel->GetVertex(ia)
+	B = ed->multi_view_3d->VecProject(mode_model_mesh_triangle->data->Vertex[ib].pos, win);
+	C = ed->multi_view_3d->VecProject(mode_model_mesh_triangle->data->Vertex[ic].pos, win);
 	// all vertices within rectangle?
 	if ((A.z>0)&&(B.z>0)&&(C.z>0))
 		if ((A.x>r->x1)&&(A.x<r->x2)&&(A.y>r->y1)&&(A.y<r->y2))
@@ -304,7 +304,7 @@ bool TriangleInRect(int index, void *user_data, int win, irect *r)
 }
 
 
-void ModeModelMeshSkin::OnUpdate(Observable *o)
+void ModeModelMeshTriangle::OnUpdate(Observable *o)
 {
 	if (this != ed->cur_mode)
 		return;
@@ -335,56 +335,56 @@ void ModeModelMeshSkin::OnUpdate(Observable *o)
 
 
 
-void ModeModelMeshSkin::OnRightButtonDown()
+void ModeModelMeshTriangle::OnRightButtonDown()
 {
 }
 
 
 
-void ModeModelMeshSkin::OnRightButtonUp()
+void ModeModelMeshTriangle::OnRightButtonUp()
 {
 }
 
 
 
-void ModeModelMeshSkin::OnCommand(const string & id)
+void ModeModelMeshTriangle::OnCommand(const string & id)
 {
 }
 
 
 
-void ModeModelMeshSkin::Draw()
+void ModeModelMeshTriangle::Draw()
 {
 	FillSelectionBuffers();
 }
 
 
 
-void ModeModelMeshSkin::OnMiddleButtonUp()
+void ModeModelMeshTriangle::OnMiddleButtonUp()
 {
 }
 
 
 
-void ModeModelMeshSkin::OnKeyUp()
+void ModeModelMeshTriangle::OnKeyUp()
 {
 }
 
 
 
-void ModeModelMeshSkin::OnLeftButtonUp()
+void ModeModelMeshTriangle::OnLeftButtonUp()
 {
 }
 
 
 
-void ModeModelMeshSkin::OnLeftButtonDown()
+void ModeModelMeshTriangle::OnLeftButtonDown()
 {
 }
 
 
 
-void ModeModelMeshSkin::OnMouseMove()
+void ModeModelMeshTriangle::OnMouseMove()
 {
 }
 

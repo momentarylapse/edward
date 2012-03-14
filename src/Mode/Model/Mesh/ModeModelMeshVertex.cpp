@@ -42,7 +42,7 @@ void ModeModelMeshVertex::End()
 
 void ModeModelMeshVertex::DrawWin(int win, irect dest)
 {
-	mode_model_mesh_skin->DrawWin(win, dest);
+	mode_model_mesh_triangle->DrawWin(win, dest);
 }
 
 
@@ -126,13 +126,13 @@ void ModeModelMeshVertex::OnUpdate(Observable *o)
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
 				NULL, NULL);
-		mode_model_mesh_skin->FillSelectionBuffers();
+		mode_model_mesh_triangle->FillSelectionBuffers();
 	}else if (o->GetName() == "MultiView"){
 		// tria selection from vertices
 		foreach(data->Surface, s)
 			foreach(s.Triangle, t)
 				t.is_selected = ((data->Vertex[t.Vertex[0]].is_selected) and (data->Vertex[t.Vertex[1]].is_selected) and (data->Vertex[t.Vertex[2]].is_selected));
-		mode_model_mesh_skin->FillSelectionBuffers();
+		mode_model_mesh_triangle->FillSelectionBuffers();
 	}
 }
 

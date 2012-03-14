@@ -10,7 +10,7 @@
 #include "../../Data/Model/DataModel.h"
 #include "Mesh/ModeModelMesh.h"
 #include "Mesh/ModeModelMeshVertex.h"
-#include "Mesh/ModeModelMeshSkin.h"
+#include "Mesh/ModeModelMeshTriangle.h"
 
 ModeModel *mode_model = NULL;
 
@@ -166,7 +166,7 @@ void ModeModel::OnCommand(const string & id)
 	/*if (id == "mode_model_edge")
 		ed->SetMode(mode_model_mesh_edge);*/
 	if (id == "mode_model_triangle")
-		ed->SetMode(mode_model_mesh_skin);
+		ed->SetMode(mode_model_mesh_triangle);
 	if (id == "mode_model_texture")
 		ExecuteMaterialDialog(1);
 		//SetSubMode(SubModeTextures);
@@ -191,7 +191,7 @@ void ModeModel::OnUpdateMenu()
 {
 	ed->Check("mode_model_vertex", ed->cur_mode == mode_model_mesh_vertex);
 	ed->Check("mode_model_edge", false);//ed->cur_mode == mode_model_mesh_edge);
-	ed->Check("mode_model_triangle", ed->cur_mode == mode_model_mesh_skin);
+	ed->Check("mode_model_triangle", ed->cur_mode == mode_model_mesh_triangle);
 	ed->Check("mode_model_surface", false);//ed->cur_mode == mode_model_mesh_surface);
 	ed->Check("mode_model_mesh", ed->cur_mode->parent == mode_model_mesh);
 	ed->Check("mode_model_texture_coord", false);
