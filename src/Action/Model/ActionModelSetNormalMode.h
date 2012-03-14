@@ -10,11 +10,12 @@
 
 #include "../Action.h"
 #include "../../lib/types/types.h"
+#include "../../Data/Model/DataModel.h"
 
 class ActionModelSetNormalMode: public Action
 {
 public:
-	ActionModelSetNormalMode(int _mode);
+	ActionModelSetNormalMode(DataModel *m, int _mode);
 	virtual ~ActionModelSetNormalMode();
 
 	void *execute(Data *d);

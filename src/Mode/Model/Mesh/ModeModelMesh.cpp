@@ -6,6 +6,7 @@
  */
 
 #include "../../../Edward.h"
+#include "../ModeModel.h"
 #include "ModeModelMesh.h"
 #include "ModeModelMeshVertex.h"
 #include "ModeModelMeshSkin.h"
@@ -17,6 +18,8 @@
 #include "Creation/ModeModelMeshCreateCylinder.h"
 #include "Creation/ModeModelMeshCreatePlane.h"
 #include "../../../Action/Model/ActionModelDeleteSelection.h"
+#include "../../../Action/Model/ActionModelSetMaterial.h"
+#include "../Dialog/ModelMaterialSelectionDialog.h"
 
 ModeModelMesh *mode_model_mesh = NULL;
 
@@ -28,6 +31,8 @@ ModeModelMesh::ModeModelMesh(Mode *_parent, DataModel *_data)
 	menu = NULL;
 	multi_view = NULL;
 	Subscribe(data);
+
+	MaterialSelectionDialog = NULL;
 
 	mode_model_mesh_vertex = new ModeModelMeshVertex(this, data);
 	mode_model_mesh_skin = new ModeModelMeshSkin(this, data);
@@ -107,6 +112,11 @@ void ModeModelMesh::OnCommand(const string & id)
 		ed->SetCreationMode(new ModeModelMeshCreateCylinder(ed->cur_mode, data));
 	if (id == "new_plane")
 		ed->SetCreationMode(new ModeModelMeshCreatePlane(ed->cur_mode, data));
+
+	if (id == "create_new_material")
+		CreateNewMaterialForSelection();
+	if (id == "choose_material")
+		ChooseMaterialForSelection();
 }
 
 
@@ -171,4 +181,72 @@ void ModeModelMesh::OptimizeView()
 }
 
 
+
+void ModeModelMesh::CreateNewMaterialForSelection()
+{
+#if 0
+	msg_db_r("CreateNewMaterialForSelection", 2);
+	if (0 == data->GetNumMarkedTriangles()){
+		ed->SetMessage(_("kein Dreieck ausgew&ahlt"));
+		msg_db_l(2);
+		return;
+	}
+
+	//StartChanging();
+
+	data->Material.resize(data->Material.num + 1);
+	data->Material.num --; // stupid...
+	data->Material[data->Material.num].reset();
+	//Material[Material.num] = cur_mat;
+	int cmi = data->CurrentMaterial;
+	data->CurrentMaterial = data->Material.num;
+
+	if (mode_model->ExecuteMaterialDialog(0)){//, true)){
+		data->Material.num ++;
+
+		data->CurrentTextureLevel = 0;
+
+		// create new subs
+		for (int i=0;i<4;i++){
+			data->Skin[i].Sub.resize(data->Material.num);
+			data->Skin[i].Sub[data->CurrentMaterial].NumTextures = data->Material[data->CurrentMaterial].NumTextures;
+		}
+
+		// move selected trias to the new sub
+//		move_sel_trias_to_mat(CurrentMaterial);
+	}else{
+		data->Material.num ++;
+		data->Material.resize(data->Material.num - 1);
+		data->CurrentMaterial = cmi;
+	}
+
+	//EndChanging();
+	msg_db_l(2);
+#endif
+}
+
+void ModeModelMesh::ChooseMaterialForSelection()
+{
+	msg_db_r("ChooseMaterialForSelection", 2);
+	if (0 == data->GetNumMarkedTriangles()){
+		ed->SetMessage(_("kein Dreieck ausgew&ahlt"));
+		msg_db_l(2);
+		return;
+	}
+
+	int SelectionDialogReturnIndex;
+
+
+	// dialog
+	MaterialSelectionDialog = new ModelMaterialSelectionDialog(ed, false, data);
+	MaterialSelectionDialog->PutAnswer(&SelectionDialogReturnIndex);
+	//FillMaterialList(MaterialSelectionDialog);
+	MaterialSelectionDialog->Update();
+	HuiWaitTillWindowClosed(MaterialSelectionDialog);
+
+	if (SelectionDialogReturnIndex >= 0)
+		data->Execute(new ActionModelSetMaterial(data, SelectionDialogReturnIndex));
+
+	msg_db_l(2);
+}
 

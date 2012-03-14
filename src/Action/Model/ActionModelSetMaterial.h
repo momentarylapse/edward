@@ -10,11 +10,12 @@
 
 #include "../Action.h"
 #include "../../lib/types/types.h"
+#include "../../Data/Model/DataModel.h"
 
 class ActionModelSetMaterial: public Action
 {
 public:
-	ActionModelSetMaterial(int _material);
+	ActionModelSetMaterial(DataModel *m, int _material);
 	virtual ~ActionModelSetMaterial();
 
 	void *execute(Data *d);

@@ -7,7 +7,7 @@
 
 #include "ActionModelSetNormalMode.h"
 
-ActionModelSetNormalMode::ActionModelSetNormalMode(int _mode)
+ActionModelSetNormalMode::ActionModelSetNormalMode(DataModel *m, int _mode)
 {
 	// TODO Auto-generated constructor stub
 

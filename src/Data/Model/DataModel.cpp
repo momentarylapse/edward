@@ -1060,3 +1060,62 @@ void DataModel::GenerateInertiaTensor(float mass, bool just_temp)
 
 	msg_db_l(3);
 }
+
+
+int DataModel::GetNumMarkedVertices()
+{
+	int r = 0;
+	/*if ((CreationMode < 0) && ((SubMode == SubModeSkeleton) || ((SubMode == SubModeAnimation) && (move->Type == MoveTypeSkeletal)))){
+		for (int i=0;i<Bone.num;i++)
+			if (Bone[i].IsSelected)
+				r++;
+		return r;
+	}*/
+	foreach(Vertex, v)
+		if (v.is_selected)
+			r ++;
+	return r;
+}
+
+int DataModel::GetNumMarkedSkinVertices()
+{
+	int r=0;
+	return r;
+}
+
+int DataModel::GetNumMarkedTriangles()
+{
+	int r = 0;
+	foreach(Surface, s)
+		foreach(s.Triangle, t)
+			if (t.is_selected)
+				r ++;
+	return r;
+}
+
+int DataModel::GetNumMarkedSurfaces()
+{
+	int r = 0;
+	foreach(Surface, s)
+		if (s.is_selected)
+			r ++;
+	return r;
+}
+
+/*int DataModel::GetNumMarkedBalls()
+{
+	int r=0;
+	for (int i=0;i<Ball.num;i++)
+		if (Ball[i].IsSelected)
+			r++;
+	return r;
+}
+
+int DataModel::GetNumMarkedKonvPolys()
+{
+	int r=0;
+	for (int i=0;i<Poly.num;i++)
+		if (Poly[i].IsSelected)
+			r++;
+	return r;
+}*/

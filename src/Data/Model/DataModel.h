@@ -191,6 +191,14 @@ public:
 
 
 
+	int GetNumMarkedVertices();
+	int GetNumMarkedSkinVertices();
+	int GetNumMarkedTriangles();
+	int GetNumMarkedSurfaces();
+	//int GetNumMarkedBalls();
+	//int GetNumMarkedKonvPolys();
+
+
 	float GetDiameter();
 	void GenerateDetailDists(bool just_temp = false);
 	void GenerateInertiaTensor(float mass, bool just_temp = false);

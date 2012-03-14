@@ -49,6 +49,7 @@ ModelPropertiesDialog::ModelPropertiesDialog(CHuiWindow *_parent, bool _allow_pa
 
 ModelPropertiesDialog::~ModelPropertiesDialog()
 {
+	mode_model->PropertiesDialog = NULL;
 }
 
 void ModelPropertiesDialog::LoadData()
@@ -330,11 +331,10 @@ void ModelPropertiesDialog::ApplyData()
 void ModelPropertiesDialog::OnClose()
 {
 	delete(this);
-	mode_model->PropertiesDialog = NULL;
 }
 
 void ModelPropertiesDialog::OnOk()
 {
 	ApplyData();
-	OnClose();
+	delete(this);
 }

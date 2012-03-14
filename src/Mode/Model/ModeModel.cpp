@@ -133,19 +133,15 @@ void ModeModel::OnCommand(const string & id)
 		ed->SetMode(mode_model_mesh_vertex);
 	if (id == "mode_model_skin")
 		ed->SetMode(mode_model_mesh_skin);
-	/*if (id == "mode_model_texture")
-		ExecuteMaterialDialog(1);*/
+	if (id == "mode_model_texture")
+		ExecuteMaterialDialog(1);
 		//SetSubMode(SubModeTextures);
 	if (id == "mode_model_properties")
 		ExecutePropertiesDialog(0);
-	/*if (id == "mode_model_material")
-		ExecuteMaterialDialog(0);*/
+	if (id == "mode_model_material")
+		ExecuteMaterialDialog(0);
 	if (id == "mode_model_materials")
 		ExecutePropertiesDialog(1);
-	/*if (id == "create_new_material")
-		CreateNewMaterialForSelection();
-	if (id == "choose_material")
-		ChooseMaterialForSelection();*/
 }
 
 

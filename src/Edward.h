@@ -64,6 +64,7 @@ public:
 	int Run();
 
 	void OnAbout();
+	void OnSendBugReport();
 	void SetMode(Mode *m);
 	void SetCreationMode(ModeCreation *m);
 
@@ -86,6 +87,7 @@ public:
 
 	void SetMessage(const string &message);
 	void ErrorBox(const string &message);
+	Array<string> message_str;
 
 
 	void SetRootDirectory(const string &directory);

@@ -43,6 +43,7 @@ ModelMaterialDialog::ModelMaterialDialog(CHuiWindow *_parent, bool _allow_parent
 
 ModelMaterialDialog::~ModelMaterialDialog()
 {
+	mode_model->MaterialDialog = NULL;
 }
 
 void ModelMaterialDialog::LoadData()
@@ -281,11 +282,10 @@ void ModelMaterialDialog::ApplyData()
 void ModelMaterialDialog::OnOk()
 {
 	ApplyData();
-	OnClose();
+	delete(this);
 }
 
 void ModelMaterialDialog::OnClose()
 {
 	delete(this);
-	mode_model->MaterialDialog = NULL;
 }

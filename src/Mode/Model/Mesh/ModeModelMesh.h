@@ -10,6 +10,7 @@
 
 #include "../../Mode.h"
 #include "../../../Data/Model/DataModel.h"
+#include "../Dialog/ModelMaterialSelectionDialog.h"
 
 class Mode;
 class DataModel;
@@ -40,7 +41,11 @@ public:
 
 	void OptimizeView();
 
+	void CreateNewMaterialForSelection();
+	void ChooseMaterialForSelection();
+
 	DataModel *data;
+	ModelMaterialSelectionDialog *MaterialSelectionDialog;
 };
 
 extern ModeModelMesh *mode_model_mesh;

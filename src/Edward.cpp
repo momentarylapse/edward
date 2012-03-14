@@ -154,6 +154,7 @@ Edward::Edward(Array<string> arg) :
 	NixTextureIconSize = 32;
 
 	EventM("hui:close", this, (void(CHuiWindow::*)())&Edward::OnClose);
+	EventM("exit", this, (void(CHuiWindow::*)())&Edward::OnClose);
 	EventM("hui:redraw", this, (void(CHuiWindow::*)())&Edward::OnDraw);
 	EventM("hui:key-down", this, (void(CHuiWindow::*)())&Edward::OnKeyDown);
 	EventM("hui:key-up", this, (void(CHuiWindow::*)())&Edward::OnKeyUp);
@@ -166,6 +167,7 @@ Edward::Edward(Array<string> arg) :
 	EventM("hui:right-button-up", this, (void(CHuiWindow::*)())&Edward::OnRightButtonUp);
 	EventM("*", this, (void(CHuiWindow::*)())&Edward::OnEvent);
 	EventM("what_the_fuck", this, (void(CHuiWindow::*)())&Edward::OnAbout);
+	EventM("send_bug_report", this, (void(CHuiWindow::*)())&Edward::OnSendBugReport);
 	HuiAddCommand("abort_creation_mode", "hui:cancel", KEY_ESCAPE, &OnAbortCreationMode);
 
 	MetaInit();
@@ -290,6 +292,9 @@ void Edward::SetCreationMode(ModeCreation *m)
 void Edward::OnAbout()
 {	HuiAboutBox(this);	}
 
+void Edward::OnSendBugReport()
+{	HuiSendBugReport();	}
+
 void Edward::OnUpdate(Observable *o)
 {
 	msg_db_r("Edward.OnUpdate", 2);
@@ -327,6 +332,10 @@ void Edward::OnDraw()
 		creation_mode->PostDraw();
 		DrawStr(MaxX / 2, MaxY - 20, creation_mode->message);
 	}
+
+	// messages
+	foreachi(message_str, m, i)
+		DrawStr(MaxX / 2 - NixGetStrWidth(m, -1, -1) / 2, MaxY / 2 - 10 - i * 20, m);
 
 	NixEnd();
 }
@@ -432,9 +441,18 @@ void Edward::MakeDirs(const string &original_dir, bool as_root_dir)
 	msg_db_l(1);
 }
 
+void RemoveMessage()
+{
+	ed->message_str.erase(0);
+	ed->ForceRedraw();
+}
+
 void Edward::SetMessage(const string &message)
 {
 	msg_write(message);
+	message_str.add(message);
+	ForceRedraw();
+	HuiRunLater(2000, &RemoveMessage);
 }
 
 
