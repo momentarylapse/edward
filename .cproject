@@ -20,19 +20,26 @@
 <toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1838791875" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 <targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.debug.1827194105" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
 <builder buildPath="${workspace_loc:/Edward/Debug}" command="make" id="cdt.managedbuild.target.gnu.builder.exe.debug.1244485813" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="2" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
-<tool command="g++ `pkg-config --cflags --libs gtk+-2.0`" id="cdt.managedbuild.tool.gnu.archiver.base.903462101" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
-<tool command="g++" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}  `pkg-config --cflags --libs gtk+-2.0`" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1309347408" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
-<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.1747606687" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
-<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.2063902302" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
+<tool command="g++ `pkg-config --cflags --libs gtk+-2.0`" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS} `pkg-config --cflags --libs gtk+-2.0`" id="cdt.managedbuild.tool.gnu.archiver.base.903462101" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
+<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS} `pkg-config --cflags --libs gtk+-2.0`" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1309347408" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
+<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.38180120" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.1045328543" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.534396045" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 </tool>
-<tool command="gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}  `pkg-config --cflags --libs gtk+-2.0`" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.2130664223" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
-<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.1051578435" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
-<option id="gnu.c.compiler.exe.debug.option.debugging.level.55041159" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.2130664223" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
+<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.974675657" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
+<option id="gnu.c.compiler.exe.debug.option.debugging.level.1657974802" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2051153547" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 </tool>
-<tool command="g++ `pkg-config --cflags --libs gtk+-2.0`" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1609797558" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug"/>
-<tool command="g++" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS} `pkg-config --cflags --libs gtk+-2.0` -lGL -lGLU" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1993093530" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
+<tool command="g++ `pkg-config --cflags --libs gtk+-2.0`" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS} `pkg-config --cflags --libs gtk+-2.0`" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1609797558" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug">
+<option id="gnu.c.link.option.shared.1961429855" name="Shared (-shared)" superClass="gnu.c.link.option.shared"/>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1993093530" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
+<option id="gnu.cpp.link.option.shared.1615178824" name="Shared (-shared)" superClass="gnu.cpp.link.option.shared"/>
+<option id="gnu.cpp.link.option.libs.1904223039" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+<listOptionValue builtIn="false" value="GL"/>
+<listOptionValue builtIn="false" value="GLU"/>
+</option>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1887307735" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 <additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -130,8 +137,8 @@
 <parser enabled="true"/>
 </scannerInfoProvider>
 </profile>
-<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.163762552;cdt.managedbuild.config.gnu.exe.release.163762552.;cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.303096316;cdt.managedbuild.tool.gnu.cpp.compiler.input.1151559218">
-<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.163762552;cdt.managedbuild.config.gnu.exe.release.163762552.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.1208947794;cdt.managedbuild.tool.gnu.c.compiler.input.1056210680">
+<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 <profile id="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile">
 <buildOutputProvider>
 <openAction enabled="true" filePath=""/>
@@ -213,8 +220,8 @@
 </scannerInfoProvider>
 </profile>
 </scannerConfigBuildInfo>
-<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.163762552;cdt.managedbuild.config.gnu.exe.release.163762552.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.1208947794;cdt.managedbuild.tool.gnu.c.compiler.input.1056210680">
-<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.163762552;cdt.managedbuild.config.gnu.exe.release.163762552.;cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.303096316;cdt.managedbuild.tool.gnu.cpp.compiler.input.1151559218">
+<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
 <profile id="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile">
 <buildOutputProvider>
 <openAction enabled="true" filePath=""/>
@@ -480,20 +487,27 @@
 <folderInfo id="cdt.managedbuild.config.gnu.exe.release.163762552." name="/" resourcePath="">
 <toolChain id="cdt.managedbuild.toolchain.gnu.exe.release.1989868599" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.release">
 <targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.release.936516348" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.release"/>
-<builder buildPath="${workspace_loc:/Edward/Release}" id="cdt.managedbuild.target.gnu.builder.exe.release.1217125682" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="-1" superClass="cdt.managedbuild.target.gnu.builder.exe.release"/>
-<tool command="g++ `pkg-config --cflags --libs gtk+-2.0`" id="cdt.managedbuild.tool.gnu.archiver.base.420657836" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
-<tool command="g++ `pkg-config --cflags --libs gtk+-2.0`" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.303096316" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release">
-<option id="gnu.cpp.compiler.exe.release.option.optimization.level.1024901115" name="Optimization Level" superClass="gnu.cpp.compiler.exe.release.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
-<option id="gnu.cpp.compiler.exe.release.option.debugging.level.1769044533" name="Debug Level" superClass="gnu.cpp.compiler.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
+<builder buildPath="${workspace_loc:/Edward/Release}" id="cdt.managedbuild.target.gnu.builder.exe.release.1217125682" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="2" superClass="cdt.managedbuild.target.gnu.builder.exe.release"/>
+<tool command="g++ `pkg-config --cflags --libs gtk+-2.0`" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS} `pkg-config --cflags --libs gtk+-2.0`" id="cdt.managedbuild.tool.gnu.archiver.base.420657836" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
+<tool command="g++" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS} `pkg-config --cflags --libs gtk+-2.0`" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.303096316" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release">
+<option id="gnu.cpp.compiler.exe.release.option.optimization.level.429466404" name="Optimization Level" superClass="gnu.cpp.compiler.exe.release.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
+<option id="gnu.cpp.compiler.exe.release.option.debugging.level.1603060378" name="Debug Level" superClass="gnu.cpp.compiler.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1151559218" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 </tool>
-<tool command="gcc `pkg-config --cflags --libs gtk+-2.0`" id="cdt.managedbuild.tool.gnu.c.compiler.exe.release.1208947794" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.release">
-<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.exe.release.option.optimization.level.1361865755" name="Optimization Level" superClass="gnu.c.compiler.exe.release.option.optimization.level" valueType="enumerated"/>
-<option id="gnu.c.compiler.exe.release.option.debugging.level.38386509" name="Debug Level" superClass="gnu.c.compiler.exe.release.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
+<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.release.1208947794" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.release">
+<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.exe.release.option.optimization.level.1139302879" name="Optimization Level" superClass="gnu.c.compiler.exe.release.option.optimization.level" valueType="enumerated"/>
+<option id="gnu.c.compiler.exe.release.option.debugging.level.899451930" name="Debug Level" superClass="gnu.c.compiler.exe.release.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
 <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1056210680" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 </tool>
-<tool command="g++ `pkg-config --cflags --libs gtk+-2.0`" id="cdt.managedbuild.tool.gnu.c.linker.exe.release.767016234" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.release"/>
-<tool command="g++ `pkg-config --cflags --libs gtk+-2.0`" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.1874075016" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release">
+<tool command="g++ `pkg-config --cflags --libs gtk+-2.0`" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS} `pkg-config --cflags --libs gtk+-2.0`" id="cdt.managedbuild.tool.gnu.c.linker.exe.release.767016234" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.release">
+<option id="gnu.c.link.option.shared.525210164" name="Shared (-shared)" superClass="gnu.c.link.option.shared"/>
+</tool>
+<tool command="g++" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS} `pkg-config --cflags --libs gtk+-2.0`" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.1874075016" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release">
+<option id="gnu.cpp.link.option.shared.507306542" name="Shared (-shared)" superClass="gnu.cpp.link.option.shared"/>
+<option id="gnu.cpp.link.option.libs.1226023394" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+<listOptionValue builtIn="false" value="GL"/>
+<listOptionValue builtIn="false" value="GLU"/>
+</option>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1032038941" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 <additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -591,8 +605,8 @@
 <parser enabled="true"/>
 </scannerInfoProvider>
 </profile>
-<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.163762552;cdt.managedbuild.config.gnu.exe.release.163762552.;cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.303096316;cdt.managedbuild.tool.gnu.cpp.compiler.input.1151559218">
-<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.163762552;cdt.managedbuild.config.gnu.exe.release.163762552.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.1208947794;cdt.managedbuild.tool.gnu.c.compiler.input.1056210680">
+<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 <profile id="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile">
 <buildOutputProvider>
 <openAction enabled="true" filePath=""/>
@@ -674,8 +688,8 @@
 </scannerInfoProvider>
 </profile>
 </scannerConfigBuildInfo>
-<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.163762552;cdt.managedbuild.config.gnu.exe.release.163762552.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.1208947794;cdt.managedbuild.tool.gnu.c.compiler.input.1056210680">
-<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.163762552;cdt.managedbuild.config.gnu.exe.release.163762552.;cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.303096316;cdt.managedbuild.tool.gnu.cpp.compiler.input.1151559218">
+<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
 <profile id="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile">
 <buildOutputProvider>
 <openAction enabled="true" filePath=""/>
