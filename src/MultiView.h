@@ -34,8 +34,9 @@ enum
 };
 
 // "des Pudels Kern", don't change!!!!!!!
-struct MultiViewSingleData
+class MultiViewSingleData
 {
+public:
 	int view_stage;
 	bool is_selected, m_delta, m_old, is_special;
 	vector pos;

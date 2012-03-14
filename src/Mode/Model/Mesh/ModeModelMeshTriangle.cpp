@@ -123,14 +123,18 @@ void ModeModelMeshTriangle::FillSelectionBuffers()
 		ModeModelTriangle *mmo = NULL;
 		if ((multi_view->MouseOver >= 0) && (multi_view->MouseOverSet < data->Surface.num) && (multi_view->MouseOverType == MVDModelTriangle))
 			mmo = &data->Surface[multi_view->MouseOverSet].Triangle[multi_view->MouseOver];
-		foreach(data->Surface, s)
+		foreachi(data->Surface, s, si){
+			bool s_mo = false;
+			if ((multi_view->MouseOver >= 0) && (multi_view->MouseOverType == MVDModelSurface))
+				s_mo = (multi_view->MouseOver == si);
 			foreach(s.Triangle, t)
 				/*if (t.view_stage >= ViewStage)*/{
 				if (t.is_selected)
 					add_tria(VBMarked, data, t);
-				if (&t == mmo)
+				if ((&t == mmo) || (s_mo))
 					add_tria(VBMouseOver, data, t);
 			}
+		}
 	}/*else if (EditMode == EditModeSurface){
 		ModeModelSurface *mmo = NULL;
 		if ((MouseOver >= 0) && (MouseOverType == MVDModelSurface))
@@ -329,8 +333,14 @@ void ModeModelMeshTriangle::OnUpdate(Observable *o)
 				if (t.is_selected)
 					for (int k=0;k<3;k++)
 						data->Vertex[t.Vertex[k]].is_selected = true;
-		FillSelectionBuffers();
+		// surface selection from trias
+		foreach(data->Surface, s){
+			s.is_selected = true;
+			foreach(s.Triangle, t)
+				s.is_selected &= t.is_selected;
+		}
 	}
+	FillSelectionBuffers();
 }
 
 

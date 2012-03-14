@@ -42,8 +42,9 @@ struct ModeModelFX{
 	string File, Function;
 };
 
-struct ModeModelVertex: MultiViewSingleData
+class ModeModelVertex: public MultiViewSingleData
 {
+public:
 	int NormalMode;
 	int BoneIndex;
 
@@ -55,8 +56,9 @@ struct ModeModelVertex: MultiViewSingleData
 	int Surface;
 };
 
-struct ModeModelTriangle: MultiViewSingleData
+class ModeModelTriangle: public MultiViewSingleData
 {
+public:
 	int Vertex[3], Edge[3];
 	vector SkinVertex[MODEL_MAX_TEXTURES][3];
 	int NormalIndex[3];
@@ -66,8 +68,9 @@ struct ModeModelTriangle: MultiViewSingleData
 	int Material;
 };
 
-struct ModeModelBall: MultiViewSingleData
+class ModeModelBall: public MultiViewSingleData
 {
+public:
 	int Index;
 	float Radius;
 };
@@ -81,8 +84,9 @@ struct ModeModelPolyhedronFace
 
 
 // TODO: dynamical!
-struct ModeModelPolyhedron: MultiViewSingleData
+class ModeModelPolyhedron: public MultiViewSingleData
 {
+public:
 	int NumFaces;
 	ModeModelPolyhedronFace Face[MODEL_MAX_POLY_FACES];
 	int NumSVertices;
@@ -131,8 +135,9 @@ struct ModeModelSkin
 	ModeModelTriangle *Triangle;
 };*/
 
-struct ModeModelSkeletonBone: MultiViewSingleData
+class ModeModelSkeletonBone: public MultiViewSingleData
 {
+public:
 	int Parent;
 	vector DeltaPos;
 	string ModelFile;
@@ -165,8 +170,9 @@ struct ModeModelMove
 	string Name;
 };
 
-struct ModeModelEdge: MultiViewSingleData
+class ModeModelEdge: public MultiViewSingleData
 {
+public:
 	int NormalMode;
 	int Vertex[2];
 	int RefCount, Triangle[2];

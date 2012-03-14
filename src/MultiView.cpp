@@ -29,6 +29,7 @@ const int PointRadiusMouseOver = 4;
 						else \
 							zoom = (float)NixScreenHeight * 0.8f;
 #define MVGetSingleData(d, index)	((MultiViewSingleData*) ((char*)(d).data + (d).DataSingleSize * index))
+//#define MVGetSingleData(d, index)	( dynamic_cast<MultiViewSingleData*> ((char*)(d).data + (d).DataSingleSize * index))
 
 bool pos_in_irect(int x, int y, irect r)
 {
@@ -125,6 +126,9 @@ void MultiView::SetData(int type, const DynamicArray & a, void *user_data, int m
 	d.Num = a.num;
 	d.Type = type;
 	d.data = a.data;
+	if (type == 0) // MVDModelSurface...
+		d.data = (char*)a.data + 4;
+	msg_todo("MultiView: class data offset");
 	d.user_data = user_data;
 	d.MVSelectable = (mode & FlagSelect)>0;
 	d.Drawable = (mode & FlagDraw)>0;
@@ -1267,8 +1271,10 @@ void MultiView::SelectAllInRectangle(int mode)
 				else
 					sd->is_selected = sd->m_delta;
 			}
+
 	Notify("SelectionChange");
 	NotifyEnd();
+
 	msg_db_l(4);
 }
 

@@ -9,7 +9,7 @@
 #include "../../../MultiView.h"
 #include "ModeModelMesh.h"
 #include "ModeModelMeshVertex.h"
-#include "ModeModelMeshSkin.h"
+#include "ModeModelMeshTriangle.h"
 #include "../../../lib/nix/nix.h"
 
 ModeModelMeshVertex *mode_model_mesh_vertex = NULL;
@@ -126,14 +126,19 @@ void ModeModelMeshVertex::OnUpdate(Observable *o)
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
 				NULL, NULL);
-		mode_model_mesh_triangle->FillSelectionBuffers();
 	}else if (o->GetName() == "MultiView"){
 		// tria selection from vertices
 		foreach(data->Surface, s)
 			foreach(s.Triangle, t)
 				t.is_selected = ((data->Vertex[t.Vertex[0]].is_selected) and (data->Vertex[t.Vertex[1]].is_selected) and (data->Vertex[t.Vertex[2]].is_selected));
-		mode_model_mesh_triangle->FillSelectionBuffers();
+		// surface selection from trias
+		foreach(data->Surface, s){
+			s.is_selected = true;
+			foreach(s.Triangle, t)
+				s.is_selected &= t.is_selected;
+		}
 	}
+	mode_model_mesh_triangle->FillSelectionBuffers();
 }
 
 

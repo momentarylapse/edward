@@ -10,7 +10,12 @@
 #include "../../Data/Model/DataModel.h"
 #include "Mesh/ModeModelMesh.h"
 #include "Mesh/ModeModelMeshVertex.h"
+#include "Mesh/ModeModelMeshEdge.h"
 #include "Mesh/ModeModelMeshTriangle.h"
+#include "Mesh/ModeModelMeshSurface.h"
+#include "Mesh/ModeModelMeshTexture.h"
+#include "Skeleton/ModeModelSkeleton.h"
+#include "Animation/ModeModelAnimation.h"
 
 ModeModel *mode_model = NULL;
 
@@ -26,6 +31,8 @@ ModeModel::ModeModel()
 	MaterialDialog = NULL;
 
 	mode_model_mesh = new ModeModelMesh(this, data);
+	mode_model_skeleton = new ModeModelSkeleton(this, data);
+	mode_model_animation = new ModeModelAnimation(this, data);
 	Subscribe(data);
 }
 
@@ -163,10 +170,18 @@ void ModeModel::OnCommand(const string & id)
 
 	if (id == "mode_model_vertex")
 		ed->SetMode(mode_model_mesh_vertex);
-	/*if (id == "mode_model_edge")
-		ed->SetMode(mode_model_mesh_edge);*/
+	if (id == "mode_model_edge")
+		ed->SetMode(mode_model_mesh_edge);
 	if (id == "mode_model_triangle")
 		ed->SetMode(mode_model_mesh_triangle);
+	if (id == "mode_model_surface")
+		ed->SetMode(mode_model_mesh_surface);
+	if (id == "mode_model_texture_coord")
+		ed->SetMode(mode_model_mesh_texture);
+	if (id == "mode_model_animation")
+		ed->SetMode(mode_model_animation);
+	if (id == "mode_model_skeleton")
+		ed->SetMode(mode_model_skeleton);
 	if (id == "mode_model_texture")
 		ExecuteMaterialDialog(1);
 		//SetSubMode(SubModeTextures);
@@ -190,13 +205,14 @@ void ModeModel::OnUpdate(Observable *o)
 void ModeModel::OnUpdateMenu()
 {
 	ed->Check("mode_model_vertex", ed->cur_mode == mode_model_mesh_vertex);
-	ed->Check("mode_model_edge", false);//ed->cur_mode == mode_model_mesh_edge);
+	ed->Check("mode_model_edge", ed->cur_mode == mode_model_mesh_edge);
 	ed->Check("mode_model_triangle", ed->cur_mode == mode_model_mesh_triangle);
-	ed->Check("mode_model_surface", false);//ed->cur_mode == mode_model_mesh_surface);
+	ed->Check("mode_model_surface", ed->cur_mode == mode_model_mesh_surface);
+	ed->Check("mode_model_texture_coord", ed->cur_mode == mode_model_mesh_texture);
 	ed->Check("mode_model_mesh", ed->cur_mode->parent == mode_model_mesh);
 	ed->Check("mode_model_texture_coord", false);
-	ed->Check("mode_model_skeleton", false);
-	ed->Check("mode_model_animation", false);
+	ed->Check("mode_model_skeleton", ed->cur_mode == mode_model_skeleton);
+	ed->Check("mode_model_animation", ed->cur_mode == mode_model_animation);
 }
 
 

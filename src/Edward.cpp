@@ -285,6 +285,8 @@ void Edward::SetMode(Mode *m)
 
 void Edward::SetCreationMode(ModeCreation *m)
 {
+	if (creation_mode == m)
+		return;
 	msg_db_r("SetCreationMode", 1);
 
 	// close current creation_mode
@@ -302,6 +304,7 @@ void Edward::SetCreationMode(ModeCreation *m)
 	}
 
 	ForceRedraw();
+	UpdateMenu();
 	msg_db_l(1);
 }
 
@@ -512,7 +515,7 @@ void Edward::OnCommand(const string &id)
 
 Mode *get_cur_root_mode()
 {
-	Mode *m;
+	Mode *m = NULL;
 	Mode *p = ed->cur_mode;
 	while(p){
 		m = p;

@@ -9,7 +9,10 @@
 #include "../ModeModel.h"
 #include "ModeModelMesh.h"
 #include "ModeModelMeshVertex.h"
+#include "ModeModelMeshEdge.h"
 #include "ModeModelMeshTriangle.h"
+#include "ModeModelMeshSurface.h"
+#include "ModeModelMeshTexture.h"
 #include "../../ModeCreation.h"
 #include "Creation/ModeModelMeshCreateVertex.h"
 #include "Creation/ModeModelMeshCreateTriangles.h"
@@ -37,7 +40,10 @@ ModeModelMesh::ModeModelMesh(Mode *_parent, DataModel *_data)
 	right_mouse_function = RMFRotate;
 
 	mode_model_mesh_vertex = new ModeModelMeshVertex(this, data);
+	mode_model_mesh_edge = new ModeModelMeshEdge(this, data);
 	mode_model_mesh_triangle = new ModeModelMeshTriangle(this, data);
+	mode_model_mesh_surface = new ModeModelMeshSurface(this, data);
+	mode_model_mesh_texture = new ModeModelMeshTexture(this, data);
 }
 
 ModeModelMesh::~ModeModelMesh()
