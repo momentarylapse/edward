@@ -196,12 +196,15 @@ void ModeModelMesh::OnUpdate(Observable *o)
 
 void ModeModelMesh::OnUpdateMenu()
 {
-	/*ed->Check("new_point", );
-	ed->Check("new_tria", ); // "new_tria_u"
-	ed->Check("new_plane", );
-	ed->Check("new_cube", );
-	ed->Check("new_ball", );
-	ed->Check("new_cylinder", );*/
+	string cm_name;
+	if (ed->creation_mode)
+		cm_name = ed->creation_mode->name;
+	ed->Check("new_point", cm_name == "ModelMeshCreateVertex");
+	ed->Check("new_tria", cm_name == "ModelMeshCreateTriangles");
+	ed->Check("new_plane", cm_name == "ModelMeshCreatePlane");
+	ed->Check("new_cube", cm_name == "ModelMeshCreateCube");
+	ed->Check("new_ball", cm_name == "ModelMeshCreateBall");
+	ed->Check("new_cylinder", cm_name == "ModelMeshCreateCylinder");
 
 	ed->Check("rotate", right_mouse_function == RMFRotate);
 	ed->Check("scale", right_mouse_function == RMFScale);

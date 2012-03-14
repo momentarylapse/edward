@@ -210,7 +210,6 @@ void ModeModel::OnUpdateMenu()
 	ed->Check("mode_model_surface", ed->cur_mode == mode_model_mesh_surface);
 	ed->Check("mode_model_texture_coord", ed->cur_mode == mode_model_mesh_texture);
 	ed->Check("mode_model_mesh", ed->cur_mode->parent == mode_model_mesh);
-	ed->Check("mode_model_texture_coord", false);
 	ed->Check("mode_model_skeleton", ed->cur_mode == mode_model_skeleton);
 	ed->Check("mode_model_animation", ed->cur_mode == mode_model_animation);
 }

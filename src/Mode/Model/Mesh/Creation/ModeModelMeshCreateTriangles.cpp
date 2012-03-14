@@ -64,12 +64,24 @@ void ModeModelMeshCreateTriangles::OnKeyDown()
 void ModeModelMeshCreateTriangles::OnLeftButtonDown()
 {
 	if (multi_view->Selected >= 0){
+		// closed loop -> done
 		if (selection.num > 0)
 			if (multi_view->Selected == selection[0]){
 				data->Execute(new ActionModelAddTrianglesByOutline(selection, data));
 				ed->SetCreationMode(NULL);
 				return;
 			}
+
+		// consistency?
+		foreachi(selection, s, i)
+			if (s == multi_view->Selected)
+				if (i > 0){
+					ed->SetMessage(_("keine doppelten Punkte erlaubt!"));
+					ed->SetCreationMode(NULL);
+					return;
+				}
+
+		// all ok -> add
 		selection.add(multi_view->Selected);
 
 	}else{
