@@ -223,9 +223,11 @@ gboolean OnGtkWindowMouseMove(GtkWidget *widget, GdkEventMotion *event, gpointer
 	int mx, my, mod = 0;
 	if (win->gl_widget){
 		//msg_write("gl");
-		//gdk_window_get_pointer(win->gl_widget->window, &mx, &my, (GdkModifierType*)&mod);
-		mx = event->x;
-		my = event->y;
+		gdk_window_get_pointer(win->gl_widget->window, &mx, &my, (GdkModifierType*)&mod);
+		//mx = event->x;
+		//my = event->y;
+		win->mouse_offset_x = mx - event->x;
+		win->mouse_offset_y = my - event->y;
 		mod = event->state;
 	}else{
 		gdk_window_get_pointer(win->window->window, &mx, &my, (GdkModifierType*)&mod);

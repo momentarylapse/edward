@@ -110,6 +110,12 @@ void ModeFont::New()
 
 void ModeFont::Start()
 {
+	ed->ToolbarSetCurrent(HuiToolbarTop);
+	ed->ToolbarReset();
+	ed->EnableToolbar(false);
+	ed->ToolbarSetCurrent(HuiToolbarLeft);
+	ed->ToolbarReset();
+	ed->EnableToolbar(false);
 }
 
 

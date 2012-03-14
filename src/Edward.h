@@ -63,10 +63,13 @@ public:
 	void LoadKeyCodes();
 	int Run();
 
+	void IdleFunction();
+
 	void OnAbout();
 	void OnSendBugReport();
 	void SetMode(Mode *m);
 	void SetCreationMode(ModeCreation *m);
+	void OnAbortCreationMode();
 
 	void OnUpdate(Observable *o);
 	void OnCommand(const string &id);
@@ -86,6 +89,7 @@ public:
 	//void OnAbortCreationMode();
 
 	void SetMessage(const string &message);
+	void RemoveMessage();
 	void ErrorBox(const string &message);
 	Array<string> message_str;
 

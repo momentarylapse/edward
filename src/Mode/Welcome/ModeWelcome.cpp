@@ -31,6 +31,13 @@ ModeWelcome::~ModeWelcome()
 
 void ModeWelcome::Start()
 {
+	ed->ToolbarSetCurrent(HuiToolbarTop);
+	ed->ToolbarReset();
+	ed->EnableToolbar(false);
+	ed->ToolbarSetCurrent(HuiToolbarLeft);
+	ed->ToolbarReset();
+	ed->EnableToolbar(false);
+
 	mouse_over = mouse_over_cmd = -1;
 }
 

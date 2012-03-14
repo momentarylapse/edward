@@ -37,6 +37,7 @@ struct HuiClosedWindow
 {
 	CHuiWindow *win;
 	int unique_id;
+	string last_id;
 };
 extern Array<HuiClosedWindow> _HuiClosedWindow_;
 

@@ -130,6 +130,12 @@ void ModeWorld::DrawWin(int win, irect dest)
 
 void ModeWorld::Start()
 {
+	ed->ToolbarSetCurrent(HuiToolbarTop);
+	ed->ToolbarReset();
+	ed->EnableToolbar(false);
+	ed->ToolbarSetCurrent(HuiToolbarLeft);
+	ed->ToolbarReset();
+	ed->EnableToolbar(false);
 }
 
 

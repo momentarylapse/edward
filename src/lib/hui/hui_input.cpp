@@ -248,6 +248,8 @@ void HuiAddKeyCode(const string &id, int key_code)
 	c.enabled = true;
 	c.type = 0;
 	c.func = NULL;
+	c.object = NULL;
+	c.member_function = NULL;
 	_HuiCommand_.add(c);
 }
 
@@ -468,10 +470,13 @@ void HuiAddCommand(const string &id, const string &image, int default_key_code, 
 	c.id = id;
 	c.key_code = default_key_code;
 	c.func = func;
+	c.object = NULL;
+	c.member_function = NULL;
 	_HuiCommand_.add(c);
 
 	foreach(HuiWindow, w)
-		w->Event(id, func);
+		if (func)
+			w->Event(id, func);
 }
 
 void HuiAddCommandToggle(const string &id, const string &image, int default_key_code, hui_callback *func)
@@ -481,10 +486,45 @@ void HuiAddCommandToggle(const string &id, const string &image, int default_key_
 	c.id = id;
 	c.key_code = default_key_code;
 	c.func = func;
+	c.object = NULL;
+	c.member_function = NULL;
 	_HuiCommand_.add(c);
 
 	foreach(HuiWindow, w)
-		w->Event(id, func);
+		if (func)
+			w->Event(id, func);
+}
+
+void HuiAddCommandM(const string &id, const string &image, int default_key_code, CHuiWindow *object, void (CHuiWindow::*function)())
+{
+	HuiCommand c;
+	c.type = 0;
+	c.id = id;
+	c.key_code = default_key_code;
+	c.func = NULL;
+	c.object = object;
+	c.member_function = function;
+	_HuiCommand_.add(c);
+
+	foreach(HuiWindow, w)
+		if ((object) && (function))
+			w->EventM(id, object, function);
+}
+
+void HuiAddCommandMToggle(const string &id, const string &image, int default_key_code, CHuiWindow *object, void (CHuiWindow::*function)())
+{
+	HuiCommand c;
+	c.type = 1;
+	c.id = id;
+	c.key_code = default_key_code;
+	c.func = NULL;
+	c.object = object;
+	c.member_function = function;
+	_HuiCommand_.add(c);
+
+	foreach(HuiWindow, w)
+		if ((object) && (function))
+			w->EventM(id, object, function);
 }
 
 void HuiLoadKeyCodes(const string &filename)

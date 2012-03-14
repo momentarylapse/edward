@@ -89,8 +89,12 @@ void CHuiWindow::_Init_(CHuiWindow *_root, bool _allow_root, int _mode)
 
 	SetTarget("", 0);
 
+	// inherit commands
 	foreach(_HuiCommand_, c)
-		Event(c.id, c.func);
+		if (c.func)
+			Event(c.id, c.func);
+		else if ((c.object) && (c.member_function))
+			EventM(c.id, c.object, c.member_function);
 
 	msg_db_l(2);
 }
@@ -101,6 +105,7 @@ void CHuiWindow::_CleanUp_()
 	HuiClosedWindow c;
 	c.unique_id = unique_id;
 	c.win = this;
+	c.last_id = cur_id;
 	_HuiClosedWindow_.add(c);
 
 	for (int i=0;i<control.num;i++)
@@ -165,6 +170,16 @@ int CHuiWindow::_GetUniqueID_()
 	return unique_id;
 }
 
+string CHuiWindow::_GetCurID_()
+{
+	return cur_id;
+}
+
+void CHuiWindow::_SetCurID_(const string &id)
+{
+	cur_id = id;
+}
+
 CHuiMenu *CHuiWindow::GetMenu()
 {
 	return menu;
@@ -219,7 +234,6 @@ void CHuiWindow::EventX(const string &id, const string &msg, hui_callback *funct
 	e.object = NULL;
 	e.member_function = NULL;
 	event.add(e);
-	
 }
 
 void CHuiWindow::EventM(const string &id, CHuiWindow *object, void (CHuiWindow::*function)())
@@ -270,6 +284,10 @@ bool CHuiWindow::_SendEvent_(HuiEvent *e)
 	e->key = (e->key_code % 256);
 	e->text = HuiGetKeyChar(e->key_code);
 	_HuiEvent_ = *e;
+	if (e->id.num > 0)
+		_SetCurID_(e->id);
+	else
+		_SetCurID_(e->message);
 	
 	bool sent = false;
 	foreach(event, ee){	

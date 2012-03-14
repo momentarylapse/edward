@@ -15,7 +15,7 @@
 #include "../file/file.h"
 
 
-string HuiVersion = "0.4.10.0";
+string HuiVersion = "0.4.11.0";
 
 
 #include <stdio.h>
@@ -71,6 +71,8 @@ void _so(int i)
 
 
 hui_callback *HuiIdleFunction = NULL, *HuiErrorFunction = NULL;
+CHuiWindow *hui_idle_object = NULL;
+void (CHuiWindow::*hui_idle_member_function)() = NULL;
 bool HuiHaveToExit;
 bool HuiRunning;
 bool HuiEndKeepMsgAlive = false;
@@ -123,16 +125,36 @@ Array<sHuiImage> HuiImage;
 	{
 		if (HuiIdleFunction)
 			HuiIdleFunction();
+		else if ((hui_idle_object) && (hui_idle_member_function))
+			(hui_idle_object->*hui_idle_member_function)();
 		else
 			HuiSleep(10);
 		return TRUE;
 	}
 
+	struct HuiRunLaterItem
+	{
+		hui_callback *function;
+		CHuiWindow *member_object;
+		void (CHuiWindow::*member_function)();
+
+		HuiRunLaterItem()
+		{
+			function = NULL;
+			member_object = NULL;
+			member_function = NULL;
+		}
+	};
+
 	gboolean GtkRunLaterFunction(gpointer data)
 	{
 		if (data){
-			hui_callback *function = (hui_callback*)data;
-			function();
+			HuiRunLaterItem *i = (HuiRunLaterItem*)data;
+			if (i->function)
+				i->function();
+			else if ((i->member_object) && (i->member_function))
+				(i->member_object->*i->member_function)();
+			delete(i);
 		}
 		return false;
 	}
@@ -140,15 +162,36 @@ Array<sHuiImage> HuiImage;
 
 void HuiSetIdleFunction(hui_callback *idle_function)
 {
-	#ifdef HUI_API_GTK
-		if ((idle_function) && (!HuiIdleFunction))
-			idle_id = g_idle_add_full(300, GtkIdleFunction, NULL, NULL);
-		if ((!idle_function) && (HuiIdleFunction) && (idle_id >= 0)){
-			gtk_idle_remove(idle_id);
-			idle_id = -1;
-		}
-	#endif
+#ifdef HUI_API_GTK
+	bool old_idle = (HuiIdleFunction) || ((hui_idle_object) && (hui_idle_member_function));
+	bool new_idle = idle_function;
+	if ((new_idle) && (!old_idle))
+		idle_id = g_idle_add_full(300, GtkIdleFunction, NULL, NULL);
+	if ((!new_idle) && (old_idle) && (idle_id >= 0)){
+		gtk_idle_remove(idle_id);
+		idle_id = -1;
+	}
+#endif
+	hui_idle_object = NULL;
+	hui_idle_member_function = NULL;
 	HuiIdleFunction = idle_function;
+}
+
+void HuiSetIdleFunctionM(CHuiWindow *object, void (CHuiWindow::*function)())
+{
+#ifdef HUI_API_GTK
+	bool old_idle = (HuiIdleFunction) || ((hui_idle_object) && (hui_idle_member_function));
+	bool new_idle = ((object) && (function));
+	if ((new_idle) && (!old_idle))
+		idle_id = g_idle_add_full(300, GtkIdleFunction, NULL, NULL);
+	if ((!new_idle) && (old_idle) && (idle_id >= 0)){
+		gtk_idle_remove(idle_id);
+		idle_id = -1;
+	}
+#endif
+	hui_idle_object = object;
+	hui_idle_member_function = function;
+	HuiIdleFunction = NULL;
 }
 
 void HuiRunLater(int time_ms, hui_callback *function)
@@ -157,7 +200,22 @@ void HuiRunLater(int time_ms, hui_callback *function)
 		msg_todo("HuiRunLater");
 	#endif
 	#ifdef HUI_API_GTK
-		g_timeout_add_full(300, time_ms, &GtkRunLaterFunction, (void*)function, NULL);
+		HuiRunLaterItem *i = new HuiRunLaterItem;
+		i->function = function;
+		g_timeout_add_full(300, time_ms, &GtkRunLaterFunction, (void*)i, NULL);
+	#endif
+}
+
+void HuiRunLaterM(int time_ms, CHuiWindow *object, void (CHuiWindow::*function)())
+{
+	#ifdef HUI_API_WIN
+		msg_todo("HuiRunLater");
+	#endif
+	#ifdef HUI_API_GTK
+		HuiRunLaterItem *i = new HuiRunLaterItem;
+		i->member_function = function;
+		i->member_object = object;
+		g_timeout_add_full(300, time_ms, &GtkRunLaterFunction, (void*)i, NULL);
 	#endif
 }
 
@@ -471,12 +529,13 @@ void HuiEnd()
 
 
 // wartet, bis das Fenster sich geschlossen hat
-void HuiWaitTillWindowClosed(CHuiWindow *win)
+string HuiWaitTillWindowClosed(CHuiWindow *win)
 {
 	msg_db_r("HuiWaitTillWindowClosed",1);
 	int uid = win->_GetUniqueID_();
 	/*msg_write((int)win);
 	msg_write(win->uid);*/
+	string last_id = "";
 
 #ifdef HUI_API_WIN
 	MSG messages;
@@ -515,8 +574,8 @@ void HuiWaitTillWindowClosed(CHuiWindow *win)
 		bool killed = false;
 		while(!killed){
 			HuiDoSingleMainLoop();
-			for (int i=0;i<_HuiClosedWindow_.num;i++)
-				if (_HuiClosedWindow_[i].unique_id == uid)
+			foreach(_HuiClosedWindow_, cw)
+				if (cw.unique_id == uid)
 					killed = true;
 		}
 	}
@@ -525,9 +584,12 @@ void HuiWaitTillWindowClosed(CHuiWindow *win)
 
 	// clean up
 	foreachbi(_HuiClosedWindow_, cw, i)
-		if (cw.unique_id == uid)
+		if (cw.unique_id == uid){
+			last_id = cw.last_id;
 			_HuiClosedWindow_.erase(i);
+		}
 	msg_db_l(1);
+	return last_id;
 }
 
 string HuiSetImage(const Image &image)

@@ -257,6 +257,12 @@ void ModeMaterial::OnKeyDown()
 
 void ModeMaterial::Start()
 {
+	ed->ToolbarSetCurrent(HuiToolbarTop);
+	ed->ToolbarReset();
+	ed->EnableToolbar(false);
+	ed->ToolbarSetCurrent(HuiToolbarLeft);
+	ed->ToolbarReset();
+	ed->EnableToolbar(false);
 }
 
 

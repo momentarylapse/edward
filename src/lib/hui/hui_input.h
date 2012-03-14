@@ -15,6 +15,8 @@ struct HuiCommand
 	int type, key_code;
 	bool enabled;
 	hui_callback *func;
+	CHuiWindow *object;
+	void (CHuiWindow::*member_function)();
 };
 
 extern Array<HuiCommand> _HuiCommand_;
@@ -45,6 +47,8 @@ void _HuiInitInput_();
 void HuiAddKeyCode(const string &id, int key_code);
 void HuiAddCommand(const string &id, const string &image, int default_key_code, hui_callback *func);
 void HuiAddCommandToggle(const string &id, const string &image, int default_key_code, hui_callback *func);
+void HuiAddCommandM(const string &id, const string &image, int default_key_code, CHuiWindow *object, void (CHuiWindow::*function)());
+void HuiAddCommandMToggle(const string &id, const string &image, int default_key_code, CHuiWindow *object, void (CHuiWindow::*function)());
 void HuiLoadKeyCodes(const string &filename);
 void HuiSaveKeyCodes(const string &filename);
 

@@ -25,7 +25,8 @@ struct HuiCompleteWindowMessage
 
 
 // user input
-struct HuiInputData{
+struct HuiInputData
+{
 	// mouse
 	float x, y, dx, dy, dz;	// position, change
 	float area_x, area_y;
@@ -267,8 +268,11 @@ public:
 	HuiControl *_GetControl_(const string &id);
 	HuiControl *_GetControlByWidget_(GtkWidget *widget);
 	string _GetIDByWidget_(GtkWidget *widget);
+	string _GetCurID_();
+	void _SetCurID_(const string &id);
 	bool allow_input;
 	HuiInputData input;
+	int mouse_offset_x, mouse_offset_y;
 
 private:
 	int tab_creation_page;
@@ -317,6 +321,7 @@ private:
 	string id;
 	bool is_hidden;
 	int main_level;
+	string cur_id;
 
 	//HuiCompleteWindowMessage CompleteWindowMessage;
 };

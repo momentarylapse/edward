@@ -364,10 +364,9 @@ void MultiView::OnLeftButtonUp()
 void MultiView::OnMouseMove()
 {
 	mx = HuiGetEvent()->mx;
-	my = HuiGetEvent()->my - 27;
+	my = HuiGetEvent()->my;
 	vx = HuiGetEvent()->dx;
 	vy = HuiGetEvent()->dy;
-	msg_todo("hui liefert falsche Maus");
 
 	bool lbut = HuiGetEvent()->lbut;
 	bool mbut = HuiGetEvent()->mbut;

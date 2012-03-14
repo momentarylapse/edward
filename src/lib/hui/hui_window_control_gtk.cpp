@@ -14,8 +14,6 @@ extern Array<string> PartString;
 extern string OptionString, HuiFormatString;
 
 
-static string _cur_id_;
-
 //----------------------------------------------------------------------------------
 // creating control items
 
@@ -172,8 +170,8 @@ HuiControl *CHuiWindow::_InsertControl_(GtkWidget *widget, int x, int y, int wid
 
 HuiControl *CHuiWindow ::_GetControl_(const string &id)
 {
-	if ((id.num == 0) && (_cur_id_.num > 0))
-		return _GetControl_(_cur_id_);
+	if ((id.num == 0) && (cur_id.num > 0))
+		return _GetControl_(cur_id);
 	for (int i=0;i<control.num;i++){
 		if (control[i]->id == id)
 			return control[i];
@@ -213,9 +211,10 @@ void NotifyWindowByWidget(CHuiWindow *win, GtkWidget *widget, const string &mess
 	if (allow_signal_level > 0)
 		return;
 	msg_db_m("NotifyWindowByWidget", 2);
-	_cur_id_ = win->_GetIDByWidget_(widget);
-	if (_cur_id_.num > 0){
-		HuiEvent e = HuiCreateEvent(_cur_id_, message);
+	string id = win->_GetIDByWidget_(widget);
+	win->_SetCurID_(id);
+	if (id.num > 0){
+		HuiEvent e = HuiCreateEvent(id, message);
 		win->_SendEvent_(&e);
 	}
 }

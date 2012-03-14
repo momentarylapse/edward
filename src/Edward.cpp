@@ -83,16 +83,16 @@ void Edward::OnEvent()
 	OnCommand(id);
 }
 
-static void OnAbortCreationMode()
-{	ed->SetCreationMode(NULL);	}
+void Edward::OnAbortCreationMode()
+{	SetCreationMode(NULL);	}
 
-static void IdleFunction()
+void Edward::IdleFunction()
 {
 	msg_db_r("Idle", 3);
 
-	if (ed->force_redraw){
-		ed->OnDraw();
-		ed->force_redraw = false;
+	if (force_redraw){
+		OnDraw();
+		force_redraw = false;
 	}else
 		HuiSleep(10);
 
@@ -168,7 +168,7 @@ Edward::Edward(Array<string> arg) :
 	EventM("*", this, (void(CHuiWindow::*)())&Edward::OnEvent);
 	EventM("what_the_fuck", this, (void(CHuiWindow::*)())&Edward::OnAbout);
 	EventM("send_bug_report", this, (void(CHuiWindow::*)())&Edward::OnSendBugReport);
-	HuiAddCommand("abort_creation_mode", "hui:cancel", KEY_ESCAPE, &OnAbortCreationMode);
+	HuiAddCommandM("abort_creation_mode", "hui:cancel", KEY_ESCAPE, this, (void(CHuiWindow::*)())&Edward::OnAbortCreationMode);
 
 	MetaInit();
 	FxInit("", "", "");
@@ -215,7 +215,7 @@ Edward::Edward(Array<string> arg) :
 
 	SetMode(mode_welcome);
 
-	HuiSetIdleFunction(&IdleFunction);
+	HuiSetIdleFunctionM(this, (void(CHuiWindow::*)())&Edward::IdleFunction);
 
 	msg_db_l(1);
 }
@@ -441,10 +441,10 @@ void Edward::MakeDirs(const string &original_dir, bool as_root_dir)
 	msg_db_l(1);
 }
 
-void RemoveMessage()
+void Edward::RemoveMessage()
 {
-	ed->message_str.erase(0);
-	ed->ForceRedraw();
+	message_str.erase(0);
+	ForceRedraw();
 }
 
 void Edward::SetMessage(const string &message)
@@ -452,7 +452,7 @@ void Edward::SetMessage(const string &message)
 	msg_write(message);
 	message_str.add(message);
 	ForceRedraw();
-	HuiRunLater(2000, &RemoveMessage);
+	HuiRunLaterM(2000, this, (void(CHuiWindow::*)())&Edward::RemoveMessage);
 }
 
 

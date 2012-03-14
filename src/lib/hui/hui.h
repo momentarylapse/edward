@@ -73,10 +73,12 @@ int HuiRun();
 void HuiPushMainLevel();
 void HuiPopMainLevel();
 void HuiSetIdleFunction(hui_callback *idle_function);
+void HuiSetIdleFunctionM(CHuiWindow *object, void (CHuiWindow::*function)());
 void HuiRunLater(int time_ms, hui_callback *function);
+void HuiRunLaterM(int time_ms, CHuiWindow *object, void (CHuiWindow::*function)());
 void HuiDoSingleMainLoop();
 void HuiEnd();
-void HuiWaitTillWindowClosed(CHuiWindow *win);
+string HuiWaitTillWindowClosed(CHuiWindow *win);
 extern bool HuiEndKeepMsgAlive;
 
 // images
