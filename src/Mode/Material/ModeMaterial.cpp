@@ -257,9 +257,19 @@ void ModeMaterial::OnKeyDown()
 
 void ModeMaterial::Start()
 {
+	string dir = HuiAppDirectoryStatic + SysFileName("Data/icons/toolbar/");
 	ed->ToolbarSetCurrent(HuiToolbarTop);
 	ed->ToolbarReset();
-	ed->EnableToolbar(false);
+	ed->ToolbarAddItem(L("new"),L("new"),dir + "new.png","new");
+	ed->ToolbarAddItem(L("open"),L("open"),dir + "open.png","open");
+	ed->ToolbarAddItem(L("save"),L("save"),dir + "save.png","save");
+	ed->ToolbarAddSeparator();
+	ed->ToolbarAddItem(L("undo"),L("undo"),dir + "undo.png","undo");
+	ed->ToolbarAddItem(L("redo"),L("redo"),dir + "redo.png","redo");
+	ed->ToolbarAddSeparator();
+	ed->ToolbarAddItem(_("Eigenschaften"),_("Eigenschaften"), dir + "configure.png", "appearance");
+	ed->EnableToolbar(true);
+	ed->ToolbarConfigure(false,true);
 	ed->ToolbarSetCurrent(HuiToolbarLeft);
 	ed->ToolbarReset();
 	ed->EnableToolbar(false);
