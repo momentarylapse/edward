@@ -22,88 +22,9 @@ ModeModelMeshCreateVertex::~ModeModelMeshCreateVertex()
 {
 }
 
-void ModeModelMeshCreateVertex::End()
-{
-}
-
-
-
-void ModeModelMeshCreateVertex::OnMouseMove()
-{
-}
-
-
-
-void ModeModelMeshCreateVertex::Start()
-{
-}
-
-
-
-void ModeModelMeshCreateVertex::OnRightButtonUp()
-{
-}
-
-
-
-void ModeModelMeshCreateVertex::OnKeyDown()
-{
-}
-
-
-
-void ModeModelMeshCreateVertex::PostDraw()
-{
-}
-
-
-
-void ModeModelMeshCreateVertex::OnMiddleButtonDown()
-{
-}
-
-
 
 void ModeModelMeshCreateVertex::OnLeftButtonDown()
 {
 	data->AddVertex(multi_view->GetCursor3d());
 	ed->SetCreationMode(NULL);
 }
-
-
-
-void ModeModelMeshCreateVertex::OnLeftButtonUp()
-{
-}
-
-
-
-void ModeModelMeshCreateVertex::PostDrawWin(int win, irect dest)
-{
-}
-
-
-
-void ModeModelMeshCreateVertex::OnCommand(const string & id)
-{
-}
-
-
-
-void ModeModelMeshCreateVertex::OnKeyUp()
-{
-}
-
-
-
-void ModeModelMeshCreateVertex::OnRightButtonDown()
-{
-}
-
-
-
-void ModeModelMeshCreateVertex::OnMiddleButtonUp()
-{
-}
-
-

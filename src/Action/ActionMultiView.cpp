@@ -20,6 +20,17 @@ ActionMultiView::~ActionMultiView()
 {
 }
 
+
+
+
+void ActionMultiView::set_axis(const vector &_e1, const vector &_e2, const vector &_e3)
+{
+	e[0] = _e1;
+	e[1] = _e2;
+	e[2] = _e3;
+}
+
+
 void ActionMultiView::set_param_and_notify(Data *d, const vector & _param)
 {
 	set_param(d, _param);

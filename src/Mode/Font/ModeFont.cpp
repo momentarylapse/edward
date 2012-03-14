@@ -155,3 +155,9 @@ void ModeFont::OnMiddleButtonDown()
 }
 
 
+
+void ModeFont::OnUpdateMenu()
+{
+}
+
+

@@ -45,7 +45,7 @@ zzz_setbgimage
 306
 mode_model_vertex
 22
-mode_model_skin
+mode_model_triangle
 23
 mode_model_animation
 32
@@ -55,7 +55,7 @@ mode_model_texture_coord
 26
 mode_model_texture
 27
-mode_model_properties
+mode_properties
 24
 new_tria
 16

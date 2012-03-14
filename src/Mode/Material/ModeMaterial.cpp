@@ -272,3 +272,9 @@ void ModeMaterial::OnMiddleButtonUp()
 }
 
 
+
+void ModeMaterial::OnUpdateMenu()
+{
+}
+
+

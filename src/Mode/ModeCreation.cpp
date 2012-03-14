@@ -9,13 +9,10 @@
 
 ModeCreation::ModeCreation()
 {
-	// TODO Auto-generated constructor stub
-
 }
 
 ModeCreation::~ModeCreation()
 {
-	// TODO Auto-generated destructor stub
 }
 
 void ModeCreation::OnUpdate(Observable *o)
@@ -34,4 +31,65 @@ void ModeCreation::DrawWin(int win, irect dest)
 {
 }
 
+
+
+void ModeCreation::OnCommand(const string & id)
+{
+}
+
+void ModeCreation::OnKeyUp()
+{
+}
+
+void ModeCreation::OnKeyDown()
+{
+}
+
+void ModeCreation::OnLeftButtonDown()
+{
+}
+
+void ModeCreation::PostDrawWin(int win, irect dest)
+{
+}
+
+void ModeCreation::OnMiddleButtonDown()
+{
+}
+
+void ModeCreation::OnMouseMove()
+{
+}
+
+void ModeCreation::OnRightButtonUp()
+{
+}
+
+void ModeCreation::OnRightButtonDown()
+{
+}
+
+void ModeCreation::OnLeftButtonUp()
+{
+}
+
+void ModeCreation::OnMiddleButtonUp()
+{
+}
+
+void ModeCreation::End()
+{
+}
+
+void ModeCreation::Start()
+{
+}
+
+void ModeCreation::PostDraw()
+{
+}
+
+void ModeCreation::OnUpdateMenu()
+{
+}
 

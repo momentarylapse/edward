@@ -33,6 +33,7 @@ public:
 	virtual void OnKeyDown() = 0;
 	virtual void OnKeyUp() = 0;
 	virtual void OnCommand(const string &id) = 0;
+	virtual void OnUpdateMenu() = 0;
 
 	// send events to multi_view first, then call derived event handlers
 	//   (to be called by edward)
@@ -46,6 +47,7 @@ public:
 	void OnPreKeyDown();
 	void OnPreKeyUp();
 	void OnPreCommand(const string &id);
+	void OnPreUpdateMenu();
 	Mode *GetRootMode();
 
 	virtual void Draw() = 0;

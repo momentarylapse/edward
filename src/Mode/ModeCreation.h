@@ -17,22 +17,23 @@ public:
 	ModeCreation();
 	virtual ~ModeCreation();
 
-	virtual void Start() = 0;
-	virtual void End() = 0;
+	virtual void Start();
+	virtual void End();
 
-	virtual void OnMouseMove() = 0;
-	virtual void OnLeftButtonDown() = 0;
-	virtual void OnLeftButtonUp() = 0;
-	virtual void OnMiddleButtonDown() = 0;
-	virtual void OnMiddleButtonUp() = 0;
-	virtual void OnRightButtonDown() = 0;
-	virtual void OnRightButtonUp() = 0;
-	virtual void OnKeyDown() = 0;
-	virtual void OnKeyUp() = 0;
-	virtual void OnCommand(const string &id) = 0;
+	virtual void OnMouseMove();
+	virtual void OnLeftButtonDown();
+	virtual void OnLeftButtonUp();
+	virtual void OnMiddleButtonDown();
+	virtual void OnMiddleButtonUp();
+	virtual void OnRightButtonDown();
+	virtual void OnRightButtonUp();
+	virtual void OnKeyDown();
+	virtual void OnKeyUp();
+	virtual void OnCommand(const string &id);
+	virtual void OnUpdateMenu();
 
-	virtual void PostDraw() = 0;
-	virtual void PostDrawWin(int win, irect dest) = 0;
+	virtual void PostDraw();
+	virtual void PostDrawWin(int win, irect dest);
 
 	string message;
 	CHuiWindow *dialog;

@@ -176,8 +176,10 @@ HuiControl *CHuiWindow ::_GetControl_(const string &id)
 		if (control[i]->id == id)
 			return control[i];
 	}
-	if (id.num != 0)
-		msg_error("hui: unknown id: '" + id + "'");
+	if (id.num != 0){
+		// ...test if exists in menu/toolbar before reporting an error!
+		//msg_error("hui: unknown id: '" + id + "'");
+	}
 	return NULL;
 }
 
@@ -1472,6 +1474,8 @@ color CHuiWindow::GetColor(const string &_id)
 void CHuiWindow::Enable(const string &_id,bool enabled)
 {
 	_ToolbarEnable_(_id, enabled);
+	if (menu)
+		menu->EnableItem(_id, enabled);
 	
 	HuiControl *c = _GetControl_(_id);
 	if (!c)
@@ -1503,6 +1507,8 @@ void CHuiWindow::Check(const string &_id,bool checked)
 {
 	_ToolbarCheck_(_id, checked);
 	HuiControl *c = _GetControl_(_id);
+	if (menu)
+		menu->CheckItem(_id, checked);
 	if (!c)
 		return;
 	allow_signal_level++;

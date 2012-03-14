@@ -24,11 +24,6 @@ ModeModelMeshCreateTriangles::~ModeModelMeshCreateTriangles()
 {
 }
 
-void ModeModelMeshCreateTriangles::OnLeftButtonUp()
-{
-}
-
-
 
 void ModeModelMeshCreateTriangles::Start()
 {
@@ -43,19 +38,6 @@ void ModeModelMeshCreateTriangles::End()
 	foreach(data->Vertex, v)
 		v.is_special = false;
 }
-
-
-
-void ModeModelMeshCreateTriangles::OnRightButtonDown()
-{
-}
-
-
-
-void ModeModelMeshCreateTriangles::OnMiddleButtonDown()
-{
-}
-
 
 
 void ModeModelMeshCreateTriangles::PostDrawWin(int win, irect dest)
@@ -79,19 +61,6 @@ void ModeModelMeshCreateTriangles::OnKeyDown()
 }
 
 
-
-void ModeModelMeshCreateTriangles::OnKeyUp()
-{
-}
-
-
-
-void ModeModelMeshCreateTriangles::OnMiddleButtonUp()
-{
-}
-
-
-
 void ModeModelMeshCreateTriangles::OnLeftButtonDown()
 {
 	if (multi_view->Selected >= 0){
@@ -110,29 +79,4 @@ void ModeModelMeshCreateTriangles::OnLeftButtonDown()
 	data->Vertex[selection.back()].is_special = true;
 	message = format(_("Dreiecke w&ahlen: %d -> Shift + Return"), selection.num);
 }
-
-
-
-void ModeModelMeshCreateTriangles::PostDraw()
-{
-}
-
-
-
-void ModeModelMeshCreateTriangles::OnRightButtonUp()
-{
-}
-
-
-
-void ModeModelMeshCreateTriangles::OnMouseMove()
-{
-}
-
-
-
-void ModeModelMeshCreateTriangles::OnCommand(const string & id)
-{
-}
-
 

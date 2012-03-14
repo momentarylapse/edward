@@ -40,47 +40,6 @@ ModeModelMeshCreateCylinder::~ModeModelMeshCreateCylinder()
 	delete(dialog);
 }
 
-void ModeModelMeshCreateCylinder::OnMiddleButtonDown()
-{
-}
-
-
-
-void ModeModelMeshCreateCylinder::PostDraw()
-{
-}
-
-
-
-void ModeModelMeshCreateCylinder::OnMiddleButtonUp()
-{
-}
-
-
-
-void ModeModelMeshCreateCylinder::End()
-{
-}
-
-
-
-void ModeModelMeshCreateCylinder::OnKeyDown()
-{
-}
-
-
-
-void ModeModelMeshCreateCylinder::OnCommand(const string & id)
-{
-}
-
-
-
-void ModeModelMeshCreateCylinder::OnRightButtonDown()
-{
-}
-
-
 
 void ModeModelMeshCreateCylinder::OnMouseMove()
 {
@@ -95,18 +54,6 @@ void ModeModelMeshCreateCylinder::OnMouseMove()
 			pos2 = multi_view->GetCursor3d();
 		}
 	}
-}
-
-
-
-void ModeModelMeshCreateCylinder::Start()
-{
-}
-
-
-
-void ModeModelMeshCreateCylinder::OnRightButtonUp()
-{
 }
 
 
@@ -144,12 +91,6 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 		pos_chosen = true;
 		pos2 = pos;
 	}
-}
-
-
-
-void ModeModelMeshCreateCylinder::OnLeftButtonUp()
-{
 }
 
 
@@ -192,12 +133,6 @@ void ModeModelMeshCreateCylinder::PostDrawWin(int win, irect dest)
 			NixDrawLine3D(pos, pos2, Green);
 		}
 	}
-}
-
-
-
-void ModeModelMeshCreateCylinder::OnKeyUp()
-{
 }
 
 

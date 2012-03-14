@@ -5,9 +5,9 @@
 // Y
 -1
 // Width
-800
+988
 // Height
-600
+738
 // Maximized
 false
 // RootDir

@@ -146,6 +146,12 @@ void ModeWorld::OnRightButtonDown()
 
 
 
+void ModeWorld::OnUpdateMenu()
+{
+}
+
+
+
 bool ModeWorld::Open()
 {
 	data->Reset();

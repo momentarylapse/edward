@@ -43,34 +43,6 @@ ModeModelMeshCreateBall::~ModeModelMeshCreateBall()
 	delete(dialog);
 }
 
-void ModeModelMeshCreateBall::OnMiddleButtonDown()
-{
-}
-
-
-
-void ModeModelMeshCreateBall::OnKeyDown()
-{
-}
-
-
-
-void ModeModelMeshCreateBall::OnLeftButtonUp()
-{
-}
-
-
-
-void ModeModelMeshCreateBall::OnRightButtonUp()
-{
-}
-
-
-
-void ModeModelMeshCreateBall::OnMiddleButtonUp()
-{
-}
-
 
 
 void ModeModelMeshCreateBall::OnLeftButtonDown()
@@ -101,30 +73,6 @@ void ModeModelMeshCreateBall::OnLeftButtonDown()
 }
 
 
-
-void ModeModelMeshCreateBall::PostDraw()
-{
-}
-
-
-
-void ModeModelMeshCreateBall::Start()
-{
-}
-
-
-
-void ModeModelMeshCreateBall::OnKeyUp()
-{
-}
-
-
-
-void ModeModelMeshCreateBall::OnCommand(const string & id)
-{
-}
-
-
 void ModeModelMeshCreateBall::PostDrawWin(int win, irect dest)
 {
 	if (pos_chosen){
@@ -135,24 +83,12 @@ void ModeModelMeshCreateBall::PostDrawWin(int win, irect dest)
 
 
 
-void ModeModelMeshCreateBall::End()
-{
-}
-
-
-
 void ModeModelMeshCreateBall::OnMouseMove()
 {
 	if (pos_chosen){
 		vector pos2 = multi_view->GetCursor3d();
 		radius = VecLength(pos2 - pos);
 	}
-}
-
-
-
-void ModeModelMeshCreateBall::OnRightButtonDown()
-{
 }
 
 

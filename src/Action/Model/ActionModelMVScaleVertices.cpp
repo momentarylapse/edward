@@ -43,7 +43,10 @@ void *ActionModelMVScaleVertices::execute(Data *d)
 	msg_write("scale vert do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii)
-		m->Vertex[i].pos = pos0 + (old_data[ii] - pos0) * param.x;
+		m->Vertex[i].pos = pos0 +
+			(e[0] * (old_data[ii] - pos0)) * param.x * e[0] +
+			(e[1] * (old_data[ii] - pos0)) * param.y * e[1] +
+			(e[2] * (old_data[ii] - pos0)) * param.z * e[2];
 	m->SetNormalsDirtyByVertices(index);
 	return NULL;
 }

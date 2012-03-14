@@ -173,24 +173,28 @@ void MultiView::ToggleWholeWindow()
 	whole_window = !whole_window;
 	view[4].type = view[mouse_win].type;
 	ed->ForceRedraw();
+	Notify("SettingsChange");
 }
 
 void MultiView::ToggleGrid()
 {
 	grid_enabled = !grid_enabled;
 	ed->ForceRedraw();
+	Notify("SettingsChange");
 }
 
 void MultiView::ToggleLight()
 {
 	light_enabled = !light_enabled;
 	ed->ForceRedraw();
+	Notify("SettingsChange");
 }
 
 void MultiView::ToggleWire()
 {
 	wire_mode = !wire_mode;
 	ed->ForceRedraw();
+	Notify("SettingsChange");
 }
 
 void MultiView::OnCommand(const string & id)
@@ -889,8 +893,11 @@ void MultiView::Draw()
 			ed->DrawStr(100, 100, f2s(r.x, 2) + "°");
 			ed->DrawStr(100, 120, f2s(r.y, 2) + "°");
 			ed->DrawStr(100, 140, f2s(r.z, 2) + "°");
-		}else if ((mode == ActionScale) or (mode == ActionScale2d)){
+		}else if (mode == ActionScale){
 			ed->DrawStr(100, 100, f2s(mouse_action_param.x * 100.0f, 2) + "%");
+		}else if (mode == ActionScale2d){
+			ed->DrawStr(100, 100, f2s(mouse_action_param.x * 100.0f, 2) + "%");
+			ed->DrawStr(100, 120, f2s(mouse_action_param.y * 100.0f, 2) + "%");
 		}
 	}
 
@@ -1282,6 +1289,7 @@ void MultiView::MouseActionStart(int button)
 		active_mouse_action = button;
 		mouse_action_pos0 = MouseOverTP;
 		cur_action = ActionMultiViewFactory(action[button].name, _data_, mouse_action_pos0);
+		cur_action->set_axis(GetDirectionRight(mouse_win), GetDirectionUp(mouse_win), GetDirection(mouse_win));
 		Notify("ActionStart");
 	}
 }
@@ -1315,10 +1323,11 @@ void MultiView::MouseActionUpdate()
 		else if (mode == ActionRotate2d)
 			mouse_action_param = transform_ang(this, e_z * (v2p.x - v1p.x) * 0.003f);
 		else if (mode == ActionScale)
-			mouse_action_param = e_x + (v2p - v1p) * 0.01f;
-		else if (mode == ActionScale2d)
-			mouse_action_param = e_x + (v2p - v1p) * 0.01f;
-		else if (mode == ActionOnce)
+			mouse_action_param = vector(1, 1, 1) * ( 1 + (v2p.x - v1p.x) * 0.01f);
+		else if (mode == ActionScale2d){
+			msg_write("s2d");
+			mouse_action_param = vector(1 + (v2p.x - v1p.x) * 0.01f, 1 - (v2p.y - v1p.y) * 0.01f, 1);
+		}else if (mode == ActionOnce)
 			mouse_action_param = GetDirectionRight(mouse_win);
 		else
 			mouse_action_param = v0;

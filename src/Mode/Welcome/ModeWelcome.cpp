@@ -132,6 +132,10 @@ void ModeWelcome::OnUpdate(Observable *o)
 {
 }
 
+void ModeWelcome::OnUpdateMenu()
+{
+}
+
 
 void ModeWelcome::DrawIcon(int x, int y, int index, const string &name)
 {

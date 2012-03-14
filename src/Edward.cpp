@@ -49,7 +49,7 @@ color i42c(int *c)
 void Edward::OnClose()
 {
 	if (AllowTermination())
-		HuiEnd();
+		delete(this);
 }
 
 #define IMPLEMENT_EVENT(event, pre_event, param_list, param)	\
@@ -100,7 +100,7 @@ void Edward::IdleFunction()
 }
 
 Edward::Edward(Array<string> arg) :
-	CHuiWindow("", -1, -1, 800, 600, NULL, false, HuiWinModeResizable | HuiWinModeNix, true)
+	CHuiWindow(AppName, -1, -1, 800, 600, NULL, false, HuiWinModeResizable | HuiWinModeNix, true)
 {
 	msg_db_r("Init", 1);
 
@@ -209,8 +209,8 @@ Edward::Edward(Array<string> arg) :
 	Subscribe(mode_material->data);
 	Subscribe(mode_world->data);
 	Subscribe(mode_font->data);
-	Subscribe(multi_view_2d, "SelectionChange");
-	Subscribe(multi_view_3d, "SelectionChange");
+	Subscribe(multi_view_2d);
+	Subscribe(multi_view_3d);
 
 
 	SetMode(mode_welcome);
@@ -222,6 +222,21 @@ Edward::Edward(Array<string> arg) :
 
 Edward::~Edward()
 {
+	// saving the configuration data...
+	irect r = GetOuteriorDesired();
+	HuiConfigWriteInt("X", -1);//r.x1);
+	HuiConfigWriteInt("Y", -1);//r.y1);
+	HuiConfigWriteInt("Width", r.x2 - r.x1);
+	HuiConfigWriteInt("Height", r.y2 - r.y1);
+	HuiConfigWriteBool("Maximized", IsMaximized());
+	HuiConfigWriteStr("RootDir", RootDir);
+	HuiConfigWriteStr("Language", HuiGetCurLanguage());
+	/*HuiConfigWriteBool("LocalDocumentation", LocalDocumentation);
+	HuiConfigWriteStr("WorldScriptVarFile", WorldScriptVarFile);
+	HuiConfigWriteStr("ObjectScriptVarFile", ObjectScriptVarFile);
+	HuiConfigWriteStr("ItemScriptVarFile", ItemScriptVarFile);*/
+	//HuiConfigWriteInt("UpdateNormalMaxTime (ms)", int(UpdateNormalMaxTime * 1000.0f));
+
 	HuiEnd();
 }
 
@@ -262,6 +277,7 @@ void Edward::SetMode(Mode *m)
 	msg_write("start " + cur_mode->name);
 	cur_mode->Start();
 	SetMenu(cur_mode->menu);
+	UpdateMenu();
 
 	ForceRedraw();
 	msg_db_l(1);
@@ -298,7 +314,17 @@ void Edward::OnSendBugReport()
 void Edward::OnUpdate(Observable *o)
 {
 	msg_db_r("Edward.OnUpdate", 2);
-	ForceRedraw();
+	//msg_write("ed: " + o->GetName() + " - " + o->GetMessage());
+	if (o->GetName() == "MultiView"){
+		if (o->GetMessage() == "SettingsChange")
+			UpdateMenu();
+		else
+			ForceRedraw();
+	}else{
+		// data...
+		ForceRedraw();
+		UpdateMenu();
+	}
 	msg_db_l(2);
 }
 
@@ -483,6 +509,55 @@ void Edward::OnCommand(const string &id)
 		OnClose();
 }
 
+
+Mode *get_cur_root_mode()
+{
+	Mode *m;
+	Mode *p = ed->cur_mode;
+	while(p){
+		m = p;
+		p = m->parent;
+	}
+	return m;
+}
+
+Data *get_mode_data(Mode *m)
+{
+	if (m == mode_model)
+		return mode_model->data;
+	if (m == mode_material)
+		return mode_material->data;
+	if (m == mode_world)
+		return mode_world->data;
+	if (m == mode_font)
+		return mode_font->data;
+	return NULL;
+}
+
+
+void Edward::UpdateMenu()
+{
+	if (!cur_mode)
+		return;
+	cur_mode->OnPreUpdateMenu();
+
+	Mode *root = cur_mode->GetRootMode();
+	Data *d = get_mode_data(root);
+	if (d){
+		Enable("undo", d->action_manager->Undoable());
+		Enable("redo", d->action_manager->Redoable());
+	}
+
+	// general multiview stuff
+	MultiView *mv = cur_mode->multi_view;
+	if (mv){
+		Check("whole_window", mv->whole_window);
+		Check("grid", mv->grid_enabled);
+		Check("light", mv->light_enabled);
+		Check("wire", mv->wire_mode);
+	}
+}
+
 static string NoEnding(const string &filename)
 {
 	int p = filename.rfind(".");
@@ -528,7 +603,7 @@ bool Edward::FileDialog(int kind,bool save,bool force_in_root_dir)
 				return false;
 			}
 		}//else
-			//CModeAll::MakeDirs(HuiFileDialogPath);
+			//MakeDirs(HuiFileDialogPath);
 
 		if (in_root_dir){
 			UpdateDialogDir(kind);
@@ -541,30 +616,6 @@ bool Edward::FileDialog(int kind,bool save,bool force_in_root_dir)
 		return true;
 	}
 	return false;
-}
-
-Mode *get_cur_root_mode()
-{
-	Mode *m;
-	Mode *p = ed->cur_mode;
-	while(p){
-		m = p;
-		p = m->parent;
-	}
-	return m;
-}
-
-Data *get_mode_data(Mode *m)
-{
-	if (m == mode_model)
-		return mode_model->data;
-	if (m == mode_material)
-		return mode_material->data;
-	if (m == mode_world)
-		return mode_world->data;
-	if (m == mode_font)
-		return mode_font->data;
-	return NULL;
 }
 
 bool Edward::AllowTermination()

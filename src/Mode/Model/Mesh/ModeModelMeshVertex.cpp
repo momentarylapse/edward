@@ -7,6 +7,7 @@
 
 #include "../../../Edward.h"
 #include "../../../MultiView.h"
+#include "ModeModelMesh.h"
 #include "ModeModelMeshVertex.h"
 #include "ModeModelMeshSkin.h"
 #include "../../../lib/nix/nix.h"
@@ -116,11 +117,7 @@ void ModeModelMeshVertex::OnUpdate(Observable *o)
 		return;
 	if (o->GetName() == "Data"){
 		multi_view->ResetData(data);
-		multi_view->SetMouseAction(0, "ActionModelMVMoveVertices", MultiView::ActionMove);
-		multi_view->SetMouseAction(1, "ActionModelMVRotateVertices", MultiView::ActionRotate2d);
-		multi_view->SetMouseAction(2, "ActionModelMVRotateVertices", MultiView::ActionRotate);
-		/*multi_view->SetMouseAction(1, "ActionModelMVMirrorVertices", MultiView::ActionOnce);
-		multi_view->SetMouseAction(2, "ActionModelMVScaleVertices", MultiView::ActionScale);*/
+		mode_model_mesh->ApplyRightMouseFunction(multi_view);
 		multi_view->MVRectable = true;
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		//CModeAll::SetMultiViewFunctions(&StartChanging, &EndChanging, &Change);
@@ -137,6 +134,12 @@ void ModeModelMeshVertex::OnUpdate(Observable *o)
 				t.is_selected = ((data->Vertex[t.Vertex[0]].is_selected) and (data->Vertex[t.Vertex[1]].is_selected) and (data->Vertex[t.Vertex[2]].is_selected));
 		mode_model_mesh_skin->FillSelectionBuffers();
 	}
+}
+
+
+
+void ModeModelMeshVertex::OnUpdateMenu()
+{
 }
 
 

@@ -29,6 +29,7 @@ public:
 	void OnKeyUp();
 	void OnCommand(const string &id);
 	void OnUpdate(Observable *o);
+	void OnUpdateMenu();
 
 	void Draw();
 	void DrawWin(int win, irect dest);

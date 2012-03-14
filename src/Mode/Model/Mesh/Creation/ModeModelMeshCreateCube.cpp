@@ -28,10 +28,6 @@ ModeModelMeshCreateCube::~ModeModelMeshCreateCube()
 {
 }
 
-void ModeModelMeshCreateCube::PostDraw()
-{
-}
-
 
 void set_dpos3(vector *length, const vector &dpos)
 {
@@ -72,49 +68,6 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 	}
 }
 
-
-
-void ModeModelMeshCreateCube::OnRightButtonUp()
-{
-}
-
-
-
-void ModeModelMeshCreateCube::OnRightButtonDown()
-{
-}
-
-
-
-void ModeModelMeshCreateCube::OnKeyDown()
-{
-}
-
-
-
-void ModeModelMeshCreateCube::OnKeyUp()
-{
-}
-
-
-
-void ModeModelMeshCreateCube::OnMiddleButtonUp()
-{
-}
-
-
-
-void ModeModelMeshCreateCube::Start()
-{
-}
-
-
-
-void ModeModelMeshCreateCube::End()
-{
-}
-
-
 void ModeModelMeshCreateCube::OnMouseMove()
 {
 	if (pos_chosen){
@@ -130,24 +83,6 @@ void ModeModelMeshCreateCube::OnMouseMove()
 			set_dpos3(length, multi_view->GetCursor3d() - pos);
 		}
 	}
-}
-
-
-
-void ModeModelMeshCreateCube::OnMiddleButtonDown()
-{
-}
-
-
-
-void ModeModelMeshCreateCube::OnLeftButtonUp()
-{
-}
-
-
-
-void ModeModelMeshCreateCube::OnCommand(const string & id)
-{
 }
 
 

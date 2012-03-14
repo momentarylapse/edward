@@ -106,6 +106,15 @@ void Mode::OnPreRightButtonDown()
 	OnRightButtonDown();
 }
 
+void Mode::OnPreUpdateMenu()
+{
+	if (parent)
+		parent->OnPreUpdateMenu();
+	OnUpdateMenu();
+}
+
+
+
 Mode *Mode::GetRootMode()
 {
 	if (parent)

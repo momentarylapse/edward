@@ -39,59 +39,6 @@ ModeModelMeshCreatePlane::~ModeModelMeshCreatePlane()
 	delete(dialog);
 }
 
-void ModeModelMeshCreatePlane::PostDraw()
-{
-}
-
-
-
-void ModeModelMeshCreatePlane::End()
-{
-}
-
-
-
-void ModeModelMeshCreatePlane::Start()
-{
-}
-
-
-
-void ModeModelMeshCreatePlane::OnRightButtonUp()
-{
-}
-
-
-
-void ModeModelMeshCreatePlane::OnCommand(const string & id)
-{
-}
-
-
-
-void ModeModelMeshCreatePlane::OnKeyDown()
-{
-}
-
-
-
-void ModeModelMeshCreatePlane::OnRightButtonDown()
-{
-}
-
-
-
-void ModeModelMeshCreatePlane::OnMiddleButtonUp()
-{
-}
-
-
-
-void ModeModelMeshCreatePlane::OnMiddleButtonDown()
-{
-}
-
-
 
 void ModeModelMeshCreatePlane::OnLeftButtonDown()
 {
@@ -117,18 +64,6 @@ void ModeModelMeshCreatePlane::OnLeftButtonDown()
 		message = _("Ebene: zweiter Punkt");
 		pos_chosen = true;
 	}
-}
-
-
-
-void ModeModelMeshCreatePlane::OnLeftButtonUp()
-{
-}
-
-
-
-void ModeModelMeshCreatePlane::OnKeyUp()
-{
 }
 
 

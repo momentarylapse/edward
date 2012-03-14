@@ -63,29 +63,16 @@ void ModeModel::Start()
 	ed->ToolbarAddItemCheckable(_("Mesh"),_("Mesh"), dir + "mode_skin.png", "mode_model_mesh");
 	ed->ToolbarAddItemCheckable(_("Skelett"),_("Skelett"), dir + "mode_skeletton.png", "mode_model_skeleton");
 	ed->ToolbarAddItemCheckable(_("Animation"),_("Animation"), dir + "mode_move.png", "mode_model_animation");
-	ed->ToolbarAddItemCheckable(_("Texturen"),_("Texturen"), dir + "mode_textures.png", "mode_model_texture");
+	ed->ToolbarAddItem(_("Texturen"),_("Texturen"), dir + "mode_textures.png", "mode_model_texture");
 	ed->ToolbarAddItem(_("Material"),_("Material"), dir + "mode_textures.png", "mode_model_material");
 	ed->ToolbarAddItem(_("Materialien"),_("Materialien"), dir + "mode_textures.png", "mode_model_materials");
-	ed->ToolbarAddItemCheckable(_("Eigenschaften"),_("Eigenschaften"), dir + "configure.png", "mode_properties");
+	ed->ToolbarAddItem(_("Eigenschaften"),_("Eigenschaften"), dir + "configure.png", "mode_properties");
 	ed->EnableToolbar(true);
 	ed->ToolbarConfigure(false,true);
 	ed->ToolbarSetCurrent(HuiToolbarLeft);
 	ed->ToolbarReset();
-	ed->ToolbarAddSeparator();
-	ed->ToolbarAddItemCheckable(_("Vertexpunkt"),_("Vertexpunkt"), dir + "new_vertex.png", "new_point");
-	ed->ToolbarAddItemCheckable(_("Dreieck"),_("Dreieck"), dir + "new_triangle.png", "new_tria");
-	ed->ToolbarAddItemCheckable(_("Dreieck \"U\""),_("Dreieck \"U\""), dir + "new_triangles_u.png", "new_tria_u");
-	ed->ToolbarAddItemCheckable(_("Ebene"),_("Ebene"), dir + "new_plane.png", "new_plane");
-	ed->ToolbarAddItemCheckable(_("Quader"),_("Quader"), dir + "mode_skin.png", "new_cube");
-	ed->ToolbarAddItemCheckable(_("Kugel"),_("Kugel"), dir + "new_ball.png", "new_ball");
-	ed->ToolbarAddItemCheckable(_("Zylinder"),_("Zylinder"), dir + "new_cylinder.png", "new_cylinder");
-	ed->ToolbarAddSeparator();
-	ed->ToolbarAddItemCheckable(_("Rotieren"),_("Rotieren"), dir + "rf_rotate.png", "rotate");
-	ed->ToolbarAddItemCheckable(_("Skalieren"),_("Skalieren"), dir + "rf_scale.png", "scale");
-	ed->ToolbarAddItemCheckable(_("Skalieren (2D)"),_("Skalieren (2D)"), dir + "rf_scale2d.png", "scale_2d");
-	ed->ToolbarAddItemCheckable(_("Spiegeln"),_("Spiegeln"), dir + "rf_mirror.png", "mirror");
-	ed->EnableToolbar(true);
-	ed->ToolbarConfigure(false,true);
+	ed->EnableToolbar(false);
+
 	ed->SetMode(mode_model_mesh);
 }
 
@@ -176,12 +163,14 @@ void ModeModel::OnCommand(const string & id)
 
 	if (id == "mode_model_vertex")
 		ed->SetMode(mode_model_mesh_vertex);
-	if (id == "mode_model_skin")
+	/*if (id == "mode_model_edge")
+		ed->SetMode(mode_model_mesh_edge);*/
+	if (id == "mode_model_triangle")
 		ed->SetMode(mode_model_mesh_skin);
 	if (id == "mode_model_texture")
 		ExecuteMaterialDialog(1);
 		//SetSubMode(SubModeTextures);
-	if (id == "mode_model_properties")
+	if (id == "mode_properties")
 		ExecutePropertiesDialog(0);
 	if (id == "mode_model_material")
 		ExecuteMaterialDialog(0);
@@ -194,6 +183,20 @@ void ModeModel::OnCommand(const string & id)
 void ModeModel::OnUpdate(Observable *o)
 {
 	data->UpdateNormals();
+}
+
+
+
+void ModeModel::OnUpdateMenu()
+{
+	ed->Check("mode_model_vertex", ed->cur_mode == mode_model_mesh_vertex);
+	ed->Check("mode_model_edge", false);//ed->cur_mode == mode_model_mesh_edge);
+	ed->Check("mode_model_triangle", ed->cur_mode == mode_model_mesh_skin);
+	ed->Check("mode_model_surface", false);//ed->cur_mode == mode_model_mesh_surface);
+	ed->Check("mode_model_mesh", ed->cur_mode->parent == mode_model_mesh);
+	ed->Check("mode_model_texture_coord", false);
+	ed->Check("mode_model_skeleton", false);
+	ed->Check("mode_model_animation", false);
 }
 
 

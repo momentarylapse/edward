@@ -34,6 +34,8 @@ ModeModelMesh::ModeModelMesh(Mode *_parent, DataModel *_data)
 
 	MaterialSelectionDialog = NULL;
 
+	right_mouse_function = RMFRotate;
+
 	mode_model_mesh_vertex = new ModeModelMeshVertex(this, data);
 	mode_model_mesh_skin = new ModeModelMeshSkin(this, data);
 }
@@ -44,6 +46,25 @@ ModeModelMesh::~ModeModelMesh()
 
 void ModeModelMesh::Start()
 {
+	string dir = HuiAppDirectoryStatic + SysFileName("Data/icons/toolbar/");
+	ed->ToolbarSetCurrent(HuiToolbarLeft);
+	ed->ToolbarReset();
+	ed->ToolbarAddSeparator();
+	ed->ToolbarAddItemCheckable(_("Vertexpunkt"),_("Vertexpunkt"), dir + "new_vertex.png", "new_point");
+	ed->ToolbarAddItemCheckable(_("Dreieck"),_("Dreieck"), dir + "new_triangle.png", "new_tria");
+	ed->ToolbarAddItemCheckable(_("Dreieck \"U\""),_("Dreieck \"U\""), dir + "new_triangles_u.png", "new_tria_u");
+	ed->ToolbarAddItemCheckable(_("Ebene"),_("Ebene"), dir + "new_plane.png", "new_plane");
+	ed->ToolbarAddItemCheckable(_("Quader"),_("Quader"), dir + "mode_skin.png", "new_cube");
+	ed->ToolbarAddItemCheckable(_("Kugel"),_("Kugel"), dir + "new_ball.png", "new_ball");
+	ed->ToolbarAddItemCheckable(_("Zylinder"),_("Zylinder"), dir + "new_cylinder.png", "new_cylinder");
+	ed->ToolbarAddSeparator();
+	ed->ToolbarAddItemCheckable(_("Rotieren"),_("Rotieren"), dir + "rf_rotate.png", "rotate");
+	ed->ToolbarAddItemCheckable(_("Skalieren"),_("Skalieren"), dir + "rf_scale.png", "scale");
+	ed->ToolbarAddItemCheckable(_("Skalieren (2D)"),_("Skalieren (2D)"), dir + "rf_scale2d.png", "scale_2d");
+	ed->ToolbarAddItemCheckable(_("Spiegeln"),_("Spiegeln"), dir + "rf_mirror.png", "mirror");
+	ed->EnableToolbar(true);
+	ed->ToolbarConfigure(false,true);
+
 	ed->SetMode(mode_model_mesh_vertex);
 	//ed->SetMode(mode_model_mesh_skin);
 }
@@ -113,6 +134,15 @@ void ModeModelMesh::OnCommand(const string & id)
 	if (id == "new_plane")
 		ed->SetCreationMode(new ModeModelMeshCreatePlane(ed->cur_mode, data));
 
+	if (id == "rotate")
+		ChooseRightMouseFunction(RMFRotate);
+	if (id == "scale")
+		ChooseRightMouseFunction(RMFScale);
+	if (id == "scale_2d")
+		ChooseRightMouseFunction(RMFScale2d);
+	if (id == "mirror")
+		ChooseRightMouseFunction(RMFMirror);
+
 	if (id == "create_new_material")
 		CreateNewMaterialForSelection();
 	if (id == "choose_material")
@@ -154,6 +184,23 @@ void ModeModelMesh::OnMiddleButtonDown()
 void ModeModelMesh::OnUpdate(Observable *o)
 {
 	data->DebugShow();
+}
+
+
+
+void ModeModelMesh::OnUpdateMenu()
+{
+	/*ed->Check("new_point", );
+	ed->Check("new_tria", ); // "new_tria_u"
+	ed->Check("new_plane", );
+	ed->Check("new_cube", );
+	ed->Check("new_ball", );
+	ed->Check("new_cylinder", );*/
+
+	ed->Check("rotate", right_mouse_function == RMFRotate);
+	ed->Check("scale", right_mouse_function == RMFScale);
+	ed->Check("scale_2d", right_mouse_function == RMFScale2d);
+	ed->Check("mirror", right_mouse_function == RMFMirror);
 }
 
 void ModeModelMesh::OptimizeView()
@@ -249,4 +296,34 @@ void ModeModelMesh::ChooseMaterialForSelection()
 
 	msg_db_l(2);
 }
+
+void ModeModelMesh::ChooseRightMouseFunction(int f)
+{
+	right_mouse_function = f;
+	ed->UpdateMenu();
+	ApplyRightMouseFunction(ed->multi_view_3d);
+}
+
+void ModeModelMesh::ApplyRightMouseFunction(MultiView *mv)
+{
+	if (!mv)
+		return;
+
+	// left -> translate
+	mv->SetMouseAction(0, "ActionModelMVMoveVertices", MultiView::ActionMove);
+
+	// right...
+	if (right_mouse_function == RMFRotate){
+		mv->SetMouseAction(1, "ActionModelMVRotateVertices", MultiView::ActionRotate2d);
+		mv->SetMouseAction(2, "ActionModelMVRotateVertices", MultiView::ActionRotate);
+	}else if (right_mouse_function == RMFScale){
+		mv->SetMouseAction(2, "ActionModelMVScaleVertices", MultiView::ActionScale);
+	}else if (right_mouse_function == RMFScale2d){
+		mv->SetMouseAction(2, "ActionModelMVScaleVertices", MultiView::ActionScale2d);
+	}else if (right_mouse_function == RMFMirror){
+		mv->SetMouseAction(2, "ActionModelMVMirrorVertices", MultiView::ActionOnce);
+	}
+}
+
+
 

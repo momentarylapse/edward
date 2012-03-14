@@ -105,6 +105,7 @@ public:
 	void DrawStr(int x, int y, const string &str);
 	void ForceRedraw();
 	bool force_redraw;
+	void UpdateMenu();
 
 	Mode *cur_mode;
 	ModeCreation *creation_mode;

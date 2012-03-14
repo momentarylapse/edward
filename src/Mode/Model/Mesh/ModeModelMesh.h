@@ -35,6 +35,7 @@ public:
 	void OnKeyUp();
 	void OnCommand(const string &id);
 	void OnUpdate(Observable *o);
+	void OnUpdateMenu();
 
 	void Draw();
 	void DrawWin(int win, irect dest);
@@ -44,8 +45,19 @@ public:
 	void CreateNewMaterialForSelection();
 	void ChooseMaterialForSelection();
 
+	void ChooseRightMouseFunction(int f);
+	void ApplyRightMouseFunction(MultiView *mv);
+
 	DataModel *data;
 	ModelMaterialSelectionDialog *MaterialSelectionDialog;
+
+	enum{
+		RMFRotate,
+		RMFScale,
+		RMFScale2d,
+		RMFMirror
+	};
+	int right_mouse_function;
 };
 
 extern ModeModelMesh *mode_model_mesh;

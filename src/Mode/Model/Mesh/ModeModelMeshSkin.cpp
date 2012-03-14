@@ -8,6 +8,7 @@
 #include "../../../Edward.h"
 #include "../../../MultiView.h"
 #include "ModeModelMeshSkin.h"
+#include "ModeModelMesh.h"
 
 
 
@@ -209,6 +210,12 @@ void ModeModelMeshSkin::OnMiddleButtonDown()
 
 
 
+void ModeModelMeshSkin::OnUpdateMenu()
+{
+}
+
+
+
 void ModeModelMeshSkin::End()
 {
 }
@@ -303,11 +310,7 @@ void ModeModelMeshSkin::OnUpdate(Observable *o)
 		return;
 	if (o->GetName() == "Data"){
 		multi_view->ResetData(data);
-		multi_view->SetMouseAction(0, "ActionModelMVMoveVertices", MultiView::ActionMove);
-		multi_view->SetMouseAction(1, "ActionModelMVRotateVertices", MultiView::ActionRotate2d);
-		multi_view->SetMouseAction(2, "ActionModelMVRotateVertices", MultiView::ActionRotate);
-		/*multi_view->SetMouseAction(1, "ActionModelMVMirrorVertices", MultiView::ActionOnce);
-		multi_view->SetMouseAction(2, "ActionModelMVScaleVertices", MultiView::ActionScale);*/
+		mode_model_mesh->ApplyRightMouseFunction(multi_view);
 		multi_view->MVRectable = true;
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		//CModeAll::SetMultiViewFunctions(&StartChanging, &EndChanging, &Change);
