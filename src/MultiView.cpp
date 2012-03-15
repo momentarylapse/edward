@@ -27,7 +27,7 @@ const int PointRadiusMouseOver = 4;
 #define update_zoom		if (mode3d) \
 							zoom = ((float)NixScreenHeight / (whole_window ? 1.0f : 2.0f) / radius); \
 						else \
-							zoom = (float)NixScreenHeight * 0.8f;
+							zoom = (float)NixScreenHeight * 0.8f / radius;
 #define MVGetSingleData(d, index)	((MultiViewSingleData*) ((char*)(d).data + (d).DataSingleSize * index))
 //#define MVGetSingleData(d, index)	( dynamic_cast<MultiViewSingleData*> ((char*)(d).data + (d).DataSingleSize * index))
 
@@ -93,7 +93,10 @@ void MultiView::ResetView()
 {
 	pos = v0;
 	ang = v0;
-	radius = 100;
+	if (mode3d)
+		radius = 100;
+	else
+		radius = 1;
 	zoom = 1;
 	whole_window = false;
 	grid_enabled = true;
@@ -145,17 +148,18 @@ void MultiView::SetData(int type, const DynamicArray & a, void *user_data, int m
 void MultiView::DoZoom(float factor)
 {
 	vector mup;
-	if (!mode3d){
-		mup = VecUnProject(vector((float)mx,(float)my,0),mouse_win);
-		zoom *= factor;
-		pos += mup - VecUnProject(vector((float)mx,(float)my,0),mouse_win);
-	}else{
+	if (mode3d){
 		if (view[mouse_win].type != ViewPerspective)
 			mup = VecUnProject(vector((float)mx,(float)my,0),mouse_win);
 		radius /= factor;
 		update_zoom;
 		if (view[mouse_win].type != ViewPerspective)
 			pos += mup - VecUnProject(vector((float)mx,(float)my,0),mouse_win);
+	}else{
+		mup = VecUnProject(vector((float)mx,(float)my,0),mouse_win);
+		radius /= factor;
+		update_zoom;
+		pos += mup - VecUnProject(vector((float)mx,(float)my,0),mouse_win);
 	}
 	ed->ForceRedraw();
 }
