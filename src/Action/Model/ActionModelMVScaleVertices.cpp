@@ -67,12 +67,3 @@ void ActionModelMVScaleVertices::abort(Data *d)
 }
 
 
-
-void ActionModelMVScaleVertices::set_param(Data *d, const vector & _param)
-{
-	//msg_write("scale vert set param");
-	param = _param;
-	execute(d);
-}
-
-

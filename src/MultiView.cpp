@@ -1112,6 +1112,8 @@ vector MultiView::GetDirectionRight(int win)
 
 void MultiView::SetMouseAction(int button, const string & name, int mode)
 {
+	if ((!mode3d) && (mode == ActionRotate))
+		mode = ActionRotate2d;
 	action[button].name = name;
 	action[button].mode = mode;
 }

@@ -10,6 +10,10 @@
 #include "Model/ActionModelMVScaleVertices.h"
 #include "Model/ActionModelMVRotateVertices.h"
 #include "Model/ActionModelMVMirrorVertices.h"
+#include "Model/ActionModelMVMoveSkinVertices.h"
+#include "Model/ActionModelMVScaleSkinVertices.h"
+#include "Model/ActionModelMVRotateSkinVertices.h"
+#include "Model/ActionModelMVMirrorSkinVertices.h"
 
 ActionMultiView::ActionMultiView(Data *d, const vector &_pos0)
 {
@@ -33,7 +37,8 @@ void ActionMultiView::set_axis(const vector &_e1, const vector &_e2, const vecto
 
 void ActionMultiView::set_param_and_notify(Data *d, const vector & _param)
 {
-	set_param(d, _param);
+	param = _param;
+	execute(d);
 	d->Notify("Change");
 }
 
@@ -49,12 +54,20 @@ ActionMultiView *ActionMultiViewFactory(const string &name, Data *d, const vecto
 {
 	if (name == "ActionModelMVMoveVertices")
 		return new ActionModelMVMoveVertices(d, _pos0);
-	if (name == "ActionModelMVScaleVertices")
+	else if (name == "ActionModelMVScaleVertices")
 		return new ActionModelMVScaleVertices(d, _pos0);
-	if (name == "ActionModelMVRotateVertices")
+	else if (name == "ActionModelMVRotateVertices")
 		return new ActionModelMVRotateVertices(d, _pos0);
-	if (name == "ActionModelMVMirrorVertices")
+	else if (name == "ActionModelMVMirrorVertices")
 		return new ActionModelMVMirrorVertices(d, _pos0);
+	else if (name == "ActionModelMVMoveSkinVertices")
+		return new ActionModelMVMoveSkinVertices(d, _pos0);
+	else if (name == "ActionModelMVScaleSkinVertices")
+		return new ActionModelMVScaleSkinVertices(d, _pos0);
+	else if (name == "ActionModelMVRotateSkinVertices")
+		return new ActionModelMVRotateSkinVertices(d, _pos0);
+	else if (name == "ActionModelMVMirrorSkinVertices")
+		return new ActionModelMVMirrorSkinVertices(d, _pos0);
 	return NULL;
 }
 

@@ -27,7 +27,6 @@ public:
 
 	// continuous editing
 	void abort(Data *d);
-	void set_param(Data *d, const vector &_param);
 };
 
 #endif /* ACTIONMODELMVROTATEVERTICES_H_ */

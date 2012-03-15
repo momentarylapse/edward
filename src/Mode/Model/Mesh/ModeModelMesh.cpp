@@ -311,6 +311,7 @@ void ModeModelMesh::ChooseRightMouseFunction(int f)
 	right_mouse_function = f;
 	ed->UpdateMenu();
 	ApplyRightMouseFunction(ed->multi_view_3d);
+	ApplyRightMouseFunction(ed->multi_view_2d);
 }
 
 void ModeModelMesh::ApplyRightMouseFunction(MultiView *mv)
@@ -318,19 +319,23 @@ void ModeModelMesh::ApplyRightMouseFunction(MultiView *mv)
 	if (!mv)
 		return;
 
+	string suffix = "Vertices";
+	if (!mv->mode3d)
+		suffix = "SkinVertices";
+
 	// left -> translate
-	mv->SetMouseAction(0, "ActionModelMVMoveVertices", MultiView::ActionMove);
+	mv->SetMouseAction(0, "ActionModelMVMove" + suffix, MultiView::ActionMove);
 
 	// right...
 	if (right_mouse_function == RMFRotate){
-		mv->SetMouseAction(1, "ActionModelMVRotateVertices", MultiView::ActionRotate2d);
-		mv->SetMouseAction(2, "ActionModelMVRotateVertices", MultiView::ActionRotate);
+		mv->SetMouseAction(1, "ActionModelMVRotate" + suffix, MultiView::ActionRotate2d);
+		mv->SetMouseAction(2, "ActionModelMVRotate" + suffix, MultiView::ActionRotate);
 	}else if (right_mouse_function == RMFScale){
-		mv->SetMouseAction(2, "ActionModelMVScaleVertices", MultiView::ActionScale);
+		mv->SetMouseAction(2, "ActionModelMVScale" + suffix, MultiView::ActionScale);
 	}else if (right_mouse_function == RMFScale2d){
-		mv->SetMouseAction(2, "ActionModelMVScaleVertices", MultiView::ActionScale2d);
+		mv->SetMouseAction(2, "ActionModelMVScale" + suffix, MultiView::ActionScale2d);
 	}else if (right_mouse_function == RMFMirror){
-		mv->SetMouseAction(2, "ActionModelMVMirrorVertices", MultiView::ActionOnce);
+		mv->SetMouseAction(2, "ActionModelMVMirror" + suffix, MultiView::ActionOnce);
 	}
 }
 

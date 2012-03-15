@@ -68,6 +68,11 @@ public:
 	int Material;
 };
 
+// only for use in MultiView...
+class ModeModelSkinVertexDummy: public MultiViewSingleData
+{
+};
+
 class ModeModelBall: public MultiViewSingleData
 {
 public:

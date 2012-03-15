@@ -10,6 +10,7 @@
 
 #include "../../Mode.h"
 #include "../../../Data/Model/DataModel.h"
+#include "../../../lib/file/file.h"
 
 class Mode;
 class DataModel;
@@ -39,7 +40,11 @@ public:
 	void Draw();
 	void DrawWin(int win, irect dest);
 
+	// for MultiView actions
+	void GetSelectedSkinVertices(Array<int> &surf, Array<int> &index);
+
 	DataModel *data;
+	Array<ModeModelSkinVertexDummy> skin_vertex;
 };
 
 extern ModeModelMeshTexture *mode_model_mesh_texture;

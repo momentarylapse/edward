@@ -35,15 +35,6 @@ void ActionModelMVMoveVertices::abort(Data *d)
 
 
 
-void ActionModelMVMoveVertices::set_param(Data *d, const vector &_param)
-{
-	//msg_write("move vert set param");
-	param = _param;
-	execute(d);
-}
-
-
-
 void ActionModelMVMoveVertices::undo(Data *d)
 {
 	msg_write("move vert undo");

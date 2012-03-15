@@ -36,15 +36,6 @@ void ActionModelMVMirrorVertices::redo(Data *d)
 
 
 
-void ActionModelMVMirrorVertices::set_param(Data *d, const vector & _param)
-{
-	//msg_write("mirror vert set param");
-	param = _param;
-	execute(d);
-}
-
-
-
 void *ActionModelMVMirrorVertices::execute(Data *d)
 {
 	msg_write("mirror vert do");

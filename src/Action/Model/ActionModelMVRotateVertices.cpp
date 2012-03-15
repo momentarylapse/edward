@@ -59,13 +59,6 @@ void *ActionModelMVRotateVertices::execute(Data *d)
 	return NULL;
 }
 
-void ActionModelMVRotateVertices::set_param(Data *d, const vector & _param)
-{
-	//msg_write("rotate vert set param");
-	param = _param;
-	execute(d);
-}
-
 
 
 void ActionModelMVRotateVertices::abort(Data *d)

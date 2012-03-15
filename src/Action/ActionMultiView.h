@@ -27,7 +27,7 @@ public:
 
 	// continuous editing
 	virtual void abort(Data *d) = 0;
-	virtual void set_param(Data *d, const vector &_param) = 0;
+	//virtual void set_param(Data *d, const vector &_param) = 0;
 	virtual void set_axis(const vector &_e1, const vector &_e2, const vector &_e3);
 	void abort_and_notify(Data *d);
 	void set_param_and_notify(Data *d, const vector &_param);
