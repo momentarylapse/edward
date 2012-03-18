@@ -9,6 +9,7 @@
 
 #include "Edward.h"
 #include "Mode/Model/ModeModel.h"
+#include "Mode/Model/Mesh/ModeModelMesh.h"
 #include "Mode/Material/ModeMaterial.h"
 #include "Mode/World/ModeWorld.h"
 #include "Mode/Font/ModeFont.h"
@@ -213,7 +214,8 @@ Edward::Edward(Array<string> arg) :
 	Subscribe(multi_view_3d);
 
 
-	SetMode(mode_welcome);
+	if (!HandleArguments(arg))
+		SetMode(mode_welcome);
 
 	HuiSetIdleFunctionM(this, (void(CHuiWindow::*)())&Edward::IdleFunction);
 
@@ -239,6 +241,100 @@ Edward::~Edward()
 
 	HuiEnd();
 }
+
+bool Edward::HandleArguments(Array<string> arg)
+{
+	if (arg.num < 2)
+		return false;
+	msg_db_r("LoadParam", 1);
+// convert file types...
+	/*if (_param == "-cftmodel"){		ConvertFileFormat(FDModel, true);		End();	}
+	if (_param == "-cftobject"){	ConvertFileFormat(FDObject, true);		End();	}
+	if (_param == "-cftitem"){		ConvertFileFormat(FDItem, true);		End();	}
+	if (_param == "-cftmaterial"){	ConvertFileFormat(FDMaterial, true);	End();	}
+	if (_param == "-cftmap"){		ConvertFileFormat(FDTerrain, true);		End();	}
+	if (_param == "-cftworld"){		ConvertFileFormat(FDWorld, true);		End();	}
+// test files
+	if (_param == "-tftmodel"){		ConvertFileFormat(FDModel, false);		End();	}
+	if (_param == "-tftobject"){	ConvertFileFormat(FDObject, false);		End();	}
+	if (_param == "-tftitem"){		ConvertFileFormat(FDItem, false);		End();	}
+	if (_param == "-tftmaterial"){	ConvertFileFormat(FDMaterial, false);	End();	}
+	if (_param == "-tftmap"){		ConvertFileFormat(FDTerrain, false);	End();	}
+	if (_param == "-tftworld"){		ConvertFileFormat(FDWorld, false);		End();	}*/
+
+// loading...
+	string param = arg[1];
+	if (param[0]=='"')
+		param.delete_single(0);
+	if (param[param.num-1]=='"')
+		param.resize(param.num-1);
+
+	string ext = file_extension(param);
+
+	if (ext == "model"){
+		MakeDirs(param);
+		mode_model->data->Load(param, true);
+		SetMode(mode_model);
+		HuiRunLaterM(100, (CHuiWindow*)mode_model_mesh, (void(CHuiWindow::*)())&ModeModelMesh::OptimizeView);
+		/*if (mmodel->Skin[1].Sub[0].Triangle.num==0)
+			mmodel->SetEditMode(EditModeVertex);*/
+	/*}else if (ext == "object"){
+		MakeDirs(param);
+		mobject->LoadFromFile(param);
+		SetMode(ModeObject);
+	}else if (ext == "item"){
+		MakeDirs(param);
+		mitem->LoadFromFile(param);
+		SetMode(ModeItem);*/
+	}else if (ext == "material"){
+		MakeDirs(param);
+		mode_material->data->Load(param, true);
+		SetMode(mode_material);
+	/*}else if ((ext == "map") || (ext == "terrain")){
+		MakeDirs(param);
+		mworld->Terrain.resize(1);
+		mworld->LoadFromFileTerrain(0, v0, param, true);
+		mworld->OptimizeView();
+		SetMode(ModeWorld);
+	}else if (ext == "world"){
+		if (param[0] == '$'){
+			JustCreateLightMap = true;
+			param.delete_single(0);
+		}
+
+		MakeDirs(param);
+		mworld->LoadFromFile(param);
+		SetMode(ModeWorld);
+		WholeWindow=true;
+	}else if (ext == "xfont"){
+		MakeDirs(param);
+		mfont->LoadFromFile(param);
+		SetMode(ModeFont);
+	}else if ((ext == "mdl") || (ext == "MDL")){
+		mmodel->LoadImportFromGameStudioMdl(param);
+		SetMode(ModeModel);
+		WholeWindow=true;
+		mmodel->OptimizeView();
+		//mmodel->Changed=false;
+	}else if ((ext == "wmb") || (ext == "WMB")){
+		mmodel->LoadImportFromGameStudioWmb(param);
+		SetMode(ModeModel);
+		WholeWindow=true;
+		mmodel->OptimizeView();
+	}else if ((ext == "3ds") || (ext == "3DS")){
+		mmodel->LoadImportFrom3DS(param);
+		SetMode(ModeModel);
+		WholeWindow=true;
+		mmodel->OptimizeView();*/
+	}else{
+		ErrorBox(_("Unbekannte Dateinamenerweiterung: ") + param);
+		HuiEnd();
+	}
+	msg_db_l(1);
+	return true;
+}
+
+
 
 bool mode_switch_allowed(Mode *m)
 {

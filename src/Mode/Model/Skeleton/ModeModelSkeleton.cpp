@@ -20,7 +20,7 @@ ModeModelSkeleton::ModeModelSkeleton(Mode *_parent, DataModel *_data)
 	name = "ModelSkeleton";
 	parent = _parent;
 	data = _data;
-	menu = HuiCreateResourceMenu("menu_model");
+	menu = HuiCreateResourceMenu("menu_skeleton");
 	multi_view = ed->multi_view_3d;
 	Subscribe(data);
 	Subscribe(multi_view, "SelectionChange");

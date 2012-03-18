@@ -60,6 +60,7 @@ public:
 	Edward(Array<string> arg);
 	virtual ~Edward();
 
+	bool HandleArguments(Array<string> arg);
 	void LoadKeyCodes();
 	int Run();
 
