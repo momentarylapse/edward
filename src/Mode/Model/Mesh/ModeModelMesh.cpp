@@ -229,6 +229,9 @@ void ModeModelMesh::OptimizeView()
 		if (data->Vertex.num > 1)
 			mv->radius = VecLengthFuzzy(max - min) * 1.3f * ((float)NixScreenWidth / (float)NixTargetWidth);
 	}
+
+	ed->multi_view_2d->ResetView();
+	ed->multi_view_2d->pos = vector(0.5f, 0.5f, 0);
 	/*if ((Bone.num > 0) && (Vertex.num <= 0))
 		SetSubMode(SubModeSkeleton);
 	if (SubMode == SubModeSkeleton)

@@ -105,6 +105,10 @@ void MultiView::ResetView()
 	wire_mode = false;
 
 	view_stage = 0;
+
+	MouseOver = -1;
+	MouseOverSet = -1;
+	MouseOverType = -1;
 }
 
 void MultiView::ResetMouseAction()
