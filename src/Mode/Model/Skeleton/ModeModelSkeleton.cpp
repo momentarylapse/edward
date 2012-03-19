@@ -10,6 +10,7 @@
 #include "ModeModelSkeleton.h"
 #include "../Mesh/ModeModelMeshTriangle.h"
 #include "../Animation/ModeModelAnimation.h"
+#include "Creation/ModeModelSkeletonCreateBone.h"
 
 
 ModeModelSkeleton *mode_model_skeleton = NULL;
@@ -38,6 +39,8 @@ void ModeModelSkeleton::OnMiddleButtonUp()
 
 void ModeModelSkeleton::OnCommand(const string & id)
 {
+	if (id == "skeleton_new_point")
+		ed->SetCreationMode(new ModeModelSkeletonCreateBone(ed->cur_mode, data));
 }
 
 
