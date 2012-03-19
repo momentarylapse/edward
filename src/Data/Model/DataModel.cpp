@@ -759,6 +759,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 
 
 		// import...
+	NotifyBegin();
 		foreach(Skin[1].Vertex, v)
 			AddVertex(v.pos);
 		for (int i=0;i<Material.num;i++){
@@ -770,6 +771,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 						tt->SkinVertex[tl][k] = t.SkinVertex[tl][k];
 			}
 		}
+	NotifyEnd();
 
 
 

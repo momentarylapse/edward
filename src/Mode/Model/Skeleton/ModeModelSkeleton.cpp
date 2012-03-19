@@ -162,10 +162,10 @@ void DrawBone(const vector &r, const vector &d, const color &c, int win)
 		//NixDrawLine(pr.x,pr.y,pd.x,pd.y,c,z);
 		float l=VecLength(d);
 		float w=(float)atan2(d.x,d.y)+pi;
-		NixDrawLine(pr.x,pr.y,pr.x+l*(float)sin(w+0.4f)*0.2f,pr.y+l*(float)cos(w+0.4f)*0.2f,c,z);
-		NixDrawLine(pr.x,pr.y,pr.x+l*(float)sin(w-0.4f)*0.2f,pr.y+l*(float)cos(w-0.4f)*0.2f,c,z);
-		NixDrawLine(pd.x,pd.y,pr.x+l*(float)sin(w+0.4f)*0.2f,pr.y+l*(float)cos(w+0.4f)*0.2f,c,z);
-		NixDrawLine(pd.x,pd.y,pr.x+l*(float)sin(w-0.4f)*0.2f,pr.y+l*(float)cos(w-0.4f)*0.2f,c,z);
+		NixDrawLine(pr.x,pr.y,pr.x+l*(float)sin(w+0.5f)*0.2f,pr.y+l*(float)cos(w+0.5f)*0.2f,c,z);
+		NixDrawLine(pr.x,pr.y,pr.x+l*(float)sin(w-0.5f)*0.2f,pr.y+l*(float)cos(w-0.5f)*0.2f,c,z);
+		NixDrawLine(pd.x,pd.y,pr.x+l*(float)sin(w+0.5f)*0.2f,pr.y+l*(float)cos(w+0.5f)*0.2f,c,z);
+		NixDrawLine(pd.x,pd.y,pr.x+l*(float)sin(w-0.5f)*0.2f,pr.y+l*(float)cos(w-0.5f)*0.2f,c,z);
 	}
 }
 
