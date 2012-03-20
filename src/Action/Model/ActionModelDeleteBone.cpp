@@ -26,6 +26,7 @@ void ActionModelDeleteBone::redo(Data *d)
 
 void *ActionModelDeleteBone::execute(Data *d)
 {
+	msg_write("del bone do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	ModeModelSkeletonBone &b = m->Bone[index];
 	pos = b.DeltaPos;
@@ -48,6 +49,28 @@ void *ActionModelDeleteBone::execute(Data *d)
 			if (bb.Parent > index)
 				bb.Parent --;
 		}
+
+	// save + correct animations
+	move_dpos.clear();
+	move_ang.clear();
+	foreach(m->Move, move)
+		foreach(move.Frame, f){
+			move_dpos.add(f.SkelDPos[index]);
+			f.SkelDPos.erase(index);
+			move_ang.add(f.SkelAng[index]);
+			f.SkelAng.erase(index);
+		}
+
+	// save + correct vertices
+	vertex.clear();
+	foreachi(m->Vertex, v, vi)
+		if (v.BoneIndex == index){
+			v.BoneIndex = -1;
+			vertex.add(vi);
+		}else if (v.BoneIndex > index)
+			v.BoneIndex --;
+
+	m->Bone.erase(index);
 	return NULL;
 }
 
@@ -55,6 +78,7 @@ void *ActionModelDeleteBone::execute(Data *d)
 
 void ActionModelDeleteBone::undo(Data *d)
 {
+	msg_write("del bone undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	ModeModelSkeletonBone b;
 	b.Parent = parent;
@@ -80,6 +104,22 @@ void ActionModelDeleteBone::undo(Data *d)
 		m->Bone[c].Parent = index;
 		m->Bone[c].DeltaPos = m->Bone[c].pos - pos;
 	}
+
+	// correct animations
+	int fi = 0;
+	foreach(m->Move, move)
+		foreach(move.Frame, f){
+			f.SkelDPos.insert(move_dpos[fi], index);
+			f.SkelAng.insert(move_ang[fi], index);
+			fi ++;
+		}
+
+	// correct vertices
+	foreach(m->Vertex, v)
+		if (v.BoneIndex >= index)
+			v.BoneIndex ++;
+	foreach(vertex, vi)
+		m->Vertex[vi].BoneIndex = index;
 }
 
 

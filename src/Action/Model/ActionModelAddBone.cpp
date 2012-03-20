@@ -21,6 +21,7 @@ ActionModelAddBone::~ActionModelAddBone()
 
 void *ActionModelAddBone::execute(Data *d)
 {
+	msg_write("add bone do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	ModeModelSkeletonBone b;
 	b.Parent = parent;
@@ -35,6 +36,14 @@ void *ActionModelAddBone::execute(Data *d)
 	b.view_stage = 0;
 	b.is_special = b.is_selected = false;
 	m->Bone.add(b);
+
+	// correct animations
+	foreach(m->Move, move)
+		foreach(move.Frame, f){
+			f.SkelDPos.add(v0);
+			f.SkelAng.add(v0);
+		}
+
 	return &m->Bone.back();
 }
 
@@ -49,8 +58,16 @@ void ActionModelAddBone::redo(Data *d)
 
 void ActionModelAddBone::undo(Data *d)
 {
+	msg_write("add bone undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	m->Bone.pop();
+
+	// correct animations
+	foreach(m->Move, move)
+		foreach(move.Frame, f){
+			f.SkelDPos.pop();
+			f.SkelAng.pop();
+		}
 }
 
 

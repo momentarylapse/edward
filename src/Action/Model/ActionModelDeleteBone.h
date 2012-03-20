@@ -28,6 +28,9 @@ private:
 	int parent;
 	string filename;
 	void *model;
+	Array<vector> move_dpos;
+	Array<vector> move_ang;
+	Array<int> vertex;
 };
 
 #endif /* ACTIONMODELDELETEBONE_H_ */

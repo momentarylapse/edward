@@ -11,6 +11,7 @@
 #include "../Mesh/ModeModelMeshTriangle.h"
 #include "../Animation/ModeModelAnimation.h"
 #include "Creation/ModeModelSkeletonCreateBone.h"
+#include "../../../Action/Model/ActionModelDeleteBoneSelection.h"
 
 
 ModeModelSkeleton *mode_model_skeleton = NULL;
@@ -41,6 +42,9 @@ void ModeModelSkeleton::OnCommand(const string & id)
 {
 	if (id == "skeleton_new_point")
 		ed->SetCreationMode(new ModeModelSkeletonCreateBone(ed->cur_mode, data));
+
+	if (id == "delete")
+		data->Execute(new ActionModelDeleteBoneSelection(data));
 }
 
 
