@@ -634,6 +634,14 @@ Data *get_mode_data(Mode *m)
 }
 
 
+string title_filename(const string &filename)
+{
+	if (filename.num > 0)
+		return basename(filename);// + " (" + dirname(filename) + ")";
+	return _("Unbenannt");
+}
+
+
 void Edward::UpdateMenu()
 {
 	if (!cur_mode)
@@ -645,6 +653,12 @@ void Edward::UpdateMenu()
 	if (d){
 		Enable("undo", d->action_manager->Undoable());
 		Enable("redo", d->action_manager->Redoable());
+		string title = title_filename(d->filename) + " - " + AppName;
+		if (!d->action_manager->IsSave())
+			title = "*" + title;
+		SetTitle(title);
+	}else{
+		SetTitle(AppName);
 	}
 
 	// general multiview stuff
