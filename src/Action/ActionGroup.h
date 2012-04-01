@@ -24,7 +24,7 @@ public:
 	void redo(Data *d);
 
 protected:
-	void AddSubAction(Action *a, Data *d);
+	void *AddSubAction(Action *a, Data *d);
 	virtual void *execute_return(Data *d);
 
 private:

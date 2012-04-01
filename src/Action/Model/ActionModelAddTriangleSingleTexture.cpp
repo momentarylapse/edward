@@ -17,7 +17,7 @@ ActionModelAddTriangleSingleTexture::ActionModelAddTriangleSingleTexture(DataMod
 		sv[2][l] = _svc;
 	}
 
-	AddSubAction(new ActionModelAddTriangle(m, _a, _b, _c, _material, sv[0], sv[1], sv[2]), m);
+	dummy = AddSubAction(new ActionModelAddTriangle(m, _a, _b, _c, _material, sv[0], sv[1], sv[2]), m);
 }
 
 ActionModelAddTriangleSingleTexture::~ActionModelAddTriangleSingleTexture()
@@ -27,6 +27,5 @@ ActionModelAddTriangleSingleTexture::~ActionModelAddTriangleSingleTexture()
 
 void *ActionModelAddTriangleSingleTexture::execute_return(Data *d)
 {
-	// TODO ???
-	return NULL;
+	return dummy;
 }

@@ -21,6 +21,7 @@ public:
 	void *execute_return(Data *d);
 
 private:
+	void *dummy;
 };
 
 #endif /* ACTIONMODELADDTRIANGLESINGLETEXTURE_H_ */
