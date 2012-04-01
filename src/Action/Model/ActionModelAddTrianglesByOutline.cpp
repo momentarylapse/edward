@@ -7,7 +7,7 @@
 
 #include "ActionModelAddTrianglesByOutline.h"
 #include "ActionModelAddVertex.h"
-#include "ActionModelAddTriangle.h"
+#include "ActionModelAddTriangleSingleTexture.h"
 #include "../../Data/Model/DataModel.h"
 
 
@@ -53,7 +53,7 @@ vector get_cloud_normal(DataModel *m, const Array<int> &v)
 void ActionModelAddTrianglesByOutline::CreateTrianglesFlat(DataModel *m, Array<int> &v)
 {
 	if (v.num == 3){
-		AddSubAction(new ActionModelAddTriangle(m, v[0], v[1], v[2], v0, e_x, e_y), m);
+		AddSubAction(new ActionModelAddTriangleSingleTexture(m, v[0], v[1], v[2], m->CurrentMaterial, v0, e_x, e_y), m);
 	}else if (v.num > 3){
 
 		flat_n = get_cloud_normal(m, v);
@@ -102,7 +102,7 @@ void ActionModelAddTrianglesByOutline::CreateTrianglesFlat(DataModel *m, Array<i
 			}
 		}
 
-		AddSubAction(new ActionModelAddTriangle(m, v[i_max], v[(i_max+1) % v.num], v[(i_max+2) % v.num], v0, e_x, e_y), m);
+		AddSubAction(new ActionModelAddTriangleSingleTexture(m, v[i_max], v[(i_max+1) % v.num], v[(i_max+2) % v.num], m->CurrentMaterial, v0, e_x, e_y), m);
 
 		v.erase((i_max+1) % v.num);
 		CreateTrianglesFlat(m, v);

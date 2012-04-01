@@ -10,6 +10,7 @@
 #include <assert.h>
 
 
+// creates a "disjoint" surface -> don't use alone!
 
 ActionModel__JoinSurfaces::ActionModel__JoinSurfaces(int _surface1, int _surface2)
 {

@@ -9,6 +9,9 @@
 #include "../../Data/Model/DataModel.h"
 #include <assert.h>
 
+
+// can only delete lonely vertices!
+
 ActionModel__DeleteVertex::ActionModel__DeleteVertex(int _vertex)
 {
 	vertex = _vertex;

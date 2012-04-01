@@ -26,10 +26,7 @@ void ActionModel__SurfaceDeleteTriangle::undo(Data *d)
 	ModeModelSurface *s = &m->Surface[surface];
 
 	// add triangle
-	s->AddTriangle(vertex[0], vertex[1], vertex[2], skin[0], skin[1], skin[2], index);
-	for (int l=1;l<m->Material[material].NumTextures;l++)
-			for (int k=0;k<3;k++)
-				s->Triangle[index].SkinVertex[l][k] = skin[l * 3 + k];
+	s->AddTriangle(vertex[0], vertex[1], vertex[2], material, skin[0], skin[1], skin[2], index);
 	s->BuildFromTriangles();
 }
 
@@ -47,10 +44,9 @@ void *ActionModel__SurfaceDeleteTriangle::execute(Data *d)
 	material = t->Material;
 	for (int k=0;k<3;k++)
 		vertex[k] = t->Vertex[k];
-	skin.clear();
 	for (int l=0;l<m->Material[material].NumTextures;l++)
 		for (int k=0;k<3;k++)
-			skin.add(t->SkinVertex[l][k]);
+			skin[k][l] = t->SkinVertex[l][k];
 
 	// erase
 	s->Triangle.erase(index);

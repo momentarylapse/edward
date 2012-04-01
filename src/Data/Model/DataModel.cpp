@@ -12,7 +12,7 @@
 #include "../../Action/ActionManager.h"
 #include "../../Edward.h"
 #include "../../Action/Model/ActionModelAddVertex.h"
-#include "../../Action/Model/ActionModelAddTriangle.h"
+#include "../../Action/Model/ActionModelAddTriangleSingleTexture.h"
 #include "../../Action/Model/ActionModelAddCube.h"
 #include "../../Action/Model/ActionModelAddPlane.h"
 #include "../../Action/Model/ActionModelAddCylinder.h"
@@ -857,7 +857,7 @@ ModeModelTriangle *DataModel::AddTriangle(int a, int b, int c)
 {
 	vector sv[3] = {e_y, v0, e_x};
 	//ApplyAutoTexturing(this, a, b, c, sv);
-	return (ModeModelTriangle*) Execute(new ActionModelAddTriangle(this, a, b, c, sv[0], sv[1], sv[2]));
+	return (ModeModelTriangle*) Execute(new ActionModelAddTriangleSingleTexture(this, a, b, c, CurrentMaterial, sv[0], sv[1], sv[2]));
 }
 
 

@@ -7,7 +7,7 @@
 
 #include "ActionModelAddCylinder.h"
 #include "ActionModelAddVertex.h"
-#include "ActionModelAddTriangle.h"
+#include "ActionModelAddTriangleSingleTexture.h"
 
 ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, const vector &pos, const vector &length, float radius, int rings, int edges, bool closed)
 {
@@ -20,6 +20,7 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, const vector &pos, 
 	VecNormalize(r);
 
 	int nv = m->Vertex.num;
+	int material = m->CurrentMaterial;
 
 // the curved surface
 	Array<vector> sv;
@@ -39,13 +40,15 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, const vector &pos, 
 			int _b=(rings+1)*(i+1)+j;
 			int _c=(rings+1)* i   +j+1;
 			int _d=(rings+1)*(i+1)+j+1;
-			AddSubAction(new ActionModelAddTriangle(
+			AddSubAction(new ActionModelAddTriangleSingleTexture(
 					m,
 					nv+(_a%n),nv+(_c%n),nv+(_d%n),
+					material,
 					sv[_a]   ,sv[_c]   ,sv[_d]   ), m);
-			AddSubAction(new ActionModelAddTriangle(
+			AddSubAction(new ActionModelAddTriangleSingleTexture(
 					m,
 					nv+(_a%n),nv+(_d%n),nv+(_b%n),
+					material,
 					sv[_a]   ,sv[_d]   ,sv[_b]   ), m);
 		}
 // the endings
@@ -61,13 +64,15 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, const vector &pos, 
 			}
 		}
 		for (int j=0;j<edges;j++){
-			AddSubAction(new ActionModelAddTriangle(
+			AddSubAction(new ActionModelAddTriangleSingleTexture(
 					m,
 					nv+(rings+1)*edges	,nv+j*(rings+1)						,nv+((j+1)%edges)*(rings+1),
+					material,
 					sv[0], sv[1+j], sv[1+(j+1)%edges]), m);
-			AddSubAction(new ActionModelAddTriangle(
+			AddSubAction(new ActionModelAddTriangleSingleTexture(
 					m,
 					nv+(rings+1)*edges+1,nv+((j+1)%edges)*(rings+1)+rings	,nv+j*(rings+1)+rings,
+					material,
 					sv[edges+1] ,sv[edges+2+(j+1)%edges], sv[edges+2+j]), m);
 		}
 	}

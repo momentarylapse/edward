@@ -10,11 +10,12 @@
 
 #include "../Action.h"
 #include "../../lib/types/types.h"
+#include "../../lib/x/x.h"
 
 class ActionModel__SurfaceAddTriangle: public Action
 {
 public:
-	ActionModel__SurfaceAddTriangle(int _surface, int _a, int _b, int _c, const vector &_sva, const vector &_svb, const vector &_svc);
+	ActionModel__SurfaceAddTriangle(int _surface, int _a, int _b, int _c, int _material, const vector *_sva, const vector *_svb, const vector *_svc);
 	virtual ~ActionModel__SurfaceAddTriangle();
 
 	void *execute(Data *d);
@@ -24,7 +25,8 @@ public:
 private:
 	int surface;
 	int a, b, c;
-	vector sv[3];
+	int material;
+	vector sv[3][MODEL_MAX_TEXTURES];
 };
 
 #endif /* ACTIONMODEL__SURFACEADDTRIANGLE_H_ */

@@ -9,6 +9,8 @@
 #include "../../Data/Model/DataModel.h"
 #include <assert.h>
 
+// creates an empty surfaces -> don't use alone!
+
 ActionModel__AddSurface::ActionModel__AddSurface()
 {
 }

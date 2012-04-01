@@ -8,15 +8,20 @@
 #include "ActionModel__SurfaceAddTriangle.h"
 #include "../../Data/Model/DataModel.h"
 
-ActionModel__SurfaceAddTriangle::ActionModel__SurfaceAddTriangle(int _surface, int _a, int _b, int _c, const vector &_sva, const vector &_svb, const vector &_svc)
+// might create a "disjoint" surface -> don't use alone!
+
+ActionModel__SurfaceAddTriangle::ActionModel__SurfaceAddTriangle(int _surface, int _a, int _b, int _c, int _material, const vector *_sva, const vector *_svb, const vector *_svc)
 {
 	surface = _surface;
 	a = _a;
 	b = _b;
 	c = _c;
-	sv[0] = _sva;
-	sv[1] = _svb;
-	sv[2] = _svc;
+	material = _material;
+	for (int l=0;l<MODEL_MAX_TEXTURES;l++){
+		sv[0][l] = _sva[l];
+		sv[1][l] = _svb[l];
+		sv[2][l] = _svc[l];
+	}
 }
 
 ActionModel__SurfaceAddTriangle::~ActionModel__SurfaceAddTriangle()
@@ -48,7 +53,7 @@ void *ActionModel__SurfaceAddTriangle::execute(Data *d)
 	ModeModelSurface *s = &m->Surface[surface];
 
 	// add triangle
-	s->AddTriangle(a, b, c, sv[0], sv[1], sv[2]);
+	s->AddTriangle(a, b, c, material, sv[0], sv[1], sv[2]);
 	return &s->Triangle.back();
 
 	/*sModeModelSubSkin *sub = &skin->Sub[CurrentMaterial];

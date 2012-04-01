@@ -30,7 +30,7 @@ void ModeModelSurface::AddVertex(int v)
 		msg_error("SurfaceAddVertex ...surface not found");
 }
 
-void ModeModelSurface::AddTriangle(int a, int b, int c, const vector &sa, const vector &sb, const vector &sc, int index)
+void ModeModelSurface::AddTriangle(int a, int b, int c, int material, const vector *sa, const vector *sb, const vector *sc, int index)
 {
 	msg_db_r("Surf.AddTria", 1);
 
@@ -38,10 +38,10 @@ void ModeModelSurface::AddTriangle(int a, int b, int c, const vector &sa, const 
 	t.Vertex[0] = a;
 	t.Vertex[1] = b;
 	t.Vertex[2] = c;
-	for (int i=0;i<model->Material[model->CurrentMaterial].NumTextures;i++){
-		t.SkinVertex[i][0] = sa;
-		t.SkinVertex[i][1] = sb;
-		t.SkinVertex[i][2] = sc;
+	for (int i=0;i<model->Material[material].NumTextures;i++){
+		t.SkinVertex[i][0] = sa[i];
+		t.SkinVertex[i][1] = sb[i];
+		t.SkinVertex[i][2] = sc[i];
 	}
 	for (int k=0;k<3;k++)
 		t.Edge[k] = AddEdgeForNewTriangle(t.Vertex[k], t.Vertex[(k + 1) % 3]);
@@ -53,7 +53,7 @@ void ModeModelSurface::AddTriangle(int a, int b, int c, const vector &sa, const 
 	UpdateClosed();
 
 	t.is_selected = false;
-	t.Material = model->CurrentMaterial;
+	t.Material = material;
 	t.view_stage = model->ViewStage;
 	t.NormalDirty = true;
 	if (index >= 0)

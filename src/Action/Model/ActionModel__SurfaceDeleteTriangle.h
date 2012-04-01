@@ -10,6 +10,7 @@
 
 #include "../Action.h"
 #include "../../lib/types/types.h"
+#include "../../lib/x/x.h"
 
 class ActionModel__SurfaceDeleteTriangle: public Action
 {
@@ -24,7 +25,7 @@ public:
 private:
 	int surface, index;
 	int material, vertex[3];
-	Array<vector> skin;
+	vector skin[3][MODEL_MAX_TEXTURES];
 };
 
 #endif /* ACTIONMODEL__SURFACEDELETETRIANGLE_H_ */

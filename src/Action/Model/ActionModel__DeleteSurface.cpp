@@ -9,6 +9,8 @@
 #include "../../Data/Model/DataModel.h"
 #include <assert.h>
 
+// can only delete empty surfaces!
+
 ActionModel__DeleteSurface::ActionModel__DeleteSurface(int _surface)
 {
 	surface = _surface;

@@ -7,7 +7,7 @@
 
 #include "ActionModelAddBall.h"
 #include "ActionModelAddVertex.h"
-#include "ActionModelAddTriangle.h"
+#include "ActionModelAddTriangleSingleTexture.h"
 
 
 #define ball_ang(x, y)	vector((float)(y)/(float)_num_y,(float)(x)/(float)_num_x,0)
@@ -15,6 +15,7 @@
 ActionModelAddBall::ActionModelAddBall(DataModel *m, const vector &_pos, float _radius, int _num_x, int _num_y, bool _as_sphere)
 {
 	int nv = m->Vertex.num;
+	int material = m->CurrentMaterial;
 	// sphere = "blown up cube"
 	if (_as_sphere){
 		for (int f=0;f<6;f++){
@@ -45,8 +46,8 @@ ActionModelAddBall::ActionModelAddBall(DataModel *m, const vector &_pos, float _
 					vector svb = vector((float) x   /(float)_num_x,(float)(y+1)/(float)_num_x,0);
 					vector svc = vector((float)(x+1)/(float)_num_x,(float) y   /(float)_num_x,0);
 					vector svd = vector((float)(x+1)/(float)_num_x,(float)(y+1)/(float)_num_x,0);
-					AddSubAction(new ActionModelAddTriangle(m, nv+a,nv+c,nv+d,sva,svc,svd), m);
-					AddSubAction(new ActionModelAddTriangle(m, nv+a,nv+d,nv+b,sva,svd,svb), m);
+					AddSubAction(new ActionModelAddTriangleSingleTexture(m, nv+a,nv+c,nv+d, material, sva,svc,svd), m);
+					AddSubAction(new ActionModelAddTriangleSingleTexture(m, nv+a,nv+d,nv+b, material, sva,svd,svb), m);
 				}
 			nv += (_num_x+1) * (_num_x + 1);
 		}
@@ -66,14 +67,16 @@ ActionModelAddBall::ActionModelAddBall(DataModel *m, const vector &_pos, float _
 			}
 		// create new triangles
 		for (int y=0;y<_num_y;y++)
-			AddSubAction(new ActionModelAddTriangle(
+			AddSubAction(new ActionModelAddTriangleSingleTexture(
 					m,
 					nv+0				,nv+2+y				,nv+2+(y+1)%_num_y,
+					material,
 					ball_ang(0, y+1),	ball_ang(1, y),	ball_ang(1, y+1)), m);
 		for (int y=0;y<_num_y;y++)
-			AddSubAction(new ActionModelAddTriangle(
+			AddSubAction(new ActionModelAddTriangleSingleTexture(
 					m,
 					nv+2+_num_y*(_num_x-2)+y	,nv+1				,nv+2+_num_y*(_num_x-2)+(y+1)%_num_y,
+					material,
 					ball_ang(_num_x-1, y),		ball_ang(_num_x, y),	ball_ang(_num_x-1, y+1)), m);
 		for (int x=1;x<_num_x-1;x++)
 			for (int y=0;y<_num_y;y++){
@@ -81,13 +84,15 @@ ActionModelAddBall::ActionModelAddBall(DataModel *m, const vector &_pos, float _
 				vector svb = ball_ang(x  , y+1);
 				vector svc = ball_ang(x+1, y  );
 				vector svd = ball_ang(x+1, y+1);
-				AddSubAction(new ActionModelAddTriangle(
+				AddSubAction(new ActionModelAddTriangleSingleTexture(
 						m,
 						nv+2 +  _num_y *(x-1)+ y	,nv+2 + _num_y * x    +  y	,nv+2 +  _num_y   *(x-1) + (y+1)%_num_y,
+						material,
 						sva, svc, svb), m);
-				AddSubAction(new ActionModelAddTriangle(
+				AddSubAction(new ActionModelAddTriangleSingleTexture(
 						m,
 						nv+2 +  _num_y * x   + y		,nv+2 + _num_y * x    + (y+1)%_num_y	,nv+2 +  _num_y   *(x-1) + (y+1)%_num_y,
+						material,
 						svc, svd, svb), m);
 			}
 	}

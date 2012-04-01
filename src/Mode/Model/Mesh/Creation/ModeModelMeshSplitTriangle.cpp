@@ -7,6 +7,7 @@
 
 #include "ModeModelMeshSplitTriangle.h"
 #include "../../../../Edward.h"
+#include "../../../../Action/Model/ActionModelSplitTriangle.h"
 
 ModeModelMeshSplitTriangle::ModeModelMeshSplitTriangle(Mode *_parent, DataModel *_data)
 {
@@ -27,6 +28,14 @@ ModeModelMeshSplitTriangle::~ModeModelMeshSplitTriangle()
 
 void ModeModelMeshSplitTriangle::OnLeftButtonDown()
 {
+	triangle = multi_view->MouseOver;
+	surface = multi_view->MouseOverSet;
+	pos = multi_view->MouseOverTP;
+
+	if ((triangle >= 0) && (surface >= 0)){
+		data->Execute(new ActionModelSplitTriangle(data, surface, triangle, pos));
+		ed->SetCreationMode(NULL);
+	}
 }
 
 void ModeModelMeshSplitTriangle::PostDrawWin(int win, irect dest)

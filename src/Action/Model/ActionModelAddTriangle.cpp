@@ -12,7 +12,7 @@
 #include "ActionModel__JoinSurfaces.h"
 #include <assert.h>
 
-ActionModelAddTriangle::ActionModelAddTriangle(DataModel *m, int _a, int _b, int _c, const vector &_sva, const vector &_svb, const vector &_svc)
+ActionModelAddTriangle::ActionModelAddTriangle(DataModel *m, int _a, int _b, int _c, int _material, const vector *_sva, const vector *_svb, const vector *_svc)
 {
 	assert(_a >= 0 && _b >= 0 && _c >= 0);
 	assert(_a != _b && _b != _c && _c != _a);
@@ -38,8 +38,9 @@ ActionModelAddTriangle::ActionModelAddTriangle(DataModel *m, int _a, int _b, int
 		for (int i=surf.num-1;i>0;i--)
 			AddSubAction(new ActionModel__JoinSurfaces(surf_no, surf[i]), m);
 	}
+
 	// add triangle
-	AddSubAction(new ActionModel__SurfaceAddTriangle(surf_no, _a, _b, _c, _sva, _svb, _svc), m);
+	AddSubAction(new ActionModel__SurfaceAddTriangle(surf_no, _a, _b, _c, m->CurrentMaterial, _sva, _svb, _svc), m);
 
 	/*sModeModelSubSkin *sub = &skin->Sub[CurrentMaterial];
 	sModeModelTriangle t;
@@ -74,7 +75,6 @@ ActionModelAddTriangle::ActionModelAddTriangle(DataModel *m, int _a, int _b, int
 ActionModelAddTriangle::~ActionModelAddTriangle()
 {
 }
-
 
 
 void *ActionModelAddTriangle::execute_return(Data *d)
