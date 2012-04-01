@@ -25,24 +25,24 @@ ModelPropertiesDialog::ModelPropertiesDialog(CHuiWindow *_parent, bool _allow_pa
 	// dialog
 	FromResource("model_dialog");
 
-	EventM("cancel", this, (void(CHuiWindow::*)())&ModelPropertiesDialog::OnClose);
-	EventM("hui:close", this, (void(CHuiWindow::*)())&ModelPropertiesDialog::OnClose);
-	EventM("set", this, (void(CHuiWindow::*)())&ModelPropertiesDialog::ApplyData);
-	EventM("ok", this, (void(CHuiWindow::*)())&ModelPropertiesDialog::OnOk);
-	EventM("generate_dists_auto", this, (void(CHuiWindow::*)())&ModelPropertiesDialog::OnGenerateDistsAuto);
-	EventM("generate_dists", this, (void(CHuiWindow::*)())&ModelPropertiesDialog::OnGenerateDists);
-	EventM("generate_skin_2", this, (void(CHuiWindow::*)())&ModelPropertiesDialog::OnGenerateSkin2);
-	EventM("generate_skin_3", this, (void(CHuiWindow::*)())&ModelPropertiesDialog::OnGenerateSkin3);
-	EventM("material_list", this, (void(CHuiWindow::*)())&ModelPropertiesDialog::OnMaterialList);
-	EventM("ph_passive", this, (void(CHuiWindow::*)())&ModelPropertiesDialog::OnPhysicsPassive);
-	EventM("generate_tensor_auto", this, (void(CHuiWindow::*)())&ModelPropertiesDialog::OnGenerateTensorAuto);
-	EventM("mass", this, (void(CHuiWindow::*)())&ModelPropertiesDialog::OnGenerateTensorAuto);
-	EventM("num_items", this, (void(CHuiWindow::*)())&ModelPropertiesDialog::OnNumItems);
-	EventM("model_inventary", this, (void(CHuiWindow::*)())&ModelPropertiesDialog::OnModelInventary);
-	EventM("delete_item", this, (void(CHuiWindow::*)())&ModelPropertiesDialog::OnDeleteItem);
-	EventM("max_script_vars", this, (void(CHuiWindow::*)())&ModelPropertiesDialog::OnMaxScriptVars);
-	EventM("script_find", this, (void(CHuiWindow::*)())&ModelPropertiesDialog::OnScriptFind);
-	EventM("model_script_var_template", this, (void(CHuiWindow::*)())&ModelPropertiesDialog::OnModelScriptVarTemplate);
+	EventM("cancel", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnClose);
+	EventM("hui:close", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnClose);
+	EventM("set", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::ApplyData);
+	EventM("ok", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnOk);
+	EventM("generate_dists_auto", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateDistsAuto);
+	EventM("generate_dists", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateDists);
+	EventM("generate_skin_2", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateSkin2);
+	EventM("generate_skin_3", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateSkin3);
+	EventM("material_list", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnMaterialList);
+	EventM("ph_passive", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnPhysicsPassive);
+	EventM("generate_tensor_auto", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateTensorAuto);
+	EventM("mass", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateTensorAuto);
+	EventM("num_items", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnNumItems);
+	EventM("model_inventary", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnModelInventary);
+	EventM("delete_item", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnDeleteItem);
+	EventM("max_script_vars", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnMaxScriptVars);
+	EventM("script_find", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnScriptFind);
+	EventM("model_script_var_template", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnModelScriptVarTemplate);
 
 	LoadData();
 }

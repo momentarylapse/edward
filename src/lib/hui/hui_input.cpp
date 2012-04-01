@@ -468,6 +468,7 @@ void HuiAddCommand(const string &id, const string &image, int default_key_code, 
 	HuiCommand c;
 	c.type = 0;
 	c.id = id;
+	c.image = image;
 	c.key_code = default_key_code;
 	c.func = func;
 	c.object = NULL;
@@ -484,6 +485,7 @@ void HuiAddCommandToggle(const string &id, const string &image, int default_key_
 	HuiCommand c;
 	c.type = 1;
 	c.id = id;
+	c.image = image;
 	c.key_code = default_key_code;
 	c.func = func;
 	c.object = NULL;
@@ -495,36 +497,38 @@ void HuiAddCommandToggle(const string &id, const string &image, int default_key_
 			w->Event(id, func);
 }
 
-void HuiAddCommandM(const string &id, const string &image, int default_key_code, CHuiWindow *object, void (CHuiWindow::*function)())
+void HuiAddCommandM(const string &id, const string &image, int default_key_code, HuiEventHandler *handler, void (HuiEventHandler::*function)())
 {
 	HuiCommand c;
 	c.type = 0;
 	c.id = id;
+	c.image = image;
 	c.key_code = default_key_code;
 	c.func = NULL;
-	c.object = object;
+	c.object = handler;
 	c.member_function = function;
 	_HuiCommand_.add(c);
 
 	foreach(HuiWindow, w)
-		if ((object) && (function))
-			w->EventM(id, object, function);
+		if ((handler) && (function))
+			w->EventM(id, handler, function);
 }
 
-void HuiAddCommandMToggle(const string &id, const string &image, int default_key_code, CHuiWindow *object, void (CHuiWindow::*function)())
+void HuiAddCommandMToggle(const string &id, const string &image, int default_key_code, HuiEventHandler *handler, void (HuiEventHandler::*function)())
 {
 	HuiCommand c;
 	c.type = 1;
 	c.id = id;
+	c.image = image;
 	c.key_code = default_key_code;
 	c.func = NULL;
-	c.object = object;
+	c.object = handler;
 	c.member_function = function;
 	_HuiCommand_.add(c);
 
 	foreach(HuiWindow, w)
-		if ((object) && (function))
-			w->EventM(id, object, function);
+		if ((handler) && (function))
+			w->EventM(id, handler, function);
 }
 
 void HuiLoadKeyCodes(const string &filename)

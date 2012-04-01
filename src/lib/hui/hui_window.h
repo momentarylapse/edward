@@ -95,12 +95,17 @@ struct HuiToolbar
 #endif
 };
 
+class HuiEventHandler
+{
+public:
+};
+
 struct HuiWinEvent
 {
 	string id, message;
 	hui_callback *function;
-	void (CHuiWindow::*member_function)();
-	CHuiWindow *object;
+	void (HuiEventHandler::*member_function)();
+	HuiEventHandler *object;
 };
 
 class HuiDrawingContext
@@ -128,7 +133,7 @@ class HuiDrawingContext
 	int width, height;
 };
 
-class CHuiWindow
+class CHuiWindow : public HuiEventHandler
 {
 public:
 	CHuiWindow(const string &title, int x, int y, int width, int height, CHuiWindow *parent, bool allow_parent, int mode, bool show);
@@ -189,15 +194,17 @@ public:
 	void _cdecl AllowEvents(const string &msg);
 	void _cdecl Event(const string &id, hui_callback *function);
 	void _cdecl EventX(const string &id, const string &msg, hui_callback *function);
-	void EventM(const string &id, CHuiWindow *object, void (CHuiWindow::*function)());
-	void EventMX(const string &id, const string &msg, CHuiWindow *object, void (CHuiWindow::*function)());
+	void EventM(const string &id, HuiEventHandler *handler, void (HuiEventHandler::*function)());
+	void EventMX(const string &id, const string &msg, HuiEventHandler *handler, void (HuiEventHandler::*function)());
 	bool _SendEvent_(HuiEvent *e);
 
 	// creating controls
 	void _cdecl AddButton(const string &title,int x,int y,int width,int height,const string &id);
 	void _cdecl AddDefButton(const string &title,int x,int y,int width,int height,const string &id);
 	void _cdecl AddColorButton(const string &title,int x,int y,int width,int height,const string &id);
+	void _cdecl AddToggleButton(const string &title,int x,int y,int width,int height,const string &id);
 	void _cdecl AddCheckBox(const string &title,int x,int y,int width,int height,const string &id);
+	void _cdecl AddRadioButton(const string &title,int x,int y,int width,int height,const string &id);
 	void _cdecl AddText(const string &title,int x,int y,int width,int height,const string &id);
 	void _cdecl AddEdit(const string &title,int x,int y,int width,int height,const string &id);
 	void _cdecl AddMultilineEdit(const string &title,int x,int y,int width,int height,const string &id);

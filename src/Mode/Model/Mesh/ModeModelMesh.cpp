@@ -20,6 +20,7 @@
 #include "Creation/ModeModelMeshCreateCube.h"
 #include "Creation/ModeModelMeshCreateCylinder.h"
 #include "Creation/ModeModelMeshCreatePlane.h"
+#include "Creation/ModeModelMeshSplitTriangle.h"
 #include "../../../Action/Model/ActionModelDeleteSelection.h"
 #include "../../../Action/Model/ActionModelSetMaterial.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
@@ -139,6 +140,10 @@ void ModeModelMesh::OnCommand(const string & id)
 		ed->SetCreationMode(new ModeModelMeshCreateCylinder(ed->cur_mode, data));
 	if (id == "new_plane")
 		ed->SetCreationMode(new ModeModelMeshCreatePlane(ed->cur_mode, data));
+	if (id == "new_extract"){
+		ed->SetMode(mode_model_mesh_triangle);
+		ed->SetCreationMode(new ModeModelMeshSplitTriangle(ed->cur_mode, data));
+	}
 
 	if (id == "rotate")
 		ChooseRightMouseFunction(RMFRotate);

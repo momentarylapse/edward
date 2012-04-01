@@ -22,20 +22,20 @@ ModelMaterialDialog::ModelMaterialDialog(CHuiWindow *_parent, bool _allow_parent
 	// dialog
 	FromResource("model_material_dialog");
 
-	EventM("cancel", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnClose);
-	EventM("hui:close", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnClose);
-	EventM("set", this, (void(CHuiWindow::*)())&ModelMaterialDialog::ApplyData);
-	EventM("ok", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnOk);
-	EventM("transparency_mode", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnTransparencyMode);
-	EventM("default_transparency", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnDefaultTransparency);
-	EventM("mat_add_texture_level", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnMatAddTextureLevel);
-	EventM("mat_textures", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnMatTextures);
-	EventM("mat_delete_texture_level", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnMatDeleteTextureLevel);
-	EventM("mat_empty_texture_level", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnMatEmptyTextureLevel);
-	EventM("default_material", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnDefaultMaterial);
-	EventM("find_material", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnFindMaterial);
-	EventM("edit_material", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnEditMaterial);
-	EventM("default_colors", this, (void(CHuiWindow::*)())&ModelMaterialDialog::OnDefaultColors);
+	EventM("cancel", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnClose);
+	EventM("hui:close", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnClose);
+	EventM("set", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::ApplyData);
+	EventM("ok", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnOk);
+	EventM("transparency_mode", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnTransparencyMode);
+	EventM("default_transparency", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnDefaultTransparency);
+	EventM("mat_add_texture_level", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnMatAddTextureLevel);
+	EventM("mat_textures", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnMatTextures);
+	EventM("mat_delete_texture_level", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnMatDeleteTextureLevel);
+	EventM("mat_empty_texture_level", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnMatEmptyTextureLevel);
+	EventM("default_material", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnDefaultMaterial);
+	EventM("find_material", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnFindMaterial);
+	EventM("edit_material", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnEditMaterial);
+	EventM("default_colors", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnDefaultColors);
 
 	mat = &data->Material[data->CurrentMaterial];
 	LoadData();

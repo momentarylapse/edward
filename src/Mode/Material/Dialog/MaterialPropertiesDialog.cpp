@@ -18,18 +18,18 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(CHuiWindow *_parent, bool _al
 
 	// dialog
 	FromResource("material_dialog");
-	EventM("cancel", this, (void(CHuiWindow::*)())&MaterialPropertiesDialog::OnClose);
-	EventM("hui:close", this, (void(CHuiWindow::*)())&MaterialPropertiesDialog::OnClose);
-	EventM("set", this, (void(CHuiWindow::*)())&MaterialPropertiesDialog::ApplyData);
-	EventM("ok", this, (void(CHuiWindow::*)())&MaterialPropertiesDialog::OnOk);
-	EventM("mat_add_texture_level", this, (void(CHuiWindow::*)())&MaterialPropertiesDialog::OnMatAddTextureLevel);
-	EventM("mat_textures", this, (void(CHuiWindow::*)())&MaterialPropertiesDialog::OnMatTextures);
-	EventM("mat_delete_texture_level", this, (void(CHuiWindow::*)())&MaterialPropertiesDialog::OnMatDeleteTextureLevel);
-	EventM("mat_empty_texture_level", this, (void(CHuiWindow::*)())&MaterialPropertiesDialog::OnMatEmptyTextureLevel);
-	EventM("transparency_mode", this, (void(CHuiWindow::*)())&MaterialPropertiesDialog::OnTransparencyMode);
-	EventM("reflection", this, (void(CHuiWindow::*)())&MaterialPropertiesDialog::OnReflection);
-	EventM("reflection_textures", this, (void(CHuiWindow::*)())&MaterialPropertiesDialog::OnReflectionTextures);
-	EventM("find_effect", this, (void(CHuiWindow::*)())&MaterialPropertiesDialog::OnFindEffect);
+	EventM("cancel", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnClose);
+	EventM("hui:close", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnClose);
+	EventM("set", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::ApplyData);
+	EventM("ok", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnOk);
+	EventM("mat_add_texture_level", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnMatAddTextureLevel);
+	EventM("mat_textures", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnMatTextures);
+	EventM("mat_delete_texture_level", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnMatDeleteTextureLevel);
+	EventM("mat_empty_texture_level", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnMatEmptyTextureLevel);
+	EventM("transparency_mode", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnTransparencyMode);
+	EventM("reflection", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnReflection);
+	EventM("reflection_textures", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnReflectionTextures);
+	EventM("find_effect", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnFindEffect);
 
 	LoadData();
 }

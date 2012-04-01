@@ -28,8 +28,8 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(CHuiWindow *_parent, 
 		AddString("material_list", format("%d%s\\%d\\%s\\%s", i, (i == _data->CurrentMaterial) ? "(*)" : "", nt, im.c_str(), file_secure(_data->Material[i].MaterialFile).c_str()));
 	}
 
-	EventM("hui:close", this, (void(CHuiWindow::*)())&ModelMaterialSelectionDialog::OnClose);
-	EventM("material_list", this, (void(CHuiWindow::*)())&ModelMaterialSelectionDialog::OnMaterialList);
+	EventM("hui:close", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnClose);
+	EventM("material_list", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnMaterialList);
 
 	answer = NULL;
 }

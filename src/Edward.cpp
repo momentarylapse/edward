@@ -154,22 +154,22 @@ Edward::Edward(Array<string> arg) :
 	NixInit("OpenGL", 1024, 768, 32, false, this);
 	NixTextureIconSize = 32;
 
-	EventM("hui:close", this, (void(CHuiWindow::*)())&Edward::OnClose);
-	EventM("exit", this, (void(CHuiWindow::*)())&Edward::OnClose);
-	EventM("hui:redraw", this, (void(CHuiWindow::*)())&Edward::OnDraw);
-	EventM("hui:key-down", this, (void(CHuiWindow::*)())&Edward::OnKeyDown);
-	EventM("hui:key-up", this, (void(CHuiWindow::*)())&Edward::OnKeyUp);
-	EventM("hui:mouse-move", this, (void(CHuiWindow::*)())&Edward::OnMouseMove);
-	EventM("hui:left-button-down", this, (void(CHuiWindow::*)())&Edward::OnLeftButtonDown);
-	EventM("hui:left-button-up", this, (void(CHuiWindow::*)())&Edward::OnLeftButtonUp);
-	EventM("hui:middle-button-down", this, (void(CHuiWindow::*)())&Edward::OnMiddleButtonDown);
-	EventM("hui:middle-button-up", this, (void(CHuiWindow::*)())&Edward::OnMiddleButtonUp);
-	EventM("hui:right-button-down", this, (void(CHuiWindow::*)())&Edward::OnRightButtonDown);
-	EventM("hui:right-button-up", this, (void(CHuiWindow::*)())&Edward::OnRightButtonUp);
-	EventM("*", this, (void(CHuiWindow::*)())&Edward::OnEvent);
-	EventM("what_the_fuck", this, (void(CHuiWindow::*)())&Edward::OnAbout);
-	EventM("send_bug_report", this, (void(CHuiWindow::*)())&Edward::OnSendBugReport);
-	HuiAddCommandM("abort_creation_mode", "hui:cancel", KEY_ESCAPE, this, (void(CHuiWindow::*)())&Edward::OnAbortCreationMode);
+	EventM("hui:close", this, (void(HuiEventHandler::*)())&Edward::OnClose);
+	EventM("exit", this, (void(HuiEventHandler::*)())&Edward::OnClose);
+	EventM("hui:redraw", this, (void(HuiEventHandler::*)())&Edward::OnDraw);
+	EventM("hui:key-down", this, (void(HuiEventHandler::*)())&Edward::OnKeyDown);
+	EventM("hui:key-up", this, (void(HuiEventHandler::*)())&Edward::OnKeyUp);
+	EventM("hui:mouse-move", this, (void(HuiEventHandler::*)())&Edward::OnMouseMove);
+	EventM("hui:left-button-down", this, (void(HuiEventHandler::*)())&Edward::OnLeftButtonDown);
+	EventM("hui:left-button-up", this, (void(HuiEventHandler::*)())&Edward::OnLeftButtonUp);
+	EventM("hui:middle-button-down", this, (void(HuiEventHandler::*)())&Edward::OnMiddleButtonDown);
+	EventM("hui:middle-button-up", this, (void(HuiEventHandler::*)())&Edward::OnMiddleButtonUp);
+	EventM("hui:right-button-down", this, (void(HuiEventHandler::*)())&Edward::OnRightButtonDown);
+	EventM("hui:right-button-up", this, (void(HuiEventHandler::*)())&Edward::OnRightButtonUp);
+	EventM("*", this, (void(HuiEventHandler::*)())&Edward::OnEvent);
+	EventM("what_the_fuck", this, (void(HuiEventHandler::*)())&Edward::OnAbout);
+	EventM("send_bug_report", this, (void(HuiEventHandler::*)())&Edward::OnSendBugReport);
+	HuiAddCommandM("abort_creation_mode", "hui:cancel", KEY_ESCAPE, this, (void(HuiEventHandler::*)())&Edward::OnAbortCreationMode);
 
 	MetaInit();
 	FxInit("", "", "");
@@ -217,7 +217,7 @@ Edward::Edward(Array<string> arg) :
 	if (!HandleArguments(arg))
 		SetMode(mode_welcome);
 
-	HuiSetIdleFunctionM(this, (void(CHuiWindow::*)())&Edward::IdleFunction);
+	HuiSetIdleFunctionM(this, (void(HuiEventHandler::*)())&Edward::IdleFunction);
 
 	msg_db_l(1);
 }
@@ -275,7 +275,7 @@ bool Edward::HandleArguments(Array<string> arg)
 		MakeDirs(param);
 		mode_model->data->Load(param, true);
 		SetMode(mode_model);
-		HuiRunLaterM(100, (CHuiWindow*)mode_model_mesh, (void(CHuiWindow::*)())&ModeModelMesh::OptimizeView);
+		HuiRunLaterM(100, (CHuiWindow*)mode_model_mesh, (void(HuiEventHandler::*)())&ModeModelMesh::OptimizeView);
 		/*if (mmodel->Skin[1].Sub[0].Triangle.num==0)
 			mmodel->SetEditMode(EditModeVertex);*/
 	/*}else if (ext == "object"){
@@ -577,7 +577,7 @@ void Edward::SetMessage(const string &message)
 	msg_write(message);
 	message_str.add(message);
 	ForceRedraw();
-	HuiRunLaterM(2000, this, (void(CHuiWindow::*)())&Edward::RemoveMessage);
+	HuiRunLaterM(2000, this, (void(HuiEventHandler::*)())&Edward::RemoveMessage);
 }
 
 

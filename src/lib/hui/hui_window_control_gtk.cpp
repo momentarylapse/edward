@@ -116,6 +116,14 @@ HuiControl *CHuiWindow::_InsertControl_(GtkWidget *widget, int x, int y, int wid
 				op_x = GtkAttachOptions(GTK_FILL);
 			else if (OptionString.find("expandx") >= 0)
 				op_x = GtkAttachOptions(GTK_FILL | GTK_EXPAND);
+			if (OptionString.find("width") >= 0){
+				string ww = OptionString.substr(OptionString.find("width") + 6, -1);
+				if (ww.find(","))
+					ww = ww.substr(0, ww.find(","));
+				int width = s2i(ww);
+				gtk_widget_set_size_request(frame, width, 30);
+				op_x = GtkAttachOptions(0);
+			}
 
 			// TODO
 			unsigned int nx, ny;
@@ -221,6 +229,16 @@ void NotifyWindowByWidget(CHuiWindow *win, GtkWidget *widget, const string &mess
 	}
 }
 
+void SetImageById(CHuiWindow *win, const string &id)
+{
+	if ((id == "ok") || (id == "cancel") || (id == "apply"))
+		win->SetImage(id, "hui:" + id);
+	else if (id != "")
+		foreach(_HuiCommand_, c)
+			if ((c.id == id) && (c.image != ""))
+				win->SetImage(id, c.image);
+}
+
 
 void OnGtkButtonPress(GtkWidget *widget, gpointer data)
 {	NotifyWindowByWidget((CHuiWindow*)data, widget);	}
@@ -232,8 +250,7 @@ void CHuiWindow::AddButton(const string &title,int x,int y,int width,int height,
 	g_signal_connect(G_OBJECT(b), "clicked", G_CALLBACK(&OnGtkButtonPress), this);
 	_InsertControl_(b, x, y, width, height, id, HuiKindButton);
 
-	if ((id == "ok") || (id == "cancel") || (id == "apply"))
-		SetImage(id, "hui:" + id);
+	SetImageById(this, id);
 }
 
 void CHuiWindow::AddColorButton(const string &title,int x,int y,int width,int height,const string &id)
@@ -259,8 +276,7 @@ void CHuiWindow::AddDefButton(const string &title,int x,int y,int width,int heig
 #endif
 	gtk_widget_grab_default(b);
 
-	if ((id == "ok") || (id == "cancel") || (id == "apply"))
-		SetImage(id, "hui:" + id);
+	SetImageById(this, id);
 }
 
 
@@ -381,6 +397,40 @@ void CHuiWindow::AddComboBox(const string &title,int x,int y,int width,int heigh
 	if ((PartString.num > 1) || (PartString[0] != ""))
 		for (int i=0;i<PartString.num;i++)
 			AddString(id, PartString[i]);
+	SetInt(id, 0);
+}
+
+
+void OnGtkToggleButtonToggle(GtkWidget *widget, gpointer data)
+{	NotifyWindowByWidget((CHuiWindow*)data, widget, "hui:change");	}
+
+void CHuiWindow::AddToggleButton(const string &title,int x,int y,int width,int height,const string &id)
+{
+	GetPartStrings(id, title);
+	GtkWidget *cb = gtk_toggle_button_new_with_label(sys_str(PartString[0]));
+	g_signal_connect(G_OBJECT(cb), "toggled", G_CALLBACK(&OnGtkToggleButtonToggle), this);
+	_InsertControl_(cb, x, y, width, height, id, HuiKindToggleButton);
+	SetInt(id, 0);
+}
+
+
+void OnGtkRadioButtonToggle(GtkWidget *widget, gpointer data)
+{	NotifyWindowByWidget((CHuiWindow*)data, widget, "hui:change");	}
+
+void CHuiWindow::AddRadioButton(const string &title,int x,int y,int width,int height,const string &id)
+{
+	GetPartStrings(id, title);
+	string group_id = id.substr(0, id.find(":"));
+	GSList *group = NULL;
+	foreach(control, c)
+		if (c->type == HuiKindRadioButton)
+			if (c->id.find(":"))
+				if (c->id.substr(0, c->id.find(":")) == group_id)
+					group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(c->widget));
+		
+	GtkWidget *cb = gtk_radio_button_new_with_label(group, sys_str(PartString[0]));
+	g_signal_connect(G_OBJECT(cb), "toggled", G_CALLBACK(&OnGtkRadioButtonToggle), this);
+	_InsertControl_(cb, x, y, width, height, id, HuiKindRadioButton);
 	SetInt(id, 0);
 }
 
@@ -1512,7 +1562,7 @@ void CHuiWindow::Check(const string &_id,bool checked)
 	if (!c)
 		return;
 	allow_signal_level++;
-	if (c->type == HuiKindCheckBox)
+	if ((c->type == HuiKindCheckBox) || (c->type == HuiKindToggleButton) || (c->type == HuiKindRadioButton))
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(c->widget), checked);
 	allow_signal_level--;
 }
@@ -1524,7 +1574,7 @@ bool CHuiWindow::IsChecked(const string &_id)
 	HuiControl *c = _GetControl_(_id);
 	if (!c)
 		return _ToolbarIsChecked_(_id);
-	if (c->type == HuiKindCheckBox)
+	if ((c->type == HuiKindCheckBox) || (c->type == HuiKindToggleButton) || (c->type == HuiKindRadioButton))
 		return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(c->widget));
 	return false;
 }

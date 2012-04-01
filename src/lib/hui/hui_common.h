@@ -139,7 +139,9 @@ enum{
 	HuiKindDrawingArea,
 	HuiKindControlTable,
 	HuiKindMultilineEdit,
-	HuiKindSpinButton
+	HuiKindSpinButton,
+	HuiKindRadioButton,
+	HuiKindToggleButton
 };
 
 // key codes
