@@ -1116,15 +1116,11 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-291
+126
 // Data (ID,Text)
                   Close dialog box to exit program.
 
-    ges: %.2fs
-
    - ohne Datei -
-
- -- Komplette Welt -- 
 
  ist abgestürzt!\t\tDie letzten Zeilen der Datei message.txt:
 
@@ -1132,119 +1128,23 @@ zzz_setbgimage
 
 !bold\\Name:
 
-%d Dateien erfolgreich exportiert!
-
-%d geschlossene Flächen subtrahiert
-
-%d markierte Kamera-Punkte gelöscht
-
-%d von %d
-
-%d von %d Dateien gelöscht.\nEngine-Dateien und geforderte Dateien können noch nicht gelöscht werden!
-
-%d von %d Dateien konnten nicht exportiert werden:\n
-
-%s  (noch %s)
-
 (anonym)
-
-- <<< Ansicht -
-
-- >>> Ansicht -
-
-- Eigenschaften -
-
-- Punkt(e) löschen -
-
-- Regel hinzufügen -
-
-- Script löschen -
-
-- Vorschau -
-
-- hinzufügen -
-
-- neuer Punkt (als #%d) -
-
-- neuer Punkt (am Ende) -
-
-- nächster Punkt -
-
-- speichern -
-
-- stopp -
-
-- vorheriger Punkt -
-
-- zurück -
-
--- keine Objekte markiert --
-
--keine Animationen-
-
--leer-
 
 ...done
 
 2D
 
-<Return> = OK   <ESC> = Abbrechen
-
-<neu...>
-
 Abbrechen
 
 Administration
 
-Alle Frames
-
-Allgemein
-
-An Gitter ausgerichtet
-
-Anfangspunkt der Verbindung wählen
-
-Anim (???)
-
-Anim (Skel)
-
-Anim (Vert)
-
 Animation
-
-Animation löschen?
-
-Animationen importieren? (Nur Vertex-Animationen können erhalten bleiben)
-
-Ans Ende sortiert: 
 
 Ansicht
 
-Anzahl der Texturen im Terrain wurde an das Material angepasst!
-
 Anzahl der Texturen wurde an das Material angepasst!
 
-Arbeitsverzeichnis \"%s\" enthält keine \"game.ini\"-Datei. Soll diese erstellt werden?
-
-Arbeitsverzeichnis ungültig, hier klicken, um eines zu wählen!
-
-Arbeitsverzeichnis wählen
-
-Ausgeschnitten
-
-Beim Löschen des letzten Frames wird die komplette Animation gelöscht. Wollen Sie dies tun?
-
-Beispiel Text 0123456789
-
-Berechne Sichtbarkeiten
-
 Beschreibung
-
-Bestehende Verbindung musste gelöst werden!
-
-Das Rechteck für das Hintergrundbild hat keine Ausdehnung.\nSoll das aktuelle Bild entfernt werden?
-
-Datei
 
 Datei ist nicht in der Stimmung, geöffnet zu werden
 
@@ -1258,81 +1158,27 @@ Dateien (*.*)
 
 Demütige aber höfliche Frage
 
-Der konvexe Polyeder ist nicht so ganz konvex!
-
-Die Sonne ist in der Welt nicht aktiviert.\nOption \"Sonne erlauben\" wird ignoriert.
-
-Die Texturen dieses Modells:
-
-Dreick oder Kante zum Extrahieren wählen
-
 Dreieck
 
 Dreieck \"U\"
 
-Dreieck wählen: %d/3
-
 Dreiecke
 
-Dreiecke umgedreht: %d
-
-Dreiecke wählen: %d ->Return
-
-Dreiecke zerschnitten: %d
+Dreiecke wählen: %d -> Shift + Return
 
 Ebene
 
-Ebene ziehen
+Ebene: erster Punkt
 
-Editor
+Ebene: zweiter Punkt
 
 Editor für Spiele-Daten der x9-Engine
 
 Eigenschaften
 
-Eigenschaften importiert!
-
-Eingefügt
-
-Eingefügt!
-
-Einzelnen Winkel an markierter Stelle eingefügt
-
-Einzelnen Winkel an markierter Stelle eingefügt (x %d frames)
-
-Einzelner Frame
-
-Endpunkt der Verbindung wählen
-
-Error
-
-Erst einen neuen Frame erstellen!
-
-Erstelle Datenbank
-
-Es existiert bereits eine Animation mit diesem Index. Bitte einen anderen wählen.
-
-Es muss erst ein Knochen markiert sein!
-
-Es sind nur maximal %d Texturen pro Terrain erlaubt!
-
-Esc -> Abbrechen
-
-Exportiere Spiel
-
 Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
 
-Falsches Datei-Format: %s statt MDL7!
-
-Falsches Dateiformat der Datei %s: %d (statt %d)!
-
 Fehler
-
-Fehler in  Script-Datei: \"%s\"\n%s\n%s
-
-Fehler in Script-Datei: \"%s\"\n%s\n%s
-
-Fehler!
 
 Fehlerbericht
 
@@ -1344,57 +1190,25 @@ Font-Datei
 
 Font-Dateien (*.xfont)
 
-Frage
-
-Frame %.2f / %d
-
-Frame %d / %d
-
-Gespeichert!
-
-Gespiegelt!
-
-Geändert!
-
-Größe des Fonts überschreitet 1024x1024
-
 Hinten
 
 Hinten (-z)
 
 Höchstens %d Textur-Ebenen erlaubt!
 
-Import fertig!
-
-Information
-
-Initialisierung
-
 Isometrisch
 
 Ist halt irgendwie passiert...
-
-Item
 
 Item-Datei
 
 Items (*.item)
 
-Kamera
-
 Kamera-Datei
 
 Kamera-Dateien (*.camera)
 
-Kamera-Script gespeichert!
-
-KameraPunkt
-
 Kann Material-Datei nicht öffnen
-
-Kann XFont-Datei nicht öffnen
-
-Kante
 
 Kanten
 
@@ -1402,39 +1216,19 @@ Karten (*.map)
 
 Karten-Datei
 
-Kein Punkt markiert!
+Knochen setzen
 
-Kein Terrain zum Editieren markiert!
-
-Keine Daten in der Zwischenablage!
-
-Keine Hintergrund-Textur in der perspektivischen Ansicht möglich!
-
-Keine geschlossene Flächen markiert
-
-Keine rekursiven Verbindungen erlaubt!
-
-Kopiert!
+Knochen setzen oder Wurzel-Knochen waehlen
 
 Kugel
 
 Kugel skalieren
 
-Kugelzentrum waehlen (Maus-Taste halten)
-
-Lade Objekte
-
-Lade Terrain
-
-Lade Welt
+Kugelzentrum waehlen
 
 Links
 
 Links (x)
-
-Markierung an
-
-Markierung aus
 
 Material
 
@@ -1444,13 +1238,7 @@ Materialien
 
 Materialien (*.material)
 
-Mausbewegung -> Tiefe,  <Return> = OK
-
 Mesh
-
-Mindestens eine Textur muss existieren! Sie darf allerdings leer sein; \"Leeren\"
-
-Mindestens eine Textur-Ebene muss existieren!
 
 Mindestens eine Textur-Ebene muss vorhanden sein!
 
@@ -1460,17 +1248,9 @@ Modell-Datei
 
 Modelle (*.model)
 
-Musste umsortieren...
-
 Nachrichten
 
 Neben diesen Angaben wird noch der Inhalt der Datei message.txt geschickt
-
-Nicht während Animieren editierbar!
-
-Nichts markiert!
-
-Nur unabhängige Punkte können bewegt werden!
 
 OK
 
@@ -1480,39 +1260,17 @@ Oben (-y)
 
 Oberflächen
 
-Objekt
-
 Objekte (*.object)
-
-Objekte links auswählen und in die Karte setzen
 
 Objekte-Datei
 
 Perspektive
 
-Plugin-Script \"erfolgreich\" ausgeführt
-
-Plugin-Script wählen
-
 Pop
-
-Punkte angenähert
-
-Punkte verbunden
 
 Push
 
 Quader
-
-Quader ziehen (Ebene)
-
-Quader ziehen (Tiefe)    erstellen mit linker Maustaste
-
-Radiosity
-
-Raytracing
-
-Rechteck für Hintergrundbild wählen....
 
 Rechts
 
@@ -1520,25 +1278,9 @@ Rechts (-x)
 
 Rotieren
 
-Schnitt-Linie wählen
-
-Schritt %d von %d
-
-Script
-
-Script (*.kaba)
-
 Script-Datei
 
-Script-Datei enthält keine Funktion vom Typ \"effect Funktion( vector )\"
-
-Script-Datei enthält keine Funktion vom Typ \"void Funktion()\"
-
 Script-Dateien (*.kaba)
-
-Scripte wählen
-
-Shader
 
 Shader-Datei
 
@@ -1552,63 +1294,29 @@ Skalieren (2D)
 
 Skelett
 
-Skin
-
-Sortiereung nicht für das Skelett möglich!
-
-Sound
-
 Sound-Datei
 
 Sounds (wav,mp3,midi)
 
-Spat waehlen: %d/4
-
 Spiegeln
-
-Surf
-
-Symmetrisiere
-
-Terrain
-
-Terrain-Vertices editieren
-
-Terrain:    %d+1 x %d+1\nBitmap:    %d x %d\nSoll das Terrain an die Bitmap angepasst werden?
-
-Teste Dateien
-
-Textur
-
-Textur durch Anklicken auswählen!
 
 Textur-Datei
 
 Textur-Datei nicht ladbar: %s
 
-Textur-Größe zu klein um alle Dreiecke aufzunehmen.
-
 Textur-Koordinaten
-
-Textur-Koordinaten wählen
 
 Texturen
 
 Texturen (bmp,jpg,tga,avi)
 
-Trace
+Unbekannte Dateinamenerweiterung: 
 
-Unbekannte Dateinamenerweiterung
-
-Unpassende Größe
+Unbenannt
 
 Unten
 
 Unten (y)
-
-Vertex
-
-Vertex-Skelett-Zuordnung beibehalten? (\"Nein\" löscht diese Daten)
 
 Vertexpunkt
 
@@ -1628,76 +1336,38 @@ Welt-Datei
 
 Welten (*.world)
 
-Winkel eingefügt: %d
+Wuefel: zweiter Punkt
 
-Winkel eingefügt: %d x %d frames
-
-Winkel gelöscht: %d x %d frames
-
-Winkel gelöscht; %d
-
-Winkel kopiert: %d
-
-Winkel kopiert: %d x %d frames
-
-Während dem Abspielen nicht editierbar!
-
-Zeichensatz des aktuellen Fonts wurde übernommen
-
-Zu viele Knochen markiert, Auswahl wird ignoriert!
+Wuerfel: dritter Punkt
 
 Zylinder
 
-Zylinder ziehen
+Zylinder: Endpunkt
 
-[Engine]
-
-[Kamera-Punkt %d]
+Zylinder: Radius
 
 \\\\   - keine Texturen -
-
-\\\\\\\\                  -- neu --
 
 administrieren
 
 beliebige Datei
 
-berechne Koeffizienten
-
-berechne Lichtquellen
-
-entschlüssele Dateien (%d von %d mb)
-
-erstelle kd-Baum
+cube...
 
 i'm now going to clean up...
 
-importiere Dateien (%d von %d)
-
 kein Dreieck ausgewählt
 
-konv.Poly wählen: %dS, %dP
-
-linke Maustaste -> die jeweiligen Textur-Koordinaten bearbeiten
+keine doppelten Punkte erlaubt!
 
 message.txt öffnen
 
 neue Punkte setzen
 
+neuen Punkt in Dreieck setzen
+
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 
-rechte Maustaste -> Textur-Menü
-
-rechte Maustaste -> neuer Punkt, <Return> -> Tiefe festlegen
-
-rendere
-
-sortiere Daten
-
-unabhängigen Punkt setzen oder Root-Punkt wählen
-
-verzweigten Punkt setzen
-
-Überflüssiges Material wurde gelöscht!
+zylinder...
 
 #

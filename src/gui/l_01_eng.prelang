@@ -1116,136 +1116,36 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-291
+126
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
-    ges: %.2fs
-    all: %.2fs
    - ohne Datei -
    - no file -
- -- Komplette Welt -- 
- -- complete world -- 
  ist abgestürzt!\t\tDie letzten Zeilen der Datei message.txt:
 
 !bold\\Kommentar/Geschehnisse:
 !bold\\Comment/What happened:
 !bold\\Name:
 !bold\\Name:
-%d Dateien erfolgreich exportiert!
-%d files successfully exported!
-%d geschlossene Flächen subtrahiert
-
-%d markierte Kamera-Punkte gelöscht
-deleted %d selected camera points
-%d von %d
-%d / %d
-%d von %d Dateien gelöscht.\nEngine-Dateien und geforderte Dateien können noch nicht gelöscht werden!
-Deleted %d of %d files.\nEngine files and linked files can\\'t be deleted yet!
-%d von %d Dateien konnten nicht exportiert werden:\n
-%d out of %d files could not be exported:\n
-%s  (noch %s)
-%s  (%s to go)
 (anonym)
 (anonymous)
-- <<< Ansicht -
-- <<< view -
-- >>> Ansicht -
-- >>> view -
-- Eigenschaften -
-- Properties -
-- Punkt(e) löschen -
-- Delete point(s) -
-- Regel hinzufügen -
-- Add rule -
-- Script löschen -
-- Delete script -
-- Vorschau -
-- Preview -
-- hinzufügen -
-- Add -
-- neuer Punkt (als #%d) -
-- New point (as #%d) -
-- neuer Punkt (am Ende) -
-- New point (at the end) -
-- nächster Punkt -
-- Next point -
-- speichern -
-- Save -
-- stopp -
-- Stop -
-- vorheriger Punkt -
-- Previous point -
-- zurück -
-- Back -
--- keine Objekte markiert --
--- no objects selected --
--keine Animationen-
--no animations-
--leer-
--empty-
 ...done
 ...done
 2D
 2D
-<Return> = OK   <ESC> = Abbrechen
-<Return> = OK   <ESC> = Cancel
-<neu...>
-<new...>
 Abbrechen
 Cancel
 Administration
 Administration
-Alle Frames
-All frames
-Allgemein
-Common
-An Gitter ausgerichtet
-Arranged to grid
-Anfangspunkt der Verbindung wählen
-Select starting point of connection
-Anim (???)
-Anim (???)
-Anim (Skel)
-Anim (Skel)
-Anim (Vert)
-Anim (Vert)
 Animation
 Animation
-Animation löschen?
-Delete animation?
-Animationen importieren? (Nur Vertex-Animationen können erhalten bleiben)
-Import animatios? (Only vertex animations can be kept)
-Ans Ende sortiert: 
-Moved to the end of the order: 
 Ansicht
 View
-Anzahl der Texturen im Terrain wurde an das Material angepasst!
-Number of terrain textures changed to comply with the material!
 Anzahl der Texturen wurde an das Material angepasst!
 Number of textures changed to comply with the material!
-Arbeitsverzeichnis \"%s\" enthält keine \"game.ini\"-Datei. Soll diese erstellt werden?
-Working directory \"%s\" doesn't contain a \"game.ini\" file. Should it be created?
-Arbeitsverzeichnis ungültig, hier klicken, um eines zu wählen!
-Working directory is wrong, click here to choose one!
-Arbeitsverzeichnis wählen
-Choose working directory
-Ausgeschnitten
-Cut
-Beim Löschen des letzten Frames wird die komplette Animation gelöscht. Wollen Sie dies tun?
-By deleting the last frame the whole animation gets deleted. Do you want to do that?
-Beispiel Text 0123456789
-Example text 0123456789
-Berechne Sichtbarkeiten
-Calculating visibilities
 Beschreibung
 Description
-Bestehende Verbindung musste gelöst werden!
-Connections had to be destroyed!
-Das Rechteck für das Hintergrundbild hat keine Ausdehnung.\nSoll das aktuelle Bild entfernt werden?
-The rectangle for the background image is zero-sized.\nShould the current image be removed?
-Datei
-File
 Datei ist nicht in der Stimmung, geöffnet zu werden
 The file is not in the mood of beeing opened
 Datei liegt nicht im vorgesehenen Verzeichnis: \"%s\"\noder in dessen Unterverzeichnis
@@ -1258,82 +1158,28 @@ Dateien (*.*)
 Files (*.*)
 Demütige aber höfliche Frage
 Quite a polite question
-Der konvexe Polyeder ist nicht so ganz konvex!
-Convec polyeder is not very convex!
-Die Sonne ist in der Welt nicht aktiviert.\nOption \"Sonne erlauben\" wird ignoriert.
-The sun is disabled.\nOption \"Sun allowed\" will be ignored!
-Die Texturen dieses Modells:
-The textures of this model:
-Dreick oder Kante zum Extrahieren wählen
-Select a triangle or an edge to be extracted
 Dreieck
 Triangle
 Dreieck \"U\"
 Triangle \"U\"
-Dreieck wählen: %d/3
-Select triangle: %d/3
 Dreiecke
 
-Dreiecke umgedreht: %d
-Trianlges inverted: %d
-Dreiecke wählen: %d ->Return
-Select triangles: %d ->Return
-Dreiecke zerschnitten: %d
-Triangles cut: %d
+Dreiecke wählen: %d -> Shift + Return
+
 Ebene
 Plane
-Ebene ziehen
-Draw plane
-Editor
-Editor
+Ebene: erster Punkt
+
+Ebene: zweiter Punkt
+
 Editor für Spiele-Daten der x9-Engine
 Editor for game data of the x9 engine
 Eigenschaften
 Properties
-Eigenschaften importiert!
-Properties imported
-Eingefügt
-Pasted
-Eingefügt!
-Pasted!
-Einzelnen Winkel an markierter Stelle eingefügt
-Inserted a single angle at selected position
-Einzelnen Winkel an markierter Stelle eingefügt (x %d frames)
-Inserted a single angle at selected position (x %d frames)
-Einzelner Frame
-Single frame
-Endpunkt der Verbindung wählen
-Select end point of connection
-Error
-Error
-Erst einen neuen Frame erstellen!
-You first have to create a new frame!
-Erstelle Datenbank
-Creating database
-Es existiert bereits eine Animation mit diesem Index. Bitte einen anderen wählen.
-There already is an animation with this index. Please choose an other one.
-Es muss erst ein Knochen markiert sein!
-You first have to select a bone!
-Es sind nur maximal %d Texturen pro Terrain erlaubt!
-Only maximally %d textures per terrain allowed!
-Esc -> Abbrechen
-ESC -> Cancel
-Exportiere Spiel
-Exporting game
 Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
 File %s has a wrong file format: %d (expected: %d - %d)!
-Falsches Datei-Format: %s statt MDL7!
-Wrong file format: %s (expected: MDL7)
-Falsches Dateiformat der Datei %s: %d (statt %d)!
-File %s has a wrong file format: %d (expected: %d)!
 Fehler
 Error
-Fehler in  Script-Datei: \"%s\"\n%s\n%s
-Error in script file: \"%s\"\n%s\n%s
-Fehler in Script-Datei: \"%s\"\n%s\n%s
-Error in script file: \"%s\"\n%s\n%s
-Fehler!
-Error!
 Fehlerbericht
 Bug Report
 Fehlerbericht an Michi senden
@@ -1344,98 +1190,46 @@ Font-Datei
 Font file
 Font-Dateien (*.xfont)
 Font files (*.xfont)
-Frage
-Question
-Frame %.2f / %d
-Frame %.2f / %d
-Frame %d / %d
-Frame %d / %d
-Gespeichert!
-Saved!
-Gespiegelt!
-Mirrored!
-Geändert!
-Changed!
-Größe des Fonts überschreitet 1024x1024
-Size of font exceeds 1024x1024
 Hinten
 Back
 Hinten (-z)
 Back (-z)
 Höchstens %d Textur-Ebenen erlaubt!
 Only %d texture levels allowed!
-Import fertig!
-Importing done!
-Information
-Information
-Initialisierung
-Initializing
 Isometrisch
 Isometric
 Ist halt irgendwie passiert...
 Just happened somehow...
-Item
-Item
 Item-Datei
 Item file
 Items (*.item)
 Items (*.item)
-Kamera
-Camera
 Kamera-Datei
 Camera file
 Kamera-Dateien (*.camera)
 Camera files (*.camera)
-Kamera-Script gespeichert!
-Camera script saved!
-KameraPunkt
-Camera point
 Kann Material-Datei nicht öffnen
 Can't load material file
-Kann XFont-Datei nicht öffnen
-Can't load xfont file
-Kante
-
 Kanten
 
 Karten (*.map)
 Terrains (*.map)
 Karten-Datei
 Terrain files
-Kein Punkt markiert!
-No vertex selected!
-Kein Terrain zum Editieren markiert!
-No terrain selected for editing!
-Keine Daten in der Zwischenablage!
-No data in clipboard!
-Keine Hintergrund-Textur in der perspektivischen Ansicht möglich!
-No background image allowed for perspective view!
-Keine geschlossene Flächen markiert
+Knochen setzen
 
-Keine rekursiven Verbindungen erlaubt!
-No recursive connections allowed!
-Kopiert!
-Copied!
+Knochen setzen oder Wurzel-Knochen waehlen
+
 Kugel
 Sphere
 Kugel skalieren
 Scale the sphere
-Kugelzentrum waehlen (Maus-Taste halten)
-Select center of sphere (keep cursor button pressed)
-Lade Objekte
-Loading objects
-Lade Terrain
-Loading terrain
-Lade Welt
-Loading world
+Kugelzentrum waehlen
+
 Links
 Left
 Links (x)
 Left (x)
-Markierung an
-Selecting on
-Markierung aus
-Selecting off
 Material
 Material
 Material-Datei
@@ -1444,14 +1238,8 @@ Materialien
 Materials
 Materialien (*.material)
 Materials (*.material)
-Mausbewegung -> Tiefe,  <Return> = OK
-Cursor movement -> Depth, <Return> = OK
 Mesh
 
-Mindestens eine Textur muss existieren! Sie darf allerdings leer sein; \"Leeren\"
-There has to be at least one texture! It may however be empty; \"empty\"
-Mindestens eine Textur-Ebene muss existieren!
-There has to be at least one texture level!
 Mindestens eine Textur-Ebene muss vorhanden sein!
 At least one texture level has to exist!
 Modell
@@ -1460,18 +1248,10 @@ Modell-Datei
 Model file
 Modelle (*.model)
 Models (*.model)
-Musste umsortieren...
-Had to reorder...
 Nachrichten
 Messages
 Neben diesen Angaben wird noch der Inhalt der Datei message.txt geschickt
 Additionally to this information I will send the file message.txt
-Nicht während Animieren editierbar!
-Not editable while animating!
-Nichts markiert!
-Nothing selected
-Nur unabhängige Punkte können bewegt werden!
-Only independent points can be moved!
 OK
 OK
 Oben
@@ -1480,66 +1260,28 @@ Oben (-y)
 Top (-y)
 Oberflächen
 
-Objekt
-Object
 Objekte (*.object)
 Objects (*.object)
-Objekte links auswählen und in die Karte setzen
-Select objects on the left side and put them into the map
 Objekte-Datei
 Object file
 Perspektive
 Perspective
-Plugin-Script \"erfolgreich\" ausgeführt
-Plugin script \"successfully\" executed
-Plugin-Script wählen
-Choose a plugin script
 Pop
 Pop
-Punkte angenähert
-Vertices nearified
-Punkte verbunden
-Vertices connected
 Push
 Push
 Quader
 Cube
-Quader ziehen (Ebene)
-Draw cube (plane)
-Quader ziehen (Tiefe)    erstellen mit linker Maustaste
-Draw cube (depth)        left mouse button -> create
-Radiosity
-Radiosity
-Raytracing
-Raytracing
-Rechteck für Hintergrundbild wählen....
-Select a rectangle for the background image...
 Rechts
 Right
 Rechts (-x)
 Right (-x)
 Rotieren
 Rotate
-Schnitt-Linie wählen
-Select cutting line
-Schritt %d von %d
-Step %d of %d
-Script
-Script
-Script (*.kaba)
-Script (*.kaba)
 Script-Datei
 Script file
-Script-Datei enthält keine Funktion vom Typ \"effect Funktion( vector )\"
-Script file doesn't contain a function of type \"effect Funktion( vector )\"
-Script-Datei enthält keine Funktion vom Typ \"void Funktion()\"
-Script file doesn't contain a function of type \"void Funktion()\"
 Script-Dateien (*.kaba)
 Script files (*.kaba)
-Scripte wählen
-Select Script
-Shader
-Shader
 Shader-Datei
 Shader file
 Shader-Dateien (*.fx)
@@ -1552,64 +1294,30 @@ Skalieren (2D)
 Scale (2D)
 Skelett
 Skeleton
-Skin
-Skin
-Sortiereung nicht für das Skelett möglich!
-Ordering not possible for this skeleton!
-Sound
-Sound
 Sound-Datei
 Sound file
 Sounds (wav,mp3,midi)
 Sounds (wav,mp3, midi)
-Spat waehlen: %d/4
-Select spat: %d/4
 Spiegeln
 Mirror
-Surf
-
-Symmetrisiere
-Symmetricising
-Terrain
-Terrain
-Terrain-Vertices editieren
-Edit vertices of terrain
-Terrain:    %d+1 x %d+1\nBitmap:    %d x %d\nSoll das Terrain an die Bitmap angepasst werden?
-Terrain:    %d+1 x %d+1\nBitmap:    %d x %d\nEdit the terrain to fit the bitmap?
-Teste Dateien
-Testing files
-Textur
-Texture
-Textur durch Anklicken auswählen!
-Select texture by clicking!
 Textur-Datei
 Texture file
 Textur-Datei nicht ladbar: %s
 Texture file not loadable: %s
-Textur-Größe zu klein um alle Dreiecke aufzunehmen.
-Texture size too small to store all triangles.
 Textur-Koordinaten
 Texture coordinates
-Textur-Koordinaten wählen
-Select texture coordinates
 Texturen
 Textures
 Texturen (bmp,jpg,tga,avi)
 Textures (bmp,jpg,tga,avi)
-Trace
-Trace
-Unbekannte Dateinamenerweiterung
-Unknown file extension
-Unpassende Größe
-Bad Size
+Unbekannte Dateinamenerweiterung: 
+
+Unbenannt
+
 Unten
 Bottom
 Unten (y)
 Bottom (y)
-Vertex
-Vertex
-Vertex-Skelett-Zuordnung beibehalten? (\"Nein\" löscht diese Daten)
-Keep correlation: vertex <-> skeleton? (\"No\" deletes this data)
 Vertexpunkt
 Vertex
 Vertices
@@ -1628,76 +1336,38 @@ Welt-Datei
 World file
 Welten (*.world)
 Worlds (*.world)
-Winkel eingefügt: %d
-Angles inserted: %d
-Winkel eingefügt: %d x %d frames
-Angles inserted: %d x %d frames
-Winkel gelöscht: %d x %d frames
-Angles deleted: %d x %d frames
-Winkel gelöscht; %d
-Angles deleted: %d
-Winkel kopiert: %d
-Angles copied: %d
-Winkel kopiert: %d x %d frames
-Angles copied: %d x %d frames
-Während dem Abspielen nicht editierbar!
-Not editable while playing!
-Zeichensatz des aktuellen Fonts wurde übernommen
-Kept the character set for the current font
-Zu viele Knochen markiert, Auswahl wird ignoriert!
-Too many bones selected, selection beeing ignored!
+Wuefel: zweiter Punkt
+
+Wuerfel: dritter Punkt
+
 Zylinder
 Cylinder
-Zylinder ziehen
-Draw cylinder
-[Engine]
-[Engine]
-[Kamera-Punkt %d]
-[Camera point %d]
+Zylinder: Endpunkt
+
+Zylinder: Radius
+
 \\\\   - keine Texturen -
 
-\\\\\\\\                  -- neu --
-\\\\\\\\                  -- new --
 administrieren
 administrate
 beliebige Datei
 arbitrary file
-berechne Koeffizienten
-calculating coefficients
-berechne Lichtquellen
-calculating light sources
-entschlüssele Dateien (%d von %d mb)
-decrypting file (%d of %d mb)
-erstelle kd-Baum
-creating kd-tree
+cube...
+
 i'm now going to clean up...
 i'm now going to clean up...
-importiere Dateien (%d von %d)
-importing files (%d of %d)
 kein Dreieck ausgewählt
 no triangle selected
-konv.Poly wählen: %dS, %dP
-selecting conv.poly: %dS %dP
-linke Maustaste -> die jeweiligen Textur-Koordinaten bearbeiten
-left button -> edit texture coordinates
+keine doppelten Punkte erlaubt!
+
 message.txt öffnen
 Open message.txt
 neue Punkte setzen
 place new vertex
+neuen Punkt in Dreieck setzen
+
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
-rechte Maustaste -> Textur-Menü
-right button -> texture menu
-rechte Maustaste -> neuer Punkt, <Return> -> Tiefe festlegen
-right button -> new point, <Return> -> select depth
-rendere
-rendering
-sortiere Daten
-sorting data
-unabhängigen Punkt setzen oder Root-Punkt wählen
-place independet point or select root point
-verzweigten Punkt setzen
-place branching point
-Überflüssiges Material wurde gelöscht!
-Deleted unused material!
+zylinder...
+
 #
