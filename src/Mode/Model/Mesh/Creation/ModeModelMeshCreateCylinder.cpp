@@ -17,7 +17,7 @@ ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(Mode *_parent, DataMode
 	data = _data;
 	multi_view = parent->multi_view;
 
-	message = _("zylinder...");
+	message = _("zylinder... Punkte + Shift Return");
 
 	dialog = HuiCreateResourceDialog("new_cylinder_dialog",ed);
 
@@ -30,9 +30,8 @@ ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(Mode *_parent, DataMode
 	dialog->Event("hui:close", &HuiFuncIgnore);
 
 	ed->Activate();
-	pos_chosen = false;
-	pos2_chosen = false;
 	radius = 0;
+	ready_for_scaling = false;
 }
 
 ModeModelMeshCreateCylinder::~ModeModelMeshCreateCylinder()
@@ -43,16 +42,12 @@ ModeModelMeshCreateCylinder::~ModeModelMeshCreateCylinder()
 
 void ModeModelMeshCreateCylinder::OnMouseMove()
 {
-	if (pos_chosen){
-		if (pos2_chosen){
-			vector p = multi_view->GetCursor3d();
-			radius = VecLength(p - pos2);
-			float min_rad = 10 / multi_view->zoom; // 10 px
-			if (radius < min_rad)
-				radius = min_rad;
-		}else{
-			pos2 = multi_view->GetCursor3d();
-		}
+	if (ready_for_scaling){
+		vector p = multi_view->GetCursor3d();
+		radius = VecLength(p - pos.back());
+		float min_rad = 10 / multi_view->zoom; // 10 px
+		if (radius < min_rad)
+			radius = min_rad;
 	}
 }
 
@@ -60,36 +55,38 @@ void ModeModelMeshCreateCylinder::OnMouseMove()
 
 void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 {
-	if (pos_chosen){
-		if (pos2_chosen){
+	if (ready_for_scaling){
 
-			int rings = dialog->GetInt("ncy_rings");
-			int edges = dialog->GetInt("ncy_edges");
-			bool closed = dialog->IsChecked("ncy_endings");
-			HuiConfigWriteInt("NewCylinderRings", rings);
-			HuiConfigWriteInt("NewCylinderEdges", edges);
-			HuiConfigWriteBool("NewCylinderClosedEndings", closed);
+		int rings = dialog->GetInt("ncy_rings");
+		int edges = dialog->GetInt("ncy_edges");
+		bool closed = dialog->IsChecked("ncy_endings");
+		HuiConfigWriteInt("NewCylinderRings", rings);
+		HuiConfigWriteInt("NewCylinderEdges", edges);
+		HuiConfigWriteBool("NewCylinderClosedEndings", closed);
 
-			data->Execute(new ActionModelAddCylinder(data, pos, pos2 - pos, radius, rings, edges, closed));
+		data->Execute(new ActionModelAddCylinder(data, pos[0], pos[1] - pos[0], radius, rings, edges, closed));
 
-			ed->SetCreationMode(NULL);
-		}else{
-			if (multi_view->Selected >= 0)
-				pos2 = data->Vertex[multi_view->Selected].pos;
-			else
-				pos2 = multi_view->GetCursor3d();
-			message = _("Zylinder: Radius");
-			pos2_chosen = true;
-			radius = VecLength(pos2 - pos) / 8;
-		}
+		ed->SetCreationMode(NULL);
 	}else{
 		if (multi_view->Selected >= 0)
-			pos = data->Vertex[multi_view->Selected].pos;
+			pos.add(data->Vertex[multi_view->Selected].pos);
 		else
-			pos = multi_view->GetCursor3d();
-		message = _("Zylinder: Endpunkt");
-		pos_chosen = true;
-		pos2 = pos;
+			pos.add(multi_view->GetCursor3d());
+		radius = VecLength(pos.back() - pos[0]) / 8;
+	//message = _("Zylinder: Endpunkt");
+	}
+}
+
+
+
+void ModeModelMeshCreateCylinder::OnKeyDown()
+{
+	if (HuiGetEvent()->key_code == KEY_SHIFT + KEY_RETURN){
+		if (pos.num > 1){
+			ready_for_scaling = true;
+			message = _("Zylinder: Radius");
+			ed->ForceRedraw();
+		}
 	}
 }
 
@@ -98,7 +95,6 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 
 void CreateCylinderBuffer(int buffer, const vector &pos, const vector &length, float radius)
 {
-	NixVBClear(buffer);
 	int num=16;
 	vector u = VecOrtho(length);
 	VecNormalize(u);
@@ -124,14 +120,26 @@ void CreateCylinderBuffer(int buffer, const vector &pos, const vector &length, f
 
 void ModeModelMeshCreateCylinder::PostDrawWin(int win, irect dest)
 {
-	if (pos_chosen){
-		if (pos2_chosen){
-			mode_model->SetMaterialCreation();
-			CreateCylinderBuffer(VBTemp, pos, pos2 - pos, radius);
-			NixDraw3D(-1, VBTemp, m_id);
-		}else{
-			NixDrawLine3D(pos, pos2, Green);
+	if (ready_for_scaling){
+		Interpolator inter(Interpolator::TYPE_CUBIC_SPLINE_NOTANG);
+		foreach(pos, p)
+			inter.Add(p);
+		int n = (pos.num - 1) * dialog->GetInt("ncy_rings");
+		mode_model->SetMaterialCreation();
+		NixVBClear(VBTemp);
+		for (int i=0;i<n;i++){
+			float t0 = (float)i       / (float)n;
+			float t1 = (float)(i + 1) / (float)n;
+			CreateCylinderBuffer(VBTemp, inter.Get(t0), inter.Get(t1) - inter.Get(t0), radius);
 		}
+		NixDraw3D(-1, VBTemp, m_id);
+	}else if (pos.num > 0){
+		Interpolator inter(Interpolator::TYPE_CUBIC_SPLINE_NOTANG);
+		foreach(pos, p)
+			inter.Add(p);
+		inter.Add(multi_view->GetCursor3d());
+		for (int i=0;i<100;i++)
+			NixDrawLine3D(inter.Get((float)i * 0.01f), inter.Get((float)i * 0.01f + 0.01f), Green);
 	}
 }
 

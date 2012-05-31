@@ -19,15 +19,17 @@ public:
 
 	void OnMouseMove();
 	void OnLeftButtonDown();
+	void OnKeyDown();
 
 	void PostDrawWin(int win, irect dest);
 
 	DataModel *data;
 
 private:
-	vector pos, pos2, length;
+	Array<vector> pos;
+	bool ready_for_scaling;
+	vector length;
 	float radius;
-	bool pos_chosen, pos2_chosen;
 };
 
 #endif /* MODEMODELMESHCREATECYLINDER_H_ */
