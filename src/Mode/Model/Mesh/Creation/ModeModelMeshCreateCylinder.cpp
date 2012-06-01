@@ -43,7 +43,7 @@ ModeModelMeshCreateCylinder::~ModeModelMeshCreateCylinder()
 void ModeModelMeshCreateCylinder::OnMouseMove()
 {
 	if (ready_for_scaling){
-		vector p = multi_view->GetCursor3d();
+		vector p = multi_view->GetCursor3d(pos.back());
 		radius = VecLength(p - pos.back());
 		float min_rad = 10 / multi_view->zoom; // 10 px
 		if (radius < min_rad)
@@ -120,6 +120,24 @@ void CreateCylinderBuffer(int buffer, const vector &pos, const vector &length, f
 
 void ModeModelMeshCreateCylinder::PostDrawWin(int win, irect dest)
 {
+	if (pos.num > 0){
+		// control polygon
+		for (int i=0;i<pos.num;i++){
+			vector pp = multi_view->VecProject(pos[i], win);
+			NixDrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, Green, 0);
+			if (i > 0)
+				NixDrawLine3D(pos[i - 1], pos[i], White);
+		}
+
+		// spline curve
+		Interpolator inter(Interpolator::TYPE_CUBIC_SPLINE_NOTANG);
+		foreach(pos, p)
+			inter.Add(p);
+		if (!ready_for_scaling)
+			inter.Add(multi_view->GetCursor3d());
+		for (int i=0;i<100;i++)
+			NixDrawLine3D(inter.Get((float)i * 0.01f), inter.Get((float)i * 0.01f + 0.01f), Green);
+	}
 	if (ready_for_scaling){
 		Interpolator inter(Interpolator::TYPE_CUBIC_SPLINE_NOTANG);
 		foreach(pos, p)
@@ -133,13 +151,6 @@ void ModeModelMeshCreateCylinder::PostDrawWin(int win, irect dest)
 			CreateCylinderBuffer(VBTemp, inter.Get(t0), inter.Get(t1) - inter.Get(t0), radius);
 		}
 		NixDraw3D(-1, VBTemp, m_id);
-	}else if (pos.num > 0){
-		Interpolator inter(Interpolator::TYPE_CUBIC_SPLINE_NOTANG);
-		foreach(pos, p)
-			inter.Add(p);
-		inter.Add(multi_view->GetCursor3d());
-		for (int i=0;i<100;i++)
-			NixDrawLine3D(inter.Get((float)i * 0.01f), inter.Get((float)i * 0.01f + 0.01f), Green);
 	}
 }
 
