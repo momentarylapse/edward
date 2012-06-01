@@ -64,7 +64,7 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 		HuiConfigWriteInt("NewCylinderEdges", edges);
 		HuiConfigWriteBool("NewCylinderClosedEndings", closed);
 
-		data->Execute(new ActionModelAddCylinder(data, pos[0], pos[1] - pos[0], radius, rings, edges, closed));
+		data->Execute(new ActionModelAddCylinder(data, pos, radius, rings, edges, closed));
 
 		ed->SetCreationMode(NULL);
 	}else{
