@@ -142,13 +142,15 @@ public:
 	void SelectAllInRectangle(int mode = SelectSet);
 
 
-	vector VecProject(vector p, int win);
-	vector VecUnProject(vector p, int win);
-	vector VecUnProject2(vector p, vector o, int win);
+	vector VecProject(const vector &p, int win);
+	vector VecUnProject(const vector &p, int win);
+	vector VecUnProject2(const vector &p, const vector &o, int win);
 	vector GetDirection(int win);
 	vector GetDirectionUp(int win);
 	vector GetDirectionRight(int win);
+	void GetMovingFrame(vector &dir, vector &up, vector &right, int win);
 	vector GetCursor3d();
+	vector GetCursor3d(const vector &depth_reference);
 
 	bool mode3d;
 

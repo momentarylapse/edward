@@ -916,23 +916,24 @@ void MultiView::Draw()
 	msg_db_l(2);
 }
 
-vector MultiView::VecUnProject2(vector p,vector o,int win)
+vector MultiView::VecUnProject2(const vector &p, const vector &o, int win)
 {
 	vector r;
 	int t=view[win].type;
+	vector pp = p;
 	if ((t==ViewPerspective) || (t==ViewIsometric)){ // 3D
 		if (cur_view!=win){
 			cur_view=win;
 			//NixSetView(true,ViewMatrix[win]);
 		}
 		if ((cur_view_rect!=win)&&(!whole_window)){
-			p.x-=(view[win].dest.x1+view[win].dest.x2-MaxX)/2;
-			p.y-=(view[win].dest.y1+view[win].dest.y2-MaxY)/2;
+			pp.x-=(view[win].dest.x1+view[win].dest.x2-MaxX)/2;
+			pp.y-=(view[win].dest.y1+view[win].dest.y2-MaxY)/2;
 		}
 		vector p_o;
 		NixGetVecProject(p_o,o);
-		p.z=p_o.z;
-		NixGetVecUnproject(r,p);
+		pp.z=p_o.z;
+		NixGetVecUnproject(r,pp);
 	}else if (t==View2D){
 		r.x=(p.x-MaxX/2)/zoom+pos.x;
 		r.y=(p.y-MaxY/2)/zoom+pos.y;
@@ -940,36 +941,36 @@ vector MultiView::VecUnProject2(vector p,vector o,int win)
 	}else{ // 2D
 		r=o;
 		if (whole_window){
-			p.x-=MaxX/4;
-			p.y-=MaxY/4;
+			pp.x-=MaxX/4;
+			pp.y-=MaxY/4;
 		}else{
-			p.x-=MaxX/2*float(win%2);
-			p.y-=MaxY/2*float(win/2);
+			pp.x-=MaxX/2*float(win%2);
+			pp.y-=MaxY/2*float(win/2);
 		}
 		if (t==ViewFront){
-			r.x=-(p.x-MaxX/4)/zoom+pos.x;
-			r.y=-(p.y-MaxY/4)/zoom+pos.y;
+			r.x=-(pp.x-MaxX/4)/zoom+pos.x;
+			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
 		}else if (t==ViewBack){
-			r.x= (p.x-MaxX/4)/zoom+pos.x;
-			r.y=-(p.y-MaxY/4)/zoom+pos.y;
+			r.x= (pp.x-MaxX/4)/zoom+pos.x;
+			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
 		}else if (t==ViewRight){
-			r.z= (p.x-MaxX/4)/zoom+pos.z;
-			r.y=-(p.y-MaxY/4)/zoom+pos.y;
+			r.z= (pp.x-MaxX/4)/zoom+pos.z;
+			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
 		}else if (t==ViewLeft){
-			r.z=-(p.x-MaxX/4)/zoom+pos.z;
-			r.y=-(p.y-MaxY/4)/zoom+pos.y;
+			r.z=-(pp.x-MaxX/4)/zoom+pos.z;
+			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
 		}else if (t==ViewTop){
-			r.x= (p.x-MaxX/4)/zoom+pos.x;
-			r.z=-(p.y-MaxY/4)/zoom+pos.z;
+			r.x= (pp.x-MaxX/4)/zoom+pos.x;
+			r.z=-(pp.y-MaxY/4)/zoom+pos.z;
 		}else if (t==ViewBottom){
-			r.x= (p.x-MaxX/4)/zoom+pos.x;
-			r.z= (p.y-MaxY/4)/zoom+pos.z;
+			r.x= (pp.x-MaxX/4)/zoom+pos.x;
+			r.z= (pp.y-MaxY/4)/zoom+pos.z;
 		}
 	}
 	return r;
 }
 
-vector MultiView::VecProject(vector p,int win)
+vector MultiView::VecProject(const vector &p,int win)
 {
 	vector r;
 	int t=view[win].type;
@@ -1019,51 +1020,52 @@ vector MultiView::VecProject(vector p,int win)
 	return r;
 }
 
-vector MultiView::VecUnProject(vector p,int win)
+vector MultiView::VecUnProject(const vector &p,int win)
 {
 	vector r;
 	int t=view[win].type;
+	vector pp = p;
 	if ((t==ViewPerspective) || (t==ViewIsometric)){ // 3D
 		if (cur_view!=win){
 			cur_view=win;
 			//NixSetView(true,ViewMatrix[win]);
 		}
 		if ((cur_view_rect!=win)&&(!whole_window)){
-			p.x-=(view[win].dest.x1+view[win].dest.x2-MaxX)/2;
-			p.y-=(view[win].dest.y1+view[win].dest.y2-MaxY)/2;
+			pp.x-=(view[win].dest.x1+view[win].dest.x2-MaxX)/2;
+			pp.y-=(view[win].dest.y1+view[win].dest.y2-MaxY)/2;
 		}
-		NixGetVecUnproject(r,p);
+		NixGetVecUnproject(r,pp);
 	}else if (t==View2D){
-		r.x=(p.x-MaxX/2)/zoom+pos.x;
-		r.y=(p.y-MaxY/2)/zoom+pos.y;
+		r.x=(pp.x-MaxX/2)/zoom+pos.x;
+		r.y=(pp.y-MaxY/2)/zoom+pos.y;
 		r.z=0;
 	}else{ // 2D
 		if (whole_window){
-			p.x-=MaxX/4;
-			p.y-=MaxY/4;
+			pp.x-=MaxX/4;
+			pp.y-=MaxY/4;
 		}else{
-			p.x-=MaxX/2*float(win%2);
-			p.y-=MaxY/2*float(win/2);
+			pp.x-=MaxX/2*float(win%2);
+			pp.y-=MaxY/2*float(win/2);
 		}
 		r=pos;
 		if (t==ViewFront){
-			r.x=-(p.x-MaxX/4)/zoom+pos.x;
-			r.y=-(p.y-MaxY/4)/zoom+pos.y;
+			r.x=-(pp.x-MaxX/4)/zoom+pos.x;
+			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
 		}else if (t==ViewBack){
-			r.x= (p.x-MaxX/4)/zoom+pos.x;
-			r.y=-(p.y-MaxY/4)/zoom+pos.y;
+			r.x= (pp.x-MaxX/4)/zoom+pos.x;
+			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
 		}else if (t==ViewRight){
-			r.z= (p.x-MaxX/4)/zoom+pos.z;
-			r.y=-(p.y-MaxY/4)/zoom+pos.y;
+			r.z= (pp.x-MaxX/4)/zoom+pos.z;
+			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
 		}else if (t==ViewLeft){
-			r.z=-(p.x-MaxX/4)/zoom+pos.z;
-			r.y=-(p.y-MaxY/4)/zoom+pos.y;
+			r.z=-(pp.x-MaxX/4)/zoom+pos.z;
+			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
 		}else if (t==ViewTop){
-			r.x= (p.x-MaxX/4)/zoom+pos.x;
-			r.z=-(p.y-MaxY/4)/zoom+pos.z;
+			r.x= (pp.x-MaxX/4)/zoom+pos.x;
+			r.z=-(pp.y-MaxY/4)/zoom+pos.z;
 		}else if (t==ViewBottom){
-			r.x= (p.x-MaxX/4)/zoom+pos.x;
-			r.z= (p.y-MaxY/4)/zoom+pos.z;
+			r.x= (pp.x-MaxX/4)/zoom+pos.x;
+			r.z= (pp.y-MaxY/4)/zoom+pos.z;
 		}
 	}
 	return r;
@@ -1118,6 +1120,13 @@ vector MultiView::GetDirectionRight(int win)
 	return VecCrossProduct(d,u);
 }
 
+void MultiView::GetMovingFrame(vector &dir, vector &up, vector &right, int win)
+{
+	dir = GetDirection(win);
+	up = GetDirectionUp(win);
+	right = dir ^ up;
+}
+
 void MultiView::SetMouseAction(int button, const string & name, int mode)
 {
 	if ((!mode3d) && (mode == ActionRotate))
@@ -1140,6 +1149,11 @@ void MultiView::InvertSelection()
 vector MultiView::GetCursor3d()
 {
 	return VecUnProject2(vector((float)mx, (float)my, 0), pos, mouse_win);
+}
+
+vector MultiView::GetCursor3d(const vector &depth_reference)
+{
+	return VecUnProject2(vector((float)mx, (float)my, 0), depth_reference, mouse_win);
 }
 
 
