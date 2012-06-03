@@ -40,10 +40,6 @@ ModeModel::~ModeModel()
 {
 }
 
-void ModeModel::OnLeftButtonDown()
-{
-}
-
 
 
 void ModeModel::Start()
@@ -86,66 +82,6 @@ void ModeModel::Start()
 
 
 void ModeModel::End()
-{
-}
-
-
-
-void ModeModel::DrawWin(int win, irect dest)
-{
-}
-
-
-
-void ModeModel::Draw()
-{
-}
-
-
-
-void ModeModel::OnRightButtonDown()
-{
-}
-
-
-
-void ModeModel::OnKeyDown()
-{
-}
-
-
-
-void ModeModel::OnMiddleButtonDown()
-{
-}
-
-
-
-void ModeModel::OnRightButtonUp()
-{
-}
-
-
-
-void ModeModel::OnMouseMove()
-{
-}
-
-
-
-void ModeModel::OnMiddleButtonUp()
-{
-}
-
-
-
-void ModeModel::OnKeyUp()
-{
-}
-
-
-
-void ModeModel::OnLeftButtonUp()
 {
 }
 

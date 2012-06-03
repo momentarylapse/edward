@@ -31,12 +31,6 @@ ModeModelMeshSurface::~ModeModelMeshSurface()
 
 
 
-void ModeModelMeshSurface::OnMouseMove()
-{
-}
-
-
-
 void ModeModelMeshSurface::DrawWin(int win, irect dest)
 {
 	mode_model_mesh_triangle->DrawWin(win, dest);
@@ -44,67 +38,7 @@ void ModeModelMeshSurface::DrawWin(int win, irect dest)
 
 
 
-void ModeModelMeshSurface::OnRightButtonDown()
-{
-}
-
-
-
-void ModeModelMeshSurface::OnUpdateMenu()
-{
-}
-
-
-
-void ModeModelMeshSurface::OnCommand(const string & id)
-{
-}
-
-
-
-void ModeModelMeshSurface::OnMiddleButtonDown()
-{
-}
-
-
-
-void ModeModelMeshSurface::OnKeyDown()
-{
-}
-
-
-
-void ModeModelMeshSurface::OnLeftButtonDown()
-{
-}
-
-
-
 void ModeModelMeshSurface::End()
-{
-}
-
-
-
-void ModeModelMeshSurface::OnKeyUp()
-{
-}
-
-
-
-void ModeModelMeshSurface::OnMiddleButtonUp()
-{
-}
-
-
-
-void ModeModelMeshSurface::OnLeftButtonUp()
-{
-}
-
-
-
-void ModeModelMeshSurface::OnRightButtonUp()
 {
 }
 

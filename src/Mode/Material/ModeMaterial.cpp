@@ -45,12 +45,6 @@ void ModeMaterial::New()
 
 
 
-void ModeMaterial::OnKeyUp()
-{
-}
-
-
-
 bool ModeMaterial::Save()
 {
 	if (data->filename == "")
@@ -90,12 +84,6 @@ void ModeMaterial::OnCommand(const string & id)
 		data->Undo();
 	if (id == "redo")
 		data->Redo();
-}
-
-
-
-void ModeMaterial::OnRightButtonUp()
-{
 }
 
 void ModeMaterial::ExecuteAppearanceDialog()
@@ -184,12 +172,6 @@ void ModeMaterial::DrawWin(int win, irect dest)
 
 
 
-void ModeMaterial::OnMouseMove()
-{
-}
-
-
-
 bool ModeMaterial::Open()
 {
 	if (!ed->AllowTermination())
@@ -203,30 +185,6 @@ bool ModeMaterial::Open()
 	multi_view->radius = 500;
 	ed->SetMode(mode_material);
 	return true;
-}
-
-
-
-void ModeMaterial::OnMiddleButtonDown()
-{
-}
-
-
-
-void ModeMaterial::OnRightButtonDown()
-{
-}
-
-
-
-void ModeMaterial::OnLeftButtonDown()
-{
-}
-
-
-
-void ModeMaterial::OnLeftButtonUp()
-{
 }
 
 
@@ -249,12 +207,6 @@ bool ModeMaterial::SaveAs()
 
 
 
-void ModeMaterial::OnKeyDown()
-{
-}
-
-
-
 void ModeMaterial::Start()
 {
 	string dir = HuiAppDirectoryStatic + SysFileName("Data/icons/toolbar/");
@@ -273,18 +225,6 @@ void ModeMaterial::Start()
 	ed->ToolbarSetCurrent(HuiToolbarLeft);
 	ed->ToolbarReset();
 	ed->EnableToolbar(false);
-}
-
-
-
-void ModeMaterial::OnMiddleButtonUp()
-{
-}
-
-
-
-void ModeMaterial::OnUpdateMenu()
-{
 }
 
 

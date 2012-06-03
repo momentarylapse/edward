@@ -56,66 +56,6 @@ void ModeModelMeshVertex::Draw()
 	}
 }
 
-
-
-void ModeModelMeshVertex::OnMouseMove()
-{
-}
-
-
-
-void ModeModelMeshVertex::OnLeftButtonDown()
-{
-}
-
-
-
-void ModeModelMeshVertex::OnLeftButtonUp()
-{
-}
-
-
-
-void ModeModelMeshVertex::OnMiddleButtonDown()
-{
-}
-
-
-
-void ModeModelMeshVertex::OnMiddleButtonUp()
-{
-}
-
-
-
-void ModeModelMeshVertex::OnRightButtonDown()
-{
-}
-
-
-
-void ModeModelMeshVertex::OnRightButtonUp()
-{
-}
-
-
-
-void ModeModelMeshVertex::OnKeyDown()
-{
-}
-
-
-
-void ModeModelMeshVertex::OnKeyUp()
-{
-}
-
-
-
-void ModeModelMeshVertex::OnCommand(const string & id)
-{
-}
-
 void ModeModelMeshVertex::OnUpdate(Observable *o)
 {
 	if (this != ed->cur_mode)
@@ -144,12 +84,6 @@ void ModeModelMeshVertex::OnUpdate(Observable *o)
 		}
 	}
 	mode_model_mesh_triangle->FillSelectionBuffers();
-}
-
-
-
-void ModeModelMeshVertex::OnUpdateMenu()
-{
 }
 
 

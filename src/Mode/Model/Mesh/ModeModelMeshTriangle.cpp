@@ -208,25 +208,7 @@ void ModeModelMeshTriangle::DrawWin(int win, irect dest)
 
 
 
-void ModeModelMeshTriangle::OnMiddleButtonDown()
-{
-}
-
-
-
-void ModeModelMeshTriangle::OnUpdateMenu()
-{
-}
-
-
-
 void ModeModelMeshTriangle::End()
-{
-}
-
-
-
-void ModeModelMeshTriangle::OnKeyDown()
 {
 }
 
@@ -345,24 +327,6 @@ void ModeModelMeshTriangle::OnUpdate(Observable *o)
 
 
 
-void ModeModelMeshTriangle::OnRightButtonDown()
-{
-}
-
-
-
-void ModeModelMeshTriangle::OnRightButtonUp()
-{
-}
-
-
-
-void ModeModelMeshTriangle::OnCommand(const string & id)
-{
-}
-
-
-
 void ModeModelMeshTriangle::Draw()
 {
 	FillSelectionBuffers();
@@ -372,36 +336,6 @@ void ModeModelMeshTriangle::Draw()
 		NixDrawStr(20, 120, format(_("tria: %d"), data->GetNumMarkedTriangles()));
 		NixDrawStr(20, 140, format(_("surf: %d"), data->GetNumMarkedSurfaces()));
 	}
-}
-
-
-
-void ModeModelMeshTriangle::OnMiddleButtonUp()
-{
-}
-
-
-
-void ModeModelMeshTriangle::OnKeyUp()
-{
-}
-
-
-
-void ModeModelMeshTriangle::OnLeftButtonUp()
-{
-}
-
-
-
-void ModeModelMeshTriangle::OnLeftButtonDown()
-{
-}
-
-
-
-void ModeModelMeshTriangle::OnMouseMove()
-{
 }
 
 

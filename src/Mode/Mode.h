@@ -23,17 +23,17 @@ public:
 	virtual void End() = 0;
 
 	// events to be handled by derived modes
-	virtual void OnMouseMove() = 0;
-	virtual void OnLeftButtonDown() = 0;
-	virtual void OnLeftButtonUp() = 0;
-	virtual void OnMiddleButtonDown() = 0;
-	virtual void OnMiddleButtonUp() = 0;
-	virtual void OnRightButtonDown() = 0;
-	virtual void OnRightButtonUp() = 0;
-	virtual void OnKeyDown() = 0;
-	virtual void OnKeyUp() = 0;
-	virtual void OnCommand(const string &id) = 0;
-	virtual void OnUpdateMenu() = 0;
+	virtual void OnMouseMove(){};
+	virtual void OnLeftButtonDown(){};
+	virtual void OnLeftButtonUp(){};
+	virtual void OnMiddleButtonDown(){};
+	virtual void OnMiddleButtonUp(){};
+	virtual void OnRightButtonDown(){};
+	virtual void OnRightButtonUp(){};
+	virtual void OnKeyDown(){};
+	virtual void OnKeyUp(){};
+	virtual void OnCommand(const string &id){};
+	virtual void OnUpdateMenu(){};
 
 	// send events to multi_view first, then call derived event handlers
 	//   (to be called by edward)
@@ -50,8 +50,8 @@ public:
 	void OnPreUpdateMenu();
 	Mode *GetRootMode();
 
-	virtual void Draw() = 0;
-	virtual void DrawWin(int win, irect dest) = 0;
+	virtual void Draw(){};
+	virtual void DrawWin(int win, irect dest){};
 
 	string name;
 

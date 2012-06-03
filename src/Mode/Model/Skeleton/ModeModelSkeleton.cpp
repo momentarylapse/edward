@@ -32,10 +32,6 @@ ModeModelSkeleton::~ModeModelSkeleton()
 {
 }
 
-void ModeModelSkeleton::OnMiddleButtonUp()
-{
-}
-
 
 
 void ModeModelSkeleton::OnCommand(const string & id)
@@ -49,31 +45,7 @@ void ModeModelSkeleton::OnCommand(const string & id)
 
 
 
-void ModeModelSkeleton::OnRightButtonDown()
-{
-}
-
-
-
-void ModeModelSkeleton::OnKeyUp()
-{
-}
-
-
-
 void ModeModelSkeleton::Draw()
-{
-}
-
-
-
-void ModeModelSkeleton::OnMiddleButtonDown()
-{
-}
-
-
-
-void ModeModelSkeleton::OnMouseMove()
 {
 }
 
@@ -98,31 +70,8 @@ void ModeModelSkeleton::Start()
 }
 
 
-void ModeModelSkeleton::OnLeftButtonDown()
-{
-}
-
-
 
 void ModeModelSkeleton::End()
-{
-}
-
-
-
-void ModeModelSkeleton::OnKeyDown()
-{
-}
-
-
-
-void ModeModelSkeleton::OnLeftButtonUp()
-{
-}
-
-
-
-void ModeModelSkeleton::OnRightButtonUp()
 {
 }
 

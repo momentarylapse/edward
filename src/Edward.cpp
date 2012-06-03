@@ -480,6 +480,7 @@ void Edward::LoadKeyCodes()
 		int key_code = f->ReadInt();
 		HuiAddKeyCode(id, key_code);
 	}
+	HuiAddKeyCode("subtract_surface", KEY_CONTROL + KEY_J); // TODO ...
 	FileClose(f);
 	msg_db_l(1);
 }

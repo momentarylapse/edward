@@ -45,18 +45,6 @@ void ModeWelcome::End()
 {
 }
 
-void ModeWelcome::OnKeyDown()
-{
-}
-
-void ModeWelcome::OnKeyUp()
-{
-}
-
-void ModeWelcome::OnLeftButtonDown()
-{
-}
-
 void ModeWelcome::OnLeftButtonUp()
 {
 	if (mouse_over == 0){
@@ -82,10 +70,6 @@ void ModeWelcome::OnLeftButtonUp()
 	}/*else if (mouse_over == 4){
 		SetMode(ModeAdministration);
 	}*/
-}
-
-void ModeWelcome::OnRightButtonUp()
-{
 }
 
 void ModeWelcome::OnCommand(const string & id)
@@ -116,26 +100,10 @@ void ModeWelcome::OnMouseMove()
 	ed->ForceRedraw();
 }
 
-void ModeWelcome::OnMiddleButtonDown()
-{
-}
-
-void ModeWelcome::OnMiddleButtonUp()
-{
-}
-
-void ModeWelcome::OnRightButtonDown()
-{
-}
 
 void ModeWelcome::OnUpdate(Observable *o)
 {
 }
-
-void ModeWelcome::OnUpdateMenu()
-{
-}
-
 
 void ModeWelcome::DrawIcon(int x, int y, int index, const string &name)
 {
@@ -180,12 +148,6 @@ void ModeWelcome::DrawIcon(int x, int y, int index, const string &name)
 		//NixDrawStr(x+10,y-3,name);
 	NixDrawStr(x-25,y-52,name);
 	msg_db_l(2);
-}
-
-
-
-void ModeWelcome::DrawWin(int win, irect dest)
-{
 }
 
 void ModeWelcome::Draw()

@@ -33,19 +33,7 @@ void ModeModelAnimation::Draw()
 
 
 
-void ModeModelAnimation::OnLeftButtonUp()
-{
-}
-
-
-
 void ModeModelAnimation::OnCommand(const string & id)
-{
-}
-
-
-
-void ModeModelAnimation::OnRightButtonUp()
 {
 }
 
@@ -56,19 +44,7 @@ void ModeModelAnimation::Start()
 }
 
 
-
-void ModeModelAnimation::OnKeyUp()
-{
-}
-
-
 void ModeModelAnimation::OnUpdateMenu()
-{
-}
-
-
-
-void ModeModelAnimation::OnMouseMove()
 {
 }
 
@@ -86,37 +62,7 @@ void ModeModelAnimation::OnUpdate(Observable *o)
 
 
 
-void ModeModelAnimation::OnRightButtonDown()
-{
-}
-
-
-
 void ModeModelAnimation::DrawWin(int win, irect dest)
-{
-}
-
-
-
-void ModeModelAnimation::OnKeyDown()
-{
-}
-
-
-
-void ModeModelAnimation::OnLeftButtonDown()
-{
-}
-
-
-
-void ModeModelAnimation::OnMiddleButtonUp()
-{
-}
-
-
-
-void ModeModelAnimation::OnMiddleButtonDown()
 {
 }
 

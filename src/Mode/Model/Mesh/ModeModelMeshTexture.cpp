@@ -31,12 +31,6 @@ ModeModelMeshTexture::~ModeModelMeshTexture()
 
 
 
-void ModeModelMeshTexture::OnRightButtonUp()
-{
-}
-
-
-
 void ModeModelMeshTexture::Start()
 {
 	skin_vertex.clear();
@@ -62,12 +56,6 @@ void ModeModelMeshTexture::Start()
 void ModeModelMeshTexture::End()
 {
 	skin_vertex.clear();
-}
-
-
-
-void ModeModelMeshTexture::OnLeftButtonDown()
-{
 }
 
 #define cur_tex			data->Material[data->CurrentMaterial].Texture[data->CurrentTextureLevel]
@@ -131,18 +119,6 @@ void ModeModelMeshTexture::DrawWin(int win, irect dest)
 
 
 
-void ModeModelMeshTexture::OnMiddleButtonDown()
-{
-}
-
-
-
-void ModeModelMeshTexture::OnUpdateMenu()
-{
-}
-
-
-
 void ModeModelMeshTexture::Draw()
 {
 	if (data->GetNumMarkedVertices() > 0){
@@ -151,40 +127,6 @@ void ModeModelMeshTexture::Draw()
 		NixDrawStr(20, 140, format(_("surf: %d"), data->GetNumMarkedSurfaces()));
 		NixDrawStr(20, 160, format(_("skin: %d"), data->GetNumMarkedSkinVertices()));
 	}
-}
-
-
-
-void ModeModelMeshTexture::OnRightButtonDown()
-{
-}
-
-void ModeModelMeshTexture::OnKeyUp()
-{
-}
-
-
-
-void ModeModelMeshTexture::OnMiddleButtonUp()
-{
-}
-
-
-
-void ModeModelMeshTexture::OnLeftButtonUp()
-{
-}
-
-
-
-void ModeModelMeshTexture::OnCommand(const string & id)
-{
-}
-
-
-
-void ModeModelMeshTexture::OnMouseMove()
-{
 }
 
 
@@ -228,12 +170,6 @@ void ModeModelMeshTexture::OnUpdate(Observable *o)
 		}*/
 	}
 	//mode_model_mesh_triangle->FillSelectionBuffers();
-}
-
-
-
-void ModeModelMeshTexture::OnKeyDown()
-{
 }
 
 

@@ -81,40 +81,6 @@ void ModeModelMesh::End()
 {
 }
 
-void ModeModelMesh::OnMiddleButtonUp()
-{
-}
-
-
-
-void ModeModelMesh::OnRightButtonUp()
-{
-}
-
-
-
-void ModeModelMesh::OnLeftButtonUp()
-{
-}
-
-
-
-void ModeModelMesh::OnLeftButtonDown()
-{
-}
-
-
-
-void ModeModelMesh::OnKeyDown()
-{
-}
-
-
-
-void ModeModelMesh::OnKeyUp()
-{
-}
-
 
 
 void ModeModelMesh::OnCommand(const string & id)
@@ -161,36 +127,6 @@ void ModeModelMesh::OnCommand(const string & id)
 		CreateNewMaterialForSelection();
 	if (id == "choose_material")
 		ChooseMaterialForSelection();
-}
-
-
-
-void ModeModelMesh::OnRightButtonDown()
-{
-}
-
-
-
-void ModeModelMesh::DrawWin(int win, irect dest)
-{
-}
-
-
-
-void ModeModelMesh::Draw()
-{
-}
-
-
-
-void ModeModelMesh::OnMouseMove()
-{
-}
-
-
-
-void ModeModelMesh::OnMiddleButtonDown()
-{
 }
 
 
