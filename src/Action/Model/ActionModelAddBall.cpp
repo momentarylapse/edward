@@ -8,6 +8,7 @@
 #include "ActionModelAddBall.h"
 #include "ActionModelAddVertex.h"
 #include "ActionModelAddTriangleSingleTexture.h"
+#include "ActionModelSurfaceAutoWeld.h"
 
 
 #define ball_ang(x, y)	vector((float)(y)/(float)_num_y,(float)(x)/(float)_num_x,0)
@@ -51,9 +52,8 @@ ActionModelAddBall::ActionModelAddBall(DataModel *m, const vector &_pos, float _
 				}
 			nv += (_num_x+1) * (_num_x + 1);
 		}
-		/*for (int f=1;f<6;f++)
-			SurfaceAutoWeld(&Surface[Surface.num - 2], &Surface.back(), radius / (float)nx * 0.01f);
-		s = &Surface.back();*/
+		for (int f=1;f<6;f++)
+			AddSubAction(new ActionModelSurfaceAutoWeld(m, m->Surface.num - 2, m->Surface.num - 1, _radius / (float)_num_x * 0.01f), m);
 
 	// ball from disks
 	}else{
