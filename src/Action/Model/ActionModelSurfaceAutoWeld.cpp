@@ -59,19 +59,6 @@ ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(DataModel *m, int _surfac
 	}
 	a->TestSanity("AutoWeld relink tria");
 
-/*	// relink edges
-	foreach(a->Edge, e){
-		for (int k=0;k<2;k++){
-			foreachi(wb, w, i){
-				if (e.Vertex[k] == w)
-					e.Vertex[k] = wa[i];
-			}
-		}
-	}
-	a->TestSanity("AutoWeld relink edges");
-
-	SurfaceMergeEdges(a);
-
 	// remove obsolete vertices
 	Set<int> vv;
 	foreach(wb, w)
@@ -81,16 +68,6 @@ ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(DataModel *m, int _surfac
 		m->Vertex[ww].Surface = -1;
 		AddSubAction(new ActionModel__DeleteVertex(ww), m);
 	}
-
-	// update normals
-	foreach(a->Triangle, t){
-		for (int k=0;k<3;k++)
-			for (int i=0;i<wa.num;i++)
-				if (t.Vertex[k] == wa[i])
-					t.NormalDirty = true;
-	}
-	a->TestSanity("AutoWeld post a");
-	a->UpdateClosed();*/
 
 	msg_db_l(1);
 	//return a;
