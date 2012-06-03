@@ -173,6 +173,13 @@ void ModeModelMeshSurface::Start()
 void ModeModelMeshSurface::Draw()
 {
 	mode_model_mesh_triangle->FillSelectionBuffers();
+
+
+	if (data->GetNumMarkedVertices() > 0){
+		NixDrawStr(20, 100, format(_("vert: %d"), data->GetNumMarkedVertices()));
+		NixDrawStr(20, 120, format(_("tria: %d"), data->GetNumMarkedTriangles()));
+		NixDrawStr(20, 140, format(_("surf: %d"), data->GetNumMarkedSurfaces()));
+	}
 }
 
 
