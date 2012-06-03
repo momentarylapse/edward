@@ -23,6 +23,7 @@
 #include "Creation/ModeModelMeshSplitTriangle.h"
 #include "../../../Action/Model/ActionModelDeleteSelection.h"
 #include "../../../Action/Model/ActionModelSetMaterial.h"
+#include "../../../Action/Model/ActionModelSurfaceSubtract.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
 
 ModeModelMesh *mode_model_mesh = NULL;
@@ -123,6 +124,8 @@ void ModeModelMesh::OnCommand(const string & id)
 
 	if (id == "delete")
 		data->Execute(new ActionModelDeleteSelection(data, (ed->cur_mode == mode_model_mesh_vertex)));
+	if (id == "subtract_surface")
+		data->Execute(new ActionModelSurfaceSubtract(data));
 
 	if (id == "new_point"){
 		ed->SetMode(mode_model_mesh_vertex);
