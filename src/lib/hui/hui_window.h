@@ -31,7 +31,8 @@ struct HuiInputData
 	float x, y, dx, dy, dz;	// position, change
 	float area_x, area_y;
 	float mw;					// drection
-	bool lb,mb,rb;				// keys
+	bool lb,mb,rb;				// buttons
+	int row, column;
 	// keyboard
 	bool key[256];
 	int key_code;
@@ -68,6 +69,7 @@ struct HuiControl
 #endif
 	bool enabled;
 	bool is_button_bar;
+	CHuiWindow *win;
 };
 
 struct HuiToolbarItem

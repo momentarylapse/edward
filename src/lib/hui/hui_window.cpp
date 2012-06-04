@@ -283,6 +283,8 @@ bool CHuiWindow::_SendEvent_(HuiEvent *e)
 	e->key_code = input.key_code;
 	e->key = (e->key_code % 256);
 	e->text = HuiGetKeyChar(e->key_code);
+	e->row = input.row;
+	e->column = input.column;
 	_HuiEvent_ = *e;
 	if (e->id.num > 0)
 		_SetCurID_(e->id);

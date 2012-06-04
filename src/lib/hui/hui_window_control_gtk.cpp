@@ -39,6 +39,7 @@ HuiControl *CHuiWindow::_InsertControl_(GtkWidget *widget, int x, int y, int wid
 	if (!frame)
 		frame = widget;
 	HuiControl *c = new HuiControl;
+	c->win = this;
 	c->widget = widget;
 	c->is_button_bar = false;
 	if (is_resizable){
@@ -241,7 +242,7 @@ void SetImageById(CHuiWindow *win, const string &id)
 
 
 void OnGtkButtonPress(GtkWidget *widget, gpointer data)
-{	NotifyWindowByWidget((CHuiWindow*)data, widget);	}
+{	NotifyWindowByWidget((CHuiWindow*)data, widget, "hui:click");	}
 
 void CHuiWindow::AddButton(const string &title,int x,int y,int width,int height,const string &id)
 {
@@ -443,7 +444,7 @@ void OnGtkTabControlSwitch(GtkWidget *widget, GtkNotebookPage *page, guint page_
 	HuiControl *c = win->_GetControlByWidget_(widget);
 	if (c)
 		c->selected = page_num;
-	NotifyWindowByWidget((CHuiWindow*)data, widget);
+	NotifyWindowByWidget((CHuiWindow*)data, widget, "hui:change");
 }
 
 void CHuiWindow::AddTabControl(const string &title,int x,int y,int width,int height,const string &id)
@@ -495,16 +496,11 @@ static void list_toggle_callback(GtkCellRendererToggle *cell, gchar *path_string
 		gtk_list_store_set(GTK_LIST_STORE(model), &iter, column, state, -1);
 	else if (c->type == HuiKindTreeView)
 		gtk_tree_store_set(GTK_TREE_STORE(model), &iter, column, state, -1);
-	gtk_tree_path_free(path);
 
-	/*if (c->input_handler){
-		HuiEvent e;
-		e.message = "hui:xxx";
-		e.id = c->ID;
-		e.column = column;
-		e.row = s2i(path_string);
-		c->input_handler(&e);
-	}*/
+	c->win->input.column = column;
+	c->win->input.row = s2i(path_string);
+	NotifyWindowByWidget(c->win, c->widget, "hui:change");
+	gtk_tree_path_free(path);
 }
 
 
@@ -520,16 +516,12 @@ static void list_edited_callback(GtkCellRendererText *cell, const gchar *path_st
 		gtk_list_store_set(GTK_LIST_STORE(model), &iter, column, new_text, -1);
 	else if (c->type == HuiKindTreeView)
 		gtk_tree_store_set(GTK_TREE_STORE(model), &iter, column, new_text, -1);
-	gtk_tree_path_free(path);
 	
-	/*if (c->input_handler){
-		HuiInputMessage m;
-		m.message = 0;
-		m.id = c->ID;
-		m.column = column;
-		m.row = s2i(path_string);
-		c->input_handler(&m);
-	}*/
+
+	c->win->input.column = column;
+	c->win->input.row = s2i(path_string);
+	NotifyWindowByWidget(c->win, c->widget, "hui:change");
+	gtk_tree_path_free(path);
 }
 
 static GType HuiTypeList[64];
@@ -577,7 +569,7 @@ void configure_tree_view_columns(HuiControl *c, GtkWidget *view)
 }
 
 void OnGtkListActivate(GtkWidget *widget, void* a, void* b, gpointer data)
-{	NotifyWindowByWidget((CHuiWindow*)data, widget);	}
+{	NotifyWindowByWidget((CHuiWindow*)data, widget, "hui:activate");	}
 
 void CHuiWindow::AddListView(const string &title,int x,int y,int width,int height,const string &id)
 {
@@ -650,7 +642,7 @@ void CHuiWindow::AddTreeView(const string &title,int x,int y,int width,int heigh
 }
 
 void OnGtkIconListActivate(GtkWidget *widget, void* a, gpointer data)
-{	NotifyWindowByWidget((CHuiWindow*)data, widget);	}
+{	NotifyWindowByWidget((CHuiWindow*)data, widget, "hui:activate");	}
 
 void CHuiWindow::AddIconView(const string &title,int x,int y,int width,int height,const string &id)
 {
@@ -693,7 +685,7 @@ void CHuiWindow::AddProgressBar(const string &title,int x,int y,int width,int he
 
 
 void OnGtkSliderChange(GtkWidget *widget, gpointer data)
-{	NotifyWindowByWidget((CHuiWindow*)data, widget);	}
+{	NotifyWindowByWidget((CHuiWindow*)data, widget, "hui:change");	}
 
 void CHuiWindow::AddSlider(const string &title,int x,int y,int width,int height,const string &id)
 {
