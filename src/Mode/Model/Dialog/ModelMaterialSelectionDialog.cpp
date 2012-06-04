@@ -17,19 +17,12 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(CHuiWindow *_parent, 
 	// dialog
 	FromResource("model_material_selection_dialog");
 
-	Reset("material_list");
-	for (int i=0;i<_data->Material.num;i++){
-		int nt = 0;
-		foreach(_data->Surface, s)
-			foreach(s.Triangle, t)
-			if (t.Material == i)
-				nt ++;
-		string im = render_material(&_data->Material[i]);
-		AddString("material_list", format("%d%s\\%d\\%s\\%s", i, (i == _data->CurrentMaterial) ? "(*)" : "", nt, im.c_str(), file_secure(_data->Material[i].MaterialFile).c_str()));
-	}
+	data = _data;
+	FillMaterialList();
 
 	EventM("hui:close", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnClose);
-	EventM("material_list", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnMaterialList);
+	EventMX("material_list", "hui:activate", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnMaterialList);
+	EventMX("material_list", "hui:change", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnMaterialListCheck);
 
 	answer = NULL;
 }
@@ -37,6 +30,20 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(CHuiWindow *_parent, 
 ModelMaterialSelectionDialog::~ModelMaterialSelectionDialog()
 {
 	mode_model_mesh->MaterialSelectionDialog = NULL;
+}
+
+void ModelMaterialSelectionDialog::FillMaterialList()
+{
+	Reset("material_list");
+	for (int i=0;i<data->Material.num;i++){
+		int nt = 0;
+		foreach(data->Surface, s)
+			foreach(s.Triangle, t)
+			if (t.Material == i)
+				nt ++;
+		string im = render_material(&data->Material[i]);
+		AddString("material_list", format("%d\\%d\\%s\\%s\\%s", i, nt, (i == data->CurrentMaterial) ? "true" : "false", im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
+	}
 }
 
 void ModelMaterialSelectionDialog::PutAnswer(int *_answer)
@@ -57,6 +64,13 @@ void ModelMaterialSelectionDialog::OnMaterialList()
 	if (answer)
 		*answer = GetInt("");
 	delete(this);
+}
+
+void ModelMaterialSelectionDialog::OnMaterialListCheck()
+{
+	data->CurrentMaterial = HuiGetEvent()->row;
+	data->CurrentTextureLevel = 0;
+	FillMaterialList();
 }
 
 

@@ -33,7 +33,8 @@ ModelPropertiesDialog::ModelPropertiesDialog(CHuiWindow *_parent, bool _allow_pa
 	EventM("generate_dists", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateDists);
 	EventM("generate_skin_2", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateSkin2);
 	EventM("generate_skin_3", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateSkin3);
-	EventM("material_list", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnMaterialList);
+	EventMX("material_list", "hui:activate", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnMaterialList);
+	EventMX("material_list", "hui:change", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnMaterialListCheck);
 	EventM("ph_passive", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnPhysicsPassive);
 	EventM("generate_tensor_auto", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateTensorAuto);
 	EventM("mass", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateTensorAuto);
@@ -144,7 +145,7 @@ void ModelPropertiesDialog::FillMaterialList()
 			if (t.Material == i)
 				nt ++;
 		string im = render_material(&data->Material[i]);
-		AddString("material_list", format("%d%s\\%d\\%s\\%s", i, (i == data->CurrentMaterial) ? "(*)" : "", nt, im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
+		AddString("material_list", format("%d\\%d\\%s\\%s\\%s", i, nt, (i == data->CurrentMaterial) ? "true" : "false", im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
 	}
 }
 
@@ -206,6 +207,13 @@ void ModelPropertiesDialog::OnMaterialList()
 		mode_model->ExecuteMaterialDialog(0);
 		FillMaterialList();
 	}
+}
+
+void ModelPropertiesDialog::OnMaterialListCheck()
+{
+	data->CurrentMaterial = HuiGetEvent()->row;
+	data->CurrentTextureLevel = 0;
+	FillMaterialList();
 }
 
 // physics

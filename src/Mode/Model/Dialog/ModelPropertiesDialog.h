@@ -28,6 +28,7 @@ public:
 	void OnGenerateSkin2();
 	void OnGenerateSkin3();
 	void OnMaterialList();
+	void OnMaterialListCheck();
 	void OnPhysicsPassive();
 	void OnGenerateTensorAuto();
 	void OnNumItems();

@@ -19,10 +19,14 @@ public:
 
 	void OnClose();
 	void OnMaterialList();
+	void OnMaterialListCheck();
+
+	void FillMaterialList();
 
 	void PutAnswer(int *_answer);
 private:
 	int *answer;
+	DataModel *data;
 };
 
 #endif /* MODELMATERIALSELECTIONDIALOG_H_ */

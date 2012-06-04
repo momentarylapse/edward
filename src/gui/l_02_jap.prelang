@@ -1116,7 +1116,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-126
+132
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1127,6 +1127,8 @@ zzz_setbgimage
 !bold\\Kommentar/Geschehnisse:
 
 !bold\\Name:
+
+%d geschlossene Flächen subtrahiert
 
 (anonym)
 
@@ -1215,6 +1217,8 @@ Kanten
 Karten (*.map)
 
 Karten-Datei
+
+Keine geschlossene Flächen markiert
 
 Knochen setzen
 
@@ -1368,6 +1372,14 @@ neuen Punkt in Dreieck setzen
 
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 
-zylinder...
+skin: %d
+
+surf: %d
+
+tria: %d
+
+vert: %d
+
+zylinder... Punkte + Shift Return
 
 #

@@ -1116,7 +1116,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-126
+132
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1128,6 +1128,8 @@ Set background image
 !bold\\Comment/What happened:
 !bold\\Name:
 !bold\\Name:
+%d geschlossene Flächen subtrahiert
+
 (anonym)
 (anonymous)
 ...done
@@ -1216,6 +1218,8 @@ Karten (*.map)
 Terrains (*.map)
 Karten-Datei
 Terrain files
+Keine geschlossene Flächen markiert
+
 Knochen setzen
 
 Knochen setzen oder Wurzel-Knochen waehlen
@@ -1368,6 +1372,14 @@ neuen Punkt in Dreieck setzen
 
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
-zylinder...
+skin: %d
+
+surf: %d
+
+tria: %d
+
+vert: %d
+
+zylinder... Punkte + Shift Return
 
 #
