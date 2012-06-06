@@ -47,6 +47,7 @@ ModelMaterialDialog::ModelMaterialDialog(CHuiWindow *_parent, bool _allow_parent
 ModelMaterialDialog::~ModelMaterialDialog()
 {
 	mode_model->MaterialDialog = NULL;
+	Unsubscribe(data);
 }
 
 void ModelMaterialDialog::LoadData()

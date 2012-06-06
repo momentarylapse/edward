@@ -54,6 +54,7 @@ ModelPropertiesDialog::ModelPropertiesDialog(CHuiWindow *_parent, bool _allow_pa
 ModelPropertiesDialog::~ModelPropertiesDialog()
 {
 	mode_model->PropertiesDialog = NULL;
+	Unsubscribe(data);
 }
 
 void ModelPropertiesDialog::LoadData()
