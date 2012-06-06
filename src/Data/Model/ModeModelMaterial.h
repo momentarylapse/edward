@@ -17,7 +17,10 @@ public:
 	virtual ~ModeModelMaterial();
 
 	void reset();
+	void MakeConsistent();
 	void CheckTextures();
+	void CheckColors();
+	void CheckTransparency();
 	void ApplyForRendering();
 
 	string MaterialFile;
@@ -26,12 +29,18 @@ public:
 	int Texture[MODEL_MAX_TEXTURES];
 	string TextureFile[MODEL_MAX_TEXTURES];
 
+	bool UserTransparency;
 	int TransparencyMode;
-	int AlphaFactor,AlphaSource,AlphaDestination;
+	int AlphaSource, AlphaDestination;
+	float AlphaFactor;
 	bool AlphaZBuffer;
+
 	bool UserColor;
-	color Color[4];
-	int Shininess;
+	color Ambient;
+	color Diffuse;
+	color Specular;
+	color Emission;
+	float Shininess;
 };
 
 #endif /* MODEMODELMATERIAL_H_ */

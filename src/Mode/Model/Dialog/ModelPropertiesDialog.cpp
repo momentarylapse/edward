@@ -117,23 +117,6 @@ void ModelPropertiesDialog::OnUpdate(Observable *o)
 	FillMaterialList();
 }
 
-static void mat_get_col(ModeModelMaterial *m, color &am, color &di, color &sp, float &shininess, color &em)
-{
-	if (m->UserColor){
-		am = m->Color[0];
-		di = m->Color[1];
-		sp = m->Color[2];
-		em = m->Color[3];
-		shininess = m->Shininess;
-	}else{
-		am = m->material->ambient;
-		di = m->material->diffuse;
-		sp = m->material->specular;
-		em = m->material->emission;
-		shininess = m->material->shininess;
-	}
-}
-
 color col_mul(const color &a, const color &b)
 {
 	return color(1, a.r * b.r, a.g * b.g, a.b * b.b);
@@ -150,7 +133,6 @@ vector img_get_ball_n(int x, int y, int N)
 
 string render_material(ModeModelMaterial *m)
 {
-	msg_write("render_material");
 	// texture?
 	int tex = NixLoadTexture(m->TextureFile[0]);
 	if (tex < 0)
@@ -160,9 +142,6 @@ string render_material(ModeModelMaterial *m)
 	const int N = 32;
 
 	// simulate a lit sphere
-	float shininess;
-	color am, di, sp, em;
-	mat_get_col(m, am, di, sp, shininess, em);
 	Image img;
 	img.Create(N, N, Black);
 	vector light_dir = vector(-1, -1, -1);
@@ -175,15 +154,17 @@ string render_material(ModeModelMaterial *m)
 			// ambient + diffuse + emission
 			vector n = img_get_ball_n(x, y, N);
 			float f = clampf(n * light_dir, 0, 1);
-			color c = am * 0.3f + di * f + em;
+			color c = m->Ambient * 0.3f + m->Diffuse * f + m->Emission;
 
 			// texture "mapping"
 			if (tex >= 0)
 				c = col_mul(c, NixTexture[tex].Icon.GetPixel(x, y));
+			else
+				c = c * 0.8f;
 
 			// specular
-			f = pow(n * light_sp_dir, shininess) * 0.4f;
-			c += sp * f;
+			f = pow(n * light_sp_dir, m->Shininess) * 0.4f;
+			c += m->Specular * f;
 
 			c = c * 0.9f;
 			c.clamp();

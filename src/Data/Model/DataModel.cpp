@@ -210,14 +210,16 @@ bool DataModel::Load(const string & _filename, bool deep)
 			Material[i].MaterialFile = f->ReadStr();
 			Material[i].UserColor = f->ReadBool();
 			if (Material[i].UserColor){
-				for (int j=0;j<4;j++)
-					read_color(f, Material[i].Color[j]);
-				Material[i].Shininess = f->ReadInt();
+				read_color(f, Material[i].Ambient);
+				read_color(f, Material[i].Diffuse);
+				read_color(f, Material[i].Specular);
+				read_color(f, Material[i].Emission);
+				Material[i].Shininess = (float)f->ReadInt();
 			}
 			Material[i].TransparencyMode = f->ReadInt();
 			Material[i].AlphaSource = f->ReadInt();
 			Material[i].AlphaDestination = f->ReadInt();
-			Material[i].AlphaFactor = f->ReadInt();
+			Material[i].AlphaFactor = (float)f->ReadInt() * 0.01f;
 			Material[i].AlphaZBuffer = f->ReadBool();
 			Material[i].NumTextures = f->ReadInt();
 			for (int t=0;t<Material[i].NumTextures;t++)
@@ -468,13 +470,15 @@ bool DataModel::Load(const string & _filename, bool deep)
 		for (int i=0;i<Material.num;i++){
 			Material[i].MaterialFile = f->ReadStr();
 			Material[i].UserColor = f->ReadBool();
-			for (int j=0;j<4;j++)
-				read_color(f, Material[i].Color[j]);
-			Material[i].Shininess = f->ReadInt();
+			read_color(f, Material[i].Ambient);
+			read_color(f, Material[i].Diffuse);
+			read_color(f, Material[i].Specular);
+			read_color(f, Material[i].Emission);
+			Material[i].Shininess = (float)f->ReadInt();
 			Material[i].TransparencyMode = f->ReadInt();
 			Material[i].AlphaSource = f->ReadInt();
 			Material[i].AlphaDestination = f->ReadInt();
-			Material[i].AlphaFactor = f->ReadInt();
+			Material[i].AlphaFactor = (float)f->ReadInt() * 0.01f;
 			Material[i].AlphaZBuffer = f->ReadBool();
 			Material[i].NumTextures = f->ReadInt();
 			for (int t=0;t<Material[i].NumTextures;t++)
@@ -783,7 +787,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 				if ((Material[i].Texture[t] < 0) && (Material[i].TextureFile[t].num > 0))
 					ed->SetMessage(format(_("Textur-Datei nicht ladbar: %s"), Material[i].TextureFile[t].c_str()));
 			}
-			Material[i].CheckTextures();
+			Material[i].MakeConsistent();
 		}
 
 

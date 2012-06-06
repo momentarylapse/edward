@@ -19,23 +19,53 @@ ModeModelMaterial::~ModeModelMaterial()
 
 void ModeModelMaterial::reset()
 {
+	// transparency
+	UserTransparency = false;
 	TransparencyMode = TransparencyModeDefault;
 	AlphaDestination = 0;
 	AlphaSource = 0;
-	AlphaFactor = 0;
+	AlphaFactor = 50;
 	AlphaZBuffer = true;
-	Shininess = 80;
-	Color[0] = White; // ambient
-	Color[1] = White; // diffuse
-	Color[2] = Black; // specular
-	Color[3] = Black; // emissive
+
+	// color
 	UserColor = false;
+	Ambient = White;
+	Diffuse = White;
+	Specular = Black;
+	Emission = Black;
+	Shininess = 20;
+
+	// file
 	MaterialFile = "";
 	material = MetaLoadMaterial("");
+
+	// textures
 	NumTextures = 1;
 	TextureFile[0] = "";
 	Texture[0] = -1;
 }
+
+void ModeModelMaterial::MakeConsistent()
+{
+	CheckTextures();
+	CheckTransparency();
+	CheckColors();
+}
+
+void ModeModelMaterial::CheckTransparency()
+{
+	if (TransparencyMode == TransparencyModeDefault)
+		UserTransparency = false;
+	if (!UserTransparency){
+		TransparencyMode = material->transparency_mode;
+		AlphaSource = material->alpha_source;
+		AlphaDestination = material->alpha_destination;
+		AlphaFactor	= material->alpha_factor;
+		AlphaZBuffer = material->alpha_z_buffer;
+	}
+}
+
+
 
 void ModeModelMaterial::CheckTextures()
 {
@@ -54,51 +84,34 @@ void ModeModelMaterial::CheckTextures()
 				Texture[i] = material->texture[i];
 }
 
+void ModeModelMaterial::CheckColors()
+{
+	if (!UserColor){
+		Ambient = material->ambient;
+		Diffuse = material->diffuse;
+		Specular = material->specular;
+		Shininess = material->shininess;
+		Emission = material->emission;
+	}
+}
+
 void ModeModelMaterial::ApplyForRendering()
 {
 	NixSetAlpha(AlphaNone);
 	NixSetShader(-1);
-	color am = material->ambient;
-	color di = material->diffuse;
-	color sp = material->specular;
-	color em = material->emission;
-	float sh = material->shininess;
-	if (UserColor){
-		am = Color[0];
-		di = Color[1];
-		sp = Color[2];
-		em = Color[3];
-		sh = (float)Shininess;
-	}
-	em=ColorInterpolate(em,White,0.1f);
-	NixSetMaterial(am,di,sp,sh,em);
-	if (false){//MVFXEnabled){
-		int tm,as,ad;
-		bool az;
-		float af;
-		if (TransparencyMode==TransparencyModeDefault){
-			tm=material->transparency_mode;
-			as=material->alpha_source;
-			ad=material->alpha_destination;
-			af=material->alpha_factor;
-			az=material->alpha_z_buffer;
-		}else{
-			tm=TransparencyMode;
-			as=AlphaSource;
-			ad=AlphaDestination;
-			af=(float)AlphaFactor*0.01f;
-			az=AlphaZBuffer;
-		}
-		NixSetZ(az,az);
-		if (tm==TransparencyModeColorKeyHard)
+	color em = ColorInterpolate(Emission, White, 0.1f);
+	NixSetMaterial(Ambient, Diffuse, Specular, Shininess, em);
+	if (true){//MVFXEnabled){
+		NixSetZ(AlphaZBuffer, AlphaZBuffer);
+		if (TransparencyMode == TransparencyModeColorKeyHard)
 			NixSetAlpha(AlphaColorKeyHard);
-		else if (tm==TransparencyModeColorKeySmooth)
+		else if (TransparencyMode == TransparencyModeColorKeySmooth)
 			NixSetAlpha(AlphaColorKeySmooth);
-		else if (tm==TransparencyModeFunctions){
-			NixSetAlpha(as,ad);
+		else if (TransparencyMode == TransparencyModeFunctions){
+			NixSetAlpha(AlphaSource, AlphaDestination);
 			//NixSetZ(false,false);
-		}else if (tm==TransparencyModeFactor){
-			NixSetAlpha(af);
+		}else if (TransparencyMode == TransparencyModeFactor){
+			NixSetAlpha(AlphaFactor);
 			//NixSetZ(false,false);
 		}
 		NixSetShader(material->shader);
