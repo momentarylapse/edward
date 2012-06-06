@@ -117,23 +117,79 @@ void ModelPropertiesDialog::OnUpdate(Observable *o)
 	FillMaterialList();
 }
 
-color mat_get_col(ModeModelMaterial *m)
+static void mat_get_col(ModeModelMaterial *m, color &am, color &di, color &sp, float &shininess, color &em)
 {
-	if (m->UserColor)
-		return m->Color[1];
-	return m->material->diffuse;
+	if (m->UserColor){
+		am = m->Color[0];
+		di = m->Color[1];
+		sp = m->Color[2];
+		em = m->Color[3];
+		shininess = m->Shininess;
+	}else{
+		am = m->material->ambient;
+		di = m->material->diffuse;
+		sp = m->material->specular;
+		em = m->material->emission;
+		shininess = m->material->shininess;
+	}
+}
+
+color col_mul(const color &a, const color &b)
+{
+	return color(1, a.r * b.r, a.g * b.g, a.b * b.b);
+}
+
+vector img_get_ball_n(int x, int y, int N)
+{
+	//vector n = vector(x - N/2, y - N/2, 0);
+	vector n = vector(x - N/2, y - N/2, 0);
+	n.z = - sqrt(N*N/2 - n.x*n.x - n.y*n.y);
+	VecNormalize(n);
+	return n;
 }
 
 string render_material(ModeModelMaterial *m)
 {
+	msg_write("render_material");
+	// texture?
 	int tex = NixLoadTexture(m->TextureFile[0]);
 	if (tex < 0)
 		if (m->material->num_textures > 0)
 			tex = m->material->texture[0];
-	if (tex >= 0)
-		return ed->get_tex_image(tex);
+
+	const int N = 32;
+
+	// simulate a lit sphere
+	float shininess;
+	color am, di, sp, em;
+	mat_get_col(m, am, di, sp, shininess, em);
 	Image img;
-	img.Create(32, 32, mat_get_col(m));
+	img.Create(N, N, Black);
+	vector light_dir = vector(-1, -1, -1);
+	VecNormalize(light_dir);
+	vector cam_dir = - e_z;
+	vector light_sp_dir = light_dir + cam_dir;
+	VecNormalize(light_sp_dir);
+	for (int x=0;x<N;x++)
+		for (int y=0;y<N;y++){
+			// ambient + diffuse + emission
+			vector n = img_get_ball_n(x, y, N);
+			float f = clampf(n * light_dir, 0, 1);
+			color c = am * 0.3f + di * f + em;
+
+			// texture "mapping"
+			if (tex >= 0)
+				c = col_mul(c, NixTexture[tex].Icon.GetPixel(x, y));
+
+			// specular
+			f = pow(n * light_sp_dir, shininess) * 0.4f;
+			c += sp * f;
+
+			c = c * 0.9f;
+			c.clamp();
+			c.a = 1;
+			img.SetPixel(x, y, c);
+		}
 	return HuiSetImage(img);
 }
 

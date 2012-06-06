@@ -1116,7 +1116,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-132
+133
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1351,6 +1351,8 @@ Zylinder: Endpunkt
 Zylinder: Radius
 
 \\\\   - keine Texturen -
+
+\\\\\\\\- neu -
 
 administrieren
 administrate

@@ -127,7 +127,7 @@ enum{
 	PropertiesDialog->AddSlider("",95,245,175,25,HMM_DETAIL_FACTOR_3_SLIDER);
 	PropertiesDialog->Enable(HMM_DETAIL_FACTOR_3_SLIDER,false);
 	PropertiesDialog->SetTabCreationPage(HMM_MODEL_DIALOG_TAB_CONTROL,1);
-	PropertiesDialog->AddTreeView("!format=ttCit\\#\\Dreiecke\\Aktiv\\\\Datei",10,10,325,300,HMM_MATERIAL_LIST);
+	PropertiesDialog->AddListView("!format=ttCit\\#\\Dreiecke\\Aktiv\\\\Datei",10,10,325,300,HMM_MATERIAL_LIST);
 	PropertiesDialog->SetTabCreationPage(HMM_MODEL_DIALOG_TAB_CONTROL,3);
 	PropertiesDialog->AddEdit("",95,10,240,25,HMM_MODEL_NAME);
 	PropertiesDialog->AddText("Name",10,10,80,25,HMM_MODEL_DIALOG_T_NAME);

@@ -10860,7 +10860,7 @@ detail_factor_3_slider
 0
 model_dialog_tab_control
 
-TreeView
+ListView
 material_list
 
 1
