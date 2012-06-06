@@ -10,8 +10,9 @@
 
 #include "../../../lib/hui/hui.h"
 #include "../../../Data/Model/DataModel.h"
+#include "../../../Stuff/Observer.h"
 
-class ModelMaterialDialog: public CHuiWindow
+class ModelMaterialDialog: public CHuiWindow, public Observer
 {
 public:
 	ModelMaterialDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data);
@@ -35,9 +36,11 @@ public:
 
 	void FillTextureList();
 
+	void OnUpdate(Observable *o);
+
 private:
 	DataModel *data;
-	ModeModelMaterial *mat;
+	int index;
 	ModeModelMaterial TempMaterial;
 };
 

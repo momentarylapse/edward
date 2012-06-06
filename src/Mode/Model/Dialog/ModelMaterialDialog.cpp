@@ -8,6 +8,7 @@
 #include "ModelMaterialDialog.h"
 #include "../ModeModel.h"
 #include "../../../Edward.h"
+#include "../../../Action/Model/ActionModelEditMaterial.h"
 
 
 
@@ -37,8 +38,10 @@ ModelMaterialDialog::ModelMaterialDialog(CHuiWindow *_parent, bool _allow_parent
 	EventM("edit_material", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnEditMaterial);
 	EventM("default_colors", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnDefaultColors);
 
-	mat = &data->Material[data->CurrentMaterial];
+	index = data->CurrentMaterial;
 	LoadData();
+
+	Subscribe(data);
 }
 
 ModelMaterialDialog::~ModelMaterialDialog()
@@ -48,6 +51,7 @@ ModelMaterialDialog::~ModelMaterialDialog()
 
 void ModelMaterialDialog::LoadData()
 {
+	ModeModelMaterial *mat = &data->Material[index];
 	// material
 	Check("default_colors", !mat->UserColor);
 	Enable("mat_am", mat->UserColor);
@@ -230,40 +234,37 @@ void ModelMaterialDialog::ApplyData()
 {
 // material
 	if (IsChecked("default_material"))
-		mat->MaterialFile = "";
+		TempMaterial.MaterialFile = "";
 	else
-		mat->MaterialFile = GetString("material_file");
-	mat->Color[0] = GetColor("mat_am");
-	mat->Color[1] = GetColor("mat_di");
-	mat->Color[2] = GetColor("mat_sp");
-	mat->Color[3] = GetColor("mat_em");
-	mat->Shininess = GetInt("mat_shininess");
-	mat->UserColor = !IsChecked("default_colors");
-	mat->material = MetaLoadMaterial(mat->MaterialFile);
+		TempMaterial.MaterialFile = GetString("material_file");
+	TempMaterial.Color[0] = GetColor("mat_am");
+	TempMaterial.Color[1] = GetColor("mat_di");
+	TempMaterial.Color[2] = GetColor("mat_sp");
+	TempMaterial.Color[3] = GetColor("mat_em");
+	TempMaterial.Shininess = GetInt("mat_shininess");
+	TempMaterial.UserColor = !IsChecked("default_colors");
+	TempMaterial.material = MetaLoadMaterial(TempMaterial.MaterialFile);
 // transparency
 	int s = GetInt("transparency_mode");
 	if (s==1)
-		mat->TransparencyMode=TransparencyModeColorKeySmooth;
+		TempMaterial.TransparencyMode=TransparencyModeColorKeySmooth;
 	else if (s==2)
-		mat->TransparencyMode=TransparencyModeColorKeyHard;
+		TempMaterial.TransparencyMode=TransparencyModeColorKeyHard;
 	else if (s==3)
-		mat->TransparencyMode=TransparencyModeFactor;
+		TempMaterial.TransparencyMode=TransparencyModeFactor;
 	else if (s==4)
-		mat->TransparencyMode=TransparencyModeFunctions;
+		TempMaterial.TransparencyMode=TransparencyModeFunctions;
 	else
-		mat->TransparencyMode=TransparencyModeNone;
+		TempMaterial.TransparencyMode=TransparencyModeNone;
 	if (IsChecked("default_transparency"))
-		mat->TransparencyMode=TransparencyModeDefault;
-	mat->AlphaFactor = GetInt("alpha_factor");
-	mat->AlphaSource = GetInt("alpha_source");
-	mat->AlphaDestination = GetInt("alpha_dest");
-	mat->AlphaZBuffer = IsChecked("alpha_z_buffer");
+		TempMaterial.TransparencyMode=TransparencyModeDefault;
+	TempMaterial.AlphaFactor = GetInt("alpha_factor");
+	TempMaterial.AlphaSource = GetInt("alpha_source");
+	TempMaterial.AlphaDestination = GetInt("alpha_dest");
+	TempMaterial.AlphaZBuffer = IsChecked("alpha_z_buffer");
 // textures
-	mat->NumTextures = TempMaterial.NumTextures;
-	for (int i=0;i<TempMaterial.NumTextures;i++){
-		mat->TextureFile[i] = TempMaterial.TextureFile[i];
-		mat->Texture[i] = NixLoadTexture(mat->TextureFile[i]);
-	}
+	for (int i=0;i<TempMaterial.NumTextures;i++)
+		TempMaterial.Texture[i] = NixLoadTexture(TempMaterial.TextureFile[i]);
 			/*if (m->NumTextures < skin->Sub[mmodel->CurrentMaterial].NumTextures){
 				for (int i=0;i<4;i++)
 					mmodel->Skin[i].Sub[mmodel->CurrentMaterial].NumTextures = m->NumTextures;
@@ -273,10 +274,9 @@ void ModelMaterialDialog::ApplyData()
 				// TODO ...new SkinVertices...
 			}*/
 
-	//StartChanging();
-	mat->CheckTextures();
-	//Change();
-	//EndChanging();
+	TempMaterial.CheckTextures();
+
+	data->Execute(new ActionModelEditMaterial(index, TempMaterial));
 }
 
 void ModelMaterialDialog::OnOk()
@@ -288,4 +288,9 @@ void ModelMaterialDialog::OnOk()
 void ModelMaterialDialog::OnClose()
 {
 	delete(this);
+}
+
+void ModelMaterialDialog::OnUpdate(Observable *o)
+{
+	LoadData();
 }

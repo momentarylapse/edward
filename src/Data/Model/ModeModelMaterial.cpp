@@ -24,7 +24,7 @@ void ModeModelMaterial::reset()
 	AlphaSource = 0;
 	AlphaFactor = 0;
 	AlphaZBuffer = true;
-	Shininess = 0;
+	Shininess = 80;
 	Color[0] = White; // ambient
 	Color[1] = White; // diffuse
 	Color[2] = Black; // specular
