@@ -10,8 +10,9 @@
 
 #include "../../../lib/hui/hui.h"
 #include "../../../Data/Model/DataModel.h"
+#include "../../../Stuff/Observer.h"
 
-class ModelPropertiesDialog: public CHuiWindow
+class ModelPropertiesDialog: public CHuiWindow, public Observer
 {
 public:
 	ModelPropertiesDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data);
@@ -39,6 +40,8 @@ public:
 	void OnModelScriptVarTemplate();
 	void OnOk();
 	void OnClose();
+
+	void OnUpdate(Observable *o);
 
 private:
 	DataModel *data;

@@ -8,6 +8,7 @@
 #include "ModelPropertiesDialog.h"
 #include "../../../Edward.h"
 #include "../ModeModel.h"
+#include "../../../Action/Model/ActionModelAddMaterial.h"
 
 
 
@@ -44,6 +45,8 @@ ModelPropertiesDialog::ModelPropertiesDialog(CHuiWindow *_parent, bool _allow_pa
 	EventM("max_script_vars", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnMaxScriptVars);
 	EventM("script_find", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnScriptFind);
 	EventM("model_script_var_template", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnModelScriptVarTemplate);
+
+	Subscribe(data);
 
 	LoadData();
 }
@@ -108,6 +111,11 @@ void ModelPropertiesDialog::LoadData()
 		SetString("model_script_var_template", data->ScriptVarFile[i]);*/
 }
 
+void ModelPropertiesDialog::OnUpdate(Observable *o)
+{
+	FillMaterialList();
+}
+
 color mat_get_col(ModeModelMaterial *m)
 {
 	if (m->UserColor)
@@ -147,6 +155,7 @@ void ModelPropertiesDialog::FillMaterialList()
 		string im = render_material(&data->Material[i]);
 		AddString("material_list", format("%d\\%d\\%s\\%s\\%s", i, nt, (i == data->CurrentMaterial) ? "true" : "false", im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
 	}
+	AddString("material_list", _("\\\\\\\\- neu -"));
 }
 
 void ModelPropertiesDialog::RefillInventaryList()
@@ -201,12 +210,18 @@ void ModelPropertiesDialog::OnGenerateSkin3()
 void ModelPropertiesDialog::OnMaterialList()
 {
 	int s = GetInt("");
-	if (s >= 0){
-		data->CurrentMaterial = s;
-		data->CurrentTextureLevel = 0;
-		mode_model->ExecuteMaterialDialog(0);
-		FillMaterialList();
+	if (s < 0)
+		return;
+
+	// create new?
+	if (s >= data->Material.num){
+		data->Execute(new ActionModelAddMaterial());
+		s = data->Material.num - 1;
 	}
+	data->CurrentMaterial = s;
+	data->CurrentTextureLevel = 0;
+	mode_model->ExecuteMaterialDialog(0);
+	FillMaterialList();
 }
 
 void ModelPropertiesDialog::OnMaterialListCheck()
