@@ -69,15 +69,21 @@ void ModeModelMaterial::CheckTransparency()
 
 void ModeModelMaterial::CheckTextures()
 {
+	// parent has more texture levels?
 	if (material->num_textures > NumTextures){
 		for (int i=NumTextures;i<material->num_textures;i++){
 			TextureFile[i] = "";
 			Texture[i] = -1;
 		}
 		NumTextures = material->num_textures;
-		//Change();
 		ed->SetMessage(_("Anzahl der Texturen wurde an das Material angepasst!"));
 	}
+
+	// load all textures
+	for (int i=0;i<NumTextures;i++)
+		Texture[i] = NixLoadTexture(TextureFile[i]);
+
+	// parent overwrites unused textures
 	for (int i=0;i<material->num_textures;i++)
 		if (Texture[i] < 0)
 			if (TextureFile[i].num == 0)

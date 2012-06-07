@@ -782,12 +782,13 @@ bool DataModel::Load(const string & _filename, bool deep)
 	if (deep){
 		for (int i=0;i<Material.num;i++){
 			Material[i].material = MetaLoadMaterial(Material[i].MaterialFile);
+			Material[i].MakeConsistent();
+
+			// test textures
 			for (int t=0;t<Material[i].NumTextures;t++){
-				Material[i].Texture[t] = NixLoadTexture(Material[i].TextureFile[t]);
 				if ((Material[i].Texture[t] < 0) && (Material[i].TextureFile[t].num > 0))
 					ed->SetMessage(format(_("Textur-Datei nicht ladbar: %s"), Material[i].TextureFile[t].c_str()));
 			}
-			Material[i].MakeConsistent();
 		}
 
 

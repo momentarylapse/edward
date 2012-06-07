@@ -27,6 +27,7 @@ public:
 	void OnDefaultTransparency();
 	void OnMatAddTextureLevel();
 	void OnMatTextures();
+	void OnMatTexturesSelect();
 	void OnMatDeleteTextureLevel();
 	void OnMatEmptyTextureLevel();
 	void OnDefaultMaterial();

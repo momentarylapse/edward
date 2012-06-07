@@ -30,7 +30,8 @@ ModelMaterialDialog::ModelMaterialDialog(CHuiWindow *_parent, bool _allow_parent
 	EventM("transparency_mode", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnTransparencyMode);
 	EventM("default_transparency", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnDefaultTransparency);
 	EventM("mat_add_texture_level", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnMatAddTextureLevel);
-	EventM("mat_textures", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnMatTextures);
+	EventMX("mat_textures", "hui:activate", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnMatTextures);
+	EventMX("mat_textures", "hui:select", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnMatTexturesSelect);
 	EventM("mat_delete_texture_level", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnMatDeleteTextureLevel);
 	EventM("mat_empty_texture_level", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnMatEmptyTextureLevel);
 	EventM("default_material", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnDefaultMaterial);
@@ -101,9 +102,12 @@ void ModelMaterialDialog::FillTextureList()
 {
 	Reset("mat_textures");
 	for (int i=0;i<TempMaterial.NumTextures;i++){
-		string img = ed->get_tex_image(NixLoadTexture(TempMaterial.TextureFile[i]));
+		string img = ed->get_tex_image(TempMaterial.Texture[i]);
 		AddString("mat_textures", i2s(i) + "\\" + img + "\\" + file_secure(TempMaterial.TextureFile[i]));
 	}
+
+	Enable("mat_delete_texture_level", false);
+	Enable("mat_empty_texture_level", false);
 }
 
 // transparency
@@ -127,10 +131,12 @@ void ModelMaterialDialog::OnDefaultTransparency()
 // textures
 void ModelMaterialDialog::OnMatAddTextureLevel()
 {
-	if (TempMaterial.NumTextures >= MODEL_MAX_TEXTURES)
+	if (TempMaterial.NumTextures >= MODEL_MAX_TEXTURES){
 		ed->ErrorBox(format(_("H&ochstens %d Textur-Ebenen erlaubt!"), MODEL_MAX_TEXTURES));
-	else
-		TempMaterial.TextureFile[TempMaterial.NumTextures ++] = "";
+		return;
+	}
+	TempMaterial.TextureFile[TempMaterial.NumTextures ++] = "";
+	TempMaterial.CheckTextures();
 	FillTextureList();
 }
 
@@ -141,9 +147,17 @@ void ModelMaterialDialog::OnMatTextures()
 	if ((sel >= 0) && (sel < TempMaterial.NumTextures))
 		if (ed->FileDialog(FDTexture, false, true)){
 			TempMaterial.TextureFile[sel] = ed->DialogFile;
-			//mmaterial->Texture[sel] = MetaLoadTexture(mmaterial->TextureFile[sel]);
+			TempMaterial.CheckTextures();
 			FillTextureList();
 		}
+}
+
+
+void ModelMaterialDialog::OnMatTexturesSelect()
+{
+	int sel = GetInt("");
+	Enable("mat_delete_texture_level", sel >= 0);
+	Enable("mat_empty_texture_level", sel >= 0);
 }
 
 void ModelMaterialDialog::OnMatDeleteTextureLevel()
@@ -157,6 +171,7 @@ void ModelMaterialDialog::OnMatDeleteTextureLevel()
 		for (int i=sel;i<TempMaterial.NumTextures-1;i++)
 			TempMaterial.TextureFile[i] = TempMaterial.TextureFile[i + 1];
 		TempMaterial.NumTextures --;
+		TempMaterial.CheckTextures();
 		FillTextureList();
 	}
 }
@@ -166,6 +181,7 @@ void ModelMaterialDialog::OnMatEmptyTextureLevel()
 	int sel = GetInt("mat_textures");
 	if (sel >= 0){
 		TempMaterial.TextureFile[sel] = "";
+		TempMaterial.CheckTextures();
 		FillTextureList();
 	}
 }
