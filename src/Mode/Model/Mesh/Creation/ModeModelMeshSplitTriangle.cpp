@@ -34,7 +34,7 @@ void ModeModelMeshSplitTriangle::OnLeftButtonDown()
 
 	if ((triangle >= 0) && (surface >= 0)){
 		data->Execute(new ActionModelSplitTriangle(data, surface, triangle, pos));
-		ed->SetCreationMode(NULL);
+		//ed->SetCreationMode(NULL);
 	}
 }
 

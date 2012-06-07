@@ -26,5 +26,5 @@ ModeModelMeshCreateVertex::~ModeModelMeshCreateVertex()
 void ModeModelMeshCreateVertex::OnLeftButtonDown()
 {
 	data->AddVertex(multi_view->GetCursor3d());
-	ed->SetCreationMode(NULL);
+	//ed->SetCreationMode(NULL);
 }
