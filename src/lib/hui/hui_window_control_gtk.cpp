@@ -571,6 +571,9 @@ void configure_tree_view_columns(HuiControl *c, GtkWidget *view)
 void OnGtkListActivate(GtkWidget *widget, void* a, void* b, gpointer data)
 {	NotifyWindowByWidget((CHuiWindow*)data, widget, "hui:activate");	}
 
+void OnGtkListSelect(GtkTreeSelection *selection, gpointer data)
+{	NotifyWindowByWidget((CHuiWindow*)data, (GtkWidget*)gtk_tree_selection_get_tree_view(selection), "hui:select");	}
+
 void CHuiWindow::AddListView(const string &title,int x,int y,int width,int height,const string &id)
 {
 	GetPartStrings(id, title);
@@ -587,10 +590,11 @@ void CHuiWindow::AddListView(const string &title,int x,int y,int width,int heigh
 	g_object_unref(G_OBJECT(store));
 	g_signal_connect(G_OBJECT(view), "row-activated", G_CALLBACK(&OnGtkListActivate), this);
 
-	if (OptionString.find("multiline") >= 0){
-		GtkTreeSelection *sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
+	GtkTreeSelection *sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
+	g_signal_connect(G_OBJECT(sel), "changed", G_CALLBACK(&OnGtkListSelect), this);
+
+	if (OptionString.find("multiline") >= 0)
 		gtk_tree_selection_set_mode(sel, GTK_SELECTION_MULTIPLE);
-	}
 	if (OptionString.find("nobar") >= 0)
 		gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(view), false);
 
@@ -623,6 +627,9 @@ void CHuiWindow::AddTreeView(const string &title,int x,int y,int width,int heigh
 	GtkWidget *view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
 	g_object_unref(G_OBJECT(store));
 	g_signal_connect(G_OBJECT(view),"row-activated",G_CALLBACK(&OnGtkListActivate),this);
+
+	GtkTreeSelection *sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
+	g_signal_connect(G_OBJECT(sel), "changed", G_CALLBACK(&OnGtkListSelect), this);
 	
 	if (OptionString.find("nobar") >= 0)
 		gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(view), false);
