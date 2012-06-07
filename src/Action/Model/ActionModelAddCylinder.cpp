@@ -9,6 +9,9 @@
 #include "ActionModelAddVertex.h"
 #include "ActionModelAddTriangleSingleTexture.h"
 
+#define _cyl_vert(i, j)         ( edges      * (i) +(j) % edges) + nv
+#define _cyl_svert(i, j)        sv[(edges + 1) * (i) +(j) % (edges + 1)]
+
 ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos, float radius, int rings, int edges, bool closed)
 {
 	int nv = m->Vertex.num;
@@ -37,7 +40,7 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos,
 		r_last = r;
 
 		// vertex ring
-		for (int j=0;j<edges+1;j++){
+		for (int j=0;j<=edges;j++){
 			float w = pi*2*(float)j/(float)edges;
 			vector p = p0+((float)sin(w)*u+(float)cos(w)*r)*radius;
 			if (j < edges)
@@ -49,22 +52,12 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos,
 // the curved surface
 	for (int i=0;i<n;i++)
 		for (int j=0;j<edges;j++){
-			int _a = edges * i   +j;
-			int _b = edges *(i+1)+j;
-			int _c = edges * i   +(j+1) % edges;
-			int _d = edges *(i+1)+(j+1) % edges;
-			int _cs = edges * i   +j+1;
-			int _ds = edges *(i+1)+j+1;
-			AddSubAction(new ActionModelAddTriangleSingleTexture(
-					m,
-					nv+_a,nv+_d,nv+_c,
-					material,
-					sv[_a]   ,sv[_ds]   ,sv[_cs]   ), m);
-			AddSubAction(new ActionModelAddTriangleSingleTexture(
-					m,
-					nv+_a,nv+_b,nv+_d,
-					material,
-					sv[_a]   ,sv[_b]   ,sv[_ds]   ), m);
+			AddSubAction(new ActionModelAddTriangleSingleTexture(m,
+					_cyl_vert(i, j),  _cyl_vert(i+1, j+1),  _cyl_vert(i, j+1), material,
+					_cyl_svert(i, j), _cyl_svert(i+1, j+1), _cyl_svert(i, j+1)), m);
+			AddSubAction(new ActionModelAddTriangleSingleTexture(m,
+					_cyl_vert(i, j),  _cyl_vert(i+1, j),  _cyl_vert(i+1, j+1), material,
+					_cyl_svert(i, j), _cyl_svert(i+1, j), _cyl_svert(i+1, j+1)), m);
 		}
 
 // the endings
@@ -87,15 +80,11 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos,
 
 		// triangles
 		for (int j=0;j<edges;j++){
-				AddSubAction(new ActionModelAddTriangleSingleTexture(
-						m,
-						nv2	,nv+j	,nv+(j+1)%edges,
-						material,
+				AddSubAction(new ActionModelAddTriangleSingleTexture(m,
+						nv2	,nv+j	,nv+(j+1)%edges, material,
 						sv[0], sv[1+j], sv[1+(j+1)%edges]), m);
-				AddSubAction(new ActionModelAddTriangleSingleTexture(
-						m,
-						nv2+1	,nv2-edges+(j+1)%edges	,nv2-edges+j,
-						material,
+				AddSubAction(new ActionModelAddTriangleSingleTexture(m,
+						nv2+1	,nv2-edges+(j+1)%edges	,nv2-edges+j, material,
 						sv[edges+1] ,sv[edges+2+(j+1)%edges], sv[edges+2+j]), m);
 			}
 		}
