@@ -38,6 +38,9 @@ void *ActionModel__JoinSurfaces::execute(Data *d)
 	msg_write("__join surf do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
+	assert(surface1 < m->Surface.num);
+	assert(surface2 < m->Surface.num);
+
 	ModeModelSurface *a = &m->Surface[surface1];
 	ModeModelSurface *b = &m->Surface[surface2];
 
@@ -75,6 +78,11 @@ void *ActionModel__JoinSurfaces::execute(Data *d)
 	m->Surface.erase(surface2);
 	a = &m->Surface[surface1];
 	a->TestSanity("Join post a");
+
+	// correct vertices of surfaces above b
+	foreach(m->Vertex, v)
+		if (v.Surface >= surface2)
+			v.Surface --;
 
 	msg_db_l(1);
 	return a;
