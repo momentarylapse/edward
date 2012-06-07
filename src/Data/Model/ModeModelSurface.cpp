@@ -44,7 +44,7 @@ void ModeModelSurface::AddTriangle(int a, int b, int c, int material, const vect
 		t.SkinVertex[i][2] = sc[i];
 	}
 	for (int k=0;k<3;k++)
-		t.Edge[k] = AddEdgeForNewTriangle(t.Vertex[k], t.Vertex[(k + 1) % 3]);
+		t.Edge[k] = AddEdgeForNewTriangle(t.Vertex[k], t.Vertex[(k + 1) % 3], Triangle.num);
 	AddVertex(a);
 	AddVertex(b);
 	AddVertex(c);
@@ -56,16 +56,16 @@ void ModeModelSurface::AddTriangle(int a, int b, int c, int material, const vect
 	t.Material = material;
 	t.view_stage = model->ViewStage;
 	t.NormalDirty = true;
-	if (index >= 0)
+	if (index >= 0){
+		msg_todo("add tria.. index: correct edges");
 		Triangle.insert(t, index);
-	else
+	}else
 		Triangle.add(t);
 	msg_db_l(1);
 }
 
-int ModeModelSurface::AddEdgeForNewTriangle(int a, int b)
+int ModeModelSurface::AddEdgeForNewTriangle(int a, int b, int tria)
 {
-	int tria = Triangle.num;
 	foreachi(Edge, e, i){
 		if ((e.Vertex[0] == a) && (e.Vertex[1] == b)){
 			e.RefCount ++;
@@ -230,24 +230,35 @@ void ModeModelSurface::UpdateNormals()
 		e.IsRound = false;
 		if (e.NormalMode == NormalModeAngular)
 			e.IsRound = (fabs(t1.TempNormal * t2.TempNormal) > 0.5f);
-		else if (e.NormalMode == NormalModeAngular)
+		else if (e.NormalMode == NormalModeSmooth)
 			e.IsRound = true;
 
-		//if (e->IsRound){
+		if (e.IsRound){
 			vert.add(e.Vertex[0]);
 			vert.add(e.Vertex[1]);
-		//}
+		}
+
+		/*if (e.IsRound){
+			vector n = t1.TempNormal + t2.TempNormal;
+			VecNormalize(n);
+			for (int k=0;k<3;k++)
+				if ((t1.Vertex[k] == e.Vertex[0]) || (t1.Vertex[k] == e.Vertex[1]))
+					t1.Normal[k] = n;
+			for (int k=0;k<3;k++)
+				if ((t2.Vertex[k] == e.Vertex[0]) || (t2.Vertex[k] == e.Vertex[1]))
+					t2.Normal[k] = n;
+		}*/
 	}
 
-/*	// per vertex...
-	foreach2(vert, ip){
+	// per vertex...
+	foreach(vert, ip){
 
 		// find all triangles shared by this vertex
 		Array<int> ti, tv;
-		foreachi(s->Triangle, t, i){
+		foreachi(Triangle, t, i){
 			for (int k=0;k<3;k++){
-				if (t->Vertex[k] == *ip){
-					t->Normal[k] = t->TempNormal;
+				if (t.Vertex[k] == ip){
+					t.Normal[k] = t.TempNormal;
 					ti.add(i);
 					tv.add(k);
 				}
@@ -262,11 +273,11 @@ void ModeModelSurface::UpdateNormals()
 			used.add(0);
 
 			// search to the right
-			bool closed = find_tria_top(s, ti, tv, used, true);
+			bool closed = find_tria_top(this, ti, tv, used, true);
 
 			// search to the left
 			if (!closed)
-				find_tria_top(s, ti, tv, used, false);
+				find_tria_top(this, ti, tv, used, false);
 
 			if (used.num == 1){
 				// no smoothly connected triangles...
@@ -278,16 +289,16 @@ void ModeModelSurface::UpdateNormals()
 			// average normal
 			vector n = v0;
 			for (int i=0;i<used.num;i++)
-				n += s->Triangle[ti[used[i]]].Normal[tv[used[i]]];
+				n += Triangle[ti[used[i]]].Normal[tv[used[i]]];
 			VecNormalize(n);
 			// apply normal... and remove from list
 			for (int i=used.num-1;i>=0;i--){
-				s->Triangle[ti[used[i]]].Normal[tv[used[i]]] = n;
+				Triangle[ti[used[i]]].Normal[tv[used[i]]] = n;
 				ti.erase(used[i]);
 				tv.erase(used[i]);
 			}
 		}
-	}*/
+	}
 	msg_db_l(2);
 }
 
@@ -305,14 +316,14 @@ void ModeModelSurface::BuildFromTriangles()
 		}
 
 	// add all triangles
-	foreach(Triangle, t){
+	foreachi(Triangle, t, ti){
 		// vertices
 		for (int k=0;k<3;k++)
 			AddVertex(t.Vertex[k]);
 
 		// edges
 		for (int k=0;k<3;k++)
-			t.Edge[k] = AddEdgeForNewTriangle(t.Vertex[k], t.Vertex[(k + 1) % 3]);
+			t.Edge[k] = AddEdgeForNewTriangle(t.Vertex[k], t.Vertex[(k + 1) % 3], ti);
 	}
 
 	UpdateClosed();
