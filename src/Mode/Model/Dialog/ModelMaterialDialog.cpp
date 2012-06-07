@@ -188,11 +188,10 @@ void ModelMaterialDialog::OnMatEmptyTextureLevel()
 // material
 void ModelMaterialDialog::OnDefaultMaterial()
 {
-	if (IsChecked("")){
-		SetString("material_file","");
-		Enable("material_file",false);
-	}else
-		Enable("material_file",true);
+	if (IsChecked(""))
+		TempMaterial.MaterialFile = "";
+	TempMaterial.MakeConsistent();
+	LoadData();
 }
 
 		/*case HMM_MATERIAL_FILE:
@@ -202,9 +201,9 @@ void ModelMaterialDialog::OnDefaultMaterial()
 void ModelMaterialDialog::OnFindMaterial()
 {
 	if (ed->FileDialog(FDMaterial, false, true)){
-		SetString("material_file", ed->DialogFileNoEnding);
-		Enable("material_file", true);
-		Check("default_material",false);
+		TempMaterial.MaterialFile = ed->DialogFileNoEnding;
+		TempMaterial.MakeConsistent();
+		LoadData();
 	}
 }
 

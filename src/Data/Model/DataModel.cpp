@@ -781,7 +781,6 @@ bool DataModel::Load(const string & _filename, bool deep)
 
 	if (deep){
 		for (int i=0;i<Material.num;i++){
-			Material[i].material = MetaLoadMaterial(Material[i].MaterialFile);
 			Material[i].MakeConsistent();
 
 			// test textures

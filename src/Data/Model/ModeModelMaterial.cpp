@@ -47,6 +47,7 @@ void ModeModelMaterial::reset()
 
 void ModeModelMaterial::MakeConsistent()
 {
+	material = MetaLoadMaterial(MaterialFile);
 	CheckTextures();
 	CheckTransparency();
 	CheckColors();
