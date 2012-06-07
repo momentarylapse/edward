@@ -10,8 +10,9 @@
 
 #include "../../../lib/hui/hui.h"
 #include "../../../Data/Material/DataMaterial.h"
+#include "../../../Stuff/Observer.h"
 
-class MaterialPropertiesDialog: public CHuiWindow
+class MaterialPropertiesDialog: public CHuiWindow, public Observer
 {
 public:
 	MaterialPropertiesDialog(CHuiWindow *_parent, bool _allow_parent, DataMaterial *_data);
@@ -34,6 +35,8 @@ public:
 
 	void RefillReflTexView();
 	void FillTextureList();
+
+	void OnUpdate(Observable *o);
 
 
 private:

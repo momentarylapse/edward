@@ -35,7 +35,8 @@ public:
 	color ColorAmbient, ColorDiffuse, ColorSpecular, ColorEmissive;
 	float ColorShininess;
 	int ShiningDensity,ShiningLength;
-	int TransparencyMode,AlphaFactor,AlphaSource,AlphaDestination;
+	int TransparencyMode,AlphaSource,AlphaDestination;
+	float AlphaFactor;
 	bool AlphaZBuffer;
 	int ReflectionMode,ReflectionDensity,ReflectionSize;
 	string ReflectionTextureFile[6];

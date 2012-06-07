@@ -10,8 +10,8 @@
 #include "../../Data/Material/DataMaterial.h"
 #include "../../lib/x/x.h"
 
-const int MATERIAL_BALL_NUMX = 16;
-const int MATERIAL_BALL_NUMY = 32;
+const int MATERIAL_BALL_NUMX = 32;
+const int MATERIAL_BALL_NUMY = 64;
 
 ModeMaterial *mode_material = NULL;
 

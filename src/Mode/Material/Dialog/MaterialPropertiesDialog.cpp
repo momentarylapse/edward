@@ -34,6 +34,7 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(CHuiWindow *_parent, bool _al
 	EventM("find_effect", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnFindEffect);
 
 	LoadData();
+	Subscribe(data);
 }
 
 void MaterialPropertiesDialog::LoadData()
@@ -46,7 +47,7 @@ void MaterialPropertiesDialog::LoadData()
 	SetColor("mat_di", data->ColorDiffuse);
 	SetColor("mat_sp", data->ColorSpecular);
 	SetColor("mat_em", data->ColorEmissive);
-	SetInt("mat_shininess", data->ColorShininess);
+	SetFloat("mat_shininess", data->ColorShininess);
 	if (data->TransparencyMode==TransparencyModeColorKeySmooth)
 		SetInt("transparency_mode",1);
 	else if (data->TransparencyMode==TransparencyModeColorKeyHard)
@@ -60,7 +61,7 @@ void MaterialPropertiesDialog::LoadData()
 	Enable("alpha_factor", data->TransparencyMode==TransparencyModeFactor);
 	Enable("alpha_source", data->TransparencyMode==TransparencyModeFunctions);
 	Enable("alpha_dest", data->TransparencyMode==TransparencyModeFunctions);
-	SetInt("alpha_factor", data->AlphaFactor);
+	SetFloat("alpha_factor", data->AlphaFactor * 100.0f);
 	Check("alpha_z_buffer", data->AlphaZBuffer);
 	SetInt("alpha_source", data->AlphaSource);
 	SetInt("alpha_dest", data->AlphaDestination);
@@ -82,6 +83,12 @@ void MaterialPropertiesDialog::LoadData()
 
 MaterialPropertiesDialog::~MaterialPropertiesDialog()
 {
+	Unsubscribe(data);
+}
+
+void MaterialPropertiesDialog::OnUpdate(Observable *o)
+{
+	LoadData();
 }
 
 void MaterialPropertiesDialog::OnAddTextureLevel()
@@ -189,7 +196,7 @@ void MaterialPropertiesDialog::ApplyData()
 	data->ColorDiffuse = GetColor("mat_di");
 	data->ColorSpecular = GetColor("mat_sp");
 	data->ColorEmissive = GetColor("mat_em");
-	data->ColorShininess = GetInt("mat_shininess");
+	data->ColorShininess = GetFloat("mat_shininess");
 	if (GetInt("transparency_mode")==1)
 		data->TransparencyMode=TransparencyModeColorKeySmooth;
 	else if (GetInt("transparency_mode")==2)
@@ -201,7 +208,7 @@ void MaterialPropertiesDialog::ApplyData()
 	else
 		data->TransparencyMode=TransparencyModeNone;
 	data->AlphaZBuffer=IsChecked("alpha_z_buffer");
-	data->AlphaFactor=GetInt("alpha_factor");
+	data->AlphaFactor=GetFloat("alpha_factor") * 0.01f;
 	data->AlphaSource=GetInt("alpha_source");
 	data->AlphaDestination=GetInt("alpha_dest");
 	data->ShiningDensity=GetInt("shining");

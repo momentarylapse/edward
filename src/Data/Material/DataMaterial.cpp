@@ -12,18 +12,18 @@
 
 /*static void write_color(CFile *f, const color &c)
 {
+	f->WriteInt((int)(c.a * 255.0f));
 	f->WriteInt((int)(c.r * 255.0f));
 	f->WriteInt((int)(c.g * 255.0f));
 	f->WriteInt((int)(c.b * 255.0f));
-	f->WriteInt((int)(c.a * 255.0f));
 }*/
 
 static void read_color(CFile *f, color &c)
 {
+	c.a = (float)f->ReadInt() / 255.0f;
 	c.r = (float)f->ReadInt() / 255.0f;
 	c.g = (float)f->ReadInt() / 255.0f;
 	c.b = (float)f->ReadInt() / 255.0f;
-	c.a = (float)f->ReadInt() / 255.0f;
 }
 
 DataMaterial::DataMaterial()
@@ -80,7 +80,7 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 		read_color(f,ColorEmissive);
 		// Transparency
 		TransparencyMode=f->ReadIntC();
-		AlphaFactor=f->ReadInt();
+		AlphaFactor=(float)f->ReadInt() * 0.01f;
 		AlphaSource=f->ReadInt();
 		AlphaDestination=f->ReadInt();
 		AlphaZBuffer=f->ReadBool();
@@ -120,7 +120,7 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 		read_color(f,ColorEmissive);
 		// Transparency
 		TransparencyMode=f->ReadIntC();
-		AlphaFactor=f->ReadInt();
+		AlphaFactor=(float)f->ReadInt() * 0.01f;
 		AlphaSource=f->ReadInt();
 		AlphaDestination=f->ReadInt();
 		// Appearance
@@ -156,7 +156,7 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 		read_color(f,ColorEmissive);
 		// Transparency
 		TransparencyMode=f->ReadIntC();
-		AlphaFactor=f->ReadInt();
+		AlphaFactor=(float)f->ReadInt() * 0.01f;
 		AlphaSource=f->ReadInt();
 		AlphaDestination=f->ReadInt();
 		// Appearance
@@ -194,6 +194,7 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 	}
 
 	ResetHistory();
+	Notify("Change");
 	return !error;
 }
 
@@ -213,54 +214,54 @@ void DataMaterial::Reset()
 	ColorSpecular = Black;
 	ColorShininess = 20;
 	ColorEmissive = Black;
-	ShiningDensity=0;
-	ShiningLength=0;
-	TransparencyMode=TransparencyModeNone;
-	AlphaSource=AlphaDestination=0;
-	AlphaFactor=50;
-	AlphaZBuffer=true;
-	RCJump=700;
-	RCStatic=800;
-	RCSliding=500;
-	RCRolling=200;
-	RCVJumpMin=10000;
-	RCVSlidingMin=10000;
-	Burnable=false;
-	BurningTemperature=500;
-	BurningIntensity=40;
-	Water=false;
-	ReflectionMode=ReflectionNone;
-	ReflectionDensity=0;
-	ReflectionSize=128;
+	ShiningDensity = 0;
+	ShiningLength = 0;
+	TransparencyMode = TransparencyModeNone;
+	AlphaSource = AlphaDestination = 0;
+	AlphaFactor = 0.5f;
+	AlphaZBuffer = true;
+	RCJump = 700;
+	RCStatic = 800;
+	RCSliding = 500;
+	RCRolling = 200;
+	RCVJumpMin = 10000;
+	RCVSlidingMin = 10000;
+	Burnable = false;
+	BurningTemperature = 500;
+	BurningIntensity = 40;
+	Water = false;
+	ReflectionMode = ReflectionNone;
+	ReflectionDensity = 0;
+	ReflectionSize = 128;
 	for (int i=0;i<6;i++)
 		ReflectionTextureFile[i] = "";
 
-	NumSoundRules=0;
+	NumSoundRules = 0;
 
 
 	EffectFile = "";
-	EffectIndex=-1;
+	EffectIndex = -1;
 
 	ResetHistory();
+	Notify("Change");
 }
 
 void DataMaterial::ApplyForRendering()
 {
-	NixSetMaterial(ColorAmbient, ColorDiffuse, ColorSpecular,(float)ColorShininess, ColorEmissive);
+	NixSetMaterial(ColorAmbient, ColorDiffuse, ColorSpecular, ColorShininess, ColorEmissive);
 
 	NixSetAlpha(AlphaNone);
-	NixSetZ(true,true);
-	if (TransparencyMode==TransparencyModeColorKeyHard)
+	NixSetZ(true, true);
+	if (TransparencyMode == TransparencyModeColorKeyHard){
 		NixSetAlpha(AlphaColorKeyHard);
-	if (TransparencyMode==TransparencyModeColorKeySmooth)
+	}else if (TransparencyMode == TransparencyModeColorKeySmooth){
 		NixSetAlpha(AlphaColorKeySmooth);
-	if (TransparencyMode==TransparencyModeFunctions){
-		NixSetAlpha(AlphaSource,AlphaDestination);
-		NixSetZ(false,false);
-	}
-	if (TransparencyMode==TransparencyModeFactor){
-		NixSetAlpha((float)AlphaFactor*0.01f);
-		NixSetZ(false,false);
+	}else if (TransparencyMode == TransparencyModeFunctions){
+		NixSetAlpha(AlphaSource, AlphaDestination);
+		NixSetZ(false, false);
+	}else if (TransparencyMode == TransparencyModeFactor){
+		NixSetAlpha(AlphaFactor);
+		NixSetZ(false, false);
 	}
 
 	NixSetShader(EffectIndex);
