@@ -34,7 +34,7 @@ ModelPropertiesDialog::ModelPropertiesDialog(CHuiWindow *_parent, bool _allow_pa
 	EventM("generate_dists", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateDists);
 	EventM("generate_skin_2", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateSkin2);
 	EventM("generate_skin_3", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateSkin3);
-	EventMX("material_list", "hui:activate", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnMaterialList);
+	EventM("material_list", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnMaterialList);
 	EventMX("material_list", "hui:change", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnMaterialListCheck);
 	EventM("ph_passive", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnPhysicsPassive);
 	EventM("generate_tensor_auto", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateTensorAuto);

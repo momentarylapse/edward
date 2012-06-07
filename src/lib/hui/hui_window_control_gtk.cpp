@@ -217,7 +217,7 @@ string CHuiWindow::_GetIDByWidget_(GtkWidget *widget)
 
 
 
-void NotifyWindowByWidget(CHuiWindow *win, GtkWidget *widget, const string &message = "")
+void NotifyWindowByWidget(CHuiWindow *win, GtkWidget *widget, const string &message = "", bool is_default = true)
 {
 	if (allow_signal_level > 0)
 		return;
@@ -226,6 +226,7 @@ void NotifyWindowByWidget(CHuiWindow *win, GtkWidget *widget, const string &mess
 	win->_SetCurID_(id);
 	if (id.num > 0){
 		HuiEvent e = HuiCreateEvent(id, message);
+		e.is_default = is_default;
 		win->_SendEvent_(&e);
 	}
 }
@@ -499,7 +500,7 @@ static void list_toggle_callback(GtkCellRendererToggle *cell, gchar *path_string
 
 	c->win->input.column = column;
 	c->win->input.row = s2i(path_string);
-	NotifyWindowByWidget(c->win, c->widget, "hui:change");
+	NotifyWindowByWidget(c->win, c->widget, "hui:change", false);
 	gtk_tree_path_free(path);
 }
 
@@ -520,7 +521,7 @@ static void list_edited_callback(GtkCellRendererText *cell, const gchar *path_st
 
 	c->win->input.column = column;
 	c->win->input.row = s2i(path_string);
-	NotifyWindowByWidget(c->win, c->widget, "hui:change");
+	NotifyWindowByWidget(c->win, c->widget, "hui:change", false);
 	gtk_tree_path_free(path);
 }
 
@@ -572,7 +573,7 @@ void OnGtkListActivate(GtkWidget *widget, void* a, void* b, gpointer data)
 {	NotifyWindowByWidget((CHuiWindow*)data, widget, "hui:activate");	}
 
 void OnGtkListSelect(GtkTreeSelection *selection, gpointer data)
-{	NotifyWindowByWidget((CHuiWindow*)data, (GtkWidget*)gtk_tree_selection_get_tree_view(selection), "hui:select");	}
+{	NotifyWindowByWidget((CHuiWindow*)data, (GtkWidget*)gtk_tree_selection_get_tree_view(selection), "hui:select", false);	}
 
 void CHuiWindow::AddListView(const string &title,int x,int y,int width,int height,const string &id)
 {
@@ -731,7 +732,7 @@ gboolean OnGtkAreaExpose(GtkWidget *widget, GdkEventExpose *event, gpointer user
 }
 
 void OnGtkAreaResize(GtkWidget *widget, GtkRequisition *requisition, gpointer user_data)
-{	NotifyWindowByWidget((CHuiWindow*)user_data, widget, "hui:resize");	}
+{	NotifyWindowByWidget((CHuiWindow*)user_data, widget, "hui:resize", false);	}
 
 gboolean OnGtkAreaMouseMove(GtkWidget *widget, GdkEventMotion *event, gpointer user_data)
 {
@@ -744,7 +745,7 @@ gboolean OnGtkAreaMouseMove(GtkWidget *widget, GdkEventMotion *event, gpointer u
 	win->input.lb = ((mod & GDK_BUTTON1_MASK) > 0);
 	win->input.mb = ((mod & GDK_BUTTON2_MASK) > 0);
 	win->input.rb = ((mod & GDK_BUTTON3_MASK) > 0);
-	NotifyWindowByWidget(win, widget, "hui:mouse-move");
+	NotifyWindowByWidget(win, widget, "hui:mouse-move", false);
 	gdk_event_request_motions(event); // too prevent too many signals for slow message processing
 	return false;
 }
@@ -762,7 +763,7 @@ gboolean OnGtkAreaButtonDown(GtkWidget *widget, GdkEventButton *event, gpointer 
 		msg += "-double-click";
 	else
 		msg += "-button-down";
-	NotifyWindowByWidget((CHuiWindow*)user_data, widget, msg);
+	NotifyWindowByWidget((CHuiWindow*)user_data, widget, msg, false);
 	return false;
 }
 
@@ -776,7 +777,7 @@ gboolean OnGtkAreaButtonUp(GtkWidget *widget, GdkEventButton *event, gpointer us
 	else if (event->button == 3)
 		msg += "right";
 	msg += "-button-up";
-	NotifyWindowByWidget((CHuiWindow*)user_data, widget, msg);
+	NotifyWindowByWidget((CHuiWindow*)user_data, widget, msg, false);
 	return false;
 }
 
@@ -788,7 +789,7 @@ gboolean OnGtkAreaMouseWheel(GtkWidget *widget, GdkEventScroll *event, gpointer 
 			win->input.dz = 1;
 		else if (event->direction == GDK_SCROLL_DOWN)
 			win->input.dz = -1;
-		NotifyWindowByWidget(win, widget, "hui:mouse-wheel");
+		NotifyWindowByWidget(win, widget, "hui:mouse-wheel", false);
 	}
 	return false;
 }
