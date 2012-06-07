@@ -53,9 +53,9 @@ unsigned int image_color(const color &c)
 color image_uncolor(unsigned int i)
 {
 	return color((float)(i >> 24) / 255.0f,
-	             (float)((i >> 16) & 255) / 255.0f,
+	             (float)(i & 255) / 255.0f,
 	             (float)((i >> 8) & 255) / 255.0f,
-	             (float)(i & 255) / 255.0f);
+	             (float)((i >> 16) & 255) / 255.0f);
 }
 
 void Image::Create(int _width, int _height, const color &c)
