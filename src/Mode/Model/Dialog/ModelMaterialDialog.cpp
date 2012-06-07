@@ -12,8 +12,7 @@
 
 
 
-//color mat_get_col(ModeModelMaterial *m); // -> ModelPropertiesDialog
-string file_secure(const string &filename);
+string file_secure(const string &filename); // -> ModelPropertiesDialog
 
 ModelMaterialDialog::ModelMaterialDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data):
 	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls, true)

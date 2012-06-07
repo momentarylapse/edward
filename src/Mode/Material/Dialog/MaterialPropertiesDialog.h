@@ -20,10 +20,11 @@ public:
 	void LoadData();
 	void ApplyData();
 
-	void OnMatAddTextureLevel();
-	void OnMatTextures();
-	void OnMatDeleteTextureLevel();
-	void OnMatEmptyTextureLevel();
+	void OnTextures();
+	void OnTexturesSelect();
+	void OnAddTextureLevel();
+	void OnDeleteTextureLevel();
+	void OnEmptyTextureLevel();
 	void OnTransparencyMode();
 	void OnReflection();
 	void OnReflectionTextures();

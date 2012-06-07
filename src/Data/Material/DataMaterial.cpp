@@ -211,7 +211,7 @@ void DataMaterial::Reset()
 	ColorAmbient = White;
 	ColorDiffuse = White;
 	ColorSpecular = Black;
-	ColorShininess = 0;
+	ColorShininess = 20;
 	ColorEmissive = Black;
 	ShiningDensity=0;
 	ShiningLength=0;

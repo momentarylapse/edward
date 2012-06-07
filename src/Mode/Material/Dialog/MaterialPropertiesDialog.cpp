@@ -10,6 +10,7 @@
 #include "../ModeMaterial.h"
 
 
+string file_secure(const string &filename); // -> ModelPropertiesDialog
 
 MaterialPropertiesDialog::MaterialPropertiesDialog(CHuiWindow *_parent, bool _allow_parent, DataMaterial *_data):
 	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls, true)
@@ -22,10 +23,11 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(CHuiWindow *_parent, bool _al
 	EventM("hui:close", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnClose);
 	EventM("set", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::ApplyData);
 	EventM("ok", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnOk);
-	EventM("mat_add_texture_level", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnMatAddTextureLevel);
-	EventM("mat_textures", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnMatTextures);
-	EventM("mat_delete_texture_level", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnMatDeleteTextureLevel);
-	EventM("mat_empty_texture_level", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnMatEmptyTextureLevel);
+	EventM("mat_add_texture_level", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnAddTextureLevel);
+	EventM("mat_textures", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnTextures);
+	EventMX("mat_textures", "hui:select", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnTexturesSelect);
+	EventM("mat_delete_texture_level", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnDeleteTextureLevel);
+	EventM("mat_empty_texture_level", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnEmptyTextureLevel);
 	EventM("transparency_mode", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnTransparencyMode);
 	EventM("reflection", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnReflection);
 	EventM("reflection_textures", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnReflectionTextures);
@@ -82,7 +84,7 @@ MaterialPropertiesDialog::~MaterialPropertiesDialog()
 {
 }
 
-void MaterialPropertiesDialog::OnMatAddTextureLevel()
+void MaterialPropertiesDialog::OnAddTextureLevel()
 {
 	if (TempNumTextureLevels >= MATERIAL_MAX_TEXTURE_LEVELS)
 		ed->ErrorBox(format(_("H&ochstens %d Textur-Ebenen erlaubt!"), MATERIAL_MAX_TEXTURE_LEVELS));
@@ -91,7 +93,7 @@ void MaterialPropertiesDialog::OnMatAddTextureLevel()
 	FillTextureList();
 }
 
-void MaterialPropertiesDialog::OnMatTextures()
+void MaterialPropertiesDialog::OnTextures()
 {
 	int sel = GetInt("");
 	if ((sel >= 0) && (sel <TempNumTextureLevels))
@@ -102,7 +104,14 @@ void MaterialPropertiesDialog::OnMatTextures()
 		}
 }
 
-void MaterialPropertiesDialog::OnMatDeleteTextureLevel()
+void MaterialPropertiesDialog::OnTexturesSelect()
+{
+	int sel = GetInt("");
+	Enable("mat_delete_texture_level", (sel >= 0) && (sel < TempNumTextureLevels));
+	Enable("mat_empty_texture_level", (sel >= 0) && (sel < TempNumTextureLevels));
+}
+
+void MaterialPropertiesDialog::OnDeleteTextureLevel()
 {
 	int sel = GetInt("mat_textures");
 	if (sel >= 0){
@@ -113,7 +122,7 @@ void MaterialPropertiesDialog::OnMatDeleteTextureLevel()
 	}
 }
 
-void MaterialPropertiesDialog::OnMatEmptyTextureLevel()
+void MaterialPropertiesDialog::OnEmptyTextureLevel()
 {
 	int sel = GetInt("mat_textures");
 	if (sel >= 0){
@@ -243,12 +252,10 @@ void MaterialPropertiesDialog::FillTextureList()
 	Reset("mat_textures");
 	for (int i=0;i<TempNumTextureLevels;i++){
 		string img = ed->get_tex_image(NixLoadTexture(TempTextureFile[i]));
-		if (TempTextureFile[i].num > 0)
-			AddString("mat_textures", format("%d\\%s\\%s", i, img.c_str(), TempTextureFile[i].c_str()));
-		else
-			AddString("mat_textures", format("%d\\\\%s", i, _("   - ohne Datei -").c_str()));
+		AddString("mat_textures", format("%d\\%s\\%s", i, img.c_str(), file_secure(TempTextureFile[i]).c_str()));
 	}
 	if (TempNumTextureLevels == 0)
 		AddString("mat_textures", _("\\\\   - keine Texturen -"));
-	Enable("mat_delete_texture_level", TempNumTextureLevels > 0);
+	Enable("mat_delete_texture_level", false);
+	Enable("mat_empty_texture_level", false);
 }
