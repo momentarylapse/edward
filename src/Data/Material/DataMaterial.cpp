@@ -64,117 +64,117 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 		error=true;
 	}else if ((ffv == 3) || (ffv == 4)){
 		if (ffv >= 4){
-			NumTextureLevels = f->ReadIntC();
-			for (int i=0;i<NumTextureLevels;i++)
-				TextureFile[i] = f->ReadStr();
-			if ((NumTextureLevels == 1) && (TextureFile[0].num == 0)){
-				NumTextureLevels = 0;
+			Appearance.NumTextureLevels = f->ReadIntC();
+			for (int i=0;i<Appearance.NumTextureLevels;i++)
+				Appearance.TextureFile[i] = f->ReadStr();
+			if ((Appearance.NumTextureLevels == 1) && (Appearance.TextureFile[0].num == 0)){
+				Appearance.NumTextureLevels = 0;
 			}
 		}
 		// Colors
 		f->ReadComment();
-		read_color(f,ColorAmbient);
-		read_color(f,ColorDiffuse);
-		read_color(f,ColorSpecular);
-		ColorShininess=f->ReadInt();
-		read_color(f,ColorEmissive);
+		read_color(f,Appearance.ColorAmbient);
+		read_color(f,Appearance.ColorDiffuse);
+		read_color(f,Appearance.ColorSpecular);
+		Appearance.ColorShininess=f->ReadInt();
+		read_color(f,Appearance.ColorEmissive);
 		// Transparency
-		TransparencyMode=f->ReadIntC();
-		AlphaFactor=(float)f->ReadInt() * 0.01f;
-		AlphaSource=f->ReadInt();
-		AlphaDestination=f->ReadInt();
-		AlphaZBuffer=f->ReadBool();
+		Appearance.TransparencyMode=f->ReadIntC();
+		Appearance.AlphaFactor=(float)f->ReadInt() * 0.01f;
+		Appearance.AlphaSource=f->ReadInt();
+		Appearance.AlphaDestination=f->ReadInt();
+		Appearance.AlphaZBuffer=f->ReadBool();
 		// Appearance
-		ShiningDensity=f->ReadIntC();
-		ShiningLength=f->ReadInt();
-		Water=f->ReadBool();
+		Appearance.ShiningDensity=(float)f->ReadIntC();
+		Appearance.ShiningLength=(float)f->ReadInt();
+		Appearance.Water=f->ReadBool();
 		// Reflection
-		ReflectionMode=f->ReadIntC();
-		ReflectionDensity=f->ReadInt();
-		ReflectionSize=f->ReadInt();
+		Appearance.ReflectionMode=f->ReadIntC();
+		Appearance.ReflectionDensity=(float)f->ReadInt();
+		Appearance.ReflectionSize=f->ReadInt();
 		for (int i=0;i<6;i++)
-			ReflectionTextureFile[i] = f->ReadStr();
+			Appearance.ReflectionTextureFile[i] = f->ReadStr();
 		// ShaderFile
-		EffectFile = f->ReadStrC();
+		Appearance.EffectFile = f->ReadStrC();
 		// Physics
-		RCJump=f->ReadIntC();
-		RCStatic=f->ReadInt();
-		RCSliding=f->ReadInt();
-		RCRolling=f->ReadInt();
-		RCVJumpMin=f->ReadInt();
-		RCVSlidingMin=f->ReadInt();
+		Physics.RCJump=f->ReadIntC();
+		Physics.RCStatic=f->ReadInt();
+		Physics.RCSliding=f->ReadInt();
+		Physics.RCRolling=f->ReadInt();
+		Physics.RCVJumpMin=f->ReadInt();
+		Physics.RCVSlidingMin=f->ReadInt();
 		if (ffv >= 4){
 			// Sound
 			//NumSoundRules=f->ReadIntC();
-			NumSoundRules=0;
+			Sound.NumRules=0;
 		}
 
 		//AlphaZBuffer=(TransparencyMode!=TransparencyModeFunctions)&&(TransparencyMode!=TransparencyModeFactor);
 	}else if (ffv==2){
 		// Colors
 		f->ReadComment();
-		read_color(f,ColorAmbient);
-		read_color(f,ColorDiffuse);
-		read_color(f,ColorSpecular);
-		ColorShininess=f->ReadInt();
-		read_color(f,ColorEmissive);
+		read_color(f,Appearance.ColorAmbient);
+		read_color(f,Appearance.ColorDiffuse);
+		read_color(f,Appearance.ColorSpecular);
+		Appearance.ColorShininess=(float)f->ReadInt();
+		read_color(f,Appearance.ColorEmissive);
 		// Transparency
-		TransparencyMode=f->ReadIntC();
-		AlphaFactor=(float)f->ReadInt() * 0.01f;
-		AlphaSource=f->ReadInt();
-		AlphaDestination=f->ReadInt();
+		Appearance.TransparencyMode=f->ReadIntC();
+		Appearance.AlphaFactor=(float)f->ReadInt() * 0.01f;
+		Appearance.AlphaSource=f->ReadInt();
+		Appearance.AlphaDestination=f->ReadInt();
 		// Appearance
 		int MetalDensity=f->ReadIntC();
 		if (MetalDensity>0){
-			ReflectionMode=ReflectionMetal;
-			ReflectionDensity=MetalDensity;
+			Appearance.ReflectionMode=ReflectionMetal;
+			Appearance.ReflectionDensity=(float)MetalDensity;
 		}
-		ShiningDensity=f->ReadInt();
-		ShiningLength=f->ReadInt();
+		Appearance.ShiningDensity=(float)f->ReadInt();
+		Appearance.ShiningLength=(float)f->ReadInt();
 		bool Mirror=f->ReadBool();
 		if (Mirror)
-			ReflectionMode=ReflectionMirror;
-		Water=f->ReadBool();
+			Appearance.ReflectionMode=ReflectionMirror;
+		Appearance.Water=f->ReadBool();
 		// ShaderFile
-		EffectFile = f->ReadStrC();
+		Appearance.EffectFile = f->ReadStrC();
 		// Physics
-		RCJump=f->ReadIntC();
-		RCStatic=f->ReadInt();
-		RCSliding=f->ReadInt();
-		RCRolling=f->ReadInt();
-		RCVJumpMin=f->ReadInt();
-		RCVSlidingMin=f->ReadInt();
+		Physics.RCJump=f->ReadIntC();
+		Physics.RCStatic=f->ReadInt();
+		Physics.RCSliding=f->ReadInt();
+		Physics.RCRolling=f->ReadInt();
+		Physics.RCVJumpMin=f->ReadInt();
+		Physics.RCVSlidingMin=f->ReadInt();
 
-		AlphaZBuffer=(TransparencyMode!=TransparencyModeFunctions)&&(TransparencyMode!=TransparencyModeFactor);
+		Appearance.AlphaZBuffer=(Appearance.TransparencyMode!=TransparencyModeFunctions)&&(Appearance.TransparencyMode!=TransparencyModeFactor);
 	}else if (ffv==1){
 		// Colors
 		f->ReadComment();
-		read_color(f,ColorAmbient);
-		read_color(f,ColorDiffuse);
-		read_color(f,ColorSpecular);
-		ColorShininess=f->ReadInt();
-		read_color(f,ColorEmissive);
+		read_color(f,Appearance.ColorAmbient);
+		read_color(f,Appearance.ColorDiffuse);
+		read_color(f,Appearance.ColorSpecular);
+		Appearance.ColorShininess=(float)f->ReadInt();
+		read_color(f,Appearance.ColorEmissive);
 		// Transparency
-		TransparencyMode=f->ReadIntC();
-		AlphaFactor=(float)f->ReadInt() * 0.01f;
-		AlphaSource=f->ReadInt();
-		AlphaDestination=f->ReadInt();
+		Appearance.TransparencyMode=f->ReadIntC();
+		Appearance.AlphaFactor=(float)f->ReadInt() * 0.01f;
+		Appearance.AlphaSource=f->ReadInt();
+		Appearance.AlphaDestination=f->ReadInt();
 		// Appearance
 		int MetalDensity=f->ReadIntC();
 		if (MetalDensity>0){
-			ReflectionMode=ReflectionMetal;
-			ReflectionDensity=MetalDensity;
+			Appearance.ReflectionMode=ReflectionMetal;
+			Appearance.ReflectionDensity=(float)MetalDensity;
 		}
-		ShiningDensity=f->ReadInt();
-		ShiningLength=f->ReadInt();
-		ReflectionMode=(f->ReadBool()?ReflectionMirror:ReflectionNone);
+		Appearance.ShiningDensity=(float)f->ReadInt();
+		Appearance.ShiningLength=(float)f->ReadInt();
+		Appearance.ReflectionMode=(f->ReadBool()?ReflectionMirror:ReflectionNone);
 		bool Mirror=f->ReadBool();
 		if (Mirror)
-			ReflectionMode=ReflectionMirror;
+			Appearance.ReflectionMode=ReflectionMirror;
 		// ShaderFile
-		EffectFile = f->ReadStrC();
+		Appearance.EffectFile = f->ReadStrC();
 
-		AlphaZBuffer=(TransparencyMode!=TransparencyModeFunctions)&&(TransparencyMode!=TransparencyModeFactor);
+		Appearance.AlphaZBuffer=(Appearance.TransparencyMode!=TransparencyModeFunctions)&&(Appearance.TransparencyMode!=TransparencyModeFactor);
 	}else{
 		ed->ErrorBox(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 1, 4));
 		error=true;
@@ -185,12 +185,12 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 
 
 
-	NixDeleteShader(EffectIndex);
+	NixDeleteShader(Appearance.EffectIndex);
 	if (deep){
-		if (EffectFile.num>0)
-			EffectIndex = NixLoadShader(MaterialDir + EffectFile + ".fx");
-		for (int i=0;i<NumTextureLevels;i++)
-			Texture[i] = NixLoadTexture(TextureFile[i]);
+		if (Appearance.EffectFile.num>0)
+			Appearance.EffectIndex = NixLoadShader(MaterialDir + Appearance.EffectFile + ".fx");
+		for (int i=0;i<Appearance.NumTextureLevels;i++)
+			Appearance.Texture[i] = NixLoadTexture(Appearance.TextureFile[i]);
 	}
 
 	ResetHistory();
@@ -199,12 +199,8 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 }
 
 
-
-void DataMaterial::Reset()
+void DataMaterial::AppearanceData::Reset()
 {
-
-	filename = "";
-
 	NumTextureLevels = 0;
 	//Texture[0] = -1;
 	//strcpy(TextureFile[0], "");
@@ -214,12 +210,28 @@ void DataMaterial::Reset()
 	ColorSpecular = Black;
 	ColorShininess = 20;
 	ColorEmissive = Black;
-	ShiningDensity = 0;
-	ShiningLength = 0;
+
 	TransparencyMode = TransparencyModeNone;
 	AlphaSource = AlphaDestination = 0;
 	AlphaFactor = 0.5f;
 	AlphaZBuffer = true;
+
+	ReflectionMode = ReflectionNone;
+	ReflectionDensity = 0;
+	ReflectionSize = 128;
+	for (int i=0;i<6;i++)
+		ReflectionTextureFile[i] = "";
+
+	Water = false;
+	ShiningDensity = 0;
+	ShiningLength = 0;
+	EffectFile = "";
+	EffectIndex = -1;
+}
+
+
+void DataMaterial::PhysicsData::Reset()
+{
 	RCJump = 700;
 	RCStatic = 800;
 	RCSliding = 500;
@@ -229,18 +241,23 @@ void DataMaterial::Reset()
 	Burnable = false;
 	BurningTemperature = 500;
 	BurningIntensity = 40;
-	Water = false;
-	ReflectionMode = ReflectionNone;
-	ReflectionDensity = 0;
-	ReflectionSize = 128;
-	for (int i=0;i<6;i++)
-		ReflectionTextureFile[i] = "";
-
-	NumSoundRules = 0;
+}
 
 
-	EffectFile = "";
-	EffectIndex = -1;
+void DataMaterial::SoundData::Reset()
+{
+	NumRules = 0;
+}
+
+void DataMaterial::Reset()
+{
+
+	filename = "";
+
+	Appearance.Reset();
+	Physics.Reset();
+	Sound.Reset();
+
 
 	ResetHistory();
 	Notify("Change");
@@ -248,23 +265,23 @@ void DataMaterial::Reset()
 
 void DataMaterial::ApplyForRendering()
 {
-	NixSetMaterial(ColorAmbient, ColorDiffuse, ColorSpecular, ColorShininess, ColorEmissive);
+	NixSetMaterial(Appearance.ColorAmbient, Appearance.ColorDiffuse, Appearance.ColorSpecular, Appearance.ColorShininess, Appearance.ColorEmissive);
 
 	NixSetAlpha(AlphaNone);
 	NixSetZ(true, true);
-	if (TransparencyMode == TransparencyModeColorKeyHard){
+	if (Appearance.TransparencyMode == TransparencyModeColorKeyHard){
 		NixSetAlpha(AlphaColorKeyHard);
-	}else if (TransparencyMode == TransparencyModeColorKeySmooth){
+	}else if (Appearance.TransparencyMode == TransparencyModeColorKeySmooth){
 		NixSetAlpha(AlphaColorKeySmooth);
-	}else if (TransparencyMode == TransparencyModeFunctions){
-		NixSetAlpha(AlphaSource, AlphaDestination);
+	}else if (Appearance.TransparencyMode == TransparencyModeFunctions){
+		NixSetAlpha(Appearance.AlphaSource, Appearance.AlphaDestination);
 		NixSetZ(false, false);
-	}else if (TransparencyMode == TransparencyModeFactor){
-		NixSetAlpha(AlphaFactor);
+	}else if (Appearance.TransparencyMode == TransparencyModeFactor){
+		NixSetAlpha(Appearance.AlphaFactor);
 		NixSetZ(false, false);
 	}
 
-	NixSetShader(EffectIndex);
+	NixSetShader(Appearance.EffectIndex);
 }
 
 

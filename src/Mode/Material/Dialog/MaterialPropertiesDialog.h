@@ -41,9 +41,8 @@ public:
 
 private:
 	DataMaterial *data;
-	int TempNumTextureLevels;
-	string TempTextureFile[32];
-	string ReflTex[6];
+	DataMaterial::AppearanceData *app;
+	DataMaterial::AppearanceData temp;
 };
 
 #endif /* MATERIALPROPERTIESDIALOG_H_ */

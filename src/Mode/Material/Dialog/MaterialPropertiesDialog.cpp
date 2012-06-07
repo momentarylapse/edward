@@ -8,6 +8,7 @@
 #include "MaterialPropertiesDialog.h"
 #include "../../../Edward.h"
 #include "../ModeMaterial.h"
+#include "../../../Action/Material/ActionMaterialEditAppearance.h"
 
 
 string file_secure(const string &filename); // -> ModelPropertiesDialog
@@ -33,52 +34,48 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(CHuiWindow *_parent, bool _al
 	EventM("reflection_textures", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnReflectionTextures);
 	EventM("find_effect", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnFindEffect);
 
+	temp = data->Appearance;
 	LoadData();
 	Subscribe(data);
 }
 
 void MaterialPropertiesDialog::LoadData()
 {
-	TempNumTextureLevels = data->NumTextureLevels;
-	for (int i=0;i<data->NumTextureLevels;i++)
-		TempTextureFile[i] = data->TextureFile[i];
 	FillTextureList();
-	SetColor("mat_am", data->ColorAmbient);
-	SetColor("mat_di", data->ColorDiffuse);
-	SetColor("mat_sp", data->ColorSpecular);
-	SetColor("mat_em", data->ColorEmissive);
-	SetFloat("mat_shininess", data->ColorShininess);
-	if (data->TransparencyMode==TransparencyModeColorKeySmooth)
+	SetColor("mat_am", temp.ColorAmbient);
+	SetColor("mat_di", temp.ColorDiffuse);
+	SetColor("mat_sp", temp.ColorSpecular);
+	SetColor("mat_em", temp.ColorEmissive);
+	SetFloat("mat_shininess", temp.ColorShininess);
+	if (temp.TransparencyMode==TransparencyModeColorKeySmooth)
 		SetInt("transparency_mode",1);
-	else if (data->TransparencyMode==TransparencyModeColorKeyHard)
+	else if (temp.TransparencyMode==TransparencyModeColorKeyHard)
 		SetInt("transparency_mode",2);
-	else if(data->TransparencyMode==TransparencyModeFactor)
+	else if(temp.TransparencyMode==TransparencyModeFactor)
 		SetInt("transparency_mode",3);
-	else if(data->TransparencyMode==TransparencyModeFunctions)
+	else if(temp.TransparencyMode==TransparencyModeFunctions)
 		SetInt("transparency_mode",4);
 	else
 		SetInt("transparency_mode",0);
-	Enable("alpha_factor", data->TransparencyMode==TransparencyModeFactor);
-	Enable("alpha_source", data->TransparencyMode==TransparencyModeFunctions);
-	Enable("alpha_dest", data->TransparencyMode==TransparencyModeFunctions);
-	SetFloat("alpha_factor", data->AlphaFactor * 100.0f);
-	Check("alpha_z_buffer", data->AlphaZBuffer);
-	SetInt("alpha_source", data->AlphaSource);
-	SetInt("alpha_dest", data->AlphaDestination);
+	Enable("alpha_factor", temp.TransparencyMode==TransparencyModeFactor);
+	Enable("alpha_source", temp.TransparencyMode==TransparencyModeFunctions);
+	Enable("alpha_dest", temp.TransparencyMode==TransparencyModeFunctions);
+	SetFloat("alpha_factor", temp.AlphaFactor * 100.0f);
+	Check("alpha_z_buffer", temp.AlphaZBuffer);
+	SetInt("alpha_source", temp.AlphaSource);
+	SetInt("alpha_dest", temp.AlphaDestination);
 
-	SetInt("reflection", data->ReflectionMode);
-	SetInt("reflection_size", data->ReflectionSize);
-	SetInt("reflection_density", data->ReflectionDensity);
-	for (int i=0;i<6;i++)
-		ReflTex[i] = data->ReflectionTextureFile[i];
+	SetInt("reflection", temp.ReflectionMode);
+	SetInt("reflection_size", temp.ReflectionSize);
+	SetInt("reflection_density", temp.ReflectionDensity);
 	RefillReflTexView();
-	Enable("reflection_size", ((data->ReflectionMode == ReflectionCubeMapStatic) || (data->ReflectionMode == ReflectionCubeMapDynamical)));
-	Enable("reflection_textures", (data->ReflectionMode == ReflectionCubeMapStatic));
-	Enable("reflection_density", (data->ReflectionMode != ReflectionNone));
-	SetInt("shining", data->ShiningDensity);
-	SetInt("shining_length", data->ShiningLength);
-	SetString("effect_file", data->EffectFile);
-	Check("water", data->Water);
+	Enable("reflection_size", ((temp.ReflectionMode == ReflectionCubeMapStatic) || (temp.ReflectionMode == ReflectionCubeMapDynamical)));
+	Enable("reflection_textures", (temp.ReflectionMode == ReflectionCubeMapStatic));
+	Enable("reflection_density", (temp.ReflectionMode != ReflectionNone));
+	SetInt("shining", temp.ShiningDensity);
+	SetInt("shining_length", temp.ShiningLength);
+	SetString("effect_file", temp.EffectFile);
+	Check("water", temp.Water);
 }
 
 MaterialPropertiesDialog::~MaterialPropertiesDialog()
@@ -88,24 +85,25 @@ MaterialPropertiesDialog::~MaterialPropertiesDialog()
 
 void MaterialPropertiesDialog::OnUpdate(Observable *o)
 {
+	temp = data->Appearance;
 	LoadData();
 }
 
 void MaterialPropertiesDialog::OnAddTextureLevel()
 {
-	if (TempNumTextureLevels >= MATERIAL_MAX_TEXTURE_LEVELS)
+	if (temp.NumTextureLevels >= MATERIAL_MAX_TEXTURE_LEVELS)
 		ed->ErrorBox(format(_("H&ochstens %d Textur-Ebenen erlaubt!"), MATERIAL_MAX_TEXTURE_LEVELS));
 	else
-		TempTextureFile[TempNumTextureLevels ++] = "";
+		temp.TextureFile[temp.NumTextureLevels ++] = "";
 	FillTextureList();
 }
 
 void MaterialPropertiesDialog::OnTextures()
 {
 	int sel = GetInt("");
-	if ((sel >= 0) && (sel <TempNumTextureLevels))
+	if ((sel >= 0) && (sel <temp.NumTextureLevels))
 		if (ed->FileDialog(FDTexture, false, true)){
-			TempTextureFile[sel] = ed->DialogFile;
+			temp.TextureFile[sel] = ed->DialogFile;
 			//mmaterial->Texture[sel] = MetaLoadTexture(mmaterial->TextureFile[sel]);
 			FillTextureList();
 		}
@@ -114,17 +112,17 @@ void MaterialPropertiesDialog::OnTextures()
 void MaterialPropertiesDialog::OnTexturesSelect()
 {
 	int sel = GetInt("");
-	Enable("mat_delete_texture_level", (sel >= 0) && (sel < TempNumTextureLevels));
-	Enable("mat_empty_texture_level", (sel >= 0) && (sel < TempNumTextureLevels));
+	Enable("mat_delete_texture_level", (sel >= 0) && (sel < temp.NumTextureLevels));
+	Enable("mat_empty_texture_level", (sel >= 0) && (sel < temp.NumTextureLevels));
 }
 
 void MaterialPropertiesDialog::OnDeleteTextureLevel()
 {
 	int sel = GetInt("mat_textures");
 	if (sel >= 0){
-		for (int i=sel;i<TempNumTextureLevels-1;i++)
-			TempTextureFile[i] = TempTextureFile[i + 1];
-		TempNumTextureLevels --;
+		for (int i=sel;i<temp.NumTextureLevels-1;i++)
+			temp.TextureFile[i] = temp.TextureFile[i + 1];
+		temp.NumTextureLevels --;
 		FillTextureList();
 	}
 }
@@ -133,7 +131,7 @@ void MaterialPropertiesDialog::OnEmptyTextureLevel()
 {
 	int sel = GetInt("mat_textures");
 	if (sel >= 0){
-		TempTextureFile[sel] = "";
+		temp.TextureFile[sel] = "";
 		FillTextureList();
 	}
 }
@@ -159,15 +157,15 @@ void MaterialPropertiesDialog::OnReflectionTextures()
 {
 	int sel=GetInt("");
 	if (ed->FileDialog(FDTexture,false,true)){
-		ReflTex[sel] = ed->DialogFile;
-		if ((sel==0)&&(ReflTex[0].find(".") >= 0)){
-			int p=ReflTex[0].find(".");
+		temp.ReflectionTextureFile[sel] = ed->DialogFile;
+		if ((sel==0)&&(temp.ReflectionTextureFile[0].find(".") >= 0)){
+			int p=temp.ReflectionTextureFile[0].find(".");
 			for (int i=1;i<6;i++){
 				string tf;
-				tf = ReflTex[0];
-				tf[p-1]=ReflTex[0][p-1]+i;
+				tf = temp.ReflectionTextureFile[0];
+				tf[p-1]=temp.ReflectionTextureFile[0][p-1]+i;
 				if (file_test_existence(NixTextureDir + tf)){
-					ReflTex[i] = tf;
+					temp.ReflectionTextureFile[i] = tf;
 				}
 			}
 
@@ -185,49 +183,40 @@ void MaterialPropertiesDialog::OnFindEffect()
 
 void MaterialPropertiesDialog::ApplyData()
 {
-	for (int i=0;i<TempNumTextureLevels;i++){
-		if (i < data->NumTextureLevels)
-			if (data->TextureFile[i] != TempTextureFile[i])
-				data->Texture[i] = NixLoadTexture(TempTextureFile[i]);
-		data->TextureFile[i] = TempTextureFile[i];
-	}
-	data->NumTextureLevels = TempNumTextureLevels;
-	data->ColorAmbient = GetColor("mat_am");
-	data->ColorDiffuse = GetColor("mat_di");
-	data->ColorSpecular = GetColor("mat_sp");
-	data->ColorEmissive = GetColor("mat_em");
-	data->ColorShininess = GetFloat("mat_shininess");
+	temp.ColorAmbient = GetColor("mat_am");
+	temp.ColorDiffuse = GetColor("mat_di");
+	temp.ColorSpecular = GetColor("mat_sp");
+	temp.ColorEmissive = GetColor("mat_em");
+	temp.ColorShininess = GetFloat("mat_shininess");
 	if (GetInt("transparency_mode")==1)
-		data->TransparencyMode=TransparencyModeColorKeySmooth;
+		temp.TransparencyMode=TransparencyModeColorKeySmooth;
 	else if (GetInt("transparency_mode")==2)
-		data->TransparencyMode=TransparencyModeColorKeyHard;
+		temp.TransparencyMode=TransparencyModeColorKeyHard;
 	else if (GetInt("transparency_mode")==3)
-		data->TransparencyMode=TransparencyModeFactor;
+		temp.TransparencyMode=TransparencyModeFactor;
 	else if (GetInt("transparency_mode")==4)
-		data->TransparencyMode=TransparencyModeFunctions;
+		temp.TransparencyMode=TransparencyModeFunctions;
 	else
-		data->TransparencyMode=TransparencyModeNone;
-	data->AlphaZBuffer=IsChecked("alpha_z_buffer");
-	data->AlphaFactor=GetFloat("alpha_factor") * 0.01f;
-	data->AlphaSource=GetInt("alpha_source");
-	data->AlphaDestination=GetInt("alpha_dest");
-	data->ShiningDensity=GetInt("shining");
-	data->ShiningLength=GetInt("shining_length");
-	data->Water=IsChecked("water");
+		temp.TransparencyMode=TransparencyModeNone;
+	temp.AlphaZBuffer=IsChecked("alpha_z_buffer");
+	temp.AlphaFactor=GetFloat("alpha_factor") * 0.01f;
+	temp.AlphaSource=GetInt("alpha_source");
+	temp.AlphaDestination=GetInt("alpha_dest");
+	temp.ShiningDensity=GetInt("shining");
+	temp.ShiningLength=GetInt("shining_length");
+	temp.Water=IsChecked("water");
 
-	data->ReflectionMode = GetInt("reflection");
-	data->ReflectionDensity = GetInt("reflection_density");
-	data->ReflectionSize = GetInt("reflection_size");
-	for (int i=0;i<6;i++)
-		data->ReflectionTextureFile[i] = ReflTex[i];
+	temp.ReflectionMode = GetInt("reflection");
+	temp.ReflectionDensity = GetInt("reflection_density");
+	temp.ReflectionSize = GetInt("reflection_size");
 
-	if (data->EffectFile != GetString("effect_file")){
+	/*if (data->EffectFile != GetString("effect_file")){
 		NixDeleteShader(data->EffectIndex);
 		data->EffectFile = GetString("effect_file");
 
 		data->EffectIndex = NixLoadShader(MaterialDir + data->EffectFile + ".fx");
-	}
-	data->Notify("Change");
+	}*/
+	data->Execute(new ActionMaterialEditAppearance(temp));
 }
 
 void MaterialPropertiesDialog::OnOk()
@@ -246,22 +235,23 @@ void MaterialPropertiesDialog::OnClose()
 void MaterialPropertiesDialog::RefillReflTexView()
 {
 	Reset("reflection_textures");
-	AddString("reflection_textures", " + X\\" + ReflTex[0]);
-	AddString("reflection_textures", " - X\\" + ReflTex[1]);
-	AddString("reflection_textures", " + Y\\" + ReflTex[2]);
-	AddString("reflection_textures", " - Y\\" + ReflTex[3]);
-	AddString("reflection_textures", " + Z\\" + ReflTex[4]);
-	AddString("reflection_textures", " - Z\\" + ReflTex[5]);
+	AddString("reflection_textures", " + X\\" + temp.ReflectionTextureFile[0]);
+	AddString("reflection_textures", " - X\\" + temp.ReflectionTextureFile[1]);
+	AddString("reflection_textures", " + Y\\" + temp.ReflectionTextureFile[2]);
+	AddString("reflection_textures", " - Y\\" + temp.ReflectionTextureFile[3]);
+	AddString("reflection_textures", " + Z\\" + temp.ReflectionTextureFile[4]);
+	AddString("reflection_textures", " - Z\\" + temp.ReflectionTextureFile[5]);
 }
 
 void MaterialPropertiesDialog::FillTextureList()
 {
 	Reset("mat_textures");
-	for (int i=0;i<TempNumTextureLevels;i++){
-		string img = ed->get_tex_image(NixLoadTexture(TempTextureFile[i]));
-		AddString("mat_textures", format("%d\\%s\\%s", i, img.c_str(), file_secure(TempTextureFile[i]).c_str()));
+	for (int i=0;i<temp.NumTextureLevels;i++){
+		temp.Texture[i] = NixLoadTexture(temp.TextureFile[i]);
+		string img = ed->get_tex_image(temp.Texture[i]);
+		AddString("mat_textures", format("%d\\%s\\%s", i, img.c_str(), file_secure(temp.TextureFile[i]).c_str()));
 	}
-	if (TempNumTextureLevels == 0)
+	if (temp.NumTextureLevels == 0)
 		AddString("mat_textures", _("\\\\   - keine Texturen -"));
 	Enable("mat_delete_texture_level", false);
 	Enable("mat_empty_texture_level", false);

@@ -102,10 +102,10 @@ void ModeMaterial::DrawWin(int win, irect dest)
 {
 	NixSetAmbientLight(color(1,0.2f,0.2f,0.2f));
 	data->ApplyForRendering();
-	if (data->NumTextureLevels <= 1){
+	if (data->Appearance.NumTextureLevels <= 1){
 		NixVBClear(VBTemp);
 		FxCreateBall(VBTemp, v0, 100, 16, 32);
-		NixDraw3D((data->NumTextureLevels == 1) ? data->Texture[0] : -1,VBTemp,m_id);
+		NixDraw3D((data->Appearance.NumTextureLevels == 1) ? data->Appearance.Texture[0] : -1,VBTemp,m_id);
 	}else{
 		/*vector p[(MATERIAL_BALL_NUMX + 1) * (MATERIAL_BALL_NUMY + 1)];
 		vector n[(MATERIAL_BALL_NUMX + 1) * (MATERIAL_BALL_NUMY + 1)];
@@ -135,7 +135,7 @@ void ModeMaterial::DrawWin(int win, irect dest)
 									p3,n3,float(x+1)/(float)nx,float(y+1)/(float)ny);
 		}*/
 		float radius = 100;
-		NixVBClear(MaterialVB[data->NumTextureLevels]);
+		NixVBClear(MaterialVB[data->Appearance.NumTextureLevels]);
 		float tc[4][MATERIAL_MAX_TEXTURE_LEVELS * 2];
 		for (int x=0;x<MATERIAL_BALL_NUMX;x++)
 			for (int y=0;y<MATERIAL_BALL_NUMY;y++){
@@ -148,20 +148,20 @@ void ModeMaterial::DrawWin(int win, irect dest)
 				vector p1=radius*n1;
 				vector p2=radius*n2;
 				vector p3=radius*n3;
-				for (int i=0;i<data->NumTextureLevels;i++){
+				for (int i=0;i<data->Appearance.NumTextureLevels;i++){
 					tc[0][i*2] = float(x  )/(float)MATERIAL_BALL_NUMX;	tc[0][i*2+1] = float(y  )/(float)MATERIAL_BALL_NUMY;
 					tc[1][i*2] = float(x+1)/(float)MATERIAL_BALL_NUMX;	tc[1][i*2+1] = float(y  )/(float)MATERIAL_BALL_NUMY;
 					tc[2][i*2] = float(x  )/(float)MATERIAL_BALL_NUMX;	tc[2][i*2+1] = float(y+1)/(float)MATERIAL_BALL_NUMY;
 					tc[3][i*2] = float(x+1)/(float)MATERIAL_BALL_NUMX;	tc[3][i*2+1] = float(y+1)/(float)MATERIAL_BALL_NUMY;
 				}
-				NixVBAddTriaM(MaterialVB[data->NumTextureLevels],	p0,n0,tc[0],
+				NixVBAddTriaM(MaterialVB[data->Appearance.NumTextureLevels],	p0,n0,tc[0],
 															p1,n1,tc[1],
 															p2,n2,tc[2]);
-				NixVBAddTriaM(MaterialVB[data->NumTextureLevels],	p2,n2,tc[2],
+				NixVBAddTriaM(MaterialVB[data->Appearance.NumTextureLevels],	p2,n2,tc[2],
 															p1,n1,tc[1],
 															p3,n3,tc[3]);
 			}
-		NixDraw3DM(data->Texture,MaterialVB[data->NumTextureLevels],m_id);
+		NixDraw3DM(data->Appearance.Texture,MaterialVB[data->Appearance.NumTextureLevels],m_id);
 	}
 
 	NixSetShader(-1);
