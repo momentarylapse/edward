@@ -179,9 +179,9 @@ void ModeWelcome::Draw()
 
 	DrawIcon(x1     ,y1,0,_("Modell"));
 	DrawIcon(x1+dx  ,y1,1,_("Material"));
-	DrawIcon(x1+dx*2,y1,2,_("Welt"));
-	DrawIcon(x1+dx*3,y1,3,_("Font"));
-	DrawIcon(x1+dx*4,y1,4,_("Administration"));
+	DrawIcon(x1+dx*2,y1,4,_("Welt"));
+	DrawIcon(x1+dx*3,y1,5,_("Font"));
+	DrawIcon(x1+dx*4,y1,6,_("Administration"));
 
 	f=0.2f;
 	NixSetFontColor(color(1,f,f,f));
