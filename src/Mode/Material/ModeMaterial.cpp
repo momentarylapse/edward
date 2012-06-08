@@ -97,6 +97,38 @@ void ModeMaterial::ExecuteAppearanceDialog()
 	//HuiWaitTillWindowClosed(AppearanceDialog);
 }
 
+void CreateTorus(int buffer, const vector &pos, const vector dir, float radius1, float radius2, int nx, int ny)
+{
+	vector dir2 = VecOrtho(dir);
+	vector dir3 = dir ^ dir2;
+	for (int x=0;x<nx;x++){
+		float fx0 = float(x  )/(float)nx;
+		float fx1 = float(x+1)/(float)nx;
+		vector rdir0 = dir2 * cos(2 * pi * fx0) + dir3 * sin(2 * pi * fx0);
+		vector rdir1 = dir2 * cos(2 * pi * fx1) + dir3 * sin(2 * pi * fx1);
+		vector pp0 = pos + rdir0 * radius1;
+		vector pp1 = pos + rdir1 * radius1;
+		for (int y=0;y<ny;y++){
+			float fy0 = float(y  )/(float)ny;
+			float fy1 = float(y+1)/(float)ny;
+			vector n00 = rdir0 * cos(2 * pi * fy0) + dir * sin(2 * pi * fy0);
+			vector n01 = rdir0 * cos(2 * pi * fy1) + dir * sin(2 * pi * fy1);
+			vector n10 = rdir1 * cos(2 * pi * fy0) + dir * sin(2 * pi * fy0);
+			vector n11 = rdir1 * cos(2 * pi * fy1) + dir * sin(2 * pi * fy1);
+			vector p00 = pp0 + n00 * radius2;
+			vector p01 = pp0 + n01 * radius2;
+			vector p10 = pp1 + n10 * radius2;
+			vector p11 = pp1 + n11 * radius2;
+			NixVBAddTria(buffer,	p01,n01,fx0,fy1,
+									p00,n00,fx0,fy0,
+									p10,n10,fx1,fy0);
+			NixVBAddTria(buffer,	p01,n01,fx0,fy1,
+									p10,n10,fx1,fy0,
+									p11,n11,fx1,fy1);
+		}
+	}
+}
+
 
 void ModeMaterial::DrawWin(int win, irect dest)
 {
@@ -104,7 +136,8 @@ void ModeMaterial::DrawWin(int win, irect dest)
 	data->ApplyForRendering();
 	if (data->Appearance.NumTextureLevels <= 1){
 		NixVBClear(VBTemp);
-		FxCreateBall(VBTemp, v0, 100, 16, 32);
+		//FxCreateBall(VBTemp, v0, 100, 16, 32);
+		CreateTorus(VBTemp, v0, e_z, 80, 50, 64, 32);
 		NixDraw3D((data->Appearance.NumTextureLevels == 1) ? data->Appearance.Texture[0] : -1,VBTemp,m_id);
 	}else{
 		/*vector p[(MATERIAL_BALL_NUMX + 1) * (MATERIAL_BALL_NUMY + 1)];
