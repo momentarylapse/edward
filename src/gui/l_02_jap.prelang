@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-556
+550
 // Data (ID,Text)
 ad_dialog
 
@@ -101,8 +101,6 @@ copy
 コーピ
 create_lightmap
 
-create_new_material
-
 create_objects
 オブジェクト...
 current_material
@@ -128,8 +126,6 @@ current_mode_object
 current_mode_world
 [世界　の　モード]
 cut_out
-
-cutting_line
 
 default_colors
 
@@ -697,8 +693,6 @@ ncy_texture_closed
 
 nearify
 
-needs_vertices
-
 new
 新規
 new_animation_dialog
@@ -755,8 +749,6 @@ new_terrain_dialog
 
 new_tria
 新しい　三角形
-new_tria_u
-新しい　三角形　\"U\"
 normal_all_angular
 
 normal_all_hard
@@ -765,15 +757,11 @@ normal_all_per_vertex
 
 normal_all_smooth
 
-normal_all_smooth_edges
-
 normal_this_angular
 
 normal_this_hard
 
 normal_this_smooth
-
-normal_this_smooth_edges
 
 np_num_x
 
@@ -889,8 +877,6 @@ scriptvar_t_value
 値
 select_cw
 
-select_recursive
-
 selection_properties
 設定...
 selfish
@@ -935,6 +921,8 @@ sounds
 音...
 specular
 反射光
+subtract_surface
+
 sun_enabled
 
 sun_from_view
@@ -1116,7 +1104,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-133
+134
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1127,6 +1115,10 @@ zzz_setbgimage
 !bold\\Kommentar/Geschehnisse:
 
 !bold\\Name:
+
+%d Vertizes, %d Dreiecke eingefügt
+
+%d Vertizes, %d Dreiecke kopiert
 
 %d geschlossene Flächen subtrahiert
 
@@ -1161,8 +1153,6 @@ Dateien (*.*)
 Demütige aber höfliche Frage
 
 Dreieck
-
-Dreieck \"U\"
 
 Dreiecke
 

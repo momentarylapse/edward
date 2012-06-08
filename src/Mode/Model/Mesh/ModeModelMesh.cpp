@@ -63,11 +63,10 @@ void ModeModelMesh::Start()
 	ed->ToolbarAddSeparator();
 	ed->ToolbarAddItemCheckable(_("Vertexpunkt"),_("Vertexpunkt"), dir + "new_vertex.png", "new_point");
 	ed->ToolbarAddItemCheckable(_("Dreieck"),_("Dreieck"), dir + "new_triangle.png", "new_tria");
-	ed->ToolbarAddItemCheckable(_("Dreieck \"U\""),_("Dreieck \"U\""), dir + "new_triangles_u.png", "new_tria_u");
 	ed->ToolbarAddItemCheckable(_("Ebene"),_("Ebene"), dir + "new_plane.png", "new_plane");
 	ed->ToolbarAddItemCheckable(_("Quader"),_("Quader"), dir + "mode_skin.png", "new_cube");
 	ed->ToolbarAddItemCheckable(_("Kugel"),_("Kugel"), dir + "new_ball.png", "new_ball");
-	ed->ToolbarAddItemCheckable(_("Zylinder"),_("Zylinder"), dir + "new_cylinder.png", "new_cylinder");
+	ed->ToolbarAddItemCheckable(_("Zylinder (-schlange)"),_("Zylinder (-schlange)"), dir + "new_cylinder.png", "new_cylinder");
 	ed->ToolbarAddSeparator();
 	ed->ToolbarAddItemCheckable(_("Rotieren"),_("Rotieren"), dir + "rf_rotate.png", "rotate");
 	ed->ToolbarAddItemCheckable(_("Skalieren"),_("Skalieren"), dir + "rf_scale.png", "scale");

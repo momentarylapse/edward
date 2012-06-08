@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-556
+550
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -101,8 +101,6 @@ copy
 Copy
 create_lightmap
 Render lightmap...
-create_new_material
-Apply new material...
 create_objects
 Objects...
 current_material
@@ -129,8 +127,6 @@ current_mode_world
 -World-Mode-
 cut_out
 Cut off
-cutting_line
-Cutting line
 default_colors
 Use colors from material
 default_material
@@ -697,8 +693,6 @@ ncy_texture_closed
 Circled texture
 nearify
 Nearify
-needs_vertices
-For vertices
 new
 New
 new_animation_dialog
@@ -755,8 +749,6 @@ new_terrain_dialog
 New terrain
 new_tria
 New triangle
-new_tria_u
-New triangles \"U\"
 normal_all_angular
 Angular
 normal_all_hard
@@ -765,16 +757,12 @@ normal_all_per_vertex
 Per vertex
 normal_all_smooth
 Smooth
-normal_all_smooth_edges
-Smooth edges
 normal_this_angular
 Angular
 normal_this_hard
 Edgy
 normal_this_smooth
 Smooth
-normal_this_smooth_edges
-Smooth Edges
 np_num_x
 \\1
 np_num_y
@@ -889,8 +877,6 @@ scriptvar_t_value
 value:
 select_cw
 triangles only clockwise
-select_recursive
-Select connected
 selection_properties
 Properties...
 selfish
@@ -935,6 +921,8 @@ sounds
 Sounds...
 specular
 specular
+subtract_surface
+
 sun_enabled
 enabled
 sun_from_view
@@ -1116,7 +1104,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-133
+134
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1128,6 +1116,10 @@ Set background image
 !bold\\Comment/What happened:
 !bold\\Name:
 !bold\\Name:
+%d Vertizes, %d Dreiecke eingefügt
+
+%d Vertizes, %d Dreiecke kopiert
+
 %d geschlossene Flächen subtrahiert
 
 (anonym)
@@ -1162,8 +1154,6 @@ Demütige aber höfliche Frage
 Quite a polite question
 Dreieck
 Triangle
-Dreieck \"U\"
-Triangle \"U\"
 Dreiecke
 
 Dreiecke wählen: %d -> Shift + Return

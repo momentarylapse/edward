@@ -7014,7 +7014,7 @@ menu_model
 0
 
 
-142
+135
 ItemPopup
 menu_model_file
 
@@ -7669,59 +7669,7 @@ ItemPopup
 menu_model_creation
 
 1
-17
-0
-0
-0
-0
-0
-0
-
-
-Item
-needs_vertices
-
-0
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-new_tria
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-new_tria_u
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemSeparator
-
-
-1
-0
+14
 0
 0
 0
@@ -7745,6 +7693,19 @@ selfish
 
 Item
 new_point
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+new_tria
 
 1
 0
@@ -7903,20 +7864,7 @@ ItemPopup
 menu_model_selection
 
 1
-17
-0
-0
-0
-0
-0
-0
-
-
-Item
-select_recursive
-
-1
-0
+15
 0
 0
 0
@@ -8056,19 +8004,6 @@ ItemSeparator
 
 
 ItemImage
-create_new_material
-hui:new
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
 choose_material
 hui:open
 1
@@ -8150,7 +8085,7 @@ ItemPopup
 menu_model_normals
 
 1
-12
+10
 0
 0
 0
@@ -8187,19 +8122,6 @@ normal_this_smooth
 
 Item
 normal_this_hard
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-normal_this_smooth_edges
 
 1
 0
@@ -8265,19 +8187,6 @@ normal_all_smooth
 
 ItemCheckable
 normal_all_hard
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemCheckable
-normal_all_smooth_edges
 
 1
 0
@@ -8563,7 +8472,7 @@ ItemSeparator
 
 
 ItemImage
-cutting_line
+subtract_surface
 hui:cut
 1
 0
@@ -17381,7 +17290,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-709
+703
 // Text
 ad_dialog
 Verwaltung
@@ -17491,8 +17400,6 @@ copy
 Kopieren
 create_lightmap
 Lightmap rendern...
-create_new_material
-Mit neuem Material belegen...
 create_objects
 Objekte...
 creator
@@ -17521,8 +17428,6 @@ current_mode_world
 -Welt-Modus-
 cut_out
 Ausschneiden
-cutting_line
-Schnittlinie
 default_colors
 Farben aus dem Material verwenden
 default_font
@@ -17578,7 +17483,7 @@ dummy_text
 easify_dialog
 Oberfläche vereinfachen
 easify_skin
-Vereinfachen
+Vereinfachen...
 eat_quality
 Qualitätsfaktor:
 eat_triangles
@@ -18243,8 +18148,6 @@ ncy_texture_closed
 Geschlossene Textur
 nearify
 Punkte annähern
-needs_vertices
-Auf Vertex-Punkten
 new
 Neu
 new_animation_dialog
@@ -18270,7 +18173,7 @@ Punkte pro Scheibe
 new_cube
 Quader
 new_cylinder
-Zylinder...
+Zylinder (-schlange)
 new_cylinder_dialog
 neuer Zylinder
 new_cylinder_dialog_t_edges
@@ -18278,13 +18181,13 @@ Kanten
 new_cylinder_dialog_t_rings
 Ringe
 new_extract
-Extrahieren
+Dreieck dreiteilen
 new_frame
 neuer Frame
 new_konv_poly
-Konv. Polyeder
+--Konv. Polyeder
 new_outline
-Umriss
+--Umriss
 new_plane
 Ebene
 new_plane_dialog
@@ -18296,13 +18199,11 @@ Streifen Y:
 new_point
 Vertex-Punkte
 new_spat
-Spat
+--Spat
 new_terrain_dialog
 neues Terrain
 new_tria
-Neues Dreieck
-new_tria_u
-Neue Dreiecke \"U\"
+Dreiecke
 normal_all_angular
 Winkelabhängig
 normal_all_hard
@@ -18311,16 +18212,12 @@ normal_all_per_vertex
 Per Vertex
 normal_all_smooth
 Rund
-normal_all_smooth_edges
-Kanten rund
 normal_this_angular
 Winkelabhängig
 normal_this_hard
 Eckig
 normal_this_smooth
 Rund
-normal_this_smooth_edges
-Kanten rund
 np_num_x
 \\1
 np_num_y
@@ -18503,8 +18400,6 @@ search_model
 
 select_cw
 Dreiecke nur im Uhrzeigersinn
-select_recursive
-Zusammenhängendes markieren
 selection_properties
 Eigenschaften...
 selfish
@@ -18557,6 +18452,8 @@ specular
 Specular
 speed
 
+subtract_surface
+Volumen ausschneiden
 sun_am
 
 sun_ang_x
@@ -18807,7 +18704,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-709
+703
 // Text
 ad_dialog
 Administration
@@ -18917,8 +18814,6 @@ copy
 Copy
 create_lightmap
 Render lightmap...
-create_new_material
-Apply new material...
 create_objects
 Objects...
 creator
@@ -18947,8 +18842,6 @@ current_mode_world
 -World-Mode-
 cut_out
 Cut off
-cutting_line
-Cutting line
 default_colors
 Use colors from material
 default_font
@@ -19669,8 +19562,6 @@ ncy_texture_closed
 Circled texture
 nearify
 Nearify
-needs_vertices
-For vertices
 new
 New
 new_animation_dialog
@@ -19727,8 +19618,6 @@ new_terrain_dialog
 New terrain
 new_tria
 New triangle
-new_tria_u
-New triangles \"U\"
 normal_all_angular
 Angular
 normal_all_hard
@@ -19737,16 +19626,12 @@ normal_all_per_vertex
 Per vertex
 normal_all_smooth
 Smooth
-normal_all_smooth_edges
-Smooth edges
 normal_this_angular
 Angular
 normal_this_hard
 Edgy
 normal_this_smooth
 Smooth
-normal_this_smooth_edges
-Smooth Edges
 np_num_x
 \\1
 np_num_y
@@ -19929,8 +19814,6 @@ search_model
 
 select_cw
 triangles only clockwise
-select_recursive
-Select connected
 selection_properties
 Properties...
 selfish
@@ -19982,6 +19865,8 @@ Sounds...
 specular
 specular
 speed
+
+subtract_surface
 
 sun_am
 
@@ -20228,7 +20113,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-104
+103
 // Text
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -20270,8 +20155,6 @@ Demütige aber höfliche Frage
 Quite a polite question
 Dreieck
 Triangle
-Dreieck \"U\"
-Triangle \"U\"
 Ebene
 Plane
 Editor für Spiele-Daten der x9-Engine
@@ -20441,7 +20324,7 @@ program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 // Language
 日本語
 // NumIDs
-709
+703
 // Text
 ad_dialog
 
@@ -20551,8 +20434,6 @@ copy
 コーピ
 create_lightmap
 
-create_new_material
-
 create_objects
 オブジェクト...
 creator
@@ -20580,8 +20461,6 @@ current_mode_object
 current_mode_world
 [世界　の　モード]
 cut_out
-
-cutting_line
 
 default_colors
 
@@ -21303,8 +21182,6 @@ ncy_texture_closed
 
 nearify
 
-needs_vertices
-
 new
 新規
 new_animation_dialog
@@ -21361,8 +21238,6 @@ new_terrain_dialog
 
 new_tria
 新しい　三角形
-new_tria_u
-新しい　三角形　\"U\"
 normal_all_angular
 
 normal_all_hard
@@ -21371,15 +21246,11 @@ normal_all_per_vertex
 
 normal_all_smooth
 
-normal_all_smooth_edges
-
 normal_this_angular
 
 normal_this_hard
 
 normal_this_smooth
-
-normal_this_smooth_edges
 
 np_num_x
 
@@ -21563,8 +21434,6 @@ search_model
 
 select_cw
 
-select_recursive
-
 selection_properties
 設定...
 selfish
@@ -21616,6 +21485,8 @@ sounds
 specular
 反射光
 speed
+
+subtract_surface
 
 sun_am
 
