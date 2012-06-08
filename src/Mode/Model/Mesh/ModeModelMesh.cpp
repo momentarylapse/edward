@@ -26,6 +26,7 @@
 #include "../../../Action/Model/ActionModelSurfaceSubtract.h"
 #include "../../../Action/Model/ActionModelPasteGeometry.h"
 #include "../../../Action/Model/ActionModelSetNormalModeSelection.h"
+#include "../../../Action/Model/ActionModelSetNormalModeAll.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
 
 ModeModelMesh *mode_model_mesh = NULL;
@@ -140,7 +141,12 @@ void ModeModelMesh::OnCommand(const string & id)
 		data->Execute(new ActionModelSetNormalModeSelection(data, NormalModeHard));
 	if (id == "normal_this_angular")
 		data->Execute(new ActionModelSetNormalModeSelection(data, NormalModeAngular));
-	//normal_all_smooth  normal_all_hard  normal_all_angular  normal_all_per_vertex
+	if (id == "normal_all_smooth")
+		data->Execute(new ActionModelSetNormalModeAll(NormalModeSmooth));
+	if (id == "normal_all_hard")
+		data->Execute(new ActionModelSetNormalModeAll(NormalModeHard));
+	if (id == "normal_all_angular")
+		data->Execute(new ActionModelSetNormalModeAll(NormalModeAngular));
 }
 
 
@@ -170,6 +176,11 @@ void ModeModelMesh::OnUpdateMenu()
 	ed->Check("scale", right_mouse_function == RMFScale);
 	ed->Check("scale_2d", right_mouse_function == RMFScale2d);
 	ed->Check("mirror", right_mouse_function == RMFMirror);
+
+	ed->Check("normal_all_hard", data->NormalModeAll == NormalModeHard);
+	ed->Check("normal_all_smooth", data->NormalModeAll == NormalModeSmooth);
+	ed->Check("normal_all_angular", data->NormalModeAll == NormalModeAngular);
+	ed->Check("normal_all_per_vertex", data->NormalModeAll == NormalModePerVertex);
 }
 
 void ModeModelMesh::OptimizeView()

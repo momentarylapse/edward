@@ -205,6 +205,7 @@ public:
 	void DebugShow();
 
 	void SetNormalsDirtyByVertices(const Array<int> &index);
+	void SetAllNormalsDirty();
 	void UpdateNormals();
 
 

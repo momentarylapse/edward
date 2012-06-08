@@ -831,6 +831,13 @@ void DataModel::SetNormalsDirtyByVertices(const Array<int> &index)
 						}
 }
 
+void DataModel::SetAllNormalsDirty()
+{
+	foreach(Surface, s)
+		foreach(s.Triangle, t)
+			t.NormalDirty = true;
+}
+
 
 void DataModel::UpdateNormals()
 {
