@@ -10118,7 +10118,7 @@ model_dialog
 0
 
 
-67
+69
 DefButton
 ok
 hui:ok
@@ -10776,7 +10776,33 @@ material_list
 10
 10
 325
-300
+270
+1
+0
+0
+model_dialog_tab_control
+
+Button
+add_material
+hui:add
+1
+10
+285
+100
+25
+1
+0
+0
+model_dialog_tab_control
+
+Button
+delete_material
+hui:delete
+1
+115
+285
+100
+25
 1
 0
 0
@@ -17290,7 +17316,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-703
+705
 // Text
 ad_dialog
 Verwaltung
@@ -17302,6 +17328,8 @@ ad_rudimentary_configuration
 Grundeinstellungen
 ad_tab_control
 Aktuelles Spiel\\Alle Dateien\\Details\\Überflüssig\\Fehlend
+add_material
+neu...
 administrate
 Verwalten
 adress
@@ -17450,6 +17478,8 @@ delete_frame
 Frame löschen
 delete_item
 Item löschen
+delete_material
+löschen
 delete_texture_level
 Ebene löschen
 description
@@ -18704,7 +18734,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-703
+705
 // Text
 ad_dialog
 Administration
@@ -18716,6 +18746,8 @@ ad_rudimentary_configuration
 Configuration
 ad_tab_control
 current game\\all files\\details\\unnesessary\\missing
+add_material
+
 administrate
 Administrate
 adress
@@ -18864,6 +18896,8 @@ delete_frame
 delete frame
 delete_item
 Delete item
+delete_material
+
 delete_texture_level
 Delete texture level
 description
@@ -20113,7 +20147,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-103
+102
 // Text
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -20305,8 +20339,6 @@ Welt-Datei
 World file
 Welten (*.world)
 Worlds (*.world)
-Zylinder
-Cylinder
 administrieren
 administrate
 beliebige Datei
@@ -20324,7 +20356,7 @@ program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 // Language
 日本語
 // NumIDs
-703
+705
 // Text
 ad_dialog
 
@@ -20336,6 +20368,8 @@ ad_rudimentary_configuration
 
 ad_tab_control
 current game\\all files\\details\\unnesessary\\missing
+add_material
+
 administrate
 
 adress
@@ -20483,6 +20517,8 @@ delete
 delete_frame
 
 delete_item
+
+delete_material
 
 delete_texture_level
 

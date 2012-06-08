@@ -36,6 +36,9 @@ ModelPropertiesDialog::ModelPropertiesDialog(CHuiWindow *_parent, bool _allow_pa
 	EventM("generate_skin_3", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateSkin3);
 	EventM("material_list", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnMaterialList);
 	EventMX("material_list", "hui:change", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnMaterialListCheck);
+	EventMX("material_list", "hui:select", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnMaterialListSelect);
+	EventM("add_material", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnAddMaterial);
+	EventM("delete_material", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnDeleteMaterial);
 	EventM("ph_passive", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnPhysicsPassive);
 	EventM("generate_tensor_auto", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateTensorAuto);
 	EventM("mass", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateTensorAuto);
@@ -193,7 +196,7 @@ void ModelPropertiesDialog::FillMaterialList()
 		string im = render_material(&data->Material[i]);
 		AddString("material_list", format("%d\\%d\\%s\\%s\\%s", i, nt, (i == data->CurrentMaterial) ? "true" : "false", im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
 	}
-	AddString("material_list", _("\\\\\\\\- neu -"));
+	Enable("delete_material", false);
 }
 
 void ModelPropertiesDialog::RefillInventaryList()
@@ -251,11 +254,6 @@ void ModelPropertiesDialog::OnMaterialList()
 	if (s < 0)
 		return;
 
-	// create new?
-	if (s >= data->Material.num){
-		data->Execute(new ActionModelAddMaterial());
-		s = data->Material.num - 1;
-	}
 	data->CurrentMaterial = s;
 	data->CurrentTextureLevel = 0;
 	mode_model->ExecuteMaterialDialog(0);
@@ -266,6 +264,24 @@ void ModelPropertiesDialog::OnMaterialListCheck()
 {
 	data->CurrentMaterial = HuiGetEvent()->row;
 	data->CurrentTextureLevel = 0;
+	FillMaterialList();
+}
+
+void ModelPropertiesDialog::OnMaterialListSelect()
+{
+	int s = GetInt("");
+	Enable("delete_material", s >= 0);
+}
+
+void ModelPropertiesDialog::OnAddMaterial()
+{
+	data->Execute(new ActionModelAddMaterial());
+}
+
+void ModelPropertiesDialog::OnDeleteMaterial()
+{
+	HuiErrorBox(this, "", "noch nicht implementiert");
+	// TODO
 	FillMaterialList();
 }
 

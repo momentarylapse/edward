@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-550
+552
 // Data (ID,Text)
 ad_dialog
 
@@ -13,6 +13,8 @@ ad_rudimentary_configuration
 
 ad_tab_control
 current game\\all files\\details\\unnesessary\\missing
+add_material
+
 administrate
 
 adt_dest
@@ -140,6 +142,8 @@ delete
 delete_frame
 
 delete_item
+
+delete_material
 
 delete_texture_level
 
@@ -1104,7 +1108,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-134
+133
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1334,15 +1338,13 @@ Wuefel: zweiter Punkt
 
 Wuerfel: dritter Punkt
 
-Zylinder
+Zylinder (-schlange)
 
 Zylinder: Endpunkt
 
 Zylinder: Radius
 
 \\\\   - keine Texturen -
-
-\\\\\\\\- neu -
 
 administrieren
 

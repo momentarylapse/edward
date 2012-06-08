@@ -30,6 +30,9 @@ public:
 	void OnGenerateSkin3();
 	void OnMaterialList();
 	void OnMaterialListCheck();
+	void OnMaterialListSelect();
+	void OnAddMaterial();
+	void OnDeleteMaterial();
 	void OnPhysicsPassive();
 	void OnGenerateTensorAuto();
 	void OnNumItems();

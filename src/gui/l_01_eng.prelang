@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-550
+552
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -13,6 +13,8 @@ ad_rudimentary_configuration
 Configuration
 ad_tab_control
 current game\\all files\\details\\unnesessary\\missing
+add_material
+
 administrate
 Administrate
 adt_dest
@@ -141,6 +143,8 @@ delete_frame
 delete frame
 delete_item
 Delete item
+delete_material
+
 delete_texture_level
 Delete texture level
 detail_0
@@ -1104,7 +1108,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-134
+133
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1334,15 +1338,13 @@ Wuefel: zweiter Punkt
 
 Wuerfel: dritter Punkt
 
-Zylinder
-Cylinder
+Zylinder (-schlange)
+
 Zylinder: Endpunkt
 
 Zylinder: Radius
 
 \\\\   - keine Texturen -
-
-\\\\\\\\- neu -
 
 administrieren
 administrate
