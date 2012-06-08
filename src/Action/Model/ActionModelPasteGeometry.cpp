@@ -11,6 +11,8 @@
 
 ActionModelPasteGeometry::ActionModelPasteGeometry(DataModel *m, ModeModelGeometry &geo)
 {
+	m->ClearSelection();
+
 	int nv = m->Vertex.num;
 	foreach(m->Vertex, v)
 		v.is_selected = false;

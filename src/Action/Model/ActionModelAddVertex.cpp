@@ -30,7 +30,7 @@ void *ActionModelAddVertex::execute(Data *d)
 	vv.pos = v;
 	vv.NormalMode = NormalModeAngular;
 	vv.BoneIndex = 0;
-	vv.is_selected = false;
+	vv.is_selected = true;
 	vv.is_special = false;
 	vv.view_stage = m->ViewStage;
 	vv.RefCount = 0;

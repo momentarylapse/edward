@@ -52,7 +52,7 @@ void ModeModelSurface::AddTriangle(int a, int b, int c, int material, const vect
 	// closed?
 	UpdateClosed();
 
-	t.is_selected = false;
+	t.is_selected = true;
 	t.Material = material;
 	t.view_stage = model->ViewStage;
 	t.NormalDirty = true;

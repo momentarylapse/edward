@@ -840,7 +840,7 @@ ModeModelSurface *DataModel::AddSurface(int surf_no)
 	ModeModelSurface s;
 	s.model = this;
 	s.view_stage = ViewStage;
-	s.is_selected = false;
+	s.is_selected = true;
 	s.IsClosed = false;
 	s.IsVisible = true;
 	s.IsPhysical = true;
