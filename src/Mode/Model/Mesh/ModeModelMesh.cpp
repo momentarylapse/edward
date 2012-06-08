@@ -25,6 +25,7 @@
 #include "../../../Action/Model/ActionModelSetMaterial.h"
 #include "../../../Action/Model/ActionModelSurfaceSubtract.h"
 #include "../../../Action/Model/ActionModelPasteGeometry.h"
+#include "../../../Action/Model/ActionModelSetNormalModeSelection.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
 
 ModeModelMesh *mode_model_mesh = NULL;
@@ -132,6 +133,14 @@ void ModeModelMesh::OnCommand(const string & id)
 		CreateNewMaterialForSelection();
 	if (id == "choose_material")
 		ChooseMaterialForSelection();
+
+	if (id == "normal_this_smooth")
+		data->Execute(new ActionModelSetNormalModeSelection(data, NormalModeSmooth));
+	if (id == "normal_this_hard")
+		data->Execute(new ActionModelSetNormalModeSelection(data, NormalModeHard));
+	if (id == "normal_this_angular")
+		data->Execute(new ActionModelSetNormalModeSelection(data, NormalModeAngular));
+	//normal_all_smooth  normal_all_hard  normal_all_angular  normal_all_per_vertex
 }
 
 

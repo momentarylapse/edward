@@ -178,7 +178,7 @@ struct ModeModelMove
 class ModeModelEdge: public MultiViewSingleData
 {
 public:
-	int NormalMode;
+	//int NormalMode;
 	int Vertex[2];
 	int RefCount, Triangle[2];
 	bool IsRound; // for editing
@@ -250,7 +250,7 @@ public:
 	int get_surf_no(ModeModelSurface *s);
 
 	// high level (actions)
-	void AddVertex(const vector &v);
+	void AddVertex(const vector &v, int normal_mode = -1);
 	ModeModelTriangle *AddTriangle(int a, int b, int c);
 
 
@@ -277,6 +277,7 @@ public:
 	// geometry
 	Array<ModeModelVertex> Vertex;
 	Array<ModeModelSurface> Surface;
+	int NormalModeAll;
 	Array<MultiViewSingleData> SkinVertex; // only temporary...
 	int SkinVertMat, SkinVertTL;
 

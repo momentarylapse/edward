@@ -9,9 +9,10 @@
 #include "../../Data/Model/DataModel.h"
 #include <assert.h>
 
-ActionModelAddVertex::ActionModelAddVertex(const vector &_v)
+ActionModelAddVertex::ActionModelAddVertex(const vector &_v, int _normal_mode)
 {
 	v = _v;
+	normal_mode = _normal_mode;
 }
 
 ActionModelAddVertex::~ActionModelAddVertex()
@@ -28,7 +29,13 @@ void *ActionModelAddVertex::execute(Data *d)
 	// new vertex
 	ModeModelVertex vv;
 	vv.pos = v;
-	vv.NormalMode = NormalModeAngular;
+	if (normal_mode < 0){
+		if (m->NormalModeAll != NormalModePerVertex)
+			vv.NormalMode = m->NormalModeAll;
+		else
+			vv.NormalMode = NormalModeAngular;
+	}else
+		vv.NormalMode = normal_mode;
 	vv.BoneIndex = 0;
 	vv.is_selected = true;
 	vv.is_special = false;

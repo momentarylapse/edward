@@ -14,7 +14,7 @@
 class ActionModelAddVertex: public Action
 {
 public:
-	ActionModelAddVertex(const vector &_v);
+	ActionModelAddVertex(const vector &_v, int _normal_mode = -1);
 	virtual ~ActionModelAddVertex();
 
 	void *execute(Data *d);
@@ -23,6 +23,7 @@ public:
 
 private:
 	vector v;
+	int normal_mode;
 };
 
 #endif /* ACTIONMODELADDVERTEX_H_ */

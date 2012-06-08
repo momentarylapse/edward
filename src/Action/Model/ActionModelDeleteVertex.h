@@ -24,6 +24,7 @@ public:
 private:
 	int vertex;
 	vector pos;
+	int normal_mode;
 };
 
 #endif /* ACTIONMODELDELETEVERTEX_H_ */

@@ -62,6 +62,7 @@ void DataModel::Reset()
 	Material[0].reset();
 	AutoGenerateTensor=true;
 	Matrix3Identity(InertiaTensor);
+	NormalModeAll = NormalModeAngular;
 
 	CurrentMaterial = 0;
 	CurrentTextureLevel = 0;
@@ -764,6 +765,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 
 		// import...
 	NotifyBegin();
+	NormalModeAll = Skin[1].NormalModeAll;
 		foreach(Skin[1].Vertex, v)
 			AddVertex(v.pos);
 		for (int i=0;i<Material.num;i++){
@@ -855,8 +857,8 @@ ModeModelSurface *DataModel::AddSurface(int surf_no)
 }
 
 
-void DataModel::AddVertex(const vector &v)
-{	Execute(new ActionModelAddVertex(v));	}
+void DataModel::AddVertex(const vector &v, int normal_mode)
+{	Execute(new ActionModelAddVertex(v, normal_mode));	}
 
 void DataModel::ClearSelection()
 {

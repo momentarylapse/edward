@@ -87,7 +87,6 @@ int ModeModelSurface::AddEdgeForNewTriangle(int a, int b, int tria)
 	ee.is_selected = false;
 	ee.is_special = false;
 	ee.IsRound = false;
-	ee.NormalMode = NormalModeAngular;
 	ee.RefCount = 1;
 	ee.Triangle[0] = tria;
 	ee.Triangle[1] = -1;
@@ -226,17 +225,18 @@ void ModeModelSurface::UpdateNormals()
 		ModeModelTriangle &t1 = Triangle[e.Triangle[0]];
 		ModeModelTriangle &t2 = Triangle[e.Triangle[1]];
 
+		ModeModelVertex &v1 = model->Vertex[e.Vertex[0]];
+		ModeModelVertex &v2 = model->Vertex[e.Vertex[1]];
+
 		// round?
 		e.IsRound = false;
-		if (e.NormalMode == NormalModeAngular)
+		if ((v1.NormalMode == NormalModeAngular) || (v2.NormalMode == NormalModeAngular))
 			e.IsRound = (fabs(t1.TempNormal * t2.TempNormal) > 0.5f);
-		else if (e.NormalMode == NormalModeSmooth)
-			e.IsRound = true;
 
-		if (e.IsRound){
+		if (((v1.NormalMode == NormalModeAngular) && (e.IsRound)) || (v1.NormalMode == NormalModeSmooth))
 			vert.add(e.Vertex[0]);
+		if (((v2.NormalMode == NormalModeAngular) && (e.IsRound)) || (v2.NormalMode == NormalModeSmooth))
 			vert.add(e.Vertex[1]);
-		}
 
 		/*if (e.IsRound){
 			vector n = t1.TempNormal + t2.TempNormal;
@@ -253,6 +253,10 @@ void ModeModelSurface::UpdateNormals()
 	// per vertex...
 	foreach(vert, ip){
 
+		// hard vertex -> nothing to do
+		if (model->Vertex[ip].NormalMode == NormalModeHard)
+			continue;
+
 		// find all triangles shared by this vertex
 		Array<int> ti, tv;
 		foreachi(Triangle, t, i){
@@ -264,6 +268,22 @@ void ModeModelSurface::UpdateNormals()
 				}
 			}
 		}
+
+		// smooth vertex
+		if (model->Vertex[ip].NormalMode == NormalModeSmooth){
+
+			// average normal
+			vector n = v0;
+			for (int i=0;i<ti.num;i++)
+				n += Triangle[ti[i]].Normal[tv[i]];
+			VecNormalize(n);
+			// apply normal...
+			for (int i=0;i<ti.num;i++)
+				Triangle[ti[i]].Normal[tv[i]] = n;
+			continue;
+		}
+
+		// angular vertex...
 
 		// find groups of triangles that are connected by round edges
 		while (ti.num > 0){
