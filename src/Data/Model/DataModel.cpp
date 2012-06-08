@@ -775,6 +775,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 						tt->SkinVertex[tl][k] = t.SkinVertex[tl][k];
 			}
 		}
+	ClearSelection();
 	NotifyEnd();
 
 
