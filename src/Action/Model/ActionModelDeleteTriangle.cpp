@@ -24,12 +24,6 @@ void *ActionModelDeleteTriangle::execute(Data *d)
 
 
 
-void ActionModelDeleteTriangle::redo(Data *d)
-{
-}
-
-
-
 void ActionModelDeleteTriangle::undo(Data *d)
 {
 }

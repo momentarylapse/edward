@@ -40,11 +40,6 @@ void ActionModel__SurfaceAddTriangle::undo(Data *d)
 
 
 
-void ActionModel__SurfaceAddTriangle::redo(Data *d)
-{	execute(d);	}
-
-
-
 void *ActionModel__SurfaceAddTriangle::execute(Data *d)
 {
 	msg_write("__surf add tria do");

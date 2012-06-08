@@ -48,13 +48,6 @@ void *ActionModelMVRotateSkinVertices::execute(Data *d)
 
 
 
-void ActionModelMVRotateSkinVertices::redo(Data *d)
-{
-	execute(d);
-}
-
-
-
 void ActionModelMVRotateSkinVertices::undo(Data *d)
 {
 	msg_write("rot skin undo");

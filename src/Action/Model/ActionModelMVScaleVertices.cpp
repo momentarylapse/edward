@@ -53,13 +53,6 @@ void *ActionModelMVScaleVertices::execute(Data *d)
 
 
 
-void ActionModelMVScaleVertices::redo(Data *d)
-{
-	execute(d);
-}
-
-
-
 void ActionModelMVScaleVertices::abort(Data *d)
 {
 	msg_write("scale vert abort");

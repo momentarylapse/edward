@@ -90,11 +90,6 @@ void *ActionModel__JoinSurfaces::execute(Data *d)
 
 
 
-void ActionModel__JoinSurfaces::redo(Data *d)
-{	execute(d);	}
-
-
-
 void ActionModel__JoinSurfaces::undo(Data *d)
 {
 	msg_write("__join surf undo");

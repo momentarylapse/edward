@@ -19,7 +19,6 @@ public:
 
 	void *execute(Data *d);
 	void undo(Data *d);
-	void redo(Data *d);
 };
 
 #endif /* ACTIONMODELADDMATERIAL_H_ */

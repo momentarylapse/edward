@@ -41,8 +41,3 @@ void *ActionModel__AddSurface::execute(Data *d)
 }
 
 
-
-void ActionModel__AddSurface::redo(Data *d)
-{	execute(d);	}
-
-

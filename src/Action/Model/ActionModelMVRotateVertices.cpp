@@ -40,13 +40,6 @@ void ActionModelMVRotateVertices::undo(Data *d)
 
 
 
-void ActionModelMVRotateVertices::redo(Data *d)
-{
-	execute(d);
-}
-
-
-
 void *ActionModelMVRotateVertices::execute(Data *d)
 {
 	msg_write("rotate vert do");

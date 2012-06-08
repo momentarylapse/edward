@@ -65,10 +65,3 @@ void ActionModelMVScaleSkinVertices::undo(Data *d)
 }
 
 
-
-void ActionModelMVScaleSkinVertices::redo(Data *d)
-{
-	execute(d);
-}
-
-

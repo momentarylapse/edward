@@ -55,8 +55,3 @@ void *ActionModel__SurfaceDeleteTriangle::execute(Data *d)
 }
 
 
-
-void ActionModel__SurfaceDeleteTriangle::redo(Data *d)
-{	execute(d);	}
-
-

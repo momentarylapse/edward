@@ -64,10 +64,3 @@ void ActionModelSetNormalModeSelection::undo(Data *d)
 }
 
 
-
-void ActionModelSetNormalModeSelection::redo(Data *d)
-{
-	execute(d);
-}
-
-

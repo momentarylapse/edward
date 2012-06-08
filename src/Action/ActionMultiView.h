@@ -21,9 +21,9 @@ public:
 	ActionMultiView(Data *d, const vector &_pos0);
 	virtual ~ActionMultiView();
 
-	virtual void *execute(Data *d) = 0;
+	/*virtual void *execute(Data *d) = 0;
 	virtual void undo(Data *d) = 0;
-	virtual void redo(Data *d) = 0;
+	virtual void redo(Data *d) = 0;*/
 
 	// continuous editing
 	virtual void abort(Data *d) = 0;

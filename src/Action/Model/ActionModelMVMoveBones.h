@@ -21,7 +21,6 @@ public:
 
 	void *execute(Data *d);
 	void undo(Data *d);
-	void redo(Data *d);
 
 	// continuous editing
 	void abort(Data *d);

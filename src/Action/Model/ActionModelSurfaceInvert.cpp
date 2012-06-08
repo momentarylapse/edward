@@ -48,10 +48,3 @@ void ActionModelSurfaceInvert::undo(Data *d)
 }
 
 
-
-void ActionModelSurfaceInvert::redo(Data *d)
-{
-	execute(d);
-}
-
-

@@ -27,13 +27,6 @@ void *ActionModelAddMaterial::execute(Data *d)
 
 
 
-void ActionModelAddMaterial::redo(Data *d)
-{
-	execute(d);
-}
-
-
-
 void ActionModelAddMaterial::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);

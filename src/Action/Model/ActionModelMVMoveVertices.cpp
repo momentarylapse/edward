@@ -57,10 +57,3 @@ void *ActionModelMVMoveVertices::execute(Data *d)
 }
 
 
-
-void ActionModelMVMoveVertices::redo(Data *d)
-{
-	execute(d);
-}
-
-

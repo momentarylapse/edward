@@ -26,9 +26,6 @@ ActionModelSetMaterial::~ActionModelSetMaterial()
 {
 }
 
-void ActionModelSetMaterial::redo(Data *d)
-{	execute(d);	}
-
 
 
 void *ActionModelSetMaterial::execute(Data *d)

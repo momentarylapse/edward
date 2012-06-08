@@ -49,13 +49,6 @@ void *ActionModelAddBone::execute(Data *d)
 
 
 
-void ActionModelAddBone::redo(Data *d)
-{
-	execute(d);
-}
-
-
-
 void ActionModelAddBone::undo(Data *d)
 {
 	msg_write("add bone undo");

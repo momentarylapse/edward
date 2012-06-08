@@ -34,11 +34,6 @@ void *ActionModel__DeleteSurface::execute(Data *d)
 
 
 
-void ActionModel__DeleteSurface::redo(Data *d)
-{	execute(d);	}
-
-
-
 void ActionModel__DeleteSurface::undo(Data *d)
 {
 	msg_write("__del surf undo");

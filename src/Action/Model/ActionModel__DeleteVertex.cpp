@@ -104,8 +104,3 @@ void *ActionModel__DeleteVertex::execute(Data *d)
 }
 
 
-
-void ActionModel__DeleteVertex::redo(Data *d)
-{	execute(d);	}
-
-

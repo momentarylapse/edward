@@ -39,10 +39,3 @@ void ActionModelEditMaterial::undo(Data *d)
 }
 
 
-
-void ActionModelEditMaterial::redo(Data *d)
-{
-	execute(d);
-}
-
-

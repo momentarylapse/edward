@@ -58,13 +58,6 @@ void ActionModelMVMoveBones::undo(Data *d)
 
 
 
-void ActionModelMVMoveBones::redo(Data *d)
-{
-	execute(d);
-}
-
-
-
 void ActionModelMVMoveBones::abort(Data *d)
 {
 	undo(d);

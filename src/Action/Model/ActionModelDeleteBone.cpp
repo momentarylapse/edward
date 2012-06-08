@@ -17,11 +17,6 @@ ActionModelDeleteBone::~ActionModelDeleteBone()
 {
 }
 
-void ActionModelDeleteBone::redo(Data *d)
-{
-	execute(d);
-}
-
 
 
 void *ActionModelDeleteBone::execute(Data *d)

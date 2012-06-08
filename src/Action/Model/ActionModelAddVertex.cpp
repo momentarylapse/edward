@@ -71,10 +71,3 @@ void ActionModelAddVertex::undo(Data *d)
 	m->Vertex.pop();
 }
 
-
-
-void ActionModelAddVertex::redo(Data *d)
-{
-	execute(d);
-}
-

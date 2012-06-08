@@ -9,13 +9,10 @@
 
 Action::Action()
 {
-	// TODO Auto-generated constructor stub
-
 }
 
 Action::~Action()
 {
-	// TODO Auto-generated destructor stub
 }
 
 void Action::undo_and_notify(Data *d)

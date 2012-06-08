@@ -39,13 +39,6 @@ void ActionModelMVMirrorSkinVertices::abort(Data *d)
 
 
 
-void ActionModelMVMirrorSkinVertices::redo(Data *d)
-{
-	execute(d);
-}
-
-
-
 void *ActionModelMVMirrorSkinVertices::execute(Data *d)
 {
 	msg_write("mirror skin do");

@@ -24,12 +24,6 @@ void ActionModelDeleteVertex::undo(Data *d)
 
 
 
-void ActionModelDeleteVertex::redo(Data *d)
-{
-}
-
-
-
 void *ActionModelDeleteVertex::execute(Data *d)
 {
 }

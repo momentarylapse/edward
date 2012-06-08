@@ -29,13 +29,6 @@ ActionModelMVMirrorVertices::~ActionModelMVMirrorVertices()
 
 
 
-void ActionModelMVMirrorVertices::redo(Data *d)
-{
-	execute(d);
-}
-
-
-
 void *ActionModelMVMirrorVertices::execute(Data *d)
 {
 	msg_write("mirror vert do");
