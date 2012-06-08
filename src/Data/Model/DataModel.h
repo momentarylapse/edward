@@ -185,6 +185,13 @@ public:
 };
 
 
+struct ModeModelGeometry
+{
+	Array<ModeModelVertex> Vertex;
+	Array<ModeModelTriangle> Triangle;
+};
+
+
 class DataModel: public Data
 {
 public:

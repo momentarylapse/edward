@@ -46,6 +46,12 @@ public:
 		RMFMirror
 	};
 	int right_mouse_function;
+
+	void Copy();
+	void Paste();
+	bool Copyable();
+	bool Pasteable();
+	ModeModelGeometry TempGeo;
 };
 
 extern ModeModelMesh *mode_model_mesh;

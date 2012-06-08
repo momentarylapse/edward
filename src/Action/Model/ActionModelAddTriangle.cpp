@@ -40,7 +40,7 @@ ActionModelAddTriangle::ActionModelAddTriangle(DataModel *m, int _a, int _b, int
 	}
 
 	// add triangle
-	AddSubAction(new ActionModel__SurfaceAddTriangle(surf_no, _a, _b, _c, m->CurrentMaterial, _sva, _svb, _svc), m);
+	AddSubAction(new ActionModel__SurfaceAddTriangle(surf_no, _a, _b, _c, _material, _sva, _svb, _svc), m);
 
 	/*sModeModelSubSkin *sub = &skin->Sub[CurrentMaterial];
 	sModeModelTriangle t;

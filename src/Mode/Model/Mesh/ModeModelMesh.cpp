@@ -24,6 +24,7 @@
 #include "../../../Action/Model/ActionModelDeleteSelection.h"
 #include "../../../Action/Model/ActionModelSetMaterial.h"
 #include "../../../Action/Model/ActionModelSurfaceSubtract.h"
+#include "../../../Action/Model/ActionModelPasteGeometry.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
 
 ModeModelMesh *mode_model_mesh = NULL;
@@ -90,6 +91,10 @@ void ModeModelMesh::OnCommand(const string & id)
 
 	if (id == "delete")
 		data->Execute(new ActionModelDeleteSelection(data, (ed->cur_mode == mode_model_mesh_vertex)));
+	if (id == "copy")
+		Copy();
+	if (id == "paste")
+		Paste();
 	if (id == "subtract_surface")
 		data->Execute(new ActionModelSurfaceSubtract(data));
 
@@ -140,6 +145,8 @@ void ModeModelMesh::OnUpdate(Observable *o)
 
 void ModeModelMesh::OnUpdateMenu()
 {
+	ed->Check("copy", Copyable());
+	ed->Check("paste", Pasteable());
 	string cm_name;
 	if (ed->creation_mode)
 		cm_name = ed->creation_mode->name;
@@ -284,6 +291,50 @@ void ModeModelMesh::ApplyRightMouseFunction(MultiView *mv)
 	}else if (right_mouse_function == RMFMirror){
 		mv->SetMouseAction(2, "ActionModelMVMirror" + suffix, MultiView::ActionOnce);
 	}
+}
+
+void ModeModelMesh::Copy()
+{
+	TempGeo.Vertex.clear();
+	TempGeo.Triangle.clear();
+
+	// copy vertices
+	Array<int> vert;
+	foreachi(data->Vertex, v, vi)
+		if (v.is_selected){
+			TempGeo.Vertex.add(v);
+			vert.add(vi);
+		}
+
+	// copy triangles
+	foreach(data->Surface, s)
+		foreach(s.Triangle, t)
+			if (t.is_selected){
+				ModeModelTriangle tt = t;
+				for (int k=0;k<3;k++)
+					foreachi(vert, v, vi)
+						if (v == t.Vertex[k])
+							tt.Vertex[k] = vi;
+				TempGeo.Triangle.add(tt);
+			}
+
+	ed->SetMessage(format(_("%d Vertizes, %d Dreiecke kopiert"), TempGeo.Vertex.num, TempGeo.Triangle.num));
+}
+
+void ModeModelMesh::Paste()
+{
+	data->Execute(new ActionModelPasteGeometry(data, TempGeo));
+	ed->SetMessage(format(_("%d Vertizes, %d Dreiecke eingef&ugt"), TempGeo.Vertex.num, TempGeo.Triangle.num));
+}
+
+bool ModeModelMesh::Copyable()
+{
+	return data->GetNumMarkedVertices();
+}
+
+bool ModeModelMesh::Pasteable()
+{
+	return TempGeo.Vertex.num > 0;
 }
 
 
