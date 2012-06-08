@@ -11,7 +11,7 @@
 #include "../Mesh/ModeModelMeshTriangle.h"
 #include "../Animation/ModeModelAnimation.h"
 #include "Creation/ModeModelSkeletonCreateBone.h"
-#include "../../../Action/Model/ActionModelDeleteBoneSelection.h"
+#include "../../../Action/Model/Skeleton/ActionModelDeleteBoneSelection.h"
 
 
 ModeModelSkeleton *mode_model_skeleton = NULL;

@@ -6,7 +6,7 @@
  */
 
 #include "ActionModelAddBone.h"
-#include "../../Data/Model/DataModel.h"
+#include "../../../Data/Model/DataModel.h"
 #include <assert.h>
 
 ActionModelAddBone::ActionModelAddBone(const vector &_pos, int _parent)

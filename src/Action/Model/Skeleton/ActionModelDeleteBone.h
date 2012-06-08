@@ -8,8 +8,8 @@
 #ifndef ACTIONMODELDELETEBONE_H_
 #define ACTIONMODELDELETEBONE_H_
 
-#include "../Action.h"
-#include "../../lib/types/types.h"
+#include "../../Action.h"
+#include "../../../lib/types/types.h"
 
 class ActionModelDeleteBone: public Action
 {

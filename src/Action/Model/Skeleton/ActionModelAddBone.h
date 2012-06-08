@@ -8,8 +8,8 @@
 #ifndef ACTIONMODELADDBONE_H_
 #define ACTIONMODELADDBONE_H_
 
-#include "../Action.h"
-#include "../../lib/types/types.h"
+#include "../../Action.h"
+#include "../../../lib/types/types.h"
 
 class ActionModelAddBone: public Action
 {

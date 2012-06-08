@@ -8,10 +8,9 @@
 #ifndef ACTIONMODELDELETEBONESELECTION_H_
 #define ACTIONMODELDELETEBONESELECTION_H_
 
-#include "../Action.h"
-#include "../ActionGroup.h"
-#include "../../lib/types/types.h"
-#include "../../Data/Model/DataModel.h"
+#include "../../Action.h"
+#include "../../ActionGroup.h"
+#include "../../../Data/Model/DataModel.h"
 
 class ActionModelDeleteBoneSelection: public ActionGroup
 {

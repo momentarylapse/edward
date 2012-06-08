@@ -8,8 +8,8 @@
 #ifndef ACTIONMODELADDMATERIAL_H_
 #define ACTIONMODELADDMATERIAL_H_
 
-#include "../Action.h"
-#include "../../Data/Model/DataModel.h"
+#include "../../Action.h"
+#include "../../../Data/Model/DataModel.h"
 
 class ActionModelAddMaterial : public Action
 {

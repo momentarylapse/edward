@@ -8,7 +8,7 @@
 #include "ModelPropertiesDialog.h"
 #include "../../../Edward.h"
 #include "../ModeModel.h"
-#include "../../../Action/Model/ActionModelAddMaterial.h"
+#include "../../../Action/Model/Data/ActionModelAddMaterial.h"
 
 
 

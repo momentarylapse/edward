@@ -8,7 +8,7 @@
 #include "ModeModelSkeletonCreateBone.h"
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"
-#include "../../../../Action/Model/ActionModelAddBone.h"
+#include "../../../../Action/Model/Skeleton/ActionModelAddBone.h"
 
 ModeModelSkeletonCreateBone::ModeModelSkeletonCreateBone(Mode *_parent, DataModel *_data)
 {

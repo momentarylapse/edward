@@ -6,7 +6,7 @@
  */
 
 #include "ActionModelDeleteBone.h"
-#include "../../Data/Model/DataModel.h"
+#include "../../../Data/Model/DataModel.h"
 
 ActionModelDeleteBone::ActionModelDeleteBone(int _index)
 {
