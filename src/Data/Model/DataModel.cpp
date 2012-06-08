@@ -857,6 +857,60 @@ ModeModelSurface *DataModel::AddSurface(int surf_no)
 void DataModel::AddVertex(const vector &v)
 {	Execute(new ActionModelAddVertex(v));	}
 
+void DataModel::ClearSelection()
+{
+	foreach(Vertex, v)
+		v.is_selected = false;
+	foreach(Surface, s){
+		s.is_selected = false;
+		foreach(s.Triangle, t)
+			t.is_selected = false;
+	}
+}
+
+void DataModel::SelectionTrianglesFromSurfaces()
+{
+	foreach(Surface, s)
+		foreach(s.Triangle, t)
+			t.is_selected = s.is_selected;
+}
+
+void DataModel::SelectionVerticesFromSurfaces()
+{
+	foreach(Vertex, v)
+		if (v.Surface >= 0)
+			v.is_selected = Surface[v.Surface].is_selected;
+		else
+			v.is_selected = false;
+}
+
+void DataModel::SelectionSurfacesFromTriangles()
+{
+	foreach(Surface, s){
+		s.is_selected = true;
+		foreach(s.Triangle, t)
+			s.is_selected &= t.is_selected;
+	}
+}
+
+void DataModel::SelectionVerticesFromTriangles()
+{
+	foreach(Vertex, v)
+		v.is_selected = false;
+	foreach(Surface, s)
+		foreach(s.Triangle, t)
+			if (t.is_selected)
+				for (int k=0;k<3;k++)
+					Vertex[t.Vertex[k]].is_selected = true;
+}
+
+void DataModel::SelectionTrianglesFromVertices()
+{
+	foreach(Surface, s)
+		foreach(s.Triangle, t)
+			t.is_selected = ((Vertex[t.Vertex[0]].is_selected) and (Vertex[t.Vertex[1]].is_selected) and (Vertex[t.Vertex[2]].is_selected));
+}
+
 ModeModelTriangle *DataModel::AddTriangle(int a, int b, int c)
 {
 	vector sv[3] = {e_y, v0, e_x};

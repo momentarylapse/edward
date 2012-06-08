@@ -216,6 +216,13 @@ public:
 	//int GetNumMarkedBalls();
 	//int GetNumMarkedKonvPolys();
 
+	void ClearSelection();
+	void SelectionTrianglesFromVertices();
+	void SelectionSurfacesFromTriangles();
+	void SelectionTrianglesFromSurfaces();
+	void SelectionVerticesFromTriangles();
+	void SelectionVerticesFromSurfaces();
+
 
 	float GetDiameter();
 	void GenerateDetailDists(bool just_temp = false);

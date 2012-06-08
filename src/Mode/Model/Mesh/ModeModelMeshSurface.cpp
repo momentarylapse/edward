@@ -81,16 +81,8 @@ void ModeModelMeshSurface::OnUpdate(Observable *o)
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
 				&SurfaceIsMouseOver, &SurfaceInRect);
 	}else if (o->GetName() == "MultiView"){
-		// vertex selection from surfaces
-		foreach(data->Vertex, v)
-			if (v.Surface >= 0)
-				v.is_selected = data->Surface[v.Surface].is_selected;
-			else
-				v.is_selected = false;
-		// trias from surfaces
-		foreach(data->Surface, s)
-			foreach(s.Triangle, t)
-				t.is_selected = s.is_selected;
+		data->SelectionVerticesFromSurfaces();
+		data->SelectionTrianglesFromSurfaces();
 	}
 	mode_model_mesh_triangle->FillSelectionBuffers();
 }
