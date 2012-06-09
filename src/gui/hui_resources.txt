@@ -4924,7 +4924,7 @@ Menu
 menu_material
 
 1
-4
+3
 0
 0
 0
@@ -4933,7 +4933,7 @@ menu_material
 0
 
 
-40
+39
 ItemPopup
 menu_file
 
@@ -5315,19 +5315,6 @@ ItemImage
 exit
 hui:quit
 1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-current_mode_material
-
-0
 0
 0
 0
@@ -7005,7 +6992,7 @@ Menu
 menu_model
 
 1
-9
+8
 0
 0
 0
@@ -7014,7 +7001,7 @@ menu_model
 0
 
 
-135
+147
 ItemPopup
 menu_model_file
 
@@ -7496,24 +7483,11 @@ hui:quit
 0
 
 
-Item
-current_mode_model
-
-0
-0
-0
-0
-0
-0
-0
-0
-
-
 ItemPopup
-menu_model_mode
+menu_model_edit
 
 1
-11
+8
 0
 0
 0
@@ -7522,22 +7496,9 @@ menu_model_mode
 0
 
 
-ItemCheckable
-mode_model_mesh
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemCheckable
-mode_model_skeleton
-
+ItemImage
+undo
+hui:undo
 1
 0
 0
@@ -7548,9 +7509,9 @@ mode_model_skeleton
 0
 
 
-ItemCheckable
-mode_model_animation
-
+ItemImage
+redo
+hui:redo
 1
 0
 0
@@ -7574,9 +7535,9 @@ ItemSeparator
 0
 
 
-ItemCheckable
-mode_model_vertex
-
+ItemImage
+copy
+hui:copy
 1
 0
 0
@@ -7587,9 +7548,9 @@ mode_model_vertex
 0
 
 
-ItemCheckable
-mode_model_edge
-
+ItemImage
+paste
+hui:paste
 1
 0
 0
@@ -7600,35 +7561,9 @@ mode_model_edge
 0
 
 
-ItemCheckable
-mode_model_triangle
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemCheckable
-mode_model_surface
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemCheckable
-mode_model_texture_coord
-
+ItemImage
+delete
+hui:delete
 1
 0
 0
@@ -7666,10 +7601,10 @@ hui:preferences
 
 
 ItemPopup
-menu_model_creation
+menu_model_selection
 
 1
-14
+5
 0
 0
 0
@@ -7679,10 +7614,75 @@ menu_model_creation
 
 
 Item
-selfish
+select_all
 
+1
 0
 0
+0
+0
+0
+0
+0
+
+
+Item
+select_none
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+invert_selection
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemSeparator
+
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemCheckable
+select_cw
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemPopup
+menu_model_creation
+
+1
+10
 0
 0
 0
@@ -7769,45 +7769,6 @@ new_cylinder
 0
 
 
-Item
-new_outline
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemSeparator
-
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-new_extract
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
 ItemSeparator
 
 
@@ -7861,218 +7822,10 @@ new_spat
 
 
 ItemPopup
-menu_model_selection
-
-1
-15
-0
-0
-0
-0
-0
-0
-
-
-ItemCheckable
-select_cw
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemSeparator
-
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-invert_trias
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-connect
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-nearify
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-cut_out
-hui:cut
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-end_of_order
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-align_to_grid
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-text_from_bg
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemSeparator
-
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-choose_material
-hui:open
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemSeparator
-
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-copy
-hui:copy
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-paste
-hui:paste
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-delete
-hui:delete
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemPopup
 menu_model_appearance
 
 1
-10
+13
 0
 0
 0
@@ -8289,6 +8042,45 @@ ItemSeparator
 0
 
 
+ItemImage
+choose_material
+hui:open
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+text_from_bg
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemSeparator
+
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
 Item
 current_material
 
@@ -8384,7 +8176,7 @@ ItemPopup
 menu_model_functions
 
 1
-8
+21
 0
 0
 0
@@ -8393,11 +8185,11 @@ menu_model_functions
 0
 
 
-Item
-menu_rightmouse_sign
+ItemPopup
+menu_rightmouse
 
-0
-0
+1
+4
 0
 0
 0
@@ -8471,10 +8263,231 @@ ItemSeparator
 0
 
 
+Item
+menu_vertex_header
+
+0
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+align_to_grid
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+connect
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+nearify
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemSeparator
+
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+menu_edge_header
+
+0
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+new_extract_edge
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemSeparator
+
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+menu_tria_header
+
+0
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+cut_out
+hui:cut
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+new_extract
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemSeparator
+
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+menu_surface_header
+
+0
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+invert_trias
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
 ItemImage
 subtract_surface
 hui:cut
 1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+new_outline
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemSeparator
+
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+menu_all_header
+
+0
 0
 0
 0
@@ -8501,7 +8514,137 @@ ItemPopup
 menu_model_view
 
 1
+10
+0
+0
+0
+0
+0
+0
+
+
+ItemPopup
+menu_model_mode
+
+1
 9
+0
+0
+0
+0
+0
+0
+
+
+ItemCheckable
+mode_model_mesh
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemCheckable
+mode_model_skeleton
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemCheckable
+mode_model_animation
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemSeparator
+
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemCheckable
+mode_model_vertex
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemCheckable
+mode_model_edge
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemCheckable
+mode_model_triangle
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemCheckable
+mode_model_surface
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemCheckable
+mode_model_texture_coord
+
+1
+0
 0
 0
 0
@@ -17316,7 +17459,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-705
+711
 // Text
 ad_dialog
 Verwaltung
@@ -17421,7 +17564,7 @@ Kamera-Fahrt (laden)...
 cancel
 Abbrechen
 choose_material
-Material wählen...
+Mit Material belegen...
 connect
 Punkte vereinen
 copy
@@ -17440,10 +17583,6 @@ current_mode_font
 -Schrift-Modus-
 current_mode_item
 -Item-Modus-
-current_mode_material
--Material-Modus-
-current_mode_model
--Modell-Modus-
 current_mode_model_move
 -Modell-Modus (Animation)-
 current_mode_model_skeleton
@@ -17455,7 +17594,7 @@ current_mode_object
 current_mode_world
 -Welt-Modus-
 cut_out
-Ausschneiden
+Heraustrennen
 default_colors
 Farben aus dem Material verwenden
 default_font
@@ -17552,8 +17691,6 @@ effect_file
 
 emission
 Emission
-end_of_order
-Ans Ende der Reihenfolge
 execute_plugin
 Plugin ausführen...
 exit
@@ -17794,6 +17931,8 @@ interpolate_loop
 für Schleife optimieren
 interpolate_quad
 quadrat. Interpolation
+invert_selection
+Invertieren
 invert_trias
 Dreiecke umkehren
 item
@@ -17972,6 +18111,10 @@ menu_administration_file
 Datei
 menu_administration_game
 Spiel
+menu_all_header
+Komplett
+menu_edge_header
+Auf Kanten
 menu_file
 Datei
 menu_font
@@ -17992,12 +18135,14 @@ menu_model_appearance
 Aussehen
 menu_model_creation
 Erstellen
+menu_model_edit
+Bearbeiten
 menu_model_export
 Exportieren
 menu_model_file
 Datei
 menu_model_functions
-Funktionen
+Operationen
 menu_model_fx
 Effekte
 menu_model_import
@@ -18019,19 +18164,25 @@ menu_model_texture
 menu_model_view
 Ansicht
 menu_model_viewstage
-Ansichts-Schicht
+Schicht
 menu_move
 
 menu_nomode
 
 menu_object
 Objekt
-menu_rightmouse_sign
+menu_rightmouse
 Rechte Maustaste
 menu_skeleton
 
+menu_surface_header
+Auf Flächen
 menu_terrain_texture
 Terrain Textur
+menu_tria_header
+Auf Dreiecke
+menu_vertex_header
+Auf Punkte
 menu_view
 
 menu_world
@@ -18212,6 +18363,8 @@ new_cylinder_dialog_t_rings
 Ringe
 new_extract
 Dreieck dreiteilen
+new_extract_edge
+Kante zerteilen
 new_frame
 neuer Frame
 new_konv_poly
@@ -18428,12 +18581,14 @@ search_item
 
 search_model
 
+select_all
+Alles auswählen
 select_cw
 Dreiecke nur im Uhrzeigersinn
+select_none
+Nichts auswählen
 selection_properties
 Eigenschaften...
-selfish
-Selbständig
 send_bug_report
 Fehler berichten
 set
@@ -18569,7 +18724,7 @@ terrain_z
 text
 
 text_from_bg
-TexKoord aus Hintergrund
+Texturkoordinaten aus Hintergrund
 texture
 Textur...
 texture_choose
@@ -18734,7 +18889,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-705
+711
 // Text
 ad_dialog
 Administration
@@ -18858,10 +19013,6 @@ current_mode_font
 -Font-Mode-
 current_mode_item
 -Item-Mode-
-current_mode_material
--Material-Mode-
-current_mode_model
--Model-Mode-
 current_mode_model_move
 -Model-Mode (Animation)-
 current_mode_model_skeleton
@@ -18970,8 +19121,6 @@ effect_file
 
 emission
 emission
-end_of_order
-Move to end of order
 execute_plugin
 Execute plugin
 exit
@@ -19212,6 +19361,8 @@ interpolate_loop
 optimize for loop
 interpolate_quad
 quadratic interpolation
+invert_selection
+
 invert_trias
 Triangle inversion
 item
@@ -19390,6 +19541,10 @@ menu_administration_file
 File
 menu_administration_game
 Game
+menu_all_header
+
+menu_edge_header
+
 menu_file
 File
 menu_font
@@ -19410,6 +19565,8 @@ menu_model_appearance
 Appearance
 menu_model_creation
 Create
+menu_model_edit
+
 menu_model_export
 Export
 menu_model_file
@@ -19444,12 +19601,18 @@ menu_nomode
 
 menu_object
 Object
-menu_rightmouse_sign
-Right mouse button
+menu_rightmouse
+
 menu_skeleton
+
+menu_surface_header
 
 menu_terrain_texture
 Terrain texture
+menu_tria_header
+
+menu_vertex_header
+
 menu_view
 
 menu_world
@@ -19630,6 +19793,8 @@ new_cylinder_dialog_t_rings
 rings
 new_extract
 Extract
+new_extract_edge
+
 new_frame
 new frame
 new_konv_poly
@@ -19846,12 +20011,14 @@ search_item
 
 search_model
 
+select_all
+
 select_cw
 triangles only clockwise
+select_none
+
 selection_properties
 Properties...
-selfish
-Independent
 send_bug_report
 Report a bug
 set
@@ -20356,7 +20523,7 @@ program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 // Language
 日本語
 // NumIDs
-705
+711
 // Text
 ad_dialog
 
@@ -20480,10 +20647,6 @@ current_mode_font
 [フォント　の　モード]
 current_mode_item
 [アイテム　の　モード]
-current_mode_material
-[マテリアル　の　モード]
-current_mode_model
-[モデル　の　モード]
 current_mode_model_move
 [モデル　の　モード (アニメーション)]
 current_mode_model_skeleton
@@ -20592,8 +20755,6 @@ effect_file
 
 emission
 発光
-end_of_order
-
 execute_plugin
 
 exit
@@ -20834,6 +20995,8 @@ interpolate_loop
 
 interpolate_quad
 
+invert_selection
+
 invert_trias
 
 item
@@ -21012,6 +21175,10 @@ menu_administration_file
 ファイル
 menu_administration_game
 
+menu_all_header
+
+menu_edge_header
+
 menu_file
 ファイル
 menu_font
@@ -21032,6 +21199,8 @@ menu_model_appearance
 
 menu_model_creation
 作成
+menu_model_edit
+
 menu_model_export
 エクスポート
 menu_model_file
@@ -21066,11 +21235,17 @@ menu_nomode
 
 menu_object
 オブジェクト
-menu_rightmouse_sign
+menu_rightmouse
 
 menu_skeleton
 
+menu_surface_header
+
 menu_terrain_texture
+
+menu_tria_header
+
+menu_vertex_header
 
 menu_view
 
@@ -21251,6 +21426,8 @@ new_cylinder_dialog_t_edges
 new_cylinder_dialog_t_rings
 
 new_extract
+
+new_extract_edge
 
 new_frame
 
@@ -21468,12 +21645,14 @@ search_item
 
 search_model
 
+select_all
+
 select_cw
+
+select_none
 
 selection_properties
 設定...
-selfish
-
 send_bug_report
 
 set

@@ -80,8 +80,6 @@ enum{
 		sub_menu_file->AddSeparator();
 		sub_menu_file->AddEntryImage("Beenden",HuiImageQuit,HMM_EXIT);
 	Menu->AddSubMenu("Datei",HMM_MENU_FILE,sub_menu_file);
-	Menu->AddEntry("-Material-Modus-",HMM_CURRENT_MODE_MATERIAL);
-	Menu->EnableItem(HMM_CURRENT_MODE_MATERIAL,false);
 		CHuiMenu *sub_menu_prop=new CHuiMenu();
 		sub_menu_prop->AddEntryImage("Aussehen...",HuiImagePreferences,HMM_APPEARANCE);
 		sub_menu_prop->AddEntryImage("Physik...",HuiImagePreferences,HMM_PHYSICS);

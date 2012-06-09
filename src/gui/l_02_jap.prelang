@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-552
+558
 // Data (ID,Text)
 ad_dialog
 
@@ -113,10 +113,6 @@ current_mode_font
 [フォント　の　モード]
 current_mode_item
 [アイテム　の　モード]
-current_mode_material
-[マテリアル　の　モード]
-current_mode_model
-[モデル　の　モード]
 current_mode_model_move
 [モデル　の　モード (アニメーション)]
 current_mode_model_skeleton
@@ -197,8 +193,6 @@ editor_dialog_tab_control
 properties\\keys\\information
 emission
 発光
-end_of_order
-
 execute_plugin
 
 exit
@@ -363,6 +357,8 @@ interpolate_loop
 
 interpolate_quad
 
+invert_selection
+
 invert_trias
 
 item_dialog
@@ -511,6 +507,10 @@ menu_administration_file
 ファイル
 menu_administration_game
 
+menu_all_header
+
+menu_edge_header
+
 menu_file
 ファイル
 menu_font
@@ -531,6 +531,8 @@ menu_model_appearance
 
 menu_model_creation
 作成
+menu_model_edit
+
 menu_model_export
 エクスポート
 menu_model_file
@@ -559,9 +561,15 @@ menu_model_viewstage
 表示　の　レベル
 menu_object
 オブジェクト
-menu_rightmouse_sign
+menu_rightmouse
+
+menu_surface_header
 
 menu_terrain_texture
+
+menu_tria_header
+
+menu_vertex_header
 
 menu_world
 世界
@@ -731,6 +739,8 @@ new_cylinder_dialog_t_rings
 
 new_extract
 
+new_extract_edge
+
 new_frame
 
 new_konv_poly
@@ -879,12 +889,14 @@ scriptvar_t_index
 索引
 scriptvar_t_value
 値
+select_all
+
 select_cw
+
+select_none
 
 selection_properties
 設定...
-selfish
-
 send_bug_report
 
 set

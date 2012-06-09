@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-552
+558
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -113,10 +113,6 @@ current_mode_font
 -Font-Mode-
 current_mode_item
 -Item-Mode-
-current_mode_material
--Material-Mode-
-current_mode_model
--Model-Mode-
 current_mode_model_move
 -Model-Mode (Animation)-
 current_mode_model_skeleton
@@ -197,8 +193,6 @@ editor_dialog_tab_control
 Information\\Properties\\Keys
 emission
 emission
-end_of_order
-Move to end of order
 execute_plugin
 Execute plugin
 exit
@@ -363,6 +357,8 @@ interpolate_loop
 optimize for loop
 interpolate_quad
 quadratic interpolation
+invert_selection
+
 invert_trias
 Triangle inversion
 item_dialog
@@ -511,6 +507,10 @@ menu_administration_file
 File
 menu_administration_game
 Game
+menu_all_header
+
+menu_edge_header
+
 menu_file
 File
 menu_font
@@ -531,6 +531,8 @@ menu_model_appearance
 Appearance
 menu_model_creation
 Create
+menu_model_edit
+
 menu_model_export
 Export
 menu_model_file
@@ -559,10 +561,16 @@ menu_model_viewstage
 Viewstage
 menu_object
 Object
-menu_rightmouse_sign
-Right mouse button
+menu_rightmouse
+
+menu_surface_header
+
 menu_terrain_texture
 Terrain texture
+menu_tria_header
+
+menu_vertex_header
+
 menu_world
 World
 menu_world_creation
@@ -731,6 +739,8 @@ new_cylinder_dialog_t_rings
 rings
 new_extract
 Extract
+new_extract_edge
+
 new_frame
 new frame
 new_konv_poly
@@ -879,12 +889,14 @@ scriptvar_t_index
 index:
 scriptvar_t_value
 value:
+select_all
+
 select_cw
 triangles only clockwise
+select_none
+
 selection_properties
 Properties...
-selfish
-Independent
 send_bug_report
 Report a bug
 set
