@@ -254,10 +254,6 @@ enum{
 		sub_menu_858->AddEntry("Punkte vereinen",HMM_CONNECT);
 		sub_menu_858->AddEntry("Punkte ann&ahern",HMM_NEARIFY);
 		sub_menu_858->AddSeparator();
-		sub_menu_858->AddEntry("Auf Kanten",HMM_MENU_EDGE_HEADER);
-		sub_menu_858->EnableItem(HMM_MENU_EDGE_HEADER,false);
-		sub_menu_858->AddEntry("Kante zerteilen",HMM_NEW_EXTRACT_EDGE);
-		sub_menu_858->AddSeparator();
 		sub_menu_858->AddEntry("Auf Dreiecke",HMM_MENU_TRIA_HEADER);
 		sub_menu_858->EnableItem(HMM_MENU_TRIA_HEADER,false);
 		sub_menu_858->AddEntryImage("Heraustrennen",HuiImageCut,HMM_CUT_OUT);

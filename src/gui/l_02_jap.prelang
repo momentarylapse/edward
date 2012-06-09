@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-558
+556
 // Data (ID,Text)
 ad_dialog
 
@@ -509,8 +509,6 @@ menu_administration_game
 
 menu_all_header
 
-menu_edge_header
-
 menu_file
 ファイル
 menu_font
@@ -738,8 +736,6 @@ new_cylinder_dialog_t_edges
 new_cylinder_dialog_t_rings
 
 new_extract
-
-new_extract_edge
 
 new_frame
 

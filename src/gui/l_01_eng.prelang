@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-558
+556
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -509,8 +509,6 @@ menu_administration_game
 Game
 menu_all_header
 
-menu_edge_header
-
 menu_file
 File
 menu_font
@@ -739,8 +737,6 @@ new_cylinder_dialog_t_rings
 rings
 new_extract
 Extract
-new_extract_edge
-
 new_frame
 new frame
 new_konv_poly

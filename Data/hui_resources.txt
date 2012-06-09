@@ -7001,7 +7001,7 @@ menu_model
 0
 
 
-147
+144
 ItemPopup
 menu_model_file
 
@@ -8176,7 +8176,7 @@ ItemPopup
 menu_model_functions
 
 1
-21
+18
 0
 0
 0
@@ -8304,45 +8304,6 @@ connect
 
 Item
 nearify
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemSeparator
-
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-menu_edge_header
-
-0
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-new_extract_edge
 
 1
 0
@@ -17459,7 +17420,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-711
+709
 // Text
 ad_dialog
 Verwaltung
@@ -18113,8 +18074,6 @@ menu_administration_game
 Spiel
 menu_all_header
 Komplett
-menu_edge_header
-Auf Kanten
 menu_file
 Datei
 menu_font
@@ -18363,8 +18322,6 @@ new_cylinder_dialog_t_rings
 Ringe
 new_extract
 Dreieck dreiteilen
-new_extract_edge
-Kante zerteilen
 new_frame
 neuer Frame
 new_konv_poly
@@ -18889,7 +18846,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-711
+709
 // Text
 ad_dialog
 Administration
@@ -19543,8 +19500,6 @@ menu_administration_game
 Game
 menu_all_header
 
-menu_edge_header
-
 menu_file
 File
 menu_font
@@ -19793,8 +19748,6 @@ new_cylinder_dialog_t_rings
 rings
 new_extract
 Extract
-new_extract_edge
-
 new_frame
 new frame
 new_konv_poly
@@ -20523,7 +20476,7 @@ program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 // Language
 日本語
 // NumIDs
-711
+709
 // Text
 ad_dialog
 
@@ -21177,8 +21130,6 @@ menu_administration_game
 
 menu_all_header
 
-menu_edge_header
-
 menu_file
 ファイル
 menu_font
@@ -21426,8 +21377,6 @@ new_cylinder_dialog_t_edges
 new_cylinder_dialog_t_rings
 
 new_extract
-
-new_extract_edge
 
 new_frame
 
