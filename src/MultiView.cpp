@@ -215,6 +215,13 @@ void MultiView::OnCommand(const string & id)
 
 	//msg_write(id);
 
+	if (id == "select_all")
+		SelectAll();
+	if (id == "select_none")
+		SelectNone();
+	if (id == "invert_selection")
+		InvertSelection();
+
 	if (id == "view_right")
 		view[mouse_win].type = ViewRight;
 	if (id == "view_left")
@@ -1133,6 +1140,27 @@ void MultiView::SetMouseAction(int button, const string & name, int mode)
 		mode = ActionRotate2d;
 	action[button].name = name;
 	action[button].mode = mode;
+}
+
+void MultiView::SelectAll()
+{
+	foreach(data, d)
+		for (int i=0;i<d.Num;i++){
+			MultiViewSingleData* sd = MVGetSingleData(d, i);
+			if (sd->view_stage >= view_stage)
+				sd->is_selected = true;
+		}
+	Notify("SelectionChange");
+}
+
+void MultiView::SelectNone()
+{
+	foreach(data, d)
+		for (int i=0;i<d.Num;i++){
+			MultiViewSingleData* sd = MVGetSingleData(d, i);
+			sd->is_selected = false;
+		}
+	Notify("SelectionChange");
 }
 
 void MultiView::InvertSelection()

@@ -124,6 +124,9 @@ public:
 	void ResetData(Data *_data);
 	void ViewStagePush();
 	void ViewStagePop();
+
+	void SelectAll();
+	void SelectNone();
 	void InvertSelection();
 
 	void HoldCursor(bool holding);
