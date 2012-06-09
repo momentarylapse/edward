@@ -21,12 +21,12 @@
 #include "Creation/ModeModelMeshCreateCylinder.h"
 #include "Creation/ModeModelMeshCreatePlane.h"
 #include "Creation/ModeModelMeshSplitTriangle.h"
-#include "../../../Action/Model/ActionModelDeleteSelection.h"
-#include "../../../Action/Model/ActionModelSetMaterial.h"
-#include "../../../Action/Model/ActionModelSurfaceSubtract.h"
-#include "../../../Action/Model/ActionModelPasteGeometry.h"
-#include "../../../Action/Model/ActionModelSetNormalModeSelection.h"
-#include "../../../Action/Model/ActionModelSetNormalModeAll.h"
+#include "../../../Action/Model/Mesh/ActionModelDeleteSelection.h"
+#include "../../../Action/Model/Mesh/Look/ActionModelSetMaterial.h"
+#include "../../../Action/Model/Mesh/Surface/ActionModelSurfaceSubtract.h"
+#include "../../../Action/Model/Mesh/ActionModelPasteGeometry.h"
+#include "../../../Action/Model/Mesh/Look/ActionModelSetNormalModeSelection.h"
+#include "../../../Action/Model/Mesh/Look/ActionModelSetNormalModeAll.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
 
 ModeModelMesh *mode_model_mesh = NULL;

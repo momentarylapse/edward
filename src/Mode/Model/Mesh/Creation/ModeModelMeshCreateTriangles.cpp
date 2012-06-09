@@ -7,7 +7,7 @@
 
 #include "ModeModelMeshCreateTriangles.h"
 #include "../../../../Edward.h"
-#include "../../../../Action/Model/ActionModelAddTrianglesByOutline.h"
+#include "../../../../Action/Model/Mesh/Triangle/ActionModelAddTrianglesByOutline.h"
 #include "../../../../lib/nix/nix.h"
 
 ModeModelMeshCreateTriangles::ModeModelMeshCreateTriangles(Mode *_parent, DataModel *_data)

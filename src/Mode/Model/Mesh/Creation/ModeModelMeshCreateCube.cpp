@@ -8,7 +8,7 @@
 #include "../../ModeModel.h"
 #include "ModeModelMeshCreateCube.h"
 #include "../../../../Edward.h"
-#include "../../../../Action/Model/ActionModelAddCube.h"
+#include "../../../../Action/Model/Mesh/Surface/ActionModelAddCube.h"
 
 ModeModelMeshCreateCube::ModeModelMeshCreateCube(Mode *_parent, DataModel *_data)
 {

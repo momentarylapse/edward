@@ -11,12 +11,12 @@
 #include "../../Action/Action.h"
 #include "../../Action/ActionManager.h"
 #include "../../Edward.h"
-#include "../../Action/Model/ActionModelAddVertex.h"
-#include "../../Action/Model/ActionModelAddTriangleSingleTexture.h"
-#include "../../Action/Model/ActionModelAddCube.h"
-#include "../../Action/Model/ActionModelAddPlane.h"
-#include "../../Action/Model/ActionModelAddCylinder.h"
-#include "../../Action/Model/ActionModelAddBall.h"
+#include "../../Action/Model/Mesh/Vertex/ActionModelAddVertex.h"
+#include "../../Action/Model/Mesh/Triangle/ActionModelAddTriangleSingleTexture.h"
+#include "../../Action/Model/Mesh/Surface/ActionModelAddCube.h"
+#include "../../Action/Model/Mesh/Surface/ActionModelAddPlane.h"
+#include "../../Action/Model/Mesh/Surface/ActionModelAddCylinder.h"
+#include "../../Action/Model/Mesh/Surface/ActionModelAddBall.h"
 
 
 

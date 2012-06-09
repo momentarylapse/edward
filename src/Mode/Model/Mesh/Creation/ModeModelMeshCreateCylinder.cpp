@@ -8,7 +8,7 @@
 #include "ModeModelMeshCreateCylinder.h"
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"
-#include "../../../../Action/Model/ActionModelAddCylinder.h"
+#include "../../../../Action/Model/Mesh/Surface/ActionModelAddCylinder.h"
 
 ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(Mode *_parent, DataModel *_data)
 {

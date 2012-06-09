@@ -8,7 +8,7 @@
 #include "ModeModelMeshCreateBall.h"
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"
-#include "../../../../Action/Model/ActionModelAddBall.h"
+#include "../../../../Action/Model/Mesh/Surface/ActionModelAddBall.h"
 #include "../../../../lib/x/x.h"
 
 ModeModelMeshCreateBall::ModeModelMeshCreateBall(Mode *_parent, DataModel *_data)

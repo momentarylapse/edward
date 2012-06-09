@@ -8,7 +8,7 @@
 #include "../../ModeModel.h"
 #include "ModeModelMeshCreatePlane.h"
 #include "../../../../Edward.h"
-#include "../../../../Action/Model/ActionModelAddPlane.h"
+#include "../../../../Action/Model/Mesh/Surface/ActionModelAddPlane.h"
 #include "../../../../lib/nix/nix.h"
 
 ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(Mode *_parent, DataModel *_data)

@@ -6,15 +6,15 @@
  */
 
 #include "ActionMultiView.h"
-#include "Model/ActionModelMVMoveVertices.h"
-#include "Model/ActionModelMVScaleVertices.h"
-#include "Model/ActionModelMVRotateVertices.h"
-#include "Model/ActionModelMVMirrorVertices.h"
-#include "Model/ActionModelMVMoveSkinVertices.h"
-#include "Model/ActionModelMVScaleSkinVertices.h"
-#include "Model/ActionModelMVRotateSkinVertices.h"
-#include "Model/ActionModelMVMirrorSkinVertices.h"
-#include "Model/ActionModelMVMoveBones.h"
+#include "Model/Mesh/Vertex/ActionModelMVMoveVertices.h"
+#include "Model/Mesh/Vertex/ActionModelMVScaleVertices.h"
+#include "Model/Mesh/Vertex/ActionModelMVRotateVertices.h"
+#include "Model/Mesh/Vertex/ActionModelMVMirrorVertices.h"
+#include "Model/Mesh/Skin/ActionModelMVMoveSkinVertices.h"
+#include "Model/Mesh/Skin/ActionModelMVScaleSkinVertices.h"
+#include "Model/Mesh/Skin/ActionModelMVRotateSkinVertices.h"
+#include "Model/Mesh/Skin/ActionModelMVMirrorSkinVertices.h"
+#include "Model/Skeleton/ActionModelMVMoveBones.h"
 #include <assert.h>
 
 ActionMultiView::ActionMultiView(Data *d, const vector &_pos0)

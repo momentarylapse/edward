@@ -7,7 +7,7 @@
 
 #include "ModeModelMeshSplitTriangle.h"
 #include "../../../../Edward.h"
-#include "../../../../Action/Model/ActionModelSplitTriangle.h"
+#include "../../../../Action/Model/Mesh/Triangle/ActionModelSplitTriangle.h"
 
 ModeModelMeshSplitTriangle::ModeModelMeshSplitTriangle(Mode *_parent, DataModel *_data)
 {
