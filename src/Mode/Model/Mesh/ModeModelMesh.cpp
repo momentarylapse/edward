@@ -159,8 +159,9 @@ void ModeModelMesh::OnUpdate(Observable *o)
 
 void ModeModelMesh::OnUpdateMenu()
 {
-	ed->Check("copy", Copyable());
-	ed->Check("paste", Pasteable());
+	ed->Enable("copy", Copyable());
+	ed->Enable("paste", Pasteable());
+	ed->Enable("delete", Copyable());
 	string cm_name;
 	if (ed->creation_mode)
 		cm_name = ed->creation_mode->name;
