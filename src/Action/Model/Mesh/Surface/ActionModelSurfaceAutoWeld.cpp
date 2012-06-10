@@ -6,7 +6,7 @@
  */
 
 #include "ActionModelSurfaceAutoWeld.h"
-#include "Helper/ActionModel__JoinSurfaces.h"
+#include "Helper/ActionModelJoinSurfaces.h"
 #include "../Vertex/Helper/ActionModelDeleteUnusedVertex.h"
 #include "Helper/ActionModelSurfaceRelinkTriangle.h"
 #include "../../../../Data/Model/ModeModelSurface.h"
@@ -39,7 +39,7 @@ ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(DataModel *m, int _surfac
 	}
 
 	// join
-	a = (ModeModelSurface*)AddSubAction(new ActionModel__JoinSurfaces(_surface1, _surface2), m);
+	a = (ModeModelSurface*)AddSubAction(new ActionModelJoinSurfaces(_surface1, _surface2), m);
 
 	// relink triangles
 	foreachbi(a->Triangle, t, ti){

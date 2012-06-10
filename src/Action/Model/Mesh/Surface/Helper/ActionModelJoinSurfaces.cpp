@@ -1,18 +1,18 @@
 /*
- * ActionModel__JoinSurfaces.cpp
+ * ActionModelJoinSurfaces.cpp
  *
  *  Created on: 13.03.2012
  *      Author: michi
  */
 
-#include "ActionModel__JoinSurfaces.h"
+#include "ActionModelJoinSurfaces.h"
 #include "../../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
 
 // creates a "disjoint" surface -> don't use alone!
 
-ActionModel__JoinSurfaces::ActionModel__JoinSurfaces(int _surface1, int _surface2)
+ActionModelJoinSurfaces::ActionModelJoinSurfaces(int _surface1, int _surface2)
 {
 	assert(_surface1 >= 0);
 	assert(_surface2 >= 0);
@@ -26,13 +26,13 @@ ActionModel__JoinSurfaces::ActionModel__JoinSurfaces(int _surface1, int _surface
 	}
 }
 
-ActionModel__JoinSurfaces::~ActionModel__JoinSurfaces()
+ActionModelJoinSurfaces::~ActionModelJoinSurfaces()
 {
 }
 
 
 
-void *ActionModel__JoinSurfaces::execute(Data *d)
+void *ActionModelJoinSurfaces::execute(Data *d)
 {
 	msg_db_r("SurfJoin", 1);
 	msg_write("__join surf do");
@@ -90,7 +90,7 @@ void *ActionModel__JoinSurfaces::execute(Data *d)
 
 
 
-void ActionModel__JoinSurfaces::undo(Data *d)
+void ActionModelJoinSurfaces::undo(Data *d)
 {
 	msg_write("__join surf undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);

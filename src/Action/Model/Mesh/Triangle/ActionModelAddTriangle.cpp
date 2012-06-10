@@ -9,7 +9,7 @@
 #include "../../../../Data/Model/DataModel.h"
 #include "../Surface/Helper/ActionModelAddEmptySurface.h"
 #include "../Surface/Helper/ActionModelSurfaceAddTriangle.h"
-#include "../Surface/Helper/ActionModel__JoinSurfaces.h"
+#include "../Surface/Helper/ActionModelJoinSurfaces.h"
 #include <assert.h>
 
 ActionModelAddTriangle::ActionModelAddTriangle(DataModel *m, int _a, int _b, int _c, int _material, const vector *_sva, const vector *_svb, const vector *_svc)
@@ -36,7 +36,7 @@ ActionModelAddTriangle::ActionModelAddTriangle(DataModel *m, int _a, int _b, int
 
 		// join other surfaces into surf_no
 		for (int i=surf.num-1;i>0;i--)
-			AddSubAction(new ActionModel__JoinSurfaces(surf_no, surf[i]), m);
+			AddSubAction(new ActionModelJoinSurfaces(surf_no, surf[i]), m);
 	}
 
 	// add triangle
