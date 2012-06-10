@@ -52,9 +52,17 @@ void *ActionModelSurfaceInvert::execute(Data *d)
 
 	// flip edges
 	foreach(s.Edge, e){
+		// swap vertices
 		int v = e.Vertex[0];
 		e.Vertex[0] = e.Vertex[1];
 		e.Vertex[1] = v;
+
+		// relink sides
+		for (int k=0;k<e.RefCount;k++)
+			if (e.Side[k] == 1)
+				e.Side[k] = 2;
+			else if (e.Side[k] == 2)
+				e.Side[k] = 1;
 	}
 
 	return NULL;

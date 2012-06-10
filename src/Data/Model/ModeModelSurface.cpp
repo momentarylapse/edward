@@ -43,8 +43,10 @@ void ModeModelSurface::AddTriangle(int a, int b, int c, int material, const vect
 		t.SkinVertex[i][1] = sb[i];
 		t.SkinVertex[i][2] = sc[i];
 	}
-	for (int k=0;k<3;k++)
-		t.Edge[k] = AddEdgeForNewTriangle(t.Vertex[k], t.Vertex[(k + 1) % 3], Triangle.num);
+	for (int k=0;k<3;k++){
+		t.Edge[k] = AddEdgeForNewTriangle(t.Vertex[k], t.Vertex[(k + 1) % 3], Triangle.num, k);
+		t.EdgeDirection[k] = Edge[t.Edge[k]].RefCount;
+	}
 	AddVertex(a);
 	AddVertex(b);
 	AddVertex(c);
@@ -64,13 +66,14 @@ void ModeModelSurface::AddTriangle(int a, int b, int c, int material, const vect
 	msg_db_l(1);
 }
 
-int ModeModelSurface::AddEdgeForNewTriangle(int a, int b, int tria)
+int ModeModelSurface::AddEdgeForNewTriangle(int a, int b, int tria, int side)
 {
 	foreachi(Edge, e, i){
 		if ((e.Vertex[0] == a) && (e.Vertex[1] == b)){
 			e.RefCount ++;
 			msg_error("surface error? inverse edge");
 			e.Triangle[1] = tria;
+			e.Side[1] = side;
 			return i;
 		}
 		if ((e.Vertex[0] == b) && (e.Vertex[1] == a)){
@@ -78,6 +81,7 @@ int ModeModelSurface::AddEdgeForNewTriangle(int a, int b, int tria)
 			if (e.RefCount > 2)
 				msg_error("surface error? edge refcount > 2");
 			e.Triangle[1] = tria;
+			e.Side[1] = side;
 			return i;
 		}
 	}
@@ -89,6 +93,7 @@ int ModeModelSurface::AddEdgeForNewTriangle(int a, int b, int tria)
 	ee.IsRound = false;
 	ee.RefCount = 1;
 	ee.Triangle[0] = tria;
+	ee.Side[0] = side;
 	ee.Triangle[1] = -1;
 	Edge.add(ee);
 	return Edge.num - 1;
@@ -172,13 +177,17 @@ void ModeModelSurface::MergeEdges()
 				if (e.RefCount + f.RefCount > 2)
 					msg_error(format("SurfMergeEdges: edge(%d,%d).RefCount...  %d + %d    tria=(%d,%d,%d,%d)", f.Vertex[0], f.Vertex[1], e.RefCount, f.RefCount, e.Triangle[0], e.Triangle[1], f.Triangle[0], f.Triangle[1]));
 
+				// add a link to the triangle
 				e.RefCount ++;
 				e.Triangle[1] = f.Triangle[0];
+				e.Side[1] = f.Side[0];
 
 				// relink triangles
 				for (int k=0;k<3;k++)
-					if (Triangle[e.Triangle[1]].Edge[k] == j)
+					if (Triangle[e.Triangle[1]].Edge[k] == j){
 						Triangle[e.Triangle[1]].Edge[k] = i;
+						Triangle[e.Triangle[1]].EdgeDirection[k] = 1;
+					}
 				RemoveObsoleteEdge(j);
 				break;
 			}
@@ -342,8 +351,10 @@ void ModeModelSurface::BuildFromTriangles()
 			AddVertex(t.Vertex[k]);
 
 		// edges
-		for (int k=0;k<3;k++)
-			t.Edge[k] = AddEdgeForNewTriangle(t.Vertex[k], t.Vertex[(k + 1) % 3], ti);
+		for (int k=0;k<3;k++){
+			t.Edge[k] = AddEdgeForNewTriangle(t.Vertex[k], t.Vertex[(k + 1) % 3], ti, k);
+			t.EdgeDirection[k] = Edge[t.Edge[k]].RefCount;
+		}
 	}
 
 	UpdateClosed();
@@ -354,14 +365,21 @@ void ModeModelSurface::TestSanity(const string &loc)
 {
 	foreach(Triangle, t)
 		if ((t.Vertex[0] == t.Vertex[1]) || (t.Vertex[1] == t.Vertex[2]) || (t.Vertex[2] == t.Vertex[0])){
-			msg_error(loc + ": surf broken!   tria");
+			msg_error(loc + ": surf broken!   trivial tria");
 			return;
 		}
-	foreach(Edge, e)
+	foreachi(Edge, e, i){
 		if (e.Vertex[0] == e.Vertex[1]){
-			msg_error(loc + ": surf broken!   edge");
+			msg_error(loc + ": surf broken!   trivial edge");
 			return;
 		}
+		for (int k=0;k<e.RefCount;k++)
+			if (Triangle[e.Triangle[k]].Edge[e.Side[k]] != i){
+				msg_error(loc + ": surf broken!   edge linkage");
+				return;
+			}
+
+	}
 }
 
 bool ModeModelSurface::IsInside(const vector &p)

@@ -59,7 +59,9 @@ public:
 class ModeModelTriangle: public MultiViewSingleData
 {
 public:
-	int Vertex[3], Edge[3];
+	int Vertex[3];
+	int Edge[3];
+	int EdgeDirection[3]; // which no of triangle in edge's list are we?
 	vector SkinVertex[MODEL_MAX_TEXTURES][3];
 	int NormalIndex[3];
 	vector Normal[3];
@@ -180,8 +182,13 @@ class ModeModelEdge: public MultiViewSingleData
 public:
 	//int NormalMode;
 	int Vertex[2];
-	int RefCount, Triangle[2];
+	int RefCount, Triangle[2], Side[2];
 	bool IsRound; // for editing
+
+	// constraints:
+	//  Vertex[0] = surf.Triangle[Triangle[0]].Vertex[Side[0]]
+	//  Vertex[1] = surf.Triangle[Triangle[0]].Vertex[(Side[0] + 1) % 3]
+	//  same for Triangle/Side[1] but Vertex[0 <-> 1]
 };
 
 
