@@ -1,27 +1,27 @@
 /*
- * ActionModel__DeleteVertex.cpp
+ * ActionModelDeleteUnusedVertex.cpp
  *
  *  Created on: 13.03.2012
  *      Author: michi
  */
 
-#include "ActionModel__DeleteVertex.h"
+#include "ActionModelDeleteUnusedVertex.h"
 #include "../../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
 
 // can only delete lonely vertices!
 
-ActionModel__DeleteVertex::ActionModel__DeleteVertex(int _vertex)
+ActionModelDeleteUnusedVertex::ActionModelDeleteUnusedVertex(int _vertex)
 {
 	vertex = _vertex;
 }
 
-ActionModel__DeleteVertex::~ActionModel__DeleteVertex()
+ActionModelDeleteUnusedVertex::~ActionModelDeleteUnusedVertex()
 {
 }
 
-void ActionModel__DeleteVertex::undo(Data *d)
+void ActionModelDeleteUnusedVertex::undo(Data *d)
 {
 	msg_write("__del vertex undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
@@ -64,7 +64,7 @@ void ActionModel__DeleteVertex::undo(Data *d)
 
 
 
-void *ActionModel__DeleteVertex::execute(Data *d)
+void *ActionModelDeleteUnusedVertex::execute(Data *d)
 {
 	msg_write("__del vertex do");
 	DataModel *m = dynamic_cast<DataModel*>(d);

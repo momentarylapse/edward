@@ -7,7 +7,7 @@
 
 #include "ActionModelSurfaceAutoWeld.h"
 #include "Helper/ActionModel__JoinSurfaces.h"
-#include "../Vertex/Helper/ActionModel__DeleteVertex.h"
+#include "../Vertex/Helper/ActionModelDeleteUnusedVertex.h"
 #include "Helper/ActionModelSurfaceRelinkTriangle.h"
 #include "../../../../Data/Model/ModeModelSurface.h"
 
@@ -66,7 +66,7 @@ ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(DataModel *m, int _surfac
 	foreachb(vv, ww){
 		a->Vertex.erase(ww);
 		m->Vertex[ww].Surface = -1;
-		AddSubAction(new ActionModel__DeleteVertex(ww), m);
+		AddSubAction(new ActionModelDeleteUnusedVertex(ww), m);
 	}
 
 	msg_db_l(1);

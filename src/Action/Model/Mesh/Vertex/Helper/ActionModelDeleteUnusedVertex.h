@@ -1,21 +1,21 @@
 /*
- * ActionModel__DeleteVertex.h
+ * ActionModelDeleteUnusedVertex.h
  *
  *  Created on: 13.03.2012
  *      Author: michi
  */
 
-#ifndef ACTIONMODEL__DELETEVERTEX_H_
-#define ACTIONMODEL__DELETEVERTEX_H_
+#ifndef ACTIONMODELDELETEUNUSEDVERTEX_H_
+#define ACTIONMODELDELETEUNUSEDVERTEX_H_
 
 #include "../../../../Action.h"
 #include "../../../../../lib/types/types.h"
 
-class ActionModel__DeleteVertex: public Action
+class ActionModelDeleteUnusedVertex: public Action
 {
 public:
-	ActionModel__DeleteVertex(int _vertex);
-	virtual ~ActionModel__DeleteVertex();
+	ActionModelDeleteUnusedVertex(int _vertex);
+	virtual ~ActionModelDeleteUnusedVertex();
 	string name(){	return "Model__DeleteVertex";	}
 
 	void *execute(Data *d);
@@ -28,4 +28,4 @@ private:
 	Array<vector> move;
 };
 
-#endif /* ACTIONMODEL__DELETEVERTEX_H_ */
+#endif /* ACTIONMODELDELETEUNUSEDVERTEX_H_ */

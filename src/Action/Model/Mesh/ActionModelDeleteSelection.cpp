@@ -7,7 +7,7 @@
 
 #include "ActionModelDeleteSelection.h"
 #include "Surface/Helper/ActionModel__SurfaceDeleteTriangle.h"
-#include "Vertex/Helper/ActionModel__DeleteVertex.h"
+#include "Vertex/Helper/ActionModelDeleteUnusedVertex.h"
 #include "Surface/Helper/ActionModel__SurfaceDeleteTriangle.h"
 #include "Surface/Helper/ActionModelDeleteEmptySurface.h"
 
@@ -33,7 +33,7 @@ ActionModelDeleteSelection::ActionModelDeleteSelection(DataModel *m, bool greedy
 	foreachbi(m->Vertex, v, i)
 		if (v.is_selected)
 			if (v.RefCount == 0)
-				AddSubAction(new ActionModel__DeleteVertex(i), m);
+				AddSubAction(new ActionModelDeleteUnusedVertex(i), m);
 }
 
 ActionModelDeleteSelection::~ActionModelDeleteSelection()
