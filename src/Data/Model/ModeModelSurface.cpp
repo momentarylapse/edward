@@ -368,5 +368,29 @@ bool ModeModelSurface::IsInside(const vector &p)
 {
 	if (!IsClosed)
 		return false;
-	return false;
+
+	// how often does a ray from p intersect the surface?
+	int n = 0;
+	foreach(Triangle, t){
+		vector v[3];
+		for (int k=0;k<3;k++)
+			v[k] = model->Vertex[t.Vertex[k]].pos;
+
+		// fast tests
+		if ((v[0].x < p.x) && (v[1].x < p.x) && (v[2].x < p.x))
+			continue;
+		if (((v[0].y < p.y) == (v[1].y < p.y)) && ((v[0].y < p.y) == (v[2].y < p.y)))
+			continue;
+		if (((v[0].z < p.z) == (v[1].z < p.z)) && ((v[0].z < p.z) == (v[2].z < p.z)))
+			continue;
+
+		// real intersection
+		vector col;
+		if (LineIntersectsTriangle(v[0], v[1], v[2], p, p + e_x, col, false))
+			if (col.x > p.x)
+				n ++;
+	}
+
+	// even or odd?
+	return ((n % 2) == 1);
 }
