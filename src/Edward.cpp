@@ -24,7 +24,7 @@ Edward *ed = NULL;
 string SoundDir;
 
 
-void read_color_4(CFile *f,int *c)
+void read_color_4i(CFile *f,int *c)
 {
 	// argb (file) -> rgba (editor)
 	c[3]=f->ReadInt();
@@ -33,13 +33,44 @@ void read_color_4(CFile *f,int *c)
 	c[2]=f->ReadInt();
 }
 
-void write_color_4(CFile *f,int *c)
+void write_color_4i(CFile *f,int *c)
 {
 	// rgba (editor) -> argb (file)
 	f->WriteInt(c[3]);
 	f->WriteInt(c[0]);
 	f->WriteInt(c[1]);
 	f->WriteInt(c[2]);
+}
+
+void write_color_4i(CFile *f, const color &c)
+{
+	f->WriteInt((int)(c.r * 255.0f));
+	f->WriteInt((int)(c.g * 255.0f));
+	f->WriteInt((int)(c.b * 255.0f));
+	f->WriteInt((int)(c.a * 255.0f));
+}
+
+void read_color_4i(CFile *f, color &c)
+{
+	c.r = (float)f->ReadInt() / 255.0f;
+	c.g = (float)f->ReadInt() / 255.0f;
+	c.b = (float)f->ReadInt() / 255.0f;
+	c.a = (float)f->ReadInt() / 255.0f;
+}
+
+void write_color_3i(CFile *f, const color &c)
+{
+	f->WriteInt((int)(c.r * 255.0f));
+	f->WriteInt((int)(c.g * 255.0f));
+	f->WriteInt((int)(c.b * 255.0f));
+}
+
+void read_color_3i(CFile *f, color &c)
+{
+	c.r = (float)f->ReadInt() / 255.0f;
+	c.g = (float)f->ReadInt() / 255.0f;
+	c.b = (float)f->ReadInt() / 255.0f;
+	c.a = 1;
 }
 
 color i42c(int *c)

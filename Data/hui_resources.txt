@@ -17527,7 +17527,7 @@ Abbrechen
 choose_material
 Mit Material belegen...
 connect
-Punkte vereinen
+--Punkte vereinen
 copy
 Kopieren
 create_lightmap
@@ -17555,7 +17555,7 @@ current_mode_object
 current_mode_world
 -Welt-Modus-
 cut_out
-Heraustrennen
+--Heraustrennen
 default_colors
 Farben aus dem Material verwenden
 default_font
@@ -17613,7 +17613,7 @@ dummy_text
 easify_dialog
 Oberfläche vereinfachen
 easify_skin
-Vereinfachen...
+--Vereinfachen...
 eat_quality
 Qualitätsfaktor:
 eat_triangles
@@ -18103,7 +18103,7 @@ Datei
 menu_model_functions
 Operationen
 menu_model_fx
-Effekte
+--Effekte
 menu_model_import
 Importieren
 menu_model_mode
@@ -18321,7 +18321,7 @@ Kanten
 new_cylinder_dialog_t_rings
 Ringe
 new_extract
-Dreieck dreiteilen
+Dreieck zerteilen
 new_frame
 neuer Frame
 new_konv_poly
@@ -18595,7 +18595,7 @@ Specular
 speed
 
 subtract_surface
-Volumen ausschneiden
+++Volumen ausschneiden
 sun_am
 
 sun_ang_x

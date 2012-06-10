@@ -50,8 +50,12 @@ enum{
 };
 
 
-void read_color_4(CFile *f,int *c);
-void write_color_4(CFile *f,int *c);
+void read_color_4i(CFile *f, int *c);
+void write_color_4i(CFile *f, int *c);
+void read_color_4i(CFile *f, color &c);
+void write_color_4i(CFile *f, color &c);
+void read_color_3i(CFile *f, color &c);
+void write_color_3i(CFile *f, color &c);
 color i42c(int *c);
 
 class Edward : public Observer, public CHuiWindow

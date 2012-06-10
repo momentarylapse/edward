@@ -167,22 +167,6 @@ vector get_normal_by_index(int index)
 
 
 
-/*static void write_color(CFile *f, const color &c)
-{
-	f->WriteInt((int)(c.r * 255.0f));
-	f->WriteInt((int)(c.g * 255.0f));
-	f->WriteInt((int)(c.b * 255.0f));
-	f->WriteInt((int)(c.a * 255.0f));
-}*/
-
-static void read_color(CFile *f, color &c)
-{
-	c.r = (float)f->ReadInt() / 255.0f;
-	c.g = (float)f->ReadInt() / 255.0f;
-	c.b = (float)f->ReadInt() / 255.0f;
-	c.a = (float)f->ReadInt() / 255.0f;
-}
-
 
 bool DataModel::Load(const string & _filename, bool deep)
 {
@@ -223,10 +207,10 @@ bool DataModel::Load(const string & _filename, bool deep)
 			Material[i].MaterialFile = f->ReadStr();
 			Material[i].UserColor = f->ReadBool();
 			if (Material[i].UserColor){
-				read_color(f, Material[i].Ambient);
-				read_color(f, Material[i].Diffuse);
-				read_color(f, Material[i].Specular);
-				read_color(f, Material[i].Emission);
+				read_color_4i(f, Material[i].Ambient);
+				read_color_4i(f, Material[i].Diffuse);
+				read_color_4i(f, Material[i].Specular);
+				read_color_4i(f, Material[i].Emission);
 				Material[i].Shininess = (float)f->ReadInt();
 			}
 			Material[i].TransparencyMode = f->ReadInt();
@@ -400,7 +384,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 				Fx[i].Vertex=f->ReadInt();
 				Fx[i].Size=f->ReadInt();
 				for (int j=0;j<3;j++)
-					read_color_4(f,Fx[i].Colors[j]);
+					read_color_4i(f,Fx[i].Colors[j]);
 			}
 			if (fxkind == "Sound"){
 				Fx[i].Kind=FXKindSound;
@@ -483,10 +467,10 @@ bool DataModel::Load(const string & _filename, bool deep)
 		for (int i=0;i<Material.num;i++){
 			Material[i].MaterialFile = f->ReadStr();
 			Material[i].UserColor = f->ReadBool();
-			read_color(f, Material[i].Ambient);
-			read_color(f, Material[i].Diffuse);
-			read_color(f, Material[i].Specular);
-			read_color(f, Material[i].Emission);
+			read_color_4i(f, Material[i].Ambient);
+			read_color_4i(f, Material[i].Diffuse);
+			read_color_4i(f, Material[i].Specular);
+			read_color_4i(f, Material[i].Emission);
 			Material[i].Shininess = (float)f->ReadInt();
 			Material[i].TransparencyMode = f->ReadInt();
 			Material[i].AlphaSource = f->ReadInt();
@@ -672,7 +656,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 				Fx[i].Vertex=f->ReadInt();
 				Fx[i].Size=f->ReadInt();
 				for (int j=0;j<3;j++)
-					read_color_4(f,Fx[i].Colors[j]);
+					read_color_4i(f,Fx[i].Colors[j]);
 			}
 			if (fxkind == "Sound"){
 				Fx[i].Kind = FXKindSound;

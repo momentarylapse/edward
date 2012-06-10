@@ -105,15 +105,15 @@ void ModeWelcome::OnUpdate(Observable *o)
 {
 }
 
-void ModeWelcome::DrawIcon(int x, int y, int index, const string &name)
+void ModeWelcome::DrawIcon(int x, int y, int index, int pic_index, const string &name)
 {
 	msg_db_r("DrawIcon", 2);
 	rect s,d;
 	y+=30;
 	float rad=25;
 	icon_rect[index] = irect(x-40,x+60,y-30,y+30);
-	s.x1=(float)index*0.125f;
-	s.x2=(float)index*0.125f+0.125f;
+	s.x1=(float)pic_index*0.125f;
+	s.x2=(float)pic_index*0.125f+0.125f;
 	s.y1=0;
 	s.y2=1;
 
@@ -177,11 +177,11 @@ void ModeWelcome::Draw()
 	NixDrawLineH(0,MaxX,y1,color(1,f,f,f),0);
 	NixDrawLineH(0,MaxX,y2,color(1,f,f,f),0);
 
-	DrawIcon(x1     ,y1,0,_("Modell"));
-	DrawIcon(x1+dx  ,y1,1,_("Material"));
-	DrawIcon(x1+dx*2,y1,4,_("Welt"));
-	DrawIcon(x1+dx*3,y1,5,_("Font"));
-	DrawIcon(x1+dx*4,y1,6,_("Administration"));
+	DrawIcon(x1     ,y1,0,0,_("Modell"));
+	DrawIcon(x1+dx  ,y1,1,1,_("Material"));
+	DrawIcon(x1+dx*2,y1,2,4,_("Welt"));
+	DrawIcon(x1+dx*3,y1,3,5,_("Font"));
+	DrawIcon(x1+dx*4,y1,4,6,_("Administration"));
 
 	f=0.2f;
 	NixSetFontColor(color(1,f,f,f));

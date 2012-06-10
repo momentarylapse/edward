@@ -24,7 +24,6 @@ ModeWorld::ModeWorld()
 
 ModeWorld::~ModeWorld()
 {
-	// TODO Auto-generated destructor stub
 }
 
 bool ModeWorld::SaveAs()
@@ -36,6 +35,14 @@ bool ModeWorld::SaveAs()
 
 void ModeWorld::OnCommand(const string & id)
 {
+	if (id == "new")
+		New();
+	if (id == "open")
+		Open();
+	if (id == "save")
+		Save();
+	if (id == "save_as")
+		SaveAs();
 }
 
 
@@ -91,6 +98,9 @@ void ModeWorld::OnRightButtonUp()
 
 void ModeWorld::New()
 {
+	if (!ed->AllowTermination())
+		return;
+
 	data->Reset();
 	multi_view->Reset();
 	ed->SetMode(mode_world);
@@ -167,10 +177,17 @@ void ModeWorld::OnUpdateMenu()
 
 bool ModeWorld::Open()
 {
-	data->Reset();
+	if (!ed->AllowTermination())
+		return false;
+	if (!ed->FileDialog(FDWorld, false, false))
+		return false;
+	if (!data->Load(ed->DialogFileComplete))
+		return false;
+
 	multi_view->Reset();
 	ed->SetMode(mode_world);
-	return false;
+	//OptimizeView();
+	return true;
 }
 
 

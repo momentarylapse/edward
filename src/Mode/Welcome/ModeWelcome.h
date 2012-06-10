@@ -25,7 +25,7 @@ public:
 
 	void Draw();
 
-	void DrawIcon(int x, int y, int index, const string &name);
+	void DrawIcon(int x, int y, int index, int pic_index, const string &name);
 
 	int tex_icons, tex_logo;
 	irect icon_rect[7];
