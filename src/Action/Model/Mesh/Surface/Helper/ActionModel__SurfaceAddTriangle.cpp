@@ -33,9 +33,10 @@ void ActionModel__SurfaceAddTriangle::undo(Data *d)
 	msg_write("__surf add tria undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModeModelSurface *s = &m->Surface[surface];
-	s->Triangle.pop();
-	s->BuildFromTriangles();
+	ModeModelSurface &s = m->Surface[surface];
+	s.RemoveTriangle(s.Triangle.num -1);
+	//s.Triangle.pop();
+	//s.BuildFromTriangles();
 }
 
 
@@ -45,11 +46,11 @@ void *ActionModel__SurfaceAddTriangle::execute(Data *d)
 	msg_write("__surf add tria do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModeModelSurface *s = &m->Surface[surface];
+	ModeModelSurface &s = m->Surface[surface];
 
 	// add triangle
-	s->AddTriangle(a, b, c, material, sv[0], sv[1], sv[2]);
-	return &s->Triangle.back();
+	s.AddTriangle(a, b, c, material, sv[0], sv[1], sv[2]);
+	return &s.Triangle.back();
 
 	/*sModeModelSubSkin *sub = &skin->Sub[CurrentMaterial];
 	sModeModelTriangle t;
