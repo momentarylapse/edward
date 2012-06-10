@@ -7,7 +7,7 @@
 
 #include "ActionModelAddTriangle.h"
 #include "../../../../Data/Model/DataModel.h"
-#include "../Surface/Helper/ActionModel__AddSurface.h"
+#include "../Surface/Helper/ActionModelAddEmptySurface.h"
 #include "../Surface/Helper/ActionModel__SurfaceAddTriangle.h"
 #include "../Surface/Helper/ActionModel__JoinSurfaces.h"
 #include <assert.h>
@@ -28,7 +28,7 @@ ActionModelAddTriangle::ActionModelAddTriangle(DataModel *m, int _a, int _b, int
 
 	if (surf.num == 0){
 		// new surface
-		AddSubAction(new ActionModel__AddSurface(), m);
+		AddSubAction(new ActionModelAddEmptySurface(), m);
 		surf_no = m->Surface.num - 1;
 	}else{
 		// main surface?
