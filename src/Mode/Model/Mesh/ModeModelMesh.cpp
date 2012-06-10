@@ -353,6 +353,7 @@ void ModeModelMesh::Copy()
 				TempGeo.Triangle.add(tt);
 			}
 
+	OnUpdateMenu();
 	ed->SetMessage(format(_("%d Vertizes, %d Dreiecke kopiert"), TempGeo.Vertex.num, TempGeo.Triangle.num));
 }
 
