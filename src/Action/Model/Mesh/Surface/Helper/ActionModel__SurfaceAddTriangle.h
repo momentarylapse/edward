@@ -17,6 +17,7 @@ class ActionModel__SurfaceAddTriangle: public Action
 public:
 	ActionModel__SurfaceAddTriangle(int _surface, int _a, int _b, int _c, int _material, const vector *_sva, const vector *_svb, const vector *_svc);
 	virtual ~ActionModel__SurfaceAddTriangle();
+	string name(){	return "Model__SurfaceAddTriangle";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

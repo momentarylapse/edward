@@ -17,6 +17,7 @@ class ActionModelDeleteBoneSelection: public ActionGroup
 public:
 	ActionModelDeleteBoneSelection(DataModel *m);
 	virtual ~ActionModelDeleteBoneSelection();
+	string name(){	return "ModelDeleteBoneSelection";	}
 };
 
 #endif /* ACTIONMODELDELETEBONESELECTION_H_ */

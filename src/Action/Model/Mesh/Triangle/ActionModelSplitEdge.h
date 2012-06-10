@@ -17,6 +17,7 @@ class ActionModelSplitEdge : public ActionGroup
 public:
 	ActionModelSplitEdge(DataModel *m, int _surface, int _edge, const vector &_pos);
 	virtual ~ActionModelSplitEdge();
+	string name(){	return "ModelSplitEdge";	}
 };
 
 #endif /* ACTIONMODELSPLITEDGE_H_ */

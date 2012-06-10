@@ -17,6 +17,7 @@ class ActionModelSetNormalModeSelection: public Action
 public:
 	ActionModelSetNormalModeSelection(DataModel *m, int _mode);
 	virtual ~ActionModelSetNormalModeSelection();
+	string name(){	return "ModelSetNormalModeSelection";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

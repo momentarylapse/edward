@@ -16,6 +16,7 @@ class ActionModelDeleteVertex: public Action
 public:
 	ActionModelDeleteVertex(int _vertex);
 	virtual ~ActionModelDeleteVertex();
+	string name(){	return "ModelDeleteVertex";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

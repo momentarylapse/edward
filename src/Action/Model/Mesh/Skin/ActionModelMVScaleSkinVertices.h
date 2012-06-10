@@ -18,6 +18,7 @@ class ActionModelMVScaleSkinVertices: public ActionMultiView
 public:
 	ActionModelMVScaleSkinVertices(Data *d, const vector &_pos0);
 	virtual ~ActionModelMVScaleSkinVertices();
+	string name(){	return "ModelScaleSkinVertices";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

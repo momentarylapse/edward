@@ -18,6 +18,7 @@ class ActionModelMVRotateSkinVertices: public ActionMultiView
 public:
 	ActionModelMVRotateSkinVertices(Data *d, const vector &_pos0);
 	virtual ~ActionModelMVRotateSkinVertices();
+	string name(){	return "ModelRotateSkinVertices";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

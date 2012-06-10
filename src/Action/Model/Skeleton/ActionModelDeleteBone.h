@@ -16,6 +16,7 @@ class ActionModelDeleteBone: public Action
 public:
 	ActionModelDeleteBone(int _index);
 	virtual ~ActionModelDeleteBone();
+	string name(){	return "ModelDeleteBone";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

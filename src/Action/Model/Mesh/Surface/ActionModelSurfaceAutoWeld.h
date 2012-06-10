@@ -18,6 +18,7 @@ class ActionModelSurfaceAutoWeld : public ActionGroup
 public:
 	ActionModelSurfaceAutoWeld(DataModel *m, int _surface1, int _surface2, float d);
 	virtual ~ActionModelSurfaceAutoWeld();
+	string name(){	return "ModelSurfaceAutoWeld";	}
 };
 
 #endif /* ACTIONMODELSURFACEAUTOWELD_H_ */

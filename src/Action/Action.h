@@ -18,6 +18,8 @@ public:
 	Action();
 	virtual ~Action();
 
+	virtual string name() = 0;
+
 	virtual void *execute(Data *d) = 0;
 	virtual void undo(Data *d) = 0;
 	virtual void redo(Data *d){	execute(d);	}

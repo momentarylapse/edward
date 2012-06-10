@@ -18,6 +18,7 @@ class ActionModelSplitTriangle: public ActionGroup
 public:
 	ActionModelSplitTriangle(DataModel *m, int _surface, int _triangle, const vector &_pos);
 	virtual ~ActionModelSplitTriangle();
+	string name(){	return "ModelSplitTriangle";	}
 };
 
 #endif /* ACTIONMODELSPLITTRIANGLE_H_ */

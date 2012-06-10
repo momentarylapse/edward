@@ -16,6 +16,7 @@ class ActionModelDeleteTriangle: public Action
 public:
 	ActionModelDeleteTriangle(int _surface, int _triangle);
 	virtual ~ActionModelDeleteTriangle();
+	string name(){	return "ModelDeleteTriangle";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

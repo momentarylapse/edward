@@ -17,6 +17,7 @@ class ActionModelSetNormalModeAll : public Action
 public:
 	ActionModelSetNormalModeAll(int _mode);
 	virtual ~ActionModelSetNormalModeAll();
+	string name(){	return "ModelSetNormalModeAll";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

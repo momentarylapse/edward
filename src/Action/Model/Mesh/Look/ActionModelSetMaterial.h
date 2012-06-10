@@ -17,6 +17,7 @@ class ActionModelSetMaterial: public Action
 public:
 	ActionModelSetMaterial(DataModel *m, int _material);
 	virtual ~ActionModelSetMaterial();
+	string name(){	return "ModelSetMaterial";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

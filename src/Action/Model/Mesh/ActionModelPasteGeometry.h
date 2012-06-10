@@ -16,6 +16,7 @@ class ActionModelPasteGeometry : public ActionGroup
 public:
 	ActionModelPasteGeometry(DataModel *m, ModeModelGeometry &geo);
 	virtual ~ActionModelPasteGeometry();
+	string name(){	return "ModelPasteGeometry";	}
 };
 
 #endif /* ACTIONMODELPASTEGEOMETRY_H_ */

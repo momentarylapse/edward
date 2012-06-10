@@ -16,6 +16,7 @@ class ActionModel__DeleteSurface: public Action
 public:
 	ActionModel__DeleteSurface(int _surface);
 	virtual ~ActionModel__DeleteSurface();
+	string name(){	return "Model__DeleteSurface";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

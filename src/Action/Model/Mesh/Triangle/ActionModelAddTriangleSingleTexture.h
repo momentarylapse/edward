@@ -17,6 +17,7 @@ class ActionModelAddTriangleSingleTexture: public ActionGroup
 public:
 	ActionModelAddTriangleSingleTexture(DataModel *m, int _a, int _b, int _c, int _material, const vector &_sva, const vector &_svb, const vector &_svc);
 	virtual ~ActionModelAddTriangleSingleTexture();
+	string name(){	return "ModelAddTriangleSingleTexture";	}
 
 	void *execute_return(Data *d);
 

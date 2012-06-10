@@ -18,6 +18,7 @@ class ActionModelMVMoveBones: public ActionMultiView
 public:
 	ActionModelMVMoveBones(Data *d, const vector &_pos0);
 	virtual ~ActionModelMVMoveBones();
+	string name(){	return "ModelMoveBones";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

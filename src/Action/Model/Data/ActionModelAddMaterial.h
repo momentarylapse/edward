@@ -16,6 +16,7 @@ class ActionModelAddMaterial : public Action
 public:
 	ActionModelAddMaterial();
 	virtual ~ActionModelAddMaterial();
+	string name(){	return "ModelAddMaterial";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

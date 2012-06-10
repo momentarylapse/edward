@@ -18,6 +18,7 @@ class ActionModelAddCube: public ActionGroup
 public:
 	ActionModelAddCube(DataModel *m, const vector &_pos, const vector &_dv1, const vector &_dv2, const vector &_dv3);
 	virtual ~ActionModelAddCube();
+	string name(){	return "ModelAddCube";	}
 };
 
 #endif /* ACTIONMODELADDCUBE_H_ */

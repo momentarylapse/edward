@@ -20,6 +20,7 @@ class ActionModelMVMoveVertices: public ActionMultiView
 public:
 	ActionModelMVMoveVertices(Data *d, const vector &_pos0);
 	virtual ~ActionModelMVMoveVertices();
+	string name(){	return "ModelMoveVertices";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

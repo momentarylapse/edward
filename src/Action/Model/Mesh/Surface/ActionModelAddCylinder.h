@@ -18,6 +18,7 @@ class ActionModelAddCylinder: public ActionGroup
 public:
 	ActionModelAddCylinder(DataModel *m, Array<vector> &pos, float radius, int rings, int edges, bool closed);
 	virtual ~ActionModelAddCylinder();
+	string name(){	return "ModelAddCylinder";	}
 };
 
 #endif /* ACTIONMODELADDCYLINDER_H_ */

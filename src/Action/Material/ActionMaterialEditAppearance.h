@@ -16,6 +16,7 @@ class ActionMaterialEditAppearance : public Action
 public:
 	ActionMaterialEditAppearance(const DataMaterial::AppearanceData &_app);
 	virtual ~ActionMaterialEditAppearance();
+	string name(){	return "MaterialEditAppearance";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

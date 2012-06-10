@@ -20,6 +20,7 @@ class ActionModelMVScaleVertices: public ActionMultiView
 public:
 	ActionModelMVScaleVertices(Data *d, const vector &_pos0);
 	virtual ~ActionModelMVScaleVertices();
+	string name(){	return "ModelScaleVertices";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

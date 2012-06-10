@@ -18,6 +18,7 @@ class ActionModelMVMirrorSkinVertices: public ActionMultiView
 public:
 	ActionModelMVMirrorSkinVertices(Data *d, const vector &_pos0);
 	virtual ~ActionModelMVMirrorSkinVertices();
+	string name(){	return "ModelMirrorSkinVertices";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

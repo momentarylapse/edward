@@ -16,6 +16,7 @@ class ActionModelSurfaceInvert : public Action
 public:
 	ActionModelSurfaceInvert(int _surface);
 	virtual ~ActionModelSurfaceInvert();
+	string name(){	return "ModelSurfacenvert";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

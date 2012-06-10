@@ -18,6 +18,7 @@ class ActionModelSurfaceCopy : public ActionGroup
 public:
 	ActionModelSurfaceCopy(DataModel *m, ModeModelSurface *&s);
 	virtual ~ActionModelSurfaceCopy();
+	string name(){	return "ModelSurfaceCopy";	}
 
 	void *execute_return(Data *d);
 };

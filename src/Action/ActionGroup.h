@@ -19,6 +19,8 @@ public:
 	ActionGroup();
 	virtual ~ActionGroup();
 
+	virtual string name() = 0;
+
 	void *execute(Data *d);
 	void undo(Data *d);
 	void redo(Data *d);

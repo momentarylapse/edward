@@ -20,6 +20,7 @@ class ActionModelMVRotateVertices: public ActionMultiView
 public:
 	ActionModelMVRotateVertices(Data *d, const vector &_pos0);
 	virtual ~ActionModelMVRotateVertices();
+	string name(){	return "ModelRotateVertices";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

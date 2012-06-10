@@ -17,6 +17,7 @@ class ActionModelDeleteSurface: public ActionGroup
 public:
 	ActionModelDeleteSurface();
 	virtual ~ActionModelDeleteSurface();
+	string name(){	return "ModelDeleteSurface";	}
 };
 
 #endif /* ACTIONMODELDELETESURFACE_H_ */

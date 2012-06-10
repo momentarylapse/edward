@@ -16,6 +16,7 @@ class ActionModel__JoinSurfaces: public Action
 public:
 	ActionModel__JoinSurfaces(int _surface1, int _surface2);
 	virtual ~ActionModel__JoinSurfaces();
+	string name(){	return "Model__JoinSurface";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

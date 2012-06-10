@@ -18,6 +18,7 @@ class ActionModelSurfaceSubtract : public ActionGroup
 public:
 	ActionModelSurfaceSubtract(DataModel *m);
 	virtual ~ActionModelSurfaceSubtract();
+	string name(){	return "ModelSurfaceSubtract";	}
 
 private:
 

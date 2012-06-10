@@ -16,6 +16,7 @@ class ActionModel__AddSurface: public Action
 public:
 	ActionModel__AddSurface();
 	virtual ~ActionModel__AddSurface();
+	string name(){	return "Model__AddSurface";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

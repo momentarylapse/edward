@@ -18,6 +18,7 @@ class ActionModelAddBall: public ActionGroup
 public:
 	ActionModelAddBall(DataModel *m, const vector &_pos, float _radius, int _num_x, int _num_y, bool _as_sphere);
 	virtual ~ActionModelAddBall();
+	string name(){	return "ModelAddBall";	}
 };
 
 #endif /* ACTIONMODELADDBALL_H_ */

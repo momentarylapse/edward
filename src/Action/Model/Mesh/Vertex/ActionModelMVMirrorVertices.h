@@ -20,6 +20,7 @@ class ActionModelMVMirrorVertices: public ActionMultiView
 public:
 	ActionModelMVMirrorVertices(Data *d, const vector &_pos0);
 	virtual ~ActionModelMVMirrorVertices();
+	string name(){	return "ModelMirrorVertices";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);
