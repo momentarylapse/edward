@@ -1053,12 +1053,9 @@ void DataModel::GenerateDetailDists(bool just_temp)
 }
 
 
+#define n_theta		16
 
-static matrix3 InertiaTensorTemp;
-
-#define n_theta		64
-
-void DataModel::GenerateInertiaTensor(float mass, bool just_temp)
+matrix3 DataModel::GenerateInertiaTensor(float mass)
 {
 	msg_db_r("GenerateInertiaTensor", 3);
 //	sModeModelSkin *p = &Skin[0];
@@ -1081,9 +1078,11 @@ void DataModel::GenerateInertiaTensor(float mass, bool just_temp)
 
 
 	//float dv=(max.x-min.x)/n_theta*(max.y-min.y)/n_theta*(max.z-min.z)/n_theta;
-	float t_xx=0,t_yy=0,t_zz=0,t_xy=0,t_yz=0,t_zx=0;
 	int num_ds=0;
 
+	matrix3 t;
+	for (int i=0;i<9;i++)
+		t.e[i] = 0;
 
 	for (int i=0;i<n_theta;i++){
 		float x=min.x+(float(i)+0.5f)*(max.x-min.x)/n_theta;
@@ -1101,34 +1100,35 @@ void DataModel::GenerateInertiaTensor(float mass, bool just_temp)
 						inside=true;
 				}*/
 				foreach(Surface, s)
-					if (s.IsInside(r))
+					if (s.IsInside(r)){
 						inside = true;
+						break;
+					}
 				if (inside){
 					//msg_write("in");
 					num_ds++;
-					t_xx+=y*y+z*z;
-					t_yy+=z*z+x*x;
-					t_zz+=x*x+y*y;
-					t_xy-=x*y;
-					t_yz-=y*z;
-					t_zx-=z*x;
+					t._00 += y*y + z*z;
+					t._11 += z*z + x*x;
+					t._22 += x*x + y*y;
+					t._01 -= x*y;
+					t._12 -= y*z;
+					t._20 -= z*x;
 				}
 			}
 		}
 	}
 
-	Matrix3Identity(InertiaTensorTemp);
 	if (num_ds>0){
 		float f = mass / num_ds;
-		InertiaTensorTemp._00=t_xx*f;	InertiaTensorTemp._01=t_xy*f;	InertiaTensorTemp._02=t_zx*f;
-		InertiaTensorTemp._10=t_xy*f;	InertiaTensorTemp._11=t_yy*f;	InertiaTensorTemp._12=t_yz*f;
-		InertiaTensorTemp._20=t_zx*f;	InertiaTensorTemp._21=t_yz*f;	InertiaTensorTemp._22=t_zz*f;
-	}
-
-	if (!just_temp)
-		InertiaTensor = InertiaTensorTemp;
+		t *= f;
+		t._10 = t._01;
+		t._21 = t._12;
+		t._02 = t._20;
+	}else
+		Matrix3Identity(t);
 
 	msg_db_l(3);
+	return t;
 }
 
 

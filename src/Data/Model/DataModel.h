@@ -227,7 +227,7 @@ public:
 
 	float GetDiameter();
 	void GenerateDetailDists(bool just_temp = false);
-	void GenerateInertiaTensor(float mass, bool just_temp = false);
+	matrix3 GenerateInertiaTensor(float mass);
 	void CreateSkin(ModeModelSkin *src, ModeModelSkin *dst, float quality_factor);
 
 	void ResetAutoTexturing();

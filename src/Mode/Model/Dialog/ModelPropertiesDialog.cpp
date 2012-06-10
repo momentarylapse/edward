@@ -80,7 +80,7 @@ void ModelPropertiesDialog::LoadData()
 	FillMaterialList();
 	// physics
 	if (data->AutoGenerateTensor)
-		data->GenerateInertiaTensor(data->Mass);
+		data->InertiaTensor = data->GenerateInertiaTensor(data->Mass);
 	SetFloat("mass", data->Mass);
 	Check("ph_active", data->ActivePhysics);
 	Check("ph_passive", data->PassivePhysics);
@@ -303,15 +303,14 @@ void ModelPropertiesDialog::OnGenerateTensorAuto()
 	Enable("tensor_xz", !b);
 	Enable("tensor_yz", !b);
 	if (b){
-		data->GenerateInertiaTensor(GetFloat("mass"), true);
 		SetDecimals(InertiaTensorDec);
-		matrix3 InertiaTensorTemp;
-		SetFloat("tensor_xx", InertiaTensorTemp._00);
-		SetFloat("tensor_yy", InertiaTensorTemp._11);
-		SetFloat("tensor_zz", InertiaTensorTemp._22);
-		SetFloat("tensor_xy", InertiaTensorTemp._01);
-		SetFloat("tensor_xz", InertiaTensorTemp._02);
-		SetFloat("tensor_yz", InertiaTensorTemp._12);
+		matrix3 t = data->GenerateInertiaTensor(GetFloat("mass"));
+		SetFloat("tensor_xx", t._00);
+		SetFloat("tensor_yy", t._11);
+		SetFloat("tensor_zz", t._22);
+		SetFloat("tensor_xy", t._01);
+		SetFloat("tensor_xz", t._02);
+		SetFloat("tensor_yz", t._12);
 	}
 }
 
