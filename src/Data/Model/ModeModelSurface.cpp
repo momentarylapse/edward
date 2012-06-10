@@ -45,7 +45,7 @@ void ModeModelSurface::AddTriangle(int a, int b, int c, int material, const vect
 	}
 	for (int k=0;k<3;k++){
 		t.Edge[k] = AddEdgeForNewTriangle(t.Vertex[k], t.Vertex[(k + 1) % 3], Triangle.num, k);
-		t.EdgeDirection[k] = Edge[t.Edge[k]].RefCount;
+		t.EdgeDirection[k] = Edge[t.Edge[k]].RefCount - 1;
 	}
 	AddVertex(a);
 	AddVertex(b);
@@ -353,13 +353,75 @@ void ModeModelSurface::BuildFromTriangles()
 		// edges
 		for (int k=0;k<3;k++){
 			t.Edge[k] = AddEdgeForNewTriangle(t.Vertex[k], t.Vertex[(k + 1) % 3], ti, k);
-			t.EdgeDirection[k] = Edge[t.Edge[k]].RefCount;
+			t.EdgeDirection[k] = Edge[t.Edge[k]].RefCount - 1;
 		}
 	}
 
 	UpdateClosed();
 }
 
+
+void ModeModelSurface::RemoveTriangle(int index)
+{
+	ModeModelTriangle &t = Triangle[index];
+
+	// unref the vertices
+	for (int k=0;k<3;k++){
+		model->Vertex[t.Vertex[k]].RefCount --;
+		if (model->Vertex[t.Vertex[k]].RefCount == 0)
+			model->Vertex[t.Vertex[k]].Surface = -1;
+		Vertex.erase(t.Vertex[k]);
+	}
+
+	Set<int> obsolete;
+
+	// remove from its 3 edges
+	for (int k=0;k<3;k++){
+		ModeModelEdge &e = Edge[t.Edge[k]];
+		e.RefCount --;
+		if (e.RefCount > 0){
+			// edge has other triangle...
+			if (t.EdgeDirection[k] > 0){
+				e.Triangle[1] = -1;
+			}else{
+				// flip ownership
+				e.Triangle[0] = e.Triangle[1];
+				e.Side[0] = e.Side[1];
+				e.Triangle[1] = -1;
+
+				// swap vertices
+				int v = e.Vertex[0];
+				e.Vertex[0] = e.Vertex[1];
+				e.Vertex[1] = v;
+
+				// relink other triangle
+				Triangle[e.Triangle[0]].EdgeDirection[e.Side[0]] = 0;
+			}
+		}else{
+			e.Triangle[0] = -1;
+			obsolete.add(t.Edge[k]);
+		}
+	}
+
+	// correct edge links
+	foreachi(Edge, e, i)
+		for (int k=0;k<e.RefCount;k++)
+			if (e.Triangle[k] > index)
+				e.Triangle[k] --;
+			else if (e.Triangle[k] == index){
+				msg_error("RemoveTriangle: tria == index");
+			}
+
+	Triangle.erase(index);
+
+	//TestSanity("rem tria 0");
+
+	// remove obsolete edges
+	foreachb(obsolete, o)
+		RemoveObsoleteEdge(o);
+
+	TestSanity("rem tria");
+}
 
 void ModeModelSurface::TestSanity(const string &loc)
 {
@@ -376,6 +438,7 @@ void ModeModelSurface::TestSanity(const string &loc)
 		for (int k=0;k<e.RefCount;k++)
 			if (Triangle[e.Triangle[k]].Edge[e.Side[k]] != i){
 				msg_error(loc + ": surf broken!   edge linkage");
+				msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.Side[k], Triangle[e.Triangle[k]].Edge[e.Side[k]], Triangle[e.Triangle[k]].EdgeDirection[e.Side[k]]));
 				return;
 			}
 

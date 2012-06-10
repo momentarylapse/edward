@@ -33,6 +33,7 @@ public:
 
 	void AddVertex(int v);
 	void AddTriangle(int a, int b, int c, int material, const vector *sa, const vector *sb, const vector *sc, int index = -1);
+	void RemoveTriangle(int index);
 	int AddEdgeForNewTriangle(int a, int b, int tria, int side);
 	void RemoveObsoleteEdge(int index);
 	void MergeEdges();

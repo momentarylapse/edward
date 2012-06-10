@@ -37,20 +37,20 @@ void *ActionModel__SurfaceDeleteTriangle::execute(Data *d)
 	msg_write("__surf del tria do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModeModelSurface *s = &m->Surface[surface];
-	ModeModelTriangle *t = &s->Triangle[index];
+	ModeModelSurface &s = m->Surface[surface];
+	ModeModelTriangle &t = s.Triangle[index];
 
 	// save old data
-	material = t->Material;
+	material = t.Material;
 	for (int k=0;k<3;k++)
-		vertex[k] = t->Vertex[k];
+		vertex[k] = t.Vertex[k];
 	for (int l=0;l<m->Material[material].NumTextures;l++)
 		for (int k=0;k<3;k++)
-			skin[k][l] = t->SkinVertex[l][k];
+			skin[k][l] = t.SkinVertex[l][k];
 
 	// erase
-	s->Triangle.erase(index);
-	s->BuildFromTriangles();
+	s.RemoveTriangle(index);
+
 	return NULL;
 }
 
