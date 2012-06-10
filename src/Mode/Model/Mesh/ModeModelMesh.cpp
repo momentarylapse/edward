@@ -29,6 +29,7 @@
 #include "../../../Action/Model/Mesh/Look/ActionModelSetNormalModeAll.h"
 #include "../../../Action/Model/Mesh/Vertex/ActionModelNearifyVertices.h"
 #include "../../../Action/Model/Mesh/Vertex/ActionModelAlignToGrid.h"
+#include "../../../Action/Model/Mesh/Skin/ActionModelSkinVerticesFromProjection.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
 
 ModeModelMesh *mode_model_mesh = NULL;
@@ -98,6 +99,7 @@ void ModeModelMesh::OnCommand(const string & id)
 		Copy();
 	if (id == "paste")
 		Paste();
+
 	if (id == "subtract_surface")
 		data->Execute(new ActionModelSurfaceSubtract(data));
 	if (id == "nearify")
@@ -139,6 +141,10 @@ void ModeModelMesh::OnCommand(const string & id)
 		CreateNewMaterialForSelection();
 	if (id == "choose_material")
 		ChooseMaterialForSelection();
+	if (id == "text_from_bg"){
+		MultiView *mv = mode_model_mesh_triangle->multi_view;
+		data->Execute(new ActionModelSkinVerticesFromProjection(data, mv));
+	}
 
 	if (id == "normal_this_smooth")
 		data->Execute(new ActionModelSetNormalModeSelection(data, NormalModeSmooth));
