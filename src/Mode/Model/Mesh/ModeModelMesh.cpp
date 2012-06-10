@@ -28,6 +28,7 @@
 #include "../../../Action/Model/Mesh/Look/ActionModelSetNormalModeSelection.h"
 #include "../../../Action/Model/Mesh/Look/ActionModelSetNormalModeAll.h"
 #include "../../../Action/Model/Mesh/Vertex/ActionModelNearifyVertices.h"
+#include "../../../Action/Model/Mesh/Vertex/ActionModelAlignToGrid.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
 
 ModeModelMesh *mode_model_mesh = NULL;
@@ -101,6 +102,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		data->Execute(new ActionModelSurfaceSubtract(data));
 	if (id == "nearify")
 		data->Execute(new ActionModelNearifyVertices(data));
+	if (id == "align_to_grid")
+		data->Execute(new ActionModelAlignToGrid(data, mode_model_mesh_vertex->multi_view->GetGridD()));
 
 	if (id == "new_point"){
 		ed->SetMode(mode_model_mesh_vertex);
