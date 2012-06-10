@@ -23,6 +23,8 @@ public:
 	void Start();
 	void End();
 
+	void OnCommand(const string &id);
+	void OnUpdateMenu();
 	void OnUpdate(Observable *o);
 
 	void Draw();
@@ -32,6 +34,8 @@ public:
 	void FillSelectionBuffers();
 
 	DataModel *data;
+
+	bool SelectCW;
 
 	int VBModel, VBModel2, VBModel3, VBModel4;
 	int VBMarked, VBMouseOver, VBCreation;

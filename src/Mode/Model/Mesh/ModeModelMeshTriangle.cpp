@@ -32,6 +32,8 @@ ModeModelMeshTriangle::ModeModelMeshTriangle(Mode *_parent, DataModel *_data)
 	VBModel4 = -1;
 	VBMouseOver = NixCreateVB(1024);
 	VBCreation = NixCreateVB(1024);
+
+	SelectCW = false;
 }
 
 ModeModelMeshTriangle::~ModeModelMeshTriangle()
@@ -109,6 +111,17 @@ void ModeModelMeshTriangle::DrawTrias()
 		}
 	}
 	msg_db_l(2);
+}
+
+void ModeModelMeshTriangle::OnCommand(const string & id)
+{
+	if (id == "select_cw")
+		SelectCW = !SelectCW;
+}
+
+void ModeModelMeshTriangle::OnUpdateMenu()
+{
+	ed->Check("select_cw", SelectCW);
 }
 
 void ModeModelMeshTriangle::FillSelectionBuffers()
@@ -274,7 +287,7 @@ bool TriangleInRect(int index, void *user_data, int win, irect *r)
 			if ((B.x>r->x1)&&(B.x<r->x2)&&(B.y>r->y1)&&(B.y<r->y2))
 				if ((C.x>r->x1)&&(C.x<r->x2)&&(C.y>r->y1)&&(C.y<r->y2)){
 					// care for the sense of rotation?
-					if (false){//SelectCW){
+					if (mode_model_mesh_triangle->SelectCW){
 						float wba=(float)atan2(B.x-A.x,B.y-A.y);
 						float wca=(float)atan2(C.x-A.x,C.y-A.y);
 						if (wba<0)	wba+=2*pi;
