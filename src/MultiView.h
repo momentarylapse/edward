@@ -144,6 +144,7 @@ public:
 	void GetSelected(int mode = SelectSet);
 	void SelectAllInRectangle(int mode = SelectSet);
 
+	float GetGridD();
 
 	vector VecProject(const vector &p, int win);
 	vector VecUnProject(const vector &p, int win);

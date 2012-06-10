@@ -504,7 +504,7 @@ void MultiView::EndRect()
 
 #define GridConst	5.0f
 
-float GetGridD(float zoom)
+float MultiView::GetGridD()
 {
 	float z = zoom,d=1.0f;
 	if (z<GridConst){
@@ -590,7 +590,7 @@ void MultiView::DrawGrid(int win, irect dest)
 	}
 
 	// rectangular
-	float D = GetGridD(zoom);
+	float D = GetGridD();
 	int a,b;
 	float fa,fb,t;
 
@@ -633,10 +633,10 @@ void MultiView::DrawGrid(int win, irect dest)
 	}
 }
 
-string GetMVScaleByZoom(vector &v, float zoom)
+string GetMVScaleByZoom(MultiView *mv, vector &v)
 {
 
-	float l = GetGridD(zoom) * 10.1f;
+	float l = mv->GetGridD() * 10.1f;
 	string unit;
 	float f = 1.0f;
 
@@ -681,7 +681,7 @@ string GetMVScaleByZoom(vector &v, float zoom)
 void MultiView::DrawMousePos()
 {
 	vector m = GetCursor3d();
-	string unit = GetMVScaleByZoom(m, zoom);
+	string unit = GetMVScaleByZoom(this, m);
 	string sx = f2s(m.x,2) + " " + unit;
 	string sy = f2s(m.y,2) + " " + unit;
 	string sz = f2s(m.z,2) + " " + unit;
@@ -903,7 +903,7 @@ void MultiView::Draw()
 		int mode = action[active_mouse_action].mode;
 		if (mode == ActionMove){
 			vector t = mouse_action_param;
-			string unit = GetMVScaleByZoom(t, zoom);
+			string unit = GetMVScaleByZoom(this, t);
 			ed->DrawStr(100, 100, f2s(t.x, 2) + " " + unit);
 			ed->DrawStr(100, 120, f2s(t.y, 2) + " " + unit);
 			ed->DrawStr(100, 140, f2s(t.z, 2) + " " + unit);
