@@ -6,7 +6,7 @@
  */
 
 #include "ActionModelSurfaceRelinkTriangle.h"
-#include "ActionModel__SurfaceDeleteTriangle.h"
+#include "ActionModelSurfaceDeleteTriangle.h"
 #include "ActionModel__SurfaceAddTriangle.h"
 
 ActionModelSurfaceRelinkTriangle::ActionModelSurfaceRelinkTriangle(DataModel *m, int _surface, int _triangle, int a, int b, int c)
@@ -19,7 +19,7 @@ ActionModelSurfaceRelinkTriangle::ActionModelSurfaceRelinkTriangle(DataModel *m,
 			sv[k][l] = m->Surface[_surface].Triangle[_triangle].SkinVertex[l][k];
 
 	// delete old triangle
-	AddSubAction(new ActionModel__SurfaceDeleteTriangle(_surface, _triangle), m);
+	AddSubAction(new ActionModelSurfaceDeleteTriangle(_surface, _triangle), m);
 
 	// create new triangle
 	AddSubAction(new ActionModel__SurfaceAddTriangle(_surface, a, b, c, material, sv[0], sv[1], sv[2]), m);

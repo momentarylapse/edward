@@ -6,9 +6,8 @@
  */
 
 #include "ActionModelDeleteSelection.h"
-#include "Surface/Helper/ActionModel__SurfaceDeleteTriangle.h"
+#include "Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
 #include "Vertex/Helper/ActionModelDeleteUnusedVertex.h"
-#include "Surface/Helper/ActionModel__SurfaceDeleteTriangle.h"
 #include "Surface/Helper/ActionModelDeleteEmptySurface.h"
 
 ActionModelDeleteSelection::ActionModelDeleteSelection(DataModel *m, bool greedy)
@@ -23,7 +22,7 @@ ActionModelDeleteSelection::ActionModelDeleteSelection(DataModel *m, bool greedy
 				del = t.is_selected;
 			}
 			if (del)
-				AddSubAction(new ActionModel__SurfaceDeleteTriangle(si, ti), m);
+				AddSubAction(new ActionModelSurfaceDeleteTriangle(si, ti), m);
 		}
 
 		if (s.Triangle.num == 0)

@@ -1,38 +1,38 @@
 /*
- * ActionModel__SurfaceDeleteTriangle.cpp
+ * ActionModelSurfaceDeleteTriangle.cpp
  *
  *  Created on: 13.03.2012
  *      Author: michi
  */
 
-#include "ActionModel__SurfaceDeleteTriangle.h"
+#include "ActionModelSurfaceDeleteTriangle.h"
 #include "../../../../../Data/Model/DataModel.h"
 
-ActionModel__SurfaceDeleteTriangle::ActionModel__SurfaceDeleteTriangle(int _surface, int _index)
+ActionModelSurfaceDeleteTriangle::ActionModelSurfaceDeleteTriangle(int _surface, int _index)
 {
 	surface = _surface;
 	index = _index;
 }
 
-ActionModel__SurfaceDeleteTriangle::~ActionModel__SurfaceDeleteTriangle()
+ActionModelSurfaceDeleteTriangle::~ActionModelSurfaceDeleteTriangle()
 {
 }
 
-void ActionModel__SurfaceDeleteTriangle::undo(Data *d)
+void ActionModelSurfaceDeleteTriangle::undo(Data *d)
 {
 	msg_write("__surf del tria undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModeModelSurface *s = &m->Surface[surface];
+	ModeModelSurface &s = m->Surface[surface];
 
 	// add triangle
-	s->AddTriangle(vertex[0], vertex[1], vertex[2], material, skin[0], skin[1], skin[2], index);
-	s->BuildFromTriangles();
+	s.AddTriangle(vertex[0], vertex[1], vertex[2], material, skin[0], skin[1], skin[2], index);
+	s.BuildFromTriangles();
 }
 
 
 
-void *ActionModel__SurfaceDeleteTriangle::execute(Data *d)
+void *ActionModelSurfaceDeleteTriangle::execute(Data *d)
 {
 	msg_write("__surf del tria do");
 	DataModel *m = dynamic_cast<DataModel*>(d);

@@ -1,22 +1,22 @@
 /*
- * ActionModel__SurfaceDeleteTriangle.h
+ * ActionModelSurfaceDeleteTriangle.h
  *
  *  Created on: 13.03.2012
  *      Author: michi
  */
 
-#ifndef ACTIONMODEL__SURFACEDELETETRIANGLE_H_
-#define ACTIONMODEL__SURFACEDELETETRIANGLE_H_
+#ifndef ACTIONMODELSURFACEDELETETRIANGLE_H_
+#define ACTIONMODELSURFACEDELETETRIANGLE_H_
 
 #include "../../../../Action.h"
 #include "../../../../../lib/types/types.h"
 #include "../../../../../lib/x/x.h"
 
-class ActionModel__SurfaceDeleteTriangle: public Action
+class ActionModelSurfaceDeleteTriangle: public Action
 {
 public:
-	ActionModel__SurfaceDeleteTriangle(int _surface, int _index);
-	virtual ~ActionModel__SurfaceDeleteTriangle();
+	ActionModelSurfaceDeleteTriangle(int _surface, int _index);
+	virtual ~ActionModelSurfaceDeleteTriangle();
 	string name(){	return "Model__SurfaceDeleteTriangle";	}
 
 	void *execute(Data *d);
@@ -28,4 +28,4 @@ private:
 	vector skin[3][MODEL_MAX_TEXTURES];
 };
 
-#endif /* ACTIONMODEL__SURFACEDELETETRIANGLE_H_ */
+#endif /* ACTIONMODELSURFACEDELETETRIANGLE_H_ */

@@ -8,7 +8,7 @@
 #include "ActionModelSurfaceSubtract.h"
 #include "ActionModelSurfaceAutoWeld.h"
 #include "ActionModelSurfaceInvert.h"
-#include "Helper/ActionModel__SurfaceDeleteTriangle.h"
+#include "Helper/ActionModelSurfaceDeleteTriangle.h"
 #include "../Triangle/ActionModelAddTrianglesByOutline.h"
 #include "ActionModelSurfaceCopy.h"
 #include "../../../../Edward.h"
@@ -373,7 +373,7 @@ void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModeModelSur
 
 	// remove obsolete triangles
 	foreachb(to_del, p)
-		AddSubAction(new ActionModel__SurfaceDeleteTriangle(ai, p), m);
+		AddSubAction(new ActionModelSurfaceDeleteTriangle(ai, p), m);
 	a->TestSanity("tria sub a med");
 
 	// connect separate parts

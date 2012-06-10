@@ -6,7 +6,7 @@
  */
 
 #include "ActionModelSplitEdge.h"
-#include "../Surface/Helper/ActionModel__SurfaceDeleteTriangle.h"
+#include "../Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
 #include "../Surface/Helper/ActionModel__SurfaceAddTriangle.h"
 #include "../Vertex/ActionModelAddVertex.h"
 #include <assert.h>
@@ -65,11 +65,11 @@ ActionModelSplitEdge::ActionModelSplitEdge(DataModel *m, int _surface, int _edge
 
 	// delete old triangle(s)
 	if (nt1 >= 0){
-		AddSubAction(new ActionModel__SurfaceDeleteTriangle(_surface, nt1), m);
+		AddSubAction(new ActionModelSurfaceDeleteTriangle(_surface, nt1), m);
 		if (nt0 > nt1)
 			nt0 --;
 	}
-	AddSubAction(new ActionModel__SurfaceDeleteTriangle(_surface, nt0), m);
+	AddSubAction(new ActionModelSurfaceDeleteTriangle(_surface, nt0), m);
 
 	// create new vertex
 	AddSubAction(new ActionModelAddVertex(_pos), m);

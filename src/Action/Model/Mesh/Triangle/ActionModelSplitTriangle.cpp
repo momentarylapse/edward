@@ -6,7 +6,7 @@
  */
 
 #include "ActionModelSplitTriangle.h"
-#include "../Surface/Helper/ActionModel__SurfaceDeleteTriangle.h"
+#include "../Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
 #include "../Surface/Helper/ActionModel__SurfaceAddTriangle.h"
 #include "../Vertex/ActionModelAddVertex.h"
 
@@ -29,7 +29,7 @@ ActionModelSplitTriangle::ActionModelSplitTriangle(DataModel *m, int _surface, i
 		sv[3][l] = sv[0][l] * (1 - f - g) + sv[1][l] * f + sv[2][l] * g;
 
 	// delete old triangle
-	AddSubAction(new ActionModel__SurfaceDeleteTriangle(_surface, _triangle), m);
+	AddSubAction(new ActionModelSurfaceDeleteTriangle(_surface, _triangle), m);
 
 	// create new vertex
 	AddSubAction(new ActionModelAddVertex(_pos), m);
