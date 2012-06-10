@@ -1,16 +1,16 @@
 /*
- * ActionModel__SurfaceAddTriangle.cpp
+ * ActionModelSurfaceAddTriangle.cpp
  *
  *  Created on: 13.03.2012
  *      Author: michi
  */
 
-#include "ActionModel__SurfaceAddTriangle.h"
+#include "ActionModelSurfaceAddTriangle.h"
 #include "../../../../../Data/Model/DataModel.h"
 
 // might create a "disjoint" surface -> don't use alone!
 
-ActionModel__SurfaceAddTriangle::ActionModel__SurfaceAddTriangle(int _surface, int _a, int _b, int _c, int _material, const vector *_sva, const vector *_svb, const vector *_svc)
+ActionModelSurfaceAddTriangle::ActionModelSurfaceAddTriangle(int _surface, int _a, int _b, int _c, int _material, const vector *_sva, const vector *_svb, const vector *_svc)
 {
 	surface = _surface;
 	a = _a;
@@ -24,11 +24,11 @@ ActionModel__SurfaceAddTriangle::ActionModel__SurfaceAddTriangle(int _surface, i
 	}
 }
 
-ActionModel__SurfaceAddTriangle::~ActionModel__SurfaceAddTriangle()
+ActionModelSurfaceAddTriangle::~ActionModelSurfaceAddTriangle()
 {
 }
 
-void ActionModel__SurfaceAddTriangle::undo(Data *d)
+void ActionModelSurfaceAddTriangle::undo(Data *d)
 {
 	msg_write("__surf add tria undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
@@ -41,7 +41,7 @@ void ActionModel__SurfaceAddTriangle::undo(Data *d)
 
 
 
-void *ActionModel__SurfaceAddTriangle::execute(Data *d)
+void *ActionModelSurfaceAddTriangle::execute(Data *d)
 {
 	msg_write("__surf add tria do");
 	DataModel *m = dynamic_cast<DataModel*>(d);

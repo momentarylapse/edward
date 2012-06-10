@@ -7,7 +7,7 @@
 
 #include "ActionModelSurfaceRelinkTriangle.h"
 #include "ActionModelSurfaceDeleteTriangle.h"
-#include "ActionModel__SurfaceAddTriangle.h"
+#include "ActionModelSurfaceAddTriangle.h"
 
 ActionModelSurfaceRelinkTriangle::ActionModelSurfaceRelinkTriangle(DataModel *m, int _surface, int _triangle, int a, int b, int c)
 {
@@ -22,7 +22,7 @@ ActionModelSurfaceRelinkTriangle::ActionModelSurfaceRelinkTriangle(DataModel *m,
 	AddSubAction(new ActionModelSurfaceDeleteTriangle(_surface, _triangle), m);
 
 	// create new triangle
-	AddSubAction(new ActionModel__SurfaceAddTriangle(_surface, a, b, c, material, sv[0], sv[1], sv[2]), m);
+	AddSubAction(new ActionModelSurfaceAddTriangle(_surface, a, b, c, material, sv[0], sv[1], sv[2]), m);
 }
 
 ActionModelSurfaceRelinkTriangle::~ActionModelSurfaceRelinkTriangle()

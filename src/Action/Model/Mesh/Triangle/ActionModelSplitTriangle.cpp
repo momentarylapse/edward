@@ -7,7 +7,7 @@
 
 #include "ActionModelSplitTriangle.h"
 #include "../Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
-#include "../Surface/Helper/ActionModel__SurfaceAddTriangle.h"
+#include "../Surface/Helper/ActionModelSurfaceAddTriangle.h"
 #include "../Vertex/ActionModelAddVertex.h"
 
 ActionModelSplitTriangle::ActionModelSplitTriangle(DataModel *m, int _surface, int _triangle, const vector &_pos)
@@ -36,9 +36,9 @@ ActionModelSplitTriangle::ActionModelSplitTriangle(DataModel *m, int _surface, i
 	int v = m->Vertex.num - 1;
 
 	// create 3 new triangles
-	AddSubAction(new ActionModel__SurfaceAddTriangle(_surface, va, vb, v, material, sv[0], sv[1], sv[3]), m);
-	AddSubAction(new ActionModel__SurfaceAddTriangle(_surface, vb, vc, v, material, sv[1], sv[2], sv[3]), m);
-	AddSubAction(new ActionModel__SurfaceAddTriangle(_surface, vc, va, v, material, sv[2], sv[0], sv[3]), m);
+	AddSubAction(new ActionModelSurfaceAddTriangle(_surface, va, vb, v, material, sv[0], sv[1], sv[3]), m);
+	AddSubAction(new ActionModelSurfaceAddTriangle(_surface, vb, vc, v, material, sv[1], sv[2], sv[3]), m);
+	AddSubAction(new ActionModelSurfaceAddTriangle(_surface, vc, va, v, material, sv[2], sv[0], sv[3]), m);
 }
 
 ActionModelSplitTriangle::~ActionModelSplitTriangle()

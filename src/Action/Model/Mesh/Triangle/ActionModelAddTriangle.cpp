@@ -8,7 +8,7 @@
 #include "ActionModelAddTriangle.h"
 #include "../../../../Data/Model/DataModel.h"
 #include "../Surface/Helper/ActionModelAddEmptySurface.h"
-#include "../Surface/Helper/ActionModel__SurfaceAddTriangle.h"
+#include "../Surface/Helper/ActionModelSurfaceAddTriangle.h"
 #include "../Surface/Helper/ActionModel__JoinSurfaces.h"
 #include <assert.h>
 
@@ -40,7 +40,7 @@ ActionModelAddTriangle::ActionModelAddTriangle(DataModel *m, int _a, int _b, int
 	}
 
 	// add triangle
-	AddSubAction(new ActionModel__SurfaceAddTriangle(surf_no, _a, _b, _c, _material, _sva, _svb, _svc), m);
+	AddSubAction(new ActionModelSurfaceAddTriangle(surf_no, _a, _b, _c, _material, _sva, _svb, _svc), m);
 
 	/*sModeModelSubSkin *sub = &skin->Sub[CurrentMaterial];
 	sModeModelTriangle t;

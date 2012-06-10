@@ -7,7 +7,7 @@
 
 #include "ActionModelSplitEdge.h"
 #include "../Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
-#include "../Surface/Helper/ActionModel__SurfaceAddTriangle.h"
+#include "../Surface/Helper/ActionModelSurfaceAddTriangle.h"
 #include "../Vertex/ActionModelAddVertex.h"
 #include <assert.h>
 
@@ -76,11 +76,11 @@ ActionModelSplitEdge::ActionModelSplitEdge(DataModel *m, int _surface, int _edge
 	int v = m->Vertex.num - 1;
 
 	// create 2-4 new triangles
-	AddSubAction(new ActionModel__SurfaceAddTriangle(_surface, v0[0], v0[1], v, material0, sv[0], sv[1], sv[6]), m);
-	AddSubAction(new ActionModel__SurfaceAddTriangle(_surface, v0[2], v0[0], v, material0, sv[2], sv[0], sv[6]), m);
+	AddSubAction(new ActionModelSurfaceAddTriangle(_surface, v0[0], v0[1], v, material0, sv[0], sv[1], sv[6]), m);
+	AddSubAction(new ActionModelSurfaceAddTriangle(_surface, v0[2], v0[0], v, material0, sv[2], sv[0], sv[6]), m);
 	if (nt1 >= 0){
-		AddSubAction(new ActionModel__SurfaceAddTriangle(_surface, v1[0], v1[1], v, material1, sv[3], sv[4], sv[6]), m);
-		AddSubAction(new ActionModel__SurfaceAddTriangle(_surface, v1[2], v1[0], v, material1, sv[5], sv[3], sv[6]), m);
+		AddSubAction(new ActionModelSurfaceAddTriangle(_surface, v1[0], v1[1], v, material1, sv[3], sv[4], sv[6]), m);
+		AddSubAction(new ActionModelSurfaceAddTriangle(_surface, v1[2], v1[0], v, material1, sv[5], sv[3], sv[6]), m);
 	}
 }
 
