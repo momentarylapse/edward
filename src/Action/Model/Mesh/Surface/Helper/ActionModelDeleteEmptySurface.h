@@ -1,21 +1,21 @@
 /*
- * ActionModel__DeleteSurface.h
+ * ActionModelDeleteEmptySurface.h
  *
  *  Created on: 13.03.2012
  *      Author: michi
  */
 
-#ifndef ACTIONMODEL__DELETESURFACE_H_
-#define ACTIONMODEL__DELETESURFACE_H_
+#ifndef ACTIONMODELDELETEEMPTYSURFACE_H_
+#define ACTIONMODELDELETEEMPTYSURFACE_H_
 
 #include "../../../../Action.h"
 #include "../../../../../lib/types/types.h"
 
-class ActionModel__DeleteSurface: public Action
+class ActionModelDeleteEmptySurface: public Action
 {
 public:
-	ActionModel__DeleteSurface(int _surface);
-	virtual ~ActionModel__DeleteSurface();
+	ActionModelDeleteEmptySurface(int _surface);
+	virtual ~ActionModelDeleteEmptySurface();
 	string name(){	return "Model__DeleteSurface";	}
 
 	void *execute(Data *d);
@@ -26,4 +26,4 @@ private:
 	bool is_physical, is_visible;
 };
 
-#endif /* ACTIONMODEL__DELETESURFACE_H_ */
+#endif /* ACTIONMODELDELETEEMPTYSURFACE_H_ */

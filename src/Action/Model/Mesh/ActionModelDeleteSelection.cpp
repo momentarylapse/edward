@@ -9,7 +9,7 @@
 #include "Surface/Helper/ActionModel__SurfaceDeleteTriangle.h"
 #include "Vertex/Helper/ActionModel__DeleteVertex.h"
 #include "Surface/Helper/ActionModel__SurfaceDeleteTriangle.h"
-#include "Surface/Helper/ActionModel__DeleteSurface.h"
+#include "Surface/Helper/ActionModelDeleteEmptySurface.h"
 
 ActionModelDeleteSelection::ActionModelDeleteSelection(DataModel *m, bool greedy)
 {
@@ -27,7 +27,7 @@ ActionModelDeleteSelection::ActionModelDeleteSelection(DataModel *m, bool greedy
 		}
 
 		if (s.Triangle.num == 0)
-			AddSubAction(new ActionModel__DeleteSurface(si), m);
+			AddSubAction(new ActionModelDeleteEmptySurface(si), m);
 	}
 
 	foreachbi(m->Vertex, v, i)

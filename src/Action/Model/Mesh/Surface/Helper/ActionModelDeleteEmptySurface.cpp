@@ -1,26 +1,26 @@
 /*
- * ActionModel__DeleteSurface.cpp
+ * ActionModelDeleteEmptySurface.cpp
  *
  *  Created on: 13.03.2012
  *      Author: michi
  */
 
-#include "ActionModel__DeleteSurface.h"
+#include "ActionModelDeleteEmptySurface.h"
 #include "../../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
 // can only delete empty surfaces!
 
-ActionModel__DeleteSurface::ActionModel__DeleteSurface(int _surface)
+ActionModelDeleteEmptySurface::ActionModelDeleteEmptySurface(int _surface)
 {
 	surface = _surface;
 }
 
-ActionModel__DeleteSurface::~ActionModel__DeleteSurface()
+ActionModelDeleteEmptySurface::~ActionModelDeleteEmptySurface()
 {
 }
 
-void *ActionModel__DeleteSurface::execute(Data *d)
+void *ActionModelDeleteEmptySurface::execute(Data *d)
 {
 	msg_write("__del surf do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
@@ -34,7 +34,7 @@ void *ActionModel__DeleteSurface::execute(Data *d)
 
 
 
-void ActionModel__DeleteSurface::undo(Data *d)
+void ActionModelDeleteEmptySurface::undo(Data *d)
 {
 	msg_write("__del surf undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
