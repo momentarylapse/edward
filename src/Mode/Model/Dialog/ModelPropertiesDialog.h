@@ -39,6 +39,7 @@ public:
 	void OnModelInventary();
 	void OnDeleteItem();
 	void OnMaxScriptVars();
+	void OnScriptVarEdit();
 	void OnScriptFind();
 	void OnModelScriptVarTemplate();
 	void OnOk();
@@ -49,8 +50,7 @@ public:
 private:
 	DataModel *data;
 
-	Array<string> temp_item;
-	Array<float> temp_script_var;
+	DataModel::MetaData temp;
 };
 
 #endif /* MODELPROPERTIESDIALOG_H_ */
