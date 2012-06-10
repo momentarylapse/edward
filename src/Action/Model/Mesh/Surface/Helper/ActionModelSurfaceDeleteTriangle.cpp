@@ -27,7 +27,7 @@ void ActionModelSurfaceDeleteTriangle::undo(Data *d)
 
 	// add triangle
 	s.AddTriangle(vertex[0], vertex[1], vertex[2], material, skin[0], skin[1], skin[2], index);
-	s.BuildFromTriangles();
+	//s.BuildFromTriangles();
 }
 
 

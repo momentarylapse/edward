@@ -59,8 +59,17 @@ void ModeModelSurface::AddTriangle(int a, int b, int c, int material, const vect
 	t.view_stage = model->ViewStage;
 	t.NormalDirty = true;
 	if (index >= 0){
-		msg_todo("add tria.. index: correct edges");
 		Triangle.insert(t, index);
+
+		// correct edges
+		foreach(Edge, e)
+			for (int k=0;k<e.RefCount;k++)
+				if (e.Triangle[k] >= index)
+					e.Triangle[k] ++;
+
+		// correct own edges
+		for (int k=0;k<3;k++)
+			Edge[Triangle[index].Edge[k]].Triangle[Triangle[index].EdgeDirection[k]] = index;
 	}else
 		Triangle.add(t);
 	msg_db_l(1);
