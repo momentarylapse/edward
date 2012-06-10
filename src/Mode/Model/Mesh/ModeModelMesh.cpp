@@ -27,6 +27,7 @@
 #include "../../../Action/Model/Mesh/ActionModelPasteGeometry.h"
 #include "../../../Action/Model/Mesh/Look/ActionModelSetNormalModeSelection.h"
 #include "../../../Action/Model/Mesh/Look/ActionModelSetNormalModeAll.h"
+#include "../../../Action/Model/Mesh/Vertex/ActionModelNearifyVertices.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
 
 ModeModelMesh *mode_model_mesh = NULL;
@@ -98,6 +99,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		Paste();
 	if (id == "subtract_surface")
 		data->Execute(new ActionModelSurfaceSubtract(data));
+	if (id == "nearify")
+		data->Execute(new ActionModelNearifyVertices(data));
 
 	if (id == "new_point"){
 		ed->SetMode(mode_model_mesh_vertex);
