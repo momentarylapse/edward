@@ -24,6 +24,7 @@
 #include "../../../Action/Model/Mesh/ActionModelDeleteSelection.h"
 #include "../../../Action/Model/Mesh/Look/ActionModelSetMaterial.h"
 #include "../../../Action/Model/Mesh/Surface/ActionModelSurfaceSubtract.h"
+#include "../../../Action/Model/Mesh/Surface/ActionModelInvertSelection.h"
 #include "../../../Action/Model/Mesh/ActionModelPasteGeometry.h"
 #include "../../../Action/Model/Mesh/Look/ActionModelSetNormalModeSelection.h"
 #include "../../../Action/Model/Mesh/Look/ActionModelSetNormalModeAll.h"
@@ -102,6 +103,8 @@ void ModeModelMesh::OnCommand(const string & id)
 
 	if (id == "subtract_surface")
 		data->Execute(new ActionModelSurfaceSubtract(data));
+	if (id == "invert_trias")
+		data->Execute(new ActionModelInvertSelection(data));
 	if (id == "nearify")
 		data->Execute(new ActionModelNearifyVertices(data));
 	if (id == "align_to_grid")
