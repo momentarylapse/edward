@@ -154,25 +154,21 @@ bool DataWorld::Load(const string & _filename, bool deep)
 	delete(f);
 		msg_write(".8");
 
-	/*if ((!Error)&&(allow_load)){
-		ProgressEnd();
-		for (int i=0;i<Terrain.num;i++)
-			LoadFromFileTerrain(i,Terrain[i].Pos, MapDir + Terrain[i].FileName + ".map", true);
-		ProgressStart(MainWin, _("Lade Objekte"));
+	if ((!Error)&&(deep)){
+//		ProgressEnd();
+//		for (int i=0;i<Terrain.num;i++)
+//			LoadFromFileTerrain(i,Terrain[i].Pos, MapDir + Terrain[i].FileName + ".map", true);
+//		ProgressStart(MainWin, _("Lade Objekte"));
 		for (int i=0;i<Object.num;i++){
-			Progress(format(_("%d von %d"), i, Object.num), float(i)/float(Object.num));
+//			Progress(format(_("%d von %d"), i, Object.num), float(i)/float(Object.num));
 			Object[i].object = (CObject*)MetaLoadModel(Object[i].FileName);
-			Object[i].object->Pos = Object[i].Pos;
-			Object[i].object->Ang = Object[i].Ang;
+			Object[i].object->pos = Object[i].pos;
+			Object[i].object->ang = Object[i].Ang;
 //			if (Object[i].object)
 //				GodRegisterModel(Object[i].object);
 		}
-		ProgressEnd();
-		CModeAll::SetTitle(FileName);
-
-		ResetHistory();
-		OptimizeView();
-	}*/
+//		ProgressEnd();
+	}
 
     msg_write("|   fertig                                                |");
 	msg_write("-----------------------------------------------------------");
@@ -185,6 +181,8 @@ bool DataWorld::Load(const string & _filename, bool deep)
 			Object[i].is_selected = true;
 		CreateLightMap(true);
 	}*/
+	ResetHistory();
+	Notify("Change");
 
 	return !Error;
 }
@@ -224,6 +222,7 @@ void DataWorld::MetaData::Reset()
 
 void DataWorld::Reset()
 {
+	filename = "";
 
 	// delete old data...
 	for (int i=0;i<Object.num;i++)

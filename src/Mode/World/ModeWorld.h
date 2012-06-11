@@ -46,6 +46,11 @@ public:
 	bool SaveAs();
 
 	DataWorld *data;
+
+	int ViewStage;
+	bool ShowTerrains;
+	bool ShowObjects;
+	int TerrainShowTextureLevel;
 };
 
 extern ModeWorld* mode_world;
