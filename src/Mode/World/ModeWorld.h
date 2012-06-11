@@ -46,6 +46,8 @@ public:
 	bool Save();
 	bool SaveAs();
 
+	void OptimizeView();
+
 	void ExecutePropertiesSelectionDialog();
 	void ExecuteWorldPropertiesDialog();
 	void ExecuteObjectPropertiesDialog();

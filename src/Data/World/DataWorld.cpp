@@ -238,3 +238,37 @@ void DataWorld::Reset()
 }
 
 
+void DataWorld::GetBoundaryBox(vector &min, vector &max)
+{
+	bool found_any=false;
+	msg_db_m("GetBoundaryBox",2);
+	foreach(Object, o)
+		if (o.object){
+			vector min2 = o.pos - vector(1,1,1) * o.object->radius;
+			vector max2 = o.pos + vector(1,1,1) * o.object->radius;
+			if (!found_any){
+				min = min2;
+				max = max2;
+			}
+			VecMin(min, min2);
+			VecMax(max, max2);
+			found_any = true; //|=(min2!=max2);
+		}
+	/*for (int i=0;i<Terrain.num;i++){
+		vector min2=Terrain[i].Pos+Terrain[i].Min;
+		vector max2=Terrain[i].Pos+Terrain[i].Max;
+		if (!found_any){
+			min=min2;
+			max=max2;
+		}
+		VecMin(min,min2);
+		VecMax(max,max2);
+		found_any=true;
+	}*/
+	if (!found_any){
+		min=vector(-100,-100,-100);
+		max=vector( 100, 100, 100);
+	}
+}
+
+

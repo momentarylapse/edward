@@ -92,6 +92,8 @@ public:
 	bool Save(const string &_filename);
 
 
+	void GetBoundaryBox(vector &min, vector &max);
+
 	// terrains
 	Array<ModeWorldTerrain> Terrain;
 

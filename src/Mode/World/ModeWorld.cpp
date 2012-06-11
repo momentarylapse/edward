@@ -69,6 +69,9 @@ void ModeWorld::OnCommand(const string & id)
 
 	if (id == "selection_properties")
 		ExecuteWorldPropertiesDialog();
+
+	if (id == "opt_view")
+		OptimizeView();
 }
 
 #define MODEL_MAX_VERTICES	65536
@@ -509,7 +512,7 @@ bool ModeWorld::Open()
 
 	multi_view->Reset();
 	ed->SetMode(mode_world);
-	//OptimizeView();
+	OptimizeView();
 	return true;
 }
 
@@ -539,6 +542,21 @@ void ModeWorld::ExecuteObjectPropertiesDialog()
 
 void ModeWorld::ExecuteTerrainPropertiesDialog()
 {
+}
+
+
+void ModeWorld::OptimizeView()
+{
+	multi_view->ResetView();
+	vector min, max;
+	data->GetBoundaryBox(min, max);
+	multi_view->pos = (max + min) / 2;
+	multi_view->radius = VecLengthFuzzy(max - min) * 1.3f;
+
+	ViewStage = 0;
+	//MVFXEnabled=false;
+	TerrainShowTextureLevel=-1;
+	//TerrainsSelectable=false;
 }
 
 
