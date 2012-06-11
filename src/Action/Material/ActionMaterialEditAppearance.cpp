@@ -37,10 +37,3 @@ void ActionMaterialEditAppearance::undo(Data *d)
 }
 
 
-
-void ActionMaterialEditAppearance::redo(Data *d)
-{
-	execute(d);
-}
-
-
