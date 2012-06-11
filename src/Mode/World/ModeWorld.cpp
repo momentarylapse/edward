@@ -59,6 +59,11 @@ void ModeWorld::OnCommand(const string & id)
 		Save();
 	if (id == "save_as")
 		SaveAs();
+
+	if (id == "undo")
+		data->Undo();
+	if (id == "redo")
+		data->Redo();
 }
 
 #define MODEL_MAX_VERTICES	65536
@@ -482,6 +487,8 @@ void ModeWorld::OnRightButtonDown()
 
 void ModeWorld::OnUpdateMenu()
 {
+	ed->Enable("undo", data->action_manager->Undoable());
+	ed->Enable("redo", data->action_manager->Redoable());
 }
 
 
