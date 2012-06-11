@@ -58,36 +58,36 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 		}
 		// Colors
 		f->ReadComment();
-		read_color_argb(f,Appearance.ColorAmbient);
-		read_color_argb(f,Appearance.ColorDiffuse);
-		read_color_argb(f,Appearance.ColorSpecular);
-		Appearance.ColorShininess=f->ReadInt();
-		read_color_argb(f,Appearance.ColorEmissive);
+		read_color_argb(f, Appearance.ColorAmbient);
+		read_color_argb(f, Appearance.ColorDiffuse);
+		read_color_argb(f, Appearance.ColorSpecular);
+		Appearance.ColorShininess = f->ReadInt();
+		read_color_argb(f, Appearance.ColorEmissive);
 		// Transparency
-		Appearance.TransparencyMode=f->ReadIntC();
-		Appearance.AlphaFactor=(float)f->ReadInt() * 0.01f;
-		Appearance.AlphaSource=f->ReadInt();
-		Appearance.AlphaDestination=f->ReadInt();
-		Appearance.AlphaZBuffer=f->ReadBool();
+		Appearance.TransparencyMode = f->ReadIntC();
+		Appearance.AlphaFactor = (float)f->ReadInt() * 0.01f;
+		Appearance.AlphaSource = f->ReadInt();
+		Appearance.AlphaDestination = f->ReadInt();
+		Appearance.AlphaZBuffer = f->ReadBool();
 		// Appearance
-		Appearance.ShiningDensity=(float)f->ReadIntC();
-		Appearance.ShiningLength=(float)f->ReadInt();
-		Appearance.Water=f->ReadBool();
+		Appearance.ShiningDensity = (float)f->ReadIntC();
+		Appearance.ShiningLength = (float)f->ReadInt();
+		Appearance.Water = f->ReadBool();
 		// Reflection
-		Appearance.ReflectionMode=f->ReadIntC();
-		Appearance.ReflectionDensity=(float)f->ReadInt();
-		Appearance.ReflectionSize=f->ReadInt();
+		Appearance.ReflectionMode = f->ReadIntC();
+		Appearance.ReflectionDensity = (float)f->ReadInt();
+		Appearance.ReflectionSize = f->ReadInt();
 		for (int i=0;i<6;i++)
 			Appearance.ReflectionTextureFile[i] = f->ReadStr();
 		// ShaderFile
 		Appearance.EffectFile = f->ReadStrC();
 		// Physics
-		Physics.RCJump=f->ReadIntC();
-		Physics.RCStatic=f->ReadInt();
-		Physics.RCSliding=f->ReadInt();
-		Physics.RCRolling=f->ReadInt();
-		Physics.RCVJumpMin=f->ReadInt();
-		Physics.RCVSlidingMin=f->ReadInt();
+		Physics.RCJump = (float)f->ReadIntC() * 0.001f;
+		Physics.RCStatic = (float)f->ReadInt() * 0.001f;
+		Physics.RCSliding = (float)f->ReadInt() * 0.001f;
+		Physics.RCRolling = (float)f->ReadInt() * 0.001f;
+		Physics.RCVJumpMin = (float)f->ReadInt() * 0.001f;
+		Physics.RCVSlidingMin = (float)f->ReadInt() * 0.001f;
 		if (ffv >= 4){
 			// Sound
 			//NumSoundRules=f->ReadIntC();
@@ -98,71 +98,71 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 	}else if (ffv==2){
 		// Colors
 		f->ReadComment();
-		read_color_argb(f,Appearance.ColorAmbient);
-		read_color_argb(f,Appearance.ColorDiffuse);
-		read_color_argb(f,Appearance.ColorSpecular);
-		Appearance.ColorShininess=(float)f->ReadInt();
-		read_color_argb(f,Appearance.ColorEmissive);
+		read_color_argb(f, Appearance.ColorAmbient);
+		read_color_argb(f, Appearance.ColorDiffuse);
+		read_color_argb(f, Appearance.ColorSpecular);
+		Appearance.ColorShininess = (float)f->ReadInt();
+		read_color_argb(f, Appearance.ColorEmissive);
 		// Transparency
-		Appearance.TransparencyMode=f->ReadIntC();
-		Appearance.AlphaFactor=(float)f->ReadInt() * 0.01f;
-		Appearance.AlphaSource=f->ReadInt();
-		Appearance.AlphaDestination=f->ReadInt();
+		Appearance.TransparencyMode = f->ReadIntC();
+		Appearance.AlphaFactor = (float)f->ReadInt() * 0.01f;
+		Appearance.AlphaSource = f->ReadInt();
+		Appearance.AlphaDestination = f->ReadInt();
 		// Appearance
-		int MetalDensity=f->ReadIntC();
-		if (MetalDensity>0){
-			Appearance.ReflectionMode=ReflectionMetal;
-			Appearance.ReflectionDensity=(float)MetalDensity;
+		int MetalDensity = f->ReadIntC();
+		if (MetalDensity > 0){
+			Appearance.ReflectionMode = ReflectionMetal;
+			Appearance.ReflectionDensity = (float)MetalDensity;
 		}
-		Appearance.ShiningDensity=(float)f->ReadInt();
-		Appearance.ShiningLength=(float)f->ReadInt();
-		bool Mirror=f->ReadBool();
+		Appearance.ShiningDensity = (float)f->ReadInt();
+		Appearance.ShiningLength = (float)f->ReadInt();
+		bool Mirror = f->ReadBool();
 		if (Mirror)
-			Appearance.ReflectionMode=ReflectionMirror;
-		Appearance.Water=f->ReadBool();
+			Appearance.ReflectionMode = ReflectionMirror;
+		Appearance.Water = f->ReadBool();
 		// ShaderFile
 		Appearance.EffectFile = f->ReadStrC();
 		// Physics
-		Physics.RCJump=f->ReadIntC();
-		Physics.RCStatic=f->ReadInt();
-		Physics.RCSliding=f->ReadInt();
-		Physics.RCRolling=f->ReadInt();
-		Physics.RCVJumpMin=f->ReadInt();
-		Physics.RCVSlidingMin=f->ReadInt();
+		Physics.RCJump = (float)f->ReadIntC() * 0.001f;
+		Physics.RCStatic = (float)f->ReadInt() * 0.001f;
+		Physics.RCSliding = (float)f->ReadInt() * 0.001f;
+		Physics.RCRolling = (float)f->ReadInt() * 0.001f;
+		Physics.RCVJumpMin = (float)f->ReadInt() * 0.001f;
+		Physics.RCVSlidingMin = (float)f->ReadInt() * 0.001f;
 
 		Appearance.AlphaZBuffer=(Appearance.TransparencyMode!=TransparencyModeFunctions)&&(Appearance.TransparencyMode!=TransparencyModeFactor);
 	}else if (ffv==1){
 		// Colors
 		f->ReadComment();
-		read_color_argb(f,Appearance.ColorAmbient);
-		read_color_argb(f,Appearance.ColorDiffuse);
-		read_color_argb(f,Appearance.ColorSpecular);
-		Appearance.ColorShininess=(float)f->ReadInt();
-		read_color_argb(f,Appearance.ColorEmissive);
+		read_color_argb(f, Appearance.ColorAmbient);
+		read_color_argb(f, Appearance.ColorDiffuse);
+		read_color_argb(f, Appearance.ColorSpecular);
+		Appearance.ColorShininess = (float)f->ReadInt();
+		read_color_argb(f, Appearance.ColorEmissive);
 		// Transparency
-		Appearance.TransparencyMode=f->ReadIntC();
-		Appearance.AlphaFactor=(float)f->ReadInt() * 0.01f;
-		Appearance.AlphaSource=f->ReadInt();
-		Appearance.AlphaDestination=f->ReadInt();
+		Appearance.TransparencyMode = f->ReadIntC();
+		Appearance.AlphaFactor = (float)f->ReadInt() * 0.01f;
+		Appearance.AlphaSource = f->ReadInt();
+		Appearance.AlphaDestination = f->ReadInt();
 		// Appearance
-		int MetalDensity=f->ReadIntC();
-		if (MetalDensity>0){
-			Appearance.ReflectionMode=ReflectionMetal;
-			Appearance.ReflectionDensity=(float)MetalDensity;
+		int MetalDensity = f->ReadIntC();
+		if (MetalDensity > 0){
+			Appearance.ReflectionMode = ReflectionMetal;
+			Appearance.ReflectionDensity = (float)MetalDensity;
 		}
-		Appearance.ShiningDensity=(float)f->ReadInt();
-		Appearance.ShiningLength=(float)f->ReadInt();
-		Appearance.ReflectionMode=(f->ReadBool()?ReflectionMirror:ReflectionNone);
-		bool Mirror=f->ReadBool();
+		Appearance.ShiningDensity = (float)f->ReadInt();
+		Appearance.ShiningLength = (float)f->ReadInt();
+		Appearance.ReflectionMode = (f->ReadBool() ? ReflectionMirror : ReflectionNone);
+		bool Mirror = f->ReadBool();
 		if (Mirror)
-			Appearance.ReflectionMode=ReflectionMirror;
+			Appearance.ReflectionMode = ReflectionMirror;
 		// ShaderFile
 		Appearance.EffectFile = f->ReadStrC();
 
-		Appearance.AlphaZBuffer=(Appearance.TransparencyMode!=TransparencyModeFunctions)&&(Appearance.TransparencyMode!=TransparencyModeFactor);
+		Appearance.AlphaZBuffer = (Appearance.TransparencyMode != TransparencyModeFunctions) && (Appearance.TransparencyMode != TransparencyModeFactor);
 	}else{
 		ed->ErrorBox(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 1, 4));
-		error=true;
+		error = true;
 	}
 
 	f->Close();
@@ -217,12 +217,12 @@ void DataMaterial::AppearanceData::Reset()
 
 void DataMaterial::PhysicsData::Reset()
 {
-	RCJump = 700;
-	RCStatic = 800;
-	RCSliding = 500;
-	RCRolling = 200;
-	RCVJumpMin = 10000;
-	RCVSlidingMin = 10000;
+	RCJump = 0.7f;
+	RCStatic = 0.8f;
+	RCSliding = 0.5f;
+	RCRolling = 0.2f;
+	RCVJumpMin = 10;
+	RCVSlidingMin = 10;
 	Burnable = false;
 	BurningTemperature = 500;
 	BurningIntensity = 40;
