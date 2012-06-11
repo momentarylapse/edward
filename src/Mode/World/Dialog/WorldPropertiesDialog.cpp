@@ -98,7 +98,7 @@ void WorldPropertiesDialog::OnFogEnabled()
 
 void WorldPropertiesDialog::FillSkyboxList()
 {
-	HuiComboBoxSeparator=';';
+	HuiComboBoxSeparator=':';
 	Reset("skybox");
 	for (int i=0;i<temp.SkyBoxFile.num;i++)
 		AddString("skybox",format("%d:%s",i,temp.SkyBoxFile[i].c_str()));
