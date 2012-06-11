@@ -32,6 +32,8 @@ ModeWorld::ModeWorld()
 	multi_view = ed->multi_view_3d;
 	Subscribe(data);
 
+	WorldDialog = NULL;
+
 	ShowTerrains = false;//true;
 	ShowObjects = true;
 	TerrainShowTextureLevel = -1;
@@ -64,6 +66,9 @@ void ModeWorld::OnCommand(const string & id)
 		data->Undo();
 	if (id == "redo")
 		data->Redo();
+
+	if (id == "selection_properties")
+		ExecuteWorldPropertiesDialog();
 }
 
 #define MODEL_MAX_VERTICES	65536
@@ -507,5 +512,35 @@ bool ModeWorld::Open()
 	//OptimizeView();
 	return true;
 }
+
+void ModeWorld::ExecuteWorldPropertiesDialog()
+{
+	if (WorldDialog)
+		return;
+
+	WorldDialog = new WorldPropertiesDialog(ed, true, data);
+	WorldDialog->Update();
+	//HuiWaitTillWindowClosed(WorldDialog);
+}
+
+
+
+void ModeWorld::ExecutePropertiesSelectionDialog()
+{
+}
+
+
+
+void ModeWorld::ExecuteObjectPropertiesDialog()
+{
+}
+
+
+
+void ModeWorld::ExecuteTerrainPropertiesDialog()
+{
+}
+
+
 
 

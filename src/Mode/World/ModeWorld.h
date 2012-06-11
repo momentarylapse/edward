@@ -10,6 +10,7 @@
 
 #include "../Mode.h"
 #include "../../Data/World/DataWorld.h"
+#include "Dialog/WorldPropertiesDialog.h"
 
 class Mode;
 class DataWorld;
@@ -44,6 +45,13 @@ public:
 	bool Open();
 	bool Save();
 	bool SaveAs();
+
+	void ExecutePropertiesSelectionDialog();
+	void ExecuteWorldPropertiesDialog();
+	void ExecuteObjectPropertiesDialog();
+	void ExecuteTerrainPropertiesDialog();
+
+	WorldPropertiesDialog *WorldDialog;
 
 	DataWorld *data;
 
