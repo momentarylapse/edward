@@ -239,10 +239,11 @@ void ModeWorld::OnUpdate(Observable *o)
 		}
 
 		multi_view->ResetData(data);
-		//mode_model_mesh->ApplyRightMouseFunction(multi_view);
+
+		// left -> translate
+		multi_view->SetMouseAction(0, "ActionWorldMoveObjects", MultiView::ActionMove);
 		multi_view->MVRectable = true;
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		//CModeAll::SetMultiViewFunctions(&StartChanging, &EndChanging, &Change);
 		multi_view->SetData(	MVDWorldObject,
 				data->Object,
 				NULL,
