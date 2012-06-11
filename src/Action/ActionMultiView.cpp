@@ -16,6 +16,7 @@
 #include "Model/Mesh/Skin/ActionModelMVMirrorSkinVertices.h"
 #include "Model/Skeleton/ActionModelMVMoveBones.h"
 #include "World/ActionWorldMoveObjects.h"
+#include "World/ActionWorldRotateObjects.h"
 #include <assert.h>
 
 ActionMultiView::ActionMultiView(Data *d, const vector &_pos0)
@@ -75,6 +76,8 @@ ActionMultiView *ActionMultiViewFactory(const string &name, Data *d, const vecto
 		return new ActionModelMVMoveBones(d, _pos0);
 	else if (name == "ActionWorldMoveObjects")
 		return new ActionWorldMoveObjects(d, _pos0);
+	else if (name == "ActionWorldRotateObjects")
+		return new ActionWorldRotateObjects(d, _pos0);
 	msg_error("ActionMultiViewFactory: unknown action: " + name);
 	assert(0);
 	return NULL;
