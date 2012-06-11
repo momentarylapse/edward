@@ -70,7 +70,7 @@ bool DataWorld::Load(const string & _filename, bool deep)
 			f->ReadBoolC(); // BackGroudColorEnabled
 		else
 			f->ReadComment();
-		read_color_4i(f,meta_data.BackGroundColor);
+		read_color_argb(f,meta_data.BackGroundColor);
 		msg_write("b");
 		if (ffv==9){
 			meta_data.SkyBoxFile[0] = f->ReadStr();
@@ -87,7 +87,7 @@ bool DataWorld::Load(const string & _filename, bool deep)
 		meta_data.FogStart=f->ReadFloat();
 		meta_data.FogEnd=f->ReadFloat();
 		meta_data.FogDensity=f->ReadFloat();
-		read_color_4i(f,meta_data.FogColor);
+		read_color_argb(f,meta_data.FogColor);
 		msg_write("c");
 		// Music
 		n = f->ReadIntC();

@@ -10,21 +10,6 @@
 #include "../../lib/nix/nix.h"
 
 
-/*static void write_color(CFile *f, const color &c)
-{
-	f->WriteInt((int)(c.a * 255.0f));
-	f->WriteInt((int)(c.r * 255.0f));
-	f->WriteInt((int)(c.g * 255.0f));
-	f->WriteInt((int)(c.b * 255.0f));
-}*/
-
-static void read_color(CFile *f, color &c)
-{
-	c.a = (float)f->ReadInt() / 255.0f;
-	c.r = (float)f->ReadInt() / 255.0f;
-	c.g = (float)f->ReadInt() / 255.0f;
-	c.b = (float)f->ReadInt() / 255.0f;
-}
 
 DataMaterial::DataMaterial()
 {
@@ -73,11 +58,11 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 		}
 		// Colors
 		f->ReadComment();
-		read_color(f,Appearance.ColorAmbient);
-		read_color(f,Appearance.ColorDiffuse);
-		read_color(f,Appearance.ColorSpecular);
+		read_color_argb(f,Appearance.ColorAmbient);
+		read_color_argb(f,Appearance.ColorDiffuse);
+		read_color_argb(f,Appearance.ColorSpecular);
 		Appearance.ColorShininess=f->ReadInt();
-		read_color(f,Appearance.ColorEmissive);
+		read_color_argb(f,Appearance.ColorEmissive);
 		// Transparency
 		Appearance.TransparencyMode=f->ReadIntC();
 		Appearance.AlphaFactor=(float)f->ReadInt() * 0.01f;
@@ -113,11 +98,11 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 	}else if (ffv==2){
 		// Colors
 		f->ReadComment();
-		read_color(f,Appearance.ColorAmbient);
-		read_color(f,Appearance.ColorDiffuse);
-		read_color(f,Appearance.ColorSpecular);
+		read_color_argb(f,Appearance.ColorAmbient);
+		read_color_argb(f,Appearance.ColorDiffuse);
+		read_color_argb(f,Appearance.ColorSpecular);
 		Appearance.ColorShininess=(float)f->ReadInt();
-		read_color(f,Appearance.ColorEmissive);
+		read_color_argb(f,Appearance.ColorEmissive);
 		// Transparency
 		Appearance.TransparencyMode=f->ReadIntC();
 		Appearance.AlphaFactor=(float)f->ReadInt() * 0.01f;
@@ -149,11 +134,11 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 	}else if (ffv==1){
 		// Colors
 		f->ReadComment();
-		read_color(f,Appearance.ColorAmbient);
-		read_color(f,Appearance.ColorDiffuse);
-		read_color(f,Appearance.ColorSpecular);
+		read_color_argb(f,Appearance.ColorAmbient);
+		read_color_argb(f,Appearance.ColorDiffuse);
+		read_color_argb(f,Appearance.ColorSpecular);
 		Appearance.ColorShininess=(float)f->ReadInt();
-		read_color(f,Appearance.ColorEmissive);
+		read_color_argb(f,Appearance.ColorEmissive);
 		// Transparency
 		Appearance.TransparencyMode=f->ReadIntC();
 		Appearance.AlphaFactor=(float)f->ReadInt() * 0.01f;

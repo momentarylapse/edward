@@ -207,10 +207,10 @@ bool DataModel::Load(const string & _filename, bool deep)
 			Material[i].MaterialFile = f->ReadStr();
 			Material[i].UserColor = f->ReadBool();
 			if (Material[i].UserColor){
-				read_color_4i(f, Material[i].Ambient);
-				read_color_4i(f, Material[i].Diffuse);
-				read_color_4i(f, Material[i].Specular);
-				read_color_4i(f, Material[i].Emission);
+				read_color_rgba(f, Material[i].Ambient);
+				read_color_rgba(f, Material[i].Diffuse);
+				read_color_rgba(f, Material[i].Specular);
+				read_color_rgba(f, Material[i].Emission);
 				Material[i].Shininess = (float)f->ReadInt();
 			}
 			Material[i].TransparencyMode = f->ReadInt();
@@ -467,10 +467,10 @@ bool DataModel::Load(const string & _filename, bool deep)
 		for (int i=0;i<Material.num;i++){
 			Material[i].MaterialFile = f->ReadStr();
 			Material[i].UserColor = f->ReadBool();
-			read_color_4i(f, Material[i].Ambient);
-			read_color_4i(f, Material[i].Diffuse);
-			read_color_4i(f, Material[i].Specular);
-			read_color_4i(f, Material[i].Emission);
+			read_color_rgba(f, Material[i].Ambient);
+			read_color_rgba(f, Material[i].Diffuse);
+			read_color_rgba(f, Material[i].Specular);
+			read_color_rgba(f, Material[i].Emission);
 			Material[i].Shininess = (float)f->ReadInt();
 			Material[i].TransparencyMode = f->ReadInt();
 			Material[i].AlphaSource = f->ReadInt();
