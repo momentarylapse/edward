@@ -207,8 +207,8 @@ void DataWorld::MetaData::Reset()
 	SunSpecular = Black;
 	Ambient = color(1, 0.25f, 0.25f, 0.25f);
 
-	SkyBox.clear();
-	SkyBox.resize(32);
+	SkyBoxFile.clear();
+	SkyBoxFile.resize(32);
 
 	BackGroundColor = Black;
 

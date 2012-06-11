@@ -8,6 +8,7 @@
 #include "WorldPropertiesDialog.h"
 #include "../../../Edward.h"
 #include "../ModeWorld.h"
+#include "../../../Action/World/ActionWorldEditData.h"
 
 WorldPropertiesDialog::WorldPropertiesDialog(CHuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
 	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls, true)
@@ -62,11 +63,11 @@ void WorldPropertiesDialog::OnClose()
 void WorldPropertiesDialog::OnSunEnabled()
 {
 	bool b = IsChecked("");
-	Enable("sun_am",b);
-	Enable("sun_di",b);
-	Enable("sun_sp",b);
-	Enable("sun_ang_x",b);
-	Enable("sun_ang_y",b);
+	Enable("sun_am", b);
+	Enable("sun_di", b);
+	Enable("sun_sp", b);
+	Enable("sun_ang_x", b);
+	Enable("sun_ang_y", b);
 }
 
 
@@ -86,21 +87,21 @@ void WorldPropertiesDialog::OnRemoveSkybox()
 void WorldPropertiesDialog::OnFogEnabled()
 {
 	bool b = IsChecked("");
-	Enable("fog_mode",b);
-	Enable("fog_start",b);
-	Enable("fog_end",b);
-	Enable("fog_density",b);
-	Enable("fog_color",b);
+	Enable("fog_mode", b);
+	Enable("fog_start", b);
+	Enable("fog_end", b);
+	Enable("fog_density", b);
+	Enable("fog_color", b);
 }
 
 
 
 void WorldPropertiesDialog::FillSkyboxList()
 {
-	HuiComboBoxSeparator='§';
+	HuiComboBoxSeparator=';';
 	Reset("skybox");
 	for (int i=0;i<temp.SkyBoxFile.num;i++)
-		AddString("skybox",format("%d§%s",i,temp.SkyBoxFile[i].c_str()));
+		AddString("skybox",format("%d:%s",i,temp.SkyBoxFile[i].c_str()));
 	HuiComboBoxSeparator='\\';
 }
 
@@ -154,6 +155,8 @@ void WorldPropertiesDialog::ApplyData()
 	temp.SunAng.x = GetFloat("sun_ang_x") / 180.0f * pi;
 	temp.SunAng.y = GetFloat("sun_ang_y") / 180.0f * pi;
 	temp.Ambient = GetColor("ambient");
+
+	data->Execute(new ActionWorldEditData(temp));
 }
 
 
@@ -192,6 +195,11 @@ void WorldPropertiesDialog::LoadData()
 	SetFloat("fog_end", temp.FogEnd);
 	SetFloat("fog_density", temp.FogDensity);
 	SetColor("fog_color", temp.FogColor);
+	Enable("fog_mode", temp.FogEnabled);
+	Enable("fog_start", temp.FogEnabled);
+	Enable("fog_end", temp.FogEnabled);
+	Enable("fog_density", temp.FogEnabled);
+	Enable("fog_color", temp.FogEnabled);
 
 	Check("sun_enabled", temp.SunEnabled);
 	SetColor("sun_am", temp.SunAmbient);
@@ -199,6 +207,11 @@ void WorldPropertiesDialog::LoadData()
 	SetColor("sun_sp", temp.SunSpecular);
 	SetFloat("sun_ang_x", temp.SunAng.x * 180.0f / pi);
 	SetFloat("sun_ang_y", temp.SunAng.y * 180.0f / pi);
+	Enable("sun_am", temp.SunEnabled);
+	Enable("sun_di", temp.SunEnabled);
+	Enable("sun_sp", temp.SunEnabled);
+	Enable("sun_ang_x", temp.SunEnabled);
+	Enable("sun_ang_y", temp.SunEnabled);
 	SetColor("ambient", temp.Ambient);
 
 	SetInt("max_script_vars", temp.ScriptVar.num);
