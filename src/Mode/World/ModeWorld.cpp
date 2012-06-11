@@ -231,11 +231,25 @@ void ModeWorld::OnMouseMove()
 
 void ModeWorld::OnUpdate(Observable *o)
 {
-	msg_write("update");
-	foreach(data->Object, o){
-		o.object->pos = o.pos;
-		o.object->ang = o.Ang;
-		o.object->UpdateMatrix();
+	if (o->GetName() == "Data"){
+		foreach(data->Object, o){
+			o.object->pos = o.pos;
+			o.object->ang = o.Ang;
+			o.object->UpdateMatrix();
+		}
+
+		multi_view->ResetData(data);
+		//mode_model_mesh->ApplyRightMouseFunction(multi_view);
+		multi_view->MVRectable = true;
+		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
+		//CModeAll::SetMultiViewFunctions(&StartChanging, &EndChanging, &Change);
+		multi_view->SetData(	MVDWorldObject,
+				data->Object,
+				NULL,
+				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
+				&IsMouseOverObject, &IsInRectObject);
+	}else if (o->GetName() == "MultiView"){
+		// selection
 	}
 }
 
@@ -450,6 +464,8 @@ void ModeWorld::Start()
 	ed->ToolbarSetCurrent(HuiToolbarLeft);
 	ed->ToolbarReset();
 	ed->EnableToolbar(false);
+
+	OnUpdate(data);
 }
 
 
