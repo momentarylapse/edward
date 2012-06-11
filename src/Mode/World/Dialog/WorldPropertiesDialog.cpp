@@ -26,6 +26,7 @@ WorldPropertiesDialog::WorldPropertiesDialog(CHuiWindow *_parent, bool _allow_pa
 	EventM("sun_enabled", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnSunEnabled);
 	EventM("fog_enabled", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnFogEnabled);
 	EventM("skybox", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnSkybox);
+	EventMX("skybox", "hui:select", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnSkyboxSelect);
 	EventM("remove_skybox", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnRemoveSkybox);
 	EventM("max_script_vars", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnMaxScriptVars);
 	EventMX("script_vars", "hui:change", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnScriptVarEdit);
@@ -40,6 +41,7 @@ WorldPropertiesDialog::WorldPropertiesDialog(CHuiWindow *_parent, bool _allow_pa
 WorldPropertiesDialog::~WorldPropertiesDialog()
 {
 	mode_world->WorldDialog = NULL;
+	Unsubscribe(data);
 }
 
 void WorldPropertiesDialog::OnSkybox()
@@ -49,6 +51,15 @@ void WorldPropertiesDialog::OnSkybox()
 		temp.SkyBoxFile[n] = ed->DialogFileNoEnding;
 		FillSkyboxList();
 	}
+}
+
+void WorldPropertiesDialog::OnSkyboxSelect()
+{
+	int row = GetInt("");
+	if (row >= 0)
+		Enable("remove_skybox", temp.SkyBoxFile[row].num > 0);
+	else
+		Enable("remove_skybox", false);
 }
 
 
@@ -98,11 +109,12 @@ void WorldPropertiesDialog::OnFogEnabled()
 
 void WorldPropertiesDialog::FillSkyboxList()
 {
-	HuiComboBoxSeparator=':';
+	HuiComboBoxSeparator = ':';
 	Reset("skybox");
-	for (int i=0;i<temp.SkyBoxFile.num;i++)
-		AddString("skybox",format("%d:%s",i,temp.SkyBoxFile[i].c_str()));
-	HuiComboBoxSeparator='\\';
+	foreachi(temp.SkyBoxFile, sb, i)
+		AddString("skybox", format("%d:%s", i, sb.c_str()));
+	HuiComboBoxSeparator = '\\';
+	Enable("remove_skybox", false);
 }
 
 
