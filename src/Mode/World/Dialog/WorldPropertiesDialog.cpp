@@ -24,6 +24,7 @@ WorldPropertiesDialog::WorldPropertiesDialog(CHuiWindow *_parent, bool _allow_pa
 	EventM("ok", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnOk);
 
 	EventM("sun_enabled", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnSunEnabled);
+	EventM("sun_ang_from_camera", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnSunAngFromCamera);
 	EventM("fog_enabled", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnFogEnabled);
 	EventM("skybox", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnSkybox);
 	EventMX("skybox", "hui:select", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnSkyboxSelect);
@@ -90,6 +91,13 @@ void WorldPropertiesDialog::OnSunEnabled()
 	Enable("sun_ang_x", b);
 	Enable("sun_ang_y", b);
 	Enable("sun_ang_from_camera", b);
+}
+
+
+void WorldPropertiesDialog::OnSunAngFromCamera()
+{
+	SetFloat("sun_ang_x", ed->multi_view_3d->ang.x * 180.0f / pi);
+	SetFloat("sun_ang_y", ed->multi_view_3d->ang.y * 180.0f / pi);
 }
 
 
