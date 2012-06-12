@@ -24,6 +24,11 @@ void CTerrain::reset()
 
 CTerrain::CTerrain(const string &_filename_, const vector &_pos_)
 {
+	Load(_filename_, _pos_);
+}
+
+bool CTerrain::Load(const string &_filename_, const vector &_pos_, bool deep)
+{
 	msg_db_r("loading terrain", 1);
 	msg_write("loading terrain: " + _filename_);
 	msg_right();
@@ -43,45 +48,51 @@ CTerrain::CTerrain(const string &_filename_, const vector &_pos_)
 			num_z = f->ReadInt();
 			int num = (num_x + 1) * (num_z + 1);
 			height.resize(num);
-			normal = new vector[num];
-			vertex = new vector[num];
-			pl = new plane[num_x * num_z * 2];
+			normal.resize(num);
+			vertex.resize(num);
 			pattern.x = f->ReadFloat();
 			pattern.y = 0;
 			pattern.z = f->ReadFloat();
 			// Textures
 			num_textures = f->ReadIntC();
 			for (int i=0;i<num_textures;i++){
-				texture[i] = NixLoadTexture(f->ReadStr());
+				texture_file[i] = f->ReadStr();
+				if (deep)
+					texture[i] = NixLoadTexture(texture_file[i]);
 				texture_scale[i].x = f->ReadFloat();
 				texture_scale[i].y = 0;
 				texture_scale[i].z = f->ReadFloat();
 			}
 			// Material
-			material = MetaLoadMaterial(f->ReadStr());
-			// Height
-			for (int x=0;x<num_x+1;x++)
-				for (int z=0;z<num_z+1;z++)
-					height[Index(x,z)] = f->ReadFloat();
-			for (int x=0;x<num_x/32+1;x++)
-				for (int z=0;z<num_z/32+1;z++)
-					partition[x][z] = -1;
+			material_file = f->ReadStr();
+			if (deep)
+				material = MetaLoadMaterial(material_file);
 
-			// material dependence
-			if (material->num_textures > num_textures){
-				for (int i=num_textures;i<material->num_textures;i++){
-					texture[i] = -1;
-					texture_scale[i] = vector(0.1f, 0, 0.1f);
+			if (deep){
+				// Height
+				for (int x=0;x<num_x+1;x++)
+					for (int z=0;z<num_z+1;z++)
+						height[Index(x,z)] = f->ReadFloat();
+				for (int x=0;x<num_x/32+1;x++)
+					for (int z=0;z<num_z/32+1;z++)
+						partition[x][z] = -1;
+
+				// material dependence
+				if (material->num_textures > num_textures){
+					for (int i=num_textures;i<material->num_textures;i++){
+						texture[i] = -1;
+						texture_scale[i] = vector(0.1f, 0, 0.1f);
+					}
+					num_textures = material->num_textures;
 				}
-				num_textures = material->num_textures;
+				for (int i=0;i<material->num_textures;i++)
+					if (texture[i] < 0)
+						texture[i] = material->texture[i];
+				if (num_textures == 1)
+					vertex_buffer = NixCreateVB(65536);
+				else if (num_textures > 1)
+					vertex_buffer = NixCreateVBM(65536, num_textures);
 			}
-			for (int i=0;i<material->num_textures;i++)
-				if (texture[i] < 0)
-					texture[i] = material->texture[i];
-			if (num_textures == 1)
-				vertex_buffer = NixCreateVB(65536);
-			else if (num_textures > 1)
-				vertex_buffer = NixCreateVBM(65536, num_textures);
 		}else{
 			msg_error(format("wrong file format: %d (4 expected)",ffv));
 			error = true;
@@ -92,7 +103,8 @@ CTerrain::CTerrain(const string &_filename_, const vector &_pos_)
 
 		// generate normal vectors
 		pos = _pos_;
-		Update(-1, -1, -1, -1, TerrainUpdateAll);
+		if (deep)
+			Update(-1, -1, -1, -1, TerrainUpdateAll);
 		// bounding box
 		min = pos;
 		max = pos + vector(pattern.x * num_x, 0, pattern.z * num_z);
@@ -103,15 +115,12 @@ CTerrain::CTerrain(const string &_filename_, const vector &_pos_)
 		error = true;
 	msg_left();
 	msg_db_l(1);
+	return !error;
 }
 
 CTerrain::~CTerrain()
 {
 	msg_db_r("~Terrain",1);
-	delete[](vertex);
-	delete[](normal);
-	height.clear();
-	delete[](pl);
 	NixDeleteVB(vertex_buffer);
 	msg_db_l(1);
 }
@@ -130,6 +139,8 @@ void CTerrain::Update(int x1,int x2,int z1,int z2,int mode)
 	bool uv=((mode & TerrainUpdateVertices)>0);
 	bool up=((mode & TerrainUpdatePlanes)>0);
 	float dhx,dhz;
+
+	pl.resize(num_x * num_z * 2);
 
 	// create (soft) normal vectors and vertices
 	for (int i=x1;i<=x2;i++)
@@ -258,7 +269,7 @@ void CTerrain::GetTriangleHull(void *hull, vector &_pos_, float _radius_)
 {
 	//msg_db_r("Terrain::GetTriangleHull", 1);
 	TriangleHull *h = (TriangleHull*)hull;
-	h->p = vertex;
+	h->p = &vertex[0];
 	h->index = TempVertexIndex;
 	h->triangle_index = TempTriangleIndex;
 	h->edge_index = TempEdgeIndex;

@@ -8,6 +8,7 @@
 #include "../../Edward.h"
 #include "ModeWorld.h"
 #include "../../Data/World/DataWorld.h"
+#include "../../lib/x/x.h"
 
 ModeWorld *mode_world = NULL;
 
@@ -34,7 +35,7 @@ ModeWorld::ModeWorld()
 
 	WorldDialog = NULL;
 
-	ShowTerrains = false;//true;
+	ShowTerrains = true;
 	ShowObjects = true;
 	TerrainShowTextureLevel = -1;
 	ViewStage = 0;
@@ -151,35 +152,37 @@ bool IsInRectObject(int index, void *user_data, int win, irect *r)
 bool IsMouseOverTerrain(int index, void *user_data, int win, vector &tp)
 {
 	msg_db_r(format("IMOT index= %d",index).c_str(),3);
-	ModeWorldTerrain *t = &mode_world->data->Terrain[index];
+	CTerrain *t = mode_world->data->Terrain[index].terrain;
+	if (!t)
+		return false;
 	vector mv = vector(float(ed->multi_view_3d->mx), float(ed->multi_view_3d->my), 0);
 	float z_min=1;
 	int x1,z1,x,z;
-	for (x1=0;x1<(t->NumX-1)/32+1;x1++)
-		for (z1=0;z1<(t->NumZ-1)/32+1;z1++){
-			int lx=(x1*32>t->NumX-32)?(t->NumX%32):32;
-			int lz=(z1*32>t->NumZ-32)?(t->NumZ%32):32;
+	for (x1=0;x1<(t->num_x-1)/32+1;x1++)
+		for (z1=0;z1<(t->num_z-1)/32+1;z1++){
+			int lx=(x1*32>t->num_x-32)?(t->num_x%32):32;
+			int lz=(z1*32>t->num_z-32)?(t->num_z%32):32;
 			int x0=x1*32;
 			int z0=z1*32;
-			int e=t->Partition[x1][z1];
+			int e=t->partition[x1][z1];
 			if (e<0)	continue;
 			for (x=x0;x<=x0+lx;x+=e)
 				for (z=z0;z<=z0+lz;z+=e){
-					int i=x*(t->NumZ+1)+z;
-					pmv[i] = mode_world->multi_view->VecProject(t->Vertex[i].pos,win);
+					int i=x*(t->num_z+1)+z;
+					pmv[i] = mode_world->multi_view->VecProject(t->vertex[i],win);
 				}
 			for (x=x0;x<x0+lx;x+=e)
 				for (z=z0;z<z0+lz;z+=e)
 					for (int i=0;i<2;i++){
 						int _a_,_b_,_c_;
 						if (i==0){
-							_a_= x   *(t->NumZ+1)+z  ;
-							_b_= x   *(t->NumZ+1)+z+e;
-							_c_=(x+e)*(t->NumZ+1)+z+e;
+							_a_= x   *(t->num_z+1)+z  ;
+							_b_= x   *(t->num_z+1)+z+e;
+							_c_=(x+e)*(t->num_z+1)+z+e;
 						}else{
-							_a_= x   *(t->NumZ+1)+z  ;
-							_b_=(x+e)*(t->NumZ+1)+z+e;
-							_c_=(x+e)*(t->NumZ+1)+z  ;
+							_a_= x   *(t->num_z+1)+z  ;
+							_b_=(x+e)*(t->num_z+1)+z+e;
+							_c_=(x+e)*(t->num_z+1)+z  ;
 						}
 						vector a=pmv[_a_],b=pmv[_b_],c=pmv[_c_];
 						if ((a.z<=0)||(b.z<=0)||(c.z<=0)||(a.z>=1)||(b.z>=1)||(c.z>=1))	continue;
@@ -191,7 +194,7 @@ bool IsMouseOverTerrain(int index, void *user_data, int win, vector &tp)
 							float z=az + f*(bz-az) + g*(cz-az);
 							if (z<z_min){
 								z_min=z;
-								tp=t->Vertex[_a_].pos + f*(t->Vertex[_b_].pos-t->Vertex[_a_].pos) + g*(t->Vertex[_c_].pos-t->Vertex[_a_].pos);
+								tp=t->vertex[_a_] + f*(t->vertex[_b_]-t->vertex[_a_]) + g*(t->vertex[_c_]-t->vertex[_a_]);
 							}
 						}
 				}
@@ -202,10 +205,10 @@ bool IsMouseOverTerrain(int index, void *user_data, int win, vector &tp)
 
 bool IsInRectTerrain(int index, void *user_data, int win, irect *r)
 {
-	ModeWorldTerrain *t = &mode_world->data->Terrain[index];
+	CTerrain *t = mode_world->data->Terrain[index].terrain;
 	vector min,max;
 	for (int i=0;i<8;i++){
-		vector v=t->pos+vector((i%2)==0?t->Min.x:t->Max.x,((i/2)%2)==0?t->Min.y:t->Max.y,((i/4)%2)==0?t->Min.z:t->Max.z);
+		vector v=t->pos+vector((i%2)==0?t->min.x:t->max.x,((i/2)%2)==0?t->min.y:t->max.y,((i/4)%2)==0?t->min.z:t->max.z);
 		vector p = mode_world->multi_view->VecProject(v,win);
 		if (i==0)
 			min=max=p;
@@ -245,11 +248,10 @@ void ModeWorld::OnMouseMove()
 void ModeWorld::OnUpdate(Observable *o)
 {
 	if (o->GetName() == "Data"){
-		foreach(data->Object, o){
-			o.object->pos = o.pos;
-			o.object->ang = o.Ang;
-			o.object->UpdateMatrix();
-		}
+		foreach(data->Object, o)
+			o.UpdateData();
+		foreach(data->Terrain, t)
+			t.UpdateData();
 
 		multi_view->ResetData(data);
 
@@ -265,6 +267,11 @@ void ModeWorld::OnUpdate(Observable *o)
 				NULL,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
 				&IsMouseOverObject, &IsInRectObject);
+		/*multi_view->SetData(	MVDWorldTerrain,
+				data->Terrain,
+				NULL,
+				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
+				&IsMouseOverTerrain, &IsInRectTerrain);*/
 	}else if (o->GetName() == "MultiView"){
 		// selection
 	}
@@ -310,6 +317,7 @@ void ModeWorld::OnLeftButtonUp()
 
 void ModeWorld::Draw()
 {
+	view_cur->pos = multi_view->pos;
 }
 
 
@@ -363,12 +371,14 @@ void ModeWorld::DrawWin(int win, irect dest)
 // terrain
 	if (ShowTerrains)
 		foreachi(data->Terrain, t, i){
+			if (!t.terrain)
+				continue;
 			/*if (t.ViewStage < ViewStage)
 				continue;*/
 			NixSetWire(multi_view->wire_mode);
 			NixEnableLighting(multi_view->light_enabled);
 			NixSetMaterial(White,White,Black,0,Black);
-			if (TerrainShowTextureLevel<0){
+			/*if (TerrainShowTextureLevel<0){
 				NixSetShader(t.material->shader);
 				NixDraw3DM(t.Texture, t.VertexBuffer, m_id);
 				NixSetShader(-1);
@@ -377,7 +387,8 @@ void ModeWorld::DrawWin(int win, irect dest)
 				if (TerrainShowTextureLevel < t.NumTextures)
 					tex = t.Texture[TerrainShowTextureLevel];
 				NixDraw3D(tex, t.VertexBufferSingle, m_id);
-			}
+			}*/
+			t.terrain->Draw();
 
 			NixSetWire(false);
 			NixEnableLighting(true);

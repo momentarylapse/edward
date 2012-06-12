@@ -9,6 +9,46 @@
 #include "../../Mode/World/ModeWorld.h"
 #include "../../Edward.h"
 
+
+void ModeWorldObject::UpdateData()
+{
+	if (!object)
+		return;
+	object->pos = pos;
+	object->ang = Ang;
+	object->UpdateMatrix();
+}
+
+bool ModeWorldTerrain::Load(const vector &_pos, const string &filename, bool deep)
+{
+	msg_db_r("Terrain.LoadFromFile", 1);
+	view_stage = 0;
+	is_selected = false;
+	is_special = false;
+
+	if (deep)
+		ed->MakeDirs(filename);
+	FileName = filename.substr(MapDir.num, -1);
+	FileName.resize(FileName.num - 4);
+
+	terrain = new CTerrain();
+	bool Error = !terrain->Load(FileName, _pos, deep);
+
+	if (Error){
+		delete(terrain);
+		terrain = NULL;
+	}
+
+	return !Error;
+}
+
+void ModeWorldTerrain::UpdateData()
+{
+	if (!terrain)
+		return;
+	terrain->pos = pos;
+}
+
 DataWorld::DataWorld()
 {
 }
@@ -156,8 +196,8 @@ bool DataWorld::Load(const string & _filename, bool deep)
 
 	if ((!Error)&&(deep)){
 //		ProgressEnd();
-//		for (int i=0;i<Terrain.num;i++)
-//			LoadFromFileTerrain(i,Terrain[i].Pos, MapDir + Terrain[i].FileName + ".map", true);
+		for (int i=0;i<Terrain.num;i++)
+			Terrain[i].Load(Terrain[i].pos, MapDir + Terrain[i].FileName + ".map", true);
 //		ProgressStart(MainWin, _("Lade Objekte"));
 		for (int i=0;i<Object.num;i++){
 //			Progress(format(_("%d von %d"), i, Object.num), float(i)/float(Object.num));

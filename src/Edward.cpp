@@ -342,18 +342,19 @@ bool Edward::HandleArguments(Array<string> arg)
 		mworld->Terrain.resize(1);
 		mworld->LoadFromFileTerrain(0, v0, param, true);
 		mworld->OptimizeView();
-		SetMode(ModeWorld);
+		SetMode(ModeWorld);*/
 	}else if (ext == "world"){
-		if (param[0] == '$'){
+		/*if (param[0] == '$'){
 			JustCreateLightMap = true;
 			param.delete_single(0);
-		}
+		}*/
 
 		MakeDirs(param);
-		mworld->LoadFromFile(param);
-		SetMode(ModeWorld);
-		WholeWindow=true;
-	}else if (ext == "xfont"){
+		mode_world->data->Load(param);
+		SetMode(mode_world);
+		mode_world->OptimizeView();
+		multi_view_3d->whole_window = true;
+	/*}else if (ext == "xfont"){
 		MakeDirs(param);
 		mfont->LoadFromFile(param);
 		SetMode(ModeFont);

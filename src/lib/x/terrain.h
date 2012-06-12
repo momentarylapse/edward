@@ -27,7 +27,9 @@ enum{
 class CTerrain
 {
 public:
-	CTerrain(const string &filename,const vector &pos);
+	CTerrain(){};
+	CTerrain(const string &filename, const vector &pos);
+	bool Load(const string &filename, const vector &pos, bool deep = true);
 	~CTerrain();
 	void reset();
 	void Update(int x1,int x2,int z1,int z2,int mode);
@@ -48,18 +50,20 @@ public:
 	vector pos;
 	int num_x, num_z;
 	Array<float> height;
-	vector *vertex, *normal;
-	plane *pl; // for collision detection
+	Array<vector> vertex, normal;
+	Array<plane> pl; // for collision detection
 	int vertex_buffer;
 	int partition[128][128], partition_old[128][128];
 	vector pattern, min, max;
 	Material *material;
+	string material_file;
 
 	int num_textures;
 	int texture[TERRAIN_MAX_TEXTURES];
+	string texture_file[TERRAIN_MAX_TEXTURES];
 	vector texture_scale[TERRAIN_MAX_TEXTURES];
 
-	float dhx,dhz;
+	float dhx, dhz;
 
 
 	bool changed;

@@ -47,30 +47,25 @@ struct ModeWorldScript
 	Array<ModeWorldScriptRule> Rule;
 };
 
-class ModeWorldTerrainVertex: public MultiViewSingleData
+/*class ModeWorldTerrainVertex: public MultiViewSingleData
 {
 public:
 	float Height;
 	vector Normal;
-};
+};*/
 
 class ModeWorldTerrain: public MultiViewSingleData
 {
 public:
 	string FileName;
-	int NumX, NumZ;
-	Array<ModeWorldTerrainVertex> Vertex;
-	int VertexBuffer, VertexBufferSingle;
-	int Partition[128][128];
-	vector Pattern, Min, Max;
+	//Array<ModeWorldTerrainVertex> Vertex;
+	int VertexBufferSingle;
 	int ShowTexture;
-	int NumTextures;
-	int Texture[WORLD_MAX_TEXTURES_PER_TERRAIN];
-	string TextureFile[WORLD_MAX_TEXTURES_PER_TERRAIN];
-	vector TextureScale[WORLD_MAX_TEXTURES_PER_TERRAIN];
-	Material *material;
-	string MaterialFile;
 	bool Changed;
+	CTerrain *terrain;
+
+	bool Load(const vector &pos, const string &filename, bool deep = true);
+	void UpdateData();
 };
 
 class ModeWorldObject: public MultiViewSingleData
@@ -79,6 +74,8 @@ public:
 	string FileName, Name;
 	CObject *object;
 	vector Ang;
+
+	void UpdateData();
 };
 
 class DataWorld: public Data
