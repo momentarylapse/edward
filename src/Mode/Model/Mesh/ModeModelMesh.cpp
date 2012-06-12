@@ -101,6 +101,9 @@ void ModeModelMesh::OnCommand(const string & id)
 	if (id == "paste")
 		Paste();
 
+	if (id == "select_cw")
+		mode_model_mesh_triangle->ToggleSelectCW();
+
 	if (id == "subtract_surface")
 		data->Execute(new ActionModelSurfaceSubtract(data));
 	if (id == "invert_trias")
@@ -186,6 +189,8 @@ void ModeModelMesh::OnUpdateMenu()
 	ed->Check("new_cube", cm_name == "ModelMeshCreateCube");
 	ed->Check("new_ball", cm_name == "ModelMeshCreateBall");
 	ed->Check("new_cylinder", cm_name == "ModelMeshCreateCylinder");
+
+	ed->Check("select_cw", mode_model_mesh_triangle->SelectCW);
 
 	ed->Check("rotate", right_mouse_function == RMFRotate);
 	ed->Check("scale", right_mouse_function == RMFScale);

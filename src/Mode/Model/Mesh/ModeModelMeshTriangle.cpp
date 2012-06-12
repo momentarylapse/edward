@@ -115,13 +115,10 @@ void ModeModelMeshTriangle::DrawTrias()
 
 void ModeModelMeshTriangle::OnCommand(const string & id)
 {
-	if (id == "select_cw")
-		SelectCW = !SelectCW;
 }
 
 void ModeModelMeshTriangle::OnUpdateMenu()
 {
-	ed->Check("select_cw", SelectCW);
 }
 
 void ModeModelMeshTriangle::FillSelectionBuffers()
@@ -338,5 +335,13 @@ void ModeModelMeshTriangle::Draw()
 		NixDrawStr(20, 140, format(_("surf: %d"), data->GetNumMarkedSurfaces()));
 	}
 }
+
+void ModeModelMeshTriangle::ToggleSelectCW()
+{
+	SelectCW = !SelectCW;
+	ed->UpdateMenu();
+}
+
+
 
 

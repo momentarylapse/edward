@@ -35,6 +35,7 @@ public:
 
 	DataModel *data;
 
+	void ToggleSelectCW();
 	bool SelectCW;
 
 	int VBModel, VBModel2, VBModel3, VBModel4;
