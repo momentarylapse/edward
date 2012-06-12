@@ -11,6 +11,7 @@
 #include "../../lib/x/x.h"
 #include "Dialog/SelectionPropertiesDialog.h"
 #include "Dialog/ObjectPropertiesDialog.h"
+#include "Creation/ModeWorldCreateObject.h"
 
 ModeWorld *mode_world = NULL;
 
@@ -70,6 +71,9 @@ void ModeWorld::OnCommand(const string & id)
 		data->Undo();
 	if (id == "redo")
 		data->Redo();
+
+	if (id == "create_objects")
+		ed->SetCreationMode(new ModeWorldCreateObject(ed->cur_mode, data));
 
 	if (id == "selection_properties")
 		ExecutePropertiesDialog();
