@@ -37,6 +37,7 @@ ModeWorld::ModeWorld()
 
 	ShowTerrains = true;
 	ShowObjects = true;
+	ShowEffects = false;
 	TerrainShowTextureLevel = -1;
 	ViewStage = 0;
 }
@@ -73,6 +74,12 @@ void ModeWorld::OnCommand(const string & id)
 
 	if (id == "opt_view")
 		OptimizeView();
+	if (id == "show_objects")
+		ToggleShowObjects();
+	if (id == "show_terrains")
+		ToggleShowTerrains();
+	if (id == "show_fx")
+		ToggleShowEffects();
 }
 
 #define MODEL_MAX_VERTICES	65536
@@ -356,7 +363,7 @@ void ModeWorld::DrawWin(int win, irect dest)
 {
 	msg_db_r("World::DrawWin",2);
 	NixEnableFog(false);
-	if (false){//MVFXEnabled){
+	if (ShowEffects){
 		NixSetZ(false,false);
 		if (multi_view->view[win].type == ViewPerspective)
 			NixDraw2D(-1,data->meta_data.BackGroundColor,r01,NixTargetRect,0);
@@ -508,6 +515,10 @@ void ModeWorld::OnUpdateMenu()
 {
 	ed->Enable("undo", data->action_manager->Undoable());
 	ed->Enable("redo", data->action_manager->Redoable());
+
+	ed->Check("show_objects", ShowObjects);
+	ed->Check("show_terrains", ShowTerrains);
+	ed->Check("show_fx", ShowEffects);
 }
 
 
@@ -569,6 +580,33 @@ void ModeWorld::OptimizeView()
 	TerrainShowTextureLevel=-1;
 	//TerrainsSelectable=false;
 }
+
+void ModeWorld::ToggleShowEffects()
+{
+	ShowEffects = !ShowEffects;
+	ed->UpdateMenu();
+	ed->ForceRedraw();
+}
+
+
+
+void ModeWorld::ToggleShowObjects()
+{
+	ShowObjects = !ShowObjects;
+	ed->UpdateMenu();
+	ed->ForceRedraw();
+}
+
+
+
+void ModeWorld::ToggleShowTerrains()
+{
+	ShowTerrains = !ShowTerrains;
+	ed->UpdateMenu();
+	ed->ForceRedraw();
+}
+
+
 
 
 

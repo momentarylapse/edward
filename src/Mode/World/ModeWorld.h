@@ -60,7 +60,12 @@ public:
 	int ViewStage;
 	bool ShowTerrains;
 	bool ShowObjects;
+	bool ShowEffects;
 	int TerrainShowTextureLevel;
+
+	void ToggleShowTerrains();
+	void ToggleShowObjects();
+	void ToggleShowEffects();
 };
 
 extern ModeWorld* mode_world;
