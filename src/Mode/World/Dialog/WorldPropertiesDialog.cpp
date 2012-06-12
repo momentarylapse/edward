@@ -28,6 +28,10 @@ WorldPropertiesDialog::WorldPropertiesDialog(CHuiWindow *_parent, bool _allow_pa
 	EventM("skybox", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnSkybox);
 	EventMX("skybox", "hui:select", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnSkyboxSelect);
 	EventM("remove_skybox", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnRemoveSkybox);
+	EventM("physics_enabled", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnPhysicsEnabled);
+	EventMX("script_list", "hui:select", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnScriptSelect);
+	EventM("remove_script", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnRemoveScript);
+	EventM("add_script", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnAddScript);
 	EventM("max_script_vars", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnMaxScriptVars);
 	EventMX("script_vars", "hui:change", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnScriptVarEdit);
 	//EventM("model_script_var_template", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnModelScriptVarTemplate);
@@ -63,12 +67,18 @@ void WorldPropertiesDialog::OnSkyboxSelect()
 }
 
 
+void WorldPropertiesDialog::OnScriptSelect()
+{
+	int row = GetInt("");
+	Enable("remove_script", row >= 0);
+}
+
+
 
 void WorldPropertiesDialog::OnClose()
 {
 	delete(this);
 }
-
 
 
 void WorldPropertiesDialog::OnSunEnabled()
@@ -79,6 +89,16 @@ void WorldPropertiesDialog::OnSunEnabled()
 	Enable("sun_sp", b);
 	Enable("sun_ang_x", b);
 	Enable("sun_ang_y", b);
+	Enable("sun_ang_from_camera", b);
+}
+
+
+void WorldPropertiesDialog::OnPhysicsEnabled()
+{
+	bool b = IsChecked("");
+	Enable("gravitation_x", b);
+	Enable("gravitation_y", b);
+	Enable("gravitation_z", b);
 }
 
 
@@ -91,6 +111,29 @@ void WorldPropertiesDialog::OnRemoveSkybox()
 			temp.SkyBoxFile[n] = "";
 			FillSkyboxList();
 		}
+}
+
+
+
+void WorldPropertiesDialog::OnAddScript()
+{
+	if (ed->FileDialog(FDScript, false, true)){
+		ModeWorldScript s;
+		s.Filename = ed->DialogFileComplete.substr(ScriptDir.num, -1);
+		temp.Script.add(s);
+		FillScriptList();
+	}
+}
+
+
+
+void WorldPropertiesDialog::OnRemoveScript()
+{
+	int n = GetInt("script_list");
+	if (n >= 0){
+		temp.Script.erase(n);
+		FillScriptList();
+	}
 }
 
 
@@ -143,6 +186,18 @@ void WorldPropertiesDialog::FillScriptVarList()
 			AddString("script_vars", format("%d\\%s\\%.6f", i, ObjectScriptVarName[i].c_str(), v));
 		else*/
 			AddString("script_vars", format("%d\\\\%.6f", i, v));
+}
+
+
+
+void WorldPropertiesDialog::FillScriptList()
+{
+	HuiComboBoxSeparator = ':';
+	Reset("script_list");
+	foreach(temp.Script, s)
+		AddString("script_list", s.Filename);
+	Enable("remove_script", false);
+	HuiComboBoxSeparator = '\\';
 }
 
 
@@ -224,12 +279,19 @@ void WorldPropertiesDialog::LoadData()
 	Enable("sun_sp", temp.SunEnabled);
 	Enable("sun_ang_x", temp.SunEnabled);
 	Enable("sun_ang_y", temp.SunEnabled);
+	Enable("sun_ang_from_camera", temp.SunEnabled);
 	SetColor("ambient", temp.Ambient);
+
+	Check("physics_enabled", temp.PhysicsEnabled);
+	Enable("gravitation_x", temp.PhysicsEnabled);
+	Enable("gravitation_y", temp.PhysicsEnabled);
+	Enable("gravitation_z", temp.PhysicsEnabled);
 
 	SetInt("max_script_vars", temp.ScriptVar.num);
 
 	FillSkyboxList();
 	FillScriptVarList();
+	FillScriptList();
 }
 
 

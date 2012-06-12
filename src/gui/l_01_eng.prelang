@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-556
+559
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -14,6 +14,8 @@ Configuration
 ad_tab_control
 current game\\all files\\details\\unnesessary\\missing
 add_material
+
+add_script
 
 administrate
 Administrate
@@ -683,8 +685,6 @@ move_selection_sign
 Selection
 ms
 ms
-music
-music...
 nb_complexity
 \\1
 nb_tab_control
@@ -833,6 +833,8 @@ photons
 \\0
 physics
 Physics...
+physics_enabled
+
 property_list
 type\\index\\name
 quality_factor
@@ -851,6 +853,8 @@ reflection_size
 \\1\\10000\\1
 reflection_textures
 face\\texture
+remove_script
+
 remove_skybox
 Remove
 rename
@@ -877,6 +881,8 @@ scaling_dialog
 Scaling
 script_find
 ...
+script_list
+
 script_vars
 #\\name\\type\\value
 scriptvar_dialog
@@ -934,6 +940,8 @@ Sounds...
 specular
 specular
 subtract_surface
+
+sun_ang_from_camera
 
 sun_enabled
 enabled
@@ -1047,32 +1055,30 @@ world_dialog_grp_ambient
 ambient
 world_dialog_grp_bg_color
 background color
-world_dialog_grp_fog
-fog
 world_dialog_grp_gravitation
 gravitation
-world_dialog_grp_sun_color
-color
-world_dialog_t_bg_description
-(at first the color is applied to the background, second is the model. If interpolation of color and model is wanted you should use the model's transparency)
+world_dialog_grp_skybox
+
+world_dialog_grp_sun
+
 world_dialog_t_fog_color
 color
 world_dialog_t_fog_density
 density (\"Density\")
-world_dialog_t_fog_end
-far edge (\"End\")
+world_dialog_t_fog_distance
+
 world_dialog_t_fog_mode
 type (\"Mode\")
-world_dialog_t_fog_start
-near edge (\"Start\")
+world_dialog_t_fog_to
+
 world_dialog_t_max_script_vars
 number (max):
-world_dialog_t_selection
-Selection
 world_dialog_t_sun_ang_x
 X: Altitude above horizon (X-Z-plane)
 world_dialog_t_sun_ang_y
 Y: Direction (Angle to Z-axis)
+world_dialog_t_sun_dir
+
 world_dialog_tab_control
 common\\background\\script variables
 world_new
@@ -1116,7 +1122,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-133
+136
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1133,6 +1139,8 @@ Set background image
 %d Vertizes, %d Dreiecke kopiert
 
 %d geschlossene Flächen subtrahiert
+
+%d von %d
 
 (anonym)
 (anonymous)
@@ -1231,6 +1239,10 @@ Sphere
 Kugel skalieren
 Scale the sphere
 Kugelzentrum waehlen
+
+Lade Objekte
+
+Lade Welt
 
 Links
 Left

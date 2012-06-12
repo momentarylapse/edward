@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-556
+559
 // Data (ID,Text)
 ad_dialog
 
@@ -14,6 +14,8 @@ ad_rudimentary_configuration
 ad_tab_control
 current game\\all files\\details\\unnesessary\\missing
 add_material
+
+add_script
 
 administrate
 
@@ -683,8 +685,6 @@ move_selection_sign
 選択
 ms
 ms
-music
-音...
 nb_complexity
 
 nb_tab_control
@@ -833,6 +833,8 @@ photons
 
 physics
 物理学...
+physics_enabled
+
 property_list
 type\\index\\name
 quality_factor
@@ -851,6 +853,8 @@ reflection_size
 
 reflection_textures
 face\\texture
+remove_script
+
 remove_skybox
 削除
 rename
@@ -877,6 +881,8 @@ scaling_dialog
 
 script_find
 ...
+script_list
+
 script_vars
 #\\名前\\種類\\値
 scriptvar_dialog
@@ -934,6 +940,8 @@ sounds
 specular
 反射光
 subtract_surface
+
+sun_ang_from_camera
 
 sun_enabled
 
@@ -1047,31 +1055,29 @@ world_dialog_grp_ambient
 
 world_dialog_grp_bg_color
 
-world_dialog_grp_fog
-霧
 world_dialog_grp_gravitation
 引力
-world_dialog_grp_sun_color
-色
-world_dialog_t_bg_description
+world_dialog_grp_skybox
+
+world_dialog_grp_sun
 
 world_dialog_t_fog_color
 色
 world_dialog_t_fog_density
 
-world_dialog_t_fog_end
+world_dialog_t_fog_distance
 
 world_dialog_t_fog_mode
 
-world_dialog_t_fog_start
+world_dialog_t_fog_to
 
 world_dialog_t_max_script_vars
-
-world_dialog_t_selection
 
 world_dialog_t_sun_ang_x
 
 world_dialog_t_sun_ang_y
+
+world_dialog_t_sun_dir
 
 world_dialog_tab_control
 common\\background\\script variables
@@ -1116,7 +1122,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-133
+136
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1133,6 +1139,8 @@ zzz_setbgimage
 %d Vertizes, %d Dreiecke kopiert
 
 %d geschlossene Flächen subtrahiert
+
+%d von %d
 
 (anonym)
 
@@ -1231,6 +1239,10 @@ Kugel
 Kugel skalieren
 
 Kugelzentrum waehlen
+
+Lade Objekte
+
+Lade Welt
 
 Links
 

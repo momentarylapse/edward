@@ -23,11 +23,16 @@ public:
 
 	void FillSkyboxList();
 	void FillScriptVarList();
+	void FillScriptList();
 	void OnSunEnabled();
 	void OnFogEnabled();
 	void OnSkybox();
 	void OnSkyboxSelect();
 	void OnRemoveSkybox();
+	void OnPhysicsEnabled();
+	void OnScriptSelect();
+	void OnAddScript();
+	void OnRemoveScript();
 	void OnMaxScriptVars();
 	void OnScriptVarEdit();
 	void OnScriptVarTemplate();

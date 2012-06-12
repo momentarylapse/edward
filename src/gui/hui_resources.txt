@@ -14824,7 +14824,7 @@ world_dialog
 
 1
 410
-360
+420
 0
 0
 0
@@ -14838,7 +14838,7 @@ ok
 hui:ok
 1
 300
-320
+380
 100
 25
 -1
@@ -14851,8 +14851,21 @@ cancel
 hui:cancel
 1
 195
-320
+380
 100
+25
+-1
+0
+0
+
+
+Button
+apply
+hui:ok
+1
+80
+380
+110
 25
 -1
 0
@@ -14866,86 +14879,21 @@ world_dialog_tab_control
 5
 5
 400
-305
+360
 -1
 0
 0
 
 
-Button
-apply
-hui:ok
-1
-80
-320
-110
-25
--1
-0
-0
-
-
-Group
+Text
 world_dialog_grp_bg_color
 
 1
 10
 10
 380
-55
-1
-0
-0
-world_dialog_tab_control
-
-Text
-world_dialog_t_bg_description
-
-1
-10
-220
-380
-55
-1
-0
-0
-world_dialog_tab_control
-
-ListView
-skybox
-
-1
-10
-70
-300
-145
-1
-0
-0
-world_dialog_tab_control
-
-Button
-remove_skybox
-hui:delete
-1
-315
-155
-75
 25
-1
 0
-0
-world_dialog_tab_control
-
-Text
-world_dialog_t_selection
-
-1
-315
-125
-75
-25
-1
 0
 0
 world_dialog_tab_control
@@ -14954,165 +14902,48 @@ ColorButton
 bgc
 
 1
-155
-30
-100
+20
+35
+370
 25
-1
-0
-0
-world_dialog_tab_control
-
-Group
-world_dialog_grp_gravitation
-
-1
-10
-10
-145
-115
 0
 0
 0
 world_dialog_tab_control
 
-Group
-world_dialog_grp_fog
+Text
+world_dialog_grp_skybox
 
 1
-160
 10
-230
-230
+70
+380
+25
+0
+0
+0
+world_dialog_tab_control
+
+ListView
+skybox
+
+1
+20
+95
+370
+195
 0
 0
 0
 world_dialog_tab_control
 
 Button
-music
-
-0
-40
-160
-100
-25
-0
-0
-0
-world_dialog_tab_control
-
-Text
-x
-
+remove_skybox
+hui:delete
 1
-20
-30
-20
-25
-0
-0
-0
-world_dialog_tab_control
-
-Edit
-gravitation_x
-
-1
-40
-30
-60
-25
-0
-0
-0
-world_dialog_tab_control
-
-Text
-luss
-
-1
-100
-30
-45
-25
-0
-0
-0
-world_dialog_tab_control
-
-Text
-y
-
-1
-20
-60
-20
-25
-0
-0
-0
-world_dialog_tab_control
-
-Edit
-gravitation_y
-
-1
-40
-60
-60
-25
-0
-0
-0
-world_dialog_tab_control
-
-Text
-luss
-
-1
-100
-60
-45
-25
-0
-0
-0
-world_dialog_tab_control
-
-Text
-z
-
-1
-20
-90
-20
-25
-0
-0
-0
-world_dialog_tab_control
-
-Edit
-gravitation_z
-
-1
-40
-90
-60
-25
-0
-0
-0
-world_dialog_tab_control
-
-Text
-luss
-
-1
-100
-90
-45
+270
+295
+120
 25
 0
 0
@@ -15123,102 +14954,11 @@ CheckBox
 fog_enabled
 
 1
-210
-30
-100
+20
+10
+370
 25
-0
-0
-0
-world_dialog_tab_control
-
-ComboBox
-fog_mode
-
 1
-300
-60
-80
-25
-0
-0
-0
-world_dialog_tab_control
-
-Text
-world_dialog_t_fog_density
-
-1
-170
-150
-130
-25
-0
-0
-0
-world_dialog_tab_control
-
-Edit
-fog_density
-
-1
-300
-150
-80
-25
-0
-0
-0
-world_dialog_tab_control
-
-Text
-world_dialog_t_fog_start
-
-1
-170
-90
-130
-25
-0
-0
-0
-world_dialog_tab_control
-
-Edit
-fog_start
-
-1
-300
-90
-80
-25
-0
-0
-0
-world_dialog_tab_control
-
-Text
-world_dialog_t_fog_end
-
-1
-170
-120
-130
-25
-0
-0
-0
-world_dialog_tab_control
-
-Edit
-fog_end
-
-1
-300
-120
-80
-25
-0
 0
 0
 world_dialog_tab_control
@@ -15227,11 +14967,102 @@ Text
 world_dialog_t_fog_mode
 
 1
-170
-60
-130
+20
+45
+100
 25
+1
 0
+0
+world_dialog_tab_control
+
+ComboBox
+fog_mode
+
+1
+125
+45
+265
+25
+1
+0
+0
+world_dialog_tab_control
+
+Text
+world_dialog_t_fog_distance
+
+1
+20
+75
+100
+25
+1
+0
+0
+world_dialog_tab_control
+
+Edit
+fog_start
+
+1
+125
+75
+105
+25
+1
+0
+0
+world_dialog_tab_control
+
+Text
+world_dialog_t_fog_to
+
+1
+245
+75
+30
+25
+1
+0
+0
+world_dialog_tab_control
+
+Edit
+fog_end
+
+1
+285
+75
+105
+25
+1
+0
+0
+world_dialog_tab_control
+
+Text
+world_dialog_t_fog_density
+
+1
+20
+105
+100
+25
+1
+0
+0
+world_dialog_tab_control
+
+Edit
+fog_density
+
+1
+125
+105
+265
+25
+1
 0
 0
 world_dialog_tab_control
@@ -15240,11 +15071,11 @@ Text
 world_dialog_t_fog_color
 
 1
-170
-180
-130
+20
+135
+100
 25
-0
+1
 0
 0
 world_dialog_tab_control
@@ -15253,75 +15084,49 @@ ColorButton
 fog_color
 
 1
-300
-180
-80
+125
+135
+265
 25
-0
-0
-0
-world_dialog_tab_control
-
-ListView
-script_vars
-
 1
-10
-40
-380
-230
-3
 0
 0
 world_dialog_tab_control
 
 Text
-world_dialog_t_max_script_vars
+world_dialog_grp_ambient
 
 1
 10
 10
-125
+145
 25
-3
-0
-0
-world_dialog_tab_control
-
-SpinButton
-max_script_vars
-
-1
-135
-10
-100
-25
-3
-0
-0
-world_dialog_tab_control
-
-Group
-world_dialog_grp_sun_color
-
-1
-10
-10
-380
-170
 2
 0
 0
 world_dialog_tab_control
 
-Group
-world_dialog_grp_ambient
+ColorButton
+ambient
+
+1
+20
+35
+370
+25
+2
+0
+0
+world_dialog_tab_control
+
+Text
+world_dialog_grp_sun
 
 1
 10
-185
-380
-65
+70
+145
+25
 2
 0
 0
@@ -15331,8 +15136,99 @@ CheckBox
 sun_enabled
 
 1
-35
-45
+20
+95
+370
+25
+2
+0
+0
+world_dialog_tab_control
+
+Text
+ambient
+
+1
+20
+125
+100
+25
+2
+0
+0
+world_dialog_tab_control
+
+Text
+diffuse
+
+1
+20
+155
+100
+25
+2
+0
+0
+world_dialog_tab_control
+
+Text
+specular
+
+1
+20
+185
+100
+25
+2
+0
+0
+world_dialog_tab_control
+
+ColorButton
+sun_am
+
+1
+125
+125
+265
+25
+2
+0
+0
+world_dialog_tab_control
+
+ColorButton
+sun_di
+
+1
+125
+155
+265
+25
+2
+0
+0
+world_dialog_tab_control
+
+ColorButton
+sun_sp
+
+1
+125
+185
+265
+25
+2
+0
+0
+world_dialog_tab_control
+
+Text
+world_dialog_t_sun_dir
+
+1
+20
+215
 100
 25
 2
@@ -15344,9 +15240,9 @@ Text
 world_dialog_t_sun_ang_x
 
 1
-20
-115
-275
+125
+215
+15
 25
 2
 0
@@ -15357,22 +15253,9 @@ SpinButton
 sun_ang_x
 
 1
-295
-115
-60
-25
-2
-0
-0
-world_dialog_tab_control
-
-Text
-degree
-
-1
-360
-115
-20
+145
+215
+80
 25
 2
 0
@@ -15383,9 +15266,9 @@ Text
 world_dialog_t_sun_ang_y
 
 1
-20
-145
-275
+235
+215
+15
 25
 2
 0
@@ -15396,9 +15279,9 @@ SpinButton
 sun_ang_y
 
 1
-295
-145
-60
+255
+215
+80
 25
 2
 0
@@ -15409,8 +15292,8 @@ Text
 degree
 
 1
-360
-145
+340
+215
 20
 25
 2
@@ -15418,93 +15301,210 @@ degree
 0
 world_dialog_tab_control
 
-Text
-ambient
-
+Button
+sun_ang_from_camera
+hui:media-record
 1
-160
-25
-65
+20
+245
+370
 25
 2
+0
+0
+world_dialog_tab_control
+
+CheckBox
+physics_enabled
+
+1
+10
+10
+200
+25
+3
 0
 0
 world_dialog_tab_control
 
 Text
-diffuse
+world_dialog_grp_gravitation
 
 1
-160
-55
-65
+10
+40
+145
 25
-2
+3
 0
 0
 world_dialog_tab_control
 
 Text
-specular
+x
 
 1
-160
-85
-65
+20
+70
+20
 25
-2
+3
 0
 0
 world_dialog_tab_control
 
-ColorButton
-sun_am
+Edit
+gravitation_x
 
 1
-225
+40
+70
+75
 25
-100
-25
-2
+3
 0
 0
 world_dialog_tab_control
 
-ColorButton
-sun_di
+Text
+y
 
 1
-225
-55
-100
+125
+70
+20
 25
-2
+3
 0
 0
 world_dialog_tab_control
 
-ColorButton
-sun_sp
+Edit
+gravitation_y
 
 1
-225
-85
-100
+145
+70
+75
 25
-2
+3
 0
 0
 world_dialog_tab_control
 
-ColorButton
-ambient
+Text
+z
 
 1
-150
+230
+70
+20
+25
+3
+0
+0
+world_dialog_tab_control
+
+Edit
+gravitation_z
+
+1
+250
+70
+75
+25
+3
+0
+0
+world_dialog_tab_control
+
+Text
+luss
+
+1
+330
+70
+45
+25
+3
+0
+0
+world_dialog_tab_control
+
+ListView
+script_list
+
+1
+10
+10
+380
+280
+4
+0
+0
+world_dialog_tab_control
+
+Button
+add_script
+hui:add
+1
+10
+295
+190
+25
+4
+0
+0
+world_dialog_tab_control
+
+Button
+remove_script
+hui:delete
+1
 205
+295
+185
+25
+4
+0
+0
+world_dialog_tab_control
+
+Text
+world_dialog_t_max_script_vars
+
+1
+20
+10
+80
+25
+5
+0
+0
+world_dialog_tab_control
+
+SpinButton
+max_script_vars
+
+1
+105
+10
 100
 25
-2
+5
+0
+0
+world_dialog_tab_control
+
+ListView
+script_vars
+
+1
+10
+40
+380
+280
+5
 0
 0
 world_dialog_tab_control
@@ -17420,7 +17420,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-709
+712
 // Text
 ad_dialog
 Verwaltung
@@ -17434,6 +17434,8 @@ ad_tab_control
 Aktuelles Spiel\\Alle Dateien\\Details\\Überflüssig\\Fehlend
 add_material
 neu...
+add_script
+Hinzufügen
 administrate
 Verwalten
 adress
@@ -18266,8 +18268,6 @@ move_selection_sign
 Markierung
 ms
 ms
-music
-Musik...
 name
 
 nb_complexity
@@ -18438,6 +18438,8 @@ photons
 \\0
 physics
 Physik...
+physics_enabled
+Aktiviert
 pos_x
 
 pos_y
@@ -18476,6 +18478,8 @@ reflection_size
 \\1\\10000\\1
 reflection_textures
 Seite\\Textur
+remove_script
+Entfernen
 remove_skybox
 Entfernen
 rename
@@ -18522,6 +18526,8 @@ script_find
 ...
 script_function
 
+script_list
+!nobar\\Datei
 script_vars
 !format=ttT\\#\\Name\\Wert
 scriptvar_dialog
@@ -18583,7 +18589,7 @@ Markierung
 skeleton_unlink
 Verbindungen lösen
 skybox
-#\\Modell ('SkyBox')
+#\\Modell
 sound_list
 Sound-Datei\\Material\\v min\\v max
 sound_radius
@@ -18598,6 +18604,8 @@ subtract_surface
 ++Volumen ausschneiden
 sun_am
 
+sun_ang_from_camera
+Richtung aus Kamerawinkel
 sun_ang_x
 
 sun_ang_y
@@ -18761,37 +18769,35 @@ working_directory
 world_dialog
 Welt-Eigenschaften
 world_dialog_grp_ambient
-Ambient
+!bold\\Ambient
 world_dialog_grp_bg_color
-Hintergrund-Farbe
-world_dialog_grp_fog
-Nebel
+!bold\\Farbe
 world_dialog_grp_gravitation
-Gravitation
-world_dialog_grp_sun_color
-Sonne
-world_dialog_t_bg_description
-(zuerst wird der Hintergrund eingefärbt, dann wird das Modell darüber gerendert. Sollen Farbe und Modell einander überlagern, muss das Modell transparent sein)
+!bold\\Gravitation
+world_dialog_grp_skybox
+!bold\\Skybox Modelle
+world_dialog_grp_sun
+!bold\\Sonne
 world_dialog_t_fog_color
 Farbe (Color)
 world_dialog_t_fog_density
-Dichte (Density)
-world_dialog_t_fog_end
-Ferne Kante (End)
+Dichte
+world_dialog_t_fog_distance
+Entfernung
 world_dialog_t_fog_mode
-Typ (Mode)
-world_dialog_t_fog_start
-Nahe Kante (Start)
+Typ
+world_dialog_t_fog_to
+bis
 world_dialog_t_max_script_vars
-maximale Anzahl:
-world_dialog_t_selection
-Markiertes
+Anzahl:
 world_dialog_t_sun_ang_x
-X: Höhe über dem Horizont (X-Z-Ebene)
+X
 world_dialog_t_sun_ang_y
-Y: Richtung (Abweichung von der Z-Achse)
+Y
+world_dialog_t_sun_dir
+Richtung
 world_dialog_tab_control
-Generell\\Himmel\\Sonne\\Script-Variablen
+Hintergrund\\Nebel\\Licht\\Physik\\Scripte\\Variablen
 world_new
 Neu
 world_object_dialog
@@ -18846,7 +18852,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-709
+712
 // Text
 ad_dialog
 Administration
@@ -18859,6 +18865,8 @@ Configuration
 ad_tab_control
 current game\\all files\\details\\unnesessary\\missing
 add_material
+
+add_script
 
 administrate
 Administrate
@@ -19692,8 +19700,6 @@ move_selection_sign
 Selection
 ms
 ms
-music
-music...
 name
 
 nb_complexity
@@ -19864,6 +19870,8 @@ photons
 \\0
 physics
 Physics...
+physics_enabled
+
 pos_x
 
 pos_y
@@ -19902,6 +19910,8 @@ reflection_size
 \\1\\10000\\1
 reflection_textures
 face\\texture
+remove_script
+
 remove_skybox
 Remove
 rename
@@ -19947,6 +19957,8 @@ script_file
 script_find
 ...
 script_function
+
+script_list
 
 script_vars
 #\\name\\type\\value
@@ -20023,6 +20035,8 @@ speed
 subtract_surface
 
 sun_am
+
+sun_ang_from_camera
 
 sun_ang_x
 
@@ -20190,32 +20204,30 @@ world_dialog_grp_ambient
 ambient
 world_dialog_grp_bg_color
 background color
-world_dialog_grp_fog
-fog
 world_dialog_grp_gravitation
 gravitation
-world_dialog_grp_sun_color
-color
-world_dialog_t_bg_description
-(at first the color is applied to the background, second is the model. If interpolation of color and model is wanted you should use the model's transparency)
+world_dialog_grp_skybox
+
+world_dialog_grp_sun
+
 world_dialog_t_fog_color
 color
 world_dialog_t_fog_density
 density (\"Density\")
-world_dialog_t_fog_end
-far edge (\"End\")
+world_dialog_t_fog_distance
+
 world_dialog_t_fog_mode
 type (\"Mode\")
-world_dialog_t_fog_start
-near edge (\"Start\")
+world_dialog_t_fog_to
+
 world_dialog_t_max_script_vars
 number (max):
-world_dialog_t_selection
-Selection
 world_dialog_t_sun_ang_x
 X: Altitude above horizon (X-Z-plane)
 world_dialog_t_sun_ang_y
 Y: Direction (Angle to Z-axis)
+world_dialog_t_sun_dir
+
 world_dialog_tab_control
 common\\background\\script variables
 world_new
@@ -20476,7 +20488,7 @@ program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 // Language
 日本語
 // NumIDs
-709
+712
 // Text
 ad_dialog
 
@@ -20489,6 +20501,8 @@ ad_rudimentary_configuration
 ad_tab_control
 current game\\all files\\details\\unnesessary\\missing
 add_material
+
+add_script
 
 administrate
 
@@ -21322,8 +21336,6 @@ move_selection_sign
 選択
 ms
 ms
-music
-音...
 name
 
 nb_complexity
@@ -21494,6 +21506,8 @@ photons
 
 physics
 物理学...
+physics_enabled
+
 pos_x
 
 pos_y
@@ -21532,6 +21546,8 @@ reflection_size
 
 reflection_textures
 face\\texture
+remove_script
+
 remove_skybox
 削除
 rename
@@ -21577,6 +21593,8 @@ script_file
 script_find
 ...
 script_function
+
+script_list
 
 script_vars
 #\\名前\\種類\\値
@@ -21653,6 +21671,8 @@ speed
 subtract_surface
 
 sun_am
+
+sun_ang_from_camera
 
 sun_ang_x
 
@@ -21820,31 +21840,29 @@ world_dialog_grp_ambient
 
 world_dialog_grp_bg_color
 
-world_dialog_grp_fog
-霧
 world_dialog_grp_gravitation
 引力
-world_dialog_grp_sun_color
-色
-world_dialog_t_bg_description
+world_dialog_grp_skybox
+
+world_dialog_grp_sun
 
 world_dialog_t_fog_color
 色
 world_dialog_t_fog_density
 
-world_dialog_t_fog_end
+world_dialog_t_fog_distance
 
 world_dialog_t_fog_mode
 
-world_dialog_t_fog_start
+world_dialog_t_fog_to
 
 world_dialog_t_max_script_vars
-
-world_dialog_t_selection
 
 world_dialog_t_sun_ang_x
 
 world_dialog_t_sun_ang_y
+
+world_dialog_t_sun_dir
 
 world_dialog_tab_control
 common\\background\\script variables
