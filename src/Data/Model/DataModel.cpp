@@ -120,6 +120,7 @@ void DataModel::Reset()
 	meta_data.Reset();
 
 	ResetHistory();
+	Notify("Change");
 
 //	Execute(new ActionModelAddCube(v0, e_x * 20, e_y * 20, e_z * 20, Vertex.num));
 	/*Execute(new ActionModelAddPlane(e_y * 10, e_x * 200, e_z * 200, 4, 4, Vertex.num));

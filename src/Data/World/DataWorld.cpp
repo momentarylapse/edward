@@ -275,6 +275,9 @@ void DataWorld::Reset()
 	EgoIndex = -1;
 
 	meta_data.Reset();
+
+	ResetHistory();
+	Notify("Change");
 }
 
 
