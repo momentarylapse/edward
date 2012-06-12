@@ -12,6 +12,7 @@
 #include "Dialog/SelectionPropertiesDialog.h"
 #include "Dialog/ObjectPropertiesDialog.h"
 #include "Creation/ModeWorldCreateObject.h"
+#include "../../Action/World/ActionWorldEditData.h"
 
 ModeWorld *mode_world = NULL;
 
@@ -71,6 +72,9 @@ void ModeWorld::OnCommand(const string & id)
 		data->Undo();
 	if (id == "redo")
 		data->Redo();
+
+	if (id == "import_world_properties")
+		ImportWorldProperties();
 
 	if (id == "create_objects")
 		ed->SetCreationMode(new ModeWorldCreateObject(ed->cur_mode, data));
@@ -660,6 +664,18 @@ void ModeWorld::ToggleShowTerrains()
 	ShowTerrains = !ShowTerrains;
 	ed->UpdateMenu();
 	ed->ForceRedraw();
+}
+
+
+void ModeWorld::ImportWorldProperties()
+{
+	if (ed->FileDialog(FDWorld, false, false)){
+		DataWorld w;
+		if (w.Load(ed->DialogFileComplete, false))
+			data->Execute(new ActionWorldEditData(w.meta_data));
+		else
+			ed->ErrorBox(_("Angegebene Welt konnte nicht korrekt geladen werden!"));
+	}
 }
 
 

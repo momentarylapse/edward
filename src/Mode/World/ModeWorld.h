@@ -48,6 +48,8 @@ public:
 
 	void OptimizeView();
 
+	void ImportWorldProperties();
+
 	void ExecutePropertiesDialog();
 	void ExecuteSelectionPropertiesDialog();
 	void ExecuteWorldPropertiesDialog();
