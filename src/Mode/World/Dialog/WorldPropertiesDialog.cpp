@@ -10,6 +10,10 @@
 #include "../ModeWorld.h"
 #include "../../../Action/World/ActionWorldEditData.h"
 
+#define WorldPhysicsDec			3
+#define WorldLightDec			1
+#define WorldFogDec				6
+
 WorldPropertiesDialog::WorldPropertiesDialog(CHuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
 	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls, true)
 {
@@ -260,9 +264,7 @@ void WorldPropertiesDialog::OnOk()
 
 void WorldPropertiesDialog::LoadData()
 {
-	SetFloat("gravitation_x", temp.Gravity.x);
-	SetFloat("gravitation_y", temp.Gravity.y);
-	SetFloat("gravitation_z", temp.Gravity.z);
+	SetDecimals(WorldFogDec);
 	SetColor("bgc", temp.BackGroundColor);
 	Check("fog_enabled", temp.FogEnabled);
 	SetInt("fog_mode", temp.FogMode);
@@ -276,6 +278,7 @@ void WorldPropertiesDialog::LoadData()
 	Enable("fog_density", temp.FogEnabled);
 	Enable("fog_color", temp.FogEnabled);
 
+	SetDecimals(WorldLightDec);
 	Check("sun_enabled", temp.SunEnabled);
 	SetColor("sun_am", temp.SunAmbient);
 	SetColor("sun_di", temp.SunDiffuse);
@@ -290,10 +293,14 @@ void WorldPropertiesDialog::LoadData()
 	Enable("sun_ang_from_camera", temp.SunEnabled);
 	SetColor("ambient", temp.Ambient);
 
+	SetDecimals(WorldPhysicsDec);
 	Check("physics_enabled", temp.PhysicsEnabled);
 	Enable("gravitation_x", temp.PhysicsEnabled);
 	Enable("gravitation_y", temp.PhysicsEnabled);
 	Enable("gravitation_z", temp.PhysicsEnabled);
+	SetFloat("gravitation_x", temp.Gravity.x);
+	SetFloat("gravitation_y", temp.Gravity.y);
+	SetFloat("gravitation_z", temp.Gravity.z);
 
 	SetInt("max_script_vars", temp.ScriptVar.num);
 
