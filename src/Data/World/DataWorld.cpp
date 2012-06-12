@@ -66,14 +66,13 @@ bool DataWorld::Save(const string & _filename)
 
 bool DataWorld::Load(const string & _filename, bool deep)
 {
+	msg_db_r("World.Load", 1);
 	bool Error=false;
 	int ffv;
 
 	Reset();
 //	if (deep)
 //		ProgressStart(MainWin, _("Lade Welt"));
-	msg_write("-----------------------------------------------------------");
-	msg_write("|   lade Welt                                             |");
 
 	filename = _filename;
 	if (this == mode_world->data)
@@ -81,18 +80,16 @@ bool DataWorld::Load(const string & _filename, bool deep)
 
 	CFile *f = OpenFile(filename);
 	if (!f){
-		msg_write("|   fertig                                                |");
-		msg_write("-----------------------------------------------------------");
+		msg_db_l(1);
 		return false;
 	}
 //	FileTime=f->GetDate(FileDateModification).time;
 
 	ffv = f->ReadFileFormatVersion();
 
-	if ((ffv==10)||(ffv==9)){ // neues Format
+	if ((ffv==10)||(ffv==9)){ // new format
 		// Terrains
 		int n = f->ReadIntC();
-		msg_write("a");
 		for (int i=0;i<n;i++){
 			ModeWorldTerrain t;
 			t.FileName = f->ReadStr();
@@ -111,7 +108,6 @@ bool DataWorld::Load(const string & _filename, bool deep)
 		else
 			f->ReadComment();
 		read_color_argb(f,meta_data.BackGroundColor);
-		msg_write("b");
 		if (ffv==9){
 			meta_data.SkyBoxFile[0] = f->ReadStr();
 		}else{
@@ -128,13 +124,11 @@ bool DataWorld::Load(const string & _filename, bool deep)
 		meta_data.FogEnd=f->ReadFloat();
 		meta_data.FogDensity=f->ReadFloat();
 		read_color_argb(f,meta_data.FogColor);
-		msg_write("c");
 		// Music
 		n = f->ReadIntC();
 		for (int i=0;i<n;i++)
 			meta_data.MusicFile.add(f->ReadStr());
 		// Objects
-		msg_write("d");
 		n=f->ReadIntC();
 		for (int i=0;i<n;i++){
 			ModeWorldObject o;
@@ -152,7 +146,6 @@ bool DataWorld::Load(const string & _filename, bool deep)
 			o.is_special = false;
 			Object.add(o);
 		}
-		msg_write("e");
 		// Scripts
 		n=f->ReadIntC();
 		for (int i=0;i<n;i++){
@@ -167,7 +160,6 @@ bool DataWorld::Load(const string & _filename, bool deep)
 			}
 			meta_data.Script.add(s);
 		}
-		msg_write("f");
 		// ScriptVars
 		n=f->ReadIntC();
 		meta_data.ScriptVar.clear();
@@ -183,7 +175,6 @@ bool DataWorld::Load(const string & _filename, bool deep)
 			f->ReadComment();
 			read_color_3i(f, meta_data.Ambient);
 		}
-		msg_write("g");
 
 	}else{
 		ed->ErrorBox(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 8, 10));
@@ -192,7 +183,6 @@ bool DataWorld::Load(const string & _filename, bool deep)
 	f->Close();
 
 	delete(f);
-		msg_write(".8");
 
 	if ((!Error)&&(deep)){
 //		ProgressEnd();
@@ -210,9 +200,6 @@ bool DataWorld::Load(const string & _filename, bool deep)
 //		ProgressEnd();
 	}
 
-    msg_write("|   fertig                                                |");
-	msg_write("-----------------------------------------------------------");
-
 
 
 	// debug...
@@ -224,6 +211,7 @@ bool DataWorld::Load(const string & _filename, bool deep)
 	ResetHistory();
 	Notify("Change");
 
+	msg_db_l(1);
 	return !Error;
 }
 
