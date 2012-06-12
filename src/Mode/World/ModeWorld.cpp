@@ -10,6 +10,7 @@
 #include "../../Data/World/DataWorld.h"
 #include "../../lib/x/x.h"
 #include "Dialog/SelectionPropertiesDialog.h"
+#include "Dialog/ObjectPropertiesDialog.h"
 
 ModeWorld *mode_world = NULL;
 
@@ -553,10 +554,26 @@ void ModeWorld::ExecuteWorldPropertiesDialog()
 
 void ModeWorld::ExecutePropertiesDialog()
 {
-	if (data->GetSelectedObjects() + data->GetSelectedTerrains() > 0)
-		ExecuteSelectionPropertiesDialog();
-	else
+	int num_o = data->GetSelectedObjects();
+	int num_t = data->GetSelectedTerrains();
+
+	if (num_o + num_t == 0){
+		// nothing selected -> world
 		ExecuteWorldPropertiesDialog();
+	}else if ((num_o == 1) && (num_t == 0)){
+		// single object -> object
+		foreachi(data->Object, o, i)
+			if (o.is_selected)
+				ExecuteObjectPropertiesDialog(i);
+	}else if ((num_o == 0) && (num_t == 1)){
+		// single terrain -> terrain
+		foreachi(data->Terrain, t, i)
+			if (t.is_selected)
+				ExecuteTerrainPropertiesDialog(i);
+	}else{
+		// multiple selections -> choose
+		ExecuteSelectionPropertiesDialog();
+	}
 }
 
 
@@ -575,11 +592,9 @@ void ModeWorld::ExecuteSelectionPropertiesDialog()
 		if (sel_type == FDWorld){
 			ExecuteWorldPropertiesDialog();
 		}else if (sel_type == FDModel){
-			//ObjectDialogIndex = sel_ndex;
-			//ExecuteObjectDialog();
+			ExecuteObjectPropertiesDialog(sel_index);
 		}else if (sel_type==FDTerrain){
-			//CurrentTerrain = sel_index;
-			//ExecuteTerrainDialog();
+			ExecuteTerrainPropertiesDialog(sel_index);
 		}/*if (sel_type == FDCameraFlight){
 			CamPointDialogIndex=PropertySelectionIndex[PropertySelectionChosen];
 			ExecuteCamPointDialog();
@@ -589,13 +604,17 @@ void ModeWorld::ExecuteSelectionPropertiesDialog()
 
 
 
-void ModeWorld::ExecuteObjectPropertiesDialog()
+void ModeWorld::ExecuteObjectPropertiesDialog(int index)
 {
+	ObjectPropertiesDialog *dlg = new ObjectPropertiesDialog(ed, false, data, index);
+	dlg->Update();
+
+	HuiWaitTillWindowClosed(dlg);
 }
 
 
 
-void ModeWorld::ExecuteTerrainPropertiesDialog()
+void ModeWorld::ExecuteTerrainPropertiesDialog(int index)
 {
 }
 
