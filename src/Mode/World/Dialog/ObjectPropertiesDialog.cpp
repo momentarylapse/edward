@@ -6,6 +6,7 @@
  */
 
 #include "ObjectPropertiesDialog.h"
+#include "../../../Action/World/ActionWorldEditObject.h"
 #include <assert.h>
 
 ObjectPropertiesDialog::ObjectPropertiesDialog(CHuiWindow *_parent, bool _allow_parent, DataWorld *_data, int _index) :
@@ -53,9 +54,9 @@ void ObjectPropertiesDialog::LoadData()
 	SetFloat("pos_x", temp.pos.x);
 	SetFloat("pos_y", temp.pos.y);
 	SetFloat("pos_z", temp.pos.z);
-	SetFloat("ang_x", temp.Ang.x);
-	SetFloat("ang_y", temp.Ang.y);
-	SetFloat("ang_z", temp.Ang.z);
+	SetFloat("ang_x", temp.Ang.x * 180.0f / pi);
+	SetFloat("ang_y", temp.Ang.y * 180.0f / pi);
+	SetFloat("ang_z", temp.Ang.z * 180.0f / pi);
 }
 
 
@@ -89,6 +90,8 @@ void ObjectPropertiesDialog::ApplyData()
 	temp.Ang.y = GetFloat("ang_y") * pi / 180.0f;
 	temp.Ang.z = GetFloat("ang_z") * pi / 180.0f;
 	temp.Name = GetString("name");
+
+	data->Execute(new ActionWorldEditObject(index, temp));
 }
 
 
