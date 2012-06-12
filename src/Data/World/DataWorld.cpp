@@ -297,17 +297,18 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 			VecMax(max, max2);
 			found_any = true; //|=(min2!=max2);
 		}
-	/*for (int i=0;i<Terrain.num;i++){
-		vector min2=Terrain[i].Pos+Terrain[i].Min;
-		vector max2=Terrain[i].Pos+Terrain[i].Max;
-		if (!found_any){
-			min=min2;
-			max=max2;
+	foreach(Terrain, t)
+		if (t.terrain){
+			vector min2 = t.terrain->min;
+			vector max2 = t.terrain->max;
+			if (!found_any){
+				min = min2;
+				max = max2;
+			}
+			VecMin(min, min2);
+			VecMax(max, max2);
+			found_any = true;
 		}
-		VecMin(min,min2);
-		VecMax(max,max2);
-		found_any=true;
-	}*/
 	if (!found_any){
 		min=vector(-100,-100,-100);
 		max=vector( 100, 100, 100);
