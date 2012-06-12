@@ -26,7 +26,9 @@ ModeWorldCreateObject::~ModeWorldCreateObject()
 
 void ModeWorldCreateObject::OnLeftButtonDown()
 {
-	filename = "lightmapped_0";
-	data->Execute(new ActionWorldAddObject(filename, multi_view->GetCursor3d()));
+	if (ed->FileDialog(FDModel, false, true)){
+		filename = ed->DialogFileNoEnding;
+		data->Execute(new ActionWorldAddObject(filename, multi_view->GetCursor3d()));
+	}
 	//ed->SetCreationMode(NULL);
 }
