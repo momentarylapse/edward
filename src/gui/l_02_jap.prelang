@@ -1122,11 +1122,13 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-136
+140
 // Data (ID,Text)
                   Close dialog box to exit program.
 
    - ohne Datei -
+
+ -- Komplette Welt -- 
 
  ist abgestürzt!\t\tDie letzten Zeilen der Datei message.txt:
 
@@ -1220,6 +1222,8 @@ Kamera-Datei
 
 Kamera-Dateien (*.camera)
 
+KameraPunkt
+
 Kann Material-Datei nicht öffnen
 
 Kanten
@@ -1278,6 +1282,8 @@ Oben (-y)
 
 Oberflächen
 
+Objekt
+
 Objekte (*.object)
 
 Objekte-Datei
@@ -1317,6 +1323,8 @@ Sound-Datei
 Sounds (wav,mp3,midi)
 
 Spiegeln
+
+Terrain
 
 Textur-Datei
 

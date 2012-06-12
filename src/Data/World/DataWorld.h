@@ -90,6 +90,8 @@ public:
 
 
 	void GetBoundaryBox(vector &min, vector &max);
+	int GetSelectedObjects();
+	int GetSelectedTerrains();
 
 	// terrains
 	Array<ModeWorldTerrain> Terrain;

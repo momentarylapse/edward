@@ -9,6 +9,7 @@
 #include "ModeWorld.h"
 #include "../../Data/World/DataWorld.h"
 #include "../../lib/x/x.h"
+#include "Dialog/SelectionPropertiesDialog.h"
 
 ModeWorld *mode_world = NULL;
 
@@ -70,7 +71,7 @@ void ModeWorld::OnCommand(const string & id)
 		data->Redo();
 
 	if (id == "selection_properties")
-		ExecuteWorldPropertiesDialog();
+		ExecutePropertiesDialog();
 
 	if (id == "opt_view")
 		OptimizeView();
@@ -550,8 +551,40 @@ void ModeWorld::ExecuteWorldPropertiesDialog()
 
 
 
-void ModeWorld::ExecutePropertiesSelectionDialog()
+void ModeWorld::ExecutePropertiesDialog()
 {
+	if (data->GetSelectedObjects() + data->GetSelectedTerrains() > 0)
+		ExecuteSelectionPropertiesDialog();
+	else
+		ExecuteWorldPropertiesDialog();
+}
+
+
+
+void ModeWorld::ExecuteSelectionPropertiesDialog()
+{
+	//ExecuteWorldPropertiesDialog();
+	int sel_type, sel_index;
+
+	SelectionPropertiesDialog *dlg = new SelectionPropertiesDialog(ed, false, data, &sel_type, &sel_index);
+	dlg->Update();
+
+	HuiWaitTillWindowClosed(dlg);
+
+	if (sel_type >= 0){
+		if (sel_type == FDWorld){
+			ExecuteWorldPropertiesDialog();
+		}else if (sel_type == FDModel){
+			//ObjectDialogIndex = sel_ndex;
+			//ExecuteObjectDialog();
+		}else if (sel_type==FDTerrain){
+			//CurrentTerrain = sel_index;
+			//ExecuteTerrainDialog();
+		}/*if (sel_type == FDCameraFlight){
+			CamPointDialogIndex=PropertySelectionIndex[PropertySelectionChosen];
+			ExecuteCamPointDialog();
+		}*/
+	}
 }
 
 

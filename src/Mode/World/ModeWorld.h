@@ -48,11 +48,11 @@ public:
 
 	void OptimizeView();
 
-	void ExecutePropertiesSelectionDialog();
+	void ExecutePropertiesDialog();
+	void ExecuteSelectionPropertiesDialog();
 	void ExecuteWorldPropertiesDialog();
 	void ExecuteObjectPropertiesDialog();
 	void ExecuteTerrainPropertiesDialog();
-
 	WorldPropertiesDialog *WorldDialog;
 
 	DataWorld *data;

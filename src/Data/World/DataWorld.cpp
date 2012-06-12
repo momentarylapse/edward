@@ -314,4 +314,26 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 	}
 }
 
+int DataWorld::GetSelectedObjects()
+{
+	int n = 0;
+	foreach(Object, o)
+		if (o.is_selected)
+			n ++;
+	return n;
+}
+
+
+
+int DataWorld::GetSelectedTerrains()
+{
+	int n = 0;
+	foreach(Terrain, t)
+		if (t.is_selected)
+			n ++;
+	return n;
+}
+
+
+
 

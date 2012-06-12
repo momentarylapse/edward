@@ -1122,12 +1122,14 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-136
+140
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
    - ohne Datei -
    - no file -
+ -- Komplette Welt -- 
+
  ist abgestürzt!\t\tDie letzten Zeilen der Datei message.txt:
 
 !bold\\Kommentar/Geschehnisse:
@@ -1220,6 +1222,8 @@ Kamera-Datei
 Camera file
 Kamera-Dateien (*.camera)
 Camera files (*.camera)
+KameraPunkt
+
 Kann Material-Datei nicht öffnen
 Can't load material file
 Kanten
@@ -1278,6 +1282,8 @@ Oben (-y)
 Top (-y)
 Oberflächen
 
+Objekt
+
 Objekte (*.object)
 Objects (*.object)
 Objekte-Datei
@@ -1318,6 +1324,8 @@ Sounds (wav,mp3,midi)
 Sounds (wav,mp3, midi)
 Spiegeln
 Mirror
+Terrain
+
 Textur-Datei
 Texture file
 Textur-Datei nicht ladbar: %s
