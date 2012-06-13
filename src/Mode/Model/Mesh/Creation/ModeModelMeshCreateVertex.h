@@ -20,6 +20,7 @@ public:
 	void OnLeftButtonDown();
 
 	DataModel *data;
+	Data *GetData(){	return data;	}
 };
 
 #endif /* MODEMODELMESHCREATEVERTEX_H_ */

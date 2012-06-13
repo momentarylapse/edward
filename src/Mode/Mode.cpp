@@ -122,5 +122,38 @@ Mode *Mode::GetRootMode()
 	return this;
 }
 
+void Mode::New()
+{
+	if (parent)
+		parent->New();
+}
+
+bool Mode::Save()
+{
+	if (parent)
+		return parent->Save();
+	return true;
+}
+
+
+
+bool Mode::SaveAs()
+{
+	if (parent)
+		return parent->SaveAs();
+	return true;
+}
+
+
+
+bool Mode::Open()
+{
+	if (parent)
+		return parent->Open();
+	return true;
+}
+
+
+
 
 

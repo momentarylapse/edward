@@ -46,6 +46,7 @@ public:
 	bool SaveAs();
 
 	DataFont *data;
+	Data *GetData(){	return data;	}
 };
 
 extern ModeFont* mode_font;

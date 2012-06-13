@@ -20,6 +20,8 @@ public:
 	void OnLeftButtonDown();
 
 	DataWorld *data;
+	Data *GetData(){	return data;	}
+
 	string filename;
 };
 

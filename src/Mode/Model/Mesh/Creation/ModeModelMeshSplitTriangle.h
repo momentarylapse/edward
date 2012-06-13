@@ -22,6 +22,7 @@ public:
 	void PostDrawWin(int win, irect dest);
 
 	DataModel *data;
+	Data *GetData(){	return data;	}
 
 private:
 	int surface, triangle;

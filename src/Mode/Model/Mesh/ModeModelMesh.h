@@ -37,6 +37,8 @@ public:
 	void ApplyRightMouseFunction(MultiView *mv);
 
 	DataModel *data;
+	Data *GetData(){	return data;	}
+
 	ModelMaterialSelectionDialog *MaterialSelectionDialog;
 
 	enum{

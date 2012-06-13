@@ -48,10 +48,17 @@ public:
 	void OnPreKeyUp();
 	void OnPreCommand(const string &id);
 	void OnPreUpdateMenu();
-	Mode *GetRootMode();
 
 	virtual void Draw(){};
 	virtual void DrawWin(int win, irect dest){};
+
+	Mode *GetRootMode();
+	virtual Data *GetData(){	return NULL;	}
+
+	virtual void New();
+	virtual bool Open();
+	virtual bool Save();
+	virtual bool SaveAs();
 
 	string name;
 

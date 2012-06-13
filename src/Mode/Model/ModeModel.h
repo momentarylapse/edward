@@ -43,6 +43,8 @@ public:
 	void ExecuteMaterialDialog(int initial_tab_page = 0);
 
 	DataModel *data;
+	Data *GetData(){	return data;	}
+
 	ModelPropertiesDialog *PropertiesDialog;
 	ModelMaterialDialog *MaterialDialog;
 };

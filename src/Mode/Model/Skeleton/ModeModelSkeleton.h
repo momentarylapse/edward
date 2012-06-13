@@ -31,6 +31,7 @@ public:
 	void DrawWin(int win, irect dest);
 
 	DataModel *data;
+	Data *GetData(){	return data;	}
 };
 
 extern ModeModelSkeleton *mode_model_skeleton;

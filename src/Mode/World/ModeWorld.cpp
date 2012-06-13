@@ -284,11 +284,11 @@ void ModeWorld::OnUpdate(Observable *o)
 				NULL,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
 				&IsMouseOverObject, &IsInRectObject);
-		/*multi_view->SetData(	MVDWorldTerrain,
+		multi_view->SetData(	MVDWorldTerrain,
 				data->Terrain,
 				NULL,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
-				&IsMouseOverTerrain, &IsInRectTerrain);*/
+				&IsMouseOverTerrain, &IsInRectTerrain);
 	}else if (o->GetName() == "MultiView"){
 		// selection
 	}
@@ -335,6 +335,9 @@ void ModeWorld::OnLeftButtonUp()
 void ModeWorld::Draw()
 {
 	view_cur->pos = multi_view->pos;
+
+	ed->DrawStr(10, 100, format("obj: %d", data->GetSelectedObjects()));
+	ed->DrawStr(10, 120, format("ter: %d", data->GetSelectedTerrains()));
 }
 
 

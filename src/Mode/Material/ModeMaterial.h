@@ -40,6 +40,7 @@ public:
 	void ExecuteAppearanceDialog();
 
 	DataMaterial *data;
+	Data *GetData(){	return data;	}
 
 	int MaterialVB[MATERIAL_MAX_TEXTURE_LEVELS];
 	MaterialPropertiesDialog *AppearanceDialog;

@@ -33,6 +33,8 @@ public:
 	void GetSelectedSkinVertices(Array<int> &surf, Array<int> &index);
 
 	DataModel *data;
+	Data *GetData(){	return data;	}
+
 	Array<ModeModelSkinVertexDummy> skin_vertex;
 };
 

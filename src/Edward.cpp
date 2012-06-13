@@ -660,31 +660,6 @@ void Edward::OnCommand(const string &id)
 }
 
 
-Mode *get_cur_root_mode()
-{
-	Mode *m = NULL;
-	Mode *p = ed->cur_mode;
-	while(p){
-		m = p;
-		p = m->parent;
-	}
-	return m;
-}
-
-Data *get_mode_data(Mode *m)
-{
-	if (m == mode_model)
-		return mode_model->data;
-	if (m == mode_material)
-		return mode_material->data;
-	if (m == mode_world)
-		return mode_world->data;
-	if (m == mode_font)
-		return mode_font->data;
-	return NULL;
-}
-
-
 string title_filename(const string &filename)
 {
 	if (filename.num > 0)
@@ -699,8 +674,7 @@ void Edward::UpdateMenu()
 		return;
 	cur_mode->OnPreUpdateMenu();
 
-	Mode *root = cur_mode->GetRootMode();
-	Data *d = get_mode_data(root);
+	Data *d = cur_mode->GetData();
 	if (d){
 		Enable("undo", d->action_manager->Undoable());
 		Enable("redo", d->action_manager->Redoable());
@@ -786,8 +760,7 @@ bool Edward::AllowTermination()
 {
 	if (!cur_mode)
 		return true;
-	Mode *root = cur_mode->GetRootMode();
-	Data *d = get_mode_data(root);
+	Data *d = cur_mode->GetData();
 	if (!d)
 		return true;
 	if (d->action_manager->IsSave())
@@ -797,13 +770,7 @@ bool Edward::AllowTermination()
 		return false;
 	if (answer == "hui:no")
 		return true;
-	//if (answer == "hui:no")
-	bool saved = true;
-	if (root == mode_model)		saved = mode_model->Save();
-	/*if (Mode==ModeObject)		saved=mobject->Save();
-	if (Mode==ModeItem)			saved=mitem->Save();
-	if (Mode==ModeMaterial)		saved=mmaterial->Save();
-	if (Mode==ModeWorld)		saved=mworld->Save();*/
+	bool saved = cur_mode->Save();
 	return saved;
 }
 

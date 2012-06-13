@@ -58,6 +58,7 @@ public:
 	WorldPropertiesDialog *WorldDialog;
 
 	DataWorld *data;
+	Data *GetData(){	return data;	}
 
 	int ViewStage;
 	bool ShowTerrains;

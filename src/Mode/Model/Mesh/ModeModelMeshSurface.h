@@ -29,6 +29,7 @@ public:
 	void DrawWin(int win, irect dest);
 
 	DataModel *data;
+	Data *GetData(){	return data;	}
 };
 
 extern ModeModelMeshSurface *mode_model_mesh_surface;

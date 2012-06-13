@@ -34,6 +34,7 @@ public:
 	void FillSelectionBuffers();
 
 	DataModel *data;
+	Data *GetData(){	return data;	}
 
 	void ToggleSelectCW();
 	bool SelectCW;
