@@ -21,13 +21,13 @@ void ModeCreation::OnUpdate(Observable *o)
 
 
 
-void ModeCreation::Draw()
+void ModeCreation::OnDraw()
 {
 }
 
 
 
-void ModeCreation::DrawWin(int win, irect dest)
+void ModeCreation::OnDrawWin(int win, irect dest)
 {
 }
 
@@ -77,11 +77,11 @@ void ModeCreation::OnMiddleButtonUp()
 {
 }
 
-void ModeCreation::End()
+void ModeCreation::OnEnd()
 {
 }
 
-void ModeCreation::Start()
+void ModeCreation::OnStart()
 {
 }
 

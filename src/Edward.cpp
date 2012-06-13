@@ -109,15 +109,15 @@ void Edward::event() \
 		creation_mode->event(); \
 }
 
-IMPLEMENT_EVENT(OnKeyDown, OnPreKeyDown, , )
-IMPLEMENT_EVENT(OnKeyUp, OnPreKeyUp, , )
-IMPLEMENT_EVENT(OnMouseMove, OnPreMouseMove, , )
-IMPLEMENT_EVENT(OnLeftButtonDown, OnPreLeftButtonDown, , )
-IMPLEMENT_EVENT(OnLeftButtonUp, OnPreLeftButtonUp, , )
-IMPLEMENT_EVENT(OnMiddleButtonDown, OnPreMiddleButtonDown, , )
-IMPLEMENT_EVENT(OnMiddleButtonUp, OnPreMiddleButtonUp, , )
-IMPLEMENT_EVENT(OnRightButtonDown, OnPreRightButtonDown, , )
-IMPLEMENT_EVENT(OnRightButtonUp, OnPreRightButtonUp, , )
+IMPLEMENT_EVENT(OnKeyDown, OnKeyDownRecursive, , )
+IMPLEMENT_EVENT(OnKeyUp, OnKeyUpRecursive, , )
+IMPLEMENT_EVENT(OnMouseMove, OnMouseMoveRecursive, , )
+IMPLEMENT_EVENT(OnLeftButtonDown, OnLeftButtonDownRecursive, , )
+IMPLEMENT_EVENT(OnLeftButtonUp, OnLeftButtonUpRecursive, , )
+IMPLEMENT_EVENT(OnMiddleButtonDown, OnMiddleButtonDownRecursive, , )
+IMPLEMENT_EVENT(OnMiddleButtonUp, OnMiddleButtonUpRecursive, , )
+IMPLEMENT_EVENT(OnRightButtonDown, OnRightButtonDownRecursive, , )
+IMPLEMENT_EVENT(OnRightButtonUp, OnRightButtonUpRecursive, , )
 
 void Edward::OnEvent()
 {
@@ -125,7 +125,7 @@ void Edward::OnEvent()
 	if (id.num == 0)
 		id = HuiGetEvent()->message;
 	if (cur_mode)
-		cur_mode->OnPreCommand(id);
+		cur_mode->OnCommandRecursive(id);
 	if (creation_mode)
 		creation_mode->OnCommand(id);
 	OnCommand(id);
@@ -411,7 +411,7 @@ void Edward::SetMode(Mode *m)
 	// close current mode
 	if (cur_mode){
 		msg_write("end " + cur_mode->name);
-		cur_mode->End();
+		cur_mode->OnEnd();
 	}
 	multi_view_3d->ResetMouseAction();
 	multi_view_2d->ResetMouseAction();
@@ -419,7 +419,7 @@ void Edward::SetMode(Mode *m)
 	// start new mode
 	cur_mode = m;
 	msg_write("start " + cur_mode->name);
-	cur_mode->Start();
+	cur_mode->OnStart();
 	SetMenu(cur_mode->menu);
 	UpdateMenu();
 
@@ -436,7 +436,7 @@ void Edward::SetCreationMode(ModeCreation *m)
 	// close current creation_mode
 	if (creation_mode){
 		msg_write("end (creation) " + creation_mode->name);
-		creation_mode->End();
+		creation_mode->OnEnd();
 		delete(creation_mode);
 	}
 
@@ -444,7 +444,7 @@ void Edward::SetCreationMode(ModeCreation *m)
 	creation_mode = m;
 	if (creation_mode){
 		msg_write("start (creation) " + creation_mode->name);
-		creation_mode->Start();
+		creation_mode->OnStart();
 	}
 
 	ForceRedraw();
@@ -495,7 +495,7 @@ void Edward::OnDraw()
 	if (cur_mode){
 		if (cur_mode->multi_view)
 			cur_mode->multi_view->Draw();
-		cur_mode->Draw();
+		cur_mode->OnDrawRecursive();
 	}else{
 		NixResetToColor(Black);
 		NixDrawStr(100, 100, "no mode...");
@@ -672,7 +672,7 @@ void Edward::UpdateMenu()
 {
 	if (!cur_mode)
 		return;
-	cur_mode->OnPreUpdateMenu();
+	cur_mode->OnUpdateMenuRecursive();
 
 	Data *d = cur_mode->GetData();
 	if (d){

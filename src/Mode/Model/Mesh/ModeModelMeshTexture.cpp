@@ -31,7 +31,7 @@ ModeModelMeshTexture::~ModeModelMeshTexture()
 
 
 
-void ModeModelMeshTexture::Start()
+void ModeModelMeshTexture::OnStart()
 {
 	skin_vertex.clear();
 	foreach(data->Surface, surf)
@@ -53,7 +53,7 @@ void ModeModelMeshTexture::Start()
 
 
 
-void ModeModelMeshTexture::End()
+void ModeModelMeshTexture::OnEnd()
 {
 	skin_vertex.clear();
 }
@@ -61,7 +61,7 @@ void ModeModelMeshTexture::End()
 #define cur_tex			data->Material[data->CurrentMaterial].Texture[data->CurrentTextureLevel]
 
 
-void ModeModelMeshTexture::DrawWin(int win, irect dest)
+void ModeModelMeshTexture::OnDrawWin(int win, irect dest)
 {
 	rect s,r;
 	color c;
@@ -119,7 +119,7 @@ void ModeModelMeshTexture::DrawWin(int win, irect dest)
 
 
 
-void ModeModelMeshTexture::Draw()
+void ModeModelMeshTexture::OnDraw()
 {
 	if (data->GetNumMarkedVertices() > 0){
 		NixDrawStr(20, 100, format(_("vert: %d"), data->GetNumMarkedVertices()));

@@ -59,7 +59,7 @@ ModeModelMesh::~ModeModelMesh()
 {
 }
 
-void ModeModelMesh::Start()
+void ModeModelMesh::OnStart()
 {
 	string dir = HuiAppDirectoryStatic + SysFileName("Data/icons/toolbar/");
 	ed->ToolbarSetCurrent(HuiToolbarLeft);
@@ -83,7 +83,7 @@ void ModeModelMesh::Start()
 	//ed->SetMode(mode_model_mesh_skin);
 }
 
-void ModeModelMesh::End()
+void ModeModelMesh::OnEnd()
 {
 }
 
@@ -164,6 +164,12 @@ void ModeModelMesh::OnCommand(const string & id)
 		data->Execute(new ActionModelSetNormalModeAll(NormalModeHard));
 	if (id == "normal_all_angular")
 		data->Execute(new ActionModelSetNormalModeAll(NormalModeAngular));
+}
+
+
+
+void ModeModelMesh::OnDraw()
+{
 }
 
 

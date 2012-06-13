@@ -19,8 +19,8 @@ public:
 	Mode();
 	virtual ~Mode();
 
-	virtual void Start() = 0;
-	virtual void End() = 0;
+	virtual void OnStart() = 0;
+	virtual void OnEnd() = 0;
 
 	// events to be handled by derived modes
 	virtual void OnMouseMove(){};
@@ -35,25 +35,29 @@ public:
 	virtual void OnCommand(const string &id){};
 	virtual void OnUpdateMenu(){};
 
+	virtual void OnDraw(){};
+	virtual void OnDrawWin(int win, irect dest){};
+
 	// send events to multi_view first, then call derived event handlers
 	//   (to be called by edward)
-	void OnPreMouseMove();
-	void OnPreLeftButtonDown();
-	void OnPreLeftButtonUp();
-	void OnPreMiddleButtonDown();
-	void OnPreMiddleButtonUp();
-	void OnPreRightButtonDown();
-	void OnPreRightButtonUp();
-	void OnPreKeyDown();
-	void OnPreKeyUp();
-	void OnPreCommand(const string &id);
-	void OnPreUpdateMenu();
+	void OnMouseMoveRecursive();
+	void OnLeftButtonDownRecursive();
+	void OnLeftButtonUpRecursive();
+	void OnMiddleButtonDownRecursive();
+	void OnMiddleButtonUpRecursive();
+	void OnRightButtonDownRecursive();
+	void OnRightButtonUpRecursive();
+	void OnKeyDownRecursive();
+	void OnKeyUpRecursive();
+	void OnCommandRecursive(const string &id);
+	void OnUpdateMenuRecursive();
 
-	virtual void Draw(){};
-	virtual void DrawWin(int win, irect dest){};
+	void OnDrawRecursive();
+	//void OnDrawWinRecursive(int win, irect dest);
 
 	Mode *GetRootMode();
 	virtual Data *GetData(){	return NULL;	}
+
 
 	virtual void New();
 	virtual bool Open();

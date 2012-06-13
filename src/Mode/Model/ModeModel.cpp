@@ -42,7 +42,7 @@ ModeModel::~ModeModel()
 
 
 
-void ModeModel::Start()
+void ModeModel::OnStart()
 {
 	string dir = HuiAppDirectoryStatic + SysFileName("Data/icons/toolbar/");
 	ed->ToolbarSetCurrent(HuiToolbarTop);
@@ -81,7 +81,7 @@ void ModeModel::Start()
 
 
 
-void ModeModel::End()
+void ModeModel::OnEnd()
 {
 }
 

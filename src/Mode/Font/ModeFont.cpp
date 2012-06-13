@@ -39,13 +39,13 @@ void ModeFont::OnLeftButtonDown()
 
 
 
-void ModeFont::End()
+void ModeFont::OnEnd()
 {
 }
 
 
 
-void ModeFont::Draw()
+void ModeFont::OnDraw()
 {
 }
 
@@ -108,7 +108,7 @@ void ModeFont::New()
 
 
 
-void ModeFont::Start()
+void ModeFont::OnStart()
 {
 	ed->ToolbarSetCurrent(HuiToolbarTop);
 	ed->ToolbarReset();
@@ -144,7 +144,7 @@ void ModeFont::OnRightButtonDown()
 
 
 
-void ModeFont::DrawWin(int win, irect dest)
+void ModeFont::OnDrawWin(int win, irect dest)
 {
 }
 

@@ -608,7 +608,7 @@ void NixRenderToCubeMap(int cube_map,vector &pos,callback_function *render_func,
 			SetCubeMatrix(pos,vector(0,pi,0));
 			render_func();
 		}
-		DXRenderToEnvMap[cube_map]->End(0);
+		DXRenderToEnvMap[cube_map]->OnEnd(0);
 
 		/*lpDevice->BeginScene();
 		SetCubeMatrix(pos,vector(0,pi,0));

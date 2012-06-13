@@ -31,14 +31,14 @@ ModeModelMeshSurface::~ModeModelMeshSurface()
 
 
 
-void ModeModelMeshSurface::DrawWin(int win, irect dest)
+void ModeModelMeshSurface::OnDrawWin(int win, irect dest)
 {
-	mode_model_mesh_triangle->DrawWin(win, dest);
+	mode_model_mesh_triangle->OnDrawWin(win, dest);
 }
 
 
 
-void ModeModelMeshSurface::End()
+void ModeModelMeshSurface::OnEnd()
 {
 }
 
@@ -89,14 +89,14 @@ void ModeModelMeshSurface::OnUpdate(Observable *o)
 
 
 
-void ModeModelMeshSurface::Start()
+void ModeModelMeshSurface::OnStart()
 {
 	OnUpdate(data);
 }
 
 
 
-void ModeModelMeshSurface::Draw()
+void ModeModelMeshSurface::OnDraw()
 {
 	mode_model_mesh_triangle->FillSelectionBuffers();
 

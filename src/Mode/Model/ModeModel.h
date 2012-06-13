@@ -22,8 +22,8 @@ public:
 	ModeModel();
 	virtual ~ModeModel();
 
-	void Start();
-	void End();
+	void OnStart();
+	void OnEnd();
 
 	void OnCommand(const string &id);
 	void OnUpdate(Observable *o);

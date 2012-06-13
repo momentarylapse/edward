@@ -20,15 +20,15 @@ public:
 	ModeModelMeshTriangle(Mode *_parent, DataModel *_data);
 	virtual ~ModeModelMeshTriangle();
 
-	void Start();
-	void End();
+	void OnStart();
+	void OnEnd();
 
 	void OnCommand(const string &id);
 	void OnUpdateMenu();
 	void OnUpdate(Observable *o);
 
-	void Draw();
-	void DrawWin(int win, irect dest);
+	void OnDraw();
+	void OnDrawWin(int win, irect dest);
 	void DrawTrias();
 
 	void FillSelectionBuffers();

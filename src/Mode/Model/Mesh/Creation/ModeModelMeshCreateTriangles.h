@@ -17,8 +17,8 @@ public:
 	ModeModelMeshCreateTriangles(Mode *_parent, DataModel *_data);
 	virtual ~ModeModelMeshCreateTriangles();
 
-	void Start();
-	void End();
+	void OnStart();
+	void OnEnd();
 
 	void OnLeftButtonDown();
 	void OnKeyDown();

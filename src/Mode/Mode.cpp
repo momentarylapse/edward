@@ -16,101 +16,108 @@ Mode::~Mode()
 {
 }
 
-void Mode::OnPreCommand(const string & id)
+void Mode::OnCommandRecursive(const string & id)
 {
 	if (multi_view)
 		multi_view->OnCommand(id);
 	if (parent)
-		parent->OnPreCommand(id);
+		parent->OnCommandRecursive(id);
 	OnCommand(id);
 }
 
-void Mode::OnPreLeftButtonUp()
+void Mode::OnLeftButtonUpRecursive()
 {
 	if (multi_view)
 		multi_view->OnLeftButtonUp();
 	if (parent)
-		parent->OnPreLeftButtonUp();
+		parent->OnLeftButtonUpRecursive();
 	OnLeftButtonUp();
 }
 
-void Mode::OnPreMiddleButtonUp()
+void Mode::OnMiddleButtonUpRecursive()
 {
 	if (multi_view)
 		multi_view->OnMiddleButtonUp();
 	if (parent)
-		parent->OnPreMiddleButtonUp();
+		parent->OnMiddleButtonUpRecursive();
 	OnMiddleButtonUp();
 }
 
-void Mode::OnPreKeyDown()
+void Mode::OnKeyDownRecursive()
 {
 	if (multi_view)
 		multi_view->OnKeyDown();
 	if (parent)
-		parent->OnPreKeyDown();
+		parent->OnKeyDownRecursive();
 	OnKeyDown();
 }
 
-void Mode::OnPreRightButtonUp()
+void Mode::OnRightButtonUpRecursive()
 {
 	if (multi_view)
 		multi_view->OnRightButtonUp();
 	if (parent)
-		parent->OnPreRightButtonUp();
+		parent->OnRightButtonUpRecursive();
 	OnRightButtonUp();
 }
 
-void Mode::OnPreKeyUp()
+void Mode::OnKeyUpRecursive()
 {
 	if (multi_view)
 		multi_view->OnKeyUp();
 	if (parent)
-		parent->OnPreKeyUp();
+		parent->OnKeyUpRecursive();
 	OnKeyUp();
 }
 
-void Mode::OnPreMouseMove()
+void Mode::OnMouseMoveRecursive()
 {
 	if (multi_view)
 		multi_view->OnMouseMove();
 	if (parent)
-		parent->OnPreMouseMove();
+		parent->OnMouseMoveRecursive();
 	OnMouseMove();
 }
 
-void Mode::OnPreLeftButtonDown()
+void Mode::OnLeftButtonDownRecursive()
 {
 	if (multi_view)
 		multi_view->OnLeftButtonDown();
 	if (parent)
-		parent->OnPreLeftButtonDown();
+		parent->OnLeftButtonDownRecursive();
 	OnLeftButtonDown();
 }
 
-void Mode::OnPreMiddleButtonDown()
+void Mode::OnMiddleButtonDownRecursive()
 {
 	if (multi_view)
 		multi_view->OnMiddleButtonDown();
 	if (parent)
-		parent->OnPreMiddleButtonDown();
+		parent->OnMiddleButtonDownRecursive();
 	OnMiddleButtonDown();
 }
 
-void Mode::OnPreRightButtonDown()
+void Mode::OnRightButtonDownRecursive()
 {
 	if (multi_view)
 		multi_view->OnRightButtonDown();
 	if (parent)
-		parent->OnPreRightButtonDown();
+		parent->OnRightButtonDownRecursive();
 	OnRightButtonDown();
 }
 
-void Mode::OnPreUpdateMenu()
+void Mode::OnUpdateMenuRecursive()
 {
 	if (parent)
-		parent->OnPreUpdateMenu();
+		parent->OnUpdateMenuRecursive();
 	OnUpdateMenu();
+}
+
+void Mode::OnDrawRecursive()
+{
+	if (parent)
+		parent->OnDrawRecursive();
+	OnDraw();
 }
 
 

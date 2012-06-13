@@ -17,8 +17,8 @@ public:
 	ModeCreation();
 	virtual ~ModeCreation();
 
-	virtual void Start();
-	virtual void End();
+	virtual void OnStart();
+	virtual void OnEnd();
 
 	virtual void OnMouseMove();
 	virtual void OnLeftButtonDown();
@@ -41,8 +41,8 @@ public:
 private:
 	// dummy
 	void OnUpdate(Observable *o);
-	void Draw();
-	void DrawWin(int win, irect dest);
+	void OnDraw();
+	void OnDrawWin(int win, irect dest);
 };
 
 #endif /* MODECREATION_H_ */

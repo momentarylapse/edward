@@ -54,7 +54,7 @@ bool ModeMaterial::Save()
 
 
 
-void ModeMaterial::Draw()
+void ModeMaterial::OnDraw()
 {
 }
 
@@ -130,7 +130,7 @@ void CreateTorus(int buffer, const vector &pos, const vector dir, float radius1,
 }
 
 
-void ModeMaterial::DrawWin(int win, irect dest)
+void ModeMaterial::OnDrawWin(int win, irect dest)
 {
 	NixSetAmbientLight(color(1,0.2f,0.2f,0.2f));
 	data->ApplyForRendering();
@@ -222,7 +222,7 @@ bool ModeMaterial::Open()
 
 
 
-void ModeMaterial::End()
+void ModeMaterial::OnEnd()
 {
 	if (AppearanceDialog)
 		delete(AppearanceDialog);
@@ -240,7 +240,7 @@ bool ModeMaterial::SaveAs()
 
 
 
-void ModeMaterial::Start()
+void ModeMaterial::OnStart()
 {
 	string dir = HuiAppDirectoryStatic + SysFileName("Data/icons/toolbar/");
 	ed->ToolbarSetCurrent(HuiToolbarTop);

@@ -332,7 +332,7 @@ void ModeWorld::OnLeftButtonUp()
 
 
 
-void ModeWorld::Draw()
+void ModeWorld::OnDraw()
 {
 	view_cur->pos = multi_view->pos;
 
@@ -352,7 +352,7 @@ void ModeWorld::OnKeyUp()
 
 
 
-void ModeWorld::End()
+void ModeWorld::OnEnd()
 {
 }
 
@@ -416,7 +416,7 @@ void DrawTerrainColored(CTerrain *t, const color &c, float alpha)
 	NixEnableLighting(mode_world->multi_view->light_enabled);
 }
 
-void ModeWorld::DrawWin(int win, irect dest)
+void ModeWorld::OnDrawWin(int win, irect dest)
 {
 	msg_db_r("World::DrawWin",2);
 
@@ -520,7 +520,7 @@ void ModeWorld::DrawWin(int win, irect dest)
 
 
 
-void ModeWorld::Start()
+void ModeWorld::OnStart()
 {
 	string dir = HuiAppDirectoryStatic + SysFileName("Data/icons/toolbar/");
 	ed->ToolbarSetCurrent(HuiToolbarTop);

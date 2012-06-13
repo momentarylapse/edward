@@ -25,7 +25,7 @@ ModeModelMeshCreateTriangles::~ModeModelMeshCreateTriangles()
 }
 
 
-void ModeModelMeshCreateTriangles::Start()
+void ModeModelMeshCreateTriangles::OnStart()
 {
 	foreach(data->Vertex, v)
 		v.is_special = false;
@@ -33,7 +33,7 @@ void ModeModelMeshCreateTriangles::Start()
 
 
 
-void ModeModelMeshCreateTriangles::End()
+void ModeModelMeshCreateTriangles::OnEnd()
 {
 	foreach(data->Vertex, v)
 		v.is_special = false;

@@ -188,7 +188,7 @@ void SetMaterialCreation()
 	NixSetMaterial(Black,color(0.3f,0.3f,1,0.3f),Black,0,color(1,0.1f,0.4f,0.1f));
 }
 
-void ModeModelMeshTriangle::DrawWin(int win, irect dest)
+void ModeModelMeshTriangle::OnDrawWin(int win, irect dest)
 {
 	msg_db_r("skin.DrawWin",4);
 
@@ -218,13 +218,13 @@ void ModeModelMeshTriangle::DrawWin(int win, irect dest)
 
 
 
-void ModeModelMeshTriangle::End()
+void ModeModelMeshTriangle::OnEnd()
 {
 }
 
 
 
-void ModeModelMeshTriangle::Start()
+void ModeModelMeshTriangle::OnStart()
 {
 	OnUpdate(data);
 }
@@ -325,7 +325,7 @@ void ModeModelMeshTriangle::OnUpdate(Observable *o)
 
 
 
-void ModeModelMeshTriangle::Draw()
+void ModeModelMeshTriangle::OnDraw()
 {
 	FillSelectionBuffers();
 

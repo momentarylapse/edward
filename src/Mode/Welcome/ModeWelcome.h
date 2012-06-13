@@ -15,15 +15,15 @@ public:
 	ModeWelcome();
 	virtual ~ModeWelcome();
 
-	void Start();
-	void End();
+	void OnStart();
+	void OnEnd();
 
 	void OnMouseMove();
 	void OnLeftButtonUp();
 	void OnCommand(const string &id);
 	void OnUpdate(Observable *o);
 
-	void Draw();
+	void OnDraw();
 
 	void DrawIcon(int x, int y, int index, int pic_index, const string &name);
 

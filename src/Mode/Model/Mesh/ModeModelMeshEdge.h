@@ -20,8 +20,8 @@ public:
 	ModeModelMeshEdge(Mode *_parent, DataModel *_data);
 	virtual ~ModeModelMeshEdge();
 
-	void Start();
-	void End();
+	void OnStart();
+	void OnEnd();
 
 	void OnMouseMove();
 	void OnLeftButtonDown();
@@ -36,8 +36,8 @@ public:
 	void OnUpdate(Observable *o);
 	void OnUpdateMenu();
 
-	void Draw();
-	void DrawWin(int win, irect dest);
+	void OnDraw();
+	void OnDrawWin(int win, irect dest);
 
 	DataModel *data;
 	Data *GetData(){	return data;	}

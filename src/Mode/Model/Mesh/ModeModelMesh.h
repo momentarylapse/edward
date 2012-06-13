@@ -21,12 +21,14 @@ public:
 	ModeModelMesh(Mode *_parent, DataModel *_data);
 	virtual ~ModeModelMesh();
 
-	void Start();
-	void End();
+	void OnStart();
+	void OnEnd();
 
 	void OnCommand(const string &id);
 	void OnUpdate(Observable *o);
 	void OnUpdateMenu();
+
+	void OnDraw();
 
 	void OptimizeView();
 

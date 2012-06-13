@@ -29,25 +29,25 @@ ModeModelMeshVertex::~ModeModelMeshVertex()
 {
 }
 
-void ModeModelMeshVertex::Start()
+void ModeModelMeshVertex::OnStart()
 {
 	OnUpdate(data);
 }
 
-void ModeModelMeshVertex::End()
+void ModeModelMeshVertex::OnEnd()
 {
 }
 
 
 
-void ModeModelMeshVertex::DrawWin(int win, irect dest)
+void ModeModelMeshVertex::OnDrawWin(int win, irect dest)
 {
-	mode_model_mesh_triangle->DrawWin(win, dest);
+	mode_model_mesh_triangle->OnDrawWin(win, dest);
 }
 
 
 
-void ModeModelMeshVertex::Draw()
+void ModeModelMeshVertex::OnDraw()
 {
 	if (data->GetNumMarkedVertices() > 0){
 		NixDrawStr(20, 100, format(_("vert: %d"), data->GetNumMarkedVertices()));

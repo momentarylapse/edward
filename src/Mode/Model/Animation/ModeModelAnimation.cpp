@@ -27,7 +27,7 @@ ModeModelAnimation::~ModeModelAnimation()
 {
 }
 
-void ModeModelAnimation::Draw()
+void ModeModelAnimation::OnDraw()
 {
 }
 
@@ -39,7 +39,7 @@ void ModeModelAnimation::OnCommand(const string & id)
 
 
 
-void ModeModelAnimation::Start()
+void ModeModelAnimation::OnStart()
 {
 }
 
@@ -50,7 +50,7 @@ void ModeModelAnimation::OnUpdateMenu()
 
 
 
-void ModeModelAnimation::End()
+void ModeModelAnimation::OnEnd()
 {
 }
 
@@ -62,7 +62,7 @@ void ModeModelAnimation::OnUpdate(Observable *o)
 
 
 
-void ModeModelAnimation::DrawWin(int win, irect dest)
+void ModeModelAnimation::OnDrawWin(int win, irect dest)
 {
 }
 

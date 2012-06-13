@@ -29,7 +29,7 @@ ModeWelcome::~ModeWelcome()
 {
 }
 
-void ModeWelcome::Start()
+void ModeWelcome::OnStart()
 {
 	ed->ToolbarSetCurrent(HuiToolbarTop);
 	ed->ToolbarReset();
@@ -41,7 +41,7 @@ void ModeWelcome::Start()
 	mouse_over = mouse_over_cmd = -1;
 }
 
-void ModeWelcome::End()
+void ModeWelcome::OnEnd()
 {
 }
 
@@ -150,7 +150,7 @@ void ModeWelcome::DrawIcon(int x, int y, int index, int pic_index, const string 
 	msg_db_l(2);
 }
 
-void ModeWelcome::Draw()
+void ModeWelcome::OnDraw()
 {
 	msg_db_r("Welcome.Draw", 1);
 	NixDraw2D(-1, Black, r01, NixTargetRect, 0.999999f);

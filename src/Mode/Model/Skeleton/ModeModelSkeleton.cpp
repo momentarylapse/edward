@@ -45,7 +45,7 @@ void ModeModelSkeleton::OnCommand(const string & id)
 
 
 
-void ModeModelSkeleton::Draw()
+void ModeModelSkeleton::OnDraw()
 {
 }
 
@@ -57,7 +57,7 @@ void ModeModelSkeleton::OnUpdateMenu()
 
 
 
-void ModeModelSkeleton::Start()
+void ModeModelSkeleton::OnStart()
 {
 	// relative to absolute pos
 	foreach(data->Bone, b)
@@ -71,7 +71,7 @@ void ModeModelSkeleton::Start()
 
 
 
-void ModeModelSkeleton::End()
+void ModeModelSkeleton::OnEnd()
 {
 }
 
@@ -137,7 +137,7 @@ void DrawCoordBasis(const ModeModelSkeletonBone *b)
 	}
 }
 
-void ModeModelSkeleton::DrawWin(int win, irect dest)
+void ModeModelSkeleton::OnDrawWin(int win, irect dest)
 {
 	mode_model_mesh_triangle->DrawTrias();
 
@@ -149,7 +149,7 @@ void ModeModelSkeleton::DrawWin(int win, irect dest)
 				Bone[i].model->Matrix = PointMatrix[i];
 			else
 				MatrixTranslation(Bone[i].model->Matrix, SkeletonGetPointPos(i));
-			Bone[i].model->Draw(0,false,false);
+			Bone[i].model->OnDraw(0,false,false);
 		}
 #endif
 

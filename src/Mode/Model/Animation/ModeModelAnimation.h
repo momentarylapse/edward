@@ -20,15 +20,15 @@ public:
 	ModeModelAnimation(Mode *_parent, DataModel *_data);
 	virtual ~ModeModelAnimation();
 
-	void Start();
-	void End();
+	void OnStart();
+	void OnEnd();
 
 	void OnCommand(const string &id);
 	void OnUpdate(Observable *o);
 	void OnUpdateMenu();
 
-	void Draw();
-	void DrawWin(int win, irect dest);
+	void OnDraw();
+	void OnDrawWin(int win, irect dest);
 
 	DataModel *data;
 	Data *GetData(){	return data;	}

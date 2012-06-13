@@ -21,13 +21,13 @@ public:
 	ModeModelMeshTexture(Mode *_parent, DataModel *_data);
 	virtual ~ModeModelMeshTexture();
 
-	void Start();
-	void End();
+	void OnStart();
+	void OnEnd();
 
 	void OnUpdate(Observable *o);
 
-	void Draw();
-	void DrawWin(int win, irect dest);
+	void OnDraw();
+	void OnDrawWin(int win, irect dest);
 
 	// for MultiView actions
 	void GetSelectedSkinVertices(Array<int> &surf, Array<int> &index);

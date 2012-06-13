@@ -71,7 +71,7 @@ void ModeModelMeshEdge::OnUpdateMenu()
 
 
 
-void ModeModelMeshEdge::Draw()
+void ModeModelMeshEdge::OnDraw()
 {
 	if (data->GetNumMarkedVertices() > 0){
 		NixDrawStr(20, 100, format(_("vert: %d"), data->GetNumMarkedVertices()));
@@ -88,7 +88,7 @@ void ModeModelMeshEdge::OnMouseMove()
 
 
 
-void ModeModelMeshEdge::Start()
+void ModeModelMeshEdge::OnStart()
 {
 }
 
@@ -112,13 +112,13 @@ void ModeModelMeshEdge::OnLeftButtonDown()
 
 
 
-void ModeModelMeshEdge::DrawWin(int win, irect dest)
+void ModeModelMeshEdge::OnDrawWin(int win, irect dest)
 {
 }
 
 
 
-void ModeModelMeshEdge::End()
+void ModeModelMeshEdge::OnEnd()
 {
 }
 
