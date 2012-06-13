@@ -336,8 +336,12 @@ void ModeWorld::Draw()
 {
 	view_cur->pos = multi_view->pos;
 
-	ed->DrawStr(10, 100, format("obj: %d", data->GetSelectedObjects()));
-	ed->DrawStr(10, 120, format("ter: %d", data->GetSelectedTerrains()));
+	int num_ob = data->GetSelectedObjects();
+	int num_te = data->GetSelectedTerrains();
+	if (num_ob + num_te > 0){
+		ed->DrawStr(10, 100, format("obj: %d", num_ob));
+		ed->DrawStr(10, 120, format("ter: %d", num_te));
+	}
 }
 
 
