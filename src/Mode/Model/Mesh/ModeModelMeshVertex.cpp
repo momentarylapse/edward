@@ -49,11 +49,6 @@ void ModeModelMeshVertex::OnDrawWin(int win, irect dest)
 
 void ModeModelMeshVertex::OnDraw()
 {
-	if (data->GetNumMarkedVertices() > 0){
-		NixDrawStr(20, 100, format(_("vert: %d"), data->GetNumMarkedVertices()));
-		NixDrawStr(20, 120, format(_("tria: %d"), data->GetNumMarkedTriangles()));
-		NixDrawStr(20, 140, format(_("surf: %d"), data->GetNumMarkedSurfaces()));
-	}
 }
 
 void ModeModelMeshVertex::OnUpdate(Observable *o)

@@ -170,6 +170,11 @@ void ModeModelMesh::OnCommand(const string & id)
 
 void ModeModelMesh::OnDraw()
 {
+	if (data->GetNumMarkedVertices() > 0){
+		ed->DrawStr(20, 100, format(_("vert: %d"), data->GetNumMarkedVertices()));
+		ed->DrawStr(20, 120, format(_("tria: %d"), data->GetNumMarkedTriangles()));
+		ed->DrawStr(20, 140, format(_("surf: %d"), data->GetNumMarkedSurfaces()));
+	}
 }
 
 
