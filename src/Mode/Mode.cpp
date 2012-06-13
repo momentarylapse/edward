@@ -10,6 +10,8 @@
 Mode::Mode()
 {
 	menu = NULL;
+	parent = NULL;
+	multi_view = NULL;
 }
 
 Mode::~Mode()

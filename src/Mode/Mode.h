@@ -40,20 +40,20 @@ public:
 
 	// send events to multi_view first, then call derived event handlers
 	//   (to be called by edward)
-	void OnMouseMoveRecursive();
-	void OnLeftButtonDownRecursive();
-	void OnLeftButtonUpRecursive();
-	void OnMiddleButtonDownRecursive();
-	void OnMiddleButtonUpRecursive();
-	void OnRightButtonDownRecursive();
-	void OnRightButtonUpRecursive();
-	void OnKeyDownRecursive();
-	void OnKeyUpRecursive();
-	void OnCommandRecursive(const string &id);
-	void OnUpdateMenuRecursive();
+	virtual void OnMouseMoveRecursive();
+	virtual void OnLeftButtonDownRecursive();
+	virtual void OnLeftButtonUpRecursive();
+	virtual void OnMiddleButtonDownRecursive();
+	virtual void OnMiddleButtonUpRecursive();
+	virtual void OnRightButtonDownRecursive();
+	virtual void OnRightButtonUpRecursive();
+	virtual void OnKeyDownRecursive();
+	virtual void OnKeyUpRecursive();
+	virtual void OnCommandRecursive(const string &id);
+	virtual void OnUpdateMenuRecursive();
 
-	void OnDrawRecursive();
-	//void OnDrawWinRecursive(int win, irect dest);
+	virtual void OnDrawRecursive();
+	//virtual void OnDrawWinRecursive(int win, irect dest);
 
 	Mode *GetRootMode();
 	virtual Data *GetData(){	return NULL;	}
