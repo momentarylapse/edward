@@ -134,6 +134,8 @@ public:
 		Array<string> MusicFile;
 
 		void Reset();
+		void DrawBackground();
+		void ApplyToDraw();
 	};
 	MetaData meta_data;
 

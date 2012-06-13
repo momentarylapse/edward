@@ -371,23 +371,57 @@ void DrawSelectionObject(CModel *o, float alpha, const color &c)
 	}
 }
 
+void DrawTerrainColored(CTerrain *t, const color &c, float alpha)
+{
+	NixSetWire(false);
+	NixEnableLighting(true);
+	NixSetAlpha(AlphaMaterial);
+
+	// save terrain data
+	color am = t->material->ambient;
+	color di = t->material->diffuse;
+	color sp = t->material->specular;
+	color em = t->material->emission;
+	int shader = t->material->shader;
+	int texture[TERRAIN_MAX_TEXTURES];
+	for (int i=0;i<t->num_textures;i++)
+		texture[i] = t->texture[i];
+
+	// alter data
+	t->material->ambient = Black;
+	t->material->diffuse = color(alpha, 0, 0, 0);
+	t->material->specular = Black;
+	t->material->emission = c;
+	t->material->shader = -1;
+	for (int i=0;i<t->num_textures;i++)
+		t->texture[i] = -1;
+
+	t->Draw();
+
+	// restore data
+	t->material->shader = shader;
+	for (int i=0;i<t->num_textures;i++)
+		t->texture[i] = texture[i];
+	t->material->ambient = am;
+	t->material->diffuse = di;
+	t->material->specular = sp;
+	t->material->emission = em;
+
+	NixSetAlpha(AlphaNone);
+	NixSetWire(mode_world->multi_view->wire_mode);
+	NixEnableLighting(mode_world->multi_view->light_enabled);
+}
 
 void ModeWorld::DrawWin(int win, irect dest)
 {
 	msg_db_r("World::DrawWin",2);
-	NixEnableFog(false);
+
 	if (ShowEffects){
-		NixSetZ(false,false);
 		if (multi_view->view[win].type == ViewPerspective)
-			NixDraw2D(-1,data->meta_data.BackGroundColor,r01,NixTargetRect,0);
-		NixSetZ(true,true);
-		NixSetFog(data->meta_data.FogMode,data->meta_data.FogStart,data->meta_data.FogEnd,data->meta_data.FogDensity,data->meta_data.FogColor);
-		NixEnableFog(data->meta_data.FogEnabled);
-		NixSetLightDirectional(multi_view->light,VecAng2Dir(data->meta_data.SunAng),data->meta_data.SunAmbient,data->meta_data.SunDiffuse, data->meta_data.SunSpecular);
-		NixEnableLight(multi_view->light, data->meta_data.SunEnabled);
-		NixSetAmbientLight(data->meta_data.Ambient);
+			data->meta_data.DrawBackground();
+		data->meta_data.ApplyToDraw();
 	}
-	NixSetWire(multi_view->wire_mode);
+
 // terrain
 	if (ShowTerrains)
 		foreachi(data->Terrain, t, i){
@@ -395,9 +429,7 @@ void ModeWorld::DrawWin(int win, irect dest)
 				continue;
 			/*if (t.ViewStage < ViewStage)
 				continue;*/
-			NixSetWire(multi_view->wire_mode);
-			NixEnableLighting(multi_view->light_enabled);
-			NixSetMaterial(White,White,Black,0,Black);
+
 			/*if (TerrainShowTextureLevel<0){
 				NixSetShader(t.material->shader);
 				NixDraw3DM(t.Texture, t.VertexBuffer, m_id);
@@ -410,24 +442,14 @@ void ModeWorld::DrawWin(int win, irect dest)
 			}*/
 			t.terrain->Draw();
 
-			NixSetWire(false);
-			NixEnableLighting(true);
-			if (t.is_selected){
-				NixSetAlpha(AlphaMaterial);
-				NixSetMaterial(Black,color(TSelectionAlpha,0,0,0),Black,0,Red);
-				NixDraw3D(-1,t.VertexBufferSingle,m_id);
-			}
-			if ((multi_view->MouseOverType==MVDWorldTerrain)&&(multi_view->MouseOver==i)){
-				NixSetAlpha(AlphaMaterial);
-				NixSetMaterial(Black,color(TMouseOverAlpha,0,0,0),Black,0,White);
-				NixDraw3D(-1,t.VertexBufferSingle,m_id);
-			}
-			NixSetAlpha(AlphaNone);
+			if (t.is_selected)
+				DrawTerrainColored(t.terrain, Red, TSelectionAlpha);
+			if ((multi_view->MouseOverType==MVDWorldTerrain)&&(multi_view->MouseOver==i))
+				DrawTerrainColored(t.terrain, White, TMouseOverAlpha);
 		}
 	NixSetWire(multi_view->wire_mode);
 	NixEnableLighting(multi_view->light_enabled);
 
-msg_db_m("c",2);
 // objects (models)
 	if (ShowObjects){
 		//GodDraw();
@@ -485,7 +507,10 @@ msg_db_m("c",2);
 		if (CamPoint[i].Type!=CPKCamFlight)
 			v_old=v0;
 	}*/
+
 	NixSetZ(true,true);
+	NixEnableFog(false);
+
 	msg_db_l(2);
 }
 

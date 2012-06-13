@@ -248,6 +248,25 @@ void DataWorld::MetaData::Reset()
 }
 
 
+void DataWorld::MetaData::ApplyToDraw()
+{
+	NixSetFog(FogMode, FogStart, FogEnd, FogDensity, FogColor);
+	NixEnableFog(FogEnabled);
+	NixSetLightDirectional(ed->multi_view_3d->light, VecAng2Dir(SunAng), SunAmbient, SunDiffuse, SunSpecular);
+	NixEnableLight(ed->multi_view_3d->light, SunEnabled);
+	NixSetAmbientLight(Ambient);
+}
+
+void DataWorld::MetaData::DrawBackground()
+{
+	NixSetZ(false,false);
+	NixSetWire(false);
+	NixDraw2D(-1, BackGroundColor, r01, NixTargetRect, 0);
+	NixSetWire(ed->multi_view_3d->wire_mode);
+	NixSetZ(true,true);
+}
+
+
 void DataWorld::Reset()
 {
 	filename = "";
