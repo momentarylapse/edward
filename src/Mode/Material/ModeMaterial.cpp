@@ -37,7 +37,7 @@ ModeMaterial::~ModeMaterial()
 void ModeMaterial::New()
 {
 	data->Reset();
-	multi_view->Reset();
+	multi_view->ResetView();
 	multi_view->radius = 500;
 	ed->SetMode(mode_material);
 }
@@ -213,7 +213,7 @@ bool ModeMaterial::Open()
 	if (!data->Load(ed->DialogFileComplete))
 		return false;
 
-	ed->multi_view_3d->Reset();
+	ed->multi_view_3d->ResetView();
 	multi_view->radius = 500;
 	ed->SetMode(mode_material);
 	return true;

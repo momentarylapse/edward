@@ -88,7 +88,7 @@ void ModeFont::OnCommand(const string & id)
 bool ModeFont::Open()
 {
 	data->Reset();
-	multi_view->Reset();
+	multi_view->ResetView();
 	ed->SetMode(mode_font);
 	return false;
 }
@@ -104,7 +104,7 @@ void ModeFont::OnRightButtonUp()
 void ModeFont::New()
 {
 	data->Reset();
-	multi_view->Reset();
+	multi_view->ResetView();
 	ed->SetMode(mode_font);
 }
 

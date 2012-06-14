@@ -319,7 +319,7 @@ void ModeWorld::New()
 		return;
 
 	data->Reset();
-	multi_view->Reset();
+	OptimizeView();
 	ed->SetMode(mode_world);
 }
 
@@ -580,7 +580,6 @@ bool ModeWorld::Open()
 	if (!data->Load(ed->DialogFileComplete))
 		return false;
 
-	multi_view->Reset();
 	ed->SetMode(mode_world);
 	OptimizeView();
 	return true;
@@ -671,7 +670,8 @@ void ModeWorld::OptimizeView()
 	vector min, max;
 	data->GetBoundaryBox(min, max);
 	multi_view->pos = (max + min) / 2;
-	multi_view->radius = VecLengthFuzzy(max - min) * 1.3f;
+	if (VecLengthFuzzy(max - min) > 0)
+		multi_view->radius = VecLengthFuzzy(max - min) * 1.3f;
 
 	ViewStage = 0;
 	//MVFXEnabled=false;

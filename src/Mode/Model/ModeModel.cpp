@@ -182,9 +182,8 @@ void ModeModel::New()
 	if (!ed->AllowTermination())
 		return;
 	data->Reset();
-	ed->multi_view_2d->Reset();
-	ed->multi_view_3d->Reset();
 	ed->SetMode(mode_model);
+	mode_model_mesh->OptimizeView();
 }
 
 bool ModeModel::Open()
@@ -196,8 +195,6 @@ bool ModeModel::Open()
 	if (!data->Load(ed->DialogFileComplete))
 		return false;
 
-	ed->multi_view_2d->Reset();
-	ed->multi_view_3d->Reset();
 	ed->SetMode(mode_model);
 	mode_model_mesh->OptimizeView();
 	return true;
