@@ -418,8 +418,8 @@ void Edward::SetMode(Mode *m)
 		cur_mode = cur_mode->parent;
 	}
 
-	multi_view_3d->ResetMouseAction();
-	multi_view_2d->ResetMouseAction();
+	//multi_view_3d->ResetMouseAction();
+	//multi_view_2d->ResetMouseAction();
 
 	// start new modes
 	while(cur_mode != m){
@@ -427,7 +427,6 @@ void Edward::SetMode(Mode *m)
 		msg_write("start " + cur_mode->name);
 		cur_mode->OnStart();
 	}
-
 
 	SetMenu(cur_mode->menu);
 
