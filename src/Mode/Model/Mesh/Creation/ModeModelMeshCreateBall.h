@@ -17,6 +17,9 @@ public:
 	ModeModelMeshCreateBall(Mode *_parent);
 	virtual ~ModeModelMeshCreateBall();
 
+	void OnStart();
+	void OnEnd();
+
 	void OnMouseMove();
 	void OnLeftButtonDown();
 

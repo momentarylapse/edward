@@ -21,8 +21,14 @@ ModeModelMeshCreateBall::ModeModelMeshCreateBall(Mode *_parent) :
 
 	pos_chosen = false;
 	radius = 0;
+}
 
+ModeModelMeshCreateBall::~ModeModelMeshCreateBall()
+{
+}
 
+void ModeModelMeshCreateBall::OnStart()
+{
 	// Dialog
 	dialog = HuiCreateResourceDialog("new_ball_dialog", ed);
 
@@ -37,7 +43,8 @@ ModeModelMeshCreateBall::ModeModelMeshCreateBall(Mode *_parent) :
 	ed->Activate();
 }
 
-ModeModelMeshCreateBall::~ModeModelMeshCreateBall()
+
+void ModeModelMeshCreateBall::OnEnd()
 {
 	delete(dialog);
 }

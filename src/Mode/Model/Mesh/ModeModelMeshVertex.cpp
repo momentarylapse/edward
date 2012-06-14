@@ -53,7 +53,7 @@ void ModeModelMeshVertex::OnDraw()
 
 void ModeModelMeshVertex::OnUpdate(Observable *o)
 {
-	if (this != ed->cur_mode)
+	if ((ed->cur_mode != this) && (!ed->cur_mode->IsAncestorOf(this)))
 		return;
 	if (o->GetName() == "Data"){
 		multi_view->ResetData(data);

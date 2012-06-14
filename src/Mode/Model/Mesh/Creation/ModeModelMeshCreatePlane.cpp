@@ -20,8 +20,14 @@ ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(Mode *_parent) :
 	message = _("Ebene: erster Punkt");
 	pos_chosen = false;
 	length[0] = length[1] = v0;
+}
 
+ModeModelMeshCreatePlane::~ModeModelMeshCreatePlane()
+{
+}
 
+void ModeModelMeshCreatePlane::OnStart()
+{
 	// Dialog
 	dialog = HuiCreateResourceDialog("new_plane_dialog", ed);
 	dialog->SetInt("np_num_x", HuiConfigReadInt("NewPlaneNumX", 4));
@@ -33,7 +39,8 @@ ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(Mode *_parent) :
 	ed->Activate();
 }
 
-ModeModelMeshCreatePlane::~ModeModelMeshCreatePlane()
+
+void ModeModelMeshCreatePlane::OnEnd()
 {
 	delete(dialog);
 }

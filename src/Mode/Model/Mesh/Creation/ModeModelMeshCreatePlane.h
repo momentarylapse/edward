@@ -17,6 +17,9 @@ public:
 	ModeModelMeshCreatePlane(Mode *_parent);
 	virtual ~ModeModelMeshCreatePlane();
 
+	void OnStart();
+	void OnEnd();
+
 	void OnMouseMove();
 	void OnLeftButtonDown();
 

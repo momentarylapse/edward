@@ -55,8 +55,10 @@ public:
 	virtual void OnDrawRecursive();
 	virtual void OnDrawWinRecursive(int win, irect dest);
 
-	Mode *GetRootMode();
+	Mode *GetRoot();
 	bool IsAncestorOf(Mode *m);
+	Mode *GetNextChildTo(Mode *target);
+	bool EqualRoots(Mode *m);
 	virtual Data *GetData(){	return NULL;	}
 
 

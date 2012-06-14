@@ -17,6 +17,9 @@ public:
 	ModeModelMeshCreateCylinder(Mode *_parent);
 	virtual ~ModeModelMeshCreateCylinder();
 
+	void OnStart();
+	void OnEnd();
+
 	void OnMouseMove();
 	void OnLeftButtonDown();
 	void OnKeyDown();

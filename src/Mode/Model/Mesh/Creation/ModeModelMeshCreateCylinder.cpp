@@ -18,6 +18,16 @@ ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(Mode *_parent) :
 
 	message = _("zylinder... Punkte + Shift Return");
 
+	radius = 0;
+	ready_for_scaling = false;
+}
+
+ModeModelMeshCreateCylinder::~ModeModelMeshCreateCylinder()
+{
+}
+
+void ModeModelMeshCreateCylinder::OnStart()
+{
 	dialog = HuiCreateResourceDialog("new_cylinder_dialog",ed);
 
 	dialog->SetInt("ncy_rings", HuiConfigReadInt("NewCylinderRings", 4));
@@ -29,11 +39,10 @@ ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(Mode *_parent) :
 	dialog->Event("hui:close", &HuiFuncIgnore);
 
 	ed->Activate();
-	radius = 0;
-	ready_for_scaling = false;
 }
 
-ModeModelMeshCreateCylinder::~ModeModelMeshCreateCylinder()
+
+void ModeModelMeshCreateCylinder::OnEnd()
 {
 	delete(dialog);
 }

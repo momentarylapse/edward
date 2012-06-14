@@ -388,24 +388,9 @@ bool Edward::HandleArguments(Array<string> arg)
 //  -> data loss?
 bool mode_switch_allowed(Mode *m)
 {
-	Mode *root_cur = NULL;
-	if (ed->cur_mode)
-		root_cur = ed->cur_mode->GetRootMode();
-	Mode *root_new = m->GetRootMode();
-
-	if (root_cur == root_new)
+	if (m->EqualRoots(ed->cur_mode))
 		return true;
 	return ed->AllowTermination();
-}
-
-Mode *mode_get_child_in_line(Mode *m, Mode *target)
-{
-	while(target){
-		if (m == target->parent)
-			return target;
-		target = target->parent;
-	}
-	return NULL;
 }
 
 void Edward::SetMode(Mode *m)
@@ -438,7 +423,7 @@ void Edward::SetMode(Mode *m)
 
 	// start new modes
 	while(cur_mode != m){
-		cur_mode = mode_get_child_in_line(cur_mode, m);
+		cur_mode = cur_mode->GetNextChildTo(m);
 		msg_write("start " + cur_mode->name);
 		cur_mode->OnStart();
 	}

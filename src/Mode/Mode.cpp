@@ -131,10 +131,10 @@ void Mode::OnDrawWinRecursive(int win, irect dest)
 
 
 
-Mode *Mode::GetRootMode()
+Mode *Mode::GetRoot()
 {
 	if (parent)
-		return parent->GetRootMode();
+		return parent->GetRoot();
 	return this;
 }
 
@@ -145,6 +145,25 @@ bool Mode::IsAncestorOf(Mode *m)
 	if (m->parent)
 		return IsAncestorOf(m->parent);
 	return false;
+}
+
+
+Mode *Mode::GetNextChildTo(Mode *target)
+{
+	while(target){
+		if (this == target->parent)
+			return target;
+		target = target->parent;
+	}
+	return NULL;
+}
+
+
+bool Mode::EqualRoots(Mode *m)
+{
+	if (!m)
+		return false;
+	return GetRoot() == m->GetRoot();
 }
 
 void Mode::New()
