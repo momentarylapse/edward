@@ -23,7 +23,6 @@ ActionModelAddVertex::~ActionModelAddVertex()
 
 void *ActionModelAddVertex::execute(Data *d)
 {
-	msg_write("add vertex do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	// new vertex
@@ -56,7 +55,6 @@ void *ActionModelAddVertex::execute(Data *d)
 
 void ActionModelAddVertex::undo(Data *d)
 {
-	msg_write("add vertex undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	assert(m->Vertex.back().RefCount == 0);
 	assert(m->Vertex.back().Surface < 0);

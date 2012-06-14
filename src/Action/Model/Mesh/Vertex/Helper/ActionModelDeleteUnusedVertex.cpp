@@ -23,7 +23,6 @@ ActionModelDeleteUnusedVertex::~ActionModelDeleteUnusedVertex()
 
 void ActionModelDeleteUnusedVertex::undo(Data *d)
 {
-	msg_write("__del vertex undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	// new vertex
@@ -66,7 +65,6 @@ void ActionModelDeleteUnusedVertex::undo(Data *d)
 
 void *ActionModelDeleteUnusedVertex::execute(Data *d)
 {
-	msg_write("__del vertex do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	assert(m->Vertex[vertex].RefCount == 0);
 	assert(m->Vertex[vertex].Surface < 0);

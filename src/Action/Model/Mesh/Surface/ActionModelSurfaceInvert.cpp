@@ -20,7 +20,6 @@ ActionModelSurfaceInvert::~ActionModelSurfaceInvert()
 
 void *ActionModelSurfaceInvert::execute(Data *d)
 {
-	msg_write("surf invert do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	assert((surface >= 0) && (surface < m->Surface.num));

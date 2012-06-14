@@ -29,7 +29,6 @@ ActionModelMVMoveBones::~ActionModelMVMoveBones()
 
 void *ActionModelMVMoveBones::execute(Data *d)
 {
-	msg_write("move bones do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii){
 		m->Bone[i].pos = old_data[ii] + param;
@@ -45,7 +44,6 @@ void *ActionModelMVMoveBones::execute(Data *d)
 
 void ActionModelMVMoveBones::undo(Data *d)
 {
-	msg_write("move bones undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii){
 		m->Bone[i].pos = old_data[ii];
@@ -54,13 +52,6 @@ void ActionModelMVMoveBones::undo(Data *d)
 		else
 			m->Bone[i].DeltaPos = m->Bone[i].pos;
 	}
-}
-
-
-
-void ActionModelMVMoveBones::abort(Data *d)
-{
-	undo(d);
 }
 
 

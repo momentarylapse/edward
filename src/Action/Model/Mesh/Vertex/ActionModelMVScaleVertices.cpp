@@ -29,7 +29,6 @@ ActionModelMVScaleVertices::~ActionModelMVScaleVertices()
 
 void ActionModelMVScaleVertices::undo(Data *d)
 {
-	msg_write("scale vert undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii)
 		m->Vertex[i].pos = old_data[ii];
@@ -40,7 +39,6 @@ void ActionModelMVScaleVertices::undo(Data *d)
 
 void *ActionModelMVScaleVertices::execute(Data *d)
 {
-	msg_write("scale vert do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii)
 		m->Vertex[i].pos = pos0 +
@@ -49,14 +47,6 @@ void *ActionModelMVScaleVertices::execute(Data *d)
 			(e[2] * (old_data[ii] - pos0)) * param.z * e[2];
 	m->SetNormalsDirtyByVertices(index);
 	return NULL;
-}
-
-
-
-void ActionModelMVScaleVertices::abort(Data *d)
-{
-	msg_write("scale vert abort");
-	undo(d);
 }
 
 

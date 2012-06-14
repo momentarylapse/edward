@@ -30,7 +30,6 @@ ActionModelSurfaceAddTriangle::~ActionModelSurfaceAddTriangle()
 
 void ActionModelSurfaceAddTriangle::undo(Data *d)
 {
-	msg_write("__surf add tria undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	ModeModelSurface &s = m->Surface[surface];
@@ -43,7 +42,6 @@ void ActionModelSurfaceAddTriangle::undo(Data *d)
 
 void *ActionModelSurfaceAddTriangle::execute(Data *d)
 {
-	msg_write("__surf add tria do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	ModeModelSurface &s = m->Surface[surface];

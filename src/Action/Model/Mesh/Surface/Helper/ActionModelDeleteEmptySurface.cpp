@@ -22,7 +22,6 @@ ActionModelDeleteEmptySurface::~ActionModelDeleteEmptySurface()
 
 void *ActionModelDeleteEmptySurface::execute(Data *d)
 {
-	msg_write("__del surf do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	assert(m->Surface[surface].Vertex.num + m->Surface[surface].Triangle.num == 0);
 
@@ -36,7 +35,6 @@ void *ActionModelDeleteEmptySurface::execute(Data *d)
 
 void ActionModelDeleteEmptySurface::undo(Data *d)
 {
-	msg_write("__del surf undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	ModeModelSurface *s = m->AddSurface(surface);

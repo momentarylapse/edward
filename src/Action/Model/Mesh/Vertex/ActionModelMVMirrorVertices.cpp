@@ -31,7 +31,6 @@ ActionModelMVMirrorVertices::~ActionModelMVMirrorVertices()
 
 void *ActionModelMVMirrorVertices::execute(Data *d)
 {
-	msg_write("mirror vert do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii)
 		m->Vertex[i].pos = old_data[ii] - 2 * param * ((old_data[ii] - pos0) * param);
@@ -43,19 +42,10 @@ void *ActionModelMVMirrorVertices::execute(Data *d)
 
 void ActionModelMVMirrorVertices::undo(Data *d)
 {
-	msg_write("mirror vert undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii)
 		m->Vertex[i].pos = old_data[ii];
 	m->SetNormalsDirtyByVertices(index);
-}
-
-
-
-void ActionModelMVMirrorVertices::abort(Data *d)
-{
-	msg_write("mirror vert abort");
-	undo(d);
 }
 
 

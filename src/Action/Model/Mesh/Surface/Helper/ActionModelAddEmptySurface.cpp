@@ -21,7 +21,6 @@ ActionModelAddEmptySurface::~ActionModelAddEmptySurface()
 
 void ActionModelAddEmptySurface::undo(Data *d)
 {
-	msg_write("__add surf undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	assert(m->Surface.back().Vertex.num + m->Surface.back().Edge.num + m->Surface.back().Triangle.num == 0);
 
@@ -33,7 +32,6 @@ void ActionModelAddEmptySurface::undo(Data *d)
 
 void *ActionModelAddEmptySurface::execute(Data *d)
 {
-	msg_write("__add surf do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	ModeModelSurface *s = m->AddSurface();

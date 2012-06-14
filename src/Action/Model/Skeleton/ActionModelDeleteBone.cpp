@@ -21,7 +21,6 @@ ActionModelDeleteBone::~ActionModelDeleteBone()
 
 void *ActionModelDeleteBone::execute(Data *d)
 {
-	msg_write("del bone do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	ModeModelSkeletonBone &b = m->Bone[index];
 	pos = b.DeltaPos;
@@ -73,7 +72,6 @@ void *ActionModelDeleteBone::execute(Data *d)
 
 void ActionModelDeleteBone::undo(Data *d)
 {
-	msg_write("del bone undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	ModeModelSkeletonBone b;
 	b.Parent = parent;

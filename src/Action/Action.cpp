@@ -17,6 +17,7 @@ Action::~Action()
 
 void Action::undo_and_notify(Data *d)
 {
+	msg_write("undo " + name());
 	d->NotifyBegin();
 	undo(d);
 	d->Notify("Change");
@@ -27,6 +28,7 @@ void Action::undo_and_notify(Data *d)
 
 void *Action::execute_and_notify(Data *d)
 {
+	msg_write("do " + name());
 	d->NotifyBegin();
 	void *r = execute(d);
 	d->Notify("Change");
@@ -38,6 +40,7 @@ void *Action::execute_and_notify(Data *d)
 
 void Action::redo_and_notify(Data *d)
 {
+	msg_write("redo " + name());
 	d->NotifyBegin();
 	redo(d);
 	d->Notify("Change");

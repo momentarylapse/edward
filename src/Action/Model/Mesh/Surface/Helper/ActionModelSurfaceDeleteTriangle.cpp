@@ -20,7 +20,6 @@ ActionModelSurfaceDeleteTriangle::~ActionModelSurfaceDeleteTriangle()
 
 void ActionModelSurfaceDeleteTriangle::undo(Data *d)
 {
-	msg_write("__surf del tria undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	ModeModelSurface &s = m->Surface[surface];
@@ -34,7 +33,6 @@ void ActionModelSurfaceDeleteTriangle::undo(Data *d)
 
 void *ActionModelSurfaceDeleteTriangle::execute(Data *d)
 {
-	msg_write("__surf del tria do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	ModeModelSurface &s = m->Surface[surface];

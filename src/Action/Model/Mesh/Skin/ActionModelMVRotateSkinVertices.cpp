@@ -34,7 +34,6 @@ ActionModelMVRotateSkinVertices::~ActionModelMVRotateSkinVertices()
 
 void *ActionModelMVRotateSkinVertices::execute(Data *d)
 {
-	msg_write("rot skin do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	matrix rot;
 	MatrixRotation(rot, param);
@@ -50,20 +49,12 @@ void *ActionModelMVRotateSkinVertices::execute(Data *d)
 
 void ActionModelMVRotateSkinVertices::undo(Data *d)
 {
-	msg_write("rot skin undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii){
 		ModeModelSurface &s = m->Surface[surface[ii]];
 		vector &v = s.Triangle[i / 3].SkinVertex[texture_level][i % 3];
 		v = old_data[ii];
 	}
-}
-
-
-
-void ActionModelMVRotateSkinVertices::abort(Data *d)
-{
-	undo(d);
 }
 
 

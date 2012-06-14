@@ -24,9 +24,6 @@ public:
 
 	void *execute(Data *d);
 	void undo(Data *d);
-
-	// continuous editing
-	void abort(Data *d);
 };
 
 #endif /* ACTIONMODELMVMOVEVERTICES_H_ */

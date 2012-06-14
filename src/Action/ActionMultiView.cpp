@@ -48,6 +48,13 @@ void ActionMultiView::set_param_and_notify(Data *d, const vector & _param)
 
 
 
+void ActionMultiView::abort(Data *d)
+{
+	undo(d);
+}
+
+
+
 void ActionMultiView::abort_and_notify(Data *d)
 {
 	abort(d);

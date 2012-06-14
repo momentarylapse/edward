@@ -23,9 +23,6 @@ public:
 	void *execute(Data *d);
 	void undo(Data *d);
 
-	// continuous editing
-	void abort(Data *d);
-
 private:
 	int material, texture_level;
 	Array<int> surface;

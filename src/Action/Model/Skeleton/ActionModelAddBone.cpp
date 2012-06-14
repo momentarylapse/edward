@@ -21,7 +21,6 @@ ActionModelAddBone::~ActionModelAddBone()
 
 void *ActionModelAddBone::execute(Data *d)
 {
-	msg_write("add bone do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	ModeModelSkeletonBone b;
 	b.Parent = parent;
@@ -51,7 +50,6 @@ void *ActionModelAddBone::execute(Data *d)
 
 void ActionModelAddBone::undo(Data *d)
 {
-	msg_write("add bone undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	m->Bone.pop();
 

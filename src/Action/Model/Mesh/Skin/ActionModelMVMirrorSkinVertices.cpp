@@ -32,16 +32,8 @@ ActionModelMVMirrorSkinVertices::~ActionModelMVMirrorSkinVertices()
 
 
 
-void ActionModelMVMirrorSkinVertices::abort(Data *d)
-{
-	undo(d);
-}
-
-
-
 void *ActionModelMVMirrorSkinVertices::execute(Data *d)
 {
-	msg_write("mirror skin do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii){
 		ModeModelSurface &s = m->Surface[surface[ii]];
@@ -55,7 +47,6 @@ void *ActionModelMVMirrorSkinVertices::execute(Data *d)
 
 void ActionModelMVMirrorSkinVertices::undo(Data *d)
 {
-	msg_write("mirror skin undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii){
 		ModeModelSurface &s = m->Surface[surface[ii]];

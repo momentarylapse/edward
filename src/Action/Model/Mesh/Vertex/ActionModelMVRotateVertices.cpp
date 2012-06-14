@@ -31,7 +31,6 @@ ActionModelMVRotateVertices::~ActionModelMVRotateVertices()
 
 void ActionModelMVRotateVertices::undo(Data *d)
 {
-	msg_write("rotate vert undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii)
 		m->Vertex[i].pos = old_data[ii];
@@ -42,7 +41,6 @@ void ActionModelMVRotateVertices::undo(Data *d)
 
 void *ActionModelMVRotateVertices::execute(Data *d)
 {
-	msg_write("rotate vert do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	matrix rot;
 	MatrixRotation(rot, param);
@@ -50,14 +48,6 @@ void *ActionModelMVRotateVertices::execute(Data *d)
 		m->Vertex[i].pos = pos0 + (old_data[ii] - pos0) * rot;
 	m->SetNormalsDirtyByVertices(index);
 	return NULL;
-}
-
-
-
-void ActionModelMVRotateVertices::abort(Data *d)
-{
-	msg_write("rotate vert abort");
-	undo(d);
 }
 
 

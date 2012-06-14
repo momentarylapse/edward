@@ -30,16 +30,10 @@ ActionModelMVScaleSkinVertices::~ActionModelMVScaleSkinVertices()
 {
 }
 
-void ActionModelMVScaleSkinVertices::abort(Data *d)
-{
-	undo(d);
-}
-
 
 
 void *ActionModelMVScaleSkinVertices::execute(Data *d)
 {
-	msg_write("scale skin do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii){
 		ModeModelSurface &s = m->Surface[surface[ii]];
@@ -55,7 +49,6 @@ void *ActionModelMVScaleSkinVertices::execute(Data *d)
 
 void ActionModelMVScaleSkinVertices::undo(Data *d)
 {
-	msg_write("scale skin undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii){
 		ModeModelSurface &s = m->Surface[surface[ii]];

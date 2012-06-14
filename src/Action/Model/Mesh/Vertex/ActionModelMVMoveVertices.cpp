@@ -27,17 +27,10 @@ ActionModelMVMoveVertices::~ActionModelMVMoveVertices()
 {
 }
 
-void ActionModelMVMoveVertices::abort(Data *d)
-{
-	msg_write("move vert abort");
-	undo(d);
-}
-
 
 
 void ActionModelMVMoveVertices::undo(Data *d)
 {
-	msg_write("move vert undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii)
 		m->Vertex[i].pos = old_data[ii];
@@ -48,7 +41,6 @@ void ActionModelMVMoveVertices::undo(Data *d)
 
 void *ActionModelMVMoveVertices::execute(Data *d)
 {
-	msg_write("move vert do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii)
 		m->Vertex[i].pos = old_data[ii] + param;

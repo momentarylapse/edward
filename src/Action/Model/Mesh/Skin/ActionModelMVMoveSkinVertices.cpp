@@ -34,7 +34,6 @@ ActionModelMVMoveSkinVertices::~ActionModelMVMoveSkinVertices()
 
 void *ActionModelMVMoveSkinVertices::execute(Data *d)
 {
-	msg_write("move skin do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii){
 		ModeModelSurface &s = m->Surface[surface[ii]];
@@ -48,27 +47,12 @@ void *ActionModelMVMoveSkinVertices::execute(Data *d)
 
 void ActionModelMVMoveSkinVertices::undo(Data *d)
 {
-	msg_write("move skin undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii){
 		ModeModelSurface &s = m->Surface[surface[ii]];
 		vector &v = s.Triangle[i / 3].SkinVertex[texture_level][i % 3];
 		v = old_data[ii];
 	}
-}
-
-
-
-void ActionModelMVMoveSkinVertices::abort(Data *d)
-{
-	undo(d);
-}
-
-
-
-void ActionModelMVMoveSkinVertices::redo(Data *d)
-{
-	execute(d);
 }
 
 

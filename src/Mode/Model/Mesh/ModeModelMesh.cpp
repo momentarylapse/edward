@@ -178,7 +178,7 @@ void ModeModelMesh::OnDraw()
 
 void ModeModelMesh::OnUpdate(Observable *o)
 {
-	data->DebugShow();
+	//data->DebugShow();
 }
 
 

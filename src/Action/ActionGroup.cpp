@@ -21,6 +21,7 @@ ActionGroup::~ActionGroup()
 void *ActionGroup::AddSubAction(Action *a, Data *d)
 {
 	action.add(a);
+	msg_write("do " + a->name());
 	return a->execute(d);
 }
 
@@ -40,16 +41,20 @@ void *ActionGroup::execute(Data *d)
 
 void ActionGroup::undo(Data *d)
 {
-	foreachb(action, a)
+	foreachb(action, a){
+		msg_write("undo " + a->name());
 		a->undo(d);
+	}
 }
 
 
 
 void ActionGroup::redo(Data *d)
 {
-	foreach(action, a)
+	foreach(action, a){
+		msg_write("do " + a->name());
 		a->redo(d);
+	}
 }
 
 

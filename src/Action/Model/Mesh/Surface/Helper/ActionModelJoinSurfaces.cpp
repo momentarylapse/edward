@@ -35,7 +35,6 @@ ActionModelJoinSurfaces::~ActionModelJoinSurfaces()
 void *ActionModelJoinSurfaces::execute(Data *d)
 {
 	msg_db_r("SurfJoin", 1);
-	msg_write("__join surf do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	assert(surface1 < m->Surface.num);
@@ -92,7 +91,6 @@ void *ActionModelJoinSurfaces::execute(Data *d)
 
 void ActionModelJoinSurfaces::undo(Data *d)
 {
-	msg_write("__join surf undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	ModeModelSurface *b = m->AddSurface(surface2);

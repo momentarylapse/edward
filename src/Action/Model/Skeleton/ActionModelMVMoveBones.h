@@ -22,9 +22,6 @@ public:
 
 	void *execute(Data *d);
 	void undo(Data *d);
-
-	// continuous editing
-	void abort(Data *d);
 };
 
 #endif /* ACTIONMODELMVMOVEBONES_H_ */

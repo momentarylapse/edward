@@ -30,7 +30,6 @@ ActionModelSetMaterial::~ActionModelSetMaterial()
 
 void *ActionModelSetMaterial::execute(Data *d)
 {
-	msg_write("set mat do");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 
@@ -45,7 +44,6 @@ void *ActionModelSetMaterial::execute(Data *d)
 
 void ActionModelSetMaterial::undo(Data *d)
 {
-	msg_write("set mat undo");
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	foreachi(surface, s, i){
