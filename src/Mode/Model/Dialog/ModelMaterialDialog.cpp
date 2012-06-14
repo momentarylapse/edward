@@ -287,6 +287,11 @@ void ModelMaterialDialog::OnClose()
 
 void ModelMaterialDialog::OnUpdate(Observable *o)
 {
+	if (index >= data->Material.num){
+		delete(this);
+		return;
+	}
+
 	// undo/redo -> show current state
 	TempMaterial = data->Material[index];
 	LoadData();
