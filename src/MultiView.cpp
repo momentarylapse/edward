@@ -685,17 +685,14 @@ void MultiView::DrawMousePos()
 	string sx = f2s(m.x,2) + " " + unit;
 	string sy = f2s(m.y,2) + " " + unit;
 	string sz = f2s(m.z,2) + " " + unit;
-	int slx = NixGetStrWidth(sx, -1, -1);
-	int sly = NixGetStrWidth(sy, -1, -1);
-	int slz = NixGetStrWidth(sz, -1, -1);
 
 	if (view[mouse_win].type == View2D){
-		ed->DrawStr(MaxX - slx, MaxY - 60, sx);
-		ed->DrawStr(MaxX - sly, MaxY - 40, sy);
+		ed->DrawStr(MaxX, MaxY - 60, sx, Edward::AlignRight);
+		ed->DrawStr(MaxX, MaxY - 40, sy, Edward::AlignRight);
 	}else{
-		ed->DrawStr(MaxX - slx, MaxY - 80, sx);
-		ed->DrawStr(MaxX - sly, MaxY - 60, sy);
-		ed->DrawStr(MaxX - slz, MaxY - 40, sz);
+		ed->DrawStr(MaxX, MaxY - 80, sx, Edward::AlignRight);
+		ed->DrawStr(MaxX, MaxY - 60, sy, Edward::AlignRight);
+		ed->DrawStr(MaxX, MaxY - 40, sz, Edward::AlignRight);
 	}
 }
 
@@ -902,19 +899,19 @@ void MultiView::Draw()
 		if (mode == ActionMove){
 			vector t = mouse_action_param;
 			string unit = GetMVScaleByZoom(this, t);
-			ed->DrawStr(100, 100, f2s(t.x, 2) + " " + unit);
-			ed->DrawStr(100, 120, f2s(t.y, 2) + " " + unit);
-			ed->DrawStr(100, 140, f2s(t.z, 2) + " " + unit);
+			ed->DrawStr(150, 100, f2s(t.x, 2) + " " + unit, Edward::AlignRight);
+			ed->DrawStr(150, 120, f2s(t.y, 2) + " " + unit, Edward::AlignRight);
+			ed->DrawStr(150, 140, f2s(t.z, 2) + " " + unit, Edward::AlignRight);
 		}else if ((mode == ActionRotate) or (mode == ActionRotate2d)){
 			vector r = mouse_action_param * 180.0f / pi;
-			ed->DrawStr(100, 100, f2s(r.x, 2) + "°");
-			ed->DrawStr(100, 120, f2s(r.y, 2) + "°");
-			ed->DrawStr(100, 140, f2s(r.z, 2) + "°");
+			ed->DrawStr(150, 100, f2s(r.x, 2) + "°", Edward::AlignRight);
+			ed->DrawStr(150, 120, f2s(r.y, 2) + "°", Edward::AlignRight);
+			ed->DrawStr(150, 140, f2s(r.z, 2) + "°", Edward::AlignRight);
 		}else if (mode == ActionScale){
-			ed->DrawStr(100, 100, f2s(mouse_action_param.x * 100.0f, 2) + "%");
+			ed->DrawStr(150, 100, f2s(mouse_action_param.x * 100.0f, 2) + "%", Edward::AlignRight);
 		}else if (mode == ActionScale2d){
-			ed->DrawStr(100, 100, f2s(mouse_action_param.x * 100.0f, 2) + "%");
-			ed->DrawStr(100, 120, f2s(mouse_action_param.y * 100.0f, 2) + "%");
+			ed->DrawStr(150, 100, f2s(mouse_action_param.x * 100.0f, 2) + "%", Edward::AlignRight);
+			ed->DrawStr(150, 120, f2s(mouse_action_param.y * 100.0f, 2) + "%", Edward::AlignRight);
 		}
 	}
 
@@ -1380,10 +1377,9 @@ void MultiView::MouseActionUpdate()
 			mouse_action_param = transform_ang(this, e_z * (v2p.x - v1p.x) * 0.003f);
 		else if (mode == ActionScale)
 			mouse_action_param = vector(1, 1, 1) * ( 1 + (v2p.x - v1p.x) * 0.01f);
-		else if (mode == ActionScale2d){
-			msg_write("s2d");
+		else if (mode == ActionScale2d)
 			mouse_action_param = vector(1 + (v2p.x - v1p.x) * 0.01f, 1 - (v2p.y - v1p.y) * 0.01f, 1);
-		}else if (mode == ActionOnce)
+		else if (mode == ActionOnce)
 			mouse_action_param = GetDirectionRight(mouse_win);
 		else
 			mouse_action_param = v0;
