@@ -9,12 +9,11 @@
 #include "../../../Action/World/ActionWorldAddObject.h"
 #include "../../../Edward.h"
 
-ModeWorldCreateObject::ModeWorldCreateObject(Mode *_parent, DataWorld *_data)
+ModeWorldCreateObject::ModeWorldCreateObject(Mode *_parent) :
+	ModeCreation(_parent)
 {
 	name = "WorldCreateObject";
-	parent = _parent;
-	data = _data;
-	multi_view = parent->multi_view;
+	data = (DataWorld*)_parent->GetData();
 
 	message = _("neues Objekt setzen");
 }

@@ -10,12 +10,11 @@
 #include "../../../../Action/Model/Mesh/Triangle/ActionModelAddTrianglesByOutline.h"
 #include "../../../../lib/nix/nix.h"
 
-ModeModelMeshCreateTriangles::ModeModelMeshCreateTriangles(Mode *_parent, DataModel *_data)
+ModeModelMeshCreateTriangles::ModeModelMeshCreateTriangles(Mode *_parent) :
+	ModeCreation(_parent)
 {
 	name = "ModelMeshCreateTriangles";
-	parent = _parent;
-	data = _data;
-	multi_view = parent->multi_view;
+	data = (DataModel*)_parent->GetData();
 
 	message = format(_("Dreiecke w&ahlen: %d -> Shift + Return"), 0);
 }
@@ -40,7 +39,7 @@ void ModeModelMeshCreateTriangles::OnEnd()
 }
 
 
-void ModeModelMeshCreateTriangles::PostDrawWin(int win, irect dest)
+void ModeModelMeshCreateTriangles::OnDrawWin(int win, irect dest)
 {
 	for (int i=1;i<selection.num;i++){
 		vector pa = multi_view->VecProject(data->Vertex[selection[i - 1]].pos, win);
@@ -56,7 +55,7 @@ void ModeModelMeshCreateTriangles::OnKeyDown()
 {
 	if (HuiGetEvent()->key_code == KEY_SHIFT + KEY_RETURN){
 		data->Execute(new ActionModelAddTrianglesByOutline(selection, data));
-		ed->SetCreationMode(NULL);
+		Abort();
 	}
 }
 
@@ -68,7 +67,7 @@ void ModeModelMeshCreateTriangles::OnLeftButtonDown()
 		if (selection.num > 0)
 			if (multi_view->Selected == selection[0]){
 				data->Execute(new ActionModelAddTrianglesByOutline(selection, data));
-				ed->SetCreationMode(NULL);
+				Abort();
 				return;
 			}
 
@@ -77,7 +76,7 @@ void ModeModelMeshCreateTriangles::OnLeftButtonDown()
 			if (s == multi_view->Selected)
 				if (i > 0){
 					ed->SetMessage(_("keine doppelten Punkte erlaubt!"));
-					ed->SetCreationMode(NULL);
+					Abort();
 					return;
 				}
 

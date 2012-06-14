@@ -23,7 +23,7 @@ public:
 	void Subscribe(Observable *o, const string &message);
 	void Unsubscribe(Observable *o);
 
-	virtual void OnUpdate(Observable *o) = 0;
+	virtual void OnUpdate(Observable *o){};
 };
 
 #endif /* OBSERVER_H_ */

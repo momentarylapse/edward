@@ -14,13 +14,13 @@
 class ModeModelMeshCreatePlane: public ModeCreation
 {
 public:
-	ModeModelMeshCreatePlane(Mode *_parent, DataModel *_data);
+	ModeModelMeshCreatePlane(Mode *_parent);
 	virtual ~ModeModelMeshCreatePlane();
 
 	void OnMouseMove();
 	void OnLeftButtonDown();
 
-	void PostDrawWin(int win, irect dest);
+	void OnDrawWin(int win, irect dest);
 
 	DataModel *data;
 	Data *GetData(){	return data;	}

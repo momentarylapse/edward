@@ -10,7 +10,6 @@
 
 #include "lib/hui/hui.h"
 #include "Mode/Mode.h"
-#include "Mode/ModeCreation.h"
 #include "Stuff/Observer.h"
 
 
@@ -75,8 +74,6 @@ public:
 	void OnAbout();
 	void OnSendBugReport();
 	void SetMode(Mode *m);
-	void SetCreationMode(ModeCreation *m);
-	void OnAbortCreationMode();
 
 	void OnUpdate(Observable *o);
 	void OnCommand(const string &id);
@@ -93,7 +90,7 @@ public:
 	void OnRightButtonDown();
 	void OnRightButtonUp();
 	void OnEvent();
-	//void OnAbortCreationMode();
+	void OnAbortCreationMode();
 
 	void SetMessage(const string &message);
 	void RemoveMessage();
@@ -115,7 +112,6 @@ public:
 	void UpdateMenu();
 
 	Mode *cur_mode;
-	ModeCreation *creation_mode;
 
 	string RootDir;
 	bool RootDirCorrect;

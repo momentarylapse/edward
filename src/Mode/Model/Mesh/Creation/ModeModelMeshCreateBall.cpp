@@ -11,12 +11,11 @@
 #include "../../../../Action/Model/Mesh/Surface/ActionModelAddBall.h"
 #include "../../../../lib/x/x.h"
 
-ModeModelMeshCreateBall::ModeModelMeshCreateBall(Mode *_parent, DataModel *_data)
+ModeModelMeshCreateBall::ModeModelMeshCreateBall(Mode *_parent) :
+	ModeCreation(_parent)
 {
 	name = "ModelMeshCreateBall";
-	parent = _parent;
-	data = _data;
-	multi_view = parent->multi_view;
+	data = (DataModel*)_parent->GetData();
 
 	message = _("Kugelzentrum waehlen");
 
@@ -61,7 +60,7 @@ void ModeModelMeshCreateBall::OnLeftButtonDown()
 		else
 			data->Execute(new ActionModelAddBall(data, pos, radius, nx, ny, false));
 
-		ed->SetCreationMode(NULL);
+		Abort();
 	}else{
 		if (multi_view->Selected >= 0)
 			pos = data->Vertex[multi_view->Selected].pos;
@@ -73,7 +72,7 @@ void ModeModelMeshCreateBall::OnLeftButtonDown()
 }
 
 
-void ModeModelMeshCreateBall::PostDrawWin(int win, irect dest)
+void ModeModelMeshCreateBall::OnDrawWin(int win, irect dest)
 {
 	if (pos_chosen){
 		mode_model->SetMaterialCreation();

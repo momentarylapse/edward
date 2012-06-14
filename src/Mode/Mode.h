@@ -19,8 +19,8 @@ public:
 	Mode();
 	virtual ~Mode();
 
-	virtual void OnStart() = 0;
-	virtual void OnEnd() = 0;
+	virtual void OnStart(){};
+	virtual void OnEnd(){};
 
 	// events to be handled by derived modes
 	virtual void OnMouseMove(){};
@@ -53,9 +53,10 @@ public:
 	virtual void OnUpdateMenuRecursive();
 
 	virtual void OnDrawRecursive();
-	//virtual void OnDrawWinRecursive(int win, irect dest);
+	virtual void OnDrawWinRecursive(int win, irect dest);
 
 	Mode *GetRootMode();
+	bool IsAncestorOf(Mode *m);
 	virtual Data *GetData(){	return NULL;	}
 
 

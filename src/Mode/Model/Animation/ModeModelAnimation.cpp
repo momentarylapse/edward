@@ -13,7 +13,7 @@ ModeModelAnimation *mode_model_animation = NULL;
 
 ModeModelAnimation::ModeModelAnimation(Mode *_parent, DataModel *_data)
 {
-	name = "ModelSkeleton";
+	name = "ModelAnimation";
 	parent = _parent;
 	data = _data;
 	menu = HuiCreateResourceMenu("menu_model");

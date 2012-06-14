@@ -10,10 +10,12 @@
 #include "Edward.h"
 #include "Mode/Model/ModeModel.h"
 #include "Mode/Model/Mesh/ModeModelMesh.h"
+#include "Mode/Model/Mesh/ModeModelMeshVertex.h"
 #include "Mode/Material/ModeMaterial.h"
 #include "Mode/World/ModeWorld.h"
 #include "Mode/Font/ModeFont.h"
 #include "Mode/Welcome/ModeWelcome.h"
+#include "Mode/ModeCreation.h"
 #include "MultiView.h"
 #include "lib/x/x.h"
 #include "lib/script/script.h"
@@ -105,8 +107,6 @@ void Edward::event() \
 { \
 	if (cur_mode) \
 		cur_mode->pre_event(); \
-	if (creation_mode) \
-		creation_mode->event(); \
 }
 
 IMPLEMENT_EVENT(OnKeyDown, OnKeyDownRecursive, , )
@@ -126,13 +126,15 @@ void Edward::OnEvent()
 		id = HuiGetEvent()->message;
 	if (cur_mode)
 		cur_mode->OnCommandRecursive(id);
-	if (creation_mode)
-		creation_mode->OnCommand(id);
 	OnCommand(id);
 }
 
 void Edward::OnAbortCreationMode()
-{	SetCreationMode(NULL);	}
+{
+	ModeCreation *m = dynamic_cast<ModeCreation*>(cur_mode);
+	if (m)
+		m->Abort();
+}
 
 void Edward::IdleFunction()
 {
@@ -154,7 +156,6 @@ Edward::Edward(Array<string> arg) :
 
 	ed = this;
 	cur_mode = NULL;
-	creation_mode = NULL;
 	force_redraw = false;
 
 
@@ -383,7 +384,8 @@ bool Edward::HandleArguments(Array<string> arg)
 }
 
 
-
+// do we change roots?
+//  -> data loss?
 bool mode_switch_allowed(Mode *m)
 {
 	Mode *root_cur = NULL;
@@ -396,8 +398,25 @@ bool mode_switch_allowed(Mode *m)
 	return ed->AllowTermination();
 }
 
+Mode *mode_get_child_in_line(Mode *m, Mode *target)
+{
+	while(target){
+		if (m == target->parent)
+			return target;
+		target = target->parent;
+	}
+	return NULL;
+}
+
 void Edward::SetMode(Mode *m)
 {
+	// ugly redirection
+	if (m == mode_model)
+		m = mode_model_mesh_vertex;
+	if (m == mode_model_mesh)
+		m = mode_model_mesh_vertex;
+
+
 	if (cur_mode == m)
 		return;
 	if (!mode_switch_allowed(m))
@@ -405,50 +424,31 @@ void Edward::SetMode(Mode *m)
 
 	msg_db_r("SetMode", 1);
 
-	// close current creation_mode
-	SetCreationMode(NULL);
-
-	// close current mode
-	if (cur_mode){
+	// close current modes
+	while(cur_mode){
+		if (cur_mode->IsAncestorOf(m))
+			break;
 		msg_write("end " + cur_mode->name);
 		cur_mode->OnEnd();
+		cur_mode = cur_mode->parent;
 	}
+
 	multi_view_3d->ResetMouseAction();
 	multi_view_2d->ResetMouseAction();
 
-	// start new mode
-	cur_mode = m;
-	msg_write("start " + cur_mode->name);
-	cur_mode->OnStart();
+	// start new modes
+	while(cur_mode != m){
+		cur_mode = mode_get_child_in_line(cur_mode, m);
+		msg_write("start " + cur_mode->name);
+		cur_mode->OnStart();
+	}
+
+
 	SetMenu(cur_mode->menu);
+
 	UpdateMenu();
-
 	ForceRedraw();
-	msg_db_l(1);
-}
 
-void Edward::SetCreationMode(ModeCreation *m)
-{
-	if (creation_mode == m)
-		return;
-	msg_db_r("SetCreationMode", 1);
-
-	// close current creation_mode
-	if (creation_mode){
-		msg_write("end (creation) " + creation_mode->name);
-		creation_mode->OnEnd();
-		delete(creation_mode);
-	}
-
-	// start new creation mode
-	creation_mode = m;
-	if (creation_mode){
-		msg_write("start (creation) " + creation_mode->name);
-		creation_mode->OnStart();
-	}
-
-	ForceRedraw();
-	UpdateMenu();
 	msg_db_l(1);
 }
 
@@ -499,11 +499,6 @@ void Edward::OnDraw()
 	}else{
 		NixResetToColor(Black);
 		NixDrawStr(100, 100, "no mode...");
-	}
-
-	if (creation_mode){
-		creation_mode->PostDraw();
-		DrawStr(MaxX / 2, MaxY - 20, creation_mode->message);
 	}
 
 	// messages

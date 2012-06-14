@@ -10,12 +10,11 @@
 #include "../../../../Edward.h"
 #include "../../../../Action/Model/Mesh/Surface/ActionModelAddCylinder.h"
 
-ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(Mode *_parent, DataModel *_data)
+ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(Mode *_parent) :
+	ModeCreation(_parent)
 {
 	name = "ModelMeshCreateCylinder";
-	parent = _parent;
-	data = _data;
-	multi_view = parent->multi_view;
+	data = (DataModel*)_parent->GetData();
 
 	message = _("zylinder... Punkte + Shift Return");
 
@@ -66,7 +65,7 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 
 		data->Execute(new ActionModelAddCylinder(data, pos, radius, rings, edges, closed));
 
-		ed->SetCreationMode(NULL);
+		Abort();
 	}else{
 		if (multi_view->Selected >= 0)
 			pos.add(data->Vertex[multi_view->Selected].pos);
@@ -118,7 +117,7 @@ void CreateCylinderBuffer(int buffer, const vector &pos, const vector &length, f
 	}
 }
 
-void ModeModelMeshCreateCylinder::PostDrawWin(int win, irect dest)
+void ModeModelMeshCreateCylinder::OnDrawWin(int win, irect dest)
 {
 	if (pos.num > 0){
 		// control polygon

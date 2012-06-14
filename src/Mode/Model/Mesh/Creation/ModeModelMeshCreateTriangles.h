@@ -14,7 +14,7 @@
 class ModeModelMeshCreateTriangles: public ModeCreation
 {
 public:
-	ModeModelMeshCreateTriangles(Mode *_parent, DataModel *_data);
+	ModeModelMeshCreateTriangles(Mode *_parent);
 	virtual ~ModeModelMeshCreateTriangles();
 
 	void OnStart();
@@ -23,7 +23,7 @@ public:
 	void OnLeftButtonDown();
 	void OnKeyDown();
 
-	void PostDrawWin(int win, irect dest);
+	void OnDrawWin(int win, irect dest);
 
 	DataModel *data;
 	Data *GetData(){	return data;	}

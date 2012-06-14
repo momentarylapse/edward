@@ -14,12 +14,12 @@
 class ModeModelMeshSplitTriangle: public ModeCreation
 {
 public:
-	ModeModelMeshSplitTriangle(Mode *_parent, DataModel *_data);
+	ModeModelMeshSplitTriangle(Mode *_parent);
 	virtual ~ModeModelMeshSplitTriangle();
 
 	void OnLeftButtonDown();
 
-	void PostDrawWin(int win, irect dest);
+	void OnDrawWin(int win, irect dest);
 
 	DataModel *data;
 	Data *GetData(){	return data;	}

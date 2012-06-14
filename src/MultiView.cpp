@@ -778,8 +778,8 @@ void MultiView::DrawWin(int win, irect dest)
 	//msg_db_r("sub",2);
 	if (ed->cur_mode)
 		ed->cur_mode->OnDrawWin(win, dest);
-	if (ed->creation_mode)
-		ed->creation_mode->PostDrawWin(win, dest);
+	/*if (ed->creation_mode)
+		ed->creation_mode->PostDrawWin(win, dest);*/
 	//msg_db_l(2);
 
 	// draw multiview data

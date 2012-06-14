@@ -30,7 +30,6 @@ ModeWorld *mode_world = NULL;
 ModeWorld::ModeWorld()
 {
 	name = "World";
-	parent = NULL;
 
 	menu = HuiCreateResourceMenu("menu_world");
 	data = new DataWorld;
@@ -77,7 +76,7 @@ void ModeWorld::OnCommand(const string & id)
 		ImportWorldProperties();
 
 	if (id == "create_objects")
-		ed->SetCreationMode(new ModeWorldCreateObject(ed->cur_mode, data));
+		ed->SetMode(new ModeWorldCreateObject(ed->cur_mode));
 
 	if (id == "selection_properties")
 		ExecutePropertiesDialog();
@@ -354,6 +353,9 @@ void ModeWorld::OnKeyUp()
 
 void ModeWorld::OnEnd()
 {
+	ed->ToolbarSetCurrent(HuiToolbarTop);
+	ed->ToolbarReset();
+	ed->EnableToolbar(false);
 }
 
 

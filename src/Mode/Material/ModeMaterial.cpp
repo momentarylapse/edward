@@ -18,7 +18,6 @@ ModeMaterial *mode_material = NULL;
 ModeMaterial::ModeMaterial()
 {
 	name = "Material";
-	parent = NULL;
 
 	menu = HuiCreateResourceMenu("menu_material");
 	data = new DataMaterial;
@@ -227,6 +226,10 @@ void ModeMaterial::OnEnd()
 	if (AppearanceDialog)
 		delete(AppearanceDialog);
 	AppearanceDialog = NULL;
+
+	ed->ToolbarSetCurrent(HuiToolbarTop);
+	ed->ToolbarReset();
+	ed->EnableToolbar(false);
 }
 
 

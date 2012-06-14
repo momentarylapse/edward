@@ -14,7 +14,7 @@
 class ModeWorldCreateObject: public ModeCreation
 {
 public:
-	ModeWorldCreateObject(Mode *_parent, DataWorld *_data);
+	ModeWorldCreateObject(Mode *_parent);
 	virtual ~ModeWorldCreateObject();
 
 	void OnLeftButtonDown();

@@ -14,13 +14,13 @@
 class ModeModelSkeletonCreateBone: public ModeCreation
 {
 public:
-	ModeModelSkeletonCreateBone(Mode *_parent, DataModel *_data);
+	ModeModelSkeletonCreateBone(Mode *_parent);
 	virtual ~ModeModelSkeletonCreateBone();
 
 	void OnMouseMove();
 	void OnLeftButtonDown();
 
-	void PostDrawWin(int win, irect dest);
+	void OnDrawWin(int win, irect dest);
 
 	DataModel *data;
 	Data *GetData(){	return data;	}

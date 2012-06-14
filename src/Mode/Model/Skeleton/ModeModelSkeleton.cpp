@@ -37,7 +37,7 @@ ModeModelSkeleton::~ModeModelSkeleton()
 void ModeModelSkeleton::OnCommand(const string & id)
 {
 	if (id == "skeleton_new_point")
-		ed->SetCreationMode(new ModeModelSkeletonCreateBone(ed->cur_mode, data));
+		ed->SetMode(new ModeModelSkeletonCreateBone(ed->cur_mode));
 
 	if (id == "delete")
 		data->Execute(new ActionModelDeleteBoneSelection(data));

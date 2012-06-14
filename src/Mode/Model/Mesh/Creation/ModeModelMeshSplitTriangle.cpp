@@ -10,12 +10,11 @@
 #include "../../../../Action/Model/Mesh/Triangle/ActionModelSplitTriangle.h"
 #include "../../../../Action/Model/Mesh/Triangle/ActionModelSplitEdge.h"
 
-ModeModelMeshSplitTriangle::ModeModelMeshSplitTriangle(Mode *_parent, DataModel *_data)
+ModeModelMeshSplitTriangle::ModeModelMeshSplitTriangle(Mode *_parent) :
+	ModeCreation(_parent)
 {
 	name = "ModelMeshSplitTriangle";
-	parent = _parent;
-	data = _data;
-	multi_view = parent->multi_view;
+	data = (DataModel*)_parent->GetData();
 
 	surface = -1;
 	triangle = -1;
@@ -38,13 +37,13 @@ void ModeModelMeshSplitTriangle::OnLeftButtonDown()
 			data->Execute(new ActionModelSplitEdge(data, surface, edge, pos));
 		else
 			data->Execute(new ActionModelSplitTriangle(data, surface, triangle, pos));
-		//ed->SetCreationMode(NULL);
+		//Abort();
 		surface = -1;
 		triangle = -1;
 	}
 }
 
-void ModeModelMeshSplitTriangle::PostDrawWin(int win, irect dest)
+void ModeModelMeshSplitTriangle::OnDrawWin(int win, irect dest)
 {
 	triangle = multi_view->MouseOver;
 	surface = multi_view->MouseOverSet;

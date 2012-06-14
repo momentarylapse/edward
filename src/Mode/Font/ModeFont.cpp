@@ -15,7 +15,6 @@ ModeFont *mode_font = NULL;
 ModeFont::ModeFont()
 {
 	name = "Font";
-	parent = NULL;
 
 	menu = HuiCreateResourceMenu("menu_font");
 	data = new DataFont;
@@ -41,6 +40,9 @@ void ModeFont::OnLeftButtonDown()
 
 void ModeFont::OnEnd()
 {
+	ed->ToolbarSetCurrent(HuiToolbarTop);
+	ed->ToolbarReset();
+	ed->EnableToolbar(false);
 }
 
 

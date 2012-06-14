@@ -14,14 +14,14 @@
 class ModeModelMeshCreateCylinder: public ModeCreation
 {
 public:
-	ModeModelMeshCreateCylinder(Mode *_parent, DataModel *_data);
+	ModeModelMeshCreateCylinder(Mode *_parent);
 	virtual ~ModeModelMeshCreateCylinder();
 
 	void OnMouseMove();
 	void OnLeftButtonDown();
 	void OnKeyDown();
 
-	void PostDrawWin(int win, irect dest);
+	void OnDrawWin(int win, irect dest);
 
 	DataModel *data;
 	Data *GetData(){	return data;	}

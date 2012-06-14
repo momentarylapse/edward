@@ -79,12 +79,15 @@ void ModeModelMesh::OnStart()
 	ed->EnableToolbar(true);
 	ed->ToolbarConfigure(false,true);
 
-	ed->SetMode(mode_model_mesh_vertex);
+//	ed->SetMode(mode_model_mesh_vertex);
 	//ed->SetMode(mode_model_mesh_skin);
 }
 
 void ModeModelMesh::OnEnd()
 {
+	ed->ToolbarSetCurrent(HuiToolbarLeft);
+	ed->ToolbarReset();
+	ed->EnableToolbar(false);
 }
 
 
@@ -113,26 +116,20 @@ void ModeModelMesh::OnCommand(const string & id)
 	if (id == "align_to_grid")
 		data->Execute(new ActionModelAlignToGrid(data, mode_model_mesh_vertex->multi_view->GetGridD()));
 
-	if (id == "new_point"){
-		ed->SetMode(mode_model_mesh_vertex);
-		ed->SetCreationMode(new ModeModelMeshCreateVertex(ed->cur_mode, data));
-	}
-	if (id == "new_tria"){
-		ed->SetMode(mode_model_mesh_vertex);
-		ed->SetCreationMode(new ModeModelMeshCreateTriangles(ed->cur_mode, data));
-	}
+	if (id == "new_point")
+		ed->SetMode(new ModeModelMeshCreateVertex(mode_model_mesh_vertex));
+	if (id == "new_tria")
+		ed->SetMode(new ModeModelMeshCreateTriangles(mode_model_mesh_vertex));
 	if (id == "new_ball")
-		ed->SetCreationMode(new ModeModelMeshCreateBall(ed->cur_mode, data));
+		ed->SetMode(new ModeModelMeshCreateBall(ed->cur_mode));
 	if (id == "new_cube")
-		ed->SetCreationMode(new ModeModelMeshCreateCube(ed->cur_mode, data));
+		ed->SetMode(new ModeModelMeshCreateCube(ed->cur_mode));
 	if (id == "new_cylinder")
-		ed->SetCreationMode(new ModeModelMeshCreateCylinder(ed->cur_mode, data));
+		ed->SetMode(new ModeModelMeshCreateCylinder(ed->cur_mode));
 	if (id == "new_plane")
-		ed->SetCreationMode(new ModeModelMeshCreatePlane(ed->cur_mode, data));
-	if (id == "new_extract"){
-		ed->SetMode(mode_model_mesh_triangle);
-		ed->SetCreationMode(new ModeModelMeshSplitTriangle(ed->cur_mode, data));
-	}
+		ed->SetMode(new ModeModelMeshCreatePlane(ed->cur_mode));
+	if (id == "new_extract")
+		ed->SetMode(new ModeModelMeshSplitTriangle(mode_model_mesh_triangle));
 
 	if (id == "rotate")
 		ChooseRightMouseFunction(RMFRotate);
@@ -191,9 +188,7 @@ void ModeModelMesh::OnUpdateMenu()
 	ed->Enable("copy", Copyable());
 	ed->Enable("paste", Pasteable());
 	ed->Enable("delete", Copyable());
-	string cm_name;
-	if (ed->creation_mode)
-		cm_name = ed->creation_mode->name;
+	string cm_name = ed->cur_mode->name;
 	ed->Check("new_point", cm_name == "ModelMeshCreateVertex");
 	ed->Check("new_tria", cm_name == "ModelMeshCreateTriangles");
 	ed->Check("new_plane", cm_name == "ModelMeshCreatePlane");

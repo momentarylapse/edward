@@ -14,7 +14,7 @@
 class ModeModelMeshCreateVertex: public ModeCreation
 {
 public:
-	ModeModelMeshCreateVertex(Mode *_parent, DataModel *_data);
+	ModeModelMeshCreateVertex(Mode *_parent);
 	virtual ~ModeModelMeshCreateVertex();
 
 	void OnLeftButtonDown();

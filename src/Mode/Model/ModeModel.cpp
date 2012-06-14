@@ -22,11 +22,8 @@ ModeModel *mode_model = NULL;
 ModeModel::ModeModel()
 {
 	name = "Model";
-	parent = NULL;
 
-	menu = NULL;
 	data = new DataModel;
-	multi_view = NULL;
 	PropertiesDialog = NULL;
 	MaterialDialog = NULL;
 
@@ -76,13 +73,16 @@ void ModeModel::OnStart()
 	ed->ToolbarReset();
 	ed->EnableToolbar(false);
 
-	ed->SetMode(mode_model_mesh);
+	//ed->SetMode(mode_model_mesh);
 }
 
 
 
 void ModeModel::OnEnd()
 {
+	ed->ToolbarSetCurrent(HuiToolbarTop);
+	ed->ToolbarReset();
+	ed->EnableToolbar(false);
 }
 
 

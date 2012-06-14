@@ -14,13 +14,13 @@
 class ModeModelMeshCreateCube: public ModeCreation
 {
 public:
-	ModeModelMeshCreateCube(Mode *_parent, DataModel *_data);
+	ModeModelMeshCreateCube(Mode *_parent);
 	virtual ~ModeModelMeshCreateCube();
 
 	void OnMouseMove();
 	void OnLeftButtonDown();
 
-	void PostDrawWin(int win, irect dest);
+	void OnDrawWin(int win, irect dest);
 
 	DataModel *data;
 	Data *GetData(){	return data;	}

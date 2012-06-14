@@ -10,12 +10,11 @@
 #include "../../../../Edward.h"
 #include "../../../../Action/Model/Skeleton/ActionModelAddBone.h"
 
-ModeModelSkeletonCreateBone::ModeModelSkeletonCreateBone(Mode *_parent, DataModel *_data)
+ModeModelSkeletonCreateBone::ModeModelSkeletonCreateBone(Mode *_parent) :
+	ModeCreation(_parent)
 {
 	name = "ModelSkeletonCreateBone";
-	parent = _parent;
-	data = _data;
-	multi_view = parent->multi_view;
+	data = (DataModel*)_parent->GetData();
 
 	message = _("Knochen setzen oder Wurzel-Knochen waehlen");
 	pos_chosen = false;
@@ -26,7 +25,7 @@ ModeModelSkeletonCreateBone::~ModeModelSkeletonCreateBone()
 {
 }
 
-void ModeModelSkeletonCreateBone::PostDrawWin(int win, irect dest)
+void ModeModelSkeletonCreateBone::OnDrawWin(int win, irect dest)
 {
 }
 
@@ -38,7 +37,7 @@ void ModeModelSkeletonCreateBone::OnLeftButtonDown()
 		pos = multi_view->GetCursor3d();
 		data->Execute(new ActionModelAddBone(pos, bone_parent));
 		data->Bone[bone_parent].is_special = false;
-		ed->SetCreationMode(NULL);
+		Abort();
 	}else{
 		if (multi_view->Selected >= 0){
 			bone_parent = multi_view->Selected;
@@ -48,7 +47,7 @@ void ModeModelSkeletonCreateBone::OnLeftButtonDown()
 		}else{
 			pos = multi_view->GetCursor3d();
 			data->Execute(new ActionModelAddBone(pos, -1));
-			ed->SetCreationMode(NULL);
+			Abort();
 		}
 	}
 }

@@ -8,12 +8,11 @@
 #include "ModeModelMeshCreateVertex.h"
 #include "../../../../Edward.h"
 
-ModeModelMeshCreateVertex::ModeModelMeshCreateVertex(Mode *_parent, DataModel *_data)
+ModeModelMeshCreateVertex::ModeModelMeshCreateVertex(Mode *_parent) :
+	ModeCreation(_parent)
 {
 	name = "ModelMeshCreateVertex";
-	parent = _parent;
-	data = _data;
-	multi_view = parent->multi_view;
+	data = (DataModel*)_parent->GetData();
 
 	message = _("neue Punkte setzen");
 }
@@ -26,5 +25,5 @@ ModeModelMeshCreateVertex::~ModeModelMeshCreateVertex()
 void ModeModelMeshCreateVertex::OnLeftButtonDown()
 {
 	data->AddVertex(multi_view->GetCursor3d());
-	//ed->SetCreationMode(NULL);
+	//Abort();
 }

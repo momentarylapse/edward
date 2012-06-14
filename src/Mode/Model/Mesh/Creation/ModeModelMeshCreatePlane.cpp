@@ -11,12 +11,11 @@
 #include "../../../../Action/Model/Mesh/Surface/ActionModelAddPlane.h"
 #include "../../../../lib/nix/nix.h"
 
-ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(Mode *_parent, DataModel *_data)
+ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(Mode *_parent) :
+	ModeCreation(_parent)
 {
 	name = "ModelMeshCreatePlane";
-	parent = _parent;
-	data = _data;
-	multi_view = parent->multi_view;
+	data = (DataModel*)_parent->GetData();
 
 	message = _("Ebene: erster Punkt");
 	pos_chosen = false;
@@ -55,7 +54,7 @@ void ModeModelMeshCreatePlane::OnLeftButtonDown()
 
 		data->Execute(new ActionModelAddPlane(data, pos, length[0], length[1], nx, ny));
 
-		ed->SetCreationMode(NULL);
+		Abort();
 	}else{
 		if (multi_view->Selected >= 0)
 			pos = data->Vertex[multi_view->Selected].pos;
@@ -68,7 +67,7 @@ void ModeModelMeshCreatePlane::OnLeftButtonDown()
 
 
 
-void ModeModelMeshCreatePlane::PostDrawWin(int win, irect dest)
+void ModeModelMeshCreatePlane::OnDrawWin(int win, irect dest)
 {
 	if (pos_chosen){
 		vector n = length[0] ^ length[1];

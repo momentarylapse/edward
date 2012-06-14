@@ -6,90 +6,30 @@
  */
 
 #include "ModeCreation.h"
+#include "../Edward.h"
+#include <assert.h>
 
-ModeCreation::ModeCreation()
+ModeCreation::ModeCreation(Mode *_parent)
 {
+	assert(_parent);
+	parent = _parent;
+	menu = parent->menu;
+	multi_view = parent->multi_view;
+	dialog = NULL;
 }
 
-ModeCreation::~ModeCreation()
+void ModeCreation::OnDrawRecursive()
 {
+	if (parent)
+		parent->OnDrawRecursive();
+	OnDraw();
+
+	ed->DrawStr(MaxX / 2, MaxY - 20, message);
 }
 
-void ModeCreation::OnUpdate(Observable *o)
+void ModeCreation::Abort()
 {
-}
-
-
-
-void ModeCreation::OnDraw()
-{
-}
-
-
-
-void ModeCreation::OnDrawWin(int win, irect dest)
-{
-}
-
-
-
-void ModeCreation::OnCommand(const string & id)
-{
-}
-
-void ModeCreation::OnKeyUp()
-{
-}
-
-void ModeCreation::OnKeyDown()
-{
-}
-
-void ModeCreation::OnLeftButtonDown()
-{
-}
-
-void ModeCreation::PostDrawWin(int win, irect dest)
-{
-}
-
-void ModeCreation::OnMiddleButtonDown()
-{
-}
-
-void ModeCreation::OnMouseMove()
-{
-}
-
-void ModeCreation::OnRightButtonUp()
-{
-}
-
-void ModeCreation::OnRightButtonDown()
-{
-}
-
-void ModeCreation::OnLeftButtonUp()
-{
-}
-
-void ModeCreation::OnMiddleButtonUp()
-{
-}
-
-void ModeCreation::OnEnd()
-{
-}
-
-void ModeCreation::OnStart()
-{
-}
-
-void ModeCreation::PostDraw()
-{
-}
-
-void ModeCreation::OnUpdateMenu()
-{
+	assert(parent);
+	ed->SetMode(parent);
 }
 

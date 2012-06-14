@@ -10,12 +10,11 @@
 #include "../../../../Edward.h"
 #include "../../../../Action/Model/Mesh/Surface/ActionModelAddCube.h"
 
-ModeModelMeshCreateCube::ModeModelMeshCreateCube(Mode *_parent, DataModel *_data)
+ModeModelMeshCreateCube::ModeModelMeshCreateCube(Mode *_parent) :
+	ModeCreation(_parent)
 {
 	name = "ModelMeshCreateCube";
-	parent = _parent;
-	data = _data;
-	multi_view = parent->multi_view;
+	data = (DataModel*)_parent->GetData();
 
 	message = _("cube...");
 	pos_chosen = false;
@@ -48,7 +47,7 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 
 			data->Execute(new ActionModelAddCube(data, pos, length[0], length[1], length[2]));
 
-			ed->SetCreationMode(NULL);
+			Abort();
 		}else{
 			if (multi_view->Selected >= 0)
 				pos2 = data->Vertex[multi_view->Selected].pos;
@@ -87,7 +86,7 @@ void ModeModelMeshCreateCube::OnMouseMove()
 
 
 
-void ModeModelMeshCreateCube::PostDrawWin(int win, irect dest)
+void ModeModelMeshCreateCube::OnDrawWin(int win, irect dest)
 {
 	mode_model->SetMaterialCreation();
 	if (pos_chosen){
