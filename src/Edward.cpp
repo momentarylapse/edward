@@ -464,13 +464,17 @@ void Edward::ForceRedraw()
 	force_redraw = true;
 }
 
-void Edward::DrawStr(int x, int y, const string &str)
+void Edward::DrawStr(int x, int y, const string &str, AlignType a)
 {
 	int w = NixGetStrWidth(str, -1, -1);
+	if (a == AlignRight)
+		x -= w;
+	else if (a == AlignCenter)
+		x -= w / 2;
 	NixSetAlpha(AlphaMaterial);
-	NixDrawRect(float(x),float(x+w),float(y),float(y+20),color(0.5f,0,0,0),0);
+	NixDrawRect(float(x), float(x+w), float(y), float(y+20), color(0.5f,0,0,0), 0);
 	NixSetAlpha(AlphaNone);
-	NixDrawStr(x,y,str);//SysStr(str));
+	NixDrawStr(x, y, str);//SysStr(str));
 }
 
 void Edward::OnDraw()
@@ -487,7 +491,7 @@ void Edward::OnDraw()
 
 	// messages
 	foreachi(message_str, m, i)
-		DrawStr(MaxX / 2 - NixGetStrWidth(m, -1, -1) / 2, MaxY / 2 - 10 - i * 20, m);
+		DrawStr(MaxX / 2, MaxY / 2 - 10 - i * 20, m, AlignCenter);
 
 	NixEnd();
 }

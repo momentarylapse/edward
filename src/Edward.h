@@ -105,8 +105,13 @@ public:
 	bool FileDialog(int kind, bool save, bool force_in_root_dir);
 	bool AllowTermination();
 
-	//void Draw();
-	void DrawStr(int x, int y, const string &str);
+	enum AlignType
+	{
+		AlignLeft,
+		AlignCenter,
+		AlignRight
+	};
+	void DrawStr(int x, int y, const string &str, AlignType a = AlignLeft);
 	void ForceRedraw();
 	bool force_redraw;
 	void UpdateMenu();
