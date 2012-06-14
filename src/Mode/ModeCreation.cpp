@@ -11,8 +11,13 @@
 
 ModeCreation::ModeCreation(Mode *_parent)
 {
-	assert(_parent);
 	parent = _parent;
+
+	// don't nest creation modes!
+	if (dynamic_cast<ModeCreation*>(parent))
+		parent = parent->parent;
+
+	assert(parent);
 	menu = parent->menu;
 	multi_view = parent->multi_view;
 	dialog = NULL;
