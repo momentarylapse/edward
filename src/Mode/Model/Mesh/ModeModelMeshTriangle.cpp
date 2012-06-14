@@ -21,8 +21,6 @@ ModeModelMeshTriangle::ModeModelMeshTriangle(Mode *_parent, DataModel *_data)
 	data = _data;
 	menu = HuiCreateResourceMenu("menu_model");
 	multi_view = ed->multi_view_3d;
-	Subscribe(data);
-	Subscribe(multi_view, "SelectionChange");
 
 	// vertex buffers
 	VBMarked = NixCreateVB(65536);
@@ -220,12 +218,16 @@ void ModeModelMeshTriangle::OnDrawWin(int win, irect dest)
 
 void ModeModelMeshTriangle::OnEnd()
 {
+	Unsubscribe(data);
+	Unsubscribe(multi_view);
 }
 
 
 
 void ModeModelMeshTriangle::OnStart()
 {
+	Subscribe(data);
+	Subscribe(multi_view, "SelectionChange");
 	OnUpdate(data);
 }
 
@@ -302,8 +304,6 @@ bool TriangleInRect(int index, void *user_data, int win, irect *r)
 
 void ModeModelMeshTriangle::OnUpdate(Observable *o)
 {
-	if (this != ed->cur_mode)
-		return;
 	if (o->GetName() == "Data"){
 		multi_view->ResetData(data);
 		mode_model_mesh->ApplyRightMouseFunction(multi_view);

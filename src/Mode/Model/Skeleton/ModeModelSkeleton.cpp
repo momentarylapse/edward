@@ -24,8 +24,6 @@ ModeModelSkeleton::ModeModelSkeleton(Mode *_parent, DataModel *_data)
 	data = _data;
 	menu = HuiCreateResourceMenu("menu_skeleton");
 	multi_view = ed->multi_view_3d;
-	Subscribe(data);
-	Subscribe(multi_view, "SelectionChange");
 }
 
 ModeModelSkeleton::~ModeModelSkeleton()
@@ -66,6 +64,8 @@ void ModeModelSkeleton::OnStart()
 		else
 			b.pos = b.DeltaPos;
 
+	Subscribe(data);
+	Subscribe(multi_view, "SelectionChange");
 	OnUpdate(data);
 }
 
@@ -73,6 +73,8 @@ void ModeModelSkeleton::OnStart()
 
 void ModeModelSkeleton::OnEnd()
 {
+	Unsubscribe(data);
+	Unsubscribe(multi_view);
 }
 
 

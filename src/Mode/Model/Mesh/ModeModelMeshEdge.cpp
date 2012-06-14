@@ -19,8 +19,6 @@ ModeModelMeshEdge::ModeModelMeshEdge(Mode *_parent, DataModel *_data)
 	data = _data;
 	menu = HuiCreateResourceMenu("menu_model");
 	multi_view = ed->multi_view_3d;
-	Subscribe(data);
-	Subscribe(multi_view, "SelectionChange");
 }
 
 
@@ -85,6 +83,8 @@ void ModeModelMeshEdge::OnMouseMove()
 
 void ModeModelMeshEdge::OnStart()
 {
+	Subscribe(data);
+	Subscribe(multi_view, "SelectionChange");
 }
 
 
@@ -115,6 +115,8 @@ void ModeModelMeshEdge::OnDrawWin(int win, irect dest)
 
 void ModeModelMeshEdge::OnEnd()
 {
+	Unsubscribe(data);
+	Unsubscribe(multi_view);
 }
 
 

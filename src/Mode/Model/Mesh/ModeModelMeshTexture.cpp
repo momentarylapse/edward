@@ -19,8 +19,6 @@ ModeModelMeshTexture::ModeModelMeshTexture(Mode *_parent, DataModel *_data)
 	data = _data;
 	menu = HuiCreateResourceMenu("menu_model");
 	multi_view = ed->multi_view_2d;
-	Subscribe(data);
-	Subscribe(multi_view, "SelectionChange");
 }
 
 
@@ -48,6 +46,9 @@ void ModeModelMeshTexture::OnStart()
 				skin_vertex.add(v);
 			}
 		}
+
+	Subscribe(data);
+	Subscribe(multi_view, "SelectionChange");
 	OnUpdate(data);
 }
 
@@ -55,6 +56,8 @@ void ModeModelMeshTexture::OnStart()
 
 void ModeModelMeshTexture::OnEnd()
 {
+	Unsubscribe(data);
+	Unsubscribe(multi_view);
 	skin_vertex.clear();
 }
 
@@ -130,8 +133,6 @@ void ModeModelMeshTexture::OnDraw()
 
 void ModeModelMeshTexture::OnUpdate(Observable *o)
 {
-	if (this != ed->cur_mode)
-		return;
 	if (o->GetName() == "Data"){
 
 

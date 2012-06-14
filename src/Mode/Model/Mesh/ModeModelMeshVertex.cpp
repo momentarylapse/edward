@@ -21,8 +21,6 @@ ModeModelMeshVertex::ModeModelMeshVertex(Mode *_parent, DataModel *_data)
 	data = _data;
 	multi_view = ed->multi_view_3d;
 	menu = HuiCreateResourceMenu("menu_model");
-	Subscribe(data);
-	Subscribe(multi_view, "SelectionChange");
 }
 
 ModeModelMeshVertex::~ModeModelMeshVertex()
@@ -31,11 +29,15 @@ ModeModelMeshVertex::~ModeModelMeshVertex()
 
 void ModeModelMeshVertex::OnStart()
 {
+	Subscribe(data);
+	Subscribe(multi_view, "SelectionChange");
 	OnUpdate(data);
 }
 
 void ModeModelMeshVertex::OnEnd()
 {
+	Unsubscribe(data);
+	Unsubscribe(multi_view);
 }
 
 
@@ -53,8 +55,6 @@ void ModeModelMeshVertex::OnDraw()
 
 void ModeModelMeshVertex::OnUpdate(Observable *o)
 {
-	if ((ed->cur_mode != this) && (!ed->cur_mode->IsAncestorOf(this)))
-		return;
 	if (o->GetName() == "Data"){
 		multi_view->ResetData(data);
 		mode_model_mesh->ApplyRightMouseFunction(multi_view);

@@ -21,8 +21,6 @@ ModeModelMeshSurface::ModeModelMeshSurface(Mode *_parent, DataModel *_data)
 	data = _data;
 	menu = HuiCreateResourceMenu("menu_model");
 	multi_view = ed->multi_view_3d;
-	Subscribe(data);
-	Subscribe(multi_view, "SelectionChange");
 }
 
 ModeModelMeshSurface::~ModeModelMeshSurface()
@@ -40,6 +38,8 @@ void ModeModelMeshSurface::OnDrawWin(int win, irect dest)
 
 void ModeModelMeshSurface::OnEnd()
 {
+	Unsubscribe(data);
+	Unsubscribe(multi_view);
 }
 
 bool TriangleIsMouseOver(int index, void *user_data, int win, vector &tp);
@@ -67,8 +67,6 @@ bool SurfaceInRect(int index, void *user_data, int win, irect *r)
 
 void ModeModelMeshSurface::OnUpdate(Observable *o)
 {
-	if (this != ed->cur_mode)
-		return;
 	if (o->GetName() == "Data"){
 		multi_view->ResetData(data);
 		mode_model_mesh->ApplyRightMouseFunction(multi_view);
@@ -91,6 +89,8 @@ void ModeModelMeshSurface::OnUpdate(Observable *o)
 
 void ModeModelMeshSurface::OnStart()
 {
+	Subscribe(data);
+	Subscribe(multi_view, "SelectionChange");
 	OnUpdate(data);
 }
 
