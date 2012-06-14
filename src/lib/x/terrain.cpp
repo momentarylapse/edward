@@ -130,11 +130,11 @@ void CTerrain::Update(int x1,int x2,int z1,int z2,int mode)
 {
 	msg_db_r("terrain::update",1);
 	if (x1<0)		x1=0;
-	if (x2<0)		x2=num_x-1;
-	if (x2>=num_x)	x2=num_x-1;
+	if (x2<0)		x2=num_x;
+	if (x2>=num_x)	x2=num_x;
 	if (z1<0)		z1=0;
-	if (z2<0)		z2=num_z-1;
-	if (z2>=num_z)	z2=num_z-1;
+	if (z2<0)		z2=num_z;
+	if (z2>=num_z)	z2=num_z;
 	bool un=((mode & TerrainUpdateNormals)>0);
 	bool uv=((mode & TerrainUpdateVertices)>0);
 	bool up=((mode & TerrainUpdatePlanes)>0);
@@ -162,18 +162,18 @@ void CTerrain::Update(int x1,int x2,int z1,int z2,int mode)
 				vertex[n]=pos+vector(pattern.x*(float)i,height[n],pattern.z*(float)j);
 		}
 	if (uv){
-		int j=z2+1;
+		int j = z2;
 		for (int i=x1;i<=x2;i++)
 			vertex[Index(i,j)]=pos+vector(pattern.x*(float)i,height[Index(i,j)],pattern.z*(float)j);
-		int i=x2+1;
-		for (j=z1;j<=z2+1;j++)
+		int i = x2;
+		for (j=z1;j<=z2;j++)
 			vertex[Index(i,j)]=pos+vector(pattern.x*(float)i,height[Index(i,j)],pattern.z*(float)j);
 	}
 
 	// update planes (for collision detection)
 	if (up)
-		for (int i=x1;i<=x2;i++)
-			for (int j=z1;j<=z2;j++){
+		for (int i=x1;i<x2;i++)
+			for (int j=z1;j<z2;j++){
 				int nt=(i*num_z+j)*2;
 				PlaneFromPoints(pl[nt  ],vertex[Index(i  ,j  )],vertex[Index(i  ,j+1)],vertex[Index(i+1,j+1)]);
 				PlaneFromPoints(pl[nt+1],vertex[Index(i  ,j  )],vertex[Index(i+1,j+1)],vertex[Index(i+1,j  )]);
