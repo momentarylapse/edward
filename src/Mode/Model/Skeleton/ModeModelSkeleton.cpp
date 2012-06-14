@@ -81,8 +81,6 @@ void ModeModelSkeleton::OnEnd()
 
 void ModeModelSkeleton::OnUpdate(Observable *o)
 {
-	if (this != ed->cur_mode)
-		return;
 	if (o->GetName() == "Data"){
 
 		multi_view->ResetData(data);
