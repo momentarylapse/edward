@@ -80,6 +80,13 @@ void ModeModel::OnStart()
 
 void ModeModel::OnEnd()
 {
+	if (PropertiesDialog)
+		delete(PropertiesDialog);
+	PropertiesDialog = NULL;
+	if (MaterialDialog)
+		delete(MaterialDialog);
+	MaterialDialog = NULL;
+
 	ed->ToolbarSetCurrent(HuiToolbarTop);
 	ed->ToolbarReset();
 	ed->EnableToolbar(false);

@@ -353,6 +353,10 @@ void ModeWorld::OnKeyUp()
 
 void ModeWorld::OnEnd()
 {
+	if (WorldDialog)
+		delete(WorldDialog);
+	WorldDialog = NULL;
+
 	ed->ToolbarSetCurrent(HuiToolbarTop);
 	ed->ToolbarReset();
 	ed->EnableToolbar(false);
