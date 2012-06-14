@@ -1340,7 +1340,7 @@ void MultiView::MouseActionStart(int button)
 	if (cur_action)
 		MouseActionEnd(false);
 	if (action[button].name != ""){
-		msg_error("mouse action start <" + action[button].name + ">");
+		msg_write("mouse action start " + action[button].name);
 
 		active_mouse_action = button;
 		mouse_action_pos0 = MouseOverTP;
@@ -1398,7 +1398,7 @@ void MultiView::MouseActionUpdate()
 void MultiView::MouseActionEnd(bool set)
 {
 	if (cur_action){
-		msg_error("mouse action end");
+		msg_write("mouse action end");
 		if (set){
 			_data_->Execute(cur_action);
 			Notify("ActionExecute");
