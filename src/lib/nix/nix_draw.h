@@ -13,7 +13,7 @@ void _cdecl NixResetToColor(const color &c);
 void _cdecl NixSetFontColor(const color &c);
 void _cdecl NixDrawChar(int x,int y,char c);
 void _cdecl NixDrawStr(int x,int y,const string &str);
-int _cdecl NixGetStrWidth(const string &str,int start,int end);
+int _cdecl NixGetStrWidth(const string &str);
 void _cdecl NixDrawFloat(int x,int y,float fl,int com);
 void _cdecl NixDrawInt(int x,int y,int num);
 void _cdecl NixDrawLine(float x1,float y1,float x2,float y2,const color &c,float depth);

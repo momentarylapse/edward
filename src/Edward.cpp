@@ -466,7 +466,7 @@ void Edward::ForceRedraw()
 
 void Edward::DrawStr(int x, int y, const string &str, AlignType a)
 {
-	int w = NixGetStrWidth(str, -1, -1);
+	int w = NixGetStrWidth(str);
 	if (a == AlignRight)
 		x -= w;
 	else if (a == AlignCenter)

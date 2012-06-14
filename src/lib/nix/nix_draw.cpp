@@ -26,27 +26,23 @@ void NixDrawChar(int x,int y,char c)
 	NixDrawStr(x,y,str);
 }
 
+string str_utf8_to_ubyte(const string &str)
+{
+	string r;
+	for (int i=0;i<str.num;i++)
+		if (((unsigned int)str[i] & 0x80) > 0){
+			r.add(((str[i] & 0x1f) << 6) + (str[i + 1] & 0x3f));
+			i ++;
+		}else
+			r.add(str[i]);
+	return r;
+}
+
 void NixDrawStr(int x,int y,const string &str)
 {
 	msg_db_r("NixDrawStr",10);
-	/*char *str2=_file_get_str_();
-	int ll=strlen(str),l=0;
-	for (int i=0;i<ll;i++){
-		if (str[i]=='&'){
-			i++;
-			if (str[i]=='a')		str2[l++]=(signed char)0xe4;
-			else if (str[i]=='o')	str2[l++]=(signed char)0xf6;
-			else if (str[i]=='u')	str2[l++]=(signed char)0xfc;
-			else if (str[i]=='A')	str2[l++]=(signed char)0xc4;
-			else if (str[i]=='O')	str2[l++]=(signed char)0xd6;
-			else if (str[i]=='U')	str2[l++]=(signed char)0xdc;
-			else if (str[i]=='s')	str2[l++]=(signed char)0xdf;
-			else str2[l++]=str[i-1];
-		}else
-			str2[l++]=str[i];
-	}
-	str2[l++]=0;
-	str=str2;*/
+	string str2 = str_utf8_to_ubyte(str);
+
 	NixSetTexture(-1);
 	OGLSet2DMode();
 	bool z_test, z_write;
@@ -57,20 +53,19 @@ void NixDrawStr(int x,int y,const string &str)
 	glColor3f(FontColor.r,FontColor.g,FontColor.b);
 	glRasterPos3f(float(x),float(y+2+int(float(NixFontHeight)*0.75f)),-1.0f);
 	glListBase(NixOGLFontDPList);
-	glCallLists(str.num,GL_UNSIGNED_BYTE,(char*)str.data);
+	glCallLists(str2.num,GL_UNSIGNED_BYTE,(char*)str2.data);
 	glRasterPos3f(0,0,0);
 	if (z_test)
 		NixSetZ(z_write, z_test);
 	msg_db_l(10);
 }
 
-int NixGetStrWidth(const string &str,int start,int end)
+int NixGetStrWidth(const string &str)
 {
-	if (start<0)	start=0;
-	if (end<0)		end=str.num;
-	int w=0;
-	for (int i=start;i<end;i++)
-		w+=NixFontGlyphWidth[(unsigned char)str[i]];
+	string str2 = str_utf8_to_ubyte(str);
+	int w = 0;
+	for (int i=0;i<str2.num;i++)
+		w += NixFontGlyphWidth[(unsigned char)str2[i]];
 	return w;
 }
 

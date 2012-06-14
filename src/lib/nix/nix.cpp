@@ -14,7 +14,7 @@
 #include "nix_common.h"
 
 
-string NixVersion = "0.9.7.0";
+string NixVersion = "0.9.7.1";
 
 
 // libraries (in case Visual C++ is used)

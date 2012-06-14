@@ -826,7 +826,7 @@ void MultiView::DrawWin(int win, irect dest)
 
 	// type of view
 
-	view[win].name_dest = irect(dest.x1 + 3, dest.x1 + 3 + NixGetStrWidth(view_kind, -1, -1), dest.y1, dest.y1 + 20);
+	view[win].name_dest = irect(dest.x1 + 3, dest.x1 + 3 + NixGetStrWidth(view_kind), dest.y1, dest.y1 + 20);
 	if (pos_in_irect(mx, my, view[win].name_dest))
 		NixSetFontColor(Red);
 	ed->DrawStr(dest.x1 + 3, dest.y1, view_kind);
