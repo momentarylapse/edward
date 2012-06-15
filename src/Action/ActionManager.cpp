@@ -84,6 +84,7 @@ bool ActionManager::Redoable()
 void ActionManager::MarkCurrentAsSave()
 {
 	save_pos = cur_pos;
+	data->Notify("Change");
 }
 
 
