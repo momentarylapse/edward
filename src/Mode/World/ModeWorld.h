@@ -49,6 +49,7 @@ public:
 	void OptimizeView();
 
 	void ImportWorldProperties();
+	void LoadTerrain();
 
 	void ExecutePropertiesDialog();
 	void ExecuteSelectionPropertiesDialog();

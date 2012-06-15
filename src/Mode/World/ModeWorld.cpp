@@ -15,6 +15,7 @@
 #include "Creation/ModeWorldCreateObject.h"
 #include "Creation/ModeWorldCreateTerrain.h"
 #include "../../Action/World/ActionWorldEditData.h"
+#include "../../Action/World/ActionWorldAddTerrain.h"
 
 ModeWorld *mode_world = NULL;
 
@@ -81,6 +82,8 @@ void ModeWorld::OnCommand(const string & id)
 		ed->SetMode(new ModeWorldCreateObject(ed->cur_mode));
 	if (id == "terrain_create")
 		ed->SetMode(new ModeWorldCreateTerrain(ed->cur_mode));
+	if (id == "terrain_load")
+		LoadTerrain();
 
 	if (id == "selection_properties")
 		ExecutePropertiesDialog();
@@ -685,6 +688,12 @@ void ModeWorld::OptimizeView()
 	//MVFXEnabled=false;
 	TerrainShowTextureLevel=-1;
 	//TerrainsSelectable=false;
+}
+
+void ModeWorld::LoadTerrain()
+{
+	if (ed->FileDialog(FDTerrain, false, true))
+		data->Execute(new ActionWorldAddTerrain(multi_view->pos, ed->DialogFileNoEnding));
 }
 
 void ModeWorld::ToggleShowEffects()
