@@ -22,7 +22,60 @@ DataMaterial::~DataMaterial()
 
 bool DataMaterial::Save(const string & _filename)
 {
-	return false;
+	filename = _filename;
+	ed->MakeDirs(filename);
+
+	CFile *f = CreateFile(filename);
+	f->WriteFileFormatVersion(false, 4);
+
+	f->WriteComment("// Textures");
+	f->WriteInt(Appearance.NumTextureLevels);
+	for (int i=0;i<Appearance.NumTextureLevels;i++)
+		f->WriteStr(Appearance.TextureFile[i]);
+	f->WriteComment("// Colors");
+	write_color_argb(f, Appearance.ColorAmbient);
+	write_color_argb(f, Appearance.ColorDiffuse);
+	write_color_argb(f, Appearance.ColorSpecular);
+	f->WriteInt(Appearance.ColorShininess);
+	write_color_argb(f, Appearance.ColorEmissive);
+	f->WriteComment("// Transparency");
+	f->WriteInt(Appearance.TransparencyMode);
+	f->WriteInt(Appearance.AlphaFactor * 100.0f);
+	f->WriteInt(Appearance.AlphaSource);
+	f->WriteInt(Appearance.AlphaDestination);
+	f->WriteBool(Appearance.AlphaZBuffer);
+	f->WriteComment("// Appearance");
+	f->WriteInt(Appearance.ShiningDensity);
+	f->WriteInt(Appearance.ShiningLength);
+	f->WriteBool(Appearance.Water);
+	f->WriteComment("// Reflection");
+	f->WriteInt(Appearance.ReflectionMode);
+	f->WriteInt(Appearance.ReflectionDensity);
+	f->WriteInt(Appearance.ReflectionSize);
+	for (int i=0;i<6;i++)
+		f->WriteStr(Appearance.ReflectionTextureFile[i]);
+	f->WriteComment("// ShaderFile");
+	f->WriteStr(Appearance.EffectFile);
+	f->WriteComment("// Physics");
+	f->WriteInt(Physics.RCJump * 1000.0f);
+	f->WriteInt(Physics.RCStatic * 1000.0f);
+	f->WriteInt(Physics.RCSliding * 1000.0f);
+	f->WriteInt(Physics.RCRolling * 1000.0f);
+	f->WriteInt(Physics.RCVJumpMin * 1000.0f);
+	f->WriteInt(Physics.RCVSlidingMin * 1000.0f);
+	f->WriteComment("// Sound");
+	f->WriteInt(Sound.NumRules);
+	for (int i=0;i<Sound.NumRules;i++){
+	}
+
+
+	f->WriteStr("#");
+	f->Close();
+	delete(f);
+
+	ed->SetMessage(_("Gespeichert!"));
+	action_manager->MarkCurrentAsSave();
+	return true;
 }
 
 
