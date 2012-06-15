@@ -50,6 +50,7 @@ public:
 
 	void ImportWorldProperties();
 	void LoadTerrain();
+	void SetEgo();
 
 	void ExecutePropertiesDialog();
 	void ExecuteSelectionPropertiesDialog();

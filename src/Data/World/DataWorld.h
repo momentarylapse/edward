@@ -12,6 +12,7 @@
 #include "../../MultiView.h"
 #include "../../lib/x/x.h"
 
+class DataWorld;
 
 
 #define WORLD_MAX_TEXTURES_PER_TERRAIN	8
@@ -104,6 +105,8 @@ public:
 	void GetBoundaryBox(vector &min, vector &max);
 	int GetSelectedObjects();
 	int GetSelectedTerrains();
+
+	void UpdateData();
 
 	// terrains
 	Array<ModeWorldTerrain> Terrain;

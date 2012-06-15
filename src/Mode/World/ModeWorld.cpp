@@ -16,6 +16,7 @@
 #include "Creation/ModeWorldCreateTerrain.h"
 #include "../../Action/World/ActionWorldEditData.h"
 #include "../../Action/World/ActionWorldAddTerrain.h"
+#include "../../Action/World/ActionWorldSetEgo.h"
 
 ModeWorld *mode_world = NULL;
 
@@ -84,6 +85,9 @@ void ModeWorld::OnCommand(const string & id)
 		ed->SetMode(new ModeWorldCreateTerrain(ed->cur_mode));
 	if (id == "terrain_load")
 		LoadTerrain();
+
+	if (id == "own_figure")
+		SetEgo();
 
 	if (id == "selection_properties")
 		ExecutePropertiesDialog();
@@ -271,10 +275,7 @@ void ModeWorld::OnMouseMove()
 void ModeWorld::OnUpdate(Observable *o)
 {
 	if (o->GetName() == "Data"){
-		foreach(data->Object, o)
-			o.UpdateData();
-		foreach(data->Terrain, t)
-			t.UpdateData();
+		data->UpdateData();
 
 		multi_view->ResetData(data);
 
@@ -488,6 +489,8 @@ void ModeWorld::OnDrawWin(int win, irect dest)
 		foreachi(data->Object, o, i)
 			if (o.is_selected)
 				DrawSelectionObject(o.object, OSelectionAlpha, Red);
+			else if (o.is_special)
+				DrawSelectionObject(o.object, OSelectionAlpha, Green);
 		if ((multi_view->MouseOver>=0)&&(multi_view->MouseOverType==MVDWorldObject))
 			DrawSelectionObject(data->Object[multi_view->MouseOver].object, OSelectionAlpha, White);
 		NixSetAlpha(AlphaNone);
@@ -694,6 +697,17 @@ void ModeWorld::LoadTerrain()
 {
 	if (ed->FileDialog(FDTerrain, false, true))
 		data->Execute(new ActionWorldAddTerrain(multi_view->pos, ed->DialogFileNoEnding));
+}
+
+void ModeWorld::SetEgo()
+{
+	if (data->GetSelectedObjects() != 1){
+		ed->SetMessage(_("Es muss genau ein Objekt markiert sein!"));
+		return;
+	}
+	foreachi(data->Object, o, i)
+		if (o.is_selected)
+			data->Execute(new ActionWorldSetEgo(i));
 }
 
 void ModeWorld::ToggleShowEffects()

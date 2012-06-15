@@ -343,5 +343,16 @@ int DataWorld::GetSelectedTerrains()
 }
 
 
+void DataWorld::UpdateData()
+{
+	foreachi(Object, o, i){
+		o.UpdateData();
+		o.is_special = (i == EgoIndex);
+	}
+	foreach(Terrain, t)
+		t.UpdateData();
+}
+
+
 
 
