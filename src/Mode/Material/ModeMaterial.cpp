@@ -131,7 +131,6 @@ void CreateTorus(int buffer, const vector &pos, const vector dir, float radius1,
 
 void ModeMaterial::OnDrawWin(int win, irect dest)
 {
-	NixSetAmbientLight(color(1,0.2f,0.2f,0.2f));
 	data->ApplyForRendering();
 	if (data->Appearance.NumTextureLevels <= 1){
 		NixVBClear(VBTemp);
