@@ -88,10 +88,10 @@ void TerrainPropertiesDialog::FillTextureList()
 
 void TerrainPropertiesDialog::LoadData()
 {
-	FillTextureList();
 	SetString("material", temp.MaterialFile);
 	Check("default_material", (temp.MaterialFile == ""));
 	Enable("material", false);//(temp.MaterialFile != ""));
+	FillTextureList();
 
 	SetString("", temp.FileName);
 	SetFloat("num_x", temp.NumX);
