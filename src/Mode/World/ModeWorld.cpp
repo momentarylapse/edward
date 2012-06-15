@@ -280,7 +280,7 @@ void ModeWorld::OnUpdate(Observable *o)
 		multi_view->ResetData(data);
 
 		// left -> translate
-		multi_view->SetMouseAction(0, "ActionWorldMoveObjects", MultiView::ActionMove);
+		multi_view->SetMouseAction(0, "ActionWorldMoveSelection", MultiView::ActionMove);
 		// middle/right -> rotate
 		multi_view->SetMouseAction(1, "ActionWorldRotateObjects", MultiView::ActionRotate2d);
 		multi_view->SetMouseAction(2, "ActionWorldRotateObjects", MultiView::ActionRotate);

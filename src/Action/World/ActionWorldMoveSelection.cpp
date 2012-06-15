@@ -5,10 +5,10 @@
  *      Author: michi
  */
 
-#include "ActionWorldMoveObjects.h"
+#include "ActionWorldMoveSelection.h"
 #include "../../Data/World/DataWorld.h"
 
-ActionWorldMoveObjects::ActionWorldMoveObjects(Data *d, const vector &_pos0) :
+ActionWorldMoveSelection::ActionWorldMoveSelection(Data *d, const vector &_pos0) :
 	ActionMultiView(d, _pos0)
 {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
@@ -26,17 +26,18 @@ ActionWorldMoveObjects::ActionWorldMoveObjects(Data *d, const vector &_pos0) :
 		}
 }
 
-ActionWorldMoveObjects::~ActionWorldMoveObjects()
+ActionWorldMoveSelection::~ActionWorldMoveSelection()
 {
 }
 
-void *ActionWorldMoveObjects::execute(Data *d)
+void *ActionWorldMoveSelection::execute(Data *d)
 {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	foreachi(index, i, ii)
 		w->Object[i].pos = old_data[ii] + param;
 	foreachi(terrain_index, i, ii){
 		w->Terrain[i].pos = terrain_old_data[ii] + param;
+		w->Terrain[i].terrain->pos = w->Terrain[i].pos;
 		w->Terrain[i].terrain->Update(-1, -1, -1, -1, TerrainUpdateVertices);
 	}
 	return NULL;
@@ -44,13 +45,14 @@ void *ActionWorldMoveObjects::execute(Data *d)
 
 
 
-void ActionWorldMoveObjects::undo(Data *d)
+void ActionWorldMoveSelection::undo(Data *d)
 {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	foreachi(index, i, ii)
 		w->Object[i].pos = old_data[ii];
 	foreachi(terrain_index, i, ii){
 		w->Terrain[i].pos = terrain_old_data[ii];
+		w->Terrain[i].terrain->pos = w->Terrain[i].pos;
 		w->Terrain[i].terrain->Update(-1, -1, -1, -1, TerrainUpdateVertices);
 	}
 }
