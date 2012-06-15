@@ -55,6 +55,8 @@ ModeWorld::~ModeWorld()
 
 bool ModeWorld::SaveAs()
 {
+	if (ed->FileDialog(FDWorld, true, false))
+		return data->Save(ed->DialogFileComplete);
 	return false;
 }
 
@@ -255,7 +257,9 @@ void ModeWorld::OnLeftButtonDown()
 
 bool ModeWorld::Save()
 {
-	return false;
+	if (data->filename == "")
+		return SaveAs();
+	return data->Save(data->filename);
 }
 
 
