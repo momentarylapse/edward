@@ -12,6 +12,7 @@
 #include "Dialog/SelectionPropertiesDialog.h"
 #include "Dialog/ObjectPropertiesDialog.h"
 #include "Creation/ModeWorldCreateObject.h"
+#include "Creation/ModeWorldCreateTerrain.h"
 #include "../../Action/World/ActionWorldEditData.h"
 
 ModeWorld *mode_world = NULL;
@@ -77,6 +78,8 @@ void ModeWorld::OnCommand(const string & id)
 
 	if (id == "create_objects")
 		ed->SetMode(new ModeWorldCreateObject(ed->cur_mode));
+	if (id == "terrain_create")
+		ed->SetMode(new ModeWorldCreateTerrain(ed->cur_mode));
 
 	if (id == "selection_properties")
 		ExecutePropertiesDialog();
