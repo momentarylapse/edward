@@ -6,6 +6,7 @@
  */
 
 #include "TerrainPropertiesDialog.h"
+#include "../../../Action/World/ActionWorldEditTerrain.h"
 #include "../../../Edward.h"
 #include <assert.h>
 
@@ -50,6 +51,7 @@ TerrainPropertiesDialog::~TerrainPropertiesDialog()
 void TerrainPropertiesDialog::ApplyData()
 {
 	temp.MaterialFile = GetString("material");
+	data->Execute(new ActionWorldEditTerrain(index, temp));
 }
 
 
@@ -67,7 +69,6 @@ void TerrainPropertiesDialog::OnTextures()
 void TerrainPropertiesDialog::FillTextureList()
 {
 	Material *m = MetaLoadMaterial(GetString("material"));
-	msg_write(p2s(m));
 
 	Reset("textures");
 	for (int i=0;i<temp.NumTextures;i++){
@@ -121,12 +122,12 @@ void TerrainPropertiesDialog::OnSaveAs()
 
 void TerrainPropertiesDialog::OnDeleteTextureLevel()
 {
-	int index = GetInt("textures");
+	int n = GetInt("textures");
 	if (temp.NumTextures <= 1){
 		ed->ErrorBox(_("Mindestens eine Textur-Ebene muss existieren!"));
 		return;
 	}
-	for (int i=index;i<temp.NumTextures-1;i++){
+	for (int i=n;i<temp.NumTextures-1;i++){
 		temp.TextureFile[i] = temp.TextureFile[i+1];
 		temp.TextureScale[i] = temp.TextureScale[i+1];
 	}
@@ -227,6 +228,7 @@ void TerrainPropertiesDialog::OnUpdate(Observable *o)
 
 void TerrainPropertiesDialog::OnOk()
 {
+	ApplyData();
 	delete(this);
 }
 
