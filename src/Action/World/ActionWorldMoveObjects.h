@@ -22,9 +22,9 @@ public:
 
 	void *execute(Data *d);
 	void undo(Data *d);
-
-	// continuous editing
-	void abort(Data *d);
+private:
+	Array<int> terrain_index;
+	Array<vector> terrain_old_data;
 };
 
 #endif /* ACTIONWORLDMOVEOBJECTS_H_ */
