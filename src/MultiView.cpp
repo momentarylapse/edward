@@ -664,7 +664,7 @@ string GetMVScaleByZoom(MultiView *mv, vector &v)
 	if (l>0.000000000000001f){		unit = "f";	f=1000000000000000.0f;	}
 	if (l>0.000000000001f){			unit = "p";	f=1000000000000.0f;	}
 	if (l>0.000000001f){			unit = "n";	f=1000000000.0f;	}
-	if (l>0.000001f){				unit = "u";	f=1000000.0f;	}
+	if (l>0.000001f){				unit = "\u00b5";	f=1000000.0f;	}
 	if (l>0.001f){					unit = "m";	f=1000.0f;	}
 	if (l>1.0f){					unit = "";	f=1.0f;	}
 	if (l>1000.0f){					unit = "k";	f=0.001f;	}
