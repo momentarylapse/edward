@@ -188,34 +188,36 @@ void MaterialPropertiesDialog::ApplyData()
 	temp.ColorSpecular = GetColor("mat_sp");
 	temp.ColorEmissive = GetColor("mat_em");
 	temp.ColorShininess = GetFloat("mat_shininess");
-	if (GetInt("transparency_mode")==1)
-		temp.TransparencyMode=TransparencyModeColorKeySmooth;
-	else if (GetInt("transparency_mode")==2)
-		temp.TransparencyMode=TransparencyModeColorKeyHard;
-	else if (GetInt("transparency_mode")==3)
-		temp.TransparencyMode=TransparencyModeFactor;
-	else if (GetInt("transparency_mode")==4)
-		temp.TransparencyMode=TransparencyModeFunctions;
+	int n = GetInt("transparency_mode");
+	if (n == 1)
+		temp.TransparencyMode = TransparencyModeColorKeySmooth;
+	else if (n == 2)
+		temp.TransparencyMode = TransparencyModeColorKeyHard;
+	else if (n == 3)
+		temp.TransparencyMode = TransparencyModeFactor;
+	else if (n == 4)
+		temp.TransparencyMode = TransparencyModeFunctions;
 	else
-		temp.TransparencyMode=TransparencyModeNone;
-	temp.AlphaZBuffer=IsChecked("alpha_z_buffer");
-	temp.AlphaFactor=GetFloat("alpha_factor") * 0.01f;
-	temp.AlphaSource=GetInt("alpha_source");
-	temp.AlphaDestination=GetInt("alpha_dest");
-	temp.ShiningDensity=GetInt("shining");
-	temp.ShiningLength=GetInt("shining_length");
-	temp.Water=IsChecked("water");
+		temp.TransparencyMode = TransparencyModeNone;
+	temp.AlphaZBuffer = IsChecked("alpha_z_buffer");
+	temp.AlphaFactor = GetFloat("alpha_factor") * 0.01f;
+	temp.AlphaSource = GetInt("alpha_source");
+	temp.AlphaDestination = GetInt("alpha_dest");
+	temp.ShiningDensity = GetInt("shining");
+	temp.ShiningLength = GetInt("shining_length");
+	temp.Water = IsChecked("water");
 
 	temp.ReflectionMode = GetInt("reflection");
 	temp.ReflectionDensity = GetInt("reflection_density");
 	temp.ReflectionSize = GetInt("reflection_size");
 
-	/*if (data->EffectFile != GetString("effect_file")){
-		NixDeleteShader(data->EffectIndex);
-		data->EffectFile = GetString("effect_file");
+	if (temp.EffectFile != GetString("effect_file")){
+		NixDeleteShader(temp.EffectIndex);
+		temp.EffectFile = GetString("effect_file");
 
-		data->EffectIndex = NixLoadShader(MaterialDir + data->EffectFile + ".fx");
-	}*/
+		temp.EffectIndex = NixLoadShader(MaterialDir + temp.EffectFile + ".fx");
+	}
+
 	data->Execute(new ActionMaterialEditAppearance(temp));
 }
 
