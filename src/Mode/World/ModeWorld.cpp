@@ -688,8 +688,8 @@ void ModeWorld::OptimizeView()
 		multi_view->radius = VecLengthFuzzy(max - min) * 1.3f;
 
 	ViewStage = 0;
-	//MVFXEnabled=false;
-	TerrainShowTextureLevel=-1;
+	//ShowEffects = false;
+	TerrainShowTextureLevel = -1;
 	//TerrainsSelectable=false;
 }
 

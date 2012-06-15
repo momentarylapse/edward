@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-561
+560
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -949,8 +949,6 @@ sun_ang_from_camera
 
 sun_enabled
 enabled
-sun_from_view
-Sun from camera direction
 terrain_create
 Terrain (new)...
 terrain_dialog
@@ -1126,7 +1124,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-143
+146
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1196,6 +1194,10 @@ Editor für Spiele-Daten der x9-Engine
 Editor for game data of the x9 engine
 Eigenschaften
 Properties
+Es muss genau ein Objekt markiert sein!
+
+Es sind nur maximal %d Texturen pro Terrain erlaubt!
+
 Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
 File %s has a wrong file format: %d (expected: %d - %d)!
 Fehler
@@ -1267,6 +1269,8 @@ Materials
 Materialien (*.material)
 Materials (*.material)
 Mesh
+
+Mindestens eine Textur-Ebene muss existieren!
 
 Mindestens eine Textur-Ebene muss vorhanden sein!
 At least one texture level has to exist!

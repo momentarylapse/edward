@@ -2226,12 +2226,12 @@ menu_font
 0
 
 
-39
+33
 ItemPopup
 menu_file
 
 1
-17
+15
 0
 0
 0
@@ -2359,84 +2359,6 @@ hui:new
 
 ItemImage
 model_open
-hui:open
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemPopup
-menu_object
-
-1
-2
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-object_new
-hui:new
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-object_open
-hui:open
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemPopup
-menu_item
-
-1
-2
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-item_new
-hui:new
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-item_open
 hui:open
 1
 0
@@ -4933,12 +4855,12 @@ menu_material
 0
 
 
-39
+33
 ItemPopup
 menu_file
 
 1
-17
+15
 0
 0
 0
@@ -5066,84 +4988,6 @@ hui:new
 
 ItemImage
 model_open
-hui:open
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemPopup
-menu_object
-
-1
-2
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-object_new
-hui:new
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-object_open
-hui:open
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemPopup
-menu_item
-
-1
-2
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-item_new
-hui:new
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-item_open
 hui:open
 1
 0
@@ -7001,12 +6845,12 @@ menu_model
 0
 
 
-144
+138
 ItemPopup
 menu_model_file
 
 1
-20
+18
 0
 0
 0
@@ -7225,84 +7069,6 @@ hui:new
 
 ItemImage
 model_open
-hui:open
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemPopup
-menu_object
-
-1
-2
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-object_new
-hui:new
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-object_open
-hui:open
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemPopup
-menu_item
-
-1
-2
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-item_new
-hui:new
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-item_open
 hui:open
 1
 0
@@ -11398,12 +11164,12 @@ menu_skeleton
 0
 
 
-80
+74
 ItemPopup
 menu_file
 
 1
-19
+17
 0
 0
 0
@@ -11583,84 +11349,6 @@ hui:new
 
 ItemImage
 model_open
-hui:open
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemPopup
-menu_object
-
-1
-2
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-object_new
-hui:new
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-object_open
-hui:open
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemPopup
-menu_item
-
-1
-2
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-item_new
-hui:new
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-item_open
 hui:open
 1
 0
@@ -15772,12 +15460,12 @@ menu_world
 0
 
 
-96
+88
 ItemPopup
 menu_world_file
 
 1
-20
+18
 0
 0
 0
@@ -16008,84 +15696,6 @@ hui:open
 
 
 ItemPopup
-menu_object
-
-1
-2
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-object_new
-hui:new
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-object_open
-hui:open
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemPopup
-menu_item
-
-1
-2
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-item_new
-hui:new
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-item_open
-hui:open
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemPopup
 menu_font
 
 1
@@ -16271,7 +15881,7 @@ ItemPopup
 menu_world_creation
 
 1
-10
+8
 0
 0
 0
@@ -16374,32 +15984,6 @@ hui:new
 ItemImage
 camscript_load
 hui:open
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemSeparator
-
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-sun_from_view
-
 1
 0
 0
@@ -17446,7 +17030,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-714
+713
 // Text
 ad_dialog
 Verwaltung
@@ -18644,8 +18228,6 @@ sun_di
 
 sun_enabled
 aktiviert
-sun_from_view
-Sonne aus Kamerarichtung
 sun_sp
 
 table_1
@@ -18882,7 +18464,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-714
+713
 // Text
 ad_dialog
 Administration
@@ -20080,8 +19662,6 @@ sun_di
 
 sun_enabled
 enabled
-sun_from_view
-Sun from camera direction
 sun_sp
 
 table_1
@@ -20522,7 +20102,7 @@ program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 // Language
 日本語
 // NumIDs
-714
+713
 // Text
 ad_dialog
 
@@ -21719,8 +21299,6 @@ sun_ang_y
 sun_di
 
 sun_enabled
-
-sun_from_view
 
 sun_sp
 
