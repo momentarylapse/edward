@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-559
+561
 // Data (ID,Text)
 ad_dialog
 
@@ -16,6 +16,8 @@ current game\\all files\\details\\unnesessary\\missing
 add_material
 
 add_script
+
+add_texture_level
 
 administrate
 
@@ -98,6 +100,8 @@ camscript_load
 cancel
 キャンセル
 choose_material
+
+clear_texture_level
 
 connect
 
@@ -1122,7 +1126,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-140
+143
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1153,6 +1157,8 @@ zzz_setbgimage
 Abbrechen
 
 Administration
+
+Angegebene Welt konnte nicht korrekt geladen werden!
 
 Animation
 
@@ -1391,6 +1397,10 @@ message.txt öffnen
 neue Punkte setzen
 
 neuen Punkt in Dreieck setzen
+
+neues Objekt setzen
+
+neues Terrain...
 
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 

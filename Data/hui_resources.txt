@@ -14306,7 +14306,7 @@ terrain_dialog
 0
 
 
-26
+28
 DefButton
 ok
 hui:ok
@@ -14555,12 +14555,38 @@ hui:save-as
 terrain_dialog_tab_control
 
 Button
+add_texture_level
+hui:add
+1
+5
+155
+65
+25
+1
+0
+0
+terrain_dialog_tab_control
+
+Button
 delete_texture_level
 hui:delete
 1
-115
+75
 155
-130
+90
+25
+1
+0
+0
+terrain_dialog_tab_control
+
+Button
+clear_texture_level
+hui:clear
+1
+170
+155
+80
 25
 1
 0
@@ -14571,9 +14597,9 @@ Button
 texture_map_complete
 hui:zoom-fit
 1
-250
+255
 155
-165
+160
 25
 1
 0
@@ -17420,7 +17446,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-712
+714
 // Text
 ad_dialog
 Verwaltung
@@ -17436,6 +17462,8 @@ add_material
 neu...
 add_script
 Hinzufügen
+add_texture_level
+Neu
 administrate
 Verwalten
 adress
@@ -17528,6 +17556,8 @@ cancel
 Abbrechen
 choose_material
 Mit Material belegen...
+clear_texture_level
+Leeren
 connect
 --Punkte vereinen
 copy
@@ -17583,7 +17613,7 @@ Item löschen
 delete_material
 löschen
 delete_texture_level
-Ebene löschen
+Löschen
 description
 
 detail_0
@@ -18852,7 +18882,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-712
+714
 // Text
 ad_dialog
 Administration
@@ -18867,6 +18897,8 @@ current game\\all files\\details\\unnesessary\\missing
 add_material
 
 add_script
+
+add_texture_level
 
 administrate
 Administrate
@@ -18960,6 +18992,8 @@ cancel
 Cancel
 choose_material
 Choose material...
+clear_texture_level
+
 connect
 Connect Points
 copy
@@ -20488,7 +20522,7 @@ program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 // Language
 日本語
 // NumIDs
-712
+714
 // Text
 ad_dialog
 
@@ -20503,6 +20537,8 @@ current game\\all files\\details\\unnesessary\\missing
 add_material
 
 add_script
+
+add_texture_level
 
 administrate
 
@@ -20595,6 +20631,8 @@ camscript_load
 cancel
 キャンセル
 choose_material
+
+clear_texture_level
 
 connect
 

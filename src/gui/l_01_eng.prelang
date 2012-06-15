@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-559
+561
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -16,6 +16,8 @@ current game\\all files\\details\\unnesessary\\missing
 add_material
 
 add_script
+
+add_texture_level
 
 administrate
 Administrate
@@ -99,6 +101,8 @@ cancel
 Cancel
 choose_material
 Choose material...
+clear_texture_level
+
 connect
 Connect Points
 copy
@@ -1122,7 +1126,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-140
+143
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1154,6 +1158,8 @@ Abbrechen
 Cancel
 Administration
 Administration
+Angegebene Welt konnte nicht korrekt geladen werden!
+
 Animation
 Animation
 Ansicht
@@ -1391,6 +1397,10 @@ Open message.txt
 neue Punkte setzen
 place new vertex
 neuen Punkt in Dreieck setzen
+
+neues Objekt setzen
+
+neues Terrain...
 
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m

@@ -11,6 +11,7 @@
 #include "../../lib/x/x.h"
 #include "Dialog/SelectionPropertiesDialog.h"
 #include "Dialog/ObjectPropertiesDialog.h"
+#include "Dialog/TerrainPropertiesDialog.h"
 #include "Creation/ModeWorldCreateObject.h"
 #include "Creation/ModeWorldCreateTerrain.h"
 #include "../../Action/World/ActionWorldEditData.h"
@@ -664,6 +665,10 @@ void ModeWorld::ExecuteObjectPropertiesDialog(int index)
 
 void ModeWorld::ExecuteTerrainPropertiesDialog(int index)
 {
+	TerrainPropertiesDialog *dlg = new TerrainPropertiesDialog(ed, false, data, index);
+	dlg->Update();
+
+	HuiWaitTillWindowClosed(dlg);
 }
 
 

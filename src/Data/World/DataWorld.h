@@ -68,6 +68,18 @@ public:
 	void UpdateData();
 };
 
+class ModeWorldEditingTerrain
+{
+public:
+	string FileName;
+	int NumX, NumZ;
+	vector Pattern;
+	string MaterialFile;
+	int NumTextures;
+	string TextureFile[TERRAIN_MAX_TEXTURES];
+	vector TextureScale[TERRAIN_MAX_TEXTURES];
+};
+
 class ModeWorldObject: public MultiViewSingleData
 {
 public:

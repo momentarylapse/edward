@@ -56,9 +56,13 @@ enum{
 	TerrainDialog->AddButton("Speichern...",320,10,95,25,HMM_TERRAIN_SAVE_AS);
 	TerrainDialog->SetImage(HMM_TERRAIN_SAVE_AS,HuiImageSaveAs);
 	TerrainDialog->SetTabCreationPage(HMM_TERRAIN_DIALOG_TAB_CONTROL,1);
-	TerrainDialog->AddButton("Ebene l&oschen",115,155,130,25,HMM_DELETE_TEXTURE_LEVEL);
+	TerrainDialog->AddButton("Neu",5,155,65,25,HMM_ADD_TEXTURE_LEVEL);
+	TerrainDialog->SetImage(HMM_ADD_TEXTURE_LEVEL,HuiImageAdd);
+	TerrainDialog->AddButton("L&oschen",75,155,90,25,HMM_DELETE_TEXTURE_LEVEL);
 	TerrainDialog->SetImage(HMM_DELETE_TEXTURE_LEVEL,HuiImageDelete);
-	TerrainDialog->AddButton("auf ganzes Terrain",250,155,165,25,HMM_TEXTURE_MAP_COMPLETE);
+	TerrainDialog->AddButton("Leeren",170,155,80,25,HMM_CLEAR_TEXTURE_LEVEL);
+	TerrainDialog->SetImage(HMM_CLEAR_TEXTURE_LEVEL,HuiImageClear);
+	TerrainDialog->AddButton("auf ganzes Terrain",255,155,160,25,HMM_TEXTURE_MAP_COMPLETE);
 	TerrainDialog->SetImage(HMM_TEXTURE_MAP_COMPLETE,HuiImageZoomFit);
 	TerrainDialog->AddListView("!format=tTTit\\Ebene\\Gr&o&se X\\Gr&o&se Z\\\\Datei",5,5,415,140,HMM_TEXTURES);
 	TerrainDialog->SetTabCreationPage(HMM_TERRAIN_DIALOG_TAB_CONTROL,2);
