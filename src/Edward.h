@@ -52,11 +52,11 @@ enum{
 void read_color_4i(CFile *f, int *c);
 void write_color_4i(CFile *f, int *c);
 void read_color_argb(CFile *f, color &c);
-void write_color_argb(CFile *f, color &c);
+void write_color_argb(CFile *f, const color &c);
 void read_color_rgba(CFile *f, color &c);
-void write_color_rgba(CFile *f, color &c);
+void write_color_rgba(CFile *f, const color &c);
 void read_color_3i(CFile *f, color &c);
-void write_color_3i(CFile *f, color &c);
+void write_color_3i(CFile *f, const color &c);
 color i42c(int *c);
 
 class Edward : public Observer, public CHuiWindow
