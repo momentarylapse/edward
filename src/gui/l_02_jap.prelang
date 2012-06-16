@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-559
+533
 // Data (ID,Text)
 ad_dialog
 
@@ -117,16 +117,12 @@ current_mode_administration
 
 current_mode_font
 [フォント　の　モード]
-current_mode_item
-[アイテム　の　モード]
 current_mode_model_move
 [モデル　の　モード (アニメーション)]
 current_mode_model_skeleton
 [モデル　の　モード (骨格)]
 current_mode_none
 [なし]
-current_mode_object
-[オブジェクト　の　モード]
 current_mode_world
 [世界　の　モード]
 cut_out
@@ -169,13 +165,7 @@ eat_triangles
 
 eat_vertices
 
-edit_item
-編集
 edit_material
-編集
-edit_model
-編集
-edit_object
 編集
 edit_scripts
 
@@ -365,26 +355,6 @@ invert_selection
 
 invert_trias
 
-item_dialog
-
-item_dialog_t_description
-
-item_dialog_t_max_scriptvars
-
-item_dialog_t_maxnum
-
-item_dialog_t_model
-
-item_dialog_t_name
-名前
-item_dialog_t_num
-
-item_dialog_t_object
-
-item_dialog_t_type
-
-item_dialog_tab_control
-common\\script variables
 item_new
 新規
 item_open
@@ -787,28 +757,6 @@ num_x
 
 num_z
 
-object_dialog
-
-object_dialog_t_item
-
-object_dialog_t_life
-
-object_dialog_t_mass
-質量
-object_dialog_t_maxitems
-
-object_dialog_t_model
-
-object_dialog_t_name
-名前
-object_dialog_t_radius
-
-object_dialog_t_scriptfile
-
-object_dialog_t_scriptvars
-
-object_dialog_tab_control
-common\\script
 object_new
 新規
 object_open

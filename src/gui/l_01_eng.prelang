@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-559
+533
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -117,16 +117,12 @@ current_mode_administration
 -Administration-Mode-
 current_mode_font
 -Font-Mode-
-current_mode_item
--Item-Mode-
 current_mode_model_move
 -Model-Mode (Animation)-
 current_mode_model_skeleton
 -Model-Mode (Skeleton)-
 current_mode_none
 -Empty-Mode-
-current_mode_object
--Object-Mode-
 current_mode_world
 -World-Mode-
 cut_out
@@ -169,13 +165,7 @@ eat_triangles
 triangles
 eat_vertices
 vertices
-edit_item
-edit
 edit_material
-edit
-edit_model
-edit
-edit_object
 edit
 edit_scripts
 Scripts...
@@ -365,26 +355,6 @@ invert_selection
 
 invert_trias
 Triangle inversion
-item_dialog
-Item properties
-item_dialog_t_description
-description
-item_dialog_t_max_scriptvars
-number (max):
-item_dialog_t_maxnum
-number (max)
-item_dialog_t_model
-model
-item_dialog_t_name
-name
-item_dialog_t_num
-number
-item_dialog_t_object
-object
-item_dialog_t_type
-type
-item_dialog_tab_control
-common\\script variables
 item_new
 New
 item_open
@@ -787,28 +757,6 @@ num_x
 \\1
 num_z
 \\1
-object_dialog
-Object properties
-object_dialog_t_item
-item
-object_dialog_t_life
-life
-object_dialog_t_mass
-mass
-object_dialog_t_maxitems
-max.number of items
-object_dialog_t_model
-model
-object_dialog_t_name
-name
-object_dialog_t_radius
-radius
-object_dialog_t_scriptfile
-script file:
-object_dialog_t_scriptvars
-!bold\\script variables:
-object_dialog_tab_control
-common\\script
 object_new
 New
 object_open
