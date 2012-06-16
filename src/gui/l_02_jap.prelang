@@ -1124,7 +1124,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-146
+147
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1211,6 +1211,8 @@ Font
 Font-Datei
 
 Font-Dateien (*.xfont)
+
+Gespeichert!
 
 Hinten
 

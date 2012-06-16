@@ -1124,7 +1124,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-146
+147
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1212,6 +1212,8 @@ Font-Datei
 Font file
 Font-Dateien (*.xfont)
 Font files (*.xfont)
+Gespeichert!
+
 Hinten
 Back
 Hinten (-z)

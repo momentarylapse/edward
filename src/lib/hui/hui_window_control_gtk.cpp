@@ -181,10 +181,13 @@ HuiControl *CHuiWindow ::_GetControl_(const string &id)
 {
 	if ((id.num == 0) && (cur_id.num > 0))
 		return _GetControl_(cur_id);
-	for (int i=0;i<control.num;i++){
-		if (control[i]->id == id)
-			return control[i];
-	}
+
+	// search backwards -> multiple AddText()s with identical ids
+	//   will always set their own text
+	foreachb(control, c)
+		if (c->id == id)
+			return c;
+
 	if (id.num != 0){
 		// ...test if exists in menu/toolbar before reporting an error!
 		//msg_error("hui: unknown id: '" + id + "'");
