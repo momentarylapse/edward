@@ -1,71 +1,35 @@
-// IDs
-enum{
-	HMM_WORLD_OBJECT_DIALOG,
-	HMM_WORLD_OBJECT_DIALOG_GRP_POS,
-	HMM_WORLD_OBJECT_DIALOG_GRP_ANG,
-	HMM_OK,
-	HMM_CANCEL,
-	HMM_X,
-	HMM_POS_X,
-	HMM_Y,
-	HMM_POS_Y,
-	HMM_Z,
-	HMM_POS_Z,
-	HMM_ANG_X,
-	HMM_ANG_Y,
-	HMM_ANG_Z,
-	HMM_DEGREE,
-	HMM_WORLD_OBJECT_DIALOG_T_NAME,
-	HMM_NAME,
-	HMM_APPLY,
-	HMM_WORLD_OBJECT_DIALOG_T_TYPE,
-	HMM_KIND,
-	HMM_LU,
-	HMM_FIND_OBJECT,
-	HMM_EDIT_OBJECT
-};
-
-
-
 	// dialog
-	ObjectDialog=HuiCreateDialog("Objekt-Eigenschaften",390,190,MainWin,true,&ObjectDialogFunction);
-	ObjectDialog->SetID(HMM_WORLD_OBJECT_DIALOG);
-	ObjectDialog->AddGroup("Position",10,70,120,110,HMM_WORLD_OBJECT_DIALOG_GRP_POS);
-	ObjectDialog->AddGroup("Winkel",140,70,120,110,HMM_WORLD_OBJECT_DIALOG_GRP_ANG);
-	ObjectDialog->AddDefButton("OK",280,90,100,25,HMM_OK);
-	ObjectDialog->SetImage(HMM_OK,HuiImageOk);
-	ObjectDialog->AddButton("Abbrechen",280,120,100,25,HMM_CANCEL);
-	ObjectDialog->SetImage(HMM_CANCEL,HuiImageCancel);
-	ObjectDialog->AddText("X",20,90,20,25,HMM_X);
-	ObjectDialog->AddEdit("",40,90,65,25,HMM_POS_X);
-	ObjectDialog->AddText("Y",20,120,20,25,HMM_Y);
-	ObjectDialog->AddEdit("",40,120,65,25,HMM_POS_Y);
-	ObjectDialog->AddText("Z",20,150,20,25,HMM_Z);
-	ObjectDialog->AddEdit("",40,150,65,25,HMM_POS_Z);
-	ObjectDialog->AddEdit("",170,90,65,25,HMM_ANG_X);
-	ObjectDialog->AddText("Y",150,120,20,25,HMM_Y);
-	ObjectDialog->AddEdit("",170,120,65,25,HMM_ANG_Y);
-	ObjectDialog->AddText("Z",150,150,20,25,HMM_Z);
-	ObjectDialog->AddEdit("",170,150,65,25,HMM_ANG_Z);
-	ObjectDialog->AddText("°",235,90,20,25,HMM_DEGREE);
-	ObjectDialog->AddText("°",235,120,20,25,HMM_DEGREE);
-	ObjectDialog->AddText("°",235,150,20,25,HMM_DEGREE);
-	ObjectDialog->AddText("Name:",10,10,50,25,HMM_WORLD_OBJECT_DIALOG_T_NAME);
-	ObjectDialog->AddEdit("",50,10,220,25,HMM_NAME);
-	ObjectDialog->AddButton("&Ubernehmen",280,150,100,25,HMM_APPLY);
-	ObjectDialog->SetImage(HMM_APPLY,HuiImageApply);
-	ObjectDialog->AddText("Typ:",10,40,50,25,HMM_WORLD_OBJECT_DIALOG_T_TYPE);
-	ObjectDialog->AddEdit("",50,40,220,25,HMM_KIND);
-	ObjectDialog->Enable(HMM_KIND,false);
-	ObjectDialog->AddText("X",150,90,20,25,HMM_X);
-	ObjectDialog->AddText("le",105,90,20,25,HMM_LU);
-	ObjectDialog->AddText("le",105,120,20,25,HMM_LU);
-	ObjectDialog->AddText("le",105,150,20,25,HMM_LU);
-	ObjectDialog->AddButton("...",275,40,25,25,HMM_FIND_OBJECT);
-	ObjectDialog->Enable(HMM_FIND_OBJECT,false);
-	ObjectDialog->AddButton("Bearb.",305,40,75,25,HMM_EDIT_OBJECT);
-	ObjectDialog->SetImage(HMM_EDIT_OBJECT,HuiImageEdit);
+	ObjectDialog = HuiCreateDialog("Objekt-Eigenschaften", 390, 220, MainWin, true);
+	ObjectDialog->SetID("world_object_dialog");
+	ObjectDialog->AddText("Position", 10, 100, 60, 25, "world_object_dialog_grp_pos");
+	ObjectDialog->AddText("Winkel", 10, 130, 60, 25, "world_object_dialog_grp_ang");
+	ObjectDialog->AddDefButton("OK", 280, 175, 100, 25, "ok");
+	ObjectDialog->SetImage("ok", "hui:ok");
+	ObjectDialog->AddButton("Abbrechen", 175, 175, 100, 25, "cancel");
+	ObjectDialog->SetImage("cancel", "hui:cancel");
+	ObjectDialog->AddText("X", 115, 70, 20, 25, "x");
+	ObjectDialog->AddEdit("", 75, 100, 90, 25, "pos_x");
+	ObjectDialog->AddText("Y", 210, 70, 20, 25, "y");
+	ObjectDialog->AddEdit("", 170, 100, 90, 25, "pos_y");
+	ObjectDialog->AddText("Z", 305, 70, 20, 25, "z");
+	ObjectDialog->AddEdit("", 265, 100, 90, 25, "pos_z");
+	ObjectDialog->AddEdit("", 75, 130, 90, 25, "ang_x");
+	ObjectDialog->AddEdit("", 170, 130, 90, 25, "ang_y");
+	ObjectDialog->AddEdit("", 265, 130, 90, 25, "ang_z");
+	ObjectDialog->AddText("°", 360, 130, 20, 25, "degree");
+	ObjectDialog->AddText("Name:", 10, 10, 60, 25, "world_object_dialog_t_name");
+	ObjectDialog->AddEdit("", 75, 10, 305, 25, "name");
+	ObjectDialog->AddButton("&Ubernehmen", 70, 175, 100, 25, "apply");
+	ObjectDialog->SetImage("apply", "hui:apply");
+	ObjectDialog->AddText("Typ:", 10, 40, 60, 25, "world_object_dialog_t_type");
+	ObjectDialog->AddEdit("", 75, 40, 245, 25, "kind");
+	ObjectDialog->Enable("kind", false);
+	ObjectDialog->AddText("le", 360, 100, 20, 25, "lu");
+	ObjectDialog->AddButton("", 325, 40, 25, 25, "find_object");
+	ObjectDialog->Enable("find_object", false);
+	ObjectDialog->SetImage("find_object", "hui:open");
+	ObjectDialog->AddButton("", 355, 40, 25, 25, "edit_object");
+	ObjectDialog->SetImage("edit_object", "hui:edit");
 	ObjectDialog->Update();
-
 
 

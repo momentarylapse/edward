@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-560
+559
 // Data (ID,Text)
 ad_dialog
 
@@ -227,8 +227,6 @@ file_list_missing
 
 file_list_super
 
-find_object
-...
 fog_enabled
 
 fog_mode

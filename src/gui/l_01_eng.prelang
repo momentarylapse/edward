@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-560
+559
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -227,8 +227,6 @@ file_list_missing
 !format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
 file_list_super
 !format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
-find_object
-...
 fog_enabled
 enabled
 fog_mode
