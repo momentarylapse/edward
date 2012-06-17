@@ -1,0 +1,34 @@
+	// dialog
+	TerrainDialog = HuiCreateDialog("H&ohenkarte", 615, 275, MainWin, false);
+	TerrainDialog->SetID("terrain_heightmap_dialog");
+	TerrainDialog->AddDefButton("OK", 505, 230, 100, 25, "ok");
+	TerrainDialog->SetImage("ok", "hui:ok");
+	TerrainDialog->AddButton("Abbrechen", 400, 230, 100, 25, "cancel");
+	TerrainDialog->SetImage("cancel", "hui:cancel");
+	TerrainDialog->AddText("Streckung", 30, 100, 100, 25, "terrain_hm_dialog_t_strech");
+	TerrainDialog->AddText("X", 130, 100, 20, 25, "x");
+	TerrainDialog->AddSpinButton("1\\0\\1000\\0.01", 150, 100, 100, 25, "strech_x");
+	TerrainDialog->AddText("Z", 275, 100, 20, 25, "z");
+	TerrainDialog->AddSpinButton("1\\0\\1000\\0.01", 295, 100, 100, 25, "strech_z");
+	TerrainDialog->AddText("!bold\\H&ohen aus Graustufen einer Bilddatei", 10, 10, 385, 25, "terrain_hm_dialog_grp_heightmap");
+	TerrainDialog->AddText("H&ohenkarte", 30, 40, 100, 25, "terrain_dialog_t_heightmap");
+	TerrainDialog->AddEdit("", 130, 40, 235, 25, "height_image");
+	TerrainDialog->Enable("height_image", false);
+	TerrainDialog->AddButton("", 370, 40, 25, 25, "height_image_find");
+	TerrainDialog->SetImage("height_image_find", "hui:open");
+	TerrainDialog->AddText("Maximale H&ohe", 30, 70, 100, 25, "terrain_hm_dialog_t_gray");
+	TerrainDialog->AddEdit("", 130, 70, 235, 25, "height_factor");
+	TerrainDialog->AddText("le", 370, 70, 25, 25, "lu");
+	TerrainDialog->AddText("!bold\\Filter", 10, 160, 385, 25, "terrain_dialog_grp_filter");
+	TerrainDialog->AddDrawingArea("", 405, 10, 200, 200, "preview");
+	TerrainDialog->AddText("Filter", 30, 190, 100, 25, "terrain_dialog_t_filter");
+	TerrainDialog->AddEdit("", 130, 190, 235, 25, "filter_image");
+	TerrainDialog->Enable("filter_image", false);
+	TerrainDialog->AddButton("", 370, 190, 25, 25, "filter_image_find");
+	TerrainDialog->SetImage("filter_image_find", "hui:open");
+	TerrainDialog->AddRadioButton("&Uberschreiben", 130, 130, 130, 25, "height_op:set");
+	TerrainDialog->AddRadioButton("Addieren", 265, 130, 130, 25, "height_op:add");
+	TerrainDialog->AddText("Operation", 30, 130, 100, 25, "terrain_hm_dialog_t_op");
+	TerrainDialog->Update();
+
+
