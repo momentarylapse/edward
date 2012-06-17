@@ -77,7 +77,7 @@ void TerrainPropertiesDialog::FillTextureList()
 			if (i < m->num_textures)
 				tex = m->texture[i];
 		string img = ed->get_tex_image(tex);
-		AddString("textures", format("%d\\%.5f\\%.5f\\%s\\%s", i, temp.TextureScale[i].x, temp.TextureScale[i].z, img.c_str(), file_secure(temp.TextureFile[i]).c_str()));
+		AddString("textures", format("%d\\%.5f\\%.5f\\%s\\%s", i, temp.TextureScale[i].x * (float)temp.NumX, temp.TextureScale[i].z * (float)temp.NumZ, img.c_str(), file_secure(temp.TextureFile[i]).c_str()));
 	}
 	Enable("delete_texture_level", false);
 	Enable("clear_texture_level", false);
@@ -107,9 +107,9 @@ void TerrainPropertiesDialog::OnTexturesEdit()
 	int col = HuiGetEvent()->column;
 	int row = HuiGetEvent()->row;
 	if (col == 1)
-		temp.TextureScale[row].x = s2f(GetCell("textures", row, col));
+		temp.TextureScale[row].x = s2f(GetCell("textures", row, col)) / (float)temp.NumX;
 	else if (col == 2)
-		temp.TextureScale[row].y = s2f(GetCell("textures", row, col));
+		temp.TextureScale[row].z = s2f(GetCell("textures", row, col)) / (float)temp.NumZ;
 }
 
 
