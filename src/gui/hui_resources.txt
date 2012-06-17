@@ -1,6 +1,6 @@
 t3
 // Number Of Resources
-43
+44
 // Resource
 Menu
 
@@ -12619,6 +12619,307 @@ default_material
 terrain_dialog_tab_control
 
 // Resource
+Dialog
+terrain_heightmap_dialog
+
+1
+615
+275
+0
+0
+0
+0
+0
+
+
+22
+DefButton
+ok
+hui:ok
+1
+505
+230
+100
+25
+-1
+0
+0
+
+
+Button
+cancel
+hui:cancel
+1
+400
+230
+100
+25
+-1
+0
+0
+
+
+Text
+terrain_hm_dialog_t_strech
+
+1
+30
+100
+100
+25
+-1
+0
+0
+
+
+Text
+x
+
+1
+130
+100
+20
+25
+-1
+0
+0
+
+
+SpinButton
+strech_x
+
+1
+150
+100
+100
+25
+-1
+0
+0
+
+
+Text
+z
+
+1
+275
+100
+20
+25
+-1
+0
+0
+
+
+SpinButton
+strech_z
+
+1
+295
+100
+100
+25
+-1
+0
+0
+
+
+Text
+terrain_hm_dialog_grp_heightmap
+
+1
+10
+10
+385
+25
+-1
+0
+0
+
+
+Text
+terrain_dialog_t_heightmap
+
+1
+30
+40
+100
+25
+-1
+0
+0
+
+
+Edit
+height_image
+
+0
+130
+40
+235
+25
+-1
+0
+0
+
+
+Button
+height_image_find
+hui:open
+1
+370
+40
+25
+25
+-1
+0
+0
+
+
+Text
+terrain_hm_dialog_t_gray
+
+1
+30
+70
+100
+25
+-1
+0
+0
+
+
+Edit
+height_factor
+
+1
+130
+70
+235
+25
+-1
+0
+0
+
+
+Text
+lu
+
+1
+370
+70
+25
+25
+-1
+0
+0
+
+
+Text
+terrain_dialog_grp_filter
+
+1
+10
+160
+385
+25
+-1
+0
+0
+
+
+DrawingArea
+preview
+
+1
+405
+10
+200
+200
+-1
+0
+0
+
+
+Text
+terrain_dialog_t_filter
+
+1
+30
+190
+100
+25
+-1
+0
+0
+
+
+Edit
+filter_image
+
+0
+130
+190
+235
+25
+-1
+0
+0
+
+
+Button
+filter_image_find
+hui:open
+1
+370
+190
+25
+25
+-1
+0
+0
+
+
+RadioButton
+height_op:set
+
+1
+130
+130
+130
+25
+-1
+0
+0
+
+
+RadioButton
+height_op:add
+
+1
+265
+130
+130
+25
+-1
+0
+0
+
+
+Text
+terrain_hm_dialog_t_op
+
+1
+30
+130
+100
+25
+-1
+0
+0
+
+
+// Resource
 Menu
 menu_view
 
@@ -13710,7 +14011,7 @@ Menu
 menu_world
 
 1
-6
+7
 0
 0
 0
@@ -13719,7 +14020,7 @@ menu_world
 0
 
 
-88
+96
 ItemPopup
 menu_world_file
 
@@ -14123,21 +14424,8 @@ hui:quit
 0
 
 
-Item
-current_mode_world
-
-0
-0
-0
-0
-0
-0
-0
-0
-
-
 ItemPopup
-menu_world_creation
+menu_world_edit
 
 1
 8
@@ -14149,22 +14437,9 @@ menu_world_creation
 0
 
 
-Item
-menu_world_sign_add
-
-0
-0
-0
-0
-0
-0
-0
-0
-
-
 ItemImage
-create_objects
-hui:open
+undo
+hui:undo
 1
 0
 0
@@ -14176,190 +14451,8 @@ hui:open
 
 
 ItemImage
-terrain_create
-hui:new
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-terrain_load
-hui:open
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-edit_scripts
-hui:edit
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemSeparator
-
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-camscript_create
-hui:new
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-camscript_load
-hui:open
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemPopup
-menu_world_selection
-
-1
-14
-0
-0
-0
-0
-0
-0
-
-
-Item
-menu_world_sign_terrain
-
-0
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-edit_terrain_vertices
-hui:edit
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemCheckable
-edit_terrain_selectable
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemSeparator
-
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-menu_world_sign_object
-
-0
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-height_to_terrain
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-own_figure
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-create_lightmap
-hui:media-record
+redo
+hui:redo
 1
 0
 0
@@ -14438,6 +14531,318 @@ ItemSeparator
 ItemImage
 selection_properties
 hui:preferences
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemPopup
+menu_world_selection
+
+1
+5
+0
+0
+0
+0
+0
+0
+
+
+Item
+select_all
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+select_none
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+invert_selection
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemSeparator
+
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemCheckable
+edit_terrain_selectable
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemPopup
+menu_world_creation
+
+1
+7
+0
+0
+0
+0
+0
+0
+
+
+Item
+menu_world_sign_add
+
+0
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+create_objects
+hui:open
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+terrain_create
+hui:new
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+terrain_load
+hui:open
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemSeparator
+
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+camscript_create
+hui:new
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+camscript_load
+hui:open
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemPopup
+menu_world_operation
+
+1
+9
+0
+0
+0
+0
+0
+0
+
+
+Item
+menu_world_sign_terrain
+
+0
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+edit_terrain_vertices
+hui:edit
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+terrain_heightmap
+hui:edit
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemSeparator
+
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+menu_world_sign_object
+
+0
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+height_to_terrain
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+own_figure
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemSeparator
+
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+create_lightmap
+hui:media-record
 1
 0
 0
@@ -15198,7 +15603,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-675
+690
 // Text
 ad_dialog
 Verwaltung
@@ -15301,9 +15706,9 @@ Typ
 campoint_type
 Position setzen\\Position addieren\\Winkel setzen\\Position&
 camscript_create
-Kamera-Fahrt (neu)...
+Neue Kamera-Fahrt...
 camscript_load
-Kamera-Fahrt (laden)...
+Kamera-Fahrt laden...
 cancel
 Abbrechen
 choose_material
@@ -15332,8 +15737,6 @@ current_mode_model_skeleton
 -Modell-Modus (Skelett)-
 current_mode_none
 -Leerer-Modus-
-current_mode_world
--Welt-Modus-
 cut_out
 --Heraustrennen
 default_colors
@@ -15402,12 +15805,10 @@ edit_material
 Bearb.
 edit_object
 
-edit_scripts
-Scripte...
 edit_terrain_selectable
-Markierbar
+Terrains Markierbar
 edit_terrain_vertices
-Vertices bearbeiten
+--Vertices bearbeiten
 editor_dialog
 Edward
 editor_dialog_t_adress
@@ -15461,6 +15862,10 @@ file_list_missing
 file_list_super
 !format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend
 filename
+
+filter_image
+
+filter_image_find
 
 find
 
@@ -15640,6 +16045,10 @@ height_image
 
 height_image_find
 
+height_op:add
+Addieren
+height_op:set
+Überschreiben
 height_to_terrain
 Höhe = Terrain
 help
@@ -15896,6 +16305,8 @@ menu_world
 Welt
 menu_world_creation
 Erstellen
+menu_world_edit
+Bearbeiten
 menu_world_export
 Exportieren
 menu_world_file
@@ -15904,6 +16315,8 @@ menu_world_help
 ?
 menu_world_import
 Importieren
+menu_world_operation
+Operationen
 menu_world_selection
 Auswahl
 menu_world_sign_add
@@ -16166,6 +16579,8 @@ pos_y
 
 pos_z
 
+preview
+
 property_list
 Typ\\Index\\Name
 quality_factor
@@ -16310,6 +16725,10 @@ specular
 Specular
 speed
 
+strech_x
+1\\0\\1000\\0.01
+strech_z
+1\\0\\1000\\0.01
 subtract_surface
 ++Volumen ausschneiden
 sun_am
@@ -16345,15 +16764,19 @@ tensor_yz
 tensor_zz
 
 terrain_create
-Terrain (neu)...
+Neues Terrain...
 terrain_dialog
 Terrain-Eigenschaften
+terrain_dialog_grp_filter
+!bold\\Filter
 terrain_dialog_grp_heightmap
 !bold\\Höhen aus Graustufen einer Bilddatei
 terrain_dialog_grp_size
 !bold\\Abmessungen
 terrain_dialog_t_filename
 Terrain-Datei:
+terrain_dialog_t_filter
+Filter
 terrain_dialog_t_gray
 1 Graustufe =
 terrain_dialog_t_heightmap
@@ -16368,8 +16791,20 @@ terrain_dialog_t_terrainsize
 Terrain-Größe
 terrain_dialog_tab_control
 Eigenschaften\\Texturen\\Material
+terrain_heightmap
+Höhenarte
+terrain_heightmap_dialog
+Höhenkarte
+terrain_hm_dialog_grp_heightmap
+!bold\\Höhen aus Graustufen einer Bilddatei
+terrain_hm_dialog_t_gray
+Maximale Höhe
+terrain_hm_dialog_t_op
+Operation
+terrain_hm_dialog_t_strech
+Streckung
 terrain_load
-Terrain (laden)...
+Terrain laden...
 terrain_save_as
 Speichern...
 terrain_show_texture_final
@@ -16556,7 +16991,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-675
+690
 // Text
 ad_dialog
 Administration
@@ -16690,8 +17125,6 @@ current_mode_model_skeleton
 -Model-Mode (Skeleton)-
 current_mode_none
 -Empty-Mode-
-current_mode_world
--World-Mode-
 cut_out
 Cut off
 default_colors
@@ -16760,8 +17193,6 @@ edit_material
 edit
 edit_object
 
-edit_scripts
-Scripts...
 edit_terrain_selectable
 Selectable
 edit_terrain_vertices
@@ -16819,6 +17250,10 @@ file_list_missing
 file_list_super
 !format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
 filename
+
+filter_image
+
+filter_image_find
 
 find
 
@@ -16997,6 +17432,10 @@ height_factor
 height_image
 
 height_image_find
+
+height_op:add
+
+height_op:set
 
 height_to_terrain
 Height = terrain
@@ -17254,6 +17693,8 @@ menu_world
 World
 menu_world_creation
 Create
+menu_world_edit
+
 menu_world_export
 Export
 menu_world_file
@@ -17262,6 +17703,8 @@ menu_world_help
 ?
 menu_world_import
 Import
+menu_world_operation
+
 menu_world_selection
 Selection
 menu_world_sign_add
@@ -17524,6 +17967,8 @@ pos_y
 
 pos_z
 
+preview
+
 property_list
 type\\index\\name
 quality_factor
@@ -17668,6 +18113,10 @@ specular
 specular
 speed
 
+strech_x
+
+strech_z
+
 subtract_surface
 
 sun_am
@@ -17706,12 +18155,16 @@ terrain_create
 Terrain (new)...
 terrain_dialog
 Terrain properties
+terrain_dialog_grp_filter
+
 terrain_dialog_grp_heightmap
 !bold\\New terrain from heightmap
 terrain_dialog_grp_size
 !bold\\Geometry
 terrain_dialog_t_filename
 terrain file:
+terrain_dialog_t_filter
+
 terrain_dialog_t_gray
 1 level of gray =
 terrain_dialog_t_heightmap
@@ -17726,6 +18179,18 @@ terrain_dialog_t_terrainsize
 Terrain size
 terrain_dialog_tab_control
 properties\\textures\\material\\import
+terrain_heightmap
+
+terrain_heightmap_dialog
+
+terrain_hm_dialog_grp_heightmap
+
+terrain_hm_dialog_t_gray
+
+terrain_hm_dialog_t_op
+
+terrain_hm_dialog_t_strech
+
 terrain_load
 Terrain (load)...
 terrain_save_as
@@ -18118,7 +18583,7 @@ program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 // Language
 日本語
 // NumIDs
-675
+690
 // Text
 ad_dialog
 
@@ -18252,8 +18717,6 @@ current_mode_model_skeleton
 [モデル　の　モード (骨格)]
 current_mode_none
 [なし]
-current_mode_world
-[世界　の　モード]
 cut_out
 
 default_colors
@@ -18322,8 +18785,6 @@ edit_material
 編集
 edit_object
 
-edit_scripts
-
 edit_terrain_selectable
 
 edit_terrain_vertices
@@ -18381,6 +18842,10 @@ file_list_missing
 file_list_super
 
 filename
+
+filter_image
+
+filter_image_find
 
 find
 
@@ -18559,6 +19024,10 @@ height_factor
 height_image
 
 height_image_find
+
+height_op:add
+
+height_op:set
 
 height_to_terrain
 
@@ -18816,6 +19285,8 @@ menu_world
 世界
 menu_world_creation
 作成
+menu_world_edit
+
 menu_world_export
 作成
 menu_world_file
@@ -18824,6 +19295,8 @@ menu_world_help
 ヘルプ
 menu_world_import
 インポート
+menu_world_operation
+
 menu_world_selection
 選択
 menu_world_sign_add
@@ -19086,6 +19559,8 @@ pos_y
 
 pos_z
 
+preview
+
 property_list
 type\\index\\name
 quality_factor
@@ -19230,6 +19705,10 @@ specular
 反射光
 speed
 
+strech_x
+
+strech_z
+
 subtract_surface
 
 sun_am
@@ -19268,11 +19747,15 @@ terrain_create
 新しい　陸...
 terrain_dialog
 
+terrain_dialog_grp_filter
+
 terrain_dialog_grp_heightmap
 
 terrain_dialog_grp_size
 
 terrain_dialog_t_filename
+
+terrain_dialog_t_filter
 
 terrain_dialog_t_gray
 
@@ -19288,6 +19771,18 @@ terrain_dialog_t_terrainsize
 
 terrain_dialog_tab_control
 properties\\textures\\material\\import
+terrain_heightmap
+
+terrain_heightmap_dialog
+
+terrain_hm_dialog_grp_heightmap
+
+terrain_hm_dialog_t_gray
+
+terrain_hm_dialog_t_op
+
+terrain_hm_dialog_t_strech
+
 terrain_load
 
 terrain_save_as

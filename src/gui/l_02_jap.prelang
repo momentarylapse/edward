@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-533
+545
 // Data (ID,Text)
 ad_dialog
 
@@ -123,8 +123,6 @@ current_mode_model_skeleton
 [モデル　の　モード (骨格)]
 current_mode_none
 [なし]
-current_mode_world
-[世界　の　モード]
 cut_out
 
 default_colors
@@ -167,8 +165,6 @@ eat_vertices
 
 edit_material
 編集
-edit_scripts
-
 edit_terrain_selectable
 
 edit_terrain_vertices
@@ -331,6 +327,10 @@ generate_tensor_auto
 
 grid
 グリッド
+height_op:add
+
+height_op:set
+
 height_to_terrain
 
 help
@@ -547,6 +547,8 @@ menu_world
 世界
 menu_world_creation
 作成
+menu_world_edit
+
 menu_world_export
 作成
 menu_world_file
@@ -555,6 +557,8 @@ menu_world_help
 ヘルプ
 menu_world_import
 インポート
+menu_world_operation
+
 menu_world_selection
 選択
 menu_world_sign_add
@@ -889,6 +893,10 @@ sounds
 音...
 specular
 反射光
+strech_x
+
+strech_z
+
 subtract_surface
 
 sun_ang_from_camera
@@ -899,11 +907,15 @@ terrain_create
 新しい　陸...
 terrain_dialog
 
+terrain_dialog_grp_filter
+
 terrain_dialog_grp_heightmap
 
 terrain_dialog_grp_size
 
 terrain_dialog_t_filename
+
+terrain_dialog_t_filter
 
 terrain_dialog_t_gray
 
@@ -919,6 +931,18 @@ terrain_dialog_t_terrainsize
 
 terrain_dialog_tab_control
 properties\\textures\\material\\import
+terrain_heightmap
+
+terrain_heightmap_dialog
+
+terrain_hm_dialog_grp_heightmap
+
+terrain_hm_dialog_t_gray
+
+terrain_hm_dialog_t_op
+
+terrain_hm_dialog_t_strech
+
 terrain_load
 
 terrain_save_as

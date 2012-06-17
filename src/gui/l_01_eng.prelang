@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-533
+545
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -123,8 +123,6 @@ current_mode_model_skeleton
 -Model-Mode (Skeleton)-
 current_mode_none
 -Empty-Mode-
-current_mode_world
--World-Mode-
 cut_out
 Cut off
 default_colors
@@ -167,8 +165,6 @@ eat_vertices
 vertices
 edit_material
 edit
-edit_scripts
-Scripts...
 edit_terrain_selectable
 Selectable
 edit_terrain_vertices
@@ -331,6 +327,10 @@ generate_tensor_auto
 auto
 grid
 Grid
+height_op:add
+
+height_op:set
+
 height_to_terrain
 Height = terrain
 help
@@ -547,6 +547,8 @@ menu_world
 World
 menu_world_creation
 Create
+menu_world_edit
+
 menu_world_export
 Export
 menu_world_file
@@ -555,6 +557,8 @@ menu_world_help
 ?
 menu_world_import
 Import
+menu_world_operation
+
 menu_world_selection
 Selection
 menu_world_sign_add
@@ -889,6 +893,10 @@ sounds
 Sounds...
 specular
 specular
+strech_x
+
+strech_z
+
 subtract_surface
 
 sun_ang_from_camera
@@ -899,12 +907,16 @@ terrain_create
 Terrain (new)...
 terrain_dialog
 Terrain properties
+terrain_dialog_grp_filter
+
 terrain_dialog_grp_heightmap
 !bold\\New terrain from heightmap
 terrain_dialog_grp_size
 !bold\\Geometry
 terrain_dialog_t_filename
 terrain file:
+terrain_dialog_t_filter
+
 terrain_dialog_t_gray
 1 level of gray =
 terrain_dialog_t_heightmap
@@ -919,6 +931,18 @@ terrain_dialog_t_terrainsize
 Terrain size
 terrain_dialog_tab_control
 properties\\textures\\material\\import
+terrain_heightmap
+
+terrain_heightmap_dialog
+
+terrain_hm_dialog_grp_heightmap
+
+terrain_hm_dialog_t_gray
+
+terrain_hm_dialog_t_op
+
+terrain_hm_dialog_t_strech
+
 terrain_load
 Terrain (load)...
 terrain_save_as
