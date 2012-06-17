@@ -44,7 +44,7 @@ ActionWorldTerrainApplyHeightmap::ActionWorldTerrainApplyHeightmap(DataWorld *da
 					float hmy = (float)z / (float)tt->num_z;
 					float f = im_interpolate(im_height, hmx, hmy, stretch_x, stretch_z);
 					if (!im_filter.Empty())
-						f *= im_interpolate(im_height, hmx, hmy, 1, 1);
+						f *= im_interpolate(im_filter, hmx, hmy, 1, 1);
 					height.add(f * height_factor);
 				}
 
