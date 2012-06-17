@@ -32,8 +32,12 @@ public:
 
 private:
 	DataWorld *data;
+	string heightmap_file;
+	string filter_file;
 	Image heightmap;
 	Image filter;
+	float stretch_x;
+	float stretch_z;
 };
 
 #endif /* TERRAINHEIGHTMAPDIALOG_H_ */
