@@ -158,6 +158,8 @@ Edward::Edward(Array<string> arg) :
 	cur_mode = NULL;
 	force_redraw = false;
 
+	progress = new Progress;
+
 
 	LoadKeyCodes();
 

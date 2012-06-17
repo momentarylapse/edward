@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-545
+547
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -789,6 +789,10 @@ physics
 Physics...
 physics_enabled
 
+progress_cancelable_dialog
+
+progress_dialog
+
 property_list
 type\\index\\name
 quality_factor
@@ -1226,7 +1230,7 @@ Kugel skalieren
 Scale the sphere
 Kugelzentrum waehlen
 
-Lade Objekte
+Lade Terrains
 
 Lade Welt
 

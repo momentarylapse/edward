@@ -1,6 +1,6 @@
 t3
 // Number Of Resources
-44
+46
 // Resource
 Menu
 
@@ -11923,6 +11923,75 @@ hui:about
 
 // Resource
 Dialog
+progress_dialog
+
+1
+310
+35
+0
+0
+0
+0
+0
+
+
+1
+ProgressBar
+progress_bar
+
+1
+5
+5
+300
+25
+-1
+0
+0
+
+
+// Resource
+Dialog
+progress_cancelable_dialog
+
+1
+310
+65
+0
+0
+0
+0
+0
+
+
+2
+ProgressBar
+progress_bar
+
+1
+5
+5
+300
+25
+-1
+0
+0
+
+
+Button
+cancel
+hui:cancel
+1
+5
+35
+300
+25
+-1
+0
+0
+
+
+// Resource
+Dialog
 world_scriptfunc_dialog
 
 1
@@ -15603,7 +15672,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-690
+693
 // Text
 ad_dialog
 Verwaltung
@@ -16581,6 +16650,12 @@ pos_z
 
 preview
 
+progress_bar
+
+progress_cancelable_dialog
+in Arbeit
+progress_dialog
+in Arbeit
 property_list
 Typ\\Index\\Name
 quality_factor
@@ -16991,7 +17066,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-690
+693
 // Text
 ad_dialog
 Administration
@@ -17969,6 +18044,12 @@ pos_z
 
 preview
 
+progress_bar
+
+progress_cancelable_dialog
+
+progress_dialog
+
 property_list
 type\\index\\name
 quality_factor
@@ -18583,7 +18664,7 @@ program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 // Language
 日本語
 // NumIDs
-690
+693
 // Text
 ad_dialog
 
@@ -19560,6 +19641,12 @@ pos_y
 pos_z
 
 preview
+
+progress_bar
+
+progress_cancelable_dialog
+
+progress_dialog
 
 property_list
 type\\index\\name

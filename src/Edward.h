@@ -11,6 +11,7 @@
 #include "lib/hui/hui.h"
 #include "Mode/Mode.h"
 #include "Stuff/Observer.h"
+#include "Stuff/Progress.h"
 
 
 
@@ -128,6 +129,7 @@ public:
 	MultiView *multi_view_2d;
 	MultiView *multi_view_3d;
 
+	Progress *progress;
 
 
 	Array<string> icon_image;

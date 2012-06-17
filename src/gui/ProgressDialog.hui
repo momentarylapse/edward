@@ -1,0 +1,7 @@
+	// dialog
+	ProgressDialog = HuiCreateDialog("in Arbeit", 310, 35, MainWin, false);
+	ProgressDialog->SetID("progress_dialog");
+	ProgressDialog->AddProgressBar("", 5, 5, 300, 25, "progress_bar");
+	ProgressDialog->Update();
+
+
