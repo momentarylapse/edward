@@ -104,23 +104,25 @@ static float im_interpolate(const Image &im, float x, float y, float stretch_x, 
 
 void TerrainHeightmapDialog::OnPreviewDraw()
 {
-	if (heightmap.Empty())
-		return;
 	HuiDrawingContext *c = BeginDraw("preview");
-	Image m;
-	int w = c->width, h = c->height;
-	m.Create(w, h, White);
-	for (int x=0;x<w;x++)
-		for (int y=0;y<h;y++){
-			float hmx = (float)x / (float)w;
-			float hmy = (float)y / (float)h;
-			float f = im_interpolate(heightmap, hmx, hmy, stretch_x, stretch_z);
-			if (!filter.Empty())
-				f *= im_interpolate(filter, hmx, hmy, 1, 1);
-			m.SetPixel(x, y, color(1, f, f, f));
-		}
-
-	c->DrawImage(0, 0, m);
+	if (heightmap.Empty()){
+		c->SetColor(Black);
+		c->DrawRect(0, 0, c->width, c->height);
+	}else{
+		Image m;
+		int w = c->width, h = c->height;
+		m.Create(w, h, White);
+		for (int x=0;x<w;x++)
+			for (int y=0;y<h;y++){
+				float hmx = (float)x / (float)w;
+				float hmy = (float)y / (float)h;
+				float f = im_interpolate(heightmap, hmx, hmy, stretch_x, stretch_z);
+				if (!filter.Empty())
+					f *= im_interpolate(filter, hmx, hmy, 1, 1);
+				m.SetPixel(x, y, color(1, f, f, f));
+			}
+		c->DrawImage(0, 0, m);
+	}
 	c->End();
 }
 

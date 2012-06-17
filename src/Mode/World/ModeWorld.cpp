@@ -183,10 +183,19 @@ bool IsInRectObject(int index, void *user_data, int win, irect *r)
 
 bool IsMouseOverTerrain(int index, void *user_data, int win, vector &tp)
 {
-	msg_db_r(format("IMOT index= %d",index).c_str(),3);
+	//msg_db_r(format("IMOT index= %d",index).c_str(),3);
 	CTerrain *t = mode_world->data->Terrain[index].terrain;
 	if (!t)
 		return false;
+#if 0
+	MultiView *mv = ed->multi_view_3d;
+	float mx = mv->mx;
+	float my = mv->my;
+	vector a = mv->VecUnProject(vector(mx, my, 0) ,win);
+	vector b = mv->VecUnProject2(vector(mx, my, 0), mv->pos + mv->GetDirection(win) * mv->radius * 100, win);
+	vector dir = v0;
+	return t->Trace(a, b, dir, 1000000000000, tp, false);
+#else
 	vector mv = vector(float(ed->multi_view_3d->mx), float(ed->multi_view_3d->my), 0);
 	float z_min=1;
 	int x1,z1,x,z;
@@ -198,23 +207,24 @@ bool IsMouseOverTerrain(int index, void *user_data, int win, vector &tp)
 			int z0=z1*32;
 			int e=t->partition[x1][z1];
 			if (e<0)	continue;
-			for (x=x0;x<=x0+lx;x+=e)
-				for (z=z0;z<=z0+lz;z+=e){
-					int i=x*(t->num_z+1)+z;
-					pmv[i] = mode_world->multi_view->VecProject(t->vertex[i],win);
+			for (int dx=0;dx<=lx;dx+=e)
+				for (int dz=0;dz<=lz;dz+=e){
+					int di=dx*(32+1)+dz;
+					int i=(dx + x0)*(t->num_z+1)+(dz + z0);
+					pmv[di] = mode_world->multi_view->VecProject(t->vertex[i],win);
 				}
-			for (x=x0;x<x0+lx;x+=e)
-				for (z=z0;z<z0+lz;z+=e)
+			for (int dx=0;dx<lx;dx+=e)
+				for (int dz=0;dz<lz;dz+=e)
 					for (int i=0;i<2;i++){
 						int _a_,_b_,_c_;
 						if (i==0){
-							_a_= x   *(t->num_z+1)+z  ;
-							_b_= x   *(t->num_z+1)+z+e;
-							_c_=(x+e)*(t->num_z+1)+z+e;
+							_a_= dx   *(32+1)+dz  ;
+							_b_= dx   *(32+1)+dz+e;
+							_c_=(dx+e)*(32+1)+dz+e;
 						}else{
-							_a_= x   *(t->num_z+1)+z  ;
-							_b_=(x+e)*(t->num_z+1)+z+e;
-							_c_=(x+e)*(t->num_z+1)+z  ;
+							_a_= dx   *(32+1)+dz  ;
+							_b_=(dx+e)*(32+1)+dz+e;
+							_c_=(dx+e)*(32+1)+dz  ;
 						}
 						vector a=pmv[_a_],b=pmv[_b_],c=pmv[_c_];
 						if ((a.z<=0)||(b.z<=0)||(c.z<=0)||(a.z>=1)||(b.z>=1)||(c.z>=1))	continue;
@@ -231,8 +241,9 @@ bool IsMouseOverTerrain(int index, void *user_data, int win, vector &tp)
 						}
 				}
 		}
-	msg_db_l(3);
+	//msg_db_l(3);
 	return (z_min<1);
+#endif
 }
 
 bool IsInRectTerrain(int index, void *user_data, int win, irect *r)
@@ -756,6 +767,10 @@ void ModeWorld::ImportWorldProperties()
 
 void ModeWorld::ApplyHeightmap()
 {
+	if (data->GetSelectedTerrains() == 0){
+		ed->SetMessage(_("Es muss mindestens ein Terrain markiert sein!"));
+		return;
+	}
 	TerrainHeightmapDialog *dlg = new TerrainHeightmapDialog(ed, false, data);
 	dlg->Update();
 
