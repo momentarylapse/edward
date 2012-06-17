@@ -12623,7 +12623,7 @@ Dialog
 terrain_heightmap_dialog
 
 1
-615
+620
 275
 0
 0
@@ -12637,7 +12637,7 @@ DefButton
 ok
 hui:ok
 1
-505
+510
 230
 100
 25
@@ -12650,7 +12650,7 @@ Button
 cancel
 hui:cancel
 1
-400
+405
 230
 100
 25
@@ -12664,7 +12664,7 @@ terrain_hm_dialog_t_stretch
 
 1
 30
-100
+70
 100
 25
 -1
@@ -12676,8 +12676,8 @@ Text
 x
 
 1
-130
-100
+135
+70
 20
 25
 -1
@@ -12689,8 +12689,8 @@ SpinButton
 stretch_x
 
 1
-150
-100
+155
+70
 100
 25
 -1
@@ -12702,8 +12702,8 @@ Text
 z
 
 1
-275
-100
+280
+70
 20
 25
 -1
@@ -12715,8 +12715,8 @@ SpinButton
 stretch_z
 
 1
-295
-100
+300
+70
 100
 25
 -1
@@ -12730,7 +12730,7 @@ terrain_hm_dialog_grp_heightmap
 1
 10
 10
-385
+390
 25
 -1
 0
@@ -12754,7 +12754,7 @@ Edit
 height_image
 
 0
-130
+135
 40
 235
 25
@@ -12767,7 +12767,7 @@ Button
 height_image_find
 hui:open
 1
-370
+375
 40
 25
 25
@@ -12781,7 +12781,7 @@ terrain_hm_dialog_t_gray
 
 1
 30
-70
+160
 100
 25
 -1
@@ -12793,8 +12793,8 @@ Edit
 height_factor
 
 1
-130
-70
+135
+160
 235
 25
 -1
@@ -12806,22 +12806,9 @@ Text
 lu
 
 1
-370
-70
-25
-25
--1
-0
-0
-
-
-Text
-terrain_dialog_grp_filter
-
-1
-10
+375
 160
-385
+25
 25
 -1
 0
@@ -12834,8 +12821,8 @@ preview
 1
 405
 10
-200
-200
+205
+205
 -1
 0
 0
@@ -12846,7 +12833,7 @@ terrain_dialog_t_filter
 
 1
 30
-190
+100
 100
 25
 -1
@@ -12858,8 +12845,8 @@ Edit
 filter_image
 
 0
-130
-190
+135
+100
 235
 25
 -1
@@ -12871,8 +12858,8 @@ Button
 filter_image_find
 hui:open
 1
-370
-190
+375
+100
 25
 25
 -1
@@ -12884,8 +12871,8 @@ RadioButton
 height_op:set
 
 1
-130
-130
+135
+190
 130
 25
 -1
@@ -12897,8 +12884,8 @@ RadioButton
 height_op:add
 
 1
-265
-130
+270
+190
 130
 25
 -1
@@ -12911,8 +12898,21 @@ terrain_hm_dialog_t_op
 
 1
 30
-130
+190
 100
+25
+-1
+0
+0
+
+
+Text
+terrain_dialog_grp_apply
+
+1
+10
+130
+390
 25
 -1
 0
@@ -16767,8 +16767,8 @@ terrain_create
 Neues Terrain...
 terrain_dialog
 Terrain-Eigenschaften
-terrain_dialog_grp_filter
-!bold\\Filter
+terrain_dialog_grp_apply
+!bold\\Anwenden
 terrain_dialog_grp_heightmap
 !bold\\Höhen aus Graustufen einer Bilddatei
 terrain_dialog_grp_size
@@ -16776,7 +16776,7 @@ terrain_dialog_grp_size
 terrain_dialog_t_filename
 Terrain-Datei:
 terrain_dialog_t_filter
-Filter
+Filter (optional)
 terrain_dialog_t_gray
 1 Graustufe =
 terrain_dialog_t_heightmap
@@ -18155,7 +18155,7 @@ terrain_create
 Terrain (new)...
 terrain_dialog
 Terrain properties
-terrain_dialog_grp_filter
+terrain_dialog_grp_apply
 
 terrain_dialog_grp_heightmap
 !bold\\New terrain from heightmap
@@ -19747,7 +19747,7 @@ terrain_create
 新しい　陸...
 terrain_dialog
 
-terrain_dialog_grp_filter
+terrain_dialog_grp_apply
 
 terrain_dialog_grp_heightmap
 

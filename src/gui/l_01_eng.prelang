@@ -907,7 +907,7 @@ terrain_create
 Terrain (new)...
 terrain_dialog
 Terrain properties
-terrain_dialog_grp_filter
+terrain_dialog_grp_apply
 
 terrain_dialog_grp_heightmap
 !bold\\New terrain from heightmap
@@ -1094,7 +1094,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-147
+148
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1165,6 +1165,8 @@ Editor for game data of the x9 engine
 Eigenschaften
 Properties
 Es muss genau ein Objekt markiert sein!
+
+Es muss mindestens ein Terrain markiert sein!
 
 Es sind nur maximal %d Texturen pro Terrain erlaubt!
 
