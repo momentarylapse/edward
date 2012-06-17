@@ -154,8 +154,6 @@ bool DataWorld::Load(const string & _filename, bool deep)
 	int ffv;
 
 	Reset();
-//	if (deep)
-//		ProgressStart(MainWin, _("Lade Welt"));
 
 	filename = _filename;
 	if (this == mode_world->data)
@@ -268,19 +266,18 @@ bool DataWorld::Load(const string & _filename, bool deep)
 	delete(f);
 
 	if ((!Error)&&(deep)){
-//		ProgressEnd();
-		for (int i=0;i<Terrain.num;i++)
+		for (int i=0;i<Terrain.num;i++){
+			ed->progress->Set(_("Terrains"), (float)i / (float)Terrain.num / 2.0f);
 			Terrain[i].Load(Terrain[i].pos, MapDir + Terrain[i].FileName + ".map", true);
-//		ProgressStart(MainWin, _("Lade Objekte"));
+		}
 		for (int i=0;i<Object.num;i++){
-//			Progress(format(_("%d von %d"), i, Object.num), float(i)/float(Object.num));
+			ed->progress->Set(format(_("Objekt %d von %d"), i, Object.num), (float)i / (float)Object.num / 2.0f + 0.5f);
 			Object[i].object = (CObject*)MetaLoadModel(Object[i].FileName);
 			Object[i].object->pos = Object[i].pos;
 			Object[i].object->ang = Object[i].Ang;
 //			if (Object[i].object)
 //				GodRegisterModel(Object[i].object);
 		}
-//		ProgressEnd();
 	}
 
 

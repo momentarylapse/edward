@@ -605,7 +605,10 @@ bool ModeWorld::Open()
 		return false;
 	if (!ed->FileDialog(FDWorld, false, false))
 		return false;
-	if (!data->Load(ed->DialogFileComplete))
+	ed->progress->Start(_("Lade Welt"), 0);
+	bool ok = data->Load(ed->DialogFileComplete);
+	ed->progress->End();
+	if (!ok)
 		return false;
 
 	ed->SetMode(mode_world);
