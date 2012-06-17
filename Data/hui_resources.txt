@@ -12660,7 +12660,7 @@ hui:cancel
 
 
 Text
-terrain_hm_dialog_t_strech
+terrain_hm_dialog_t_stretch
 
 1
 30
@@ -12686,7 +12686,7 @@ x
 
 
 SpinButton
-strech_x
+stretch_x
 
 1
 150
@@ -12712,7 +12712,7 @@ z
 
 
 SpinButton
-strech_z
+stretch_z
 
 1
 295
@@ -16725,9 +16725,9 @@ specular
 Specular
 speed
 
-strech_x
+stretch_x
 1\\0\\1000\\0.01
-strech_z
+stretch_z
 1\\0\\1000\\0.01
 subtract_surface
 ++Volumen ausschneiden
@@ -16801,7 +16801,7 @@ terrain_hm_dialog_t_gray
 Maximale Höhe
 terrain_hm_dialog_t_op
 Operation
-terrain_hm_dialog_t_strech
+terrain_hm_dialog_t_stretch
 Streckung
 terrain_load
 Terrain laden...
@@ -18113,9 +18113,9 @@ specular
 specular
 speed
 
-strech_x
+stretch_x
 
-strech_z
+stretch_z
 
 subtract_surface
 
@@ -18189,7 +18189,7 @@ terrain_hm_dialog_t_gray
 
 terrain_hm_dialog_t_op
 
-terrain_hm_dialog_t_strech
+terrain_hm_dialog_t_stretch
 
 terrain_load
 Terrain (load)...
@@ -19705,9 +19705,9 @@ specular
 反射光
 speed
 
-strech_x
+stretch_x
 
-strech_z
+stretch_z
 
 subtract_surface
 
@@ -19781,7 +19781,7 @@ terrain_hm_dialog_t_gray
 
 terrain_hm_dialog_t_op
 
-terrain_hm_dialog_t_strech
+terrain_hm_dialog_t_stretch
 
 terrain_load
 

@@ -893,9 +893,9 @@ sounds
 音...
 specular
 反射光
-strech_x
+stretch_x
 
-strech_z
+stretch_z
 
 subtract_surface
 
@@ -941,7 +941,7 @@ terrain_hm_dialog_t_gray
 
 terrain_hm_dialog_t_op
 
-terrain_hm_dialog_t_strech
+terrain_hm_dialog_t_stretch
 
 terrain_load
 

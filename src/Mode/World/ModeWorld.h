@@ -51,6 +51,7 @@ public:
 	void ImportWorldProperties();
 	void LoadTerrain();
 	void SetEgo();
+	void ApplyHeightmap();
 
 	void ExecutePropertiesDialog();
 	void ExecuteSelectionPropertiesDialog();

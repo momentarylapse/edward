@@ -12,6 +12,7 @@
 #include "Dialog/SelectionPropertiesDialog.h"
 #include "Dialog/ObjectPropertiesDialog.h"
 #include "Dialog/TerrainPropertiesDialog.h"
+#include "Dialog/TerrainHeightmapDialog.h"
 #include "Creation/ModeWorldCreateObject.h"
 #include "Creation/ModeWorldCreateTerrain.h"
 #include "../../Action/World/ActionWorldEditData.h"
@@ -90,6 +91,8 @@ void ModeWorld::OnCommand(const string & id)
 
 	if (id == "own_figure")
 		SetEgo();
+	if (id == "terrain_heightmap")
+		ApplyHeightmap();
 
 	if (id == "selection_properties")
 		ExecutePropertiesDialog();
@@ -749,6 +752,14 @@ void ModeWorld::ImportWorldProperties()
 		else
 			ed->ErrorBox(_("Angegebene Welt konnte nicht korrekt geladen werden!"));
 	}
+}
+
+void ModeWorld::ApplyHeightmap()
+{
+	TerrainHeightmapDialog *dlg = new TerrainHeightmapDialog(ed, false, data);
+	dlg->Update();
+
+	HuiWaitTillWindowClosed(dlg);
 }
 
 
