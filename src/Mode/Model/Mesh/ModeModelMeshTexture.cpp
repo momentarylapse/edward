@@ -94,6 +94,14 @@ void ModeModelMeshTexture::OnDrawWin(int win, irect dest)
 	NixDraw2D(cur_tex, color(1,0.7f,0.7f,0.7f), s, NixTargetRect, 0.99f);
 	NixSetAlphaM(AlphaNone);
 
+	// rectangle of unity
+	a = multi_view->VecProject(v0, win);
+	b = multi_view->VecProject(vector(1, 1, 0), win);
+	NixDrawLine(a.x, a.y, b.x, a.y, Red, 0.98f);
+	NixDrawLine(b.x, a.y, b.x, b.y, Red, 0.98f);
+	NixDrawLine(a.x, a.y, a.x, b.y, Red, 0.98f);
+	NixDrawLine(a.x, b.y, b.x, b.y, Red, 0.98f);
+
 	// draw triangles (outlines) of current material
 	foreach(data->Surface, surf)
 		foreach(surf.Triangle, t){
