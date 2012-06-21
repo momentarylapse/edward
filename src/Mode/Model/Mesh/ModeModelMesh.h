@@ -32,6 +32,8 @@ public:
 
 	void OptimizeView();
 
+	void Easify();
+
 	void CreateNewMaterialForSelection();
 	void ChooseMaterialForSelection();
 

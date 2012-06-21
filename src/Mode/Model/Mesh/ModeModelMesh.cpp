@@ -31,6 +31,7 @@
 #include "../../../Action/Model/Mesh/Vertex/ActionModelNearifyVertices.h"
 #include "../../../Action/Model/Mesh/Vertex/ActionModelAlignToGrid.h"
 #include "../../../Action/Model/Mesh/Skin/ActionModelSkinVerticesFromProjection.h"
+#include "../../../Action/Model/Mesh/ActionModelEasify.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
 
 ModeModelMesh *mode_model_mesh = NULL;
@@ -148,6 +149,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		MultiView *mv = mode_model_mesh_triangle->multi_view;
 		data->Execute(new ActionModelSkinVerticesFromProjection(data, mv));
 	}
+	if (id == "easify_skin")
+		data->Execute(new ActionModelEasify(data, 0.5f));
 
 	if (id == "normal_this_smooth")
 		data->Execute(new ActionModelSetNormalModeSelection(data, NormalModeSmooth));
