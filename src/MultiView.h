@@ -217,6 +217,15 @@ public:
 	bool MultiViewEditing;
 
 	CHuiMenu *menu;
+
+	struct Message3d
+	{
+		string str;
+		vector pos;
+	};
+	Array<Message3d> message3d;
+	void AddMessage3d(const string &str, const vector &pos);
+	void ResetMessage3d();
 };
 
 #endif /* MULTIVIEW_H_ */

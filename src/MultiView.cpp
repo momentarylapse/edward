@@ -831,6 +831,13 @@ void MultiView::DrawWin(int win, irect dest)
 		NixSetFontColor(Red);
 	ed->DrawStr(dest.x1 + 3, dest.y1, view_kind);
 	NixSetFontColor(ColorText);
+
+	foreach(message3d, m){
+		vector p = VecProject(m.pos, win);
+		if (p.z > 0)
+			ed->DrawStr(p.x, p.y, m.str);
+	}
+
 	msg_db_l(2);
 }
 
@@ -1409,3 +1416,16 @@ void MultiView::MouseActionEnd(bool set)
 }
 
 
+
+void MultiView::AddMessage3d(const string &str, const vector &pos)
+{
+	Message3d m;
+	m.str = str;
+	m.pos = pos;
+	message3d.add(m);
+}
+
+void MultiView::ResetMessage3d()
+{
+	message3d.clear();
+}
