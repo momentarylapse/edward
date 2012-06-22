@@ -18,6 +18,7 @@ ModelTextureLevelDialog::ModelTextureLevelDialog(CHuiWindow *_parent, bool _allo
 
 	// dialog
 	FromResource("model_texture_level_dialog");
+	SetPositionSpecial(_parent, HuiRight | HuiTop);
 
 	EventM("hui:close", this, (void(HuiEventHandler::*)())&ModelTextureLevelDialog::OnClose);
 	EventMX("texture_list", "hui:change", this, (void(HuiEventHandler::*)())&ModelTextureLevelDialog::OnTextureListCheck);

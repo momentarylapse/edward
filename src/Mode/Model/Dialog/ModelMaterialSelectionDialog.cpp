@@ -12,7 +12,7 @@ string file_secure(const string &filename);
 string render_material(ModeModelMaterial *m);
 
 ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data):
-	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls | HuiWinModeResizable, true)
+	CHuiWindow("dummy", -1, -1, 320, 450, _parent, _allow_parent, HuiWinModeControls | HuiWinModeResizable, true)
 {
 	// dialog
 	FromResource("model_material_selection_dialog");
