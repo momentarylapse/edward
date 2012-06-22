@@ -139,7 +139,7 @@ class CHuiWindow : public HuiEventHandler
 {
 public:
 	CHuiWindow(const string &title, int x, int y, int width, int height, CHuiWindow *parent, bool allow_parent, int mode, bool show);
-	~CHuiWindow();
+	virtual ~CHuiWindow();
 	void _Init_(CHuiWindow *parent, bool allow_parent, int mode);
 	void _CleanUp_();
 
