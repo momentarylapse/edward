@@ -37,7 +37,8 @@ enum{
 
 struct ModeModelFX{
 	int Kind, Surface, Vertex;
-	int Size, Colors[3][4],Speed,Intensity;
+	int Size, Speed, Intensity;
+	color Colors[3];
 	bool InvQuad;
 	string File, Function;
 };
@@ -233,6 +234,7 @@ public:
 
 
 	float GetDiameter();
+	void GetBoundingBox(vector &min, vector &max);
 	void GenerateDetailDists(float *dist);
 	matrix3 GenerateInertiaTensor(float mass);
 	void CreateSkin(ModeModelSkin *src, ModeModelSkin *dst, float quality_factor);
