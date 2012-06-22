@@ -446,11 +446,12 @@ bool CFile::Open(const string &filename)
 			}
 		}
 		Error=ErrorReported=true;
-		if (!DontReportErrors)
+		if (!DontReportErrors){
 			if (SilentFileAccess)
 				msg_error("while opening the file: " + filename);
 			else
 				msg_error("while opening the file");
+		}
 		if (!SilentFileAccess)
 			msg_left();
 	}else{
@@ -477,11 +478,12 @@ bool CFile::Create(const string &filename)
 #endif
 	if (handle<=0){
 		Error=ErrorReported=true;
-		if (!DontReportErrors)
+		if (!DontReportErrors){
 			if (SilentFileAccess)
 				msg_error("while creating the file: " + filename);
 			else
 				msg_error("while creating the file");
+		}
 		return false;
 	}
 	SetBinaryMode(false);
@@ -506,11 +508,12 @@ bool CFile::Append(const string &filename)
 #endif
 	if (handle<=0){
 		Error=ErrorReported=true;
-		if (!DontReportErrors)
+		if (!DontReportErrors){
 			if (SilentFileAccess)
 				msg_error("while appending file: " + filename);
 			else
 				msg_error("while appending file");
+		}
 		return false;
 	}
 	SetBinaryMode(false);
@@ -528,11 +531,12 @@ bool _cdecl CFile::Close()
 		/*if (Error)
 			msg_error("during file access");*/
 	}else{
-		if (!DontReportErrors)
+		if (!DontReportErrors){
 			if ((Error)&&(!ErrorReported))
 				msg_error("during file access");
 			else
 				msg_ok();
+		}
 		if (!SilentFileAccess)
 			msg_left();
 	}
@@ -733,7 +737,7 @@ void CFile::ReadComment()
 {
 	if ((Error)||(Binary))	return;
 #ifdef FILE_COMMENTS_DEBUG
-	msg_write(string("comment: ",ReadStr()));
+	msg_write("comment: " + ReadStr());
 #else
 	unsigned char a=0;
 	while (a!='\n'){
@@ -1130,8 +1134,8 @@ int get_sfi_num(const char *str)
 			else
 				return n;
 		}
-	}else
-		return 1;
+	}
+	return 1;
 }
 
 sStructFormat *get_format(const char *format)
