@@ -1661,6 +1661,43 @@ void CHuiWindow::CompletionClear(const string &_id)
 	}
 }
 
+// expand a single row
+//    for TreeView
+void CHuiWindow::Expand(const string &_id, int row, bool expand)
+{
+	/*HuiControl *c = _GetControl_(_id);
+	if (c->type == HuiKindTreeView){
+		if (expand)
+			gtk_tree_view_expand_row(GTK_TREE_VIEW(c->widget), c->_item_[row]);
+		else
+			gtk_tree_view_collapse_row(GTK_TREE_VIEW(c->widget));
+	}*/
+	msg_todo("CHuiWindow::Expand()");
+}
+
+// expand all rows
+//    for TreeView
+void CHuiWindow::ExpandAll(const string &_id, bool expand)
+{
+	HuiControl *c = _GetControl_(_id);
+	if (c->type == HuiKindTreeView){
+		if (expand)
+			gtk_tree_view_expand_all(GTK_TREE_VIEW(c->widget));
+		else
+			gtk_tree_view_collapse_all(GTK_TREE_VIEW(c->widget));
+	}
+}
+
+// is column in tree expanded?
+//    for TreeView
+bool CHuiWindow::IsExpanded(const string &_id, int row)
+{
+	HuiControl *c = _GetControl_(_id);
+	/*if (c->type == HuiKindTreeView)
+		return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(c->widget));*/
+	return false;
+}
+
 // for drawing area
 #if 0
 void CHuiWindow::SetInputHandler(const string &_id, input_handler_function *f)

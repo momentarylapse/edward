@@ -15,7 +15,7 @@
 #include "../file/file.h"
 
 
-string HuiVersion = "0.4.16.1";
+string HuiVersion = "0.4.17.0";
 
 
 #include <stdio.h>

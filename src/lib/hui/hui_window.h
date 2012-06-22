@@ -246,6 +246,10 @@ public:
 	// color
 	void _cdecl SetColor(const string &id, const color &col);
 	color _cdecl GetColor(const string &id);
+	// tree
+	void _cdecl ExpandAll(const string &id, bool expand);
+	void _cdecl Expand(const string &id, int row, bool expand);
+	bool _cdecl IsExpanded(const string &id, int row);
 	// stuff
 	void _cdecl Enable(const string &id, bool enabled);
 	bool _cdecl IsEnabled(const string &id);
