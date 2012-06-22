@@ -52,6 +52,7 @@ void ModelTextureLevelDialog::FillTextureList()
 			string im = ed->get_tex_image(m.Texture[j]);
 			AddChildString("texture_list", i, format("%d\\%s\\%s\\%s", j, ((i == data->CurrentMaterial) && (j == data->CurrentTextureLevel)) ? "true" : "false", im.c_str(), file_secure(m.TextureFile[j]).c_str()));
 		}
+	ExpandAll("texture_list", true);
 }
 
 
