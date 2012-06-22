@@ -125,6 +125,9 @@ void MetaInit()
 	m->shininess = 0;
 	m->emission = Black;
 	m->transparency_mode = TransparencyModeNone;
+	m->alpha_source = 0;
+	m->alpha_destination = 0;
+	m->alpha_factor = 1;
 	m->alpha_z_buffer = true;
 	m->shader = -1;
 	m->reflection_mode = ReflectionNone;
