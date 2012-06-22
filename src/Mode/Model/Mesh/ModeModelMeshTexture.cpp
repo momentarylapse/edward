@@ -9,6 +9,7 @@
 #include "../../../MultiView.h"
 #include "ModeModelMesh.h"
 #include "ModeModelMeshTexture.h"
+#include "../Dialog/ModelTextureLevelDialog.h"
 
 ModeModelMeshTexture *mode_model_mesh_texture = NULL;
 
@@ -50,6 +51,9 @@ void ModeModelMeshTexture::OnStart()
 	Subscribe(data);
 	Subscribe(multi_view, "SelectionChange");
 	OnUpdate(data);
+
+	dialog = new ModelTextureLevelDialog(ed, true, data);
+	dialog->Update();
 }
 
 
@@ -59,6 +63,7 @@ void ModeModelMeshTexture::OnEnd()
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
 	skin_vertex.clear();
+	delete(dialog);
 }
 
 #define cur_tex			data->Material[data->CurrentMaterial].Texture[data->CurrentTextureLevel]

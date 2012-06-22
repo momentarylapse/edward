@@ -1,6 +1,6 @@
 t3
 // Number Of Resources
-46
+47
 // Resource
 Menu
 
@@ -11316,6 +11316,34 @@ hui:about
 
 
 // Resource
+SizableDialog
+model_texture_level_dialog
+
+1
+268
+360
+0
+0
+0
+0
+0
+
+
+1
+TreeView
+texture_list
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+// Resource
 Menu
 menu_model_texture
 
@@ -15672,7 +15700,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-693
+695
 // Text
 ad_dialog
 Verwaltung
@@ -16476,6 +16504,8 @@ model_open
 Öffnen...
 model_script_var_template
 
+model_texture_level_dialog
+Textur-Ebenen
 move_allframes
 Alle Frames beeinflussen
 move_frame_dec
@@ -16916,6 +16946,8 @@ texture_delete
 Löschen
 texture_empty
 Leeren
+texture_list
+!format=tCit\\#\\Aktiv\\\\Datei
 texture_map_complete
 auf ganzes Terrain
 texture_menu_sign
@@ -17066,7 +17098,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-693
+695
 // Text
 ad_dialog
 Administration
@@ -17870,6 +17902,8 @@ model_open
 Open...
 model_script_var_template
 
+model_texture_level_dialog
+
 move_allframes
 Effect all frames
 move_frame_dec
@@ -18310,6 +18344,8 @@ texture_delete
 Delete
 texture_empty
 Leeren
+texture_list
+
 texture_map_complete
 1:1 mapping
 texture_menu_sign
@@ -18664,7 +18700,7 @@ program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 // Language
 日本語
 // NumIDs
-693
+695
 // Text
 ad_dialog
 
@@ -19468,6 +19504,8 @@ model_open
 開く...
 model_script_var_template
 
+model_texture_level_dialog
+
 move_allframes
 
 move_frame_dec
@@ -19907,6 +19945,8 @@ texture_choose
 texture_delete
 削除
 texture_empty
+
+texture_list
 
 texture_map_complete
 

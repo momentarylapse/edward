@@ -36,6 +36,8 @@ public:
 	Data *GetData(){	return data;	}
 
 	Array<ModeModelSkinVertexDummy> skin_vertex;
+
+	CHuiWindow *dialog;
 };
 
 extern ModeModelMeshTexture *mode_model_mesh_texture;
