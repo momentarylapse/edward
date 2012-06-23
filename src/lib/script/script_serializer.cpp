@@ -91,7 +91,7 @@ inline void add_temp(sType *t, sSerialCommandParam &param)
 		param.shift = 0;
 		
 
-		if (t->IsSuperArray)
+		if (t->Element.num > 0)
 			add_cmd_constructor(param, true);
 	}else{
 		param = p_none;
@@ -402,7 +402,7 @@ void AddFuncInstance(sSerialCommandParam &inst)
 
 void AddReference(sSerialCommandParam &param, sType *type, sSerialCommandParam &ret);
 
-void AddFunctionCall(void *func, sFunction *caller)
+void AddFunctionCall(void *func, sFunction *caller, int func_no = -1)
 {
 	msg_db_r("AddFunctionCall", 4);
 	call_used = true;
@@ -1565,35 +1565,54 @@ Array<sSerialCommandParam> InsertedConstructorTemp;
 
 void add_cmd_constructor(sSerialCommandParam &param, bool is_temp)
 {
-	sSerialCommandParam inst;
-	AddReference(param, TypePointer, inst);
-	sSerialCommandParam size = param_const(TypeInt, (void*)param.type->SubType->Size);
-	//AddFuncInstance(inst);
-	AddFuncParam(inst);
-	AddFuncParam(size);
-	//void *p = DynamicArray::init;
-	AddFunctionCall((void*)&_fake_array_init_, cur_func);
-	if (is_temp)
-		InsertedConstructorTemp.add(param);
-	else
-		InsertedConstructorFunc.add(param);
+	foreach(param.type->Function, f){
+		if (strstr(f.Name, "__init__")){ // TODO test signature "void __init__()"
+			sSerialCommandParam inst;
+			AddReference(param, TypePointer, inst);
+			AddFuncInstance(inst);
+			void *fp;
+			if (f.Kind == KindCompilerFunction)
+				fp = PreCommand[f.Nr].Func;
+			else if (f.Kind == KindFunction){
+				fp = (void*)param.type->Owner->script->func[f.Nr];
+				if (!fp)
+					msg_error("x.__init__() unlinkable compiler function!");
+			}
+
+			AddFunctionCall(fp, cur_func);
+			if (is_temp)
+				InsertedConstructorTemp.add(param);
+			else
+				InsertedConstructorFunc.add(param);
+			return;
+		}
+	}
 }
 
 void add_cmd_destructor(sSerialCommandParam &param)
 {
-	sSerialCommandParam inst;
-	AddReference(param, TypePointer, inst);
-	//AddFuncInstance(inst);
-	AddFuncParam(inst);
-	//void *p = DynamicArray::clear;
-	AddFunctionCall((void*)&_fake_array_clear_, cur_func);
+	foreach(param.type->Function, f)
+		if (strstr(f.Name, "__delete__")){ // TODO test signature "void __delete__()"
+			sSerialCommandParam inst;
+			AddReference(param, TypePointer, inst);
+			AddFuncInstance(inst);
+			void *fp;
+			if (f.Kind == KindCompilerFunction)
+				fp = PreCommand[f.Nr].Func;
+			else if (f.Kind == KindFunction){
+				fp = (void*)param.type->Owner->script->func[f.Nr];
+				if (!fp)
+					msg_error("x.__delete__() unlinkable compiler function!");
+			}
+			AddFunctionCall(fp, cur_func);
+		}
 }
 
 void FillInConstructorsFunc()
 {
 	msg_db_r("FillInConstructorsFunc", 4);
 	for (int i=0;i<cur_func->Var.num;i++)
-		if (cur_func->Var[i].Type->IsSuperArray){
+		/*if (cur_func->Var[i].Type->Element.num > 0)*/{
 			sSerialCommandParam param = param_local(cur_func->Var[i].Type, cur_func->Var[i]._Offset);
 			add_cmd_constructor(param, false);
 		}

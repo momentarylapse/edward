@@ -1,7 +1,17 @@
 #include "image.h"
 
 
-string ImageVersion = "0.2.1.0";
+string ImageVersion = "0.2.1.1";
+
+void Image::__init__()
+{
+	data.__init__();
+}
+
+void Image::__delete__()
+{
+	data.clear();
+}
 
 // mode: rgba
 //    = r + g<<8 + b<<16 + a<<24

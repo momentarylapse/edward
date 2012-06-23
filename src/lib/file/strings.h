@@ -16,6 +16,7 @@ class string : public DynamicArray
 	string(const string &s);
 	string(const char *str);
 	string(const char *str, int l);
+	void __init__();
 	~string();
 
 	// functions

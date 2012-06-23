@@ -783,7 +783,6 @@ void add_type_cast(int penalty, sType *source, sType *dest, const char *cmd, voi
 }
 
 
-
 void SIAddPackageBase()
 {
 	msg_db_r("SIAddPackageBase", 3);
@@ -819,6 +818,25 @@ void SIAddPackageBase()
 	TypeString			= add_type_a("string",		TypeChar, -1);	// string := char[]
 	TypeStringList		= add_type_a("string[]",	TypeString, -1);
 
+
+	add_class(TypePointerList);
+		class_add_func("__init__",	TypeVoid, mf((tmf)&Array<void*>::__init__));
+		class_add_func("__delete__",	TypeVoid, mf((tmf)&Array<void*>::clear));
+	add_class(TypeIntList);
+		class_add_func("__init__",	TypeVoid, mf((tmf)&Array<int>::__init__));
+		class_add_func("__delete__",	TypeVoid, mf((tmf)&Array<int>::clear));
+	add_class(TypeFloatList);
+		class_add_func("__init__",	TypeVoid, mf((tmf)&Array<float>::__init__));
+		class_add_func("__delete__",	TypeVoid, mf((tmf)&Array<float>::clear));
+	add_class(TypeBoolList);
+		class_add_func("__init__",	TypeVoid, mf((tmf)&Array<bool>::__init__));
+		class_add_func("__delete__",	TypeVoid, mf((tmf)&Array<bool>::clear));
+	add_class(TypeString);
+		class_add_func("__init__",	TypeVoid, mf((tmf)&string::__init__));
+		class_add_func("__delete__",	TypeVoid, mf((tmf)&string::clear));
+	add_class(TypeStringList);
+		class_add_func("__init__",	TypeVoid, mf((tmf)&Array<string>::__init__));
+		class_add_func("__delete__",	TypeVoid, mf((tmf)&Array<string>::clear));
 
 
 	add_const("nil", TypePointer, NULL);

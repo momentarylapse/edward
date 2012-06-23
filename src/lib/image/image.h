@@ -23,6 +23,9 @@ class Image
 	bool alpha_used;
 	bool error;
 	
+	void __init__();
+	void __delete__();
+
 	bool Empty(){	return (data.num == 0);	}
 
 	void Load(const string &filename);

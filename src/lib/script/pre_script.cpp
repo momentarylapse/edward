@@ -120,6 +120,9 @@ CPreScript::CPreScript(const string &filename,bool just_analyse)
 		Show();
 
 	if (!Error)
+		CreateImplicitFunctions();
+
+	if (!Error)
 		ConvertCallByReference();
 
 	/*if ((!Error) && (FlagShow))
@@ -694,6 +697,7 @@ int CPreScript::AddFunction(const char *name, sType *type)
 	f->Var.clear();
 	f->Type = type;
 	f->LiteralType = type;
+	f->Class = NULL;
 	return Function.num - 1;
 }
 sCommand *CPreScript::AddCommand()
@@ -713,6 +717,14 @@ inline sCommand *add_command_compilerfunc(CPreScript *ps, int cf)
 {
 	sCommand *c = ps->AddCommand();
 	ps->CommandSetCompilerFunction(cf, c);
+	return c;
+}
+
+inline sCommand *add_command_classfunc(CPreScript *ps, sClassFunction &f)
+{
+	sCommand *c = ps->AddCommand();
+	c->Kind = f.Kind;
+	c->LinkNr = f.Nr;
 	return c;
 }
 
@@ -2403,9 +2415,6 @@ void ParseClassFunction(CPreScript *ps, sType *t)
 	sFunction *f = &ps->Function.back();
 	sprintf(f->Name, "%s.%s", t->Name, f->Name);
 
-	// remove instance parameter....
-	//f->Var.erase(f->Var.begin());
-	f->NumParams --;
 	msg_todo("Kaba: Class Function parameters...");
 }
 
@@ -2742,14 +2751,11 @@ void CPreScript::ParseFunction(sType *class_type)
 	bool func_extern = next_extern;
 	next_extern = false;
 	sFunction *f = &Function[function];
+	
 	next_exp();
 	next_exp(); // '('
 
 // parameter list
-	if (class_type){
-		f->NumParams ++;
-		AddVar("self", class_type, f);
-	}
 	
 	if (strcmp(cur_name, ")") != 0)
 		for (int k=0;k<SCRIPT_MAX_PARAMS;k++){
@@ -2787,6 +2793,12 @@ void CPreScript::ParseFunction(sType *class_type)
 		msg_db_l(4);
 		return;
 	}
+
+
+	// class function
+	f->Class = class_type;
+	if (class_type)
+		AddVar("self", class_type, f);
 
 	if (func_extern){
 		AddExternalFunc(this, f);
@@ -2864,6 +2876,7 @@ void CPreScript::Parser()
 		// class
 		}else if ((strcmp(cur_name, "struct") == 0) || (strcmp(cur_name, "class") == 0)){
 			ParseClass();
+			CreateImplicitFunctions();
 			
 		}else{
 
@@ -3215,6 +3228,139 @@ void CPreScript::BreakDownComplicatedCommands()
 		}			
 	}
 	msg_db_l(4);
+}
+
+void CreateImplicitConstructor(CPreScript *ps, sType *t)
+{
+	// create function
+	int fn = ps->AddFunction(format("%s.__init__", t->Name).c_str(), TypeVoid);
+	sFunction *f = &ps->Function[fn];
+	f->Class = t;
+	ps->AddVar("self", ps->GetPointerType(t), f);
+
+	sCommand *self = ps->AddCommand();
+	self->Kind = KindVarLocal;
+	self->LinkNr = 0;
+	self->Type = t;
+
+
+	// call child constructors
+	foreach(t->Element, e)
+		foreach(e.Type->Function, ff)
+			if (strstr(ff.Name, "__init__")){
+				sCommand *c = add_command_classfunc(ps, ff);
+				sCommand *p = ps->AddCommand();
+				p->Kind = KindDerefAddressShift;
+				p->LinkNr = e.Offset;
+				p->Type = e.Type;
+				p->NumParams = 1;
+				p->Param[0] = self;
+				ref_command(ps, p);
+
+				c->Instance = p;
+				f->Block->Command.add(c);
+			}
+
+	sClassFunction cf;
+	cf.Kind = KindFunction;
+	cf.Nr = fn;
+	strcpy(cf.Name, "__init__");
+	t->Function.add(cf);
+}
+
+void CreateImplicitDestructor(CPreScript *ps, sType *t)
+{
+	// create function
+	int fn = ps->AddFunction(format("%s.__delete__", t->Name).c_str(), TypeVoid);
+	sFunction *f = &ps->Function[fn];
+	f->Class = t;
+	ps->AddVar("self", ps->GetPointerType(t), f);
+
+	sCommand *self = ps->AddCommand();
+	self->Kind = KindVarLocal;
+	self->LinkNr = 0;
+	self->Type = t;
+
+
+	// call child constructors
+	foreach(t->Element, e)
+		foreach(e.Type->Function, ff)
+			if (strstr(ff.Name, "__delete__")){
+				if (ff.Kind == KindCompilerFunction){
+					sCommand *c = add_command_classfunc(ps, ff);
+					sCommand *p = ps->AddCommand();
+					p->Kind = KindDerefAddressShift;
+					p->LinkNr = e.Offset;
+					p->Type = e.Type;
+					p->NumParams = 1;
+					p->Param[0] = self;
+					ref_command(ps, p);
+
+					c->Instance = p;
+					f->Block->Command.add(c);
+				}
+			}
+
+	sClassFunction cf;
+	cf.Kind = KindFunction;
+	cf.Nr = fn;
+	strcpy(cf.Name, "__delete__");
+	t->Function.add(cf);
+}
+
+void CPreScript::CreateImplicitFunctions()
+{
+	int num_funcs = Function.num;
+
+	foreach(Type, t){
+		if (t->Owner != this)
+			continue;
+		bool has_constructor = false;
+		foreach(t->Function, f)
+			if (strcmp(f.Name, "__init__") == 0)
+				has_constructor = true;
+		if (has_constructor)
+			continue;
+		int n = 0;
+		foreach(t->Element, e)
+			foreach(e.Type->Function, f)
+				if (strcmp(f.Name, "__init__") == 0)
+					n ++;
+		if ((n == 0) && (!t->IsSuperArray))
+			continue;
+
+		CreateImplicitConstructor(this, t);
+		CreateImplicitDestructor(this, t);
+	}
+
+	/*if (num_funcs != Function.num){
+		// resort Function[]
+		num_funcs = Function.num;
+		for (int i=0;i<num_funcs;i++){
+			sFunction f = Function.pop();
+			Function.insert(f, 0);
+		}
+
+		// relink commands
+		foreach(Command, c)
+			if (c->Kind == KindFunction){
+				if (c->script == NULL)
+					continue;
+				if (c->LinkNr <= num_funcs)
+					c->LinkNr += Function.num - num_funcs;
+				else
+					c->LinkNr -= num_funcs;
+			}
+
+		// relink class functions
+		foreach(Type, t)
+			foreach(t->Function, f)
+				if (f.Kind == KindFunction)
+					if (f.Nr <= num_funcs)
+						f.Nr += Function.num - num_funcs;
+					else
+						f.Nr -= num_funcs;
+	}*/
 }
 
 // no included scripts may be deleted before us!!!

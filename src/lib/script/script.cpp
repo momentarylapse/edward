@@ -21,7 +21,7 @@
 	#include "../x/x.h"
 #endif
 
-string ScriptVersion = "0.9.4.1";
+string ScriptVersion = "0.9.5.0";
 
 //#define ScriptDebug
 
@@ -294,6 +294,7 @@ CScript::CScript(const string &filename, bool just_analyse)
 	ShowCompilerStats = (!ScriptCompileSilently) && ScriptShowCompilerStats;
 
 	pre_script = new CPreScript(filename,just_analyse);
+	pre_script->script = this;
 	ParserError = Error = pre_script->Error;
 	LinkerError = pre_script->IncludeLinkerError;
 	ErrorLine = pre_script->ErrorLine;
@@ -680,23 +681,34 @@ void find_all_super_arrays(CPreScript *ps, sFunction *f, Array<char*> &g_var)
 void FindVariableOffsets(CPreScript *p)
 {
 	msg_db_r("FindVariableOffsets", 1);
-	for (int i=0;i<p->Function.num;i++){
-		sFunction *f = &p->Function[i];
-		f->_ParamSize = 8; // space for return value and eBP
-		if (f->Type->Size > 4)
-			f->_ParamSize += 4;
-		f->_VarSize = 0;
-		// parameters
-		for (int j=0;j<f->NumParams;j++){
-			int s = mem_align(f->Var[j].Type->Size);
-			f->Var[j]._Offset = f->_ParamSize;
-			f->_ParamSize += s;
-		}
-		// "real" local variables
-		for (int j=f->NumParams;j<f->Var.num;j++){
-			int s = mem_align(f->Var[j].Type->Size);
-			f->Var[j]._Offset = - f->_VarSize - s;
-			f->_VarSize += s;
+	foreach(p->Function, f){
+		f._ParamSize = 8; // space for return value and eBP
+		if (f.Type->Size > 4)
+			f._ParamSize += 4;
+		f._VarSize = 0;
+
+		// map "self" to the first parameter
+		if (f.Class)
+			foreachi(f.Var, v, i)
+				if (strcmp(v.Name, "self") == 0){
+					int s = mem_align(v.Type->Size);
+					v._Offset = f._ParamSize;
+					f._ParamSize += s;
+				}
+
+		foreachi(f.Var, v, i){
+			if ((f.Class) && (strcmp(v.Name, "self") == 0))
+				continue;
+			int s = mem_align(v.Type->Size);
+			if (i < f.NumParams){
+				// parameters
+				v._Offset = f._ParamSize;
+				f._ParamSize += s;
+			}else{
+				// "real" local variables
+				v._Offset = - f._VarSize - s;
+				f._VarSize += s;
+			}
 		}
 	}
 	msg_db_l(1);
@@ -808,7 +820,6 @@ void CScript::Compiler()
 	
 // compiling an operating system?
 //   -> create an entry point for execution... so we can just call Opcode like a function
-	sFunction *ff;
 	if ((pre_script->FlagCompileOS)||(pre_script->FlagCompileInitialRealMode)){
 		nf=-1;
 		foreachi(pre_script->Function, ff, index)
@@ -955,6 +966,7 @@ CScript::CScript()
 	WaitingMode = WaitingModeFirst;
 
 	pre_script = new CPreScript();
+	pre_script->script = this;
 	
 	pre_script->Filename = "-console script-";
 

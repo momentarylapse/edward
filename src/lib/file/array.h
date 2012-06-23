@@ -54,6 +54,10 @@ class Array : public DynamicArray
 			init(sizeof(T));
 			add(item);
 		}
+		void __init__()
+		{
+			init(sizeof(T));
+		}
 		~Array()
 		{	clear();	}
 		void clear()

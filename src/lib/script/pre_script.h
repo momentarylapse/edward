@@ -150,6 +150,7 @@ struct sFunction
 	Array<sLocalVariable> Var;
 	sType *LiteralParamType[SCRIPT_MAX_PARAMS];
 	Array<sSuperArrayLocation> SuArLoc;
+	sType *Class;
 	// return value
 	sType *Type;
 	sType *LiteralType;
@@ -176,6 +177,8 @@ struct sAsmBlock
 	char *block;
 	int Line;
 };
+
+class CScript;
 
 
 // data structures (uncompiled)
@@ -222,6 +225,7 @@ public:
 	// pre compiler
 	void PreCompiler(bool just_analyse);
 	void HandleMacro(ps_line_t *l, int &line_no, int &NumIfDefs, bool *IfDefed, bool just_analyse);
+	void CreateImplicitFunctions();
 
 	// syntax analysis
 	sType *GetConstantType();
@@ -302,6 +306,8 @@ public:
 	Array<sCommand*> Command;
 
 	sFunction RootOfAllEvil;
+
+	CScript *script;
 };
 
 #define _do_error_(str,n,r)	{DoError(str);msg_db_l(n);return r;}

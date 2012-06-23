@@ -59,6 +59,11 @@ string::string(const string &s)
 	assign(&s);
 }
 
+void string::__init__()
+{
+	init(sizeof(char));
+}
+
 string::~string()
 {
 //	printf("~     %d", num);
