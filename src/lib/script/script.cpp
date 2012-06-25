@@ -682,32 +682,32 @@ void FindVariableOffsets(CPreScript *p)
 {
 	msg_db_r("FindVariableOffsets", 1);
 	foreach(p->Function, f){
-		f._ParamSize = 8; // space for return value and eBP
-		if (f.Type->Size > 4)
-			f._ParamSize += 4;
-		f._VarSize = 0;
+		f->_ParamSize = 8; // space for return value and eBP
+		if (f->Type->Size > 4)
+			f->_ParamSize += 4;
+		f->_VarSize = 0;
 
 		// map "self" to the first parameter
-		if (f.Class)
-			foreachi(f.Var, v, i)
+		if (f->Class)
+			foreachi(f->Var, v, i)
 				if (strcmp(v.Name, "self") == 0){
 					int s = mem_align(v.Type->Size);
-					v._Offset = f._ParamSize;
-					f._ParamSize += s;
+					v._Offset = f->_ParamSize;
+					f->_ParamSize += s;
 				}
 
-		foreachi(f.Var, v, i){
-			if ((f.Class) && (strcmp(v.Name, "self") == 0))
+		foreachi(f->Var, v, i){
+			if ((f->Class) && (strcmp(v.Name, "self") == 0))
 				continue;
 			int s = mem_align(v.Type->Size);
-			if (i < f.NumParams){
+			if (i < f->NumParams){
 				// parameters
-				v._Offset = f._ParamSize;
-				f._ParamSize += s;
+				v._Offset = f->_ParamSize;
+				f->_ParamSize += s;
 			}else{
 				// "real" local variables
-				v._Offset = - f._VarSize - s;
-				f._VarSize += s;
+				v._Offset = - f->_VarSize - s;
+				f->_VarSize += s;
 			}
 		}
 	}
@@ -823,7 +823,7 @@ void CScript::Compiler()
 	if ((pre_script->FlagCompileOS)||(pre_script->FlagCompileInitialRealMode)){
 		nf=-1;
 		foreachi(pre_script->Function, ff, index)
-			if (strcmp(ff.Name, "main") == 0)
+			if (strcmp(ff->Name, "main") == 0)
 				nf = index;
 		// call
 		if (nf>=0)
@@ -854,7 +854,7 @@ void CScript::Compiler()
 	foreachi(pre_script->Function, ff, i){
 		right();
 		func[i] = (t_func*)&Opcode[OpcodeSize];
-		SerializeFunction(&ff);
+		SerializeFunction(ff);
 
 		CompileSerialized(Opcode, OpcodeSize);
 		left();
@@ -893,8 +893,8 @@ void CScript::Compiler()
 		// call
 		nf = -1;
 		foreachi(pre_script->Function, ff, index){
-			if (strcmp(ff.Name, "main") == 0)
-				if (ff.NumParams == 0)
+			if (strcmp(ff->Name, "main") == 0)
+				if (ff->NumParams == 0)
 					nf = index;
 		}
 		if (nf >= 0){
@@ -1033,8 +1033,7 @@ void ExecuteSingleScriptCommand(const string &cmd)
 // analyse syntax
 
 	// create a main() function
-	int func = ps->AddFunction("main", TypeVoid);
-	sFunction *f = &ps->Function[func];
+	sFunction *f = ps->AddFunction("main", TypeVoid);
 	f->_VarSize = 0; // set to -1...
 
 	// parse
@@ -1077,20 +1076,20 @@ void *CScript::MatchFunction(const string &name, const string &return_type, int 
 	va_end(marker);
 
 	// match
-	for (int i=0;i<pre_script->Function.num;i++)
-		if (name == pre_script->Function[i].Name)
-			if (num_params == pre_script->Function[i].NumParams){
+	foreachi(pre_script->Function, f, i)
+		if (name == f->Name)
+			if (num_params == f->NumParams){
 
 				bool params_ok = true;
 				for (int j=0;j<num_params;j++)
-					if (pre_script->Function[i].Var[j].Type->Name == param_type[j])
+					if (f->Var[j].Type->Name == param_type[j])
 						params_ok = false;
 				if (params_ok){
 					msg_db_l(2);
 					if (func.num > 0)
 						return (void*)func[i];
 					else
-						return (void*)0xdeadbeaf;
+						return (void*)NULL;//0xdeadbeaf;
 				}
 			}
 
@@ -1108,7 +1107,7 @@ bool CScript::ExecuteScriptFunction(const string &name,...)
 
 	if ((pre_script->GetExistence(cname, &pre_script->RootOfAllEvil))&&(pre_script->GetExistenceLink.Kind==KindFunction)){
 
-		sFunction *f=&pre_script->Function[pre_script->GetExistenceLink.LinkNr];
+		sFunction *f = pre_script->Function[pre_script->GetExistenceLink.LinkNr];
 
 		if (f->NumParams==0)
 			// no arguments -> directly execute function

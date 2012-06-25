@@ -225,7 +225,8 @@ public:
 	// pre compiler
 	void PreCompiler(bool just_analyse);
 	void HandleMacro(ps_line_t *l, int &line_no, int &NumIfDefs, bool *IfDefed, bool just_analyse);
-	void CreateImplicitFunctions();
+	void CreateImplicitFunctions(sType *t, bool relocate_last_function);
+	void CreateAllImplicitFunctions(bool relocate_last_function);
 
 	// syntax analysis
 	sType *GetConstantType();
@@ -257,7 +258,7 @@ public:
 	int AddVar(const char *name, sType *type, sFunction *f);
 	int AddConstant(sType *type);
 	sBlock *AddBlock();
-	int AddFunction(const char *name, sType *type);
+	sFunction *AddFunction(const char *name, sType *type);
 	sCommand *AddCommand();
 
 	// pre processor
@@ -302,12 +303,13 @@ public:
 	Array<sAsmBlock> AsmBlock;
 	Array<sConstant> Constant;
 	Array<sBlock*> Block;
-	Array<sFunction> Function;
+	Array<sFunction*> Function;
 	Array<sCommand*> Command;
 
 	sFunction RootOfAllEvil;
 
 	CScript *script;
+	sFunction *cur_func;
 };
 
 #define _do_error_(str,n,r)	{DoError(str);msg_db_l(n);return r;}

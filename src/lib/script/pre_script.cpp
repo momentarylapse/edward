@@ -32,6 +32,14 @@ inline sCommand *cp_command(CPreScript *ps, sCommand *c)
 	return cmd;
 }
 
+inline sCommand *cp_command_deep(CPreScript *ps, sCommand *c)
+{
+	sCommand *cmd = cp_command(ps, c);
+	for (int i=0;i<c->NumParams;i++)
+		cmd->Param[i] = cp_command_deep(ps, c->Param[i]);
+	return cmd;
+}
+
 inline void command_make_ref(CPreScript *ps, sCommand *c, sCommand *param)
 {
 	c->Kind = KindReference;
@@ -86,6 +94,7 @@ void reset_pre_script(CPreScript *ps)
 	strcpy(ps->RootOfAllEvil.Name, "RootOfAllEvil");
 	ps->RootOfAllEvil.NumParams = 0;
 	ps->RootOfAllEvil.Type = TypeVoid;
+	ps->cur_func = NULL;
 
 	// "include" default stuff
 	ps->NumOwnTypes = 0;
@@ -118,9 +127,6 @@ CPreScript::CPreScript(const string &filename,bool just_analyse)
 	
 	if ((!Error) && (FlagShowPrae))
 		Show();
-
-	if (!Error)
-		CreateImplicitFunctions();
 
 	if (!Error)
 		ConvertCallByReference();
@@ -320,7 +326,7 @@ string LinkNr2Str(CPreScript *s,int kind,int nr)
 	if (kind==KindVarFunction)		return i2s(nr);
 	if (kind==KindVarExternal)		return PreExternalVar[nr].Name;
 	if (kind==KindConstant)			return i2s(nr);
-	if (kind==KindFunction)			return s->Function[nr].Name;
+	if (kind==KindFunction)			return s->Function[nr]->Name;
 	if (kind==KindCompilerFunction)	return PreCommand[nr].Name;
 	if (kind==KindOperator)			return Operator2Str(s,nr);
 	if (kind==KindPrimitiveOperator)return PrimitiveOperator2Str(nr);
@@ -665,7 +671,7 @@ int CPreScript::AddConstant(sType *type)
 	sConstant *c = &Constant.back();
 	strcpy(c->name, "-none-");
 	c->type = type;
-	int s = (type->Size > (int)PointerSize) ? type->Size : PointerSize;
+	int s = max(type->Size, (int)PointerSize);
 	if (type == TypeString)
 		s = 256;
 	c->data = new char[s];
@@ -684,21 +690,21 @@ sBlock *CPreScript::AddBlock()
 
 // functions
 
-int CPreScript::AddFunction(const char *name, sType *type)
+sFunction *CPreScript::AddFunction(const char *name, sType *type)
 {
 	so("AddFunction");
-	Function.resize(Function.num + 1);
-	sFunction *f = &Function.back();
+	sFunction *f = new sFunction();
 	strcpy(f->Name, name);
 	f->Block = AddBlock();
 	if (Error)
-		return -1;
+		return f;
 	f->NumParams = 0;
 	f->Var.clear();
 	f->Type = type;
 	f->LiteralType = type;
 	f->Class = NULL;
-	return Function.num - 1;
+	Function.add(f);
+	return f;
 }
 sCommand *CPreScript::AddCommand()
 {
@@ -709,6 +715,7 @@ sCommand *CPreScript::AddCommand()
 	c->Kind = KindUnknown;
 	c->NumParams = 0;
 	c->Instance = NULL;
+	c->script = NULL;
 	return c;
 }
 
@@ -720,11 +727,17 @@ inline sCommand *add_command_compilerfunc(CPreScript *ps, int cf)
 	return c;
 }
 
-inline sCommand *add_command_classfunc(CPreScript *ps, sClassFunction &f)
+inline void CommandSetClassFunc(sCommand *c, sClassFunction &f, sCommand *inst)
 {
-	sCommand *c = ps->AddCommand();
 	c->Kind = f.Kind;
 	c->LinkNr = f.Nr;
+	c->Instance = inst;
+}
+
+inline sCommand *add_command_classfunc(CPreScript *ps, sClassFunction &f, sCommand *inst)
+{
+	sCommand *c = ps->AddCommand();
+	CommandSetClassFunc(c, f, inst);
 	return c;
 }
 
@@ -835,12 +848,12 @@ bool CPreScript::GetExistence(const char *name, sFunction *f)
 	}
 
 	// then the (self-coded) functions
-	for (int i=0;i<Function.num;i++)
-		if (strcmp(Function[i].Name, name) == 0){
+	foreachi(Function, f, i)
+		if (strcmp(f->Name, name) == 0){
 			GetExistenceLink.Kind = KindFunction;
 			GetExistenceLink.LinkNr = i;
-			GetExistenceLink.Type = Function[i].LiteralType;
-			GetExistenceLink.NumParams = Function[i].NumParams;
+			GetExistenceLink.Type = f->LiteralType;
+			GetExistenceLink.NumParams = f->NumParams;
 			msg_db_l(3);
 			return true;
 		}
@@ -1118,9 +1131,9 @@ void DoClassFunction(CPreScript *ps, sCommand *Operand, sType *t, int f_no, sFun
 		Operand->NumParams = PreCommand[t->Function[f_no].Nr].Param.num;
 		ps->GetFunctionCall(PreCommand[t->Function[f_no].Nr].Name, Operand, f);
 	}else if (t->Function[f_no].Kind == KindFunction){
-		Operand->Type = ps->Function[t->Function[f_no].Nr].LiteralType;
-		Operand->NumParams = ps->Function[t->Function[f_no].Nr].NumParams;
-		ps->GetFunctionCall(ps->Function[t->Function[f_no].Nr].Name, Operand, f);
+		Operand->Type = ps->Function[t->Function[f_no].Nr]->LiteralType;
+		Operand->NumParams = ps->Function[t->Function[f_no].Nr]->NumParams;
+		ps->GetFunctionCall(ps->Function[t->Function[f_no].Nr]->Name, Operand, f);
 		//ps->DoError("script member function call not implemented");
 	}
 	Operand->Instance = ob;
@@ -1355,9 +1368,9 @@ void CPreScript::FindFunctionSingleParameter(int p, sType **WantedType, sFunctio
 	WantedType[p] = TypeUnknown;
 	if (cmd->Kind == KindFunction){
 		if (cmd->script)
-			WantedType[p] = cmd->script->pre_script->Function[cmd->LinkNr].LiteralParamType[p];
+			WantedType[p] = cmd->script->pre_script->Function[cmd->LinkNr]->LiteralParamType[p];
 		else
-			WantedType[p] = Function[cmd->LinkNr].LiteralParamType[p];
+			WantedType[p] = Function[cmd->LinkNr]->LiteralParamType[p];
 	}
 	if (cmd->Kind == KindCompilerFunction)
 		WantedType[p] = PreCommand[cmd->LinkNr].Param[p].Type;
@@ -1736,10 +1749,13 @@ void apply_type_cast(CPreScript *ps, int tc, sCommand *param)
 		char *data_new = (char*)TypeCast[tc].Func(data_old);
 		if ((TypeCast[tc].Dest->IsArray) || (TypeCast[tc].Dest->IsSuperArray)){
 			// arrays as return value -> reference!
+			int size = TypeCast[tc].Dest->Size;
+			if (TypeCast[tc].Dest == TypeString)
+				size = 256;
 			delete[] data_old;
-			ps->Constant[param->LinkNr].data = new char[TypeCast[tc].Dest->Size];
+			ps->Constant[param->LinkNr].data = new char[size];
 			data_new = *(char**)data_new;
-			memcpy(ps->Constant[param->LinkNr].data, data_new, TypeCast[tc].Dest->Size);
+			memcpy(ps->Constant[param->LinkNr].data, data_new, size);
 		}else
 			memcpy(ps->Constant[param->LinkNr].data, data_new, TypeCast[tc].Dest->Size);
 		ps->Constant[param->LinkNr].type = TypeCast[tc].Dest;
@@ -1778,17 +1794,25 @@ void CPreScript::LinkMostImportantOperator(int &NumOperators, sCommand **Operand
 		if (!p1->IsSuperArray)
 			if (p1->Element.num > 0)
 				equal_classes = true;
+	int class_func_no = -1;
+	bool ok = false;
 
+	// __assign__?
+	if ((p1 == p2) && (strcmp(PrimitiveOperator[Operator[mio]->LinkNr].Name, "=") == 0)){
+		class_func_no = p1->GetFunc("__assign__");
+		if (class_func_no >= 0)
+			ok = true;
+	}
 
 	// exact match?
-	bool ok = false;
-	for (int i=0;i<PreOperator.num;i++)
-		if (po == PreOperator[i].PrimitiveID)
-			if (type_match(p1, equal_classes, PreOperator[i].ParamType1) && type_match(p2, equal_classes, PreOperator[i].ParamType2)){
-				o = i;
-				ok = true;
-				break;
-			}
+	if (!ok)
+		for (int i=0;i<PreOperator.num;i++)
+			if (po == PreOperator[i].PrimitiveID)
+				if (type_match(p1, equal_classes, PreOperator[i].ParamType1) && type_match(p2, equal_classes, PreOperator[i].ParamType2)){
+					o = i;
+					ok = true;
+					break;
+				}
 
 
 	// needs type casting?
@@ -1817,7 +1841,14 @@ void CPreScript::LinkMostImportantOperator(int &NumOperators, sCommand **Operand
 	}
 
 	if (ok){
-		CommandMakeOperator(Operator[mio], param1, param2, o);
+		if (class_func_no >= 0){
+			sCommand *inst = param1;
+			ref_command(this, inst);
+			CommandSetClassFunc(Operator[mio], p1->Function[class_func_no], inst);
+			Operator[mio]->NumParams = 1;
+			Operator[mio]->Param[0] = param2;
+		}else
+			CommandMakeOperator(Operator[mio], param1, param2, o);
 	}else{
 		Exp.cur_exp = op_exp[mio];
 		_do_error_(format("no operator found: (%s) %s (%s)", Type2Str(this,p1).c_str(), PrimitiveOperator2Str(po).c_str(), Type2Str(this,p2).c_str()), 4,);
@@ -2320,6 +2351,7 @@ void CPreScript::TestArrayDefinition(sType **type, bool is_pointer)
 		if (array_size < 0){
 			(*type) = CreateNewType(	format("%s[]%s", or_name, &(*type)->Name[or_name_length]).c_str(),
 			                        	SuperArraySize, false, false, true, array_size, (*type));
+			CreateImplicitFunctions((*type), cur_func);
 		}else{
 			(*type) = CreateNewType(	format("%s[%d]%s", or_name, array_size, &(*type)->Name[or_name_length]).c_str(),
 			                        	(*type)->Size * array_size, false, false, true, array_size, (*type));
@@ -2412,8 +2444,8 @@ void ParseClassFunction(CPreScript *ps, sType *t)
 	ps->ParseFunction(ps->GetPointerType(t));
 
 	// convert name to Class.Function
-	sFunction *f = &ps->Function.back();
-	sprintf(f->Name, "%s.%s", t->Name, f->Name);
+	sFunction *f = ps->Function.back();
+	strcpy(f->Name, format("%s.%s", t->Name, f->Name).c_str());
 
 	msg_todo("Kaba: Class Function parameters...");
 }
@@ -2531,6 +2563,9 @@ void CPreScript::ParseClass()
 		if (type_needs_alignment(e.Type))
 			_offset = mem_align(_offset);
 	t->Size = _offset;
+
+
+	CreateImplicitFunctions(t, false);
 
 	Exp.cur_line --;
 	msg_db_l(4);
@@ -2743,14 +2778,14 @@ void CPreScript::ParseFunction(sType *class_type)
 	}
 
 	so(cur_name);
-	int function = AddFunction(cur_name, type);
+	sFunction *f = AddFunction(cur_name, type);
 	if (Error){
 		msg_db_l(4);
 		return;
 	}
+	cur_func = f;
 	bool func_extern = next_extern;
 	next_extern = false;
-	sFunction *f = &Function[function];
 	
 	next_exp();
 	next_exp(); // '('
@@ -2829,6 +2864,7 @@ void CPreScript::ParseFunction(sType *class_type)
 			return;
 		}
 	}
+	cur_func = NULL;
 
 	Exp.cur_line --;
 	msg_db_l(4);
@@ -2841,6 +2877,7 @@ void CPreScript::Parser()
 	msg_db_r("Parser", 4);
 
 	strcpy(RootOfAllEvil.Name, "RootOfAllEvil");
+	cur_func = NULL;
 
 	// syntax analysis
 	Error = false;
@@ -2876,7 +2913,6 @@ void CPreScript::Parser()
 		// class
 		}else if ((strcmp(cur_name, "struct") == 0) || (strcmp(cur_name, "class") == 0)){
 			ParseClass();
-			CreateImplicitFunctions();
 			
 		}else{
 
@@ -3000,20 +3036,20 @@ void CPreScript::ConvertCallByReference()
 	foreach(Function, f){
 		
 		// parameter: array/class as refrerence
-		for (int j=0;j<f.NumParams;j++)
-			if ((f.Var[j].Type->IsArray) || (f.Var[j].Type->IsSuperArray) || (f.Var[j].Type->Element.num > 0)){
-				f.Var[j].Type = GetPointerType(f.Var[j].Type);
+		for (int j=0;j<f->NumParams;j++)
+			if (f->Var[j].Type->UsesCallByReference()){
+				f->Var[j].Type = GetPointerType(f->Var[j].Type);
 
 				// internal usage...
-				foreach(f.Block->Command, c)
+				foreach(f->Block->Command, c)
 					conv_cbr(this, c, j);
 			}
 
 		// return: array as reference
-		if ((f.Type->IsArray) /*|| (f.Type->IsSuperArray)*/){
-			f.Type = GetPointerType(f.Type);
-			/*for (int k=0;k<f.Block->Command.num;k++)
-				conv_return(this, f.Block->Command[k]);*/
+		if ((f->Type->IsArray) /*|| (f->Type->IsSuperArray)*/){
+			f->Type = GetPointerType(f->Type);
+			/*for (int k=0;k<f->Block->Command.num;k++)
+				conv_return(this, f->Block->Command[k]);*/
 			// no need... return gets converted automatically (all calls...)
 		}
 	}
@@ -3038,7 +3074,7 @@ void CPreScript::ConvertCallByReference()
 		if ((c->Kind == KindFunction)|| (c->Kind == KindCompilerFunction)){
 			// parameters: array/class as reference
 			for (int j=0;j<c->NumParams;j++)
-				if ((c->Param[j]->Type->IsArray) || (c->Param[j]->Type->IsSuperArray) || (c->Param[j]->Type->Element.num > 0)){
+				if (c->Param[j]->Type->UsesCallByReference()){
 					so("conv param");
 					so(c->Param[j]->Type->Name);
 					ref_command(this, c->Param[j]);
@@ -3073,11 +3109,9 @@ void CPreScript::Simplify()
 	msg_db_r("Simplify", 2);
 	
 	// remove &*
-	for (int i=0;i<Function.num;i++){
-		sFunction *f = &Function[i];
-		for (int k=0;k<f->Block->Command.num;k++)
-			easyfy(this, f->Block->Command[k],0);
-	}
+	foreach(Function, f)
+		foreach(f->Block->Command, c)
+			easyfy(this, c, 0);
 	
 
 	
@@ -3233,33 +3267,44 @@ void CPreScript::BreakDownComplicatedCommands()
 void CreateImplicitConstructor(CPreScript *ps, sType *t)
 {
 	// create function
-	int fn = ps->AddFunction(format("%s.__init__", t->Name).c_str(), TypeVoid);
-	sFunction *f = &ps->Function[fn];
+	sFunction *f = ps->AddFunction(format("%s.__init__", t->Name).c_str(), TypeVoid);
+	int fn = ps->Function.num - 1;
 	f->Class = t;
 	ps->AddVar("self", ps->GetPointerType(t), f);
 
 	sCommand *self = ps->AddCommand();
 	self->Kind = KindVarLocal;
 	self->LinkNr = 0;
-	self->Type = t;
+	self->Type = ps->GetPointerType(t);
 
-
-	// call child constructors
-	foreach(t->Element, e)
-		foreach(e.Type->Function, ff)
-			if (strstr(ff.Name, "__init__")){
-				sCommand *c = add_command_classfunc(ps, ff);
-				sCommand *p = ps->AddCommand();
-				p->Kind = KindDerefAddressShift;
-				p->LinkNr = e.Offset;
-				p->Type = e.Type;
-				p->NumParams = 1;
-				p->Param[0] = self;
-				ref_command(ps, p);
-
-				c->Instance = p;
+	if (t->IsSuperArray){
+		foreach(t->Function, ff)
+			if (strcmp(ff.Name, "__mem_init__") == 0){
+				int nc = ps->AddConstant(TypeInt);
+				*(int*)ps->Constant[nc].data = t->SubType->Size;
+				sCommand *c = add_command_classfunc(ps, ff, self);
+				sCommand *p = add_command_const(ps, nc);
+				c->Param[0] = p;
+				c->NumParams = 1;
 				f->Block->Command.add(c);
 			}
+	}else{
+
+		// call child constructors
+		foreach(t->Element, e)
+			foreach(e.Type->Function, ff)
+				if (strcmp(ff.Name, "__init__") == 0){
+					sCommand *p = ps->AddCommand();
+					p->Kind = KindDerefAddressShift;
+					p->LinkNr = e.Offset;
+					p->Type = e.Type;
+					p->NumParams = 1;
+					p->Param[0] = self;
+					ref_command(ps, p);
+					sCommand *c = add_command_classfunc(ps, ff, p);
+					f->Block->Command.add(c);
+				}
+	}
 
 	sClassFunction cf;
 	cf.Kind = KindFunction;
@@ -3271,23 +3316,28 @@ void CreateImplicitConstructor(CPreScript *ps, sType *t)
 void CreateImplicitDestructor(CPreScript *ps, sType *t)
 {
 	// create function
-	int fn = ps->AddFunction(format("%s.__delete__", t->Name).c_str(), TypeVoid);
-	sFunction *f = &ps->Function[fn];
+	sFunction *f = ps->AddFunction(format("%s.__delete__", t->Name).c_str(), TypeVoid);
+	int fn = ps->Function.num - 1;
 	f->Class = t;
 	ps->AddVar("self", ps->GetPointerType(t), f);
 
 	sCommand *self = ps->AddCommand();
 	self->Kind = KindVarLocal;
 	self->LinkNr = 0;
-	self->Type = t;
+	self->Type = ps->GetPointerType(t);
 
+	if (t->IsSuperArray){
+		foreach(t->Function, ff)
+			if (strcmp(ff.Name, "clear") == 0){
+				sCommand *c = add_command_classfunc(ps, ff, self);
+				f->Block->Command.add(c);
+			}
+	}else{
 
-	// call child constructors
-	foreach(t->Element, e)
-		foreach(e.Type->Function, ff)
-			if (strstr(ff.Name, "__delete__")){
-				if (ff.Kind == KindCompilerFunction){
-					sCommand *c = add_command_classfunc(ps, ff);
+		// call child destructors
+		foreach(t->Element, e)
+			foreach(e.Type->Function, ff)
+				if (strcmp(ff.Name, "__delete__") == 0){
 					sCommand *p = ps->AddCommand();
 					p->Kind = KindDerefAddressShift;
 					p->LinkNr = e.Offset;
@@ -3295,11 +3345,10 @@ void CreateImplicitDestructor(CPreScript *ps, sType *t)
 					p->NumParams = 1;
 					p->Param[0] = self;
 					ref_command(ps, p);
-
-					c->Instance = p;
+					sCommand *c = add_command_classfunc(ps, ff, p);
 					f->Block->Command.add(c);
 				}
-			}
+	}
 
 	sClassFunction cf;
 	cf.Kind = KindFunction;
@@ -3308,59 +3357,542 @@ void CreateImplicitDestructor(CPreScript *ps, sType *t)
 	t->Function.add(cf);
 }
 
-void CPreScript::CreateImplicitFunctions()
+void CreateImplicitAssign(CPreScript *ps, sType *t)
+{
+	// create function
+	sFunction *f = ps->AddFunction(format("%s.__assign__", t->Name).c_str(), TypeVoid);
+	int fn = ps->Function.num - 1;
+	ps->AddVar("other", t, f);
+	f->NumParams = 1;
+	f->LiteralParamType[0] = t;
+	f->Class = t;
+	ps->AddVar("self", ps->GetPointerType(t), f);
+
+	sCommand *deref_other = ps->AddCommand();
+	deref_other->Kind = KindVarLocal;
+	deref_other->LinkNr = 0;
+	deref_other->Type = t;
+	sCommand *other = cp_command(ps, deref_other);
+	ref_command(ps, other);
+
+	sCommand *self = ps->AddCommand();
+	self->Kind = KindVarLocal;
+	self->LinkNr = 1;
+	self->Type = ps->GetPointerType(t);
+
+	if (t->IsSuperArray){
+
+		int nf = t->GetFunc("resize");
+		if (nf < 0){
+			ps->DoError(format("%s.__assign__(): no %s.resize() found", t->Name, t->Name));
+			return;
+		}
+
+		// self.resize(other.num)
+		sCommand *other_num = ps->AddCommand();
+		other_num->Kind = KindDerefAddressShift;
+		other_num->LinkNr = PointerSize;
+		other_num->Type = TypeInt;
+		other_num->NumParams = 1;
+		other_num->Param[0] = cp_command_deep(ps, other);
+
+		sCommand *cmd_resize = add_command_classfunc(ps, t->Function[nf], cp_command(ps, self));
+		cmd_resize->NumParams = 1;
+		cmd_resize->Param[0] = other_num;
+		f->Block->Command.add(cmd_resize);
+
+		// for int i, 0, other.num
+		//    self[i].__assign__(other[i])
+
+		ps->AddVar("i", TypeInt, f);
+
+		sCommand *for_var = ps->AddCommand();
+		for_var->Kind = KindVarLocal;
+		for_var->LinkNr = 2;
+		for_var->Type = TypeInt;
+
+
+		// for_var = 0
+		int nc = ps->AddConstant(TypeInt);
+		(*(int*)ps->Constant[nc].data) = 0;
+		sCommand *cmd_0 = add_command_const(ps, nc);
+		sCommand *cmd_assign = ps->AddCommand();
+		CommandMakeOperator(cmd_assign, for_var, cmd_0, OperatorIntAssign);
+		f->Block->Command.add(cmd_assign);
+
+		// while(for_var < self.num)
+		sCommand *cmd_cmp = ps->AddCommand();
+		CommandMakeOperator(cmd_cmp, for_var, cp_command_deep(ps, other_num), OperatorIntSmaller);
+
+		sCommand *cmd_while = add_command_compilerfunc(ps, CommandFor);
+		cmd_while->Param[0] = cmd_cmp;
+		f->Block->Command.add(cmd_while);
+
+		sCommand *cb = ps->AddCommand();
+		sBlock *b = ps->AddBlock();
+		cb->Kind = KindBlock;
+		cb->LinkNr = b->Index;
+
+		// el := self[for_var]
+		sCommand *deref_self = cp_command(ps, self);
+		deref_command(ps, deref_self);
+		sCommand *cmd_el = ps->AddCommand();
+		cmd_el->Kind = KindPointerAsArray;
+		cmd_el->Type = t->SubType;
+		cmd_el->Param[0] = deref_self;
+		cmd_el->Param[1] = for_var;
+		cmd_el->NumParams = 2;
+
+		// el2 := other[for_var]
+		sCommand *cmd_el2 = ps->AddCommand();
+		cmd_el2->Kind = KindPointerAsArray;
+		cmd_el2->Type = t->SubType;
+		cmd_el2->Param[0] = deref_other;
+		cmd_el2->Param[1] = for_var;
+		cmd_el2->NumParams = 2;
+
+		if (t->SubType->GetFunc("__assign__")){
+			ref_command(ps, cmd_el);
+			ref_command(ps, cmd_el2);
+
+			// __assign__
+			sCommand *cmd_assign = add_command_classfunc(ps, t->SubType->Function[t->SubType->GetFunc("__assign__")], cmd_el);
+			cmd_assign->NumParams = 1;
+			cmd_assign->Param[0] = cmd_el2;
+			b->Command.add(cmd_assign);
+
+		}else{
+
+			ps->DoError(format("%s.__assign__(): no %s.__assign__() found", t->Name, t->SubType->Name));
+			return;
+		}
+
+		// ...for_var += 1
+		sCommand *cmd_inc = ps->AddCommand();
+		CommandMakeOperator(cmd_inc, for_var, cmd_0 /*dummy*/, OperatorIntIncrease);
+		b->Command.add(cmd_inc);
+		f->Block->Command.add(cb);
+	}else{
+
+		// call child assignment
+		foreach(t->Element, e){
+			sCommand *p = ps->AddCommand();
+			p->Kind = KindDerefAddressShift;
+			p->LinkNr = e.Offset;
+			p->Type = e.Type;
+			p->NumParams = 1;
+			p->Param[0] = self;
+			sCommand *o = ps->AddCommand();
+			o->Kind = KindDerefAddressShift;
+			o->LinkNr = e.Offset;
+			o->Type = e.Type;
+			o->NumParams = 1;
+			o->Param[0] = cp_command(ps, other); // needed for call-by-ref conversion!
+			int nf = e.Type->GetFunc("__assign__");
+			if (nf >= 0){
+				ref_command(ps, p);
+				ref_command(ps, o);
+				sCommand *c = add_command_classfunc(ps, e.Type->Function[nf], p);
+				c->NumParams = 1;
+				c->Param[0] = o;
+				f->Block->Command.add(c);
+			}else{
+				int op = -1;
+				foreachi(PreOperator, o, i)
+					if ((strcmp(PrimitiveOperator[o.PrimitiveID].Name, "=") == 0) && (o.ParamType1 == e.Type) && (o.ParamType2 == e.Type))
+						op = i;
+
+				if (op >= 0){
+					sCommand *c = ps->AddCommand();
+					CommandMakeOperator(c, p, o, op);
+					f->Block->Command.add(c);
+				}else{
+					ps->DoError(format("%s.__assign__(): no %s.__assign__ for element \"%s\"", t->Name, e.Type->Name, e.Name));
+					return;
+				}
+			}
+		}
+	}
+
+	sClassFunction cf;
+	cf.Kind = KindFunction;
+	cf.Nr = fn;
+	strcpy(cf.Name, "__assign__");
+	t->Function.add(cf);
+}
+
+
+void CreateImplicitArrayClear(CPreScript *ps, sType *t)
+{
+	// create function
+	sFunction *f = ps->AddFunction(format("%s.clear", t->Name).c_str(), TypeVoid);
+	int fn = ps->Function.num - 1;
+	f->Class = t;
+	ps->AddVar("self", ps->GetPointerType(t), f);
+	ps->AddVar("for_var", TypeInt, f);
+
+	sCommand *self = ps->AddCommand();
+	self->Kind = KindVarLocal;
+	self->LinkNr = 0;
+	self->Type = ps->GetPointerType(t);
+
+	sCommand *self_num = ps->AddCommand();
+	self_num->Kind = KindDerefAddressShift;
+	self_num->LinkNr = PointerSize;
+	self_num->Type = TypeInt;
+	self_num->NumParams = 1;
+	self_num->Param[0] = cp_command(ps, self);
+
+	sCommand *for_var = ps->AddCommand();
+	for_var->Kind = KindVarLocal;
+	for_var->LinkNr = 1;
+	for_var->Type = TypeInt;
+
+// delete...
+	if (t->SubType->GetFunc("__delete__") >= 0){
+		// for_var = 0
+		int nc = ps->AddConstant(TypeInt);
+		(*(int*)ps->Constant[nc].data) = 0;
+		sCommand *cmd_0 = add_command_const(ps, nc);
+		sCommand *cmd_assign = ps->AddCommand();
+		CommandMakeOperator(cmd_assign, for_var, cmd_0, OperatorIntAssign);
+		f->Block->Command.add(cmd_assign);
+
+		// while(for_var < self.num)
+		sCommand *cmd_cmp = ps->AddCommand();
+		CommandMakeOperator(cmd_cmp, for_var, self_num, OperatorIntSmaller);
+
+		sCommand *cmd_while = add_command_compilerfunc(ps, CommandFor);
+		cmd_while->Param[0] = cmd_cmp;
+		f->Block->Command.add(cmd_while);
+
+		sCommand *cb = ps->AddCommand();
+		sBlock *b = ps->AddBlock();
+		cb->Kind = KindBlock;
+		cb->LinkNr = b->Index;
+
+		// el := self[for_var]
+		sCommand *deref_self = cp_command(ps, self);
+		deref_command(ps, deref_self);
+		sCommand *cmd_el = ps->AddCommand();
+		cmd_el->Kind = KindPointerAsArray;
+		cmd_el->Type = t->SubType;
+		cmd_el->Param[0] = deref_self;
+		cmd_el->Param[1] = for_var;
+		cmd_el->NumParams = 2;
+		ref_command(ps, cmd_el);
+
+		// __delete__
+		sCommand *cmd_delete = add_command_classfunc(ps, t->SubType->Function[t->SubType->GetFunc("__delete__")], cmd_el);
+		b->Command.add(cmd_delete);
+
+		// ...for_var += 1
+		sCommand *cmd_inc = ps->AddCommand();
+		CommandMakeOperator(cmd_inc, for_var, cmd_0 /*dummy*/, OperatorIntIncrease);
+		b->Command.add(cmd_inc);
+		f->Block->Command.add(cb);
+	}
+
+	// clear
+	sCommand *cmd_clear = add_command_classfunc(ps, t->Function[t->GetFunc("__mem_clear__")], self);
+	f->Block->Command.add(cmd_clear);
+
+
+	sClassFunction cf;
+	cf.Kind = KindFunction;
+	cf.Nr = fn;
+	strcpy(cf.Name, "clear");
+	t->Function.add(cf);
+}
+
+
+void CreateImplicitArrayResize(CPreScript *ps, sType *t)
+{
+	// create function
+	sFunction *f = ps->AddFunction(format("%s.resize", t->Name).c_str(), TypeVoid);
+	int fn = ps->Function.num - 1;
+	ps->AddVar("num", TypeInt, f);
+	f->NumParams = 1;
+	f->LiteralParamType[0] = TypeInt;
+	f->Class = t;
+	ps->AddVar("self", ps->GetPointerType(t), f);
+	ps->AddVar("for_var", TypeInt, f);
+	ps->AddVar("num_old", TypeInt, f);
+
+	sCommand *num = ps->AddCommand();
+	num->Kind = KindVarLocal;
+	num->LinkNr = 0;
+	num->Type = TypeInt;
+
+	sCommand *self = ps->AddCommand();
+	self->Kind = KindVarLocal;
+	self->LinkNr = 1;
+	self->Type = ps->GetPointerType(t);
+
+	sCommand *self_num = ps->AddCommand();
+	self_num->Kind = KindDerefAddressShift;
+	self_num->LinkNr = PointerSize;
+	self_num->Type = TypeInt;
+	self_num->NumParams = 1;
+	self_num->Param[0] = cp_command(ps, self);
+
+	sCommand *for_var = ps->AddCommand();
+	for_var->Kind = KindVarLocal;
+	for_var->LinkNr = 2;
+	for_var->Type = TypeInt;
+
+	sCommand *num_old = ps->AddCommand();
+	num_old->Kind = KindVarLocal;
+	num_old->LinkNr = 3;
+	num_old->Type = TypeInt;
+
+	// num_old = self.num
+	sCommand *cmd_copy_num = ps->AddCommand();
+	CommandMakeOperator(cmd_copy_num, num_old, self_num, OperatorIntAssign);
+	f->Block->Command.add(cmd_copy_num);
+
+// delete...
+	if (t->SubType->GetFunc("__delete__") >= 0){
+		// for_var = num
+		sCommand *cmd_assign = ps->AddCommand();
+		CommandMakeOperator(cmd_assign, for_var, num, OperatorIntAssign);
+		f->Block->Command.add(cmd_assign);
+
+		// while(for_var < self.num)
+		sCommand *cmd_cmp = ps->AddCommand();
+		CommandMakeOperator(cmd_cmp, for_var, self_num, OperatorIntSmaller);
+
+		sCommand *cmd_while = add_command_compilerfunc(ps, CommandFor);
+		cmd_while->Param[0] = cmd_cmp;
+		f->Block->Command.add(cmd_while);
+
+		sCommand *cb = ps->AddCommand();
+		sBlock *b = ps->AddBlock();
+		cb->Kind = KindBlock;
+		cb->LinkNr = b->Index;
+
+		// el := self[for_var]
+		sCommand *deref_self = cp_command(ps, self);
+		deref_command(ps, deref_self);
+		sCommand *cmd_el = ps->AddCommand();
+		cmd_el->Kind = KindPointerAsArray;
+		cmd_el->Type = t->SubType;
+		cmd_el->Param[0] = deref_self;
+		cmd_el->Param[1] = for_var;
+		cmd_el->NumParams = 2;
+		ref_command(ps, cmd_el);
+
+		// __delete__
+		sCommand *cmd_delete = add_command_classfunc(ps, t->SubType->Function[t->SubType->GetFunc("__delete__")], cmd_el);
+		b->Command.add(cmd_delete);
+
+		// ...for_var += 1
+		sCommand *cmd_inc = ps->AddCommand();
+		CommandMakeOperator(cmd_inc, for_var, num /*dummy*/, OperatorIntIncrease);
+		b->Command.add(cmd_inc);
+		f->Block->Command.add(cb);
+	}
+
+	// resize
+	sCommand *c_resize = add_command_classfunc(ps, t->Function[t->GetFunc("__mem_resize__")], self);
+	c_resize->NumParams = 1;
+	c_resize->Param[0] = num;
+	f->Block->Command.add(c_resize);
+
+	// new...
+	if (t->SubType->GetFunc("__init__") >= 0){
+		// for_var = num_old
+		sCommand *cmd_assign = ps->AddCommand();
+		CommandMakeOperator(cmd_assign, for_var, num_old, OperatorIntAssign);
+		f->Block->Command.add(cmd_assign);
+
+		// while(for_var < self.num)
+		sCommand *cmd_cmp = ps->AddCommand();
+		CommandMakeOperator(cmd_cmp, for_var, self_num, OperatorIntSmaller);
+
+		sCommand *cmd_while = add_command_compilerfunc(ps, CommandFor);
+		cmd_while->Param[0] = cmd_cmp;
+		f->Block->Command.add(cmd_while);
+
+		sCommand *cb = ps->AddCommand();
+		sBlock *b = ps->AddBlock();
+		cb->Kind = KindBlock;
+		cb->LinkNr = b->Index;
+
+		// el := self[for_var]
+		sCommand *deref_self = cp_command(ps, self);
+		deref_command(ps, deref_self);
+		sCommand *cmd_el = ps->AddCommand();
+		cmd_el->Kind = KindPointerAsArray;
+		cmd_el->Type = t->SubType;
+		cmd_el->Param[0] = deref_self;
+		cmd_el->Param[1] = for_var;
+		cmd_el->NumParams = 2;
+		ref_command(ps, cmd_el);
+
+		// __init__
+		sCommand *cmd_init = add_command_classfunc(ps, t->SubType->Function[t->SubType->GetFunc("__init__")], cmd_el);
+		b->Command.add(cmd_init);
+
+		// ...for_var += 1
+		sCommand *cmd_inc = ps->AddCommand();
+		CommandMakeOperator(cmd_inc, for_var, num /*dummy*/, OperatorIntIncrease);
+		b->Command.add(cmd_inc);
+		f->Block->Command.add(cb);
+	}
+
+
+	sClassFunction cf;
+	cf.Kind = KindFunction;
+	cf.Nr = fn;
+	strcpy(cf.Name, "resize");
+	t->Function.add(cf);
+}
+
+void CreateImplicitArrayAdd(CPreScript *ps, sType *t)
+{
+	// create function
+	sFunction *f = ps->AddFunction(format("%s.add", t->Name).c_str(), TypeVoid);
+	int fn = ps->Function.num - 1;
+	ps->AddVar("x", t->SubType, f);
+	f->NumParams = 1;
+	f->LiteralParamType[0] = t->SubType;
+	f->Class = t;
+	ps->AddVar("self", ps->GetPointerType(t), f);
+
+	sCommand *item = ps->AddCommand();
+	item->Kind = KindVarLocal;
+	item->LinkNr = 0;
+	item->Type = t->SubType;
+	ref_command(ps, item);
+
+	sCommand *self = ps->AddCommand();
+	self->Kind = KindVarLocal;
+	self->LinkNr = 1;
+	self->Type = ps->GetPointerType(t);
+
+	sCommand *self_num = ps->AddCommand();
+	self_num->Kind = KindDerefAddressShift;
+	self_num->LinkNr = PointerSize;
+	self_num->Type = TypeInt;
+	self_num->NumParams = 1;
+	self_num->Param[0] = cp_command(ps, self);
+
+
+	// resize(self.num + 1)
+	int nc = ps->AddConstant(TypeInt);
+	(*(int*)ps->Constant[nc].data) = 1;
+	sCommand *cmd_1 = add_command_const(ps, nc);
+	sCommand *cmd_add = ps->AddCommand();
+	CommandMakeOperator(cmd_add, self_num, cmd_1, OperatorIntAdd);
+	sCommand *cmd_resize = add_command_classfunc(ps, t->Function[t->GetFunc("resize")], self);
+	cmd_resize->NumParams = 1;
+	cmd_resize->Param[0] = cmd_add;
+	f->Block->Command.add(cmd_resize);
+
+
+
+	// el := self[self.num - 1]
+	sCommand *cmd_sub = ps->AddCommand();
+	CommandMakeOperator(cmd_sub, cp_command(ps, self_num), cmd_1, OperatorIntSubtract);
+	sCommand *deref_self = cp_command(ps, self);
+	deref_command(ps, deref_self);
+	sCommand *cmd_el = ps->AddCommand();
+	cmd_el->Kind = KindPointerAsArray;
+	cmd_el->Type = t->SubType;
+	cmd_el->Param[0] = deref_self;
+	cmd_el->Param[1] = cmd_sub;
+	cmd_el->NumParams = 2;
+	ref_command(ps, cmd_el);
+
+	if (t->SubType->GetFunc("__assign__") >= 0){
+		sCommand *cmd_assign = add_command_classfunc(ps, t->SubType->Function[t->SubType->GetFunc("__assign__")], cmd_el);
+		cmd_assign->NumParams = 1;
+		cmd_assign->Param[0] = item;
+		f->Block->Command.add(cmd_assign);
+	}else{
+		ps->DoError(format("%s.add(): no %s.__assign__ for elements", t->Name, t->SubType->Name));
+		return;
+	}
+
+	sClassFunction cf;
+	cf.Kind = KindFunction;
+	cf.Nr = fn;
+	strcpy(cf.Name, "add");
+	t->Function.add(cf);
+}
+
+void CPreScript::CreateImplicitFunctions(sType *t, bool relocate_last_function)
 {
 	int num_funcs = Function.num;
 
-	foreach(Type, t){
-		if (t->Owner != this)
-			continue;
-		bool has_constructor = false;
-		foreach(t->Function, f)
+	if (t->Owner != this)
+		return;
+	if (t->IsPointer)
+		return;
+
+	// needs complex functions?
+	bool needs_init = false;
+	foreach(t->Element, e)
+		foreach(e.Type->Function, f)
 			if (strcmp(f.Name, "__init__") == 0)
-				has_constructor = true;
-		if (has_constructor)
-			continue;
-		int n = 0;
-		foreach(t->Element, e)
-			foreach(e.Type->Function, f)
-				if (strcmp(f.Name, "__init__") == 0)
-					n ++;
-		if ((n == 0) && (!t->IsSuperArray))
-			continue;
+				needs_init = true;
+	if (t->IsSuperArray)
+		needs_init = true;
 
-		CreateImplicitConstructor(this, t);
-		CreateImplicitDestructor(this, t);
+	if (t->IsSuperArray){
+		if ((!Error) && (t->GetFunc("clear") < 0))
+			CreateImplicitArrayClear(this, t);
+		if ((!Error) && (t->GetFunc("resize") < 0))
+			CreateImplicitArrayResize(this, t);
+		if ((!Error) && (t->GetFunc("add") < 0))
+			CreateImplicitArrayAdd(this, t);
 	}
+	if (needs_init){
+		if ((!Error) && (t->GetFunc("__init__") < 0))
+			CreateImplicitConstructor(this, t);
+		if ((!Error) && (t->GetFunc("__delete__") < 0))
+			CreateImplicitDestructor(this, t);
+	}
+	if ((!Error) && (t->GetFunc("__assign__") < 0))
+		CreateImplicitAssign(this, t);
+	if (Error)
+		return;
 
-	/*if (num_funcs != Function.num){
+	if (relocate_last_function && (num_funcs != Function.num)){
+		//msg_error("relocate implicit function");
 		// resort Function[]
-		num_funcs = Function.num;
-		for (int i=0;i<num_funcs;i++){
-			sFunction f = Function.pop();
-			Function.insert(f, 0);
-		}
+		sFunction *f = Function[num_funcs - 1];
+		Function.erase(num_funcs - 1);
+		Function.add(f);
 
 		// relink commands
 		foreach(Command, c)
 			if (c->Kind == KindFunction){
-				if (c->script == NULL)
+				if (c->script)
 					continue;
-				if (c->LinkNr <= num_funcs)
-					c->LinkNr += Function.num - num_funcs;
-				else
-					c->LinkNr -= num_funcs;
+				if (c->LinkNr == num_funcs - 1)
+					c->LinkNr = Function.num - 1;
+				else if (c->LinkNr > num_funcs - 1)
+					c->LinkNr --;
 			}
 
 		// relink class functions
 		foreach(Type, t)
 			foreach(t->Function, f)
-				if (f.Kind == KindFunction)
-					if (f.Nr <= num_funcs)
-						f.Nr += Function.num - num_funcs;
-					else
-						f.Nr -= num_funcs;
-	}*/
+				if (f.Kind == KindFunction){
+					if (f.Nr == num_funcs - 1)
+						f.Nr = Function.num - 1;
+					else if (f.Nr > num_funcs - 1)
+						f.Nr --;
+				}
+	}
+}
+
+void CPreScript::CreateAllImplicitFunctions(bool relocate_last_function)
+{
+	foreach(Type, t)
+		CreateImplicitFunctions(t, relocate_last_function);
 }
 
 // no included scripts may be deleted before us!!!
@@ -3415,7 +3947,7 @@ CPreScript::~CPreScript()
 		delete(Block[i]);
 	Block.clear();
 	for (int i=0;i<Function.num;i++)
-		Function[i].Var.clear();
+		delete(Function[i]);
 	Function.clear();
 	
 	msg_db_l(4);
@@ -3454,8 +3986,8 @@ void CPreScript::ShowBlock(sBlock *b)
 
 void CPreScript::ShowFunction(int f)
 {
-	msg_write(format("%d: %s --------------------------", f, Function[f].Name));
-	ShowBlock(Function[f].Block);
+	msg_write(format("%d: %s --------------------------", f, Function[f]->Name));
+	ShowBlock(Function[f]->Block);
 }
 
 void CPreScript::Show()

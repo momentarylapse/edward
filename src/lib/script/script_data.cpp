@@ -570,20 +570,27 @@ bool super_array_equal_str(string *a, string *b)
 bool super_array_notequal_str(string *a, string *b)
 {	return *a != *b;	}
 
-class string_list : public Array<string>
+bool type_is_simple_class(sType *t)
 {
-};
+	if (t->UsesCallByReference())
+		return true;
+	if (t->IsArray)
+		return false;
+	if (t->IsSuperArray)
+		return false;
+	foreach(t->Element, e)
+		if (e.Type->UsesCallByReference())
+			return false;
+	return true;
+}
 
 void script_make_super_array(sType *t, CPreScript *ps)
 {
 	msg_db_r("make_super_array", 4);
 	add_class(t);
 		class_add_element("num", TypeInt, PointerSize);
-		class_add_func("clear", TypeVoid, mf((tmf)&CSuperArray::clear));
-		class_add_func("remove", TypeVoid, mf((tmf)&CSuperArray::delete_single));
-			func_add_param("index",		TypeInt);
-		class_add_func("removep", TypeVoid, mf((tmf)&CSuperArray::delete_single_by_pointer));
-			func_add_param("pointer",		TypePointer);
+
+		// always usable operations
 		class_add_func("swap", TypeVoid, mf((tmf)&CSuperArray::swap));
 			func_add_param("i1",		TypeInt);
 			func_add_param("i2",		TypeInt);
@@ -593,29 +600,11 @@ void script_make_super_array(sType *t, CPreScript *ps)
 			func_add_param("pointer",		TypePointerPs);
 		class_add_func("index", TypeInt, mf((tmf)&CSuperArray::index));
 			func_add_param("pointer",		TypePointer);
-		class_add_func("resize", TypeVoid, mf((tmf)&CSuperArray::resize));
+		class_add_func("subarray", t, mf((tmf)&CSuperArray::ref_subarray));
+			func_add_param("start",		TypeInt);
 			func_add_param("num",		TypeInt);
-		class_add_func("ensure_size", TypeVoid, mf((tmf)&CSuperArray::ensure_size));
-			func_add_param("num",		TypeInt);
-		if (t->SubType->Size == 4){
-			class_add_func("add", TypeVoid, mf((tmf)&CSuperArray::append_4_single));
-				func_add_param("x",		t->SubType);
-		}else if (t->SubType->Size == 1){
-			class_add_func("add", TypeVoid, mf((tmf)&CSuperArray::append_1_single));
-				func_add_param("x",		t->SubType);
-		}else if (t->SubType == TypeComplex){
-			class_add_func("add", TypeVoid, mf((tmf)&CSuperArray::append_single));
-				func_add_param("x",		t->SubType);
-		}else if (t->SubType == TypeString){
-			class_add_func("add", TypeVoid, mf((tmf)&string_list::add));
-				func_add_param("x",		t->SubType);
-		}else if ((t->SubType->IsArray) || (t->SubType->Element.num > 0)){
-			class_add_func("add", TypeVoid, mf((tmf)&CSuperArray::append_single));
-				func_add_param("x",		t->SubType);
-		}else{
-			class_add_func("add", TypeVoid, mf((tmf)&CSuperArray::append_single));
-				func_add_param("x",		TypePointer);
-		}
+
+		// special additional operations
 		if (t->SubType == TypeInt){
 			class_add_func("sort", TypeVoid, mf((tmf)&CSuperArray::int_sort));
 			class_add_func("unique", TypeVoid, mf((tmf)&CSuperArray::int_unique));
@@ -642,13 +631,44 @@ void script_make_super_array(sType *t, CPreScript *ps)
 			class_add_func("explode", TypeStringList, mf((tmf)&string::explode));
 				func_add_param("str",		TypeString);
 		}
-		class_add_func("subarray", t, mf((tmf)&CSuperArray::ref_subarray));
-			func_add_param("start",		TypeInt);
-			func_add_param("num",		TypeInt);
 
-	// until we have automatic initialization... (T_T)
-		class_add_func("_manual_init_", TypeVoid, mf((tmf)&CSuperArray::init));
+		if (type_is_simple_class(t->SubType)){
+			if (!t->SubType->UsesCallByReference()){
+				if (t->SubType->Size == 4){
+					class_add_func("__init__",	TypeVoid, mf((tmf)&Array<int>::__init__));
+					class_add_func("add", TypeVoid, mf((tmf)&CSuperArray::append_4_single));
+						func_add_param("x",		t->SubType);
+				}else if (t->SubType->Size == 1){
+					class_add_func("__init__",	TypeVoid, mf((tmf)&Array<char>::__init__));
+					class_add_func("add", TypeVoid, mf((tmf)&CSuperArray::append_1_single));
+						func_add_param("x",		t->SubType);
+				}
+			}else{
+				class_add_func("add", TypeVoid, mf((tmf)&CSuperArray::append_single));
+					func_add_param("x",		t->SubType);
+			}
+			class_add_func("__delete__",	TypeVoid, mf((tmf)&CSuperArray::clear));
+			class_add_func("clear", TypeVoid, mf((tmf)&CSuperArray::clear));
+			class_add_func("__assign__", TypeVoid, mf((tmf)&CSuperArray::assign));
+				func_add_param("other",		t);
+			class_add_func("remove", TypeVoid, mf((tmf)&CSuperArray::delete_single));
+				func_add_param("index",		TypeInt);
+			class_add_func("removep", TypeVoid, mf((tmf)&CSuperArray::delete_single_by_pointer));
+				func_add_param("pointer",		TypePointer);
+			class_add_func("resize", TypeVoid, mf((tmf)&CSuperArray::resize));
+				func_add_param("num",		TypeInt);
+			class_add_func("ensure_size", TypeVoid, mf((tmf)&CSuperArray::ensure_size));
+				func_add_param("num",		TypeInt);
+		}
+
+		// low level operations
+		class_add_func("__mem_init__", TypeVoid, mf((tmf)&CSuperArray::init));
 			func_add_param("element_size",		TypeInt);
+		class_add_func("__mem_clear__", TypeVoid, mf((tmf)&CSuperArray::clear));
+		class_add_func("__mem_resize__", TypeVoid, mf((tmf)&CSuperArray::resize));
+			func_add_param("size",		TypeInt);
+		class_add_func("__mem_remove__", TypeVoid, mf((tmf)&CSuperArray::delete_single));
+			func_add_param("index",		TypeInt);
 	msg_db_l(4);
 }
 
@@ -819,24 +839,16 @@ void SIAddPackageBase()
 	TypeStringList		= add_type_a("string[]",	TypeString, -1);
 
 
-	add_class(TypePointerList);
-		class_add_func("__init__",	TypeVoid, mf((tmf)&Array<void*>::__init__));
-		class_add_func("__delete__",	TypeVoid, mf((tmf)&Array<void*>::clear));
-	add_class(TypeIntList);
-		class_add_func("__init__",	TypeVoid, mf((tmf)&Array<int>::__init__));
-		class_add_func("__delete__",	TypeVoid, mf((tmf)&Array<int>::clear));
-	add_class(TypeFloatList);
-		class_add_func("__init__",	TypeVoid, mf((tmf)&Array<float>::__init__));
-		class_add_func("__delete__",	TypeVoid, mf((tmf)&Array<float>::clear));
-	add_class(TypeBoolList);
-		class_add_func("__init__",	TypeVoid, mf((tmf)&Array<bool>::__init__));
-		class_add_func("__delete__",	TypeVoid, mf((tmf)&Array<bool>::clear));
-	add_class(TypeString);
-		class_add_func("__init__",	TypeVoid, mf((tmf)&string::__init__));
-		class_add_func("__delete__",	TypeVoid, mf((tmf)&string::clear));
 	add_class(TypeStringList);
 		class_add_func("__init__",	TypeVoid, mf((tmf)&Array<string>::__init__));
 		class_add_func("__delete__",	TypeVoid, mf((tmf)&Array<string>::clear));
+		class_add_func("add", TypeVoid, mf((tmf)&Array<string>::add));
+			func_add_param("x",		TypeString);
+		class_add_func("clear", TypeVoid, mf((tmf)&Array<string>::clear));
+		class_add_func("remove", TypeVoid, mf((tmf)&Array<string>::erase));
+			func_add_param("index",		TypeInt);
+		class_add_func("resize", TypeVoid, mf((tmf)&Array<string>::resize));
+			func_add_param("num",		TypeInt);
 
 
 	add_const("nil", TypePointer, NULL);

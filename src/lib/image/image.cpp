@@ -18,8 +18,6 @@ void Image::__delete__()
 void Image::LoadFlipped(const string &filename)
 {
 	msg_db_r("Image.LoadFlipped", 1);
-	if (data.element_size != 4)
-		data.init(4); // script...
 
 	// reset image
 	width = 0;

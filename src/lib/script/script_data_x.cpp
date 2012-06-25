@@ -205,6 +205,13 @@ void SIAddPackageX()
 	TypePlaneList		= add_type_a("plane[]",		TypePlane, -1);
 	TypeVectorList		= add_type_a("vector[]",	TypeVector, -1);
 	
+
+	// bone, subskin, material...
+	add_class(TypeVectorList);
+		class_add_func("__init__",	TypeVoid, mf((tmf)&Array<vector>::__init__));
+	add_class(TypePlaneList);
+		class_add_func("__init__",	TypeVoid, mf((tmf)&Array<plane>::__init__));
+
 	add_class(TypePicture);
 		class_add_element("enabled",		TypeBool,		GetDAPicture(enabled));
 		class_add_element("tc_inverted",	TypeBool,		GetDAPicture(tc_inverted));

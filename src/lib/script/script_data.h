@@ -58,6 +58,16 @@ struct sType{
 	Array<sClassFunction> Function;
 	sType *SubType;
 	CPreScript *Owner; // to share and be able to delete...
+
+	bool UsesCallByReference()
+	{	return ((IsArray) || (IsSuperArray) || (Element.num > 0));	}
+	int GetFunc(const char *name)
+	{
+		foreachi(Function, f, i)
+			if (strcmp(f.Name, name) == 0)
+				return i;
+		return -1;
+	}
 };
 extern Array<sType*> PreType;
 extern sType *TypeUnknown;

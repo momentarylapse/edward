@@ -119,6 +119,10 @@ void SIAddPackageMath()
 	TypeVli			= add_type  ("vli",		sizeof(vli));
 	
 	
+
+	add_class(TypeComplexList);
+		class_add_func("__init__",	TypeVoid, mf((tmf)&Array<complex>::__init__));
+
 	
 	add_class(TypeComplex);
 		class_add_element("x",		TypeFloat,	0);

@@ -1226,10 +1226,10 @@ sSerialCommandParam CScript::SerializeCommand(sCommand *com, sFunction *f, int l
 			is_class_function = true;
 	if (com->Kind == KindFunction){
 		if (com->script){
-			if (strstr(com->script->pre_script->Function[com->LinkNr].Name, "."))
+			if (strstr(com->script->pre_script->Function[com->LinkNr]->Name, "."))
 				is_class_function = true;
 		}else{
-			if (strstr(pre_script->Function[com->LinkNr].Name, "."))
+			if (strstr(pre_script->Function[com->LinkNr]->Name, "."))
 				is_class_function = true;
 		}
 	}
@@ -1263,8 +1263,8 @@ sSerialCommandParam CScript::SerializeCommand(sCommand *com, sFunction *f, int l
 				so("   -ok");
 			}else{
 				fp = (void*)func[com->LinkNr];
-				if (strstr(pre_script->Function[com->LinkNr].Name, ".")){
-					msg_error("class   member--------");
+				if (strstr(pre_script->Function[com->LinkNr]->Name, ".")){
+					so("    class function!!!");
 					class_function = true;
 				}
 			}
@@ -1566,7 +1566,7 @@ Array<sSerialCommandParam> InsertedConstructorTemp;
 void add_cmd_constructor(sSerialCommandParam &param, bool is_temp)
 {
 	foreach(param.type->Function, f){
-		if (strstr(f.Name, "__init__")){ // TODO test signature "void __init__()"
+		if (strcmp(f.Name, "__init__") == 0){ // TODO test signature "void __init__()"
 			sSerialCommandParam inst;
 			AddReference(param, TypePointer, inst);
 			AddFuncInstance(inst);
@@ -1576,7 +1576,7 @@ void add_cmd_constructor(sSerialCommandParam &param, bool is_temp)
 			else if (f.Kind == KindFunction){
 				fp = (void*)param.type->Owner->script->func[f.Nr];
 				if (!fp)
-					msg_error("x.__init__() unlinkable compiler function!");
+					msg_error(format("%s.__init__() unlinkable compiler function!", param.type->Name));
 			}
 
 			AddFunctionCall(fp, cur_func);
@@ -1592,7 +1592,7 @@ void add_cmd_constructor(sSerialCommandParam &param, bool is_temp)
 void add_cmd_destructor(sSerialCommandParam &param)
 {
 	foreach(param.type->Function, f)
-		if (strstr(f.Name, "__delete__")){ // TODO test signature "void __delete__()"
+		if (strcmp(f.Name, "__delete__") == 0){ // TODO test signature "void __delete__()"
 			sSerialCommandParam inst;
 			AddReference(param, TypePointer, inst);
 			AddFuncInstance(inst);
@@ -1602,7 +1602,7 @@ void add_cmd_destructor(sSerialCommandParam &param)
 			else if (f.Kind == KindFunction){
 				fp = (void*)param.type->Owner->script->func[f.Nr];
 				if (!fp)
-					msg_error("x.__delete__() unlinkable compiler function!");
+					msg_error(format("%s.__delete__() unlinkable compiler function!", param.type->Name));
 			}
 			AddFunctionCall(fp, cur_func);
 		}
