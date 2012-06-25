@@ -98,6 +98,34 @@ void script_make_super_array(sType *t, CPreScript *ps = NULL);
 
 //--------------------------------------------------------------------------------------------------
 // operators
+enum{
+	OperatorAssign,			//  =
+	OperatorAdd,			//  +
+	OperatorSubtract,		//  -
+	OperatorMultiply,		//  *
+	OperatorDivide,			//  /
+	OperatorAddS,			// +=
+	OperatorSubtractS,		// -=
+	OperatorMultiplyS,		// *=
+	OperatorDivideS,		// /=
+	OperatorEqual,			// ==
+	OperatorNotEqual,		// !=
+	OperatorNegate,			//  !
+	OperatorSmaller,		//  <
+	OperatorGreater,		//  >
+	OperatorSmallerEqual,	// <=
+	OperatorGreaterEqual,	// >=
+	OperatorAnd,			// and
+	OperatorOr,				// or
+	OperatorModulo,			//  %
+	OperatorBitAnd,			//  &
+	OperatorBitOr,			//  |
+	OperatorShiftLeft,		// <<
+	OperatorShiftRight,		// >>
+	OperatorIncrease,		// ++
+	OperatorDecrease,		// --
+	NUM_PRIMITIVE_OPERATORS
+};
 
 struct sPrimitiveOperator{
 	char Name[4];

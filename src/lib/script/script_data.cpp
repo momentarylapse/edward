@@ -173,36 +173,6 @@ sType *ScriptGetPreType(const char *name)
 //------------------------------------------------------------------------------------------------//
 
 //   without type information ("primitive")
-enum{
-	OperatorAssign,			//  =
-	OperatorAdd,			//  +
-	OperatorSubtract,		//  -
-	OperatorMultiply,		//  *
-	OperatorDivide,			//  /
-	OperatorAddS,			// +=
-	OperatorSubtractS,		// -=
-	OperatorMultiplyS,		// *=
-	OperatorDivideS,		// /=
-	OperatorEqual,			// ==
-	OperatorNotEqual,		// !=
-	OperatorNegate,			//  !
-	OperatorSmaller,		//  <
-	OperatorGreater,		//  >
-	OperatorSmallerEqual,	// <=
-	OperatorGreaterEqual,	// >=
-/*	OperatorAnd,			// &&
-	OperatorOr,				// ||  */
-	OperatorAndLiteral,		// and
-	OperatorOrLiteral,		// or
-	OperatorModulo,			//  %
-	OperatorBitAnd,			//  &
-	OperatorBitOr,			//  |
-	OperatorShiftLeft,		// <<
-	OperatorShiftRight,		// >>
-	OperatorIncrease,		// ++
-	OperatorDecrease,		// --
-	NUM_PRIMITIVE_OPERATORS
-};
 int NumPrimitiveOperators = NUM_PRIMITIVE_OPERATORS;
 
 sPrimitiveOperator PrimitiveOperator[NUM_PRIMITIVE_OPERATORS]={
@@ -222,10 +192,8 @@ sPrimitiveOperator PrimitiveOperator[NUM_PRIMITIVE_OPERATORS]={
 	{">",	OperatorGreater,		false,	9},
 	{"<=",	OperatorSmallerEqual,	false,	9},
 	{">=",	OperatorGreaterEqual,	false,	9},
-/*	{"-&&",	OperatorAnd,			false,	4},
-	{"-||",	OperatorOr,				false,	3},*/
-	{"and",	OperatorAndLiteral,		false,	4},
-	{"or",	OperatorOrLiteral,		false,	3},
+	{"and",	OperatorAnd,			false,	4},
+	{"or",	OperatorOr,				false,	3},
 	{"%",	OperatorModulo,			false,	12},
 	{"&",	OperatorBitAnd,			false,	7},
 	{"|",	OperatorBitOr,			false,	5},
@@ -572,14 +540,20 @@ bool super_array_notequal_str(string *a, string *b)
 
 bool type_is_simple_class(sType *t)
 {
-	if (t->UsesCallByReference())
+	if (!t->UsesCallByReference())
 		return true;
-	if (t->IsArray)
-		return false;
+	/*if (t->IsArray)
+		return false;*/
 	if (t->IsSuperArray)
 		return false;
+	if (t->GetFunc("__init__") >= 0)
+		return false;
+	if (t->GetFunc("__delete__") >= 0)
+		return false;
+	if (t->GetFunc("__assign__") >= 0)
+		return false;
 	foreach(t->Element, e)
-		if (e.Type->UsesCallByReference())
+		if (!type_is_simple_class(e.Type))
 			return false;
 	return true;
 }
@@ -977,10 +951,8 @@ void SIAddOperators()
 	add_operator(OperatorGreaterEqual,	TypeBool,		TypeBool,		TypeBool);
 	add_operator(OperatorSmaller,		TypeBool,		TypeBool,		TypeBool);
 	add_operator(OperatorSmallerEqual,	TypeBool,		TypeBool,		TypeBool);
-/*	add_operator(OperatorAnd,			TypeBool,		TypeBool,		TypeBool);
-	add_operator(OperatorOr,			TypeBool,		TypeBool,		TypeBool);*/
-	add_operator(OperatorAndLiteral,	TypeBool,		TypeBool,		TypeBool);
-	add_operator(OperatorOrLiteral,		TypeBool,		TypeBool,		TypeBool);
+	add_operator(OperatorAnd,			TypeBool,		TypeBool,		TypeBool);
+	add_operator(OperatorOr,			TypeBool,		TypeBool,		TypeBool);
 	add_operator(OperatorNegate,		TypeBool,		TypeVoid,		TypeBool);	
 	add_operator(OperatorAssign,		TypeVoid,		TypeInt,		TypeInt);
 	add_operator(OperatorAdd,			TypeInt,		TypeInt,		TypeInt,	(void*)op_int_add);

@@ -8,6 +8,8 @@
 /*#define PRESCRIPT_DB_LEVEL	2
 #define db_r(msg,level)		msg_db_r(msg,level+PRESCRIPT_DB_LEVEL)*/
 
+bool type_is_simple_class(sType *t); // -> script_data.cpp
+
 static int PreConstantNr, NamedConstantNr;
 
 inline bool type_match(sType *type, bool is_class, sType *wanted);
@@ -1707,7 +1709,7 @@ inline void CommandMakeOperator(sCommand *cmd, sCommand *p1, sCommand *p2, int o
 }*/
 
 // both operand types have to match the operator's types
-//   (operater wants a pointer -> all pointers are allowed!!!)
+//   (operator wants a pointer -> all pointers are allowed!!!)
 //   (same for classes of same type...)
 inline bool type_match(sType *type, bool is_class, sType *wanted)
 {
@@ -1769,6 +1771,78 @@ void apply_type_cast(CPreScript *ps, int tc, sCommand *param)
 	}
 }
 
+bool CPreScript::LinkOperator(int op_no, sCommand *param1, sCommand *param2, sCommand **cmd)
+{
+	bool left_modifiable = PrimitiveOperator[op_no].LeftModifiable;
+
+	int o = -1;
+	sType *p1 = param1->Type;
+	sType *p2 = param2->Type;
+	bool equal_classes = false;
+	if (p1 == p2)
+		if (!p1->IsSuperArray)
+			if (p1->Element.num > 0)
+				equal_classes = true;
+	int class_func_no = -1;
+	bool ok = false;
+
+	// __assign__?
+	if ((p1 == p2) && (strcmp(PrimitiveOperator[op_no].Name, "=") == 0)){
+		class_func_no = p1->GetFunc("__assign__");
+		if (class_func_no >= 0)
+			ok = true;
+	}
+
+	// exact match?
+	if (!ok)
+		for (int i=0;i<PreOperator.num;i++)
+			if (op_no == PreOperator[i].PrimitiveID)
+				if (type_match(p1, equal_classes, PreOperator[i].ParamType1) && type_match(p2, equal_classes, PreOperator[i].ParamType2)){
+					o = i;
+					ok = true;
+					break;
+				}
+
+
+	// needs type casting?
+	if (!ok){
+		int pen1, pen2;
+		int c1, c2, c1_best, c2_best;
+		int pen_min = 200;
+		for (int i=0;i<PreOperator.num;i++)
+			if ((unsigned)op_no == PreOperator[i].PrimitiveID)
+				if (type_match_with_cast(p1, equal_classes, left_modifiable, PreOperator[i].ParamType1, pen1, c1) && type_match_with_cast(p2, equal_classes, false, PreOperator[i].ParamType2, pen2, c2)){
+					ok = true;
+					if (pen1 + pen2 < pen_min){
+						o = i;
+						pen_min = pen1 + pen2;
+						c1_best = c1;
+						c2_best = c2;
+					}
+			}
+		// cast
+		if (ok){
+			apply_type_cast(this, c1_best, param1);
+			apply_type_cast(this, c2_best, param2);
+			if (Error)
+				_return_(4, false);
+		}
+	}
+
+	if (ok){
+		if (class_func_no >= 0){
+			sCommand *inst = param1;
+			ref_command(this, inst);
+			CommandSetClassFunc(*cmd, p1->Function[class_func_no], inst);
+			(*cmd)->NumParams = 1;
+			(*cmd)->Param[0] = param2;
+		}else
+			CommandMakeOperator(*cmd, param1, param2, o);
+	}
+
+	return ok;
+}
+
 void CPreScript::LinkMostImportantOperator(int &NumOperators, sCommand **Operand, sCommand **Operator, int *op_exp)
 {
 	msg_db_r("LinkMostImpOp",4);
@@ -1784,77 +1858,13 @@ void CPreScript::LinkMostImportantOperator(int &NumOperators, sCommand **Operand
 // link it
 	sCommand *param1 = Operand[mio];
 	sCommand *param2 = Operand[mio + 1];
-	bool left_modifiable = PrimitiveOperator[Operator[mio]->LinkNr].LeftModifiable;
-	
-	int po = Operator[mio]->LinkNr, o = -1;
-	sType *p1 = Operand[mio]->Type;
-	sType *p2 = Operand[mio+1]->Type;
-	bool equal_classes = false;
-	if (p1 == p2)
-		if (!p1->IsSuperArray)
-			if (p1->Element.num > 0)
-				equal_classes = true;
-	int class_func_no = -1;
-	bool ok = false;
-
-	// __assign__?
-	if ((p1 == p2) && (strcmp(PrimitiveOperator[Operator[mio]->LinkNr].Name, "=") == 0)){
-		class_func_no = p1->GetFunc("__assign__");
-		if (class_func_no >= 0)
-			ok = true;
-	}
-
-	// exact match?
-	if (!ok)
-		for (int i=0;i<PreOperator.num;i++)
-			if (po == PreOperator[i].PrimitiveID)
-				if (type_match(p1, equal_classes, PreOperator[i].ParamType1) && type_match(p2, equal_classes, PreOperator[i].ParamType2)){
-					o = i;
-					ok = true;
-					break;
-				}
-
-
-	// needs type casting?
-	if (!ok){
-		int pen1, pen2;
-		int c1, c2, c1_best, c2_best;
-		int pen_min = 200;
-		for (int i=0;i<PreOperator.num;i++)
-			if ((unsigned)po == PreOperator[i].PrimitiveID)
-				if (type_match_with_cast(p1, equal_classes, left_modifiable, PreOperator[i].ParamType1, pen1, c1) && type_match_with_cast(p2, equal_classes, false, PreOperator[i].ParamType2, pen2, c2)){
-					ok = true;
-					if (pen1 + pen2 < pen_min){
-						o = i;
-						pen_min = pen1 + pen2;
-						c1_best = c1;
-						c2_best = c2;
-					}
-			}
-		// cast
-		if (ok){
-			apply_type_cast(this, c1_best, param1);
-			apply_type_cast(this, c2_best, param2);
-			if (Error)
-				_return_(4,);
-		}
-	}
-
-	if (ok){
-		if (class_func_no >= 0){
-			sCommand *inst = param1;
-			ref_command(this, inst);
-			CommandSetClassFunc(Operator[mio], p1->Function[class_func_no], inst);
-			Operator[mio]->NumParams = 1;
-			Operator[mio]->Param[0] = param2;
-		}else
-			CommandMakeOperator(Operator[mio], param1, param2, o);
-	}else{
+	int op_no = Operator[mio]->LinkNr;
+	if (!LinkOperator(op_no, param1, param2, &Operator[mio])){
 		Exp.cur_exp = op_exp[mio];
-		_do_error_(format("no operator found: (%s) %s (%s)", Type2Str(this,p1).c_str(), PrimitiveOperator2Str(po).c_str(), Type2Str(this,p2).c_str()), 4,);
+		_do_error_(format("no operator found: (%s) %s (%s)", Type2Str(this, param1->Type).c_str(), PrimitiveOperator2Str(op_no).c_str(), Type2Str(this, param2->Type).c_str()), 4,);
 	}
 
-// ihn aus der Liste herauskuerzen
+// remove from list
 	Operand[mio]=Operator[mio];
 	for (int i=mio;i<NumOperators-1;i++){
 		Operator[i]=Operator[i+1];
@@ -1881,7 +1891,7 @@ sCommand *CPreScript::GetCommand(sFunction *f)
 	}
 	NumOperands ++;
 
-	// je einen Operator und einen Operanden finden
+	// find pairs of operators and operands
 	for (int i=0;true;i++){
 		op_exp.add(Exp.cur_exp);
 		sCommand *op = GetOperator(f);
@@ -1909,7 +1919,7 @@ sCommand *CPreScript::GetCommand(sFunction *f)
 	}
 
 
-	// in jedem Schritt den wichtigsten Operator finden und herauskuerzen
+	// in each step remove/link the most important operator
 	int NumOperators=NumOperands-1;
 	for (int i=0;i<NumOperands-1;i++){
 		LinkMostImportantOperator(NumOperators, &Operand[0], &Operator[0], &op_exp[0]);
@@ -1924,8 +1934,7 @@ sCommand *CPreScript::GetCommand(sFunction *f)
 	Operator.clear();
 	op_exp.clear();
 
-	// der gesammte Befehl hat sich dann im Operand[0] gesammelt
-	// (ohne Operator war Operand[0] schon das einzig wichtige)
+	// complete command is now collected in Operand[0]
 
 	so("-fertig");
 	so(format("Command endet mit %s", get_name(Exp.cur_exp - 1)));
@@ -2446,8 +2455,6 @@ void ParseClassFunction(CPreScript *ps, sType *t)
 	// convert name to Class.Function
 	sFunction *f = ps->Function.back();
 	strcpy(f->Name, format("%s.%s", t->Name, f->Name).c_str());
-
-	msg_todo("Kaba: Class Function parameters...");
 }
 
 inline bool type_needs_alignment(sType *t)
@@ -2483,8 +2490,15 @@ void CPreScript::ParseClass()
 		bool found = false;
 		if (ancestor->Element.num > 0){
 			// inheritance of elements
-			t->Element.assign(&ancestor->Element);
+			t->Element = ancestor->Element;
 			_offset = ancestor->Size;
+			found = true;
+		}
+		if (ancestor->Function.num > 0){
+			// inheritance of functions
+			foreach(ancestor->Function, f)
+				if ((strcmp(f.Name, "__init__") != 0) && (strcmp(f.Name, "__delete__") != 0) && (strcmp(f.Name, "__assign__") != 0))
+					t->Function.add(f);
 			found = true;
 		}
 		if (!found){
@@ -3416,9 +3430,9 @@ void CreateImplicitAssign(CPreScript *ps, sType *t)
 		int nc = ps->AddConstant(TypeInt);
 		(*(int*)ps->Constant[nc].data) = 0;
 		sCommand *cmd_0 = add_command_const(ps, nc);
-		sCommand *cmd_assign = ps->AddCommand();
-		CommandMakeOperator(cmd_assign, for_var, cmd_0, OperatorIntAssign);
-		f->Block->Command.add(cmd_assign);
+		sCommand *cmd_assign0 = ps->AddCommand();
+		CommandMakeOperator(cmd_assign0, for_var, cmd_0, OperatorIntAssign);
+		f->Block->Command.add(cmd_assign0);
 
 		// while(for_var < self.num)
 		sCommand *cmd_cmp = ps->AddCommand();
@@ -3451,21 +3465,13 @@ void CreateImplicitAssign(CPreScript *ps, sType *t)
 		cmd_el2->Param[1] = for_var;
 		cmd_el2->NumParams = 2;
 
-		if (t->SubType->GetFunc("__assign__")){
-			ref_command(ps, cmd_el);
-			ref_command(ps, cmd_el2);
 
-			// __assign__
-			sCommand *cmd_assign = add_command_classfunc(ps, t->SubType->Function[t->SubType->GetFunc("__assign__")], cmd_el);
-			cmd_assign->NumParams = 1;
-			cmd_assign->Param[0] = cmd_el2;
-			b->Command.add(cmd_assign);
-
-		}else{
-
+		sCommand *cmd_assign = ps->AddCommand();
+		if (!ps->LinkOperator(OperatorAssign, cmd_el, cmd_el2, &cmd_assign)){
 			ps->DoError(format("%s.__assign__(): no %s.__assign__() found", t->Name, t->SubType->Name));
 			return;
 		}
+		b->Command.add(cmd_assign);
 
 		// ...for_var += 1
 		sCommand *cmd_inc = ps->AddCommand();
@@ -3488,29 +3494,13 @@ void CreateImplicitAssign(CPreScript *ps, sType *t)
 			o->Type = e.Type;
 			o->NumParams = 1;
 			o->Param[0] = cp_command(ps, other); // needed for call-by-ref conversion!
-			int nf = e.Type->GetFunc("__assign__");
-			if (nf >= 0){
-				ref_command(ps, p);
-				ref_command(ps, o);
-				sCommand *c = add_command_classfunc(ps, e.Type->Function[nf], p);
-				c->NumParams = 1;
-				c->Param[0] = o;
-				f->Block->Command.add(c);
-			}else{
-				int op = -1;
-				foreachi(PreOperator, o, i)
-					if ((strcmp(PrimitiveOperator[o.PrimitiveID].Name, "=") == 0) && (o.ParamType1 == e.Type) && (o.ParamType2 == e.Type))
-						op = i;
 
-				if (op >= 0){
-					sCommand *c = ps->AddCommand();
-					CommandMakeOperator(c, p, o, op);
-					f->Block->Command.add(c);
-				}else{
-					ps->DoError(format("%s.__assign__(): no %s.__assign__ for element \"%s\"", t->Name, e.Type->Name, e.Name));
-					return;
-				}
+			sCommand *cmd_assign = ps->AddCommand();
+			if (!ps->LinkOperator(OperatorAssign, p, o, &cmd_assign)){
+				ps->DoError(format("%s.__assign__(): no %s.__assign__ for element \"%s\"", t->Name, e.Type->Name, e.Name));
+				return;
 			}
+			f->Block->Command.add(cmd_assign);
 		}
 	}
 
@@ -3764,7 +3754,6 @@ void CreateImplicitArrayAdd(CPreScript *ps, sType *t)
 	item->Kind = KindVarLocal;
 	item->LinkNr = 0;
 	item->Type = t->SubType;
-	ref_command(ps, item);
 
 	sCommand *self = ps->AddCommand();
 	self->Kind = KindVarLocal;
@@ -3803,17 +3792,13 @@ void CreateImplicitArrayAdd(CPreScript *ps, sType *t)
 	cmd_el->Param[0] = deref_self;
 	cmd_el->Param[1] = cmd_sub;
 	cmd_el->NumParams = 2;
-	ref_command(ps, cmd_el);
 
-	if (t->SubType->GetFunc("__assign__") >= 0){
-		sCommand *cmd_assign = add_command_classfunc(ps, t->SubType->Function[t->SubType->GetFunc("__assign__")], cmd_el);
-		cmd_assign->NumParams = 1;
-		cmd_assign->Param[0] = item;
-		f->Block->Command.add(cmd_assign);
-	}else{
+	sCommand *cmd_assign = ps->AddCommand();
+	if (!ps->LinkOperator(OperatorAssign, cmd_el, item, &cmd_assign)){
 		ps->DoError(format("%s.add(): no %s.__assign__ for elements", t->Name, t->SubType->Name));
 		return;
 	}
+	f->Block->Command.add(cmd_assign);
 
 	sClassFunction cf;
 	cf.Kind = KindFunction;
@@ -3821,6 +3806,8 @@ void CreateImplicitArrayAdd(CPreScript *ps, sType *t)
 	strcpy(cf.Name, "add");
 	t->Function.add(cf);
 }
+
+
 
 void CPreScript::CreateImplicitFunctions(sType *t, bool relocate_last_function)
 {
@@ -3832,13 +3819,13 @@ void CPreScript::CreateImplicitFunctions(sType *t, bool relocate_last_function)
 		return;
 
 	// needs complex functions?
-	bool needs_init = false;
+	/*bool needs_init = false;
 	foreach(t->Element, e)
 		foreach(e.Type->Function, f)
 			if (strcmp(f.Name, "__init__") == 0)
 				needs_init = true;
 	if (t->IsSuperArray)
-		needs_init = true;
+		needs_init = true;*/
 
 	if (t->IsSuperArray){
 		if ((!Error) && (t->GetFunc("clear") < 0))
@@ -3848,14 +3835,14 @@ void CPreScript::CreateImplicitFunctions(sType *t, bool relocate_last_function)
 		if ((!Error) && (t->GetFunc("add") < 0))
 			CreateImplicitArrayAdd(this, t);
 	}
-	if (needs_init){
+	if (!type_is_simple_class(t)){//needs_init){
 		if ((!Error) && (t->GetFunc("__init__") < 0))
 			CreateImplicitConstructor(this, t);
 		if ((!Error) && (t->GetFunc("__delete__") < 0))
 			CreateImplicitDestructor(this, t);
+		if ((!Error) && (t->GetFunc("__assign__") < 0))
+			CreateImplicitAssign(this, t);
 	}
-	if ((!Error) && (t->GetFunc("__assign__") < 0))
-		CreateImplicitAssign(this, t);
 	if (Error)
 		return;
 

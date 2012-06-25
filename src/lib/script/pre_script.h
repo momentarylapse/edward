@@ -237,6 +237,7 @@ public:
 	void TestArrayDefinition(sType **type, bool is_pointer);
 	bool GetExistence(const char *name, sFunction *f);
 	void LinkMostImportantOperator(int &NumOperators, sCommand **Operand, sCommand **Operator, int *op_exp);
+	bool LinkOperator(int op_no, sCommand *param1, sCommand *param2, sCommand **cmd);
 	void GetOperandExtension(sCommand *Operand, sFunction *f);
 	sCommand *GetCommand(sFunction *f);
 	void GetCompleteCommand(sBlock *block, sFunction *f);
