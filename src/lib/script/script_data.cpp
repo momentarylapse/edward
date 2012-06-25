@@ -777,6 +777,12 @@ void add_type_cast(int penalty, sType *source, sType *dest, const char *cmd, voi
 }
 
 
+class DummyStringList : Array<string>
+{
+public:
+	void assign(DummyStringList &s){	*this = s;	}
+};
+
 void SIAddPackageBase()
 {
 	msg_db_r("SIAddPackageBase", 3);
@@ -823,6 +829,8 @@ void SIAddPackageBase()
 			func_add_param("index",		TypeInt);
 		class_add_func("resize", TypeVoid, mf((tmf)&Array<string>::resize));
 			func_add_param("num",		TypeInt);
+		class_add_func("__assign__",	TypeVoid, mf((tmf)&DummyStringList::assign));
+			func_add_param("other",		TypeStringList);
 
 
 	add_const("nil", TypePointer, NULL);
