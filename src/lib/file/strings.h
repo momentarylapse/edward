@@ -65,10 +65,22 @@ class string : public DynamicArray
 	}
 	bool operator != (const string &s) const
 	{	return !(*this == s);	}
+	bool operator < (const string &s) const
+	{	return compare(s) < 0;	}
+	bool operator > (const string &s) const
+	{	return compare(s) > 0;	}
+	bool operator <= (const string &s) const
+	{	return compare(s) <= 0;	}
+	bool operator >= (const string &s) const
+	{	return compare(s) >= 0;	}
 	char operator[] (int index) const
 	{	return ((char*)data)[index];	}
 	char &operator[] (int index)
 	{	return ((char*)data)[index];	}
+	char &back()
+	{	return (*this)[num - 1];	}
+	char back() const
+	{	return (*this)[num - 1];	}
 };
 
 

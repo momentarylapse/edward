@@ -3,7 +3,7 @@
 
 //#define ScriptDebug
 
-extern int s2i2(const char *str);
+extern int s2i2(const string &str);
 static char Temp[1024];
 
 static int shift_right=0;
@@ -100,7 +100,7 @@ enum{
 	NumMacroNames
 };
 
-char MacroName[NumMacroNames][SCRIPT_MAX_NAME]=
+string MacroName[NumMacroNames] =
 {
 	"#include",
 	"#define",
@@ -125,14 +125,16 @@ void CPreScript::HandleMacro(ps_line_t *l, int &line_no, int &NumIfDefs, bool *I
 	msg_db_r("HandleMacro", 4);
 	Exp.cur_line = l;
 	Exp.cur_exp = 0;
+	Exp._cur_ = Exp.cur_line->exp[Exp.cur_exp].name;
 	int ln;
 	string filename;
 	CScript *include;
 	sDefine d;
-	
+
+
 	int macro_no=-1;
 	for (int i=0;i<NumMacroNames;i++)
-		if (strcmp(cur_name, MacroName[i]) == 0)
+		if (cur_name == MacroName[i])
 			macro_no = i;
 	
 	switch(macro_no){
@@ -141,8 +143,7 @@ void CPreScript::HandleMacro(ps_line_t *l, int &line_no, int &NumIfDefs, bool *I
 			/*if (!IsIfDefed(NumIfDefs, IfDefed))
 				continue;*/
 
-			filename = dirname(Filename) + &cur_name[1];
-			filename.resize(filename.num - 1); // remove "
+			filename = dirname(Filename) + cur_name.substr(1, cur_name.num - 2); // remove "
 			filename = filename_no_recursion(filename);
 
 			so("lade Include-Datei");
@@ -161,7 +162,7 @@ void CPreScript::HandleMacro(ps_line_t *l, int &line_no, int &NumIfDefs, bool *I
 		case MacroDefine:
 			// source
 			next_exp();
-			strcpy(d.Source, cur_name);
+			d.Source = cur_name;
 			// dests
 			while(true){
 				next_exp();
@@ -215,17 +216,17 @@ void CPreScript::HandleMacro(ps_line_t *l, int &line_no, int &NumIfDefs, bool *I
 			}
 			NumIfDefs--;
 			break;*/
-		case MacroRule:
+		case MacroRule:{
 			next_exp();
 			if (end_of_line()){
 				_do_error_("location rule has syntax:  #rule  <LocationName>  <Level>  <Function>", 4, );
 			}
 			ln = -1;
 			for (int i=0;i<ScriptLocation.num;i++)
-				if (strcmp(ScriptLocation[i].Name, cur_name)==0)
+				if (ScriptLocation[i].Name == cur_name)
 					ln = ScriptLocation[i].Location;
 			if (ln < 0){
-				msg_error(format("%s: unknown location in script rule: %s", Filename.c_str(), cur_name));
+				msg_error(format("%s: unknown location in script rule: %s", Filename.c_str(), cur_name.c_str()));
 				/*DoError("unknown location in script rule");
 				msg_db_l(4);
 				return;*/
@@ -241,9 +242,8 @@ void CPreScript::HandleMacro(ps_line_t *l, int &line_no, int &NumIfDefs, bool *I
 			if (end_of_line()){
 				_do_error_("location rule has syntax:  #rule  <LocationName>  <Level>  <Function>", 4, );
 			}
-			strcpy(pr.Name, &cur_name[1]);
-			pr.Name[strlen(pr.Name) - 1] = 0;
-			PreScriptRule.add(pr);
+			pr.Name = cur_name.substr(1, cur_name.num - 2);
+			PreScriptRule.add(pr);}
 			break;
 		case MacroDisasm:
 			FlagDisassemble=true;
@@ -326,12 +326,13 @@ void CPreScript::PreCompiler(bool just_analyse)
 			if (Error)
 				_return_(4,);
 		}else{
+			Exp._cur_ = Exp.cur_line->exp[Exp.cur_exp].name;
 
 			// replace by definition?
 			int num_defs_inserted = 0;
 			while(!end_of_line()){
 				foreachi(Define, d, j){
-					if (strcmp(cur_name, d.Source) == 0){
+					if (cur_name == d.Source){
 						int pos = Exp.cur_line->exp[Exp.cur_exp].pos;
 						remove_from_buffer(this, Exp.cur_exp);
 						for (int k=0;k<d.Dest.num;k++){
@@ -339,6 +340,7 @@ void CPreScript::PreCompiler(bool just_analyse)
 							next_exp();
 						}
 						Exp.cur_exp -= d.Dest.num;
+						Exp._cur_ = Exp.cur_line->exp[Exp.cur_exp].name;
 						num_defs_inserted ++;
 						if (num_defs_inserted > SCRIPT_MAX_DEFINE_RECURSIONS){
 							DoError("recursion in #define macros");
@@ -353,23 +355,23 @@ void CPreScript::PreCompiler(bool just_analyse)
 
 			// "-" in front of numbers (after ( , : [ = < >)
 			Exp.cur_exp = 1;
+			Exp._cur_ = Exp.cur_line->exp[Exp.cur_exp].name;
 			while(!end_of_line()){
-				if (strcmp(cur_name, "-") == 0){
-					if ((strcmp(get_name(Exp.cur_exp - 1), "(") == 0) ||
-						(strcmp(get_name(Exp.cur_exp - 1), ",") == 0) ||
-						(strcmp(get_name(Exp.cur_exp - 1), ":") == 0) ||
-						(strcmp(get_name(Exp.cur_exp - 1), "[") == 0) ||
-						(strcmp(get_name(Exp.cur_exp - 1), "=") == 0) ||
-						(strcmp(get_name(Exp.cur_exp - 1), "<") == 0) ||
-						(strcmp(get_name(Exp.cur_exp - 1), ">") == 0)){
-						if (isNumber(get_name(Exp.cur_exp + 1)[0])){
-							char name[SCRIPT_MAX_NAME * 2];
-							strcpy(name, "-");
-							strcat(name, get_name(Exp.cur_exp + 1));
+				if (cur_name == "-"){
+					string last = get_name(Exp.cur_exp - 1);
+					if ((last == "(") ||
+						(last == ",") ||
+						(last == ":") ||
+						(last == "[") ||
+						(last == "=") ||
+						(last == "<") ||
+						(last == ">")){
+						if (isNumber(last[0])){
+							string name = string("-") + get_name(Exp.cur_exp + 1);
 							int pos = Exp.cur_line->exp[Exp.cur_exp].pos;
 							remove_from_buffer(this, Exp.cur_exp);
 							remove_from_buffer(this, Exp.cur_exp);
-							insert_into_buffer(this, name, pos, Exp.cur_exp);
+							insert_into_buffer(this, name.c_str(), pos, Exp.cur_exp);
 						}
 					}
 				}

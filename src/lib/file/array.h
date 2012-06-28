@@ -174,6 +174,8 @@ class Array : public DynamicArray
 		{	return ((T*)data)[index];	}
 		T &back()
 		{	return ((T*)data)[num - 1];	}
+		const T &back() const
+		{	return ((T*)data)[num - 1];	}
 };
 
 

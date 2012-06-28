@@ -102,7 +102,7 @@ inline sType *get_subtype(sType *t)
 {
 	if (t->SubType)
 		return t->SubType;
-	msg_error(format("subtype wanted of... %s", t->Name));
+	msg_error("subtype wanted of... " + t->Name);
 	msg_write(cur_func->Name);
 	return TypeUnknown;
 }
@@ -180,7 +180,7 @@ inline void param_out(string &str, sSerialCommandParam &p)
 {
 	//msg_db_r("param_out", 4);
 	if (p.kind >= 0){
-		str += format("   %s %p (%s)", Kind2Str(p.kind).c_str(), p.p, p.type->Name);
+		str += format("   %s %p (%s)", Kind2Str(p.kind).c_str(), p.p, p.type->Name.c_str());
 		if (p.shift > 0)
 			str += format(" + shift %d", p.shift);
 	}
@@ -588,7 +588,7 @@ void CScript::SerializeParameter(sCommand *link, sFunction *f, int level, int in
 		p.p = (char*)PreExternalVar[link->LinkNr].Pointer;
 		p.kind = KindVarGlobal;
 		if (!p.p){
-			DoErrorLink(format("external variable is not linkable: %s",PreExternalVar[link->LinkNr].Name));
+			DoErrorLink(format("external variable is not linkable: %s",PreExternalVar[link->LinkNr].Name.c_str()));
 			_return_(4,);
 		}
 	}else if (link->Kind == KindConstant){
@@ -1083,116 +1083,6 @@ void CScript::SerializeOperator(sCommand *com, sFunction *p_func, sSerialCommand
 				add_cmd(inst_xor, param_shift(ret, i * 4), param_const(TypeInt, (void*)0x80000000));
 			}
 			break;
-// super arrays
-		case OperatorSuperArrayAssign:
-//		case OperatorIntListAssign:
-//		case OperatorFloatListAssign:
-		case OperatorIntListAssignInt:
-		case OperatorFloatListAssignFloat:
-		case OperatorIntListAddS:
-		case OperatorIntListSubtractS:
-		case OperatorIntListMultiplyS:
-		case OperatorIntListDivideS:
-		case OperatorFloatListAddS:
-		case OperatorFloatListSubtractS:
-		case OperatorFloatListMultiplyS:
-		case OperatorFloatListDivideS:
-		case OperatorComplexListAddS:
-		case OperatorComplexListSubtractS:
-		case OperatorComplexListMultiplyS:
-		case OperatorComplexListDivideS:{
-			void *func;
-			if (com->LinkNr == OperatorIntListAssignInt)	func = (void*)&super_array_assign_4_single;
-			if (com->LinkNr == OperatorFloatListAssignFloat)func = (void*)&super_array_assign_4_single;
-			if (com->LinkNr == OperatorSuperArrayAssign)	func = (void*)&super_array_assign;
-			if (com->LinkNr == OperatorIntListAddS)			func = (void*)&super_array_add_s_int;
-			if (com->LinkNr == OperatorIntListSubtractS)	func = (void*)&super_array_sub_s_int;
-			if (com->LinkNr == OperatorIntListMultiplyS)	func = (void*)&super_array_mul_s_int;
-			if (com->LinkNr == OperatorIntListDivideS)		func = (void*)&super_array_div_s_int;
-			if (com->LinkNr == OperatorFloatListAddS)		func = (void*)&super_array_add_s_float;
-			if (com->LinkNr == OperatorFloatListSubtractS)	func = (void*)&super_array_sub_s_float;
-			if (com->LinkNr == OperatorFloatListMultiplyS)	func = (void*)&super_array_mul_s_float;
-			if (com->LinkNr == OperatorFloatListDivideS)	func = (void*)&super_array_div_s_float;
-			if (com->LinkNr == OperatorComplexListAddS)		func = (void*)&super_array_add_s_com;
-			if (com->LinkNr == OperatorComplexListSubtractS)	func = (void*)&super_array_sub_s_com;
-			if (com->LinkNr == OperatorComplexListMultiplyS)	func = (void*)&super_array_mul_s_com;
-			if (com->LinkNr == OperatorComplexListDivideS)	func = (void*)&super_array_div_s_com;
-			AddFuncParam(param[0]);
-			AddFuncParam(param[1]);
-			AddFunctionCall(func, p_func);
-			}break;
-		/*case OperatorIntListAdd:
-		case OperatorIntListSubtract:
-		case OperatorIntListMultiply:
-		case OperatorIntListDivide:{
-			OCAddEspAdd(Opcode,OpcodeSize,-p_func->VarSize-LocalOffset-12);
-			OCAddInstruction(Opcode,OpcodeSize,inPushM,pk[1],param[1]);
-			OCAddInstruction(Opcode,OpcodeSize,inPushM,pk[0],param[0]);
-			OCAddInstruction(Opcode,OpcodeSize,inPushM,rk,ret);
-			long func;
-			if (com->LinkNr == OperatorIntListAdd)			func = (long)&super_array_add_int;
-			if (com->LinkNr == OperatorIntListSubtract)		func = (long)&super_array_sub_int;
-			if (com->LinkNr == OperatorIntListMultiply)		func = (long)&super_array_mul_int;
-			if (com->LinkNr == OperatorIntListDivide)		func = (long)&super_array_div_int;
-			OCAddInstruction(Opcode,OpcodeSize,inCallRel32,KindConstant,(char*)(func-(long)&Opcode[OpcodeSize]-CallRel32OCSize));
-			OCAddEspAdd(Opcode,OpcodeSize,p_func->VarSize+LocalOffset+20);
-		}break;*/
-		case OperatorIntListAddSInt:
-		case OperatorIntListSubtractSInt:
-		case OperatorIntListMultiplySInt:
-		case OperatorIntListDivideSInt:
-		case OperatorFloatListAddSFloat:
-		case OperatorFloatListSubtractSFloat:
-		case OperatorFloatListMultiplySFloat:
-		case OperatorFloatListDivideSFloat:
-		case OperatorComplexListMultiplySFloat:{
-			void* func;
-			if (com->LinkNr == OperatorIntListAddSInt)			func = (void*)&super_array_add_s_int_int;
-			if (com->LinkNr == OperatorIntListSubtractSInt)		func = (void*)&super_array_sub_s_int_int;
-			if (com->LinkNr == OperatorIntListMultiplySInt)		func = (void*)&super_array_mul_s_int_int;
-			if (com->LinkNr == OperatorIntListDivideSInt)		func = (void*)&super_array_div_s_int_int;
-			if (com->LinkNr == OperatorFloatListAddSFloat)		func = (void*)&super_array_add_s_float_float;
-			if (com->LinkNr == OperatorFloatListSubtractSFloat)	func = (void*)&super_array_sub_s_float_float;
-			if (com->LinkNr == OperatorFloatListMultiplySFloat)	func = (void*)&super_array_mul_s_float_float;
-			if (com->LinkNr == OperatorFloatListDivideSFloat)	func = (void*)&super_array_div_s_float_float;
-			if (com->LinkNr == OperatorComplexListMultiplySFloat)	func = (void*)&super_array_mul_s_com_float;
-			AddFuncParam(param[0]);
-			AddFuncParam(param[1]);
-			AddFunctionCall(func, p_func);
-			}break;
-		case OperatorComplexListAssignComplex:
-		case OperatorComplexListAddSComplex:
-		case OperatorComplexListSubtractSComplex:
-		case OperatorComplexListMultiplySComplex:
-		case OperatorComplexListDivideSComplex:
-		case OperatorStringAddS:
-		case OperatorStringAssignCString:
-		case OperatorStringAddCString:{
-			void* func;
-			if (com->LinkNr == OperatorComplexListAssignComplex)		func = (void*)&super_array_assign_8_single;
-			if (com->LinkNr == OperatorComplexListAddSComplex)			func = (void*)&super_array_add_s_com_com;
-			if (com->LinkNr == OperatorComplexListSubtractSComplex)		func = (void*)&super_array_sub_s_com_com;
-			if (com->LinkNr == OperatorComplexListMultiplySComplex)		func = (void*)&super_array_mul_s_com_com;
-			if (com->LinkNr == OperatorComplexListDivideSComplex)		func = (void*)&super_array_div_s_com_com;
-			if (com->LinkNr == OperatorStringAddS)						func = (void*)&super_array_add_s_str;
-			if (com->LinkNr == OperatorStringAssignCString)				func = (void*)&super_array_assign_str_cstr;
-			if (com->LinkNr == OperatorStringAddCString)				func = (void*)&super_array_add_str_cstr;
-			AddFuncParam(param[0]);
-			AddFuncParam(param[1]);
-			AddFunctionCall(func, p_func);
-			}break;
-		case OperatorStringAdd:
-		case OperatorStringEqual:
-		case OperatorStringNotEqual:{
-			void* func;
-			if (com->LinkNr == OperatorStringAdd)						func = (void*)&super_array_add_str;
-			if (com->LinkNr == OperatorStringEqual)						func = (void*)&super_array_equal_str;
-			if (com->LinkNr == OperatorStringNotEqual)					func = (void*)&super_array_notequal_str;
-			AddFuncReturn(ret);
-			AddFuncParam(param[0]);
-			AddFuncParam(param[1]);
-			AddFunctionCall(func, p_func);
-			}break;
 		default:
 			DoErrorInternal("unimplemented operator: " + Operator2Str(pre_script, com->LinkNr));
 	}
@@ -1226,10 +1116,10 @@ sSerialCommandParam CScript::SerializeCommand(sCommand *com, sFunction *f, int l
 			is_class_function = true;
 	if (com->Kind == KindFunction){
 		if (com->script){
-			if (strstr(com->script->pre_script->Function[com->LinkNr]->Name, "."))
+			if (com->script->pre_script->Function[com->LinkNr]->Name.find(".") >= 0)
 				is_class_function = true;
 		}else{
-			if (strstr(pre_script->Function[com->LinkNr]->Name, "."))
+			if (pre_script->Function[com->LinkNr]->Name.find(".") >= 0)
 				is_class_function = true;
 		}
 	}
@@ -1253,7 +1143,7 @@ sSerialCommandParam CScript::SerializeCommand(sCommand *com, sFunction *f, int l
 		//so("---func");
 		void *fp = NULL;
 		bool class_function = false;
-		char name[128];
+		string name;
 		if (com->Kind == KindFunction){ // own script Function
 			so("Funktion!!!");
 			if (com->script){
@@ -1263,7 +1153,7 @@ sSerialCommandParam CScript::SerializeCommand(sCommand *com, sFunction *f, int l
 				so("   -ok");
 			}else{
 				fp = (void*)func[com->LinkNr];
-				if (strstr(pre_script->Function[com->LinkNr]->Name, ".")){
+				if (pre_script->Function[com->LinkNr]->Name.find(".") >= 0){
 					so("    class function!!!");
 					class_function = true;
 				}
@@ -1271,7 +1161,7 @@ sSerialCommandParam CScript::SerializeCommand(sCommand *com, sFunction *f, int l
 		}else{ // compiler function
 			fp = PreCommand[com->LinkNr].Func;
 			class_function = PreCommand[com->LinkNr].IsClassFunction;
-			strcpy(name, PreCommand[com->LinkNr].Name);
+			name = PreCommand[com->LinkNr].Name;
 		}
 		if (fp){ // a real function
 
@@ -1484,13 +1374,13 @@ sSerialCommandParam CScript::SerializeCommand(sCommand *com, sFunction *f, int l
 					add_cmd(inst_mov, param_shift(ret, 8), param[3]);
 					break;
 				default:
- 					_do_error_int_(format("compiler function unimplemented: %s",PreCommand[com->LinkNr].Name), 4, ret);
+ 					_do_error_int_("compiler function unimplemented: " + PreCommand[com->LinkNr].Name, 4, ret);
 			}
 		}else{
 			if (PreCommand[com->LinkNr].IsSemiExternal)
-	 			DoErrorLink(format("external function not linkable: %s",PreCommand[com->LinkNr].Name));
+	 			DoErrorLink("external function not linkable: " + PreCommand[com->LinkNr].Name);
 			else
-	 			DoErrorInternal(format("compiler function not linkable: %s",PreCommand[com->LinkNr].Name));
+	 			DoErrorInternal("compiler function not linkable: " + PreCommand[com->LinkNr].Name);
 			_return_(4, ret);
 		}
 	}else if (com->Kind == KindBlock){
@@ -1566,7 +1456,7 @@ Array<sSerialCommandParam> InsertedConstructorTemp;
 void add_cmd_constructor(sSerialCommandParam &param, bool is_temp)
 {
 	foreach(param.type->Function, f){
-		if (strcmp(f.Name, "__init__") == 0){ // TODO test signature "void __init__()"
+		if (f.Name == "__init__"){ // TODO test signature "void __init__()"
 			sSerialCommandParam inst;
 			AddReference(param, TypePointer, inst);
 			AddFuncInstance(inst);
@@ -1576,7 +1466,7 @@ void add_cmd_constructor(sSerialCommandParam &param, bool is_temp)
 			else if (f.Kind == KindFunction){
 				fp = (void*)param.type->Owner->script->func[f.Nr];
 				if (!fp)
-					msg_error(format("%s.__init__() unlinkable compiler function!", param.type->Name));
+					msg_error(param.type->Name + ".__init__() unlinkable compiler function!");
 			}
 
 			AddFunctionCall(fp, cur_func);
@@ -1592,7 +1482,7 @@ void add_cmd_constructor(sSerialCommandParam &param, bool is_temp)
 void add_cmd_destructor(sSerialCommandParam &param)
 {
 	foreach(param.type->Function, f)
-		if (strcmp(f.Name, "__delete__") == 0){ // TODO test signature "void __delete__()"
+		if (f.Name == "__delete__"){ // TODO test signature "void __delete__()"
 			sSerialCommandParam inst;
 			AddReference(param, TypePointer, inst);
 			AddFuncInstance(inst);
@@ -1602,7 +1492,7 @@ void add_cmd_destructor(sSerialCommandParam &param)
 			else if (f.Kind == KindFunction){
 				fp = (void*)param.type->Owner->script->func[f.Nr];
 				if (!fp)
-					msg_error(format("%s.__delete__() unlinkable compiler function!", param.type->Name));
+					msg_error(param.type->Name + ".__delete__() unlinkable compiler function!");
 			}
 			AddFunctionCall(fp, cur_func);
 		}
@@ -2748,7 +2638,7 @@ inline void assemble_cmd(char *Opcode, int &OpcodeSize, sSerialCommand &c)
 	// assemble instruction
 	AsmAddInstruction(Opcode, OpcodeSize, c.inst, param1_type, param1, param2_type, param2);
 	if (AsmError)
-		cur_script->DoErrorInternal(format("asm error (function '%s')", cur_func->Name));
+		cur_script->DoErrorInternal(format("asm error (function '%s')", cur_func->Name.c_str()));
 	//printf("%s", Opcode2Asm(oc, ocs));
 }
 

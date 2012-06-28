@@ -360,9 +360,8 @@ void CScript::SetVariable(const string &name, void *data)
 {
 	msg_db_r("SetVariable", 4);
 	//msg_write(name);
-	const char *cname = name.c_str();
 	for (int i=0;i<pre_script->RootOfAllEvil.Var.num;i++)
-		if (strcmp(pre_script->RootOfAllEvil.Var[i].Name, cname) == 0){
+		if (pre_script->RootOfAllEvil.Var[i].Name == name){
 			/*msg_write("var");
 			msg_write(pre_script->RootOfAllEvil.Var[i].Type->Size);
 			msg_write((int)g_var[i]);*/
@@ -370,7 +369,7 @@ void CScript::SetVariable(const string &name, void *data)
 			msg_db_l(4);
 			return;
 		}
-	msg_error("CScript::SetVariable: variable " + name + " not found");
+	msg_error("CScript.SetVariable: variable " + name + " not found");
 	msg_db_l(4);
 }
 
@@ -660,7 +659,7 @@ void init_sub_super_array(CPreScript *ps, sFunction *f, sType *t, char* g_var, i
 	// direct
 	if (t->IsSuperArray){
 		if (g_var)
-			((CSuperArray*)(g_var + offset))->init_by_type(t->SubType);
+			((DynamicArray*)(g_var + offset))->init(t->SubType->Size);
 		if (f){}
 	}
 
@@ -690,14 +689,14 @@ void FindVariableOffsets(CPreScript *p)
 		// map "self" to the first parameter
 		if (f->Class)
 			foreachi(f->Var, v, i)
-				if (strcmp(v.Name, "self") == 0){
+				if (v.Name == "self"){
 					int s = mem_align(v.Type->Size);
 					v._Offset = f->_ParamSize;
 					f->_ParamSize += s;
 				}
 
 		foreachi(f->Var, v, i){
-			if ((f->Class) && (strcmp(v.Name, "self") == 0))
+			if ((f->Class) && (v.Name == "self"))
 				continue;
 			int s = mem_align(v.Type->Size);
 			if (i < f->NumParams){
@@ -772,7 +771,7 @@ void CScript::Compiler()
 			g_var[i] = (char*)(MemorySize + pre_script->VariablesOffset);
 		else
 			g_var[i] = &Memory[MemorySize];
-		so(format("%d: %s", MemorySize, pre_script->RootOfAllEvil.Var[i].Name));
+		so(format("%d: %s", MemorySize, pre_script->RootOfAllEvil.Var[i].Name.c_str()));
 		MemorySize += mem_align(pre_script->RootOfAllEvil.Var[i].Type->Size);
 	}
 	memset(Memory, 0, MemorySize); // reset all global variables to 0
@@ -823,7 +822,7 @@ void CScript::Compiler()
 	if ((pre_script->FlagCompileOS)||(pre_script->FlagCompileInitialRealMode)){
 		nf=-1;
 		foreachi(pre_script->Function, ff, index)
-			if (strcmp(ff->Name, "main") == 0)
+			if (ff->Name == "main")
 				nf = index;
 		// call
 		if (nf>=0)
@@ -862,7 +861,7 @@ void CScript::Compiler()
 	if (!Error)
 		if (pre_script->AsmMetaInfo)
 			if (((sAsmMetaInfo*)pre_script->AsmMetaInfo)->WantedLabel.num > 0)
-				_do_error_(format("unknown name in assembler code:  \"%s\"", ((sAsmMetaInfo*)pre_script->AsmMetaInfo)->WantedLabel[0].Name), 2,);
+				_do_error_(format("unknown name in assembler code:  \"%s\"", ((sAsmMetaInfo*)pre_script->AsmMetaInfo)->WantedLabel[0].Name.c_str()), 2,);
 
 	/*CFile *oo = FileCreate("o");
 	oo->WriteStrL(Opcode, OpcodeSize);
@@ -893,7 +892,7 @@ void CScript::Compiler()
 		// call
 		nf = -1;
 		foreachi(pre_script->Function, ff, index){
-			if (strcmp(ff->Name, "main") == 0)
+			if (ff->Name == "main")
 				if (ff->NumParams == 0)
 					nf = index;
 		}
@@ -1070,9 +1069,9 @@ void *CScript::MatchFunction(const string &name, const string &return_type, int 
 	// process argument list
 	va_list marker;
 	va_start(marker, num_params);
-	char *param_type[SCRIPT_MAX_PARAMS];
+	string param_type[SCRIPT_MAX_PARAMS];
 	for (int p=0;p<num_params;p++)
-		param_type[p] = va_arg(marker, char*);
+		param_type[p] = string(va_arg(marker, char*));
 	va_end(marker);
 
 	// match
@@ -1082,7 +1081,7 @@ void *CScript::MatchFunction(const string &name, const string &return_type, int 
 
 				bool params_ok = true;
 				for (int j=0;j<num_params;j++)
-					if (f->Var[j].Type->Name == param_type[j])
+					if (f->Var[j].Type->Name != param_type[j])
 						params_ok = false;
 				if (params_ok){
 					msg_db_l(2);
@@ -1103,9 +1102,7 @@ bool CScript::ExecuteScriptFunction(const string &name,...)
 	msg_db_m(name.c_str(),2);
 	msg_db_m(pre_script->Filename.c_str(),2);
 
-	const char *cname = name.c_str();
-
-	if ((pre_script->GetExistence(cname, &pre_script->RootOfAllEvil))&&(pre_script->GetExistenceLink.Kind==KindFunction)){
+	if ((pre_script->GetExistence(name, &pre_script->RootOfAllEvil))&&(pre_script->GetExistenceLink.Kind==KindFunction)){
 
 		sFunction *f = pre_script->Function[pre_script->GetExistenceLink.LinkNr];
 

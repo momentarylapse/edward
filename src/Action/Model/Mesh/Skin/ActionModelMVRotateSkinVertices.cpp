@@ -40,7 +40,7 @@ void *ActionModelMVRotateSkinVertices::execute(Data *d)
 	foreachi(index, i, ii){
 		ModeModelSurface &s = m->Surface[surface[ii]];
 		vector &v = s.Triangle[i / 3].SkinVertex[texture_level][i % 3];
-		v = pos0 + (old_data[ii] - pos0) * rot;
+		v = pos0 + rot * (old_data[ii] - pos0);
 	}
 	return NULL;
 }

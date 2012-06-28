@@ -137,11 +137,20 @@ enum{
 	ScriptLocationNetworkRecieve,
 	ScriptLocationNetworkAddClient,
 	ScriptLocationNetworkRemoveClient,
-	ScriptLocationOnKillObject,
-	ScriptLocationOnCollision,
-	/*ScriptLocationOnKeyDown,
+	ScriptLocationWorldInit,
+	ScriptLocationWorldDelete,
+	ScriptLocationOnKeyDown,
 	ScriptLocationOnKeyUp,
-	ScriptLocationOnKey,*/
+	ScriptLocationOnKey,
+	ScriptLocationOnLeftButtonDown,
+	ScriptLocationOnLeftButtonUp,
+	ScriptLocationOnLeftButton,
+	ScriptLocationOnMiddleButtonDown,
+	ScriptLocationOnMiddleButtonUp,
+	ScriptLocationOnMiddleButton,
+	ScriptLocationOnRightButtonDown,
+	ScriptLocationOnRightButtonUp,
+	ScriptLocationOnRightButton,
 };
 
 #endif

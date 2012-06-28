@@ -52,7 +52,7 @@ void *ActionWorldRotateObjects::execute(Data *d)
 	matrix rot;
 	MatrixRotation(rot, param);
 	foreachi(index, i, ii){
-		w->Object[i].pos = pos0 + (old_data[ii] - pos0) * rot;
+		w->Object[i].pos = pos0 + rot * (old_data[ii] - pos0);
 		w->Object[i].Ang = VecAngAdd(old_ang[ii], param);
 	}
 	return NULL;

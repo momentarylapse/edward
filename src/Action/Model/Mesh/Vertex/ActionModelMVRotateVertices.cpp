@@ -45,7 +45,7 @@ void *ActionModelMVRotateVertices::execute(Data *d)
 	matrix rot;
 	MatrixRotation(rot, param);
 	foreachi(index, i, ii)
-		m->Vertex[i].pos = pos0 + (old_data[ii] - pos0) * rot;
+		m->Vertex[i].pos = pos0 + rot * (old_data[ii] - pos0);
 	m->SetNormalsDirtyByVertices(index);
 	return NULL;
 }
