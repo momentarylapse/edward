@@ -9,6 +9,7 @@
 
 #include "../lib/script/script.h"
 #include "../Edward.h"
+#include "../Mode/Model/ModeModel.h"
 
 PluginManager::PluginManager()
 {
@@ -48,6 +49,8 @@ void TestFunc()
 	msg_write("execute test func!");
 }
 
+char *ppp;
+#define _offsetof(t, x)	((int)(long)((char*)&(((t*)ppp)->x) - ppp))
 
 void PluginManager::Init()
 {
@@ -56,10 +59,24 @@ void PluginManager::Init()
 	test.name = "test.name";
 	test.i = 13;
 
+	msg_write("_offsetof:");
+	msg_write(_offsetof(DataModel, filename));
+
+	/*msg_write("dm: " + p2s(mode_model->data));
+	msg_write("dm.bone: " + p2s(&mode_model->data->Bone));
+	msg_write("dm.fn: " + p2s(&mode_model->data->filename));
+	msg_write("dm.obs: " + p2s(dynamic_cast<Observable*>(mode_model->data)));*/
+
 	ScriptLinkSemiExternalVar("TestVar", &TestVar);
 	ScriptLinkSemiExternalFunc("TestFunc", (void*)&TestFunc);
 	ScriptLinkSemiExternalVar("test", &test);
 	ScriptLinkSemiExternalFunc("TestClass.func", (void*)&TestClass::func);
+
+	ScriptLinkSemiExternalVar("edward", &ed);
+	ScriptLinkSemiExternalVar("data_model", &mode_model->data);
+	ScriptLinkSemiExternalFunc("DataModel.AddVertex", (void*)&DataModel::AddVertex);
+	ScriptLinkSemiExternalFunc("DataModel.AddTriangle", (void*)&DataModel::AddTriangle);
+
 //	ScriptLinkDynamicExternalData();
 }
 

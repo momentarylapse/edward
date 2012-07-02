@@ -3732,18 +3732,10 @@ CPreScript::~CPreScript()
 
 	// delete all types created by this script
 	for (int i=Type.num-NumOwnTypes;i<Type.num;i++)
-		if (Type[i]->Owner == this){ // redundant...
-			Type[i]->Element.clear();
-			Type[i]->Function.clear();
+		if (Type[i]->Owner == this) // redundant...
 			delete(Type[i]);
-		}
 	Type.clear();
 	
-	for (int i=0;i<Define.num;i++){
-		for (int j=0;j<Define[i].Dest.num;j++)
-			Define[i].Dest[j].clear();
-		Define[i].Dest.clear();
-	}
 	Define.clear();
 
 	
