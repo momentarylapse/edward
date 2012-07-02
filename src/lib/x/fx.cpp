@@ -210,7 +210,7 @@ inline void particle_init(sParticle *p, const vector &pos, const vector &param, 
 	p->enabled = true;
 	p->suicidal = (time_to_live >= 0);
 	p->texture = texture;
-	p->source = r01;
+	p->source = r_id;
 	p->pos = pos;
 	p->parameter = param;
 	p->vel = v0;
@@ -993,7 +993,7 @@ void FxDrawShadows()
 		NixSetStencil(StencilMaskNotEqual, 0);
 		NixSetAlpha(AlphaMaterial);
 
-		NixDraw2D(-1, ShadowColor, r01, NixTargetRect, 0);
+		NixDraw2D(-1, ShadowColor, r_id, NixTargetRect, 0);
 
 		NixSetStencil(StencilNone);
 		NixSetZ(true, true);
@@ -1048,7 +1048,7 @@ void FxDrawMirrors(Skin *s,const matrix &mat)
 		NixSetZ(true,false);
 		NixSetAlpha(AlphaZero,AlphaOne);
 		NixSetStencil(StencilNone);
-		NixDraw2D(-1,White,r01,NixTargetRect,0.9999999f);
+		NixDraw2D(-1,White,r_id,NixTargetRect,0.9999999f);
 		NixSetStencil(StencilMaskEqual,1);
 		NixSetAlpha(AlphaNone);
 		NixSetZ(true,true);

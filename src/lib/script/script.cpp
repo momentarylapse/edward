@@ -21,7 +21,7 @@
 	#include "../x/x.h"
 #endif
 
-string ScriptVersion = "0.9.5.0";
+string ScriptVersion = "0.10.1.0";
 
 //#define ScriptDebug
 
@@ -267,7 +267,6 @@ void reset_script(CScript *s)
 	s->ShowCompilerStats = (!ScriptCompileSilently) && ScriptShowCompilerStats;
 	
 	s->pre_script = NULL;
-	s->user_data = NULL;
 
 	s->Opcode = NULL;
 	s->OpcodeSize = 0;

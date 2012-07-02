@@ -40,7 +40,7 @@ void CameraReset()
 	View.clear();
 
 	// create the main-view ("cam")
-	Cam = CameraCreateView(v0, v0, r01, true);
+	Cam = CameraCreateView(v0, v0, r_id, true);
 	view_cur = Cam;
 
 	msg_db_l(1);
@@ -291,7 +291,7 @@ void ExecuteCamPoint(CView *view)
 				p->duration,
 				true);
 		view->flight_time_el = ft;
-		// Daten für die Rotation erstellen
+		// create data for the rotation
 		view->script_rot_0 = v0;
 		if (view->cam_point_nr > 0)
 			if (view->cam_point[view->cam_point_nr - 1].type == CPKCamFlight)

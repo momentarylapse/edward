@@ -191,7 +191,7 @@ void NixDrawLineV(int x,int y1,int y2,const color &c,float depth)
 	d.x2=(float)x+1;
 	d.y1=(float)y1;
 	d.y2=(float)y2;
-	NixDraw2D(-1, c, r01, d, depth);
+	NixDraw2D(-1, c, r_id, d, depth);
 }
 
 void NixDrawLineH(int x1,int x2,int y,const color &c,float depth)
@@ -208,7 +208,7 @@ void NixDrawLineH(int x1,int x2,int y,const color &c,float depth)
 	d.x2=(float)x2;
 	d.y1=(float)y;
 	d.y2=(float)y+1;
-	NixDraw2D(-1, c, r01, d, depth);
+	NixDraw2D(-1, c, r_id, d, depth);
 }
 
 void NixDrawLine3D(const vector &l1,const vector &l2,const color &c)

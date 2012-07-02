@@ -341,7 +341,7 @@ void DataWorld::MetaData::DrawBackground()
 {
 	NixSetZ(false,false);
 	NixSetWire(false);
-	NixDraw2D(-1, BackGroundColor, r01, NixTargetRect, 0);
+	NixDraw2D(-1, BackGroundColor, r_id, NixTargetRect, 0);
 	NixSetWire(ed->multi_view_3d->wire_mode);
 	NixSetZ(true,true);
 }

@@ -83,16 +83,11 @@ void CPreScript::AddIncludeData(CScript *s)
 enum{
 	MacroInclude,
 	MacroDefine,
-	MacroIfdef,
-	MacroIfndef,
-	MacroEndif,
-	MacroElse,
 	MacroDisasm,
 	MacroNoExec,
 	MacroShow,
 	MacroShowPrae,
 	MacroImmortal,
-	MacroRule,
 	MacroOs,
 	MacroInitialRealmode,
 	MacroVariablesOffset,
@@ -104,16 +99,11 @@ string MacroName[NumMacroNames] =
 {
 	"#include",
 	"#define",
-	"#ifdef",
-	"#ifndef",
-	"#endif",
-	"#else",
 	"#disasm",
 	"#noexec",
 	"#show",
 	"#show_prae",
 	"#immortal",
-	"#rule",
 	"#os",
 	"#initial_realmode",
 	"#variables_offset",
@@ -171,79 +161,6 @@ void CPreScript::HandleMacro(ps_line_t *l, int &line_no, int &NumIfDefs, bool *I
 				d.Dest.add(cur_name);
 			}
 			Define.add(d);
-			break;
-		/*case MacroIfdef:
-			next_exp();
-			//IfDefed[NumIfDefs] = false;
-			bool defed = false;
-			for (int i=0;i<NumDefines;i++)
-				if (strcmp(Temp, Define[i]->Source) == 0){
-					//IfDefed[NumIfDefs] = true;
-					defed = true;
-					break;
-				}
-			//NumIfDefs ++;
-			if (!defed){
-			}
-			break;*/
-	/*	case MacroIfndef:
-			NextExp(Buffer);
-			IfDefed[NumIfDefs]=true;
-			for (i=0;i<NumDefines;i++)
-				if (strcmp(Temp,Define[i]->Source)==0){
-					IfDefed[NumIfDefs]=false;
-					break;
-				}
-			NumIfDefs++;
-			break;
-		case MacroElse:
-			if (NumIfDefs<1){
-				strcpy(Exp->Name[Exp->NumExps],Temp);
-				Exp->Line[Exp->NumExps]=Exp->TempLine;
-				Exp->Column[Exp->NumExps]=Exp->TempColumn;
-				DoError("\"#else\" found but no matching \"#ifdef\"",Exp->NumExps);
-				return;
-			}
-			IfDefed[NumIfDefs-1]=!IfDefed[NumIfDefs-1];
-			break;
-		case MacroEndif:
-			if (NumIfDefs<1){
-				strcpy(Exp->Name[Exp->NumExps],Temp);
-				Exp->Line[Exp->NumExps]=Exp->TempLine;
-				Exp->Column[Exp->NumExps]=Exp->TempColumn;
-				DoError("\"#endif\" found but no matching \"#ifdef\"",Exp->NumExps);
-				return;
-			}
-			NumIfDefs--;
-			break;*/
-		case MacroRule:{
-			next_exp();
-			if (end_of_line()){
-				_do_error_("location rule has syntax:  #rule  <LocationName>  <Level>  <Function>", 4, );
-			}
-			ln = -1;
-			for (int i=0;i<ScriptLocation.num;i++)
-				if (ScriptLocation[i].Name == cur_name)
-					ln = ScriptLocation[i].Location;
-			if (ln < 0){
-				msg_error(format("%s: unknown location in script rule: %s", Filename.c_str(), cur_name.c_str()));
-				/*DoError("unknown location in script rule");
-				msg_db_l(4);
-				return;*/
-			}
-			sPreScriptRule pr;
-			pr.Location = ln;
-			next_exp();
-			if (end_of_line()){
-				_do_error_("location rule has syntax:  #rule  <LocationName>  <Level>  <Function>", 4, );
-			}
-			pr.Level = s2i(cur_name);
-			next_exp();
-			if (end_of_line()){
-				_do_error_("location rule has syntax:  #rule  <LocationName>  <Level>  <Function>", 4, );
-			}
-			pr.Name = cur_name.substr(1, cur_name.num - 2);
-			PreScriptRule.add(pr);}
 			break;
 		case MacroDisasm:
 			FlagDisassemble=true;

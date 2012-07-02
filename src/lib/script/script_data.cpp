@@ -13,9 +13,10 @@
 	#include "windows.h"
 #endif
 #include "script.h"
+#include "script_data_common.h"
 #include "../00_config.h"
 
-string ScriptDataVersion = "0.9.4.0";
+string ScriptDataVersion = "0.10.1.0";
 
 
 #ifdef _X_USE_HUI_
@@ -92,37 +93,29 @@ void set_cur_package(const string &name)
 }
 
 Array<sType*> PreType;
-sType *add_type(const string &name, int size)
+sType *add_type(const string &name, int size, TypeFlag flag)
 {
 	msg_db_r("add_type", 4);
 	sType *t = new sType;
 	t->Name = name;
-	t->Owner = NULL;
 	t->Size = size;
-	t->IsArray = false;
-	t->IsSuperArray = false;
-	t->ArrayLength = 0;
-	t->IsPointer = false;
-	t->IsSilent = false;
-	t->SubType = NULL;
+	if ((flag & FLAG_CALL_BY_VALUE) > 0)
+		t->ForceCallByValue = true;
 	PreType.add(t);
 	if (cur_package)
 		cur_package->type.add(t);
 	msg_db_l(4);
 	return t;
 }
-sType *add_type_p(const string &name, sType *sub_type, bool is_silent = false)
+sType *add_type_p(const string &name, sType *sub_type, TypeFlag flag)
 {
 	msg_db_r("add_type_p", 4);
 	sType *t = new sType;
 	t->Name = name;
-	t->Owner = NULL;
 	t->Size = PointerSize;
-	t->IsArray = false;
-	t->IsSuperArray = false;
-	t->ArrayLength = 0;
 	t->IsPointer = true;
-	t->IsSilent = is_silent;
+	if ((flag & FLAG_SILENT) > 0)
+		t->IsSilent = true;
 	t->SubType = sub_type;
 	PreType.add(t);
 	if (cur_package)
@@ -135,22 +128,16 @@ sType *add_type_a(const string &name, sType *sub_type, int array_length)
 	msg_db_r("add_type_a", 4);
 	sType *t = new sType;
 	t->Name = name;
-	t->Owner = NULL;
-	t->IsPointer = false;
-	t->IsSilent = false;
 	t->SubType = sub_type;
 	if (array_length < 0){
 		// super array
 		t->Size = SuperArraySize;
-		t->IsArray = false;
 		t->IsSuperArray = true;
-		t->ArrayLength = 0;
 		//script_make_super_array(t); // do it later !!!
 	}else{
 		// standard array
 		t->Size = sub_type->Size * array_length;
 		t->IsArray = true;
-		t->IsSuperArray = false;
 		t->ArrayLength = array_length;
 	}
 	PreType.add(t);
@@ -250,7 +237,7 @@ void class_add_element(const string &name, sType *type, int offset)
 	msg_db_l(4);
 }
 
-int add_func(const string &name, sType *return_type, void *func, bool is_class = false);
+int add_func(const string &name, sType *return_type, void *func, bool is_class);
 
 void class_add_func(const string &name, sType *return_type, void *func)
 {
@@ -321,15 +308,10 @@ void add_ext_var(const string &name, sType *type, void *var)
 void _cdecl _cstringout(char *str){	msg_write(str);	}
 void _cdecl _stringout(string &str){	msg_write(str);	}
 int _cdecl _Float2Int(float f){	return (int)f;	}
+string _cdecl ff2s(complex &x){	return x.str();	}
+string _cdecl fff2s(vector &x){	return x.str();	}
+string _cdecl ffff2s(quaternion &x){	return x.str();	}
 
-
-typedef void (CFile::*tmf)();
-typedef char *tcpa[4];
-void *mf(tmf vmf)
-{
-	tcpa *cpa=(tcpa*)&vmf;
-	return (*cpa)[0];
-}
 
 void *f_cp = (void*)1; // for fake (compiler-) functions
 
@@ -386,42 +368,7 @@ void func_add_param(const string &name, sType *type)
 void CSuperArray::init_by_type(sType *t)
 {	init(t->Size);	}
 
-
-void super_array_assign(CSuperArray *a, CSuperArray *b)
-{
-	a->element_size = b->element_size; // ...
-	a->reserve(b->num);
-	memcpy(a->data, b->data, b->element_size * b->num);
-	a->num = b->num;
-}
-
-void super_array_assign_8_single(CSuperArray *a, complex x)
-{
-	complex *p = (complex*)a->data;
-	for (int i=0;i<a->num;i++)
-		*(p ++) = x;
-}
-
-void super_array_assign_4_single(CSuperArray *a, int x)
-{
-	int *p = (int*)a->data;
-	for (int i=0;i<a->num;i++)
-		*(p ++) = x;
-}
-
-void super_array_assign_1_single(CSuperArray *a, char x)
-{
-	char *p = (char*)a->data;
-	for (int i=0;i<a->num;i++)
-		*(p ++) = x;
-}
-
-void super_array_add_s_str(string *a, string *b)
-{
-	a->append(b);
-}
-
-string super_array_add_str(string *a, string *b)
+/*string super_array_add_str(string *a, string *b)
 {
 	string r;
 	//r.init(1); // done by kaba-constructors for temp variables
@@ -443,13 +390,7 @@ void super_array_add_str_cstr(string *a, char *b)
 	int l = strlen(b);
 	a->resize(a->num + l);
 	memcpy(&((char*)a->data)[n_old], b, l);
-}
-
-bool super_array_equal_str(string *a, string *b)
-{	return *a == *b;	}
-
-bool super_array_notequal_str(string *a, string *b)
-{	return *a != *b;	}
+}*/
 
 bool type_is_simple_class(sType *t)
 {
@@ -612,15 +553,15 @@ char *CastPointer2StringP(void *p)
 }
 char *CastVector2StringP(vector *v)
 {
-	string s = fff2s((float*)v);
+	string s = v->str();
 	char *str = get_type_cast_buf(s.num + 1);
 	memcpy(str, s.data, s.num);
 	*(char**)&CastTemp[0] = str; // save the return address in CastTemp
 	return &CastTemp[0];
 }
-char *CastFFFF2StringP(quaternion *v)
+char *CastFFFF2StringP(quaternion *q)
 {
-	string s = ffff2s((float*)v);
+	string s = q->str();
 	char *str = get_type_cast_buf(s.num + 1);
 	memcpy(str, s.data, s.num);
 	*(char**)&CastTemp[0] = str; // save the return address in CastTemp
@@ -628,7 +569,7 @@ char *CastFFFF2StringP(quaternion *v)
 }
 char *CastComplex2StringP(complex *z)
 {
-	string s = ff2s((float*)z);
+	string s = z->str();
 	char *str = get_type_cast_buf(s.num + 1);
 	memcpy(str, s.data, s.num);
 	*(char**)&CastTemp[0] = str; // save the return address in CastTemp
@@ -662,10 +603,55 @@ void add_type_cast(int penalty, sType *source, sType *dest, const string &cmd, v
 }
 
 
-class DummyStringList : Array<string>
+class StringList : public Array<string>
 {
 public:
-	void assign(DummyStringList &s){	*this = s;	}
+	void assign(StringList &s){	*this = s;	}
+	string join(const string &glue)
+	{
+		string r;
+		foreachi(*this, s, i){
+			if (i > 0)
+				r += glue;
+			r += s;
+		}
+		return r;
+	}
+};
+
+class IntClass
+{
+	int i;
+public:
+	string str(){	return i2s(i);	}
+};
+
+class FloatClass
+{
+	float f;
+public:
+	string str(){	return f2s(f, 6);	}
+};
+
+class BoolClass
+{
+	bool b;
+public:
+	string str(){	return b2s(b);	}
+};
+
+class CharClass
+{
+	char c;
+public:
+	string str(){	string r;	r.add(c);	return r;	}
+};
+
+class PointerClass
+{
+	void *p;
+public:
+	string str(){	return p2s(p);	}
 };
 
 void SIAddPackageBase()
@@ -684,25 +670,37 @@ void SIAddPackageBase()
 	// "real"
 	TypeVoid			= add_type  ("void",		0);
 	TypeSuperArray		= add_type_a("void[]",		TypeVoid, -1); // substitute for all super arrays
-	TypePointer			= add_type_p("void*",		TypeVoid); // substitute for all pointer types
-	TypePointerPs		= add_type_p("void*&",		TypePointer, true);
+	TypePointer			= add_type_p("void*",		TypeVoid, FLAG_CALL_BY_VALUE); // substitute for all pointer types
+	TypePointerPs		= add_type_p("void*&",		TypePointer, FLAG_SILENT);
 	TypePointerList		= add_type_a("void*[]",		TypePointer, -1);
-	TypeBool			= add_type  ("bool",		sizeof(bool));
+	TypeBool			= add_type  ("bool",		sizeof(bool), FLAG_CALL_BY_VALUE);
 	TypeBoolList		= add_type_a("bool[]",		TypeBool, -11);
-	TypeInt				= add_type  ("int",			sizeof(int));
-	TypeIntPs			= add_type_p("int&",		TypeInt, true);
+	TypeInt				= add_type  ("int",			sizeof(int), FLAG_CALL_BY_VALUE);
+	TypeIntPs			= add_type_p("int&",		TypeInt, FLAG_SILENT);
 	TypeIntList			= add_type_a("int[]",		TypeInt, -1);
 	TypeIntArray		= add_type_a("int[?]",		TypeInt, 1);
-	TypeFloat			= add_type  ("float",		sizeof(float));
-	TypeFloatPs			= add_type_p("float&",		TypeFloat, true);
+	TypeFloat			= add_type  ("float",		sizeof(float), FLAG_CALL_BY_VALUE);
+	TypeFloatPs			= add_type_p("float&",		TypeFloat, FLAG_SILENT);
 	TypeFloatArray		= add_type_a("float[?]",	TypeFloat, 1);
 	TypeFloatArrayP		= add_type_p("float[?]*",	TypeFloatArray);
 	TypeFloatList		= add_type_a("float[]",		TypeFloat, -1);
-	TypeChar			= add_type  ("char",		sizeof(char));
+	TypeChar			= add_type  ("char",		sizeof(char), FLAG_CALL_BY_VALUE);
 	TypeCString			= add_type_a("cstring",		TypeChar, 256);	// cstring := char[256]
 	TypeString			= add_type_a("string",		TypeChar, -1);	// string := char[]
 	TypeStringList		= add_type_a("string[]",	TypeString, -1);
 
+	
+	add_class(TypeInt);
+		class_add_func("str", TypeString, mf((tmf)&IntClass::str));
+	add_class(TypeFloat);
+		class_add_func("str", TypeString, mf((tmf)&FloatClass::str));
+	add_class(TypeBool);
+		class_add_func("str", TypeString, mf((tmf)&BoolClass::str));
+	add_class(TypeChar);
+		class_add_func("str", TypeString, mf((tmf)&CharClass::str));
+	add_class(TypePointer);
+		class_add_func("str", TypeString, mf((tmf)&PointerClass::str));
+	
 	add_class(TypeString);
 		class_add_func("__iadd__", TypeVoid, mf((tmf)&string::operator+=));
 			func_add_param("x",		TypeString);
@@ -735,19 +733,23 @@ void SIAddPackageBase()
 			func_add_param("by",		TypeString);
 		class_add_func("explode", TypeStringList, mf((tmf)&string::explode));
 			func_add_param("str",		TypeString);
+		class_add_func("lower", TypeString, mf((tmf)&string::lower));
+		class_add_func("upper", TypeString, mf((tmf)&string::upper));
 
 	add_class(TypeStringList);
-		class_add_func("__init__",	TypeVoid, mf((tmf)&Array<string>::__init__));
-		class_add_func("__delete__",	TypeVoid, mf((tmf)&Array<string>::clear));
-		class_add_func("add", TypeVoid, mf((tmf)&Array<string>::add));
+		class_add_func("__init__",	TypeVoid, mf((tmf)&StringList::__init__));
+		class_add_func("__delete__",	TypeVoid, mf((tmf)&StringList::clear));
+		class_add_func("add", TypeVoid, mf((tmf)&StringList::add));
 			func_add_param("x",		TypeString);
-		class_add_func("clear", TypeVoid, mf((tmf)&Array<string>::clear));
-		class_add_func("remove", TypeVoid, mf((tmf)&Array<string>::erase));
+		class_add_func("clear", TypeVoid, mf((tmf)&StringList::clear));
+		class_add_func("remove", TypeVoid, mf((tmf)&StringList::erase));
 			func_add_param("index",		TypeInt);
-		class_add_func("resize", TypeVoid, mf((tmf)&Array<string>::resize));
+		class_add_func("resize", TypeVoid, mf((tmf)&StringList::resize));
 			func_add_param("num",		TypeInt);
-		class_add_func("__assign__",	TypeVoid, mf((tmf)&DummyStringList::assign));
+		class_add_func("__assign__",	TypeVoid, mf((tmf)&StringList::assign));
 			func_add_param("other",		TypeStringList);
+		class_add_func("join", TypeString, mf((tmf)&StringList::join));
+			func_add_param("glue",		TypeString);
 
 
 	add_const("nil", TypePointer, NULL);
@@ -954,8 +956,6 @@ void SIAddOperators()
 	add_operator(OperatorDivideS,		TypeVoid,		TypeVector,		TypeFloat);
 	add_operator(OperatorSubtract,		TypeVector,		TypeVoid,		TypeVector);
 	
-	add_operator(OperatorAssign,		TypeVoid,		TypeSuperArray,	TypeSuperArray);
-	
 	msg_db_l(3);
 }
 
@@ -1155,9 +1155,7 @@ void ScriptLinkSemiExternalFunc(const string &name, void *pointer)
 	c.ReturnType = TypeUnknown; // unusable until defined via "extern" in the script!
 	c.IsSemiExternal = true;
 	PreCommand.add(c);
-}	
-
-Array<sScriptLocation> ScriptLocation;
+}
 
 void ScriptEnd()
 {
@@ -1165,9 +1163,6 @@ void ScriptEnd()
 	DeleteAllScripts(true, true);
 
 	ScriptResetSemiExternalData();
-	
-	// locations
-	ScriptLocation.clear();
 
 	PreOperator.clear();
 

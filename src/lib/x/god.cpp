@@ -288,7 +288,7 @@ void GodResetLevelData()
 	LevelData.object.clear();
 	LevelData.skybox_filename.clear();
 	LevelData.skybox_ang.clear();
-	LevelData.script.clear();
+	LevelData.script_filename.clear();
 	LevelData.script_var.clear();
 
 	LevelData.ego_index = -1;
@@ -467,16 +467,12 @@ bool GodLoadWorld(const string &filename)
 	// Scripts
 	n = f->ReadIntC();
 	for (int i=0;i<n;i++){
-		LevelDataScript s;
-		s.filename = f->ReadStr();
+		LevelData.script_filename.add(f->ReadStr());
 		int nr = f->ReadInt();
 		for (int j=0;j<nr;j++){
-			LevelDataScriptRule r;
-			r.function = f->ReadStr();
-			r.location = f->ReadInt();
-			s.rule.add(r);
+			f->ReadStr();
+			f->ReadInt();
 		}
-		LevelData.script.add(s);
 	}
 
 	// ScriptVars
@@ -492,8 +488,8 @@ bool GodLoadWorld(const string &filename)
 		for (int i=0;i<3;i++)
 			LevelData.sun_color[i] = ReadColor3(f);
 		LevelData.sun_ang.x = f->ReadFloat();
-		LevelData.sun_ang.y=f->ReadFloat();
-		LevelData.sun_ang.z=0;
+		LevelData.sun_ang.y = f->ReadFloat();
+		LevelData.sun_ang.z = 0;
 		// Ambient
 		f->ReadComment();
 		LevelData.ambient = ReadColor3(f);

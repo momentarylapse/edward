@@ -50,12 +50,6 @@ struct LevelDataScriptRule
 	int location;
 };
 
-struct LevelDataScript
-{
-	string filename;
-	Array<LevelDataScriptRule> rule;
-};
-
 struct sLevelData
 {
 	string world_filename;
@@ -65,7 +59,7 @@ struct sLevelData
 	Array<LevelDataObject> object;
 	Array<LevelDataTerrain> terrain;
 	int ego_index;
-	Array<LevelDataScript> script;
+	Array<string> script_filename;
 	Array<float> script_var;
 	
 	bool sun_enabled;

@@ -1,7 +1,15 @@
 
+
+enum TypeFlag
+{
+	FLAG_NONE = 0,
+	FLAG_CALL_BY_VALUE = 1,
+	FLAG_SILENT = 2,
+};
+
 void set_cur_package(const string &name);
-sType *add_type(const string &name, int size);
-sType *add_type_p(const string &name, sType *sub_type, bool is_silent = false);
+sType *add_type(const string &name, int size, TypeFlag = FLAG_NONE);
+sType *add_type_p(const string &name, sType *sub_type, TypeFlag = FLAG_NONE);
 sType *add_type_a(const string &name, sType *sub_type, int array_length);
 int add_func(const string &name, sType *return_type, void *func, bool is_class = false);
 int add_func_special(const string &name, sType *return_type, int index);

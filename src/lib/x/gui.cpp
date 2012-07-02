@@ -94,7 +94,7 @@ sPicture *GuiCreatePicture(const vector &pos, float width, float height, int tex
 	// default data to show existence...
 	p->enabled = true;
 	p->tc_inverted = false;
-	p->source = r01;
+	p->source = r_id;
 	p->pos = pos;
 	p->width = width;
 	p->height = height;

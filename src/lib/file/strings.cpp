@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <time.h>
+#include <locale.h>
 
 #ifdef FILE_OS_WINDOWS
 	#include <stdio.h>
@@ -76,7 +77,18 @@ string::~string()
 string string::substr(int start, int length) const
 {
 	string r;
-	if ((start + length > num) || (length == -1))
+	if (start >= num)
+		return r;
+	if (start < 0){
+		// start from the end
+		start = num + start;
+		if (start < 0)
+			return r;
+	}
+	if (length < 0){
+		length = num - start + length + 1;
+	}
+	if (start + length > num)
 		length = num - start;
 	if (length > 0){
 		r.resize(length);
@@ -353,6 +365,8 @@ string file_extension(const string &filename)
 	return "";
 }
 
+static bool format_locale_set = false;
+
 // connecting strings
 string format(const string str,...)
 {
@@ -361,6 +375,11 @@ string format(const string str,...)
 
     // retrieve the variable arguments
     va_start(args, str);
+
+	//if (!format_locale_set){
+		setlocale(LC_NUMERIC, "C");
+		//format_locale_set = true;
+	//}
 
 #ifdef FILE_OS_WINDOWS
 	int len = _vscprintf(str.c_str(), args);
@@ -528,7 +547,7 @@ string b2s(bool b)
 }
 
 // convert a vector to a string
-string fff2s(float *f)
+/*string fff2s(float *f)
 {
 	return "(" + f2sf(f[0]) + ", " + f2sf(f[1]) + ", " + f2sf(f[2]) + ")";
 }
@@ -539,7 +558,7 @@ string ff2s(float *f)
 string ffff2s(float *f)
 {
 	return "(" + f2sf(f[0]) + ", " + f2sf(f[1]) + ", " + f2sf(f[2]) + ", " + f2sf(f[3]) + ")";
-}
+}*/
 string p2s(void *p)
 {
 	char tmp[64];

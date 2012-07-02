@@ -150,7 +150,7 @@ void ModeWelcome::DrawIcon(int x, int y, int index, int pic_index, const string 
 void ModeWelcome::OnDraw()
 {
 	msg_db_r("Welcome.Draw", 1);
-	NixDraw2D(-1, Black, r01, NixTargetRect, 0.999999f);
+	NixDraw2D(-1, Black, r_id, NixTargetRect, 0.999999f);
 	// logo
 	float x=50;
 	float y=5+MaxY*0.18f;
@@ -159,7 +159,7 @@ void ModeWelcome::OnDraw()
 	float f=0.4f;//0.90f;
 	color c=color(1,f,f,f);
 	rect d=rect(x,x+w,y,y+h);
-	NixDraw2D(tex_logo, c, r01, d, 0.999f);
+	NixDraw2D(tex_logo, c, r_id, d, 0.999f);
 	NixDrawLineH((int)x,(int)x+720,(int)y+70,c,0.99f);
 	NixDrawLineH((int)x,(int)x+670,(int)y+73,c,0.99f);
 

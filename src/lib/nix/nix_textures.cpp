@@ -503,7 +503,7 @@ int NixCreateDynamicTexture(int width,int height)
 	
 	// clear texture
 	NixStart(NixTexture.num - 1);
-	NixDraw2D(-1, color(0,0,0,0), r01, NixTargetRect, 0);
+	NixDraw2D(-1, color(0,0,0,0), r_id, NixTargetRect, 0);
 	NixEnd();
 
 	msg_db_l(1);
@@ -608,7 +608,7 @@ void NixRenderToCubeMap(int cube_map,vector &pos,callback_function *render_func,
 			SetCubeMatrix(pos,vector(0,pi,0));
 			render_func();
 		}
-		DXRenderToEnvMap[cube_map]->OnEnd(0);
+		DXRenderToEnvMap[cube_map]->End(0);
 
 		/*lpDevice->BeginScene();
 		SetCubeMatrix(pos,vector(0,pi,0));

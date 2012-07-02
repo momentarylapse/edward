@@ -29,6 +29,7 @@ struct ps_exp_buffer_t
 #define cur_name		Exp._cur_
 #define get_name(n)		string(Exp.cur_line->exp[n].name)
 #define next_exp()		{Exp.cur_exp ++; Exp._cur_ = Exp.cur_line->exp[Exp.cur_exp].name;}//;ExpectNoNewline()
+#define rewind_exp()	{Exp.cur_exp --; Exp._cur_ = Exp.cur_line->exp[Exp.cur_exp].name;}
 #define end_of_line()	(Exp.cur_exp >= Exp.cur_line->exp.num - 1) // the last entry is "-eol-"
 #define past_end_of_line()	(Exp.cur_exp >= Exp.cur_line->exp.num)
 #define next_line()		{Exp.cur_line ++; Exp.cur_exp = 0; test_indent(Exp.cur_line->indent);  Exp._cur_ = Exp.cur_line->exp[Exp.cur_exp].name;}
@@ -40,13 +41,6 @@ struct sDefine
 {
 	string Source;
 	Array<string> Dest;
-};
-
-// special macro for execution rules
-struct sPreScriptRule
-{
-	int Location, Level;
-	string Name;
 };
 
 // single enum entries
@@ -133,12 +127,6 @@ struct sLocalVariable
 	int _Offset; // for compilation
 };
 
-struct sSuperArrayLocation
-{
-	int Offset, Offset2;
-	sType *SubType;
-};
-
 // user defined functions
 struct sFunction
 {
@@ -150,7 +138,6 @@ struct sFunction
 	// local variables
 	Array<sLocalVariable> Var;
 	sType *LiteralParamType[SCRIPT_MAX_PARAMS];
-	Array<sSuperArrayLocation> SuArLoc;
 	sType *Class;
 	// return value
 	sType *Type;
@@ -211,7 +198,8 @@ public:
 	void Parser();
 	void ParseEnum();
 	void ParseClass();
-	void ParseFunction(sType *class_type = NULL);
+	void ParseFunction(sType *class_type, bool as_extern);
+	void ParseClassFunction(sType *t, bool as_extern);
 	sType *ParseVariableDefSingle(sType *type, sFunction *f, bool as_param = false);
 	void ParseVariableDef(bool single, sFunction *f);
 	void ParseGlobalConst(const string &name, sType *type);
@@ -300,7 +288,6 @@ public:
 	//Array<sEnum> Enum;
 	Array<CScript*> Include;
 	Array<sDefine> Define;
-	Array<sPreScriptRule> PreScriptRule;
 	char *AsmMetaInfo;
 	Array<sAsmBlock> AsmBlock;
 	Array<sConstant> Constant;

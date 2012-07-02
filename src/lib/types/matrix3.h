@@ -77,6 +77,8 @@ public:
 	}
 	friend vector operator * (const vector &v, const matrix3 &m)
 	{	return m*v;	}
+	string str()
+	{	return format("(%f, %f, %f; %f, %f, %f; %f, %f, %f)", _00, _01, _02, _10, _11, _12, _20, _21, _22);	}
 };
 
 // matrix3s

@@ -92,7 +92,7 @@ void ModeModelMeshTexture::OnDrawWin(int win, irect dest)
 						(float)(i+1)/16.0f*NixTargetWidth,
 						(float)j/16.0f*NixTargetHeight,
 						(float)(j+1)/16.0f*NixTargetHeight);
-				NixDraw2D( -1, ((i+j)%2==0) ? c1 : c2, r01, r, 0.999f );
+				NixDraw2D( -1, ((i+j)%2==0) ? c1 : c2, r_id, r, 0.999f );
 			}
 		NixSetAlphaSD(AlphaSourceAlpha,AlphaSourceInvAlpha);
 	}

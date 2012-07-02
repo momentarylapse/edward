@@ -89,7 +89,6 @@ public:
 	CPreScript *pre_script;
 
 	int ReferenceCounter;
-	void *user_data; // to associate additional data with the script
 
 	char *Opcode; // executable code
 	int OpcodeSize;

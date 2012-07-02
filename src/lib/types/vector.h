@@ -37,6 +37,8 @@ public:
 	{	return x*v.x + y*v.y + z*v.z;	}
 	vector operator ^ (vector v) const
 	{	return vector( y*v.z-z*v.y, z*v.x-x*v.z, x*v.y-y*v.x );	}
+	string str()
+	{	return format("(%f, %f, %f)", x, y, z);	}
 };
 // vectors
 float _cdecl VecLength(const vector &v);

@@ -64,7 +64,7 @@ bool SilentFiles = false;
 
 
 #ifdef FILE_OS_WINDOWS
-Date time2date(_SYSTEMTIME t)
+Date systime2date(_SYSTEMTIME t)
 {
 	Date d;
 	d.time=-1;//(int)t.time;   :---(
@@ -80,7 +80,6 @@ Date time2date(_SYSTEMTIME t)
 	return d;
 }
 #endif
-#ifdef FILE_OS_LINUX
 Date time2date(time_t t)
 {
 	Date d;
@@ -97,14 +96,13 @@ Date time2date(time_t t)
 	d.day_of_year=tm->tm_yday;
 	return d;
 }
-#endif
 
 Date get_current_date()
 {
 #ifdef FILE_OS_WINDOWS
 	_SYSTEMTIME t;
 	GetLocalTime(&t);
-	return time2date(t);
+	return systime2date(t);
 #endif
 #ifdef FILE_OS_LINUX
 	time_t t;
@@ -573,40 +571,37 @@ int CFile::GetSize()
 	return (int)_filelength(handle);
 #endif
 #ifdef FILE_OS_LINUX
-	struct stat stat;
-	fstat(handle, &stat);
-	return stat.st_size;
+	struct stat _stat;
+	fstat(handle, &_stat);
+	return _stat.st_size;
 #endif
 }
 
-Date CFile::GetDate(int type)
+Date CFile::GetDateCreation()
 {
-	time_t t;
-	struct stat stat;
-	fstat(handle, &stat);
-	if (type==FileDateAccess)		t=stat.st_atime;
-	if (type==FileDateModification)	t=stat.st_mtime;
-	if (type==FileDateCreation)		t=stat.st_ctime;
-	//return time2date(t);
+	struct stat _stat;
+	fstat(handle, &_stat);
+	return time2date(_stat.st_ctime);
+}
 
-	Date d;
-	tm *tm=localtime(&t);
-	d.time=(int)t;
-	d.year=tm->tm_year+1900;
-	d.month=tm->tm_mon;
-	d.day=tm->tm_mday;
-	d.hour=tm->tm_hour;
-	d.minute=tm->tm_min;
-	d.second=tm->tm_sec;
-	d.day_of_week=tm->tm_wday;
-	d.day_of_year=tm->tm_yday;
-	return d;
+Date CFile::GetDateModification()
+{
+	struct stat _stat;
+	fstat(handle, &_stat);
+	return time2date(_stat.st_mtime);
+}
+
+Date CFile::GetDateAccess()
+{
+	struct stat _stat;
+	fstat(handle, &_stat);
+	return time2date(_stat.st_atime);
 }
 
 // where is the current reading position in the file?
 int CFile::GetPos()
 {
-	return _lseek(handle,0,SEEK_CUR);
+	return _lseek(handle, 0, SEEK_CUR);
 }
 
 // read a single character followed by the file-format-version-number

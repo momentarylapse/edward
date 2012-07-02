@@ -50,6 +50,17 @@ struct sClassFunction{
 };
 
 struct sType{
+	sType(){
+		Owner = NULL;
+		Size = 0;
+		IsArray = false;
+		IsSuperArray = false;
+		ArrayLength = 0;
+		IsPointer = false;
+		IsSilent = false;
+		SubType = NULL;
+		ForceCallByValue = false;
+	};
 	string Name;
 	int Size; // complete size of type
 	int ArrayLength;
@@ -60,8 +71,9 @@ struct sType{
 	sType *SubType;
 	CPreScript *Owner; // to share and be able to delete...
 
+	bool ForceCallByValue;
 	bool UsesCallByReference()
-	{	return ((IsArray) || (IsSuperArray) || (Element.num > 0));	}
+	{	return (!ForceCallByValue) && ((IsArray) || (IsSuperArray) || (Element.num > 0));	}
 	int GetFunc(const string &name)
 	{
 		foreachi(Function, f, i)
@@ -244,8 +256,6 @@ enum{
 	OperatorVectorMultiplyS,
 	OperatorVectorDivideS,
 	OperatorVectorNegate,
-
-	OperatorSuperArrayAssign,
 };
 
 
@@ -382,21 +392,6 @@ class CSuperArray : public DynamicArray
 	void init_by_type(sType *t);
 	int string_cfind(char *a, int start);
 };
-
-void super_array_assign(CSuperArray *a, CSuperArray *b);
-void super_array_assign_single(CSuperArray *a, void *d);
-void super_array_assign_8_single(CSuperArray *a, complex x);
-void super_array_assign_4_single(CSuperArray *a, int x);
-void super_array_assign_1_single(CSuperArray *a, char x);
-
-
-
-struct sScriptLocation{
-	string Name;
-	int Location;
-};
-
-extern Array<sScriptLocation> ScriptLocation;
 
 
 #endif

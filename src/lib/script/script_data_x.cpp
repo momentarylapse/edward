@@ -172,7 +172,7 @@ void SIAddPackageX()
 	TypeModelP			= add_type_p("model",		TypeModel);
 	TypeModelPPs		= add_type_p("model&",		TypeModelP);
 	TypeModelPList		= add_type_a("model[]",		TypeModelP, -1);
-	TypeModelPListPs	= add_type_p("model[]&",	TypeModelPList, true);
+	TypeModelPListPs	= add_type_p("model[]&",	TypeModelPList, FLAG_SILENT);
 	TypeBone			= add_type  ("Bone",		sizeof_Bone);
 	TypeBoneList		= add_type_a("Bone[]",		TypeBone, -1);
 	TypeText			= add_type  ("Text",		0);

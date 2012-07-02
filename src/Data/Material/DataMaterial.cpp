@@ -94,7 +94,7 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 		ed->SetMessage(_("Kann Material-Datei nicht &offnen"));
 		return false;
 	}
-	file_time = f->GetDate(FileDateModification).time;
+	file_time = f->GetDateModification().time;
 
 	ffv=f->ReadFileFormatVersion();
 	if (ffv<0){

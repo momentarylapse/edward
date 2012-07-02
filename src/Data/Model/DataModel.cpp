@@ -191,7 +191,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 		msg_db_l(1);
 		return false;
 	}
-	file_time = f->GetDate(FileDateModification).time;
+	file_time = f->GetDateModification().time;
 
 	ffv=f->ReadFileFormatVersion();
 

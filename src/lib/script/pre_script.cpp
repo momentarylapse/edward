@@ -419,219 +419,6 @@ void CreateAsmMetaInfo(CPreScript* ps)
 }
 
 
-#if 0
-void CPreScript::MakeExps(char *Buffer,bool just_ana				)
-{
-	msg_db_r("MakeExps",4);
-	int i,NumIfDefs=0,ln;
-	bool IfDefed[1024];
-	Exp=new exp_buffer;
-	Exp->BufferUsed=0;
-	BufferPos=0;
-	Exp->TempLine=1;
-	Exp->TempColumn=0;
-	Exp->NumExps=0;
-	char filename[256];
-	CScript *include;
-	
-	while(true){
-		int l=(Exp->NumExps==0)?0:Exp->TempLine;
-		NextExp(Buffer);
-		if (Error)	return;
-		if (Temp[0]==0)
-			break;
-
-		if ((Exp->TempLine>l)&&(strcmp(Temp,"#")==0)){
-			msg_db_m("makro",4);
-			l=Exp->TempLine;
-			so("# -Makro");
-			NextExp(Buffer);
-
-			int macro_no=-1;
-			for (i=0;i<NumMacroNames;i++)
-				if (strcmp(Temp,MacroName[i])==0)
-					macro_no=i;
-
-			switch(macro_no){
-				case MacroInclude:
-					NextExp(Buffer);
-					if (!IsIfDefed(NumIfDefs,IfDefed))
-						continue;
-					strcpy(filename,dir_from_filename(Filename));
-					strcat(filename,&Temp[1]);
-					filename[strlen(filename)-1]=0; // remove "
-					strcpy(filename,filename_no_recursion(filename));
-
-					so("lade Include-Datei");
-					right();
-
-					include=LoadScriptAsInclude(filename,just_analyse);
-
-					left();
-					if ((!include)||(include->Error)){
-						IncludeLinkerError|=include->LinkerError;
-						DoError(string2("error in inluded file \"%s\":\n[ %s (line %d:) ]",filename,include->ErrorMsg,include->ErrorLine,include->ErrorColumn),Exp->ExpNr);
-						return;
-					}
-					AddIncludeData(include);
-					Exp->ExpNr++;
-					break;
-				case MacroDefine:
-					Define[NumDefines]=new sDefine;
-					Define[NumDefines]->Owner=this;
-					// Source
-					NextExp(Buffer);
-					strcpy(Define[NumDefines]->Source,Temp);
-					Define[NumDefines]->NumDests=0;
-					// Dests
-					int t;
-					for (i=0;i<SCRIPT_MAX_DEFINE_DESTS;i++){
-						t=BufferPos;
-						NextExp(Buffer);
-						if (Exp->TempLine>l){
-							BufferPos=t;
-							break;
-						}
-						strcpy(Define[NumDefines]->Dest[Define[NumDefines]->NumDests],Temp);
-						Define[NumDefines]->NumDests++;
-					}
-					Exp->TempLine=l;
-					NumDefines++;
-					break;
-				case MacroIfdef:
-					NextExp(Buffer);
-					IfDefed[NumIfDefs]=false;
-					for (i=0;i<NumDefines;i++)
-						if (strcmp(Temp,Define[i]->Source)==0){
-							IfDefed[NumIfDefs]=true;
-							break;
-						}
-					NumIfDefs++;
-					break;
-				case MacroIfndef:
-					NextExp(Buffer);
-					IfDefed[NumIfDefs]=true;
-					for (i=0;i<NumDefines;i++)
-						if (strcmp(Temp,Define[i]->Source)==0){
-							IfDefed[NumIfDefs]=false;
-							break;
-						}
-					NumIfDefs++;
-					break;
-				case MacroElse:
-					if (NumIfDefs<1){
-						strcpy(Exp->Name[Exp->NumExps],Temp);
-						Exp->Line[Exp->NumExps]=Exp->TempLine;
-						Exp->Column[Exp->NumExps]=Exp->TempColumn;
-						DoError("\"#else\" found but no matching \"#ifdef\"",Exp->NumExps);
-						return;
-					}
-					IfDefed[NumIfDefs-1]=!IfDefed[NumIfDefs-1];
-					break;
-				case MacroEndif:
-					if (NumIfDefs<1){
-						strcpy(Exp->Name[Exp->NumExps],Temp);
-						Exp->Line[Exp->NumExps]=Exp->TempLine;
-						Exp->Column[Exp->NumExps]=Exp->TempColumn;
-						DoError("\"#endif\" found but no matching \"#ifdef\"",Exp->NumExps);
-						return;
-					}
-					NumIfDefs--;
-					break;
-				case MacroRule:
-					NextExp(Buffer);
-					ln=-1;
-					for (i=0;i<NumScriptLocations;i++)
-						if (strcmp(ScriptLocation[i].Name,Temp)==0)
-							ln=i;
-					if (ln<0){
-						strcpy(Exp->Name[Exp->NumExps],Temp);
-						Exp->Line[Exp->NumExps]=Exp->TempLine;
-						Exp->Column[Exp->NumExps]=Exp->TempColumn;
-						DoError("unknown location in script rule",Exp->NumExps);
-						return;
-					}
-					PreScriptRule[NumPreScriptRules]=new sPreScriptRule;
-					PreScriptRule[NumPreScriptRules]->Location=ScriptLocation[ln].Location;
-					NextExp(Buffer);
-					PreScriptRule[NumPreScriptRules]->Level=s2i(Temp);
-					NextExp(Buffer);
-					Temp[strlen(Temp)-1]=0;
-					strcpy(PreScriptRule[NumPreScriptRules]->Name,&Temp[1]);
-					NumPreScriptRules++;
-					break;
-				case MacroDisasm:
-					FlagDisassemble=true;
-					break;
-				case MacroShow:
-					FlagShow=true;
-					break;
-				case MacroImmortal:
-					FlagImmortal=true;
-					break;
-				case MacroOs:
-					FlagCompileOS=true;
-					break;
-				case MacroInitialRealmode:
-					FlagCompileInitialRealMode=true;
-					break;
-				case MacroVariablesOffset:
-					FlagOverwriteVariablesOffset=true;
-					NextExp(Buffer);
-					VariablesOffset=s2i2(Temp);
-					break;
-				case MacroCodeOrigin:
-					NextExp(Buffer);
-					CreateAsmMetaInfo(this);
-					((sAsmMetaInfo*)AsmMetaInfo)->CodeOrigin=s2i2(Temp);
-					break;
-				default:
-					strcpy(Exp->Name[Exp->NumExps],Temp);
-					Exp->Line[Exp->NumExps]=Exp->TempLine;
-					Exp->Column[Exp->NumExps]=Exp->TempColumn;
-					DoError("unknown makro atfer \"#\"",Exp->NumExps);
-					return;
-			}
-			continue;
-		}
-	//msg_db_m("def",4);
-
-		bool defed=false;
-		for (i=0;i<NumDefines;i++)
-			if (strcmp(Temp,Define[i]->Source)==0){
-				defed=true;
-				for (int j=0;j<Define[i]->NumDests;j++){
-					strcpy(Exp->Name[Exp->NumExps],Define[i]->Dest[j]);
-					Exp->BufferUsed+=strlen(Define[i]->Dest[j])+1;
-					Exp->Name[Exp->NumExps+1]=&Exp->Buffer[Exp->BufferUsed];
-					Exp->Line[Exp->NumExps]=Exp->TempLine;
-					Exp->Column[Exp->NumExps]=Exp->TempColumn;
-					Exp->NumExps++;
-				}
-				break;
-			}
-			
-	//msg_db_m("postdef",4);
-		if (defed)
-			continue;
-
-		if (!IsIfDefed(NumIfDefs,IfDefed))
-			continue;
-	//msg_db_m("zzz",4);
-
-		strcpy(Exp->Name[Exp->NumExps],Temp);
-		Exp->Line[Exp->NumExps]=Exp->TempLine;
-		Exp->Column[Exp->NumExps]=Exp->TempColumn;
-		Exp->NumExps++;
-	}
-	if (NumIfDefs>0){
-		DoError("\"#ifdef\" found but no matching \"#endif\"",Exp->NumExps);
-		return;
-	}
-	Exp->ExpNr=0;
-	msg_db_l(4);
-}
-#endif
 
 bool next_extern = false;
 bool next_const = false;
@@ -720,7 +507,7 @@ inline sCommand *add_command_compilerfunc(CPreScript *ps, int cf)
 	return c;
 }
 
-inline void CommandSetClassFunc(CPreScript *ps, sCommand *c, sClassFunction &f, sCommand *inst)
+inline void CommandSetClassFunc(CPreScript *ps, sType *class_type, sCommand *c, sClassFunction &f, sCommand *inst)
 {
 	c->Kind = f.Kind;
 	c->LinkNr = f.Nr;
@@ -729,14 +516,14 @@ inline void CommandSetClassFunc(CPreScript *ps, sCommand *c, sClassFunction &f, 
 		c->Type = PreCommand[f.Nr].ReturnType;
 		//c->NumParams = PreCommand[f.Nr].Param.num;
 	}else if (f.Kind == KindFunction){
-		c->Type = ps->Function[f.Nr]->Type;
+		c->Type = class_type->Owner->Function[f.Nr]->Type;
 	}
 }
 
-inline sCommand *add_command_classfunc(CPreScript *ps, sClassFunction &f, sCommand *inst)
+inline sCommand *add_command_classfunc(CPreScript *ps, sType *class_type, sClassFunction &f, sCommand *inst)
 {
 	sCommand *c = ps->AddCommand();
-	CommandSetClassFunc(ps, c, f, inst);
+	CommandSetClassFunc(ps, class_type, c, f, inst);
 	return c;
 }
 
@@ -1186,9 +973,8 @@ void CPreScript::GetOperandExtension(sCommand *Operand, sFunction *f)
 				break;
 			}
 		
+		// class function?
 		if (!ok){
-
-			// class function?
 			for (int e=0;e<type->Function.num;e++)
 				if (cur_name == type->Function[e].Name){
 					if (!deref){
@@ -1197,11 +983,17 @@ void CPreScript::GetOperandExtension(sCommand *Operand, sFunction *f)
 					}
 					next_exp();
 					DoClassFunction(this, Operand, type, e, f);
-					//DoError(string("class functions not implemented yet  ...",Type2Str(this,type)));
-					msg_db_l(4);
-					return;
+					if (Error){
+						msg_db_l(4);
+						return;
+					}
+					ok = true;
+					rewind_exp();
+					break;
 				}
-			
+		}
+		
+		if (!ok){
 			DoError("unknown element of " + Type2Str(this,type));
 			msg_db_l(4);
 			return;
@@ -1268,7 +1060,7 @@ void CPreScript::GetOperandExtension(sCommand *Operand, sFunction *f)
 		}
 		array->Param[1] = index;
 		if (index->Type != TypeInt){
-			Exp.cur_exp --;
+			rewind_exp();
 			DoError(format("type of index for an array needs to be (int), not (%s)", index->Type->Name.c_str()));
 			msg_db_l(4);
 			return;
@@ -1433,7 +1225,7 @@ void CPreScript::CheckParamLink(sCommand *link, sType *type, const string &f_nam
 
 			// no need to do anything...
 		}else{
-			Exp.cur_exp --;
+			rewind_exp();
 			DoError(format("(c) parameter %d for function \"%s\" has type (%s), (%s) expected", param_no + 1, f_name.c_str(), pt->Name.c_str(), wt->Name.c_str()));
 			_return_(4,);
 		}
@@ -1471,7 +1263,7 @@ void CPreScript::GetFunctionCall(const string &f_name, sCommand *Operand, sFunct
 			Operand->Type = TypePointer;
 			Operand->NumParams = 0;
 		}else{
-			Exp.cur_exp --;
+			rewind_exp();
 			//DoError("\"(\" expected in front of parameter list");
 			DoError("only script functions can be referenced");
 		}
@@ -1515,7 +1307,7 @@ void CPreScript::GetFunctionCall(const string &f_name, sCommand *Operand, sFunct
 
 	// test compatibility
 	if (np != Operand->NumParams){
-		Exp.cur_exp --;
+		rewind_exp();
 		DoError(format("function \"%s\" expects %d parameters, %d were found",f_name.c_str(), Operand->NumParams, np));
 		_return_(4,);
 	}
@@ -1556,7 +1348,7 @@ sCommand *CPreScript::GetOperand(sFunction *f)
 		if (Error)
 			_return_(4, Operand);
 		if (!Operand->Type->IsPointer){
-			Exp.cur_exp --;
+			rewind_exp();
 			_do_error_("only pointers can be dereferenced using \"*\"", 4, Operand);
 		}
 		deref_command(this, Operand);
@@ -1787,7 +1579,7 @@ bool CPreScript::LinkOperator(int op_no, sCommand *param1, sCommand *param2, sCo
 			if (type_match(p2, equal_classes, f.ParamType[0])){
 				sCommand *inst = param1;
 				ref_command(this, inst);
-				CommandSetClassFunc(this, *cmd, f, inst);
+				CommandSetClassFunc(this, p1, *cmd, f, inst);
 				(*cmd)->NumParams = 1;
 				(*cmd)->Param[0] = param2;
 				msg_db_l(4);
@@ -1839,7 +1631,7 @@ bool CPreScript::LinkOperator(int op_no, sCommand *param1, sCommand *param2, sCo
 		if (op_is_class_func){
 			sCommand *inst = param1;
 			ref_command(this, inst);
-			CommandSetClassFunc(this, *cmd, p1->Function[op_found], inst);
+			CommandSetClassFunc(this, p1, *cmd, p1->Function[op_found], inst);
 			(*cmd)->NumParams = 1;
 			(*cmd)->Param[0] = param2;
 		}else{
@@ -1908,7 +1700,7 @@ sCommand *CPreScript::GetCommand(sFunction *f)
 		if (op){
 			Operator.add(op);
 			if (end_of_line()){
-				//Exp.cur_exp --;
+				//rewind_exp();
 				_do_error_("unexpected end of line after operator", 4, NULL);
 			}
 			Operand.add(GetOperand(f));
@@ -1988,7 +1780,7 @@ void CPreScript::GetSpecialCommand(sBlock *block, sFunction *f)
 		sCommand *val0 = GetCommand(f);
 		if (Error)	_return_(4,);
 		if (val0->Type != for_var->Type){
-			Exp.cur_exp --;
+			rewind_exp();
 			_do_error_(format("%s expected as first value of for", for_var->Type->Name.c_str()), 4,);
 		}
 
@@ -1999,7 +1791,7 @@ void CPreScript::GetSpecialCommand(sBlock *block, sFunction *f)
 		sCommand *val1 = GetCommand(f);
 		if (Error)	_return_(4,);
 		if (val1->Type != for_var->Type){
-			Exp.cur_exp --;
+			rewind_exp();
 			_do_error_(format("%s expected as last value of for", for_var->Type->Name.c_str()), 4,);
 		}
 
@@ -2287,8 +2079,7 @@ void CPreScript::GetCompleteCommand(sBlock *block, sFunction *f)
 
 			// assignment?
 			if (cur_name == "="){
-				Exp.cur_exp --;
-				Exp._cur_ = Exp.cur_line->exp[Exp.cur_exp].name;
+				rewind_exp();
 				sCommand *c = GetCommand(f);
 				if (Error)
 					_return_(4,);
@@ -2460,22 +2251,31 @@ void CPreScript::ParseEnum()
 	msg_db_l(4);
 }
 
-void ParseClassFunction(CPreScript *ps, sType *t)
+static int ExternalFuncPreCommandIndex;
+
+void CPreScript::ParseClassFunction(sType *t, bool as_extern)
 {
-	ps->ParseFunction(ps->GetPointerType(t));
-	sFunction *f = ps->Function.back();
+	ParseFunction(t, as_extern);
 
 	sClassFunction cf;
-	cf.Name = f->Name;
-	cf.Kind = KindFunction;
-	cf.Nr = ps->Function.num - 1;
-	cf.ReturnType = f->Type;
-	for (int i=0;i<f->NumParams;i++)
-		cf.ParamType.add(f->Var[i].Type);
+	if (as_extern){
+		sPreCommand *c = &PreCommand[ExternalFuncPreCommandIndex];
+		cf.Name = c->Name.substr(t->Name.num + 1, -1);
+		cf.Kind = KindCompilerFunction;
+		cf.Nr = ExternalFuncPreCommandIndex;
+		cf.ReturnType = c->ReturnType;
+		foreach(c->Param, p)
+			cf.ParamType.add(p.Type);
+	}else{
+		sFunction *f = Function.back();
+		cf.Name = f->Name.substr(t->Name.num + 1, -1);
+		cf.Kind = KindFunction;
+		cf.Nr = Function.num - 1;
+		cf.ReturnType = f->Type;
+		for (int i=0;i<f->NumParams;i++)
+			cf.ParamType.add(f->Var[i].Type);
+	}
 	t->Function.add(cf);
-
-	// convert name to Class.Function
-	f->Name = t->Name + "." +  f->Name;
 }
 
 inline bool type_needs_alignment(sType *t)
@@ -2539,7 +2339,15 @@ void CPreScript::ParseClass()
 			break;
 		if (end_of_file())
 			break;
+
+		// extern?
+		next_extern = false;
+		if (cur_name == "extern"){
+			next_extern = true;
+			next_exp();
+		}
 		int ie = Exp.cur_exp;
+
 		sType *tType = GetType(cur_name, true);
 		if (Error){
 			msg_db_l(4);
@@ -2567,7 +2375,7 @@ void CPreScript::ParseClass()
 			if (is_function){
 				Exp.cur_exp = ie;
 				Exp._cur_ = Exp.cur_line->exp[Exp.cur_exp].name;
-				ParseClassFunction(this, t);
+				ParseClassFunction(t, next_extern);
 				
 				break;
 			}
@@ -2748,9 +2556,11 @@ void CPreScript::ParseVariableDef(bool single, sFunction *f)
 	msg_db_l(4);
 }
 
-void CopyFuncDataToExternal(sFunction *f, sPreCommand *c)
+void CopyFuncDataToExternal(sFunction *f, sPreCommand *c, bool is_class_func)
 {
+	c->IsClassFunction = is_class_func;
 	c->ReturnType = f->Type;
+	c->Param.clear();
 	for (int j=0;j<f->NumParams;j++){
 		sPreCommandParam p;
 		p.Name = f->Var[j].Name;
@@ -2759,16 +2569,19 @@ void CopyFuncDataToExternal(sFunction *f, sPreCommand *c)
 	}
 }
 
-void AddExternalFunc(CPreScript *ps, sFunction *f)
+void AddExternalFunc(CPreScript *ps, sFunction *f, sType *class_type)
 {
 	so("extern");
 	
+	string func_name = f->Name;
+
 	// already existing?
 	bool found = false;
 	for (int i=0;i<PreCommand.num;i++)
 		if (PreCommand[i].IsSemiExternal)
-			if (PreCommand[i].Name == f->Name){
-				CopyFuncDataToExternal(f, &PreCommand[i]);
+			if (PreCommand[i].Name == func_name){
+				ExternalFuncPreCommandIndex = i;
+				CopyFuncDataToExternal(f, &PreCommand[i], class_type != NULL);
 				found = true;
 				break;
 			}
@@ -2776,18 +2589,19 @@ void AddExternalFunc(CPreScript *ps, sFunction *f)
 	// not found -> create provisorium (not linkable.... but parsable)
 	if (!found){
 		sPreCommand c;
-		c.Name = f->Name;
+		c.Name = func_name;
 		c.Func = NULL;
-		CopyFuncDataToExternal(f, &c);
-		c.IsClassFunction = false;
+		CopyFuncDataToExternal(f, &c, class_type != NULL);
 		c.IsSemiExternal = true;
+		ExternalFuncPreCommandIndex = PreCommand.num;
 		PreCommand.add(c);
 	}
-	f->Var.clear();
-	ps->Function.erase(ps->Function.num - 1);
+
+	// delete as function
+	ps->Function.pop();
 }
 
-void CPreScript::ParseFunction(sType *class_type)
+void CPreScript::ParseFunction(sType *class_type, bool as_extern)
 {
 	msg_db_r("ParseFunction", 4);
 	
@@ -2811,7 +2625,6 @@ void CPreScript::ParseFunction(sType *class_type)
 		return;
 	}
 	cur_func = f;
-	bool func_extern = next_extern;
 	next_extern = false;
 	
 	next_exp();
@@ -2859,11 +2672,16 @@ void CPreScript::ParseFunction(sType *class_type)
 
 	// class function
 	f->Class = class_type;
-	if (class_type)
-		AddVar("self", class_type, f);
+	if (class_type){
+		AddVar("self", GetPointerType(class_type), f);
 
-	if (func_extern){
-		AddExternalFunc(this, f);
+		// convert name to Class.Function
+		f->Name = class_type->Name + "." +  f->Name;
+	}
+
+	if (as_extern){
+		AddExternalFunc(this, f, class_type);
+		cur_func = NULL;
 		msg_db_l(4);
 		return;
 	}
@@ -2950,8 +2768,7 @@ void CPreScript::Parser()
 				msg_db_l(4);
 				return;
 			}
-			Exp.cur_exp --;
-			Exp._cur_ = Exp.cur_line->exp[Exp.cur_exp].name;
+			rewind_exp();
 			bool is_function = false;
 			for (int j=1;j<Exp.cur_line->exp.num-1;j++)
 				if (strcmp(Exp.cur_line->exp[j].name, "(") == 0)
@@ -2959,7 +2776,7 @@ void CPreScript::Parser()
 
 			// own function?
 			if (is_function){
-				ParseFunction();
+				ParseFunction(NULL, next_extern);
 				
 			// global variables
 			}else{
@@ -3311,7 +3128,7 @@ void CreateImplicitConstructor(CPreScript *ps, sType *t)
 			if (ff.Name == "__mem_init__"){
 				int nc = ps->AddConstant(TypeInt);
 				*(int*)ps->Constant[nc].data = t->SubType->Size;
-				sCommand *c = add_command_classfunc(ps, ff, self);
+				sCommand *c = add_command_classfunc(ps, t, ff, self);
 				sCommand *p = add_command_const(ps, nc);
 				c->Param[0] = p;
 				c->NumParams = 1;
@@ -3330,7 +3147,7 @@ void CreateImplicitConstructor(CPreScript *ps, sType *t)
 					p->NumParams = 1;
 					p->Param[0] = self;
 					ref_command(ps, p);
-					sCommand *c = add_command_classfunc(ps, ff, p);
+					sCommand *c = add_command_classfunc(ps, t, ff, p);
 					f->Block->Command.add(c);
 				}
 	}
@@ -3359,7 +3176,7 @@ void CreateImplicitDestructor(CPreScript *ps, sType *t)
 	if (t->IsSuperArray){
 		foreach(t->Function, ff)
 			if (ff.Name == "clear"){
-				sCommand *c = add_command_classfunc(ps, ff, self);
+				sCommand *c = add_command_classfunc(ps, t, ff, self);
 				f->Block->Command.add(c);
 			}
 	}else{
@@ -3375,7 +3192,7 @@ void CreateImplicitDestructor(CPreScript *ps, sType *t)
 					p->NumParams = 1;
 					p->Param[0] = self;
 					ref_command(ps, p);
-					sCommand *c = add_command_classfunc(ps, ff, p);
+					sCommand *c = add_command_classfunc(ps, t, ff, p);
 					f->Block->Command.add(c);
 				}
 	}
@@ -3427,7 +3244,7 @@ void CreateImplicitAssign(CPreScript *ps, sType *t)
 		other_num->NumParams = 1;
 		other_num->Param[0] = cp_command_deep(ps, other);
 
-		sCommand *cmd_resize = add_command_classfunc(ps, t->Function[nf], cp_command(ps, self));
+		sCommand *cmd_resize = add_command_classfunc(ps, t, t->Function[nf], cp_command(ps, self));
 		cmd_resize->NumParams = 1;
 		cmd_resize->Param[0] = other_num;
 		f->Block->Command.add(cmd_resize);
@@ -3592,7 +3409,7 @@ void CreateImplicitArrayClear(CPreScript *ps, sType *t)
 		ref_command(ps, cmd_el);
 
 		// __delete__
-		sCommand *cmd_delete = add_command_classfunc(ps, t->SubType->Function[t->SubType->GetFunc("__delete__")], cmd_el);
+		sCommand *cmd_delete = add_command_classfunc(ps, t, t->SubType->Function[t->SubType->GetFunc("__delete__")], cmd_el);
 		b->Command.add(cmd_delete);
 
 		// ...for_var += 1
@@ -3603,7 +3420,7 @@ void CreateImplicitArrayClear(CPreScript *ps, sType *t)
 	}
 
 	// clear
-	sCommand *cmd_clear = add_command_classfunc(ps, t->Function[t->GetFunc("__mem_clear__")], self);
+	sCommand *cmd_clear = add_command_classfunc(ps, t, t->Function[t->GetFunc("__mem_clear__")], self);
 	f->Block->Command.add(cmd_clear);
 
 
@@ -3693,7 +3510,7 @@ void CreateImplicitArrayResize(CPreScript *ps, sType *t)
 		ref_command(ps, cmd_el);
 
 		// __delete__
-		sCommand *cmd_delete = add_command_classfunc(ps, t->SubType->Function[t->SubType->GetFunc("__delete__")], cmd_el);
+		sCommand *cmd_delete = add_command_classfunc(ps, t, t->SubType->Function[t->SubType->GetFunc("__delete__")], cmd_el);
 		b->Command.add(cmd_delete);
 
 		// ...for_var += 1
@@ -3704,7 +3521,7 @@ void CreateImplicitArrayResize(CPreScript *ps, sType *t)
 	}
 
 	// resize
-	sCommand *c_resize = add_command_classfunc(ps, t->Function[t->GetFunc("__mem_resize__")], self);
+	sCommand *c_resize = add_command_classfunc(ps, t, t->Function[t->GetFunc("__mem_resize__")], self);
 	c_resize->NumParams = 1;
 	c_resize->Param[0] = num;
 	f->Block->Command.add(c_resize);
@@ -3741,7 +3558,7 @@ void CreateImplicitArrayResize(CPreScript *ps, sType *t)
 		ref_command(ps, cmd_el);
 
 		// __init__
-		sCommand *cmd_init = add_command_classfunc(ps, t->SubType->Function[t->SubType->GetFunc("__init__")], cmd_el);
+		sCommand *cmd_init = add_command_classfunc(ps, t, t->SubType->Function[t->SubType->GetFunc("__init__")], cmd_el);
 		b->Command.add(cmd_init);
 
 		// ...for_var += 1
@@ -3796,7 +3613,7 @@ void CreateImplicitArrayAdd(CPreScript *ps, sType *t)
 	sCommand *cmd_1 = add_command_const(ps, nc);
 	sCommand *cmd_add = ps->AddCommand();
 	CommandMakeOperator(cmd_add, self_num, cmd_1, OperatorIntAdd);
-	sCommand *cmd_resize = add_command_classfunc(ps, t->Function[t->GetFunc("resize")], self);
+	sCommand *cmd_resize = add_command_classfunc(ps, t, t->Function[t->GetFunc("resize")], self);
 	cmd_resize->NumParams = 1;
 	cmd_resize->Param[0] = cmd_add;
 	f->Block->Command.add(cmd_resize);
@@ -3928,9 +3745,6 @@ CPreScript::~CPreScript()
 		Define[i].Dest.clear();
 	}
 	Define.clear();
-
-
-	PreScriptRule.clear();
 
 	
 	msg_db_m("asm", 8);

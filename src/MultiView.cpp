@@ -711,14 +711,14 @@ void MultiView::DrawWin(int win, irect dest)
 			NixSetPerspectiveMode(PerspectiveSizeSet,(float)NixScreenWidth,(float)NixScreenHeight);
 		else
 			NixSetPerspectiveMode(PerspectiveSizeSet,(float)NixScreenWidth/2,(float)NixScreenHeight/2);
-		NixDraw2D(-1,ColorBackGround3D,r01,NixTargetRect,0.9999999f);
+		NixDraw2D(-1,ColorBackGround3D,r_id,NixTargetRect,0.9999999f);
 	}else if (view[win].type == View2D){
 		NixSetPerspectiveMode(Perspective2DScaleSet, zoom, zoom);
-		NixDraw2D(-1,ColorBackGround2D,r01,NixTargetRect,0.9999999f);
+		NixDraw2D(-1,ColorBackGround2D,r_id,NixTargetRect,0.9999999f);
 	}else{
 		NixSetPerspectiveMode(Perspective2DScaleSet, zoom, zoom);
 		//NixSetPerspectiveMode(Perspective2DScaleSet,1,1);
-		NixDraw2D(-1,ColorBackGround2D,r01,NixTargetRect,0.9999999f);
+		NixDraw2D(-1,ColorBackGround2D,r_id,NixTargetRect,0.9999999f);
 	}
 
 	// camera position

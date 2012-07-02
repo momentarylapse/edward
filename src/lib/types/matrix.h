@@ -63,6 +63,8 @@ public:
 						v.x*_10 + v.y*_11 + v.z*_12 + _13,
 						v.x*_20 + v.y*_21 + v.z*_22 + _23);
 	}
+	string str()
+	{	return format("(%f, %f, %f, %f; %f, %f, %f, %f; %f, %f, %f, %f; %f, %f, %f, %f)", _00, _01, _02, _03, _10, _11, _12, _13, _20, _21, _22, _23, _30, _31, _32, _33);	}
 
 	// kaba
 	void imul(const matrix &m)
@@ -90,6 +92,6 @@ void _cdecl MatrixReflect(matrix &m,const plane &pl);
 matrix _cdecl MatrixMultiply2(const matrix &m2,const matrix &m1);
 matrix _cdecl MatrixRotation2(const vector &ang);
 
-const float f_m_id[16]={ 1,0,0,0 , 0,1,0,0 , 0,0,1,0 , 0,0,0,1 };
-const matrix m_id=matrix(f_m_id);
+const float f_m_id[16] = { 1,0,0,0 , 0,1,0,0 , 0,0,1,0 , 0,0,0,1 };
+const matrix m_id = matrix(f_m_id);
 

@@ -23,6 +23,8 @@ public:
 	color operator * (color &c) const
 	{	return color(a*c.a , r*c.r , g*c.g , b*c.b);	}
 	void clamp();
+	string str()
+	{	return format("(%f, %f, %f, %f)", r, g, b, a);	}
 };
 // colors
 color _cdecl SetColorSave(float a, float r, float g, float b);
