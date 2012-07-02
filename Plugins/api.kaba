@@ -1,0 +1,173 @@
+
+
+
+// "des Pudels Kern", don't change!!!!!!!
+class MultiViewSingleData
+	int view_stage
+	bool is_selected, m_delta, m_old, is_special
+	vector pos
+
+
+
+
+const int MODEL_MAX_TEXTURES = 8
+const int MODEL_MAX_POLY_VERTICES_PER_FACE = 16
+const int MODEL_MAX_POLY_FACES = 32
+const int MODEL_MAX_POLY_EDGES = 32 * 4
+
+
+const int TransparencyModeDefault = 0-1
+const int TransparencyModeNone = 0
+const int TransparencyModeFunctions = 1
+const int TransparencyModeColorKeyHard = 2
+const int TransparencyModeColorKeySmooth = 3
+const int TransparencyModeFactor = 4
+
+// effects
+enum
+	FXKindScript,
+	FXKindLight,
+	FXKindFog,
+	FXKindSound,
+	FXKindForceField
+
+class ModeModelFX
+	int Kind, Surface, Vertex
+	int Size, Speed, Intensity
+	color Colors[3]
+	bool InvQuad
+	string File, Function
+	void __assign__(ModeModelFX other)
+		nil
+
+class ModeModelVertex: MultiViewSingleData
+	int NormalMode
+	int BoneIndex
+
+	bool NormalDirty
+	int RefCount // triangles
+	int Surface
+
+class ModeModelTriangle: MultiViewSingleData
+	int Vertex[3]
+	int Edge[3]
+	int EdgeDirection[3] // which no of triangle in edge's list are we?
+	vector SkinVertex[MODEL_MAX_TEXTURES][3]
+	int NormalIndex[3]
+	vector Normal[3]
+	vector TempNormal
+	bool NormalDirty
+	int Material
+
+// only for use in MultiView...
+class ModeModelSkinVertexDummy: MultiViewSingleData
+
+class ModeModelBall: MultiViewSingleData
+	int Index
+	float Radius
+
+class ModeModelPolyhedronFace
+	int NumVertices
+	int Index[MODEL_MAX_POLY_VERTICES_PER_FACE]
+	plane Plane
+
+
+// TODO: dynamical!
+class ModeModelPolyhedron: MultiViewSingleData
+	int NumFaces
+	ModeModelPolyhedronFace Face[MODEL_MAX_POLY_FACES]
+	int NumSVertices
+	int SIndex[MODEL_MAX_POLY_FACES * MODEL_MAX_POLY_VERTICES_PER_FACE]
+
+	// non redundant edge list!
+	int NumEdges
+	int EdgeIndex[MODEL_MAX_POLY_EDGES * 2]
+
+	// "topology"
+	bool EdgeOnFace[MODEL_MAX_POLY_EDGES * MODEL_MAX_POLY_FACES] // [edge * NumFaces + face]
+	int FacesJoiningEdge[MODEL_MAX_POLY_FACES * MODEL_MAX_POLY_FACES] // [face1 * NumFaces + face2]
+
+
+// triangles belonging to one material
+class ModeModelSubSkin
+	int NumTextures // "read only" (updated automatically...)
+
+	// triangles
+	ModeModelTriangle Triangle[]
+
+
+// geometry
+class ModeModelSkin
+	// general properties
+	int NormalModeAll
+
+	// vertices
+	ModeModelVertex Vertex[]
+
+	// sub skins
+	ModeModelSubSkin Sub[]
+
+// current geometry
+//extern ModeModelSkin *skin;
+
+/*struct PseudoSkin{
+	int NumVertices;
+	ModeModelVertex *Vertex;
+	int NumTriangles;
+	ModeModelTriangle *Triangle;
+};*/
+
+class ModeModelSkeletonBone: MultiViewSingleData
+	int Parent
+	vector DeltaPos
+	string ModelFile
+	model model
+	bool ConstPos
+
+	// for editing
+	matrix Matrix, RotMatrix
+
+class ModeModelFrame
+	// skeleton animation
+	vector SkelDPos[]
+	vector SkelAng[]
+
+	// vertex animation
+	vector DPos[4][]
+	vector VertexDPos[]
+	void __assign__(ModeModelFrame other)
+
+class ModeModelMove
+	int Type
+	ModeModelFrame Frame[]
+	float FramesPerSecConst, FramesPerSecFactor
+	bool InterpolatedQuadratic, InterpolatedLoop
+	string Name
+
+class ModeModelEdge: MultiViewSingleData
+	//int NormalMode;
+	int Vertex[2]
+	int RefCount, Triangle[2], Side[2]
+	bool IsRound // for editing
+
+	// constraints:
+	//  Vertex[0] = surf.Triangle[Triangle[0]].Vertex[Side[0]]
+	//  Vertex[1] = surf.Triangle[Triangle[0]].Vertex[(Side[0] + 1) % 3]
+	//  same for Triangle/Side[1] but Vertex[0 <-> 1]
+
+class TestClass
+	string name
+	int i
+	extern void func()
+
+extern TestClass test
+extern string TestVar
+extern void TestFunc()
+
+void main()
+	print "test"
+	print TestVar
+	TestFunc()
+	print test.name
+	print test.i
+	test.func()

@@ -219,6 +219,7 @@ Edward::Edward(Array<string> arg) :
 	EventM("*", this, (void(HuiEventHandler::*)())&Edward::OnEvent);
 	EventM("what_the_fuck", this, (void(HuiEventHandler::*)())&Edward::OnAbout);
 	EventM("send_bug_report", this, (void(HuiEventHandler::*)())&Edward::OnSendBugReport);
+	EventM("execute_plugin", this, (void(HuiEventHandler::*)())&Edward::OnExecutePlugin);
 	HuiAddCommandM("abort_creation_mode", "hui:cancel", KEY_ESCAPE, this, (void(HuiEventHandler::*)())&Edward::OnAbortCreationMode);
 
 	MetaInit();
@@ -227,8 +228,6 @@ Edward::Edward(Array<string> arg) :
 	CameraInit();
 	GodInit();
 
-	ScriptInit();
-//	ScriptLinkDynamicExternalData();
 
 	/*RegisterFileTypes();
 
@@ -263,6 +262,7 @@ Edward::Edward(Array<string> arg) :
 	Subscribe(multi_view_2d);
 	Subscribe(multi_view_3d);
 
+	plugins = new PluginManager();
 
 	if (!HandleArguments(arg))
 		SetMode(mode_welcome);
@@ -459,6 +459,15 @@ void Edward::OnUpdate(Observable *o)
 		UpdateMenu();
 	}
 	msg_db_l(2);
+}
+
+void Edward::OnExecutePlugin()
+{
+	string temp = DialogDir[FDScript];
+	DialogDir[FDScript] = HuiAppDirectoryStatic + "Plugins/";
+	if (FileDialog(FDScript, false, false))
+		plugins->Execute(DialogFileComplete);
+	DialogDir[FDScript] = temp;
 }
 
 void Edward::ForceRedraw()

@@ -12,6 +12,7 @@
 #include "Mode/Mode.h"
 #include "Stuff/Observer.h"
 #include "Stuff/Progress.h"
+#include "Stuff/PluginManager.h"
 
 
 
@@ -98,6 +99,7 @@ public:
 	void ErrorBox(const string &message);
 	Array<string> message_str;
 
+	void OnExecutePlugin();
 
 	void SetRootDirectory(const string &directory);
 	void UpdateDialogDir(int kind);
@@ -130,6 +132,8 @@ public:
 	MultiView *multi_view_3d;
 
 	Progress *progress;
+
+	PluginManager *plugins;
 
 
 	Array<string> icon_image;
