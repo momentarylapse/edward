@@ -14,6 +14,7 @@
 
 class Data;
 class Action;
+class ActionGroup;
 
 class ActionManager
 {
@@ -27,6 +28,9 @@ public:
 	void Undo();
 	void Redo();
 
+	void BeginActionGroup();
+	void EndActionGroup();
+
 	bool Undoable();
 	bool Redoable();
 	bool IsSave();
@@ -37,6 +41,10 @@ public:
 	Array<Action*> action;
 	int cur_pos;
 	int save_pos;
+
+	// group
+	int cur_group_level;
+	ActionGroup *cur_group;
 };
 
 #endif /* ACTIONMANAGER_H_ */

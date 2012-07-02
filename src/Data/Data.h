@@ -29,6 +29,8 @@ public:
 
 	void ResetHistory();
 	void *Execute(Action *a);
+	void BeginActionGroup();
+	void EndActionGroup();
 	void Undo();
 	void Redo();
 

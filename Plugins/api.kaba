@@ -280,6 +280,8 @@ class DataModel : Data
 	ModelMetaData meta_data
 	extern void AddVertex(vector v, int normal_mode)
 	extern ModeModelTriangle *AddTriangle(int a, int b, int c)
+	extern void BeginActionGroup()
+	extern void EndActionGroup()
 	void __assign__(DataModel other)
 
 extern DataModel *data_model

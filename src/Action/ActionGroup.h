@@ -12,14 +12,16 @@
 #include "../Data/Data.h"
 
 class Data;
+class ActionManager;
 
 class ActionGroup: public Action
 {
+	friend class ActionManager;
 public:
 	ActionGroup();
 	virtual ~ActionGroup();
 
-	virtual string name() = 0;
+	virtual string name(){	return "-group-";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);

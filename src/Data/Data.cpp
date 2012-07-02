@@ -20,6 +20,16 @@ Data::~Data()
 
 
 
+void Data::BeginActionGroup()
+{
+	action_manager->BeginActionGroup();
+}
+
+void Data::EndActionGroup()
+{
+	action_manager->EndActionGroup();
+}
+
 void Data::Redo()
 {
 	action_manager->Redo();

@@ -7,13 +7,17 @@
 
 #include "ActionManager.h"
 #include "Action.h"
+#include "ActionGroup.h"
 #include "../Data/Data.h"
+#include <assert.h>
 
 ActionManager::ActionManager(Data *_data)
 {
 	data = _data;
 	cur_pos = 0;
 	save_pos = 0;
+	cur_group_level = 0;
+	cur_group = NULL;
 }
 
 ActionManager::~ActionManager()
@@ -28,6 +32,10 @@ void ActionManager::Reset()
 	action.clear();
 	cur_pos = 0;
 	save_pos = 0;
+	cur_group_level = 0;
+	if (cur_group)
+		delete(cur_group);
+	cur_group = NULL;
 }
 
 
@@ -47,6 +55,8 @@ void ActionManager::add(Action *a)
 
 void *ActionManager::Execute(Action *a)
 {
+	if (cur_group)
+		return cur_group->AddSubAction(a, data);
 	add(a);
 	return a->execute_and_notify(data);
 }
@@ -80,6 +90,26 @@ bool ActionManager::Redoable()
 }
 
 
+
+void ActionManager::BeginActionGroup()
+{
+	if (!cur_group){
+		cur_group = new ActionGroup;
+	}
+	cur_group_level ++;
+}
+
+void ActionManager::EndActionGroup()
+{
+	cur_group_level --;
+	assert(cur_group_level >= 0);
+
+	if (cur_group_level == 0){
+		ActionGroup *g = cur_group;
+		cur_group = NULL;
+		Execute(g);
+	}
+}
 
 void ActionManager::MarkCurrentAsSave()
 {
