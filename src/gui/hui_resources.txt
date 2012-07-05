@@ -6567,9 +6567,9 @@ menu_model_selection
 0
 
 
-Item
+ItemImage
 select_all
-
+hui:select-all
 1
 0
 0
@@ -7074,9 +7074,9 @@ transparency
 0
 
 
-Item
+ItemImage
 model_colors
-
+hui:select-color
 1
 0
 0
@@ -14651,9 +14651,9 @@ menu_world_selection
 0
 
 
-Item
+ItemImage
 select_all
-
+hui:select-all
 1
 0
 0
@@ -14939,7 +14939,7 @@ ItemSeparator
 
 ItemImage
 create_lightmap
-hui:media-record
+hui:convert
 1
 0
 0

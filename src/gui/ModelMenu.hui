@@ -178,7 +178,7 @@ enum{
 		sub_menu_284->AddEntryImage("Eigenschaften...",HuiImagePreferences,HMM_MODE_PROPERTIES);
 	Menu->AddSubMenu("Bearbeiten",HMM_MENU_MODEL_EDIT,sub_menu_284);
 		CHuiMenu *sub_menu_966=new CHuiMenu();
-		sub_menu_966->AddEntry("Alles ausw&ahlen",HMM_SELECT_ALL);
+		sub_menu_966->AddEntryImage("Alles ausw&ahlen",HuiImageSelectAll,HMM_SELECT_ALL);
 		sub_menu_966->AddEntry("Nichts ausw&ahlen",HMM_SELECT_NONE);
 		sub_menu_966->AddEntry("Invertieren",HMM_INVERT_SELECTION);
 		sub_menu_966->AddSeparator();
@@ -227,7 +227,7 @@ enum{
 		sub_menu_895->EnableItem(HMM_CURRENT_MATERIAL,false);
 		sub_menu_895->AddEntry("Material...",HMM_MODE_MODEL_MATERIAL);
 		sub_menu_895->AddEntry("Transparenz...",HMM_TRANSPARENCY);
-		sub_menu_895->AddEntry("Farben...",HMM_MODEL_COLORS);
+		sub_menu_895->AddEntryImage("Farben...",HuiImageSelectColor,HMM_MODEL_COLORS);
 		sub_menu_895->AddEntry("Texturen...",HMM_MODE_MODEL_TEXTURE);
 		sub_menu_895->AddSeparator();
 		sub_menu_895->AddEntry("Materialien...",HMM_MODE_MODEL_MATERIALS);

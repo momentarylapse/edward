@@ -138,7 +138,7 @@ enum{
 		sub_menu_edit->AddEntryImage("Eigenschaften...",HuiImagePreferences,HMM_SELECTION_PROPERTIES);
 	Menu->AddSubMenu("Bearbeiten",HMM_MENU_WORLD_EDIT,sub_menu_edit);
 		CHuiMenu *sub_menu_585=new CHuiMenu();
-		sub_menu_585->AddEntry("Alles ausw&ahlen",HMM_SELECT_ALL);
+		sub_menu_585->AddEntryImage("Alles ausw&ahlen",HuiImageSelectAll,HMM_SELECT_ALL);
 		sub_menu_585->AddEntry("Nichts ausw&ahlen",HMM_SELECT_NONE);
 		sub_menu_585->AddEntry("Invertieren",HMM_INVERT_SELECTION);
 		sub_menu_585->AddSeparator();
@@ -165,7 +165,7 @@ enum{
 		sub_menu_op->AddEntry("H&ohe = Terrain",HMM_HEIGHT_TO_TERRAIN);
 		sub_menu_op->AddEntry("Eigene Figur (ego=...)",HMM_OWN_FIGURE);
 		sub_menu_op->AddSeparator();
-		sub_menu_op->AddEntryImage("Lightmap rendern...",HuiImageMediaRecord,HMM_CREATE_LIGHTMAP);
+		sub_menu_op->AddEntryImage("Lightmap rendern...",HuiImageConvert,HMM_CREATE_LIGHTMAP);
 	Menu->AddSubMenu("Operationen",HMM_MENU_WORLD_OPERATION,sub_menu_op);
 		CHuiMenu *sub_menu_513=new CHuiMenu();
 			CHuiMenu *sub_menu_303=new CHuiMenu();

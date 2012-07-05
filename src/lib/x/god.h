@@ -96,7 +96,7 @@ extern color GlobalAmbient;
 extern Fog GlobalFog;
 extern int SunLight;
 extern float SpeedOfSound;
-extern bool PhysicsEnabled;
+extern bool PhysicsEnabled, CollisionsEnabled;
 extern int PhysicsNumSteps, PhysicsNumLinkSteps;
 
 #ifdef _X_ALLOW_ODE_

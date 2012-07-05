@@ -243,6 +243,7 @@ public:
 	void ConvertCallByReference();
 	void BreakDownComplicatedCommands();
 	void BreakDownHighLevelOperators();
+	void MapLocalVariablesToStack();
 
 	// data creation
 	int AddVar(const string &name, sType *type, sFunction *f);

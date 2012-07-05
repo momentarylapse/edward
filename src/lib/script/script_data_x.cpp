@@ -660,6 +660,7 @@ void SIAddPackageX()
 	add_ext_var("Terrain",			TypeTerrainPList,god_p(&Terrain));
 	add_ext_var("Gravitation",		TypeVector,		god_p(&GlobalG));
 	add_ext_var("PhysicsEnabled",	TypeBool,		god_p(&PhysicsEnabled));
+	add_ext_var("CollisionsEnabled",	TypeBool,		god_p(&CollisionsEnabled));
 	add_ext_var("Cam",				TypeViewP,		cam_p(&Cam));
 	add_ext_var("SkyBox",			TypeModelPList,	god_p(&SkyBox));
 	add_ext_var("BackGroundColor",	TypeColor,		god_p(&BackGroundColor));

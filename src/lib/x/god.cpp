@@ -36,7 +36,7 @@ inline void qode2x(const dQuaternion q, quaternion *qq)
 }
 #endif
 
-bool PhysicsEnabled;
+bool PhysicsEnabled, CollisionsEnabled;
 int PhysicsNumSteps, PhysicsNumLinkSteps;
 
 #ifdef _X_ALLOW_PHYSICS_DEBUG_
@@ -251,6 +251,7 @@ void GodReset()
 	NixMinDepth = 1.0f;
 	
 	PhysicsEnabled = false;
+	CollisionsEnabled = true;
 	PhysicsNumSteps = 10;
 	PhysicsNumLinkSteps = 5;
 
@@ -1002,6 +1003,14 @@ void GodCalcMove()
 		for (int i=0;i<Object.num;i++)
 			if (Object[i])
 				Object[i]->UpdateMatrix();
+		ResetExternalForces();
+		msg_db_l(2);
+		return;
+	}else if (!CollisionsEnabled){
+		for (int i=0;i<Object.num;i++)
+			if (Object[i])
+				//if (!Object[i]->Frozen)
+					Object[i]->DoPhysics();
 		ResetExternalForces();
 		msg_db_l(2);
 		return;

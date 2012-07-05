@@ -3110,6 +3110,42 @@ void CPreScript::BreakDownComplicatedCommands()
 	msg_db_l(4);
 }
 
+void CPreScript::MapLocalVariablesToStack()
+{
+	msg_db_r("MapLocalVariablesToStack", 1);
+	foreach(Function, f){
+		f->_ParamSize = 8; // space for return value and eBP
+		if (f->Type->Size > 4)
+			f->_ParamSize += 4;
+		f->_VarSize = 0;
+
+		// map "self" to the first parameter
+		if (f->Class)
+			foreachi(f->Var, v, i)
+				if (v.Name == "self"){
+					int s = mem_align(v.Type->Size);
+					v._Offset = f->_ParamSize;
+					f->_ParamSize += s;
+				}
+
+		foreachi(f->Var, v, i){
+			if ((f->Class) && (v.Name == "self"))
+				continue;
+			int s = mem_align(v.Type->Size);
+			if (i < f->NumParams){
+				// parameters
+				v._Offset = f->_ParamSize;
+				f->_ParamSize += s;
+			}else{
+				// "real" local variables
+				v._Offset = - f->_VarSize - s;
+				f->_VarSize += s;
+			}
+		}
+	}
+	msg_db_l(1);
+}
+
 void CreateImplicitConstructor(CPreScript *ps, sType *t)
 {
 	// create function
