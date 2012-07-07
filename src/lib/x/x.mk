@@ -3,7 +3,7 @@
 X_BIN  = temp/x.a
 X_OBJ  = temp/meta.o temp/fx.o temp/camera.o temp/model.o temp/object.o temp/terrain.o\
 temp/god.o temp/links.o temp/matrixn.o temp/tree.o temp/collision.o temp/physics.o temp/gui.o
-X_CXXFLAGS = `pkg-config --cflags gtk+-2.0` $(GLOBALFLAGS)
+X_CXXFLAGS = `pkg-config --cflags gtk+-3.0` $(GLOBALFLAGS)
 
 $(X_BIN) : $(X_OBJ)
 	rm -f $@

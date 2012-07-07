@@ -8,7 +8,7 @@ HUI_OBJ  = temp/hui.o \
  temp/hui_window.o temp/hui_window_gtk.o temp/hui_window_win.o \
  temp/hui_window_toolbar.o temp/hui_window_toolbar_gtk.o temp/hui_window_toolbar_win.o \
  temp/hui_window_control.o temp/hui_window_control_gtk.o temp/hui_window_control_win.o
-HUI_CXXFLAGS =  `pkg-config --cflags gtk+-2.0` $(GLOBALFLAGS)
+HUI_CXXFLAGS =  `pkg-config --cflags gtk+-3.0` $(GLOBALFLAGS)
 
 
 $(HUI_BIN) : $(HUI_OBJ)

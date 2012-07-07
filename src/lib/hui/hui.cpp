@@ -168,7 +168,7 @@ void HuiSetIdleFunction(hui_callback *idle_function)
 	if ((new_idle) && (!old_idle))
 		idle_id = g_idle_add_full(300, GtkIdleFunction, NULL, NULL);
 	if ((!new_idle) && (old_idle) && (idle_id >= 0)){
-		gtk_idle_remove(idle_id);
+		g_source_remove(idle_id);
 		idle_id = -1;
 	}
 #endif
@@ -185,7 +185,7 @@ void HuiSetIdleFunctionM(HuiEventHandler *object, void (HuiEventHandler::*functi
 	if ((new_idle) && (!old_idle))
 		idle_id = g_idle_add_full(300, GtkIdleFunction, NULL, NULL);
 	if ((!new_idle) && (old_idle) && (idle_id >= 0)){
-		gtk_idle_remove(idle_id);
+		g_source_remove(idle_id);
 		idle_id = -1;
 	}
 #endif
@@ -291,6 +291,8 @@ void HuiInit()
 	HuiErrorFunction=NULL;
 	HuiLanguaged=false;
 	HuiCreateHiddenWindows=false;
+
+	HuiPushMainLevel();
 
 	// make random numbers...well...random
 	Date d = get_current_date();
@@ -401,7 +403,7 @@ int HuiRun()
 {
 	msg_db_r("HuiRun",1);
 	HuiRunning = true;
-	HuiPushMainLevel();
+	//HuiPushMainLevel();
 #ifdef HUI_API_WIN
 	MSG messages;
 	messages.message = 0;
@@ -483,23 +485,31 @@ void HuiDoSingleMainLoop()
 
 void HuiPushMainLevel()
 {
+	msg_db_r("HuiPushMainLevel",2);
 	HuiMainLevel ++;
+	msg_db_l(2);
+}
+
+void HuiCleanUpMainLevel()
+{
+	msg_db_r("HuiCleanUpMainLevel",2);
+	foreachb(HuiWindow, w)
+		if (w->_GetMainLevel_() >= HuiMainLevel)
+			delete(w);
+	HuiSetIdleFunction(NULL);
+	msg_db_l(2);
 }
 
 void HuiPopMainLevel()
 {
-	msg_db_r("HuiPopMainLevel",1);
+	msg_db_r("HuiPopMainLevel",2);
+	HuiCleanUpMainLevel();
 	HuiMainLevel --;
 	
 	if (HuiMainLevel == 0)
 		HuiSetErrorFunction(NULL);
-	else{
-		foreachb(HuiWindow, w)
-			if (w->_GetMainLevel_() > HuiMainLevel)
-				delete(w);
-	}
 	HuiDoSingleMainLoop();
-	msg_db_l(1);
+	msg_db_l(2);
 }
 
 // ends the system loop of the HuiRun() command
@@ -507,7 +517,8 @@ void HuiEnd()
 {
 	msg_db_r("HuiEnd",1);
 
-	HuiPopMainLevel();
+	if (HuiMainLevel > 1)
+		HuiCleanUpMainLevel();
 
 	// send "quit" message
 #ifdef HUI_API_WIN
@@ -518,7 +529,7 @@ void HuiEnd()
 #endif
 
 	// really end hui?
-	if (HuiMainLevel == 0){
+	if (HuiMainLevel == 1){
 #ifdef HUI_API_GTK
 #ifdef HUI_OS_LINUX
 		// sometimes freezes...
@@ -526,13 +537,13 @@ void HuiEnd()
 		//	XCloseDisplay(hui_x_display);
 #endif
 
-		gdk_cursor_unref((GdkCursor*)invisible_cursor);
+		g_object_unref(invisible_cursor);
 #endif
 		if (HuiConfigChanged)
 			HuiSaveConfigFile();
 	}
 	msg_db_l(1);
-	if ((msg_inited) && (!HuiEndKeepMsgAlive) && (HuiMainLevel == 0))
+	if ((msg_inited) && (!HuiEndKeepMsgAlive) && (HuiMainLevel == 1))
 		msg_end();
 }
 

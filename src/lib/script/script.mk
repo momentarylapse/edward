@@ -7,7 +7,7 @@ temp/script_data.o temp/script_data_file.o temp/script_data_math.o temp/script_d
 temp/script_data_nix.o temp/script_data_hui.o temp/script_data_net.o \
 temp/script_data_x.o temp/script_data_image.o temp/script_data_sound.o \
 temp/script_serializer.o temp/dasm.o
-SCRIPT_CXXFLAGS =  `pkg-config --cflags gtk+-2.0` $(GLOBALFLAGS)
+SCRIPT_CXXFLAGS =  `pkg-config --cflags gtk+-3.0` $(GLOBALFLAGS)
 SCRIPT_DEP =  script/script.h script/dasm.h script/pre_script.h script/script_data.h
 
 $(SCRIPT_BIN) : $(SCRIPT_OBJ) $(SCRIPT_DEP)

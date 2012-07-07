@@ -323,7 +323,7 @@ XVisualInfo *choose_visual()
 
 	// we need this one!
 	//   at least if possible...
-	int gdk_visualid = XVisualIDFromVisual(GDK_VISUAL_XVISUAL(gdk_window_get_visual(NixWindow->window->window)));
+	int gdk_visualid = XVisualIDFromVisual(GDK_VISUAL_XVISUAL(gdk_window_get_visual(gtk_widget_get_window(NixWindow->window))));
 
 	// let glx select a visual
 	XVisualInfo *vi = glXChooseVisual(hui_x_display, screen, attrListDblAccum);
@@ -348,7 +348,8 @@ XVisualInfo *choose_visual()
 		// translate visual to gdk
 		GdkScreen *gdk_screen = gdk_screen_get_default();
 		GdkVisual *visual = gdk_x11_screen_lookup_visual(gdk_screen, vi->visualid);
-		GdkColormap *colormap = gdk_colormap_new(visual, FALSE);
+		// TODO GTK3
+		//GdkColormap *colormap = gdk_colormap_new(visual, FALSE);
 
 		// create new gtk_drawing_area with correct visual
 		/*gtk_widget_destroy(NixWindow->gl_widget);
@@ -359,13 +360,13 @@ XVisualInfo *choose_visual()
 		gtk_widget_realize(NixWindow->gl_widget);*/
 
 		// no ...just apply color map
-		gtk_widget_set_colormap(NixWindow->gl_widget, colormap);
+		gtk_widget_set_visual(NixWindow->gl_widget, visual);
 	}
 
 	// realize the widget...
 	gtk_widget_show(NixWindow->gl_widget);
 	gtk_widget_realize(NixWindow->gl_widget);
-	gdk_window_invalidate_rect(NixWindow->gl_widget->window, NULL, false);
+	gdk_window_invalidate_rect(gtk_widget_get_window(NixWindow->gl_widget), NULL, false);
 	gdk_window_process_all_updates();
 
 	// look for the gdk-ish one...
@@ -823,7 +824,7 @@ void set_video_mode_gl(int xres, int yres, int depth)
 	attr.border_pixel=0;*/
 	//Window win=GDK_WINDOW_XWINDOW(NixWindow->window->window);
 #endif
-		Window win = GDK_WINDOW_XWINDOW(NixWindow->gl_widget->window);
+		Window win = GDK_WINDOW_XID(gtk_widget_get_window(NixWindow->gl_widget));
 		context = glXCreateContext(hui_x_display, vi, 0, GL_TRUE);
 		glXMakeCurrent(hui_x_display, win, context);
 

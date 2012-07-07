@@ -3,7 +3,7 @@
 NIX_BIN  = temp/nix.a
 NIX_OBJ  = temp/nix.o temp/nix_draw.o temp/nix_view.o temp/nix_input.o temp/nix_textures.o \
 temp/nix_light.o temp/nix_shader.o temp/nix_vertexbuffer.o
-NIX_CXXFLAGS =  `pkg-config --cflags gtk+-2.0` $(GLOBALFLAGS)
+NIX_CXXFLAGS =  `pkg-config --cflags gtk+-3.0` $(GLOBALFLAGS)
 
 $(NIX_BIN) : $(NIX_OBJ)
 	rm -f $@

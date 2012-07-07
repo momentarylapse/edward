@@ -1,125 +1,71 @@
-// IDs
-enum{
-	HMM_WORLD_DIALOG,
-	HMM_OK,
-	HMM_CANCEL,
-	HMM_WORLD_DIALOG_TAB_CONTROL,
-	HMM_APPLY,
-	HMM_WORLD_DIALOG_GRP_BG_COLOR,
-	HMM_WORLD_DIALOG_T_BG_DESCRIPTION,
-	HMM_SKYBOX,
-	HMM_REMOVE_SKYBOX,
-	HMM_WORLD_DIALOG_T_SELECTION,
-	HMM_BGC,
-	HMM_WORLD_DIALOG_GRP_GRAVITATION,
-	HMM_WORLD_DIALOG_GRP_FOG,
-	HMM_MUSIC,
-	HMM_X,
-	HMM_GRAVITATION_X,
-	HMM_LUSS,
-	HMM_Y,
-	HMM_GRAVITATION_Y,
-	HMM_Z,
-	HMM_GRAVITATION_Z,
-	HMM_FOG_ENABLED,
-	HMM_FOG_MODE,
-	HMM_WORLD_DIALOG_T_FOG_DENSITY,
-	HMM_FOG_DENSITY,
-	HMM_WORLD_DIALOG_T_FOG_START,
-	HMM_FOG_START,
-	HMM_WORLD_DIALOG_T_FOG_END,
-	HMM_FOG_END,
-	HMM_WORLD_DIALOG_T_FOG_MODE,
-	HMM_WORLD_DIALOG_T_FOG_COLOR,
-	HMM_FOG_COLOR,
-	HMM_SCRIPT_VARS,
-	HMM_WORLD_DIALOG_T_MAX_SCRIPT_VARS,
-	HMM_MAX_SCRIPT_VARS,
-	HMM_WORLD_DIALOG_GRP_SUN_COLOR,
-	HMM_WORLD_DIALOG_GRP_AMBIENT,
-	HMM_SUN_ENABLED,
-	HMM_WORLD_DIALOG_T_SUN_ANG_X,
-	HMM_SUN_ANG_X,
-	HMM_DEGREE,
-	HMM_WORLD_DIALOG_T_SUN_ANG_Y,
-	HMM_SUN_ANG_Y,
-	HMM_AMBIENT,
-	HMM_DIFFUSE,
-	HMM_SPECULAR,
-	HMM_SUN_AM,
-	HMM_SUN_DI,
-	HMM_SUN_SP
-};
-
-
 	// dialog
-	WorldDialog=HuiCreateDialog("Welt-Eigenschaften",410,420,MainWin,false,&WorldDialogFunction);
-	WorldDialog->SetID(HMM_WORLD_DIALOG);
-	WorldDialog->AddDefButton("OK",300,380,100,25,HMM_OK);
-	WorldDialog->SetImage(HMM_OK,HuiImageOk);
-	WorldDialog->AddButton("Abbrechen",195,380,100,25,HMM_CANCEL);
-	WorldDialog->SetImage(HMM_CANCEL,HuiImageCancel);
-	WorldDialog->AddButton("&Ubernehmen",80,380,110,25,HMM_APPLY);
-	WorldDialog->SetImage(HMM_APPLY,HuiImageOk);
-	WorldDialog->AddTabControl("Hintergrund\\Nebel\\Licht\\Physik\\Scripte\\Variablen",5,5,400,360,HMM_WORLD_DIALOG_TAB_CONTROL);
-	WorldDialog->SetTabCreationPage(HMM_WORLD_DIALOG_TAB_CONTROL,0);
-	WorldDialog->AddText("!bold\\Farbe",10,10,380,25,HMM_WORLD_DIALOG_GRP_BG_COLOR);
-	WorldDialog->AddColorButton("!alpha",20,35,370,25,HMM_BGC);
-	WorldDialog->AddText("!bold\\Skybox Modelle",10,70,380,25,HMM_WORLD_DIALOG_GRP_SKYBOX);
-	WorldDialog->AddListView("#\\Modell",20,95,370,195,HMM_SKYBOX);
-	WorldDialog->AddButton("Entfernen",270,295,120,25,HMM_REMOVE_SKYBOX);
-	WorldDialog->SetImage(HMM_REMOVE_SKYBOX,HuiImageDelete);
-	WorldDialog->SetTabCreationPage(HMM_WORLD_DIALOG_TAB_CONTROL,1);
-	WorldDialog->AddCheckBox("aktiviert",20,10,370,25,HMM_FOG_ENABLED);
-	WorldDialog->AddText("Typ",20,45,100,25,HMM_WORLD_DIALOG_T_FOG_MODE);
-	WorldDialog->AddComboBox("Linear\\Exp\\Exp2",125,45,265,25,HMM_FOG_MODE);
-	WorldDialog->AddText("Entfernung",20,75,100,25,HMM_WORLD_DIALOG_T_FOG_DISTANCE);
-	WorldDialog->AddEdit("",125,75,105,25,HMM_FOG_START);
-	WorldDialog->AddText("bis",245,75,30,25,HMM_WORLD_DIALOG_T_FOG_TO);
-	WorldDialog->AddEdit("",285,75,105,25,HMM_FOG_END);
-	WorldDialog->AddText("Dichte",20,105,100,25,HMM_WORLD_DIALOG_T_FOG_DENSITY);
-	WorldDialog->AddEdit("",125,105,265,25,HMM_FOG_DENSITY);
-	WorldDialog->AddText("Farbe (Color)",20,135,100,25,HMM_WORLD_DIALOG_T_FOG_COLOR);
-	WorldDialog->AddColorButton("",125,135,265,25,HMM_FOG_COLOR);
-	WorldDialog->SetTabCreationPage(HMM_WORLD_DIALOG_TAB_CONTROL,2);
-	WorldDialog->AddText("!bold\\Ambient",10,10,145,25,HMM_WORLD_DIALOG_GRP_AMBIENT);
-	WorldDialog->AddColorButton("",20,35,370,25,HMM_AMBIENT);
-	WorldDialog->AddText("!bold\\Sonne",10,70,145,25,HMM_WORLD_DIALOG_GRP_SUN);;
-	WorldDialog->AddCheckBox("aktiviert",20,95,370,25,HMM_SUN_ENABLED);
-	WorldDialog->AddText("Ambient",20,125,100,25,HMM_AMBIENT);
-	WorldDialog->AddText("Diffuse",20,155,100,25,HMM_DIFFUSE);
-	WorldDialog->AddText("Specular",20,185,100,25,HMM_SPECULAR);
-	WorldDialog->AddColorButton("",125,125,265,25,HMM_SUN_AM);
-	WorldDialog->AddColorButton("",125,155,265,25,HMM_SUN_DI);
-	WorldDialog->AddColorButton("",125,185,265,25,HMM_SUN_SP);
-	WorldDialog->AddText("Richtung",20,215,100,25,HMM_WORLD_DIALOG_T_SUN_DIR);
-	WorldDialog->AddText("X",125,215,15,25,HMM_WORLD_DIALOG_T_SUN_ANG_X);
-	WorldDialog->AddSpinButton("",145,215,80,25,HMM_SUN_ANG_X);
-	WorldDialog->AddText("Y",235,215,15,25,HMM_WORLD_DIALOG_T_SUN_ANG_Y);
-	WorldDialog->AddSpinButton("",255,215,80,25,HMM_SUN_ANG_Y);
-	WorldDialog->AddText("°",340,215,20,25,HMM_DEGREE);
-	WorldDialog->AddButton("Richtung aus Kamerawinkel",20,245,370,25,HMM_SUN_ANG_FROM_CAMERA);
-	WorldDialog->SetImage(HMM_SUN_DIR_FROM_CAMERA,HuiImageMediaRecord);
-	WorldDialog->SetTabCreationPage(HMM_WORLD_DIALOG_TAB_CONTROL,3);
-	WorldDialog->AddCheckBox("Aktiviert",10,10,200,25,HMM_PHYSICS_ENABLED);
-	WorldDialog->AddText("!bold\\Gravitation",10,40,145,25,HMM_WORLD_DIALOG_GRP_GRAVITATION);
-	WorldDialog->AddText("X",20,70,20,25,HMM_X);
-	WorldDialog->AddEdit("",40,70,75,25,HMM_GRAVITATION_X);
-	WorldDialog->AddText("Y",125,70,20,25,HMM_Y);
-	WorldDialog->AddEdit("",145,70,75,25,HMM_GRAVITATION_Y);
-	WorldDialog->AddText("Z",230,70,20,25,HMM_Z);
-	WorldDialog->AddEdit("",250,70,75,25,HMM_GRAVITATION_Z);
-	WorldDialog->AddText("le/s^2",330,70,45,25,HMM_LUSS);
-	WorldDialog->SetTabCreationPage(HMM_WORLD_DIALOG_TAB_CONTROL,4);
-	WorldDialog->AddListView("!nobar\\Datei",10,10,380,280,HMM_SCRIPT_LIST);
-	WorldDialog->AddButton("Hinzuf&ugen",10,295,190,25,HMM_ADD_SCRIPT);
-	WorldDialog->SetImage(HMM_ADD_SCRIPT,HuiImageAdd);
-	WorldDialog->AddButton("Entfernen",205,295,185,25,HMM_REMOVE_SCRIPT);
-	WorldDialog->SetImage(HMM_REMOVE_SCRIPT,HuiImageDelete);
-	WorldDialog->SetTabCreationPage(HMM_WORLD_DIALOG_TAB_CONTROL,5);
-	WorldDialog->AddText("Anzahl:",20,10,80,25,HMM_WORLD_DIALOG_T_MAX_SCRIPT_VARS);
-	WorldDialog->AddSpinButton("\\0",105,10,100,25,HMM_MAX_SCRIPT_VARS);
-	WorldDialog->AddListView("!format=ttT\\#\\Name\\Wert",10,40,380,280,HMM_SCRIPT_VARS);
+	WorldDialog = HuiCreateDialog("Welt-Eigenschaften", 410, 420, MainWin, false);
+	WorldDialog->SetID("world_dialog");
+	WorldDialog->AddDefButton("OK", 300, 380, 100, 25, "ok");
+	WorldDialog->SetImage("ok", "hui:ok");
+	WorldDialog->AddButton("Abbrechen", 195, 380, 100, 25, "cancel");
+	WorldDialog->SetImage("cancel", "hui:cancel");
+	WorldDialog->AddButton("&Ubernehmen", 80, 380, 110, 25, "apply");
+	WorldDialog->SetImage("apply", "hui:ok");
+	WorldDialog->AddTabControl("Hintergrund\\Nebel\\Licht\\Physik\\Scripte\\Variablen", 5, 5, 400, 360, "world_dialog_tab_control");
+	WorldDialog->SetTabCreationPage("world_dialog_tab_control", 0);
+	WorldDialog->AddText("!bold\\Farbe", 10, 10, 380, 25, "world_dialog_grp_bg_color");
+	WorldDialog->AddColorButton("!alpha", 20, 35, 370, 25, "bgc");
+	WorldDialog->AddText("!bold\\Skybox Modelle", 10, 70, 380, 25, "world_dialog_grp_skybox");
+	WorldDialog->AddListView("#\\Modell", 20, 95, 370, 195, "skybox");
+	WorldDialog->AddButton("Entfernen", 270, 295, 120, 25, "remove_skybox");
+	WorldDialog->SetImage("remove_skybox", "hui:delete");
+	WorldDialog->SetTabCreationPage("world_dialog_tab_control", 1);
+	WorldDialog->AddCheckBox("aktiviert", 20, 10, 370, 25, "fog_enabled");
+	WorldDialog->AddText("Typ", 20, 45, 100, 25, "world_dialog_t_fog_mode");
+	WorldDialog->AddComboBox("Linear\\Exp\\Exp2", 125, 45, 265, 25, "fog_mode");
+	WorldDialog->AddText("Entfernung", 20, 75, 100, 25, "world_dialog_t_fog_distance");
+	WorldDialog->AddEdit("", 125, 75, 265, 25, "fog_start");
+	WorldDialog->AddText("bis", 20, 105, 100, 25, "world_dialog_t_fog_to");
+	WorldDialog->AddEdit("", 125, 105, 265, 25, "fog_end");
+	WorldDialog->AddText("Dichte", 20, 135, 100, 25, "world_dialog_t_fog_density");
+	WorldDialog->AddEdit("", 125, 135, 265, 25, "fog_density");
+	WorldDialog->AddText("Farbe (Color)", 20, 165, 100, 25, "world_dialog_t_fog_color");
+	WorldDialog->AddColorButton("", 125, 165, 265, 25, "fog_color");
+	WorldDialog->SetTabCreationPage("world_dialog_tab_control", 2);
+	WorldDialog->AddText("!bold\\Ambient", 10, 10, 145, 25, "world_dialog_grp_ambient");
+	WorldDialog->AddColorButton("", 20, 35, 370, 25, "ambient");
+	WorldDialog->AddText("!bold\\Sonne", 10, 70, 145, 25, "world_dialog_grp_sun");
+	WorldDialog->AddCheckBox("aktiviert", 20, 95, 370, 25, "sun_enabled");
+	WorldDialog->AddText("Ambient", 20, 125, 100, 25, "ambient");
+	WorldDialog->AddText("Diffuse", 20, 155, 100, 25, "diffuse");
+	WorldDialog->AddText("Specular", 20, 185, 100, 25, "specular");
+	WorldDialog->AddColorButton("", 125, 125, 265, 25, "sun_am");
+	WorldDialog->AddColorButton("", 125, 155, 265, 25, "sun_di");
+	WorldDialog->AddColorButton("", 125, 185, 265, 25, "sun_sp");
+	WorldDialog->AddText("Richtung", 20, 215, 100, 25, "world_dialog_t_sun_dir");
+	WorldDialog->AddText("X", 125, 215, 15, 25, "world_dialog_t_sun_ang_x");
+	WorldDialog->AddSpinButton("", 145, 215, 80, 25, "sun_ang_x");
+	WorldDialog->AddText("Y", 235, 215, 15, 25, "world_dialog_t_sun_ang_y");
+	WorldDialog->AddSpinButton("", 255, 215, 80, 25, "sun_ang_y");
+	WorldDialog->AddText("°", 340, 215, 20, 25, "degree");
+	WorldDialog->AddButton("Richtung aus Kamerawinkel", 20, 245, 370, 25, "sun_ang_from_camera");
+	WorldDialog->SetImage("sun_ang_from_camera", "hui:media-record");
+	WorldDialog->SetTabCreationPage("world_dialog_tab_control", 3);
+	WorldDialog->AddCheckBox("Aktiviert", 10, 10, 200, 25, "physics_enabled");
+	WorldDialog->AddText("!bold\\Gravitation", 10, 40, 145, 25, "world_dialog_grp_gravitation");
+	WorldDialog->AddText("X", 20, 70, 20, 25, "x");
+	WorldDialog->AddEdit("", 40, 70, 75, 25, "gravitation_x");
+	WorldDialog->AddText("Y", 125, 70, 20, 25, "y");
+	WorldDialog->AddEdit("", 145, 70, 75, 25, "gravitation_y");
+	WorldDialog->AddText("Z", 230, 70, 20, 25, "z");
+	WorldDialog->AddEdit("", 250, 70, 75, 25, "gravitation_z");
+	WorldDialog->AddText("le/s^2", 330, 70, 45, 25, "luss");
+	WorldDialog->SetTabCreationPage("world_dialog_tab_control", 4);
+	WorldDialog->AddListView("!nobar\\Datei", 10, 10, 380, 280, "script_list");
+	WorldDialog->AddButton("Hinzuf&ugen", 10, 295, 190, 25, "add_script");
+	WorldDialog->SetImage("add_script", "hui:add");
+	WorldDialog->AddButton("Entfernen", 205, 295, 185, 25, "remove_script");
+	WorldDialog->SetImage("remove_script", "hui:delete");
+	WorldDialog->SetTabCreationPage("world_dialog_tab_control", 5);
+	WorldDialog->AddText("Anzahl:", 20, 10, 80, 25, "world_dialog_t_max_script_vars");
+	WorldDialog->AddSpinButton("\\0", 105, 10, 100, 25, "max_script_vars");
+	WorldDialog->AddListView("!format=ttT\\#\\Name\\Wert", 10, 40, 380, 280, "script_vars");
 	WorldDialog->Update();
 
 

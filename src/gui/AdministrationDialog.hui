@@ -1,56 +1,6 @@
-// IDs
-enum{
-	HMM_AD_DIALOG,
-	HMM_TABLE_1,
-	HMM_TABLE_2,
-	HMM_DELETE,
-	HMM_RENAME,
-	HMM_AD_EDIT,
-	HMM_AD_EXPORT_GAME,
-	HMM_AD_RUDIMENTARY_CONFIGURATION,
-	HMM_AD_TAB_CONTROL,
-	HMM_FILE_LIST_CUR,
-	HMM_FILE_LIST_ALL,
-	HMM_TABLE_3,
-	HMM_ADT_FILE,
-	HMM_FILE_DETAILS,
-	HMM_ADT_SOURCE,
-	HMM_FILE_LIST_DETAIL_SOURCE,
-	HMM_ADT_DEST,
-	HMM_FILE_LIST_DETAIL_DEST,
-	HMM_FILE_LIST_SUPER,
-	HMM_FILE_LIST_MISSING,
-	HMM_DUMMY_TEXT
-};
-
-
 	// dialog
-	Dialog=HuiCreateSizableDialog("Verwaltung",680,590,MainWin,false,&DialogFunction);
-	Dialog->SetID(HMM_AD_DIALOG);
-	Dialog->AddControlTable("",-1,0,1,2,HMM_TABLE_1);
-	Dialog->AddControlTable("",HMM_TABLE_1,1,6,1,HMM_TABLE_2);
-	Dialog->AddButton("L&oschen",HMM_TABLE_2,0,0,0,HMM_DELETE);
-	Dialog->SetImage(HMM_DELETE,HuiImageDelete);
-	Dialog->AddButton("Umbenennen",HMM_TABLE_2,1,0,0,HMM_RENAME);
-	Dialog->AddButton("Bearbeiten",HMM_TABLE_2,2,0,0,HMM_AD_EDIT);
-	Dialog->SetImage(HMM_AD_EDIT,HuiImageEdit);
-	Dialog->AddButton("Spiel exportieren",HMM_TABLE_2,4,0,0,HMM_AD_EXPORT_GAME);
-	Dialog->SetImage(HMM_AD_EXPORT_GAME,HuiImageRefresh);
-	Dialog->AddButton("Grundeinstellungen",HMM_TABLE_2,5,0,0,HMM_AD_RUDIMENTARY_CONFIGURATION);
-	Dialog->SetImage(HMM_AD_RUDIMENTARY_CONFIGURATION,HuiImagePreferences);
-	Dialog->AddTabControl("Aktuelles Spiel\\Alle Dateien\\Details\\&Uberfl&ussig\\Fehlend",HMM_TABLE_1,0,0,0,HMM_AD_TAB_CONTROL);
-	Dialog->AddListView("!format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend",HMM_AD_TAB_CONTROL,0,0,0,HMM_FILE_LIST_CUR);
-	Dialog->AddListView("!format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend",HMM_AD_TAB_CONTROL,1,0,0,HMM_FILE_LIST_ALL);
-	Dialog->AddControlTable("",HMM_AD_TAB_CONTROL,2,1,6,HMM_TABLE_3);
-	Dialog->AddText("!bold\\Datei",HMM_TABLE_3,0,0,0,HMM_ADT_FILE);
-	Dialog->AddText("",HMM_TABLE_3,1,0,0,HMM_FILE_DETAILS);
-	Dialog->AddText("!bold\\gefordert von",HMM_TABLE_3,2,0,0,HMM_ADT_SOURCE);
-	Dialog->AddListView("!format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend",HMM_TABLE_3,3,0,0,HMM_FILE_LIST_DETAIL_SOURCE);
-	Dialog->AddText("!bold\\fordert",HMM_TABLE_3,4,0,0,HMM_ADT_DEST);
-	Dialog->AddListView("!format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend",HMM_TABLE_3,5,0,0,HMM_FILE_LIST_DETAIL_DEST);
-	Dialog->AddListView("!format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend",HMM_AD_TAB_CONTROL,3,0,0,HMM_FILE_LIST_SUPER);
-	Dialog->AddListView("!format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend",HMM_AD_TAB_CONTROL,4,0,0,HMM_FILE_LIST_MISSING);
-	Dialog->AddText("",HMM_TABLE_2,3,0,0,HMM_DUMMY_TEXT);
+	Dialog = HuiCreateSizableDialog("Verwaltung", 680, 590, MainWin, false);
+	Dialog->SetID("ad_dialog");
 	Dialog->Update();
 
 

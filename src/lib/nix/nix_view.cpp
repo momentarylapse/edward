@@ -428,7 +428,7 @@ void NixEnd()
 			#endif
 			//glutSwapBuffers();
 			if (NixGLDoubleBuffered)
-				glXSwapBuffers(hui_x_display,GDK_WINDOW_XWINDOW(NixWindow->gl_widget->window));
+				glXSwapBuffers(hui_x_display,GDK_WINDOW_XID(gtk_widget_get_window(NixWindow->gl_widget)));
 		#endif
 	}
 	#ifdef NIX_ALLOW_DYNAMIC_TEXTURE
