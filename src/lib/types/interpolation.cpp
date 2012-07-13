@@ -7,15 +7,41 @@
 
 #include "types.h"
 
-Interpolator::Interpolator(Type _type)
+
+
+
+template<class T>
+Interpolator<T>::Interpolator(Type _type)
 {
 	type = _type;
-	Clear();
+	clear();
+}
+
+template<class T>
+void Interpolator<T>::__init__()
+{
+	type = TYPE_LERP;
+	part.__init__();
+	clear();
+}
+
+template<class T>
+void Interpolator<T>::set_type(const string &_type)
+{
+	if (_type == "lerp")
+		type = TYPE_LERP;
+	else if (_type == "cubic-spline")
+		type = TYPE_CUBIC_SPLINE;
+	else if (_type == "cubic-spline-notang")
+		type = TYPE_CUBIC_SPLINE_NOTANG;
+	else if (_type == "angular-lerp")
+		type = TYPE_ANGULAR_LERP;
+	clear();
 }
 
 
-
-void Interpolator::Clear()
+template<class T>
+void Interpolator<T>::clear()
 {
 	part.clear();
 	empty = true;
@@ -26,47 +52,71 @@ void Interpolator::Clear()
 
 
 
-void Interpolator::Add(const vector & p, float dt)
-{
-	Add(p, v0, dt);
-}
+template<class T>
+T _inter_zero_();
+
+template<>
+inline float _inter_zero_<float>()
+{	return 0;	}
+
+template<>
+inline vector _inter_zero_<vector>()
+{	return v0;	}
 
 
 
-void Interpolator::Add(const vector & p, const vector & v, float dt)
+template<class T>
+void Interpolator<T>::add(const T &p, float dt)
+{	add3(p, _inter_zero_<T>(), 1, dt);	}
+
+
+template<class T>
+void Interpolator<T>::add2(const T &p, const T &v, float dt)
+{	add3(p, v, 1, dt);	}
+
+
+template<class T>
+void Interpolator<T>::add3(const T &p, const T &v, float weight, float dt)
 {
 	if (!empty){
 		temp.pos1 = p;
 		temp.vel1 = v;
+		temp.weight1 = weight;
 		temp.t0 = t_sum;
+		temp.dt = dt;
+		float ww = temp.weight0 + temp.weight1;
+		temp.weight0 /= ww;
+		temp.weight1 /= ww;
 		part.add(temp);
 		t_sum += temp.dt;
 	}
 	temp.pos0 = p;
 	temp.vel0 = v;
-	temp.dt = dt;
+	temp.weight0 = weight;
+	temp.dt = 0;
 	empty = false;
 }
 
 
-
-void Interpolator::Jump(const vector & p, const vector & v)
+template<class T>
+void Interpolator<T>::jump(const T &p, const T &v)
 {
 	temp.pos0 = p;
 	temp.vel0 = v;
+	temp.weight0 = 1;
 	empty = false;
 }
 
 
-
-void Interpolator::Update()
+template<class T>
+void Interpolator<T>::update()
 {
 	if (type == TYPE_CUBIC_SPLINE_NOTANG){
 		type = TYPE_CUBIC_SPLINE;
-		part[0].vel0 = (part[0].pos1 - part[0].pos0);
-		part.back().vel1 = (part.back().pos1 - part.back().pos0);
+		part[0].vel0 = (part[0].pos1 - part[0].pos0) / part[0].dt;
+		part.back().vel1 = (part.back().pos1 - part.back().pos0) / part.back().dt;
 		for (int i=1;i<part.num;i++){
-			vector v = (part[i].pos1 - part[i - 1].pos0) / 2;
+			T v = (part[i].pos1 - part[i - 1].pos0) / (part[i - 1].dt + part[i].dt);
 			part[i - 1].vel1 = v;
 			part[i    ].vel0 = v;
 		};
@@ -75,33 +125,53 @@ void Interpolator::Update()
 }
 
 
-
-inline vector _inter_lerp_(const Interpolator::Part &p, float t)
+template<class T>
+inline T _inter_lerp_(const typename Interpolator<T>::Part &p, float t)
 {	return (1 - t) * p.pos0 + t * p.pos1;	}
 
-inline vector _inter_lerp_tang_(const Interpolator::Part &p, float t)
-{	return p.pos1 - p.pos0;	}
+template<class T>
+inline T _inter_lerp_tang_(const typename Interpolator<T>::Part &p, float t)
+{	return p.vel0;	}
 
-inline vector _inter_cubic_spline_(const Interpolator::Part &p, float t)
+
+template<class T>
+inline T _inter_cubic_spline_(const typename Interpolator<T>::Part &p, float t)
 {
-	float tt = t * t;
+	/*float tt = t * t;
 	float ttt = tt * t;
 	return (  2 * ttt - 3 * tt + 1) * p.pos0 +
-	       (      ttt - 2 * tt + t) * p.vel0 +
+	       (      ttt - 2 * tt + t) * p.vel0 * p.dt +
 	       (- 2 * ttt + 3 * tt    ) * p.pos1 +
-	       (      ttt -     tt    ) * p.vel1;
+	       (      ttt -     tt    ) * p.vel1 * p.dt;*/
+	float tt = 1 - t;
+	T pp0 = p.pos0 + (p.vel0 * p.dt) / 3;
+	T pp1 = p.pos1 - (p.vel1 * p.dt) / 3;
+	float l0 = p.weight0 * 2;
+	float l1 = p.weight1 * 2;
+	float b0 = tt * tt * tt / l1;
+	float b1 = 3 * tt * tt * t;
+	float b2 = 3 * tt * t * t;
+	float b3 = t * t * t / l0;
+
+	return (p.pos0 * b0 + pp0 * b1 + pp1 * b2 + p.pos1 * b3) / (b0 + b1 + b2 + b3);
+
 }
 
-inline vector _inter_cubic_spline_tang_(const Interpolator::Part &p, float t)
+template<class T>
+inline T _inter_cubic_spline_tang_(const typename Interpolator<T>::Part &p, float t)
 {
 	float tt = t * t;
-	return (  6 * tt - 6 * t    ) * p.pos0 +
+	return (  6 * tt - 6 * t    ) * p.pos0 / p.dt +
 	       (  3 * tt - 4 * t + 1) * p.vel0 +
-	       (- 6 * tt + 6 * t    ) * p.pos1 +
+	       (- 6 * tt + 6 * t    ) * p.pos1 / p.dt +
 	       (  3 * tt - 2 * t    ) * p.vel1;
 }
 
-inline vector _inter_angular_lerp_(const Interpolator::Part &p, float t)
+template<class T>
+T _inter_angular_lerp_(const typename Interpolator<T>::Part &p, float t);
+
+template<>
+inline vector _inter_angular_lerp_(const Interpolator<vector>::Part &p, float t)
 {
 	quaternion q0, q1, q;
 	QuaternionRotationV(q0, p.pos0);
@@ -109,47 +179,84 @@ inline vector _inter_angular_lerp_(const Interpolator::Part &p, float t)
 	QuaternionInterpolate(q, q0, q1, t);
 	return QuaternionToAngle(q);
 }
+template<>
+inline float _inter_angular_lerp_(const Interpolator<float>::Part &p, float t)
+{	return 0;	}
+
+float clampf(float, float, float);
 
 
+template<class T>
+int Interpolator<T>::canonize(float &t)
+{
+	t = clampf(t, 0, 0.99999f) * t_sum;
+	foreachi(part, p, i)
+		if ((t >= p.t0) && (t <= p.t0 + p.dt)){
+			t = (t - p.t0) / p.dt;
+			return i;
+		}
+	return 0;
+}
 
-vector Interpolator::Get(float t)
+template<class T>
+T Interpolator<T>::get(float t)
 {
 	if (!ready)
-		Update();
+		update();
 	if (part.num > 0){
-		t = clampf(t, 0, 0.99999f);
-		float f_index = (float)part.num * t;
-		int index = (int)f_index;
-		t = f_index - index;
+		int index = canonize(t);
 		if (type == TYPE_LERP)
-			return _inter_lerp_(part[index], t);
+			return _inter_lerp_<T>(part[index], t);
 		if (type == TYPE_CUBIC_SPLINE)
-			return _inter_cubic_spline_(part[index], t);
+			return _inter_cubic_spline_<T>(part[index], t);
 		if (type == TYPE_ANGULAR_LERP)
-			return _inter_angular_lerp_(part[index], t);
+			return _inter_angular_lerp_<T>(part[index], t);
 		return part[index].pos0;
 	}
-	return v0;
+	return _inter_zero_<T>();
 }
 
 
-
-vector Interpolator::GetTang(float t)
+template<class T>
+T Interpolator<T>::get_tang(float t)
 {
 	if (!ready)
-		Update();
+		update();
 	if (part.num > 0){
-		t = clampf(t, 0, 0.99999f);
-		float f_index = (float)part.num * t;
-		int index = (int)f_index;
-		t = f_index - index;
+		int index = canonize(t);
 		if (type == TYPE_LERP)
-			return _inter_lerp_tang_(part[index], t);
+			return _inter_lerp_tang_<T>(part[index], t);
 		if (type == TYPE_CUBIC_SPLINE)
-			return _inter_cubic_spline_tang_(part[index], t);
+			return _inter_cubic_spline_tang_<T>(part[index], t);
 	}
-	return v0;
+	return _inter_zero_<T>();
 }
 
+template<>
+inline void Interpolator<float>::print()
+{
+	if (!ready)
+		update();
+	msg_write("---");
+	foreach(part, p)
+		msg_write(format("t0=%f dt=%f (%f  %f) -> (%f  %f)", p.t0, p.dt, p.pos0, p.vel0, p.pos1, p.vel1));
+}
 
+template<>
+inline void Interpolator<vector>::print(){}
+
+template<class T>
+Array<T> Interpolator<T>::get_list(Array<float> &t)
+{
+	//print();
+	Array<T> r;
+	r.resize(t.num);
+	foreachi(t, tt, i)
+		r[i] = get(tt);
+	return r;
+}
+
+template class Interpolator<float>;
+template class Interpolator<vector>;
+//template class Interpolator<quaternion>;
 

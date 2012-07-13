@@ -89,13 +89,6 @@ void CHuiWindow::_Init_(CHuiWindow *_root, bool _allow_root, int _mode)
 
 	SetTarget("", 0);
 
-	// inherit commands
-	foreach(_HuiCommand_, c)
-		if (c.func)
-			Event(c.id, c.func);
-		else if ((c.object) && (c.member_function))
-			EventM(c.id, c.object, c.member_function);
-
 	msg_db_l(2);
 }
 
@@ -292,35 +285,14 @@ bool CHuiWindow::_SendEvent_(HuiEvent *e)
 
 	bool sent = false;
 	foreach(event, ee){
-		bool send = false;
-		
-		// all events
-		if (ee.id == "*")
-			send = true;
-
-		// direct match ("extended")
-		if ((ee.id == e->id) && (ee.message == e->message))
-			send = true;
-
-		// default match
-		if ((ee.id == e->id) && (ee.message == ":def:") && (e->is_default))
-			send = true;
-		if ((ee.id == e->message) && (e->id == "") && (ee.message == ":def:") && (e->is_default))
-			send = true;
-			
-		// simple match
-		if (ee.message == "*"){
-			if (ee.id == e->id)
-				send = true;
-			if ((ee.id == e->message) && (e->id == ""))
-				send = true;
-		}
+		if (!_HuiEventMatch_(e, ee.id, ee.message))
+			continue;
 		
 		// send the event
-		if ((send) && (ee.function)){
+		if (ee.function){
 			ee.function();
 			sent = true;
-		}else if ((send) && (ee.object) && (ee.member_function)){
+		}else if ((ee.object) && (ee.member_function)){
 			// send the event (member)
 			(ee.object->*ee.member_function)();
 			sent = true;

@@ -22,9 +22,9 @@ public:
 	ActionManager(Data *_data);
 	virtual ~ActionManager();
 	void Reset();
+	void Enable(bool _enabled);
 
 	void *Execute(Action *a);
-	void add(Action *a);
 	void Undo();
 	void Redo();
 
@@ -36,11 +36,15 @@ public:
 	bool IsSave();
 	void MarkCurrentAsSave();
 
+private:
+	void add(Action *a);
 	Data *data;
-
 	Array<Action*> action;
 	int cur_pos;
 	int save_pos;
+
+	int cur_level;
+	bool enabled;
 
 	// group
 	int cur_group_level;

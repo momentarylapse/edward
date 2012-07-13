@@ -15,7 +15,7 @@
 #include "../file/file.h"
 
 
-string HuiVersion = "0.4.18.0";
+string HuiVersion = "0.4.19.0";
 
 
 #include <stdio.h>
@@ -76,7 +76,8 @@ void (HuiEventHandler::*hui_idle_member_function)() = NULL;
 bool HuiHaveToExit;
 bool HuiRunning;
 bool HuiEndKeepMsgAlive = false;
-int HuiMainLevel = 0;
+int HuiMainLevel = -1;
+Array<bool> HuiMainLevelRunning;
 
 Array<CHuiWindow*> HuiWindow;
 Array<HuiClosedWindow> _HuiClosedWindow_;
@@ -403,6 +404,7 @@ int HuiRun()
 {
 	msg_db_r("HuiRun",1);
 	HuiRunning = true;
+	HuiMainLevelRunning[HuiMainLevel] = true;
 	//HuiPushMainLevel();
 #ifdef HUI_API_WIN
 	MSG messages;
@@ -487,6 +489,7 @@ void HuiPushMainLevel()
 {
 	msg_db_r("HuiPushMainLevel",2);
 	HuiMainLevel ++;
+	HuiMainLevelRunning.add(false);
 	msg_db_l(2);
 }
 
@@ -506,8 +509,10 @@ void HuiPopMainLevel()
 	HuiCleanUpMainLevel();
 	HuiMainLevel --;
 	
-	if (HuiMainLevel == 0)
+	if (HuiMainLevel < 0)
 		HuiSetErrorFunction(NULL);
+	else
+		HuiMainLevelRunning.pop();
 	HuiDoSingleMainLoop();
 	msg_db_l(2);
 }
@@ -517,7 +522,7 @@ void HuiEnd()
 {
 	msg_db_r("HuiEnd",1);
 
-	if (HuiMainLevel > 1)
+	if (HuiMainLevel > 0)
 		HuiCleanUpMainLevel();
 
 	// send "quit" message
@@ -525,11 +530,12 @@ void HuiEnd()
 	PostQuitMessage(0);
 #endif
 #ifdef HUI_API_GTK
-	gtk_main_quit();
+	if (HuiMainLevelRunning.back())
+		gtk_main_quit();
 #endif
 
 	// really end hui?
-	if (HuiMainLevel == 1){
+	if (HuiMainLevel == 0){
 #ifdef HUI_API_GTK
 #ifdef HUI_OS_LINUX
 		// sometimes freezes...
@@ -543,7 +549,7 @@ void HuiEnd()
 			HuiSaveConfigFile();
 	}
 	msg_db_l(1);
-	if ((msg_inited) && (!HuiEndKeepMsgAlive) && (HuiMainLevel == 1))
+	if ((msg_inited) && (!HuiEndKeepMsgAlive) && (HuiMainLevel == 0))
 		msg_end();
 }
 

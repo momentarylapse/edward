@@ -18,17 +18,17 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos,
 	int material = m->CurrentMaterial;
 
 	// vertices (interpolated on path)
-	Interpolator inter(Interpolator::TYPE_CUBIC_SPLINE_NOTANG);
+	Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
 	foreach(pos, p)
-		inter.Add(p);
+		inter.add(p);
 	int n = (pos.num - 1) * rings;
 	Array<vector> sv;
 	vector r_last = v0;
 	for (int i=0;i<=n;i++){
 		// interpolated point on path
 		float t = (float)i / (float)n;
-		vector p0 = inter.Get(t);
-		vector dir = inter.GetTang(t);
+		vector p0 = inter.get(t);
+		vector dir = inter.get_tang(t);
 
 		// moving frame
 		vector u = r_last ^ dir;
@@ -65,8 +65,8 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos,
 		int nv2 = m->Vertex.num;
 
 		// center points
-		AddSubAction(new ActionModelAddVertex(inter.Get(0)), m);
-		AddSubAction(new ActionModelAddVertex(inter.Get(1)), m);
+		AddSubAction(new ActionModelAddVertex(inter.get(0)), m);
+		AddSubAction(new ActionModelAddVertex(inter.get(1)), m);
 
 		// skin vertices
 		sv.clear();

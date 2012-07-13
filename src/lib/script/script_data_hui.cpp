@@ -346,11 +346,18 @@ void SIAddPackageHui()
 		class_add_func("DrawLines",								TypeVoid,		mf((tmf)&HuiDrawingContext::DrawLinesMA));
 			func_add_param("x",			TypeFloatList);
 			func_add_param("y",			TypeFloatList);
+		class_add_func("DrawPolygon",								TypeVoid,		mf((tmf)&HuiDrawingContext::DrawPolygonMA));
+			func_add_param("x",			TypeFloatList);
+			func_add_param("y",			TypeFloatList);
 		class_add_func("DrawRect",								TypeVoid,		mf((tmf)&HuiDrawingContext::DrawRect));
 			func_add_param("x",			TypeFloat);
 			func_add_param("y",			TypeFloat);
 			func_add_param("w",			TypeFloat);
 			func_add_param("h",			TypeFloat);
+		class_add_func("DrawCircle",								TypeVoid,		mf((tmf)&HuiDrawingContext::DrawCircle));
+			func_add_param("x",			TypeFloat);
+			func_add_param("y",			TypeFloat);
+			func_add_param("r",			TypeFloat);
 		class_add_func("DrawStr",								TypeVoid,		mf((tmf)&HuiDrawingContext::DrawStr));
 			func_add_param("x",			TypeFloat);
 			func_add_param("y",			TypeFloat);
@@ -485,6 +492,7 @@ void SIAddPackageHui()
 		class_add_element("message",	TypeString,	GetDAEvent(message));
 		class_add_element("mouse_x",	TypeInt,	GetDAEvent(mx));
 		class_add_element("mouse_y",	TypeInt,	GetDAEvent(my));
+		class_add_element("wheel",		TypeInt,	GetDAEvent(dz));
 		class_add_element("key",		TypeInt,	GetDAEvent(key));
 		class_add_element("key_code",	TypeInt,	GetDAEvent(key_code));
 		class_add_element("width",		TypeInt,	GetDAEvent(width));

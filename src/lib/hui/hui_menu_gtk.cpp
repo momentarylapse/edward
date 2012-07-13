@@ -65,6 +65,7 @@ gboolean OnGtkMenuClick(GtkWidget *widget, gpointer data)
 	HuiEvent e = HuiCreateEvent(id, "hui:click");
 
 	// which window?
+	_HuiSendGlobalCommand_(&e);
 	for (int i=0;i<HuiWindow.num;i++)
 		HuiWindow[i]->_SendEvent_(&e);
 	return FALSE;
@@ -221,12 +222,16 @@ sHuiImage *get_image(const string &image)
 
 void *get_gtk_image(const string &image, bool large)
 {
+	if (image == "")
+		return NULL;
 	if (image.find("hui:") == 0){
 		// internal
 		return gtk_image_new_from_stock(get_stock_id(image), large ? GTK_ICON_SIZE_LARGE_TOOLBAR : GTK_ICON_SIZE_MENU);
 	}else{
 		// file
 		sHuiImage *img = get_image(image);
+		if (!img)
+			return NULL;
 		// absolute path?
 		if ((img->filename[0] == '/') || (img->filename[1] == ':'))
 			return gtk_image_new_from_file(sys_str_f(img->filename));
@@ -237,19 +242,24 @@ void *get_gtk_image(const string &image, bool large)
 
 void *get_gtk_image_pixbuf(const string &image)
 {
-#ifdef _X_USE_IMAGE_
 	if (image.find("hui:") == 0){
 		// internal
-		return gtk_icon_theme_load_icon(gtk_icon_theme_get_default(), get_stock_id(image), 24, (GtkIconLookupFlags)0, NULL);
+		GdkPixbuf *pb = gtk_icon_theme_load_icon(gtk_icon_theme_get_default(), get_stock_id(image), 24, (GtkIconLookupFlags)0, NULL);
+		if (pb){
+			GdkPixbuf *r = gdk_pixbuf_copy(pb);
+			g_object_unref(pb);
+			return r;
+		}
 	}else{
 		// file
 		sHuiImage *img = get_image(image);
 		if (img->type == 0){
 		}else if (img->type == 1){
+#ifdef _X_USE_IMAGE_
 			return gdk_pixbuf_new_from_data((guchar*)img->image.data.data, GDK_COLORSPACE_RGB, true, 8, img->image.width, img->image.height, img->image.width * 4, NULL, NULL);
+#endif
 		}
 	}
-#endif
 	return NULL;
 }
 
@@ -259,7 +269,8 @@ void CHuiMenu::AddItemImage(const string &name, const string &image, const strin
 	
 	i->widget = gtk_image_menu_item_new_with_label(get_lang_sys(id, name, false));
 	GtkWidget *im = (GtkWidget*)get_gtk_image(image, false);
-	gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(i->widget), im);
+	if (im)
+		gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(i->widget), im);
 	gtk_menu_shell_append(GTK_MENU_SHELL(g_menu), i->widget);
 	gtk_widget_show(i->widget);
 	g_signal_connect(G_OBJECT(i->widget), "activate", G_CALLBACK(OnGtkMenuClick), this);

@@ -2,7 +2,8 @@
 
 TYPES_BIN  = temp/types.a
 TYPES_OBJ  = temp/types.o temp/types_color.o temp/types_color.o temp/types_complex.o temp/types_vector.o \
-   temp/types_matrix.o temp/types_matrix3.o temp/types_quaternion.o temp/types_plane.o temp/types_rect.o
+   temp/types_matrix.o temp/types_matrix3.o temp/types_quaternion.o temp/types_plane.o \
+   temp/types_rect.o temp/types_interpolation.o
 TYPES_CXXFLAGS = $(GLOBALFLAGS)
 
 $(TYPES_BIN) : $(TYPES_OBJ)
@@ -35,3 +36,6 @@ temp/types_plane.o : types/plane.cpp
 
 temp/types_rect.o : types/rect.cpp
 	$(CPP) -c types/rect.cpp -o $@ $(TYPES_CXXFLAGS)
+
+temp/types_interpolation.o : types/interpolation.cpp
+	$(CPP) -c types/interpolation.cpp -o $@ $(TYPES_CXXFLAGS)

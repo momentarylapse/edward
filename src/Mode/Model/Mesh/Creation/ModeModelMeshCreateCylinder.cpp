@@ -138,25 +138,25 @@ void ModeModelMeshCreateCylinder::OnDrawWin(int win, irect dest)
 		}
 
 		// spline curve
-		Interpolator inter(Interpolator::TYPE_CUBIC_SPLINE_NOTANG);
+		Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
 		foreach(pos, p)
-			inter.Add(p);
+			inter.add(p);
 		if (!ready_for_scaling)
-			inter.Add(multi_view->GetCursor3d());
+			inter.add(multi_view->GetCursor3d());
 		for (int i=0;i<100;i++)
-			NixDrawLine3D(inter.Get((float)i * 0.01f), inter.Get((float)i * 0.01f + 0.01f), Green);
+			NixDrawLine3D(inter.get((float)i * 0.01f), inter.get((float)i * 0.01f + 0.01f), Green);
 	}
 	if (ready_for_scaling){
-		Interpolator inter(Interpolator::TYPE_CUBIC_SPLINE_NOTANG);
+		Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
 		foreach(pos, p)
-			inter.Add(p);
+			inter.add(p);
 		int n = (pos.num - 1) * dialog->GetInt("ncy_rings");
 		mode_model->SetMaterialCreation();
 		NixVBClear(VBTemp);
 		for (int i=0;i<n;i++){
 			float t0 = (float)i       / (float)n;
 			float t1 = (float)(i + 1) / (float)n;
-			CreateCylinderBuffer(VBTemp, inter.Get(t0), inter.Get(t1) - inter.Get(t0), radius);
+			CreateCylinderBuffer(VBTemp, inter.get(t0), inter.get(t1) - inter.get(t0), radius);
 		}
 		NixDraw3D(-1, VBTemp, m_id);
 	}

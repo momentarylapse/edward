@@ -8,6 +8,7 @@
 #ifndef INTERPOLATION_H_
 #define INTERPOLATION_H_
 
+template<class T>
 class Interpolator
 {
 public:
@@ -18,26 +19,33 @@ public:
 		TYPE_ANGULAR_LERP,
 	};
 	Interpolator(Type type);
+	void __init__();
+	void set_type(const string &_type);
 
 	// data input
-	void Clear();
-	void Add(const vector &p, float dt = 1.0f);
-	void Add(const vector &p, const vector &v, float dt = 1.0f);
-	void Jump(const vector &p, const vector &v);
+	void clear();
+	void add(const T &p, float dt = 1.0f);
+	void add2(const T &p, const T &v, float dt = 1.0f);
+	void add3(const T &p, const T &v, float weight, float dt = 1.0f);
+	void jump(const T &p, const T &v);
 
 	// interpolated output
-	vector Get(float t);
-	vector GetTang(float t);
+	T get(float t);
+	T get_tang(float t);
+	Array<T> get_list(Array<float> &t);
 
 	struct Part
 	{
-		vector pos0, pos1;
-		vector vel0, vel1;
+		T pos0, pos1;
+		T vel0, vel1;
 		float t0, dt;
+		float weight0, weight1;
 	};
 
 private:
-	void Update();
+	void update();
+	int canonize(float &t);
+	void print();
 	Type type;
 	bool empty;
 	bool ready;

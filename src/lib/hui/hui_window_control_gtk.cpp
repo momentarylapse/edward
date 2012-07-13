@@ -231,6 +231,7 @@ void NotifyWindowByWidget(CHuiWindow *win, GtkWidget *widget, const string &mess
 	win->_SetCurID_(id);
 	if (id.num > 0){
 		HuiEvent e = HuiCreateEvent(id, message);
+		_HuiSendGlobalCommand_(&e);
 		e.is_default = is_default;
 		win->_SendEvent_(&e);
 	}
@@ -1034,6 +1035,22 @@ void HuiDrawingContext::DrawLinesMA(Array<float> &x, Array<float> &y)
 	DrawLines(&x[0], &y[0], x.num - 1);
 }
 
+void HuiDrawingContext::DrawPolygon(float *x, float *y, int num_points)
+{
+	if (!cr)
+		return;
+	cairo_move_to(cr, x[0], y[0]);
+	for (int i=1;i<num_points;i++)
+		cairo_line_to(cr, x[i], y[i]);
+	cairo_close_path(cr);
+	cairo_fill(cr);
+}
+
+void HuiDrawingContext::DrawPolygonMA(Array<float> &x, Array<float> &y)
+{
+	DrawPolygon(&x[0], &y[0], x.num);
+}
+
 void HuiDrawingContext::DrawStr(float x, float y, const string &str)
 {
 	if (!cr)
@@ -1064,6 +1081,14 @@ void HuiDrawingContext::DrawRect(float x, float y, float w, float h)
 	if (!cr)
 		return;
 	cairo_rectangle(cr, x, y, w, h);
+	cairo_fill(cr);
+}
+
+void HuiDrawingContext::DrawCircle(float x, float y, float radius)
+{
+	if (!cr)
+		return;
+	cairo_arc(cr, x, y, radius, 0, 2 * pi);
 	cairo_fill(cr);
 }
 
