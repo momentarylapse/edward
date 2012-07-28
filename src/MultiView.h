@@ -49,6 +49,7 @@ struct MultiViewView
 	irect dest;
 	irect name_dest;
 	vector ang;
+	matrix projection;
 };
 
 

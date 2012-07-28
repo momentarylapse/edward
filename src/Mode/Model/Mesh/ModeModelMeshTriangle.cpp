@@ -69,7 +69,9 @@ void ModeModelMeshTriangle::DrawTrias()
 						add_tria(VBModel, data, t);
 
 			// draw
-			NixDraw3D(m.Texture[0], VBModel, m_id); // TODO:  alle Texturen, nicht nur die erste....
+			NixSetTexture(m.Texture[0]);
+			NixDraw3D(VBModel); // TODO:  alle Texturen, nicht nur die erste....
+			NixSetTexture(-1);
 
 		// multi texture
 		}else{
@@ -105,7 +107,9 @@ void ModeModelMeshTriangle::DrawTrias()
 					}
 
 			// draw
-			NixDraw3DM(m.Texture, *vb, m_id);
+			NixSetTextures(m.Texture, num_tex);
+			NixDraw3DM(*vb);
+			NixSetTexture(-1);
 		}
 	}
 	msg_db_l(2);
@@ -203,11 +207,11 @@ void ModeModelMeshTriangle::OnDrawWin(int win, irect dest)
 	msg_db_m("----a",4);
 
 	SetMaterialMarked();
-	NixDraw3D(-1,VBMarked,m_id);
+	NixDraw3D(VBMarked);
 	SetMaterialMouseOver();
-	NixDraw3D(-1,VBMouseOver,m_id);
+	NixDraw3D(VBMouseOver);
 	SetMaterialCreation();
-	NixDraw3D(-1,VBCreation,m_id);
+	NixDraw3D(VBCreation);
 	NixSetMaterial(White,White,Black,0,Black);
 	NixSetAlpha(AlphaNone);
 

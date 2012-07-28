@@ -11,6 +11,7 @@ struct sText : XContainer
 	float size;
 	color _color;
 	string text;
+	bool IsMouseOver();
 };
 
 struct sPicture : XContainer
@@ -22,11 +23,13 @@ struct sPicture : XContainer
 	int texture;
 	rect source;
 	int shader;
+	
+	bool IsMouseOver();
 };
 
 struct sPicture3D : XContainer
 {
-	bool relative, lighting, world_3d;
+	bool lighting, world_3d;
 	float z;
 	matrix _matrix;
 	CModel *model;
@@ -39,6 +42,7 @@ struct sPicture3D : XContainer
 	int transparency_mode;
 	float alpha_factor;
 	float reflection_density;
+	bool IsMouseOver();
 };
 
 struct sSubPicture
@@ -85,7 +89,6 @@ sPicture3D *_cdecl GuiCreatePicture3D(CModel *model, const matrix &mat, float z)
 void GuiDeletePicture3D(sPicture3D *picture3d);
 sGrouping *_cdecl GuiCreateGrouping(const vector &pos, bool set_current);
 void GuiDeleteGrouping(sGrouping *grouping);
-bool _cdecl GuiMouseOver(void *p);
 
 void GuiReset();
 void GuiDraw();

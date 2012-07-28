@@ -14,6 +14,10 @@
 //bool TestMenuID(CHuiMenu *menu, int id, message_function *mf);
 void add_key_to_buffer(HuiInputData *d, int key);
 
+#if GTK_MAJOR_VERSION == 2
+GtkWidget *gtk_box_new(GtkOrientation orientation, int spacing); // -> hui_window_control_gtk.cpp
+#endif
+
 
 unsigned int ignore_time = 0;
 
@@ -118,19 +122,19 @@ bool process_key(GdkEventKey *event, GtkWidget *KeyReciever, CHuiWindow *win, bo
 {
 	//printf("%d   %d\n", nk++, event->time);
 	// convert hardware keycode into GDK keyvalue
-	/*GdkKeymapKey kmk;
+	GdkKeymapKey kmk;
 	kmk.keycode = event->hardware_keycode;
 	kmk.group = event->group;
 	kmk.level = 0;
-	int keyvalue = gdk_keymap_lookup_key(NULL, &kmk);*/
+	int keyvalue = gdk_keymap_lookup_key(gdk_keymap_get_default(), &kmk);
 	// TODO GTK3
-	int keyvalue = event->keyval;
+	//int keyvalue = event->keyval;
 	//msg_write(keyvalue);
 
 	// convert GDK keyvalue into HUI key id
 	int key=-1;
 	for (int i=0;i<HUI_NUM_KEYS;i++)
-		//if ((KeyID[i]==k->keyval)||(KeyID2[i]==k->keyval))
+		//if ((HuiKeyID[i] == keyvalue)||(HuiKeyID2[i] == keyvalue))
 		if (HuiKeyID[i] == keyvalue)
 			key = i;
 	if (key < 0){
@@ -164,7 +168,7 @@ bool process_key(GdkEventKey *event, GtkWidget *KeyReciever, CHuiWindow *win, bo
 			key_code += KEY_CONTROL;
 		if ((event->state & GDK_SHIFT_MASK) > 0)
 			key_code += KEY_SHIFT;
-		if (((event->state & GDK_MOD1_MASK) > 0) /*|| ((event->state & GDK_MOD2_MASK) > 0)*/){
+		if (((event->state & GDK_MOD1_MASK) > 0) || ((event->state & GDK_MOD2_MASK) > 0) || ((event->state & GDK_MOD5_MASK) > 0)){
 			key_code += KEY_ALT;
 		}
 		win->input.key_code = key_code;
@@ -231,9 +235,11 @@ gboolean OnGtkWindowMouseMove(GtkWidget *widget, GdkEventMotion *event, gpointer
 	int mx, my, mod = 0;
 	if (win->gl_widget){
 		//msg_write("gl");
+#if GTK_MAJOR_VERSION >= 3
 		gdk_window_get_device_position(gtk_widget_get_window(win->gl_widget), event->device, &mx, &my, (GdkModifierType*)&mod);
-		// TODO GTK3
-		//gdk_window_get_pointer(win->gl_widget->window, &mx, &my, (GdkModifierType*)&mod);
+#else
+		gdk_window_get_pointer(win->gl_widget->window, &mx, &my, (GdkModifierType*)&mod);
+#endif
 		//mx = event->x;
 		//my = event->y;
 		/*win->mouse_offset_x = mx - event->x;

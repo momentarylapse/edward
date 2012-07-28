@@ -230,13 +230,11 @@ inline void particle_init(sParticle *p, const vector &pos, const vector &param, 
 	return p;
 }*/
 
-static vector senseless_vector;
-
 sParticle *FxParticleCreateDef(const vector &pos, int texture, particle_callback *func, float time_to_live, float radius)
 {
 	msg_db_r("new particle",2);
 	xcont_find_new(XContainerParticle, sParticle, p, Particle);
-	particle_init(p, pos, senseless_vector, texture, func, time_to_live, radius);
+	particle_init(p, pos, v0, texture, func, time_to_live, radius);
 	msg_db_l(2);
 	return p;
 }
@@ -614,12 +612,12 @@ void FxCubeMapCreate(int cube_map,int tex0,int tex1,int tex2,int tex3,int tex4,i
 	NixSetCubeMap(CubeMap[cube_map].CubeMap,tex0,tex1,tex2,tex3,tex4,tex5);
 }
 
-void FxCubeMapDraw(int cube_map,int buffer,const matrix &mat,float density)
+void FxCubeMapDraw(int cube_map,int buffer,float density)
 {
 	bool el=NixLightingEnabled;
 	NixEnableLighting(!CubeMap[cube_map].Dynamical);
 	NixSetAlpha(density);
-	NixDraw3DCubeMapped(CubeMap[cube_map].CubeMap,buffer,mat);
+	NixDraw3DCubeMapped(CubeMap[cube_map].CubeMap,buffer);
 	NixSetAlpha(AlphaNone);
 	NixEnableLighting(el);
 }
@@ -642,7 +640,7 @@ void FxDrawPolygon(int num_points,const vector *p)
 {
 	NixVBClear(VBTemp);
 	FxCreatePolygon(VBTemp,num_points,p);
-	NixDraw3D(-1,VBTemp,m_id);
+	NixDraw3D(VBTemp);
 }
 
 void FxCreateBall(int buffer,const vector &pos,float radius,int nx,int ny)
@@ -671,7 +669,7 @@ void FxDrawBall(const vector &pos,float radius,int nx,int ny)
 {
 	NixVBClear(FxVB);
 	FxCreateBall(FxVB,pos,radius,nx,ny);
-	NixDraw3D(-1,FxVB,m_id);
+	NixDraw3D(FxVB);
 }
 
 void FxCreateSpat(int buffer,const vector &p0,const vector &p1,const vector &p2,const vector &p3)
@@ -754,7 +752,7 @@ void FxDrawSpat(const vector &p0,const vector &p1,const vector& p2,const vector 
 {
 	NixVBClear(FxVB);
 	FxCreateSpat(FxVB,p0,p1,p2,p3);
-	NixDraw3D(-1,FxVB,m_id);
+	NixDraw3D(FxVB);
 }
 
 void FxCreateCube(int buffer,const vector &a,const vector &b)
@@ -969,6 +967,9 @@ void FxDrawShadows()
 	if (Shadow.num > 0){
 		NixSetZ(false,true);
 		NixSetAlpha(AlphaZero, AlphaOne);
+		NixEnableLighting(false);
+		NixSetTexture(-1);
+		NixSetWorldMatrix(m_id);
 
 
 		NixSetStencil(StencilReset, 0);
@@ -976,14 +977,14 @@ void FxDrawShadows()
 		// render back side
 		NixSetCull(CullCW);
 		NixSetStencil(StencilIncrease, 1);
-		NixDraw3D(-1, ShadowVB[0], m_id);
-		NixDraw3D(-1, ShadowVB[1], m_id);
+		NixDraw3D(ShadowVB[0]);
+		NixDraw3D(ShadowVB[1]);
 
 		// render front
 		NixSetCull(CullCCW);
 		NixSetStencil(StencilDecreaseNotNegative,1);
-		NixDraw3D(-1, ShadowVB[0], m_id);
-		NixDraw3D(-1, ShadowVB[1], m_id);
+		NixDraw3D(ShadowVB[0]);
+		NixDraw3D(ShadowVB[1]);
 
 
 		// draw the shadow itself
@@ -993,7 +994,9 @@ void FxDrawShadows()
 		NixSetStencil(StencilMaskNotEqual, 0);
 		NixSetAlpha(AlphaMaterial);
 
-		NixDraw2D(-1, ShadowColor, r_id, NixTargetRect, 0);
+		NixSetColor(ShadowColor);
+		NixSetProjection(false, false);
+		NixDraw2D(r_id, NixTargetRect, 0);
 
 		NixSetStencil(StencilNone);
 		NixSetZ(true, true);
@@ -1089,7 +1092,7 @@ void FxDrawMirrors(Skin *s,const matrix &mat)
 void TCTransform(float &u,float &v,vector n,vector p)
 {
 #ifdef _X_ALLOW_CAMERA_
-	p-=view_cur->view_pos;
+	p-=cur_cam->view_pos;
 	VecNormalize(p);
 	//vector sd=meta->GetSunDirection();
 	float f=VecDotProduct(CamDir,n)+VecDotProduct(CamDir,p);
@@ -1327,17 +1330,21 @@ void FxDraw1()
 
 #include <GL/gl.h>
 
-extern matrix NixViewMatrix, NixOGLProjectionMatrix2D, NixProjectionMatrix;
+extern matrix NixViewMatrix, NixProjectionMatrix;
 extern float NixView3DRatio;
 extern vector NixViewScale;
 
 void DrawParticles()
 {
+	NixSetWorldMatrix(m_id);
+	NixEnableLighting(true);
 	foreach(Particle, p)
 		if ((p->used) && (p->enabled)){
-			if (p->type == XContainerParticle)
-				NixDrawSprite(p->texture, p->_color, p->source, p->pos, p->radius);
-			else if (p->type == XContainerParticleRot){
+			if (p->type == XContainerParticle){
+				NixSetTexture(p->texture);
+				NixSetColor(p->_color);
+				NixDrawSprite(p->source, p->pos, p->radius);
+			}else if (p->type == XContainerParticleRot){
 				matrix r,t,m;
 				MatrixRotation(r, p->parameter);
 				MatrixTranslation(t, p->pos);
@@ -1359,57 +1366,51 @@ void DrawParticles()
 										d,n,p->source.x2,p->source.y1,
 										b,n,p->source.x2,p->source.y2);
 				NixSetMaterial(Black, color(p->_color.a, 0, 0, 0), Black, 0, p->_color);
-				NixDraw3D(p->texture, VBTemp, m_id);
+				NixSetTexture(p->texture);
+				NixDraw3D(VBTemp);
 			}
 		}
 }
 
 void DrawParticlesNew()
 {
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf((float*)&NixOGLProjectionMatrix2D);
-	glDisable(GL_LIGHTING);
+	NixSetProjection(true, true);
+	cur_cam->SetView();
+	NixSetWorldMatrix(m_id);
+	NixEnableLighting(false);
+
+	matrix mi;
+	MatrixInverse(mi, NixViewMatrix);
+	vector ve_x, ve_y;
+	VecNormalTransform(ve_x, mi, e_x);
+	VecNormalTransform(ve_y, mi, e_y);
 
 	
 	foreach(Particle, p)
 		if ((p->used) && (p->enabled))
 			if (p->type == XContainerParticle){
-				rect dest;
-				float depth;
-				vector pp;
-				NixGetVecProject(pp, p->pos);
-				if ((pp.z <= 0.0f) || (pp.z >= 1.0))
-					continue;
-				depth = pp.z;
-				vector u;
-				VecTransform(u, NixViewMatrix, p->pos);
-				float q = NixMaxDepth / (NixMaxDepth - NixMinDepth);
-				float f = 1.0f / (u.z * q * NixMinDepth * NixView3DRatio);
-				dest.x1 = pp.x - f * p->radius * NixViewScale.x * NixTargetWidth;
-				dest.x2 = pp.x + f * p->radius * NixViewScale.x * NixTargetWidth;
-				dest.y1 = pp.y - f * p->radius * NixViewScale.y * NixTargetHeight * NixView3DRatio;
-				dest.y2 = pp.y + f * p->radius * NixViewScale.y * NixTargetHeight * NixView3DRatio;
-				
 				NixSetTexture(p->texture);
-				depth = depth * 2 - 1;
 				glColor4fv((float*)&p->_color);
+				vector a = p->pos - p->radius * ve_x - p->radius * ve_y;
+				vector b = p->pos + p->radius * ve_x - p->radius * ve_y;
+				vector c = p->pos - p->radius * ve_x + p->radius * ve_y;
+				vector d = p->pos + p->radius * ve_x + p->radius * ve_y;
+				
 				// ab
 				// cd
 				glBegin(GL_QUADS);
 					// c
 					glTexCoord2f(p->source.x1, 1 - p->source.y2);
-					glVertex3f(dest.x1, dest.y2, depth);
+					glVertex3f(c.x, c.y, c.z);
 					// a
 					glTexCoord2f(p->source.x1, 1 - p->source.y1);
-					glVertex3f(dest.x1, dest.y1, depth);
+					glVertex3f(a.x, a.y, a.z);
 					// b
 					glTexCoord2f(p->source.x2, 1 - p->source.y1);
-					glVertex3f(dest.x2, dest.y1, depth);
+					glVertex3f(b.x, b.y, b.z);
 					// d
 					glTexCoord2f(p->source.x2, 1 - p->source.y2);
-					glVertex3f(dest.x2, dest.y2, depth);
+					glVertex3f(d.x, d.y, d.z);
 				glEnd();
 			}
 }
@@ -1418,8 +1419,10 @@ void DrawBeams()
 {
 	vector dir;
 #ifdef _X_ALLOW_CAMERA_
-	dir = VecAng2Dir(view_cur->ang);
+	dir = VecAng2Dir(cur_cam->ang);
 #endif
+	NixSetWorldMatrix(m_id);
+	NixEnableLighting(true);
 	foreach(Beam, p)
 		if ((p->used) && (p->enabled)){
 			vector r = VecCrossProduct(dir, p->parameter);
@@ -1437,20 +1440,21 @@ void DrawBeams()
 									d,n,p->source.x2,p->source.y1,
 									b,n,p->source.x2,p->source.y2);
 			NixSetMaterial(Black, color(p->_color.a, 0, 0, 0), Black, 0, p->_color);
-			NixDraw3D(p->texture, VBTemp, m_id);
+			NixSetTexture(p->texture);
+			NixDraw3D(VBTemp);
 		}
 }
 
 void DrawBeamsNew()
 {
+	NixSetProjection(true, true);
+	cur_cam->SetView();
 	NixSetWorldMatrix(m_id);
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf((float*)&NixProjectionMatrix);
-	glDisable(GL_LIGHTING);
+	NixEnableLighting(false);
 	
 	vector dir;
 #ifdef _X_ALLOW_CAMERA_
-	dir = VecAng2Dir(view_cur->ang);
+	dir = VecAng2Dir(cur_cam->ang);
 #endif
 	foreach(Beam, p)
 		if ((p->used) && (p->enabled)){
@@ -1493,7 +1497,6 @@ void FxDraw2()
 	NixSetAlpha(AlphaSourceAlpha,AlphaSourceInvAlpha);
 
 
-	//NixEnableLighting2D(true);
 	//NixSetMaterial(White,Black,Black,0,Black);
 // particles
 	msg_db_m("--Pa",3);
@@ -1506,10 +1509,8 @@ void FxDraw2()
 	
 #endif
 	//NixSetAlpha(AlphaSourceColor,AlphaOne);
-	//NixEnableLighting2D(false);
 	NixEnableLighting(true);
 	NixSetAlpha(AlphaSourceColor,AlphaOne);
-	//NixEnableLighting2D(false);
 
 // tails (of weapons)
 	msg_db_m("--Ta",3);

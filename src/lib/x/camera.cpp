@@ -20,11 +20,13 @@
 
 
 
-Array<CView*> View;
-CView *Cam; // "camera"
-CView *view_cur; // currently rendering
+Array<Camera*> camera;
+Camera *Cam; // "camera"
+Camera *cur_cam; // currently rendering
 
-void ExecuteCamPoint(CView *view);
+void ExecuteCamPoint(Camera *cam);
+
+extern matrix NixViewMatrix, NixProjectionMatrix;
 
 
 void CameraInit()
@@ -35,24 +37,26 @@ void CameraInit()
 void CameraReset()
 {
 	msg_db_r("CameraReset",1);
-	foreach(View, v)
-		delete(v);
-	View.clear();
+	foreach(camera, c)
+		delete(c);
+	camera.clear();
 
 	// create the main-view ("cam")
-	Cam = CameraCreateView(v0, v0, r_id, true);
-	view_cur = Cam;
+	Cam = CreateCamera(v0, v0, r_id, true);
+	cur_cam = Cam;
 
 	msg_db_l(1);
 }
 
-void CView::reset()
+void Camera::reset()
 {
 	pmvd.opaque.clear();
 	pmvd.trans.clear();
 
 	zoom = 1.0f;
 	z = 0.999999f;
+	min_depth = 1.0f;
+	max_depth = 100000.0f;
 	output_texture = -1;
 	input_texture = -1;
 	shader = -1;
@@ -77,9 +81,12 @@ void CView::reset()
 	real_time = false;
 	jump_to_pos = false;
 	auto_over = false;
+
+	MatrixIdentity(m_all);
+	MatrixIdentity(im_all);
 }
 
-CView::CView()
+Camera::Camera()
 {
 	this->reset();
 	enabled = true;
@@ -89,10 +96,10 @@ CView::CView()
 	jump_to_pos = false;
 }
 
-CView *CameraCreateView(const vector &pos,const vector &ang,const rect &dest,bool show)
+Camera *CreateCamera(const vector &pos,const vector &ang,const rect &dest,bool show)
 {
-	msg_db_r("CameraCreateView",1);
-	xcont_find_new(XContainerView, CView, v, View);
+	msg_db_r("CreateCamera",1);
+	xcont_find_new(XContainerView, Camera, v, camera);
 	// initial data
 	v->pos = pos;
 	v->ang = ang;
@@ -103,14 +110,14 @@ CView *CameraCreateView(const vector &pos,const vector &ang,const rect &dest,boo
 	return v;
 }
 
-void CameraDeleteView(CView *v)
+void DeleteCamera(Camera *v)
 {
 	v->enabled = false;
 	v->show = false;
 	v->used = false;
 }
 
-void SetAim(CView *view,vector &pos,vector &vel,vector &ang,float time,bool real_time)
+void SetAim(Camera *view,vector &pos,vector &vel,vector &ang,float time,bool real_time)
 {
 	//if (view->AutoOver<0)
 	//	view->PraeAng=view->Ang;
@@ -139,7 +146,7 @@ void SetAim(CView *view,vector &pos,vector &vel,vector &ang,float time,bool real
 	view->automatic = true;
 }
 
-void CView::StartScript(const string &filename,const vector &dpos)
+void Camera::StartScript(const string &filename,const vector &dpos)
 {
 	if (filename.num <= 0){
 		automatic=false;
@@ -218,14 +225,14 @@ void CView::StartScript(const string &filename,const vector &dpos)
 	msg_left();
 }
 
-void CView::StopScript()
+void Camera::StopScript()
 {
 	cam_point_nr = -1;
 	cam_point.clear();
 	automatic = false;
 }
 
-void ExecuteCamPoint(CView *view)
+void ExecuteCamPoint(Camera *view)
 {
 	view->script_ang[0] = view->ang;
 	if (view->cam_point_nr == 0)
@@ -311,7 +318,7 @@ void CameraCalcMove()
 {
 	msg_db_r("CamCalcMove",2);
 
-	foreach(View, v){
+	foreach(camera, v){
 		if (!v->enabled)
 			continue;
 
@@ -385,9 +392,9 @@ void CameraCalcMove()
 	msg_db_l(2);
 }
 
-void CView::Start()
+void Camera::Start()
 {
-	view_cur = this;
+	cur_cam = this;
 	if (output_texture >= 0){
 		NixStart(output_texture);
 	}else{
@@ -400,7 +407,7 @@ void CView::Start()
 
 int num_used_clipping_planes = 0;
 
-void CView::SetView()
+void Camera::SetView()
 {
 	vector scale = vector(zoom, zoom, 1);
 
@@ -412,7 +419,13 @@ void CView::SetView()
 		NixEnableClipPlane(i, false);
 
 	// View-Transformation setzen (Kamera)
-	NixSetView(true, view_pos, ang, scale);
+	NixMinDepth = min_depth;
+	NixMaxDepth = max_depth;
+	NixSetProjection(true, true);
+	NixSetView(view_pos, ang, scale);
+	
+	m_all = NixProjectionMatrix * NixViewMatrix;
+	MatrixInverse(im_all, m_all);
 
 	// clipping planes
 	for (int i=0;i<clipping_plane.num;i++){
@@ -424,7 +437,7 @@ void CView::SetView()
 	num_used_clipping_planes = clipping_plane.num;
 }
 
-void CView::SetViewLocal()
+void Camera::SetViewLocal()
 {
 	vector scale = vector(zoom, zoom, 1);
 
@@ -433,6 +446,37 @@ void CView::SetViewLocal()
 	view_pos = pos;
 
 	// View-Transformation setzen (Kamera)
-	NixSetView(true, v0, ang, scale);
+	NixMinDepth = 0.01f;
+	NixMaxDepth = 1000000.0f;
+	NixSetProjection(true, true);
+	NixSetView(v0, ang, scale);
+	
+	m_all = NixProjectionMatrix * NixViewMatrix;
+	MatrixInverse(im_all, m_all);
+}
+
+vector Camera::Project(const vector &v)
+{
+	float f[4];
+	f[0] = m_all._00 * v.x + m_all._01 * v.y + m_all._02 * v.z + m_all._03;
+	f[1] = m_all._10 * v.x + m_all._11 * v.y + m_all._12 * v.z + m_all._13;
+	f[2] = m_all._20 * v.x + m_all._21 * v.y + m_all._22 * v.z + m_all._23;
+	f[3] = m_all._30 * v.x + m_all._31 * v.y + m_all._32 * v.z + m_all._33;
+	if (f[3] <= 0)
+		return vector(0, 0, -1);
+	return vector(f[0] / f[3] * 0.5f + 0.5f, 0.5f - f[1] / f[3] * 0.5f, f[2] / f[3]);
+}
+
+vector Camera::Unproject(const vector &v)
+{
+	float f[4], g[3];
+	g[0] = (v.x - 0.5f) * 2;
+	g[1] = (0.5f - v.y) * 2;
+	g[2] = v.z;
+	f[0] = m_all._00 * g[0] + m_all._01 * g[1] + m_all._02 * g[2] + m_all._03;
+	f[1] = m_all._10 * g[0] + m_all._11 * g[1] + m_all._12 * g[2] + m_all._13;
+	f[2] = m_all._20 * g[0] + m_all._21 * g[1] + m_all._22 * g[2] + m_all._23;
+	f[3] = m_all._30 * g[0] + m_all._31 * g[1] + m_all._32 * g[2] + m_all._33;
+	return vector(f[0], f[1], f[2]);
 }
 

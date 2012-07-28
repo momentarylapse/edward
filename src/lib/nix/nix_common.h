@@ -99,14 +99,13 @@ extern bool OGLShaderSupport;
 
 	extern bool OGLDynamicTextureSupport;
 #endif
-extern matrix NixOGLProjectionMatrix2D;
 extern bool NixGLDoubleBuffered;
 extern int NixOGLFontDPList;
 extern int NixglShaderCurrent;
 
 
-extern matrix NixViewMatrix,NixProjectionMatrix,NixInvProjectionMatrix;
-extern matrix NixWorldMatrix,NixWorldViewProjectionMatrix;
+extern matrix NixViewMatrix, NixProjectionMatrix, NixInvProjectionMatrix;
+extern matrix NixWorldMatrix, NixWorldViewProjectionMatrix;
 
 extern float NixView3DRatio;
 extern vector NixViewScale;
@@ -156,29 +155,5 @@ extern Array<sShaderFile> NixShader;
 
 
 
-
-
-inline void OGLSet2DMode()
-{
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf((float*)&NixOGLProjectionMatrix2D);
-	if (NixLightingEnabled2D)
-		glEnable(GL_LIGHTING);
-	else
-		glDisable(GL_LIGHTING);
-}
-
-inline void OGLSet3DMode()
-{
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf((float*)&NixProjectionMatrix);
-	glColor3f(1,1,1);
-	if (NixLightingEnabled)
-		glEnable(GL_LIGHTING);
-	else
-		glDisable(GL_LIGHTING);
-}
 
 

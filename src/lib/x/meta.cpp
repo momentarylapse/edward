@@ -43,8 +43,7 @@ bool ShadowLowerDetail;
 float FpsMax,FpsMin;
 int Multisampling = 0;
 bool NetworkEnabled,CullingEnabled,SortingEnabled,ZBufferEnabled;
-color XFontColor;
-int XFontIndex,DefaultFont;
+int XFontIndex, DefaultFont;
 float XFontZ;
 bool ResettingGame = false;
 
@@ -94,7 +93,6 @@ CModel *NoModel;
 void MetaInit()
 {
 	msg_db_r("Meta",1);
-	XFontColor=Black;
 	XFontIndex=0;
 	DefaultFont=0;
 	// unnessessary...
@@ -185,7 +183,6 @@ void MetaReset()
 	ModelToIgnore=NULL;
 	DefaultFont=0;
 	XFontZ=0;
-	XFontColor=White;
 	XFontIndex=0;
 	ShadowLight=0;
 	ShadowLowerDetail=false;
@@ -630,7 +627,7 @@ void _cdecl MetaDelete(void *p)
 #endif
 #ifdef _X_ALLOW_CAMERA_
 	else if (type == XContainerView)
-		CameraDeleteView((CView*)p);
+		DeleteCamera((Camera*)p);
 #endif
 	else // TODO: recognize models!
 		MetaDeleteModel((CModel*)p);
@@ -789,6 +786,7 @@ float _cdecl XFDrawStr(float x,float y,float height,const string &str,bool centr
 		x-=XFGetWidth(height,str)/2;
 	NixSetAlpha(AlphaSourceAlpha,AlphaSourceInvAlpha);
 		//NixSetAlpha(AlphaMaterial);
+	NixSetTexture(f->texture);
 	float xf=height*f->x_factor;
 	float yf=height*f->y_factor;
 	float w=0;
@@ -805,11 +803,11 @@ float _cdecl XFDrawStr(float x,float y,float height,const string &str,bool centr
 		}
 		int n=(unsigned char)s[i];
 		n=f->table[n];
-		d.x1=(x+w-f->glyph[n].x_offset*xf)*MaxX;
-		d.x2=(x+w+f->glyph[n].dx2     *xf)*MaxX;
-		d.y1=(y             )*MaxY;
-		d.y2=(y+f->height*yf)*MaxY;
-		NixDraw2D(f->texture, XFontColor, f->glyph[n].src, d, XFontZ);
+		d.x1=(x+w-f->glyph[n].x_offset*xf);
+		d.x2=(x+w+f->glyph[n].dx2     *xf);
+		d.y1=(y             );
+		d.y2=(y+f->height*yf);
+		NixDraw2D(f->glyph[n].src, d, XFontZ);
 		w += f->glyph[n].dx * xf;
 	}
 	NixSetAlpha(AlphaNone);
@@ -825,6 +823,7 @@ float _cdecl XFDrawVertStr(float x,float y,float height,const string &str)
 		return 0;
 	msg_db_r("XFDrawVertStr",10);
 	NixSetAlpha(AlphaSourceAlpha,AlphaSourceInvAlpha);
+	NixSetTexture(f->texture);
 	float xf=height*f->x_factor;
 	float yf=height*f->y_factor;
 	y-=f->y_offset*yf;
@@ -837,11 +836,11 @@ float _cdecl XFDrawVertStr(float x,float y,float height,const string &str)
 			continue;
 		int n=(unsigned char)s[i];
 		n=f->table[n];
-		d.x1=(x-f->glyph[n].x_offset*xf)*MaxX;
-		d.x2=(x+f->glyph[n].dx2     *xf)*MaxX;
-		d.y1=(y             )*MaxY;
-		d.y2=(y+f->height*yf)*MaxY;
-		NixDraw2D(f->texture, XFontColor, f->glyph[n].src, d, XFontZ);
+		d.x1=(x-f->glyph[n].x_offset*xf);
+		d.x2=(x+f->glyph[n].dx2     *xf);
+		d.y1=(y             );
+		d.y2=(y+f->height*yf);
+		NixDraw2D(f->glyph[n].src, d, XFontZ);
 		y+=yf*0.8f;
 	}
 	NixSetAlpha(AlphaNone);

@@ -11,7 +11,6 @@
 
 
 void _cdecl NixEnableLighting(bool enabled);
-void _cdecl NixEnableLighting2D(bool enabled);
 int _cdecl NixCreateLight();
 void _cdecl NixDeleteLight(int index);
 void _cdecl NixSetLightRadial(int num,const vector &pos,float radius,const color &ambient,const color &diffuse,const color &specular);

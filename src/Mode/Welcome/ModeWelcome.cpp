@@ -120,26 +120,28 @@ void ModeWelcome::DrawIcon(int x, int y, int index, int pic_index, const string 
 	d.y1=(float)y-rad;
 	d.y2=(float)y+rad;
 	NixSetAlpha(AlphaMaterial);
-	color c=color((mouse_over==index)?0.3f:0.99f,1,1,1);
-	NixDraw2D(tex_icons,c,s,d,0);
+	NixSetTexture(tex_icons);
+	NixSetColor(color((mouse_over==index)?0.3f:0.99f,1,1,1));
+	NixDraw2D(s, d, 0);
+	NixSetTexture(-1);
 	NixSetAlpha(AlphaNone);
 
 	x-=15;
-	NixSetFontColor(color(1,0.6f,0.6f,0.6f));
+	NixSetColor(color(1,0.6f,0.6f,0.6f));
 	if (mouse_over == index){
 		// operations to choose from
 		if (index != 4){
 			color c=color(1,0.5f,0.5f,0.6f); // unmarked: grayish
-			NixSetFontColor((mouse_over_cmd == 0) ? White : c);
+			NixSetColor((mouse_over_cmd == 0) ? White : c);
 			NixDrawStr(x+17,y-25,L("new"));
-			NixSetFontColor((mouse_over_cmd == 1) ? White : c);
+			NixSetColor((mouse_over_cmd == 1) ? White : c);
 			NixDrawStr(x+8,y,L("open"));
-			NixSetFontColor(White);
+			NixSetColor(White);
 		}else{
-			NixSetFontColor(White);
+			NixSetColor(White);
 			NixDrawStr(x,y-12,_("administrieren"));
 		}
-		NixSetFontColor(White);
+		NixSetColor(White);
 	}//else
 		// title
 		//NixDrawStr(x+10,y-3,name);
@@ -150,7 +152,8 @@ void ModeWelcome::DrawIcon(int x, int y, int index, int pic_index, const string 
 void ModeWelcome::OnDraw()
 {
 	msg_db_r("Welcome.Draw", 1);
-	NixDraw2D(-1, Black, r_id, NixTargetRect, 0.999999f);
+	NixSetColor(Black);
+	NixDraw2D(r_id, NixTargetRect, 0.999999f);
 	// logo
 	float x=50;
 	float y=5+MaxY*0.18f;
@@ -159,9 +162,12 @@ void ModeWelcome::OnDraw()
 	float f=0.4f;//0.90f;
 	color c=color(1,f,f,f);
 	rect d=rect(x,x+w,y,y+h);
-	NixDraw2D(tex_logo, c, r_id, d, 0.999f);
-	NixDrawLineH((int)x,(int)x+720,(int)y+70,c,0.99f);
-	NixDrawLineH((int)x,(int)x+670,(int)y+73,c,0.99f);
+	NixSetTexture(tex_logo);
+	NixSetColor(c);
+	NixDraw2D(r_id, d, 0.999f);
+	NixSetTexture(-1);
+	NixDrawLineH(x, x + 720, y + 70, 0.99f);
+	NixDrawLineH(x, x + 670, y + 73, 0.99f);
 
 	// button stripe
 	int dx = clampi(int((float)MaxX * 0.10f), 100, 200);
@@ -169,10 +175,12 @@ void ModeWelcome::OnDraw()
 	int y1 = int((float)MaxY * 0.80f) - 40;
 	int y2 = y1 + 60;
 
-	NixDrawRect(0,(float)MaxX,(float)y1,(float)y2,color(1,0,0,0.2f),0.5f);
+	NixSetColor(color(1,0,0,0.2f));
+	NixDrawRect(0, (float)MaxX, (float)y1, (float)y2, 0.5f);
 	f=0.6f;
-	NixDrawLineH(0,MaxX,y1,color(1,f,f,f),0);
-	NixDrawLineH(0,MaxX,y2,color(1,f,f,f),0);
+	NixSetColor(color(1,f,f,f));
+	NixDrawLineH(0, MaxX, y1, 0);
+	NixDrawLineH(0, MaxX, y2, 0);
 
 	DrawIcon(x1     ,y1,0,0,_("Modell"));
 	DrawIcon(x1+dx  ,y1,1,1,_("Material"));
@@ -181,10 +189,10 @@ void ModeWelcome::OnDraw()
 	DrawIcon(x1+dx*4,y1,4,6,_("Administration"));
 
 	f=0.2f;
-	NixSetFontColor(color(1,f,f,f));
+	NixSetColor(color(1,f,f,f));
 	//NixSetFontColor(color(1,0.6f,0,0));
 	NixDrawStr(0,MaxY-20,"(c) by MichiSoft TM 2012");
-	NixSetFontColor(White);
+	NixSetColor(White);
 
 	msg_db_l(1);
 }

@@ -136,7 +136,9 @@ void ModeMaterial::OnDrawWin(int win, irect dest)
 		NixVBClear(VBTemp);
 		//FxCreateBall(VBTemp, v0, 100, 16, 32);
 		CreateTorus(VBTemp, v0, e_z, 80, 50, 64, 32);
-		NixDraw3D((data->Appearance.NumTextureLevels == 1) ? data->Appearance.Texture[0] : -1,VBTemp,m_id);
+		NixSetTexture((data->Appearance.NumTextureLevels == 1) ? data->Appearance.Texture[0] : -1);
+		NixDraw3D(VBTemp);
+		NixSetTexture(-1);
 	}else{
 		/*vector p[(MATERIAL_BALL_NUMX + 1) * (MATERIAL_BALL_NUMY + 1)];
 		vector n[(MATERIAL_BALL_NUMX + 1) * (MATERIAL_BALL_NUMY + 1)];
@@ -192,7 +194,9 @@ void ModeMaterial::OnDrawWin(int win, irect dest)
 															p1,n1,tc[1],
 															p3,n3,tc[3]);
 			}
-		NixDraw3DM(data->Appearance.Texture,MaterialVB[data->Appearance.NumTextureLevels],m_id);
+		NixSetTextures(data->Appearance.Texture, data->Appearance.NumTextureLevels);
+		NixDraw3DM(MaterialVB[data->Appearance.NumTextureLevels]);
+		NixSetTexture(-1);
 	}
 
 	NixSetShader(-1);

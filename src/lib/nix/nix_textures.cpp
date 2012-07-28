@@ -401,13 +401,55 @@ void NixUnloadTexture(int texture)
 	msg_db_l(1);
 }
 
-void NixSetTexture(int texture)
+inline void SetShaderFileData(int texture0,int texture1,int texture2,int texture3)
+{
+#ifdef NIX_OS_LINUX
+		if (NixglShaderCurrent==0)	return;
+		int loc;
+		loc=glGetUniformLocationARB(NixglShaderCurrent,"tex0");
+		if (loc>-1)	glUniform1iARB(loc, 0);
+		loc=glGetUniformLocationARB(NixglShaderCurrent,"tex1");
+		if (loc>-1)	glUniform1iARB(loc, 1);
+		loc=glGetUniformLocationARB(NixglShaderCurrent,"tex2");
+		if (loc>-1)	glUniform1iARB(loc, 2);
+		loc=glGetUniformLocationARB(NixglShaderCurrent,"tex3");
+		if (loc>-1)	glUniform1iARB(loc, 3);
+#else
+	msg_todo("SetShaderFileData windows?");
+#endif
+}
+
+inline void refresh_texture(int texture)
 {
 	if (texture >= 0){
 		if (NixTexture[texture].LifeTime < 0)
 			NixReloadTexture(texture);
 		NixTexture[texture].LifeTime = 0;
 	}
+}
+
+int _nix_num_textures_activated_ = 0;
+
+void unset_textures()
+{
+	// unset multitexturing
+	/*if (OGLMultiTexturingSupport){
+		for (int i=1;i<_nix_num_textures_activated_;i++){
+			glActiveTexture(GL_TEXTURE0+i);
+			glDisable(GL_TEXTURE_2D);
+			glClientActiveTexture(GL_TEXTURE0+i);
+			glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+		}
+		glActiveTexture(GL_TEXTURE0);
+		glClientActiveTexture(GL_TEXTURE0);
+	}
+	_nix_num_textures_activated_ = 1;*/
+}
+
+void NixSetTexture(int texture)
+{
+	refresh_texture(texture);
+	unset_textures();
 	if (texture>=0){
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D,NixTexture[texture].glTexture);
@@ -417,27 +459,30 @@ void NixSetTexture(int texture)
 		}*/
 	}else
 		glDisable(GL_TEXTURE_2D);
+	_nix_num_textures_activated_ = 1;
+	SetShaderFileData(texture,-1,-1,-1);
 }
 
-void NixSetTextures(int *texture,int num_textures)
+void NixSetTextures(int *texture, int num_textures)
 {
 	for (int i=0;i<num_textures;i++)
-		if (texture[i] >= 0){
-			if (NixTexture[texture[i]].LifeTime < 0)
-				NixReloadTexture(texture[i]);
-			NixTexture[texture[i]].LifeTime = 0;
-		}else
-			break;
+		refresh_texture(texture[i]);
+	unset_textures();
 
-	if (texture[0]>=0){
+	// set multitexturing
+	if (OGLMultiTexturingSupport){
+		for (int i=0;i<num_textures;i++){
+			glActiveTexture(GL_TEXTURE0+i);
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D,NixTexture[texture[i]].glTexture);
+		}
+	}else{
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D,NixTexture[texture[0]].glTexture);
-		/*if (TextureIsDynamic[texture[0]]){
-			#ifdef NIX_OS_WONDOWS
-			#endif
-		}*/
-	}else
-		glDisable(GL_TEXTURE_2D);
+	}
+
+	_nix_num_textures_activated_ = num_textures;
+	SetShaderFileData(texture[0], texture[1], texture[2], texture[3]);
 }
 
 void NixSetTextureVideoFrame(int texture,int frame)
@@ -503,7 +548,9 @@ int NixCreateDynamicTexture(int width,int height)
 	
 	// clear texture
 	NixStart(NixTexture.num - 1);
-	NixDraw2D(-1, color(0,0,0,0), r_id, NixTargetRect, 0);
+	NixSetColor(color(0,0,0,0));
+	NixSetTexture(-1);
+	NixDraw2D(r_id, NixTargetRect, 0);
 	NixEnd();
 
 	msg_db_l(1);

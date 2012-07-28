@@ -112,7 +112,7 @@ void _cdecl FxLightEnable(int index,bool enabled);
 int FxCubeMapNew(int size);
 void FxCubeMapCreate(int cube_map,int tex0,int tex1,int tex2,int tex3,int tex4,int tex5);
 void FxCubeMapCreate(int cube_map,CModel *m);
-void FxCubeMapDraw(int cube_map,int buffer,const matrix &mat,float density);
+void FxCubeMapDraw(int cube_map,int buffer,float density);
 
 // stuff
 void FxCreatePolygon(int buffer,int num_points,const vector *p);

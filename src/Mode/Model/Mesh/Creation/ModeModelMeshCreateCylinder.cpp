@@ -132,9 +132,11 @@ void ModeModelMeshCreateCylinder::OnDrawWin(int win, irect dest)
 		// control polygon
 		for (int i=0;i<pos.num;i++){
 			vector pp = multi_view->VecProject(pos[i], win);
-			NixDrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, Green, 0);
+			NixSetColor(Green);
+			NixDrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
+			NixSetColor(White);
 			if (i > 0)
-				NixDrawLine3D(pos[i - 1], pos[i], White);
+				NixDrawLine3D(pos[i - 1], pos[i]);
 		}
 
 		// spline curve
@@ -143,8 +145,10 @@ void ModeModelMeshCreateCylinder::OnDrawWin(int win, irect dest)
 			inter.add(p);
 		if (!ready_for_scaling)
 			inter.add(multi_view->GetCursor3d());
+		NixSetColor(Green);
 		for (int i=0;i<100;i++)
-			NixDrawLine3D(inter.get((float)i * 0.01f), inter.get((float)i * 0.01f + 0.01f), Green);
+			NixDrawLine3D(inter.get((float)i * 0.01f), inter.get((float)i * 0.01f + 0.01f));
+		NixSetColor(White);
 	}
 	if (ready_for_scaling){
 		Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
@@ -158,7 +162,7 @@ void ModeModelMeshCreateCylinder::OnDrawWin(int win, irect dest)
 			float t1 = (float)(i + 1) / (float)n;
 			CreateCylinderBuffer(VBTemp, inter.get(t0), inter.get(t1) - inter.get(t0), radius);
 		}
-		NixDraw3D(-1, VBTemp, m_id);
+		NixDraw3D(VBTemp);
 	}
 }
 

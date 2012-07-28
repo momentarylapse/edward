@@ -1,18 +1,10 @@
 // Language
 日本語
 // Num IDs
-549
+535
 // Data (ID,Text)
 ad_dialog
 
-ad_edit
-編集
-ad_export_game
-
-ad_rudimentary_configuration
-
-ad_tab_control
-current game\\all files\\details\\unnesessary\\missing
 add_material
 
 add_script
@@ -20,12 +12,6 @@ add_script
 add_texture_level
 
 administrate
-
-adt_dest
-
-adt_file
-
-adt_source
 
 align_to_grid
 
@@ -200,18 +186,6 @@ export_to_gamestudio
 export_type
 single files\\archive (compressed)\\archive (uncompressed)
 export_world
-
-file_list_all
-
-file_list_cur
-
-file_list_detail_dest
-
-file_list_detail_source
-
-file_list_missing
-
-file_list_super
 
 fog_enabled
 
@@ -817,8 +791,6 @@ remove_script
 
 remove_skybox
 削除
-rename
-名前の変更
 replace_objects
 
 resolution

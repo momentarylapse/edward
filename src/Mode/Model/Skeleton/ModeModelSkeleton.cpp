@@ -115,10 +115,11 @@ void DrawBone(const vector &r, const vector &d, const color &c, int win)
 		//NixDrawLine(pr.x,pr.y,pd.x,pd.y,c,z);
 		float l=VecLength(d);
 		float w=(float)atan2(d.x,d.y)+pi;
-		NixDrawLine(pr.x,pr.y,pr.x+l*(float)sin(w+0.5f)*0.2f,pr.y+l*(float)cos(w+0.5f)*0.2f,c,z);
-		NixDrawLine(pr.x,pr.y,pr.x+l*(float)sin(w-0.5f)*0.2f,pr.y+l*(float)cos(w-0.5f)*0.2f,c,z);
-		NixDrawLine(pd.x,pd.y,pr.x+l*(float)sin(w+0.5f)*0.2f,pr.y+l*(float)cos(w+0.5f)*0.2f,c,z);
-		NixDrawLine(pd.x,pd.y,pr.x+l*(float)sin(w-0.5f)*0.2f,pr.y+l*(float)cos(w-0.5f)*0.2f,c,z);
+		NixSetColor(c);
+		NixDrawLine(pr.x,pr.y,pr.x+l*(float)sin(w+0.5f)*0.2f,pr.y+l*(float)cos(w+0.5f)*0.2f,z);
+		NixDrawLine(pr.x,pr.y,pr.x+l*(float)sin(w-0.5f)*0.2f,pr.y+l*(float)cos(w-0.5f)*0.2f,z);
+		NixDrawLine(pd.x,pd.y,pr.x+l*(float)sin(w+0.5f)*0.2f,pr.y+l*(float)cos(w+0.5f)*0.2f,z);
+		NixDrawLine(pd.x,pd.y,pr.x+l*(float)sin(w-0.5f)*0.2f,pr.y+l*(float)cos(w-0.5f)*0.2f,z);
 	}
 }
 
@@ -133,7 +134,8 @@ void DrawCoordBasis(const ModeModelSkeletonBone *b)
 		for (int i=0;i<3;i++)
 			VecNormalTransform(e[i], b->Matrix, e[i]);
 	for (int i=0;i<3;i++){
-		NixDrawLine3D(o, o + e[i] * 30 / ed->multi_view_3d->zoom, color(1,0,(i==0)?1:0.5f,0));
+		NixSetColor(color(1,0,(i==0)?1:0.5f,0));
+		NixDrawLine3D(o, o + e[i] * 30 / ed->multi_view_3d->zoom);
 	}
 }
 
@@ -143,18 +145,18 @@ void ModeModelSkeleton::OnDrawWin(int win, irect dest)
 
 #ifdef USE_MODELS
 	// sub models
-	for (int i=0;i<Bone.num;i++)
-		if (Bone[i].model){
-			if (SubMode==ModeModelAnimation)
-				Bone[i].model->Matrix = PointMatrix[i];
+	foreachi(data->Bone, b, i)
+		if (b.model){
+			if (SubMode == ModeModelAnimation)
+				b.model->Matrix = PointMatrix[i];
 			else
-				MatrixTranslation(Bone[i].model->Matrix, SkeletonGetPointPos(i));
-			Bone[i].model->OnDraw(0,false,false);
+				MatrixTranslation(b.model->Matrix, SkeletonGetPointPos(i));
+			b.model->OnDraw(0, false, false);
 		}
 #endif
 
 	NixSetZ(false, false);
-	NixEnableLighting(true);
+	NixEnableLighting(false);
 	NixSetWire(false);
 
 	foreach(data->Bone, b){

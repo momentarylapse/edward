@@ -57,7 +57,6 @@ extern bool ShadowLowerDetail;
 extern float FpsMax,FpsMin;
 extern int Multisampling;
 extern bool NetworkEnabled,CullingEnabled,SortingEnabled,ZBufferEnabled;
-extern color XFontColor;
 extern int XFontIndex,DefaultFont;
 extern bool ResettingGame;
 
@@ -105,8 +104,7 @@ typedef void str_float_func(const string&,float);
 // only used by meta itself and the editor...
 	extern Array<XFont*> _XFont_;
 	// gui...
-	extern color XFontColor;
-	extern int XFontIndex,DefaultFont;
+	extern int XFontIndex, DefaultFont;
 	extern float XFontZ;
 
 

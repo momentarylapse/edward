@@ -28,7 +28,6 @@ void NixSetTexture(int texture);
 void NixSetTextures(int *texture,int num_textures);
 void NixSetTextureVideoFrame(int texture,int frame);
 void NixTextureVideoMove(int texture,float elapsed);
-void NixSaveTGA(const string &filename,int width,int height,int bits,int alpha_bits,void *data);
 int NixCreateCubeMap(int size);
 void NixRenderToCubeMap(int cube_map,vector &pos,callback_function *render_scene,int mask);
 void NixSetCubeMap(int cube_map,int tex0,int tex1,int tex2,int tex3,int tex4,int tex5);

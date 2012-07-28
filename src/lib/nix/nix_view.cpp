@@ -12,13 +12,15 @@
 #endif
 
 
-matrix NixViewMatrix,NixProjectionMatrix,NixInvProjectionMatrix;
-matrix NixWorldMatrix,NixWorldViewProjectionMatrix;
+matrix NixViewMatrix, NixProjectionMatrix, NixInvProjectionMatrix;
+matrix NixProjectionMatrix2d;
+matrix NixWorldMatrix, NixWorldViewProjectionMatrix;
 float View3DWidth,View3DHeight,View3DCenterX,View3DCenterY,NixView3DRatio;	// 3D transformation
 float View2DScaleX,View2DScaleY;				// 2D transformation
 int PerspectiveModeSize, PerspectiveModeCenter, PerspectiveMode2DScale;
 vector NixViewScale = vector(1,1,1);
-bool NixEnabled3D;
+static bool _NixProjectionPerspective, _NixProjectionRelative;
+bool NixMode3d = false;
 
 float NixViewJitterX = 0, NixViewJitterY = 0;
 
@@ -33,6 +35,28 @@ int RenderingToTexture = -1;
 	extern HGLRC hRC;
 #endif
 
+void _NixSetMode2d()
+{
+	if (!NixMode3d)
+		return;
+	glMatrixMode(GL_PROJECTION);
+	glLoadMatrixf((float*)&NixProjectionMatrix2d);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	NixMode3d = false;
+}
+
+void _NixSetMode3d()
+{
+	if (NixMode3d)
+		return;
+	glMatrixMode(GL_PROJECTION);
+	glLoadMatrixf((float*)&NixProjectionMatrix);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadMatrixf((float*)&NixViewMatrix);
+	glMultMatrixf((float*)&NixWorldMatrix);
+	NixMode3d = true;
+}
 
 void NixResize()
 {
@@ -46,13 +70,6 @@ void NixResize()
 	if (NixTargetHeight<=0)
 		NixTargetHeight=1;
 	NixTargetRect = rect(0, NixTargetWidth, 0, NixTargetHeight);
-
-	// projection 2d
-	matrix s,t;
-	// OpenGl hat (0,0) in Fenster-Mitte und berdeckt einen Bereich von -1 bis 1 (x und y)
-	MatrixScale(s,2.0f/float(NixTargetWidth),-2.0f/float(NixTargetHeight),1);
-	MatrixTranslation(t,vector(-float(NixTargetWidth)/2.0f,-float(NixTargetHeight)/2.0f,0));
-	MatrixMultiply(NixOGLProjectionMatrix2D,s,t);
 
 	// screen
 	glViewport(0,0,NixTargetWidth,NixTargetHeight);
@@ -79,19 +96,21 @@ void NixResize()
 	}
 
 	// camera
-	NixSetView(NixEnabled3D,NixViewMatrix);
+	NixSetProjection(_NixProjectionPerspective, _NixProjectionRelative);
+	NixSetView(NixViewMatrix);
 
 	msg_db_l(5);
 }
 
 void NixSetWorldMatrix(const matrix &mat)
 {
-	NixWorldMatrix=mat;
-	MatrixMultiply(NixWorldViewProjectionMatrix,NixViewMatrix,NixWorldMatrix);
-	MatrixMultiply(NixWorldViewProjectionMatrix,NixProjectionMatrix,NixWorldViewProjectionMatrix);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf((float*)&NixViewMatrix);
-	glMultMatrixf((float*)&mat);
+	NixWorldMatrix = mat;
+	NixWorldViewProjectionMatrix = NixProjectionMatrix * NixViewMatrix * NixWorldMatrix;
+	if (NixMode3d){
+		glMatrixMode(GL_MODELVIEW);
+		glLoadMatrixf((float*)&NixViewMatrix);
+		glMultMatrixf((float*)&NixWorldMatrix);
+	}
 }
 
 void NixSetPerspectiveMode(int mode,float param1,float param2)
@@ -136,26 +155,54 @@ void NixSetPerspectiveMode(int mode,float param1,float param2)
 	}
 }
 
+void NixUpdateLights()
+{
+	// OpenGL muss Lichter neu ausrichten, weil sie in Kamera-Koordinaten gespeichert werden!
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	//glLoadIdentity();
+	glLoadMatrixf((float*)&NixViewMatrix);
+
+	foreachi(NixLight, l, i){
+		if (!l.Used)
+			continue;
+		if (!l.Enabled)
+			continue;
+	//	if (OGLLightNo[i]<0)	continue;
+		float f[4];
+		/*f[0]=LightVector[i].x;	f[1]=LightVector[i].y;	f[2]=LightVector[i].z;
+		if (LightDirectional[i])
+			f[3]=0;
+		else
+			f[3]=1;
+		glLightfv(OGLLightNo[i],GL_POSITION,f);*/
+		if (l.Type == LightTypeDirectional){
+			f[0] = l.Dir.x;	f[1] = l.Dir.y;	f[2] = l.Dir.z;	f[3] = 0;
+		}else if (l.Type == LightTypeRadial){
+			f[0] = l.Pos.x;	f[1] = l.Pos.y;	f[2] = l.Pos.z;	f[3] = 1;
+		}
+		glLightfv(GL_LIGHT0+i,GL_POSITION,f);
+		//msg_write(i);
+	}
+	glPopMatrix();
+}
+
 static vector ViewPos,ViewDir;
 static vector Frustrum[8];
 static plane FrustrumPl[6];
 
-void NixSetView(bool enable3d,const vector &view_pos,const vector &view_ang,const vector &scale)
+void NixSetView(const vector &view_pos,const vector &view_ang,const vector &scale)
 {
-	ViewPos=view_pos;
-	ViewDir=VecAng2Dir(view_ang);
-	NixViewScale=scale;
+	ViewPos = view_pos;
+	ViewDir = VecAng2Dir(view_ang);
+	NixViewScale = scale;
 
-	//if (enable3d){
-		matrix t,r,s;
-		vector m_pos = v0 - view_pos;
-		MatrixTranslation(t,m_pos);
-		MatrixRotationView(r,view_ang);
-		//MatrixScale(s,scale.x,scale.y,scale.z);
-		MatrixMultiply(NixViewMatrix,r,t);
-		//MatrixMultiply(NixViewMatrix,s,NixViewMatrix);
-	//}
-	NixSetView(enable3d,NixViewMatrix);
+	matrix t,r,s;
+	MatrixTranslation(t, -view_pos);
+	MatrixRotationView(r, view_ang);
+	//MatrixScale(s,scale.x,scale.y,scale.z);
+	NixViewMatrix = /* s * */ r * t;
+	NixSetView(NixViewMatrix);
 
 	// die Eckpunkte des Sichtfeldes
 	/*NixGetVecUnproject(Frustrum[0],vector(                   0,                    0,0.0f));
@@ -180,88 +227,99 @@ void NixSetView(bool enable3d,const vector &view_pos,const vector &view_ang,cons
 // enable3d: true  -> 3D-Ansicht auf (View3DWidth,View3DHeight) gemapt
 //           false -> Pixel-Angaben~~~
 // beide Bilder sind um View3DCenterX,View3DCenterY (3D als Fluchtpunkt) verschoben
-void NixSetView(bool enable3d,const matrix &view_mat)
-{
-	//SetCull(CullCCW); // ???
-	NixViewMatrix=view_mat;
 
-	//msg_write("NixSetView");
-	// Projektions-Matrix editieren
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	/*msg_write(NixTargetWidth);
-	msg_write(NixTargetHeight);
-	msg_write(View3DCenterX);
-	msg_write(View3DCenterY);
-	msg_write(View3DWidth);
-	msg_write(View3DHeight);
-	msg_write(View2DScaleX);
-	msg_write(View2DScaleY);
-	msg_write(NixMaxDepth);*/
-	if (enable3d){
-		//msg_write("3d");
+void NixSetProjection(bool perspective, bool relative)
+{
+	// projection 2d
+	matrix s, t;
+	// OpenGl hat (0,0) in Fenster-Mitte und berdeckt einen Bereich von -1 bis 1 (x und y)
+	MatrixTranslation(t, vector(-float(NixTargetWidth)/2.0f,-float(NixTargetHeight)/2.0f,0));
+	MatrixScale(s, 2.0f / float(NixTargetWidth), -2.0f / float(NixTargetHeight), 1);
+	NixProjectionMatrix2d = s * t;
+
+	if (perspective){
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
 		glTranslatef(((float)View3DCenterX + NixViewJitterX) / float(NixTargetWidth) * 2.0f - 1,
 		             1 - ((float)View3DCenterY + NixViewJitterY) / float(NixTargetHeight) * 2.0f,
 		             0);
-		//glGetFloatv(GL_PROJECTION_MATRIX,(float*)&NixProjectionMatrix);
-		//mout(NixProjectionMatrix);
 		// perspektivische Verzerrung
 		gluPerspective(60.0f,NixView3DRatio,NixMinDepth,NixMaxDepth);
-		//glGetFloatv(GL_PROJECTION_MATRIX,(float*)&NixProjectionMatrix);
-		//mout(NixProjectionMatrix);
 		glScalef(View3DWidth / (float)NixTargetWidth,
 		         View3DHeight / (float)NixTargetHeight,
 		         -1); // -1: Koordinatensystem: Links vs Rechts
 		glScalef(NixViewScale.x, NixViewScale.y, NixViewScale.z);
-		//glGetFloatv(GL_PROJECTION_MATRIX,(float*)&NixProjectionMatrix);
-		//mout(NixProjectionMatrix);
+		glGetFloatv(GL_PROJECTION_MATRIX,(float*)&NixProjectionMatrix);
+	}else if (relative){
+		MatrixTranslation(t, vector(View3DCenterX/float(NixTargetWidth)*2.0f-2,2-View3DCenterY/float(NixTargetHeight)*2.0f,0));
+		MatrixScale(s, 2*View2DScaleX, -2*View2DScaleY,1.0f/(float)NixMaxDepth);
+		NixProjectionMatrix = s * t;
 	}else{
-		glTranslatef(View3DCenterX/float(NixTargetWidth)*2.0f-1,1-View3DCenterY/float(NixTargetHeight)*2.0f,0);
-		//glGetFloatv(GL_PROJECTION_MATRIX,(float*)&NixProjectionMatrix);
-		//mout(NixProjectionMatrix);
-		glScalef(2*View2DScaleX/(float)NixTargetWidth,2*View2DScaleY/(float)NixTargetHeight,1.0f/(float)NixMaxDepth);
-		//glGetFloatv(GL_PROJECTION_MATRIX,(float*)&NixProjectionMatrix);
-		//mout(NixProjectionMatrix);
+		NixProjectionMatrix = NixProjectionMatrix2d;
 	}
-	// Matrix speichern
-	glGetFloatv(GL_PROJECTION_MATRIX,(float*)&NixProjectionMatrix);
 
-	// OpenGL muss Lichter neu ausrichten, weil sie in Kamera-Koordinaten gespeichert werden!
+
+	glMatrixMode(GL_PROJECTION);
+	if (NixMode3d)
+		glLoadMatrixf((float*)&NixProjectionMatrix);
+	else
+		glLoadMatrixf((float*)&NixProjectionMatrix2d);
+	
 	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	//glLoadIdentity();
-	glLoadMatrixf((float*)&NixViewMatrix);
-	for (int i=0;i<NixLight.num;i++){
-		if (!NixLight[i].Used)	continue;
-		if (!NixLight[i].Enabled)	continue;
-	//	if (OGLLightNo[i]<0)	continue;
-		float f[4];
-		/*f[0]=LightVector[i].x;	f[1]=LightVector[i].y;	f[2]=LightVector[i].z;
-		if (LightDirectional[i])
-			f[3]=0;
-		else
-			f[3]=1;
-		glLightfv(OGLLightNo[i],GL_POSITION,f);*/
-		if (NixLight[i].Type==LightTypeDirectional){
-			f[0]=NixLight[i].Dir.x;	f[1]=NixLight[i].Dir.y;	f[2]=NixLight[i].Dir.z;	f[3]=0;
-		}else if (NixLight[i].Type==LightTypeRadial){
-			f[0]=NixLight[i].Pos.x;	f[1]=NixLight[i].Pos.y;	f[2]=NixLight[i].Pos.z;	f[3]=1;
-		}
-		glLightfv(GL_LIGHT0+i,GL_POSITION,f);
-		//msg_write(i);
-	}
-	glPopMatrix();
-	MatrixInverse(NixInvProjectionMatrix,NixProjectionMatrix);
-	NixEnabled3D=enable3d;
+	glLoadIdentity();
+
+	NixViewMatrix = m_id;
+	NixWorldMatrix = m_id;
+	
+	MatrixInverse(NixInvProjectionMatrix, NixProjectionMatrix);
+	_NixProjectionPerspective = perspective;
+	_NixProjectionRelative = relative;
 }
 
-void NixSetViewV(bool enable3d,const vector &view_pos,const vector &view_ang)
-{	NixSetView(enable3d, view_pos, view_ang, NixViewScale);	}
+void NixSetProjectionMatrix(const matrix &mat)
+{
+	// projection 2d
+	matrix s, t;
+	// OpenGl hat (0,0) in Fenster-Mitte und berdeckt einen Bereich von -1 bis 1 (x und y)
+	MatrixTranslation(t, vector(-float(NixTargetWidth)/2.0f,-float(NixTargetHeight)/2.0f,0));
+	MatrixScale(s, 2.0f / float(NixTargetWidth), -2.0f / float(NixTargetHeight), 1);
+	NixProjectionMatrix2d = s * t;
 
-void NixSetViewM(bool enable3d,const matrix &view_mat)
+	NixProjectionMatrix = mat;
+
+
+	glMatrixMode(GL_PROJECTION);
+	if (NixMode3d)
+		glLoadMatrixf((float*)&NixProjectionMatrix);
+	else
+		glLoadMatrixf((float*)&NixProjectionMatrix2d);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	NixViewMatrix = m_id;
+	NixWorldMatrix = m_id;
+
+	MatrixInverse(NixInvProjectionMatrix, NixProjectionMatrix);
+}
+
+void NixSetView(const matrix &view_mat)
+{
+	//SetCull(CullCCW); // ???
+	NixViewMatrix = view_mat;
+
+	NixSetWorldMatrix(m_id);
+
+	NixUpdateLights();
+}
+
+void NixSetViewV(const vector &view_pos,const vector &view_ang)
+{	NixSetView(view_pos, view_ang, NixViewScale);	}
+
+void NixSetViewM(const matrix &view_mat)
 {
 	NixViewScale = vector(1, 1, 1);
-	NixSetView(enable3d, view_mat);
+	NixSetView(view_mat);
 }
 
 
@@ -403,7 +461,11 @@ void NixStartPart(int x1,int y1,int x2,int y2,bool set_centric)
 	if (set_centric){
 		View3DCenterX=float(x1+x2)/2.0f;
 		View3DCenterY=float(y1+y2)/2.0f;
-		NixSetView(NixEnabled3D,NixViewMatrix);
+		if (NixMode3d)
+			NixSetProjectionMatrix(NixProjectionMatrix);
+		else
+			NixSetProjectionMatrix(NixProjectionMatrix2d);
+		NixSetView(NixViewMatrix);
 	}
 }
 

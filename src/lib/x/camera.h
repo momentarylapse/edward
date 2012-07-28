@@ -34,10 +34,10 @@ struct PartialModelViewData
 	Array<PartialModelView> trans;
 };
 
-class CView : public XContainer
+class Camera : public XContainer
 {
 public:
-	CView();
+	Camera();
 	void reset();
 	
 	rect dest;
@@ -49,6 +49,8 @@ public:
 	int output_texture, input_texture;
 	int shader;
 	bool shaded_displays;
+
+	float min_depth, max_depth;
 	
 	vector last_pos, pos, view_pos, vel, vel_rt, ang, rot, pos_0, vel_0, ang_0, pos_1, vel_1, ang_1, a_pos, b_pos, a_ang, b_ang, script_rot_0, script_rot_1;
 	vector script_ang[2];
@@ -68,17 +70,21 @@ public:
 
 	Array<plane> clipping_plane;
 	Array<CModel*> ignore;
+
+	matrix m_all, im_all;
+	vector Project(const vector &v);
+	vector Unproject(const vector &v);
 };
 
 void CameraInit();
 void CameraReset();
 void CameraCalcMove();
-CView *_cdecl CameraCreateView(const vector &pos, const vector &ang, const rect &dest, bool show);
-void CameraDeleteView(CView *view);
+Camera *_cdecl CreateCamera(const vector &pos, const vector &ang, const rect &dest, bool show);
+void DeleteCamera(Camera *am);
 
-extern Array<CView*> View;
-extern CView *Cam; // "camera"
-extern CView *view_cur; // currently rendering
+extern Array<Camera*> camera;
+extern Camera *Cam; // "camera"
+extern Camera *cur_cam; // currently rendering
 
 #endif
 

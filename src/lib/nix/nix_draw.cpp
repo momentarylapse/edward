@@ -8,17 +8,25 @@
 #include "nix.h"
 #include "nix_common.h"
 
-static color FontColor = White;
 float NixLineWidth = 1;
 bool NixSmoothLines = false;
+static color NixColor = White;
 
 
-void NixSetFontColor(const color &c)
+
+
+void NixSetColor(const color &c)
 {
-	FontColor=c;
+	NixColor = c;
+	glColor4fv((float*)&c);
 }
 
-void NixDrawChar(int x,int y,char c)
+color NixGetColor()
+{
+	return NixColor;
+}
+
+void NixDrawChar(float x, float y, char c)
 {
 	char str[2];
 	str[0]=c;
@@ -38,25 +46,16 @@ string str_utf8_to_ubyte(const string &str)
 	return r;
 }
 
-void NixDrawStr(int x,int y,const string &str)
+void NixDrawStr(float x, float y, const string &str)
 {
 	msg_db_r("NixDrawStr",10);
 	string str2 = str_utf8_to_ubyte(str);
+	_NixSetMode2d();
 
-	NixSetTexture(-1);
-	OGLSet2DMode();
-	bool z_test, z_write;
-	glGetBooleanv(GL_DEPTH_TEST, (GLboolean*)&z_test);
-	glGetBooleanv(GL_DEPTH_WRITEMASK, (GLboolean*)&z_write);
-	if (z_test)
-		NixSetZ(false, false);
-	glColor3f(FontColor.r,FontColor.g,FontColor.b);
-	glRasterPos3f(float(x),float(y+2+int(float(NixFontHeight)*0.75f)),-1.0f);
+	glRasterPos3f(x, (y+2+int(float(NixFontHeight)*0.75f)),-1.0f);
 	glListBase(NixOGLFontDPList);
 	glCallLists(str2.num,GL_UNSIGNED_BYTE,(char*)str2.data);
 	glRasterPos3f(0,0,0);
-	if (z_test)
-		NixSetZ(z_write, z_test);
 	msg_db_l(10);
 }
 
@@ -69,25 +68,13 @@ int NixGetStrWidth(const string &str)
 	return w;
 }
 
-void NixDrawFloat(int x,int y,float fl,int com)
-{
-	NixDrawStr(x,y,f2s(fl,com));
-}
-
-void NixDrawInt(int x,int y,int num)
-{
-	NixDrawStr(x,y,i2s(num));
-}
-
-void NixDrawLine(float x1,float y1,float x2,float y2,const color &c,float depth)
+void NixDrawLine(float x1, float y1, float x2, float y2, float depth)
 {
 	float dx=x2-x1;
 	if (dx<0)	dx=-dx;
 	float dy=y2-y1;
 	if (dy<0)	dy=-dy;
-	OGLSet2DMode();
-	glDisable(GL_TEXTURE_2D);
-	glColor3fv((float*)&c);
+	_NixSetMode2d();
 
 #ifdef NIX_OS_LINUX
 	// internal line drawing function \(^_^)/
@@ -100,10 +87,10 @@ void NixDrawLine(float x1,float y1,float x2,float y2,const color &c,float depth)
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}else
 		glLineWidth(NixLineWidth);
-		glBegin(GL_LINES);
-			glVertex3f((float)x1,(float)y1,depth);
-			glVertex3f((float)x2,(float)y2,depth);
-		glEnd();
+	glBegin(GL_LINES);
+		glVertex3f(x1, y1, depth);
+		glVertex3f(x2, y2, depth);
+	glEnd();
 	if (NixSmoothLines){
 		glDisable(GL_LINE_SMOOTH);
 		glDisable(GL_BLEND);
@@ -141,12 +128,9 @@ void NixDrawLine(float x1,float y1,float x2,float y2,const color &c,float depth)
 #endif
 }
 
-void NixDrawLines(float *x, float *y, int num_lines, bool contiguous, const color &c, float depth)
+void NixDrawLines(float *x, float *y, int num_lines, bool contiguous, float depth)
 {
-	OGLSet2DMode();
-	glDisable(GL_TEXTURE_2D);
-	glColor3fv((float*)&c);
-
+	_NixSetMode2d();
 	// internal line drawing function \(^_^)/
 	if (NixSmoothLines){
 		// antialiasing!
@@ -179,56 +163,43 @@ void NixDrawLines(float *x, float *y, int num_lines, bool contiguous, const colo
 	}
 }
 
-void NixDrawLineV(int x,int y1,int y2,const color &c,float depth)
+void NixDrawLineV(float x, float y1, float y2, float depth)
 {
-	/*NixDrawLine((float)x,(float)y1,(float)x,(float)y2,c,depth);
-	return;*/
-	if (y1>y2){
-		int y=y2;	y2=y1;	y1=y;
+	NixDrawLine(x, y1, x, y2, depth);
+	/*if (y1>y2){
+		float y=y2;	y2=y1;	y1=y;
 	}
-	rect d;
-	d.x1=(float)x;
-	d.x2=(float)x+1;
-	d.y1=(float)y1;
-	d.y2=(float)y2;
-	NixDraw2D(-1, c, r_id, d, depth);
+	NixDraw2D(r_id, rect(x, x + 1, y1, y2), depth);*/
 }
 
-void NixDrawLineH(int x1,int x2,int y,const color &c,float depth)
+void NixDrawLineH(float x1, float x2, float y, float depth)
 {
-	/*NixDrawLine((float)x1,(float)y,(float)x2,(float)y,c,depth);
-	return;*/
-	if (x1>x2){
-		int x=x2;
+	NixDrawLine(x1, y, x2, y, depth);
+	/*if (x1>x2){
+		float x=x2;
 		x2=x1;
 		x1=x;
 	}
-	rect d;
-	d.x1=(float)x1;
-	d.x2=(float)x2;
-	d.y1=(float)y;
-	d.y2=(float)y+1;
-	NixDraw2D(-1, c, r_id, d, depth);
+	NixDraw2D(r_id, rect(x1, x2, y, y + 1), depth);*/
 }
 
-void NixDrawLine3D(const vector &l1,const vector &l2,const color &c)
+void NixDrawLine3D(const vector &l1, const vector &l2)
 {
-/*	OGLSet2DMode();
-	glDisable(GL_TEXTURE_2D);
-	glColor3fv(color2f3(c));
+	_NixSetMode3d();
 	glLineWidth(1);
 	glBegin(GL_LINE);
 		glVertex3fv((float*)&l1);
 		glVertex3fv((float*)&l2);
-	glEnd();*/
-		vector p1, p2;
+	glEnd();
+/*		vector p1, p2;
 		NixGetVecProject(p1,l1);
 		NixGetVecProject(p2,l2);
 		if ((p1.z>0)&&(p2.z>0)&&(p1.z<1)&&(p2.z<1))
-			NixDrawLine(p1.x,p1.y,p2.x,p2.y,c,(p1.z+p2.z)/2);
+			NixDrawLine(p1.x,p1.y,p2.x,p2.y,c,(p1.z+p2.z)/2);*/
+	//NixDrawLine(l1.x, l1.y, l2.x, l2.y, (l1.z+l2.z)/2);
 }
 
-void NixDrawRect(float x1,float x2,float y1,float y2,const color &c,float depth)
+void NixDrawRect(float x1, float x2, float y1, float y2, float depth)
 {
 	float t;
 	if (x1>x2){
@@ -249,44 +220,22 @@ void NixDrawRect(float x1,float x2,float y1,float y2,const color &c,float depth)
 				float _y2=y2;
 				if (y2-y1-j*pa>pa)	_y2=y1+j*pa+pa;
 
-				rect r=rect(_x1,_x2,_y1,_y2);
-				NixDraw2D(-1,c,NixTargetRect,r,depth);
+				NixDraw2D(r_id, rect(_x1, _x2, _y1, _y2), depth);
 			}
 		}
 		return;
 	}
-	rect r=rect(x1,x2,y1,y2);
-	NixDraw2D(-1,c,NixTargetRect,r,depth);
+	NixDraw2D(r_id, rect(x1, x2, y1, y2), depth);
 }
 
-inline void SetShaderFileData(int texture0,int texture1,int texture2,int texture3)
+void NixDraw2D(const rect &src, const rect &dest, float depth)
 {
-#ifdef NIX_OS_LINUX
-		if (NixglShaderCurrent==0)	return;
-		int loc;
-		loc=glGetUniformLocationARB(NixglShaderCurrent,"tex0");
-		if (loc>-1)	glUniform1iARB(loc, 0);
-		loc=glGetUniformLocationARB(NixglShaderCurrent,"tex1");
-		if (loc>-1)	glUniform1iARB(loc, 1);
-		loc=glGetUniformLocationARB(NixglShaderCurrent,"tex2");
-		if (loc>-1)	glUniform1iARB(loc, 2);
-		loc=glGetUniformLocationARB(NixglShaderCurrent,"tex3");
-		if (loc>-1)	glUniform1iARB(loc, 3);
-#else
-	msg_todo("SetShaderFileData windows?");
-#endif
-}
-
-void NixDraw2D(int texture,const color &col,const rect &src,const rect &dest,float depth)
-{
+	_NixSetMode2d();
 	//if (depth==0)	depth=0.5f;
 	
 	//msg_write("2D");
-	NixSetTexture(texture);
-	SetShaderFileData(texture,-1,-1,-1);
+//	SetShaderFileData(texture,-1,-1,-1);
 	depth=depth*2-1;
-	OGLSet2DMode();
-	glColor4fv((float*)&col);
 	glBegin(GL_QUADS);
 		glTexCoord2f(src.x1,1-src.y2);
 		glVertex3f(dest.x1,dest.y2,depth);
@@ -299,19 +248,13 @@ void NixDraw2D(int texture,const color &col,const rect &src,const rect &dest,flo
 	glEnd();
 }
 
-void NixDraw3D(int texture,int buffer,const matrix &mat)
+void NixDraw3D(int buffer)
 {
 	if (buffer<0)	return;
+	_NixSetMode3d();
 
 	sVertexBuffer *vb = &NixVB[buffer];
-	
-	NixSetTexture(texture);
-	// Transformations-Matrix Modell->Welt
-	NixSetWorldMatrix(mat);
 
-	SetShaderFileData(texture,-1,-1,-1);
-
-	OGLSet3DMode();
 #if 1
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glEnableClientState( GL_NORMAL_ARRAY );
@@ -343,17 +286,12 @@ void NixDraw3D(int texture,int buffer,const matrix &mat)
 	NixNumTrias += vb->NumTrias;
 }
 
-void NixDraw3DM(int *texture,int buffer,const matrix &mat)
+void NixDraw3DM(int buffer)
 {
 	if (buffer<0)	return;
 	sVertexBuffer *vb = &NixVB[buffer];
-	NixSetTextures(texture,vb->NumTextures);
-	// Transformations-Matrix Modell->Welt
-	NixSetWorldMatrix(mat);
+	_NixSetMode3d();
 
-	SetShaderFileData(texture[0],texture[1],texture[2],texture[3]);
-
-	OGLSet3DMode();
 #if 1
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glEnableClientState( GL_NORMAL_ARRAY );
@@ -363,16 +301,11 @@ void NixDraw3DM(int *texture,int buffer,const matrix &mat)
 	// set multitexturing
 	if (OGLMultiTexturingSupport){
 		for (int i=0;i<vb->NumTextures;i++){
-			glActiveTexture(GL_TEXTURE0+i);
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D,NixTexture[texture[i]].glTexture);
 			glClientActiveTexture(GL_TEXTURE0+i);
 			glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 			glTexCoordPointer( 2, GL_FLOAT, 0, vb->glTexCoords[i] );
 		}
 	}else{
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D,NixTexture[texture[0]].glTexture);
 		glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 		glTexCoordPointer( 2, GL_FLOAT, 0, vb->glTexCoords[0] );
 	}
@@ -410,9 +343,10 @@ void NixDraw3DM(int *texture,int buffer,const matrix &mat)
 	NixNumTrias+=vb->NumTrias;
 }
 
-void NixDraw3DCubeMapped(int cube_map,int buffer,const matrix &mat)
+void NixDraw3DCubeMapped(int cube_map,int buffer)
 {
 	if (buffer<0)	return;
+	_NixSetMode3d();
 
 #ifdef NIX_API_DIRECTX9
 	if (NixApi==NIX_API_DIRECTX9){
@@ -430,7 +364,7 @@ void NixDraw3DCubeMapped(int cube_map,int buffer,const matrix &mat)
 		lpDevice->SetTransform(D3DTS_TEXTURE0,(D3DMATRIX*)&tm);
 
 
-		NixDraw3D(-2,buffer,mat);
+		NixDraw3D(-2,buffer);
 		lpDevice->SetTextureStageState(0,D3DTSS_TEXCOORDINDEX,D3DTSS_TCI_PASSTHRU);
 		lpDevice->SetTextureStageState(0,D3DTSS_TEXTURETRANSFORMFLAGS,D3DTTFF_DISABLE);
 	}
@@ -444,7 +378,7 @@ void NixDraw3DCubeMapped(int cube_map,int buffer,const matrix &mat)
 #endif
 }
 
-void NixDrawSpriteR(int texture,const color &col,const rect &src,const vector &pos,const rect &dest)
+void NixDrawSpriteR(const rect &src, const vector &pos, const rect &dest)
 {
 	rect d;
 	float depth;
@@ -468,17 +402,17 @@ void NixDrawSpriteR(int texture,const color &col,const rect &src,const vector &p
 	d.x2=p.x+f*(dest.x2)*NixViewScale.x*NixTargetWidth;
 	d.y1=p.y+f*(dest.y1)*NixViewScale.y*NixTargetHeight*NixView3DRatio;
 	d.y2=p.y+f*(dest.y2)*NixViewScale.y*NixTargetHeight*NixView3DRatio;
-	NixDraw2D(texture,col,src,d,depth);
+	NixDraw2D(src, d, depth);
 }
 
-void NixDrawSprite(int texture,const color &col,const rect &src,const vector &pos,float radius)
+void NixDrawSprite(const rect &src,const vector &pos,float radius)
 {
 	rect d;
 	d.x1=-radius;
 	d.x2=radius;
 	d.y1=-radius;
 	d.y2=radius;
-	NixDrawSpriteR(texture,col,src,pos,d);
+	NixDrawSpriteR(src, pos, d);
 }
 
 void NixResetToColor(const color &c)

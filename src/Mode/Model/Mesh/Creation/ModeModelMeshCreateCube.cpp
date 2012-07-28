@@ -146,7 +146,7 @@ void ModeModelMeshCreateCube::OnDrawWin(int win, irect dest)
 			NixVBAddTria(VBTemp,_5, n0,0,0,_7, n0,0,0,_6, n0,0,0);
 			NixVBAddTria(VBTemp,_5, n0,0,0,_6, n0,0,0,_4, n0,0,0);
 		}
-		NixDraw3D(-1, VBTemp, m_id);
+		NixDraw3D(VBTemp);
 	}
 }
 

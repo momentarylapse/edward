@@ -1370,8 +1370,8 @@ void GodUnregisterModel(CModel *m)
 
 inline bool is_ignored(CModel *m)
 {
-	for (int i=0;i<view_cur->ignore.num;i++)
-		if (m == view_cur->ignore[i])
+	for (int i=0;i<cur_cam->ignore.num;i++)
+		if (m == cur_cam->ignore[i])
 			return true;
 	return false;
 }
@@ -1421,16 +1421,16 @@ inline void fill_pmv(vector &pos, Array<PartialModel> &p, Array<PartialModelView
 inline void draw_pmv(Array<PartialModelView> &vp)
 {
 	// camera frustrum data
-	vector pos = view_cur->pos;
-	vector dir = VecAng2Dir(view_cur->ang);
+	vector pos = cur_cam->pos;
+	vector dir = VecAng2Dir(cur_cam->ang);
 	vector a2;
-	a2 = VecAngAdd(vector(0, +0.9, 0), view_cur->ang);
+	a2 = VecAngAdd(vector(0, +0.9, 0), cur_cam->ang);
 	vector dir_l = VecAng2Dir(a2);
-	a2 = VecAngAdd(vector(0, -0.9, 0), view_cur->ang);
+	a2 = VecAngAdd(vector(0, -0.9, 0), cur_cam->ang);
 	vector dir_r = VecAng2Dir(a2);
-	a2 = VecAngAdd(vector(+1.0, 0, 0), view_cur->ang);
+	a2 = VecAngAdd(vector(+1.0, 0, 0), cur_cam->ang);
 	vector dir_t = VecAng2Dir(a2);
-	a2 = VecAngAdd(vector(-1.0, 0, 0), view_cur->ang);
+	a2 = VecAngAdd(vector(-1.0, 0, 0), cur_cam->ang);
 	vector dir_b = VecAng2Dir(a2);
 	
 	for (int i=0;i<vp.num;i++){
@@ -1487,9 +1487,9 @@ void GodDrawSorted()
 	//fill_frame ++;
 	//if (fill_frame > 10){
 		// TODO: refill when SortedNonTrans or SortedNonTrans change... pointers...vector allocation...
-		vector pos = view_cur->pos;
-		fill_pmv(pos, SortedNonTrans, view_cur->pmvd.opaque, SortingEnabled, true);
-		fill_pmv(pos, SortedTrans, view_cur->pmvd.trans, true, false);
+		vector pos = cur_cam->pos;
+		fill_pmv(pos, SortedNonTrans, cur_cam->pmvd.opaque, SortingEnabled, true);
+		fill_pmv(pos, SortedTrans, cur_cam->pmvd.trans, true, false);
 		fill_frame = 0;
 	//}
 
@@ -1501,7 +1501,7 @@ void GodDrawSorted()
 		NixSetZ(false,false);
 
 	// drawing
-	draw_pmv(view_cur->pmvd.opaque);
+	draw_pmv(cur_cam->pmvd.opaque);
 
 //transparent models
 	// test but don't write
@@ -1509,7 +1509,7 @@ void GodDrawSorted()
 		NixSetZ(false,true);
 
 	// drawing
-	draw_pmv(view_cur->pmvd.trans);
+	draw_pmv(cur_cam->pmvd.trans);
 
 	
 	// reset the z buffer

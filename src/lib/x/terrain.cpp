@@ -231,7 +231,7 @@ void CTerrain::CalcDetail()
 			int lz=(z1*32>num_z-32)?(num_z%32):32;
 			int x0=x1*32;
 			int z0=z1*32;
-			float depth=VecLength(view_cur->pos-vertex[Index(x0+lx/2,z0+lz/2)])/pattern.x;
+			float depth=VecLength(cur_cam->pos-vertex[Index(x0+lx/2,z0+lz/2)])/pattern.x;
 			int e=32;
 			if (depth<500)	e=32;
 			if (depth<320)	e=16;
@@ -593,12 +593,16 @@ void CTerrain::Draw()
 	//NixSetShader(-1);
 
 	// the actual drawing
-	if (num_textures == 1)
-		NixDraw3D(texture[0], vertex_buffer, m_id);
-	else if (num_textures>1)
-		NixDraw3DM(texture, vertex_buffer, m_id);
+	NixSetWorldMatrix(m_id);
+	if (num_textures == 1){
+		NixSetTexture(texture[0]);
+		NixDraw3D(vertex_buffer);
+	}else if (num_textures>1){
+		NixSetTextures(texture, num_textures);
+		NixDraw3DM(vertex_buffer);
+	}
 
-	pos_old = view_cur->pos;
+	pos_old = cur_cam->pos;
 	force_redraw = false;
 	for (int x=0;x<num_x/32;x++)
 		for (int z=0;z<num_z/32;z++)

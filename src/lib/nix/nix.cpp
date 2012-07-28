@@ -14,7 +14,7 @@
 #include "nix_common.h"
 
 
-string NixVersion = "0.9.7.1";
+string NixVersion = "0.10.0.0";
 
 
 // libraries (in case Visual C++ is used)
@@ -73,7 +73,6 @@ bool NixUsable,NixDoingEvilThingsToTheDevice;
 // things'n'stuff
 static bool WireFrame;
 static matrix *PostProjectionMatrix; // for creating the NixProjectionMatrix
-static matrix identity_matrix;
 static int ClipPlaneMask;
 int NixFontGlyphWidth[256];
 
@@ -93,7 +92,6 @@ int NixNumTrias;
 int NixTextureMaxFramesToLive,NixMaxVideoTextureSize=256;
 float NixMaxDepth,NixMinDepth;
 
-bool NixLightingEnabled,NixLightingEnabled2D;
 bool NixCullingInverted;
 
 
@@ -179,8 +177,6 @@ static int OGLPixelFormat;
 	bool NixGLDoubleBuffered;
 #endif
 
-matrix NixOGLProjectionMatrix2D;
-
 // shader files
 int glShaderCurrent = 0;
 
@@ -217,19 +213,7 @@ void CreateFontGlyphWidth()
 	DeleteObject(hFont);
 #endif
 #ifdef NIX_OS_LINUX
-		//XQueryTextExtents(hui_x_display, );
-	/*OGLSet2DMode();
-	for(int c=0;c<255;c++){
-		glRasterPos3f(0,0,0);
-		int x0;
-		float x[4];
-		glGetFloatv(GL_CURRENT_RASTER_POSITION,x);
-		x0=int(x[0]+0.5f);
-		glListBase(NixOGLFontDPList);
-		glCallLists(1,GL_UNSIGNED_BYTE,&c);
-		glGetFloatv(GL_CURRENT_RASTER_POSITION,x);
-		NixFontGlyphWidth[c]=int(x[0]+0.5f)-x0;
-	}*/
+	//XQueryTextExtents(hui_x_display, );
 	memset(NixFontGlyphWidth, 0, sizeof(NixFontGlyphWidth));
 	for(int c=0;c<255;c++)
 		NixFontGlyphWidth[c] = XTextWidth(x_font, (char*)&c, 1);
@@ -600,14 +584,12 @@ void NixInit(const string &api,int xres,int yres,int depth,bool fullscreen,CHuiW
 
 
 	// default values of the engine
-	MatrixIdentity(identity_matrix);
 	MatrixIdentity(NixViewMatrix);
 	MatrixIdentity(NixProjectionMatrix);
 	NixSetPerspectiveMode(PerspectiveSizeAutoScreen);
 	NixSetPerspectiveMode(PerspectiveCenterAutoTarget);
 	NixSetPerspectiveMode(Perspective2DScaleSet, 1, 1);
 	NixSetPerspectiveMode(PerspectiveRatioSet, 4.0f / 3.0f);
-	NixEnabled3D = true;
 	NixMouseMappingWidth = 1024;
 	NixMouseMappingHeight = 768;
 	NixMaxDepth = 100000.0f;
@@ -638,12 +620,13 @@ void NixInit(const string &api,int xres,int yres,int depth,bool fullscreen,CHuiW
 	NixSetWire(false);
 	NixSetAlpha(AlphaNone);
 	NixEnableLighting(false);
-	NixEnableLighting2D(false);
-	NixSetMaterial(White,White,White,0,color(0.1f,0.1f,0.1f,0.1f));
+	NixSetMaterial(White, White, White, 0, color(0.1f, 0.1f, 0.1f, 0.1f));
 	NixSetAmbientLight(Black);
 	NixSpecularEnable(false);
-	NixCullingInverted=false;
-	NixSetView(true,NixViewMatrix);
+	NixCullingInverted = false;
+	NixSetProjection(false, false);
+	NixSetView(m_id);
+	NixSetWorldMatrix(m_id);
 	NixResize();
 
 	NixInputInit();

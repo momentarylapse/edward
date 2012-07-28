@@ -90,7 +90,7 @@ void ModeModelMeshCreatePlane::OnDrawWin(int win, irect dest)
 		NixVBAddTria(VBTemp, b,  n, 0, 0, d,  n, 0, 0, c,  n, 0, 0);
 		NixVBAddTria(VBTemp, b,  n, 0, 0, c,  n, 0, 0, a,  n, 0, 0);
 		mode_model->SetMaterialCreation();
-		NixDraw3D(-1, VBTemp, m_id);
+		NixDraw3D(VBTemp);
 	}
 }
 

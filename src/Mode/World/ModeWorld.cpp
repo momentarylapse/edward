@@ -359,7 +359,7 @@ void ModeWorld::OnLeftButtonUp()
 
 void ModeWorld::OnDraw()
 {
-	view_cur->pos = multi_view->pos;
+	cur_cam->pos = multi_view->pos;
 
 	int num_ob = data->GetSelectedObjects();
 	int num_te = data->GetSelectedTerrains();

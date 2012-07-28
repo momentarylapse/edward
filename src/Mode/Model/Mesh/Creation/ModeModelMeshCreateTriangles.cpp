@@ -44,8 +44,10 @@ void ModeModelMeshCreateTriangles::OnDrawWin(int win, irect dest)
 	for (int i=1;i<selection.num;i++){
 		vector pa = multi_view->VecProject(data->Vertex[selection[i - 1]].pos, win);
 		vector pb = multi_view->VecProject(data->Vertex[selection[i    ]].pos, win);
+		NixSetColor(Green);
 		if ((pa.z >= 0) and (pa.z < 1) and (pb.z >= 0) and (pb.z <= 1))
-			NixDrawLine(pa.x, pa.y, pb.x, pb.y, Green, 0);
+			NixDrawLine(pa.x, pa.y, pb.x, pb.y, 0);
+		NixSetColor(White);
 	}
 }
 

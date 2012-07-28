@@ -120,7 +120,6 @@ sPicture3D *GuiCreatePicture3D(CModel *model, const matrix &mat, float z)
 	xcont_find_new(XContainerPicture3d, sPicture3D, p, Picture3D);
 	// default data to show existence...
 	p->enabled = true;
-	p->relative = true;
 	p->lighting = false;
 	p->world_3d = false;
 	p->_color = White;
@@ -191,69 +190,60 @@ void GuiGroupingAddText(sGrouping *grouping, sText *text)
 	grouping->text.add(t);
 }
 
-bool GuiMouseOver(void *p)
+bool sPicture::IsMouseOver()
 {
-	// test pictures
-	for (int i=0;i<Picture.num;i++)
-		if (Picture[i] == p){
-		//	if (!Picture[i].Enabled)
-		//		return false;
-			rect r=rect(	Picture[i]->pos.x,	Picture[i]->pos.x+Picture[i]->width,
-							Picture[i]->pos.y,	Picture[i]->pos.y+Picture[i]->height);
+//	if (!enabled)
+//		return false;
+	rect r=rect(	pos.x,	pos.x+width,
+					pos.y,	pos.y+height);
 
-			// grouping correction?
-			for (int j=0;j<Grouping.num;j++){
-				sGrouping *g = Grouping[j];
-				for (int k=0;k<g->picture.num;k++)
-					if (&g->picture[k] == p){
-						if (!g->enabled)
-							return false;
-						r.x1 += g->pos.x;
-						r.x2 += g->pos.x;
-						r.y1 += g->pos.y;
-						r.y2 += g->pos.y;
-						j+=Grouping.num;
-						break;
-					}
+	// grouping correction?
+	foreachi(Grouping, g, j){
+		for (int k=0;k<g->picture.num;k++)
+			if (&g->picture[k] == (void*)this){
+				if (!g->enabled)
+					return false;
+				r.x1 += g->pos.x;
+				r.x2 += g->pos.x;
+				r.y1 += g->pos.y;
+				r.y2 += g->pos.y;
+				j+=Grouping.num;
+				break;
 			}
+	}
 
-			// actual test
-			return ((NixMouseRel.x>r.x1)&&(NixMouseRel.x<r.x2)&&(NixMouseRel.y>r.y1)&&(NixMouseRel.y<r.y2));
-		}
+	// actual test
+	return ((NixMouseRel.x>r.x1)&&(NixMouseRel.x<r.x2)&&(NixMouseRel.y>r.y1)&&(NixMouseRel.y<r.y2));
+}
 
-	// test texts
-	for (int i=0;i<Text.num;i++)
-		if (Text[i] == p){
-	//		if (!Text[i].Enabled)
-	//			return false;
-			XFontIndex = Text[i]->font;
-			float w = XFGetWidth(Text[i]->size, Text[i]->text);
-			float x = Text[i]->pos.x;
-			if (Text[i]->centric)
-				x-=w/2;
-			rect r=rect(x,x+w,Text[i]->pos.y,Text[i]->pos.y+Text[i]->size);
+bool sText::IsMouseOver()
+{
+//	if (!enabled)
+//		return false;
+	XFontIndex = font;
+	float w = XFGetWidth(size, text);
+	float x = pos.x;
+	if (centric)
+		x-=w/2;
+	rect r=rect(x,x+w,pos.y,pos.y+size);
 
-			// grouping correction?
-			for (int j=0;j<Grouping.num;j++){
-				sGrouping *g = Grouping[j];
-				for (int k=0;k<g->text.num;k++)
-					if (&g->text[k]==p){
-						if (!g->enabled)
-							return false;
-						r.x1 += g->pos.x;
-						r.x2 += g->pos.x;
-						r.y1 += g->pos.y;
-						r.y2 += g->pos.y;
-						j+=Grouping.num;
-						break;
-					}
+	// grouping correction?
+	foreachi(Grouping, g, j){
+		for (int k=0;k<g->text.num;k++)
+			if (&g->text[k]==(void*)this){
+				if (!g->enabled)
+					return false;
+				r.x1 += g->pos.x;
+				r.x2 += g->pos.x;
+				r.y1 += g->pos.y;
+				r.y2 += g->pos.y;
+				j+=Grouping.num;
+				break;
 			}
+	}
 
-			// actual test
-
-			return ((NixMouseRel.x>r.x1)&&(NixMouseRel.x<r.x2)&&(NixMouseRel.y>r.y1)&&(NixMouseRel.y<r.y2));
-		}
-	return false;
+	// actual test
+	return ((NixMouseRel.x>r.x1)&&(NixMouseRel.x<r.x2)&&(NixMouseRel.y>r.y1)&&(NixMouseRel.y<r.y2));
 }
 
 
@@ -285,17 +275,11 @@ inline void MatrixInvH(matrix &m)
 	m.e[13]=-m.e[13];
 }
 
-inline void MatrixAddTrans(matrix &m,vector &v,bool rel)
+inline void MatrixAddTrans(matrix &m,vector &v)
 {
-	if (rel){
-		m.e[12]+=v.x;
-		m.e[13]+=-v.y;
-		//m.e[14]+=v.z;
-	}else{
-		m.e[12]+=v.x*(float)MaxX;
-		m.e[13]+=-v.y*(float)MaxY;
-		//m.e[14]+=v.z;
-	}
+	m.e[12]+=v.x;
+	m.e[13]+=-v.y;
+	//m.e[14]+=v.z;
 }
 
 inline void apply_grouping(sGrouping *g)
@@ -322,7 +306,7 @@ inline void apply_grouping(sGrouping *g)
 		sp->z = p->z;
 		p->z += g->pos.z;
 		sp->_matrix = p->_matrix;
-		MatrixAddTrans(p->_matrix, g->pos, p->relative);
+		MatrixAddTrans(p->_matrix, g->pos);
 		sp->_color = p->_color;
 		p->_color = ColorMultiply(p->_color, g->_color);
 	}
@@ -374,39 +358,40 @@ inline void GuiDrawPicture(sPicture *p)
 {
 	if (!p->enabled)
 		return;
+	//if (p->_color.a <= 0)
+	//	return;
 #ifdef _X_ALLOW_CAMERA_
 	if (Cam->shader < 0)
 #endif
 		NixSetShader(p->shader);
 	//p->Texture=-1;
-	NixSetZ(false, true);
+
 	NixSetAlpha(AlphaMaterial);
-	NixSetCull(CullNone);
+	NixSetTexture(p->texture);
+	NixSetColor(p->_color);
 	if (p->tc_inverted){ // texture coordinates are inverted ( y <-> x )
 		// create two 3D triangles...
 		vector n=v0,pa,pb,pc,pd;
 		NixVBClear(VBTemp);
-		pa=   vector((p->pos.x-0.5f)*float(MaxX)	,(0.5f-p->pos.y)*float(MaxY),0);
-		pb=pa+vector(p->width*float(MaxX)			,0							,0);
-		pc=pa+vector(0								,-p->height*float(MaxY)		,0);
-		pd=pa+vector(p->width*float(MaxX)			,-p->height*float(MaxY)		,0);
+		pa = p->pos;
+		pb = pa+vector(p->width	,0			,0);
+		pc = pa+vector(0		,p->height	,0);
+		pd = pa+vector(p->width	,p->height	,0);
 		NixVBAddTria(VBTemp,	pa,n,p->source.x1,p->source.y1,
 								pb,n,p->source.x1,p->source.y2,
 								pc,n,p->source.x2,p->source.y1);
 		NixVBAddTria(VBTemp,	pc,n,p->source.x2,p->source.y1,
 								pb,n,p->source.x1,p->source.y2,
 								pd,n,p->source.x2,p->source.y2);
-		NixSetMaterial(Black,p->_color,Black,0,p->_color);
-		NixEnableLighting(true);
-		NixDraw3D(p->texture,VBTemp,m_id);
+		NixDraw3D(VBTemp);
 	}else{ // default
 		// use the 2D rectangle drawing function
 		rect d;
-		d.x1= p->pos.x				*float(MaxX);
-		d.x2=(p->pos.x+p->width)	*float(MaxX);
-		d.y1= p->pos.y				*float(MaxY);
-		d.y2=(p->pos.y+p->height)	*float(MaxY);
-		NixDraw2D(p->texture, p->_color, p->source, d, p->pos.z);
+		d.x1= p->pos.x;
+		d.x2=(p->pos.x+p->width);
+		d.y1= p->pos.y;
+		d.y2=(p->pos.y+p->height);
+		NixDraw2D(p->source, d, p->pos.z);
 	}
 #ifdef _X_ALLOW_CAMERA_
 	if (Cam->shader < 0)
@@ -418,13 +403,9 @@ inline void GuiDrawText(sText *t)
 {
 	if (!t->enabled)
 		return;
-	//NixSetAlpha(AlphaNone);
-	XFontColor = t->_color;
 	XFontIndex = t->font;
 	XFontZ = t->pos.z;
-	NixSetZ(false, true);
-	NixSetAlpha(AlphaMaterial);
-	NixSetCull(CullNone);
+	NixSetColor(t->_color);
 	if (t->vertical)
 		XFDrawVertStr(t->pos.x, t->pos.y, t->size, t->text);
 	else
@@ -432,8 +413,16 @@ inline void GuiDrawText(sText *t)
 	//NixSetZ(true, true);
 }
 
+void mout(const matrix &m)
+{
+	msg_write(format("%f %f %f %f", m._00, m._01, m._02, m._03));
+	msg_write(format("%f %f %f %f", m._10, m._11, m._12, m._13));
+	msg_write(format("%f %f %f %f", m._20, m._21, m._22, m._23));
+	msg_write(format("%f %f %f %f", m._30, m._31, m._32, m._33));
+}
 
-static matrix rel;
+
+extern matrix NixProjectionMatrix, NixViewMatrix, NixWorldMatrix;
 
 inline void GuiDrawPicture3D(sPicture3D *p)
 {
@@ -471,30 +460,43 @@ inline void GuiDrawPicture3D(sPicture3D *p)
 	else
 		NixSetZ(true,true);
 	if (p->world_3d){
-		view_cur->SetView();
 		NixSetZ(false,false);
 	}
 	NixSetAlpha(AlphaNone);
-	NixSetCull(CullDefault);
 	NixEnableLighting(p->lighting);
 	if (p->world_3d){
+		NixSetProjection(true, true);
+		cur_cam->SetView();
 		p->model->_matrix = p->_matrix;
 	}else{
-		matrix t;
+		/*NixSetProjection(false, true);
+		NixSetView(v0, v0, vector(1,1,0.1f));*/
+		matrix s, t;
 		MatrixTranslation(t,vector(-(float)MaxX/2,-(float)MaxY/2,p->z*100));
 		//MatrixInvH(p->_matrix);
-		if (p->relative){
-			MatrixMultiply(p->model->_matrix,rel,p->_matrix);
-			MatrixMultiply(p->model->_matrix,t,p->model->_matrix);
-		}else
-			MatrixMultiply(p->model->_matrix,t,p->_matrix);
+		/*if (p->relative)
+			p->model->_matrix = t * rel * p->_matrix;
+		else
+			p->model->_matrix = t * p->_matrix;*/
+		MatrixTranslation(t, e_y);
+		MatrixScale(s, 1, -1, 1);
+		NixSetColor(White);
+		p->model->_matrix = t * s * p->_matrix;
 	}
+
+	// draw
 //	p->model->Draw(SkinView0,&p->_matrix,false);
 	p->model->Draw(SkinHigh,false,false);
 	//MatrixInvH(p->_matrix);
-	
-	if (p->world_3d)
-		NixSetView(false, v0, v0, vector(1,1,0.1f));
+
+	// clean up
+	if (p->world_3d){
+		NixSetProjection(false, true);
+		NixSetView(m_id);
+	}
+	NixSetWorldMatrix(m_id);
+	NixEnableLighting(false);
+	NixSetZ(false, true);
 
 	if (ch_color){
 		m->ambient = p->ambient;
@@ -514,17 +516,9 @@ void GuiDraw()
 	msg_db_r("GuiDraw", 2);
 	// save old state
 	int _XFontIndex = XFontIndex;
-	color _XFontColor = XFontColor;
 	float _XFontZ = XFontZ;
 
-	//NixSetView2D();
-	//NixSetView(false);
-	NixSetCull(CullNone);
 	NixEnableLighting(false);
-	// reset Z buffer
-//	NixSetZ(true,false);
-//	NixSetAlphaSD(AlphaZero,AlphaOne);
-//	NixDraw2D(-1,NULL,NULL,NULL,0.9999999f);
 
 
 	// groupings
@@ -535,17 +529,22 @@ void GuiDraw()
 	AddAllDrawables();
 	std::sort(&Drawable[0], &Drawable[Drawable.num]);
 
-	MatrixScale(rel, float(MaxX), float(MaxY), 1.0f);
-
 	// drawing
 	NixSetAlpha(AlphaNone);
-	NixSetView(false, v0, v0, vector(1,1,0.1f));
+	//NixSetProjection(false, true);
+	NixSetView(m_id);
 #ifdef _X_ALLOW_CAMERA_
 	if (Cam->shaded_displays)
 		NixSetShader(Cam->shader);
 #endif
 
-	NixSetZ(true, true);
+	//NixSetZ(true, true);
+	NixSetZ(false, true);
+	NixEnableLighting(false);
+	NixSetProjection(false, true);
+	NixSetView(m_id);
+	NixSetWorldMatrix(m_id);
+	NixSpecularEnable(false);
 
 	 // drawing
 	foreach(Drawable, d){
@@ -562,9 +561,8 @@ void GuiDraw()
 	Drawable.clear();
 	NixSetAlpha(AlphaNone);
 	NixSetZ(true, true);
-	NixSetCull(CullDefault);
+	NixSpecularEnable(true);
 	NixSetShader(-1);
-	XFontColor = _XFontColor;
 	XFontIndex = _XFontIndex;
 	XFontZ =_XFontZ;
 

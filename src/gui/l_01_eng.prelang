@@ -1,18 +1,10 @@
 // Language
 English
 // Num IDs
-549
+535
 // Data (ID,Text)
 ad_dialog
 Administration
-ad_edit
-Edit
-ad_export_game
-Export game
-ad_rudimentary_configuration
-Configuration
-ad_tab_control
-current game\\all files\\details\\unnesessary\\missing
 add_material
 
 add_script
@@ -21,12 +13,6 @@ add_texture_level
 
 administrate
 Administrate
-adt_dest
-!bold\\Needs
-adt_file
-!bold\\File
-adt_source
-!bold\\Needed by
 align_to_grid
 Align to grid
 all
@@ -201,18 +187,6 @@ export_type
 single files\\archive (compressed)\\archive (uncompressed)
 export_world
 Export world
-file_list_all
-!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
-file_list_cur
-!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
-file_list_detail_dest
-!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
-file_list_detail_source
-!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
-file_list_missing
-!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
-file_list_super
-!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
 fog_enabled
 enabled
 fog_mode
@@ -817,8 +791,6 @@ remove_script
 
 remove_skybox
 Remove
-rename
-rename
 replace_objects
 Replace
 resolution

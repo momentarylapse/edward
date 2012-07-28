@@ -33,6 +33,35 @@ enum{
 		g_object_get(G_OBJECT(table), "n-columns", columns, NULL);
 	}
 #endif
+
+	GtkWidget *gtk_scale_new_with_range(GtkOrientation orientation, double min, double max, double step)
+	{
+		if (orientation == GTK_ORIENTATION_VERTICAL)
+			return gtk_vscale_new_with_range(min, max, step);
+		else
+			return gtk_hscale_new_with_range(min, max, step);
+	}
+
+	void gtk_combo_box_text_remove_all(GtkComboBoxText *c)
+	{
+		GtkTreeModel *m = gtk_combo_box_get_model(GTK_COMBO_BOX(c));
+		int n = gtk_tree_model_iter_n_children(m, NULL);
+		for (int i=0;i<n;i++)
+			gtk_combo_box_text_remove(c, 0);
+	}
+
+	void gtk_combo_box_text_append(GtkComboBoxText *c, const char *id, const char *text)
+	{
+		gtk_combo_box_text_append_text(c, text);
+	}
+
+	GtkWidget *gtk_box_new(GtkOrientation orientation, int spacing)
+	{
+		if (orientation == GTK_ORIENTATION_VERTICAL)
+			return gtk_vbox_new(false, spacing);
+		else
+			return gtk_hbox_new(false, spacing);
+	}
 #endif
 
 HuiControl *CHuiWindow::_InsertControl_(GtkWidget *widget, int x, int y, int width, int height, const string &id, int type, GtkWidget *frame)
@@ -1074,6 +1103,31 @@ void HuiDrawingContext::DrawStr(float x, float y, const string &str)
 	g_object_unref(layout);
 	
 	//cairo_show_text(cr, str);
+}
+
+float HuiDrawingContext::GetStrWidth(const string &str)
+{
+	if (!cr)
+		return 0;
+	PangoLayout *layout = pango_cairo_create_layout(cr);
+	pango_layout_set_text(layout, (char*)str.data, str.num);//.c_str(), -1);
+	string f = cur_font;
+	if (cur_font_bold)
+		f += " Bold";
+	if (cur_font_italic)
+		f += " Italic";
+	f += " " + i2s(cur_font_size);
+	PangoFontDescription *desc = pango_font_description_from_string(f.c_str());
+	//PangoFontDescription *desc = pango_font_description_new();
+	//pango_font_description_set_family(desc, "Sans");//cur_font);
+	//pango_font_description_set_size(desc, 10);//cur_font_size);
+	pango_layout_set_font_description(layout, desc);
+	pango_font_description_free(desc);
+	int w, h;
+	pango_layout_get_size(layout, &w, &h);
+	g_object_unref(layout);
+
+	return (float)w / 1000.0f;
 }
 
 void HuiDrawingContext::DrawRect(float x, float y, float w, float h)

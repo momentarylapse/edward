@@ -92,20 +92,26 @@ void ModeModelMeshTexture::OnDrawWin(int win, irect dest)
 						(float)(i+1)/16.0f*NixTargetWidth,
 						(float)j/16.0f*NixTargetHeight,
 						(float)(j+1)/16.0f*NixTargetHeight);
-				NixDraw2D( -1, ((i+j)%2==0) ? c1 : c2, r_id, r, 0.999f );
+				NixSetColor(((i+j)%2==0) ? c1 : c2);
+				NixDraw2D(r_id, r, 0.999f );
 			}
 		NixSetAlphaSD(AlphaSourceAlpha,AlphaSourceInvAlpha);
 	}
-	NixDraw2D(cur_tex, color(1,0.7f,0.7f,0.7f), s, NixTargetRect, 0.99f);
+	NixSetColor(color(1,0.7f,0.7f,0.7f));
+	NixSetTexture(cur_tex);
+	NixDraw2D(s, NixTargetRect, 0.99f);
+	NixSetTexture(-1);
 	NixSetAlphaM(AlphaNone);
 
 	// rectangle of unity
 	a = multi_view->VecProject(v0, win);
 	b = multi_view->VecProject(vector(1, 1, 0), win);
-	NixDrawLine(a.x, a.y, b.x, a.y, Red, 0.98f);
-	NixDrawLine(b.x, a.y, b.x, b.y, Red, 0.98f);
-	NixDrawLine(a.x, a.y, a.x, b.y, Red, 0.98f);
-	NixDrawLine(a.x, b.y, b.x, b.y, Red, 0.98f);
+	NixSetColor(Red);
+	NixDrawLine(a.x, a.y, b.x, a.y, 0.98f);
+	NixDrawLine(b.x, a.y, b.x, b.y, 0.98f);
+	NixDrawLine(a.x, a.y, a.x, b.y, 0.98f);
+	NixDrawLine(a.x, b.y, b.x, b.y, 0.98f);
+	NixSetColor(White);
 
 	// draw triangles (outlines) of current material
 	foreach(data->Surface, surf)
@@ -120,13 +126,13 @@ void ModeModelMeshTexture::OnDrawWin(int win, irect dest)
 			c = multi_view->VecProject(t.SkinVertex[data->CurrentTextureLevel][2],win);
 			NixDrawLine(	a.x,a.y,
 							b.x,b.y,
-							White,0.9f);
+							0.9f);
 			NixDrawLine(	c.x,c.y,
 							b.x,b.y,
-							White,0.9f);
+							0.9f);
 			NixDrawLine(	a.x,a.y,
 							c.x,c.y,
-							White,0.9f);
+							0.9f);
 		}
 
 	ed->DrawStr(180, MaxY - 20, format("%d von %d: %s", data->CurrentTextureLevel + 1, data->Material[data->CurrentMaterial].NumTextures,

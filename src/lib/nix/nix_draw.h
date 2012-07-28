@@ -10,24 +10,23 @@
 
 
 void _cdecl NixResetToColor(const color &c);
-void _cdecl NixSetFontColor(const color &c);
-void _cdecl NixDrawChar(int x,int y,char c);
-void _cdecl NixDrawStr(int x,int y,const string &str);
+void _cdecl NixSetColor(const color &c);
+color _cdecl NixGetColor();
+void _cdecl NixDrawChar(float x, float y, char c);
+void _cdecl NixDrawStr(float x, float y, const string &str);
 int _cdecl NixGetStrWidth(const string &str);
-void _cdecl NixDrawFloat(int x,int y,float fl,int com);
-void _cdecl NixDrawInt(int x,int y,int num);
-void _cdecl NixDrawLine(float x1,float y1,float x2,float y2,const color &c,float depth);
-void _cdecl NixDrawLineV(int x,int y1,int y2,const color &c,float depth);
-void _cdecl NixDrawLineH(int x1,int x2,int y,const color &c,float depth);
-void _cdecl NixDrawLines(float *x, float *y, int num_lines, bool contiguous, const color &c, float depth);
-void _cdecl NixDrawLine3D(const vector &l1,const vector &l2,const color &c);
-void _cdecl NixDrawRect(float x1,float x2,float y1,float y2,const color &c,float depth);
-void _cdecl NixDraw2D(int texture,const color &col,const rect &src,const rect &dest,float depth);
-void _cdecl NixDraw3D(int texture,int buffer,const matrix &mat);
-void _cdecl NixDraw3DM(int *texture,int buffer,const matrix &mat);
-void _cdecl NixDrawSpriteR(int texture,const color &col,const rect &src,const vector &pos,const rect &dest);
-void _cdecl NixDrawSprite(int texture,const color &col,const rect &src,const vector &pos,float radius);
-void _cdecl NixDraw3DCubeMapped(int cube_map,int vertex_buffer,const matrix &mat);
+void _cdecl NixDrawLine(float x1, float y1, float x2, float y2, float depth);
+void _cdecl NixDrawLineV(float x, float y1, float y2, float depth);
+void _cdecl NixDrawLineH(float x1, float x2, float y, float depth);
+void _cdecl NixDrawLines(float *x, float *y, int num_lines, bool contiguous, float depth);
+void _cdecl NixDrawLine3D(const vector &l1, const vector &l2);
+void _cdecl NixDrawRect(float x1, float x2, float y1, float y2, float depth);
+void _cdecl NixDraw2D(const rect &src, const rect &dest, float depth);
+void _cdecl NixDraw3D(int buffer);
+void _cdecl NixDraw3DM(int buffer);
+void _cdecl NixDrawSpriteR(const rect &src, const vector &pos, const rect &dest);
+void _cdecl NixDrawSprite(const rect &src, const vector &pos, float radius);
+void _cdecl NixDraw3DCubeMapped(int cube_map, int vertex_buffer);
 
 extern float NixLineWidth;
 extern bool NixSmoothLines;

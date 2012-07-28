@@ -159,7 +159,7 @@ extern int NixDesktopWidth, NixDesktopHeight, NixDesktopDepth;	// pre-NIX-resolu
 extern int NixTargetWidth, NixTargetHeight;						// render target size (window/texture)
 extern bool NixFullscreen;
 extern callback_function *NixRefillAllVertexBuffers;			// animate the application to refill lost VertexBuffers
-extern bool NixLightingEnabled, NixLightingEnabled2D;
+extern bool NixLightingEnabled;
 extern bool NixCullingInverted;
 
 extern float NixMouseMappingWidth, NixMouseMappingHeight;		// fullscreen mouse territory

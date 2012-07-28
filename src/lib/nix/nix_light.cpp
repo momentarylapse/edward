@@ -10,22 +10,17 @@
 
 Array<sLight> NixLight;
 
+bool NixLightingEnabled;
 
 
-// nur "3D" Polygone betreffend
+// general ability of using lights
 void NixEnableLighting(bool Enabled)
 {
-	NixLightingEnabled=Enabled;
+	NixLightingEnabled = Enabled;
 	if (Enabled)
 		glEnable(GL_LIGHTING);
 	else
 		glDisable(GL_LIGHTING);
-}
-
-// nur "2D" Polygone betreffend
-void NixEnableLighting2D(bool Enabled)
-{
-	NixLightingEnabled2D=Enabled;
 }
 
 int NixCreateLight()
