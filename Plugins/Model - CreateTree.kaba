@@ -1,10 +1,39 @@
 #include "api.kaba"
 
-void main()
+const int MAX_LENGTH = 12
+const float BRANCH_PROB = 0.8
+const float BRANCH_FACTOR = 0.7
+const float BRANCH_ANGLE = 0.5
+const float DIR_RAND = 0.2
+
+vector get_rotated(vector dir)
+	vector v1 = VecCrossProduct(dir, e_x)
+	VecNormalize(v1)
+	vector v2 = VecCrossProduct(dir, v1)
+	float w = rand(2 * pi)
+	vector bdir = dir * 0.5 + cos(w) * v1 + sin(w) * v2
+	VecNormalize(bdir)
+	return bdir
+
+void branch(vector pos0, vector dir0, int num, float radius, float length)
+	vector dir = dir0
+	vector p = pos0
 	vector pos[]
-	pos.add(v0)
-	pos.add(vector(10, 30, 0))
-	pos.add(vector(0, 60, 0))
-	pos.add(vector(10, 90, 0))
-	pos.add(vector(-10, 120, 0))
-	data_model.AddCylinder(pos, 10, 0, 5, 16, true)
+	pos.add(pos0)
+	for int i, 1, num
+		dir.x += rand(DIR_RAND * 2) - DIR_RAND
+		dir.y += 0.5
+		dir.z += rand(DIR_RAND * 2) - DIR_RAND
+		VecNormalize(dir)
+		p += dir * length
+		pos.add(p)
+		
+		if rand(1) < BRANCH_PROB
+			vector bdir = get_rotated(dir)
+			int bnum = (num - i + 0.5) * BRANCH_FACTOR
+			if bnum > 1
+				branch(p, bdir, bnum, radius / num * bnum, length)
+	data_model.AddCylinder(pos, radius, 0, 5, 16, false)
+
+void main()
+	branch(v0, e_y, MAX_LENGTH, 5, 40)
