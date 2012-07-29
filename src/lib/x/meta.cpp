@@ -787,7 +787,7 @@ float _cdecl XFDrawStr(float x,float y,float height,const string &str,bool centr
 	NixSetAlpha(AlphaSourceAlpha,AlphaSourceInvAlpha);
 		//NixSetAlpha(AlphaMaterial);
 	NixSetTexture(f->texture);
-	float xf=height*f->x_factor;
+	float xf=height*f->x_factor * 1.33f;
 	float yf=height*f->y_factor;
 	float w=0;
 	y-=f->y_offset*yf;

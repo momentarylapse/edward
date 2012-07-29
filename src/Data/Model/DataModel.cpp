@@ -121,12 +121,6 @@ void DataModel::Reset()
 
 	ResetHistory();
 	Notify("Change");
-
-//	Execute(new ActionModelAddCube(v0, e_x * 20, e_y * 20, e_z * 20, Vertex.num));
-	/*Execute(new ActionModelAddPlane(e_y * 10, e_x * 200, e_z * 200, 4, 4, Vertex.num));
-	Execute(new ActionModelAddBall(vector(-200, 0, 0), 100, 16, 16, false, Vertex.num));
-	Execute(new ActionModelAddBall(vector(-200, 0, 200), 100, 16, 16, true, Vertex.num));
-	Execute(new ActionModelAddCylinder(vector(200, 0, 0), e_z * 100, 40, 3, 16, true, Vertex.num));*/
 }
 
 void DataModel::DebugShow()
@@ -1544,6 +1538,19 @@ int DataModel::GetNumMarkedSurfaces()
 			r ++;
 	return r;
 }
+
+ModeModelSurface* DataModel::AddBall(const vector& _pos, float _radius, int _num_x, int _num_y, bool _as_sphere)
+{	return (ModeModelSurface*)Execute(new ActionModelAddBall(this, _pos, _radius, _num_x, _num_y, _as_sphere));	}
+
+ModeModelSurface* DataModel::AddPlane(const vector& _pos, const vector& _dv1, const vector& _dv2, int _num_x, int _num_y)
+{	return (ModeModelSurface*)Execute(new ActionModelAddPlane(this, _pos, _dv1, _dv2, _num_x, _num_y));	}
+
+ModeModelSurface* DataModel::AddCube(const vector& _pos, const vector& _dv1, const vector& _dv2, const vector& _dv3)
+{	return (ModeModelSurface*)Execute(new ActionModelAddCube(this, _pos, _dv1, _dv2, _dv3));	}
+
+ModeModelSurface* DataModel::AddCylinder(Array<vector>& pos, float radius1, float radius2, int rings, int edges, bool closed)
+{	return (ModeModelSurface*)Execute(new ActionModelAddCylinder(this, pos, radius1, radius2, rings, edges, closed));	}
+
 
 /*int DataModel::GetNumMarkedBalls()
 {

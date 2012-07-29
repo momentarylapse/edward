@@ -251,8 +251,8 @@ void NixSetProjection(bool perspective, bool relative)
 		glScalef(NixViewScale.x, NixViewScale.y, NixViewScale.z);
 		glGetFloatv(GL_PROJECTION_MATRIX,(float*)&NixProjectionMatrix);
 	}else if (relative){
-		MatrixTranslation(t, vector(View3DCenterX/float(NixTargetWidth)*2.0f-2,2-View3DCenterY/float(NixTargetHeight)*2.0f,0));
-		MatrixScale(s, 2*View2DScaleX, -2*View2DScaleY,1.0f/(float)NixMaxDepth);
+		MatrixTranslation(t, vector(-0.5f, -0.5f, 0));
+		MatrixScale(s, 2 * View2DScaleX, -2 * View2DScaleY, 1.0f / (float)NixMaxDepth);
 		NixProjectionMatrix = s * t;
 	}else{
 		NixProjectionMatrix = NixProjectionMatrix2d;

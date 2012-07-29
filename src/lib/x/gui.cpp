@@ -387,10 +387,10 @@ inline void GuiDrawPicture(sPicture *p)
 	}else{ // default
 		// use the 2D rectangle drawing function
 		rect d;
-		d.x1= p->pos.x;
-		d.x2=(p->pos.x+p->width);
-		d.y1= p->pos.y;
-		d.y2=(p->pos.y+p->height);
+		d.x1= p->pos.x * MaxX;
+		d.x2=(p->pos.x+p->width) * MaxX;
+		d.y1= p->pos.y * MaxY;
+		d.y2=(p->pos.y+p->height) * MaxY;
 		NixDraw2D(p->source, d, p->pos.z);
 	}
 #ifdef _X_ALLOW_CAMERA_
@@ -407,9 +407,9 @@ inline void GuiDrawText(sText *t)
 	XFontZ = t->pos.z;
 	NixSetColor(t->_color);
 	if (t->vertical)
-		XFDrawVertStr(t->pos.x, t->pos.y, t->size, t->text);
+		XFDrawVertStr(t->pos.x * MaxX, t->pos.y * MaxY, t->size * MaxY, t->text);
 	else
-		XFDrawStr(t->pos.x, t->pos.y, t->size, t->text, t->centric);
+		XFDrawStr(t->pos.x * MaxX, t->pos.y * MaxY, t->size * MaxY, t->text, t->centric);
 	//NixSetZ(true, true);
 }
 
@@ -422,7 +422,7 @@ void mout(const matrix &m)
 }
 
 
-extern matrix NixProjectionMatrix, NixViewMatrix, NixWorldMatrix;
+extern matrix NixProjectionMatrix, NixProjectionMatrix2d, NixViewMatrix, NixWorldMatrix;
 
 inline void GuiDrawPicture3D(sPicture3D *p)
 {
@@ -469,10 +469,8 @@ inline void GuiDrawPicture3D(sPicture3D *p)
 		cur_cam->SetView();
 		p->model->_matrix = p->_matrix;
 	}else{
-		/*NixSetProjection(false, true);
-		NixSetView(v0, v0, vector(1,1,0.1f));*/
+		NixSetProjection(false, true);
 		matrix s, t;
-		MatrixTranslation(t,vector(-(float)MaxX/2,-(float)MaxY/2,p->z*100));
 		//MatrixInvH(p->_matrix);
 		/*if (p->relative)
 			p->model->_matrix = t * rel * p->_matrix;
@@ -481,7 +479,9 @@ inline void GuiDrawPicture3D(sPicture3D *p)
 		MatrixTranslation(t, e_y);
 		MatrixScale(s, 1, -1, 1);
 		NixSetColor(White);
-		p->model->_matrix = t * s * p->_matrix;
+		matrix projection = NixProjectionMatrix * t * s;
+		NixSetProjectionMatrix(projection);
+		p->model->_matrix = p->_matrix;
 	}
 
 	// draw
@@ -490,11 +490,12 @@ inline void GuiDrawPicture3D(sPicture3D *p)
 	//MatrixInvH(p->_matrix);
 
 	// clean up
-	if (p->world_3d){
+	/*if (p->world_3d){
 		NixSetProjection(false, true);
 		NixSetView(m_id);
 	}
-	NixSetWorldMatrix(m_id);
+	NixSetWorldMatrix(m_id);*/
+	NixSetProjection(false, true);
 	NixEnableLighting(false);
 	NixSetZ(false, true);
 
@@ -542,8 +543,6 @@ void GuiDraw()
 	NixSetZ(false, true);
 	NixEnableLighting(false);
 	NixSetProjection(false, true);
-	NixSetView(m_id);
-	NixSetWorldMatrix(m_id);
 	NixSpecularEnable(false);
 
 	 // drawing

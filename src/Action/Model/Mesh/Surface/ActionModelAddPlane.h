@@ -19,6 +19,8 @@ public:
 	ActionModelAddPlane(DataModel *m, const vector &_pos, const vector &_dv1, const vector &_dv2, int _num_x, int _num_y);
 	virtual ~ActionModelAddPlane();
 	string name(){	return "ModelAddPlane";	}
+
+	virtual void *execute_return(Data *d);
 };
 
 #endif /* ACTIONMODELADDPLANE_H_ */

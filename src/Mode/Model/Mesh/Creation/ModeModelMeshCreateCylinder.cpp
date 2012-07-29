@@ -8,7 +8,6 @@
 #include "ModeModelMeshCreateCylinder.h"
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"
-#include "../../../../Action/Model/Mesh/Surface/ActionModelAddCylinder.h"
 
 ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(Mode *_parent) :
 	ModeCreation(_parent)
@@ -72,7 +71,7 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 		HuiConfigWriteInt("NewCylinderEdges", edges);
 		HuiConfigWriteBool("NewCylinderClosedEndings", closed);
 
-		data->Execute(new ActionModelAddCylinder(data, pos, radius, rings, edges, closed));
+		data->AddCylinder(pos, radius, radius, rings, edges, closed);
 
 		Abort();
 	}else{

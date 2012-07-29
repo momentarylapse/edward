@@ -8,7 +8,6 @@
 #include "../../ModeModel.h"
 #include "ModeModelMeshCreatePlane.h"
 #include "../../../../Edward.h"
-#include "../../../../Action/Model/Mesh/Surface/ActionModelAddPlane.h"
 #include "../../../../lib/nix/nix.h"
 
 ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(Mode *_parent) :
@@ -59,7 +58,7 @@ void ModeModelMeshCreatePlane::OnLeftButtonDown()
 			length[0] = -length[0];
 		}
 
-		data->Execute(new ActionModelAddPlane(data, pos, length[0], length[1], nx, ny));
+		data->AddPlane(pos, length[0], length[1], nx, ny);
 
 		Abort();
 	}else{

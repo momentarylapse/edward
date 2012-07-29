@@ -57,4 +57,7 @@ ActionModelAddCube::~ActionModelAddCube()
 {
 }
 
+void *ActionModelAddCube::execute_return(Data *d)
+{	return &(dynamic_cast<DataModel*>(d))->Surface.back();	}
+
 

@@ -1,0 +1,10 @@
+#include "api.kaba"
+
+void main()
+	vector pos[]
+	pos.add(v0)
+	pos.add(vector(10, 30, 0))
+	pos.add(vector(0, 60, 0))
+	pos.add(vector(10, 90, 0))
+	pos.add(vector(-10, 120, 0))
+	data_model.AddCylinder(pos, 10, 0, 5, 16, true)

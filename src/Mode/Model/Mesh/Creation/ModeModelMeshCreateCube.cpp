@@ -8,7 +8,6 @@
 #include "../../ModeModel.h"
 #include "ModeModelMeshCreateCube.h"
 #include "../../../../Edward.h"
-#include "../../../../Action/Model/Mesh/Surface/ActionModelAddCube.h"
 
 ModeModelMeshCreateCube::ModeModelMeshCreateCube(Mode *_parent) :
 	ModeCreation(_parent)
@@ -45,7 +44,7 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 	if (pos_chosen){
 		if (pos2_chosen){
 
-			data->Execute(new ActionModelAddCube(data, pos, length[0], length[1], length[2]));
+			data->AddCube(pos, length[0], length[1], length[2]);
 
 			Abort();
 		}else{

@@ -101,3 +101,6 @@ ActionModelAddBall::ActionModelAddBall(DataModel *m, const vector &_pos, float _
 ActionModelAddBall::~ActionModelAddBall()
 {
 }
+
+void *ActionModelAddBall::execute_return(Data *d)
+{	return &(dynamic_cast<DataModel*>(d))->Surface.back();	}

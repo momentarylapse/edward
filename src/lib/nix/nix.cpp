@@ -624,9 +624,7 @@ void NixInit(const string &api,int xres,int yres,int depth,bool fullscreen,CHuiW
 	NixSetAmbientLight(Black);
 	NixSpecularEnable(false);
 	NixCullingInverted = false;
-	NixSetProjection(false, false);
-	NixSetView(m_id);
-	NixSetWorldMatrix(m_id);
+	NixSetProjection(true, true);
 	NixResize();
 
 	NixInputInit();

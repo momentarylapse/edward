@@ -50,3 +50,6 @@ ActionModelAddPlane::ActionModelAddPlane(DataModel *m, const vector &_pos, const
 ActionModelAddPlane::~ActionModelAddPlane()
 {
 }
+
+void *ActionModelAddPlane::execute_return(Data *d)
+{	return &(dynamic_cast<DataModel*>(d))->Surface.back();	}

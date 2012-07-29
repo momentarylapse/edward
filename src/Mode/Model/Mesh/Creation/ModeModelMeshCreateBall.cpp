@@ -8,7 +8,6 @@
 #include "ModeModelMeshCreateBall.h"
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"
-#include "../../../../Action/Model/Mesh/Surface/ActionModelAddBall.h"
 #include "../../../../lib/x/x.h"
 
 ModeModelMeshCreateBall::ModeModelMeshCreateBall(Mode *_parent) :
@@ -63,9 +62,9 @@ void ModeModelMeshCreateBall::OnLeftButtonDown()
 		HuiConfigWriteInt("NewBallComplexity", complexity);
 		HuiConfigWriteBool("NewBallSphere", sphere);
 		if (sphere)
-			data->Execute(new ActionModelAddBall(data, pos, radius, complexity, complexity, true));
+			data->AddBall(pos, radius, complexity, complexity, true);
 		else
-			data->Execute(new ActionModelAddBall(data, pos, radius, nx, ny, false));
+			data->AddBall(pos, radius, nx, ny, false);
 
 		Abort();
 	}else{

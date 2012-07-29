@@ -262,6 +262,10 @@ public:
 	// high level (actions)
 	void AddVertex(const vector &v, int normal_mode = -1);
 	ModeModelTriangle *AddTriangle(int a, int b, int c);
+	ModeModelSurface *AddBall(const vector &_pos, float _radius, int _num_x, int _num_y, bool _as_sphere);
+	ModeModelSurface *AddPlane(const vector &_pos, const vector &_dv1, const vector &_dv2, int _num_x, int _num_y);
+	ModeModelSurface *AddCube(const vector &_pos, const vector &_dv1, const vector &_dv2, const vector &_dv3);
+	ModeModelSurface *AddCylinder(Array<vector> &pos, float radius1, float radius2, int rings, int edges, bool closed);
 
 
 	// properties

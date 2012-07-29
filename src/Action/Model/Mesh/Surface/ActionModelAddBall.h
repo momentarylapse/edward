@@ -19,6 +19,8 @@ public:
 	ActionModelAddBall(DataModel *m, const vector &_pos, float _radius, int _num_x, int _num_y, bool _as_sphere);
 	virtual ~ActionModelAddBall();
 	string name(){	return "ModelAddBall";	}
+
+	virtual void *execute_return(Data *d);
 };
 
 #endif /* ACTIONMODELADDBALL_H_ */

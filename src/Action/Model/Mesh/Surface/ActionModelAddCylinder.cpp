@@ -12,7 +12,7 @@
 #define _cyl_vert(i, j)         ( edges      * (i) +(j) % edges) + nv
 #define _cyl_svert(i, j)        sv[(edges + 1) * (i) +(j) % (edges + 1)]
 
-ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos, float radius, int rings, int edges, bool closed)
+ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos, float radius1, float radius2, int rings, int edges, bool closed)
 {
 	int nv = m->Vertex.num;
 	int material = m->CurrentMaterial;
@@ -40,6 +40,7 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos,
 		r_last = r;
 
 		// vertex ring
+		float radius = (1 - t) * radius1 + t * radius2;
 		for (int j=0;j<=edges;j++){
 			float w = pi*2*(float)j/(float)edges;
 			vector p = p0+((float)sin(w)*u+(float)cos(w)*r)*radius;
@@ -93,3 +94,6 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos,
 ActionModelAddCylinder::~ActionModelAddCylinder()
 {
 }
+
+void *ActionModelAddCylinder::execute_return(Data *d)
+{	return &(dynamic_cast<DataModel*>(d))->Surface.back();	}

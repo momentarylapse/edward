@@ -995,7 +995,6 @@ void FxDrawShadows()
 		NixSetAlpha(AlphaMaterial);
 
 		NixSetColor(ShadowColor);
-		NixSetProjection(false, false);
 		NixDraw2D(r_id, NixTargetRect, 0);
 
 		NixSetStencil(StencilNone);
@@ -1378,6 +1377,7 @@ void DrawParticlesNew()
 	cur_cam->SetView();
 	NixSetWorldMatrix(m_id);
 	NixEnableLighting(false);
+	_NixSetMode3d();
 
 	matrix mi;
 	MatrixInverse(mi, NixViewMatrix);
@@ -1451,6 +1451,7 @@ void DrawBeamsNew()
 	cur_cam->SetView();
 	NixSetWorldMatrix(m_id);
 	NixEnableLighting(false);
+	_NixSetMode3d();
 	
 	vector dir;
 #ifdef _X_ALLOW_CAMERA_
