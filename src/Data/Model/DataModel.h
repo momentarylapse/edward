@@ -265,7 +265,7 @@ public:
 	ModeModelSurface *AddBall(const vector &_pos, float _radius, int _num_x, int _num_y, bool _as_sphere);
 	ModeModelSurface *AddPlane(const vector &_pos, const vector &_dv1, const vector &_dv2, int _num_x, int _num_y);
 	ModeModelSurface *AddCube(const vector &_pos, const vector &_dv1, const vector &_dv2, const vector &_dv3);
-	ModeModelSurface *AddCylinder(Array<vector> &pos, float radius1, float radius2, int rings, int edges, bool closed);
+	ModeModelSurface *AddCylinder(Array<vector> &pos, Array<float> &radius, int rings, int edges, bool closed);
 
 
 	// properties

@@ -1548,8 +1548,8 @@ ModeModelSurface* DataModel::AddPlane(const vector& _pos, const vector& _dv1, co
 ModeModelSurface* DataModel::AddCube(const vector& _pos, const vector& _dv1, const vector& _dv2, const vector& _dv3)
 {	return (ModeModelSurface*)Execute(new ActionModelAddCube(this, _pos, _dv1, _dv2, _dv3));	}
 
-ModeModelSurface* DataModel::AddCylinder(Array<vector>& pos, float radius1, float radius2, int rings, int edges, bool closed)
-{	return (ModeModelSurface*)Execute(new ActionModelAddCylinder(this, pos, radius1, radius2, rings, edges, closed));	}
+ModeModelSurface* DataModel::AddCylinder(Array<vector>& pos, Array<float> &radius, int rings, int edges, bool closed)
+{	return (ModeModelSurface*)Execute(new ActionModelAddCylinder(this, pos, radius, rings, edges, closed));	}
 
 
 /*int DataModel::GetNumMarkedBalls()

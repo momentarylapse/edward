@@ -71,7 +71,10 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 		HuiConfigWriteInt("NewCylinderEdges", edges);
 		HuiConfigWriteBool("NewCylinderClosedEndings", closed);
 
-		data->AddCylinder(pos, radius, radius, rings, edges, closed);
+		Array<float> r = radius;
+		r += radius;
+
+		data->AddCylinder(pos, r, rings * (pos.num - 1), edges, closed);
 
 		Abort();
 	}else{
@@ -128,6 +131,7 @@ void CreateCylinderBuffer(int buffer, const vector &pos, const vector &length, f
 void ModeModelMeshCreateCylinder::OnDrawWin(int win, irect dest)
 {
 	if (pos.num > 0){
+		NixEnableLighting(false);
 		// control polygon
 		for (int i=0;i<pos.num;i++){
 			vector pp = multi_view->VecProject(pos[i], win);

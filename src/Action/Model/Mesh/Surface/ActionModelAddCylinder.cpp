@@ -12,21 +12,24 @@
 #define _cyl_vert(i, j)         ( edges      * (i) +(j) % edges) + nv
 #define _cyl_svert(i, j)        sv[(edges + 1) * (i) +(j) % (edges + 1)]
 
-ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos, float radius1, float radius2, int rings, int edges, bool closed)
+ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos, Array<float> &_radius, int rings, int edges, bool closed)
 {
 	int nv = m->Vertex.num;
 	int material = m->CurrentMaterial;
+
+	Interpolator<float> inter_r(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
+	foreach(_radius, r)
+		inter_r.add(r);
 
 	// vertices (interpolated on path)
 	Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
 	foreach(pos, p)
 		inter.add(p);
-	int n = (pos.num - 1) * rings;
 	Array<vector> sv;
 	vector r_last = v0;
-	for (int i=0;i<=n;i++){
+	for (int i=0;i<=rings;i++){
 		// interpolated point on path
-		float t = (float)i / (float)n;
+		float t = (float)i / (float)rings;
 		vector p0 = inter.get(t);
 		vector dir = inter.get_tang(t);
 
@@ -40,7 +43,7 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos,
 		r_last = r;
 
 		// vertex ring
-		float radius = (1 - t) * radius1 + t * radius2;
+		float radius = inter_r.get(t);
 		for (int j=0;j<=edges;j++){
 			float w = pi*2*(float)j/(float)edges;
 			vector p = p0+((float)sin(w)*u+(float)cos(w)*r)*radius;
@@ -51,7 +54,7 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos,
 	}
 
 // the curved surface
-	for (int i=0;i<n;i++)
+	for (int i=0;i<rings;i++)
 		for (int j=0;j<edges;j++){
 			AddSubAction(new ActionModelAddTriangleSingleTexture(m,
 					_cyl_vert(i, j),  _cyl_vert(i+1, j+1),  _cyl_vert(i, j+1), material,
