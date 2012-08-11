@@ -70,6 +70,7 @@ void ModeModelMeshSplitTriangle::OnDrawWin(int win, irect dest)
 			}
 		}
 
+		NixEnableLighting(false);
 		/*NixDrawLine3D(data->Vertex[data->Surface[surface].Triangle[triangle].Vertex[0]].pos, pos, Green);
 		NixDrawLine3D(data->Vertex[data->Surface[surface].Triangle[triangle].Vertex[1]].pos, pos, Green);
 		NixDrawLine3D(data->Vertex[data->Surface[surface].Triangle[triangle].Vertex[2]].pos, pos, Green);*/
@@ -77,5 +78,6 @@ void ModeModelMeshSplitTriangle::OnDrawWin(int win, irect dest)
 		for (int k=0;k<3;k++)
 			NixDrawLine(p[k].x, p[k].y, pp.x, pp.y, 0);
 		NixSetColor(White);
+		NixEnableLighting(true);
 	}
 }
