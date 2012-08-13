@@ -40,6 +40,8 @@ public:
 
 	void OnUpdate(Observable *o);
 
+	int GetSelectedAnimation();
+
 private:
 	DataModel *data;
 };

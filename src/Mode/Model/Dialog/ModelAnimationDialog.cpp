@@ -99,18 +99,26 @@ void ModelAnimationDialog::FillAnimation()
 	}
 }
 
-void ModelAnimationDialog::OnAnimationList()
+int ModelAnimationDialog::GetSelectedAnimation()
 {
-	int s = GetInt("");
+	int s = GetInt("animation_list");
 	if (s >= 0){
-		// which animation was clicked?
 		int n = 0;
 		foreachi(data->Move, m, i)
 			if (m.Frame.num > 0){
 				if (n == s)
-					data->SetCurrentMove(i);
+					return i;
 				n ++;
 			}
+	}
+	return -1;
+}
+
+void ModelAnimationDialog::OnAnimationList()
+{
+	int s = GetSelectedAnimation();
+	if (s > 0){
+		data->SetCurrentMove(s);
 		SetInt("animation_dialog_tab_control", 1);
 	}
 }
@@ -132,6 +140,9 @@ void ModelAnimationDialog::OnAddAnimation()
 
 void ModelAnimationDialog::OnDeleteAnimation()
 {
+	int s = GetSelectedAnimation();
+	if (s > 0)
+		data->DeleteAnimation(s);
 }
 
 void ModelAnimationDialog::OnFrameInc()

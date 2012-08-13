@@ -9,6 +9,7 @@
 #define ACTIONMODELDELETEANIMATION_H_
 
 #include "../../Action.h"
+#include "../../../Data/Model/DataModel.h"
 
 class ActionModelDeleteAnimation: public Action
 {
@@ -21,7 +22,8 @@ public:
 	void undo(Data *d);
 
 private:
-	int index, type;
+	int index;
+	ModeModelMove animation;
 };
 
 #endif /* ACTIONMODELDELETEANIMATION_H_ */
