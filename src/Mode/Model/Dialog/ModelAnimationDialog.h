@@ -23,6 +23,19 @@ public:
 
 	void FillAnimation();
 	void OnAnimationList();
+	void OnAddAnimation();
+	void OnDeleteAnimation();
+	void OnFrameInc();
+	void OnFrameDec();
+	void OnFrame();
+	void OnAddFrame();
+	void OnDeleteFrame();
+	void OnName();
+	void OnFpsConst();
+	void OnFpsFactor();
+	void OnSpeed();
+	void OnParameter();
+	void OnTabControl();
 	void OnClose();
 
 	void OnUpdate(Observable *o);
