@@ -280,6 +280,12 @@ public:
 	void SetCurrentMove(int move);
 	void SetCurrentFrame(int frame);
 
+	// actions
+	void AddAnimation(int index, int type);
+	void DeleteAnimation(int index);
+	void AnimationAddFrame(int index, int frame);
+	void AnimationDeleteFrame(int index, int frame);
+
 	bool Playing,PlayLoop;
 	float TimeScale,TimeParam,SimFrame;
 

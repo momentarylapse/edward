@@ -17,6 +17,10 @@
 #include "../../Action/Model/Mesh/Surface/ActionModelAddPlane.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelAddCylinder.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelAddBall.h"
+#include "../../Action/Model/Animation/ActionModelAddAnimation.h"
+#include "../../Action/Model/Animation/ActionModelDeleteAnimation.h"
+#include "../../Action/Model/Animation/ActionModelAnimationAddFrame.h"
+#include "../../Action/Model/Animation/ActionModelAnimationDeleteFrame.h"
 
 
 
@@ -1566,6 +1570,19 @@ void DataModel::SetCurrentFrame(int frame_no)
 	CurrentFrame = frame_no;
 	Notify("Change");
 }
+
+void DataModel::AddAnimation(int index, int type)
+{	Execute(new ActionModelAddAnimation(index, type));	}
+
+void DataModel::DeleteAnimation(int index)
+{	Execute(new ActionModelDeleteAnimation(index));	}
+
+void DataModel::AnimationAddFrame(int index, int frame)
+{	Execute(new ActionModelAnimationAddFrame(index, frame));	}
+
+void DataModel::AnimationDeleteFrame(int index, int frame)
+{	Execute(new ActionModelAnimationDeleteFrame(index, frame));	}
+
 
 
 

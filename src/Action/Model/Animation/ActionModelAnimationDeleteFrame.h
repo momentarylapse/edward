@@ -10,7 +10,7 @@
 
 #include "../../Action.h"
 
-class ActionModelAnimationDeleteFrame
+class ActionModelAnimationDeleteFrame: public Action
 {
 public:
 	ActionModelAnimationDeleteFrame(int _index, int _frame);

@@ -8,6 +8,7 @@
 #include "ModelAnimationDialog.h"
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
+#include "ModelNewAnimationDialog.h"
 
 ModelAnimationDialog::ModelAnimationDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data) :
 	CHuiWindow("dummy", -1, -1, 230, 400, _parent, _allow_parent, HuiWinModeControls, true)
@@ -124,6 +125,9 @@ void ModelAnimationDialog::ApplyData()
 
 void ModelAnimationDialog::OnAddAnimation()
 {
+	ModelNewAnimationDialog *dlg = new ModelNewAnimationDialog(this, false, data, 0);
+	dlg->Update();
+	HuiWaitTillWindowClosed(dlg);
 }
 
 void ModelAnimationDialog::OnDeleteAnimation()
