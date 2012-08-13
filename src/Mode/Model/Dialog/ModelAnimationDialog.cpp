@@ -117,7 +117,7 @@ int ModelAnimationDialog::GetSelectedAnimation()
 void ModelAnimationDialog::OnAnimationList()
 {
 	int s = GetSelectedAnimation();
-	if (s > 0){
+	if (s >= 0){
 		data->SetCurrentMove(s);
 		SetInt("animation_dialog_tab_control", 1);
 	}
@@ -141,7 +141,7 @@ void ModelAnimationDialog::OnAddAnimation()
 void ModelAnimationDialog::OnDeleteAnimation()
 {
 	int s = GetSelectedAnimation();
-	if (s > 0)
+	if (s >= 0)
 		data->DeleteAnimation(s);
 }
 
