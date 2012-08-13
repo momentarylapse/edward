@@ -77,8 +77,10 @@ void *ActionWorldAddTerrain::execute(Data *d)
 		t.terrain->min = pos;
 		t.terrain->max = pos + size;
 		t.terrain->force_redraw = true;
-	}else
+	}else{
 		t.terrain = new CTerrain(filename, pos);
+		t.FileName = filename;
+	}
 
 	w->Terrain.add(t);
 	return &w->Terrain.back();
