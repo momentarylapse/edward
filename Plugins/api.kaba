@@ -288,7 +288,34 @@ class DataModel : Data
 	extern void EndActionGroup()
 	void __assign__(DataModel other)
 
+
+
+
+
+class ModeWorldTerrain: MultiViewSingleData
+	int _TODO_
+
+
+
+class ModeWorldObject: MultiViewSingleData
+	string FileName, Name
+	model object
+	vector Ang
+
+
+
+class DataWorld: Data
+	int _TODO_
+
+	// actions
+	extern ModeWorldObject *AddObject(string filename, vector pos)
+	extern ModeWorldTerrain *AddTerrainLoad(string filename, vector pos)
+	extern ModeWorldTerrain *AddTerrain(vector pos, vector size, int num_x, int num_z)
+
+
+
 extern DataModel *data_model
+extern DataWorld *data_world
 extern window edward
 
 void main()

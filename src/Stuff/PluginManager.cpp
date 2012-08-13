@@ -10,6 +10,7 @@
 #include "../lib/script/script.h"
 #include "../Edward.h"
 #include "../Mode/Model/ModeModel.h"
+#include "../Mode/World/ModeWorld.h"
 
 PluginManager::PluginManager()
 {
@@ -82,6 +83,10 @@ void PluginManager::Init()
 	ScriptLinkSemiExternalFunc("DataModel.AddCylinder", (void*)&DataModel::AddCylinder);
 	ScriptLinkSemiExternalFunc("DataModel.BeginActionGroup", (void*)&DataModel::BeginActionGroup);
 	ScriptLinkSemiExternalFunc("DataModel.EndActionGroup", (void*)&DataModel::EndActionGroup);
+	ScriptLinkSemiExternalVar("data_world", &mode_world->data);
+	ScriptLinkSemiExternalFunc("DataWorld.AddObject", (void*)&DataWorld::AddObject);
+	ScriptLinkSemiExternalFunc("DataWorld.AddTerrain", (void*)&DataWorld::AddTerrain);
+	ScriptLinkSemiExternalFunc("DataWorld.AddNewTerrain", (void*)&DataWorld::AddNewTerrain);
 
 //	ScriptLinkDynamicExternalData();
 }

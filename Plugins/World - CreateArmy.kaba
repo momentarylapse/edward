@@ -1,0 +1,9 @@
+#include "api.kaba"
+
+const int N = 10
+
+void main()
+	for int i, 0, N
+		for int j, 0, N
+			vector pos = vector(i * 200, 120, j * 200)
+			data_world.AddObject("Characters/1st Char/1st", pos)
