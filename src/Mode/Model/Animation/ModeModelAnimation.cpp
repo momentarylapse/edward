@@ -8,6 +8,7 @@
 #include "../../../Edward.h"
 #include "../../../MultiView.h"
 #include "ModeModelAnimation.h"
+#include "../Dialog/ModelAnimationDialog.h"
 
 ModeModelAnimation *mode_model_animation = NULL;
 
@@ -41,6 +42,8 @@ void ModeModelAnimation::OnCommand(const string & id)
 
 void ModeModelAnimation::OnStart()
 {
+	dialog = new ModelAnimationDialog(ed, true, data);
+	dialog->Update();
 }
 
 
@@ -52,6 +55,7 @@ void ModeModelAnimation::OnUpdateMenu()
 
 void ModeModelAnimation::OnEnd()
 {
+	delete(dialog);
 }
 
 

@@ -32,6 +32,8 @@ public:
 
 	DataModel *data;
 	Data *GetData(){	return data;	}
+
+	CHuiWindow *dialog;
 };
 
 extern ModeModelAnimation *mode_model_animation;
