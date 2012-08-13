@@ -9,8 +9,8 @@
 #define MODELANIMATIONDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
-#include "../../../Data/Model/DataModel.h"
 #include "../../../Stuff/Observer.h"
+class DataModel;
 
 class ModelAnimationDialog: public CHuiWindow, public Observer
 {

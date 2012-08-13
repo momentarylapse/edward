@@ -6,6 +6,7 @@
  */
 
 #include "ModelAnimationDialog.h"
+#include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
 
 ModelAnimationDialog::ModelAnimationDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data) :

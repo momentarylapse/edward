@@ -9,7 +9,7 @@
 #define MODELMATERIALSELECTIONDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
-#include "../../../Data/Model/DataModel.h"
+class DataModel;
 
 class ModelMaterialSelectionDialog: public CHuiWindow
 {

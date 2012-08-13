@@ -9,8 +9,8 @@
 #define MODELTEXTURELEVELDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
-#include "../../../Data/Model/DataModel.h"
 #include "../../../Stuff/Observer.h"
+class DataModel;
 
 class ModelTextureLevelDialog: public CHuiWindow, public Observer
 {

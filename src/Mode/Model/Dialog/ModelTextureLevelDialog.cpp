@@ -6,6 +6,7 @@
  */
 
 #include "ModelTextureLevelDialog.h"
+#include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
 
 string file_secure(const string &filename);

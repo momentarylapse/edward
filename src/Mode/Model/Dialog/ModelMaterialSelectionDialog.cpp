@@ -6,6 +6,7 @@
  */
 
 #include "ModelMaterialSelectionDialog.h"
+#include "../../../Data/Model/DataModel.h"
 #include "../Mesh/ModeModelMesh.h"
 
 string file_secure(const string &filename);
