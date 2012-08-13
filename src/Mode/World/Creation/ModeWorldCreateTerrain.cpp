@@ -7,7 +7,6 @@
 
 #include "ModeWorldCreateTerrain.h"
 #include "../../../Edward.h"
-#include "../../../Action/World/ActionWorldAddTerrain.h"
 
 ModeWorldCreateTerrain::ModeWorldCreateTerrain(Mode *_parent) :
 	ModeCreation(_parent)
@@ -59,7 +58,7 @@ void ModeWorldCreateTerrain::OnOk()
 	vector pos = multi_view->pos - size / 2;
 	int num_x = dialog->GetInt("num_x");
 	int num_z = dialog->GetInt("num_z");
-	data->Execute(new ActionWorldAddTerrain(pos, size, num_x, num_z));
+	data->AddNewTerrain(pos, size, num_x, num_z);
 	Abort();
 }
 

@@ -16,7 +16,6 @@
 #include "Creation/ModeWorldCreateObject.h"
 #include "Creation/ModeWorldCreateTerrain.h"
 #include "../../Action/World/ActionWorldEditData.h"
-#include "../../Action/World/ActionWorldAddTerrain.h"
 #include "../../Action/World/ActionWorldSetEgo.h"
 
 ModeWorld *mode_world = NULL;
@@ -717,7 +716,7 @@ void ModeWorld::OptimizeView()
 void ModeWorld::LoadTerrain()
 {
 	if (ed->FileDialog(FDTerrain, false, true))
-		data->Execute(new ActionWorldAddTerrain(multi_view->pos, ed->DialogFileNoEnding));
+		data->AddTerrain(ed->DialogFileNoEnding, multi_view->pos);
 }
 
 void ModeWorld::SetEgo()

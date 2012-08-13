@@ -8,6 +8,8 @@
 #include "DataWorld.h"
 #include "../../Mode/World/ModeWorld.h"
 #include "../../Edward.h"
+#include "../../Action/World/ActionWorldAddObject.h"
+#include "../../Action/World/ActionWorldAddTerrain.h"
 
 
 void ModeWorldObject::UpdateData()
@@ -434,6 +436,16 @@ void DataWorld::UpdateData()
 	foreach(Terrain, t)
 		t.UpdateData();
 }
+
+ModeWorldObject* DataWorld::AddObject(const string& filename, const vector& pos)
+{	return (ModeWorldObject*)Execute(new ActionWorldAddObject(filename, pos));	}
+
+ModeWorldTerrain* DataWorld::AddTerrain(const string& filename, const vector& pos)
+{	return (ModeWorldTerrain*)Execute(new ActionWorldAddTerrain(pos, filename));	}
+
+ModeWorldTerrain* DataWorld::AddNewTerrain(const vector& pos, const vector& size, int num_x, int num_z)
+{	return (ModeWorldTerrain*)Execute(new ActionWorldAddTerrain(pos, size, num_x, num_z));	}
+
 
 
 

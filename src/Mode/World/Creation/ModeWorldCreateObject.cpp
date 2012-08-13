@@ -6,7 +6,6 @@
  */
 
 #include "ModeWorldCreateObject.h"
-#include "../../../Action/World/ActionWorldAddObject.h"
 #include "../../../Edward.h"
 
 ModeWorldCreateObject::ModeWorldCreateObject(Mode *_parent) :
@@ -27,7 +26,7 @@ void ModeWorldCreateObject::OnLeftButtonDown()
 {
 	if (ed->FileDialog(FDModel, false, true)){
 		filename = ed->DialogFileNoEnding;
-		data->Execute(new ActionWorldAddObject(filename, multi_view->GetCursor3d()));
+		data->AddObject(filename, multi_view->GetCursor3d());
 	}
 	//ed->SetCreationMode(NULL);
 }

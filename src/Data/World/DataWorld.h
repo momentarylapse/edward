@@ -161,6 +161,12 @@ public:
 	int CamPointBeing;
 	Array<ModeWorldCamPoint> CamPoint;
 	Array<ModeWorldCamPointVel> CamPointVel;
+
+
+	// actions
+	ModeWorldObject *AddObject(const string &filename, const vector &pos);
+	ModeWorldTerrain *AddTerrain(const string &filename, const vector &pos);
+	ModeWorldTerrain *AddNewTerrain(const vector &pos, const vector &size, int num_x, int num_z);
 };
 
 #endif /* DATAWORLD_H_ */
