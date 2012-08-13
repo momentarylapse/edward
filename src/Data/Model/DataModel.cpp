@@ -1551,6 +1551,23 @@ ModeModelSurface* DataModel::AddCube(const vector& _pos, const vector& _dv1, con
 ModeModelSurface* DataModel::AddCylinder(Array<vector>& pos, Array<float> &radius, int rings, int edges, bool closed)
 {	return (ModeModelSurface*)Execute(new ActionModelAddCylinder(this, pos, radius, rings, edges, closed));	}
 
+void DataModel::SetCurrentMove(int move_no)
+{
+	move = NULL;
+	if ((move_no >= 0) && (move_no < Move.num))
+		move = &Move[move_no];
+	CurrentMove = move_no;
+	CurrentFrame = 0;
+	Notify("Change");
+}
+
+void DataModel::SetCurrentFrame(int frame_no)
+{
+	CurrentFrame = frame_no;
+	Notify("Change");
+}
+
+
 
 /*int DataModel::GetNumMarkedBalls()
 {

@@ -277,10 +277,11 @@ public:
 	ModeModelMove *move;
 
 	int CurrentMove,CurrentFrame;
+	void SetCurrentMove(int move);
+	void SetCurrentFrame(int frame);
 
 	bool Playing,PlayLoop;
-	float TimeScale,TimeParam,SimFrame,TimeInFrame;
-	int Frame0,Frame1;
+	float TimeScale,TimeParam,SimFrame;
 
 	bool ShowSkeleton;
 
