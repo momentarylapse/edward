@@ -311,6 +311,8 @@ class DataWorld: Data
 	extern ModeWorldObject *AddObject(string filename, vector pos)
 	extern ModeWorldTerrain *AddTerrainLoad(string filename, vector pos)
 	extern ModeWorldTerrain *AddTerrain(vector pos, vector size, int num_x, int num_z)
+	extern void BeginActionGroup()
+	extern void EndActionGroup()
 
 
 

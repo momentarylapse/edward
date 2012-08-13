@@ -87,6 +87,8 @@ void PluginManager::Init()
 	ScriptLinkSemiExternalFunc("DataWorld.AddObject", (void*)&DataWorld::AddObject);
 	ScriptLinkSemiExternalFunc("DataWorld.AddTerrain", (void*)&DataWorld::AddTerrain);
 	ScriptLinkSemiExternalFunc("DataWorld.AddNewTerrain", (void*)&DataWorld::AddNewTerrain);
+	ScriptLinkSemiExternalFunc("DataWorld.BeginActionGroup", (void*)&DataWorld::BeginActionGroup);
+	ScriptLinkSemiExternalFunc("DataWorld.EndActionGroup", (void*)&DataWorld::EndActionGroup);
 
 //	ScriptLinkDynamicExternalData();
 }
