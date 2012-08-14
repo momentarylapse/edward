@@ -1563,16 +1563,13 @@ void DataModel::SetCurrentMove(int move_no)
 	if ((move_no >= 0) && (move_no < Move.num))
 		move = &Move[move_no];
 	CurrentMove = move_no;
-	CurrentFrame = 0;
-	UpdateAnimation();
-	Notify("Change");
+	SetCurrentFrame(0);
 }
 
 void DataModel::SetCurrentFrame(int frame_no)
 {
 	CurrentFrame = frame_no;
 	UpdateAnimation();
-	Notify("Change");
 }
 
 void DataModel::AddAnimation(int index, int type)
@@ -1596,22 +1593,36 @@ void DataModel::UpdateAnimation()
 			v.AnimatedPos = v.pos;
 		}
 	}
+	Notify("Change");
 }
 
 void DataModel::UpdateSkeleton()
 {
+	int frame0 = CurrentFrame;
+	int frame1 = CurrentFrame;
+	float t = 0;
+	if (Playing){
+		frame0 = SimFrame;
+		frame1 = (frame0 + 1) % move->Frame.num;
+		t = SimFrame - frame0;
+	}
+
 	foreachi(Bone, b, i){
 		if (b.Parent < 0){
-			b.pos = b.DeltaPos + move->Frame[CurrentFrame].SkelDPos[i];
+			b.pos = b.DeltaPos + (1 - t) * move->Frame[frame0].SkelDPos[i] + t * move->Frame[frame1].SkelDPos[i];
 		}else{
 			vector dp;
 			VecNormalTransform(dp, Bone[b.Parent].Matrix, b.DeltaPos);
 			b.pos = Bone[b.Parent].pos + dp;
 		}
-		matrix t;
-		MatrixTranslation(t, b.pos);
-		MatrixRotation(b.RotMatrix, move->Frame[CurrentFrame].SkelAng[i]);
-		b.Matrix = t * b.RotMatrix;
+		matrix trans;
+		MatrixTranslation(trans, b.pos);
+		quaternion q0, q1, q;
+		QuaternionRotationV(q0, move->Frame[frame0].SkelAng[i]);
+		QuaternionRotationV(q1, move->Frame[frame1].SkelAng[i]);
+		QuaternionInterpolate(q, q0, q1, t);
+		MatrixRotationQ(b.RotMatrix, q);
+		b.Matrix = trans * b.RotMatrix;
 	}
 }
 

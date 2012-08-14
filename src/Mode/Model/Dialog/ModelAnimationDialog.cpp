@@ -10,10 +10,31 @@
 #include "../../../Edward.h"
 #include "ModelNewAnimationDialog.h"
 
+static DataModel *__data = NULL;
+static int timer = -1;
+
+void _later_func_()
+{
+	if (!__data)
+		return;
+	float dt = HuiGetTime(timer);
+	if (__data->Playing){
+		__data->SimFrame += dt * (__data->move->FramesPerSecConst + __data->move->FramesPerSecFactor * __data->TimeParam) * __data->TimeScale;
+		if (__data->SimFrame > __data->move->Frame.num)
+			__data->SimFrame = 0;
+		__data->UpdateAnimation();
+		HuiRunLater(20, &_later_func_);
+	}else
+		HuiRunLater(200, &_later_func_);
+}
+
 ModelAnimationDialog::ModelAnimationDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data) :
 	CHuiWindow("dummy", -1, -1, 230, 400, _parent, _allow_parent, HuiWinModeControls, true)
 {
 	data = _data;
+	__data = data;
+	if (timer < 0)
+		timer = HuiCreateTimer();
 
 	// dialog
 	FromResource("animation_dialog");
@@ -38,11 +59,13 @@ ModelAnimationDialog::ModelAnimationDialog(CHuiWindow *_parent, bool _allow_pare
 	Subscribe(data);
 
 	LoadData();
+	HuiRunLater(200, &_later_func_);
 }
 
 ModelAnimationDialog::~ModelAnimationDialog()
 {
 	Unsubscribe(data);
+	__data = NULL;
 }
 
 void ModelAnimationDialog::LoadData()
@@ -197,6 +220,7 @@ void ModelAnimationDialog::OnTabControl()
 {
 	data->Playing = (GetInt("") == 2) && (data->move->Frame.num > 0);
 	data->SimFrame = 0;
+	data->UpdateAnimation();
 }
 
 void ModelAnimationDialog::OnUpdate(Observable *o)
