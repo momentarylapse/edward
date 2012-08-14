@@ -9,6 +9,7 @@
 #define ACTIONMODELANIMATIONDELETEFRAME_H_
 
 #include "../../Action.h"
+#include "../../../Data/Model/DataModel.h"
 
 class ActionModelAnimationDeleteFrame: public Action
 {
@@ -22,6 +23,7 @@ public:
 
 private:
 	int index, frame;
+	ModeModelFrame old_frame;
 };
 
 #endif /* ACTIONMODELANIMATIONDELETEFRAME_H_ */
