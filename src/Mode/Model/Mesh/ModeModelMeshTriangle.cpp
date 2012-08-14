@@ -43,12 +43,8 @@ ModeModelMeshTriangle::~ModeModelMeshTriangle()
 inline vector GetVertex(int v)
 {
 	DataModel *m = mode_model_mesh_triangle->data;
-	if (ed->cur_mode == mode_model_animation){
-		if (m->move->Type == MoveTypeSkeletal){
-			int b = m->Vertex[v].BoneIndex;
-			return m->Bone[b].Matrix * (m->Vertex[v].pos - m->GetBonePos(b));
-		}
-	}
+	if (ed->cur_mode == mode_model_animation)
+		return m->Vertex[v].AnimatedPos;
 	return m->Vertex[v].pos;
 }
 

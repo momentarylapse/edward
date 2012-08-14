@@ -776,6 +776,10 @@ bool DataModel::Load(const string & _filename, bool deep)
 						tt->SkinVertex[tl][k] = t.SkinVertex[tl][k];
 			}
 		}
+		foreach(Move, m)
+			if (m.Type == MoveTypeVertex)
+				foreach(m.Frame, f)
+					f.VertexDPos = f.Skin[1].DPos;
 	ClearSelection();
 	NotifyEnd();
 
@@ -1587,6 +1591,18 @@ void DataModel::UpdateAnimation()
 		UpdateSkeleton();
 		foreach(Vertex, v){
 			v.AnimatedPos = Bone[v.BoneIndex].Matrix * (v.pos - GetBonePos(v.BoneIndex));
+		}
+	}else if (move->Type == MoveTypeVertex){
+		int frame0 = CurrentFrame;
+		int frame1 = CurrentFrame;
+		float t = 0;
+		if (Playing){
+			frame0 = SimFrame;
+			frame1 = (frame0 + 1) % move->Frame.num;
+			t = SimFrame - frame0;
+		}
+		foreachi(Vertex, v, i){
+			v.AnimatedPos = v.pos + (1 - t) * move->Frame[frame0].VertexDPos[i] + t * move->Frame[frame1].VertexDPos[i];
 		}
 	}else{
 		foreach(Vertex, v){
