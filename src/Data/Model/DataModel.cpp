@@ -763,8 +763,10 @@ bool DataModel::Load(const string & _filename, bool deep)
 		// import...
 	NotifyBegin();
 	NormalModeAll = Skin[1].NormalModeAll;
-		foreach(Skin[1].Vertex, v)
+		foreachi(Skin[1].Vertex, v, i){
 			AddVertex(v.pos);
+			Vertex[i].BoneIndex = v.BoneIndex;
+		}
 		for (int i=0;i<Material.num;i++){
 			CurrentMaterial = i;
 			foreach(Skin[1].Sub[i].Triangle, t){
@@ -1562,12 +1564,14 @@ void DataModel::SetCurrentMove(int move_no)
 		move = &Move[move_no];
 	CurrentMove = move_no;
 	CurrentFrame = 0;
+	UpdateAnimation();
 	Notify("Change");
 }
 
 void DataModel::SetCurrentFrame(int frame_no)
 {
 	CurrentFrame = frame_no;
+	UpdateAnimation();
 	Notify("Change");
 }
 
@@ -1579,6 +1583,49 @@ void DataModel::DeleteAnimation(int index)
 
 void DataModel::AnimationAddFrame(int index, int frame)
 {	Execute(new ActionModelAnimationAddFrame(index, frame));	}
+
+void DataModel::UpdateAnimation()
+{
+	if (move->Type == MoveTypeSkeletal){
+		UpdateSkeleton();
+		foreach(Vertex, v){
+			v.AnimatedPos = Bone[v.BoneIndex].Matrix * (v.pos - GetBonePos(v.BoneIndex));
+		}
+	}else{
+		foreach(Vertex, v){
+			v.AnimatedPos = v.pos;
+		}
+	}
+}
+
+void DataModel::UpdateSkeleton()
+{
+	foreachi(Bone, b, i){
+		if (b.Parent < 0){
+			b.pos = b.DeltaPos + move->Frame[CurrentFrame].SkelDPos[i];
+		}else{
+			vector dp;
+			VecNormalTransform(dp, Bone[b.Parent].Matrix, b.DeltaPos);
+			b.pos = Bone[b.Parent].pos + dp;
+		}
+		matrix t;
+		MatrixTranslation(t, b.pos);
+		MatrixRotation(b.RotMatrix, move->Frame[CurrentFrame].SkelAng[i]);
+		b.Matrix = t * b.RotMatrix;
+	}
+}
+
+vector DataModel::GetBonePos(int index)
+{
+	if (index < 0)
+		return v0;
+	return Bone[index].DeltaPos + GetBonePos(Bone[index].Parent);
+}
+
+vector DataModel::GetBonePosAnimated(int index)
+{
+	return Bone[index].pos;
+}
 
 void DataModel::AnimationDeleteFrame(int index, int frame)
 {	Execute(new ActionModelAnimationDeleteFrame(index, frame));	}

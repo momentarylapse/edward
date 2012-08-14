@@ -49,8 +49,7 @@ public:
 	int NormalMode;
 	int BoneIndex;
 
-	// vertex animation (all frames of all moves continuously)
-	// TODO model.h
+	vector AnimatedPos;
 
 	bool NormalDirty;
 	int RefCount; // triangles
@@ -279,6 +278,10 @@ public:
 	int CurrentMove,CurrentFrame;
 	void SetCurrentMove(int move);
 	void SetCurrentFrame(int frame);
+	void UpdateAnimation();
+	void UpdateSkeleton();
+	vector GetBonePos(int index);
+	vector GetBonePosAnimated(int index);
 
 	// actions
 	void AddAnimation(int index, int type);

@@ -9,6 +9,7 @@
 #include "../../../MultiView.h"
 #include "ModeModelMeshTriangle.h"
 #include "ModeModelMesh.h"
+#include "../Animation/ModeModelAnimation.h"
 
 
 
@@ -38,7 +39,18 @@ ModeModelMeshTriangle::~ModeModelMeshTriangle()
 {
 }
 
-#define GetVertex(v)	data->Vertex[v].pos
+//#define GetVertex(v)	data->Vertex[v].pos
+inline vector GetVertex(int v)
+{
+	DataModel *m = mode_model_mesh_triangle->data;
+	if (ed->cur_mode == mode_model_animation){
+		if (m->move->Type == MoveTypeSkeletal){
+			int b = m->Vertex[v].BoneIndex;
+			return m->Bone[b].Matrix * (m->Vertex[v].pos - m->GetBonePos(b));
+		}
+	}
+	return m->Vertex[v].pos;
+}
 
 inline void add_tria(int vb, const DataModel *data, const ModeModelTriangle &t)
 {
