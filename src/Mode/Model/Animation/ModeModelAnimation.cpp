@@ -82,9 +82,10 @@ void ModeModelAnimation::OnUpdate(Observable *o)
 		//multi_view->ResetMouseAction();
 
 		// left -> translate
-		multi_view->SetMouseAction(0, "ActionModelMVMoveBones", MultiView::ActionMove);
+		//multi_view->SetMouseAction(0, "ActionModelAnimationMoveBones", MultiView::ActionMove);
+		multi_view->SetMouseAction(1, "ActionModelAnimationRotateBones", MultiView::ActionRotate2d);
+		multi_view->SetMouseAction(2, "ActionModelAnimationRotateBones", MultiView::ActionRotate);
 
-		//mode_model_mesh->ApplyRightMouseFunction(multi_view);
 		multi_view->MVRectable = true;
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		//CModeAll::SetMultiViewFunctions(&StartChanging, &EndChanging, &Change);
