@@ -185,10 +185,13 @@ void ModelAnimationDialog::OnFrame()
 
 void ModelAnimationDialog::OnAddFrame()
 {
+	data->AnimationAddFrame(data->CurrentMove, data->CurrentFrame + 1);
+	data->SetCurrentFrame(data->CurrentFrame + 1);
 }
 
 void ModelAnimationDialog::OnDeleteFrame()
 {
+	data->AnimationDeleteFrame(data->CurrentMove, data->CurrentFrame);
 }
 
 void ModelAnimationDialog::OnName()
