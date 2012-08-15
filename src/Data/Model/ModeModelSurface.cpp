@@ -111,7 +111,9 @@ int ModeModelSurface::AddEdgeForNewTriangle(int a, int b, int tria, int side)
 
 inline bool edge_equal(ModeModelEdge *e, int a, int b)
 {
-	return (((e->Vertex[0] == a) && (e->Vertex[1] == b)) || ((e->Vertex[0] == b) && (e->Vertex[1] == a)));
+	int v0 = e->Vertex[0];
+	int v1 = e->Vertex[1];
+	return (((v0 == a) && (v1 == b)) || ((v0 == b) && (v1 == a)));
 }
 
 inline int find_other_tria_from_edge(ModeModelSurface *s, int e, int t)
