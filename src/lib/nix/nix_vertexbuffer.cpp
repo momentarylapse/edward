@@ -118,29 +118,33 @@ bool NixVBAddTria(int buffer,	const vector &p1,const vector &n1,float tu1,float 
 								const vector &p2,const vector &n2,float tu2,float tv2,
 								const vector &p3,const vector &n3,float tu3,float tv3)
 {
-	if (NixVB[buffer].NumTrias > NixVB[buffer].MaxTrias){
-		if (!NixVB[buffer].NotedFull){
+	sVertexBuffer &vb = NixVB[buffer];
+	if (vb.NumTrias > vb.MaxTrias){
+		if (!vb.NotedFull){
 			msg_error("too many triangles in the vertex buffer!");
 			msg_write(buffer);
-			NixVB[buffer].NotedFull = true;
+			vb.NotedFull = true;
 		}
 		return false;
 	}
 	//msg_write("VertexBufferAddTriangle");
-	NixVB[buffer].glVertices[NixVB[buffer].NumTrias*3  ]=p1;
-	NixVB[buffer].glVertices[NixVB[buffer].NumTrias*3+1]=p2;
-	NixVB[buffer].glVertices[NixVB[buffer].NumTrias*3+2]=p3;
-	NixVB[buffer].glNormals[NixVB[buffer].NumTrias*3  ]=n1;
-	NixVB[buffer].glNormals[NixVB[buffer].NumTrias*3+1]=n2;
-	NixVB[buffer].glNormals[NixVB[buffer].NumTrias*3+2]=n3;
-	NixVB[buffer].glTexCoords[0][NixVB[buffer].NumTrias*6  ]=tu1;
-	NixVB[buffer].glTexCoords[0][NixVB[buffer].NumTrias*6+1]=1-tv1;
-	NixVB[buffer].glTexCoords[0][NixVB[buffer].NumTrias*6+2]=tu2;
-	NixVB[buffer].glTexCoords[0][NixVB[buffer].NumTrias*6+3]=1-tv2;
-	NixVB[buffer].glTexCoords[0][NixVB[buffer].NumTrias*6+4]=tu3;
-	NixVB[buffer].glTexCoords[0][NixVB[buffer].NumTrias*6+5]=1-tv3;
-	NixVB[buffer].NumTrias ++;
-	NixVB[buffer].Indexed = false;
+	vector *pv = &vb.glVertices[vb.NumTrias*3];
+	*(pv++) = p1;
+	*(pv++) = p2;
+	*(pv++) = p3;
+	pv = &vb.glNormals[vb.NumTrias*3];
+	*(pv++) = n1;
+	*(pv++) = n2;
+	*(pv++) = n3;
+	float *pf = &vb.glTexCoords[0][vb.NumTrias*6];
+	*(pf++) = tu1;
+	*(pf++) = 1 - tv1;
+	*(pf++) = tu2;
+	*(pf++) = 1 - tv2;
+	*(pf++) = tu3;
+	*(pf++) = 1 - tv3;
+	vb.NumTrias ++;
+	vb.Indexed = false;
 	return true;
 }
 
@@ -149,45 +153,49 @@ bool NixVBAddTriaM(int buffer,	const vector &p1,const vector &n1,const float *t1
 								const vector &p3,const vector &n3,const float *t3)
 {
 	if (buffer<0)	return false;
-	if (NixVB[buffer].NumTrias > NixVB[buffer].MaxTrias){
-		if (!NixVB[buffer].NotedFull){
+	sVertexBuffer &vb = NixVB[buffer];
+	if (vb.NumTrias > vb.MaxTrias){
+		if (!vb.NotedFull){
 			msg_error("too many triangles in the vertex buffer!");
-			NixVB[buffer].NotedFull = true;
+			vb.NotedFull = true;
 		}
 		return false;
 	}
-	int n = NixVB[buffer].NumTrias;
-	NixVB[buffer].glVertices[n*3  ]=p1;
-	NixVB[buffer].glVertices[n*3+1]=p2;
-	NixVB[buffer].glVertices[n*3+2]=p3;
-	NixVB[buffer].glNormals[n*3  ]=n1;
-	NixVB[buffer].glNormals[n*3+1]=n2;
-	NixVB[buffer].glNormals[n*3+2]=n3;
-	for (int i=0;i<NixVB[buffer].NumTextures;i++){
-		NixVB[buffer].glTexCoords[i][n*6  ]=t1[i*2  ];
-		NixVB[buffer].glTexCoords[i][n*6+1]=1-t1[i*2+1];
-		NixVB[buffer].glTexCoords[i][n*6+2]=t2[i*2  ];
-		NixVB[buffer].glTexCoords[i][n*6+3]=1-t2[i*2+1];
-		NixVB[buffer].glTexCoords[i][n*6+4]=t3[i*2  ];
-		NixVB[buffer].glTexCoords[i][n*6+5]=1-t3[i*2+1];
+	vector *pv = &vb.glVertices[vb.NumTrias*3];
+	*(pv++) = p1;
+	*(pv++) = p2;
+	*(pv++) = p3;
+	pv = &vb.glNormals[vb.NumTrias*3];
+	*(pv++) = n1;
+	*(pv++) = n2;
+	*(pv++) = n3;
+	for (int i=0;i<vb.NumTextures;i++){
+		float *pf = &vb.glTexCoords[i][vb.NumTrias*6];
+		*(pf++) = t1[i*2  ];
+		*(pf++) = 1 - t1[i*2+1];
+		*(pf++) = t2[i*2  ];
+		*(pf++) = 1 - t2[i*2+1];
+		*(pf++) = t3[i*2  ];
+		*(pf++) = 1 - t3[i*2+1];
 	}
-	NixVB[buffer].NumTrias ++;
-	NixVB[buffer].Indexed = false;
+	vb.NumTrias ++;
+	vb.Indexed = false;
 	return true;
 }
 
 // for each triangle there have to be 3 vertices (p[i],n[i],t[i*2],t[i*2+1])
 void NixVBAddTrias(int buffer,int num_trias,const vector *p,const vector *n,const float *t)
 {
-	memcpy(NixVB[buffer].glVertices, p, sizeof(vector) * num_trias * 3);
-	memcpy(NixVB[buffer].glNormals, n, sizeof(vector) * num_trias * 3);
+	sVertexBuffer &vb = NixVB[buffer];
+	memcpy(vb.glVertices, p, sizeof(vector) * num_trias * 3);
+	memcpy(vb.glNormals, n, sizeof(vector) * num_trias * 3);
 	//memcpy(OGLVBTexCoords[buffer][0],t,sizeof(float)*num_trias*6);
 	for (int i=0;i<num_trias*3;i++){
-		NixVB[buffer].glTexCoords[0][i*2  ] = t[i*2];
-		NixVB[buffer].glTexCoords[0][i*2+1] = t[i*2+1];
+		vb.glTexCoords[0][i*2  ] = t[i*2];
+		vb.glTexCoords[0][i*2+1] = t[i*2+1];
 	}
-	NixVB[buffer].NumTrias += num_trias;
-	NixVB[buffer].NumPoints += num_trias * 3;
+	vb.NumTrias += num_trias;
+	vb.NumPoints += num_trias * 3;
 }
 
 void NixVBAddTriasIndexed(int buffer,int num_points,int num_trias,const vector *p,const vector *n,const float *tu,const float *tv,const unsigned short *indices)
@@ -198,10 +206,11 @@ void NixVBAddTriasIndexed(int buffer,int num_points,int num_trias,const vector *
 
 void NixVBClear(int buffer)
 {
-	NixVB[buffer].NumTrias = 0;
-	NixVB[buffer].NumPoints = 0;
-	NixVB[buffer].Indexed = false;
-	NixVB[buffer].NotedFull = false;
+	sVertexBuffer &vb = NixVB[buffer];
+	vb.NumTrias = 0;
+	vb.NumPoints = 0;
+	vb.Indexed = false;
+	vb.NotedFull = false;
 }
 
 int NixVBGetMaxTrias(int buffer)
