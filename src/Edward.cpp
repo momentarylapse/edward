@@ -107,6 +107,8 @@ void Edward::event() \
 { \
 	if (cur_mode) \
 		cur_mode->pre_event(); \
+	if (force_redraw) \
+		OnDraw(); \
 }
 
 IMPLEMENT_EVENT(OnKeyDown, OnKeyDownRecursive, , )
@@ -140,10 +142,9 @@ void Edward::IdleFunction()
 {
 	msg_db_r("Idle", 3);
 
-	if (force_redraw){
+	if (force_redraw)
 		OnDraw();
-		force_redraw = false;
-	}else
+	else
 		HuiSleep(10);
 
 	msg_db_l(3);
@@ -160,6 +161,7 @@ Edward::Edward(Array<string> arg) :
 
 	progress = new Progress;
 
+	timer = HuiCreateTimer();
 
 	LoadKeyCodes();
 
@@ -508,6 +510,7 @@ void Edward::OnDraw()
 		DrawStr(MaxX / 2, MaxY / 2 - 10 - i * 20, m, AlignCenter);
 
 	NixEnd();
+	force_redraw = false;
 }
 
 

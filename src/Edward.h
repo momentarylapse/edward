@@ -138,6 +138,8 @@ public:
 
 	Array<string> icon_image;
 	string get_tex_image(int tex);
+
+	int timer;
 };
 
 extern Edward *ed;

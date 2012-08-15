@@ -8,6 +8,8 @@
 #include "../../../Edward.h"
 #include "../../../MultiView.h"
 #include "ModeModelAnimation.h"
+#include "../Mesh/ModeModelMeshVertex.h"
+#include "../Mesh/ModeModelMeshTriangle.h"
 #include "../Skeleton/ModeModelSkeleton.h"
 #include "../Dialog/ModelAnimationDialog.h"
 
@@ -43,6 +45,13 @@ void ModeModelAnimation::OnCommand(const string & id)
 
 void ModeModelAnimation::OnStart()
 {
+	multi_view->ResetMouseAction();
+
+	// left -> translate
+	//multi_view->SetMouseAction(0, "ActionModelAnimationMoveBones", MultiView::ActionMove);
+	multi_view->SetMouseAction(1, "ActionModelAnimationRotateBones", MultiView::ActionRotate2d);
+	multi_view->SetMouseAction(2, "ActionModelAnimationRotateBones", MultiView::ActionRotate);
+
 	// relative to absolute pos
 	foreach(data->Bone, b)
 		if (b.Parent >= 0)
@@ -79,21 +88,23 @@ void ModeModelAnimation::OnUpdate(Observable *o)
 	if (o->GetName() == "Data"){
 
 		multi_view->ResetData(data);
-		//multi_view->ResetMouseAction();
-
-		// left -> translate
-		//multi_view->SetMouseAction(0, "ActionModelAnimationMoveBones", MultiView::ActionMove);
-		multi_view->SetMouseAction(1, "ActionModelAnimationRotateBones", MultiView::ActionRotate2d);
-		multi_view->SetMouseAction(2, "ActionModelAnimationRotateBones", MultiView::ActionRotate);
 
 		multi_view->MVRectable = true;
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		//CModeAll::SetMultiViewFunctions(&StartChanging, &EndChanging, &Change);
-		multi_view->SetData(	MVDSkeletonPoint,
-				data->Bone,
-				NULL,
-				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
-				NULL, NULL);
+
+		if (data->move->Type == MoveTypeSkeletal){
+			multi_view->SetData(	MVDSkeletonPoint,
+					data->Bone,
+					NULL,
+					MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect,
+					NULL, NULL);
+		}else if (data->move->Type == MoveTypeVertex){
+			multi_view->SetData(	MVDModelVertex,
+					data->Vertex,
+					NULL,
+					MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect,
+					NULL, NULL);
+		}
 	}else if (o->GetName() == "MultiView"){
 	}
 }
@@ -102,7 +113,12 @@ void ModeModelAnimation::OnUpdate(Observable *o)
 
 void ModeModelAnimation::OnDrawWin(int win, irect dest)
 {
-	mode_model_skeleton->OnDrawWin(win, dest);
+	if (data->move->Type == MoveTypeSkeletal){
+		mode_model_skeleton->OnDrawWin(win, dest);
+	}else if (data->move->Type == MoveTypeVertex){
+		mode_model_mesh_vertex->OnDrawWin(win, dest);
+	}else
+		mode_model_mesh_triangle->DrawTrias();
 }
 
 
