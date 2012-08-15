@@ -150,6 +150,7 @@ void Edward::IdleFunction()
 	msg_db_l(3);
 }
 
+
 Edward::Edward(Array<string> arg) :
 	CHuiWindow(AppName, -1, -1, 800, 600, NULL, false, HuiWinModeResizable | HuiWinModeNix, true)
 {
