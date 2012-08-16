@@ -38,6 +38,7 @@ void ModeModelMeshSurface::OnDrawWin(int win, irect dest)
 
 void ModeModelMeshSurface::OnEnd()
 {
+	multi_view->ResetData(data);
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
 }
@@ -69,10 +70,7 @@ void ModeModelMeshSurface::OnUpdate(Observable *o)
 {
 	if (o->GetName() == "Data"){
 		multi_view->ResetData(data);
-		mode_model_mesh->ApplyRightMouseFunction(multi_view);
-		multi_view->MVRectable = true;
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		//CModeAll::SetMultiViewFunctions(&StartChanging, &EndChanging, &Change);
 		multi_view->SetData(	MVDModelSurface,
 				data->Surface,
 				data,
@@ -91,6 +89,8 @@ void ModeModelMeshSurface::OnStart()
 {
 	Subscribe(data);
 	Subscribe(multi_view, "SelectionChange");
+	mode_model_mesh->ApplyRightMouseFunction(multi_view);
+	multi_view->MVRectable = true;
 	OnUpdate(data);
 }
 

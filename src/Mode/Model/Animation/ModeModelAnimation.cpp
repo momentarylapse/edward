@@ -45,12 +45,13 @@ void ModeModelAnimation::OnCommand(const string & id)
 
 void ModeModelAnimation::OnStart()
 {
-	multi_view->ResetMouseAction();
+	multi_view->ResetData(NULL);
 
 	// left -> translate
 	//multi_view->SetMouseAction(0, "ActionModelAnimationMoveBones", MultiView::ActionMove);
 	multi_view->SetMouseAction(1, "ActionModelAnimationRotateBones", MultiView::ActionRotate2d);
 	multi_view->SetMouseAction(2, "ActionModelAnimationRotateBones", MultiView::ActionRotate);
+	multi_view->MVRectable = true;
 
 	// relative to absolute pos
 	foreach(data->Bone, b)
@@ -79,6 +80,7 @@ void ModeModelAnimation::OnEnd()
 	delete(dialog);
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
+	multi_view->ResetData(NULL);
 }
 
 
@@ -88,8 +90,6 @@ void ModeModelAnimation::OnUpdate(Observable *o)
 	if (o->GetName() == "Data"){
 
 		multi_view->ResetData(data);
-
-		multi_view->MVRectable = true;
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 
 		if (data->move->Type == MoveTypeSkeletal){

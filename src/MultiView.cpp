@@ -112,6 +112,7 @@ void MultiView::ResetView()
 	MouseOver = -1;
 	MouseOverSet = -1;
 	MouseOverType = -1;
+	ed->ForceRedraw();
 }
 
 void MultiView::ResetMouseAction()
@@ -127,6 +128,8 @@ void MultiView::ResetData(Data *_data)
 {
 	data.clear();
 	_data_ = _data;
+	if (!_data_)
+		ResetMouseAction();
 }
 
 void MultiView::SetData(int type, const DynamicArray & a, void *user_data, int mode, t_is_mouse_over_func *is_mouse_over_func, t_is_in_rect_func *is_in_rect_func)

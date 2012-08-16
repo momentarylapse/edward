@@ -66,6 +66,13 @@ void ModeModelSkeleton::OnStart()
 
 	Subscribe(data);
 	Subscribe(multi_view, "SelectionChange");
+
+	multi_view->ResetData(data);
+
+	// left -> translate
+	multi_view->SetMouseAction(0, "ActionModelMVMoveBones", MultiView::ActionMove);
+	//mode_model_mesh->ApplyRightMouseFunction(multi_view);
+	multi_view->MVRectable = true;
 	OnUpdate(data);
 }
 
@@ -73,6 +80,7 @@ void ModeModelSkeleton::OnStart()
 
 void ModeModelSkeleton::OnEnd()
 {
+	multi_view->ResetData(NULL);
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
 }
@@ -84,15 +92,8 @@ void ModeModelSkeleton::OnUpdate(Observable *o)
 	if (o->GetName() == "Data"){
 
 		multi_view->ResetData(data);
-		//multi_view->ResetMouseAction();
 
-		// left -> translate
-		multi_view->SetMouseAction(0, "ActionModelMVMoveBones", MultiView::ActionMove);
-
-		//mode_model_mesh->ApplyRightMouseFunction(multi_view);
-		multi_view->MVRectable = true;
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		//CModeAll::SetMultiViewFunctions(&StartChanging, &EndChanging, &Change);
 		multi_view->SetData(	MVDSkeletonPoint,
 				data->Bone,
 				NULL,

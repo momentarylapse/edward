@@ -50,6 +50,8 @@ void ModeModelMeshTexture::OnStart()
 
 	Subscribe(data);
 	Subscribe(multi_view, "SelectionChange");
+	mode_model_mesh->ApplyRightMouseFunction(multi_view);
+	multi_view->MVRectable = true;
 	OnUpdate(data);
 
 	dialog = new ModelTextureLevelDialog(ed, true, data);
@@ -62,6 +64,7 @@ void ModeModelMeshTexture::OnEnd()
 {
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
+	multi_view->ResetData(NULL);
 	skin_vertex.clear();
 	delete(dialog);
 }
@@ -165,10 +168,7 @@ void ModeModelMeshTexture::OnUpdate(Observable *o)
 			}
 
 		multi_view->ResetData(data);
-		mode_model_mesh->ApplyRightMouseFunction(multi_view);
-		multi_view->MVRectable = true;
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		//CModeAll::SetMultiViewFunctions(&StartChanging, &EndChanging, &Change);
 		multi_view->SetData(	MVDModelSkinVertex,
 				skin_vertex,
 				NULL,

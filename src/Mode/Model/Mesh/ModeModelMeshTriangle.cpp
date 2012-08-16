@@ -230,6 +230,7 @@ void ModeModelMeshTriangle::OnDrawWin(int win, irect dest)
 
 void ModeModelMeshTriangle::OnEnd()
 {
+	multi_view->ResetData(NULL);
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
 }
@@ -240,6 +241,8 @@ void ModeModelMeshTriangle::OnStart()
 {
 	Subscribe(data);
 	Subscribe(multi_view, "SelectionChange");
+	mode_model_mesh->ApplyRightMouseFunction(multi_view);
+	multi_view->MVRectable = true;
 	OnUpdate(data);
 }
 
@@ -318,10 +321,7 @@ void ModeModelMeshTriangle::OnUpdate(Observable *o)
 {
 	if (o->GetName() == "Data"){
 		multi_view->ResetData(data);
-		mode_model_mesh->ApplyRightMouseFunction(multi_view);
-		multi_view->MVRectable = true;
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		//CModeAll::SetMultiViewFunctions(&StartChanging, &EndChanging, &Change);
 		foreach(data->Surface, s)
 		multi_view->SetData(	MVDModelTriangle,
 				s.Triangle,
