@@ -21,8 +21,6 @@ ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(Mode* _parent,
 	data = _data;
 	menu = HuiCreateResourceMenu("menu_move");
 	multi_view = ed->multi_view_3d;
-	Subscribe(data);
-	Subscribe(multi_view, "SelectionChange");
 }
 
 ModeModelAnimationSkeleton::~ModeModelAnimationSkeleton()

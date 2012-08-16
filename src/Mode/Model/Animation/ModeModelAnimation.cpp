@@ -22,8 +22,6 @@ ModeModelAnimation::ModeModelAnimation(Mode *_parent, DataModel *_data)
 	data = _data;
 	menu = HuiCreateResourceMenu("menu_move");
 	multi_view = ed->multi_view_3d;
-	Subscribe(data);
-	Subscribe(multi_view, "SelectionChange");
 	mode_model_animation_skeleton = new ModeModelAnimationSkeleton(this, data);
 	mode_model_animation_vertex = new ModeModelAnimationVertex(this, data);
 }

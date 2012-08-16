@@ -20,8 +20,6 @@ ModeModelAnimationVertex::ModeModelAnimationVertex(Mode* _parent, DataModel* _da
 	data = _data;
 	menu = HuiCreateResourceMenu("menu_move");
 	multi_view = ed->multi_view_3d;
-	Subscribe(data);
-	Subscribe(multi_view, "SelectionChange");
 }
 
 ModeModelAnimationVertex::~ModeModelAnimationVertex()
@@ -32,9 +30,6 @@ void ModeModelAnimationVertex::OnStart()
 {
 	multi_view->ResetData(NULL);
 
-	foreachi(data->Vertex, v, i)
-		vertex[i].is_selected = v.is_selected;
-
 	// left -> translate
 	multi_view->SetMouseAction(0, "ActionModelAnimationMoveVertices", MultiView::ActionMove);
 	multi_view->SetMouseAction(1, "ActionModelAnimationRotateVertices", MultiView::ActionRotate2d);
@@ -44,6 +39,9 @@ void ModeModelAnimationVertex::OnStart()
 	Subscribe(data);
 	Subscribe(multi_view, "SelectionChange");
 	OnUpdate(data);
+
+	foreachi(data->Vertex, v, i)
+		vertex[i].is_selected = v.is_selected;
 }
 
 void ModeModelAnimationVertex::OnEnd()
