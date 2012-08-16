@@ -40,13 +40,6 @@ void ModeModelAnimationSkeleton::OnStart()
 	multi_view->SetMouseAction(2, "ActionModelAnimationRotateBones", MultiView::ActionRotate);
 	multi_view->MVRectable = true;
 
-	// relative to absolute pos
-	foreach(data->Bone, b)
-		if (b.Parent >= 0)
-			b.pos = data->Bone[b.Parent].pos + b.DeltaPos;
-		else
-			b.pos = b.DeltaPos;
-
 	Subscribe(data);
 	Subscribe(multi_view, "SelectionChange");
 	OnUpdate(data);
