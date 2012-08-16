@@ -1,12 +1,12 @@
 /*
- * ModeModelAnimation.h
+ * ModeModelAnimationVertex.h
  *
- *  Created on: 14.03.2012
+ *  Created on: 16.08.2012
  *      Author: michi
  */
 
-#ifndef MODEMODELANIMATION_H_
-#define MODEMODELANIMATION_H_
+#ifndef MODEMODELANIMATIONVERTEX_H_
+#define MODEMODELANIMATIONVERTEX_H_
 
 #include "../../Mode.h"
 #include "../../../Data/Model/DataModel.h"
@@ -14,11 +14,11 @@
 class Mode;
 class DataModel;
 
-class ModeModelAnimation: public Mode
+class ModeModelAnimationVertex: public Mode
 {
 public:
-	ModeModelAnimation(Mode *_parent, DataModel *_data);
-	virtual ~ModeModelAnimation();
+	ModeModelAnimationVertex(Mode *_parent, DataModel *_data);
+	virtual ~ModeModelAnimationVertex();
 
 	void OnStart();
 	void OnEnd();
@@ -35,6 +35,6 @@ public:
 	CHuiWindow *dialog;
 };
 
-extern ModeModelAnimation *mode_model_animation;
+extern ModeModelAnimationVertex *mode_model_animation_vertex;
 
-#endif /* MODEMODELANIMATION_H_ */
+#endif /* MODEMODELANIMATIONVERTEX_H_ */

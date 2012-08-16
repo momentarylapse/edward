@@ -43,7 +43,7 @@ ModeModelMeshTriangle::~ModeModelMeshTriangle()
 inline vector GetVertex(int v)
 {
 	DataModel *m = mode_model_mesh_triangle->data;
-	if (ed->cur_mode == mode_model_animation)
+	if (mode_model_animation->IsAncestorOf(ed->cur_mode))
 		return m->Vertex[v].AnimatedPos;
 	return m->Vertex[v].pos;
 }
