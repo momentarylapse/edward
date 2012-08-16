@@ -37,8 +37,8 @@ void ModeModelAnimationVertex::OnStart()
 
 	// left -> translate
 	multi_view->SetMouseAction(0, "ActionModelAnimationMoveVertices", MultiView::ActionMove);
-//	multi_view->SetMouseAction(1, "ActionModelAnimationRotateVertices", MultiView::ActionRotate2d);
-//	multi_view->SetMouseAction(2, "ActionModelAnimationRotateVertices", MultiView::ActionRotate);
+	multi_view->SetMouseAction(1, "ActionModelAnimationRotateVertices", MultiView::ActionRotate2d);
+	multi_view->SetMouseAction(2, "ActionModelAnimationRotateVertices", MultiView::ActionRotate);
 	multi_view->MVRectable = true;
 
 	Subscribe(data);

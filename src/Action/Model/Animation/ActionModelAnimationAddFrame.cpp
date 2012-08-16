@@ -25,7 +25,7 @@ void *ActionModelAnimationAddFrame::execute(Data *d)
 	assert(index >= 0);
 	assert(index < m->Move.num);
 	assert(frame >= 0);
-	assert(frame < m->Move[index].Frame.num);
+	assert(frame <= m->Move[index].Frame.num);
 
 	ModeModelFrame new_frame;
 	if (frame > 0)
