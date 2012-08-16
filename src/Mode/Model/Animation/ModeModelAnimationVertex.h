@@ -33,6 +33,9 @@ public:
 	Data *GetData(){	return data;	}
 
 	CHuiWindow *dialog;
+
+	void UpdateVertices();
+	Array<ModeModelVertex> vertex;
 };
 
 extern ModeModelAnimationVertex *mode_model_animation_vertex;

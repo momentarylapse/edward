@@ -32,8 +32,11 @@ void ModeModelAnimationVertex::OnStart()
 {
 	multi_view->ResetData(NULL);
 
+	foreachi(data->Vertex, v, i)
+		vertex[i].is_selected = v.is_selected;
+
 	// left -> translate
-	//multi_view->SetMouseAction(0, "ActionModelAnimationMoveVertices", MultiView::ActionMove);
+	multi_view->SetMouseAction(0, "ActionModelAnimationMoveVertices", MultiView::ActionMove);
 //	multi_view->SetMouseAction(1, "ActionModelAnimationRotateVertices", MultiView::ActionRotate2d);
 //	multi_view->SetMouseAction(2, "ActionModelAnimationRotateVertices", MultiView::ActionRotate);
 	multi_view->MVRectable = true;
@@ -48,6 +51,7 @@ void ModeModelAnimationVertex::OnEnd()
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
 	multi_view->ResetData(NULL);
+	vertex.clear();
 }
 
 void ModeModelAnimationVertex::OnCommand(const string& id)
@@ -57,16 +61,19 @@ void ModeModelAnimationVertex::OnCommand(const string& id)
 void ModeModelAnimationVertex::OnUpdate(Observable* o)
 {
 	if (o->GetName() == "Data"){
+		UpdateVertices();
 
 		multi_view->ResetData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 
 		multi_view->SetData(	MVDModelVertex,
-				data->Vertex,
+				vertex,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect,
 				NULL, NULL);
 	}else if (o->GetName() == "MultiView"){
+		foreachi(data->Vertex, v, i)
+			v.is_selected = vertex[i].is_selected;
 	}
 }
 
@@ -78,5 +85,13 @@ void ModeModelAnimationVertex::OnDrawWin(int win, irect dest)
 {
 	mode_model_mesh_vertex->OnDrawWin(win, dest);
 }
+
+void ModeModelAnimationVertex::UpdateVertices()
+{
+	vertex.resize(data->Vertex.num);
+	foreachi(vertex, v, i)
+		v.pos = data->Vertex[i].AnimatedPos;
+}
+
 
 
