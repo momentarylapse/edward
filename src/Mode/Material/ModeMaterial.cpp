@@ -216,7 +216,7 @@ bool ModeMaterial::Open()
 	if (!data->Load(ed->DialogFileComplete))
 		return false;
 
-	ed->multi_view_3d->ResetView();
+	multi_view->ResetView();
 	multi_view->radius = 500;
 	ed->SetMode(mode_material);
 	return true;
@@ -264,6 +264,7 @@ void ModeMaterial::OnStart()
 	ed->ToolbarSetCurrent(HuiToolbarLeft);
 	ed->ToolbarReset();
 	ed->EnableToolbar(false);
+	multi_view->MVRectable = false;
 }
 
 
