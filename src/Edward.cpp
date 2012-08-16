@@ -271,6 +271,7 @@ Edward::Edward(Array<string> arg) :
 		SetMode(mode_welcome);
 
 	HuiSetIdleFunctionM(this, (void(HuiEventHandler::*)())&Edward::IdleFunction);
+	HuiRunLaterM(100, this, (void(HuiEventHandler::*)())&Edward::ForceRedraw);
 
 	msg_db_l(1);
 }
