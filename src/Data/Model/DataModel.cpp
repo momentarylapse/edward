@@ -22,7 +22,7 @@
 #include "../../Action/Model/Animation/ActionModelAnimationAddFrame.h"
 #include "../../Action/Model/Animation/ActionModelAnimationDeleteFrame.h"
 
-
+ModeModelMove *EmptyMove = NULL;
 
 
 DataModel::DataModel()
@@ -30,6 +30,18 @@ DataModel::DataModel()
 	AutoTexturingData.enabled = false;
 
 	ViewStage = 0; // TODO: mode...?
+
+	if (!EmptyMove){
+		// create one dummy animation
+		EmptyMove = new ModeModelMove;
+		EmptyMove->Name = "-empty move-";
+		EmptyMove->Type = MoveTypeNone;
+		EmptyMove->Frame.resize(1);
+		EmptyMove->FramesPerSecConst = 1;
+		EmptyMove->FramesPerSecFactor = 0;
+		EmptyMove->InterpolatedQuadratic = 0;
+		EmptyMove->InterpolatedLoop = false;
+	}
 }
 
 DataModel::~DataModel()
@@ -96,18 +108,10 @@ void DataModel::Reset()
 	// skeleton
 	Bone.clear();
 
-	// create one dummy animation
-	Move.resize(1);
-	move = &Move[0];
-	CurrentMove = 0;
+	Move.clear();
+	move = EmptyMove;
+	CurrentMove = -1;
 	CurrentFrame = 0;
-	move->Frame.num = 0;
-	move->Type = MoveTypeNone;
-	move->FramesPerSecConst = 1;
-	move->FramesPerSecFactor = 0;
-	move->InterpolatedQuadratic = 0;
-	move->InterpolatedLoop = false;
-	move->Name = "";
 	TimeScale = 1;
 	TimeParam = 0;
 	Playing = false;
@@ -1563,17 +1567,22 @@ ModeModelSurface* DataModel::AddCylinder(Array<vector>& pos, Array<float> &radiu
 
 void DataModel::SetCurrentMove(int move_no)
 {
-	move = NULL;
+	move = EmptyMove;
+	CurrentMove = -1;
 	if ((move_no >= 0) && (move_no < Move.num))
-		move = &Move[move_no];
-	CurrentMove = move_no;
+		if (Move[move_no].Frame.num > 0){
+			move = &Move[move_no];
+			CurrentMove = move_no;
+		}
 	SetCurrentFrame(0);
 }
 
 void DataModel::SetCurrentFrame(int frame_no)
 {
-	CurrentFrame = frame_no;
-	UpdateAnimation();
+	if ((frame_no >= 0) && (frame_no < move->Frame.num)){
+		CurrentFrame = frame_no;
+		UpdateAnimation();
+	}
 }
 
 void DataModel::AddAnimation(int index, int type)
@@ -1617,6 +1626,15 @@ void DataModel::UpdateAnimation()
 
 void DataModel::UpdateSkeleton()
 {
+	if (move->Type != MoveTypeSkeletal){
+		foreachi(Bone, b, i){
+			if (b.Parent < 0)
+				b.pos = b.DeltaPos;
+			else
+				b.pos = Bone[b.Parent].pos + b.DeltaPos;
+		}
+		return;
+	}
 	int frame0 = CurrentFrame;
 	int frame1 = CurrentFrame;
 	float t = 0;

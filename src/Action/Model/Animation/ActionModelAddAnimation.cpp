@@ -51,5 +51,9 @@ void ActionModelAddAnimation::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	m->Move[index].Frame.clear();
+
+	// valid m->move
+	if (m->CurrentMove == index)
+		m->SetCurrentMove(-1);
 }
 

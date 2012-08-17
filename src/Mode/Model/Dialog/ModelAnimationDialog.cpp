@@ -6,10 +6,7 @@
  */
 
 #include "ModelAnimationDialog.h"
-#include "../Animation/ModeModelAnimationSkeleton.h"
-#include "../Animation/ModeModelAnimationVertex.h"
 #include "../../../Data/Model/DataModel.h"
-#include "../../../Edward.h"
 #include "ModelNewAnimationDialog.h"
 
 static DataModel *__data = NULL;
@@ -144,10 +141,6 @@ void ModelAnimationDialog::OnAnimationList()
 	int s = GetSelectedAnimation();
 	if (s >= 0){
 		data->SetCurrentMove(s);
-		if (data->move->Type == MoveTypeSkeletal)
-			ed->SetMode(mode_model_animation_skeleton);
-		else if (data->move->Type == MoveTypeVertex)
-			ed->SetMode(mode_model_animation_vertex);
 		SetInt("animation_dialog_tab_control", 1);
 	}
 }

@@ -73,7 +73,7 @@ void ModeModel::OnStart()
 	ed->ToolbarReset();
 	ed->EnableToolbar(false);
 
-	//ed->SetMode(mode_model_mesh);
+	ed->SetMode(mode_model_mesh);
 }
 
 
@@ -147,14 +147,14 @@ void ModeModel::OnUpdate(Observable *o)
 
 void ModeModel::OnUpdateMenu()
 {
-	ed->Check("mode_model_vertex", ed->cur_mode == mode_model_mesh_vertex);
-	ed->Check("mode_model_edge", ed->cur_mode == mode_model_mesh_edge);
-	ed->Check("mode_model_triangle", ed->cur_mode == mode_model_mesh_triangle);
-	ed->Check("mode_model_surface", ed->cur_mode == mode_model_mesh_surface);
-	ed->Check("mode_model_texture_coord", ed->cur_mode == mode_model_mesh_texture);
-	ed->Check("mode_model_mesh", ed->cur_mode->parent == mode_model_mesh);
-	ed->Check("mode_model_skeleton", ed->cur_mode == mode_model_skeleton);
-	ed->Check("mode_model_animation", ed->cur_mode == mode_model_animation);
+	ed->Check("mode_model_vertex", mode_model_mesh_vertex->IsAncestorOf(ed->cur_mode));
+	ed->Check("mode_model_edge", mode_model_mesh_edge->IsAncestorOf(ed->cur_mode));
+	ed->Check("mode_model_triangle", mode_model_mesh_triangle->IsAncestorOf(ed->cur_mode));
+	ed->Check("mode_model_surface", mode_model_mesh_surface->IsAncestorOf(ed->cur_mode));
+	ed->Check("mode_model_texture_coord", mode_model_mesh_texture->IsAncestorOf(ed->cur_mode));
+	ed->Check("mode_model_mesh", mode_model_mesh->IsAncestorOf(ed->cur_mode));
+	ed->Check("mode_model_skeleton", mode_model_skeleton->IsAncestorOf(ed->cur_mode));
+	ed->Check("mode_model_animation", mode_model_animation->IsAncestorOf(ed->cur_mode));
 }
 
 

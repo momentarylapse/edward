@@ -10,7 +10,6 @@
 #include "Edward.h"
 #include "Mode/Model/ModeModel.h"
 #include "Mode/Model/Mesh/ModeModelMesh.h"
-#include "Mode/Model/Mesh/ModeModelMeshVertex.h"
 #include "Mode/Material/ModeMaterial.h"
 #include "Mode/World/ModeWorld.h"
 #include "Mode/Font/ModeFont.h"
@@ -401,37 +400,45 @@ bool mode_switch_allowed(Mode *m)
 
 void Edward::SetMode(Mode *m)
 {
-	// ugly redirection
-	if (m == mode_model)
-		m = mode_model_mesh_vertex;
-	if (m == mode_model_mesh)
-		m = mode_model_mesh_vertex;
-
-
 	if (cur_mode == m)
 		return;
 	if (!mode_switch_allowed(m))
 		return;
 
+	// recursive use...
+	mode_queue.add(m);
+	if (mode_queue.num > 1)
+		return;
+
 	msg_db_r("SetMode", 1);
 
-	// close current modes
-	while(cur_mode){
-		if (cur_mode->IsAncestorOf(m))
-			break;
-		msg_write("end " + cur_mode->name);
-		cur_mode->OnEnd();
-		cur_mode = cur_mode->parent;
-	}
+	m = mode_queue[0];
+	while(m){
 
-	//multi_view_3d->ResetMouseAction();
-	//multi_view_2d->ResetMouseAction();
+		// close current modes
+		while(cur_mode){
+			if (cur_mode->IsAncestorOf(m))
+				break;
+			msg_write("end " + cur_mode->name);
+			cur_mode->OnEnd();
+			cur_mode = cur_mode->parent;
+		}
 
-	// start new modes
-	while(cur_mode != m){
-		cur_mode = cur_mode->GetNextChildTo(m);
-		msg_write("start " + cur_mode->name);
-		cur_mode->OnStart();
+		//multi_view_3d->ResetMouseAction();
+		//multi_view_2d->ResetMouseAction();
+
+		// start new modes
+		while(cur_mode != m){
+			cur_mode = cur_mode->GetNextChildTo(m);
+			msg_write("start " + cur_mode->name);
+			cur_mode->OnStart();
+		}
+
+		// nested set calls?
+		mode_queue.erase(0);
+		m = NULL;
+		if (mode_queue.num > 0)
+			m = mode_queue[0];
 	}
 
 	SetMenu(cur_mode->menu);

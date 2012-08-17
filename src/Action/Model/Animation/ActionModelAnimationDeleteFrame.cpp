@@ -29,9 +29,13 @@ void *ActionModelAnimationDeleteFrame::execute(Data *d)
 	old_frame = m->Move[index].Frame[frame];
 	m->Move[index].Frame.erase(frame);
 
-	if ((index == m->CurrentMove) && (m->CurrentFrame >= m->Move[index].Frame.num))
-		m->CurrentFrame --;
-	m->UpdateAnimation();
+	// make current state valid
+	if (index == m->CurrentMove){
+		if (m->Move[index].Frame.num == 0)
+			m->SetCurrentMove(-1);
+		else if (m->CurrentFrame >= m->Move[index].Frame.num)
+			m->SetCurrentFrame(m->CurrentFrame - 1);
+	}
 	return NULL;
 }
 

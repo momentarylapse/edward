@@ -120,6 +120,7 @@ public:
 	void UpdateMenu();
 
 	Mode *cur_mode;
+	Array<Mode*> mode_queue;
 
 	string RootDir;
 	bool RootDirCorrect;

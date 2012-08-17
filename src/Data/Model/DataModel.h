@@ -177,6 +177,8 @@ struct ModeModelMove
 	string Name;
 };
 
+extern ModeModelMove *EmptyMove;
+
 class ModeModelEdge: public MultiViewSingleData
 {
 public:

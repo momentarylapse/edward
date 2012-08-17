@@ -21,7 +21,6 @@ ModeModelAnimation::ModeModelAnimation(Mode *_parent, DataModel *_data)
 	parent = _parent;
 	data = _data;
 	menu = HuiCreateResourceMenu("menu_move");
-	multi_view = ed->multi_view_3d;
 	mode_model_animation_skeleton = new ModeModelAnimationSkeleton(this, data);
 	mode_model_animation_vertex = new ModeModelAnimationVertex(this, data);
 }
@@ -43,6 +42,10 @@ void ModeModelAnimation::OnStart()
 {
 	dialog = new ModelAnimationDialog(ed, true, data);
 	dialog->Update();
+
+	data->UpdateAnimation();
+	Subscribe(data);
+	OnUpdate(data);
 }
 
 
@@ -54,6 +57,7 @@ void ModeModelAnimation::OnUpdateMenu()
 
 void ModeModelAnimation::OnEnd()
 {
+	Unsubscribe(data);
 	delete(dialog);
 }
 
@@ -61,16 +65,16 @@ void ModeModelAnimation::OnEnd()
 
 void ModeModelAnimation::OnUpdate(Observable *o)
 {
-	if (o->GetName() == "Data"){
-	}else if (o->GetName() == "MultiView"){
-	}
+	if (data->move->Type == MoveTypeSkeletal)
+		ed->SetMode(mode_model_animation_skeleton);
+	else // vertex/none
+		ed->SetMode(mode_model_animation_vertex);
 }
 
 
 
 void ModeModelAnimation::OnDrawWin(int win, irect dest)
 {
-	mode_model_mesh_triangle->DrawTrias();
 }
 
 

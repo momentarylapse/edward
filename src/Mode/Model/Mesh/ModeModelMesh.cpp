@@ -80,7 +80,7 @@ void ModeModelMesh::OnStart()
 	ed->EnableToolbar(true);
 	ed->ToolbarConfigure(false,true);
 
-//	ed->SetMode(mode_model_mesh_vertex);
+	ed->SetMode(mode_model_mesh_vertex);
 	//ed->SetMode(mode_model_mesh_skin);
 }
 
