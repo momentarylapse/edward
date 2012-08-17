@@ -1,23 +1,23 @@
 /*
- * ActionModelMVMirrorSkinVertices.h
+ * ActionModelMirrorSkinVertices.h
  *
  *  Created on: 15.03.2012
  *      Author: michi
  */
 
-#ifndef ACTIONMODELMVMIRRORSKINVERTICES_H_
-#define ACTIONMODELMVMIRRORSKINVERTICES_H_
+#ifndef ACTIONMODELMIRRORSKINVERTICES_H_
+#define ACTIONMODELMIRRORSKINVERTICES_H_
 
 #include "../../../ActionMultiView.h"
 #include "../../../../Data/Data.h"
 #include "../../../../lib/file/file.h"
 #include "../../../../lib/types/types.h"
 
-class ActionModelMVMirrorSkinVertices: public ActionMultiView
+class ActionModelMirrorSkinVertices: public ActionMultiView
 {
 public:
-	ActionModelMVMirrorSkinVertices(Data *d, const vector &_pos0);
-	virtual ~ActionModelMVMirrorSkinVertices();
+	ActionModelMirrorSkinVertices(Data *d, const vector &_pos0);
+	virtual ~ActionModelMirrorSkinVertices();
 	string name(){	return "ModelMirrorSkinVertices";	}
 
 	void *execute(Data *d);
@@ -28,4 +28,4 @@ private:
 	Array<int> surface;
 };
 
-#endif /* ACTIONMODELMVMIRRORSKINVERTICES_H_ */
+#endif /* ACTIONMODELMIRRORSKINVERTICES_H_ */

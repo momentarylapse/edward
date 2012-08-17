@@ -6,18 +6,18 @@
  */
 
 #include "ActionMultiView.h"
-#include "Model/Mesh/Vertex/ActionModelMVMoveVertices.h"
-#include "Model/Mesh/Vertex/ActionModelMVScaleVertices.h"
-#include "Model/Mesh/Vertex/ActionModelMVRotateVertices.h"
-#include "Model/Mesh/Vertex/ActionModelMVMirrorVertices.h"
-#include "Model/Mesh/Skin/ActionModelMVMoveSkinVertices.h"
-#include "Model/Mesh/Skin/ActionModelMVScaleSkinVertices.h"
-#include "Model/Mesh/Skin/ActionModelMVRotateSkinVertices.h"
-#include "Model/Mesh/Skin/ActionModelMVMirrorSkinVertices.h"
-#include "Model/Skeleton/ActionModelMVMoveBones.h"
-#include "Model/Animation/ActionModelMVAnimationRotateBones.h"
-#include "Model/Animation/ActionModelMVAnimationMoveVertices.h"
-#include "Model/Animation/ActionModelMVAnimationRotateVertices.h"
+#include "Model/Mesh/Vertex/ActionModelMoveVertices.h"
+#include "Model/Mesh/Vertex/ActionModelScaleVertices.h"
+#include "Model/Mesh/Vertex/ActionModelRotateVertices.h"
+#include "Model/Mesh/Vertex/ActionModelMirrorVertices.h"
+#include "Model/Mesh/Skin/ActionModelMoveSkinVertices.h"
+#include "Model/Mesh/Skin/ActionModelScaleSkinVertices.h"
+#include "Model/Mesh/Skin/ActionModelRotateSkinVertices.h"
+#include "Model/Mesh/Skin/ActionModelMirrorSkinVertices.h"
+#include "Model/Skeleton/ActionModelMoveBones.h"
+#include "Model/Animation/ActionModelAnimationRotateBones.h"
+#include "Model/Animation/ActionModelAnimationMoveVertices.h"
+#include "Model/Animation/ActionModelAnimationRotateVertices.h"
 #include "World/ActionWorldMoveSelection.h"
 #include "World/ActionWorldRotateObjects.h"
 #include <assert.h>
@@ -66,30 +66,30 @@ void ActionMultiView::abort_and_notify(Data *d)
 
 ActionMultiView *ActionMultiViewFactory(const string &name, Data *d, const vector &_pos0)
 {
-	if (name == "ActionModelMVMoveVertices")
-		return new ActionModelMVMoveVertices(d, _pos0);
-	else if (name == "ActionModelMVScaleVertices")
-		return new ActionModelMVScaleVertices(d, _pos0);
-	else if (name == "ActionModelMVRotateVertices")
-		return new ActionModelMVRotateVertices(d, _pos0);
-	else if (name == "ActionModelMVMirrorVertices")
-		return new ActionModelMVMirrorVertices(d, _pos0);
-	else if (name == "ActionModelMVMoveSkinVertices")
-		return new ActionModelMVMoveSkinVertices(d, _pos0);
-	else if (name == "ActionModelMVScaleSkinVertices")
-		return new ActionModelMVScaleSkinVertices(d, _pos0);
-	else if (name == "ActionModelMVRotateSkinVertices")
-		return new ActionModelMVRotateSkinVertices(d, _pos0);
-	else if (name == "ActionModelMVMirrorSkinVertices")
-		return new ActionModelMVMirrorSkinVertices(d, _pos0);
-	else if (name == "ActionModelMVMoveBones")
-		return new ActionModelMVMoveBones(d, _pos0);
+	if (name == "ActionModelMoveVertices")
+		return new ActionModelMoveVertices(d, _pos0);
+	else if (name == "ActionModelScaleVertices")
+		return new ActionModelScaleVertices(d, _pos0);
+	else if (name == "ActionModelRotateVertices")
+		return new ActionModelRotateVertices(d, _pos0);
+	else if (name == "ActionModelMirrorVertices")
+		return new ActionModelMirrorVertices(d, _pos0);
+	else if (name == "ActionModelMoveSkinVertices")
+		return new ActionModelMoveSkinVertices(d, _pos0);
+	else if (name == "ActionModelScaleSkinVertices")
+		return new ActionModelScaleSkinVertices(d, _pos0);
+	else if (name == "ActionModelRotateSkinVertices")
+		return new ActionModelRotateSkinVertices(d, _pos0);
+	else if (name == "ActionModelMirrorSkinVertices")
+		return new ActionModelMirrorSkinVertices(d, _pos0);
+	else if (name == "ActionModelMoveBones")
+		return new ActionModelMoveBones(d, _pos0);
 	else if (name == "ActionModelAnimationRotateBones")
-		return new ActionModelMVAnimationRotateBones(d, _pos0);
+		return new ActionModelAnimationRotateBones(d, _pos0);
 	else if (name == "ActionModelAnimationMoveVertices")
-		return new ActionModelMVAnimationMoveVertices(d, _pos0);
+		return new ActionModelAnimationMoveVertices(d, _pos0);
 	else if (name == "ActionModelAnimationRotateVertices")
-		return new ActionModelMVAnimationRotateVertices(d, _pos0);
+		return new ActionModelAnimationRotateVertices(d, _pos0);
 	else if (name == "ActionWorldMoveSelection")
 		return new ActionWorldMoveSelection(d, _pos0);
 	else if (name == "ActionWorldRotateObjects")

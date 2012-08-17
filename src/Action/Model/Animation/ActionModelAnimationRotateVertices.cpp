@@ -1,15 +1,15 @@
 /*
- * ActionModelMVAnimationMoveVertices.cpp
+ * ActionModelAnimationRotateVertices.cpp
  *
  *  Created on: 16.08.2012
  *      Author: michi
  */
 
-#include "ActionModelMVAnimationMoveVertices.h"
+#include "ActionModelAnimationRotateVertices.h"
 #include "../../../Data/Model/DataModel.h"
 #include <assert.h>
 
-ActionModelMVAnimationMoveVertices::ActionModelMVAnimationMoveVertices(Data* d, const vector& _pos0):
+ActionModelAnimationRotateVertices::ActionModelAnimationRotateVertices(Data* d, const vector& _pos0):
 	ActionMultiView(d, _pos0)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
@@ -25,23 +25,26 @@ ActionModelMVAnimationMoveVertices::ActionModelMVAnimationMoveVertices(Data* d, 
 		}
 }
 
-ActionModelMVAnimationMoveVertices::~ActionModelMVAnimationMoveVertices()
+ActionModelAnimationRotateVertices::~ActionModelAnimationRotateVertices()
 {
 }
 
-void* ActionModelMVAnimationMoveVertices::execute(Data* d)
+void* ActionModelAnimationRotateVertices::execute(Data* d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
+	matrix rot;
+	MatrixRotation(rot, param);
 	foreachi(index, i, ii)
-		m->Move[move].Frame[frame].VertexDPos[i] = old_data[ii] + param;
+		m->Move[move].Frame[frame].VertexDPos[i] = pos0 + rot * (old_data[ii] + m->Vertex[i].pos - pos0) - m->Vertex[i].pos;
 	m->UpdateAnimation();
 	return NULL;
 }
 
-void ActionModelMVAnimationMoveVertices::undo(Data* d)
+void ActionModelAnimationRotateVertices::undo(Data* d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii)
 		m->Move[move].Frame[frame].VertexDPos[i] = old_data[ii];
 	m->UpdateAnimation();
 }
+

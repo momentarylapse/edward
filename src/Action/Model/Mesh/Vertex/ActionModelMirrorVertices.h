@@ -1,12 +1,12 @@
 /*
- * ActionModelMVMirrorVertices.h
+ * ActionModelMirrorVertices.h
  *
  *  Created on: 09.03.2012
  *      Author: michi
  */
 
-#ifndef ACTIONMODELMVMIRRORVERTICES_H_
-#define ACTIONMODELMVMIRRORVERTICES_H_
+#ifndef ACTIONMODELMIRRORVERTICES_H_
+#define ACTIONMODELMIRRORVERTICES_H_
 
 #include "../../../ActionMultiView.h"
 #include "../../../../Data/Data.h"
@@ -15,15 +15,15 @@
 
 class Data;
 
-class ActionModelMVMirrorVertices: public ActionMultiView
+class ActionModelMirrorVertices: public ActionMultiView
 {
 public:
-	ActionModelMVMirrorVertices(Data *d, const vector &_pos0);
-	virtual ~ActionModelMVMirrorVertices();
+	ActionModelMirrorVertices(Data *d, const vector &_pos0);
+	virtual ~ActionModelMirrorVertices();
 	string name(){	return "ModelMirrorVertices";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);
 };
 
-#endif /* ACTIONMODELMVMIRRORVERTICES_H_ */
+#endif /* ACTIONMODELMIRRORVERTICES_H_ */

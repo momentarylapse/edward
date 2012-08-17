@@ -1,17 +1,17 @@
 /*
- * ActionModelMVMirrorSkinVertices.cpp
+ * ActionModelMoveSkinVertices.cpp
  *
  *  Created on: 15.03.2012
  *      Author: michi
  */
 
-#include "ActionModelMVMirrorSkinVertices.h"
+#include "ActionModelMoveSkinVertices.h"
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../lib/file/file.h"
 #include "../../../../lib/types/types.h"
 #include "../../../../Mode/Model/Mesh/ModeModelMeshTexture.h"
 
-ActionModelMVMirrorSkinVertices::ActionModelMVMirrorSkinVertices(Data *d, const vector &_pos0) :
+ActionModelMoveSkinVertices::ActionModelMoveSkinVertices(Data *d, const vector &_pos0) :
 	ActionMultiView(d, _pos0)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
@@ -26,26 +26,26 @@ ActionModelMVMirrorSkinVertices::ActionModelMVMirrorSkinVertices(Data *d, const 
 	}
 }
 
-ActionModelMVMirrorSkinVertices::~ActionModelMVMirrorSkinVertices()
+ActionModelMoveSkinVertices::~ActionModelMoveSkinVertices()
 {
 }
 
 
 
-void *ActionModelMVMirrorSkinVertices::execute(Data *d)
+void *ActionModelMoveSkinVertices::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii){
 		ModeModelSurface &s = m->Surface[surface[ii]];
 		vector &v = s.Triangle[i / 3].SkinVertex[texture_level][i % 3];
-		v = old_data[ii] - 2 * param * ((old_data[ii] - pos0) * param);
+		v = old_data[ii] + param;
 	}
 	return NULL;
 }
 
 
 
-void ActionModelMVMirrorSkinVertices::undo(Data *d)
+void ActionModelMoveSkinVertices::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii){

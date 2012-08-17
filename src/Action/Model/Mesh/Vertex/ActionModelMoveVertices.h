@@ -1,12 +1,12 @@
 /*
- * ActionModelMVMoveVertices.h
+ * ActionModelMoveVertices.h
  *
  *  Created on: 08.03.2012
  *      Author: michi
  */
 
-#ifndef ACTIONMODELMVMOVEVERTICES_H_
-#define ACTIONMODELMVMOVEVERTICES_H_
+#ifndef ACTIONMODELMOVEVERTICES_H_
+#define ACTIONMODELMOVEVERTICES_H_
 
 #include "../../../ActionMultiView.h"
 #include "../../../../Data/Data.h"
@@ -15,15 +15,15 @@
 
 class Data;
 
-class ActionModelMVMoveVertices: public ActionMultiView
+class ActionModelMoveVertices: public ActionMultiView
 {
 public:
-	ActionModelMVMoveVertices(Data *d, const vector &_pos0);
-	virtual ~ActionModelMVMoveVertices();
+	ActionModelMoveVertices(Data *d, const vector &_pos0);
+	virtual ~ActionModelMoveVertices();
 	string name(){	return "ModelMoveVertices";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);
 };
 
-#endif /* ACTIONMODELMVMOVEVERTICES_H_ */
+#endif /* ACTIONMODELMOVEVERTICES_H_ */

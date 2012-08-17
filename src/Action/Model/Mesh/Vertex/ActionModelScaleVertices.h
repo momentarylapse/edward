@@ -1,12 +1,12 @@
 /*
- * ActionModelMVScaleVertices.h
+ * ActionModelScaleVertices.h
  *
  *  Created on: 09.03.2012
  *      Author: michi
  */
 
-#ifndef ACTIONMODELMVSCALEVERTICES_H_
-#define ACTIONMODELMVSCALEVERTICES_H_
+#ifndef ACTIONMODELSCALEVERTICES_H_
+#define ACTIONMODELSCALEVERTICES_H_
 
 #include "../../../ActionMultiView.h"
 #include "../../../../Data/Data.h"
@@ -15,11 +15,11 @@
 
 class Data;
 
-class ActionModelMVScaleVertices: public ActionMultiView
+class ActionModelScaleVertices: public ActionMultiView
 {
 public:
-	ActionModelMVScaleVertices(Data *d, const vector &_pos0);
-	virtual ~ActionModelMVScaleVertices();
+	ActionModelScaleVertices(Data *d, const vector &_pos0);
+	virtual ~ActionModelScaleVertices();
 	string name(){	return "ModelScaleVertices";	}
 
 	void *execute(Data *d);
@@ -27,4 +27,4 @@ public:
 private:
 };
 
-#endif /* ACTIONMODELMVSCALEVERTICES_H_ */
+#endif /* ACTIONMODELSCALEVERTICES_H_ */

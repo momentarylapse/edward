@@ -327,18 +327,18 @@ void ModeModelMesh::ApplyRightMouseFunction(MultiView *mv)
 		suffix = "SkinVertices";
 
 	// left -> translate
-	mv->SetMouseAction(0, "ActionModelMVMove" + suffix, MultiView::ActionMove);
+	mv->SetMouseAction(0, "ActionModelMove" + suffix, MultiView::ActionMove);
 
 	// right...
 	if (right_mouse_function == RMFRotate){
-		mv->SetMouseAction(1, "ActionModelMVRotate" + suffix, MultiView::ActionRotate2d);
-		mv->SetMouseAction(2, "ActionModelMVRotate" + suffix, MultiView::ActionRotate);
+		mv->SetMouseAction(1, "ActionModelRotate" + suffix, MultiView::ActionRotate2d);
+		mv->SetMouseAction(2, "ActionModelRotate" + suffix, MultiView::ActionRotate);
 	}else if (right_mouse_function == RMFScale){
-		mv->SetMouseAction(2, "ActionModelMVScale" + suffix, MultiView::ActionScale);
+		mv->SetMouseAction(2, "ActionModelScale" + suffix, MultiView::ActionScale);
 	}else if (right_mouse_function == RMFScale2d){
-		mv->SetMouseAction(2, "ActionModelMVScale" + suffix, MultiView::ActionScale2d);
+		mv->SetMouseAction(2, "ActionModelScale" + suffix, MultiView::ActionScale2d);
 	}else if (right_mouse_function == RMFMirror){
-		mv->SetMouseAction(2, "ActionModelMVMirror" + suffix, MultiView::ActionOnce);
+		mv->SetMouseAction(2, "ActionModelMirror" + suffix, MultiView::ActionOnce);
 	}
 }
 

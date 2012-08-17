@@ -1,16 +1,16 @@
 /*
- * ActionModelMVMoveVertices.cpp
+ * ActionModelScaleVertices.cpp
  *
- *  Created on: 08.03.2012
+ *  Created on: 09.03.2012
  *      Author: michi
  */
 
-#include "ActionModelMVMoveVertices.h"
+#include "ActionModelScaleVertices.h"
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../lib/file/file.h"
 #include "../../../../lib/types/types.h"
 
-ActionModelMVMoveVertices::ActionModelMVMoveVertices(Data *d, const vector &_pos0) :
+ActionModelScaleVertices::ActionModelScaleVertices(Data *d, const vector &_pos0) :
 	ActionMultiView(d, _pos0)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
@@ -23,13 +23,11 @@ ActionModelMVMoveVertices::ActionModelMVMoveVertices(Data *d, const vector &_pos
 		}
 }
 
-ActionModelMVMoveVertices::~ActionModelMVMoveVertices()
+ActionModelScaleVertices::~ActionModelScaleVertices()
 {
 }
 
-
-
-void ActionModelMVMoveVertices::undo(Data *d)
+void ActionModelScaleVertices::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii)
@@ -39,11 +37,14 @@ void ActionModelMVMoveVertices::undo(Data *d)
 
 
 
-void *ActionModelMVMoveVertices::execute(Data *d)
+void *ActionModelScaleVertices::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii)
-		m->Vertex[i].pos = old_data[ii] + param;
+		m->Vertex[i].pos = pos0 +
+			(e[0] * (old_data[ii] - pos0)) * param.x * e[0] +
+			(e[1] * (old_data[ii] - pos0)) * param.y * e[1] +
+			(e[2] * (old_data[ii] - pos0)) * param.z * e[2];
 	m->SetNormalsDirtyByVertices(index);
 	return NULL;
 }

@@ -1,16 +1,16 @@
 /*
- * ActionModelMVMirrorVertices.cpp
+ * ActionModelMirrorVertices.cpp
  *
  *  Created on: 09.03.2012
  *      Author: michi
  */
 
-#include "ActionModelMVMirrorVertices.h"
+#include "ActionModelMirrorVertices.h"
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../lib/file/file.h"
 #include "../../../../lib/types/types.h"
 
-ActionModelMVMirrorVertices::ActionModelMVMirrorVertices(Data *d, const vector &_pos0) :
+ActionModelMirrorVertices::ActionModelMirrorVertices(Data *d, const vector &_pos0) :
 	ActionMultiView(d, _pos0)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
@@ -23,13 +23,13 @@ ActionModelMVMirrorVertices::ActionModelMVMirrorVertices(Data *d, const vector &
 		}
 }
 
-ActionModelMVMirrorVertices::~ActionModelMVMirrorVertices()
+ActionModelMirrorVertices::~ActionModelMirrorVertices()
 {
 }
 
 
 
-void *ActionModelMVMirrorVertices::execute(Data *d)
+void *ActionModelMirrorVertices::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii)
@@ -40,7 +40,7 @@ void *ActionModelMVMirrorVertices::execute(Data *d)
 
 
 
-void ActionModelMVMirrorVertices::undo(Data *d)
+void ActionModelMirrorVertices::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii)

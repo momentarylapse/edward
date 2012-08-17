@@ -1,14 +1,14 @@
 /*
- * ActionModelMVAnimationRotateBones.cpp
+ * ActionModelAnimationRotateBones.cpp
  *
  *  Created on: 14.08.2012
  *      Author: michi
  */
 
-#include "ActionModelMVAnimationRotateBones.h"
+#include "ActionModelAnimationRotateBones.h"
 #include "../../../Data/Model/DataModel.h"
 
-ActionModelMVAnimationRotateBones::ActionModelMVAnimationRotateBones(Data *d, const vector &_pos0) :
+ActionModelAnimationRotateBones::ActionModelAnimationRotateBones(Data *d, const vector &_pos0) :
 	ActionMultiView(d, _pos0)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
@@ -24,11 +24,11 @@ ActionModelMVAnimationRotateBones::ActionModelMVAnimationRotateBones(Data *d, co
 		}
 }
 
-ActionModelMVAnimationRotateBones::~ActionModelMVAnimationRotateBones()
+ActionModelAnimationRotateBones::~ActionModelAnimationRotateBones()
 {
 }
 
-void *ActionModelMVAnimationRotateBones::execute(Data *d)
+void *ActionModelAnimationRotateBones::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii)
@@ -39,7 +39,7 @@ void *ActionModelMVAnimationRotateBones::execute(Data *d)
 
 
 
-void ActionModelMVAnimationRotateBones::undo(Data *d)
+void ActionModelAnimationRotateBones::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii)

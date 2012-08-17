@@ -1,16 +1,16 @@
 /*
- * ActionModelMVMoveBones.cpp
+ * ActionModelMoveBones.cpp
  *
  *  Created on: 18.03.2012
  *      Author: michi
  */
 
-#include "ActionModelMVMoveBones.h"
+#include "ActionModelMoveBones.h"
 #include "../../../Data/Model/DataModel.h"
 #include "../../../lib/file/file.h"
 #include "../../../lib/types/types.h"
 
-ActionModelMVMoveBones::ActionModelMVMoveBones(Data *d, const vector &_pos0) :
+ActionModelMoveBones::ActionModelMoveBones(Data *d, const vector &_pos0) :
 	ActionMultiView(d, _pos0)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
@@ -23,11 +23,11 @@ ActionModelMVMoveBones::ActionModelMVMoveBones(Data *d, const vector &_pos0) :
 		}
 }
 
-ActionModelMVMoveBones::~ActionModelMVMoveBones()
+ActionModelMoveBones::~ActionModelMoveBones()
 {
 }
 
-void *ActionModelMVMoveBones::execute(Data *d)
+void *ActionModelMoveBones::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii){
@@ -42,7 +42,7 @@ void *ActionModelMVMoveBones::execute(Data *d)
 
 
 
-void ActionModelMVMoveBones::undo(Data *d)
+void ActionModelMoveBones::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii){

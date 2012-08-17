@@ -1,27 +1,27 @@
 /*
- * ActionModelMVMoveBones.h
+ * ActionModelMoveBones.h
  *
  *  Created on: 18.03.2012
  *      Author: michi
  */
 
-#ifndef ACTIONMODELMVMOVEBONES_H_
-#define ACTIONMODELMVMOVEBONES_H_
+#ifndef ACTIONMODELMOVEBONES_H_
+#define ACTIONMODELMOVEBONES_H_
 
 #include "../../ActionMultiView.h"
 #include "../../../Data/Data.h"
 #include "../../../lib/file/file.h"
 #include "../../../lib/types/types.h"
 
-class ActionModelMVMoveBones: public ActionMultiView
+class ActionModelMoveBones: public ActionMultiView
 {
 public:
-	ActionModelMVMoveBones(Data *d, const vector &_pos0);
-	virtual ~ActionModelMVMoveBones();
+	ActionModelMoveBones(Data *d, const vector &_pos0);
+	virtual ~ActionModelMoveBones();
 	string name(){	return "ModelMoveBones";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);
 };
 
-#endif /* ACTIONMODELMVMOVEBONES_H_ */
+#endif /* ACTIONMODELMOVEBONES_H_ */

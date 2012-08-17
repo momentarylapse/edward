@@ -1,23 +1,23 @@
 /*
- * ActionModelMVScaleSkinVertices.h
+ * ActionModelScaleSkinVertices.h
  *
  *  Created on: 15.03.2012
  *      Author: michi
  */
 
-#ifndef ACTIONMODELMVSCALESKINVERTICES_H_
-#define ACTIONMODELMVSCALESKINVERTICES_H_
+#ifndef ACTIONMODELSCALESKINVERTICES_H_
+#define ACTIONMODELSCALESKINVERTICES_H_
 
 #include "../../../ActionMultiView.h"
 #include "../../../../Data/Data.h"
 #include "../../../../lib/file/file.h"
 #include "../../../../lib/types/types.h"
 
-class ActionModelMVScaleSkinVertices: public ActionMultiView
+class ActionModelScaleSkinVertices: public ActionMultiView
 {
 public:
-	ActionModelMVScaleSkinVertices(Data *d, const vector &_pos0);
-	virtual ~ActionModelMVScaleSkinVertices();
+	ActionModelScaleSkinVertices(Data *d, const vector &_pos0);
+	virtual ~ActionModelScaleSkinVertices();
 	string name(){	return "ModelScaleSkinVertices";	}
 
 	void *execute(Data *d);
@@ -28,4 +28,4 @@ private:
 	Array<int> surface;
 };
 
-#endif /* ACTIONMODELMVSCALESKINVERTICES_H_ */
+#endif /* ACTIONMODELSCALESKINVERTICES_H_ */

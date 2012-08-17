@@ -1,17 +1,17 @@
 /*
- * ActionModelMVScaleSkinVertices.cpp
+ * ActionModelRotateSkinVertices.cpp
  *
  *  Created on: 15.03.2012
  *      Author: michi
  */
 
-#include "ActionModelMVScaleSkinVertices.h"
+#include "ActionModelRotateSkinVertices.h"
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../lib/file/file.h"
 #include "../../../../lib/types/types.h"
 #include "../../../../Mode/Model/Mesh/ModeModelMeshTexture.h"
 
-ActionModelMVScaleSkinVertices::ActionModelMVScaleSkinVertices(Data *d, const vector &_pos0) :
+ActionModelRotateSkinVertices::ActionModelRotateSkinVertices(Data *d, const vector &_pos0) :
 	ActionMultiView(d, _pos0)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
@@ -26,28 +26,28 @@ ActionModelMVScaleSkinVertices::ActionModelMVScaleSkinVertices(Data *d, const ve
 	}
 }
 
-ActionModelMVScaleSkinVertices::~ActionModelMVScaleSkinVertices()
+ActionModelRotateSkinVertices::~ActionModelRotateSkinVertices()
 {
 }
 
 
 
-void *ActionModelMVScaleSkinVertices::execute(Data *d)
+void *ActionModelRotateSkinVertices::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
+	matrix rot;
+	MatrixRotation(rot, param);
 	foreachi(index, i, ii){
 		ModeModelSurface &s = m->Surface[surface[ii]];
 		vector &v = s.Triangle[i / 3].SkinVertex[texture_level][i % 3];
-		v = pos0 + (e[0] * (old_data[ii] - pos0)) * param.x * e[0] +
-		           (e[1] * (old_data[ii] - pos0)) * param.y * e[1] +
-		           (e[2] * (old_data[ii] - pos0)) * param.z * e[2];
+		v = pos0 + rot * (old_data[ii] - pos0);
 	}
 	return NULL;
 }
 
 
 
-void ActionModelMVScaleSkinVertices::undo(Data *d)
+void ActionModelRotateSkinVertices::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(index, i, ii){

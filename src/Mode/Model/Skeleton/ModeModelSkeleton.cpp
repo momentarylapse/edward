@@ -70,7 +70,7 @@ void ModeModelSkeleton::OnStart()
 	multi_view->ResetData(data);
 
 	// left -> translate
-	multi_view->SetMouseAction(0, "ActionModelMVMoveBones", MultiView::ActionMove);
+	multi_view->SetMouseAction(0, "ActionModelMoveBones", MultiView::ActionMove);
 	//mode_model_mesh->ApplyRightMouseFunction(multi_view);
 	multi_view->MVRectable = true;
 	OnUpdate(data);
