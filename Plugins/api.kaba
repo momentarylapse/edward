@@ -278,7 +278,7 @@ class DataModel : Data
 	ModeModelFX Fx[]
 
 	ModelMetaData meta_data
-	extern void AddVertex(vector v, int normal_mode)
+	extern void AddVertex(vector pos, int bone_index, int normal_mode)
 	extern ModeModelTriangle *AddTriangle(int a, int b, int c)
 	extern ModeModelSurface *AddBall(vector pos, float radius, int num_x, int num_y, bool as_sphere)
 	extern ModeModelSurface *AddPlane(vector pos, vector dv1, vector dv2, int num_x, int num_y)

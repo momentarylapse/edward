@@ -1246,8 +1246,8 @@ ModeModelSurface *DataModel::AddSurface(int surf_no)
 }
 
 
-void DataModel::AddVertex(const vector &v, int normal_mode)
-{	Execute(new ActionModelAddVertex(v, normal_mode));	}
+void DataModel::AddVertex(const vector &pos, int bone_index, int normal_mode)
+{	Execute(new ActionModelAddVertex(pos, bone_index, normal_mode));	}
 
 void DataModel::ClearSelection()
 {

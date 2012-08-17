@@ -259,7 +259,7 @@ public:
 	int get_surf_no(ModeModelSurface *s);
 
 	// high level (actions)
-	void AddVertex(const vector &v, int normal_mode = -1);
+	void AddVertex(const vector &pos, int bone_index = 0, int normal_mode = -1);
 	ModeModelTriangle *AddTriangle(int a, int b, int c);
 	ModeModelSurface *AddBall(const vector &_pos, float _radius, int _num_x, int _num_y, bool _as_sphere);
 	ModeModelSurface *AddPlane(const vector &_pos, const vector &_dv1, const vector &_dv2, int _num_x, int _num_y);

@@ -14,7 +14,7 @@
 class ActionModelAddVertex: public Action
 {
 public:
-	ActionModelAddVertex(const vector &_v, int _normal_mode = -1);
+	ActionModelAddVertex(const vector &_pos, int _bone_index = 0, int _normal_mode = -1);
 	virtual ~ActionModelAddVertex();
 	string name(){	return "ModelAddVertex";	}
 
@@ -22,7 +22,8 @@ public:
 	void undo(Data *d);
 
 private:
-	vector v;
+	vector pos;
+	int bone_index;
 	int normal_mode;
 };
 
