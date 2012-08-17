@@ -59,13 +59,13 @@ void ActionModelAddVertex::undo(Data *d)
 	assert(m->Vertex.back().RefCount == 0);
 	assert(m->Vertex.back().Surface < 0);
 
+	// delete
+	m->Vertex.pop();
+
 	// correct animations
 	foreach(m->Move, move)
 		if (move.Type == MoveTypeVertex)
 			foreach(move.Frame, f)
 				f.VertexDPos.resize(m->Vertex.num);
-
-	// delete
-	m->Vertex.pop();
 }
 
