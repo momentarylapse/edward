@@ -23,6 +23,7 @@ public:
 
 	void FillAnimation();
 	void OnAnimationList();
+	void OnAnimationListSelect();
 	void OnAddAnimation();
 	void OnDeleteAnimation();
 	void OnFrameInc();

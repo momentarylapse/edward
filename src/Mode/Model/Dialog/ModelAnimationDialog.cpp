@@ -41,6 +41,7 @@ ModelAnimationDialog::ModelAnimationDialog(CHuiWindow *_parent, bool _allow_pare
 
 	EventM("hui:close", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnClose);
 	EventM("animation_list", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnAnimationList);
+	EventMX("animation_list", "hui:select", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnAnimationListSelect);
 	EventM("animation_new", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnAddAnimation);
 	EventM("animation_delete", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnDeleteAnimation);
 	EventM("frame_inc", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnFrameInc);
@@ -70,6 +71,7 @@ ModelAnimationDialog::~ModelAnimationDialog()
 void ModelAnimationDialog::LoadData()
 {
 	Reset("animation_list");
+	int n = 0;
 	foreachi(data->Move, m, i)
 		if (m.Frame.num > 0){
 			string str = i2s(i) + "\\";
@@ -81,6 +83,9 @@ void ModelAnimationDialog::LoadData()
 				str += "???";
 			str += format("\\%d\\", m.Frame.num) + m.Name;
 			AddString("animation_list", str);
+			if (i == data->CurrentMove)
+				SetInt("animation_list", n);
+			n ++;
 		}
 	FillAnimation();
 	SetDecimals(1);
@@ -139,10 +144,15 @@ int ModelAnimationDialog::GetSelectedAnimation()
 void ModelAnimationDialog::OnAnimationList()
 {
 	int s = GetSelectedAnimation();
-	if (s >= 0){
-		data->SetCurrentMove(s);
+	data->SetCurrentMove(s);
+	if (s >= 0)
 		SetInt("animation_dialog_tab_control", 1);
-	}
+}
+
+void ModelAnimationDialog::OnAnimationListSelect()
+{
+	int s = GetSelectedAnimation();
+	data->SetCurrentMove(s);
 }
 
 void ModelAnimationDialog::OnClose()
@@ -220,7 +230,8 @@ void ModelAnimationDialog::OnParameter()
 
 void ModelAnimationDialog::OnTabControl()
 {
-	data->Playing = (GetInt("") == 2) && (data->move->Frame.num > 0);
+	int s = GetInt("");
+	data->Playing = (s == 2) && (data->move->Frame.num > 0);
 	data->SimFrame = 0;
 	data->UpdateAnimation();
 }

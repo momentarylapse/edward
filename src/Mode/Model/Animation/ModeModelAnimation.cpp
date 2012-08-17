@@ -8,6 +8,7 @@
 #include "../../../Edward.h"
 #include "../../../MultiView.h"
 #include "ModeModelAnimation.h"
+#include "ModeModelAnimationNone.h"
 #include "ModeModelAnimationSkeleton.h"
 #include "ModeModelAnimationVertex.h"
 #include "../Mesh/ModeModelMeshTriangle.h"
@@ -21,6 +22,7 @@ ModeModelAnimation::ModeModelAnimation(Mode *_parent, DataModel *_data)
 	parent = _parent;
 	data = _data;
 	menu = HuiCreateResourceMenu("menu_move");
+	mode_model_animation_none = new ModeModelAnimationNone(this, data);
 	mode_model_animation_skeleton = new ModeModelAnimationSkeleton(this, data);
 	mode_model_animation_vertex = new ModeModelAnimationVertex(this, data);
 }
@@ -67,8 +69,10 @@ void ModeModelAnimation::OnUpdate(Observable *o)
 {
 	if (data->move->Type == MoveTypeSkeletal)
 		ed->SetMode(mode_model_animation_skeleton);
-	else // vertex/none
+	else if (data->move->Type == MoveTypeVertex)
 		ed->SetMode(mode_model_animation_vertex);
+	else
+		ed->SetMode(mode_model_animation_none);
 }
 
 
