@@ -8,7 +8,6 @@
 #include "ModeModelAnimationVertex.h"
 #include "../../../Edward.h"
 #include "../../../MultiView.h"
-#include "../Mesh/ModeModelMeshVertex.h"
 #include "../Mesh/ModeModelMeshTriangle.h"
 
 ModeModelAnimationVertex *mode_model_animation_vertex = NULL;
@@ -72,7 +71,10 @@ void ModeModelAnimationVertex::OnUpdate(Observable* o)
 	}else if (o->GetName() == "MultiView"){
 		foreachi(data->Vertex, v, i)
 			v.is_selected = vertex[i].is_selected;
+		data->SelectionTrianglesFromVertices();
+		data->SelectionSurfacesFromTriangles();
 	}
+	mode_model_mesh_triangle->FillSelectionBuffers();
 }
 
 void ModeModelAnimationVertex::OnUpdateMenu()
@@ -81,7 +83,7 @@ void ModeModelAnimationVertex::OnUpdateMenu()
 
 void ModeModelAnimationVertex::OnDrawWin(int win, irect dest)
 {
-	mode_model_mesh_vertex->OnDrawWin(win, dest);
+	mode_model_mesh_triangle->OnDrawWin(win, dest);
 }
 
 void ModeModelAnimationVertex::UpdateVertices()
