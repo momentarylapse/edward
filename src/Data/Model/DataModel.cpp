@@ -1590,7 +1590,10 @@ void DataModel::UpdateAnimation()
 	if (move->Type == MoveTypeSkeletal){
 		UpdateSkeleton();
 		foreach(Vertex, v){
-			v.AnimatedPos = Bone[v.BoneIndex].Matrix * (v.pos - GetBonePos(v.BoneIndex));
+			if (v.BoneIndex >= Bone.num)
+				v.AnimatedPos = v.pos;
+			else
+				v.AnimatedPos = Bone[v.BoneIndex].Matrix * (v.pos - GetBonePos(v.BoneIndex));
 		}
 	}else if (move->Type == MoveTypeVertex){
 		int frame0 = CurrentFrame;
