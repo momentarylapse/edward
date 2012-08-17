@@ -22,6 +22,7 @@ public:
 	virtual ~ModeModelMesh();
 
 	void OnStart();
+	void OnEnter();
 	void OnEnd();
 
 	void OnCommand(const string &id);

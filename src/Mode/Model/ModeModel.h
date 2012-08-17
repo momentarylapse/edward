@@ -24,6 +24,7 @@ public:
 
 	void OnStart();
 	void OnEnd();
+	void OnEnter();
 
 	void OnCommand(const string &id);
 	void OnUpdate(Observable *o);

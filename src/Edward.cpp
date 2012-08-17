@@ -417,6 +417,7 @@ void Edward::SetMode(Mode *m)
 
 		// close current modes
 		while(cur_mode){
+			cur_mode->OnLeave();
 			if (cur_mode->IsAncestorOf(m))
 				break;
 			msg_write("end " + cur_mode->name);
@@ -432,7 +433,9 @@ void Edward::SetMode(Mode *m)
 			cur_mode = cur_mode->GetNextChildTo(m);
 			msg_write("start " + cur_mode->name);
 			cur_mode->OnStart();
+			cur_mode->OnEnter();
 		}
+		cur_mode->OnEnter();
 
 		// nested set calls?
 		mode_queue.erase(0);

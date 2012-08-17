@@ -21,6 +21,8 @@ public:
 
 	virtual void OnStart(){};
 	virtual void OnEnd(){};
+	virtual void OnEnter(){};
+	virtual void OnLeave(){};
 
 	// events to be handled by derived modes
 	virtual void OnMouseMove(){};

@@ -79,7 +79,10 @@ void ModeModelMesh::OnStart()
 	ed->ToolbarAddItemCheckable(_("Spiegeln"),_("Spiegeln"), dir + "rf_mirror.png", "mirror");
 	ed->EnableToolbar(true);
 	ed->ToolbarConfigure(false,true);
+}
 
+void ModeModelMesh::OnEnter()
+{
 	ed->SetMode(mode_model_mesh_vertex);
 	//ed->SetMode(mode_model_mesh_skin);
 }

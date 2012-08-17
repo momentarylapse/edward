@@ -72,10 +72,14 @@ void ModeModel::OnStart()
 	ed->ToolbarSetCurrent(HuiToolbarLeft);
 	ed->ToolbarReset();
 	ed->EnableToolbar(false);
-
-	ed->SetMode(mode_model_mesh);
 }
 
+
+
+void ModeModel::OnEnter()
+{
+	ed->SetMode(mode_model_mesh);
+}
 
 
 void ModeModel::OnEnd()
