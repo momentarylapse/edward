@@ -1594,6 +1594,16 @@ void DataModel::SetCurrentFrame(int frame_no)
 	}
 }
 
+void DataModel::SetCurrentFrameNext()
+{
+	SetCurrentFrame((CurrentFrame + 1) % move->Frame.num);
+}
+
+void DataModel::SetCurrentFramePrevious()
+{
+	SetCurrentFrame((CurrentFrame - 1 + move->Frame.num) % move->Frame.num);
+}
+
 void DataModel::AddAnimation(int index, int type)
 {	Execute(new ActionModelAddAnimation(index, type));	}
 
@@ -1686,6 +1696,18 @@ vector DataModel::GetBonePosAnimated(int index)
 
 void DataModel::AnimationDeleteFrame(int index, int frame)
 {	Execute(new ActionModelAnimationDeleteFrame(index, frame));	}
+
+void DataModel::AnimationDeleteCurrentFrame()
+{
+	AnimationDeleteFrame(CurrentMove, CurrentFrame);
+}
+
+void DataModel::AnimationDuplicateCurrentFrame()
+{
+	AnimationAddFrame(CurrentMove, CurrentFrame + 1);
+	SetCurrentFrame(CurrentFrame + 1);
+}
+
 
 
 

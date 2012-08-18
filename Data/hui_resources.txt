@@ -121,267 +121,7 @@ ad_dialog
 0
 
 
-20
-ControlTable
-table_1
-
-1
 0
-0
-1
-2
-0
-0
-0
-
-
-ControlTable
-table_2
-
-1
-0
-0
-6
-1
-1
-0
-0
-table_1
-
-Button
-delete
-hui:delete
-1
-0
-0
-0
-0
-0
-0
-0
-table_2
-
-Button
-rename
-
-1
-0
-0
-0
-0
-1
-0
-0
-table_2
-
-Button
-ad_edit
-hui:edit
-1
-0
-0
-0
-0
-2
-0
-0
-table_2
-
-Button
-ad_export_game
-hui:refresh
-1
-0
-0
-0
-0
-4
-0
-0
-table_2
-
-Button
-ad_rudimentary_configuration
-hui:preferences
-1
-0
-0
-0
-0
-5
-0
-0
-table_2
-
-TabControl
-ad_tab_control
-
-1
-0
-0
-0
-0
-0
-0
-0
-table_1
-
-ListView
-file_list_cur
-
-1
-0
-0
-0
-0
-0
-0
-0
-ad_tab_control
-
-ListView
-file_list_all
-
-1
-0
-0
-0
-0
-1
-0
-0
-ad_tab_control
-
-ControlTable
-table_3
-
-1
-0
-0
-1
-6
-2
-0
-0
-ad_tab_control
-
-Text
-adt_file
-
-1
-0
-0
-0
-0
-0
-0
-0
-table_3
-
-Text
-file_details
-
-1
-0
-0
-0
-0
-1
-0
-0
-table_3
-
-Text
-adt_source
-
-1
-0
-0
-0
-0
-2
-0
-0
-table_3
-
-ListView
-file_list_detail_source
-
-1
-0
-0
-0
-0
-3
-0
-0
-table_3
-
-Text
-adt_dest
-
-1
-0
-0
-0
-0
-4
-0
-0
-table_3
-
-ListView
-file_list_detail_dest
-
-1
-0
-0
-0
-0
-5
-0
-0
-table_3
-
-ListView
-file_list_super
-
-1
-0
-0
-0
-0
-3
-0
-0
-ad_tab_control
-
-ListView
-file_list_missing
-
-1
-0
-0
-0
-0
-4
-0
-0
-ad_tab_control
-
-Text
-dummy_text
-
-1
-0
-0
-0
-0
-3
-0
-0
-table_2
-
 // Resource
 Menu
 menu_administration
@@ -3396,9 +3136,9 @@ Button
 cancel
 hui:cancel
 1
-160
+135
 280
-95
+120
 25
 -1
 0
@@ -3409,9 +3149,9 @@ Button
 set
 hui:apply
 1
-60
+10
 280
-95
+120
 25
 -1
 0
@@ -3475,7 +3215,7 @@ emission
 
 1
 25
-100
+130
 65
 25
 0
@@ -3487,8 +3227,8 @@ Text
 shininess
 
 1
-200
-70
+25
+100
 65
 25
 0
@@ -3500,9 +3240,9 @@ SpinButton
 mat_shininess
 
 1
-270
-70
-65
+95
+100
+100
 25
 0
 0
@@ -3513,7 +3253,7 @@ ColorButton
 mat_am
 
 1
-90
+95
 10
 100
 25
@@ -3526,7 +3266,7 @@ ColorButton
 mat_di
 
 1
-90
+95
 40
 100
 25
@@ -3539,7 +3279,7 @@ ColorButton
 mat_sp
 
 1
-90
+95
 70
 100
 25
@@ -3552,8 +3292,8 @@ ColorButton
 mat_em
 
 1
-90
-100
+95
+130
 100
 25
 0
@@ -4007,7 +3747,7 @@ Text
 material_dialog_t_refl_texturesize
 
 1
-200
+180
 40
 90
 25
@@ -4020,9 +3760,9 @@ SpinButton
 reflection_size
 
 1
-290
+270
 40
-55
+40
 25
 3
 0
@@ -7842,12 +7582,12 @@ menu_move
 0
 
 
-81
+83
 ItemPopup
 menu_file
 
 1
-19
+18
 0
 0
 0
@@ -7925,7 +7665,7 @@ ItemPopup
 menu_model_import
 
 1
-2
+3
 0
 0
 0
@@ -7950,6 +7690,45 @@ hui:open
 ItemImage
 import_from_3ds
 hui:open
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+import_from_lineage2
+hui:open
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemPopup
+menu_model_export
+
+1
+1
+0
+0
+0
+0
+0
+0
+
+
+Item
+export_to_gamestudio
+
 1
 0
 0
@@ -8027,84 +7806,6 @@ hui:new
 
 ItemImage
 model_open
-hui:open
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemPopup
-menu_object
-
-1
-2
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-object_new
-hui:new
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-object_open
-hui:open
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemPopup
-menu_item
-
-1
-2
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-item_new
-hui:new
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-item_open
 hui:open
 1
 0
@@ -8285,11 +7986,284 @@ hui:quit
 0
 
 
+ItemPopup
+menu_model_edit
+
+1
+8
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+undo
+hui:undo
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+redo
+hui:redo
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemSeparator
+
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+copy
+hui:copy
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+paste
+hui:paste
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+move_reset
+hui:delete
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemSeparator
+
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+mode_properties
+hui:preferences
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemPopup
+menu_model_selection
+
+1
+3
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+select_all
+hui:select-all
+1
+0
+0
+0
+0
+0
+0
+0
+
+
 Item
-current_mode_model_move
+select_none
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+invert_selection
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemPopup
+menu_model_move
+
+1
+7
+0
+0
+0
+0
+0
+0
+
+
+ItemCheckable
+move_allframes
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemSeparator
+
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+move_frame_sign
 
 0
 0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+move_frame_inc
+hui:forward
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+move_frame_dec
+hui:back
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+move_frame_delete
+hui:delete
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+move_frame_insert
+hui:new
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemPopup
+menu_model_view
+
+1
+10
 0
 0
 0
@@ -8302,7 +8276,7 @@ ItemPopup
 menu_model_mode
 
 1
-11
+9
 0
 0
 0
@@ -8420,214 +8394,6 @@ mode_model_texture_coord
 
 1
 0
-0
-0
-0
-0
-0
-0
-
-
-ItemSeparator
-
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-mode_properties
-hui:preferences
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemPopup
-menu_model_move
-
-1
-12
-0
-0
-0
-0
-0
-0
-
-
-ItemCheckable
-move_allframes
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemSeparator
-
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-move_selection_sign
-
-0
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-copy
-hui:copy
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-paste
-hui:paste
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-move_reset
-hui:delete
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemSeparator
-
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-move_frame_sign
-
-0
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-move_frame_inc
-hui:forward
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-move_frame_dec
-hui:back
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-move_frame_delete
-hui:delete
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-move_frame_insert
-hui:new
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemPopup
-menu_model_view
-
-1
-9
 0
 0
 0
@@ -13379,7 +13145,7 @@ fog_start
 1
 125
 75
-105
+265
 25
 1
 0
@@ -13388,32 +13154,6 @@ world_dialog_tab_control
 
 Text
 world_dialog_t_fog_to
-
-1
-245
-75
-30
-25
-1
-0
-0
-world_dialog_tab_control
-
-Edit
-fog_end
-
-1
-285
-75
-105
-25
-1
-0
-0
-world_dialog_tab_control
-
-Text
-world_dialog_t_fog_density
 
 1
 20
@@ -13426,7 +13166,7 @@ world_dialog_t_fog_density
 world_dialog_tab_control
 
 Edit
-fog_density
+fog_end
 
 1
 125
@@ -13439,11 +13179,37 @@ fog_density
 world_dialog_tab_control
 
 Text
-world_dialog_t_fog_color
+world_dialog_t_fog_density
 
 1
 20
 135
+100
+25
+1
+0
+0
+world_dialog_tab_control
+
+Edit
+fog_density
+
+1
+125
+135
+265
+25
+1
+0
+0
+world_dialog_tab_control
+
+Text
+world_dialog_t_fog_color
+
+1
+20
+165
 100
 25
 1
@@ -13456,7 +13222,7 @@ fog_color
 
 1
 125
-135
+165
 265
 25
 1
@@ -15700,18 +15466,10 @@ property_list
 // Language
 Deutsch
 // NumIDs
-695
+674
 // Text
 ad_dialog
 Verwaltung
-ad_edit
-Bearbeiten
-ad_export_game
-Spiel exportieren
-ad_rudimentary_configuration
-Grundeinstellungen
-ad_tab_control
-Aktuelles Spiel\\Alle Dateien\\Details\\Überflüssig\\Fehlend
 add_material
 neu...
 add_script
@@ -15722,12 +15480,6 @@ administrate
 Verwalten
 adress
 
-adt_dest
-!bold\\fordert
-adt_file
-!bold\\Datei
-adt_source
-!bold\\gefordert von
 align_to_grid
 Am Raster ausrichten
 all
@@ -15828,8 +15580,6 @@ current_mode_administration
 -Verwaltungs-Modus-
 current_mode_font
 -Schrift-Modus-
-current_mode_model_move
--Modell-Modus (Animation)-
 current_mode_model_skeleton
 -Modell-Modus (Skelett)-
 current_mode_none
@@ -15886,8 +15636,6 @@ detail_factor_3_slider
 
 diffuse
 Diffuse
-dummy_text
-
 easify_dialog
 Oberfläche vereinfachen
 easify_skin
@@ -15944,20 +15692,6 @@ factorx
 
 factory
 
-file_details
-
-file_list_all
-!format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend
-file_list_cur
-!format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend
-file_list_detail_dest
-!format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend
-file_list_detail_source
-!format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend
-file_list_missing
-!format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend
-file_list_super
-!format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend
 filename
 
 filter_image
@@ -16520,8 +16254,6 @@ move_frame_sign
 Frame
 move_reset
 Zurücksetzen
-move_selection_sign
-Markierung
 ms
 ms
 name
@@ -16709,15 +16441,13 @@ reflection
 reflection_density
 \\0\\100\\1
 reflection_size
-\\1\\10000\\1
+\\0\\1024\\1
 reflection_textures
 Seite\\Textur
 remove_script
 Entfernen
 remove_skybox
 Entfernen
-rename
-Umbenennen
 replace_objects
 Ersetzen
 resolution
@@ -16849,12 +16579,6 @@ sun_di
 sun_enabled
 aktiviert
 sun_sp
-
-table_1
-
-table_2
-
-table_3
 
 tensor_xx
 
@@ -17098,18 +16822,10 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-695
+674
 // Text
 ad_dialog
 Administration
-ad_edit
-Edit
-ad_export_game
-Export game
-ad_rudimentary_configuration
-Configuration
-ad_tab_control
-current game\\all files\\details\\unnesessary\\missing
 add_material
 
 add_script
@@ -17120,12 +16836,6 @@ administrate
 Administrate
 adress
 
-adt_dest
-!bold\\Needs
-adt_file
-!bold\\File
-adt_source
-!bold\\Needed by
 align_to_grid
 Align to grid
 all
@@ -17226,8 +16936,6 @@ current_mode_administration
 -Administration-Mode-
 current_mode_font
 -Font-Mode-
-current_mode_model_move
--Model-Mode (Animation)-
 current_mode_model_skeleton
 -Model-Mode (Skeleton)-
 current_mode_none
@@ -17284,8 +16992,6 @@ detail_factor_3_slider
 
 diffuse
 diffuse
-dummy_text
-
 easify_dialog
 Easify skin
 easify_skin
@@ -17342,20 +17048,6 @@ factorx
 
 factory
 
-file_details
-
-file_list_all
-!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
-file_list_cur
-!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
-file_list_detail_dest
-!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
-file_list_detail_source
-!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
-file_list_missing
-!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
-file_list_super
-!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
 filename
 
 filter_image
@@ -17918,8 +17610,6 @@ move_frame_sign
 Frame
 move_reset
 Reset
-move_selection_sign
-Selection
 ms
 ms
 name
@@ -18114,8 +17804,6 @@ remove_script
 
 remove_skybox
 Remove
-rename
-rename
 replace_objects
 Replace
 resolution
@@ -18247,12 +17935,6 @@ sun_di
 sun_enabled
 enabled
 sun_sp
-
-table_1
-
-table_2
-
-table_3
 
 tensor_xx
 
@@ -18700,18 +18382,10 @@ program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 // Language
 日本語
 // NumIDs
-695
+674
 // Text
 ad_dialog
 
-ad_edit
-編集
-ad_export_game
-
-ad_rudimentary_configuration
-
-ad_tab_control
-current game\\all files\\details\\unnesessary\\missing
 add_material
 
 add_script
@@ -18721,12 +18395,6 @@ add_texture_level
 administrate
 
 adress
-
-adt_dest
-
-adt_file
-
-adt_source
 
 align_to_grid
 
@@ -18828,8 +18496,6 @@ current_mode_administration
 
 current_mode_font
 [フォント　の　モード]
-current_mode_model_move
-[モデル　の　モード (アニメーション)]
 current_mode_model_skeleton
 [モデル　の　モード (骨格)]
 current_mode_none
@@ -18886,8 +18552,6 @@ detail_factor_3_slider
 
 diffuse
 拡散光
-dummy_text
-
 easify_dialog
 
 easify_skin
@@ -18943,20 +18607,6 @@ export_world
 factorx
 
 factory
-
-file_details
-
-file_list_all
-
-file_list_cur
-
-file_list_detail_dest
-
-file_list_detail_source
-
-file_list_missing
-
-file_list_super
 
 filename
 
@@ -19520,8 +19170,6 @@ move_frame_sign
 フレーム
 move_reset
 リセット
-move_selection_sign
-選択
 ms
 ms
 name
@@ -19716,8 +19364,6 @@ remove_script
 
 remove_skybox
 削除
-rename
-名前の変更
 replace_objects
 
 resolution
@@ -19849,12 +19495,6 @@ sun_di
 sun_enabled
 
 sun_sp
-
-table_1
-
-table_2
-
-table_3
 
 tensor_xx
 

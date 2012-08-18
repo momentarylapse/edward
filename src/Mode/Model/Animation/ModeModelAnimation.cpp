@@ -34,6 +34,14 @@ ModeModelAnimation::~ModeModelAnimation()
 
 void ModeModelAnimation::OnCommand(const string & id)
 {
+	if (id == "move_frame_inc")
+		data->SetCurrentFrameNext();
+	if (id == "move_frame_dec")
+		data->SetCurrentFramePrevious();
+	if (id == "move_frame_delete")
+		data->AnimationDeleteCurrentFrame();
+	if (id == "move_frame_insert")
+		data->AnimationDuplicateCurrentFrame();
 }
 
 

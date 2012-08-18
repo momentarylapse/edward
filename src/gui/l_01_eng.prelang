@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-535
+533
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -103,8 +103,6 @@ current_mode_administration
 -Administration-Mode-
 current_mode_font
 -Font-Mode-
-current_mode_model_move
--Model-Mode (Animation)-
 current_mode_model_skeleton
 -Model-Mode (Skeleton)-
 current_mode_none
@@ -633,8 +631,6 @@ move_frame_sign
 Frame
 move_reset
 Reset
-move_selection_sign
-Selection
 ms
 ms
 nb_complexity
@@ -1074,7 +1070,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-148
+152
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1142,6 +1138,10 @@ Editor für Spiele-Daten der x9-Engine
 Editor for game data of the x9 engine
 Eigenschaften
 Properties
+Es existiert bereits eine Animation mit diesem Index. Bitte einen anderen wählen.
+
+Es muss genau 1 Knochen markiert sein!
+
 Es muss genau ein Objekt markiert sein!
 
 Es muss mindestens ein Terrain markiert sein!
@@ -1308,10 +1308,14 @@ Unten
 Bottom
 Unten (y)
 Bottom (y)
+Vertex
+
 Vertexpunkt
 Vertex
 Vertices
 Vertices
+Vertices auswählen
+
 ViewStage Pop
 ViewStage Pop
 ViewStage Push

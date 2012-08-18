@@ -179,12 +179,12 @@ void ModelAnimationDialog::OnDeleteAnimation()
 
 void ModelAnimationDialog::OnFrameInc()
 {
-	data->SetCurrentFrame((data->CurrentFrame + 1) % data->move->Frame.num);
+	data->SetCurrentFrameNext();
 }
 
 void ModelAnimationDialog::OnFrameDec()
 {
-	data->SetCurrentFrame((data->CurrentFrame + data->move->Frame.num - 1) % data->move->Frame.num);
+	data->SetCurrentFramePrevious();
 }
 
 void ModelAnimationDialog::OnFrame()
@@ -194,13 +194,12 @@ void ModelAnimationDialog::OnFrame()
 
 void ModelAnimationDialog::OnAddFrame()
 {
-	data->AnimationAddFrame(data->CurrentMove, data->CurrentFrame + 1);
-	data->SetCurrentFrame(data->CurrentFrame + 1);
+	data->AnimationDuplicateCurrentFrame();
 }
 
 void ModelAnimationDialog::OnDeleteFrame()
 {
-	data->AnimationDeleteFrame(data->CurrentMove, data->CurrentFrame);
+	data->AnimationDeleteCurrentFrame();
 }
 
 void ModelAnimationDialog::OnName()

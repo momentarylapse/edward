@@ -281,6 +281,8 @@ public:
 	int CurrentMove,CurrentFrame;
 	void SetCurrentMove(int move);
 	void SetCurrentFrame(int frame);
+	void SetCurrentFrameNext();
+	void SetCurrentFramePrevious();
 	void UpdateAnimation();
 	void UpdateSkeleton();
 	vector GetBonePos(int index);
@@ -291,6 +293,8 @@ public:
 	void DeleteAnimation(int index);
 	void AnimationAddFrame(int index, int frame);
 	void AnimationDeleteFrame(int index, int frame);
+	void AnimationDeleteCurrentFrame();
+	void AnimationDuplicateCurrentFrame();
 
 	bool Playing,PlayLoop;
 	float TimeScale,TimeParam,SimFrame;

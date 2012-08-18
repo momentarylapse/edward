@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-535
+533
 // Data (ID,Text)
 ad_dialog
 
@@ -103,8 +103,6 @@ current_mode_administration
 
 current_mode_font
 [フォント　の　モード]
-current_mode_model_move
-[モデル　の　モード (アニメーション)]
 current_mode_model_skeleton
 [モデル　の　モード (骨格)]
 current_mode_none
@@ -633,8 +631,6 @@ move_frame_sign
 フレーム
 move_reset
 リセット
-move_selection_sign
-選択
 ms
 ms
 nb_complexity
@@ -1074,7 +1070,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-148
+152
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1141,6 +1137,10 @@ Ebene: zweiter Punkt
 Editor für Spiele-Daten der x9-Engine
 
 Eigenschaften
+
+Es existiert bereits eine Animation mit diesem Index. Bitte einen anderen wählen.
+
+Es muss genau 1 Knochen markiert sein!
 
 Es muss genau ein Objekt markiert sein!
 
@@ -1308,9 +1308,13 @@ Unten
 
 Unten (y)
 
+Vertex
+
 Vertexpunkt
 
 Vertices
+
+Vertices auswählen
 
 ViewStage Pop
 
