@@ -14,13 +14,10 @@
 ModeModelMeshSurface *mode_model_mesh_surface = NULL;
 
 
-ModeModelMeshSurface::ModeModelMeshSurface(Mode *_parent, DataModel *_data)
+ModeModelMeshSurface::ModeModelMeshSurface(Mode *_parent, DataModel *_data) :
+	Mode("ModelMeshSurface", _parent, _data, ed->multi_view_3d, "menu_model")
 {
-	name = "ModelMeshSurface";
-	parent = _parent;
 	data = _data;
-	menu = HuiCreateResourceMenu("menu_model");
-	multi_view = ed->multi_view_3d;
 }
 
 ModeModelMeshSurface::~ModeModelMeshSurface()

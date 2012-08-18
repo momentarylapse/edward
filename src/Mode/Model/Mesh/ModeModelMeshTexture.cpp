@@ -13,13 +13,10 @@
 
 ModeModelMeshTexture *mode_model_mesh_texture = NULL;
 
-ModeModelMeshTexture::ModeModelMeshTexture(Mode *_parent, DataModel *_data)
+ModeModelMeshTexture::ModeModelMeshTexture(Mode *_parent, DataModel *_data) :
+	Mode("ModelMeshTexture", _parent, _data, ed->multi_view_2d, "menu_model")
 {
-	name = "ModelMeshTexture";
-	parent = _parent;
 	data = _data;
-	menu = HuiCreateResourceMenu("menu_model");
-	multi_view = ed->multi_view_2d;
 }
 
 

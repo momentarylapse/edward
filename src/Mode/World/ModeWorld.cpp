@@ -31,13 +31,10 @@ ModeWorld *mode_world = NULL;
 #define TSelectionAlpha				0.20f
 #define TMouseOverAlpha				0.20f
 
-ModeWorld::ModeWorld()
+ModeWorld::ModeWorld() :
+	Mode("World", NULL, new DataWorld, ed->multi_view_3d, "menu_world")
 {
-	name = "World";
-
-	menu = HuiCreateResourceMenu("menu_world");
-	data = new DataWorld;
-	multi_view = ed->multi_view_3d;
+	data = dynamic_cast<DataWorld*>(data_generic);
 	Subscribe(data);
 
 	WorldDialog = NULL;

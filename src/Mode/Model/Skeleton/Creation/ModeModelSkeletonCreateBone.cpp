@@ -11,9 +11,8 @@
 #include "../../../../Action/Model/Skeleton/ActionModelAddBone.h"
 
 ModeModelSkeletonCreateBone::ModeModelSkeletonCreateBone(Mode *_parent) :
-	ModeCreation(_parent)
+	ModeCreation("ModelSkeletonCreateBone", _parent)
 {
-	name = "ModelSkeletonCreateBone";
 	data = (DataModel*)_parent->GetData();
 
 	message = _("Knochen setzen oder Wurzel-Knochen waehlen");

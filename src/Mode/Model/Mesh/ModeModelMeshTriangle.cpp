@@ -15,13 +15,10 @@
 
 ModeModelMeshTriangle *mode_model_mesh_triangle = NULL;
 
-ModeModelMeshTriangle::ModeModelMeshTriangle(Mode *_parent, DataModel *_data)
+ModeModelMeshTriangle::ModeModelMeshTriangle(Mode *_parent, DataModel *_data) :
+	Mode("ModelMeshSkin", _parent, _data, ed->multi_view_3d, "menu_model")
 {
-	name = "ModelMeshSkin";
-	parent = _parent;
 	data = _data;
-	menu = HuiCreateResourceMenu("menu_model");
-	multi_view = ed->multi_view_3d;
 
 	// vertex buffers
 	VBMarked = NixCreateVB(65536);

@@ -9,9 +9,8 @@
 #include "../../../Edward.h"
 
 ModeWorldCreateObject::ModeWorldCreateObject(Mode *_parent) :
-	ModeCreation(_parent)
+	ModeCreation("WorldCreateObject", _parent)
 {
-	name = "WorldCreateObject";
 	data = (DataWorld*)_parent->GetData();
 
 	message = _("neues Objekt setzen");

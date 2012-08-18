@@ -11,19 +11,17 @@
 #include "../Mesh/ModeModelMeshTriangle.h"
 #include "../Animation/ModeModelAnimation.h"
 #include "Creation/ModeModelSkeletonCreateBone.h"
+#include "Creation/ModeModelSkeletonAttachVertices.h"
 #include "../../../Action/Model/Skeleton/ActionModelDeleteBoneSelection.h"
 
 
 ModeModelSkeleton *mode_model_skeleton = NULL;
 
 
-ModeModelSkeleton::ModeModelSkeleton(Mode *_parent, DataModel *_data)
+ModeModelSkeleton::ModeModelSkeleton(Mode *_parent, DataModel *_data) :
+	Mode("ModelSkeleton", _parent, _data, ed->multi_view_3d, "menu_skeleton")
 {
-	name = "ModelSkeleton";
-	parent = _parent;
 	data = _data;
-	menu = HuiCreateResourceMenu("menu_skeleton");
-	multi_view = ed->multi_view_3d;
 }
 
 ModeModelSkeleton::~ModeModelSkeleton()
@@ -36,6 +34,17 @@ void ModeModelSkeleton::OnCommand(const string & id)
 {
 	if (id == "skeleton_new_point")
 		ed->SetMode(new ModeModelSkeletonCreateBone(ed->cur_mode));
+	if (id == "skeleton_edit_bone"){
+		if (data->GetNumMarkedBones() == 1){
+			foreachi(data->Bone, b, i)
+				if (b.is_selected){
+					ed->SetMode(new ModeModelSkeletonAttachVertices(ed->cur_mode, i));
+					break;
+				}
+		}else{
+			ed->ErrorBox(_("Es muss genau 1 Knochen markiert sein!"));
+		}
+	}
 
 	if (id == "delete")
 		data->Execute(new ActionModelDeleteBoneSelection(data));

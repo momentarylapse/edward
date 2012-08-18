@@ -863,9 +863,9 @@ void MultiView::DrawWin(int win, irect dest)
 	msg_db_l(2);
 }
 
-void MultiView::Draw()
+void MultiView::OnDraw()
 {
-	msg_db_r("All::DrawMultiview",2);
+	msg_db_r("Multiview.OnDraw",2);
 	NixMaxDepth = radius * 1000;
 	NixMinDepth = radius / 1000;
 

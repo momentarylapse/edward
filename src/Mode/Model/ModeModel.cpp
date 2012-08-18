@@ -19,11 +19,10 @@
 
 ModeModel *mode_model = NULL;
 
-ModeModel::ModeModel()
+ModeModel::ModeModel() :
+	Mode("Model", NULL, new DataModel, NULL, "")
 {
-	name = "Model";
-
-	data = new DataModel;
+	data = dynamic_cast<DataModel*>(data_generic);
 	PropertiesDialog = NULL;
 	MaterialDialog = NULL;
 

@@ -12,13 +12,10 @@
 
 ModeFont *mode_font = NULL;
 
-ModeFont::ModeFont()
+ModeFont::ModeFont() :
+	Mode("Font", NULL, new DataFont, ed->multi_view_2d, "menu_font")
 {
-	name = "Font";
-
-	menu = HuiCreateResourceMenu("menu_font");
-	data = new DataFont;
-	multi_view = ed->multi_view_2d;
+	data = dynamic_cast<DataFont*>(data_generic);
 	Subscribe(data);
 }
 

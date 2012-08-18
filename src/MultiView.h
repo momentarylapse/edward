@@ -105,7 +105,7 @@ public:
 	void OnKeyUp();
 	void OnCommand(const string &id);
 
-	void Draw();
+	void OnDraw();
 	void DrawWin(int win, irect dest);
 	void DrawMousePos();
 	void DrawGrid(int win, irect dest);

@@ -11,9 +11,8 @@
 #include "../../../../lib/nix/nix.h"
 
 ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(Mode *_parent) :
-	ModeCreation(_parent)
+	ModeCreation("ModelMeshCreatePlane", _parent)
 {
-	name = "ModelMeshCreatePlane";
 	data = (DataModel*)_parent->GetData();
 
 	message = _("Ebene: erster Punkt");

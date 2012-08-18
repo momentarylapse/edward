@@ -11,9 +11,8 @@
 #include "../../../../Action/Model/Mesh/Triangle/ActionModelSplitEdge.h"
 
 ModeModelMeshSplitTriangle::ModeModelMeshSplitTriangle(Mode *_parent) :
-	ModeCreation(_parent)
+	ModeCreation("ModelMeshSplitTriangle", _parent)
 {
-	name = "ModelMeshSplitTriangle";
 	data = (DataModel*)_parent->GetData();
 
 	surface = -1;

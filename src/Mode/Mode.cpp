@@ -7,119 +7,62 @@
 
 #include "Mode.h"
 
-Mode::Mode()
+Mode::Mode(const string &_name, Mode *_parent, Data *_data, MultiView *_multi_view, const string &_menu)
 {
+	parent = _parent;
+	name = _name;
+	data_generic = _data;
+	multi_view = _multi_view;
 	menu = NULL;
-	parent = NULL;
-	multi_view = NULL;
+	if (_menu.num > 0)
+		menu = HuiCreateResourceMenu(_menu);
+	/*if ((!menu) && (parent))
+		menu = parent->menu;*/
 }
 
 Mode::~Mode()
 {
 }
 
-void Mode::OnCommandRecursive(const string & id)
+void Mode::OnCommandRecursive(const string & id, bool multi_view_handled)
 {
-	if (multi_view)
+	if ((multi_view) && (!multi_view_handled)){
 		multi_view->OnCommand(id);
+		multi_view_handled = true;
+	}
 	if (parent)
-		parent->OnCommandRecursive(id);
+		parent->OnCommandRecursive(id, multi_view_handled);
 	OnCommand(id);
 }
 
-void Mode::OnLeftButtonUpRecursive()
-{
-	if (multi_view)
-		multi_view->OnLeftButtonUp();
-	if (parent)
-		parent->OnLeftButtonUpRecursive();
-	OnLeftButtonUp();
+#define CREATE_EVENT_HANDLER(_name_rec_, _name_)	\
+void Mode::_name_rec_(bool multi_view_handled) \
+{ \
+	if ((multi_view) && (!multi_view_handled)){ \
+		multi_view->_name_(); \
+		multi_view_handled = true; \
+	} \
+	if (parent) \
+		parent->_name_rec_(multi_view_handled); \
+	_name_(); \
 }
 
-void Mode::OnMiddleButtonUpRecursive()
-{
-	if (multi_view)
-		multi_view->OnMiddleButtonUp();
-	if (parent)
-		parent->OnMiddleButtonUpRecursive();
-	OnMiddleButtonUp();
-}
+CREATE_EVENT_HANDLER(OnLeftButtonDownRecursive, OnLeftButtonDown)
+CREATE_EVENT_HANDLER(OnLeftButtonUpRecursive, OnLeftButtonUp)
+CREATE_EVENT_HANDLER(OnMiddleButtonDownRecursive, OnMiddleButtonDown)
+CREATE_EVENT_HANDLER(OnMiddleButtonUpRecursive, OnMiddleButtonUp)
+CREATE_EVENT_HANDLER(OnRightButtonDownRecursive, OnRightButtonDown)
+CREATE_EVENT_HANDLER(OnRightButtonUpRecursive, OnRightButtonUp)
+CREATE_EVENT_HANDLER(OnMouseMoveRecursive, OnMouseMove)
+CREATE_EVENT_HANDLER(OnKeyDownRecursive, OnKeyDown)
+CREATE_EVENT_HANDLER(OnKeyUpRecursive, OnKeyUp)
+CREATE_EVENT_HANDLER(OnDrawRecursive, OnDraw)
 
-void Mode::OnKeyDownRecursive()
-{
-	if (multi_view)
-		multi_view->OnKeyDown();
-	if (parent)
-		parent->OnKeyDownRecursive();
-	OnKeyDown();
-}
-
-void Mode::OnRightButtonUpRecursive()
-{
-	if (multi_view)
-		multi_view->OnRightButtonUp();
-	if (parent)
-		parent->OnRightButtonUpRecursive();
-	OnRightButtonUp();
-}
-
-void Mode::OnKeyUpRecursive()
-{
-	if (multi_view)
-		multi_view->OnKeyUp();
-	if (parent)
-		parent->OnKeyUpRecursive();
-	OnKeyUp();
-}
-
-void Mode::OnMouseMoveRecursive()
-{
-	if (multi_view)
-		multi_view->OnMouseMove();
-	if (parent)
-		parent->OnMouseMoveRecursive();
-	OnMouseMove();
-}
-
-void Mode::OnLeftButtonDownRecursive()
-{
-	if (multi_view)
-		multi_view->OnLeftButtonDown();
-	if (parent)
-		parent->OnLeftButtonDownRecursive();
-	OnLeftButtonDown();
-}
-
-void Mode::OnMiddleButtonDownRecursive()
-{
-	if (multi_view)
-		multi_view->OnMiddleButtonDown();
-	if (parent)
-		parent->OnMiddleButtonDownRecursive();
-	OnMiddleButtonDown();
-}
-
-void Mode::OnRightButtonDownRecursive()
-{
-	if (multi_view)
-		multi_view->OnRightButtonDown();
-	if (parent)
-		parent->OnRightButtonDownRecursive();
-	OnRightButtonDown();
-}
-
-void Mode::OnUpdateMenuRecursive()
+void Mode::OnUpdateMenuRecursive(bool multi_view_handled)
 {
 	if (parent)
 		parent->OnUpdateMenuRecursive();
 	OnUpdateMenu();
-}
-
-void Mode::OnDrawRecursive()
-{
-	if (parent)
-		parent->OnDrawRecursive();
-	OnDraw();
 }
 
 void Mode::OnDrawWinRecursive(int win, irect dest)

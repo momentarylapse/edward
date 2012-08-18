@@ -11,9 +11,8 @@
 #include "../../../../lib/nix/nix.h"
 
 ModeModelMeshCreateTriangles::ModeModelMeshCreateTriangles(Mode *_parent) :
-	ModeCreation(_parent)
+	ModeCreation("ModelMeshCreateTriangles", _parent)
 {
-	name = "ModelMeshCreateTriangles";
 	data = (DataModel*)_parent->GetData();
 
 	message = format(_("Dreiecke w&ahlen: %d -> Shift + Return"), 0);

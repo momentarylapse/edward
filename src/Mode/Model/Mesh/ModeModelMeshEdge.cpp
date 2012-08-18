@@ -12,13 +12,10 @@
 
 ModeModelMeshEdge *mode_model_mesh_edge = NULL;
 
-ModeModelMeshEdge::ModeModelMeshEdge(Mode *_parent, DataModel *_data)
+ModeModelMeshEdge::ModeModelMeshEdge(Mode *_parent, DataModel *_data) :
+	Mode("ModelMeshEdge", _parent, _data, ed->multi_view_3d, "menu_model")
 {
-	name = "ModelMeshEdge";
-	parent = _parent;
 	data = _data;
-	menu = HuiCreateResourceMenu("menu_model");
-	multi_view = ed->multi_view_3d;
 }
 
 

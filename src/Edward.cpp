@@ -411,13 +411,14 @@ void Edward::SetMode(Mode *m)
 		return;
 
 	msg_db_r("SetMode", 1);
+	if (cur_mode)
+		cur_mode->OnLeave();
 
 	m = mode_queue[0];
 	while(m){
 
 		// close current modes
 		while(cur_mode){
-			cur_mode->OnLeave();
 			if (cur_mode->IsAncestorOf(m))
 				break;
 			msg_write("end " + cur_mode->name);
@@ -433,7 +434,6 @@ void Edward::SetMode(Mode *m)
 			cur_mode = cur_mode->GetNextChildTo(m);
 			msg_write("start " + cur_mode->name);
 			cur_mode->OnStart();
-			cur_mode->OnEnter();
 		}
 		cur_mode->OnEnter();
 
@@ -445,8 +445,9 @@ void Edward::SetMode(Mode *m)
 	}
 
 	SetMenu(cur_mode->menu);
-
 	UpdateMenu();
+	cur_mode->OnEnter();
+
 	ForceRedraw();
 
 	msg_db_l(1);
@@ -509,8 +510,6 @@ void Edward::OnDraw()
 {
 	NixStart();
 	if (cur_mode){
-		if (cur_mode->multi_view)
-			cur_mode->multi_view->Draw();
 		cur_mode->OnDrawRecursive();
 	}else{
 		NixResetToColor(Black);

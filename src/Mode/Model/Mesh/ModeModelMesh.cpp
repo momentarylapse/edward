@@ -36,13 +36,10 @@
 
 ModeModelMesh *mode_model_mesh = NULL;
 
-ModeModelMesh::ModeModelMesh(Mode *_parent, DataModel *_data)
+ModeModelMesh::ModeModelMesh(Mode *_parent, DataModel *_data) :
+	Mode("ModelMesh", _parent, _data, NULL, "")
 {
-	name = "ModelMesh";
-	parent = _parent;
 	data = _data;
-	menu = NULL;
-	multi_view = NULL;
 	Subscribe(data);
 
 	MaterialSelectionDialog = NULL;

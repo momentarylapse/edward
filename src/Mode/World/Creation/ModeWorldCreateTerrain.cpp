@@ -9,9 +9,8 @@
 #include "../../../Edward.h"
 
 ModeWorldCreateTerrain::ModeWorldCreateTerrain(Mode *_parent) :
-	ModeCreation(_parent)
+	ModeCreation("WorldCreateTerrain", _parent)
 {
-	name = "WorldCreateTerrain";
 	data = (DataWorld*)_parent->GetData();
 
 	message = _("neues Terrain...");

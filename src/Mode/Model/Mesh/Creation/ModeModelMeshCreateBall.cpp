@@ -11,9 +11,8 @@
 #include "../../../../lib/x/x.h"
 
 ModeModelMeshCreateBall::ModeModelMeshCreateBall(Mode *_parent) :
-	ModeCreation(_parent)
+	ModeCreation("ModelMeshCreateBall", _parent)
 {
-	name = "ModelMeshCreateBall";
 	data = (DataModel*)_parent->GetData();
 
 	message = _("Kugelzentrum waehlen");

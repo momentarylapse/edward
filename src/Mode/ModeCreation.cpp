@@ -9,25 +9,21 @@
 #include "../Edward.h"
 #include <assert.h>
 
-ModeCreation::ModeCreation(Mode *_parent)
+ModeCreation::ModeCreation(const string &_name, Mode *_parent) :
+	Mode(_name, _parent, _parent->data_generic, _parent->multi_view, "")
 {
-	parent = _parent;
-
 	// don't nest creation modes!
 	if (dynamic_cast<ModeCreation*>(parent))
 		parent = parent->parent;
 
 	assert(parent);
 	menu = parent->menu;
-	multi_view = parent->multi_view;
 	dialog = NULL;
 }
 
-void ModeCreation::OnDrawRecursive()
+void ModeCreation::OnDrawRecursive(bool multi_view_handled)
 {
-	if (parent)
-		parent->OnDrawRecursive();
-	OnDraw();
+	Mode::OnDrawRecursive(multi_view_handled);
 
 	ed->DrawStr(MaxX / 2, MaxY - 20, message);
 }

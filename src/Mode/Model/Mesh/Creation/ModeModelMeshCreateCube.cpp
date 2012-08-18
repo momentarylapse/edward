@@ -10,9 +10,8 @@
 #include "../../../../Edward.h"
 
 ModeModelMeshCreateCube::ModeModelMeshCreateCube(Mode *_parent) :
-	ModeCreation(_parent)
+	ModeCreation("ModelMeshCreateCube", _parent)
 {
-	name = "ModelMeshCreateCube";
 	data = (DataModel*)_parent->GetData();
 
 	message = _("cube...");

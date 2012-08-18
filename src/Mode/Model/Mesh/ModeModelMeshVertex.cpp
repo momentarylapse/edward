@@ -14,13 +14,10 @@
 
 ModeModelMeshVertex *mode_model_mesh_vertex = NULL;
 
-ModeModelMeshVertex::ModeModelMeshVertex(Mode *_parent, DataModel *_data)
+ModeModelMeshVertex::ModeModelMeshVertex(Mode *_parent, DataModel *_data) :
+	Mode("ModelMeshVertex", _parent, _data, ed->multi_view_3d, "menu_model")
 {
-	name = "ModelMeshVertex";
-	parent = _parent;
 	data = _data;
-	multi_view = ed->multi_view_3d;
-	menu = HuiCreateResourceMenu("menu_model");
 }
 
 ModeModelMeshVertex::~ModeModelMeshVertex()

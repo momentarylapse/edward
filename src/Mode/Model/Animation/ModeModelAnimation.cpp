@@ -16,12 +16,10 @@
 
 ModeModelAnimation *mode_model_animation = NULL;
 
-ModeModelAnimation::ModeModelAnimation(Mode *_parent, DataModel *_data)
+ModeModelAnimation::ModeModelAnimation(Mode *_parent, DataModel *_data) :
+	Mode("ModelAnimation", _parent, _data, NULL, "menu_move")
 {
-	name = "ModelAnimation";
-	parent = _parent;
 	data = _data;
-	menu = HuiCreateResourceMenu("menu_move");
 	mode_model_animation_none = new ModeModelAnimationNone(this, data);
 	mode_model_animation_skeleton = new ModeModelAnimationSkeleton(this, data);
 	mode_model_animation_vertex = new ModeModelAnimationVertex(this, data);

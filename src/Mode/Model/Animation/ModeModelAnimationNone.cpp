@@ -12,13 +12,10 @@
 
 ModeModelAnimationNone *mode_model_animation_none = NULL;
 
-ModeModelAnimationNone::ModeModelAnimationNone(Mode* _parent, DataModel* _data)
+ModeModelAnimationNone::ModeModelAnimationNone(Mode* _parent, DataModel* _data) :
+	Mode("ModelAnimationNone", _parent, _data, ed->multi_view_3d, "menu_move")
 {
-	name = "ModelAnimationNone";
-	parent = _parent;
 	data = _data;
-	menu = HuiCreateResourceMenu("menu_move");
-	multi_view = ed->multi_view_3d;
 }
 
 ModeModelAnimationNone::~ModeModelAnimationNone()

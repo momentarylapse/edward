@@ -15,13 +15,10 @@ const int MATERIAL_BALL_NUMY = 64;
 
 ModeMaterial *mode_material = NULL;
 
-ModeMaterial::ModeMaterial()
+ModeMaterial::ModeMaterial() :
+	Mode("Material", NULL, new DataMaterial, ed->multi_view_3d, "menu_material")
 {
-	name = "Material";
-
-	menu = HuiCreateResourceMenu("menu_material");
-	data = new DataMaterial;
-	multi_view = ed->multi_view_3d;
+	data = dynamic_cast<DataMaterial*>(data_generic);
 	Subscribe(data);
 
 	AppearanceDialog = NULL;

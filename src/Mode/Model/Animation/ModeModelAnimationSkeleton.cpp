@@ -14,13 +14,10 @@
 ModeModelAnimationSkeleton *mode_model_animation_skeleton = NULL;
 
 ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(Mode* _parent,
-		DataModel* _data)
+		DataModel* _data) :
+	Mode("ModelAnimationSkeleton", _parent, _data, ed->multi_view_3d, "menu_move")
 {
-	name = "ModelAnimationSkeleton";
-	parent = _parent;
 	data = _data;
-	menu = HuiCreateResourceMenu("menu_move");
-	multi_view = ed->multi_view_3d;
 }
 
 ModeModelAnimationSkeleton::~ModeModelAnimationSkeleton()

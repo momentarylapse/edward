@@ -15,9 +15,9 @@
 
 ModeWelcome *mode_welcome = NULL;
 
-ModeWelcome::ModeWelcome()
+ModeWelcome::ModeWelcome():
+	Mode("Welcome", NULL, NULL, NULL, "")
 {
-	name = "Welcome";
 	tex_icons = NixLoadTexture(HuiAppDirectoryStatic + "Data/icons/icons.tga");
 	tex_logo = NixLoadTexture(HuiAppDirectoryStatic + "Data/edward.jpg");
 }

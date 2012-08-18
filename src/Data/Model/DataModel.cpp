@@ -1553,6 +1553,15 @@ int DataModel::GetNumMarkedSurfaces()
 	return r;
 }
 
+int DataModel::GetNumMarkedBones()
+{
+	int r = 0;
+	foreach(Bone, b)
+		if (b.is_selected)
+			r ++;
+	return r;
+}
+
 ModeModelSurface* DataModel::AddBall(const vector& _pos, float _radius, int _num_x, int _num_y, bool _as_sphere)
 {	return (ModeModelSurface*)Execute(new ActionModelAddBall(this, _pos, _radius, _num_x, _num_y, _as_sphere));	}
 

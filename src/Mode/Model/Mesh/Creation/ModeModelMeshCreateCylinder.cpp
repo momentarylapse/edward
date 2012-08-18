@@ -10,9 +10,8 @@
 #include "../../../../Edward.h"
 
 ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(Mode *_parent) :
-	ModeCreation(_parent)
+	ModeCreation("ModelMeshCreateCylinder", _parent)
 {
-	name = "ModelMeshCreateCylinder";
 	data = (DataModel*)_parent->GetData();
 
 	message = _("zylinder... Punkte + Shift Return");

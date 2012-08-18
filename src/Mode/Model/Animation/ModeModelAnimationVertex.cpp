@@ -12,13 +12,10 @@
 
 ModeModelAnimationVertex *mode_model_animation_vertex = NULL;
 
-ModeModelAnimationVertex::ModeModelAnimationVertex(Mode* _parent, DataModel* _data)
+ModeModelAnimationVertex::ModeModelAnimationVertex(Mode* _parent, DataModel* _data) :
+	Mode("ModelAnimationVertex", _parent, _data, ed->multi_view_3d, "menu_move")
 {
-	name = "ModelAnimationVertex";
-	parent = _parent;
 	data = _data;
-	menu = HuiCreateResourceMenu("menu_move");
-	multi_view = ed->multi_view_3d;
 }
 
 ModeModelAnimationVertex::~ModeModelAnimationVertex()

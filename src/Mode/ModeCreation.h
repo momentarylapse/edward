@@ -15,8 +15,8 @@
 class ModeCreation: public Mode
 {
 public:
-	ModeCreation(Mode *_parent);
-	virtual void OnDrawRecursive();
+	ModeCreation(const string &_name, Mode *_parent);
+	virtual void OnDrawRecursive(bool multi_view_handled = false);
 
 	virtual void Abort();
 	string message;

@@ -225,6 +225,7 @@ public:
 	int GetNumMarkedSurfaces();
 	//int GetNumMarkedBalls();
 	//int GetNumMarkedKonvPolys();
+	int GetNumMarkedBones();
 
 	void ClearSelection();
 	void SelectionTrianglesFromVertices();
