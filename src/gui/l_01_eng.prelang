@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-533
+534
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -581,8 +581,10 @@ model_dialog_grp_physics
 !bold\\General
 model_dialog_grp_tensor
 !bold\\Moment of inertia tensor
-model_dialog_t_comment
-Properties from this material file can be overwritten in the following tab pages.
+model_dialog_t_comment1
+
+model_dialog_t_comment2
+
 model_dialog_t_description
 Description
 model_dialog_t_detail_high

@@ -5249,7 +5249,7 @@ model_material_dialog
 0
 
 
-37
+38
 DefButton
 ok
 hui:ok
@@ -5667,13 +5667,26 @@ model_dialog_grp_material_file
 model_material_dialog_tab_control
 
 Text
-model_dialog_t_comment
+model_dialog_t_comment1
 
 1
 10
-135
+125
 330
-85
+25
+0
+0
+0
+model_material_dialog_tab_control
+
+Text
+model_dialog_t_comment2
+
+1
+10
+150
+330
+25
 0
 0
 0
@@ -15466,7 +15479,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-674
+675
 // Text
 ad_dialog
 Verwaltung
@@ -16200,8 +16213,10 @@ model_dialog_grp_physics
 !bold\\Generell
 model_dialog_grp_tensor
 !bold\\Trägheitstensor
-model_dialog_t_comment
-Die Eigenschaften dieser Material-Datei können in den folgenden Tab-Seiten überschrieben werden.
+model_dialog_t_comment1
+Die Eigenschaften dieser Material-Datei können in
+model_dialog_t_comment2
+den folgenden Tab-Seiten überschrieben werden.
 model_dialog_t_description
 Beschreibung
 model_dialog_t_detail_high
@@ -16822,7 +16837,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-674
+675
 // Text
 ad_dialog
 Administration
@@ -17556,8 +17571,10 @@ model_dialog_grp_physics
 !bold\\General
 model_dialog_grp_tensor
 !bold\\Moment of inertia tensor
-model_dialog_t_comment
-Properties from this material file can be overwritten in the following tab pages.
+model_dialog_t_comment1
+
+model_dialog_t_comment2
+
 model_dialog_t_description
 Description
 model_dialog_t_detail_high
@@ -18382,7 +18399,7 @@ program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 // Language
 日本語
 // NumIDs
-674
+675
 // Text
 ad_dialog
 
@@ -19116,7 +19133,9 @@ model_dialog_grp_physics
 
 model_dialog_grp_tensor
 
-model_dialog_t_comment
+model_dialog_t_comment1
+
+model_dialog_t_comment2
 
 model_dialog_t_description
 

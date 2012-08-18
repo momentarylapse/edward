@@ -84,7 +84,8 @@ enum{
 	AppearanceDialog->SetImage(HMM_EDIT_MATERIAL,HuiImageEdit);
 	AppearanceDialog->AddCheckBox("Standard-Material verwenden",10,10,335,25,HMM_DEFAULT_MATERIAL);
 	AppearanceDialog->AddText("!bold\\Material-Datei",10,60,330,25,HMM_MODEL_DIALOG_GRP_MATERIAL_FILE);
-	AppearanceDialog->AddText("Die Eigenschaften dieser Material-Datei k&onnen in den folgenden Tab-Seiten &uberschrieben werden.",10,135,330,85,HMM_MODEL_DIALOG_T_COMMENT);
+	AppearanceDialog->AddText("Die Eigenschaften dieser Material-Datei k&onnen in",10,125,330,25,HMM_MODEL_DIALOG_T_COMMENT1);
+	AppearanceDialog->AddText("den folgenden Tab-Seiten &uberschrieben werden.",10,150,330,25,HMM_MODEL_DIALOG_T_COMMENT2);
 	AppearanceDialog->SetTabCreationPage(HMM_MODEL_MATERIAL_DIALOG_TAB_CONTROL,1);
 	AppearanceDialog->AddButton("L&oschen",130,195,105,25,HMM_MAT_DELETE_TEXTURE_LEVEL);
 	AppearanceDialog->SetImage(HMM_MAT_DELETE_TEXTURE_LEVEL,HuiImageDelete);

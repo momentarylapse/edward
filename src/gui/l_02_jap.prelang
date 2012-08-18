@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-533
+534
 // Data (ID,Text)
 ad_dialog
 
@@ -581,7 +581,9 @@ model_dialog_grp_physics
 
 model_dialog_grp_tensor
 
-model_dialog_t_comment
+model_dialog_t_comment1
+
+model_dialog_t_comment2
 
 model_dialog_t_description
 
