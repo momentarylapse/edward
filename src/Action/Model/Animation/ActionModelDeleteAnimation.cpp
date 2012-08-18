@@ -25,6 +25,9 @@ void *ActionModelDeleteAnimation::execute(Data *d)
 	assert(m->Move[index].Frame.num > 0);
 	animation = m->Move[index];
 	m->Move[index].Frame.clear();
+
+	if (index == m->CurrentMove)
+		m->SetCurrentMove(-1);
 	return NULL;
 }
 
