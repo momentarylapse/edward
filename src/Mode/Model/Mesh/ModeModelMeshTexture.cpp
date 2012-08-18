@@ -85,6 +85,8 @@ void ModeModelMeshTexture::OnDrawWin(int win, irect dest)
 	s.y1=a.y;
 	s.y2=b.y;
 
+	NixEnableLighting(false);
+
 	if (true){//mul->FXEnabled){
 		// background pattern to show transparency
 		color c1 = Black;
@@ -100,7 +102,7 @@ void ModeModelMeshTexture::OnDrawWin(int win, irect dest)
 			}
 		NixSetAlphaSD(AlphaSourceAlpha,AlphaSourceInvAlpha);
 	}
-	NixSetColor(color(1,0.7f,0.7f,0.7f));
+	NixSetColor(color(1,0.8f,0.8f,0.8f));
 	NixSetTexture(cur_tex);
 	NixDraw2D(s, NixTargetRect, 0.99f);
 	NixSetTexture(-1);
