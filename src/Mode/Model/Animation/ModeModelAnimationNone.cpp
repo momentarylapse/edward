@@ -31,13 +31,6 @@ void ModeModelAnimationNone::OnStart()
 	multi_view->MVRectable = false;
 
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-
-	multi_view->SetData(	MVDModelVertex,
-			data->Vertex,
-			NULL,
-			MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect,
-			NULL, NULL);
-
 	OnUpdate(data);
 }
 
