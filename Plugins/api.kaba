@@ -61,6 +61,8 @@ class ModeModelFX
 class ModeModelVertex: MultiViewSingleData
 	int NormalMode
 	int BoneIndex
+	
+	vector AnimatedPos
 
 	bool NormalDirty
 	int RefCount // triangles
@@ -246,8 +248,7 @@ class DataModel : Data
 	int CurrentMove,CurrentFrame
 
 	bool Playing,PlayLoop
-	float TimeScale,TimeParam,SimFrame,TimeInFrame
-	int Frame0,Frame1
+	float TimeScale,TimeParam,SimFrame
 
 	bool ShowSkeleton
 
