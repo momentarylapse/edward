@@ -17,9 +17,17 @@ SkinGenerator::~SkinGenerator()
 {
 }
 
-void SkinGenerator::init_affine(const vector& pos00, const vector& pos01,
-		const vector& pos11)
+void SkinGenerator::init_affine(const vector &dir_u, float f_u, const vector &dir_v, float f_v)
 {
+	m = m_id;
+	m._00 = dir_u.x;
+	m._01 = dir_u.y;
+	m._02 = dir_u.z;
+	m._03 = f_u;
+	m._10 = dir_v.x;
+	m._11 = dir_v.y;
+	m._12 = dir_v.z;
+	m._13 = f_v;
 }
 
 void SkinGenerator::init_projective(const matrix &_m)
@@ -37,7 +45,7 @@ void SkinGenerator::init_projective(MultiView *mv, int win)
 	init_projective(t2 * s * t1 * mv->view[win].projection * mv->view[win].mat);
 }
 
-vector SkinGenerator::get(const vector& v)
+vector SkinGenerator::get(const vector& v) const
 {
 	vector p = m * v;
 	p.z = 0;
