@@ -187,15 +187,15 @@ void NixDrawLine3D(const vector &l1, const vector &l2)
 {
 	_NixSetMode3d();
 	glLineWidth(1);
-	glBegin(GL_LINE);
+	glBegin(GL_LINES);
 		glVertex3fv((float*)&l1);
 		glVertex3fv((float*)&l2);
 	glEnd();
-/*		vector p1, p2;
-		NixGetVecProject(p1,l1);
-		NixGetVecProject(p2,l2);
-		if ((p1.z>0)&&(p2.z>0)&&(p1.z<1)&&(p2.z<1))
-			NixDrawLine(p1.x,p1.y,p2.x,p2.y,c,(p1.z+p2.z)/2);*/
+	/*vector p1, p2;
+	NixGetVecProject(p1,l1);
+	NixGetVecProject(p2,l2);
+	if ((p1.z>0)&&(p2.z>0)&&(p1.z<1)&&(p2.z<1))
+		NixDrawLine(p1.x, p1.y, p2.x, p2.y, (p1.z + p2.z)/2);*/
 	//NixDrawLine(l1.x, l1.y, l2.x, l2.y, (l1.z+l2.z)/2);
 }
 
