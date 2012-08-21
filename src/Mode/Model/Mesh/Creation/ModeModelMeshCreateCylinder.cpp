@@ -81,7 +81,6 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 			pos.add(data->Vertex[multi_view->Selected].pos);
 		else
 			pos.add(multi_view->GetCursor3d());
-		radius = VecLength(pos.back() - pos[0]) / 8;
 	//message = _("Zylinder: Endpunkt");
 	}
 }
@@ -93,6 +92,7 @@ void ModeModelMeshCreateCylinder::OnKeyDown()
 	if (HuiGetEvent()->key_code == KEY_SHIFT + KEY_RETURN){
 		if (pos.num > 1){
 			ready_for_scaling = true;
+			OnMouseMove();
 			message = _("Zylinder: Radius");
 			ed->ForceRedraw();
 		}
@@ -157,6 +157,7 @@ void ModeModelMeshCreateCylinder::OnDrawWin(int win, irect dest)
 		foreach(pos, p)
 			inter.add(p);
 		int n = (pos.num - 1) * dialog->GetInt("ncy_rings");
+		NixEnableLighting(true);
 		mode_model->SetMaterialCreation();
 		NixVBClear(VBTemp);
 		for (int i=0;i<n;i++){
