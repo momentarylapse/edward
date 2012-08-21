@@ -10,8 +10,9 @@
 
 #include "../../../Action.h"
 #include "../../../ActionGroup.h"
-#include "../../../../Data/Model/DataModel.h"
 #include "../../../../lib/types/types.h"
+class DataModel;
+class SkinGenerator;
 
 class ActionModelAddTrianglesByOutline: public ActionGroup
 {
@@ -21,7 +22,7 @@ public:
 	string name(){	return "ModelAddTrianglesByOutline";	}
 
 private:
-	void CreateTrianglesFlat(DataModel *m, Array<int> &v);
+	void CreateTrianglesFlat(DataModel *m, Array<int> &v, const SkinGenerator &sg);
 };
 
 #endif /* ACTIONMODELADDTRIANGLESBYOUTLINE_H_ */

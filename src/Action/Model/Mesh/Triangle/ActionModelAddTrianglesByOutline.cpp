@@ -7,8 +7,9 @@
 
 #include "ActionModelAddTrianglesByOutline.h"
 #include "../Vertex/ActionModelAddVertex.h"
-#include "ActionModelAddTriangleSingleTexture.h"
+#include "ActionModelAddTriangleWithSkinGenerator.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/SkinGenerator.h"
 
 
 
@@ -50,10 +51,32 @@ vector get_cloud_normal(DataModel *m, const Array<int> &v)
 	return v0;
 }
 
-void ActionModelAddTrianglesByOutline::CreateTrianglesFlat(DataModel *m, Array<int> &v)
+void init_skin_generator(DataModel *m, Array<int> &v, SkinGenerator &sg)
+{
+	vector n = get_cloud_normal(m, v);
+	vector d[2];
+	d[0] = VecOrtho(n);
+	d[1] = d[0] ^ n;
+	float boundary[2][2], l[2];
+	for (int k=0;k<2;k++){
+		boundary[k][0] = boundary[k][1] = d[k] * m->Vertex[v[0]].pos;
+		foreach(v, vi){
+			float f = d[k] * m->Vertex[vi].pos;
+			if (f < boundary[k][0])
+				boundary[k][0] = f;
+			if (f > boundary[k][1])
+				boundary[k][1] = f;
+		}
+		l[k] = (boundary[k][1] - boundary[k][0]);
+	}
+	sg.init_affine(d[0] / l[0], - boundary[0][0] / l[0], d[1] / l[1], - boundary[1][0] / l[1]);
+
+}
+
+void ActionModelAddTrianglesByOutline::CreateTrianglesFlat(DataModel *m, Array<int> &v, const SkinGenerator &sg)
 {
 	if (v.num == 3){
-		AddSubAction(new ActionModelAddTriangleSingleTexture(m, v[0], v[1], v[2], m->CurrentMaterial, v0, e_x, e_y), m);
+		AddSubAction(new ActionModelAddTriangleWithSkinGenerator(m, v[0], v[1], v[2], m->CurrentMaterial, sg), m);
 	}else if (v.num > 3){
 
 		flat_n = get_cloud_normal(m, v);
@@ -102,16 +125,18 @@ void ActionModelAddTrianglesByOutline::CreateTrianglesFlat(DataModel *m, Array<i
 			}
 		}
 
-		AddSubAction(new ActionModelAddTriangleSingleTexture(m, v[i_max], v[(i_max+1) % v.num], v[(i_max+2) % v.num], m->CurrentMaterial, v0, e_x, e_y), m);
+		AddSubAction(new ActionModelAddTriangleWithSkinGenerator(m, v[i_max], v[(i_max+1) % v.num], v[(i_max+2) % v.num], m->CurrentMaterial, sg), m);
 
 		v.erase((i_max+1) % v.num);
-		CreateTrianglesFlat(m, v);
+		CreateTrianglesFlat(m, v, sg);
 	}
 }
 
 ActionModelAddTrianglesByOutline::ActionModelAddTrianglesByOutline(Array<int> vertex, DataModel *data)
 {
-	CreateTrianglesFlat(data, vertex);
+	SkinGenerator sg;
+	init_skin_generator(data, vertex, sg);
+	CreateTrianglesFlat(data, vertex, sg);
 }
 
 ActionModelAddTrianglesByOutline::~ActionModelAddTrianglesByOutline()
