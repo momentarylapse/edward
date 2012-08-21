@@ -10,7 +10,9 @@
 
 #include "../../../Action.h"
 #include "../../../../Data/Model/DataModel.h"
-#include "../../../../MultiView.h"
+#include "../../../../Data/Model/SkinGenerator.h"
+
+class MultiView;
 
 class ActionModelSkinVerticesFromProjection : public Action
 {
@@ -27,7 +29,7 @@ private:
 	Array<int> triangle;
 	Array<int> vert_on_tria;
 	Array<vector> old_pos[MODEL_MAX_TEXTURES];
-	Array<vector> new_pos;
+	SkinGenerator sg;
 };
 
 #endif /* ACTIONMODELSKINVERTICESFROMPROJECTION_H_ */
