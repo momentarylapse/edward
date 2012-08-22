@@ -30,7 +30,7 @@ public:
 	void OnDrawWin(int win, irect dest);
 
 	// for MultiView actions
-	void GetSelectedSkinVertices(Array<int> &surf, Array<int> &index);
+	void GetSelectedSkinVertices(Array<int> &surf, Array<int> &tria, Array<int> &index);
 
 	DataModel *data;
 	Data *GetData(){	return data;	}

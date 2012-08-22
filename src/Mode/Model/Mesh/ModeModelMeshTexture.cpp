@@ -182,17 +182,17 @@ void ModeModelMeshTexture::OnUpdate(Observable *o)
 
 
 
-void ModeModelMeshTexture::GetSelectedSkinVertices(Array<int> & surf, Array<int> & index)
+void ModeModelMeshTexture::GetSelectedSkinVertices(Array<int> & surf, Array<int> &tria, Array<int> & index)
 {
 	int i = 0;
 	foreachi(data->Surface, s, si)
-		foreach(s.Triangle, t)
+		foreachi(s.Triangle, t, ti)
 			if (t.Material == data->CurrentMaterial){
 				for (int k=0;k<3;k++){
 					if (skin_vertex[i].is_selected){
-						index.add(i);
-						//old_data.add(skin_vertex[i].pos);
+						index.add(k);
 						surf.add(si);
+						tria.add(ti);
 					}
 					i ++;
 				}

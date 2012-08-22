@@ -19,10 +19,10 @@ ActionModelMoveSkinVertices::ActionModelMoveSkinVertices(Data *d, const vector &
 	texture_level = m->CurrentTextureLevel;
 
 	// list of selected skin vertices and save old pos
-	mode_model_mesh_texture->GetSelectedSkinVertices(surface, index);
-	foreachi(index, i, ii){
-		ModeModelSurface &s = m->Surface[surface[ii]];
-		old_data.add(s.Triangle[i / 3].SkinVertex[texture_level][i % 3]);
+	mode_model_mesh_texture->GetSelectedSkinVertices(surface, tria, index);
+	foreachi(index, k, i){
+		ModeModelTriangle &t = m->Surface[surface[i]].Triangle[tria[i]];
+		old_data.add(t.SkinVertex[texture_level][k]);
 	}
 }
 
@@ -35,9 +35,9 @@ ActionModelMoveSkinVertices::~ActionModelMoveSkinVertices()
 void *ActionModelMoveSkinVertices::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(index, i, ii){
-		ModeModelSurface &s = m->Surface[surface[ii]];
-		vector &v = s.Triangle[i / 3].SkinVertex[texture_level][i % 3];
+	foreachi(index, k, ii){
+		ModeModelTriangle &t = m->Surface[surface[ii]].Triangle[tria[ii]];
+		vector &v = t.SkinVertex[texture_level][k];
 		v = old_data[ii] + param;
 	}
 	return NULL;
@@ -48,10 +48,10 @@ void *ActionModelMoveSkinVertices::execute(Data *d)
 void ActionModelMoveSkinVertices::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(index, i, ii){
-		ModeModelSurface &s = m->Surface[surface[ii]];
-		vector &v = s.Triangle[i / 3].SkinVertex[texture_level][i % 3];
-		v = old_data[ii];
+	foreachi(index, k, i){
+		ModeModelTriangle &t = m->Surface[surface[i]].Triangle[tria[i]];
+		vector &v = t.SkinVertex[texture_level][k];
+		v = old_data[i];
 	}
 }
 

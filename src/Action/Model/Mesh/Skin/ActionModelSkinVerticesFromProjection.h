@@ -26,7 +26,7 @@ public:
 
 private:
 	Array<int> surface;
-	Array<int> triangle;
+	Array<int> tria;
 	Array<int> vert_on_tria;
 	Array<vector> old_pos[MODEL_MAX_TEXTURES];
 	SkinGenerator sg;

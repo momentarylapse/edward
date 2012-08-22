@@ -26,6 +26,7 @@ public:
 private:
 	int material, texture_level;
 	Array<int> surface;
+	Array<int> tria;
 };
 
 #endif /* ACTIONMODELMIRRORSKINVERTICES_H_ */
