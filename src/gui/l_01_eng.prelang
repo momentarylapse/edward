@@ -1,10 +1,18 @@
 // Language
 English
 // Num IDs
-539
+554
 // Data (ID,Text)
 ad_dialog
 Administration
+ad_edit
+Edit
+ad_export_game
+Export game
+ad_rudimentary_configuration
+Basic settings
+ad_tab_control
+
 add_material
 
 add_script
@@ -13,6 +21,12 @@ add_texture_level
 
 administrate
 Administrate
+adt_dest
+
+adt_file
+
+adt_source
+
 align_to_grid
 Align to grid
 all
@@ -124,7 +138,7 @@ delete frame
 delete_item
 Delete item
 delete_material
-
+delete
 delete_texture_level
 Delete texture level
 detail_0
@@ -185,6 +199,18 @@ export_type
 single files\\archive (compressed)\\archive (uncompressed)
 export_world
 Export world
+file_list_all
+!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
+file_list_cur
+!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
+file_list_detail_dest
+!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
+file_list_detail_source
+!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
+file_list_missing
+!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
+file_list_super
+!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
 fog_enabled
 enabled
 fog_mode
@@ -300,9 +326,9 @@ auto
 grid
 Grid
 height_op:add
-
+Add
 height_op:set
-
+Overwrite
 height_to_terrain
 Height = terrain
 help
@@ -324,7 +350,7 @@ optimize for loop
 interpolate_quad
 quadratic interpolation
 invert_selection
-
+Invert
 invert_trias
 Triangle inversion
 item_new
@@ -476,7 +502,7 @@ Appearance
 menu_model_creation
 Create
 menu_model_edit
-
+Edit
 menu_model_export
 Export
 menu_model_file
@@ -506,21 +532,21 @@ Viewstage
 menu_object
 Object
 menu_rightmouse
-
+Right mouse button
 menu_surface_header
-
+On surfaces
 menu_terrain_texture
 Terrain texture
 menu_tria_header
-
+On triangles
 menu_vertex_header
-
+On vertices
 menu_world
 World
 menu_world_creation
 Create
 menu_world_edit
-
+Edit
 menu_world_export
 Export
 menu_world_file
@@ -530,7 +556,7 @@ menu_world_help
 menu_world_import
 Import
 menu_world_operation
-
+Operations
 menu_world_selection
 Selection
 menu_world_sign_add
@@ -546,23 +572,23 @@ mirror
 mode_model_animation
 Animation
 mode_model_edge
-
+Edges
 mode_model_material
 Material...
 mode_model_materials
 Materials...
 mode_model_mesh
-
+Mesh
 mode_model_skeleton
 Skeleton
 mode_model_surface
-
+Surfaces
 mode_model_texture
 Textures
 mode_model_texture_coord
 Texture coordinates
 mode_model_triangle
-
+Triangles
 mode_model_vertex
 Vertices
 mode_properties
@@ -618,7 +644,7 @@ New
 model_open
 Open...
 model_texture_level_dialog
-
+Texture levels
 move_allframes
 Effect all frames
 move_frame_dec
@@ -644,13 +670,13 @@ nb_x
 nb_y
 \\1
 nc_x
-
+\\1
 nc_y
-
+\\1
 nc_z
-
+\\1
 ncdt_slides
-
+Stripes
 ncy_edges
 \\2
 ncy_endings
@@ -686,7 +712,7 @@ new_ball_dialog_t_y
 new_cube
 Cube
 new_cube_dialog
-
+new cube
 new_cylinder
 Cylinder...
 new_cylinder_dialog
@@ -772,11 +798,11 @@ photons
 physics
 Physics...
 physics_enabled
-
+Enables
 progress_cancelable_dialog
-
+working
 progress_dialog
-
+working
 property_list
 type\\index\\name
 quality_factor
@@ -796,9 +822,11 @@ reflection_size
 reflection_textures
 face\\texture
 remove_script
-
+Remove
 remove_skybox
 Remove
+rename
+Rename
 replace_objects
 Replace
 resolution
@@ -822,7 +850,7 @@ Scaling
 script_find
 ...
 script_list
-
+!nobar\\File
 script_vars
 #\\name\\type\\value
 scriptvar_dialog
@@ -832,11 +860,11 @@ index:
 scriptvar_t_value
 value:
 select_all
-
+Select all
 select_cw
 triangles only clockwise
 select_none
-
+Select none
 selection_properties
 Properties...
 send_bug_report
@@ -880,15 +908,17 @@ Sounds...
 specular
 specular
 stretch_x
-
+1\\0\\1000\\0.01
 stretch_z
-
+1\\0\\1000\\0.01
 subtract_surface
 
 sun_ang_from_camera
 
 sun_enabled
 enabled
+table_2
+
 terrain_create
 Terrain (new)...
 terrain_dialog
@@ -1018,19 +1048,19 @@ background color
 world_dialog_grp_gravitation
 gravitation
 world_dialog_grp_skybox
-
+!bold\\Skybox models
 world_dialog_grp_sun
-
+!bold\\Sun
 world_dialog_t_fog_color
 color
 world_dialog_t_fog_density
 density (\"Density\")
 world_dialog_t_fog_distance
-
+Distance
 world_dialog_t_fog_mode
 type (\"Mode\")
 world_dialog_t_fog_to
-
+to
 world_dialog_t_max_script_vars
 number (max):
 world_dialog_t_sun_ang_x
@@ -1137,7 +1167,7 @@ Quite a polite question
 Dreieck
 Triangle
 Dreiecke
-
+Triangles
 Dreiecke wählen: %d -> Shift + Return
 
 Ebene
@@ -1199,15 +1229,15 @@ KameraPunkt
 Kann Material-Datei nicht öffnen
 Can't load material file
 Kanten
-
+Edges
 Karten (*.map)
 Terrains (*.map)
 Karten-Datei
 Terrain files
 Keine geschlossene Flächen markiert
-
+No closed surfaces selected!
 Knochen setzen
-
+Set bone
 Knochen setzen oder Wurzel-Knochen waehlen
 
 Kugel
@@ -1215,9 +1245,9 @@ Sphere
 Kugel skalieren
 Scale the sphere
 Kugelzentrum waehlen
-
+Select center
 Lade Welt
-
+Loading world
 Links
 Left
 Links (x)
@@ -1231,7 +1261,7 @@ Materials
 Materialien (*.material)
 Materials (*.material)
 Mesh
-
+Mesh
 Mindestens eine Textur-Ebene muss existieren!
 
 Mindestens eine Textur-Ebene muss vorhanden sein!
@@ -1253,11 +1283,11 @@ Top
 Oben (-y)
 Top (-y)
 Oberflächen
-
+Surfaces
 Objekt
-
+Object
 Objekt %d von %d
-
+Object %d / %d
 Objekte (*.object)
 Objects (*.object)
 Objekte-Datei
@@ -1299,9 +1329,9 @@ Sounds (wav,mp3, midi)
 Spiegeln
 Mirror
 Terrain
-
+Terrain
 Terrains
-
+Terrains
 Textur-Datei
 Texture file
 Textur-Datei nicht ladbar: %s
@@ -1313,21 +1343,21 @@ Textures
 Texturen (bmp,jpg,tga,avi)
 Textures (bmp,jpg,tga,avi)
 Unbekannte Dateinamenerweiterung: 
-
+Unknown file extension: 
 Unbenannt
-
+Unknown
 Unten
 Bottom
 Unten (y)
 Bottom (y)
 Vertex
-
+Vertex
 Vertexpunkt
 Vertex
 Vertices
 Vertices
 Vertices auswählen
-
+Select vertices
 ViewStage Pop
 ViewStage Pop
 ViewStage Push
@@ -1342,9 +1372,11 @@ Welt-Datei
 World file
 Welten (*.world)
 Worlds (*.world)
-Wuefel: zweiter Punkt
+Würfel: Punkt 1 / 3
 
-Wuerfel: dritter Punkt
+Würfel: Punkt 2 / 3
+
+Würfel: Punkt 3 / 3
 
 Zylinder (-schlange)
 
@@ -1358,8 +1390,6 @@ administrieren
 administrate
 beliebige Datei
 arbitrary file
-cube...
-
 i'm now going to clean up...
 i'm now going to clean up...
 kein Dreieck ausgewählt
@@ -1379,13 +1409,13 @@ neues Terrain...
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 skin: %d
-
+skin: %d
 surf: %d
-
+surf: %d
 tria: %d
-
+tria: %d
 vert: %d
-
+vert: %d
 zylinder... Punkte + Shift Return
 
 #

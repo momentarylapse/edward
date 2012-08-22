@@ -1,14 +1,7 @@
-// IDs
-enum{
-	HMM_MODEL_MATERIAL_SELECTION_DIALOG,
-	HMM_MATERIAL_LIST
-};
-
-
 	// dialog
-	PropertiesDialog=HuiCreateSizableDialog("Ein Material ausw&ahlen",355,360,MainWin,false,&ModelPropertyDialogFunc);
-	PropertiesDialog->SetID(HMM_MODEL_MATERIAL_SELECTION_DIALOG);
-	PropertiesDialog->AddListView("!format=ttCit\\#\\Dreiecke\\Aktiv\\\\Datei",-1,0,0,0,HMM_MATERIAL_LIST);
+	PropertiesDialog = HuiCreateSizableDialog("Ein Material ausw&ahlen", 355, 360, MainWin, false);
+	PropertiesDialog->SetID("model_material_selection_dialog");
+	PropertiesDialog->AddListView("!format=ttCit\\#\\Dreiecke\\Aktiv\\\\Datei", 0, 0, 0, 0, "material_list");
 	PropertiesDialog->Update();
 
 

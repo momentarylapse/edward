@@ -1,9 +1,17 @@
 // Language
 日本語
 // Num IDs
-539
+554
 // Data (ID,Text)
 ad_dialog
+
+ad_edit
+
+ad_export_game
+
+ad_rudimentary_configuration
+
+ad_tab_control
 
 add_material
 
@@ -12,6 +20,12 @@ add_script
 add_texture_level
 
 administrate
+
+adt_dest
+
+adt_file
+
+adt_source
 
 align_to_grid
 
@@ -184,6 +198,18 @@ export_to_gamestudio
 export_type
 single files\\archive (compressed)\\archive (uncompressed)
 export_world
+
+file_list_all
+
+file_list_cur
+
+file_list_detail_dest
+
+file_list_detail_source
+
+file_list_missing
+
+file_list_super
 
 fog_enabled
 
@@ -799,6 +825,8 @@ remove_script
 
 remove_skybox
 削除
+rename
+
 replace_objects
 
 resolution
@@ -888,6 +916,8 @@ subtract_surface
 sun_ang_from_camera
 
 sun_enabled
+
+table_2
 
 terrain_create
 新しい　陸...
@@ -1342,9 +1372,11 @@ Welt-Datei
 
 Welten (*.world)
 
-Wuefel: zweiter Punkt
+Würfel: Punkt 1 / 3
 
-Wuerfel: dritter Punkt
+Würfel: Punkt 2 / 3
+
+Würfel: Punkt 3 / 3
 
 Zylinder (-schlange)
 
@@ -1357,8 +1389,6 @@ Zylinder: Radius
 administrieren
 
 beliebige Datei
-
-cube...
 
 i'm now going to clean up...
 

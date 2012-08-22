@@ -1,6 +1,38 @@
 	// dialog
 	Dialog = HuiCreateSizableDialog("Verwaltung", 680, 590, MainWin, false);
 	Dialog->SetID("ad_dialog");
+	Dialog->AddControlTable("", 0, 0, 1, 2, "table_1");
+	Dialog->SetTarget("table_1", 0);
+	Dialog->AddControlTable("!noexpandy", 0, 1, 6, 1, "table_2");
+	Dialog->AddTabControl("Aktuelles Spiel\\Alle Dateien\\Details\\&Uberfl&ussig\\Fehlend", 0, 0, 0, 0, "ad_tab_control");
+	Dialog->SetTarget("table_2", 0);
+	Dialog->AddButton("L&oschen", 0, 0, 0, 0, "delete");
+	Dialog->SetImage("delete", "hui:delete");
+	Dialog->AddButton("Umbenennen", 1, 0, 0, 0, "rename");
+	Dialog->AddButton("Bearbeiten", 2, 0, 0, 0, "ad_edit");
+	Dialog->SetImage("ad_edit", "hui:edit");
+	Dialog->AddButton("Spiel exportieren", 4, 0, 0, 0, "ad_export_game");
+	Dialog->SetImage("ad_export_game", "hui:refresh");
+	Dialog->AddButton("Grundeinstellungen", 5, 0, 0, 0, "ad_rudimentary_configuration");
+	Dialog->SetImage("ad_rudimentary_configuration", "hui:preferences");
+	Dialog->AddText("", 3, 0, 0, 0, "dummy_text");
+	Dialog->SetTarget("ad_tab_control", 0);
+	Dialog->AddListView("!format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend", 0, 0, 0, 0, "file_list_cur");
+	Dialog->SetTarget("ad_tab_control", 1);
+	Dialog->AddListView("!format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend", 0, 0, 0, 0, "file_list_all");
+	Dialog->SetTarget("ad_tab_control", 2);
+	Dialog->AddControlTable("", 0, 0, 1, 6, "table_3");
+	Dialog->SetTarget("table_3", 0);
+	Dialog->AddText("!bold\\Datei", 0, 0, 0, 0, "adt_file");
+	Dialog->AddText("", 0, 1, 0, 0, "file_details");
+	Dialog->AddText("!bold\\gefordert von", 0, 2, 0, 0, "adt_source");
+	Dialog->AddListView("!format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend", 0, 3, 0, 0, "file_list_detail_source");
+	Dialog->AddText("!bold\\fordert", 0, 4, 0, 0, "adt_dest");
+	Dialog->AddListView("!format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend", 0, 5, 0, 0, "file_list_detail_dest");
+	Dialog->SetTarget("ad_tab_control", 3);
+	Dialog->AddListView("!format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend", 0, 0, 0, 0, "file_list_super");
+	Dialog->SetTarget("ad_tab_control", 4);
+	Dialog->AddListView("!format=ttttc\\Typ\\Datei\\gefordert von\\fordert\\Fehlend", 0, 0, 0, 0, "file_list_missing");
 	Dialog->Update();
 
 
