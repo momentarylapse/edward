@@ -283,7 +283,7 @@ class DataModel : Data
 	extern ModeModelTriangle *AddTriangle(int a, int b, int c)
 	extern ModeModelSurface *AddBall(vector pos, float radius, int num_x, int num_y, bool as_sphere)
 	extern ModeModelSurface *AddPlane(vector pos, vector dv1, vector dv2, int num_x, int num_y)
-	extern ModeModelSurface *AddCube(vector pos, vector dv1, vector dv2, vector dv3)
+	extern ModeModelSurface *AddCube(vector pos, vector dv1, vector dv2, vector dv3, int num_1, int num_2, int num_3)
 	extern ModeModelSurface *AddCylinder(vector pos[], float radius[], int rings, int edges, bool closed)
 	extern void BeginActionGroup()
 	extern void EndActionGroup()

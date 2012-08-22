@@ -14,7 +14,7 @@ ModeModelMeshCreateCube::ModeModelMeshCreateCube(Mode *_parent) :
 {
 	data = (DataModel*)_parent->GetData();
 
-	message = _("cube...");
+	message = _("W&urfel: Punkt 1 / 3");
 	pos_chosen = false;
 	pos2_chosen = false;
 	for (int i=0;i<3;i++)
@@ -42,8 +42,14 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 {
 	if (pos_chosen){
 		if (pos2_chosen){
+			int num_1 = dialog->GetInt("nc_x");
+			int num_2 = dialog->GetInt("nc_y");
+			int num_3 = dialog->GetInt("nc_z");
+			HuiConfigWriteInt("NewCubeNumX", num_1);
+			HuiConfigWriteInt("NewCubeNumY", num_2);
+			HuiConfigWriteInt("NewCubeNumZ", num_3);
 
-			data->AddCube(pos, length[0], length[1], length[2]);
+			data->AddCube(pos, length[0], length[1], length[2], num_1, num_2, num_3);
 
 			Abort();
 		}else{
@@ -51,7 +57,7 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 				pos2 = data->Vertex[multi_view->Selected].pos;
 			else
 				pos2 = multi_view->GetCursor3d();
-			message = _("Wuerfel: dritter Punkt");
+			message = _("W&urfel: Punkt 3 / 3");
 			pos2_chosen = true;
 			set_dpos3(length, v0);
 		}
@@ -60,7 +66,7 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 			pos = data->Vertex[multi_view->Selected].pos;
 		else
 			pos = multi_view->GetCursor3d();
-		message = _("Wuefel: zweiter Punkt");
+		message = _("W&urfel: Punkt 2 / 3");
 		pos_chosen = true;
 	}
 }
@@ -83,6 +89,26 @@ void ModeModelMeshCreateCube::OnMouseMove()
 }
 
 
+
+void ModeModelMeshCreateCube::OnStart()
+{
+	// Dialog
+	dialog = HuiCreateResourceDialog("new_cube_dialog", ed);
+
+	dialog->SetInt("nc_x", HuiConfigReadInt("NewCubeNumX", 1));
+	dialog->SetInt("nc_y", HuiConfigReadInt("NewCubeNumY", 1));
+	dialog->SetInt("nc_z", HuiConfigReadInt("NewCubeNumZ", 1));
+	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
+	dialog->Update();
+	dialog->Event("hui:close", &HuiFuncIgnore);
+
+	ed->Activate();
+}
+
+void ModeModelMeshCreateCube::OnEnd()
+{
+	delete(dialog);
+}
 
 void ModeModelMeshCreateCube::OnDrawWin(int win, irect dest)
 {

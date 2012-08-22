@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-534
+539
 // Data (ID,Text)
 ad_dialog
 
@@ -643,6 +643,14 @@ nb_x
 
 nb_y
 
+nc_x
+
+nc_y
+
+nc_z
+
+ncdt_slides
+
 ncy_edges
 
 ncy_endings
@@ -677,6 +685,8 @@ new_ball_dialog_t_y
 
 new_cube
 正六面体
+new_cube_dialog
+
 new_cylinder
 円柱...
 new_cylinder_dialog

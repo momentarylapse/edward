@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-534
+539
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -643,6 +643,14 @@ nb_x
 \\1
 nb_y
 \\1
+nc_x
+
+nc_y
+
+nc_z
+
+ncdt_slides
+
 ncy_edges
 \\2
 ncy_endings
@@ -677,6 +685,8 @@ new_ball_dialog_t_y
 # vertices per disc
 new_cube
 Cube
+new_cube_dialog
+
 new_cylinder
 Cylinder...
 new_cylinder_dialog

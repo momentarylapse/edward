@@ -1,6 +1,6 @@
 t3
 // Number Of Resources
-47
+48
 // Resource
 Menu
 
@@ -8783,6 +8783,112 @@ nb_tab_control
 
 // Resource
 Dialog
+new_cube_dialog
+
+1
+140
+135
+0
+0
+0
+1
+0
+
+
+7
+Text
+x
+
+1
+10
+40
+20
+25
+-1
+0
+0
+
+
+SpinButton
+nc_x
+
+1
+35
+40
+95
+25
+-1
+0
+0
+
+
+SpinButton
+nc_y
+
+1
+35
+70
+95
+25
+-1
+0
+0
+
+
+SpinButton
+nc_z
+
+1
+35
+100
+95
+25
+-1
+0
+0
+
+
+Text
+y
+
+1
+10
+70
+20
+25
+-1
+0
+0
+
+
+Text
+z
+
+1
+10
+100
+20
+25
+-1
+0
+0
+
+
+Text
+ncdt_slides
+
+1
+10
+10
+100
+25
+-1
+0
+0
+
+
+// Resource
+Dialog
 new_cylinder_dialog
 
 1
@@ -15479,7 +15585,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-675
+680
 // Text
 ad_dialog
 Verwaltung
@@ -16281,6 +16387,14 @@ nb_x
 \\1
 nb_y
 \\1
+nc_x
+\\1
+nc_y
+\\1
+nc_z
+\\1
+ncdt_slides
+Streifen
 ncy_edges
 \\2
 ncy_endings
@@ -16315,6 +16429,8 @@ new_ball_dialog_t_y
 Punkte pro Scheibe
 new_cube
 Quader
+new_cube_dialog
+neuer Quader
 new_cylinder
 Zylinder (-schlange)
 new_cylinder_dialog
@@ -16837,7 +16953,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-675
+680
 // Text
 ad_dialog
 Administration
@@ -17639,6 +17755,14 @@ nb_x
 \\1
 nb_y
 \\1
+nc_x
+
+nc_y
+
+nc_z
+
+ncdt_slides
+
 ncy_edges
 \\2
 ncy_endings
@@ -17673,6 +17797,8 @@ new_ball_dialog_t_y
 # vertices per disc
 new_cube
 Cube
+new_cube_dialog
+
 new_cylinder
 Cylinder...
 new_cylinder_dialog
@@ -18399,7 +18525,7 @@ program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 // Language
 日本語
 // NumIDs
-675
+680
 // Text
 ad_dialog
 
@@ -19201,6 +19327,14 @@ nb_x
 
 nb_y
 
+nc_x
+
+nc_y
+
+nc_z
+
+ncdt_slides
+
 ncy_edges
 
 ncy_endings
@@ -19235,6 +19369,8 @@ new_ball_dialog_t_y
 
 new_cube
 正六面体
+new_cube_dialog
+
 new_cylinder
 円柱...
 new_cylinder_dialog
