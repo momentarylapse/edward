@@ -25,6 +25,12 @@ public:
 	void OnUpdate(Observable *o);
 
 	void OnClose();
+	void OnExit();
+	void OnRename();
+	void OnDelete();
+	void OnEdit();
+	void OnFileList();
+	void OnRudimentaryConfiguration();
 
 
 	void FillAdminList(int view, const string &lid);

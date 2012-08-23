@@ -31,6 +31,7 @@ class AdminFileList : public Array<AdminFile*>
 {
 public:
 	void clear();
+	void clear_deep();
 	void sort();
 	void add_recursive(AdminFile *a);
 	AdminFile *add_unchecked(int kind, const string &filename, AdminFile *source = NULL);

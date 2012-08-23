@@ -267,6 +267,7 @@ void AdminFile::check(AdminFileList &list)
 				for (int j=0;j<m.Material[i].NumTextures;j++)
 					add_possible_link(l, FDTexture, m.Material[i].TextureFile[j]);
 			}
+			add_possible_link(l, FDScript, m.meta_data.ScriptFile);
 		}else
 			Missing=true;
 	}else if (Kind==FDMaterial){
@@ -282,11 +283,11 @@ void AdminFile::check(AdminFileList &list)
 		}else
 			Missing=true;
 	}else if (Kind==FDFont){
-		/*DataFont f;
+		DataFont f;
 		if (f.Load(MaterialDir + Name,false)){
 			Time = f.file_time;
 			add_possible_link(l, FDTexture, f.TextureFile);
-		}else*/
+		}else
 			Missing=true;
 	}else if (Kind==FDScript){
 		if (f->Open(ScriptDir + Name)){
@@ -420,6 +421,11 @@ void AdminFileList::sort()
 
 void AdminFileList::clear()
 {
+	Array<AdminFile*>::clear();
+}
+
+void AdminFileList::clear_deep()
+{
 	foreach(*this, a)
 		delete(a);
 	Array<AdminFile*>::clear();
@@ -551,7 +557,7 @@ void DataAdministration::SaveDatabase()
 void DataAdministration::ResetDatabase()
 {
 	msg_db_r("ResetDatabase",5);
-	file_list.clear();
+	file_list.clear_deep();
 	msg_db_l(5);
 }
 

@@ -9,6 +9,7 @@
 #include "../../../Data/Administration/DataAdministration.h"
 #include "../../../Edward.h"
 #include "../../../Mode/Welcome/ModeWelcome.h"
+#include <assert.h>
 
 AdministrationDialog::AdministrationDialog(CHuiWindow* _parent, bool _allow_parent, DataAdministration *_data):
 	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls | HuiWinModeResizable, true)
@@ -19,19 +20,20 @@ AdministrationDialog::AdministrationDialog(CHuiWindow* _parent, bool _allow_pare
 	// dialog
 	FromResource("ad_dialog");
 	EventM("hui:close", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnClose);
-	/*EventM("cancel", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnClose);
-	EventM("hui:close", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnClose);
-	EventM("set", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::ApplyData);
-	EventM("ok", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnOk);
-	EventM("mat_add_texture_level", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnAddTextureLevel);
-	EventM("mat_textures", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnTextures);
-	EventMX("mat_textures", "hui:select", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnTexturesSelect);
-	EventM("mat_delete_texture_level", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnDeleteTextureLevel);
-	EventM("mat_empty_texture_level", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnEmptyTextureLevel);
-	EventM("transparency_mode", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnTransparencyMode);
-	EventM("reflection", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnReflection);
-	EventM("reflection_textures", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnReflectionTextures);
-	EventM("find_effect", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnFindEffect);*/
+	EventM("exit", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnExit);
+	EventM("ad_edit", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnEdit);
+	EventM("rename", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnRename);
+	EventM("delete", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnDelete);
+	EventM("file_list_cur", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnFileList);
+	EventM("file_list_all", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnFileList);
+	EventM("file_list_detail_source", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnFileList);
+	EventM("file_list_detail_dest", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnFileList);
+	EventM("file_list_super", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnFileList);
+	EventM("file_list_missing", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnFileList);
+	EventM("rudimentary_configuration", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnRudimentaryConfiguration);
+	EventM("ad_rudimentary_configuration", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnRudimentaryConfiguration);
+	//EventM("ad_export_game", this, (void(HuiEventHandler::*)())&AdministrationDialog::PreExportGame);
+	//EventM("export_game", this, (void(HuiEventHandler::*)())&AdministrationDialog::PreExportGame);
 
 	LoadData();
 	Subscribe(data);
@@ -46,8 +48,8 @@ void AdministrationDialog::LoadData()
 {
 	FillAdminList(0, "file_list_cur");
 	FillAdminList(1, "file_list_all");
-	FillAdminList(3, "file_list_super");
-	FillAdminList(4, "file_list_missing");
+	FillAdminList(4, "file_list_super");
+	FillAdminList(5, "file_list_missing");
 }
 
 void AdministrationDialog::OnUpdate(Observable* o)
@@ -79,8 +81,6 @@ static string FD2Str(int k)
 void AdministrationDialog::FillAdminList(int view, const string &lid)
 {
 	msg_db_r("FillAdminList",1);
-	if (view<0)
-		view = GetInt("ad_tab_control");
 
 	Reset(lid);
 	string sep = HuiComboBoxSeparator;
@@ -88,24 +88,24 @@ void AdministrationDialog::FillAdminList(int view, const string &lid)
 
 	// currently viewed list
 	AdminFileList *l = get_list(lid);
+	assert(l);
+
 	l->clear();
-	if (view==0){ // current game (in game.ini)
+	if (view == 0){ // current game (in game.ini)
 		l->add_recursive(data->file_list[0]);
-	}else if (view==1){ // all files
+	}else if (view == 1){ // all files
 		*l = data->file_list;
-	}else if (view==2){ // selected file
-		if (lid == "file_list_detail_source"){
-			for (int j=0;j<SelectedAdminFile->Parent.num;j++)
-				l->add(SelectedAdminFile->Parent[j]);
-		}else{
-			for (int j=0;j<SelectedAdminFile->Child.num;j++)
-				l->add(SelectedAdminFile->Child[j]);
-		}
-	}else if (view==3){ // unnessecary
+	}else if (view == 2){ // selected file
+		foreach(SelectedAdminFile->Parent, a)
+			l->add(a);
+	}else if (view == 3){
+		foreach(SelectedAdminFile->Child, a)
+			l->add(a);
+	}else if (view == 4){ // unnessecary
 		foreach(data->file_list, a)
 			if ((a->Kind >= 0) && (a->Parent.num == 0))
 				l->add(a);
-	}else if (view==4){ // missing
+	}else if (view == 5){ // missing
 		foreach(data->file_list, a)
 			if (a->Missing)
 				l->add(a);
@@ -135,10 +135,13 @@ void AdministrationDialog::ShowDetail(int n, const string &lid)
 {
 	msg_db_r("ShowDetail", 1);
 	AdminFileList *l = get_list(lid);
+	assert(l);
+	assert(n >= 0);
+	assert(n < l->num);
 	SelectedAdminFile = (*l)[n];
 	SetString("file_details", SelectedAdminFile->Name);
 	FillAdminList(2, "file_list_detail_source");
-	FillAdminList(2, "file_list_detail_dest");
+	FillAdminList(3, "file_list_detail_dest");
 	SetInt("ad_tab_control", 2);
 	msg_db_l(1);
 }
@@ -165,4 +168,26 @@ void AdministrationDialog::OnClose()
 {
 	ed->SetMode(mode_welcome);
 }
+
+void AdministrationDialog::OnExit()
+{	ed->SetMode(mode_welcome);	}
+
+void AdministrationDialog::OnRename()
+{}//{	madmin->Rename();	}
+
+void AdministrationDialog::OnDelete()
+{}//{	madmin->Delete();	}
+
+void AdministrationDialog::OnEdit()
+{}//{	madmin->Edit();	}
+
+void AdministrationDialog::OnFileList()
+{
+	string id = HuiGetEvent()->id;
+	int n = GetInt(id);
+	ShowDetail(n, id);
+}
+
+void AdministrationDialog::OnRudimentaryConfiguration()
+{}//{	madmin->ExecuteConfigurationDialog(false);	}
 
