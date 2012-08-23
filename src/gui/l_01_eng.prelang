@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-560
+558
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -117,8 +117,6 @@ current_mode_font
 -Font-Mode-
 current_mode_model_skeleton
 -Model-Mode (Skeleton)-
-current_mode_none
--Empty-Mode-
 cut_out
 Cut off
 default_colors
@@ -359,8 +357,6 @@ key_dialog_t_key
 combination:
 key_list
 !tree\\command\\keys
-kill
-kill'em all
 l
 L
 level
@@ -1124,7 +1120,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-152
+165
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1162,8 +1158,12 @@ Ansicht
 View
 Anzahl der Texturen wurde an das Material angepasst!
 Number of textures changed to comply with the material!
+Arbeitsverzeichnis \"%s\" enthält keine \"game.ini\"-Datei. Soll diese erstellt werden?
+
 Beschreibung
 Description
+Datei
+
 Datei ist nicht in der Stimmung, geöffnet zu werden
 The file is not in the mood of beeing opened
 Datei liegt nicht im vorgesehenen Verzeichnis: \"%s\"\noder in dessen Unterverzeichnis
@@ -1192,6 +1192,8 @@ Editor für Spiele-Daten der x9-Engine
 Editor for game data of the x9 engine
 Eigenschaften
 Properties
+Erstelle Datenbank
+
 Es existiert bereits eine Animation mit diesem Index. Bitte einen anderen wählen.
 
 Es muss genau 1 Knochen markiert sein!
@@ -1216,6 +1218,8 @@ Font-Datei
 Font file
 Font-Dateien (*.xfont)
 Font files (*.xfont)
+Frage
+
 Gespeichert!
 
 Hinten
@@ -1224,14 +1228,20 @@ Hinten (-z)
 Back (-z)
 Höchstens %d Textur-Ebenen erlaubt!
 Only %d texture levels allowed!
+Initialisierung
+
 Isometrisch
 Isometric
 Ist halt irgendwie passiert...
 Just happened somehow...
+Item
+
 Item-Datei
 Item file
 Items (*.item)
 Items (*.item)
+Kamera
+
 Kamera-Datei
 Camera file
 Kamera-Dateien (*.camera)
@@ -1318,10 +1328,14 @@ Rechts (-x)
 Right (-x)
 Rotieren
 Rotate
+Script
+
 Script-Datei
 Script file
 Script-Dateien (*.kaba)
 Script files (*.kaba)
+Shader
+
 Shader-Datei
 Shader file
 Shader-Dateien (*.fx)
@@ -1334,6 +1348,8 @@ Skalieren (2D)
 Scale (2D)
 Skelett
 Skeleton
+Sound
+
 Sound-Datei
 Sound file
 Sounds (wav,mp3,midi)
@@ -1344,6 +1360,10 @@ Terrain
 Terrain
 Terrains
 Terrains
+Teste Dateien
+
+Textur
+
 Textur-Datei
 Texture file
 Textur-Datei nicht ladbar: %s
@@ -1395,6 +1415,8 @@ Zylinder (-schlange)
 Zylinder: Endpunkt
 
 Zylinder: Radius
+
+[Engine]
 
 \\\\   - keine Texturen -
 

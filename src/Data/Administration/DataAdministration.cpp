@@ -606,8 +606,6 @@ void DataAdministration::UpdateDatabase()
 	f1->add_child(f3);
 	LoadGameIni(ed->RootDir,&GameIni);
 
-	HuiGetTime(0);
-
 	// find all files
 	// iterate file types
 	for (int update_kind=0;update_kind<NumFDs;update_kind++){

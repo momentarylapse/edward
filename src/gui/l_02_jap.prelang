@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-560
+558
 // Data (ID,Text)
 ad_dialog
 
@@ -117,8 +117,6 @@ current_mode_font
 [フォント　の　モード]
 current_mode_model_skeleton
 [モデル　の　モード (骨格)]
-current_mode_none
-[なし]
 cut_out
 
 default_colors
@@ -359,8 +357,6 @@ key_dialog_t_key
 
 key_list
 !tree\\command\\keys
-kill
-kill'em all
 l
 L
 level
@@ -1124,7 +1120,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-152
+165
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1162,7 +1158,11 @@ Ansicht
 
 Anzahl der Texturen wurde an das Material angepasst!
 
+Arbeitsverzeichnis \"%s\" enthält keine \"game.ini\"-Datei. Soll diese erstellt werden?
+
 Beschreibung
+
+Datei
 
 Datei ist nicht in der Stimmung, geöffnet zu werden
 
@@ -1192,6 +1192,8 @@ Editor für Spiele-Daten der x9-Engine
 
 Eigenschaften
 
+Erstelle Datenbank
+
 Es existiert bereits eine Animation mit diesem Index. Bitte einen anderen wählen.
 
 Es muss genau 1 Knochen markiert sein!
@@ -1216,6 +1218,8 @@ Font-Datei
 
 Font-Dateien (*.xfont)
 
+Frage
+
 Gespeichert!
 
 Hinten
@@ -1224,13 +1228,19 @@ Hinten (-z)
 
 Höchstens %d Textur-Ebenen erlaubt!
 
+Initialisierung
+
 Isometrisch
 
 Ist halt irgendwie passiert...
 
+Item
+
 Item-Datei
 
 Items (*.item)
+
+Kamera
 
 Kamera-Datei
 
@@ -1318,9 +1328,13 @@ Rechts (-x)
 
 Rotieren
 
+Script
+
 Script-Datei
 
 Script-Dateien (*.kaba)
+
+Shader
 
 Shader-Datei
 
@@ -1334,6 +1348,8 @@ Skalieren (2D)
 
 Skelett
 
+Sound
+
 Sound-Datei
 
 Sounds (wav,mp3,midi)
@@ -1343,6 +1359,10 @@ Spiegeln
 Terrain
 
 Terrains
+
+Teste Dateien
+
+Textur
 
 Textur-Datei
 
@@ -1395,6 +1415,8 @@ Zylinder (-schlange)
 Zylinder: Endpunkt
 
 Zylinder: Radius
+
+[Engine]
 
 \\\\   - keine Texturen -
 

@@ -12067,11 +12067,219 @@ menu_nomode
 0
 
 
-6
-Item
-current_mode_none
+22
+ItemPopup
+menu_file
 
+1
+8
 0
+0
+0
+0
+0
+0
+
+
+ItemPopup
+menu_model
+
+1
+2
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+model_new
+hui:new
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+model_open
+hui:open
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemPopup
+menu_font
+
+1
+2
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+font_new
+hui:new
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+font_open
+hui:open
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemPopup
+menu_material
+
+1
+2
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+material_new
+hui:new
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+material_open
+hui:open
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemPopup
+menu_world
+
+1
+2
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+world_new
+hui:new
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+world_open
+hui:open
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+administrate
+hui:preferences
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+settings
+hui:preferences
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemSeparator
+
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+exit
+hui:quit
+1
 0
 0
 0
@@ -12107,8 +12315,8 @@ hui:help
 0
 
 
-Item
-kill
+ItemSeparator
+
 
 1
 0
@@ -12120,8 +12328,8 @@ kill
 0
 
 
-ItemSeparator
-
+Item
+send_bug_report
 
 1
 0
@@ -15897,7 +16105,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-704
+702
 // Text
 ad_dialog
 Verwaltung
@@ -16025,8 +16233,6 @@ current_mode_font
 -Schrift-Modus-
 current_mode_model_skeleton
 -Modell-Modus (Skelett)-
-current_mode_none
--Leerer-Modus-
 cut_out
 --Heraustrennen
 default_colors
@@ -16381,8 +16587,6 @@ key_list
 !tree\\Befehl\\Tasten
 key_reset
 
-kill
-alle...umbringen
 kind
 
 l
@@ -17313,7 +17517,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-704
+702
 // Text
 ad_dialog
 Administration
@@ -17441,8 +17645,6 @@ current_mode_font
 -Font-Mode-
 current_mode_model_skeleton
 -Model-Mode (Skeleton)-
-current_mode_none
--Empty-Mode-
 cut_out
 Cut off
 default_colors
@@ -17797,8 +17999,6 @@ key_list
 !tree\\command\\keys
 key_reset
 
-kill
-kill'em all
 kind
 
 l
@@ -18991,7 +19191,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-704
+702
 // Text
 ad_dialog
 
@@ -19119,8 +19319,6 @@ current_mode_font
 [フォント　の　モード]
 current_mode_model_skeleton
 [モデル　の　モード (骨格)]
-current_mode_none
-[なし]
 cut_out
 
 default_colors
@@ -19475,8 +19673,6 @@ key_list
 !tree\\command\\keys
 key_reset
 
-kill
-kill'em all
 kind
 
 l
