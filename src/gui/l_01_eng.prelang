@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-567
+560
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -12,21 +12,21 @@ Export game
 ad_rudimentary_configuration
 Basic settings
 ad_tab_control
-
+Current game\\All files\\Details\\Not needed\\Missing
 add_material
-
+New...
 add_script
-
+Add
 add_texture_level
-
+New
 administrate
 Administrate
 adt_dest
-
+!bold\\Needs
 adt_file
-
+!bold\\File
 adt_source
-
+!bold\\Needed by
 align_to_grid
 Align to grid
 all
@@ -102,7 +102,7 @@ Cancel
 choose_material
 Choose material...
 clear_texture_level
-
+Clear
 connect
 Connect Points
 copy
@@ -113,8 +113,6 @@ create_objects
 Objects...
 current_material
 Current material
-current_mode_administration
--Administration-Mode-
 current_mode_font
 -Font-Mode-
 current_mode_model_skeleton
@@ -188,7 +186,7 @@ Exit
 exponent
 \\0\\10\\0.05
 export_game
-Export game...
+Export...
 export_group
 Groupe...
 export_to_gamestudio
@@ -351,10 +349,6 @@ invert_selection
 Invert
 invert_trias
 Triangle inversion
-item_new
-New
-item_open
-Open...
 just_physical
 Physical skin
 just_selection
@@ -478,7 +472,7 @@ File
 menu_administration_game
 Game
 menu_all_header
-
+All
 menu_file
 File
 menu_font
@@ -487,8 +481,6 @@ menu_font_edit
 Edit
 menu_help
 ?
-menu_item
-Item
 menu_material
 Material
 menu_material_properties
@@ -527,8 +519,6 @@ menu_model_view
 View
 menu_model_viewstage
 Viewstage
-menu_object
-Object
 menu_rightmouse
 Right mouse button
 menu_surface_header
@@ -767,10 +757,6 @@ num_x
 \\1
 num_z
 \\1
-object_new
-New
-object_open
-Open...
 odt_max_scriptvars
 max number:
 ok
@@ -832,7 +818,7 @@ Rotate
 rotation_dialog
 Rotation
 rudimentary_configuration
-Configuration...
+Basic settings
 save
 Save
 save_as
@@ -910,37 +896,37 @@ stretch_z
 subtract_surface
 
 sun_ang_from_camera
-
+Direction from camera
 sun_enabled
 enabled
 table_1
-
+ControlTable 1
 table_10
-
+!noexpandy
 table_11
-
+!noexpandy
 table_2
-
+!noexpandy
 table_3
-
+ControlTable 3
 table_4
-
+!noexpandy
 table_5
-
+ControlTable 5
 table_6
-
+ControlTable 6
 table_7
-
+ControlTable 7
 table_8
-
+ControlTable 8
 table_9
-
+ControlTable 9
 terrain_create
 Terrain (new)...
 terrain_dialog
 Terrain properties
 terrain_dialog_grp_apply
-
+!bold\\Apply
 terrain_dialog_grp_heightmap
 !bold\\New terrain from heightmap
 terrain_dialog_grp_size
@@ -948,7 +934,7 @@ terrain_dialog_grp_size
 terrain_dialog_t_filename
 terrain file:
 terrain_dialog_t_filter
-
+Filter (optional)
 terrain_dialog_t_gray
 1 level of gray =
 terrain_dialog_t_heightmap
@@ -964,17 +950,17 @@ Terrain size
 terrain_dialog_tab_control
 properties\\textures\\material\\import
 terrain_heightmap
-
+Heightmap
 terrain_heightmap_dialog
-
+Heightmap
 terrain_hm_dialog_grp_heightmap
-
+!bold\\Height from image's brightness
 terrain_hm_dialog_t_gray
-
+Maximum height
 terrain_hm_dialog_t_op
-
+Operation
 terrain_hm_dialog_t_stretch
-
+Zoom
 terrain_load
 Terrain (load)...
 terrain_save_as
@@ -1008,7 +994,7 @@ Delete
 texture_empty
 Leeren
 texture_list
-
+!format=tCit\\#\\Active\\\\File
 texture_map_complete
 1:1 mapping
 texture_menu_sign
@@ -1020,15 +1006,15 @@ transparency...
 transparency_mode
   --none--\\color keyed (smooth)\\color keyed (hard)\\factor\\function
 transparency_mode:color_key
-
+Color key
 transparency_mode:factor
-
+Factor
 transparency_mode:function
-
+Function
 transparency_mode:material
-
+Transparency from material
 transparency_mode:none
-
+No transparency
 undo
 Undo
 view_back
@@ -1094,7 +1080,7 @@ X: Altitude above horizon (X-Z-plane)
 world_dialog_t_sun_ang_y
 Y: Direction (Angle to Z-axis)
 world_dialog_t_sun_dir
-
+Direction
 world_dialog_tab_control
 common\\background\\script variables
 world_new
@@ -1145,19 +1131,19 @@ Set background image
    - ohne Datei -
    - no file -
  -- Komplette Welt -- 
-
+ -- Whole world -- 
  ist abgestürzt!\t\tDie letzten Zeilen der Datei message.txt:
-
+ has crashed!\t\tLast lines from message.txt:
 !bold\\Kommentar/Geschehnisse:
 !bold\\Comment/What happened:
 !bold\\Name:
 !bold\\Name:
 %d Vertizes, %d Dreiecke eingefügt
-
+%d vertices, %d triangles pasted
 %d Vertizes, %d Dreiecke kopiert
-
+%d vertices, %d triangles copied
 %d geschlossene Flächen subtrahiert
-
+%d closed surfaces subtracted
 (anonym)
 (anonymous)
 ...done
@@ -1169,7 +1155,7 @@ Cancel
 Administration
 Administration
 Angegebene Welt konnte nicht korrekt geladen werden!
-
+World could not be loaded correctly!
 Animation
 Animation
 Ansicht
@@ -1195,13 +1181,13 @@ Triangle
 Dreiecke
 Triangles
 Dreiecke wählen: %d -> Shift + Return
-
+Choose triangles: %d -> Shift + Return
 Ebene
 Plane
 Ebene: erster Punkt
-
+Plane: first point
 Ebene: zweiter Punkt
-
+Plane: second point
 Editor für Spiele-Daten der x9-Engine
 Editor for game data of the x9 engine
 Eigenschaften

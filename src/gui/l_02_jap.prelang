@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-567
+560
 // Data (ID,Text)
 ad_dialog
 
@@ -112,8 +112,6 @@ create_lightmap
 create_objects
 オブジェクト...
 current_material
-
-current_mode_administration
 
 current_mode_font
 [フォント　の　モード]
@@ -351,10 +349,6 @@ invert_selection
 
 invert_trias
 
-item_new
-新規
-item_open
-開く...
 just_physical
 
 just_selection
@@ -474,7 +468,7 @@ max_script_vars
 me
 mu
 menu_administration_file
-ファイル
+
 menu_administration_game
 
 menu_all_header
@@ -487,8 +481,6 @@ menu_font_edit
 編集
 menu_help
 ヘルプ
-menu_item
-アイテム
 menu_material
 マテリアル
 menu_material_properties
@@ -527,8 +519,6 @@ menu_model_view
 表示
 menu_model_viewstage
 表示　の　レベル
-menu_object
-オブジェクト
 menu_rightmouse
 
 menu_surface_header
@@ -767,10 +757,6 @@ num_x
 
 num_z
 
-object_new
-新規
-object_open
-開く...
 odt_max_scriptvars
 
 ok

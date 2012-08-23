@@ -6,6 +6,8 @@
  */
 
 #include "ModeAdministration.h"
+#include "Dialog/AdministrationDialog.h"
+#include "../../Edward.h"
 
 ModeAdministration *mode_administration;
 
@@ -20,10 +22,13 @@ ModeAdministration::~ModeAdministration()
 
 void ModeAdministration::OnStart()
 {
+	dialog = new AdministrationDialog(ed, true);
+	dialog->Update();
 }
 
 void ModeAdministration::OnEnd()
 {
+	delete(dialog);
 }
 
 void ModeAdministration::OnCommand(const string& id)

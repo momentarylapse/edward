@@ -869,7 +869,7 @@ void CHuiWindow::AddControlTable(const string &title, int x, int y, int width, i
 	_InsertControl_(t, x, y, width, height, id, HuiKindControlTable);
 }
 
-void CHuiWindow::EmbedDialog(const string &root, int page, const string &id)
+void CHuiWindow::EmbedDialog(const string &id, int x, int y)
 {
 #if 0
 	CHuiWindow *dlg = HuiCreateResourceDialog(id, NULL, NULL);
@@ -903,13 +903,12 @@ void CHuiWindow::EmbedDialog(const string &root, int page, const string &id)
 
 			string target_id = cmd.s_param[0];
 			int target_page = cmd.i_param[4];
-			if (i == 0){
-				target_id = root;
-				target_page = page;
-			}
-			SetTarget(target_id, target_page);
+			if (i > 0)
+				SetTarget(target_id, target_page);
+			int _x = (i == 0) ? x : cmd.i_param[0];
+			int _y = (i == 0) ? y : cmd.i_param[1];
 			HuiWindowAddControl( this, cmd.type, HuiGetLanguage(cmd.id),
-								target_page, 0,
+								_x, _y,
 								cmd.i_param[2], cmd.i_param[3],
 								cmd.id);
 			Enable(cmd.id, cmd.enabled);
