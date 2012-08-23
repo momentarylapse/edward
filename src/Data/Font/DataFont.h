@@ -11,6 +11,12 @@
 #include "../Data.h"
 #include "../../lib/x/x.h"
 
+
+struct FontGlyph{
+	string Name;
+	int Width, X1, X2;
+};
+
 class DataFont: public Data
 {
 public:
@@ -20,6 +26,20 @@ public:
 	void Reset();
 	bool Load(const string &_filename, bool deep = true);
 	bool Save(const string &_filename);
+
+
+	// properties
+	int Texture;
+	string TextureFile;
+	int TextureWidth, TextureHeight;
+
+	int UnknownGlyphNo;
+	int GlyphHeight, GlyphY1, GlyphY2;
+	int XFactor, YFactor;
+	Array<FontGlyph> Glyph;
+
+	// for editing
+	int Marked;
 };
 
 #endif /* DATAFONT_H_ */
