@@ -7,6 +7,7 @@
 
 #include "../../Edward.h"
 #include "ModeWelcome.h"
+#include "../Administration/ModeAdministration.h"
 #include "../Model/ModeModel.h"
 #include "../Material/ModeMaterial.h"
 #include "../World/ModeWorld.h"
@@ -64,9 +65,9 @@ void ModeWelcome::OnLeftButtonUp()
 			mode_font->New();
 		else
 			mode_font->Open();
-	}/*else if (mouse_over == 4){
-		SetMode(ModeAdministration);
-	}*/
+	}else if (mouse_over == 4){
+		ed->SetMode(mode_administration);
+	}
 }
 
 void ModeWelcome::OnCommand(const string & id)

@@ -8,6 +8,7 @@
 #include "lib/hui/hui.h"
 
 #include "Edward.h"
+#include "Mode/Administration/ModeAdministration.h"
 #include "Mode/Model/ModeModel.h"
 #include "Mode/Model/Mesh/ModeModelMesh.h"
 #include "Mode/Material/ModeMaterial.h"
@@ -248,7 +249,7 @@ Edward::Edward(Array<string> arg) :
 	mode_material = new ModeMaterial;
 	mode_world = new ModeWorld;
 	mode_font = new ModeFont;
-	//madmin = new ModeAdministration;
+	mode_administration = new ModeAdministration;
 	msg_db_m("              \\(^_^)/", 1);
 
 	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;
@@ -668,6 +669,8 @@ void Edward::OnCommand(const string &id)
 		mode_font->New();
 	if (id == "font_open")
 		mode_font->Open();
+	if (id == "administrate")
+		SetMode(mode_administration);
 	if (id == "exit")
 		OnClose();
 }
