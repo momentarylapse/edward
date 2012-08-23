@@ -16,7 +16,7 @@
 string file_secure(const string &filename); // -> ModelPropertiesDialog
 
 ModelMaterialDialog::ModelMaterialDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data):
-	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls, true)
+	CHuiWindow("dummy", -1, -1, 300, 300, _parent, _allow_parent, HuiWinModeControls | HuiWinModeResizable, true)
 {
 	data = _data;
 
@@ -25,10 +25,13 @@ ModelMaterialDialog::ModelMaterialDialog(CHuiWindow *_parent, bool _allow_parent
 
 	EventM("cancel", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnClose);
 	EventM("hui:close", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnClose);
-	EventM("set", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::ApplyData);
+	EventM("apply", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::ApplyData);
 	EventM("ok", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnOk);
-	EventM("transparency_mode", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnTransparencyMode);
-	EventM("default_transparency", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnDefaultTransparency);
+	EventM("transparency_mode:material", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnTransparencyMode);
+	EventM("transparency_mode:none", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnTransparencyMode);
+	EventM("transparency_mode:function", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnTransparencyMode);
+	EventM("transparency_mode:color_key", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnTransparencyMode);
+	EventM("transparency_mode:factor", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnTransparencyMode);
 	EventM("mat_add_texture_level", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnMatAddTextureLevel);
 	EventMX("mat_textures", "hui:activate", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnMatTextures);
 	EventMX("mat_textures", "hui:select", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnMatTexturesSelect);
@@ -71,18 +74,18 @@ void ModelMaterialDialog::LoadData()
 	Check("default_material", mat->MaterialFile.num == 0);
 	Enable("material_file", mat->MaterialFile.num > 0);
 	// transparency
-	Check("default_transparency", !mat->UserTransparency);
-	if (mat->TransparencyMode==TransparencyModeColorKeySmooth)
-		SetInt("transparency_mode",1);
+	if (!mat->UserTransparency)
+		Check("transparency_mode:material", true);
+	else if (mat->TransparencyMode==TransparencyModeColorKeySmooth)
+		Check("transparency_mode:color_key", true);
 	else if (mat->TransparencyMode==TransparencyModeColorKeyHard)
-		SetInt("transparency_mode",2);
+		Check("transparency_mode:color_key", true);
 	else if (mat->TransparencyMode==TransparencyModeFactor)
-		SetInt("transparency_mode",3);
+		Check("transparency_mode:factor", true);
 	else if (mat->TransparencyMode==TransparencyModeFunctions)
-		SetInt("transparency_mode",4);
+		Check("transparency_mode:function", true);
 	else
-		SetInt("transparency_mode",0);
-	Enable("transparency_mode", mat->UserTransparency);
+		Check("transparency_mode:none", true);
 	Enable("alpha_factor", (mat->TransparencyMode==TransparencyModeFactor) && mat->UserTransparency);
 	Enable("alpha_source", (mat->TransparencyMode==TransparencyModeFunctions) && mat->UserTransparency);
 	Enable("alpha_dest", (mat->TransparencyMode==TransparencyModeFunctions) && mat->UserTransparency);
@@ -113,18 +116,18 @@ void ModelMaterialDialog::FillTextureList()
 // transparency
 void ModelMaterialDialog::OnTransparencyMode()
 {
-	int sel = GetInt("");
-	Enable("alpha_factor",sel==3);
-	Enable("alpha_source",sel==4);
-	Enable("alpha_dest",sel==4);
-	Check("alpha_z_buffer",(sel!=3)&&(sel!=4));
-}
-
-void ModelMaterialDialog::OnDefaultTransparency()
-{
-	TempMaterial.UserTransparency = !IsChecked("");
-	if (!TempMaterial.UserTransparency)
-		TempMaterial.CheckTransparency();
+	TempMaterial.UserTransparency = !IsChecked("transparency_mode:material");
+	if (IsChecked("transparency_mode:material"))
+		TempMaterial.TransparencyMode = TransparencyModeDefault;
+	else if (IsChecked("transparency_mode:function"))
+		TempMaterial.TransparencyMode = TransparencyModeFunctions;
+	else if (IsChecked("transparency_mode:color_key"))
+		TempMaterial.TransparencyMode = TransparencyModeColorKeyHard;
+	else if (IsChecked("transparency_mode:factor"))
+		TempMaterial.TransparencyMode = TransparencyModeFactor;
+	else
+		TempMaterial.TransparencyMode = TransparencyModeNone;
+	TempMaterial.CheckTransparency();
 	LoadData();
 }
 
@@ -241,19 +244,6 @@ void ModelMaterialDialog::ApplyData()
 	TempMaterial.UserColor = !IsChecked("default_colors");
 	TempMaterial.material = MetaLoadMaterial(TempMaterial.MaterialFile);
 // transparency
-	int s = GetInt("transparency_mode");
-	if (s==1)
-		TempMaterial.TransparencyMode=TransparencyModeColorKeySmooth;
-	else if (s==2)
-		TempMaterial.TransparencyMode=TransparencyModeColorKeyHard;
-	else if (s==3)
-		TempMaterial.TransparencyMode=TransparencyModeFactor;
-	else if (s==4)
-		TempMaterial.TransparencyMode=TransparencyModeFunctions;
-	else
-		TempMaterial.TransparencyMode=TransparencyModeNone;
-	if (IsChecked("default_transparency"))
-		TempMaterial.TransparencyMode=TransparencyModeDefault;
 	TempMaterial.AlphaFactor = GetFloat("alpha_factor") * 0.01f;
 	TempMaterial.AlphaSource = GetInt("alpha_source");
 	TempMaterial.AlphaDestination = GetInt("alpha_dest");

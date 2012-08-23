@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-554
+567
 // Data (ID,Text)
 ad_dialog
 
@@ -126,8 +126,6 @@ cut_out
 default_colors
 
 default_material
-
-default_transparency
 
 degree
 °
@@ -607,9 +605,7 @@ model_dialog_grp_physics
 
 model_dialog_grp_tensor
 
-model_dialog_t_comment1
-
-model_dialog_t_comment2
+model_dialog_t_comment
 
 model_dialog_t_description
 
@@ -917,7 +913,27 @@ sun_ang_from_camera
 
 sun_enabled
 
+table_1
+
+table_10
+
+table_11
+
 table_2
+
+table_3
+
+table_4
+
+table_5
+
+table_6
+
+table_7
+
+table_8
+
+table_9
 
 terrain_create
 新しい　陸...
@@ -1003,6 +1019,16 @@ transparency
 透明...
 transparency_mode
   --none--\\color keyed (smooth)\\color keyed (hard)\\factor\\function
+transparency_mode:color_key
+
+transparency_mode:factor
+
+transparency_mode:function
+
+transparency_mode:material
+
+transparency_mode:none
+
 undo
 元に戻す
 view_back

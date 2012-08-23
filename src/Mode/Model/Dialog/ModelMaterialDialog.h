@@ -24,7 +24,6 @@ public:
 	void OnOk();
 	void OnClose();
 	void OnTransparencyMode();
-	void OnDefaultTransparency();
 	void OnMatAddTextureLevel();
 	void OnMatTextures();
 	void OnMatTexturesSelect();

@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-554
+567
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -127,8 +127,6 @@ default_colors
 Use colors from material
 default_material
 use default material
-default_transparency
-Use transparency from material
 degree
 °
 delete
@@ -607,9 +605,7 @@ model_dialog_grp_physics
 !bold\\General
 model_dialog_grp_tensor
 !bold\\Moment of inertia tensor
-model_dialog_t_comment1
-
-model_dialog_t_comment2
+model_dialog_t_comment
 
 model_dialog_t_description
 Description
@@ -917,7 +913,27 @@ sun_ang_from_camera
 
 sun_enabled
 enabled
+table_1
+
+table_10
+
+table_11
+
 table_2
+
+table_3
+
+table_4
+
+table_5
+
+table_6
+
+table_7
+
+table_8
+
+table_9
 
 terrain_create
 Terrain (new)...
@@ -1003,6 +1019,16 @@ transparency
 transparency...
 transparency_mode
   --none--\\color keyed (smooth)\\color keyed (hard)\\factor\\function
+transparency_mode:color_key
+
+transparency_mode:factor
+
+transparency_mode:function
+
+transparency_mode:material
+
+transparency_mode:none
+
 undo
 Undo
 view_back

@@ -28,8 +28,8 @@
 	AppearanceDialog->AddButton("Leeren", 240, 190, 105, 25, "mat_empty_texture_level");
 	AppearanceDialog->SetImage("mat_empty_texture_level", "hui:clear");
 	AppearanceDialog->SetTabCreationPage("material_dialog_tab_control", 2);
-	AppearanceDialog->AddComboBox("AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha", 90, 100, 255, 25, "alpha_source");
-	AppearanceDialog->AddComboBox("AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha", 90, 130, 255, 25, "alpha_dest");
+	AppearanceDialog->AddComboBox("Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha", 90, 100, 255, 25, "alpha_source");
+	AppearanceDialog->AddComboBox("Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha", 90, 130, 255, 25, "alpha_dest");
 	AppearanceDialog->AddComboBox("  --keine--\\Color-Key (weich)\\Color-Key (hart)\\Faktor\\Funktion", 60, 10, 285, 25, "transparency_mode");
 	AppearanceDialog->AddText("Art:", 30, 10, 30, 25, "material_dialog_t_trans_type");
 	AppearanceDialog->AddText("Quelle", 30, 100, 60, 25, "material_dialog_t_trans_source");
