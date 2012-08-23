@@ -10,20 +10,34 @@
 
 #include "../Data.h"
 
-
+class AdminFileList;
 
 struct AdminFile{
 	string Name;
 	int Kind;
 	bool Missing;
 	bool Checked;
-	Array<AdminFile*> Source;
-	Array<AdminFile*> Dest;
+	Array<AdminFile*> Parent;
+	Array<AdminFile*> Child;
 	int Time;
+
+	void add_child(AdminFile *a);
+	void remove_child(AdminFile *a);
+	void remove_all_children();
+	void check(AdminFileList &list);
 };
 
-
-typedef Array<AdminFile*> AdminFileList;
+class AdminFileList : public Array<AdminFile*>
+{
+public:
+	void clear();
+	void sort();
+	void add_recursive(AdminFile *a);
+	AdminFile *add_unchecked(int kind, const string &filename, AdminFile *source = NULL);
+	AdminFile *add_unchecked_ae(int kind, const string &filename, AdminFile *source);
+	AdminFile *get(int kind, const string &name);
+	void remove_obsolete();
+};
 
 
 struct GameIniData
@@ -58,17 +72,11 @@ public:
 	bool Load(const string &_filename, bool deep = true){	return false;	}
 	bool Save(const string &_filename){	return false;	}
 
-	void AddLink(AdminFile *source, AdminFile *dest);
-	void RemoveLink(AdminFile *source, AdminFile *dest);
-	AdminFile *GetAdminFile(int kind,const string &name);
-	string FD2Str(int k);
-	string FD2Dir(int k);
-	string StringAfterString;
-	bool StringBegin(const string &buf, int start, const string &test);
-	void add_possible_link(Array<s_admin_link> &l, int type, const string &filename);
-	void CheckFile(AdminFile *a);
-	AdminFile *AddFileUnchecked(int kind, const string &filename, AdminFile *source = NULL);
-	AdminFile *AddFileUnchecked_ae(int kind, const string &filename, AdminFile *source);
+	//void AddLink(AdminFile *source, AdminFile *dest);
+	//void RemoveLink(AdminFile *source, AdminFile *dest);
+	//AdminFile *GetAdminFile(int kind,const string &name);
+	//string FD2Str(int k);
+	//string FD2Dir(int k);
 	void FraesDir(const string &root_dir, const string &dir, const string &extension);
 	void MetaFraesDir(int kind);
 	void LoadGameIni(const string &dir, GameIniData *g);
@@ -78,17 +86,15 @@ public:
 	void ResetDatabase();
 	void LoadDatabase();
 	void UpdateDatabase();
-	void FindRecursive(AdminFileList &a, AdminFile *to_add, bool source, int levels);
-	void SortList(AdminFileList &a);
 
 
-	AdminFileList file_list_all; // all files (the ones already found...)
+	AdminFileList file_list;
 
 	Array<string> cft;
 
 	GameIniData GameIni, GameIniExport, GameIniDialog;
 
-	CFile *admin_file;
+	static CFile *admin_file;
 };
 
 #endif /* DATAADMINISTRATION_H_ */

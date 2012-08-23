@@ -14,6 +14,7 @@ AdministrationDialog::AdministrationDialog(CHuiWindow* _parent, bool _allow_pare
 	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls | HuiWinModeResizable, true)
 {
 	data = _data;
+	file_list.resize(6);
 
 	// dialog
 	FromResource("ad_dialog");
@@ -56,6 +57,25 @@ void AdministrationDialog::OnUpdate(Observable* o)
 
 
 
+static string FD2Str(int k)
+{
+	if (k==-1)				return _("[Engine]");
+	if (k==FDModel)			return _("Modell");
+//	if (k==FDObject)		return _("Objekt");
+//	if (k==FDItem)			return _("Item");
+	if (k==FDTexture)		return _("Textur");
+	if (k==FDSound)			return _("Sound");
+	if (k==FDMaterial)		return _("Material");
+	if (k==FDTerrain)		return _("Terrain");
+	if (k==FDWorld)			return _("Welt");
+	if (k==FDShaderFile)	return _("Shader");
+	if (k==FDFont)			return _("Font");
+	if (k==FDScript)		return _("Script");
+	if (k==FDCameraFlight)	return _("Kamera");
+	if (k==FDFile)			return _("Datei");
+	return "???";
+}
+
 void AdministrationDialog::FillAdminList(int view, const string &lid)
 {
 	msg_db_r("FillAdminList",1);
@@ -70,39 +90,37 @@ void AdministrationDialog::FillAdminList(int view, const string &lid)
 	AdminFileList *l = get_list(lid);
 	l->clear();
 	if (view==0){ // current game (in game.ini)
-		data->FindRecursive(*l, data->file_list_all[0], false, -1);
-		data->FindRecursive(*l, data->file_list_all[1], false, -1);
-		data->FindRecursive(*l, data->file_list_all[2], false, -1);
+		l->add_recursive(data->file_list[0]);
 	}else if (view==1){ // all files
-		*l = data->file_list_all;
+		*l = data->file_list;
 	}else if (view==2){ // selected file
 		if (lid == "file_list_detail_source"){
-			for (int j=0;j<SelectedAdminFile->Source.num;j++)
-				l->add(SelectedAdminFile->Source[j]);
+			for (int j=0;j<SelectedAdminFile->Parent.num;j++)
+				l->add(SelectedAdminFile->Parent[j]);
 		}else{
-			for (int j=0;j<SelectedAdminFile->Dest.num;j++)
-				l->add(SelectedAdminFile->Dest[j]);
+			for (int j=0;j<SelectedAdminFile->Child.num;j++)
+				l->add(SelectedAdminFile->Child[j]);
 		}
 	}else if (view==3){ // unnessecary
-		foreach(data->file_list_all, a)
-			if ((a->Kind >= 0) && (a->Source.num == 0))
+		foreach(data->file_list, a)
+			if ((a->Kind >= 0) && (a->Parent.num == 0))
 				l->add(a);
 	}else if (view==4){ // missing
-		foreach(data->file_list_all, a)
+		foreach(data->file_list, a)
 			if (a->Missing)
 				l->add(a);
 	}
 
 
-	data->SortList(*l);
+	l->sort();
 
 	// place them into the list
 	int k=-2;
 	foreach(*l, a){
 		AddString(lid, format("%s::%s::%d::%d::%s",
-			(k != a->Kind) ? data->FD2Str(a->Kind).c_str() : "",
+			(k != a->Kind) ? FD2Str(a->Kind).c_str() : "",
 			a->Name.c_str(),
-			a->Source.num, a->Dest.num,
+			a->Parent.num, a->Child.num,
 			a->Missing ? "1" : "0"));
 		k = a->Kind;
 	}
@@ -129,17 +147,17 @@ void AdministrationDialog::ShowDetail(int n, const string &lid)
 AdminFileList *AdministrationDialog::get_list(const string &lid)
 {
 	if (lid == "file_list_cur")
-		return &file_list_cur;
+		return &file_list[0];
 	if (lid == "file_list_all")
-		return &file_list_all;
+		return &file_list[1];
 	if (lid == "file_list_detail_source")
-		return &file_list_detail_source;
+		return &file_list[2];
 	if (lid == "file_list_detail_dest")
-		return &file_list_detail_dest;
+		return &file_list[3];
 	if (lid == "file_list_super")
-		return &file_list_super;
+		return &file_list[4];
 	if (lid == "file_list_missing")
-		return &file_list_missing;
+		return &file_list[5];
 	return NULL;
 }
 

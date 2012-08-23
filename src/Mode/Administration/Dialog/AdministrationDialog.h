@@ -12,7 +12,7 @@
 #include "../../../Stuff/Observer.h"
 class DataAdministration;
 class AdminFile;
-typedef Array<AdminFile*> AdminFileList;
+class AdminFileList;
 
 class AdministrationDialog: public CHuiWindow, public Observer
 {
@@ -35,11 +35,7 @@ public:
 private:
 	DataAdministration *data;
 
-	AdminFileList file_list_cur; // files to show (not including source/dest-files in detailed viewing mode)
-	AdminFileList file_list_all; // the same order as the list view
-	AdminFileList file_list_detail_source, file_list_detail_dest;
-	AdminFileList file_list_missing;
-	AdminFileList file_list_super;
+	Array<AdminFileList> file_list;
 	AdminFile *SelectedAdminFile;
 };
 

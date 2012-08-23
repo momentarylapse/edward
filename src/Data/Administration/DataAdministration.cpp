@@ -12,9 +12,12 @@
 #include "../Font/DataFont.h"
 #include "../../Edward.h"
 
+CFile *DataAdministration::admin_file = NULL;
+
 DataAdministration::DataAdministration()
 {
-	admin_file = new CFile();
+	if (!admin_file)
+		admin_file = new CFile();
 }
 
 DataAdministration::~DataAdministration()
@@ -22,74 +25,74 @@ DataAdministration::~DataAdministration()
 }
 
 
-
-void DataAdministration::AddLink(AdminFile *source, AdminFile *dest)
+void AdminFile::add_child(AdminFile *child)
 {
-	if ((!source)||(!dest))
+	if (!child)
 		return;
-	msg_db_r("Admin.AddLink",5);
-	msg_db_m(format("link:   %s  ->  %s",source->Name.c_str(),dest->Name.c_str()).c_str(),1);
+	msg_db_r("AdminFile.add_child",5);
+	msg_db_m(format("link:   %s  ->  %s",Name.c_str(),child->Name.c_str()).c_str(),1);
 
-	// as source of dest
+	// as parent of child
 	bool add = true;
-	for (int i=0;i<dest->Source.num;i++)
-		if (dest->Source[i] == source)
+	for (int i=0;i<child->Parent.num;i++)
+		if (child->Parent[i] == this)
 			add = false;
 	if (add)
-		dest->Source.add(source);
+		child->Parent.add(this);
 
 	// as dest of source
 	add = true;
-	for (int i=0;i<source->Dest.num;i++)
-		if (source->Dest[i] == dest)
+	for (int i=0;i<Child.num;i++)
+		if (Child[i] == child)
 			add = false;
 	if (add)
-		source->Dest.add(dest);
+		Child.add(child);
 
 	msg_db_l(5);
+}
+
+void AdminFile::remove_child(AdminFile *child)
+{
+	msg_db_r("AdminFile.remove_child",5);
+	for (int i=child->Parent.num-1;i>=0;i--)
+		if (child->Parent[i] == this)
+			child->Parent.erase(i);
+	for (int i=Child.num-1;i>=0;i--)
+		if (Child[i] == child)
+			Child.erase(i);
+	msg_db_l(5);
+}
+
+void AdminFile::remove_all_children()
+{
+	for (int j=Child.num-1;j>=0;j--)
+		remove_child(Child[j]);
+}
+
+/*void DataAdministration::AddLink(AdminFile *source, AdminFile *dest)
+{
+	if ((!source) || (!dest))
+		return;
+	source->add_child(dest);
 }
 
 void DataAdministration::RemoveLink(AdminFile *source, AdminFile *dest)
 {
-	if ((!source)||(!dest))	return;
-	msg_db_r("Admin.RemoveLink",5);
-	for (int i=dest->Source.num-1;i>=0;i--)
-		if (dest->Source[i] == source)
-			dest->Source.erase(i);
-	for (int i=source->Dest.num-1;i>=0;i--)
-		if (source->Dest[i] == dest)
-			source->Dest.erase(i);
-	msg_db_l(5);
-}
+	if ((!source) || (!dest))
+		return;
+	source->remove_child(dest);
+}*/
 
-AdminFile *DataAdministration::GetAdminFile(int kind, const string &name)
+AdminFile *AdminFileList::get(int kind, const string &name)
 {
 	string _name = SysFileName(name);
-	foreach(file_list_all, a)
+	foreach(*this, a)
 		if ((a->Kind == kind) && (a->Name == _name))
 			return a;
 	return NULL;
 }
 
-string DataAdministration::FD2Str(int k)
-{
-	if (k==-1)				return _("[Engine]");
-	if (k==FDModel)			return _("Modell");
-//	if (k==FDObject)		return _("Objekt");
-//	if (k==FDItem)			return _("Item");
-	if (k==FDTexture)		return _("Textur");
-	if (k==FDSound)			return _("Sound");
-	if (k==FDMaterial)		return _("Material");
-	if (k==FDTerrain)		return _("Terrain");
-	if (k==FDWorld)			return _("Welt");
-	if (k==FDShaderFile)	return _("Shader");
-	if (k==FDFont)			return _("Font");
-	if (k==FDScript)		return _("Script");
-	if (k==FDCameraFlight)	return _("Kamera");
-	if (k==FDFile)			return _("Datei");
-	return "???";
-}
-string DataAdministration::FD2Dir(int k)
+string FD2Dir(int k)
 {
 	if (k==-1)				return ed->RootDir;
 	if (k==FDModel)			return ObjectDir;
@@ -108,7 +111,8 @@ string DataAdministration::FD2Dir(int k)
 	return ed->RootDir;
 }
 
-bool DataAdministration::StringBegin(const string &buf, int start, const string &test)
+static string StringAfterString;
+bool StringBegin(const string &buf, int start, const string &test)
 {
 	// does the string <test> start here?
 	for (int i=0;i<test.num;i++)
@@ -165,7 +169,7 @@ sScriptLink ScriptLink[NumScriptLinks]={
 	{"CamStartScript"	,FDCameraFlight}
 };
 
-void DataAdministration::add_possible_link(Array<s_admin_link> &l, int type, const string &filename)
+void add_possible_link(Array<s_admin_link> &l, int type, const string &filename)
 {
 	if (filename.num < 0)
 		return;
@@ -181,40 +185,38 @@ void DataAdministration::add_possible_link(Array<s_admin_link> &l, int type, con
 	l.add(link);
 }
 
-void DataAdministration::CheckFile(AdminFile *a)
+void AdminFile::check(AdminFileList &list)
 {
-	if (!a)
-		return;
-	msg_db_r("CheckAdminFile", 5);
-	msg_db_m(a->Name.c_str(), 5);
+	msg_db_r("AdminFile.check", 5);
+	msg_db_m(Name.c_str(), 5);
 
 
 	bool really_scan = true;
 
 	// test file existence
-	admin_file->SilentFileAccess = true;
-	if (admin_file->Open(FD2Dir(a->Kind) + a->Name)){
+	CFile *f = DataAdministration::admin_file;
+	f->SilentFileAccess = true;
+	if (f->Open(FD2Dir(Kind) + Name)){
 
 		// file ok
-		int time = admin_file->GetDateModification().time;
-		a->Missing = false;
-		admin_file->Close();
+		int _time = f->GetDateModification().time;
+		Missing = false;
+		f->Close();
 
 		// different time stamp -> rescan file
-		really_scan = (time != a->Time);
+		really_scan = (_time != Time);
 		if (really_scan)
-			for (int j=a->Dest.num-1;j>=0;j--)
-				RemoveLink(a,a->Dest[j]);
+			remove_all_children();
 	}else{
 
 		// no file -> missing
-		a->Missing = true;
-		a->Time = 0;
+		Missing = true;
+		Time = 0;
 		really_scan = false;
-		for (int j=a->Dest.num-1;j>=0;j--)
-			RemoveLink(a,a->Dest[j]);
+		if (Kind >= 0)
+			remove_all_children();
 	}
-	admin_file->SilentFileAccess = false;
+	f->SilentFileAccess = false;
 
 
 	// rescan file?
@@ -225,10 +227,10 @@ void DataAdministration::CheckFile(AdminFile *a)
 
 	// find links
 	Array<s_admin_link> l;
-	if (a->Kind==FDWorld){
+	if (Kind==FDWorld){
 		DataWorld w;
-		if (w.Load(MapDir + a->Name, false)){
-			a->Time = w.file_time;
+		if (w.Load(MapDir + Name, false)){
+			Time = w.file_time;
 			for (int i=0;i<w.Terrain.num;i++)
 				add_possible_link(l, FDTerrain, w.Terrain[i].FileName);
 			for (int i=0;i<w.meta_data.SkyBoxFile.num;i++)
@@ -238,20 +240,20 @@ void DataAdministration::CheckFile(AdminFile *a)
 			for (int i=0;i<w.Object.num;i++)
 				add_possible_link(l, FDModel, w.Object[i].FileName);
 		}else
-			a->Missing=true;
-	}else if (a->Kind==FDTerrain){
+			Missing=true;
+	}else if (Kind==FDTerrain){
 		ModeWorldTerrain t;
-		if (t.Load(v0, MapDir + a->Name, false)){
-			a->Time = 0; // TODO
+		if (t.Load(v0, MapDir + Name, false)){
+			Time = 0; // TODO
 			for (int i=0;i<t.terrain->num_textures;i++)
 				add_possible_link(l, FDTexture, t.terrain->texture_file[i]);
 			add_possible_link(l, FDMaterial, t.terrain->material_file);
 		}else
-			a->Missing=true;
-	}else if (a->Kind==FDModel){
+			Missing=true;
+	}else if (Kind==FDModel){
 		DataModel m;
-		if (m.Load(ObjectDir + a->Name,false)){
-			a->Time = m.file_time;
+		if (m.Load(ObjectDir + Name,false)){
+			Time = m.file_time;
 			for (int i=0;i<m.Bone.num;i++)
 				add_possible_link(l, FDModel, m.Bone[i].ModelFile);
 			for (int i=0;i<m.Fx.num;i++){
@@ -266,11 +268,11 @@ void DataAdministration::CheckFile(AdminFile *a)
 					add_possible_link(l, FDTexture, m.Material[i].TextureFile[j]);
 			}
 		}else
-			a->Missing=true;
-	}else if (a->Kind==FDMaterial){
+			Missing=true;
+	}else if (Kind==FDMaterial){
 		DataMaterial m;
-		if (m.Load(MaterialDir + a->Name,false)){
-			a->Time = m.file_time;
+		if (m.Load(MaterialDir + Name,false)){
+			Time = m.file_time;
 			add_possible_link(l, FDShaderFile, m.Appearance.EffectFile);
 			if (m.Appearance.ReflectionMode==ReflectionCubeMapStatic)
 				for (int i=0;i<6;i++)
@@ -278,20 +280,20 @@ void DataAdministration::CheckFile(AdminFile *a)
 			for (int i=0;i<m.Appearance.NumTextureLevels;i++)
 				add_possible_link(l, FDTexture, m.Appearance.TextureFile[i]);
 		}else
-			a->Missing=true;
-	}else if (a->Kind==FDFont){
+			Missing=true;
+	}else if (Kind==FDFont){
 		/*DataFont f;
-		if (f.Load(MaterialDir + a->Name,false)){
-			a->Time = f.file_time;
+		if (f.Load(MaterialDir + Name,false)){
+			Time = f.file_time;
 			add_possible_link(l, FDTexture, f.TextureFile);
 		}else*/
-			a->Missing=true;
-	}else if (a->Kind==FDScript){
-		if (admin_file->Open(ScriptDir + a->Name)){
-			a->Time=admin_file->GetDateModification().time;
-			admin_file->SetBinaryMode(true);
-			string buf = admin_file->ReadComplete();
-			admin_file->Close();
+			Missing=true;
+	}else if (Kind==FDScript){
+		if (f->Open(ScriptDir + Name)){
+			Time = f->GetDateModification().time;
+			f->SetBinaryMode(true);
+			string buf = f->ReadComplete();
+			f->Close();
 			// would be better to compile the script and look for functions having a string constant as a parameter...
 			//   -> would automatically ignore comments and   function( "aaa" + b )
 			for (int i=0;i<buf.num;i++){
@@ -300,26 +302,26 @@ void DataAdministration::CheckFile(AdminFile *a)
 						add_possible_link(l,ScriptLink[j].type,StringAfterString);
 				// #include must be handled differently (relative path...)
 				if (StringBegin(buf,i,ScriptLink[0].str))
-					add_possible_link(l, ScriptLink[0].type, filename_no_recursion(dirname(a->Name) + StringAfterString));
+					add_possible_link(l, ScriptLink[0].type, filename_no_recursion(dirname(Name) + StringAfterString));
 			}
 		}else
-			a->Missing=true;
+			Missing=true;
 	}else{
-		if (admin_file->Open(FD2Dir(a->Kind) + a->Name)){
-			a->Time = admin_file->GetDateModification().time;
-			admin_file->Close();
+		if (f->Open(FD2Dir(Kind) + Name)){
+			Time = f->GetDateModification().time;
+			f->Close();
 		}else
-			a->Missing=true;
+			Missing=true;
 	}
 
 	// recursively scan linked files
 	for (int i=0;i<l.num;i++)
-		AddFileUnchecked_ae(l[i].type, l[i].file,a);
+		list.add_unchecked_ae(l[i].type, l[i].file, this);
 
 	msg_db_l(5);
 }
 
-AdminFile *DataAdministration::AddFileUnchecked(int kind, const string &filename, AdminFile *source)
+AdminFile *AdminFileList::add_unchecked(int kind, const string &filename, AdminFile *source)
 {
 	if (filename.num <= 0)
 		return NULL;
@@ -330,7 +332,7 @@ AdminFile *DataAdministration::AddFileUnchecked(int kind, const string &filename
 	string _filename = SysFileName(filename);
 
 	// is there already an entry in the database?
-	foreach(file_list_all, aa)
+	foreach(*this, aa)
 		if ((aa->Kind == kind) && (aa->Name == _filename)){
 			a = aa;
 			break;
@@ -339,7 +341,7 @@ AdminFile *DataAdministration::AddFileUnchecked(int kind, const string &filename
 	// no list entry yet -> create one
 	if (!a){
 		a = new AdminFile;
-		file_list_all.add(a);
+		add(a);
 		a->Name = _filename;
 		a->Kind = kind;
 		a->Missing = false;
@@ -347,14 +349,15 @@ AdminFile *DataAdministration::AddFileUnchecked(int kind, const string &filename
 	}
 
 	// link to meta
-	AddLink(source, a);
+	if (source)
+		source->add_child(a);
 
 	msg_db_l(5);
 	return a;
 }
 
 // same as AddAdminFileUnchecked but used without file extensions
-AdminFile *DataAdministration::AddFileUnchecked_ae(int kind, const string &filename, AdminFile *source)
+AdminFile *AdminFileList::add_unchecked_ae(int kind, const string &filename, AdminFile *source)
 {
 	if (filename.num<=0)
 		return NULL;
@@ -368,7 +371,58 @@ AdminFile *DataAdministration::AddFileUnchecked_ae(int kind, const string &filen
 	if (kind==FDFont)		filename2 += ".xfont";
 	if (kind==FDCameraFlight)filename2 += ".camera";
 	if (kind==FDShaderFile)	filename2 += ".fx";
-	return AddFileUnchecked(kind, filename2, source);
+	return add_unchecked(kind, filename2, source);
+}
+
+void AdminFileList::remove_obsolete()
+{
+	foreachbi(*this, a, i){
+		// missing and unwanted -> remove
+		if ((a->Missing) && (a->Parent.num == 0))
+			if (a->Kind >= 0) // don't remove engine files...
+				erase(i);
+	}
+}
+
+void AdminFileList::add_recursive(AdminFile *to_add)
+{
+	// already in list?
+	for (int i=0;i<num;i++)
+		if ((*this)[i] == to_add)
+			return;
+
+	// add
+	add(to_add);
+
+	// recursion...
+	foreach(to_add->Child, a)
+		add_recursive(a);
+}
+
+void AdminFileList::sort()
+{
+	msg_db_r("AdminFileList.sort",1);
+
+	// sorting (by type)
+	for (int i=0;i<num-1;i++)
+		for (int j=i;j<num;j++)
+			if ((*this)[i]->Kind > (*this)[j]->Kind)
+				swap(i, j);
+	// sorting (by name)
+	for (int i=0;i<num-1;i++)
+		if ((*this)[i]->Kind>=0)
+			for (int j=i;j<num;j++)
+				if ((*this)[i]->Kind == (*this)[j]->Kind)
+					if ((*this)[i]->Name.compare((*this)[j]->Name) > 0)
+						swap(i, j);
+	msg_db_l(1);
+}
+
+void AdminFileList::clear()
+{
+	foreach(*this, a)
+		delete(a);
+	Array<AdminFile*>::clear();
 }
 
 void DataAdministration::FraesDir(const string &root_dir, const string &dir, const string &extension)
@@ -468,20 +522,20 @@ void DataAdministration::SaveDatabase()
 	msg_db_r("SaveAdminDatabase",5);
 	admin_file->Create(HuiAppDirectory + "Data/admin_database.txt");
 	admin_file->WriteComment("// Number Of Files");
-	admin_file->WriteInt(file_list_all.num);
+	admin_file->WriteInt(file_list.num);
 	admin_file->WriteComment("// Files (type, filename, date, missing)");
-	foreach(file_list_all, a){
+	foreach(file_list, a){
 		admin_file->WriteInt(a->Kind);
 		admin_file->WriteStr(a->Name);
 		admin_file->WriteInt(a->Time);
 		admin_file->WriteBool(a->Missing);
 	}
 	admin_file->WriteComment("// Links (num dests, dests...)");
-	foreach(file_list_all, a){
-		admin_file->WriteInt(a->Dest.num);
-		foreach(a->Dest, d){
+	foreach(file_list, a){
+		admin_file->WriteInt(a->Child.num);
+		foreach(a->Child, d){
 			int n=-1;
-			foreachi(file_list_all, aa, k)
+			foreachi(file_list, aa, k)
 				if (d == aa){
 					n=k;
 					break;
@@ -497,9 +551,7 @@ void DataAdministration::SaveDatabase()
 void DataAdministration::ResetDatabase()
 {
 	msg_db_r("ResetDatabase",5);
-	foreach(file_list_all, a)
-		delete(a);
-	file_list_all.clear();
+	file_list.clear();
 	msg_db_l(5);
 }
 
@@ -515,11 +567,11 @@ void DataAdministration::LoadDatabase()
 	int num = admin_file->ReadIntC();
 	for (int i=0;i<num;i++){
 		AdminFile *a = new AdminFile;
-		file_list_all.add(a);
+		file_list.add(a);
 	}
 	// files
 	admin_file->ReadComment();
-	foreach(file_list_all, a){
+	foreach(file_list, a){
 		a->Kind = admin_file->ReadInt();
 		a->Name = SysFileName(admin_file->ReadStr());
 		a->Time = admin_file->ReadInt();
@@ -528,11 +580,11 @@ void DataAdministration::LoadDatabase()
 	}
 	// links
 	admin_file->ReadComment();
-	foreach(file_list_all, a){
+	foreach(file_list, a){
 		int nd = admin_file->ReadInt();
 		for (int j=0;j<nd;j++){
 			int n = admin_file->ReadInt();
-			AddLink(a, file_list_all[n]);
+			a->add_child(file_list[n]);
 		}
 	}
 	admin_file->Close();
@@ -547,11 +599,11 @@ void DataAdministration::UpdateDatabase()
 	ed->progress->Set(_("Initialisierung"), 0);
 
 	// make sure the "Engine"-files are the first 3 ones
-	AdminFile *f1 = AddFileUnchecked(-1, "x.exe");
-	AdminFile *f2 = AddFileUnchecked(-1, "config.txt");
-	AdminFile *f3 = AddFileUnchecked(-1, "game.ini");
-	AddLink(f1,f2);
-	AddLink(f1,f3);
+	AdminFile *f1 = file_list.add_unchecked(-1, "x.exe");
+	AdminFile *f2 = file_list.add_unchecked(-1, "config.txt");
+	AdminFile *f3 = file_list.add_unchecked(-1, "game.ini");
+	f1->add_child(f2);
+	f1->add_child(f3);
 	LoadGameIni(ed->RootDir,&GameIni);
 
 	HuiGetTime(0);
@@ -563,85 +615,35 @@ void DataAdministration::UpdateDatabase()
 
 		// iterare files of one type
 		for (int update_index=0;(unsigned)update_index<cft.num;update_index++){
-			AddFileUnchecked(update_kind,cft[update_index].c_str(),NULL);
+			file_list.add_unchecked(update_kind,cft[update_index].c_str(),NULL);
 		}
 	}
 
 	// files in game.ini ok?
-	AddFileUnchecked_ae(FDScript,	GameIni.DefScript,f3);
-	AddFileUnchecked_ae(FDWorld,	GameIni.DefWorld,f3);
-	AddFileUnchecked_ae(FDWorld,	GameIni.SecondWorld,f3);
-	AddFileUnchecked_ae(FDMaterial,GameIni.DefMaterial,f3);
-	AddFileUnchecked_ae(FDFont,	GameIni.DefFont,f3);
-	AddFileUnchecked_ae(FDTexture,	GameIni.DefTextureFxMetal,f3);
+	file_list.add_unchecked_ae(FDScript,	GameIni.DefScript,f3);
+	file_list.add_unchecked_ae(FDWorld,	GameIni.DefWorld,f3);
+	file_list.add_unchecked_ae(FDWorld,	GameIni.SecondWorld,f3);
+	file_list.add_unchecked_ae(FDMaterial,GameIni.DefMaterial,f3);
+	file_list.add_unchecked_ae(FDFont,	GameIni.DefFont,f3);
+	file_list.add_unchecked_ae(FDTexture,	GameIni.DefTextureFxMetal,f3);
 
 
 
 
-	for (int i=0;i<file_list_all.num;i++){
-		CheckFile(file_list_all[i]);
+	// check all files
+	for (int i=0;i<file_list.num;i++){
+		file_list[i]->check(file_list);
 
-		ed->progress->Set(_("Teste Dateien"), (float)i / (float)file_list_all.num);
+		ed->progress->Set(_("Teste Dateien"), (float)i / (float)file_list.num);
 	}
 
 
-	for (int i=file_list_all.num-1;i>=0;i--){
-		// missing and unwanted -> remove
-		if ((file_list_all[i]->Missing) && (file_list_all[i]->Source.num == 0))
-			file_list_all.erase(i);
-	}
+	file_list.remove_obsolete();
 
 
 	ed->progress->End();
 	SaveDatabase();
 	Notify("Changed");
 	msg_db_l(0);
-}
-
-void DataAdministration::FindRecursive(AdminFileList &a, AdminFile *to_add, bool source, int levels)
-{
-	// already in list?
-	for (int i=0;i<a.num;i++)
-		if (a[i] == to_add)
-			return;
-
-	// add
-	a.add(to_add);
-
-	// recursion...
-	//if (levels==0)		return;
-	if (source){
-		for (int j=0;j<to_add->Source.num;j++)
-			FindRecursive(a, to_add->Source[j], source, levels - 1);
-	}else{
-		for (int j=0;j<to_add->Dest.num;j++)
-			FindRecursive(a, to_add->Dest[j], source, levels - 1);
-	}
-}
-
-void DataAdministration::SortList(AdminFileList &a)
-{
-	msg_db_r("SortList",1);
-	int num = a.num;
-
-	// sorting (by type)
-	for (int i=0;i<num-1;i++)
-		for (int j=i;j<num;j++)
-			if (a[i]->Kind>a[j]->Kind){
-				AdminFile *t=a[i];
-				a[i]=a[j];
-				a[j]=t;
-			}
-	// sorting (by name)
-	for (int i=0;i<num-1;i++)
-		if (a[i]->Kind>=0)
-			for (int j=i;j<num;j++)
-				if (a[i]->Kind==a[j]->Kind)
-					if (a[i]->Name.compare(a[j]->Name) > 0){
-						AdminFile *t=a[i];
-						a[i]=a[j];
-						a[j]=t;
-					}
-	msg_db_l(1);
 }
 
