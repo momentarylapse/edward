@@ -164,11 +164,11 @@ void WorldPropertiesDialog::OnFogEnabled()
 
 void WorldPropertiesDialog::FillSkyboxList()
 {
-	HuiComboBoxSeparator = ':';
+	HuiComboBoxSeparator = ":";
 	Reset("skybox");
 	foreachi(temp.SkyBoxFile, sb, i)
 		AddString("skybox", format("%d:%s", i, sb.c_str()));
-	HuiComboBoxSeparator = '\\';
+	HuiComboBoxSeparator = "\\";
 	Enable("remove_skybox", false);
 }
 
@@ -204,12 +204,12 @@ void WorldPropertiesDialog::FillScriptVarList()
 
 void WorldPropertiesDialog::FillScriptList()
 {
-	HuiComboBoxSeparator = ':';
+	HuiComboBoxSeparator = ":";
 	Reset("script_list");
 	foreach(temp.Script, s)
 		AddString("script_list", s.Filename);
 	Enable("remove_script", false);
-	HuiComboBoxSeparator = '\\';
+	HuiComboBoxSeparator = "\\";
 }
 
 

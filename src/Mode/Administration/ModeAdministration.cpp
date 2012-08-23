@@ -6,14 +6,16 @@
  */
 
 #include "ModeAdministration.h"
+#include "../../Data/Administration/DataAdministration.h"
 #include "Dialog/AdministrationDialog.h"
 #include "../../Edward.h"
 
 ModeAdministration *mode_administration;
 
 ModeAdministration::ModeAdministration():
-	Mode("Administration", NULL, NULL, NULL, "menu_administration")
+	Mode("Administration", NULL, new DataAdministration, NULL, "menu_administration")
 {
+	data = (DataAdministration*)data_generic;
 }
 
 ModeAdministration::~ModeAdministration()
@@ -22,7 +24,9 @@ ModeAdministration::~ModeAdministration()
 
 void ModeAdministration::OnStart()
 {
-	dialog = new AdministrationDialog(ed, true);
+	data->LoadDatabase();
+	data->UpdateDatabase();
+	dialog = new AdministrationDialog(ed, true, data);
 	dialog->Update();
 }
 

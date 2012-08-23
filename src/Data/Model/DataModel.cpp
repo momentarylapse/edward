@@ -764,9 +764,15 @@ bool DataModel::Load(const string & _filename, bool deep)
 
 
 
+
+
+
+
+	if (deep){
+
 		// import...
-	NotifyBegin();
-	NormalModeAll = Skin[1].NormalModeAll;
+		NotifyBegin();
+		NormalModeAll = Skin[1].NormalModeAll;
 		foreachi(Skin[1].Vertex, v, i){
 			AddVertex(v.pos);
 			Vertex[i].BoneIndex = v.BoneIndex;
@@ -774,6 +780,8 @@ bool DataModel::Load(const string & _filename, bool deep)
 		for (int i=0;i<Material.num;i++){
 			CurrentMaterial = i;
 			foreach(Skin[1].Sub[i].Triangle, t){
+				if ((t.Vertex[0] == t.Vertex[1]) || (t.Vertex[1] == t.Vertex[2]) || (t.Vertex[2] == t.Vertex[0]))
+					continue;
 				ModeModelTriangle *tt = AddTriangle(t.Vertex[0], t.Vertex[1], t.Vertex[2]);
 				for (int tl=0;tl<Material[i].NumTextures;tl++)
 					for (int k=0;k<3;k++)
@@ -784,12 +792,9 @@ bool DataModel::Load(const string & _filename, bool deep)
 			if (m.Type == MoveTypeVertex)
 				foreach(m.Frame, f)
 					f.VertexDPos = f.Skin[1].DPos;
-	ClearSelection();
-	NotifyEnd();
+		ClearSelection();
+		NotifyEnd();
 
-
-
-	if (deep){
 		for (int i=0;i<Material.num;i++){
 			Material[i].MakeConsistent();
 
@@ -813,7 +818,8 @@ bool DataModel::Load(const string & _filename, bool deep)
 	//OptimizeView();
 	ResetHistory();
 
-	UpdateNormals();
+	if (deep)
+		UpdateNormals();
 	msg_db_l(1);
 	return !error;
 }

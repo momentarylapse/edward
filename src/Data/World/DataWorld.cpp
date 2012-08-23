@@ -166,7 +166,7 @@ bool DataWorld::Load(const string & _filename, bool deep)
 		msg_db_l(1);
 		return false;
 	}
-//	FileTime=f->GetDate(FileDateModification).time;
+	file_time = f->GetDateModification().time;
 
 	ffv = f->ReadFileFormatVersion();
 

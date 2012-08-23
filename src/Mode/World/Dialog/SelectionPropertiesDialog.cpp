@@ -52,7 +52,7 @@ void SelectionPropertiesDialog::OnPropertyList()
 
 void SelectionPropertiesDialog::FillList()
 {
-	HuiComboBoxSeparator = ':';
+	HuiComboBoxSeparator = ":";
 	Reset("property_list");
 	AddString("property_list", _("Welt") + ":-:" + _(" -- Komplette Welt -- "));
 	index.add(0);
@@ -77,7 +77,7 @@ void SelectionPropertiesDialog::FillList()
 			PropertySelectionIndex.add(i);
 		}*/
 
-	HuiComboBoxSeparator = '\\';
+	HuiComboBoxSeparator = "\\";
 }
 
 

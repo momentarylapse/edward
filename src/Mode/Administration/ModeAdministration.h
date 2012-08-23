@@ -9,6 +9,7 @@
 #define MODEADMINISTRATION_H_
 
 #include "../Mode.h"
+class DataAdministration;
 class AdministrationDialog;
 
 class ModeAdministration: public Mode {
@@ -23,6 +24,8 @@ public:
 	void OnUpdate(Observable *o);
 
 	AdministrationDialog *dialog;
+
+	DataAdministration *data;
 };
 
 extern ModeAdministration *mode_administration;
