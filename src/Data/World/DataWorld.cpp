@@ -41,6 +41,7 @@ bool ModeWorldTerrain::Load(const vector &_pos, const string &filename, bool dee
 		terrain = NULL;
 	}
 
+	msg_db_l(1);
 	return !Error;
 }
 
