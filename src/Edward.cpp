@@ -23,7 +23,9 @@
 
 Edward *ed = NULL;
 
+#ifndef _X_USE_SOUND_
 string SoundDir;
+#endif
 
 
 void read_color_4i(CFile *f,int *c)
@@ -597,6 +599,9 @@ void Edward::SetRootDirectory(const string &directory)
 		material_dir = RootDir;
 	}
 	MetaSetDirs(texture_dir,map_dir,object_dir,sound_dir,script_dir,material_dir);
+#ifndef _X_USE_SOUND_
+	SoundDir = sound_dir;
+#endif
 	if (ufd)
 		for (int i=0;i<NumFDs;i++){
 			DialogDir[i] = "";
