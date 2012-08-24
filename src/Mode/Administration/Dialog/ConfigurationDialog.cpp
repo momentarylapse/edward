@@ -16,7 +16,10 @@ ConfigurationDialog::ConfigurationDialog(CHuiWindow* _parent, bool _allow_parent
 	data = _data;
 
 	// dialog
-	FromResource("rc_dialog");
+	if (exporting)
+		FromResource("ge_dialog");
+	else
+		FromResource("rc_dialog");
 	EventM("hui:close", this, (void(HuiEventHandler::*)())&ConfigurationDialog::OnClose);
 	EventM("cancel", this, (void(HuiEventHandler::*)())&ConfigurationDialog::OnClose);
 	EventM("ok", this, (void(HuiEventHandler::*)())&ConfigurationDialog::OnOk);
