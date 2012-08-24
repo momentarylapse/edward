@@ -9,8 +9,14 @@
 #include "../../../Data/Administration/DataAdministration.h"
 #include "../../../Edward.h"
 #include "../../../Mode/Welcome/ModeWelcome.h"
+#include "../../../Mode/Model/ModeModel.h"
+#include "../../../Mode/Material/ModeMaterial.h"
+#include "../../../Mode/World/ModeWorld.h"
+#include "../../../Mode/Font/ModeFont.h"
 #include "../ModeAdministration.h"
 #include <assert.h>
+
+string FD2Dir(int k); // DataAdministration.cpp
 
 AdministrationDialog::AdministrationDialog(CHuiWindow* _parent, bool _allow_parent, DataAdministration *_data):
 	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls | HuiWinModeResizable, true)
@@ -180,6 +186,7 @@ string get_first_list_id_by_tab_page(int page)
 		return "file_list_super";
 	if (page == 4)
 		return "file_list_missing";
+	return "";
 }
 
 Array<AdminFile*> AdministrationDialog::GetSelectedFilesFromList(const string& lid)
@@ -230,6 +237,51 @@ void AdministrationDialog::OnEdit()
 	AdminFile *a = GetSingleSelectedFile();
 	if (!a)
 		return;
+	switch (a->Kind){
+		case -1:
+			if (a->Name == "config.txt")
+				HuiOpenDocument(FD2Dir(a->Kind) + a->Name);
+			else if (a->Name == "game.ini")
+				mode_administration->BasicSettings();
+			break;
+		case FDModel:
+			if (mode_model->data->Load(ObjectDir + a->Name, true))
+				ed->SetMode(mode_model);
+			break;
+		case FDMaterial:
+			if (mode_material->data->Load(MaterialDir + a->Name, true))
+				ed->SetMode(mode_material);
+			break;
+		case FDFont:
+			if (mode_font->data->Load(MaterialDir + a->Name, true))
+				ed->SetMode(mode_font);
+			break;
+		case FDWorld:
+			if (mode_world->data->Load(MapDir + a->Name, true))
+				ed->SetMode(mode_world);
+			break;
+		case FDTerrain:
+			mode_world->data->Reset();
+			if (mode_world->data->AddTerrain(a->Name.substr(0, -5), v0)){
+				ed->SetMode(mode_world);
+			}
+			break;
+		case FDCameraFlight:
+			/*mode_world->data->Reset();
+			strcpy(mworld->CamScriptFile,a->Name);
+			if (mworld->LoadCameraScript()){
+				SetMode(ModeWorld);
+				mworld->OptimizeView();
+			}*/
+			break;
+		case FDTexture:
+		case FDSound:
+		case FDShaderFile:
+		case FDScript:
+		case FDFile:
+			HuiOpenDocument(FD2Dir(a->Kind) + a->Name);
+			break;
+	}
 }
 
 void AdministrationDialog::OnFileList()
