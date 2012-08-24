@@ -166,7 +166,7 @@ sScriptLink ScriptLink[NumScriptLinks]={
 	{"SoundEmit"		,FDSound},
 	{"MusicLoad"		,FDSound},
 	{"LoadXFont"		,FDFont},
-	{"CamStartScript"	,FDCameraFlight}
+	{"StartScript"	,FDCameraFlight}
 };
 
 void add_possible_link(Array<s_admin_link> &l, int type, const string &filename)

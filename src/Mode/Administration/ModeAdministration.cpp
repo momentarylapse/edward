@@ -8,6 +8,7 @@
 #include "ModeAdministration.h"
 #include "../../Data/Administration/DataAdministration.h"
 #include "Dialog/AdministrationDialog.h"
+#include "Dialog/ConfigurationDialog.h"
 #include "../../Edward.h"
 
 ModeAdministration *mode_administration;
@@ -37,10 +38,31 @@ void ModeAdministration::OnEnd()
 
 void ModeAdministration::OnCommand(const string& id)
 {
+	if (id == "export_game")
+		ExportGame();
+	if (id == "rudimentary_configuration")
+		BasicSettings();
 }
 
 void ModeAdministration::OnUpdate(Observable* o)
 {
 }
+
+void ModeAdministration::BasicSettings()
+{
+	ConfigurationDialog *dlg = new ConfigurationDialog(HuiCurWindow, false, data, false);
+	dlg->Update();
+	HuiWaitTillWindowClosed(dlg);
+}
+
+void ModeAdministration::ExportGame()
+{
+	ConfigurationDialog *dlg = new ConfigurationDialog(HuiCurWindow, false, data, true);
+	dlg->Update();
+	HuiWaitTillWindowClosed(dlg);
+
+	// data->ExportGame(...);
+}
+
 
 

@@ -23,6 +23,9 @@ public:
 	void OnCommand(const string &id);
 	void OnUpdate(Observable *o);
 
+	void BasicSettings();
+	void ExportGame();
+
 	AdministrationDialog *dialog;
 
 	DataAdministration *data;

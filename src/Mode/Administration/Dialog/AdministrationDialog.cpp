@@ -9,6 +9,7 @@
 #include "../../../Data/Administration/DataAdministration.h"
 #include "../../../Edward.h"
 #include "../../../Mode/Welcome/ModeWelcome.h"
+#include "../ModeAdministration.h"
 #include <assert.h>
 
 AdministrationDialog::AdministrationDialog(CHuiWindow* _parent, bool _allow_parent, DataAdministration *_data):
@@ -30,10 +31,8 @@ AdministrationDialog::AdministrationDialog(CHuiWindow* _parent, bool _allow_pare
 	EventM("file_list_detail_dest", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnFileList);
 	EventM("file_list_super", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnFileList);
 	EventM("file_list_missing", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnFileList);
-	EventM("rudimentary_configuration", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnRudimentaryConfiguration);
 	EventM("ad_rudimentary_configuration", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnRudimentaryConfiguration);
-	//EventM("ad_export_game", this, (void(HuiEventHandler::*)())&AdministrationDialog::PreExportGame);
-	//EventM("export_game", this, (void(HuiEventHandler::*)())&AdministrationDialog::PreExportGame);
+	EventM("ad_export_game", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnExportGame);
 
 	LoadData();
 	Subscribe(data);
@@ -147,6 +146,11 @@ void AdministrationDialog::ShowDetail(int n, const string &lid)
 }
 
 
+void AdministrationDialog::OnExportGame()
+{
+	mode_administration->ExportGame();
+}
+
 AdminFileList *AdministrationDialog::get_list(const string &lid)
 {
 	if (lid == "file_list_cur")
@@ -164,6 +168,49 @@ AdminFileList *AdministrationDialog::get_list(const string &lid)
 	return NULL;
 }
 
+string get_first_list_id_by_tab_page(int page)
+{
+	if (page == 0)
+		return "file_list_cur";
+	if (page == 1)
+		return "file_list_all";
+	if (page == 2)
+		return "file_list_detail_source";
+	if (page == 3)
+		return "file_list_super";
+	if (page == 4)
+		return "file_list_missing";
+}
+
+Array<AdminFile*> AdministrationDialog::GetSelectedFilesFromList(const string& lid)
+{
+	Array<AdminFile*> r;
+	Array<int> index = GetMultiSelection(lid);
+	AdminFileList *l = get_list(lid);
+	assert(l);
+	foreach(index, i)
+		r.add((*l)[i]);
+	return r;
+}
+
+Array<AdminFile*> AdministrationDialog::GetSelectedFiles()
+{
+	int page = GetInt("ad_tab_control");
+	Array<AdminFile*> r = GetSelectedFilesFromList(get_first_list_id_by_tab_page(page));
+	if (page == 2)
+		r.append(GetSelectedFilesFromList("file_list_detail_dest"));
+	return r;
+}
+
+AdminFile* AdministrationDialog::GetSingleSelectedFile()
+{
+	Array<AdminFile*> l = GetSelectedFiles();
+	if (l.num == 1)
+		return l[0];
+	ed->ErrorBox(_("Es muss genau eine Datei markiert sein!"));
+	return NULL;
+}
+
 void AdministrationDialog::OnClose()
 {
 	ed->SetMode(mode_welcome);
@@ -173,13 +220,17 @@ void AdministrationDialog::OnExit()
 {	ed->SetMode(mode_welcome);	}
 
 void AdministrationDialog::OnRename()
-{}//{	madmin->Rename();	}
+{}//{	data->Rename();	}
 
 void AdministrationDialog::OnDelete()
 {}//{	madmin->Delete();	}
 
 void AdministrationDialog::OnEdit()
-{}//{	madmin->Edit();	}
+{
+	AdminFile *a = GetSingleSelectedFile();
+	if (!a)
+		return;
+}
 
 void AdministrationDialog::OnFileList()
 {
@@ -189,5 +240,7 @@ void AdministrationDialog::OnFileList()
 }
 
 void AdministrationDialog::OnRudimentaryConfiguration()
-{}//{	madmin->ExecuteConfigurationDialog(false);	}
+{
+	mode_administration->BasicSettings();
+}
 

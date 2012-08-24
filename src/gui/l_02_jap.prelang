@@ -1120,7 +1120,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-165
+167
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1157,6 +1157,8 @@ Animation
 Ansicht
 
 Anzahl der Texturen wurde an das Material angepasst!
+
+Arbeitsverzeichnis
 
 Arbeitsverzeichnis \"%s\" enthält keine \"game.ini\"-Datei. Soll diese erstellt werden?
 
@@ -1249,6 +1251,8 @@ Kamera-Dateien (*.camera)
 KameraPunkt
 
 Kann Material-Datei nicht öffnen
+
+Kann XFont-Datei nicht öffnen
 
 Kanten
 

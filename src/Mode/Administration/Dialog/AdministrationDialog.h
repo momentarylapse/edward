@@ -31,6 +31,11 @@ public:
 	void OnEdit();
 	void OnFileList();
 	void OnRudimentaryConfiguration();
+	void OnExportGame();
+
+	Array<AdminFile*> GetSelectedFiles();
+	Array<AdminFile*> GetSelectedFilesFromList(const string &lid);
+	AdminFile* GetSingleSelectedFile();
 
 
 	void FillAdminList(int view, const string &lid);

@@ -592,7 +592,7 @@ model_dialog_grp_physics
 model_dialog_grp_tensor
 !bold\\Moment of inertia tensor
 model_dialog_t_comment
-
+The properties of this material file can be overwritten in the following tab pages
 model_dialog_t_description
 Description
 model_dialog_t_detail_high
@@ -1120,7 +1120,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-165
+167
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1158,12 +1158,14 @@ Ansicht
 View
 Anzahl der Texturen wurde an das Material angepasst!
 Number of textures changed to comply with the material!
+Arbeitsverzeichnis
+Working directory
 Arbeitsverzeichnis \"%s\" enthält keine \"game.ini\"-Datei. Soll diese erstellt werden?
-
+Woring directory \"%s\" does not contain a file named \"game.ini\". Do you want one to be created?
 Beschreibung
 Description
 Datei
-
+File
 Datei ist nicht in der Stimmung, geöffnet zu werden
 The file is not in the mood of beeing opened
 Datei liegt nicht im vorgesehenen Verzeichnis: \"%s\"\noder in dessen Unterverzeichnis
@@ -1193,17 +1195,17 @@ Editor for game data of the x9 engine
 Eigenschaften
 Properties
 Erstelle Datenbank
-
+Creating database
 Es existiert bereits eine Animation mit diesem Index. Bitte einen anderen wählen.
-
+This index is already taken by another animation.
 Es muss genau 1 Knochen markiert sein!
-
+Please select exactly one bone!
 Es muss genau ein Objekt markiert sein!
-
+Please select exactly one object!
 Es muss mindestens ein Terrain markiert sein!
-
+No terrain selected!
 Es sind nur maximal %d Texturen pro Terrain erlaubt!
-
+No more than %d textures per terrain allowed!
 Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
 File %s has a wrong file format: %d (expected: %d - %d)!
 Fehler
@@ -1219,9 +1221,9 @@ Font file
 Font-Dateien (*.xfont)
 Font files (*.xfont)
 Frage
-
+Question
 Gespeichert!
-
+Saved!
 Hinten
 Back
 Hinten (-z)
@@ -1229,27 +1231,29 @@ Back (-z)
 Höchstens %d Textur-Ebenen erlaubt!
 Only %d texture levels allowed!
 Initialisierung
-
+Initializing
 Isometrisch
 Isometric
 Ist halt irgendwie passiert...
 Just happened somehow...
 Item
-
+Item
 Item-Datei
 Item file
 Items (*.item)
 Items (*.item)
 Kamera
-
+Camera
 Kamera-Datei
 Camera file
 Kamera-Dateien (*.camera)
 Camera files (*.camera)
 KameraPunkt
-
+Camera point
 Kann Material-Datei nicht öffnen
 Can't load material file
+Kann XFont-Datei nicht öffnen
+Can't load font file
 Kanten
 Edges
 Karten (*.map)
@@ -1285,7 +1289,7 @@ Materials (*.material)
 Mesh
 Mesh
 Mindestens eine Textur-Ebene muss existieren!
-
+There has to be at least one texture level!
 Mindestens eine Textur-Ebene muss vorhanden sein!
 At least one texture level has to exist!
 Modell
@@ -1329,13 +1333,13 @@ Right (-x)
 Rotieren
 Rotate
 Script
-
+Script
 Script-Datei
 Script file
 Script-Dateien (*.kaba)
 Script files (*.kaba)
 Shader
-
+Shader
 Shader-Datei
 Shader file
 Shader-Dateien (*.fx)
@@ -1349,7 +1353,7 @@ Scale (2D)
 Skelett
 Skeleton
 Sound
-
+Sound
 Sound-Datei
 Sound file
 Sounds (wav,mp3,midi)
@@ -1361,9 +1365,9 @@ Terrain
 Terrains
 Terrains
 Teste Dateien
-
+Checking files
 Textur
-
+Texture
 Textur-Datei
 Texture file
 Textur-Datei nicht ladbar: %s
@@ -1405,21 +1409,21 @@ World file
 Welten (*.world)
 Worlds (*.world)
 Würfel: Punkt 1 / 3
-
+Cube: point 1 / 3
 Würfel: Punkt 2 / 3
-
+Cube: point 2 / 3
 Würfel: Punkt 3 / 3
-
+Cube: point 3 / 3
 Zylinder (-schlange)
-
+Cylinder (-snake)
 Zylinder: Endpunkt
-
+Cylinder: ...points
 Zylinder: Radius
-
+Cylinder: radius
 [Engine]
-
+[Engine]
 \\\\   - keine Texturen -
-
+\\\\   - no textures -
 administrieren
 administrate
 beliebige Datei
@@ -1429,13 +1433,13 @@ i'm now going to clean up...
 kein Dreieck ausgewählt
 no triangle selected
 keine doppelten Punkte erlaubt!
-
+No double points allowed!
 message.txt öffnen
 Open message.txt
 neue Punkte setzen
 place new vertex
 neuen Punkt in Dreieck setzen
-
+Add a new vertex into a triangle
 neues Objekt setzen
 
 neues Terrain...
