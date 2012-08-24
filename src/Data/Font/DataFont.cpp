@@ -62,7 +62,7 @@ bool DataFont::Load(const string & _filename, bool deep)
 
 	}else if (ffv==2){
 
-		TextureFile == f->ReadStrC();
+		TextureFile = f->ReadStrC();
 		int NumGlyphs=f->ReadWordC();
 		GlyphHeight=f->ReadByteC();
 		GlyphY1=f->ReadByteC();
