@@ -9,7 +9,6 @@
 #define ACTIONMODELDELETETRIANGLE_H_
 
 #include "../../../Action.h"
-#include "../../../../lib/types/types.h"
 
 class ActionModelDeleteTriangle: public Action
 {

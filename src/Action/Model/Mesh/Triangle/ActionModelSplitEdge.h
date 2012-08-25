@@ -8,9 +8,9 @@
 #ifndef ACTIONMODELSPLITEDGE_H_
 #define ACTIONMODELSPLITEDGE_H_
 
-#include "../../../Action.h"
 #include "../../../ActionGroup.h"
-#include "../../../../Data/Model/DataModel.h"
+class DataModel;
+class vector;
 
 class ActionModelSplitEdge : public ActionGroup
 {

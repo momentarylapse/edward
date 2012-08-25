@@ -8,10 +8,10 @@
 #ifndef ACTIONMODELADDCUBE_H_
 #define ACTIONMODELADDCUBE_H_
 
-#include "../../../Action.h"
 #include "../../../ActionGroup.h"
-#include "../../../../lib/types/types.h"
-#include "../../../../Data/Model/DataModel.h"
+class DataModel;
+class Data;
+class vector;
 
 class ActionModelAddCube: public ActionGroup
 {

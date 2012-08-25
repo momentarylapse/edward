@@ -11,7 +11,24 @@
 #include "Helper/ActionModelSurfaceDeleteTriangle.h"
 #include "../Triangle/ActionModelAddTrianglesByOutline.h"
 #include "ActionModelSurfaceCopy.h"
+#include "../../../../Data/Model/DataModel.h"
 #include "../../../../Edward.h"
+
+
+class sCol
+{
+public:
+	sCol(){}
+	sCol(const vector &_p, bool _own_edge, int _index, int _k){
+		p = _p;
+		own_edge = _own_edge;
+		index = _index;
+		k = _k;
+	}
+	vector p;
+	bool own_edge;
+	int index, k;
+};
 
 ActionModelSurfaceSubtract::ActionModelSurfaceSubtract(DataModel *m)
 {

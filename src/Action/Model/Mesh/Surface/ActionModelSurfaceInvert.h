@@ -9,7 +9,7 @@
 #define ACTIONMODELSURFACEINVERT_H_
 
 #include "../../../Action.h"
-#include "../../../../Data/Data.h"
+class Data;
 
 class ActionModelSurfaceInvert : public Action
 {

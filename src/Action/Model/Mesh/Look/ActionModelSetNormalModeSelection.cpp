@@ -6,6 +6,7 @@
  */
 
 #include "ActionModelSetNormalModeSelection.h"
+#include "../../../../Data/Model/DataModel.h"
 
 ActionModelSetNormalModeSelection::ActionModelSetNormalModeSelection(DataModel *m, int _mode)
 {

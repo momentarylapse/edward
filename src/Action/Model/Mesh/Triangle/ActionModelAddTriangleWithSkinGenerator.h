@@ -9,7 +9,6 @@
 #define ACTIONMODELADDTRIANGLEWITHSKINGENERATOR_H_
 
 #include "../../../ActionGroup.h"
-#include "../../../../lib/types/types.h"
 class DataModel;
 class SkinGenerator;
 

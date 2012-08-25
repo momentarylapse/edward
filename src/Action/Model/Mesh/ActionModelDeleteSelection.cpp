@@ -9,6 +9,7 @@
 #include "Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
 #include "Vertex/Helper/ActionModelDeleteUnusedVertex.h"
 #include "Surface/Helper/ActionModelDeleteEmptySurface.h"
+#include "../../../Data/Model/DataModel.h"
 
 ActionModelDeleteSelection::ActionModelDeleteSelection(DataModel *m, bool greedy)
 {

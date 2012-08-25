@@ -9,8 +9,7 @@
 #define ACTIONMODELSETMATERIAL_H_
 
 #include "../../../Action.h"
-#include "../../../../lib/types/types.h"
-#include "../../../../Data/Model/DataModel.h"
+class DataModel;
 
 class ActionModelSetMaterial: public Action
 {

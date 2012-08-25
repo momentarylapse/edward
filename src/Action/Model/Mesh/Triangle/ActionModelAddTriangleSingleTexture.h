@@ -9,8 +9,8 @@
 #define ACTIONMODELADDTRIANGLESINGLETEXTURE_H_
 
 #include "../../../ActionGroup.h"
-#include "../../../../Data/Model/DataModel.h"
-#include "../../../../lib/types/types.h"
+class DataModel;
+class vector;
 
 class ActionModelAddTriangleSingleTexture: public ActionGroup
 {

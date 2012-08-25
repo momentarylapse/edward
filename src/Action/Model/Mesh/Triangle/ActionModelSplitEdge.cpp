@@ -9,6 +9,7 @@
 #include "../Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
 #include "../Surface/Helper/ActionModelSurfaceAddTriangle.h"
 #include "../Vertex/ActionModelAddVertex.h"
+#include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
 inline int tria_sort_vert_by_edge(const ModeModelTriangle &t, const ModeModelEdge &e, int v[3])

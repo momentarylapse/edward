@@ -8,6 +8,7 @@
 #include "ActionModelAddCube.h"
 #include "../Vertex/ActionModelAddVertex.h"
 #include "../Triangle/ActionModelAddTriangleSingleTexture.h"
+#include "../../../../Data/Model/DataModel.h"
 
 ActionModelAddCube::ActionModelAddCube(DataModel *m, const vector &_pos, const vector &_dv1, const vector &_dv2, const vector &_dv3, int num_1, int num_2, int num_3)
 {

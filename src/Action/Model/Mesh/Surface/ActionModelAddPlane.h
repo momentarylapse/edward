@@ -8,10 +8,10 @@
 #ifndef ACTIONMODELADDPLANE_H_
 #define ACTIONMODELADDPLANE_H_
 
-#include "../../../Action.h"
 #include "../../../ActionGroup.h"
-#include "../../../../lib/types/types.h"
-#include "../../../../Data/Model/DataModel.h"
+class DataModel;
+class Data;
+class vector;
 
 class ActionModelAddPlane: public ActionGroup
 {

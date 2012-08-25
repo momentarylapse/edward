@@ -9,6 +9,7 @@
 #include "../Vertex/ActionModelAddVertex.h"
 #include "../Triangle/ActionModelAddTriangleSingleTexture.h"
 #include "ActionModelSurfaceAutoWeld.h"
+#include "../../../../Data/Model/DataModel.h"
 
 
 #define ball_ang(x, y)	vector((float)(y)/(float)_num_y,(float)(x)/(float)_num_x,0)

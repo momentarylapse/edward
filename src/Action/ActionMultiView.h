@@ -9,7 +9,7 @@
 #define ACTIONMULTIVIEW_H_
 
 #include "Action.h"
-#include "../Data/Data.h"
+class Data;
 #include "../lib/file/file.h"
 #include "../lib/types/types.h"
 

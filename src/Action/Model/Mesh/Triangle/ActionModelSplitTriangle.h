@@ -8,10 +8,9 @@
 #ifndef ACTIONMODELSPLITTRIANGLE_H_
 #define ACTIONMODELSPLITTRIANGLE_H_
 
-#include "../../../Action.h"
 #include "../../../ActionGroup.h"
-#include "../../../../lib/types/types.h"
-#include "../../../../Data/Model/DataModel.h"
+class DataModel;
+class vector;
 
 class ActionModelSplitTriangle: public ActionGroup
 {

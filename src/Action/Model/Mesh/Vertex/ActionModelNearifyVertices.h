@@ -9,7 +9,8 @@
 #define ACTIONMODELNEARIFYVERTICES_H_
 
 #include "../../../Action.h"
-#include "../../../../Data/Model/DataModel.h"
+class DataModel;
+class vector;
 
 class ActionModelNearifyVertices : public Action
 {

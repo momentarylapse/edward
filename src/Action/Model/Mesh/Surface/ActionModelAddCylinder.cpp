@@ -8,6 +8,7 @@
 #include "ActionModelAddCylinder.h"
 #include "../Vertex/ActionModelAddVertex.h"
 #include "../Triangle/ActionModelAddTriangleSingleTexture.h"
+#include "../../../../Data/Model/DataModel.h"
 
 #define _cyl_vert(i, j)         ( edges      * (i) +(j) % edges) + nv
 #define _cyl_svert(i, j)        sv[(edges + 1) * (i) +(j) % (edges + 1)]

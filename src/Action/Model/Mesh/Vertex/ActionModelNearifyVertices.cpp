@@ -6,6 +6,7 @@
  */
 
 #include "ActionModelNearifyVertices.h"
+#include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
 ActionModelNearifyVertices::ActionModelNearifyVertices(DataModel *m)

@@ -9,6 +9,7 @@
 #include "../Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
 #include "../Surface/Helper/ActionModelSurfaceAddTriangle.h"
 #include "../Vertex/ActionModelAddVertex.h"
+#include "../../../../Data/Model/DataModel.h"
 
 ActionModelSplitTriangle::ActionModelSplitTriangle(DataModel *m, int _surface, int _triangle, const vector &_pos)
 {

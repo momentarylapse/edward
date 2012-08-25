@@ -9,7 +9,8 @@
 #define ACTIONMODELALIGNTOGRID_H_
 
 #include "../../../Action.h"
-#include "../../../../Data/Model/DataModel.h"
+class DataModel;
+class vector;
 
 class ActionModelAlignToGrid : public Action
 {

@@ -8,6 +8,7 @@
 #include "ActionModelPasteGeometry.h"
 #include "Vertex/ActionModelAddVertex.h"
 #include "Triangle/ActionModelAddTriangle.h"
+#include "../../../Data/Model/DataModel.h"
 
 ActionModelPasteGeometry::ActionModelPasteGeometry(DataModel *m, ModeModelGeometry &geo)
 {

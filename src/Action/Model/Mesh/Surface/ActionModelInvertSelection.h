@@ -9,7 +9,7 @@
 #define ACTIONMODELINVERTSELECTION_H_
 
 #include "../../../ActionGroup.h"
-#include "../../../../Data/Model/DataModel.h"
+class DataModel;
 
 class ActionModelInvertSelection : public ActionGroup
 {

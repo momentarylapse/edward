@@ -9,7 +9,6 @@
 #define ACTIONMODELDELETEEMPTYSURFACE_H_
 
 #include "../../../../Action.h"
-#include "../../../../../lib/types/types.h"
 
 class ActionModelDeleteEmptySurface: public Action
 {

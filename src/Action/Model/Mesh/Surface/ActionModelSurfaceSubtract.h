@@ -8,10 +8,11 @@
 #ifndef ACTIONMODELSURFACESUBTRACT_H_
 #define ACTIONMODELSURFACESUBTRACT_H_
 
-#include "../../../Action.h"
 #include "../../../ActionGroup.h"
-#include "../../../../lib/types/types.h"
-#include "../../../../Data/Model/DataModel.h"
+class DataModel;
+class ModeModelTriangle;
+class ModeModelSurface;
+class sCol;
 
 class ActionModelSurfaceSubtract : public ActionGroup
 {
@@ -21,20 +22,6 @@ public:
 	string name(){	return "ModelSurfaceSubtract";	}
 
 private:
-
-	struct sCol
-	{
-		sCol(){}
-		sCol(const vector &_p, bool _own_edge, int _index, int _k){
-			p = _p;
-			own_edge = _own_edge;
-			index = _index;
-			k = _k;
-		}
-		vector p;
-		bool own_edge;
-		int index, k;
-	};
 
 	Array<sCol> t_col;
 

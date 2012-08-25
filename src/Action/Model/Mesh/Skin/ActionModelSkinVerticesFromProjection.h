@@ -9,8 +9,9 @@
 #define ACTIONMODELSKINVERTICESFROMPROJECTION_H_
 
 #include "../../../Action.h"
-#include "../../../../Data/Model/DataModel.h"
+#include "../../../../lib/x/x.h"
 #include "../../../../Data/Model/SkinGenerator.h"
+class DataModel;
 
 class MultiView;
 

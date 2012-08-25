@@ -8,9 +8,7 @@
 #ifndef ACTIONMODELDELETESURFACE_H_
 #define ACTIONMODELDELETESURFACE_H_
 
-#include "../../../Action.h"
 #include "../../../ActionGroup.h"
-#include "../../../../lib/types/types.h"
 
 class ActionModelDeleteSurface: public ActionGroup
 {

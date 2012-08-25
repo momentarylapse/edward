@@ -9,7 +9,7 @@
 #define ACTIONMODELSURFACEDELETETRIANGLE_H_
 
 #include "../../../../Action.h"
-#include "../../../../../lib/types/types.h"
+class vector;
 #include "../../../../../lib/x/x.h"
 
 class ActionModelSurfaceDeleteTriangle: public Action

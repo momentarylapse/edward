@@ -6,9 +6,8 @@
  */
 
 #include "ActionModelEasify.h"
-#include "Vertex/ActionModelAddVertex.h"
-#include "Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
-#include "Surface/Helper/ActionModelSurfaceRelinkTriangle.h"
+#include "Surface/ActionModelCollapseEdge.h"
+#include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
 
 static vector get_area(DataModel *m, ModeModelTriangle &t)
@@ -106,25 +105,7 @@ ActionModelEasify::ActionModelEasify(DataModel *m, float factor)
 				index = i;
 			}
 
-		ModeModelEdge &e = s.Edge[index];
-		int v[2] = {e.Vertex[0], e.Vertex[1]};
-		AddSubAction(new ActionModelAddVertex((m->Vertex[v[0]].pos + m->Vertex[v[1]].pos) / 2), m);
-
-		Set<int> tria;
-		for (int k=0;k<e.RefCount;k++)
-			tria.add(e.Triangle[k]);
-
-		foreachb(tria, t)
-			AddSubAction(new ActionModelSurfaceDeleteTriangle(si, t), m);
-
-		foreachbi(s.Triangle, t, i)
-			for (int k=0;k<3;k++)
-				if ((t.Vertex[k] == v[0]) || (t.Vertex[k] == v[1])){
-					int nv[3];
-					for (int l=0;l<3;l++)
-						nv[l] = (k == l) ? (m->Vertex.num - 1) : t.Vertex[l];
-					AddSubAction(new ActionModelSurfaceRelinkTriangle(m, si, i, nv[0], nv[1], nv[2]), m);
-				}
+		AddSubAction(new ActionModelCollapseEdge(m, si, index), m);
 
 	}
 }

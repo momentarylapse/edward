@@ -6,6 +6,7 @@
  */
 
 #include "ActionModelAlignToGrid.h"
+#include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
 ActionModelAlignToGrid::ActionModelAlignToGrid(DataModel *m, float _grid_dist)

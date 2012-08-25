@@ -8,9 +8,7 @@
 #ifndef ACTIONMODELADDTRIANGLESBYOUTLINE_H_
 #define ACTIONMODELADDTRIANGLESBYOUTLINE_H_
 
-#include "../../../Action.h"
 #include "../../../ActionGroup.h"
-#include "../../../../lib/types/types.h"
 class DataModel;
 class SkinGenerator;
 

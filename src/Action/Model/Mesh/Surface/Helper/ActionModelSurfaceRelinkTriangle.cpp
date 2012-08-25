@@ -8,6 +8,7 @@
 #include "ActionModelSurfaceRelinkTriangle.h"
 #include "ActionModelSurfaceDeleteTriangle.h"
 #include "ActionModelSurfaceAddTriangle.h"
+#include "../../../../../Data/Model/DataModel.h"
 
 ActionModelSurfaceRelinkTriangle::ActionModelSurfaceRelinkTriangle(DataModel *m, int _surface, int _triangle, int a, int b, int c)
 {

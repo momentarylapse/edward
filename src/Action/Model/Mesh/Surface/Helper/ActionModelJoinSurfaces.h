@@ -9,7 +9,6 @@
 #define ACTIONMODELJOINSURFACES_H_
 
 #include "../../../../Action.h"
-#include "../../../../../lib/types/types.h"
 
 class ActionModelJoinSurfaces: public Action
 {

@@ -8,10 +8,9 @@
 #ifndef ACTIONMODELSURFACECOPY_H_
 #define ACTIONMODELSURFACECOPY_H_
 
-#include "../../../Action.h"
 #include "../../../ActionGroup.h"
-#include "../../../../lib/types/types.h"
-#include "../../../../Data/Model/DataModel.h"
+class DataModel;
+class ModeModelSurface;
 
 class ActionModelSurfaceCopy : public ActionGroup
 {

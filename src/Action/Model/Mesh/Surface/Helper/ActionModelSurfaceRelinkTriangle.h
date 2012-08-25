@@ -8,10 +8,8 @@
 #ifndef ACTIONMODELSURFACERELINKTRIANGLE_H_
 #define ACTIONMODELSURFACERELINKTRIANGLE_H_
 
-#include "../../../../Action.h"
 #include "../../../../ActionGroup.h"
-#include "../../../../../lib/types/types.h"
-#include "../../../../../Data/Model/DataModel.h"
+class DataModel;
 
 class ActionModelSurfaceRelinkTriangle : public ActionGroup
 {

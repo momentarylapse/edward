@@ -9,9 +9,7 @@
 #define ACTIONMODELROTATEVERTICES_H_
 
 #include "../../../ActionMultiView.h"
-#include "../../../../Data/Data.h"
-#include "../../../../lib/file/file.h"
-#include "../../../../lib/types/types.h"
+class vector;
 
 class Data;
 

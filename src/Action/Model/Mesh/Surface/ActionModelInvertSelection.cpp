@@ -7,6 +7,7 @@
 
 #include "ActionModelInvertSelection.h"
 #include "ActionModelSurfaceInvert.h"
+#include "../../../../Data/Model/DataModel.h"
 
 ActionModelInvertSelection::ActionModelInvertSelection(DataModel *m)
 {

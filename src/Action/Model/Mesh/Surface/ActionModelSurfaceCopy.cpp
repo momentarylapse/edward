@@ -8,6 +8,7 @@
 #include "ActionModelSurfaceCopy.h"
 #include "../Vertex/ActionModelAddVertex.h"
 #include "../Triangle/ActionModelAddTriangle.h"
+#include "../../../../Data/Model/DataModel.h"
 
 ActionModelSurfaceCopy::ActionModelSurfaceCopy(DataModel *m, ModeModelSurface *&s)
 {

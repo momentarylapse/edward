@@ -7,6 +7,7 @@
 
 #include "ActionModelAddTriangleSingleTexture.h"
 #include "ActionModelAddTriangle.h"
+#include "../../../../Data/Model/DataModel.h"
 
 ActionModelAddTriangleSingleTexture::ActionModelAddTriangleSingleTexture(DataModel *m, int _a, int _b, int _c, int _material, const vector &_sva, const vector &_svb, const vector &_svc)
 {

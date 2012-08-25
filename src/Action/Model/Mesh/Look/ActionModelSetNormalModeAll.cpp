@@ -6,6 +6,7 @@
  */
 
 #include "ActionModelSetNormalModeAll.h"
+#include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
 ActionModelSetNormalModeAll::ActionModelSetNormalModeAll(int _mode)
