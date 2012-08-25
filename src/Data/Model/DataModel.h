@@ -271,6 +271,18 @@ public:
 	ModeModelSurface *AddCube(const vector &_pos, const vector &_dv1, const vector &_dv2, const vector &_dv3, int num_1, int num_2, int num_3);
 	ModeModelSurface *AddCylinder(Array<vector> &pos, Array<float> &radius, int rings, int edges, bool closed);
 
+	void DeleteSelection(bool greedy = false);
+	void InvertSelection();
+	void SubtractSelection();
+	void AlignToGridSelection(float grid_d);
+	void NearifySelectedVertices();
+	void SetNormalModeSelection(int mode);
+	void SetNormalModeAll(int mode);
+	void SetMaterialSelection(int material);
+	void CopyGeometry(ModeModelGeometry &geo); // not an action...
+	void PasteGeometry(ModeModelGeometry &geo);
+	void Easify(float factor);
+
 
 	// properties
 	Array<ModeModelSkeletonBone> Bone;

@@ -21,15 +21,6 @@
 #include "Creation/ModeModelMeshCreateCylinder.h"
 #include "Creation/ModeModelMeshCreatePlane.h"
 #include "Creation/ModeModelMeshSplitTriangle.h"
-#include "../../../Action/Model/Mesh/ActionModelDeleteSelection.h"
-#include "../../../Action/Model/Mesh/Look/ActionModelSetMaterial.h"
-#include "../../../Action/Model/Mesh/Surface/ActionModelSurfaceSubtract.h"
-#include "../../../Action/Model/Mesh/Surface/ActionModelInvertSelection.h"
-#include "../../../Action/Model/Mesh/ActionModelPasteGeometry.h"
-#include "../../../Action/Model/Mesh/Look/ActionModelSetNormalModeSelection.h"
-#include "../../../Action/Model/Mesh/Look/ActionModelSetNormalModeAll.h"
-#include "../../../Action/Model/Mesh/Vertex/ActionModelNearifyVertices.h"
-#include "../../../Action/Model/Mesh/Vertex/ActionModelAlignToGrid.h"
 #include "../../../Action/Model/Mesh/Skin/ActionModelSkinVerticesFromProjection.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
 #include "../Dialog/ModelEasifyDialog.h"
@@ -99,7 +90,7 @@ void ModeModelMesh::OnCommand(const string & id)
 		OptimizeView();
 
 	if (id == "delete")
-		data->Execute(new ActionModelDeleteSelection(data, (ed->cur_mode == mode_model_mesh_vertex)));
+		data->DeleteSelection(ed->cur_mode == mode_model_mesh_vertex);
 	if (id == "copy")
 		Copy();
 	if (id == "paste")
@@ -109,13 +100,13 @@ void ModeModelMesh::OnCommand(const string & id)
 		mode_model_mesh_triangle->ToggleSelectCW();
 
 	if (id == "subtract_surface")
-		data->Execute(new ActionModelSurfaceSubtract(data));
+		data->SubtractSelection();
 	if (id == "invert_trias")
-		data->Execute(new ActionModelInvertSelection(data));
+		data->InvertSelection();
 	if (id == "nearify")
-		data->Execute(new ActionModelNearifyVertices(data));
+		data->NearifySelectedVertices();
 	if (id == "align_to_grid")
-		data->Execute(new ActionModelAlignToGrid(data, mode_model_mesh_vertex->multi_view->GetGridD()));
+		data->AlignToGridSelection(mode_model_mesh_vertex->multi_view->GetGridD());
 
 	if (id == "new_point")
 		ed->SetMode(new ModeModelMeshCreateVertex(mode_model_mesh_vertex));
@@ -153,17 +144,17 @@ void ModeModelMesh::OnCommand(const string & id)
 		Easify();
 
 	if (id == "normal_this_smooth")
-		data->Execute(new ActionModelSetNormalModeSelection(data, NormalModeSmooth));
+		data->SetNormalModeSelection(NormalModeSmooth);
 	if (id == "normal_this_hard")
-		data->Execute(new ActionModelSetNormalModeSelection(data, NormalModeHard));
+		data->SetNormalModeSelection(NormalModeHard);
 	if (id == "normal_this_angular")
-		data->Execute(new ActionModelSetNormalModeSelection(data, NormalModeAngular));
+		data->SetNormalModeSelection(NormalModeAngular);
 	if (id == "normal_all_smooth")
-		data->Execute(new ActionModelSetNormalModeAll(NormalModeSmooth));
+		data->SetNormalModeAll(NormalModeSmooth);
 	if (id == "normal_all_hard")
-		data->Execute(new ActionModelSetNormalModeAll(NormalModeHard));
+		data->SetNormalModeAll(NormalModeHard);
 	if (id == "normal_all_angular")
-		data->Execute(new ActionModelSetNormalModeAll(NormalModeAngular));
+		data->SetNormalModeAll(NormalModeAngular);
 }
 
 
@@ -304,7 +295,7 @@ void ModeModelMesh::ChooseMaterialForSelection()
 	HuiWaitTillWindowClosed(MaterialSelectionDialog);
 
 	if (SelectionDialogReturnIndex >= 0)
-		data->Execute(new ActionModelSetMaterial(data, SelectionDialogReturnIndex));
+		data->SetMaterialSelection(SelectionDialogReturnIndex);
 
 	msg_db_l(2);
 }
@@ -344,28 +335,7 @@ void ModeModelMesh::ApplyRightMouseFunction(MultiView *mv)
 
 void ModeModelMesh::Copy()
 {
-	TempGeo.Vertex.clear();
-	TempGeo.Triangle.clear();
-
-	// copy vertices
-	Array<int> vert;
-	foreachi(data->Vertex, v, vi)
-		if (v.is_selected){
-			TempGeo.Vertex.add(v);
-			vert.add(vi);
-		}
-
-	// copy triangles
-	foreach(data->Surface, s)
-		foreach(s.Triangle, t)
-			if (t.is_selected){
-				ModeModelTriangle tt = t;
-				for (int k=0;k<3;k++)
-					foreachi(vert, v, vi)
-						if (v == t.Vertex[k])
-							tt.Vertex[k] = vi;
-				TempGeo.Triangle.add(tt);
-			}
+	data->CopyGeometry(TempGeo);
 
 	OnUpdateMenu();
 	ed->SetMessage(format(_("%d Vertizes, %d Dreiecke kopiert"), TempGeo.Vertex.num, TempGeo.Triangle.num));
@@ -373,7 +343,7 @@ void ModeModelMesh::Copy()
 
 void ModeModelMesh::Paste()
 {
-	data->Execute(new ActionModelPasteGeometry(data, TempGeo));
+	data->PasteGeometry(TempGeo);
 	ed->SetMessage(format(_("%d Vertizes, %d Dreiecke eingef&ugt"), TempGeo.Vertex.num, TempGeo.Triangle.num));
 }
 

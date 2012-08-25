@@ -8,7 +8,6 @@
 #include "ModelEasifyDialog.h"
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
-#include "../../../Action/Model/Mesh/ActionModelEasify.h"
 
 ModelEasifyDialog::ModelEasifyDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data):
 	CHuiWindow("dummy", -1, -1, 320, 450, _parent, _allow_parent, HuiWinModeControls , true)
@@ -53,7 +52,7 @@ void ModelEasifyDialog::OnClose()
 
 void ModelEasifyDialog::OnOk()
 {
-	data->Execute(new ActionModelEasify(data, factor));
+	data->Easify(factor);
 	delete(this);
 }
 

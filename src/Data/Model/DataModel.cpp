@@ -12,11 +12,21 @@
 #include "../../Action/ActionManager.h"
 #include "../../Edward.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelAddVertex.h"
+#include "../../Action/Model/Mesh/Vertex/ActionModelNearifyVertices.h"
+#include "../../Action/Model/Mesh/Vertex/ActionModelAlignToGrid.h"
 #include "../../Action/Model/Mesh/Triangle/ActionModelAddTriangleSingleTexture.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelAddCube.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelAddPlane.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelAddCylinder.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelAddBall.h"
+#include "../../Action/Model/Mesh/Surface/ActionModelSurfaceSubtract.h"
+#include "../../Action/Model/Mesh/Surface/ActionModelInvertSelection.h"
+#include "../../Action/Model/Mesh/Look/ActionModelSetMaterial.h"
+#include "../../Action/Model/Mesh/Look/ActionModelSetNormalModeSelection.h"
+#include "../../Action/Model/Mesh/Look/ActionModelSetNormalModeAll.h"
+#include "../../Action/Model/Mesh/ActionModelDeleteSelection.h"
+#include "../../Action/Model/Mesh/ActionModelPasteGeometry.h"
+#include "../../Action/Model/Mesh/ActionModelEasify.h"
 #include "../../Action/Model/Animation/ActionModelAddAnimation.h"
 #include "../../Action/Model/Animation/ActionModelDeleteAnimation.h"
 #include "../../Action/Model/Animation/ActionModelAnimationAddFrame.h"
@@ -1715,6 +1725,62 @@ void DataModel::AnimationDeleteCurrentFrame()
 {
 	AnimationDeleteFrame(CurrentMove, CurrentFrame);
 }
+
+void DataModel::CopyGeometry(ModeModelGeometry &geo)
+{
+	geo.Vertex.clear();
+	geo.Triangle.clear();
+
+	// copy vertices
+	Array<int> vert;
+	foreachi(Vertex, v, vi)
+		if (v.is_selected){
+			geo.Vertex.add(v);
+			vert.add(vi);
+		}
+
+	// copy triangles
+	foreach(Surface, s)
+		foreach(s.Triangle, t)
+			if (t.is_selected){
+				ModeModelTriangle tt = t;
+				for (int k=0;k<3;k++)
+					foreachi(vert, v, vi)
+						if (v == t.Vertex[k])
+							tt.Vertex[k] = vi;
+				geo.Triangle.add(tt);
+			}
+}
+
+void DataModel::DeleteSelection(bool greedy)
+{	Execute(new ActionModelDeleteSelection(this, greedy));	}
+
+void DataModel::InvertSelection()
+{	Execute(new ActionModelInvertSelection(this));	}
+
+void DataModel::SubtractSelection()
+{	Execute(new ActionModelSurfaceSubtract(this));	}
+
+void DataModel::AlignToGridSelection(float grid_d)
+{	Execute(new ActionModelAlignToGrid(this, grid_d));	}
+
+void DataModel::NearifySelectedVertices()
+{	Execute(new ActionModelNearifyVertices(this));	}
+
+void DataModel::SetNormalModeSelection(int mode)
+{	Execute(new ActionModelSetNormalModeSelection(this, mode));	}
+
+void DataModel::SetNormalModeAll(int mode)
+{	Execute(new ActionModelSetNormalModeAll(mode));	}
+
+void DataModel::SetMaterialSelection(int material)
+{	Execute(new ActionModelSetMaterial(this, material));	}
+
+void DataModel::PasteGeometry(ModeModelGeometry& geo)
+{	Execute(new ActionModelPasteGeometry(this, geo));	}
+
+void DataModel::Easify(float factor)
+{	Execute(new ActionModelEasify(this, factor));	}
 
 void DataModel::AnimationDuplicateCurrentFrame()
 {
