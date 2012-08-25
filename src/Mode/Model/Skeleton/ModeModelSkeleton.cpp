@@ -35,7 +35,7 @@ void ModeModelSkeleton::OnCommand(const string & id)
 	if (id == "skeleton_new_point")
 		ed->SetMode(new ModeModelSkeletonCreateBone(ed->cur_mode));
 	if (id == "skeleton_edit_bone"){
-		if (data->GetNumMarkedBones() == 1){
+		if (data->GetNumSelectedBones() == 1){
 			foreachi(data->Bone, b, i)
 				if (b.is_selected){
 					ed->SetMode(new ModeModelSkeletonAttachVertices(ed->cur_mode, i));

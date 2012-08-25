@@ -1519,7 +1519,7 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 }
 
 
-int DataModel::GetNumMarkedVertices()
+int DataModel::GetNumSelectedVertices()
 {
 	int r = 0;
 	/*if ((CreationMode < 0) && ((SubMode == SubModeSkeleton) || ((SubMode == SubModeAnimation) && (move->Type == MoveTypeSkeletal)))){
@@ -1534,13 +1534,13 @@ int DataModel::GetNumMarkedVertices()
 	return r;
 }
 
-int DataModel::GetNumMarkedSkinVertices()
+int DataModel::GetNumSelectedSkinVertices()
 {
 	int r=0;
 	return r;
 }
 
-int DataModel::GetNumMarkedTriangles()
+int DataModel::GetNumSelectedTriangles()
 {
 	int r = 0;
 	foreach(Surface, s)
@@ -1550,7 +1550,7 @@ int DataModel::GetNumMarkedTriangles()
 	return r;
 }
 
-int DataModel::GetNumMarkedSurfaces()
+int DataModel::GetNumSelectedSurfaces()
 {
 	int r = 0;
 	foreach(Surface, s)
@@ -1559,12 +1559,20 @@ int DataModel::GetNumMarkedSurfaces()
 	return r;
 }
 
-int DataModel::GetNumMarkedBones()
+int DataModel::GetNumSelectedBones()
 {
 	int r = 0;
 	foreach(Bone, b)
 		if (b.is_selected)
 			r ++;
+	return r;
+}
+
+int DataModel::GetNumTriangles()
+{
+	int r = 0;
+	foreach(Surface, s)
+		r += s.Triangle.num;
 	return r;
 }
 

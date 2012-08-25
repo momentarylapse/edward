@@ -17,6 +17,9 @@ public:
 	ActionModelEasify(DataModel *m, float factor);
 	virtual ~ActionModelEasify();
 	string name(){	return "ModelEasify";	}
+
+private:
+	bool EasifyStep(DataModel *m);
 };
 
 #endif /* ACTIONMODELEASIFY_H_ */

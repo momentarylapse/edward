@@ -31,8 +31,8 @@
 #include "../../../Action/Model/Mesh/Vertex/ActionModelNearifyVertices.h"
 #include "../../../Action/Model/Mesh/Vertex/ActionModelAlignToGrid.h"
 #include "../../../Action/Model/Mesh/Skin/ActionModelSkinVerticesFromProjection.h"
-#include "../../../Action/Model/Mesh/ActionModelEasify.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
+#include "../Dialog/ModelEasifyDialog.h"
 
 ModeModelMesh *mode_model_mesh = NULL;
 
@@ -150,7 +150,7 @@ void ModeModelMesh::OnCommand(const string & id)
 		data->Execute(new ActionModelSkinVerticesFromProjection(data, mv));
 	}
 	if (id == "easify_skin")
-		data->Execute(new ActionModelEasify(data, 0.5f));
+		Easify();
 
 	if (id == "normal_this_smooth")
 		data->Execute(new ActionModelSetNormalModeSelection(data, NormalModeSmooth));
@@ -170,10 +170,10 @@ void ModeModelMesh::OnCommand(const string & id)
 
 void ModeModelMesh::OnDraw()
 {
-	if (data->GetNumMarkedVertices() > 0){
-		ed->DrawStr(20, 100, format(_("vert: %d"), data->GetNumMarkedVertices()));
-		ed->DrawStr(20, 120, format(_("tria: %d"), data->GetNumMarkedTriangles()));
-		ed->DrawStr(20, 140, format(_("surf: %d"), data->GetNumMarkedSurfaces()));
+	if (data->GetNumSelectedVertices() > 0){
+		ed->DrawStr(20, 100, format(_("vert: %d"), data->GetNumSelectedVertices()));
+		ed->DrawStr(20, 120, format(_("tria: %d"), data->GetNumSelectedTriangles()));
+		ed->DrawStr(20, 140, format(_("surf: %d"), data->GetNumSelectedSurfaces()));
 	}
 }
 
@@ -245,7 +245,7 @@ void ModeModelMesh::CreateNewMaterialForSelection()
 {
 #if 0
 	msg_db_r("CreateNewMaterialForSelection", 2);
-	if (0 == data->GetNumMarkedTriangles()){
+	if (0 == data->GetNumSelectedTriangles()){
 		ed->SetMessage(_("kein Dreieck ausgew&ahlt"));
 		msg_db_l(2);
 		return;
@@ -287,7 +287,7 @@ void ModeModelMesh::CreateNewMaterialForSelection()
 void ModeModelMesh::ChooseMaterialForSelection()
 {
 	msg_db_r("ChooseMaterialForSelection", 2);
-	if (0 == data->GetNumMarkedTriangles()){
+	if (0 == data->GetNumSelectedTriangles()){
 		ed->SetMessage(_("kein Dreieck ausgew&ahlt"));
 		msg_db_l(2);
 		return;
@@ -379,12 +379,19 @@ void ModeModelMesh::Paste()
 
 bool ModeModelMesh::Copyable()
 {
-	return data->GetNumMarkedVertices();
+	return data->GetNumSelectedVertices();
 }
 
 bool ModeModelMesh::Pasteable()
 {
 	return TempGeo.Vertex.num > 0;
+}
+
+void ModeModelMesh::Easify()
+{
+	ModelEasifyDialog *dlg = new ModelEasifyDialog(ed, false, data);
+	dlg->Update();
+	HuiWaitTillWindowClosed(dlg);
 }
 
 

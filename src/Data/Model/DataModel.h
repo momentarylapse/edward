@@ -220,13 +220,14 @@ public:
 
 
 
-	int GetNumMarkedVertices();
-	int GetNumMarkedSkinVertices();
-	int GetNumMarkedTriangles();
-	int GetNumMarkedSurfaces();
-	//int GetNumMarkedBalls();
-	//int GetNumMarkedKonvPolys();
-	int GetNumMarkedBones();
+	int GetNumSelectedVertices();
+	int GetNumSelectedSkinVertices();
+	int GetNumSelectedTriangles();
+	int GetNumSelectedSurfaces();
+	//int GetNumSelectedBalls();
+	//int GetNumSelectedPolys();
+	int GetNumSelectedBones();
+	int GetNumTriangles();
 
 	void ClearSelection();
 	void SelectionTrianglesFromVertices();

@@ -145,8 +145,8 @@ void ModeModelMeshTexture::OnDrawWin(int win, irect dest)
 
 void ModeModelMeshTexture::OnDraw()
 {
-	if (data->GetNumMarkedVertices() > 0){
-		NixDrawStr(20, 160, format(_("skin: %d"), data->GetNumMarkedSkinVertices()));
+	if (data->GetNumSelectedVertices() > 0){
+		NixDrawStr(20, 160, format(_("skin: %d"), data->GetNumSelectedSkinVertices()));
 	}
 }
 

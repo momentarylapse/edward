@@ -54,7 +54,7 @@ static float get_weight(DataModel *m, ModeModelSurface &s, ModeModelEdge &e)
 	return w;
 }
 
-ActionModelEasify::ActionModelEasify(DataModel *m, float factor)
+bool ActionModelEasify::EasifyStep(DataModel *m)
 {
 	ed->multi_view_3d->ResetMessage3d();
 
@@ -104,8 +104,19 @@ ActionModelEasify::ActionModelEasify(DataModel *m, float factor)
 				_edge = ei;
 			}
 
-	if (_edge >= 0)
+	if (_edge >= 0){
 		AddSubAction(new ActionModelCollapseEdge(m, _surface, _edge), m);
+		return true;
+	}
+	return false;
+}
+
+ActionModelEasify::ActionModelEasify(DataModel *m, float factor)
+{
+	int n = (int)((float)m->GetNumTriangles() * factor);
+	while(m->GetNumTriangles() > n)
+		if (!EasifyStep(m))
+			break;
 }
 
 ActionModelEasify::~ActionModelEasify()
