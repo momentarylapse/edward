@@ -186,6 +186,7 @@ public:
 	int Vertex[2];
 	int RefCount, Triangle[2], Side[2];
 	bool IsRound; // for editing
+	float Weight; // for easify'ing
 
 	// constraints:
 	//  Vertex[0] = surf.Triangle[Triangle[0]].Vertex[Side[0]]

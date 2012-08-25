@@ -61,11 +61,8 @@ ActionModelEasify::ActionModelEasify(DataModel *m, float factor)
 	foreachi(m->Surface, s, si){
 
 		// calculate edge weights
-		Array<float> we;
-		foreach(s.Edge, e){
-			float w = get_weight(m, s, e);
-			we.add(w);
-		}
+		foreach(s.Edge, e)
+			e.Weight = get_weight(m, s, e);
 
 		foreachi(s.Edge, e, ei)
 			if (e.RefCount == 1){
@@ -85,7 +82,7 @@ ActionModelEasify::ActionModelEasify(DataModel *m, float factor)
 						vector nv = (m->Vertex[s.Edge[eee].Vertex[0]].pos + m->Vertex[s.Edge[eee].Vertex[1]].pos) / 2;
 
 						vector area = (m->Vertex[s.Edge[ei].Vertex[0]].pos - nv) ^ (m->Vertex[s.Edge[ei].Vertex[1]].pos - nv);
-						we[eee] += VecLength( area );
+						s.Edge[eee].Weight += VecLength( area );
 					}
 
 			}
@@ -93,21 +90,22 @@ ActionModelEasify::ActionModelEasify(DataModel *m, float factor)
 
 //		foreachi(s.Edge, e, i)
 //			ed->multi_view_3d->AddMessage3d(f2s(we[i], 1), (m->Vertex[e.Vertex[0]].pos + m->Vertex[e.Vertex[1]].pos) / 2);
+	}
 
-		//msg_write(fa2s(we));
 
-		// remove least important
-		int index = 0;
-		float min = we[0];
-		foreachi(we, w, i)
-			if (w < min){
-				min = w;
-				index = i;
+	int _surface = 0, _edge = -1;
+	// remove least important
+	float min = 0;
+	foreachi(m->Surface, s, si)
+		foreachi(s.Edge, e, ei)
+			if ((e.Weight < min) || (_edge < 0)){
+				min = e.Weight;
+				_surface = si;
+				_edge = ei;
 			}
 
-		AddSubAction(new ActionModelCollapseEdge(m, si, index), m);
-
-	}
+	if (_edge >= 0)
+		AddSubAction(new ActionModelCollapseEdge(m, _surface, _edge), m);
 }
 
 ActionModelEasify::~ActionModelEasify()
