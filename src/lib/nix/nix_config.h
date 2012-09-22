@@ -13,15 +13,6 @@
 #include "../00_config.h"
 
 
-// which operating system?
-
-#ifdef _WIN32
-	#define NIX_OS_WINDOWS
-#else
-	#define NIX_OS_LINUX
-#endif
-
-
 
 // which developing environment?
 
@@ -47,12 +38,13 @@
 
 
 
-#ifndef NIX_OS_WINDOWS
+#ifndef OS_WINDOWS
 	#undef NIX_ALLOW_VIDEO_TEXTURE
 #endif
 
 
 #include <math.h>
+#include "../base/base.h"
 #include "../file/file.h"
 #include "../hui/hui.h"
 #include "../types/types.h"

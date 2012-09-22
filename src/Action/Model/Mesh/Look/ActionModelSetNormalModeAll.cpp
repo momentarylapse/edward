@@ -24,12 +24,12 @@ void ActionModelSetNormalModeAll::undo(Data *d)
 
 	// mode all
 	if (old_mode_all != NormalModePerVertex){
-		foreach(m->Vertex, v)
+		foreach(ModelVertex &v, m->Vertex)
 			v.NormalMode = old_mode_all;
 	}else{
 		assert(m->Vertex.num == old_mode.num);
 		// per vertex
-		foreachi(m->Vertex, v, i)
+		foreachi(ModelVertex &v, m->Vertex, i)
 			v.NormalMode = old_mode[i];
 	}
 	m->NormalModeAll = old_mode_all;
@@ -47,14 +47,14 @@ void *ActionModelSetNormalModeAll::execute(Data *d)
 	old_mode_all = m->NormalModeAll;
 	old_mode.clear();
 	if (m->NormalModeAll != NormalModePerVertex){
-		foreach(m->Vertex, v)
+		foreach(ModelVertex &v, m->Vertex)
 			old_mode.add(v.NormalMode);
 	}
 
 	m->NormalModeAll = mode;
 
 	// update vertices
-	foreach(m->Vertex, v)
+	foreach(ModelVertex &v, m->Vertex)
 		v.NormalMode = mode;
 	m->SetAllNormalsDirty();
 

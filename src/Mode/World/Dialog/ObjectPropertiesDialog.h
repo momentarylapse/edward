@@ -31,7 +31,7 @@ private:
 	DataWorld *data;
 	int index;
 
-	ModeWorldObject temp;
+	WorldObject temp;
 };
 
 #endif /* OBJECTPROPERTIESDIALOG_H_ */

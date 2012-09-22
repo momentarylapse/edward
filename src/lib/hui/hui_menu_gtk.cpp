@@ -15,7 +15,7 @@
 	#pragma comment(lib,"winmm.lib")
 	#pragma warning(disable : 4995)
 #endif
-#ifdef HUI_OS_LINUX
+#ifdef OS_LINUX
 	#include <string.h>
 	#include <unistd.h>
 	#include <sys/time.h>
@@ -30,7 +30,7 @@ GtkAccelGroup *accel_group = NULL;
 
 void try_add_accel(GtkWidget *item, const string &id)
 {
-	foreach(_HuiCommand_, c)
+	foreach(HuiCommand &c, _HuiCommand_)
 		if ((id == c.id) && (c.key_code >= 0)){
 			int k = c.key_code;
 			int mod = (((k&KEY_SHIFT)>0) ? GDK_SHIFT_MASK : 0) | (((k&KEY_CONTROL)>0) ? GDK_CONTROL_MASK : 0);
@@ -40,7 +40,7 @@ void try_add_accel(GtkWidget *item, const string &id)
 
 string get_menu_id_by_widget(CHuiMenu *m, GtkWidget *widget)
 {
-	foreach(m->item, it){
+	foreach(HuiMenuItem &it, m->item){
 		if (it.sub_menu){
 			string id = get_menu_id_by_widget(it.sub_menu, widget);
 			if (id.num > 0)
@@ -212,7 +212,7 @@ const char *get_stock_id(const string image)
 
 sHuiImage *get_image(const string &image)
 {
-	foreach(HuiImage, m)
+	foreach(sHuiImage &m, HuiImage)
 		if (m.filename == image)
 			return &m;
 	sHuiImage img = {0, image};
@@ -318,7 +318,7 @@ int allow_signal_level=0;
 void CHuiMenu::CheckItem(const string &id, bool checked)
 {
 	allow_signal_level++;
-	foreach(item, it)
+	foreach(HuiMenuItem &it, item)
 		if (it.sub_menu)
 			it.sub_menu->CheckItem(id, checked);
 		else if (it.id == id){
@@ -344,7 +344,7 @@ bool CHuiMenu::IsItemChecked(const string &id)
 
 void CHuiMenu::EnableItem(const string &id,bool enabled)
 {
-	foreach(item, it){
+	foreach(HuiMenuItem &it, item){
 		if (it.sub_menu)
 			it.sub_menu->EnableItem(id, enabled);
 		if (it.id == id){
@@ -356,13 +356,13 @@ void CHuiMenu::EnableItem(const string &id,bool enabled)
 
 void CHuiMenu::SetText(const string &id, const string &text)
 {
-	foreach(item, it){
+	foreach(HuiMenuItem &it, item){
 		if (it.sub_menu)
 			it.sub_menu->SetText(id, text);
 		if (it.id == id){
 			it.name = text;
 			
-#ifndef HUI_OS_WINDOWS
+#ifndef OS_WINDOWS
 			gtk_menu_item_set_label(GTK_MENU_ITEM(it.widget), sys_str(text));
 #endif
 			try_add_accel(it.widget, id);

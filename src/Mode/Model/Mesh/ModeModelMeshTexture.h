@@ -35,7 +35,7 @@ public:
 	DataModel *data;
 	Data *GetData(){	return data;	}
 
-	Array<ModeModelSkinVertexDummy> skin_vertex;
+	Array<ModelSkinVertexDummy> skin_vertex;
 
 	CHuiWindow *dialog;
 };

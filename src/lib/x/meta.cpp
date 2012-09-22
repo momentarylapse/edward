@@ -655,8 +655,8 @@ int _cdecl MetaLoadXFont(const string &filename)
 	if (filename.num == 0)
 		return 0;
 
-	foreachi(_XFont_, ff, i)
-		if (ff->filename  == SysFileName(filename))
+	foreachi(XFont *ff, _XFont_, i)
+		if (ff->filename  == filename.sys_filename())
 			return i;
 	CFile *f = OpenFile(MaterialDir + filename + ".xfont");
 	if (!f)
@@ -664,7 +664,7 @@ int _cdecl MetaLoadXFont(const string &filename)
 	int ffv=f->ReadFileFormatVersion();
 	if (ffv==2){
 		XFont *font = new XFont;
-		font->filename = SysFileName(filename);
+		font->filename = filename.sys_filename();
 		font->texture = NixLoadTexture(f->ReadStrC());
 		int tx = 1;
 		int ty = 1;

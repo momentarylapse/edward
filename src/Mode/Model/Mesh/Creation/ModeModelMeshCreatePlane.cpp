@@ -17,7 +17,7 @@ ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(Mode *_parent) :
 
 	message = _("Ebene: erster Punkt");
 	pos_chosen = false;
-	length[0] = length[1] = v0;
+	length[0] = length[1] = v_0;
 }
 
 ModeModelMeshCreatePlane::~ModeModelMeshCreatePlane()
@@ -76,7 +76,7 @@ void ModeModelMeshCreatePlane::OnDrawWin(int win, irect dest)
 {
 	if (pos_chosen){
 		vector n = length[0] ^ length[1];
-		VecNormalize(n);
+		n.normalize();
 		/// vertices
 		vector a = pos;
 		vector b = pos + length[0];

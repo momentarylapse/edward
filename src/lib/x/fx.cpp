@@ -144,17 +144,17 @@ void FxReset()
 	msg_db_r("FxReset",1);
 	
 	// particles
-	foreach(Particle, p)
+	foreach(sParticle *p, Particle)
 		delete(p);
 	Particle.clear();
 	
 	// beams
-	foreach(Beam, b)
+	foreach(sParticle *b, Beam)
 		delete(b);
 	Beam.clear();
 	
 	// effects
-	foreach(Effect, e)
+	foreach(sEffect *e, Effect)
 		delete(e); // TODO call script-destructor
 	Effect.clear();
 
@@ -180,8 +180,8 @@ void FxReset()
 int fx_get_num_effects()
 {
 	int n=0;
-	foreach(Effect, f)
-		if (f->used)
+	foreach(sEffect *fx, Effect)
+		if (fx->used)
 			n ++;
 	return n;
 }
@@ -190,10 +190,10 @@ int fx_get_num_effects()
 int fx_get_num_particles()
 {
 	int n=0;
-	foreach(Particle, p)
+	foreach(sParticle *p, Particle)
 		if (p->used)
 			n ++;
-	foreach(Beam, p)
+	foreach(sParticle *p, Beam)
 		if (p->used)
 			n ++;
 	return n;
@@ -213,7 +213,7 @@ inline void particle_init(sParticle *p, const vector &pos, const vector &param, 
 	p->source = r_id;
 	p->pos = pos;
 	p->parameter = param;
-	p->vel = v0;
+	p->vel = v_0;
 	p->_color = White;
 	p->time_to_live = time_to_live;
 	p->func_delta_t = 0.05f;
@@ -234,7 +234,7 @@ sParticle *FxParticleCreateDef(const vector &pos, int texture, particle_callback
 {
 	msg_db_r("new particle",2);
 	xcont_find_new(XContainerParticle, sParticle, p, Particle);
-	particle_init(p, pos, v0, texture, func, time_to_live, radius);
+	particle_init(p, pos, v_0, texture, func, time_to_live, radius);
 	msg_db_l(2);
 	return p;
 }
@@ -273,7 +273,7 @@ sEffect *_cdecl FxCreate(const vector &pos,particle_callback *func,particle_call
 	p->enabled = true;
 	p->suicidal = (time_to_live >= 0);
 	p->pos = pos;
-	p->vel = v0;
+	p->vel = v_0;
 	p->time_to_live = time_to_live;
 	p->func_delta_t = 0.1f;
 	p->elapsed = p->func_delta_t;
@@ -629,7 +629,7 @@ void FxCreatePolygon(int buffer,int num_points,const vector *p)
 {
 	plane pl;
 	PlaneFromPoints(pl,p[0],p[1],p[2]);
-	vector n=GetNormal(pl);
+	vector n=pl.n;
 	for (int i=0;i<num_points-2;i++)
 		NixVBAddTria(buffer,	p[0],n,0,0,
 								p[i+1],n,0,0,
@@ -648,10 +648,10 @@ void FxCreateBall(int buffer,const vector &pos,float radius,int nx,int ny)
 	for (int x=0;x<nx;x++)
 		for (int y=0;y<ny;y++){
 			vector v;
-			vector n0=VecAng2Dir(v=vector(pi*(x  -nx/2)/nx,pi*2.0f* y   /ny,0));
-			vector n1=VecAng2Dir(v=vector(pi*(x+1-nx/2)/nx,pi*2.0f* y   /ny,0));
-			vector n2=VecAng2Dir(v=vector(pi*(x  -nx/2)/nx,pi*2.0f*(y+1)/ny,0));
-			vector n3=VecAng2Dir(v=vector(pi*(x+1-nx/2)/nx,pi*2.0f*(y+1)/ny,0));
+			vector n0=vector(pi*(x  -nx/2)/nx,pi*2.0f* y   /ny,0).ang2dir();
+			vector n1=vector(pi*(x+1-nx/2)/nx,pi*2.0f* y   /ny,0).ang2dir();
+			vector n2=vector(pi*(x  -nx/2)/nx,pi*2.0f*(y+1)/ny,0).ang2dir();
+			vector n3=vector(pi*(x+1-nx/2)/nx,pi*2.0f*(y+1)/ny,0).ang2dir();
 			vector p0=pos+radius*n0;
 			vector p1=pos+radius*n1;
 			vector p2=pos+radius*n2;
@@ -678,8 +678,8 @@ void FxCreateSpat(int buffer,const vector &p0,const vector &p1,const vector &p2,
 	plane pl;
 	PlaneFromPoints(pl,p0,p1,p2);
 	vector p0d=p0+d;
-	float d1=PlaneDistance(pl,p0d);
-	float d2=PlaneDistance(pl,p3);
+	float d1=pl.distance(p0d);
+	float d2=pl.distance(p3);
 	vector _p1, _p2;
 	if (((d1>0)&&(d2<0))||((d1<0)&&(d2>0))){
 		_p1 = p2;
@@ -694,7 +694,7 @@ void FxCreateSpat(int buffer,const vector &p0,const vector &p1,const vector &p2,
 	vector n;
 	// vorne
 	n=VecCrossProduct(dp2,dp1);
-	VecNormalize(n);
+	n.normalize();
 	NixVBAddTria(buffer,	p0,n,0,0,
 							p0+dp2,n,0,0,
 							p0+dp1+dp2,n,0,0);
@@ -703,7 +703,7 @@ void FxCreateSpat(int buffer,const vector &p0,const vector &p1,const vector &p2,
 							p0,n,0,0);
 	// oben
 	n=VecCrossProduct(dp3,dp1);
-	VecNormalize(n);
+	n.normalize();
 	NixVBAddTria(buffer,	p0+dp2,n,0,0,
 							p0+dp2+dp3,n,0,0,
 							p0+dp1+dp2+dp3,n,0,0);
@@ -712,7 +712,7 @@ void FxCreateSpat(int buffer,const vector &p0,const vector &p1,const vector &p2,
 							p0+dp2,n,0,0);
 	// unten
 	n=VecCrossProduct(dp1,dp3);
-	VecNormalize(n);
+	n.normalize();
 	NixVBAddTria(buffer,	p0,n,0,0,
 							p0+dp1,n,0,0,
 							p0+dp1+dp3,n,0,0);
@@ -721,7 +721,7 @@ void FxCreateSpat(int buffer,const vector &p0,const vector &p1,const vector &p2,
 							p0,n,0,0);
 	// rechts
 	n=VecCrossProduct(dp2,dp3);
-	VecNormalize(n);
+	n.normalize();
 	NixVBAddTria(buffer,	p0+dp1,n,0,0,
 							p0+dp1+dp2,n,0,0,
 							p0+dp1+dp2+dp3,n,0,0);
@@ -730,7 +730,7 @@ void FxCreateSpat(int buffer,const vector &p0,const vector &p1,const vector &p2,
 							p0+dp1,n,0,0);
 	// links
 	n=VecCrossProduct(dp3,dp2);
-	VecNormalize(n);
+	n.normalize();
 	NixVBAddTria(buffer,	p0,n,0,0,
 							p0+dp3,n,0,0,
 							p0+dp2+dp3,n,0,0);
@@ -739,7 +739,7 @@ void FxCreateSpat(int buffer,const vector &p0,const vector &p1,const vector &p2,
 							p0,n,0,0);
 	// hinten
 	n=VecCrossProduct(dp1,dp2);
-	VecNormalize(n);
+	n.normalize();
 	NixVBAddTria(buffer,	p0+dp3,n,0,0,
 							p0+dp1+dp3,n,0,0,
 							p0+dp1+dp2+dp3,n,0,0);
@@ -910,15 +910,14 @@ void FxDrawShadows()
 		NixVBClear(ShadowVB[0]);
 		if (update_slow)
 			NixVBClear(ShadowVB[1]);
-		foreach(Shadow, s){
+		foreach(sShadow &s, Shadow){
 			if ((s.slow) && (!update_slow))
 				continue;
 			matrix m = *s.mat;
 			matrix inv;
 			MatrixTranspose(inv, m);
 			LightDir = s.LightSource;
-			vector rel_light;
-			VecNormalTransform(rel_light, inv, LightDir);
+			vector rel_light = LightDir.transform_normal(inv);
 
 			const vector *v = s.v;
 			/*int *e = s.e;
@@ -951,7 +950,7 @@ void FxDrawShadows()
 				vector p3 = p1 - LightDir*100000;//s.Length;
 				vector p4 = p2 - LightDir*100000;//s.Length;
 
-				vector n=v0;
+				vector n=v_0;
 				NixVBAddTria(vb,	p1,n,0,0,
 									p2,n,0,0,
 									p3,n,0,0);
@@ -1092,7 +1091,7 @@ void TCTransform(float &u,float &v,vector n,vector p)
 {
 #ifdef _X_ALLOW_CAMERA_
 	p-=cur_cam->view_pos;
-	VecNormalize(p);
+	p.normalize();
 	//vector sd=meta->GetSunDirection();
 	float f=VecDotProduct(CamDir,n)+VecDotProduct(CamDir,p);
 	/*if (f<0)
@@ -1174,12 +1173,12 @@ void FxCalcMove()
 {
 	msg_db_r("FXCalcMove",2);
 #ifdef _X_ALLOW_CAMERA_
-	CamDir = VecAng2Dir(Cam->ang);
+	CamDir = Cam->ang.ang2dir();
 #endif
 
 // effecsts
 	msg_db_m("-fx",3);
-	foreach(Effect, fx)
+	foreach(sEffect *fx, Effect){
 		if ((fx->used) && (fx->enabled)){
 			
 			// automaticly controlled by models
@@ -1219,10 +1218,11 @@ void FxCalcMove()
 					FxDelete(fx);
 			}
 		}
+	}
 
 // particles
 	msg_db_m("--Pa",3);
-	foreach(Particle, p)
+	foreach(sParticle *p, Particle){
 		if (p->used){
 			if (p->func){
 				p->elapsed += Elapsed;
@@ -1238,10 +1238,11 @@ void FxCalcMove()
 					FxParticleDelete(p);
 			}
 		}
+	}
 
 // beams
 	msg_db_m("--Bm",3);
-	foreach(Beam, p)
+	foreach(sParticle *p, Beam){
 		if (p->used){
 			if (p->func){
 				p->elapsed += Elapsed;
@@ -1257,6 +1258,7 @@ void FxCalcMove()
 					FxParticleDelete(p);
 			}
 		}
+	}
 
 #ifdef _X_ALLOW_CAMERA_
 	// dynamical cube maps
@@ -1269,7 +1271,7 @@ void FxCalcMove()
 				// render each frame one cube face
 				// ...but start with a complete cube rendering
 				int n=0;
-				vector dir=VecAng2Dir(Cam->ang);
+				vector dir=Cam->ang.ang2dir();
 				if (CubeMap[i].Frame==0){
 					if (VecDotProduct(vector( 1,0,0),dir)<0)	n|=1;
 					if (VecDotProduct(vector(-1,0,0),dir)<0)	n|=2;
@@ -1337,7 +1339,7 @@ void DrawParticles()
 {
 	NixSetWorldMatrix(m_id);
 	NixEnableLighting(true);
-	foreach(Particle, p)
+	foreach(sParticle *p, Particle){
 		if ((p->used) && (p->enabled)){
 			if (p->type == XContainerParticle){
 				NixSetTexture(p->texture);
@@ -1349,14 +1351,10 @@ void DrawParticles()
 				MatrixTranslation(t, p->pos);
 				MatrixMultiply(m, t, r);
 				vector n;
-				vector a = vector(-p->radius,-p->radius,0);
-				vector b = vector( p->radius,-p->radius,0);
-				vector c = vector(-p->radius, p->radius,0);
-				vector d = vector( p->radius, p->radius,0);
-				VecTransform(a, m, a);
-				VecTransform(b, m, b);
-				VecTransform(c, m, c);
-				VecTransform(d, m, d);
+				vector a = m * vector(-p->radius,-p->radius,0);
+				vector b = m * vector( p->radius,-p->radius,0);
+				vector c = m * vector(-p->radius, p->radius,0);
+				vector d = m * vector( p->radius, p->radius,0);
 				NixVBClear(VBTemp);
 				NixVBAddTria(VBTemp,	a,n,p->source.x1,p->source.y2,
 										c,n,p->source.x1,p->source.y1,
@@ -1369,6 +1367,7 @@ void DrawParticles()
 				NixDraw3D(VBTemp);
 			}
 		}
+	}
 }
 
 void DrawParticlesNew()
@@ -1381,12 +1380,11 @@ void DrawParticlesNew()
 
 	matrix mi;
 	MatrixInverse(mi, NixViewMatrix);
-	vector ve_x, ve_y;
-	VecNormalTransform(ve_x, mi, e_x);
-	VecNormalTransform(ve_y, mi, e_y);
+	vector ve_x = e_x.transform_normal(mi);
+	vector ve_y = e_y.transform_normal(mi);
 
 	
-	foreach(Particle, p)
+	foreach(sParticle *p, Particle){
 		if ((p->used) && (p->enabled))
 			if (p->type == XContainerParticle){
 				NixSetTexture(p->texture);
@@ -1413,20 +1411,21 @@ void DrawParticlesNew()
 					glVertex3f(d.x, d.y, d.z);
 				glEnd();
 			}
+	}
 }
 
 void DrawBeams()
 {
 	vector dir;
 #ifdef _X_ALLOW_CAMERA_
-	dir = VecAng2Dir(cur_cam->ang);
+	dir = cur_cam->ang.ang2dir();
 #endif
 	NixSetWorldMatrix(m_id);
 	NixEnableLighting(true);
-	foreach(Beam, p)
+	foreach(sParticle *p, Beam){
 		if ((p->used) && (p->enabled)){
 			vector r = VecCrossProduct(dir, p->parameter);
-			VecNormalize(r);
+			r.normalize();
 			vector n;
 			vector a = p->pos + r * p->radius;
 			vector b = p->pos - r * p->radius;
@@ -1443,6 +1442,7 @@ void DrawBeams()
 			NixSetTexture(p->texture);
 			NixDraw3D(VBTemp);
 		}
+	}
 }
 
 void DrawBeamsNew()
@@ -1455,12 +1455,12 @@ void DrawBeamsNew()
 	
 	vector dir;
 #ifdef _X_ALLOW_CAMERA_
-	dir = VecAng2Dir(cur_cam->ang);
+	dir = cur_cam->ang.ang2dir();
 #endif
-	foreach(Beam, p)
+	foreach(sParticle *p, Beam){
 		if ((p->used) && (p->enabled)){
 			vector r = VecCrossProduct(dir, p->parameter);
-			VecNormalize(r);
+			r.normalize();
 			vector a = p->pos + r * p->radius;
 			vector b = p->pos - r * p->radius;
 			vector c = p->pos + r * p->radius + p->parameter;
@@ -1485,6 +1485,7 @@ void DrawBeamsNew()
 				glVertex3f(b.x, b.y, b.z);
 			glEnd();
 		}
+	}
 }
 
 void FxDraw2()

@@ -14,7 +14,7 @@
 class ActionModelEditMaterial : public Action
 {
 public:
-	ActionModelEditMaterial(int _index, const ModeModelMaterial &_mat);
+	ActionModelEditMaterial(int _index, const ModelMaterial &_mat);
 	virtual ~ActionModelEditMaterial();
 	string name(){	return "ModelEditMaterial";	}
 
@@ -23,7 +23,7 @@ public:
 
 private:
 	int index;
-	ModeModelMaterial mat;
+	ModelMaterial mat;
 };
 
 #endif /* ACTIONMODELEDITMATERIAL_H_ */

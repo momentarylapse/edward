@@ -85,8 +85,8 @@ void DataAdministration::RemoveLink(AdminFile *source, AdminFile *dest)
 
 AdminFile *AdminFileList::get(int kind, const string &name)
 {
-	string _name = SysFileName(name);
-	foreach(*this, a)
+	string _name = name.sys_filename();
+	foreach(AdminFile *a, *this)
 		if ((a->Kind == kind) && (a->Name == _name))
 			return a;
 	return NULL;
@@ -242,8 +242,8 @@ void AdminFile::check(AdminFileList &list)
 		}else
 			Missing=true;
 	}else if (Kind==FDTerrain){
-		ModeWorldTerrain t;
-		if (t.Load(v0, MapDir + Name, false)){
+		WorldTerrain t;
+		if (t.Load(v_0, MapDir + Name, false)){
 			Time = 0; // TODO
 			for (int i=0;i<t.terrain->num_textures;i++)
 				add_possible_link(l, FDTexture, t.terrain->texture_file[i]);
@@ -303,7 +303,7 @@ void AdminFile::check(AdminFileList &list)
 						add_possible_link(l,ScriptLink[j].type,StringAfterString);
 				// #include must be handled differently (relative path...)
 				if (StringBegin(buf,i,ScriptLink[0].str))
-					add_possible_link(l, ScriptLink[0].type, filename_no_recursion(dirname(Name) + StringAfterString));
+					add_possible_link(l, ScriptLink[0].type, (Name.dirname() + StringAfterString).no_recursion());
 			}
 		}else
 			Missing=true;
@@ -330,10 +330,10 @@ AdminFile *AdminFileList::add_unchecked(int kind, const string &filename, AdminF
 	msg_db_m(filename.c_str(),5);
 
 	AdminFile *a = NULL;
-	string _filename = SysFileName(filename);
+	string _filename = filename.sys_filename();
 
 	// is there already an entry in the database?
-	foreach(*this, aa)
+	foreach(AdminFile *aa, *this)
 		if ((aa->Kind == kind) && (aa->Name == _filename)){
 			a = aa;
 			break;
@@ -377,7 +377,7 @@ AdminFile *AdminFileList::add_unchecked_ae(int kind, const string &filename, Adm
 
 void AdminFileList::remove_obsolete()
 {
-	foreachbi(*this, a, i){
+	foreachib(AdminFile *a, *this, i){
 		// missing and unwanted -> remove
 		if ((a->Missing) && (a->Parent.num == 0))
 			if (a->Kind >= 0) // don't remove engine files...
@@ -396,7 +396,7 @@ void AdminFileList::add_recursive(AdminFile *to_add)
 	add(to_add);
 
 	// recursion...
-	foreach(to_add->Child, a)
+	foreach(AdminFile *a, to_add->Child)
 		add_recursive(a);
 }
 
@@ -426,7 +426,7 @@ void AdminFileList::clear()
 
 void AdminFileList::clear_deep()
 {
-	foreach(*this, a)
+	foreach(AdminFile *a, *this)
 		delete(a);
 	Array<AdminFile*>::clear();
 }
@@ -436,7 +436,7 @@ void DataAdministration::FraesDir(const string &root_dir, const string &dir, con
 	msg_db_r("FraesDir",1);
 	msg_db_m(dir.c_str(),1);
 	Array<DirEntry> list = dir_search(root_dir + dir, "*" + extension, true);
-	foreach(list, e){
+	foreach(DirEntry &e, list){
 		if (e.is_dir){
 			FraesDir(root_dir, dir + e.name + "/", extension);
 		}else{
@@ -530,18 +530,18 @@ void DataAdministration::SaveDatabase()
 	admin_file->WriteComment("// Number Of Files");
 	admin_file->WriteInt(file_list.num);
 	admin_file->WriteComment("// Files (type, filename, date, missing)");
-	foreach(file_list, a){
+	foreach(AdminFile *a, file_list){
 		admin_file->WriteInt(a->Kind);
 		admin_file->WriteStr(a->Name);
 		admin_file->WriteInt(a->Time);
 		admin_file->WriteBool(a->Missing);
 	}
 	admin_file->WriteComment("// Links (num dests, dests...)");
-	foreach(file_list, a){
+	foreach(AdminFile *a, file_list){
 		admin_file->WriteInt(a->Child.num);
-		foreach(a->Child, d){
+		foreach(AdminFile *d, a->Child){
 			int n=-1;
-			foreachi(file_list, aa, k)
+			foreachi(AdminFile *aa, file_list, k)
 				if (d == aa){
 					n=k;
 					break;
@@ -577,16 +577,16 @@ void DataAdministration::LoadDatabase()
 	}
 	// files
 	admin_file->ReadComment();
-	foreach(file_list, a){
+	foreach(AdminFile *a, file_list){
 		a->Kind = admin_file->ReadInt();
-		a->Name = SysFileName(admin_file->ReadStr());
+		a->Name = admin_file->ReadStr().sys_filename();
 		a->Time = admin_file->ReadInt();
 		a->Missing = admin_file->ReadBool();
 		a->Checked = false;
 	}
 	// links
 	admin_file->ReadComment();
-	foreach(file_list, a){
+	foreach(AdminFile *a, file_list){
 		int nd = admin_file->ReadInt();
 		for (int j=0;j<nd;j++){
 			int n = admin_file->ReadInt();

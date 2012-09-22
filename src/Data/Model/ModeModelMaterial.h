@@ -10,11 +10,11 @@
 
 #include "../../lib/x/x.h"
 
-class ModeModelMaterial
+class ModelMaterial
 {
 public:
-	ModeModelMaterial();
-	virtual ~ModeModelMaterial();
+	ModelMaterial();
+	virtual ~ModelMaterial();
 
 	void reset();
 	void MakeConsistent();

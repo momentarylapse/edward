@@ -37,7 +37,7 @@ void ActionModelDeleteEmptySurface::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModeModelSurface *s = m->AddSurface(surface);
+	ModelSurface *s = m->AddSurface(surface);
 	s->IsPhysical = is_physical;
 	s->IsVisible = is_visible;
 }

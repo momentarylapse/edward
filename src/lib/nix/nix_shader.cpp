@@ -18,7 +18,7 @@ int NixLoadShader(const string &filename)
 {
 	if (filename.num < 1)
 		return -1;
-	msg_write("loading shader file " + SysFileName(filename));
+	msg_write("loading shader file " + filename.sys_filename());
 	msg_right();
 	sShaderFile sf;
 /*#ifndef NIX_IDE_VCS

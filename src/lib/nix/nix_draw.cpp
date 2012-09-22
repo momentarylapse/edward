@@ -76,7 +76,7 @@ void NixDrawLine(float x1, float y1, float x2, float y2, float depth)
 	if (dy<0)	dy=-dy;
 	_NixSetMode2d();
 
-#ifdef NIX_OS_LINUX
+#ifdef OS_LINUX
 	// internal line drawing function \(^_^)/
 	if (NixSmoothLines){
 		// antialiasing!
@@ -261,7 +261,7 @@ void NixDraw3D(int buffer)
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 	glVertexPointer( 3, GL_FLOAT, 0, vb->glVertices );
 	glNormalPointer( GL_FLOAT, 0, vb->glNormals );
-#ifdef NIX_OS_LINUX
+#ifdef OS_LINUX
 	glClientActiveTexture(GL_TEXTURE0_ARB);
 #endif
 	glTexCoordPointer( 2, GL_FLOAT, 0, vb->glTexCoords[0] );
@@ -387,8 +387,7 @@ void NixDrawSpriteR(const rect &src, const vector &pos, const rect &dest)
 	if ((p.z<=0.0f)||(p.z>=1.0))
 		return;
 	depth=p.z;
-	vector u;
-	VecTransform(u,NixViewMatrix,pos);
+	vector u = NixViewMatrix * pos;
 	float q=NixMaxDepth/(NixMaxDepth-NixMinDepth);
 	float f=1.0f/(u.z*q*NixMinDepth*NixView3DRatio);
 #ifdef NIX_API_OPENGL

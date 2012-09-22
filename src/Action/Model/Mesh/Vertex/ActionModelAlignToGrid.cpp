@@ -11,7 +11,7 @@
 
 ActionModelAlignToGrid::ActionModelAlignToGrid(DataModel *m, float _grid_dist)
 {
-	foreachi(m->Vertex, v, i)
+	foreachi(ModelVertex &v, m->Vertex, i)
 		if (v.is_selected)
 			index.add(i);
 	grid_dist = _grid_dist;
@@ -35,7 +35,7 @@ void *ActionModelAlignToGrid::execute(Data *d)
 
 	old_pos.clear();
 
-	foreach(index, i){
+	foreach(int i, index){
 		// save old data
 		old_pos.add(m->Vertex[i].pos);
 
@@ -57,7 +57,7 @@ void ActionModelAlignToGrid::undo(Data *d)
 	assert(index.num == old_pos.num);
 
 	// apply old data
-	foreachi(index, vi, i)
+	foreachi(int vi, index, i)
 		m->Vertex[vi].pos = old_pos[i];
 
 	m->SetNormalsDirtyByVertices(index);

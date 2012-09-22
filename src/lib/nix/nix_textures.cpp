@@ -321,7 +321,7 @@ void NixReloadTexture(int texture)
 
 	glBindTexture(GL_TEXTURE_2D,t->glTexture);
 
-	string extension = file_extension(t->Filename);
+	string extension = t->Filename.extension();
 	if (extension.num < 1){
 		msg_error("texture file extension missing!");
 		msg_db_l(1);
@@ -403,7 +403,7 @@ void NixUnloadTexture(int texture)
 
 inline void SetShaderFileData(int texture0,int texture1,int texture2,int texture3)
 {
-#ifdef NIX_OS_LINUX
+#ifdef OS_LINUX
 		if (NixglShaderCurrent==0)	return;
 		int loc;
 		loc=glGetUniformLocationARB(NixglShaderCurrent,"tex0");
@@ -454,7 +454,7 @@ void NixSetTexture(int texture)
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D,NixTexture[texture].glTexture);
 		/*if (TextureIsDynamic[texture]){
-			#ifdef NIX_OS_WONDOWS
+			#ifdef OS_WONDOWS
 			#endif
 		}*/
 	}else

@@ -25,7 +25,7 @@ ModeModelMeshCreateTriangles::~ModeModelMeshCreateTriangles()
 
 void ModeModelMeshCreateTriangles::OnStart()
 {
-	foreach(data->Vertex, v)
+	foreach(ModelVertex &v, data->Vertex)
 		v.is_special = false;
 }
 
@@ -33,7 +33,7 @@ void ModeModelMeshCreateTriangles::OnStart()
 
 void ModeModelMeshCreateTriangles::OnEnd()
 {
-	foreach(data->Vertex, v)
+	foreach(ModelVertex &v, data->Vertex)
 		v.is_special = false;
 }
 
@@ -75,7 +75,7 @@ void ModeModelMeshCreateTriangles::OnLeftButtonDown()
 			}
 
 		// consistency?
-		foreachi(selection, s, i)
+		foreachi(int s, selection, i)
 			if (s == multi_view->Selected)
 				if (i > 0){
 					ed->SetMessage(_("keine doppelten Punkte erlaubt!"));

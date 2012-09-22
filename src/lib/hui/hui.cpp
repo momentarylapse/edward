@@ -20,7 +20,7 @@ string HuiVersion = "0.4.20.1";
 
 #include <stdio.h>
 #include <signal.h>
-#ifdef HUI_OS_WINDOWS
+#ifdef OS_WINDOWS
 	#include <shlobj.h>
 	#include <winuser.h>
 	#include <direct.h>
@@ -40,18 +40,18 @@ string HuiVersion = "0.4.20.1";
 	#endif
 	#pragma warning(disable : 4995)
 #endif
-#ifdef HUI_OS_LINUX
+#ifdef OS_LINUX
 	#include <gdk/gdkx.h>
 #endif
 
-#ifdef HUI_OS_WINDOWS
+#ifdef OS_WINDOWS
 	HINSTANCE hui_win_instance;
 #endif
 #ifdef HUI_API_WIN
 	HFONT hui_win_default_font;
 	HICON hui_win_main_icon;
 #endif
-#ifdef HUI_OS_LINUX
+#ifdef OS_LINUX
 	void *_hui_x_display_;
 #endif
 
@@ -97,7 +97,7 @@ Array<string> HuiArgument;
 
 
 
-#ifdef HUI_OS_WINDOWS
+#ifdef OS_WINDOWS
 	LONGLONG perf_cnt;
 	bool perf_flag=false;
 	float time_scale;
@@ -222,12 +222,12 @@ void HuiRunLaterM(int time_ms, HuiEventHandler *object, void (HuiEventHandler::*
 
 void HuiInit()
 {
-	#ifdef HUI_OS_WINDOWS
+	#ifdef OS_WINDOWS
 		HuiAppFilename = _pgmptr;
 		HuiAppDirectory = dir_from_filename(HuiAppFilename);
 		hui_win_instance = (HINSTANCE)GetModuleHandle(NULL);
 	#endif
-	#ifdef HUI_OS_LINUX
+	#ifdef OS_LINUX
 		if (HuiArgument.num > 0){
 			if (HuiArgument[0][0]=='/'){
 				HuiAppFilename = HuiArgument[0];
@@ -238,7 +238,7 @@ void HuiInit()
 				else
 					HuiAppFilename = HuiArgument[0];
 			}
-			HuiAppDirectory = dirname(HuiAppFilename);
+			HuiAppDirectory = HuiAppFilename.dirname();
 		}
 	#endif
 
@@ -264,7 +264,7 @@ void HuiInit()
 		hui_win_main_icon=ExtractIcon(hui_win_instance,sys_str(_pgmptr),0);		
 
 	#endif
-	#ifdef HUI_OS_WINDOWS
+	#ifdef OS_WINDOWS
 		// timers
 		if (QueryPerformanceFrequency((LARGE_INTEGER *) &perf_cnt)){
 			perf_flag=true;
@@ -275,7 +275,7 @@ void HuiInit()
 	#endif
 	#ifdef HUI_API_GTK
 		gtk_init(NULL, NULL);
-		#ifdef HUI_OS_LINUX
+		#ifdef OS_LINUX
 			_hui_x_display_ = XOpenDisplay(0);
 		#endif
 
@@ -310,7 +310,7 @@ void HuiInitExtended(const string &program, const string &version, hui_callback 
 		g_set_prgname(program.c_str());
 	#endif
 
-	#ifdef HUI_OS_LINUX
+	#ifdef OS_LINUX
 		if (HuiArgument.num > 0){
 			if (HuiArgument[0][0] == '/'){
 				if (HuiArgument[0][1] == 'u'){ // /usr/...
@@ -319,11 +319,11 @@ void HuiInitExtended(const string &program, const string &version, hui_callback 
 					HuiAppDirectoryStatic = "/usr/share/" + program + "/";
 				}else{
 					HuiAppFilename = HuiArgument[0];
-					HuiAppDirectory = dirname(HuiAppFilename);
+					HuiAppDirectory = HuiAppFilename.dirname();
 					HuiAppDirectoryStatic = HuiAppDirectory;
 				}
 			}else{
-				dir_ensure_ending(HuiAppDirectory, true);
+				HuiAppDirectory.dir_ensure_ending();
 				if (HuiArgument[0][0] == '.'){
 					HuiAppFilename = HuiArgument[0].substr(2, -1);
 					HuiAppDirectory = HuiInitialWorkingDirectory;
@@ -351,7 +351,7 @@ void HuiInitExtended(const string &program, const string &version, hui_callback 
 		
 
 	HuiInit();
-#ifdef HUI_OS_LINUX
+#ifdef OS_LINUX
 	HuiAppDirectory = s1;
 	HuiAppDirectoryStatic = s2;
 	dir_create(HuiAppDirectory);
@@ -494,7 +494,7 @@ void HuiPushMainLevel()
 void HuiCleanUpMainLevel()
 {
 	msg_db_r("HuiCleanUpMainLevel",2);
-	foreachb(HuiWindow, w)
+	foreachb(CHuiWindow *w, HuiWindow)
 		if (w->_GetMainLevel_() >= HuiMainLevel)
 			delete(w);
 	HuiSetIdleFunction(NULL);
@@ -535,7 +535,7 @@ void HuiEnd()
 	// really end hui?
 	if (HuiMainLevel == 0){
 #ifdef HUI_API_GTK
-#ifdef HUI_OS_LINUX
+#ifdef OS_LINUX
 		// sometimes freezes...
 		//if (_hui_x_display_)
 		//	XCloseDisplay(hui_x_display);
@@ -599,7 +599,7 @@ string HuiWaitTillWindowClosed(CHuiWindow *win)
 		bool killed = false;
 		while(!killed){
 			HuiDoSingleMainLoop();
-			foreach(_HuiClosedWindow_, cw)
+			foreach(HuiClosedWindow &cw, _HuiClosedWindow_)
 				if (cw.unique_id == uid)
 					killed = true;
 		}
@@ -608,7 +608,7 @@ string HuiWaitTillWindowClosed(CHuiWindow *win)
 	//msg_write("cleanup");
 
 	// clean up
-	foreachbi(_HuiClosedWindow_, cw, i)
+	foreachi(HuiClosedWindow &cw, _HuiClosedWindow_, i)
 		if (cw.unique_id == uid){
 			last_id = cw.last_id;
 			_HuiClosedWindow_.erase(i);

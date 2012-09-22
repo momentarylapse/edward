@@ -22,7 +22,7 @@ ActionModelAddBone::~ActionModelAddBone()
 void *ActionModelAddBone::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	ModeModelSkeletonBone b;
+	ModelBone b;
 	b.Parent = parent;
 	b.ConstPos = false;
 	b.pos = pos;
@@ -37,10 +37,10 @@ void *ActionModelAddBone::execute(Data *d)
 	m->Bone.add(b);
 
 	// correct animations
-	foreach(m->Move, move)
-		foreach(move.Frame, f){
-			f.SkelDPos.add(v0);
-			f.SkelAng.add(v0);
+	foreach(ModelMove &move, m->Move)
+		foreach(ModelFrame &f, move.Frame){
+			f.SkelDPos.add(v_0);
+			f.SkelAng.add(v_0);
 		}
 
 	return &m->Bone.back();
@@ -54,8 +54,8 @@ void ActionModelAddBone::undo(Data *d)
 	m->Bone.pop();
 
 	// correct animations
-	foreach(m->Move, move)
-		foreach(move.Frame, f){
+	foreach(ModelMove &move, m->Move)
+		foreach(ModelFrame &f, move.Frame){
 			f.SkelDPos.pop();
 			f.SkelAng.pop();
 		}

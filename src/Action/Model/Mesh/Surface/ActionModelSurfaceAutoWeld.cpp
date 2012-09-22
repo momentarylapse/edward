@@ -15,8 +15,8 @@ ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(DataModel *m, int _surfac
 {
 	msg_db_r("SurfWeld", 1);
 
-	ModeModelSurface *a = &m->Surface[_surface1];
-	ModeModelSurface *b = &m->Surface[_surface2];
+	ModelSurface *a = &m->Surface[_surface1];
+	ModelSurface *b = &m->Surface[_surface2];
 
 	if (a > b)
 		msg_error("SurfaceWeld: a > b... array reference broken");
@@ -28,9 +28,9 @@ ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(DataModel *m, int _surfac
 	// find pairs of vertices close to each other
 	// use edges instead???
 	Array<int> wa, wb;
-	foreach(a->Vertex, va){
-		foreach(b->Vertex, vb){
-			if (VecLength(m->Vertex[va].pos - m->Vertex[vb].pos) <= d){
+	foreach(int va, a->Vertex){
+		foreach(int vb, b->Vertex){
+			if ((m->Vertex[va].pos - m->Vertex[vb].pos).length() <= d){
 				wa.add(va);
 				wb.add(vb);
 				break;
@@ -39,15 +39,15 @@ ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(DataModel *m, int _surfac
 	}
 
 	// join
-	a = (ModeModelSurface*)AddSubAction(new ActionModelJoinSurfaces(_surface1, _surface2), m);
+	a = (ModelSurface*)AddSubAction(new ActionModelJoinSurfaces(_surface1, _surface2), m);
 
 	// relink triangles
-	foreachbi(a->Triangle, t, ti){
+	foreachib(ModelTriangle &t, a->Triangle, ti){
 		int v[3];
 		bool relink = false;
 		for (int k=0;k<3;k++){
 			v[k] = t.Vertex[k];
-			foreachi(wb, w, i){
+			foreachi(int w, wb, i){
 				if (t.Vertex[k] == w){
 					relink = true;
 					v[k] = wa[i];
@@ -61,9 +61,9 @@ ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(DataModel *m, int _surfac
 
 	// remove obsolete vertices
 	Set<int> vv;
-	foreach(wb, w)
+	foreach(int w, wb)
 		vv.add(w);
-	foreachb(vv, ww){
+	foreachb(int ww, vv){
 		a->Vertex.erase(ww);
 		m->Vertex[ww].Surface = -1;
 		AddSubAction(new ActionModelDeleteUnusedVertex(ww), m);

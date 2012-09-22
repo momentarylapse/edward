@@ -50,7 +50,7 @@ ModeModelMesh::~ModeModelMesh()
 
 void ModeModelMesh::OnStart()
 {
-	string dir = HuiAppDirectoryStatic + SysFileName("Data/icons/toolbar/");
+	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
 	ed->ToolbarSetCurrent(HuiToolbarLeft);
 	ed->ToolbarReset();
 	ed->ToolbarAddSeparator();
@@ -212,13 +212,13 @@ void ModeModelMesh::OptimizeView()
 	mv->whole_window = ww;
 	if (data->Vertex.num > 0){
 		vector min = data->Vertex[0].pos, max = data->Vertex[0].pos;
-		foreach(data->Vertex, v){
-			VecMin(min, v.pos);
-			VecMax(max, v.pos);
+		foreach(ModelVertex &v, data->Vertex){
+			min._min(v.pos);
+			max._max(v.pos);
 		}
 		mv->pos = (min + max) / 2;
 		if (data->Vertex.num > 1)
-			mv->radius = VecLengthFuzzy(max - min) * 1.3f * ((float)NixScreenWidth / (float)NixTargetWidth);
+			mv->radius = (max - min).length_fuzzy() * 1.3f * ((float)NixScreenWidth / (float)NixTargetWidth);
 	}
 
 	ed->multi_view_2d->ResetView();

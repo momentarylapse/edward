@@ -36,7 +36,7 @@ void ModeModelSkeleton::OnCommand(const string & id)
 		ed->SetMode(new ModeModelSkeletonCreateBone(ed->cur_mode));
 	if (id == "skeleton_edit_bone"){
 		if (data->GetNumSelectedBones() == 1){
-			foreachi(data->Bone, b, i)
+			foreachi(ModelBone &b, data->Bone, i)
 				if (b.is_selected){
 					ed->SetMode(new ModeModelSkeletonAttachVertices(ed->cur_mode, i));
 					break;
@@ -67,7 +67,7 @@ void ModeModelSkeleton::OnUpdateMenu()
 void ModeModelSkeleton::OnStart()
 {
 	// relative to absolute pos
-	foreach(data->Bone, b)
+	foreach(ModelBone &b, data->Bone)
 		if (b.Parent >= 0)
 			b.pos = data->Bone[b.Parent].pos + b.DeltaPos;
 		else
@@ -123,7 +123,7 @@ void DrawBone(const vector &r, const vector &d, const color &c, int win)
 		pr.z=pd.z=0;
 		vector d=pr-pd;
 		//NixDrawLine(pr.x,pr.y,pd.x,pd.y,c,z);
-		float l=VecLength(d);
+		float l=d.length();
 		float w=(float)atan2(d.x,d.y)+pi;
 		NixSetColor(c);
 		NixDrawLine(pr.x,pr.y,pr.x+l*(float)sin(w+0.5f)*0.2f,pr.y+l*(float)cos(w+0.5f)*0.2f,z);
@@ -133,7 +133,7 @@ void DrawBone(const vector &r, const vector &d, const color &c, int win)
 	}
 }
 
-void DrawCoordBasis(const ModeModelSkeletonBone *b)
+void DrawCoordBasis(const ModelBone *b)
 {
 	vector o = b->pos;
 	vector e[3];
@@ -142,7 +142,7 @@ void DrawCoordBasis(const ModeModelSkeletonBone *b)
 	e[2] = e_z;
 	if (ed->cur_mode == mode_model_animation)
 		for (int i=0;i<3;i++)
-			VecNormalTransform(e[i], b->Matrix, e[i]);
+			e[i] = b->Matrix.transform_normal(e[i]);
 	for (int i=0;i<3;i++){
 		NixSetColor(color(1,0,(i==0)?1:0.5f,0));
 		NixDrawLine3D(o, o + e[i] * 30 / ed->multi_view_3d->zoom);
@@ -169,7 +169,7 @@ void ModeModelSkeleton::OnDrawWin(int win, irect dest)
 	NixEnableLighting(false);
 	NixSetWire(false);
 
-	foreach(data->Bone, b){
+	foreach(ModelBone &b, data->Bone){
 		/*if (b.view_stage<=ViewStage)
 			continue;*/
 		if (b.is_selected)

@@ -58,13 +58,13 @@ void SelectionPropertiesDialog::FillList()
 	index.add(0);
 	type.add(FDWorld);
 
-	foreachi(data->Object, o, i)
+	foreachi(WorldObject &o, data->Object, i)
 		if (o.is_selected){
 			AddString("property_list", _("Objekt") + format(":%d:", i) + o.Name);
 			type.add(FDModel);
 			index.add(i);
 		}
-	foreachi(data->Terrain, t, i)
+	foreachi(WorldTerrain &t, data->Terrain, i)
 		if (t.is_selected){
 			AddString("property_list", _("Terrain") + format(":%d:", i) + t.FileName);
 			type.add(FDTerrain);

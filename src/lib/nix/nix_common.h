@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 
-#ifdef NIX_OS_WINDOWS
+#ifdef OS_WINDOWS
 	#define _WIN32_WINDOWS 0x500
 	#include <stdio.h>
 	#include <io.h>
@@ -20,7 +20,7 @@
 	#endif
 #endif
 
-#ifdef NIX_OS_LINUX
+#ifdef OS_LINUX
 #ifdef NIX_ALLOW_FULLSCREEN
 	#include <X11/extensions/xf86vmode.h>
 #endif
@@ -38,13 +38,13 @@
 	#define _close	close
 #endif
 
-#ifdef NIX_OS_WINDOWS
+#ifdef OS_WINDOWS
 	#include <gl\gl.h>
 	#include <gl\glu.h>
 	#include <gl\glext.h>
 	#include <gl\wglext.h>
 #endif
-#ifdef NIX_OS_LINUX
+#ifdef OS_LINUX
 	#define GL_GLEXT_PROTOTYPES
 	#include <GL/glx.h>
 	#include <GL/gl.h>
@@ -56,7 +56,7 @@
 
 
 
-#ifdef NIX_OS_WINDOWS
+#ifdef OS_WINDOWS
 	// multitexturing
 	extern PFNGLACTIVETEXTUREPROC glActiveTexture;
 	extern PFNGLCLIENTACTIVETEXTUREPROC glClientActiveTexture;
@@ -77,7 +77,7 @@ extern bool OGLMultiTexturingSupport;
 extern bool OGLShaderSupport;
 
 #ifdef NIX_ALLOW_DYNAMIC_TEXTURE
-	#ifdef NIX_OS_WINDOWS
+	#ifdef OS_WINDOWS
 		extern PFNGLISRENDERBUFFEREXTPROC glIsRenderbufferEXT;
 		extern PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT;
 		extern PFNGLDELETERENDERBUFFERSEXTPROC glDeleteRenderbuffersEXT;

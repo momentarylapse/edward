@@ -10,12 +10,12 @@
 
 #include "../../ActionGroup.h"
 class DataModel;
-class ModeModelGeometry;
+class ModelGeometry;
 
 class ActionModelPasteGeometry : public ActionGroup
 {
 public:
-	ActionModelPasteGeometry(DataModel *m, ModeModelGeometry &geo);
+	ActionModelPasteGeometry(DataModel *m, ModelGeometry &geo);
 	virtual ~ActionModelPasteGeometry();
 	string name(){	return "ModelPasteGeometry";	}
 };

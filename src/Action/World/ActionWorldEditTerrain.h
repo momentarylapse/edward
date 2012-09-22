@@ -14,7 +14,7 @@
 class ActionWorldEditTerrain : public Action
 {
 public:
-	ActionWorldEditTerrain(int _index, const ModeWorldEditingTerrain &_data);
+	ActionWorldEditTerrain(int _index, const WorldEditingTerrain &_data);
 	virtual ~ActionWorldEditTerrain();
 	string name(){	return "WorldEditTerrain";	}
 
@@ -22,7 +22,7 @@ public:
 	void undo(Data *d);
 
 private:
-	ModeWorldEditingTerrain data;
+	WorldEditingTerrain data;
 	int index;
 };
 

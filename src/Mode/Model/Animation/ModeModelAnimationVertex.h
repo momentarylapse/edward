@@ -35,7 +35,7 @@ public:
 	CHuiWindow *dialog;
 
 	void UpdateVertices();
-	Array<ModeModelVertex> vertex;
+	Array<ModelVertex> vertex;
 };
 
 extern ModeModelAnimationVertex *mode_model_animation_vertex;

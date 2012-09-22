@@ -8,7 +8,7 @@
 #include "ActionModelEditMaterial.h"
 #include <assert.h>
 
-ActionModelEditMaterial::ActionModelEditMaterial(int _index, const ModeModelMaterial &_mat)
+ActionModelEditMaterial::ActionModelEditMaterial(int _index, const ModelMaterial &_mat)
 {
 	index = _index;
 	mat = _mat;
@@ -24,7 +24,7 @@ void *ActionModelEditMaterial::execute(Data *d)
 
 	assert((index >= 0) && (index < m->Material.num));
 
-	ModeModelMaterial old_mat = m->Material[index];
+	ModelMaterial old_mat = m->Material[index];
 	m->Material[index] = mat;
 	mat = old_mat;
 

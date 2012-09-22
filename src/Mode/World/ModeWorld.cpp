@@ -117,7 +117,7 @@ bool IsMouseOverObject(int index, void *user_data, int win, vector &tp)
 	if ((d<0)||(d>2))
 		return false;
 	for (int i=0;i<m->skin[d]->vertex.num;i++){
-		VecTransform(tmv[i], m->_matrix, m->skin[d]->vertex[i]);
+		tmv[i] = m->_matrix * m->skin[d]->vertex[i];
 		pmv[i] = mode_world->multi_view->VecProject(tmv[i],win);
 	}
 	float z_min=1;
@@ -155,7 +155,7 @@ bool IsInRectObject(int index, void *user_data, int win, irect *r)
 		return false;
 	vector min, max;
 	for (int i=0;i<m->skin[d]->vertex.num;i++){
-		VecTransform(tmv[i],m->_matrix,m->skin[d]->vertex[i]);
+		tmv[i] = m->_matrix * m->skin[d]->vertex[i];
 		pmv[i] = mode_world->multi_view->VecProject(tmv[i],win);
 	}
 	for (int mm=0;mm<m->material.num;mm++)
@@ -167,12 +167,12 @@ bool IsInRectObject(int index, void *user_data, int win, irect *r)
 			continue;
 		if (i==0)
 			min = max = a;
-		VecMin(min,a);
-		VecMin(min,b);
-		VecMin(min,c);
-		VecMax(max,a);
-		VecMax(max,b);
-		VecMax(max,c);
+		min._min(a);
+		min._min(b);
+		min._min(c);
+		max._max(a);
+		max._max(b);
+		max._max(c);
 	}
 	return ((min.x>=r->x1)&&(min.y>=r->y1)&&(max.x<=r->x2)&&(max.y<=r->y2));
 }
@@ -251,8 +251,8 @@ bool IsInRectTerrain(int index, void *user_data, int win, irect *r)
 		vector p = mode_world->multi_view->VecProject(v,win);
 		if (i==0)
 			min=max=p;
-		VecMin(min,p);
-		VecMax(max,p);
+		min._min(p);
+		max._max(p);
 	}
 	return ((min.x>=r->x1)&&(min.y>=r->y1)&&(max.x<=r->x2)&&(max.y<=r->y2));
 }
@@ -456,7 +456,7 @@ void ModeWorld::OnDrawWin(int win, irect dest)
 
 // terrain
 	if (ShowTerrains)
-		foreachi(data->Terrain, t, i){
+		foreachi(WorldTerrain &t, data->Terrain, i){
 			if (!t.terrain)
 				continue;
 			/*if (t.ViewStage < ViewStage)
@@ -489,7 +489,7 @@ void ModeWorld::OnDrawWin(int win, irect dest)
 		//NixSetWire(false);
 		NixEnableLighting(true);
 
-		foreach(data->Object, o){
+		foreach(WorldObject &o, data->Object){
 			if (o.view_stage < ViewStage)
 				continue;
 			if (o.object){
@@ -500,7 +500,7 @@ void ModeWorld::OnDrawWin(int win, irect dest)
 		NixSetWire(false);
 
 		// object selection
-		foreachi(data->Object, o, i)
+		foreachi(WorldObject &o, data->Object, i)
 			if (o.is_selected)
 				DrawSelectionObject(o.object, OSelectionAlpha, Red);
 			else if (o.is_special)
@@ -552,7 +552,7 @@ void ModeWorld::OnDrawWin(int win, irect dest)
 
 void ModeWorld::OnStart()
 {
-	string dir = HuiAppDirectoryStatic + SysFileName("Data/icons/toolbar/");
+	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
 	ed->ToolbarSetCurrent(HuiToolbarTop);
 	ed->ToolbarReset();
 	ed->ToolbarAddItem(L("new"),L("new"),dir + "new.png","new");
@@ -634,12 +634,12 @@ void ModeWorld::ExecutePropertiesDialog()
 		ExecuteWorldPropertiesDialog();
 	}else if ((num_o == 1) && (num_t == 0)){
 		// single object -> object
-		foreachi(data->Object, o, i)
+		foreachi(WorldObject &o, data->Object, i)
 			if (o.is_selected)
 				ExecuteObjectPropertiesDialog(i);
 	}else if ((num_o == 0) && (num_t == 1)){
 		// single terrain -> terrain
-		foreachi(data->Terrain, t, i)
+		foreachi(WorldTerrain &t, data->Terrain, i)
 			if (t.is_selected)
 				ExecuteTerrainPropertiesDialog(i);
 	}else{
@@ -701,8 +701,8 @@ void ModeWorld::OptimizeView()
 	vector min, max;
 	data->GetBoundaryBox(min, max);
 	multi_view->pos = (max + min) / 2;
-	if (VecLengthFuzzy(max - min) > 0)
-		multi_view->radius = VecLengthFuzzy(max - min) * 1.3f;
+	if ((max - min).length_fuzzy() > 0)
+		multi_view->radius = (max - min).length_fuzzy() * 1.3f;
 
 	ViewStage = 0;
 	//ShowEffects = false;
@@ -722,7 +722,7 @@ void ModeWorld::SetEgo()
 		ed->SetMessage(_("Es muss genau ein Objekt markiert sein!"));
 		return;
 	}
-	foreachi(data->Object, o, i)
+	foreachi(WorldObject &o, data->Object, i)
 		if (o.is_selected)
 			data->Execute(new ActionWorldSetEgo(i));
 }

@@ -20,8 +20,8 @@ float get_ang(DataModel *m, int a, int b, int c)
 {
 	vector v1 = m->Vertex[b].pos - m->Vertex[a].pos;
 	vector v2 = m->Vertex[c].pos - m->Vertex[b].pos;
-	VecNormalize(v1);
-	VecNormalize(v2);
+	v1.normalize();
+	v2.normalize();
 	float x = (v1 ^ v2) * flat_n;
 	float y = v1 * v2;
 	return atan2(x, y);
@@ -39,28 +39,28 @@ vector get_cloud_normal(DataModel *m, const Array<int> &v)
 	Array<vector> p;
 	for (int i=1;i<v.num;i++){
 		p.add(m->Vertex[v[i]].pos - m->Vertex[v[0]].pos);
-		VecNormalize(p.back());
+		p.back().normalize();
 	}
 	for (int i=0;i<p.num;i++)
 		for (int j=i+1;j<p.num;j++){
 			vector d = (p[i] ^ p[j]);
-			float l = VecLength(d);
+			float l = d.length();
 			if (l > 0.1f)
 				return d / l;
 		}
-	return v0;
+	return v_0;
 }
 
 void init_skin_generator(DataModel *m, Array<int> &v, SkinGenerator &sg)
 {
 	vector n = get_cloud_normal(m, v);
 	vector d[2];
-	d[0] = VecOrtho(n);
+	d[0] = n.ortho();
 	d[1] = d[0] ^ n;
 	float boundary[2][2], l[2];
 	for (int k=0;k<2;k++){
 		boundary[k][0] = boundary[k][1] = d[k] * m->Vertex[v[0]].pos;
-		foreach(v, vi){
+		foreach(int vi, v){
 			float f = d[k] * m->Vertex[vi].pos;
 			if (f < boundary[k][0])
 				boundary[k][0] = f;

@@ -20,8 +20,8 @@ ActionModelRotateSkinVertices::ActionModelRotateSkinVertices(Data *d, const vect
 
 	// list of selected skin vertices and save old pos
 	mode_model_mesh_texture->GetSelectedSkinVertices(surface, tria, index);
-	foreachi(index, k, i){
-		ModeModelTriangle &t = m->Surface[surface[i]].Triangle[tria[i]];
+	foreachi(int k, index, i){
+		ModelTriangle &t = m->Surface[surface[i]].Triangle[tria[i]];
 		old_data.add(t.SkinVertex[texture_level][k]);
 	}
 }
@@ -37,8 +37,8 @@ void *ActionModelRotateSkinVertices::execute(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	matrix rot;
 	MatrixRotation(rot, param);
-	foreachi(index, k, i){
-		ModeModelTriangle &t = m->Surface[surface[i]].Triangle[tria[i]];
+	foreachi(int k, index, i){
+		ModelTriangle &t = m->Surface[surface[i]].Triangle[tria[i]];
 		vector &v = t.SkinVertex[texture_level][k];
 		v = pos0 + rot * (old_data[i] - pos0);
 	}
@@ -50,8 +50,8 @@ void *ActionModelRotateSkinVertices::execute(Data *d)
 void ActionModelRotateSkinVertices::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(index, k, i){
-		ModeModelTriangle &t = m->Surface[surface[i]].Triangle[tria[i]];
+	foreachi(int k, index, i){
+		ModelTriangle &t = m->Surface[surface[i]].Triangle[tria[i]];
 		vector &v = t.SkinVertex[texture_level][k];
 		v = old_data[i];
 	}

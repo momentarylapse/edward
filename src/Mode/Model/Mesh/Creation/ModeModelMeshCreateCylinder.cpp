@@ -50,7 +50,7 @@ void ModeModelMeshCreateCylinder::OnMouseMove()
 {
 	if (ready_for_scaling){
 		vector p = multi_view->GetCursor3d(pos.back());
-		radius = VecLength(p - pos.back());
+		radius = (p - pos.back()).length();
 		float min_rad = 10 / multi_view->zoom; // 10 px
 		if (radius < min_rad)
 			radius = min_rad;
@@ -105,10 +105,10 @@ void ModeModelMeshCreateCylinder::OnKeyDown()
 void CreateCylinderBuffer(int buffer, const vector &pos, const vector &length, float radius)
 {
 	int num=16;
-	vector u = VecOrtho(length);
-	VecNormalize(u);
+	vector u = length.ortho();
+	u.normalize();
 	vector r = length ^ u;
-	VecNormalize(r);
+	r.normalize();
 	for (int i=0;i<num;i++){
 		float w1=pi*2*(float) i   /(float)num;
 		float w2=pi*2*(float)(i+1)/(float)num;
@@ -143,7 +143,7 @@ void ModeModelMeshCreateCylinder::OnDrawWin(int win, irect dest)
 
 		// spline curve
 		Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
-		foreach(pos, p)
+		foreach(vector &p, pos)
 			inter.add(p);
 		if (!ready_for_scaling)
 			inter.add(multi_view->GetCursor3d());
@@ -154,7 +154,7 @@ void ModeModelMeshCreateCylinder::OnDrawWin(int win, irect dest)
 	}
 	if (ready_for_scaling){
 		Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
-		foreach(pos, p)
+		foreach(vector &p, pos)
 			inter.add(p);
 		int n = (pos.num - 1) * dialog->GetInt("ncy_rings");
 		NixEnableLighting(true);

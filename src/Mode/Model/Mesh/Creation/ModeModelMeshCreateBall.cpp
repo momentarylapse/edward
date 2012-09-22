@@ -91,7 +91,7 @@ void ModeModelMeshCreateBall::OnMouseMove()
 {
 	if (pos_chosen){
 		vector pos2 = multi_view->GetCursor3d(pos);
-		radius = VecLength(pos2 - pos);
+		radius = (pos2 - pos).length();
 	}
 }
 

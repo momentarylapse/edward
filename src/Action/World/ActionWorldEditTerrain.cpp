@@ -8,7 +8,7 @@
 #include "ActionWorldEditTerrain.h"
 #include <assert.h>
 
-ActionWorldEditTerrain::ActionWorldEditTerrain(int _index, const ModeWorldEditingTerrain &_data)
+ActionWorldEditTerrain::ActionWorldEditTerrain(int _index, const WorldEditingTerrain &_data)
 {
 	index = _index;
 	data = _data;
@@ -34,7 +34,7 @@ void *ActionWorldEditTerrain::execute(Data *d)
 	CTerrain *t = w->Terrain[index].terrain;
 
 	// swap
-	ModeWorldEditingTerrain old_data;
+	WorldEditingTerrain old_data;
 	old_data.NumX = t->num_x;
 	old_data.NumZ = t->num_z;
 	old_data.Pattern = t->pattern;

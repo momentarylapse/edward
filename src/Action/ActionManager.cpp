@@ -27,7 +27,7 @@ ActionManager::~ActionManager()
 
 void ActionManager::Reset()
 {
-	foreach(action, a)
+	foreach(Action *a, action)
 		delete(a);
 	action.clear();
 	cur_pos = 0;

@@ -34,7 +34,7 @@ void *ActionModelAddEmptySurface::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModeModelSurface *s = m->AddSurface();
+	ModelSurface *s = m->AddSurface();
 	return s;
 }
 

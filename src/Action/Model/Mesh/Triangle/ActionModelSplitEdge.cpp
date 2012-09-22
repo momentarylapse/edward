@@ -12,7 +12,7 @@
 #include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
-inline int tria_sort_vert_by_edge(const ModeModelTriangle &t, const ModeModelEdge &e, int v[3])
+inline int tria_sort_vert_by_edge(const ModelTriangle &t, const ModelEdge &e, int v[3])
 {
 	for (int k=0;k<3;k++)
 		if ((t.Vertex[k] != e.Vertex[0]) && (t.Vertex[k] != e.Vertex[1])){
@@ -29,11 +29,11 @@ ActionModelSplitEdge::ActionModelSplitEdge(DataModel *m, int _surface, int _edge
 {
 	assert(_surface >= 0);
 	assert(_surface < m->Surface.num);
-	ModeModelSurface &s = m->Surface[_surface];
+	ModelSurface &s = m->Surface[_surface];
 	assert(_edge >= 0);
 	assert(_edge < s.Edge.num);
 
-	ModeModelEdge &e = s.Edge[_edge];
+	ModelEdge &e = s.Edge[_edge];
 	assert(e.Triangle[0] >= 0);
 
 	// copy old triangles data
@@ -58,7 +58,7 @@ ActionModelSplitEdge::ActionModelSplitEdge(DataModel *m, int _surface, int _edge
 	}
 
 	// bary centric
-	float f = VecFactorBetween(_pos, m->Vertex[e.Vertex[0]].pos, m->Vertex[e.Vertex[1]].pos);
+	float f = _pos.factor_between( m->Vertex[e.Vertex[0]].pos, m->Vertex[e.Vertex[1]].pos);
 	if (e.Vertex[0] != v0[1]) // TODO ...
 		f = 1 - f;
 	for (int l=0;l<MODEL_MAX_TEXTURES;l++)

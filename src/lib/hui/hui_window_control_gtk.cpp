@@ -2,7 +2,7 @@
 #include "hui_internal.h"
 #ifdef HUI_API_GTK
 
-#ifndef HUI_OS_WINDOWS
+#ifndef OS_WINDOWS
 #include <pango/pangocairo.h>
 #endif
 
@@ -222,7 +222,7 @@ HuiControl *CHuiWindow ::_GetControl_(const string &id)
 
 	// search backwards -> multiple AddText()s with identical ids
 	//   will always set their own text
-	foreachb(control, c)
+	foreachb(HuiControl *c, control)
 		if (c->id == id)
 			return c;
 
@@ -278,7 +278,7 @@ void SetImageById(CHuiWindow *win, const string &id)
 	if ((id == "ok") || (id == "cancel") || (id == "apply"))
 		win->SetImage(id, "hui:" + id);
 	else if (id != "")
-		foreach(_HuiCommand_, c)
+		foreach(HuiCommand &c, _HuiCommand_)
 			if ((c.id == id) && (c.image != ""))
 				win->SetImage(id, c.image);
 }
@@ -313,7 +313,7 @@ void CHuiWindow::AddDefButton(const string &title,int x,int y,int width,int heig
 	GtkWidget *b = gtk_button_new_with_label(sys_str(PartString[0]));
 	g_signal_connect(G_OBJECT(b),"clicked", G_CALLBACK(&OnGtkButtonPress), this);
 	_InsertControl_(b, x, y, width, height, id, HuiKindButton);
-#ifdef HUI_OS_WINDOWS
+#ifdef OS_WINDOWS
 	GTK_WIDGET_SET_FLAGS(b, GTK_CAN_DEFAULT);
 #else
 	gtk_widget_set_can_default(b, true);
@@ -466,7 +466,7 @@ void CHuiWindow::AddRadioButton(const string &title,int x,int y,int width,int he
 	GetPartStrings(id, title);
 	string group_id = id.substr(0, id.find(":"));
 	GSList *group = NULL;
-	foreach(control, c)
+	foreach(HuiControl *c, control)
 		if (c->type == HuiKindRadioButton)
 			if (c->id.find(":"))
 				if (c->id.substr(0, c->id.find(":")) == group_id)
@@ -897,7 +897,7 @@ void CHuiWindow::EmbedDialog(const string &id, int x, int y)
 	if (res){
 		if (res->type != "SizableDialog")
 			return;
-		foreachi(res->cmd, cmd, i){
+		foreachi(HuiResourceCommand &cmd, res->cmd, i){
 			//msg_db_m(format("%d:  %d / %d",j,(cmd->type & 1023),(cmd->type >> 10)).c_str(),4);
 			//if ((cmd->type & 1023)==HuiCmdDialogAddControl){
 

@@ -325,7 +325,7 @@ bool Edward::HandleArguments(Array<string> arg)
 	if (param[param.num-1]=='"')
 		param.resize(param.num-1);
 
-	string ext = file_extension(param);
+	string ext = param.extension();
 
 	if (ext == "model"){
 		MakeDirs(param);
@@ -520,7 +520,7 @@ void Edward::OnDraw()
 	}
 
 	// messages
-	foreachi(message_str, m, i)
+	foreachi(string &m, message_str, i)
 		DrawStr(MaxX / 2, MaxY / 2 - 10 - i * 20, m, AlignCenter);
 
 	NixEnd();
@@ -576,7 +576,7 @@ void Edward::SetRootDirectory(const string &directory)
 	string object_dir, map_dir, texture_dir, sound_dir, script_dir, material_dir;
 	bool ufd = (RootDir.find(directory) < 0) && (directory.find(RootDir) < 0);
 	RootDir = directory;
-	dir_ensure_ending(RootDir, true);
+	RootDir.dir_ensure_ending();
 	if (RootDirCorrect){
 		map_dir = RootDir + "Maps/";
 		dir_create(map_dir);
@@ -615,12 +615,12 @@ void Edward::MakeDirs(const string &original_dir, bool as_root_dir)
 	msg_db_r("MakeDirs", 1);
 	string dir = original_dir;
 	if (dir.num > 0)
-		dir = dirname(dir);
+		dir = dir.dirname();
 	bool sub_dir=false;
 	if (!as_root_dir){
 		// we are in a sub dir?
 		sub_dir=false;
-		foreach(PossibleSubDir, p){
+		foreach(string &p, PossibleSubDir){
 			if (dir.find(p) >= 0){
 				dir = dir.substr(0, dir.find(p));
 				sub_dir=true;
@@ -684,7 +684,7 @@ void Edward::OnCommand(const string &id)
 string title_filename(const string &filename)
 {
 	if (filename.num > 0)
-		return basename(filename);// + " (" + dirname(filename) + ")";
+		return filename.basename();// + " (" + filename.dirname() + ")";
 	return _("Unbenannt");
 }
 
@@ -753,12 +753,12 @@ bool Edward::FileDialog(int kind,bool save,bool force_in_root_dir)
 	else		done=HuiFileDialogOpen(this,title,DialogDir[kind],show_filter,filter);
 	if (done){
 
-		bool in_root_dir = (SysFileName(HuiFilename).find(SysFileName(RootDirKind[kind])) >= 0);
+		bool in_root_dir = (HuiFilename.sys_filename().find(RootDirKind[kind].sys_filename()) >= 0);
 
 		if (force_in_root_dir){
 			if (!in_root_dir){
-				ErrorBox(SysFileName(HuiFilename));
-				ErrorBox(format(_("Datei liegt nicht im vorgesehenen Verzeichnis: \"%s\"\noder in dessen Unterverzeichnis"), SysFileName(RootDirKind[kind]).c_str()));
+				ErrorBox(HuiFilename.sys_filename());
+				ErrorBox(format(_("Datei liegt nicht im vorgesehenen Verzeichnis: \"%s\"\noder in dessen Unterverzeichnis"), RootDirKind[kind].sys_filename().c_str()));
 				return false;
 			}
 		}//else
@@ -766,7 +766,7 @@ bool Edward::FileDialog(int kind,bool save,bool force_in_root_dir)
 
 		if (in_root_dir){
 			UpdateDialogDir(kind);
-			DialogDir[kind] = dirname(HuiFilename);
+			DialogDir[kind] = HuiFilename.dirname();
 		}
 		DialogFileComplete = HuiFilename;
 		DialogFile = DialogFileComplete.substr(RootDirKind[kind].num, -1);

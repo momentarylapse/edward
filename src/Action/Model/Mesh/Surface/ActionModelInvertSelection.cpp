@@ -11,7 +11,7 @@
 
 ActionModelInvertSelection::ActionModelInvertSelection(DataModel *m)
 {
-	foreachi(m->Surface, s, i)
+	foreachi(ModelSurface &s, m->Surface, i)
 		if (s.is_selected)
 			AddSubAction(new ActionModelSurfaceInvert(i), m);
 }

@@ -26,7 +26,7 @@ ModeModelSkeletonAttachVertices::~ModeModelSkeletonAttachVertices()
 void ModeModelSkeletonAttachVertices::OnStart()
 {
 	// relative to absolute pos
-	foreach(data->Vertex, v)
+	foreach(ModelVertex &v, data->Vertex)
 		v.is_selected = (v.BoneIndex == bone_index);
 
 	//Subscribe(data);
@@ -53,7 +53,7 @@ void ModeModelSkeletonAttachVertices::OnKeyDown()
 	int key = HuiGetEvent()->key_code;
 	if (key == KEY_RETURN){
 		Array<int> index;
-		foreachi(data->Vertex, v, i)
+		foreachi(ModelVertex &v, data->Vertex, i)
 			if (v.is_selected)
 				index.add(i);
 		data->Execute(new ActionModelAttachVerticesToBone(index, bone_index));

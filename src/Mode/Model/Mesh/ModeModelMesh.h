@@ -58,7 +58,7 @@ public:
 	void Paste();
 	bool Copyable();
 	bool Pasteable();
-	ModeModelGeometry TempGeo;
+	ModelGeometry TempGeo;
 };
 
 extern ModeModelMesh *mode_model_mesh;

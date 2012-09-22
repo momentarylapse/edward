@@ -8,7 +8,7 @@
 #include "ActionWorldEditObject.h"
 #include <assert.h>
 
-ActionWorldEditObject::ActionWorldEditObject(int _index, const ModeWorldObject &_data)
+ActionWorldEditObject::ActionWorldEditObject(int _index, const WorldObject &_data)
 {
 	data = _data;
 	index = _index;
@@ -32,7 +32,7 @@ void *ActionWorldEditObject::execute(Data *d)
 	assert(index < w->Object.num);
 
 	// swap
-	ModeWorldObject old_data = w->Object[index];
+	WorldObject old_data = w->Object[index];
 	w->Object[index] = data;
 	data = old_data;
 

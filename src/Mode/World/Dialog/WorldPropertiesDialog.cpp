@@ -130,7 +130,7 @@ void WorldPropertiesDialog::OnRemoveSkybox()
 void WorldPropertiesDialog::OnAddScript()
 {
 	if (ed->FileDialog(FDScript, false, true)){
-		ModeWorldScript s;
+		WorldScript s;
 		s.Filename = ed->DialogFileComplete.substr(ScriptDir.num, -1);
 		temp.Script.add(s);
 		FillScriptList();
@@ -166,7 +166,7 @@ void WorldPropertiesDialog::FillSkyboxList()
 {
 	HuiComboBoxSeparator = ":";
 	Reset("skybox");
-	foreachi(temp.SkyBoxFile, sb, i)
+	foreachi(string &sb, temp.SkyBoxFile, i)
 		AddString("skybox", format("%d:%s", i, sb.c_str()));
 	HuiComboBoxSeparator = "\\";
 	Enable("remove_skybox", false);
@@ -193,7 +193,7 @@ void WorldPropertiesDialog::OnScriptVarEdit()
 void WorldPropertiesDialog::FillScriptVarList()
 {
 	Reset("script_vars");
-	foreachi(temp.ScriptVar, v, i)
+	foreachi(float v, temp.ScriptVar, i)
 		/*if (i<NumObjectScriptVarNames)
 			AddString("script_vars", format("%d\\%s\\%.6f", i, ObjectScriptVarName[i].c_str(), v));
 		else*/
@@ -206,7 +206,7 @@ void WorldPropertiesDialog::FillScriptList()
 {
 	HuiComboBoxSeparator = ":";
 	Reset("script_list");
-	foreach(temp.Script, s)
+	foreach(WorldScript &s, temp.Script)
 		AddString("script_list", s.Filename);
 	Enable("remove_script", false);
 	HuiComboBoxSeparator = "\\";

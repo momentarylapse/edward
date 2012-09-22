@@ -10,12 +10,12 @@
 
 #include "../../../ActionGroup.h"
 class DataModel;
-class ModeModelSurface;
+class ModelSurface;
 
 class ActionModelSurfaceCopy : public ActionGroup
 {
 public:
-	ActionModelSurfaceCopy(DataModel *m, ModeModelSurface *&s);
+	ActionModelSurfaceCopy(DataModel *m, ModelSurface *&s);
 	virtual ~ActionModelSurfaceCopy();
 	string name(){	return "ModelSurfaceCopy";	}
 

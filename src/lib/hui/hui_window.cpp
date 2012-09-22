@@ -284,7 +284,7 @@ bool CHuiWindow::_SendEvent_(HuiEvent *e)
 		_SetCurID_(e->message);
 
 	bool sent = false;
-	foreach(event, ee){
+	foreach(HuiWinEvent &ee, event){
 		if (!_HuiEventMatch_(e, ee.id, ee.message))
 			continue;
 		
@@ -299,7 +299,7 @@ bool CHuiWindow::_SendEvent_(HuiEvent *e)
 		}
 
 		// window closed by callback?
-		foreach(_HuiClosedWindow_, cw)
+		foreach(HuiClosedWindow &cw, _HuiClosedWindow_)
 			if (cw.win == this){
 				msg_db_l(2);
 				return sent;
@@ -397,7 +397,7 @@ void CHuiWindow::FromResource(const string &id)
 		ToolbarSetByID(res->s_param[1]);
 
 	// controls
-	foreach(res->cmd, cmd){
+	foreach(HuiResourceCommand &cmd, res->cmd){
 		//msg_db_m(format("%d:  %d / %d",j,(cmd->type & 1023),(cmd->type >> 10)).c_str(),4);
 		if (res->type == "Dialog"){
 			SetTarget(cmd.s_param[0], cmd.i_param[4]);

@@ -10,8 +10,8 @@
 
 #include "../../../ActionGroup.h"
 class DataModel;
-class ModeModelTriangle;
-class ModeModelSurface;
+class ModelTriangle;
+class ModelSurface;
 class sCol;
 
 class ActionModelSurfaceSubtract : public ActionGroup
@@ -25,14 +25,14 @@ private:
 
 	Array<sCol> t_col;
 
-	bool CollideTriangles(DataModel *m, ModeModelTriangle *t1, ModeModelTriangle *t2, int t2_index);
-	bool CollideTriangleSurface(DataModel *m, ModeModelTriangle *t, ModeModelSurface *s);
-	bool TriangleInsideSurface(DataModel *m, ModeModelTriangle *t, ModeModelSurface *s);
-	bool sort_t_col(ModeModelSurface *s, Array<sCol> &c2);
-	void sort_and_join_contours(DataModel *m, ModeModelTriangle *t, ModeModelSurface *b, Array<Array<sCol> > &c, bool inverse);
-	void TriangleSubtract(DataModel *m, ModeModelSurface *&a, ModeModelTriangle *t, ModeModelSurface *&b, bool inverse);
-	void SurfaceSubtractUnary(DataModel *m, ModeModelSurface *&a, ModeModelSurface *&b, bool inverse);
-	void SurfaceSubtract(DataModel *m, ModeModelSurface *&a, ModeModelSurface *&b);
+	bool CollideTriangles(DataModel *m, ModelTriangle *t1, ModelTriangle *t2, int t2_index);
+	bool CollideTriangleSurface(DataModel *m, ModelTriangle *t, ModelSurface *s);
+	bool TriangleInsideSurface(DataModel *m, ModelTriangle *t, ModelSurface *s);
+	bool sort_t_col(ModelSurface *s, Array<sCol> &c2);
+	void sort_and_join_contours(DataModel *m, ModelTriangle *t, ModelSurface *b, Array<Array<sCol> > &c, bool inverse);
+	void TriangleSubtract(DataModel *m, ModelSurface *&a, ModelTriangle *t, ModelSurface *&b, bool inverse);
+	void SurfaceSubtractUnary(DataModel *m, ModelSurface *&a, ModelSurface *&b, bool inverse);
+	void SurfaceSubtract(DataModel *m, ModelSurface *&a, ModelSurface *&b);
 };
 
 #endif /* ACTIONMODELSURFACESUBTRACT_H_ */

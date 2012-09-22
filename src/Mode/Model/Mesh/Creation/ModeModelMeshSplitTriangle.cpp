@@ -62,7 +62,7 @@ void ModeModelMeshSplitTriangle::OnDrawWin(int win, irect dest)
 		// close to an edge?
 		for (int k=0;k<3;k++){
 			if (VecLineDistance(pp, p[k], p[(k + 1) % 3]) < 10){
-				float f = VecLength(pp - p[k]) / VecLength(p[k] - p[(k + 1) % 3]);
+				float f = (pp - p[k]).length() / (p[k] - p[(k + 1) % 3]).length();
 				pos = v[k] * (1 - f) + v[(k + 1) % 3] * f;
 				pp = multi_view->VecProject(pos, win);
 				edge = data->Surface[surface].Triangle[triangle].Edge[k];

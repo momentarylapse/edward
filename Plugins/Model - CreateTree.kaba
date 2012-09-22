@@ -8,11 +8,11 @@ const float DIR_RAND = 0.2
 
 vector get_rotated(vector dir)
 	vector v1 = VecCrossProduct(dir, e_x)
-	VecNormalize(v1)
+	v1.normalize()
 	vector v2 = VecCrossProduct(dir, v1)
 	float w = rand(2 * pi)
 	vector bdir = dir * 0.5 + cos(w) * v1 + sin(w) * v2
-	VecNormalize(bdir)
+	bdir.normalize()
 	return bdir
 
 void branch(vector pos0, vector dir0, int num, float radius, float length)
@@ -24,7 +24,7 @@ void branch(vector pos0, vector dir0, int num, float radius, float length)
 		dir.x += rand(DIR_RAND * 2) - DIR_RAND
 		dir.y += 0.5
 		dir.z += rand(DIR_RAND * 2) - DIR_RAND
-		VecNormalize(dir)
+		dir.normalize()
 		p += dir * length
 		pos.add(p)
 		
@@ -39,4 +39,4 @@ void branch(vector pos0, vector dir0, int num, float radius, float length)
 	data_model.AddCylinder(pos, r, 5, 16, false)
 
 void main()
-	branch(v0, e_y, MAX_LENGTH, 5, 40)
+	branch(v_0, e_y, MAX_LENGTH, 5, 40)

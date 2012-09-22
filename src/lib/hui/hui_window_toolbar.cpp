@@ -40,7 +40,7 @@ void CHuiWindow::ToolbarSetByID(const string &id)
 	}
 	ToolbarReset();
 	//ToolBarConfigure(res->b_param[0], res->b_param[1]);
-	foreach(res->cmd, cmd){
+	foreach(HuiResourceCommand &cmd, res->cmd){
 		if (cmd.type == "Item")
 			ToolbarAddItem(get_lang(cmd.id, "", false), get_lang(cmd.id, "", false), cmd.image, cmd.id);
 		else if (cmd.type == "ItemCheckable")
@@ -62,7 +62,7 @@ void CHuiWindow::ToolbarSetByID(const string &id)
 bool CHuiWindow::_ToolbarIsEnabled_(const string &id)
 {
 	for (int t=0;t<4;t++)
-		foreach(toolbar[t].item, it)
+		foreach(HuiToolbarItem &it, toolbar[t].item)
 			if (id == it.id)
 				return it.enabled;
 	return false;

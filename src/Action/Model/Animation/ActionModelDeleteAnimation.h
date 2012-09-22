@@ -23,7 +23,7 @@ public:
 
 private:
 	int index;
-	ModeModelMove animation;
+	ModelMove animation;
 };
 
 #endif /* ACTIONMODELDELETEANIMATION_H_ */

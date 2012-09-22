@@ -23,7 +23,7 @@ public:
 
 private:
 	int index, frame;
-	ModeModelFrame old_frame;
+	ModelFrame old_frame;
 };
 
 #endif /* ACTIONMODELANIMATIONDELETEFRAME_H_ */

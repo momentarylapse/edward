@@ -12,7 +12,7 @@
 #include "../../Action/World/ActionWorldAddTerrain.h"
 
 
-void ModeWorldObject::UpdateData()
+void WorldObject::UpdateData()
 {
 	if (!object)
 		return;
@@ -21,7 +21,7 @@ void ModeWorldObject::UpdateData()
 	object->UpdateMatrix();
 }
 
-bool ModeWorldTerrain::Load(const vector &_pos, const string &filename, bool deep)
+bool WorldTerrain::Load(const vector &_pos, const string &filename, bool deep)
 {
 	msg_db_r("Terrain.LoadFromFile", 1);
 	view_stage = 0;
@@ -45,7 +45,7 @@ bool ModeWorldTerrain::Load(const vector &_pos, const string &filename, bool dee
 	return !Error;
 }
 
-void ModeWorldTerrain::UpdateData()
+void WorldTerrain::UpdateData()
 {
 	if (!terrain)
 		return;
@@ -72,7 +72,7 @@ bool DataWorld::Save(const string & _filename)
 	f->WriteFileFormatVersion(false, 10);
 	f->WriteComment("// Terrains");
 	f->WriteInt(Terrain.num);
-	foreach(Terrain, t){
+	foreach(WorldTerrain &t, Terrain){
 		f->WriteStr(t.FileName);
 		f->WriteFloat(t.pos.x);
 		f->WriteFloat(t.pos.y);
@@ -87,7 +87,7 @@ bool DataWorld::Save(const string & _filename)
 	f->WriteComment("// Background");
 	write_color_argb(f, meta_data.BackGroundColor);
 	int ns = 0;
-	foreachi(meta_data.SkyBoxFile, sb, i)
+	foreachi(string &sb, meta_data.SkyBoxFile, i)
 		if (sb.num > 0)
 			ns = i + 1;
 	f->WriteInt(ns);
@@ -102,11 +102,11 @@ bool DataWorld::Save(const string & _filename)
 	write_color_argb(f, meta_data.FogColor);
 	f->WriteComment("// Music");
 	f->WriteInt(meta_data.MusicFile.num);
-	foreach(meta_data.MusicFile, m)
+	foreach(string &m, meta_data.MusicFile)
 		f->WriteStr(m);
 	f->WriteComment("// Objects");
 	f->WriteInt(Object.num);
-	foreach(Object, o){
+	foreach(WorldObject &o, Object){
 		f->WriteStr(o.FileName);
 		f->WriteStr(o.Name);
 		f->WriteFloat(o.pos.x);
@@ -118,17 +118,17 @@ bool DataWorld::Save(const string & _filename)
 	}
 	f->WriteComment("// Scripts");
 	f->WriteInt(meta_data.Script.num);
-	foreach(meta_data.Script, s){
+	foreach(WorldScript &s, meta_data.Script){
 		f->WriteStr(s.Filename);
 		f->WriteInt(s.Rule.num);
-		foreach(s.Rule, r){
+		foreach(WorldScriptRule &r, s.Rule){
 			f->WriteStr(r.Function);
 			f->WriteInt(r.Location);
 		}
 	}
 	f->WriteComment("// ScriptVars");
 	f->WriteInt(meta_data.ScriptVar.num);
-	foreach(meta_data.ScriptVar, v)
+	foreach(float v, meta_data.ScriptVar)
 		f->WriteFloat(v);
 	f->WriteComment("// Sun");
 	f->WriteBool(meta_data.SunEnabled);
@@ -175,7 +175,7 @@ bool DataWorld::Load(const string & _filename, bool deep)
 		// Terrains
 		int n = f->ReadIntC();
 		for (int i=0;i<n;i++){
-			ModeWorldTerrain t;
+			WorldTerrain t;
 			t.FileName = f->ReadStr();
 			f->ReadVector(&t.pos);
 			Terrain.add(t);
@@ -215,7 +215,7 @@ bool DataWorld::Load(const string & _filename, bool deep)
 		// Objects
 		n = f->ReadIntC();
 		for (int i=0;i<n;i++){
-			ModeWorldObject o;
+			WorldObject o;
 			o.FileName = f->ReadStr();
 			o.Name = f->ReadStr();
 			o.pos.x = f->ReadFloat();
@@ -233,11 +233,11 @@ bool DataWorld::Load(const string & _filename, bool deep)
 		// Scripts
 		n = f->ReadIntC();
 		for (int i=0;i<n;i++){
-			ModeWorldScript s;
+			WorldScript s;
 			s.Filename = f->ReadStr();
 			int NumRules = f->ReadInt();
 			for (int n=0;n<NumRules;n++){
-				ModeWorldScriptRule r;
+				WorldScriptRule r;
 				r.Function = f->ReadStr();
 				r.Location = f->ReadInt();
 				s.Rule.add(r);
@@ -335,7 +335,7 @@ void DataWorld::MetaData::ApplyToDraw()
 {
 	NixSetFog(FogMode, FogStart, FogEnd, FogDensity, FogColor);
 	NixEnableFog(FogEnabled);
-	NixSetLightDirectional(ed->multi_view_3d->light, VecAng2Dir(SunAng), SunAmbient, SunDiffuse, SunSpecular);
+	NixSetLightDirectional(ed->multi_view_3d->light, SunAng.ang2dir(), SunAmbient, SunDiffuse, SunSpecular);
 	NixEnableLight(ed->multi_view_3d->light, SunEnabled);
 	NixSetAmbientLight(Ambient);
 }
@@ -377,7 +377,7 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 {
 	bool found_any=false;
 	msg_db_m("GetBoundaryBox",2);
-	foreach(Object, o)
+	foreach(WorldObject &o, Object)
 		if (o.object){
 			vector min2 = o.pos - vector(1,1,1) * o.object->radius;
 			vector max2 = o.pos + vector(1,1,1) * o.object->radius;
@@ -385,11 +385,11 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 				min = min2;
 				max = max2;
 			}
-			VecMin(min, min2);
-			VecMax(max, max2);
+			min._min(min2);
+			max._max(max2);
 			found_any = true; //|=(min2!=max2);
 		}
-	foreach(Terrain, t)
+	foreach(WorldTerrain &t, Terrain)
 		if (t.terrain){
 			vector min2 = t.terrain->min;
 			vector max2 = t.terrain->max;
@@ -397,8 +397,8 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 				min = min2;
 				max = max2;
 			}
-			VecMin(min, min2);
-			VecMax(max, max2);
+			min._min(min2);
+			max._max(max2);
 			found_any = true;
 		}
 	if (!found_any){
@@ -410,7 +410,7 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 int DataWorld::GetSelectedObjects()
 {
 	int n = 0;
-	foreach(Object, o)
+	foreach(WorldObject &o, Object)
 		if (o.is_selected)
 			n ++;
 	return n;
@@ -421,7 +421,7 @@ int DataWorld::GetSelectedObjects()
 int DataWorld::GetSelectedTerrains()
 {
 	int n = 0;
-	foreach(Terrain, t)
+	foreach(WorldTerrain &t, Terrain)
 		if (t.is_selected)
 			n ++;
 	return n;
@@ -430,22 +430,22 @@ int DataWorld::GetSelectedTerrains()
 
 void DataWorld::UpdateData()
 {
-	foreachi(Object, o, i){
+	foreachi(WorldObject &o, Object, i){
 		o.UpdateData();
 		o.is_special = (i == EgoIndex);
 	}
-	foreach(Terrain, t)
+	foreach(WorldTerrain &t, Terrain)
 		t.UpdateData();
 }
 
-ModeWorldObject* DataWorld::AddObject(const string& filename, const vector& pos)
-{	return (ModeWorldObject*)Execute(new ActionWorldAddObject(filename, pos));	}
+WorldObject* DataWorld::AddObject(const string& filename, const vector& pos)
+{	return (WorldObject*)Execute(new ActionWorldAddObject(filename, pos));	}
 
-ModeWorldTerrain* DataWorld::AddTerrain(const string& filename, const vector& pos)
-{	return (ModeWorldTerrain*)Execute(new ActionWorldAddTerrain(pos, filename));	}
+WorldTerrain* DataWorld::AddTerrain(const string& filename, const vector& pos)
+{	return (WorldTerrain*)Execute(new ActionWorldAddTerrain(pos, filename));	}
 
-ModeWorldTerrain* DataWorld::AddNewTerrain(const vector& pos, const vector& size, int num_x, int num_z)
-{	return (ModeWorldTerrain*)Execute(new ActionWorldAddTerrain(pos, size, num_x, num_z));	}
+WorldTerrain* DataWorld::AddNewTerrain(const vector& pos, const vector& size, int num_x, int num_z)
+{	return (WorldTerrain*)Execute(new ActionWorldAddTerrain(pos, size, num_x, num_z));	}
 
 
 

@@ -94,8 +94,8 @@ void MultiView::Reset()
 
 void MultiView::ResetView()
 {
-	pos = v0;
-	ang = v0;
+	pos = v_0;
+	ang = v_0;
 	if (mode3d)
 		radius = 100;
 	else
@@ -448,11 +448,11 @@ void MultiView::OnMouseMove()
 // camera rotation
 			bool RotatingOwn = (mbut || (NixGetKey(KEY_CONTROL)));
 			if (RotatingOwn)
-				pos -= radius * VecAng2Dir(ang);
+				pos -= radius * ang.ang2dir();
 			vector dang = vector((float)vy, (float)vx, 0) * MouseRotationSpeed;
 			ang = VecAngAdd(dang, ang);
 			if (RotatingOwn)
-				pos += radius * VecAng2Dir(ang);
+				pos += radius * ang.ang2dir();
 		}else{
 // camera translation
 			if (t == View2D)
@@ -486,7 +486,7 @@ void MultiView::StartRect()
 	RectY=my;
 
 	// reset selection data
-	foreach(data, d)
+	foreach(MultiViewData &d, data)
 		if (d.MVSelectable)
 			for (int i=0;i<d.Num;i++){
 				MultiViewSingleData* sd = MVGetSingleData(d,i);
@@ -572,22 +572,22 @@ void MultiView::DrawGrid(int win, irect dest)
 
 	// spherical for perspective view
 	if (vt==ViewPerspective){
-		vector PerspectiveViewPos = radius * VecAng2Dir(ang) - pos;
+		vector PerspectiveViewPos = radius * ang.ang2dir() - pos;
 		//NixSetZ(false,false);
 		// horizontale
 		float r=NixMaxDepth*0.6f;
 		for (int j=-16;j<16;j++)
 			for (int i=0;i<64;i++){
-				vector pa=VecAng2Dir(vector(float(j)/32*pi,float(i  )/32*pi,0))*r-PerspectiveViewPos;
-				vector pb=VecAng2Dir(vector(float(j)/32*pi,float(i+1)/32*pi,0))*r-PerspectiveViewPos;
+				vector pa = vector(float(j)/32*pi,float(i  )/32*pi,0).ang2dir() * r - PerspectiveViewPos;
+				vector pb = vector(float(j)/32*pi,float(i+1)/32*pi,0).ang2dir() * r - PerspectiveViewPos;
 				NixSetColor(ColorInterpolate(ColorBackGround2D,ColorGrid,j==0?0.6f:0.1f));
 				NixDrawLine3D(pa,pb);
 			}
 		// vertikale
 		for (int j=0;j<32;j++)
 			for (int i=0;i<64;i++){
-				vector pa=VecAng2Dir(vector(float(i  )/32*pi,float(j)/32*pi,0))*r-PerspectiveViewPos;
-				vector pb=VecAng2Dir(vector(float(i+1)/32*pi,float(j)/32*pi,0))*r-PerspectiveViewPos;
+				vector pa = vector(float(i  )/32*pi,float(j)/32*pi,0).ang2dir() * r - PerspectiveViewPos;
+				vector pb = vector(float(i+1)/32*pi,float(j)/32*pi,0).ang2dir() * r - PerspectiveViewPos;
 				NixSetColor(ColorInterpolate(ColorBackGround2D,ColorGrid,(j%16)==0?0.6f:0.1f));
 				NixDrawLine3D(pa,pb);
 			}
@@ -608,7 +608,7 @@ void MultiView::DrawGrid(int win, irect dest)
 
 	// vertikal
 	n=vux2-vux1;
-	n/=VecLengthFuzzy(n);	//VecNormalize(n);
+	n/=n.length_fuzzy();	//n.normalize();
 	va=n*VecDotProduct(n,vux1);
 	vb=n*VecDotProduct(n,vux2);
 	fa=(va.x+va.y+va.z)/D;
@@ -624,7 +624,7 @@ void MultiView::DrawGrid(int win, irect dest)
 
 	// horizontal
 	n=vuy2-vuy1;
-	n/=VecLengthFuzzy(n);	//-VecNormalize(n);
+	n/=n.length_fuzzy();	//-normalize(n);
 	va=n*VecDotProduct(n,vuy1);
 	vb=n*VecDotProduct(n,vuy2);
 	fa=(va.x+va.y+va.z)/D;
@@ -746,7 +746,7 @@ void MultiView::DrawWin(int win, irect dest)
 		view[win].ang = - e_y * pi;
 	}else if (view[win].type == ViewBack){
 		view_kind = _("Hinten");
-		view[win].ang = v0;
+		view[win].ang = v_0;
 	}else if (view[win].type == ViewRight){
 		view_kind = _("Rechts");
 		view[win].ang = - e_y * pi / 2;
@@ -762,12 +762,12 @@ void MultiView::DrawWin(int win, irect dest)
 	}else if (view[win].type == ViewPerspective){
 		view_kind = _("Perspektive");
 		float _radius = ignore_radius ? 0 : radius;
-		MatrixTranslation(t, _radius * VecAng2Dir(ang) + vt);
+		MatrixTranslation(t, _radius * ang.ang2dir() + vt);
 		view[win].ang = ang;
 	}else if (view[win].type == ViewIsometric){
 		view_kind = _("Isometrisch");
 		float _radius = ignore_radius? 0 : radius;
-		MatrixTranslation(t, _radius * VecAng2Dir(ang) + vt);
+		MatrixTranslation(t, _radius * ang.ang2dir() + vt);
 		view[win].ang = ang;
 	}else if (view[win].type == View2D){
 		view_kind = _("2D");
@@ -799,7 +799,7 @@ void MultiView::DrawWin(int win, irect dest)
 	// draw multiview data
 	NixSetWire(false);
 	NixEnableLighting(false);
-	foreachi(data, d, di){
+	foreachi(MultiViewData &d, data, di){
 		if ((d.Drawable)||(d.Indexable)){
 			for (int i=0;i<d.Num;i++){
 
@@ -854,7 +854,7 @@ void MultiView::DrawWin(int win, irect dest)
 	ed->DrawStr(dest.x1 + 3, dest.y1, view_kind);
 	NixSetColor(ColorText);
 
-	foreach(message3d, m){
+	foreach(Message3d &m, message3d){
 		vector p = VecProject(m.pos, win);
 		if (p.z > 0)
 			ed->DrawStr(p.x, p.y, m.str);
@@ -872,7 +872,7 @@ void MultiView::OnDraw()
 	update_zoom;
 
 // light
-	vector dir=-VecAng2Dir(ang);
+	vector dir=-ang.ang2dir();
 	color am=color(1,0.3f,0.3f,0.3f);
 	color di=color(1,0.6f,0.6f,0.6f);
 	color sp=color(1,0.4f,0.4f,0.4f);
@@ -1113,8 +1113,8 @@ vector MultiView::GetDirection(int win)
 	else if (t==ViewBottom)
 		return vector(0,1,0);
 	else if ((t==ViewPerspective) || (t==ViewIsometric))
-		return VecAng2Dir(ang);
-	return v0;
+		return ang.ang2dir();
+	return v_0;
 }
 
 vector MultiView::GetDirectionUp(int win)
@@ -1135,8 +1135,8 @@ vector MultiView::GetDirectionUp(int win)
 	else if (t==ViewBottom)
 		return vector(0,0,1);
 	else if ((t==ViewPerspective) || (t==ViewIsometric))
-		return VecAng2Dir(VecAngAdd(vector(-pi/2,0,0), ang));
-	return v0;
+		return VecAngAdd(vector(-pi/2,0,0), ang).ang2dir();
+	return v_0;
 }
 
 vector MultiView::GetDirectionRight(int win)
@@ -1163,7 +1163,7 @@ void MultiView::SetMouseAction(int button, const string & name, int mode)
 
 void MultiView::SelectAll()
 {
-	foreach(data, d)
+	foreach(MultiViewData &d, data)
 		for (int i=0;i<d.Num;i++){
 			MultiViewSingleData* sd = MVGetSingleData(d, i);
 			if (sd->view_stage >= view_stage)
@@ -1174,7 +1174,7 @@ void MultiView::SelectAll()
 
 void MultiView::SelectNone()
 {
-	foreach(data, d)
+	foreach(MultiViewData &d, data)
 		for (int i=0;i<d.Num;i++){
 			MultiViewSingleData* sd = MVGetSingleData(d, i);
 			sd->is_selected = false;
@@ -1184,7 +1184,7 @@ void MultiView::SelectNone()
 
 void MultiView::InvertSelection()
 {
-	foreach(data, d)
+	foreach(MultiViewData &d, data)
 		for (int i=0;i<d.Num;i++){
 			MultiViewSingleData* sd = MVGetSingleData(d, i);
 			if (sd->view_stage >= view_stage)
@@ -1212,7 +1212,7 @@ void MultiView::GetMouseOver()
 		return;*/
 	float _radius=(float)PointRadiusMouseOver;
 	float z_min=1;
-	foreachi(data, d, di)
+	foreachi(MultiViewData &d, data, di)
 		if (d.MVSelectable)
 			for (int i=0;i<d.Num;i++){
 				MultiViewSingleData* sd=MVGetSingleData(d,i);
@@ -1262,7 +1262,7 @@ void MultiView::GetMouseOver()
 
 void MultiView::UnselectAll()
 {
-	foreach(data, d)
+	foreach(MultiViewData &d, data)
 		if (d.MVSelectable)
 			for (int i=0;i<d.Num;i++){
 				MultiViewSingleData* sd = MVGetSingleData(d,i);
@@ -1318,7 +1318,7 @@ void MultiView::SelectAllInRectangle(int mode)
 	irect r = irect(x1,x2,y1,y2);
 
 	// select
-	foreach(data, d)
+	foreach(MultiViewData &d, data)
 		if (d.MVSelectable)
 			for (int i=0;i<d.Num;i++){
 				MultiViewSingleData* sd=MVGetSingleData(d,i);
@@ -1377,10 +1377,11 @@ vector transform_ang(MultiView *mv, const vector &ang)
 	quaternion qmv, mqmv, qang, q;
 	QuaternionRotationV(qmv,  mv->view[mv->mouse_win].ang);
 	QuaternionRotationV(qang, ang);
-	QuaternionInverse(mqmv, qmv);
-	QuaternionMultiply(q, qang, mqmv);
-	QuaternionMultiply(q, qmv, q);
-	return QuaternionToAngle(q);
+	mqmv = qmv;
+	mqmv.inverse();
+	q = qang * mqmv;
+	q = qmv * q;
+	return q.get_angles();
 }
 
 void MultiView::MouseActionUpdate()
@@ -1406,7 +1407,7 @@ void MultiView::MouseActionUpdate()
 		else if (mode == ActionOnce)
 			mouse_action_param = GetDirectionRight(mouse_win);
 		else
-			mouse_action_param = v0;
+			mouse_action_param = v_0;
 		cur_action->set_param_and_notify(_data_, mouse_action_param);
 
 		Notify("ActionUpdate");

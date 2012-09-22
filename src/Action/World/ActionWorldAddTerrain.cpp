@@ -42,7 +42,7 @@ void ActionWorldAddTerrain::undo(Data *d)
 void *ActionWorldAddTerrain::execute(Data *d)
 {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
-	ModeWorldTerrain t;
+	WorldTerrain t;
 
 	t.Changed = true;
 	t.ShowTexture = -1;

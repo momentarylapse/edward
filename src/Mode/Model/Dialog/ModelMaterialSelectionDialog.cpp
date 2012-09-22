@@ -10,7 +10,7 @@
 #include "../Mesh/ModeModelMesh.h"
 
 string file_secure(const string &filename);
-string render_material(ModeModelMaterial *m);
+string render_material(ModelMaterial *m);
 
 ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data):
 	CHuiWindow("dummy", -1, -1, 320, 450, _parent, _allow_parent, HuiWinModeControls | HuiWinModeResizable, true)
@@ -38,8 +38,8 @@ void ModelMaterialSelectionDialog::FillMaterialList()
 	Reset("material_list");
 	for (int i=0;i<data->Material.num;i++){
 		int nt = 0;
-		foreach(data->Surface, s)
-			foreach(s.Triangle, t)
+		foreach(ModelSurface &s, data->Surface)
+			foreach(ModelTriangle &t, s.Triangle)
 			if (t.Material == i)
 				nt ++;
 		string im = render_material(&data->Material[i]);

@@ -32,7 +32,7 @@ void ActionModelSurfaceAddTriangle::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModeModelSurface &s = m->Surface[surface];
+	ModelSurface &s = m->Surface[surface];
 	s.RemoveTriangle(s.Triangle.num -1);
 	//s.Triangle.pop();
 	//s.BuildFromTriangles();
@@ -44,7 +44,7 @@ void *ActionModelSurfaceAddTriangle::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModeModelSurface &s = m->Surface[surface];
+	ModelSurface &s = m->Surface[surface];
 
 	// add triangle
 	s.AddTriangle(a, b, c, material, sv[0], sv[1], sv[2]);

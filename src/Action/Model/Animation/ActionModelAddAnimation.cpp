@@ -36,7 +36,7 @@ void *ActionModelAddAnimation::execute(Data *d)
 	m->Move[index].FramesPerSecFactor = 0;
 
 	// add animation data
-	ModeModelFrame f;
+	ModelFrame f;
 	if (type ==MoveTypeSkeletal){
 		f.SkelAng.resize(m->Bone.num);
 		f.SkelDPos.resize(m->Bone.num);

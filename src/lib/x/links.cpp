@@ -23,20 +23,6 @@ char *v2s(vector v);
 
 
 
-// needs |v| ~ 1
-inline vector get_orthogonal(const vector &v)
-{
-	vector t;
-	if (fabs(v.z) < 0.5f)
-		t = e_z;
-	else
-		t = e_x;
-	vector o = v ^ t; // v x t
-	_vec_normalize_(o);
-	return o;
-}
-
-
 //------------------------------------------------------------------------------
 // clusters
 
@@ -96,9 +82,9 @@ int AddLinkSpring(CObject *o1, CObject *o2, const vector &p1, const vector &p2, 
 	matrix im1, im2;
 	MatrixInverse(im1, o1->_matrix);
 	MatrixInverse(im2, o2->_matrix);
-	VecTransform(l->rho1, im1, p1);
-	VecTransform(l->rho2, im2, p2);
-	l->param_f1 = VecLength(p1 - p2) + dx0;
+	l->rho1 = im1 * p1;
+	l->rho2 = im2 * p2;
+	l->param_f1 = (p1 - p2).length() + dx0;
 	l->param_f2 = k;
 	msg_db_l(2);
 	return Link.num - 1;
@@ -113,10 +99,10 @@ int AddLinkBall(CObject *o1, CObject *o2, const vector &p)
 	matrix im1, im2;
 	MatrixInverse(im1, o1->_matrix);
 	MatrixInverse(im2, o2->_matrix);
-	VecTransform(l->rho1, im1, p);
-	VecTransform(l->rho2, im2, p);
+	l->rho1 = im1 * p;
+	l->rho2 = im2 * p;
 #ifdef USE_ODE
-	l->d4 = v0;
+	l->d4 = v_0;
 	l->joint_id = dJointCreateBall(world_id, 0);
 	dJointAttach(l->joint_id, o1->body_id, o2->body_id);
 	dJointSetBallAnchor(l->joint_id, p.x, p.y, p.z);
@@ -141,16 +127,16 @@ int AddLinkHinge(CObject *o1, CObject *o2, const vector &p, const vector &ax)
 	matrix im1, im2;
 	MatrixInverse(im1, o1->_matrix);
 	MatrixInverse(im2, o2->_matrix);
-	VecTransform(l->rho1, im1, p);
-	VecTransform(l->rho2, im2, p);
-	VecNormalTransform(l->d1, im1, ax);
-	VecNormalTransform(l->d2, im2, ax);
-	VecNormalize(l->d1);
-	VecNormalize(l->d2);
+	l->rho1 = im1 * p;
+	l->rho2 = im2 * p;
+	l->d1 = ax.transform_normal(im1);
+	l->d2 = ax.transform_normal(im2);
+	l->d1.normalize();
+	l->d2.normalize();
 	// create some vectors building an ONB with ax1
-	l->d3 = get_orthogonal(l->d1);
+	l->d3 = l->d1.ortho();
 	l->d4 = l->d1 ^ l->d3;
-	VecNormalize(l->d4);
+	l->d4.normalize();
 #ifdef USE_ODE
 	l->joint_id = dJointCreateHinge(world_id, 0);
 	dJointAttach(l->joint_id, o1->body_id, o2->body_id);
@@ -504,26 +490,26 @@ void AddLinkContact(CObject *o1, CObject *o2, const vector &cp, const vector &n,
 	matrix m1, m2, mi1, mi2;
 	MatrixRotation(m1, o1->ang);
 	MatrixTranspose(mi1, m1);
-	VecTransform(l->rho1, mi1, cp - o1->pos);
+	l->rho1 = mi1 * (cp - o1->pos);
 	MatrixRotation(m2, o2->ang);
 	MatrixTranspose(mi2, m2);
 	vector cp2 = cp - n * depth;
-	VecTransform(l->rho2, mi2, cp2 - o2->pos);
-	VecNormalTransform(l->d1, mi1, n);
+	l->rho2 = mi2 * (cp2 - o2->pos);
+	l->d1 = n.transform_normal(mi1);
 
 	l->dv = dv;
 	l->param_f1 = c_static;
 	l->param_f2 = c_dynamic;
-	l->d4 = v0;
+	l->d4 = v_0;
 
-	l->f_fric = v0;
+	l->f_fric = v_0;
 	msg_db_l(2);
 }
 
 static bool TestVectorSanity(vector &v, const char *name)
 {
 	if (inf_v(v)){
-		v=v0;
+		v=v_0;
 		msg_error(format("Vektor %s unendlich!!!!!!!",name));
 		return true;
 	}
@@ -537,7 +523,7 @@ static bool TestMatrix3Sanity(matrix3 &m, const char *name)
 		if (inf_f(m.e[k]))
 			e=true;
 	if (e){
-		//m=v0;
+		//m=v_0;
 		msg_error(format("Matrix3 %s unendlich!!!!!!!",name));
 		return true;
 	}
@@ -549,9 +535,9 @@ inline void DoLinkSpring(sLink *&l,CObject *&o1,CObject *&o2)
 {
 	// current coordinate frame
 	vector rho1,rho2,p1,p2;
-	VecNormalTransform(rho1, o1->_matrix, l->rho1);
+	rho1 = l->rho1.transform_normal(o1->_matrix);
 	if (o2)
-		VecNormalTransform(rho2, o2->_matrix, l->rho2);
+		rho2 = l->rho2.transform_normal(o2->_matrix);
 	else
 		rho2 = l->rho2;
 	p1 = o1->pos + rho1;
@@ -561,7 +547,7 @@ inline void DoLinkSpring(sLink *&l,CObject *&o1,CObject *&o2)
 		p2 = l->p;
 
 	// evaluate forces		( = ( dist - dist_0 ) * k )
-	float x=VecLength(p2-p1);
+	float x=(p2-p1).length();
 	vector dir;
 	if (x==0)
 		dir=e_x;
@@ -583,10 +569,10 @@ inline void DoLinkBall(sLink *&l,CObject *&o1,CObject *&o2,int nc)
 {
 	// some values
 	vector r1,r2,dtr1,dtr2;
-	VecNormalTransform( r1, o1->_matrix, l->rho1 );
+	r1 = l->rho1.transform_normal(o1->_matrix);
 	dtr1 = VecCrossProduct( o1->rot, r1 );
 	if (o2){
-		VecNormalTransform( r2, o2->_matrix, l->rho2 );
+		r2 = l->rho2.transform_normal(o2->_matrix);
 		dtr2 = VecCrossProduct( o2->rot, r2 );
 	}
 
@@ -645,22 +631,22 @@ inline void DoLinkHinge(sLink *&l,CObject *&o1,CObject *&o2,int nc)
 {
 	// some values
 	vector r1,r2,dtr1,dtr2,d1,d2,d3,d4,dtd1,dtd2,dtd3,dtd4;
-	VecNormalTransform( r1, o1->_matrix, l->rho1 );
+	r1 = l->rho1.transform_normal(o1->_matrix);
 	dtr1 = VecCrossProduct( o1->rot, r1 );
-	VecNormalTransform( d1, o1->_matrix, l->d1 );
+	d1 = l->d1.transform_normal(o1->_matrix);
 	dtd1 = VecCrossProduct( o1->rot, d1 );
 	if (o2){
-		VecNormalTransform( r2, o2->_matrix, l->rho2 );
+		r2 = o2->_matrix.transform_normal(l->rho2);
 		dtr2 = VecCrossProduct( o2->rot, r2 );
-		VecNormalTransform( d2, o2->_matrix, l->d2 );
+		d2 = o2->_matrix.transform_normal(l->d2);
 		dtd2 = VecCrossProduct( o2->rot, d2 );
 	}else{
 		d2=l->d2;
-		dtd2=v0;
+		dtd2=v_0;
 	}
-	VecNormalTransform( d3, o1->_matrix, l->d3 );
+	d3 = o1->_matrix.transform_normal(l->d3);
 	dtd3 = VecCrossProduct( o1->rot, d3 );
-	VecNormalTransform( d4, o1->_matrix, l->d4 );
+	d4 = o1->_matrix.transform_normal(l->d4);
 	dtd4 = VecCrossProduct( o1->rot, d4 );
 	float d32=VecDotProduct(d3,d2);
 	float d42=VecDotProduct(d4,d2);
@@ -738,24 +724,24 @@ inline void DoLinkStatic(sLink *&l,CObject *&o1,CObject *&o2,int nc)
 {
 	// some values
 	vector r1,r2,dtr1,dtr2,d1,d2,d3,d4,dtd1,dtd2,dtd3,dtd4;
-	VecNormalTransform( r1, o1->_matrix, l->rho1 );
+	r1 = o1->_matrix.transform_normal(l->rho1);
 	dtr1 = VecCrossProduct( o1->rot, r1 );
-	VecNormalTransform( d1, o1->_matrix, l->d1 );
+	d1 = o1->_matrix.transform_normal(l->d1);
 	dtd1 = VecCrossProduct( o1->rot, d1 );
-	VecNormalTransform( d3, o1->_matrix, l->d3 );
+	d3 = o1->_matrix.transform_normal(l->d3);
 	dtd3 = VecCrossProduct( o1->rot, d3 );
 	if (o2){
-		VecNormalTransform( r2, o2->_matrix, l->rho2 );
+		r2 = o2->_matrix.transform_normal(l->rho2);
 		dtr2 = VecCrossProduct( o2->rot, r2 );
-		VecNormalTransform( d2, o2->_matrix, l->d2 );
+		d2 = o2->_matrix.transform_normal(l->d2);
 		dtd2 = VecCrossProduct( o2->rot, d2 );
-		VecNormalTransform( d4, o2->_matrix, l->d4 );
+		d4 = o2->_matrix.transform_normal(l->d4);
 		dtd4 = VecCrossProduct( o2->rot, d4 );
 	}else{
 		d2=l->d2;
-		dtd2=v0;
+		dtd2=v_0;
 		d4=l->d4;
-		dtd4=v0;
+		dtd4=v_0;
 	}
 	float d14=VecDotProduct(d1,d4);
 	float d34=VecDotProduct(d3,d4);
@@ -819,17 +805,17 @@ inline void DoLinkContact(sLink *&l,CObject *&o1,CObject *&o2,int &nc, matrix_n 
 	vector n,dtn,r1,r2,dtr1,dtr2;
 	/*msg_write(v2s(l->d1));
 	msg_write(v2s(n));*/
-	VecNormalTransform( n, o1->_matrix, l->d1 );
+	n = o1->_matrix.transform_normal(l->d1);
 	l->n = n;
 	dtn = VecCrossProduct( o1->rot, n );
-	VecNormalTransform( r1, o1->_matrix, l->rho1 );
+	r1 = o1->_matrix.transform_normal(l->rho1);
 	dtr1 = VecCrossProduct( o1->rot, r1 );
 	if (o2){
-		VecNormalTransform( r2, o2->_matrix, l->rho2 );
+		r2 = o2->_matrix.transform_normal(l->rho2);
 		dtr2 = VecCrossProduct( o2->rot, r2 );
 	}else{
 		r2 = l->rho2;
-		dtr2 = v0;
+		dtr2 = v_0;
 	}
 	vector nxr1=VecCrossProduct(n,r1);
 	vector nxr2=VecCrossProduct(n,r2);
@@ -1254,7 +1240,7 @@ void DoLinks(int steps)
 
 	// reset link forces
 	for (int i=0;i<Link.num;i++)
-		Link[i].sf1 = Link[i].st1 = Link[i].sf2 = Link[i].st2 = v0;
+		Link[i].sf1 = Link[i].st1 = Link[i].sf2 = Link[i].st2 = v_0;
 
 	printf("%d links\n", Link.num);
 	
@@ -1340,7 +1326,7 @@ void LinkCalcContactFriction()
 				if (_vec_length_fuzzy_(dv_tang) > 0.01f){
 					float x = 1.0f/((1.0f/o1->mass) + (o2->active_physics?(1.0f/o2->mass):0)) /*/ Elapsed * 0.001f*/ * 0.01f;
 					l->f_fric = - dv_tang * x + l->n * (f * l->n) - f;
-					printf("dv... %f  %f", x, VecLength(dv_tang * x));
+					printf("dv... %f  %f", x, dv_tang.length() * x);
 				}else{
 					l->f_fric = l->n * (f * l->n) - f;
 				}
@@ -1358,8 +1344,8 @@ void LinkCalcContactFriction()
 			CObject *o1 = l->o1;
 			CObject *o2 = l->o2;
 			vector r1, r2;
-			VecNormalTransform( r1, o1->_matrix, l->rho1 );
-			VecNormalTransform( r2, o2->_matrix, l->rho2 );
+			r1 = o1->_matrix.transform_normal(l->rho1);
+			r2 = o2->_matrix.transform_normal(l->rho2);
 			//l->f_fric *= 10;
 			o1->force_int += l->f_fric;
 			o1->torque_int += r1 ^ l->f_fric;

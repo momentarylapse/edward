@@ -334,7 +334,7 @@ inline void _add_col_(CollisionData &col, float depth, const vector &n, const ve
 		msg_write(msg_get_trace());
 		return;
 	}
-	if (n==v0){
+	if (n==v_0){
 		msg_write("ignoring collision (normal=0)");
 		msg_write(msg_get_trace());
 		return;
@@ -463,7 +463,7 @@ inline bool GetCollisionBallBall(	PhysicalSkinAbsolute *o_abs,Ball *bo,
 	float depth=d_opt-d_act;
 	if (depth>0){
 		col.depth[col.num] = depth;
-		vector n=v0;
+		vector n=v_0;
 		if (d_act>=0.00000001f)
 			n=dp/d_act;
 
@@ -524,7 +524,7 @@ inline bool GetCollisionBallPoly(	Ball *bo, PhysicalSkinAbsolute *o_abs,
 			// collision point on ball
 			//vector cp_b=ball_p - ball_r*_get_normal_(plp[k]);
 			// collision point on plane
-			vector cp_p=ball_p - pl_dist[k]*_get_normal_(plp[k]);
+			vector cp_p=ball_p - pl_dist[k] * plp[k].n;
 			// point within polygon?
 			// ...cut into triangles
 			for (int i=0;i<pp->face[k].num_vertices-2;i++){
@@ -540,7 +540,7 @@ inline bool GetCollisionBallPoly(	Ball *bo, PhysicalSkinAbsolute *o_abs,
 		}
 	}
 	if (inside){
-		vector n=-_get_normal_(plp[nearest]);
+		vector n = - plp[nearest].n;
 		set_col_type("ball poly 1");
 		_add_col_(col,depth,n, ball_p+ball_r*n);
 		if (inf_v(n))
@@ -673,7 +673,7 @@ inline void process_poly_dat_vv_fe(	Array<s_col_poly_data> &vv, Array<s_col_poly
 		for (int j=fe.num-1;j>=0;j--)
 			if (poly_vert_on_edge(pp, vv[i].vert, fe[j].edge)){
 				int face = fe[j].face;
-				vector n = _get_normal_(plo[face]);
+				//vector n = plo[face].n;
 				float d = fabs(_plane_distance_(plo[face], vv[i].cp));
 				if (d < dmin){
 					dmin = d;
@@ -686,7 +686,7 @@ inline void process_poly_dat_vv_fe(	Array<s_col_poly_data> &vv, Array<s_col_poly
 			int edge = fe[jmin].edge;
 
 			// add collision
-			vector n = _get_normal_(plo[face]);
+			vector n = plo[face].n;
 			//printf("kante  %d %d  (me: %d)\n", vv[i].vert, fe[jmin].edge, po->num_faces);
 			float dmin = fabs(_plane_distance_(plo[face], vv[i].cp));
 			if (dmin > 0)
@@ -874,7 +874,7 @@ inline bool GetCollisionPolyPoly(	ConvexPolyhedron *po,vector *vo,plane *plo,
 	// garbage
 	for (int i=0;i<4;i++)
 		for (int j=0;j<cut[i].num;j++)
-			_add_col_(col, 0.001f, v0, cut[i][j].cp);
+			_add_col_(col, 0.001f, v_0, cut[i][j].cp);
 #endif
 
 
@@ -992,13 +992,12 @@ inline bool GetCollisionBallHull(Ball *bo,vector *vo,TriangleHull *hull,Collisio
 			continue;
 
 		// where do we touch?
-		vector n=-_get_normal_(pl);
-		vector cp=ball_p+d*n;
+		vector cp=ball_p-d*pl.n;
 		float f,g;
 		_get_bary_centric_(cp,pl,a,b,c,f,g);
 		if ((f>0)&&(g>0)&&(f+g<1)){
 			set_col_type("ball hull");
-			_add_col_(col,r-d,n,cp);
+			_add_col_(col,r-d,-pl.n,cp);
 			hit|=true;
 		}
 	}
@@ -1243,7 +1242,7 @@ inline void _do_bad_ending_(vector &e1,vector &e2,vector &e_dir,vector &cp,plane
 		HuiRaiseError("c inf... bad ending");
 	// the direct way (along the edge e1,e2)
 	float depth=-_plane_distance_(pl,e1);//(cp-e1)*e_dir;
-	vector n=-_get_normal_(pl);
+	vector n=-pl.n;
 	//vector p=e1;
 	//vector pp=cp;
 	vector p=e1-depth*n;
@@ -1527,7 +1526,7 @@ inline void process_hull_dat(	Array<s_col_poly_data> &ef, Array<s_col_poly_data>
 					n = - n;
 					d = - d;
 				}
-				if (n * _get_normal_(hull->pl[f1]) > 0)
+				if (n * hull->pl[f1].n > 0)
 					continue;
 				
 				_add_col_(col, d, n, (ef[i].cp + ef[other_cut].cp) * 0.5f);
@@ -1545,7 +1544,7 @@ inline void process_hull_dat(	Array<s_col_poly_data> &ef, Array<s_col_poly_data>
 		// distance to poly-edge end point?
 		vector e0 = vo[po->edge_index[edge * 2]];
 		vector e1 = vo[po->edge_index[edge * 2 + 1]];
-		vector edge_n = - _get_normal_(hull->pl[ef[i].face]);
+		vector edge_n = - hull->pl[ef[i].face].n;
 		float d0 = - _plane_distance_(hull->pl[ef[i].face], e0);
 		float d1 = - _plane_distance_(hull->pl[ef[i].face], e1);
 //		printf("fe  %f  %f\n", d0, d1);
@@ -1654,7 +1653,7 @@ inline bool GetCollisionPolyHull(ConvexPolyhedron *po,vector *vo,plane *plo,
 	// garbage
 	for (int i=0;i<4;i++)
 		for (int j=0;j<cut[i].num;j++)
-			_add_col_(col, 0.001f, v0, cut[i][j].cp);
+			_add_col_(col, 0.001f, v_0, cut[i][j].cp);
 #endif
 	
 
@@ -1792,7 +1791,7 @@ bool CollideObjects(CObject *o1, CObject *o2)
 		msg_db_m(o2->name.c_str(), 4);
 
 		// too far away?
-		if (!VecBoundingBox(o1->pos, o2->pos, o1->radius + o1->radius)){
+		if (!o1->pos.bounding_cube(o2->pos, o1->radius + o1->radius)){
 			msg_db_l(3);
 			return 0;
 		}
@@ -1825,7 +1824,7 @@ bool CollideObjects(CObject *o1, CObject *o2)
 	if ((ActivePhysics)||(PassivePhysics)){
 
 		// zu weit von einander entfernt?
-		vector mp=v0;
+		vector mp=v_0;
 		VecTransform(mp,*mat,mp);
 		float d=Radius+partner->Diameter;
 		if (!VecBoundingBox(Pos,mp,d))

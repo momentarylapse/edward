@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#ifdef FILE_OS_WINDOWS
+#ifdef OS_WINDOWS
 	#include <stdio.h>
 	#include <io.h>
 	#include <direct.h>
@@ -37,7 +37,7 @@
 	#include <winbase.h>
 	#include <winnt.h>
 #endif
-#ifdef FILE_OS_LINUX
+#ifdef OS_LINUX
 	#include <unistd.h>
 	#include <dirent.h>
 	#include <stdarg.h>
@@ -63,7 +63,7 @@
 bool SilentFiles = false;
 
 
-#ifdef FILE_OS_WINDOWS
+#ifdef OS_WINDOWS
 Date systime2date(_SYSTEMTIME t)
 {
 	Date d;
@@ -99,12 +99,12 @@ Date time2date(time_t t)
 
 Date get_current_date()
 {
-#ifdef FILE_OS_WINDOWS
+#ifdef OS_WINDOWS
 	_SYSTEMTIME t;
 	GetLocalTime(&t);
 	return systime2date(t);
 #endif
-#ifdef FILE_OS_LINUX
+#ifdef OS_LINUX
 	time_t t;
 	t = time(NULL);
 	Date d;
@@ -178,7 +178,7 @@ void file_set_archive(const string &filename)
 	a_num_files=a_f->ReadInt();
 	a_file=new s_a_file[a_num_files];
 	for (int i=0;i<a_num_dirs;i++){
-		a_dir[i].name = SysFileName(a_f->ReadStr());
+		a_dir[i].name = a_f->ReadStr().sys_filename();
 		a_dir[i].first_file=a_f->ReadInt();
 		a_dir[i].num_files=a_f->ReadInt();
 		for (int j=a_dir[i].first_file;j<a_dir[i].first_file+a_dir[i].num_files;j++)
@@ -224,7 +224,7 @@ static void read_tree(const char *in_buffer,int &pos,int i)
 void add_created_dir(const string &dir)
 {
 	for (int i=0;i<a_num_created_dirs;i++)
-		if (a_created_dir[i] == SysFileName(dir))
+		if (a_created_dir[i] == dir.sys_filename())
 			return;
 	a_created_dir[a_num_created_dirs++] = SysFileName(dir);
 }
@@ -437,12 +437,12 @@ void FileWrite(const string &filename, const string &str)
 bool CFile::Open(const string &filename)
 {
 	if (!SilentFileAccess){
-		msg_write("loading file: " + SysFileName(filename));
+		msg_write("loading file: " + filename.sys_filename());
 		msg_right();
 	}
 	Error=Eof=false;
 	Reading = true;
-	handle=_open(SysFileName(filename).c_str(),O_RDONLY);
+	handle=_open(filename.sys_filename().c_str(),O_RDONLY);
 	if (handle<=0){
 		/*if (file_get_from_archive(filename)){
 			handle=_open(SysFileName(filename).c_str(),O_RDONLY);
@@ -450,7 +450,7 @@ bool CFile::Open(const string &filename)
 			return true;
 		}else*/ if (FileTryAgainFunc){
 			if (FileTryAgainFunc(filename)){
-				handle=_open(SysFileName(filename).c_str(),O_RDONLY);
+				handle=_open(filename.sys_filename().c_str(),O_RDONLY);
 				SetBinaryMode(false);
 				return true;
 			}
@@ -474,17 +474,17 @@ bool CFile::Open(const string &filename)
 bool CFile::Create(const string &filename)
 {
 	if (!SilentFileAccess){
-		msg_write("creating file: " + SysFileName(filename));
+		msg_write("creating file: " + filename.sys_filename());
 		msg_right();
 	}
 	Error=false;
 	Reading = false;
 	FloatDecimals=3;
-#ifdef FILE_OS_WINDOWS
-	handle=_creat(SysFileName(filename).c_str(),_S_IREAD | _S_IWRITE);
+#ifdef OS_WINDOWS
+	handle=_creat(filename.sys_filename().c_str(),_S_IREAD | _S_IWRITE);
 #endif
-#ifdef FILE_OS_LINUX
-	handle=creat(SysFileName(filename).c_str(),S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+#ifdef OS_LINUX
+	handle=creat(filename.sys_filename().c_str(),S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 #endif
 	if (handle<=0){
 		Error=ErrorReported=true;
@@ -504,17 +504,17 @@ bool CFile::Create(const string &filename)
 bool CFile::Append(const string &filename)
 {
 	if (!SilentFileAccess){
-		msg_write("appending file: " + SysFileName(filename));
+		msg_write("appending file: " + filename.sys_filename());
 		msg_right();
 	}
 	Error=false;
 	Reading = false;
 	FloatDecimals=3;
-#ifdef FILE_OS_WINDOWS
-	handle=_open(SysFileName(filename).c_str(),O_WRONLY | O_APPEND | O_CREAT,_S_IREAD | _S_IWRITE);
+#ifdef OS_WINDOWS
+	handle=_open(filename.sys_filename().c_str(),O_WRONLY | O_APPEND | O_CREAT,_S_IREAD | _S_IWRITE);
 #endif
-#ifdef FILE_OS_LINUX
-	handle=open(SysFileName(filename).c_str(),O_WRONLY | O_APPEND | O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+#ifdef OS_LINUX
+	handle=open(filename.sys_filename().c_str(),O_WRONLY | O_APPEND | O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 #endif
 	if (handle<=0){
 		Error=ErrorReported=true;
@@ -559,7 +559,7 @@ void CFile::SetBinaryMode(bool binary)
 	if (Error)		return;
 	if (handle<0)	return;
 	Binary=binary;
-#ifdef FILE_OS_WINDOWS
+#ifdef OS_WINDOWS
 	if (binary)
 		_setmode(handle,_O_BINARY);
 	else
@@ -579,10 +579,10 @@ void CFile::SetPos(int pos,bool absolute)
 // retrieve the size of the opened(!) file
 int CFile::GetSize()
 {
-#ifdef FILE_OS_WINDOWS
+#ifdef OS_WINDOWS
 	return (int)_filelength(handle);
 #endif
-#ifdef FILE_OS_LINUX
+#ifdef OS_LINUX
 	struct stat _stat;
 	fstat(handle, &_stat);
 	return _stat.st_size;
@@ -662,7 +662,7 @@ string CFile::ReadComplete()
 			return "";
 		}
 		int n0 = buf.num;
-#ifdef FILE_OS_WINDOWS
+#ifdef OS_WINDOWS
 		buf.resize(buf.num + t_len);
 		memcpy(&((char*)buf.data)[n0], chunk, t_len);
 #else
@@ -687,7 +687,7 @@ int CFile::ReadBuffer(void *buffer,int size)
 	size=0;
 	while(t_len==chunk_size){
 		t_len=read(handle,chunk,chunk_size);
-#ifdef FILE_OS_WINDOWS
+#ifdef OS_WINDOWS
 		memcpy(&buffer[size],chunk,t_len);
 		size+=t_len;
 #else
@@ -917,7 +917,7 @@ string _cdecl CFile::ReadStr()
 				return "";
 			}
 			
-			#ifdef FILE_OS_LINUX
+			#ifdef OS_LINUX
 				// windows read-function does this on its own... (O_O)
 				if (tttt[0]=='\r')
 					continue;
@@ -946,7 +946,7 @@ string CFile::ReadStrNT()
 			Eof=true;
 			return "";
 		}
-		#ifdef FILE_OS_LINUX
+		#ifdef OS_LINUX
 			if (a=='\r')
 				continue;
 		#endif

@@ -13,8 +13,8 @@
 
 ActionModelDeleteSelection::ActionModelDeleteSelection(DataModel *m, bool greedy)
 {
-	foreachbi(m->Surface, s, si){
-		foreachbi(s.Triangle, t, ti){
+	foreachib(ModelSurface &s, m->Surface, si){
+		foreachib(ModelTriangle &t, s.Triangle, ti){
 			bool del = false;
 			if (greedy){
 				for (int k=0;k<3;k++)
@@ -24,16 +24,20 @@ ActionModelDeleteSelection::ActionModelDeleteSelection(DataModel *m, bool greedy
 			}
 			if (del)
 				AddSubAction(new ActionModelSurfaceDeleteTriangle(si, ti), m);
+			_foreach_it_.update(); // TODO
 		}
 
 		if (s.Triangle.num == 0)
 			AddSubAction(new ActionModelDeleteEmptySurface(si), m);
+		_foreach_it_.update(); // TODO
 	}
 
-	foreachbi(m->Vertex, v, i)
+	foreachib(ModelVertex &v, m->Vertex, i)
 		if (v.is_selected)
-			if (v.RefCount == 0)
+			if (v.RefCount == 0){
 				AddSubAction(new ActionModelDeleteUnusedVertex(i), m);
+				_foreach_it_.update(); // TODO
+			}
 }
 
 ActionModelDeleteSelection::~ActionModelDeleteSelection()

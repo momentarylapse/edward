@@ -33,7 +33,7 @@ public:
 ActionModelSurfaceSubtract::ActionModelSurfaceSubtract(DataModel *m)
 {
 	int n = 0;
-	foreach(m->Surface, s)
+	foreach(ModelSurface &s, m->Surface)
 		if ((s.is_selected) && (s.IsClosed))
 			n ++;
 	if (n == 0){
@@ -42,11 +42,11 @@ ActionModelSurfaceSubtract::ActionModelSurfaceSubtract(DataModel *m)
 	}
 
 	msg_db_r("Subtract", 1);
-	foreachb(m->Surface, b){
-		ModeModelSurface *bb = &b;
+	foreachb(ModelSurface &b, m->Surface){
+		ModelSurface *bb = &b;
 		if (bb->is_selected){
-			foreachb(m->Surface, a){
-				ModeModelSurface *aa = &a;
+			foreachb(ModelSurface &a, m->Surface){
+				ModelSurface *aa = &a;
 				if ((aa->view_stage >= m->ViewStage) && (!aa->is_selected))
 					SurfaceSubtract(m, aa, bb);
 			}
@@ -61,7 +61,7 @@ ActionModelSurfaceSubtract::~ActionModelSurfaceSubtract()
 }
 
 
-bool ActionModelSurfaceSubtract::CollideTriangles(DataModel *m, ModeModelTriangle *t1, ModeModelTriangle *t2, int t2_index)
+bool ActionModelSurfaceSubtract::CollideTriangles(DataModel *m, ModelTriangle *t1, ModelTriangle *t2, int t2_index)
 {
 	msg_db_r("CollideTriangles", 1);
 	vector v1[3], v2[3];
@@ -76,7 +76,7 @@ bool ActionModelSurfaceSubtract::CollideTriangles(DataModel *m, ModeModelTriangl
 
 
 	// all vertices of t2 on the same side of pl1?
-	if ((PlaneDistance(pl1, v2[0]) * PlaneDistance(pl1, v2[1]) > 0) && (PlaneDistance(pl1, v2[0]) * PlaneDistance(pl1, v2[2]) > 0)){
+	if ((pl1.distance(v2[0]) * pl1.distance(v2[1]) > 0) && (pl1.distance(v2[0]) * pl1.distance(v2[2]) > 0)){
 		msg_db_l(1);
 		return false;
 	}
@@ -86,7 +86,7 @@ bool ActionModelSurfaceSubtract::CollideTriangles(DataModel *m, ModeModelTriangl
 		vector col;
 		if (!LineIntersectsTriangle2(pl1, v1[0], v1[1], v1[2], v2[k], v2[(k+1) % 3], col, false))
 			continue;
-		if (!VecBetween(col, v2[k], v2[(k+1) % 3]))
+		if (!col.between(v2[k], v2[(k+1) % 3]))
 			continue;
 		t_col.add(sCol(col, false, t2_index, k));
 		bcol = true;
@@ -98,7 +98,7 @@ bool ActionModelSurfaceSubtract::CollideTriangles(DataModel *m, ModeModelTriangl
 		vector col;
 		if (!LineIntersectsTriangle2(pl2, v2[0], v2[1], v2[2], v1[k], v1[(k+1) % 3], col, false))
 			continue;
-		if (!VecBetween(col, v1[k], v1[(k+1) % 3]))
+		if (!col.between(v1[k], v1[(k+1) % 3]))
 			continue;
 		t_col.add(sCol(col, true, t2_index, k));
 		bcol = true;
@@ -108,11 +108,11 @@ bool ActionModelSurfaceSubtract::CollideTriangles(DataModel *m, ModeModelTriangl
 	return bcol;
 }
 
-bool ActionModelSurfaceSubtract::CollideTriangleSurface(DataModel *m, ModeModelTriangle *t, ModeModelSurface *s)
+bool ActionModelSurfaceSubtract::CollideTriangleSurface(DataModel *m, ModelTriangle *t, ModelSurface *s)
 {
 	msg_db_r("CollideTriangleSurface", 1);
 	t_col.clear();
-	foreachi(s->Triangle, t2, i)
+	foreachi(ModelTriangle &t2, s->Triangle, i)
 		CollideTriangles(m, t, &t2, i);
 			//return true;
 	msg_db_l(1);
@@ -120,7 +120,7 @@ bool ActionModelSurfaceSubtract::CollideTriangleSurface(DataModel *m, ModeModelT
 }
 
 // t must not collide with s...
-bool ActionModelSurfaceSubtract::TriangleInsideSurface(DataModel *m, ModeModelTriangle *t, ModeModelSurface *s)
+bool ActionModelSurfaceSubtract::TriangleInsideSurface(DataModel *m, ModelTriangle *t, ModelSurface *s)
 {
 	msg_db_r("TriangleInsideSurface", 2);
 	vector p = m->Vertex[t->Vertex[0]].pos;
@@ -128,7 +128,7 @@ bool ActionModelSurfaceSubtract::TriangleInsideSurface(DataModel *m, ModeModelTr
 
 	// how many times does a ray starting at p hit s?
 	int n = 0;
-	foreach(s->Triangle, t2){
+	foreach(ModelTriangle &t2, s->Triangle){
 		vector v[3];
 		for (int k=0;k<3;k++)
 			v[k] = m->Vertex[t2.Vertex[k]].pos;
@@ -144,7 +144,7 @@ bool ActionModelSurfaceSubtract::TriangleInsideSurface(DataModel *m, ModeModelTr
 	return (n % 2) == 1;
 }
 
-bool ActionModelSurfaceSubtract::sort_t_col(ModeModelSurface *s, Array<sCol> &c2)
+bool ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 {
 	msg_db_r("sort_t_col", 2);
 //	msg_write(format("sort %d   %d", t_col.num, c2.num));
@@ -152,11 +152,12 @@ bool ActionModelSurfaceSubtract::sort_t_col(ModeModelSurface *s, Array<sCol> &c2
 //		msg_write(format("%d  %d  %d - %d", (int)cc->own_edge, cc->index, cc->k, s->Triangle[cc->index].EdgeIndex[cc->k]));
 
 	// find first
-	foreachi(t_col, c, i)
+	foreachi(sCol &c, t_col, i)
 		if (c.own_edge){
 //			msg_write(c.index);
 			c2.add(c);
 			t_col.erase(i);
+			_foreach_it_.update(); // TODO badness 10000!!!!!!!!!
 			break;
 		}
 	if (c2.num != 1){
@@ -170,11 +171,12 @@ bool ActionModelSurfaceSubtract::sort_t_col(ModeModelSurface *s, Array<sCol> &c2
 //		msg_write(".");
 		// find col on same s.tria as the last col
 		bool found = false;
-		foreachi(t_col, c, i)
+		foreachi(sCol &c, t_col, i)
 			if (c.index == c2.back().index){
 //				msg_write(format("%d  %d  %d - %d", (int)c->own_edge, c->index, c->k, s->Triangle[c->index].Edge[c->k]));
 				c2.add(c);
 				t_col.erase(i);
+				_foreach_it_.update(); // TODO
 				found = true;
 			}
 		if (!found){
@@ -187,12 +189,13 @@ bool ActionModelSurfaceSubtract::sort_t_col(ModeModelSurface *s, Array<sCol> &c2
 		found = false;
 
 		// find col on same s.edge as the last col
-		foreachi(t_col, c, i)
+		foreachi(sCol &c, t_col, i)
 			if (!c.own_edge)
 			if (s->Triangle[c.index].Edge[c.k] == s->Triangle[c2.back().index].Edge[c2.back().k]){
 //				msg_write(format("%d  %d  %d - %d", (int)c.own_edge, c.index, c.k, s->Triangle[c.index].Edge[c.k]));
 				c2.add(c);
 				t_col.erase(i);
+				_foreach_it_.update(); // TODO
 				found = true;
 			}
 		if (!found){
@@ -212,7 +215,7 @@ bool ActionModelSurfaceSubtract::sort_t_col(ModeModelSurface *s, Array<sCol> &c2
 	return true;
 }
 
-void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModeModelTriangle *t, ModeModelSurface *b, Array<Array<sCol> > &c, bool inverse)
+void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelTriangle *t, ModelSurface *b, Array<Array<sCol> > &c, bool inverse)
 {
 	msg_db_r("sort_and_join_contours", 1);
 	vector v[3];
@@ -243,7 +246,7 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModeModelT
 //		msg_write(format("- cont %d / %d    %d - %d", l, c.num, c[l][0].k, c[l].back().k));
 		int kb = c[l].back().k;
 
-		float f_min = VecLength(c[l].back().p - v[kb]) / VecLength(v[(kb + 1) % 3] - v[kb]);
+		float f_min = (c[l].back().p - v[kb]).length() / (v[(kb + 1) % 3] - v[kb]).length();
 //		msg_write(f2s(f_min, 3));
 
 		for (int kk=kb;kk<kb + 4;kk++){
@@ -266,7 +269,7 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModeModelT
 					if (c[ll][0].k != k)
 						continue;
 
-					float f = VecLength(c[ll][0].p - v[k]) / VecLength(v[k2] - v[k]);
+					float f = (c[ll][0].p - v[k]).length() / (v[k2] - v[k]).length();
 					if ((f > f_min) && (f < f_max)){
 						l_next = ll;
 						f_max = f;
@@ -285,7 +288,7 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModeModelT
 						// merge with next contour
 //						msg_write(c[l_next].back().k);
 						int k_next = c[l_next].back().k;
-						f_min = VecLength(c[l_next].back().p - v[k_next]) / VecLength(v[(k_next + 1) % 3] - v[k_next]);
+						f_min = (c[l_next].back().p - v[k_next]).length() / (v[(k_next + 1) % 3] - v[k_next]).length();
 						c[l].append(c[l_next]);
 						c.erase(l_next);
 
@@ -312,7 +315,7 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModeModelT
 	msg_db_l(1);
 }
 
-void ActionModelSurfaceSubtract::TriangleSubtract(DataModel *m, ModeModelSurface *&a, ModeModelTriangle *t, ModeModelSurface *&b, bool inverse)
+void ActionModelSurfaceSubtract::TriangleSubtract(DataModel *m, ModelSurface *&a, ModelTriangle *t, ModelSurface *&b, bool inverse)
 {
 	msg_db_r("TriangleSubtract", 1);
 	a->TestSanity("tria sub a prae");
@@ -365,7 +368,7 @@ void ActionModelSurfaceSubtract::TriangleSubtract(DataModel *m, ModeModelSurface
 	msg_db_l(1);
 }
 
-void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModeModelSurface *& a, ModeModelSurface *& b, bool inverse)
+void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModelSurface *& a, ModelSurface *& b, bool inverse)
 {
 	msg_db_r("SurfSubtractUnary", 0);
 	a->TestSanity("surf sub a prae");
@@ -376,7 +379,7 @@ void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModeModelSur
 
 	// collide both surfaces and create additional triangles (as new surfaces...)
 	Set<int> to_del;
-	foreachbi(a->Triangle, t, i)
+	foreachib(ModelTriangle &t, a->Triangle, i)
 		if (CollideTriangleSurface(m, &t, b)){
 			a->TestSanity("tria sub (ext) a prae");
 			TriangleSubtract(m, a, &t, b, inverse);
@@ -389,7 +392,7 @@ void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModeModelSur
 	b->TestSanity("surf sub b med");
 
 	// remove obsolete triangles
-	foreachb(to_del, p)
+	foreachb(int p, to_del)
 		AddSubAction(new ActionModelSurfaceDeleteTriangle(ai, p), m);
 	a->TestSanity("tria sub a med");
 
@@ -409,18 +412,18 @@ void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModeModelSur
 }
 
 
-void ActionModelSurfaceSubtract::SurfaceSubtract(DataModel *m, ModeModelSurface *&a, ModeModelSurface *&b)
+void ActionModelSurfaceSubtract::SurfaceSubtract(DataModel *m, ModelSurface *&a, ModelSurface *&b)
 {
 	msg_db_r("SurfSubtract", 0);
 
 	int ai = m->get_surf_no(a);
 	int bi = m->get_surf_no(b);
 	bool closed = a->IsClosed;
-	ModeModelSurface *c;
+	ModelSurface *c;
 	int ci;
 
 	if (closed){
-		c = (ModeModelSurface*)AddSubAction(new ActionModelSurfaceCopy(m, b), m);
+		c = (ModelSurface*)AddSubAction(new ActionModelSurfaceCopy(m, b), m);
 		ci = m->get_surf_no(c);
 		a = &m->Surface[ai];
 		SurfaceSubtractUnary(m, c, a, true);

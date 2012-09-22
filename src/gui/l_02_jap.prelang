@@ -1120,7 +1120,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-167
+168
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1201,6 +1201,8 @@ Es existiert bereits eine Animation mit diesem Index. Bitte einen anderen wähle
 Es muss genau 1 Knochen markiert sein!
 
 Es muss genau ein Objekt markiert sein!
+
+Es muss genau eine Datei markiert sein!
 
 Es muss mindestens ein Terrain markiert sein!
 

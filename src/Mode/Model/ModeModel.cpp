@@ -40,7 +40,7 @@ ModeModel::~ModeModel()
 
 void ModeModel::OnStart()
 {
-	string dir = HuiAppDirectoryStatic + SysFileName("Data/icons/toolbar/");
+	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
 	ed->ToolbarSetCurrent(HuiToolbarTop);
 	ed->ToolbarReset();
 	ed->ToolbarAddItem(L("new"),L("new"),dir + "new.png","new");

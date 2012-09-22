@@ -24,7 +24,7 @@ class DataWorld;
 #define CPKCamFlight	10
 #define CPKCamFlightRel	11
 
-class ModeWorldCamPoint: public MultiViewSingleData
+class WorldCamPoint: public MultiViewSingleData
 {
 public:
 	int Type;
@@ -32,34 +32,34 @@ public:
 	float Duration;
 };
 
-class ModeWorldCamPointVel: public MultiViewSingleData
+class WorldCamPointVel: public MultiViewSingleData
 {
 };
 
-struct ModeWorldScriptRule
+struct WorldScriptRule
 {
 	string Function;
 	int Location;
 };
 
-struct ModeWorldScript
+struct WorldScript
 {
 	string Filename;
-	Array<ModeWorldScriptRule> Rule;
+	Array<WorldScriptRule> Rule;
 };
 
-/*class ModeWorldTerrainVertex: public MultiViewSingleData
+/*class WorldTerrainVertex: public MultiViewSingleData
 {
 public:
 	float Height;
 	vector Normal;
 };*/
 
-class ModeWorldTerrain: public MultiViewSingleData
+class WorldTerrain: public MultiViewSingleData
 {
 public:
 	string FileName;
-	//Array<ModeWorldTerrainVertex> Vertex;
+	//Array<WorldTerrainVertex> Vertex;
 	int VertexBufferSingle;
 	int ShowTexture;
 	bool Changed;
@@ -69,7 +69,7 @@ public:
 	void UpdateData();
 };
 
-class ModeWorldEditingTerrain
+class WorldEditingTerrain
 {
 public:
 	string FileName;
@@ -81,7 +81,7 @@ public:
 	vector TextureScale[TERRAIN_MAX_TEXTURES];
 };
 
-class ModeWorldObject: public MultiViewSingleData
+class WorldObject: public MultiViewSingleData
 {
 public:
 	string FileName, Name;
@@ -109,10 +109,10 @@ public:
 	void UpdateData();
 
 	// terrains
-	Array<ModeWorldTerrain> Terrain;
+	Array<WorldTerrain> Terrain;
 
 	// objects
-	Array<ModeWorldObject> Object;
+	Array<WorldObject> Object;
 	int EgoIndex;
 
 	struct MetaData{
@@ -143,7 +143,7 @@ public:
 		color Ambient;
 
 		// scripts
-		Array<ModeWorldScript> Script;
+		Array<WorldScript> Script;
 
 		// music
 		Array<string> MusicFile;
@@ -159,14 +159,14 @@ public:
 	// camera script
 	string CamScriptFile;
 	int CamPointBeing;
-	Array<ModeWorldCamPoint> CamPoint;
-	Array<ModeWorldCamPointVel> CamPointVel;
+	Array<WorldCamPoint> CamPoint;
+	Array<WorldCamPointVel> CamPointVel;
 
 
 	// actions
-	ModeWorldObject *AddObject(const string &filename, const vector &pos);
-	ModeWorldTerrain *AddTerrain(const string &filename, const vector &pos);
-	ModeWorldTerrain *AddNewTerrain(const vector &pos, const vector &size, int num_x, int num_z);
+	WorldObject *AddObject(const string &filename, const vector &pos);
+	WorldTerrain *AddTerrain(const string &filename, const vector &pos);
+	WorldTerrain *AddNewTerrain(const vector &pos, const vector &size, int num_x, int num_z);
 };
 
 #endif /* DATAWORLD_H_ */

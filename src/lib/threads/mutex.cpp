@@ -1,10 +1,10 @@
 #include "threads.h"
 #include "../file/file.h"
 
-#ifdef FILE_OS_WINDOWS
+#ifdef OS_WINDOWS
 	#include <windows.h>
 #endif
-#ifdef FILE_OS_LINUX
+#ifdef OS_LINUX
 	#include <pthread.h>
 #endif
 
@@ -17,10 +17,10 @@ struct sMutex
 {
 	bool used;
 	int index;
-#ifdef FILE_OS_WINDOWS
+#ifdef OS_WINDOWS
 	HANDLE mutex;
 #endif
-#ifdef FILE_OS_LINUX
+#ifdef OS_LINUX
 	pthread_mutex_t mutex;
 #endif
 };
@@ -41,7 +41,7 @@ sMutex *get_new_mutex()
 	return &Mutex.back();
 }
 
-#ifdef FILE_OS_WINDOWS
+#ifdef OS_WINDOWS
 
 int MutexCreate()
 {
@@ -65,7 +65,7 @@ void MutexUnlock(int mutex)
 }
 
 #endif
-#ifdef FILE_OS_LINUX
+#ifdef OS_LINUX
 
 int MutexCreate()
 {

@@ -73,7 +73,7 @@ void CPreScript::AddIncludeData(CScript *s)
 		//Type.insert(ps->Type[i + PreType.num], i);
 
 	// constants
-	foreach(ps->Constant, c)
+	foreach(sConstant &c, ps->Constant)
 		if (c.name[0] != '-')
 			Constant.add(c);
 	// TODO... ownership of "big" constants
@@ -133,8 +133,8 @@ void CPreScript::HandleMacro(ps_line_t *l, int &line_no, int &NumIfDefs, bool *I
 			/*if (!IsIfDefed(NumIfDefs, IfDefed))
 				continue;*/
 
-			filename = dirname(Filename) + cur_name.substr(1, cur_name.num - 2); // remove "
-			filename = filename_no_recursion(filename);
+			filename = Filename.dirname() + cur_name.substr(1, cur_name.num - 2); // remove "
+			filename = filename.no_recursion();
 
 			so("lade Include-Datei");
 			right();
@@ -248,7 +248,7 @@ void CPreScript::PreCompiler(bool just_analyse)
 			// replace by definition?
 			int num_defs_inserted = 0;
 			while(!end_of_line()){
-				foreachi(Define, d, j){
+				foreachi(sDefine &d, Define, j){
 					if (cur_name == d.Source){
 						int pos = Exp.cur_line->exp[Exp.cur_exp].pos;
 						remove_from_buffer(this, Exp.cur_exp);

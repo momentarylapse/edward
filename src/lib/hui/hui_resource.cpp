@@ -128,7 +128,7 @@ void HuiLoadResource(const string &filename)
 
 HuiResource *HuiGetResource(const string &id)
 {
-	foreach(_HuiResource_, r)
+	foreach(HuiResource &r, _HuiResource_)
 		if (r.id == id)
 			return &r;
 	return NULL;
@@ -164,7 +164,7 @@ CHuiWindow *HuiCreateResourceDialog(const string &id, CHuiWindow *root)
 		dlg->ToolbarSetByID(res->s_param[1]);
 
 	// controls
-	foreach(res->cmd, cmd){
+	foreach(HuiResourceCommand &cmd, res->cmd){
 		//msg_db_m(format("%d:  %d / %d",j,(cmd->type & 1023),(cmd->type >> 10)).c_str(),4);
 		if (res->type == "Dialog"){
 			dlg->SetTarget(cmd.s_param[0], cmd.i_param[4]);

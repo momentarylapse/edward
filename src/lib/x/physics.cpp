@@ -16,7 +16,7 @@ inline bool ainf_v(vector &v)
 {
 	if (inf_v(v))
 		return true;
-	return (VecLengthFuzzy(v) > 100000000000.0f);
+	return (v.length_fuzzy() > 100000000000.0f);
 }
 
 bool ObjectInfinity(CObject *o)
@@ -99,14 +99,14 @@ static void DoHit(CObject *o1,CObject *o2,CollisionData *col,int i_max,float rc_
 		rho2[i]=cp-o2->pos;
 		vector d2=VecCrossProduct(n,rho2[i]);
 		vector ti_d1,t_w1,ti_d2,t_w2;
-		VecTransform3(ti_d1,o1->theta_inv,d1);
-		VecTransform3(t_w1,o1->theta,w1_0);
-		VecTransform3(ti_d2,o2->theta_inv,d2);
-		VecTransform3(t_w2,o2->theta,w2_0);
+		ti_d1 = o1->theta_inv * d1;
+		t_w1 = o1->theta * w1_0;
+		ti_d2 = o2->theta_inv * d2;
+		t_w2 = o2->theta * w2_0;
 		if (!o1->active_physics)
-			rho1[i]=d1=ti_d1=v0;
+			rho1[i]=d1=ti_d1=v_0;
 		if (!o2->active_physics)
-			rho2[i]=d2=ti_d2=v0;
+			rho2[i]=d2=ti_d2=v_0;
 
 		// Energie-Erhaltung: dp=0 oder...
 		dp[i]=(	2*VecDotProduct(n,v1_0-v2_0)
@@ -132,9 +132,9 @@ static void DoHit(CObject *o1,CObject *o2,CollisionData *col,int i_max,float rc_
 		o1->vel-=n*dp_r*o1->mass_inv;
 		o2->vel+=n*dp_r*o2->mass_inv;
 		vector dw1,dw2;
-		VecTransform3(dw1,o1->theta_inv,-dp_r*d1);
+		dw1 = o1->theta_inv * (-dp_r*d1);
 		w1+=dw1;
-		VecTransform3(dw2,o2->theta_inv,dp_r*d2);
+		dw2 = o2->theta_inv * (dp_r*d2);
 		w2+=dw2;
 	}
 
@@ -150,14 +150,14 @@ static void DoHit(CObject *o1,CObject *o2,CollisionData *col,int i_max,float rc_
 		vector dv= v1 - v2 - VecCrossProduct(rho2[i],w2)+VecCrossProduct(rho1[i],w1);
 		float dv_orth=VecDotProduct(n,dv);
 		vector dv_tang=dv-n*dv_orth;
-		float dv_tang_l=VecLength(dv_tang);
+		float dv_tang_l=dv_tang.length();
 		//CollDV=dv_tang;
 		if (fabs(dv_tang_l)>fabs(dv_orth*0.001f)){ // gegen zu kleine Werte -> Rundungsfehler!
 			//msg_write("tang");
 			vector dir_tang=dv_tang/dv_tang_l;
 			vector dr_ti1,dr_ti2;
-			VecTransform3(dr_ti1,o1->theta_inv,VecCrossProduct(dir_tang,rho1[i]));
-			VecTransform3(dr_ti2,o2->theta_inv,VecCrossProduct(dir_tang,rho2[i]));
+			dr_ti1 = o1->theta_inv * VecCrossProduct(dir_tang,rho1[i]);
+			dr_ti2 = o2->theta_inv * VecCrossProduct(dir_tang,rho2[i]);
 			// maximal uebertragbaren Impuls in tangentialer Richtung
 			float dp_max= dv_tang_l / (
 										o1->mass_inv + o2->mass_inv
@@ -178,9 +178,9 @@ static void DoHit(CObject *o1,CObject *o2,CollisionData *col,int i_max,float rc_
 			vector dLr1=VecCrossProduct(dp_tang,rho1[i]);
 			vector dLr2=VecCrossProduct(dp_tang,rho2[i]);
 			vector dw1,dw2;
-			VecTransform3(dw1,o1->theta_inv,-dLr1);
+			dw1 = o1->theta_inv * (-dLr1);
 			w1+=dw1;
-			VecTransform3(dw2,o2->theta_inv, dLr2);
+			dw2 = o2->theta_inv * dLr2;
 			w2+=dw2;
 		}
 	}
@@ -193,9 +193,9 @@ static void DoHit(CObject *o1,CObject *o2,CollisionData *col,int i_max,float rc_
 	o2->rot=-w2*rf; // Reibung eigentlich ueber Differenzen...mit Tensor....
 
 	if (!o1->active_physics)
-		o1->rot=o1->vel=v0;
+		o1->rot=o1->vel=v_0;
 	if (!o2->active_physics)
-		o2->rot=o2->vel=v0;
+		o2->rot=o2->vel=v_0;
 
 	//if (StopOnCollision)
 	//	TimeScale=0;
@@ -225,7 +225,7 @@ static void HandleCollisionsSemiOde(CObject *o1, CObject *o2, CollisionData *col
 	//msg_write(col->Num);
 	dContact c;
 	c.surface.mode = dContactApprox1 | dContactBounce | dContactSoftCFM | dContactSoftERP;
-	c.surface.mu = (VecLengthFuzzy(o1->vel - o2->vel) + VecLengthFuzzy(o1->rot - o2->rot) < 1) ? rc_static : rc_gliding;
+	c.surface.mu = ((o1->vel - o2->vel).length_fuzzy() + (o1->rot - o2->rot).length_fuzzy() < 1) ? rc_static : rc_gliding;
 	c.surface.bounce = rc_jump;
 	c.surface.bounce_vel = 0.1;
 	c.surface.soft_cfm = 0.01;

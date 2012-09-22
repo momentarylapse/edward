@@ -16,7 +16,7 @@ ActionModelMirrorVertices::ActionModelMirrorVertices(Data *d, const vector &_pos
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	// list of selected vertices and save old pos
-	foreachi(m->Vertex, v, i)
+	foreachi(ModelVertex &v, m->Vertex, i)
 		if (v.is_selected){
 			index.add(i);
 			old_data.add(m->Vertex[i].pos);
@@ -32,7 +32,7 @@ ActionModelMirrorVertices::~ActionModelMirrorVertices()
 void *ActionModelMirrorVertices::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(index, i, ii)
+	foreachi(int i, index, ii)
 		m->Vertex[i].pos = old_data[ii] - 2 * param * ((old_data[ii] - pos0) * param);
 	m->SetNormalsDirtyByVertices(index);
 	return NULL;
@@ -43,7 +43,7 @@ void *ActionModelMirrorVertices::execute(Data *d)
 void ActionModelMirrorVertices::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(index, i, ii)
+	foreachi(int i, index, ii)
 		m->Vertex[i].pos = old_data[ii];
 	m->SetNormalsDirtyByVertices(index);
 }

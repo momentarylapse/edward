@@ -161,10 +161,10 @@ void AppraiseDimensions(CModel *m)
 	float rad = 0;
 	
 	// bounding box (visual skin[0])
-	m->min = m->max = v0;
+	m->min = m->max = v_0;
 	for (int i=0;i<m->skin[0]->vertex.num;i++){
-		VecMin(m->min, m->skin[0]->vertex[i]);
-		VecMax(m->max, m->skin[0]->vertex[i]);
+		m->min._min(m->skin[0]->vertex[i]);
+		m->max._max(m->skin[0]->vertex[i]);
 		float r = _vec_length_fuzzy_(m->skin[0]->vertex[i]);
 		if (r > rad)
 			rad = r;
@@ -209,12 +209,12 @@ void PostProcessSkin(CModel *m, Skin *s)
 	CreateVB(m,s);
 
 	// bounding box
-	s->min = s->max = v0;
+	s->min = s->max = v_0;
 	if (s->vertex.num > 0){
 		s->min = s->max = s->vertex[0];
 		for (int i=0;i<s->vertex.num;i++){
-			VecMin(s->min, s->vertex[i]);
-			VecMax(s->max, s->vertex[i]);
+			s->min._min(s->vertex[i]);
+			s->max._max(s->vertex[i]);
 		}
 	}
 }
@@ -324,7 +324,7 @@ void CModel::ResetData()
 
 	// fx
 	fx.resize(_template->fx.num);
-	foreachi(_template->fx, tf, i){
+	foreachi(ModelEffectData &tf, _template->fx, i){
 		if (tf.type == FXTypeLight)
 			fx[i] = FxCreateLight(this, tf.vertex, tf.radius, tf.am, tf.di, tf.sp);
 		else if (tf.type == FXTypeSound)
@@ -349,7 +349,7 @@ void CModel::ResetData()
 	body_id = 0;
 #endif
 	
-	vel = rot = v0;
+	vel = rot = v_0;
 	msg_db_l(2);
 }
 
@@ -364,7 +364,7 @@ void read_color(CFile *f, color &c)
 void CModel::reset()
 {
 	error = false;
-	pos = ang = vel = rot = v0;
+	pos = ang = vel = rot = v_0;
 	object_id = -1;
 	on_ground = false;
 	visible = true;
@@ -373,13 +373,13 @@ void CModel::reset()
 	frozen = false;
 	time_till_freeze = 0;
 	ground_id = -1;
-	ground_normal = v0;
+	ground_normal = v_0;
 	_detail_ = -1;
 
 
-	vel_surf = acc = v0;
-	force_int = torque_int = v0;
-	force_ext = torque_ext = v0;
+	vel_surf = acc = v_0;
+	force_int = torque_int = v_0;
+	force_ext = torque_ext = v_0;
 }
 
 // completely load an original model (all data is its own)
@@ -482,9 +482,9 @@ CModel::CModel(const string &filename)
 			p->face[j].num_vertices = f->ReadInt();
 			for (int k=0;k<p->face[j].num_vertices;k++)
 				p->face[j].index[k] = f->ReadInt();
-			p->face[j].pl.a = f->ReadFloat();
-			p->face[j].pl.b = f->ReadFloat();
-			p->face[j].pl.c = f->ReadFloat();
+			p->face[j].pl.n.x = f->ReadFloat();
+			p->face[j].pl.n.y = f->ReadFloat();
+			p->face[j].pl.n.z = f->ReadFloat();
 			p->face[j].pl.d = f->ReadFloat();
 		}
 		// non redundand stuff
@@ -1117,7 +1117,7 @@ void CModel::CalcMove()
 
 			// reset (only if not being edited by script)
 			/*if (Nummove_operations != -2){
-				b->cur_ang = q_id;//quaternion(1, v0);
+				b->cur_ang = q_id;//quaternion(1, v_0);
 				b->cur_pos = b->Pos;
 			}*/
 
@@ -1168,20 +1168,20 @@ void CModel::CalcMove()
 				}else if (op->operation == MoveOpSetNewKeyed){
 					if (w.w!=1)
 						b->cur_ang=w;
-					if (p!=v0)
+					if (p!=v_0)
 						b->cur_pos=p;
 
 				// overwrite, if last equals 0
 				}else if (op->operation == MoveOpSetOldKeyed){
 					if (b->cur_ang.w==1)
 						b->cur_ang=w;
-					if (b->cur_pos==v0)
+					if (b->cur_pos==v_0)
 						b->cur_pos=p;
 
 				// w = w_old         + w_new * f
 				}else if (op->operation == MoveOpAdd1Factor){
 					QuaternionScale(w, op->param1);
-					QuaternionMultiply(b->cur_ang, w, b->cur_ang);
+					b->cur_ang = w * b->cur_ang;
 					b->cur_pos += op->param1 * p;
 
 				// w = w_old * (1-f) + w_new * f
@@ -1200,7 +1200,7 @@ void CModel::CalcMove()
 
 			// bone has root -> align to root
 			if (b->parent >= 0)
-				VecTransform(b->cur_pos, bone[b->parent].dmatrix, b->pos);
+				b->cur_pos = bone[b->parent].dmatrix * b->pos;
 
 			// create matrices (model -> skeleton)
 			matrix t,r;
@@ -1229,7 +1229,7 @@ void CModel::CalcMove()
 					SubSkin *sub = &sk->sub[mm];
 				#ifdef DynamicNormalCorrect
 					for (int t=0;t<sub->num_triangles*3;t++)
-						VecNormalTransform(normal_dyn[s][t + offset], bone[sk->bone_index[sub->triangle_index[t]]].dmatrix, sub->normal[t]);
+						normal_dyn[s][t + offset] = bone[sk->bone_index[sub->triangle_index[t]]].dmatrix.transform_normal(sub->normal[t]);
 						//normal_dyn[s][t + offset]=sub->Normal[t];
 				#else
 					memcpy(&normal_dyn[s][offset], &sub->Normal[0], sub->num_triangles * 3 * sizeof(vector));
@@ -1324,10 +1324,10 @@ bool CModel::Trace(vector &p1, vector &p2, vector &dir, float range, vector &tp,
 // Modell nah genug am Trace-Strahl?
 	vector o,tm;
 	plane pl;
-	VecTransform(o, _matrix, v0); // Modell-Mittelpunkt (absolut)
+	o = _matrix * v_0; // Modell-Mittelpunkt (absolut)
 	tm=(p1+p2)/2; // Mittelpunkt des Trace-Strahles
 	// Wuerfel um Modell und Trace-Mittelpunkt berschneiden sich?
-	if (!VecBoundingBox(o, tm, radius + range / 2)){
+	if (!o.bounding_cube(tm, radius + range / 2)){
 		msg_db_l(5);
 		return false;
 	}
@@ -1335,7 +1335,7 @@ bool CModel::Trace(vector &p1, vector &p2, vector &dir, float range, vector &tp,
 	PlaneFromPointNormal(pl,o,dir);
 	_plane_intersect_line_(c,pl,p1,p2);
 	// Schnitt nah genau an Modell?
-	if (!VecBoundingBox(o, c, radius * 2)){
+	if (!o.bounding_cube(c, radius * 2)){
 		msg_db_l(5);
 		return false;
 	}
@@ -1406,10 +1406,10 @@ vector _cdecl CModel::GetVertex(int index, int skin_no)
 	if (meta_move){ // animated
 		int b = s->bone_index[index];
 		v = s->vertex[index] - bone_pos_0[b];//Move(b);
-		VecTransform(v, bone[b].dmatrix, v);
-		VecTransform(v, _matrix, v);
+		v = bone[b].dmatrix * v;
+		v = _matrix * v;
 	}else{ // static
-		VecTransform(v, _matrix, s->vertex[index]);
+		v = _matrix * s->vertex[index];
 	}
 	return v;
 }
@@ -1501,7 +1501,7 @@ void CModel::BeginEditAnimation()
 		return;
 	num_move_operations = -2;
 	for (int i=0;i<bone.num;i++){
-		bone[i].cur_ang = q_id;//quaternion(1,v0);
+		bone[i].cur_ang = q_id;//quaternion(1,v_0);
 		bone[i].cur_pos = bone[i].pos;
 	}
 }
@@ -1672,7 +1672,7 @@ void CModel::SortingTest(vector &pos,const vector &dpos,matrix *mat,bool allow_s
 		if (boneModel[i]){
 			vector sub_pos;
 			MatrixMultiply(boneMatrix[i],*mat,boneDMatrix[i]);
-			VecTransform(sub_pos,boneMatrix[i],v0);
+			VecTransform(sub_pos,boneMatrix[i],v_0);
 			boneModel[i]->SortingTest(sub_pos,dpos,&BoneMatrix[i],allow_shadow);
 		}
 	int _Detail_=SkinHigh;

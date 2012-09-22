@@ -30,7 +30,7 @@ static int VPx1,VPy1,VPx2,VPy2;
 
 int RenderingToTexture = -1;
 
-#ifdef NIX_OS_WINDOWS
+#ifdef OS_WINDOWS
 	extern HDC hDC;
 	extern HGLRC hRC;
 #endif
@@ -163,7 +163,7 @@ void NixUpdateLights()
 	//glLoadIdentity();
 	glLoadMatrixf((float*)&NixViewMatrix);
 
-	foreachi(NixLight, l, i){
+	foreachi(sLight &l, NixLight, i){
 		if (!l.Used)
 			continue;
 		if (!l.Enabled)
@@ -177,9 +177,15 @@ void NixUpdateLights()
 			f[3]=1;
 		glLightfv(OGLLightNo[i],GL_POSITION,f);*/
 		if (l.Type == LightTypeDirectional){
-			f[0] = l.Dir.x;	f[1] = l.Dir.y;	f[2] = l.Dir.z;	f[3] = 0;
+			f[0] = l.Dir.x;
+			f[1] = l.Dir.y;
+			f[2] = l.Dir.z;
+			f[3] = 0;
 		}else if (l.Type == LightTypeRadial){
-			f[0] = l.Pos.x;	f[1] = l.Pos.y;	f[2] = l.Pos.z;	f[3] = 1;
+			f[0] = l.Pos.x;
+			f[1] = l.Pos.y;
+			f[2] = l.Pos.z;
+			f[3] = 1;
 		}
 		glLightfv(GL_LIGHT0+i,GL_POSITION,f);
 		//msg_write(i);
@@ -194,7 +200,7 @@ static plane FrustrumPl[6];
 void NixSetView(const vector &view_pos,const vector &view_ang,const vector &scale)
 {
 	ViewPos = view_pos;
-	ViewDir = VecAng2Dir(view_ang);
+	ViewDir = view_ang.ang2dir();
 	NixViewScale = scale;
 
 	matrix t,r,s;
@@ -342,7 +348,7 @@ bool NixIsInFrustrum(const vector &pos,float radius)
 	bool in=false;
 	for (int i=0;i<8;i++)
 		//for (int j=0;j<6;j++)
-			if (PlaneDistance(FrustrumPl[0],p[i])<0)
+			if (FrustrumPl[0].distance(p[i])<0)
 				in=true;
 	/*vector d;
 	VecNormalize(d,pos-ViewPos); // zu einer Berechnung zusammenfassen!!!!!!
@@ -368,7 +374,7 @@ bool NixStart(int texture)
 	RenderingToTexture=texture;
 	//msg_write(string("Start ",i2s(texture)));
 	if (texture<0){
-		#ifdef NIX_OS_WINDOWS
+		#ifdef OS_WINDOWS
 			#ifdef NIX_ALLOW_DYNAMIC_TEXTURE
 				if (OGLDynamicTextureSupport)
 					glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
@@ -381,7 +387,7 @@ bool NixStart(int texture)
 			}
 		#endif
 
-		#ifdef NIX_OS_LINUX
+		#ifdef OS_LINUX
 			//glXSwapBuffers(hui_x_display, GDK_WINDOW_XWINDOW(NixWindow->gl_widget->window));
 		#endif			
 	}else{
@@ -479,11 +485,11 @@ void NixEnd()
 	glDisable(GL_SCISSOR_TEST);
 	if (RenderingToTexture<0){
 		// auf den Bildschirm
-		#ifdef NIX_OS_WINDOWS
+		#ifdef OS_WINDOWS
 			if (RenderingToTexture<0)
 				SwapBuffers(hDC);
 		#endif
-		#ifdef NIX_OS_LINUX
+		#ifdef OS_LINUX
 			#ifdef NIX_ALLOW_FULLSCREEN
 				if (NixFullscreen)
 					XF86VidModeSetViewPort(hui_x_display,screen,0,NixDesktopHeight-NixScreenHeight);
@@ -505,7 +511,10 @@ void NixEnd()
 void NixSetClipPlane(int index,const plane &pl)
 {
 	GLdouble d[4];
-	d[0]=pl.a;	d[1]=pl.b;	d[2]=pl.c;	d[3]=pl.d;
+	d[0]=pl.n.x;
+	d[1]=pl.n.y;
+	d[2]=pl.n.z;
+	d[3]=pl.d;
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadMatrixf((float*)&NixViewMatrix);
@@ -566,13 +575,13 @@ void NixScreenShot(const string &filename, int width, int height)
 			}
 	}
 	// set alpha to 1
-	foreach(image.data, c)
-		c |= 0xff000000;
+	for (int i=0;i<image.data.num;i++)
+		image.data[i] |= 0xff000000;
 	// save
 	image.Save(filename);
 	image.Delete();
 #endif
-	msg_write("screenshot saved: " + SysFileName(filename));
+	msg_write("screenshot saved: " + filename.sys_filename());
 }
 
 void NixScreenShotToImage(Image &image)

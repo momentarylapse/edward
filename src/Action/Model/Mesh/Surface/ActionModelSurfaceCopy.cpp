@@ -10,21 +10,21 @@
 #include "../Triangle/ActionModelAddTriangle.h"
 #include "../../../../Data/Model/DataModel.h"
 
-ActionModelSurfaceCopy::ActionModelSurfaceCopy(DataModel *m, ModeModelSurface *&s)
+ActionModelSurfaceCopy::ActionModelSurfaceCopy(DataModel *m, ModelSurface *&s)
 {
 	int si = m->get_surf_no(s);
 	int dv = m->Vertex.num;
 
 	// copy vertices
-	foreach(s->Vertex, v){
+	foreach(int v, s->Vertex){
 		AddSubAction(new ActionModelAddVertex(m->Vertex[v].pos), m);
 		//m->Vertex.back().Surface = m->Surface.num;
 	}
 
-	foreach(s->Triangle, t){
+	foreach(ModelTriangle &t, s->Triangle){
 		int v[3];
 		for (int k=0;k<3;k++)
-			foreachi(s->Vertex, vv, vi)
+			foreachi(int vv, s->Vertex, vi)
 				if (vv == t.Vertex[k])
 					v[k] = dv + vi;
 		AddSubAction(new ActionModelAddTriangle(m, v[0], v[1], v[2], t.Material, t.SkinVertex[0], t.SkinVertex[1], t.SkinVertex[2]), m);

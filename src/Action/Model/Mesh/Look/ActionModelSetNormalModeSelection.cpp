@@ -11,7 +11,7 @@
 ActionModelSetNormalModeSelection::ActionModelSetNormalModeSelection(DataModel *m, int _mode)
 {
 	mode = _mode;
-	foreachi(m->Vertex, v, i)
+	foreachi(ModelVertex &v, m->Vertex, i)
 		if (v.is_selected)
 			index.add(i);
 }
@@ -27,14 +27,14 @@ void *ActionModelSetNormalModeSelection::execute(Data *d)
 	// mode all
 	old_mode_all = m->NormalModeAll;
 	if (m->NormalModeAll != NormalModePerVertex){
-		foreach(m->Vertex, v)
+		foreach(ModelVertex &v, m->Vertex)
 			v.NormalMode = mode;
 		m->NormalModeAll = NormalModePerVertex;
 	}
 
 	// per vertex
 	old_mode.clear();
-	foreach(index, i){
+	foreach(int i, index){
 		old_mode.add(m->Vertex[i].NormalMode);
 		m->Vertex[i].NormalMode = mode;
 	}
@@ -53,11 +53,11 @@ void ActionModelSetNormalModeSelection::undo(Data *d)
 	// mode all
 	if (old_mode_all != NormalModePerVertex){
 		m->NormalModeAll = old_mode_all;
-		foreach(m->Vertex, v)
+		foreach(ModelVertex &v, m->Vertex)
 			v.NormalMode = old_mode_all;
 	}else{
 		// per vertex
-		foreach(index, i)
+		foreach(int i, index)
 			m->Vertex[i].NormalMode = old_mode[i];
 	}
 

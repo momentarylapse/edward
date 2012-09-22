@@ -11,13 +11,13 @@
 #include "../../Edward.h"
 
 
-ModeModelMaterial::ModeModelMaterial()
+ModelMaterial::ModelMaterial()
 {	reset();	}
 
-ModeModelMaterial::~ModeModelMaterial()
+ModelMaterial::~ModelMaterial()
 {}
 
-void ModeModelMaterial::reset()
+void ModelMaterial::reset()
 {
 	// transparency
 	UserTransparency = false;
@@ -45,7 +45,7 @@ void ModeModelMaterial::reset()
 	Texture[0] = -1;
 }
 
-void ModeModelMaterial::MakeConsistent()
+void ModelMaterial::MakeConsistent()
 {
 	material = MetaLoadMaterial(MaterialFile);
 	CheckTextures();
@@ -53,7 +53,7 @@ void ModeModelMaterial::MakeConsistent()
 	CheckColors();
 }
 
-void ModeModelMaterial::CheckTransparency()
+void ModelMaterial::CheckTransparency()
 {
 	if (TransparencyMode == TransparencyModeDefault)
 		UserTransparency = false;
@@ -68,7 +68,7 @@ void ModeModelMaterial::CheckTransparency()
 
 
 
-void ModeModelMaterial::CheckTextures()
+void ModelMaterial::CheckTextures()
 {
 	// parent has more texture levels?
 	if (material->num_textures > NumTextures){
@@ -91,7 +91,7 @@ void ModeModelMaterial::CheckTextures()
 				Texture[i] = material->texture[i];
 }
 
-void ModeModelMaterial::CheckColors()
+void ModelMaterial::CheckColors()
 {
 	if (!UserColor){
 		Ambient = material->ambient;
@@ -102,7 +102,7 @@ void ModeModelMaterial::CheckColors()
 	}
 }
 
-void ModeModelMaterial::ApplyForRendering()
+void ModelMaterial::ApplyForRendering()
 {
 	NixSetAlpha(AlphaNone);
 	NixSetShader(-1);

@@ -42,7 +42,7 @@ private:
 	DataWorld *data;
 	int index;
 
-	ModeWorldEditingTerrain temp;
+	WorldEditingTerrain temp;
 };
 
 #endif /* TERRAINPROPERTIESDIALOG_H_ */

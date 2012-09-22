@@ -34,9 +34,9 @@ void *ActionWorldAddObject::execute(Data *d)
 {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 
-	ModeWorldObject o;
+	WorldObject o;
 	o.pos = pos;
-	o.Ang = v0;
+	o.Ang = v_0;
 	o.is_selected = true;
 	o.is_special = false;
 	o.FileName = filename;

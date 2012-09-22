@@ -18,7 +18,7 @@ ModeModelMeshCreateCube::ModeModelMeshCreateCube(Mode *_parent) :
 	pos_chosen = false;
 	pos2_chosen = false;
 	for (int i=0;i<3;i++)
-		length[i] = v0;
+		length[i] = v_0;
 }
 
 ModeModelMeshCreateCube::~ModeModelMeshCreateCube()
@@ -29,10 +29,10 @@ ModeModelMeshCreateCube::~ModeModelMeshCreateCube()
 void set_dpos3(vector *length, const vector &dpos)
 {
 	vector n = length[0] ^ length[1];
-	VecNormalize(n);
+	n.normalize();
 	length[2] = n * (n * dpos);
 	float min_thick = 10 / ed->multi_view_3d->zoom; // 10 px
-	if (VecLength(length[2]) < min_thick)
+	if (length[2].length() < min_thick)
 		length[2] = n * min_thick;
 }
 
@@ -59,7 +59,7 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 				pos2 = multi_view->GetCursor3d();
 			message = _("W&urfel: Punkt 3 / 3");
 			pos2_chosen = true;
-			set_dpos3(length, v0);
+			set_dpos3(length, v_0);
 		}
 	}else{
 		if (multi_view->Selected >= 0)
@@ -117,7 +117,7 @@ void ModeModelMeshCreateCube::OnDrawWin(int win, irect dest)
 		NixVBClear(VBTemp);
 		if (!pos2_chosen){
 			vector n = length[0] ^ length[1];
-			VecNormalize(n);
+			n.normalize();
 			/// vertices
 			vector a = pos;
 			vector b = pos + length[0];
@@ -146,11 +146,11 @@ void ModeModelMeshCreateCube::OnDrawWin(int win, irect dest)
 			vector _6 = pos        + d[1] + d[2];
 			vector _7 = pos + d[0] + d[1] + d[2];
 			vector n0 = d[0];
-			VecNormalize(n0);
+			n0.normalize();
 			vector n1 = d[1];
-			VecNormalize(n1);
+			n1.normalize();
 			vector n2 = d[2];
-			VecNormalize(n2);
+			n2.normalize();
 			// front
 			NixVBAddTria(VBTemp,_0,-n0,0,0,_2,-n0,0,0,_3,-n0,0,0);
 			NixVBAddTria(VBTemp,_0,-n0,0,0,_3,-n0,0,0,_1,-n0,0,0);

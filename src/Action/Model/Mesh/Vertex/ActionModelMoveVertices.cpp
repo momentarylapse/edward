@@ -16,7 +16,7 @@ ActionModelMoveVertices::ActionModelMoveVertices(Data *d, const vector &_pos0) :
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	// list of selected vertices and save old pos
-	foreachi(m->Vertex, v, i)
+	foreachi(ModelVertex &v, m->Vertex, i)
 		if (v.is_selected){
 			index.add(i);
 			old_data.add(m->Vertex[i].pos);
@@ -32,7 +32,7 @@ ActionModelMoveVertices::~ActionModelMoveVertices()
 void ActionModelMoveVertices::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(index, i, ii)
+	foreachi(int i, index, ii)
 		m->Vertex[i].pos = old_data[ii];
 	m->SetNormalsDirtyByVertices(index);
 }
@@ -42,7 +42,7 @@ void ActionModelMoveVertices::undo(Data *d)
 void *ActionModelMoveVertices::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(index, i, ii)
+	foreachi(int i, index, ii)
 		m->Vertex[i].pos = old_data[ii] + param;
 	m->SetNormalsDirtyByVertices(index);
 	return NULL;

@@ -1,5 +1,6 @@
 #include "script.h"
 //#include "dasm.h"
+#include "../file/file.h"
 
 //#define _insert_asm_
 
@@ -283,7 +284,7 @@ inline void move_last_cmd(SerializerData *d, int index)
 
 	// adjust temp vars
 	if (d->TempVarRangesDefined)
-		foreach(d->TempVar, v){
+		foreach(sTempVar &v, d->TempVar){
 			if (v.first >= index)
 				v.first ++;
 			if (v.last >= index)
@@ -291,7 +292,7 @@ inline void move_last_cmd(SerializerData *d, int index)
 		}
 
 	// adjust reg channels
-	foreach(d->RegChannel, r){
+	foreach(sRegChannel &r, d->RegChannel){
 		if (r.first >= index)
 			r.first ++;
 		if (r.last >= index)
@@ -304,7 +305,7 @@ inline void remove_cmd(SerializerData *d, int index)
 	d->cmd.erase(index);
 
 	// adjust temp vars
-	foreach(d->TempVar, v){
+	foreach(sTempVar &v, d->TempVar){
 		if (v.first >= index)
 			v.first --;
 		if (v.last >= index)
@@ -312,7 +313,7 @@ inline void remove_cmd(SerializerData *d, int index)
 	}
 
 	// adjust reg channels
-	foreach(d->RegChannel, r){
+	foreach(sRegChannel &r, d->RegChannel){
 		if (r.first >= index)
 			r.first --;
 		if (r.last >= index)
@@ -322,7 +323,7 @@ inline void remove_cmd(SerializerData *d, int index)
 
 inline void remove_temp_var(SerializerData *d, int v)
 {
-	foreach(d->cmd, c){
+	foreach(sSerialCommand &c, d->cmd){
 		if ((c.p1.kind == KindVarTemp) || (c.p1.kind == KindDerefVarTemp))
 			if ((long)c.p1.p > v)
 				c.p1.p = (char*)((long)c.p1.p - 1);
@@ -346,7 +347,7 @@ inline void move_param(SerializerData *d, sSerialCommandParam &p, int from, int 
 		so("move_param reg");
 		long r = (long)p.p;
 		bool found = false;
-		foreach(d->RegChannel, rc)
+		foreach(sRegChannel &rc, d->RegChannel)
 			if ((r == rc.reg) && (from >= rc.first) && (from >= rc.first)){
 				if (rc.last < max(from, to))
 					rc.last = max(from, to);
@@ -1462,7 +1463,7 @@ Array<sSerialCommandParam> InsertedConstructorTemp;
 
 void add_cmd_constructor(SerializerData *d, sSerialCommandParam &param, bool is_temp)
 {
-	foreach(param.type->Function, f){
+	foreach(sClassFunction &f, param.type->Function){
 		if (f.Name == "__init__"){ // TODO test signature "void __init__()"
 			sSerialCommandParam inst;
 			AddReference(d, param, TypePointer, inst);
@@ -1488,7 +1489,7 @@ void add_cmd_constructor(SerializerData *d, sSerialCommandParam &param, bool is_
 
 void add_cmd_destructor(SerializerData *d, sSerialCommandParam &param)
 {
-	foreach(param.type->Function, f)
+	foreach(sClassFunction &f, param.type->Function)
 		if (f.Name == "__delete__"){ // TODO test signature "void __delete__()"
 			sSerialCommandParam inst;
 			AddReference(d, param, TypePointer, inst);
@@ -1548,7 +1549,7 @@ inline int temp_in_cmd(SerializerData *d, int c, int v)
 void ScanTempVarUsage(SerializerData *d)
 {
 	msg_db_r("ScanTempVarUsage", 4);
-	foreachi(d->TempVar, v, i){
+	foreachi(sTempVar &v, d->TempVar, i){
 		v.first = -1;
 		v.last = -1;
 		v.count = 0;
@@ -2603,7 +2604,7 @@ Array<int> InstructionPos;
 void ProcessJumpTargets(SerializerData *d, char *Opcode, int &OpcodeSize)
 {
 	msg_db_r("ProcessJumpTargets", 3);
-	foreachi(d->cmd, c, i){
+	foreachi(sSerialCommand &c, d->cmd, i){
 		if (c.inst < inst_marker)
 			if (c.p1.kind == KindMarker){
 				so("adjust jump");

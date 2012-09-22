@@ -1,10 +1,10 @@
 #include "threads.h"
 #include "../file/file.h"
 
-#ifdef FILE_OS_WINDOWS
+#ifdef OS_WINDOWS
 	#include <windows.h>
 #endif
-#ifdef FILE_OS_LINUX
+#ifdef OS_LINUX
 	#include <pthread.h>
 	#include <unistd.h>
 #endif
@@ -15,10 +15,10 @@ struct sThread
 	int index;
 	void *p;
 	thread_func_t *f;
-#ifdef FILE_OS_WINDOWS
+#ifdef OS_WINDOWS
 	HANDLE thread;
 #endif
-#ifdef FILE_OS_LINUX
+#ifdef OS_LINUX
 	pthread_t thread;
 #endif
 };
@@ -47,12 +47,12 @@ sThread *get_new_thread()
 
 int ThreadGetNumCores()
 {
-#ifdef FILE_OS_WINDOWS
+#ifdef OS_WINDOWS
 	SYSTEM_INFO siSysInfo;
 	GetSystemInfo(&siSysInfo);
 	return siSysInfo.dwNumberOfProcessors;
 #endif
-#ifdef FILE_OS_LINUX
+#ifdef OS_LINUX
 	return ::sysconf(_SC_NPROCESSORS_ONLN);
 #endif
 	return 1;
@@ -64,7 +64,7 @@ int ThreadGetNumCores()
 //------------------------------------------------------------------------------
 // low level
 
-#ifdef FILE_OS_WINDOWS
+#ifdef OS_WINDOWS
 
 
 DWORD WINAPI thread_start_func(__in LPVOID p)
@@ -133,7 +133,7 @@ int ThreadGetId()
 
 
 #endif
-#ifdef FILE_OS_LINUX
+#ifdef OS_LINUX
 
 void *thread_start_func(void *p)
 {

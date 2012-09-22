@@ -10,18 +10,18 @@
 #include "Triangle/ActionModelAddTriangle.h"
 #include "../../../Data/Model/DataModel.h"
 
-ActionModelPasteGeometry::ActionModelPasteGeometry(DataModel *m, ModeModelGeometry &geo)
+ActionModelPasteGeometry::ActionModelPasteGeometry(DataModel *m, ModelGeometry &geo)
 {
 	m->ClearSelection();
 
 	int nv = m->Vertex.num;
-	foreach(m->Vertex, v)
+	foreach(ModelVertex &v, m->Vertex)
 		v.is_selected = false;
 
-	foreach(geo.Vertex, v)
+	foreach(ModelVertex &v, geo.Vertex)
 		AddSubAction(new ActionModelAddVertex(v.pos), m);
 
-	foreach(geo.Triangle, t){
+	foreach(ModelTriangle &t, geo.Triangle){
 		vector sv[3][MODEL_MAX_TEXTURES];
 		for (int k=0;k<3;k++)
 			for (int l=0;l<MODEL_MAX_TEXTURES;l++)

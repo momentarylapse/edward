@@ -41,7 +41,7 @@ public:
 private:
 	DataModel *data;
 	int index;
-	ModeModelMaterial TempMaterial;
+	ModelMaterial TempMaterial;
 };
 
 #endif /* MODELMATERIALDIALOG_H_ */

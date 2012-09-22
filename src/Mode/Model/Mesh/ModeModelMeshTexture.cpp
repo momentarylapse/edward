@@ -30,11 +30,11 @@ ModeModelMeshTexture::~ModeModelMeshTexture()
 void ModeModelMeshTexture::OnStart()
 {
 	skin_vertex.clear();
-	foreach(data->Surface, surf)
-		foreach(surf.Triangle, t){
+	foreach(ModelSurface &surf, data->Surface)
+		foreach(ModelTriangle &t, surf.Triangle){
 			if (t.Material != data->CurrentMaterial)
 				continue;
-			ModeModelSkinVertexDummy v;
+			ModelSkinVertexDummy v;
 			v.m_delta = v.m_old = false;
 			v.is_special = false;
 			v.view_stage = t.view_stage;
@@ -74,7 +74,7 @@ void ModeModelMeshTexture::OnDrawWin(int win, irect dest)
 	rect s,r;
 	color c;
 
-	vector a = multi_view->VecUnProject(v0, win);
+	vector a = multi_view->VecUnProject(v_0, win);
 	vector b = multi_view->VecUnProject(vector((float)MaxX,(float)MaxY,0),win);
 
 	s.x1=a.x;
@@ -106,7 +106,7 @@ void ModeModelMeshTexture::OnDrawWin(int win, irect dest)
 	NixSetAlphaM(AlphaNone);
 
 	// rectangle of unity
-	a = multi_view->VecProject(v0, win);
+	a = multi_view->VecProject(v_0, win);
 	b = multi_view->VecProject(vector(1, 1, 0), win);
 	NixSetColor(Red);
 	NixDrawLine(a.x, a.y, b.x, a.y, 0.98f);
@@ -116,8 +116,8 @@ void ModeModelMeshTexture::OnDrawWin(int win, irect dest)
 	NixSetColor(White);
 
 	// draw triangles (outlines) of current material
-	foreach(data->Surface, surf)
-		foreach(surf.Triangle, t){
+	foreach(ModelSurface &surf, data->Surface)
+		foreach(ModelTriangle &t, surf.Triangle){
 			if (t.Material != data->CurrentMaterial)
 				continue;
 			if (t.view_stage < data->ViewStage)
@@ -158,8 +158,8 @@ void ModeModelMeshTexture::OnUpdate(Observable *o)
 
 
 		int svi = 0;
-		foreach(data->Surface, surf)
-			foreach(surf.Triangle, t){
+		foreach(ModelSurface &surf, data->Surface)
+			foreach(ModelTriangle &t, surf.Triangle){
 				if (t.Material != data->CurrentMaterial)
 					continue;
 				for (int k=0;k<3;k++)
@@ -185,8 +185,8 @@ void ModeModelMeshTexture::OnUpdate(Observable *o)
 void ModeModelMeshTexture::GetSelectedSkinVertices(Array<int> & surf, Array<int> &tria, Array<int> & index)
 {
 	int i = 0;
-	foreachi(data->Surface, s, si)
-		foreachi(s.Triangle, t, ti)
+	foreachi(ModelSurface &s, data->Surface, si)
+		foreachi(ModelTriangle &t, s.Triangle, ti)
 			if (t.Material == data->CurrentMaterial){
 				for (int k=0;k<3;k++){
 					if (skin_vertex[i].is_selected){

@@ -46,7 +46,7 @@ bool TriangleInRect(int index, void *user_data, int win, irect *r);
 bool SurfaceIsMouseOver(int index, void *user_data, int win, vector &tp)
 {
 	DataModel *data = (DataModel*)user_data;
-	ModeModelSurface &s = data->Surface[index];
+	ModelSurface &s = data->Surface[index];
 	for (int i=0;i<s.Triangle.num;i++)
 		if (TriangleIsMouseOver(i, &s, win, tp))
 			return true;
@@ -56,7 +56,7 @@ bool SurfaceIsMouseOver(int index, void *user_data, int win, vector &tp)
 bool SurfaceInRect(int index, void *user_data, int win, irect *r)
 {
 	DataModel *data = (DataModel*)user_data;
-	ModeModelSurface &s = data->Surface[index];
+	ModelSurface &s = data->Surface[index];
 	for (int i=0;i<s.Triangle.num;i++)
 		if (!TriangleInRect(i, &s, win, r))
 			return false;

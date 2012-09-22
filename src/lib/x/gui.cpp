@@ -51,13 +51,13 @@ inline void AddDrawable(XContainer *p, float z)
 
 void AddAllDrawables()
 {
-	foreach(Text, t)
+	foreach(sText *t, Text)
 		if ((t->used) && (t->enabled))
 			AddDrawable(t, t->pos.z);
-	foreach(Picture, p)
+	foreach(sPicture *p, Picture)
 		if ((p->used) && (p->enabled))
 			AddDrawable(p, p->pos.z);
-	foreach(Picture3D, p)
+	foreach(sPicture3D *p, Picture3D)
 		if ((p->used) && (p->enabled))
 			AddDrawable(p, p->z);
 }
@@ -198,7 +198,7 @@ bool sPicture::IsMouseOver()
 					pos.y,	pos.y+height);
 
 	// grouping correction?
-	foreachi(Grouping, g, j){
+	foreachi(sGrouping *g, Grouping, j){
 		for (int k=0;k<g->picture.num;k++)
 			if (&g->picture[k] == (void*)this){
 				if (!g->enabled)
@@ -228,7 +228,7 @@ bool sText::IsMouseOver()
 	rect r=rect(x,x+w,pos.y,pos.y+size);
 
 	// grouping correction?
-	foreachi(Grouping, g, j){
+	foreachi(sGrouping *g, Grouping, j){
 		for (int k=0;k<g->text.num;k++)
 			if (&g->text[k]==(void*)this){
 				if (!g->enabled)
@@ -371,7 +371,7 @@ inline void GuiDrawPicture(sPicture *p)
 	NixSetColor(p->_color);
 	if (p->tc_inverted){ // texture coordinates are inverted ( y <-> x )
 		// create two 3D triangles...
-		vector n=v0,pa,pb,pc,pd;
+		vector n=v_0,pa,pb,pc,pd;
 		NixVBClear(VBTemp);
 		pa = p->pos;
 		pb = pa+vector(p->width	,0			,0);
@@ -546,7 +546,7 @@ void GuiDraw()
 	NixSpecularEnable(false);
 
 	 // drawing
-	foreach(Drawable, d){
+	foreach(sDrawable &d, Drawable){
 		int type = d.p->type;
 		if (type == XContainerText)
 			GuiDrawText((sText*)d.p);

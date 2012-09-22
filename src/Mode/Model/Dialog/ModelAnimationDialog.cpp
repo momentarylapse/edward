@@ -72,7 +72,7 @@ void ModelAnimationDialog::LoadData()
 {
 	Reset("animation_list");
 	int n = 0;
-	foreachi(data->Move, m, i)
+	foreachi(ModelMove &m, data->Move, i)
 		if (m.Frame.num > 0){
 			string str = i2s(i) + "\\";
 			if (m.Type == MoveTypeVertex)
@@ -131,7 +131,7 @@ int ModelAnimationDialog::GetSelectedAnimation()
 	int s = GetInt("animation_list");
 	if (s >= 0){
 		int n = 0;
-		foreachi(data->Move, m, i)
+		foreachi(ModelMove &m, data->Move, i)
 			if (m.Frame.num > 0){
 				if (n == s)
 					return i;

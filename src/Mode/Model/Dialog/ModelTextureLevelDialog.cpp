@@ -10,7 +10,7 @@
 #include "../../../Edward.h"
 
 string file_secure(const string &filename);
-string render_material(ModeModelMaterial *m);
+string render_material(ModelMaterial *m);
 
 ModelTextureLevelDialog::ModelTextureLevelDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data):
 	CHuiWindow("dummy", -1, -1, 230, 400, _parent, _allow_parent, HuiWinModeControls | HuiWinModeResizable, true)
@@ -44,11 +44,11 @@ void ModelTextureLevelDialog::ApplyData()
 void ModelTextureLevelDialog::FillTextureList()
 {
 	Reset("texture_list");
-	foreachi(data->Material, m, i){
+	foreachi(ModelMaterial &m, data->Material, i){
 		string im = render_material(&m);
 		AddString("texture_list", format("%d\\%s\\%s\\%s", i, (i == data->CurrentMaterial) ? "true" : "false", im.c_str(), file_secure(m.MaterialFile).c_str()));
 	}
-	foreachi(data->Material, m, i)
+	foreachi(ModelMaterial &m, data->Material, i)
 		for (int j=0;j<m.NumTextures;j++){
 			string im = ed->get_tex_image(m.Texture[j]);
 			AddChildString("texture_list", i, format("%d\\%s\\%s\\%s", j, ((i == data->CurrentMaterial) && (j == data->CurrentTextureLevel)) ? "true" : "false", im.c_str(), file_secure(m.TextureFile[j]).c_str()));
@@ -87,7 +87,7 @@ void ModelTextureLevelDialog::OnTextureList()
 		data->Notify("Change");
 	}else{
 		n -= data->Material.num;
-		foreachi(data->Material, m, i)
+		foreachi(ModelMaterial &m, data->Material, i)
 			if (n < m.NumTextures){
 				data->CurrentMaterial = i;
 				data->CurrentTextureLevel = n;

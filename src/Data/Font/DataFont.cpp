@@ -56,7 +56,7 @@ bool DataFont::Load(const string & _filename, bool deep)
 		}
 		string str = f->ReadStrC();
 		UnknownGlyphNo=0;
-		foreachi(Glyph, g, i)
+		foreachi(FontGlyph &g, Glyph, i)
 			if (g.Name == str)
 				UnknownGlyphNo = i;
 
@@ -79,7 +79,7 @@ bool DataFont::Load(const string & _filename, bool deep)
 		}
 		string str = f->ReadStrC();
 		UnknownGlyphNo=0;
-		foreachi(Glyph, g, i)
+		foreachi(FontGlyph &g, Glyph, i)
 			if (g.Name == str)
 				UnknownGlyphNo = i;
 	}else{

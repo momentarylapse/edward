@@ -8,7 +8,7 @@
 #include "nix.h"
 //#include "nix_common.h"
 
-#ifdef NIX_OS_LINUX
+#ifdef OS_LINUX
 	#include <X11/keysym.h>
 	#include <gdk/gdkx.h>
 #endif
@@ -200,7 +200,7 @@ void NixUpdateInput()
 {
 	NixInputDataLast = NixInputDataCurrent;
 	NixKeyRep = -2;
-	foreach(NixInputEvent, e){
+	foreach(HuiEvent &e, NixInputEvent){
 		if (e.message == "hui:key-down")
 			NixKeyRep = e.key;
 	}
@@ -212,7 +212,7 @@ void NixUpdateInput()
 		NixInputDataCurrent.x = mx0;
 		NixInputDataCurrent.y = my0;
 		NixInputDataCurrent.dx = NixInputDataCurrent.dy = NixInputDataCurrent.dz = 0;
-		foreach(NixInputEvent, e){
+		foreach(HuiEvent &e, NixInputEvent){
 			NixInputDataCurrent.dx += e.dx;
 			NixInputDataCurrent.dy += e.dy;
 			NixInputDataCurrent.dz += e.dz;
@@ -259,7 +259,7 @@ void NixResetCursor()
 {
 #if 0
 	if (NixFullscreen){
-		#ifdef NIX_OS_WINDOWS
+		#ifdef OS_WINDOWS
 			SetCursorPos(NixScreenWidth/2,NixScreenHeight/2);
 		#endif
 		NixWindow->InputData.x=NixInputDataCurrent.x=NixScreenWidth/2.0f;

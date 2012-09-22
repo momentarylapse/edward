@@ -22,7 +22,7 @@ ActionModelDeleteBone::~ActionModelDeleteBone()
 void *ActionModelDeleteBone::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	ModeModelSkeletonBone &b = m->Bone[index];
+	ModelBone &b = m->Bone[index];
 	pos = b.DeltaPos;
 	parent = b.Parent;
 	filename = b.ModelFile;
@@ -30,7 +30,7 @@ void *ActionModelDeleteBone::execute(Data *d)
 	child.clear();
 
 	// correct the rest of the skeleton
-	foreachi(m->Bone, bb, i)
+	foreachi(ModelBone &bb, m->Bone, i)
 		if (i != index){
 			// child -> save and make root
 			if (bb.Parent == index){
@@ -47,8 +47,8 @@ void *ActionModelDeleteBone::execute(Data *d)
 	// save + correct animations
 	move_dpos.clear();
 	move_ang.clear();
-	foreach(m->Move, move)
-		foreach(move.Frame, f){
+	foreach(ModelMove &move, m->Move)
+		foreach(ModelFrame &f, move.Frame){
 			move_dpos.add(f.SkelDPos[index]);
 			f.SkelDPos.erase(index);
 			move_ang.add(f.SkelAng[index]);
@@ -57,7 +57,7 @@ void *ActionModelDeleteBone::execute(Data *d)
 
 	// save + correct vertices
 	vertex.clear();
-	foreachi(m->Vertex, v, vi)
+	foreachi(ModelVertex &v, m->Vertex, vi)
 		if (v.BoneIndex == index){
 			v.BoneIndex = -1;
 			vertex.add(vi);
@@ -73,7 +73,7 @@ void *ActionModelDeleteBone::execute(Data *d)
 void ActionModelDeleteBone::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	ModeModelSkeletonBone b;
+	ModelBone b;
 	b.Parent = parent;
 	b.ConstPos = false;
 	b.DeltaPos = pos;
@@ -88,30 +88,30 @@ void ActionModelDeleteBone::undo(Data *d)
 	m->Bone.insert(b, index);
 
 	// correct skeleton
-	foreachi(m->Bone, bb, i)
+	foreachi(ModelBone &bb, m->Bone, i)
 		if (i != index){
 			if (bb.Parent >= index)
 				bb.Parent ++;
 		}
-	foreach(child, c){
+	foreach(int c, child){
 		m->Bone[c].Parent = index;
 		m->Bone[c].DeltaPos = m->Bone[c].pos - pos;
 	}
 
 	// correct animations
 	int fi = 0;
-	foreach(m->Move, move)
-		foreach(move.Frame, f){
+	foreach(ModelMove &move, m->Move)
+		foreach(ModelFrame &f, move.Frame){
 			f.SkelDPos.insert(move_dpos[fi], index);
 			f.SkelAng.insert(move_ang[fi], index);
 			fi ++;
 		}
 
 	// correct vertices
-	foreach(m->Vertex, v)
+	foreach(ModelVertex &v, m->Vertex)
 		if (v.BoneIndex >= index)
 			v.BoneIndex ++;
-	foreach(vertex, vi)
+	foreach(int vi, vertex)
 		m->Vertex[vi].BoneIndex = index;
 }
 

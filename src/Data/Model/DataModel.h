@@ -15,8 +15,8 @@
 #include "ModeModelMaterial.h"
 
 class DataModel;
-class ModeModelSurface;
-class ModeModelMaterial;
+class ModelSurface;
+class ModelMaterial;
 
 
 #define TransparencyModeDefault			-1
@@ -35,7 +35,7 @@ enum{
 	FXKindForceField
 };
 
-struct ModeModelFX{
+struct ModelEffect{
 	int Kind, Surface, Vertex;
 	int Size, Speed, Intensity;
 	color Colors[3];
@@ -43,7 +43,7 @@ struct ModeModelFX{
 	string File, Function;
 };
 
-class ModeModelVertex: public MultiViewSingleData
+class ModelVertex: public MultiViewSingleData
 {
 public:
 	int NormalMode;
@@ -56,7 +56,7 @@ public:
 	int Surface;
 };
 
-class ModeModelTriangle: public MultiViewSingleData
+class ModelTriangle: public MultiViewSingleData
 {
 public:
 	int Vertex[3];
@@ -71,18 +71,18 @@ public:
 };
 
 // only for use in MultiView...
-class ModeModelSkinVertexDummy: public MultiViewSingleData
+class ModelSkinVertexDummy: public MultiViewSingleData
 {
 };
 
-class ModeModelBall: public MultiViewSingleData
+class ModelBall: public MultiViewSingleData
 {
 public:
 	int Index;
 	float Radius;
 };
 
-struct ModeModelPolyhedronFace
+struct ModelPolyhedronFace
 {
 	int NumVertices;
 	int Index[MODEL_MAX_POLY_VERTICES_PER_FACE];
@@ -91,11 +91,11 @@ struct ModeModelPolyhedronFace
 
 
 // TODO: dynamical!
-class ModeModelPolyhedron: public MultiViewSingleData
+class ModelPolyhedron: public MultiViewSingleData
 {
 public:
 	int NumFaces;
-	ModeModelPolyhedronFace Face[MODEL_MAX_POLY_FACES];
+	ModelPolyhedronFace Face[MODEL_MAX_POLY_FACES];
 	int NumSVertices;
 	int SIndex[MODEL_MAX_POLY_FACES * MODEL_MAX_POLY_VERTICES_PER_FACE];
 
@@ -110,39 +110,29 @@ public:
 
 
 // triangles belonging to one material
-struct ModeModelSubSkin
+struct ModelSubSkin
 {
 	int NumTextures; // "read only" (updated automatically...)
 
 	// triangles
-	Array<ModeModelTriangle> Triangle;
+	Array<ModelTriangle> Triangle;
 };
 
 
 // geometry
-struct ModeModelSkin
+struct ModelSkin
 {
 	// general properties
 	int NormalModeAll;
 
 	// vertices
-	Array<ModeModelVertex> Vertex;
+	Array<ModelVertex> Vertex;
 
 	// sub skins
-	Array<ModeModelSubSkin> Sub;
+	Array<ModelSubSkin> Sub;
 };
 
-// current geometry
-//extern ModeModelSkin *skin;
-
-/*struct PseudoSkin{
-	int NumVertices;
-	ModeModelVertex *Vertex;
-	int NumTriangles;
-	ModeModelTriangle *Triangle;
-};*/
-
-class ModeModelSkeletonBone: public MultiViewSingleData
+class ModelBone: public MultiViewSingleData
 {
 public:
 	int Parent;
@@ -155,7 +145,7 @@ public:
 	matrix Matrix, RotMatrix;
 };
 
-struct ModeModelFrame
+struct ModelFrame
 {
 	// skeleton animation
 	Array<vector> SkelDPos;
@@ -168,18 +158,16 @@ struct ModeModelFrame
 	Array<vector> VertexDPos;
 };
 
-struct ModeModelMove
+struct ModelMove
 {
 	int Type;
-	Array<ModeModelFrame> Frame;
+	Array<ModelFrame> Frame;
 	float FramesPerSecConst, FramesPerSecFactor;
 	bool InterpolatedQuadratic, InterpolatedLoop;
 	string Name;
 };
 
-extern ModeModelMove *EmptyMove;
-
-class ModeModelEdge: public MultiViewSingleData
+class ModelEdge: public MultiViewSingleData
 {
 public:
 	//int NormalMode;
@@ -195,10 +183,10 @@ public:
 };
 
 
-struct ModeModelGeometry
+struct ModelGeometry
 {
-	Array<ModeModelVertex> Vertex;
-	Array<ModeModelTriangle> Triangle;
+	Array<ModelVertex> Vertex;
+	Array<ModelTriangle> Triangle;
 };
 
 
@@ -241,7 +229,7 @@ public:
 	void GetBoundingBox(vector &min, vector &max);
 	void GenerateDetailDists(float *dist);
 	matrix3 GenerateInertiaTensor(float mass);
-	void CreateSkin(ModeModelSkin *src, ModeModelSkin *dst, float quality_factor);
+	void CreateSkin(ModelSkin *src, ModelSkin *dst, float quality_factor);
 
 	void ResetAutoTexturing();
 	void ApplyAutoTexturing(int a, int b, int c, vector *sv);
@@ -259,17 +247,17 @@ public:
 
 	// low level (un-action'ed)
 	//void LowLevelAddVertex(const vector &vd);
-	ModeModelSurface *AddSurface(int surf_no = -1);
-	ModeModelSurface *SurfaceJoin(ModeModelSurface *a, ModeModelSurface *b);
-	int get_surf_no(ModeModelSurface *s);
+	ModelSurface *AddSurface(int surf_no = -1);
+	ModelSurface *SurfaceJoin(ModelSurface *a, ModelSurface *b);
+	int get_surf_no(ModelSurface *s);
 
 	// high level (actions)
 	void AddVertex(const vector &pos, int bone_index = 0, int normal_mode = -1);
-	ModeModelTriangle *AddTriangle(int a, int b, int c);
-	ModeModelSurface *AddBall(const vector &_pos, float _radius, int _num_x, int _num_y, bool _as_sphere);
-	ModeModelSurface *AddPlane(const vector &_pos, const vector &_dv1, const vector &_dv2, int _num_x, int _num_y);
-	ModeModelSurface *AddCube(const vector &_pos, const vector &_dv1, const vector &_dv2, const vector &_dv3, int num_1, int num_2, int num_3);
-	ModeModelSurface *AddCylinder(Array<vector> &pos, Array<float> &radius, int rings, int edges, bool closed);
+	ModelTriangle *AddTriangle(int a, int b, int c);
+	ModelSurface *AddBall(const vector &_pos, float _radius, int _num_x, int _num_y, bool _as_sphere);
+	ModelSurface *AddPlane(const vector &_pos, const vector &_dv1, const vector &_dv2, int _num_x, int _num_y);
+	ModelSurface *AddCube(const vector &_pos, const vector &_dv1, const vector &_dv2, const vector &_dv3, int num_1, int num_2, int num_3);
+	ModelSurface *AddCylinder(Array<vector> &pos, Array<float> &radius, int rings, int edges, bool closed);
 
 	void DeleteSelection(bool greedy = false);
 	void InvertSelection();
@@ -279,18 +267,18 @@ public:
 	void SetNormalModeSelection(int mode);
 	void SetNormalModeAll(int mode);
 	void SetMaterialSelection(int material);
-	void CopyGeometry(ModeModelGeometry &geo); // not an action...
-	void PasteGeometry(ModeModelGeometry &geo);
+	void CopyGeometry(ModelGeometry &geo); // not an action...
+	void PasteGeometry(ModelGeometry &geo);
 	void Easify(float factor);
 
 
 	// properties
-	Array<ModeModelSkeletonBone> Bone;
+	Array<ModelBone> Bone;
 
 
 	// properties
-	Array<ModeModelMove> Move;
-	ModeModelMove *move;
+	Array<ModelMove> Move;
+	ModelMove *move;
 
 	int CurrentMove,CurrentFrame;
 	void SetCurrentMove(int move);
@@ -320,26 +308,26 @@ public:
 	int NewRootPoint;
 
 	// geometry
-	Array<ModeModelVertex> Vertex;
-	Array<ModeModelSurface> Surface;
+	Array<ModelVertex> Vertex;
+	Array<ModelSurface> Surface;
 	int NormalModeAll;
 	Array<MultiViewSingleData> SkinVertex; // only temporary...
 	int SkinVertMat, SkinVertTL;
 
 	// old geometry
-	ModeModelSkin Skin[4];
+	ModelSkin Skin[4];
 
 	// geometry (physical)
-	Array<ModeModelBall> Ball;
-	Array<ModeModelPolyhedron> Poly;
+	Array<ModelBall> Ball;
+	Array<ModelPolyhedron> Poly;
 
 	// general properties
-	Array<ModeModelMaterial> Material;
+	Array<ModelMaterial> Material;
 	int CurrentMaterial, CurrentTextureLevel;
 	vector Min, Max;
 
 	// effects
-	Array<ModeModelFX> Fx;
+	Array<ModelEffect> Fx;
 
 	struct MetaData
 	{
@@ -381,11 +369,11 @@ public:
 	bool NormalIndicesOK[4];
 
 	// temporary data (copy/paste)
-/*	Array<ModeModelVertex> BVertex;
-	Array<ModeModelTriangle> BTriangle;
+/*	Array<ModelVertex> BVertex;
+	Array<ModelTriangle> BTriangle;
 	Array<int> BTriangleMat;
-	Array<ModeModelBall> BBall;
-	Array<ModeModelPolyhedron> BPoly;*/
+	Array<ModelBall> BBall;
+	Array<ModelPolyhedron> BPoly;*/
 };
 
 #endif /* DATAMODEL_H_ */

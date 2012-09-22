@@ -33,8 +33,8 @@ ActionModelAddBall::ActionModelAddBall(DataModel *m, const vector &_pos, float _
 			for (int x=0;x<_num_x+1;x++)
 				for (int y=0;y<_num_x+1;y++){
 					vector dp=vector(float(x*2-_num_x),float(y*2-_num_x),float(_num_x));
-					VecNormalize(dp);
-					VecTransform(dp,mat,dp);
+					dp.normalize();
+					dp = mat * dp;
 					AddSubAction(new ActionModelAddVertex(_pos + _radius * dp), m);
 				}
 			// create new triangles
@@ -64,7 +64,7 @@ ActionModelAddBall::ActionModelAddBall(DataModel *m, const vector &_pos, float _
 		for (int x=0;x<_num_x+1;x++)
 			for (int y=0;y<_num_y+1;y++){
 				if ((x>0)&&(x<_num_x)&&(y<_num_y))
-					AddSubAction(new ActionModelAddVertex(_pos + _radius * VecAng2Dir(vector(pi*(float(x)-(float)_num_x/2.0f)/_num_x,pi*2.0f* y/_num_y,0))), m);
+					AddSubAction(new ActionModelAddVertex(_pos + _radius * vector(pi*(float(x)-(float)_num_x/2.0f)/_num_x,pi*2.0f* y/_num_y,0).ang2dir()), m);
 			}
 		// create new triangles
 		for (int y=0;y<_num_y;y++)

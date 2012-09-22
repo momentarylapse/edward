@@ -14,8 +14,8 @@ ActionModelSkinVerticesFromProjection::ActionModelSkinVerticesFromProjection(Dat
 	sg.init_projective(mv, mv->mouse_win);
 
 	// list of selected skin vertices and save old pos
-	foreachi(m->Surface, s, si)
-		foreachi(s.Triangle, t, ti)
+	foreachi(ModelSurface &s, m->Surface, si)
+		foreachi(ModelTriangle &t, s.Triangle, ti)
 			for (int k=0;k<3;k++)
 				if (m->Vertex[t.Vertex[k]].is_selected){
 					vert_on_tria.add(k);
@@ -34,8 +34,8 @@ void *ActionModelSkinVerticesFromProjection::execute(Data *d)
 
 	for (int l=0;l<MODEL_MAX_TEXTURES;l++)
 		old_pos[l].clear();
-	foreachi(vert_on_tria, k, i){
-		ModeModelTriangle &t = m->Surface[surface[i]].Triangle[tria[i]];
+	foreachi(int k, vert_on_tria, i){
+		ModelTriangle &t = m->Surface[surface[i]].Triangle[tria[i]];
 		for (int l=0;l<MODEL_MAX_TEXTURES;l++){
 			vector &v = t.SkinVertex[l][k];
 			old_pos[l].add(v);
@@ -52,8 +52,8 @@ void ActionModelSkinVerticesFromProjection::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	foreachi(vert_on_tria, k, i){
-		ModeModelTriangle &t = m->Surface[surface[i]].Triangle[tria[i]];
+	foreachi(int k, vert_on_tria, i){
+		ModelTriangle &t = m->Surface[surface[i]].Triangle[tria[i]];
 		for (int l=0;l<MODEL_MAX_TEXTURES;l++)
 			t.SkinVertex[l][k] = old_pos[l][i];
 	}

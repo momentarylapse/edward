@@ -156,7 +156,7 @@ void CTerrain::Update(int x1,int x2,int z1,int z2,int mode)
 				else
 					dhz=0;
 				normal[n]=vector(-dhx/pattern.x,4,-dhz/pattern.z);
-				VecNormalize(normal[n]);
+				normal[n].normalize();
 			}
 			if (uv)
 				vertex[n]=pos+vector(pattern.x*(float)i,height[n],pattern.z*(float)j);
@@ -218,7 +218,7 @@ float CTerrain::gimme_height_n(const vector &p, vector &n)
 	vector vdx=vector(pattern.x, dhx,0            );
 	vector vdz=vector(0        ,-dhz,pattern.z);
 	n=VecCrossProduct(vdz,vdx);
-	VecNormalize(n);
+	n.normalize();
 	return he;
 }
 
@@ -231,7 +231,7 @@ void CTerrain::CalcDetail()
 			int lz=(z1*32>num_z-32)?(num_z%32):32;
 			int x0=x1*32;
 			int z0=z1*32;
-			float depth=VecLength(cur_cam->pos-vertex[Index(x0+lx/2,z0+lz/2)])/pattern.x;
+			float depth=(cur_cam->pos-vertex[Index(x0+lx/2,z0+lz/2)]).length()/pattern.x;
 			int e=32;
 			if (depth<500)	e=32;
 			if (depth<320)	e=16;
@@ -344,9 +344,9 @@ inline bool TracePattern(CTerrain *t,vector &p1,vector &p2,vector &tp,int x,int 
 
 	// scan both triangles
 	if (LineIntersectsTriangle(a,b,d,p1,p2,tp,false))
-		dmin1=VecLength(v=(tp-p1));
+		dmin1=(tp-p1).length();
 	if (LineIntersectsTriangle(a,c,d,p1,p2,ttp,false)){
-		dmin2=VecLength(v=tp-p1);
+		dmin2=(tp-p1).length();
 		if (dmin2<dmin1){ // better than the first one?
 			dmin1=dmin2;
 			tp=ttp;

@@ -37,12 +37,12 @@ void CameraInit()
 void CameraReset()
 {
 	msg_db_r("CameraReset",1);
-	foreach(camera, c)
+	foreach(Camera *c, camera)
 		delete(c);
 	camera.clear();
 
 	// create the main-view ("cam")
-	Cam = CreateCamera(v0, v0, r_id, true);
+	Cam = CreateCamera(v_0, v_0, r_id, true);
 	cur_cam = Cam;
 
 	msg_db_l(1);
@@ -69,11 +69,11 @@ void Camera::reset()
 
 	show = false;
 	
-	pos = vel = ang = rot = v0;
-	last_pos = view_pos = vel_rt = pos_0 = vel_0 = ang_0 = pos_1 = vel_1 = ang_1 = v0;
-	a_pos = b_pos = a_ang = b_ang = v0;
-	script_rot_0 = script_rot_1 = v0;
-	script_ang[0] = script_ang[1] = v0;
+	pos = vel = ang = rot = v_0;
+	last_pos = view_pos = vel_rt = pos_0 = vel_0 = ang_0 = pos_1 = vel_1 = ang_1 = v_0;
+	a_pos = b_pos = a_ang = b_ang = v_0;
+	script_rot_0 = script_rot_1 = v_0;
+	script_ang[0] = script_ang[1] = v_0;
 	el = el_rt = flight_time = flight_time_el = 0;
 	post_projection_matrix = NULL;
 	modal = false;
@@ -221,7 +221,7 @@ void Camera::StartScript(const string &filename,const vector &dpos)
 		flight_time_el = flight_time = 0;
 		ExecuteCamPoint(this);
 	}
-	vel = vel_rt = v0;
+	vel = vel_rt = v_0;
 	msg_left();
 }
 
@@ -236,7 +236,7 @@ void ExecuteCamPoint(Camera *view)
 {
 	view->script_ang[0] = view->ang;
 	if (view->cam_point_nr == 0)
-		view->script_rot_1 = v0;
+		view->script_rot_1 = v_0;
 	if (view->cam_point_nr >= view->cam_point.num){
 		view->cam_point_nr = -1;
 		view->cam_point.clear();
@@ -255,14 +255,14 @@ void ExecuteCamPoint(Camera *view)
 		return;
 	}else if (p->type == CPKSetCamAng){
 		view->ang = p->ang;
-		view->script_rot_1 = v0;
+		view->script_rot_1 = v_0;
 		view->cam_point_nr ++;
 		ExecuteCamPoint(view);
 		return;
 	}else if (p->type == CPKSetCamPosAng){
 		view->pos = p->pos;
 		view->ang = p->ang;
-		view->script_rot_1 = v0;
+		view->script_rot_1 = v_0;
 		if (p->duration <= 0){
 			view->cam_point_nr ++;
 			ExecuteCamPoint(view);
@@ -272,19 +272,19 @@ void ExecuteCamPoint(Camera *view)
 					p->pos, p->vel, p->ang,
 					p->duration,
 					true);
-			view->a_pos = v0; //view->pos;
-			view->b_pos = v0; //view->pos;
+			view->a_pos = v_0; //view->pos;
+			view->b_pos = v_0; //view->pos;
 			view->pos_0 = view->pos;
 			view->pos_1 = view->pos;
-			view->vel_0 = v0;
-			view->vel_1 = v0;
-			view->a_ang = v0; //view->ang;
-			view->b_ang = v0; //view->ang;
+			view->vel_0 = v_0;
+			view->vel_1 = v_0;
+			view->a_ang = v_0; //view->ang;
+			view->b_ang = v_0; //view->ang;
 			view->ang_0 = view->ang;
 			view->ang_1 = view->ang;
-			view->rot = v0;
-			view->script_rot_0 = v0;
-			view->script_rot_1 = v0;
+			view->rot = v_0;
+			view->script_rot_0 = v_0;
+			view->script_rot_1 = v_0;
 		}
 	}else if (p->type == CPKCamFlight){
 		float ft = view->flight_time_el - view->flight_time;
@@ -299,11 +299,11 @@ void ExecuteCamPoint(Camera *view)
 				true);
 		view->flight_time_el = ft;
 		// create data for the rotation
-		view->script_rot_0 = v0;
+		view->script_rot_0 = v_0;
 		if (view->cam_point_nr > 0)
 			if (view->cam_point[view->cam_point_nr - 1].type == CPKCamFlight)
 				view->script_rot_0 = view->script_rot_1;//(view->cam_point[view->cam_pointNr].Ang-view->ScriptAng[1])/(view->cam_point[view->cam_pointNr-1].Wait + p->wait);
-		view->script_rot_1 = v0;
+		view->script_rot_1 = v_0;
 		if (view->cam_point_nr < view->cam_point.num - 1)
 			if (view->cam_point[view->cam_point_nr + 1].type == CPKCamFlight)
 				view->script_rot_1 = (view->cam_point[view->cam_point_nr + 1].ang - view->ang_0) / (p->duration + view->cam_point[view->cam_point_nr + 1].duration);
@@ -318,7 +318,7 @@ void CameraCalcMove()
 {
 	msg_db_r("CamCalcMove",2);
 
-	foreach(camera, v){
+	foreach(Camera *v, camera){
 		if (!v->enabled)
 			continue;
 
@@ -384,7 +384,7 @@ void CameraCalcMove()
 			v->vel_rt = (v->pos - v->last_pos)/ElapsedRT;
 		}
 		if (v->jump_to_pos)
-			v->vel = v->vel_rt = v0;
+			v->vel = v->vel_rt = v_0;
 		v->last_pos = v->pos;
 		v->jump_to_pos = false;
 	}
@@ -449,7 +449,7 @@ void Camera::SetViewLocal()
 	NixMinDepth = 0.01f;
 	NixMaxDepth = 1000000.0f;
 	NixSetProjection(true, true);
-	NixSetView(v0, ang, scale);
+	NixSetView(v_0, ang, scale);
 	
 	m_all = NixProjectionMatrix * NixViewMatrix;
 	MatrixInverse(im_all, m_all);

@@ -36,7 +36,7 @@ void ModeModelAnimationVertex::OnStart()
 	Subscribe(multi_view, "SelectionChange");
 	OnUpdate(data);
 
-	foreachi(data->Vertex, v, i)
+	foreachi(ModelVertex &v, data->Vertex, i)
 		vertex[i].is_selected = v.is_selected;
 }
 
@@ -66,7 +66,7 @@ void ModeModelAnimationVertex::OnUpdate(Observable* o)
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect,
 				NULL, NULL);
 	}else if (o->GetName() == "MultiView"){
-		foreachi(data->Vertex, v, i)
+		foreachi(ModelVertex &v, data->Vertex, i)
 			v.is_selected = vertex[i].is_selected;
 		data->SelectionTrianglesFromVertices();
 		data->SelectionSurfacesFromTriangles();
@@ -86,7 +86,7 @@ void ModeModelAnimationVertex::OnDrawWin(int win, irect dest)
 void ModeModelAnimationVertex::UpdateVertices()
 {
 	vertex.resize(data->Vertex.num);
-	foreachi(vertex, v, i)
+	foreachi(ModelVertex &v, vertex, i)
 		v.pos = data->Vertex[i].AnimatedPos;
 }
 

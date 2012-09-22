@@ -16,14 +16,14 @@ ActionModelAddTriangle::ActionModelAddTriangle(DataModel *m, int _a, int _b, int
 {
 	assert(_a >= 0 && _b >= 0 && _c >= 0);
 	assert(_a != _b && _b != _c && _c != _a);
-	Array<int> v;
-	v.add(_a);
-	v.add(_b);
-	v.add(_c);
+	Array<int> vertex;
+	vertex.add(_a);
+	vertex.add(_b);
+	vertex.add(_c);
 	Set<int> surf;
-	foreach(v, vv){
-		if (m->Vertex[vv].Surface >= 0)
-			surf.add(m->Vertex[vv].Surface);
+	foreach(int v, vertex){
+		if (m->Vertex[v].Surface >= 0)
+			surf.add(m->Vertex[v].Surface);
 	}
 
 	if (surf.num == 0){

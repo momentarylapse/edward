@@ -10,21 +10,22 @@
 
 #include "../../MultiView.h"
 #include "DataModel.h"
+#include "../../lib/base/set.h"
 #include "../../lib/types/types.h"
 
 class DataModel;
-class ModeModelSurface;
-struct ModeModelEdge;
-struct ModeModelTriangle;
+class ModelSurface;
+struct ModelEdge;
+struct ModelTriangle;
 
-class ModeModelSurface: public MultiViewSingleData
+class ModelSurface: public MultiViewSingleData
 {
 public:
-	ModeModelSurface();
-	virtual ~ModeModelSurface();
+	ModelSurface();
+	virtual ~ModelSurface();
 
-	Array<ModeModelTriangle> Triangle;
-	Array<ModeModelEdge> Edge;
+	Array<ModelTriangle> Triangle;
+	Array<ModelEdge> Edge;
 	Set<int> Vertex;
 	bool IsPhysical, IsVisible;
 	bool IsClosed;

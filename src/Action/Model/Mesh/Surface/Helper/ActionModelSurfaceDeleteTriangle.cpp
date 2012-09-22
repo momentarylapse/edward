@@ -22,7 +22,7 @@ void ActionModelSurfaceDeleteTriangle::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModeModelSurface &s = m->Surface[surface];
+	ModelSurface &s = m->Surface[surface];
 
 	// add triangle
 	s.AddTriangle(vertex[0], vertex[1], vertex[2], material, skin[0], skin[1], skin[2], index);
@@ -35,8 +35,8 @@ void *ActionModelSurfaceDeleteTriangle::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModeModelSurface &s = m->Surface[surface];
-	ModeModelTriangle &t = s.Triangle[index];
+	ModelSurface &s = m->Surface[surface];
+	ModelTriangle &t = s.Triangle[index];
 
 	// save old data
 	material = t.Material;

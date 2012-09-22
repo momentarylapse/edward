@@ -25,11 +25,11 @@ void* ActionModelAttachVerticesToBone::execute(Data* d)
 
 	// save old bone indices
 	old_bone.clear();
-	foreach(index, i)
+	foreach(int i, index)
 		old_bone.add(m->Vertex[i].BoneIndex);
 
 	// apply
-	foreach(index, i)
+	foreach(int i, index)
 		m->Vertex[i].BoneIndex = bone_index;
 	return NULL;
 }
@@ -39,7 +39,7 @@ void ActionModelAttachVerticesToBone::undo(Data* d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	// restore old bone indices
-	foreachi(index, i, ii)
+	foreachi(int i, index, ii)
 		m->Vertex[i].BoneIndex = old_bone[ii];
 }
 

@@ -18,7 +18,7 @@ ActionModelAnimationRotateVertices::ActionModelAnimationRotateVertices(Data* d, 
 	frame = m->CurrentFrame;
 
 	// list of selected vertices and save old pos
-	foreachi(m->Vertex, v, i)
+	foreachi(ModelVertex &v, m->Vertex, i)
 		if (v.is_selected){
 			index.add(i);
 			old_data.add(m->Move[move].Frame[frame].VertexDPos[i]);
@@ -34,7 +34,7 @@ void* ActionModelAnimationRotateVertices::execute(Data* d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	matrix rot;
 	MatrixRotation(rot, param);
-	foreachi(index, i, ii)
+	foreachi(int i, index, ii)
 		m->Move[move].Frame[frame].VertexDPos[i] = pos0 + rot * (old_data[ii] + m->Vertex[i].pos - pos0) - m->Vertex[i].pos;
 	m->UpdateAnimation();
 	return NULL;
@@ -43,7 +43,7 @@ void* ActionModelAnimationRotateVertices::execute(Data* d)
 void ActionModelAnimationRotateVertices::undo(Data* d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(index, i, ii)
+	foreachi(int i, index, ii)
 		m->Move[move].Frame[frame].VertexDPos[i] = old_data[ii];
 	m->UpdateAnimation();
 }

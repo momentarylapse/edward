@@ -101,17 +101,17 @@ void AdministrationDialog::FillAdminList(int view, const string &lid)
 	}else if (view == 1){ // all files
 		*l = data->file_list;
 	}else if (view == 2){ // selected file
-		foreach(SelectedAdminFile->Parent, a)
+		foreach(AdminFile *a, SelectedAdminFile->Parent)
 			l->add(a);
 	}else if (view == 3){
-		foreach(SelectedAdminFile->Child, a)
+		foreach(AdminFile *a, SelectedAdminFile->Child)
 			l->add(a);
 	}else if (view == 4){ // unnessecary
-		foreach(data->file_list, a)
+		foreach(AdminFile *a, data->file_list)
 			if ((a->Kind >= 0) && (a->Parent.num == 0))
 				l->add(a);
 	}else if (view == 5){ // missing
-		foreach(data->file_list, a)
+		foreach(AdminFile *a, data->file_list)
 			if (a->Missing)
 				l->add(a);
 	}
@@ -121,7 +121,7 @@ void AdministrationDialog::FillAdminList(int view, const string &lid)
 
 	// place them into the list
 	int k=-2;
-	foreach(*l, a){
+	foreach(AdminFile *a, *l){
 		AddString(lid, format("%s::%s::%d::%d::%s",
 			(k != a->Kind) ? FD2Str(a->Kind).c_str() : "",
 			a->Name.c_str(),
@@ -195,7 +195,7 @@ Array<AdminFile*> AdministrationDialog::GetSelectedFilesFromList(const string& l
 	Array<int> index = GetMultiSelection(lid);
 	AdminFileList *l = get_list(lid);
 	assert(l);
-	foreach(index, i)
+	foreach(int i, index)
 		r.add((*l)[i]);
 	return r;
 }
@@ -262,7 +262,7 @@ void AdministrationDialog::OnEdit()
 			break;
 		case FDTerrain:
 			mode_world->data->Reset();
-			if (mode_world->data->AddTerrain(a->Name.substr(0, -5), v0)){
+			if (mode_world->data->AddTerrain(a->Name.substr(0, -5), v_0)){
 				ed->SetMode(mode_world);
 			}
 			break;

@@ -10,7 +10,7 @@
 
 ActionModelDeleteBoneSelection::ActionModelDeleteBoneSelection(DataModel *m)
 {
-	foreachbi(m->Bone, b, bi)
+	foreachib(ModelBone &b, m->Bone, bi)
 		if (b.is_selected)
 			AddSubAction(new ActionModelDeleteBone(bi), m);
 }

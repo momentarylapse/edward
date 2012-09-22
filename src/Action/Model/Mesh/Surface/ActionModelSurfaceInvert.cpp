@@ -24,10 +24,10 @@ void *ActionModelSurfaceInvert::execute(Data *d)
 
 	assert((surface >= 0) && (surface < m->Surface.num));
 
-	ModeModelSurface &s = m->Surface[surface];
+	ModelSurface &s = m->Surface[surface];
 
 	// flip triangles
-	foreachi(s.Triangle, t, ti){
+	foreachi(ModelTriangle &t, s.Triangle, ti){
 		// swap vertices
 		int v = t.Vertex[0];
 		t.Vertex[0] = t.Vertex[1];
@@ -50,7 +50,7 @@ void *ActionModelSurfaceInvert::execute(Data *d)
 	}
 
 	// flip edges
-	foreach(s.Edge, e){
+	foreach(ModelEdge &e, s.Edge){
 		// swap vertices
 		int v = e.Vertex[0];
 		e.Vertex[0] = e.Vertex[1];

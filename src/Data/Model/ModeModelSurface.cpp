@@ -8,15 +8,15 @@
 #include "ModeModelSurface.h"
 #include "DataModel.h"
 
-ModeModelSurface::ModeModelSurface()
+ModelSurface::ModelSurface()
 {
 }
 
-ModeModelSurface::~ModeModelSurface()
+ModelSurface::~ModelSurface()
 {
 }
 
-void ModeModelSurface::AddVertex(int v)
+void ModelSurface::AddVertex(int v)
 {
 	// set -> unique
 	Vertex.add(v);
@@ -30,11 +30,11 @@ void ModeModelSurface::AddVertex(int v)
 		msg_error("SurfaceAddVertex ...surface not found");
 }
 
-void ModeModelSurface::AddTriangle(int a, int b, int c, int material, const vector *sa, const vector *sb, const vector *sc, int index)
+void ModelSurface::AddTriangle(int a, int b, int c, int material, const vector *sa, const vector *sb, const vector *sc, int index)
 {
 	msg_db_r("Surf.AddTria", 1);
 
-	ModeModelTriangle t;
+	ModelTriangle t;
 	t.Vertex[0] = a;
 	t.Vertex[1] = b;
 	t.Vertex[2] = c;
@@ -62,7 +62,7 @@ void ModeModelSurface::AddTriangle(int a, int b, int c, int material, const vect
 		Triangle.insert(t, index);
 
 		// correct edges
-		foreach(Edge, e)
+		foreach(ModelEdge &e, Edge)
 			for (int k=0;k<e.RefCount;k++)
 				if (e.Triangle[k] >= index)
 					e.Triangle[k] ++;
@@ -75,9 +75,9 @@ void ModeModelSurface::AddTriangle(int a, int b, int c, int material, const vect
 	msg_db_l(1);
 }
 
-int ModeModelSurface::AddEdgeForNewTriangle(int a, int b, int tria, int side)
+int ModelSurface::AddEdgeForNewTriangle(int a, int b, int tria, int side)
 {
-	foreachi(Edge, e, i){
+	foreachi(ModelEdge &e, Edge, i){
 		if ((e.Vertex[0] == a) && (e.Vertex[1] == b)){
 			e.RefCount ++;
 			msg_error("surface error? inverse edge");
@@ -94,7 +94,7 @@ int ModeModelSurface::AddEdgeForNewTriangle(int a, int b, int tria, int side)
 			return i;
 		}
 	}
-	ModeModelEdge ee;
+	ModelEdge ee;
 	ee.Vertex[0] = a;
 	ee.Vertex[1] = b;
 	ee.is_selected = false;
@@ -109,14 +109,14 @@ int ModeModelSurface::AddEdgeForNewTriangle(int a, int b, int tria, int side)
 }
 
 
-inline bool edge_equal(ModeModelEdge *e, int a, int b)
+inline bool edge_equal(ModelEdge &e, int a, int b)
 {
-	int v0 = e->Vertex[0];
-	int v1 = e->Vertex[1];
+	int v0 = e.Vertex[0];
+	int v1 = e.Vertex[1];
 	return (((v0 == a) && (v1 == b)) || ((v0 == b) && (v1 == a)));
 }
 
-inline int find_other_tria_from_edge(ModeModelSurface *s, int e, int t)
+inline int find_other_tria_from_edge(ModelSurface *s, int e, int t)
 {
 	if (s->Edge[e].Triangle[0] == t)
 		return s->Edge[e].Triangle[1];
@@ -124,7 +124,7 @@ inline int find_other_tria_from_edge(ModeModelSurface *s, int e, int t)
 }
 
 // return: closed circle... don't run again to the left
-inline bool find_tria_top(ModeModelSurface *s, const Array<int> &ti, const Array<int> &tv, Set<int> &used, bool to_the_right)
+inline bool find_tria_top(ModelSurface *s, const Array<int> &ti, const Array<int> &tv, Set<int> &used, bool to_the_right)
 {
 	int t0 = 0;
 	while(true){
@@ -148,22 +148,22 @@ inline bool find_tria_top(ModeModelSurface *s, const Array<int> &ti, const Array
 }
 
 
-void ModeModelSurface::UpdateClosed()
+void ModelSurface::UpdateClosed()
 {
 	// closed?
 	IsClosed = true;
-	foreach(Edge, e)
+	foreach(ModelEdge &e, Edge)
 		if (e.RefCount != 2){
 			IsClosed = false;
 			break;
 		}
 }
 
-void ModeModelSurface::RemoveObsoleteEdge(int index)
+void ModelSurface::RemoveObsoleteEdge(int index)
 {
 	msg_db_r("Surf.RemoveObsoleteEdge", 2);
 	// correct triangle references
-	foreach(Triangle, t)
+	foreach(ModelTriangle &t, Triangle)
 		for (int k=0;k<3;k++)
 			if (t.Edge[k] > index)
 				t.Edge[k] --;
@@ -175,16 +175,16 @@ void ModeModelSurface::RemoveObsoleteEdge(int index)
 	msg_db_l(2);
 }
 
-void ModeModelSurface::MergeEdges()
+void ModelSurface::MergeEdges()
 {
 	msg_db_r("Surf.MergeEdges", 1);
 
 	TestSanity("MergeEdges prae");
 
-	foreachi(Edge, e, i){
+	foreachi(ModelEdge &e, Edge, i){
 		for (int j=i+1;j<Edge.num;j++){
-			ModeModelEdge &f = Edge[j];
-			if (edge_equal(&e, f.Vertex[0], f.Vertex[1])){
+			ModelEdge &f = Edge[j];
+			if (edge_equal(e, f.Vertex[0], f.Vertex[1])){
 				if (e.RefCount + f.RefCount > 2)
 					msg_error(format("SurfMergeEdges: edge(%d,%d).RefCount...  %d + %d    tria=(%d,%d,%d,%d)", f.Vertex[0], f.Vertex[1], e.RefCount, f.RefCount, e.Triangle[0], e.Triangle[1], f.Triangle[0], f.Triangle[1]));
 
@@ -208,45 +208,45 @@ void ModeModelSurface::MergeEdges()
 	msg_db_l(1);
 }
 
-void ModeModelSurface::UpdateNormals()
+void ModelSurface::UpdateNormals()
 {
 	msg_db_r("Surf.UpdateNormals", 2);
 	Set<int> edge, vert;
 
 	// "flat" triangle normals
-	foreach(Triangle, t)
+	foreach(ModelTriangle &t, Triangle)
 		if (t.NormalDirty){
 			t.NormalDirty = false;
 			vector a = model->Vertex[t.Vertex[0]].pos;
 			vector b = model->Vertex[t.Vertex[1]].pos;
 			vector c = model->Vertex[t.Vertex[2]].pos;
 			t.TempNormal = (b - a) ^ (c - a);
-			VecNormalize(t.TempNormal);
+			t.TempNormal.normalize();
 
 			for (int k=0;k<3;k++)
 				t.Normal[k] = t.TempNormal;
 
-			foreachi(Edge, e, i)
+			foreachi(ModelEdge &e, Edge, i)
 				if (e.RefCount == 2){
-					if (edge_equal(&e, t.Vertex[0], t.Vertex[1]))
+					if (edge_equal(e, t.Vertex[0], t.Vertex[1]))
 						edge.add(i);
-					if (edge_equal(&e, t.Vertex[1], t.Vertex[2]))
+					if (edge_equal(e, t.Vertex[1], t.Vertex[2]))
 						edge.add(i);
-					if (edge_equal(&e, t.Vertex[2], t.Vertex[0]))
+					if (edge_equal(e, t.Vertex[2], t.Vertex[0]))
 						edge.add(i);
 				}
 		}
 
 	// round edges?
-	foreach(edge, ip){
-		ModeModelEdge &e = Edge[ip];
+	foreach(int ip, edge){
+		ModelEdge &e = Edge[ip];
 
 		// adjoined triangles
-		ModeModelTriangle &t1 = Triangle[e.Triangle[0]];
-		ModeModelTriangle &t2 = Triangle[e.Triangle[1]];
+		ModelTriangle &t1 = Triangle[e.Triangle[0]];
+		ModelTriangle &t2 = Triangle[e.Triangle[1]];
 
-		ModeModelVertex &v1 = model->Vertex[e.Vertex[0]];
-		ModeModelVertex &v2 = model->Vertex[e.Vertex[1]];
+		ModelVertex &v1 = model->Vertex[e.Vertex[0]];
+		ModelVertex &v2 = model->Vertex[e.Vertex[1]];
 
 		// round?
 		e.IsRound = false;
@@ -271,7 +271,7 @@ void ModeModelSurface::UpdateNormals()
 	}
 
 	// per vertex...
-	foreach(vert, ip){
+	foreach(int ip, vert){
 
 		// hard vertex -> nothing to do
 		if (model->Vertex[ip].NormalMode == NormalModeHard)
@@ -279,7 +279,7 @@ void ModeModelSurface::UpdateNormals()
 
 		// find all triangles shared by this vertex
 		Array<int> ti, tv;
-		foreachi(Triangle, t, i){
+		foreachi(ModelTriangle &t, Triangle, i){
 			for (int k=0;k<3;k++){
 				if (t.Vertex[k] == ip){
 					t.Normal[k] = t.TempNormal;
@@ -293,10 +293,10 @@ void ModeModelSurface::UpdateNormals()
 		if (model->Vertex[ip].NormalMode == NormalModeSmooth){
 
 			// average normal
-			vector n = v0;
+			vector n = v_0;
 			for (int i=0;i<ti.num;i++)
 				n += Triangle[ti[i]].Normal[tv[i]];
-			VecNormalize(n);
+			n.normalize();
 			// apply normal...
 			for (int i=0;i<ti.num;i++)
 				Triangle[ti[i]].Normal[tv[i]] = n;
@@ -327,10 +327,10 @@ void ModeModelSurface::UpdateNormals()
 			}
 
 			// average normal
-			vector n = v0;
+			vector n = v_0;
 			for (int i=0;i<used.num;i++)
 				n += Triangle[ti[used[i]]].Normal[tv[used[i]]];
-			VecNormalize(n);
+			n.normalize();
 			// apply normal... and remove from list
 			for (int i=used.num-1;i>=0;i--){
 				Triangle[ti[used[i]]].Normal[tv[used[i]]] = n;
@@ -343,20 +343,20 @@ void ModeModelSurface::UpdateNormals()
 }
 
 
-void ModeModelSurface::BuildFromTriangles()
+void ModelSurface::BuildFromTriangles()
 {
 	// clear
 	Edge.clear();
 	Vertex.clear();
 	int n = model->get_surf_no(this);
-	foreach(model->Vertex, v)
+	foreach(ModelVertex &v, model->Vertex)
 		if (v.Surface == n){
 			v.Surface = -1;
 			v.RefCount = 0;
 		}
 
 	// add all triangles
-	foreachi(Triangle, t, ti){
+	foreachi(ModelTriangle &t, Triangle, ti){
 		// vertices
 		for (int k=0;k<3;k++)
 			AddVertex(t.Vertex[k]);
@@ -372,9 +372,9 @@ void ModeModelSurface::BuildFromTriangles()
 }
 
 
-void ModeModelSurface::RemoveTriangle(int index)
+void ModelSurface::RemoveTriangle(int index)
 {
-	ModeModelTriangle &t = Triangle[index];
+	ModelTriangle &t = Triangle[index];
 
 	// unref the vertices
 	for (int k=0;k<3;k++){
@@ -388,7 +388,7 @@ void ModeModelSurface::RemoveTriangle(int index)
 
 	// remove from its 3 edges
 	for (int k=0;k<3;k++){
-		ModeModelEdge &e = Edge[t.Edge[k]];
+		ModelEdge &e = Edge[t.Edge[k]];
 		e.RefCount --;
 		if (e.RefCount > 0){
 			// edge has other triangle...
@@ -415,7 +415,7 @@ void ModeModelSurface::RemoveTriangle(int index)
 	}
 
 	// correct edge links
-	foreachi(Edge, e, i)
+	foreachi(ModelEdge &e, Edge, i)
 		for (int k=0;k<e.RefCount;k++)
 			if (e.Triangle[k] > index)
 				e.Triangle[k] --;
@@ -428,20 +428,20 @@ void ModeModelSurface::RemoveTriangle(int index)
 	//TestSanity("rem tria 0");
 
 	// remove obsolete edges
-	foreachb(obsolete, o)
+	foreachb(int o, obsolete)
 		RemoveObsoleteEdge(o);
 
 	TestSanity("rem tria");
 }
 
-void ModeModelSurface::TestSanity(const string &loc)
+void ModelSurface::TestSanity(const string &loc)
 {
-	foreach(Triangle, t)
+	foreach(ModelTriangle &t, Triangle)
 		if ((t.Vertex[0] == t.Vertex[1]) || (t.Vertex[1] == t.Vertex[2]) || (t.Vertex[2] == t.Vertex[0])){
 			msg_error(loc + ": surf broken!   trivial tria");
 			return;
 		}
-	foreachi(Edge, e, i){
+	foreachi(ModelEdge &e, Edge, i){
 		if (e.Vertex[0] == e.Vertex[1]){
 			msg_error(loc + ": surf broken!   trivial edge");
 			return;
@@ -456,14 +456,14 @@ void ModeModelSurface::TestSanity(const string &loc)
 	}
 }
 
-bool ModeModelSurface::IsInside(const vector &p)
+bool ModelSurface::IsInside(const vector &p)
 {
 	if (!IsClosed)
 		return false;
 
 	// how often does a ray from p intersect the surface?
 	int n = 0;
-	foreach(Triangle, t){
+	foreach(ModelTriangle &t, Triangle){
 		vector v[3];
 		for (int k=0;k<3;k++)
 			v[k] = model->Vertex[t.Vertex[k]].pos;

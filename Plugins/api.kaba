@@ -49,16 +49,16 @@ enum
 	FXKindSound,
 	FXKindForceField
 
-class ModeModelFX
+class ModelEffect
 	int Kind, Surface, Vertex
 	int Size, Speed, Intensity
 	color Colors[3]
 	bool InvQuad
 	string File, Function
-	void __assign__(ModeModelFX other)
+	void __assign__(ModelEffect other)
 		nil
 
-class ModeModelVertex: MultiViewSingleData
+class ModelVertex: MultiViewSingleData
 	int NormalMode
 	int BoneIndex
 	
@@ -68,7 +68,7 @@ class ModeModelVertex: MultiViewSingleData
 	int RefCount // triangles
 	int Surface
 
-class ModeModelTriangle: MultiViewSingleData
+class ModelTriangle: MultiViewSingleData
 	int Vertex[3]
 	int Edge[3]
 	int EdgeDirection[3] // which no of triangle in edge's list are we?
@@ -80,22 +80,22 @@ class ModeModelTriangle: MultiViewSingleData
 	int Material
 
 // only for use in MultiView...
-class ModeModelSkinVertexDummy: MultiViewSingleData
+class ModelSkinVertexDummy: MultiViewSingleData
 
-class ModeModelBall: MultiViewSingleData
+class ModelBall: MultiViewSingleData
 	int Index
 	float Radius
 
-class ModeModelPolyhedronFace
+class ModelPolyhedronFace
 	int NumVertices
 	int Index[MODEL_MAX_POLY_VERTICES_PER_FACE]
 	plane Plane
 
 
 // TODO: dynamical!
-class ModeModelPolyhedron: MultiViewSingleData
+class ModelPolyhedron: MultiViewSingleData
 	int NumFaces
-	ModeModelPolyhedronFace Face[MODEL_MAX_POLY_FACES]
+	ModelPolyhedronFace Face[MODEL_MAX_POLY_FACES]
 	int NumSVertices
 	int SIndex[MODEL_MAX_POLY_FACES * MODEL_MAX_POLY_VERTICES_PER_FACE]
 
@@ -109,35 +109,25 @@ class ModeModelPolyhedron: MultiViewSingleData
 
 
 // triangles belonging to one material
-class ModeModelSubSkin
+class ModelSubSkin
 	int NumTextures // "read only" (updated automatically...)
 
 	// triangles
-	ModeModelTriangle Triangle[]
+	ModelTriangle Triangle[]
 
 
 // geometry
-class ModeModelSkin
+class ModelSkin
 	// general properties
 	int NormalModeAll
 
 	// vertices
-	ModeModelVertex Vertex[]
+	ModelVertex Vertex[]
 
 	// sub skins
-	ModeModelSubSkin Sub[]
+	ModelSubSkin Sub[]
 
-// current geometry
-//extern ModeModelSkin *skin;
-
-/*struct PseudoSkin{
-	int NumVertices;
-	ModeModelVertex *Vertex;
-	int NumTriangles;
-	ModeModelTriangle *Triangle;
-};*/
-
-class ModeModelSkeletonBone: MultiViewSingleData
+class ModelBone: MultiViewSingleData
 	int Parent
 	vector DeltaPos
 	string ModelFile
@@ -147,7 +137,7 @@ class ModeModelSkeletonBone: MultiViewSingleData
 	// for editing
 	matrix Matrix, RotMatrix
 
-class ModeModelFrame
+class ModelFrame
 	// skeleton animation
 	vector SkelDPos[]
 	vector SkelAng[]
@@ -155,16 +145,16 @@ class ModeModelFrame
 	// vertex animation
 	vector DPos[4][]
 	vector VertexDPos[]
-	void __assign__(ModeModelFrame other)
+	void __assign__(ModelFrame other)
 
-class ModeModelMove
+class ModelMove
 	int Type
-	ModeModelFrame Frame[]
+	ModelFrame Frame[]
 	float FramesPerSecConst, FramesPerSecFactor
 	bool InterpolatedQuadratic, InterpolatedLoop
 	string Name
 
-class ModeModelEdge: MultiViewSingleData
+class ModelEdge: MultiViewSingleData
 	//int NormalMode;
 	int Vertex[2]
 	int RefCount, Triangle[2], Side[2]
@@ -177,9 +167,9 @@ class ModeModelEdge: MultiViewSingleData
 	//  same for Triangle/Side[1] but Vertex[0 <-> 1]
 
 
-class ModeModelSurface: MultiViewSingleData
-	ModeModelTriangle Triangle[]
-	ModeModelEdge Edge[]
+class ModelSurface: MultiViewSingleData
+	ModelTriangle Triangle[]
+	ModelEdge Edge[]
 	int Vertex[]
 	bool IsPhysical, IsVisible
 	bool IsClosed
@@ -187,7 +177,7 @@ class ModeModelSurface: MultiViewSingleData
 	void *model
 
 
-class ModeModelMaterial
+class ModelMaterial
 	string MaterialFile
 	Material *material
 	int NumTextures
@@ -206,7 +196,7 @@ class ModeModelMaterial
 	color Specular
 	color Emission
 	float Shininess
-	void __assign__(ModeModelMaterial other)
+	void __assign__(ModelMaterial other)
 
 class ModelMetaData
 	// level of detail
@@ -239,12 +229,12 @@ class DataModel : Data
 	sAutoTexturingData AutoTexturingData
 	
 	// properties
-	ModeModelSkeletonBone Bone[]
+	ModelBone Bone[]
 
 
 	// properties
-	ModeModelMove Move[]
-	ModeModelMove *move
+	ModelMove Move[]
+	ModelMove *move
 
 	int CurrentMove,CurrentFrame
 
@@ -258,34 +248,34 @@ class DataModel : Data
 	int NewRootPoint
 
 	// geometry
-	ModeModelVertex Vertex[]
-	ModeModelSurface Surface[]
+	ModelVertex Vertex[]
+	ModelSurface Surface[]
 	int NormalModeAll
 	MultiViewSingleData SkinVertex[] // only temporary...
 	int SkinVertMat, SkinVertTL
 
 	// old geometry
-	ModeModelSkin Skin[4]
+	ModelSkin Skin[4]
 
 	// geometry (physical)
-	ModeModelBall Ball[]
-	ModeModelPolyhedron Poly[]
+	ModelBall Ball[]
+	ModelPolyhedron Poly[]
 
 	// general properties
-	ModeModelMaterial Material[]
+	ModelMaterial Material[]
 	int CurrentMaterial, CurrentTextureLevel
 	vector Min, Max
 
 	// effects
-	ModeModelFX Fx[]
+	ModelEffect Fx[]
 
 	ModelMetaData meta_data
 	extern void AddVertex(vector pos, int bone_index, int normal_mode)
-	extern ModeModelTriangle *AddTriangle(int a, int b, int c)
-	extern ModeModelSurface *AddBall(vector pos, float radius, int num_x, int num_y, bool as_sphere)
-	extern ModeModelSurface *AddPlane(vector pos, vector dv1, vector dv2, int num_x, int num_y)
-	extern ModeModelSurface *AddCube(vector pos, vector dv1, vector dv2, vector dv3, int num_1, int num_2, int num_3)
-	extern ModeModelSurface *AddCylinder(vector pos[], float radius[], int rings, int edges, bool closed)
+	extern ModelTriangle *AddTriangle(int a, int b, int c)
+	extern ModelSurface *AddBall(vector pos, float radius, int num_x, int num_y, bool as_sphere)
+	extern ModelSurface *AddPlane(vector pos, vector dv1, vector dv2, int num_x, int num_y)
+	extern ModelSurface *AddCube(vector pos, vector dv1, vector dv2, vector dv3, int num_1, int num_2, int num_3)
+	extern ModelSurface *AddCylinder(vector pos[], float radius[], int rings, int edges, bool closed)
 	extern void BeginActionGroup()
 	extern void EndActionGroup()
 	void __assign__(DataModel other)
@@ -294,12 +284,12 @@ class DataModel : Data
 
 
 
-class ModeWorldTerrain: MultiViewSingleData
+class WorldTerrain: MultiViewSingleData
 	int _TODO_
 
 
 
-class ModeWorldObject: MultiViewSingleData
+class WorldObject: MultiViewSingleData
 	string FileName, Name
 	model object
 	vector Ang
@@ -310,9 +300,9 @@ class DataWorld: Data
 	int _TODO_
 
 	// actions
-	extern ModeWorldObject *AddObject(string filename, vector pos)
-	extern ModeWorldTerrain *AddTerrainLoad(string filename, vector pos)
-	extern ModeWorldTerrain *AddTerrain(vector pos, vector size, int num_x, int num_z)
+	extern WorldObject *AddObject(string filename, vector pos)
+	extern WorldTerrain *AddTerrainLoad(string filename, vector pos)
+	extern WorldTerrain *AddTerrain(vector pos, vector size, int num_x, int num_z)
 	extern void BeginActionGroup()
 	extern void EndActionGroup()
 
@@ -322,7 +312,7 @@ extern DataModel *data_model
 extern DataWorld *data_world
 extern window edward
 
-void main()
+/*void main()
 	print "dm: " + data_model
 	print "dm.Bone: " + &(data_model.Bone)
 	print "dm.obs_name: " + &(data_model.observable_name)
@@ -331,7 +321,7 @@ void main()
 	print data_model.filename
 	print "bone: " + data_model.Bone.num
 	print "vertex: " + data_model.Vertex.num
-	print "surf: " + data_model.Surface.num
+	print "surf: " + data_model.Surface.num*/
 
 /*class TestClass
 	string name

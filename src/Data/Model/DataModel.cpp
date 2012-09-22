@@ -32,7 +32,7 @@
 #include "../../Action/Model/Animation/ActionModelAnimationAddFrame.h"
 #include "../../Action/Model/Animation/ActionModelAnimationDeleteFrame.h"
 
-ModeModelMove *EmptyMove = NULL;
+ModelMove *EmptyMove = NULL;
 
 
 DataModel::DataModel()
@@ -43,7 +43,7 @@ DataModel::DataModel()
 
 	if (!EmptyMove){
 		// create one dummy animation
-		EmptyMove = new ModeModelMove;
+		EmptyMove = new ModelMove;
 		EmptyMove->Name = "-empty move-";
 		EmptyMove->Type = MoveTypeNone;
 		EmptyMove->Frame.resize(1);
@@ -146,7 +146,7 @@ void DataModel::DebugShow()
 	msg_write("------------");
 	msg_write(Vertex.num);
 	msg_write(Surface.num);
-	foreach(Surface, s){
+	foreach(ModelSurface &s, Surface){
 		msg_write(s.Triangle.num);
 		s.TestSanity("Model.DebugShow");
 	}
@@ -343,7 +343,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 		for (int i=0;i<num_anims;i++){
 			int anim_index = f->ReadInt();
 			Move.resize(anim_index + 1);
-			ModeModelMove *m = &Move[anim_index];
+			ModelMove *m = &Move[anim_index];
 			m->Name = f->ReadStr();
 			m->Type = f->ReadInt();
 			m->Frame.resize(f->ReadInt());
@@ -616,7 +616,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 		for (int i=0;i<num_anims;i++){
 			int anim_index = f->ReadInt();
 			Move.resize(anim_index + 1);
-			ModeModelMove *m = &Move[anim_index];
+			ModelMove *m = &Move[anim_index];
 			m->Name = f->ReadStr();
 			m->Type = f->ReadInt();
 			m->Frame.resize(f->ReadInt());
@@ -735,13 +735,13 @@ bool DataModel::Load(const string & _filename, bool deep)
 		// Normals
 		f->ReadComment();
 		for (int i=1;i<4;i++){
-			ModeModelSkin *s = &Skin[i];
+			ModelSkin *s = &Skin[i];
 			s->NormalModeAll = f->ReadInt();
 			if (s->NormalModeAll == NormalModePerVertex){
-				foreach(s->Vertex, v)
+				foreach(ModelVertex &v, s->Vertex)
 					v.NormalMode = f->ReadInt();
 			}else{
-				foreach(s->Vertex, v)
+				foreach(ModelVertex &v, s->Vertex)
 					v.NormalMode = s->NormalModeAll;
 			}
 		   }
@@ -783,24 +783,24 @@ bool DataModel::Load(const string & _filename, bool deep)
 		// import...
 		NotifyBegin();
 		NormalModeAll = Skin[1].NormalModeAll;
-		foreachi(Skin[1].Vertex, v, i){
+		foreachi(ModelVertex &v, Skin[1].Vertex, i){
 			AddVertex(v.pos);
 			Vertex[i].BoneIndex = v.BoneIndex;
 		}
 		for (int i=0;i<Material.num;i++){
 			CurrentMaterial = i;
-			foreach(Skin[1].Sub[i].Triangle, t){
+			foreach(ModelTriangle &t, Skin[1].Sub[i].Triangle){
 				if ((t.Vertex[0] == t.Vertex[1]) || (t.Vertex[1] == t.Vertex[2]) || (t.Vertex[2] == t.Vertex[0]))
 					continue;
-				ModeModelTriangle *tt = AddTriangle(t.Vertex[0], t.Vertex[1], t.Vertex[2]);
+				ModelTriangle *tt = AddTriangle(t.Vertex[0], t.Vertex[1], t.Vertex[2]);
 				for (int tl=0;tl<Material[i].NumTextures;tl++)
 					for (int k=0;k<3;k++)
 						tt->SkinVertex[tl][k] = t.SkinVertex[tl][k];
 			}
 		}
-		foreach(Move, m)
+		foreach(ModelMove &m, Move)
 			if (m.Type == MoveTypeVertex)
-				foreach(m.Frame, f)
+				foreach(ModelFrame &f, m.Frame)
 					f.VertexDPos = f.Skin[1].DPos;
 		ClearSelection();
 		NotifyEnd();
@@ -838,19 +838,19 @@ bool DataModel::Load(const string & _filename, bool deep)
 void DataModel::GetBoundingBox(vector &min, vector &max)
 {
 	// bounding box (visual skin[1])
-	min = max = v0;
+	min = max = v_0;
 	for (int i=0;i<Skin[1].Vertex.num;i++){
-		VecMin(min, Skin[1].Vertex[i].pos);
-		VecMax(max, Skin[1].Vertex[i].pos);
+		min._min(Skin[1].Vertex[i].pos);
+		max._max(Skin[1].Vertex[i].pos);
 	}
 	// (physical skin)
 	for (int i=0;i<Skin[0].Vertex.num;i++){
-		VecMin(min, Skin[0].Vertex[i].pos);
-		VecMax(max, Skin[0].Vertex[i].pos);
+		min._min(Skin[0].Vertex[i].pos);
+		max._max(Skin[0].Vertex[i].pos);
 	}
 	for (int i=0;i<Ball.num;i++){
-		VecMin(min, Skin[0].Vertex[Ball[i].Index].pos - vector(1,1,1) * Ball[i].Radius);
-		VecMax(max, Skin[0].Vertex[Ball[i].Index].pos + vector(1,1,1) * Ball[i].Radius);
+		min._min(Skin[0].Vertex[Ball[i].Index].pos - vector(1,1,1) * Ball[i].Radius);
+		max._max(Skin[0].Vertex[Ball[i].Index].pos + vector(1,1,1) * Ball[i].Radius);
 	}
 }
 
@@ -878,10 +878,10 @@ bool DataModel::Save(const string & _filename)
 	Skin[1].Vertex = Vertex;
 	Skin[1].Sub.clear();
 	Skin[1].Sub.resize(Material.num);
-	foreach(Surface, s)
-		foreach(s.Triangle, t)
+	foreach(ModelSurface &s, Surface)
+		foreach(ModelTriangle &t, s.Triangle)
 			Skin[1].Sub[t.Material].Triangle.add(t);
-	foreachi(Material, m, i)
+	foreachi(ModelMaterial &m, Material, i)
 		Skin[1].Sub[i].NumTextures = m.NumTextures;
 
 
@@ -922,7 +922,7 @@ bool DataModel::Save(const string & _filename)
 // materials
 	f->WriteComment("// Materials");
 	f->WriteInt(Material.num);
-	foreach(Material, m){
+	foreach(ModelMaterial &m, Material){
 		f->WriteStr(m.MaterialFile);
 		f->WriteBool(m.UserColor);
 		write_color_argb(f, m.Ambient);
@@ -970,9 +970,9 @@ bool DataModel::Save(const string & _filename)
 			f->WriteInt(Poly[j].Face[k].NumVertices);
 			for (int l=0;l<Poly[j].Face[k].NumVertices;l++)
 				f->WriteInt(Poly[j].Face[k].Index[l]);
-			f->WriteFloat(Poly[j].Face[k].Plane.a);
-			f->WriteFloat(Poly[j].Face[k].Plane.b);
-			f->WriteFloat(Poly[j].Face[k].Plane.c);
+			f->WriteFloat(Poly[j].Face[k].Plane.n.x);
+			f->WriteFloat(Poly[j].Face[k].Plane.n.y);
+			f->WriteFloat(Poly[j].Face[k].Plane.n.z);
 			f->WriteFloat(Poly[j].Face[k].Plane.d);
 		}
 		f->WriteInt(Poly[j].NumSVertices);
@@ -994,14 +994,14 @@ bool DataModel::Save(const string & _filename)
 
 // skin
 	for (int i=1;i<4;i++){
-		ModeModelSkin *s = &Skin[i];
+		ModelSkin *s = &Skin[i];
 		f->WriteComment(format("// Skin[%d]",i));
 
 		// verices
 		f->WriteInt(s->Vertex.num);
-		foreach(s->Vertex, v)
+		foreach(ModelVertex &v, s->Vertex)
 			f->WriteVector(&v.pos);
-		foreach(s->Vertex, v)
+		foreach(ModelVertex &v, s->Vertex)
 			f->WriteInt(v.BoneIndex);
 
 	    // skin vertices
@@ -1021,7 +1021,7 @@ bool DataModel::Save(const string & _filename)
 		// sub skins
 		int svi = 0;
 		for (int m=0;m<Material.num;m++){
-			ModeModelSubSkin *sub = &s->Sub[m];
+			ModelSubSkin *sub = &s->Sub[m];
 
 			// triangles
 			f->WriteInt(sub->Triangle.num);
@@ -1078,7 +1078,7 @@ bool DataModel::Save(const string & _filename)
 	f->WriteInt(n_frames_skel);
 	for (int i=0;i<Move.num;i++)
 		if (Move[i].Frame.num > 0){
-			ModeModelMove *m = &Move[i];
+			ModelMove *m = &Move[i];
 			f->WriteInt(i);
 			f->WriteStr(m->Name);
 			f->WriteInt(m->Type);
@@ -1093,11 +1093,11 @@ bool DataModel::Save(const string & _filename)
 						// compress (only write != 0)
 						int num_vertices = 0;
 						for (int j=0;j<Skin[s].Vertex.num;j++)
-							if (m->Frame[fr].Skin[i].DPos[j] != v0)
+							if (m->Frame[fr].Skin[i].DPos[j] != v_0)
 								num_vertices ++;
 						f->WriteInt(num_vertices);
 						for (int j=0;j<Skin[s].Vertex.num;j++)
-							if (m->Frame[fr].Skin[i].DPos[j] != v0){
+							if (m->Frame[fr].Skin[i].DPos[j] != v_0){
 								f->WriteInt(j);
 								f->WriteVector(&m->Frame[fr].Skin[i].DPos[j]);
 							}
@@ -1192,10 +1192,10 @@ bool DataModel::Save(const string & _filename)
 	f->WriteInt(meta_data.DetailFactor[2]);
 	f->WriteComment("// Normals");
 	for (int i=1;i<4;i++){
-		ModeModelSkin *s = &Skin[i];
+		ModelSkin *s = &Skin[i];
 		f->WriteInt(s->NormalModeAll);
 		if (s->NormalModeAll == NormalModePerVertex)
-			foreach(s->Vertex, v)
+			foreach(ModelVertex &v, s->Vertex)
 				f->WriteInt(v.NormalMode);
 	   }
 	/*f->WriteComment("// BG Textures");
@@ -1222,8 +1222,8 @@ bool DataModel::Save(const string & _filename)
 
 void DataModel::SetNormalsDirtyByVertices(const Array<int> &index)
 {
-	foreach(Surface, s)
-		foreach(s.Triangle, t)
+	foreach(ModelSurface &s, Surface)
+		foreach(ModelTriangle &t, s.Triangle)
 			for (int k=0;k<3;k++)
 				if (!t.NormalDirty)
 					for (int i=0;i<index.num;i++)
@@ -1235,21 +1235,21 @@ void DataModel::SetNormalsDirtyByVertices(const Array<int> &index)
 
 void DataModel::SetAllNormalsDirty()
 {
-	foreach(Surface, s)
-		foreach(s.Triangle, t)
+	foreach(ModelSurface &s, Surface)
+		foreach(ModelTriangle &t, s.Triangle)
 			t.NormalDirty = true;
 }
 
 
 void DataModel::UpdateNormals()
 {
-	foreach(Surface, s)
+	foreach(ModelSurface &s, Surface)
 		s.UpdateNormals();
 }
 
-ModeModelSurface *DataModel::AddSurface(int surf_no)
+ModelSurface *DataModel::AddSurface(int surf_no)
 {
-	ModeModelSurface s;
+	ModelSurface s;
 	s.model = this;
 	s.view_stage = ViewStage;
 	s.is_selected = true;
@@ -1271,25 +1271,25 @@ void DataModel::AddVertex(const vector &pos, int bone_index, int normal_mode)
 
 void DataModel::ClearSelection()
 {
-	foreach(Vertex, v)
+	foreach(ModelVertex &v, Vertex)
 		v.is_selected = false;
-	foreach(Surface, s){
+	foreach(ModelSurface &s, Surface){
 		s.is_selected = false;
-		foreach(s.Triangle, t)
+		foreach(ModelTriangle &t, s.Triangle)
 			t.is_selected = false;
 	}
 }
 
 void DataModel::SelectionTrianglesFromSurfaces()
 {
-	foreach(Surface, s)
-		foreach(s.Triangle, t)
+	foreach(ModelSurface &s, Surface)
+		foreach(ModelTriangle &t, s.Triangle)
 			t.is_selected = s.is_selected;
 }
 
 void DataModel::SelectionVerticesFromSurfaces()
 {
-	foreach(Vertex, v)
+	foreach(ModelVertex &v, Vertex)
 		if (v.Surface >= 0)
 			v.is_selected = Surface[v.Surface].is_selected;
 		else
@@ -1298,19 +1298,19 @@ void DataModel::SelectionVerticesFromSurfaces()
 
 void DataModel::SelectionSurfacesFromTriangles()
 {
-	foreach(Surface, s){
+	foreach(ModelSurface &s, Surface){
 		s.is_selected = true;
-		foreach(s.Triangle, t)
+		foreach(ModelTriangle &t, s.Triangle)
 			s.is_selected &= t.is_selected;
 	}
 }
 
 void DataModel::SelectionVerticesFromTriangles()
 {
-	foreach(Vertex, v)
+	foreach(ModelVertex &v, Vertex)
 		v.is_selected = false;
-	foreach(Surface, s)
-		foreach(s.Triangle, t)
+	foreach(ModelSurface &s, Surface)
+		foreach(ModelTriangle &t, s.Triangle)
 			if (t.is_selected)
 				for (int k=0;k<3;k++)
 					Vertex[t.Vertex[k]].is_selected = true;
@@ -1318,29 +1318,29 @@ void DataModel::SelectionVerticesFromTriangles()
 
 void DataModel::SelectionTrianglesFromVertices()
 {
-	foreach(Surface, s)
-		foreach(s.Triangle, t)
+	foreach(ModelSurface &s, Surface)
+		foreach(ModelTriangle &t, s.Triangle)
 			t.is_selected = ((Vertex[t.Vertex[0]].is_selected) and (Vertex[t.Vertex[1]].is_selected) and (Vertex[t.Vertex[2]].is_selected));
 }
 
-ModeModelTriangle *DataModel::AddTriangle(int a, int b, int c)
+ModelTriangle *DataModel::AddTriangle(int a, int b, int c)
 {
-	vector sv[3] = {e_y, v0, e_x};
+	vector sv[3] = {e_y, v_0, e_x};
 	//ApplyAutoTexturing(this, a, b, c, sv);
-	return (ModeModelTriangle*) Execute(new ActionModelAddTriangleSingleTexture(this, a, b, c, CurrentMaterial, sv[0], sv[1], sv[2]));
+	return (ModelTriangle*) Execute(new ActionModelAddTriangleSingleTexture(this, a, b, c, CurrentMaterial, sv[0], sv[1], sv[2]));
 }
 
 
 
-int DataModel::get_surf_no(ModeModelSurface *s)
+int DataModel::get_surf_no(ModelSurface *s)
 {
-	foreachi(Surface, ss, i)
+	foreachi(ModelSurface &ss, Surface, i)
 		if (&ss == s)
 			return i;
 	return -1;
 }
 
-ModeModelSurface *DataModel::SurfaceJoin(ModeModelSurface *a, ModeModelSurface *b)
+ModelSurface *DataModel::SurfaceJoin(ModelSurface *a, ModelSurface *b)
 {
 	msg_db_r("SurfJoin", 1);
 
@@ -1351,7 +1351,7 @@ ModeModelSurface *DataModel::SurfaceJoin(ModeModelSurface *a, ModeModelSurface *
 	int bi = get_surf_no(b);
 
 	// correct edge data of b
-	foreach(b->Edge, e){
+	foreach(ModelEdge &e, b->Edge){
 		if (e.Triangle[0] >= 0)
 			e.Triangle[0] += a->Triangle.num;
 		if (e.Triangle[1] >= 0)
@@ -1359,12 +1359,12 @@ ModeModelSurface *DataModel::SurfaceJoin(ModeModelSurface *a, ModeModelSurface *
 	}
 
 	// correct triangle data of b
-	foreach(b->Triangle, t)
+	foreach(ModelTriangle &t, b->Triangle)
 		for (int k=0;k<3;k++)
 			t.Edge[k] += a->Edge.num;
 
 	// correct vertex data of b
-	foreach(b->Vertex, v)
+	foreach(int v, b->Vertex)
 		Vertex[v].Surface = ai;
 
 	// insert data
@@ -1401,7 +1401,7 @@ void DataModel::ApplyAutoTexturing(int a, int b, int c, vector *sv)
 	}
 }
 
-void DataModel::CreateSkin(ModeModelSkin *src, ModeModelSkin *dst, float quality_factor)
+void DataModel::CreateSkin(ModelSkin *src, ModelSkin *dst, float quality_factor)
 {
 	msg_todo("DataModel::CreateSkin");
 }
@@ -1412,8 +1412,8 @@ void DataModel::CreateSkin(ModeModelSkin *src, ModeModelSkin *dst, float quality
 float DataModel::GetDiameter()
 {
 	float Diameter=0;
-	foreach(Vertex, v){
-		float d = VecLength(v.pos) * 2;
+	foreach(ModelVertex &v, Vertex){
+		float d = v.pos.length() * 2;
 		if (d > Diameter)
 			Diameter = d;
 	}
@@ -1427,7 +1427,7 @@ float DataModel::GetDiameter()
 
 float DetailDistTemp1,DetailDistTemp2,DetailDistTemp3;
 
-int get_num_trias(DataModel *m, ModeModelSkin *s)
+int get_num_trias(DataModel *m, ModelSkin *s)
 {
 	int n = 0;
 	for (int i=0;i<m->Material.num;i++)
@@ -1458,10 +1458,10 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 //	sModeModelSkin *p = &Skin[0];
 
 	// estimate size
-	vector min = v0, max = v0;
-	foreach(Vertex, v){
-		VecMin(min, v.pos);
-		VecMax(max, v.pos);
+	vector min = v_0, max = v_0;
+	foreach(ModelVertex &v, Vertex){
+		min._min(v.pos);
+		max._max(v.pos);
 	}
 	/*for (int i=0;i<Ball.num;i++){
 		sModeModelBall *b = &Ball[i];
@@ -1496,7 +1496,7 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 					if (VecLength(r-p->Vertex[b->Index].Pos)<b->Radius)
 						inside=true;
 				}*/
-				foreach(Surface, s)
+				foreach(ModelSurface &s, Surface)
 					if (s.IsInside(r)){
 						inside = true;
 						break;
@@ -1538,7 +1538,7 @@ int DataModel::GetNumSelectedVertices()
 				r++;
 		return r;
 	}*/
-	foreach(Vertex, v)
+	foreach(ModelVertex &v, Vertex)
 		if (v.is_selected)
 			r ++;
 	return r;
@@ -1553,8 +1553,8 @@ int DataModel::GetNumSelectedSkinVertices()
 int DataModel::GetNumSelectedTriangles()
 {
 	int r = 0;
-	foreach(Surface, s)
-		foreach(s.Triangle, t)
+	foreach(ModelSurface &s, Surface)
+		foreach(ModelTriangle &t, s.Triangle)
 			if (t.is_selected)
 				r ++;
 	return r;
@@ -1563,7 +1563,7 @@ int DataModel::GetNumSelectedTriangles()
 int DataModel::GetNumSelectedSurfaces()
 {
 	int r = 0;
-	foreach(Surface, s)
+	foreach(ModelSurface &s, Surface)
 		if (s.is_selected)
 			r ++;
 	return r;
@@ -1572,7 +1572,7 @@ int DataModel::GetNumSelectedSurfaces()
 int DataModel::GetNumSelectedBones()
 {
 	int r = 0;
-	foreach(Bone, b)
+	foreach(ModelBone &b, Bone)
 		if (b.is_selected)
 			r ++;
 	return r;
@@ -1581,22 +1581,22 @@ int DataModel::GetNumSelectedBones()
 int DataModel::GetNumTriangles()
 {
 	int r = 0;
-	foreach(Surface, s)
+	foreach(ModelSurface &s, Surface)
 		r += s.Triangle.num;
 	return r;
 }
 
-ModeModelSurface* DataModel::AddBall(const vector& _pos, float _radius, int _num_x, int _num_y, bool _as_sphere)
-{	return (ModeModelSurface*)Execute(new ActionModelAddBall(this, _pos, _radius, _num_x, _num_y, _as_sphere));	}
+ModelSurface* DataModel::AddBall(const vector& _pos, float _radius, int _num_x, int _num_y, bool _as_sphere)
+{	return (ModelSurface*)Execute(new ActionModelAddBall(this, _pos, _radius, _num_x, _num_y, _as_sphere));	}
 
-ModeModelSurface* DataModel::AddPlane(const vector& _pos, const vector& _dv1, const vector& _dv2, int _num_x, int _num_y)
-{	return (ModeModelSurface*)Execute(new ActionModelAddPlane(this, _pos, _dv1, _dv2, _num_x, _num_y));	}
+ModelSurface* DataModel::AddPlane(const vector& _pos, const vector& _dv1, const vector& _dv2, int _num_x, int _num_y)
+{	return (ModelSurface*)Execute(new ActionModelAddPlane(this, _pos, _dv1, _dv2, _num_x, _num_y));	}
 
-ModeModelSurface* DataModel::AddCube(const vector& _pos, const vector& _dv1, const vector& _dv2, const vector& _dv3, int num_1, int num_2, int num_3)
-{	return (ModeModelSurface*)Execute(new ActionModelAddCube(this, _pos, _dv1, _dv2, _dv3, num_1, num_2, num_3));	}
+ModelSurface* DataModel::AddCube(const vector& _pos, const vector& _dv1, const vector& _dv2, const vector& _dv3, int num_1, int num_2, int num_3)
+{	return (ModelSurface*)Execute(new ActionModelAddCube(this, _pos, _dv1, _dv2, _dv3, num_1, num_2, num_3));	}
 
-ModeModelSurface* DataModel::AddCylinder(Array<vector>& pos, Array<float> &radius, int rings, int edges, bool closed)
-{	return (ModeModelSurface*)Execute(new ActionModelAddCylinder(this, pos, radius, rings, edges, closed));	}
+ModelSurface* DataModel::AddCylinder(Array<vector>& pos, Array<float> &radius, int rings, int edges, bool closed)
+{	return (ModelSurface*)Execute(new ActionModelAddCylinder(this, pos, radius, rings, edges, closed));	}
 
 void DataModel::SetCurrentMove(int move_no)
 {
@@ -1641,7 +1641,7 @@ void DataModel::UpdateAnimation()
 {
 	if (move->Type == MoveTypeSkeletal){
 		UpdateSkeleton();
-		foreach(Vertex, v){
+		foreach(ModelVertex &v, Vertex){
 			if (v.BoneIndex >= Bone.num)
 				v.AnimatedPos = v.pos;
 			else
@@ -1656,11 +1656,11 @@ void DataModel::UpdateAnimation()
 			frame1 = (frame0 + 1) % move->Frame.num;
 			t = SimFrame - frame0;
 		}
-		foreachi(Vertex, v, i){
+		foreachi(ModelVertex &v, Vertex, i){
 			v.AnimatedPos = v.pos + (1 - t) * move->Frame[frame0].VertexDPos[i] + t * move->Frame[frame1].VertexDPos[i];
 		}
 	}else{
-		foreach(Vertex, v){
+		foreach(ModelVertex &v, Vertex){
 			v.AnimatedPos = v.pos;
 		}
 	}
@@ -1670,7 +1670,7 @@ void DataModel::UpdateAnimation()
 void DataModel::UpdateSkeleton()
 {
 	if (move->Type != MoveTypeSkeletal){
-		foreachi(Bone, b, i){
+		foreachi(ModelBone &b, Bone, i){
 			if (b.Parent < 0)
 				b.pos = b.DeltaPos;
 			else
@@ -1687,12 +1687,11 @@ void DataModel::UpdateSkeleton()
 		t = SimFrame - frame0;
 	}
 
-	foreachi(Bone, b, i){
+	foreachi(ModelBone &b, Bone, i){
 		if (b.Parent < 0){
 			b.pos = b.DeltaPos + (1 - t) * move->Frame[frame0].SkelDPos[i] + t * move->Frame[frame1].SkelDPos[i];
 		}else{
-			vector dp;
-			VecNormalTransform(dp, Bone[b.Parent].Matrix, b.DeltaPos);
+			vector dp = Bone[b.Parent].Matrix.transform_normal(b.DeltaPos);
 			b.pos = Bone[b.Parent].pos + dp;
 		}
 		matrix trans;
@@ -1709,7 +1708,7 @@ void DataModel::UpdateSkeleton()
 vector DataModel::GetBonePos(int index)
 {
 	if (index < 0)
-		return v0;
+		return v_0;
 	return Bone[index].DeltaPos + GetBonePos(Bone[index].Parent);
 }
 
@@ -1726,26 +1725,26 @@ void DataModel::AnimationDeleteCurrentFrame()
 	AnimationDeleteFrame(CurrentMove, CurrentFrame);
 }
 
-void DataModel::CopyGeometry(ModeModelGeometry &geo)
+void DataModel::CopyGeometry(ModelGeometry &geo)
 {
 	geo.Vertex.clear();
 	geo.Triangle.clear();
 
 	// copy vertices
 	Array<int> vert;
-	foreachi(Vertex, v, vi)
+	foreachi(ModelVertex &v, Vertex, vi)
 		if (v.is_selected){
 			geo.Vertex.add(v);
 			vert.add(vi);
 		}
 
 	// copy triangles
-	foreach(Surface, s)
-		foreach(s.Triangle, t)
+	foreach(ModelSurface &s, Surface)
+		foreach(ModelTriangle &t, s.Triangle)
 			if (t.is_selected){
-				ModeModelTriangle tt = t;
+				ModelTriangle tt = t;
 				for (int k=0;k<3;k++)
-					foreachi(vert, v, vi)
+					foreachi(int v, vert, vi)
 						if (v == t.Vertex[k])
 							tt.Vertex[k] = vi;
 				geo.Triangle.add(tt);
@@ -1776,7 +1775,7 @@ void DataModel::SetNormalModeAll(int mode)
 void DataModel::SetMaterialSelection(int material)
 {	Execute(new ActionModelSetMaterial(this, material));	}
 
-void DataModel::PasteGeometry(ModeModelGeometry& geo)
+void DataModel::PasteGeometry(ModelGeometry& geo)
 {	Execute(new ActionModelPasteGeometry(this, geo));	}
 
 void DataModel::Easify(float factor)

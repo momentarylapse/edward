@@ -21,14 +21,14 @@ inline bool ainf_v(vector &v)
 {
 	if (inf_v(v))
 		return true;
-	return (VecLengthFuzzy(v) > 100000000000.0f);
+	return (v.length_fuzzy() > 100000000000.0f);
 }
 
 inline bool TestVectorSanity(vector &v,char *name)
 {
 	if (ainf_v(v)){
 		num_insane++;
-		v=v0;
+		v=v_0;
 		if (num_insane>100)
 			return false;
 		msg_error(format("Vektor %s unendlich!!!!!!!",name));
@@ -95,8 +95,8 @@ CObject::CObject(const char *filename, const char *name, const vector &pos)
 	TimeTillFreeze = ActivePhysics ? MaxTimeTillFreeze : -1;
 	frozen = !ActivePhysics;
 	GFactor = 1;
-	Vel = Rot = ang = v0;
-	ForceExt = TorqueExt = ForceInt = TorqueInt = v0;
+	Vel = Rot = ang = v_0;
+	ForceExt = TorqueExt = ForceInt = TorqueInt = v_0;
 	OnGround = false;
 	//SetMaterial(&model->Material[0], SetMaterialFriction);
 	//UpdateMatrix();
@@ -126,8 +126,8 @@ CObject::CObject(CModel *mod)
 	Matrix = &_terrain_matrix_;
 	//Theta=Theta*10000000.0f;
 	GFactor=1;
-	Vel=Rot=ang=v0;
-	ForceExt=TorqueExt=ForceInt=TorqueInt=v0;
+	Vel=Rot=ang=v_0;
+	ForceExt=TorqueExt=ForceInt=TorqueInt=v_0;
 	ActivePhysics=false;
 	PassivePhysics=true;
 	Rotating=false;
@@ -246,14 +246,14 @@ void CObject::DoPhysics()
 		//}
 
 		// rotation
-		if ((rot != v0) || (torque_int != v0)){
+		if ((rot != v_0) || (torque_int != v_0)){
 
 			quaternion q, q_dot, q_w;
 			QuaternionRotationV( q, ang );
 			q_w = quaternion( 0, rot );
 			q_dot = 0.5f * q_w * q;
 			q += q_dot * Elapsed;
-			ang = QuaternionToAngle( q );
+			ang = q.get_angles();
 
 			#ifdef _realistic_calculation_
 				vector L = theta * rot + torque_int * Elapsed;
@@ -273,14 +273,14 @@ void CObject::DoPhysics()
 	_ResetPhysAbsolute_();
 
 	// reset forces
-	force_int = torque_int = v0;
+	force_int = torque_int = v_0;
 
 	// did anything change?
 	moved = false;
 	//if ((Pos!=Pos_old)||(ang!=ang_old))
-	//if ( (vel_surf!=v0) || (VecLengthFuzzy(Pos-Pos_old)>2.0f*Elapsed) )//||(VecAng!=ang_old))
+	//if ( (vel_surf!=v_0) || (VecLengthFuzzy(Pos-Pos_old)>2.0f*Elapsed) )//||(VecAng!=ang_old))
 	if (active_physics){
-		if ( (vel_surf != v0) || (_vec_length_fuzzy_(vel) > VelThreshold) || (_vec_length_fuzzy_(rot) * radius > VelThreshold))
+		if ( (vel_surf != v_0) || (_vec_length_fuzzy_(vel) > VelThreshold) || (_vec_length_fuzzy_(rot) * radius > VelThreshold))
 			moved = true;
 	}else{
 		frozen = true;
@@ -297,7 +297,7 @@ void CObject::DoPhysics()
 		time_till_freeze -= Elapsed;
 		if (time_till_freeze < 0){
 			frozen = true;
-			force_ext = torque_ext = v0;
+			force_ext = torque_ext = v_0;
 		}else
 			on_ground = false;
 	}

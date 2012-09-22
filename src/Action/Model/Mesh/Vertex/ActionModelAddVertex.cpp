@@ -27,7 +27,7 @@ void *ActionModelAddVertex::execute(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	// new vertex
-	ModeModelVertex vv;
+	ModelVertex vv;
 	vv.pos = pos;
 	if (normal_mode < 0){
 		if (m->NormalModeAll != NormalModePerVertex)
@@ -45,9 +45,9 @@ void *ActionModelAddVertex::execute(Data *d)
 	m->Vertex.add(vv);
 
 	// correct animations
-	foreach(m->Move, move)
+	foreach(ModelMove &move, m->Move)
 		if (move.Type == MoveTypeVertex)
-			foreach(move.Frame, f)
+			foreach(ModelFrame &f, move.Frame)
 				f.VertexDPos.resize(m->Vertex.num);
 	return &m->Vertex.back();
 }
@@ -64,9 +64,9 @@ void ActionModelAddVertex::undo(Data *d)
 	m->Vertex.pop();
 
 	// correct animations
-	foreach(m->Move, move)
+	foreach(ModelMove &move, m->Move)
 		if (move.Type == MoveTypeVertex)
-			foreach(move.Frame, f)
+			foreach(ModelFrame &f, move.Frame)
 				f.VertexDPos.resize(m->Vertex.num);
 }
 

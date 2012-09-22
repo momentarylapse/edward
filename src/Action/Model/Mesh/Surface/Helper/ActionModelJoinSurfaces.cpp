@@ -40,8 +40,8 @@ void *ActionModelJoinSurfaces::execute(Data *d)
 	assert(surface1 < m->Surface.num);
 	assert(surface2 < m->Surface.num);
 
-	ModeModelSurface *a = &m->Surface[surface1];
-	ModeModelSurface *b = &m->Surface[surface2];
+	ModelSurface *a = &m->Surface[surface1];
+	ModelSurface *b = &m->Surface[surface2];
 
 	// save old data
 	old_edges1 = a->Edge.num;
@@ -52,7 +52,7 @@ void *ActionModelJoinSurfaces::execute(Data *d)
 	b->TestSanity("Join prae b");
 
 	// correct edge data of b
-	foreach(b->Edge, e){
+	foreach(ModelEdge &e, b->Edge){
 		if (e.Triangle[0] >= 0)
 			e.Triangle[0] += a->Triangle.num;
 		if (e.Triangle[1] >= 0)
@@ -60,12 +60,12 @@ void *ActionModelJoinSurfaces::execute(Data *d)
 	}
 
 	// correct triangle data of b
-	foreach(b->Triangle, t)
+	foreach(ModelTriangle &t, b->Triangle)
 		for (int k=0;k<3;k++)
 			t.Edge[k] += a->Edge.num;
 
 	// correct vertex data of b
-	foreach(b->Vertex, v)
+	foreach(int v, b->Vertex)
 		m->Vertex[v].Surface = surface1;
 
 	// insert data
@@ -79,7 +79,7 @@ void *ActionModelJoinSurfaces::execute(Data *d)
 	a->TestSanity("Join post a");
 
 	// correct vertices of surfaces above b
-	foreach(m->Vertex, v)
+	foreach(ModelVertex &v, m->Vertex)
 		if (v.Surface >= surface2)
 			v.Surface --;
 
@@ -93,8 +93,8 @@ void ActionModelJoinSurfaces::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModeModelSurface *b = m->AddSurface(surface2);
-	ModeModelSurface *a = &m->Surface[surface1];
+	ModelSurface *b = m->AddSurface(surface2);
+	ModelSurface *a = &m->Surface[surface1];
 
 	// move triangles
 	b->Triangle.append(a->Triangle.sub(old_trias1, -1));

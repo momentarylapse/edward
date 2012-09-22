@@ -95,7 +95,7 @@ void ModeMaterial::ExecuteAppearanceDialog()
 
 void CreateTorus(int buffer, const vector &pos, const vector dir, float radius1, float radius2, int nx, int ny)
 {
-	vector dir2 = VecOrtho(dir);
+	vector dir2 = dir.ortho();
 	vector dir3 = dir ^ dir2;
 	for (int x=0;x<nx;x++){
 		float fx0 = float(x  )/(float)nx;
@@ -132,7 +132,7 @@ void ModeMaterial::OnDrawWin(int win, irect dest)
 	if (data->Appearance.NumTextureLevels <= 1){
 		NixVBClear(VBTemp);
 		//FxCreateBall(VBTemp, v0, 100, 16, 32);
-		CreateTorus(VBTemp, v0, e_z, 80, 50, 64, 32);
+		CreateTorus(VBTemp, v_0, e_z, 80, 50, 64, 32);
 		NixSetTexture((data->Appearance.NumTextureLevels == 1) ? data->Appearance.Texture[0] : -1);
 		NixDraw3D(VBTemp);
 		NixSetTexture(-1);
@@ -169,11 +169,10 @@ void ModeMaterial::OnDrawWin(int win, irect dest)
 		float tc[4][MATERIAL_MAX_TEXTURE_LEVELS * 2];
 		for (int x=0;x<MATERIAL_BALL_NUMX;x++)
 			for (int y=0;y<MATERIAL_BALL_NUMY;y++){
-				vector v;
-				vector n0=VecAng2Dir(v=vector(pi*(x  -MATERIAL_BALL_NUMX/2)/MATERIAL_BALL_NUMX,pi*2.0f* y   /MATERIAL_BALL_NUMY,0));
-				vector n1=VecAng2Dir(v=vector(pi*(x+1-MATERIAL_BALL_NUMX/2)/MATERIAL_BALL_NUMX,pi*2.0f* y   /MATERIAL_BALL_NUMY,0));
-				vector n2=VecAng2Dir(v=vector(pi*(x  -MATERIAL_BALL_NUMX/2)/MATERIAL_BALL_NUMX,pi*2.0f*(y+1)/MATERIAL_BALL_NUMY,0));
-				vector n3=VecAng2Dir(v=vector(pi*(x+1-MATERIAL_BALL_NUMX/2)/MATERIAL_BALL_NUMX,pi*2.0f*(y+1)/MATERIAL_BALL_NUMY,0));
+				vector n0=vector(pi*(x  -MATERIAL_BALL_NUMX/2)/MATERIAL_BALL_NUMX,pi*2.0f* y   /MATERIAL_BALL_NUMY,0).ang2dir();
+				vector n1=vector(pi*(x+1-MATERIAL_BALL_NUMX/2)/MATERIAL_BALL_NUMX,pi*2.0f* y   /MATERIAL_BALL_NUMY,0).ang2dir();
+				vector n2=vector(pi*(x  -MATERIAL_BALL_NUMX/2)/MATERIAL_BALL_NUMX,pi*2.0f*(y+1)/MATERIAL_BALL_NUMY,0).ang2dir();
+				vector n3=vector(pi*(x+1-MATERIAL_BALL_NUMX/2)/MATERIAL_BALL_NUMX,pi*2.0f*(y+1)/MATERIAL_BALL_NUMY,0).ang2dir();
 				vector p0=radius*n0;
 				vector p1=radius*n1;
 				vector p2=radius*n2;
@@ -245,7 +244,7 @@ bool ModeMaterial::SaveAs()
 
 void ModeMaterial::OnStart()
 {
-	string dir = HuiAppDirectoryStatic + SysFileName("Data/icons/toolbar/");
+	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
 	ed->ToolbarSetCurrent(HuiToolbarTop);
 	ed->ToolbarReset();
 	ed->ToolbarAddItem(L("new"),L("new"),dir + "new.png","new");

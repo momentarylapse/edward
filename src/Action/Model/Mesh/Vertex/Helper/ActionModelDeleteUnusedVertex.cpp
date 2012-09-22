@@ -26,7 +26,7 @@ void ActionModelDeleteUnusedVertex::undo(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	// new vertex
-	ModeModelVertex vv;
+	ModelVertex vv;
 	vv.pos = pos;
 	vv.NormalMode = normal_mode;
 	vv.BoneIndex = bone;
@@ -39,23 +39,23 @@ void ActionModelDeleteUnusedVertex::undo(Data *d)
 
 	// correct animations
 	int i = 0;
-	foreach(m->Move, mv)
+	foreach(ModelMove &mv, m->Move)
 		if (mv.Type == MoveTypeVertex)
-			foreach(mv.Frame, f)
+			foreach(ModelFrame &f, mv.Frame)
 				f.VertexDPos[vertex] = move[i ++];
 
 
 	// correct references
-	foreach(m->Surface, s){
-		foreach(s.Triangle, t)
+	foreach(ModelSurface &s, m->Surface){
+		foreach(ModelTriangle &t, s.Triangle)
 			for (int k=0;k<3;k++)
 				if (t.Vertex[k] >= vertex)
 					t.Vertex[k] ++;
-		foreach(s.Edge, e)
+		foreach(ModelEdge &e, s.Edge)
 			for (int k=0;k<2;k++)
 				if (e.Vertex[k] >= vertex)
 					e.Vertex[k] ++;
-		foreach(s.Vertex, v)
+		foreach(int &v, s.Vertex)
 			if (v >= vertex)
 				v ++;
 	}
@@ -76,22 +76,22 @@ void *ActionModelDeleteUnusedVertex::execute(Data *d)
 
 	// move data
 	move.clear();
-	foreach(m->Move, mv)
+	foreach(ModelMove &mv, m->Move)
 		if (mv.Type == MoveTypeVertex)
-			foreach(mv.Frame, f)
+			foreach(ModelFrame &f, mv.Frame)
 				move.add(f.VertexDPos[vertex]);
 
 	// correct references
-	foreach(m->Surface, s){
-		foreach(s.Triangle, t)
+	foreach(ModelSurface &s, m->Surface){
+		foreach(ModelTriangle &t, s.Triangle)
 			for (int k=0;k<3;k++)
 				if (t.Vertex[k] > vertex)
 					t.Vertex[k] --;
-		foreach(s.Edge, e)
+		foreach(ModelEdge &e, s.Edge)
 			for (int k=0;k<2;k++)
 				if (e.Vertex[k] > vertex)
 					e.Vertex[k] --;
-		foreach(s.Vertex, v)
+		foreach(int &v, s.Vertex)
 			if (v > vertex)
 				v --;
 	}

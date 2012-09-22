@@ -1120,7 +1120,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-167
+168
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1202,6 +1202,8 @@ Es muss genau 1 Knochen markiert sein!
 Please select exactly one bone!
 Es muss genau ein Objekt markiert sein!
 Please select exactly one object!
+Es muss genau eine Datei markiert sein!
+
 Es muss mindestens ein Terrain markiert sein!
 No terrain selected!
 Es sind nur maximal %d Texturen pro Terrain erlaubt!

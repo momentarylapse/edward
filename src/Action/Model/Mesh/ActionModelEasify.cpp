@@ -10,12 +10,12 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
 
-static vector get_area(DataModel *m, ModeModelTriangle &t)
+static vector get_area(DataModel *m, ModelTriangle &t)
 {
 	return (m->Vertex[t.Vertex[1]].pos - m->Vertex[t.Vertex[0]].pos) ^ (m->Vertex[t.Vertex[2]].pos - m->Vertex[t.Vertex[0]].pos);
 }
 
-static int edge_other_vertex(ModeModelEdge &e, int v)
+static int edge_other_vertex(ModelEdge &e, int v)
 {
 	if (e.Vertex[0] == v)
 		return e.Vertex[1];
@@ -25,13 +25,13 @@ static int edge_other_vertex(ModeModelEdge &e, int v)
 	return e.Vertex[0];
 }
 
-static float get_weight(DataModel *m, ModeModelSurface &s, ModeModelEdge &e)
+static float get_weight(DataModel *m, ModelSurface &s, ModelEdge &e)
 {
 	float w = 0;
 	vector v = (m->Vertex[e.Vertex[0]].pos + m->Vertex[e.Vertex[1]].pos) / 2;
 
 	// triangle plane change
-	foreachi(s.Triangle, t, ti){
+	foreachi(ModelTriangle &t, s.Triangle, ti){
 		if (ti == e.Triangle[0])
 			continue;
 		if ((e.RefCount > 1) && (ti == e.Triangle[1]))
@@ -44,13 +44,13 @@ static float get_weight(DataModel *m, ModeModelSurface &s, ModeModelEdge &e)
 					for (int i=0;i<3;i++)
 						vv[i] = (i == k) ? v : m->Vertex[t.Vertex[i]].pos;
 					vector area2 = (vv[1] - vv[0]) ^ (vv[2] - vv[0]);
-					w += VecLength(area ^ area2) / (VecLength(area) + VecLength(area2));
+					w += (area ^ area2).length() / (area.length() + area2.length());
 					//w += VecLength(area - area2);
 				}
 	}
 
 	// edge length
-	w += VecLengthSqr(m->Vertex[e.Vertex[0]].pos - m->Vertex[e.Vertex[1]].pos);
+	w += (m->Vertex[e.Vertex[0]].pos - m->Vertex[e.Vertex[1]].pos).length_sqr();
 	return w;
 }
 
@@ -58,17 +58,17 @@ bool ActionModelEasify::EasifyStep(DataModel *m)
 {
 	ed->multi_view_3d->ResetMessage3d();
 
-	foreachi(m->Surface, s, si){
+	foreachi(ModelSurface &s, m->Surface, si){
 
 		// calculate edge weights
-		foreach(s.Edge, e)
+		foreach(ModelEdge &e, s.Edge)
 			e.Weight = get_weight(m, s, e);
 
-		foreachi(s.Edge, e, ei)
+		foreachi(ModelEdge &e, s.Edge, ei)
 			if (e.RefCount == 1){
 				// find all edges sharing a vertex with e
 				Set<int> ee;
-				foreach(s.Triangle, t)
+				foreach(ModelTriangle &t, s.Triangle)
 					for (int k=0;k<3;k++)
 						for (int l=0;l<2;l++)
 							if (t.Vertex[k] == e.Vertex[l]){
@@ -77,12 +77,12 @@ bool ActionModelEasify::EasifyStep(DataModel *m)
 							}
 
 				// compute damage...
-				foreach(ee, eee)
+				foreach(int eee, ee)
 					if (eee != ei){
 						vector nv = (m->Vertex[s.Edge[eee].Vertex[0]].pos + m->Vertex[s.Edge[eee].Vertex[1]].pos) / 2;
 
 						vector area = (m->Vertex[s.Edge[ei].Vertex[0]].pos - nv) ^ (m->Vertex[s.Edge[ei].Vertex[1]].pos - nv);
-						s.Edge[eee].Weight += VecLength( area );
+						s.Edge[eee].Weight +=  area.length();
 					}
 
 			}
@@ -96,8 +96,8 @@ bool ActionModelEasify::EasifyStep(DataModel *m)
 	int _surface = 0, _edge = -1;
 	// remove least important
 	float min = 0;
-	foreachi(m->Surface, s, si)
-		foreachi(s.Edge, e, ei)
+	foreachi(ModelSurface &s, m->Surface, si)
+		foreachi(ModelEdge &e, s.Edge, ei)
 			if ((e.Weight < min) || (_edge < 0)){
 				min = e.Weight;
 				_surface = si;

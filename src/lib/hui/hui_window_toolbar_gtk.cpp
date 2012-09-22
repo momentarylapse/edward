@@ -101,7 +101,7 @@ void CHuiWindow::_ToolbarEnable_(const string &id, bool enabled)
 {
 	allow_signal_level ++;
 	for (int t=0;t<4;t++)
-		foreach(toolbar[t].item, it)
+		foreach(HuiToolbarItem &it, toolbar[t].item)
 			if (id == it.id){
 			    it.enabled = enabled;
 				gtk_widget_set_sensitive(GTK_WIDGET(it.widget), enabled);
@@ -113,7 +113,7 @@ void CHuiWindow::_ToolbarCheck_(const string &id, bool checked)
 {
 	allow_signal_level++;
 	for (int t=0;t<4;t++)
-		foreach(toolbar[t].item, it)
+		foreach(HuiToolbarItem &it, toolbar[t].item)
 			if (id == it.id)
 				if (it.type == HuiToolCheckable)
 					gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(it.widget), checked);
@@ -123,7 +123,7 @@ void CHuiWindow::_ToolbarCheck_(const string &id, bool checked)
 bool CHuiWindow::_ToolbarIsChecked_(const string &id)
 {
 	for (int t=0;t<4;t++)
-		foreach(toolbar[t].item, it)
+		foreach(HuiToolbarItem &it, toolbar[t].item)
 			if (id == it.id)
 				if (it.type == HuiToolCheckable)
 					return gtk_toggle_tool_button_get_active(GTK_TOGGLE_TOOL_BUTTON(it.widget));

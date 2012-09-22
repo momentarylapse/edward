@@ -20,7 +20,7 @@ void *ActionModelAddMaterial::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModeModelMaterial mat;
+	ModelMaterial mat;
 	m->Material.add(mat);
 	return &m->Material.back();
 }

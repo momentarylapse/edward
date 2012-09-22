@@ -133,11 +133,11 @@ vector img_get_ball_n(int x, int y, int N)
 	//vector n = vector(x - N/2, y - N/2, 0);
 	vector n = vector(x - N/2, y - N/2, 0);
 	n.z = - sqrt(N*N/2 - n.x*n.x - n.y*n.y);
-	VecNormalize(n);
+	n.normalize();
 	return n;
 }
 
-string render_material(ModeModelMaterial *m)
+string render_material(ModelMaterial *m)
 {
 	// texture?
 	int tex = NixLoadTexture(m->TextureFile[0]);
@@ -151,10 +151,10 @@ string render_material(ModeModelMaterial *m)
 	Image img;
 	img.Create(N, N, Black);
 	vector light_dir = vector(-1, -1, -1);
-	VecNormalize(light_dir);
+	light_dir.normalize();
 	vector cam_dir = - e_z;
 	vector light_sp_dir = light_dir + cam_dir;
-	VecNormalize(light_sp_dir);
+	light_sp_dir.normalize();
 	for (int x=0;x<N;x++)
 		for (int y=0;y<N;y++){
 			// ambient + diffuse + emission
@@ -192,10 +192,10 @@ void ModelPropertiesDialog::FillMaterialList()
 	Reset("material_list");
 	for (int i=0;i<data->Material.num;i++){
 		int nt = 0;
-		foreach(data->Surface, s)
-			foreach(s.Triangle, t)
-			if (t.Material == i)
-				nt ++;
+		foreach(ModelSurface &s, data->Surface)
+			foreach(ModelTriangle &t, s.Triangle)
+				if (t.Material == i)
+					nt ++;
 		string im = render_material(&data->Material[i]);
 		AddString("material_list", format("%d\\%d\\%s\\%s\\%s", i, nt, (i == data->CurrentMaterial) ? "true" : "false", im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
 	}
@@ -205,14 +205,14 @@ void ModelPropertiesDialog::FillMaterialList()
 void ModelPropertiesDialog::RefillInventaryList()
 {
 	Reset("model_inventary");
-	foreachi(temp.Inventary, it, i)
+	foreachi(string &it, temp.Inventary, i)
 		AddString("model_inventary", format("%d\\%s", i, it.c_str()));
 }
 
 void ModelPropertiesDialog::RefillScriptVarList()
 {
 	Reset("script_vars");
-	foreachi(temp.ScriptVar, v, i)
+	foreachi(float v, temp.ScriptVar, i)
 		/*if (i<NumObjectScriptVarNames)
 			AddString("script_vars", format("%d\\%s\\%.6f", i, ObjectScriptVarName[i].c_str(), v));
 		else*/

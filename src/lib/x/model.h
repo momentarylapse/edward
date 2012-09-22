@@ -36,18 +36,46 @@
 #define MODEL_MAX_POLY_VERTICES_PER_FACE	16
 #define MODEL_MAX_MOVE_OPS				8
 
+
+
+template <class T>
+class CopyAsRefArray : public Array<T>
+{
+	public:
+		void operator = (const CopyAsRefArray<T> &a)
+		{
+			set_ref(a);
+		}
+		void forget()
+		{
+			Array<T>::data = NULL;
+			Array<T>::allocated = 0;
+			Array<T>::num = 0;
+		}
+		void make_own()
+		{
+			T *dd = (T*)Array<T>::data;
+			int n = Array<T>::num;
+			forget();
+			Array<T>::resize(n);
+			for (int i=0;i<Array<T>::num;i++)
+				(*this)[i] = dd[i];
+		}
+};
+
+
 struct SubSkin
 {
 	int num_triangles;
 	
 	// vertices
-	DumbArray<int> triangle_index;
+	CopyAsRefArray<int> triangle_index;
 	
 	// texture mapping
-	DumbArray<float> skin_vertex;
+	CopyAsRefArray<float> skin_vertex;
 
 	// normals
-	DumbArray<vector> normal;
+	CopyAsRefArray<vector> normal;
 
 	int vertex_buffer;
 
@@ -58,10 +86,10 @@ struct SubSkin
 // visual skin
 struct Skin
 {
-	DumbArray<int> bone_index; // skeletal reference
-	DumbArray<vector> vertex;
+	CopyAsRefArray<int> bone_index; // skeletal reference
+	CopyAsRefArray<vector> vertex;
 
-	DumbArray<SubSkin> sub;
+	CopyAsRefArray<SubSkin> sub;
 	
 	// bounding box
 	vector min, max;
@@ -352,7 +380,7 @@ public:
 	Skin *skin[MODEL_NUM_SKINS];
 	bool skin_is_reference[MODEL_NUM_SKINS];
 	// material (shared)
-	DumbArray<Material> material;
+	CopyAsRefArray<Material> material;
 	bool material_is_reference;
 	// dynamical data (own)
 	vector *vertex_dyn[MODEL_NUM_SKINS]; // here the animated vertices are stored before rendering

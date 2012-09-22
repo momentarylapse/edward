@@ -57,7 +57,7 @@ libraries to link:
 
 //#define NIX_GL_IN_WIDGET
 
-#ifdef NIX_OS_WINDOWS
+#ifdef OS_WINDOWS
 	#ifdef HUI_API_GTK
 		#include <gdk/gdkwin32.h>
 	#endif
@@ -100,7 +100,7 @@ string NixFontName = "Times New Roman";
 
 int VBTemp;
 
-#ifdef NIX_OS_WINDOWS
+#ifdef OS_WINDOWS
 	static HMENU hMenu;
 	HDC hDC;
 	HGLRC hRC;
@@ -112,7 +112,7 @@ int VBTemp;
 
 //#define ENABLE_INDEX_BUFFERS
 
-#ifdef NIX_OS_WINDOWS
+#ifdef OS_WINDOWS
 	PFNGLACTIVETEXTUREPROC glActiveTexture = NULL;
 	PFNGLCLIENTACTIVETEXTUREPROC glClientActiveTexture = NULL;
 	PFNGLCREATESHADERPROC glCreateShader = NULL;
@@ -130,7 +130,7 @@ int VBTemp;
 bool OGLMultiTexturingSupport = false;
 bool OGLShaderSupport = false;
 #ifdef NIX_ALLOW_DYNAMIC_TEXTURE
-	#ifdef NIX_OS_WINDOWS
+	#ifdef OS_WINDOWS
 		extern PFNGLISRENDERBUFFEREXTPROC glIsRenderbufferEXT = NULL;
 		extern PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT = NULL;
 		extern PFNGLDELETERENDERBUFFERSEXTPROC glDeleteRenderbuffersEXT = NULL;
@@ -172,7 +172,7 @@ bool OGLShaderSupport = false;
 #endif
 
 static int OGLPixelFormat;
-#ifdef NIX_OS_LINUX
+#ifdef OS_LINUX
 	static GLXContext context;
 	bool NixGLDoubleBuffered;
 #endif
@@ -183,7 +183,7 @@ int glShaderCurrent = 0;
 // font
 int NixOGLFontDPList;
 
-#ifdef NIX_OS_LINUX
+#ifdef OS_LINUX
 #ifdef NIX_ALLOW_FULLSCREEN
 	XF86VidModeModeInfo *original_mode;
 #endif
@@ -194,7 +194,7 @@ int NixOGLFontDPList;
 
 void CreateFontGlyphWidth()
 {
-#ifdef NIX_OS_WINDOWS
+#ifdef OS_WINDOWS
 	hDC=GetDC(NixWindow->hWnd);
 	SetMapMode(hDC,MM_TEXT);
 	HFONT hFont=CreateFont(	NixFontHeight,0,0,0,FW_EXTRALIGHT,FALSE,
@@ -212,7 +212,7 @@ void CreateFontGlyphWidth()
 	}
 	DeleteObject(hFont);
 #endif
-#ifdef NIX_OS_LINUX
+#ifdef OS_LINUX
 	//XQueryTextExtents(hui_x_display, );
 	memset(NixFontGlyphWidth, 0, sizeof(NixFontGlyphWidth));
 	for(int c=0;c<255;c++)
@@ -256,7 +256,7 @@ typedef struct {
 GLWindow GLWin;
 #endif
 
-#ifdef NIX_OS_LINUX
+#ifdef OS_LINUX
 /* attributes for a single buffered visual in RGBA format with at least
  * 4 bits per color and a 16 bit depth buffer */
 int attrListSgl[]={
@@ -536,7 +536,7 @@ void NixInit(const string &api,int xres,int yres,int depth,bool fullscreen,CHuiW
 	}
 #endif
 
-#ifdef NIX_OS_WINDOWS
+#ifdef OS_WINDOWS
 	// save the original video mode
 	DEVMODE mode;
 	EnumDisplaySettings(NULL,ENUM_CURRENT_SETTINGS,&mode);
@@ -544,7 +544,7 @@ void NixInit(const string &api,int xres,int yres,int depth,bool fullscreen,CHuiW
 	NixDesktopHeight=mode.dmPelsHeight;
 	NixDesktopDepth=mode.dmBitsPerPel;
 #endif
-#ifdef NIX_OS_LINUX
+#ifdef OS_LINUX
 	#ifdef NIX_ALLOW_FULLSCREEN
 		XF86VidModeModeInfo **modes;
 		int NumModes;
@@ -643,7 +643,7 @@ void NixKill()
 {
 	NixKillDeviceObjects();
 	if (NixFullscreen){
-		#ifdef NIX_OS_WINDOWS
+		#ifdef OS_WINDOWS
 			/*DEVMODE dmScreenSettings;								// Device Mode
 			memset(&dmScreenSettings,0,sizeof(dmScreenSettings));	// Makes Sure Memory's Cleared
 			dmScreenSettings.dmSize=sizeof(dmScreenSettings);		// Size Of The Devmode Structure
@@ -654,7 +654,7 @@ void NixKill()
 			ChangeDisplaySettings(&dmScreenSettings,CDS_FULLSCREEN);*/
 		#endif
 
-		#ifdef NIX_OS_LINUX
+		#ifdef OS_LINUX
 			msg_write("Restore Video Mode");
 			int r = system(format("xrandr --size %dx%d", NixDesktopWidth, NixDesktopHeight).c_str());
 			/*bool b=XF86VidModeSwitchToMode(hui_x_display,screen,original_mode);
@@ -693,7 +693,7 @@ void NixReincarnateDeviceObjects()
 
 void set_video_mode_gl(int xres, int yres, int depth)
 {
-	#ifdef NIX_OS_WINDOWS
+	#ifdef OS_WINDOWS
 
 #ifdef NIX_GL_IN_WIDGET
 	// realize the widget...
@@ -764,10 +764,10 @@ void set_video_mode_gl(int xres, int yres, int depth)
 			exit(0);
 		}
 
-	#endif // NIX_OS_WINDOWS
+	#endif // OS_WINDOWS
 
 	
-	#ifdef NIX_OS_LINUX
+	#ifdef OS_LINUX
 
 		
 		XVisualInfo *vi = choose_visual();
@@ -898,7 +898,7 @@ int event_mask = ExposureMask | KeyPressMask | ButtonPressMask |
 			msg_db_m("-direct rendering",1);
 		}else
 			msg_error("-no direct rendering!");
-	#endif // NIX_OS_LINUX
+	#endif // OS_LINUX
 
 	msg_db_m("-setting properties",1);
 	glShadeModel(GL_SMOOTH);
@@ -906,7 +906,7 @@ int event_mask = ExposureMask | KeyPressMask | ButtonPressMask |
 	glDepthFunc(GL_LEQUAL);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST); // "Really Nice Perspective Calculations" (...)
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
-	#ifdef NIX_OS_LINUX
+	#ifdef OS_LINUX
 		glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
 	#endif
 
@@ -914,12 +914,12 @@ int event_mask = ExposureMask | KeyPressMask | ButtonPressMask |
 	// font
 	msg_db_m("-font",1);
 //	NixOGLFontDPList=glGenLists(256);
-	#ifdef NIX_OS_WINDOWS
+	#ifdef OS_WINDOWS
 		HFONT hFont=CreateFont(NixFontHeight,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,ANSI_CHARSET,OUT_TT_PRECIS,CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,FF_DONTCARE|DEFAULT_PITCH,hui_tchar_str(NixFontName));
 		SelectObject(hDC,hFont);
 		wglUseFontBitmaps(hDC,0,255,NixOGLFontDPList);
 	#endif
-	#ifdef NIX_OS_LINUX
+	#ifdef OS_LINUX
     /*fontInfo = XLoadQueryFont(GLWin.dpy, FontName);
 	if (fontInfo){
 		printf("------------Font--------------\n");
@@ -949,7 +949,7 @@ int event_mask = ExposureMask | KeyPressMask | ButtonPressMask |
 		
 		char *ext = (char*)glGetString( GL_EXTENSIONS );
 		
-#ifdef NIX_OS_WINDOWS
+#ifdef OS_WINDOWS
 
 		// multitexturing
 		glActiveTexture = (PFNGLACTIVETEXTUREPROC)wglGetProcAddress("glActiveTexture");
@@ -990,7 +990,7 @@ int event_mask = ExposureMask | KeyPressMask | ButtonPressMask |
 				msg_error("EXT_framebuffer_object extension was not found");
 			}else{
 				OGLDynamicTextureSupport = true;
-#ifdef NIX_OS_WINDOWS
+#ifdef OS_WINDOWS
 				glIsRenderbufferEXT = (PFNGLISRENDERBUFFEREXTPROC)wglGetProcAddress("glIsRenderbufferEXT");
 				glBindRenderbufferEXT = (PFNGLBINDRENDERBUFFEREXTPROC)wglGetProcAddress("glBindRenderbufferEXT");
 				glDeleteRenderbuffersEXT = (PFNGLDELETERENDERBUFFERSEXTPROC)wglGetProcAddress("glDeleteRenderbuffersEXT");
@@ -1081,7 +1081,7 @@ void NixSetVideoMode(const string &api, int xres, int yres, int depth, bool full
 	// adjust window for new mode
 	NixWindow->SetFullscreen(NixFullscreen);
 	//NixWindow->SetPosition(0, 0);
-/*#ifdef NIX_OS_WINDOWS
+/*#ifdef OS_WINDOWS
 	msg_db_m("-window",1);
 	if (NixFullscreen){
 		DWORD style=WS_POPUP|WS_SYSMENU|WS_VISIBLE;
@@ -1109,7 +1109,7 @@ void NixSetVideoMode(const string &api, int xres, int yres, int depth, bool full
 		NixScreenWidth			=NixDesktopWidth;
 		NixScreenHeight			=NixDesktopHeight;
 		NixScreenDepth			=NixDesktopDepth;
-/*#ifdef NIX_OS_WINDOWS
+/*#ifdef OS_WINDOWS
 		msg_db_m("SetWindowPos",1);
 		SetWindowPos(	NixWindow->hWnd,HWND_NOTOPMOST,
 						WindowBounds.left,
@@ -1141,7 +1141,7 @@ void NixTellUsWhatsWrong()
 // shoot down windows
 void NixKillWindows()
 {
-#ifdef NIX_OS_WINDOWS
+#ifdef OS_WINDOWS
 	msg_db_r("Killing Windows...",0);
 	HANDLE t;
 	OpenProcessToken(	GetCurrentProcess(),TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY,&t);

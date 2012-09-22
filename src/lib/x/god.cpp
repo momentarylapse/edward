@@ -110,7 +110,7 @@ inline bool TestVectorSanity(vector &v, const char *name)
 {
 	if (inf_v(v)){
 		num_insane++;
-		v=v0;
+		v=v_0;
 		if (num_insane>100)
 			return false;
 		msg_error(format("Vektor %s unendlich!!!!!!!",name));
@@ -157,14 +157,14 @@ void TestObjectSanity(const char *str)
 void GodInit()
 {
 	msg_db_r("GodInit",1);
-	GlobalG=v0;
+	GlobalG=v_0;
 	NumForceFields = 0;
 
 	terrain_object = new CObject();
 	terrain_object->UpdateMatrix();
 
 #if 0
-	COctree *octree = new COctree(v0, 100);
+	COctree *octree = new COctree(v_0, 100);
 	sOctreeLocationData dummy_loc;
 	vector min =vector(23,31,9);
 	vector max =vector(40,50,39);
@@ -299,7 +299,7 @@ void GodResetLevelData()
 	LevelData.sun_ang = vector(1, 0, 0);
 	LevelData.ambient = color(1, 0.4f, 0.4f, 0.4f);
 
-	LevelData.gravity = v0;
+	LevelData.gravity = v_0;
 	LevelData.fog.enabled = false;
 }
 
@@ -336,7 +336,7 @@ bool GodLoadWorldFromLevelData()
 	NixSetAmbientLight(GlobalAmbient);
 
 	SunLight = FxLightCreate();
-	FxLightSetDirectional(SunLight, VecAng2Dir(LevelData.sun_ang),
+	FxLightSetDirectional(SunLight, LevelData.sun_ang.ang2dir(),
 					LevelData.sun_color[0],
 					LevelData.sun_color[1],
 					LevelData.sun_color[2]);
@@ -359,7 +359,7 @@ bool GodLoadWorldFromLevelData()
 	Object.clear(); // make sure the "missing" objects are NULL
 	Object.resize(LevelData.object.num);
 	GodNumReservedObjects = LevelData.object.num;
-	foreachi(LevelData.object, o, i)
+	foreachi(LevelDataObject &o, LevelData.object, i)
 		if (o.filename.num > 0){
 			CObject *oo = GodCreateObject(o.filename, o.name, o.pos, o.ang, i);
 			ok &= (oo >= 0);
@@ -376,7 +376,7 @@ bool GodLoadWorldFromLevelData()
 	AddAllObjectsToLists = true;
 
 	// terrains
-	foreachi(LevelData.terrain, t, i){
+	foreachi(LevelDataTerrain &t, LevelData.terrain, i){
 		MetaDrawSplashScreen("Terrain...", 0.6f + (float)i / (float)LevelData.terrain.num * 0.4f);
 		CTerrain *tt = new CTerrain(t.filename, t.pos);
 		Terrain.add(tt);
@@ -434,7 +434,7 @@ bool GodLoadWorld(const string &filename)
 	n = f->ReadInt();
 	for (int i=0;i<n;i++){
 		LevelData.skybox_filename.add(f->ReadStr());
-		LevelData.skybox_ang.add(v0);
+		LevelData.skybox_ang.add(v_0);
 	}
 
 	// Fog
@@ -460,8 +460,8 @@ bool GodLoadWorld(const string &filename)
 		o.name = f->ReadStr();
 		f->ReadVector(&o.pos);
 		f->ReadVector(&o.ang);
-		o.vel = v0;
-		o.rot = v0;
+		o.vel = v_0;
+		o.rot = v_0;
 		LevelData.object.add(o);
 	}
 
@@ -678,7 +678,7 @@ CObject *GodCreateObject(const string &filename, const string &name, const vecto
 
 CObject *_cdecl _CreateObject(const string &filename, const vector &pos)
 {
-	return GodCreateObject(filename, filename, pos, v0);
+	return GodCreateObject(filename, filename, pos, v_0);
 }
 
 void db_o(const char *msg)
@@ -779,11 +779,11 @@ void DoForceFields()
 		ForceField[f]->Radius += Elapsed * ForceField[f]->Vel;
 		for (int o=0;o<Object.num;o++)
 			if (Object[o]->active_physics)
-				if (VecBoundingBox(Object[o]->pos, ForceField[f]->Pos, ForceField[f]->Radius)){
-					float d = VecLength(Object[o]->pos - ForceField[f]->Pos);
+				if (Object[o]->pos.bounding_cube(ForceField[f]->Pos, ForceField[f]->Radius)){
+					float d = (Object[o]->pos - ForceField[f]->Pos).length();
 					if (d < ForceField[f]->Radius){
 						vector n = Object[o]->pos - ForceField[f]->Pos;
-						float d = VecLength(n);
+						float d = n.length();
 						n /= d;
 						if (ForceField[f]->Kind == FFKindRadialConst)
 							Object[o]->vel += ForceField[f]->Acc*Elapsed*n;
@@ -846,7 +846,7 @@ void SetSoundState(bool paused,float scale,bool kill,bool restart)
 
 	MetaListenerRate=paused?0:scale;
 
-	vector nv=v0;
+	vector nv=v_0;
 	if (paused)
 		SoundSetListener(nv,nv,nv);
 #endif
@@ -913,7 +913,7 @@ void PhysicsDataFromODE()
 				Object[i]->rot = *(vector*)dBodyGetAngularVel(b);
 				quaternion q;
 				qode2x(dBodyGetQuaternion(b), &q);
-				Object[i]->ang = QuaternionToAngle(q);
+				Object[i]->ang = q.get_angles();
 				Object[i]->UpdateMatrix();
 				Object[i]->UpdateTheta();
 				Object[i]->_ResetPhysAbsolute_();
@@ -969,7 +969,7 @@ void ApplyGravity()
 			if (!Object[i]->frozen){
 				float ttf = Object[i]->time_till_freeze;
 				vector g = Object[i]->mass * Object[i]->g_factor * GlobalG;
-				Object[i]->AddForce(g, v0);
+				Object[i]->AddForce(g, v_0);
 				//                                                     GetG(Object[i]->Pos));
 				Object[i]->time_till_freeze = ttf;
 			}
@@ -979,7 +979,7 @@ void ResetExternalForces()
 {
 	for (int i=0;i<Object.num;i++)
 		if (Object[i])
-			Object[i]->force_ext = Object[i]->torque_ext = v0;
+			Object[i]->force_ext = Object[i]->torque_ext = v_0;
 }
 
 
@@ -1202,7 +1202,7 @@ bool GodTrace(vector &p1, vector &p2, vector &tp, bool simple_test, int o_ignore
 {
 	msg_db_r("GodTrace",4);
 	vector dir = p2 - p1;
-	float range = VecLength(dir);
+	float range = dir.length();
 	dir /= range;
 	float d, dmin = range;
 	vector c;
@@ -1217,7 +1217,7 @@ bool GodTrace(vector &p1, vector &p2, vector &tp, bool simple_test, int o_ignore
 				msg_db_l(4);
 				return true;
 			}
-			d=VecLength(p1-c);
+			d=(p1-c).length();
 			if (d<dmin){
 				dmin=d;
 				tp=c;
@@ -1239,7 +1239,7 @@ bool GodTrace(vector &p1, vector &p2, vector &tp, bool simple_test, int o_ignore
 					msg_db_l(4);
 					return true;
 				}
-				d=VecLength(p1-c);
+				d=(p1-c).length();
 				if (d<dmin){
 					dmin=d;
 					tp=c;
@@ -1422,16 +1422,16 @@ inline void draw_pmv(Array<PartialModelView> &vp)
 {
 	// camera frustrum data
 	vector pos = cur_cam->pos;
-	vector dir = VecAng2Dir(cur_cam->ang);
+	vector dir = cur_cam->ang.ang2dir();
 	vector a2;
 	a2 = VecAngAdd(vector(0, +0.9, 0), cur_cam->ang);
-	vector dir_l = VecAng2Dir(a2);
+	vector dir_l = a2.ang2dir();
 	a2 = VecAngAdd(vector(0, -0.9, 0), cur_cam->ang);
-	vector dir_r = VecAng2Dir(a2);
+	vector dir_r = a2.ang2dir();
 	a2 = VecAngAdd(vector(+1.0, 0, 0), cur_cam->ang);
-	vector dir_t = VecAng2Dir(a2);
+	vector dir_t = a2.ang2dir();
 	a2 = VecAngAdd(vector(-1.0, 0, 0), cur_cam->ang);
-	vector dir_b = VecAng2Dir(a2);
+	vector dir_b = a2.ang2dir();
 	
 	for (int i=0;i<vp.num;i++){
 		PartialModel *p = (PartialModel*)vp[i].p;

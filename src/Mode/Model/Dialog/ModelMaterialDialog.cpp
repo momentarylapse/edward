@@ -57,7 +57,7 @@ ModelMaterialDialog::~ModelMaterialDialog()
 
 void ModelMaterialDialog::LoadData()
 {
-	ModeModelMaterial *mat = &TempMaterial;
+	ModelMaterial *mat = &TempMaterial;
 	// material
 	Check("default_colors", !mat->UserColor);
 	Enable("mat_am", mat->UserColor);

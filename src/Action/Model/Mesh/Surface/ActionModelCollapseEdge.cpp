@@ -16,11 +16,11 @@ ActionModelCollapseEdge::ActionModelCollapseEdge(DataModel *m, int _surface, int
 {
 	assert(_surface >= 0);
 	assert(_surface < m->Surface.num);
-	ModeModelSurface &s = m->Surface[_surface];
+	ModelSurface &s = m->Surface[_surface];
 
 	assert(_edge >= 0);
 	assert(_edge < s.Edge.num);
-	ModeModelEdge &e = s.Edge[_edge];
+	ModelEdge &e = s.Edge[_edge];
 	int v[2] = {e.Vertex[0], e.Vertex[1]};
 	AddSubAction(new ActionModelAddVertex((m->Vertex[v[0]].pos + m->Vertex[v[1]].pos) / 2), m);
 
@@ -28,10 +28,10 @@ ActionModelCollapseEdge::ActionModelCollapseEdge(DataModel *m, int _surface, int
 	for (int k=0;k<e.RefCount;k++)
 		tria.add(e.Triangle[k]);
 
-	foreachb(tria, t)
+	foreachb(int t, tria)
 		AddSubAction(new ActionModelSurfaceDeleteTriangle(_surface, t), m);
 
-	foreachbi(s.Triangle, t, i)
+	foreachib(ModelTriangle &t, s.Triangle, i)
 		for (int k=0;k<3;k++)
 			if ((t.Vertex[k] == v[0]) || (t.Vertex[k] == v[1])){
 				int nv[3];

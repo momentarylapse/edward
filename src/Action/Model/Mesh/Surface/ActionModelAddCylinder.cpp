@@ -19,15 +19,15 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos,
 	int material = m->CurrentMaterial;
 
 	Interpolator<float> inter_r(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
-	foreach(_radius, r)
+	foreach(float r, _radius)
 		inter_r.add(r);
 
 	// vertices (interpolated on path)
 	Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
-	foreach(pos, p)
+	foreach(vector &p, pos)
 		inter.add(p);
 	Array<vector> sv;
-	vector r_last = v0;
+	vector r_last = v_0;
 	for (int i=0;i<=rings;i++){
 		// interpolated point on path
 		float t = (float)i / (float)rings;
@@ -37,10 +37,10 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos,
 		// moving frame
 		vector u = r_last ^ dir;
 		if (i == 0)
-			u = VecOrtho(dir);
-		VecNormalize(u);
+			u = dir.ortho();
+		u.normalize();
 		vector r = dir ^ u;
-		VecNormalize(r);
+		r.normalize();
 		r_last = r;
 
 		// vertex ring
