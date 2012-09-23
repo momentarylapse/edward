@@ -8,6 +8,8 @@
 #include "ActionModelSurfaceDeleteTriangle.h"
 #include "../../../../../Data/Model/DataModel.h"
 
+// might create an empty surface -> don't use alone!
+
 ActionModelSurfaceDeleteTriangle::ActionModelSurfaceDeleteTriangle(int _surface, int _index)
 {
 	surface = _surface;

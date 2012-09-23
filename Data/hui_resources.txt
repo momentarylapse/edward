@@ -6098,7 +6098,7 @@ menu_model
 0
 
 
-138
+140
 ItemPopup
 menu_model_file
 
@@ -7195,7 +7195,7 @@ ItemPopup
 menu_model_functions
 
 1
-18
+20
 0
 0
 0
@@ -7323,6 +7323,32 @@ connect
 
 Item
 nearify
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+bevel_vertices
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+flatten_vertices
 
 1
 0
@@ -16105,7 +16131,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-702
+704
 // Text
 ad_dialog
 Verwaltung
@@ -16189,6 +16215,8 @@ appearance
 Aussehen...
 apply
 Übernehmen
+bevel_vertices
+Abfräsen
 bgc
 !alpha
 brightness
@@ -16387,6 +16415,8 @@ find_scriptfile
 
 find_workingdir
 
+flatten_vertices
+Einebnen
 fog_color
 
 fog_density
@@ -17517,7 +17547,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-702
+704
 // Text
 ad_dialog
 Administration
@@ -17601,6 +17631,8 @@ appearance
 Appearance...
 apply
 Apply
+bevel_vertices
+
 bgc
 !alpha
 brightness
@@ -17798,6 +17830,8 @@ find_rootdir
 find_scriptfile
 
 find_workingdir
+
+flatten_vertices
 
 fog_color
 
@@ -19255,7 +19289,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-702
+704
 // Text
 ad_dialog
 
@@ -19339,6 +19373,8 @@ appearance
 外観
 apply
 適用
+bevel_vertices
+
 bgc
 !alpha
 brightness
@@ -19536,6 +19572,8 @@ find_rootdir
 find_scriptfile
 
 find_workingdir
+
+flatten_vertices
 
 fog_color
 

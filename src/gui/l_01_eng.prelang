@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-558
+560
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -75,6 +75,8 @@ appearance
 Appearance...
 apply
 Apply
+bevel_vertices
+
 bgc
 !alpha
 brightness
@@ -205,6 +207,8 @@ file_list_missing
 !format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
 file_list_super
 !format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
+flatten_vertices
+
 fog_enabled
 enabled
 fog_mode
@@ -1120,7 +1124,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-168
+169
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1328,6 +1332,8 @@ Push
 Push
 Quader
 Cube
+Radius skalieren
+
 Rechts
 Right
 Rechts (-x)

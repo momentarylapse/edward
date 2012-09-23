@@ -245,6 +245,8 @@ enum{
 		sub_menu_858->AddEntry("Am Raster ausrichten",HMM_ALIGN_TO_GRID);
 		sub_menu_858->AddEntry("--Punkte vereinen",HMM_CONNECT);
 		sub_menu_858->AddEntry("Punkte ann&ahern",HMM_NEARIFY);
+		sub_menu_858->AddEntry("Abfr&asen",HMM_BEVEL_VERTICES);
+		sub_menu_858->AddEntry("Einebnen",HMM_FLATTEN_VERTICES);
 		sub_menu_858->AddSeparator();
 		sub_menu_858->AddEntry("Auf Dreiecke",HMM_MENU_TRIA_HEADER);
 		sub_menu_858->EnableItem(HMM_MENU_TRIA_HEADER,false);

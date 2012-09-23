@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-558
+560
 // Data (ID,Text)
 ad_dialog
 
@@ -75,6 +75,8 @@ appearance
 外観
 apply
 適用
+bevel_vertices
+
 bgc
 !alpha
 brightness
@@ -204,6 +206,8 @@ file_list_detail_source
 file_list_missing
 
 file_list_super
+
+flatten_vertices
 
 fog_enabled
 
@@ -1120,7 +1124,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-168
+169
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1327,6 +1331,8 @@ Pop
 Push
 
 Quader
+
+Radius skalieren
 
 Rechts
 

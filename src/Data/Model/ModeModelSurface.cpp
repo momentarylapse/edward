@@ -446,12 +446,25 @@ void ModelSurface::TestSanity(const string &loc)
 			msg_error(loc + ": surf broken!   trivial edge");
 			return;
 		}
-		for (int k=0;k<e.RefCount;k++)
-			if (Triangle[e.Triangle[k]].Edge[e.Side[k]] != i){
+		for (int k=0;k<e.RefCount;k++){
+			ModelTriangle &t = Triangle[e.Triangle[k]];
+			if (t.Edge[e.Side[k]] != i){
 				msg_error(loc + ": surf broken!   edge linkage");
-				msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.Side[k], Triangle[e.Triangle[k]].Edge[e.Side[k]], Triangle[e.Triangle[k]].EdgeDirection[e.Side[k]]));
+				msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.Side[k], t.Edge[e.Side[k]], t.EdgeDirection[e.Side[k]]));
 				return;
 			}
+			if (t.EdgeDirection[e.Side[k]] != k){
+				msg_error(loc + ": surf broken!   edge linkage (dir)");
+				msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.Side[k], t.Edge[e.Side[k]], t.EdgeDirection[e.Side[k]]));
+				return;
+			}
+			for (int j=0;j<2;j++)
+				if (e.Vertex[(j + k) % 2] != t.Vertex[(e.Side[k] + j) % 3]){
+					msg_error(loc + ": surf broken!   edge linkage (vert)");
+					msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.Side[k], t.Edge[e.Side[k]], t.EdgeDirection[e.Side[k]]));
+					return;
+				}
+		}
 
 	}
 }

@@ -18,7 +18,7 @@ public:
 	virtual ~ModeModelMeshBevelVertices();
 
 	void OnMouseMove();
-	void OnLeftButtonDown();
+	void OnKeyDown();
 
 	void OnDrawWin(int win, irect dest);
 
