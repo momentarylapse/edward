@@ -18,6 +18,7 @@
 #include "../../Action/Model/Mesh/Vertex/ActionModelFlattenVertices.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelBevelVertices.h"
 #include "../../Action/Model/Mesh/Triangle/ActionModelAddTriangleSingleTexture.h"
+#include "../../Action/Model/Mesh/Triangle/ActionModelExtrudeTriangles.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelAddCube.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelAddPlane.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelAddCylinder.h"
@@ -1792,6 +1793,9 @@ void DataModel::BevelSelectedVertices(float radius)
 
 void DataModel::FlattenSelectedVertices()
 {	Execute(new ActionModelFlattenVertices(this));	}
+
+void DataModel::ExtrudeSelectedTriangles(float offset)
+{	Execute(new ActionModelExtrudeTriangles(this, offset));	}
 
 void DataModel::AnimationDuplicateCurrentFrame()
 {

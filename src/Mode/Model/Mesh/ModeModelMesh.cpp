@@ -104,6 +104,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		data->SubtractSelection();
 	if (id == "invert_trias")
 		data->InvertSelection();
+	if (id == "extrude_triangles")
+		data->ExtrudeSelectedTriangles(40 / mode_model_mesh_vertex->multi_view->zoom);
 	if (id == "nearify")
 		data->NearifySelectedVertices();
 	if (id == "connect")

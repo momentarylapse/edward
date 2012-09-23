@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-560
+561
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -76,7 +76,7 @@ Appearance...
 apply
 Apply
 bevel_vertices
-
+Bevel
 bgc
 !alpha
 brightness
@@ -195,6 +195,8 @@ export_type
 single files\\archive (compressed)\\archive (uncompressed)
 export_world
 Export world
+extrude_triangles
+Extrude
 file_list_all
 !format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
 file_list_cur
@@ -208,7 +210,7 @@ file_list_missing
 file_list_super
 !format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
 flatten_vertices
-
+Flatten
 fog_enabled
 enabled
 fog_mode
@@ -1207,7 +1209,7 @@ Please select exactly one bone!
 Es muss genau ein Objekt markiert sein!
 Please select exactly one object!
 Es muss genau eine Datei markiert sein!
-
+Please select exactly one file!
 Es muss mindestens ein Terrain markiert sein!
 No terrain selected!
 Es sind nur maximal %d Texturen pro Terrain erlaubt!

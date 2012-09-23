@@ -10,9 +10,10 @@
 
 // might create a "disjoint" surface -> don't use alone!
 
-ActionModelSurfaceAddTriangle::ActionModelSurfaceAddTriangle(int _surface, int _a, int _b, int _c, int _material, const vector *_sva, const vector *_svb, const vector *_svc)
+ActionModelSurfaceAddTriangle::ActionModelSurfaceAddTriangle(int _surface, int _a, int _b, int _c, int _material, const vector *_sva, const vector *_svb, const vector *_svc, int _index)
 {
 	surface = _surface;
+	index = _index;
 	a = _a;
 	b = _b;
 	c = _c;
@@ -33,9 +34,11 @@ void ActionModelSurfaceAddTriangle::undo(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	ModelSurface &s = m->Surface[surface];
-	s.RemoveTriangle(s.Triangle.num -1);
-	//s.Triangle.pop();
-	//s.BuildFromTriangles();
+
+	if (index >= 0)
+		s.RemoveTriangle(index);
+	else
+		s.RemoveTriangle(s.Triangle.num -1);
 }
 
 
@@ -47,37 +50,11 @@ void *ActionModelSurfaceAddTriangle::execute(Data *d)
 	ModelSurface &s = m->Surface[surface];
 
 	// add triangle
-	s.AddTriangle(a, b, c, material, sv[0], sv[1], sv[2]);
+	s.AddTriangle(a, b, c, material, sv[0], sv[1], sv[2], index);
+
+	if (index >= 0)
+		return &s.Triangle[index];
 	return &s.Triangle.back();
-
-	/*sModeModelSubSkin *sub = &skin->Sub[CurrentMaterial];
-	sModeModelTriangle t;
-	t.Index[0] = a;
-	t.Index[1] = b;
-	t.Index[2] = c;
-	int v[3];
-	v[0] = a;
-	v[1] = b;
-	v[2] = c;
-	for (int tl=0;tl<sub->NumTextures;tl++){
-
-		// any skin vertices attached to the vertices? (same material)
-		vector sv[3] = {v0, e_x, e_y};
-		for (int i=0;i<sub->Triangle.num;i++)
-			if (sub->Triangle[i].ViewStage >= skin->ViewStage)
-				for (int k=0;k<9;k++)
-					if (sub->Triangle[i].Index[k/3] == v[k%3])
-						sv[k%3] = sub->Triangle[i].SkinVertex[tl][k/3];
-
-		t.SkinVertex[tl][0] = sv[0];
-		t.SkinVertex[tl][1] = sv[1];
-		t.SkinVertex[tl][2] = sv[2];
-	}
-	t.IsSelected = false;
-	t.IsSpecial = false;
-	t.ViewStage = skin->ViewStage;
-	t.NormalDirty = true;
-	sub->Triangle.add(t);*/
 }
 
 

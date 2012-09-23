@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-560
+561
 // Data (ID,Text)
 ad_dialog
 
@@ -194,6 +194,8 @@ export_to_gamestudio
 export_type
 single files\\archive (compressed)\\archive (uncompressed)
 export_world
+
+extrude_triangles
 
 file_list_all
 

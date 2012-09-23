@@ -23,7 +23,7 @@ ActionModelSurfaceRelinkTriangle::ActionModelSurfaceRelinkTriangle(DataModel *m,
 	AddSubAction(new ActionModelSurfaceDeleteTriangle(_surface, _triangle), m);
 
 	// create new triangle
-	AddSubAction(new ActionModelSurfaceAddTriangle(_surface, a, b, c, material, sv[0], sv[1], sv[2]), m);
+	AddSubAction(new ActionModelSurfaceAddTriangle(_surface, a, b, c, material, sv[0], sv[1], sv[2], _triangle), m);
 }
 
 ActionModelSurfaceRelinkTriangle::~ActionModelSurfaceRelinkTriangle()

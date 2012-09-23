@@ -15,7 +15,7 @@ class vector;
 class ActionModelSurfaceAddTriangle: public Action
 {
 public:
-	ActionModelSurfaceAddTriangle(int _surface, int _a, int _b, int _c, int _material, const vector *_sva, const vector *_svb, const vector *_svc);
+	ActionModelSurfaceAddTriangle(int _surface, int _a, int _b, int _c, int _material, const vector *_sva, const vector *_svb, const vector *_svc, int _index = -1);
 	virtual ~ActionModelSurfaceAddTriangle();
 	string name(){	return "ModelSurfaceAddTriangle";	}
 
@@ -24,6 +24,7 @@ public:
 
 private:
 	int surface;
+	int index;
 	int a, b, c;
 	int material;
 	vector sv[3][MODEL_MAX_TEXTURES];

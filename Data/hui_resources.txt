@@ -6098,7 +6098,7 @@ menu_model
 0
 
 
-140
+141
 ItemPopup
 menu_model_file
 
@@ -7195,7 +7195,7 @@ ItemPopup
 menu_model_functions
 
 1
-20
+21
 0
 0
 0
@@ -7401,6 +7401,19 @@ hui:cut
 
 Item
 new_extract
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+extrude_triangles
 
 1
 0
@@ -16131,7 +16144,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-704
+705
 // Text
 ad_dialog
 Verwaltung
@@ -16246,7 +16259,7 @@ Mit Material belegen...
 clear_texture_level
 Leeren
 connect
-Punkte vereinen
+Vereinen
 copy
 Kopieren
 create_lightmap
@@ -16367,6 +16380,8 @@ export_type
 einzelne Dateien\\Archiv (komprimiert)\\Archiv (unkomprimiert)
 export_world
 Welt
+extrude_triangles
+Extrudieren
 factorx
 
 factory
@@ -16968,7 +16983,7 @@ ncy_rings
 ncy_texture_closed
 Geschlossene Textur
 nearify
-Punkte annähern
+Annähern
 new
 Neu
 new_animation_dialog
@@ -17004,7 +17019,7 @@ Kanten
 new_cylinder_dialog_t_rings
 Ringe
 new_extract
-Dreieck zerteilen
+Zerteilen
 new_frame
 neuer Frame
 new_konv_poly
@@ -17547,7 +17562,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-704
+705
 // Text
 ad_dialog
 Administration
@@ -17632,7 +17647,7 @@ Appearance...
 apply
 Apply
 bevel_vertices
-
+Bevel
 bgc
 !alpha
 brightness
@@ -17783,6 +17798,8 @@ export_type
 single files\\archive (compressed)\\archive (uncompressed)
 export_world
 Export world
+extrude_triangles
+Extrude
 factorx
 
 factory
@@ -17832,7 +17849,7 @@ find_scriptfile
 find_workingdir
 
 flatten_vertices
-
+Flatten
 fog_color
 
 fog_density
@@ -18958,7 +18975,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-163
+164
 // Text
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -19040,6 +19057,8 @@ Es muss genau 1 Knochen markiert sein!
 Please select exactly one bone!
 Es muss genau ein Objekt markiert sein!
 Please select exactly one object!
+Es muss genau eine Datei markiert sein!
+Please select exactly one file!
 Es muss mindestens ein Terrain markiert sein!
 No terrain selected!
 Es sind nur maximal %d Texturen pro Terrain erlaubt!
@@ -19289,7 +19308,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-704
+705
 // Text
 ad_dialog
 
@@ -19524,6 +19543,8 @@ export_to_gamestudio
 export_type
 single files\\archive (compressed)\\archive (uncompressed)
 export_world
+
+extrude_triangles
 
 factorx
 
