@@ -16246,7 +16246,7 @@ Mit Material belegen...
 clear_texture_level
 Leeren
 connect
---Punkte vereinen
+Punkte vereinen
 copy
 Kopieren
 create_lightmap

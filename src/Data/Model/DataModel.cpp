@@ -13,6 +13,7 @@
 #include "../../Edward.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelAddVertex.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelNearifyVertices.h"
+#include "../../Action/Model/Mesh/Vertex/ActionModelCollapseVertices.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelAlignToGrid.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelFlattenVertices.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelBevelVertices.h"
@@ -1767,6 +1768,9 @@ void DataModel::AlignToGridSelection(float grid_d)
 
 void DataModel::NearifySelectedVertices()
 {	Execute(new ActionModelNearifyVertices(this));	}
+
+void DataModel::CollapseSelectedVertices()
+{	Execute(new ActionModelCollapseVertices(this));	}
 
 void DataModel::SetNormalModeSelection(int mode)
 {	Execute(new ActionModelSetNormalModeSelection(this, mode));	}

@@ -10,7 +10,6 @@
 
 #include "../../../ActionGroup.h"
 class DataModel;
-class ModelVertex;
 
 class ActionModelBevelVertices: public ActionGroup
 {

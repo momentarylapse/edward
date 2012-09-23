@@ -106,6 +106,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		data->InvertSelection();
 	if (id == "nearify")
 		data->NearifySelectedVertices();
+	if (id == "connect")
+		data->CollapseSelectedVertices();
 	if (id == "align_to_grid")
 		data->AlignToGridSelection(mode_model_mesh_vertex->multi_view->GetGridD());
 
