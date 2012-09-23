@@ -499,3 +499,25 @@ bool ModelSurface::IsInside(const vector &p)
 	// even or odd?
 	return ((n % 2) == 1);
 }
+
+
+
+Array<int> ModelSurface::GetBoundaryLoop(int v0)
+{
+	Array<int> loop;
+	int last = v0;
+	bool found = true;
+	while(found){
+		found = false;
+		foreach(ModelEdge &e, Edge)
+			if (e.RefCount == 1)
+				if (e.Vertex[0] == last){
+					last = e.Vertex[1];
+					loop.add(last);
+					if (last == v0)
+						return loop;
+					found = true;
+					break;
+				}
+	}
+}

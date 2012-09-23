@@ -7,7 +7,6 @@
 
 #include "ModeModelMeshBevelVertices.h"
 #include "../../ModeModel.h"
-#include "../../../../Action/Model/Mesh/Vertex/ActionModelBevelVertices.h"
 #include "../../../../Edward.h"
 #include "../../../../lib/x/x.h"
 
@@ -34,7 +33,7 @@ void ModeModelMeshBevelVertices::OnKeyDown()
 {
 	if (HuiGetEvent()->key_code == KEY_SHIFT + KEY_RETURN)
 		if (data->GetNumSelectedVertices() > 0){
-			data->Execute(new ActionModelBevelVertices(data, radius));
+			data->BevelSelectedVertices(radius);
 			Abort();
 		}
 }

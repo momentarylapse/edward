@@ -6,31 +6,12 @@
  */
 
 #include "ActionModelBevelVertices.h"
+#include "Helper/ActionModelDeleteUnusedVertex.h"
 #include "../Triangle/ActionModelSplitEdge.h"
 #include "../Triangle/ActionModelAddTrianglesByOutline.h"
 #include "../Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
 #include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
-
-Array<int> get_boundary_loop(ModelSurface &s, int v0)
-{
-	Array<int> loop;
-	int last = v0;
-	bool found = true;
-	while(found){
-		found = false;
-		foreach(ModelEdge &e, s.Edge)
-			if (e.RefCount == 1)
-				if (e.Vertex[0] == last){
-					last = e.Vertex[1];
-					loop.add(last);
-					if (last == v0)
-						return loop;
-					found = true;
-					break;
-				}
-	}
-}
 
 void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 {
@@ -88,11 +69,13 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 
 	// close hole
 	if ((closed) && (vert0 >= 0)){
-		Array<int> loop = get_boundary_loop(s, vert0);
+		Array<int> loop = s.GetBoundaryLoop(vert0);
 		loop.reverse();
-		msg_write(ia2s(loop));
 		AddSubAction(new ActionModelAddTrianglesByOutline(loop, m), m);
 	}
+
+	// delete vertex
+	AddSubAction(new ActionModelDeleteUnusedVertex(vi), m);
 }
 
 ActionModelBevelVertices::ActionModelBevelVertices(DataModel *m, float length)

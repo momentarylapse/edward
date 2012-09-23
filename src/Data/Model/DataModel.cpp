@@ -14,6 +14,8 @@
 #include "../../Action/Model/Mesh/Vertex/ActionModelAddVertex.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelNearifyVertices.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelAlignToGrid.h"
+#include "../../Action/Model/Mesh/Vertex/ActionModelFlattenVertices.h"
+#include "../../Action/Model/Mesh/Vertex/ActionModelBevelVertices.h"
 #include "../../Action/Model/Mesh/Triangle/ActionModelAddTriangleSingleTexture.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelAddCube.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelAddPlane.h"
@@ -1780,6 +1782,12 @@ void DataModel::PasteGeometry(ModelGeometry& geo)
 
 void DataModel::Easify(float factor)
 {	Execute(new ActionModelEasify(this, factor));	}
+
+void DataModel::BevelSelectedVertices(float radius)
+{	Execute(new ActionModelBevelVertices(this, radius));	}
+
+void DataModel::FlattenSelectedVertices()
+{	Execute(new ActionModelFlattenVertices(this));	}
 
 void DataModel::AnimationDuplicateCurrentFrame()
 {

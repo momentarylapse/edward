@@ -45,6 +45,7 @@ public:
 
 
 	bool IsInside(const vector &p);
+	Array<int> GetBoundaryLoop(int v0);
 
 	void TestSanity(const string &loc);
 };

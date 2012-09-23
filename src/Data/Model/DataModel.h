@@ -264,6 +264,8 @@ public:
 	void SubtractSelection();
 	void AlignToGridSelection(float grid_d);
 	void NearifySelectedVertices();
+	void BevelSelectedVertices(float radius);
+	void FlattenSelectedVertices();
 	void SetNormalModeSelection(int mode);
 	void SetNormalModeAll(int mode);
 	void SetMaterialSelection(int material);

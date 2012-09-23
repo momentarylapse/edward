@@ -23,7 +23,6 @@
 #include "Creation/ModeModelMeshSplitTriangle.h"
 #include "Creation/ModeModelMeshBevelVertices.h"
 #include "../../../Action/Model/Mesh/Skin/ActionModelSkinVerticesFromProjection.h"
-#include "../../../Action/Model/Mesh/Vertex/ActionModelFlattenVertices.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
 #include "../Dialog/ModelEasifyDialog.h"
 
@@ -127,7 +126,7 @@ void ModeModelMesh::OnCommand(const string & id)
 	if (id == "bevel_vertices")
 		ed->SetMode(new ModeModelMeshBevelVertices(mode_model_mesh_vertex));
 	if (id == "flatten_vertices")
-		data->Execute(new ActionModelFlattenVertices(data));
+		data->FlattenSelectedVertices();
 
 	if (id == "rotate")
 		ChooseRightMouseFunction(RMFRotate);
