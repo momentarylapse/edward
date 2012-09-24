@@ -9,11 +9,13 @@
 #define ACTIONMODELANIMATIONMOVEVERTICES_H_
 
 #include "../../ActionMultiView.h"
+class DataModel;
+class vector;
 
 class ActionModelAnimationMoveVertices: public ActionMultiView
 {
 public:
-	ActionModelAnimationMoveVertices(Data *d, const vector &_pos0);
+	ActionModelAnimationMoveVertices(DataModel *d, const vector &_param, const vector &_pos0);
 	virtual ~ActionModelAnimationMoveVertices();
 	string name(){	return "ModelAnimationMoveVertices";	}
 

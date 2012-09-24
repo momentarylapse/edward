@@ -340,7 +340,8 @@ void CHuiWindow::AddText(const string &title,int x,int y,int width,int height,co
 {
 	GetPartStrings(id, title);
 	GtkWidget *l = gtk_label_new("");
-	gtk_label_set_line_wrap(GTK_LABEL(l),true);
+	if (OptionString.find("wrap") >= 0)
+		gtk_label_set_line_wrap(GTK_LABEL(l),true);
 	if (OptionString.find("center") >= 0)
 		gtk_misc_set_alignment(GTK_MISC(l), 0.5f, 0.5f);
 	else if (OptionString.find("right") >= 0)

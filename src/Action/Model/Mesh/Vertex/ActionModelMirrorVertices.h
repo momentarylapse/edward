@@ -10,12 +10,12 @@
 
 #include "../../../ActionMultiView.h"
 class vector;
-class Data;
+class DataModel;
 
 class ActionModelMirrorVertices: public ActionMultiView
 {
 public:
-	ActionModelMirrorVertices(Data *d, const vector &_pos0);
+	ActionModelMirrorVertices(DataModel *d, const vector &_param, const vector &_pos0);
 	virtual ~ActionModelMirrorVertices();
 	string name(){	return "ModelMirrorVertices";	}
 

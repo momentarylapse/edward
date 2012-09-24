@@ -22,31 +22,14 @@
 #include "World/ActionWorldRotateObjects.h"
 #include <assert.h>
 
-ActionMultiView::ActionMultiView(Data *d, const vector &_pos0)
+ActionMultiView::ActionMultiView(const vector &_param, const vector &_pos0)
 {
+	param = _param;
 	pos0 = _pos0;
 }
 
 ActionMultiView::~ActionMultiView()
 {
-}
-
-
-
-
-void ActionMultiView::set_axis(const vector &_e1, const vector &_e2, const vector &_e3)
-{
-	e[0] = _e1;
-	e[1] = _e2;
-	e[2] = _e3;
-}
-
-
-void ActionMultiView::set_param_and_notify(Data *d, const vector & _param)
-{
-	param = _param;
-	execute(d);
-	d->Notify("Change");
 }
 
 
@@ -64,36 +47,36 @@ void ActionMultiView::abort_and_notify(Data *d)
 	d->Notify("Change");
 }
 
-ActionMultiView *ActionMultiViewFactory(const string &name, Data *d, const vector &_pos0)
+ActionMultiView *ActionMultiViewFactory(const string &name, Data *d, const vector &_param, const vector &_pos0, const vector &_ex, const vector &_ey, const vector &_ez)
 {
 	if (name == "ActionModelMoveVertices")
-		return new ActionModelMoveVertices(d, _pos0);
+		return new ActionModelMoveVertices((DataModel*)d, _param, _pos0);
 	else if (name == "ActionModelScaleVertices")
-		return new ActionModelScaleVertices(d, _pos0);
+		return new ActionModelScaleVertices((DataModel*)d, _param, _pos0, _ex, _ey, _ez);
 	else if (name == "ActionModelRotateVertices")
-		return new ActionModelRotateVertices(d, _pos0);
+		return new ActionModelRotateVertices((DataModel*)d, _param, _pos0);
 	else if (name == "ActionModelMirrorVertices")
-		return new ActionModelMirrorVertices(d, _pos0);
+		return new ActionModelMirrorVertices((DataModel*)d, _param, _pos0);
 	else if (name == "ActionModelMoveSkinVertices")
-		return new ActionModelMoveSkinVertices(d, _pos0);
+		return new ActionModelMoveSkinVertices((DataModel*)d, _param, _pos0);
 	else if (name == "ActionModelScaleSkinVertices")
-		return new ActionModelScaleSkinVertices(d, _pos0);
+		return new ActionModelScaleSkinVertices((DataModel*)d, _param, _pos0);
 	else if (name == "ActionModelRotateSkinVertices")
-		return new ActionModelRotateSkinVertices(d, _pos0);
+		return new ActionModelRotateSkinVertices((DataModel*)d, _param, _pos0);
 	else if (name == "ActionModelMirrorSkinVertices")
-		return new ActionModelMirrorSkinVertices(d, _pos0);
+		return new ActionModelMirrorSkinVertices((DataModel*)d, _param, _pos0);
 	else if (name == "ActionModelMoveBones")
-		return new ActionModelMoveBones(d, _pos0);
+		return new ActionModelMoveBones((DataModel*)d, _param, _pos0);
 	else if (name == "ActionModelAnimationRotateBones")
-		return new ActionModelAnimationRotateBones(d, _pos0);
+		return new ActionModelAnimationRotateBones((DataModel*)d, _param, _pos0);
 	else if (name == "ActionModelAnimationMoveVertices")
-		return new ActionModelAnimationMoveVertices(d, _pos0);
+		return new ActionModelAnimationMoveVertices((DataModel*)d, _param, _pos0);
 	else if (name == "ActionModelAnimationRotateVertices")
-		return new ActionModelAnimationRotateVertices(d, _pos0);
+		return new ActionModelAnimationRotateVertices((DataModel*)d, _param, _pos0);
 	else if (name == "ActionWorldMoveSelection")
-		return new ActionWorldMoveSelection(d, _pos0);
+		return new ActionWorldMoveSelection((DataWorld*)d, _param, _pos0);
 	else if (name == "ActionWorldRotateObjects")
-		return new ActionWorldRotateObjects(d, _pos0);
+		return new ActionWorldRotateObjects((DataWorld*)d, _param, _pos0);
 	msg_error("ActionMultiViewFactory: unknown action: " + name);
 	assert(0);
 	return NULL;

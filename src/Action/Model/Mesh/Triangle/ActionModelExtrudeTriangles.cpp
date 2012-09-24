@@ -24,10 +24,7 @@ ActionModelExtrudeTriangles::ActionModelExtrudeTriangles(DataModel *data, float 
 	dir.normalize();
 
 	vector dpos = dir * offset;
-	ActionMultiView *a = new ActionModelMoveVertices(data, v_0);
-	a->set_axis(e_x, e_y, e_z);
-	a->set_param_and_notify(data, dpos);
-	AddSubAction(a, data);
+	AddSubAction(new ActionModelMoveVertices(data, dpos, v_0), data);
 
 	foreachi(ModelSurface &s, data->Surface, si)
 		ExtrudeSurface(s, si, data, dpos);

@@ -9,11 +9,13 @@
 #define ACTIONMODELANIMATIONROTATEVERTICES_H_
 
 #include "../../ActionMultiView.h"
+class DataModel;
+class vector;
 
 class ActionModelAnimationRotateVertices: public ActionMultiView
 {
 public:
-	ActionModelAnimationRotateVertices(Data *d, const vector &_pos0);
+	ActionModelAnimationRotateVertices(DataModel *d, const vector &_param, const vector &_pos0);
 	virtual ~ActionModelAnimationRotateVertices();
 	string name(){	return "ModelAnimationRotateVertices";	}
 

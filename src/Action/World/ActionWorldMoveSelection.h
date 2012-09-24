@@ -9,14 +9,13 @@
 #define ACTIONWORLDMOVESELECTION_H_
 
 #include "../ActionMultiView.h"
-#include "../../Data/Data.h"
-#include "../../lib/file/file.h"
-#include "../../lib/types/types.h"
+class DataWorld;
+class vector;
 
 class ActionWorldMoveSelection: public ActionMultiView
 {
 public:
-	ActionWorldMoveSelection(Data *d, const vector &_pos0);
+	ActionWorldMoveSelection(DataWorld *d, const vector &_param, const vector &_pos0);
 	virtual ~ActionWorldMoveSelection();
 	string name(){	return "WorldMoveSelection";	}
 

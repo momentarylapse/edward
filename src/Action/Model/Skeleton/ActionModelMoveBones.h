@@ -9,14 +9,13 @@
 #define ACTIONMODELMOVEBONES_H_
 
 #include "../../ActionMultiView.h"
-#include "../../../Data/Data.h"
-#include "../../../lib/file/file.h"
-#include "../../../lib/types/types.h"
+class DataModel;
+class vector;
 
 class ActionModelMoveBones: public ActionMultiView
 {
 public:
-	ActionModelMoveBones(Data *d, const vector &_pos0);
+	ActionModelMoveBones(DataModel *d, const vector &_param, const vector &_pos0);
 	virtual ~ActionModelMoveBones();
 	string name(){	return "ModelMoveBones";	}
 

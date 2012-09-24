@@ -8,18 +8,16 @@
 #include "ActionWorldMoveSelection.h"
 #include "../../Data/World/DataWorld.h"
 
-ActionWorldMoveSelection::ActionWorldMoveSelection(Data *d, const vector &_pos0) :
-	ActionMultiView(d, _pos0)
+ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const vector &_param, const vector &_pos0) :
+	ActionMultiView(_param, _pos0)
 {
-	DataWorld *w = dynamic_cast<DataWorld*>(d);
-
 	// list of selected objects and save old pos
-	foreachi(WorldObject &o, w->Object, i)
+	foreachi(WorldObject &o, d->Object, i)
 		if (o.is_selected){
 			index.add(i);
 			old_data.add(o.pos);
 		}
-	foreachi(WorldTerrain &t, w->Terrain, i)
+	foreachi(WorldTerrain &t, d->Terrain, i)
 		if (t.is_selected){
 			terrain_index.add(i);
 			terrain_old_data.add(t.pos);

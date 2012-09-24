@@ -10,18 +10,19 @@
 
 #include "../../../ActionMultiView.h"
 class vector;
-class Data;
+class DataModel;
 
 class ActionModelScaleVertices: public ActionMultiView
 {
 public:
-	ActionModelScaleVertices(Data *d, const vector &_pos0);
+	ActionModelScaleVertices(DataModel *d, const vector &_param, const vector &_pos0, const vector &_ex, const vector &_ey, const vector &_ez);
 	virtual ~ActionModelScaleVertices();
 	string name(){	return "ModelScaleVertices";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);
 private:
+	vector e[3];
 };
 
 #endif /* ACTIONMODELSCALEVERTICES_H_ */

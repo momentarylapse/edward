@@ -10,11 +10,12 @@
 
 #include "../../../ActionMultiView.h"
 class vector;
+class DataModel;
 
 class ActionModelScaleSkinVertices: public ActionMultiView
 {
 public:
-	ActionModelScaleSkinVertices(Data *d, const vector &_pos0);
+	ActionModelScaleSkinVertices(DataModel *d, const vector &_param, const vector &_pos0);
 	virtual ~ActionModelScaleSkinVertices();
 	string name(){	return "ModelScaleSkinVertices";	}
 

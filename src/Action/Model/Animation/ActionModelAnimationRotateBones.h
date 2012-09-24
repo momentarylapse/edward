@@ -9,11 +9,13 @@
 #define ACTIONMODELANIMATIONROTATEBONES_H_
 
 #include "../../ActionMultiView.h"
+class DataModel;
+class vector;
 
 class ActionModelAnimationRotateBones: public ActionMultiView
 {
 public:
-	ActionModelAnimationRotateBones(Data *d, const vector &_pos0);
+	ActionModelAnimationRotateBones(DataModel *d, const vector &_param, const vector &_pos0);
 	virtual ~ActionModelAnimationRotateBones();
 	string name(){	return "ModelAnimationRotateBones";	}
 

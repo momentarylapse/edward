@@ -7,19 +7,16 @@
 
 #include "ActionModelMoveBones.h"
 #include "../../../Data/Model/DataModel.h"
-#include "../../../lib/file/file.h"
 #include "../../../lib/types/types.h"
 
-ActionModelMoveBones::ActionModelMoveBones(Data *d, const vector &_pos0) :
-	ActionMultiView(d, _pos0)
+ActionModelMoveBones::ActionModelMoveBones(DataModel *d, const vector &_param, const vector &_pos0) :
+	ActionMultiView(_param, _pos0)
 {
-	DataModel *m = dynamic_cast<DataModel*>(d);
-
 	// list of selected vertices and save old pos
-	foreachi(ModelBone &b, m->Bone, i)
+	foreachi(ModelBone &b, d->Bone, i)
 		if (b.is_selected){
 			index.add(i);
-			old_data.add(m->Bone[i].pos);
+			old_data.add(d->Bone[i].pos);
 		}
 }
 

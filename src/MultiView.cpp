@@ -1363,10 +1363,17 @@ void MultiView::MouseActionStart(int button)
 	if (action[button].name != ""){
 		msg_write("mouse action start " + action[button].name);
 
+
+		int mode = action[active_mouse_action].mode;
+		mouse_action_param = v_0;
+		if ((mode == ActionScale) or (mode == ActionScale2d))
+			mouse_action_param = vector(1, 1, 1);
+
 		active_mouse_action = button;
 		mouse_action_pos0 = MouseOverTP;
-		cur_action = ActionMultiViewFactory(action[button].name, _data_, mouse_action_pos0);
-		cur_action->set_axis(GetDirectionRight(mouse_win), GetDirectionUp(mouse_win), GetDirection(mouse_win));
+		cur_action = ActionMultiViewFactory(action[button].name, _data_, mouse_action_param, mouse_action_pos0,
+				GetDirectionRight(mouse_win), GetDirectionUp(mouse_win), GetDirection(mouse_win));
+		cur_action->execute_and_notify(_data_);
 		Notify("ActionStart");
 	}
 }
@@ -1408,7 +1415,11 @@ void MultiView::MouseActionUpdate()
 			mouse_action_param = GetDirectionRight(mouse_win);
 		else
 			mouse_action_param = v_0;
-		cur_action->set_param_and_notify(_data_, mouse_action_param);
+		cur_action->undo(_data_);
+		delete(cur_action);
+		cur_action = ActionMultiViewFactory(action[active_mouse_action].name, _data_, mouse_action_param, mouse_action_pos0,
+				GetDirectionRight(mouse_win), GetDirectionUp(mouse_win), GetDirection(mouse_win));
+		cur_action->execute_and_notify(_data_);
 
 		Notify("ActionUpdate");
 	}
@@ -1421,10 +1432,15 @@ void MultiView::MouseActionEnd(bool set)
 	if (cur_action){
 		msg_write("mouse action end");
 		if (set){
+			cur_action->undo(_data_);
+					delete(cur_action);
+			cur_action = ActionMultiViewFactory(action[active_mouse_action].name, _data_, mouse_action_param, mouse_action_pos0,
+					GetDirectionRight(mouse_win), GetDirectionUp(mouse_win), GetDirection(mouse_win));
 			_data_->Execute(cur_action);
 			Notify("ActionExecute");
 		}else{
 			cur_action->abort_and_notify(_data_);
+			delete(cur_action);
 			ed->ForceRedraw();
 			Notify("ActionAbort");
 		}

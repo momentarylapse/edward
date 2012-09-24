@@ -7,19 +7,15 @@
 
 #include "ActionModelMoveVertices.h"
 #include "../../../../Data/Model/DataModel.h"
-#include "../../../../lib/file/file.h"
-#include "../../../../lib/types/types.h"
 
-ActionModelMoveVertices::ActionModelMoveVertices(Data *d, const vector &_pos0) :
-	ActionMultiView(d, _pos0)
+ActionModelMoveVertices::ActionModelMoveVertices(DataModel *d, const vector &_param, const vector &_pos0) :
+	ActionMultiView(_param, _pos0)
 {
-	DataModel *m = dynamic_cast<DataModel*>(d);
-
 	// list of selected vertices and save old pos
-	foreachi(ModelVertex &v, m->Vertex, i)
+	foreachi(ModelVertex &v, d->Vertex, i)
 		if (v.is_selected){
 			index.add(i);
-			old_data.add(m->Vertex[i].pos);
+			old_data.add(d->Vertex[i].pos);
 		}
 }
 
@@ -42,8 +38,8 @@ void ActionModelMoveVertices::undo(Data *d)
 void *ActionModelMoveVertices::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(int i, index, ii)
-		m->Vertex[i].pos = old_data[ii] + param;
+	foreach(int i, index)
+		m->Vertex[i].pos +=  param;
 	m->SetNormalsDirtyByVertices(index);
 	return NULL;
 }

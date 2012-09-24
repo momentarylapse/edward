@@ -8,13 +8,11 @@
 #include "ActionWorldRotateObjects.h"
 #include "../../Data/World/DataWorld.h"
 
-ActionWorldRotateObjects::ActionWorldRotateObjects(Data *d, const vector &_pos0) :
-	ActionMultiView(d, _pos0)
+ActionWorldRotateObjects::ActionWorldRotateObjects(DataWorld *d, const vector &_param, const vector &_pos0) :
+	ActionMultiView(_param, _pos0)
 {
-	DataWorld *w = dynamic_cast<DataWorld*>(d);
-
 	// list of selected objects and save old pos
-	foreachi(WorldObject &o, w->Object, i)
+	foreachi(WorldObject &o, d->Object, i)
 		if (o.is_selected){
 			index.add(i);
 			old_data.add(o.pos);
@@ -35,13 +33,6 @@ void ActionWorldRotateObjects::undo(Data *d)
 		w->Object[i].pos = old_data[ii];
 		w->Object[i].Ang = old_ang[ii];
 	}
-}
-
-
-
-void ActionWorldRotateObjects::abort(Data *d)
-{
-	undo(d);
 }
 
 

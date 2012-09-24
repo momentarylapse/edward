@@ -9,22 +9,18 @@
 #define ACTIONWORLDROTATEOBJECTS_H_
 
 #include "../ActionMultiView.h"
-#include "../../Data/Data.h"
-#include "../../lib/file/file.h"
-#include "../../lib/types/types.h"
+class DataWorld;
+class vector;
 
 class ActionWorldRotateObjects: public ActionMultiView
 {
 public:
-	ActionWorldRotateObjects(Data *d, const vector &_pos0);
+	ActionWorldRotateObjects(DataWorld *d, const vector &_param, const vector &_pos0);
 	virtual ~ActionWorldRotateObjects();
 	string name(){	return "WorldRotateObjects";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);
-
-	// continuous editing
-	void abort(Data *d);
 private:
 	Array<vector> old_ang;
 };

@@ -8,19 +8,17 @@
 #include "ActionModelAnimationRotateBones.h"
 #include "../../../Data/Model/DataModel.h"
 
-ActionModelAnimationRotateBones::ActionModelAnimationRotateBones(Data *d, const vector &_pos0) :
-	ActionMultiView(d, _pos0)
+ActionModelAnimationRotateBones::ActionModelAnimationRotateBones(DataModel *d, const vector &_param, const vector &_pos0) :
+	ActionMultiView(_param, _pos0)
 {
-	DataModel *m = dynamic_cast<DataModel*>(d);
-
-	move = m->CurrentMove;
-	frame = m->CurrentFrame;
+	move = d->CurrentMove;
+	frame = d->CurrentFrame;
 
 	// list of selected vertices and save old pos
-	foreachi(ModelBone &b, m->Bone, i)
+	foreachi(ModelBone &b, d->Bone, i)
 		if (b.is_selected){
 			index.add(i);
-			old_data.add(m->Move[move].Frame[frame].SkelAng[i]);
+			old_data.add(d->Move[move].Frame[frame].SkelAng[i]);
 		}
 }
 
