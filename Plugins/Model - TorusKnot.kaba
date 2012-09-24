@@ -1,0 +1,25 @@
+#include "api.kaba"
+
+const int NX = 3
+const int NY = 7
+const int POINTS = 100
+const int EDGES = 8
+const int RINGS = 250
+
+const float R1 = 100.0
+const float R2 = 40.0
+const float R3 = 15.0
+
+void main()
+	vector pos[]
+	float r[]
+	for int i, 0, POINTS+1
+		float t = i2f(i) / POINTS
+		float wx = 2 * pi * t * NX
+		float wy = 2 * pi * t * NY
+		
+		vector er = vector(cos(wx), sin(wx), 0)
+		pos.add(er * R1 + (er * cos(wy) + e_z * sin(wy)) * R2)
+		r.add(R3)
+
+	data_model.AddCylinder(pos, r, RINGS, EDGES, false)

@@ -1,0 +1,29 @@
+#include "api.kaba"
+
+const int N = 8
+const float R = 50.0
+const float height = 20.0
+
+void main()
+	int nv = data_model.Vertex.num
+	
+	data_model.BeginActionGroup()
+	
+	data_model.AddVertex(v_0, 0, -1)
+	data_model.AddVertex(e_z * height, 0, -1)
+	for int i, 0, N
+		float w = i2f(i) * 2 * pi / N
+		data_model.AddVertex(vector(cos(w), sin(w), 0) * R, 0, -1)
+		data_model.AddVertex(vector(cos(w), sin(w), 0) * R + e_z * height, 0, -1)
+	
+	for int i, 0, N
+		int a = nv + 2 + i * 2
+		int b = nv + 2 + ((i + 1) % N) * 2
+		int c = nv + 3 + i * 2
+		int d = nv + 3 + ((i + 1) % N) * 2
+		data_model.AddTriangle(nv    , a, b)
+		data_model.AddTriangle(nv + 1, d, c)
+		data_model.AddTriangle(b, a, c)
+		data_model.AddTriangle(b, c, d)
+		
+	data_model.EndActionGroup()
