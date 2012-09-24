@@ -1,25 +1,62 @@
 #include "api.kaba"
 
-const int NX = 3
-const int NY = 7
-const int POINTS = 100
-const int EDGES = 8
-const int RINGS = 250
+window dlg
 
-const float R1 = 100.0
-const float R2 = 40.0
-const float R3 = 15.0
-
-void main()
+void CreateTorusKnot(int nx, int ny, int rings, int edges, float r1, float r2, float r3)
 	vector pos[]
 	float r[]
-	for int i, 0, POINTS+1
-		float t = i2f(i) / POINTS
-		float wx = 2 * pi * t * NX
-		float wy = 2 * pi * t * NY
+	for int i, 0, rings+1
+		float t = i2f(i) / rings
+		float wx = 2 * pi * t * nx
+		float wy = 2 * pi * t * ny
 		
 		vector er = vector(cos(wx), sin(wx), 0)
-		pos.add(er * R1 + (er * cos(wy) + e_z * sin(wy)) * R2)
-		r.add(R3)
+		pos.add(er * r1 + (er * cos(wy) + e_z * sin(wy)) * r2)
+		r.add(r3)
 
-	data_model.AddCylinder(pos, r, RINGS, EDGES, false)
+	data_model.AddCylinder(pos, r, rings, edges, false)
+
+int gcd(int a, int b)
+	while b != 0
+		int t = b
+		b = a % b
+		a = t
+	return a
+
+void OnOk()
+	int nx = dlg.GetInt("nx")
+	int ny = dlg.GetInt("ny")
+	if gcd(nx, ny) != 1
+		HuiErrorBox(dlg, "Error", "GreatestCommonDivisor(Loops, Twists) = 1 violated")
+	else
+		CreateTorusKnot(nx, ny, dlg.GetInt("rings"), dlg.GetInt("edges"), dlg.GetFloat("radius1"), dlg.GetFloat("radius2"), dlg.GetFloat("radius3"))
+		HuiWinClose(dlg)
+
+void OnClose()
+	HuiWinClose(dlg)
+
+void main()
+	dlg = HuiCreateSizableDialog("Torus Knot", 300, 300, edward, false)
+	dlg.AddControlTable("", 0, 0, 2, 5, "table")
+	dlg.SetTarget("table", 0)
+	dlg.AddText("Loops", 0, 0, 0, 0, "")
+	dlg.AddSpinButton("3\\1", 1, 0, 0, 0, "nx")
+	dlg.AddText("Twists", 0, 1, 0, 0, "")
+	dlg.AddSpinButton("7\\1", 1, 1, 0, 0, "ny")
+	dlg.AddText("Edges", 0, 2, 0, 0, "")
+	dlg.AddSpinButton("8\\1", 1, 2, 0, 0, "edges")
+	dlg.AddText("Rings", 0, 3, 0, 0, "")
+	dlg.AddSpinButton("100\\1", 1, 3, 0, 0, "rings")
+	dlg.AddText("Radius Torus (outer)", 0, 4, 0, 0, "")
+	dlg.AddSpinButton("100\\0\\100000000000000\\0.1", 1, 4, 0, 0, "radius1")
+	dlg.AddText("Radius Torus (inner)", 0, 5, 0, 0, "")
+	dlg.AddSpinButton("40\\0\\100000000000000\\0.1", 1, 5, 0, 0, "radius2")
+	dlg.AddText("Radius Knot", 0, 6, 0, 0, "")
+	dlg.AddSpinButton("15\\0\\100000000000000\\0.1", 1, 6, 0, 0, "radius3")
+	dlg.AddButton("Ok", 1, 7, 0, 0, "ok")
+	dlg.Update()
+	
+	dlg.Event("ok", &OnOk)
+	dlg.Event("hui:close", &OnClose)
+	
+	HuiWaitTillWindowClosed(dlg)
