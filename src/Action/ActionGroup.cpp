@@ -21,40 +21,40 @@ ActionGroup::~ActionGroup()
 void *ActionGroup::AddSubAction(Action *a, Data *d)
 {
 	action.add(a);
-	msg_write("do " + a->name());
-	return a->execute(d);
+	return a->execute_logged(d);
 }
-
-// to be overwritten by subclasses
-void *ActionGroup::execute_return(Data *d)
-{	return NULL;	}
 
 
 void *ActionGroup::execute(Data *d)
 {
+	void *r = compose(d);
+
+	// no need to execute sub actions ... done during compose()
 	/*foreach(action, a)
-		a->execute(d);*/
-	return execute_return(d);
+		a->execute_logged(d);*/
+	return r;
 }
 
 
 
 void ActionGroup::undo(Data *d)
 {
-	foreachb(Action *a, action){
-		msg_write("undo " + a->name());
-		a->undo(d);
-	}
+	foreachb(Action *a, action)
+		a->undo_logged(d);
 }
 
 
 
 void ActionGroup::redo(Data *d)
 {
-	foreach(Action *a, action){
-		msg_write("do " + a->name());
-		a->redo(d);
-	}
+	foreach(Action *a, action)
+		a->redo_logged(d);
+}
+
+void ActionGroup::abort(Data *d)
+{
+	foreachb(Action *a, action)
+		a->abort(d);
 }
 
 

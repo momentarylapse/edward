@@ -19,7 +19,7 @@ public:
 	virtual ~ActionModelAddTriangleSingleTexture();
 	string name(){	return "ModelAddTriangleSingleTexture";	}
 
-	void *execute_return(Data *d);
+	void *compose(Data *d);
 
 private:
 	void *dummy;

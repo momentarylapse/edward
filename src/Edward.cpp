@@ -414,8 +414,11 @@ void Edward::SetMode(Mode *m)
 		return;
 
 	msg_db_r("SetMode", 1);
-	if (cur_mode)
+	if (cur_mode){
 		cur_mode->OnLeave();
+		if (cur_mode->data_generic)
+			Unsubscribe(cur_mode->data_generic->action_manager);
+	}
 
 	m = mode_queue[0];
 	while(m){
@@ -450,6 +453,8 @@ void Edward::SetMode(Mode *m)
 	SetMenu(cur_mode->menu);
 	UpdateMenu();
 	cur_mode->OnEnter();
+	if (cur_mode->data_generic)
+		Subscribe(cur_mode->data_generic->action_manager);
 
 	ForceRedraw();
 
@@ -471,6 +476,9 @@ void Edward::OnUpdate(Observable *o)
 			UpdateMenu();
 		else
 			ForceRedraw();
+	}else if (o->GetName() == "ActionManager"){
+		if (o->GetMessage() == "Failed")
+			ErrorBox(_("Aktion fehlgeschlagen: ") + (dynamic_cast<ActionManager*>(o))->error_message);
 	}else{
 		// data...
 		ForceRedraw();

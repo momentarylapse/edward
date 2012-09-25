@@ -398,7 +398,7 @@ void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModelSurface
 
 	// connect separate parts
 	for (int i=m->Surface.num-1;i>=nsurf;i--){
-		AddSubAction(new ActionModelSurfaceAutoWeld(m, ai, m->Surface.num - 1, 0.00001f), m);
+		AddSubAction(new ActionModelSurfaceAutoWeld(m, ai, m->Surface.num - 1, 0.00001f, true), m);
 	}
 	a = &m->Surface[ai];
 	b = &m->Surface[bi];
@@ -433,7 +433,7 @@ void ActionModelSurfaceSubtract::SurfaceSubtract(DataModel *m, ModelSurface *&a,
 	SurfaceSubtractUnary(m, a, b, false);
 
 	if (closed){
-		AddSubAction(new ActionModelSurfaceAutoWeld(m, ai, ci, 0.00001f), m);
+		AddSubAction(new ActionModelSurfaceAutoWeld(m, ai, ci, 0.00001f, true), m);
 		a = &m->Surface[ai];
 		b = &m->Surface[bi];
 	}

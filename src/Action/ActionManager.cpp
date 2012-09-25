@@ -11,7 +11,8 @@
 #include "../Data/Data.h"
 #include <assert.h>
 
-ActionManager::ActionManager(Data *_data)
+ActionManager::ActionManager(Data *_data) :
+	Observable("ActionManager")
 {
 	data = _data;
 	cur_pos = 0;
@@ -55,10 +56,21 @@ void ActionManager::add(Action *a)
 
 void *ActionManager::Execute(Action *a)
 {
+	error_message = "";
+
 	if (cur_group)
 		return cur_group->AddSubAction(a, data);
-	add(a);
-	return a->execute_and_notify(data);
+	try{
+		void *p = a->execute_and_notify(data);
+		add(a);
+		return p;
+	}catch(ActionException &e){
+		error_message = e.message;
+		msg_error("ActionManager: " + e.message);
+		a->abort(data);
+		Notify("Failed");
+		return NULL;
+	}
 }
 
 

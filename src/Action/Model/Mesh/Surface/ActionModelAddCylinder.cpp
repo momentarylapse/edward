@@ -99,5 +99,5 @@ ActionModelAddCylinder::~ActionModelAddCylinder()
 {
 }
 
-void *ActionModelAddCylinder::execute_return(Data *d)
+void *ActionModelAddCylinder::compose(Data *d)
 {	return &(dynamic_cast<DataModel*>(d))->Surface.back();	}

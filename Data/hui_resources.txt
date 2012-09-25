@@ -6098,7 +6098,7 @@ menu_model
 0
 
 
-141
+142
 ItemPopup
 menu_model_file
 
@@ -7195,7 +7195,7 @@ ItemPopup
 menu_model_functions
 
 1
-21
+22
 0
 0
 0
@@ -7453,6 +7453,19 @@ menu_surface_header
 
 Item
 invert_trias
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+autoweld_surfaces
 
 1
 0
@@ -16144,7 +16157,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-705
+706
 // Text
 ad_dialog
 Verwaltung
@@ -16228,6 +16241,8 @@ appearance
 Aussehen...
 apply
 Übernehmen
+autoweld_surfaces
+Verschweißen
 bevel_vertices
 Abfräsen
 bgc
@@ -17562,7 +17577,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-705
+706
 // Text
 ad_dialog
 Administration
@@ -17646,6 +17661,8 @@ appearance
 Appearance...
 apply
 Apply
+autoweld_surfaces
+
 bevel_vertices
 Bevel
 bgc
@@ -19308,7 +19325,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-705
+706
 // Text
 ad_dialog
 
@@ -19392,6 +19409,8 @@ appearance
 外観
 apply
 適用
+autoweld_surfaces
+
 bevel_vertices
 
 bgc

@@ -27,7 +27,7 @@ ActionModelAddTriangleWithSkinGenerator::~ActionModelAddTriangleWithSkinGenerato
 }
 
 
-void *ActionModelAddTriangleWithSkinGenerator::execute_return(Data *d)
+void *ActionModelAddTriangleWithSkinGenerator::compose(Data *d)
 {
 	return dummy;
 }

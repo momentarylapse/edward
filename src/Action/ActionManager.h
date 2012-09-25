@@ -8,15 +8,15 @@
 #ifndef ACTIONMANAGER_H_
 #define ACTIONMANAGER_H_
 
-#include "../lib/file/file.h"
 #include "Action.h"
 #include "../Data/Data.h"
+#include "../Stuff/Observable.h"
 
 class Data;
 class Action;
 class ActionGroup;
 
-class ActionManager
+class ActionManager : public Observable
 {
 public:
 	ActionManager(Data *_data);
@@ -35,6 +35,8 @@ public:
 	bool Redoable();
 	bool IsSave();
 	void MarkCurrentAsSave();
+
+	string error_message;
 
 private:
 	void add(Action *a);

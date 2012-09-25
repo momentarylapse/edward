@@ -20,7 +20,7 @@ public:
 	virtual ~ActionModelAddCube();
 	string name(){	return "ModelAddCube";	}
 
-	virtual void *execute_return(Data *d);
+	void *compose(Data *d);
 };
 
 #endif /* ACTIONMODELADDCUBE_H_ */

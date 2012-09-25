@@ -60,7 +60,7 @@ ActionModelSurfaceCopy::~ActionModelSurfaceCopy()
 	// TODO Auto-generated destructor stub
 }
 
-void *ActionModelSurfaceCopy::execute_return(Data *d)
+void *ActionModelSurfaceCopy::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	return &m->Surface.back();

@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-561
+562
 // Data (ID,Text)
 ad_dialog
 
@@ -75,6 +75,8 @@ appearance
 外観
 apply
 適用
+autoweld_surfaces
+
 bevel_vertices
 
 bgc

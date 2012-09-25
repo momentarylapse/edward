@@ -11,15 +11,28 @@
 #include "Helper/ActionModelSurfaceRelinkTriangle.h"
 #include "../../../../Data/Model/ModeModelSurface.h"
 
-ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(DataModel *m, int _surface1, int _surface2, float d)
+ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(DataModel *m, int _surface1, int _surface2, float _epsilon, bool _ignore_failure)
+{
+	surface1 = _surface1;
+	surface2 = _surface2;
+	epsilon = _epsilon;
+	ignore_failure = _ignore_failure;
+}
+
+
+void *ActionModelSurfaceAutoWeld::compose(Data *d)
 {
 	msg_db_r("SurfWeld", 1);
+	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModelSurface *a = &m->Surface[_surface1];
-	ModelSurface *b = &m->Surface[_surface2];
+	if (surface1 >= surface2)
+		throw ActionException("SurfaceWeld: s1 >= s2");
 
-	if (a > b)
-		msg_error("SurfaceWeld: a > b... array reference broken");
+	ModelSurface *a = &m->Surface[surface1];
+	ModelSurface *b = &m->Surface[surface2];
+
+	if (a >= b)
+		throw ActionException("SurfaceWeld: a >= b... array reference broken");
 
 	a->TestSanity("AutoWeld prae a");
 	b->TestSanity("AutoWeld prae b");
@@ -28,9 +41,10 @@ ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(DataModel *m, int _surfac
 	// find pairs of vertices close to each other
 	// use edges instead???
 	Array<int> wa, wb;
+	float dmin = 1000000000;
 	foreach(int va, a->Vertex){
 		foreach(int vb, b->Vertex){
-			if ((m->Vertex[va].pos - m->Vertex[vb].pos).length() <= d){
+			if ((m->Vertex[va].pos - m->Vertex[vb].pos).length() <= epsilon){
 				wa.add(va);
 				wb.add(vb);
 				break;
@@ -38,8 +52,11 @@ ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(DataModel *m, int _surfac
 		}
 	}
 
+	if ((wa.num == 0) && (!ignore_failure))
+		throw ActionException("SurfaceWeld: nothing to weld");
+
 	// join
-	a = (ModelSurface*)AddSubAction(new ActionModelJoinSurfaces(_surface1, _surface2), m);
+	a = (ModelSurface*)AddSubAction(new ActionModelJoinSurfaces(surface1, surface2), m);
 
 	// relink triangles
 	foreachib(ModelTriangle &t, a->Triangle, ti){
@@ -55,7 +72,7 @@ ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(DataModel *m, int _surfac
 			}
 		}
 		if (relink)
-			AddSubAction(new ActionModelSurfaceRelinkTriangle(m, _surface1, ti, v[0], v[1], v[2]), m);
+			AddSubAction(new ActionModelSurfaceRelinkTriangle(m, surface1, ti, v[0], v[1], v[2]), m);
 	}
 	a->TestSanity("AutoWeld relink tria");
 
@@ -70,10 +87,5 @@ ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(DataModel *m, int _surfac
 	}
 
 	msg_db_l(1);
-	//return a;
-}
-
-ActionModelSurfaceAutoWeld::~ActionModelSurfaceAutoWeld()
-{
-	// TODO Auto-generated destructor stub
+	return a;
 }

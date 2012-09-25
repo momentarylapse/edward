@@ -19,7 +19,7 @@ public:
 	virtual ~ActionModelAddTriangleWithSkinGenerator();
 	string name(){	return "ModelAddTriangleWithSkinGenerator";	}
 
-	void *execute_return(Data *d);
+	void *compose(Data *d);
 
 private:
 	void *dummy;

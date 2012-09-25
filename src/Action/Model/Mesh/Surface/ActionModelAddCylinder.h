@@ -20,7 +20,7 @@ public:
 	virtual ~ActionModelAddCylinder();
 	string name(){	return "ModelAddCylinder";	}
 
-	virtual void *execute_return(Data *d);
+	void *compose(Data *d);
 };
 
 #endif /* ACTIONMODELADDCYLINDER_H_ */

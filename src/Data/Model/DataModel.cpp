@@ -25,6 +25,7 @@
 #include "../../Action/Model/Mesh/Surface/ActionModelAddBall.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelSurfaceSubtract.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelInvertSelection.h"
+#include "../../Action/Model/Mesh/Surface/ActionModelAutoWeldSelection.h"
 #include "../../Action/Model/Mesh/Look/ActionModelSetMaterial.h"
 #include "../../Action/Model/Mesh/Look/ActionModelSetNormalModeSelection.h"
 #include "../../Action/Model/Mesh/Look/ActionModelSetNormalModeAll.h"
@@ -803,9 +804,10 @@ bool DataModel::Load(const string & _filename, bool deep)
 			}
 		}
 		foreach(ModelMove &m, Move)
-			if (m.Type == MoveTypeVertex)
+			if (m.Type == MoveTypeVertex){
 				foreach(ModelFrame &f, m.Frame)
 					f.VertexDPos = f.Skin[1].DPos;
+			}
 		ClearSelection();
 		NotifyEnd();
 
@@ -1198,10 +1200,11 @@ bool DataModel::Save(const string & _filename)
 	for (int i=1;i<4;i++){
 		ModelSkin *s = &Skin[i];
 		f->WriteInt(s->NormalModeAll);
-		if (s->NormalModeAll == NormalModePerVertex)
+		if (s->NormalModeAll == NormalModePerVertex){
 			foreach(ModelVertex &v, s->Vertex)
 				f->WriteInt(v.NormalMode);
-	   }
+		}
+	}
 	/*f->WriteComment("// BG Textures");
 	for (int i=0;i<4;i++){
 		f->WriteStr(BgTextureFile[i]);
@@ -1796,6 +1799,9 @@ void DataModel::FlattenSelectedVertices()
 
 void DataModel::ExtrudeSelectedTriangles(float offset)
 {	Execute(new ActionModelExtrudeTriangles(this, offset));	}
+
+void DataModel::AutoWeldSelectedSurfaces(float d)
+{	Execute(new ActionModelAutoWeldSelection(this, d));	}
 
 void DataModel::AnimationDuplicateCurrentFrame()
 {

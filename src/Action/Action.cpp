@@ -17,9 +17,8 @@ Action::~Action()
 
 void Action::undo_and_notify(Data *d)
 {
-	msg_write("undo " + name());
 	d->NotifyBegin();
-	undo(d);
+	undo_logged(d);
 	d->Notify("Change");
 	d->NotifyEnd();
 }
@@ -28,11 +27,17 @@ void Action::undo_and_notify(Data *d)
 
 void *Action::execute_and_notify(Data *d)
 {
-	msg_write("do " + name());
-	d->NotifyBegin();
-	void *r = execute(d);
-	d->Notify("Change");
-	d->NotifyEnd();
+	void *r = NULL;
+	try{
+		d->NotifyBegin();
+		r = execute_logged(d);
+		d->Notify("Change");
+		d->NotifyEnd();
+	}catch(ActionException &e){
+		// needed to end notify block even when action failed
+		d->NotifyEnd();
+		throw;
+	}
 	return r;
 }
 
@@ -40,11 +45,29 @@ void *Action::execute_and_notify(Data *d)
 
 void Action::redo_and_notify(Data *d)
 {
-	msg_write("redo " + name());
 	d->NotifyBegin();
-	redo(d);
+	redo_logged(d);
 	d->Notify("Change");
 	d->NotifyEnd();
 }
+
+void* Action::execute_logged(Data* d)
+{
+	msg_write("do " + name());
+	return execute(d);
+}
+
+void Action::undo_logged(Data* d)
+{
+	msg_write("undo " + name());
+	undo(d);
+}
+
+void Action::redo_logged(Data* d)
+{
+	msg_write("redo " + name());
+	redo(d);
+}
+
 
 

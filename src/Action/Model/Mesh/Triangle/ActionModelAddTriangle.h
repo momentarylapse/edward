@@ -19,7 +19,7 @@ public:
 	virtual ~ActionModelAddTriangle();
 	string name(){	return "ModelAddTriangle";	}
 
-	void *execute_return(Data *d);
+	void *compose(Data *d);
 
 private:
 	int surf_no; // needed for execute_return()

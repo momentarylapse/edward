@@ -106,6 +106,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		data->InvertSelection();
 	if (id == "extrude_triangles")
 		data->ExtrudeSelectedTriangles(40 / mode_model_mesh_vertex->multi_view->zoom);
+	if (id == "autoweld_surfaces")
+		data->AutoWeldSelectedSurfaces(0.1f / mode_model_mesh_vertex->multi_view->zoom);
 	if (id == "nearify")
 		data->NearifySelectedVertices();
 	if (id == "connect")

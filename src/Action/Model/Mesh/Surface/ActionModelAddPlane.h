@@ -20,7 +20,7 @@ public:
 	virtual ~ActionModelAddPlane();
 	string name(){	return "ModelAddPlane";	}
 
-	virtual void *execute_return(Data *d);
+	void *compose(Data *d);
 };
 
 #endif /* ACTIONMODELADDPLANE_H_ */

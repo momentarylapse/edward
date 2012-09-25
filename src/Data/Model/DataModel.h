@@ -268,6 +268,7 @@ public:
 	void BevelSelectedVertices(float radius);
 	void FlattenSelectedVertices();
 	void ExtrudeSelectedTriangles(float offset);
+	void AutoWeldSelectedSurfaces(float d);
 	void SetNormalModeSelection(int mode);
 	void SetNormalModeAll(int mode);
 	void SetMaterialSelection(int material);

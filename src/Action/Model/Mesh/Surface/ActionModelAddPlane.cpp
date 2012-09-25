@@ -52,5 +52,5 @@ ActionModelAddPlane::~ActionModelAddPlane()
 {
 }
 
-void *ActionModelAddPlane::execute_return(Data *d)
+void *ActionModelAddPlane::compose(Data *d)
 {	return &(dynamic_cast<DataModel*>(d))->Surface.back();	}

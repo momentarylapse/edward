@@ -19,7 +19,7 @@ public:
 	virtual ~ActionModelSurfaceCopy();
 	string name(){	return "ModelSurfaceCopy";	}
 
-	void *execute_return(Data *d);
+	void *compose(Data *d);
 };
 
 #endif /* ACTIONMODELSURFACECOPY_H_ */

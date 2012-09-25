@@ -77,7 +77,7 @@ ActionModelAddTriangle::~ActionModelAddTriangle()
 }
 
 
-void *ActionModelAddTriangle::execute_return(Data *d)
+void *ActionModelAddTriangle::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	return &m->Surface[surf_no].Triangle.back();

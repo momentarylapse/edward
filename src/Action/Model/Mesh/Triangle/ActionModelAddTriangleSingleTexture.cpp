@@ -26,7 +26,7 @@ ActionModelAddTriangleSingleTexture::~ActionModelAddTriangleSingleTexture()
 }
 
 
-void *ActionModelAddTriangleSingleTexture::execute_return(Data *d)
+void *ActionModelAddTriangleSingleTexture::compose(Data *d)
 {
 	return dummy;
 }

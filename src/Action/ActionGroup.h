@@ -9,7 +9,6 @@
 #define ACTIONGROUP_H_
 
 #include "Action.h"
-#include "../lib/file/file.h"
 
 class Data;
 class ActionManager;
@@ -23,13 +22,16 @@ public:
 
 	virtual string name(){	return "-group-";	}
 
+	virtual void *compose(Data *d){	return NULL;	}
+
 	void *execute(Data *d);
 	void undo(Data *d);
 	void redo(Data *d);
 
+	virtual void abort(Data *d);
+
 protected:
 	void *AddSubAction(Action *a, Data *d);
-	virtual void *execute_return(Data *d);
 
 private:
 	Array<Action*> action;
