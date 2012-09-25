@@ -11,6 +11,7 @@
 #include "../Mode.h"
 #include "../../Data/Material/DataMaterial.h"
 #include "Dialog/MaterialPropertiesDialog.h"
+#include "Dialog/MaterialPhysicsDialog.h"
 
 class Mode;
 class DataMaterial;
@@ -38,6 +39,7 @@ public:
 	bool SaveAs();
 
 	void ExecuteAppearanceDialog();
+	void ExecutePhysicsDialog();
 
 	DataMaterial *data;
 	Data *GetData(){	return data;	}

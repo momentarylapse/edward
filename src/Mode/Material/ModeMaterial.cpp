@@ -75,6 +75,8 @@ void ModeMaterial::OnCommand(const string & id)
 
 	if (id == "appearance")
 		ExecuteAppearanceDialog();
+	if (id == "physics")
+		ExecutePhysicsDialog();
 
 	if (id == "undo")
 		data->Undo();
@@ -91,6 +93,14 @@ void ModeMaterial::ExecuteAppearanceDialog()
 
 	AppearanceDialog->Update();
 	//HuiWaitTillWindowClosed(AppearanceDialog);
+}
+
+void ModeMaterial::ExecutePhysicsDialog()
+{
+	CHuiWindow *dlg = new MaterialPhysicsDialog(ed, true, data);
+
+	dlg->Update();
+	HuiWaitTillWindowClosed(dlg);
 }
 
 void CreateTorus(int buffer, const vector &pos, const vector dir, float radius1, float radius2, int nx, int ny)
