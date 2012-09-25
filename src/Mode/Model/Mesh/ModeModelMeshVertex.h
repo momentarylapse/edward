@@ -28,6 +28,8 @@ public:
 	void OnDraw();
 	void OnDrawWin(int win, irect dest);
 
+	void DrawEffects(int win, irect dest);
+
 	DataModel *data;
 	Data *GetData(){	return data;	}
 };

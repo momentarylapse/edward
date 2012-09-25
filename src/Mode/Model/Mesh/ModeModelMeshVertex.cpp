@@ -45,6 +45,7 @@ void ModeModelMeshVertex::OnEnd()
 void ModeModelMeshVertex::OnDrawWin(int win, irect dest)
 {
 	mode_model_mesh_triangle->OnDrawWin(win, dest);
+	DrawEffects(win, dest);
 }
 
 
@@ -70,4 +71,14 @@ void ModeModelMeshVertex::OnUpdate(Observable *o)
 	mode_model_mesh_triangle->FillSelectionBuffers();
 }
 
+void ModeModelMeshVertex::DrawEffects(int win, irect dest)
+{
+	NixEnableLighting(false);
+	foreach(ModelEffect &fx, data->Fx){
+		vector p = multi_view->VecProject(data->Vertex[fx.Vertex].pos, win);
+		if ((p.z > 0) && (p.z < 1))
+			ed->DrawStr(p.x, p.y, fx.get_type());
+	}
+	NixEnableLighting(multi_view->light_enabled);
+}
 

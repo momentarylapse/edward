@@ -25,6 +25,7 @@
 #include "../../../Action/Model/Mesh/Skin/ActionModelSkinVerticesFromProjection.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
 #include "../Dialog/ModelEasifyDialog.h"
+#include "../Dialog/ModelFXDialog.h"
 
 ModeModelMesh *mode_model_mesh = NULL;
 
@@ -166,6 +167,19 @@ void ModeModelMesh::OnCommand(const string & id)
 		data->SetNormalModeAll(NormalModeHard);
 	if (id == "normal_all_angular")
 		data->SetNormalModeAll(NormalModeAngular);
+
+	if (id == "fx_new_light")
+		AddEffects(FXKindLight);
+	if (id == "fx_new_sound")
+		AddEffects(FXKindSound);
+	if (id == "fx_new_script")
+		AddEffects(FXKindScript);
+	if (id == "fx_new_field")
+		AddEffects(FXKindForceField);
+	if (id == "fx_none")
+		ClearEffects();
+	if (id == "fx_edit")
+		EditEffects();
 }
 
 
@@ -360,7 +374,35 @@ void ModeModelMesh::Paste()
 
 bool ModeModelMesh::Copyable()
 {
-	return data->GetNumSelectedVertices();
+	return data->GetNumSelectedVertices() > 0;
+}
+
+void ModeModelMesh::AddEffects(int type)
+{
+	if (data->GetNumSelectedVertices() == 0){
+		ed->SetMessage(_("Kein Punkt markiert!"));
+		return;
+	}
+	ModelFXDialog *dlg = new ModelFXDialog(ed, false, data, type);
+	dlg->Update();
+	HuiWaitTillWindowClosed(dlg);
+}
+
+void ModeModelMesh::EditEffects()
+{
+}
+
+void ModeModelMesh::ClearEffects()
+{
+	int n = 0;
+	foreach(ModelEffect &fx, data->Fx)
+		if (data->Vertex[fx.Vertex].is_selected)
+			n ++;
+	if (n == 0){
+		ed->SetMessage(_("Kein Punkt mit Effekt markiert!"));
+		return;
+	}
+	data->SelectionClearEffects();
 }
 
 bool ModeModelMesh::Pasteable()

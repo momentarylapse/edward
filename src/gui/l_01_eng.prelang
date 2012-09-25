@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-562
+565
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -253,16 +253,22 @@ formula
 Linear\\1/r^2
 fx_dialog
 Add a new effect...
+fx_edit
+
 fx_headline
 Selected vertices
-fx_new
-New...
+fx_new_field
+
+fx_new_light
+
+fx_new_script
+
+fx_new_sound
+
 fx_none
 -none-
 fx_tab_control
 fire\\light\\sound\\force field
-fxt_commondesc
-type of effect chosen by tab control (while pressing OK)
 fxt_force_desc
 ( attracting acceleration, Linear: max. value, 1/r^2: value for r=1m )
 fxt_force_formula
@@ -1128,7 +1134,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-169
+172
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1142,6 +1148,10 @@ Set background image
 !bold\\Comment/What happened:
 !bold\\Name:
 !bold\\Name:
+%d Objekte, %d Terrains eingefügt
+
+%d Objekte, %d Terrains kopiert
+
 %d Vertizes, %d Dreiecke eingefügt
 %d vertices, %d triangles pasted
 %d Vertizes, %d Dreiecke kopiert
@@ -1158,6 +1168,8 @@ Abbrechen
 Cancel
 Administration
 Administration
+Aktion fehlgeschlagen: 
+
 Angegebene Welt konnte nicht korrekt geladen werden!
 World could not be loaded correctly!
 Animation

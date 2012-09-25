@@ -4875,7 +4875,7 @@ fx_dialog
 
 1
 470
-240
+205
 0
 0
 0
@@ -4883,13 +4883,13 @@ fx_dialog
 0
 
 
-40
+39
 DefButton
 ok
 hui:ok
 1
 360
-200
+165
 100
 25
 -1
@@ -4902,7 +4902,7 @@ cancel
 hui:cancel
 1
 255
-200
+165
 100
 25
 -1
@@ -4918,19 +4918,6 @@ fx_tab_control
 5
 460
 145
--1
-0
-0
-
-
-Text
-fxt_commondesc
-
-1
-10
-155
-455
-35
 -1
 0
 0
@@ -6098,7 +6085,7 @@ menu_model
 0
 
 
-142
+146
 ItemPopup
 menu_model_file
 
@@ -7000,7 +6987,7 @@ ItemPopup
 menu_model_fx
 
 1
-3
+7
 0
 0
 0
@@ -7023,8 +7010,60 @@ fx_headline
 
 
 ItemImage
-fx_new
+fx_new_light
 hui:new
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+fx_new_sound
+hui:new
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+fx_new_field
+hui:new
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+fx_new_script
+hui:new
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+fx_edit
+hui:edit
 1
 0
 0
@@ -16157,7 +16196,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-706
+709
 // Text
 ad_dialog
 Verwaltung
@@ -16509,16 +16548,22 @@ function
 
 fx_dialog
 Einen neuen Effekt erstellen...
+fx_edit
+Bearbeiten...
 fx_headline
 Markierte Punkte
-fx_new
-Neu...
+fx_new_field
+Kraftfeld anhängen...
+fx_new_light
+Licht anhängen...
+fx_new_script
+Script-Effekt anhängen...
+fx_new_sound
+Sound anhängen...
 fx_none
--keinerlei-
+Löschen
 fx_tab_control
-Script\\Licht\\Sound\\Kraftfeld
-fxt_commondesc
-Art des Effektes wird nach dem zuletzt offenen Tab-Blatt gewählt!
+!nobar\\Script\\Licht\\Sound\\Kraftfeld
 fxt_force_desc
 ( anziehende Beschleunigung, Linear: maximaler Wert, 1/r^2: Wert bei r=100 le )
 fxt_force_desc2
@@ -16532,7 +16577,7 @@ Intensität
 fxt_force_range
 Reichweite
 fxt_lightradius
-Radius
+adius
 fxt_script_desc
 (Funktion muss vom Typ [ effect func ( vector pos ) ] sein)
 fxt_scriptfile
@@ -16808,7 +16853,7 @@ Datei
 menu_model_functions
 Operationen
 menu_model_fx
---Effekte
+Effekte
 menu_model_import
 Importieren
 menu_model_mode
@@ -17577,7 +17622,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-706
+709
 // Text
 ad_dialog
 Administration
@@ -17929,16 +17974,22 @@ function
 
 fx_dialog
 Add a new effect...
+fx_edit
+
 fx_headline
 Selected vertices
-fx_new
-New...
+fx_new_field
+
+fx_new_light
+
+fx_new_script
+
+fx_new_sound
+
 fx_none
 -none-
 fx_tab_control
 fire\\light\\sound\\force field
-fxt_commondesc
-type of effect chosen by tab control (while pressing OK)
 fxt_force_desc
 ( attracting acceleration, Linear: max. value, 1/r^2: value for r=1m )
 fxt_force_desc2
@@ -19325,7 +19376,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-706
+709
 // Text
 ad_dialog
 
@@ -19677,16 +19728,22 @@ function
 
 fx_dialog
 
+fx_edit
+
 fx_headline
 
-fx_new
-新規...
+fx_new_field
+
+fx_new_light
+
+fx_new_script
+
+fx_new_sound
+
 fx_none
 
 fx_tab_control
 炎\\光源\\音\\力場
-fxt_commondesc
-
 fxt_force_desc
 
 fxt_force_desc2

@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-562
+565
 // Data (ID,Text)
 ad_dialog
 
@@ -253,16 +253,22 @@ formula
 Linear\\1/r^2
 fx_dialog
 
+fx_edit
+
 fx_headline
 
-fx_new
-新規...
+fx_new_field
+
+fx_new_light
+
+fx_new_script
+
+fx_new_sound
+
 fx_none
 
 fx_tab_control
 炎\\光源\\音\\力場
-fxt_commondesc
-
 fxt_force_desc
 
 fxt_force_formula
@@ -1128,7 +1134,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-169
+172
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1141,6 +1147,10 @@ zzz_setbgimage
 !bold\\Kommentar/Geschehnisse:
 
 !bold\\Name:
+
+%d Objekte, %d Terrains eingefügt
+
+%d Objekte, %d Terrains kopiert
 
 %d Vertizes, %d Dreiecke eingefügt
 
@@ -1157,6 +1167,8 @@ zzz_setbgimage
 Abbrechen
 
 Administration
+
+Aktion fehlgeschlagen: 
 
 Angegebene Welt konnte nicht korrekt geladen werden!
 

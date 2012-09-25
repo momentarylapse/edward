@@ -41,6 +41,10 @@ public:
 	void ChooseRightMouseFunction(int f);
 	void ApplyRightMouseFunction(MultiView *mv);
 
+	void AddEffects(int type);
+	void EditEffects();
+	void ClearEffects();
+
 	DataModel *data;
 	Data *GetData(){	return data;	}
 

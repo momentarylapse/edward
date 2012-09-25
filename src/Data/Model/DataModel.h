@@ -41,6 +41,8 @@ struct ModelEffect{
 	color Colors[3];
 	bool InvQuad;
 	string File, Function;
+
+	string get_type();
 };
 
 class ModelVertex: public MultiViewSingleData
@@ -333,6 +335,11 @@ public:
 
 	// effects
 	Array<ModelEffect> Fx;
+
+	// actions
+	void SelectionAddEffects(const ModelEffect &effect);
+	void EditEffect(int index, const ModelEffect &effect);
+	void SelectionClearEffects();
 
 	struct MetaData
 	{

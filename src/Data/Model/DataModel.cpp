@@ -29,6 +29,9 @@
 #include "../../Action/Model/Mesh/Look/ActionModelSetMaterial.h"
 #include "../../Action/Model/Mesh/Look/ActionModelSetNormalModeSelection.h"
 #include "../../Action/Model/Mesh/Look/ActionModelSetNormalModeAll.h"
+#include "../../Action/Model/Mesh/Effects/ActionModelAddEffects.h"
+#include "../../Action/Model/Mesh/Effects/ActionModelClearEffects.h"
+#include "../../Action/Model/Mesh/Effects/ActionModelEditEffect.h"
 #include "../../Action/Model/Mesh/ActionModelDeleteSelection.h"
 #include "../../Action/Model/Mesh/ActionModelPasteGeometry.h"
 #include "../../Action/Model/Mesh/ActionModelEasify.h"
@@ -1808,6 +1811,29 @@ void DataModel::AnimationDuplicateCurrentFrame()
 	AnimationAddFrame(CurrentMove, CurrentFrame + 1);
 	SetCurrentFrame(CurrentFrame + 1);
 }
+
+string ModelEffect::get_type()
+{
+	if (Kind==FXKindScript)
+		return _("Script");
+	if (Kind==FXKindLight)
+		return _("Licht");
+	if (Kind==FXKindSound)
+		return _("Sound");
+	if (Kind==FXKindForceField)
+		return _("Kraftfeld");
+	return "???";
+}
+
+void DataModel::SelectionAddEffects(const ModelEffect& effect)
+{	Execute(new ActionModelAddEffects(this, effect));	}
+
+void DataModel::EditEffect(int index, const ModelEffect& effect)
+{	Execute(new ActionModelEditEffect(index, effect));	}
+
+void DataModel::SelectionClearEffects()
+{	Execute(new ActionModelClearEffects(this));	}
+
 
 
 

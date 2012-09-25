@@ -1,102 +1,55 @@
-// IDs
-enum{
-	HMM_FX_DIALOG,
-	HMM_OK,
-	HMM_CANCEL,
-	HMM_FX_TAB_CONTROL,
-	HMM_FXT_COMMONDESC,
-	HMM_FXT_LIGHTRADIUS,
-	HMM_LIGHT_RADIUS,
-	HMM_LU,
-	HMM_AMBIENT,
-	HMM_DIFFUSE,
-	HMM_SPECULAR,
-	HMM_MAT_AM,
-	HMM_MAT_DI,
-	HMM_MAT_SP,
-	HMM_SCRIPT_FILE,
-	HMM_FXT_SCRIPTFILE,
-	HMM_FIND_SCRIPTFILE,
-	HMM_SCRIPT_FUNCTION,
-	HMM_FXT_SCRIPTFUNCTION,
-	HMM_FXT_SCRIPT_DESC,
-	HMM_FXT_SOUNDFILE,
-	HMM_FILENAME,
-	HMM_FXT_SOUNDRANGE,
-	HMM_SOUND_RADIUS,
-	HMM_SEARCH,
-	HMM_FXT_SOUNDSPEED,
-	HMM_SPEED,
-	HMM_PERCENT,
-	HMM_FXT_SOUND_MONO_ADVICE,
-	HMM_FORMULA,
-	HMM_FXT_FORCE_FORMULA,
-	HMM_FXT_FORCE_RANGE,
-	HMM_FORCEFIELD_RADIUS,
-	HMM_FXT_FORCE_INTENSITY,
-	HMM_INTENSITY,
-	HMM_LUSS,
-	HMM_FXT_FORCE_DESC,
-	HMM_FXT_FORCE_DESC2,
-	HMM_FXT_FORCE_DESC3
-};
-
-
-
 	// dialog
-	FXDialog=HuiCreateDialog("Einen neuen Effekt erstellen...",470,240,MainWin,false,&FXDialogFunc);
-	FXDialog->SetID(HMM_FX_DIALOG);
-	FXDialog->AddDefButton("OK",360,200,100,25,HMM_OK);
-	FXDialog->SetImage(HMM_OK,HuiImageOk);
-	FXDialog->AddButton("Abbrechen",255,200,100,25,HMM_CANCEL);
-	FXDialog->SetImage(HMM_CANCEL,HuiImageCancel);
-	FXDialog->AddTabControl("Script\\Licht\\Sound\\Kraftfeld",5,5,460,145,HMM_FX_TAB_CONTROL);
-	FXDialog->AddText("Art des Effektes wird nach dem zuletzt offenen Tab-Blatt gew&ahlt!",10,155,455,35,HMM_FXT_COMMONDESC);
-	FXDialog->SetTabCreationPage(HMM_FX_TAB_CONTROL,1);
-	FXDialog->AddText("Radius",210,10,50,25,HMM_FXT_LIGHTRADIUS);
-	FXDialog->AddEdit("",260,10,50,25,HMM_LIGHT_RADIUS);
-	FXDialog->AddText("le",315,10,20,25,HMM_LU);
-	FXDialog->AddText("Ambient",10,10,70,25,HMM_AMBIENT);
-	FXDialog->AddText("Diffuse",10,40,70,25,HMM_DIFFUSE);
-	FXDialog->AddText("Specular",10,70,70,25,HMM_SPECULAR);
-	FXDialog->AddColorButton("",80,10,100,25,HMM_MAT_AM);
-	FXDialog->AddColorButton("!alpha",80,40,100,25,HMM_MAT_DI);
-	FXDialog->AddColorButton("",80,70,100,25,HMM_MAT_SP);
-	FXDialog->SetTabCreationPage(HMM_FX_TAB_CONTROL,0);
-	FXDialog->AddEdit("",95,10,325,25,HMM_SCRIPT_FILE);
-	FXDialog->Enable(HMM_SCRIPT_FILE,false);
-	FXDialog->AddText("Datei:",10,10,80,25,HMM_FXT_SCRIPTFILE);
-	FXDialog->AddButton("",425,10,25,25,HMM_FIND_SCRIPTFILE);
-	FXDialog->SetImage(HMM_FIND_SCRIPTFILE,HuiImageOpen);
-	FXDialog->AddComboBox("",95,40,355,25,HMM_SCRIPT_FUNCTION);
-	FXDialog->Enable(HMM_SCRIPT_FUNCTION,false);
-	FXDialog->AddText("Funktion:",10,40,80,25,HMM_FXT_SCRIPTFUNCTION);
-	FXDialog->AddText("(Funktion muss vom Typ [ effect func ( vector pos ) ] sein)",15,70,435,45,HMM_FXT_SCRIPT_DESC);
-	FXDialog->SetTabCreationPage(HMM_FX_TAB_CONTROL,2);
-	FXDialog->AddText("Sound-Datei",10,10,100,25,HMM_FXT_SOUNDFILE);
-	FXDialog->AddEdit("",115,10,295,25,HMM_FILENAME);
-	FXDialog->AddText("max. H&orweite",10,40,100,25,HMM_FXT_SOUNDRANGE);
-	FXDialog->AddEdit("",115,40,50,25,HMM_SOUND_RADIUS);
-	FXDialog->AddButton("",415,10,35,25,HMM_SEARCH);
-	FXDialog->SetImage(HMM_SEARCH,HuiImageOpen);
-	FXDialog->AddText("Geschwindigkeit",10,70,100,25,HMM_FXT_SOUNDSPEED);
-	FXDialog->AddEdit("",115,70,50,25,HMM_SPEED);
-	FXDialog->AddText("%",170,70,15,25,HMM_PERCENT);
-	FXDialog->AddText("(muss Mono sein!)",200,55,140,25,HMM_FXT_SOUND_MONO_ADVICE);
-	FXDialog->AddText("le",170,40,20,25,HMM_LU);
-	FXDialog->SetTabCreationPage(HMM_FX_TAB_CONTROL,3);
-	FXDialog->AddComboBox("Linear\\1/r^2",75,10,85,25,HMM_FORMULA);
-	FXDialog->AddText("Abnahme",10,10,65,25,HMM_FXT_FORCE_FORMULA);
-	FXDialog->AddText("Reichweite",175,10,70,25,HMM_FXT_FORCE_RANGE);
-	FXDialog->AddEdit("",245,10,75,25,HMM_FORCEFIELD_RADIUS);
-	FXDialog->AddText("le",325,10,20,25,HMM_LU);
-	FXDialog->AddText("Intensit&at",10,40,65,25,HMM_FXT_FORCE_INTENSITY);
-	FXDialog->AddEdit("",75,40,85,25,HMM_INTENSITY);
-	FXDialog->AddText("le/s^2",165,40,45,25,HMM_LUSS);
-	FXDialog->AddText("( anziehende Beschleunigung, Linear: maximaler Wert, 1/r^2: Wert bei r=100 le )",10,70,440,50,HMM_FXT_FORCE_DESC);
-	FXDialog->AddText("",365,250,140,25,HMM_FXT_FORCE_DESC2);
-	FXDialog->AddText("",365,275,140,25,HMM_FXT_FORCE_DESC3);
+	FXDialog = HuiCreateDialog("Einen neuen Effekt erstellen...", 470, 205, MainWin, false);
+	FXDialog->SetID("fx_dialog");
+	FXDialog->AddDefButton("OK", 360, 165, 100, 25, "ok");
+	FXDialog->SetImage("ok", "hui:ok");
+	FXDialog->AddButton("Abbrechen", 255, 165, 100, 25, "cancel");
+	FXDialog->SetImage("cancel", "hui:cancel");
+	FXDialog->AddTabControl("!nobar\\Script\\Licht\\Sound\\Kraftfeld", 5, 5, 460, 145, "fx_tab_control");
+	FXDialog->SetTabCreationPage("fx_tab_control", 1);
+	FXDialog->AddText("adius", 210, 10, 50, 25, "fxt_lightradius");
+	FXDialog->AddEdit("", 260, 10, 50, 25, "light_radius");
+	FXDialog->AddText("le", 315, 10, 20, 25, "lu");
+	FXDialog->AddText("Ambient", 10, 10, 70, 25, "ambient");
+	FXDialog->AddText("Diffuse", 10, 40, 70, 25, "diffuse");
+	FXDialog->AddText("Specular", 10, 70, 70, 25, "specular");
+	FXDialog->AddColorButton("", 80, 10, 100, 25, "mat_am");
+	FXDialog->AddColorButton("!alpha", 80, 40, 100, 25, "mat_di");
+	FXDialog->AddColorButton("", 80, 70, 100, 25, "mat_sp");
+	FXDialog->SetTabCreationPage("fx_tab_control", 0);
+	FXDialog->AddEdit("", 95, 10, 325, 25, "script_file");
+	FXDialog->Enable("script_file", false);
+	FXDialog->AddText("Datei:", 10, 10, 80, 25, "fxt_scriptfile");
+	FXDialog->AddButton("", 425, 10, 25, 25, "find_scriptfile");
+	FXDialog->SetImage("find_scriptfile", "hui:open");
+	FXDialog->AddComboBox("", 95, 40, 355, 25, "script_function");
+	FXDialog->Enable("script_function", false);
+	FXDialog->AddText("Funktion:", 10, 40, 80, 25, "fxt_scriptfunction");
+	FXDialog->AddText("(Funktion muss vom Typ [ effect func ( vector pos ) ] sein)", 15, 70, 435, 45, "fxt_script_desc");
+	FXDialog->SetTabCreationPage("fx_tab_control", 2);
+	FXDialog->AddText("Sound-Datei", 10, 10, 100, 25, "fxt_soundfile");
+	FXDialog->AddEdit("", 115, 10, 295, 25, "filename");
+	FXDialog->AddText("max. H&orweite", 10, 40, 100, 25, "fxt_soundrange");
+	FXDialog->AddEdit("", 115, 40, 50, 25, "sound_radius");
+	FXDialog->AddButton("", 415, 10, 35, 25, "search");
+	FXDialog->SetImage("search", "hui:open");
+	FXDialog->AddText("Geschwindigkeit", 10, 70, 100, 25, "fxt_soundspeed");
+	FXDialog->AddEdit("", 115, 70, 50, 25, "speed");
+	FXDialog->AddText("%", 170, 70, 15, 25, "percent");
+	FXDialog->AddText("(muss Mono sein!)", 200, 55, 140, 25, "fxt_sound_mono_advice");
+	FXDialog->AddText("le", 170, 40, 20, 25, "lu");
+	FXDialog->SetTabCreationPage("fx_tab_control", 3);
+	FXDialog->AddComboBox("Linear\\1/r^2", 75, 10, 85, 25, "formula");
+	FXDialog->AddText("Abnahme", 10, 10, 65, 25, "fxt_force_formula");
+	FXDialog->AddText("Reichweite", 175, 10, 70, 25, "fxt_force_range");
+	FXDialog->AddEdit("", 245, 10, 75, 25, "forcefield_radius");
+	FXDialog->AddText("le", 325, 10, 20, 25, "lu");
+	FXDialog->AddText("Intensit&at", 10, 40, 65, 25, "fxt_force_intensity");
+	FXDialog->AddEdit("", 75, 40, 85, 25, "intensity");
+	FXDialog->AddText("le/s^2", 165, 40, 45, 25, "luss");
+	FXDialog->AddText("( anziehende Beschleunigung, Linear: maximaler Wert, 1/r^2: Wert bei r=100 le )", 10, 70, 440, 50, "fxt_force_desc");
+	FXDialog->AddText("", 365, 250, 140, 25, "fxt_force_desc2");
+	FXDialog->AddText("", 365, 275, 140, 25, "fxt_force_desc3");
 	FXDialog->Update();
-
 
 
