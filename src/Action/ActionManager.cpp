@@ -60,11 +60,16 @@ void *ActionManager::Execute(Action *a)
 
 	if (cur_group)
 		return cur_group->AddSubAction(a, data);
+
 	try{
-		void *p = a->execute_and_notify(data);
+		data->NotifyBegin();
+		void *p = a->execute_logged(data);
 		add(a);
+		data->Notify("Change");
+		data->NotifyEnd();
 		return p;
 	}catch(ActionException &e){
+		data->NotifyEnd();
 		error_message = e.message;
 		msg_error("ActionManager: " + e.message);
 		a->abort(data);
@@ -77,16 +82,24 @@ void *ActionManager::Execute(Action *a)
 
 void ActionManager::Undo()
 {
-	if (Undoable())
-		action[-- cur_pos]->undo_and_notify(data);
+	if (Undoable()){
+		data->NotifyBegin();
+		action[-- cur_pos]->undo_logged(data);
+		data->Notify("Change");
+		data->NotifyEnd();
+	}
 }
 
 
 
 void ActionManager::Redo()
 {
-	if (Redoable())
-		action[cur_pos ++]->redo_and_notify(data);
+	if (Redoable()){
+		data->NotifyBegin();
+		action[cur_pos ++]->redo_logged(data);
+		data->Notify("Change");
+		data->NotifyEnd();
+	}
 }
 
 bool ActionManager::Undoable()
@@ -120,6 +133,7 @@ void ActionManager::EndActionGroup()
 		ActionGroup *g = cur_group;
 		cur_group = NULL;
 		Execute(g);
+		data->Notify("Change");
 	}
 }
 

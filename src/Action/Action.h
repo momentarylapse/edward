@@ -38,10 +38,6 @@ public:
 	void *execute_logged(Data *d);
 	void undo_logged(Data *d);
 	void redo_logged(Data *d);
-
-	void *execute_and_notify(Data *d);
-	void undo_and_notify(Data *d);
-	void redo_and_notify(Data *d);
 };
 
 #endif /* ACTION_H_ */

@@ -1373,7 +1373,8 @@ void MultiView::MouseActionStart(int button)
 		mouse_action_pos0 = MouseOverTP;
 		cur_action = ActionMultiViewFactory(action[button].name, _data_, mouse_action_param, mouse_action_pos0,
 				GetDirectionRight(mouse_win), GetDirectionUp(mouse_win), GetDirection(mouse_win));
-		cur_action->execute_and_notify(_data_);
+		cur_action->execute(_data_);
+		_data_->Notify("Changed");
 		Notify("ActionStart");
 	}
 }
@@ -1419,7 +1420,8 @@ void MultiView::MouseActionUpdate()
 		delete(cur_action);
 		cur_action = ActionMultiViewFactory(action[active_mouse_action].name, _data_, mouse_action_param, mouse_action_pos0,
 				GetDirectionRight(mouse_win), GetDirectionUp(mouse_win), GetDirection(mouse_win));
-		cur_action->execute_and_notify(_data_);
+		cur_action->execute(_data_);
+		_data_->Notify("Changed");
 
 		Notify("ActionUpdate");
 	}
