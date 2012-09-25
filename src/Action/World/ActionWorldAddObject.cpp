@@ -10,10 +10,11 @@
 #include "../../lib/x/x.h"
 #include <assert.h>
 
-ActionWorldAddObject::ActionWorldAddObject(const string &_filename, const vector &_pos)
+ActionWorldAddObject::ActionWorldAddObject(const string &_filename, const vector &_pos, const vector &_ang)
 {
 	filename = _filename;
 	pos = _pos;
+	ang = _ang;
 }
 
 ActionWorldAddObject::~ActionWorldAddObject()
@@ -36,7 +37,7 @@ void *ActionWorldAddObject::execute(Data *d)
 
 	WorldObject o;
 	o.pos = pos;
-	o.Ang = v_0;
+	o.Ang = ang;
 	o.is_selected = true;
 	o.is_special = false;
 	o.FileName = filename;

@@ -72,6 +72,17 @@ public:
 	void ToggleShowTerrains();
 	void ToggleShowObjects();
 	void ToggleShowEffects();
+
+
+
+	// clip board
+	void Copy();
+	void Paste();
+	bool Copyable();
+	bool Pasteable();
+
+	Array<WorldObject> temp_objects;
+	Array<WorldTerrain> temp_terrains;
 };
 
 extern ModeWorld* mode_world;

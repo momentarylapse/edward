@@ -14,7 +14,7 @@
 class ActionWorldAddObject : public Action
 {
 public:
-	ActionWorldAddObject(const string &_filename, const vector &_pos);
+	ActionWorldAddObject(const string &_filename, const vector &_pos, const vector &_ang = v_0);
 	virtual ~ActionWorldAddObject();
 	string name(){	return "WorldAddObject";	}
 
@@ -24,6 +24,7 @@ public:
 private:
 	string filename;
 	vector pos;
+	vector ang;
 };
 
 #endif /* ACTIONWORLDADDOBJECT_H_ */

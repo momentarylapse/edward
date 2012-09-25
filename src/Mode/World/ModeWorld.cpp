@@ -75,6 +75,12 @@ void ModeWorld::OnCommand(const string & id)
 	if (id == "redo")
 		data->Redo();
 
+
+	if (id == "copy")
+		Copy();
+	if (id == "paste")
+		Paste();
+
 	if (id == "import_world_properties")
 		ImportWorldProperties();
 
@@ -588,6 +594,9 @@ void ModeWorld::OnUpdateMenu()
 	ed->Enable("undo", data->action_manager->Undoable());
 	ed->Enable("redo", data->action_manager->Redoable());
 
+	ed->Enable("copy", Copyable());
+	ed->Enable("paste", Pasteable());
+
 	ed->Check("show_objects", ShowObjects);
 	ed->Check("show_terrains", ShowTerrains);
 	ed->Check("show_fx", ShowEffects);
@@ -779,5 +788,31 @@ void ModeWorld::ApplyHeightmap()
 
 
 
+
+
+
+void ModeWorld::Copy()
+{
+	data->Copy(temp_objects, temp_terrains);
+
+	OnUpdateMenu();
+	ed->SetMessage(format(_("%d Objekte, %d Terrains kopiert"), temp_objects.num, temp_terrains.num));
+}
+
+void ModeWorld::Paste()
+{
+	data->Paste(temp_objects, temp_terrains);
+	ed->SetMessage(format(_("%d Objekte, %d Terrains eingef&ugt"), temp_objects.num, temp_terrains.num));
+}
+
+bool ModeWorld::Copyable()
+{
+	return (data->GetSelectedObjects() + data->GetSelectedTerrains()) > 0;
+}
+
+bool ModeWorld::Pasteable()
+{
+	return (temp_objects.num + temp_terrains.num) > 0;
+}
 
 

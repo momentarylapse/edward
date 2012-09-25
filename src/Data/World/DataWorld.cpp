@@ -10,6 +10,7 @@
 #include "../../Edward.h"
 #include "../../Action/World/ActionWorldAddObject.h"
 #include "../../Action/World/ActionWorldAddTerrain.h"
+#include "../../Action/World/ActionWorldPaste.h"
 
 
 void WorldObject::UpdateData()
@@ -448,6 +449,27 @@ WorldTerrain* DataWorld::AddNewTerrain(const vector& pos, const vector& size, in
 {	return (WorldTerrain*)Execute(new ActionWorldAddTerrain(pos, size, num_x, num_z));	}
 
 
+void DataWorld::ClearSelection()
+{
+	foreach(WorldObject &o, Object)
+		o.is_selected = false;
+	foreach(WorldTerrain &t, Terrain)
+		t.is_selected = false;
+}
 
 
+void DataWorld::Copy(Array<WorldObject> &objects, Array<WorldTerrain> &terrains)
+{
+	objects.clear();
+	terrains.clear();
 
+	foreach(WorldObject &o, Object)
+		if (o.is_selected)
+			objects.add(o);
+	foreach(WorldTerrain &t, Terrain)
+		if (t.is_selected)
+			terrains.add(t);
+}
+
+void DataWorld::Paste(Array<WorldObject> &objects, Array<WorldTerrain> &terrains)
+{	Execute(new ActionWorldPaste(objects, terrains));	}

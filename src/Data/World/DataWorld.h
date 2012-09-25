@@ -108,6 +108,8 @@ public:
 
 	void UpdateData();
 
+	void ClearSelection();
+
 	// terrains
 	Array<WorldTerrain> Terrain;
 
@@ -167,6 +169,8 @@ public:
 	WorldObject *AddObject(const string &filename, const vector &pos);
 	WorldTerrain *AddTerrain(const string &filename, const vector &pos);
 	WorldTerrain *AddNewTerrain(const vector &pos, const vector &size, int num_x, int num_z);
+	void Copy(Array<WorldObject> &objects, Array<WorldTerrain> &terrains); // actually not an action
+	void Paste(Array<WorldObject> &objects, Array<WorldTerrain> &terrains);
 };
 
 #endif /* DATAWORLD_H_ */
