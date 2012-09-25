@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-565
+563
 // Data (ID,Text)
 ad_dialog
 
@@ -279,11 +279,7 @@ fxt_force_range
 
 fxt_lightradius
 
-fxt_script_desc
-
 fxt_scriptfile
-
-fxt_scriptfunction
 
 fxt_sound_mono_advice
 
@@ -1134,7 +1130,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-172
+179
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1232,6 +1228,8 @@ Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
 
 Fehler
 
+Fehler in Script-Datei: \"%s\"\n%s\n%s
+
 Fehlerbericht
 
 Fehlerbericht an Michi senden
@@ -1282,11 +1280,17 @@ Karten (*.map)
 
 Karten-Datei
 
+Kein Punkt markiert!
+
+Kein Punkt mit Effekt markiert!
+
 Keine geschlossene Flächen markiert
 
 Knochen setzen
 
 Knochen setzen oder Wurzel-Knochen waehlen
+
+Kraftfeld
 
 Kugel
 
@@ -1295,6 +1299,8 @@ Kugel skalieren
 Kugelzentrum waehlen
 
 Lade Welt
+
+Licht
 
 Links
 
@@ -1359,6 +1365,10 @@ Rotieren
 Script
 
 Script-Datei
+
+Script-Datei enthält keine Funktion \"void OnEffectCreate( effect )\"
+
+Script-Datei enthält keine Funktion \"void OnEffectIterate( effect )\"
 
 Script-Dateien (*.kaba)
 

@@ -22,10 +22,6 @@
 	FXDialog->AddText("Datei:", 10, 10, 80, 25, "fxt_scriptfile");
 	FXDialog->AddButton("", 425, 10, 25, 25, "find_scriptfile");
 	FXDialog->SetImage("find_scriptfile", "hui:open");
-	FXDialog->AddComboBox("", 95, 40, 355, 25, "script_function");
-	FXDialog->Enable("script_function", false);
-	FXDialog->AddText("Funktion:", 10, 40, 80, 25, "fxt_scriptfunction");
-	FXDialog->AddText("(Funktion muss vom Typ [ effect func ( vector pos ) ] sein)", 15, 70, 435, 45, "fxt_script_desc");
 	FXDialog->SetTabCreationPage("fx_tab_control", 2);
 	FXDialog->AddText("Sound-Datei", 10, 10, 100, 25, "fxt_soundfile");
 	FXDialog->AddEdit("", 115, 10, 295, 25, "filename");

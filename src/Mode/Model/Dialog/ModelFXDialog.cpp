@@ -7,13 +7,18 @@
 
 #include "ModelFXDialog.h"
 #include "../../../Data/Model/DataModel.h"
+#include "../../../lib/script/script.h"
 #include "../../../Edward.h"
 
-ModelFXDialog::ModelFXDialog(CHuiWindow* _parent, bool _allow_parent, DataModel* _data, int _type) :
+ModelFXDialog::ModelFXDialog(CHuiWindow* _parent, bool _allow_parent, DataModel* _data, int _type, int _index) :
 CHuiWindow("dummy", -1, -1, 230, 400, _parent, _allow_parent, HuiWinModeControls, true)
 {
 	data = _data;
-	temp.Kind = _type;
+	index = _index;
+	if (index >= 0)
+		temp = data->Fx[index];
+	else
+		temp.Kind = _type;
 
 	// dialog
 	FromResource("fx_dialog");
@@ -33,21 +38,32 @@ ModelFXDialog::~ModelFXDialog()
 
 void ModelFXDialog::LoadData()
 {
-	if (temp.Kind == FXKindScript)
+	if (temp.Kind == FXKindScript){
 		SetInt("fx_tab_control", 0);
-	else if (temp.Kind == FXKindLight)
+		SetString("script_file", temp.File);
+	}else if (temp.Kind == FXKindLight){
 		SetInt("fx_tab_control", 1);
-	else if (temp.Kind == FXKindSound)
+		SetColor("mat_am", temp.Colors[0]);
+		SetColor("mat_di", temp.Colors[1]);
+		SetColor("mat_sp", temp.Colors[2]);
+		SetInt("radius", temp.Size);
+	}else if (temp.Kind == FXKindSound){
 		SetInt("fx_tab_control", 2);
-	else if (temp.Kind == FXKindForceField)
+		SetString("filename", temp.File);
+		SetInt("sound_radius", temp.Size);
+		SetInt("speed", temp.Speed);
+	}else if (temp.Kind == FXKindForceField){
 		SetInt("fx_tab_control", 3);
+		SetInt("forcefield_radius", temp.Size);
+		SetInt("intensity", temp.Intensity);
+		SetInt("formula", temp.InvQuad ? 1 : 0);
+	}
 }
 
 void ModelFXDialog::ApplyData()
 {
 	if (temp.Kind == FXKindScript){
 		temp.File = GetString("script_file");
-		temp.Function = GetString("script_function");
 	}else if (temp.Kind == FXKindLight){
 		temp.Colors[0] = GetColor("mat_am");
 		temp.Colors[1] = GetColor("mat_di");
@@ -58,15 +74,36 @@ void ModelFXDialog::ApplyData()
 		temp.Size = GetInt("sound_radius");
 		temp.Speed = GetInt("speed");
 	}else if (temp.Kind == FXKindForceField){
+		temp.Size = GetInt("forcefield_radius");
+		temp.Intensity = GetInt("intensity");
+		temp.InvQuad = (GetInt("formula")  == 1);
 	}
 
-	data->SelectionAddEffects(temp);
+	if (index >= 0)
+		data->EditEffect(index, temp);
+	else
+		data->SelectionAddEffects(temp);
 }
 
 void ModelFXDialog::OnFindScriptFile()
 {
-	if (ed->FileDialog(FDScript,false,true))
-		{}//SetString("filename", ed->DialogFile);
+	if (ed->FileDialog(FDScript,false,true)){
+		string filename = ed->DialogFile;
+		SetString("script_file", ed->DialogFile);
+
+		ScriptDirectory = ScriptDir;
+		CScript *s = new CScript(filename, true); // just analyse
+		CPreScript *ps = s->pre_script;
+		if (s->Error){
+			ed->ErrorBox(format(_("Fehler in Script-Datei: \"%s\"\n%s\n%s"), filename.c_str(), ps->ErrorMsgExt[0].c_str(), ps->ErrorMsgExt[1].c_str()));
+			msg_db_l(1);
+			return;
+		}
+		if (!s->MatchFunction("OnEffectCreate", "void", 1, "effect"))
+			ed->ErrorBox(_("Script-Datei enth&alt keine Funktion \"void OnEffectCreate( effect )\""));
+		else if (!s->MatchFunction("OnEffectIterate", "void", 1, "effect"))
+			ed->ErrorBox(_("Script-Datei enth&alt keine Funktion \"void OnEffectIterate( effect )\""));
+	}
 }
 
 void ModelFXDialog::OnFindSoundFile()

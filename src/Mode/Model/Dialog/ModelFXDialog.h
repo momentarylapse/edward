@@ -14,7 +14,7 @@
 class ModelFXDialog: public CHuiWindow
 {
 public:
-	ModelFXDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data, int _type);
+	ModelFXDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data, int _type, int _index);
 	virtual ~ModelFXDialog();
 
 	void LoadData();
@@ -28,6 +28,7 @@ public:
 private:
 	DataModel *data;
 	ModelEffect temp;
+	int index;
 };
 
 #endif /* MODELFXDIALOG_H_ */

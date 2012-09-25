@@ -383,13 +383,27 @@ void ModeModelMesh::AddEffects(int type)
 		ed->SetMessage(_("Kein Punkt markiert!"));
 		return;
 	}
-	ModelFXDialog *dlg = new ModelFXDialog(ed, false, data, type);
+	ModelFXDialog *dlg = new ModelFXDialog(ed, false, data, type, -1);
 	dlg->Update();
 	HuiWaitTillWindowClosed(dlg);
 }
 
 void ModeModelMesh::EditEffects()
 {
+	int index;
+	int n = 0;
+	foreachi(ModelEffect &fx, data->Fx, i)
+		if (data->Vertex[fx.Vertex].is_selected){
+			index = i;
+			n ++;
+		}
+	if (n != 1){
+		ed->SetMessage(_("Es muss genau ein Punkt mit Effekt markiert sein!"));
+		return;
+	}
+	ModelFXDialog *dlg = new ModelFXDialog(ed, false, data, -1, index);
+	dlg->Update();
+	HuiWaitTillWindowClosed(dlg);
 }
 
 void ModeModelMesh::ClearEffects()

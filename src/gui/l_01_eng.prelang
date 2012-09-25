@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-565
+563
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -279,12 +279,8 @@ fxt_force_range
 range
 fxt_lightradius
 radius
-fxt_script_desc
-(function must be of type [ effect func ( vector pos ) ] )
 fxt_scriptfile
 script file
-fxt_scriptfunction
-function
 fxt_sound_mono_advice
 (has to be mono!)
 fxt_soundfile
@@ -1134,7 +1130,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-172
+179
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1232,6 +1228,8 @@ Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
 File %s has a wrong file format: %d (expected: %d - %d)!
 Fehler
 Error
+Fehler in Script-Datei: \"%s\"\n%s\n%s
+
 Fehlerbericht
 Bug Report
 Fehlerbericht an Michi senden
@@ -1282,11 +1280,17 @@ Karten (*.map)
 Terrains (*.map)
 Karten-Datei
 Terrain files
+Kein Punkt markiert!
+
+Kein Punkt mit Effekt markiert!
+
 Keine geschlossene Flächen markiert
 No closed surfaces selected!
 Knochen setzen
 Set bone
 Knochen setzen oder Wurzel-Knochen waehlen
+
+Kraftfeld
 
 Kugel
 Sphere
@@ -1296,6 +1300,8 @@ Kugelzentrum waehlen
 Select center
 Lade Welt
 Loading world
+Licht
+
 Links
 Left
 Links (x)
@@ -1360,6 +1366,10 @@ Script
 Script
 Script-Datei
 Script file
+Script-Datei enthält keine Funktion \"void OnEffectCreate( effect )\"
+
+Script-Datei enthält keine Funktion \"void OnEffectIterate( effect )\"
+
 Script-Dateien (*.kaba)
 Script files (*.kaba)
 Shader
