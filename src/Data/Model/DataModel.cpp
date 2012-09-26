@@ -43,6 +43,33 @@
 ModelMove *EmptyMove = NULL;
 
 
+
+string ModelEffect::get_type()
+{
+	if (Kind==FXKindScript)
+		return _("Script");
+	if (Kind==FXKindLight)
+		return _("Licht");
+	if (Kind==FXKindSound)
+		return _("Sound");
+	if (Kind==FXKindForceField)
+		return _("Kraftfeld");
+	return "???";
+}
+
+void ModelEffect::clear()
+{
+	File = "";
+	Colors[0] = White;
+	Colors[1] = White;
+	Colors[2] = White;
+	Size = 1000.0f;
+	Speed = 1.0f;
+	Intensity = 100.0f;
+	InvQuad = false;
+}
+
+
 DataModel::DataModel()
 {
 	AutoTexturingData.enabled = false;
@@ -399,28 +426,28 @@ bool DataModel::Load(const string & _filename, bool deep)
 				Fx[i].Kind = FXKindScript;
 				Fx[i].Vertex = f->ReadInt();
 				Fx[i].File = f->ReadStr();
-				Fx[i].Function = f->ReadStr();
+				f->ReadStr();
 			}
 			if (fxkind == "Light"){
-				Fx[i].Kind=FXKindLight;
-				Fx[i].Vertex=f->ReadInt();
-				Fx[i].Size=f->ReadInt();
+				Fx[i].Kind = FXKindLight;
+				Fx[i].Vertex = f->ReadInt();
+				Fx[i].Size = (float)f->ReadInt();
 				for (int j=0;j<3;j++)
 					read_color_argb(f,Fx[i].Colors[j]);
 			}
 			if (fxkind == "Sound"){
-				Fx[i].Kind=FXKindSound;
-				Fx[i].Vertex=f->ReadInt();
-				Fx[i].Size=f->ReadInt();
-				Fx[i].Speed=f->ReadInt();
-				Fx[i].File=f->ReadStr();
+				Fx[i].Kind = FXKindSound;
+				Fx[i].Vertex = f->ReadInt();
+				Fx[i].Size = (float)f->ReadInt();
+				Fx[i].Speed = (float)f->ReadInt() * 0.01f;
+				Fx[i].File = f->ReadStr();
 			}
 			if (fxkind == "ForceField"){
-				Fx[i].Kind=FXKindForceField;
-				Fx[i].Vertex=f->ReadInt();
-				Fx[i].Size=f->ReadInt();
-				Fx[i].Intensity=f->ReadInt();
-				Fx[i].InvQuad=f->ReadBool();
+				Fx[i].Kind = FXKindForceField;
+				Fx[i].Vertex = f->ReadInt();
+				Fx[i].Size = (float)f->ReadInt();
+				Fx[i].Intensity = (float)f->ReadInt();
+				Fx[i].InvQuad = f->ReadBool();
 			}
 			if (Fx[i].Kind<0)
 				msg_error("unknown effekt: " + fxkind);
@@ -672,27 +699,27 @@ bool DataModel::Load(const string & _filename, bool deep)
 				Fx[i].Kind = FXKindScript;
 				Fx[i].Vertex = f->ReadInt();
 				Fx[i].File = f->ReadStr();
-				Fx[i].Function = f->ReadStr();
+				f->ReadStr();
 			}
 			if (fxkind == "Light"){
-				Fx[i].Kind=FXKindLight;
-				Fx[i].Vertex=f->ReadInt();
-				Fx[i].Size=f->ReadInt();
+				Fx[i].Kind = FXKindLight;
+				Fx[i].Vertex = f->ReadInt();
+				Fx[i].Size = (float)f->ReadInt();
 				for (int j=0;j<3;j++)
 					read_color_argb(f,Fx[i].Colors[j]);
 			}
 			if (fxkind == "Sound"){
 				Fx[i].Kind = FXKindSound;
 				Fx[i].Vertex = f->ReadInt();
-				Fx[i].Size = f->ReadInt();
-				Fx[i].Speed = f->ReadInt();
+				Fx[i].Size = (float)f->ReadInt();
+				Fx[i].Speed = (float)f->ReadInt() * 0.01f;
 				Fx[i].File = f->ReadStr();
 			}
 			if (fxkind == "ForceField"){
 				Fx[i].Kind = FXKindForceField;
 				Fx[i].Vertex = f->ReadInt();
-				Fx[i].Size = f->ReadInt();
-				Fx[i].Intensity = f->ReadInt();
+				Fx[i].Size = (float)f->ReadInt();
+				Fx[i].Intensity = (float)f->ReadInt();
 				Fx[i].InvQuad = f->ReadBool();
 			}
 			if (Fx[i].Kind<0)
@@ -1135,24 +1162,24 @@ bool DataModel::Save(const string & _filename)
 			f->WriteStr("Script");
 			f->WriteInt(Fx[i].Vertex);
 			f->WriteStr(Fx[i].File);
-			f->WriteStr(Fx[i].Function);
+			f->WriteStr("");
 		}else if (Fx[i].Kind==FXKindLight){
 			f->WriteStr("Light");
 			f->WriteInt(Fx[i].Vertex);
-			f->WriteInt(Fx[i].Size);
+			f->WriteInt((int)Fx[i].Size);
 			for (int nc=0;nc<3;nc++)
 				write_color_argb(f, Fx[i].Colors[nc]);
 		}else if (Fx[i].Kind==FXKindSound){
 			f->WriteStr("Sound");
 			f->WriteInt(Fx[i].Vertex);
-			f->WriteInt(Fx[i].Size);
-			f->WriteInt(Fx[i].Speed);
+			f->WriteInt((int)Fx[i].Size);
+			f->WriteInt((int)(Fx[i].Speed * 100.0f));
 			f->WriteStr(Fx[i].File);
 		}else if (Fx[i].Kind==FXKindForceField){
 			f->WriteStr("ForceField");
 			f->WriteInt(Fx[i].Vertex);
-			f->WriteInt(Fx[i].Size);
-			f->WriteInt(Fx[i].Intensity);
+			f->WriteInt((int)Fx[i].Size);
+			f->WriteInt((int)Fx[i].Intensity);
 			f->WriteBool(Fx[i].InvQuad);
 		}
 	}
@@ -1810,19 +1837,6 @@ void DataModel::AnimationDuplicateCurrentFrame()
 {
 	AnimationAddFrame(CurrentMove, CurrentFrame + 1);
 	SetCurrentFrame(CurrentFrame + 1);
-}
-
-string ModelEffect::get_type()
-{
-	if (Kind==FXKindScript)
-		return _("Script");
-	if (Kind==FXKindLight)
-		return _("Licht");
-	if (Kind==FXKindSound)
-		return _("Sound");
-	if (Kind==FXKindForceField)
-		return _("Kraftfeld");
-	return "???";
 }
 
 void DataModel::SelectionAddEffects(const ModelEffect& effect)

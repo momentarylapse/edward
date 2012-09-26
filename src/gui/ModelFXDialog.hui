@@ -44,8 +44,6 @@
 	FXDialog->AddEdit("", 75, 40, 85, 25, "intensity");
 	FXDialog->AddText("le/s^2", 165, 40, 45, 25, "luss");
 	FXDialog->AddText("( anziehende Beschleunigung, Linear: maximaler Wert, 1/r^2: Wert bei r=100 le )", 10, 70, 440, 50, "fxt_force_desc");
-	FXDialog->AddText("", 365, 250, 140, 25, "fxt_force_desc2");
-	FXDialog->AddText("", 365, 275, 140, 25, "fxt_force_desc3");
 	FXDialog->Update();
 
 

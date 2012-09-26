@@ -4883,7 +4883,7 @@ fx_dialog
 0
 
 
-36
+34
 DefButton
 ok
 hui:ok
@@ -5321,32 +5321,6 @@ fxt_force_desc
 70
 440
 50
-3
-0
-0
-fx_tab_control
-
-Text
-fxt_force_desc2
-
-1
-365
-250
-140
-25
-3
-0
-0
-fx_tab_control
-
-Text
-fxt_force_desc3
-
-1
-365
-275
-140
-25
 3
 0
 0
@@ -16157,7 +16131,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-706
+704
 // Text
 ad_dialog
 Verwaltung
@@ -16527,10 +16501,6 @@ fx_tab_control
 !nobar\\Script\\Licht\\Sound\\Kraftfeld
 fxt_force_desc
 ( anziehende Beschleunigung, Linear: maximaler Wert, 1/r^2: Wert bei r=100 le )
-fxt_force_desc2
-
-fxt_force_desc3
-
 fxt_force_formula
 Abnahme
 fxt_force_intensity
@@ -17577,7 +17547,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-706
+704
 // Text
 ad_dialog
 Administration
@@ -17947,10 +17917,6 @@ fx_tab_control
 fire\\light\\sound\\force field
 fxt_force_desc
 ( attracting acceleration, Linear: max. value, 1/r^2: value for r=1m )
-fxt_force_desc2
-
-fxt_force_desc3
-
 fxt_force_formula
 formula
 fxt_force_intensity
@@ -19325,7 +19291,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-706
+704
 // Text
 ad_dialog
 
@@ -19694,10 +19660,6 @@ fx_none
 fx_tab_control
 炎\\光源\\音\\力場
 fxt_force_desc
-
-fxt_force_desc2
-
-fxt_force_desc3
 
 fxt_force_formula
 

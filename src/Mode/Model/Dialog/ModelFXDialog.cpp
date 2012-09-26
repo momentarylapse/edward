@@ -17,8 +17,10 @@ CHuiWindow("dummy", -1, -1, 230, 400, _parent, _allow_parent, HuiWinModeControls
 	index = _index;
 	if (index >= 0)
 		temp = data->Fx[index];
-	else
+	else{
+		temp.clear();
 		temp.Kind = _type;
+	}
 
 	// dialog
 	FromResource("fx_dialog");
@@ -46,16 +48,16 @@ void ModelFXDialog::LoadData()
 		SetColor("mat_am", temp.Colors[0]);
 		SetColor("mat_di", temp.Colors[1]);
 		SetColor("mat_sp", temp.Colors[2]);
-		SetInt("radius", temp.Size);
+		SetFloat("light_radius", temp.Size);
 	}else if (temp.Kind == FXKindSound){
 		SetInt("fx_tab_control", 2);
 		SetString("filename", temp.File);
-		SetInt("sound_radius", temp.Size);
-		SetInt("speed", temp.Speed);
+		SetFloat("sound_radius", temp.Size);
+		SetFloat("speed", temp.Speed * 100.0f);
 	}else if (temp.Kind == FXKindForceField){
 		SetInt("fx_tab_control", 3);
-		SetInt("forcefield_radius", temp.Size);
-		SetInt("intensity", temp.Intensity);
+		SetFloat("forcefield_radius", temp.Size);
+		SetFloat("intensity", temp.Intensity);
 		SetInt("formula", temp.InvQuad ? 1 : 0);
 	}
 }
@@ -68,14 +70,14 @@ void ModelFXDialog::ApplyData()
 		temp.Colors[0] = GetColor("mat_am");
 		temp.Colors[1] = GetColor("mat_di");
 		temp.Colors[2] = GetColor("mat_sp");
-		temp.Size = GetInt("radius");
+		temp.Size = GetFloat("light_radius");
 	}else if (temp.Kind == FXKindSound){
 		temp.File = GetString("filename");
-		temp.Size = GetInt("sound_radius");
-		temp.Speed = GetInt("speed");
+		temp.Size = GetFloat("sound_radius");
+		temp.Speed = GetFloat("speed") * 0.01f;
 	}else if (temp.Kind == FXKindForceField){
-		temp.Size = GetInt("forcefield_radius");
-		temp.Intensity = GetInt("intensity");
+		temp.Size = GetFloat("forcefield_radius");
+		temp.Intensity = GetFloat("intensity");
 		temp.InvQuad = (GetInt("formula")  == 1);
 	}
 

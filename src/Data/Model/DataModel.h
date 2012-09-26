@@ -37,11 +37,12 @@ enum{
 
 struct ModelEffect{
 	int Kind, Surface, Vertex;
-	int Size, Speed, Intensity;
+	float Size, Speed, Intensity;
 	color Colors[3];
 	bool InvQuad;
-	string File, Function;
+	string File;
 
+	void clear();
 	string get_type();
 };
 
