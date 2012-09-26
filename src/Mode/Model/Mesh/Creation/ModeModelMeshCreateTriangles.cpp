@@ -7,7 +7,7 @@
 
 #include "ModeModelMeshCreateTriangles.h"
 #include "../../../../Edward.h"
-#include "../../../../Action/Model/Mesh/Triangle/ActionModelAddTrianglesByOutline.h"
+#include "../../../../Action/Model/Mesh/Triangle/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../lib/nix/nix.h"
 
 ModeModelMeshCreateTriangles::ModeModelMeshCreateTriangles(Mode *_parent) :
@@ -57,7 +57,7 @@ void ModeModelMeshCreateTriangles::OnDrawWin(int win, irect dest)
 void ModeModelMeshCreateTriangles::OnKeyDown()
 {
 	if (HuiGetEvent()->key_code == KEY_SHIFT + KEY_RETURN){
-		data->Execute(new ActionModelAddTrianglesByOutline(selection, data));
+		data->Execute(new ActionModelAddPolygonAutoSkin(selection));
 		Abort();
 	}
 }
@@ -69,7 +69,7 @@ void ModeModelMeshCreateTriangles::OnLeftButtonDown()
 		// closed loop -> done
 		if (selection.num > 0)
 			if (multi_view->Selected == selection[0]){
-				data->Execute(new ActionModelAddTrianglesByOutline(selection, data));
+				data->Execute(new ActionModelAddPolygonAutoSkin(selection));
 				Abort();
 				return;
 			}

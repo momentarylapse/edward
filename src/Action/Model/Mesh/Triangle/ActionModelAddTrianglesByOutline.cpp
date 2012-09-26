@@ -6,7 +6,6 @@
  */
 
 #include "ActionModelAddTrianglesByOutline.h"
-#include "../Vertex/ActionModelAddVertex.h"
 #include "ActionModelAddTriangleWithSkinGenerator.h"
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../Data/Model/SkinGenerator.h"
@@ -16,7 +15,7 @@
 //static float w_all;
 static vector flat_n;
 
-float get_ang(DataModel *m, int a, int b, int c)
+static float get_ang(DataModel *m, int a, int b, int c)
 {
 	vector v1 = m->Vertex[b].pos - m->Vertex[a].pos;
 	vector v2 = m->Vertex[c].pos - m->Vertex[b].pos;
@@ -27,14 +26,14 @@ float get_ang(DataModel *m, int a, int b, int c)
 	return atan2(x, y);
 }
 
-bool vertex_in_tria(DataModel *m, int a, int b, int c, int v)
+static bool vertex_in_tria(DataModel *m, int a, int b, int c, int v)
 {
 	float f, g;
 	GetBaryCentric(m->Vertex[v].pos, m->Vertex[a].pos, m->Vertex[b].pos, m->Vertex[c].pos, f, g);
 	return ((f > 0) && (g > 0) && (f + g < 1));
 }
 
-vector get_cloud_normal(DataModel *m, const Array<int> &v)
+static vector get_cloud_normal(DataModel *m, const Array<int> &v)
 {
 	Array<vector> p;
 	for (int i=1;i<v.num;i++){
@@ -51,7 +50,7 @@ vector get_cloud_normal(DataModel *m, const Array<int> &v)
 	return v_0;
 }
 
-void init_skin_generator(DataModel *m, Array<int> &v, SkinGenerator &sg)
+static void init_skin_generator(DataModel *m, Array<int> &v, SkinGenerator &sg)
 {
 	vector n = get_cloud_normal(m, v);
 	vector d[2];

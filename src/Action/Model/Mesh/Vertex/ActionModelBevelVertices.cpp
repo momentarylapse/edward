@@ -9,7 +9,7 @@
 #include "Helper/ActionModelDeleteUnusedVertex.h"
 #include "../Edge/ActionModelSplitEdge.h"
 #include "../Triangle/Helper/ActionModelPolygonRemoveVertex.h"
-#include "../Triangle/ActionModelAddTrianglesByOutline.h"
+#include "../Triangle/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
@@ -71,7 +71,7 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 	if (closed){
 		Array<int> loop = s.GetBoundaryLoop(m->Vertex.num - 1);
 		loop.reverse();
-		AddSubAction(new ActionModelAddTrianglesByOutline(loop, m), m);
+		AddSubAction(new ActionModelAddPolygonAutoSkin(loop), m);
 	}
 
 	// delete vertex
