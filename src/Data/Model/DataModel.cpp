@@ -1379,6 +1379,16 @@ ModelPolygon *DataModel::AddTriangle(int a, int b, int c)
 	return (ModelPolygon*) Execute(new ActionModelAddTriangleSingleTexture(this, v, CurrentMaterial, sv));
 }
 
+ModelPolygon *DataModel::AddPolygon(Array<int> &v)
+{
+	Array<vector> sv;
+	for (int i=0;i<v.num;i++){
+		float w = (float)i / (float)v.num * 2 * pi;
+		sv.add(vector(0.5f + cos(w) * 0.5f, 0.5f + sin(w), 0));
+	}
+	return (ModelPolygon*)Execute(new ActionModelAddTriangleSingleTexture(this, v, CurrentMaterial, sv));
+}
+
 
 
 int DataModel::get_surf_no(ModelSurface *s)

@@ -15,7 +15,6 @@
 
 ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos, Array<float> &_radius, int rings, int edges, bool closed)
 {
-#if 0
 	int nv = m->Vertex.num;
 	int material = m->CurrentMaterial;
 
@@ -58,12 +57,17 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos,
 // the curved surface
 	for (int i=0;i<rings;i++)
 		for (int j=0;j<edges;j++){
-			AddSubAction(new ActionModelAddTriangleSingleTexture(m,
-					_cyl_vert(i, j),  _cyl_vert(i+1, j+1),  _cyl_vert(i, j+1), material,
-					_cyl_svert(i, j), _cyl_svert(i+1, j+1), _cyl_svert(i, j+1)), m);
-			AddSubAction(new ActionModelAddTriangleSingleTexture(m,
-					_cyl_vert(i, j),  _cyl_vert(i+1, j),  _cyl_vert(i+1, j+1), material,
-					_cyl_svert(i, j), _cyl_svert(i+1, j), _cyl_svert(i+1, j+1)), m);
+			Array<int> v;
+			v.add(_cyl_vert(i+1, j+1));
+			v.add(_cyl_vert(i, j+1));
+			v.add(_cyl_vert(i, j));
+			v.add(_cyl_vert(i+1, j));
+			Array<vector> _sv;
+			_sv.add(_cyl_svert(i+1, j+1));
+			_sv.add(_cyl_svert(i, j+1));
+			_sv.add(_cyl_svert(i, j));
+			_sv.add(_cyl_svert(i+1, j));
+			AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, _sv), m);
 		}
 
 // the endings
@@ -86,15 +90,28 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos,
 
 		// triangles
 		for (int j=0;j<edges;j++){
-				AddSubAction(new ActionModelAddTriangleSingleTexture(m,
-						nv2	,nv+j	,nv+(j+1)%edges, material,
-						sv[0], sv[1+j], sv[1+(j+1)%edges]), m);
-				AddSubAction(new ActionModelAddTriangleSingleTexture(m,
-						nv2+1	,nv2-edges+(j+1)%edges	,nv2-edges+j, material,
-						sv[edges+1] ,sv[edges+2+(j+1)%edges], sv[edges+2+j]), m);
-			}
+			Array<int> v;
+			v.add(nv2);
+			v.add(nv+j);
+			v.add(nv+(j+1)%edges);
+			Array<vector> _sv;
+			_sv.add(sv[0]);
+			_sv.add(sv[1+j]);
+			_sv.add(sv[1+(j+1)%edges]);
+			AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, _sv), m);
 		}
-#endif
+		for (int j=0;j<edges;j++){
+			Array<int> v;
+			v.add(nv2+1);
+			v.add(nv2-edges+(j+1)%edges);
+			v.add(nv2-edges+j);
+			Array<vector> _sv;
+			_sv.add(sv[edges+1]);
+			_sv.add(sv[edges+2+(j+1)%edges]);
+			_sv.add(sv[edges+2+j]);
+			AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, _sv), m);
+		}
+	}
 }
 
 ActionModelAddCylinder::~ActionModelAddCylinder()

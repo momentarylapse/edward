@@ -68,13 +68,16 @@ class ModelVertex: MultiViewSingleData
 	int RefCount // triangles
 	int Surface
 
-class ModelTriangle: MultiViewSingleData
-	int Vertex[3]
-	int Edge[3]
-	int EdgeDirection[3] // which no of triangle in edge's list are we?
-	vector SkinVertex[MODEL_MAX_TEXTURES][3]
-	int NormalIndex[3]
-	vector Normal[3]
+class ModelPolygonSide
+	int Vertex
+	int Edge
+	int EdgeDirection // which no of triangle in edge's list are we?
+	vector SkinVertex[MODEL_MAX_TEXTURES]
+	int NormalIndex
+	vector Normal
+
+class ModelPolygon: MultiViewSingleData
+	ModelPolygonSide Side[]
 	vector TempNormal
 	bool NormalDirty
 	int Material
@@ -106,6 +109,19 @@ class ModelPolyhedron: MultiViewSingleData
 	// "topology"
 	bool EdgeOnFace[MODEL_MAX_POLY_EDGES * MODEL_MAX_POLY_FACES] // [edge * NumFaces + face]
 	int FacesJoiningEdge[MODEL_MAX_POLY_FACES * MODEL_MAX_POLY_FACES] // [face1 * NumFaces + face2]
+
+
+
+class ModelTriangle: MultiViewSingleData
+	int Vertex[3]
+	//int Edge[3]
+	//int EdgeDirection[3] // which no of triangle in edge's list are we?
+	vector SkinVertex[MODEL_MAX_TEXTURES][3]
+	int NormalIndex[3]
+	vector Normal[3]
+	vector TempNormal
+	bool NormalDirty
+	int Material
 
 
 // triangles belonging to one material
@@ -168,7 +184,7 @@ class ModelEdge: MultiViewSingleData
 
 
 class ModelSurface: MultiViewSingleData
-	ModelTriangle Triangle[]
+	ModelPolygon Polygon[]
 	ModelEdge Edge[]
 	int Vertex[]
 	bool IsPhysical, IsVisible
@@ -271,7 +287,8 @@ class DataModel : Data
 
 	ModelMetaData meta_data
 	extern void AddVertex(vector pos, int bone_index, int normal_mode)
-	extern ModelTriangle *AddTriangle(int a, int b, int c)
+	extern ModelPolygon *AddTriangle(int a, int b, int c)
+	extern ModelPolygon *AddPolygon(int v[])
 	extern ModelSurface *AddBall(vector pos, float radius, int num_x, int num_y, bool as_sphere)
 	extern ModelSurface *AddPlane(vector pos, vector dv1, vector dv2, int num_x, int num_y)
 	extern ModelSurface *AddCube(vector pos, vector dv1, vector dv2, vector dv3, int num_1, int num_2, int num_3)

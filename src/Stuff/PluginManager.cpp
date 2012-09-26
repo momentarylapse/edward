@@ -77,6 +77,7 @@ void PluginManager::Init()
 	ScriptLinkSemiExternalVar("data_model", &mode_model->data);
 	ScriptLinkSemiExternalFunc("DataModel.AddVertex", (void*)&DataModel::AddVertex);
 	ScriptLinkSemiExternalFunc("DataModel.AddTriangle", (void*)&DataModel::AddTriangle);
+	ScriptLinkSemiExternalFunc("DataModel.AddPolygon", (void*)&DataModel::AddPolygon);
 	ScriptLinkSemiExternalFunc("DataModel.AddBall", (void*)&DataModel::AddBall);
 	ScriptLinkSemiExternalFunc("DataModel.AddPlane", (void*)&DataModel::AddPlane);
 	ScriptLinkSemiExternalFunc("DataModel.AddCube", (void*)&DataModel::AddCube);
