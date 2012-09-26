@@ -59,6 +59,13 @@ void ActionModelDeleteUnusedVertex::undo(Data *d)
 			if (v >= vertex)
 				v ++;
 	}
+
+	// fx
+	foreach(ModelEffect &f, m->Fx)
+		if (f.Vertex >= vertex)
+			f.Vertex ++;
+	foreachib(ModelEffect &f, fx, i)
+		m->Fx.insert(f, fx_index[i]);
 }
 
 
@@ -95,6 +102,18 @@ void *ActionModelDeleteUnusedVertex::execute(Data *d)
 			if (v > vertex)
 				v --;
 	}
+
+	// fx
+	fx.clear();
+	fx_index.clear();
+	foreachib(ModelEffect &f, m->Fx, i)
+		if (f.Vertex == vertex){
+			fx.add(f);
+			fx_index.add(i);
+			m->Fx.erase(i);
+			_foreach_it_.update(); // TODO
+		}else if (f.Vertex > vertex)
+			f.Vertex --;
 
 	// erase
 	m->Vertex.erase(vertex);

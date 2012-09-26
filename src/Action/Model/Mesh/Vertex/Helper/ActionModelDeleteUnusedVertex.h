@@ -10,6 +10,7 @@
 
 #include "../../../../Action.h"
 #include "../../../../../lib/types/types.h"
+class ModelEffect;
 
 class ActionModelDeleteUnusedVertex: public Action
 {
@@ -26,6 +27,8 @@ private:
 	vector pos;
 	int bone, normal_mode;
 	Array<vector> move;
+	Array<ModelEffect> fx;
+	Array<int> fx_index;
 };
 
 #endif /* ACTIONMODELDELETEUNUSEDVERTEX_H_ */
