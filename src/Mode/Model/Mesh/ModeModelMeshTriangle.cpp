@@ -62,6 +62,20 @@ void ModeModelMeshTriangle::DrawTrias()
 {
 	msg_db_r("ModelSkin.DrawTrias",2);
 
+	if (multi_view->wire_mode){
+		NixSetWire(false);
+		NixEnableLighting(false);
+		NixSetColor(White);
+		foreach(ModelSurface &s, data->Surface){
+			foreach(ModelEdge &e, s.Edge)
+				NixDrawLine3D(GetVertex(e.Vertex[0]), GetVertex(e.Vertex[1]));
+		}
+		NixSetWire(true);
+		NixEnableLighting(multi_view->light_enabled);
+		msg_db_l(2);
+		return;
+	}
+
 	// draw all materials separately
 	foreachi(ModelMaterial &m, data->Material, mi){
 		m.ApplyForRendering();

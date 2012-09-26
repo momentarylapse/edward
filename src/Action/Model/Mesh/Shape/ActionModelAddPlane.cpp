@@ -13,7 +13,6 @@
 
 ActionModelAddPlane::ActionModelAddPlane(DataModel *m, const vector &_pos, const vector &_dv1, const vector &_dv2, int _num_x, int _num_y)
 {
-#if 0
 	assert(_num_x * _num_y > 0);
 
 	/// vertices
@@ -28,26 +27,18 @@ ActionModelAddPlane::ActionModelAddPlane(DataModel *m, const vector &_pos, const
 	// triangles
 	for (int x=0;x<_num_x;x++)
 		for (int y=0;y<_num_y;y++){
-			vector sva = vector((float) x   /(float)_num_x,(float) y   /(float)_num_y,0);
-			vector svb = vector((float)(x+1)/(float)_num_x,(float) y   /(float)_num_y,0);
-			vector svc = vector((float) x   /(float)_num_x,(float)(y+1)/(float)_num_y,0);
-			vector svd = vector((float)(x+1)/(float)_num_x,(float)(y+1)/(float)_num_y,0);
-			AddSubAction(new ActionModelAddTriangleSingleTexture(
-					m,
-					nv+(_num_y+1)* x   +y+1,
-					nv+(_num_y+1)* x   +y,
-					nv+(_num_y+1)*(x+1)+y,
-					material,
-			        svc, sva, svb), m);
-			AddSubAction(new ActionModelAddTriangleSingleTexture(
-					m,
-					nv+(_num_y+1)* x   +y+1,
-					nv+(_num_y+1)*(x+1)+y,
-					nv+(_num_y+1)*(x+1)+y+1,
-					material,
-					svc, svb, svd), m);
+			Array<vector> sv;
+			sv.add(vector((float)(x+1)/(float)_num_x,(float)(y+1)/(float)_num_y,0));
+			sv.add(vector((float) x   /(float)_num_x,(float)(y+1)/(float)_num_y,0));
+			sv.add(vector((float) x   /(float)_num_x,(float) y   /(float)_num_y,0));
+			sv.add(vector((float)(x+1)/(float)_num_x,(float) y   /(float)_num_y,0));
+			Array<int> v;
+			v.add(nv+(_num_y+1)*(x+1)+y+1);
+			v.add(nv+(_num_y+1)*(x  )+y+1);
+			v.add(nv+(_num_y+1)*(x  )+y);
+			v.add(nv+(_num_y+1)*(x+1)+y);
+			AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
 		}
-#endif
 }
 
 ActionModelAddPlane::~ActionModelAddPlane()

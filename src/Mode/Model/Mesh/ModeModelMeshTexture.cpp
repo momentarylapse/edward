@@ -183,7 +183,7 @@ void ModeModelMeshTexture::GetSelectedSkinVertices(Array<int> & surf, Array<int>
 	foreachi(ModelSurface &s, data->Surface, si)
 		foreachi(ModelPolygon &t, s.Polygon, ti)
 			if (t.Material == data->CurrentMaterial){
-				for (int k=0;k<3;k++){
+				for (int k=0;k<t.Side.num;k++){
 					if (skin_vertex[i].is_selected){
 						index.add(k);
 						surf.add(si);

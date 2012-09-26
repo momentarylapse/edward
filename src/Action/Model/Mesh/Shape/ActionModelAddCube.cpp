@@ -10,13 +10,13 @@
 #include "../Triangle/ActionModelAddTriangleSingleTexture.h"
 #include "../../../../Data/Model/DataModel.h"
 
-Array<int> quad(int a, int b, int c, int d, int offset)
+static Array<int> quad(int a, int b, int c, int d)
 {
 	Array<int> v;
-	v.add(a + offset);
-	v.add(b + offset);
-	v.add(c + offset);
-	v.add(d + offset);
+	v.add(a);
+	v.add(b);
+	v.add(c);
+	v.add(d);
 	return v;
 }
 
@@ -51,22 +51,22 @@ ActionModelAddCube::ActionModelAddCube(DataModel *m, const vector &_pos, const v
 	sv.add(vector(1,0,0));
 
 	// front
-	v = quad(1, 0, 2, 3, nv);
+	v = quad(nv + 1, nv + 0, nv + 2, nv + 3);
 	AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
 	// top
-	v = quad(3, 2, 6, 7, nv);
+	v = quad(nv + 3, nv + 2, nv + 6, nv + 7);
 	AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
 	// bottom
-	v = quad(5, 4, 0, 1, nv);
+	v = quad(nv + 5, nv + 4, nv + 0, nv + 1);
 	AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
 	// left
-	v = quad(0, 4, 6, 2, nv);
+	v = quad(nv + 0, nv + 4, nv + 6, nv + 2);
 	AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
 	// right
-	v = quad(5, 1, 3, 7, nv);
+	v = quad(nv + 5, nv + 1, nv + 3, nv + 7);
 	AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
 	// back*/
-	v = quad(4, 5, 7, 6, nv);
+	v = quad(nv + 4, nv + 5, nv + 7, nv + 6);
 	AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
 
 }
