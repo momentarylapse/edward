@@ -65,8 +65,9 @@ void ActionModelAddVertex::undo(Data *d)
 
 	// correct animations
 	foreach(ModelMove &move, m->Move)
-		if (move.Type == MoveTypeVertex)
+		if (move.Type == MoveTypeVertex){
 			foreach(ModelFrame &f, move.Frame)
 				f.VertexDPos.resize(m->Vertex.num);
+		}
 }
 

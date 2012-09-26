@@ -8,7 +8,7 @@
 #include "ModeModelMeshSplitTriangle.h"
 #include "../../../../Edward.h"
 #include "../../../../Action/Model/Mesh/Triangle/ActionModelSplitTriangle.h"
-#include "../../../../Action/Model/Mesh/Triangle/ActionModelSplitEdge.h"
+#include "../../../../Action/Model/Mesh/Edge/ActionModelSplitEdge.h"
 
 ModeModelMeshSplitTriangle::ModeModelMeshSplitTriangle(Mode *_parent) :
 	ModeCreation("ModelMeshSplitTriangle", _parent)

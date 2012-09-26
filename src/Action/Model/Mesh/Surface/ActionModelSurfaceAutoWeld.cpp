@@ -41,7 +41,6 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 	// find pairs of vertices close to each other
 	// use edges instead???
 	Array<int> wa, wb;
-	float dmin = 1000000000;
 	foreach(int va, a->Vertex){
 		foreach(int vb, b->Vertex){
 			if ((m->Vertex[va].pos - m->Vertex[vb].pos).length() <= epsilon){

@@ -225,7 +225,7 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelTrian
 
 	// any contours in wrong direction?
 	for (int l=0;l<c.num;l++){
-		int k0 = c[l][0].k;
+		/*int k0 = c[l][0].k;*/
 		int kb = c[l].back().k;
 //		float f0 = VecLength(c[l][0].p - v[k0]) / VecLength(v[(k0 + 1) % 3] - v[k0]);
 //		float f1 = VecLength(c[l].back().p - v[kb]) / VecLength(v[(kb + 1) % 3] - v[kb]);

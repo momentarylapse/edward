@@ -7,8 +7,8 @@
 
 #include "ActionModelCollapseEdge.h"
 #include "../Vertex/ActionModelAddVertex.h"
-#include "Helper/ActionModelSurfaceDeleteTriangle.h"
-#include "Helper/ActionModelSurfaceRelinkTriangle.h"
+#include "../Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
+#include "../Surface/Helper/ActionModelSurfaceRelinkTriangle.h"
 #include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
 

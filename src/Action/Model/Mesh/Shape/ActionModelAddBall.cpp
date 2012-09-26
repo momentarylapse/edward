@@ -8,7 +8,7 @@
 #include "ActionModelAddBall.h"
 #include "../Vertex/ActionModelAddVertex.h"
 #include "../Triangle/ActionModelAddTriangleSingleTexture.h"
-#include "ActionModelSurfaceAutoWeld.h"
+#include "../Surface/ActionModelSurfaceAutoWeld.h"
 #include "../../../../Data/Model/DataModel.h"
 
 

@@ -7,7 +7,7 @@
 
 #include "ActionModelBevelVertices.h"
 #include "Helper/ActionModelDeleteUnusedVertex.h"
-#include "../Triangle/ActionModelSplitEdge.h"
+#include "../Edge/ActionModelSplitEdge.h"
 #include "../Triangle/ActionModelAddTrianglesByOutline.h"
 #include "../Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
 #include "../../../../Data/Model/DataModel.h"

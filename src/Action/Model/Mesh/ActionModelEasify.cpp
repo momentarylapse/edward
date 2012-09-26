@@ -6,7 +6,7 @@
  */
 
 #include "ActionModelEasify.h"
-#include "Surface/ActionModelCollapseEdge.h"
+#include "Edge/ActionModelCollapseEdge.h"
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
 
