@@ -75,9 +75,8 @@ void init_skin_generator(DataModel *m, Array<int> &v, SkinGenerator &sg)
 
 void ActionModelAddTrianglesByOutline::CreateTrianglesFlat(DataModel *m, Array<int> &v, const SkinGenerator &sg)
 {
-#if 0
 	if (v.num == 3){
-		AddSubAction(new ActionModelAddTriangleWithSkinGenerator(m, v[0], v[1], v[2], m->CurrentMaterial, sg), m);
+		AddSubAction(new ActionModelAddTriangleWithSkinGenerator(m, v, m->CurrentMaterial, sg), m);
 	}else if (v.num > 3){
 
 		flat_n = get_cloud_normal(m, v);
@@ -126,12 +125,15 @@ void ActionModelAddTrianglesByOutline::CreateTrianglesFlat(DataModel *m, Array<i
 			}
 		}
 
-		AddSubAction(new ActionModelAddTriangleWithSkinGenerator(m, v[i_max], v[(i_max+1) % v.num], v[(i_max+2) % v.num], m->CurrentMaterial, sg), m);
+		Array<int> vv;
+		vv.add(v[i_max]);
+		vv.add(v[(i_max+1) % v.num]);
+		vv.add(v[(i_max+2) % v.num]);
+		AddSubAction(new ActionModelAddTriangleWithSkinGenerator(m, vv, m->CurrentMaterial, sg), m);
 
 		v.erase((i_max+1) % v.num);
 		CreateTrianglesFlat(m, v, sg);
 	}
-#endif
 }
 
 ActionModelAddTrianglesByOutline::ActionModelAddTrianglesByOutline(Array<int> vertex, DataModel *data)

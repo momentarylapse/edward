@@ -17,6 +17,7 @@ ModeModelMeshSplitTriangle::ModeModelMeshSplitTriangle(Mode *_parent) :
 
 	surface = -1;
 	triangle = -1;
+	factor = 0;
 
 	message = _("neuen Punkt in Dreieck setzen");
 }
@@ -33,7 +34,7 @@ void ModeModelMeshSplitTriangle::OnLeftButtonDown()
 
 	if ((triangle >= 0) && (surface >= 0)){
 		if (edge >= 0)
-			data->Execute(new ActionModelSplitEdge(data, surface, edge, pos));
+			data->Execute(new ActionModelSplitEdge(surface, edge, factor));
 		else
 			data->Execute(new ActionModelSplitTriangle(data, surface, triangle, pos));
 		//Abort();
@@ -67,6 +68,7 @@ void ModeModelMeshSplitTriangle::OnDrawWin(int win, irect dest)
 				pos = v[k] * (1 - f) + v[(k + 1) % v.num] * f;
 				pp = multi_view->VecProject(pos, win);
 				edge = poly.Side[k].Edge;
+				factor = f;
 			}
 		}
 

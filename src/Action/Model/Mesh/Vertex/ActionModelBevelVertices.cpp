@@ -8,14 +8,13 @@
 #include "ActionModelBevelVertices.h"
 #include "Helper/ActionModelDeleteUnusedVertex.h"
 #include "../Edge/ActionModelSplitEdge.h"
+#include "../Triangle/Helper/ActionModelPolygonRemoveVertex.h"
 #include "../Triangle/ActionModelAddTrianglesByOutline.h"
-#include "../Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
 #include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
 void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 {
-#if 0
 	int surface = m->Vertex[vi].Surface;
 	if (surface < 0)
 		return;
@@ -40,15 +39,15 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 		foreachib(ModelEdge &e, s.Edge, ei){
 			for (int k=0;k<2;k++)
 				if (e.Vertex[k] == vi){;
-					vector dir = m->Vertex[e.Vertex[(k+1)%2]].pos - m->Vertex[e.Vertex[k]].pos;
+					vector dir = m->Vertex[e.Vertex[1-k]].pos - m->Vertex[e.Vertex[k]].pos;
 					float edge_length = dir.length();
 					if (edge_length < length + epsilon)
 						continue;
-					dir.normalize();
 
-					vector pos = m->Vertex[e.Vertex[k]].pos + dir * length;
-
-					AddSubAction(new ActionModelSplitEdge(m, surface, ei, pos), m);
+					float f = length/edge_length;
+					if (k > 0)
+						f = 1 - f;
+					AddSubAction(new ActionModelSplitEdge(surface, ei, f), m);
 					split = true;
 					break;
 			}
@@ -57,37 +56,39 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 		}
 	}
 
-	// remove triangles
-	int vert0 = -1;
-	foreachib(ModelPolygon &t, s.Polygon, ti)
-		for (int k=0;k<3;k++)
-			if (t.Vertex[k] == vi){
-				vert0 = t.Vertex[(k + 1) % 3];
-				AddSubAction(new ActionModelSurfaceDeleteTriangle(surface, ti), m);
+
+	// remove vi from polygons
+	foreachi(ModelPolygon &t, s.Polygon, i)
+		for (int k=0;k<t.Side.num;k++)
+			if (t.Side[k].Vertex == vi){
+				AddSubAction(new ActionModelPolygonRemoveVertex(surface, i, k), m);
 				_foreach_it_.update(); // TODO
 				break;
 			}
 
+
 	// close hole
-	if ((closed) && (vert0 >= 0)){
-		Array<int> loop = s.GetBoundaryLoop(vert0);
+	if (closed){
+		Array<int> loop = s.GetBoundaryLoop(m->Vertex.num - 1);
 		loop.reverse();
 		AddSubAction(new ActionModelAddTrianglesByOutline(loop, m), m);
 	}
 
 	// delete vertex
 	AddSubAction(new ActionModelDeleteUnusedVertex(vi), m);
-#endif
 }
 
-ActionModelBevelVertices::ActionModelBevelVertices(DataModel *m, float length)
+ActionModelBevelVertices::ActionModelBevelVertices(DataModel *m, float _length)
 {
+	length = _length;
+}
+
+void *ActionModelBevelVertices::compose(Data *d)
+{
+	DataModel *m = dynamic_cast<DataModel*>(d);
 	for (int i=m->Vertex.num-1;i>=0;i--)
 		if (m->Vertex[i].is_selected)
 			BevelVertex(m, fabs(length), i);
-}
-
-ActionModelBevelVertices::~ActionModelBevelVertices()
-{
+	return NULL;
 }
 

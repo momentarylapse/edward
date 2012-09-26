@@ -28,6 +28,7 @@ private:
 	int surface, triangle;
 	vector pos;
 	int edge;
+	float factor;
 };
 
 #endif /* MODEMODELMESHSPLITTRIANGLE_H_ */

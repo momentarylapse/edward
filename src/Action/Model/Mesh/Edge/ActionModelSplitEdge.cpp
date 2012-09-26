@@ -6,15 +6,14 @@
  */
 
 #include "ActionModelSplitEdge.h"
-#include "../Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
-#include "../Surface/Helper/ActionModelSurfaceAddTriangle.h"
+#include "../Triangle/Helper/ActionModelPolygonAddVertex.h"
 #include "../Vertex/ActionModelAddVertex.h"
 #include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
+#if 0
 inline int tria_sort_vert_by_edge(const ModelPolygon &t, const ModelEdge &e, int v[3])
 {
-#if 0
 	for (int k=0;k<3;k++)
 		if ((t.Vertex[k] != e.Vertex[0]) && (t.Vertex[k] != e.Vertex[1])){
 			v[0] = t.Vertex[k];
@@ -23,72 +22,46 @@ inline int tria_sort_vert_by_edge(const ModelPolygon &t, const ModelEdge &e, int
 			return k;
 		}
 	assert(0 && "funny triangle");
-#endif
 	return -1;
 }
-
-ActionModelSplitEdge::ActionModelSplitEdge(DataModel *m, int _surface, int _edge, const vector &_pos)
-{
-#if 0
-	assert(_surface >= 0);
-	assert(_surface < m->Surface.num);
-	ModelSurface &s = m->Surface[_surface];
-	assert(_edge >= 0);
-	assert(_edge < s.Edge.num);
-
-	ModelEdge &e = s.Edge[_edge];
-	assert(e.Polygon[0] >= 0);
-
-	// copy old triangles data
-	int nt0 = e.Polygon[0];
-	int nt1 = e.Polygon[1];
-	int v0[3], v1[3];
-
-	int material0 = s.Polygon[nt0].Material;
-	int material1;
-	vector sv[8][MODEL_MAX_TEXTURES];
-	int d0 = tria_sort_vert_by_edge(s.Polygon[nt0], e, v0);
-	for (int k=0;k<3;k++)
-		for (int l=0;l<MODEL_MAX_TEXTURES;l++)
-			sv[k][l] = s.Polygon[nt0].SkinVertex[l][(k + d0) % 3];
-
-	if (nt1 >= 0){
-		material1 = s.Polygon[nt1].Material;
-		int d1 = tria_sort_vert_by_edge(s.Polygon[nt1], e, v1);
-		for (int k=0;k<3;k++)
-			for (int l=0;l<MODEL_MAX_TEXTURES;l++)
-				sv[3 + k][l] = s.Polygon[nt1].SkinVertex[l][(k + d1) % 3];
-	}
-
-	// bary centric
-	float f = _pos.factor_between( m->Vertex[e.Vertex[0]].pos, m->Vertex[e.Vertex[1]].pos);
-	if (e.Vertex[0] != v0[1]) // TODO ...
-		f = 1 - f;
-	for (int l=0;l<MODEL_MAX_TEXTURES;l++)
-		sv[6][l] = sv[1][l] * (1 - f) + sv[2][l] * f;
-
-	// delete old triangle(s)
-	if (nt1 >= 0){
-		AddSubAction(new ActionModelSurfaceDeleteTriangle(_surface, nt1), m);
-		if (nt0 > nt1)
-			nt0 --;
-	}
-	AddSubAction(new ActionModelSurfaceDeleteTriangle(_surface, nt0), m);
-
-	// create new vertex
-	AddSubAction(new ActionModelAddVertex(_pos), m);
-	int v = m->Vertex.num - 1;
-
-	// create 2-4 new triangles
-	AddSubAction(new ActionModelSurfaceAddTriangle(_surface, v0[0], v0[1], v, material0, sv[0], sv[1], sv[6]), m);
-	AddSubAction(new ActionModelSurfaceAddTriangle(_surface, v0[2], v0[0], v, material0, sv[2], sv[0], sv[6]), m);
-	if (nt1 >= 0){
-		AddSubAction(new ActionModelSurfaceAddTriangle(_surface, v1[0], v1[1], v, material1, sv[3], sv[4], sv[6]), m);
-		AddSubAction(new ActionModelSurfaceAddTriangle(_surface, v1[2], v1[0], v, material1, sv[5], sv[3], sv[6]), m);
-	}
 #endif
+
+ActionModelSplitEdge::ActionModelSplitEdge(int _surface, int _edge, float _factor)
+{
+	surface = _surface;
+	edge = _edge;
+	factor = _factor;
 }
 
-ActionModelSplitEdge::~ActionModelSplitEdge()
+void *ActionModelSplitEdge::compose(Data *d)
 {
+	DataModel *m = dynamic_cast<DataModel*>(d);
+	assert(surface >= 0);
+	assert(surface < m->Surface.num);
+	ModelSurface &s = m->Surface[surface];
+	assert(edge >= 0);
+	assert(edge < s.Edge.num);
+
+	ModelEdge &e = s.Edge[edge];
+	assert(e.Polygon[0] >= 0);
+
+
+	// add vertex
+	vector pos = m->Vertex[e.Vertex[0]].pos * (1 - factor) + m->Vertex[e.Vertex[1]].pos * factor;
+	AddSubAction(new ActionModelAddVertex(pos), m);
+	int new_vertex = m->Vertex.num - 1;
+
+
+	// adjacent polygons
+	for (int i=e.RefCount-1;i>=0;i--){
+		int poly = e.Polygon[i];
+		ModelPolygon &t = s.Polygon[poly];
+
+		vector isv[MODEL_MAX_TEXTURES];
+		float f = (i == 0) ? factor : 1 - factor;
+		for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+			isv[l] = t.Side[e.Side[i]].SkinVertex[l] * (1 - f) + t.Side[(e.Side[i] + 1) % t.Side.num].SkinVertex[l] * f;
+
+		AddSubAction(new ActionModelPolygonAddVertex(surface, poly, e.Side[i], new_vertex, isv), m);
+	}
 }

@@ -15,9 +15,15 @@ class vector;
 class ActionModelSplitEdge : public ActionGroup
 {
 public:
-	ActionModelSplitEdge(DataModel *m, int _surface, int _edge, const vector &_pos);
-	virtual ~ActionModelSplitEdge();
+	ActionModelSplitEdge(int _surface, int _edge, float _factor);
+	virtual ~ActionModelSplitEdge(){}
 	string name(){	return "ModelSplitEdge";	}
+
+	void *compose(Data *d);
+private:
+	int surface;
+	int edge;
+	float factor;
 };
 
 #endif /* ACTIONMODELSPLITEDGE_H_ */

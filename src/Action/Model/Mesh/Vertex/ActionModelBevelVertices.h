@@ -14,11 +14,15 @@ class DataModel;
 class ActionModelBevelVertices: public ActionGroup
 {
 public:
-	ActionModelBevelVertices(DataModel *m, float length);
-	virtual ~ActionModelBevelVertices();
+	ActionModelBevelVertices(DataModel *m, float _length);
+	virtual ~ActionModelBevelVertices(){}
 	string name(){	return "ModelBevelVertices";	}
 
+	void *compose(Data *d);
+
 	void BevelVertex(DataModel *m, float length, int vi);
+private:
+	float length;
 };
 
 #endif /* ACTIONMODELBEVELVERTICES_H_ */
