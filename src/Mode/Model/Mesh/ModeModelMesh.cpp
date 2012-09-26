@@ -23,6 +23,7 @@
 #include "Creation/ModeModelMeshSplitTriangle.h"
 #include "Creation/ModeModelMeshBevelVertices.h"
 #include "../../../Action/Model/Mesh/Skin/ActionModelSkinVerticesFromProjection.h"
+#include "../../../Action/Model/Mesh/Triangle/ActionModelTriangulateSelection.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
 #include "../Dialog/ModelEasifyDialog.h"
 #include "../Dialog/ModelFXDialog.h"
@@ -109,6 +110,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		data->ExtrudeSelectedTriangles(40 / mode_model_mesh_vertex->multi_view->zoom);
 	if (id == "autoweld_surfaces")
 		data->AutoWeldSelectedSurfaces(0.1f / mode_model_mesh_vertex->multi_view->zoom);
+	if (id == "triangulate_selection")
+		data->Execute(new ActionModelTriangulateSelection());
 	if (id == "nearify")
 		data->NearifySelectedVertices();
 	if (id == "connect")

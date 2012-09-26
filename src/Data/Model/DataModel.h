@@ -77,6 +77,8 @@ public:
 	vector TempNormal;
 	bool NormalDirty;
 	int Material;
+
+	Array<int> Triangulate(DataModel *m);
 };
 
 // only for use in MultiView...

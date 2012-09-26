@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-563
+564
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -1021,6 +1021,8 @@ transparency_mode:material
 Transparency from material
 transparency_mode:none
 No transparency
+triangulate_selection
+
 undo
 Undo
 view_back

@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-563
+564
 // Data (ID,Text)
 ad_dialog
 
@@ -1020,6 +1020,8 @@ transparency_mode:function
 transparency_mode:material
 
 transparency_mode:none
+
+triangulate_selection
 
 undo
 元に戻す
