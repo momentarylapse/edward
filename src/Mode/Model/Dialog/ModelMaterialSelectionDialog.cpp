@@ -39,7 +39,7 @@ void ModelMaterialSelectionDialog::FillMaterialList()
 	for (int i=0;i<data->Material.num;i++){
 		int nt = 0;
 		foreach(ModelSurface &s, data->Surface)
-			foreach(ModelTriangle &t, s.Triangle)
+			foreach(ModelPolygon &t, s.Polygon)
 			if (t.Material == i)
 				nt ++;
 		string im = render_material(&data->Material[i]);

@@ -46,23 +46,23 @@ void *ActionModelJoinSurfaces::execute(Data *d)
 	// save old data
 	old_edges1 = a->Edge.num;
 	old_vertices1 = a->Vertex.num;
-	old_trias1 = a->Triangle.num;
+	old_trias1 = a->Polygon.num;
 
 	a->TestSanity("Join prae a");
 	b->TestSanity("Join prae b");
 
 	// correct edge data of b
 	foreach(ModelEdge &e, b->Edge){
-		if (e.Triangle[0] >= 0)
-			e.Triangle[0] += a->Triangle.num;
-		if (e.Triangle[1] >= 0)
-			e.Triangle[1] += a->Triangle.num;
+		if (e.Polygon[0] >= 0)
+			e.Polygon[0] += a->Polygon.num;
+		if (e.Polygon[1] >= 0)
+			e.Polygon[1] += a->Polygon.num;
 	}
 
 	// correct triangle data of b
-	foreach(ModelTriangle &t, b->Triangle)
-		for (int k=0;k<3;k++)
-			t.Edge[k] += a->Edge.num;
+	foreach(ModelPolygon &t, b->Polygon)
+		for (int k=0;k<t.Side.num;k++)
+			t.Side[k].Edge += a->Edge.num;
 
 	// correct vertex data of b
 	foreach(int v, b->Vertex)
@@ -71,7 +71,7 @@ void *ActionModelJoinSurfaces::execute(Data *d)
 	// insert data
 	a->Vertex.join(b->Vertex);
 	a->Edge.append(b->Edge);
-	a->Triangle.append(b->Triangle);
+	a->Polygon.append(b->Polygon);
 
 	// remove surface
 	m->Surface.erase(surface2);
@@ -97,10 +97,10 @@ void ActionModelJoinSurfaces::undo(Data *d)
 	ModelSurface *a = &m->Surface[surface1];
 
 	// move triangles
-	b->Triangle.append(a->Triangle.sub(old_trias1, -1));
-	a->Triangle.resize(old_trias1);
+	b->Polygon.append(a->Polygon.sub(old_trias1, -1));
+	a->Polygon.resize(old_trias1);
 
 	// rebuild
-	a->BuildFromTriangles();
-	b->BuildFromTriangles();
+	a->BuildFromPolygons();
+	b->BuildFromPolygons();
 }

@@ -32,6 +32,7 @@ public:
 
 ActionModelSurfaceSubtract::ActionModelSurfaceSubtract(DataModel *m)
 {
+#if 0
 	int n = 0;
 	foreach(ModelSurface &s, m->Surface)
 		if ((s.is_selected) && (s.IsClosed))
@@ -54,14 +55,15 @@ ActionModelSurfaceSubtract::ActionModelSurfaceSubtract(DataModel *m)
 	}
 	ed->SetMessage(format(_("%d geschlossene Fl&achen subtrahiert"), n));
 	msg_db_l(1);
+#endif
 }
 
 ActionModelSurfaceSubtract::~ActionModelSurfaceSubtract()
 {
 }
 
-
-bool ActionModelSurfaceSubtract::CollideTriangles(DataModel *m, ModelTriangle *t1, ModelTriangle *t2, int t2_index)
+#if 0
+bool ActionModelSurfaceSubtract::CollideTriangles(DataModel *m, ModelPolygon *t1, ModelPolygon *t2, int t2_index)
 {
 	msg_db_r("CollideTriangles", 1);
 	vector v1[3], v2[3];
@@ -108,11 +110,11 @@ bool ActionModelSurfaceSubtract::CollideTriangles(DataModel *m, ModelTriangle *t
 	return bcol;
 }
 
-bool ActionModelSurfaceSubtract::CollideTriangleSurface(DataModel *m, ModelTriangle *t, ModelSurface *s)
+bool ActionModelSurfaceSubtract::CollideTriangleSurface(DataModel *m, ModelPolygon *t, ModelSurface *s)
 {
 	msg_db_r("CollideTriangleSurface", 1);
 	t_col.clear();
-	foreachi(ModelTriangle &t2, s->Triangle, i)
+	foreachi(ModelPolygon &t2, s->Polygon, i)
 		CollideTriangles(m, t, &t2, i);
 			//return true;
 	msg_db_l(1);
@@ -120,7 +122,7 @@ bool ActionModelSurfaceSubtract::CollideTriangleSurface(DataModel *m, ModelTrian
 }
 
 // t must not collide with s...
-bool ActionModelSurfaceSubtract::TriangleInsideSurface(DataModel *m, ModelTriangle *t, ModelSurface *s)
+bool ActionModelSurfaceSubtract::TriangleInsideSurface(DataModel *m, ModelPolygon *t, ModelSurface *s)
 {
 	msg_db_r("TriangleInsideSurface", 2);
 	vector p = m->Vertex[t->Vertex[0]].pos;
@@ -128,7 +130,7 @@ bool ActionModelSurfaceSubtract::TriangleInsideSurface(DataModel *m, ModelTriang
 
 	// how many times does a ray starting at p hit s?
 	int n = 0;
-	foreach(ModelTriangle &t2, s->Triangle){
+	foreach(ModelPolygon &t2, s->Polygon){
 		vector v[3];
 		for (int k=0;k<3;k++)
 			v[k] = m->Vertex[t2.Vertex[k]].pos;
@@ -191,7 +193,7 @@ bool ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 		// find col on same s.edge as the last col
 		foreachi(sCol &c, t_col, i)
 			if (!c.own_edge)
-			if (s->Triangle[c.index].Edge[c.k] == s->Triangle[c2.back().index].Edge[c2.back().k]){
+			if (s->Polygon[c.index].Edge[c.k] == s->Polygon[c2.back().index].Edge[c2.back().k]){
 //				msg_write(format("%d  %d  %d - %d", (int)c.own_edge, c.index, c.k, s->Triangle[c.index].Edge[c.k]));
 				c2.add(c);
 				t_col.erase(i);
@@ -215,7 +217,7 @@ bool ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 	return true;
 }
 
-void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelTriangle *t, ModelSurface *b, Array<Array<sCol> > &c, bool inverse)
+void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolygon *t, ModelSurface *b, Array<Array<sCol> > &c, bool inverse)
 {
 	msg_db_r("sort_and_join_contours", 1);
 	vector v[3];
@@ -230,7 +232,7 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelTrian
 //		float f0 = VecLength(c[l][0].p - v[k0]) / VecLength(v[(k0 + 1) % 3] - v[k0]);
 //		float f1 = VecLength(c[l].back().p - v[kb]) / VecLength(v[(kb + 1) % 3] - v[kb]);
 //		msg_write(format("len: %d     %d - %d     %f   %f", c[l].num, c[l][0].k, c[l].back().k, f0, f1));
-		vector nb = b->Triangle[c[l].back().index].TempNormal;
+		vector nb = b->Polygon[c[l].back().index].TempNormal;
 //		msg_write(format("k0 = %d  kb = %d        n=%d", k0, kb, mc[l].num));
 
 		// wrong direction?
@@ -315,7 +317,7 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelTrian
 	msg_db_l(1);
 }
 
-void ActionModelSurfaceSubtract::TriangleSubtract(DataModel *m, ModelSurface *&a, ModelTriangle *t, ModelSurface *&b, bool inverse)
+void ActionModelSurfaceSubtract::TriangleSubtract(DataModel *m, ModelSurface *&a, ModelPolygon *t, ModelSurface *&b, bool inverse)
 {
 	msg_db_r("TriangleSubtract", 1);
 	a->TestSanity("tria sub a prae");
@@ -379,7 +381,7 @@ void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModelSurface
 
 	// collide both surfaces and create additional triangles (as new surfaces...)
 	Set<int> to_del;
-	foreachib(ModelTriangle &t, a->Triangle, i)
+	foreachib(ModelPolygon &t, a->Polygon, i)
 		if (CollideTriangleSurface(m, &t, b)){
 			a->TestSanity("tria sub (ext) a prae");
 			TriangleSubtract(m, a, &t, b, inverse);
@@ -441,4 +443,4 @@ void ActionModelSurfaceSubtract::SurfaceSubtract(DataModel *m, ModelSurface *&a,
 	msg_db_l(0);
 }
 
-
+#endif

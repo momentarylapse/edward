@@ -23,7 +23,7 @@ ActionModelDeleteEmptySurface::~ActionModelDeleteEmptySurface()
 void *ActionModelDeleteEmptySurface::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	assert(m->Surface[surface].Vertex.num + m->Surface[surface].Triangle.num == 0);
+	assert(m->Surface[surface].Vertex.num + m->Surface[surface].Polygon.num == 0);
 
 	is_physical = m->Surface[surface].IsPhysical;
 	is_visible = m->Surface[surface].IsVisible;

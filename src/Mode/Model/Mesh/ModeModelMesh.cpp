@@ -363,13 +363,13 @@ void ModeModelMesh::Copy()
 	data->CopyGeometry(TempGeo);
 
 	OnUpdateMenu();
-	ed->SetMessage(format(_("%d Vertizes, %d Dreiecke kopiert"), TempGeo.Vertex.num, TempGeo.Triangle.num));
+	ed->SetMessage(format(_("%d Vertizes, %d Dreiecke kopiert"), TempGeo.Vertex.num, TempGeo.Polygon.num));
 }
 
 void ModeModelMesh::Paste()
 {
 	data->PasteGeometry(TempGeo);
-	ed->SetMessage(format(_("%d Vertizes, %d Dreiecke eingef&ugt"), TempGeo.Vertex.num, TempGeo.Triangle.num));
+	ed->SetMessage(format(_("%d Vertizes, %d Dreiecke eingef&ugt"), TempGeo.Vertex.num, TempGeo.Polygon.num));
 }
 
 bool ModeModelMesh::Copyable()

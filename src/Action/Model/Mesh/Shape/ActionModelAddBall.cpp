@@ -25,6 +25,7 @@ ActionModelAddBall::ActionModelAddBall(DataModel *m, const vector &_pos, float _
 
 void *ActionModelAddBall::compose(Data *d)
 {
+#if 0
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	int nv = m->Vertex.num;
 	int material = m->CurrentMaterial;
@@ -110,4 +111,5 @@ void *ActionModelAddBall::compose(Data *d)
 			}
 	}
 	return &m->Surface.back();
+#endif
 }

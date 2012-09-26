@@ -48,10 +48,10 @@ void ActionModelDeleteUnusedVertex::undo(Data *d)
 
 	// correct references
 	foreach(ModelSurface &s, m->Surface){
-		foreach(ModelTriangle &t, s.Triangle)
-			for (int k=0;k<3;k++)
-				if (t.Vertex[k] >= vertex)
-					t.Vertex[k] ++;
+		foreach(ModelPolygon &t, s.Polygon)
+			for (int k=0;k<t.Side.num;k++)
+				if (t.Side[k].Vertex >= vertex)
+					t.Side[k].Vertex ++;
 		foreach(ModelEdge &e, s.Edge)
 			for (int k=0;k<2;k++)
 				if (e.Vertex[k] >= vertex)
@@ -92,10 +92,10 @@ void *ActionModelDeleteUnusedVertex::execute(Data *d)
 
 	// correct references
 	foreach(ModelSurface &s, m->Surface){
-		foreach(ModelTriangle &t, s.Triangle)
-			for (int k=0;k<3;k++)
-				if (t.Vertex[k] > vertex)
-					t.Vertex[k] --;
+		foreach(ModelPolygon &t, s.Polygon)
+			for (int k=0;k<t.Side.num;k++)
+				if (t.Side[k].Vertex > vertex)
+					t.Side[k].Vertex --;
 		foreach(ModelEdge &e, s.Edge)
 			for (int k=0;k<2;k++)
 				if (e.Vertex[k] > vertex)

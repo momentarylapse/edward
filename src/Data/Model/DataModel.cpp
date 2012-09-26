@@ -182,7 +182,7 @@ void DataModel::DebugShow()
 	msg_write(Vertex.num);
 	msg_write(Surface.num);
 	foreach(ModelSurface &s, Surface){
-		msg_write(s.Triangle.num);
+		msg_write(s.Polygon.num);
 		s.TestSanity("Model.DebugShow");
 	}
 }
@@ -827,10 +827,10 @@ bool DataModel::Load(const string & _filename, bool deep)
 			foreach(ModelTriangle &t, Skin[1].Sub[i].Triangle){
 				if ((t.Vertex[0] == t.Vertex[1]) || (t.Vertex[1] == t.Vertex[2]) || (t.Vertex[2] == t.Vertex[0]))
 					continue;
-				ModelTriangle *tt = AddTriangle(t.Vertex[0], t.Vertex[1], t.Vertex[2]);
+				ModelPolygon *tt = AddTriangle(t.Vertex[0], t.Vertex[1], t.Vertex[2]);
 				for (int tl=0;tl<Material[i].NumTextures;tl++)
 					for (int k=0;k<3;k++)
-						tt->SkinVertex[tl][k] = t.SkinVertex[tl][k];
+						tt->Side[k].SkinVertex[tl] = t.SkinVertex[tl][k];
 			}
 		}
 		foreach(ModelMove &m, Move)
@@ -893,6 +893,7 @@ void DataModel::GetBoundingBox(vector &min, vector &max)
 
 bool DataModel::Save(const string & _filename)
 {
+#if 0
 	msg_db_r("DataModel.Save",1);
 
 	/*if (AutoGenerateSkin[1])
@@ -915,7 +916,7 @@ bool DataModel::Save(const string & _filename)
 	Skin[1].Sub.clear();
 	Skin[1].Sub.resize(Material.num);
 	foreach(ModelSurface &s, Surface)
-		foreach(ModelTriangle &t, s.Triangle)
+		foreach(ModelPolygon &t, s.Polygon)
 			Skin[1].Sub[t.Material].Triangle.add(t);
 	foreachi(ModelMaterial &m, Material, i)
 		Skin[1].Sub[i].NumTextures = m.NumTextures;
@@ -1254,17 +1255,18 @@ bool DataModel::Save(const string & _filename)
 	ed->SetMessage(_("Gespeichert!"));
 	action_manager->MarkCurrentAsSave();
 	msg_db_l(1);
+#endif
 	return true;
 }
 
 void DataModel::SetNormalsDirtyByVertices(const Array<int> &index)
 {
 	foreach(ModelSurface &s, Surface)
-		foreach(ModelTriangle &t, s.Triangle)
-			for (int k=0;k<3;k++)
+		foreach(ModelPolygon &t, s.Polygon)
+			for (int k=0;k<t.Side.num;k++)
 				if (!t.NormalDirty)
 					for (int i=0;i<index.num;i++)
-						if (t.Vertex[k] == index[i]){
+						if (t.Side[k].Vertex == index[i]){
 							t.NormalDirty = true;
 							break;
 						}
@@ -1273,7 +1275,7 @@ void DataModel::SetNormalsDirtyByVertices(const Array<int> &index)
 void DataModel::SetAllNormalsDirty()
 {
 	foreach(ModelSurface &s, Surface)
-		foreach(ModelTriangle &t, s.Triangle)
+		foreach(ModelPolygon &t, s.Polygon)
 			t.NormalDirty = true;
 }
 
@@ -1312,7 +1314,7 @@ void DataModel::ClearSelection()
 		v.is_selected = false;
 	foreach(ModelSurface &s, Surface){
 		s.is_selected = false;
-		foreach(ModelTriangle &t, s.Triangle)
+		foreach(ModelPolygon &t, s.Polygon)
 			t.is_selected = false;
 	}
 }
@@ -1320,7 +1322,7 @@ void DataModel::ClearSelection()
 void DataModel::SelectionTrianglesFromSurfaces()
 {
 	foreach(ModelSurface &s, Surface)
-		foreach(ModelTriangle &t, s.Triangle)
+		foreach(ModelPolygon &t, s.Polygon)
 			t.is_selected = s.is_selected;
 }
 
@@ -1337,7 +1339,7 @@ void DataModel::SelectionSurfacesFromTriangles()
 {
 	foreach(ModelSurface &s, Surface){
 		s.is_selected = true;
-		foreach(ModelTriangle &t, s.Triangle)
+		foreach(ModelPolygon &t, s.Polygon)
 			s.is_selected &= t.is_selected;
 	}
 }
@@ -1347,24 +1349,34 @@ void DataModel::SelectionVerticesFromTriangles()
 	foreach(ModelVertex &v, Vertex)
 		v.is_selected = false;
 	foreach(ModelSurface &s, Surface)
-		foreach(ModelTriangle &t, s.Triangle)
+		foreach(ModelPolygon &t, s.Polygon)
 			if (t.is_selected)
-				for (int k=0;k<3;k++)
-					Vertex[t.Vertex[k]].is_selected = true;
+				for (int k=0;k<t.Side.num;k++)
+					Vertex[t.Side[k].Vertex].is_selected = true;
 }
 
 void DataModel::SelectionTrianglesFromVertices()
 {
 	foreach(ModelSurface &s, Surface)
-		foreach(ModelTriangle &t, s.Triangle)
-			t.is_selected = ((Vertex[t.Vertex[0]].is_selected) and (Vertex[t.Vertex[1]].is_selected) and (Vertex[t.Vertex[2]].is_selected));
+		foreach(ModelPolygon &t, s.Polygon){
+			t.is_selected = true;
+			for (int k=0;k<t.Side.num;k++)
+				t.is_selected &= Vertex[t.Side[k].Vertex].is_selected;
+		}
 }
 
-ModelTriangle *DataModel::AddTriangle(int a, int b, int c)
+ModelPolygon *DataModel::AddTriangle(int a, int b, int c)
 {
-	vector sv[3] = {e_y, v_0, e_x};
+	Array<int> v;
+	v.add(a);
+	v.add(b);
+	v.add(c);
+	Array<vector> sv;
+	sv.add(e_y);
+	sv.add(v_0);
+	sv.add(e_x);
 	//ApplyAutoTexturing(this, a, b, c, sv);
-	return (ModelTriangle*) Execute(new ActionModelAddTriangleSingleTexture(this, a, b, c, CurrentMaterial, sv[0], sv[1], sv[2]));
+	return (ModelPolygon*) Execute(new ActionModelAddTriangleSingleTexture(this, v, CurrentMaterial, sv));
 }
 
 
@@ -1389,16 +1401,16 @@ ModelSurface *DataModel::SurfaceJoin(ModelSurface *a, ModelSurface *b)
 
 	// correct edge data of b
 	foreach(ModelEdge &e, b->Edge){
-		if (e.Triangle[0] >= 0)
-			e.Triangle[0] += a->Triangle.num;
-		if (e.Triangle[1] >= 0)
-			e.Triangle[1] += a->Triangle.num;
+		if (e.Polygon[0] >= 0)
+			e.Polygon[0] += a->Polygon.num;
+		if (e.Polygon[1] >= 0)
+			e.Polygon[1] += a->Polygon.num;
 	}
 
 	// correct triangle data of b
-	foreach(ModelTriangle &t, b->Triangle)
-		for (int k=0;k<3;k++)
-			t.Edge[k] += a->Edge.num;
+	foreach(ModelPolygon &t, b->Polygon)
+		for (int k=0;k<t.Side.num;k++)
+			t.Side[k].Edge += a->Edge.num;
 
 	// correct vertex data of b
 	foreach(int v, b->Vertex)
@@ -1407,7 +1419,7 @@ ModelSurface *DataModel::SurfaceJoin(ModelSurface *a, ModelSurface *b)
 	// insert data
 	a->Vertex.join(b->Vertex);
 	a->Edge.append(b->Edge);
-	a->Triangle.append(b->Triangle);
+	a->Polygon.append(b->Polygon);
 
 	// remove surface
 	if (bi >= 0)
@@ -1591,7 +1603,7 @@ int DataModel::GetNumSelectedTriangles()
 {
 	int r = 0;
 	foreach(ModelSurface &s, Surface)
-		foreach(ModelTriangle &t, s.Triangle)
+		foreach(ModelPolygon &t, s.Polygon)
 			if (t.is_selected)
 				r ++;
 	return r;
@@ -1619,7 +1631,7 @@ int DataModel::GetNumTriangles()
 {
 	int r = 0;
 	foreach(ModelSurface &s, Surface)
-		r += s.Triangle.num;
+		r += s.Polygon.num;
 	return r;
 }
 
@@ -1765,7 +1777,7 @@ void DataModel::AnimationDeleteCurrentFrame()
 void DataModel::CopyGeometry(ModelGeometry &geo)
 {
 	geo.Vertex.clear();
-	geo.Triangle.clear();
+	geo.Polygon.clear();
 
 	// copy vertices
 	Array<int> vert;
@@ -1777,14 +1789,14 @@ void DataModel::CopyGeometry(ModelGeometry &geo)
 
 	// copy triangles
 	foreach(ModelSurface &s, Surface)
-		foreach(ModelTriangle &t, s.Triangle)
+		foreach(ModelPolygon &t, s.Polygon)
 			if (t.is_selected){
-				ModelTriangle tt = t;
-				for (int k=0;k<3;k++)
+				ModelPolygon tt = t;
+				for (int k=0;k<t.Side.num;k++)
 					foreachi(int v, vert, vi)
-						if (v == t.Vertex[k])
-							tt.Vertex[k] = vi;
-				geo.Triangle.add(tt);
+						if (v == t.Side[k].Vertex)
+							tt.Side[k].Vertex = vi;
+				geo.Polygon.add(tt);
 			}
 }
 

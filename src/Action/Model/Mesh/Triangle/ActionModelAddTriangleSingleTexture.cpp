@@ -9,16 +9,14 @@
 #include "ActionModelAddTriangle.h"
 #include "../../../../Data/Model/DataModel.h"
 
-ActionModelAddTriangleSingleTexture::ActionModelAddTriangleSingleTexture(DataModel *m, int _a, int _b, int _c, int _material, const vector &_sva, const vector &_svb, const vector &_svc)
+ActionModelAddTriangleSingleTexture::ActionModelAddTriangleSingleTexture(DataModel *m, Array<int> &_v, int _material, Array<vector> &_sv)
 {
-	vector sv[3][MODEL_MAX_TEXTURES];
-	for (int l=0;l<MODEL_MAX_TEXTURES;l++){
-		sv[0][l] = _sva;
-		sv[1][l] = _svb;
-		sv[2][l] = _svc;
-	}
+	Array<vector> sv;
+	for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+		for (int k=0;k<_v.num;k++)
+			sv.add(_sv[k]);
 
-	dummy = AddSubAction(new ActionModelAddTriangle(m, _a, _b, _c, _material, sv[0], sv[1], sv[2]), m);
+	dummy = AddSubAction(new ActionModelAddTriangle(m, _v, _material, sv), m);
 }
 
 ActionModelAddTriangleSingleTexture::~ActionModelAddTriangleSingleTexture()

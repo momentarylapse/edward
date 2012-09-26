@@ -15,7 +15,7 @@ class SkinGenerator;
 class ActionModelAddTriangleWithSkinGenerator: public ActionGroup
 {
 public:
-	ActionModelAddTriangleWithSkinGenerator(DataModel *m, int _a, int _b, int _c, int _material, const SkinGenerator &sg);
+	ActionModelAddTriangleWithSkinGenerator(DataModel *m, Array<int> &_v, int _material, const SkinGenerator &sg);
 	virtual ~ActionModelAddTriangleWithSkinGenerator();
 	string name(){	return "ModelAddTriangleWithSkinGenerator";	}
 

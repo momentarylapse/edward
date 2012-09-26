@@ -15,6 +15,7 @@
 
 ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos, Array<float> &_radius, int rings, int edges, bool closed)
 {
+#if 0
 	int nv = m->Vertex.num;
 	int material = m->CurrentMaterial;
 
@@ -93,6 +94,7 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos,
 						sv[edges+1] ,sv[edges+2+(j+1)%edges], sv[edges+2+j]), m);
 			}
 		}
+#endif
 }
 
 ActionModelAddCylinder::~ActionModelAddCylinder()

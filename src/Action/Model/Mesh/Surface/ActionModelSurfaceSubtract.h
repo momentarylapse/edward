@@ -10,7 +10,7 @@
 
 #include "../../../ActionGroup.h"
 class DataModel;
-class ModelTriangle;
+class ModelPolygon;
 class ModelSurface;
 class sCol;
 
@@ -25,12 +25,12 @@ private:
 
 	Array<sCol> t_col;
 
-	bool CollideTriangles(DataModel *m, ModelTriangle *t1, ModelTriangle *t2, int t2_index);
-	bool CollideTriangleSurface(DataModel *m, ModelTriangle *t, ModelSurface *s);
-	bool TriangleInsideSurface(DataModel *m, ModelTriangle *t, ModelSurface *s);
+	bool CollideTriangles(DataModel *m, ModelPolygon *t1, ModelPolygon *t2, int t2_index);
+	bool CollideTriangleSurface(DataModel *m, ModelPolygon *t, ModelSurface *s);
+	bool TriangleInsideSurface(DataModel *m, ModelPolygon *t, ModelSurface *s);
 	bool sort_t_col(ModelSurface *s, Array<sCol> &c2);
-	void sort_and_join_contours(DataModel *m, ModelTriangle *t, ModelSurface *b, Array<Array<sCol> > &c, bool inverse);
-	void TriangleSubtract(DataModel *m, ModelSurface *&a, ModelTriangle *t, ModelSurface *&b, bool inverse);
+	void sort_and_join_contours(DataModel *m, ModelPolygon *t, ModelSurface *b, Array<Array<sCol> > &c, bool inverse);
+	void TriangleSubtract(DataModel *m, ModelSurface *&a, ModelPolygon *t, ModelSurface *&b, bool inverse);
 	void SurfaceSubtractUnary(DataModel *m, ModelSurface *&a, ModelSurface *&b, bool inverse);
 	void SurfaceSubtract(DataModel *m, ModelSurface *&a, ModelSurface *&b);
 };

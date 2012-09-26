@@ -14,11 +14,11 @@
 ActionModelDeleteSelection::ActionModelDeleteSelection(DataModel *m, bool greedy)
 {
 	foreachib(ModelSurface &s, m->Surface, si){
-		foreachib(ModelTriangle &t, s.Triangle, ti){
+		foreachib(ModelPolygon &t, s.Polygon, ti){
 			bool del = false;
 			if (greedy){
-				for (int k=0;k<3;k++)
-					del |= m->Vertex[t.Vertex[k]].is_selected;
+				for (int k=0;k<t.Side.num;k++)
+					del |= m->Vertex[t.Side[k].Vertex].is_selected;
 			}else{
 				del = t.is_selected;
 			}
@@ -27,7 +27,7 @@ ActionModelDeleteSelection::ActionModelDeleteSelection(DataModel *m, bool greedy
 			_foreach_it_.update(); // TODO
 		}
 
-		if (s.Triangle.num == 0)
+		if (s.Polygon.num == 0)
 			AddSubAction(new ActionModelDeleteEmptySurface(si), m);
 		_foreach_it_.update(); // TODO
 	}

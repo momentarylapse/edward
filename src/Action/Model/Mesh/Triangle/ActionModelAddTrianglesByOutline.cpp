@@ -75,6 +75,7 @@ void init_skin_generator(DataModel *m, Array<int> &v, SkinGenerator &sg)
 
 void ActionModelAddTrianglesByOutline::CreateTrianglesFlat(DataModel *m, Array<int> &v, const SkinGenerator &sg)
 {
+#if 0
 	if (v.num == 3){
 		AddSubAction(new ActionModelAddTriangleWithSkinGenerator(m, v[0], v[1], v[2], m->CurrentMaterial, sg), m);
 	}else if (v.num > 3){
@@ -130,6 +131,7 @@ void ActionModelAddTrianglesByOutline::CreateTrianglesFlat(DataModel *m, Array<i
 		v.erase((i_max+1) % v.num);
 		CreateTrianglesFlat(m, v, sg);
 	}
+#endif
 }
 
 ActionModelAddTrianglesByOutline::ActionModelAddTrianglesByOutline(Array<int> vertex, DataModel *data)

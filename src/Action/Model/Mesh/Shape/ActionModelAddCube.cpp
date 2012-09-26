@@ -10,6 +10,16 @@
 #include "../Triangle/ActionModelAddTriangleSingleTexture.h"
 #include "../../../../Data/Model/DataModel.h"
 
+Array<int> quad(int a, int b, int c, int d, int offset)
+{
+	Array<int> v;
+	v.add(a + offset);
+	v.add(b + offset);
+	v.add(c + offset);
+	v.add(d + offset);
+	return v;
+}
+
 ActionModelAddCube::ActionModelAddCube(DataModel *m, const vector &_pos, const vector &_dv1, const vector &_dv2, const vector &_dv3, int num_1, int num_2, int num_3)
 {
 	// check orientation
@@ -33,24 +43,31 @@ ActionModelAddCube::ActionModelAddCube(DataModel *m, const vector &_pos, const v
 	AddSubAction(new ActionModelAddVertex(vector(_pos       + dv2 + dv3)), m);
 	AddSubAction(new ActionModelAddVertex(vector(_pos + dv1 + dv2 + dv3)), m);
 
+	Array<int> v;
+	Array<vector> sv;
+	sv.add(vector(1,1,0));
+	sv.add(vector(0,1,0));
+	sv.add(vector(0,0,0));
+	sv.add(vector(1,0,0));
+
 	// front
-	AddSubAction(new ActionModelAddTriangleSingleTexture(m, nv + 0, nv + 2, nv + 3, material, vector(0,1,0), vector(0,0,0), vector(1,0,0)), m);
-	AddSubAction(new ActionModelAddTriangleSingleTexture(m, nv + 0, nv + 3, nv + 1, material, vector(0,1,0), vector(1,0,0), vector(1,1,0)), m);
+	v = quad(1, 0, 2, 3, nv);
+	AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
 	// top
-	AddSubAction(new ActionModelAddTriangleSingleTexture(m, nv + 2, nv + 6, nv + 7, material, vector(0,1,0), vector(0,0,0), vector(1,0,0)), m);
-	AddSubAction(new ActionModelAddTriangleSingleTexture(m, nv + 2, nv + 7, nv + 3, material, vector(0,1,0), vector(1,0,0), vector(1,1,0)), m);
+	v = quad(3, 2, 6, 7, nv);
+	AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
 	// bottom
-	AddSubAction(new ActionModelAddTriangleSingleTexture(m, nv + 4, nv + 0, nv + 1, material, vector(0,1,0), vector(0,0,0), vector(1,0,0)), m);
-	AddSubAction(new ActionModelAddTriangleSingleTexture(m, nv + 4, nv + 1, nv + 5, material, vector(0,1,0), vector(1,0,0), vector(1,1,0)), m);
+	v = quad(5, 4, 0, 1, nv);
+	AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
 	// left
-	AddSubAction(new ActionModelAddTriangleSingleTexture(m, nv + 4, nv + 6, nv + 2, material, vector(0,1,0), vector(0,0,0), vector(1,0,0)), m);
-	AddSubAction(new ActionModelAddTriangleSingleTexture(m, nv + 4, nv + 2, nv + 0, material, vector(0,1,0), vector(1,0,0), vector(1,1,0)), m);
+	v = quad(0, 4, 6, 2, nv);
+	AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
 	// right
-	AddSubAction(new ActionModelAddTriangleSingleTexture(m, nv + 1, nv + 3, nv + 7, material, vector(0,1,0), vector(0,0,0), vector(1,0,0)), m);
-	AddSubAction(new ActionModelAddTriangleSingleTexture(m, nv + 1, nv + 7, nv + 5, material, vector(0,1,0), vector(1,0,0), vector(1,1,0)), m);
-	// back
-	AddSubAction(new ActionModelAddTriangleSingleTexture(m, nv + 5, nv + 7, nv + 6, material, vector(0,1,0), vector(0,0,0), vector(1,0,0)), m);
-	AddSubAction(new ActionModelAddTriangleSingleTexture(m, nv + 5, nv + 6, nv + 4, material, vector(0,1,0), vector(1,0,0), vector(1,1,0)), m);
+	v = quad(5, 1, 3, 7, nv);
+	AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
+	// back*/
+	v = quad(4, 5, 7, 6, nv);
+	AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
 
 }
 

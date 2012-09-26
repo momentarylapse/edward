@@ -18,7 +18,7 @@ ActionModelExtrudeTriangles::ActionModelExtrudeTriangles(DataModel *data, float 
 {
 	vector dir = v_0;
 	foreach(ModelSurface &s, data->Surface)
-		foreach(ModelTriangle &t, s.Triangle)
+		foreach(ModelPolygon &t, s.Polygon)
 			if (t.is_selected)
 				dir += t.TempNormal;
 	dir.normalize();
@@ -37,18 +37,19 @@ ActionModelExtrudeTriangles::~ActionModelExtrudeTriangles()
 
 void ActionModelExtrudeTriangles::ExtrudeSurface(ModelSurface &s, int surface, DataModel *m, const vector &dpos)
 {
+#if 0
 	Set<int> sel;
-	foreachi(ModelTriangle &t, s.Triangle, ti)
+	foreachi(ModelPolygon &t, s.Polygon, ti)
 		if (t.is_selected)
 			sel.add(ti);
-	if ((sel.num == 0) or (sel.num == s.Triangle.num))
+	if ((sel.num == 0) or (sel.num == s.Polygon.num))
 		return;
 
 	// find boundary
 	Set<int> boundary;
 	foreach(ModelEdge &e, s.Edge)
 		if (e.RefCount == 2)
-			if ((s.Triangle[e.Triangle[0]].is_selected != s.Triangle[e.Triangle[1]].is_selected)){
+			if ((s.Polygon[e.Polygon[0]].is_selected != s.Polygon[e.Polygon[1]].is_selected)){
 				boundary.add(e.Vertex[0]);
 				boundary.add(e.Vertex[1]);
 			}
@@ -62,7 +63,7 @@ void ActionModelExtrudeTriangles::ExtrudeSurface(ModelSurface &s, int surface, D
 	}
 
 	// re-link boundary triangles
-	foreachi(ModelTriangle &t, s.Triangle, ti)
+	foreachi(ModelPolygon &t, s.Polygon, ti)
 		if (!t.is_selected){
 			int v[3];
 			bool on_boundary = false;
@@ -95,4 +96,5 @@ void ActionModelExtrudeTriangles::ExtrudeSurface(ModelSurface &s, int surface, D
 				_foreach_it_.update(); // TODO
 			}
 		}
+#endif
 }

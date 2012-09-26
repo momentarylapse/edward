@@ -12,8 +12,9 @@
 #include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
-inline int tria_sort_vert_by_edge(const ModelTriangle &t, const ModelEdge &e, int v[3])
+inline int tria_sort_vert_by_edge(const ModelPolygon &t, const ModelEdge &e, int v[3])
 {
+#if 0
 	for (int k=0;k<3;k++)
 		if ((t.Vertex[k] != e.Vertex[0]) && (t.Vertex[k] != e.Vertex[1])){
 			v[0] = t.Vertex[k];
@@ -22,11 +23,13 @@ inline int tria_sort_vert_by_edge(const ModelTriangle &t, const ModelEdge &e, in
 			return k;
 		}
 	assert(0 && "funny triangle");
+#endif
 	return -1;
 }
 
 ActionModelSplitEdge::ActionModelSplitEdge(DataModel *m, int _surface, int _edge, const vector &_pos)
 {
+#if 0
 	assert(_surface >= 0);
 	assert(_surface < m->Surface.num);
 	ModelSurface &s = m->Surface[_surface];
@@ -34,27 +37,27 @@ ActionModelSplitEdge::ActionModelSplitEdge(DataModel *m, int _surface, int _edge
 	assert(_edge < s.Edge.num);
 
 	ModelEdge &e = s.Edge[_edge];
-	assert(e.Triangle[0] >= 0);
+	assert(e.Polygon[0] >= 0);
 
 	// copy old triangles data
-	int nt0 = e.Triangle[0];
-	int nt1 = e.Triangle[1];
+	int nt0 = e.Polygon[0];
+	int nt1 = e.Polygon[1];
 	int v0[3], v1[3];
 
-	int material0 = s.Triangle[nt0].Material;
+	int material0 = s.Polygon[nt0].Material;
 	int material1;
 	vector sv[8][MODEL_MAX_TEXTURES];
-	int d0 = tria_sort_vert_by_edge(s.Triangle[nt0], e, v0);
+	int d0 = tria_sort_vert_by_edge(s.Polygon[nt0], e, v0);
 	for (int k=0;k<3;k++)
 		for (int l=0;l<MODEL_MAX_TEXTURES;l++)
-			sv[k][l] = s.Triangle[nt0].SkinVertex[l][(k + d0) % 3];
+			sv[k][l] = s.Polygon[nt0].SkinVertex[l][(k + d0) % 3];
 
 	if (nt1 >= 0){
-		material1 = s.Triangle[nt1].Material;
-		int d1 = tria_sort_vert_by_edge(s.Triangle[nt1], e, v1);
+		material1 = s.Polygon[nt1].Material;
+		int d1 = tria_sort_vert_by_edge(s.Polygon[nt1], e, v1);
 		for (int k=0;k<3;k++)
 			for (int l=0;l<MODEL_MAX_TEXTURES;l++)
-				sv[3 + k][l] = s.Triangle[nt1].SkinVertex[l][(k + d1) % 3];
+				sv[3 + k][l] = s.Polygon[nt1].SkinVertex[l][(k + d1) % 3];
 	}
 
 	// bary centric
@@ -83,6 +86,7 @@ ActionModelSplitEdge::ActionModelSplitEdge(DataModel *m, int _surface, int _edge
 		AddSubAction(new ActionModelSurfaceAddTriangle(_surface, v1[0], v1[1], v, material1, sv[3], sv[4], sv[6]), m);
 		AddSubAction(new ActionModelSurfaceAddTriangle(_surface, v1[2], v1[0], v, material1, sv[5], sv[3], sv[6]), m);
 	}
+#endif
 }
 
 ActionModelSplitEdge::~ActionModelSplitEdge()

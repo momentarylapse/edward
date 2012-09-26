@@ -12,16 +12,12 @@
 #include "../Surface/Helper/ActionModelJoinSurfaces.h"
 #include <assert.h>
 
-ActionModelAddTriangle::ActionModelAddTriangle(DataModel *m, int _a, int _b, int _c, int _material, const vector *_sva, const vector *_svb, const vector *_svc)
+ActionModelAddTriangle::ActionModelAddTriangle(DataModel *m, Array<int> &_v, int _material, Array<vector> &_sv)
 {
-	assert(_a >= 0 && _b >= 0 && _c >= 0);
-	assert(_a != _b && _b != _c && _c != _a);
-	Array<int> vertex;
-	vertex.add(_a);
-	vertex.add(_b);
-	vertex.add(_c);
+	//assert(_a >= 0 && _b >= 0 && _c >= 0);
+	//assert(_a != _b && _b != _c && _c != _a);
 	Set<int> surf;
-	foreach(int v, vertex){
+	foreach(int v, _v){
 		if (m->Vertex[v].Surface >= 0)
 			surf.add(m->Vertex[v].Surface);
 	}
@@ -40,36 +36,7 @@ ActionModelAddTriangle::ActionModelAddTriangle(DataModel *m, int _a, int _b, int
 	}
 
 	// add triangle
-	AddSubAction(new ActionModelSurfaceAddTriangle(surf_no, _a, _b, _c, _material, _sva, _svb, _svc), m);
-
-	/*sModeModelSubSkin *sub = &skin->Sub[CurrentMaterial];
-	sModeModelTriangle t;
-	t.Index[0] = a;
-	t.Index[1] = b;
-	t.Index[2] = c;
-	int v[3];
-	v[0] = a;
-	v[1] = b;
-	v[2] = c;
-	for (int tl=0;tl<sub->NumTextures;tl++){
-
-		// any skin vertices attached to the vertices? (same material)
-		vector sv[3] = {v0, e_x, e_y};
-		for (int i=0;i<sub->Triangle.num;i++)
-			if (sub->Triangle[i].ViewStage >= skin->ViewStage)
-				for (int k=0;k<9;k++)
-					if (sub->Triangle[i].Index[k/3] == v[k%3])
-						sv[k%3] = sub->Triangle[i].SkinVertex[tl][k/3];
-
-		t.SkinVertex[tl][0] = sv[0];
-		t.SkinVertex[tl][1] = sv[1];
-		t.SkinVertex[tl][2] = sv[2];
-	}
-	t.IsSelected = false;
-	t.IsSpecial = false;
-	t.ViewStage = skin->ViewStage;
-	t.NormalDirty = true;
-	sub->Triangle.add(t);*/
+	AddSubAction(new ActionModelSurfaceAddTriangle(surf_no, _v, _material, _sv), m);
 }
 
 ActionModelAddTriangle::~ActionModelAddTriangle()
@@ -80,5 +47,5 @@ ActionModelAddTriangle::~ActionModelAddTriangle()
 void *ActionModelAddTriangle::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	return &m->Surface[surf_no].Triangle.back();
+	return &m->Surface[surf_no].Polygon.back();
 }

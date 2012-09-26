@@ -12,6 +12,7 @@
 
 ActionModelSurfaceCopy::ActionModelSurfaceCopy(DataModel *m, ModelSurface *&s)
 {
+#if 0
 	int si = m->get_surf_no(s);
 	int dv = m->Vertex.num;
 
@@ -21,15 +22,16 @@ ActionModelSurfaceCopy::ActionModelSurfaceCopy(DataModel *m, ModelSurface *&s)
 		//m->Vertex.back().Surface = m->Surface.num;
 	}
 
-	foreach(ModelTriangle &t, s->Triangle){
+	foreach(ModelPolygon &t, s->Polygon){
 		int v[3];
-		for (int k=0;k<3;k++)
+		for (int k=0;k<t.Side.num;k++)
 			foreachi(int vv, s->Vertex, vi)
-				if (vv == t.Vertex[k])
+				if (vv == t.Side[k].Vertex)
 					v[k] = dv + vi;
 		AddSubAction(new ActionModelAddTriangle(m, v[0], v[1], v[2], t.Material, t.SkinVertex[0], t.SkinVertex[1], t.SkinVertex[2]), m);
 	}
 	s = &m->Surface[si];
+#endif
 
 	// dumb copy
 /*	ModeModelSurface *r = m->AddSurface();

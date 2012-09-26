@@ -16,7 +16,7 @@
 class DataModel;
 class ModelSurface;
 struct ModelEdge;
-struct ModelTriangle;
+struct ModelPolygon;
 
 class ModelSurface: public MultiViewSingleData
 {
@@ -24,7 +24,7 @@ public:
 	ModelSurface();
 	virtual ~ModelSurface();
 
-	Array<ModelTriangle> Triangle;
+	Array<ModelPolygon> Polygon;
 	Array<ModelEdge> Edge;
 	Set<int> Vertex;
 	bool IsPhysical, IsVisible;
@@ -33,15 +33,15 @@ public:
 	DataModel *model;
 
 	void AddVertex(int v);
-	void AddTriangle(int a, int b, int c, int material, const vector *sa, const vector *sb, const vector *sc, int index = -1);
-	void RemoveTriangle(int index);
-	int AddEdgeForNewTriangle(int a, int b, int tria, int side);
+	void AddPolygon(Array<int> &v, int material, Array<vector> &sv, int index = -1);
+	void RemovePolygon(int index);
+	int AddEdgeForNewPolygon(int a, int b, int tria, int side);
 	void RemoveObsoleteEdge(int index);
 	void MergeEdges();
 	void UpdateClosed();
 	void UpdateNormals();
 
-	void BuildFromTriangles();
+	void BuildFromPolygons();
 
 
 	bool IsInside(const vector &p);

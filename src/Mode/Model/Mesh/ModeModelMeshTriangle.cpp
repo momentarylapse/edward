@@ -45,15 +45,17 @@ inline vector GetVertex(int v)
 	return m->Vertex[v].pos;
 }
 
-inline void add_tria(int vb, const DataModel *data, const ModelTriangle &t)
+inline void add_tria(int vb, const DataModel *data, const ModelPolygon &t)
 {
-	vector tv1 = t.SkinVertex[0][0];
-	vector tv2 = t.SkinVertex[0][1];
-	vector tv3 = t.SkinVertex[0][2];
-	NixVBAddTria(	vb,
-					GetVertex(t.Vertex[0]), t.Normal[0], tv1.x, tv1.y,
-					GetVertex(t.Vertex[1]), t.Normal[1], tv2.x, tv2.y,
-					GetVertex(t.Vertex[2]), t.Normal[2], tv3.x, tv3.y);
+	vector tv1 = t.Side[0].SkinVertex[0];
+	for (int k=2;k<t.Side.num;k++){
+		vector tv2 = t.Side[k-1].SkinVertex[0];
+		vector tv3 = t.Side[k  ].SkinVertex[0];
+		NixVBAddTria(	vb,
+					GetVertex(t.Side[0  ].Vertex), t.Side[0  ].Normal, tv1.x, tv1.y,
+					GetVertex(t.Side[k-1].Vertex), t.Side[k-1].Normal, tv2.x, tv2.y,
+					GetVertex(t.Side[k  ].Vertex), t.Side[k  ].Normal, tv3.x, tv3.y);
+	}
 }
 
 void ModeModelMeshTriangle::DrawTrias()
@@ -69,7 +71,7 @@ void ModeModelMeshTriangle::DrawTrias()
 			NixVBClear(VBModel);
 
 			foreach(ModelSurface &surf, data->Surface)
-				foreach(ModelTriangle &t, surf.Triangle)
+				foreach(ModelPolygon &t, surf.Polygon)
 					if ((t.view_stage >= data->ViewStage) && (t.Material == mi))
 						add_tria(VBModel, data, t);
 
@@ -94,21 +96,23 @@ void ModeModelMeshTriangle::DrawTrias()
 			NixVBClear(*vb);
 
 			foreach(ModelSurface &surf, data->Surface)
-				foreach(ModelTriangle &t, surf.Triangle)
+				foreach(ModelPolygon &t, surf.Polygon)
 					if ((t.view_stage >= data->ViewStage) && (t.Material == mi)){
-						float t1[8], t2[8], t3[8];
-						for (int tl=0;tl<num_tex;tl++){
-							t1[tl*2  ] = t.SkinVertex[tl][0].x;
-							t1[tl*2+1] = t.SkinVertex[tl][0].y;
-							t2[tl*2  ] = t.SkinVertex[tl][1].x;
-							t2[tl*2+1] = t.SkinVertex[tl][1].y;
-							t3[tl*2  ] = t.SkinVertex[tl][2].x;
-							t3[tl*2+1] = t.SkinVertex[tl][2].y;
+						for (int k=2;k<t.Side.num;k++){
+							float t1[8], t2[8], t3[8];
+							for (int tl=0;tl<num_tex;tl++){
+								t1[tl*2  ] = t.Side[0  ].SkinVertex[tl].x;
+								t1[tl*2+1] = t.Side[0  ].SkinVertex[tl].y;
+								t2[tl*2  ] = t.Side[k-1].SkinVertex[tl].x;
+								t2[tl*2+1] = t.Side[k-1].SkinVertex[tl].y;
+								t3[tl*2  ] = t.Side[k  ].SkinVertex[tl].x;
+								t3[tl*2+1] = t.Side[k  ].SkinVertex[tl].y;
+							}
+							NixVBAddTriaM(	*vb,
+											GetVertex(t.Side[0  ].Vertex), t.Side[0  ].Normal, t1,
+											GetVertex(t.Side[k-1].Vertex), t.Side[k-1].Normal, t2,
+											GetVertex(t.Side[k  ].Vertex), t.Side[k  ].Normal, t3);
 						}
-						NixVBAddTriaM(	*vb,
-										GetVertex(t.Vertex[0]), t.Normal[0], t1,
-										GetVertex(t.Vertex[1]), t.Normal[1], t2,
-										GetVertex(t.Vertex[2]), t.Normal[2], t3);
 					}
 
 			// draw
@@ -137,14 +141,14 @@ void ModeModelMeshTriangle::FillSelectionBuffers()
 	// create selection buffers
 	msg_db_m("a",4);
 	/*if ((EditMode == EditModeTriangle) || (EditMode == EditModeVertex) || (EditMode == EditModeEdge))*/{
-		ModelTriangle *mmo = NULL;
+		ModelPolygon *mmo = NULL;
 		if ((multi_view->MouseOver >= 0) && (multi_view->MouseOverSet < data->Surface.num) && (multi_view->MouseOverType == MVDModelTriangle))
-			mmo = &data->Surface[multi_view->MouseOverSet].Triangle[multi_view->MouseOver];
+			mmo = &data->Surface[multi_view->MouseOverSet].Polygon[multi_view->MouseOver];
 		foreachi(ModelSurface &s, data->Surface, si){
 			bool s_mo = false;
 			if ((multi_view->MouseOver >= 0) && (multi_view->MouseOverType == MVDModelSurface))
 				s_mo = (multi_view->MouseOver == si);
-			foreach(ModelTriangle &t, s.Triangle)
+			foreach(ModelPolygon &t, s.Polygon)
 				/*if (t.view_stage >= ViewStage)*/{
 				if (t.is_selected)
 					add_tria(VBMarked, data, t);
@@ -247,8 +251,8 @@ void ModeModelMeshTriangle::OnStart()
 
 bool TriangleIsMouseOver(int index, void *user_data, int win, vector &tp)
 {
-	ModelSurface *surf = (ModelSurface*)user_data;
-	ModelTriangle *t = &surf->Triangle[index];
+	/*ModelSurface *surf = (ModelSurface*)user_data;
+	ModelPolygon *t = &surf->Polygon[index];
 	vector M = vector(float(ed->multi_view_3d->mx), float(ed->multi_view_3d->my), 0);
 	int a = t->Vertex[0];
 	int b = t->Vertex[1];
@@ -277,14 +281,14 @@ bool TriangleIsMouseOver(int index, void *user_data, int win, vector &tp)
 				return true;
 			}
 		}
-	}
+	}*/
 	return false;
 }
 
 bool TriangleInRect(int index, void *user_data, int win, irect *r)
 {
-	ModelSurface *surf = (ModelSurface*)user_data;
-	ModelTriangle *t = &surf->Triangle[index];
+	/*ModelSurface *surf = (ModelSurface*)user_data;
+	ModelPolygon *t = &surf->Polygon[index];
 	int ia=t->Vertex[0];
 	int ib=t->Vertex[1];
 	int ic=t->Vertex[2];
@@ -309,7 +313,7 @@ bool TriangleInRect(int index, void *user_data, int win, irect *r)
 							return true;
 					}else
 						return true;
-				}
+				}*/
 	return false;
 }
 
@@ -321,7 +325,7 @@ void ModeModelMeshTriangle::OnUpdate(Observable *o)
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		foreach(ModelSurface &s, data->Surface)
 		multi_view->SetData(	MVDModelTriangle,
-				s.Triangle,
+				s.Polygon,
 				&s,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
 				&TriangleIsMouseOver, &TriangleInRect);

@@ -15,6 +15,7 @@
 
 void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 {
+#if 0
 	int surface = m->Vertex[vi].Surface;
 	if (surface < 0)
 		return;
@@ -58,7 +59,7 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 
 	// remove triangles
 	int vert0 = -1;
-	foreachib(ModelTriangle &t, s.Triangle, ti)
+	foreachib(ModelPolygon &t, s.Polygon, ti)
 		for (int k=0;k<3;k++)
 			if (t.Vertex[k] == vi){
 				vert0 = t.Vertex[(k + 1) % 3];
@@ -76,6 +77,7 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 
 	// delete vertex
 	AddSubAction(new ActionModelDeleteUnusedVertex(vi), m);
+#endif
 }
 
 ActionModelBevelVertices::ActionModelBevelVertices(DataModel *m, float length)

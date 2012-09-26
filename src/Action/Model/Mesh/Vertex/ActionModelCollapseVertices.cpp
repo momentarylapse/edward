@@ -15,6 +15,7 @@
 
 void ActionModelCollapseVertices::CollapseVerticesInSurface(DataModel *m, ModelSurface &s, int surf)
 {
+#if 0
 	Set<int> vert;
 	vector pos = v_0;
 	foreach(int v, s.Vertex)
@@ -27,7 +28,7 @@ void ActionModelCollapseVertices::CollapseVerticesInSurface(DataModel *m, ModelS
 	pos /= vert.num;
 
 	// delete triangles between 2+ selected vertices
-	foreachib(ModelTriangle &t, s.Triangle, ti){
+	foreachib(ModelPolygon &t, s.Polygon, ti){
 		int n_sel = 0;
 		for (int k=0;k<3;k++)
 			if (vert.contains(t.Vertex[k]))
@@ -43,7 +44,7 @@ void ActionModelCollapseVertices::CollapseVerticesInSurface(DataModel *m, ModelS
 	int new_vertex = m->Vertex.num - 1;
 
 	// re-link triangles with 1 selected vertex
-	foreachib(ModelTriangle &t, s.Triangle, ti){
+	foreachib(ModelPolygon &t, s.Polygon, ti){
 		int v[3];
 		for (int k=0;k<3;k++)
 			v[k] = t.Vertex[k];
@@ -58,6 +59,7 @@ void ActionModelCollapseVertices::CollapseVerticesInSurface(DataModel *m, ModelS
 	// delete old vertices
 	foreachb(int v, vert)
 		AddSubAction(new ActionModelDeleteUnusedVertex(v), m);
+#endif
 }
 
 ActionModelCollapseVertices::ActionModelCollapseVertices(DataModel *m)

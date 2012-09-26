@@ -22,7 +22,7 @@ ActionModelAddEmptySurface::~ActionModelAddEmptySurface()
 void ActionModelAddEmptySurface::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	assert(m->Surface.back().Vertex.num + m->Surface.back().Edge.num + m->Surface.back().Triangle.num == 0);
+	assert(m->Surface.back().Vertex.num + m->Surface.back().Edge.num + m->Surface.back().Polygon.num == 0);
 
 	// should be empty at this point
 	m->Surface.pop();

@@ -14,6 +14,7 @@
 
 ActionModelCollapseEdge::ActionModelCollapseEdge(DataModel *m, int _surface, int _edge)
 {
+#if 0
 	assert(_surface >= 0);
 	assert(_surface < m->Surface.num);
 	ModelSurface &s = m->Surface[_surface];
@@ -26,12 +27,12 @@ ActionModelCollapseEdge::ActionModelCollapseEdge(DataModel *m, int _surface, int
 
 	Set<int> tria;
 	for (int k=0;k<e.RefCount;k++)
-		tria.add(e.Triangle[k]);
+		tria.add(e.Polygon[k]);
 
 	foreachb(int t, tria)
 		AddSubAction(new ActionModelSurfaceDeleteTriangle(_surface, t), m);
 
-	foreachib(ModelTriangle &t, s.Triangle, i)
+	foreachib(ModelPolygon &t, s.Polygon, i)
 		for (int k=0;k<3;k++)
 			if ((t.Vertex[k] == v[0]) || (t.Vertex[k] == v[1])){
 				int nv[3];
@@ -41,6 +42,7 @@ ActionModelCollapseEdge::ActionModelCollapseEdge(DataModel *m, int _surface, int
 			}
 
 	// TODO... delete obsolete vertices
+#endif
 }
 
 ActionModelCollapseEdge::~ActionModelCollapseEdge()

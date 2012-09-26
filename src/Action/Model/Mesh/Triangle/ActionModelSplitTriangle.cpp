@@ -13,6 +13,7 @@
 
 ActionModelSplitTriangle::ActionModelSplitTriangle(DataModel *m, int _surface, int _triangle, const vector &_pos)
 {
+#if 0
 	// old triangle data
 	int va = m->Surface[_surface].Triangle[_triangle].Vertex[0];
 	int vb = m->Surface[_surface].Triangle[_triangle].Vertex[1];
@@ -40,6 +41,7 @@ ActionModelSplitTriangle::ActionModelSplitTriangle(DataModel *m, int _surface, i
 	AddSubAction(new ActionModelSurfaceAddTriangle(_surface, va, vb, v, material, sv[0], sv[1], sv[3]), m);
 	AddSubAction(new ActionModelSurfaceAddTriangle(_surface, vb, vc, v, material, sv[1], sv[2], sv[3]), m);
 	AddSubAction(new ActionModelSurfaceAddTriangle(_surface, vc, va, v, material, sv[2], sv[0], sv[3]), m);
+#endif
 }
 
 ActionModelSplitTriangle::~ActionModelSplitTriangle()

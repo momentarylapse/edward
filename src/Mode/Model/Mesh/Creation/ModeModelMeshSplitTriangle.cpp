@@ -52,20 +52,21 @@ void ModeModelMeshSplitTriangle::OnDrawWin(int win, irect dest)
 	if ((triangle >= 0) && (surface >= 0)){
 		vector pp = multi_view->VecProject(pos, win);
 		pp.z = 0;
-		vector v[3], p[3];
-		for (int k=0;k<3;k++){
-			v[k] = data->Vertex[data->Surface[surface].Triangle[triangle].Vertex[k]].pos;
-			p[k] = multi_view->VecProject(v[k], win);
-			p[k].z = 0;
+		ModelPolygon &poly = data->Surface[surface].Polygon[triangle];
+		Array<vector> v, p;
+		for (int k=0;k<poly.Side.num;k++){
+			v.add(data->Vertex[poly.Side[k].Vertex].pos);
+			p.add(multi_view->VecProject(v[k], win));
+			p.back().z = 0;
 		}
 
 		// close to an edge?
-		for (int k=0;k<3;k++){
-			if (VecLineDistance(pp, p[k], p[(k + 1) % 3]) < 10){
-				float f = (pp - p[k]).length() / (p[k] - p[(k + 1) % 3]).length();
-				pos = v[k] * (1 - f) + v[(k + 1) % 3] * f;
+		for (int k=0;k<v.num;k++){
+			if (VecLineDistance(pp, p[k], p[(k + 1) % v.num]) < 10){
+				float f = (pp - p[k]).length() / (p[k] - p[(k + 1) % v.num]).length();
+				pos = v[k] * (1 - f) + v[(k + 1) % v.num] * f;
 				pp = multi_view->VecProject(pos, win);
-				edge = data->Surface[surface].Triangle[triangle].Edge[k];
+				edge = poly.Side[k].Edge;
 			}
 		}
 
@@ -74,7 +75,7 @@ void ModeModelMeshSplitTriangle::OnDrawWin(int win, irect dest)
 		NixDrawLine3D(data->Vertex[data->Surface[surface].Triangle[triangle].Vertex[1]].pos, pos, Green);
 		NixDrawLine3D(data->Vertex[data->Surface[surface].Triangle[triangle].Vertex[2]].pos, pos, Green);*/
 		NixSetColor(Green);
-		for (int k=0;k<3;k++)
+		for (int k=0;k<v.num;k++)
 			NixDrawLine(p[k].x, p[k].y, pp.x, pp.y, 0);
 		NixSetColor(White);
 		NixEnableLighting(true);

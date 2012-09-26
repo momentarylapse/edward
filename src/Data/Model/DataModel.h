@@ -59,15 +59,21 @@ public:
 	int Surface;
 };
 
-class ModelTriangle: public MultiViewSingleData
+class ModelPolygonSide
 {
 public:
-	int Vertex[3];
-	int Edge[3];
-	int EdgeDirection[3]; // which no of triangle in edge's list are we?
-	vector SkinVertex[MODEL_MAX_TEXTURES][3];
-	int NormalIndex[3];
-	vector Normal[3];
+	int Vertex;
+	int Edge;
+	int EdgeDirection; // which no of triangle in edge's list are we?
+	vector SkinVertex[MODEL_MAX_TEXTURES];
+	int NormalIndex;
+	vector Normal;
+};
+
+class ModelPolygon: public MultiViewSingleData
+{
+public:
+	Array<ModelPolygonSide> Side;
 	vector TempNormal;
 	bool NormalDirty;
 	int Material;
@@ -109,6 +115,20 @@ public:
 	// "topology"
 	bool EdgeOnFace[MODEL_MAX_POLY_EDGES * MODEL_MAX_POLY_FACES]; // [edge * NumFaces + face]
 	int FacesJoiningEdge[MODEL_MAX_POLY_FACES * MODEL_MAX_POLY_FACES]; // [face1 * NumFaces + face2]
+};
+
+class ModelTriangle: public MultiViewSingleData
+{
+public:
+	int Vertex[3];
+	//int Edge[3];
+	//int EdgeDirection[3]; // which no of triangle in edge's list are we?
+	vector SkinVertex[MODEL_MAX_TEXTURES][3];
+	int NormalIndex[3];
+	vector Normal[3];
+	vector TempNormal;
+	bool NormalDirty;
+	int Material;
 };
 
 
@@ -175,7 +195,7 @@ class ModelEdge: public MultiViewSingleData
 public:
 	//int NormalMode;
 	int Vertex[2];
-	int RefCount, Triangle[2], Side[2];
+	int RefCount, Polygon[2], Side[2];
 	bool IsRound; // for editing
 	float Weight; // for easify'ing
 
@@ -189,7 +209,7 @@ public:
 struct ModelGeometry
 {
 	Array<ModelVertex> Vertex;
-	Array<ModelTriangle> Triangle;
+	Array<ModelPolygon> Polygon;
 };
 
 
@@ -256,7 +276,7 @@ public:
 
 	// high level (actions)
 	void AddVertex(const vector &pos, int bone_index = 0, int normal_mode = -1);
-	ModelTriangle *AddTriangle(int a, int b, int c);
+	ModelPolygon *AddTriangle(int a, int b, int c);
 	ModelSurface *AddBall(const vector &_pos, float _radius, int _num_x, int _num_y, bool _as_sphere);
 	ModelSurface *AddPlane(const vector &_pos, const vector &_dv1, const vector &_dv2, int _num_x, int _num_y);
 	ModelSurface *AddCube(const vector &_pos, const vector &_dv1, const vector &_dv2, const vector &_dv3, int num_1, int num_2, int num_3);

@@ -31,16 +31,16 @@ void ModeModelMeshTexture::OnStart()
 {
 	skin_vertex.clear();
 	foreach(ModelSurface &surf, data->Surface)
-		foreach(ModelTriangle &t, surf.Triangle){
+		foreach(ModelPolygon &t, surf.Polygon){
 			if (t.Material != data->CurrentMaterial)
 				continue;
 			ModelSkinVertexDummy v;
 			v.m_delta = v.m_old = false;
 			v.is_special = false;
 			v.view_stage = t.view_stage;
-			for (int k=0;k<3;k++){
-				v.is_selected = data->Vertex[t.Vertex[k]].is_selected;
-				v.pos = t.SkinVertex[data->CurrentTextureLevel][k];
+			for (int k=0;k<t.Side.num;k++){
+				v.is_selected = data->Vertex[t.Side[k].Vertex].is_selected;
+				v.pos = t.Side[k].SkinVertex[data->CurrentTextureLevel];
 				skin_vertex.add(v);
 			}
 		}
@@ -117,24 +117,19 @@ void ModeModelMeshTexture::OnDrawWin(int win, irect dest)
 
 	// draw triangles (outlines) of current material
 	foreach(ModelSurface &surf, data->Surface)
-		foreach(ModelTriangle &t, surf.Triangle){
+		foreach(ModelPolygon &t, surf.Polygon){
 			if (t.Material != data->CurrentMaterial)
 				continue;
 			if (t.view_stage < data->ViewStage)
 				continue;
-			vector a,b,c;
-			a = multi_view->VecProject(t.SkinVertex[data->CurrentTextureLevel][0],win);
-			b = multi_view->VecProject(t.SkinVertex[data->CurrentTextureLevel][1],win);
-			c = multi_view->VecProject(t.SkinVertex[data->CurrentTextureLevel][2],win);
-			NixDrawLine(	a.x,a.y,
-							b.x,b.y,
-							0.9f);
-			NixDrawLine(	c.x,c.y,
-							b.x,b.y,
-							0.9f);
-			NixDrawLine(	a.x,a.y,
-							c.x,c.y,
-							0.9f);
+			Array<vector> v;
+			for (int k=0;k<t.Side.num;k++)
+				v.add(multi_view->VecProject(t.Side[k].SkinVertex[data->CurrentTextureLevel],win));
+			v.add(v[0]);
+			for (int k=0;k<t.Side.num;k++)
+				NixDrawLine(	v[k].x,v[k].y,
+								v[k+1].x,v[k+1].y,
+								0.9f);
 		}
 
 	ed->DrawStr(180, MaxY - 20, format("%d von %d: %s", data->CurrentTextureLevel + 1, data->Material[data->CurrentMaterial].NumTextures,
@@ -159,11 +154,11 @@ void ModeModelMeshTexture::OnUpdate(Observable *o)
 
 		int svi = 0;
 		foreach(ModelSurface &surf, data->Surface)
-			foreach(ModelTriangle &t, surf.Triangle){
+			foreach(ModelPolygon &t, surf.Polygon){
 				if (t.Material != data->CurrentMaterial)
 					continue;
-				for (int k=0;k<3;k++)
-					skin_vertex[svi ++].pos = t.SkinVertex[data->CurrentTextureLevel][k];
+				for (int k=0;k<t.Side.num;k++)
+					skin_vertex[svi ++].pos = t.Side[k].SkinVertex[data->CurrentTextureLevel];
 			}
 
 		multi_view->ResetData(data);
@@ -186,7 +181,7 @@ void ModeModelMeshTexture::GetSelectedSkinVertices(Array<int> & surf, Array<int>
 {
 	int i = 0;
 	foreachi(ModelSurface &s, data->Surface, si)
-		foreachi(ModelTriangle &t, s.Triangle, ti)
+		foreachi(ModelPolygon &t, s.Polygon, ti)
 			if (t.Material == data->CurrentMaterial){
 				for (int k=0;k<3;k++){
 					if (skin_vertex[i].is_selected){

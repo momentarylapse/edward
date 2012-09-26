@@ -27,23 +27,27 @@ void *ActionModelSurfaceInvert::execute(Data *d)
 	ModelSurface &s = m->Surface[surface];
 
 	// flip triangles
-	foreachi(ModelTriangle &t, s.Triangle, ti){
-		// swap vertices
-		int v = t.Vertex[0];
-		t.Vertex[0] = t.Vertex[1];
-		t.Vertex[1] = v;
+	foreachi(ModelPolygon &t, s.Polygon, ti){
+		for (int k=0;k<t.Side.num/2;k++){
+			int kk = t.Side.num - k - 1;
 
-		// swap skin vertices
-		for (int tl=0;tl<MODEL_MAX_TEXTURES;tl++){
-			vector tv = t.SkinVertex[tl][0];
-			t.SkinVertex[tl][0] = t.SkinVertex[tl][1];
-			t.SkinVertex[tl][1] = tv;
+			// swap vertices
+			int v = t.Side[k].Vertex;
+			t.Side[k].Vertex = t.Side[kk].Vertex;
+			t.Side[kk].Vertex = v;
+
+			// swap skin vertices
+			for (int tl=0;tl<MODEL_MAX_TEXTURES;tl++){
+				vector tv = t.Side[k].SkinVertex[tl];
+				t.Side[k].SkinVertex[tl] = t.Side[kk].SkinVertex[tl];
+				t.Side[kk].SkinVertex[tl] = tv;
+			}
+
+			// swap edges
+			int e = t.Side[k].Edge;
+			t.Side[k].Edge = t.Side[kk].Edge;
+			t.Side[kk].Edge = e;
 		}
-
-		// swap edges
-		int e = t.Edge[1];
-		t.Edge[1] = t.Edge[2];
-		t.Edge[2] = e;
 
 		// mark for update
 		t.NormalDirty = true;

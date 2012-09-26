@@ -13,6 +13,7 @@
 
 ActionModelAddPlane::ActionModelAddPlane(DataModel *m, const vector &_pos, const vector &_dv1, const vector &_dv2, int _num_x, int _num_y)
 {
+#if 0
 	assert(_num_x * _num_y > 0);
 
 	/// vertices
@@ -46,6 +47,7 @@ ActionModelAddPlane::ActionModelAddPlane(DataModel *m, const vector &_pos, const
 					material,
 					svc, svb, svd), m);
 		}
+#endif
 }
 
 ActionModelAddPlane::~ActionModelAddPlane()

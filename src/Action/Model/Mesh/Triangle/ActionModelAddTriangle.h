@@ -15,7 +15,7 @@ class vector;
 class ActionModelAddTriangle: public ActionGroup
 {
 public:
-	ActionModelAddTriangle(DataModel *m, int _a, int _b, int _c, int _material, const vector *_sva, const vector *_svb, const vector *_svc);
+	ActionModelAddTriangle(DataModel *m, Array<int> &_v, int _material, Array<vector> &_sv);
 	virtual ~ActionModelAddTriangle();
 	string name(){	return "ModelAddTriangle";	}
 

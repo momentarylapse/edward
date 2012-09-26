@@ -10,7 +10,8 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
 
-static vector get_area(DataModel *m, ModelTriangle &t)
+#if 0
+static vector get_area(DataModel *m, ModelPolygon &t)
 {
 	return (m->Vertex[t.Vertex[1]].pos - m->Vertex[t.Vertex[0]].pos) ^ (m->Vertex[t.Vertex[2]].pos - m->Vertex[t.Vertex[0]].pos);
 }
@@ -31,10 +32,10 @@ static float get_weight(DataModel *m, ModelSurface &s, ModelEdge &e)
 	vector v = (m->Vertex[e.Vertex[0]].pos + m->Vertex[e.Vertex[1]].pos) / 2;
 
 	// triangle plane change
-	foreachi(ModelTriangle &t, s.Triangle, ti){
-		if (ti == e.Triangle[0])
+	foreachi(ModelPolygon &t, s.Polygon, ti){
+		if (ti == e.Polygon[0])
 			continue;
-		if ((e.RefCount > 1) && (ti == e.Triangle[1]))
+		if ((e.RefCount > 1) && (ti == e.Polygon[1]))
 			continue;
 		for (int l=0;l<e.RefCount;l++)
 			for (int k=0;k<3;k++)
@@ -68,7 +69,7 @@ bool ActionModelEasify::EasifyStep(DataModel *m)
 			if (e.RefCount == 1){
 				// find all edges sharing a vertex with e
 				Set<int> ee;
-				foreach(ModelTriangle &t, s.Triangle)
+				foreach(ModelPolygon &t, s.Polygon)
 					for (int k=0;k<3;k++)
 						for (int l=0;l<2;l++)
 							if (t.Vertex[k] == e.Vertex[l]){
@@ -110,13 +111,16 @@ bool ActionModelEasify::EasifyStep(DataModel *m)
 	}
 	return false;
 }
+#endif
 
 ActionModelEasify::ActionModelEasify(DataModel *m, float factor)
 {
+#if 0
 	int n = (int)((float)m->GetNumTriangles() * factor);
 	while(m->GetNumTriangles() > n)
 		if (!EasifyStep(m))
 			break;
+#endif
 }
 
 ActionModelEasify::~ActionModelEasify()
