@@ -16,7 +16,7 @@ class ActionModelDeleteUnusedVertex: public Action
 {
 public:
 	ActionModelDeleteUnusedVertex(int _vertex);
-	virtual ~ActionModelDeleteUnusedVertex();
+	virtual ~ActionModelDeleteUnusedVertex(){}
 	string name(){	return "ModelDeleteUnusedVertex";	}
 
 	void *execute(Data *d);

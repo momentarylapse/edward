@@ -43,7 +43,8 @@ void *ActionModelPolygonRemoveVertex::compose(Data *d)
 	AddSubAction(new ActionModelSurfaceDeleteTriangle(surface, poly), m);
 
 	// recreate
-	AddSubAction(new ActionModelSurfaceAddTriangle(surface, v, material, _sv, poly), m);
+	if (v.num > 2)
+		AddSubAction(new ActionModelSurfaceAddTriangle(surface, v, material, _sv, poly), m);
 
 	return NULL;
 }

@@ -17,10 +17,6 @@ ActionModelDeleteUnusedVertex::ActionModelDeleteUnusedVertex(int _vertex)
 	vertex = _vertex;
 }
 
-ActionModelDeleteUnusedVertex::~ActionModelDeleteUnusedVertex()
-{
-}
-
 void ActionModelDeleteUnusedVertex::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
