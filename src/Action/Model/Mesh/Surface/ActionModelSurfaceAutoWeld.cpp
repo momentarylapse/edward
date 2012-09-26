@@ -22,7 +22,6 @@ ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(DataModel *m, int _surfac
 
 void *ActionModelSurfaceAutoWeld::compose(Data *d)
 {
-#if 0
 	msg_db_r("SurfWeld", 1);
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
@@ -61,6 +60,7 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 	// relink triangles
 	foreachib(ModelPolygon &t, a->Polygon, ti){
 		Array<int> v;
+		v.resize(t.Side.num);
 		bool relink = false;
 		for (int k=0;k<t.Side.num;k++){
 			v[k] = t.Side[k].Vertex;
@@ -71,8 +71,10 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 				}
 			}
 		}
-		if (relink)
-			AddSubAction(new ActionModelSurfaceRelinkTriangle(m, surface1, ti, v[0], v[1], v[2]), m);
+		if (relink){
+			AddSubAction(new ActionModelSurfaceRelinkTriangle(m, surface1, ti, v), m);
+			_foreach_it_.update(); // TODO
+		}
 	}
 	a->TestSanity("AutoWeld relink tria");
 
@@ -88,6 +90,4 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 
 	msg_db_l(1);
 	return a;
-#endif
-	return NULL;
 }

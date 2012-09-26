@@ -14,7 +14,7 @@ class DataModel;
 class ActionModelSurfaceRelinkTriangle : public ActionGroup
 {
 public:
-	ActionModelSurfaceRelinkTriangle(DataModel *m, int _surface, int _triangle, int a, int b, int c);
+	ActionModelSurfaceRelinkTriangle(DataModel *m, int _surface, int _triangle, Array<int> &_v);
 	virtual ~ActionModelSurfaceRelinkTriangle();
 	string name(){	return "ModelSurfaceRelinkTriangle";	}
 };

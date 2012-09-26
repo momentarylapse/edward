@@ -25,7 +25,6 @@ ActionModelAddBall::ActionModelAddBall(DataModel *m, const vector &_pos, float _
 
 void *ActionModelAddBall::compose(Data *d)
 {
-#if 0
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	int nv = m->Vertex.num;
 	int material = m->CurrentMaterial;
@@ -51,16 +50,17 @@ void *ActionModelAddBall::compose(Data *d)
 			// create new triangles
 			for (int x=0;x<num_x;x++)
 				for (int y=0;y<num_x;y++){
-					int a=(num_x+1)* x   +y;
-					int b=(num_x+1)* x   +y+1;
-					int c=(num_x+1)*(x+1)+y;
-					int d=(num_x+1)*(x+1)+y+1;
-					vector sva = vector((float) x   /(float)num_x,(float) y   /(float)num_x,0);
-					vector svb = vector((float) x   /(float)num_x,(float)(y+1)/(float)num_x,0);
-					vector svc = vector((float)(x+1)/(float)num_x,(float) y   /(float)num_x,0);
-					vector svd = vector((float)(x+1)/(float)num_x,(float)(y+1)/(float)num_x,0);
-					AddSubAction(new ActionModelAddTriangleSingleTexture(m, nv+a,nv+c,nv+d, material, sva,svc,svd), m);
-					AddSubAction(new ActionModelAddTriangleSingleTexture(m, nv+a,nv+d,nv+b, material, sva,svd,svb), m);
+					Array<int> v;
+					v.add(nv + (num_x+1)* x   +y+1);
+					v.add(nv + (num_x+1)* x   +y);
+					v.add(nv + (num_x+1)*(x+1)+y);
+					v.add(nv + (num_x+1)*(x+1)+y+1);
+					Array<vector> sv;
+					sv.add(vector((float) x   /(float)num_x,(float)(y+1)/(float)num_x,0));
+					sv.add(vector((float) x   /(float)num_x,(float) y   /(float)num_x,0));
+					sv.add(vector((float)(x+1)/(float)num_x,(float) y   /(float)num_x,0));
+					sv.add(vector((float)(x+1)/(float)num_x,(float)(y+1)/(float)num_x,0));
+					AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
 				}
 			nv += (num_x+1) * (num_x + 1);
 		}
@@ -80,36 +80,42 @@ void *ActionModelAddBall::compose(Data *d)
 					AddSubAction(new ActionModelAddVertex(pos + radius * vector(pi*(float(x)-(float)num_x/2.0f)/num_x,pi*2.0f* y/num_y,0).ang2dir()), m);
 			}
 		// create new triangles
-		for (int y=0;y<num_y;y++)
-			AddSubAction(new ActionModelAddTriangleSingleTexture(
-					m,
-					nv+0				,nv+2+y				,nv+2+(y+1)%num_y,
-					material,
-					ball_ang(0, y+1),	ball_ang(1, y),	ball_ang(1, y+1)), m);
-		for (int y=0;y<num_y;y++)
-			AddSubAction(new ActionModelAddTriangleSingleTexture(
-					m,
-					nv+2+num_y*(num_x-2)+y	,nv+1				,nv+2+num_y*(num_x-2)+(y+1)%num_y,
-					material,
-					ball_ang(num_x-1, y),		ball_ang(num_x, y),	ball_ang(num_x-1, y+1)), m);
+		for (int y=0;y<num_y;y++){
+			Array<int> v;
+			v.add(nv);
+			v.add(nv + 2 +  y);
+			v.add(nv + 2 + (y+1)%num_y);
+			Array<vector> sv;
+			sv.add(ball_ang(0, y+1));
+			sv.add(ball_ang(1, y));
+			sv.add(ball_ang(1, y+1));
+			AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
+		}
+		for (int y=0;y<num_y;y++){
+			Array<int> v;
+			v.add(nv+2+num_y*(num_x-2)+y);
+			v.add(nv + 1);
+			v.add(nv+2+num_y*(num_x-2)+(y+1)%num_y);
+			Array<vector> sv;
+			sv.add(ball_ang(num_x - 1, y));
+			sv.add(ball_ang(num_x, y));
+			sv.add(ball_ang(num_x - 1, y+1));
+			AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
+		}
 		for (int x=1;x<num_x-1;x++)
 			for (int y=0;y<num_y;y++){
-				vector sva = ball_ang(x  , y  );
-				vector svb = ball_ang(x  , y+1);
-				vector svc = ball_ang(x+1, y  );
-				vector svd = ball_ang(x+1, y+1);
-				AddSubAction(new ActionModelAddTriangleSingleTexture(
-						m,
-						nv+2 +  num_y *(x-1)+ y	,nv+2 + num_y * x    +  y	,nv+2 +  num_y   *(x-1) + (y+1)%num_y,
-						material,
-						sva, svc, svb), m);
-				AddSubAction(new ActionModelAddTriangleSingleTexture(
-						m,
-						nv+2 +  num_y * x   + y		,nv+2 + num_y * x    + (y+1)%num_y	,nv+2 +  num_y   *(x-1) + (y+1)%num_y,
-						material,
-						svc, svd, svb), m);
+				Array<int> v;
+				v.add(nv+2 + num_y *(x-1) +(y+1)%num_y);
+				v.add(nv+2 + num_y *(x-1) + y);
+				v.add(nv+2 + num_y * x    + y);
+				v.add(nv+2 + num_y * x    + (y+1)%num_y);
+				Array<vector> sv;
+				sv.add(ball_ang(x  , y+1));
+				sv.add(ball_ang(x  , y  ));
+				sv.add(ball_ang(x+1, y  ));
+				sv.add(ball_ang(x+1, y+1));
+				AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
 			}
 	}
 	return &m->Surface.back();
-#endif
 }

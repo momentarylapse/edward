@@ -22,22 +22,19 @@ ActionModelSurfaceDeleteTriangle::~ActionModelSurfaceDeleteTriangle()
 
 void ActionModelSurfaceDeleteTriangle::undo(Data *d)
 {
-#if 0
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	ModelSurface &s = m->Surface[surface];
 
 	// add triangle
-	s.AddTriangle(vertex[0], vertex[1], vertex[2], material, skin[0], skin[1], skin[2], index);
-	//s.BuildFromTriangles();
-#endif
+	s.AddPolygon(vertex, material, skin, index);
+	//s.BuildFromPolygons();
 }
 
 
 
 void *ActionModelSurfaceDeleteTriangle::execute(Data *d)
 {
-#if 0
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	ModelSurface &s = m->Surface[surface];
@@ -45,15 +42,16 @@ void *ActionModelSurfaceDeleteTriangle::execute(Data *d)
 
 	// save old data
 	material = t.Material;
+	vertex.resize(t.Side.num);
 	for (int k=0;k<t.Side.num;k++)
 		vertex[k] = t.Side[k].Vertex;
-	for (int l=0;l<m->Material[material].NumTextures;l++)
-		for (int k=0;k<t.Side.num;k++)
-			skin[k][l] = t.Side[k].SkinVertex[l];
+	skin.clear();
+	for (int k=0;k<t.Side.num;k++)
+		for (int l=0;l<m->Material[material].NumTextures;l++)
+			skin.add(t.Side[k].SkinVertex[l]);
 
 	// erase
-	s.RemoveTriangle(index);
-#endif
+	s.RemovePolygon(index);
 
 	return NULL;
 }

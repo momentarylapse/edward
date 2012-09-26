@@ -9,23 +9,24 @@
 #include "ActionModelSurfaceDeleteTriangle.h"
 #include "ActionModelSurfaceAddTriangle.h"
 #include "../../../../../Data/Model/DataModel.h"
+#include <assert.h>
 
-ActionModelSurfaceRelinkTriangle::ActionModelSurfaceRelinkTriangle(DataModel *m, int _surface, int _triangle, int a, int b, int c)
+ActionModelSurfaceRelinkTriangle::ActionModelSurfaceRelinkTriangle(DataModel *m, int _surface, int _triangle, Array<int> &_v)
 {
-#if 0
 	// old triangle data
-	int material = m->Surface[_surface].Polygon[_triangle].Material;
-	vector sv[3][MODEL_MAX_TEXTURES];
-	for (int k=0;k<3;k++)
-		for (int l=0;l<MODEL_MAX_TEXTURES;l++)
-			sv[k][l] = m->Surface[_surface].Polygon[_triangle].SkinVertex[l][k];
+	ModelPolygon &t = m->Surface[_surface].Polygon[_triangle];
+	assert(_v.num == t.Side.num);
+	int material = t.Material;
+	Array<vector> sv;
+	for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+		for (int k=0;k<t.Side.num;k++)
+			sv.add(t.Side[k].SkinVertex[l]);
 
 	// delete old triangle
 	AddSubAction(new ActionModelSurfaceDeleteTriangle(_surface, _triangle), m);
 
 	// create new triangle
-	AddSubAction(new ActionModelSurfaceAddTriangle(_surface, a, b, c, material, sv[0], sv[1], sv[2], _triangle), m);
-#endif
+	AddSubAction(new ActionModelSurfaceAddTriangle(_surface, _v, material, sv, _triangle), m);
 }
 
 ActionModelSurfaceRelinkTriangle::~ActionModelSurfaceRelinkTriangle()
