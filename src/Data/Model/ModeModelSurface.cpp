@@ -30,7 +30,7 @@ void ModelSurface::AddVertex(int v)
 		msg_error("SurfaceAddVertex ...surface not found");
 }
 
-void ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, int index)
+bool ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, int index)
 {
 	msg_db_r("Surf.AddTria", 1);
 
@@ -42,7 +42,20 @@ void ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, in
 			t.Side[k].SkinVertex[i] = sv[i * v.num + k];
 	}
 	for (int k=0;k<v.num;k++){
-		t.Side[k].Edge = AddEdgeForNewPolygon(t.Side[k].Vertex, t.Side[(k + 1) % v.num].Vertex, Polygon.num, k);
+		int e = AddEdgeForNewPolygon(t.Side[k].Vertex, t.Side[(k + 1) % v.num].Vertex, Polygon.num, k);
+		if (e < 0){
+			// failed -> clean up
+			for (int i=Edge.num-1;i>=0;i--)
+				for (int j=0;j<Edge[i].RefCount;j++)
+					if (Edge[i].Polygon[j] == Polygon.num){
+						Edge[i].RefCount --;
+						if (Edge[i].RefCount == 0)
+							Edge.resize(i);
+					}
+			msg_db_l(1);
+			return false;
+		}
+		t.Side[k].Edge = e;
 		t.Side[k].EdgeDirection = Edge[t.Side[k].Edge].RefCount - 1;
 	}
 	for (int k=0;k<v.num;k++)
@@ -70,22 +83,30 @@ void ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, in
 	}else
 		Polygon.add(t);
 	msg_db_l(1);
+	return true;
 }
 
 int ModelSurface::AddEdgeForNewPolygon(int a, int b, int tria, int side)
 {
 	foreachi(ModelEdge &e, Edge, i){
 		if ((e.Vertex[0] == a) && (e.Vertex[1] == b)){
-			e.RefCount ++;
+			return -1;
+			/*e.RefCount ++;
 			msg_error("surface error? inverse edge");
 			e.Polygon[1] = tria;
 			e.Side[1] = side;
-			return i;
+			return i;*/
 		}
 		if ((e.Vertex[0] == b) && (e.Vertex[1] == a)){
+			if (e.Polygon[0] == tria){
+				//msg_error("surface error? same edge in poly");
+				return -1;
+			}
+			if (e.RefCount > 1){
+				//msg_error("surface error? edge refcount > 2");
+				return -1;
+			}
 			e.RefCount ++;
-			if (e.RefCount > 2)
-				msg_error("surface error? edge refcount > 2");
 			e.Polygon[1] = tria;
 			e.Side[1] = side;
 			return i;
@@ -570,15 +591,6 @@ Array<int> ModelPolygon::Triangulate(DataModel *m)
 		vi.add(k);
 	}
 
-
-	vector flat_n = TempNormal;
-	float f_sum = 0;
-	for (int i=0;i<v.num;i++)
-		f_sum += get_ang(m, v[i], v[(i+1) % v.num], v[(i+2) % v.num], flat_n);
-	//msg_write(f2s(f_sum, 3));
-	if (f_sum < 0)
-		flat_n = -flat_n;
-
 	while(v.num > 3){
 
 		// find largest angle (sharpest)
@@ -586,12 +598,12 @@ Array<int> ModelPolygon::Triangulate(DataModel *m)
 		int i_max = 0;
 		float f_max = 0;
 		for (int i=0;i<v.num;i++){
-			float f = get_ang(m, v[i], v[(i+1) % v.num], v[(i+2) % v.num], flat_n);
+			float f = get_ang(m, v[i], v[(i+1) % v.num], v[(i+2) % v.num], TempNormal);
 			if (f < 0)
 				continue;
 			// cheat: ...
-			float f_n = get_ang(m, v[(i+1) % v.num], v[(i+2) % v.num], v[(i+3) % v.num], flat_n);
-			float f_l = get_ang(m, v[(i-1+v.num) % v.num], v[i], v[(i+1) % v.num], flat_n);
+			float f_n = get_ang(m, v[(i+1) % v.num], v[(i+2) % v.num], v[(i+3) % v.num], TempNormal);
+			float f_l = get_ang(m, v[(i-1+v.num) % v.num], v[i], v[(i+1) % v.num], TempNormal);
 			if (f_n >= 0)
 				f += 0.01f / (f_n + 0.01f);
 			if (f_l >= 0)

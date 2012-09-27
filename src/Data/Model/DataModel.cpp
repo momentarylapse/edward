@@ -1826,7 +1826,7 @@ void DataModel::NearifySelectedVertices()
 {	Execute(new ActionModelNearifyVertices(this));	}
 
 void DataModel::CollapseSelectedVertices()
-{	Execute(new ActionModelCollapseVertices(this));	}
+{	Execute(new ActionModelCollapseVertices());	}
 
 void DataModel::SetNormalModeSelection(int mode)
 {	Execute(new ActionModelSetNormalModeSelection(this, mode));	}

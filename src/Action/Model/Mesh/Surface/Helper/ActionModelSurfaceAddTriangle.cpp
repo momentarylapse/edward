@@ -45,7 +45,8 @@ void *ActionModelSurfaceAddTriangle::execute(Data *d)
 	ModelSurface &s = m->Surface[surface];
 
 	// add triangle
-	s.AddPolygon(v, material, sv, index);
+	if (!s.AddPolygon(v, material, sv, index))
+		throw(ActionException("evil polygon"));
 
 	if (index >= 0)
 		return &s.Polygon[index];

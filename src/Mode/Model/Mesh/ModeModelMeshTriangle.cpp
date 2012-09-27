@@ -265,70 +265,68 @@ void ModeModelMeshTriangle::OnStart()
 
 bool TriangleIsMouseOver(int index, void *user_data, int win, vector &tp)
 {
-	/*ModelSurface *surf = (ModelSurface*)user_data;
+	ModelSurface *surf = (ModelSurface*)user_data;
 	ModelPolygon *t = &surf->Polygon[index];
+
+	// care for the sense of rotation?
+	if (t->TempNormal * ed->multi_view_3d->GetDirection(win) > 0)
+		return false;
+
+	DataModel *m = mode_model_mesh_triangle->data; // surf->model;
+
+	// project all points
+	Array<vector> p;
+	for (int k=0;k<t->Side.num;k++){
+		vector pp = ed->multi_view_3d->VecProject(m->Vertex[t->Side[k].Vertex].pos, win); // mmodel->GetVertex(ia)
+		if ((pp.z <= 0) or (pp.z >= 1))
+			return false;
+		p.add(pp);
+	}
+
+	// test all sub-triangles
+	Array<int> vi = t->Triangulate(m);
 	vector M = vector(float(ed->multi_view_3d->mx), float(ed->multi_view_3d->my), 0);
-	int a = t->Vertex[0];
-	int b = t->Vertex[1];
-	int c = t->Vertex[2];
-	vector va = mode_model_mesh_triangle->data->Vertex[a].pos;//mmodel->GetVertex(a);
-	vector vb = mode_model_mesh_triangle->data->Vertex[b].pos;//mmodel->GetVertex(b);
-	vector vc = mode_model_mesh_triangle->data->Vertex[c].pos;//mmodel->GetVertex(c);
-	vector pa = ed->multi_view_3d->VecProject(va, win);
-	vector pb = ed->multi_view_3d->VecProject(vb, win);
-	vector pc = ed->multi_view_3d->VecProject(vc, win);
-	if ((pa.z>0)&&(pb.z>0)&&(pc.z>0)&&(pa.z<1)&&(pb.z<1)&&(pc.z<1)){
+	for (int i=0;i<vi.num/3;i++){
 		float f,g;
-		GetBaryCentric(M,pa,pb,pc,f,g);
+		GetBaryCentric(M, p[vi[i*3]], p[vi[i*3+1]], p[vi[i*3+2]], f, g);
 		// cursor in triangle?
 		if ((f>0)&&(g>0)&&(f+g<1)){
-			// rechts- oder links-herum?
-			float wba=(float)atan2(pb.x-pa.x,pb.y-pa.y);
-			float wca=(float)atan2(pc.x-pa.x,pc.y-pa.y);
-			if (wba<0)	wba+=2*pi;
-			if (wca<0)	wca+=2*pi;
-			float dw=wca-wba;
-			if (dw<0)	dw+=2*pi;
-			if (dw>pi){
-				// Mauspunkt mit Tiefe z
-				tp=va+f*(vb-va)+g*(vc-va);
-				return true;
-			}
+			vector va = m->Vertex[t->Side[vi[i*3  ]].Vertex].pos;
+			vector vb = m->Vertex[t->Side[vi[i*3+1]].Vertex].pos;
+			vector vc = m->Vertex[t->Side[vi[i*3+2]].Vertex].pos;
+			tp = va+f*(vb-va)+g*(vc-va);
+			return true;
 		}
-	}*/
+	}
 	return false;
+}
+
+inline bool in_irect(const vector &p, irect *r)
+{
+	return ((p.x > r->x1) and (p.x < r->x2) and (p.y > r->y1) and (p.y < r->y2));
 }
 
 bool TriangleInRect(int index, void *user_data, int win, irect *r)
 {
-	/*ModelSurface *surf = (ModelSurface*)user_data;
+	ModelSurface *surf = (ModelSurface*)user_data;
 	ModelPolygon *t = &surf->Polygon[index];
-	int ia=t->Vertex[0];
-	int ib=t->Vertex[1];
-	int ic=t->Vertex[2];
-	vector A,B,C;
-	A = ed->multi_view_3d->VecProject(mode_model_mesh_triangle->data->Vertex[ia].pos, win); // mmodel->GetVertex(ia)
-	B = ed->multi_view_3d->VecProject(mode_model_mesh_triangle->data->Vertex[ib].pos, win);
-	C = ed->multi_view_3d->VecProject(mode_model_mesh_triangle->data->Vertex[ic].pos, win);
+
+	// care for the sense of rotation?
+	if (mode_model_mesh_triangle->SelectCW)
+		if (t->TempNormal * ed->multi_view_3d->GetDirection(win) > 0)
+			return false;
+
+	DataModel *m = mode_model_mesh_triangle->data; // surf->model;
+
 	// all vertices within rectangle?
-	if ((A.z>0)&&(B.z>0)&&(C.z>0))
-		if ((A.x>r->x1)&&(A.x<r->x2)&&(A.y>r->y1)&&(A.y<r->y2))
-			if ((B.x>r->x1)&&(B.x<r->x2)&&(B.y>r->y1)&&(B.y<r->y2))
-				if ((C.x>r->x1)&&(C.x<r->x2)&&(C.y>r->y1)&&(C.y<r->y2)){
-					// care for the sense of rotation?
-					if (mode_model_mesh_triangle->SelectCW){
-						float wba=(float)atan2(B.x-A.x,B.y-A.y);
-						float wca=(float)atan2(C.x-A.x,C.y-A.y);
-						if (wba<0)	wba+=2*pi;
-						if (wca<0)	wca+=2*pi;
-						float dw=wca-wba;
-						if (dw<0)	dw+=2*pi;
-						if (dw>pi)
-							return true;
-					}else
-						return true;
-				}*/
-	return false;
+	for (int k=0;k<t->Side.num;k++){
+		vector pp = ed->multi_view_3d->VecProject(m->Vertex[t->Side[k].Vertex].pos, win); // mmodel->GetVertex(ia)
+		if ((pp.z <= 0) or (pp.z >= 1))
+			return false;
+		if (!in_irect(pp, r))
+			return false;
+	}
+	return true;
 }
 
 

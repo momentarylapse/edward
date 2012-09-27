@@ -15,9 +15,11 @@ class ModelSurface;
 class ActionModelCollapseVertices: public ActionGroup
 {
 public:
-	ActionModelCollapseVertices(DataModel *m);
-	virtual ~ActionModelCollapseVertices();
+	ActionModelCollapseVertices();
+	virtual ~ActionModelCollapseVertices(){}
 	string name(){	return "ModelCollapseVertices";	}
+
+	void *compose(Data *d);
 
 	void CollapseVerticesInSurface(DataModel *m, ModelSurface &s, int surf);
 };

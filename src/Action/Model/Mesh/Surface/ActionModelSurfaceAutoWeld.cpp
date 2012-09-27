@@ -8,7 +8,7 @@
 #include "ActionModelSurfaceAutoWeld.h"
 #include "Helper/ActionModelJoinSurfaces.h"
 #include "../Vertex/Helper/ActionModelDeleteUnusedVertex.h"
-#include "Helper/ActionModelSurfaceRelinkTriangle.h"
+#include "Helper/ActionModelSurfaceRelinkPolygon.h"
 #include "../../../../Data/Model/ModeModelSurface.h"
 
 ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(DataModel *m, int _surface1, int _surface2, float _epsilon, bool _ignore_failure)
@@ -72,7 +72,7 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 			}
 		}
 		if (relink){
-			AddSubAction(new ActionModelSurfaceRelinkTriangle(m, surface1, ti, v), m);
+			AddSubAction(new ActionModelSurfaceRelinkPolygon(surface1, ti, v), m);
 			_foreach_it_.update(); // TODO
 		}
 	}

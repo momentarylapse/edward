@@ -8,7 +8,7 @@
 #include "ActionModelExtrudeTriangles.h"
 //#include "../Surface/Helper/ActionModelSurfaceAddTriangle.h"
 #include "../Triangle/ActionModelAddTriangleSingleTexture.h"
-#include "../Surface/Helper/ActionModelSurfaceRelinkTriangle.h"
+#include "../Surface/Helper/ActionModelSurfaceRelinkPolygon.h"
 #include "../Vertex/ActionModelAddVertex.h"
 #include "../Vertex/ActionModelMoveVertices.h"
 #include "../../../../Data/Model/DataModel.h"

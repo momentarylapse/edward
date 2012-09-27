@@ -9,13 +9,12 @@
 #include "Helper/ActionModelDeleteUnusedVertex.h"
 #include "ActionModelAddVertex.h"
 #include "../Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
-#include "../Surface/Helper/ActionModelSurfaceRelinkTriangle.h"
+#include "../Surface/Helper/ActionModelSurfaceRelinkPolygon.h"
 #include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
 void ActionModelCollapseVertices::CollapseVerticesInSurface(DataModel *m, ModelSurface &s, int surf)
 {
-#if 0
 	Set<int> vert;
 	vector pos = v_0;
 	foreach(int v, s.Vertex)
@@ -26,7 +25,7 @@ void ActionModelCollapseVertices::CollapseVerticesInSurface(DataModel *m, ModelS
 	if (vert.num < 2)
 		return;
 	pos /= vert.num;
-
+#if 0
 	// delete triangles between 2+ selected vertices
 	foreachib(ModelPolygon &t, s.Polygon, ti){
 		int n_sel = 0;
@@ -45,13 +44,13 @@ void ActionModelCollapseVertices::CollapseVerticesInSurface(DataModel *m, ModelS
 
 	// re-link triangles with 1 selected vertex
 	foreachib(ModelPolygon &t, s.Polygon, ti){
-		int v[3];
-		for (int k=0;k<3;k++)
-			v[k] = t.Vertex[k];
-		for (int k=0;k<3;k++)
-			if (vert.contains(t.Vertex[k])){
+		Array<int> v;
+		for (int k=0;k<t.Side.num;k++)
+			v.add(t.Side[k].Vertex);
+		for (int k=0;k<t.Side.num;k++)
+			if (vert.contains(t.Side[k].Vertex)){
 				v[k] = new_vertex;
-				AddSubAction(new ActionModelSurfaceRelinkTriangle(m, surf, ti, v[0], v[1], v[2]), m);
+				AddSubAction(new ActionModelSurfaceRelinkPolygon(surf, ti, v), m);
 				_foreach_it_.update(); // TODO
 			}
 	}
@@ -62,13 +61,16 @@ void ActionModelCollapseVertices::CollapseVerticesInSurface(DataModel *m, ModelS
 #endif
 }
 
-ActionModelCollapseVertices::ActionModelCollapseVertices(DataModel *m)
+ActionModelCollapseVertices::ActionModelCollapseVertices()
+{}
+
+void *ActionModelCollapseVertices::compose(Data *d)
 {
+	DataModel *m = dynamic_cast<DataModel*>(d);
+
 	foreachi(ModelSurface &s, m->Surface, si)
 		CollapseVerticesInSurface(m, s, si);
-}
 
-ActionModelCollapseVertices::~ActionModelCollapseVertices()
-{
+	return NULL;
 }
 
