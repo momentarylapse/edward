@@ -16383,7 +16383,7 @@ einzelne Dateien\\Archiv (komprimiert)\\Archiv (unkomprimiert)
 export_world
 Welt
 extrude_triangles
---Extrudieren
+Extrudieren
 factorx
 
 factory
