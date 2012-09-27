@@ -247,7 +247,7 @@ enum{
 		sub_menu_858->AddEntry("Auf Punkte",HMM_MENU_VERTEX_HEADER);
 		sub_menu_858->EnableItem(HMM_MENU_VERTEX_HEADER,false);
 		sub_menu_858->AddEntry("Am Raster ausrichten",HMM_ALIGN_TO_GRID);
-		sub_menu_858->AddEntry("Vereinen",HMM_CONNECT);
+		sub_menu_858->AddEntry("--Vereinen",HMM_CONNECT);
 		sub_menu_858->AddEntry("Ann&ahern",HMM_NEARIFY);
 		sub_menu_858->AddEntry("Abfr&asen",HMM_BEVEL_VERTICES);
 		sub_menu_858->AddEntry("Einebnen",HMM_FLATTEN_VERTICES);
@@ -256,7 +256,7 @@ enum{
 		sub_menu_858->EnableItem(HMM_MENU_TRIA_HEADER,false);
 		sub_menu_858->AddEntryImage("--Heraustrennen",HuiImageCut,HMM_CUT_OUT);
 		sub_menu_858->AddEntry("Zerteilen",HMM_NEW_EXTRACT);
-		sub_menu_858->AddEntry("Extrudieren",HMM_EXTRUDE_TRIANGLES);
+		sub_menu_858->AddEntry("--Extrudieren",HMM_EXTRUDE_TRIANGLES);
 		sub_menu_858->AddEntry("Triangulieren",HMM_TRIANGULATE_SELECTION);
 		sub_menu_858->AddSeparator();
 		sub_menu_858->AddEntry("Auf Fl&achen",HMM_MENU_SURFACE_HEADER);

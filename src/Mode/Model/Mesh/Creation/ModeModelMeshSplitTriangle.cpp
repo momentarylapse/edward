@@ -7,7 +7,7 @@
 
 #include "ModeModelMeshSplitTriangle.h"
 #include "../../../../Edward.h"
-#include "../../../../Action/Model/Mesh/Triangle/ActionModelSplitTriangle.h"
+#include "../../../../Action/Model/Mesh/Triangle/ActionModelSplitPolygon.h"
 #include "../../../../Action/Model/Mesh/Edge/ActionModelSplitEdge.h"
 
 ModeModelMeshSplitTriangle::ModeModelMeshSplitTriangle(Mode *_parent) :
@@ -19,7 +19,7 @@ ModeModelMeshSplitTriangle::ModeModelMeshSplitTriangle(Mode *_parent) :
 	triangle = -1;
 	factor = 0;
 
-	message = _("neuen Punkt in Dreieck setzen");
+	message = _("neuen Punkt in Polygon setzen");
 }
 
 ModeModelMeshSplitTriangle::~ModeModelMeshSplitTriangle()
@@ -36,10 +36,11 @@ void ModeModelMeshSplitTriangle::OnLeftButtonDown()
 		if (edge >= 0)
 			data->Execute(new ActionModelSplitEdge(surface, edge, factor));
 		else
-			data->Execute(new ActionModelSplitTriangle(data, surface, triangle, pos));
+			data->Execute(new ActionModelSplitPolygon(surface, triangle, pos));
 		//Abort();
 		surface = -1;
 		triangle = -1;
+		ed->ForceRedraw();
 	}
 }
 

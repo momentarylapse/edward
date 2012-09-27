@@ -16261,7 +16261,7 @@ Mit Material belegen...
 clear_texture_level
 Leeren
 connect
-Vereinen
+--Vereinen
 copy
 Kopieren
 create_lightmap
@@ -16383,7 +16383,7 @@ einzelne Dateien\\Archiv (komprimiert)\\Archiv (unkomprimiert)
 export_world
 Welt
 extrude_triangles
-Extrudieren
+--Extrudieren
 factorx
 
 factory
@@ -18975,7 +18975,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-164
+163
 // Text
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -19293,8 +19293,6 @@ message.txt öffnen
 Open message.txt
 neue Punkte setzen
 place new vertex
-neuen Punkt in Dreieck setzen
-Add a new vertex into a triangle
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 skin: %d

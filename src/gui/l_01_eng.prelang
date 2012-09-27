@@ -1476,8 +1476,8 @@ message.txt öffnen
 Open message.txt
 neue Punkte setzen
 place new vertex
-neuen Punkt in Dreieck setzen
-Add a new vertex into a triangle
+neuen Punkt in Polygon setzen
+
 neues Objekt setzen
 
 neues Terrain...
