@@ -21,6 +21,9 @@ public:
 	void *execute(Data *d);
 	void undo(Data *d);
 
+	// abort: don't undo because exception was thrown without adding a polygon
+	void abort(Data *d){}
+
 private:
 	int surface;
 	int index;

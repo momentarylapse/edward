@@ -20,8 +20,15 @@ ActionGroup::~ActionGroup()
 
 void *ActionGroup::AddSubAction(Action *a, Data *d)
 {
-	action.add(a);
-	return a->execute_logged(d);
+	void *r = NULL;
+	try{
+		r = a->execute_logged(d);
+		action.add(a);
+	}catch(ActionException &e){
+		a->abort(d);
+		throw;
+	}
+	return r;
 }
 
 
@@ -54,7 +61,7 @@ void ActionGroup::redo(Data *d)
 void ActionGroup::abort(Data *d)
 {
 	foreachb(Action *a, action)
-		a->abort(d);
+		a->undo_logged(d);
 }
 
 

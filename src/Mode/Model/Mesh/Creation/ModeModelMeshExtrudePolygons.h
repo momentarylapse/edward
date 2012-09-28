@@ -24,6 +24,9 @@ public:
 
 	void OnDrawWin(int win, irect dest);
 
+	void Preview();
+	void CleanUp();
+
 	DataModel *data;
 	Data *GetData(){	return data;	}
 

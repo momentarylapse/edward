@@ -17,8 +17,7 @@ ModeModelMeshExtrudePolygons::ModeModelMeshExtrudePolygons(Mode *_parent) :
 	data->GetSelectionState(selection);
 
 	offset = 20.0f / multi_view->zoom;
-	a = new ActionModelExtrudePolygons(offset);
-	a->execute_logged(data);
+	Preview();
 
 	message = _("Extrudieren: Offset durch Maus, Linke Taste = fertig");
 }
@@ -29,17 +28,12 @@ ModeModelMeshExtrudePolygons::~ModeModelMeshExtrudePolygons()
 
 void ModeModelMeshExtrudePolygons::OnEnd()
 {
-	if (a){
-		a->undo_logged(data);
-		delete(a);
-	}
+	CleanUp();
 }
 
 void ModeModelMeshExtrudePolygons::OnLeftButtonDown()
 {
-	a->undo_logged(data);
-	delete(a);
-	a = NULL;
+	CleanUp();
 
 	data->SetSelectionState(selection);
 	data->Execute(new ActionModelExtrudePolygons(offset));
@@ -49,13 +43,10 @@ void ModeModelMeshExtrudePolygons::OnLeftButtonDown()
 
 void ModeModelMeshExtrudePolygons::OnMouseMove()
 {
-	a->undo_logged(data);
-	delete(a);
+	CleanUp();
 
 	offset += (HuiGetEvent()->dx) / multi_view->zoom;
-	data->SetSelectionState(selection);
-	a = new ActionModelExtrudePolygons(offset);
-	a->execute_logged(data);
+	Preview();
 }
 
 void ModeModelMeshExtrudePolygons::OnDrawWin(int win, irect dest)
@@ -63,3 +54,28 @@ void ModeModelMeshExtrudePolygons::OnDrawWin(int win, irect dest)
 	NixEnableLighting(false);
 	ed->DrawStr(100, 100, f2s(offset, 3));
 }
+
+void ModeModelMeshExtrudePolygons::Preview()
+{
+	data->SetSelectionState(selection);
+	a = new ActionModelExtrudePolygons(offset);
+	try{
+		a->execute_logged(data);
+	}catch(ActionException &e){
+		a->abort(data);
+		delete(a);
+		a = NULL;
+		Abort();
+		ed->ErrorBox(e.message);
+	}
+}
+
+void ModeModelMeshExtrudePolygons::CleanUp()
+{
+	if (a){
+		a->undo_logged(data);
+		delete(a);
+		a = NULL;
+	}
+}
+

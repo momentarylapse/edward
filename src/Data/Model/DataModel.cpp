@@ -830,9 +830,11 @@ bool DataModel::Load(const string & _filename, bool deep)
 				if ((t.Vertex[0] == t.Vertex[1]) || (t.Vertex[1] == t.Vertex[2]) || (t.Vertex[2] == t.Vertex[0]))
 					continue;
 				ModelPolygon *tt = AddTriangle(t.Vertex[0], t.Vertex[1], t.Vertex[2]);
-				for (int tl=0;tl<Material[i].NumTextures;tl++)
-					for (int k=0;k<3;k++)
-						tt->Side[k].SkinVertex[tl] = t.SkinVertex[tl][k];
+				if (tt){
+					for (int tl=0;tl<Material[i].NumTextures;tl++)
+						for (int k=0;k<3;k++)
+							tt->Side[k].SkinVertex[tl] = t.SkinVertex[tl][k];
+				}
 			}
 		}
 		foreach(ModelMove &m, Move)

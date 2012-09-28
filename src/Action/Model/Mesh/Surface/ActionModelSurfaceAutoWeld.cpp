@@ -22,7 +22,6 @@ ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(int _surface1, int _surfa
 
 void *ActionModelSurfaceAutoWeld::compose(Data *d)
 {
-	msg_db_r("SurfWeld", 1);
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	if (surface1 >= surface2)
@@ -91,6 +90,5 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 		AddSubAction(new ActionModelDeleteUnusedVertex(ww), m);
 	}
 
-	msg_db_l(1);
 	return a;
 }
