@@ -791,19 +791,42 @@ bool DataModel::Load(const string & _filename, bool deep)
 					v.NormalMode = s->NormalModeAll;
 			}
 		   }
-		// BG Textures
-		f->ReadComment();
-	/*for (int i=0;i<4;i++){
-		f->WriteStr(BgTextureFile[i]);
-		if (strlen(BgTextureFile[i])>0){
-			f->WriteFloat(BgTextureA[i].x);
-			f->WriteFloat(BgTextureA[i].y);
-			f->WriteFloat(BgTextureA[i].z);
-			f->WriteFloat(BgTextureB[i].x);
-			f->WriteFloat(BgTextureB[i].y);
-			f->WriteFloat(BgTextureB[i].z);
+
+		// Polygons
+		if (f->ReadStr() == "// Polygons"){
+			NormalModeAll = Skin[1].NormalModeAll;
+			foreachi(ModelVertex &v, Skin[1].Vertex, i)
+				AddVertex(v.pos, v.BoneIndex, v.NormalMode);
+			int ns = f->ReadInt();
+			for (int i=0;i<ns;i++){
+				ModelSurface s;
+				int nv = f->ReadInt();
+				for (int j=0;j<nv;j++){
+					ModelPolygon t;
+					int n = f->ReadInt();
+					t.Material = f->ReadInt();
+					t.Side.resize(n);
+					for (int k=0;k<n;k++){
+						t.Side[k].Vertex = f->ReadInt();
+						for (int l=0;l<Material[t.Material].NumTextures;l++){
+							t.Side[k].SkinVertex[l].x = f->ReadFloat();
+							t.Side[k].SkinVertex[l].y = f->ReadFloat();
+						}
+					}
+					t.NormalDirty = true;
+					s.Polygon.add(t);
+				}
+				s.IsPhysical = f->ReadBool();
+				s.IsVisible = f->ReadBool();
+				f->ReadInt();
+				s.model = this;
+				Surface.add(s);
+			}
+			foreach(ModelSurface &s, Surface)
+				s.BuildFromPolygons();
 		}
-	}*/
+
+
 
 
 
@@ -827,6 +850,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 	if (deep){
 
 		// import...
+		if (Surface.num == 0){
 		NotifyBegin();
 		NormalModeAll = Skin[1].NormalModeAll;
 		foreachi(ModelVertex &v, Skin[1].Vertex, i){
@@ -846,13 +870,14 @@ bool DataModel::Load(const string & _filename, bool deep)
 				}
 			}
 		}
+		ClearSelection();
+		NotifyEnd();
+		}
 		foreach(ModelMove &m, Move)
 			if (m.Type == MoveTypeVertex){
 				foreach(ModelFrame &f, m.Frame)
 					f.VertexDPos = f.Skin[1].DPos;
 			}
-		ClearSelection();
-		NotifyEnd();
 
 		for (int i=0;i<Material.num;i++){
 			Material[i].MakeConsistent();
@@ -1266,8 +1291,13 @@ bool DataModel::Save(const string & _filename)
 		foreach(ModelPolygon &t, s.Polygon){
 			f->WriteInt(t.Side.num);
 			f->WriteInt(t.Material);
-			foreach(ModelPolygonSide &ss, t.Side)
+			foreach(ModelPolygonSide &ss, t.Side){
 				f->WriteInt(ss.Vertex);
+				for (int l=0;l<Material[t.Material].NumTextures;l++){
+					f->WriteFloat(ss.SkinVertex[l].x);
+					f->WriteFloat(ss.SkinVertex[l].y);
+				}
+			}
 		}
 		f->WriteBool(s.IsPhysical);
 		f->WriteBool(s.IsVisible);
