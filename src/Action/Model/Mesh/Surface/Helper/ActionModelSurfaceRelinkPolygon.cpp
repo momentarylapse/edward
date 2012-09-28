@@ -6,8 +6,8 @@
  */
 
 #include "ActionModelSurfaceRelinkPolygon.h"
-#include "ActionModelSurfaceDeleteTriangle.h"
-#include "ActionModelSurfaceAddTriangle.h"
+#include "ActionModelSurfaceDeletePolygon.h"
+#include "ActionModelSurfaceAddPolygon.h"
 #include "../../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
@@ -33,13 +33,13 @@ void *ActionModelSurfaceRelinkPolygon::compose(Data *d)
 			sv.add(t.Side[k].SkinVertex[l]);
 
 	// delete old triangle
-	AddSubAction(new ActionModelSurfaceDeleteTriangle(surface, polygon), m);
+	AddSubAction(new ActionModelSurfaceDeletePolygon(surface, polygon), m);
 
 	// create new triangle
 	if (new_surface >= 0)
-		AddSubAction(new ActionModelSurfaceAddTriangle(new_surface, v, material, sv), m);
+		AddSubAction(new ActionModelSurfaceAddPolygon(new_surface, v, material, sv), m);
 	else
-		AddSubAction(new ActionModelSurfaceAddTriangle(surface, v, material, sv, polygon), m);
+		AddSubAction(new ActionModelSurfaceAddPolygon(surface, v, material, sv, polygon), m);
 
 	return NULL;
 }

@@ -6,7 +6,7 @@
  */
 
 #include "ActionModelExtrudePolygons.h"
-#include "../Triangle/ActionModelAddTriangleSingleTexture.h"
+#include "ActionModelAddPolygonSingleTexture.h"
 #include "../Surface/Helper/ActionModelSurfaceRelinkPolygon.h"
 #include "../Vertex/ActionModelAddVertex.h"
 #include "../Vertex/Helper/ActionModelMoveVertex.h"
@@ -108,7 +108,7 @@ void ActionModelExtrudePolygons::ExtrudeSurface(ModelSurface &s, int surface, Da
 				sv.add(vector(0,0,0));
 				sv.add(vector(0,1,0));
 				sv.add(vector(1,1,0));
-				AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, m->CurrentMaterial, sv), m);
+				AddSubAction(new ActionModelAddPolygonSingleTexture(v, m->CurrentMaterial, sv), m);
 				_foreach_it_.update(); // TODO
 			}
 		}

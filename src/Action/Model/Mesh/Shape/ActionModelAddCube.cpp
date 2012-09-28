@@ -7,7 +7,7 @@
 
 #include "ActionModelAddCube.h"
 #include "../Vertex/ActionModelAddVertex.h"
-#include "../Triangle/ActionModelAddTriangleSingleTexture.h"
+#include "../Polygon/ActionModelAddPolygonSingleTexture.h"
 #include "../../../../Data/Model/DataModel.h"
 
 static Array<int> quad(int a, int b, int c, int d)
@@ -52,22 +52,22 @@ ActionModelAddCube::ActionModelAddCube(DataModel *m, const vector &_pos, const v
 
 	// front
 	v = quad(nv + 1, nv + 0, nv + 2, nv + 3);
-	AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
+	AddSubAction(new ActionModelAddPolygonSingleTexture(v, material, sv), m);
 	// top
 	v = quad(nv + 3, nv + 2, nv + 6, nv + 7);
-	AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
+	AddSubAction(new ActionModelAddPolygonSingleTexture(v, material, sv), m);
 	// bottom
 	v = quad(nv + 5, nv + 4, nv + 0, nv + 1);
-	AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
+	AddSubAction(new ActionModelAddPolygonSingleTexture(v, material, sv), m);
 	// left
 	v = quad(nv + 0, nv + 4, nv + 6, nv + 2);
-	AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
+	AddSubAction(new ActionModelAddPolygonSingleTexture(v, material, sv), m);
 	// right
 	v = quad(nv + 5, nv + 1, nv + 3, nv + 7);
-	AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
+	AddSubAction(new ActionModelAddPolygonSingleTexture(v, material, sv), m);
 	// back*/
 	v = quad(nv + 4, nv + 5, nv + 7, nv + 6);
-	AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
+	AddSubAction(new ActionModelAddPolygonSingleTexture(v, material, sv), m);
 
 }
 

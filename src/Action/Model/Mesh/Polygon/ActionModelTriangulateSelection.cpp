@@ -6,8 +6,8 @@
  */
 
 #include "ActionModelTriangulateSelection.h"
-#include "../Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
-#include "../Surface/Helper/ActionModelSurfaceAddTriangle.h"
+#include "../Surface/Helper/ActionModelSurfaceDeletePolygon.h"
+#include "../Surface/Helper/ActionModelSurfaceAddPolygon.h"
 #include "../../../../Data/Model/DataModel.h"
 
 ActionModelTriangulateSelection::ActionModelTriangulateSelection()
@@ -27,7 +27,7 @@ void *ActionModelTriangulateSelection::compose(Data *d)
 				ModelPolygon temp = t;
 
 				// delete old polygon
-				AddSubAction(new ActionModelSurfaceDeleteTriangle(si, ti), m);
+				AddSubAction(new ActionModelSurfaceDeletePolygon(si, ti), m);
 
 				// triangulate
 				Array<int> vv = temp.Triangulate(m);
@@ -39,7 +39,7 @@ void *ActionModelTriangulateSelection::compose(Data *d)
 					for (int l=0;l<MODEL_MAX_TEXTURES;l++)
 						for (int k=0;k<3;k++)
 							sv.add(temp.Side[vv[i*3+k]].SkinVertex[l]);
-					AddSubAction(new ActionModelSurfaceAddTriangle(si, v, temp.Material, sv), m);
+					AddSubAction(new ActionModelSurfaceAddPolygon(si, v, temp.Material, sv), m);
 				}
 
 

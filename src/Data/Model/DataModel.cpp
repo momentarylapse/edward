@@ -6,7 +6,7 @@
  */
 
 #include "DataModel.h"
-#include "ModeModelSurface.h"
+#include "ModelSurface.h"
 #include "../../Mode/Model/ModeModel.h"
 #include "../../Action/Action.h"
 #include "../../Action/ActionManager.h"
@@ -17,8 +17,10 @@
 #include "../../Action/Model/Mesh/Vertex/ActionModelAlignToGrid.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelFlattenVertices.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelBevelVertices.h"
-#include "../../Action/Model/Mesh/Triangle/ActionModelAddTriangleSingleTexture.h"
-#include "../../Action/Model/Mesh/Triangle/ActionModelExtrudePolygons.h"
+#include "../../Action/Model/Mesh/Polygon/ActionModelAddPolygonSingleTexture.h"
+#include "../../Action/Model/Mesh/Polygon/ActionModelExtrudePolygons.h"
+#include "../../Action/Model/Mesh/Polygon/ActionModelTriangulateSelection.h"
+#include "../../Action/Model/Mesh/Polygon/ActionModelCutOutPolygons.h"
 #include "../../Action/Model/Mesh/Shape/ActionModelAddCube.h"
 #include "../../Action/Model/Mesh/Shape/ActionModelAddPlane.h"
 #include "../../Action/Model/Mesh/Shape/ActionModelAddCylinder.h"
@@ -1381,7 +1383,7 @@ ModelPolygon *DataModel::AddTriangle(int a, int b, int c)
 	sv.add(v_0);
 	sv.add(e_x);
 	//ApplyAutoTexturing(this, a, b, c, sv);
-	return (ModelPolygon*) Execute(new ActionModelAddTriangleSingleTexture(this, v, CurrentMaterial, sv));
+	return (ModelPolygon*) Execute(new ActionModelAddPolygonSingleTexture(v, CurrentMaterial, sv));
 }
 
 ModelPolygon *DataModel::AddPolygon(Array<int> &v)
@@ -1391,7 +1393,7 @@ ModelPolygon *DataModel::AddPolygon(Array<int> &v)
 		float w = (float)i / (float)v.num * 2 * pi;
 		sv.add(vector(0.5f + cos(w) * 0.5f, 0.5f + sin(w), 0));
 	}
-	return (ModelPolygon*)Execute(new ActionModelAddTriangleSingleTexture(this, v, CurrentMaterial, sv));
+	return (ModelPolygon*)Execute(new ActionModelAddPolygonSingleTexture(v, CurrentMaterial, sv));
 }
 
 
@@ -1816,10 +1818,10 @@ void DataModel::CopyGeometry(ModelGeometry &geo)
 }
 
 void DataModel::DeleteSelection(bool greedy)
-{	Execute(new ActionModelDeleteSelection(this, greedy));	}
+{	Execute(new ActionModelDeleteSelection(greedy));	}
 
 void DataModel::InvertSelection()
-{	Execute(new ActionModelInvertSelection(this));	}
+{	Execute(new ActionModelInvertSelection());	}
 
 void DataModel::SubtractSelection()
 {	Execute(new ActionModelSurfaceSubtract(this));	}
@@ -1843,7 +1845,7 @@ void DataModel::SetMaterialSelection(int material)
 {	Execute(new ActionModelSetMaterial(this, material));	}
 
 void DataModel::PasteGeometry(ModelGeometry& geo)
-{	Execute(new ActionModelPasteGeometry(this, geo));	}
+{	Execute(new ActionModelPasteGeometry(geo));	}
 
 void DataModel::Easify(float factor)
 {	Execute(new ActionModelEasify(this, factor));	}
@@ -1871,6 +1873,12 @@ void DataModel::SelectionAddEffects(const ModelEffect& effect)
 
 void DataModel::EditEffect(int index, const ModelEffect& effect)
 {	Execute(new ActionModelEditEffect(index, effect));	}
+
+void DataModel::CutOutSelection()
+{	Execute(new ActionModelCutOutPolygons());	}
+
+void DataModel::TriangulateSelection()
+{	Execute(new ActionModelTriangulateSelection());	}
 
 void DataModel::SelectionClearEffects()
 {	Execute(new ActionModelClearEffects(this));	}

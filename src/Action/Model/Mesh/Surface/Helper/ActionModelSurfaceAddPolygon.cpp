@@ -1,16 +1,16 @@
 /*
- * ActionModelSurfaceAddTriangle.cpp
+ * ActionModelSurfaceAddPolygon.cpp
  *
  *  Created on: 13.03.2012
  *      Author: michi
  */
 
-#include "ActionModelSurfaceAddTriangle.h"
+#include "ActionModelSurfaceAddPolygon.h"
 #include "../../../../../Data/Model/DataModel.h"
 
 // might create a "disjoint" surface -> don't use alone!
 
-ActionModelSurfaceAddTriangle::ActionModelSurfaceAddTriangle(int _surface, Array<int> &_v, int _material, Array<vector> &_sv, int _index)
+ActionModelSurfaceAddPolygon::ActionModelSurfaceAddPolygon(int _surface, Array<int> &_v, int _material, Array<vector> &_sv, int _index)
 {
 	surface = _surface;
 	index = _index;
@@ -20,11 +20,11 @@ ActionModelSurfaceAddTriangle::ActionModelSurfaceAddTriangle(int _surface, Array
 
 }
 
-ActionModelSurfaceAddTriangle::~ActionModelSurfaceAddTriangle()
+ActionModelSurfaceAddPolygon::~ActionModelSurfaceAddPolygon()
 {
 }
 
-void ActionModelSurfaceAddTriangle::undo(Data *d)
+void ActionModelSurfaceAddPolygon::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
@@ -38,7 +38,7 @@ void ActionModelSurfaceAddTriangle::undo(Data *d)
 
 
 
-void *ActionModelSurfaceAddTriangle::execute(Data *d)
+void *ActionModelSurfaceAddPolygon::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 

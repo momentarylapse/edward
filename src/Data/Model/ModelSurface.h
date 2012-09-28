@@ -1,12 +1,12 @@
 /*
- * ModeModelSurface.h
+ * ModelSurface.h
  *
  *  Created on: 07.03.2012
  *      Author: michi
  */
 
-#ifndef MODEMODELSURFACE_H_
-#define MODEMODELSURFACE_H_
+#ifndef MODELSURFACE_H_
+#define MODELSURFACE_H_
 
 #include "../../MultiView.h"
 #include "DataModel.h"
@@ -50,4 +50,4 @@ public:
 	bool TestSanity(const string &loc);
 };
 
-#endif /* MODEMODELSURFACE_H_ */
+#endif /* MODELSURFACE_H_ */

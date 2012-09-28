@@ -7,7 +7,7 @@
 
 #include "ModeModelMeshExtrudePolygons.h"
 #include "../../../../Edward.h"
-#include "../../../../Action/Model/Mesh/Triangle/ActionModelExtrudePolygons.h"
+#include "../../../../Action/Model/Mesh/Polygon/ActionModelExtrudePolygons.h"
 
 ModeModelMeshExtrudePolygons::ModeModelMeshExtrudePolygons(Mode *_parent) :
 	ModeCreation("ModelMeshExtrudePolygons", _parent)

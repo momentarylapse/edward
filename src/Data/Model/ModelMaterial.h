@@ -1,12 +1,12 @@
 /*
- * ModeModelMaterial.h
+ * ModelMaterial.h
  *
  *  Created on: 07.03.2012
  *      Author: michi
  */
 
-#ifndef MODEMODELMATERIAL_H_
-#define MODEMODELMATERIAL_H_
+#ifndef MODELMATERIAL_H_
+#define MODELMATERIAL_H_
 
 #include "../../lib/x/x.h"
 
@@ -43,4 +43,4 @@ public:
 	float Shininess;
 };
 
-#endif /* MODEMODELMATERIAL_H_ */
+#endif /* MODELMATERIAL_H_ */

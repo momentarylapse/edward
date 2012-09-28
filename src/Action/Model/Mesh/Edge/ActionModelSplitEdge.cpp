@@ -6,7 +6,7 @@
  */
 
 #include "ActionModelSplitEdge.h"
-#include "../Triangle/Helper/ActionModelPolygonAddVertex.h"
+#include "../Polygon/Helper/ActionModelPolygonAddVertex.h"
 #include "../Vertex/ActionModelAddVertex.h"
 #include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
@@ -64,4 +64,5 @@ void *ActionModelSplitEdge::compose(Data *d)
 
 		AddSubAction(new ActionModelPolygonAddVertex(surface, poly, e.Side[i], new_vertex, isv), m);
 	}
+	return NULL;
 }

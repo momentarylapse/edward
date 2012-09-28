@@ -7,8 +7,8 @@
 
 #include "ActionModelPolygonRemoveVertex.h"
 #include "../../../../../Data/Model/DataModel.h"
-#include "../../Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
-#include "../../Surface/Helper/ActionModelSurfaceAddTriangle.h"
+#include "../../Surface/Helper/ActionModelSurfaceDeletePolygon.h"
+#include "../../Surface/Helper/ActionModelSurfaceAddPolygon.h"
 
 ActionModelPolygonRemoveVertex::ActionModelPolygonRemoveVertex(int _surface, int _poly, int _side)
 {
@@ -40,11 +40,11 @@ void *ActionModelPolygonRemoveVertex::compose(Data *d)
 		_sv.erase(side + l * t.Side.num);
 
 	// delete
-	AddSubAction(new ActionModelSurfaceDeleteTriangle(surface, poly), m);
+	AddSubAction(new ActionModelSurfaceDeletePolygon(surface, poly), m);
 
 	// recreate
 	if (v.num > 2)
-		AddSubAction(new ActionModelSurfaceAddTriangle(surface, v, material, _sv, poly), m);
+		AddSubAction(new ActionModelSurfaceAddPolygon(surface, v, material, _sv, poly), m);
 
 	return NULL;
 }

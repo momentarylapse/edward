@@ -1,11 +1,11 @@
 /*
- * ModeModelMaterial.cpp
+ * ModelMaterial.cpp
  *
  *  Created on: 07.03.2012
  *      Author: michi
  */
 
-#include "ModeModelMaterial.h"
+#include "ModelMaterial.h"
 #include "../../lib/x/x.h"
 #include "../../lib/nix/nix.h"
 #include "../../Edward.h"

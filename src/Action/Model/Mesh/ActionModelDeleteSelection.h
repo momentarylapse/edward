@@ -14,9 +14,13 @@ class DataModel;
 class ActionModelDeleteSelection: public ActionGroup
 {
 public:
-	ActionModelDeleteSelection(DataModel *m, bool greedy);
-	virtual ~ActionModelDeleteSelection();
+	ActionModelDeleteSelection(bool _greedy);
+	virtual ~ActionModelDeleteSelection(){}
 	string name(){	return "ModelDeleteSelection";	}
+
+	void *compose(Data *d);
+private:
+	bool greedy;
 };
 
 #endif /* ACTIONMODELDELETESELECTION_H_ */

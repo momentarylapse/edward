@@ -9,13 +9,14 @@
 #include "ActionModelSurfaceInvert.h"
 #include "../../../../Data/Model/DataModel.h"
 
-ActionModelInvertSelection::ActionModelInvertSelection(DataModel *m)
+ActionModelInvertSelection::ActionModelInvertSelection()
 {
+}
+
+void *ActionModelInvertSelection::compose(Data *d)
+{
+	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(ModelSurface &s, m->Surface, i)
 		if (s.is_selected)
 			AddSubAction(new ActionModelSurfaceInvert(i), m);
-}
-
-ActionModelInvertSelection::~ActionModelInvertSelection()
-{
 }

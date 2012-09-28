@@ -7,8 +7,8 @@
 
 #include "ActionModelPolygonAddVertex.h"
 #include "../../../../../Data/Model/DataModel.h"
-#include "../../Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
-#include "../../Surface/Helper/ActionModelSurfaceAddTriangle.h"
+#include "../../Surface/Helper/ActionModelSurfaceDeletePolygon.h"
+#include "../../Surface/Helper/ActionModelSurfaceAddPolygon.h"
 
 ActionModelPolygonAddVertex::ActionModelPolygonAddVertex(int _surface,
 		int _poly, int _side, int _vertex, const vector* _sv)
@@ -44,10 +44,10 @@ void* ActionModelPolygonAddVertex::compose(Data* d)
 		_sv.insert(sv[l], side + 1 + l * t.Side.num);
 
 	// delete
-	AddSubAction(new ActionModelSurfaceDeleteTriangle(surface, poly), m);
+	AddSubAction(new ActionModelSurfaceDeletePolygon(surface, poly), m);
 
 	// recreate
-	AddSubAction(new ActionModelSurfaceAddTriangle(surface, v, material, _sv, poly), m);
+	AddSubAction(new ActionModelSurfaceAddPolygon(surface, v, material, _sv, poly), m);
 
 	return NULL;
 }

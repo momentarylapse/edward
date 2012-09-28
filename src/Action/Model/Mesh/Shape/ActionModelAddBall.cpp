@@ -7,7 +7,7 @@
 
 #include "ActionModelAddBall.h"
 #include "../Vertex/ActionModelAddVertex.h"
-#include "../Triangle/ActionModelAddTriangleSingleTexture.h"
+#include "../Polygon/ActionModelAddPolygonSingleTexture.h"
 #include "../Surface/ActionModelSurfaceAutoWeld.h"
 #include "../../../../Data/Model/DataModel.h"
 
@@ -60,7 +60,7 @@ void *ActionModelAddBall::compose(Data *d)
 					sv.add(vector((float) x   /(float)num_x,(float) y   /(float)num_x,0));
 					sv.add(vector((float)(x+1)/(float)num_x,(float) y   /(float)num_x,0));
 					sv.add(vector((float)(x+1)/(float)num_x,(float)(y+1)/(float)num_x,0));
-					AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
+					AddSubAction(new ActionModelAddPolygonSingleTexture(v, material, sv), m);
 				}
 			nv += (num_x+1) * (num_x + 1);
 		}
@@ -89,7 +89,7 @@ void *ActionModelAddBall::compose(Data *d)
 			sv.add(ball_ang(0, y+1));
 			sv.add(ball_ang(1, y));
 			sv.add(ball_ang(1, y+1));
-			AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
+			AddSubAction(new ActionModelAddPolygonSingleTexture(v, material, sv), m);
 		}
 		for (int y=0;y<num_y;y++){
 			Array<int> v;
@@ -100,7 +100,7 @@ void *ActionModelAddBall::compose(Data *d)
 			sv.add(ball_ang(num_x - 1, y));
 			sv.add(ball_ang(num_x, y));
 			sv.add(ball_ang(num_x - 1, y+1));
-			AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
+			AddSubAction(new ActionModelAddPolygonSingleTexture(v, material, sv), m);
 		}
 		for (int x=1;x<num_x-1;x++)
 			for (int y=0;y<num_y;y++){
@@ -114,7 +114,7 @@ void *ActionModelAddBall::compose(Data *d)
 				sv.add(ball_ang(x  , y  ));
 				sv.add(ball_ang(x+1, y  ));
 				sv.add(ball_ang(x+1, y+1));
-				AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
+				AddSubAction(new ActionModelAddPolygonSingleTexture(v, material, sv), m);
 			}
 	}
 	return &m->Surface.back();

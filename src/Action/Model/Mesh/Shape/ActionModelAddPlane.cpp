@@ -7,7 +7,7 @@
 
 #include "ActionModelAddPlane.h"
 #include "../Vertex/ActionModelAddVertex.h"
-#include "../Triangle/ActionModelAddTriangleSingleTexture.h"
+#include "../Polygon/ActionModelAddPolygonSingleTexture.h"
 #include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
@@ -37,7 +37,7 @@ ActionModelAddPlane::ActionModelAddPlane(DataModel *m, const vector &_pos, const
 			v.add(nv+(_num_y+1)*(x  )+y+1);
 			v.add(nv+(_num_y+1)*(x  )+y);
 			v.add(nv+(_num_y+1)*(x+1)+y);
-			AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, sv), m);
+			AddSubAction(new ActionModelAddPolygonSingleTexture(v, material, sv), m);
 		}
 }
 

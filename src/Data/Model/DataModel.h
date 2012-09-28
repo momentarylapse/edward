@@ -11,8 +11,9 @@
 #include "../Data.h"
 #include "../../MultiView.h"
 #include "../../lib/x/x.h"
-#include "ModeModelSurface.h"
-#include "ModeModelMaterial.h"
+#include "ModelPolygon.h"
+#include "ModelSurface.h"
+#include "ModelMaterial.h"
 
 class DataModel;
 class ModelSurface;
@@ -57,28 +58,6 @@ public:
 	bool NormalDirty;
 	int RefCount; // triangles
 	int Surface;
-};
-
-class ModelPolygonSide
-{
-public:
-	int Vertex;
-	int Edge;
-	int EdgeDirection; // which no of triangle in edge's list are we?
-	vector SkinVertex[MODEL_MAX_TEXTURES];
-	int NormalIndex;
-	vector Normal;
-};
-
-class ModelPolygon: public MultiViewSingleData
-{
-public:
-	Array<ModelPolygonSide> Side;
-	vector TempNormal;
-	bool NormalDirty;
-	int Material;
-
-	Array<int> Triangulate(DataModel *m);
 };
 
 // only for use in MultiView...
@@ -300,6 +279,8 @@ public:
 	void DeleteSelection(bool greedy = false);
 	void InvertSelection();
 	void SubtractSelection();
+	void CutOutSelection();
+	void TriangulateSelection();
 	void AlignToGridSelection(float grid_d);
 	void NearifySelectedVertices();
 	void CollapseSelectedVertices();

@@ -7,11 +7,17 @@
 
 #include "ActionModelPasteGeometry.h"
 #include "Vertex/ActionModelAddVertex.h"
-#include "Triangle/ActionModelAddTriangle.h"
+#include "Polygon/ActionModelAddPolygon.h"
 #include "../../../Data/Model/DataModel.h"
 
-ActionModelPasteGeometry::ActionModelPasteGeometry(DataModel *m, ModelGeometry &geo)
+ActionModelPasteGeometry::ActionModelPasteGeometry(ModelGeometry &_geo) :
+	geo(_geo)
 {
+}
+
+void *ActionModelPasteGeometry::compose(Data *d)
+{
+	DataModel *m = dynamic_cast<DataModel*>(d);
 	m->ClearSelection();
 
 	int nv = m->Vertex.num;
@@ -29,10 +35,7 @@ ActionModelPasteGeometry::ActionModelPasteGeometry(DataModel *m, ModelGeometry &
 		for (int l=0;l<MODEL_MAX_TEXTURES;l++)
 			for (int k=0;k<t.Side.num;k++)
 				sv.add(t.Side[k].SkinVertex[l]);
-		AddSubAction(new ActionModelAddTriangle(m, v, t.Material, sv), m);
+		AddSubAction(new ActionModelAddPolygon(v, t.Material, sv), m);
 	}
-}
-
-ActionModelPasteGeometry::~ActionModelPasteGeometry()
-{
+	return NULL;
 }

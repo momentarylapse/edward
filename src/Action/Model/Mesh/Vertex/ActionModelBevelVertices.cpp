@@ -8,8 +8,8 @@
 #include "ActionModelBevelVertices.h"
 #include "Helper/ActionModelDeleteUnusedVertex.h"
 #include "../Edge/ActionModelSplitEdge.h"
-#include "../Triangle/Helper/ActionModelPolygonRemoveVertex.h"
-#include "../Triangle/ActionModelAddPolygonAutoSkin.h"
+#include "../Polygon/Helper/ActionModelPolygonRemoveVertex.h"
+#include "../Polygon/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
 

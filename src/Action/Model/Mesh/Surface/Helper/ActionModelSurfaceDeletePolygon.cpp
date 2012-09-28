@@ -1,26 +1,26 @@
 /*
- * ActionModelSurfaceDeleteTriangle.cpp
+ * ActionModelSurfaceDeletePolygon.cpp
  *
  *  Created on: 13.03.2012
  *      Author: michi
  */
 
-#include "ActionModelSurfaceDeleteTriangle.h"
+#include "ActionModelSurfaceDeletePolygon.h"
 #include "../../../../../Data/Model/DataModel.h"
 
 // might create an empty surface -> don't use alone!
 
-ActionModelSurfaceDeleteTriangle::ActionModelSurfaceDeleteTriangle(int _surface, int _index)
+ActionModelSurfaceDeletePolygon::ActionModelSurfaceDeletePolygon(int _surface, int _index)
 {
 	surface = _surface;
 	index = _index;
 }
 
-ActionModelSurfaceDeleteTriangle::~ActionModelSurfaceDeleteTriangle()
+ActionModelSurfaceDeletePolygon::~ActionModelSurfaceDeletePolygon()
 {
 }
 
-void ActionModelSurfaceDeleteTriangle::undo(Data *d)
+void ActionModelSurfaceDeletePolygon::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
@@ -33,7 +33,7 @@ void ActionModelSurfaceDeleteTriangle::undo(Data *d)
 
 
 
-void *ActionModelSurfaceDeleteTriangle::execute(Data *d)
+void *ActionModelSurfaceDeletePolygon::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 

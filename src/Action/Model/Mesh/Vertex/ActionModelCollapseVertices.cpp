@@ -8,7 +8,7 @@
 #include "ActionModelCollapseVertices.h"
 #include "Helper/ActionModelDeleteUnusedVertex.h"
 #include "ActionModelAddVertex.h"
-#include "../Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
+#include "../Surface/Helper/ActionModelSurfaceDeletePolygon.h"
 #include "../Surface/Helper/ActionModelSurfaceRelinkPolygon.h"
 #include "../../../../Data/Model/DataModel.h"
 #include <assert.h>

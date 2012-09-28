@@ -24,8 +24,6 @@
 #include "Creation/ModeModelMeshBevelVertices.h"
 #include "Creation/ModeModelMeshExtrudePolygons.h"
 #include "../../../Action/Model/Mesh/Skin/ActionModelSkinVerticesFromProjection.h"
-#include "../../../Action/Model/Mesh/Triangle/ActionModelTriangulateSelection.h"
-#include "../../../Action/Model/Mesh/Triangle/ActionModelCutOutPolygons.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
 #include "../Dialog/ModelEasifyDialog.h"
 #include "../Dialog/ModelFXDialog.h"
@@ -114,9 +112,9 @@ void ModeModelMesh::OnCommand(const string & id)
 	if (id == "autoweld_surfaces")
 		data->AutoWeldSelectedSurfaces(0.1f / mode_model_mesh_vertex->multi_view->zoom);
 	if (id == "triangulate_selection")
-		data->Execute(new ActionModelTriangulateSelection());
+		data->TriangulateSelection();
 	if (id == "cut_out")
-		data->Execute(new ActionModelCutOutPolygons());
+		data->CutOutSelection();
 	if (id == "nearify")
 		data->NearifySelectedVertices();
 	if (id == "connect")

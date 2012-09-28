@@ -6,7 +6,7 @@
  */
 
 #include "ActionModelAddPolygonAutoSkin.h"
-#include "ActionModelAddTriangleWithSkinGenerator.h"
+#include "ActionModelAddPolygonWithSkinGenerator.h"
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../Data/Model/SkinGenerator.h"
 
@@ -62,6 +62,6 @@ void *ActionModelAddPolygonAutoSkin::compose(Data *d)
 	SkinGenerator sg;
 	init_skin_generator(m, vertex, sg);
 
-	return AddSubAction(new ActionModelAddTriangleWithSkinGenerator(m, vertex, m->CurrentMaterial, sg), m);
+	return AddSubAction(new ActionModelAddPolygonWithSkinGenerator(vertex, m->CurrentMaterial, sg), m);
 }
 

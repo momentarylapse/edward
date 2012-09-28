@@ -7,7 +7,7 @@
 
 #include "ModeModelMeshCreateTriangles.h"
 #include "../../../../Edward.h"
-#include "../../../../Action/Model/Mesh/Triangle/ActionModelAddPolygonAutoSkin.h"
+#include "../../../../Action/Model/Mesh/Polygon/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../lib/nix/nix.h"
 
 ModeModelMeshCreateTriangles::ModeModelMeshCreateTriangles(Mode *_parent) :

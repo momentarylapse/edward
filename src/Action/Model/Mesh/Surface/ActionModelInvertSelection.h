@@ -14,9 +14,11 @@ class DataModel;
 class ActionModelInvertSelection : public ActionGroup
 {
 public:
-	ActionModelInvertSelection(DataModel *m);
-	virtual ~ActionModelInvertSelection();
+	ActionModelInvertSelection();
+	virtual ~ActionModelInvertSelection(){}
 	string name(){	return "ModelInvertSelection";	}
+
+	void *compose(Data *d);
 };
 
 #endif /* ACTIONMODELINVERTSELECTION_H_ */

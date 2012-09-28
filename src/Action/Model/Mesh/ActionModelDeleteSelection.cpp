@@ -6,13 +6,20 @@
  */
 
 #include "ActionModelDeleteSelection.h"
-#include "Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
+#include "Surface/Helper/ActionModelSurfaceDeletePolygon.h"
 #include "Vertex/Helper/ActionModelDeleteUnusedVertex.h"
 #include "Surface/Helper/ActionModelDeleteEmptySurface.h"
 #include "../../../Data/Model/DataModel.h"
 
-ActionModelDeleteSelection::ActionModelDeleteSelection(DataModel *m, bool greedy)
+ActionModelDeleteSelection::ActionModelDeleteSelection(bool _greedy)
 {
+	greedy = _greedy;
+}
+
+void *ActionModelDeleteSelection::compose(Data *d)
+{
+	DataModel *m = dynamic_cast<DataModel*>(d);
+
 	foreachib(ModelSurface &s, m->Surface, si){
 		foreachib(ModelPolygon &t, s.Polygon, ti){
 			bool del = false;
@@ -23,7 +30,7 @@ ActionModelDeleteSelection::ActionModelDeleteSelection(DataModel *m, bool greedy
 				del = t.is_selected;
 			}
 			if (del)
-				AddSubAction(new ActionModelSurfaceDeleteTriangle(si, ti), m);
+				AddSubAction(new ActionModelSurfaceDeletePolygon(si, ti), m);
 			_foreach_it_.update(); // TODO
 		}
 
@@ -38,8 +45,6 @@ ActionModelDeleteSelection::ActionModelDeleteSelection(DataModel *m, bool greedy
 				AddSubAction(new ActionModelDeleteUnusedVertex(i), m);
 				_foreach_it_.update(); // TODO
 			}
-}
 
-ActionModelDeleteSelection::~ActionModelDeleteSelection()
-{
+	return NULL;
 }

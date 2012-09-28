@@ -7,7 +7,7 @@
 
 #include "ActionModelAddCylinder.h"
 #include "../Vertex/ActionModelAddVertex.h"
-#include "../Triangle/ActionModelAddTriangleSingleTexture.h"
+#include "../Polygon/ActionModelAddPolygonSingleTexture.h"
 #include "../../../../Data/Model/DataModel.h"
 
 #define _cyl_vert(i, j)         ( edges      * (i) +(j) % edges) + nv
@@ -67,7 +67,7 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos,
 			_sv.add(_cyl_svert(i, j+1));
 			_sv.add(_cyl_svert(i, j));
 			_sv.add(_cyl_svert(i+1, j));
-			AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, _sv), m);
+			AddSubAction(new ActionModelAddPolygonSingleTexture(v, material, _sv), m);
 		}
 
 // the endings
@@ -98,7 +98,7 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos,
 			_sv.add(sv[0]);
 			_sv.add(sv[1+j]);
 			_sv.add(sv[1+(j+1)%edges]);
-			AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, _sv), m);
+			AddSubAction(new ActionModelAddPolygonSingleTexture(v, material, _sv), m);
 		}
 		for (int j=0;j<edges;j++){
 			Array<int> v;
@@ -109,7 +109,7 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos,
 			_sv.add(sv[edges+1]);
 			_sv.add(sv[edges+2+(j+1)%edges]);
 			_sv.add(sv[edges+2+j]);
-			AddSubAction(new ActionModelAddTriangleSingleTexture(m, v, material, _sv), m);
+			AddSubAction(new ActionModelAddPolygonSingleTexture(v, material, _sv), m);
 		}
 	}
 }

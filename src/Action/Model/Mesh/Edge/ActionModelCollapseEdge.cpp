@@ -6,7 +6,7 @@
  */
 
 #include "ActionModelCollapseEdge.h"
-#include "../Triangle/Helper/ActionModelPolygonRemoveVertex.h"
+#include "../Polygon/Helper/ActionModelPolygonRemoveVertex.h"
 #include "../Vertex/Helper/ActionModelDeleteUnusedVertex.h"
 #include "../Vertex/Helper/ActionModelMoveVertex.h"
 #include "../../../../Data/Model/DataModel.h"

@@ -6,8 +6,8 @@
  */
 
 #include "ActionModelSplitPolygon.h"
-#include "../Surface/Helper/ActionModelSurfaceDeleteTriangle.h"
-#include "../Surface/Helper/ActionModelSurfaceAddTriangle.h"
+#include "../Surface/Helper/ActionModelSurfaceDeletePolygon.h"
+#include "../Surface/Helper/ActionModelSurfaceAddPolygon.h"
 #include "../Vertex/ActionModelAddVertex.h"
 #include "../../../../Data/Model/DataModel.h"
 
@@ -34,7 +34,7 @@ void *ActionModelSplitPolygon::compose(Data *d)
 		sv[3][l] = sv[0][l] * (1 - f - g) + sv[1][l] * f + sv[2][l] * g;*/
 
 	// delete old triangle
-	AddSubAction(new ActionModelSurfaceDeleteTriangle(surface, polygon), m);
+	AddSubAction(new ActionModelSurfaceDeletePolygon(surface, polygon), m);
 
 	// create new vertex
 	AddSubAction(new ActionModelAddVertex(pos), m);
@@ -52,7 +52,7 @@ void *ActionModelSplitPolygon::compose(Data *d)
 			sv.add(temp.Side[(k+1)%temp.Side.num].SkinVertex[l]);
 			sv.add(v_0);
 		}
-		AddSubAction(new ActionModelSurfaceAddTriangle(surface, v, temp.Material, sv), m);
+		AddSubAction(new ActionModelSurfaceAddPolygon(surface, v, temp.Material, sv), m);
 	}
 
 	return NULL;
