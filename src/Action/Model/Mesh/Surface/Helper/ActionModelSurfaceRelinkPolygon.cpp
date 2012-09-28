@@ -11,11 +11,12 @@
 #include "../../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
-ActionModelSurfaceRelinkPolygon::ActionModelSurfaceRelinkPolygon(int _surface, int _polygon, Array<int> &_v) :
+ActionModelSurfaceRelinkPolygon::ActionModelSurfaceRelinkPolygon(int _surface, int _polygon, Array<int> &_v, int _new_surface) :
 	v(_v)
 {
 	surface = _surface;
 	polygon = _polygon;
+	new_surface = _new_surface;
 }
 
 void *ActionModelSurfaceRelinkPolygon::compose(Data *d)
@@ -35,7 +36,10 @@ void *ActionModelSurfaceRelinkPolygon::compose(Data *d)
 	AddSubAction(new ActionModelSurfaceDeleteTriangle(surface, polygon), m);
 
 	// create new triangle
-	AddSubAction(new ActionModelSurfaceAddTriangle(surface, v, material, sv, polygon), m);
+	if (new_surface >= 0)
+		AddSubAction(new ActionModelSurfaceAddTriangle(new_surface, v, material, sv), m);
+	else
+		AddSubAction(new ActionModelSurfaceAddTriangle(surface, v, material, sv, polygon), m);
 
 	return NULL;
 }

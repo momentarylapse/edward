@@ -8,6 +8,7 @@
 #include "ActionModelCutOutPolygons.h"
 #include "../Triangle/ActionModelAddTriangleSingleTexture.h"
 #include "../Surface/Helper/ActionModelSurfaceRelinkPolygon.h"
+#include "../Surface/Helper/ActionModelAddEmptySurface.h"
 #include "../Vertex/ActionModelAddVertex.h"
 #include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
@@ -19,8 +20,10 @@ ActionModelCutOutPolygons::ActionModelCutOutPolygons()
 void *ActionModelCutOutPolygons::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(ModelSurface &s, m->Surface, si)
+	foreachib(ModelSurface &s, m->Surface, si){
 		CutOutSurface(s, si, m);
+		_foreach_it_.update(); // TODO
+	}
 
 	return NULL;
 }
@@ -52,22 +55,23 @@ void ActionModelCutOutPolygons::CutOutSurface(ModelSurface &s, int surface, Data
 		_foreach_it_.update(); // TODO
 	}
 
-	// re-link outer (=unselected) boundary polygons
-	foreachi(ModelPolygon &t, s.Polygon, ti)
-		if (!t.is_selected){
+	// create new surface
+	AddSubAction(new ActionModelAddEmptySurface(), m);
+	int new_surf = m->Surface.num - 1;
+	ModelSurface &s2 = m->Surface[surface];
+
+	// move selected polygons
+	foreachib(ModelPolygon &t, s2.Polygon, ti)
+		if (t.is_selected){
 			Array<int> v;
-			bool on_boundary = false;
 			for (int k=0;k<t.Side.num;k++){
 				v.add(t.Side[k].Vertex);
+				// re-link if on boundary
 				int n = boundary.find(v[k]);
-				if (n >= 0){
-					on_boundary = true;
+				if (n >= 0)
 					v[k] = new_vert[n];
-				}
 			}
-			if (on_boundary){
-				AddSubAction(new ActionModelSurfaceRelinkPolygon(surface, ti, v), m);
-				_foreach_it_.update(); // TODO
-			}
+			AddSubAction(new ActionModelSurfaceRelinkPolygon(surface, ti, v, new_surf), m);
+			_foreach_it_.update(); // TODO
 		}
 }

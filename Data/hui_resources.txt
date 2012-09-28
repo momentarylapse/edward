@@ -16277,7 +16277,7 @@ current_mode_font
 current_mode_model_skeleton
 -Modell-Modus (Skelett)-
 cut_out
---Heraustrennen
+Heraustrennen
 default_colors
 Farben aus dem Material verwenden
 default_font
