@@ -135,12 +135,8 @@ void MultiView::ResetData(Data *_data)
 void MultiView::SetData(int type, const DynamicArray & a, void *user_data, int mode, t_is_mouse_over_func *is_mouse_over_func, t_is_in_rect_func *is_in_rect_func)
 {
 	MultiViewData d;
-
 	d.Type = type;
 	d.data = (DynamicArray*)&a;
-	/*if (type == 0) // MVDModelSurface...
-		d.data = (char*)a.data + 4;*/
-	msg_todo("MultiView: class data offset");
 	d.user_data = user_data;
 	d.MVSelectable = (mode & FlagSelect)>0;
 	d.Drawable = (mode & FlagDraw)>0;

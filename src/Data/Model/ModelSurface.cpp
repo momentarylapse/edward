@@ -17,7 +17,13 @@ void ModelSurface::AddVertex(int v)
 	model->Vertex[v].RefCount ++;
 
 	// back reference
-	model->Vertex[v].Surface = model->get_surf_no(this);
+	int surf = model->get_surf_no(this);
+	if (model->Vertex[v].Surface != surf){
+		// FIXME ... evil side effects
+		if (model->Vertex[v].Surface >= 0)
+			model->Surface[model->Vertex[v].Surface].Vertex.erase(v);
+		model->Vertex[v].Surface = surf;
+	}
 	if (model->Vertex[v].Surface < 0)
 		msg_error("SurfaceAddVertex ...surface not found");
 }
@@ -74,6 +80,7 @@ bool ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, in
 			Edge[Polygon[index].Side[k].Edge].Polygon[Polygon[index].Side[k].EdgeDirection] = index;
 	}else
 		Polygon.add(t);
+
 	msg_db_l(1);
 	return true;
 }
@@ -389,9 +396,10 @@ void ModelSurface::RemovePolygon(int index)
 	// unref the vertices
 	for (int k=0;k<t.Side.num;k++){
 		model->Vertex[t.Side[k].Vertex].RefCount --;
-		if (model->Vertex[t.Side[k].Vertex].RefCount == 0)
+		if (model->Vertex[t.Side[k].Vertex].RefCount == 0){
 			model->Vertex[t.Side[k].Vertex].Surface = -1;
-		Vertex.erase(t.Side[k].Vertex);
+			Vertex.erase(t.Side[k].Vertex);
+		}
 	}
 
 	Set<int> obsolete;

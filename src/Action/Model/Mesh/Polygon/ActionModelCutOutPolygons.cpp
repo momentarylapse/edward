@@ -6,7 +6,6 @@
  */
 
 #include "ActionModelCutOutPolygons.h"
-#include "ActionModelAddPolygonSingleTexture.h"
 #include "../Surface/Helper/ActionModelSurfaceRelinkPolygon.h"
 #include "../Surface/Helper/ActionModelAddEmptySurface.h"
 #include "../Vertex/ActionModelAddVertex.h"

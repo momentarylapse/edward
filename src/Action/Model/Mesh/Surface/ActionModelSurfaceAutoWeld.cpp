@@ -85,8 +85,10 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 	foreach(int w, wb)
 		vv.add(w);
 	foreachb(int ww, vv){
-		a->Vertex.erase(ww);
-		m->Vertex[ww].Surface = -1;
+		/*if (m->Vertex[ww].RefCount > 0)
+			foreach*/
+		//a->Vertex.erase(ww);
+		//m->Vertex[ww].Surface = -1;
 		AddSubAction(new ActionModelDeleteUnusedVertex(ww), m);
 	}
 

@@ -20,10 +20,10 @@ void *ActionModelAutoWeldSelection::compose(Data *d)
 	bool found = true;
 	while (found){
 		found = false;
-		for (int i=m->Surface.num-1;i>=0;i--){
-			m->Surface[i].TestSanity("auto weld pre");
-			for (int j=i-1;j>=0;j--)
-				if (m->Surface[i].is_selected)
+		for (int i=m->Surface.num-1;i>=0;i--)
+			if (m->Surface[i].is_selected){
+				m->Surface[i].TestSanity("auto weld pre");
+				for (int j=i-1;j>=0;j--)
 					if (m->Surface[j].is_selected){
 						try{
 							AddSubAction(new ActionModelSurfaceAutoWeld(j, i, epsilon, false), m);
@@ -34,9 +34,9 @@ void *ActionModelAutoWeldSelection::compose(Data *d)
 							//msg_write("abort... " + e.message);
 						}
 					}
-			if (found)
-				break;
-		}
+				if (found)
+					break;
+			}
 	}
 	return NULL;
 }
