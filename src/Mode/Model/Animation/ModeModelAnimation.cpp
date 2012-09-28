@@ -11,7 +11,7 @@
 #include "ModeModelAnimationNone.h"
 #include "ModeModelAnimationSkeleton.h"
 #include "ModeModelAnimationVertex.h"
-#include "../Mesh/ModeModelMeshTriangle.h"
+#include "../Mesh/ModeModelMeshPolygon.h"
 #include "../Dialog/ModelAnimationDialog.h"
 
 ModeModelAnimation *mode_model_animation = NULL;

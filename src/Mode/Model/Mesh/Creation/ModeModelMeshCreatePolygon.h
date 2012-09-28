@@ -1,21 +1,21 @@
 /*
- * ModeModelMeshCreateTriangles.h
+ * ModeModelMeshCreatePolygon.h
  *
  *  Created on: 07.03.2012
  *      Author: michi
  */
 
-#ifndef MODEMODELMESHCREATETRIANGLES_H_
-#define MODEMODELMESHCREATETRIANGLES_H_
+#ifndef MODEMODELMESHCREATEPOLYGON_H_
+#define MODEMODELMESHCREATEPOLYGON_H_
 
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshCreateTriangles: public ModeCreation
+class ModeModelMeshCreatePolygon: public ModeCreation
 {
 public:
-	ModeModelMeshCreateTriangles(Mode *_parent);
-	virtual ~ModeModelMeshCreateTriangles();
+	ModeModelMeshCreatePolygon(Mode *_parent);
+	virtual ~ModeModelMeshCreatePolygon();
 
 	void OnStart();
 	void OnEnd();
@@ -30,4 +30,4 @@ public:
 	Array<int> selection;
 };
 
-#endif /* MODEMODELMESHCREATETRIANGLES_H_ */
+#endif /* MODEMODELMESHCREATEPOLYGON_H_ */

@@ -9,7 +9,7 @@
 #include "../../../MultiView.h"
 #include "ModeModelMesh.h"
 #include "ModeModelMeshSurface.h"
-#include "ModeModelMeshTriangle.h"
+#include "ModeModelMeshPolygon.h"
 
 ModeModelMeshSurface *mode_model_mesh_surface = NULL;
 
@@ -28,7 +28,7 @@ ModeModelMeshSurface::~ModeModelMeshSurface()
 
 void ModeModelMeshSurface::OnDrawWin(int win, irect dest)
 {
-	mode_model_mesh_triangle->OnDrawWin(win, dest);
+	mode_model_mesh_polygon->OnDrawWin(win, dest);
 }
 
 
@@ -77,7 +77,7 @@ void ModeModelMeshSurface::OnUpdate(Observable *o)
 		data->SelectionVerticesFromSurfaces();
 		data->SelectionTrianglesFromSurfaces();
 	}
-	mode_model_mesh_triangle->FillSelectionBuffers();
+	mode_model_mesh_polygon->FillSelectionBuffers();
 }
 
 
@@ -95,7 +95,7 @@ void ModeModelMeshSurface::OnStart()
 
 void ModeModelMeshSurface::OnDraw()
 {
-	mode_model_mesh_triangle->FillSelectionBuffers();
+	mode_model_mesh_polygon->FillSelectionBuffers();
 }
 
 

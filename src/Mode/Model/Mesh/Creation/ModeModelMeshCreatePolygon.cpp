@@ -1,44 +1,44 @@
 /*
- * ModeModelMeshCreateTriangles.cpp
+ * ModeModelMeshCreatePolygon.cpp
  *
  *  Created on: 07.03.2012
  *      Author: michi
  */
 
-#include "ModeModelMeshCreateTriangles.h"
+#include "ModeModelMeshCreatePolygon.h"
 #include "../../../../Edward.h"
 #include "../../../../Action/Model/Mesh/Polygon/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../lib/nix/nix.h"
 
-ModeModelMeshCreateTriangles::ModeModelMeshCreateTriangles(Mode *_parent) :
-	ModeCreation("ModelMeshCreateTriangles", _parent)
+ModeModelMeshCreatePolygon::ModeModelMeshCreatePolygon(Mode *_parent) :
+	ModeCreation("ModelMeshCreatePolygon", _parent)
 {
 	data = (DataModel*)_parent->GetData();
 
-	message = format(_("Dreiecke w&ahlen: %d -> Shift + Return"), 0);
+	message = format(_("Polygon w&ahlen: %d -> Shift + Return"), 0);
 }
 
-ModeModelMeshCreateTriangles::~ModeModelMeshCreateTriangles()
+ModeModelMeshCreatePolygon::~ModeModelMeshCreatePolygon()
 {
 }
 
 
-void ModeModelMeshCreateTriangles::OnStart()
-{
-	foreach(ModelVertex &v, data->Vertex)
-		v.is_special = false;
-}
-
-
-
-void ModeModelMeshCreateTriangles::OnEnd()
+void ModeModelMeshCreatePolygon::OnStart()
 {
 	foreach(ModelVertex &v, data->Vertex)
 		v.is_special = false;
 }
 
 
-void ModeModelMeshCreateTriangles::OnDrawWin(int win, irect dest)
+
+void ModeModelMeshCreatePolygon::OnEnd()
+{
+	foreach(ModelVertex &v, data->Vertex)
+		v.is_special = false;
+}
+
+
+void ModeModelMeshCreatePolygon::OnDrawWin(int win, irect dest)
 {
 	for (int i=1;i<selection.num;i++){
 		NixEnableLighting(false);
@@ -54,7 +54,7 @@ void ModeModelMeshCreateTriangles::OnDrawWin(int win, irect dest)
 
 
 
-void ModeModelMeshCreateTriangles::OnKeyDown()
+void ModeModelMeshCreatePolygon::OnKeyDown()
 {
 	if (HuiGetEvent()->key_code == KEY_SHIFT + KEY_RETURN){
 		data->Execute(new ActionModelAddPolygonAutoSkin(selection));
@@ -63,7 +63,7 @@ void ModeModelMeshCreateTriangles::OnKeyDown()
 }
 
 
-void ModeModelMeshCreateTriangles::OnLeftButtonDown()
+void ModeModelMeshCreatePolygon::OnLeftButtonDown()
 {
 	if (multi_view->Selected >= 0){
 		// closed loop -> done
@@ -91,6 +91,6 @@ void ModeModelMeshCreateTriangles::OnLeftButtonDown()
 		selection.add(data->Vertex.num - 1);
 	}
 	data->Vertex[selection.back()].is_special = true;
-	message = format(_("Dreiecke w&ahlen: %d -> Shift + Return"), selection.num);
+	message = format(_("Polygon w&ahlen: %d -> Shift + Return"), selection.num);
 }
 

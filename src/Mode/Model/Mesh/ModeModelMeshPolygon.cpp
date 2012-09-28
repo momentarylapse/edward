@@ -1,5 +1,5 @@
 /*
- * ModeModelMeshSkin.cpp
+ * ModeModelMeshPolygon.cpp
  *
  *  Created on: 06.03.2012
  *      Author: michi
@@ -7,15 +7,15 @@
 
 #include "../../../Edward.h"
 #include "../../../MultiView.h"
-#include "ModeModelMeshTriangle.h"
+#include "ModeModelMeshPolygon.h"
 #include "ModeModelMesh.h"
 #include "../Animation/ModeModelAnimation.h"
 
 
 
-ModeModelMeshTriangle *mode_model_mesh_triangle = NULL;
+ModeModelMeshPolygon *mode_model_mesh_polygon = NULL;
 
-ModeModelMeshTriangle::ModeModelMeshTriangle(Mode *_parent, DataModel *_data) :
+ModeModelMeshPolygon::ModeModelMeshPolygon(Mode *_parent, DataModel *_data) :
 	Mode("ModelMeshSkin", _parent, _data, ed->multi_view_3d, "menu_model")
 {
 	data = _data;
@@ -32,14 +32,14 @@ ModeModelMeshTriangle::ModeModelMeshTriangle(Mode *_parent, DataModel *_data) :
 	SelectCW = false;
 }
 
-ModeModelMeshTriangle::~ModeModelMeshTriangle()
+ModeModelMeshPolygon::~ModeModelMeshPolygon()
 {
 }
 
 //#define GetVertex(v)	data->Vertex[v].pos
 inline vector GetVertex(int v)
 {
-	DataModel *m = mode_model_mesh_triangle->data;
+	DataModel *m = mode_model_mesh_polygon->data;
 	if (mode_model_animation->IsAncestorOf(ed->cur_mode))
 		return m->Vertex[v].AnimatedPos;
 	return m->Vertex[v].pos;
@@ -58,9 +58,9 @@ inline void add_tria(int vb, const DataModel *data, const ModelPolygon &t)
 	}
 }
 
-void ModeModelMeshTriangle::DrawTrias()
+void ModeModelMeshPolygon::DrawPolygons()
 {
-	msg_db_r("ModelSkin.DrawTrias",2);
+	msg_db_r("ModelSkin.DrawPolys",2);
 
 	if (multi_view->wire_mode){
 		NixSetWire(false);
@@ -138,15 +138,15 @@ void ModeModelMeshTriangle::DrawTrias()
 	msg_db_l(2);
 }
 
-void ModeModelMeshTriangle::OnCommand(const string & id)
+void ModeModelMeshPolygon::OnCommand(const string & id)
 {
 }
 
-void ModeModelMeshTriangle::OnUpdateMenu()
+void ModeModelMeshPolygon::OnUpdateMenu()
 {
 }
 
-void ModeModelMeshTriangle::FillSelectionBuffers()
+void ModeModelMeshPolygon::FillSelectionBuffers()
 {
 	msg_db_r("SkinFillSelBuf", 4);
 	NixVBClear(VBMarked);
@@ -156,7 +156,7 @@ void ModeModelMeshTriangle::FillSelectionBuffers()
 	msg_db_m("a",4);
 	/*if ((EditMode == EditModeTriangle) || (EditMode == EditModeVertex) || (EditMode == EditModeEdge))*/{
 		ModelPolygon *mmo = NULL;
-		if ((multi_view->MouseOver >= 0) && (multi_view->MouseOverSet < data->Surface.num) && (multi_view->MouseOverType == MVDModelTriangle))
+		if ((multi_view->MouseOver >= 0) && (multi_view->MouseOverSet < data->Surface.num) && (multi_view->MouseOverType == MVDModelPolygon))
 			mmo = &data->Surface[multi_view->MouseOverSet].Polygon[multi_view->MouseOver];
 		foreachi(ModelSurface &s, data->Surface, si){
 			bool s_mo = false;
@@ -213,7 +213,7 @@ void SetMaterialCreation()
 	NixSetMaterial(Black,color(0.3f,0.3f,1,0.3f),Black,0,color(1,0.1f,0.4f,0.1f));
 }
 
-void ModeModelMeshTriangle::OnDrawWin(int win, irect dest)
+void ModeModelMeshPolygon::OnDrawWin(int win, irect dest)
 {
 	msg_db_r("skin.DrawWin",4);
 
@@ -221,7 +221,7 @@ void ModeModelMeshTriangle::OnDrawWin(int win, irect dest)
 		SetMaterialPhysical();
 		NixDraw3D(-1,VBModel,m_id);
 	}else*/
-		DrawTrias();
+		DrawPolygons();
 	NixSetShader(-1);
 	NixSetWire(false);
 	NixSetZ(true,true);
@@ -243,7 +243,7 @@ void ModeModelMeshTriangle::OnDrawWin(int win, irect dest)
 
 
 
-void ModeModelMeshTriangle::OnEnd()
+void ModeModelMeshPolygon::OnEnd()
 {
 	multi_view->ResetData(NULL);
 	Unsubscribe(data);
@@ -252,7 +252,7 @@ void ModeModelMeshTriangle::OnEnd()
 
 
 
-void ModeModelMeshTriangle::OnStart()
+void ModeModelMeshPolygon::OnStart()
 {
 	Subscribe(data);
 	Subscribe(multi_view, "SelectionChange");
@@ -272,7 +272,7 @@ bool TriangleIsMouseOver(int index, void *user_data, int win, vector &tp)
 	if (t->TempNormal * ed->multi_view_3d->GetDirection(win) > 0)
 		return false;
 
-	DataModel *m = mode_model_mesh_triangle->data; // surf->model;
+	DataModel *m = mode_model_mesh_polygon->data; // surf->model;
 
 	// project all points
 	Array<vector> p;
@@ -312,11 +312,11 @@ bool TriangleInRect(int index, void *user_data, int win, irect *r)
 	ModelPolygon *t = &surf->Polygon[index];
 
 	// care for the sense of rotation?
-	if (mode_model_mesh_triangle->SelectCW)
+	if (mode_model_mesh_polygon->SelectCW)
 		if (t->TempNormal * ed->multi_view_3d->GetDirection(win) > 0)
 			return false;
 
-	DataModel *m = mode_model_mesh_triangle->data; // surf->model;
+	DataModel *m = mode_model_mesh_polygon->data; // surf->model;
 
 	// all vertices within rectangle?
 	for (int k=0;k<t->Side.num;k++){
@@ -330,13 +330,13 @@ bool TriangleInRect(int index, void *user_data, int win, irect *r)
 }
 
 
-void ModeModelMeshTriangle::OnUpdate(Observable *o)
+void ModeModelMeshPolygon::OnUpdate(Observable *o)
 {
 	if (o->GetName() == "Data"){
 		multi_view->ResetData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		foreach(ModelSurface &s, data->Surface)
-		multi_view->SetData(	MVDModelTriangle,
+		multi_view->SetData(	MVDModelPolygon,
 				s.Polygon,
 				&s,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
@@ -350,12 +350,12 @@ void ModeModelMeshTriangle::OnUpdate(Observable *o)
 
 
 
-void ModeModelMeshTriangle::OnDraw()
+void ModeModelMeshPolygon::OnDraw()
 {
 	FillSelectionBuffers();
 }
 
-void ModeModelMeshTriangle::ToggleSelectCW()
+void ModeModelMeshPolygon::ToggleSelectCW()
 {
 	SelectCW = !SelectCW;
 	ed->UpdateMenu();

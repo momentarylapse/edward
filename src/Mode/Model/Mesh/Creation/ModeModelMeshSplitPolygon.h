@@ -1,21 +1,21 @@
 /*
- * ModeModelMeshSplitTriangle.h
+ * ModeModelMeshSplitPolygon.h
  *
  *  Created on: 01.04.2012
  *      Author: michi
  */
 
-#ifndef MODEMODELMESHSPLITTRIANGLE_H_
-#define MODEMODELMESHSPLITTRIANGLE_H_
+#ifndef MODEMODELMESHSPLITPOLYGON_H_
+#define MODEMODELMESHSPLITPOLYGON_H_
 
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshSplitTriangle: public ModeCreation
+class ModeModelMeshSplitPolygon: public ModeCreation
 {
 public:
-	ModeModelMeshSplitTriangle(Mode *_parent);
-	virtual ~ModeModelMeshSplitTriangle();
+	ModeModelMeshSplitPolygon(Mode *_parent);
+	virtual ~ModeModelMeshSplitPolygon();
 
 	void OnLeftButtonDown();
 
@@ -31,4 +31,4 @@ private:
 	float factor;
 };
 
-#endif /* MODEMODELMESHSPLITTRIANGLE_H_ */
+#endif /* MODEMODELMESHSPLITPOLYGON_H_ */

@@ -8,7 +8,7 @@
 #include "ModeModelAnimationVertex.h"
 #include "../../../Edward.h"
 #include "../../../MultiView.h"
-#include "../Mesh/ModeModelMeshTriangle.h"
+#include "../Mesh/ModeModelMeshPolygon.h"
 
 ModeModelAnimationVertex *mode_model_animation_vertex = NULL;
 
@@ -71,7 +71,7 @@ void ModeModelAnimationVertex::OnUpdate(Observable* o)
 		data->SelectionTrianglesFromVertices();
 		data->SelectionSurfacesFromTriangles();
 	}
-	mode_model_mesh_triangle->FillSelectionBuffers();
+	mode_model_mesh_polygon->FillSelectionBuffers();
 }
 
 void ModeModelAnimationVertex::OnUpdateMenu()
@@ -80,7 +80,7 @@ void ModeModelAnimationVertex::OnUpdateMenu()
 
 void ModeModelAnimationVertex::OnDrawWin(int win, irect dest)
 {
-	mode_model_mesh_triangle->OnDrawWin(win, dest);
+	mode_model_mesh_polygon->OnDrawWin(win, dest);
 }
 
 void ModeModelAnimationVertex::UpdateVertices()

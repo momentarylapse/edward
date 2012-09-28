@@ -11,7 +11,7 @@
 #include "Mesh/ModeModelMesh.h"
 #include "Mesh/ModeModelMeshVertex.h"
 #include "Mesh/ModeModelMeshEdge.h"
-#include "Mesh/ModeModelMeshTriangle.h"
+#include "Mesh/ModeModelMeshPolygon.h".h"
 #include "Mesh/ModeModelMeshSurface.h"
 #include "Mesh/ModeModelMeshTexture.h"
 #include "Skeleton/ModeModelSkeleton.h"
@@ -55,7 +55,7 @@ void ModeModel::OnStart()
 	ed->ToolbarAddSeparator();
 	ed->ToolbarAddItemCheckable(_("Vertices"),_("Vertices"),dir + "mode_vertices.png","mode_model_vertex");
 	ed->ToolbarAddItemCheckable(_("Kanten"),_("Kanten"),dir + "mode_vertices.png","mode_model_edge");
-	ed->ToolbarAddItemCheckable(_("Dreiecke"),_("Dreiecke"),dir + "mode_skin.png","mode_model_triangle");
+	ed->ToolbarAddItemCheckable(_("Polygone"),_("Polygone"),dir + "mode_skin.png","mode_model_triangle");
 	ed->ToolbarAddItemCheckable(_("Oberfl&achen"),_("Oberfl&achen"),dir + "mode_skin.png","mode_model_surface");
 	ed->ToolbarAddItemCheckable(_("Textur-Koordinaten"),_("Textur-Koordinaten"),dir + "mode_texturecoordinates.png","mode_model_texture_coord");
 	ed->ToolbarAddSeparator();
@@ -119,7 +119,7 @@ void ModeModel::OnCommand(const string & id)
 	if (id == "mode_model_edge")
 		ed->SetMode(mode_model_mesh_edge);
 	if (id == "mode_model_triangle")
-		ed->SetMode(mode_model_mesh_triangle);
+		ed->SetMode(mode_model_mesh_polygon);
 	if (id == "mode_model_surface")
 		ed->SetMode(mode_model_mesh_surface);
 	if (id == "mode_model_texture_coord")
@@ -152,7 +152,7 @@ void ModeModel::OnUpdateMenu()
 {
 	ed->Check("mode_model_vertex", mode_model_mesh_vertex->IsAncestorOf(ed->cur_mode));
 	ed->Check("mode_model_edge", mode_model_mesh_edge->IsAncestorOf(ed->cur_mode));
-	ed->Check("mode_model_triangle", mode_model_mesh_triangle->IsAncestorOf(ed->cur_mode));
+	ed->Check("mode_model_triangle", mode_model_mesh_polygon->IsAncestorOf(ed->cur_mode));
 	ed->Check("mode_model_surface", mode_model_mesh_surface->IsAncestorOf(ed->cur_mode));
 	ed->Check("mode_model_texture_coord", mode_model_mesh_texture->IsAncestorOf(ed->cur_mode));
 	ed->Check("mode_model_mesh", mode_model_mesh->IsAncestorOf(ed->cur_mode));

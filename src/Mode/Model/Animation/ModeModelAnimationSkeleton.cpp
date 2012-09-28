@@ -8,7 +8,7 @@
 #include "ModeModelAnimationSkeleton.h"
 #include "../../../Edward.h"
 #include "../../../MultiView.h"
-#include "../Mesh/ModeModelMeshTriangle.h"
+#include "../Mesh/ModeModelMeshPolygon.h"
 #include "../Skeleton/ModeModelSkeleton.h"
 
 ModeModelAnimationSkeleton *mode_model_animation_skeleton = NULL;

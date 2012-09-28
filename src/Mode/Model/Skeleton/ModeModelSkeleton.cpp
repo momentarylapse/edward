@@ -8,7 +8,7 @@
 #include "../../../Edward.h"
 #include "../../../MultiView.h"
 #include "ModeModelSkeleton.h"
-#include "../Mesh/ModeModelMeshTriangle.h"
+#include "../Mesh/ModeModelMeshPolygon.h"
 #include "../Animation/ModeModelAnimation.h"
 #include "Creation/ModeModelSkeletonCreateBone.h"
 #include "Creation/ModeModelSkeletonAttachVertices.h"
@@ -151,7 +151,7 @@ void DrawCoordBasis(const ModelBone *b)
 
 void ModeModelSkeleton::OnDrawWin(int win, irect dest)
 {
-	mode_model_mesh_triangle->DrawTrias();
+	mode_model_mesh_polygon->DrawPolygons();
 
 #ifdef USE_MODELS
 	// sub models

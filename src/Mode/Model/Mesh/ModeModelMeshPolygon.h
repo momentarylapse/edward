@@ -1,12 +1,12 @@
 /*
- * ModeModelMeshSkin.h
+ * ModeModelMeshPolygon.h
  *
  *  Created on: 06.03.2012
  *      Author: michi
  */
 
-#ifndef MODEMODELMESHSKIN_H_
-#define MODEMODELMESHSKIN_H_
+#ifndef MODEMODELMESHPOLYGON_H_
+#define MODEMODELMESHPOLYGON_H_
 
 #include "../../Mode.h"
 #include "../../../Data/Model/DataModel.h"
@@ -14,11 +14,11 @@
 class Mode;
 class DataModel;
 
-class ModeModelMeshTriangle: public Mode
+class ModeModelMeshPolygon: public Mode
 {
 public:
-	ModeModelMeshTriangle(Mode *_parent, DataModel *_data);
-	virtual ~ModeModelMeshTriangle();
+	ModeModelMeshPolygon(Mode *_parent, DataModel *_data);
+	virtual ~ModeModelMeshPolygon();
 
 	void OnStart();
 	void OnEnd();
@@ -29,7 +29,7 @@ public:
 
 	void OnDraw();
 	void OnDrawWin(int win, irect dest);
-	void DrawTrias();
+	void DrawPolygons();
 
 	void FillSelectionBuffers();
 
@@ -43,6 +43,6 @@ public:
 	int VBMarked, VBMouseOver, VBCreation;
 };
 
-extern ModeModelMeshTriangle *mode_model_mesh_triangle;
+extern ModeModelMeshPolygon *mode_model_mesh_polygon;
 
-#endif /* MODEMODELMESHSKIN_H_ */
+#endif /* MODEMODELMESHPOLYGON_H_ */

@@ -1,17 +1,17 @@
 /*
- * ModeModelMeshSplitTriangle.cpp
+ * ModeModelMeshSplitPolygon.cpp
  *
  *  Created on: 01.04.2012
  *      Author: michi
  */
 
-#include "ModeModelMeshSplitTriangle.h"
+#include "ModeModelMeshSplitPolygon.h"
 #include "../../../../Edward.h"
 #include "../../../../Action/Model/Mesh/Polygon/ActionModelSplitPolygon.h"
 #include "../../../../Action/Model/Mesh/Edge/ActionModelSplitEdge.h"
 
-ModeModelMeshSplitTriangle::ModeModelMeshSplitTriangle(Mode *_parent) :
-	ModeCreation("ModelMeshSplitTriangle", _parent)
+ModeModelMeshSplitPolygon::ModeModelMeshSplitPolygon(Mode *_parent) :
+	ModeCreation("ModelMeshSplitPolygon", _parent)
 {
 	data = (DataModel*)_parent->GetData();
 
@@ -22,11 +22,11 @@ ModeModelMeshSplitTriangle::ModeModelMeshSplitTriangle(Mode *_parent) :
 	message = _("neuen Punkt in Polygon setzen");
 }
 
-ModeModelMeshSplitTriangle::~ModeModelMeshSplitTriangle()
+ModeModelMeshSplitPolygon::~ModeModelMeshSplitPolygon()
 {
 }
 
-void ModeModelMeshSplitTriangle::OnLeftButtonDown()
+void ModeModelMeshSplitPolygon::OnLeftButtonDown()
 {
 	/*triangle = multi_view->MouseOver;
 	surface = multi_view->MouseOverSet;
@@ -44,7 +44,7 @@ void ModeModelMeshSplitTriangle::OnLeftButtonDown()
 	}
 }
 
-void ModeModelMeshSplitTriangle::OnDrawWin(int win, irect dest)
+void ModeModelMeshSplitPolygon::OnDrawWin(int win, irect dest)
 {
 	triangle = multi_view->MouseOver;
 	surface = multi_view->MouseOverSet;

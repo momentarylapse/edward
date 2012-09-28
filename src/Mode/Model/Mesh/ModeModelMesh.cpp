@@ -10,17 +10,17 @@
 #include "ModeModelMesh.h"
 #include "ModeModelMeshVertex.h"
 #include "ModeModelMeshEdge.h"
-#include "ModeModelMeshTriangle.h"
+#include "ModeModelMeshPolygon.h"
 #include "ModeModelMeshSurface.h"
 #include "ModeModelMeshTexture.h"
 #include "../../ModeCreation.h"
 #include "Creation/ModeModelMeshCreateVertex.h"
-#include "Creation/ModeModelMeshCreateTriangles.h"
+#include "Creation/ModeModelMeshCreatePolygon.h"
 #include "Creation/ModeModelMeshCreateBall.h"
 #include "Creation/ModeModelMeshCreateCube.h"
 #include "Creation/ModeModelMeshCreateCylinder.h"
 #include "Creation/ModeModelMeshCreatePlane.h"
-#include "Creation/ModeModelMeshSplitTriangle.h"
+#include "Creation/ModeModelMeshSplitPolygon.h"
 #include "Creation/ModeModelMeshBevelVertices.h"
 #include "Creation/ModeModelMeshExtrudePolygons.h"
 #include "../../../Action/Model/Mesh/Skin/ActionModelSkinVerticesFromProjection.h"
@@ -42,7 +42,7 @@ ModeModelMesh::ModeModelMesh(Mode *_parent, DataModel *_data) :
 
 	mode_model_mesh_vertex = new ModeModelMeshVertex(this, data);
 	mode_model_mesh_edge = new ModeModelMeshEdge(this, data);
-	mode_model_mesh_triangle = new ModeModelMeshTriangle(this, data);
+	mode_model_mesh_polygon = new ModeModelMeshPolygon(this, data);
 	mode_model_mesh_surface = new ModeModelMeshSurface(this, data);
 	mode_model_mesh_texture = new ModeModelMeshTexture(this, data);
 }
@@ -58,7 +58,7 @@ void ModeModelMesh::OnStart()
 	ed->ToolbarReset();
 	ed->ToolbarAddSeparator();
 	ed->ToolbarAddItemCheckable(_("Vertexpunkt"),_("Vertexpunkt"), dir + "new_vertex.png", "new_point");
-	ed->ToolbarAddItemCheckable(_("Dreieck"),_("Dreieck"), dir + "new_triangle.png", "new_tria");
+	ed->ToolbarAddItemCheckable(_("Polygon"),_("Polygon"), dir + "new_triangle.png", "new_tria");
 	ed->ToolbarAddItemCheckable(_("Ebene"),_("Ebene"), dir + "new_plane.png", "new_plane");
 	ed->ToolbarAddItemCheckable(_("Quader"),_("Quader"), dir + "mode_skin.png", "new_cube");
 	ed->ToolbarAddItemCheckable(_("Kugel"),_("Kugel"), dir + "new_ball.png", "new_ball");
@@ -100,7 +100,7 @@ void ModeModelMesh::OnCommand(const string & id)
 		Paste();
 
 	if (id == "select_cw")
-		mode_model_mesh_triangle->ToggleSelectCW();
+		mode_model_mesh_polygon->ToggleSelectCW();
 
 	if (id == "subtract_surface")
 		data->SubtractSelection();
@@ -125,7 +125,7 @@ void ModeModelMesh::OnCommand(const string & id)
 	if (id == "new_point")
 		ed->SetMode(new ModeModelMeshCreateVertex(mode_model_mesh_vertex));
 	if (id == "new_tria")
-		ed->SetMode(new ModeModelMeshCreateTriangles(mode_model_mesh_vertex));
+		ed->SetMode(new ModeModelMeshCreatePolygon(mode_model_mesh_vertex));
 	if (id == "new_ball")
 		ed->SetMode(new ModeModelMeshCreateBall(ed->cur_mode));
 	if (id == "new_cube")
@@ -135,7 +135,7 @@ void ModeModelMesh::OnCommand(const string & id)
 	if (id == "new_plane")
 		ed->SetMode(new ModeModelMeshCreatePlane(ed->cur_mode));
 	if (id == "new_extract")
-		ed->SetMode(new ModeModelMeshSplitTriangle(mode_model_mesh_triangle));
+		ed->SetMode(new ModeModelMeshSplitPolygon(mode_model_mesh_polygon));
 	if (id == "bevel_vertices")
 		ed->SetMode(new ModeModelMeshBevelVertices(mode_model_mesh_vertex));
 	if (id == "flatten_vertices")
@@ -155,7 +155,7 @@ void ModeModelMesh::OnCommand(const string & id)
 	if (id == "choose_material")
 		ChooseMaterialForSelection();
 	if (id == "text_from_bg"){
-		MultiView *mv = mode_model_mesh_triangle->multi_view;
+		MultiView *mv = mode_model_mesh_polygon->multi_view;
 		data->Execute(new ActionModelSkinVerticesFromProjection(data, mv));
 	}
 	if (id == "easify_skin")
@@ -221,7 +221,7 @@ void ModeModelMesh::OnUpdateMenu()
 	ed->Check("new_ball", cm_name == "ModelMeshCreateBall");
 	ed->Check("new_cylinder", cm_name == "ModelMeshCreateCylinder");
 
-	ed->Check("select_cw", mode_model_mesh_triangle->SelectCW);
+	ed->Check("select_cw", mode_model_mesh_polygon->SelectCW);
 
 	ed->Check("rotate", right_mouse_function == RMFRotate);
 	ed->Check("scale", right_mouse_function == RMFScale);

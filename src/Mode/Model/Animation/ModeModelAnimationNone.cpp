@@ -8,7 +8,7 @@
 #include "ModeModelAnimationNone.h"
 #include "../../../Edward.h"
 #include "../../../MultiView.h"
-#include "../Mesh/ModeModelMeshTriangle.h"
+#include "../Mesh/ModeModelMeshPolygon.h"
 
 ModeModelAnimationNone *mode_model_animation_none = NULL;
 
@@ -42,7 +42,7 @@ void ModeModelAnimationNone::OnCommand(const string& id)
 
 void ModeModelAnimationNone::OnUpdate(Observable* o)
 {
-	mode_model_mesh_triangle->FillSelectionBuffers();
+	mode_model_mesh_polygon->FillSelectionBuffers();
 }
 
 void ModeModelAnimationNone::OnUpdateMenu()
@@ -51,7 +51,7 @@ void ModeModelAnimationNone::OnUpdateMenu()
 
 void ModeModelAnimationNone::OnDrawWin(int win, irect dest)
 {
-	mode_model_mesh_triangle->OnDrawWin(win, dest);
+	mode_model_mesh_polygon->OnDrawWin(win, dest);
 }
 
 
