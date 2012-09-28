@@ -342,8 +342,8 @@ void ModeModelMeshPolygon::OnUpdate(Observable *o)
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
 				&TriangleIsMouseOver, &TriangleInRect);
 	}else if (o->GetName() == "MultiView"){
-		data->SelectionVerticesFromTriangles();
-		data->SelectionSurfacesFromTriangles();
+		data->SelectionVerticesFromPolygons();
+		data->SelectionSurfacesFromPolygons();
 	}
 	FillSelectionBuffers();
 }

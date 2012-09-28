@@ -75,7 +75,7 @@ void ModeModelMeshSurface::OnUpdate(Observable *o)
 				&SurfaceIsMouseOver, &SurfaceInRect);
 	}else if (o->GetName() == "MultiView"){
 		data->SelectionVerticesFromSurfaces();
-		data->SelectionTrianglesFromSurfaces();
+		data->SelectionPolygonsFromSurfaces();
 	}
 	mode_model_mesh_polygon->FillSelectionBuffers();
 }

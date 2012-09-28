@@ -34,9 +34,9 @@ void ModelEasifyDialog::LoadData()
 {
 	SetFloat("quality_factor", factor * 100.0f);
 	SetInt("num_vertices", data->Vertex.num);
-	SetInt("num_triangles", data->GetNumTriangles());
+	SetInt("num_triangles", data->GetNumPolygons());
 	SetInt("num_vertices_wanted", data->Vertex.num * factor);
-	SetInt("num_triangles_wanted", data->GetNumTriangles() * factor);
+	SetInt("num_triangles_wanted", data->GetNumPolygons() * factor);
 }
 
 void ModelEasifyDialog::OnQualityFactor()

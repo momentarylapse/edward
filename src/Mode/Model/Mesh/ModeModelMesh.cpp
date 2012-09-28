@@ -194,7 +194,7 @@ void ModeModelMesh::OnDraw()
 {
 	if (data->GetNumSelectedVertices() > 0){
 		ed->DrawStr(20, 100, format(_("vert: %d"), data->GetNumSelectedVertices()));
-		ed->DrawStr(20, 120, format(_("tria: %d"), data->GetNumSelectedTriangles()));
+		ed->DrawStr(20, 120, format(_("poly: %d"), data->GetNumSelectedPolygons()));
 		ed->DrawStr(20, 140, format(_("surf: %d"), data->GetNumSelectedSurfaces()));
 	}
 }
@@ -267,7 +267,7 @@ void ModeModelMesh::CreateNewMaterialForSelection()
 {
 #if 0
 	msg_db_r("CreateNewMaterialForSelection", 2);
-	if (0 == data->GetNumSelectedTriangles()){
+	if (0 == data->GetNumSelectedPolygons()){
 		ed->SetMessage(_("kein Dreieck ausgew&ahlt"));
 		msg_db_l(2);
 		return;
@@ -309,7 +309,7 @@ void ModeModelMesh::CreateNewMaterialForSelection()
 void ModeModelMesh::ChooseMaterialForSelection()
 {
 	msg_db_r("ChooseMaterialForSelection", 2);
-	if (0 == data->GetNumSelectedTriangles()){
+	if (0 == data->GetNumSelectedPolygons()){
 		ed->SetMessage(_("kein Dreieck ausgew&ahlt"));
 		msg_db_l(2);
 		return;

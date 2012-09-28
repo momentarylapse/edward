@@ -68,8 +68,8 @@ void ModeModelAnimationVertex::OnUpdate(Observable* o)
 	}else if (o->GetName() == "MultiView"){
 		foreachi(ModelVertex &v, data->Vertex, i)
 			v.is_selected = vertex[i].is_selected;
-		data->SelectionTrianglesFromVertices();
-		data->SelectionSurfacesFromTriangles();
+		data->SelectionPolygonsFromVertices();
+		data->SelectionSurfacesFromPolygons();
 	}
 	mode_model_mesh_polygon->FillSelectionBuffers();
 }

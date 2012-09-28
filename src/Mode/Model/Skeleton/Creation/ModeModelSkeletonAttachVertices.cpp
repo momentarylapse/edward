@@ -39,7 +39,7 @@ void ModeModelSkeletonAttachVertices::OnStart()
 			NULL,
 			MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect,
 			NULL, NULL);
-	data->SelectionTrianglesFromVertices();
+	data->SelectionPolygonsFromVertices();
 	OnUpdate(data);
 }
 

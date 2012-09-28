@@ -16,8 +16,7 @@ ModeModelMeshExtrudePolygons::ModeModelMeshExtrudePolygons(Mode *_parent) :
 
 	data->GetSelectionState(selection);
 
-	offset = 20.0f / multi_view->zoom;
-	Preview();
+	offset = 0;
 
 	message = _("Extrudieren: Offset durch Maus, Linke Taste = fertig");
 }

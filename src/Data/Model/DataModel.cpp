@@ -1325,7 +1325,7 @@ void DataModel::ClearSelection()
 	}
 }
 
-void DataModel::SelectionTrianglesFromSurfaces()
+void DataModel::SelectionPolygonsFromSurfaces()
 {
 	foreach(ModelSurface &s, Surface){
 		foreach(ModelPolygon &t, s.Polygon)
@@ -1344,7 +1344,7 @@ void DataModel::SelectionVerticesFromSurfaces()
 			v.is_selected = false;
 }
 
-void DataModel::SelectionSurfacesFromTriangles()
+void DataModel::SelectionSurfacesFromPolygons()
 {
 	foreach(ModelSurface &s, Surface){
 		s.is_selected = true;
@@ -1353,7 +1353,7 @@ void DataModel::SelectionSurfacesFromTriangles()
 	}
 }
 
-void DataModel::SelectionVerticesFromTriangles()
+void DataModel::SelectionVerticesFromPolygons()
 {
 	foreach(ModelVertex &v, Vertex)
 		v.is_selected = false;
@@ -1364,7 +1364,7 @@ void DataModel::SelectionVerticesFromTriangles()
 					Vertex[t.Side[k].Vertex].is_selected = true;
 }
 
-void DataModel::SelectionTrianglesFromVertices()
+void DataModel::SelectionPolygonsFromVertices()
 {
 	foreach(ModelSurface &s, Surface)
 		foreach(ModelPolygon &t, s.Polygon){
@@ -1618,7 +1618,7 @@ int DataModel::GetNumSelectedSkinVertices()
 	return r;
 }
 
-int DataModel::GetNumSelectedTriangles()
+int DataModel::GetNumSelectedPolygons()
 {
 	int r = 0;
 	foreach(ModelSurface &s, Surface)
@@ -1646,7 +1646,7 @@ int DataModel::GetNumSelectedBones()
 	return r;
 }
 
-int DataModel::GetNumTriangles()
+int DataModel::GetNumPolygons()
 {
 	int r = 0;
 	foreach(ModelSurface &s, Surface)
@@ -1858,7 +1858,7 @@ void DataModel::BevelSelectedVertices(float radius)
 void DataModel::FlattenSelectedVertices()
 {	Execute(new ActionModelFlattenVertices(this));	}
 
-void DataModel::ExtrudeSelectedTriangles(float offset)
+void DataModel::ExtrudeSelectedPolygons(float offset)
 {	Execute(new ActionModelExtrudePolygons(offset));	}
 
 void DataModel::AutoWeldSelectedSurfaces(float epsilon)

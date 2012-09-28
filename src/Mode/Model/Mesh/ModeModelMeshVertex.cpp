@@ -65,8 +65,8 @@ void ModeModelMeshVertex::OnUpdate(Observable *o)
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
 				NULL, NULL);
 	}else if (o->GetName() == "MultiView"){
-		data->SelectionTrianglesFromVertices();
-		data->SelectionSurfacesFromTriangles();
+		data->SelectionPolygonsFromVertices();
+		data->SelectionSurfacesFromPolygons();
 	}
 	mode_model_mesh_polygon->FillSelectionBuffers();
 }

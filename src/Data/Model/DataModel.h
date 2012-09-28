@@ -56,7 +56,7 @@ public:
 	vector AnimatedPos;
 
 	bool NormalDirty;
-	int RefCount; // triangles
+	int RefCount; // polygons
 	int Surface;
 };
 
@@ -181,9 +181,9 @@ public:
 	float Weight; // for easify'ing
 
 	// constraints:
-	//  Vertex[0] = surf.Triangle[Triangle[0]].Vertex[Side[0]]
-	//  Vertex[1] = surf.Triangle[Triangle[0]].Vertex[(Side[0] + 1) % 3]
-	//  same for Triangle/Side[1] but Vertex[0 <-> 1]
+	//  Vertex[0] = surf.Polygon[Triangle[0]].Vertex[Side[0]]
+	//  Vertex[1] = surf.Polygon[Triangle[0]].Vertex[(Side[0] + 1) % 3]
+	//  same for Polygon/Side[1] but Vertex[0 <-> 1]
 };
 
 
@@ -224,18 +224,18 @@ public:
 
 	int GetNumSelectedVertices();
 	int GetNumSelectedSkinVertices();
-	int GetNumSelectedTriangles();
+	int GetNumSelectedPolygons();
 	int GetNumSelectedSurfaces();
 	//int GetNumSelectedBalls();
 	//int GetNumSelectedPolys();
 	int GetNumSelectedBones();
-	int GetNumTriangles();
+	int GetNumPolygons();
 
 	void ClearSelection();
-	void SelectionTrianglesFromVertices();
-	void SelectionSurfacesFromTriangles();
-	void SelectionTrianglesFromSurfaces();
-	void SelectionVerticesFromTriangles();
+	void SelectionPolygonsFromVertices();
+	void SelectionSurfacesFromPolygons();
+	void SelectionPolygonsFromSurfaces();
+	void SelectionVerticesFromPolygons();
 	void SelectionVerticesFromSurfaces();
 	void GetSelectionState(ModelSelectionState &s);
 	void SetSelectionState(ModelSelectionState &s);
@@ -286,7 +286,7 @@ public:
 	void CollapseSelectedVertices();
 	void BevelSelectedVertices(float radius);
 	void FlattenSelectedVertices();
-	void ExtrudeSelectedTriangles(float offset);
+	void ExtrudeSelectedPolygons(float offset);
 	void AutoWeldSelectedSurfaces(float d);
 	void SetNormalModeSelection(int mode);
 	void SetNormalModeAll(int mode);
@@ -391,18 +391,10 @@ public:
 
 
 	// editor
-	//int SubMode, CreationMode, EditMode;
 	int ViewStage;
 
 	bool ForceNewNormals[4];
 	bool NormalIndicesOK[4];
-
-	// temporary data (copy/paste)
-/*	Array<ModelVertex> BVertex;
-	Array<ModelTriangle> BTriangle;
-	Array<int> BTriangleMat;
-	Array<ModelBall> BBall;
-	Array<ModelPolyhedron> BPoly;*/
 };
 
 #endif /* DATAMODEL_H_ */
