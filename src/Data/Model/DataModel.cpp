@@ -1316,14 +1316,19 @@ void DataModel::ClearSelection()
 		s.is_selected = false;
 		foreach(ModelPolygon &t, s.Polygon)
 			t.is_selected = false;
+		foreach(ModelEdge &e, s.Edge)
+			e.is_selected = false;
 	}
 }
 
 void DataModel::SelectionTrianglesFromSurfaces()
 {
-	foreach(ModelSurface &s, Surface)
+	foreach(ModelSurface &s, Surface){
 		foreach(ModelPolygon &t, s.Polygon)
 			t.is_selected = s.is_selected;
+		foreach(ModelEdge &e, s.Edge)
+			e.is_selected = s.is_selected;
+	}
 }
 
 void DataModel::SelectionVerticesFromSurfaces()
@@ -1869,6 +1874,51 @@ void DataModel::EditEffect(int index, const ModelEffect& effect)
 
 void DataModel::SelectionClearEffects()
 {	Execute(new ActionModelClearEffects(this));	}
+
+
+void ModelSelectionState::clear()
+{
+	Vertex.clear();
+	Surface.clear();
+	Polygon.clear();
+}
+
+void DataModel::GetSelectionState(ModelSelectionState& s)
+{
+	s.clear();
+	foreachi(ModelVertex &v, Vertex, i)
+		if (v.is_selected)
+			s.Vertex.add(i);
+	foreachi(ModelSurface &surf, Surface, i){
+		if (surf.is_selected)
+			s.Surface.add(i);
+		Array<int> sel;
+		foreachi(ModelPolygon &t, surf.Polygon, j)
+			if (t.is_selected)
+				sel.add(j);
+		s.Polygon.add(sel);
+		sel.clear();
+		foreachi(ModelEdge &e, surf.Edge, j)
+			if (e.is_selected)
+				sel.add(j);
+		s.Edge.add(sel);
+	}
+}
+
+void DataModel::SetSelectionState(ModelSelectionState& s)
+{
+	ClearSelection();
+	foreach(int v, s.Vertex)
+		Vertex[v].is_selected = true;
+	foreach(int si, s.Surface)
+		Surface[si].is_selected = true;
+	for (int i=0;i<s.Polygon.num;i++)
+		foreach(int j, s.Polygon[i])
+			Surface[i].Polygon[j].is_selected = true;
+	for (int i=0;i<s.Edge.num;i++)
+		foreach(int j, s.Edge[i])
+			Surface[i].Edge[j].is_selected = true;
+}
 
 
 

@@ -22,6 +22,7 @@
 #include "Creation/ModeModelMeshCreatePlane.h"
 #include "Creation/ModeModelMeshSplitTriangle.h"
 #include "Creation/ModeModelMeshBevelVertices.h"
+#include "Creation/ModeModelMeshExtrudePolygons.h"
 #include "../../../Action/Model/Mesh/Skin/ActionModelSkinVerticesFromProjection.h"
 #include "../../../Action/Model/Mesh/Triangle/ActionModelTriangulateSelection.h"
 #include "../../../Action/Model/Mesh/Triangle/ActionModelCutOutPolygons.h"
@@ -108,7 +109,8 @@ void ModeModelMesh::OnCommand(const string & id)
 	if (id == "invert_trias")
 		data->InvertSelection();
 	if (id == "extrude_triangles")
-		data->ExtrudeSelectedTriangles(40 / mode_model_mesh_vertex->multi_view->zoom);
+		ed->SetMode(new ModeModelMeshExtrudePolygons(ed->cur_mode));
+		//data->ExtrudeSelectedTriangles(40 / mode_model_mesh_vertex->multi_view->zoom);
 	if (id == "autoweld_surfaces")
 		data->AutoWeldSelectedSurfaces(0.1f / mode_model_mesh_vertex->multi_view->zoom);
 	if (id == "triangulate_selection")

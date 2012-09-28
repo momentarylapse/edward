@@ -214,6 +214,16 @@ struct ModelGeometry
 	Array<ModelPolygon> Polygon;
 };
 
+class ModelSelectionState
+{
+public:
+	Array<int> Vertex;
+	Array<int> Surface;
+	Array<Array<int> > Polygon;
+	Array<Array<int> > Edge;
+	void clear();
+};
+
 
 class DataModel: public Data
 {
@@ -248,6 +258,8 @@ public:
 	void SelectionTrianglesFromSurfaces();
 	void SelectionVerticesFromTriangles();
 	void SelectionVerticesFromSurfaces();
+	void GetSelectionState(ModelSelectionState &s);
+	void SetSelectionState(ModelSelectionState &s);
 
 
 	float GetDiameter();
