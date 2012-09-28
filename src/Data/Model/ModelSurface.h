@@ -21,8 +21,6 @@ struct ModelPolygon;
 class ModelSurface: public MultiViewSingleData
 {
 public:
-	ModelSurface();
-	virtual ~ModelSurface();
 
 	Array<ModelPolygon> Polygon;
 	Array<ModelEdge> Edge;

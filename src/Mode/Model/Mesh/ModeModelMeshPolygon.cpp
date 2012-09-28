@@ -263,7 +263,7 @@ void ModeModelMeshPolygon::OnStart()
 
 
 
-bool TriangleIsMouseOver(int index, void *user_data, int win, vector &tp)
+bool PolygonIsMouseOver(int index, void *user_data, int win, vector &tp)
 {
 	ModelSurface *surf = (ModelSurface*)user_data;
 	ModelPolygon *t = &surf->Polygon[index];
@@ -306,7 +306,7 @@ inline bool in_irect(const vector &p, irect *r)
 	return ((p.x > r->x1) and (p.x < r->x2) and (p.y > r->y1) and (p.y < r->y2));
 }
 
-bool TriangleInRect(int index, void *user_data, int win, irect *r)
+bool PolygonInRect(int index, void *user_data, int win, irect *r)
 {
 	ModelSurface *surf = (ModelSurface*)user_data;
 	ModelPolygon *t = &surf->Polygon[index];
@@ -340,7 +340,7 @@ void ModeModelMeshPolygon::OnUpdate(Observable *o)
 				s.Polygon,
 				&s,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
-				&TriangleIsMouseOver, &TriangleInRect);
+				&PolygonIsMouseOver, &PolygonInRect);
 	}else if (o->GetName() == "MultiView"){
 		data->SelectionVerticesFromPolygons();
 		data->SelectionSurfacesFromPolygons();

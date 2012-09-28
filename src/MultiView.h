@@ -58,10 +58,11 @@ typedef bool t_is_in_rect_func(int index, void *user_data, int win, irect *r);
 
 
 struct MultiViewData{
-	int Num, Type;
+	int Type;
+	DynamicArray *data;
 	bool MVSelectable, Drawable, Movable, Indexable;
-	void *data, *user_data;
-	int DataSingleSize;
+	void *user_data;
+	//int DataSingleSize;
 	t_is_mouse_over_func *IsMouseOver;
 	t_is_in_rect_func *IsInRect;
 };

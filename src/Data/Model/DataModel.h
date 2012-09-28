@@ -215,6 +215,7 @@ public:
 	bool Save(const string &_filename);
 
 	void DebugShow();
+	bool TestSanity(const string &loc);
 
 	void SetNormalsDirtyByVertices(const Array<int> &index);
 	void SetAllNormalsDirty();

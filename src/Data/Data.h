@@ -34,6 +34,8 @@ public:
 	void Undo();
 	void Redo();
 
+	virtual bool TestSanity(const string &loc){	return true;	}
+
 	string filename;
 	int file_time;
 	bool binary_file_format;

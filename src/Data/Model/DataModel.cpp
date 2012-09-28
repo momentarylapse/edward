@@ -189,6 +189,15 @@ void DataModel::DebugShow()
 	}
 }
 
+bool DataModel::TestSanity(const string &loc)
+{
+	foreach(ModelSurface &s, Surface){
+		if (!s.TestSanity(loc))
+			return false;
+	}
+	return true;
+}
+
 
 
 int get_normal_index(vector &n)
@@ -897,7 +906,6 @@ void DataModel::GetBoundingBox(vector &min, vector &max)
 
 bool DataModel::Save(const string & _filename)
 {
-#if 0
 	msg_db_r("DataModel.Save",1);
 
 	/*if (AutoGenerateSkin[1])
@@ -914,25 +922,36 @@ bool DataModel::Save(const string & _filename)
 
 
 
-	// export...
-	Skin[1].NormalModeAll = NormalModeAll;
-	Skin[1].Vertex = Vertex;
-	Skin[1].Sub.clear();
-	Skin[1].Sub.resize(Material.num);
-	foreach(ModelSurface &s, Surface)
-		foreach(ModelPolygon &t, s.Polygon)
-			Skin[1].Sub[t.Material].Triangle.add(t);
-	foreachi(ModelMaterial &m, Material, i)
-		Skin[1].Sub[i].NumTextures = m.NumTextures;
-
-
-
 #ifdef FORCE_UPDATE_NORMALS
 	for (int d=1;d<4;d++)
 		for (int j=0;j<Skin[d].NumVertices;j++)
 			Skin[d].Vertex[j].NormalDirty = true;
 #endif
 	UpdateNormals();
+
+	// export...
+	Skin[1].NormalModeAll = NormalModeAll;
+	Skin[1].Vertex = Vertex;
+	Skin[1].Sub.clear();
+	Skin[1].Sub.resize(Material.num);
+	foreach(ModelSurface &s, Surface)
+		foreach(ModelPolygon &t, s.Polygon){
+			Array<int> v = t.Triangulate(this);
+			for (int i=0;i<v.num/3;i++){
+				ModelTriangle tt;
+				for (int k=0;k<3;k++){
+					tt.Vertex[k] = t.Side[v[i*3+k]].Vertex;
+					tt.Normal[k] = t.Side[v[i*3+k]].Normal;
+					for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+						tt.SkinVertex[l][k] = t.Side[v[i*3+k]].SkinVertex[l];
+				}
+				Skin[1].Sub[t.Material].Triangle.add(tt);
+			}
+		}
+	foreachi(ModelMaterial &m, Material, i)
+		Skin[1].Sub[i].NumTextures = m.NumTextures;
+
+
 
 //	PrecreatePhysicalData();
 
@@ -1240,18 +1259,20 @@ bool DataModel::Save(const string & _filename)
 				f->WriteInt(v.NormalMode);
 		}
 	}
-	/*f->WriteComment("// BG Textures");
-	for (int i=0;i<4;i++){
-		f->WriteStr(BgTextureFile[i]);
-		if (BgTextureFile[i].num > 0){
-			f->WriteFloat(BgTextureA[i].x);
-			f->WriteFloat(BgTextureA[i].y);
-			f->WriteFloat(BgTextureA[i].z);
-			f->WriteFloat(BgTextureB[i].x);
-			f->WriteFloat(BgTextureB[i].y);
-			f->WriteFloat(BgTextureB[i].z);
+	f->WriteComment("// Polygons");
+	f->WriteInt(Surface.num);
+	foreach(ModelSurface &s, Surface){
+		f->WriteInt(s.Polygon.num);
+		foreach(ModelPolygon &t, s.Polygon){
+			f->WriteInt(t.Side.num);
+			f->WriteInt(t.Material);
+			foreach(ModelPolygonSide &ss, t.Side)
+				f->WriteInt(ss.Vertex);
 		}
-	}*/
+		f->WriteBool(s.IsPhysical);
+		f->WriteBool(s.IsVisible);
+		f->WriteInt(0);
+	}
 
 	f->WriteComment("#");
 	FileClose(f);
@@ -1259,7 +1280,6 @@ bool DataModel::Save(const string & _filename)
 	ed->SetMessage(_("Gespeichert!"));
 	action_manager->MarkCurrentAsSave();
 	msg_db_l(1);
-#endif
 	return true;
 }
 

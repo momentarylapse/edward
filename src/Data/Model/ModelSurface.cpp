@@ -8,14 +8,6 @@
 #include "ModelSurface.h"
 #include "DataModel.h"
 
-ModelSurface::ModelSurface()
-{
-}
-
-ModelSurface::~ModelSurface()
-{
-}
-
 void ModelSurface::AddVertex(int v)
 {
 	// set -> unique
