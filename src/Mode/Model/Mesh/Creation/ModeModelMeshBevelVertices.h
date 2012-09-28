@@ -20,7 +20,7 @@ public:
 	void OnEnd();
 
 	void OnMouseMove();
-	void OnKeyDown();
+	void OnLeftButtonDown();
 
 	void OnDrawWin(int win, irect dest);
 

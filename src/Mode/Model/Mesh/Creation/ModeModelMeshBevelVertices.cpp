@@ -18,7 +18,7 @@ ModeModelMeshBevelVertices::ModeModelMeshBevelVertices(Mode *_parent) :
 {
 	data = (DataModel*)_parent->GetData();
 
-	message = _("Radius skalieren [Shift + Return]");
+	message = _("Radius skalieren [Linke Maustaste = fertig]");
 
 
 	data->GetSelectionState(selection);
@@ -64,21 +64,18 @@ void ModeModelMeshBevelVertices::OnMouseMove()
 #endif
 }
 
-void ModeModelMeshBevelVertices::OnKeyDown()
+void ModeModelMeshBevelVertices::OnLeftButtonDown()
 {
-	if (HuiGetEvent()->key_code == KEY_SHIFT + KEY_RETURN)
-		if (data->GetNumSelectedVertices() > 0){
 #ifdef INTERACTIVE
-			a->undo_logged(data);
-			data->Notify("Changed");
-			delete(a);
-			a = NULL;
+	a->undo_logged(data);
+	data->Notify("Changed");
+	delete(a);
+	a = NULL;
 #endif
 
-			data->SetSelectionState(selection);
-			data->BevelSelectedVertices(radius);
-			Abort();
-		}
+	data->SetSelectionState(selection);
+	data->BevelSelectedVertices(radius);
+	Abort();
 }
 
 void ModeModelMeshBevelVertices::OnDrawWin(int win, irect dest)
