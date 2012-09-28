@@ -14,7 +14,7 @@ class DataModel;
 class ActionModelBevelVertices: public ActionGroup
 {
 public:
-	ActionModelBevelVertices(DataModel *m, float _length);
+	ActionModelBevelVertices(float _length);
 	virtual ~ActionModelBevelVertices(){}
 	string name(){	return "ModelBevelVertices";	}
 

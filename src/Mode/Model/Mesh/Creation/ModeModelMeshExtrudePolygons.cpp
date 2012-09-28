@@ -39,11 +39,11 @@ void ModeModelMeshExtrudePolygons::OnLeftButtonDown()
 {
 	a->undo_logged(data);
 	delete(a);
+	a = NULL;
 
 	data->SetSelectionState(selection);
 	data->Execute(new ActionModelExtrudePolygons(offset));
 
-	a = NULL;
 	Abort();
 }
 

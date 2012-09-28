@@ -1849,7 +1849,7 @@ void DataModel::Easify(float factor)
 {	Execute(new ActionModelEasify(this, factor));	}
 
 void DataModel::BevelSelectedVertices(float radius)
-{	Execute(new ActionModelBevelVertices(this, radius));	}
+{	Execute(new ActionModelBevelVertices(radius));	}
 
 void DataModel::FlattenSelectedVertices()
 {	Execute(new ActionModelFlattenVertices(this));	}

@@ -17,6 +17,8 @@ public:
 	ModeModelMeshBevelVertices(Mode *_parent);
 	virtual ~ModeModelMeshBevelVertices();
 
+	void OnEnd();
+
 	void OnMouseMove();
 	void OnKeyDown();
 
@@ -27,6 +29,8 @@ public:
 
 private:
 	float radius;
+	Action *a;
+	ModelSelectionState selection;
 };
 
 #endif /* MODEMODELMESHBEVELVERTICES_H_ */

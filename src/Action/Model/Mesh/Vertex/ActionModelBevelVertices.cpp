@@ -78,7 +78,7 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 	AddSubAction(new ActionModelDeleteUnusedVertex(vi), m);
 }
 
-ActionModelBevelVertices::ActionModelBevelVertices(DataModel *m, float _length)
+ActionModelBevelVertices::ActionModelBevelVertices(float _length)
 {
 	length = _length;
 }
