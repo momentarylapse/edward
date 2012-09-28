@@ -11,7 +11,7 @@
 #include "Helper/ActionModelSurfaceRelinkPolygon.h"
 #include "../../../../Data/Model/ModeModelSurface.h"
 
-ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(DataModel *m, int _surface1, int _surface2, float _epsilon, bool _ignore_failure)
+ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(int _surface1, int _surface2, float _epsilon, bool _ignore_failure)
 {
 	surface1 = _surface1;
 	surface2 = _surface2;
@@ -34,8 +34,10 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 	if (a >= b)
 		throw ActionException("SurfaceWeld: a >= b... array reference broken");
 
-	a->TestSanity("AutoWeld prae a");
-	b->TestSanity("AutoWeld prae b");
+	if (!a->TestSanity("AutoWeld prae a"))
+		throw ActionException("SurfaceWeld: s1 evil pre");
+	if (!b->TestSanity("AutoWeld prae b"))
+		throw ActionException("SurfaceWeld: s2 evil pre");
 
 
 	// find pairs of vertices close to each other
@@ -76,7 +78,8 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 			_foreach_it_.update(); // TODO
 		}
 	}
-	a->TestSanity("AutoWeld relink tria");
+	if (!a->TestSanity("AutoWeld relink tria"))
+		throw ActionException("SurfaceWeld: s1 evil post");
 
 	// remove obsolete vertices
 	Set<int> vv;

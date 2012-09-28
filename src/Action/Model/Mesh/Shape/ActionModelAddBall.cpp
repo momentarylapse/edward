@@ -67,7 +67,7 @@ void *ActionModelAddBall::compose(Data *d)
 
 		// weld together
 		for (int f=1;f<6;f++)
-			AddSubAction(new ActionModelSurfaceAutoWeld(m, m->Surface.num - 2, m->Surface.num - 1, radius / (float)num_x * 0.01f, true), m);
+			AddSubAction(new ActionModelSurfaceAutoWeld(m->Surface.num - 2, m->Surface.num - 1, radius / (float)num_x * 0.01f, true), m);
 
 	// ball from disks
 	}else{

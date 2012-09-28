@@ -14,7 +14,7 @@ class DataModel;
 class ActionModelSurfaceAutoWeld : public ActionGroup
 {
 public:
-	ActionModelSurfaceAutoWeld(DataModel *m, int _surface1, int _surface2, float _epsilon,  bool ignore_failure);
+	ActionModelSurfaceAutoWeld(int _surface1, int _surface2, float _epsilon,  bool ignore_failure);
 	virtual ~ActionModelSurfaceAutoWeld(){}
 	string name(){	return "ModelSurfaceAutoWeld";	}
 

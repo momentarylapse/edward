@@ -1852,8 +1852,8 @@ void DataModel::FlattenSelectedVertices()
 void DataModel::ExtrudeSelectedTriangles(float offset)
 {	Execute(new ActionModelExtrudePolygons(offset));	}
 
-void DataModel::AutoWeldSelectedSurfaces(float d)
-{	Execute(new ActionModelAutoWeldSelection(this, d));	}
+void DataModel::AutoWeldSelectedSurfaces(float epsilon)
+{	Execute(new ActionModelAutoWeldSelection(epsilon));	}
 
 void DataModel::AnimationDuplicateCurrentFrame()
 {

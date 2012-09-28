@@ -26,7 +26,9 @@ void *ActionModelSurfaceInvert::execute(Data *d)
 
 	ModelSurface &s = m->Surface[surface];
 
-	// flip triangles
+	s.TestSanity("inv prae");
+
+	// flip polygons
 	foreachi(ModelPolygon &t, s.Polygon, ti){
 		for (int k=0;k<t.Side.num/2;k++){
 			int kk = t.Side.num - k - 1;
@@ -45,8 +47,8 @@ void *ActionModelSurfaceInvert::execute(Data *d)
 
 			// swap edges
 			int e = t.Side[k].Edge;
-			t.Side[k].Edge = t.Side[kk].Edge;
-			t.Side[kk].Edge = e;
+			t.Side[k].Edge = t.Side[kk-1].Edge;
+			t.Side[kk-1].Edge = e;
 		}
 
 		// mark for update
@@ -61,12 +63,14 @@ void *ActionModelSurfaceInvert::execute(Data *d)
 		e.Vertex[1] = v;
 
 		// relink sides
-		for (int k=0;k<e.RefCount;k++)
-			if (e.Side[k] == 1)
-				e.Side[k] = 2;
-			else if (e.Side[k] == 2)
-				e.Side[k] = 1;
+		for (int k=0;k<e.RefCount;k++){
+			if (e.Side[k] < s.Polygon[e.Polygon[k]].Side.num - 1)
+				e.Side[k] = s.Polygon[e.Polygon[k]].Side.num - 2 - e.Side[k];
+			s.Polygon[e.Polygon[k]].Side[e.Side[k]].EdgeDirection = k;
+		}
 	}
+
+	s.TestSanity("inv post");
 
 	return NULL;
 }

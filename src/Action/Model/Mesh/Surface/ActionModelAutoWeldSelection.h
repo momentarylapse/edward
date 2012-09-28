@@ -14,9 +14,13 @@ class DataModel;
 class ActionModelAutoWeldSelection : public ActionGroup
 {
 public:
-	ActionModelAutoWeldSelection(DataModel *m, float d);
-	virtual ~ActionModelAutoWeldSelection();
+	ActionModelAutoWeldSelection(float _epsilon);
+	virtual ~ActionModelAutoWeldSelection(){}
 	string name(){	return "ModelAutoWeldSelection";	}
+
+	void *compose(Data *d);
+private:
+	float epsilon;
 };
 
 #endif /* ACTIONMODELAUTOWELDSELECTION_H_ */

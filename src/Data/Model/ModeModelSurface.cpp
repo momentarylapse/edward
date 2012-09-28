@@ -452,41 +452,42 @@ void ModelSurface::RemovePolygon(int index)
 	TestSanity("rem tria");
 }
 
-void ModelSurface::TestSanity(const string &loc)
+bool ModelSurface::TestSanity(const string &loc)
 {
 	foreach(ModelPolygon &t, Polygon)
 		for (int k=0;k<t.Side.num;k++)
 			for (int kk=k+1;kk<t.Side.num;kk++)
 				if (t.Side[k].Vertex == t.Side[kk].Vertex){
 					msg_error(loc + ": surf broken!   trivial tria");
-					return;
+					return false;
 				}
 	foreachi(ModelEdge &e, Edge, i){
 		if (e.Vertex[0] == e.Vertex[1]){
 			msg_error(loc + ": surf broken!   trivial edge");
-			return;
+			return false;
 		}
 		for (int k=0;k<e.RefCount;k++){
 			ModelPolygon &t = Polygon[e.Polygon[k]];
 			if (t.Side[e.Side[k]].Edge != i){
 				msg_error(loc + ": surf broken!   edge linkage");
 				msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.Side[k], t.Side[e.Side[k]].Edge, t.Side[e.Side[k]].EdgeDirection));
-				return;
+				return false;
 			}
 			if (t.Side[e.Side[k]].EdgeDirection != k){
 				msg_error(loc + ": surf broken!   edge linkage (dir)");
 				msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.Side[k], t.Side[e.Side[k]].Edge, t.Side[e.Side[k]].EdgeDirection));
-				return;
+				return false;
 			}
 			for (int j=0;j<2;j++)
 				if (e.Vertex[(j + k) % 2] != t.Side[(e.Side[k] + j) % t.Side.num].Vertex){
 					msg_error(loc + ": surf broken!   edge linkage (vert)");
 					msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.Side[k], t.Side[e.Side[k]].Edge, t.Side[e.Side[k]].EdgeDirection));
-					return;
+					return false;
 				}
 		}
 
 	}
+	return true;
 }
 
 bool ModelSurface::IsInside(const vector &p)
