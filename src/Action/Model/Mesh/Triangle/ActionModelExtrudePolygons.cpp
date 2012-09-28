@@ -37,17 +37,21 @@ void ActionModelExtrudePolygons::ExtrudeSurface(ModelSurface &s, int surface, Da
 			for (int k=0;k<t.Side.num;k++)
 				sel_vert.add(t.Side[k].Vertex);
 		}
-	if ((sel_poly.num == 0) or (sel_poly.num == s.Polygon.num))
+	if (sel_poly.num == 0)
 		return;
 
 	// find boundary
 	Set<int> boundary;
-	foreach(ModelEdge &e, s.Edge)
-		if (e.RefCount == 2)
-			if ((s.Polygon[e.Polygon[0]].is_selected != s.Polygon[e.Polygon[1]].is_selected)){
-				boundary.add(e.Vertex[0]);
-				boundary.add(e.Vertex[1]);
-			}
+	foreach(ModelEdge &e, s.Edge){
+		int n_sel = 0;
+		for (int k=0;k<e.RefCount;k++)
+			if (s.Polygon[e.Polygon[k]].is_selected)
+				n_sel ++;
+		if (n_sel == 1){
+			boundary.add(e.Vertex[0]);
+			boundary.add(e.Vertex[1]);
+		}
+	}
 
 	// copy boundary vertices
 	Array<int> new_vert;
