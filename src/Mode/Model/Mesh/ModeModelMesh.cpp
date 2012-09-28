@@ -20,6 +20,7 @@
 #include "Creation/ModeModelMeshCreateCube.h"
 #include "Creation/ModeModelMeshCreateCylinder.h"
 #include "Creation/ModeModelMeshCreatePlane.h"
+#include "Creation/ModeModelMeshCreateTorus.h"
 #include "Creation/ModeModelMeshSplitPolygon.h"
 #include "Creation/ModeModelMeshBevelVertices.h"
 #include "Creation/ModeModelMeshExtrudePolygons.h"
@@ -63,6 +64,7 @@ void ModeModelMesh::OnStart()
 	ed->ToolbarAddItemCheckable(_("Quader"),_("Quader"), dir + "mode_skin.png", "new_cube");
 	ed->ToolbarAddItemCheckable(_("Kugel"),_("Kugel"), dir + "new_ball.png", "new_ball");
 	ed->ToolbarAddItemCheckable(_("Zylinder (-schlange)"),_("Zylinder (-schlange)"), dir + "new_cylinder.png", "new_cylinder");
+	ed->ToolbarAddItemCheckable(_("Torus"),_("Torus"), dir + "new_ball.png", "new_torus");
 	ed->ToolbarAddSeparator();
 	ed->ToolbarAddItemCheckable(_("Rotieren"),_("Rotieren"), dir + "rf_rotate.png", "rotate");
 	ed->ToolbarAddItemCheckable(_("Skalieren"),_("Skalieren"), dir + "rf_scale.png", "scale");
@@ -134,6 +136,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		ed->SetMode(new ModeModelMeshCreateCylinder(ed->cur_mode));
 	if (id == "new_plane")
 		ed->SetMode(new ModeModelMeshCreatePlane(ed->cur_mode));
+	if (id == "new_torus")
+		ed->SetMode(new ModeModelMeshCreateTorus(ed->cur_mode));
 	if (id == "new_extract")
 		ed->SetMode(new ModeModelMeshSplitPolygon(mode_model_mesh_polygon));
 	if (id == "bevel_vertices")
@@ -220,6 +224,7 @@ void ModeModelMesh::OnUpdateMenu()
 	ed->Check("new_cube", cm_name == "ModelMeshCreateCube");
 	ed->Check("new_ball", cm_name == "ModelMeshCreateBall");
 	ed->Check("new_cylinder", cm_name == "ModelMeshCreateCylinder");
+	ed->Check("new_torus", cm_name == "ModelMeshCreateTorus");
 
 	ed->Check("select_cw", mode_model_mesh_polygon->SelectCW);
 

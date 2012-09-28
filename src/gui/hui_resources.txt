@@ -1,6 +1,6 @@
 t3
 // Number Of Resources
-48
+49
 // Resource
 Menu
 
@@ -6020,7 +6020,7 @@ menu_model
 0
 
 
-147
+144
 ItemPopup
 menu_model_file
 
@@ -6623,7 +6623,7 @@ ItemPopup
 menu_model_creation
 
 1
-10
+7
 0
 0
 0
@@ -6698,59 +6698,20 @@ new_ball
 
 
 Item
+new_torus
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
 new_cylinder
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemSeparator
-
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-just_physical
-
-0
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-new_konv_poly
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-new_spat
 
 1
 0
@@ -9392,6 +9353,86 @@ np_num_y
 95
 35
 60
+25
+-1
+0
+0
+
+
+// Resource
+Dialog
+new_torus_dialog
+
+1
+140
+105
+0
+0
+0
+1
+0
+
+
+5
+Text
+x
+
+1
+10
+40
+20
+25
+-1
+0
+0
+
+
+SpinButton
+nc_x
+
+1
+35
+40
+95
+25
+-1
+0
+0
+
+
+SpinButton
+nc_y
+
+1
+35
+70
+95
+25
+-1
+0
+0
+
+
+Text
+y
+
+1
+10
+70
+20
+25
+-1
+0
+0
+
+
+Text
+ntdt_slides
+
+1
+10
+10
+100
 25
 -1
 0
@@ -16618,8 +16659,6 @@ invert_selection
 Invertieren
 invert_trias
 Dreiecke umkehren
-just_physical
-Phys. Oberfläche
 just_selection
 Auswahl
 key
@@ -17022,8 +17061,6 @@ new_extract
 Zerteilen
 new_frame
 neuer Frame
-new_konv_poly
---Konv. Polyeder
 new_outline
 --Umriss
 new_plane
@@ -17036,12 +17073,14 @@ new_plane_dialog_t_y
 Streifen Y:
 new_point
 Vertex-Punkte
-new_spat
---Spat
 new_terrain_dialog
 neues Terrain
+new_torus
+Torus
+new_torus_dialog
+neuer Torus
 new_tria
-Dreiecke
+Polygon
 normal_all_angular
 Winkelabhängig
 normal_all_hard
@@ -17060,6 +17099,8 @@ np_num_x
 \\1
 np_num_y
 \\1
+ntdt_slides
+Streifen
 num
 
 num_frames_set
@@ -18036,8 +18077,6 @@ invert_selection
 Invert
 invert_trias
 Triangle inversion
-just_physical
-Physical skin
 just_selection
 Selection
 key
@@ -18440,8 +18479,6 @@ new_extract
 Extract
 new_frame
 new frame
-new_konv_poly
-Conv. polyeder
 new_outline
 Outline
 new_plane
@@ -18454,10 +18491,12 @@ new_plane_dialog_t_y
 # stripes Y:
 new_point
 Vertex
-new_spat
-Spat
 new_terrain_dialog
 New terrain
+new_torus
+
+new_torus_dialog
+
 new_tria
 New triangle
 normal_all_angular
@@ -18478,6 +18517,8 @@ np_num_x
 \\1
 np_num_y
 \\1
+ntdt_slides
+
 num
 
 num_frames_set
@@ -18975,7 +19016,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-163
+158
 // Text
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -19033,12 +19074,6 @@ Dateien (*.*)
 Files (*.*)
 Demütige aber höfliche Frage
 Quite a polite question
-Dreieck
-Triangle
-Dreiecke
-Triangles
-Dreiecke wählen: %d -> Shift + Return
-Choose triangles: %d -> Shift + Return
 Ebene
 Plane
 Ebene: erster Punkt
@@ -19125,8 +19160,6 @@ Kugel
 Sphere
 Kugel skalieren
 Scale the sphere
-Kugelzentrum waehlen
-Select center
 Lade Welt
 Loading world
 Links
@@ -19299,8 +19332,6 @@ skin: %d
 skin: %d
 surf: %d
 surf: %d
-tria: %d
-tria: %d
 vert: %d
 vert: %d
 // Language
@@ -19780,8 +19811,6 @@ invert_selection
 
 invert_trias
 
-just_physical
-
 just_selection
 
 key
@@ -20184,8 +20213,6 @@ new_extract
 
 new_frame
 
-new_konv_poly
-
 new_outline
 
 new_plane
@@ -20198,9 +20225,11 @@ new_plane_dialog_t_y
 
 new_point
 
-new_spat
-
 new_terrain_dialog
+
+new_torus
+
+new_torus_dialog
 
 new_tria
 新しい　三角形
@@ -20221,6 +20250,8 @@ normal_this_smooth
 np_num_x
 
 np_num_y
+
+ntdt_slides
 
 num
 

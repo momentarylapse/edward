@@ -1,0 +1,11 @@
+	// dialog
+	NewCubeDialog = HuiCreateDialog("neuer Torus", 140, 105, MainWin, true);
+	NewCubeDialog->SetID("new_torus_dialog");
+	NewCubeDialog->AddText("X", 10, 40, 20, 25, "x");
+	NewCubeDialog->AddSpinButton("\\1", 35, 40, 95, 25, "nc_x");
+	NewCubeDialog->AddSpinButton("\\1", 35, 70, 95, 25, "nc_y");
+	NewCubeDialog->AddText("Y", 10, 70, 20, 25, "y");
+	NewCubeDialog->AddText("Streifen", 10, 10, 100, 25, "ntdt_slides");
+	NewCubeDialog->Update();
+
+

@@ -357,8 +357,6 @@ invert_selection
 Invert
 invert_trias
 Triangle inversion
-just_physical
-Physical skin
 just_selection
 Selection
 key_dialog
@@ -717,8 +715,6 @@ new_extract
 Extract
 new_frame
 new frame
-new_konv_poly
-Conv. polyeder
 new_outline
 Outline
 new_plane
@@ -731,10 +727,12 @@ new_plane_dialog_t_y
 # stripes Y:
 new_point
 Vertex
-new_spat
-Spat
 new_terrain_dialog
 New terrain
+new_torus
+
+new_torus_dialog
+
 new_tria
 New triangle
 normal_all_angular
@@ -755,6 +753,8 @@ np_num_x
 \\1
 np_num_y
 \\1
+ntdt_slides
+
 num_items
 \\0
 num_vertices_wanted
@@ -1132,7 +1132,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-180
+182
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1196,12 +1196,6 @@ Dateien (*.*)
 Files (*.*)
 Demütige aber höfliche Frage
 Quite a polite question
-Dreieck
-Triangle
-Dreiecke
-Triangles
-Dreiecke wählen: %d -> Shift + Return
-Choose triangles: %d -> Shift + Return
 Ebene
 Plane
 Ebene: erster Punkt
@@ -1228,6 +1222,8 @@ Es muss mindestens ein Terrain markiert sein!
 No terrain selected!
 Es sind nur maximal %d Texturen pro Terrain erlaubt!
 No more than %d textures per terrain allowed!
+Extrudieren: Offset durch Maus, Linke Taste = fertig
+
 Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
 File %s has a wrong file format: %d (expected: %d - %d)!
 Fehler
@@ -1300,8 +1296,8 @@ Kugel
 Sphere
 Kugel skalieren
 Scale the sphere
-Kugelzentrum waehlen
-Select center
+Kugelzentrum wählen
+
 Lade Welt
 Loading world
 Licht
@@ -1352,13 +1348,19 @@ Objekte-Datei
 Object file
 Perspektive
 Perspective
+Polygon
+
+Polygon wählen: %d -> Shift + Return
+
+Polygone
+
 Pop
 Pop
 Push
 Push
 Quader
 Cube
-Radius skalieren [Shift + Return]
+Radius skalieren [Linke Maustaste = fertig]
 
 Rechts
 Right
@@ -1416,6 +1418,8 @@ Texturen
 Textures
 Texturen (bmp,jpg,tga,avi)
 Textures (bmp,jpg,tga,avi)
+Toruszentrum wählen
+
 Unbekannte Dateinamenerweiterung: 
 Unknown file extension: 
 Unbenannt
@@ -1482,14 +1486,14 @@ neues Objekt setzen
 
 neues Terrain...
 
+poly: %d
+
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 skin: %d
 skin: %d
 surf: %d
 surf: %d
-tria: %d
-tria: %d
 vert: %d
 vert: %d
 zylinder... Punkte + Shift Return

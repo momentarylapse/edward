@@ -190,12 +190,8 @@ enum{
 		sub_menu_350->AddEntry("Ebene",HMM_NEW_PLANE);
 		sub_menu_350->AddEntry("Quader",HMM_NEW_CUBE);
 		sub_menu_350->AddEntry("Kugel",HMM_NEW_BALL);
+		sub_menu_350->AddEntry("Torus",HMM_NEW_TORUS);
 		sub_menu_350->AddEntry("Zylinder (-schlange)",HMM_NEW_CYLINDER);
-		sub_menu_350->AddSeparator();
-		sub_menu_350->AddEntry("Phys. Oberfl&ache",HMM_JUST_PHYSICAL);
-		sub_menu_350->EnableItem(HMM_JUST_PHYSICAL,false);
-		sub_menu_350->AddEntry("--Konv. Polyeder",HMM_NEW_KONV_POLY);
-		sub_menu_350->AddEntry("--Spat",HMM_NEW_SPAT);
 	Menu->AddSubMenu("Erstellen",HMM_MENU_MODEL_CREATION,sub_menu_350);
 		CHuiMenu *sub_menu_895=new CHuiMenu();
 			CHuiMenu *sub_menu_746=new CHuiMenu();

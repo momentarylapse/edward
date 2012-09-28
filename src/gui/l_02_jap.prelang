@@ -357,8 +357,6 @@ invert_selection
 
 invert_trias
 
-just_physical
-
 just_selection
 
 key_dialog
@@ -717,8 +715,6 @@ new_extract
 
 new_frame
 
-new_konv_poly
-
 new_outline
 
 new_plane
@@ -731,9 +727,11 @@ new_plane_dialog_t_y
 
 new_point
 
-new_spat
-
 new_terrain_dialog
+
+new_torus
+
+new_torus_dialog
 
 new_tria
 新しい　三角形
@@ -754,6 +752,8 @@ normal_this_smooth
 np_num_x
 
 np_num_y
+
+ntdt_slides
 
 num_items
 
@@ -1132,7 +1132,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-180
+182
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1196,12 +1196,6 @@ Dateien (*.*)
 
 Demütige aber höfliche Frage
 
-Dreieck
-
-Dreiecke
-
-Dreiecke wählen: %d -> Shift + Return
-
 Ebene
 
 Ebene: erster Punkt
@@ -1227,6 +1221,8 @@ Es muss genau eine Datei markiert sein!
 Es muss mindestens ein Terrain markiert sein!
 
 Es sind nur maximal %d Texturen pro Terrain erlaubt!
+
+Extrudieren: Offset durch Maus, Linke Taste = fertig
 
 Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
 
@@ -1300,7 +1296,7 @@ Kugel
 
 Kugel skalieren
 
-Kugelzentrum waehlen
+Kugelzentrum wählen
 
 Lade Welt
 
@@ -1352,13 +1348,19 @@ Objekte-Datei
 
 Perspektive
 
+Polygon
+
+Polygon wählen: %d -> Shift + Return
+
+Polygone
+
 Pop
 
 Push
 
 Quader
 
-Radius skalieren [Shift + Return]
+Radius skalieren [Linke Maustaste = fertig]
 
 Rechts
 
@@ -1415,6 +1417,8 @@ Textur-Koordinaten
 Texturen
 
 Texturen (bmp,jpg,tga,avi)
+
+Toruszentrum wählen
 
 Unbekannte Dateinamenerweiterung: 
 
@@ -1482,13 +1486,13 @@ neues Objekt setzen
 
 neues Terrain...
 
+poly: %d
+
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 
 skin: %d
 
 surf: %d
-
-tria: %d
 
 vert: %d
 

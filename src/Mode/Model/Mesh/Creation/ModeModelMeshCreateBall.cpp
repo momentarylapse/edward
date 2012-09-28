@@ -15,7 +15,7 @@ ModeModelMeshCreateBall::ModeModelMeshCreateBall(Mode *_parent) :
 {
 	data = (DataModel*)_parent->GetData();
 
-	message = _("Kugelzentrum waehlen");
+	message = _("Kugelzentrum w&ahlen");
 
 	pos_chosen = false;
 	radius = 0;
