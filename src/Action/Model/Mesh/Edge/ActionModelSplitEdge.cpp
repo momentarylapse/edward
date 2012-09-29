@@ -53,16 +53,17 @@ void *ActionModelSplitEdge::compose(Data *d)
 
 
 	// adjacent polygons
-	for (int i=e.RefCount-1;i>=0;i--){
-		int poly = e.Polygon[i];
+	ModelEdge ee = e;
+	for (int i=ee.RefCount-1;i>=0;i--){
+		int poly = ee.Polygon[i];
 		ModelPolygon &t = s.Polygon[poly];
 
 		vector isv[MODEL_MAX_TEXTURES];
 		float f = (i == 0) ? factor : 1 - factor;
 		for (int l=0;l<MODEL_MAX_TEXTURES;l++)
-			isv[l] = t.Side[e.Side[i]].SkinVertex[l] * (1 - f) + t.Side[(e.Side[i] + 1) % t.Side.num].SkinVertex[l] * f;
+			isv[l] = t.Side[ee.Side[i]].SkinVertex[l] * (1 - f) + t.Side[(ee.Side[i] + 1) % t.Side.num].SkinVertex[l] * f;
 
-		AddSubAction(new ActionModelPolygonAddVertex(surface, poly, e.Side[i], new_vertex, isv), m);
+		AddSubAction(new ActionModelPolygonAddVertex(surface, poly, ee.Side[i], new_vertex, isv), m);
 	}
 	return NULL;
 }
