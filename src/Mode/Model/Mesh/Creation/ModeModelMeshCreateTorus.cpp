@@ -14,6 +14,8 @@
 // ModeMaterial
 void CreateTorus(int buffer, const vector &pos, const vector dir, float radius1, float radius2, int nx, int ny);
 
+#define RADIUS_FACTOR	0.7f
+
 ModeModelMeshCreateTorus::ModeModelMeshCreateTorus(Mode *_parent) :
 	ModeCreation("ModelMeshCreateTorus", _parent)
 {
@@ -86,11 +88,10 @@ void ModeModelMeshCreateTorus::OnDrawWin(int win, irect dest)
 	if (pos_chosen){
 		mode_model->SetMaterialCreation();
 		NixVBClear(VBTemp);
-		if (rad_chosen)
-			CreateTorus(VBTemp, pos, axis, radius1, radius2, 32, 16);
-		else
-			CreateTorus(VBTemp, pos, axis, radius1, radius1 * 0.7f, 32, 16);
+		CreateTorus(VBTemp, pos, axis, radius1, radius2, 32, 16);
 		NixDraw3D(VBTemp);
+		NixEnableLighting(false);
+		ed->DrawStr(100, 100, format("%.3f / %.3f", radius1, radius2));
 	}
 }
 
@@ -98,14 +99,14 @@ void ModeModelMeshCreateTorus::OnDrawWin(int win, irect dest)
 
 void ModeModelMeshCreateTorus::OnMouseMove()
 {
-	axis = multi_view->GetDirection(multi_view->cur_view);
+	axis = multi_view->GetDirection(multi_view->mouse_win);
 	if (pos_chosen){
 		vector pos2 = multi_view->GetCursor3d(pos);
 		if (rad_chosen){
-			radius2 = (pos2 - pos).length();
+			radius2 = (pos2 - pos).length() * RADIUS_FACTOR;
 		}else{
 			radius1 = (pos2 - pos).length();
-			radius2 = radius1;
+			radius2 = radius1 * RADIUS_FACTOR;
 		}
 	}
 }
