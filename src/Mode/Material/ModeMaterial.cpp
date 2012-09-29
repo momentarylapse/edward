@@ -106,6 +106,7 @@ void ModeMaterial::ExecutePhysicsDialog()
 void CreateTorus(int buffer, const vector &pos, const vector dir, float radius1, float radius2, int nx, int ny)
 {
 	vector dir2 = dir.ortho();
+	dir2.normalize();
 	vector dir3 = dir ^ dir2;
 	for (int x=0;x<nx;x++){
 		float fx0 = float(x  )/(float)nx;

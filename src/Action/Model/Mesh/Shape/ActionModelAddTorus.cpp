@@ -26,6 +26,7 @@ void *ActionModelAddTorus::compose(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	vector d1 = axis.ortho();
+	d1.normalize();
 	vector d2 = d1 ^ axis;
 
 	int nv = m->Vertex.num;
