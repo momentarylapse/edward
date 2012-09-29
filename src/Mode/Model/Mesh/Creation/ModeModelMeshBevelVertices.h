@@ -29,7 +29,7 @@ public:
 
 private:
 	float radius;
-	Action *a;
+	float rad_max;
 	ModelSelectionState selection;
 };
 

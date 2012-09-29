@@ -20,7 +20,7 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 		return;
 	ModelSurface &s = m->Surface[surface];
 
-	float epsilon = length * 0.001f;
+	float epsilon = length * 0.0001f;
 	bool closed = true;
 
 	// restrict length

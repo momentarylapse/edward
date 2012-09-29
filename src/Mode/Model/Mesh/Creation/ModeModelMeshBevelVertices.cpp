@@ -11,7 +11,7 @@
 #include "../../../../Edward.h"
 #include "../../../../lib/x/x.h"
 
-//#define INTERACTIVE
+#define INTERACTIVE
 
 ModeModelMeshBevelVertices::ModeModelMeshBevelVertices(Mode *_parent) :
 	ModeCreation("ModelMeshBevelVertices", _parent)
@@ -23,12 +23,19 @@ ModeModelMeshBevelVertices::ModeModelMeshBevelVertices(Mode *_parent) :
 
 	data->GetSelectionState(selection);
 
-	radius = 2 / multi_view->zoom;
-#ifdef INTERACTIVE
-	a = new ActionModelBevelVertices(radius);
-	a->execute_logged(data);
-	data->Notify("Changed");
-#endif
+	// find maximal radius
+	rad_max = -1;
+	foreach(ModelSurface &s, data->Surface)
+		foreach(ModelEdge &e, s.Edge)
+			if ((data->Vertex[e.Vertex[0]].is_selected) or (data->Vertex[e.Vertex[1]].is_selected)){
+			float l = (data->Vertex[e.Vertex[0]].pos - data->Vertex[e.Vertex[1]].pos).length();
+			if ((data->Vertex[e.Vertex[0]].is_selected) and (data->Vertex[e.Vertex[1]].is_selected))
+				l /= 2;
+			if ((l < rad_max) or (rad_max < 0))
+				rad_max = l;
+		}
+
+	radius = rad_max / 2;
 }
 
 ModeModelMeshBevelVertices::~ModeModelMeshBevelVertices()
@@ -38,39 +45,31 @@ ModeModelMeshBevelVertices::~ModeModelMeshBevelVertices()
 void ModeModelMeshBevelVertices::OnEnd()
 {
 #ifdef INTERACTIVE
-	if (a){
-		a->undo_logged(data);
-		data->Notify("Changed");
-		delete(a);
-	}
+	data->action_manager->ClearPreview();
 #endif
 }
 
 void ModeModelMeshBevelVertices::OnMouseMove()
 {
 #ifdef INTERACTIVE
-	a->undo_logged(data);
-	data->Notify("Changed");
-	delete(a);
+	data->action_manager->ClearPreview();
 #endif
 
 	radius += (HuiGetEvent()->dx) / multi_view->zoom;
+	radius = clampf(radius, rad_max * 0.001f, rad_max);
 
 #ifdef INTERACTIVE
+
 	data->SetSelectionState(selection);
-	a = new ActionModelBevelVertices(fabs(radius));
-	a->execute_logged(data);
-	data->Notify("Changed");
+	if (!data->action_manager->Preview(new ActionModelBevelVertices(radius)))
+		Abort();
 #endif
 }
 
 void ModeModelMeshBevelVertices::OnLeftButtonDown()
 {
 #ifdef INTERACTIVE
-	a->undo_logged(data);
-	data->Notify("Changed");
-	delete(a);
-	a = NULL;
+	data->action_manager->ClearPreview();
 #endif
 
 	data->SetSelectionState(selection);
@@ -87,7 +86,7 @@ void ModeModelMeshBevelVertices::OnDrawWin(int win, irect dest)
 			FxDrawBall(v.pos, radius, 16,32);
 #endif
 	NixEnableLighting(false);
-	ed->DrawStr(100, 100, f2s(fabs(radius), 3));
+	ed->DrawStr(100, 100, f2s(radius, 3));
 }
 
 

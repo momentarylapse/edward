@@ -31,6 +31,9 @@ public:
 	void BeginActionGroup();
 	void EndActionGroup();
 
+	bool Preview(Action *a);
+	void ClearPreview();
+
 	bool Undoable();
 	bool Redoable();
 	bool IsSave();
@@ -51,6 +54,9 @@ private:
 	// group
 	int cur_group_level;
 	ActionGroup *cur_group;
+
+	// preview
+	Action *preview;
 };
 
 #endif /* ACTIONMANAGER_H_ */

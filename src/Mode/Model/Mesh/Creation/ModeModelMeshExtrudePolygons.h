@@ -32,7 +32,6 @@ public:
 
 private:
 	float offset;
-	Action *a;
 	ModelSelectionState selection;
 };
 

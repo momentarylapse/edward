@@ -17,7 +17,6 @@ ModeModelMeshExtrudePolygons::ModeModelMeshExtrudePolygons(Mode *_parent) :
 	data->GetSelectionState(selection);
 
 	offset = 0;
-	a = NULL;
 
 	message = _("Extrudieren: Offset durch Maus, Linke Taste = fertig");
 }
@@ -58,24 +57,12 @@ void ModeModelMeshExtrudePolygons::OnDrawWin(int win, irect dest)
 void ModeModelMeshExtrudePolygons::Preview()
 {
 	data->SetSelectionState(selection);
-	a = new ActionModelExtrudePolygons(offset);
-	try{
-		a->execute_logged(data);
-	}catch(ActionException &e){
-		a->abort(data);
-		delete(a);
-		a = NULL;
+	if (!data->action_manager->Preview(new ActionModelExtrudePolygons(offset)))
 		Abort();
-		ed->ErrorBox(e.message);
-	}
 }
 
 void ModeModelMeshExtrudePolygons::CleanUp()
 {
-	if (a){
-		a->undo_logged(data);
-		delete(a);
-		a = NULL;
-	}
+	data->action_manager->ClearPreview();
 }
 
