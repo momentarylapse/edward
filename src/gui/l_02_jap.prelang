@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-564
+573
 // Data (ID,Text)
 ad_dialog
 
@@ -14,6 +14,8 @@ ad_rudimentary_configuration
 ad_tab_control
 
 add_material
+
+add_point
 
 add_script
 
@@ -83,6 +85,8 @@ bgc
 !alpha
 brightness
 
+cam_save_as
+
 campoint__grp_ang
 
 campoint__grp_pos
@@ -136,6 +140,8 @@ delete_frame
 delete_item
 
 delete_material
+
+delete_point
 
 delete_texture_level
 
@@ -699,6 +705,8 @@ new_ball_dialog_t_x
 
 new_ball_dialog_t_y
 
+new_cam
+
 new_cube
 正六面体
 new_cube_dialog
@@ -787,6 +795,8 @@ physics
 物理学...
 physics_enabled
 
+point_list
+
 progress_cancelable_dialog
 
 progress_dialog
@@ -829,6 +839,8 @@ save
 保存
 save_as
 別名で保存...
+save_cam
+
 scale
 倍率
 scale_2d
@@ -1049,6 +1061,10 @@ view_top
 上 (-y)
 water
 水
+wcd_table_2
+
+wcd_table_3
+
 welcome_dialog
 
 welcome_list
@@ -1058,6 +1074,8 @@ what_the_fuck
 whole_window
 
 wire
+
+world_camera_dialog
 
 world_dialog
 
@@ -1132,7 +1150,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-182
+188
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1226,6 +1244,8 @@ Extrudieren: Offset durch Maus, Linke Taste = fertig
 
 Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
 
+Falsches Dateiformat der Datei %s: %d (statt %d)!
+
 Fehler
 
 Fehler in Script-Datei: \"%s\"\n%s\n%s
@@ -1267,6 +1287,10 @@ Kamera
 Kamera-Datei
 
 Kamera-Dateien (*.camera)
+
+Kamera-Fahrt
+
+Kamera-Script gespeichert!
 
 KameraPunkt
 
@@ -1417,6 +1441,12 @@ Textur-Koordinaten
 Texturen
 
 Texturen (bmp,jpg,tga,avi)
+
+Torus
+
+Torus außen skalieren
+
+Torus innen skalieren
 
 Toruszentrum wählen
 

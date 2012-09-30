@@ -17,25 +17,6 @@ class DataWorld;
 
 #define WORLD_MAX_TEXTURES_PER_TERRAIN	8
 
-#define CPKSetCamPos	0
-#define CPKSetCamPosRel	1
-#define CPKSetCamAng	2
-#define CPKSetCamPosAng	4
-#define CPKCamFlight	10
-#define CPKCamFlightRel	11
-
-class WorldCamPoint: public MultiViewSingleData
-{
-public:
-	int Type;
-	vector Vel, Ang;
-	float Duration;
-};
-
-class WorldCamPointVel: public MultiViewSingleData
-{
-};
-
 /*class WorldTerrainVertex: public MultiViewSingleData
 {
 public:

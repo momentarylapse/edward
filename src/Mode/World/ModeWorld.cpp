@@ -15,6 +15,7 @@
 #include "Dialog/TerrainHeightmapDialog.h"
 #include "Creation/ModeWorldCreateObject.h"
 #include "Creation/ModeWorldCreateTerrain.h"
+#include "Creation/ModeWorldCreateCamera.h"
 #include "../../Action/World/ActionWorldEditData.h"
 #include "../../Action/World/ActionWorldSetEgo.h"
 
@@ -90,6 +91,12 @@ void ModeWorld::OnCommand(const string & id)
 		ed->SetMode(new ModeWorldCreateTerrain(ed->cur_mode));
 	if (id == "terrain_load")
 		LoadTerrain();
+
+	if (id == "camscript_create")
+		ed->SetMode(new ModeWorldCreateCamera(ed->cur_mode, ""));
+	if (id == "camscript_load")
+		if (ed->FileDialog(FDCameraFlight, false, true))
+			ed->SetMode(new ModeWorldCreateCamera(ed->cur_mode, ed->DialogFileComplete));
 
 	if (id == "own_figure")
 		SetEgo();

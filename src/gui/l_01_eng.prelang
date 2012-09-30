@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-564
+573
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -15,6 +15,8 @@ ad_tab_control
 Current game\\All files\\Details\\Not needed\\Missing
 add_material
 New...
+add_point
+
 add_script
 Add
 add_texture_level
@@ -83,6 +85,8 @@ bgc
 !alpha
 brightness
 \\0\\100\\0.1
+cam_save_as
+
 campoint__grp_ang
 angle
 campoint__grp_pos
@@ -137,6 +141,8 @@ delete_item
 Delete item
 delete_material
 delete
+delete_point
+
 delete_texture_level
 Delete texture level
 detail_0
@@ -699,6 +705,8 @@ new_ball_dialog_t_x
 # discs
 new_ball_dialog_t_y
 # vertices per disc
+new_cam
+
 new_cube
 Cube
 new_cube_dialog
@@ -787,6 +795,8 @@ physics
 Physics...
 physics_enabled
 Enables
+point_list
+
 progress_cancelable_dialog
 working
 progress_dialog
@@ -829,6 +839,8 @@ save
 Save
 save_as
 Save as...
+save_cam
+
 scale
 Scale X=Y=Z
 scale_2d
@@ -1049,6 +1061,10 @@ view_top
 Top (-y)
 water
 water
+wcd_table_2
+
+wcd_table_3
+
 welcome_dialog
 Welcome to Edward.
 welcome_list
@@ -1059,6 +1075,8 @@ whole_window
 Use complete window
 wire
 Wire frame
+world_camera_dialog
+
 world_dialog
 World properties
 world_dialog_grp_ambient
@@ -1132,7 +1150,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-182
+188
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1226,6 +1244,8 @@ Extrudieren: Offset durch Maus, Linke Taste = fertig
 
 Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
 File %s has a wrong file format: %d (expected: %d - %d)!
+Falsches Dateiformat der Datei %s: %d (statt %d)!
+
 Fehler
 Error
 Fehler in Script-Datei: \"%s\"\n%s\n%s
@@ -1268,6 +1288,10 @@ Kamera-Datei
 Camera file
 Kamera-Dateien (*.camera)
 Camera files (*.camera)
+Kamera-Fahrt
+
+Kamera-Script gespeichert!
+
 KameraPunkt
 Camera point
 Kann Material-Datei nicht öffnen
@@ -1418,6 +1442,12 @@ Texturen
 Textures
 Texturen (bmp,jpg,tga,avi)
 Textures (bmp,jpg,tga,avi)
+Torus
+
+Torus außen skalieren
+
+Torus innen skalieren
+
 Toruszentrum wählen
 
 Unbekannte Dateinamenerweiterung: 
