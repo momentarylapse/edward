@@ -36,18 +36,6 @@ class WorldCamPointVel: public MultiViewSingleData
 {
 };
 
-struct WorldScriptRule
-{
-	string Function;
-	int Location;
-};
-
-struct WorldScript
-{
-	string Filename;
-	Array<WorldScriptRule> Rule;
-};
-
 /*class WorldTerrainVertex: public MultiViewSingleData
 {
 public:
@@ -145,7 +133,7 @@ public:
 		color Ambient;
 
 		// scripts
-		Array<WorldScript> Script;
+		Array<string> ScriptFile;
 
 		// music
 		Array<string> MusicFile;
@@ -157,12 +145,6 @@ public:
 	MetaData meta_data;
 
 
-
-	// camera script
-	string CamScriptFile;
-	int CamPointBeing;
-	Array<WorldCamPoint> CamPoint;
-	Array<WorldCamPointVel> CamPointVel;
 
 
 	// actions
