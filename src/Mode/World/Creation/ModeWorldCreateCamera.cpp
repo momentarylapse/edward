@@ -8,6 +8,7 @@
 #include "ModeWorldCreateCamera.h"
 #include "../../../Edward.h"
 #include "../../../lib/types/interpolation.h"
+#include "../../../Action/World/Camera/ActionCameraAddPoint.h"
 
 /*#define CPKSetCamPos	0
 #define CPKSetCamPosRel	1
@@ -41,6 +42,7 @@ ModeWorldCreateCamera::ModeWorldCreateCamera(Mode *_parent, DataCamera *_data) :
 	message = _("Kamera-Fahrt");
 
 	edit_vel = false;
+	adding_point = false;
 }
 
 ModeWorldCreateCamera::~ModeWorldCreateCamera()
@@ -65,6 +67,7 @@ void ModeWorldCreateCamera::OnStart()
 	dialog->EventM("cam_save_as", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnCamSaveAs);
 	dialog->EventM("cam_undo", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnCamUndo);
 	dialog->EventM("cam_redo", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnCamRedo);
+	dialog->Event("hui:close", &HuiFuncIgnore);
 
 	multi_view->ResetMouseAction();
 
@@ -84,10 +87,18 @@ void ModeWorldCreateCamera::OnEnd()
 
 void ModeWorldCreateCamera::OnLeftButtonDown()
 {
+	if (adding_point){
+		vector pos = multi_view->GetCursor3d();
+		data->Execute(new ActionCameraAddPoint(data, pos, v_0, v_0, 1));
+		adding_point = false;
+		message = _("Kamera-Fahrt");
+	}
 }
 
 void ModeWorldCreateCamera::OnAddPoint()
 {
+	adding_point = true;
+	message = _("Punkt setzen");
 }
 
 void ModeWorldCreateCamera::OnDeletePoint()

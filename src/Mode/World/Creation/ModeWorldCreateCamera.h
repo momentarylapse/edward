@@ -49,6 +49,7 @@ public:
 	Data *GetData(){	return data;	}
 
 	bool edit_vel;
+	bool adding_point;
 };
 
 #endif /* MODEWORLDCREATECAMERA_H_ */
