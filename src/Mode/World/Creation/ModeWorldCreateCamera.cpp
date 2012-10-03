@@ -25,19 +25,18 @@ static string cp_type(int type)
 	if (type == CPKSetCamAng)
 		return "SetAng";
 	if (type == CPKSetCamPosAng)
-		return "SetPosAng";
+		return _("Sprung");//"SetPosAng";
 	if (type == CPKCamFlight)
-		return "Flight";
+		return _("Flug");
 	if (type == CPKCamFlightRel)
 		return "FlightRel";
+	return "???";
 }
 
-ModeWorldCreateCamera::ModeWorldCreateCamera(Mode *_parent, const string &filename) :
+ModeWorldCreateCamera::ModeWorldCreateCamera(Mode *_parent, DataCamera *_data) :
 	ModeCreation("WorldCreateCamera", _parent)
 {
-	data = new DataCamera;
-	if (filename.num > 0)
-		data->Load(filename);
+	data = _data;
 
 	message = _("Kamera-Fahrt");
 }
@@ -60,14 +59,21 @@ void ModeWorldCreateCamera::OnStart()
 	dialog->EventM("cam_new", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnCamNew);
 	dialog->EventM("cam_save", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnCamSave);
 	dialog->EventM("cam_save_as", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnCamSaveAs);
+	dialog->EventM("cam_undo", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnCamUndo);
+	dialog->EventM("cam_redo", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnCamRedo);
 
+	multi_view->ResetMouseAction();
+
+	Subscribe(data);
 	LoadData();
 }
 
 void ModeWorldCreateCamera::OnEnd()
 {
+	Unsubscribe(data);
 	delete(dialog);
 	dialog = NULL;
+	multi_view->ResetData(data);
 }
 
 void ModeWorldCreateCamera::OnLeftButtonDown()
@@ -91,19 +97,36 @@ void ModeWorldCreateCamera::OnPointListEdit()
 }
 
 void ModeWorldCreateCamera::OnCamNew()
-{
-}
+{	New();	}
 
 void ModeWorldCreateCamera::OnCamSave()
-{
-}
+{	Save();	}
 
 void ModeWorldCreateCamera::OnCamSaveAs()
+{	SaveAs();	}
+
+void ModeWorldCreateCamera::OnCamUndo()
 {
+	data->action_manager->Undo();
+}
+
+void ModeWorldCreateCamera::OnCamRedo()
+{
+	data->action_manager->Redo();
+}
+
+void ModeWorldCreateCamera::OnUpdate(Observable *obs)
+{
+	data->UpdateVel();
+	LoadData();
+	ed->ForceRedraw();
 }
 
 void ModeWorldCreateCamera::LoadData()
 {
+	dialog->Enable("cam_undo", data->action_manager->Undoable());
+	dialog->Enable("cam_redo", data->action_manager->Redoable());
+
 	dialog->Reset("point_list");
 	float t0 = 0;
 	foreachi(WorldCamPoint &c, data->Point, i){
@@ -111,23 +134,13 @@ void ModeWorldCreateCamera::LoadData()
 		t0 += c.Duration;
 	}
 
-	PointVel.clear();
-	foreach(WorldCamPoint &c, data->Point){
-		WorldCamPointVel v;
-		v.view_stage = 0;
-		v.is_selected = false;
-		v.is_special = true;
-		v.pos = c.pos + c.Vel;
-		PointVel.add(v);
-	}
-
 
 	multi_view->ResetData(data);
 
 	// left -> translate
-	/*multi_view->SetMouseAction(0, "ActionWorldMoveSelection", MultiView::ActionMove);
+	multi_view->SetMouseAction(0, "ActionCameraMoveSelection", MultiView::ActionMove);
 	// middle/right -> rotate
-	multi_view->SetMouseAction(1, "ActionWorldRotateObjects", MultiView::ActionRotate2d);
+	/*multi_view->SetMouseAction(1, "ActionWorldRotateObjects", MultiView::ActionRotate2d);
 	multi_view->SetMouseAction(2, "ActionWorldRotateObjects", MultiView::ActionRotate);*/
 	multi_view->MVRectable = true;
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
@@ -137,7 +150,7 @@ void ModeWorldCreateCamera::LoadData()
 			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove | MultiView::FlagDraw,
 			NULL, NULL);
 	multi_view->SetData(	MVDWorldCamPointVel,
-			PointVel,
+			data->Vel,
 			NULL,
 			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove | MultiView::FlagDraw,
 			NULL, NULL);
@@ -169,3 +182,33 @@ void ModeWorldCreateCamera::OnDrawWin(int win, irect dest)
 	}
 
 }
+
+void ModeWorldCreateCamera::New()
+{
+	if (ed->AllowTermination())
+		data->Reset();
+}
+
+bool ModeWorldCreateCamera::Open()
+{
+	if (ed->AllowTermination())
+		if (ed->FileDialog(FDCameraFlight, false, true))
+			return data->Load(ed->DialogFileComplete);
+	return false;
+}
+
+bool ModeWorldCreateCamera::Save()
+{
+	if (data->filename.num > 0)
+		return data->Save(data->filename);
+	else
+		return SaveAs();
+}
+
+bool ModeWorldCreateCamera::SaveAs()
+{
+	if (ed->FileDialog(FDCameraFlight, true, true))
+		return data->Save(ed->DialogFileComplete);
+	return false;
+}
+

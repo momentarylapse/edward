@@ -42,9 +42,10 @@ public:
 	bool Load(const string &_filename, bool deep = true);
 	bool Save(const string &_filename);
 
+	void UpdateVel();
 
 	Array<WorldCamPoint> Point;
-	//Array<WorldCamPointVel> Vel;
+	Array<WorldCamPointVel> Vel;
 };
 
 #endif /* DATACAMERA_H_ */

@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-573
+570
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -85,8 +85,6 @@ bgc
 !alpha
 brightness
 \\0\\100\\0.1
-cam_save_as
-
 campoint__grp_ang
 angle
 campoint__grp_pos
@@ -705,8 +703,6 @@ new_ball_dialog_t_x
 # discs
 new_ball_dialog_t_y
 # vertices per disc
-new_cam
-
 new_cube
 Cube
 new_cube_dialog
@@ -839,8 +835,6 @@ save
 Save
 save_as
 Save as...
-save_cam
-
 scale
 Scale X=Y=Z
 scale_2d
@@ -1150,7 +1144,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-188
+190
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1254,6 +1248,8 @@ Fehlerbericht
 Bug Report
 Fehlerbericht an Michi senden
 Send bug report to Michi
+Flug
+
 Font
 Font
 Font-Datei
@@ -1424,6 +1420,8 @@ Sounds (wav,mp3,midi)
 Sounds (wav,mp3, midi)
 Spiegeln
 Mirror
+Sprung
+
 Terrain
 Terrain
 Terrains

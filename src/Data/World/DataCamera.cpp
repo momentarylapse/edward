@@ -20,6 +20,7 @@ void DataCamera::Reset()
 {
 	filename = "";
 	Point.clear();
+	Vel.clear();
 	ResetHistory();
 }
 
@@ -71,6 +72,7 @@ bool DataCamera::Load(const string& _filename, bool deep)
 		Error=true;
 	}
 	delete(f);
+	UpdateVel();
 	ResetHistory();
 	return !Error;
 }
@@ -115,4 +117,13 @@ bool DataCamera::Save(const string& _filename)
 	return true;
 }
 
+
+void DataCamera::UpdateVel()
+{
+	Vel.resize(Point.num);
+	foreachi(WorldCamPoint &c, Point, i){
+		Vel[i].is_special = true;
+		Vel[i].pos = c.pos + c.Vel;
+	}
+}
 

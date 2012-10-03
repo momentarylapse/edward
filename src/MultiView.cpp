@@ -801,13 +801,13 @@ void MultiView::DrawWin(int win, irect dest)
 				if (sd->view_stage < view_stage)
 					continue;
 
-				bool di = ((d.Indexable) && (sd->is_selected) && (NixGetKey(KEY_I)));
-				if ((!d.Drawable) && (!di))
+				bool _di = ((d.Indexable) && (sd->is_selected) && (NixGetKey(KEY_I)));
+				if ((!d.Drawable) && (!_di))
 					continue;
 				vector p = VecProject(sd->pos,win);
 				if ((p.x<dest.x1)||(p.y<dest.y1)||(p.x>dest.x2)||(p.y>dest.y2)||(p.z<=0)||(p.z>=1))
 					continue;
-				if (di)
+				if (_di)
 					NixDrawStr(p.x+3, p.y, i2s(i));
 				if (d.Drawable){
 					color c=Blue;

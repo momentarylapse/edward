@@ -93,10 +93,15 @@ void ModeWorld::OnCommand(const string & id)
 		LoadTerrain();
 
 	if (id == "camscript_create")
-		ed->SetMode(new ModeWorldCreateCamera(ed->cur_mode, ""));
+		ed->SetMode(new ModeWorldCreateCamera(ed->cur_mode, new DataCamera));
 	if (id == "camscript_load")
-		if (ed->FileDialog(FDCameraFlight, false, true))
-			ed->SetMode(new ModeWorldCreateCamera(ed->cur_mode, ed->DialogFileComplete));
+		if (ed->FileDialog(FDCameraFlight, false, true)){
+			DataCamera *cam = new DataCamera;
+			if (cam->Load(ed->DialogFileComplete))
+				ed->SetMode(new ModeWorldCreateCamera(ed->cur_mode, cam));
+			else
+				delete(cam);
+		}
 
 	if (id == "own_figure")
 		SetEgo();

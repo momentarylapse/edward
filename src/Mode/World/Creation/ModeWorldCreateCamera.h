@@ -14,7 +14,7 @@
 class ModeWorldCreateCamera: public ModeCreation, public HuiEventHandler
 {
 public:
-	ModeWorldCreateCamera(Mode *_parent, const string &filename);
+	ModeWorldCreateCamera(Mode *_parent, DataCamera *_data);
 	virtual ~ModeWorldCreateCamera();
 
 	void OnStart();
@@ -31,14 +31,20 @@ public:
 	void OnCamNew();
 	void OnCamSave();
 	void OnCamSaveAs();
+	void OnCamUndo();
+	void OnCamRedo();
 
 	void LoadData();
 
+	void OnUpdate(Observable *obs);
+
+	void New();
+	bool Open();
+	bool Save();
+	bool SaveAs();
+
 	DataCamera *data;
 	Data *GetData(){	return data;	}
-
-	string filename;
-	Array<WorldCamPointVel> PointVel;
 };
 
 #endif /* MODEWORLDCREATECAMERA_H_ */

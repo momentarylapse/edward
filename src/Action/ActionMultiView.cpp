@@ -20,6 +20,7 @@
 #include "Model/Animation/ActionModelAnimationRotateVertices.h"
 #include "World/ActionWorldMoveSelection.h"
 #include "World/ActionWorldRotateObjects.h"
+#include "World/Camera/ActionCameraMoveSelection.h"
 #include <assert.h>
 
 ActionMultiView::ActionMultiView(const vector &_param, const vector &_pos0)
@@ -77,6 +78,8 @@ ActionMultiView *ActionMultiViewFactory(const string &name, Data *d, const vecto
 		return new ActionWorldMoveSelection((DataWorld*)d, _param, _pos0);
 	else if (name == "ActionWorldRotateObjects")
 		return new ActionWorldRotateObjects((DataWorld*)d, _param, _pos0);
+	else if (name == "ActionCameraMoveSelection")
+		return new ActionCameraMoveSelection((DataCamera*)d, _param, _pos0);
 	msg_error("ActionMultiViewFactory: unknown action: " + name);
 	assert(0);
 	return NULL;

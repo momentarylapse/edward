@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-573
+570
 // Data (ID,Text)
 ad_dialog
 
@@ -84,8 +84,6 @@ bevel_vertices
 bgc
 !alpha
 brightness
-
-cam_save_as
 
 campoint__grp_ang
 
@@ -705,8 +703,6 @@ new_ball_dialog_t_x
 
 new_ball_dialog_t_y
 
-new_cam
-
 new_cube
 正六面体
 new_cube_dialog
@@ -839,8 +835,6 @@ save
 保存
 save_as
 別名で保存...
-save_cam
-
 scale
 倍率
 scale_2d
@@ -1150,7 +1144,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-188
+190
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1253,6 +1247,8 @@ Fehler in Script-Datei: \"%s\"\n%s\n%s
 Fehlerbericht
 
 Fehlerbericht an Michi senden
+
+Flug
 
 Font
 
@@ -1423,6 +1419,8 @@ Sound-Datei
 Sounds (wav,mp3,midi)
 
 Spiegeln
+
+Sprung
 
 Terrain
 
