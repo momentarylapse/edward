@@ -65,11 +65,15 @@ void ModeModelMeshPolygon::DrawPolygons()
 	if (multi_view->wire_mode){
 		NixSetWire(false);
 		NixEnableLighting(false);
-		NixSetColor(White);
+		vector dir = multi_view->ang.ang2dir();
 		foreach(ModelSurface &s, data->Surface){
-			foreach(ModelEdge &e, s.Edge)
+			foreach(ModelEdge &e, s.Edge){
+				float f = 0.7f - (s.Polygon[e.Polygon[0]].TempNormal * dir) * 0.3f;
+				NixSetColor(color(1, f, f, f));
 				NixDrawLine3D(GetVertex(e.Vertex[0]), GetVertex(e.Vertex[1]));
+			}
 		}
+		NixSetColor(White);
 		NixSetWire(true);
 		NixEnableLighting(multi_view->light_enabled);
 		msg_db_l(2);
