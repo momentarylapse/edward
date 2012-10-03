@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-570
+571
 // Data (ID,Text)
 ad_dialog
 
@@ -84,6 +84,8 @@ bevel_vertices
 bgc
 !alpha
 brightness
+
+cam_edit_vel
 
 campoint__grp_ang
 

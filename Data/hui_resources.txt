@@ -13688,7 +13688,7 @@ world_camera_dialog
 0
 
 
-11
+12
 ControlTable
 wcd_table_1
 
@@ -13696,7 +13696,7 @@ wcd_table_1
 0
 0
 1
-3
+4
 -1
 0
 0
@@ -13733,9 +13733,22 @@ wcd_table_3
 
 1
 0
-2
+3
 5
 1
+0
+0
+0
+wcd_table_1
+
+CheckBox
+cam_edit_vel
+
+1
+0
+2
+0
+0
 0
 0
 0
@@ -16343,7 +16356,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-717
+718
 // Text
 ad_dialog
 Verwaltung
@@ -16437,6 +16450,8 @@ bgc
 !alpha
 brightness
 \\0\\100\\0.1
+cam_edit_vel
+Geschwindigkeit editieren
 cam_new
 
 cam_redo
@@ -17324,7 +17339,7 @@ Physik...
 physics_enabled
 Aktiviert
 point_list
-!format=tttT\\#\\Typ\\Start\\Dauer
+!multiline,format=tttT\\#\\Typ\\Start\\Dauer
 pos_x
 
 pos_y
@@ -17785,7 +17800,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-717
+718
 // Text
 ad_dialog
 Administration
@@ -17879,6 +17894,8 @@ bgc
 !alpha
 brightness
 \\0\\100\\0.1
+cam_edit_vel
+
 cam_new
 
 cam_redo
@@ -19543,7 +19560,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-717
+718
 // Text
 ad_dialog
 
@@ -19636,6 +19653,8 @@ bevel_vertices
 bgc
 !alpha
 brightness
+
+cam_edit_vel
 
 cam_new
 

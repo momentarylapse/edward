@@ -21,6 +21,9 @@ public:
 
 	void *execute(Data *d);
 	void undo(Data *d);
+private:
+	Array<int> index_vel;
+	Array<vector> old_vel;
 };
 
 #endif /* ACTIONCAMERAMOVESELECTION_H_ */

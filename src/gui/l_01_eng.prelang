@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-570
+571
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -85,6 +85,8 @@ bgc
 !alpha
 brightness
 \\0\\100\\0.1
+cam_edit_vel
+
 campoint__grp_ang
 angle
 campoint__grp_pos

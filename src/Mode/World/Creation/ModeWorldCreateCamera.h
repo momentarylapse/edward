@@ -28,6 +28,8 @@ public:
 	void OnDeletePoint();
 	void OnPointList();
 	void OnPointListEdit();
+	void OnPointListSelect();
+	void OnCamEditVel();
 	void OnCamNew();
 	void OnCamSave();
 	void OnCamSaveAs();
@@ -45,6 +47,8 @@ public:
 
 	DataCamera *data;
 	Data *GetData(){	return data;	}
+
+	bool edit_vel;
 };
 
 #endif /* MODEWORLDCREATECAMERA_H_ */

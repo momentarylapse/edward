@@ -1691,6 +1691,20 @@ Array<int> CHuiWindow::GetMultiSelection(const string &_id)
 	return sel;
 }
 
+void CHuiWindow::SetMultiSelection(const string &_id, Array<int> &sel)
+{
+	HuiControl *c = _GetControl_(_id);
+	if (!c)
+		return;
+	if (c->type==HuiKindListView){
+		GtkTreeSelection *s = gtk_tree_view_get_selection(GTK_TREE_VIEW(c->widget));
+		gtk_tree_selection_set_mode(s, GTK_SELECTION_MULTIPLE);
+		gtk_tree_selection_unselect_all(s);
+		for (int j=0;j<sel.num;j++)
+			gtk_tree_selection_select_iter(s, &c->_item_[sel[j]]);
+	}
+}
+
 // delete all the content
 //    for ComboBox, ListView
 void CHuiWindow::Reset(const string &_id)

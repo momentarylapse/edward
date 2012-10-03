@@ -39,6 +39,8 @@ ModeWorldCreateCamera::ModeWorldCreateCamera(Mode *_parent, DataCamera *_data) :
 	data = _data;
 
 	message = _("Kamera-Fahrt");
+
+	edit_vel = false;
 }
 
 ModeWorldCreateCamera::~ModeWorldCreateCamera()
@@ -53,8 +55,10 @@ void ModeWorldCreateCamera::OnStart()
 
 	dialog->EventMX("point_list", "hui:activate", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnPointList);
 	dialog->EventMX("point_list", "hui:change", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnPointListEdit);
+	dialog->EventMX("point_list", "hui:select", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnPointListSelect);
 	dialog->EventM("add_point", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnAddPoint);
 	dialog->EventM("delete_point", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnDeletePoint);
+	dialog->EventM("cam_edit_vel", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnCamEditVel);
 
 	dialog->EventM("cam_new", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnCamNew);
 	dialog->EventM("cam_save", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnCamSave);
@@ -65,12 +69,14 @@ void ModeWorldCreateCamera::OnStart()
 	multi_view->ResetMouseAction();
 
 	Subscribe(data);
+	Subscribe(multi_view);
 	LoadData();
 }
 
 void ModeWorldCreateCamera::OnEnd()
 {
 	Unsubscribe(data);
+	Unsubscribe(multi_view);
 	delete(dialog);
 	dialog = NULL;
 	multi_view->ResetData(data);
@@ -96,6 +102,24 @@ void ModeWorldCreateCamera::OnPointListEdit()
 {
 }
 
+void ModeWorldCreateCamera::OnPointListSelect()
+{
+	Array<int> sel = dialog->GetMultiSelection("point_list");
+	foreach(WorldCamPoint &c, data->Point)
+		c.is_selected = false;
+	foreach(WorldCamPointVel &v, data->Vel)
+		v.is_selected = false;
+	foreach(int i, sel)
+		data->Point[i].is_selected = true;
+	ed->ForceRedraw();
+}
+
+void ModeWorldCreateCamera::OnCamEditVel()
+{
+	edit_vel = dialog->IsChecked("");
+	LoadData();
+}
+
 void ModeWorldCreateCamera::OnCamNew()
 {	New();	}
 
@@ -117,9 +141,19 @@ void ModeWorldCreateCamera::OnCamRedo()
 
 void ModeWorldCreateCamera::OnUpdate(Observable *obs)
 {
-	data->UpdateVel();
-	LoadData();
-	ed->ForceRedraw();
+	if (obs->GetMessage() == "Change"){
+		data->UpdateVel();
+		LoadData();
+		ed->ForceRedraw();
+	}else{
+
+		Array<int> sel;
+		foreachi(WorldCamPoint &c, data->Point, i){
+			if (c.is_selected)
+				sel.add(i);
+		}
+		dialog->SetMultiSelection("point_list", sel);
+	}
 }
 
 void ModeWorldCreateCamera::LoadData()
@@ -129,10 +163,14 @@ void ModeWorldCreateCamera::LoadData()
 
 	dialog->Reset("point_list");
 	float t0 = 0;
+	Array<int> sel;
 	foreachi(WorldCamPoint &c, data->Point, i){
+		if (c.is_selected)
+			sel.add(i);
 		dialog->SetString("point_list", format("%d\\%s\\%.3f\\%.3f", i+1, cp_type(c.Type).c_str(), t0, c.Duration));
 		t0 += c.Duration;
 	}
+	dialog->SetMultiSelection("point_list", sel);
 
 
 	multi_view->ResetData(data);
@@ -149,6 +187,7 @@ void ModeWorldCreateCamera::LoadData()
 			NULL,
 			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove | MultiView::FlagDraw,
 			NULL, NULL);
+	if (edit_vel)
 	multi_view->SetData(	MVDWorldCamPointVel,
 			data->Vel,
 			NULL,
@@ -171,8 +210,10 @@ void ModeWorldCreateCamera::OnDrawWin(int win, irect dest)
 			int N = 50;
 			for (int n=0;n<N;n++)
 				NixDrawLine3D(inter.get((float)n / N), inter.get((float)(n+1) / N));
-			NixSetColor(Green);
-			NixDrawLine3D(c.pos, c.pos + c.Vel);
+			if (edit_vel){
+				NixSetColor(Green);
+				NixDrawLine3D(c.pos, c.pos + c.Vel);
+			}
 		}else{
 			NixSetColor(Grey);
 			NixDrawLine3D(last_pos, c.pos);

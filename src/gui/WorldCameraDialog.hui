@@ -1,11 +1,12 @@
 	// dialog
 	CHuiWindow *dlg = HuiCreateSizableDialog("Kamera-Fahrt", 218, 494, MainWin, true);
 	dlg->SetID("world_camera_dialog");
-	dlg->AddControlTable("", 0, 0, 1, 3, "wcd_table_1");
+	dlg->AddControlTable("", 0, 0, 1, 4, "wcd_table_1");
 	dlg->SetTarget("wcd_table_1", 0);
-	dlg->AddListView("!format=tttT\\#\\Typ\\Start\\Dauer", 0, 0, 0, 0, "point_list");
+	dlg->AddListView("!multiline,format=tttT\\#\\Typ\\Start\\Dauer", 0, 0, 0, 0, "point_list");
 	dlg->AddControlTable("!noexpandy", 0, 1, 2, 1, "wcd_table_2");
-	dlg->AddControlTable("!noexpandy", 0, 2, 5, 1, "wcd_table_3");
+	dlg->AddControlTable("!noexpandy", 0, 3, 5, 1, "wcd_table_3");
+	dlg->AddCheckBox("Geschwindigkeit editieren", 0, 2, 0, 0, "cam_edit_vel");
 	dlg->SetTarget("wcd_table_2", 0);
 	dlg->AddButton("Hinzuf&ugen", 0, 0, 0, 0, "add_point");
 	dlg->SetImage("add_point", "hui:add");
