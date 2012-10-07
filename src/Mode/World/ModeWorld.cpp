@@ -8,6 +8,7 @@
 #include "../../Edward.h"
 #include "ModeWorld.h"
 #include "../../Data/World/DataWorld.h"
+#include "../../Data/World/DataCamera.h"
 #include "../../lib/x/x.h"
 #include "Dialog/SelectionPropertiesDialog.h"
 #include "Dialog/ObjectPropertiesDialog.h"
@@ -15,7 +16,7 @@
 #include "Dialog/TerrainHeightmapDialog.h"
 #include "Creation/ModeWorldCreateObject.h"
 #include "Creation/ModeWorldCreateTerrain.h"
-#include "Creation/ModeWorldCreateCamera.h"
+#include "Camera/ModeWorldCamera.h"
 #include "../../Action/World/ActionWorldEditData.h"
 #include "../../Action/World/ActionWorldSetEgo.h"
 
@@ -45,6 +46,8 @@ ModeWorld::ModeWorld() :
 	ShowEffects = false;
 	TerrainShowTextureLevel = -1;
 	ViewStage = 0;
+
+	mode_world_camera = new ModeWorldCamera(this, new DataCamera);
 }
 
 ModeWorld::~ModeWorld()
@@ -93,14 +96,13 @@ void ModeWorld::OnCommand(const string & id)
 		LoadTerrain();
 
 	if (id == "camscript_create")
-		ed->SetMode(new ModeWorldCreateCamera(ed->cur_mode, new DataCamera));
+		ed->SetMode(mode_world_camera);
 	if (id == "camscript_load")
 		if (ed->FileDialog(FDCameraFlight, false, true)){
-			DataCamera *cam = new DataCamera;
-			if (cam->Load(ed->DialogFileComplete))
-				ed->SetMode(new ModeWorldCreateCamera(ed->cur_mode, cam));
+			if (mode_world_camera->data->Load(ed->DialogFileComplete))
+				ed->SetMode(mode_world_camera);
 			else
-				delete(cam);
+				mode_world_camera->data->Reset();
 		}
 
 	if (id == "own_figure")
@@ -473,7 +475,7 @@ void ModeWorld::OnDrawWin(int win, irect dest)
 	}
 
 // terrain
-	if (ShowTerrains)
+	if (ShowTerrains){
 		foreachi(WorldTerrain &t, data->Terrain, i){
 			if (!t.terrain)
 				continue;
@@ -497,6 +499,7 @@ void ModeWorld::OnDrawWin(int win, irect dest)
 			if ((multi_view->MouseOverType==MVDWorldTerrain)&&(multi_view->MouseOver==i))
 				DrawTerrainColored(t.terrain, White, TMouseOverAlpha);
 		}
+	}
 	NixSetWire(multi_view->wire_mode);
 	NixEnableLighting(multi_view->light_enabled);
 

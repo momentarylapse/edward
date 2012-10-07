@@ -8,7 +8,8 @@
 #include "DataCamera.h"
 #include "../../Edward.h"
 
-DataCamera::DataCamera()
+DataCamera::DataCamera() :
+	Data(FDCameraFlight)
 {
 }
 
@@ -22,6 +23,7 @@ void DataCamera::Reset()
 	Point.clear();
 	Vel.clear();
 	ResetHistory();
+	Notify("Change");
 }
 
 bool DataCamera::Load(const string& _filename, bool deep)
@@ -74,6 +76,7 @@ bool DataCamera::Load(const string& _filename, bool deep)
 	delete(f);
 	UpdateVel();
 	ResetHistory();
+	Notify("Change");
 	return !Error;
 }
 

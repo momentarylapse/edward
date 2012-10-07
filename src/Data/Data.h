@@ -20,7 +20,7 @@ class Observable;
 class Data : public Observable
 {
 public:
-	Data();
+	Data(int _type);
 	virtual ~Data();
 
 	virtual void Reset() = 0;
@@ -39,6 +39,7 @@ public:
 	string filename;
 	int file_time;
 	bool binary_file_format;
+	int type;
 
 	ActionManager *action_manager;
 };

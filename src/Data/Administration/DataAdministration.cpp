@@ -14,7 +14,8 @@
 
 CFile *DataAdministration::admin_file = NULL;
 
-DataAdministration::DataAdministration()
+DataAdministration::DataAdministration() :
+	Data(-1)
 {
 	if (!admin_file)
 		admin_file = new CFile();
@@ -617,7 +618,7 @@ void DataAdministration::UpdateDatabase()
 	for (int update_kind=0;update_kind<NumFDs;update_kind++){
 		MetaFraesDir(update_kind);
 
-		// iterare files of one type
+		// iterate files of one type
 		for (int update_index=0;(unsigned)update_index<cft.num;update_index++){
 			file_list.add_unchecked(update_kind,cft[update_index].c_str(),NULL);
 		}

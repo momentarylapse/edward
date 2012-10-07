@@ -8,7 +8,8 @@
 #include "DataFont.h"
 #include "../../Edward.h"
 
-DataFont::DataFont()
+DataFont::DataFont() :
+	Data(FDFont)
 {
 	Reset();
 }

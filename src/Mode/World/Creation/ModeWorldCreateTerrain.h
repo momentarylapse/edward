@@ -9,7 +9,7 @@
 #define MODEWORLDCREATETERRAIN_H_
 
 #include "../../ModeCreation.h"
-#include "../../../Data/World/DataWorld.h"
+class DataWorld;
 
 class ModeWorldCreateTerrain: public ModeCreation, public HuiEventHandler
 {
@@ -27,7 +27,6 @@ public:
 	void OnSizeChange();
 
 	DataWorld *data;
-	Data *GetData(){	return data;	}
 };
 
 #endif /* MODEWORLDCREATETERRAIN_H_ */

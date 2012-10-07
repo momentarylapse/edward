@@ -11,7 +11,8 @@
 
 
 
-DataMaterial::DataMaterial()
+DataMaterial::DataMaterial() :
+	Data(FDMaterial)
 {
 	Reset();
 }

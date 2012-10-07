@@ -72,7 +72,8 @@ void ModelEffect::clear()
 }
 
 
-DataModel::DataModel()
+DataModel::DataModel() :
+	Data(FDModel)
 {
 	AutoTexturingData.enabled = false;
 

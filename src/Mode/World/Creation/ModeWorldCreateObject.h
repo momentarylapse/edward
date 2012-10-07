@@ -9,7 +9,7 @@
 #define MODEWORLDCREATEOBJECT_H_
 
 #include "../../ModeCreation.h"
-#include "../../../Data/World/DataWorld.h"
+class DataWorld;
 
 class ModeWorldCreateObject: public ModeCreation
 {
@@ -20,7 +20,6 @@ public:
 	void OnLeftButtonDown();
 
 	DataWorld *data;
-	Data *GetData(){	return data;	}
 
 	string filename;
 };

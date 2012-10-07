@@ -6,6 +6,7 @@
  */
 
 #include "ModeWorldCreateObject.h"
+#include "../../../Data/World/DataWorld.h"
 #include "../../../Edward.h"
 
 ModeWorldCreateObject::ModeWorldCreateObject(Mode *_parent) :

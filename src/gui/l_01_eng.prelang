@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-571
+570
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -1059,8 +1059,6 @@ water
 water
 wcd_table_2
 
-wcd_table_3
-
 welcome_dialog
 Welcome to Edward.
 welcome_list
@@ -1286,8 +1284,6 @@ Kamera-Datei
 Camera file
 Kamera-Dateien (*.camera)
 Camera files (*.camera)
-Kamera-Fahrt
-
 Kamera-Script gespeichert!
 
 KameraPunkt
@@ -1378,6 +1374,8 @@ Polygone
 
 Pop
 Pop
+Punkt setzen
+
 Push
 Push
 Quader

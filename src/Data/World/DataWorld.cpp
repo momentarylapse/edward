@@ -53,7 +53,8 @@ void WorldTerrain::UpdateData()
 	terrain->pos = pos;
 }
 
-DataWorld::DataWorld()
+DataWorld::DataWorld() :
+	Data(FDWorld)
 {
 }
 

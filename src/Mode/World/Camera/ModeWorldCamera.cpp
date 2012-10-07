@@ -1,21 +1,17 @@
 /*
- * ModeWorldCreateCamera.cpp
+ * ModeWorldCamera.cpp
  *
  *  Created on: 30.09.2012
  *      Author: michi
  */
 
-#include "ModeWorldCreateCamera.h"
+#include "ModeWorldCamera.h"
+#include "../../../Data/World/DataCamera.h"
 #include "../../../Edward.h"
 #include "../../../lib/types/interpolation.h"
-#include "../../../Action/World/Camera/ActionCameraAddPoint.h"
+#include "Creation/ModeWorldCameraCreatePoint.h"
 
-/*#define CPKSetCamPos	0
-#define CPKSetCamPosRel	1
-#define CPKSetCamAng	2
-#define CPKSetCamPosAng	4
-#define CPKCamFlight	10
-#define CPKCamFlightRel	11*/
+ModeWorldCamera *mode_world_camera = NULL;
 
 static string cp_type(int type)
 {
@@ -34,40 +30,52 @@ static string cp_type(int type)
 	return "???";
 }
 
-ModeWorldCreateCamera::ModeWorldCreateCamera(Mode *_parent, DataCamera *_data) :
-	ModeCreation("WorldCreateCamera", _parent)
+ModeWorldCamera::ModeWorldCamera(Mode *_parent, Data *_data) :
+	Mode("WorldCamera", _parent, _data, ed->multi_view_3d, "")
 {
-	data = _data;
-
-	message = _("Kamera-Fahrt");
+	data = (DataCamera*)_data;
 
 	edit_vel = false;
-	adding_point = false;
 }
 
-ModeWorldCreateCamera::~ModeWorldCreateCamera()
+ModeWorldCamera::~ModeWorldCamera()
 {
 }
 
-void ModeWorldCreateCamera::OnStart()
+void ModeWorldCamera::OnStart()
 {
 	// Dialog
 	dialog = HuiCreateResourceDialog("world_camera_dialog", ed);
 	dialog->Update();
 
-	dialog->EventMX("point_list", "hui:activate", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnPointList);
-	dialog->EventMX("point_list", "hui:change", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnPointListEdit);
-	dialog->EventMX("point_list", "hui:select", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnPointListSelect);
-	dialog->EventM("add_point", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnAddPoint);
-	dialog->EventM("delete_point", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnDeletePoint);
-	dialog->EventM("cam_edit_vel", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnCamEditVel);
+	dialog->EventMX("point_list", "hui:activate", this, (void(HuiEventHandler::*)())&ModeWorldCamera::OnPointList);
+	dialog->EventMX("point_list", "hui:change", this, (void(HuiEventHandler::*)())&ModeWorldCamera::OnPointListEdit);
+	dialog->EventMX("point_list", "hui:select", this, (void(HuiEventHandler::*)())&ModeWorldCamera::OnPointListSelect);
+	dialog->EventM("add_point", this, (void(HuiEventHandler::*)())&ModeWorldCamera::OnAddPoint);
+	dialog->EventM("delete_point", this, (void(HuiEventHandler::*)())&ModeWorldCamera::OnDeletePoint);
+	dialog->EventM("cam_edit_vel", this, (void(HuiEventHandler::*)())&ModeWorldCamera::OnCamEditVel);
 
-	dialog->EventM("cam_new", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnCamNew);
-	dialog->EventM("cam_save", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnCamSave);
-	dialog->EventM("cam_save_as", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnCamSaveAs);
-	dialog->EventM("cam_undo", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnCamUndo);
-	dialog->EventM("cam_redo", this, (void(HuiEventHandler::*)())&ModeWorldCreateCamera::OnCamRedo);
-	dialog->Event("hui:close", &HuiFuncIgnore);
+	dialog->EventM("hui:close", this, (void(HuiEventHandler::*)())&ModeWorldCamera::OnCloseDialog);
+
+
+
+	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
+	ed->ToolbarSetCurrent(HuiToolbarTop);
+	ed->ToolbarReset();
+	ed->ToolbarAddItem(L("new"),L("new"),dir + "new.png","cam_new");
+	ed->ToolbarAddItem(L("open"),L("open"),dir + "open.png","cam_open");
+	ed->ToolbarAddItem(L("save"),L("save"),dir + "save.png","cam_save");
+	ed->ToolbarAddSeparator();
+	ed->ToolbarAddItem(L("undo"),L("undo"),dir + "undo.png","cam_undo");
+	ed->ToolbarAddItem(L("redo"),L("redo"),dir + "redo.png","cam_redo");
+	ed->ToolbarAddSeparator();
+	ed->ToolbarAddItem(_("Push"),_("ViewStage Push"),dir + "view_push.png","view_push");
+	ed->ToolbarAddItem(_("Pop"),_("ViewStage Pop"),dir + "view_pop.png","view_pop");
+	ed->EnableToolbar(true);
+	ed->ToolbarConfigure(false,true);
+	ed->ToolbarSetCurrent(HuiToolbarLeft);
+	ed->ToolbarReset();
+	ed->EnableToolbar(false);
 
 	multi_view->ResetMouseAction();
 
@@ -76,44 +84,35 @@ void ModeWorldCreateCamera::OnStart()
 	LoadData();
 }
 
-void ModeWorldCreateCamera::OnEnd()
+void ModeWorldCamera::OnEnd()
 {
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
 	delete(dialog);
 	dialog = NULL;
 	multi_view->ResetData(data);
+
+	parent->OnStart();
 }
 
-void ModeWorldCreateCamera::OnLeftButtonDown()
+void ModeWorldCamera::OnAddPoint()
 {
-	if (adding_point){
-		vector pos = multi_view->GetCursor3d();
-		data->Execute(new ActionCameraAddPoint(data, pos, v_0, v_0, 1));
-		adding_point = false;
-		message = _("Kamera-Fahrt");
-	}
+	ed->SetMode(new ModeWorldCameraCreatePoint(ed->cur_mode));
 }
 
-void ModeWorldCreateCamera::OnAddPoint()
-{
-	adding_point = true;
-	message = _("Punkt setzen");
-}
-
-void ModeWorldCreateCamera::OnDeletePoint()
+void ModeWorldCamera::OnDeletePoint()
 {
 }
 
-void ModeWorldCreateCamera::OnPointList()
+void ModeWorldCamera::OnPointList()
 {
 }
 
-void ModeWorldCreateCamera::OnPointListEdit()
+void ModeWorldCamera::OnPointListEdit()
 {
 }
 
-void ModeWorldCreateCamera::OnPointListSelect()
+void ModeWorldCamera::OnPointListSelect()
 {
 	Array<int> sel = dialog->GetMultiSelection("point_list");
 	foreach(WorldCamPoint &c, data->Point)
@@ -125,32 +124,44 @@ void ModeWorldCreateCamera::OnPointListSelect()
 	ed->ForceRedraw();
 }
 
-void ModeWorldCreateCamera::OnCamEditVel()
+void ModeWorldCamera::OnCamEditVel()
 {
 	edit_vel = dialog->IsChecked("");
 	LoadData();
 }
 
-void ModeWorldCreateCamera::OnCamNew()
-{	New();	}
-
-void ModeWorldCreateCamera::OnCamSave()
-{	Save();	}
-
-void ModeWorldCreateCamera::OnCamSaveAs()
-{	SaveAs();	}
-
-void ModeWorldCreateCamera::OnCamUndo()
+void ModeWorldCamera::OnCloseDialog()
 {
-	data->action_manager->Undo();
+	if (ed->AllowTermination()){
+		New();
+		ed->SetMode(parent);
+	}
 }
 
-void ModeWorldCreateCamera::OnCamRedo()
+void ModeWorldCamera::OnCommand(const string &id)
 {
-	data->action_manager->Redo();
+	if (id == "cam_undo")
+		data->action_manager->Undo();
+	if (id == "cam_redo")
+		data->action_manager->Redo();
+
+	if (id == "cam_new")
+		New();
+	if (id == "cam_open")
+		Open();
+	if (id == "cam_save")
+		Save();
+	if (id == "cam_save_as")
+		SaveAs();
 }
 
-void ModeWorldCreateCamera::OnUpdate(Observable *obs)
+void ModeWorldCamera::OnUpdateMenu()
+{
+	ed->Enable("cam_undo", data->action_manager->Undoable());
+	ed->Enable("cam_redo", data->action_manager->Redoable());
+}
+
+void ModeWorldCamera::OnUpdate(Observable *obs)
 {
 	if (obs->GetMessage() == "Change"){
 		data->UpdateVel();
@@ -167,10 +178,9 @@ void ModeWorldCreateCamera::OnUpdate(Observable *obs)
 	}
 }
 
-void ModeWorldCreateCamera::LoadData()
+void ModeWorldCamera::LoadData()
 {
-	dialog->Enable("cam_undo", data->action_manager->Undoable());
-	dialog->Enable("cam_redo", data->action_manager->Redoable());
+	OnUpdateMenu();
 
 	dialog->Reset("point_list");
 	float t0 = 0;
@@ -206,7 +216,7 @@ void ModeWorldCreateCamera::LoadData()
 			NULL, NULL);
 }
 
-void ModeWorldCreateCamera::OnDrawWin(int win, irect dest)
+void ModeWorldCamera::OnDrawWin(int win, irect dest)
 {
 	NixEnableLighting(false);
 
@@ -235,13 +245,13 @@ void ModeWorldCreateCamera::OnDrawWin(int win, irect dest)
 
 }
 
-void ModeWorldCreateCamera::New()
+void ModeWorldCamera::New()
 {
 	if (ed->AllowTermination())
 		data->Reset();
 }
 
-bool ModeWorldCreateCamera::Open()
+bool ModeWorldCamera::Open()
 {
 	if (ed->AllowTermination())
 		if (ed->FileDialog(FDCameraFlight, false, true))
@@ -249,7 +259,7 @@ bool ModeWorldCreateCamera::Open()
 	return false;
 }
 
-bool ModeWorldCreateCamera::Save()
+bool ModeWorldCamera::Save()
 {
 	if (data->filename.num > 0)
 		return data->Save(data->filename);
@@ -257,7 +267,7 @@ bool ModeWorldCreateCamera::Save()
 		return SaveAs();
 }
 
-bool ModeWorldCreateCamera::SaveAs()
+bool ModeWorldCamera::SaveAs()
 {
 	if (ed->FileDialog(FDCameraFlight, true, true))
 		return data->Save(ed->DialogFileComplete);

@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-571
+570
 // Data (ID,Text)
 ad_dialog
 
@@ -1059,8 +1059,6 @@ water
 水
 wcd_table_2
 
-wcd_table_3
-
 welcome_dialog
 
 welcome_list
@@ -1286,8 +1284,6 @@ Kamera-Datei
 
 Kamera-Dateien (*.camera)
 
-Kamera-Fahrt
-
 Kamera-Script gespeichert!
 
 KameraPunkt
@@ -1377,6 +1373,8 @@ Polygon wählen: %d -> Shift + Return
 Polygone
 
 Pop
+
+Punkt setzen
 
 Push
 

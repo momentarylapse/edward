@@ -7,9 +7,10 @@
 
 #include "Data.h"
 
-Data::Data() :
+Data::Data(int _type) :
 	Observable("Data")
 {
+	type = _type;
 	action_manager = new ActionManager(this);
 }
 
