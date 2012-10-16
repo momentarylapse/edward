@@ -763,6 +763,10 @@ void DataAdministration::ExportGame(const string &dir, GameIniData &game_ini)
 		target += a->Name;
 		if (file_copy(source, target))
 			num_ok ++;
+
+		if (a->Kind == FDShaderFile){
+			file_copy(source + ".glsl", target + ".glsl");
+		}
 	}
 	HuiInfoBox(HuiCurWindow, "info", format("%d von %d Dateien exportiern", num_ok, list.num));
 
