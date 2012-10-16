@@ -1877,7 +1877,7 @@ void DataModel::InvertSelection()
 {	Execute(new ActionModelInvertSelection());	}
 
 void DataModel::SubtractSelection()
-{	Execute(new ActionModelSurfaceSubtract(this));	}
+{	Execute(new ActionModelSurfaceSubtract());	}
 
 void DataModel::AlignToGridSelection(float grid_d)
 {	Execute(new ActionModelAlignToGrid(this, grid_d));	}

@@ -219,6 +219,7 @@ void ModeWorldCamera::LoadData()
 void ModeWorldCamera::OnDrawWin(int win, irect dest)
 {
 	NixEnableLighting(false);
+	NixSetWorldMatrix(m_id);
 
 	vector last_pos = v_0;
 	vector last_vel = v_0;
