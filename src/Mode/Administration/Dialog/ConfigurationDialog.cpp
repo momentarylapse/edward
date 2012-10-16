@@ -128,7 +128,7 @@ void ConfigurationDialog::OnOk()
 		data->GameIni.DefMaterial = GetString("default_material");
 		data->GameIni.DefFont = GetString("default_font");
 //		data->LinkGameIni(&data->GameIni);
-		data->SaveGameIni(ed->RootDir,&data->GameIni);
+		data->GameIni.Save(ed->RootDir);
 		if (rdc)
 			data->UpdateDatabase();
 	}

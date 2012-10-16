@@ -476,36 +476,36 @@ void DataAdministration::MetaFraesDir(int kind)
 	msg_db_l(5);
 }
 
-void DataAdministration::LoadGameIni(const string &dir, GameIniData *g)
+void GameIniData::Load(const string &dir)
 {
 	msg_db_r("LoadGameIni",5);
 	CFile *f = OpenFile(dir + "game.ini");
-	g->DefScript = f->ReadStrC();
-	g->DefWorld = f->ReadStrC();
-	g->SecondWorld = f->ReadStrC();
-	g->DefMaterial = f->ReadStrC();
-	g->DefFont = f->ReadStrC();
-	g->DefTextureFxMetal = f->ReadStrC();
+	DefScript = f->ReadStrC();
+	DefWorld = f->ReadStrC();
+	SecondWorld = f->ReadStrC();
+	DefMaterial = f->ReadStrC();
+	DefFont = f->ReadStrC();
+	DefTextureFxMetal = f->ReadStrC();
 	delete(f);
 	msg_db_l(5);
 }
 
-void DataAdministration::SaveGameIni(const string &dir, GameIniData *g)
+void GameIniData::Save(const string &dir)
 {
 	msg_db_r("SaveGameIni",5);
 	CFile *f = CreateFile(dir + "game.ini");
 	f->WriteStr("// Main Script");
-	f->WriteStr(g->DefScript);
+	f->WriteStr(DefScript);
 	f->WriteStr("// Default World");
-	f->WriteStr(g->DefWorld);
+	f->WriteStr(DefWorld);
 	f->WriteStr("// Second World");
-	f->WriteStr(g->SecondWorld);
+	f->WriteStr(SecondWorld);
 	f->WriteStr("// Default Material");
-	f->WriteStr(g->DefMaterial);
+	f->WriteStr(DefMaterial);
 	f->WriteStr("// Default Font");
-	f->WriteStr(g->DefFont);
+	f->WriteStr(DefFont);
 	f->WriteStr("// Texture FX-metal");
-	f->WriteStr(g->DefTextureFxMetal);
+	f->WriteStr(DefTextureFxMetal);
 	f->WriteStr("#");
 	delete(f);
 	msg_db_l(5);
@@ -524,10 +524,11 @@ void DataAdministration::TestRootDirectory()
 	SetRootDirectory(RootDir);*/
 }
 
-void DataAdministration::SaveDatabase()
+bool DataAdministration::Save(const string &_filename)
 {
-	msg_db_r("SaveAdminDatabase",5);
-	admin_file->Create(HuiAppDirectory + "Data/admin_database.txt");
+	msg_db_r("Admin.Save",5);
+	filename = _filename;
+	admin_file->Create(filename);
 	admin_file->WriteComment("// Number Of Files");
 	admin_file->WriteInt(file_list.num);
 	admin_file->WriteComment("// Files (type, filename, date, missing)");
@@ -553,23 +554,30 @@ void DataAdministration::SaveDatabase()
 	admin_file->WriteStr("#");
 	admin_file->Close();
 	msg_db_l(5);
+	return true;
 }
 
-void DataAdministration::ResetDatabase()
+void DataAdministration::SaveDatabase()
 {
-	msg_db_r("ResetDatabase",5);
+	Save(HuiAppDirectory + "Data/admin_database.txt");
+}
+
+void DataAdministration::Reset()
+{
+	msg_db_r("Admin.Reset",5);
 	file_list.clear_deep();
 	msg_db_l(5);
 }
 
-void DataAdministration::LoadDatabase()
+bool DataAdministration::Load(const string &_filename, bool deep)
 {
-	msg_db_r("LoadDatabase",5);
-	ResetDatabase();
+	msg_db_r("Admin.Load",5);
+	Reset();
+	filename = _filename;
 
-	if (!admin_file->Open(HuiAppDirectory + "Data/admin_database.txt")){
+	if (!admin_file->Open(filename)){
 		msg_db_l(5);
-		return;
+		return false;
 	}
 	int num = admin_file->ReadIntC();
 	for (int i=0;i<num;i++){
@@ -597,6 +605,12 @@ void DataAdministration::LoadDatabase()
 	admin_file->Close();
 	Notify("Changed");
 	msg_db_l(5);
+	return true;
+}
+
+void DataAdministration::LoadDatabase()
+{
+	Load(HuiAppDirectory + "Data/admin_database.txt");
 }
 
 void DataAdministration::UpdateDatabase()
@@ -611,7 +625,7 @@ void DataAdministration::UpdateDatabase()
 	AdminFile *f3 = file_list.add_unchecked(-1, "game.ini");
 	f1->add_child(f2);
 	f1->add_child(f3);
-	LoadGameIni(ed->RootDir,&GameIni);
+	GameIni.Load(ed->RootDir);
 
 	// find all files
 	// iterate file types

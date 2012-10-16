@@ -54,6 +54,8 @@ struct GameIniData
 		DefFont = "";
 		DefTextureFxMetal = "";
 	}
+	void Load(const string &dir);
+	void Save(const string &dir);
 };
 
 // for searching a file for links
@@ -69,22 +71,14 @@ public:
 	DataAdministration();
 	virtual ~DataAdministration();
 
-	void Reset(){}
-	bool Load(const string &_filename, bool deep = true){	return false;	}
-	bool Save(const string &_filename){	return false;	}
+	void Reset();
+	bool Load(const string &_filename, bool deep = true);
+	bool Save(const string &_filename);
 
-	//void AddLink(AdminFile *source, AdminFile *dest);
-	//void RemoveLink(AdminFile *source, AdminFile *dest);
-	//AdminFile *GetAdminFile(int kind,const string &name);
-	//string FD2Str(int k);
-	//string FD2Dir(int k);
 	void FraesDir(const string &root_dir, const string &dir, const string &extension);
 	void MetaFraesDir(int kind);
-	void LoadGameIni(const string &dir, GameIniData *g);
-	void SaveGameIni(const string &dir, GameIniData *g);
 	void TestRootDirectory();
 	void SaveDatabase();
-	void ResetDatabase();
 	void LoadDatabase();
 	void UpdateDatabase();
 
