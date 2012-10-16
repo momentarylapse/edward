@@ -120,8 +120,10 @@ bool DataWorld::Save(const string & _filename)
 	}
 	f->WriteComment("// Scripts");
 	f->WriteInt(meta_data.ScriptFile.num);
-	foreach(string &s, meta_data.ScriptFile)
+	foreach(string &s, meta_data.ScriptFile){
 		f->WriteStr(s);
+		f->WriteInt(0);
+	}
 	f->WriteComment("// ScriptVars");
 	f->WriteInt(meta_data.ScriptVar.num);
 	foreach(float v, meta_data.ScriptVar)
@@ -230,6 +232,7 @@ bool DataWorld::Load(const string & _filename, bool deep)
 		n = f->ReadIntC();
 		for (int i=0;i<n;i++){
 			string s = f->ReadStr();
+			f->ReadInt();
 			meta_data.ScriptFile.add(s);
 		}
 		// ScriptVars
