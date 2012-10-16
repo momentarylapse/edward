@@ -106,7 +106,7 @@ void ConfigurationDialog::OnOk()
 	if (exporting){
 		//GameIniAlt=GameIni;
 		GameIniData GameIniExport = data->GameIni;
-//		_exporting_dir_ = GetString("rootdir");
+		string dir = GetString("rootdir");
 		GameIniExport.DefWorld = GetString("default_world");
 		GameIniExport.SecondWorld = GetString("default_second_world");
 		GameIniExport.DefScript = GetString("default_script");
@@ -114,8 +114,12 @@ void ConfigurationDialog::OnOk()
 		GameIniExport.DefFont = GetString("default_font");
 //		_exporting_type_ = GetInt("export_type");
 //		_exporting_system_ = GetInt("ged_system");
-		/*if (!data->ExportGame())
-			return;*/
+		try{
+			data->ExportGame(dir, GameIniExport);
+		}catch(AdminGameExportException &e){
+			ed->ErrorBox(_("Fehler beim Exportieren: ") + e.message);
+			return;
+		}
 	}else{
 		// new RootDir?
 		bool rdc = (ed->RootDir != GetString("rootdir"));

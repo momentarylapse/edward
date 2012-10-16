@@ -263,6 +263,8 @@ void AdminFile::check(AdminFileList &list)
 				if (m.Fx[i].Kind==FXKindSound)
 					add_possible_link(l, FDSound, m.Fx[i].File);
 			}
+			foreach(string &s, m.meta_data.Inventary)
+				add_possible_link(l, FDModel, s);
 			for (int i=0;i<m.Material.num;i++){
 				add_possible_link(l, FDMaterial, m.Material[i].MaterialFile);
 				for (int j=0;j<m.Material[i].NumTextures;j++)
@@ -330,15 +332,10 @@ AdminFile *AdminFileList::add_unchecked(int kind, const string &filename, AdminF
 	msg_db_r("AddAdminFileUnchecked",5);
 	msg_db_m(filename.c_str(),5);
 
-	AdminFile *a = NULL;
 	string _filename = filename.sys_filename();
 
 	// is there already an entry in the database?
-	foreach(AdminFile *aa, *this)
-		if ((aa->Kind == kind) && (aa->Name == _filename)){
-			a = aa;
-			break;
-		}
+	AdminFile *a = get(kind, _filename);
 
 	// no list entry yet -> create one
 	if (!a){
@@ -613,6 +610,73 @@ void DataAdministration::LoadDatabase()
 	Load(HuiAppDirectory + "Data/admin_database.txt");
 }
 
+AdminFile *AdminFileList::add_engine_files()
+{
+	AdminFile *f1 = add_unchecked(-1, "x.exe");
+	AdminFile *f2 = add_unchecked(-1, "config.txt");
+	AdminFile *f3 = add_unchecked(-1, "game.ini");
+	f1->add_child(f2);
+	f1->add_child(f3);
+	return f3;
+}
+
+void AdminFileList::add_from_game_ini(GameIniData &game_ini, AdminFile *f)
+{
+	add_unchecked_ae(FDScript,  game_ini.DefScript, f);
+	add_unchecked_ae(FDWorld,   game_ini.DefWorld, f);
+	add_unchecked_ae(FDWorld,   game_ini.SecondWorld, f);
+	add_unchecked_ae(FDMaterial,game_ini.DefMaterial, f);
+	add_unchecked_ae(FDFont,    game_ini.DefFont, f);
+	add_unchecked_ae(FDTexture, game_ini.DefTextureFxMetal, f);
+}
+
+void AdminFileList::add_from_game_ini_export(AdminFileList *source, GameIniData &game_ini)
+{
+	AdminFile *a;
+	if (game_ini.DefScript.num > 0){
+		a = source->get(FDScript,  game_ini.DefScript);
+		if (!a)
+			throw AdminGameExportException("game.ini: script file");
+		add_recursive(a);
+	}
+
+	if (game_ini.DefWorld.num > 0){
+		a = source->get(FDWorld,   game_ini.DefWorld + ".world");
+		if (!a)
+			throw AdminGameExportException("game.ini: initial world");
+		add_recursive(a);
+	}
+
+	if (game_ini.SecondWorld.num > 0){
+		a = source->get(FDWorld,   game_ini.SecondWorld + ".world");
+		if (!a)
+			throw AdminGameExportException("game.ini: second world");
+		add_recursive(a);
+	}
+
+	if (game_ini.DefMaterial.num > 0){
+		a = source->get(FDMaterial,game_ini.DefMaterial + ".material");
+		if (!a)
+			throw AdminGameExportException("game.ini: default material");
+		add_recursive(a);
+	}
+
+	if (game_ini.DefFont.num > 0){
+		a = source->get(FDFont,    game_ini.DefFont + ".xfont");
+		if (!a)
+			throw AdminGameExportException("game.ini: default font");
+		add_recursive(a);
+	}
+
+	if (game_ini.DefTextureFxMetal.num > 0){
+		a = source->get(FDTexture, game_ini.DefTextureFxMetal);
+		if (!a)
+			throw AdminGameExportException("game.ini: metal texture");
+		add_recursive(a);
+	}
+}
+
+
 void DataAdministration::UpdateDatabase()
 {
 	msg_db_r("UpdateDatebase",0);
@@ -620,11 +684,8 @@ void DataAdministration::UpdateDatabase()
 	ed->progress->Set(_("Initialisierung"), 0);
 
 	// make sure the "Engine"-files are the first 3 ones
-	AdminFile *f1 = file_list.add_unchecked(-1, "x.exe");
-	AdminFile *f2 = file_list.add_unchecked(-1, "config.txt");
-	AdminFile *f3 = file_list.add_unchecked(-1, "game.ini");
-	f1->add_child(f2);
-	f1->add_child(f3);
+	AdminFile *f_game_ini = file_list.add_engine_files();
+
 	GameIni.Load(ed->RootDir);
 
 	// find all files
@@ -639,12 +700,7 @@ void DataAdministration::UpdateDatabase()
 	}
 
 	// files in game.ini ok?
-	file_list.add_unchecked_ae(FDScript,	GameIni.DefScript,f3);
-	file_list.add_unchecked_ae(FDWorld,	GameIni.DefWorld,f3);
-	file_list.add_unchecked_ae(FDWorld,	GameIni.SecondWorld,f3);
-	file_list.add_unchecked_ae(FDMaterial,GameIni.DefMaterial,f3);
-	file_list.add_unchecked_ae(FDFont,	GameIni.DefFont,f3);
-	file_list.add_unchecked_ae(FDTexture,	GameIni.DefTextureFxMetal,f3);
+	file_list.add_from_game_ini(GameIni, f_game_ini);
 
 
 
@@ -666,3 +722,49 @@ void DataAdministration::UpdateDatabase()
 	msg_db_l(0);
 }
 
+void DataAdministration::ExportGame(const string &dir, GameIniData &game_ini)
+{
+	if (dir == ed->RootDir)
+		throw AdminGameExportException("export dir = root dir");
+	AdminFileList list;
+	list.add(file_list[0]);
+	list.add(file_list[1]);
+	list.add_from_game_ini_export(&file_list, game_ini);
+
+	ed->progress->Start(_("Exportiere Spiel"), 0);
+	int num_ok = 0;
+
+	game_ini.Save(dir);
+
+	foreachi(AdminFile *a, list, i){
+		ed->progress->Set((float)i / (float)list.num);
+		if (a->Missing)
+			continue;
+
+		string source = ed->RootDir;
+		string target = dir;
+		if ((a->Kind == FDWorld) || (a->Kind == FDTerrain)){
+			source += "Maps/";
+			target += "Maps/";
+		}else if (a->Kind == FDModel){
+			source += "Objects/";
+			target += "Objects/";
+		}else if ((a->Kind == FDMaterial) || (a->Kind == FDFont) || (a->Kind == FDShaderFile)){
+			source += "Materials/";
+			target += "Materials/";
+		}else if ((a->Kind == FDScript) || (a->Kind == FDCameraFlight)){
+			source += "Scripts/";
+			target += "Scripts/";
+		}else if (a->Kind == FDTexture){
+			source += "Textures/";
+			target += "Textures/";
+		}
+		source += a->Name;
+		target += a->Name;
+		if (file_copy(source, target))
+			num_ok ++;
+	}
+	HuiInfoBox(HuiCurWindow, "info", format("%d von %d Dateien exportiern", num_ok, list.num));
+
+	ed->progress->End();
+}

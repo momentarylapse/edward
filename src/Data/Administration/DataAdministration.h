@@ -10,6 +10,30 @@
 
 #include "../Data.h"
 
+class AdminGameExportException
+{
+public:
+	AdminGameExportException(const string &msg){	message = msg;	}
+	string message;
+};
+
+struct GameIniData
+{
+	string DefScript, DefWorld, SecondWorld, DefMaterial, DefFont;
+	string DefTextureFxMetal;
+	void reset()
+	{
+		DefScript = "";
+		DefWorld = "";
+		SecondWorld = "";
+		DefMaterial = "";
+		DefFont = "";
+		DefTextureFxMetal = "";
+	}
+	void Load(const string &dir);
+	void Save(const string &dir);
+};
+
 class AdminFileList;
 
 struct AdminFile{
@@ -38,24 +62,10 @@ public:
 	AdminFile *add_unchecked_ae(int kind, const string &filename, AdminFile *source);
 	AdminFile *get(int kind, const string &name);
 	void remove_obsolete();
-};
 
-
-struct GameIniData
-{
-	string DefScript, DefWorld, SecondWorld, DefMaterial, DefFont;
-	string DefTextureFxMetal;
-	void reset()
-	{
-		DefScript = "";
-		DefWorld = "";
-		SecondWorld = "";
-		DefMaterial = "";
-		DefFont = "";
-		DefTextureFxMetal = "";
-	}
-	void Load(const string &dir);
-	void Save(const string &dir);
+	AdminFile *add_engine_files();
+	void add_from_game_ini(GameIniData &game_ini, AdminFile *f);
+	void add_from_game_ini_export(AdminFileList *source, GameIniData &game_ini);
 };
 
 // for searching a file for links
@@ -82,12 +92,13 @@ public:
 	void LoadDatabase();
 	void UpdateDatabase();
 
+	void ExportGame(const string &dir, GameIniData &game_ini);
 
 	AdminFileList file_list;
 
 	Array<string> cft;
 
-	GameIniData GameIni, GameIniExport, GameIniDialog;
+	GameIniData GameIni;
 
 	static CFile *admin_file;
 };
