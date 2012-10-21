@@ -168,7 +168,7 @@ bool ActionModelSurfaceSubtract::CollidePolygonSurface(DataModel *m, ModelPolygo
 			for (int i=0;i<vv2.num;i+=3){
 				if (!LineIntersectsTriangle2(pl2, v2[vv2[i+0]], v2[vv2[i+1]], v2[vv2[i+2]], ve[0], ve[1], col, false))
 					continue;
-				t_col.add(sCol(col, true, ti, kk));
+				t_col.add(sCol(col, true, ti, t->Side[kk].Edge));
 			}
 		}
 	}
@@ -205,21 +205,23 @@ bool ActionModelSurfaceSubtract::PolygonInsideSurface(DataModel *m, ModelPolygon
 	msg_db_l(2);
 	return (n % 2) == 1;
 }
+#endif
 
 bool ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 {
 	msg_db_r("sort_t_col", 2);
-//	msg_write(format("sort %d   %d", t_col.num, c2.num));
-//	foreach(t_col, cc)
-//		msg_write(format("%d  %d  %d - %d", (int)cc->own_edge, cc->index, cc->k, s->Triangle[cc->index].EdgeIndex[cc->k]));
+	msg_write(format("sort %d   %d", t_col.num, c2.num));
+	foreach(sCol &cc, t_col)
+		msg_write(format("%d  %d  - %d", (int)cc.own_edge, cc.polygon, cc.edge));
 
 	// find first
+	int last_poly = -1;
 	foreachi(sCol &c, t_col, i)
-		if (c.own_edge){
-//			msg_write(c.index);
+		if (!c.own_edge){
+			last_poly = c.polygon;
+			msg_write(c.polygon);
 			c2.add(c);
 			t_col.erase(i);
-			_foreach_it_.update(); // TODO badness 10000!!!!!!!!!
 			break;
 		}
 	if (c2.num != 1){
@@ -230,52 +232,55 @@ bool ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 	}
 
 	while(true){
-//		msg_write(".");
-		// find col on same s.tria as the last col
+		msg_write(".");
+		// find col on same s.poly as the last col
 		bool found = false;
 		foreachi(sCol &c, t_col, i)
-			if (c.index == c2.back().index){
-//				msg_write(format("%d  %d  %d - %d", (int)c->own_edge, c->index, c->k, s->Triangle[c->index].Edge[c->k]));
-				c2.add(c);
-				t_col.erase(i);
-				_foreach_it_.update(); // TODO
-				found = true;
+			if (c.own_edge){
+				for (int k=0;k<2;k++)
+					if (s->Edge[c.edge].Polygon[k] == last_poly){
+						msg_write(format("%d  %d  - %d", (int)c.own_edge, c.polygon, c.edge));
+						c2.add(c);
+						t_col.erase(i);
+						last_poly = s->Edge[c.edge].Polygon[1 - k];
+						found = true;
+						break;
+					}
+				if (found)
+					break;
 			}
-		if (!found){
-			msg_error("subtract: inconsistent (1)");
-			msg_db_l(2);
-			return false;
-		}
-		if (c2.back().own_edge)
-			break;
-		found = false;
+
+		if (found)
+			continue;
 
 		// find col on same s.edge as the last col
 		foreachi(sCol &c, t_col, i)
 			if (!c.own_edge)
-			if (s->Polygon[c.index].Edge[c.k] == s->Polygon[c2.back().index].Edge[c2.back().k]){
-//				msg_write(format("%d  %d  %d - %d", (int)c.own_edge, c.index, c.k, s->Triangle[c.index].Edge[c.k]));
+			if (c.polygon == last_poly){
+				msg_write(format("%d  %d  - %d", (int)c.own_edge, c.polygon, c.edge));
 				c2.add(c);
 				t_col.erase(i);
-				_foreach_it_.update(); // TODO
 				found = true;
+				break;
 			}
 		if (!found){
 			msg_error("subtract: inconsistent (2)");
 			msg_db_l(2);
 			return false;
 		}
+		break;
 	}
-//	msg_write("----------");
+	msg_write("----------");
 
-	/*int n = 0;
-	foreach2(t_col, c)
-		if (c->own_edge)
+	int n = 0;
+	foreach(sCol &c, t_col)
+		if (c.own_edge)
 			n ++;
-	msg_write(format("%d  %d", n, t_col.num));*/
+	msg_write(format("%d  %d", n, t_col.num));
 	msg_db_l(2);
 	return true;
 }
+#if 0
 
 void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolygon *t, ModelSurface *b, Array<Array<sCol> > &c, bool inverse)
 {
@@ -386,6 +391,7 @@ void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a,
 	b->TestSanity("tria sub b prae");
 	int a_i = m->get_surf_no(a);
 	int b_i = m->get_surf_no(b);
+#endif
 
 	Array<Array<sCol> > c;
 
@@ -404,6 +410,7 @@ void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a,
 
 		c.add(cc);
 	}
+#if 0
 //	msg_write(format("contours: %d", c.num));
 
 	sort_and_join_contours(m, t, b, c, inverse);
