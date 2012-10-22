@@ -64,7 +64,7 @@ void ModeModelMesh::OnStart()
 	ed->ToolbarAddItemCheckable(_("Quader"),_("Quader"), dir + "mode_skin.png", "new_cube");
 	ed->ToolbarAddItemCheckable(_("Kugel"),_("Kugel"), dir + "new_ball.png", "new_ball");
 	ed->ToolbarAddItemCheckable(_("Zylinder (-schlange)"),_("Zylinder (-schlange)"), dir + "new_cylinder.png", "new_cylinder");
-	ed->ToolbarAddItemCheckable(_("Torus"),_("Torus"), dir + "new_ball.png", "new_torus");
+	ed->ToolbarAddItemCheckable(_("Torus"),_("Torus"), dir + "new_torus.svg", "new_torus");
 	ed->ToolbarAddSeparator();
 	ed->ToolbarAddItemCheckable(_("Rotieren"),_("Rotieren"), dir + "rf_rotate.png", "rotate");
 	ed->ToolbarAddItemCheckable(_("Skalieren"),_("Skalieren"), dir + "rf_scale.png", "scale");
