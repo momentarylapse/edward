@@ -127,7 +127,7 @@ bool ActionModelSurfaceSubtract::CollidePolygonSurface(DataModel *m, ModelPolygo
 
 	Array<int> vv = t->Triangulate(m);
 
-	// collide polygon <-> edges
+	// collide polygon <-> surface's edges
 	foreachi(ModelEdge &e, s->Edge, ei){
 		vector ve[2];
 		for (int k=0;k<2;k++)
@@ -145,7 +145,7 @@ bool ActionModelSurfaceSubtract::CollidePolygonSurface(DataModel *m, ModelPolygo
 		}
 	}
 
-	// collide edges <-> polygons
+	// collide polygon's edges <-> surface's polygons
 	foreachi(ModelPolygon &t2, s->Polygon, ti){
 		// polygon's data
 		Array<vector> v2;
@@ -161,7 +161,7 @@ bool ActionModelSurfaceSubtract::CollidePolygonSurface(DataModel *m, ModelPolygo
 				ve[k] = m->Vertex[t->Side[(kk + k) % t->Side.num].Vertex].pos;
 
 			// crossing plane?
-			if (pl2.distance(ve[0]) * pl.distance(ve[1]) > 0)
+			if (pl2.distance(ve[0]) * pl2.distance(ve[1]) > 0)
 				continue;
 
 			vector col;
@@ -217,10 +217,11 @@ bool ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 	// find first
 	int last_poly = -1;
 	foreachi(sCol &c, t_col, i)
-		if (!c.own_edge){
+		if (c.own_edge){
 			last_poly = c.polygon;
 			msg_write(c.polygon);
 			c2.add(c);
+			//ed->multi_view_3d->AddMessage3d("1", c.p);
 			t_col.erase(i);
 			break;
 		}
@@ -228,6 +229,7 @@ bool ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 		msg_error("subtract: first not found");
 		// TODO: completely inside....
 		msg_db_l(2);
+		throw ActionException("sort inconsistent: no start found");
 		return false;
 	}
 
@@ -236,13 +238,14 @@ bool ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 		// find col on same s.poly as the last col
 		bool found = false;
 		foreachi(sCol &c, t_col, i)
-			if (c.own_edge){
+			if (!c.own_edge){
 				for (int k=0;k<2;k++)
 					if (s->Edge[c.edge].Polygon[k] == last_poly){
 						msg_write(format("%d  %d  - %d", (int)c.own_edge, c.polygon, c.edge));
 						c2.add(c);
-						t_col.erase(i);
 						last_poly = s->Edge[c.edge].Polygon[1 - k];
+						//ed->multi_view_3d->AddMessage3d(i2s(c2.num), c.p);
+						t_col.erase(i);
 						found = true;
 						break;
 					}
@@ -253,12 +256,14 @@ bool ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 		if (found)
 			continue;
 
+
 		// find col on same s.edge as the last col
 		foreachi(sCol &c, t_col, i)
-			if (!c.own_edge)
+			if (c.own_edge)
 			if (c.polygon == last_poly){
 				msg_write(format("%d  %d  - %d", (int)c.own_edge, c.polygon, c.edge));
 				c2.add(c);
+				//ed->multi_view_3d->AddMessage3d(i2s(c2.num)+"*", c.p);
 				t_col.erase(i);
 				found = true;
 				break;
@@ -266,6 +271,7 @@ bool ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 		if (!found){
 			msg_error("subtract: inconsistent (2)");
 			msg_db_l(2);
+			throw ActionException("sort inconsistent: no end found");
 			return false;
 		}
 		break;
