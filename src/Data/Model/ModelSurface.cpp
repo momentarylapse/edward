@@ -239,17 +239,7 @@ void ModelSurface::UpdateNormals()
 		if (t.NormalDirty){
 			t.NormalDirty = false;
 
-			// Newell's method
-			t.TempNormal = v_0;
-			vector p1 = model->Vertex[t.Side.back().Vertex].pos;
-			for (int i=0; i<t.Side.num; i++){
-				vector p0 = p1;
-				p1 = model->Vertex[t.Side[i].Vertex].pos;
-				t.TempNormal.x += (p0.y - p1.y) * (p0.z + p1.z);
-				t.TempNormal.y += (p0.z - p1.z) * (p0.x + p1.x);
-				t.TempNormal.z += (p0.x - p1.x) * (p0.y + p1.y);
-			}
-			t.TempNormal.normalize();
+			t.TempNormal = t.GetNormal(model);
 
 			for (int k=0;k<t.Side.num;k++)
 				t.Side[k].Normal = t.TempNormal;

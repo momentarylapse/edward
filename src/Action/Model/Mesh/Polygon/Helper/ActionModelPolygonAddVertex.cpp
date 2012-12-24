@@ -29,13 +29,8 @@ void* ActionModelPolygonAddVertex::compose(Data* d)
 
 
 	// save old polygon data
-	Array<int> v;
-	Array<vector> _sv;
-	for (int k=0;k<t.Side.num;k++)
-		v.add(t.Side[k].Vertex);
-	for (int l=0;l<MODEL_MAX_TEXTURES;l++)
-		for (int k=0;k<t.Side.num;k++)
-			_sv.add(t.Side[k].SkinVertex[l]);
+	Array<int> v = t.GetVertices();
+	Array<vector> _sv = t.GetSkinVertices();
 	int material = t.Material;
 
 	// insert vertex
