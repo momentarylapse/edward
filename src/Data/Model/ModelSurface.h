@@ -41,6 +41,7 @@ public:
 
 	void BuildFromPolygons();
 
+	int FindEdge(int vertex0, int vertex1);
 
 	bool IsInside(const vector &p);
 	Array<int> GetBoundaryLoop(int v0);

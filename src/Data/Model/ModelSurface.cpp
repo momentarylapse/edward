@@ -89,6 +89,7 @@ int ModelSurface::AddEdgeForNewPolygon(int a, int b, int tria, int side)
 {
 	foreachi(ModelEdge &e, Edge, i){
 		if ((e.Vertex[0] == a) && (e.Vertex[1] == b)){
+			msg_error("surface error? inverse edge");
 			return -1;
 			/*e.RefCount ++;
 			msg_error("surface error? inverse edge");
@@ -98,11 +99,11 @@ int ModelSurface::AddEdgeForNewPolygon(int a, int b, int tria, int side)
 		}
 		if ((e.Vertex[0] == b) && (e.Vertex[1] == a)){
 			if (e.Polygon[0] == tria){
-				//msg_error("surface error? same edge in poly");
+				msg_error("surface error? same edge in poly");
 				return -1;
 			}
 			if (e.RefCount > 1){
-				//msg_error("surface error? edge refcount > 2");
+				msg_error("surface error? edge refcount > 2");
 				return -1;
 			}
 			e.RefCount ++;
@@ -237,10 +238,17 @@ void ModelSurface::UpdateNormals()
 	foreach(ModelPolygon &t, Polygon)
 		if (t.NormalDirty){
 			t.NormalDirty = false;
-			vector a = model->Vertex[t.Side[0].Vertex].pos; // TODO... Newell's method
-			vector b = model->Vertex[t.Side[1].Vertex].pos;
-			vector c = model->Vertex[t.Side[2].Vertex].pos;
-			t.TempNormal = (b - a) ^ (c - a);
+
+			// Newell's method
+			t.TempNormal = v_0;
+			vector p1 = model->Vertex[t.Side.back().Vertex].pos;
+			for (int i=0; i<t.Side.num; i++){
+				vector p0 = p1;
+				p1 = model->Vertex[t.Side[i].Vertex].pos;
+				t.TempNormal.x += (p0.y - p1.y) * (p0.z + p1.z);
+				t.TempNormal.y += (p0.z - p1.z) * (p0.x + p1.x);
+				t.TempNormal.z += (p0.x - p1.x) * (p0.y + p1.y);
+			}
 			t.TempNormal.normalize();
 
 			for (int k=0;k<t.Side.num;k++)
@@ -543,4 +551,13 @@ Array<int> ModelSurface::GetBoundaryLoop(int v0)
 					break;
 				}
 	}
+	return loop;
+}
+
+int ModelSurface::FindEdge(int vertex0, int vertex1)
+{
+	foreachi(ModelEdge &e, Edge, i)
+		if (((e.Vertex[0] == vertex0) && (e.Vertex[1] == vertex1)) || ((e.Vertex[1] == vertex0) && (e.Vertex[0] == vertex1)))
+			return i;
+	return -1;
 }
