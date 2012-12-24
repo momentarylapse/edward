@@ -1713,13 +1713,13 @@ ModelSurface* DataModel::AddSphere(const vector& pos, float radius, int num)
 {	return (ModelSurface*)Execute(new ActionModelAddSphere(pos, radius, num));	}
 
 ModelSurface* DataModel::AddPlane(const vector& pos, const vector& dv1, const vector& dv2, int num_x, int num_y)
-{	return (ModelSurface*)Execute(new ActionModelAddPlane(this, pos, dv1, dv2, num_x, num_y));	}
+{	return (ModelSurface*)Execute(new ActionModelAddPlane(pos, dv1, dv2, num_x, num_y));	}
 
 ModelSurface* DataModel::AddCube(const vector& pos, const vector& dv1, const vector& dv2, const vector& dv3, int num_1, int num_2, int num_3)
 {	return (ModelSurface*)Execute(new ActionModelAddCube(pos, dv1, dv2, dv3, num_1, num_2, num_3));	}
 
 ModelSurface* DataModel::AddCylinder(Array<vector>& pos, Array<float> &radius, int rings, int edges, bool closed)
-{	return (ModelSurface*)Execute(new ActionModelAddCylinder(this, pos, radius, rings, edges, closed));	}
+{	return (ModelSurface*)Execute(new ActionModelAddCylinder(pos, radius, rings, edges, closed));	}
 
 void DataModel::SetCurrentMove(int move_no)
 {

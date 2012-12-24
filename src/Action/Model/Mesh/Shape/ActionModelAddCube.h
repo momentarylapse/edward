@@ -9,7 +9,7 @@
 #define ACTIONMODELADDCUBE_H_
 
 #include "../../../ActionGroup.h"
-#include "../../../../lib/types/types.h"
+#include "../../../../lib/types/vector.h"
 
 class ActionModelAddCube: public ActionGroup
 {

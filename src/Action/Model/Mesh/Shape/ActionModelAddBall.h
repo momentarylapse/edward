@@ -9,10 +9,7 @@
 #define ACTIONMODELADDBALL_H_
 
 #include "../../../ActionGroup.h"
-#include "../../../../lib/types/types.h"
-class DataModel;
-class Data;
-class vector;
+#include "../../../../lib/types/vector.h"
 
 class ActionModelAddBall: public ActionGroup
 {

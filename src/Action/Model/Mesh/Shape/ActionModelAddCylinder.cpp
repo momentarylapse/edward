@@ -13,13 +13,27 @@
 #define _cyl_vert(i, j)         ( edges      * (i) +(j) % edges) + nv
 #define _cyl_svert(i, j)        sv[(edges + 1) * (i) +(j) % (edges + 1)]
 
-ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos, Array<float> &_radius, int rings, int edges, bool closed)
+ActionModelAddCylinder::ActionModelAddCylinder(Array<vector> &_pos, Array<float> &_radius, int _rings, int _edges, bool _closed)
 {
+	pos = _pos;
+	radius = _radius;
+	rings = _rings;
+	edges = _edges;
+	closed = _closed;
+}
+
+ActionModelAddCylinder::~ActionModelAddCylinder()
+{
+}
+
+void *ActionModelAddCylinder::compose(Data *d)
+{
+	DataModel *m = dynamic_cast<DataModel*>(d);
 	int nv = m->Vertex.num;
 	int material = m->CurrentMaterial;
 
 	Interpolator<float> inter_r(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
-	foreach(float r, _radius)
+	foreach(float r, radius)
 		inter_r.add(r);
 
 	// vertices (interpolated on path)
@@ -112,11 +126,5 @@ ActionModelAddCylinder::ActionModelAddCylinder(DataModel *m, Array<vector> &pos,
 			AddSubAction(new ActionModelAddPolygonSingleTexture(v, material, _sv), m);
 		}
 	}
+	return &m->Surface.back();
 }
-
-ActionModelAddCylinder::~ActionModelAddCylinder()
-{
-}
-
-void *ActionModelAddCylinder::compose(Data *d)
-{	return &(dynamic_cast<DataModel*>(d))->Surface.back();	}
