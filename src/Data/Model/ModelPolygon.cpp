@@ -10,6 +10,41 @@
 #include "DataModel.h"
 #include "ModelPolygon.h"
 
+vector ModelPolygon::GetNormal(DataModel *m) const
+{
+	// Newell's method
+	vector n = v_0;
+	vector p1 = m->Vertex[Side.back().Vertex].pos;
+	for (int i=0; i<Side.num; i++){
+		vector p0 = p1;
+		p1 = m->Vertex[Side[i].Vertex].pos;
+		n.x += (p0.y - p1.y) * (p0.z + p1.z);
+		n.y += (p0.z - p1.z) * (p0.x + p1.x);
+		n.z += (p0.x - p1.x) * (p0.y + p1.y);
+	}
+	n.normalize();
+	return n;
+}
+
+Array<int> ModelPolygon::GetVertices() const
+{
+	Array<int> v;
+	v.resize(Side.num);
+	for (int i=0; i<Side.num; i++)
+		v[i] = Side[i].Vertex;
+	return v;
+}
+
+Array<vector> ModelPolygon::GetSkinVertices() const
+{
+	Array<vector> sv;
+	sv.resize(Side.num * MODEL_MAX_TEXTURES);
+	int n = 0;
+	for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+		for (int i=0; i<Side.num; i++)
+			sv[n ++] = Side[i].SkinVertex[l];
+	return sv;
+}
 
 
 static float get_ang(DataModel *m, int a, int b, int c, const vector &flat_n)
@@ -47,7 +82,7 @@ static bool vertex_in_tria(DataModel *m, int a, int b, int c, int v)
 	return v_0;
 }*/
 
-Array<int> ModelPolygon::Triangulate(DataModel *m)
+Array<int> ModelPolygon::Triangulate(DataModel *m) const
 {
 	Array<int> output;
 

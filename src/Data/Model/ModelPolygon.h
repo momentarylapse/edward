@@ -29,7 +29,10 @@ public:
 	bool NormalDirty;
 	int Material;
 
-	Array<int> Triangulate(DataModel *m);
+	Array<int> Triangulate(DataModel *m) const;
+	vector GetNormal(DataModel *m) const;
+	Array<int> GetVertices() const;
+	Array<vector> GetSkinVertices() const;
 };
 
 
