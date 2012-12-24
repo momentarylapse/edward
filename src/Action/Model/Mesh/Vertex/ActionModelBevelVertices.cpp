@@ -32,25 +32,33 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 					closed = false;
 			}
 
+	int n_vert = m->Vertex.num;
+
 	// split the edges
 	bool split = true;
 	while(split){
 		split = false;
 		foreachib(ModelEdge &e, s.Edge, ei){
 			for (int k=0;k<2;k++)
-				if (e.Vertex[k] == vi){;
+				if (e.Vertex[k] == vi){
+
+					// don't split newly split edges!
+					if (e.Vertex[1-k] >= n_vert)
+						continue;
+
 					vector dir = m->Vertex[e.Vertex[1-k]].pos - m->Vertex[e.Vertex[k]].pos;
 					float edge_length = dir.length();
 					if (edge_length < length + epsilon)
 						continue;
 
+					// split
 					float f = length/edge_length;
 					if (k > 0)
 						f = 1 - f;
 					AddSubAction(new ActionModelSplitEdge(surface, ei, f), m);
 					split = true;
 					break;
-			}
+				}
 			if (split)
 				break;
 		}
