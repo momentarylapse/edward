@@ -25,6 +25,7 @@
 #include "../../Action/Model/Mesh/Shape/ActionModelAddPlane.h"
 #include "../../Action/Model/Mesh/Shape/ActionModelAddCylinder.h"
 #include "../../Action/Model/Mesh/Shape/ActionModelAddBall.h"
+#include "../../Action/Model/Mesh/Shape/ActionModelAddSphere.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelSurfaceSubtract.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelInvertSelection.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelAutoWeldSelection.h"
@@ -1705,14 +1706,17 @@ int DataModel::GetNumPolygons()
 	return r;
 }
 
-ModelSurface* DataModel::AddBall(const vector& _pos, float _radius, int _num_x, int _num_y, bool _as_sphere)
-{	return (ModelSurface*)Execute(new ActionModelAddBall(this, _pos, _radius, _num_x, _num_y, _as_sphere));	}
+ModelSurface* DataModel::AddBall(const vector& pos, float radius, int num_x, int num_y)
+{	return (ModelSurface*)Execute(new ActionModelAddBall(this, pos, radius, num_x, num_y));	}
 
-ModelSurface* DataModel::AddPlane(const vector& _pos, const vector& _dv1, const vector& _dv2, int _num_x, int _num_y)
-{	return (ModelSurface*)Execute(new ActionModelAddPlane(this, _pos, _dv1, _dv2, _num_x, _num_y));	}
+ModelSurface* DataModel::AddSphere(const vector& pos, float radius, int num)
+{	return (ModelSurface*)Execute(new ActionModelAddSphere(this, pos, radius, num));	}
 
-ModelSurface* DataModel::AddCube(const vector& _pos, const vector& _dv1, const vector& _dv2, const vector& _dv3, int num_1, int num_2, int num_3)
-{	return (ModelSurface*)Execute(new ActionModelAddCube(this, _pos, _dv1, _dv2, _dv3, num_1, num_2, num_3));	}
+ModelSurface* DataModel::AddPlane(const vector& pos, const vector& dv1, const vector& dv2, int num_x, int num_y)
+{	return (ModelSurface*)Execute(new ActionModelAddPlane(this, pos, dv1, dv2, num_x, num_y));	}
+
+ModelSurface* DataModel::AddCube(const vector& pos, const vector& dv1, const vector& dv2, const vector& dv3, int num_1, int num_2, int num_3)
+{	return (ModelSurface*)Execute(new ActionModelAddCube(this, pos, dv1, dv2, dv3, num_1, num_2, num_3));	}
 
 ModelSurface* DataModel::AddCylinder(Array<vector>& pos, Array<float> &radius, int rings, int edges, bool closed)
 {	return (ModelSurface*)Execute(new ActionModelAddCylinder(this, pos, radius, rings, edges, closed));	}

@@ -272,9 +272,10 @@ public:
 	void AddVertex(const vector &pos, int bone_index = 0, int normal_mode = -1);
 	ModelPolygon *AddTriangle(int a, int b, int c);
 	ModelPolygon *AddPolygon(Array<int> &v);
-	ModelSurface *AddBall(const vector &_pos, float _radius, int _num_x, int _num_y, bool _as_sphere);
-	ModelSurface *AddPlane(const vector &_pos, const vector &_dv1, const vector &_dv2, int _num_x, int _num_y);
-	ModelSurface *AddCube(const vector &_pos, const vector &_dv1, const vector &_dv2, const vector &_dv3, int num_1, int num_2, int num_3);
+	ModelSurface *AddBall(const vector &pos, float radius, int num_x, int num_y);
+	ModelSurface *AddSphere(const vector &pos, float radius, int num);
+	ModelSurface *AddPlane(const vector &pos, const vector &dv1, const vector &dv2, int num_x, int num_y);
+	ModelSurface *AddCube(const vector &pos, const vector &dv1, const vector &dv2, const vector &dv3, int num_1, int num_2, int num_3);
 	ModelSurface *AddCylinder(Array<vector> &pos, Array<float> &radius, int rings, int edges, bool closed);
 
 	void DeleteSelection(bool greedy = false);

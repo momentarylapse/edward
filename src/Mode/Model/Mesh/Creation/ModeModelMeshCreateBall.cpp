@@ -61,9 +61,9 @@ void ModeModelMeshCreateBall::OnLeftButtonDown()
 		HuiConfigWriteInt("NewBallComplexity", complexity);
 		HuiConfigWriteBool("NewBallSphere", sphere);
 		if (sphere)
-			data->AddBall(pos, radius, complexity, complexity, true);
+			data->AddSphere(pos, radius, complexity);
 		else
-			data->AddBall(pos, radius, nx, ny, false);
+			data->AddBall(pos, radius, nx, ny);
 
 		Abort();
 	}else{
