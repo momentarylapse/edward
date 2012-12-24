@@ -17,7 +17,7 @@ class vector;
 class ActionModelAddSphere: public ActionGroup
 {
 public:
-	ActionModelAddSphere(DataModel *m, const vector &pos, float radius, int num);
+	ActionModelAddSphere(const vector &pos, float radius, int num);
 	virtual ~ActionModelAddSphere(){}
 	string name(){	return "ModelAddSphere";	}
 

@@ -11,7 +11,7 @@
 #include "../Surface/ActionModelSurfaceAutoWeld.h"
 #include "../../../../Data/Model/DataModel.h"
 
-ActionModelAddSphere::ActionModelAddSphere(DataModel *m, const vector &_pos, float _radius, int _num)
+ActionModelAddSphere::ActionModelAddSphere(const vector &_pos, float _radius, int _num)
 {
 	pos = _pos;
 	radius = _radius;

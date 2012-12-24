@@ -33,7 +33,6 @@ private:
 	vector length[3];
 	bool pos_chosen;
 	bool pos2_chosen;
-	bool invert;
 };
 
 #endif /* MODEMODELMESHCREATECUBE_H_ */

@@ -14,7 +14,7 @@
 
 #define ball_ang(x, y)	vector((float)(y)/(float)num_y,(float)(x)/(float)num_x,0)
 
-ActionModelAddBall::ActionModelAddBall(DataModel *m, const vector &_pos, float _radius, int _num_x, int _num_y)
+ActionModelAddBall::ActionModelAddBall(const vector &_pos, float _radius, int _num_x, int _num_y)
 {
 	pos = _pos;
 	radius = _radius;

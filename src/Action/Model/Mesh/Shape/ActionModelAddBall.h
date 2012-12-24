@@ -17,7 +17,7 @@ class vector;
 class ActionModelAddBall: public ActionGroup
 {
 public:
-	ActionModelAddBall(DataModel *m, const vector &_pos, float _radius, int _num_x, int _num_y);
+	ActionModelAddBall(const vector &_pos, float _radius, int _num_x, int _num_y);
 	virtual ~ActionModelAddBall(){}
 	string name(){	return "ModelAddBall";	}
 
