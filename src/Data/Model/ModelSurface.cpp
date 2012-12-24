@@ -492,33 +492,50 @@ bool ModelSurface::IsInside(const vector &p)
 {
 	if (!IsClosed)
 		return false;
-#if 0
 	// how often does a ray from p intersect the surface?
 	int n = 0;
+	Array<vector> v;
 	foreach(ModelPolygon &t, Polygon){
-		vector v[3];
+
+		// plane test
+		if (((p - model->Vertex[t.Side[0].Vertex].pos) * t.TempNormal > 0) == (t.TempNormal.x > 0))
+			continue;
+
+		// polygon data
+		if (v.num < t.Side.num)
+			v.resize(t.Side.num);
 		for (int k=0;k<t.Side.num;k++)
 			v[k] = model->Vertex[t.Side[k].Vertex].pos;
 
-		// fast tests
-		if ((v[0].x < p.x) && (v[1].x < p.x) && (v[2].x < p.x))
+		// bounding box tests
+		bool smaller = true;
+		for (int k=0;k<t.Side.num;k++)
+			if (v[k].x >= p.x)
+				smaller = false;
+		if (smaller)
 			continue;
-		if (((v[0].y < p.y) == (v[1].y < p.y)) && ((v[0].y < p.y) == (v[2].y < p.y)))
-			continue;
-		if (((v[0].z < p.z) == (v[1].z < p.z)) && ((v[0].z < p.z) == (v[2].z < p.z)))
+
+		smaller = true;
+		for (int k=1;k<t.Side.num;k++){
+			if ((v[0].y < p.y) !=  (v[k].y < p.y))
+				smaller = false;
+			if ((v[0].z < p.z) !=  (v[k].z < p.z))
+				smaller = false;
+		}
+		if (smaller)
 			continue;
 
 		// real intersection
 		vector col;
-		if (LineIntersectsTriangle(v[0], v[1], v[2], p, p + e_x, col, false))
-			if (col.x > p.x)
-				n ++;
+		Array<int> vv = t.Triangulate(model);
+		for (int k=0;k<vv.num;k+=3)
+			if (LineIntersectsTriangle(v[vv[k]], v[vv[k+1]], v[vv[k+2]], p, p + e_x, col, false))
+				if (col.x > p.x)
+					n ++;
 	}
 
 	// even or odd?
 	return ((n % 2) == 1);
-#endif
-	return false;
 }
 
 
