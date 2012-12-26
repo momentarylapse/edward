@@ -28,6 +28,17 @@ void *ActionModelEditMaterial::execute(Data *d)
 	m->Material[index] = mat;
 	mat = old_mat;
 
+	// correct skin vertices
+	// (copy highest texture level when adding more levels)
+	foreach(ModelSurface &s, m->Surface)
+		foreach(ModelPolygon &p, s.Polygon){
+			if (p.Material == index){
+				foreach(ModelPolygonSide &side, p.Side)
+					for (int l=mat.NumTextures;l<m->Material[index].NumTextures;l++)
+						side.SkinVertex[l] = side.SkinVertex[mat.NumTextures - 1];
+			}
+		}
+
 	return NULL;
 }
 
