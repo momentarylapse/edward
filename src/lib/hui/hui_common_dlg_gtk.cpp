@@ -26,12 +26,9 @@ void add_filters(GtkWidget *dlg, const string &show_filter, const string &filter
 {
 	GtkFileFilter *gtk_filter = gtk_file_filter_new();
 	gtk_file_filter_set_name(gtk_filter, sys_str(show_filter));
-	int pos = 0, pos2;
-	while((pos2 = filter.find(";", pos)) >= 0){
-		gtk_file_filter_add_pattern(gtk_filter, sys_str(filter.substr(pos, pos2 - pos)));
-		pos = pos2 + 1;
-	}
-	gtk_file_filter_add_pattern(gtk_filter, sys_str(filter.substr(pos, filter.num - pos)));
+	Array<string> filters = filter.explode(";");
+	foreach(string &f, filters)
+		gtk_file_filter_add_pattern(gtk_filter, sys_str(f));
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dlg), gtk_filter);
 }
 
@@ -68,7 +65,7 @@ static void try_to_ensure_extension(string &filename, const string &filter)
 	// multiple choices -> ignore
 	if (filter.find(";") >= 0)
 		return;
-	string filter_ext = filter.substr(2, filter.num - 2); // "*.ext"
+	string filter_ext = filter.extension(); // "*.ext"
 	// not the wanted extension -> add
 	if (filename.extension() != filter_ext)
 		filename += "." + filter_ext;
@@ -87,8 +84,10 @@ bool HuiFileDialogSave(CHuiWindow *win,const string &title,const string &dir,con
 	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dlg), sys_str_f(dir));
 	add_filters(dlg, show_filter, filter);
 	int r = gtk_dialog_run(GTK_DIALOG(dlg));
-	if (r == GTK_RESPONSE_ACCEPT)
+	if (r == GTK_RESPONSE_ACCEPT){
 		HuiFilename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg));
+		try_to_ensure_extension(HuiFilename, filter);
+	}
 	gtk_widget_destroy (dlg);
 	return (r==GTK_RESPONSE_ACCEPT);
 }
