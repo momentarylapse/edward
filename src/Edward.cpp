@@ -303,23 +303,34 @@ bool Edward::HandleArguments(Array<string> arg)
 	if (arg.num < 2)
 		return false;
 	msg_db_r("LoadParam", 1);
+
+	for (int i=1; i<arg.num; i++){
+		string param = arg[i];
+
 // convert file types...
-	/*if (_param == "-cftmodel"){		ConvertFileFormat(FDModel, true);		End();	}
-	if (_param == "-cftobject"){	ConvertFileFormat(FDObject, true);		End();	}
-	if (_param == "-cftitem"){		ConvertFileFormat(FDItem, true);		End();	}
-	if (_param == "-cftmaterial"){	ConvertFileFormat(FDMaterial, true);	End();	}
-	if (_param == "-cftmap"){		ConvertFileFormat(FDTerrain, true);		End();	}
-	if (_param == "-cftworld"){		ConvertFileFormat(FDWorld, true);		End();	}
+	/*if (param == "-cftmodel"){		ConvertFileFormat(FDModel, true);		End();	}
+	if (param == "-cftobject"){	ConvertFileFormat(FDObject, true);		End();	}
+	if (param == "-cftitem"){		ConvertFileFormat(FDItem, true);		End();	}
+	if (param == "-cftmaterial"){	ConvertFileFormat(FDMaterial, true);	End();	}
+	if (param == "-cftmap"){		ConvertFileFormat(FDTerrain, true);		End();	}
+	if (param == "-cftworld"){		ConvertFileFormat(FDWorld, true);		End();	}
 // test files
-	if (_param == "-tftmodel"){		ConvertFileFormat(FDModel, false);		End();	}
-	if (_param == "-tftobject"){	ConvertFileFormat(FDObject, false);		End();	}
-	if (_param == "-tftitem"){		ConvertFileFormat(FDItem, false);		End();	}
-	if (_param == "-tftmaterial"){	ConvertFileFormat(FDMaterial, false);	End();	}
-	if (_param == "-tftmap"){		ConvertFileFormat(FDTerrain, false);	End();	}
-	if (_param == "-tftworld"){		ConvertFileFormat(FDWorld, false);		End();	}*/
+	if (param == "-tftmodel"){		ConvertFileFormat(FDModel, false);		End();	}
+	if (param == "-tftobject"){	ConvertFileFormat(FDObject, false);		End();	}
+	if (param == "-tftitem"){		ConvertFileFormat(FDItem, false);		End();	}
+	if (param == "-tftmaterial"){	ConvertFileFormat(FDMaterial, false);	End();	}
+	if (param == "-tftmap"){		ConvertFileFormat(FDTerrain, false);	End();	}
+	if (param == "-tftworld"){		ConvertFileFormat(FDWorld, false);		End();	}*/
+
+		if (param == "--execute"){
+			i ++;
+			if (i < arg.num){
+				plugins->Execute(arg[i]);
+			}
+			continue;
+		}
 
 // loading...
-	string param = arg[1];
 	if (param[0]=='"')
 		param.delete_single(0);
 	if (param[param.num-1]=='"')
@@ -386,6 +397,7 @@ bool Edward::HandleArguments(Array<string> arg)
 	}else{
 		ErrorBox(_("Unbekannte Dateinamenerweiterung: ") + param);
 		HuiEnd();
+	}
 	}
 	msg_db_l(1);
 	return true;

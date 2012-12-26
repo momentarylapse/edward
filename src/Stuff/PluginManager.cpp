@@ -75,13 +75,25 @@ void PluginManager::Init()
 
 	ScriptLinkSemiExternalVar("edward", &ed);
 	ScriptLinkSemiExternalVar("data_model", &mode_model->data);
+	ScriptLinkSemiExternalFunc("DataModel.ClearSelection", (void*)&DataModel::ClearSelection);
+	ScriptLinkSemiExternalFunc("DataModel.SelectionPolygonsFromVertices", (void*)&DataModel::SelectionPolygonsFromVertices);
+	ScriptLinkSemiExternalFunc("DataModel.SelectionSurfacesFromPolygons", (void*)&DataModel::SelectionSurfacesFromPolygons);
+	ScriptLinkSemiExternalFunc("DataModel.SelectionPolygonsFromSurfaces", (void*)&DataModel::SelectionPolygonsFromSurfaces);
+	ScriptLinkSemiExternalFunc("DataModel.SelectionVerticesFromPolygons", (void*)&DataModel::SelectionVerticesFromPolygons);
+	ScriptLinkSemiExternalFunc("DataModel.SelectionVerticesFromSurfaces", (void*)&DataModel::SelectionVerticesFromSurfaces);
 	ScriptLinkSemiExternalFunc("DataModel.AddVertex", (void*)&DataModel::AddVertex);
 	ScriptLinkSemiExternalFunc("DataModel.AddTriangle", (void*)&DataModel::AddTriangle);
 	ScriptLinkSemiExternalFunc("DataModel.AddPolygon", (void*)&DataModel::AddPolygon);
 	ScriptLinkSemiExternalFunc("DataModel.AddBall", (void*)&DataModel::AddBall);
+	ScriptLinkSemiExternalFunc("DataModel.AddSphere", (void*)&DataModel::AddSphere);
 	ScriptLinkSemiExternalFunc("DataModel.AddPlane", (void*)&DataModel::AddPlane);
 	ScriptLinkSemiExternalFunc("DataModel.AddCube", (void*)&DataModel::AddCube);
 	ScriptLinkSemiExternalFunc("DataModel.AddCylinder", (void*)&DataModel::AddCylinder);
+	ScriptLinkSemiExternalFunc("DataModel.DeleteSelection", (void*)&DataModel::DeleteSelection);
+	ScriptLinkSemiExternalFunc("DataModel.SubtractSelection", (void*)&DataModel::SubtractSelection);
+	ScriptLinkSemiExternalFunc("DataModel.TriangulateSelection", (void*)&DataModel::TriangulateSelection);
+	ScriptLinkSemiExternalFunc("DataModel.BevelSelectedVertices", (void*)&DataModel::BevelSelectedVertices);
+	ScriptLinkSemiExternalFunc("DataModel.ExtrudeSelectedPolygons", (void*)&DataModel::ExtrudeSelectedPolygons);
 	ScriptLinkSemiExternalFunc("DataModel.BeginActionGroup", (void*)&DataModel::BeginActionGroup);
 	ScriptLinkSemiExternalFunc("DataModel.EndActionGroup", (void*)&DataModel::EndActionGroup);
 	ScriptLinkSemiExternalVar("data_world", &mode_world->data);

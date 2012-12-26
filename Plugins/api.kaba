@@ -16,6 +16,7 @@ class Data : Observable
 	string filename
 	int file_time
 	bool binary_file_format
+	int type
 	void *action_manager
 
 
@@ -286,13 +287,40 @@ class DataModel : Data
 	ModelEffect Fx[]
 
 	ModelMetaData meta_data
+	
+	extern void ClearSelection()
+	extern void SelectionPolygonsFromVertices()
+	extern void SelectionSurfacesFromPolygons()
+	extern void SelectionPolygonsFromSurfaces()
+	extern void SelectionVerticesFromPolygons()
+	extern void SelectionVerticesFromSurfaces()
+	
 	extern void AddVertex(vector pos, int bone_index, int normal_mode)
 	extern ModelPolygon *AddTriangle(int a, int b, int c)
 	extern ModelPolygon *AddPolygon(int v[])
-	extern ModelSurface *AddBall(vector pos, float radius, int num_x, int num_y, bool as_sphere)
+	extern ModelSurface *AddBall(vector pos, float radius, int num_x, int num_y)
+	extern ModelSurface *AddSphere(vector pos, float radius, int num)
 	extern ModelSurface *AddPlane(vector pos, vector dv1, vector dv2, int num_x, int num_y)
 	extern ModelSurface *AddCube(vector pos, vector dv1, vector dv2, vector dv3, int num_1, int num_2, int num_3)
 	extern ModelSurface *AddCylinder(vector pos[], float radius[], int rings, int edges, bool closed)
+	
+	extern void DeleteSelection(bool greedy)
+	extern void InvertSelection()
+	extern void SubtractSelection()
+	extern void CutOutSelection()
+	extern void TriangulateSelection()
+	extern void AlignToGridSelection(float grid_d)
+	extern void NearifySelectedVertices()
+	extern void CollapseSelectedVertices()
+	extern void BevelSelectedVertices(float radius)
+	extern void FlattenSelectedVertices()
+	extern void ExtrudeSelectedPolygons(float offset)
+	extern void AutoWeldSelectedSurfaces(float d)
+	extern void SetNormalModeSelection(int mode)
+	extern void SetNormalModeAll(int mode)
+	extern void SetMaterialSelection(int material)
+	extern void Easify(float factor)
+	
 	extern void BeginActionGroup()
 	extern void EndActionGroup()
 	void __assign__(DataModel other)
