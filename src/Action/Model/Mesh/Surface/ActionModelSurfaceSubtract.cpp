@@ -190,32 +190,15 @@ bool ActionModelSurfaceSubtract::CollidePolygonSurface(DataModel *m, ModelPolygo
 	return t_col.num > 0;
 }
 
-#if 0
-// t must not collide with s...
+// we assume t does not collide with s...!
 bool ActionModelSurfaceSubtract::PolygonInsideSurface(DataModel *m, ModelPolygon *t, ModelSurface *s)
 {
-	msg_db_r("PolygonInsideSurface", 2);
-	vector p = m->Vertex[t->Vertex[0]].pos;
-	vector d = e_z;
-
-	// how many times does a ray starting at p hit s?
-	int n = 0;
-	foreach(ModelPolygon &t2, s->Polygon){
-		vector v[3];
-		for (int k=0;k<3;k++)
-			v[k] = m->Vertex[t2.Vertex[k]].pos;
-		vector col;
-		if (!LineIntersectsTriangle(v[0], v[1], v[2], p, p + d, col, false))
-			continue;
-		if (VecDotProduct(col - p, d) < 0)
-			continue;
-
-		n ++;
-	}
-	msg_db_l(2);
-	return (n % 2) == 1;
+	foreach(ModelPolygonSide &side, t->Side)
+		if (!s->IsInside(m->Vertex[side.Vertex].pos))
+			return false;
+	return true;
 }
-#endif
+
 
 void ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 {
@@ -408,14 +391,15 @@ void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a,
 		for (int i=0;i<cc.num;i++){
 			vv.add(m->Vertex.num);
 			AddSubAction(new ActionModelAddVertex(cc[i].p), m);
+		}
 
-			// skin vertices
-			for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+		// skin vertices
+		for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+			for (int i=0;i<cc.num;i++)
 				if (cc[i].type == sCol::TYPE_OLD_VERTEX)
 					sv.add(t->Side[cc[i].side].SkinVertex[l]);
 				else
 					sv.add(sg.get(cc[i].p, l));
-		}
 
 		// fill contour with polygons
 		AddSubAction(new ActionModelAddPolygon(vv, t->Material, sv), m);
@@ -433,29 +417,19 @@ void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModelSurface
 	msg_db_r("SurfSubtractUnary", 0);
 	a->TestSanity("surf sub a prae");
 	b->TestSanity("surf sub b prae");
-#if 0
-	int nsurf = m->Surface.num;
+	//int nsurf = m->Surface.num;
 	int ai = m->get_surf_no(a);
-	int bi = m->get_surf_no(b);
-#endif
+	//int bi = m->get_surf_no(b);
 
-
+	// collide both surfaces and create additional polygons (as new surfaces...)
+	Set<int> to_del;
 	foreachib(ModelPolygon &t, a->Polygon, i)
 		if (CollidePolygonSurface(m, &t, b, i)){
 			a->TestSanity("tria sub (ext) a prae");
 			PolygonSubtract(m, a, &t, b, inverse);
 			a->TestSanity("tria sub (ext) a post");
-			_foreach_it_.update(); // TODO
-		}
-#if 0
-	// collide both surfaces and create additional polygons (as new surfaces...)
-	Set<int> to_del;
-	foreachib(ModelPolygon &t, a->Polygon, i)
-		if (CollidePolygonSurface(m, &t, b)){
-			a->TestSanity("tria sub (ext) a prae");
-			PolygonSubtract(m, a, &t, b, inverse);
-			a->TestSanity("tria sub (ext) a post");
 			to_del.add(i);
+			_foreach_it_.update(); // TODO
 		}else if (PolygonInsideSurface(m, &t, b) != inverse){
 			to_del.add(i);
 		}
@@ -467,6 +441,7 @@ void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModelSurface
 		AddSubAction(new ActionModelSurfaceDeletePolygon(ai, p), m);
 	a->TestSanity("tria sub a med");
 
+#if 0
 	// connect separate parts
 	for (int i=m->Surface.num-1;i>=nsurf;i--){
 		AddSubAction(new ActionModelSurfaceAutoWeld(ai, m->Surface.num - 1, 0.00001f, true), m);
@@ -490,7 +465,7 @@ void ActionModelSurfaceSubtract::SurfaceSubtract(DataModel *m, ModelSurface *&a,
 
 	int ai = m->get_surf_no(a);
 	int bi = m->get_surf_no(b);
-	bool closed = a->IsClosed;
+	bool closed = false;//a->IsClosed;
 	ModelSurface *c;
 	int ci;
 
