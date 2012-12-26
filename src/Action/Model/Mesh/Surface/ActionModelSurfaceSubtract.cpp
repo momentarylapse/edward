@@ -19,7 +19,7 @@ float ActionModelSurfaceSubtract::sCol::get_f(DataModel *m, ModelPolygon *t)
 {
 	if (type == TYPE_OLD_VERTEX)
 		return 0;
-	if (type == TYPE_OWN_EDGE_OUT)
+	if ((type == TYPE_OWN_EDGE_OUT) || (type == TYPE_OWN_EDGE_IN))
 		return p.factor_between(m->Vertex[t->Side[side].Vertex].pos, m->Vertex[t->Side[(side + 1) % t->Side.num].Vertex].pos);
 	throw ActionException("subtract: unhandled col type");
 }
@@ -219,16 +219,16 @@ bool ActionModelSurfaceSubtract::PolygonInsideSurface(DataModel *m, ModelPolygon
 void ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 {
 	msg_db_r("sort_t_col", 2);
-	msg_write(format("sort %d   %d", t_col.num, c2.num));
+	/*msg_write(format("sort %d   %d", t_col.num, c2.num));
 	foreach(sCol &cc, t_col)
-		msg_write(format("%d  %d  - %d", cc.type, cc.polygon, cc.edge));
+		msg_write(format("%d  %d  - %d", cc.type, cc.polygon, cc.edge));*/
 
 	// find first
 	int last_poly = -1;
 	foreachi(sCol &c, t_col, i)
 		if (c.type == c.TYPE_OWN_EDGE_IN){
 			last_poly = c.polygon;
-			msg_write(c.polygon);
+			//msg_write(c.polygon);
 			c2.add(c);
 			t_col.erase(i);
 			break;
@@ -240,14 +240,14 @@ void ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 	}
 
 	while(true){
-		msg_write(".");
+		//msg_write(".");
 		// find col on same s.poly as the last col
 		bool found = false;
 		foreachi(sCol &c, t_col, i)
 			if (c.type == c.TYPE_OTHER_EDGE){
 				for (int k=0;k<2;k++)
 					if (s->Edge[c.edge].Polygon[k] == last_poly){
-						msg_write(format("%d  %d  - %d", c.type, c.polygon, c.edge));
+						//msg_write(format("%d  %d  - %d", c.type, c.polygon, c.edge));
 						c2.add(c);
 						last_poly = s->Edge[c.edge].Polygon[1 - k];
 						t_col.erase(i);
@@ -265,7 +265,7 @@ void ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 		// find col on same s.edge as the last col
 		foreachi(sCol &c, t_col, i)
 			if ((c.type == c.TYPE_OWN_EDGE_OUT) && (c.polygon == last_poly)){
-				msg_write(format("%d  %d  - %d", c.type, c.polygon, c.edge));
+				//msg_write(format("%d  %d  - %d", c.type, c.polygon, c.edge));
 				c2.add(c);
 				t_col.erase(i);
 				found = true;
@@ -277,13 +277,13 @@ void ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 		}
 		break;
 	}
-	msg_write("----------");
+	//msg_write("----------");
 
-	int n = 0;
+	/*int n = 0;
 	foreach(sCol &c, t_col)
 		if (c.type == c.TYPE_OTHER_EDGE)
 			n ++;
-	msg_write(format("%d  %d", n, t_col.num));
+	msg_write(format("%d  %d", n, t_col.num));*/
 
 	// remove double vertices ????
 	/*for (int i=c2.num-2;i>=2;i-=2)
@@ -292,7 +292,7 @@ void ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 	msg_db_l(2);
 }
 
-void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolygon *t, ModelSurface *b, Array<Array<sCol> > &c, bool inverse)
+void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolygon *t, ModelSurface *b, Array<Array<sCol> > &c_in, bool inverse)
 {
 	msg_db_r("sort_and_join_contours", 1);
 	Array<sCol> v;
@@ -304,21 +304,24 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolyg
 	}
 
 	if (inverse)
-		for (int l=0;l<c.num;l++)
-			c[l].reverse();
+		for (int l=0;l<c_in.num;l++)
+			c_in[l].reverse();
 
+	Array<Array<sCol> > c_out;
 	Array<sCol> cc;
-	cc = c[0];
-	c.erase(0);
+	cc = c_in[0];
+	c_in.erase(0);
 
-	while((c.num > 0) || (v.num > 0)){
+	while(true){
 		int side = cc.back().side;
 		float f = cc.back().get_f(m, t);
+		int side0 = cc[0].side;
+		float f0 = cc[0].get_f(m, t);
 
 		// search new contours
 		float fmin = 2;
 		int imin = -1;
-		foreachi(Array<sCol> &ccc, c, i)
+		foreachi(Array<sCol> &ccc, c_in, i)
 			if (ccc[0].side == side){
 				float ff = cc.back().get_f(m, t);
 				if ((ff > f) && (ff < fmin)){
@@ -329,8 +332,8 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolyg
 
 		// add new contour
 		if (imin >= 0){
-			cc.append(c[imin]);
-			c.erase(imin);
+			cc.append(c_in[imin]);
+			c_in.erase(imin);
 			continue;
 		}
 
@@ -338,21 +341,34 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolyg
 		bool ok = false;
 		foreachi(sCol &ccc, v, i){
 			if (ccc.side == ((side + 1) % t->Side.num)){
+				// loop already closed?
+				if ((side == side0) && (f0 > f))
+					break;
 				cc.add(ccc);
 				v.erase(i);
 				ok = true;
 				break;
 			}
 		}
+		if (ok)
+			continue;
 
-		// nothing?
-		if (!ok)
+		// done?
+		foreachi(sCol &ccc, cc, i)
+			ed->multi_view_3d->AddMessage3d(i2s(i + 1), ccc.p);
+		c_out.add(cc);
+		cc.clear();
+
+		if (c_in.num > 0){
+			cc = c_in[0];
+			c_in.erase(0);
+		}else if (v.num == 0){
+			break;
+		}else
 			throw ActionException("no next point found...");
 
 	}
-
-	foreachi(sCol &ccc, cc, i)
-		ed->multi_view_3d->AddMessage3d(i2s(i + 1), ccc.p);
+	//msg_write(c_out.num);
 
 /*	// any triangle vertices to keep?
 	for (int l=0;l<c.num;l++){
