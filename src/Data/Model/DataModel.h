@@ -20,6 +20,13 @@ class ModelSurface;
 class ModelMaterial;
 
 
+class GeometryException
+{
+public:
+	GeometryException(const string &_message){	message = _message;	}
+	string message;
+};
+
 #define TransparencyModeDefault			-1
 #define TransparencyModeNone			0
 #define TransparencyModeFunctions		1

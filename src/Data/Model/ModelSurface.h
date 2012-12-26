@@ -31,7 +31,7 @@ public:
 	DataModel *model;
 
 	void AddVertex(int v);
-	bool AddPolygon(Array<int> &v, int material, Array<vector> &sv, int index = -1);
+	void AddPolygon(Array<int> &v, int material, Array<vector> &sv, int index = -1);
 	void RemovePolygon(int index);
 	int AddEdgeForNewPolygon(int a, int b, int tria, int side);
 	void RemoveObsoleteEdge(int index);

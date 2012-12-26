@@ -27,7 +27,11 @@ void ActionModelSurfaceDeletePolygon::undo(Data *d)
 	ModelSurface &s = m->Surface[surface];
 
 	// add triangle
-	s.AddPolygon(vertex, material, skin, index);
+	try{
+		s.AddPolygon(vertex, material, skin, index);
+	}catch(GeometryException &e){
+		throw ActionException(e.message);
+	}
 	//s.BuildFromPolygons();
 }
 
@@ -51,7 +55,11 @@ void *ActionModelSurfaceDeletePolygon::execute(Data *d)
 			skin.add(t.Side[k].SkinVertex[l]);
 
 	// erase
-	s.RemovePolygon(index);
+	try{
+		s.RemovePolygon(index);
+	}catch(GeometryException &e){
+		throw ActionException(e.message);
+	}
 
 	return NULL;
 }

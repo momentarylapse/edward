@@ -28,7 +28,7 @@ void ModelSurface::AddVertex(int v)
 		msg_error("SurfaceAddVertex ...surface not found");
 }
 
-bool ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, int index)
+void ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, int index)
 {
 	msg_db_r("Surf.AddTria", 1);
 
@@ -40,8 +40,10 @@ bool ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, in
 			t.Side[k].SkinVertex[i] = sv[i * v.num + k];
 	}
 	for (int k=0;k<v.num;k++){
-		int e = AddEdgeForNewPolygon(t.Side[k].Vertex, t.Side[(k + 1) % v.num].Vertex, Polygon.num, k);
-		if (e < 0){
+		try{
+			t.Side[k].Edge = AddEdgeForNewPolygon(t.Side[k].Vertex, t.Side[(k + 1) % v.num].Vertex, Polygon.num, k);
+			t.Side[k].EdgeDirection = Edge[t.Side[k].Edge].RefCount - 1;
+		}catch(GeometryException &e){
 			// failed -> clean up
 			for (int i=Edge.num-1;i>=0;i--)
 				for (int j=0;j<Edge[i].RefCount;j++)
@@ -51,10 +53,8 @@ bool ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, in
 							Edge.resize(i);
 					}
 			msg_db_l(1);
-			return false;
+			throw(e);
 		}
-		t.Side[k].Edge = e;
-		t.Side[k].EdgeDirection = Edge[t.Side[k].Edge].RefCount - 1;
 	}
 	for (int k=0;k<v.num;k++)
 		AddVertex(v[k]);
@@ -82,15 +82,13 @@ bool ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, in
 		Polygon.add(t);
 
 	msg_db_l(1);
-	return true;
 }
 
 int ModelSurface::AddEdgeForNewPolygon(int a, int b, int tria, int side)
 {
 	foreachi(ModelEdge &e, Edge, i){
 		if ((e.Vertex[0] == a) && (e.Vertex[1] == b)){
-			msg_error("surface error? inverse edge");
-			return -1;
+			throw GeometryException("surface error? inverse edge");
 			/*e.RefCount ++;
 			msg_error("surface error? inverse edge");
 			e.Polygon[1] = tria;
@@ -98,14 +96,10 @@ int ModelSurface::AddEdgeForNewPolygon(int a, int b, int tria, int side)
 			return i;*/
 		}
 		if ((e.Vertex[0] == b) && (e.Vertex[1] == a)){
-			if (e.Polygon[0] == tria){
-				msg_error("surface error? same edge in poly");
-				return -1;
-			}
-			if (e.RefCount > 1){
-				msg_error("surface error? edge refcount > 2");
-				return -1;
-			}
+			if (e.Polygon[0] == tria)
+				throw GeometryException("surface error? same edge in poly");
+			if (e.RefCount > 1)
+				throw GeometryException("surface error? edge refcount > 2");
 			e.RefCount ++;
 			e.Polygon[1] = tria;
 			e.Side[1] = side;
@@ -436,7 +430,7 @@ void ModelSurface::RemovePolygon(int index)
 			if (e.Polygon[k] > index)
 				e.Polygon[k] --;
 			else if (e.Polygon[k] == index){
-				msg_error("RemoveTriangle: tria == index");
+				throw GeometryException("RemoveTriangle: tria == index");
 			}
 
 	Polygon.erase(index);
