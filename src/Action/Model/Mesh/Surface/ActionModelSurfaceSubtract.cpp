@@ -13,6 +13,7 @@
 #include "../Polygon/ActionModelAddPolygon.h"
 #include "ActionModelSurfaceCopy.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/SkinGenerator.h"
 #include "../../../../Edward.h"
 
 float ActionModelSurfaceSubtract::sCol::get_f(DataModel *m, ModelPolygon *t)
@@ -183,8 +184,8 @@ bool ActionModelSurfaceSubtract::CollidePolygonSurface(DataModel *m, ModelPolygo
 	}
 
 	// FIXME debug
-	foreach(sCol &c, t_col)
-		AddSubAction(new ActionModelAddVertex(c.p), m);
+	/*foreach(sCol &c, t_col)
+		AddSubAction(new ActionModelAddVertex(c.p), m);*/
 	msg_db_l(0);
 	return t_col.num > 0;
 }
@@ -296,7 +297,6 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolyg
 {
 	msg_db_r("sort_and_join_contours", 1);
 	Array<sCol> v;
-//	msg_write("---------------------------------");
 	for (int k=0;k<t->Side.num;k++){
 		vector pos = m->Vertex[t->Side[k].Vertex].pos;
 		if (!b->IsInside(pos))
@@ -354,8 +354,8 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolyg
 			continue;
 
 		// done?
-		foreachi(sCol &ccc, cc, i)
-			ed->multi_view_3d->AddMessage3d(i2s(i + 1), ccc.p);
+		/*foreachi(sCol &ccc, cc, i)
+			ed->multi_view_3d->AddMessage3d(i2s(i + 1), ccc.p);*/
 		c_out.add(cc);
 		cc.clear();
 
@@ -368,91 +368,17 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolyg
 			throw ActionException("no next point found...");
 
 	}
-	//msg_write(c_out.num);
-
-/*	// any triangle vertices to keep?
-	for (int l=0;l<c.num;l++){
-//		msg_write(format("- cont %d / %d    %d - %d", l, c.num, c[l][0].k, c[l].back().k));
-		int kb = c[l].back().k;
-
-		float f_min = (c[l].back().p - v[kb]).length() / (v[(kb + 1) % 3] - v[kb]).length();
-//		msg_write(f2s(f_min, 3));
-
-		for (int kk=kb;kk<kb + 4;kk++){
-//			msg_write(format("edge %d", kk));
-			bool done = false;
-			bool next_cont = false;
-			int k = kk % 3;
-			int k2 = (k + 1) % 3;
-
-			int l_next = 666;
-
-			while (l_next >= 0){
-//				msg_write(".");
-				l_next = -1;
-				float f_max = 1;
-
-				// find next contour on edge k
-				for (int ll=l;ll<c.num;ll++){
-
-					if (c[ll][0].k != k)
-						continue;
-
-					float f = (c[ll][0].p - v[k]).length() / (v[k2] - v[k]).length();
-					if ((f > f_min) && (f < f_max)){
-						l_next = ll;
-						f_max = f;
-					}
-				}
-
-				if (l_next >= 0){
-//					msg_write(format("next: %d  %f", l_next, f_max));
-
-					if (l_next == l){
-						// loop closed
-//						msg_write("--");
-						done = true;
-						break;
-					}else{
-						// merge with next contour
-//						msg_write(c[l_next].back().k);
-						int k_next = c[l_next].back().k;
-						f_min = (c[l_next].back().p - v[k_next]).length() / (v[(k_next + 1) % 3] - v[k_next]).length();
-						c[l].append(c[l_next]);
-						c.erase(l_next);
-
-						// jump to ending edge of next contour
-						kk += (k_next - kk + 6) % 3 - 1;
-//						msg_write(f2s(f_min, 3));
-						next_cont = true;
-						break;
-					}
-				}
-			}
-			if (done)
-				break;
-			if (next_cont)
-				continue;
-
-			// add original triangle vertex to the contour
-			c[l].add(sCol(v[k2], true, -1, -1));
-//			msg_write("o");
-
-			f_min = 0;
-		}
-	}*/
+	c_in = c_out;
 	msg_db_l(1);
 }
 
 void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a, ModelPolygon *t, ModelSurface *&b, bool inverse)
 {
-#if 0
 	msg_db_r("PolygonSubtract", 1);
 	a->TestSanity("tria sub a prae");
 	b->TestSanity("tria sub b prae");
 	int a_i = m->get_surf_no(a);
 	int b_i = m->get_surf_no(b);
-#endif
 
 	Array<Array<sCol> > c;
 
@@ -471,25 +397,28 @@ void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a,
 
 	sort_and_join_contours(m, t, b, c, inverse);
 
-#if 0
+	SkinGeneratorMulti sg;
+	sg.init_polygon(m, *t);
+
 	// create new surfaces
-	for (int l=0;l<c.num;l++){
+	foreach(Array<sCol> &cc, c){
 		// create contour vertices
 		Array<int> vv;
 		Array<vector> sv;
-		for (int i=0;i<c[l].num;i++){
+		for (int i=0;i<cc.num;i++){
 			vv.add(m->Vertex.num);
-			AddSubAction(new ActionModelAddVertex(c[l][i].p), m);
-			/*for (int l=0;l<MODEL_MAX_TEXTURES;l++)
-				sv.add()*/
+			AddSubAction(new ActionModelAddVertex(cc[i].p), m);
+
+			// skin vertices
+			for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+				if (cc[i].type == sCol::TYPE_OLD_VERTEX)
+					sv.add(t->Side[cc[i].side].SkinVertex[l]);
+				else
+					sv.add(sg.get(cc[i].p, l));
 		}
 
-		// fill contour with triangles
-		AddSubAction(new ActionModelAddPolygon(vv, 0, sv), m);
-		// TODO
-		/*SetAutoTexturingTriangle(m, t);
-		m->CreateTrianglesFlat(vv);
-		ResetAutoTexturing();*/
+		// fill contour with polygons
+		AddSubAction(new ActionModelAddPolygon(vv, t->Material, sv), m);
 	}
 
 	a = &m->Surface[a_i];
@@ -497,7 +426,6 @@ void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a,
 	a->TestSanity("tria sub a post");
 
 	msg_db_l(1);
-#endif
 }
 
 void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModelSurface *& a, ModelSurface *& b, bool inverse)
