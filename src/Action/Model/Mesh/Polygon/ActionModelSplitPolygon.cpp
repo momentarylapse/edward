@@ -28,13 +28,9 @@ void *ActionModelSplitPolygon::compose(Data *d)
 	// old triangle data
 	ModelPolygon temp = t;
 
-	// bary centric
-	SkinGenerator sg;
+	// skin interpolation
+	SkinGeneratorMulti sg;
 	sg.init_polygon(m, t);
-	/*float f, g;
-	GetBaryCentric(pos, m->Vertex[va].pos, m->Vertex[vb].pos, m->Vertex[vc].pos, f, g);
-	for (int l=0;l<MODEL_MAX_TEXTURES;l++)
-		sv[3][l] = sv[0][l] * (1 - f - g) + sv[1][l] * f + sv[2][l] * g;*/
 
 	// delete old triangle
 	AddSubAction(new ActionModelSurfaceDeletePolygon(surface, polygon), m);
@@ -53,7 +49,7 @@ void *ActionModelSplitPolygon::compose(Data *d)
 		for (int l=0;l<MODEL_MAX_TEXTURES;l++){
 			sv.add(temp.Side[k].SkinVertex[l]);
 			sv.add(temp.Side[(k+1)%temp.Side.num].SkinVertex[l]);
-			sv.add(sg.get(pos));
+			sv.add(sg.get(pos, l));
 		}
 		AddSubAction(new ActionModelSurfaceAddPolygon(surface, v, temp.Material, sv), m);
 	}

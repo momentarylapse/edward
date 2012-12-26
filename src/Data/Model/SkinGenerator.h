@@ -22,12 +22,26 @@ public:
 	void init_affine(const vector &dir_u, float f_u, const vector &dir_v, float f_v);
 	void init_projective(const matrix &_m);
 	void init_projective(MultiView *mv, int win);
-	void init_polygon(DataModel *model, ModelPolygon &p);
+	void init_polygon(DataModel *model, ModelPolygon &p, int level);
 
 	vector get(const vector &v) const;
 
 private:
 	matrix m;
+};
+
+class SkinGeneratorMulti
+{
+public:
+	SkinGeneratorMulti();
+	SkinGeneratorMulti(const SkinGenerator &sg);
+	virtual ~SkinGeneratorMulti();
+	void init_polygon(DataModel *model, ModelPolygon &p);
+
+	vector get(const vector &v, int level) const;
+
+private:
+	SkinGenerator *gen;
 };
 
 #endif /* SKINGENERATOR_H_ */
