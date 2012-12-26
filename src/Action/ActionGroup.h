@@ -29,6 +29,7 @@ public:
 	void redo(Data *d);
 
 	virtual void abort(Data *d);
+	virtual bool was_trivial();
 
 protected:
 	void *AddSubAction(Action *a, Data *d);

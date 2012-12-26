@@ -23,7 +23,8 @@ void *ActionGroup::AddSubAction(Action *a, Data *d)
 	void *r = NULL;
 	try{
 		r = a->execute_logged(d);
-		action.add(a);
+		if (!a->was_trivial())
+			action.add(a);
 	}catch(ActionException &e){
 		a->abort(d);
 		throw;
@@ -62,6 +63,11 @@ void ActionGroup::abort(Data *d)
 {
 	foreachb(Action *a, action)
 		a->undo_logged(d);
+}
+
+bool ActionGroup::was_trivial()
+{
+	return action.num == 0;
 }
 
 

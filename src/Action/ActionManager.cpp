@@ -67,7 +67,8 @@ void *ActionManager::Execute(Action *a)
 	try{
 		data->NotifyBegin();
 		void *p = a->execute_logged(data);
-		add(a);
+		if (!a->was_trivial())
+			add(a);
 		data->Notify("Change");
 		data->NotifyEnd();
 		return p;

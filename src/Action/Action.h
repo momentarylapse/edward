@@ -30,6 +30,7 @@ public:
 
 	virtual bool allowed(Data *d){	return true;	}
 	virtual void abort(Data *d){	undo_logged(d);	}
+	virtual bool was_trivial(){	return false;	}
 
 	virtual void *execute(Data *d) = 0;
 	virtual void undo(Data *d) = 0;
