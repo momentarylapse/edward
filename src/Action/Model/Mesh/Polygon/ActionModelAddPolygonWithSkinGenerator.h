@@ -10,12 +10,12 @@
 
 #include "../../../ActionGroup.h"
 class DataModel;
-class SkinGenerator;
+class SkinGeneratorMulti;
 
 class ActionModelAddPolygonWithSkinGenerator: public ActionGroup
 {
 public:
-	ActionModelAddPolygonWithSkinGenerator(Array<int> &_v, int _material, const SkinGenerator &_sg);
+	ActionModelAddPolygonWithSkinGenerator(Array<int> &_v, int _material, const SkinGeneratorMulti &_sg);
 	virtual ~ActionModelAddPolygonWithSkinGenerator(){}
 	string name(){	return "ModelAddPolygonWithSkinGenerator";	}
 
@@ -24,7 +24,7 @@ public:
 private:
 	Array<int> &v;
 	int material;
-	const SkinGenerator &sg;
+	const SkinGeneratorMulti &sg;
 };
 
 #endif /* ACTIONMODELADDPOLYGONWITHSKINGENERATOR_H_ */
