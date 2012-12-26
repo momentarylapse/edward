@@ -52,6 +52,7 @@ void SkinGenerator::init_polygon(DataModel *model, ModelPolygon &p, int level)
 	vector n = p.TempNormal;
 	vector d1 = n.ortho();
 	vector d2 = n ^ d1;
+	matrix R = matrix(d1, d2, n);
 	float sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0, su = 0, sv = 0, sux = 0, suy = 0, svx = 0, svy = 0;
 	foreach(ModelPolygonSide &s, p.Side){
 		float x = d1 * model->Vertex[s.Vertex].pos;
@@ -92,6 +93,9 @@ void SkinGenerator::init_polygon(DataModel *model, ModelPolygon &p, int level)
 	m._11 = vv.y;
 	m._13 = vv.z;
 	m._22 = 0;
+	matrix iR;
+	MatrixTranspose(iR, R);
+	m = m * iR;
 }
 
 vector SkinGenerator::get(const vector& v) const
