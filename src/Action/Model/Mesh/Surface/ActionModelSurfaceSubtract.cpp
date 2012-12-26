@@ -15,6 +15,14 @@
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../Edward.h"
 
+float ActionModelSurfaceSubtract::sCol::get_f(DataModel *m, ModelPolygon *t)
+{
+	if (type == TYPE_OLD_VERTEX)
+		return 0;
+	if (type == TYPE_OWN_EDGE_OUT)
+		return p.factor_between(m->Vertex[t->Side[side].Vertex].pos, m->Vertex[t->Side[(side + 1) % t->Side.num].Vertex].pos);
+	throw ActionException("subtract: unhandled col type");
+}
 
 ActionModelSurfaceSubtract::ActionModelSurfaceSubtract()
 {}
@@ -141,7 +149,7 @@ bool ActionModelSurfaceSubtract::CollidePolygonSurface(DataModel *m, ModelPolygo
 		for (int i=0;i<vv.num;i+=3){
 			if (!LineIntersectsTriangle2(pl, v[vv[i+0]], v[vv[i+1]], v[vv[i+2]], ve[0], ve[1], col, false))
 				continue;
-			t_col.add(sCol(col, false, t_index, ei));
+			t_col.add(sCol(col, sCol::TYPE_OTHER_EDGE, t_index, ei, -1));
 		}
 	}
 
@@ -168,7 +176,8 @@ bool ActionModelSurfaceSubtract::CollidePolygonSurface(DataModel *m, ModelPolygo
 			for (int i=0;i<vv2.num;i+=3){
 				if (!LineIntersectsTriangle2(pl2, v2[vv2[i+0]], v2[vv2[i+1]], v2[vv2[i+2]], ve[0], ve[1], col, false))
 					continue;
-				t_col.add(sCol(col, true, ti, t->Side[kk].Edge));
+				int type = ((pl2.distance(ve[0]) > 0) ^ (t->Side[kk].EdgeDirection == 1)) ? sCol::TYPE_OWN_EDGE_IN : sCol::TYPE_OWN_EDGE_OUT;
+				t_col.add(sCol(col, type, ti, t->Side[kk].Edge, kk));
 			}
 		}
 	}
@@ -207,30 +216,27 @@ bool ActionModelSurfaceSubtract::PolygonInsideSurface(DataModel *m, ModelPolygon
 }
 #endif
 
-bool ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
+void ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 {
 	msg_db_r("sort_t_col", 2);
 	msg_write(format("sort %d   %d", t_col.num, c2.num));
 	foreach(sCol &cc, t_col)
-		msg_write(format("%d  %d  - %d", (int)cc.own_edge, cc.polygon, cc.edge));
+		msg_write(format("%d  %d  - %d", cc.type, cc.polygon, cc.edge));
 
 	// find first
 	int last_poly = -1;
 	foreachi(sCol &c, t_col, i)
-		if (c.own_edge){
+		if (c.type == c.TYPE_OWN_EDGE_IN){
 			last_poly = c.polygon;
 			msg_write(c.polygon);
 			c2.add(c);
-			//ed->multi_view_3d->AddMessage3d("1", c.p);
 			t_col.erase(i);
 			break;
 		}
 	if (c2.num != 1){
-		msg_error("subtract: first not found");
 		// TODO: completely inside....
 		msg_db_l(2);
-		throw ActionException("sort inconsistent: no start found");
-		return false;
+		throw ActionException("subtract: sort inconsistent: no start found");
 	}
 
 	while(true){
@@ -238,13 +244,12 @@ bool ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 		// find col on same s.poly as the last col
 		bool found = false;
 		foreachi(sCol &c, t_col, i)
-			if (!c.own_edge){
+			if (c.type == c.TYPE_OTHER_EDGE){
 				for (int k=0;k<2;k++)
 					if (s->Edge[c.edge].Polygon[k] == last_poly){
-						msg_write(format("%d  %d  - %d", (int)c.own_edge, c.polygon, c.edge));
+						msg_write(format("%d  %d  - %d", c.type, c.polygon, c.edge));
 						c2.add(c);
 						last_poly = s->Edge[c.edge].Polygon[1 - k];
-						//ed->multi_view_3d->AddMessage3d(i2s(c2.num), c.p);
 						t_col.erase(i);
 						found = true;
 						break;
@@ -259,20 +264,16 @@ bool ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 
 		// find col on same s.edge as the last col
 		foreachi(sCol &c, t_col, i)
-			if (c.own_edge)
-			if (c.polygon == last_poly){
-				msg_write(format("%d  %d  - %d", (int)c.own_edge, c.polygon, c.edge));
+			if ((c.type == c.TYPE_OWN_EDGE_OUT) && (c.polygon == last_poly)){
+				msg_write(format("%d  %d  - %d", c.type, c.polygon, c.edge));
 				c2.add(c);
-				//ed->multi_view_3d->AddMessage3d(i2s(c2.num)+"*", c.p);
 				t_col.erase(i);
 				found = true;
 				break;
 			}
 		if (!found){
-			msg_error("subtract: inconsistent (2)");
 			msg_db_l(2);
-			throw ActionException("sort inconsistent: no end found");
-			return false;
+			throw ActionException("subtract: sort inconsistent: no end found");
 		}
 		break;
 	}
@@ -280,41 +281,80 @@ bool ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 
 	int n = 0;
 	foreach(sCol &c, t_col)
-		if (c.own_edge)
+		if (c.type == c.TYPE_OTHER_EDGE)
 			n ++;
 	msg_write(format("%d  %d", n, t_col.num));
+
+	// remove double vertices ????
+	/*for (int i=c2.num-2;i>=2;i-=2)
+		c2.erase(i);*/
+
 	msg_db_l(2);
-	return true;
 }
-#if 0
 
 void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolygon *t, ModelSurface *b, Array<Array<sCol> > &c, bool inverse)
 {
 	msg_db_r("sort_and_join_contours", 1);
-	vector v[3];
+	Array<sCol> v;
 //	msg_write("---------------------------------");
-	for (int k=0;k<3;k++)
-		v[k] = m->Vertex[t->Vertex[k]].pos;
-
-	// any contours in wrong direction?
-	for (int l=0;l<c.num;l++){
-		/*int k0 = c[l][0].k;*/
-		int kb = c[l].back().k;
-//		float f0 = VecLength(c[l][0].p - v[k0]) / VecLength(v[(k0 + 1) % 3] - v[k0]);
-//		float f1 = VecLength(c[l].back().p - v[kb]) / VecLength(v[(kb + 1) % 3] - v[kb]);
-//		msg_write(format("len: %d     %d - %d     %f   %f", c[l].num, c[l][0].k, c[l].back().k, f0, f1));
-		vector nb = b->Polygon[c[l].back().index].TempNormal;
-//		msg_write(format("k0 = %d  kb = %d        n=%d", k0, kb, mc[l].num));
-
-		// wrong direction?
-		float sign = inverse ? -1 : 1;
-		if (sign * VecDotProduct(nb, (v[(kb + 1) % 3] - v[kb])) < 0){
-//			msg_write("reverse");
-			c[l].reverse();
-		}
+	for (int k=0;k<t->Side.num;k++){
+		vector pos = m->Vertex[t->Side[k].Vertex].pos;
+		if (!b->IsInside(pos))
+			v.add(sCol(pos, k));
 	}
 
-	// any triangle vertices to keep?
+	if (inverse)
+		for (int l=0;l<c.num;l++)
+			c[l].reverse();
+
+	Array<sCol> cc;
+	cc = c[0];
+	c.erase(0);
+
+	while((c.num > 0) || (v.num > 0)){
+		int side = cc.back().side;
+		float f = cc.back().get_f(m, t);
+
+		// search new contours
+		float fmin = 2;
+		int imin = -1;
+		foreachi(Array<sCol> &ccc, c, i)
+			if (ccc[0].side == side){
+				float ff = cc.back().get_f(m, t);
+				if ((ff > f) && (ff < fmin)){
+					fmin = ff;
+					imin = i;
+				}
+			}
+
+		// add new contour
+		if (imin >= 0){
+			cc.append(c[imin]);
+			c.erase(imin);
+			continue;
+		}
+
+		// search old vertices
+		bool ok = false;
+		foreachi(sCol &ccc, v, i){
+			if (ccc.side == ((side + 1) % t->Side.num)){
+				cc.add(ccc);
+				v.erase(i);
+				ok = true;
+				break;
+			}
+		}
+
+		// nothing?
+		if (!ok)
+			throw ActionException("no next point found...");
+
+	}
+
+	foreachi(sCol &ccc, cc, i)
+		ed->multi_view_3d->AddMessage3d(i2s(i + 1), ccc.p);
+
+/*	// any triangle vertices to keep?
 	for (int l=0;l<c.num;l++){
 //		msg_write(format("- cont %d / %d    %d - %d", l, c.num, c[l][0].k, c[l].back().k));
 		int kb = c[l].back().k;
@@ -384,10 +424,9 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolyg
 
 			f_min = 0;
 		}
-	}
+	}*/
 	msg_db_l(1);
 }
-#endif
 
 void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a, ModelPolygon *t, ModelSurface *&b, bool inverse)
 {
@@ -407,20 +446,16 @@ void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a,
 		Array<sCol> cc;
 
 		// find consecutive vertices
-		if (!sort_t_col(b, cc))
-			break;
-
-		// remove double vertices
-		for (int i=cc.num-2;i>=2;i-=2)
-			cc.erase(i);
+		sort_t_col(b, cc);
 
 		c.add(cc);
 	}
-#if 0
+
 //	msg_write(format("contours: %d", c.num));
 
 	sort_and_join_contours(m, t, b, c, inverse);
 
+#if 0
 	// create new surfaces
 	for (int l=0;l<c.num;l++){
 		// create contour vertices
