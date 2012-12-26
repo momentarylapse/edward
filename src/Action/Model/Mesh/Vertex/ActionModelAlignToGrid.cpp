@@ -63,4 +63,5 @@ void ActionModelAlignToGrid::undo(Data *d)
 	m->SetNormalsDirtyByVertices(index);
 }
 
-
+bool ActionModelAlignToGrid::was_trivial()
+{	return index.num == 0;	}

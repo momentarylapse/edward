@@ -22,6 +22,8 @@ public:
 	void *execute(Data *d);
 	void undo(Data *d);
 
+	virtual bool was_trivial();
+
 private:
 	Array<int> index;
 	Array<vector> old_pos;

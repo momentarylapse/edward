@@ -97,4 +97,7 @@ void ActionModelFlattenVertices::undo(Data* d)
 	m->SetNormalsDirtyByVertices(index);
 }
 
+bool ActionModelFlattenVertices::was_trivial()
+{	return index.num == 0;	}
+
 

@@ -60,4 +60,7 @@ void *ActionModelNearifyVertices::execute(Data *d)
 	return NULL;
 }
 
+bool ActionModelNearifyVertices::was_trivial()
+{	return index.num == 0;	}
+
 
