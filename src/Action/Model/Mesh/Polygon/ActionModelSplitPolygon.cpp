@@ -10,6 +10,7 @@
 #include "../Surface/Helper/ActionModelSurfaceAddPolygon.h"
 #include "../Vertex/ActionModelAddVertex.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/SkinGenerator.h"
 
 ActionModelSplitPolygon::ActionModelSplitPolygon(int _surface, int _polygon, const vector &_pos) :
 	pos(_pos)
@@ -28,6 +29,8 @@ void *ActionModelSplitPolygon::compose(Data *d)
 	ModelPolygon temp = t;
 
 	// bary centric
+	SkinGenerator sg;
+	sg.init_polygon(m, t);
 	/*float f, g;
 	GetBaryCentric(pos, m->Vertex[va].pos, m->Vertex[vb].pos, m->Vertex[vc].pos, f, g);
 	for (int l=0;l<MODEL_MAX_TEXTURES;l++)
@@ -50,7 +53,7 @@ void *ActionModelSplitPolygon::compose(Data *d)
 		for (int l=0;l<MODEL_MAX_TEXTURES;l++){
 			sv.add(temp.Side[k].SkinVertex[l]);
 			sv.add(temp.Side[(k+1)%temp.Side.num].SkinVertex[l]);
-			sv.add(v_0);
+			sv.add(sg.get(pos));
 		}
 		AddSubAction(new ActionModelSurfaceAddPolygon(surface, v, temp.Material, sv), m);
 	}
