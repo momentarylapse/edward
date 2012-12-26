@@ -32,7 +32,6 @@ void ActionModelSurfaceDeletePolygon::undo(Data *d)
 	}catch(GeometryException &e){
 		throw ActionException(e.message);
 	}
-	//s.BuildFromPolygons();
 }
 
 
@@ -46,13 +45,8 @@ void *ActionModelSurfaceDeletePolygon::execute(Data *d)
 
 	// save old data
 	material = t.Material;
-	vertex.resize(t.Side.num);
-	for (int k=0;k<t.Side.num;k++)
-		vertex[k] = t.Side[k].Vertex;
-	skin.clear();
-	for (int k=0;k<t.Side.num;k++)
-		for (int l=0;l<m->Material[material].NumTextures;l++)
-			skin.add(t.Side[k].SkinVertex[l]);
+	vertex = t.GetVertices();
+	skin = t.GetSkinVertices();
 
 	// erase
 	try{
