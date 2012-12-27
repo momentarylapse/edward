@@ -62,9 +62,9 @@ private:
 	bool PolygonInsideSurface(DataModel *m, ModelPolygon *t, ModelSurface *s);
 	void sort_t_col(ModelSurface *s, Array<sCol> &c2);
 	void sort_and_join_contours(DataModel *m, ModelPolygon *t, ModelSurface *b, Array<Array<sCol> > &c, bool inverse);
-	void PolygonSubtract(DataModel *m, ModelSurface *&a, ModelPolygon *t, ModelSurface *&b, bool inverse);
+	void PolygonSubtract(DataModel *m, ModelSurface *&a, ModelPolygon *t, int t_index, ModelSurface *&b, bool inverse);
 	void SurfaceSubtractUnary(DataModel *m, ModelSurface *&a, ModelSurface *&b, bool inverse);
-	void SurfaceSubtract(DataModel *m, ModelSurface *&a, ModelSurface *&b);
+	void SurfaceSubtract(DataModel *m, ModelSurface *a, ModelSurface *b);
 };
 
 #endif /* ACTIONMODELSURFACESUBTRACT_H_ */

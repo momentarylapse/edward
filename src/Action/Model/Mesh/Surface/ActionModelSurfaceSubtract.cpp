@@ -42,13 +42,12 @@ void *ActionModelSurfaceSubtract::compose(Data *d)
 	}
 
 	msg_db_r("Subtract", 1);
-	foreachb(ModelSurface &b, m->Surface){
-		ModelSurface *bb = &b;
-		if (bb->is_selected){
-			foreachb(ModelSurface &a, m->Surface){
-				ModelSurface *aa = &a;
-				if ((aa->view_stage >= m->ViewStage) && (!aa->is_selected))
-					SurfaceSubtract(m, aa, bb);
+	for (int bi=m->Surface.num-1; bi>=0; bi--){
+		if (m->Surface[bi].is_selected){
+			for (int ai=m->Surface.num-1; ai>=0; ai--){
+				ModelSurface *a = &m->Surface[ai];
+				if ((a->view_stage >= m->ViewStage) && (!a->is_selected))
+					SurfaceSubtract(m, a, &m->Surface[bi]);
 			}
 		}
 	}
@@ -177,7 +176,7 @@ bool ActionModelSurfaceSubtract::CollidePolygonSurface(DataModel *m, ModelPolygo
 			for (int i=0;i<vv2.num;i+=3){
 				if (!LineIntersectsTriangle2(pl2, v2[vv2[i+0]], v2[vv2[i+1]], v2[vv2[i+2]], ve[0], ve[1], col, false))
 					continue;
-				int type = ((pl2.distance(ve[0]) > 0) ^ (t->Side[kk].EdgeDirection == 1)) ? sCol::TYPE_OWN_EDGE_IN : sCol::TYPE_OWN_EDGE_OUT;
+				int type = (pl2.distance(ve[0]) > 0) ? sCol::TYPE_OWN_EDGE_IN : sCol::TYPE_OWN_EDGE_OUT;
 				t_col.add(sCol(col, type, ti, t->Side[kk].Edge, kk));
 			}
 		}
@@ -355,9 +354,9 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolyg
 	msg_db_l(1);
 }
 
-void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a, ModelPolygon *t, ModelSurface *&b, bool inverse)
+void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a, ModelPolygon *t, int t_index, ModelSurface *&b, bool inverse)
 {
-	msg_db_r("PolygonSubtract", 1);
+	msg_db_r("PolygonSubtract", 0);
 	a->TestSanity("tria sub a prae");
 	b->TestSanity("tria sub b prae");
 	int a_i = m->get_surf_no(a);
@@ -403,13 +402,16 @@ void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a,
 
 		// fill contour with polygons
 		AddSubAction(new ActionModelAddPolygon(vv, t->Material, sv), m);
+
+		a = &m->Surface[a_i];
+		b = &m->Surface[b_i];
+		a->TestSanity("tria sub a post");
+
+		t = &a->Polygon[t_index];
 	}
 
-	a = &m->Surface[a_i];
-	b = &m->Surface[b_i];
-	a->TestSanity("tria sub a post");
 
-	msg_db_l(1);
+	msg_db_l(0);
 }
 
 void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModelSurface *& a, ModelSurface *& b, bool inverse)
@@ -423,14 +425,13 @@ void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModelSurface
 
 	// collide both surfaces and create additional polygons (as new surfaces...)
 	Set<int> to_del;
-	foreachib(ModelPolygon &t, a->Polygon, i)
-		if (CollidePolygonSurface(m, &t, b, i)){
+	for (int i=a->Polygon.num-1; i>=0; i--)
+		if (CollidePolygonSurface(m, &a->Polygon[i], b, i)){
 			a->TestSanity("tria sub (ext) a prae");
-			PolygonSubtract(m, a, &t, b, inverse);
+			PolygonSubtract(m, a, &a->Polygon[i], i, b, inverse);
 			a->TestSanity("tria sub (ext) a post");
 			to_del.add(i);
-			_foreach_it_.update(); // TODO
-		}else if (PolygonInsideSurface(m, &t, b) != inverse){
+		}else if (PolygonInsideSurface(m, &a->Polygon[i], b) != inverse){
 			to_del.add(i);
 		}
 	a->TestSanity("surf sub a med");
@@ -459,7 +460,7 @@ void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModelSurface
 }
 
 
-void ActionModelSurfaceSubtract::SurfaceSubtract(DataModel *m, ModelSurface *&a, ModelSurface *&b)
+void ActionModelSurfaceSubtract::SurfaceSubtract(DataModel *m, ModelSurface *a, ModelSurface *b)
 {
 	msg_db_r("SurfSubtract", 0);
 
@@ -479,11 +480,8 @@ void ActionModelSurfaceSubtract::SurfaceSubtract(DataModel *m, ModelSurface *&a,
 
 	SurfaceSubtractUnary(m, a, b, false);
 
-	if (closed){
+	if (closed)
 		AddSubAction(new ActionModelSurfaceAutoWeld(ai, ci, 0.00001f, true), m);
-		a = &m->Surface[ai];
-		b = &m->Surface[bi];
-	}
 
 	msg_db_l(0);
 }
