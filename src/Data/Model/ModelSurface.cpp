@@ -562,3 +562,9 @@ int ModelSurface::FindEdge(int vertex0, int vertex1)
 			return i;
 	return -1;
 }
+
+Array<Array<int> > ModelSurface::GetConnectedComponents()
+{
+	Array<Array<int> > cc;
+	return cc;
+}

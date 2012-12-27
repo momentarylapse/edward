@@ -45,6 +45,7 @@ public:
 
 	bool IsInside(const vector &p);
 	Array<int> GetBoundaryLoop(int v0);
+	Array<Array<int> > GetConnectedComponents();
 
 	bool TestSanity(const string &loc);
 };

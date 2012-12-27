@@ -11,12 +11,11 @@
 #include "Helper/ActionModelSurfaceRelinkPolygon.h"
 #include "../../../../Data/Model/ModelSurface.h"
 
-ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(int _surface1, int _surface2, float _epsilon, bool _ignore_failure)
+ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(int _surface1, int _surface2, float _epsilon)
 {
 	surface1 = _surface1;
 	surface2 = _surface2;
 	epsilon = _epsilon;
-	ignore_failure = _ignore_failure;
 }
 
 
@@ -52,8 +51,9 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 		}
 	}
 
-	if ((wa.num == 0) && (!ignore_failure))
-		throw ActionException("SurfaceWeld: nothing to weld");
+	// nothing to weld
+	if (wa.num == 0)
+		return NULL;
 
 	// join
 	a = (ModelSurface*)AddSubAction(new ActionModelJoinSurfaces(surface1, surface2), m);

@@ -419,9 +419,9 @@ void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModelSurface
 	msg_db_r("SurfSubtractUnary", 0);
 	a->TestSanity("surf sub a prae");
 	b->TestSanity("surf sub b prae");
-	//int nsurf = m->Surface.num;
+	int nsurf = m->Surface.num;
 	int ai = m->get_surf_no(a);
-	//int bi = m->get_surf_no(b);
+	int bi = m->get_surf_no(b);
 
 	// collide both surfaces and create additional polygons (as new surfaces...)
 	Set<int> to_del;
@@ -442,10 +442,9 @@ void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModelSurface
 		AddSubAction(new ActionModelSurfaceDeletePolygon(ai, p), m);
 	a->TestSanity("tria sub a med");
 
-#if 0
 	// connect separate parts
 	for (int i=m->Surface.num-1;i>=nsurf;i--){
-		AddSubAction(new ActionModelSurfaceAutoWeld(ai, m->Surface.num - 1, 0.00001f, true), m);
+		AddSubAction(new ActionModelSurfaceAutoWeld(ai, m->Surface.num - 1, 0.00001f), m);
 	}
 	a = &m->Surface[ai];
 	b = &m->Surface[bi];
@@ -454,7 +453,6 @@ void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModelSurface
 
 	if (inverse)
 		AddSubAction(new ActionModelSurfaceInvert(ai), m);
-#endif
 
 	msg_db_l(0);
 }
@@ -481,7 +479,7 @@ void ActionModelSurfaceSubtract::SurfaceSubtract(DataModel *m, ModelSurface *a, 
 	SurfaceSubtractUnary(m, a, b, false);
 
 	if (closed)
-		AddSubAction(new ActionModelSurfaceAutoWeld(ai, ci, 0.00001f, true), m);
+		AddSubAction(new ActionModelSurfaceAutoWeld(ai, ci, 0.00001f), m);
 
 	msg_db_l(0);
 }
