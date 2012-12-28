@@ -30,8 +30,8 @@ void *ActionModelAddSphere::compose(Data *d)
 		if (f==0)	MatrixIdentity(mat);
 		if (f==1)	MatrixRotationX(mat, pi/2);
 		if (f==2)	MatrixRotationX(mat,-pi/2);
-		if (f==3)	MatrixRotationX(mat, pi);
-		if (f==4)	MatrixRotationY(mat, pi/2);
+		if (f==3)	MatrixRotationY(mat, pi/2);
+		if (f==4)	MatrixRotationX(mat, pi);
 		if (f==5)	MatrixRotationY(mat,-pi/2);
 		// create new vertices
 		for (int x=0;x<num+1;x++)
