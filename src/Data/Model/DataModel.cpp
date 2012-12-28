@@ -805,6 +805,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 				int nv = f->ReadInt();
 				for (int j=0;j<nv;j++){
 					ModelPolygon t;
+					t.TriangulationDirty = true;
 					int n = f->ReadInt();
 					t.Material = f->ReadInt();
 					t.Side.resize(n);

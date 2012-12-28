@@ -10,7 +10,7 @@
 #include "DataModel.h"
 #include "ModelPolygon.h"
 
-vector ModelPolygon::GetNormal(DataModel *m) const
+vector ModelPolygon::GetNormal(const DataModel *m) const
 {
 	// Newell's method
 	vector n = v_0;
@@ -47,7 +47,7 @@ Array<vector> ModelPolygon::GetSkinVertices() const
 }
 
 
-static float get_ang(DataModel *m, int a, int b, int c, const vector &flat_n)
+static float get_ang(const DataModel *m, int a, int b, int c, const vector &flat_n)
 {
 	vector v1 = m->Vertex[b].pos - m->Vertex[a].pos;
 	vector v2 = m->Vertex[c].pos - m->Vertex[b].pos;
@@ -58,7 +58,7 @@ static float get_ang(DataModel *m, int a, int b, int c, const vector &flat_n)
 	return atan2(x, y);
 }
 
-static bool vertex_in_tria(DataModel *m, int a, int b, int c, int v)
+static bool vertex_in_tria(const DataModel *m, int a, int b, int c, int v)
 {
 	float f, g;
 	GetBaryCentric(m->Vertex[v].pos, m->Vertex[a].pos, m->Vertex[b].pos, m->Vertex[c].pos, f, g);
@@ -82,7 +82,7 @@ static bool vertex_in_tria(DataModel *m, int a, int b, int c, int v)
 	return v_0;
 }*/
 
-Array<int> ModelPolygon::Triangulate(DataModel *m) const
+Array<int> ModelPolygon::Triangulate(const DataModel *m) const
 {
 	Array<int> output;
 
@@ -141,4 +141,11 @@ Array<int> ModelPolygon::Triangulate(DataModel *m) const
 	return output;
 }
 
-
+void ModelPolygon::UpdateTriangulation(const DataModel *m)
+{
+	Array<int> v = Triangulate(m);
+	for (int i=0; i<v.num; i+=3)
+		for (int k=0; k<3; k++)
+			Side[i/3].Triangulation[k] = v[i + k];
+	TriangulationDirty = false;
+}

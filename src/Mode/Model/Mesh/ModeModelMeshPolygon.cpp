@@ -45,8 +45,10 @@ inline vector GetVertex(int v)
 	return m->Vertex[v].pos;
 }
 
-inline void add_tria(int vb, const DataModel *data, const ModelPolygon &t)
+inline void add_poly(int vb, const DataModel *data, ModelPolygon &t)
 {
+	msg_db_r("add poly", 1);
+#if 0
 	vector tv1 = t.Side[0].SkinVertex[0];
 	for (int k=2;k<t.Side.num;k++){
 		vector tv2 = t.Side[k-1].SkinVertex[0];
@@ -56,6 +58,23 @@ inline void add_tria(int vb, const DataModel *data, const ModelPolygon &t)
 					GetVertex(t.Side[k-1].Vertex), t.Side[k-1].Normal, tv2.x, tv2.y,
 					GetVertex(t.Side[k  ].Vertex), t.Side[k  ].Normal, tv3.x, tv3.y);
 	}
+#else
+	if (t.TriangulationDirty)
+		t.UpdateTriangulation(data);
+	for (int k=t.Side.num-3; k>=0; k--){
+		int a = t.Side[k].Triangulation[0];
+		int b = t.Side[k].Triangulation[1];
+		int c = t.Side[k].Triangulation[2];
+		vector tv1 = t.Side[a].SkinVertex[0];
+		vector tv2 = t.Side[b].SkinVertex[0];
+		vector tv3 = t.Side[c].SkinVertex[0];
+		NixVBAddTria(	vb,
+						GetVertex(t.Side[a].Vertex), t.Side[a].Normal, tv1.x, tv1.y,
+						GetVertex(t.Side[b].Vertex), t.Side[b].Normal, tv2.x, tv2.y,
+						GetVertex(t.Side[c].Vertex), t.Side[c].Normal, tv3.x, tv3.y);
+	}
+#endif
+	msg_db_l(1);
 }
 
 void ModeModelMeshPolygon::DrawPolygons()
@@ -91,7 +110,7 @@ void ModeModelMeshPolygon::DrawPolygons()
 			foreach(ModelSurface &surf, data->Surface)
 				foreach(ModelPolygon &t, surf.Polygon)
 					if ((t.view_stage >= data->ViewStage) && (t.Material == mi))
-						add_tria(VBModel, data, t);
+						add_poly(VBModel, data, t);
 
 			// draw
 			NixSetTexture(m.Texture[0]);
@@ -169,9 +188,9 @@ void ModeModelMeshPolygon::FillSelectionBuffers()
 			foreach(ModelPolygon &t, s.Polygon)
 				/*if (t.view_stage >= ViewStage)*/{
 				if (t.is_selected)
-					add_tria(VBMarked, data, t);
+					add_poly(VBMarked, data, t);
 				if ((&t == mmo) || (s_mo))
-					add_tria(VBMouseOver, data, t);
+					add_poly(VBMouseOver, data, t);
 			}
 		}
 	}/*else if (EditMode == EditModeSurface){
@@ -288,16 +307,20 @@ bool PolygonIsMouseOver(int index, void *user_data, int win, vector &tp)
 	}
 
 	// test all sub-triangles
-	Array<int> vi = t->Triangulate(m);
+	if (t->TriangulationDirty)
+		t->UpdateTriangulation(m);
 	vector M = vector(float(ed->multi_view_3d->mx), float(ed->multi_view_3d->my), 0);
-	for (int i=0;i<vi.num/3;i++){
+	for (int k=t->Side.num-3; k>=0; k--){
+		int a = t->Side[k].Triangulation[0];
+		int b = t->Side[k].Triangulation[1];
+		int c = t->Side[k].Triangulation[2];
 		float f,g;
-		GetBaryCentric(M, p[vi[i*3]], p[vi[i*3+1]], p[vi[i*3+2]], f, g);
+		GetBaryCentric(M, p[a], p[b], p[c], f, g);
 		// cursor in triangle?
 		if ((f>0)&&(g>0)&&(f+g<1)){
-			vector va = m->Vertex[t->Side[vi[i*3  ]].Vertex].pos;
-			vector vb = m->Vertex[t->Side[vi[i*3+1]].Vertex].pos;
-			vector vc = m->Vertex[t->Side[vi[i*3+2]].Vertex].pos;
+			vector va = m->Vertex[t->Side[a].Vertex].pos;
+			vector vb = m->Vertex[t->Side[b].Vertex].pos;
+			vector vc = m->Vertex[t->Side[c].Vertex].pos;
 			tp = va+f*(vb-va)+g*(vc-va);
 			return true;
 		}

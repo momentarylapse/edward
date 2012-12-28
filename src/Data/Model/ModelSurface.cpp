@@ -66,6 +66,7 @@ void ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, in
 	t.Material = material;
 	t.view_stage = model->ViewStage;
 	t.NormalDirty = true;
+	t.TriangulationDirty = true;
 	if (index >= 0){
 		Polygon.insert(t, index);
 

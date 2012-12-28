@@ -76,11 +76,12 @@ class ModelPolygonSide
 	vector SkinVertex[MODEL_MAX_TEXTURES]
 	int NormalIndex
 	vector Normal
+	char Triangulation[3]
 
 class ModelPolygon: MultiViewSingleData
 	ModelPolygonSide Side[]
 	vector TempNormal
-	bool NormalDirty
+	bool NormalDirty, TriangulationDirty
 	int Material
 
 // only for use in MultiView...

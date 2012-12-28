@@ -19,6 +19,7 @@ public:
 	vector SkinVertex[MODEL_MAX_TEXTURES];
 	int NormalIndex;
 	vector Normal;
+	unsigned char Triangulation[3];
 };
 
 class ModelPolygon: public MultiViewSingleData
@@ -26,11 +27,12 @@ class ModelPolygon: public MultiViewSingleData
 public:
 	Array<ModelPolygonSide> Side;
 	vector TempNormal;
-	bool NormalDirty;
+	bool NormalDirty, TriangulationDirty;
 	int Material;
 
-	Array<int> Triangulate(DataModel *m) const;
-	vector GetNormal(DataModel *m) const;
+	Array<int> Triangulate(const DataModel *m) const;
+	void UpdateTriangulation(const DataModel *m);
+	vector GetNormal(const DataModel *m) const;
 	Array<int> GetVertices() const;
 	Array<vector> GetSkinVertices() const;
 };
