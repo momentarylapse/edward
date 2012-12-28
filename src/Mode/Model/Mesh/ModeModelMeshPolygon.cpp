@@ -135,20 +135,25 @@ void ModeModelMeshPolygon::DrawPolygons()
 			foreach(ModelSurface &surf, data->Surface)
 				foreach(ModelPolygon &t, surf.Polygon)
 					if ((t.view_stage >= data->ViewStage) && (t.Material == mi)){
-						for (int k=2;k<t.Side.num;k++){
+						if (t.TriangulationDirty)
+							t.UpdateTriangulation(data);
+						for (int k=t.Side.num-3; k>=0; k--){
+							int a = t.Side[k].Triangulation[0];
+							int b = t.Side[k].Triangulation[1];
+							int c = t.Side[k].Triangulation[2];
 							float t1[8], t2[8], t3[8];
 							for (int tl=0;tl<num_tex;tl++){
-								t1[tl*2  ] = t.Side[0  ].SkinVertex[tl].x;
-								t1[tl*2+1] = t.Side[0  ].SkinVertex[tl].y;
-								t2[tl*2  ] = t.Side[k-1].SkinVertex[tl].x;
-								t2[tl*2+1] = t.Side[k-1].SkinVertex[tl].y;
-								t3[tl*2  ] = t.Side[k  ].SkinVertex[tl].x;
-								t3[tl*2+1] = t.Side[k  ].SkinVertex[tl].y;
+								t1[tl*2  ] = t.Side[a].SkinVertex[tl].x;
+								t1[tl*2+1] = t.Side[a].SkinVertex[tl].y;
+								t2[tl*2  ] = t.Side[b].SkinVertex[tl].x;
+								t2[tl*2+1] = t.Side[b].SkinVertex[tl].y;
+								t3[tl*2  ] = t.Side[c].SkinVertex[tl].x;
+								t3[tl*2+1] = t.Side[c].SkinVertex[tl].y;
 							}
 							NixVBAddTriaM(	*vb,
-											GetVertex(t.Side[0  ].Vertex), t.Side[0  ].Normal, t1,
-											GetVertex(t.Side[k-1].Vertex), t.Side[k-1].Normal, t2,
-											GetVertex(t.Side[k  ].Vertex), t.Side[k  ].Normal, t3);
+											GetVertex(t.Side[a].Vertex), t.Side[a].Normal, t1,
+											GetVertex(t.Side[b].Vertex), t.Side[b].Normal, t2,
+											GetVertex(t.Side[c].Vertex), t.Side[c].Normal, t3);
 						}
 					}
 
