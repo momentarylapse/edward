@@ -27,7 +27,7 @@ float ActionModelSurfaceSubtract::sCol::get_f(DataModel *m, ModelPolygon *t)
 
 string ActionModelSurfaceSubtract::sCol::str() const
 {
-	return format("[%d]\tp=%d\te=%d\ts=%d", type, polygon, edge, side);
+	return format("[%d]\tp=%d\te=%d\ts=%d\t%.1f\t%.1f\t%.1f", type, polygon, edge, side, p.x, p.y, p.z);
 }
 
 ActionModelSurfaceSubtract::sCol::sCol(const vector &_p, int _side)
@@ -435,6 +435,149 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolyg
 	msg_db_l(1);
 }
 
+
+float ActionModelSurfaceSubtract::get_ang(Array<sCol> &c, int i, const vector &flat_n)
+{
+	int ia = i - 1;
+	int ic = i + 1;
+	if (ia < 0)
+		ia = c.num -1;
+	if (ic >= c.num)
+		ic = 0;
+	vector v1 = c[i].p - c[ia].p;
+	vector v2 = c[ic].p - c[i].p;
+	v1.normalize();
+	v2.normalize();
+	float x = (v1 ^ v2) * flat_n;
+	float y = v1 * v2;
+	return atan2(x, y);
+}
+
+bool ActionModelSurfaceSubtract::vertex_in_tria(sCol &a, sCol &b, sCol &c, sCol &v, float &slope)
+{
+	float f, g;
+	GetBaryCentric(v.p, b.p, c.p, a.p, f, g);
+	slope = f / g;
+	return ((f > 0) && (g > 0) && (f + g < 1));
+}
+
+void ActionModelSurfaceSubtract::combine_contours(Array<Array<sCol> > &c, int ca, int ia, int cb, int ib)
+{
+	Array<sCol> temp = c[ca].sub(ia, c[ca].num - ia) + c[ca].sub(0, ia);
+	c[ca] = temp;
+
+	// copy one point
+	temp = c[cb].sub(ib, c[cb].num - ib) + c[cb].sub(0, ib + 1);
+	c[ca].append(temp);
+
+	c.erase(cb);
+}
+
+void ActionModelSurfaceSubtract::triangulate_contours(DataModel *m, ModelPolygon *t, Array<Array<sCol> > &contours)
+{
+	if (contours.num == 1)
+		return;
+	Array<Array<sCol> > temp = contours;
+	Array<Array<sCol> > output;
+
+	while(contours.num > 0){
+
+		// find largest angle (sharpest)
+		// TODO: prevent colinear triangles!
+		int i_max = -1;
+		int c_max;
+		float f_max = 0;
+		int inside_i, inside_c;
+		float inside_slope;
+		foreachi(Array<sCol> &c, contours, ci)
+		for (int i=0;i<c.num;i++){
+			float f = get_ang(c, (i+1) % c.num, t->TempNormal);
+			if (f < 0)
+				continue;
+			// cheat: ...
+			float f_n = get_ang(c, (i+2) % c.num, t->TempNormal);
+			float f_l = get_ang(c, i, t->TempNormal);
+			if (f_n >= 0)
+				f += 0.01f / (f_n + 0.01f);
+			if (f_l >= 0)
+				f += 0.01f / (f_l + 0.01f);
+
+			if (f > f_max){
+				inside_i = -1;
+				inside_slope = -1;
+				// other vertices within this triangle?
+				bool ok = true;
+				foreachi(Array<sCol> &other, contours, cj)
+				for (int j=0;j<other.num;j++){
+					if (&c == &other)
+						if ((j == i) || (j == ((i+1) % c.num)) || (j == ((i+2) % c.num)))
+							continue;
+					float slope;
+					if (vertex_in_tria(c[i], c[(i+1) % c.num], c[(i+2) % c.num], other[j], slope)){
+						if (&c == &other){
+							ok = false;
+							break;
+						}
+						if ((slope < inside_slope) || (inside_i < 0)){
+							inside_i = j;
+							inside_c = cj;
+							inside_slope = slope;
+						}
+					}
+				}
+
+				if (ok){
+					f_max = f;
+					i_max = i;
+					c_max = ci;
+				}
+			}
+		}
+
+		if (i_max < 0)
+			throw ActionException("could not fill contours");
+
+
+		if (inside_i < 0){
+			//msg_write("--");
+			//msg_write(format("%d  %d", c_max, i_max));
+			Array<sCol> tt;
+			tt.add(contours[c_max][i_max]);
+			tt.add(contours[c_max][(i_max+1) % contours[c_max].num]);
+			tt.add(contours[c_max][(i_max+2) % contours[c_max].num]);
+			output.add(tt);
+
+			contours[c_max].erase((i_max+1) % contours[c_max].num);
+			if (contours[c_max].num < 3)
+				contours.erase(c_max);
+		}else{
+			//msg_write("-- inside");
+			//msg_write(format("%d  %d   %d %d", c_max, i_max, inside_c, inside_i));
+			Array<sCol> tt;
+			tt.add(contours[c_max][i_max]);
+			tt.add(contours[c_max][(i_max+1) % contours[c_max].num]);
+			tt.add(contours[inside_c][inside_i]);
+			output.add(tt);
+
+			combine_contours(contours, c_max, (i_max+1) % contours[c_max].num, inside_c, inside_i);
+		}
+	}
+
+	/*foreach(Array<sCol> &cc, output){
+		msg_write("out");
+		foreachi(sCol &c, cc, i)
+			msg_write(i2s(i) + " " + c.str());
+	}*/
+
+	contours = output;
+}
+
+void ActionModelSurfaceSubtract::simplify_filling(Array<Array<sCol> > &c)
+{
+	if (c.num == 1)
+		return;
+}
+
 void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a, ModelPolygon *t, int t_index, ModelSurface *&b, bool inverse)
 {
 	msg_db_r("PolygonSubtract", 0);
@@ -446,6 +589,10 @@ void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a,
 	// find contours
 	Array<Array<sCol> > contours;
 	find_contours(m, t, b, contours, inverse);
+
+	triangulate_contours(m, t, contours);
+
+	simplify_filling(contours);
 
 	SkinGeneratorMulti sg;
 	sg.init_polygon(m, *t);

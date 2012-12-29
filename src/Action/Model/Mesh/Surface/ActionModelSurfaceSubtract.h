@@ -52,6 +52,11 @@ private:
 	void find_contours(DataModel *m, ModelPolygon *t, ModelSurface *s, Array<Array<sCol> > &c_out, bool inverse);
 	bool find_contour_boundary(ModelSurface *s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse);
 	bool find_contour_inside(DataModel *m, ModelPolygon *t, ModelSurface *s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse);
+	float get_ang(Array<sCol> &c, int i, const vector &flat_n);
+	bool vertex_in_tria(sCol &a, sCol &b, sCol &c, sCol &v, float &slope);
+	void combine_contours(Array<Array<sCol> > &c, int ca, int ia, int cb, int ib);
+	void triangulate_contours(DataModel *m, ModelPolygon *t, Array<Array<sCol> > &c);
+	void simplify_filling(Array<Array<sCol> > &c);
 	void sort_and_join_contours(DataModel *m, ModelPolygon *t, ModelSurface *b, Array<Array<sCol> > &c, bool inverse);
 	void PolygonSubtract(DataModel *m, ModelSurface *&a, ModelPolygon *t, int t_index, ModelSurface *&b, bool inverse);
 	void SurfaceSubtractUnary(DataModel *m, ModelSurface *&a, ModelSurface *&b, bool inverse);
