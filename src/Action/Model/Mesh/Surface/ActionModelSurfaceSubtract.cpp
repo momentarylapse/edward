@@ -48,6 +48,11 @@ ActionModelSurfaceSubtract::sCol::sCol(const vector &_p, int _type, int _polygon
 	side = _side;
 }
 
+bool ActionModelSurfaceSubtract::sCol::operator==(const sCol &other) const
+{
+	return (type == other.type) && (p == other.p) && (edge == other.edge) && (side == other.side);
+}
+
 
 ActionModelSurfaceSubtract::ActionModelSurfaceSubtract()
 {}
@@ -336,11 +341,11 @@ void ActionModelSurfaceSubtract::find_contours(DataModel *m, ModelPolygon *t, Mo
 
 	sort_and_join_contours(m, t, s, c_out, inverse);
 
-	foreach(Array<sCol> &cc, c_out){
+	/*foreach(Array<sCol> &cc, c_out){
 		msg_write("contour");
 		foreachi(sCol &c, cc, i)
 			msg_write(i2s(i) + " " + c.str());
-	}
+	}*/
 }
 
 void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolygon *t, ModelSurface *b, Array<Array<sCol> > &c_in, bool inverse)
@@ -572,10 +577,84 @@ void ActionModelSurfaceSubtract::triangulate_contours(DataModel *m, ModelPolygon
 	contours = output;
 }
 
+bool ActionModelSurfaceSubtract::combine_polygons(Array<Array<sCol> > &c, int ia, int ib)
+{
+	Array<int> equals;
+	foreachi(sCol &a, c[ia], cia)
+		foreachi(sCol &b, c[ib], cib)
+			if (a == b){
+				equals.add(cia);
+				equals.add(cib);
+			}
+	if (equals.num != 4)
+		return false;
+
+	if ((equals[0] == 0) && (equals[2] == c[ia].num-1)){
+		int t = equals[0];
+		equals[0] = equals[2];
+		equals[2] = t;
+		t = equals[1];
+		equals[1] = equals[3];
+		equals[3] = t;
+	}
+
+	if ((equals[2] - equals[0] + c[ia].num - 1) % c[ia].num != 0)
+		return false;
+	if ((equals[3] - equals[1] + c[ib].num + 1) % c[ib].num != 0)
+		return false;
+
+	//msg_write("combine");
+	//msg_write(ia2s(equals));
+	Array<sCol> temp;
+	if (equals[0] < equals[2])
+		temp = c[ia].sub(0, equals[0] + 1);
+	else
+		temp = c[ia];
+	if (equals[1] > equals[3]){
+		temp += c[ib].sub(equals[1] + 1, -1);
+		temp += c[ib].sub(0, equals[3]);
+	}else{
+		temp += c[ib].sub(1, c[ib].num - 2);
+	}
+	if (equals[0] < equals[2])
+		temp += c[ia].sub(equals[2], -1);
+	//msg_write(format("%d %d    %d", c[ia].num, c[ib].num, temp.num));
+	c[ia] = temp;
+	c.erase(ib);
+	return true;
+}
+
 void ActionModelSurfaceSubtract::simplify_filling(Array<Array<sCol> > &c)
 {
 	if (c.num == 1)
 		return;
+
+	/*msg_write("prae sim");
+	foreach(Array<sCol> &cc, c){
+			msg_write("out");
+			foreachi(sCol &ccc, cc, i)
+				msg_write(i2s(i) + " " + ccc.str());
+		}*/
+
+	bool found = true;
+	while(found){
+		found = false;
+
+		for (int ci=0;ci<c.num;ci++)
+			for (int cj=ci+1;cj<c.num;cj++)
+				if (combine_polygons(c, ci, cj)){
+					ci = cj = c.num;
+					found = true;
+				}
+	}
+
+
+	/*msg_write("post sim");
+	foreach(Array<sCol> &cc, c){
+			msg_write("out");
+			foreachi(sCol &ccc, cc, i)
+				msg_write(i2s(i) + " " + ccc.str());
+		}*/
 }
 
 void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a, ModelPolygon *t, int t_index, ModelSurface *&b, bool inverse)

@@ -38,6 +38,7 @@ private:
 		sCol(const vector &_p, int _side);
 		sCol(const vector &_p, int _type, int _polygon, int _edge, int _side);
 		float get_f(DataModel *m, ModelPolygon *t);
+		bool operator==(const sCol &other) const;
 		vector p;
 		int type;
 		int polygon, edge, side;
@@ -56,6 +57,7 @@ private:
 	bool vertex_in_tria(sCol &a, sCol &b, sCol &c, sCol &v, float &slope);
 	void combine_contours(Array<Array<sCol> > &c, int ca, int ia, int cb, int ib);
 	void triangulate_contours(DataModel *m, ModelPolygon *t, Array<Array<sCol> > &c);
+	bool combine_polygons(Array<Array<sCol> > &c, int ia, int ib);
 	void simplify_filling(Array<Array<sCol> > &c);
 	void sort_and_join_contours(DataModel *m, ModelPolygon *t, ModelSurface *b, Array<Array<sCol> > &c, bool inverse);
 	void PolygonSubtract(DataModel *m, ModelSurface *&a, ModelPolygon *t, int t_index, ModelSurface *&b, bool inverse);
