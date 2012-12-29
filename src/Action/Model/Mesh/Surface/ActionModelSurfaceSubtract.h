@@ -51,7 +51,7 @@ private:
 	bool PolygonInsideSurface(DataModel *m, ModelPolygon *t, ModelSurface *s);
 	void find_contours(DataModel *m, ModelPolygon *t, ModelSurface *s, Array<Array<sCol> > &c_out, bool inverse);
 	bool find_contour_boundary(ModelSurface *s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse);
-	bool find_contour_inside(ModelSurface *s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse);
+	bool find_contour_inside(DataModel *m, ModelPolygon *t, ModelSurface *s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse);
 	void sort_and_join_contours(DataModel *m, ModelPolygon *t, ModelSurface *b, Array<Array<sCol> > &c, bool inverse);
 	void PolygonSubtract(DataModel *m, ModelSurface *&a, ModelPolygon *t, int t_index, ModelSurface *&b, bool inverse);
 	void SurfaceSubtractUnary(DataModel *m, ModelSurface *&a, ModelSurface *&b, bool inverse);

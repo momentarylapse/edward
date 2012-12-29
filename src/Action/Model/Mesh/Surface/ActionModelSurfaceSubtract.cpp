@@ -225,19 +225,16 @@ bool ActionModelSurfaceSubtract::PolygonInsideSurface(DataModel *m, ModelPolygon
 bool ActionModelSurfaceSubtract::find_contour_boundary(ModelSurface *s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse)
 {
 	// find first
-	int start = -1;
 	int last_poly = -1;
 	foreachi(sCol &c, c_in, i)
 		if (c.type == c.TYPE_OWN_EDGE_IN){
 			last_poly = c.polygon;
-			//msg_write(c.polygon);
-			start = c_out.num;
 			c_out.add(c);
 			c_in.erase(i);
 			break;
 		}
 
-	if (start < 0)
+	if (last_poly < 0)
 		return false;
 
 
@@ -279,10 +276,60 @@ bool ActionModelSurfaceSubtract::find_contour_boundary(ModelSurface *s, Array<sC
 	return false;
 }
 
+bool ActionModelSurfaceSubtract::find_contour_inside(DataModel *m, ModelPolygon *t, ModelSurface *s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse)
+{
+	if (c_in.num == 0)
+		return false;
+
+	if (c_in[0].type != sCol::TYPE_OTHER_EDGE)
+		throw ActionException("internal contour without internal point...");
+	c_out.add(c_in[0]);
+	c_in.erase(0);
+	vector edge_dir = m->Vertex[s->Edge[c_out[0].edge].Vertex[1]].pos - m->Vertex[s->Edge[c_out[0].edge].Vertex[0]].pos;
+	int last_poly = s->Edge[c_out[0].edge].Polygon[0];
+	if (t->TempNormal * edge_dir < 0)
+		last_poly = s->Edge[c_out[0].edge].Polygon[1];
+
+
+	//throw ActionException("internal contour not implemented");
+
+	while(true){
+		// find col on same s.poly as the last col
+		bool found = false;
+		foreachi(sCol &c, c_in, i)
+			if (c.type == c.TYPE_OTHER_EDGE){
+				for (int k=0;k<2;k++)
+					if (s->Edge[c.edge].Polygon[k] == last_poly){
+						//msg_write(format("%d  %d  - %d", c.type, c.polygon, c.edge));
+						c_out.add(c);
+						last_poly = s->Edge[c.edge].Polygon[1 - k];
+						c_in.erase(i);
+						found = true;
+						break;
+					}
+				if (found)
+					break;
+			}
+
+		if (found)
+			continue;
+
+		// TODO ...test if loop is closed
+		return true;
+	}
+
+	return false;
+}
+
 void ActionModelSurfaceSubtract::find_contours(DataModel *m, ModelPolygon *t, ModelSurface *s, Array<Array<sCol> > &c_out, bool inverse)
 {
 	Array<sCol> temp;
 	while (find_contour_boundary(s, col, temp, inverse)){
+		c_out.add(temp);
+		temp.clear();
+	}
+
+	while (find_contour_inside(m, t, s, col, temp, inverse)){
 		c_out.add(temp);
 		temp.clear();
 	}
@@ -306,12 +353,27 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolyg
 			v.add(sCol(pos, k));
 	}
 
+	bool boundary_points = false;
+	foreach(Array<sCol> &ccc, c_in)
+		foreach(sCol &cc, ccc)
+			if ((cc.type == cc.TYPE_OWN_EDGE_IN) || (cc.type == cc.TYPE_OWN_EDGE_OUT))
+				boundary_points = true;
+
 	Array<Array<sCol> > c_out;
+
+	if (!boundary_points){
+		c_out.add(v);
+		v.clear();
+	}
+
 	Array<sCol> cc;
 	cc = c_in[0];
 	c_in.erase(0);
 
 	while(true){
+
+		if (cc[0].type != sCol::TYPE_OTHER_EDGE){
+
 		int side = cc.back().side;
 		float f = cc.back().get_f(m, t);
 		int side0 = cc[0].side;
@@ -351,6 +413,8 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolyg
 		}
 		if (ok)
 			continue;
+
+		}
 
 		// done?
 		/*foreachi(sCol &ccc, cc, i)
