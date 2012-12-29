@@ -35,32 +35,23 @@ private:
 			TYPE_OLD_VERTEX
 		};
 		sCol(){}
-		sCol(const vector &_p, int _side){
-			p = _p;
-			type = TYPE_OLD_VERTEX;
-			polygon = -1;
-			edge = -1;
-			side = _side;
-		}
-		sCol(const vector &_p, int _type, int _polygon, int _edge, int _side){
-			p = _p;
-			type = _type;
-			polygon = _polygon;
-			edge = _edge;
-			side = _side;
-		}
+		sCol(const vector &_p, int _side);
+		sCol(const vector &_p, int _type, int _polygon, int _edge, int _side);
 		float get_f(DataModel *m, ModelPolygon *t);
 		vector p;
 		int type;
 		int polygon, edge, side;
+		string str() const;
 	};
 
-	Array<sCol> t_col;
+	Array<sCol> col;
 
 	bool CollidePolygons(DataModel *m, ModelPolygon *t1, ModelPolygon *t2, int t2_index);
 	bool CollidePolygonSurface(DataModel *m, ModelPolygon *t, ModelSurface *s, int t_index);
 	bool PolygonInsideSurface(DataModel *m, ModelPolygon *t, ModelSurface *s);
-	void sort_t_col(ModelSurface *s, Array<sCol> &c2);
+	void find_contours(DataModel *m, ModelPolygon *t, ModelSurface *s, Array<Array<sCol> > &c_out, bool inverse);
+	bool find_contour_boundary(ModelSurface *s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse);
+	bool find_contour_inside(ModelSurface *s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse);
 	void sort_and_join_contours(DataModel *m, ModelPolygon *t, ModelSurface *b, Array<Array<sCol> > &c, bool inverse);
 	void PolygonSubtract(DataModel *m, ModelSurface *&a, ModelPolygon *t, int t_index, ModelSurface *&b, bool inverse);
 	void SurfaceSubtractUnary(DataModel *m, ModelSurface *&a, ModelSurface *&b, bool inverse);

@@ -25,6 +25,30 @@ float ActionModelSurfaceSubtract::sCol::get_f(DataModel *m, ModelPolygon *t)
 	throw ActionException("subtract: unhandled col type");
 }
 
+string ActionModelSurfaceSubtract::sCol::str() const
+{
+	return format("[%d]\tp=%d\te=%d\ts=%d", type, polygon, edge, side);
+}
+
+ActionModelSurfaceSubtract::sCol::sCol(const vector &_p, int _side)
+{
+	p = _p;
+	type = TYPE_OLD_VERTEX;
+	polygon = -1;
+	edge = -1;
+	side = _side;
+}
+
+ActionModelSurfaceSubtract::sCol::sCol(const vector &_p, int _type, int _polygon, int _edge, int _side)
+{
+	p = _p;
+	type = _type;
+	polygon = _polygon;
+	edge = _edge;
+	side = _side;
+}
+
+
 ActionModelSurfaceSubtract::ActionModelSurfaceSubtract()
 {}
 
@@ -124,7 +148,7 @@ bool ActionModelSurfaceSubtract::CollidePolygons(DataModel *m, ModelPolygon *t1,
 bool ActionModelSurfaceSubtract::CollidePolygonSurface(DataModel *m, ModelPolygon *t, ModelSurface *s, int t_index)
 {
 	msg_db_r("CollidePolygonSurface", 0);
-	t_col.clear();
+	col.clear();
 
 	// polygon's data
 	Array<vector> v;
@@ -145,11 +169,11 @@ bool ActionModelSurfaceSubtract::CollidePolygonSurface(DataModel *m, ModelPolygo
 		if (pl.distance(ve[0]) * pl.distance(ve[1]) > 0)
 			continue;
 
-		vector col;
+		vector pos;
 		for (int i=0;i<vv.num;i+=3){
-			if (!LineIntersectsTriangle2(pl, v[vv[i+0]], v[vv[i+1]], v[vv[i+2]], ve[0], ve[1], col, false))
+			if (!LineIntersectsTriangle2(pl, v[vv[i+0]], v[vv[i+1]], v[vv[i+2]], ve[0], ve[1], pos, false))
 				continue;
-			t_col.add(sCol(col, sCol::TYPE_OTHER_EDGE, t_index, ei, -1));
+			col.add(sCol(pos, sCol::TYPE_OTHER_EDGE, t_index, ei, -1));
 		}
 	}
 
@@ -172,21 +196,21 @@ bool ActionModelSurfaceSubtract::CollidePolygonSurface(DataModel *m, ModelPolygo
 			if (pl2.distance(ve[0]) * pl2.distance(ve[1]) > 0)
 				continue;
 
-			vector col;
+			vector pos;
 			for (int i=0;i<vv2.num;i+=3){
-				if (!LineIntersectsTriangle2(pl2, v2[vv2[i+0]], v2[vv2[i+1]], v2[vv2[i+2]], ve[0], ve[1], col, false))
+				if (!LineIntersectsTriangle2(pl2, v2[vv2[i+0]], v2[vv2[i+1]], v2[vv2[i+2]], ve[0], ve[1], pos, false))
 					continue;
 				int type = (pl2.distance(ve[0]) > 0) ? sCol::TYPE_OWN_EDGE_IN : sCol::TYPE_OWN_EDGE_OUT;
-				t_col.add(sCol(col, type, ti, t->Side[kk].Edge, kk));
+				col.add(sCol(pos, type, ti, t->Side[kk].Edge, kk));
 			}
 		}
 	}
 
 	// FIXME debug
-	/*foreach(sCol &c, t_col)
+	/*foreach(sCol &c, col)
 		AddSubAction(new ActionModelAddVertex(c.p), m);*/
 	msg_db_l(0);
-	return t_col.num > 0;
+	return col.num > 0;
 }
 
 // we assume t does not collide with s...!
@@ -198,42 +222,37 @@ bool ActionModelSurfaceSubtract::PolygonInsideSurface(DataModel *m, ModelPolygon
 	return true;
 }
 
-
-void ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
+bool ActionModelSurfaceSubtract::find_contour_boundary(ModelSurface *s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse)
 {
-	msg_db_r("sort_t_col", 2);
-	/*msg_write(format("sort %d   %d", t_col.num, c2.num));
-	foreach(sCol &cc, t_col)
-		msg_write(format("%d  %d  - %d", cc.type, cc.polygon, cc.edge));*/
-
 	// find first
+	int start = -1;
 	int last_poly = -1;
-	foreachi(sCol &c, t_col, i)
+	foreachi(sCol &c, c_in, i)
 		if (c.type == c.TYPE_OWN_EDGE_IN){
 			last_poly = c.polygon;
 			//msg_write(c.polygon);
-			c2.add(c);
-			t_col.erase(i);
+			start = c_out.num;
+			c_out.add(c);
+			c_in.erase(i);
 			break;
 		}
-	if (c2.num != 1){
-		// TODO: completely inside....
-		msg_db_l(2);
-		throw ActionException("subtract: sort inconsistent: no start found");
-	}
+
+	if (start < 0)
+		return false;
+
 
 	while(true){
 		//msg_write(".");
 		// find col on same s.poly as the last col
 		bool found = false;
-		foreachi(sCol &c, t_col, i)
+		foreachi(sCol &c, c_in, i)
 			if (c.type == c.TYPE_OTHER_EDGE){
 				for (int k=0;k<2;k++)
 					if (s->Edge[c.edge].Polygon[k] == last_poly){
 						//msg_write(format("%d  %d  - %d", c.type, c.polygon, c.edge));
-						c2.add(c);
+						c_out.add(c);
 						last_poly = s->Edge[c.edge].Polygon[1 - k];
-						t_col.erase(i);
+						c_in.erase(i);
 						found = true;
 						break;
 					}
@@ -246,33 +265,35 @@ void ActionModelSurfaceSubtract::sort_t_col(ModelSurface *s, Array<sCol> &c2)
 
 
 		// find col on same s.edge as the last col
-		foreachi(sCol &c, t_col, i)
+		foreachi(sCol &c, c_in, i)
 			if ((c.type == c.TYPE_OWN_EDGE_OUT) && (c.polygon == last_poly)){
 				//msg_write(format("%d  %d  - %d", c.type, c.polygon, c.edge));
-				c2.add(c);
-				t_col.erase(i);
-				found = true;
-				break;
+				c_out.add(c);
+				c_in.erase(i);
+				if (inverse)
+					c_out.reverse();
+				return true;
 			}
-		if (!found){
-			msg_db_l(2);
-			throw ActionException("subtract: sort inconsistent: no end found");
-		}
-		break;
+		throw ActionException("subtract: contour starting on boundary but not ending on boundary found");
 	}
-	//msg_write("----------");
+	return false;
+}
 
-	/*int n = 0;
-	foreach(sCol &c, t_col)
-		if (c.type == c.TYPE_OTHER_EDGE)
-			n ++;
-	msg_write(format("%d  %d", n, t_col.num));*/
+void ActionModelSurfaceSubtract::find_contours(DataModel *m, ModelPolygon *t, ModelSurface *s, Array<Array<sCol> > &c_out, bool inverse)
+{
+	Array<sCol> temp;
+	while (find_contour_boundary(s, col, temp, inverse)){
+		c_out.add(temp);
+		temp.clear();
+	}
 
-	// remove double vertices ????
-	/*for (int i=c2.num-2;i>=2;i-=2)
-		c2.erase(i);*/
+	sort_and_join_contours(m, t, s, c_out, inverse);
 
-	msg_db_l(2);
+	foreach(Array<sCol> &cc, c_out){
+		msg_write("contour");
+		foreachi(sCol &c, cc, i)
+			msg_write(i2s(i) + " " + c.str());
+	}
 }
 
 void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolygon *t, ModelSurface *b, Array<Array<sCol> > &c_in, bool inverse)
@@ -284,10 +305,6 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolyg
 		if (!b->IsInside(pos))
 			v.add(sCol(pos, k));
 	}
-
-	if (inverse)
-		for (int l=0;l<c_in.num;l++)
-			c_in[l].reverse();
 
 	Array<Array<sCol> > c_out;
 	Array<sCol> cc;
@@ -347,7 +364,7 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolyg
 		}else if (v.num == 0){
 			break;
 		}else
-			throw ActionException("no next point found...");
+			throw ActionException("no next point for contour found...");
 
 	}
 	c_in = c_out;
@@ -362,43 +379,30 @@ void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a,
 	int a_i = m->get_surf_no(a);
 	int b_i = m->get_surf_no(b);
 
-	Array<Array<sCol> > c;
-
-	// connect "cutting" contours
-	while(t_col.num > 0){
-//		msg_write(t_col.num);
-		Array<sCol> cc;
-
-		// find consecutive vertices
-		sort_t_col(b, cc);
-
-		c.add(cc);
-	}
-
-//	msg_write(format("contours: %d", c.num));
-
-	sort_and_join_contours(m, t, b, c, inverse);
+	// find contours
+	Array<Array<sCol> > contours;
+	find_contours(m, t, b, contours, inverse);
 
 	SkinGeneratorMulti sg;
 	sg.init_polygon(m, *t);
 
 	// create new surfaces
-	foreach(Array<sCol> &cc, c){
+	foreach(Array<sCol> &c, contours){
 		// create contour vertices
 		Array<int> vv;
 		Array<vector> sv;
-		for (int i=0;i<cc.num;i++){
+		for (int i=0;i<c.num;i++){
 			vv.add(m->Vertex.num);
-			AddSubAction(new ActionModelAddVertex(cc[i].p), m);
+			AddSubAction(new ActionModelAddVertex(c[i].p), m);
 		}
 
 		// skin vertices
 		for (int l=0;l<MODEL_MAX_TEXTURES;l++)
-			for (int i=0;i<cc.num;i++)
-				if (cc[i].type == sCol::TYPE_OLD_VERTEX)
-					sv.add(t->Side[cc[i].side].SkinVertex[l]);
+			for (int i=0;i<c.num;i++)
+				if (c[i].type == sCol::TYPE_OLD_VERTEX)
+					sv.add(t->Side[c[i].side].SkinVertex[l]);
 				else
-					sv.add(sg.get(cc[i].p, l));
+					sv.add(sg.get(c[i].p, l));
 
 		// fill contour with polygons
 		AddSubAction(new ActionModelAddPolygon(vv, t->Material, sv), m);
