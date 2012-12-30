@@ -57,6 +57,6 @@ void *ActionModelAddTorus::compose(Data *d)
 			AddSubAction(new ActionModelAddPolygonSingleTexture(v, m->CurrentMaterial, sv), m);
 		}
 
-	return NULL;
+	return &m->Surface.back();
 }
 
