@@ -7,7 +7,7 @@ const float height = 20.0
 void main()
 	int nv = data_model.Vertex.num
 	
-	data_model.BeginActionGroup()
+	data_model.BeginActionGroup("CreateGon")
 	
 	data_model.AddVertex(v_0, 0, -1)
 	data_model.AddVertex(e_z * height, 0, -1)
@@ -28,3 +28,5 @@ void main()
 		v.clear()
 		
 	data_model.EndActionGroup()
+	
+	data_model.SelectOnlySurface(data_model.Surface[data_model.Surface.num - 1])

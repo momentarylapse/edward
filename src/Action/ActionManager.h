@@ -28,7 +28,7 @@ public:
 	void Undo();
 	void Redo();
 
-	void BeginActionGroup();
+	void BeginActionGroup(const string &name);
 	void EndActionGroup();
 
 	bool Preview(Action *a);

@@ -293,7 +293,7 @@ class DataModel : Data
 	extern void SelectionFromVertices()
 	extern void SelectionFromPolygons()
 	extern void SelectionFromSurfaces()
-	extern void SelectOnlySurface(ModelSurface *s)
+	extern void SelectOnlySurface(ModelSurface s)
 	
 	extern void AddVertex(vector pos, int bone_index, int normal_mode)
 	extern ModelPolygon *AddTriangle(int a, int b, int c)
@@ -321,7 +321,7 @@ class DataModel : Data
 	extern void SetMaterialSelection(int material)
 	extern void Easify(float factor)
 	
-	extern void BeginActionGroup()
+	extern void BeginActionGroup(string name)
 	extern void EndActionGroup()
 	void __assign__(DataModel other)
 
@@ -348,7 +348,7 @@ class DataWorld: Data
 	extern WorldObject *AddObject(string filename, vector pos)
 	extern WorldTerrain *AddTerrainLoad(string filename, vector pos)
 	extern WorldTerrain *AddTerrain(vector pos, vector size, int num_x, int num_z)
-	extern void BeginActionGroup()
+	extern void BeginActionGroup(string name)
 	extern void EndActionGroup()
 
 

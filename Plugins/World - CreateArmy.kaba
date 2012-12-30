@@ -3,7 +3,7 @@
 const int N = 10
 
 void main()
-	data_world.BeginActionGroup()
+	data_world.BeginActionGroup("CreateArmy")
 	for int i, 0, N
 		for int j, 0, N
 			vector pos = vector(i * 200, 120, j * 200)

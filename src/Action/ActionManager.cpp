@@ -122,11 +122,11 @@ bool ActionManager::Redoable()
 
 
 
-void ActionManager::BeginActionGroup()
+void ActionManager::BeginActionGroup(const string &name)
 {
 	ClearPreview();
 	if (!cur_group){
-		cur_group = new ActionGroup;
+		cur_group = new ActionGroupManual(name);
 	}
 	cur_group_level ++;
 }

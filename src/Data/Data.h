@@ -29,7 +29,7 @@ public:
 
 	void ResetHistory();
 	void *Execute(Action *a);
-	void BeginActionGroup();
+	void BeginActionGroup(const string &name);
 	void EndActionGroup();
 	void Undo();
 	void Redo();

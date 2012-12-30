@@ -21,9 +21,9 @@ Data::~Data()
 
 
 
-void Data::BeginActionGroup()
+void Data::BeginActionGroup(const string &name)
 {
-	action_manager->BeginActionGroup();
+	action_manager->BeginActionGroup(name);
 }
 
 void Data::EndActionGroup()

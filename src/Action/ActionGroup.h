@@ -20,7 +20,7 @@ public:
 	ActionGroup();
 	virtual ~ActionGroup();
 
-	virtual string name(){	return "-group-";	}
+	virtual string name() = 0;
 
 	virtual void *compose(Data *d){	return NULL;	}
 
@@ -36,6 +36,18 @@ protected:
 
 private:
 	Array<Action*> action;
+};
+
+class ActionGroupManual : public ActionGroup
+{
+	friend class ActionManager;
+public:
+	ActionGroupManual(const string &name){	_name_ = name;	}
+	virtual ~ActionGroupManual(){}
+
+	virtual string name(){	return _name_;	}
+private:
+	string _name_;
 };
 
 #endif /* ACTIONGROUP_H_ */
