@@ -73,7 +73,8 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 		Array<float> r = radius;
 		r += radius;
 
-		data->AddCylinder(pos, r, rings * (pos.num - 1), edges, closed);
+		ModelSurface *s = data->AddCylinder(pos, r, rings * (pos.num - 1), edges, closed);
+		data->SelectOnlySurface(s);
 
 		Abort();
 	}else{

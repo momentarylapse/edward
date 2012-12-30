@@ -60,10 +60,12 @@ void ModeModelMeshCreateBall::OnLeftButtonDown()
 		HuiConfigWriteInt("NewBallNumY", ny);
 		HuiConfigWriteInt("NewBallComplexity", complexity);
 		HuiConfigWriteBool("NewBallSphere", sphere);
+		ModelSurface *s;
 		if (sphere)
-			data->AddSphere(pos, radius, complexity);
+			s = data->AddSphere(pos, radius, complexity);
 		else
-			data->AddBall(pos, radius, nx, ny);
+			s = data->AddBall(pos, radius, nx, ny);
+		data->SelectOnlySurface(s);
 
 		Abort();
 	}else{

@@ -10,6 +10,7 @@
 
 #include "../Data.h"
 #include "../../MultiView.h"
+#include "../../lib/base/set.h"
 #include "../../lib/x/x.h"
 #include "ModelPolygon.h"
 #include "ModelSurface.h"
@@ -203,10 +204,10 @@ struct ModelGeometry
 class ModelSelectionState
 {
 public:
-	Array<int> Vertex;
-	Array<int> Surface;
-	Array<Array<int> > Polygon;
-	Array<Array<int> > Edge;
+	Set<int> Vertex;
+	Set<int> Surface;
+	Array<Set<int> > Polygon;
+	Array<Set<int> > Edge;
 	void clear();
 };
 
@@ -240,13 +241,14 @@ public:
 	int GetNumPolygons();
 
 	void ClearSelection();
-	void SelectionPolygonsFromVertices();
-	void SelectionSurfacesFromPolygons();
-	void SelectionPolygonsFromSurfaces();
-	void SelectionVerticesFromPolygons();
-	void SelectionVerticesFromSurfaces();
+	void SelectionFromVertices();
+	void SelectionFromPolygons();
+	void SelectionFromSurfaces();
 	void GetSelectionState(ModelSelectionState &s);
 	void SetSelectionState(ModelSelectionState &s);
+	Set<int> GetSelectedSurfaces();
+	Set<int> GetSelectedVertices();
+	void SelectOnlySurface(ModelSurface *s);
 
 
 	float GetDiameter();
@@ -284,9 +286,11 @@ public:
 	ModelSurface *AddPlane(const vector &pos, const vector &dv1, const vector &dv2, int num_x, int num_y);
 	ModelSurface *AddCube(const vector &pos, const vector &dv1, const vector &dv2, const vector &dv3, int num_1, int num_2, int num_3);
 	ModelSurface *AddCylinder(Array<vector> &pos, Array<float> &radius, int rings, int edges, bool closed);
+	ModelSurface *AddTorus(const vector &pos, const vector &axis, float radius1, float radius2, int num_x, int num_y);
 
 	void DeleteSelection(bool greedy = false);
 	void InvertSelection();
+	void InvertSurfaces(const Set<int> &surfaces);
 	void SubtractSelection();
 	void CutOutSelection();
 	void TriangulateSelection();
@@ -296,6 +300,7 @@ public:
 	void BevelSelectedVertices(float radius);
 	void FlattenSelectedVertices();
 	void ExtrudeSelectedPolygons(float offset);
+	void AutoWeldSurfaces(const Set<int> &surfaces, float d);
 	void AutoWeldSelectedSurfaces(float d);
 	void SetNormalModeSelection(int mode);
 	void SetNormalModeAll(int mode);

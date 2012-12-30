@@ -9,23 +9,22 @@
 #include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
-ActionModelSurfaceInvert::ActionModelSurfaceInvert(int _surface)
+ActionModelSurfaceInvert::ActionModelSurfaceInvert(const Set<int> &_surfaces)
 {
-	surface = _surface;
+	surfaces = _surfaces;
 }
 
 ActionModelSurfaceInvert::~ActionModelSurfaceInvert()
 {
 }
 
-void *ActionModelSurfaceInvert::execute(Data *d)
+bool ActionModelSurfaceInvert::was_trivial()
 {
-	DataModel *m = dynamic_cast<DataModel*>(d);
+	return surfaces.num == 0;
+}
 
-	assert((surface >= 0) && (surface < m->Surface.num));
-
-	ModelSurface &s = m->Surface[surface];
-
+void ActionModelSurfaceInvert::InvertSurface(ModelSurface &s)
+{
 	s.TestSanity("inv prae");
 
 	// flip polygons
@@ -71,6 +70,18 @@ void *ActionModelSurfaceInvert::execute(Data *d)
 	}
 
 	s.TestSanity("inv post");
+}
+
+void *ActionModelSurfaceInvert::execute(Data *d)
+{
+	DataModel *m = dynamic_cast<DataModel*>(d);
+
+	foreach(int surface, surfaces){
+
+		assert((surface >= 0) && (surface < m->Surface.num));
+
+		InvertSurface(m->Surface[surface]);
+	}
 
 	return NULL;
 }

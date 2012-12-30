@@ -57,7 +57,8 @@ void ModeModelMeshCreatePlane::OnLeftButtonDown()
 			length[0] = -length[0];
 		}
 
-		data->AddPlane(pos, length[0], length[1], nx, ny);
+		ModelSurface *s = data->AddPlane(pos, length[0], length[1], nx, ny);
+		data->SelectOnlySurface(s);
 
 		Abort();
 	}else{

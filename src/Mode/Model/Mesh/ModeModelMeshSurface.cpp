@@ -74,8 +74,7 @@ void ModeModelMeshSurface::OnUpdate(Observable *o)
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
 				&SurfaceIsMouseOver, &SurfaceInRect);
 	}else if (o->GetName() == "MultiView"){
-		data->SelectionVerticesFromSurfaces();
-		data->SelectionPolygonsFromSurfaces();
+		data->SelectionFromSurfaces();
 	}
 	mode_model_mesh_polygon->FillSelectionBuffers();
 }

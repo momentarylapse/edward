@@ -16,6 +16,8 @@
 #include "../../../../Data/Model/SkinGenerator.h"
 #include "../../../../Edward.h"
 
+#define ALLOW_WELD		0
+
 float ActionModelSurfaceSubtract::sCol::get_f(DataModel *m, ModelPolygon *t)
 {
 	if (type == TYPE_OLD_VERTEX)
@@ -272,8 +274,6 @@ bool ActionModelSurfaceSubtract::find_contour_boundary(ModelSurface *s, Array<sC
 				//msg_write(format("%d  %d  - %d", c.type, c.polygon, c.edge));
 				c_out.add(c);
 				c_in.erase(i);
-				/*if (inverse)
-					c_out.reverse();*/
 				return true;
 			}
 
@@ -776,9 +776,10 @@ void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModelSurface
 	a->TestSanity("tria sub a med");
 
 	// connect separate parts
-	for (int i=m->Surface.num-1;i>=nsurf;i--){
+#if ALLOW_WELD
+	for (int i=m->Surface.num-1;i>=nsurf;i--)
 		AddSubAction(new ActionModelSurfaceAutoWeld(ai, m->Surface.num - 1, 0.00001f), m);
-	}
+#endif
 	a = &m->Surface[ai];
 	b = &m->Surface[bi];
 	a->TestSanity("surf sub a post");
@@ -812,8 +813,10 @@ void ActionModelSurfaceSubtract::SurfaceSubtract(DataModel *m, ModelSurface *a, 
 	SurfaceSubtractUnary(m, a, b, false);
 	//SurfaceSubtractUnary(m, a, b, true);
 
+#if ALLOW_WELD
 	if (closed)
 		AddSubAction(new ActionModelSurfaceAutoWeld(ai, ci, 0.00001f), m);
+#endif
 
 	msg_db_l(0);
 }

@@ -290,11 +290,10 @@ class DataModel : Data
 	ModelMetaData meta_data
 	
 	extern void ClearSelection()
-	extern void SelectionPolygonsFromVertices()
-	extern void SelectionSurfacesFromPolygons()
-	extern void SelectionPolygonsFromSurfaces()
-	extern void SelectionVerticesFromPolygons()
-	extern void SelectionVerticesFromSurfaces()
+	extern void SelectionFromVertices()
+	extern void SelectionFromPolygons()
+	extern void SelectionFromSurfaces()
+	extern void SelectOnlySurface(ModelSurface *s)
 	
 	extern void AddVertex(vector pos, int bone_index, int normal_mode)
 	extern ModelPolygon *AddTriangle(int a, int b, int c)

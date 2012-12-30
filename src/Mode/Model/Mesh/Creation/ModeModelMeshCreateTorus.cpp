@@ -65,7 +65,8 @@ void ModeModelMeshCreateTorus::OnLeftButtonDown()
 			HuiConfigWriteInt("NewTorusNumX", nx);
 			HuiConfigWriteInt("NewTorusNumY", ny);
 
-			data->Execute(new ActionModelAddTorus(pos, axis, radius1, radius2, nx, ny));
+			ModelSurface *s = data->AddTorus(pos, axis, radius1, radius2, nx, ny);
+			data->SelectOnlySurface(s);
 
 			Abort();
 		}else{

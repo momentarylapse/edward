@@ -62,7 +62,7 @@ void ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, in
 	// closed?
 	UpdateClosed();
 
-	t.is_selected = true;
+	t.is_selected = false;
 	t.Material = material;
 	t.view_stage = model->ViewStage;
 	t.NormalDirty = true;

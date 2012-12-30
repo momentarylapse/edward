@@ -76,11 +76,10 @@ void PluginManager::Init()
 	ScriptLinkSemiExternalVar("edward", &ed);
 	ScriptLinkSemiExternalVar("data_model", &mode_model->data);
 	ScriptLinkSemiExternalFunc("DataModel.ClearSelection", (void*)&DataModel::ClearSelection);
-	ScriptLinkSemiExternalFunc("DataModel.SelectionPolygonsFromVertices", (void*)&DataModel::SelectionPolygonsFromVertices);
-	ScriptLinkSemiExternalFunc("DataModel.SelectionSurfacesFromPolygons", (void*)&DataModel::SelectionSurfacesFromPolygons);
-	ScriptLinkSemiExternalFunc("DataModel.SelectionPolygonsFromSurfaces", (void*)&DataModel::SelectionPolygonsFromSurfaces);
-	ScriptLinkSemiExternalFunc("DataModel.SelectionVerticesFromPolygons", (void*)&DataModel::SelectionVerticesFromPolygons);
-	ScriptLinkSemiExternalFunc("DataModel.SelectionVerticesFromSurfaces", (void*)&DataModel::SelectionVerticesFromSurfaces);
+	ScriptLinkSemiExternalFunc("DataModel.SelectionFromVertices", (void*)&DataModel::SelectionFromVertices);
+	ScriptLinkSemiExternalFunc("DataModel.SelectionFromPolygons", (void*)&DataModel::SelectionFromPolygons);
+	ScriptLinkSemiExternalFunc("DataModel.SelectionFromSurfaces", (void*)&DataModel::SelectionFromSurfaces);
+	ScriptLinkSemiExternalFunc("DataModel.SelectOnlySurface", (void*)&DataModel::SelectOnlySurface);
 	ScriptLinkSemiExternalFunc("DataModel.AddVertex", (void*)&DataModel::AddVertex);
 	ScriptLinkSemiExternalFunc("DataModel.AddTriangle", (void*)&DataModel::AddTriangle);
 	ScriptLinkSemiExternalFunc("DataModel.AddPolygon", (void*)&DataModel::AddPolygon);

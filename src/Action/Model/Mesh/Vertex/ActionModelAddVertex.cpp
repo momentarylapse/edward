@@ -37,7 +37,7 @@ void *ActionModelAddVertex::execute(Data *d)
 	}else
 		vv.NormalMode = normal_mode;
 	vv.BoneIndex = bone_index;
-	vv.is_selected = true;
+	vv.is_selected = false;
 	vv.is_special = false;
 	vv.view_stage = m->ViewStage;
 	vv.RefCount = 0;

@@ -49,7 +49,8 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 			HuiConfigWriteInt("NewCubeNumY", num_2);
 			HuiConfigWriteInt("NewCubeNumZ", num_3);
 
-			data->AddCube(pos, length[0], length[1], length[2], num_1, num_2, num_3);
+			ModelSurface *s = data->AddCube(pos, length[0], length[1], length[2], num_1, num_2, num_3);
+			data->SelectOnlySurface(s);
 
 			Abort();
 		}else{

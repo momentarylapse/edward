@@ -9,20 +9,26 @@
 #define ACTIONMODELSURFACEINVERT_H_
 
 #include "../../../Action.h"
+#include "../../../../lib/base/set.h"
 class Data;
+class ModelSurface;
 
 class ActionModelSurfaceInvert : public Action
 {
 public:
-	ActionModelSurfaceInvert(int _surface);
+	ActionModelSurfaceInvert(const Set<int> &surfaces);
 	virtual ~ActionModelSurfaceInvert();
-	string name(){	return "ModelSurfacenvert";	}
+	string name(){	return "ModelSurfaceInvert";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);
 
+	virtual bool was_trivial();
+
 private:
-	int surface;
+	Set<int> surfaces;
+
+	void InvertSurface(ModelSurface &s);
 };
 
 #endif /* ACTIONMODELSURFACEINVERT_H_ */

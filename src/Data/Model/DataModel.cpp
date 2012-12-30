@@ -26,8 +26,9 @@
 #include "../../Action/Model/Mesh/Shape/ActionModelAddCylinder.h"
 #include "../../Action/Model/Mesh/Shape/ActionModelAddBall.h"
 #include "../../Action/Model/Mesh/Shape/ActionModelAddSphere.h"
+#include "../../Action/Model/Mesh/Shape/ActionModelAddTorus.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelSurfaceSubtract.h"
-#include "../../Action/Model/Mesh/Surface/ActionModelInvertSelection.h"
+#include "../../Action/Model/Mesh/Surface/ActionModelSurfaceInvert.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelAutoWeldSelection.h"
 #include "../../Action/Model/Mesh/Look/ActionModelSetMaterial.h"
 #include "../../Action/Model/Mesh/Look/ActionModelSetNormalModeSelection.h"
@@ -805,6 +806,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 				int nv = f->ReadInt();
 				for (int j=0;j<nv;j++){
 					ModelPolygon t;
+					t.is_selected = false;
 					t.TriangulationDirty = true;
 					int n = f->ReadInt();
 					t.Material = f->ReadInt();
@@ -821,6 +823,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 				}
 				s.IsPhysical = f->ReadBool();
 				s.IsVisible = f->ReadBool();
+				s.is_selected = false;
 				f->ReadInt();
 				s.model = this;
 				Surface.add(s);
@@ -1376,37 +1379,25 @@ void DataModel::ClearSelection()
 		foreach(ModelEdge &e, s.Edge)
 			e.is_selected = false;
 	}
+	Notify("Selection");
 }
 
-void DataModel::SelectionPolygonsFromSurfaces()
+void DataModel::SelectionFromSurfaces()
 {
+	foreach(ModelVertex &v, Vertex)
+		v.is_selected = false;
 	foreach(ModelSurface &s, Surface){
+		foreach(int v, s.Vertex)
+			Vertex[v].is_selected = s.is_selected;
 		foreach(ModelPolygon &t, s.Polygon)
 			t.is_selected = s.is_selected;
 		foreach(ModelEdge &e, s.Edge)
 			e.is_selected = s.is_selected;
 	}
+	Notify("Selection");
 }
 
-void DataModel::SelectionVerticesFromSurfaces()
-{
-	foreach(ModelVertex &v, Vertex)
-		if (v.Surface >= 0)
-			v.is_selected = Surface[v.Surface].is_selected;
-		else
-			v.is_selected = false;
-}
-
-void DataModel::SelectionSurfacesFromPolygons()
-{
-	foreach(ModelSurface &s, Surface){
-		s.is_selected = true;
-		foreach(ModelPolygon &t, s.Polygon)
-			s.is_selected &= t.is_selected;
-	}
-}
-
-void DataModel::SelectionVerticesFromPolygons()
+void DataModel::SelectionFromPolygons()
 {
 	foreach(ModelVertex &v, Vertex)
 		v.is_selected = false;
@@ -1415,16 +1406,33 @@ void DataModel::SelectionVerticesFromPolygons()
 			if (t.is_selected)
 				for (int k=0;k<t.Side.num;k++)
 					Vertex[t.Side[k].Vertex].is_selected = true;
+	foreach(ModelSurface &s, Surface){
+		s.is_selected = true;
+		foreach(ModelPolygon &t, s.Polygon)
+			s.is_selected &= t.is_selected;
+	}
+	Notify("Selection");
 }
 
-void DataModel::SelectionPolygonsFromVertices()
+void DataModel::SelectionFromVertices()
 {
-	foreach(ModelSurface &s, Surface)
+	foreach(ModelSurface &s, Surface){
+		s.is_selected = true;
 		foreach(ModelPolygon &t, s.Polygon){
 			t.is_selected = true;
 			for (int k=0;k<t.Side.num;k++)
 				t.is_selected &= Vertex[t.Side[k].Vertex].is_selected;
+			s.is_selected &= t.is_selected;
 		}
+	}
+	Notify("Selection");
+}
+
+void DataModel::SelectOnlySurface(ModelSurface *s)
+{
+	foreach(ModelSurface &ss, Surface)
+		ss.is_selected = (&ss == s);
+	SelectionFromSurfaces();
 }
 
 ModelPolygon *DataModel::AddTriangle(int a, int b, int c)
@@ -1722,6 +1730,9 @@ ModelSurface* DataModel::AddCube(const vector& pos, const vector& dv1, const vec
 ModelSurface* DataModel::AddCylinder(Array<vector>& pos, Array<float> &radius, int rings, int edges, bool closed)
 {	return (ModelSurface*)Execute(new ActionModelAddCylinder(pos, radius, rings, edges, closed));	}
 
+ModelSurface *DataModel::AddTorus(const vector &pos, const vector &axis, float radius1, float radius2, int num_x, int num_y)
+{	return (ModelSurface*)Execute(new ActionModelAddTorus(pos, axis, radius1, radius2, num_x, num_y));	}
+
 void DataModel::SetCurrentMove(int move_no)
 {
 	move = EmptyMove;
@@ -1878,8 +1889,11 @@ void DataModel::CopyGeometry(ModelGeometry &geo)
 void DataModel::DeleteSelection(bool greedy)
 {	Execute(new ActionModelDeleteSelection(greedy));	}
 
+void DataModel::InvertSurfaces(const Set<int> &surfaces)
+{	Execute(new ActionModelSurfaceInvert(surfaces));	}
+
 void DataModel::InvertSelection()
-{	Execute(new ActionModelInvertSelection());	}
+{	InvertSurfaces(GetSelectedSurfaces());	}
 
 void DataModel::SubtractSelection()
 {	Execute(new ActionModelSurfaceSubtract());	}
@@ -1917,6 +1931,9 @@ void DataModel::FlattenSelectedVertices()
 void DataModel::ExtrudeSelectedPolygons(float offset)
 {	Execute(new ActionModelExtrudePolygons(offset));	}
 
+void DataModel::AutoWeldSurfaces(const Set<int> &surfaces, float epsilon)
+{	Execute(new ActionModelAutoWeldSelection(epsilon));	}
+
 void DataModel::AutoWeldSelectedSurfaces(float epsilon)
 {	Execute(new ActionModelAutoWeldSelection(epsilon));	}
 
@@ -1949,6 +1966,24 @@ void ModelSelectionState::clear()
 	Polygon.clear();
 }
 
+Set<int> DataModel::GetSelectedSurfaces()
+{
+	Set<int> vertex;
+	foreachi(ModelVertex &v, Vertex, i)
+		if (v.is_selected)
+			vertex.add(i);
+	return vertex;
+}
+
+Set<int> DataModel::GetSelectedVertices()
+{
+	Set<int> surface;
+	foreachi(ModelSurface &surf, Surface, i)
+		if (surf.is_selected)
+			surface.add(i);
+	return surface;
+}
+
 void DataModel::GetSelectionState(ModelSelectionState& s)
 {
 	s.clear();
@@ -1958,7 +1993,7 @@ void DataModel::GetSelectionState(ModelSelectionState& s)
 	foreachi(ModelSurface &surf, Surface, i){
 		if (surf.is_selected)
 			s.Surface.add(i);
-		Array<int> sel;
+		Set<int> sel;
 		foreachi(ModelPolygon &t, surf.Polygon, j)
 			if (t.is_selected)
 				sel.add(j);
@@ -1984,6 +2019,7 @@ void DataModel::SetSelectionState(ModelSelectionState& s)
 	for (int i=0;i<s.Edge.num;i++)
 		foreach(int j, s.Edge[i])
 			Surface[i].Edge[j].is_selected = true;
+	Notify("Selection");
 }
 
 
