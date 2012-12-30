@@ -272,10 +272,16 @@ bool ActionModelSurfaceSubtract::find_contour_boundary(ModelSurface *s, Array<sC
 				//msg_write(format("%d  %d  - %d", c.type, c.polygon, c.edge));
 				c_out.add(c);
 				c_in.erase(i);
-				if (inverse)
-					c_out.reverse();
+				/*if (inverse)
+					c_out.reverse();*/
 				return true;
 			}
+
+		msg_write(c_out.num);
+		c_out += c_in;
+		msg_error("evil contour");
+		foreachi(sCol &c, c_out, i)
+			msg_write(i2s(i) + " " + c.str());
 		throw ActionException("subtract: contour starting on boundary but not ending on boundary found");
 	}
 	return false;
@@ -287,7 +293,7 @@ bool ActionModelSurfaceSubtract::find_contour_inside(DataModel *m, ModelPolygon 
 		return false;
 
 	if (c_in[0].type != sCol::TYPE_OTHER_EDGE)
-		throw ActionException("internal contour without internal point...");
+		throw ActionException("internal contour without internal point..." + i2s(c_in[0].type));
 	c_out.add(c_in[0]);
 	c_in.erase(0);
 	vector edge_dir = m->Vertex[s->Edge[c_out[0].edge].Vertex[1]].pos - m->Vertex[s->Edge[c_out[0].edge].Vertex[0]].pos;
@@ -328,6 +334,17 @@ bool ActionModelSurfaceSubtract::find_contour_inside(DataModel *m, ModelPolygon 
 
 void ActionModelSurfaceSubtract::find_contours(DataModel *m, ModelPolygon *t, ModelSurface *s, Array<Array<sCol> > &c_out, bool inverse)
 {
+	int ni = 0, no = 0;
+	foreach(sCol &cc, col){
+		if (cc.type == cc.TYPE_OWN_EDGE_IN)
+			ni ++;
+		if (cc.type == cc.TYPE_OWN_EDGE_OUT)
+			no ++;
+	}
+	msg_write(format("%d  %d", ni, no));
+	if (ni != no)
+		throw ActionException("ni != no");
+
 	Array<sCol> temp;
 	while (find_contour_boundary(s, col, temp, inverse)){
 		c_out.add(temp);
@@ -339,103 +356,119 @@ void ActionModelSurfaceSubtract::find_contours(DataModel *m, ModelPolygon *t, Mo
 		temp.clear();
 	}
 
+	if (inverse){
+		foreach(Array<sCol> &cc, c_out)
+			cc.reverse();
+	}
+
 	sort_and_join_contours(m, t, s, c_out, inverse);
 
-	/*foreach(Array<sCol> &cc, c_out){
+	foreach(Array<sCol> &cc, c_out){
 		msg_write("contour");
 		foreachi(sCol &c, cc, i)
 			msg_write(i2s(i) + " " + c.str());
-	}*/
+		if (cc.num < 3)
+			throw ActionException("contour with num<3");
+	}
 }
 
 void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolygon *t, ModelSurface *b, Array<Array<sCol> > &c_in, bool inverse)
 {
 	msg_db_r("sort_and_join_contours", 1);
+
+	// find old vertices
 	Array<sCol> v;
 	for (int k=0;k<t->Side.num;k++){
 		vector pos = m->Vertex[t->Side[k].Vertex].pos;
-		if (!b->IsInside(pos))
+		if (b->IsInside(pos) == inverse)
 			v.add(sCol(pos, k));
 	}
 
-	bool boundary_points = false;
-	foreach(Array<sCol> &ccc, c_in)
-		foreach(sCol &cc, ccc)
-			if ((cc.type == cc.TYPE_OWN_EDGE_IN) || (cc.type == cc.TYPE_OWN_EDGE_OUT))
-				boundary_points = true;
-
 	Array<Array<sCol> > c_out;
 
-	if (!boundary_points){
-		c_out.add(v);
-		v.clear();
-	}
+	// find purely internal contours
+	bool boundary_points = false;
+	for (int i=c_in.num-1; i>=0; i--)
+		if (c_in[i][0].type == sCol::TYPE_OTHER_EDGE){
+			c_out.add(c_in[i]);
+			c_in.erase(i);
+		}else{
+			boundary_points = true;
+		}
 
-	Array<sCol> cc;
-	cc = c_in[0];
-	c_in.erase(0);
+	// find contours on boundary and connect with old vertices
+	while(c_in.num > 0){
+		Array<sCol> cc = c_in.pop();
+		//msg_write("------con");
 
-	while(true){
+		// expand current contour
+		while(true){
 
-		if (cc[0].type != sCol::TYPE_OTHER_EDGE){
+			int side = cc.back().side;
+			float f = cc.back().get_f(m, t);
+			int side0 = cc[0].side;
+			float f0 = cc[0].get_f(m, t);
+			//msg_write(format("%d %f  -> %d %f", side0, f0, side, f));
 
-		int side = cc.back().side;
-		float f = cc.back().get_f(m, t);
-		int side0 = cc[0].side;
-		float f0 = cc[0].get_f(m, t);
+			// loop already closed?
+			bool closed = (side == side0) && (f0 > f);
 
-		// search new contours
-		float fmin = 2;
-		int imin = -1;
-		foreachi(Array<sCol> &ccc, c_in, i)
-			if (ccc[0].side == side){
-				float ff = cc.back().get_f(m, t);
-				if ((ff > f) && (ff < fmin)){
-					fmin = ff;
-					imin = i;
+			// search new contours
+			float fmin = 2;
+			if (closed) // don't cross the start/finish line
+				fmin = f0;
+			int imin = -1;
+			foreachi(Array<sCol> &ccc, c_in, i)
+				if (ccc[0].side == side){
+					float ff = ccc[0].get_f(m, t);
+					//msg_write(f2s(ff, 3));
+					if ((ff > f) && (ff < fmin)){
+						//msg_write("found");
+						fmin = ff;
+						imin = i;
+					}
+				}
+
+			// add new contour
+			if (imin >= 0){
+				cc.append(c_in[imin]);
+				c_in.erase(imin);
+				continue;
+			}
+
+			// don't add old vertices when closed
+			if (closed)
+				break;
+
+			// search old vertices
+			bool found = false;
+			foreachi(sCol &ccc, v, i){
+				if (ccc.side == ((side + 1) % t->Side.num)){
+					cc.add(ccc);
+					v.erase(i);
+					found = true;
+					break;
 				}
 			}
-
-		// add new contour
-		if (imin >= 0){
-			cc.append(c_in[imin]);
-			c_in.erase(imin);
-			continue;
-		}
-
-		// search old vertices
-		bool ok = false;
-		foreachi(sCol &ccc, v, i){
-			if (ccc.side == ((side + 1) % t->Side.num)){
-				// loop already closed?
-				if ((side == side0) && (f0 > f))
-					break;
-				cc.add(ccc);
-				v.erase(i);
-				ok = true;
+			if (!found)
 				break;
-			}
-		}
-		if (ok)
-			continue;
-
 		}
 
 		// done?
 		/*foreachi(sCol &ccc, cc, i)
 			ed->multi_view_3d->AddMessage3d(i2s(i + 1), ccc.p);*/
 		c_out.add(cc);
-		cc.clear();
-
-		if (c_in.num > 0){
-			cc = c_in[0];
-			c_in.erase(0);
-		}else if (v.num == 0){
-			break;
-		}else
-			throw ActionException("no next point for contour found...");
-
 	}
+
+
+	// without boundary contours the old vertices build their own contour
+	if (v.num > 0){
+		if (boundary_points)
+			throw ActionException("unused old points with boundary contours...");
+		c_out.add(v);
+	}
+
+
 	c_in = c_out;
 	msg_db_l(1);
 }
@@ -539,8 +572,11 @@ void ActionModelSurfaceSubtract::triangulate_contours(DataModel *m, ModelPolygon
 			}
 		}
 
-		if (i_max < 0)
-			throw ActionException("could not fill contours");
+		if (i_max < 0){
+			msg_error("could not fill contours");
+			break;
+			//throw ActionException("could not fill contours");
+		}
 
 
 		if (inside_i < 0){
@@ -678,6 +714,9 @@ void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a,
 
 	// create new surfaces
 	foreach(Array<sCol> &c, contours){
+		if (inverse)
+			c.reverse();
+
 		// create contour vertices
 		Array<int> vv;
 		Array<vector> sv;
@@ -758,12 +797,12 @@ void ActionModelSurfaceSubtract::SurfaceSubtract(DataModel *m, ModelSurface *a, 
 
 	int ai = m->get_surf_no(a);
 	int bi = m->get_surf_no(b);
-	bool closed = false;//a->IsClosed;
+	bool closed = a->IsClosed;
 	ModelSurface *c;
 	int ci;
 
 	if (closed){
-		c = (ModelSurface*)AddSubAction(new ActionModelSurfaceCopy(m, b), m);
+		c = (ModelSurface*)AddSubAction(new ActionModelSurfaceCopy(bi), m);
 		ci = m->get_surf_no(c);
 		a = &m->Surface[ai];
 		SurfaceSubtractUnary(m, c, a, true);
@@ -771,6 +810,7 @@ void ActionModelSurfaceSubtract::SurfaceSubtract(DataModel *m, ModelSurface *a, 
 	}
 
 	SurfaceSubtractUnary(m, a, b, false);
+	//SurfaceSubtractUnary(m, a, b, true);
 
 	if (closed)
 		AddSubAction(new ActionModelSurfaceAutoWeld(ai, ci, 0.00001f), m);

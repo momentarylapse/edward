@@ -6,12 +6,14 @@
  */
 
 #include "ActionModelSurfaceCopy.h"
+#include "Helper/ActionModelAddEmptySurface.h"
+#include "Helper/ActionModelSurfaceAddPolygon.h"
 #include "../Vertex/ActionModelAddVertex.h"
-#include "../Polygon/ActionModelAddPolygon.h"
 #include "../../../../Data/Model/DataModel.h"
 
-ActionModelSurfaceCopy::ActionModelSurfaceCopy(DataModel *m, ModelSurface *&s)
+ActionModelSurfaceCopy::ActionModelSurfaceCopy(int _surface)
 {
+	surface = _surface;
 #if 0
 	int si = m->get_surf_no(s);
 	int dv = m->Vertex.num;
@@ -59,11 +61,34 @@ ActionModelSurfaceCopy::ActionModelSurfaceCopy(DataModel *m, ModelSurface *&s)
 
 ActionModelSurfaceCopy::~ActionModelSurfaceCopy()
 {
-	// TODO Auto-generated destructor stub
 }
 
 void *ActionModelSurfaceCopy::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	return &m->Surface.back();
+	ModelSurface s = m->Surface[surface];
+
+	int dv = m->Vertex.num;
+
+	// copy vertices
+	foreach(int v, s.Vertex)
+		AddSubAction(new ActionModelAddVertex(m->Vertex[v].pos), m);
+
+	int s_no = m->Surface.num;
+	ModelSurface *copy = (ModelSurface*)AddSubAction(new ActionModelAddEmptySurface(), m);
+
+	foreach(ModelPolygon &t, s.Polygon){
+		Array<int> v = t.GetVertices();
+		Array<vector> sv = t.GetSkinVertices();
+		for (int k=0;k<t.Side.num;k++)
+			foreachi(int vv, s.Vertex, vi)
+				if (vv == t.Side[k].Vertex)
+					v[k] = dv + vi;
+		AddSubAction(new ActionModelSurfaceAddPolygon(s_no, v, t.Material, sv), m);
+	}
+
+	foreach(ModelPolygon &cp, copy->Polygon)
+		cp.TempNormal = cp.GetNormal(m);
+
+	return copy;
 }

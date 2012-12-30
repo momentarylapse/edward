@@ -15,11 +15,13 @@ class ModelSurface;
 class ActionModelSurfaceCopy : public ActionGroup
 {
 public:
-	ActionModelSurfaceCopy(DataModel *m, ModelSurface *&s);
+	ActionModelSurfaceCopy(int surface);
 	virtual ~ActionModelSurfaceCopy();
 	string name(){	return "ModelSurfaceCopy";	}
 
 	void *compose(Data *d);
+private:
+	int surface;
 };
 
 #endif /* ACTIONMODELSURFACECOPY_H_ */
