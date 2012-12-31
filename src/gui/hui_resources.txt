@@ -16417,7 +16417,7 @@ current_mode_model_skeleton
 cut_out
 Heraustrennen
 default_colors
-Farben aus dem Material verwenden
+Farben aus der Datei verwenden
 default_font
 
 default_material
@@ -17039,7 +17039,7 @@ model_dialog_grp_physics
 model_dialog_grp_tensor
 !bold\\Trägheitstensor
 model_dialog_t_comment
-Die Eigenschaften dieser Material-Datei können in den folgenden Tab-Seiten überschrieben werden.
+!wrap\\Die Eigenschaften dieser Material-Datei können in den folgenden Tab-Seiten überschrieben werden.
 model_dialog_t_description
 Beschreibung
 model_dialog_t_detail_high
@@ -17559,7 +17559,7 @@ Faktor
 transparency_mode:function
 Funktion
 transparency_mode:material
-Transparenz aus dem Material verwenden
+Transparenz aus der Datei verwenden
 transparency_mode:none
 Keine Transparenz
 triangulate_selection

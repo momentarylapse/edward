@@ -28,7 +28,7 @@
 	AppearanceDialog->AddCheckBox("Standard-Material verwenden", 0, 0, 0, 0, "default_material");
 	AppearanceDialog->AddText("!bold\\Material-Datei", 0, 2, 0, 0, "model_dialog_grp_material_file");
 	AppearanceDialog->AddControlTable("ControlTable 6", 0, 3, 5, 1, "table_6");
-	AppearanceDialog->AddText("Die Eigenschaften dieser Material-Datei k&onnen in den folgenden Tab-Seiten &uberschrieben werden.", 0, 5, 0, 0, "model_dialog_t_comment");
+	AppearanceDialog->AddText("!wrap\\Die Eigenschaften dieser Material-Datei k&onnen in den folgenden Tab-Seiten &uberschrieben werden.", 0, 5, 0, 0, "model_dialog_t_comment");
 	AppearanceDialog->SetTarget("table_6", 0);
 	AppearanceDialog->AddEdit("", 2, 0, 0, 0, "material_file");
 	AppearanceDialog->AddButton("", 3, 0, 0, 0, "find_material");
@@ -38,7 +38,7 @@
 	AppearanceDialog->SetTarget("model_material_dialog_tab_control", 2);
 	AppearanceDialog->AddControlTable("ControlTable 7", 0, 0, 1, 2, "table_7");
 	AppearanceDialog->SetTarget("table_7", 0);
-	AppearanceDialog->AddCheckBox("Farben aus dem Material verwenden", 0, 0, 0, 0, "default_colors");
+	AppearanceDialog->AddCheckBox("Farben aus der Datei verwenden", 0, 0, 0, 0, "default_colors");
 	AppearanceDialog->AddControlTable("ControlTable 8", 0, 1, 6, 4, "table_8");
 	AppearanceDialog->SetTarget("table_8", 0);
 	AppearanceDialog->AddText("Ambient", 2, 0, 0, 0, "ambient");
@@ -54,7 +54,7 @@
 	AppearanceDialog->SetTarget("model_material_dialog_tab_control", 3);
 	AppearanceDialog->AddControlTable("ControlTable 9", 0, 0, 1, 10, "table_9");
 	AppearanceDialog->SetTarget("table_9", 0);
-	AppearanceDialog->AddRadioButton("Transparenz aus dem Material verwenden", 0, 0, 0, 0, "transparency_mode:material");
+	AppearanceDialog->AddRadioButton("Transparenz aus der Datei verwenden", 0, 0, 0, 0, "transparency_mode:material");
 	AppearanceDialog->AddRadioButton("Keine Transparenz", 0, 1, 0, 0, "transparency_mode:none");
 	AppearanceDialog->AddRadioButton("Color-Key", 0, 2, 0, 0, "transparency_mode:color_key");
 	AppearanceDialog->AddRadioButton("Funktion", 0, 3, 0, 0, "transparency_mode:function");

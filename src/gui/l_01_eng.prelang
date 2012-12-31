@@ -1144,7 +1144,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-190
+192
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1234,6 +1234,8 @@ Es muss mindestens ein Terrain markiert sein!
 No terrain selected!
 Es sind nur maximal %d Texturen pro Terrain erlaubt!
 No more than %d textures per terrain allowed!
+Exportiere Spiel
+
 Extrudieren: Offset durch Maus, Linke Taste = fertig
 
 Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
@@ -1242,6 +1244,8 @@ Falsches Dateiformat der Datei %s: %d (statt %d)!
 
 Fehler
 Error
+Fehler beim Exportieren: 
+
 Fehler in Script-Datei: \"%s\"\n%s\n%s
 
 Fehlerbericht

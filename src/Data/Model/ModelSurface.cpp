@@ -522,9 +522,10 @@ bool ModelSurface::IsInside(const vector &p)
 
 		// real intersection
 		vector col;
-		Array<int> vv = t.Triangulate(model);
-		for (int k=0;k<vv.num;k+=3)
-			if (LineIntersectsTriangle(v[vv[k]], v[vv[k+1]], v[vv[k+2]], p, p + e_x, col, false))
+		if (t.TriangulationDirty)
+			t.UpdateTriangulation(model);
+		for (int k=t.Side.num-2;k>=0;k--)
+			if (LineIntersectsTriangle(v[t.Side[k].Triangulation[0]], v[t.Side[k].Triangulation[1]], v[t.Side[k].Triangulation[2]], p, p + e_x, col, false))
 				if (col.x > p.x)
 					n ++;
 	}

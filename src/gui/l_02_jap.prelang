@@ -1144,7 +1144,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-190
+192
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1234,6 +1234,8 @@ Es muss mindestens ein Terrain markiert sein!
 
 Es sind nur maximal %d Texturen pro Terrain erlaubt!
 
+Exportiere Spiel
+
 Extrudieren: Offset durch Maus, Linke Taste = fertig
 
 Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
@@ -1241,6 +1243,8 @@ Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
 Falsches Dateiformat der Datei %s: %d (statt %d)!
 
 Fehler
+
+Fehler beim Exportieren: 
 
 Fehler in Script-Datei: \"%s\"\n%s\n%s
 
