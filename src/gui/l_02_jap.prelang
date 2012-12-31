@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-570
+571
 // Data (ID,Text)
 ad_dialog
 
@@ -657,6 +657,8 @@ move_reset
 リセット
 ms
 ms
+msd_table_2
+
 nb_complexity
 
 nb_tab_control

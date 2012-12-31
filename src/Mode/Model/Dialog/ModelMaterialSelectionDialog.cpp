@@ -8,6 +8,8 @@
 #include "ModelMaterialSelectionDialog.h"
 #include "../../../Data/Model/DataModel.h"
 #include "../Mesh/ModeModelMesh.h"
+#include "../../../Action/Model/Data/ActionModelAddMaterial.h"
+#include "../ModeModel.h"
 
 string file_secure(const string &filename);
 string render_material(ModelMaterial *m);
@@ -24,12 +26,18 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(CHuiWindow *_parent, 
 	EventM("hui:close", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnClose);
 	EventMX("material_list", "hui:activate", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnMaterialList);
 	EventMX("material_list", "hui:change", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnMaterialListCheck);
+	EventMX("material_list", "hui:select", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnMaterialListSelect);
+	EventM("add_material", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnMaterialAdd);
+	EventM("edit_material", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnMaterialEdit);
 
 	answer = NULL;
+
+	Subscribe(data);
 }
 
 ModelMaterialSelectionDialog::~ModelMaterialSelectionDialog()
 {
+	Unsubscribe(data);
 	mode_model_mesh->MaterialSelectionDialog = NULL;
 }
 
@@ -45,6 +53,7 @@ void ModelMaterialSelectionDialog::FillMaterialList()
 		string im = render_material(&data->Material[i]);
 		AddString("material_list", format("%d\\%d\\%s\\%s\\%s", i, nt, (i == data->CurrentMaterial) ? "true" : "false", im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
 	}
+	Enable("edit_material", false);
 }
 
 void ModelMaterialSelectionDialog::PutAnswer(int *_answer)
@@ -71,6 +80,33 @@ void ModelMaterialSelectionDialog::OnMaterialListCheck()
 {
 	data->CurrentMaterial = HuiGetEvent()->row;
 	data->CurrentTextureLevel = 0;
+	FillMaterialList();
+}
+
+void ModelMaterialSelectionDialog::OnMaterialListSelect()
+{
+	Enable("edit_material", GetInt("") >= 0);
+}
+
+void ModelMaterialSelectionDialog::OnMaterialAdd()
+{
+	data->Execute(new ActionModelAddMaterial());
+}
+
+void ModelMaterialSelectionDialog::OnMaterialEdit()
+{
+	int s = GetInt("material_list");
+	if (s < 0)
+		return;
+
+	data->CurrentMaterial = s;
+	data->CurrentTextureLevel = 0;
+	mode_model->ExecuteMaterialDialog(0, false);
+	FillMaterialList();
+}
+
+void ModelMaterialSelectionDialog::OnUpdate(Observable *o)
+{
 	FillMaterialList();
 }
 

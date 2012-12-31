@@ -229,15 +229,17 @@ void ModeModel::ExecutePropertiesDialog(int initial_tab_page)
 	//HuiWaitTillWindowClosed(PropertiesDialog);
 }
 
-void ModeModel::ExecuteMaterialDialog(int initial_tab_page)
+void ModeModel::ExecuteMaterialDialog(int initial_tab_page, bool allow_parent)
 {
 	if (MaterialDialog)
 		return;
 
-	MaterialDialog = new ModelMaterialDialog(ed, true, data);
+	MaterialDialog = new ModelMaterialDialog(allow_parent ? ed : HuiCurWindow, allow_parent, data);
 	MaterialDialog->SetInt("model_material_dialog_tab_control", initial_tab_page);
 
 	MaterialDialog->Update();
-	//HuiWaitTillWindowClosed(MaterialDialog);
+
+	if (!allow_parent)
+		HuiWaitTillWindowClosed(MaterialDialog);
 }
 

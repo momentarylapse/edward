@@ -5992,7 +5992,20 @@ model_material_selection_dialog
 0
 
 
+5
+ControlTable
+msd_table_1
+
 1
+0
+0
+1
+2
+-1
+0
+0
+
+
 ListView
 material_list
 
@@ -6001,10 +6014,49 @@ material_list
 0
 0
 0
--1
 0
 0
+0
+msd_table_1
 
+ControlTable
+msd_table_2
+
+1
+0
+1
+2
+1
+0
+0
+0
+msd_table_1
+
+Button
+add_material
+hui:add
+1
+0
+0
+0
+0
+0
+0
+0
+msd_table_2
+
+Button
+edit_material
+hui:edit
+1
+1
+0
+0
+0
+0
+0
+0
+msd_table_2
 
 // Resource
 Menu
@@ -16278,7 +16330,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-712
+714
 // Text
 ad_dialog
 Verwaltung
@@ -17094,6 +17146,10 @@ move_reset
 Zurücksetzen
 ms
 ms
+msd_table_1
+
+msd_table_2
+!noexpandy
 name
 
 nb_complexity
@@ -17710,7 +17766,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-712
+714
 // Text
 ad_dialog
 Administration
@@ -18526,6 +18582,10 @@ move_reset
 Reset
 ms
 ms
+msd_table_1
+
+msd_table_2
+
 name
 
 nb_complexity
@@ -19458,7 +19518,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-712
+714
 // Text
 ad_dialog
 
@@ -20274,6 +20334,10 @@ move_reset
 リセット
 ms
 ms
+msd_table_1
+
+msd_table_2
+
 name
 
 nb_complexity

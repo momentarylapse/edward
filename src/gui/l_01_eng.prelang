@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-570
+571
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -657,6 +657,8 @@ move_reset
 Reset
 ms
 ms
+msd_table_2
+
 nb_complexity
 \\1
 nb_tab_control

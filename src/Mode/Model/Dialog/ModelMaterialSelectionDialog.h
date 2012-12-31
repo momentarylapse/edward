@@ -9,9 +9,10 @@
 #define MODELMATERIALSELECTIONDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
+#include "../../../Stuff/Observer.h"
 class DataModel;
 
-class ModelMaterialSelectionDialog: public CHuiWindow
+class ModelMaterialSelectionDialog: public CHuiWindow, public Observer
 {
 public:
 	ModelMaterialSelectionDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data);
@@ -20,6 +21,11 @@ public:
 	void OnClose();
 	void OnMaterialList();
 	void OnMaterialListCheck();
+	void OnMaterialListSelect();
+	void OnMaterialAdd();
+	void OnMaterialEdit();
+
+	void OnUpdate(Observable *o);
 
 	void FillMaterialList();
 

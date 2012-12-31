@@ -41,7 +41,7 @@ public:
 	void SetMaterialCreation();
 
 	void ExecutePropertiesDialog(int initial_tab_page = 0);
-	void ExecuteMaterialDialog(int initial_tab_page = 0);
+	void ExecuteMaterialDialog(int initial_tab_page = 0, bool allow_parent = true);
 
 	DataModel *data;
 	Data *GetData(){	return data;	}
