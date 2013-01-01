@@ -29,9 +29,9 @@ void *ActionWorldEditTerrain::execute(Data *d)
 {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	assert(index >= 0);
-	assert(index < w->Terrain.num);
+	assert(index < w->Terrains.num);
 
-	CTerrain *t = w->Terrain[index].terrain;
+	Terrain *t = w->Terrains[index].terrain;
 
 	// swap
 	WorldEditingTerrain old_data;

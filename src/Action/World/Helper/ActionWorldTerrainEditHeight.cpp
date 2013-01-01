@@ -30,9 +30,9 @@ void *ActionWorldTerrainEditHeight::execute(Data *d)
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 
 	assert(index >= 0);
-	assert(index < w->Terrain.num);
+	assert(index < w->Terrains.num);
 
-	CTerrain *t = w->Terrain[index].terrain;
+	Terrain *t = w->Terrains[index].terrain;
 	assert(t);
 
 	assert(dest.x1 >= 0);

@@ -31,10 +31,10 @@ ActionWorldAddTerrain::~ActionWorldAddTerrain()
 void ActionWorldAddTerrain::undo(Data *d)
 {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
-	assert(w->Terrain.num > 0);
+	assert(w->Terrains.num > 0);
 
-	delete(w->Terrain.back().terrain);
-	w->Terrain.pop();
+	delete(w->Terrains.back().terrain);
+	w->Terrains.pop();
 }
 
 
@@ -51,7 +51,7 @@ void *ActionWorldAddTerrain::execute(Data *d)
 	t.pos = pos;
 
 	if (filename == ""){
-		t.terrain = new CTerrain();
+		t.terrain = new Terrain();
 		t.terrain->pos = pos;
 		t.terrain->num_x = num_x;
 		t.terrain->num_z = num_z;
@@ -78,12 +78,12 @@ void *ActionWorldAddTerrain::execute(Data *d)
 		t.terrain->max = pos + size;
 		t.terrain->force_redraw = true;
 	}else{
-		t.terrain = new CTerrain(filename, pos);
+		t.terrain = new Terrain(filename, pos);
 		t.FileName = filename;
 	}
 
-	w->Terrain.add(t);
-	return &w->Terrain.back();
+	w->Terrains.add(t);
+	return &w->Terrains.back();
 }
 
 

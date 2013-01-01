@@ -45,6 +45,8 @@ struct AdminFile{
 	Array<AdminFile*> Child;
 	int Time;
 
+	AdminFile();
+	AdminFile(const string &filename, int kind);
 	void add_child(AdminFile *a);
 	void remove_child(AdminFile *a);
 	void remove_all_children();

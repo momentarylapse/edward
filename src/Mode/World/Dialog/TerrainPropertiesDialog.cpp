@@ -18,7 +18,7 @@ TerrainPropertiesDialog::TerrainPropertiesDialog(CHuiWindow *_parent, bool _allo
 	data = _data;
 	index = _index;
 	assert(index >= 0);
-	assert(index < data->Terrain.num);
+	assert(index < data->Terrains.num);
 
 	// dialog
 	FromResource("terrain_dialog");
@@ -204,14 +204,14 @@ void TerrainPropertiesDialog::OnClearTextureLevel()
 
 void TerrainPropertiesDialog::OnUpdate(Observable *o)
 {
-	if (index >= data->Terrain.num){
+	if (index >= data->Terrains.num){
 		delete(this);
 		return;
 	}
 
-	CTerrain *t = data->Terrain[index].terrain;
+	Terrain *t = data->Terrains[index].terrain;
 	assert(t);
-	temp.FileName = data->Terrain[index].FileName;
+	temp.FileName = data->Terrains[index].FileName;
 	temp.NumX = t->num_x;
 	temp.NumZ = t->num_z;
 	temp.Pattern = t->pattern;

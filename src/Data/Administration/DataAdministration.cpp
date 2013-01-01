@@ -26,6 +26,23 @@ DataAdministration::~DataAdministration()
 }
 
 
+AdminFile::AdminFile()
+{
+	Kind = -1;
+	Missing = false;
+	Checked = false;
+	Time = 0;
+}
+
+AdminFile::AdminFile(const string &filename, int kind)
+{
+	Name = filename;
+	Kind = kind;
+	Missing = false;
+	Checked = false;
+	Time = 0;
+}
+
 void AdminFile::add_child(AdminFile *child)
 {
 	if (!child)
@@ -232,14 +249,14 @@ void AdminFile::check(AdminFileList &list)
 		DataWorld w;
 		if (w.Load(MapDir + Name, false)){
 			Time = w.file_time;
-			for (int i=0;i<w.Terrain.num;i++)
-				add_possible_link(l, FDTerrain, w.Terrain[i].FileName);
+			for (int i=0;i<w.Terrains.num;i++)
+				add_possible_link(l, FDTerrain, w.Terrains[i].FileName);
 			for (int i=0;i<w.meta_data.SkyBoxFile.num;i++)
 				add_possible_link(l, FDModel, w.meta_data.SkyBoxFile[i]);
 			for (int i=0;i<w.meta_data.ScriptFile.num;i++)
 				add_possible_link(l, FDScript, w.meta_data.ScriptFile[i]);
-			for (int i=0;i<w.Object.num;i++)
-				add_possible_link(l, FDModel, w.Object[i].FileName);
+			for (int i=0;i<w.Objects.num;i++)
+				add_possible_link(l, FDModel, w.Objects[i].FileName);
 		}else
 			Missing=true;
 	}else if (Kind==FDTerrain){
@@ -339,12 +356,8 @@ AdminFile *AdminFileList::add_unchecked(int kind, const string &filename, AdminF
 
 	// no list entry yet -> create one
 	if (!a){
-		a = new AdminFile;
+		a = new AdminFile(_filename, kind);
 		add(a);
-		a->Name = _filename;
-		a->Kind = kind;
-		a->Missing = false;
-		a->Checked = false;
 	}
 
 	// link to meta

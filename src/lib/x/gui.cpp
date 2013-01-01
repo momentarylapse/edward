@@ -115,7 +115,7 @@ void GuiDeletePicture(sPicture *picture)
 		}
 }
 
-sPicture3D *GuiCreatePicture3D(CModel *model, const matrix &mat, float z)
+sPicture3D *GuiCreatePicture3D(Model *model, const matrix &mat, float z)
 {
 	xcont_find_new(XContainerPicture3d, sPicture3D, p, Picture3D);
 	// default data to show existence...

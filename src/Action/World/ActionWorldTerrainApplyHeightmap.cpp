@@ -32,9 +32,9 @@ ActionWorldTerrainApplyHeightmap::ActionWorldTerrainApplyHeightmap(DataWorld *da
 	if (filter != "")
 		im_filter.Load(filter);
 
-	foreachi(WorldTerrain &t, data->Terrain, index)
+	foreachi(WorldTerrain &t, data->Terrains, index)
 		if (t.is_selected){
-			CTerrain *tt = t.terrain;
+			Terrain *tt = t.terrain;
 			irect dest(0, tt->num_x + 1, 0, tt->num_z + 1);
 			Array<float> height;
 

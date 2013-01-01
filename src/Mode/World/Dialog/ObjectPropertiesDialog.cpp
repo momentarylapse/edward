@@ -15,7 +15,7 @@ ObjectPropertiesDialog::ObjectPropertiesDialog(CHuiWindow *_parent, bool _allow_
 	data = _data;
 	index = _index;
 	assert(index >= 0);
-	assert(index < data->Object.num);
+	assert(index < data->Objects.num);
 
 	// dialog
 	FromResource("world_object_dialog");
@@ -29,7 +29,7 @@ ObjectPropertiesDialog::ObjectPropertiesDialog(CHuiWindow *_parent, bool _allow_
 
 	Subscribe(data);
 
-	temp = data->Object[index];
+	temp = data->Objects[index];
 	LoadData();
 }
 

@@ -12,7 +12,7 @@ ActionWorldRotateObjects::ActionWorldRotateObjects(DataWorld *d, const vector &_
 	ActionMultiView(_param, _pos0)
 {
 	// list of selected objects and save old pos
-	foreachi(WorldObject &o, d->Object, i)
+	foreachi(WorldObject &o, d->Objects, i)
 		if (o.is_selected){
 			index.add(i);
 			old_data.add(o.pos);
@@ -30,8 +30,8 @@ void ActionWorldRotateObjects::undo(Data *d)
 	matrix rot;
 	MatrixRotation(rot, param);
 	foreachi(int i, index, ii){
-		w->Object[i].pos = old_data[ii];
-		w->Object[i].Ang = old_ang[ii];
+		w->Objects[i].pos = old_data[ii];
+		w->Objects[i].Ang = old_ang[ii];
 	}
 }
 
@@ -43,8 +43,8 @@ void *ActionWorldRotateObjects::execute(Data *d)
 	matrix rot;
 	MatrixRotation(rot, param);
 	foreachi(int i, index, ii){
-		w->Object[i].pos = pos0 + rot * (old_data[ii] - pos0);
-		w->Object[i].Ang = VecAngAdd(old_ang[ii], param);
+		w->Objects[i].pos = pos0 + rot * (old_data[ii] - pos0);
+		w->Objects[i].Ang = VecAngAdd(old_ang[ii], param);
 	}
 	return NULL;
 }

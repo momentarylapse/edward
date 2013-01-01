@@ -114,9 +114,9 @@ extern sType *TypePlaneList;
 	#define	GetDAGrouping(x)	0
 #endif
 #ifdef _X_ALLOW_FX_
-	static sParticle *_particle;
+	static Particle *_particle;
 	#define	GetDAParticle(x)	long(&_particle->x)-long(_particle)
-	static sEffect *_effect;
+	static Effect *_effect;
 	#define	GetDAEffect(x)		long(&_effect->x)-long(_effect)
 #else
 	#define	GetDAParticle(x)	0
@@ -126,7 +126,7 @@ extern sType *TypePlaneList;
 #ifdef _X_ALLOW_MODEL_
 	static Bone *_bone;
 	#define	GetDABone(x)		long(&_bone->x)-long(_bone)
-	static CModel *_model;
+	static Model *_model;
 	#define sizeof_Bone			sizeof(Bone)
 	#define	GetDAModel(x)		long(&_model->x)-long(_model)
 	static Skin *_skin;
@@ -157,7 +157,7 @@ extern sType *TypePlaneList;
 	#define	GetDACamera(x)		0
 #endif
 #ifdef _X_ALLOW_TERRAIN_
-	static CTerrain *_terrain;
+	static Terrain *_terrain;
 	#define	GetDATerrain(x)		long(&_terrain->x)-long(_terrain)
 #else
 	#define	GetDATerrain(x)		0
@@ -355,14 +355,14 @@ void SIAddPackageX()
 		class_add_element("var_p",			TypePointerList,GetDAModel(script_var));
 		class_add_element("data",			TypePointer,	GetDAModel(script_data));
 		class_add_element("item",			TypeModelPList,	GetDAModel(inventary));
-		class_add_func("AddForce",		TypeVoid,	god_p(mf((tmf)&CObject::AddForce)));
+		class_add_func("AddForce",		TypeVoid,	god_p(mf((tmf)&Object::AddForce)));
 			func_add_param("force",		TypeVector);
 			func_add_param("rho",		TypeVector);
-		class_add_func("AddTorque",		TypeVoid,	god_p(mf((tmf)&CObject::AddTorque)));
+		class_add_func("AddTorque",		TypeVoid,	god_p(mf((tmf)&Object::AddTorque)));
 			func_add_param("torque",		TypeVector);
-		class_add_func("MakeVisible",		TypeVoid,		god_p(mf((tmf)&CObject::MakeVisible)));
+		class_add_func("MakeVisible",		TypeVoid,		god_p(mf((tmf)&Object::MakeVisible)));
 			func_add_param("visible",		TypeBool);
-		class_add_func("UpdateData",		TypeVoid,		god_p(mf((tmf)&CObject::UpdateData)));
+		class_add_func("UpdateData",		TypeVoid,		god_p(mf((tmf)&Object::UpdateData)));
 		class_add_element("skin",			TypeSkinPArray,	GetDAModel(skin));
 		class_add_element("skin0",			TypeSkinP,		GetDAModel(skin[0]));
 		class_add_element("skin1",			TypeSkinP,		GetDAModel(skin[1]));
@@ -373,15 +373,15 @@ void SIAddPackageX()
 		class_add_element("max",			TypeVector,		GetDAModel(max));
 		class_add_element("test_collisions",	TypeBool,		GetDAModel(test_collisions));
 		class_add_element("allow_shadow",	TypeBool,		GetDAModel(allow_shadow));
-/*	add_func("CalcMove",					TypeVoid,		mod_p(mf((tmf)&CModel::CalcMove)));
-	add_func("Draw",						TypeVoid,		mod_p(mf((tmf)&CModel::Draw)));
+/*	add_func("CalcMove",					TypeVoid,		mod_p(mf((tmf)&Model::CalcMove)));
+	add_func("Draw",						TypeVoid,		mod_p(mf((tmf)&Model::Draw)));
 		func_add_param("skin",				TypeInt);
 		func_add_param("fx",				TypeBool);*/
-		class_add_func("GetVertex",		TypeVector,		mod_p(mf((tmf)&CModel::GetVertex)));
+		class_add_func("GetVertex",		TypeVector,		mod_p(mf((tmf)&Model::GetVertex)));
 			func_add_param("index",			TypeInt);
 			func_add_param("skin",			TypeInt);
-		class_add_func("ResetAnimation",		TypeVoid,		mod_p(mf((tmf)&CModel::ResetAnimation)));
-		class_add_func("Animate",				TypeBool,		mod_p(mf((tmf)&CModel::Animate)));
+		class_add_func("ResetAnimation",		TypeVoid,		mod_p(mf((tmf)&Model::ResetAnimation)));
+		class_add_func("Animate",				TypeBool,		mod_p(mf((tmf)&Model::Animate)));
 			func_add_param("operation",		TypeInt);
 			func_add_param("param1",		TypeFloat);
 			func_add_param("param2",		TypeFloat);
@@ -390,18 +390,18 @@ void SIAddPackageX()
 			func_add_param("dt",			TypeFloat);
 			func_add_param("v",				TypeFloat);
 			func_add_param("loop",			TypeBool);
-		class_add_func("GetFrames",		TypeInt,		mod_p(mf((tmf)&CModel::GetFrames)));
+		class_add_func("GetFrames",		TypeInt,		mod_p(mf((tmf)&Model::GetFrames)));
 			func_add_param("move",			TypeInt);
-		class_add_func("BeginEditAnimation",	TypeVoid,		mod_p(mf((tmf)&CModel::BeginEditAnimation)));
-		class_add_func("MakeEditable",		TypeVoid,		mod_p(mf((tmf)&CModel::MakeEditable)));
-		class_add_func("BeginEdit",		TypeVoid,		mod_p(mf((tmf)&CModel::BeginEdit)));
+		class_add_func("BeginEditAnimation",	TypeVoid,		mod_p(mf((tmf)&Model::BeginEditAnimation)));
+		class_add_func("MakeEditable",		TypeVoid,		mod_p(mf((tmf)&Model::MakeEditable)));
+		class_add_func("BeginEdit",		TypeVoid,		mod_p(mf((tmf)&Model::BeginEdit)));
 			func_add_param("skin",			TypeInt);
-		class_add_func("EndEdit",			TypeVoid,		mod_p(mf((tmf)&CModel::EndEdit)));
+		class_add_func("EndEdit",			TypeVoid,		mod_p(mf((tmf)&Model::EndEdit)));
 			func_add_param("skin",			TypeInt);
-		class_add_func("SetBoneModel",		TypeVoid,		mod_p(mf((tmf)&CModel::SetBoneModel)));
+		class_add_func("SetBoneModel",		TypeVoid,		mod_p(mf((tmf)&Model::SetBoneModel)));
 			func_add_param("index",			TypeInt);
 			func_add_param("bone",			TypeModelP);
-		class_add_func("GetFilename",		TypeString,		mod_p(mf((tmf)&CModel::GetFilename)));
+		class_add_func("GetFilename",		TypeString,		mod_p(mf((tmf)&Model::GetFilename)));
 
 	add_class(TypeTerrain);
 		class_add_element("pos",			TypeVector,		GetDATerrain(pos));
@@ -412,13 +412,13 @@ void SIAddPackageX()
 		class_add_element("num_textures",	TypeInt,		GetDATerrain(num_textures));
 		class_add_element("texture",		TypeIntArray,	GetDATerrain(texture));
 		class_add_element("texture_scale",	TypeVectorArray,GetDATerrain(texture_scale));
-		class_add_func("Update",			TypeVoid,		god_p(mf((tmf)&CTerrain::Update)));
+		class_add_func("Update",			TypeVoid,		god_p(mf((tmf)&Terrain::Update)));
 			func_add_param("x1",		TypeInt);
 			func_add_param("x2",		TypeInt);
 			func_add_param("z1",		TypeInt);
 			func_add_param("z2",		TypeInt);
 			func_add_param("mode",		TypeInt);
-		class_add_func("GetHeight",			TypeFloat,		god_p(mf((tmf)&CTerrain::gimme_height)));
+		class_add_func("GetHeight",			TypeFloat,		god_p(mf((tmf)&Terrain::gimme_height)));
 			func_add_param("p",			TypeVector);
 
 	add_class(TypeCamera);
@@ -654,9 +654,9 @@ void SIAddPackageX()
 	add_ext_var("InitialWorldFile", TypeString,		god_p(&InitialWorldFile));
 	add_ext_var("CurrentWorldFile", TypeString,		god_p(&CurrentWorldFile));
 	add_ext_var("SecondWorldFile",	TypeString,		god_p(&SecondWorldFile));
-	add_ext_var("Object",			TypeModelPList,	god_p(&Object));
+	add_ext_var("Object",			TypeModelPList,	god_p(&Objects));
 	add_ext_var("Ego",				TypeModelP,		god_p(&Ego));
-	add_ext_var("Terrain",			TypeTerrainPList,god_p(&Terrain));
+	add_ext_var("Terrain",			TypeTerrainPList,god_p(&Terrains));
 	add_ext_var("Gravitation",		TypeVector,		god_p(&GlobalG));
 	add_ext_var("PhysicsEnabled",	TypeBool,		god_p(&PhysicsEnabled));
 	add_ext_var("CollisionsEnabled",	TypeBool,		god_p(&CollisionsEnabled));

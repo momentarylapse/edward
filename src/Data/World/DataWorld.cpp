@@ -34,7 +34,7 @@ bool WorldTerrain::Load(const vector &_pos, const string &filename, bool deep)
 	FileName = filename.substr(MapDir.num, -1);
 	FileName.resize(FileName.num - 4);
 
-	terrain = new CTerrain();
+	terrain = new Terrain();
 	bool Error = !terrain->Load(FileName, _pos, deep);
 
 	if (Error){
@@ -73,8 +73,8 @@ bool DataWorld::Save(const string & _filename)
 
 	f->WriteFileFormatVersion(false, 10);
 	f->WriteComment("// Terrains");
-	f->WriteInt(Terrain.num);
-	foreach(WorldTerrain &t, Terrain){
+	f->WriteInt(Terrains.num);
+	foreach(WorldTerrain &t, Terrains){
 		f->WriteStr(t.FileName);
 		f->WriteFloat(t.pos.x);
 		f->WriteFloat(t.pos.y);
@@ -107,8 +107,8 @@ bool DataWorld::Save(const string & _filename)
 	foreach(string &m, meta_data.MusicFile)
 		f->WriteStr(m);
 	f->WriteComment("// Objects");
-	f->WriteInt(Object.num);
-	foreach(WorldObject &o, Object){
+	f->WriteInt(Objects.num);
+	foreach(WorldObject &o, Objects){
 		f->WriteStr(o.FileName);
 		f->WriteStr(o.Name);
 		f->WriteFloat(o.pos.x);
@@ -176,7 +176,7 @@ bool DataWorld::Load(const string & _filename, bool deep)
 			WorldTerrain t;
 			t.FileName = f->ReadStr();
 			f->ReadVector(&t.pos);
-			Terrain.add(t);
+			Terrains.add(t);
 		}
 		// Gravitation
 		meta_data.Gravity.x = f->ReadFloatC();
@@ -226,7 +226,7 @@ bool DataWorld::Load(const string & _filename, bool deep)
 			o.view_stage = 0;
 			o.is_selected = false;
 			o.is_special = false;
-			Object.add(o);
+			Objects.add(o);
 		}
 		// Scripts
 		n = f->ReadIntC();
@@ -260,17 +260,17 @@ bool DataWorld::Load(const string & _filename, bool deep)
 	delete(f);
 
 	if ((!Error)&&(deep)){
-		for (int i=0;i<Terrain.num;i++){
-			ed->progress->Set(_("Terrains"), (float)i / (float)Terrain.num / 2.0f);
-			Terrain[i].Load(Terrain[i].pos, MapDir + Terrain[i].FileName + ".map", true);
+		for (int i=0;i<Terrains.num;i++){
+			ed->progress->Set(_("Terrains"), (float)i / (float)Terrains.num / 2.0f);
+			Terrains[i].Load(Terrains[i].pos, MapDir + Terrains[i].FileName + ".map", true);
 		}
-		for (int i=0;i<Object.num;i++){
-			ed->progress->Set(format(_("Objekt %d von %d"), i, Object.num), (float)i / (float)Object.num / 2.0f + 0.5f);
-			Object[i].object = (CObject*)MetaLoadModel(Object[i].FileName);
-			Object[i].object->pos = Object[i].pos;
-			Object[i].object->ang = Object[i].Ang;
-//			if (Object[i].object)
-//				GodRegisterModel(Object[i].object);
+		for (int i=0;i<Objects.num;i++){
+			ed->progress->Set(format(_("Objekt %d von %d"), i, Objects.num), (float)i / (float)Objects.num / 2.0f + 0.5f);
+			Objects[i].object = (Object*)MetaLoadModel(Objects[i].FileName);
+			Objects[i].object->pos = Objects[i].pos;
+			Objects[i].object->ang = Objects[i].Ang;
+//			if (Objects[i].object)
+//				GodRegisterModel(Objects[i].object);
 		}
 	}
 
@@ -348,12 +348,12 @@ void DataWorld::Reset()
 	filename = "";
 
 	// delete old data...
-	for (int i=0;i<Object.num;i++)
-		if (Object[i].object)
-			MetaDeleteModel(Object[i].object);
+	for (int i=0;i<Objects.num;i++)
+		if (Objects[i].object)
+			MetaDeleteModel(Objects[i].object);
 
-	Object.clear();
-	Terrain.clear();
+	Objects.clear();
+	Terrains.clear();
 
 	EgoIndex = -1;
 
@@ -368,7 +368,7 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 {
 	bool found_any=false;
 	msg_db_m("GetBoundaryBox",2);
-	foreach(WorldObject &o, Object)
+	foreach(WorldObject &o, Objects)
 		if (o.object){
 			vector min2 = o.pos - vector(1,1,1) * o.object->radius;
 			vector max2 = o.pos + vector(1,1,1) * o.object->radius;
@@ -380,7 +380,7 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 			max._max(max2);
 			found_any = true; //|=(min2!=max2);
 		}
-	foreach(WorldTerrain &t, Terrain)
+	foreach(WorldTerrain &t, Terrains)
 		if (t.terrain){
 			vector min2 = t.terrain->min;
 			vector max2 = t.terrain->max;
@@ -401,7 +401,7 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 int DataWorld::GetSelectedObjects()
 {
 	int n = 0;
-	foreach(WorldObject &o, Object)
+	foreach(WorldObject &o, Objects)
 		if (o.is_selected)
 			n ++;
 	return n;
@@ -412,7 +412,7 @@ int DataWorld::GetSelectedObjects()
 int DataWorld::GetSelectedTerrains()
 {
 	int n = 0;
-	foreach(WorldTerrain &t, Terrain)
+	foreach(WorldTerrain &t, Terrains)
 		if (t.is_selected)
 			n ++;
 	return n;
@@ -421,11 +421,11 @@ int DataWorld::GetSelectedTerrains()
 
 void DataWorld::UpdateData()
 {
-	foreachi(WorldObject &o, Object, i){
+	foreachi(WorldObject &o, Objects, i){
 		o.UpdateData();
 		o.is_special = (i == EgoIndex);
 	}
-	foreach(WorldTerrain &t, Terrain)
+	foreach(WorldTerrain &t, Terrains)
 		t.UpdateData();
 }
 
@@ -441,9 +441,9 @@ WorldTerrain* DataWorld::AddNewTerrain(const vector& pos, const vector& size, in
 
 void DataWorld::ClearSelection()
 {
-	foreach(WorldObject &o, Object)
+	foreach(WorldObject &o, Objects)
 		o.is_selected = false;
-	foreach(WorldTerrain &t, Terrain)
+	foreach(WorldTerrain &t, Terrains)
 		t.is_selected = false;
 }
 
@@ -453,10 +453,10 @@ void DataWorld::Copy(Array<WorldObject> &objects, Array<WorldTerrain> &terrains)
 	objects.clear();
 	terrains.clear();
 
-	foreach(WorldObject &o, Object)
+	foreach(WorldObject &o, Objects)
 		if (o.is_selected)
 			objects.add(o);
-	foreach(WorldTerrain &t, Terrain)
+	foreach(WorldTerrain &t, Terrains)
 		if (t.is_selected)
 			terrains.add(t);
 }

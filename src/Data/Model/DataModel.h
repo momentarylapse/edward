@@ -150,7 +150,7 @@ public:
 	int Parent;
 	vector DeltaPos;
 	string ModelFile;
-	CModel *model;
+	Model *model;
 	bool ConstPos;
 
 	// for editing

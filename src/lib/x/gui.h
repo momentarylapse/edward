@@ -32,7 +32,7 @@ struct sPicture3D : XContainer
 	bool lighting, world_3d;
 	float z;
 	matrix _matrix;
-	CModel *model;
+	Model *model;
 	color _color;
 	// temp data
 	bool ch_alpha, ch_color;
@@ -85,7 +85,7 @@ sText *_cdecl GuiCreateText(const vector &pos, float size, const color &col, con
 void GuiDeleteText(sText *text);
 sPicture *_cdecl GuiCreatePicture(const vector &pos, float width, float height, int texture);
 void GuiDeletePicture(sPicture *picture);
-sPicture3D *_cdecl GuiCreatePicture3D(CModel *model, const matrix &mat, float z);
+sPicture3D *_cdecl GuiCreatePicture3D(Model *model, const matrix &mat, float z);
 void GuiDeletePicture3D(sPicture3D *picture3d);
 sGrouping *_cdecl GuiCreateGrouping(const vector &pos, bool set_current);
 void GuiDeleteGrouping(sGrouping *grouping);

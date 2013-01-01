@@ -83,7 +83,7 @@ void ActionModelDeleteBone::undo(Data *d)
 		b.pos = pos;
 	b.Matrix = m_id;
 	b.ModelFile = filename;
-	b.model = (CModel*)model;
+	b.model = (Model*)model;
 	b.view_stage = 0;
 	m->Bone.insert(b, index);
 

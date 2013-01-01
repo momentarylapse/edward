@@ -32,7 +32,7 @@ public:
 	int VertexBufferSingle;
 	int ShowTexture;
 	bool Changed;
-	CTerrain *terrain;
+	Terrain *terrain;
 
 	bool Load(const vector &pos, const string &filename, bool deep = true);
 	void UpdateData();
@@ -54,7 +54,7 @@ class WorldObject: public MultiViewSingleData
 {
 public:
 	string FileName, Name;
-	CObject *object;
+	Object *object;
 	vector Ang;
 
 	void UpdateData();
@@ -80,10 +80,10 @@ public:
 	void ClearSelection();
 
 	// terrains
-	Array<WorldTerrain> Terrain;
+	Array<WorldTerrain> Terrains;
 
 	// objects
-	Array<WorldObject> Object;
+	Array<WorldObject> Objects;
 	int EgoIndex;
 
 	struct MetaData{

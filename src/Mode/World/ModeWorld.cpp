@@ -129,7 +129,7 @@ bool tvm[MODEL_MAX_VERTICES*5];
 
 bool IsMouseOverObject(int index, void *user_data, int win, vector &tp)
 {
-	CModel *m = mode_world->data->Object[index].object;
+	Model *m = mode_world->data->Objects[index].object;
 	if (!m)
 		return false;
 	int d = m->_detail_;
@@ -167,7 +167,7 @@ bool IsMouseOverObject(int index, void *user_data, int win, vector &tp)
 
 bool IsInRectObject(int index, void *user_data, int win, irect *r)
 {
-	CModel *m = mode_world->data->Object[index].object;
+	Model *m = mode_world->data->Objects[index].object;
 	if (!m)
 		return false;
 	int d = m->_detail_;
@@ -200,7 +200,7 @@ bool IsInRectObject(int index, void *user_data, int win, irect *r)
 bool IsMouseOverTerrain(int index, void *user_data, int win, vector &tp)
 {
 	//msg_db_r(format("IMOT index= %d",index).c_str(),3);
-	CTerrain *t = mode_world->data->Terrain[index].terrain;
+	Terrain *t = mode_world->data->Terrains[index].terrain;
 	if (!t)
 		return false;
 #if 0
@@ -264,7 +264,7 @@ bool IsMouseOverTerrain(int index, void *user_data, int win, vector &tp)
 
 bool IsInRectTerrain(int index, void *user_data, int win, irect *r)
 {
-	CTerrain *t = mode_world->data->Terrain[index].terrain;
+	Terrain *t = mode_world->data->Terrains[index].terrain;
 	vector min,max;
 	for (int i=0;i<8;i++){
 		vector v=t->pos+vector((i%2)==0?t->min.x:t->max.x,((i/2)%2)==0?t->min.y:t->max.y,((i/4)%2)==0?t->min.z:t->max.z);
@@ -321,12 +321,12 @@ void ModeWorld::OnUpdate(Observable *o)
 		multi_view->MVRectable = true;
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		multi_view->SetData(	MVDWorldObject,
-				data->Object,
+				data->Objects,
 				NULL,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
 				&IsMouseOverObject, &IsInRectObject);
 		multi_view->SetData(	MVDWorldTerrain,
-				data->Terrain,
+				data->Terrains,
 				NULL,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
 				&IsMouseOverTerrain, &IsInRectTerrain);
@@ -406,7 +406,7 @@ void ModeWorld::OnEnd()
 
 
 
-void DrawSelectionObject(CModel *o, float alpha, const color &c)
+void DrawSelectionObject(Model *o, float alpha, const color &c)
 {
 	if (!o)
 		return;
@@ -423,7 +423,7 @@ void DrawSelectionObject(CModel *o, float alpha, const color &c)
 	}
 }
 
-void DrawTerrainColored(CTerrain *t, const color &c, float alpha)
+void DrawTerrainColored(Terrain *t, const color &c, float alpha)
 {
 	NixSetWire(false);
 	NixEnableLighting(true);
@@ -476,7 +476,7 @@ void ModeWorld::OnDrawWin(int win, irect dest)
 
 // terrain
 	if (ShowTerrains){
-		foreachi(WorldTerrain &t, data->Terrain, i){
+		foreachi(WorldTerrain &t, data->Terrains, i){
 			if (!t.terrain)
 				continue;
 			/*if (t.ViewStage < ViewStage)
@@ -510,7 +510,7 @@ void ModeWorld::OnDrawWin(int win, irect dest)
 		//NixSetWire(false);
 		NixEnableLighting(true);
 
-		foreach(WorldObject &o, data->Object){
+		foreach(WorldObject &o, data->Objects){
 			if (o.view_stage < ViewStage)
 				continue;
 			if (o.object){
@@ -521,13 +521,13 @@ void ModeWorld::OnDrawWin(int win, irect dest)
 		NixSetWire(false);
 
 		// object selection
-		foreachi(WorldObject &o, data->Object, i)
+		foreachi(WorldObject &o, data->Objects, i)
 			if (o.is_selected)
 				DrawSelectionObject(o.object, OSelectionAlpha, Red);
 			else if (o.is_special)
 				DrawSelectionObject(o.object, OSelectionAlpha, Green);
 		if ((multi_view->MouseOver>=0)&&(multi_view->MouseOverType==MVDWorldObject))
-			DrawSelectionObject(data->Object[multi_view->MouseOver].object, OSelectionAlpha, White);
+			DrawSelectionObject(data->Objects[multi_view->MouseOver].object, OSelectionAlpha, White);
 		NixSetAlpha(AlphaNone);
 	}
 
@@ -658,12 +658,12 @@ void ModeWorld::ExecutePropertiesDialog()
 		ExecuteWorldPropertiesDialog();
 	}else if ((num_o == 1) && (num_t == 0)){
 		// single object -> object
-		foreachi(WorldObject &o, data->Object, i)
+		foreachi(WorldObject &o, data->Objects, i)
 			if (o.is_selected)
 				ExecuteObjectPropertiesDialog(i);
 	}else if ((num_o == 0) && (num_t == 1)){
 		// single terrain -> terrain
-		foreachi(WorldTerrain &t, data->Terrain, i)
+		foreachi(WorldTerrain &t, data->Terrains, i)
 			if (t.is_selected)
 				ExecuteTerrainPropertiesDialog(i);
 	}else{
@@ -746,7 +746,7 @@ void ModeWorld::SetEgo()
 		ed->SetMessage(_("Es muss genau ein Objekt markiert sein!"));
 		return;
 	}
-	foreachi(WorldObject &o, data->Object, i)
+	foreachi(WorldObject &o, data->Objects, i)
 		if (o.is_selected)
 			data->Execute(new ActionWorldSetEgo(i));
 }
