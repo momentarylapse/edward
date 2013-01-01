@@ -27,7 +27,7 @@ enum{
 class CTerrain
 {
 public:
-	CTerrain(){};
+	CTerrain();
 	CTerrain(const string &filename, const vector &pos);
 	bool Load(const string &filename, const vector &pos, bool deep = true);
 	~CTerrain();

@@ -20,6 +20,12 @@ void CTerrain::reset()
 	error = false;
 	num_x = num_z = 0;
 	changed = false;
+	vertex_buffer = -1;
+}
+
+CTerrain::CTerrain()
+{
+	reset();
 }
 
 CTerrain::CTerrain(const string &_filename_, const vector &_pos_)
@@ -35,7 +41,6 @@ bool CTerrain::Load(const string &_filename_, const vector &_pos_, bool deep)
 
 	reset();
 
-	error=false;
 	filename = _filename_;
 	CFile *f = OpenFile(MapDir + filename + ".map");
 	if (f){
