@@ -23,6 +23,10 @@
 | last updated: 2009.12.09 (c) by MichiSoft TM                                 |
 \*----------------------------------------------------------------------------*/
 #include "x.h"
+#ifdef _X_ALLOW_SCRIPT_
+	#include "../script/script.h"
+	extern string Script::Directory;
+#endif
 
 string MetaVersion = "0.3.1.4";
 
@@ -201,8 +205,7 @@ void MetaSetDirs(const string &texture_dir, const string &map_dir, const string 
 	ScriptDir = script_dir;
 	MaterialDir = material_dir;
 #ifdef _X_ALLOW_SCRIPT_
-	extern string ScriptDirectory;
-	ScriptDirectory = script_dir;
+	Script::Directory = script_dir;
 #endif
 }
 

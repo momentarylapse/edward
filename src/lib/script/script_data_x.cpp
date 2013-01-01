@@ -11,6 +11,8 @@
 	#include "../networking.h"
 #endif
 
+namespace Script{
+
 #ifdef _X_ALLOW_META_
 	#define meta_p(p)	(void*)p
 #else
@@ -47,55 +49,55 @@
 	#define x_p(p)		NULL
 #endif
 
-sType *TypeBone;
-sType *TypeBoneList;
-sType *TypeModel;
-sType *TypeModelP;
-sType *TypeModelPPs;
-sType *TypeModelPList;
-sType *TypeModelPListPs;
-sType *TypeText;
-sType *TypeTextP;
-sType *TypePicture;
-sType *TypePictureP;
-sType *TypePicture3D;
-sType *TypePicture3DP;
-sType *TypeGrouping;
-sType *TypeGroupingP;
-sType *TypeParticle;
-sType *TypeParticleP;
-sType *TypeBeam;
-sType *TypeBeamP;
-sType *TypeEffect;
-sType *TypeEffectP;
-sType *TypeCamera;
-sType *TypeCameraP;
-sType *TypeSkin;
-sType *TypeSkinP;
-sType *TypeSkinPArray;
-sType *TypeSubSkin;
-sType *TypeSubSkinList;
-sType *TypeMaterial;
-sType *TypeMaterialList;
-sType *TypeFog;
-sType *TypeTerrain;
-sType *TypeTerrainP;
-sType *TypeTerrainPList;
+Type *TypeBone;
+Type *TypeBoneList;
+Type *TypeModel;
+Type *TypeModelP;
+Type *TypeModelPPs;
+Type *TypeModelPList;
+Type *TypeModelPListPs;
+Type *TypeText;
+Type *TypeTextP;
+Type *TypePicture;
+Type *TypePictureP;
+Type *TypePicture3D;
+Type *TypePicture3DP;
+Type *TypeGrouping;
+Type *TypeGroupingP;
+Type *TypeParticle;
+Type *TypeParticleP;
+Type *TypeBeam;
+Type *TypeBeamP;
+Type *TypeEffect;
+Type *TypeEffectP;
+Type *TypeCamera;
+Type *TypeCameraP;
+Type *TypeSkin;
+Type *TypeSkinP;
+Type *TypeSkinPArray;
+Type *TypeSubSkin;
+Type *TypeSubSkinList;
+Type *TypeMaterial;
+Type *TypeMaterialList;
+Type *TypeFog;
+Type *TypeTerrain;
+Type *TypeTerrainP;
+Type *TypeTerrainPList;
 
-extern sType *TypeMatrix;
-extern sType *TypeMatrix3;
-extern sType *TypeFloatList;
-extern sType *TypeIntList;
-extern sType *TypePointerList;
-extern sType *TypeVectorList;
-extern sType *TypeVectorArray;
-extern sType *TypeIntArray;
-extern sType *TypeFloatArray;
-extern sType *TypeFloatPs;
-extern sType *TypePlaneList;
-extern sType *TypeStringList;
-extern sType *TypePlane;
-extern sType *TypePlaneList;
+extern Type *TypeMatrix;
+extern Type *TypeMatrix3;
+extern Type *TypeFloatList;
+extern Type *TypeIntList;
+extern Type *TypePointerList;
+extern Type *TypeVectorList;
+extern Type *TypeVectorArray;
+extern Type *TypeIntArray;
+extern Type *TypeFloatArray;
+extern Type *TypeFloatPs;
+extern Type *TypePlaneList;
+extern Type *TypeStringList;
+extern Type *TypePlane;
+extern Type *TypePlaneList;
 
 
 #ifdef _X_ALLOW_GUI_
@@ -721,3 +723,5 @@ void SIAddPackageX()
 	add_const("MoveOpMix2Factor",  TypeInt, god_p(MoveOpMix2Factor));
 	
 }
+
+};

@@ -93,9 +93,9 @@ void ModelFXDialog::OnFindScriptFile()
 		string filename = ed->DialogFile;
 		SetString("script_file", ed->DialogFile);
 
-		ScriptDirectory = ScriptDir;
-		CScript *s = new CScript(filename, true); // just analyse
-		CPreScript *ps = s->pre_script;
+		Script::Directory = ScriptDir;
+		Script::Script *s = new Script::Script(filename, true); // just analyse
+		Script::PreScript *ps = s->pre_script;
 		if (s->Error){
 			ed->ErrorBox(format(_("Fehler in Script-Datei: \"%s\"\n%s\n%s"), filename.c_str(), ps->ErrorMsgExt[0].c_str(), ps->ErrorMsgExt[1].c_str()));
 			msg_db_l(1);
