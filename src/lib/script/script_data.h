@@ -59,7 +59,7 @@ struct Type{
 		array_length = 0;
 		is_pointer = false;
 		is_silent = false;
-		sub_type = NULL;
+		parent = NULL;
 		force_call_by_value = false;
 	};
 	string name;
@@ -69,7 +69,7 @@ struct Type{
 	bool is_pointer, is_silent; // pointer silent (&)
 	Array<ClassElement> element;
 	Array<ClassFunction> function;
-	Type *sub_type;
+	Type *parent;
 	PreScript *owner; // to share and be able to delete...
 
 	bool force_call_by_value;

@@ -661,14 +661,14 @@ void init_sub_super_array(PreScript *ps, Function *f, Type *t, char* g_var, int 
 	// direct
 	if (t->is_super_array){
 		if (g_var)
-			((DynamicArray*)(g_var + offset))->init(t->sub_type->size);
+			((DynamicArray*)(g_var + offset))->init(t->parent->size);
 		if (f){}
 	}
 
 	// indirect
 	if (t->is_array)
 		for (int i=0;i<t->array_length;i++)
-			init_sub_super_array(ps, f, t->sub_type, g_var, offset + i * t->sub_type->size);
+			init_sub_super_array(ps, f, t->parent, g_var, offset + i * t->parent->size);
 	for (int i=0;i<t->element.num;i++)
 		init_sub_super_array(ps, f, t->element[i].type, g_var, offset + t->element[i].offset);
 }

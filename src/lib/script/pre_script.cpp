@@ -56,7 +56,7 @@ inline void command_make_deref(PreScript *ps, Command *c, Command *param)
 	c->kind = KindDereference;
 	c->num_params = 1;
 	c->param[0] = param;
-	c->type = param->type->sub_type;
+	c->type = param->type->parent;
 }
 
 inline void deref_command(PreScript *ps, Command *c)
@@ -879,7 +879,7 @@ Type *PreScript::CreateNewType(const string &name, int size, bool is_pointer, bo
 	nt.is_silent = is_silent;
 	nt.name = name;
 	nt.size = size;
-	nt.sub_type = sub;
+	nt.parent = sub;
 	AddType(&pt);
 	return pt;
 }
@@ -962,7 +962,7 @@ void PreScript::GetOperandExtension(Command *Operand, Function *f)
 		// pointer -> dereference
 		bool deref = false;
 		if (type->is_pointer){
-			type = type->sub_type;
+			type = type->parent;
 			deref = true;
 		}
 
@@ -1023,9 +1023,9 @@ void PreScript::GetOperandExtension(Command *Operand, Function *f)
 		bool pparray = false;
 		if (!allowed)
 			if (Operand->type->is_pointer){
-				if ((Operand->type->sub_type->is_array) || (Operand->type->sub_type->is_super_array)){
+				if ((Operand->type->parent->is_array) || (Operand->type->parent->is_super_array)){
 					allowed = true;
-					pparray = (Operand->type->sub_type->is_super_array);
+					pparray = (Operand->type->parent->is_super_array);
 				}else{
 					DoError(format("using pointer type \"%s\" as an array (like in C) is not allowed any more", Operand->type->name.c_str()));
 					msg_db_l(4);
@@ -1050,19 +1050,19 @@ void PreScript::GetOperandExtension(Command *Operand, Function *f)
 			so("  ->Pointer-Pointer-Array");
 			//array = cp_command(this, Operand);
 			Operand->kind = KindPointerAsArray;
-			Operand->type = t->type->sub_type;
+			Operand->type = t->type->parent;
 			deref_command(this, Operand);
 			array = Operand->param[0];
 		}else if ((Operand->type->is_pointer) || (Operand->type->is_super_array)){
 			Operand->kind = KindPointerAsArray;
 			if (Operand->type->is_pointer)
-				Operand->type = t->type->sub_type->sub_type;
+				Operand->type = t->type->parent->parent;
 			else
-				Operand->type = t->type->sub_type;
+				Operand->type = t->type->parent;
 			so("  ->Pointer-Array");
 		}else{
 			Operand->kind = KindArray;
-			Operand->type = t->type->sub_type;
+			Operand->type = t->type->parent;
 		}
 
 		// array index...
@@ -1229,11 +1229,11 @@ void PreScript::CheckParamLink(Command *link, Type *type, const string &f_name, 
 
 	// "silent" pointer (&)?
 	if ((wt->is_pointer) && (wt->is_silent)){
-		if (direct_type_match(pt, wt->sub_type)){
+		if (direct_type_match(pt, wt->parent)){
 			so("<silent Ref &>");
 
 			ref_command(this, link);
-		}else if ((pt->is_pointer) && (direct_type_match(pt->sub_type, wt->sub_type))){
+		}else if ((pt->is_pointer) && (direct_type_match(pt->parent, wt->parent))){
 			so("<silent Ref & of *>");
 
 			// no need to do anything...
@@ -1871,7 +1871,7 @@ void PreScript::GetSpecialCommand(Block *block, Function *f)
 		next_exp();
 
 		// variable...
-		Type *var_type = for_array->type->sub_type;
+		Type *var_type = for_array->type->parent;
 		int var_no = AddVar(var_name, var_type, f);
 		exlink_make_var_local(this, var_type, var_no);
  		Command *for_var = cp_command(this, &GetExistenceLink);
@@ -2294,7 +2294,7 @@ void PreScript::ParseClassFunction(Type *t, bool as_extern)
 inline bool type_needs_alignment(Type *t)
 {
 	if (t->is_array)
-		return type_needs_alignment(t->sub_type);
+		return type_needs_alignment(t->parent);
 	return (t->size >= 4);
 }
 
@@ -3185,7 +3185,7 @@ void CreateImplicitConstructor(PreScript *ps, Type *t)
 		foreach(ClassFunction &ff, t->function)
 			if (ff.name == "__mem_init__"){
 				int nc = ps->AddConstant(TypeInt);
-				*(int*)ps->Constants[nc].data = t->sub_type->size;
+				*(int*)ps->Constants[nc].data = t->parent->size;
 				Command *c = add_command_classfunc(ps, t, ff, self);
 				Command *p = add_command_const(ps, nc);
 				c->param[0] = p;
@@ -3345,7 +3345,7 @@ void CreateImplicitAssign(PreScript *ps, Type *t)
 		deref_command(ps, deref_self);
 		Command *cmd_el = ps->AddCommand();
 		cmd_el->kind = KindPointerAsArray;
-		cmd_el->type = t->sub_type;
+		cmd_el->type = t->parent;
 		cmd_el->param[0] = deref_self;
 		cmd_el->param[1] = for_var;
 		cmd_el->num_params = 2;
@@ -3353,7 +3353,7 @@ void CreateImplicitAssign(PreScript *ps, Type *t)
 		// el2 := other[for_var]
 		Command *cmd_el2 = ps->AddCommand();
 		cmd_el2->kind = KindPointerAsArray;
-		cmd_el2->type = t->sub_type;
+		cmd_el2->type = t->parent;
 		cmd_el2->param[0] = deref_other;
 		cmd_el2->param[1] = for_var;
 		cmd_el2->num_params = 2;
@@ -3361,7 +3361,7 @@ void CreateImplicitAssign(PreScript *ps, Type *t)
 
 		Command *cmd_assign = ps->AddCommand();
 		if (!ps->LinkOperator(OperatorAssign, cmd_el, cmd_el2, &cmd_assign)){
-			ps->DoError(format("%s.__assign__(): no %s.__assign__() found", t->name.c_str(), t->sub_type->name.c_str()));
+			ps->DoError(format("%s.__assign__(): no %s.__assign__() found", t->name.c_str(), t->parent->name.c_str()));
 			return;
 		}
 		b->command.add(cmd_assign);
@@ -3434,7 +3434,7 @@ void CreateImplicitArrayClear(PreScript *ps, Type *t)
 	for_var->type = TypeInt;
 
 // delete...
-	if (t->sub_type->GetFunc("__delete__") >= 0){
+	if (t->parent->GetFunc("__delete__") >= 0){
 		// for_var = 0
 		int nc = ps->AddConstant(TypeInt);
 		(*(int*)ps->Constants[nc].data) = 0;
@@ -3461,14 +3461,14 @@ void CreateImplicitArrayClear(PreScript *ps, Type *t)
 		deref_command(ps, deref_self);
 		Command *cmd_el = ps->AddCommand();
 		cmd_el->kind = KindPointerAsArray;
-		cmd_el->type = t->sub_type;
+		cmd_el->type = t->parent;
 		cmd_el->param[0] = deref_self;
 		cmd_el->param[1] = for_var;
 		cmd_el->num_params = 2;
 		ref_command(ps, cmd_el);
 
 		// __delete__
-		Command *cmd_delete = add_command_classfunc(ps, t, t->sub_type->function[t->sub_type->GetFunc("__delete__")], cmd_el);
+		Command *cmd_delete = add_command_classfunc(ps, t, t->parent->function[t->parent->GetFunc("__delete__")], cmd_el);
 		b->command.add(cmd_delete);
 
 		// ...for_var += 1
@@ -3538,7 +3538,7 @@ void CreateImplicitArrayResize(PreScript *ps, Type *t)
 	f->block->command.add(cmd_copy_num);
 
 // delete...
-	if (t->sub_type->GetFunc("__delete__") >= 0){
+	if (t->parent->GetFunc("__delete__") >= 0){
 		// for_var = num
 		Command *cmd_assign = ps->AddCommand();
 		CommandMakeOperator(cmd_assign, for_var, num, OperatorIntAssign);
@@ -3562,14 +3562,14 @@ void CreateImplicitArrayResize(PreScript *ps, Type *t)
 		deref_command(ps, deref_self);
 		Command *cmd_el = ps->AddCommand();
 		cmd_el->kind = KindPointerAsArray;
-		cmd_el->type = t->sub_type;
+		cmd_el->type = t->parent;
 		cmd_el->param[0] = deref_self;
 		cmd_el->param[1] = for_var;
 		cmd_el->num_params = 2;
 		ref_command(ps, cmd_el);
 
 		// __delete__
-		Command *cmd_delete = add_command_classfunc(ps, t, t->sub_type->function[t->sub_type->GetFunc("__delete__")], cmd_el);
+		Command *cmd_delete = add_command_classfunc(ps, t, t->parent->function[t->parent->GetFunc("__delete__")], cmd_el);
 		b->command.add(cmd_delete);
 
 		// ...for_var += 1
@@ -3586,7 +3586,7 @@ void CreateImplicitArrayResize(PreScript *ps, Type *t)
 	f->block->command.add(c_resize);
 
 	// new...
-	if (t->sub_type->GetFunc("__init__") >= 0){
+	if (t->parent->GetFunc("__init__") >= 0){
 		// for_var = num_old
 		Command *cmd_assign = ps->AddCommand();
 		CommandMakeOperator(cmd_assign, for_var, num_old, OperatorIntAssign);
@@ -3610,14 +3610,14 @@ void CreateImplicitArrayResize(PreScript *ps, Type *t)
 		deref_command(ps, deref_self);
 		Command *cmd_el = ps->AddCommand();
 		cmd_el->kind = KindPointerAsArray;
-		cmd_el->type = t->sub_type;
+		cmd_el->type = t->parent;
 		cmd_el->param[0] = deref_self;
 		cmd_el->param[1] = for_var;
 		cmd_el->num_params = 2;
 		ref_command(ps, cmd_el);
 
 		// __init__
-		Command *cmd_init = add_command_classfunc(ps, t, t->sub_type->function[t->sub_type->GetFunc("__init__")], cmd_el);
+		Command *cmd_init = add_command_classfunc(ps, t, t->parent->function[t->parent->GetFunc("__init__")], cmd_el);
 		b->command.add(cmd_init);
 
 		// ...for_var += 1
@@ -3642,16 +3642,16 @@ void CreateImplicitArrayAdd(PreScript *ps, Type *t)
 	// create function
 	Function *f = ps->AddFunction(t->name + ".add", TypeVoid);
 	int fn = ps->Functions.num - 1;
-	ps->AddVar("x", t->sub_type, f);
+	ps->AddVar("x", t->parent, f);
 	f->num_params = 1;
-	f->literal_param_type[0] = t->sub_type;
+	f->literal_param_type[0] = t->parent;
 	f->_class = t;
 	ps->AddVar("self", ps->GetPointerType(t), f);
 
 	Command *item = ps->AddCommand();
 	item->kind = KindVarLocal;
 	item->link_nr = 0;
-	item->type = t->sub_type;
+	item->type = t->parent;
 
 	Command *self = ps->AddCommand();
 	self->kind = KindVarLocal;
@@ -3686,14 +3686,14 @@ void CreateImplicitArrayAdd(PreScript *ps, Type *t)
 	deref_command(ps, deref_self);
 	Command *cmd_el = ps->AddCommand();
 	cmd_el->kind = KindPointerAsArray;
-	cmd_el->type = t->sub_type;
+	cmd_el->type = t->parent;
 	cmd_el->param[0] = deref_self;
 	cmd_el->param[1] = cmd_sub;
 	cmd_el->num_params = 2;
 
 	Command *cmd_assign = ps->AddCommand();
 	if (!ps->LinkOperator(OperatorAssign, cmd_el, item, &cmd_assign)){
-		ps->DoError(format("%s.add(): no %s.__assign__ for elements", t->name.c_str(), t->sub_type->name.c_str()));
+		ps->DoError(format("%s.add(): no %s.__assign__ for elements", t->name.c_str(), t->parent->name.c_str()));
 		return;
 	}
 	f->block->command.add(cmd_assign);
@@ -3703,7 +3703,7 @@ void CreateImplicitArrayAdd(PreScript *ps, Type *t)
 	cf.nr = fn;
 	cf.name = "add";
 	cf.return_type = TypeVoid;
-	cf.param_type.add(t->sub_type);
+	cf.param_type.add(t->parent);
 	t->function.add(cf);
 }
 

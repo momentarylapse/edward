@@ -126,8 +126,8 @@ inline void add_temp(SerializerData *d, Type *t, sSerialCommandParam &param)
 
 inline Type *get_subtype(Type *t)
 {
-	if (t->sub_type)
-		return t->sub_type;
+	if (t->parent)
+		return t->parent;
 	msg_error("subtype wanted of... " + t->name);
 	//msg_write(cur_func->Name);
 	return TypeUnknown;

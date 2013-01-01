@@ -120,7 +120,7 @@ Type *add_type_p(const string &name, Type *sub_type, TypeFlag flag)
 	t->is_pointer = true;
 	if ((flag & FLAG_SILENT) > 0)
 		t->is_silent = true;
-	t->sub_type = sub_type;
+	t->parent = sub_type;
 	PreTypes.add(t);
 	if (cur_package)
 		cur_package->type.add(t);
@@ -132,7 +132,7 @@ Type *add_type_a(const string &name, Type *sub_type, int array_length)
 	msg_db_r("add_type_a", 4);
 	Type *t = new Type;
 	t->name = name;
-	t->sub_type = sub_type;
+	t->parent = sub_type;
 	if (array_length < 0){
 		// super array
 		t->size = SuperArraySize;
@@ -249,7 +249,7 @@ void class_add_func(const string &name, Type *return_type, void *func)
 	string tname = cur_class->name;
 	if (tname[0] == '-')
 		for (int i=0;i<PreTypes.num;i++)
-			if ((PreTypes[i]->is_pointer) && (PreTypes[i]->sub_type == cur_class))
+			if ((PreTypes[i]->is_pointer) && (PreTypes[i]->parent == cur_class))
 				tname = PreTypes[i]->name;
 	int cmd = add_func(tname + "." + name, return_type, func, true);
 	ClassFunction f;
@@ -436,28 +436,28 @@ void script_make_super_array(Type *t, PreScript *ps)
 			func_add_param("start",		TypeInt);
 			func_add_param("num",		TypeInt);
 
-		if (type_is_simple_class(t->sub_type)){
-			if (!t->sub_type->UsesCallByReference()){
-				if (t->sub_type->size == 4){
+		if (type_is_simple_class(t->parent)){
+			if (!t->parent->UsesCallByReference()){
+				if (t->parent->size == 4){
 					class_add_func("__init__",	TypeVoid, mf((tmf)&Array<int>::__init__));
 					class_add_func("add", TypeVoid, mf((tmf)&SuperArray::append_4_single));
-						func_add_param("x",		t->sub_type);
+						func_add_param("x",		t->parent);
 					class_add_func("insert", TypeVoid, mf((tmf)&SuperArray::insert_4_single));
-						func_add_param("x",		t->sub_type);
+						func_add_param("x",		t->parent);
 						func_add_param("index",		TypeInt);
-				}else if (t->sub_type->size == 1){
+				}else if (t->parent->size == 1){
 					class_add_func("__init__",	TypeVoid, mf((tmf)&Array<char>::__init__));
 					class_add_func("add", TypeVoid, mf((tmf)&SuperArray::append_1_single));
-						func_add_param("x",		t->sub_type);
+						func_add_param("x",		t->parent);
 					class_add_func("insert", TypeVoid, mf((tmf)&SuperArray::insert_1_single));
-						func_add_param("x",		t->sub_type);
+						func_add_param("x",		t->parent);
 						func_add_param("index",		TypeInt);
 				}
 			}else{
 				class_add_func("add", TypeVoid, mf((tmf)&SuperArray::append_single));
-					func_add_param("x",		t->sub_type);
+					func_add_param("x",		t->parent);
 				class_add_func("insert", TypeVoid, mf((tmf)&SuperArray::insert_single));
-					func_add_param("x",		t->sub_type);
+					func_add_param("x",		t->parent);
 					func_add_param("index",		TypeInt);
 			}
 			class_add_func("__delete__",	TypeVoid, mf((tmf)&SuperArray::clear));

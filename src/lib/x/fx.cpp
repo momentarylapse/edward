@@ -293,9 +293,9 @@ Effect *FxCreateScript(Model *m, int vertex, const string &filename)
 	fx->model = m;
 	fx->type = FXTypeScript;
 #ifdef _X_ALLOW_X_
-	CScript *s = LoadScript(filename);
+	Script::Script *s = Script::Load(filename);
 	if (!s->Error){
-		particle_callback *func_create = (particle_callback*)s->MatchFunction("OnEffectCreate", "void", 1, "Effects");
+		particle_callback *func_create = (particle_callback*)s->MatchFunction("OnEffectCreate", "void", 1, "effect");
 		fx->func = (particle_callback*)s->MatchFunction("OnEffectIterate", "void", 1, "effect");
 		fx->func_del = (particle_callback*)s->MatchFunction("OnEffectDelete", "void", 1, "effect");
 		fx->func_enable = (effect_enable_func*)s->MatchFunction("OnEffectEnable", "void", 2, "effect", "bool");
