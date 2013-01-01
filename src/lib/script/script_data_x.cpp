@@ -99,13 +99,13 @@ extern sType *TypePlaneList;
 
 
 #ifdef _X_ALLOW_GUI_
-	static sText *_text;
+	static Gui::Text *_text;
 	#define	GetDAText(x)		long(&_text->x)-long(_text)
-	static sPicture *_picture;
+	static Gui::Picture *_picture;
 	#define	GetDAPicture(x)		long(&_picture->x)-long(_picture)
-	static sPicture3D *_picture3d;
+	static Gui::Picture3d *_picture3d;
 	#define	GetDAPicture3D(x)	long(&_picture3d->x)-long(_picture3d)
-	static sGrouping *_grouping;
+	static Gui::Grouping *_grouping;
 	#define	GetDAGrouping(x)	long(&_grouping->x)-long(_grouping)
 #else
 	#define	GetDAText(x)		0
@@ -216,7 +216,7 @@ void SIAddPackageX()
 		class_add_element("texture",		TypeInt,		GetDAPicture(texture));
 		class_add_element("source",			TypeRect,		GetDAPicture(source));
 		class_add_element("shader",			TypeInt,		GetDAPicture(shader));
-		class_add_func("IsMouseOver",		TypeBool,	gui_p(mf((tmf)&sPicture::IsMouseOver)));
+		class_add_func("IsMouseOver",		TypeBool,	gui_p(mf((tmf)&Gui::Picture::IsMouseOver)));
 	
 	add_class(TypePicture3D);
 		class_add_element("enabled",		TypeBool,		GetDAPicture3D(enabled));
@@ -240,7 +240,7 @@ void SIAddPackageX()
 		class_add_element("size",			TypeFloat,		GetDAText(size));
 		class_add_element("color",			TypeColor,		GetDAText(_color));
 		class_add_element("text",			TypeString,		GetDAText(text));
-		class_add_func("IsMouseOver",		TypeBool,	gui_p(mf((tmf)&sText::IsMouseOver)));
+		class_add_func("IsMouseOver",		TypeBool,	gui_p(mf((tmf)&Gui::Text::IsMouseOver)));
 	
 	add_class(TypeParticle);
 		class_add_element("enabled",		TypeBool,		GetDAParticle(enabled));
@@ -467,21 +467,21 @@ void SIAddPackageX()
 		func_add_param("s",		TypeString);
 	add_func("LoadFont",			TypeInt,	meta_p(&MetaLoadXFont));
 		func_add_param("filename",		TypeString);
-	add_func("CreatePicture",										TypePictureP,	gui_p(&GuiCreatePicture));
+	add_func("CreatePicture",										TypePictureP,	gui_p(&Gui::CreatePicture));
 		func_add_param("pos",		TypeVector);
 		func_add_param("width",		TypeFloat);
 		func_add_param("height",	TypeFloat);
 		func_add_param("texture",	TypeInt);
-	add_func("CreatePicture3D",								TypePicture3DP,	gui_p(&GuiCreatePicture3D));
+	add_func("CreatePicture3D",								TypePicture3DP,	gui_p(&Gui::CreatePicture3d));
 		func_add_param("m",			TypeModelP);
 		func_add_param("mat",		TypeMatrix);
 		func_add_param("z",			TypeFloat);
-	add_func("CreateText",												TypeTextP,	gui_p(&GuiCreateText));
+	add_func("CreateText",												TypeTextP,	gui_p(&Gui::CreateText));
 		func_add_param("pos",		TypeVector);
 		func_add_param("size",		TypeFloat);
 		func_add_param("c",			TypeColor);
 		func_add_param("str",		TypeString);
-	add_func("CreateGrouping",										TypeGroupingP,	gui_p(&GuiCreateGrouping));
+	add_func("CreateGrouping",										TypeGroupingP,	gui_p(&Gui::CreateGrouping));
 		func_add_param("pos",		TypeVector);
 		func_add_param("set_cur",	TypeBool);
 	add_func("CreateParticle",										TypeParticleP,	fx_p(&FxParticleCreateDef));
@@ -671,7 +671,7 @@ void SIAddPackageX()
 	add_ext_var("TraceHitType",		TypeInt,		god_p(&TraceHitType));
 	add_ext_var("TraceHitIndex",	TypeInt,		god_p(&TraceHitIndex));
 	add_ext_var("TraceHitSubModel", TypeInt,		god_p(&TraceHitSubModel));
-	add_ext_var("CurrentGrouping",	TypeGroupingP,	gui_p(&CurrentGrouping));
+	add_ext_var("CurrentGrouping",	TypeGroupingP,	gui_p(&Gui::CurrentGrouping));
 	add_ext_var("MirrorLevelMax",	TypeInt,		god_p(&MirrorLevelMax));
 	add_ext_var("SessionName",		TypeString,		x_p(&SessionName));
 	add_ext_var("HostNames",		TypeString,		x_p(&HostNames));

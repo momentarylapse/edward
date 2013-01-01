@@ -607,13 +607,13 @@ void _cdecl MetaDelete(void *p)
 	if (false){}
 #ifdef _X_ALLOW_GUI_
 	else if (type == XContainerPicture)
-		GuiDeletePicture((sPicture*)p);
+		Gui::DeletePicture((Gui::Picture*)p);
 	else if (type == XContainerPicture3d)
-		GuiDeletePicture3D((sPicture3D*)p);
+		Gui::DeletePicture3d((Gui::Picture3d*)p);
 	else if (type == XContainerText)
-		GuiDeleteText((sText*)p);
+		Gui::DeleteText((Gui::Text*)p);
 	else if (type == XContainerGrouping)
-		GuiDeleteGrouping((sGrouping*)p);
+		Gui::DeleteGrouping((Gui::Grouping*)p);
 #endif
 #ifdef _X_ALLOW_FX_
 	else if (type == XContainerParticle)
