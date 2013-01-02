@@ -23,6 +23,8 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(CHuiWindow *_parent, 
 	data = _data;
 	FillMaterialList();
 
+	SetTooltip("material_list", _("- Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- H&akchen bei \"Aktiv\" zur Auswahl f&ur folgende neue Polygone"));
+
 	EventM("hui:close", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnClose);
 	EventMX("material_list", "hui:activate", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnMaterialList);
 	EventMX("material_list", "hui:change", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnMaterialListCheck);

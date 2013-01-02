@@ -23,6 +23,20 @@ ModelMaterialDialog::ModelMaterialDialog(CHuiWindow *_parent, bool _allow_parent
 	// dialog
 	FromResource("model_material_dialog");
 
+	SetTooltip("mat_textures", _("&Ubereinanderliegende Textur-Schichten (multitexturing)\n- Doppelklick um eine Texturdatei zu w&ahlen"));
+	SetTooltip("mat_add_texture_level", _("f&ugt eine weitere Textur-Schicht hinzu (multitexturing)"));
+	SetTooltip("mat_delete_texture_level", _("l&oscht die ausgew&ahlte Textur-Schicht"));
+	SetTooltip("mat_empty_texture_level", _("l&oscht die Textur der ausgew&ahlten Textur-Schicht"));
+
+	SetTooltip("mat_am", _("Farbe des Objektes im Schatten (Umgebungslicht)"));
+	SetTooltip("mat_di", _("Farbe des Objektes bei direktem Licht"));
+	SetTooltip("mat_sp", _("Farbe von Glanzflecken"));
+	SetTooltip("mat_shininess", _("H&arte des Glanzes (10=weich, 100=hart)"));
+	SetTooltip("mat_em", _("Farbe des Objektes bei absoluter Dunkelheit"));
+
+	SetTooltip("transparency_mode:color_key", _("Reines Gr&un wird transparent"));
+	//SetTooltip("alpha_z_buffer", _(""));
+
 	EventM("cancel", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnClose);
 	EventM("hui:close", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::OnClose);
 	EventM("apply", this, (void(HuiEventHandler::*)())&ModelMaterialDialog::ApplyData);

@@ -27,6 +27,8 @@ ModelPropertiesDialog::ModelPropertiesDialog(CHuiWindow *_parent, bool _allow_pa
 	// dialog
 	FromResource("model_dialog");
 
+	SetTooltip("material_list", _("- Doppelklick um ein Material zu editieren\n- selektieren und den Knopf \"l&oschen.\" zum L&oschen\n- H&akchen bei \"Aktiv\" zur Auswahl f&ur folgende neue Polygone"));
+
 	EventM("cancel", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnClose);
 	EventM("hui:close", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnClose);
 	EventM("apply", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::ApplyData);
