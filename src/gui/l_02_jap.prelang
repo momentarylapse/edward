@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-571
+572
 // Data (ID,Text)
 ad_dialog
 
@@ -219,10 +219,14 @@ file_list_super
 
 flatten_vertices
 
-fog_enabled
+fog_mode:exp
 
-fog_mode
-Linear\\Exp\\Exp2
+fog_mode:exp2
+
+fog_mode:linear
+
+fog_mode:none
+
 font_dialog
 
 font_dialog_t_factor_x
@@ -1091,8 +1095,6 @@ world_dialog_t_fog_density
 
 world_dialog_t_fog_distance
 
-world_dialog_t_fog_mode
-
 world_dialog_t_fog_to
 
 world_dialog_t_max_script_vars
@@ -1146,8 +1148,10 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-192
+210
 // Data (ID,Text)
+
+
                   Close dialog box to exit program.
 
    - ohne Datei -
@@ -1172,11 +1176,17 @@ zzz_setbgimage
 
 (anonym)
 
+- Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- Häkchen bei \"Aktiv\" zur Auswahl für folgende neue Polygone
+
+- Doppelklick um ein Material zu editieren\n- selektieren und den Knopf \"löschen.\" zum Löschen\n- Häkchen bei \"Aktiv\" zur Auswahl für folgende neue Polygone
+
 ...done
 
 2D
 
 Abbrechen
+
+Abstand, ab dem der Nebel beginnt (Intensität 0)
 
 Administration
 
@@ -1244,6 +1254,14 @@ Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
 
 Falsches Dateiformat der Datei %s: %d (statt %d)!
 
+Farbe des Objektes bei absoluter Dunkelheit
+
+Farbe des Objektes bei direktem Licht
+
+Farbe des Objektes im Schatten (Umgebungslicht)
+
+Farbe von Glanzflecken
+
 Fehler
 
 Fehler beim Exportieren: 
@@ -1269,6 +1287,8 @@ Gespeichert!
 Hinten
 
 Hinten (-z)
+
+Härte des Glanzes (10=weich, 100=hart)
 
 Höchstens %d Textur-Ebenen erlaubt!
 
@@ -1352,6 +1372,8 @@ Modelle (*.model)
 
 Nachrichten
 
+Nebelintensität = exp( - Dichte * Entfernung )
+
 Neben diesen Angaben wird noch der Inhalt der Datei message.txt geschickt
 
 OK
@@ -1391,6 +1413,8 @@ Radius skalieren [Linke Maustaste = fertig]
 Rechts
 
 Rechts (-x)
+
+Reines Grün wird transparent
 
 Rotieren
 
@@ -1445,6 +1469,8 @@ Textur-Koordinaten
 Texturen
 
 Texturen (bmp,jpg,tga,avi)
+
+Texturen der einzelnen Materialien\n- Doppelklick zum Bearbeiten der Texturkoordinaten
 
 Torus
 
@@ -1502,13 +1528,23 @@ Zylinder: Radius
 
 administrieren
 
+aktuelles Material
+
 beliebige Datei
+
+fügt eine weitere Textur-Schicht hinzu (multitexturing)
 
 i'm now going to clean up...
 
 kein Dreieck ausgewählt
 
 keine doppelten Punkte erlaubt!
+
+löscht die Textur der ausgewählten Textur-Schicht
+
+löscht die ausgewählte Textur-Schicht
+
+maximale Sichtweite, dahinter hat der Nebel volle Intensität
 
 message.txt öffnen
 
@@ -1531,5 +1567,7 @@ surf: %d
 vert: %d
 
 zylinder... Punkte + Shift Return
+
+Übereinanderliegende Textur-Schichten (multitexturing)\n- Doppelklick um eine Texturdatei zu wählen
 
 #

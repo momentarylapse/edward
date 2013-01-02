@@ -26,6 +26,9 @@ public:
 	void FillScriptList();
 	void OnSunEnabled();
 	void OnSunAngFromCamera();
+	void OnFogModeNone();
+	void OnFogModeLinear();
+	void OnFogModeExp();
 	void OnFogEnabled();
 	void OnSkybox();
 	void OnSkyboxSelect();

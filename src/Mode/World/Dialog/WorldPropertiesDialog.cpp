@@ -22,6 +22,20 @@ WorldPropertiesDialog::WorldPropertiesDialog(CHuiWindow *_parent, bool _allow_pa
 	// dialog
 	FromResource("world_dialog");
 
+	SetTooltip("bgc", _("Farbe des Himmels"));
+	SetTooltip("skybox", _("Modelle, die &uber die Hintergrundfarge gemalt werden\n- Doppelklick um ein Modell zu w&ahlen"));
+
+	SetTooltip("fog_start", _("Abstand, ab dem der Nebel beginnt (Intensit&at 0)"));
+	SetTooltip("fog_end", _("maximale Sichtweite, dahinter hat der Nebel volle Intensit&at"));
+	SetTooltip("fog_density", _("Nebelintensit&at = exp( - Dichte * Entfernung )"));
+
+	SetTooltip("ambient", _("Generelles Umgebungslicht zus&atzlich zu allen Lichtquellen"));
+	SetTooltip("sun_am", _("ungerichtetes Umgebungslicht"));
+	SetTooltip("sun_di", _("frontales Licht"));
+	SetTooltip("sun_sp", _("Glanzlicht"));
+	SetTooltip("sun_ang_x", _("H&ohe &uber dem Horizont"));
+	SetTooltip("sun_ang_y", _("Kompassrichtung entlang des Horizonts"));
+
 	EventM("cancel", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnClose);
 	EventM("hui:close", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnClose);
 	EventM("apply", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::ApplyData);
@@ -29,7 +43,10 @@ WorldPropertiesDialog::WorldPropertiesDialog(CHuiWindow *_parent, bool _allow_pa
 
 	EventM("sun_enabled", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnSunEnabled);
 	EventM("sun_ang_from_camera", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnSunAngFromCamera);
-	EventM("fog_enabled", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnFogEnabled);
+	EventM("fog_mode:none", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnFogModeNone);
+	EventM("fog_mode:linear", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnFogModeLinear);
+	EventM("fog_mode:exp", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnFogModeExp);
+	EventM("fog_mode:exp2", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnFogModeExp);
 	EventM("skybox", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnSkybox);
 	EventMX("skybox", "hui:select", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnSkyboxSelect);
 	EventM("remove_skybox", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnRemoveSkybox);
@@ -148,14 +165,28 @@ void WorldPropertiesDialog::OnRemoveScript()
 
 
 
-void WorldPropertiesDialog::OnFogEnabled()
+void WorldPropertiesDialog::OnFogModeNone()
 {
-	bool b = IsChecked("");
-	Enable("fog_mode", b);
-	Enable("fog_start", b);
-	Enable("fog_end", b);
-	Enable("fog_density", b);
-	Enable("fog_color", b);
+	Enable("fog_start", false);
+	Enable("fog_end", false);
+	Enable("fog_density", false);
+	Enable("fog_color", false);
+}
+
+void WorldPropertiesDialog::OnFogModeLinear()
+{
+	Enable("fog_start", true);
+	Enable("fog_end", true);
+	Enable("fog_density", false);
+	Enable("fog_color", true);
+}
+
+void WorldPropertiesDialog::OnFogModeExp()
+{
+	Enable("fog_start", false);
+	Enable("fog_end", false);
+	Enable("fog_density", true);
+	Enable("fog_color", true);
 }
 
 
@@ -218,8 +249,13 @@ void WorldPropertiesDialog::ApplyData()
 	temp.Gravity.y = GetFloat("gravitation_y");
 	temp.Gravity.z = GetFloat("gravitation_z");
 	temp.BackGroundColor = GetColor("bgc");
-	temp.FogEnabled = IsChecked("fog_enabled");
-	temp.FogMode = GetInt("fog_mode");
+	temp.FogEnabled = !IsChecked("fog_mode:none");
+	if (IsChecked("fog_mode:linear"))
+		temp.FogMode = FogLinear;
+	else if (IsChecked("fog_mode:exp"))
+		temp.FogMode = FogExp;
+	else if (IsChecked("fog_mode:exp2"))
+		temp.FogMode = FogExp2;
 	temp.FogStart = GetFloat("fog_start");
 	temp.FogEnd = GetFloat("fog_end");
 	temp.FogDensity = GetFloat("fog_density");
@@ -264,16 +300,23 @@ void WorldPropertiesDialog::LoadData()
 {
 	SetDecimals(WorldFogDec);
 	SetColor("bgc", temp.BackGroundColor);
-	Check("fog_enabled", temp.FogEnabled);
-	SetInt("fog_mode", temp.FogMode);
+	if (temp.FogEnabled){
+		if (temp.FogMode == FogLinear)
+			Check("fog_mode:linear", true);
+		else if (temp.FogMode == FogExp)
+			Check("fog_mode:exp", true);
+		else if (temp.FogMode == FogExp2)
+			Check("fog_mode:exp2", true);
+	}else{
+		Check("fog_mode:none", true);
+	}
 	SetFloat("fog_start", temp.FogStart);
 	SetFloat("fog_end", temp.FogEnd);
 	SetFloat("fog_density", temp.FogDensity);
 	SetColor("fog_color", temp.FogColor);
-	Enable("fog_mode", temp.FogEnabled);
-	Enable("fog_start", temp.FogEnabled);
-	Enable("fog_end", temp.FogEnabled);
-	Enable("fog_density", temp.FogEnabled);
+	Enable("fog_start", temp.FogEnabled && (temp.FogMode == FogLinear));
+	Enable("fog_end", temp.FogEnabled && (temp.FogMode == FogLinear));
+	Enable("fog_density", temp.FogEnabled && ((temp.FogMode == FogExp) || (temp.FogMode == FogExp2)));
 	Enable("fog_color", temp.FogEnabled);
 
 	SetDecimals(WorldLightDec);

@@ -13833,7 +13833,7 @@ world_dialog
 0
 
 
-52
+53
 DefButton
 ok
 hui:ok
@@ -13951,51 +13951,12 @@ hui:delete
 0
 world_dialog_tab_control
 
-CheckBox
-fog_enabled
-
-1
-20
-10
-370
-25
-1
-0
-0
-world_dialog_tab_control
-
-Text
-world_dialog_t_fog_mode
-
-1
-20
-45
-100
-25
-1
-0
-0
-world_dialog_tab_control
-
-ComboBox
-fog_mode
-
-1
-125
-45
-265
-25
-1
-0
-0
-world_dialog_tab_control
-
 Text
 world_dialog_t_fog_distance
 
 1
-20
-75
+35
+70
 100
 25
 1
@@ -14007,9 +13968,9 @@ Edit
 fog_start
 
 1
-125
-75
-265
+140
+70
+250
 25
 1
 0
@@ -14020,8 +13981,8 @@ Text
 world_dialog_t_fog_to
 
 1
-20
-105
+35
+100
 100
 25
 1
@@ -14033,9 +13994,9 @@ Edit
 fog_end
 
 1
-125
-105
-265
+140
+100
+250
 25
 1
 0
@@ -14046,9 +14007,9 @@ Text
 world_dialog_t_fog_density
 
 1
-20
-135
-100
+40
+160
+95
 25
 1
 0
@@ -14059,9 +14020,9 @@ Edit
 fog_density
 
 1
-125
-135
-265
+140
+160
+250
 25
 1
 0
@@ -14073,8 +14034,8 @@ world_dialog_t_fog_color
 
 1
 20
-165
-100
+190
+115
 25
 1
 0
@@ -14085,9 +14046,61 @@ ColorButton
 fog_color
 
 1
-125
-165
-265
+140
+190
+250
+25
+1
+0
+0
+world_dialog_tab_control
+
+RadioButton
+fog_mode:linear
+
+1
+20
+40
+370
+25
+1
+0
+0
+world_dialog_tab_control
+
+RadioButton
+fog_mode:exp
+
+1
+20
+130
+170
+25
+1
+0
+0
+world_dialog_tab_control
+
+RadioButton
+fog_mode:exp2
+
+1
+195
+130
+195
+25
+1
+0
+0
+world_dialog_tab_control
+
+RadioButton
+fog_mode:none
+
+1
+20
+10
+370
 25
 1
 0
@@ -16330,7 +16343,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-714
+715
 // Text
 ad_dialog
 Verwaltung
@@ -16630,12 +16643,16 @@ fog_color
 
 fog_density
 
-fog_enabled
-aktiviert
 fog_end
 
-fog_mode
-Linear\\Exp\\Exp2
+fog_mode:exp
+Exponentiell
+fog_mode:exp2
+Quadratisch exponentiell
+fog_mode:linear
+Linear
+fog_mode:none
+Deaktiviert
 fog_start
 
 font_dialog
@@ -17693,13 +17710,11 @@ world_dialog_grp_skybox
 world_dialog_grp_sun
 !bold\\Sonne
 world_dialog_t_fog_color
-Farbe (Color)
+Farbe
 world_dialog_t_fog_density
 Dichte
 world_dialog_t_fog_distance
 Entfernung
-world_dialog_t_fog_mode
-Typ
 world_dialog_t_fog_to
 bis
 world_dialog_t_max_script_vars
@@ -17766,7 +17781,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-714
+715
 // Text
 ad_dialog
 Administration
@@ -18066,12 +18081,16 @@ fog_color
 
 fog_density
 
-fog_enabled
-enabled
 fog_end
 
-fog_mode
-Linear\\Exp\\Exp2
+fog_mode:exp
+
+fog_mode:exp2
+
+fog_mode:linear
+
+fog_mode:none
+
 fog_start
 
 font_dialog
@@ -19134,8 +19153,6 @@ world_dialog_t_fog_density
 density (\"Density\")
 world_dialog_t_fog_distance
 Distance
-world_dialog_t_fog_mode
-type (\"Mode\")
 world_dialog_t_fog_to
 to
 world_dialog_t_max_script_vars
@@ -19518,7 +19535,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-714
+715
 // Text
 ad_dialog
 
@@ -19818,12 +19835,16 @@ fog_color
 
 fog_density
 
-fog_enabled
-
 fog_end
 
-fog_mode
-Linear\\Exp\\Exp2
+fog_mode:exp
+
+fog_mode:exp2
+
+fog_mode:linear
+
+fog_mode:none
+
 fog_start
 
 font_dialog
@@ -20885,8 +20906,6 @@ world_dialog_t_fog_color
 world_dialog_t_fog_density
 
 world_dialog_t_fog_distance
-
-world_dialog_t_fog_mode
 
 world_dialog_t_fog_to
 

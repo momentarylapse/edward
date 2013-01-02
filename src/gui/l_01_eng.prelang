@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-571
+572
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -219,10 +219,14 @@ file_list_super
 !format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
 flatten_vertices
 Flatten
-fog_enabled
-enabled
-fog_mode
-Linear\\Exp\\Exp2
+fog_mode:exp
+
+fog_mode:exp2
+
+fog_mode:linear
+
+fog_mode:none
+
 font_dialog
 Font properties
 font_dialog_t_factor_x
@@ -1091,8 +1095,6 @@ world_dialog_t_fog_density
 density (\"Density\")
 world_dialog_t_fog_distance
 Distance
-world_dialog_t_fog_mode
-type (\"Mode\")
 world_dialog_t_fog_to
 to
 world_dialog_t_max_script_vars
@@ -1146,8 +1148,10 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-192
+210
 // Data (ID,Text)
+
+
                   Close dialog box to exit program.
                   Close dialog box to exit program.
    - ohne Datei -
@@ -1172,12 +1176,18 @@ Set background image
 %d closed surfaces subtracted
 (anonym)
 (anonymous)
+- Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- Häkchen bei \"Aktiv\" zur Auswahl für folgende neue Polygone
+
+- Doppelklick um ein Material zu editieren\n- selektieren und den Knopf \"löschen.\" zum Löschen\n- Häkchen bei \"Aktiv\" zur Auswahl für folgende neue Polygone
+
 ...done
 ...done
 2D
 2D
 Abbrechen
 Cancel
+Abstand, ab dem der Nebel beginnt (Intensität 0)
+
 Administration
 Administration
 Aktion fehlgeschlagen: 
@@ -1244,6 +1254,14 @@ Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
 File %s has a wrong file format: %d (expected: %d - %d)!
 Falsches Dateiformat der Datei %s: %d (statt %d)!
 
+Farbe des Objektes bei absoluter Dunkelheit
+
+Farbe des Objektes bei direktem Licht
+
+Farbe des Objektes im Schatten (Umgebungslicht)
+
+Farbe von Glanzflecken
+
 Fehler
 Error
 Fehler beim Exportieren: 
@@ -1270,6 +1288,8 @@ Hinten
 Back
 Hinten (-z)
 Back (-z)
+Härte des Glanzes (10=weich, 100=hart)
+
 Höchstens %d Textur-Ebenen erlaubt!
 Only %d texture levels allowed!
 Initialisierung
@@ -1352,6 +1372,8 @@ Modelle (*.model)
 Models (*.model)
 Nachrichten
 Messages
+Nebelintensität = exp( - Dichte * Entfernung )
+
 Neben diesen Angaben wird noch der Inhalt der Datei message.txt geschickt
 Additionally to this information I will send the file message.txt
 OK
@@ -1392,6 +1414,8 @@ Rechts
 Right
 Rechts (-x)
 Right (-x)
+Reines Grün wird transparent
+
 Rotieren
 Rotate
 Script
@@ -1446,6 +1470,8 @@ Texturen
 Textures
 Texturen (bmp,jpg,tga,avi)
 Textures (bmp,jpg,tga,avi)
+Texturen der einzelnen Materialien\n- Doppelklick zum Bearbeiten der Texturkoordinaten
+
 Torus
 
 Torus außen skalieren
@@ -1502,14 +1528,24 @@ Cylinder: radius
 \\\\   - no textures -
 administrieren
 administrate
+aktuelles Material
+
 beliebige Datei
 arbitrary file
+fügt eine weitere Textur-Schicht hinzu (multitexturing)
+
 i'm now going to clean up...
 i'm now going to clean up...
 kein Dreieck ausgewählt
 no triangle selected
 keine doppelten Punkte erlaubt!
 No double points allowed!
+löscht die Textur der ausgewählten Textur-Schicht
+
+löscht die ausgewählte Textur-Schicht
+
+maximale Sichtweite, dahinter hat der Nebel volle Intensität
+
 message.txt öffnen
 Open message.txt
 neue Punkte setzen
@@ -1531,5 +1567,7 @@ surf: %d
 vert: %d
 vert: %d
 zylinder... Punkte + Shift Return
+
+Übereinanderliegende Textur-Schichten (multitexturing)\n- Doppelklick um eine Texturdatei zu wählen
 
 #

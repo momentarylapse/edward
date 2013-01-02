@@ -312,7 +312,7 @@ void DataWorld::MetaData::Reset()
 	SkyBoxFile.clear();
 	SkyBoxFile.resize(32);
 
-	BackGroundColor = Black;
+	BackGroundColor = color(1, 0.2f, 0.4f, 0.6f);
 
 	PhysicsEnabled = true;
 	Gravity = vector(0, -981, 0);
