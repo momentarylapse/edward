@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-572
+576
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -323,18 +323,10 @@ ged_t_system
 system aimed for:
 ged_t_world
 world:
-generate_dists
-calculate
 generate_dists_auto
 auto calculation
-generate_skin_2
-generate
-generate_skin_3
-generate
-generate_skin_auto_2
-auto
-generate_skin_auto_3
-auto
+generate_skin_auto
+
 generate_tensor_auto
 auto
 grid
@@ -401,6 +393,8 @@ local_documentation
 Use local documentation instead of online version
 location
 CalcMove 1\\CalcMove 2\\Render 1\\Render 2\\Render 3\\GetInput 1\\GetInput 2
+lod
+
 logo
 Data/model.png
 look_for_updates
@@ -479,8 +473,6 @@ material_sound_dialog
 Sounds
 max_script_vars
 \\0
-me
-mu
 menu_administration_file
 File
 menu_administration_game
@@ -599,8 +591,6 @@ model_colors
 Colors...
 model_dialog
 Model properties
-model_dialog_grp_creation
-!bold\\creation
 model_dialog_grp_details
 !bold\\view range
 model_dialog_grp_material_file
@@ -613,18 +603,14 @@ model_dialog_t_comment
 The properties of this material file can be overwritten in the following tab pages
 model_dialog_t_description
 Description
-model_dialog_t_detail_high
-detail high
-model_dialog_t_detail_low
-detail low
-model_dialog_t_detail_med
-detail med
 model_dialog_t_mass
 Mass
 model_dialog_t_maxitems
 Max items
 model_dialog_t_name
 Name
+model_dialog_t_num_lod
+
 model_dialog_t_scriptfile
 File
 model_dialog_t_scriptvars
@@ -659,9 +645,29 @@ move_frame_sign
 Frame
 move_reset
 Reset
+mpd_table_buttons
+
+mpd_table_inv_1
+
+mpd_table_lod3
+
+mpd_table_mass
+
+mpd_table_mat_buttons
+
+mpd_table_phys_gen
+
+mpd_table_physics
+
+mpd_table_scriptfile
+
+mpd_table_var_control
+
 ms
 ms
 msd_table_2
+
+mu
 
 nb_complexity
 \\1
@@ -769,6 +775,8 @@ ntdt_slides
 
 num_items
 \\0
+num_lod
+
 num_vertices_wanted
 \\0
 num_x
@@ -849,8 +857,6 @@ scale_2d
 Scale 2D
 scaling_dialog
 Scaling
-script_find
-...
 script_list
 !nobar\\File
 script_vars
@@ -941,6 +947,8 @@ table_8
 ControlTable 8
 table_9
 ControlTable 9
+tensor
+
 terrain_create
 Terrain (new)...
 terrain_dialog
@@ -1148,7 +1156,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-210
+218
 // Data (ID,Text)
 
 
@@ -1254,6 +1262,8 @@ Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
 File %s has a wrong file format: %d (expected: %d - %d)!
 Falsches Dateiformat der Datei %s: %d (statt %d)!
 
+Farbe des Himmels
+
 Farbe des Objektes bei absoluter Dunkelheit
 
 Farbe des Objektes bei direktem Licht
@@ -1282,8 +1292,12 @@ Font-Dateien (*.xfont)
 Font files (*.xfont)
 Frage
 Question
+Generelles Umgebungslicht zusätzlich zu allen Lichtquellen
+
 Gespeichert!
 Saved!
+Glanzlicht
+
 Hinten
 Back
 Hinten (-z)
@@ -1292,6 +1306,8 @@ Härte des Glanzes (10=weich, 100=hart)
 
 Höchstens %d Textur-Ebenen erlaubt!
 Only %d texture levels allowed!
+Höhe über dem Horizont
+
 Initialisierung
 Initializing
 Isometrisch
@@ -1334,6 +1350,8 @@ Knochen setzen
 Set bone
 Knochen setzen oder Wurzel-Knochen waehlen
 
+Kompassrichtung entlang des Horizonts
+
 Kraftfeld
 
 Kugel
@@ -1370,6 +1388,8 @@ Modell-Datei
 Model file
 Modelle (*.model)
 Models (*.model)
+Modelle, die über die Hintergrundfarge gemalt werden\n- Doppelklick um ein Modell zu wählen
+
 Nachrichten
 Messages
 Nebelintensität = exp( - Dichte * Entfernung )
@@ -1532,6 +1552,8 @@ aktuelles Material
 
 beliebige Datei
 arbitrary file
+frontales Licht
+
 fügt eine weitere Textur-Schicht hinzu (multitexturing)
 
 i'm now going to clean up...
@@ -1564,6 +1586,8 @@ skin: %d
 skin: %d
 surf: %d
 surf: %d
+ungerichtetes Umgebungslicht
+
 vert: %d
 vert: %d
 zylinder... Punkte + Shift Return

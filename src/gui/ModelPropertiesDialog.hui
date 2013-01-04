@@ -1,157 +1,93 @@
-// IDs
-enum{
-	HMM_MODEL_DIALOG,
-	HMM_OK,
-	HMM_CANCEL,
-	HMM_APPLY,
-	HMM_MODEL_DIALOG_TAB_CONTROL,
-	HMM_PH_ACTIVE,
-	HMM_PH_PASSIVE,
-	HMM_L,
-	HMM_MODEL_DIALOG_GRP_TENSOR,
-	HMM_TENSOR_XX,
-	HMM_TENSOR_XY,
-	HMM_TENSOR_YY,
-	HMM_TENSOR_ZZ,
-	HMM_TENSOR_XZ,
-	HMM_TENSOR_YZ,
-	HMM_X,
-	HMM_Y,
-	HMM_Z,
-	HMM_GENERATE_TENSOR_AUTO,
-	HMM_MASS,
-	HMM_MODEL_DIALOG_T_MASS,
-	HMM_ME,
-	HMM_MODEL_DIALOG_GRP_PHYSICS,
-	HMM_MODEL_DIALOG_GRP_DETAILS,
-	HMM_MODEL_DIALOG_GRP_CREATION,
-	HMM_DETAIL_DIST_2,
-	HMM_MODEL_DIALOG_T_DETAIL_MED,
-	HMM_DETAIL_DIST_3,
-	HMM_MODEL_DIALOG_T_DETAIL_LOW,
-	HMM_DETAIL_DIST_1,
-	HMM_MODEL_DIALOG_T_DETAIL_HIGH,
-	HMM_GENERATE_DISTS,
-	HMM_DETAIL_FACTOR_2,
-	HMM_DETAIL_FACTOR_3,
-	HMM_GENERATE_SKIN_2,
-	HMM_PERCENT,
-	HMM_GENERATE_SKIN_AUTO_2,
-	HMM_GENERATE_DISTS_AUTO,
-	HMM_GENERATE_SKIN_3,
-	HMM_GENERATE_SKIN_AUTO_3,
-	HMM_LU,
-	HMM_DETAIL_FACTOR_2_SLIDER,
-	HMM_DETAIL_FACTOR_3_SLIDER,
-	HMM_MATERIAL_LIST,
-	HMM_MODEL_NAME,
-	HMM_MODEL_DIALOG_T_NAME,
-	HMM_NUM_ITEMS,
-	HMM_MODEL_DIALOG_T_MAXITEMS,
-	HMM_MODEL_INVENTARY,
-	HMM_DELETE_ITEM,
-	HMM_MODEL_DESCRIPTION,
-	HMM_MODEL_DIALOG_T_DESCRIPTION,
-	HMM_SCRIPT,
-	HMM_MODEL_DIALOG_T_SCRIPTFILE,
-	HMM_SCRIPT_FIND,
-	HMM_SCRIPT_VARS,
-	HMM_MODEL_DIALOG_T_SCRIPTVARS,
-	HMM_ODT_MAX_SCRIPTVARS,
-	HMM_MAX_SCRIPT_VARS,
-	HMM_MODEL_SCRIPT_VAR_TEMPLATE
-};
-
-
 	// dialog
-	PropertiesDialog=HuiCreateDialog("Modell-Eigenschaften",355,410,MainWin,false,&ModelPropertyDialogFunc);
-	PropertiesDialog->SetID(HMM_MODEL_DIALOG);
-	PropertiesDialog->AddDefButton("OK",245,370,100,25,HMM_OK);
-	PropertiesDialog->SetImage(HMM_OK,HuiImageOk);
-	PropertiesDialog->AddButton("Abbrechen",140,370,100,25,HMM_CANCEL);
-	PropertiesDialog->SetImage(HMM_CANCEL,HuiImageCancel);
-	PropertiesDialog->AddButton("&Ubernehmen",25,370,110,25,HMM_APPLY);
-	PropertiesDialog->SetImage(HMM_APPLY,HuiImageApply);
-	PropertiesDialog->AddTabControl("Ansicht\\Materialien\\Physik\\Inventar\\Script",5,5,345,350,HMM_MODEL_DIALOG_TAB_CONTROL);
-	PropertiesDialog->SetTabCreationPage(HMM_MODEL_DIALOG_TAB_CONTROL,2);
-	PropertiesDialog->AddCheckBox("Physik aktiv",100,95,200,25,HMM_PH_ACTIVE);
-	PropertiesDialog->AddCheckBox("Physik passiv",80,65,220,25,HMM_PH_PASSIVE);
-	PropertiesDialog->AddText("L",85,95,15,20,HMM_L);
-	PropertiesDialog->AddText("!bold\\Tr&agheitstensor",10,130,325,25,HMM_MODEL_DIALOG_GRP_TENSOR);
-	PropertiesDialog->AddEdit("",50,180,90,25,HMM_TENSOR_XX);
-	PropertiesDialog->AddEdit("",145,180,90,25,HMM_TENSOR_XY);
-	PropertiesDialog->AddEdit("",145,210,90,25,HMM_TENSOR_YY);
-	PropertiesDialog->AddEdit("",240,240,90,25,HMM_TENSOR_ZZ);
-	PropertiesDialog->AddEdit("",240,180,90,25,HMM_TENSOR_XZ);
-	PropertiesDialog->AddEdit("",240,210,90,25,HMM_TENSOR_YZ);
-	PropertiesDialog->AddText("X",30,180,20,25,HMM_X);
-	PropertiesDialog->AddText("X",90,155,15,25,HMM_X);
-	PropertiesDialog->AddText("Y",30,210,20,25,HMM_Y);
-	PropertiesDialog->AddText("Z",30,240,20,25,HMM_Z);
-	PropertiesDialog->AddText("Y",185,155,15,25,HMM_Y);
-	PropertiesDialog->AddText("Z",280,155,15,25,HMM_Z);
-	PropertiesDialog->AddCheckBox("automatisch",80,265,120,20,HMM_GENERATE_TENSOR_AUTO);
-	PropertiesDialog->AddEdit("",80,35,220,25,HMM_MASS);
-	PropertiesDialog->AddText("Masse",30,35,50,25,HMM_MODEL_DIALOG_T_MASS);
-	PropertiesDialog->AddText("me",305,35,20,25,HMM_ME);
-	PropertiesDialog->AddText("!bold\\Generell",10,10,325,25,HMM_MODEL_DIALOG_GRP_PHYSICS);
-	PropertiesDialog->SetTabCreationPage(HMM_MODEL_DIALOG_TAB_CONTROL,0);
-	PropertiesDialog->AddText("!bold\\Sichtweite der Detailstufen",10,10,325,25,HMM_MODEL_DIALOG_GRP_DETAILS);
-	PropertiesDialog->AddText("!bold\\Erzeugung der Detailstufen",10,160,325,25,HMM_MODEL_DIALOG_GRP_CREATION);
-	PropertiesDialog->AddEdit("",90,65,80,25,HMM_DETAIL_DIST_2);
-	PropertiesDialog->AddText("mittel",30,65,60,25,HMM_MODEL_DIALOG_T_DETAIL_MED);
-	PropertiesDialog->AddEdit("",90,95,80,25,HMM_DETAIL_DIST_3);
-	PropertiesDialog->AddText("niedrig",30,95,60,25,HMM_MODEL_DIALOG_T_DETAIL_LOW);
-	PropertiesDialog->AddEdit("",90,35,80,25,HMM_DETAIL_DIST_1);
-	PropertiesDialog->AddText("hoch",30,35,60,25,HMM_MODEL_DIALOG_T_DETAIL_HIGH);
-	PropertiesDialog->AddButton("berechnen",215,65,120,25,HMM_GENERATE_DISTS);
-	PropertiesDialog->SetImage(HMM_GENERATE_DISTS,HuiImageRefresh);
-	PropertiesDialog->AddEdit("",275,185,40,25,HMM_DETAIL_FACTOR_2);
-	PropertiesDialog->AddEdit("",275,245,40,25,HMM_DETAIL_FACTOR_3);
-	PropertiesDialog->AddButton("erzeugen",50,215,105,25,HMM_GENERATE_SKIN_2);
-	PropertiesDialog->SetImage(HMM_GENERATE_SKIN_2,HuiImageRefresh);
-	PropertiesDialog->AddText("%",320,185,15,25,HMM_PERCENT);
-	PropertiesDialog->AddText("%",320,245,15,25,HMM_PERCENT);
-	PropertiesDialog->AddCheckBox("automatisch",160,215,175,25,HMM_GENERATE_SKIN_AUTO_2);
-	PropertiesDialog->AddCheckBox("automatisch berechnen",30,125,305,25,HMM_GENERATE_DISTS_AUTO);
-	PropertiesDialog->AddText("mittel",30,185,60,25,HMM_MODEL_DIALOG_T_DETAIL_MED);
-	PropertiesDialog->AddText("niedrig",30,245,60,25,HMM_MODEL_DIALOG_T_DETAIL_LOW);
-	PropertiesDialog->AddButton("erzeugen",50,275,105,25,HMM_GENERATE_SKIN_3);
-	PropertiesDialog->SetImage(HMM_GENERATE_SKIN_3,HuiImageRefresh);
-	PropertiesDialog->AddCheckBox("automatisch",160,275,175,25,HMM_GENERATE_SKIN_AUTO_3);
-	PropertiesDialog->AddText("le",175,35,15,25,HMM_LU);
-	PropertiesDialog->AddText("le",175,95,15,25,HMM_LU);
-	PropertiesDialog->AddText("le",175,65,15,25,HMM_LU);
-	PropertiesDialog->AddSlider("",95,185,175,25,HMM_DETAIL_FACTOR_2_SLIDER);
-	PropertiesDialog->Enable(HMM_DETAIL_FACTOR_2_SLIDER,false);
-	PropertiesDialog->AddSlider("",95,245,175,25,HMM_DETAIL_FACTOR_3_SLIDER);
-	PropertiesDialog->Enable(HMM_DETAIL_FACTOR_3_SLIDER,false);
-	PropertiesDialog->SetTabCreationPage(HMM_MODEL_DIALOG_TAB_CONTROL,1);
-	PropertiesDialog->AddListView("!format=ttCit\\#\\Dreiecke\\Aktiv\\\\Datei",10,10,325,270,HMM_MATERIAL_LIST);
-	PropertiesDialog->AddButton("neu...",10,285,100,25,HMM_ADD_MATERIAL);
-	PropertiesDialog->SetImage(HMM_ADD_MATERIAL,HuiImageAdd);
-	PropertiesDialog->AddButton("löschen",115,285,100,25,HMM_DELETE_MATERIAL);
-	PropertiesDialog->SetImage(HMM_DELETE_MATERIAL,HuiImageDelete);
-	PropertiesDialog->SetTabCreationPage(HMM_MODEL_DIALOG_TAB_CONTROL,3);
-	PropertiesDialog->AddEdit("",95,10,240,25,HMM_MODEL_NAME);
-	PropertiesDialog->AddText("Name",10,10,80,25,HMM_MODEL_DIALOG_T_NAME);
-	PropertiesDialog->AddSpinButton("\\0",180,75,155,25,HMM_NUM_ITEMS);
-	PropertiesDialog->AddText("Maximale Anzahl Items",10,75,165,25,HMM_MODEL_DIALOG_T_MAXITEMS);
-	PropertiesDialog->AddListView("#\\Datei",10,105,325,180,HMM_MODEL_INVENTARY);
-	PropertiesDialog->AddButton("Item l&oschen",105,290,150,25,HMM_DELETE_ITEM);
-	PropertiesDialog->SetImage(HMM_DELETE_ITEM,HuiImageDelete);
-	PropertiesDialog->AddEdit("",95,40,240,25,HMM_MODEL_DESCRIPTION);
-	PropertiesDialog->AddText("Beschreibung",10,40,80,25,HMM_MODEL_DIALOG_T_DESCRIPTION);
-	PropertiesDialog->SetTabCreationPage(HMM_MODEL_DIALOG_TAB_CONTROL,4);
-	PropertiesDialog->AddEdit("",70,10,235,25,HMM_SCRIPT);
-	PropertiesDialog->AddText("Datei:",10,10,60,25,HMM_MODEL_DIALOG_T_SCRIPTFILE);
-	PropertiesDialog->AddButton("...",310,10,25,25,HMM_SCRIPT_FIND);
-	PropertiesDialog->SetImage(HMM_SCRIPT_FIND,HuiImageOpen);
-	PropertiesDialog->AddListView("!format=ttT\\#\\Name\\Wert",20,100,315,215,HMM_SCRIPT_VARS);
-	PropertiesDialog->AddText("!bold\\Scriptvariablen:",5,45,330,25,HMM_MODEL_DIALOG_T_SCRIPTVARS);
-	PropertiesDialog->AddText("maximale Anzahl:",20,70,120,25,HMM_ODT_MAX_SCRIPTVARS);
-	PropertiesDialog->AddSpinButton("\\0",145,70,70,25,HMM_MAX_SCRIPT_VARS);
-	PropertiesDialog->AddComboBox("",220,70,115,25,HMM_MODEL_SCRIPT_VAR_TEMPLATE);
+	PropertiesDialog = HuiCreateSizableDialog("Modell-Eigenschaften", 391, 426, MainWin, false);
+	PropertiesDialog->SetID("model_dialog");
+	PropertiesDialog->AddControlTable("", 0, 0, 1, 2, "mpd_table_main");
+	PropertiesDialog->SetTarget("mpd_table_main", 0);
+	PropertiesDialog->AddTabControl("Ansicht\\Materialien\\Physik\\Inventar\\Script", 0, 0, 0, 0, "model_dialog_tab_control");
+	PropertiesDialog->AddControlTable("!noexpandy", 0, 1, 4, 1, "mpd_table_buttons");
+	PropertiesDialog->SetTarget("mpd_table_buttons", 0);
+	PropertiesDialog->AddDefButton("Ok", 3, 0, 0, 0, "ok");
+	PropertiesDialog->SetImage("ok", "hui:ok");
+	PropertiesDialog->AddButton("Abbrechen", 2, 0, 0, 0, "cancel");
+	PropertiesDialog->SetImage("cancel", "hui:cancel");
+	PropertiesDialog->AddButton("&Ubernehmen", 1, 0, 0, 0, "apply");
+	PropertiesDialog->SetImage("apply", "hui:apply");
+	PropertiesDialog->AddText("", 0, 0, 0, 0, "t_dummy");
+	PropertiesDialog->SetTarget("model_dialog_tab_control", 1);
+	PropertiesDialog->AddControlTable("", 0, 0, 1, 2, "mpd_table_material");
+	PropertiesDialog->SetTarget("mpd_table_material", 0);
+	PropertiesDialog->AddListView("!format=ttCit\\#\\Dreiecke\\Aktiv\\\\Datei", 0, 0, 0, 0, "material_list");
+	PropertiesDialog->AddControlTable("!noexpandy", 0, 1, 2, 1, "mpd_table_mat_buttons");
+	PropertiesDialog->SetTarget("mpd_table_mat_buttons", 0);
+	PropertiesDialog->AddButton("neu...", 0, 0, 0, 0, "add_material");
+	PropertiesDialog->SetImage("add_material", "hui:add");
+	PropertiesDialog->AddButton("l&oschen", 1, 0, 0, 0, "delete_material");
+	PropertiesDialog->SetImage("delete_material", "hui:delete");
+	PropertiesDialog->SetTarget("model_dialog_tab_control", 3);
+	PropertiesDialog->AddControlTable("", 0, 0, 1, 2, "mpd_table_inventary");
+	PropertiesDialog->SetTarget("mpd_table_inventary", 0);
+	PropertiesDialog->AddControlTable("!noexpandy", 0, 0, 2, 3, "mpd_table_inv_1");
+	PropertiesDialog->AddControlTable("", 0, 1, 1, 2, "mpd_table_inv_2");
+	PropertiesDialog->SetTarget("mpd_table_inv_1", 0);
+	PropertiesDialog->AddText("Name", 0, 0, 0, 0, "model_dialog_t_name");
+	PropertiesDialog->AddText("Beschreibung", 0, 1, 0, 0, "model_dialog_t_description");
+	PropertiesDialog->AddText("Items", 0, 2, 0, 0, "model_dialog_t_maxitems");
+	PropertiesDialog->AddEdit("", 1, 0, 0, 0, "model_name");
+	PropertiesDialog->AddEdit("", 1, 1, 0, 0, "model_description");
+	PropertiesDialog->AddSpinButton("\\0", 1, 2, 0, 0, "num_items");
+	PropertiesDialog->SetTarget("mpd_table_inv_2", 0);
+	PropertiesDialog->AddListView("#\\Datei", 0, 0, 0, 0, "model_inventary");
+	PropertiesDialog->AddButton("Item l&oschen", 0, 1, 0, 0, "delete_item");
+	PropertiesDialog->SetImage("delete_item", "hui:delete");
+	PropertiesDialog->SetTarget("model_dialog_tab_control", 4);
+	PropertiesDialog->AddControlTable("", 0, 0, 1, 4, "mpd_table_script");
+	PropertiesDialog->SetTarget("mpd_table_script", 0);
+	PropertiesDialog->AddText("!bold\\Datei", 0, 0, 0, 0, "model_dialog_t_scriptfile");
+	PropertiesDialog->AddText("!bold\\Variablen", 0, 2, 0, 0, "model_dialog_t_scriptvars");
+	PropertiesDialog->AddControlTable("!noexpandy", 0, 1, 4, 1, "mpd_table_scriptfile");
+	PropertiesDialog->AddControlTable("", 0, 3, 3, 2, "mpd_table_var");
+	PropertiesDialog->SetTarget("mpd_table_scriptfile", 0);
+	PropertiesDialog->AddEdit("", 2, 0, 0, 0, "script");
+	PropertiesDialog->AddButton("", 3, 0, 0, 0, "script_find");
+	PropertiesDialog->SetImage("script_find", "hui:open");
+	PropertiesDialog->SetTarget("mpd_table_var", 0);
+	PropertiesDialog->AddListView("!format=ttT\\#\\Name\\Wert", 2, 1, 0, 0, "script_vars");
+	PropertiesDialog->AddControlTable("!noexpandy", 2, 0, 3, 1, "mpd_table_var_control");
+	PropertiesDialog->SetTarget("mpd_table_var_control", 0);
+	PropertiesDialog->AddText("Anzahl:", 0, 0, 0, 0, "odt_max_scriptvars");
+	PropertiesDialog->AddSpinButton("\\0", 1, 0, 0, 0, "max_script_vars");
+	PropertiesDialog->AddComboBox("", 2, 0, 0, 0, "model_script_var_template");
+	PropertiesDialog->SetTarget("model_dialog_tab_control", 2);
+	PropertiesDialog->AddControlTable("ControlTable 12", 0, 0, 1, 4, "mpd_table_physics");
+	PropertiesDialog->SetTarget("mpd_table_physics", 0);
+	PropertiesDialog->AddText("!bold\\Generell", 0, 0, 0, 0, "model_dialog_grp_physics");
+	PropertiesDialog->AddText("!bold\\Tr&agheitstensor", 0, 2, 0, 0, "model_dialog_grp_tensor");
+	PropertiesDialog->AddControlTable("!noexpandy", 0, 1, 3, 3, "mpd_table_phys_gen");
+	PropertiesDialog->AddControlTable("", 0, 3, 3, 2, "mpd_table_tensor");
+	PropertiesDialog->SetTarget("mpd_table_phys_gen", 0);
+	PropertiesDialog->AddCheckBox("Kollisionsf&ahig", 2, 1, 0, 0, "ph_passive");
+	PropertiesDialog->AddControlTable("!noexpandy", 2, 0, 3, 1, "mpd_table_mass");
+	PropertiesDialog->AddCheckBox("Beweglich", 2, 2, 0, 0, "ph_active");
+	PropertiesDialog->SetTarget("mpd_table_mass", 0);
+	PropertiesDialog->AddText("Masse", 0, 0, 0, 0, "model_dialog_t_mass");
+	PropertiesDialog->AddText("me", 2, 0, 0, 0, "mu");
+	PropertiesDialog->AddEdit("", 1, 0, 0, 0, "mass");
+	PropertiesDialog->SetTarget("mpd_table_tensor", 0);
+	PropertiesDialog->AddListView("!format=tTTT\\\\X\\Y\\Z", 2, 0, 0, 0, "tensor");
+	PropertiesDialog->AddCheckBox("automatisch", 2, 1, 0, 0, "generate_tensor_auto");
+	PropertiesDialog->SetTarget("model_dialog_tab_control", 0);
+	PropertiesDialog->AddControlTable("", 0, 0, 1, 2, "mpd_table_lod");
+	PropertiesDialog->SetTarget("mpd_table_lod", 0);
+	PropertiesDialog->AddText("!bold\\Detailstufen", 0, 0, 0, 0, "model_dialog_grp_details");
+	PropertiesDialog->AddControlTable("", 0, 1, 3, 4, "mpd_table_lod2");
+	PropertiesDialog->SetTarget("mpd_table_lod2", 0);
+	PropertiesDialog->AddListView("!format=tTT\\#\\Sichtweite\\Detailgrad (%)", 2, 1, 0, 0, "lod");
+	PropertiesDialog->AddCheckBox("Sichtweiten automatisch berechnen", 2, 2, 0, 0, "generate_dists_auto");
+	PropertiesDialog->AddCheckBox("Detailstufen automatisch erzeugen", 2, 3, 0, 0, "generate_skin_auto");
+	PropertiesDialog->AddControlTable("!noexpandy", 2, 0, 2, 1, "mpd_table_lod3");
+	PropertiesDialog->SetTarget("mpd_table_lod3", 0);
+	PropertiesDialog->AddText("Anzahl", 0, 0, 0, 0, "model_dialog_t_num_lod");
+	PropertiesDialog->AddSpinButton("\\1", 1, 0, 0, 0, "num_lod");
 	PropertiesDialog->Update();
 
 

@@ -24,10 +24,9 @@ public:
 	void FillMaterialList();
 	void RefillInventaryList();
 	void RefillScriptVarList();
+	void FillDetailList();
+	void FillTensorList();
 	void OnGenerateDistsAuto();
-	void OnGenerateDists();
-	void OnGenerateSkin2();
-	void OnGenerateSkin3();
 	void OnMaterialList();
 	void OnMaterialListCheck();
 	void OnMaterialListSelect();
@@ -35,6 +34,7 @@ public:
 	void OnDeleteMaterial();
 	void OnPhysicsPassive();
 	void OnGenerateTensorAuto();
+	void OnTensorEdit();
 	void OnNumItems();
 	void OnModelInventary();
 	void OnDeleteItem();

@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-572
+576
 // Data (ID,Text)
 ad_dialog
 
@@ -323,17 +323,9 @@ ged_t_system
 
 ged_t_world
 
-generate_dists
-
 generate_dists_auto
 
-generate_skin_2
-
-generate_skin_3
-
-generate_skin_auto_2
-
-generate_skin_auto_3
+generate_skin_auto
 
 generate_tensor_auto
 
@@ -401,6 +393,8 @@ local_documentation
 
 location
 CalcMove 1\\CalcMove 2\\Render 1\\Render 2\\Render 3\\GetInput 1\\GetInput 2
+lod
+
 logo
 
 look_for_updates
@@ -479,8 +473,6 @@ material_sound_dialog
 
 max_script_vars
 
-me
-mu
 menu_administration_file
 
 menu_administration_game
@@ -599,8 +591,6 @@ model_colors
 
 model_dialog
 
-model_dialog_grp_creation
-
 model_dialog_grp_details
 
 model_dialog_grp_material_file
@@ -613,17 +603,13 @@ model_dialog_t_comment
 
 model_dialog_t_description
 
-model_dialog_t_detail_high
-
-model_dialog_t_detail_low
-
-model_dialog_t_detail_med
-
 model_dialog_t_mass
 
 model_dialog_t_maxitems
 
 model_dialog_t_name
+
+model_dialog_t_num_lod
 
 model_dialog_t_scriptfile
 
@@ -659,9 +645,29 @@ move_frame_sign
 フレーム
 move_reset
 リセット
+mpd_table_buttons
+
+mpd_table_inv_1
+
+mpd_table_lod3
+
+mpd_table_mass
+
+mpd_table_mat_buttons
+
+mpd_table_phys_gen
+
+mpd_table_physics
+
+mpd_table_scriptfile
+
+mpd_table_var_control
+
 ms
 ms
 msd_table_2
+
+mu
 
 nb_complexity
 
@@ -769,6 +775,8 @@ ntdt_slides
 
 num_items
 
+num_lod
+
 num_vertices_wanted
 
 num_x
@@ -849,8 +857,6 @@ scale_2d
 倍率 2D
 scaling_dialog
 
-script_find
-...
 script_list
 
 script_vars
@@ -940,6 +946,8 @@ table_7
 table_8
 
 table_9
+
+tensor
 
 terrain_create
 新しい　陸...
@@ -1148,7 +1156,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-210
+218
 // Data (ID,Text)
 
 
@@ -1254,6 +1262,8 @@ Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
 
 Falsches Dateiformat der Datei %s: %d (statt %d)!
 
+Farbe des Himmels
+
 Farbe des Objektes bei absoluter Dunkelheit
 
 Farbe des Objektes bei direktem Licht
@@ -1282,7 +1292,11 @@ Font-Dateien (*.xfont)
 
 Frage
 
+Generelles Umgebungslicht zusätzlich zu allen Lichtquellen
+
 Gespeichert!
+
+Glanzlicht
 
 Hinten
 
@@ -1291,6 +1305,8 @@ Hinten (-z)
 Härte des Glanzes (10=weich, 100=hart)
 
 Höchstens %d Textur-Ebenen erlaubt!
+
+Höhe über dem Horizont
 
 Initialisierung
 
@@ -1334,6 +1350,8 @@ Knochen setzen
 
 Knochen setzen oder Wurzel-Knochen waehlen
 
+Kompassrichtung entlang des Horizonts
+
 Kraftfeld
 
 Kugel
@@ -1369,6 +1387,8 @@ Modell
 Modell-Datei
 
 Modelle (*.model)
+
+Modelle, die über die Hintergrundfarge gemalt werden\n- Doppelklick um ein Modell zu wählen
 
 Nachrichten
 
@@ -1532,6 +1552,8 @@ aktuelles Material
 
 beliebige Datei
 
+frontales Licht
+
 fügt eine weitere Textur-Schicht hinzu (multitexturing)
 
 i'm now going to clean up...
@@ -1563,6 +1585,8 @@ program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 skin: %d
 
 surf: %d
+
+ungerichtetes Umgebungslicht
 
 vert: %d
 
