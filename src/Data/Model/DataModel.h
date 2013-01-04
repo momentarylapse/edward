@@ -222,6 +222,9 @@ public:
 	bool Load(const string &_filename, bool deep = true);
 	bool Save(const string &_filename);
 
+	void ImportFromTriangleSkin(int index);
+	void ExportToTriangleSkin(int index);
+
 	void DebugShow();
 	bool TestSanity(const string &loc);
 
@@ -281,6 +284,7 @@ public:
 	void AddVertex(const vector &pos, int bone_index = 0, int normal_mode = -1);
 	ModelPolygon *AddTriangle(int a, int b, int c);
 	ModelPolygon *AddPolygon(Array<int> &v);
+	ModelPolygon *AddPolygonWithSkin(Array<int> &v, Array<vector> &sv);
 	ModelSurface *AddBall(const vector &pos, float radius, int num_x, int num_y);
 	ModelSurface *AddSphere(const vector &pos, float radius, int num);
 	ModelSurface *AddPlane(const vector &pos, const vector &dv1, const vector &dv2, int num_x, int num_y);

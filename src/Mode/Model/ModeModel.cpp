@@ -137,6 +137,14 @@ void ModeModel::OnCommand(const string & id)
 		ExecuteMaterialDialog(0);
 	if (id == "mode_model_materials")
 		ExecutePropertiesDialog(1);
+
+	// mainly skin debugging...
+	if (id == "detail_1")
+		data->ImportFromTriangleSkin(1);
+	if (id == "detail_2")
+		data->ImportFromTriangleSkin(2);
+	if (id == "detail_3")
+		data->ImportFromTriangleSkin(3);
 }
 
 

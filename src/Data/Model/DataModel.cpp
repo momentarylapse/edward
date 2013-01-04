@@ -856,29 +856,9 @@ bool DataModel::Load(const string & _filename, bool deep)
 	if (deep){
 
 		// import...
-		if (Surface.num == 0){
-		NotifyBegin();
-		NormalModeAll = Skin[1].NormalModeAll;
-		foreachi(ModelVertex &v, Skin[1].Vertex, i){
-			AddVertex(v.pos);
-			Vertex[i].BoneIndex = v.BoneIndex;
-		}
-		for (int i=0;i<Material.num;i++){
-			CurrentMaterial = i;
-			foreach(ModelTriangle &t, Skin[1].Sub[i].Triangle){
-				if ((t.Vertex[0] == t.Vertex[1]) || (t.Vertex[1] == t.Vertex[2]) || (t.Vertex[2] == t.Vertex[0]))
-					continue;
-				ModelPolygon *tt = AddTriangle(t.Vertex[0], t.Vertex[1], t.Vertex[2]);
-				if (tt){
-					for (int tl=0;tl<Material[i].NumTextures;tl++)
-						for (int k=0;k<3;k++)
-							tt->Side[k].SkinVertex[tl] = t.SkinVertex[tl][k];
-				}
-			}
-		}
-		ClearSelection();
-		NotifyEnd();
-		}
+		if (Surface.num == 0)
+			ImportFromTriangleSkin(1);
+
 		foreach(ModelMove &m, Move)
 			if (m.Type == MoveTypeVertex){
 				foreach(ModelFrame &f, m.Frame)
@@ -912,6 +892,64 @@ bool DataModel::Load(const string & _filename, bool deep)
 		UpdateNormals();
 	msg_db_l(1);
 	return !error;
+}
+
+void DataModel::ImportFromTriangleSkin(int index)
+{
+	Vertex.clear();
+	Surface.clear();
+
+	ModelSkin &s = Skin[index];
+	NotifyBegin();
+	NormalModeAll = s.NormalModeAll;
+	foreachi(ModelVertex &v, s.Vertex, i){
+		AddVertex(v.pos);
+		Vertex[i].BoneIndex = v.BoneIndex;
+	}
+	for (int i=0;i<Material.num;i++){
+		CurrentMaterial = i;
+		foreach(ModelTriangle &t, s.Sub[i].Triangle){
+			if ((t.Vertex[0] == t.Vertex[1]) || (t.Vertex[1] == t.Vertex[2]) || (t.Vertex[2] == t.Vertex[0]))
+				continue;
+			Array<int> v;
+			for (int k=0;k<3;k++)
+				v.add(t.Vertex[k]);
+			Array<vector> sv;
+			for (int tl=0;tl<Material[i].NumTextures;tl++)
+				for (int k=0;k<3;k++)
+					sv.add(t.SkinVertex[tl][k]);
+			AddPolygonWithSkin(v, sv);
+		}
+	}
+	ClearSelection();
+	NotifyEnd();
+	action_manager->Reset();
+}
+
+void DataModel::ExportToTriangleSkin(int index)
+{
+	ModelSkin &sk = Skin[index];
+	sk.NormalModeAll = NormalModeAll;
+	sk.Vertex = Vertex;
+	sk.Sub.clear();
+	sk.Sub.resize(Material.num);
+	foreach(ModelSurface &s, Surface)
+		foreach(ModelPolygon &t, s.Polygon){
+			if (t.TriangulationDirty)
+				t.UpdateTriangulation(this);
+			for (int i=0;i<t.Side.num-2;i++){
+				ModelTriangle tt;
+				for (int k=0;k<3;k++){
+					tt.Vertex[k] = t.Side[t.Side[i].Triangulation[k]].Vertex;
+					tt.Normal[k] = t.Side[t.Side[i].Triangulation[k]].Normal;
+					for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+						tt.SkinVertex[l][k] = t.Side[t.Side[i].Triangulation[k]].SkinVertex[l];
+				}
+				sk.Sub[t.Material].Triangle.add(tt);
+			}
+		}
+	foreachi(ModelMaterial &m, Material, i)
+		sk.Sub[i].NumTextures = m.NumTextures;
 }
 
 
@@ -961,26 +999,7 @@ bool DataModel::Save(const string & _filename)
 	UpdateNormals();
 
 	// export...
-	Skin[1].NormalModeAll = NormalModeAll;
-	Skin[1].Vertex = Vertex;
-	Skin[1].Sub.clear();
-	Skin[1].Sub.resize(Material.num);
-	foreach(ModelSurface &s, Surface)
-		foreach(ModelPolygon &t, s.Polygon){
-			Array<int> v = t.Triangulate(this);
-			for (int i=0;i<v.num/3;i++){
-				ModelTriangle tt;
-				for (int k=0;k<3;k++){
-					tt.Vertex[k] = t.Side[v[i*3+k]].Vertex;
-					tt.Normal[k] = t.Side[v[i*3+k]].Normal;
-					for (int l=0;l<MODEL_MAX_TEXTURES;l++)
-						tt.SkinVertex[l][k] = t.Side[v[i*3+k]].SkinVertex[l];
-				}
-				Skin[1].Sub[t.Material].Triangle.add(tt);
-			}
-		}
-	foreachi(ModelMaterial &m, Material, i)
-		Skin[1].Sub[i].NumTextures = m.NumTextures;
+	ExportToTriangleSkin(1);
 
 
 
@@ -1456,6 +1475,11 @@ ModelPolygon *DataModel::AddPolygon(Array<int> &v)
 		float w = (float)i / (float)v.num * 2 * pi;
 		sv.add(vector(0.5f + cos(w) * 0.5f, 0.5f + sin(w), 0));
 	}
+	return (ModelPolygon*)Execute(new ActionModelAddPolygonSingleTexture(v, CurrentMaterial, sv));
+}
+
+ModelPolygon *DataModel::AddPolygonWithSkin(Array<int> &v, Array<vector> &sv)
+{
 	return (ModelPolygon*)Execute(new ActionModelAddPolygonSingleTexture(v, CurrentMaterial, sv));
 }
 
