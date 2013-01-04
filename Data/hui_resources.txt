@@ -1,6 +1,6 @@
 t3
 // Number Of Resources
-50
+51
 // Resource
 Menu
 
@@ -15855,6 +15855,86 @@ hui:about
 
 // Resource
 Dialog
+world_new_object_dialog
+
+1
+390
+75
+0
+0
+0
+1
+0
+
+
+5
+Text
+world_object_dialog_t_name
+
+1
+10
+10
+60
+25
+-1
+0
+0
+
+
+Edit
+name
+
+1
+75
+10
+305
+25
+-1
+0
+0
+
+
+Text
+world_object_dialog_t_type
+
+1
+10
+40
+60
+25
+-1
+0
+0
+
+
+Edit
+kind
+
+0
+75
+40
+275
+25
+-1
+0
+0
+
+
+Button
+find_object
+hui:open
+1
+355
+40
+25
+25
+-1
+0
+0
+
+
+// Resource
+Dialog
 world_object_dialog
 
 1
@@ -16187,7 +16267,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-717
+718
 // Text
 ad_dialog
 Verwaltung
@@ -17577,6 +17657,8 @@ world_dialog_tab_control
 Hintergrund\\Nebel\\Licht\\Physik\\Scripte\\Variablen
 world_new
 Neu
+world_new_object_dialog
+neues Objekt
 world_object_dialog
 Objekt-Eigenschaften
 world_object_dialog_grp_ang
@@ -17629,7 +17711,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-717
+718
 // Text
 ad_dialog
 Administration
@@ -19019,6 +19101,8 @@ world_dialog_tab_control
 common\\background\\script variables
 world_new
 New
+world_new_object_dialog
+
 world_object_dialog
 Object properties
 world_object_dialog_grp_ang
@@ -19387,7 +19471,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-717
+718
 // Text
 ad_dialog
 
@@ -20777,6 +20861,8 @@ world_dialog_tab_control
 common\\background\\script variables
 world_new
 新規
+world_new_object_dialog
+
 world_object_dialog
 
 world_object_dialog_grp_ang

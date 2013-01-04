@@ -1,0 +1,13 @@
+	// dialog
+	ObjectDialog = HuiCreateDialog("neues Objekt", 390, 75, MainWin, true);
+	ObjectDialog->SetID("world_new_object_dialog");
+	ObjectDialog->AddText("Name:", 10, 10, 60, 25, "world_object_dialog_t_name");
+	ObjectDialog->AddEdit("", 75, 10, 305, 25, "name");
+	ObjectDialog->AddText("Typ:", 10, 40, 60, 25, "world_object_dialog_t_type");
+	ObjectDialog->AddEdit("", 75, 40, 275, 25, "kind");
+	ObjectDialog->Enable("kind", false);
+	ObjectDialog->AddButton("", 355, 40, 25, 25, "find_object");
+	ObjectDialog->SetImage("find_object", "hui:open");
+	ObjectDialog->Update();
+
+

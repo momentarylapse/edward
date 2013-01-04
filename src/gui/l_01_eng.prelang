@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-576
+577
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -1117,6 +1117,8 @@ world_dialog_tab_control
 common\\background\\script variables
 world_new
 New
+world_new_object_dialog
+
 world_object_dialog
 Object properties
 world_object_dialog_grp_ang
