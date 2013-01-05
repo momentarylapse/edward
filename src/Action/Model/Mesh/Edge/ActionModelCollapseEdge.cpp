@@ -7,6 +7,7 @@
 
 #include "ActionModelCollapseEdge.h"
 #include "../Polygon/Helper/ActionModelPolygonRemoveVertex.h"
+#include "../Surface/Helper/ActionModelSurfaceRelinkPolygon.h"
 #include "../Vertex/Helper/ActionModelDeleteUnusedVertex.h"
 #include "../Vertex/Helper/ActionModelMoveVertex.h"
 #include "../../../../Data/Model/DataModel.h"
@@ -34,11 +35,27 @@ void *ActionModelCollapseEdge::compose(Data *d)
 	vector pos = (m->Vertex[v[0]].pos + m->Vertex[v[1]].pos) / 2;
 	AddSubAction(new ActionModelMoveVertex(v[0], pos), m);
 
-	// delete the polygons which will be trivial
+	// any polygon using this edge -> remove 1 vertex
+	Array<int> poly, side;
+	foreachib(ModelPolygon &t, s.Polygon, i){
+		for (int k=0;k<t.Side.num;k++)
+			if (t.Side[k].Edge == edge){
+				// don't disturb the edges -> remove delayed
+				poly.add(i);
+				side.add((k + 1 - t.Side[k].EdgeDirection) % t.Side.num);
+				break;
+			}
+	}
+	foreachi(int p, poly, i)
+		AddSubAction(new ActionModelPolygonRemoveVertex(surface, p, side[i]), m);
+
+	// polygon using old vertex -> relink
 	foreachib(ModelPolygon &t, s.Polygon, i){
 		for (int k=0;k<t.Side.num;k++)
 			if (t.Side[k].Vertex == v[1]){
-				AddSubAction(new ActionModelPolygonRemoveVertex(surface, i, k), m);
+				Array<int> vv = t.GetVertices();
+				vv[k] = v[0];
+				AddSubAction(new ActionModelSurfaceRelinkPolygon(surface, i, vv), m);
 				break;
 			}
 		_foreach_it_.update(); // TODO

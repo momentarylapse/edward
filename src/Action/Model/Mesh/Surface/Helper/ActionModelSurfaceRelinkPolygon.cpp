@@ -27,10 +27,7 @@ void *ActionModelSurfaceRelinkPolygon::compose(Data *d)
 	ModelPolygon &t = m->Surface[surface].Polygon[polygon];
 	assert(v.num == t.Side.num);
 	int material = t.Material;
-	Array<vector> sv;
-	for (int l=0;l<MODEL_MAX_TEXTURES;l++)
-		for (int k=0;k<t.Side.num;k++)
-			sv.add(t.Side[k].SkinVertex[l]);
+	Array<vector> sv = t.GetSkinVertices();
 
 	// delete old triangle
 	AddSubAction(new ActionModelSurfaceDeletePolygon(surface, polygon), m);

@@ -10,10 +10,19 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
 
-#if 0
+#if 1
 static vector get_area(DataModel *m, ModelPolygon &t)
 {
-	return (m->Vertex[t.Vertex[1]].pos - m->Vertex[t.Vertex[0]].pos) ^ (m->Vertex[t.Vertex[2]].pos - m->Vertex[t.Vertex[0]].pos);
+	if (t.NormalDirty)
+		t.UpdateTriangulation(m);
+	vector a = v_0;
+	for (int k=0;k<t.Side.num-2;k++){
+		int va = t.Side[t.Side[k].Triangulation[0]].Vertex;
+		int vb = t.Side[t.Side[k].Triangulation[1]].Vertex;
+		int vc = t.Side[t.Side[k].Triangulation[2]].Vertex;
+		a += (m->Vertex[vb].pos - m->Vertex[va].pos) ^ (m->Vertex[vc].pos - m->Vertex[va].pos);
+	}
+	return a;
 }
 
 static int edge_other_vertex(ModelEdge &e, int v)
@@ -22,7 +31,7 @@ static int edge_other_vertex(ModelEdge &e, int v)
 		return e.Vertex[1];
 	if (e.Vertex[1] == v)
 		return e.Vertex[0];
-	msg_error("edge_other_vertex");
+	throw ActionException("easify: edge_other_vertex");
 	return e.Vertex[0];
 }
 
@@ -38,12 +47,12 @@ static float get_weight(DataModel *m, ModelSurface &s, ModelEdge &e)
 		if ((e.RefCount > 1) && (ti == e.Polygon[1]))
 			continue;
 		for (int l=0;l<e.RefCount;l++)
-			for (int k=0;k<3;k++)
-				if (t.Vertex[k] == e.Vertex[l]){
+			for (int k=0;k<t.Side.num;k++)
+				if (t.Side[k].Vertex == e.Vertex[l]){
 					vector area = get_area(m, t);
 					vector vv[3];
 					for (int i=0;i<3;i++)
-						vv[i] = (i == k) ? v : m->Vertex[t.Vertex[i]].pos;
+						vv[i] = (i == k) ? v : m->Vertex[t.Side[i].Vertex].pos;
 					vector area2 = (vv[1] - vv[0]) ^ (vv[2] - vv[0]);
 					w += (area ^ area2).length() / (area.length() + area2.length());
 					//w += VecLength(area - area2);
@@ -70,11 +79,11 @@ bool ActionModelEasify::EasifyStep(DataModel *m)
 				// find all edges sharing a vertex with e
 				Set<int> ee;
 				foreach(ModelPolygon &t, s.Polygon)
-					for (int k=0;k<3;k++)
+					for (int k=0;k<t.Side.num;k++)
 						for (int l=0;l<2;l++)
-							if (t.Vertex[k] == e.Vertex[l]){
-								ee.add(t.Edge[k]);
-								ee.add(t.Edge[(k+2)%3]);
+							if (t.Side[k].Vertex == e.Vertex[l]){
+								ee.add(t.Side[k].Edge);
+								ee.add(t.Side[(k-1+t.Side.num) % t.Side.num].Edge);
 							}
 
 				// compute damage...
@@ -106,7 +115,7 @@ bool ActionModelEasify::EasifyStep(DataModel *m)
 			}
 
 	if (_edge >= 0){
-		AddSubAction(new ActionModelCollapseEdge(m, _surface, _edge), m);
+		AddSubAction(new ActionModelCollapseEdge(_surface, _edge), m);
 		return true;
 	}
 	return false;
@@ -115,9 +124,9 @@ bool ActionModelEasify::EasifyStep(DataModel *m)
 
 ActionModelEasify::ActionModelEasify(DataModel *m, float factor)
 {
-#if 0
-	int n = (int)((float)m->GetNumTriangles() * factor);
-	while(m->GetNumTriangles() > n)
+#if 1
+	int n = (int)((float)m->GetNumPolygons() * factor);
+	while(m->GetNumPolygons() > n)
 		if (!EasifyStep(m))
 			break;
 #endif
