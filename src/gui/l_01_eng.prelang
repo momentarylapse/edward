@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-576
+578
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -523,6 +523,8 @@ menu_model_view
 View
 menu_model_viewstage
 Viewstage
+menu_poly2_header
+
 menu_rightmouse
 Right mouse button
 menu_surface_header
@@ -531,6 +533,8 @@ menu_terrain_texture
 Terrain texture
 menu_tria_header
 On triangles
+menu_vertex2_header
+
 menu_vertex_header
 On vertices
 menu_world

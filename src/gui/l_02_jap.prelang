@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-576
+578
 // Data (ID,Text)
 ad_dialog
 
@@ -523,6 +523,8 @@ menu_model_view
 表示
 menu_model_viewstage
 表示　の　レベル
+menu_poly2_header
+
 menu_rightmouse
 
 menu_surface_header
@@ -530,6 +532,8 @@ menu_surface_header
 menu_terrain_texture
 
 menu_tria_header
+
+menu_vertex2_header
 
 menu_vertex_header
 

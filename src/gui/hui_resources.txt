@@ -6020,7 +6020,7 @@ menu_model
 0
 
 
-146
+148
 ItemPopup
 menu_model_file
 
@@ -6727,7 +6727,20 @@ ItemPopup
 menu_model_appearance
 
 1
-13
+15
+0
+0
+0
+0
+0
+0
+
+
+Item
+menu_vertex2_header
+
+0
+0
 0
 0
 0
@@ -6987,6 +7000,19 @@ ItemSeparator
 
 
 1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+menu_poly2_header
+
+0
 0
 0
 0
@@ -16241,7 +16267,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-717
+719
 // Text
 ad_dialog
 Verwaltung
@@ -16903,6 +16929,8 @@ menu_move
 
 menu_nomode
 
+menu_poly2_header
+Polygone
 menu_rightmouse
 Rechte Maustaste
 menu_skeleton
@@ -16913,6 +16941,8 @@ menu_terrain_texture
 Terrain Textur
 menu_tria_header
 Auf Polygone
+menu_vertex2_header
+Punkte
 menu_vertex_header
 Auf Punkte
 menu_view
@@ -17683,7 +17713,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-717
+719
 // Text
 ad_dialog
 Administration
@@ -18345,6 +18375,8 @@ menu_move
 
 menu_nomode
 
+menu_poly2_header
+
 menu_rightmouse
 Right mouse button
 menu_skeleton
@@ -18355,6 +18387,8 @@ menu_terrain_texture
 Terrain texture
 menu_tria_header
 On triangles
+menu_vertex2_header
+
 menu_vertex_header
 On vertices
 menu_view
@@ -19441,7 +19475,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-717
+719
 // Text
 ad_dialog
 
@@ -20103,6 +20137,8 @@ menu_move
 
 menu_nomode
 
+menu_poly2_header
+
 menu_rightmouse
 
 menu_skeleton
@@ -20112,6 +20148,8 @@ menu_surface_header
 menu_terrain_texture
 
 menu_tria_header
+
+menu_vertex2_header
 
 menu_vertex_header
 

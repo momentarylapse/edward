@@ -16,8 +16,8 @@ ActionModelSkinVerticesFromProjection::ActionModelSkinVerticesFromProjection(Dat
 	// list of selected skin vertices and save old pos
 	foreachi(ModelSurface &s, m->Surface, si)
 		foreachi(ModelPolygon &t, s.Polygon, ti)
-			for (int k=0;k<t.Side.num;k++)
-				if (m->Vertex[t.Side[k].Vertex].is_selected){
+			if (t.is_selected)
+				for (int k=0;k<t.Side.num;k++){
 					vert_on_tria.add(k);
 					surface.add(si);
 					tria.add(ti);
