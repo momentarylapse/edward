@@ -1990,7 +1990,7 @@ void ModelSelectionState::clear()
 	Polygon.clear();
 }
 
-Set<int> DataModel::GetSelectedSurfaces()
+Set<int> DataModel::GetSelectedVertices()
 {
 	Set<int> vertex;
 	foreachi(ModelVertex &v, Vertex, i)
@@ -1999,7 +1999,7 @@ Set<int> DataModel::GetSelectedSurfaces()
 	return vertex;
 }
 
-Set<int> DataModel::GetSelectedVertices()
+Set<int> DataModel::GetSelectedSurfaces()
 {
 	Set<int> surface;
 	foreachi(ModelSurface &surf, Surface, i)
