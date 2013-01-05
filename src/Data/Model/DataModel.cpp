@@ -30,6 +30,7 @@
 #include "../../Action/Model/Mesh/Surface/ActionModelSurfaceSubtract.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelSurfaceInvert.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelAutoWeldSelection.h"
+#include "../../Action/Model/Mesh/Surface/ActionModelSurfacesSubdivide.h"
 #include "../../Action/Model/Mesh/Look/ActionModelSetMaterial.h"
 #include "../../Action/Model/Mesh/Look/ActionModelSetNormalModeSelection.h"
 #include "../../Action/Model/Mesh/Look/ActionModelSetNormalModeAll.h"
@@ -1945,6 +1946,9 @@ void DataModel::PasteGeometry(ModelGeometry& geo)
 
 void DataModel::Easify(float factor)
 {	Execute(new ActionModelEasify(factor));	}
+
+void DataModel::SubdivideSelectedSurfaces()
+{	Execute(new ActionModelSurfacesSubdivide(GetSelectedSurfaces()));	}
 
 void DataModel::BevelSelectedVertices(float radius)
 {	Execute(new ActionModelBevelVertices(radius));	}

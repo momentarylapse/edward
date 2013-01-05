@@ -164,6 +164,8 @@ void ModeModelMesh::OnCommand(const string & id)
 	}
 	if (id == "easify_skin")
 		Easify();
+	if (id == "subdivide_surfaces")
+		data->SubdivideSelectedSurfaces();
 
 	if (id == "normal_this_smooth")
 		data->SetNormalModeSelection(NormalModeSmooth);

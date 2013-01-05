@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-574
+575
 // Data (ID,Text)
 ad_dialog
 
@@ -912,6 +912,8 @@ specular
 stretch_x
 
 stretch_z
+
+subdivide_surfaces
 
 subtract_surface
 

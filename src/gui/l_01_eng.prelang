@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-574
+575
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -913,6 +913,8 @@ stretch_x
 1\\0\\1000\\0.01
 stretch_z
 1\\0\\1000\\0.01
+subdivide_surfaces
+
 subtract_surface
 
 sun_ang_from_camera

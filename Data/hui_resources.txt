@@ -6020,7 +6020,7 @@ menu_model
 0
 
 
-144
+145
 ItemPopup
 menu_model_file
 
@@ -7130,7 +7130,7 @@ ItemPopup
 menu_model_functions
 
 1
-23
+24
 0
 0
 0
@@ -7440,6 +7440,19 @@ hui:cut
 
 Item
 new_outline
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+subdivide_surfaces
 
 1
 0
@@ -16215,7 +16228,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-715
+716
 // Text
 ad_dialog
 Verwaltung
@@ -17363,6 +17376,8 @@ stretch_x
 1\\0\\1000\\0.01
 stretch_z
 1\\0\\1000\\0.01
+subdivide_surfaces
+Verfeinern
 subtract_surface
 Volumen ausschneiden
 sun_am
@@ -17653,7 +17668,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-715
+716
 // Text
 ad_dialog
 Administration
@@ -18801,6 +18816,8 @@ stretch_x
 1\\0\\1000\\0.01
 stretch_z
 1\\0\\1000\\0.01
+subdivide_surfaces
+
 subtract_surface
 
 sun_am
@@ -19407,7 +19424,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-715
+716
 // Text
 ad_dialog
 
@@ -20554,6 +20571,8 @@ speed
 stretch_x
 
 stretch_z
+
+subdivide_surfaces
 
 subtract_surface
 

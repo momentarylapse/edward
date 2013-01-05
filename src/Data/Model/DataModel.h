@@ -312,6 +312,7 @@ public:
 	void CopyGeometry(ModelGeometry &geo); // not an action...
 	void PasteGeometry(ModelGeometry &geo);
 	void Easify(float factor);
+	void SubdivideSelectedSurfaces();
 
 
 	// properties
