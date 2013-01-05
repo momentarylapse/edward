@@ -28,8 +28,20 @@ void ModelSurface::AddVertex(int v)
 		msg_error("SurfaceAddVertex ...surface not found");
 }
 
+bool int_array_has_duplicates(Array<int> &a)
+{
+	for (int i=0; i<a.num; i++)
+		for (int j=i+1; j<a.num; j++)
+			if (a[i] == a[j])
+				return true;
+	return false;
+}
+
 void ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, int index)
 {
+	if (int_array_has_duplicates(v))
+		throw GeometryException("AddPolygon: duplicate vertices");
+
 	msg_db_r("Surf.AddTria", 1);
 
 	ModelPolygon t;

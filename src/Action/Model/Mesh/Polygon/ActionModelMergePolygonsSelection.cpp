@@ -22,12 +22,12 @@ void *ActionModelMergePolygonsSelection::compose(Data *d)
 	return NULL;
 }
 
-int polygons_count_shared_edges(ModelPolygon &a, ModelPolygon &b)
+int polygons_count_shared_vertices(ModelPolygon &a, ModelPolygon &b)
 {
 	int n = 0;
 	for (int i=0; i<a.Side.num; i++)
 		for (int j=0; j<b.Side.num; j++)
-			if (a.Side[i].Edge == b.Side[j].Edge)
+			if (a.Side[i].Vertex == b.Side[j].Vertex)
 				n ++;
 	return n;
 }
@@ -57,10 +57,10 @@ void ActionModelMergePolygonsSelection::MergePolygonsInSurface(DataModel *m, Mod
 			if (p1.NormalDirty)
 				p1.TempNormal = p1.GetNormal(m);
 
-			if (p0.TempNormal * p1.TempNormal < 0.95f)
+			if (p0.TempNormal * p1.TempNormal < 0.98f)
 				continue;
 
-			if (polygons_count_shared_edges(p0, p1) != 1)
+			if (polygons_count_shared_vertices(p0, p1) != 2)
 				continue;
 
 			MergePolygons(m, s, surface, ei);
