@@ -163,14 +163,14 @@ bool ActionManager::Preview(Action *a)
 	ClearPreview();
 	try{
 		a->execute_logged(data);
-		Notify("Change");
+		data->Notify("Change");
 		preview = a;
 	}catch(ActionException &e){
 		error_message = e.message;
 		a->abort(data);
 		delete(a);
 		Notify("Failed");
-		Notify("Change");
+		data->Notify("Change");
 		return false;
 	}
 	return true;
