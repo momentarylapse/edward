@@ -122,14 +122,21 @@ bool ActionModelEasify::EasifyStep(DataModel *m)
 }
 #endif
 
-ActionModelEasify::ActionModelEasify(DataModel *m, float factor)
+ActionModelEasify::ActionModelEasify(float _factor)
 {
+	factor = _factor;
+}
+
+void *ActionModelEasify::compose(Data *d)
+{
+	DataModel *m = dynamic_cast<DataModel*>(d);
 #if 1
 	int n = (int)((float)m->GetNumPolygons() * factor);
 	while(m->GetNumPolygons() > n)
 		if (!EasifyStep(m))
 			break;
 #endif
+	return NULL;
 }
 
 ActionModelEasify::~ActionModelEasify()

@@ -14,11 +14,14 @@ class DataModel;
 class ActionModelEasify: public ActionGroup
 {
 public:
-	ActionModelEasify(DataModel *m, float factor);
+	ActionModelEasify(float factor);
 	virtual ~ActionModelEasify();
 	string name(){	return "ModelEasify";	}
 
+	void *compose(Data *d);
+
 private:
+	float factor;
 	bool EasifyStep(DataModel *m);
 };
 

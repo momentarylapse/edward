@@ -1944,7 +1944,7 @@ void DataModel::PasteGeometry(ModelGeometry& geo)
 {	Execute(new ActionModelPasteGeometry(geo));	}
 
 void DataModel::Easify(float factor)
-{	Execute(new ActionModelEasify(this, factor));	}
+{	Execute(new ActionModelEasify(factor));	}
 
 void DataModel::BevelSelectedVertices(float radius)
 {	Execute(new ActionModelBevelVertices(radius));	}
