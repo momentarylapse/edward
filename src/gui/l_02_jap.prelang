@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-577
+574
 // Data (ID,Text)
 ad_dialog
 
@@ -159,11 +159,9 @@ easify_dialog
 
 easify_skin
 
+eat_estimate
+
 eat_quality
-
-eat_triangles
-
-eat_vertices
 
 edit_material
 編集
@@ -777,8 +775,6 @@ num_items
 
 num_lod
 
-num_vertices_wanted
-
 num_x
 
 num_z
@@ -817,8 +813,6 @@ property_list
 type\\index\\name
 quality_factor
 
-rarrow
-->
 rc_dialog
 
 redo
@@ -1158,7 +1152,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-218
+219
 // Data (ID,Text)
 
 
@@ -1575,6 +1569,8 @@ message.txt öffnen
 neue Punkte setzen
 
 neuen Punkt in Polygon setzen
+
+neues Objekt auswählen
 
 neues Objekt setzen
 

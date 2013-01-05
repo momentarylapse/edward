@@ -22,6 +22,7 @@ ModelEasifyDialog::ModelEasifyDialog(CHuiWindow *_parent, bool _allow_parent, Da
 	EventM("cancel", this, (void(HuiEventHandler::*)())&ModelEasifyDialog::OnClose);
 	EventM("ok", this, (void(HuiEventHandler::*)())&ModelEasifyDialog::OnOk);
 	EventM("quality_factor", this, (void(HuiEventHandler::*)())&ModelEasifyDialog::OnQualityFactor);
+	EventM("quality_slider", this, (void(HuiEventHandler::*)())&ModelEasifyDialog::OnQualitySlider);
 
 	LoadData();
 }
@@ -33,15 +34,20 @@ ModelEasifyDialog::~ModelEasifyDialog()
 void ModelEasifyDialog::LoadData()
 {
 	SetFloat("quality_factor", factor * 100.0f);
-	SetInt("num_vertices", data->Vertex.num);
-	SetInt("num_triangles", data->GetNumPolygons());
-	SetInt("num_vertices_wanted", data->Vertex.num * factor);
-	SetInt("num_triangles_wanted", data->GetNumPolygons() * factor);
+	SetFloat("quality_slider", factor);
+	SetString("eat_vertices", format(_("Vertexpunkte: %d (von %d)"), (int)(data->Vertex.num * factor), data->Vertex.num));
+	SetString("eat_polygons", format(_("Polygone: %d (von %d)"), (int)(data->GetNumPolygons() * factor), data->GetNumPolygons()));
 }
 
 void ModelEasifyDialog::OnQualityFactor()
 {
 	factor = GetFloat("quality_factor") / 100.0f;
+	LoadData();
+}
+
+void ModelEasifyDialog::OnQualitySlider()
+{
+	factor = GetFloat("");
 	LoadData();
 }
 

@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-577
+574
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -159,12 +159,10 @@ easify_dialog
 Easify skin
 easify_skin
 Easify skin
+eat_estimate
+
 eat_quality
 quality factor
-eat_triangles
-triangles
-eat_vertices
-vertices
 edit_material
 edit
 edit_terrain_selectable
@@ -777,8 +775,6 @@ num_items
 \\0
 num_lod
 
-num_vertices_wanted
-\\0
 num_x
 \\1
 num_z
@@ -817,8 +813,6 @@ property_list
 type\\index\\name
 quality_factor
 \\0\\100\\0.1
-rarrow
-->
 rc_dialog
 Rudimentary configuration
 redo
@@ -1158,7 +1152,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-218
+219
 // Data (ID,Text)
 
 
@@ -1575,6 +1569,8 @@ Open message.txt
 neue Punkte setzen
 place new vertex
 neuen Punkt in Polygon setzen
+
+neues Objekt auswählen
 
 neues Objekt setzen
 

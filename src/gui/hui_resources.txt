@@ -4690,8 +4690,8 @@ Dialog
 easify_dialog
 
 1
-300
-150
+335
+200
 0
 0
 0
@@ -4699,14 +4699,14 @@ easify_dialog
 0
 
 
-13
+9
 Text
 eat_vertices
 
 1
-10
-10
+25
 90
+300
 25
 -1
 0
@@ -4714,12 +4714,12 @@ eat_vertices
 
 
 Text
-eat_triangles
+eat_polygons
 
 1
-10
-40
-90
+25
+120
+300
 25
 -1
 0
@@ -4731,60 +4731,8 @@ eat_quality
 
 1
 10
-70
-90
-25
--1
-0
-0
-
-
-Edit
-num_vertices
-
-0
-100
 10
-70
-25
--1
-0
-0
-
-
-Edit
-num_triangles
-
-0
-100
-40
-70
-25
--1
-0
-0
-
-
-SpinButton
-num_vertices_wanted
-
-1
-205
-10
-70
-25
--1
-0
-0
-
-
-Edit
-num_triangles_wanted
-
-0
-205
-40
-70
+315
 25
 -1
 0
@@ -4795,9 +4743,9 @@ SpinButton
 quality_factor
 
 1
-205
-70
-70
+200
+35
+105
 25
 -1
 0
@@ -4808,8 +4756,8 @@ Text
 percent
 
 1
-280
-70
+310
+35
 15
 25
 -1
@@ -4821,8 +4769,8 @@ DefButton
 ok
 hui:ok
 1
-190
-110
+225
+160
 100
 25
 -1
@@ -4834,8 +4782,8 @@ Button
 cancel
 hui:cancel
 1
-85
-110
+120
+160
 100
 25
 -1
@@ -4843,13 +4791,13 @@ hui:cancel
 0
 
 
-Text
-rarrow
+Slider
+quality_slider
 
 1
-175
-10
-30
+25
+35
+170
 25
 -1
 0
@@ -4857,12 +4805,12 @@ rarrow
 
 
 Text
-rarrow
+eat_estimate
 
 1
-175
-40
-30
+10
+65
+315
 25
 -1
 0
@@ -16267,7 +16215,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-718
+715
 // Text
 ad_dialog
 Verwaltung
@@ -16446,15 +16394,17 @@ dummy_t
 dummy_text
 
 easify_dialog
-Oberfläche vereinfachen
+Geometrie vereinfachen
 easify_skin
 --Vereinfachen...
+eat_estimate
+!bold\\ungefähres Ergebnis
+eat_polygons
+
 eat_quality
-Qualitätsfaktor:
-eat_triangles
-Dreiecke:
+!bold\\Qualitätsfaktor
 eat_vertices
-Vertexpunkte
+
 edit_material
 !noexpandx\\Bearb.
 edit_object
@@ -17217,14 +17167,6 @@ num_items
 \\0
 num_lod
 \\1
-num_triangles
-
-num_triangles_wanted
-
-num_vertices
-
-num_vertices_wanted
-\\0
 num_x
 \\1
 num_z
@@ -17279,8 +17221,8 @@ property_list
 Typ\\Index\\Name
 quality_factor
 \\0\\100\\0.1
-rarrow
-->
+quality_slider
+
 rc_dialog
 Grundeinstellungen des Spieles
 rcjump
@@ -17711,7 +17653,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-718
+715
 // Text
 ad_dialog
 Administration
@@ -17893,12 +17835,14 @@ easify_dialog
 Easify skin
 easify_skin
 Easify skin
+eat_estimate
+
+eat_polygons
+
 eat_quality
 quality factor
-eat_triangles
-triangles
 eat_vertices
-vertices
+
 edit_material
 edit
 edit_object
@@ -18661,14 +18605,6 @@ num_items
 \\0
 num_lod
 
-num_triangles
-
-num_triangles_wanted
-
-num_vertices
-
-num_vertices_wanted
-\\0
 num_x
 \\1
 num_z
@@ -18723,8 +18659,8 @@ property_list
 type\\index\\name
 quality_factor
 \\0\\100\\0.1
-rarrow
-->
+quality_slider
+
 rc_dialog
 Rudimentary configuration
 rcjump
@@ -19471,7 +19407,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-718
+715
 // Text
 ad_dialog
 
@@ -19653,9 +19589,11 @@ easify_dialog
 
 easify_skin
 
-eat_quality
+eat_estimate
 
-eat_triangles
+eat_polygons
+
+eat_quality
 
 eat_vertices
 
@@ -20421,14 +20359,6 @@ num_items
 
 num_lod
 
-num_triangles
-
-num_triangles_wanted
-
-num_vertices
-
-num_vertices_wanted
-
 num_x
 
 num_z
@@ -20483,8 +20413,8 @@ property_list
 type\\index\\name
 quality_factor
 
-rarrow
-->
+quality_slider
+
 rc_dialog
 
 rcjump

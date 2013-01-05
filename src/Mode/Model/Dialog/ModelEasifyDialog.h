@@ -21,6 +21,7 @@ public:
 	void LoadData();
 
 	void OnQualityFactor();
+	void OnQualitySlider();
 	void OnClose();
 	void OnOk();
 
