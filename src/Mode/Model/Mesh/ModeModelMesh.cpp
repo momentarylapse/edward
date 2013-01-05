@@ -115,6 +115,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		data->AutoWeldSelectedSurfaces(0.1f / mode_model_mesh_vertex->multi_view->zoom);
 	if (id == "triangulate_selection")
 		data->TriangulateSelection();
+	if (id == "untriangulate_selection")
+		data->MergePolygonsSelection();
 	if (id == "cut_out")
 		data->CutOutSelection();
 	if (id == "nearify")
@@ -123,6 +125,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		data->CollapseSelectedVertices();
 	if (id == "align_to_grid")
 		data->AlignToGridSelection(mode_model_mesh_vertex->multi_view->GetGridD());
+	if (id == "subdivide_surfaces")
+		data->SubdivideSelectedSurfaces();
 
 	if (id == "new_point")
 		ed->SetMode(new ModeModelMeshCreateVertex(mode_model_mesh_vertex));
@@ -164,8 +168,6 @@ void ModeModelMesh::OnCommand(const string & id)
 	}
 	if (id == "easify_skin")
 		Easify();
-	if (id == "subdivide_surfaces")
-		data->SubdivideSelectedSurfaces();
 
 	if (id == "normal_this_smooth")
 		data->SetNormalModeSelection(NormalModeSmooth);

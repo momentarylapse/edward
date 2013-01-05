@@ -20,6 +20,7 @@
 #include "../../Action/Model/Mesh/Polygon/ActionModelAddPolygonSingleTexture.h"
 #include "../../Action/Model/Mesh/Polygon/ActionModelExtrudePolygons.h"
 #include "../../Action/Model/Mesh/Polygon/ActionModelTriangulateSelection.h"
+#include "../../Action/Model/Mesh/Polygon/ActionModelMergePolygonsSelection.h"
 #include "../../Action/Model/Mesh/Polygon/ActionModelCutOutPolygons.h"
 #include "../../Action/Model/Mesh/Shape/ActionModelAddCube.h"
 #include "../../Action/Model/Mesh/Shape/ActionModelAddPlane.h"
@@ -1982,6 +1983,9 @@ void DataModel::CutOutSelection()
 
 void DataModel::TriangulateSelection()
 {	Execute(new ActionModelTriangulateSelection());	}
+
+void DataModel::MergePolygonsSelection()
+{	Execute(new ActionModelMergePolygonsSelection());	}
 
 void DataModel::SelectionClearEffects()
 {	Execute(new ActionModelClearEffects(this));	}

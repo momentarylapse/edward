@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-575
+576
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -1043,6 +1043,8 @@ triangulate_selection
 
 undo
 Undo
+untriangulate_selection
+
 view_back
 Back (-z)
 view_bottom

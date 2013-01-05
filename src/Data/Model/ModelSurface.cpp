@@ -436,13 +436,14 @@ void ModelSurface::RemovePolygon(int index)
 
 	Polygon.erase(index);
 
-	//TestSanity("rem tria 0");
+	//TestSanity("rem poly 0");
 
 	// remove obsolete edges
 	foreachb(int o, obsolete)
 		RemoveObsoleteEdge(o);
 
-	TestSanity("rem tria");
+	if (!TestSanity("rem poly"))
+		throw GeometryException("RemoveTriangle: TestSanity");
 }
 
 bool ModelSurface::TestSanity(const string &loc)
@@ -451,7 +452,7 @@ bool ModelSurface::TestSanity(const string &loc)
 		for (int k=0;k<t.Side.num;k++)
 			for (int kk=k+1;kk<t.Side.num;kk++)
 				if (t.Side[k].Vertex == t.Side[kk].Vertex){
-					msg_error(loc + ": surf broken!   trivial tria");
+					msg_error(loc + ": surf broken!   identical vertices in poly");
 					return false;
 				}
 	foreachi(ModelEdge &e, Edge, i){

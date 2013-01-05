@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-575
+576
 // Data (ID,Text)
 ad_dialog
 
@@ -1043,6 +1043,8 @@ triangulate_selection
 
 undo
 元に戻す
+untriangulate_selection
+
 view_back
 
 view_bottom

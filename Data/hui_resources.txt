@@ -6020,7 +6020,7 @@ menu_model
 0
 
 
-145
+146
 ItemPopup
 menu_model_file
 
@@ -7130,7 +7130,7 @@ ItemPopup
 menu_model_functions
 
 1
-24
+25
 0
 0
 0
@@ -7362,6 +7362,19 @@ extrude_triangles
 
 Item
 triangulate_selection
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+untriangulate_selection
 
 1
 0
@@ -16228,7 +16241,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-716
+717
 // Text
 ad_dialog
 Verwaltung
@@ -17526,6 +17539,8 @@ undo
 Rückgängig
 unknown
 
+untriangulate_selection
+Un-Triangulieren
 value
 
 vel_x
@@ -17668,7 +17683,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-716
+717
 // Text
 ad_dialog
 Administration
@@ -18966,6 +18981,8 @@ undo
 Undo
 unknown
 
+untriangulate_selection
+
 value
 
 vel_x
@@ -19424,7 +19441,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-716
+717
 // Text
 ad_dialog
 
@@ -20721,6 +20738,8 @@ triangulate_selection
 undo
 元に戻す
 unknown
+
+untriangulate_selection
 
 value
 
