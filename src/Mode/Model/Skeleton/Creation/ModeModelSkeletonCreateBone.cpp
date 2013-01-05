@@ -24,7 +24,7 @@ ModeModelSkeletonCreateBone::~ModeModelSkeletonCreateBone()
 {
 }
 
-void ModeModelSkeletonCreateBone::OnDrawWin(int win, irect dest)
+void ModeModelSkeletonCreateBone::OnDrawWin(int win)
 {
 }
 

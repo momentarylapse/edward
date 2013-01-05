@@ -104,7 +104,7 @@ void ModeModelMeshEdge::OnLeftButtonDown()
 
 
 
-void ModeModelMeshEdge::OnDrawWin(int win, irect dest)
+void ModeModelMeshEdge::OnDrawWin(int win)
 {
 }
 

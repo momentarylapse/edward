@@ -22,7 +22,7 @@ public:
 
 	void OnKeyDown();
 
-	void OnDrawWin(int win, irect dest);
+	void OnDrawWin(int win);
 
 	DataModel *data;
 	Data *GetData(){	return data;	}

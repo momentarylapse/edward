@@ -26,9 +26,9 @@ ModeModelMeshSurface::~ModeModelMeshSurface()
 
 
 
-void ModeModelMeshSurface::OnDrawWin(int win, irect dest)
+void ModeModelMeshSurface::OnDrawWin(int win)
 {
-	mode_model_mesh_polygon->OnDrawWin(win, dest);
+	mode_model_mesh_polygon->OnDrawWin(win);
 }
 
 
@@ -41,7 +41,7 @@ void ModeModelMeshSurface::OnEnd()
 }
 
 bool PolygonIsMouseOver(int index, void *user_data, int win, vector &tp);
-bool PolygonInRect(int index, void *user_data, int win, irect *r);
+bool PolygonInRect(int index, void *user_data, int win, rect *r);
 
 bool SurfaceIsMouseOver(int index, void *user_data, int win, vector &tp)
 {
@@ -53,7 +53,7 @@ bool SurfaceIsMouseOver(int index, void *user_data, int win, vector &tp)
 	return false;
 }
 
-bool SurfaceInRect(int index, void *user_data, int win, irect *r)
+bool SurfaceInRect(int index, void *user_data, int win, rect *r)
 {
 	DataModel *data = (DataModel*)user_data;
 	ModelSurface &s = data->Surface[index];

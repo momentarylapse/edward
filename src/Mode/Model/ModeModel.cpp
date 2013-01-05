@@ -11,7 +11,7 @@
 #include "Mesh/ModeModelMesh.h"
 #include "Mesh/ModeModelMeshVertex.h"
 #include "Mesh/ModeModelMeshEdge.h"
-#include "Mesh/ModeModelMeshPolygon.h".h"
+#include "Mesh/ModeModelMeshPolygon.h"
 #include "Mesh/ModeModelMeshSurface.h"
 #include "Mesh/ModeModelMeshTexture.h"
 #include "Skeleton/ModeModelSkeleton.h"

@@ -69,7 +69,7 @@ void ModeModelMeshTexture::OnEnd()
 #define cur_tex			data->Material[data->CurrentMaterial].Texture[data->CurrentTextureLevel]
 
 
-void ModeModelMeshTexture::OnDrawWin(int win, irect dest)
+void ModeModelMeshTexture::OnDrawWin(int win)
 {
 	rect s,r;
 	color c;

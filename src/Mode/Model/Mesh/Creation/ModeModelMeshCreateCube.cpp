@@ -109,7 +109,7 @@ void ModeModelMeshCreateCube::OnEnd()
 	delete(dialog);
 }
 
-void ModeModelMeshCreateCube::OnDrawWin(int win, irect dest)
+void ModeModelMeshCreateCube::OnDrawWin(int win)
 {
 	mode_model->SetMaterialCreation();
 	if (pos_chosen){

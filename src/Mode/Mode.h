@@ -38,7 +38,7 @@ public:
 	virtual void OnUpdateMenu(){};
 
 	virtual void OnDraw(){};
-	virtual void OnDrawWin(int win, irect dest){};
+	virtual void OnDrawWin(int win){};
 
 	// send events to multi_view first, then call derived event handlers
 	//   (to be called by edward)
@@ -55,7 +55,7 @@ public:
 	virtual void OnUpdateMenuRecursive(bool multi_view_handled = false);
 
 	virtual void OnDrawRecursive(bool multi_view_handled = false);
-	virtual void OnDrawWinRecursive(int win, irect dest);
+	virtual void OnDrawWinRecursive(int win);
 
 	Mode *GetRoot();
 	bool IsAncestorOf(Mode *m);

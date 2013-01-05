@@ -241,7 +241,7 @@ void SetMaterialCreation()
 	NixSetMaterial(Black,color(0.3f,0.3f,1,0.3f),Black,0,color(1,0.1f,0.4f,0.1f));
 }
 
-void ModeModelMeshPolygon::OnDrawWin(int win, irect dest)
+void ModeModelMeshPolygon::OnDrawWin(int win)
 {
 	msg_db_r("skin.DrawWin",4);
 
@@ -333,12 +333,12 @@ bool PolygonIsMouseOver(int index, void *user_data, int win, vector &tp)
 	return false;
 }
 
-inline bool in_irect(const vector &p, irect *r)
+inline bool in_irect(const vector &p, rect *r)
 {
 	return ((p.x > r->x1) and (p.x < r->x2) and (p.y > r->y1) and (p.y < r->y2));
 }
 
-bool PolygonInRect(int index, void *user_data, int win, irect *r)
+bool PolygonInRect(int index, void *user_data, int win, rect *r)
 {
 	ModelSurface *surf = (ModelSurface*)user_data;
 	ModelPolygon *t = &surf->Polygon[index];

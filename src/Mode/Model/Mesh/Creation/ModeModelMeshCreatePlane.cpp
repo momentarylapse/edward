@@ -73,7 +73,7 @@ void ModeModelMeshCreatePlane::OnLeftButtonDown()
 
 
 
-void ModeModelMeshCreatePlane::OnDrawWin(int win, irect dest)
+void ModeModelMeshCreatePlane::OnDrawWin(int win)
 {
 	if (pos_chosen){
 		vector n = length[0] ^ length[1];

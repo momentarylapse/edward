@@ -44,7 +44,7 @@ void ModeModelMeshSplitPolygon::OnLeftButtonDown()
 	}
 }
 
-void ModeModelMeshSplitPolygon::OnDrawWin(int win, irect dest)
+void ModeModelMeshSplitPolygon::OnDrawWin(int win)
 {
 	triangle = multi_view->MouseOver;
 	surface = multi_view->MouseOverSet;

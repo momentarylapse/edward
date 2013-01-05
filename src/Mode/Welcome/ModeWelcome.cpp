@@ -78,7 +78,7 @@ void ModeWelcome::OnCommand(const string & id)
 		mode_model->Open();
 }
 
-bool mouse_in_rect(irect r, int mx, int my)
+bool mouse_in_rect(rect r, int mx, int my)
 {
 	return ((mx > r.x1) && (mx < r.x2) && (my > r.y1) && (my < r.y2));
 }
@@ -109,7 +109,7 @@ void ModeWelcome::DrawIcon(int x, int y, int index, int pic_index, const string 
 	rect s,d;
 	y+=30;
 	float rad=25;
-	icon_rect[index] = irect(x-40,x+60,y-30,y+30);
+	icon_rect[index] = rect(x-40,x+60,y-30,y+30);
 	s.x1=(float)pic_index*0.125f;
 	s.x2=(float)pic_index*0.125f+0.125f;
 	s.y1=0;

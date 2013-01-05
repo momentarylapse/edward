@@ -165,7 +165,7 @@ bool IsMouseOverObject(int index, void *user_data, int win, vector &tp)
 	return (z_min<1);
 }
 
-bool IsInRectObject(int index, void *user_data, int win, irect *r)
+bool IsInRectObject(int index, void *user_data, int win, rect *r)
 {
 	Model *m = mode_world->data->Objects[index].object;
 	if (!m)
@@ -262,7 +262,7 @@ bool IsMouseOverTerrain(int index, void *user_data, int win, vector &tp)
 #endif
 }
 
-bool IsInRectTerrain(int index, void *user_data, int win, irect *r)
+bool IsInRectTerrain(int index, void *user_data, int win, rect *r)
 {
 	Terrain *t = mode_world->data->Terrains[index].terrain;
 	vector min,max;
@@ -464,7 +464,7 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha)
 	NixEnableLighting(mode_world->multi_view->light_enabled);
 }
 
-void ModeWorld::OnDrawWin(int win, irect dest)
+void ModeWorld::OnDrawWin(int win)
 {
 	msg_db_r("World::DrawWin",2);
 
@@ -531,37 +531,6 @@ void ModeWorld::OnDrawWin(int win, irect dest)
 		NixSetAlpha(AlphaNone);
 	}
 
-// camera flight?
-	/*NixSetZ(false,false);
-	vector p_old,v_old=v0;
-	for (int i=0;i<CamPoint.num;i++){
-		vector pp=CModeAll::VecProject(CamPoint[i].Pos,win);
-		if ((pp.z>0)&&(pp.z<1)){
-			// path
-			if (CamPoint[i].Type==CPKCamFlight)
-				DrawPara3(p_old,v_old,CamPoint[i].Pos,CamPoint[i].Vel,CamPoint[i].Duration,White);
-			// velocity
-			if (CamPoint[i].Type==CPKCamFlight)
-				NixDrawLine3D(CamPoint[i].Pos,CamPoint[i].Pos+CamPoint[i].Vel,color(1,1,1,0.5f));
-			// angle
-			if ((CamPoint[i].Type==CPKCamFlight)||(CamPoint[i].Type==CPKSetCamPosAng)){
-				matrix m;
-				MatrixRotation(m,CamPoint[i].Ang);
-				vector e[3];
-				VecTransform(e[0],m,vector(1,0,0));
-				VecTransform(e[1],m,vector(0,1,0));
-				VecTransform(e[2],m,vector(0,0,1));
-				NixDrawLine3D(CamPoint[i].Pos,CamPoint[i].Pos+e[0]/Zoom3D*30,color(1,0,0.5f,0));
-				NixDrawLine3D(CamPoint[i].Pos,CamPoint[i].Pos+e[1]/Zoom3D*30,color(1,0,0.5f,0));
-				NixDrawLine3D(CamPoint[i].Pos,CamPoint[i].Pos+e[2]/Zoom3D*30,color(1,0,1.0f,0));
-			}
-			DrawInt((int)pp.x+5,(int)pp.y,i);
-		}
-		p_old=CamPoint[i].Pos;
-		v_old=CamPoint[i].Vel;
-		if (CamPoint[i].Type!=CPKCamFlight)
-			v_old=v0;
-	}*/
 
 	NixSetZ(true,true);
 	NixEnableFog(false);

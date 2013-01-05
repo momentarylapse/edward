@@ -28,7 +28,7 @@ public:
 	void DrawIcon(int x, int y, int index, int pic_index, const string &name);
 
 	int tex_icons, tex_logo;
-	irect icon_rect[7];
+	rect icon_rect[7];
 	int mouse_over, mouse_over_cmd;
 };
 

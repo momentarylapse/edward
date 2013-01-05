@@ -20,7 +20,7 @@ public:
 	void OnStart();
 	void OnEnd();
 
-	void OnDrawWin(int win, irect dest);
+	void OnDrawWin(int win);
 
 	void OnOk();
 	void OnClose();

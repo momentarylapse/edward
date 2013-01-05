@@ -84,7 +84,7 @@ void ModeModelMeshCreateTorus::OnLeftButtonDown()
 }
 
 
-void ModeModelMeshCreateTorus::OnDrawWin(int win, irect dest)
+void ModeModelMeshCreateTorus::OnDrawWin(int win)
 {
 	if (pos_chosen){
 		mode_model->SetMaterialCreation();

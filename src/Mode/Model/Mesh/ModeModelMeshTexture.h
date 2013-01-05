@@ -27,7 +27,7 @@ public:
 	void OnUpdate(Observable *o);
 
 	void OnDraw();
-	void OnDrawWin(int win, irect dest);
+	void OnDrawWin(int win);
 
 	// for MultiView actions
 	void GetSelectedSkinVertices(Array<int> &surf, Array<int> &tria, Array<int> &index);

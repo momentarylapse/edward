@@ -37,6 +37,7 @@ enum
 class MultiViewSingleData
 {
 public:
+	MultiViewSingleData();
 	int view_stage;
 	bool is_selected, m_delta, m_old, is_special;
 	vector pos;
@@ -46,15 +47,15 @@ struct MultiViewView
 {
 	int type;
 	matrix mat;
-	irect dest;
-	irect name_dest;
+	rect dest;
+	rect name_dest;
 	vector ang;
 	matrix projection;
 };
 
 
 typedef bool t_is_mouse_over_func(int index, void *user_data, int win, vector &tp);
-typedef bool t_is_in_rect_func(int index, void *user_data, int win, irect *r);
+typedef bool t_is_in_rect_func(int index, void *user_data, int win, rect *r);
 
 
 struct MultiViewData{
@@ -107,9 +108,9 @@ public:
 	void OnCommand(const string &id);
 
 	void OnDraw();
-	void DrawWin(int win, irect dest);
+	void DrawWin(int win);
 	void DrawMousePos();
-	void DrawGrid(int win, irect dest);
+	void DrawGrid(int win);
 	void ToggleWholeWindow();
 	void ToggleGrid();
 	void ToggleLight();
@@ -148,6 +149,7 @@ public:
 
 	float GetGridD();
 
+	rect GetRect(int win);
 	vector VecProject(const vector &p, int win);
 	vector VecUnProject(const vector &p, int win);
 	vector VecUnProject2(const vector &p, const vector &o, int win);

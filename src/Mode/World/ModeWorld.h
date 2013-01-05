@@ -38,7 +38,7 @@ public:
 	void OnUpdateMenu();
 
 	void OnDraw();
-	void OnDrawWin(int win, irect dest);
+	void OnDrawWin(int win);
 
 
 	void New();

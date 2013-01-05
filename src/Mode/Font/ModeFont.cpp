@@ -143,7 +143,7 @@ void ModeFont::OnRightButtonDown()
 
 
 
-void ModeFont::OnDrawWin(int win, irect dest)
+void ModeFont::OnDrawWin(int win)
 {
 }
 

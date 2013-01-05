@@ -128,7 +128,7 @@ void CreateCylinderBuffer(int buffer, const vector &pos, const vector &length, f
 	}
 }
 
-void ModeModelMeshCreateCylinder::OnDrawWin(int win, irect dest)
+void ModeModelMeshCreateCylinder::OnDrawWin(int win)
 {
 	if (pos.num > 0){
 		NixEnableLighting(false);

@@ -28,7 +28,7 @@ public:
 	void OnUpdate(Observable *o);
 
 	void OnDraw();
-	void OnDrawWin(int win, irect dest);
+	void OnDrawWin(int win);
 	void DrawPolygons();
 
 	void FillSelectionBuffers();

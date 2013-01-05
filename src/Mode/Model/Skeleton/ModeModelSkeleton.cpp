@@ -149,7 +149,7 @@ void DrawCoordBasis(const ModelBone *b)
 	}
 }
 
-void ModeModelSkeleton::OnDrawWin(int win, irect dest)
+void ModeModelSkeleton::OnDrawWin(int win)
 {
 	mode_model_mesh_polygon->DrawPolygons();
 

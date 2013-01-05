@@ -71,9 +71,9 @@ void ModeModelAnimationSkeleton::OnUpdateMenu()
 {
 }
 
-void ModeModelAnimationSkeleton::OnDrawWin(int win, irect dest)
+void ModeModelAnimationSkeleton::OnDrawWin(int win)
 {
-	mode_model_skeleton->OnDrawWin(win, dest);
+	mode_model_skeleton->OnDrawWin(win);
 }
 
 

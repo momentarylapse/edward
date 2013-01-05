@@ -34,9 +34,14 @@ const int PointRadiusMouseOver = 4;
 extern matrix NixProjectionMatrix;
 extern matrix NixProjectionMatrix2d;
 
-bool pos_in_irect(int x, int y, irect r)
+MultiViewSingleData::MultiViewSingleData()
 {
-	return ((x >= r.x1) and (x <= r.x2) && (y >= r.y1) and (y <= r.y2));
+	view_stage = 0;
+	is_selected = false;
+	m_delta = false;
+	m_old = false;
+	is_special = false;
+	pos = v_0;
 }
 
 MultiView::MultiView(bool _mode3d) :
@@ -293,7 +298,7 @@ int get_select_mode()
 void MultiView::OnLeftButtonDown()
 {
 	// menu for selection of view type
-	if (pos_in_irect(mx, my, view[mouse_win].name_dest)){
+	if (view[mouse_win].name_dest.inside(mx, my)){
 		menu->OpenPopup(ed, mx, my);
 		return;
 	}
@@ -534,7 +539,7 @@ float GetDensity(int i,float t)
 }
 
 
-void MultiView::DrawGrid(int win, irect dest)
+void MultiView::DrawGrid(int win)
 {
 	int vt=view[win].type;
 	if (vt == ViewIsometric)
@@ -594,10 +599,11 @@ void MultiView::DrawGrid(int win, irect dest)
 	int a,b;
 	float fa,fb,t;
 
-	vector vux1 = VecUnProject(vector((float)dest.x1,0,0), win);
-	vector vux2 = VecUnProject(vector((float)dest.x2,0,0), win);
-	vector vuy1 = VecUnProject(vector(0,(float)dest.y1,0), win);
-	vector vuy2 = VecUnProject(vector(0,(float)dest.y2,0), win);
+	rect dest = GetRect(win);
+	vector vux1 = VecUnProject(vector(dest.x1,0,0), win);
+	vector vux2 = VecUnProject(vector(dest.x2,0,0), win);
+	vector vuy1 = VecUnProject(vector(0,dest.y1,0), win);
+	vector vuy2 = VecUnProject(vector(0,dest.y2,0), win);
 	vector n,va,vb;
 
 	// vertikal
@@ -697,11 +703,11 @@ void MultiView::DrawMousePos()
 }
 
 
-void MultiView::DrawWin(int win, irect dest)
+void MultiView::DrawWin(int win)
 {
 	msg_db_r("MultiView.DrawWin",2);
 	matrix r, t;
-	view[win].dest = dest;
+	rect dest = GetRect(win);
 	NixStartPart(dest.x1, dest.y1, dest.x2, dest.y2, true);
 	string view_kind;
 	MatrixIdentity(view[win].mat);
@@ -777,7 +783,7 @@ void MultiView::DrawWin(int win, irect dest)
 	NixSetZ(true,true);
 	NixSetWire(false);
 	NixEnableLighting(false);
-	DrawGrid(win,dest);
+	DrawGrid(win);
 
 	NixSetWire(wire_mode);
 	NixEnableLighting(light_enabled);
@@ -787,7 +793,7 @@ void MultiView::DrawWin(int win, irect dest)
 	// draw the actual data
 	//msg_db_r("sub",2);
 	if (ed->cur_mode)
-		ed->cur_mode->OnDrawWinRecursive(win, dest);
+		ed->cur_mode->OnDrawWinRecursive(win);
 	//msg_db_l(2);
 
 	// draw multiview data
@@ -841,9 +847,9 @@ void MultiView::DrawWin(int win, irect dest)
 
 	// type of view
 
-	view[win].name_dest = irect(dest.x1 + 3, dest.x1 + 3 + NixGetStrWidth(view_kind), dest.y1, dest.y1 + 20);
+	view[win].name_dest = rect(dest.x1 + 3, dest.x1 + 3 + NixGetStrWidth(view_kind), dest.y1, dest.y1 + 20);
 	NixSetColor(ColorText);
-	if (pos_in_irect(mx, my, view[win].name_dest))
+	if (view[win].name_dest.inside(mx, my))
 		NixSetColor(Red);
 	ed->DrawStr(dest.x1 + 3, dest.y1, view_kind);
 	NixSetColor(ColorText);
@@ -877,22 +883,30 @@ void MultiView::OnDraw()
 	NixSetZ(true,true);
 	NixSetColor(ColorText);
 
-	if (!mode3d)
-		DrawWin(0,irect(0,MaxX,0,MaxY));
-	else if (whole_window)
-		DrawWin(4,irect(0,MaxX,0,MaxY));
-	else{
+
+	view[0].dest = rect(0,MaxX/2,0,MaxY/2);
+	view[1].dest = rect(MaxX/2,MaxX,0,MaxY/2);
+	view[2].dest = rect(0,MaxX/2,MaxY/2,MaxY);
+	view[3].dest = rect(MaxX/2,MaxX,MaxY/2,MaxY);
+	view[4].dest = rect(0,MaxX,0,MaxY);
+
+	if (!mode3d){
+		view[0].dest = rect(0,MaxX,0,MaxY);
+		DrawWin(0);
+	}else if (whole_window){
+		DrawWin(4);
+	}else{
 		// top left
-		DrawWin(0,irect(0,MaxX/2,0,MaxY/2));
+		DrawWin(0);
 
 		// top right
-		DrawWin(1,irect(MaxX/2,MaxX,0,MaxY/2));
+		DrawWin(1);
 
 		// bottom left
-		DrawWin(2,irect(0,MaxX/2,MaxY/2,MaxY));
+		DrawWin(2);
 
 		// bottom right
-		DrawWin(3,irect(MaxX/2,MaxX,MaxY/2,MaxY));
+		DrawWin(3);
 
 		NixStartPart(-1,-1,-1,-1,true);
 		NixEnableLighting(false);
@@ -1147,6 +1161,11 @@ void MultiView::GetMovingFrame(vector &dir, vector &up, vector &right, int win)
 	right = dir ^ up;
 }
 
+rect MultiView::GetRect(int win)
+{
+	return view[win].dest;
+}
+
 void MultiView::SetMouseAction(int button, const string & name, int mode)
 {
 	if ((!mode3d) && (mode == ActionRotate))
@@ -1303,13 +1322,13 @@ void MultiView::SelectAllInRectangle(int mode)
 {
 	msg_db_r("SelAllInRect",4);
 	NotifyBegin();
-	int x1=RectX,y1=RectY,x2=mx,y2=my,a;
+	float x1=RectX,y1=RectY,x2=mx,y2=my,a;
 	// reset data
 	UnselectAll();
 	// normalize rectangle
 	if (x2<x1){		a=x2;	x2=x1;	x1=a;	}
 	if (y2<y1){		a=y2;	y2=y1;	y1=a;	}
-	irect r = irect(x1,x2,y1,y2);
+	rect r = rect(x1,x2,y1,y2);
 
 	// select
 	foreach(MultiViewData &d, data)
@@ -1325,7 +1344,7 @@ void MultiView::SelectAllInRectangle(int mode)
 					sd->m_delta = d.IsInRect(i, d.user_data, RectWin, &r);
 				else{// if (!sd->m_delta){
 					vector p = VecProject(sd->pos,RectWin);
-					sd->m_delta = pos_in_irect(p.x, p.y, r);
+					sd->m_delta = r.inside(p.x, p.y);
 				}
 
 				// add the selection layers

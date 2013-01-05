@@ -216,7 +216,7 @@ void ModeWorldCamera::LoadData()
 			NULL, NULL);
 }
 
-void ModeWorldCamera::OnDrawWin(int win, irect dest)
+void ModeWorldCamera::OnDrawWin(int win)
 {
 	NixEnableLighting(false);
 	NixSetWorldMatrix(m_id);

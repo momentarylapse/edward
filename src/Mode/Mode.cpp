@@ -65,11 +65,11 @@ void Mode::OnUpdateMenuRecursive(bool multi_view_handled)
 	OnUpdateMenu();
 }
 
-void Mode::OnDrawWinRecursive(int win, irect dest)
+void Mode::OnDrawWinRecursive(int win)
 {
 	if (parent)
-		parent->OnDrawWinRecursive(win, dest);
-	OnDrawWin(win, dest);
+		parent->OnDrawWinRecursive(win);
+	OnDrawWin(win);
 }
 
 

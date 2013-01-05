@@ -38,7 +38,7 @@ void ModeModelMeshCreatePolygon::OnEnd()
 }
 
 
-void ModeModelMeshCreatePolygon::OnDrawWin(int win, irect dest)
+void ModeModelMeshCreatePolygon::OnDrawWin(int win)
 {
 	for (int i=1;i<selection.num;i++){
 		NixEnableLighting(false);
