@@ -16396,7 +16396,7 @@ dummy_text
 easify_dialog
 Geometrie vereinfachen
 easify_skin
---Vereinfachen...
+Vereinfachen...
 eat_estimate
 !bold\\ungefähres Ergebnis
 eat_polygons
@@ -17364,7 +17364,7 @@ stretch_x
 stretch_z
 1\\0\\1000\\0.01
 subtract_surface
-++Volumen ausschneiden
+Volumen ausschneiden
 sun_am
 
 sun_ang_from_camera

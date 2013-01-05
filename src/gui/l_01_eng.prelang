@@ -1152,7 +1152,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-219
+221
 // Data (ID,Text)
 
 
@@ -1416,6 +1416,8 @@ Polygon wählen: %d -> Shift + Return
 
 Polygone
 
+Polygone: %d (von %d)
+
 Pop
 Pop
 Punkt setzen
@@ -1508,6 +1510,8 @@ Vertex
 Vertex
 Vertexpunkt
 Vertex
+Vertexpunkte: %d (von %d)
+
 Vertices
 Vertices
 Vertices auswählen

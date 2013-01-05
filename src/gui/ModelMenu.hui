@@ -259,12 +259,12 @@ enum{
 		sub_menu_858->EnableItem(HMM_MENU_SURFACE_HEADER,false);
 		sub_menu_858->AddEntry("Dreiecke umkehren",HMM_INVERT_TRIAS);
 		sub_menu_858->AddEntry("Verschwei&sen",HMM_AUTOWELD_SURFACES);
-		sub_menu_858->AddEntryImage("++Volumen ausschneiden",HuiImageCut,HMM_SUBTRACT_SURFACE);
+		sub_menu_858->AddEntryImage("Volumen ausschneiden",HuiImageCut,HMM_SUBTRACT_SURFACE);
 		sub_menu_858->AddEntry("--Umriss",HMM_NEW_OUTLINE);
 		sub_menu_858->AddSeparator();
 		sub_menu_858->AddEntry("Komplett",HMM_MENU_ALL_HEADER);
 		sub_menu_858->EnableItem(HMM_MENU_ALL_HEADER,false);
-		sub_menu_858->AddEntry("--Vereinfachen...",HMM_EASIFY_SKIN);
+		sub_menu_858->AddEntry("Vereinfachen...",HMM_EASIFY_SKIN);
 	Menu->AddSubMenu("Operationen",HMM_MENU_MODEL_FUNCTIONS,sub_menu_858);
 		CHuiMenu *sub_menu_513=new CHuiMenu();
 			CHuiMenu *sub_menu_585=new CHuiMenu();
