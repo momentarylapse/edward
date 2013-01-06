@@ -64,6 +64,10 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 		}
 	}
 
+	// nothing done...
+	if (n_vert == m->Vertex.num)
+		return;
+
 
 	// remove vi from polygons
 	foreachi(ModelPolygon &t, s.Polygon, i)
