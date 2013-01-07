@@ -80,16 +80,30 @@ void ActionModelBevelPolygons::build_vertices(Array<VertexToCome> &vv, DataModel
 		}
 }
 
+
+static Array<VertexToCome> ev[2];
+static Array<Array<VertexToCome> > pv;
+
+bool add_edge_neighbour(ModelSurface *s, ModelEdge &e, int k, int dir, PolygonToCome &pp)
+{
+	ModelPolygon &p = s->Polygon[e.Polygon[k]];
+	int nei_side = (e.Side[k] + p.Side.num + 2*dir - 1) % p.Side.num;
+	int nei = p.Side[nei_side].Edge;
+	if (s->Edge[nei].is_selected){
+		pp.add(&pv[e.Polygon[k]][(e.Side[k] + dir) % p.Side.num]);
+	}else{
+		pp.add(&ev[(p.Side[nei_side].EdgeDirection + dir + 1) % 2][nei]);
+	}
+}
+
 void ActionModelBevelPolygons::BevelSurface(DataModel *m, ModelSurface *s, int surface)
 {
 	// update edge selection...
 	foreach(ModelEdge &e, s->Edge)
 		e.is_selected = m->Vertex[e.Vertex[0]].is_selected && m->Vertex[e.Vertex[1]].is_selected;
 
-	Array<VertexToCome> ev[2];
 	ev[0].resize(s->Edge.num);
 	ev[1].resize(s->Edge.num);
-	Array<Array<VertexToCome> > pv;
 	pv.resize(s->Polygon.num);
 
 	Array<VertexData> vdata;
@@ -148,10 +162,10 @@ void ActionModelBevelPolygons::BevelSurface(DataModel *m, ModelSurface *s, int s
 			//pp.add(&ev[0][ei]);
 			//pp.add(&ev[1][ei]);
 
-			pp.add(&pv[e.Polygon[0]][e.Side[0]]);
-			pp.add(&pv[e.Polygon[1]][(e.Side[1] + 1) % s->Polygon[e.Polygon[1]].Side.num]);
-			pp.add(&pv[e.Polygon[1]][e.Side[1]]);
-			pp.add(&pv[e.Polygon[0]][(e.Side[0] + 1) % s->Polygon[e.Polygon[0]].Side.num]);
+			add_edge_neighbour(s, e, 0, 0, pp);
+			add_edge_neighbour(s, e, 1, 1, pp);
+			add_edge_neighbour(s, e, 1, 0, pp);
+			add_edge_neighbour(s, e, 0, 1, pp);
 
 			new_poly.add(pp);
 		}
@@ -184,5 +198,9 @@ void ActionModelBevelPolygons::BevelSurface(DataModel *m, ModelSurface *s, int s
 		}else{
 
 		}*/
+
+	ev[0].clear();
+	ev[1].clear();
+	pv.clear();
 }
 
