@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-578
+579
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -78,6 +78,8 @@ Appearance...
 apply
 Apply
 autoweld_surfaces
+
+bevel_polygons
 
 bevel_vertices
 Bevel

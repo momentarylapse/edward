@@ -259,6 +259,7 @@ enum{
 		sub_menu_858->AddEntry("Extrudieren",HMM_EXTRUDE_TRIANGLES);
 		sub_menu_858->AddEntry("Triangulieren",HMM_TRIANGULATE_SELECTION);
 		sub_menu_858->AddEntry("Un-Triangulieren",HMM_UNTRIANGULATE_SELECTION);
+		sub_menu_858->AddEntry("++Abfr&asen",HMM_BEVEL_POLYGONS);
 		sub_menu_858->AddSeparator();
 		sub_menu_858->AddEntry("Auf Fl&achen",HMM_MENU_SURFACE_HEADER);
 		sub_menu_858->EnableItem(HMM_MENU_SURFACE_HEADER,false);

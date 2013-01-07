@@ -5,39 +5,42 @@
 #include "set.h"
 
 template<class T1, class T2>
-struct MapEntry
+struct HashMapEntry
 {
 	T1 key;
+	int hash;
 	T2 value;
-	bool operator == (const MapEntry<T1, T2> &e) const
-	{	return key == e.key;	}
-	bool operator > (const MapEntry<T1, T2> &e) const
-	{	return key > e.key;	}
+	bool operator == (const HashMapEntry<T1, T2> &e) const
+	{	return hash == e.hash;	}
+	bool operator > (const HashMapEntry<T1, T2> &e) const
+	{	return hash > e.hash;	}
 };
 
 template<class T1, class T2>
-class Map : public Set<MapEntry<T1, T2> >
+class HashMap : public Set<HashMapEntry<T1, T2> >
 {
 	T2 dummy;
 public:
-	typedef MapEntry<T1, T2> Entry;
+	typedef HashMapEntry<T1, T2> Entry;
 	using DynamicArray::num;
 	using DynamicArray::data;
 	int add(const T1 &key, const T2 &value)
 	{
-		MapEntry<T1, T2> e = {key, value};
-		return Set<MapEntry<T1, T2> >::add(e);
+		HashMapEntry<T1, T2> e = {key, key.hash(), value};
+		return Set<HashMapEntry<T1, T2> >::add(e);
 	}
 	const T2 &operator[] (const T1 &key) const
 	{
 		//msg_write("const[]");
+		int hash = key.hash();
 		for (int i=0;i<num;i++)
-			if (((Entry*)data)[i].key == key)
+			if (((Entry*)data)[i].hash == hash)
 				return ((Entry*)data)[i].value;
 		return dummy;
 	}
 	T2 &operator[] (const T1 &key)
 	{
+		int hash = key.hash();
 		/*HashEntry e = {"", hash, EmptyVar};
 		int n = find(e);
 		if (n >= 0)
@@ -46,11 +49,12 @@ public:
 		return ((HashEntry*)data)[n].value;*/
 
 		for (int i=0;i<num;i++)
-			if (((Entry*)data)[i].key == key)
+			if (((Entry*)data)[i].hash == hash)
 				return ((Entry*)data)[i].value;
 		resize(num + 1);
 		int n = num - 1;
 		((Entry*)data)[n].key = key;
+		((Entry*)data)[n].hash = hash;
 		return ((Entry*)data)[n].value;
 	}
 };
