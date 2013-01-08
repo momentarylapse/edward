@@ -54,6 +54,9 @@ struct PolygonToCome
 	Array<VertexToCome*> v;
 	void add(VertexToCome *vv)
 	{
+		for (int k=0; k<v.num; k++)
+			if (vv == v[k])
+				return;
 		v.add(vv);
 		vv->ref_count ++;
 	}
@@ -88,7 +91,7 @@ struct PolygonRelink
 	}
 };
 
-/*int get_next_edge(ModelSurface *s, int edge, int ek, int dir, int &next_dir)
+int get_next_edge(ModelSurface *s, int edge, int ek, int dir, int &next_dir)
 {
 	ModelEdge &e = s->Edge[edge];
 	if (e.RefCount < 2)
@@ -98,7 +101,7 @@ struct PolygonRelink
 	int side = (e.Side[np] + p.Side.num + dir) % p.Side.num;
 	next_dir = p.Side[side].EdgeDirection;
 	return p.Side[side].Edge;
-}*/
+}
 
 void ActionModelBevelPolygons::build_vertices(Array<VertexToCome> &vv, DataModel *m)
 {
@@ -201,15 +204,12 @@ void ActionModelBevelPolygons::BevelSurface(DataModel *m, ModelSurface *s, int s
 				if ((e.Vertex[0] == v) || (e.Vertex[1] == v))
 					vd.closed &= (e.RefCount == 2);
 			vdata[vi] = vd;
-
-			if (vd.closed){
-				// new polygon...
-			}
 		}
 
 	// edges...
 	foreachi(ModelEdge &e, s->Edge, ei)
 		if (e.is_selected){
+			// selected -> new polygon
 			if (e.RefCount < 2)
 				continue;
 			PolygonToCome pp;
@@ -220,6 +220,53 @@ void ActionModelBevelPolygons::BevelSurface(DataModel *m, ModelSurface *s, int s
 			add_edge_neighbour(s, e, 0, 1, pp);
 
 			new_poly.add(pp);
+		}else{
+			for (int k=0; k<2; k++)
+				if (m->Vertex[e.Vertex[k]].is_selected){
+					// not selected but vertex selected -> cut
+					ev[k][ei].ref_count ++;
+				}
+		}
+
+	// close vertices
+	foreachi(int v, s->Vertex, vi)
+		if ((m->Vertex[v].is_selected) && (vdata[vi].closed)){
+			msg_write("close--------");
+			PolygonToCome pp;
+			int edge = -1, edgedir;
+			// find first edge
+			foreachi(ModelEdge &e, s->Edge, ei){
+				for (int k=0; k<2; k++)
+					if (e.Vertex[k] == v){
+						edge = ei;
+						edgedir = k;
+					}
+				if (edge >= 0)
+					break;
+			}
+			if (edge < 0)
+				throw ActionException("BevelPoly: no edge at closed vertex found!");
+			int edge0 = edge;
+			do{
+				msg_write(edge);
+				if (ev[edgedir][edge].ref_count > 0)
+					pp.add(&ev[edgedir][edge]);
+				else{
+					ModelEdge &e = s->Edge[edge];
+					VertexToCome &v = pv[e.Polygon[  edgedir]][ e.Side[  edgedir]];
+					if (v.ref_count > 0)
+						pp.add(&v);
+				}
+
+				edge = get_next_edge(s, edge, edgedir, 1, edgedir);
+				if (edge < 0)
+					throw ActionException("BevelPoly: no next edge at closed vertex found!");
+			}while(edge != edge0);
+			msg_write("----------ok");
+			pp.v.reverse();
+
+			if (pp.v.num > 2)
+				new_poly.add(pp);
 		}
 
 	// relink polys
