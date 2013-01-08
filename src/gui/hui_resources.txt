@@ -6020,7 +6020,7 @@ menu_model
 0
 
 
-149
+148
 ItemPopup
 menu_model_file
 
@@ -7156,7 +7156,7 @@ ItemPopup
 menu_model_functions
 
 1
-26
+25
 0
 0
 0
@@ -7401,19 +7401,6 @@ triangulate_selection
 
 Item
 untriangulate_selection
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-bevel_polygons
 
 1
 0
@@ -16280,7 +16267,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-720
+719
 // Text
 ad_dialog
 Verwaltung
@@ -16368,8 +16355,6 @@ apply
 Übernehmen
 autoweld_surfaces
 Verschweißen
-bevel_polygons
-++Abfräsen
 bevel_vertices
 Abfräsen
 bgc
@@ -17728,7 +17713,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-720
+719
 // Text
 ad_dialog
 Administration
@@ -17815,8 +17800,6 @@ Appearance...
 apply
 Apply
 autoweld_surfaces
-
-bevel_polygons
 
 bevel_vertices
 Bevel
@@ -19492,7 +19475,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-720
+719
 // Text
 ad_dialog
 
@@ -19579,8 +19562,6 @@ appearance
 apply
 適用
 autoweld_surfaces
-
-bevel_polygons
 
 bevel_vertices
 

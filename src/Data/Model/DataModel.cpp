@@ -16,7 +16,7 @@
 #include "../../Action/Model/Mesh/Vertex/ActionModelCollapseVertices.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelAlignToGrid.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelFlattenVertices.h"
-#include "../../Action/Model/Mesh/Vertex/ActionModelBevelVertices.h"
+#include "../../Action/Model/Mesh/Polygon/ActionModelBevelPolygons.h"
 #include "../../Action/Model/Mesh/Polygon/ActionModelAddPolygonSingleTexture.h"
 #include "../../Action/Model/Mesh/Polygon/ActionModelExtrudePolygons.h"
 #include "../../Action/Model/Mesh/Polygon/ActionModelTriangulateSelection.h"
@@ -1952,7 +1952,7 @@ void DataModel::SubdivideSelectedSurfaces()
 {	Execute(new ActionModelSurfacesSubdivide(GetSelectedSurfaces()));	}
 
 void DataModel::BevelSelectedVertices(float radius)
-{	Execute(new ActionModelBevelVertices(radius));	}
+{	Execute(new ActionModelBevelPolygons(radius));	}
 
 void DataModel::FlattenSelectedVertices()
 {	Execute(new ActionModelFlattenVertices(this));	}

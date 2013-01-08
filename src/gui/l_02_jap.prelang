@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-579
+578
 // Data (ID,Text)
 ad_dialog
 
@@ -78,8 +78,6 @@ appearance
 apply
 適用
 autoweld_surfaces
-
-bevel_polygons
 
 bevel_vertices
 

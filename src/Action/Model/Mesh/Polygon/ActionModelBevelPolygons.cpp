@@ -12,6 +12,7 @@
 #include "../Surface/Helper/ActionModelSurfaceAddPolygon.h"
 #include "ActionModelAddPolygonAutoSkin.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/SkinGenerator.h"
 #include "../../../../lib/base/map.h"
 #include <assert.h>
 
@@ -118,25 +119,43 @@ void ActionModelBevelPolygons::do_poly_relink(ModelPolygon &p, PolygonRelink &r,
 	int material = p.Material;
 	Array<vector> sv;
 
-	msg_write("r!");
+	SkinGeneratorMulti sg;
+	sg.init_polygon(m, p);
+
+	//msg_write("r!");
 	for (int k=0;k<p.Side.num;k++){
 		if ((r.v[k*2]) && (r.v[k*2+1])){
-			msg_write(format("%d: 2x", k));
+			//msg_write(format("%d: 2x", k));
 			v.add(r.v[k*2]->v);
+			for (int l=0; l<MODEL_MAX_TEXTURES; l++)
+				sv.add(sg.get(r.v[k*2]->pos, l));
 			v.add(r.v[k*2+1]->v);
+			for (int l=0; l<MODEL_MAX_TEXTURES; l++)
+				sv.add(sg.get(r.v[k*2+1]->pos, l));
 		}else if (r.v[k*2]){
-			msg_write(format("%d: 1x", k));
+			//msg_write(format("%d: 1x", k));
 			v.add(r.v[k*2]->v);
+			for (int l=0; l<MODEL_MAX_TEXTURES; l++)
+				sv.add(sg.get(r.v[k*2]->pos, l));
 		}else{
 			v.add(p.Side[k].Vertex);
+			for (int l=0; l<MODEL_MAX_TEXTURES; l++)
+				sv.add(p.Side[k].SkinVertex[l]);
 		}
 	}
-	msg_write(ia2s(v));
-	sv.resize(v.num * MODEL_MAX_TEXTURES);
+	//msg_write(ia2s(v));
+	//sv.resize(v.num);
+
+	// transpose sv
+	Array<vector> ssv;
+	ssv.resize(v.num * MODEL_MAX_TEXTURES);
+	for (int k=0; k<v.num; k++)
+		for (int l=0; l<MODEL_MAX_TEXTURES; l++)
+			ssv[k + l*v.num] = sv[k*MODEL_MAX_TEXTURES + l];
 
 	// relink
 	AddSubAction(new ActionModelSurfaceDeletePolygon(surface, i), m);
-	AddSubAction(new ActionModelSurfaceAddPolygon(surface, v, material, sv, i), m);
+	AddSubAction(new ActionModelSurfaceAddPolygon(surface, v, material, ssv, i), m);
 }
 
 
@@ -233,7 +252,6 @@ void ActionModelBevelPolygons::BevelSurface(DataModel *m, ModelSurface *s, int s
 	// close vertices
 	foreachi(int v, s->Vertex, vi)
 		if ((m->Vertex[v].is_selected) && (vdata[vi].closed)){
-			msg_write("close--------");
 			PolygonToCome pp;
 			int edge = -1, edgedir;
 			// find first edge
@@ -250,7 +268,6 @@ void ActionModelBevelPolygons::BevelSurface(DataModel *m, ModelSurface *s, int s
 				throw ActionException("BevelPoly: no edge at closed vertex found!");
 			int edge0 = edge;
 			do{
-				msg_write(edge);
 				if (ev[edgedir][edge].ref_count > 0)
 					pp.add(&ev[edgedir][edge]);
 				else{
@@ -264,7 +281,6 @@ void ActionModelBevelPolygons::BevelSurface(DataModel *m, ModelSurface *s, int s
 				if (edge < 0)
 					throw ActionException("BevelPoly: no next edge at closed vertex found!");
 			}while(edge != edge0);
-			msg_write("----------ok");
 			pp.v.reverse();
 
 			if (pp.v.num > 2)
@@ -308,17 +324,17 @@ void ActionModelBevelPolygons::BevelSurface(DataModel *m, ModelSurface *s, int s
 	foreach(Array<VertexToCome> &vv, pv)
 		build_vertices(vv, m);
 
-	msg_write("relink");
+	// relink
 	foreachi(PolygonRelink &r, pr, i)
 		if (r.v.num > 0)
 			do_poly_relink(s->Polygon[i], r, i, surface, m);
 
-	msg_write("polys");
+	// new polygons
 	foreach(PolygonToCome &p, new_poly){
 		Array<int> v;
 		for (int k=0;k<p.v.num;k++)
 			v.add(p.v[k]->v);
-		msg_write(ia2s(v));
+		//msg_write(ia2s(v));
 		AddSubAction(new ActionModelAddPolygonAutoSkin(v), m);
 	}
 

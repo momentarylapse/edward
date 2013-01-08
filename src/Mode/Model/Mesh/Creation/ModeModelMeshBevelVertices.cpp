@@ -6,7 +6,8 @@
  */
 
 #include "ModeModelMeshBevelVertices.h"
-#include "../../../../Action/Model/Mesh/Vertex/ActionModelBevelVertices.h"
+//#include "../../../../Action/Model/Mesh/Vertex/ActionModelBevelVertices.h"
+#include "../../../../Action/Model/Mesh/Polygon/ActionModelBevelPolygons.h"
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"
 #include "../../../../lib/x/x.h"
@@ -35,7 +36,11 @@ ModeModelMeshBevelVertices::ModeModelMeshBevelVertices(Mode *_parent) :
 				rad_max = l;
 		}
 
-	radius = rad_max / 2;
+	radius = rad_max / 4;
+#ifdef INTERACTIVE
+	if (!data->action_manager->Preview(new ActionModelBevelPolygons(radius)))
+		Abort();
+#endif
 }
 
 ModeModelMeshBevelVertices::~ModeModelMeshBevelVertices()
@@ -61,7 +66,7 @@ void ModeModelMeshBevelVertices::OnMouseMove()
 #ifdef INTERACTIVE
 
 	data->SetSelectionState(selection);
-	if (!data->action_manager->Preview(new ActionModelBevelVertices(radius)))
+	if (!data->action_manager->Preview(new ActionModelBevelPolygons(radius)))
 		Abort();
 #endif
 }

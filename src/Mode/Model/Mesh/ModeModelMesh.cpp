@@ -128,8 +128,6 @@ void ModeModelMesh::OnCommand(const string & id)
 		data->AlignToGridSelection(mode_model_mesh_vertex->multi_view->GetGridD());
 	if (id == "subdivide_surfaces")
 		data->SubdivideSelectedSurfaces();
-	if (id == "bevel_polygons")
-		data->Execute(new ActionModelBevelPolygons(1.0f));
 
 	if (id == "new_point")
 		ed->SetMode(new ModeModelMeshCreateVertex(mode_model_mesh_vertex));
