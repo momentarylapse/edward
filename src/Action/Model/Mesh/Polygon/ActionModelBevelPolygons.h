@@ -11,7 +11,9 @@
 #include "../../../ActionGroup.h"
 class DataModel;
 class ModelSurface;
+class ModelPolygon;
 class VertexToCome;
+class PolygonRelink;
 
 class ActionModelBevelPolygons: public ActionGroup
 {
@@ -24,6 +26,7 @@ public:
 
 	void BevelSurface(DataModel *m, ModelSurface *s, int surface);
 	void build_vertices(Array<VertexToCome> &vv, DataModel *m);
+	void do_poly_relink(ModelPolygon &p, PolygonRelink &r, int i, int surface, DataModel *m);
 private:
 	float length;
 };

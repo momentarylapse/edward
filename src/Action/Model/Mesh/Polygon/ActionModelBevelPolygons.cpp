@@ -8,8 +8,8 @@
 #include "ActionModelBevelPolygons.h"
 #include "../Vertex/Helper/ActionModelDeleteUnusedVertex.h"
 #include "../Vertex/ActionModelAddVertex.h"
-#include "../Edge/ActionModelSplitEdge.h"
-#include "Helper/ActionModelPolygonRemoveVertex.h"
+#include "../Surface/Helper/ActionModelSurfaceDeletePolygon.h"
+#include "../Surface/Helper/ActionModelSurfaceAddPolygon.h"
 #include "ActionModelAddPolygonAutoSkin.h"
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../lib/base/map.h"
@@ -59,7 +59,36 @@ struct PolygonToCome
 	}
 };
 
-int get_next_edge(ModelSurface *s, int edge, int ek, int dir, int &next_dir)
+struct PolygonRelink
+{
+	Array<VertexToCome*> v;
+	Array<vector> sv;
+	void init(ModelPolygon *p)
+	{
+		if (v.num == 0){
+			v.resize(p->Side.num * 2);
+			foreach(VertexToCome *&vv, v)
+				vv = NULL;
+			sv.resize(p->Side.num * 2 * MODEL_MAX_TEXTURES);
+		}
+	}
+	void relink(ModelPolygon *p, int side, VertexToCome *vv)
+	{
+		init(p);
+		v[side*2] = vv;
+		vv->ref_count ++;
+	}
+	void relink(ModelPolygon *p, int side, VertexToCome *a, VertexToCome *b)
+	{
+		init(p);
+		v[side*2  ] = a;
+		v[side*2+1] = b;
+		a->ref_count ++;
+		b->ref_count ++;
+	}
+};
+
+/*int get_next_edge(ModelSurface *s, int edge, int ek, int dir, int &next_dir)
 {
 	ModelEdge &e = s->Edge[edge];
 	if (e.RefCount < 2)
@@ -69,7 +98,7 @@ int get_next_edge(ModelSurface *s, int edge, int ek, int dir, int &next_dir)
 	int side = (e.Side[np] + p.Side.num + dir) % p.Side.num;
 	next_dir = p.Side[side].EdgeDirection;
 	return p.Side[side].Edge;
-}
+}*/
 
 void ActionModelBevelPolygons::build_vertices(Array<VertexToCome> &vv, DataModel *m)
 {
@@ -80,11 +109,38 @@ void ActionModelBevelPolygons::build_vertices(Array<VertexToCome> &vv, DataModel
 		}
 }
 
+void ActionModelBevelPolygons::do_poly_relink(ModelPolygon &p, PolygonRelink &r, int i, int surface, DataModel *m)
+{
+	Array<int> v;
+	int material = p.Material;
+	Array<vector> sv;
+
+	msg_write("r!");
+	for (int k=0;k<p.Side.num;k++){
+		if ((r.v[k*2]) && (r.v[k*2+1])){
+			msg_write(format("%d: 2x", k));
+			v.add(r.v[k*2]->v);
+			v.add(r.v[k*2+1]->v);
+		}else if (r.v[k*2]){
+			msg_write(format("%d: 1x", k));
+			v.add(r.v[k*2]->v);
+		}else{
+			v.add(p.Side[k].Vertex);
+		}
+	}
+	msg_write(ia2s(v));
+	sv.resize(v.num * MODEL_MAX_TEXTURES);
+
+	// relink
+	AddSubAction(new ActionModelSurfaceDeletePolygon(surface, i), m);
+	AddSubAction(new ActionModelSurfaceAddPolygon(surface, v, material, sv, i), m);
+}
+
 
 static Array<VertexToCome> ev[2];
 static Array<Array<VertexToCome> > pv;
 
-bool add_edge_neighbour(ModelSurface *s, ModelEdge &e, int k, int dir, PolygonToCome &pp)
+void add_edge_neighbour(ModelSurface *s, ModelEdge &e, int k, int dir, PolygonToCome &pp)
 {
 	ModelPolygon &p = s->Polygon[e.Polygon[k]];
 	int nei_side = (e.Side[k] + p.Side.num + 2*dir - 1) % p.Side.num;
@@ -156,11 +212,7 @@ void ActionModelBevelPolygons::BevelSurface(DataModel *m, ModelSurface *s, int s
 		if (e.is_selected){
 			if (e.RefCount < 2)
 				continue;
-			msg_write("edge");
 			PolygonToCome pp;
-			// debug
-			//pp.add(&ev[0][ei]);
-			//pp.add(&ev[1][ei]);
 
 			add_edge_neighbour(s, e, 0, 0, pp);
 			add_edge_neighbour(s, e, 1, 1, pp);
@@ -170,10 +222,46 @@ void ActionModelBevelPolygons::BevelSurface(DataModel *m, ModelSurface *s, int s
 			new_poly.add(pp);
 		}
 
+	// relink polys
+	Array<PolygonRelink> pr;
+	pr.resize(s->Polygon.num);
+	foreachi(ModelPolygon &p, s->Polygon, i){
+		bool relink = false;
+		for (int k=0; k<p.Side.num; k++)
+			relink |= m->Vertex[p.Side[k].Vertex].is_selected;
+		if (!relink)
+			continue;
+		PolygonRelink r;
+		for (int k=0; k<p.Side.num; k++){
+			int kk = (k+p.Side.num-1) % p.Side.num;
+			if (pv[i][k].ref_count > 0){
+				r.relink(&p, k, &pv[i][k]);
+			}else{
+				VertexToCome *v_in  = &ev[1-p.Side[kk].EdgeDirection][p.Side[kk].Edge];
+				VertexToCome *v_out = &ev[  p.Side[k ].EdgeDirection][p.Side[k ].Edge];
+				bool r_in  = (v_in->ref_count > 0);
+				bool r_out = (v_out->ref_count > 0);
+				if (r_in && r_out)
+					r.relink(&p, k, v_in, v_out);
+				else if (r_in)
+					r.relink(&p, k, v_in);
+				else if (r_out)
+					r.relink(&p, k, v_out);
+			}
+		}
+
+		pr[i] = r;
+	}
+
 	build_vertices(ev[0], m);
 	build_vertices(ev[1], m);
 	foreach(Array<VertexToCome> &vv, pv)
 		build_vertices(vv, m);
+
+	msg_write("relink");
+	foreachi(PolygonRelink &r, pr, i)
+		if (r.v.num > 0)
+			do_poly_relink(s->Polygon[i], r, i, surface, m);
 
 	msg_write("polys");
 	foreach(PolygonToCome &p, new_poly){
@@ -183,21 +271,6 @@ void ActionModelBevelPolygons::BevelSurface(DataModel *m, ModelSurface *s, int s
 		msg_write(ia2s(v));
 		AddSubAction(new ActionModelAddPolygonAutoSkin(v), m);
 	}
-
-	/*foreach(ModelPolygon &p, s->Polygon)
-		if (p.is_selected){
-			Array<int> v;
-			for (int k=0; k<p.Side.num; k++){
-				vector dir0 = m->Vertex[p.Side[(k+p.Side.num-1)%p.Side.num].Vertex].pos - m->Vertex[p.Side[k].Vertex].pos;
-				vector dir1 = m->Vertex[p.Side[(k+1           )%p.Side.num].Vertex].pos - m->Vertex[p.Side[k].Vertex].pos;
-				dir0.normalize();
-				dir1.normalize();
-				vector pos = m->Vertex[p.Side[k].Vertex].pos + (dir0 + dir1) * length;
-				AddSubAction(new ActionModelAddVertex(pos, m->Vertex[p.Side[k].Vertex].BoneIndex), m);
-			}
-		}else{
-
-		}*/
 
 	ev[0].clear();
 	ev[1].clear();
