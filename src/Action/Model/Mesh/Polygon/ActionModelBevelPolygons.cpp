@@ -167,6 +167,7 @@ void ActionModelBevelPolygons::BevelSurface(DataModel *m, ModelSurface *s, int s
 
 	Array<VertexData> vdata;
 	vdata.resize(s->Vertex.num);
+	Array<int> obsolete_vertex;
 
 	// (potentially) new vertices on edges
 	foreachi(ModelEdge &e, s->Edge, i){
@@ -204,6 +205,7 @@ void ActionModelBevelPolygons::BevelSurface(DataModel *m, ModelSurface *s, int s
 				if ((e.Vertex[0] == v) || (e.Vertex[1] == v))
 					vd.closed &= (e.RefCount == 2);
 			vdata[vi] = vd;
+			obsolete_vertex.add(v);
 		}
 
 	// edges...
@@ -300,6 +302,7 @@ void ActionModelBevelPolygons::BevelSurface(DataModel *m, ModelSurface *s, int s
 		pr[i] = r;
 	}
 
+	// really build stuff
 	build_vertices(ev[0], m);
 	build_vertices(ev[1], m);
 	foreach(Array<VertexToCome> &vv, pv)
@@ -318,6 +321,10 @@ void ActionModelBevelPolygons::BevelSurface(DataModel *m, ModelSurface *s, int s
 		msg_write(ia2s(v));
 		AddSubAction(new ActionModelAddPolygonAutoSkin(v), m);
 	}
+
+	// remove obsolete vertices
+	foreachb(int v, obsolete_vertex)
+		AddSubAction(new ActionModelDeleteUnusedVertex(v), m);
 
 	ev[0].clear();
 	ev[1].clear();
