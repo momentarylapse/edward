@@ -6020,7 +6020,7 @@ menu_model
 0
 
 
-148
+150
 ItemPopup
 menu_model_file
 
@@ -6623,7 +6623,7 @@ ItemPopup
 menu_model_creation
 
 1
-7
+9
 0
 0
 0
@@ -6698,6 +6698,19 @@ new_ball
 
 
 Item
+new_dodecahedron
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
 new_torus
 
 1
@@ -6712,6 +6725,19 @@ new_torus
 
 Item
 new_cylinder
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+new_cylindersnake
 
 1
 0
@@ -16267,7 +16293,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-719
+721
 // Text
 ad_dialog
 Verwaltung
@@ -17162,13 +17188,17 @@ Quader
 new_cube_dialog
 neuer Quader
 new_cylinder
-Zylinder (-schlange)
+Zylinder
 new_cylinder_dialog
 neuer Zylinder
 new_cylinder_dialog_t_edges
 Kanten
 new_cylinder_dialog_t_rings
 Ringe
+new_cylindersnake
+Zylinderschlange
+new_dodecahedron
+Dodekaeder
 new_extract
 Zerteilen
 new_frame
@@ -17713,7 +17743,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-719
+721
 // Text
 ad_dialog
 Administration
@@ -18615,6 +18645,10 @@ new_cylinder_dialog_t_edges
 edges
 new_cylinder_dialog_t_rings
 rings
+new_cylindersnake
+
+new_dodecahedron
+
 new_extract
 Extract
 new_frame
@@ -19475,7 +19509,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-719
+721
 // Text
 ad_dialog
 
@@ -20376,6 +20410,10 @@ new_cylinder_dialog
 new_cylinder_dialog_t_edges
 
 new_cylinder_dialog_t_rings
+
+new_cylindersnake
+
+new_dodecahedron
 
 new_extract
 

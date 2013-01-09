@@ -19,8 +19,10 @@
 #include "Creation/ModeModelMeshCreateBall.h"
 #include "Creation/ModeModelMeshCreateCube.h"
 #include "Creation/ModeModelMeshCreateCylinder.h"
+#include "Creation/ModeModelMeshCreateCylinderSnake.h"
 #include "Creation/ModeModelMeshCreatePlane.h"
 #include "Creation/ModeModelMeshCreateTorus.h"
+#include "Creation/ModeModelMeshCreateDodecahedron.h"
 #include "Creation/ModeModelMeshSplitPolygon.h"
 #include "Creation/ModeModelMeshBevelVertices.h"
 #include "Creation/ModeModelMeshExtrudePolygons.h"
@@ -139,10 +141,14 @@ void ModeModelMesh::OnCommand(const string & id)
 		ed->SetMode(new ModeModelMeshCreateCube(ed->cur_mode));
 	if (id == "new_cylinder")
 		ed->SetMode(new ModeModelMeshCreateCylinder(ed->cur_mode));
+	if (id == "new_cylindersnake")
+		ed->SetMode(new ModeModelMeshCreateCylinderSnake(ed->cur_mode));
 	if (id == "new_plane")
 		ed->SetMode(new ModeModelMeshCreatePlane(ed->cur_mode));
 	if (id == "new_torus")
 		ed->SetMode(new ModeModelMeshCreateTorus(ed->cur_mode));
+	if (id == "new_dodecahedron")
+		ed->SetMode(new ModeModelMeshCreateDodecahedron(ed->cur_mode));
 	if (id == "new_extract")
 		ed->SetMode(new ModeModelMeshSplitPolygon(mode_model_mesh_polygon));
 	if (id == "bevel_vertices")

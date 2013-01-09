@@ -291,6 +291,7 @@ public:
 	ModelSurface *AddCube(const vector &pos, const vector &dv1, const vector &dv2, const vector &dv3, int num_1, int num_2, int num_3);
 	ModelSurface *AddCylinder(Array<vector> &pos, Array<float> &radius, int rings, int edges, bool closed);
 	ModelSurface *AddTorus(const vector &pos, const vector &axis, float radius1, float radius2, int num_x, int num_y);
+	ModelSurface *AddDodecahedron(const vector &pos, float radius);
 
 	void DeleteSelection(bool greedy = false);
 	void InvertSelection();

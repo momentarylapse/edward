@@ -28,6 +28,7 @@
 #include "../../Action/Model/Mesh/Shape/ActionModelAddBall.h"
 #include "../../Action/Model/Mesh/Shape/ActionModelAddSphere.h"
 #include "../../Action/Model/Mesh/Shape/ActionModelAddTorus.h"
+#include "../../Action/Model/Mesh/Shape/ActionModelAddDodecahedron.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelSurfaceSubtract.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelSurfaceInvert.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelAutoWeldSelection.h"
@@ -1758,6 +1759,9 @@ ModelSurface* DataModel::AddCylinder(Array<vector>& pos, Array<float> &radius, i
 
 ModelSurface *DataModel::AddTorus(const vector &pos, const vector &axis, float radius1, float radius2, int num_x, int num_y)
 {	return (ModelSurface*)Execute(new ActionModelAddTorus(pos, axis, radius1, radius2, num_x, num_y));	}
+
+ModelSurface *DataModel::AddDodecahedron(const vector &pos, float radius)
+{	return (ModelSurface*)Execute(new ActionModelAddDodecahedron(pos, radius));	}
 
 void DataModel::SetCurrentMove(int move_no)
 {

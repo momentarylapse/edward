@@ -14,10 +14,9 @@ ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(Mode *_parent) :
 {
 	data = (DataModel*)_parent->GetData();
 
-	message = _("zylinder... Punkte + Shift Return");
+	message = _("Zylinder: Startpunkt");
 
 	radius = 0;
-	ready_for_scaling = false;
 }
 
 ModeModelMeshCreateCylinder::~ModeModelMeshCreateCylinder()
@@ -48,7 +47,7 @@ void ModeModelMeshCreateCylinder::OnEnd()
 
 void ModeModelMeshCreateCylinder::OnMouseMove()
 {
-	if (ready_for_scaling){
+	if (pos.num == 2){
 		vector p = multi_view->GetCursor3d(pos.back());
 		radius = (p - pos.back()).length();
 		float min_rad = 10 / multi_view->zoom; // 10 px
@@ -61,7 +60,7 @@ void ModeModelMeshCreateCylinder::OnMouseMove()
 
 void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 {
-	if (ready_for_scaling){
+	if (pos.num == 2){
 
 		int rings = dialog->GetInt("ncy_rings");
 		int edges = dialog->GetInt("ncy_edges");
@@ -73,7 +72,7 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 		Array<float> r = radius;
 		r += radius;
 
-		ModelSurface *s = data->AddCylinder(pos, r, rings * (pos.num - 1), edges, closed);
+		ModelSurface *s = data->AddCylinder(pos, r, rings, edges, closed);
 		data->SelectOnlySurface(s);
 
 		Abort();
@@ -82,25 +81,16 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 			pos.add(data->Vertex[multi_view->Selected].pos);
 		else
 			pos.add(multi_view->GetCursor3d());
-	//message = _("Zylinder: Endpunkt");
-	}
-}
 
-
-
-void ModeModelMeshCreateCylinder::OnKeyDown()
-{
-	if (HuiGetEvent()->key_code == KEY_SHIFT + KEY_RETURN){
 		if (pos.num > 1){
-			ready_for_scaling = true;
-			OnMouseMove();
+			//OnMouseMove();
 			message = _("Zylinder: Radius");
-			ed->ForceRedraw();
+			//ed->ForceRedraw();
+		}else{
+			message = _("Zylinder: Endpunkt");
 		}
 	}
 }
-
-
 
 
 void CreateCylinderBuffer(int buffer, const vector &pos, const vector &length, float radius)
@@ -132,40 +122,23 @@ void ModeModelMeshCreateCylinder::OnDrawWin(int win)
 {
 	if (pos.num > 0){
 		NixEnableLighting(false);
+		NixSetColor(Green);
 		// control polygon
 		for (int i=0;i<pos.num;i++){
 			vector pp = multi_view->VecProject(pos[i], win);
-			NixSetColor(Green);
 			NixDrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
-			NixSetColor(White);
-			if (i > 0)
-				NixDrawLine3D(pos[i - 1], pos[i]);
 		}
-
-		// spline curve
-		Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
-		foreach(vector &p, pos)
-			inter.add(p);
-		if (!ready_for_scaling)
-			inter.add(multi_view->GetCursor3d());
-		NixSetColor(Green);
-		for (int i=0;i<100;i++)
-			NixDrawLine3D(inter.get((float)i * 0.01f), inter.get((float)i * 0.01f + 0.01f));
+		if (pos.num == 2)
+			NixDrawLine3D(pos[0], pos[1]);
+		else
+			NixDrawLine3D(pos[0], multi_view->GetCursor3d());
 		NixSetColor(White);
 	}
-	if (ready_for_scaling){
-		Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
-		foreach(vector &p, pos)
-			inter.add(p);
-		int n = (pos.num - 1) * dialog->GetInt("ncy_rings");
+	if (pos.num == 2){
 		NixEnableLighting(true);
 		mode_model->SetMaterialCreation();
 		NixVBClear(VBTemp);
-		for (int i=0;i<n;i++){
-			float t0 = (float)i       / (float)n;
-			float t1 = (float)(i + 1) / (float)n;
-			CreateCylinderBuffer(VBTemp, inter.get(t0), inter.get(t1) - inter.get(t0), radius);
-		}
+		CreateCylinderBuffer(VBTemp, pos[0], pos[1] - pos[0], radius);
 		NixDraw3D(VBTemp);
 	}
 }

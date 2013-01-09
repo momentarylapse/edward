@@ -22,7 +22,6 @@ public:
 
 	void OnMouseMove();
 	void OnLeftButtonDown();
-	void OnKeyDown();
 
 	void OnDrawWin(int win);
 
@@ -31,7 +30,6 @@ public:
 
 private:
 	Array<vector> pos;
-	bool ready_for_scaling;
 	vector length;
 	float radius;
 };

@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-578
+580
 // Data (ID,Text)
 ad_dialog
 
@@ -731,6 +731,10 @@ new_cylinder_dialog_t_edges
 
 new_cylinder_dialog_t_rings
 
+new_cylindersnake
+
+new_dodecahedron
+
 new_extract
 
 new_frame
@@ -1160,7 +1164,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-221
+224
 // Data (ID,Text)
 
 
@@ -1231,6 +1235,8 @@ Datei-Format unlesbar!
 Dateien (*.*)
 
 Demütige aber höfliche Frage
+
+Dodekaheder skalieren
 
 Ebene
 
@@ -1544,11 +1550,17 @@ Würfel: Punkt 2 / 3
 
 Würfel: Punkt 3 / 3
 
+Zentrum wählen
+
 Zylinder (-schlange)
 
 Zylinder: Endpunkt
 
 Zylinder: Radius
+
+Zylinder: Startpunkt
+
+Zylinderschlange... Punkte + Shift Return
 
 [Engine]
 
@@ -1599,8 +1611,6 @@ surf: %d
 ungerichtetes Umgebungslicht
 
 vert: %d
-
-zylinder... Punkte + Shift Return
 
 Übereinanderliegende Textur-Schichten (multitexturing)\n- Doppelklick um eine Texturdatei zu wählen
 

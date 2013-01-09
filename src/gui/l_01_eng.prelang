@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-578
+580
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -731,6 +731,10 @@ new_cylinder_dialog_t_edges
 edges
 new_cylinder_dialog_t_rings
 rings
+new_cylindersnake
+
+new_dodecahedron
+
 new_extract
 Extract
 new_frame
@@ -1160,7 +1164,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-221
+224
 // Data (ID,Text)
 
 
@@ -1232,6 +1236,8 @@ Dateien (*.*)
 Files (*.*)
 Demütige aber höfliche Frage
 Quite a polite question
+Dodekaheder skalieren
+
 Ebene
 Plane
 Ebene: erster Punkt
@@ -1544,12 +1550,18 @@ Würfel: Punkt 2 / 3
 Cube: point 2 / 3
 Würfel: Punkt 3 / 3
 Cube: point 3 / 3
+Zentrum wählen
+
 Zylinder (-schlange)
 Cylinder (-snake)
 Zylinder: Endpunkt
 Cylinder: ...points
 Zylinder: Radius
 Cylinder: radius
+Zylinder: Startpunkt
+
+Zylinderschlange... Punkte + Shift Return
+
 [Engine]
 [Engine]
 \\\\   - keine Texturen -
@@ -1600,8 +1612,6 @@ ungerichtetes Umgebungslicht
 
 vert: %d
 vert: %d
-zylinder... Punkte + Shift Return
-
 Übereinanderliegende Textur-Schichten (multitexturing)\n- Doppelklick um eine Texturdatei zu wählen
 
 #
