@@ -26,12 +26,7 @@ void ActionModelSurfaceDeletePolygon::undo(Data *d)
 
 	ModelSurface &s = m->Surface[surface];
 
-	// add triangle
-	try{
-		s.AddPolygon(vertex, material, skin, index);
-	}catch(GeometryException &e){
-		throw ActionException(e.message);
-	}
+	s.AddPolygon(vertex, material, skin, index);
 }
 
 
@@ -49,11 +44,7 @@ void *ActionModelSurfaceDeletePolygon::execute(Data *d)
 	skin = t.GetSkinVertices();
 
 	// erase
-	try{
-		s.RemovePolygon(index);
-	}catch(GeometryException &e){
-		throw ActionException(e.message);
-	}
+	s.RemovePolygon(index);
 
 	return NULL;
 }

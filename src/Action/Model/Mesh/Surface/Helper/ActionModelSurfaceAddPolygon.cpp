@@ -30,14 +30,10 @@ void ActionModelSurfaceAddPolygon::undo(Data *d)
 
 	ModelSurface &s = m->Surface[surface];
 
-	try{
-		if (index >= 0)
-			s.RemovePolygon(index);
-		else
-			s.RemovePolygon(s.Polygon.num -1);
-	}catch(GeometryException &e){
-		throw(ActionException("evil polygon: " + e.message));
-	}
+	if (index >= 0)
+		s.RemovePolygon(index);
+	else
+		s.RemovePolygon(s.Polygon.num -1);
 }
 
 
@@ -48,12 +44,7 @@ void *ActionModelSurfaceAddPolygon::execute(Data *d)
 
 	ModelSurface &s = m->Surface[surface];
 
-	// add triangle
-	try{
-		s.AddPolygon(v, material, sv, index);
-	}catch(GeometryException &e){
-		throw(ActionException("evil polygon: " + e.message));
-	}
+	s.AddPolygon(v, material, sv, index);
 
 	if (index >= 0)
 		return &s.Polygon[index];

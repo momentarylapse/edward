@@ -21,11 +21,10 @@ class ModelSurface;
 class ModelMaterial;
 
 
-class GeometryException
+class GeometryException : public ActionException
 {
 public:
-	GeometryException(const string &_message){	message = _message;	}
-	string message;
+	GeometryException(const string &message) : ActionException(message){}
 };
 
 #define TransparencyModeDefault			-1
@@ -292,6 +291,7 @@ public:
 	ModelSurface *AddCylinder(Array<vector> &pos, Array<float> &radius, int rings, int edges, bool closed);
 	ModelSurface *AddTorus(const vector &pos, const vector &axis, float radius1, float radius2, int num_x, int num_y);
 	ModelSurface *AddPlatonic(const vector &pos, float radius, int type);
+	ModelSurface *AddTeapot(const vector &pos, float radius, int samples);
 
 	void DeleteSelection(bool greedy = false);
 	void InvertSelection();

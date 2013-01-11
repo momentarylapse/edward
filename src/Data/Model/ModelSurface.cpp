@@ -10,6 +10,12 @@
 
 void ModelSurface::AddVertex(int v)
 {
+	int surf = model->get_surf_no(this);
+	if (surf < 0)
+		throw GeometryException("Surface.AddVertex: surface not part of the model??");
+	if ((model->Vertex[v].Surface != surf) && (model->Vertex[v].Surface >= 0))
+		throw GeometryException("Surface.AddVertex: vertex already part of an other surface");
+
 	// set -> unique
 	Vertex.add(v);
 
@@ -17,15 +23,7 @@ void ModelSurface::AddVertex(int v)
 	model->Vertex[v].RefCount ++;
 
 	// back reference
-	int surf = model->get_surf_no(this);
-	if (model->Vertex[v].Surface != surf){
-		// FIXME ... evil side effects
-		if (model->Vertex[v].Surface >= 0)
-			model->Surface[model->Vertex[v].Surface].Vertex.erase(v);
-		model->Vertex[v].Surface = surf;
-	}
-	if (model->Vertex[v].Surface < 0)
-		msg_error("SurfaceAddVertex ...surface not found");
+	model->Vertex[v].Surface = surf;
 }
 
 bool int_array_has_duplicates(Array<int> &a)
@@ -101,7 +99,7 @@ int ModelSurface::AddEdgeForNewPolygon(int a, int b, int tria, int side)
 {
 	foreachi(ModelEdge &e, Edge, i){
 		if ((e.Vertex[0] == a) && (e.Vertex[1] == b)){
-			throw GeometryException("surface error? inverse edge");
+			throw GeometryException("the new polygon would have neighbors of opposite orientation");
 			/*e.RefCount ++;
 			msg_error("surface error? inverse edge");
 			e.Polygon[1] = tria;
@@ -110,9 +108,9 @@ int ModelSurface::AddEdgeForNewPolygon(int a, int b, int tria, int side)
 		}
 		if ((e.Vertex[0] == b) && (e.Vertex[1] == a)){
 			if (e.Polygon[0] == tria)
-				throw GeometryException("surface error? same edge in poly");
+				throw GeometryException("the new polygon would contain the same edge twice");
 			if (e.RefCount > 1)
-				throw GeometryException("surface error? edge refcount > 2");
+				throw GeometryException("there would be more than 2 polygons sharing an egde");
 			e.RefCount ++;
 			e.Polygon[1] = tria;
 			e.Side[1] = side;
@@ -455,7 +453,7 @@ void ModelSurface::RemovePolygon(int index)
 		RemoveObsoleteEdge(o);
 
 	if (!TestSanity("rem poly"))
-		throw GeometryException("RemoveTriangle: TestSanity");
+		throw GeometryException("RemoveTriangle: TestSanity failed");
 }
 
 bool ModelSurface::TestSanity(const string &loc)
