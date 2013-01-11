@@ -11,6 +11,8 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
+class ModelGeometry;
+
 class ModeModelMeshCreateCylinder: public ModeCreation
 {
 public:
@@ -25,6 +27,8 @@ public:
 
 	void OnDrawWin(int win);
 
+	void UpdateGeometry();
+
 	DataModel *data;
 	Data *GetData(){	return data;	}
 
@@ -32,6 +36,7 @@ private:
 	Array<vector> pos;
 	vector length;
 	float radius;
+	ModelGeometry *geo;
 };
 
 #endif /* MODEMODELMESHCREATECYLINDER_H_ */

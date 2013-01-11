@@ -7,6 +7,7 @@
 
 #include "ModeModelMeshCreateCylinderSnake.h"
 #include "../../ModeModel.h"
+#include "../../../../Data/Model/Geometry/ModelGeometryCylinder.h"
 #include "../../../../Edward.h"
 
 // -> ModeModelMeshCreateCylinder.cpp
@@ -22,6 +23,7 @@ ModeModelMeshCreateCylinderSnake::ModeModelMeshCreateCylinderSnake(Mode *_parent
 
 	radius = 0;
 	ready_for_scaling = false;
+	geo = NULL;
 }
 
 ModeModelMeshCreateCylinderSnake::~ModeModelMeshCreateCylinderSnake()
@@ -47,6 +49,26 @@ void ModeModelMeshCreateCylinderSnake::OnStart()
 void ModeModelMeshCreateCylinderSnake::OnEnd()
 {
 	delete(dialog);
+	if (geo)
+		delete(geo);
+}
+
+void ModeModelMeshCreateCylinderSnake::UpdateGeometry()
+{
+	if (geo)
+		delete(geo);
+	if (ready_for_scaling){
+		int rings = dialog->GetInt("ncy_rings");
+		int edges = dialog->GetInt("ncy_edges");
+		bool closed = dialog->IsChecked("ncy_endings");
+		HuiConfigWriteInt("NewCylinderRings", rings);
+		HuiConfigWriteInt("NewCylinderEdges", edges);
+		HuiConfigWriteBool("NewCylinderClosedEndings", closed);
+
+		Array<float> r = radius;
+		r += radius;
+		geo = new ModelGeometryCylinder(pos, r, rings * (pos.num - 1), edges, closed);
+	}
 }
 
 
@@ -58,6 +80,7 @@ void ModeModelMeshCreateCylinderSnake::OnMouseMove()
 		float min_rad = 10 / multi_view->zoom; // 10 px
 		if (radius < min_rad)
 			radius = min_rad;
+		UpdateGeometry();
 	}
 }
 
@@ -67,18 +90,8 @@ void ModeModelMeshCreateCylinderSnake::OnLeftButtonDown()
 {
 	if (ready_for_scaling){
 
-		int rings = dialog->GetInt("ncy_rings");
-		int edges = dialog->GetInt("ncy_edges");
-		bool closed = dialog->IsChecked("ncy_endings");
-		HuiConfigWriteInt("NewCylinderRings", rings);
-		HuiConfigWriteInt("NewCylinderEdges", edges);
-		HuiConfigWriteBool("NewCylinderClosedEndings", closed);
-
-		Array<float> r = radius;
-		r += radius;
-
-		ModelSurface *s = data->AddCylinder(pos, r, rings * (pos.num - 1), edges, closed);
-		data->SelectOnlySurface(s);
+		data->PasteGeometry(*geo);
+		data->SelectOnlySurface(&data->Surface.back());
 
 		Abort();
 	}else{
@@ -86,7 +99,6 @@ void ModeModelMeshCreateCylinderSnake::OnLeftButtonDown()
 			pos.add(data->Vertex[multi_view->Selected].pos);
 		else
 			pos.add(multi_view->GetCursor3d());
-	//message = _("Zylinder: Endpunkt");
 	}
 }
 
@@ -99,6 +111,7 @@ void ModeModelMeshCreateCylinderSnake::OnKeyDown()
 			ready_for_scaling = true;
 			OnMouseMove();
 			message = _("Zylinder: Radius");
+			UpdateGeometry();
 			ed->ForceRedraw();
 		}
 	}
@@ -134,18 +147,9 @@ void ModeModelMeshCreateCylinderSnake::OnDrawWin(int win)
 		NixSetColor(White);
 	}
 	if (ready_for_scaling){
-		Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
-		foreach(vector &p, pos)
-			inter.add(p);
-		int n = (pos.num - 1) * dialog->GetInt("ncy_rings");
+		geo->Preview(VBTemp);
 		NixEnableLighting(true);
 		mode_model->SetMaterialCreation();
-		NixVBClear(VBTemp);
-		for (int i=0;i<n;i++){
-			float t0 = (float)i       / (float)n;
-			float t1 = (float)(i + 1) / (float)n;
-			CreateCylinderBuffer(VBTemp, inter.get(t0), inter.get(t1) - inter.get(t0), radius);
-		}
 		NixDraw3D(VBTemp);
 	}
 }

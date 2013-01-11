@@ -7,6 +7,7 @@
 
 #include "ModeModelMeshCreateCylinder.h"
 #include "../../ModeModel.h"
+#include "../../../../Data/Model/Geometry/ModelGeometryCylinder.h"
 #include "../../../../Edward.h"
 
 ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(Mode *_parent) :
@@ -17,10 +18,13 @@ ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(Mode *_parent) :
 	message = _("Zylinder: Startpunkt");
 
 	radius = 0;
+	geo = NULL;
 }
 
 ModeModelMeshCreateCylinder::~ModeModelMeshCreateCylinder()
 {
+	if (geo)
+		delete(geo);
 }
 
 void ModeModelMeshCreateCylinder::OnStart()
@@ -44,24 +48,11 @@ void ModeModelMeshCreateCylinder::OnEnd()
 	delete(dialog);
 }
 
-
-void ModeModelMeshCreateCylinder::OnMouseMove()
+void ModeModelMeshCreateCylinder::UpdateGeometry()
 {
+	if (geo)
+		delete(geo);
 	if (pos.num == 2){
-		vector p = multi_view->GetCursor3d(pos.back());
-		radius = (p - pos.back()).length();
-		float min_rad = 10 / multi_view->zoom; // 10 px
-		if (radius < min_rad)
-			radius = min_rad;
-	}
-}
-
-
-
-void ModeModelMeshCreateCylinder::OnLeftButtonDown()
-{
-	if (pos.num == 2){
-
 		int rings = dialog->GetInt("ncy_rings");
 		int edges = dialog->GetInt("ncy_edges");
 		bool closed = dialog->IsChecked("ncy_endings");
@@ -71,9 +62,31 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 
 		Array<float> r = radius;
 		r += radius;
+		geo = new ModelGeometryCylinder(pos, r, rings, edges, closed);
+	}
+}
 
-		ModelSurface *s = data->AddCylinder(pos, r, rings, edges, closed);
-		data->SelectOnlySurface(s);
+void ModeModelMeshCreateCylinder::OnMouseMove()
+{
+	if (pos.num == 2){
+		vector p = multi_view->GetCursor3d(pos.back());
+		radius = (p - pos.back()).length();
+		float min_rad = 10 / multi_view->zoom; // 10 px
+		if (radius < min_rad)
+			radius = min_rad;
+		UpdateGeometry();
+	}
+}
+
+
+
+void ModeModelMeshCreateCylinder::OnLeftButtonDown()
+{
+	if (pos.num == 2){
+
+
+		data->PasteGeometry(*geo);
+		data->SelectOnlySurface(&data->Surface.back());
 
 		Abort();
 	}else{
@@ -85,36 +98,11 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 		if (pos.num > 1){
 			//OnMouseMove();
 			message = _("Zylinder: Radius");
+			UpdateGeometry();
 			//ed->ForceRedraw();
 		}else{
 			message = _("Zylinder: Endpunkt");
 		}
-	}
-}
-
-
-void CreateCylinderBuffer(int buffer, const vector &pos, const vector &length, float radius)
-{
-	int num=16;
-	vector u = length.ortho();
-	u.normalize();
-	vector r = length ^ u;
-	r.normalize();
-	for (int i=0;i<num;i++){
-		float w1=pi*2*(float) i   /(float)num;
-		float w2=pi*2*(float)(i+1)/(float)num;
-		vector n1=u*(float)sin(w1)+r*(float)cos(w1);
-		vector n2=u*(float)sin(w2)+r*(float)cos(w2);
-		vector pa=pos       +n1*radius;
-		vector pb=pos       +n2*radius;
-		vector pc=pos+length+n1*radius;
-		vector pd=pos+length+n2*radius;
-		vector pe=pos+length;
-		vector md=-length;
-		NixVBAddTria(buffer,pa,md,0,0,pb,md,0,0,pos,md,0,0);
-		NixVBAddTria(buffer,pa,n1,0,0,pc,n1,0,0,pd ,n2,0,0);
-		NixVBAddTria(buffer,pa,n1,0,0,pd,n2,0,0,pb ,n2,0,0);
-		NixVBAddTria(buffer,pd, length,0,0,pc, length,0,0,pe , length,0,0);
 	}
 }
 
@@ -137,8 +125,7 @@ void ModeModelMeshCreateCylinder::OnDrawWin(int win)
 	if (pos.num == 2){
 		NixEnableLighting(true);
 		mode_model->SetMaterialCreation();
-		NixVBClear(VBTemp);
-		CreateCylinderBuffer(VBTemp, pos[0], pos[1] - pos[0], radius);
+		geo->Preview(VBTemp);
 		NixDraw3D(VBTemp);
 	}
 }

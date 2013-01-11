@@ -11,6 +11,8 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
+class ModelGeometry;
+
 class ModeModelMeshCreateCylinderSnake: public ModeCreation
 {
 public:
@@ -26,6 +28,8 @@ public:
 
 	void OnDrawWin(int win);
 
+	void UpdateGeometry();
+
 	DataModel *data;
 	Data *GetData(){	return data;	}
 
@@ -34,6 +38,7 @@ private:
 	bool ready_for_scaling;
 	vector length;
 	float radius;
+	ModelGeometry *geo;
 };
 
 #endif /* MODEMODELMESHCREATECYLINDERSNAKE_H_ */
