@@ -7,7 +7,7 @@
 
 #include "ActionModelAddTeapot.h"
 #include "../Vertex/ActionModelAddVertex.h"
-#include "../Polygon/ActionModelAddPolygonAutoSkin.h"
+#include "../Polygon/ActionModelAddPolygonSingleTexture.h"
 #include "../Surface/ActionModelSurfaceAutoWeld.h"
 #include "../../../../Data/Model/DataModel.h"
 
@@ -330,16 +330,6 @@ ActionModelAddTeapot::ActionModelAddTeapot(const vector &_pos, float _radius, in
 	samples = _samples;
 }
 
-void ActionModelAddTeapot::add4(int nv, int v0, int v1, int v2, int v3, DataModel *m)
-{
-	Array<int> v;
-	v.add(nv + v0);
-	v.add(nv + v1);
-	v.add(nv + v2);
-	v.add(nv + v3);
-	AddSubAction(new ActionModelAddPolygonAutoSkin(v), m);
-}
-
 static float Bernstein3(int i, float t)
 {
 	float ti = 1 - t;
@@ -369,8 +359,19 @@ void ActionModelAddTeapot::addBezier(int v00, int v01, int v02, int v03, int v10
 			AddSubAction(new ActionModelAddVertex(pos + p * r), m);
 		}
 	for (int i=0; i<N; i++)
-		for (int j=0; j<N; j++)
-			add4(nv, i*(N+1)+j, i*(N+1)+j+1, (i+1)*(N+1)+j+1, (i+1)*(N+1)+j, m);
+		for (int j=0; j<N; j++){
+			Array<int> v;
+			v.add(nv + i*(N+1)+j);
+			v.add(nv + i*(N+1)+j+1);
+			v.add(nv + (i+1)*(N+1)+j+1);
+			v.add(nv + (i+1)*(N+1)+j);
+			Array<vector> sv;
+			sv.add(vector((float) i    / (float)N, (float) j    / (float)N, 0));
+			sv.add(vector((float) i    / (float)N, (float)(j+1) / (float)N, 0));
+			sv.add(vector((float)(i+1) / (float)N, (float)(j+1) / (float)N, 0));
+			sv.add(vector((float)(i+1) / (float)N, (float) j    / (float)N, 0));
+			AddSubAction(new ActionModelAddPolygonSingleTexture(v, m->CurrentMaterial, sv), m);
+		}
 }
 
 

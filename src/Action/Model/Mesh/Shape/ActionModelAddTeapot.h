@@ -21,7 +21,6 @@ public:
 
 	void *compose(Data *d);
 private:
-	void add4(int nv, int v0, int v1, int v2, int v3, DataModel *m);
 	void addBezier(int v00, int v01, int v02, int v03, int v10, int v11, int v12, int v13, int v20, int v21, int v22, int v23, int v30, int v31, int v32, int v33, DataModel *m);
 	vector pos;
 	float radius;
