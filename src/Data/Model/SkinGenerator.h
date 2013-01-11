@@ -13,6 +13,7 @@ class vector;
 class MultiView;
 class DataModel;
 class ModelPolygon;
+class ModelVertex;
 
 class SkinGenerator
 {
@@ -23,6 +24,7 @@ public:
 	void init_projective(const matrix &_m);
 	void init_projective(MultiView *mv, int win);
 	void init_polygon(DataModel *model, ModelPolygon &p, int level);
+	void init_point_cloud_boundary(const Array<ModelVertex> &p, const Array<int> &v);
 
 	vector get(const vector &v) const;
 

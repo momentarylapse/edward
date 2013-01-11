@@ -10,6 +10,7 @@
 
 #include "../../Mode.h"
 #include "../../../Data/Model/DataModel.h"
+#include "../../../Data/Model/Geometry/ModelGeometry.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
 
 class Mode;

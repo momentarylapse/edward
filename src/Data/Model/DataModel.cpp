@@ -7,6 +7,7 @@
 
 #include "DataModel.h"
 #include "ModelSurface.h"
+#include "Geometry/ModelGeometry.h"
 #include "../../Mode/Model/ModeModel.h"
 #include "../../Action/Action.h"
 #include "../../Action/ActionManager.h"
@@ -1892,8 +1893,7 @@ void DataModel::AnimationDeleteCurrentFrame()
 
 void DataModel::CopyGeometry(ModelGeometry &geo)
 {
-	geo.Vertex.clear();
-	geo.Polygon.clear();
+	geo.clear();
 
 	// copy vertices
 	Array<int> vert;

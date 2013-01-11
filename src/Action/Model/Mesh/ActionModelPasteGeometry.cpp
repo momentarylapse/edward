@@ -9,6 +9,7 @@
 #include "Vertex/ActionModelAddVertex.h"
 #include "Polygon/ActionModelAddPolygon.h"
 #include "../../../Data/Model/DataModel.h"
+#include "../../../Data/Model/Geometry/ModelGeometry.h"
 
 ActionModelPasteGeometry::ActionModelPasteGeometry(ModelGeometry &_geo) :
 	geo(_geo)

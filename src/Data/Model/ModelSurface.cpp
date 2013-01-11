@@ -42,6 +42,9 @@ void ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, in
 
 	msg_db_r("Surf.AddTria", 1);
 
+	if (material < 0)
+		material = model->CurrentMaterial;
+
 	ModelPolygon t;
 	t.Side.resize(v.num);
 	for (int k=0;k<v.num;k++){

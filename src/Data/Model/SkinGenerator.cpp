@@ -98,6 +98,46 @@ void SkinGenerator::init_polygon(DataModel *model, ModelPolygon &p, int level)
 	m = m * iR;
 }
 
+
+static vector get_cloud_normal(const Array<ModelVertex> &pp, const Array<int> &v)
+{
+	Array<vector> p;
+	for (int i=1;i<v.num;i++){
+		p.add(pp[v[i]].pos - pp[v[0]].pos);
+		p.back().normalize();
+	}
+	for (int i=0;i<p.num;i++)
+		for (int j=i+1;j<p.num;j++){
+			vector d = (p[i] ^ p[j]);
+			float l = d.length();
+			if (l > 0.1f)
+				return d / l;
+		}
+	return v_0;
+}
+
+void SkinGenerator::init_point_cloud_boundary(const Array<ModelVertex> &p, const Array<int> &v)
+{
+	vector n = get_cloud_normal(p, v);
+	vector d[2];
+	d[0] = n.ortho();
+	d[1] = d[0] ^ n;
+	float boundary[2][2], l[2];
+	for (int k=0;k<2;k++){
+		boundary[k][0] = boundary[k][1] = d[k] * p[v[0]].pos;
+		foreach(int vi, const_cast<Array<int>&>(v)){
+			float f = d[k] * p[vi].pos;
+			if (f < boundary[k][0])
+				boundary[k][0] = f;
+			if (f > boundary[k][1])
+				boundary[k][1] = f;
+		}
+		l[k] = (boundary[k][1] - boundary[k][0]);
+	}
+	init_affine(d[0] / l[0], - boundary[0][0] / l[0], d[1] / l[1], - boundary[1][0] / l[1]);
+
+}
+
 vector SkinGenerator::get(const vector& v) const
 {
 	vector p = m.project(v);

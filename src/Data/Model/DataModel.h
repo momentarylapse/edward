@@ -19,6 +19,7 @@
 class DataModel;
 class ModelSurface;
 class ModelMaterial;
+class ModelGeometry;
 
 
 class GeometryException : public ActionException
@@ -193,12 +194,6 @@ public:
 	//  same for Polygon/Side[1] but Vertex[0 <-> 1]
 };
 
-
-struct ModelGeometry
-{
-	Array<ModelVertex> Vertex;
-	Array<ModelPolygon> Polygon;
-};
 
 class ModelSelectionState
 {
