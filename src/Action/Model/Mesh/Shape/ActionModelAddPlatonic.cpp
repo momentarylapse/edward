@@ -9,6 +9,7 @@
 #include "../Vertex/ActionModelAddVertex.h"
 #include "../Polygon/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "ActionModelAddTeapot.h"
 
 ActionModelAddPlatonic::ActionModelAddPlatonic(const vector &_pos, float _radius, int _type)
 {
@@ -50,6 +51,8 @@ void *ActionModelAddPlatonic::compose(Data *d)
 		AddDodecahedron(m);
 	else if (type == 20)
 		AddIcosahedron(m);
+	else if (type == 306)
+		AddSubAction(new ActionModelAddTeapot(pos, radius, 4), m);
 	else
 		throw ActionException("unknown platonic: " + i2s(type));
 

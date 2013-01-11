@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-584
+585
 // Data (ID,Text)
 ad_dialog
 
@@ -757,6 +757,8 @@ new_plane_dialog_t_y
 
 new_point
 
+new_teapot
+
 new_terrain_dialog
 
 new_tetrahedron
@@ -1172,7 +1174,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-224
+222
 // Data (ID,Text)
 
 
@@ -1510,8 +1512,6 @@ Texturen (bmp,jpg,tga,avi)
 
 Texturen der einzelnen Materialien\n- Doppelklick zum Bearbeiten der Texturkoordinaten
 
-Torus
-
 Torus außen skalieren
 
 Torus innen skalieren
@@ -1527,8 +1527,6 @@ Unten
 Unten (y)
 
 Vertex
-
-Vertexpunkt
 
 Vertexpunkte: %d (von %d)
 
@@ -1558,7 +1556,7 @@ Würfel: Punkt 3 / 3
 
 Zentrum wählen
 
-Zylinder (-schlange)
+Zylinder
 
 Zylinder: Endpunkt
 

@@ -195,6 +195,7 @@ enum{
 			sub_menu_platonic->AddEntry("Oktaeder",HMM_NEW_OCTAHEDRON);
 			sub_menu_platonic->AddEntry("Dodekaeder",HMM_NEW_DODECAHEDRON);
 			sub_menu_platonic->AddEntry("Ikosaeder",HMM_NEW_ICOSAHEDRON);
+			sub_menu_platonic->AddEntry("Teekanne",HMM_NEW_TEAPOT);
 		sub_menu_350->AddSubMenu("Platonische K&orper",HMM_MENU_MODEL_PLATONIC,sub_menu_platonic);
 		sub_menu_350->AddEntry("Torus",HMM_NEW_TORUS);
 		sub_menu_350->AddEntry("Zylinder",HMM_NEW_CYLINDER);

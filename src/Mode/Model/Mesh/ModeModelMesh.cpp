@@ -153,6 +153,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		ed->SetMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 12));
 	if (id == "new_icosahedron")
 		ed->SetMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 20));
+	if (id == "new_teapot")
+		ed->SetMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 306));
 	if (id == "new_extract")
 		ed->SetMode(new ModeModelMeshSplitPolygon(mode_model_mesh_polygon));
 	if (id == "bevel_vertices")
