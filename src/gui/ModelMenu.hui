@@ -190,7 +190,12 @@ enum{
 		sub_menu_350->AddEntry("Ebene",HMM_NEW_PLANE);
 		sub_menu_350->AddEntry("Quader",HMM_NEW_CUBE);
 		sub_menu_350->AddEntry("Kugel",HMM_NEW_BALL);
-		sub_menu_350->AddEntry("Dodekaeder",HMM_NEW_DODECAHEDRON);
+			CHuiMenu *sub_menu_platonic=new CHuiMenu();
+			sub_menu_platonic->AddEntry("Tetraeder",HMM_NEW_TETRAHEDRON);
+			sub_menu_platonic->AddEntry("Oktaeder",HMM_NEW_OCTAHEDRON);
+			sub_menu_platonic->AddEntry("Dodekaeder",HMM_NEW_DODECAHEDRON);
+			sub_menu_platonic->AddEntry("Ikosaeder",HMM_NEW_ICOSAHEDRON);
+		sub_menu_350->AddSubMenu("Platonische K&orper",HMM_MENU_MODEL_PLATONIC,sub_menu_platonic);
 		sub_menu_350->AddEntry("Torus",HMM_NEW_TORUS);
 		sub_menu_350->AddEntry("Zylinder",HMM_NEW_CYLINDER);
 		sub_menu_350->AddEntry("Zylinderschlange",HMM_NEW_CYLINDERSNAKE);

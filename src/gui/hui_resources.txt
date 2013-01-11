@@ -6020,7 +6020,7 @@ menu_model
 0
 
 
-150
+154
 ItemPopup
 menu_model_file
 
@@ -6697,8 +6697,60 @@ new_ball
 0
 
 
+ItemPopup
+menu_model_platonic
+
+1
+4
+0
+0
+0
+0
+0
+0
+
+
+Item
+new_tetrahedron
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+new_octahedron
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
 Item
 new_dodecahedron
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+new_icosahedron
 
 1
 0
@@ -16293,7 +16345,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-721
+725
 // Text
 ad_dialog
 Verwaltung
@@ -16939,6 +16991,8 @@ menu_model_move
 Animation
 menu_model_normals
 Normalenart
+menu_model_platonic
+Platonische Körper
 menu_model_selection
 Auswahl
 menu_model_skeleton
@@ -17203,6 +17257,10 @@ new_extract
 Zerteilen
 new_frame
 neuer Frame
+new_icosahedron
+Ikosaeder
+new_octahedron
+Oktaeder
 new_outline
 --Umriss
 new_plane
@@ -17217,6 +17275,8 @@ new_point
 Vertex-Punkte
 new_terrain_dialog
 neues Terrain
+new_tetrahedron
+Tetraeder
 new_torus
 Torus
 new_torus_dialog
@@ -17743,7 +17803,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-721
+725
 // Text
 ad_dialog
 Administration
@@ -18389,6 +18449,8 @@ menu_model_move
 Animation
 menu_model_normals
 Normals
+menu_model_platonic
+
 menu_model_selection
 Selection
 menu_model_skeleton
@@ -18653,6 +18715,10 @@ new_extract
 Extract
 new_frame
 new frame
+new_icosahedron
+
+new_octahedron
+
 new_outline
 Outline
 new_plane
@@ -18667,6 +18733,8 @@ new_point
 Vertex
 new_terrain_dialog
 New terrain
+new_tetrahedron
+
 new_torus
 
 new_torus_dialog
@@ -19509,7 +19577,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-721
+725
 // Text
 ad_dialog
 
@@ -20155,6 +20223,8 @@ menu_model_move
 アニメーション
 menu_model_normals
 法線
+menu_model_platonic
+
 menu_model_selection
 選択
 menu_model_skeleton
@@ -20419,6 +20489,10 @@ new_extract
 
 new_frame
 
+new_icosahedron
+
+new_octahedron
+
 new_outline
 
 new_plane
@@ -20432,6 +20506,8 @@ new_plane_dialog_t_y
 new_point
 
 new_terrain_dialog
+
+new_tetrahedron
 
 new_torus
 

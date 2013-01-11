@@ -22,7 +22,7 @@
 #include "Creation/ModeModelMeshCreateCylinderSnake.h"
 #include "Creation/ModeModelMeshCreatePlane.h"
 #include "Creation/ModeModelMeshCreateTorus.h"
-#include "Creation/ModeModelMeshCreateDodecahedron.h"
+#include "Creation/ModeModelMeshCreatePlatonic.h"
 #include "Creation/ModeModelMeshSplitPolygon.h"
 #include "Creation/ModeModelMeshBevelVertices.h"
 #include "Creation/ModeModelMeshExtrudePolygons.h"
@@ -61,13 +61,11 @@ void ModeModelMesh::OnStart()
 	ed->ToolbarSetCurrent(HuiToolbarLeft);
 	ed->ToolbarReset();
 	ed->ToolbarAddSeparator();
-	ed->ToolbarAddItemCheckable(_("Vertexpunkt"),_("Vertexpunkt"), dir + "new_vertex.png", "new_point");
 	ed->ToolbarAddItemCheckable(_("Polygon"),_("Polygon"), dir + "new_triangle.png", "new_tria");
 	ed->ToolbarAddItemCheckable(_("Ebene"),_("Ebene"), dir + "new_plane.png", "new_plane");
 	ed->ToolbarAddItemCheckable(_("Quader"),_("Quader"), dir + "mode_skin.png", "new_cube");
 	ed->ToolbarAddItemCheckable(_("Kugel"),_("Kugel"), dir + "new_ball.png", "new_ball");
-	ed->ToolbarAddItemCheckable(_("Zylinder (-schlange)"),_("Zylinder (-schlange)"), dir + "new_cylinder.png", "new_cylinder");
-	ed->ToolbarAddItemCheckable(_("Torus"),_("Torus"), dir + "new_torus.svg", "new_torus");
+	ed->ToolbarAddItemCheckable(_("Zylinder"),_("Zylinder"), dir + "new_cylinder.png", "new_cylinder");
 	ed->ToolbarAddSeparator();
 	ed->ToolbarAddItemCheckable(_("Rotieren"),_("Rotieren"), dir + "rf_rotate.png", "rotate");
 	ed->ToolbarAddItemCheckable(_("Skalieren"),_("Skalieren"), dir + "rf_scale.png", "scale");
@@ -147,8 +145,14 @@ void ModeModelMesh::OnCommand(const string & id)
 		ed->SetMode(new ModeModelMeshCreatePlane(ed->cur_mode));
 	if (id == "new_torus")
 		ed->SetMode(new ModeModelMeshCreateTorus(ed->cur_mode));
+	if (id == "new_tetrahedron")
+		ed->SetMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 4));
+	if (id == "new_octahedron")
+		ed->SetMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 8));
 	if (id == "new_dodecahedron")
-		ed->SetMode(new ModeModelMeshCreateDodecahedron(ed->cur_mode));
+		ed->SetMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 12));
+	if (id == "new_icosahedron")
+		ed->SetMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 20));
 	if (id == "new_extract")
 		ed->SetMode(new ModeModelMeshSplitPolygon(mode_model_mesh_polygon));
 	if (id == "bevel_vertices")

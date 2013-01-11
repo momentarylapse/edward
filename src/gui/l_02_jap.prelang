@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-580
+584
 // Data (ID,Text)
 ad_dialog
 
@@ -513,6 +513,8 @@ menu_model_move
 アニメーション
 menu_model_normals
 法線
+menu_model_platonic
+
 menu_model_selection
 選択
 menu_model_skeleton
@@ -739,6 +741,10 @@ new_extract
 
 new_frame
 
+new_icosahedron
+
+new_octahedron
+
 new_outline
 
 new_plane
@@ -752,6 +758,8 @@ new_plane_dialog_t_y
 new_point
 
 new_terrain_dialog
+
+new_tetrahedron
 
 new_torus
 
@@ -1236,8 +1244,6 @@ Dateien (*.*)
 
 Demütige aber höfliche Frage
 
-Dodekaheder skalieren
-
 Ebene
 
 Ebene: erster Punkt
@@ -1603,6 +1609,8 @@ neues Terrain...
 poly: %d
 
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
+
+skalieren
 
 skin: %d
 

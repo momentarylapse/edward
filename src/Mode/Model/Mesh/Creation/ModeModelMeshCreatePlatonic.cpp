@@ -1,36 +1,37 @@
 /*
- * ModeModelMeshCreateDodecahedron.cpp
+ * ModeModelMeshCreatePlatonic.cpp
  *
  *  Created on: 09.01.2013
  *      Author: michi
  */
 
-#include "ModeModelMeshCreateDodecahedron.h"
+#include "ModeModelMeshCreatePlatonic.h"
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"
 #include "../../../../lib/x/x.h"
 
-ModeModelMeshCreateDodecahedron::ModeModelMeshCreateDodecahedron(Mode *_parent) :
-	ModeCreation("ModelMeshCreateDodecahedron", _parent)
+ModeModelMeshCreatePlatonic::ModeModelMeshCreatePlatonic(Mode *_parent, int _type) :
+	ModeCreation("ModelMeshCreatePlatonic", _parent)
 {
 	data = (DataModel*)_parent->GetData();
+	type = _type;
 
-	message = _("Dodekaeder-Zentrum w&ahlen");
+	message = _("Zentrum w&ahlen");
 
 	pos_chosen = false;
 	radius = 0;
 }
 
-ModeModelMeshCreateDodecahedron::~ModeModelMeshCreateDodecahedron()
+ModeModelMeshCreatePlatonic::~ModeModelMeshCreatePlatonic()
 {
 }
 
 
 
-void ModeModelMeshCreateDodecahedron::OnLeftButtonDown()
+void ModeModelMeshCreatePlatonic::OnLeftButtonDown()
 {
 	if (pos_chosen){
-		ModelSurface *s = data->AddDodecahedron(pos, radius);
+		ModelSurface *s = data->AddPlatonic(pos, radius, type);
 		data->SelectOnlySurface(s);
 
 		Abort();
@@ -39,13 +40,13 @@ void ModeModelMeshCreateDodecahedron::OnLeftButtonDown()
 			pos = data->Vertex[multi_view->Selected].pos;
 		else
 			pos = multi_view->GetCursor3d();
-		message = _("Dodekaeder skalieren");
+		message = _("skalieren");
 		pos_chosen = true;
 	}
 }
 
 
-void ModeModelMeshCreateDodecahedron::OnDrawWin(int win)
+void ModeModelMeshCreatePlatonic::OnDrawWin(int win)
 {
 	if (pos_chosen){
 		mode_model->SetMaterialCreation();
@@ -55,7 +56,7 @@ void ModeModelMeshCreateDodecahedron::OnDrawWin(int win)
 
 
 
-void ModeModelMeshCreateDodecahedron::OnMouseMove()
+void ModeModelMeshCreatePlatonic::OnMouseMove()
 {
 	if (pos_chosen){
 		vector pos2 = multi_view->GetCursor3d(pos);

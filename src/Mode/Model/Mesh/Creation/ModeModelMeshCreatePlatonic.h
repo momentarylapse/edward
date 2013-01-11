@@ -1,21 +1,21 @@
 /*
- * ModeModelMeshCreateDodecahedron.h
+ * ModeModelMeshCreatePlatonic.h
  *
  *  Created on: 09.01.2013
  *      Author: michi
  */
 
-#ifndef MODEMODELMESHCREATEDODECAHEDRON_H_
-#define MODEMODELMESHCREATEDODECAHEDRON_H_
+#ifndef MODEMODELMESHCREATEPLATONIC_H_
+#define MODEMODELMESHCREATEPLATONIC_H_
 
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshCreateDodecahedron: public ModeCreation
+class ModeModelMeshCreatePlatonic: public ModeCreation
 {
 public:
-	ModeModelMeshCreateDodecahedron(Mode *_parent);
-	virtual ~ModeModelMeshCreateDodecahedron();
+	ModeModelMeshCreatePlatonic(Mode *parent, int type);
+	virtual ~ModeModelMeshCreatePlatonic();
 
 	void OnMouseMove();
 	void OnLeftButtonDown();
@@ -26,9 +26,10 @@ public:
 	Data *GetData(){	return data;	}
 
 private:
+	int type;
 	vector pos;
 	float radius;
 	bool pos_chosen;
 };
 
-#endif /* MODEMODELMESHCREATEDODECAHEDRON_H_ */
+#endif /* MODEMODELMESHCREATEPLATONIC_H_ */
