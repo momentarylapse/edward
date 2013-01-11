@@ -10,6 +10,7 @@
 
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
+class ModelGeometry;
 
 class ModeModelMeshCreatePlatonic: public ModeCreation
 {
@@ -22,10 +23,13 @@ public:
 
 	void OnDrawWin(int win);
 
+	void UpdateGeometry();
+
 	DataModel *data;
 	Data *GetData(){	return data;	}
 
 private:
+	ModelGeometry *geo;
 	int type;
 	vector pos;
 	float radius;

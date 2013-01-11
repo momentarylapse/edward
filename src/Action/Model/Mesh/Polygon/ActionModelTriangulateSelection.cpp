@@ -30,7 +30,7 @@ void *ActionModelTriangulateSelection::compose(Data *d)
 				AddSubAction(new ActionModelSurfaceDeletePolygon(si, ti), m);
 
 				// triangulate
-				Array<int> vv = temp.Triangulate(m);
+				Array<int> vv = temp.Triangulate(m->Vertex);
 				for (int i=0;i<vv.num/3;i++){
 					Array<int> v;
 					for (int k=0;k<3;k++)

@@ -88,7 +88,7 @@ void *ActionModelSurfaceCopy::compose(Data *d)
 	}
 
 	foreach(ModelPolygon &cp, copy->Polygon)
-		cp.TempNormal = cp.GetNormal(m);
+		cp.TempNormal = cp.GetNormal(m->Vertex);
 
 	return copy;
 }

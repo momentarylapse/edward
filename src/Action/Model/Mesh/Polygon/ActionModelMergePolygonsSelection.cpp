@@ -53,9 +53,9 @@ void ActionModelMergePolygonsSelection::MergePolygonsInSurface(DataModel *m, Mod
 				continue;
 
 			if (p0.NormalDirty)
-				p0.TempNormal = p0.GetNormal(m);
+				p0.TempNormal = p0.GetNormal(m->Vertex);
 			if (p1.NormalDirty)
-				p1.TempNormal = p1.GetNormal(m);
+				p1.TempNormal = p1.GetNormal(m->Vertex);
 
 			if (p0.TempNormal * p1.TempNormal < 0.98f)
 				continue;

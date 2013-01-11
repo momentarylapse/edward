@@ -9,6 +9,7 @@
 #define MODELPOLYGON_H_
 
 class DataModel;
+class ModelVertex;
 
 class ModelPolygonSide
 {
@@ -30,9 +31,9 @@ public:
 	bool NormalDirty, TriangulationDirty;
 	int Material;
 
-	Array<int> Triangulate(const DataModel *m) const;
+	Array<int> Triangulate(const Array<ModelVertex> &vertex) const;
 	void UpdateTriangulation(const DataModel *m);
-	vector GetNormal(const DataModel *m) const;
+	vector GetNormal(const Array<ModelVertex> &vertex) const;
 	Array<int> GetVertices() const;
 	Array<vector> GetSkinVertices() const;
 };

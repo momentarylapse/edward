@@ -10,14 +10,14 @@
 #include "DataModel.h"
 #include "ModelPolygon.h"
 
-vector ModelPolygon::GetNormal(const DataModel *m) const
+vector ModelPolygon::GetNormal(const Array<ModelVertex> &vertex) const
 {
 	// Newell's method
 	vector n = v_0;
-	vector p1 = m->Vertex[Side.back().Vertex].pos;
+	vector p1 = vertex[Side.back().Vertex].pos;
 	for (int i=0; i<Side.num; i++){
 		vector p0 = p1;
-		p1 = m->Vertex[Side[i].Vertex].pos;
+		p1 = vertex[Side[i].Vertex].pos;
 		n.x += (p0.y - p1.y) * (p0.z + p1.z);
 		n.y += (p0.z - p1.z) * (p0.x + p1.x);
 		n.z += (p0.x - p1.x) * (p0.y + p1.y);
@@ -47,10 +47,10 @@ Array<vector> ModelPolygon::GetSkinVertices() const
 }
 
 
-static float get_ang(const DataModel *m, int a, int b, int c, const vector &flat_n)
+static float get_ang(const Array<ModelVertex> &vertex, int a, int b, int c, const vector &flat_n)
 {
-	vector v1 = m->Vertex[b].pos - m->Vertex[a].pos;
-	vector v2 = m->Vertex[c].pos - m->Vertex[b].pos;
+	vector v1 = vertex[b].pos - vertex[a].pos;
+	vector v2 = vertex[c].pos - vertex[b].pos;
 	v1.normalize();
 	v2.normalize();
 	float x = (v1 ^ v2) * flat_n;
@@ -58,10 +58,10 @@ static float get_ang(const DataModel *m, int a, int b, int c, const vector &flat
 	return atan2(x, y);
 }
 
-static bool vertex_in_tria(const DataModel *m, int a, int b, int c, int v)
+static bool vertex_in_tria(const Array<ModelVertex> &vertex, int a, int b, int c, int v)
 {
 	float f, g;
-	GetBaryCentric(m->Vertex[v].pos, m->Vertex[a].pos, m->Vertex[b].pos, m->Vertex[c].pos, f, g);
+	GetBaryCentric(vertex[v].pos, vertex[a].pos, vertex[b].pos, vertex[c].pos, f, g);
 	return ((f > 0) && (g > 0) && (f + g < 1));
 }
 
@@ -82,7 +82,7 @@ static bool vertex_in_tria(const DataModel *m, int a, int b, int c, int v)
 	return v_0;
 }*/
 
-Array<int> ModelPolygon::Triangulate(const DataModel *m) const
+Array<int> ModelPolygon::Triangulate(const Array<ModelVertex> &vertex) const
 {
 	Array<int> output;
 
@@ -99,12 +99,12 @@ Array<int> ModelPolygon::Triangulate(const DataModel *m) const
 		int i_max = 0;
 		float f_max = 0;
 		for (int i=0;i<v.num;i++){
-			float f = get_ang(m, v[i], v[(i+1) % v.num], v[(i+2) % v.num], TempNormal);
+			float f = get_ang(vertex, v[i], v[(i+1) % v.num], v[(i+2) % v.num], TempNormal);
 			if (f < 0)
 				continue;
 			// cheat: ...
-			float f_n = get_ang(m, v[(i+1) % v.num], v[(i+2) % v.num], v[(i+3) % v.num], TempNormal);
-			float f_l = get_ang(m, v[(i-1+v.num) % v.num], v[i], v[(i+1) % v.num], TempNormal);
+			float f_n = get_ang(vertex, v[(i+1) % v.num], v[(i+2) % v.num], v[(i+3) % v.num], TempNormal);
+			float f_l = get_ang(vertex, v[(i-1+v.num) % v.num], v[i], v[(i+1) % v.num], TempNormal);
 			if (f_n >= 0)
 				f += 0.01f / (f_n + 0.01f);
 			if (f_l >= 0)
@@ -116,7 +116,7 @@ Array<int> ModelPolygon::Triangulate(const DataModel *m) const
 				for (int j=0;j<v.num;j++){
 					if ((j == i) || (j == ((i+1) % v.num)) || (j == ((i+2) % v.num)))
 						continue;
-					if (vertex_in_tria(m, v[i], v[(i+1) % v.num], v[(i+2) % v.num], v[j])){
+					if (vertex_in_tria(vertex, v[i], v[(i+1) % v.num], v[(i+2) % v.num], v[j])){
 						ok = false;
 						break;
 					}
@@ -143,7 +143,7 @@ Array<int> ModelPolygon::Triangulate(const DataModel *m) const
 
 void ModelPolygon::UpdateTriangulation(const DataModel *m)
 {
-	Array<int> v = Triangulate(m);
+	Array<int> v = Triangulate(m->Vertex);
 	for (int i=0; i<v.num; i+=3)
 		for (int k=0; k<3; k++)
 			Side[i/3].Triangulation[k] = v[i + k];

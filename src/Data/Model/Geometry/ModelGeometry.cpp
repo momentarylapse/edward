@@ -9,6 +9,7 @@
 #include "../DataModel.h"
 #include "../ModelPolygon.h"
 #include "../SkinGenerator.h"
+#include "../../../lib/nix/nix.h"
 
 
 static float Bernstein3(int i, float t)
@@ -62,7 +63,7 @@ void ModelGeometry::AddPolygonAutoTexture(Array<int> &v)
 		for (int k=0; k<v.num; k++)
 			sv.add(sg.get(Vertex[v[k]].pos));
 
-	AddPolygonSingleTexture(v, sv);
+	AddPolygon(v, sv);
 }
 
 void ModelGeometry::AddPolygonSingleTexture(Array<int> &v, Array<vector> &sv)
@@ -72,7 +73,7 @@ void ModelGeometry::AddPolygonSingleTexture(Array<int> &v, Array<vector> &sv)
 		for (int k=0; k<v.num; k++)
 			sv2.add(sv[k]);
 
-	AddPolygonSingleTexture(v, sv2);
+	AddPolygon(v, sv2);
 }
 
 void ModelGeometry::AddBezier3(Array<vector> &v, int num_x, int num_y)
@@ -103,5 +104,87 @@ void ModelGeometry::AddBezier3(Array<vector> &v, int num_x, int num_y)
 			sv.add(vector((float)(i+1) / (float)num_y, (float) j    / (float)num_y, 0));
 			AddPolygonSingleTexture(vv, sv);
 		}
+}
+
+void ModelGeometry::Add5(int nv, int v0, int v1, int v2, int v3, int v4)
+{
+	Array<int> v;
+	v.add(nv + v0);
+	v.add(nv + v1);
+	v.add(nv + v2);
+	v.add(nv + v3);
+	v.add(nv + v4);
+	AddPolygonAutoTexture(v);
+}
+
+void ModelGeometry::Add4(int nv, int v0, int v1, int v2, int v3)
+{
+	Array<int> v;
+	v.add(nv + v0);
+	v.add(nv + v1);
+	v.add(nv + v2);
+	v.add(nv + v3);
+	AddPolygonAutoTexture(v);
+}
+
+void ModelGeometry::Add3(int nv, int v0, int v1, int v2)
+{
+	Array<int> v;
+	v.add(nv + v0);
+	v.add(nv + v1);
+	v.add(nv + v2);
+	AddPolygonAutoTexture(v);
+}
+
+void ModelGeometry::Add(ModelGeometry& geo)
+{
+}
+
+void ModelGeometry::Weld(float epsilon)
+{
+	return; // TODO
+	msg_write("------------------------ weld");
+	float ep2 = epsilon * epsilon;
+	for (int i=Vertex.num-2; i>=0; i--)
+		for (int j=Vertex.num-1; j>i; j--)
+			if ((Vertex[i].pos - Vertex[j].pos).length_sqr() < ep2){
+				msg_write(format("del %d %d", i, j));
+				bool allowed = true;
+				foreach(ModelPolygon &p, Polygon){
+					bool use_i = false;
+					bool use_j = false;
+					for (int k=0; k<p.Side.num; k++){
+						use_i |= (p.Side[k].Vertex == i);
+						use_j |= (p.Side[k].Vertex == j);
+					}
+					allowed &= (!use_i || !use_j);
+				}
+				if (!allowed)
+					continue;
+
+				Vertex.erase(j);
+
+				// relink polygons
+				foreach(ModelPolygon &p, Polygon)
+					for (int k=0; k<p.Side.num; k++){
+						if (p.Side[k].Vertex == j)
+							p.Side[k].Vertex = i;
+						else if (p.Side[k].Vertex > j)
+							p.Side[k].Vertex --;
+					}
+			}
+}
+
+void ModelGeometry::Preview(int vb) const
+{
+	NixVBClear(vb);
+	foreach(ModelPolygon &p, const_cast<Array<ModelPolygon>&>(Polygon)){
+		Array<int> v = p.Triangulate(Vertex);
+		vector n = p.GetNormal(Vertex);
+		for (int i=0; i<v.num; i+=3)
+			NixVBAddTria(vb, Vertex[p.Side[v[i]].Vertex].pos, n, 0,0,
+					Vertex[p.Side[v[i+1]].Vertex].pos, n, 0,0,
+					Vertex[p.Side[v[i+2]].Vertex].pos, n, 0,0);
+	}
 }
 

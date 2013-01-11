@@ -247,7 +247,7 @@ void ModelSurface::UpdateNormals()
 		if (t.NormalDirty){
 			t.NormalDirty = false;
 
-			t.TempNormal = t.GetNormal(model);
+			t.TempNormal = t.GetNormal(model->Vertex);
 
 			for (int k=0;k<t.Side.num;k++)
 				t.Side[k].Normal = t.TempNormal;

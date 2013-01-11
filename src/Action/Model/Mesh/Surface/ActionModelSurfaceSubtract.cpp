@@ -164,7 +164,7 @@ bool ActionModelSurfaceSubtract::CollidePolygonSurface(DataModel *m, ModelPolygo
 	plane pl;
 	PlaneFromPointNormal(pl, m->Vertex[t->Side[0].Vertex].pos, t->TempNormal);
 
-	Array<int> vv = t->Triangulate(m);
+	Array<int> vv = t->Triangulate(m->Vertex);
 
 	// collide polygon <-> surface's edges
 	foreachi(ModelEdge &e, s->Edge, ei){
@@ -193,7 +193,7 @@ bool ActionModelSurfaceSubtract::CollidePolygonSurface(DataModel *m, ModelPolygo
 		plane pl2;
 		PlaneFromPointNormal(pl2, m->Vertex[t2.Side[0].Vertex].pos, t2.TempNormal);
 
-		Array<int> vv2 = t2.Triangulate(m);
+		Array<int> vv2 = t2.Triangulate(m->Vertex);
 		for (int kk=0;kk<t->Side.num;kk++){
 			vector ve[2];
 			for (int k=0;k<2;k++)
