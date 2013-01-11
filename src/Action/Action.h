@@ -18,6 +18,9 @@ class ActionException
 public:
 	ActionException(const string &_message){	message = _message;	}
 	string message;
+	Array<string> location;
+	void add_parent(const string &loc);
+	string where() const;
 };
 
 class Action

@@ -489,8 +489,9 @@ void Edward::OnUpdate(Observable *o)
 		else
 			ForceRedraw();
 	}else if (o->GetName() == "ActionManager"){
+		ActionManager *am = dynamic_cast<ActionManager*>(o);
 		if (o->GetMessage() == "Failed")
-			ErrorBox(_("Aktion fehlgeschlagen: ") + (dynamic_cast<ActionManager*>(o))->error_message);
+			ErrorBox(format(_("Aktion fehlgeschlagen: %s\nGrund: %s"), am->error_location.c_str(), am->error_message.c_str()));
 	}else{
 		// data...
 		ForceRedraw();

@@ -74,8 +74,11 @@ void *ActionManager::Execute(Action *a)
 		return p;
 	}catch(ActionException &e){
 		data->NotifyEnd();
+		e.add_parent(a->name());
 		error_message = e.message;
-		msg_error("ActionManager: " + e.message);
+		error_location = e.where();
+		msg_error(error_message);
+		msg_write("at " + error_location);
 		a->abort(data);
 		Notify("Failed");
 		return NULL;
@@ -166,7 +169,9 @@ bool ActionManager::Preview(Action *a)
 		data->Notify("Change");
 		preview = a;
 	}catch(ActionException &e){
+		e.add_parent(a->name());
 		error_message = e.message;
+		error_location = e.where();
 		a->abort(data);
 		delete(a);
 		Notify("Failed");

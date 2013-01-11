@@ -9,6 +9,18 @@
 
 //#define ACTION_DEBUG
 
+
+
+void ActionException::add_parent(const string &loc)
+{
+	location.insert(loc, 0);
+}
+
+string ActionException::where() const
+{
+	return implode(location, " > ");
+}
+
 Action::Action()
 {
 }

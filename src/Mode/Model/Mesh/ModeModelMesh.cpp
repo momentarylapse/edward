@@ -375,8 +375,8 @@ void ModeModelMesh::ApplyRightMouseFunction(MultiView *mv)
 
 	// right...
 	if (right_mouse_function == RMFRotate){
-		mv->SetMouseAction(1, "ActionModelRotate" + suffix, MultiView::ActionRotate2d);
-		mv->SetMouseAction(2, "ActionModelRotate" + suffix, MultiView::ActionRotate);
+		mv->SetMouseAction(1, "ActionModelRotate" + suffix, MultiView::ActionRotate);
+		mv->SetMouseAction(2, "ActionModelRotate" + suffix, MultiView::ActionRotate2d);
 	}else if (right_mouse_function == RMFScale){
 		mv->SetMouseAction(2, "ActionModelScale" + suffix, MultiView::ActionScale);
 	}else if (right_mouse_function == RMFScale2d){

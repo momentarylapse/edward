@@ -24,18 +24,18 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	if (surface1 >= surface2)
-		throw ActionException("SurfaceWeld: s1 >= s2");
+		throw ActionException("s1 >= s2");
 
 	ModelSurface *a = &m->Surface[surface1];
 	ModelSurface *b = &m->Surface[surface2];
 
 	if (a >= b)
-		throw ActionException("SurfaceWeld: a >= b... array reference broken");
+		throw ActionException("a >= b... array reference broken");
 
 	if (!a->TestSanity("AutoWeld prae a"))
-		throw ActionException("SurfaceWeld: s1 evil pre");
+		throw ActionException("s1 evil pre");
 	if (!b->TestSanity("AutoWeld prae b"))
-		throw ActionException("SurfaceWeld: s2 evil pre");
+		throw ActionException("s2 evil pre");
 
 
 	// find pairs of vertices close to each other
@@ -78,7 +78,7 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 		}
 	}
 	if (!a->TestSanity("AutoWeld relink tria"))
-		throw ActionException("SurfaceWeld: s1 evil post");
+		throw ActionException("s1 evil post");
 
 	// remove obsolete vertices
 	Set<int> vv;

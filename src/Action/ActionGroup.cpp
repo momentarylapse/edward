@@ -26,6 +26,7 @@ void *ActionGroup::AddSubAction(Action *a, Data *d)
 		if (!a->was_trivial())
 			action.add(a);
 	}catch(ActionException &e){
+		e.add_parent(a->name());
 		a->abort(d);
 		throw;
 	}

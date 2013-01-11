@@ -40,6 +40,7 @@ public:
 	void MarkCurrentAsSave();
 
 	string error_message;
+	string error_location;
 
 private:
 	void add(Action *a);

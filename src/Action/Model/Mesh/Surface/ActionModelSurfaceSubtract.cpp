@@ -24,7 +24,7 @@ float ActionModelSurfaceSubtract::sCol::get_f(DataModel *m, ModelPolygon *t)
 		return 0;
 	if ((type == TYPE_OWN_EDGE_OUT) || (type == TYPE_OWN_EDGE_IN))
 		return p.factor_between(m->Vertex[t->Side[side].Vertex].pos, m->Vertex[t->Side[(side + 1) % t->Side.num].Vertex].pos);
-	throw ActionException("subtract: unhandled col type");
+	throw ActionException("unhandled col type");
 }
 
 string ActionModelSurfaceSubtract::sCol::str() const
@@ -282,7 +282,7 @@ bool ActionModelSurfaceSubtract::find_contour_boundary(ModelSurface *s, Array<sC
 		msg_error("evil contour");
 		foreachi(sCol &c, c_out, i)
 			msg_write(i2s(i) + " " + c.str());
-		throw ActionException("subtract: contour starting on boundary but not ending on boundary found");
+		throw ActionException("contour starting on boundary but not ending on boundary found");
 	}
 	return false;
 }

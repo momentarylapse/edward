@@ -31,7 +31,7 @@ static int edge_other_vertex(ModelEdge &e, int v)
 		return e.Vertex[1];
 	if (e.Vertex[1] == v)
 		return e.Vertex[0];
-	throw ActionException("easify: edge_other_vertex");
+	throw ActionException("edge_other_vertex");
 	return e.Vertex[0];
 }
 
