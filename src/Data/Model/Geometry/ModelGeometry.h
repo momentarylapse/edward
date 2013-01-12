@@ -26,7 +26,7 @@ public:
 	void Add5(int nv, int v0, int v1, int v2, int v3, int v4);
 	void Add4(int nv, int v0, int v1, int v2, int v3);
 	void Add3(int nv, int v0, int v1, int v2);
-	void AddBezier3(Array<vector> &v, int num_x, int num_y);
+	void AddBezier3(Array<vector> &v, int num_x, int num_y, float epsilon);
 	void Add(ModelGeometry &geo);
 
 	void Weld(float epsilon);

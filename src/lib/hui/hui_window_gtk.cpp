@@ -259,7 +259,7 @@ gboolean OnGtkWindowMouseMove(GtkWidget *widget, GdkEventMotion *event, gpointer
 	if (ignore_time != 0)
 		if (gdk_event_get_time((GdkEvent*)event) <= ignore_time){
 			//msg_error("ignore");
-			gdk_event_request_motions(event); // too prevent too many signals for slow message processing
+			gdk_event_request_motions(event); // to prevent too many signals for slow message processing
 			return false;
 		}
 	win->input.dx = mx - win->input.x;
@@ -918,6 +918,7 @@ void put_events()
 // relative to Interior
 void CHuiWindow::SetCursorPos(int x,int y)
 {
+#if 0
 	irect ri = GetInterior();
 	irect ro = GetOuterior();
 	int dx = 0;
@@ -968,6 +969,7 @@ void CHuiWindow::SetCursorPos(int x,int y)
 	input.y = (float)y - dy;
 	input.dx = 0;
 	input.dy = 0;
+#endif
 }
 
 void CHuiWindow::SetMaximized(bool maximized)

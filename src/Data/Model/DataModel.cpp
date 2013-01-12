@@ -1004,6 +1004,11 @@ bool DataModel::Save(const string & _filename)
 
 	// export...
 	ExportToTriangleSkin(1);
+	for (int d=1;d<4;d++){
+		if (Skin[d].Sub.num != Material.num){
+			Skin[d].Sub.resize(Material.num);
+		}
+	}
 
 
 

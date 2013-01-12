@@ -76,10 +76,13 @@ void ModelGeometry::AddPolygonSingleTexture(Array<int> &v, Array<vector> &sv)
 	AddPolygon(v, sv2);
 }
 
-void ModelGeometry::AddBezier3(Array<vector> &v, int num_x, int num_y)
+void ModelGeometry::AddBezier3(Array<vector> &v, int num_x, int num_y, float epsilon)
 {
-	int nv = Vertex.num;
 	vector vv[4][4] = {{v[0], v[1], v[2], v[3]}, {v[4], v[5], v[6], v[7]}, {v[8], v[9], v[10], v[11]}, {v[12], v[13], v[14], v[15]}};
+	Array<vector> pp;
+	Array<int> vn;
+	vn.resize((num_x+1) * (num_y+1));
+	bool merged_vertices = false;
 	for (int i=0; i<=num_x; i++)
 		for (int j=0; j<=num_y; j++){
 			float ti = (float)i / (float)num_x;
@@ -88,20 +91,41 @@ void ModelGeometry::AddBezier3(Array<vector> &v, int num_x, int num_y)
 			for (int k=0; k<=3; k++)
 				for (int l=0; l<=3; l++)
 					p += Bernstein3(k, ti) * Bernstein3(l, tj) * vv[k][l];
-			AddVertex(p);
+			int old = -1;
+			if (epsilon > 0){
+				foreachi(vector &vv, pp, ii)
+					if ((p-vv).length_fuzzy() < epsilon)
+						old = vn[ii];
+			}
+			if (old >= 0){
+				merged_vertices = true;
+				vn[i*(num_y+1)+j] = old;
+			}else{
+				vn[i*(num_y+1)+j] = Vertex.num;
+				pp.add(p);
+				AddVertex(p);
+			}
 		}
 	for (int i=0; i<num_x; i++)
 		for (int j=0; j<num_y; j++){
 			Array<int> vv;
-			vv.add(nv + i*(num_y+1)+j);
-			vv.add(nv + i*(num_y+1)+j+1);
-			vv.add(nv + (i+1)*(num_y+1)+j+1);
-			vv.add(nv + (i+1)*(num_y+1)+j);
+			vv.add(vn[ i   *(num_y+1)+j]);
+			vv.add(vn[ i   *(num_y+1)+j+1]);
+			vv.add(vn[(i+1)*(num_y+1)+j+1]);
+			vv.add(vn[(i+1)*(num_y+1)+j]);
 			Array<vector> sv;
 			sv.add(vector((float) i    / (float)num_y, (float) j    / (float)num_y, 0));
 			sv.add(vector((float) i    / (float)num_y, (float)(j+1) / (float)num_y, 0));
 			sv.add(vector((float)(i+1) / (float)num_y, (float)(j+1) / (float)num_y, 0));
 			sv.add(vector((float)(i+1) / (float)num_y, (float) j    / (float)num_y, 0));
+			if (merged_vertices)
+				for (int k=0;k<vv.num;k++)
+					for (int kk=k+1;kk<vv.num;kk++)
+						if (vv[k] == vv[kk]){
+							vv.erase(kk);
+							sv.erase(kk);
+							kk --;
+						}
 			AddPolygonSingleTexture(vv, sv);
 		}
 }
@@ -155,7 +179,7 @@ void ModelGeometry::Weld(float epsilon)
 	for (int i=Vertex.num-2; i>=0; i--)
 		for (int j=Vertex.num-1; j>i; j--)
 			if ((Vertex[i].pos - Vertex[j].pos).length_sqr() < ep2){
-				msg_write(format("del %d %d", i, j));
+				//msg_write(format("del %d %d", i, j));
 				/*bool allowed = true;
 				foreach(ModelPolygon &p, Polygon){
 					bool use_i = false;
