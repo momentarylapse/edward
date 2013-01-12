@@ -64,7 +64,7 @@ static float get_weight(DataModel *m, ModelSurface &s, ModelEdge &e)
 	return w;
 }
 
-bool ActionModelEasify::EasifyStep(DataModel *m)
+void ActionModelEasify::CalculateWeights(DataModel *m)
 {
 	ed->multi_view_3d->ResetMessage3d();
 
@@ -101,7 +101,11 @@ bool ActionModelEasify::EasifyStep(DataModel *m)
 //		foreachi(s.Edge, e, i)
 //			ed->multi_view_3d->AddMessage3d(f2s(we[i], 1), (m->Vertex[e.Vertex[0]].pos + m->Vertex[e.Vertex[1]].pos) / 2);
 	}
+}
 
+bool ActionModelEasify::EasifyStep(DataModel *m)
+{
+	CalculateWeights(m);
 
 	int _surface = 0, _edge = -1;
 	// remove least important
@@ -115,6 +119,17 @@ bool ActionModelEasify::EasifyStep(DataModel *m)
 			}
 
 	if (_edge >= 0){
+		/*ModelEdge _e = m->Surface[_surface].Edge[_edge];
+		// distribute weights
+		Array<int> ee;
+		foreachi(ModelEdge &e, m->Surface[_surface].Edge, i)
+			if ((e.Vertex[0] == _e.Vertex[0]) || (e.Vertex[1] == _e.Vertex[0]) || (e.Vertex[0] == _e.Vertex[1]) || (e.Vertex[1] == _e.Vertex[1]))
+				if (i != _edge)
+					ee.add(i);
+		foreach(int ie, ee)
+			m->Surface[_surface].Edge[ie].Weight += _e.Weight / ee.num;*/
+
+		// remove
 		AddSubAction(new ActionModelCollapseEdge(_surface, _edge), m);
 		return true;
 	}
@@ -131,6 +146,7 @@ void *ActionModelEasify::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 #if 1
+	//CalculateWeights(m);
 	int n = (int)((float)m->GetNumPolygons() * factor);
 	while(m->GetNumPolygons() > n)
 		if (!EasifyStep(m))

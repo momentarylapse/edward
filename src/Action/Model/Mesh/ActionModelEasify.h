@@ -22,6 +22,7 @@ public:
 
 private:
 	float factor;
+	void CalculateWeights(DataModel *m);
 	bool EasifyStep(DataModel *m);
 };
 
