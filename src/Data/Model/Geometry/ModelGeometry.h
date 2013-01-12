@@ -30,6 +30,7 @@ public:
 	void Add(ModelGeometry &geo);
 
 	void Weld(float epsilon);
+	void Weld(ModelGeometry &geo, float epsilon);
 
 	void Preview(int vb) const;
 

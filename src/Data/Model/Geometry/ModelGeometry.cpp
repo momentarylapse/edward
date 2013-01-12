@@ -138,6 +138,13 @@ void ModelGeometry::Add3(int nv, int v0, int v1, int v2)
 
 void ModelGeometry::Add(ModelGeometry& geo)
 {
+	int nv = Vertex.num;
+	int np = Polygon.num;
+	Vertex.append(geo.Vertex);
+	Polygon.append(geo.Polygon);
+	for (int i=np; i<Polygon.num; i++)
+		for (int k=0; k<Polygon[i].Side.num; k++)
+			Polygon[i].Side[k].Vertex += nv;
 }
 
 void ModelGeometry::Weld(float epsilon)
@@ -173,6 +180,10 @@ void ModelGeometry::Weld(float epsilon)
 							p.Side[k].Vertex --;
 					}
 			}
+}
+
+void ModelGeometry::Weld(ModelGeometry &geo, float epsilon)
+{
 }
 
 void ModelGeometry::Preview(int vb) const
