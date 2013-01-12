@@ -7,14 +7,11 @@
 
 #include "ModeModelMeshCreateTorus.h"
 #include "../../ModeModel.h"
+#include "../../../../Data/Model/Geometry/ModelGeometryTorus.h"
 #include "../../../../Edward.h"
 #include "../../../../lib/x/x.h"
-#include "../../../../Action/Model/Mesh/Shape/ActionModelAddTorus.h"
 
-// ModeMaterial
-void CreateTorus(int buffer, const vector &pos, const vector dir, float radius1, float radius2, int nx, int ny);
-
-#define RADIUS_FACTOR	0.7f
+#define RADIUS_FACTOR	0.5f
 
 ModeModelMeshCreateTorus::ModeModelMeshCreateTorus(Mode *_parent) :
 	ModeCreation("ModelMeshCreateTorus", _parent)
@@ -28,10 +25,13 @@ ModeModelMeshCreateTorus::ModeModelMeshCreateTorus(Mode *_parent) :
 	radius1 = 0;
 	radius2 = 0;
 	axis = e_z;
+	geo = NULL;
 }
 
 ModeModelMeshCreateTorus::~ModeModelMeshCreateTorus()
 {
+	if (geo)
+		delete(geo);
 }
 
 void ModeModelMeshCreateTorus::OnStart()
@@ -55,18 +55,27 @@ void ModeModelMeshCreateTorus::OnEnd()
 }
 
 
+void ModeModelMeshCreateTorus::UpdateGeometry()
+{
+	if (geo)
+		delete(geo);
+	if (pos_chosen){
+		int nx = dialog->GetInt("nc_x");
+		int ny = dialog->GetInt("nc_y");
+		HuiConfigWriteInt("NewTorusNumX", nx);
+		HuiConfigWriteInt("NewTorusNumY", ny);
+		geo = new ModelGeometryTorus(pos, axis, radius1, radius2, nx, ny);
+	}
+}
+
 
 void ModeModelMeshCreateTorus::OnLeftButtonDown()
 {
 	if (pos_chosen){
 		if (rad_chosen){
-			int nx = dialog->GetInt("nc_x");
-			int ny = dialog->GetInt("nc_y");
-			HuiConfigWriteInt("NewTorusNumX", nx);
-			HuiConfigWriteInt("NewTorusNumY", ny);
 
-			ModelSurface *s = data->AddTorus(pos, axis, radius1, radius2, nx, ny);
-			data->SelectOnlySurface(s);
+			data->PasteGeometry(*geo);
+			data->SelectOnlySurface(&data->Surface.back());
 
 			Abort();
 		}else{
@@ -80,6 +89,7 @@ void ModeModelMeshCreateTorus::OnLeftButtonDown()
 			pos = multi_view->GetCursor3d();
 		message = _("Torus au&sen skalieren");
 		pos_chosen = true;
+		UpdateGeometry();
 	}
 }
 
@@ -88,8 +98,7 @@ void ModeModelMeshCreateTorus::OnDrawWin(int win)
 {
 	if (pos_chosen){
 		mode_model->SetMaterialCreation();
-		NixVBClear(VBTemp);
-		CreateTorus(VBTemp, pos, axis, radius1, radius2, 32, 16);
+		geo->Preview(VBTemp);
 		NixDraw3D(VBTemp);
 		NixEnableLighting(false);
 		ed->DrawStr(100, 100, format("%.3f / %.3f", radius1, radius2));
@@ -109,6 +118,7 @@ void ModeModelMeshCreateTorus::OnMouseMove()
 			radius1 = (pos2 - pos).length();
 			radius2 = radius1 * RADIUS_FACTOR;
 		}
+		UpdateGeometry();
 	}
 }
 

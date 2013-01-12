@@ -368,6 +368,6 @@ ModelGeometryTeapot::ModelGeometryTeapot(const vector &pos, float radius, int sa
 	addBezier(222,227,228,229,248,255,256,257,251,258,259,260,254,261,262,263);
 	addBezier(229,232,233,212,257,264,265,234,260,266,267,238,263,268,269,242);
 
-	Weld(radius / samples * 0.01f);
+	//Weld(radius / samples * 0.01f);
 }
 

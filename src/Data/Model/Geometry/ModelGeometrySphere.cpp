@@ -47,5 +47,6 @@ ModelGeometrySphere::ModelGeometrySphere(const vector &pos, float radius, int nu
 			}
 		nv += (num + 1) * (num + 1);
 	}
+	Weld(radius / num * 0.01f);
 }
 

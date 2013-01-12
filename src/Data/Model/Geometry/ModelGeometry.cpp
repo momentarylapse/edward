@@ -142,14 +142,14 @@ void ModelGeometry::Add(ModelGeometry& geo)
 
 void ModelGeometry::Weld(float epsilon)
 {
-	return; // TODO
-	msg_write("------------------------ weld");
+	//return; // TODO
+	//msg_write("------------------------ weld");
 	float ep2 = epsilon * epsilon;
 	for (int i=Vertex.num-2; i>=0; i--)
 		for (int j=Vertex.num-1; j>i; j--)
 			if ((Vertex[i].pos - Vertex[j].pos).length_sqr() < ep2){
 				msg_write(format("del %d %d", i, j));
-				bool allowed = true;
+				/*bool allowed = true;
 				foreach(ModelPolygon &p, Polygon){
 					bool use_i = false;
 					bool use_j = false;
@@ -160,7 +160,7 @@ void ModelGeometry::Weld(float epsilon)
 					allowed &= (!use_i || !use_j);
 				}
 				if (!allowed)
-					continue;
+					continue;*/
 
 				Vertex.erase(j);
 

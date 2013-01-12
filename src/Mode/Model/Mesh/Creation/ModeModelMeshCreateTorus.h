@@ -25,6 +25,8 @@ public:
 
 	void OnDrawWin(int win);
 
+	void UpdateGeometry();
+
 	DataModel *data;
 	Data *GetData(){	return data;	}
 
@@ -32,6 +34,7 @@ private:
 	vector pos, axis;
 	float radius1, radius2;
 	bool pos_chosen, rad_chosen;
+	ModelGeometry *geo;
 };
 
 #endif /* MODEMODELMESHCREATETORUS_H_ */
