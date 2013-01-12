@@ -33,8 +33,6 @@ void ModeModelMeshCreateCylinder::OnStart()
 
 	dialog->SetInt("ncy_rings", HuiConfigReadInt("NewCylinderRings", 4));
 	dialog->SetInt("ncy_edges", HuiConfigReadInt("NewCylinderEdges", 8));
-	dialog->Check("ncy_endings", HuiConfigReadBool("NewCylinderClosedEndings", true));
-	dialog->Check("ncy_texture_closed", HuiConfigReadBool("NewCylinderClosedTexture", true));
 	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
 	dialog->Update();
 	dialog->Event("hui:close", &HuiFuncIgnore);
@@ -55,14 +53,12 @@ void ModeModelMeshCreateCylinder::UpdateGeometry()
 	if (pos.num == 2){
 		int rings = dialog->GetInt("ncy_rings");
 		int edges = dialog->GetInt("ncy_edges");
-		bool closed = dialog->IsChecked("ncy_endings");
 		HuiConfigWriteInt("NewCylinderRings", rings);
 		HuiConfigWriteInt("NewCylinderEdges", edges);
-		HuiConfigWriteBool("NewCylinderClosedEndings", closed);
 
 		Array<float> r = radius;
 		r += radius;
-		geo = new ModelGeometryCylinder(pos, r, rings, edges, closed);
+		geo = new ModelGeometryCylinder(pos, r, rings, edges, true);
 	}
 }
 

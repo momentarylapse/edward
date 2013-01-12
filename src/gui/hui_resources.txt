@@ -1,6 +1,6 @@
 t3
 // Number Of Resources
-51
+52
 // Resource
 Menu
 
@@ -9347,8 +9347,8 @@ Dialog
 new_cylinder_dialog
 
 1
-180
-135
+195
+75
 0
 0
 0
@@ -9356,7 +9356,7 @@ new_cylinder_dialog
 0
 
 
-6
+4
 Text
 new_cylinder_dialog_t_rings
 
@@ -9376,7 +9376,7 @@ ncy_rings
 1
 65
 10
-60
+120
 25
 -1
 0
@@ -9402,33 +9402,7 @@ ncy_edges
 1
 65
 40
-60
-25
--1
-0
-0
-
-
-CheckBox
-ncy_endings
-
-1
-10
-70
-160
-25
--1
-0
-0
-
-
-CheckBox
-ncy_texture_closed
-
-1
-10
-100
-160
+120
 25
 -1
 0
@@ -9496,6 +9470,47 @@ np_num_y
 95
 35
 60
+25
+-1
+0
+0
+
+
+// Resource
+Dialog
+new_teapot_dialog
+
+1
+215
+45
+0
+0
+0
+1
+0
+
+
+2
+Text
+new_teapot_dialog_t_samples
+
+1
+10
+10
+75
+25
+-1
+0
+0
+
+
+SpinButton
+ntp_samples
+
+1
+85
+10
+120
 25
 -1
 0
@@ -16358,7 +16373,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-726
+727
 // Text
 ad_dialog
 Verwaltung
@@ -17220,12 +17235,8 @@ ncdt_slides
 Streifen
 ncy_edges
 \\2
-ncy_endings
-Geschlossene Enden
 ncy_rings
 \\1
-ncy_texture_closed
-Geschlossene Textur
 nearify
 Annähern
 new
@@ -17288,6 +17299,10 @@ new_point
 Vertex-Punkte
 new_teapot
 Teekanne
+new_teapot_dialog
+neue Teekanne
+new_teapot_dialog_t_samples
+Samples
 new_terrain_dialog
 neues Terrain
 new_tetrahedron
@@ -17318,6 +17333,8 @@ np_num_y
 \\1
 ntdt_slides
 Streifen
+ntp_samples
+\\1
 num
 
 num_frames_set
@@ -17818,7 +17835,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-726
+727
 // Text
 ad_dialog
 Administration
@@ -18680,12 +18697,8 @@ ncdt_slides
 Stripes
 ncy_edges
 \\2
-ncy_endings
-Closed endings
 ncy_rings
 \\1
-ncy_texture_closed
-Circled texture
 nearify
 Nearify
 new
@@ -18748,6 +18761,10 @@ new_point
 Vertex
 new_teapot
 
+new_teapot_dialog
+
+new_teapot_dialog_t_samples
+
 new_terrain_dialog
 New terrain
 new_tetrahedron
@@ -18777,6 +18794,8 @@ np_num_x
 np_num_y
 \\1
 ntdt_slides
+
+ntp_samples
 
 num
 
@@ -19590,7 +19609,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-726
+727
 // Text
 ad_dialog
 
@@ -20452,11 +20471,7 @@ ncdt_slides
 
 ncy_edges
 
-ncy_endings
-
 ncy_rings
-
-ncy_texture_closed
 
 nearify
 
@@ -20520,6 +20535,10 @@ new_point
 
 new_teapot
 
+new_teapot_dialog
+
+new_teapot_dialog_t_samples
+
 new_terrain_dialog
 
 new_tetrahedron
@@ -20549,6 +20568,8 @@ np_num_x
 np_num_y
 
 ntdt_slides
+
+ntp_samples
 
 num
 

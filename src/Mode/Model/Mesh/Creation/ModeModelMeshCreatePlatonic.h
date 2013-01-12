@@ -18,6 +18,9 @@ public:
 	ModeModelMeshCreatePlatonic(Mode *parent, int type);
 	virtual ~ModeModelMeshCreatePlatonic();
 
+	void OnStart();
+	void OnEnd();
+
 	void OnMouseMove();
 	void OnLeftButtonDown();
 

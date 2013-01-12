@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-585
+586
 // Data (ID,Text)
 ad_dialog
 
@@ -691,11 +691,7 @@ ncdt_slides
 
 ncy_edges
 
-ncy_endings
-
 ncy_rings
-
-ncy_texture_closed
 
 nearify
 
@@ -759,6 +755,10 @@ new_point
 
 new_teapot
 
+new_teapot_dialog
+
+new_teapot_dialog_t_samples
+
 new_terrain_dialog
 
 new_tetrahedron
@@ -788,6 +788,8 @@ np_num_x
 np_num_y
 
 ntdt_slides
+
+ntp_samples
 
 num_items
 
@@ -1216,7 +1218,7 @@ Abstand, ab dem der Nebel beginnt (Intensität 0)
 
 Administration
 
-Aktion fehlgeschlagen: 
+Aktion fehlgeschlagen: %s\nGrund: %s
 
 Angegebene Welt konnte nicht korrekt geladen werden!
 

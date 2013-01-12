@@ -33,16 +33,40 @@ ModeModelMeshCreatePlatonic::~ModeModelMeshCreatePlatonic()
 		delete(geo);
 }
 
+void ModeModelMeshCreatePlatonic::OnStart()
+{
+	if (type != 306)
+		return;
+	// Dialog
+	dialog = HuiCreateResourceDialog("new_teapot_dialog", ed);
+	dialog->SetInt("ntp_samples", HuiConfigReadInt("NewTeapotSamples", 4));
+	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
+	dialog->Update();
+	dialog->Event("hui:close", &HuiFuncIgnore);
+
+	ed->Activate();
+}
+
+
+void ModeModelMeshCreatePlatonic::OnEnd()
+{
+	if (dialog)
+		delete(dialog);
+}
+
 
 void ModeModelMeshCreatePlatonic::UpdateGeometry()
 {
 	if (geo)
 		delete(geo);
 	if (pos_chosen){
-		if (type == 306)
-			geo = new ModelGeometryTeapot(pos, radius, 4);
-		else
+		if (type == 306){
+			int samples = dialog->GetInt("ntp_samples");
+			HuiConfigWriteInt("NewTeapotSamples", samples);
+			geo = new ModelGeometryTeapot(pos, radius, samples);
+		}else{
 			geo = new ModelGeometryPlatonic(pos, radius, type);
+		}
 	}
 }
 

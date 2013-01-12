@@ -1,0 +1,8 @@
+	// dialog
+	NewTeapotDialog = HuiCreateDialog("neue Teekanne", 215, 45, MainWin, true);
+	NewTeapotDialog->SetID("new_teapot_dialog");
+	NewTeapotDialog->AddText("Samples", 10, 10, 75, 25, "new_teapot_dialog_t_samples");
+	NewTeapotDialog->AddSpinButton("\\1", 85, 10, 120, 25, "ntp_samples");
+	NewTeapotDialog->Update();
+
+
