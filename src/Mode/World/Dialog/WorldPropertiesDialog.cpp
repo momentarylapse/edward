@@ -36,27 +36,27 @@ WorldPropertiesDialog::WorldPropertiesDialog(CHuiWindow *_parent, bool _allow_pa
 	SetTooltip("sun_ang_x", _("H&ohe &uber dem Horizont"));
 	SetTooltip("sun_ang_y", _("Kompassrichtung entlang des Horizonts"));
 
-	EventM("cancel", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnClose);
-	EventM("hui:close", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnClose);
-	EventM("apply", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::ApplyData);
-	EventM("ok", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnOk);
+	EventM("cancel", this, &WorldPropertiesDialog::OnClose);
+	EventM("hui:close", this, &WorldPropertiesDialog::OnClose);
+	EventM("apply", this, &WorldPropertiesDialog::ApplyData);
+	EventM("ok", this, &WorldPropertiesDialog::OnOk);
 
-	EventM("sun_enabled", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnSunEnabled);
-	EventM("sun_ang_from_camera", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnSunAngFromCamera);
-	EventM("fog_mode:none", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnFogModeNone);
-	EventM("fog_mode:linear", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnFogModeLinear);
-	EventM("fog_mode:exp", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnFogModeExp);
-	EventM("fog_mode:exp2", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnFogModeExp);
-	EventM("skybox", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnSkybox);
-	EventMX("skybox", "hui:select", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnSkyboxSelect);
-	EventM("remove_skybox", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnRemoveSkybox);
-	EventM("physics_enabled", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnPhysicsEnabled);
-	EventMX("script_list", "hui:select", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnScriptSelect);
-	EventM("remove_script", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnRemoveScript);
-	EventM("add_script", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnAddScript);
-	EventM("max_script_vars", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnMaxScriptVars);
-	EventMX("script_vars", "hui:change", this, (void(HuiEventHandler::*)())&WorldPropertiesDialog::OnScriptVarEdit);
-	//EventM("model_script_var_template", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnModelScriptVarTemplate);
+	EventM("sun_enabled", this, &WorldPropertiesDialog::OnSunEnabled);
+	EventM("sun_ang_from_camera", this, &WorldPropertiesDialog::OnSunAngFromCamera);
+	EventM("fog_mode:none", this, &WorldPropertiesDialog::OnFogModeNone);
+	EventM("fog_mode:linear", this, &WorldPropertiesDialog::OnFogModeLinear);
+	EventM("fog_mode:exp", this, &WorldPropertiesDialog::OnFogModeExp);
+	EventM("fog_mode:exp2", this, &WorldPropertiesDialog::OnFogModeExp);
+	EventM("skybox", this, &WorldPropertiesDialog::OnSkybox);
+	EventMX("skybox", "hui:select", this, &WorldPropertiesDialog::OnSkyboxSelect);
+	EventM("remove_skybox", this, &WorldPropertiesDialog::OnRemoveSkybox);
+	EventM("physics_enabled", this, &WorldPropertiesDialog::OnPhysicsEnabled);
+	EventMX("script_list", "hui:select", this, &WorldPropertiesDialog::OnScriptSelect);
+	EventM("remove_script", this, &WorldPropertiesDialog::OnRemoveScript);
+	EventM("add_script", this, &WorldPropertiesDialog::OnAddScript);
+	EventM("max_script_vars", this, &WorldPropertiesDialog::OnMaxScriptVars);
+	EventMX("script_vars", "hui:change", this, &WorldPropertiesDialog::OnScriptVarEdit);
+	//EventM("model_script_var_template", this, &ModelPropertiesDialog::OnModelScriptVarTemplate);
 
 	Subscribe(data);
 

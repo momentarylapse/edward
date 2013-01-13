@@ -23,9 +23,9 @@ ModelTextureLevelDialog::ModelTextureLevelDialog(CHuiWindow *_parent, bool _allo
 
 	SetTooltip("texture_list", _("Texturen der einzelnen Materialien\n- Doppelklick zum Bearbeiten der Texturkoordinaten"));
 
-	EventM("hui:close", this, (void(HuiEventHandler::*)())&ModelTextureLevelDialog::OnClose);
-	EventMX("texture_list", "hui:change", this, (void(HuiEventHandler::*)())&ModelTextureLevelDialog::OnTextureListCheck);
-	EventMX("texture_list", "hui:activate", this, (void(HuiEventHandler::*)())&ModelTextureLevelDialog::OnTextureList);
+	EventM("hui:close", this, &ModelTextureLevelDialog::OnClose);
+	EventMX("texture_list", "hui:change", this, &ModelTextureLevelDialog::OnTextureListCheck);
+	EventMX("texture_list", "hui:activate", this, &ModelTextureLevelDialog::OnTextureList);
 
 	Subscribe(data);
 

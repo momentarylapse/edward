@@ -26,19 +26,19 @@ AdministrationDialog::AdministrationDialog(CHuiWindow* _parent, bool _allow_pare
 
 	// dialog
 	FromResource("ad_dialog");
-	EventM("hui:close", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnClose);
-	EventM("exit", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnExit);
-	EventM("ad_edit", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnEdit);
-	EventM("rename", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnRename);
-	EventM("delete", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnDelete);
-	EventM("file_list_cur", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnFileList);
-	EventM("file_list_all", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnFileList);
-	EventM("file_list_detail_source", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnFileList);
-	EventM("file_list_detail_dest", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnFileList);
-	EventM("file_list_super", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnFileList);
-	EventM("file_list_missing", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnFileList);
-	EventM("ad_rudimentary_configuration", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnRudimentaryConfiguration);
-	EventM("ad_export_game", this, (void(HuiEventHandler::*)())&AdministrationDialog::OnExportGame);
+	EventM("hui:close", this, &AdministrationDialog::OnClose);
+	EventM("exit", this, &AdministrationDialog::OnExit);
+	EventM("ad_edit", this, &AdministrationDialog::OnEdit);
+	EventM("rename", this, &AdministrationDialog::OnRename);
+	EventM("delete", this, &AdministrationDialog::OnDelete);
+	EventM("file_list_cur", this, &AdministrationDialog::OnFileList);
+	EventM("file_list_all", this, &AdministrationDialog::OnFileList);
+	EventM("file_list_detail_source", this, &AdministrationDialog::OnFileList);
+	EventM("file_list_detail_dest", this, &AdministrationDialog::OnFileList);
+	EventM("file_list_super", this, &AdministrationDialog::OnFileList);
+	EventM("file_list_missing", this, &AdministrationDialog::OnFileList);
+	EventM("ad_rudimentary_configuration", this, &AdministrationDialog::OnRudimentaryConfiguration);
+	EventM("ad_export_game", this, &AdministrationDialog::OnExportGame);
 
 	LoadData();
 	Subscribe(data);

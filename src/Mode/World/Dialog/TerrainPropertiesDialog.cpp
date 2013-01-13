@@ -23,20 +23,20 @@ TerrainPropertiesDialog::TerrainPropertiesDialog(CHuiWindow *_parent, bool _allo
 	// dialog
 	FromResource("terrain_dialog");
 
-	EventM("cancel", this, (void(HuiEventHandler::*)())&TerrainPropertiesDialog::OnClose);
-	EventM("hui:close", this, (void(HuiEventHandler::*)())&TerrainPropertiesDialog::OnClose);
-	EventM("apply", this, (void(HuiEventHandler::*)())&TerrainPropertiesDialog::ApplyData);
-	EventM("ok", this, (void(HuiEventHandler::*)())&TerrainPropertiesDialog::OnOk);
+	EventM("cancel", this, &TerrainPropertiesDialog::OnClose);
+	EventM("hui:close", this, &TerrainPropertiesDialog::OnClose);
+	EventM("apply", this, &TerrainPropertiesDialog::ApplyData);
+	EventM("ok", this, &TerrainPropertiesDialog::OnOk);
 
-	EventM("add_texture_level", this, (void(HuiEventHandler::*)())&TerrainPropertiesDialog::OnAddTextureLevel);
-	EventM("delete_texture_level", this, (void(HuiEventHandler::*)())&TerrainPropertiesDialog::OnDeleteTextureLevel);
-	EventM("clear_texture_level", this, (void(HuiEventHandler::*)())&TerrainPropertiesDialog::OnClearTextureLevel);
-	EventM("texture_map_complete", this, (void(HuiEventHandler::*)())&TerrainPropertiesDialog::OnTextureMapComplete);
-	EventM("textures", this, (void(HuiEventHandler::*)())&TerrainPropertiesDialog::OnTextures);
-	EventMX("textures", "hui:change", this, (void(HuiEventHandler::*)())&TerrainPropertiesDialog::OnTexturesEdit);
-	EventMX("textures", "hui:select", this, (void(HuiEventHandler::*)())&TerrainPropertiesDialog::OnTexturesSelect);
-	EventM("material_find", this, (void(HuiEventHandler::*)())&TerrainPropertiesDialog::OnMaterialFind);
-	EventM("default_material", this, (void(HuiEventHandler::*)())&TerrainPropertiesDialog::OnDefaultMaterial);
+	EventM("add_texture_level", this, &TerrainPropertiesDialog::OnAddTextureLevel);
+	EventM("delete_texture_level", this, &TerrainPropertiesDialog::OnDeleteTextureLevel);
+	EventM("clear_texture_level", this, &TerrainPropertiesDialog::OnClearTextureLevel);
+	EventM("texture_map_complete", this, &TerrainPropertiesDialog::OnTextureMapComplete);
+	EventM("textures", this, &TerrainPropertiesDialog::OnTextures);
+	EventMX("textures", "hui:change", this, &TerrainPropertiesDialog::OnTexturesEdit);
+	EventMX("textures", "hui:select", this, &TerrainPropertiesDialog::OnTexturesSelect);
+	EventM("material_find", this, &TerrainPropertiesDialog::OnMaterialFind);
+	EventM("default_material", this, &TerrainPropertiesDialog::OnDefaultMaterial);
 
 	Subscribe(data);
 

@@ -20,15 +20,15 @@ ConfigurationDialog::ConfigurationDialog(CHuiWindow* _parent, bool _allow_parent
 		FromResource("ge_dialog");
 	else
 		FromResource("rc_dialog");
-	EventM("hui:close", this, (void(HuiEventHandler::*)())&ConfigurationDialog::OnClose);
-	EventM("cancel", this, (void(HuiEventHandler::*)())&ConfigurationDialog::OnClose);
-	EventM("ok", this, (void(HuiEventHandler::*)())&ConfigurationDialog::OnOk);
-	EventM("find_rootdir", this, (void(HuiEventHandler::*)())&ConfigurationDialog::OnFindRootdir);
-	EventM("find_default_world", this, (void(HuiEventHandler::*)())&ConfigurationDialog::OnFindDefaultWorld);
-	EventM("find_default_second_world", this, (void(HuiEventHandler::*)())&ConfigurationDialog::OnFindDefaultSecondWorld);
-	EventM("find_default_script", this, (void(HuiEventHandler::*)())&ConfigurationDialog::OnFindDefaultScript);
-	EventM("find_default_material", this, (void(HuiEventHandler::*)())&ConfigurationDialog::OnFindDefaultMaterial);
-	EventM("find_default_font", this, (void(HuiEventHandler::*)())&ConfigurationDialog::OnFindDefaultFont);
+	EventM("hui:close", this, &ConfigurationDialog::OnClose);
+	EventM("cancel", this, &ConfigurationDialog::OnClose);
+	EventM("ok", this, &ConfigurationDialog::OnOk);
+	EventM("find_rootdir", this, &ConfigurationDialog::OnFindRootdir);
+	EventM("find_default_world", this, &ConfigurationDialog::OnFindDefaultWorld);
+	EventM("find_default_second_world", this, &ConfigurationDialog::OnFindDefaultSecondWorld);
+	EventM("find_default_script", this, &ConfigurationDialog::OnFindDefaultScript);
+	EventM("find_default_material", this, &ConfigurationDialog::OnFindDefaultMaterial);
+	EventM("find_default_font", this, &ConfigurationDialog::OnFindDefaultFont);
 
 	LoadData();
 	Subscribe(data);

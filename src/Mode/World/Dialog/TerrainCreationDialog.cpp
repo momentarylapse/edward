@@ -16,16 +16,16 @@ TerrainCreationDialog::TerrainCreationDialog(CHuiWindow *_parent, bool _allow_pa
 	// dialog
 	FromResource("new_terrain_dialog");
 
-	EventM("cancel", this, (void(HuiEventHandler::*)())&TerrainCreationDialog::OnClose);
-	EventM("hui:close", this, (void(HuiEventHandler::*)())&TerrainCreationDialog::OnClose);
-	EventM("apply", this, (void(HuiEventHandler::*)())&TerrainCreationDialog::ApplyData);
-	EventM("ok", this, (void(HuiEventHandler::*)())&TerrainCreationDialog::OnOk);
+	EventM("cancel", this, &TerrainCreationDialog::OnClose);
+	EventM("hui:close", this, &TerrainCreationDialog::OnClose);
+	EventM("apply", this, &TerrainCreationDialog::ApplyData);
+	EventM("ok", this, &TerrainCreationDialog::OnOk);
 
-	EventM("height_image_find", this, (void(HuiEventHandler::*)())&TerrainCreationDialog::OnFindHeightmap);
-	EventM("num_x", this, (void(HuiEventHandler::*)())&TerrainCreationDialog::OnSizeChange);
-	EventM("num_y", this, (void(HuiEventHandler::*)())&TerrainCreationDialog::OnSizeChange);
-	EventM("terrain_x", this, (void(HuiEventHandler::*)())&TerrainCreationDialog::OnSizeChange);
-	EventM("terrain_y", this, (void(HuiEventHandler::*)())&TerrainCreationDialog::OnSizeChange);
+	EventM("height_image_find", this, &TerrainCreationDialog::OnFindHeightmap);
+	EventM("num_x", this, &TerrainCreationDialog::OnSizeChange);
+	EventM("num_y", this, &TerrainCreationDialog::OnSizeChange);
+	EventM("terrain_x", this, &TerrainCreationDialog::OnSizeChange);
+	EventM("terrain_y", this, &TerrainCreationDialog::OnSizeChange);
 
 	Subscribe(data);
 

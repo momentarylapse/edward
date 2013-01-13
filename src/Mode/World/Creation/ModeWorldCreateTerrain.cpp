@@ -27,15 +27,15 @@ void ModeWorldCreateTerrain::OnStart()
 	dialog = HuiCreateResourceDialog("new_terrain_dialog", ed);
 	dialog->Update();
 
-	dialog->EventM("cancel", this, (void(HuiEventHandler::*)())&ModeWorldCreateTerrain::OnClose);
-	dialog->EventM("hui:close", this, (void(HuiEventHandler::*)())&ModeWorldCreateTerrain::OnClose);
-	dialog->EventM("ok", this, (void(HuiEventHandler::*)())&ModeWorldCreateTerrain::OnOk);
+	dialog->EventM("cancel", this, &ModeWorldCreateTerrain::OnClose);
+	dialog->EventM("hui:close", this, &ModeWorldCreateTerrain::OnClose);
+	dialog->EventM("ok", this, &ModeWorldCreateTerrain::OnOk);
 
-	//dialog->EventM("height_image_find", this, (void(HuiEventHandler::*)())&ModeWorldCreateTerrain::OnFindHeightmap);
-	dialog->EventM("num_x", this, (void(HuiEventHandler::*)())&ModeWorldCreateTerrain::OnSizeChange);
-	dialog->EventM("num_z", this, (void(HuiEventHandler::*)())&ModeWorldCreateTerrain::OnSizeChange);
-	dialog->EventM("terrain_x", this, (void(HuiEventHandler::*)())&ModeWorldCreateTerrain::OnSizeChange);
-	dialog->EventM("terrain_z", this, (void(HuiEventHandler::*)())&ModeWorldCreateTerrain::OnSizeChange);
+	//dialog->EventM("height_image_find", this, &ModeWorldCreateTerrain::OnFindHeightmap);
+	dialog->EventM("num_x", this, &ModeWorldCreateTerrain::OnSizeChange);
+	dialog->EventM("num_z", this, &ModeWorldCreateTerrain::OnSizeChange);
+	dialog->EventM("terrain_x", this, &ModeWorldCreateTerrain::OnSizeChange);
+	dialog->EventM("terrain_z", this, &ModeWorldCreateTerrain::OnSizeChange);
 
 	dialog->SetFloat("height_factor", 100);
 	dialog->SetInt("num_x", 64);

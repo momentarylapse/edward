@@ -20,12 +20,12 @@ ObjectPropertiesDialog::ObjectPropertiesDialog(CHuiWindow *_parent, bool _allow_
 	// dialog
 	FromResource("world_object_dialog");
 
-	EventM("cancel", this, (void(HuiEventHandler::*)())&ObjectPropertiesDialog::OnClose);
-	EventM("hui:close", this, (void(HuiEventHandler::*)())&ObjectPropertiesDialog::OnClose);
-	EventM("apply", this, (void(HuiEventHandler::*)())&ObjectPropertiesDialog::ApplyData);
-	EventM("ok", this, (void(HuiEventHandler::*)())&ObjectPropertiesDialog::OnOk);
+	EventM("cancel", this, &ObjectPropertiesDialog::OnClose);
+	EventM("hui:close", this, &ObjectPropertiesDialog::OnClose);
+	EventM("apply", this, &ObjectPropertiesDialog::ApplyData);
+	EventM("ok", this, &ObjectPropertiesDialog::OnOk);
 
-	EventM("find_object", this, (void(HuiEventHandler::*)())&ObjectPropertiesDialog::OnFindObject);
+	EventM("find_object", this, &ObjectPropertiesDialog::OnFindObject);
 
 	Subscribe(data);
 

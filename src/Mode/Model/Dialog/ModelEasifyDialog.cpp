@@ -18,11 +18,11 @@ ModelEasifyDialog::ModelEasifyDialog(CHuiWindow *_parent, bool _allow_parent, Da
 	data = _data;
 	factor = 0.5f;
 
-	EventM("hui:close", this, (void(HuiEventHandler::*)())&ModelEasifyDialog::OnClose);
-	EventM("cancel", this, (void(HuiEventHandler::*)())&ModelEasifyDialog::OnClose);
-	EventM("ok", this, (void(HuiEventHandler::*)())&ModelEasifyDialog::OnOk);
-	EventM("quality_factor", this, (void(HuiEventHandler::*)())&ModelEasifyDialog::OnQualityFactor);
-	EventM("quality_slider", this, (void(HuiEventHandler::*)())&ModelEasifyDialog::OnQualitySlider);
+	EventM("hui:close", this, &ModelEasifyDialog::OnClose);
+	EventM("cancel", this, &ModelEasifyDialog::OnClose);
+	EventM("ok", this, &ModelEasifyDialog::OnOk);
+	EventM("quality_factor", this, &ModelEasifyDialog::OnQualityFactor);
+	EventM("quality_slider", this, &ModelEasifyDialog::OnQualitySlider);
 
 	LoadData();
 }

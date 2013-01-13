@@ -48,14 +48,14 @@ void ModeWorldCamera::OnStart()
 	dialog = HuiCreateResourceDialog("world_camera_dialog", ed);
 	dialog->Update();
 
-	dialog->EventMX("point_list", "hui:activate", this, (void(HuiEventHandler::*)())&ModeWorldCamera::OnPointList);
-	dialog->EventMX("point_list", "hui:change", this, (void(HuiEventHandler::*)())&ModeWorldCamera::OnPointListEdit);
-	dialog->EventMX("point_list", "hui:select", this, (void(HuiEventHandler::*)())&ModeWorldCamera::OnPointListSelect);
-	dialog->EventM("add_point", this, (void(HuiEventHandler::*)())&ModeWorldCamera::OnAddPoint);
-	dialog->EventM("delete_point", this, (void(HuiEventHandler::*)())&ModeWorldCamera::OnDeletePoint);
-	dialog->EventM("cam_edit_vel", this, (void(HuiEventHandler::*)())&ModeWorldCamera::OnCamEditVel);
+	dialog->EventMX("point_list", "hui:activate", this, &ModeWorldCamera::OnPointList);
+	dialog->EventMX("point_list", "hui:change", this, &ModeWorldCamera::OnPointListEdit);
+	dialog->EventMX("point_list", "hui:select", this, &ModeWorldCamera::OnPointListSelect);
+	dialog->EventM("add_point", this, &ModeWorldCamera::OnAddPoint);
+	dialog->EventM("delete_point", this, &ModeWorldCamera::OnDeletePoint);
+	dialog->EventM("cam_edit_vel", this, &ModeWorldCamera::OnCamEditVel);
 
-	dialog->EventM("hui:close", this, (void(HuiEventHandler::*)())&ModeWorldCamera::OnCloseDialog);
+	dialog->EventM("hui:close", this, &ModeWorldCamera::OnCloseDialog);
 
 
 

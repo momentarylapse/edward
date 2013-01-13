@@ -20,8 +20,8 @@ SelectionPropertiesDialog::SelectionPropertiesDialog(CHuiWindow *_parent, bool _
 	// dialog
 	FromResource("world_ps_dialog");
 
-	EventM("hui:close", this, (void(HuiEventHandler::*)())&SelectionPropertiesDialog::OnClose);
-	EventM("property_list", this, (void(HuiEventHandler::*)())&SelectionPropertiesDialog::OnPropertyList);
+	EventM("hui:close", this, &SelectionPropertiesDialog::OnClose);
+	EventM("property_list", this, &SelectionPropertiesDialog::OnPropertyList);
 
 	Subscribe(data);
 

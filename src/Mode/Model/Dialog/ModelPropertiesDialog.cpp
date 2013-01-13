@@ -29,27 +29,27 @@ ModelPropertiesDialog::ModelPropertiesDialog(CHuiWindow *_parent, bool _allow_pa
 
 	SetTooltip("material_list", _("- Doppelklick um ein Material zu editieren\n- selektieren und den Knopf \"l&oschen.\" zum L&oschen\n- H&akchen bei \"Aktiv\" zur Auswahl f&ur folgende neue Polygone"));
 
-	EventM("cancel", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnClose);
-	EventM("hui:close", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnClose);
-	EventM("apply", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::ApplyData);
-	EventM("ok", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnOk);
-	EventM("generate_dists_auto", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateDistsAuto);
-	EventM("material_list", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnMaterialList);
-	EventMX("material_list", "hui:change", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnMaterialListCheck);
-	EventMX("material_list", "hui:select", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnMaterialListSelect);
-	EventM("add_material", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnAddMaterial);
-	EventM("delete_material", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnDeleteMaterial);
-	EventM("ph_passive", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnPhysicsPassive);
-	EventM("generate_tensor_auto", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateTensorAuto);
-	EventMX("tensor", "hui:change", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnTensorEdit);
-	EventM("mass", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnGenerateTensorAuto);
-	EventM("num_items", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnNumItems);
-	EventM("model_inventary", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnModelInventary);
-	EventM("delete_item", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnDeleteItem);
-	EventM("max_script_vars", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnMaxScriptVars);
-	EventMX("script_vars", "hui:change", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnScriptVarEdit);
-	EventM("script_find", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnScriptFind);
-	EventM("model_script_var_template", this, (void(HuiEventHandler::*)())&ModelPropertiesDialog::OnModelScriptVarTemplate);
+	EventM("cancel", this, &ModelPropertiesDialog::OnClose);
+	EventM("hui:close", this, &ModelPropertiesDialog::OnClose);
+	EventM("apply", this, &ModelPropertiesDialog::ApplyData);
+	EventM("ok", this, &ModelPropertiesDialog::OnOk);
+	EventM("generate_dists_auto", this, &ModelPropertiesDialog::OnGenerateDistsAuto);
+	EventM("material_list", this, &ModelPropertiesDialog::OnMaterialList);
+	EventMX("material_list", "hui:change", this, &ModelPropertiesDialog::OnMaterialListCheck);
+	EventMX("material_list", "hui:select", this, &ModelPropertiesDialog::OnMaterialListSelect);
+	EventM("add_material", this, &ModelPropertiesDialog::OnAddMaterial);
+	EventM("delete_material", this, &ModelPropertiesDialog::OnDeleteMaterial);
+	EventM("ph_passive", this, &ModelPropertiesDialog::OnPhysicsPassive);
+	EventM("generate_tensor_auto", this, &ModelPropertiesDialog::OnGenerateTensorAuto);
+	EventMX("tensor", "hui:change", this, &ModelPropertiesDialog::OnTensorEdit);
+	EventM("mass", this, &ModelPropertiesDialog::OnGenerateTensorAuto);
+	EventM("num_items", this, &ModelPropertiesDialog::OnNumItems);
+	EventM("model_inventary", this, &ModelPropertiesDialog::OnModelInventary);
+	EventM("delete_item", this, &ModelPropertiesDialog::OnDeleteItem);
+	EventM("max_script_vars", this, &ModelPropertiesDialog::OnMaxScriptVars);
+	EventMX("script_vars", "hui:change", this, &ModelPropertiesDialog::OnScriptVarEdit);
+	EventM("script_find", this, &ModelPropertiesDialog::OnScriptFind);
+	EventM("model_script_var_template", this, &ModelPropertiesDialog::OnModelScriptVarTemplate);
 
 	Subscribe(data);
 

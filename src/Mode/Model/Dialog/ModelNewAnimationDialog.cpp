@@ -19,9 +19,9 @@ ModelNewAnimationDialog::ModelNewAnimationDialog(CHuiWindow *_parent, bool _allo
 
 	SetInt("new_animation_index", index);
 
-	EventM("hui:close", this, (void(HuiEventHandler::*)())&ModelNewAnimationDialog::OnClose);
-	EventM("cancel", this, (void(HuiEventHandler::*)())&ModelNewAnimationDialog::OnClose);
-	EventM("ok", this, (void(HuiEventHandler::*)())&ModelNewAnimationDialog::OnOk);
+	EventM("hui:close", this, &ModelNewAnimationDialog::OnClose);
+	EventM("cancel", this, &ModelNewAnimationDialog::OnClose);
+	EventM("ok", this, &ModelNewAnimationDialog::OnOk);
 }
 
 ModelNewAnimationDialog::~ModelNewAnimationDialog()

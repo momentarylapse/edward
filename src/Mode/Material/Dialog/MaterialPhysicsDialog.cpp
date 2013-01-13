@@ -17,9 +17,9 @@ MaterialPhysicsDialog::MaterialPhysicsDialog(CHuiWindow* _parent, bool _allow_pa
 
 	// dialog
 	FromResource("material_physics_dialog");
-	EventM("cancel", this, (void(HuiEventHandler::*)())&MaterialPhysicsDialog::OnClose);
-	EventM("hui:close", this, (void(HuiEventHandler::*)())&MaterialPhysicsDialog::OnClose);
-	EventM("ok", this, (void(HuiEventHandler::*)())&MaterialPhysicsDialog::OnOk);
+	EventM("cancel", this, &MaterialPhysicsDialog::OnClose);
+	EventM("hui:close", this, &MaterialPhysicsDialog::OnClose);
+	EventM("ok", this, &MaterialPhysicsDialog::OnOk);
 
 	temp = data->Physics;
 	LoadData();

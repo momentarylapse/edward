@@ -35,7 +35,7 @@ void ModeWorldCreateObject::OnStart()
 	dialog->Enable("name", false);
 	dialog->Update();
 	dialog->Event("hui:close", &HuiFuncIgnore);
-	dialog->EventM("find_object", this, (void(HuiEventHandler::*)())&ModeWorldCreateObject::OnFindObject);
+	dialog->EventM("find_object", this, &ModeWorldCreateObject::OnFindObject);
 
 	if (filename.num > 0)
 		message = _("neues Objekt setzen");

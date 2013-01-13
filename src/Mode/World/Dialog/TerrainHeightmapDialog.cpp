@@ -17,16 +17,16 @@ TerrainHeightmapDialog::TerrainHeightmapDialog(CHuiWindow *_parent, bool _allow_
 	// dialog
 	FromResource("terrain_heightmap_dialog");
 
-	EventM("cancel", this, (void(HuiEventHandler::*)())&TerrainHeightmapDialog::OnClose);
-	EventM("hui:close", this, (void(HuiEventHandler::*)())&TerrainHeightmapDialog::OnClose);
-	EventM("apply", this, (void(HuiEventHandler::*)())&TerrainHeightmapDialog::ApplyData);
-	EventM("ok", this, (void(HuiEventHandler::*)())&TerrainHeightmapDialog::OnOk);
+	EventM("cancel", this, &TerrainHeightmapDialog::OnClose);
+	EventM("hui:close", this, &TerrainHeightmapDialog::OnClose);
+	EventM("apply", this, &TerrainHeightmapDialog::ApplyData);
+	EventM("ok", this, &TerrainHeightmapDialog::OnOk);
 
-	EventM("height_image_find", this, (void(HuiEventHandler::*)())&TerrainHeightmapDialog::OnFindHeightmap);
-	EventM("stretch_x", this, (void(HuiEventHandler::*)())&TerrainHeightmapDialog::OnSizeChange);
-	EventM("stretch_z", this, (void(HuiEventHandler::*)())&TerrainHeightmapDialog::OnSizeChange);
-	EventM("filter_image_find", this, (void(HuiEventHandler::*)())&TerrainHeightmapDialog::OnFindFilter);
-	EventMX("preview", "hui:redraw", this, (void(HuiEventHandler::*)())&TerrainHeightmapDialog::OnPreviewDraw);
+	EventM("height_image_find", this, &TerrainHeightmapDialog::OnFindHeightmap);
+	EventM("stretch_x", this, &TerrainHeightmapDialog::OnSizeChange);
+	EventM("stretch_z", this, &TerrainHeightmapDialog::OnSizeChange);
+	EventM("filter_image_find", this, &TerrainHeightmapDialog::OnFindFilter);
+	EventMX("preview", "hui:redraw", this, &TerrainHeightmapDialog::OnPreviewDraw);
 
 	Enable("ok", false);
 

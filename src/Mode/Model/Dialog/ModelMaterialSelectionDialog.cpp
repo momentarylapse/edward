@@ -25,12 +25,12 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(CHuiWindow *_parent, 
 
 	SetTooltip("material_list", _("- Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- H&akchen bei \"Aktiv\" zur Auswahl f&ur folgende neue Polygone"));
 
-	EventM("hui:close", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnClose);
-	EventMX("material_list", "hui:activate", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnMaterialList);
-	EventMX("material_list", "hui:change", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnMaterialListCheck);
-	EventMX("material_list", "hui:select", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnMaterialListSelect);
-	EventM("add_material", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnMaterialAdd);
-	EventM("edit_material", this, (void(HuiEventHandler::*)())&ModelMaterialSelectionDialog::OnMaterialEdit);
+	EventM("hui:close", this, &ModelMaterialSelectionDialog::OnClose);
+	EventMX("material_list", "hui:activate", this, &ModelMaterialSelectionDialog::OnMaterialList);
+	EventMX("material_list", "hui:change", this, &ModelMaterialSelectionDialog::OnMaterialListCheck);
+	EventMX("material_list", "hui:select", this, &ModelMaterialSelectionDialog::OnMaterialListSelect);
+	EventM("add_material", this, &ModelMaterialSelectionDialog::OnMaterialAdd);
+	EventM("edit_material", this, &ModelMaterialSelectionDialog::OnMaterialEdit);
 
 	answer = NULL;
 

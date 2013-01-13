@@ -39,22 +39,22 @@ ModelAnimationDialog::ModelAnimationDialog(CHuiWindow *_parent, bool _allow_pare
 	FromResource("animation_dialog");
 	SetPositionSpecial(_parent, HuiRight | HuiTop);
 
-	EventM("hui:close", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnClose);
-	EventM("animation_list", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnAnimationList);
-	EventMX("animation_list", "hui:select", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnAnimationListSelect);
-	EventM("animation_new", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnAddAnimation);
-	EventM("animation_delete", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnDeleteAnimation);
-	EventM("frame_inc", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnFrameInc);
-	EventM("frame_dec", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnFrameDec);
-	EventM("frame", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnFrame);
-	EventM("new_frame", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnAddFrame);
-	EventM("delete_frame", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnDeleteFrame);
-	EventM("name", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnName);
-	EventM("fps_const", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnFpsConst);
-	EventM("fps_factor", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnFpsFactor);
-	EventM("speed", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnSpeed);
-	EventM("parameter", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnParameter);
-	EventM("animation_dialog_tab_control", this, (void(HuiEventHandler::*)())&ModelAnimationDialog::OnTabControl);
+	EventM("hui:close", this, &ModelAnimationDialog::OnClose);
+	EventM("animation_list", this, &ModelAnimationDialog::OnAnimationList);
+	EventMX("animation_list", "hui:select", this, &ModelAnimationDialog::OnAnimationListSelect);
+	EventM("animation_new", this, &ModelAnimationDialog::OnAddAnimation);
+	EventM("animation_delete", this, &ModelAnimationDialog::OnDeleteAnimation);
+	EventM("frame_inc", this, &ModelAnimationDialog::OnFrameInc);
+	EventM("frame_dec", this, &ModelAnimationDialog::OnFrameDec);
+	EventM("frame", this, &ModelAnimationDialog::OnFrame);
+	EventM("new_frame", this, &ModelAnimationDialog::OnAddFrame);
+	EventM("delete_frame", this, &ModelAnimationDialog::OnDeleteFrame);
+	EventM("name", this, &ModelAnimationDialog::OnName);
+	EventM("fps_const", this, &ModelAnimationDialog::OnFpsConst);
+	EventM("fps_factor", this, &ModelAnimationDialog::OnFpsFactor);
+	EventM("speed", this, &ModelAnimationDialog::OnSpeed);
+	EventM("parameter", this, &ModelAnimationDialog::OnParameter);
+	EventM("animation_dialog_tab_control", this, &ModelAnimationDialog::OnTabControl);
 
 	Subscribe(data);
 

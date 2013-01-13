@@ -25,11 +25,11 @@ CHuiWindow("dummy", -1, -1, 230, 400, _parent, _allow_parent, HuiWinModeControls
 	// dialog
 	FromResource("fx_dialog");
 
-	EventM("hui:close", this, (void(HuiEventHandler::*)())&ModelFXDialog::OnClose);
-	EventM("cancel", this, (void(HuiEventHandler::*)())&ModelFXDialog::OnClose);
-	EventM("ok", this, (void(HuiEventHandler::*)())&ModelFXDialog::OnOk);
-	EventM("search", this, (void(HuiEventHandler::*)())&ModelFXDialog::OnFindSoundFile);
-	EventM("find_scriptfile", this, (void(HuiEventHandler::*)())&ModelFXDialog::OnFindScriptFile);
+	EventM("hui:close", this, &ModelFXDialog::OnClose);
+	EventM("cancel", this, &ModelFXDialog::OnClose);
+	EventM("ok", this, &ModelFXDialog::OnOk);
+	EventM("search", this, &ModelFXDialog::OnFindSoundFile);
+	EventM("find_scriptfile", this, &ModelFXDialog::OnFindScriptFile);
 
 	LoadData();
 }

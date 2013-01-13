@@ -20,19 +20,19 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(CHuiWindow *_parent, bool _al
 
 	// dialog
 	FromResource("material_dialog");
-	EventM("cancel", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnClose);
-	EventM("hui:close", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnClose);
-	EventM("set", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::ApplyData);
-	EventM("ok", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnOk);
-	EventM("mat_add_texture_level", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnAddTextureLevel);
-	EventM("mat_textures", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnTextures);
-	EventMX("mat_textures", "hui:select", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnTexturesSelect);
-	EventM("mat_delete_texture_level", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnDeleteTextureLevel);
-	EventM("mat_empty_texture_level", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnEmptyTextureLevel);
-	EventM("transparency_mode", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnTransparencyMode);
-	EventM("reflection", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnReflection);
-	EventM("reflection_textures", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnReflectionTextures);
-	EventM("find_effect", this, (void(HuiEventHandler::*)())&MaterialPropertiesDialog::OnFindEffect);
+	EventM("cancel", this, &MaterialPropertiesDialog::OnClose);
+	EventM("hui:close", this, &MaterialPropertiesDialog::OnClose);
+	EventM("set", this, &MaterialPropertiesDialog::ApplyData);
+	EventM("ok", this, &MaterialPropertiesDialog::OnOk);
+	EventM("mat_add_texture_level", this, &MaterialPropertiesDialog::OnAddTextureLevel);
+	EventM("mat_textures", this, &MaterialPropertiesDialog::OnTextures);
+	EventMX("mat_textures", "hui:select", this, &MaterialPropertiesDialog::OnTexturesSelect);
+	EventM("mat_delete_texture_level", this, &MaterialPropertiesDialog::OnDeleteTextureLevel);
+	EventM("mat_empty_texture_level", this, &MaterialPropertiesDialog::OnEmptyTextureLevel);
+	EventM("transparency_mode", this, &MaterialPropertiesDialog::OnTransparencyMode);
+	EventM("reflection", this, &MaterialPropertiesDialog::OnReflection);
+	EventM("reflection_textures", this, &MaterialPropertiesDialog::OnReflectionTextures);
+	EventM("find_effect", this, &MaterialPropertiesDialog::OnFindEffect);
 
 	temp = data->Appearance;
 	LoadData();
