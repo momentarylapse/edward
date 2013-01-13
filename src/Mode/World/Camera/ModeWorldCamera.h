@@ -38,6 +38,8 @@ public:
 	void OnAreaMouseWheel();
 	void OnCamEditVel();
 	void OnCamEditAng();
+	void OnCamPreview();
+	void OnCamStop();
 	void OnCloseDialog();
 
 	void LoadData();
@@ -49,12 +51,17 @@ public:
 	bool Save();
 	bool SaveAs();
 
+	void PreviewUpdate();
+
 	DataCamera *data;
 
 	CHuiWindow *dialog;
 
 	bool edit_vel, edit_ang;
 	float time_scale, time_offset;
+
+	bool preview;
+	float preview_time;
 };
 
 extern ModeWorldCamera *mode_world_camera;

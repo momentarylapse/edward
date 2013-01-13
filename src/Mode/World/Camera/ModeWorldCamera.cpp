@@ -53,9 +53,6 @@ void ModeWorldCamera::OnStart()
 	dialog->SetPositionSpecial(ed, HuiBottom);
 	dialog->Update();
 
-	/*dialog->EventMX("point_list", "hui:activate", this, &ModeWorldCamera::OnPointList);
-	dialog->EventMX("point_list", "hui:change", this, &ModeWorldCamera::OnPointListEdit);
-	dialog->EventMX("point_list", "hui:select", this, &ModeWorldCamera::OnPointListSelect);*/
 	dialog->EventMX("cam_area", "hui:redraw", this, &ModeWorldCamera::OnAreaDraw);
 	dialog->EventMX("cam_area", "hui:left-button-down", this, &ModeWorldCamera::OnAreaLeftButtonDown);
 	dialog->EventMX("cam_area", "hui:left-button-up", this, &ModeWorldCamera::OnAreaLeftButtonUp);
@@ -65,8 +62,12 @@ void ModeWorldCamera::OnStart()
 	dialog->EventM("delete_point", this, &ModeWorldCamera::OnDeletePoint);
 	dialog->EventM("cam_edit_vel", this, &ModeWorldCamera::OnCamEditVel);
 	dialog->EventM("cam_edit_ang", this, &ModeWorldCamera::OnCamEditAng);
+	dialog->EventM("cam_preview", this, &ModeWorldCamera::OnCamPreview);
+	dialog->EventM("cam_stop", this, &ModeWorldCamera::OnCamStop);
 
 	dialog->EventM("hui:close", this, &ModeWorldCamera::OnCloseDialog);
+
+	dialog->Enable("cam_stop", false);
 
 
 
@@ -189,6 +190,11 @@ void ModeWorldCamera::OnAreaDraw()
 		}
 		t0 = t1;
 	}
+
+	if (preview){
+		c->SetColor(Green);
+		c->DrawLine(sample2screen(preview_time), r.y1, sample2screen(preview_time), r.y2);
+	}
 	c->End();
 }
 
@@ -244,12 +250,45 @@ void ModeWorldCamera::OnCamEditAng()
 	LoadData();
 }
 
+void ModeWorldCamera::OnCamPreview()
+{
+	dialog->Enable("cam_stop", true);
+	preview_time = 0;
+	preview = true;
+	HuiRunLaterM(20, (HuiEventHandler*)this, &ModeWorldCamera::PreviewUpdate);
+}
+
+void ModeWorldCamera::OnCamStop()
+{
+	dialog->Enable("cam_stop", false);
+	preview = false;
+	multi_view->ignore_radius = false;
+	ed->ForceRedraw();
+}
+
 void ModeWorldCamera::OnCloseDialog()
 {
 	if (ed->AllowTermination()){
 		New();
 		ed->SetMode(parent);
 	}
+}
+
+void ModeWorldCamera::PreviewUpdate()
+{
+	preview_time += 0.050f;
+	dialog->Redraw("cam_area");
+	Interpolator<vector> pos_inter = data->BuildPosInterpolator();
+	Interpolator<vector> ang_inter = data->BuildAngInterpolator();
+	float duration = data->GetDuration();
+	multi_view->pos = pos_inter.get(preview_time / duration);
+	multi_view->ang = ang_inter.get(preview_time / duration);
+	multi_view->ignore_radius = true;
+	ed->ForceRedraw();
+	if (preview_time > duration)
+		OnCamStop();
+	if (preview)
+		HuiRunLaterM(50, (HuiEventHandler*)this, &ModeWorldCamera::PreviewUpdate);
 }
 
 void ModeWorldCamera::OnCommand(const string &id)

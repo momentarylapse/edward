@@ -130,3 +130,41 @@ void DataCamera::UpdateVel()
 	}
 }
 
+float DataCamera::GetDuration() const
+{
+	float d = 0;
+	for (int i=0; i<Point.num; i++)
+		d += Point[i].Duration;
+	return d;
+}
+
+Interpolator<vector> DataCamera::BuildPosInterpolator() const
+{
+	Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE);
+	for (int i=0; i<Point.num; i++){
+		if (Point[i].Type == CPKCamFlight){
+			inter.add2(Point[i].pos, Point[i].Vel, Point[i].Duration);
+		}else if (Point[i].Type == CPKSetCamPosAng){
+			inter.jump(Point[i].pos, v_0);
+			if (Point[i].Duration > 0)
+				inter.add(Point[i].pos, Point[i].Duration);
+		}
+	}
+	return inter;
+}
+
+Interpolator<vector> DataCamera::BuildAngInterpolator() const
+{
+	Interpolator<vector> inter(Interpolator<vector>::TYPE_ANGULAR_LERP);
+	for (int i=0; i<Point.num; i++){
+		if (Point[i].Type == CPKCamFlight){
+			inter.add(Point[i].Ang, Point[i].Duration);
+		}else if (Point[i].Type == CPKSetCamPosAng){
+			inter.jump(Point[i].Ang, v_0);
+			if (Point[i].Duration > 0)
+				inter.add(Point[i].Ang, Point[i].Duration);
+		}
+	}
+	return inter;
+}
+

@@ -44,6 +44,10 @@ public:
 
 	void UpdateVel();
 
+	float GetDuration() const;
+	Interpolator<vector> BuildPosInterpolator() const;
+	Interpolator<vector> BuildAngInterpolator() const;
+
 	Array<WorldCamPoint> Point;
 	Array<WorldCamPointVel> Vel;
 };
