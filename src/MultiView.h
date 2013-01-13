@@ -205,11 +205,14 @@ public:
 
 	int ViewMoving;
 
-	int mx, my, mouse_win;
-	int vx, vy;
+	int mouse_win;
+	float mx, my;
+	float vx, vy;
 	bool HoldingCursor;
+	float HoldingX, HoldingY;
 	bool MVRect,MVRectable;
-	int RectX,RectY,RectWin;
+	float RectX,RectY;
+	int RectWin;
 
 	bool MultiViewSelectionChanged;
 

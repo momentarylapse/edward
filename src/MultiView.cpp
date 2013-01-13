@@ -77,6 +77,7 @@ MultiView::MultiView(bool _mode3d) :
 	}
 	mx = my = 0;
 	HoldingCursor = false;
+	HoldingX = HoldingY = 0;
 
 	Reset();
 }
@@ -159,16 +160,16 @@ void MultiView::DoZoom(float factor)
 	vector mup;
 	if (mode3d){
 		if (view[mouse_win].type != ViewPerspective)
-			mup = VecUnProject(vector((float)mx,(float)my,0),mouse_win);
+			mup = VecUnProject(vector(mx,my,0),mouse_win);
 		radius /= factor;
 		update_zoom;
 		if (view[mouse_win].type != ViewPerspective)
-			pos += mup - VecUnProject(vector((float)mx,(float)my,0),mouse_win);
+			pos += mup - VecUnProject(vector(mx,my,0),mouse_win);
 	}else{
-		mup = VecUnProject(vector((float)mx,(float)my,0),mouse_win);
+		mup = VecUnProject(vector(mx,my,0),mouse_win);
 		radius /= factor;
 		update_zoom;
-		pos += mup - VecUnProject(vector((float)mx,(float)my,0),mouse_win);
+		pos += mup - VecUnProject(vector(mx,my,0),mouse_win);
 	}
 	ed->ForceRedraw();
 }
@@ -463,12 +464,8 @@ void MultiView::OnMouseMove()
 
 	// ignore mouse, while "holding"
 	if (HoldingCursor){
-//		ed->win->SetCursorPos(mx - vx, my - vy);
-		// evil hack... nix doesn't get nur pos data...
-		/*NixInputDataCurrent.x -= vx;
-		NixInputDataCurrent.y -= vy;
-		NixInputDataCurrent.dx = 0;
-		NixInputDataCurrent.dy = 0;*/
+		if (fabs(mx - HoldingX) + fabs(my - HoldingY) > 100)
+			ed->SetCursorPos(HoldingX, HoldingY);
 	}
 
 	ed->ForceRedraw();
@@ -922,7 +919,7 @@ void MultiView::OnDraw()
 		NixSetZ(false, false);
 		NixSetAlphaM(AlphaMaterial);
 		NixSetColor(color(0.2f,0,0,1));
-		NixDrawRect((float)mx,(float)RectX,(float)my,(float)RectY,0);
+		NixDrawRect(mx,RectX,my,RectY,0);
 		NixSetColor(color(0.7f,0,0,1));
 		NixDrawLineV(RectX	,RectY	,my		,0);
 		NixDrawLineV(mx		,RectY	,my		,0);
@@ -1208,12 +1205,12 @@ void MultiView::InvertSelection()
 
 vector MultiView::GetCursor3d()
 {
-	return VecUnProject2(vector((float)mx, (float)my, 0), pos, mouse_win);
+	return VecUnProject2(vector(mx, my, 0), pos, mouse_win);
 }
 
 vector MultiView::GetCursor3d(const vector &depth_reference)
 {
-	return VecUnProject2(vector((float)mx, (float)my, 0), depth_reference, mouse_win);
+	return VecUnProject2(vector(mx, my, 0), depth_reference, mouse_win);
 }
 
 
@@ -1322,13 +1319,10 @@ void MultiView::SelectAllInRectangle(int mode)
 {
 	msg_db_r("SelAllInRect",4);
 	NotifyBegin();
-	float x1=RectX,y1=RectY,x2=mx,y2=my,a;
 	// reset data
 	UnselectAll();
-	// normalize rectangle
-	if (x2<x1){		a=x2;	x2=x1;	x1=a;	}
-	if (y2<y1){		a=y2;	y2=y1;	y1=a;	}
-	rect r = rect(x1,x2,y1,y2);
+
+	rect r = rect(min(mx, RectX), max(mx, RectX), min(my, RectY), max(my, RectY));
 
 	// select
 	foreach(MultiViewData &d, data)
@@ -1340,9 +1334,9 @@ void MultiView::SelectAllInRectangle(int mode)
 
 				// selected?
 				sd->m_delta=false;
-				if (d.IsInRect)
+				if (d.IsInRect){
 					sd->m_delta = d.IsInRect(i, d.user_data, RectWin, &r);
-				else{// if (!sd->m_delta){
+				}else{// if (!sd->m_delta){
 					vector p = VecProject(sd->pos,RectWin);
 					sd->m_delta = r.inside(p.x, p.y);
 				}
@@ -1362,9 +1356,10 @@ void MultiView::SelectAllInRectangle(int mode)
 	msg_db_l(4);
 }
 
-
 void MultiView::HoldCursor(bool holding)
 {
+	HoldingX = mx;
+	HoldingY = my;
 	HoldingCursor = holding;
 	ed->ShowCursor(!holding);
 }
@@ -1410,7 +1405,7 @@ void MultiView::MouseActionUpdate()
 	if (cur_action){
 		//msg_write("mouse action update");
 
-		vector v2p = vector((float)mx, (float)my, 0);
+		vector v2p = vector(mx, my, 0);
 		vector v2  = VecUnProject2(v2p, mouse_action_pos0, mouse_win);
 		vector v1  = mouse_action_pos0;
 		vector v1p = VecProject(v1, mouse_win);
