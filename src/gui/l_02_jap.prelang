@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-586
+588
 // Data (ID,Text)
 ad_dialog
 
@@ -85,7 +85,13 @@ bgc
 !alpha
 brightness
 
+cam_edit_ang
+
 cam_edit_vel
+
+cam_preview
+
+cam_stop
 
 campoint__grp_ang
 
@@ -823,8 +829,6 @@ physics
 物理学...
 physics_enabled
 
-point_list
-
 progress_cancelable_dialog
 
 progress_dialog
@@ -1089,7 +1093,7 @@ view_top
 上 (-y)
 water
 水
-wcd_table_2
+wcd_table_t
 
 welcome_dialog
 

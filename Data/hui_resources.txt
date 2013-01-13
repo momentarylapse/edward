@@ -13681,8 +13681,8 @@ SizableDialog
 world_camera_dialog
 
 1
-218
-494
+719
+160
 0
 0
 0
@@ -13690,7 +13690,7 @@ world_camera_dialog
 0
 
 
-6
+9
 ControlTable
 wcd_table_1
 
@@ -13698,14 +13698,14 @@ wcd_table_1
 0
 0
 1
-3
+2
 -1
 0
 0
 
 
-ListView
-point_list
+DrawingArea
+cam_area
 
 1
 0
@@ -13718,26 +13718,13 @@ point_list
 wcd_table_1
 
 ControlTable
-wcd_table_2
+wcd_table_t
 
 1
 0
 1
-2
+6
 1
-0
-0
-0
-wcd_table_1
-
-CheckBox
-cam_edit_vel
-
-1
-0
-2
-0
-0
 0
 0
 0
@@ -13754,7 +13741,7 @@ hui:add
 0
 0
 0
-wcd_table_2
+wcd_table_t
 
 Button
 delete_point
@@ -13767,7 +13754,59 @@ hui:delete
 0
 0
 0
-wcd_table_2
+wcd_table_t
+
+CheckBox
+cam_edit_vel
+
+1
+2
+0
+0
+0
+0
+0
+0
+wcd_table_t
+
+CheckBox
+cam_edit_ang
+
+1
+3
+0
+0
+0
+0
+0
+0
+wcd_table_t
+
+Button
+cam_preview
+hui:media-play
+1
+4
+0
+0
+0
+0
+0
+0
+wcd_table_t
+
+Button
+cam_stop
+hui:media-stop
+1
+5
+0
+0
+0
+0
+0
+0
+wcd_table_t
 
 // Resource
 Dialog
@@ -16373,7 +16412,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-727
+730
 // Text
 ad_dialog
 Verwaltung
@@ -16467,8 +16506,16 @@ bgc
 !alpha
 brightness
 \\0\\100\\0.1
+cam_area
+
+cam_edit_ang
+Blickrichtung editieren
 cam_edit_vel
 Geschwindigkeit editieren
+cam_preview
+Vorschau
+cam_stop
+Stopp
 campoint__grp_ang
 Winkel
 campoint__grp_pos
@@ -17379,8 +17426,6 @@ physics
 Physik...
 physics_enabled
 Aktiviert
-point_list
-!multiline,format=tttT\\#\\Typ\\Start\\Dauer
 pos_x
 
 pos_y
@@ -17731,7 +17776,7 @@ water
 Wasser
 wcd_table_1
 
-wcd_table_2
+wcd_table_t
 !noexpandy
 welcome_dialog
 Edward heißt Sie willkommen.
@@ -17835,7 +17880,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-727
+730
 // Text
 ad_dialog
 Administration
@@ -17929,7 +17974,15 @@ bgc
 !alpha
 brightness
 \\0\\100\\0.1
+cam_area
+
+cam_edit_ang
+
 cam_edit_vel
+
+cam_preview
+
+cam_stop
 
 campoint__grp_ang
 angle
@@ -18841,8 +18894,6 @@ physics
 Physics...
 physics_enabled
 Enables
-point_list
-
 pos_x
 
 pos_y
@@ -19193,7 +19244,7 @@ water
 water
 wcd_table_1
 
-wcd_table_2
+wcd_table_t
 
 welcome_dialog
 Welcome to Edward.
@@ -19609,7 +19660,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-727
+730
 // Text
 ad_dialog
 
@@ -19703,7 +19754,15 @@ bgc
 !alpha
 brightness
 
+cam_area
+
+cam_edit_ang
+
 cam_edit_vel
+
+cam_preview
+
+cam_stop
 
 campoint__grp_ang
 
@@ -20615,8 +20674,6 @@ physics
 物理学...
 physics_enabled
 
-point_list
-
 pos_x
 
 pos_y
@@ -20967,7 +21024,7 @@ water
 水
 wcd_table_1
 
-wcd_table_2
+wcd_table_t
 
 welcome_dialog
 

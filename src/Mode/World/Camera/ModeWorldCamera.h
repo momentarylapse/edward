@@ -28,10 +28,16 @@ public:
 
 	void OnAddPoint();
 	void OnDeletePoint();
-	void OnPointList();
+	/*void OnPointList();
 	void OnPointListEdit();
-	void OnPointListSelect();
+	void OnPointListSelect();*/
+	void OnAreaDraw();
+	void OnAreaLeftButtonDown();
+	void OnAreaLeftButtonUp();
+	void OnAreaMouseMove();
+	void OnAreaMouseWheel();
 	void OnCamEditVel();
+	void OnCamEditAng();
 	void OnCloseDialog();
 
 	void LoadData();
@@ -47,7 +53,8 @@ public:
 
 	CHuiWindow *dialog;
 
-	bool edit_vel;
+	bool edit_vel, edit_ang;
+	float time_scale, time_offset;
 };
 
 extern ModeWorldCamera *mode_world_camera;

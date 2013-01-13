@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-586
+588
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -85,7 +85,13 @@ bgc
 !alpha
 brightness
 \\0\\100\\0.1
+cam_edit_ang
+
 cam_edit_vel
+
+cam_preview
+
+cam_stop
 
 campoint__grp_ang
 angle
@@ -823,8 +829,6 @@ physics
 Physics...
 physics_enabled
 Enables
-point_list
-
 progress_cancelable_dialog
 working
 progress_dialog
@@ -1089,7 +1093,7 @@ view_top
 Top (-y)
 water
 water
-wcd_table_2
+wcd_table_t
 
 welcome_dialog
 Welcome to Edward.

@@ -36,6 +36,10 @@ ModeWorldCamera::ModeWorldCamera(Mode *_parent, Data *_data) :
 	data = (DataCamera*)_data;
 
 	edit_vel = false;
+	edit_ang = false;
+
+	time_scale = 10;
+	time_offset = 0;
 }
 
 ModeWorldCamera::~ModeWorldCamera()
@@ -46,14 +50,21 @@ void ModeWorldCamera::OnStart()
 {
 	// Dialog
 	dialog = HuiCreateResourceDialog("world_camera_dialog", ed);
+	dialog->SetPositionSpecial(ed, HuiBottom);
 	dialog->Update();
 
-	dialog->EventMX("point_list", "hui:activate", this, &ModeWorldCamera::OnPointList);
+	/*dialog->EventMX("point_list", "hui:activate", this, &ModeWorldCamera::OnPointList);
 	dialog->EventMX("point_list", "hui:change", this, &ModeWorldCamera::OnPointListEdit);
-	dialog->EventMX("point_list", "hui:select", this, &ModeWorldCamera::OnPointListSelect);
+	dialog->EventMX("point_list", "hui:select", this, &ModeWorldCamera::OnPointListSelect);*/
+	dialog->EventMX("cam_area", "hui:redraw", this, &ModeWorldCamera::OnAreaDraw);
+	dialog->EventMX("cam_area", "hui:left-button-down", this, &ModeWorldCamera::OnAreaLeftButtonDown);
+	dialog->EventMX("cam_area", "hui:left-button-up", this, &ModeWorldCamera::OnAreaLeftButtonUp);
+	dialog->EventMX("cam_area", "hui:mouse-move", this, &ModeWorldCamera::OnAreaMouseMove);
+	dialog->EventMX("cam_area", "hui:mouse-wheel", this, &ModeWorldCamera::OnAreaMouseWheel);
 	dialog->EventM("add_point", this, &ModeWorldCamera::OnAddPoint);
 	dialog->EventM("delete_point", this, &ModeWorldCamera::OnDeletePoint);
 	dialog->EventM("cam_edit_vel", this, &ModeWorldCamera::OnCamEditVel);
+	dialog->EventM("cam_edit_ang", this, &ModeWorldCamera::OnCamEditAng);
 
 	dialog->EventM("hui:close", this, &ModeWorldCamera::OnCloseDialog);
 
@@ -104,7 +115,104 @@ void ModeWorldCamera::OnDeletePoint()
 {
 }
 
-void ModeWorldCamera::OnPointList()
+#define screen2sample(x)	((x) / time_scale + time_offset)
+#define sample2screen(x)	(((x) - time_offset) * time_scale)
+string get_time_str_fuzzy(double t, double dt)
+{
+	bool sign = (t < 0);
+	if (sign)
+		t = -t;
+	int _min=((int)t/60);
+	int _sec=((int)t %60);
+	int _usec=( ((int)(t * 1000)) %1000);
+	if (dt < 1.0){
+		if (_min > 0)
+			return format("%s%d:%.2d,%.3d",sign?"-":"",_min,_sec,_usec);
+		else
+			return format("%s%.2d,%.3d",sign?"-":"",_sec,_usec);
+	}else{
+		if (_min > 0)
+			return format("%s%d:%.2d",sign?"-":"",_min,_sec);
+		else
+			return format("%s%.2d",sign?"-":"",_sec);
+	}
+}
+
+void ModeWorldCamera::OnAreaDraw()
+{
+	double MIN_GRID_DIST = 10.0;
+	color bg = White;
+	color ColorGrid = color(1, 0.75f, 0.75f, 0.75f);
+
+	HuiDrawingContext *c = dialog->BeginDraw("cam_area");
+	c->SetLineWidth(0.8f);
+	c->SetColor(bg);
+	c->DrawRect(0, 0, c->width, c->height);
+	c->SetFontSize(8);
+
+	rect r = rect(0, c->width, 0, c->height);
+	double dt = MIN_GRID_DIST / time_scale; // >= 10 pixel
+	double exp_s = ceil(log10(dt));
+	double exp_s_mod = exp_s - log10(dt);
+	dt = pow(10, exp_s);
+//	double dw = dl * a->view_zoom;
+	int nx0 = floor(screen2sample(r.x1 - 1) / dt);
+	int nx1 = ceil(screen2sample(r.x2) / dt);
+	color c1 = ColorInterpolate(bg, ColorGrid, exp_s_mod);
+	color c2 = ColorGrid;
+	for (int n=nx0;n<nx1;n++){
+		c->SetColor(((n % 10) == 0) ? c2 : c1);
+		int xx = sample2screen(n * dt);
+		c->DrawLine(xx, 0, xx, c->height);
+	}
+	c->SetColor(ColorGrid);
+	for (int n=nx0;n<nx1;n++){
+		if ((sample2screen(dt) - sample2screen(0)) > 30){
+			if ((((n % 10) % 3) == 0) && ((n % 10) != 9) && ((n % 10) != -9))
+				c->DrawStr(sample2screen(n * dt) + 2, r.y1, get_time_str_fuzzy(n * dt, dt * 3));
+		}else{
+			if ((n % 10) == 0)
+				c->DrawStr(sample2screen(n * dt) + 2, r.y1, get_time_str_fuzzy(n * dt, dt * 10));
+		}
+	}
+
+	float t0 = 0;
+	foreachi(WorldCamPoint &p, data->Point, i){
+		c->SetColor(p.is_selected ? Red : Black);
+		float t1 = t0 + p.Duration;
+		if (p.Type == CPKCamFlight){
+			c->DrawLine(sample2screen(t1), r.y1, sample2screen(t1), r.y2);
+		}else{
+			c->DrawLine(sample2screen(t0), r.y1, sample2screen(t0), r.y2);
+			c->SetColor(color(0.2f, 0, 0, 0));
+			c->DrawRect(rect(sample2screen(t0), sample2screen(t1), r.y1, r.y2));
+		}
+		t0 = t1;
+	}
+	c->End();
+}
+
+void ModeWorldCamera::OnAreaLeftButtonDown()
+{
+}
+
+void ModeWorldCamera::OnAreaLeftButtonUp()
+{
+}
+
+void ModeWorldCamera::OnAreaMouseMove()
+{
+}
+
+void ModeWorldCamera::OnAreaMouseWheel()
+{
+	float time_scale_new = min(time_scale * pow(1.1, HuiGetEvent()->dz), 1000);
+	time_offset += HuiGetEvent()->mx * (1.0f / time_scale - 1.0f / time_scale_new);
+	time_scale = time_scale_new;
+	dialog->Redraw("cam_area");
+}
+
+/*void ModeWorldCamera::OnPointList()
 {
 }
 
@@ -122,11 +230,17 @@ void ModeWorldCamera::OnPointListSelect()
 	foreach(int i, sel)
 		data->Point[i].is_selected = true;
 	ed->ForceRedraw();
-}
+}*/
 
 void ModeWorldCamera::OnCamEditVel()
 {
 	edit_vel = dialog->IsChecked("");
+	LoadData();
+}
+
+void ModeWorldCamera::OnCamEditAng()
+{
+	edit_ang = dialog->IsChecked("");
 	LoadData();
 }
 
@@ -169,12 +283,7 @@ void ModeWorldCamera::OnUpdate(Observable *obs)
 		ed->ForceRedraw();
 	}else{
 
-		Array<int> sel;
-		foreachi(WorldCamPoint &c, data->Point, i){
-			if (c.is_selected)
-				sel.add(i);
-		}
-		dialog->SetMultiSelection("point_list", sel);
+		dialog->Redraw("cam_area");
 	}
 }
 
@@ -182,16 +291,7 @@ void ModeWorldCamera::LoadData()
 {
 	OnUpdateMenu();
 
-	dialog->Reset("point_list");
-	float t0 = 0;
-	Array<int> sel;
-	foreachi(WorldCamPoint &c, data->Point, i){
-		if (c.is_selected)
-			sel.add(i);
-		dialog->SetString("point_list", format("%d\\%s\\%.3f\\%.3f", i+1, cp_type(c.Type).c_str(), t0, c.Duration));
-		t0 += c.Duration;
-	}
-	dialog->SetMultiSelection("point_list", sel);
+	dialog->Redraw("cam_area");
 
 
 	multi_view->ResetData(data);
