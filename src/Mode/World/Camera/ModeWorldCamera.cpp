@@ -13,7 +13,7 @@
 
 ModeWorldCamera *mode_world_camera = NULL;
 
-static string cp_type(int type)
+/*static string cp_type(int type)
 {
 	if (type == CPKSetCamPos)
 		return "SetPos";
@@ -28,7 +28,7 @@ static string cp_type(int type)
 	if (type == CPKCamFlightRel)
 		return "FlightRel";
 	return "???";
-}
+}*/
 
 ModeWorldCamera::ModeWorldCamera(Mode *_parent, Data *_data) :
 	Mode("WorldCamera", _parent, _data, ed->multi_view_3d, "")
@@ -40,10 +40,15 @@ ModeWorldCamera::ModeWorldCamera(Mode *_parent, Data *_data) :
 
 	time_scale = 10;
 	time_offset = 0;
+
+	inter_pos = new Interpolator<vector>(Interpolator<vector>::TYPE_CUBIC_SPLINE);
+	inter_ang = new Interpolator<vector>(Interpolator<vector>::TYPE_ANGULAR_LERP);
 }
 
 ModeWorldCamera::~ModeWorldCamera()
 {
+	delete(inter_pos);
+	delete(inter_ang);
 }
 
 void ModeWorldCamera::OnStart()
@@ -94,6 +99,7 @@ void ModeWorldCamera::OnStart()
 	Subscribe(data);
 	Subscribe(multi_view);
 	LoadData();
+	hover = -1;
 }
 
 void ModeWorldCamera::OnEnd()
@@ -177,21 +183,39 @@ void ModeWorldCamera::OnAreaDraw()
 		}
 	}
 
+	float dur = data->GetDuration();
+	c->SetColor(color(0.15f, 0, 0, 1));
+	c->DrawRect(rect(sample2screen(0), sample2screen(dur), r.y1, r.y2));
+
 	float t0 = 0;
 	foreachi(WorldCamPoint &p, data->Point, i){
 		c->SetColor(p.is_selected ? Red : Black);
+		c->SetLineWidth((i == hover) ? 5.0f : 2.2f);
+		c->DrawLine(time_pos[i], r.y1, time_pos[i], r.y2);
 		float t1 = t0 + p.Duration;
-		if (p.Type == CPKCamFlight){
-			c->DrawLine(sample2screen(t1), r.y1, sample2screen(t1), r.y2);
-		}else{
-			c->DrawLine(sample2screen(t0), r.y1, sample2screen(t0), r.y2);
-			c->SetColor(color(0.2f, 0, 0, 0));
-			c->DrawRect(rect(sample2screen(t0), sample2screen(t1), r.y1, r.y2));
-		}
 		t0 = t1;
 	}
 
+	Array<float> v;
+	const int N = 1000;
+	v.resize(N+1);
+	float v_max = 0;
+	for (int i=0; i<=N; i++){
+		float vv = inter_pos->get_tang((float)i / (float)N).length();
+		if (vv > v_max)
+			v_max = vv;
+		v[i] = vv;
+	}
+	c->SetLineWidth(1.0f);
+	c->SetColor(Green);
+	for (int i=0; i<N; i++){
+		float t0 = (float)i / (float)N * dur;
+		float t1 = (float)(i+1) / (float)N * dur;
+		c->DrawLine(sample2screen(t0), r.y2 - v[i]/v_max * r.height(), sample2screen(t1), r.y2 - v[i+1]/v_max * r.height());
+	}
+
 	if (preview){
+		c->SetLineWidth(1.5f);
 		c->SetColor(Green);
 		c->DrawLine(sample2screen(preview_time), r.y1, sample2screen(preview_time), r.y2);
 	}
@@ -200,6 +224,10 @@ void ModeWorldCamera::OnAreaDraw()
 
 void ModeWorldCamera::OnAreaLeftButtonDown()
 {
+	foreachi(WorldCamPoint &p, data->Point, i)
+		p.is_selected = (i == hover);
+	ed->ForceRedraw();
+	dialog->Redraw("cam_area");
 }
 
 void ModeWorldCamera::OnAreaLeftButtonUp()
@@ -208,6 +236,15 @@ void ModeWorldCamera::OnAreaLeftButtonUp()
 
 void ModeWorldCamera::OnAreaMouseMove()
 {
+	int mx = HuiGetEvent()->mx;
+	int new_hover = -1;
+	foreachi(float t, time_pos, i)
+		if (fabs(mx - t) < 5)
+			new_hover = i;
+	if (new_hover != hover){
+		hover = new_hover;
+		dialog->Redraw("cam_area");
+	}
 }
 
 void ModeWorldCamera::OnAreaMouseWheel()
@@ -215,6 +252,7 @@ void ModeWorldCamera::OnAreaMouseWheel()
 	float time_scale_new = min(time_scale * pow(1.1, HuiGetEvent()->dz), 1000);
 	time_offset += HuiGetEvent()->mx * (1.0f / time_scale - 1.0f / time_scale_new);
 	time_scale = time_scale_new;
+	UpdateTimePos();
 	dialog->Redraw("cam_area");
 }
 
@@ -255,6 +293,7 @@ void ModeWorldCamera::OnCamPreview()
 	dialog->Enable("cam_stop", true);
 	preview_time = 0;
 	preview = true;
+	multi_view->ignore_radius = true;
 	HuiRunLaterM(20, (HuiEventHandler*)this, &ModeWorldCamera::PreviewUpdate);
 }
 
@@ -278,17 +317,32 @@ void ModeWorldCamera::PreviewUpdate()
 {
 	preview_time += 0.050f;
 	dialog->Redraw("cam_area");
-	Interpolator<vector> pos_inter = data->BuildPosInterpolator();
-	Interpolator<vector> ang_inter = data->BuildAngInterpolator();
 	float duration = data->GetDuration();
-	multi_view->pos = pos_inter.get(preview_time / duration);
-	multi_view->ang = ang_inter.get(preview_time / duration);
-	multi_view->ignore_radius = true;
+	multi_view->pos = inter_pos->get(preview_time / duration);
+	multi_view->ang = inter_ang->get(preview_time / duration);
+
 	ed->ForceRedraw();
 	if (preview_time > duration)
 		OnCamStop();
 	if (preview)
 		HuiRunLaterM(50, (HuiEventHandler*)this, &ModeWorldCamera::PreviewUpdate);
+}
+
+void ModeWorldCamera::UpdateTimePos()
+{
+	time_pos.clear();
+	float t0 = 0;
+	bool prev_was_flight = false;
+	foreachi(WorldCamPoint &p, data->Point, i){
+		float t1 = t0 + p.Duration;
+		if (p.Type == CPKCamFlight){
+			time_pos.add(sample2screen(t1));
+		}else{
+			time_pos.add(sample2screen(t0) + (prev_was_flight ? 5 : 0));
+		}
+		prev_was_flight = (p.Type == CPKCamFlight);
+		t0 = t1;
+	}
 }
 
 void ModeWorldCamera::OnCommand(const string &id)
@@ -330,8 +384,10 @@ void ModeWorldCamera::LoadData()
 {
 	OnUpdateMenu();
 
+	UpdateTimePos();
 	dialog->Redraw("cam_area");
-
+	*inter_pos = data->BuildPosInterpolator();
+	*inter_ang = data->BuildAngInterpolator();
 
 	multi_view->ResetData(data);
 
@@ -353,6 +409,7 @@ void ModeWorldCamera::LoadData()
 			NULL,
 			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove | MultiView::FlagDraw,
 			NULL, NULL);
+	ed->ForceRedraw();
 }
 
 void ModeWorldCamera::OnDrawWin(int win)

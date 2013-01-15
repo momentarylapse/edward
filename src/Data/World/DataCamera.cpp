@@ -65,6 +65,12 @@ bool DataCamera::Load(const string& _filename, bool deep)
 				f->ReadVector(&c.Ang);
 				c.Duration = f->ReadFloat();
 			}
+			if ((c.Type == CPKSetCamPosAng) && (c.Duration > 0)){
+				WorldCamPoint c2 = c;
+				c2.Duration = 0;
+				Point.add(c2);
+				c.Type = CPKCamFlight;
+			}
 			Point.add(c);
 		}
 
@@ -141,13 +147,14 @@ float DataCamera::GetDuration() const
 Interpolator<vector> DataCamera::BuildPosInterpolator() const
 {
 	Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE);
+	if (Point.num > 0)
+		if (Point[0].Type == CPKCamFlight)
+			inter.jump(v_0, v_0);
 	for (int i=0; i<Point.num; i++){
 		if (Point[i].Type == CPKCamFlight){
 			inter.add2(Point[i].pos, Point[i].Vel, Point[i].Duration);
 		}else if (Point[i].Type == CPKSetCamPosAng){
-			inter.jump(Point[i].pos, v_0);
-			if (Point[i].Duration > 0)
-				inter.add(Point[i].pos, Point[i].Duration);
+			inter.jump(Point[i].pos, Point[i].Vel);
 		}
 	}
 	return inter;
@@ -156,13 +163,14 @@ Interpolator<vector> DataCamera::BuildPosInterpolator() const
 Interpolator<vector> DataCamera::BuildAngInterpolator() const
 {
 	Interpolator<vector> inter(Interpolator<vector>::TYPE_ANGULAR_LERP);
+	if (Point.num > 0)
+		if (Point[0].Type == CPKCamFlight)
+			inter.jump(v_0, v_0);
 	for (int i=0; i<Point.num; i++){
 		if (Point[i].Type == CPKCamFlight){
 			inter.add(Point[i].Ang, Point[i].Duration);
 		}else if (Point[i].Type == CPKSetCamPosAng){
 			inter.jump(Point[i].Ang, v_0);
-			if (Point[i].Duration > 0)
-				inter.add(Point[i].Ang, Point[i].Duration);
 		}
 	}
 	return inter;

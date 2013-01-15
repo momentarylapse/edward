@@ -11,6 +11,8 @@
 #include "../../Mode.h"
 class CHuiWindow;
 class DataCamera;
+template<class T>
+class Interpolator;
 
 class ModeWorldCamera: public Mode, public HuiEventHandler
 {
@@ -52,6 +54,7 @@ public:
 	bool SaveAs();
 
 	void PreviewUpdate();
+	void UpdateTimePos();
 
 	DataCamera *data;
 
@@ -60,8 +63,12 @@ public:
 	bool edit_vel, edit_ang;
 	float time_scale, time_offset;
 
+	int hover;
 	bool preview;
 	float preview_time;
+
+	Interpolator<vector> *inter_pos, *inter_ang;
+	Array<float> time_pos;
 };
 
 extern ModeWorldCamera *mode_world_camera;
