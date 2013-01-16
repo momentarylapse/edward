@@ -10,6 +10,7 @@
 #include "../../../Edward.h"
 #include "../../../lib/types/interpolation.h"
 #include "Creation/ModeWorldCameraCreatePoint.h"
+#include "../../../Action/World/Camera/ActionCameraMoveTimeSelection.h"
 
 ModeWorldCamera *mode_world_camera = NULL;
 
@@ -43,6 +44,8 @@ ModeWorldCamera::ModeWorldCamera(Mode *_parent, Data *_data) :
 
 	inter_pos = new Interpolator<vector>(Interpolator<vector>::TYPE_CUBIC_SPLINE);
 	inter_ang = new Interpolator<vector>(Interpolator<vector>::TYPE_ANGULAR_LERP);
+	mt_action = NULL;
+	mouse_distance = -1;
 }
 
 ModeWorldCamera::~ModeWorldCamera()
@@ -224,26 +227,54 @@ void ModeWorldCamera::OnAreaDraw()
 
 void ModeWorldCamera::OnAreaLeftButtonDown()
 {
-	foreachi(WorldCamPoint &p, data->Point, i)
-		p.is_selected = (i == hover);
-	ed->ForceRedraw();
-	dialog->Redraw("cam_area");
+	if ((hover >= 0) && (data->Point[hover].is_selected)){
+		mouse_distance = 0;
+		mt_time0 = screen2sample(HuiGetEvent()->mx);
+	}else{
+		foreachi(WorldCamPoint &p, data->Point, i)
+			p.is_selected = (i == hover);
+		ed->ForceRedraw();
+		dialog->Redraw("cam_area");
+	}
 }
 
 void ModeWorldCamera::OnAreaLeftButtonUp()
 {
+	if (mt_action){
+		msg_write("mt end");
+		mt_action->undo(data);
+		data->Execute(mt_action);
+		mt_action = NULL;
+		mouse_distance = -1;
+	}
 }
 
 void ModeWorldCamera::OnAreaMouseMove()
 {
 	int mx = HuiGetEvent()->mx;
-	int new_hover = -1;
-	foreachi(float t, time_pos, i)
-		if (fabs(mx - t) < 5)
-			new_hover = i;
-	if (new_hover != hover){
-		hover = new_hover;
-		dialog->Redraw("cam_area");
+
+	if (HuiGetEvent()->lbut){
+		if (mouse_distance >= 0)
+			mouse_distance += abs(HuiGetEvent()->dx);
+		if (mouse_distance > 5){
+			msg_write("mt update");
+			if (mt_action){
+				mt_action->undo(data);
+				delete(mt_action);
+			}
+			mt_action = new ActionCameraMoveTimeSelection(data, screen2sample(mx), mt_time0);
+			mt_action->execute(data);
+			data->Notify("Change");
+		}
+	}else{
+		int new_hover = -1;
+		foreachi(float t, time_pos, i)
+			if (fabs(mx - t) < 5)
+				new_hover = i;
+		if (new_hover != hover){
+			hover = new_hover;
+			dialog->Redraw("cam_area");
+		}
 	}
 }
 
@@ -373,7 +404,6 @@ void ModeWorldCamera::OnUpdate(Observable *obs)
 	if (obs->GetMessage() == "Change"){
 		data->UpdateVel();
 		LoadData();
-		ed->ForceRedraw();
 	}else{
 
 		dialog->Redraw("cam_area");

@@ -13,6 +13,7 @@ class CHuiWindow;
 class DataCamera;
 template<class T>
 class Interpolator;
+class ActionCameraMoveTimeSelection;
 
 class ModeWorldCamera: public Mode, public HuiEventHandler
 {
@@ -69,6 +70,10 @@ public:
 
 	Interpolator<vector> *inter_pos, *inter_ang;
 	Array<float> time_pos;
+
+	float mt_time0;
+	int mouse_distance;
+	ActionCameraMoveTimeSelection *mt_action;
 };
 
 extern ModeWorldCamera *mode_world_camera;

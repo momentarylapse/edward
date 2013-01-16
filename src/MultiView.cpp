@@ -1382,7 +1382,7 @@ void MultiView::MouseActionStart(int button)
 		cur_action = ActionMultiViewFactory(action[button].name, _data_, mouse_action_param, mouse_action_pos0,
 				GetDirectionRight(mouse_win), GetDirectionUp(mouse_win), GetDirection(mouse_win));
 		cur_action->execute(_data_);
-		_data_->Notify("Changed");
+		_data_->Notify("Change");
 		Notify("ActionStart");
 	}
 }
