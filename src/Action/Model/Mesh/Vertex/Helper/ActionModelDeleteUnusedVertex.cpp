@@ -38,7 +38,7 @@ void ActionModelDeleteUnusedVertex::undo(Data *d)
 	foreach(ModelMove &mv, m->Move)
 		if (mv.Type == MoveTypeVertex){
 			foreach(ModelFrame &f, mv.Frame)
-				f.VertexDPos[vertex] = move[i ++];
+				f.VertexDPos.insert(move[i ++], vertex);
 		}
 
 
@@ -82,8 +82,10 @@ void *ActionModelDeleteUnusedVertex::execute(Data *d)
 	move.clear();
 	foreach(ModelMove &mv, m->Move)
 		if (mv.Type == MoveTypeVertex){
-			foreach(ModelFrame &f, mv.Frame)
+			foreach(ModelFrame &f, mv.Frame){
 				move.add(f.VertexDPos[vertex]);
+				f.VertexDPos.erase(vertex);
+			}
 		}
 
 	// correct references
