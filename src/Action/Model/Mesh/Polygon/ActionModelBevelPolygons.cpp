@@ -27,7 +27,7 @@ void *ActionModelBevelPolygons::compose(Data *d)
 
 	foreachi(ModelSurface &s, m->Surface, i){
 		BevelSurface(m, &s, i);
-		break;
+		_foreach_it_.update();
 	}
 	return NULL;
 }
