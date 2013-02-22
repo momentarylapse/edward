@@ -577,8 +577,6 @@ void Edward::UpdateDialogDir(int kind)
 {
 	if (kind==FDModel)			RootDirKind[kind] = ObjectDir;
 	if (kind==FDModel)			RootDirKind[kind] = ObjectDir;
-	if (kind==FDObject)			RootDirKind[kind] = ObjectDir;
-	if (kind==FDItem)			RootDirKind[kind] = ObjectDir;
 	if (kind==FDTexture)		RootDirKind[kind] = NixTextureDir;
 	if (kind==FDSound)			RootDirKind[kind] = SoundDir;
 	if (kind==FDMaterial)		RootDirKind[kind] = MaterialDir;
@@ -757,8 +755,6 @@ bool Edward::FileDialog(int kind,bool save,bool force_in_root_dir)
 
 	string title, show_filter, filter;
 	if (kind==FDModel){		title=_("Modell-Datei");	show_filter=_("Modelle (*.model)");			filter="*.model";	}
-	if (kind==FDObject){	title=_("Objekte-Datei");	show_filter=_("Objekte (*.object)");		filter="*.object";	}
-	if (kind==FDItem){		title=_("Item-Datei");		show_filter=_("Items (*.item)");			filter="*.item";	}
 	if (kind==FDTexture){	title=_("Textur-Datei");	show_filter=_("Texturen (bmp,jpg,tga,avi)");filter="*.jpg;*.bmp;*.tga;*.avi";	}
 	if (kind==FDSound){		title=_("Sound-Datei");		show_filter=_("Sounds (wav,mp3,midi)");		filter="*.wav;*.mp3;*.midi";	}
 	if (kind==FDMaterial){	title=_("Material-Datei");	show_filter=_("Materialien (*.material)");	filter="*.material";	}

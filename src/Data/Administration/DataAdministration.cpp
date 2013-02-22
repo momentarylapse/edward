@@ -114,8 +114,6 @@ string FD2Dir(int k)
 {
 	if (k==-1)				return ed->RootDir;
 	if (k==FDModel)			return ObjectDir;
-//	if (k==FDObject)		return ObjectDir;
-//	if (k==FDItem)			return ObjectDir;
 	if (k==FDTexture)		return NixTextureDir;
 	if (k==FDSound)			return SoundDir;
 	if (k==FDMaterial)		return MaterialDir;
@@ -376,8 +374,6 @@ AdminFile *AdminFileList::add_unchecked_ae(int kind, const string &filename, Adm
 	string filename2 = filename;
 	if (kind==FDWorld)		filename2 += ".world";
 	if (kind==FDTerrain)	filename2 += ".map";
-//	if (kind==FDObject)		filename2 += ".object";
-//	if (kind==FDItem)		filename2 += ".item";
 	if (kind==FDModel)		filename2 += ".model";
 	if (kind==FDMaterial)	filename2 += ".material";
 	if (kind==FDFont)		filename2 += ".xfont";
@@ -468,8 +464,6 @@ void DataAdministration::MetaFraesDir(int kind)
 	if (kind==FDWorld)		extension = ".world";
 	if (kind==FDTerrain)	extension = ".map";
 	if (kind==FDModel)		extension = ".model";
-//	if (kind==FDObject)		extension = ".object";
-//	if (kind==FDItem)		extension = ".item";
 	if (kind==FDMaterial)	extension = ".material";
 	if (kind==FDFont)		extension = ".xfont";
 	if (kind==FDShaderFile)	extension = ".fx";

@@ -19,8 +19,6 @@
 // file types
 enum{
 	FDModel,
-	FDObject,
-	FDItem,
 	FDTexture,
 	FDSound,
 	FDMaterial,
