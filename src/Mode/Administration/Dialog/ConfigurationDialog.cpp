@@ -7,6 +7,7 @@
 
 #include "ConfigurationDialog.h"
 #include "../../../Data/Administration/DataAdministration.h"
+#include "../../../Data/Administration/GameIniData.h"
 #include "../../../Edward.h"
 
 ConfigurationDialog::ConfigurationDialog(CHuiWindow* _parent, bool _allow_parent, DataAdministration *_data, bool _exporting):
@@ -50,7 +51,7 @@ void ConfigurationDialog::LoadData()
 
 	//GameIniDialog=GameIni;
 //	data->LoadGameIni(ed->RootDir, &GameIniDialog);
-	GameIniData GameIniDialog = data->GameIni;
+	GameIniData GameIniDialog = *data->GameIni;
 	SetString("default_world",GameIniDialog.DefWorld);
 	SetString("default_second_world",GameIniDialog.SecondWorld);
 	SetString("default_script",GameIniDialog.DefScript);
@@ -105,7 +106,7 @@ void ConfigurationDialog::OnOk()
 {
 	if (exporting){
 		//GameIniAlt=GameIni;
-		GameIniData GameIniExport = data->GameIni;
+		GameIniData GameIniExport = *data->GameIni;
 		string dir = GetString("rootdir");
 		GameIniExport.DefWorld = GetString("default_world");
 		GameIniExport.SecondWorld = GetString("default_second_world");
@@ -126,13 +127,13 @@ void ConfigurationDialog::OnOk()
 		if (rdc)
 			ed->MakeDirs(GetString("rootdir"),true);
 //		data->UnlinkGameIni();
-		data->GameIni.DefWorld = GetString("default_world");
-		data->GameIni.SecondWorld = GetString("default_second_world");
-		data->GameIni.DefScript = GetString("default_script");
-		data->GameIni.DefMaterial = GetString("default_material");
-		data->GameIni.DefFont = GetString("default_font");
-//		data->LinkGameIni(&data->GameIni);
-		data->GameIni.Save(ed->RootDir);
+		data->GameIni->DefWorld = GetString("default_world");
+		data->GameIni->SecondWorld = GetString("default_second_world");
+		data->GameIni->DefScript = GetString("default_script");
+		data->GameIni->DefMaterial = GetString("default_material");
+		data->GameIni->DefFont = GetString("default_font");
+//		data->LinkGameIni(data->GameIni);
+		data->GameIni->Save(ed->RootDir);
 		if (rdc)
 			data->UpdateDatabase();
 	}

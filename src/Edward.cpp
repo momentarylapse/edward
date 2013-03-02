@@ -655,6 +655,24 @@ void Edward::MakeDirs(const string &original_dir, bool as_root_dir)
 	msg_db_l(1);
 }
 
+
+string Edward::GetRootDir(int kind)
+{
+	if (kind==-1)				return RootDir;
+	if (kind==FDModel)			return ObjectDir;
+	if (kind==FDTexture)		return NixTextureDir;
+	if (kind==FDSound)			return SoundDir;
+	if (kind==FDMaterial)		return MaterialDir;
+	if (kind==FDTerrain)		return MapDir;
+	if (kind==FDWorld)			return MapDir;
+	if (kind==FDShaderFile)	return MaterialDir;
+	if (kind==FDFont)			return MaterialDir;
+	if (kind==FDScript)		return ScriptDir;
+	if (kind==FDCameraFlight)	return ScriptDir;
+	if (kind==FDFile)			return RootDir;
+	return RootDir;
+}
+
 void Edward::RemoveMessage()
 {
 	message_str.erase(0);

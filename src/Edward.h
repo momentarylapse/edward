@@ -102,6 +102,7 @@ public:
 	void SetRootDirectory(const string &directory);
 	void UpdateDialogDir(int kind);
 	void MakeDirs(const string &original_dir, bool as_root_dir = false);
+	string GetRootDir(int kind);
 
 	bool FileDialog(int kind, bool save, bool force_in_root_dir);
 	bool AllowTermination();

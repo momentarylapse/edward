@@ -7,6 +7,8 @@
 
 #include "AdministrationDialog.h"
 #include "../../../Data/Administration/DataAdministration.h"
+#include "../../../Data/Administration/AdminFile.h"
+#include "../../../Data/Administration/AdminFileList.h"
 #include "../../../Edward.h"
 #include "../../../Mode/Welcome/ModeWelcome.h"
 #include "../../../Mode/Model/ModeModel.h"
@@ -15,8 +17,6 @@
 #include "../../../Mode/Font/ModeFont.h"
 #include "../ModeAdministration.h"
 #include <assert.h>
-
-string FD2Dir(int k); // DataAdministration.cpp
 
 AdministrationDialog::AdministrationDialog(CHuiWindow* _parent, bool _allow_parent, DataAdministration *_data):
 	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls | HuiWinModeResizable, true)
@@ -68,8 +68,6 @@ static string FD2Str(int k)
 {
 	if (k==-1)				return _("[Engine]");
 	if (k==FDModel)			return _("Modell");
-//	if (k==FDObject)		return _("Objekt");
-//	if (k==FDItem)			return _("Item");
 	if (k==FDTexture)		return _("Textur");
 	if (k==FDSound)			return _("Sound");
 	if (k==FDMaterial)		return _("Material");
@@ -97,9 +95,9 @@ void AdministrationDialog::FillAdminList(int view, const string &lid)
 
 	l->clear();
 	if (view == 0){ // current game (in game.ini)
-		l->add_recursive(data->file_list[0]);
+		l->add_recursive((*data->file_list)[0]);
 	}else if (view == 1){ // all files
-		*l = data->file_list;
+		*l = *data->file_list;
 	}else if (view == 2){ // selected file
 		foreach(AdminFile *a, SelectedAdminFile->Parent)
 			l->add(a);
@@ -107,11 +105,11 @@ void AdministrationDialog::FillAdminList(int view, const string &lid)
 		foreach(AdminFile *a, SelectedAdminFile->Child)
 			l->add(a);
 	}else if (view == 4){ // unnessecary
-		foreach(AdminFile *a, data->file_list)
+		foreach(AdminFile *a, *data->file_list)
 			if ((a->Kind >= 0) && (a->Parent.num == 0))
 				l->add(a);
 	}else if (view == 5){ // missing
-		foreach(AdminFile *a, data->file_list)
+		foreach(AdminFile *a, *data->file_list)
 			if (a->Missing)
 				l->add(a);
 	}
@@ -240,7 +238,7 @@ void AdministrationDialog::OnEdit()
 	switch (a->Kind){
 		case -1:
 			if (a->Name == "config.txt")
-				HuiOpenDocument(FD2Dir(a->Kind) + a->Name);
+				HuiOpenDocument(ed->GetRootDir(a->Kind) + a->Name);
 			else if (a->Name == "game.ini")
 				mode_administration->BasicSettings();
 			break;
@@ -279,7 +277,7 @@ void AdministrationDialog::OnEdit()
 		case FDShaderFile:
 		case FDScript:
 		case FDFile:
-			HuiOpenDocument(FD2Dir(a->Kind) + a->Name);
+			HuiOpenDocument(ed->GetRootDir(a->Kind) + a->Name);
 			break;
 	}
 }
