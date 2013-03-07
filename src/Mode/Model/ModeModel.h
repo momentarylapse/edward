@@ -36,6 +36,8 @@ public:
 	bool Save();
 	bool SaveAs();
 
+	bool Import3ds();
+
 	void SetMaterialSelected();
 	void SetMaterialMouseOver();
 	void SetMaterialCreation();

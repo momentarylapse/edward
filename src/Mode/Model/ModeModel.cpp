@@ -8,6 +8,7 @@
 #include "../../Edward.h"
 #include "ModeModel.h"
 #include "../../Data/Model/DataModel.h"
+#include "../../Data/Model/Import/Importer3ds.h"
 #include "Mesh/ModeModelMesh.h"
 #include "Mesh/ModeModelMeshVertex.h"
 #include "Mesh/ModeModelMeshEdge.h"
@@ -107,6 +108,9 @@ void ModeModel::OnCommand(const string & id)
 		Save();
 	if (id == "save_as")
 		SaveAs();
+
+	if (id == "import_from_3ds")
+		Import3ds();
 
 	// TODO -> edward?
 	if (id == "undo")
@@ -223,6 +227,21 @@ bool ModeModel::SaveAs()
 	if (ed->FileDialog(FDModel, true, false))
 		return data->Save(ed->DialogFileComplete);
 	return false;
+}
+
+bool ModeModel::Import3ds()
+{
+	if (!ed->AllowTermination())
+		return false;
+	if (!ed->FileDialog(FDFile, false, false))
+		return false;
+	Importer3ds *im = new Importer3ds;
+	if (!im->Import(data, ed->DialogFileComplete))
+		return false;
+
+	ed->SetMode(mode_model);
+	mode_model_mesh->OptimizeView();
+	return true;
 }
 
 void ModeModel::ExecutePropertiesDialog(int initial_tab_page)
