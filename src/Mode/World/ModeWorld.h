@@ -62,7 +62,6 @@ public:
 
 	DataWorld *data;
 
-	int ViewStage;
 	bool ShowTerrains;
 	bool ShowObjects;
 	bool ShowEffects;

@@ -45,7 +45,6 @@ ModeWorld::ModeWorld() :
 	ShowObjects = true;
 	ShowEffects = false;
 	TerrainShowTextureLevel = -1;
-	ViewStage = 0;
 
 	mode_world_camera = new ModeWorldCamera(this, new DataCamera);
 }
@@ -332,6 +331,7 @@ void ModeWorld::OnUpdate(Observable *o)
 				&IsMouseOverTerrain, &IsInRectTerrain);
 	}else if (o->GetName() == "MultiView"){
 		// selection
+		ed->UpdateMenu();
 	}
 }
 
@@ -479,8 +479,8 @@ void ModeWorld::OnDrawWin(int win)
 		foreachi(WorldTerrain &t, data->Terrains, i){
 			if (!t.terrain)
 				continue;
-			/*if (t.ViewStage < ViewStage)
-				continue;*/
+			if (t.view_stage < multi_view->view_stage)
+				continue;
 
 			/*if (TerrainShowTextureLevel<0){
 				NixSetShader(t.material->shader);
@@ -511,7 +511,7 @@ void ModeWorld::OnDrawWin(int win)
 		NixEnableLighting(true);
 
 		foreach(WorldObject &o, data->Objects){
-			if (o.view_stage < ViewStage)
+			if (o.view_stage < multi_view->view_stage)
 				continue;
 			if (o.object){
 				o.object->Draw(0, false, false);
@@ -697,7 +697,6 @@ void ModeWorld::OptimizeView()
 	if ((max - min).length_fuzzy() > 0)
 		multi_view->radius = (max - min).length_fuzzy() * 1.3f;
 
-	ViewStage = 0;
 	//ShowEffects = false;
 	TerrainShowTextureLevel = -1;
 	//TerrainsSelectable=false;

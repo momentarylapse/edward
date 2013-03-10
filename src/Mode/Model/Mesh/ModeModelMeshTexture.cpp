@@ -40,10 +40,13 @@ void ModeModelMeshTexture::OnStart()
 			v.view_stage = t.view_stage;
 			for (int k=0;k<t.Side.num;k++){
 				v.is_selected = data->Vertex[t.Side[k].Vertex].is_selected;
+				v.view_stage = t.view_stage;
 				v.pos = t.Side[k].SkinVertex[data->CurrentTextureLevel];
 				skin_vertex.add(v);
 			}
 		}
+
+	multi_view->view_stage = ed->multi_view_3d->view_stage;
 
 	Subscribe(data);
 	Subscribe(multi_view, "SelectionChange");
