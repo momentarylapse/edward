@@ -486,8 +486,7 @@ void Edward::OnUpdate(Observable *o)
 	if (o->GetName() == "MultiView"){
 		if (o->GetMessage() == "SettingsChange")
 			UpdateMenu();
-		else
-			ForceRedraw();
+		ForceRedraw();
 	}else if (o->GetName() == "ActionManager"){
 		ActionManager *am = dynamic_cast<ActionManager*>(o);
 		if (o->GetMessage() == "Failed")

@@ -331,7 +331,6 @@ void ModeWorld::OnUpdate(Observable *o)
 				&IsMouseOverTerrain, &IsInRectTerrain);
 	}else if (o->GetName() == "MultiView"){
 		// selection
-		ed->UpdateMenu();
 	}
 }
 

@@ -118,7 +118,7 @@ void MultiView::ResetView()
 	MouseOver = -1;
 	MouseOverSet = -1;
 	MouseOverType = -1;
-	ed->ForceRedraw();
+	Notify("SettingsChange");
 }
 
 void MultiView::ResetMouseAction()
@@ -171,7 +171,7 @@ void MultiView::DoZoom(float factor)
 		update_zoom;
 		pos += mup - VecUnProject(vector(mx,my,0),mouse_win);
 	}
-	ed->ForceRedraw();
+	Notify("Update");
 }
 
 void MultiView::DoMove(const vector &dir)
@@ -183,35 +183,31 @@ void MultiView::DoMove(const vector &dir)
 		pos += radius*(r*dir.x+u*dir.y+d*dir.z) * SPEED_MOVE;
 	else
 		pos += (float)NixScreenHeight / zoom*(r*dir.x+u*dir.y) * SPEED_MOVE;
-	ed->ForceRedraw();
+	Notify("Update");
 }
 
 void MultiView::ToggleWholeWindow()
 {
 	whole_window = !whole_window;
 	view[4].type = view[mouse_win].type;
-	ed->ForceRedraw();
 	Notify("SettingsChange");
 }
 
 void MultiView::ToggleGrid()
 {
 	grid_enabled = !grid_enabled;
-	ed->ForceRedraw();
 	Notify("SettingsChange");
 }
 
 void MultiView::ToggleLight()
 {
 	light_enabled = !light_enabled;
-	ed->ForceRedraw();
 	Notify("SettingsChange");
 }
 
 void MultiView::ToggleWire()
 {
 	wire_mode = !wire_mode;
-	ed->ForceRedraw();
 	Notify("SettingsChange");
 }
 
@@ -473,7 +469,7 @@ void MultiView::OnMouseMove()
 			ed->SetCursorPos(HoldingX, HoldingY);
 	}
 
-	ed->ForceRedraw();
+	Notify("Update");
 }
 
 
@@ -494,7 +490,7 @@ void MultiView::StartRect()
 				sd->m_old = sd->is_selected;
 			}
 
-	ed->ForceRedraw();
+	Notify("Update");
 }
 
 void MultiView::EndRect()
@@ -505,7 +501,7 @@ void MultiView::EndRect()
 	MVRect=false;
 	RectWin=-1;
 
-	ed->ForceRedraw();
+	Notify("Update");
 }
 
 
@@ -1456,7 +1452,6 @@ void MultiView::MouseActionEnd(bool set)
 		}else{
 			cur_action->abort_and_notify(_data_);
 			delete(cur_action);
-			ed->ForceRedraw();
 			Notify("ActionAbort");
 		}
 	}
@@ -1485,7 +1480,7 @@ void MultiView::ViewStagePush()
 				if (sd->is_selected)
 					sd->view_stage = view_stage;
 			}
-	Notify("ViewStageChange");
+	Notify("SettingsChange");
 }
 
 void MultiView::ViewStagePop()
@@ -1500,7 +1495,7 @@ void MultiView::ViewStagePop()
 				if (sd->view_stage > view_stage)
 					sd->view_stage = view_stage;
 			}
-	Notify("ViewStageChange");
+	Notify("SettingsChange");
 }
 
 void MultiView::ResetMessage3d()
