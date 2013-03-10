@@ -253,6 +253,11 @@ void MultiView::OnCommand(const string & id)
 	if (id == "wire")
 		ToggleWire();
 
+	if (id == "view_push")
+		ViewStagePush();
+	if (id == "view_pop")
+		ViewStagePop();
+
 	// mouse wheel -> zoom
 	if (e->dz > 0)
 		DoZoom(SPEED_ZOOM_WHEEL);
@@ -1467,6 +1472,35 @@ void MultiView::AddMessage3d(const string &str, const vector &pos)
 	m.str = str;
 	m.pos = pos;
 	message3d.add(m);
+}
+
+void MultiView::ViewStagePush()
+{
+	view_stage ++;
+
+	foreach(MultiViewData &d, data)
+		if (d.MVSelectable)
+			for (int i=0;i<d.data->num;i++){
+				MultiViewSingleData* sd=MVGetSingleData(d,i);
+				if (sd->is_selected)
+					sd->view_stage = view_stage;
+			}
+	Notify("ViewStageChange");
+}
+
+void MultiView::ViewStagePop()
+{
+	if (view_stage <= 0)
+		return;
+	view_stage --;
+	foreach(MultiViewData &d, data)
+		if (d.MVSelectable)
+			for (int i=0;i<d.data->num;i++){
+				MultiViewSingleData* sd=MVGetSingleData(d,i);
+				if (sd->view_stage > view_stage)
+					sd->view_stage = view_stage;
+			}
+	Notify("ViewStageChange");
 }
 
 void MultiView::ResetMessage3d()

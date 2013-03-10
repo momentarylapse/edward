@@ -83,8 +83,6 @@ DataModel::DataModel() :
 {
 	AutoTexturingData.enabled = false;
 
-	ViewStage = 0; // TODO: mode...?
-
 	if (!EmptyMove){
 		// create one dummy animation
 		EmptyMove = new ModelMove;
@@ -1378,7 +1376,7 @@ ModelSurface *DataModel::AddSurface(int surf_no)
 {
 	ModelSurface s;
 	s.model = this;
-	s.view_stage = ViewStage;
+	s.view_stage = ed->multi_view_3d->view_stage;
 	s.is_selected = true;
 	s.IsClosed = false;
 	s.IsVisible = true;
@@ -1448,8 +1446,11 @@ void DataModel::SelectionFromVertices()
 		s.is_selected = true;
 		foreach(ModelPolygon &t, s.Polygon){
 			t.is_selected = true;
-			for (int k=0;k<t.Side.num;k++)
+			t.view_stage = Vertex[t.Side[0].Vertex].view_stage;
+			for (int k=0;k<t.Side.num;k++){
 				t.is_selected &= Vertex[t.Side[k].Vertex].is_selected;
+				t.view_stage = min(t.view_stage, Vertex[t.Side[k].Vertex].view_stage);
+			}
 			s.is_selected &= t.is_selected;
 		}
 	}

@@ -407,7 +407,6 @@ public:
 
 
 	// editor
-	int ViewStage;
 
 	bool ForceNewNormals[4];
 	bool NormalIndicesOK[4];

@@ -7,6 +7,7 @@
 
 #include "ModelSurface.h"
 #include "DataModel.h"
+#include "../../Edward.h"
 
 void ModelSurface::AddVertex(int v)
 {
@@ -77,7 +78,7 @@ void ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, in
 
 	t.is_selected = false;
 	t.Material = material;
-	t.view_stage = model->ViewStage;
+	t.view_stage = ed->multi_view_3d->view_stage;
 	t.NormalDirty = true;
 	t.TriangulationDirty = true;
 	if (index >= 0){

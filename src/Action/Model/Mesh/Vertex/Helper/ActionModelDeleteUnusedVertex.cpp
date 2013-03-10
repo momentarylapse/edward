@@ -7,6 +7,7 @@
 
 #include "ActionModelDeleteUnusedVertex.h"
 #include "../../../../../Data/Model/DataModel.h"
+#include "../../../../../Edward.h"
 #include <assert.h>
 
 
@@ -28,7 +29,7 @@ void ActionModelDeleteUnusedVertex::undo(Data *d)
 	vv.BoneIndex = bone;
 	vv.is_selected = false;
 	vv.is_special = false;
-	vv.view_stage = m->ViewStage;
+	vv.view_stage = ed->multi_view_3d->view_stage;
 	vv.RefCount = 0;
 	vv.Surface = -1;
 	m->Vertex.insert(vv, vertex);

@@ -7,6 +7,7 @@
 
 #include "ActionModelAddVertex.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Edward.h"
 #include <assert.h>
 
 ActionModelAddVertex::ActionModelAddVertex(const vector &_pos, int _bone_index, int _normal_mode)
@@ -39,7 +40,7 @@ void *ActionModelAddVertex::execute(Data *d)
 	vv.BoneIndex = bone_index;
 	vv.is_selected = false;
 	vv.is_special = false;
-	vv.view_stage = m->ViewStage;
+	vv.view_stage = ed->multi_view_3d->view_stage;
 	vv.RefCount = 0;
 	vv.Surface = -1;
 	m->Vertex.add(vv);

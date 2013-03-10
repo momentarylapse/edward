@@ -740,6 +740,8 @@ void Edward::UpdateMenu()
 		if (!d->action_manager->IsSave())
 			title = "*" + title;
 		SetTitle(title);
+		if (cur_mode->multi_view)
+			Enable("view_pop", cur_mode->multi_view->view_stage > 0);
 	}else{
 		SetTitle(AppName);
 	}

@@ -77,7 +77,7 @@ void *ActionModelSurfaceSubtract::compose(Data *d)
 		if (m->Surface[bi].is_selected){
 			for (int ai=m->Surface.num-1; ai>=0; ai--){
 				ModelSurface *a = &m->Surface[ai];
-				if ((a->view_stage >= m->ViewStage) && (!a->is_selected))
+				if ((a->view_stage >= ed->multi_view_3d->view_stage) && (!a->is_selected))
 					SurfaceSubtract(m, a, &m->Surface[bi]);
 			}
 		}

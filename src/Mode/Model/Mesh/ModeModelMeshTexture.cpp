@@ -120,7 +120,7 @@ void ModeModelMeshTexture::OnDrawWin(int win)
 		foreach(ModelPolygon &t, surf.Polygon){
 			if (t.Material != data->CurrentMaterial)
 				continue;
-			if (t.view_stage < data->ViewStage)
+			if (t.view_stage < multi_view->view_stage)
 				continue;
 			Array<vector> v;
 			for (int k=0;k<t.Side.num;k++)
