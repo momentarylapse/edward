@@ -89,13 +89,11 @@ public:
 		float ReflectionDensity;
 		string ReflectionTextureFile[6];
 
-		//effects
-		float ShiningDensity, ShiningLength;
-		bool Water;
-		string EffectFile;
-		int EffectIndex;
+		// shader
+		string ShaderFile;
 
 		void Reset();
+		int GetShader() const;
 	};
 
 	AppearanceData Appearance;
@@ -147,6 +145,8 @@ public:
 
 	// sounds
 	int NumSoundRules;*/
+
+	int Shader;
 };
 
 #endif /* DATAMATERIAL_H_ */

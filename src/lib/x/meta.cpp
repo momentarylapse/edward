@@ -74,7 +74,7 @@ static Array<Model*> ModelOriginal, ModelOriginal2;
 static Array<sModelRefCopy> ModelCopy, ModelCopy2;
 
 // materials
-static Array<Material*> _Material_;
+static Array<Material*> MetaMaterial;
 
 // fonts
 Array<XFont*> _XFont_;
@@ -118,7 +118,6 @@ void MetaInit()
 #ifdef _X_ALLOW_MODEL_
 	// create the default material's default values
 	Material *m = new Material;
-	_Material_.add(m);
 	m->name = "-default-";
 	m->num_textures = 0;
 	m->ambient = White;
@@ -140,6 +139,7 @@ void MetaInit()
 	m->rc_static = 0.8f;
 	m->rc_sliding = 0.4f;
 	m->rc_rolling = 0.90f;
+	MetaMaterial.add(m);
 	
 	ModelToIgnore = NULL;
 #endif
@@ -149,12 +149,8 @@ void MetaInit()
 
 void MetaEnd()
 {
-#ifdef _X_ALLOW_MODEL_
-	delete(_Material_[0]);
-	_Material_.clear();
-#endif
-
 	MetaReset();
+	delete(MetaMaterial[0]);
 }
 
 void MetaReset()
@@ -182,6 +178,13 @@ void MetaReset()
 	ModelOriginal2.clear();
 	ModelCopy2.clear();
 
+	// delete materials
+#ifdef _X_ALLOW_MODEL_
+	for (int i=1;i<MetaMaterial.num;i++)
+		delete(MetaMaterial[i]);
+#endif
+	MetaMaterial.resize(1);
+
 	MetaDeleteStuffList.clear();
 
 	ModelToIgnore=NULL;
@@ -197,6 +200,7 @@ void MetaReset()
 void MetaSetDirs(const string &texture_dir, const string &map_dir, const string &object_dir, const string &sound_dir, const string &script_dir, const string &material_dir)
 {
 	NixTextureDir = texture_dir;
+	NixShaderDir = material_dir;
 	MapDir = map_dir;
 	ObjectDir = object_dir;
 #ifdef _X_USE_SOUND_
@@ -496,16 +500,16 @@ Material *MetaLoadMaterial(const string &filename, bool as_default)
 #ifdef _X_ALLOW_MODEL_
 	// an empty name loads the default material
 	if (filename.num == 0)
-		return _Material_[0];
+		return MetaMaterial[0];
 
 	if (!as_default){
-		for (int i=1;i<_Material_.num;i++)
-			if (_Material_[i]->name == filename)
-				return _Material_[i];
+		for (int i=0;i<MetaMaterial.num;i++)
+			if (MetaMaterial[i]->name == filename)
+				return MetaMaterial[i];
 	}
 	CFile *f = OpenFile(MaterialDir + filename + ".material");
 	if (!f)
-		return FileErrorsAreCritical ? NULL : _Material_[0];
+		return FileErrorsAreCritical ? NULL : MetaMaterial[0];
 	Material *m = new Material;
 
 	int ffv=f->ReadFileFormatVersion();
@@ -546,26 +550,31 @@ Material *MetaLoadMaterial(const string &filename, bool as_default)
 		m->cube_map_size=f->ReadInt();
 		int cmt[6];
 		for (int i=0;i<6;i++)
-			cmt[i]=NixLoadTexture(f->ReadStr());
+			cmt[i] = NixLoadTexture(f->ReadStr());
 #ifdef _X_ALLOW_FX_
-		/*if (m->ReflectionMode == ReflectionCubeMapDynamical){
-			m->CubeMap=FxCubeMapNew(m->CubeMapSize);
-			FxCubeMapCreate(m->CubeMap,cmt[0],cmt[1],cmt[2],cmt[3],cmt[4],cmt[5]);
-		}*/
+		if (m->reflection_mode == ReflectionCubeMapDynamical){
+			//m->cube_map = FxCubeMapNew(m->cube_map_size);
+			//FxCubeMapCreate(m->cube_map,cmt[0],cmt[1],cmt[2],cmt[3],cmt[4],cmt[5]);
+		}else if (m->reflection_mode == ReflectionCubeMapStatic){
+			m->cube_map = FxCubeMapNew(m->cube_map_size);
+			FxCubeMapCreate(m->cube_map,cmt[0],cmt[1],cmt[2],cmt[3],cmt[4],cmt[5]);
+		}
 #endif
 		// ShaderFile
 		string ShaderFile = f->ReadStrC();
-		m->shader = MetaLoadShader(ShaderFile);
+		m->shader = -1;
+		if (ShaderFile.num > 0)
+			m->shader = NixLoadShader(ShaderFile + ".fx.glsl");
 		// Physics
 		m->rc_jump=(float)f->ReadIntC()*0.001f;
 		m->rc_static=(float)f->ReadInt()*0.001f;
 		m->rc_sliding=(float)f->ReadInt()*0.001f;
 		m->rc_rolling=(float)f->ReadInt()*0.001f;
 
-		_Material_.add(m);
+		MetaMaterial.add(m);
 	}else{
 		msg_error(format("wrong file format: %d (expected: 4)", ffv));
-		m = _Material_[0];
+		m = MetaMaterial[0];
 	}
 	FileClose(f);
 	return m;
@@ -574,15 +583,15 @@ Material *MetaLoadMaterial(const string &filename, bool as_default)
 }
 
 static bool _alpha_enabled_ = false;
-static bool _shader_file_used_ = false;
+static bool _shader_prog_used_ = false;
 
 void MetaSetMaterial(Material *m)
 {
 #ifdef _X_ALLOW_MODEL_
 	NixSetMaterial(m->ambient,m->diffuse,m->specular,m->shininess,m->emission);
-	if ((m->shader >= 0) || (_shader_file_used_)){
+	if ((m->shader >= 0) || (_shader_prog_used_)){
 		NixSetShader(m->shader);
-		_shader_file_used_ = (m->shader >= 0);
+		_shader_prog_used_ = (m->shader >= 0);
 	}
 	
 	if (m->transparency_mode > 0){
@@ -672,8 +681,8 @@ int _cdecl MetaLoadXFont(const string &filename)
 		int tx = 1;
 		int ty = 1;
 		if (font->texture >= 0){
-			tx = NixTexture[font->texture].Width;
-			ty = NixTexture[font->texture].Height;
+			tx = NixTextures[font->texture].width;
+			ty = NixTextures[font->texture].height;
 		}
 		font->num_glyphs = f->ReadWordC();
 		int height=f->ReadByteC();
@@ -849,12 +858,5 @@ float _cdecl XFDrawVertStr(float x,float y,float height,const string &str)
 	NixSetAlpha(AlphaNone);
 	msg_db_l(10);
 	return 0;
-}
-
-int _cdecl MetaLoadShader(const string &filename)
-{
-	if (filename.num > 0)
-		return NixLoadShader(MaterialDir + filename + ".fx");
-	return -1;
 }
 

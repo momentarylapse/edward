@@ -29,7 +29,7 @@ public:
 	void OnTransparencyMode();
 	void OnReflection();
 	void OnReflectionTextures();
-	void OnFindEffect();
+	void OnFindShader();
 	void OnOk();
 	void OnClose();
 

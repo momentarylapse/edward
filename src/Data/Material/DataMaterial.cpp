@@ -14,11 +14,14 @@
 DataMaterial::DataMaterial() :
 	Data(FDMaterial)
 {
+	Shader = -1;
+
 	Reset();
 }
 
 DataMaterial::~DataMaterial()
 {
+	Reset();
 }
 
 bool DataMaterial::Save(const string & _filename)
@@ -46,9 +49,9 @@ bool DataMaterial::Save(const string & _filename)
 	f->WriteInt(Appearance.AlphaDestination);
 	f->WriteBool(Appearance.AlphaZBuffer);
 	f->WriteComment("// Appearance");
-	f->WriteInt(Appearance.ShiningDensity);
-	f->WriteInt(Appearance.ShiningLength);
-	f->WriteBool(Appearance.Water);
+	f->WriteInt(0);
+	f->WriteInt(0);
+	f->WriteBool(false);
 	f->WriteComment("// Reflection");
 	f->WriteInt(Appearance.ReflectionMode);
 	f->WriteInt(Appearance.ReflectionDensity);
@@ -56,7 +59,7 @@ bool DataMaterial::Save(const string & _filename)
 	for (int i=0;i<6;i++)
 		f->WriteStr(Appearance.ReflectionTextureFile[i]);
 	f->WriteComment("// ShaderFile");
-	f->WriteStr(Appearance.EffectFile);
+	f->WriteStr(Appearance.ShaderFile);
 	f->WriteComment("// Physics");
 	f->WriteInt(Physics.RCJump * 1000.0f);
 	f->WriteInt(Physics.RCStatic * 1000.0f);
@@ -124,9 +127,9 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 		Appearance.AlphaDestination = f->ReadInt();
 		Appearance.AlphaZBuffer = f->ReadBool();
 		// Appearance
-		Appearance.ShiningDensity = (float)f->ReadIntC();
-		Appearance.ShiningLength = (float)f->ReadInt();
-		Appearance.Water = f->ReadBool();
+		f->ReadIntC();
+		f->ReadInt();
+		f->ReadBool();
 		// Reflection
 		Appearance.ReflectionMode = f->ReadIntC();
 		Appearance.ReflectionDensity = (float)f->ReadInt();
@@ -134,7 +137,9 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 		for (int i=0;i<6;i++)
 			Appearance.ReflectionTextureFile[i] = f->ReadStr();
 		// ShaderFile
-		Appearance.EffectFile = f->ReadStrC();
+		string sf = f->ReadStrC();
+		if (sf.num > 0)
+			Appearance.ShaderFile = sf + ".fx.glsl";
 		// Physics
 		Physics.RCJump = (float)f->ReadIntC() * 0.001f;
 		Physics.RCStatic = (float)f->ReadInt() * 0.001f;
@@ -168,14 +173,16 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 			Appearance.ReflectionMode = ReflectionMetal;
 			Appearance.ReflectionDensity = (float)MetalDensity;
 		}
-		Appearance.ShiningDensity = (float)f->ReadInt();
-		Appearance.ShiningLength = (float)f->ReadInt();
+		f->ReadInt();
+		f->ReadInt();
 		bool Mirror = f->ReadBool();
 		if (Mirror)
 			Appearance.ReflectionMode = ReflectionMirror;
-		Appearance.Water = f->ReadBool();
+		f->ReadBool();
 		// ShaderFile
-		Appearance.EffectFile = f->ReadStrC();
+		string sf = f->ReadStrC();
+		if (sf.num > 0)
+			Appearance.ShaderFile = sf + ".fx.glsl";
 		// Physics
 		Physics.RCJump = (float)f->ReadIntC() * 0.001f;
 		Physics.RCStatic = (float)f->ReadInt() * 0.001f;
@@ -204,14 +211,16 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 			Appearance.ReflectionMode = ReflectionMetal;
 			Appearance.ReflectionDensity = (float)MetalDensity;
 		}
-		Appearance.ShiningDensity = (float)f->ReadInt();
-		Appearance.ShiningLength = (float)f->ReadInt();
+		f->ReadInt();
+		f->ReadInt();
 		Appearance.ReflectionMode = (f->ReadBool() ? ReflectionMirror : ReflectionNone);
 		bool Mirror = f->ReadBool();
 		if (Mirror)
 			Appearance.ReflectionMode = ReflectionMirror;
 		// ShaderFile
-		Appearance.EffectFile = f->ReadStrC();
+		string sf = f->ReadStrC();
+		if (sf.num > 0)
+			Appearance.ShaderFile = sf + ".fx.glsl";
 
 		Appearance.AlphaZBuffer = (Appearance.TransparencyMode != TransparencyModeFunctions) && (Appearance.TransparencyMode != TransparencyModeFactor);
 	}else{
@@ -223,11 +232,7 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 	delete(f);
 
 
-
-	NixDeleteShader(Appearance.EffectIndex);
 	if (deep){
-		if (Appearance.EffectFile.num>0)
-			Appearance.EffectIndex = NixLoadShader(MaterialDir + Appearance.EffectFile + ".fx");
 		for (int i=0;i<Appearance.NumTextureLevels;i++)
 			Appearance.Texture[i] = NixLoadTexture(Appearance.TextureFile[i]);
 	}
@@ -261,11 +266,13 @@ void DataMaterial::AppearanceData::Reset()
 	for (int i=0;i<6;i++)
 		ReflectionTextureFile[i] = "";
 
-	Water = false;
-	ShiningDensity = 0;
-	ShiningLength = 0;
-	EffectFile = "";
-	EffectIndex = -1;
+
+	ShaderFile.clear();
+}
+
+int DataMaterial::AppearanceData::GetShader() const
+{
+	return NixLoadShader(ShaderFile);
 }
 
 
@@ -290,8 +297,11 @@ void DataMaterial::SoundData::Reset()
 
 void DataMaterial::Reset()
 {
-
 	filename = "";
+
+	if (Shader >= 0)
+		NixUnrefShader(Shader);
+	Shader = -1;
 
 	Appearance.Reset();
 	Physics.Reset();
@@ -320,7 +330,7 @@ void DataMaterial::ApplyForRendering()
 		NixSetZ(false, false);
 	}
 
-	NixSetShader(Appearance.EffectIndex);
+	NixSetShader(Shader);
 }
 
 

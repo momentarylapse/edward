@@ -93,8 +93,8 @@ bool DataFont::Load(const string & _filename, bool deep)
 
 	if (deep){
 		Texture = NixLoadTexture(TextureFile);
-		TextureWidth = NixTexture[Texture].Width;
-		TextureHeight = NixTexture[Texture].Height;
+		TextureWidth = NixTextures[Texture].width;
+		TextureHeight = NixTextures[Texture].height;
 //		SetFont();
 	}
 

@@ -111,8 +111,6 @@ typedef void str_float_func(const string&,float);
 float _cdecl XFGetWidth(float h,const string &str);
 float _cdecl XFDrawStr(float x,float y,float height,const string &str,bool centric=false);
 float _cdecl XFDrawVertStr(float x,float y,float h,const string &str);
-int _cdecl MetaLoadShader(const string &filename);
-int _cdecl MetaMusicLoad(const string &filename);
 
 enum{
 	ErrorLoadingWorld,

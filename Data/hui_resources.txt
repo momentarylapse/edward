@@ -3287,7 +3287,7 @@ material_dialog
 0
 
 
-50
+41
 DefButton
 ok
 hui:ok
@@ -3691,149 +3691,6 @@ alpha_slider
 0
 material_dialog_tab_control
 
-Edit
-shining
-
-1
-85
-90
-235
-25
-4
-0
-0
-material_dialog_tab_control
-
-Text
-material_dialog_t_shining_density
-
-1
-30
-90
-55
-25
-4
-0
-0
-material_dialog_tab_control
-
-Text
-percent
-
-1
-325
-90
-20
-25
-4
-0
-0
-material_dialog_tab_control
-
-Edit
-shining_length
-
-1
-85
-120
-235
-25
-4
-0
-0
-material_dialog_tab_control
-
-Text
-material_dialog_t_shining_length
-
-1
-30
-120
-55
-25
-4
-0
-0
-material_dialog_tab_control
-
-Text
-material_dialog_t_effectsfile
-
-1
-10
-155
-335
-25
-4
-0
-0
-material_dialog_tab_control
-
-Edit
-effect_file
-
-1
-25
-180
-290
-25
-4
-0
-0
-material_dialog_tab_control
-
-CheckBox
-water
-
-1
-30
-25
-315
-25
-4
-0
-0
-material_dialog_tab_control
-
-Button
-find_effect
-hui:open
-1
-320
-180
-25
-25
-4
-0
-0
-material_dialog_tab_control
-
-Text
-material_dialog_shining_grp
-
-1
-10
-65
-335
-25
-4
-0
-0
-material_dialog_tab_control
-
-Text
-lu
-
-1
-325
-120
-20
-25
-4
-0
-0
-material_dialog_tab_control
-
 ComboBox
 reflection
 
@@ -3934,6 +3791,32 @@ reflection_size
 40
 25
 3
+0
+0
+material_dialog_tab_control
+
+Edit
+shader_file
+
+1
+10
+10
+290
+25
+4
+0
+0
+material_dialog_tab_control
+
+Button
+find_shader
+hui:open
+1
+305
+10
+40
+25
+4
 0
 0
 material_dialog_tab_control
@@ -16412,7 +16295,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-730
+723
 // Text
 ad_dialog
 Verwaltung
@@ -16632,8 +16515,6 @@ editor_dialog_t_workingdirectory
 Arbeitsverzeichnis:
 editor_dialog_tab_control
 Information\\Einstellungen\\Tasten
-effect_file
-
 emission
 Emission
 execute_plugin
@@ -16690,8 +16571,6 @@ find_default_second_world
 
 find_default_world
 
-find_effect
-
 find_material
 
 find_object
@@ -16699,6 +16578,8 @@ find_object
 find_rootdir
 
 find_scriptfile
+
+find_shader
 
 find_workingdir
 
@@ -16966,20 +16847,12 @@ material_dialog
 Material-Aussehen
 material_dialog_func_grp
 !bold\\Funktion
-material_dialog_shining_grp
-!bold\\Shining
-material_dialog_t_effectsfile
-!bold\\DirectX9 Effekt Datei
 material_dialog_t_refl_density
 Intensität:
 material_dialog_t_refl_texturesize
 Texturgröße:
 material_dialog_t_refl_type
 Art:
-material_dialog_t_shining_density
-Intens.:
-material_dialog_t_shining_length
-Länge:
 material_dialog_t_trans_dest
 Ziel
 material_dialog_t_trans_factor
@@ -16989,7 +16862,7 @@ Quelle
 material_dialog_t_trans_type
 Art:
 material_dialog_tab_control
-Farben\\Texturen\\Transparenz\\Reflexion\\Extras
+Farben\\Texturen\\Transparenz\\Reflexion\\Shader
 material_file
 
 material_find
@@ -17540,12 +17413,10 @@ set
 Übernehmen
 settings
 Einstellungen...
+shader_file
+
 shininess
 Shininess
-shining
-
-shining_length
-
 show_fx
 Effekte
 show_objects
@@ -17772,8 +17643,6 @@ view_top
 Oben (-y)
 wait
 
-water
-Wasser
 wcd_table_1
 
 wcd_table_t
@@ -17880,7 +17749,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-730
+723
 // Text
 ad_dialog
 Administration
@@ -18100,8 +17969,6 @@ editor_dialog_t_workingdirectory
 Working directory
 editor_dialog_tab_control
 Information\\Properties\\Keys
-effect_file
-
 emission
 emission
 execute_plugin
@@ -18158,8 +18025,6 @@ find_default_second_world
 
 find_default_world
 
-find_effect
-
 find_material
 
 find_object
@@ -18167,6 +18032,8 @@ find_object
 find_rootdir
 
 find_scriptfile
+
+find_shader
 
 find_workingdir
 
@@ -18434,20 +18301,12 @@ material_dialog
 Material appearance
 material_dialog_func_grp
 !bold\\Function
-material_dialog_shining_grp
-!bold\\Shining
-material_dialog_t_effectsfile
-!bold\\DirectX9 effect file
 material_dialog_t_refl_density
 density:
 material_dialog_t_refl_texturesize
 texture size:
 material_dialog_t_refl_type
 type:
-material_dialog_t_shining_density
-density:
-material_dialog_t_shining_length
-length:
 material_dialog_t_trans_dest
 dest
 material_dialog_t_trans_factor
@@ -19008,12 +18867,10 @@ set
 apply
 settings
 Settings...
+shader_file
+
 shininess
 shininess
-shining
-
-shining_length
-
 show_fx
 Effects
 show_objects
@@ -19240,8 +19097,6 @@ view_top
 Top (-y)
 wait
 
-water
-water
 wcd_table_1
 
 wcd_table_t
@@ -19343,7 +19198,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-156
+150
 // Text
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -19455,12 +19310,6 @@ Isometrisch
 Isometric
 Ist halt irgendwie passiert...
 Just happened somehow...
-Item
-Item
-Item-Datei
-Item file
-Items (*.item)
-Items (*.item)
 Kamera
 Camera
 Kamera-Datei
@@ -19529,10 +19378,6 @@ Objekt
 Object
 Objekt %d von %d
 Object %d / %d
-Objekte (*.object)
-Objects (*.object)
-Objekte-Datei
-Object file
 Perspektive
 Perspective
 Pop
@@ -19557,8 +19402,6 @@ Shader
 Shader
 Shader-Datei
 Shader file
-Shader-Dateien (*.fx)
-Shader files (*.fx)
 Sie haben die Entropie erhöht. Wollen Sie Ihr Werk speichern?
 You increased entropy. Do you wish to save your work?
 Skalieren
@@ -19660,7 +19503,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-730
+723
 // Text
 ad_dialog
 
@@ -19880,8 +19723,6 @@ editor_dialog_t_workingdirectory
 
 editor_dialog_tab_control
 properties\\keys\\information
-effect_file
-
 emission
 発光
 execute_plugin
@@ -19938,8 +19779,6 @@ find_default_second_world
 
 find_default_world
 
-find_effect
-
 find_material
 
 find_object
@@ -19947,6 +19786,8 @@ find_object
 find_rootdir
 
 find_scriptfile
+
+find_shader
 
 find_workingdir
 
@@ -20214,19 +20055,11 @@ material_dialog
 
 material_dialog_func_grp
 
-material_dialog_shining_grp
-
-material_dialog_t_effectsfile
-
 material_dialog_t_refl_density
 
 material_dialog_t_refl_texturesize
 
 material_dialog_t_refl_type
-
-material_dialog_t_shining_density
-
-material_dialog_t_shining_length
 
 material_dialog_t_trans_dest
 
@@ -20788,11 +20621,9 @@ set
 適用
 settings
 
+shader_file
+
 shininess
-
-shining
-
-shining_length
 
 show_fx
 エフェクト
@@ -21020,8 +20851,6 @@ view_top
 上 (-y)
 wait
 
-water
-水
 wcd_table_1
 
 wcd_table_t

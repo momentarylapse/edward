@@ -26,7 +26,7 @@
 
 namespace Script{
 
-string DataVersion = "0.10.5.0";
+string DataVersion = "0.10.5.1";
 
 
 

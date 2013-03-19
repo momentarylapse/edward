@@ -127,7 +127,7 @@ sScriptLink ScriptLink[NumScriptLinks]={
 	{"CreateObject"		,FDModel},
 	{"LoadWorld"		,FDWorld},
 	{"LoadMaterial"		,FDMaterial},
-	{"LoadShaderFile"	,FDShaderFile},
+	{"NixLoadShader"	,FDShaderFile},
 	{"SoundCreate"		,FDSound},
 	{"SoundEmit"		,FDSound},
 	{"MusicLoad"		,FDSound},
@@ -251,7 +251,7 @@ void AdminFile::check(AdminFileList &list)
 		DataMaterial m;
 		if (m.Load(MaterialDir + Name,false)){
 			Time = m.file_time;
-			add_possible_link(l, FDShaderFile, m.Appearance.EffectFile);
+			add_possible_link(l, FDShaderFile, m.Appearance.ShaderFile);
 			if (m.Appearance.ReflectionMode==ReflectionCubeMapStatic)
 				for (int i=0;i<6;i++)
 					add_possible_link(l, FDTexture, m.Appearance.ReflectionTextureFile[i]);

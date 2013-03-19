@@ -779,7 +779,7 @@ bool Edward::FileDialog(int kind,bool save,bool force_in_root_dir)
 	if (kind==FDMaterial){	title=_("Material-Datei");	show_filter=_("Materialien (*.material)");	filter="*.material";	}
 	if (kind==FDTerrain){	title=_("Karten-Datei");	show_filter=_("Karten (*.map)");			filter="*.map";	}
 	if (kind==FDWorld){		title=_("Welt-Datei");		show_filter=_("Welten (*.world)");			filter="*.world";	}
-	if (kind==FDShaderFile){title=_("Shader-Datei");	show_filter=_("Shader-Dateien (*.fx)");		filter="*.fx";	}
+	if (kind==FDShaderFile){title=_("Shader-Datei");	show_filter=_("Shader-Dateien (*.glsl)");	filter="*.glsl";	}
 	if (kind==FDFont){		title=_("Font-Datei");		show_filter=_("Font-Dateien (*.xfont)");	filter="*.xfont";	}
 	if (kind==FDScript){	title=_("Script-Datei");	show_filter=_("Script-Dateien (*.kaba)");	filter="*.kaba";	}
 	if (kind==FDCameraFlight){title=_("Kamera-Datei");	show_filter=_("Kamera-Dateien (*.camera)");	filter="*.camera";	}
@@ -849,7 +849,7 @@ string Edward::get_tex_image(int tex)
 		empty.Create(32, 32, White);
 		img = HuiSetImage(empty);
 	}else
-		img = HuiSetImage(NixTexture[tex].Icon);
+		img = HuiSetImage(NixTextures[tex].icon);
 	for (int i=icon_image.num;i<=index;i++)
 		icon_image.add("");
 	icon_image[index] = img;

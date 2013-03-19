@@ -159,7 +159,7 @@ string render_material(ModelMaterial *m)
 
 			// texture "mapping"
 			if (tex >= 0)
-				c = c * NixTexture[tex].Icon.GetPixel(x, y);
+				c = c * NixTextures[tex].icon.GetPixel(x, y);
 			else
 				c = c * 0.8f;
 

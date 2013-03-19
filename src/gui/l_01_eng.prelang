@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-588
+583
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -425,20 +425,12 @@ material_dialog
 Material appearance
 material_dialog_func_grp
 !bold\\Function
-material_dialog_shining_grp
-!bold\\Shining
-material_dialog_t_effectsfile
-!bold\\DirectX9 effect file
 material_dialog_t_refl_density
 density:
 material_dialog_t_refl_texturesize
 texture size:
 material_dialog_t_refl_type
 type:
-material_dialog_t_shining_density
-density:
-material_dialog_t_shining_length
-length:
 material_dialog_t_trans_dest
 dest
 material_dialog_t_trans_factor
@@ -1091,8 +1083,6 @@ view_right
 Right (-x)
 view_top
 Top (-y)
-water
-water
 wcd_table_t
 
 welcome_dialog
@@ -1180,7 +1170,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-222
+218
 // Data (ID,Text)
 
 
@@ -1302,6 +1292,8 @@ Fehler beim Exportieren:
 
 Fehler in Script-Datei: \"%s\"\n%s\n%s
 
+Fehler in der Shader-Datei:\n
+
 Fehlerbericht
 Bug Report
 Fehlerbericht an Michi senden
@@ -1338,12 +1330,6 @@ Isometrisch
 Isometric
 Ist halt irgendwie passiert...
 Just happened somehow...
-Item
-Item
-Item-Datei
-Item file
-Items (*.item)
-Items (*.item)
 Kamera
 Camera
 Kamera-Datei
@@ -1432,10 +1418,6 @@ Objekt
 Object
 Objekt %d von %d
 Object %d / %d
-Objekte (*.object)
-Objects (*.object)
-Objekte-Datei
-Object file
 Perspektive
 Perspective
 Polygon
@@ -1478,8 +1460,8 @@ Shader
 Shader
 Shader-Datei
 Shader file
-Shader-Dateien (*.fx)
-Shader files (*.fx)
+Shader-Dateien (*.glsl)
+
 Sie haben die Entropie erhöht. Wollen Sie Ihr Werk speichern?
 You increased entropy. Do you wish to save your work?
 Skalieren

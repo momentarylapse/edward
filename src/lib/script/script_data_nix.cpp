@@ -175,6 +175,10 @@ void SIAddPackageNix()
 	add_func("NixCreateDynamicTexture",	TypeInt,	nix_p(&NixCreateDynamicTexture));
 		func_add_param("width",		TypeInt);
 		func_add_param("height",	TypeInt);
+	add_func("NixCreateEmptyTexture",	TypeInt,	nix_p(&NixCreateEmptyTexture));
+	add_func("NixOverwriteTexture",	TypeVoid,	nix_p(&NixOverwriteTexture));
+		func_add_param("tex",		TypeInt);
+		func_add_param("image",		TypeImage);
 	add_func("VecProject",								TypeVoid,	nix_p(&NixGetVecProject));
 		func_add_param("v_out",		TypeVector);
 		func_add_param("v_in",		TypeVector);
@@ -212,6 +216,12 @@ void SIAddPackageNix()
 		func_add_param("p",		TypeVectorArrayP);
 		func_add_param("n",		TypeVectorArrayP);
 		func_add_param("t",		TypeFloatArrayP);
+	add_func("NixLoadShader",										TypeInt,	nix_p(&NixLoadShader));
+		func_add_param("filename",		TypeString);
+	add_func("NixCreateShader",										TypeInt,	nix_p(&NixCreateShader));
+		func_add_param("filename",		TypeString);
+	add_func("NixUnrefShader",										TypeVoid,	nix_p(&NixUnrefShader));
+		func_add_param("index",		TypeInt);
 	add_func("NixSetShaderData",					TypeVoid,	nix_p(&NixSetShaderData));
 		func_add_param("index",		TypeInt);
 		func_add_param("name",		TypeString);

@@ -58,6 +58,11 @@ void ModeMaterial::OnDraw()
 
 void ModeMaterial::OnUpdate(Observable *o)
 {
+	msg_write(o->GetName() + " - " + o->GetMessage());
+	if (o->GetName() == "Data"){
+		NixUnrefShader(data->Shader);
+		data->Shader = data->Appearance.GetShader();
+	}
 }
 
 

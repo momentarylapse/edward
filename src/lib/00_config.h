@@ -30,15 +30,8 @@
 // graphics and sound support in the nix.h and nix.cpp
 //#####################################################################
 
-//#define NIX_ALLOW_API_DIRECTX8
-//#define NIX_ALLOW_API_DIRECTX9
 #define NIX_ALLOW_API_OPENGL
-//#define NIX_ALLOW_TYPES_BY_DIRECTX9		// let matrices, quaternios,... be computed by DirectX9?
 //#define NIX_ALLOW_VIDEO_TEXTURE			// allow Avi-videos as texture?
-//#define NIX_ALLOW_DYNAMIC_TEXTURE		// allow textures as render targets?
-//#define NIX_ALLOW_CUBEMAPS				// allow cubical environment mapping?
-//#define NIX_ALLOW_SOUND					// allow support for sound?
-//#define NIX_ALLOW_SOUND_BY_DIRECTX9		// sound controlled by DirectX9 (if allowed in general)?
 
 
 

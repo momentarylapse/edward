@@ -59,7 +59,6 @@ AdminFile *AdminFileList::add_unchecked_ae(int kind, const string &filename, Adm
 	if (kind==FDMaterial)	filename2 += ".material";
 	if (kind==FDFont)		filename2 += ".xfont";
 	if (kind==FDCameraFlight)filename2 += ".camera";
-	if (kind==FDShaderFile)	filename2 += ".fx";
 	return add_unchecked(kind, filename2, source);
 }
 

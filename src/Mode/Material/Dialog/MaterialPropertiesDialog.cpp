@@ -13,6 +13,8 @@
 
 string file_secure(const string &filename); // -> ModelPropertiesDialog
 
+extern string NixShaderError; // -> nix
+
 MaterialPropertiesDialog::MaterialPropertiesDialog(CHuiWindow *_parent, bool _allow_parent, DataMaterial *_data):
 	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls, true)
 {
@@ -32,7 +34,7 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(CHuiWindow *_parent, bool _al
 	EventM("transparency_mode", this, &MaterialPropertiesDialog::OnTransparencyMode);
 	EventM("reflection", this, &MaterialPropertiesDialog::OnReflection);
 	EventM("reflection_textures", this, &MaterialPropertiesDialog::OnReflectionTextures);
-	EventM("find_effect", this, &MaterialPropertiesDialog::OnFindEffect);
+	EventM("find_shader", this, &MaterialPropertiesDialog::OnFindShader);
 
 	temp = data->Appearance;
 	LoadData();
@@ -72,10 +74,7 @@ void MaterialPropertiesDialog::LoadData()
 	Enable("reflection_size", ((temp.ReflectionMode == ReflectionCubeMapStatic) || (temp.ReflectionMode == ReflectionCubeMapDynamical)));
 	Enable("reflection_textures", (temp.ReflectionMode == ReflectionCubeMapStatic));
 	Enable("reflection_density", (temp.ReflectionMode != ReflectionNone));
-	SetInt("shining", temp.ShiningDensity);
-	SetInt("shining_length", temp.ShiningLength);
-	SetString("effect_file", temp.EffectFile);
-	Check("water", temp.Water);
+	SetString("shader_file", temp.ShaderFile);
 }
 
 MaterialPropertiesDialog::~MaterialPropertiesDialog()
@@ -175,10 +174,22 @@ void MaterialPropertiesDialog::OnReflectionTextures()
 	}
 }
 
-void MaterialPropertiesDialog::OnFindEffect()
+bool TestShaderFile(const string &filename)
 {
-	if (ed->FileDialog(FDShaderFile,false,true))
-		SetString("effect_file", ed->DialogFileNoEnding);
+	int shader = NixLoadShader(filename);
+	NixUnrefShader(shader);
+	return shader >= 0;
+}
+
+void MaterialPropertiesDialog::OnFindShader()
+{
+	if (ed->FileDialog(FDShaderFile,false,true)){
+		if (TestShaderFile(ed->DialogFile)){
+			SetString("shader_file", ed->DialogFile);
+		}else{
+			ed->ErrorBox(_("Fehler in der Shader-Datei:\n") + NixShaderError);
+		}
+	}
 }
 
 void MaterialPropertiesDialog::ApplyData()
@@ -203,20 +214,13 @@ void MaterialPropertiesDialog::ApplyData()
 	temp.AlphaFactor = GetFloat("alpha_factor") * 0.01f;
 	temp.AlphaSource = GetInt("alpha_source");
 	temp.AlphaDestination = GetInt("alpha_dest");
-	temp.ShiningDensity = GetInt("shining");
-	temp.ShiningLength = GetInt("shining_length");
-	temp.Water = IsChecked("water");
 
 	temp.ReflectionMode = GetInt("reflection");
 	temp.ReflectionDensity = GetInt("reflection_density");
 	temp.ReflectionSize = GetInt("reflection_size");
 
-	if (temp.EffectFile != GetString("effect_file")){
-		NixDeleteShader(temp.EffectIndex);
-		temp.EffectFile = GetString("effect_file");
 
-		temp.EffectIndex = NixLoadShader(MaterialDir + temp.EffectFile + ".fx");
-	}
+	temp.ShaderFile = GetString("shader_file");
 
 	data->Execute(new ActionMaterialEditAppearance(temp));
 }

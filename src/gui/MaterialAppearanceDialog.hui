@@ -7,7 +7,7 @@
 	AppearanceDialog->SetImage("cancel", "hui:cancel");
 	AppearanceDialog->AddButton("&Ubernehmen", 10, 280, 120, 25, "set");
 	AppearanceDialog->SetImage("set", "hui:apply");
-	AppearanceDialog->AddTabControl("Farben\\Texturen\\Transparenz\\Reflexion\\Extras", 5, 5, 355, 260, "material_dialog_tab_control");
+	AppearanceDialog->AddTabControl("Farben\\Texturen\\Transparenz\\Reflexion\\Shader", 5, 5, 355, 260, "material_dialog_tab_control");
 	AppearanceDialog->SetTabCreationPage("material_dialog_tab_control", 0);
 	AppearanceDialog->AddText("Ambient", 25, 10, 65, 25, "ambient");
 	AppearanceDialog->AddText("Diffuse", 25, 40, 65, 25, "diffuse");
@@ -42,19 +42,6 @@
 	AppearanceDialog->AddText("!bold\\Faktor", 10, 170, 335, 25, "");
 	AppearanceDialog->AddSlider("", 90, 195, 170, 25, "alpha_slider");
 	AppearanceDialog->Enable("alpha_slider", false);
-	AppearanceDialog->SetTabCreationPage("material_dialog_tab_control", 4);
-	AppearanceDialog->AddEdit("", 85, 90, 235, 25, "shining");
-	AppearanceDialog->AddText("Intens.:", 30, 90, 55, 25, "material_dialog_t_shining_density");
-	AppearanceDialog->AddText("%", 325, 90, 20, 25, "percent");
-	AppearanceDialog->AddEdit("", 85, 120, 235, 25, "shining_length");
-	AppearanceDialog->AddText("L&ange:", 30, 120, 55, 25, "material_dialog_t_shining_length");
-	AppearanceDialog->AddText("!bold\\DirectX9 Effekt Datei", 10, 155, 335, 25, "material_dialog_t_effectsfile");
-	AppearanceDialog->AddEdit("", 25, 180, 290, 25, "effect_file");
-	AppearanceDialog->AddCheckBox("Wasser", 30, 25, 315, 25, "water");
-	AppearanceDialog->AddButton("", 320, 180, 25, 25, "find_effect");
-	AppearanceDialog->SetImage("find_effect", "hui:open");
-	AppearanceDialog->AddText("!bold\\Shining", 10, 65, 335, 25, "material_dialog_shining_grp");
-	AppearanceDialog->AddText("le", 325, 120, 20, 25, "lu");
 	AppearanceDialog->SetTabCreationPage("material_dialog_tab_control", 3);
 	AppearanceDialog->AddComboBox("  --keine--\\Metall\\Spiegel (flach)\\CubeMap statisch\\CubeMap dynamisch", 40, 10, 305, 25, "reflection");
 	AppearanceDialog->AddText("Art:", 10, 10, 30, 25, "material_dialog_t_refl_type");
@@ -64,6 +51,10 @@
 	AppearanceDialog->AddListView("Seite\\Textur", 10, 70, 335, 155, "reflection_textures");
 	AppearanceDialog->AddText("Texturgr&o&se:", 180, 40, 90, 25, "material_dialog_t_refl_texturesize");
 	AppearanceDialog->AddSpinButton("\\0\\1024\\1", 270, 40, 40, 25, "reflection_size");
+	AppearanceDialog->SetTabCreationPage("material_dialog_tab_control", 4);
+	AppearanceDialog->AddEdit("", 10, 10, 290, 25, "shader_file");
+	AppearanceDialog->AddButton("", 305, 10, 40, 25, "find_shader");
+	AppearanceDialog->SetImage("find_shader", "hui:open");
 	AppearanceDialog->Update();
 
 

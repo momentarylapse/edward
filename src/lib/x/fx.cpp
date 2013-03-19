@@ -19,7 +19,6 @@ string FxVersion = "0.3.2.0";
 #define FX_MAX_LIGHT_FIELDS		128
 #define FX_MAX_SHADOWS			256
 #define FX_MAX_MIRRORS			128
-#define FX_MAX_CUBEMAPS			16
 #define FX_MAX_TAILS			128
 
 #ifdef _X_ALLOW_X_
@@ -100,8 +99,7 @@ static sMirror *Mirror[FX_MAX_MIRRORS];
 render_func *FxRenderFunc;
 static int MirrorLevel;
 
-static int NumCubeMaps;
-static sCubeMap CubeMap[FX_MAX_CUBEMAPS];
+static Array<sCubeMap> CubeMap;
 
 static int NumTails;
 static Tail *Tails[FX_MAX_TAILS];
@@ -134,7 +132,6 @@ void FxInit(const string &tex_file, const string &tex_file_metal, const string &
 	//NumNixLights=0;
 	NumLightFields=0;
 	NumTails=0;
-	NumCubeMaps=0;
 	FxRenderFunc=NULL;
 	msg_db_l(0);
 }
@@ -591,16 +588,19 @@ void FxLightEnable(int index,bool enabled)
 //#########################################################################
 int FxCubeMapNew(int size)
 {
-	CubeMap[NumCubeMaps].CubeMap=NixCreateCubeMap(size);
-	CubeMap[NumCubeMaps].Size=size;
-	CubeMap[NumCubeMaps].Dynamical=false;
-	CubeMap[NumCubeMaps].Frame=-2;
-	NumCubeMaps++;
-	return NumCubeMaps-1;
+	sCubeMap c;
+	c.CubeMap = NixCreateCubeMap(size);
+	c.Size = size;
+	c.Dynamical = false;
+	c.Frame = -2;
+	CubeMap.add(c);
+	return CubeMap.num - 1;
 }
 
 void FxCubeMapCreate(int cube_map,Model *m)
 {
+	if (cube_map < 0)
+		return;
 	CubeMap[cube_map].Dynamical=true;
 	CubeMap[cube_map].model=m;
 	CubeMap[cube_map].Frame=-2;
@@ -608,16 +608,25 @@ void FxCubeMapCreate(int cube_map,Model *m)
 
 void FxCubeMapCreate(int cube_map,int tex0,int tex1,int tex2,int tex3,int tex4,int tex5)
 {
+	if (cube_map < 0)
+		return;
 	CubeMap[cube_map].Dynamical=false;
-	NixSetCubeMap(CubeMap[cube_map].CubeMap,tex0,tex1,tex2,tex3,tex4,tex5);
+	NixFillCubeMap(CubeMap[cube_map].CubeMap, 0, tex0);
+	NixFillCubeMap(CubeMap[cube_map].CubeMap, 1, tex1);
+	NixFillCubeMap(CubeMap[cube_map].CubeMap, 2, tex2);
+	NixFillCubeMap(CubeMap[cube_map].CubeMap, 3, tex3);
+	NixFillCubeMap(CubeMap[cube_map].CubeMap, 4, tex4);
+	NixFillCubeMap(CubeMap[cube_map].CubeMap, 5, tex5);
 }
 
 void FxCubeMapDraw(int cube_map,int buffer,float density)
 {
-	bool el=NixLightingEnabled;
+	if (cube_map < 0)
+		return;
+	bool el = NixLightingEnabled;
 	NixEnableLighting(!CubeMap[cube_map].Dynamical);
 	NixSetAlpha(density);
-	NixDraw3DCubeMapped(CubeMap[cube_map].CubeMap,buffer);
+	NixDraw3DCubeMapped(CubeMap[cube_map].CubeMap, buffer);
 	NixSetAlpha(AlphaNone);
 	NixEnableLighting(el);
 }
@@ -1263,7 +1272,7 @@ void FxCalcMove()
 #ifdef _X_ALLOW_CAMERA_
 	// dynamical cube maps
 	msg_db_m("--CubeMap",3);
-	for (int i=0;i<NumCubeMaps;i++)
+	for (int i=0;i<CubeMap.num;i++)
 		if (CubeMap[i].Dynamical)
 			if (CubeMap[i].model->_detail_>=0){
 				vector pos = CubeMap[i].model->pos;

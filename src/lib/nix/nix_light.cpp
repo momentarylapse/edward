@@ -12,15 +12,19 @@ Array<sLight> NixLight;
 
 bool NixLightingEnabled;
 
+void TestGLError(const string &);
+
 
 // general ability of using lights
 void NixEnableLighting(bool Enabled)
 {
+	TestGLError("EnableLighting prae");
 	NixLightingEnabled = Enabled;
 	if (Enabled)
 		glEnable(GL_LIGHTING);
 	else
 		glDisable(GL_LIGHTING);
+	TestGLError("EnableLighting");
 }
 
 int NixCreateLight()
@@ -84,6 +88,7 @@ void NixSetLightRadial(int index,const vector &pos,float radius,const color &amb
 	glLightf(GL_LIGHT0+index,GL_LINEAR_ATTENUATION,2.0f/radius);
 	glLightf(GL_LIGHT0+index,GL_QUADRATIC_ATTENUATION,1/(radius*radius));
 	glPopMatrix();
+	TestGLError("SetLightRad");
 }
 
 // parallele Quelle
@@ -105,6 +110,7 @@ void NixSetLightDirectional(int index,const vector &dir,const color &ambient,con
 	glLightfv(GL_LIGHT0+index,GL_DIFFUSE,(float*)&diffuse);
 	glLightfv(GL_LIGHT0+index,GL_SPECULAR,(float*)&specular);
 	glPopMatrix();
+	TestGLError("SetLightDir");
 }
 
 void NixEnableLight(int index,bool enabled)
@@ -116,11 +122,13 @@ void NixEnableLight(int index,bool enabled)
 		glEnable(GL_LIGHT0 + index);
 	else
 		glDisable(GL_LIGHT0 + index);
+	TestGLError("EnableLight");
 }
 
 void NixSetAmbientLight(const color &c)
 {
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT,(float*)&c);
+	TestGLError("SetAmbient");
 }
 
 
@@ -130,6 +138,7 @@ void NixSetShading(int mode)
 		glShadeModel(GL_FLAT);
 	if (mode==ShadingRound)
 		glShadeModel(GL_SMOOTH);
+	TestGLError("SetShading");
 }
 
 void NixSetMaterial(const color &ambient,const color &diffuse,const color &specular,float shininess,const color &emission)
@@ -139,6 +148,7 @@ void NixSetMaterial(const color &ambient,const color &diffuse,const color &specu
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,(float*)&specular);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,(float*)&shininess);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,(float*)&emission);
+	TestGLError("SetMat");
 }
 
 void NixSpecularEnable(bool enabled)

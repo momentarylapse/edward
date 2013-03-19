@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-588
+583
 // Data (ID,Text)
 ad_dialog
 
@@ -425,19 +425,11 @@ material_dialog
 
 material_dialog_func_grp
 
-material_dialog_shining_grp
-
-material_dialog_t_effectsfile
-
 material_dialog_t_refl_density
 
 material_dialog_t_refl_texturesize
 
 material_dialog_t_refl_type
-
-material_dialog_t_shining_density
-
-material_dialog_t_shining_length
 
 material_dialog_t_trans_dest
 
@@ -1091,8 +1083,6 @@ view_right
 右 (-x)
 view_top
 上 (-y)
-water
-水
 wcd_table_t
 
 welcome_dialog
@@ -1180,7 +1170,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-222
+218
 // Data (ID,Text)
 
 
@@ -1302,6 +1292,8 @@ Fehler beim Exportieren:
 
 Fehler in Script-Datei: \"%s\"\n%s\n%s
 
+Fehler in der Shader-Datei:\n
+
 Fehlerbericht
 
 Fehlerbericht an Michi senden
@@ -1337,12 +1329,6 @@ Initialisierung
 Isometrisch
 
 Ist halt irgendwie passiert...
-
-Item
-
-Item-Datei
-
-Items (*.item)
 
 Kamera
 
@@ -1432,10 +1418,6 @@ Objekt
 
 Objekt %d von %d
 
-Objekte (*.object)
-
-Objekte-Datei
-
 Perspektive
 
 Polygon
@@ -1478,7 +1460,7 @@ Shader
 
 Shader-Datei
 
-Shader-Dateien (*.fx)
+Shader-Dateien (*.glsl)
 
 Sie haben die Entropie erhöht. Wollen Sie Ihr Werk speichern?
 

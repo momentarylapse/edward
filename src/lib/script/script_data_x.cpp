@@ -430,7 +430,7 @@ void SIAddPackageX()
 		class_add_element("enabled",		TypeBool,		GetDACamera(enabled));
 		class_add_element("show",			TypeBool,		GetDACamera(show));
 		class_add_element("texture_out",	TypeInt,		GetDACamera(output_texture));
-		class_add_element("texture_in",	TypeInt,		GetDACamera(input_texture));
+		class_add_element("texture_in",		TypeInt,		GetDACamera(input_texture));
 		class_add_element("shader",			TypeInt,		GetDACamera(shader));
 		class_add_element("shaded_displays",TypeBool,		GetDACamera(shaded_displays));
 		class_add_element("pos",			TypeVector,		GetDACamera(pos));
@@ -523,8 +523,6 @@ void SIAddPackageX()
 		func_add_param("ang",		TypeVector);
 		func_add_param("dest",		TypeRect);
 		func_add_param("show",		TypeBool);
-	add_func("LoadShader",										TypeInt,	meta_p(&MetaLoadShader));
-		func_add_param("filename",		TypeString);
 	
 	// engine
 	// effects

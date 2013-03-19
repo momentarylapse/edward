@@ -60,7 +60,7 @@ void DataAdministration::MetaFraesDir(int kind)
 	if (kind==FDModel)		extension = ".model";
 	if (kind==FDMaterial)	extension = ".material";
 	if (kind==FDFont)		extension = ".xfont";
-	if (kind==FDShaderFile)	extension = ".fx";
+	if (kind==FDShaderFile)	extension = ".glsl";
 	if (kind==FDScript)		extension = ".kaba";
 	if (kind==FDCameraFlight)extension = ".camera";
 	if (kind==FDTexture)	extension = "";
@@ -329,10 +329,6 @@ void DataAdministration::ExportGame(const string &dir, GameIniData &game_ini)
 		target += a->Name;
 		if (file_copy(source, target))
 			num_ok ++;
-
-		if (a->Kind == FDShaderFile){
-			file_copy(source + ".glsl", target + ".glsl");
-		}
 	}
 	HuiInfoBox(HuiCurWindow, "info", format("%d von %d Dateien exportiern", num_ok, list.num));
 
