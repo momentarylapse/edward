@@ -95,10 +95,10 @@ bool DataFont::Load(const string & _filename, bool deep)
 		Texture = NixLoadTexture(TextureFile);
 		TextureWidth = NixTextures[Texture].width;
 		TextureHeight = NixTextures[Texture].height;
-//		SetFont();
 	}
 
 	ResetHistory();
+	Notify("Change");
 	return !error;
 }
 
@@ -146,6 +146,7 @@ void DataFont::Reset()
 	};
 
 	ResetHistory();
+	Notify("Change");
 //	SetFont();
 }
 
@@ -153,7 +154,77 @@ void DataFont::Reset()
 
 bool DataFont::Save(const string & _filename)
 {
+	filename = _filename;
+	ed->MakeDirs(filename);
+
+	CFile *f=new CFile();
+	if (!f)
+		return false;
+	f->Create(filename);
+	f->WriteFileFormatVersion(false, 2);
+
+	f->WriteComment("// Texture");
+	f->WriteStr(TextureFile);
+	f->WriteComment("// Num Glyphs");
+	f->WriteWord(Glyph.num);
+	f->WriteComment("// Glyph Height");
+	f->WriteByte(GlyphHeight);
+	f->WriteComment("// Glyph Y1");
+	f->WriteByte(GlyphY1);
+	f->WriteComment("// Glyph Y2");
+	f->WriteByte(GlyphY2);
+	f->WriteComment("// Scale Factor X");
+	f->WriteByte(XFactor);
+	f->WriteComment("// Scale Factor Y");
+	f->WriteByte(YFactor);
+	f->WriteComment("// Glyphs (Char, Width, X1, X2)");
+	foreachi(FontGlyph &g, Glyph, i){
+		f->WriteStr(g.Name);
+		f->WriteByte(g.Width);
+		f->WriteByte(g.X1);
+		f->WriteByte(g.X2);
+	}
+	f->WriteComment("// Unknown Char");
+	f->WriteStr(Glyph[UnknownGlyphNo].Name);
+
+	f->WriteStr("#");
+	f->Close();
+	delete(f);
+
+	ed->SetMessage(_("Gespeichert!"));
+	action_manager->MarkCurrentAsSave();
 	return false;
+}
+
+
+
+void DataFont::ApplyFont(XFont *f)
+{
+	f->texture = Texture;
+	f->num_glyphs = Glyph.num;
+	f->x_factor = (float)XFactor*0.01f;
+	f->y_factor = (float)YFactor*0.01f;
+	float dy = (float)(GlyphY2-GlyphY1);
+	f->y_offset = (float)GlyphY1/dy;
+	f->height = (float)GlyphHeight/dy;
+	int x = 0, y = 0;
+	foreachi(FontGlyph &g, Glyph, i){
+		if (x + g.Width > TextureWidth){
+			x = 0;
+			y += GlyphHeight;
+		}
+		int c=(unsigned char)sys_str(g.Name)[0];
+		f->table[c] = i;
+		f->glyph[i].x_offset = (float)g.X1 / dy;
+		f->glyph[i].width = (float)g.Width / dy;
+		f->glyph[i].dx = (float)(g.X2 - g.X1) / dy;
+		f->glyph[i].dx2 = (float)(g.Width - g.X1) / dy;
+		f->glyph[i].src = rect(	(float)(x - 0.5f) / (float)TextureWidth,
+								(float)(x - 0.5f + g.Width) / (float)TextureWidth,
+								(float)y / (float)TextureHeight,
+								(float)(y + GlyphHeight) / (float)TextureHeight);
+		x += g.Width;
+	}
 }
 
 

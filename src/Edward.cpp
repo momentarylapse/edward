@@ -344,14 +344,6 @@ bool Edward::HandleArguments(Array<string> arg)
 		HuiRunLaterM(100, (HuiEventHandler*)mode_model_mesh, &ModeModelMesh::OptimizeView);
 		/*if (mmodel->Skin[1].Sub[0].Triangle.num==0)
 			mmodel->SetEditMode(EditModeVertex);*/
-	/*}else if (ext == "object"){
-		MakeDirs(param);
-		mobject->LoadFromFile(param);
-		SetMode(ModeObject);
-	}else if (ext == "item"){
-		MakeDirs(param);
-		mitem->LoadFromFile(param);
-		SetMode(ModeItem);*/
 	}else if (ext == "material"){
 		MakeDirs(param);
 		mode_material->data->Load(param, true);
@@ -373,22 +365,22 @@ bool Edward::HandleArguments(Array<string> arg)
 		SetMode(mode_world);
 		mode_world->OptimizeView();
 		multi_view_3d->whole_window = true;
-	/*}else if (ext == "xfont"){
+	}else if (ext == "xfont"){
 		MakeDirs(param);
-		mfont->LoadFromFile(param);
-		SetMode(ModeFont);
-	}else if ((ext == "mdl") || (ext == "MDL")){
+		mode_font->data->Load(param);
+		SetMode(mode_font);
+	/*}else if (ext == "mdl"){
 		mmodel->LoadImportFromGameStudioMdl(param);
 		SetMode(ModeModel);
 		WholeWindow=true;
 		mmodel->OptimizeView();
 		//mmodel->Changed=false;
-	}else if ((ext == "wmb") || (ext == "WMB")){
+	}else if (ext == "wmb"){
 		mmodel->LoadImportFromGameStudioWmb(param);
 		SetMode(ModeModel);
 		WholeWindow=true;
 		mmodel->OptimizeView();
-	}else if ((ext == "3ds") || (ext == "3DS")){
+	}else if (ext == "3ds"){
 		mmodel->LoadImportFrom3DS(param);
 		SetMode(ModeModel);
 		WholeWindow=true;

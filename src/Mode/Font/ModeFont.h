@@ -47,6 +47,8 @@ public:
 
 	DataFont *data;
 	Data *GetData(){	return data;	}
+
+	string SampleText;
 };
 
 extern ModeFont* mode_font;

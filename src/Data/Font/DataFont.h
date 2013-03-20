@@ -11,6 +11,8 @@
 #include "../Data.h"
 #include "../../lib/x/x.h"
 
+class XFont;
+
 
 struct FontGlyph{
 	string Name;
@@ -27,6 +29,7 @@ public:
 	bool Load(const string &_filename, bool deep = true);
 	bool Save(const string &_filename);
 
+	void ApplyFont(XFont *f);
 
 	// properties
 	int Texture;
