@@ -233,7 +233,6 @@ Edward::Edward(Array<string> arg) :
 	CameraInit();
 	GodInit();
 
-
 	/*RegisterFileTypes();
 
 	for (int i=0;i<NumFDs;i++)
