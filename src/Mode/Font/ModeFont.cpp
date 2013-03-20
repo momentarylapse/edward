@@ -30,14 +30,26 @@ ModeFont::~ModeFont()
 	Unsubscribe(data);
 }
 
-void ModeFont::OnKeyDown()
-{
-}
-
-
 
 void ModeFont::OnLeftButtonDown()
 {
+	vector m = multi_view->GetCursor3d();
+	int x=0,y=0;
+	foreachi(DataFont::Glyph &g, data->glyph, i){
+		int x2 = x + g.Width;
+		if (x2 > data->TextureWidth){
+			x = 0;
+			x2 = g.Width;
+			y += data->global.GlyphHeight;
+		}
+
+		if ((m.x >= x) && (m.x <= x2) && (m.y >= y) && (m.y <= y + data->global.GlyphHeight)){
+			data->Marked = i;
+			dialog->LoadData();
+			ed->ForceRedraw();
+		}
+		x = x2;
+	}
 }
 
 
@@ -74,17 +86,6 @@ bool ModeFont::SaveAs()
 	return false;
 }
 
-
-
-void ModeFont::OnKeyUp()
-{
-}
-
-
-
-void ModeFont::OnMiddleButtonUp()
-{
-}
 
 
 
@@ -129,12 +130,6 @@ bool ModeFont::Open()
 	multi_view->ResetView();
 	ed->SetMode(mode_font);
 	return true;
-}
-
-
-
-void ModeFont::OnRightButtonUp()
-{
 }
 
 
@@ -184,20 +179,10 @@ void ModeFont::OnMouseMove()
 
 void ModeFont::OnUpdate(Observable *o)
 {
+	data->UpdateTexture();
 	data->ApplyFont(_XFont_.back());
 }
 
-
-
-void ModeFont::OnLeftButtonUp()
-{
-}
-
-
-
-void ModeFont::OnRightButtonDown()
-{
-}
 
 
 
@@ -286,13 +271,6 @@ void ModeFont::OnDrawWin(int win)
 
 	NixSetAlpha(AlphaNone);
 }
-
-
-
-void ModeFont::OnMiddleButtonDown()
-{
-}
-
 
 
 void ModeFont::OnUpdateMenu()
