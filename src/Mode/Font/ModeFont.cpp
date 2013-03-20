@@ -8,6 +8,7 @@
 #include "../../Edward.h"
 #include "ModeFont.h"
 #include "../../Data/Font/DataFont.h"
+#include "Dialog/FontDialog.h"
 #include "../../lib/x/x.h"
 
 ModeFont *mode_font = NULL;
@@ -18,9 +19,10 @@ ModeFont::ModeFont() :
 	data = dynamic_cast<DataFont*>(data_generic);
 	Subscribe(data);
 
-	SampleText = _("Beispiel Text 0123456789");
 	XFont *f = new XFont;
 	_XFont_.add(f);
+
+	dialog = NULL;
 }
 
 ModeFont::~ModeFont()
@@ -42,6 +44,8 @@ void ModeFont::OnLeftButtonDown()
 
 void ModeFont::OnEnd()
 {
+	delete(dialog);
+
 	ed->ToolbarSetCurrent(HuiToolbarTop);
 	ed->ToolbarReset();
 	ed->EnableToolbar(false);
@@ -57,7 +61,8 @@ void ModeFont::OnDraw()
 	NixDrawRect(0, (float)MaxX, MaxY * 0.9f, (float)MaxY, 0);
 	XFontIndex = _XFont_.num - 1;
 	NixSetColor(Black);
-	XFDrawStr(0, (float)MaxY * 0.9f, (float)MaxY * 0.1f, SampleText);
+	if (dialog)
+		XFDrawStr(0, (float)MaxY * 0.9f, (float)MaxY * 0.1f, dialog->GetSampleText());
 }
 
 
@@ -163,6 +168,9 @@ void ModeFont::OnStart()
 	ed->ToolbarReset();
 	ed->EnableToolbar(false);
 
+	dialog = new FontDialog(ed, true, data);
+	dialog->Update();
+
 	OnUpdate(data);
 }
 
@@ -228,7 +236,7 @@ void DrawLineV(int x, int y1, int y2)
 
 void ModeFont::OnDrawWin(int win)
 {
-	int NumY = data->TextureHeight / data->GlyphHeight;
+	int NumY = data->TextureHeight / data->global.GlyphHeight;
 
 	// background
 	NixEnableLighting(false);
@@ -246,33 +254,33 @@ void ModeFont::OnDrawWin(int win)
 	// grid (horizontal lines)
 	for (int i=0;i<NumY;i++){
 		NixSetColor(color(0.3f,0.0f,0.8f,0.0f));
-		DrawLineH(0, data->TextureWidth,i*data->GlyphHeight+data->GlyphY1);
+		DrawLineH(0, data->TextureWidth,i*data->global.GlyphHeight+data->global.GlyphY1);
 		NixSetColor(color(0.3f,0.0f,1.0f,0.0f));
-		DrawLineH(0, data->TextureWidth,i*data->GlyphHeight+data->GlyphY2);
+		DrawLineH(0, data->TextureWidth,i*data->global.GlyphHeight+data->global.GlyphY2);
 		NixSetColor(color(0.5f,0.5f,0.5f,0.5f));
-		DrawLineH(0, data->TextureWidth,(i+1)*data->GlyphHeight);
+		DrawLineH(0, data->TextureWidth,(i+1)*data->global.GlyphHeight);
 	}
 
 	// separate glyphs
 	int x=0,y=0;
-	foreachi(FontGlyph &g, data->Glyph, i){
+	foreachi(DataFont::Glyph &g, data->glyph, i){
 		int x2 = x + g.Width;
 		if (x2 > data->TextureWidth){
 			x = 0;
 			x2 = g.Width;
-			y += data->GlyphHeight;
+			y += data->global.GlyphHeight;
 		}
 		if (i == data->Marked){
-			d = rect(float(x), float(x2), float(y), float(y + data->GlyphHeight));
+			d = rect(float(x), float(x2), float(y), float(y + data->global.GlyphHeight));
 			NixSetColor(color(0.2f,1,0,0));
 			Draw2D(r_id, &d);
 		}
 		NixSetColor(color(0.3f,0.8f,0.0f,0.0f));
-		DrawLineV(x + g.X1, y + data->GlyphY1, y + data->GlyphY2);
+		DrawLineV(x + g.X1, y + data->global.GlyphY1, y + data->global.GlyphY2);
 		NixSetColor(color(0.3f,0.8f,0.0f,0.0f));
-		DrawLineV(x + g.X2, y + data->GlyphY1, y + data->GlyphY2);
+		DrawLineV(x + g.X2, y + data->global.GlyphY1, y + data->global.GlyphY2);
 		NixSetColor(color(0.3f,0.5f,0.5f,0.5f));
-		DrawLineV(x2, y, y + data->GlyphHeight);
+		DrawLineV(x2, y, y + data->global.GlyphHeight);
 		x = x2;
 	}
 

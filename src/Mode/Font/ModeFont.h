@@ -13,6 +13,7 @@
 
 class Mode;
 class DataFont;
+class FontDialog;
 
 class ModeFont: public Mode
 {
@@ -48,7 +49,7 @@ public:
 	DataFont *data;
 	Data *GetData(){	return data;	}
 
-	string SampleText;
+	FontDialog *dialog;
 };
 
 extern ModeFont* mode_font;

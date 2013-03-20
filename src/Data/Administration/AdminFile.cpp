@@ -263,7 +263,7 @@ void AdminFile::check(AdminFileList &list)
 		DataFont f;
 		if (f.Load(MaterialDir + Name,false)){
 			Time = f.file_time;
-			add_possible_link(l, FDTexture, f.TextureFile);
+			add_possible_link(l, FDTexture, f.global.TextureFile);
 		}else
 			Missing=true;
 	}else if (Kind==FDScript){

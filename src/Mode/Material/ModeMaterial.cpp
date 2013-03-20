@@ -8,6 +8,8 @@
 #include "../../Edward.h"
 #include "ModeMaterial.h"
 #include "../../Data/Material/DataMaterial.h"
+#include "Dialog/MaterialPropertiesDialog.h"
+#include "Dialog/MaterialPhysicsDialog.h"
 #include "../../lib/x/x.h"
 
 const int MATERIAL_BALL_NUMX = 32;

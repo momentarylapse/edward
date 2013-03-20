@@ -10,8 +10,6 @@
 
 #include "../Mode.h"
 #include "../../Data/Material/DataMaterial.h"
-#include "Dialog/MaterialPropertiesDialog.h"
-#include "Dialog/MaterialPhysicsDialog.h"
 
 class Mode;
 class DataMaterial;
