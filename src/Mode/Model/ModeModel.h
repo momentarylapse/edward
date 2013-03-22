@@ -36,7 +36,8 @@ public:
 	bool Save();
 	bool SaveAs();
 
-	bool Import3ds();
+	bool ImportOpen3ds();
+	bool ImportLoad3ds(const string &filename);
 
 	void SetMaterialSelected();
 	void SetMaterialMouseOver();

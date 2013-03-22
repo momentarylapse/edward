@@ -110,7 +110,7 @@ void ModeModel::OnCommand(const string & id)
 		SaveAs();
 
 	if (id == "import_from_3ds")
-		Import3ds();
+		ImportOpen3ds();
 
 	// TODO -> edward?
 	if (id == "undo")
@@ -197,7 +197,7 @@ void ModeModel::New()
 	if (!ed->AllowTermination())
 		return;
 	data->Reset();
-	ed->SetMode(mode_model);
+	ed->SetMode(this);
 	mode_model_mesh->OptimizeView();
 }
 
@@ -210,7 +210,7 @@ bool ModeModel::Open()
 	if (!data->Load(ed->DialogFileComplete))
 		return false;
 
-	ed->SetMode(mode_model);
+	ed->SetMode(this);
 	mode_model_mesh->OptimizeView();
 	return true;
 }
@@ -229,17 +229,22 @@ bool ModeModel::SaveAs()
 	return false;
 }
 
-bool ModeModel::Import3ds()
+bool ModeModel::ImportOpen3ds()
 {
 	if (!ed->AllowTermination())
 		return false;
 	if (!ed->FileDialog(FDFile, false, false))
 		return false;
+	return ImportLoad3ds(ed->DialogFileComplete);
+}
+
+bool ModeModel::ImportLoad3ds(const string &filename)
+{
 	Importer3ds *im = new Importer3ds;
-	if (!im->Import(data, ed->DialogFileComplete))
+	if (!im->Import(data, filename))
 		return false;
 
-	ed->SetMode(mode_model);
+	ed->SetMode(this);
 	mode_model_mesh->OptimizeView();
 	return true;
 }

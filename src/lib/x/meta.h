@@ -33,8 +33,7 @@ struct XFont
 {
 	string filename;
 	int texture;
-	int num_glyphs;
-	int table[256], unknown_glyph_no;
+	int unknown_glyph_no;
 	XGlyph glyph[256];
 	float y_offset, height, x_factor, y_factor;
 };

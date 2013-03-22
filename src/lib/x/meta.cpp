@@ -661,6 +661,18 @@ void MetaDeleteSelection()
 	msg_db_l(1);
 }
 
+static string str_utf8_to_ubyte(const string &str)
+{
+	string r;
+	for (int i=0;i<str.num;i++)
+		if (((unsigned int)str[i] & 0x80) > 0){
+			r.add(((str[i] & 0x1f) << 6) + (str[i + 1] & 0x3f));
+			i ++;
+		}else
+			r.add(str[i]);
+	return r;
+}
+
 int _cdecl MetaLoadXFont(const string &filename)
 {
 	// "" -> default font
@@ -684,7 +696,7 @@ int _cdecl MetaLoadXFont(const string &filename)
 			tx = NixTextures[font->texture].width;
 			ty = NixTextures[font->texture].height;
 		}
-		font->num_glyphs = f->ReadWordC();
+		int num_glyphs = f->ReadWordC();
 		int height=f->ReadByteC();
 		int y1=f->ReadByteC();
 		int y2=f->ReadByteC();
@@ -694,22 +706,10 @@ int _cdecl MetaLoadXFont(const string &filename)
 		font->x_factor=(float)f->ReadByteC()*0.01f;
 		font->y_factor=(float)f->ReadByteC()*0.01f;
 		f->ReadComment();
-		for (int i=0;i<256;i++)
-			font->table[i] = -1;
 		int x=0,y=0;
-		for (int i=0;i<font->num_glyphs;i++){
+		for (int i=0;i<num_glyphs;i++){
 			string name = f->ReadStr();
-			int c=(unsigned char)name[0];
-			if ((name[0]=='&') && (name.num > 1)){
-				if (name[1]=='a')	c=_xfont_char_ae_;
-				if (name[1]=='o')	c=_xfont_char_oe_;
-				if (name[1]=='u')	c=_xfont_char_ue_;
-				if (name[1]=='A')	c=_xfont_char_Ae_;
-				if (name[1]=='O')	c=_xfont_char_Oe_;
-				if (name[1]=='U')	c=_xfont_char_Ue_;
-				if (name[1]=='s')	c=_xfont_char_ss_;
-			}
-			font->table[c]=i;
+			int c = (unsigned char)str_utf8_to_ubyte(name)[0];
 			int w=f->ReadByte();
 			int x1=f->ReadByte();
 			int x2=f->ReadByte();
@@ -726,16 +726,16 @@ int _cdecl MetaLoadXFont(const string &filename)
 											(float)(x+0.5f+w)/(float)tx,
 											(float)y/(float)ty,
 											(float)(y+height)/(float)ty);
-			font->glyph[i] = g;
+			font->glyph[c] = g;
 			x+=w;
 		}
-		int u=(unsigned char)f->ReadStrC()[0];
+		/*int u=(unsigned char)f->ReadStrC()[0];
 		font->unknown_glyph_no = font->table[u];
 		if (font->unknown_glyph_no<0)
 			font->unknown_glyph_no=0;
 		for (int i=0;i<256;i++)
 			if (font->table[i] < 0)
-				font->table[i] = font->unknown_glyph_no;
+				font->table[i] = font->unknown_glyph_no;*/
 		_XFont_.add(font);
 	}else{
 		msg_error(format("wrong file format: %d (expected: 2)",ffv));
@@ -743,31 +743,6 @@ int _cdecl MetaLoadXFont(const string &filename)
 	FileClose(f);
 
 	return _XFont_.num-1;
-}
-
-string str_utf8_to_xfont(const string &str)
-{
-	string r;
-	for (int i=0;i<str.num;i++)
-		if (str[i] == (signed char)0xc3){
-			if (str[i+1] == (signed char)0xa4)
-				r.add(_xfont_char_ae_);
-			else if (str[i+1] == (signed char)0xb6)
-				r.add(_xfont_char_oe_);
-			else if (str[i+1] == (signed char)0xbc)
-				r.add(_xfont_char_ue_);
-			else if (str[i+1] == (signed char)0x9f)
-				r.add(_xfont_char_ss_);
-			else if (str[i+1] == (signed char)0x84)
-				r.add(_xfont_char_Ae_);
-			else if (str[i+1] == (signed char)0x96)
-				r.add(_xfont_char_Oe_);
-			else if (str[i+1] == (signed char)0x9c)
-				r.add(_xfont_char_Ue_);
-			i ++;
-		}else
-			r.add(str[i]);
-	return r;
 }
 
 // retrieve the width of a given text
@@ -778,10 +753,9 @@ float _cdecl XFGetWidth(float height,const string &str)
 		return 0;
 	float w = 0;
 	float xf = height * f->x_factor;
-	string s = str_utf8_to_xfont(str);
+	string s = str_utf8_to_ubyte(str);
 	for (int i=0;i<s.num;i++){
 		int n = (unsigned char)s[i];
-		n = f->table[n];
 		w += f->glyph[n].dx * xf;
 	}
 	return w;
@@ -804,7 +778,7 @@ float _cdecl XFDrawStr(float x,float y,float height,const string &str,bool centr
 	float w=0;
 	y-=f->y_offset*yf;
 	rect d;
-	string s = str_utf8_to_xfont(str);
+	string s = str_utf8_to_ubyte(str);
 	for (int i=0;i<s.num;i++){
 		if (s[i]=='\r')
 			continue;
@@ -814,7 +788,6 @@ float _cdecl XFDrawStr(float x,float y,float height,const string &str,bool centr
 			continue;
 		}
 		int n=(unsigned char)s[i];
-		n=f->table[n];
 		d.x1=(x+w-f->glyph[n].x_offset*xf);
 		d.x2=(x+w+f->glyph[n].dx2     *xf);
 		d.y1=(y             );
@@ -840,14 +813,13 @@ float _cdecl XFDrawVertStr(float x,float y,float height,const string &str)
 	float yf=height*f->y_factor;
 	y-=f->y_offset*yf;
 	rect d;
-	string s = str_utf8_to_xfont(str);
+	string s = str_utf8_to_ubyte(str);
 	for (int i=0;i<s.num;i++){
 		if (s[i]=='\r')
 			continue;
 		if (s[i]=='\n')
 			continue;
 		int n=(unsigned char)s[i];
-		n=f->table[n];
 		d.x1=(x-f->glyph[n].x_offset*xf);
 		d.x2=(x+f->glyph[n].dx2     *xf);
 		d.y1=(y             );

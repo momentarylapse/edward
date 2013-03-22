@@ -52,7 +52,7 @@ bool DataFont::Load(const string & _filename, bool deep)
 		f->ReadComment();
 		glyph.resize(NumX*NumY);
 		for (int i=0;i<NumX*NumY;i++){
-			glyph[i].Name = f->ReadStr();
+			glyph[i].Name = str_m_to_utf8(f->ReadStr());
 			glyph[i].Width = MaxGlyphWidth;
 			glyph[i].X2 = f->ReadByte();
 			glyph[i].X1 = f->ReadByte();
@@ -75,7 +75,7 @@ bool DataFont::Load(const string & _filename, bool deep)
 		f->ReadComment();
 		glyph.resize(NumGlyphs);
 		for (int i=0;i<NumGlyphs;i++){
-			glyph[i].Name = f->ReadStr();
+			glyph[i].Name = str_m_to_utf8(f->ReadStr());
 			glyph[i].Width=f->ReadByte();
 			glyph[i].X1=f->ReadByte();
 			glyph[i].X2=f->ReadByte();
@@ -110,7 +110,8 @@ string PreGlyphName[256]={
 	"a",	"b",	"c",	"d",	"e",	"f",	"g",	"h",	"i",	"j",	"k",	"l",	"m",
 	"n",	"o",	"p",	"q",	"r",	"s",	"t",	"u",	"v",	"w",	"x",	"y",	"z",
 	"0",	"1",	"2",	"3",	"4",	"5",	"6",	"7",	"8",	"9",
-	"&A",	"&O",	"&U",	"&a",	"&o",	"&u",	"&s",
+	str_m_to_utf8("&A"),	str_m_to_utf8("&O"),	str_m_to_utf8("&U"),
+	str_m_to_utf8("&a"),	str_m_to_utf8("&o"),	str_m_to_utf8("&u"),	str_m_to_utf8("&s"),
 	",",	".",	":",	";",	"!",	"?",	"+",	"-",	"*",	"(",	")",	"/",	"|",
 	"\\",	"&",	"\"",	"<",	">",	"=",	"[",	"]",	"%",	"#",	"@",	"§",	"$",
 	"~",	"°",	"^",	"'",	" ",	"_",
@@ -202,10 +203,19 @@ void DataFont::UpdateTexture()
 }
 
 
+
+int str_utf8_first_ubyte(const string &str)
+{
+	if (str.num == 0)
+		return 0;
+	if (((unsigned int)str[0] & 0x80) > 0)
+		return ((str[0] & 0x1f) << 6) + (str[1] & 0x3f);
+	return str[0];
+}
+
 void DataFont::ApplyFont(XFont *f)
 {
 	f->texture = Texture;
-	f->num_glyphs = glyph.num;
 	f->x_factor = (float)global.XFactor*0.01f;
 	f->y_factor = (float)global.YFactor*0.01f;
 	float dy = (float)(global.GlyphY2-global.GlyphY1);
@@ -217,13 +227,12 @@ void DataFont::ApplyFont(XFont *f)
 			x = 0;
 			y += global.GlyphHeight;
 		}
-		int c=(unsigned char)sys_str(g.Name)[0];
-		f->table[c] = i;
-		f->glyph[i].x_offset = (float)g.X1 / dy;
-		f->glyph[i].width = (float)g.Width / dy;
-		f->glyph[i].dx = (float)(g.X2 - g.X1) / dy;
-		f->glyph[i].dx2 = (float)(g.Width - g.X1) / dy;
-		f->glyph[i].src = rect(	(float)(x - 0.5f) / (float)TextureWidth,
+		int c = str_utf8_first_ubyte(g.Name);
+		f->glyph[c].x_offset = (float)g.X1 / dy;
+		f->glyph[c].width = (float)g.Width / dy;
+		f->glyph[c].dx = (float)(g.X2 - g.X1) / dy;
+		f->glyph[c].dx2 = (float)(g.Width - g.X1) / dy;
+		f->glyph[c].src = rect(	(float)(x - 0.5f) / (float)TextureWidth,
 								(float)(x - 0.5f + g.Width) / (float)TextureWidth,
 								(float)y / (float)TextureHeight,
 								(float)(y + global.GlyphHeight) / (float)TextureHeight);

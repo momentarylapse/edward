@@ -355,11 +355,6 @@ bool Edward::HandleArguments(Array<string> arg)
 		mworld->OptimizeView();
 		SetMode(ModeWorld);*/
 	}else if (ext == "world"){
-		/*if (param[0] == '$'){
-			JustCreateLightMap = true;
-			param.delete_single(0);
-		}*/
-
 		MakeDirs(param);
 		mode_world->data->Load(param);
 		SetMode(mode_world);
@@ -379,12 +374,10 @@ bool Edward::HandleArguments(Array<string> arg)
 		mmodel->LoadImportFromGameStudioWmb(param);
 		SetMode(ModeModel);
 		WholeWindow=true;
-		mmodel->OptimizeView();
-	}else if (ext == "3ds"){
-		mmodel->LoadImportFrom3DS(param);
-		SetMode(ModeModel);
-		WholeWindow=true;
 		mmodel->OptimizeView();*/
+	}else if (ext == "3ds"){
+		mode_model->ImportLoad3ds(param);
+		mode_model_mesh->OptimizeView();
 	}else{
 		ErrorBox(_("Unbekannte Dateinamenerweiterung: ") + param);
 		HuiEnd();
