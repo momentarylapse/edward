@@ -186,6 +186,17 @@ void MultiView::DoMove(const vector &dir)
 	Notify("Update");
 }
 
+void MultiView::SetViewBox(const vector &min, const vector &max)
+{
+	pos = (min + max) / 2;
+	float r = (max - min).length_fuzzy();
+	if (r > 0)
+		radius = r;
+	// = (max - min).length_fuzzy() * 1.3f * ((float)NixScreenWidth / (float)NixTargetWidth);
+	update_zoom;
+	Notify("Update");
+}
+
 void MultiView::ToggleWholeWindow()
 {
 	whole_window = !whole_window;

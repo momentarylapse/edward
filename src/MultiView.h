@@ -124,6 +124,7 @@ public:
 	//void DoMultiViewStuff(bool rect_able);
 	void Reset();
 	void ResetView();
+	void SetViewBox(const vector &min, const vector &max);
 	void ResetData(Data *_data);
 	void ViewStagePush();
 	void ViewStagePop();

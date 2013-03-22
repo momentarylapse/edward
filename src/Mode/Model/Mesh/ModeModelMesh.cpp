@@ -269,9 +269,7 @@ void ModeModelMesh::OptimizeView()
 			min._min(v.pos);
 			max._max(v.pos);
 		}
-		mv->pos = (min + max) / 2;
-		if (data->Vertex.num > 1)
-			mv->radius = (max - min).length_fuzzy() * 1.3f * ((float)NixScreenWidth / (float)NixTargetWidth);
+		mv->SetViewBox(min, max);
 	}
 
 	ed->multi_view_2d->ResetView();

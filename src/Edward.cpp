@@ -364,6 +364,7 @@ bool Edward::HandleArguments(Array<string> arg)
 		MakeDirs(param);
 		mode_font->data->Load(param);
 		SetMode(mode_font);
+		mode_font->OptimizeView();
 	/*}else if (ext == "mdl"){
 		mmodel->LoadImportFromGameStudioMdl(param);
 		SetMode(ModeModel);

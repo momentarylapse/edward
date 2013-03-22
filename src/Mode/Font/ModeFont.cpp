@@ -8,6 +8,7 @@
 #include "../../Edward.h"
 #include "ModeFont.h"
 #include "../../Data/Font/DataFont.h"
+#include "../../Data/Font/Import/ImporterCairo.h"
 #include "Dialog/FontDialog.h"
 #include "../../lib/x/x.h"
 
@@ -113,6 +114,12 @@ void ModeFont::OnCommand(const string & id)
 		data->Undo();
 	if (id == "redo")
 		data->Redo();
+
+	if (id == "opt_view")
+		OptimizeView();
+
+	if (id == "import")
+		Import();
 }
 
 
@@ -127,7 +134,7 @@ bool ModeFont::Open()
 	if (!ok)
 		return false;
 
-	multi_view->ResetView();
+	OptimizeView();
 	ed->SetMode(mode_font);
 	return true;
 }
@@ -140,7 +147,7 @@ void ModeFont::New()
 		return;
 
 	data->Reset();
-	multi_view->ResetView();
+	OptimizeView();
 	ed->SetMode(mode_font);
 }
 
@@ -164,6 +171,7 @@ void ModeFont::OnStart()
 	ed->EnableToolbar(false);
 
 	dialog = new FontDialog(ed, true, data);
+	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
 	dialog->Update();
 
 	OnUpdate(data);
@@ -275,5 +283,19 @@ void ModeFont::OnDrawWin(int win)
 
 void ModeFont::OnUpdateMenu()
 {
+}
+
+void ModeFont::OptimizeView()
+{
+	multi_view->Reset();
+	multi_view->SetViewBox(v_0, vector(data->TextureWidth, data->TextureHeight, 0));
+}
+
+void ModeFont::Import()
+{
+	if (HuiSelectFont(ed, _("Font importieren"))){
+		ImporterCairo imp;
+		imp.Import(data, HuiFontname);
+	}
 }
 

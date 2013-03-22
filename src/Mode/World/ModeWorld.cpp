@@ -692,9 +692,7 @@ void ModeWorld::OptimizeView()
 	multi_view->ResetView();
 	vector min, max;
 	data->GetBoundaryBox(min, max);
-	multi_view->pos = (max + min) / 2;
-	if ((max - min).length_fuzzy() > 0)
-		multi_view->radius = (max - min).length_fuzzy() * 1.3f;
+	multi_view->SetViewBox(min, max);
 
 	//ShowEffects = false;
 	TerrainShowTextureLevel = -1;

@@ -39,6 +39,9 @@ public:
 	bool Save();
 	bool SaveAs();
 
+	void Import();
+	void OptimizeView();
+
 	DataFont *data;
 	Data *GetData(){	return data;	}
 
