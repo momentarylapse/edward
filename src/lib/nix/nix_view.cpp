@@ -17,6 +17,7 @@ void TestGLError(const string &);
 matrix NixViewMatrix, NixProjectionMatrix, NixInvProjectionMatrix;
 matrix NixProjectionMatrix2d;
 matrix NixWorldMatrix, NixWorldViewProjectionMatrix;
+vector _NixCamPos_;
 float View3DWidth,View3DHeight,View3DCenterX,View3DCenterY,NixView3DRatio;	// 3D transformation
 float View2DScaleX,View2DScaleY;				// 2D transformation
 int PerspectiveModeSize, PerspectiveModeCenter, PerspectiveMode2DScale;

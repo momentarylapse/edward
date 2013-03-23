@@ -21,8 +21,8 @@ int NixTextureIconSize = 0;
 void NixReloadTexture(int texture);
 void NixUnloadTexture(int texture);
 
-void NixSetDefaultShaderData(int texture0, int texture1, int texture2, int texture3);
-
+void NixSetDefaultShaderData(int num_textures, const vector &cam_pos);
+extern vector _NixCamPos_;
 
 
 void TestGLError(const string &pos);
@@ -429,18 +429,21 @@ void NixSetTexture(int texture)
 	_nix_num_textures_activated_ = 1;
 	TestGLError("SetTex");
 	if (NixGLCurrentProgram > 0)
-		NixSetDefaultShaderData(texture,-1,-1,-1);
+		NixSetDefaultShaderData(1, _NixCamPos_);
 }
 
 void NixSetTextures(int *texture, int num_textures)
 {
 	for (int i=0;i<num_textures;i++)
-		refresh_texture(texture[i]);
+		if (texture[i] >= 0)
+			refresh_texture(texture[i]);
 	unset_textures();
 
 	// set multitexturing
 	if (OGLMultiTexturingSupport){
 		for (int i=0;i<num_textures;i++){
+			if (texture[i] < 0)
+				continue;
 			glActiveTexture(GL_TEXTURE0+i);
 			if (NixTextures[texture[i]].is_cube_map){
 				glEnable(GL_TEXTURE_CUBE_MAP);
@@ -450,7 +453,7 @@ void NixSetTextures(int *texture, int num_textures)
 				glBindTexture(GL_TEXTURE_2D,NixTextures[texture[i]].glTexture);
 			}
 		}
-	}else{
+	}else if (texture[0] >= 0){
 		if (NixTextures[texture[0]].is_cube_map){
 			glEnable(GL_TEXTURE_CUBE_MAP);
 			glBindTexture(GL_TEXTURE_CUBE_MAP,NixTextures[texture[0]].glTexture);
@@ -462,7 +465,7 @@ void NixSetTextures(int *texture, int num_textures)
 
 	_nix_num_textures_activated_ = num_textures;
 	if (NixGLCurrentProgram > 0)
-		NixSetDefaultShaderData(texture[0], texture[1], texture[2], texture[3]);
+		NixSetDefaultShaderData(num_textures, _NixCamPos_);
 }
 
 void NixSetTextureVideoFrame(int texture,int frame)

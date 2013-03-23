@@ -61,6 +61,7 @@ void ModeMaterial::OnDraw()
 void ModeMaterial::OnUpdate(Observable *o)
 {
 	if (o->GetName() == "Data"){
+		data->UpdateTextures();
 		NixUnrefShader(data->Shader);
 		data->Shader = data->Appearance.GetShader();
 	}
@@ -109,7 +110,7 @@ void ModeMaterial::ExecutePhysicsDialog()
 	HuiWaitTillWindowClosed(dlg);
 }
 
-void CreateTorus(int buffer, const vector &pos, const vector dir, float radius1, float radius2, int nx, int ny)
+void CreateTorus(int buffer, const vector &pos, const vector dir, float radius1, float radius2, int nx, int ny, int num_tex)
 {
 	vector dir2 = dir.ortho();
 	dir2.normalize();
@@ -132,12 +133,29 @@ void CreateTorus(int buffer, const vector &pos, const vector dir, float radius1,
 			vector p01 = pp0 + n01 * radius2;
 			vector p10 = pp1 + n10 * radius2;
 			vector p11 = pp1 + n11 * radius2;
-			NixVBAddTria(buffer,	p01,n01,fx0,fy1,
-									p00,n00,fx0,fy0,
-									p10,n10,fx1,fy0);
-			NixVBAddTria(buffer,	p01,n01,fx0,fy1,
-									p10,n10,fx1,fy0,
-									p11,n11,fx1,fy1);
+			if (num_tex == 1){
+				NixVBAddTria(buffer,	p01,n01,fx0,fy1,
+										p00,n00,fx0,fy0,
+										p10,n10,fx1,fy0);
+				NixVBAddTria(buffer,	p01,n01,fx0,fy1,
+										p10,n10,fx1,fy0,
+										p11,n11,fx1,fy1);
+			}else{
+				float t00[MODEL_MAX_TEXTURES], t01[MODEL_MAX_TEXTURES], t10[MODEL_MAX_TEXTURES], t11[MODEL_MAX_TEXTURES];
+				for (int k=0; k<num_tex;k++){
+					t00[k * 2    ] = fx0;	t00[k * 2 + 1] = fy0;
+					t01[k * 2    ] = fx0;	t01[k * 2 + 1] = fy1;
+					t10[k * 2    ] = fx1;	t10[k * 2 + 1] = fy0;
+					t11[k * 2    ] = fx1;	t11[k * 2 + 1] = fy1;
+				}
+				NixVBAddTriaM(buffer,	p01,n01,t01,
+										p00,n00,t00,
+										p10,n10,t10);
+				NixVBAddTriaM(buffer,	p01,n01,t01,
+										p10,n10,t10,
+										p11,n11,t11);
+
+			}
 		}
 	}
 }
@@ -146,72 +164,21 @@ void CreateTorus(int buffer, const vector &pos, const vector dir, float radius1,
 void ModeMaterial::OnDrawWin(int win)
 {
 	data->ApplyForRendering();
-	if (data->Appearance.NumTextureLevels <= 1){
-		NixVBClear(VBTemp);
-		//FxCreateBall(VBTemp, v0, 100, 16, 32);
-		CreateTorus(VBTemp, v_0, e_z, 80, 50, 64, 32);
-		NixSetTexture((data->Appearance.NumTextureLevels == 1) ? data->Appearance.Texture[0] : -1);
-		NixDraw3D(VBTemp);
-		NixSetTexture(-1);
+
+	int num_tex = data->EffectiveTextureLevels();
+	int vb = VBTemp;
+	if (num_tex > 1)
+		vb = MaterialVB[num_tex];
+
+	if (num_tex > 1){
+		NixDraw3DM(vb);
 	}else{
-		/*vector p[(MATERIAL_BALL_NUMX + 1) * (MATERIAL_BALL_NUMY + 1)];
-		vector n[(MATERIAL_BALL_NUMX + 1) * (MATERIAL_BALL_NUMY + 1)];
-		float tc[(MATERIAL_BALL_NUMX + 1) * (MATERIAL_BALL_NUMY + 1) * 2];
-
-
-		for (int x=0;x<=MATERIAL_BALL_NUMX;x++)
-			for (int y=0;y<=MATERIAL_BALL_NUMY;y++){
-				int i = x + y * (MATERIAL_BALL_NUMX + 1);
-				vector ang = vector(pi*(x  -MATERIAL_BALL_NUMX/2)/nx,pi*2.0f* y   /MATERIAL_BALL_NUMY,0);
-				n[i] = VecAng2Dir(ang);
-				p[i] = n[i] * 100;
-			vector v;
-			vector n0=VecAng2Dir(v=vector(pi*(x  -nx/2)/nx,pi*2.0f* y   /ny,0));
-			vector n1=VecAng2Dir(v=vector(pi*(x+1-nx/2)/nx,pi*2.0f* y   /ny,0));
-			vector n2=VecAng2Dir(v=vector(pi*(x  -nx/2)/nx,pi*2.0f*(y+1)/ny,0));
-			vector n3=VecAng2Dir(v=vector(pi*(x+1-nx/2)/nx,pi*2.0f*(y+1)/ny,0));
-			vector p0=pos+radius*n0;
-			vector p1=pos+radius*n1;
-			vector p2=pos+radius*n2;
-			vector p3=pos+radius*n3;
-			NixVBAddTria(buffer,	p0,n0,float(x  )/(float)nx,float(y  )/(float)ny,
-									p1,n1,float(x+1)/(float)nx,float(y  )/(float)ny,
-									p2,n2,float(x  )/(float)nx,float(y+1)/(float)ny);
-			NixVBAddTria(buffer,	p2,n2,float(x  )/(float)nx,float(y+1)/(float)ny,
-									p1,n1,float(x+1)/(float)nx,float(y  )/(float)ny,
-									p3,n3,float(x+1)/(float)nx,float(y+1)/(float)ny);
-		}*/
-		float radius = 100;
-		NixVBClear(MaterialVB[data->Appearance.NumTextureLevels]);
-		float tc[4][MATERIAL_MAX_TEXTURE_LEVELS * 2];
-		for (int x=0;x<MATERIAL_BALL_NUMX;x++)
-			for (int y=0;y<MATERIAL_BALL_NUMY;y++){
-				vector n0=vector(pi*(x  -MATERIAL_BALL_NUMX/2)/MATERIAL_BALL_NUMX,pi*2.0f* y   /MATERIAL_BALL_NUMY,0).ang2dir();
-				vector n1=vector(pi*(x+1-MATERIAL_BALL_NUMX/2)/MATERIAL_BALL_NUMX,pi*2.0f* y   /MATERIAL_BALL_NUMY,0).ang2dir();
-				vector n2=vector(pi*(x  -MATERIAL_BALL_NUMX/2)/MATERIAL_BALL_NUMX,pi*2.0f*(y+1)/MATERIAL_BALL_NUMY,0).ang2dir();
-				vector n3=vector(pi*(x+1-MATERIAL_BALL_NUMX/2)/MATERIAL_BALL_NUMX,pi*2.0f*(y+1)/MATERIAL_BALL_NUMY,0).ang2dir();
-				vector p0=radius*n0;
-				vector p1=radius*n1;
-				vector p2=radius*n2;
-				vector p3=radius*n3;
-				for (int i=0;i<data->Appearance.NumTextureLevels;i++){
-					tc[0][i*2] = float(x  )/(float)MATERIAL_BALL_NUMX;	tc[0][i*2+1] = float(y  )/(float)MATERIAL_BALL_NUMY;
-					tc[1][i*2] = float(x+1)/(float)MATERIAL_BALL_NUMX;	tc[1][i*2+1] = float(y  )/(float)MATERIAL_BALL_NUMY;
-					tc[2][i*2] = float(x  )/(float)MATERIAL_BALL_NUMX;	tc[2][i*2+1] = float(y+1)/(float)MATERIAL_BALL_NUMY;
-					tc[3][i*2] = float(x+1)/(float)MATERIAL_BALL_NUMX;	tc[3][i*2+1] = float(y+1)/(float)MATERIAL_BALL_NUMY;
-				}
-				NixVBAddTriaM(MaterialVB[data->Appearance.NumTextureLevels],	p0,n0,tc[0],
-															p1,n1,tc[1],
-															p2,n2,tc[2]);
-				NixVBAddTriaM(MaterialVB[data->Appearance.NumTextureLevels],	p2,n2,tc[2],
-															p1,n1,tc[1],
-															p3,n3,tc[3]);
-			}
-		NixSetTextures(data->Appearance.Texture, data->Appearance.NumTextureLevels);
-		NixDraw3DM(MaterialVB[data->Appearance.NumTextureLevels]);
-		NixSetTexture(-1);
+		NixDraw3D(vb);
 	}
 
+	int tex[] = {-1, -1, -1, -1, -1, -1, -1, -1};
+	NixSetTextures(tex, 8);
+	NixSetTexture(-1);
 	NixSetShader(-1);
 
 	NixSetAlpha(AlphaNone);
@@ -278,6 +245,15 @@ void ModeMaterial::OnStart()
 	ed->ToolbarReset();
 	ed->EnableToolbar(false);
 	multi_view->MVRectable = false;
+
+
+	NixVBClear(VBTemp);
+	CreateTorus(VBTemp, v_0, e_z, 80, 50, 48, 24, 1);
+	for (int i=2;i<MODEL_MAX_TEXTURES;i++){
+		int vb = MaterialVB[i];
+		NixVBClear(vb);
+		CreateTorus(vb, v_0, e_z, 80, 50, 48, 24, i);
+	}
 }
 
 

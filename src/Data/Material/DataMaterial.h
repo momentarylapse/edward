@@ -24,6 +24,8 @@ public:
 	bool Save(const string &_filename);
 
 	void ApplyForRendering();
+	int EffectiveTextureLevels();
+	void UpdateTextures();
 
 	/*struct TextureLevel
 	{
@@ -88,6 +90,7 @@ public:
 		int ReflectionMode, ReflectionSize;
 		float ReflectionDensity;
 		string ReflectionTextureFile[6];
+		int CubeMap;
 
 		// shader
 		string ShaderFile;

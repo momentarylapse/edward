@@ -15,6 +15,7 @@ DataMaterial::DataMaterial() :
 	Data(FDMaterial)
 {
 	Shader = -1;
+	Appearance.CubeMap = NixCreateCubeMap(128);
 
 	Reset();
 }
@@ -59,7 +60,10 @@ bool DataMaterial::Save(const string & _filename)
 	for (int i=0;i<6;i++)
 		f->WriteStr(Appearance.ReflectionTextureFile[i]);
 	f->WriteComment("// ShaderFile");
-	f->WriteStr(Appearance.ShaderFile);
+	if (Appearance.ShaderFile.find(".fx.glsl"))
+		f->WriteStr(Appearance.ShaderFile.substr(0, -9));
+	else
+		f->WriteStr("");
 	f->WriteComment("// Physics");
 	f->WriteInt(Physics.RCJump * 1000.0f);
 	f->WriteInt(Physics.RCStatic * 1000.0f);
@@ -232,10 +236,8 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 	delete(f);
 
 
-	if (deep){
-		for (int i=0;i<Appearance.NumTextureLevels;i++)
-			Appearance.Texture[i] = NixLoadTexture(Appearance.TextureFile[i]);
-	}
+	if (deep)
+		UpdateTextures();
 
 	ResetHistory();
 	Notify("Change");
@@ -312,6 +314,16 @@ void DataMaterial::Reset()
 	Notify("Change");
 }
 
+
+int DataMaterial::EffectiveTextureLevels()
+{
+	if ((Appearance.ReflectionMode == ReflectionCubeMapStatic) || (Appearance.ReflectionMode == ReflectionCubeMapDynamical))
+		return 4;
+	if (Appearance.NumTextureLevels == 0)
+		return 1;
+	return Appearance.NumTextureLevels;
+}
+
 void DataMaterial::ApplyForRendering()
 {
 	NixSetMaterial(Appearance.ColorAmbient, Appearance.ColorDiffuse, Appearance.ColorSpecular, Appearance.ColorShininess, Appearance.ColorEmissive);
@@ -331,6 +343,26 @@ void DataMaterial::ApplyForRendering()
 	}
 
 	NixSetShader(Shader);
+
+	int num_tex = EffectiveTextureLevels();
+	if (num_tex > 1)
+		NixSetTextures(Appearance.Texture, num_tex);
+	else
+		NixSetTexture(Appearance.Texture[0]);
+}
+
+void DataMaterial::UpdateTextures()
+{
+	msg_db_r("Mat.UpdateTextures", 1);
+	for (int i=0;i<MATERIAL_MAX_TEXTURE_LEVELS;i++)
+		Appearance.Texture[i] = -1;
+	for (int i=0;i<Appearance.NumTextureLevels;i++)
+		Appearance.Texture[i] = NixLoadTexture(Appearance.TextureFile[i]);
+	for (int i=0;i<6;i++)
+		NixFillCubeMap(Appearance.CubeMap, i, NixLoadTexture(Appearance.ReflectionTextureFile[i]));
+	if ((Appearance.ReflectionMode == ReflectionCubeMapStatic) || (Appearance.ReflectionMode == ReflectionCubeMapDynamical))
+		Appearance.Texture[3] = Appearance.CubeMap;
+	msg_db_l(1);
 }
 
 

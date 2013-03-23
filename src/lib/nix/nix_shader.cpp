@@ -259,7 +259,7 @@ void NixGetShaderData(int index, const string &var_name, void *data, int size)
 }
 
 
-void NixSetDefaultShaderData(int texture0, int texture1, int texture2, int texture3)
+void NixSetDefaultShaderData(int num_textures, const vector &cam_pos)
 {
 	if (NixGLCurrentProgram == 0)
 		return;
@@ -277,5 +277,12 @@ void NixSetDefaultShaderData(int texture0, int texture1, int texture2, int textu
 	loc = glGetUniformLocation(NixGLCurrentProgram, "tex3");
 	if (loc > -1)
 		glUniform1i(loc, 3);
+	loc = glGetUniformLocation(NixGLCurrentProgram, "_CamPos");
+	if (loc > -1){
+		matrix m = NixViewMatrix * NixWorldMatrix, mi;
+		MatrixInverse(m, mi);
+		vector cp = mi * v_0;
+		glUniform3f(loc, cp.x, cp.y, cp.z);
+	}
 	TestGLError("SetDefaultShaderData");
 }

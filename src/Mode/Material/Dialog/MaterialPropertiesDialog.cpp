@@ -169,8 +169,7 @@ void MaterialPropertiesDialog::OnReflectionTextures()
 			}
 
 		}
-	//	mode_material->RefillReflTexView();
-	// TODO
+		RefillReflTexView();
 	}
 }
 
@@ -253,8 +252,8 @@ void MaterialPropertiesDialog::FillTextureList()
 {
 	Reset("mat_textures");
 	for (int i=0;i<temp.NumTextureLevels;i++){
-		temp.Texture[i] = NixLoadTexture(temp.TextureFile[i]);
-		string img = ed->get_tex_image(temp.Texture[i]);
+		int tex = NixLoadTexture(temp.TextureFile[i]);
+		string img = ed->get_tex_image(tex);
 		AddString("mat_textures", format("%d\\%s\\%s", i, img.c_str(), file_secure(temp.TextureFile[i]).c_str()));
 	}
 	if (temp.NumTextureLevels == 0)
