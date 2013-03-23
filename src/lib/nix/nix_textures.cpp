@@ -390,26 +390,27 @@ inline void refresh_texture(int texture)
 
 int _nix_num_textures_activated_ = 0;
 
-void unset_textures()
+void unset_textures(int num_textures)
 {
 	// unset multitexturing
-	/*if (OGLMultiTexturingSupport){
-		for (int i=1;i<_nix_num_textures_activated_;i++){
+	if (OGLMultiTexturingSupport){
+		for (int i=num_textures;i<_nix_num_textures_activated_;i++){
 			glActiveTexture(GL_TEXTURE0+i);
 			glDisable(GL_TEXTURE_2D);
-			glClientActiveTexture(GL_TEXTURE0+i);
-			glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+			glDisable(GL_TEXTURE_CUBE_MAP);
+			glClientActiveTexture(GL_TEXTURE0 + i);
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
 		glActiveTexture(GL_TEXTURE0);
 		glClientActiveTexture(GL_TEXTURE0);
 	}
-	_nix_num_textures_activated_ = 1;*/
+	_nix_num_textures_activated_ = num_textures;
 }
 
 void NixSetTexture(int texture)
 {
 	refresh_texture(texture);
-	unset_textures();
+	unset_textures(1);
 	if (texture>=0){
 		if (NixTextures[texture].is_cube_map){
 			glEnable(GL_TEXTURE_CUBE_MAP);
@@ -437,7 +438,7 @@ void NixSetTextures(int *texture, int num_textures)
 	for (int i=0;i<num_textures;i++)
 		if (texture[i] >= 0)
 			refresh_texture(texture[i]);
-	unset_textures();
+	unset_textures(num_textures);
 
 	// set multitexturing
 	if (OGLMultiTexturingSupport){
@@ -569,7 +570,7 @@ void NixFillCubeMap(int cube_map, int side, int source_tex)
 	if (s.is_cube_map)
 		return;
 	Image image;
-	image.LoadFlipped(NixTextureDir + s.filename);
+	image.Load(NixTextureDir + s.filename);
 	NixOverwriteTexture__(cube_map, GL_TEXTURE_CUBE_MAP, NixCubeMapTarget[side], image);
 }
 
