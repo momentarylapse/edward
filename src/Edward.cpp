@@ -272,7 +272,8 @@ Edward::Edward(Array<string> arg) :
 		SetMode(mode_welcome);
 
 	HuiSetIdleFunctionM(this, &Edward::IdleFunction);
-	HuiRunLaterM(100, this, &Edward::ForceRedraw);
+	HuiRunLaterM(10, this, &Edward::ForceRedraw);
+	HuiRunLaterM(100, this, &Edward::OptimizeCurrentView);
 
 	msg_db_l(1);
 }
@@ -341,7 +342,6 @@ bool Edward::HandleArguments(Array<string> arg)
 		MakeDirs(param);
 		mode_model->data->Load(param, true);
 		SetMode(mode_model);
-		HuiRunLaterM(100, (HuiEventHandler*)mode_model_mesh, &ModeModelMesh::OptimizeView);
 		/*if (mmodel->Skin[1].Sub[0].Triangle.num==0)
 			mmodel->SetEditMode(EditModeVertex);*/
 	}else if (ext == "material"){
@@ -358,13 +358,11 @@ bool Edward::HandleArguments(Array<string> arg)
 		MakeDirs(param);
 		mode_world->data->Load(param);
 		SetMode(mode_world);
-		mode_world->OptimizeView();
 		multi_view_3d->whole_window = true;
 	}else if (ext == "xfont"){
 		MakeDirs(param);
 		mode_font->data->Load(param);
 		SetMode(mode_font);
-		mode_font->OptimizeView();
 	/*}else if (ext == "mdl"){
 		mmodel->LoadImportFromGameStudioMdl(param);
 		SetMode(ModeModel);
@@ -378,7 +376,6 @@ bool Edward::HandleArguments(Array<string> arg)
 		mmodel->OptimizeView();*/
 	}else if (ext == "3ds"){
 		mode_model->ImportLoad3ds(param);
-		mode_model_mesh->OptimizeView();
 	}else{
 		ErrorBox(_("Unbekannte Dateinamenerweiterung: ") + param);
 		HuiEnd();
@@ -386,6 +383,12 @@ bool Edward::HandleArguments(Array<string> arg)
 	}
 	msg_db_l(1);
 	return true;
+}
+
+void Edward::OptimizeCurrentView()
+{
+	if (cur_mode)
+		cur_mode->OptimizeViewRecursice();
 }
 
 

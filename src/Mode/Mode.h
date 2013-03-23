@@ -19,8 +19,10 @@ public:
 	Mode(const string &_name, Mode *_parent, Data *_data, MultiView *_multi_view, const string &_menu);
 	virtual ~Mode();
 
+	// Start/End: (once) entering this mode or a sub mode
 	virtual void OnStart(){};
 	virtual void OnEnd(){};
+	// Enter/Leave: exactly this mode
 	virtual void OnEnter(){};
 	virtual void OnLeave(){};
 
@@ -39,6 +41,9 @@ public:
 
 	virtual void OnDraw(){};
 	virtual void OnDrawWin(int win){};
+
+	virtual bool OptimizeView(){ return false; };
+	virtual void OptimizeViewRecursice();
 
 	// send events to multi_view first, then call derived event handlers
 	//   (to be called by edward)

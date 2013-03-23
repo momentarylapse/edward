@@ -117,6 +117,7 @@ public:
 	void ForceRedraw();
 	bool force_redraw;
 	void UpdateMenu();
+	void OptimizeCurrentView();
 
 	Mode *cur_mode;
 	Array<Mode*> mode_queue;

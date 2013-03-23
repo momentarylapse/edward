@@ -189,10 +189,9 @@ void MultiView::DoMove(const vector &dir)
 void MultiView::SetViewBox(const vector &min, const vector &max)
 {
 	pos = (min + max) / 2;
-	float r = (max - min).length_fuzzy();
+	float r = (max - min).length_fuzzy() * 1.3f * ((float)NixScreenWidth / (float)NixTargetWidth);
 	if (r > 0)
 		radius = r;
-	// = (max - min).length_fuzzy() * 1.3f * ((float)NixScreenWidth / (float)NixTargetWidth);
 	update_zoom;
 	Notify("Update");
 }

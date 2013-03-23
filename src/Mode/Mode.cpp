@@ -72,6 +72,14 @@ void Mode::OnDrawWinRecursive(int win)
 	OnDrawWin(win);
 }
 
+void Mode::OptimizeViewRecursice()
+{
+	if (OptimizeView())
+		return;
+	if (parent)
+		parent->OptimizeViewRecursice();
+}
+
 
 
 Mode *Mode::GetRoot()

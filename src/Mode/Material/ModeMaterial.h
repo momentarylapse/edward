@@ -39,6 +39,8 @@ public:
 	void ExecuteAppearanceDialog();
 	void ExecutePhysicsDialog();
 
+	bool OptimizeView();
+
 	DataMaterial *data;
 	Data *GetData(){	return data;	}
 

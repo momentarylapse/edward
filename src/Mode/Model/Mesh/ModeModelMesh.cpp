@@ -256,7 +256,7 @@ void ModeModelMesh::OnUpdateMenu()
 	ed->Check("normal_all_per_vertex", data->NormalModeAll == NormalModePerVertex);
 }
 
-void ModeModelMesh::OptimizeView()
+bool ModeModelMesh::OptimizeView()
 {
 	msg_db_r("OptimizeView", 1);
 	MultiView *mv = ed->multi_view_3d;
@@ -279,6 +279,7 @@ void ModeModelMesh::OptimizeView()
 	if (SubMode == SubModeSkeleton)
 		SkeletonOptimizeView();*/
 	msg_db_l(1);
+	return true;
 }
 
 

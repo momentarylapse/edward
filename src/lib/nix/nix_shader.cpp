@@ -279,7 +279,7 @@ void NixSetDefaultShaderData(int num_textures, const vector &cam_pos)
 		glUniform1i(loc, 3);
 	loc = glGetUniformLocation(NixGLCurrentProgram, "_CamPos");
 	if (loc > -1){
-		matrix m = NixViewMatrix * NixWorldMatrix, mi;
+		matrix m = NixWorldMatrix * NixViewMatrix, mi;
 		MatrixInverse(m, mi);
 		vector cp = mi * v_0;
 		glUniform3f(loc, cp.x, cp.y, cp.z);

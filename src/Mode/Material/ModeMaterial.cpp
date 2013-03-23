@@ -12,8 +12,10 @@
 #include "Dialog/MaterialPhysicsDialog.h"
 #include "../../lib/x/x.h"
 
-const int MATERIAL_BALL_NUMX = 32;
-const int MATERIAL_BALL_NUMY = 64;
+const int MATERIAL_NUMX = 48;
+const int MATERIAL_NUMY = 24;
+const float MATERIAL_RADIUS1 = 80;
+const float MATERIAL_RADIUS2 = 50;
 
 ModeMaterial *mode_material = NULL;
 
@@ -26,7 +28,7 @@ ModeMaterial::ModeMaterial() :
 	AppearanceDialog = NULL;
 
 	for (int i=2;i<MATERIAL_MAX_TEXTURE_LEVELS;i++)
-		MaterialVB[i] = NixCreateVBM(MATERIAL_BALL_NUMX * MATERIAL_BALL_NUMY * 2, i);
+		MaterialVB[i] = NixCreateVBM(MATERIAL_NUMX * MATERIAL_NUMY * 2, i);
 }
 
 ModeMaterial::~ModeMaterial()
@@ -36,8 +38,7 @@ ModeMaterial::~ModeMaterial()
 void ModeMaterial::New()
 {
 	data->Reset();
-	multi_view->ResetView();
-	multi_view->radius = 500;
+	OptimizeView();
 	ed->SetMode(mode_material);
 }
 
@@ -196,8 +197,7 @@ bool ModeMaterial::Open()
 	if (!data->Load(ed->DialogFileComplete))
 		return false;
 
-	multi_view->ResetView();
-	multi_view->radius = 500;
+	OptimizeView();
 	ed->SetMode(mode_material);
 	return true;
 }
@@ -248,12 +248,21 @@ void ModeMaterial::OnStart()
 
 
 	NixVBClear(VBTemp);
-	CreateTorus(VBTemp, v_0, e_z, 80, 50, 48, 24, 1);
+	CreateTorus(VBTemp, v_0, e_z, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_NUMX, MATERIAL_NUMY, 1);
 	for (int i=2;i<MODEL_MAX_TEXTURES;i++){
 		int vb = MaterialVB[i];
 		NixVBClear(vb);
-		CreateTorus(vb, v_0, e_z, 80, 50, 48, 24, i);
+		CreateTorus(vb, v_0, e_z, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_NUMX, MATERIAL_NUMY, i);
 	}
 }
+
+bool ModeMaterial::OptimizeView()
+{
+	multi_view->ResetView();
+	vector r = vector(MATERIAL_RADIUS1 + MATERIAL_RADIUS2, MATERIAL_RADIUS1 + MATERIAL_RADIUS2, MATERIAL_RADIUS2);
+	multi_view->SetViewBox(-r, r);
+	return true;
+}
+
 
 

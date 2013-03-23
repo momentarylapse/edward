@@ -46,7 +46,7 @@ public:
 	bool Save();
 	bool SaveAs();
 
-	void OptimizeView();
+	bool OptimizeView();
 
 	void ImportWorldProperties();
 	void LoadTerrain();

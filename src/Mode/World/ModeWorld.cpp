@@ -687,7 +687,7 @@ void ModeWorld::ExecuteTerrainPropertiesDialog(int index)
 }
 
 
-void ModeWorld::OptimizeView()
+bool ModeWorld::OptimizeView()
 {
 	multi_view->ResetView();
 	vector min, max;
@@ -697,6 +697,7 @@ void ModeWorld::OptimizeView()
 	//ShowEffects = false;
 	TerrainShowTextureLevel = -1;
 	//TerrainsSelectable=false;
+	return true;
 }
 
 void ModeWorld::LoadTerrain()

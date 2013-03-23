@@ -40,7 +40,7 @@ public:
 	bool SaveAs();
 
 	void Import();
-	void OptimizeView();
+	bool OptimizeView();
 
 	DataFont *data;
 	Data *GetData(){	return data;	}

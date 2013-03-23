@@ -285,10 +285,11 @@ void ModeFont::OnUpdateMenu()
 {
 }
 
-void ModeFont::OptimizeView()
+bool ModeFont::OptimizeView()
 {
 	multi_view->Reset();
 	multi_view->SetViewBox(v_0, vector(data->TextureWidth, data->TextureHeight, 0));
+	return true;
 }
 
 void ModeFont::Import()

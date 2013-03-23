@@ -32,7 +32,7 @@ public:
 
 	void OnDraw();
 
-	void OptimizeView();
+	bool OptimizeView();
 
 	void Easify();
 
