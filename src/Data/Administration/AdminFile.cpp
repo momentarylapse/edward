@@ -220,7 +220,7 @@ void AdminFile::check(AdminFileList &list)
 		WorldTerrain t;
 		if (t.Load(v_0, MapDir + Name, false)){
 			Time = 0; // TODO
-			for (int i=0;i<t.terrain->num_textures;i++)
+			for (int i=0;i<t.terrain->material.num_textures;i++)
 				add_possible_link(l, FDTexture, t.terrain->texture_file[i]);
 			add_possible_link(l, FDMaterial, t.terrain->material_file);
 		}else

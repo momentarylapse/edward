@@ -193,7 +193,7 @@ void SIAddPackageNix()
 		func_add_param("v_in",		TypeVector);
 	add_func("NixCreateVB",									TypeInt,	nix_p(&NixCreateVB));
 		func_add_param("max_trias",		TypeInt);
-		func_add_param("index",		TypeInt);
+		func_add_param("num_textures",	TypeInt);
 	add_func("NixVBClear",									TypeVoid,	nix_p(&NixVBClear));
 		func_add_param("vb",		TypeInt);
 	add_func("NixVBAddTria",							TypeVoid,	nix_p(&NixVBAddTria));

@@ -12,6 +12,7 @@ Array<sVertexBuffer> NixVB;
 
 
 // bei angegebenem index wird der bestehende VB neu erstellt
+#if 0
 int NixCreateVB(int max_trias,int index)
 {
 	msg_db_r("creating vertex buffer", 1);
@@ -52,23 +53,22 @@ int NixCreateVB(int max_trias,int index)
 	msg_db_l(1);
 	return index;
 }
+#endif
 
-int NixCreateVBM(int max_trias,int num_textures,int index)
+int NixCreateVB(int max_trias, int num_textures)
 {
 	msg_db_r(format("creating vertex buffer (%d tex coords)",num_textures).c_str(), 1);
-	bool create = (index < 0);
 	if (num_textures > NIX_MAX_TEXTURELEVELS)
 		num_textures = NIX_MAX_TEXTURELEVELS;
-	if (create){
-		index = NixVB.num;
-		for (int i=0;i<NixVB.num;i++)
-			if (!NixVB[i].Used){
-				index = i;
-				break;
-			}
-		if (index == NixVB.num)
-			NixVB.resize(NixVB.num + 1);
-	}
+	int index = NixVB.num;
+	for (int i=0;i<NixVB.num;i++)
+		if (!NixVB[i].Used){
+			index = i;
+			break;
+		}
+	if (index == NixVB.num)
+		NixVB.resize(NixVB.num + 1);
+
 	NixVB[index].glVertices = new vector[max_trias*3];
 	NixVB[index].glNormals = new vector[max_trias*3];
 	bool failed = ((!NixVB[index].glVertices) || (!NixVB[index].glNormals));

@@ -121,11 +121,11 @@ void FxInit(const string &tex_file, const string &tex_file_metal, const string &
 {
 	msg_db_r("FxInit",0);
 #ifdef _X_ALLOW_FX_
-	FxTexMetal=NixLoadTexture(tex_file_metal);
+	FxTexMetal = NixLoadTexture(tex_file_metal);
 #endif
-	FxVB=NixCreateVB(MODEL_MAX_TRIANGLES*4);
-	ShadowVB[0]=NixCreateVB(32768);
-	ShadowVB[1]=NixCreateVB(32768);
+	FxVB = NixCreateVB(MODEL_MAX_TRIANGLES * 4, 1);
+	ShadowVB[0] = NixCreateVB(32768, 1);
+	ShadowVB[1] = NixCreateVB(32768, 1);
 	FxLightFieldsEnabled=true;
 	NumForceFields=0;
 	NumLights=0;

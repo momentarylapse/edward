@@ -651,8 +651,8 @@ void NixInit(const string &api,int xres,int yres,int depth,bool fullscreen,CHuiW
 
 	NixTexturesInit();
 
-	VBTemp=NixCreateVB(10240);
-	NixUsable=true;
+	VBTemp = NixCreateVB(10240, 1);
+	NixUsable = true;
 
 	TestGLError("Init post");
 

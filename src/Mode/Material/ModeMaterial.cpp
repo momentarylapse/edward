@@ -29,7 +29,7 @@ ModeMaterial::ModeMaterial() :
 
 	MaterialVB[1] = VBTemp;
 	for (int i=2;i<MATERIAL_MAX_TEXTURE_LEVELS;i++)
-		MaterialVB[i] = NixCreateVBM(MATERIAL_NUMX * MATERIAL_NUMY * 2, i);
+		MaterialVB[i] = NixCreateVB(MATERIAL_NUMX * MATERIAL_NUMY * 2, i);
 }
 
 ModeMaterial::~ModeMaterial()

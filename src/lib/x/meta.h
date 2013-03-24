@@ -79,7 +79,6 @@ typedef void str_float_func(const string&,float);
 
 // materials
 	Material *MetaLoadMaterial(const string &filename,bool as_default=false);
-	void MetaSetMaterial(Material *m);
 
 // fonts
 	int _cdecl MetaLoadXFont(const string &filename);

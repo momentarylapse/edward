@@ -1117,7 +1117,7 @@ void Test4Ground(Object *o)
 			if (o->_template->script_on_collide_terrain)
 				((on_collide_terrain_func*)o->_template->script_on_collide_terrain)(o, Terrains[i]);
 
-			terrain_object->SetMaterial(Terrains[i]->material, SetMaterialFriction);
+			terrain_object->SetMaterial(&Terrains[i]->material, SetMaterialFriction);
 			terrain_object->object_id = i + 0x40000000; //(1<<30);
 			ColData.o2 = terrain_object;
 			
@@ -1455,7 +1455,7 @@ inline void draw_pmv(Array<PartialModelView> &vp)
 		#endif
 
 		// draw!
-		MetaSetMaterial(p->material);
+		p->material->apply();
 		//m->Draw(0, m->_matrix, true, false);//p->shadow);
 		m->JustDraw(p->mat_index, vp[i].detail);
 				

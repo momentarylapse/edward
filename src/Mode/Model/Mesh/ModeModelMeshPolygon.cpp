@@ -21,13 +21,13 @@ ModeModelMeshPolygon::ModeModelMeshPolygon(Mode *_parent, DataModel *_data) :
 	data = _data;
 
 	// vertex buffers
-	VBMarked = NixCreateVB(65536);
-	VBModel = NixCreateVB(65536);
+	VBMarked = NixCreateVB(65536, 1);
+	VBModel = NixCreateVB(65536, 1);
 	VBModel2 = -1;
 	VBModel3 = -1;
 	VBModel4 = -1;
-	VBMouseOver = NixCreateVB(1024);
-	VBCreation = NixCreateVB(1024);
+	VBMouseOver = NixCreateVB(1024, 1);
+	VBCreation = NixCreateVB(1024, 1);
 
 	SelectCW = false;
 }
@@ -103,7 +103,7 @@ void ModeModelMeshPolygon::DrawPolygons()
 
 	// draw all materials separately
 	foreachi(ModelMaterial &m, data->Material, mi){
-		m.ApplyForRendering();
+		int *vb = &VBModel;
 
 		// single texture
 		if (m.NumTextures == 1){
@@ -114,23 +114,18 @@ void ModeModelMeshPolygon::DrawPolygons()
 					if ((t.view_stage >= multi_view->view_stage) && (t.Material == mi))
 						add_poly(VBModel, data, t);
 
-			// draw
-			NixSetTexture(m.Texture[0]);
-			NixDraw3D(VBModel); // TODO:  alle Texturen, nicht nur die erste....
-			NixSetTexture(-1);
-
 		// multi texture
 		}else{
 			int num_tex = m.NumTextures;
 			if (num_tex > 4)
 				num_tex = 4;
-			int *vb = &VBModel2;
+			vb = &VBModel2;
 			if (num_tex == 3)
 				vb = &VBModel3;
 			if (num_tex == 4)
 				vb = &VBModel4;
 			if (*vb < 0)
-				*vb = NixCreateVBM(65536, num_tex);
+				*vb = NixCreateVB(65536, num_tex);
 
 			NixVBClear(*vb);
 
@@ -159,11 +154,12 @@ void ModeModelMeshPolygon::DrawPolygons()
 						}
 					}
 
-			// draw
-			NixSetTextures(m.Texture, num_tex);
-			NixDraw3D(*vb);
-			NixSetTexture(-1);
 		}
+
+		// draw
+		m.ApplyForRendering();
+		NixDraw3D(*vb);
+		NixSetTexture(-1);
 	}
 	msg_db_l(2);
 }

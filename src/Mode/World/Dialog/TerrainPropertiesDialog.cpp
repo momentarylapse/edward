@@ -215,7 +215,7 @@ void TerrainPropertiesDialog::OnUpdate(Observable *o)
 	temp.NumX = t->num_x;
 	temp.NumZ = t->num_z;
 	temp.Pattern = t->pattern;
-	temp.NumTextures = t->num_textures;
+	temp.NumTextures = t->material.num_textures;
 	for (int i=0;i<temp.NumTextures;i++){
 		temp.TextureFile[i] = t->texture_file[i];
 		temp.TextureScale[i] = t->texture_scale[i];

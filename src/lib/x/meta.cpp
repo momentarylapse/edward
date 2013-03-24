@@ -582,34 +582,6 @@ Material *MetaLoadMaterial(const string &filename, bool as_default)
 	return NULL;
 }
 
-static bool _alpha_enabled_ = false;
-static bool _shader_prog_used_ = false;
-
-void MetaSetMaterial(Material *m)
-{
-#ifdef _X_ALLOW_MODEL_
-	NixSetMaterial(m->ambient,m->diffuse,m->specular,m->shininess,m->emission);
-	if ((m->shader >= 0) || (_shader_prog_used_)){
-		NixSetShader(m->shader);
-		_shader_prog_used_ = (m->shader >= 0);
-	}
-	
-	if (m->transparency_mode > 0){
-		if (m->transparency_mode == TransparencyModeFunctions)
-			NixSetAlpha(m->alpha_source, m->alpha_destination);
-		else if (m->transparency_mode == TransparencyModeFactor)
-			NixSetAlpha(m->alpha_factor);
-		else if (m->transparency_mode == TransparencyModeColorKeyHard)
-			NixSetAlpha(AlphaColorKeyHard);
-		else if (m->transparency_mode == TransparencyModeColorKeySmooth)
-			NixSetAlpha(AlphaColorKeySmooth);
-		_alpha_enabled_ = true;
-	}else if (_alpha_enabled_){
-		NixSetAlpha(AlphaNone);
-		_alpha_enabled_ = false;
-	}
-#endif
-}
 
 void _cdecl MetaDelete(void *p)
 {

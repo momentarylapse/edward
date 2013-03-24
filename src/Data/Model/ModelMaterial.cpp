@@ -123,5 +123,6 @@ void ModelMaterial::ApplyForRendering()
 		}
 		NixSetShader(material->shader);
 	}
+	NixSetTextures(Texture, NumTextures);
 }
 

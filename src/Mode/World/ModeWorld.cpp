@@ -429,34 +429,21 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha)
 	NixSetAlpha(AlphaMaterial);
 
 	// save terrain data
-	color am = t->material->ambient;
-	color di = t->material->diffuse;
-	color sp = t->material->specular;
-	color em = t->material->emission;
-	int shader = t->material->shader;
-	int texture[TERRAIN_MAX_TEXTURES];
-	for (int i=0;i<t->num_textures;i++)
-		texture[i] = t->texture[i];
+	Material temp = t->material;
 
 	// alter data
-	t->material->ambient = Black;
-	t->material->diffuse = color(alpha, 0, 0, 0);
-	t->material->specular = Black;
-	t->material->emission = c;
-	t->material->shader = -1;
-	for (int i=0;i<t->num_textures;i++)
-		t->texture[i] = -1;
+	t->material.ambient = Black;
+	t->material.diffuse = color(alpha, 0, 0, 0);
+	t->material.specular = Black;
+	t->material.emission = c;
+	t->material.shader = -1;
+	for (int i=0;i<t->material.num_textures;i++)
+		t->material.texture[i] = -1;
 
 	t->Draw();
 
 	// restore data
-	t->material->shader = shader;
-	for (int i=0;i<t->num_textures;i++)
-		t->texture[i] = texture[i];
-	t->material->ambient = am;
-	t->material->diffuse = di;
-	t->material->specular = sp;
-	t->material->emission = em;
+	t->material = temp;
 
 	NixSetAlpha(AlphaNone);
 	NixSetWire(mode_world->multi_view->wire_mode);
