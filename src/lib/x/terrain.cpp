@@ -599,13 +599,8 @@ void Terrain::Draw()
 
 	// the actual drawing
 	NixSetWorldMatrix(m_id);
-	if (num_textures == 1){
-		NixSetTexture(texture[0]);
-		NixDraw3D(vertex_buffer);
-	}else if (num_textures>1){
-		NixSetTextures(texture, num_textures);
-		NixDraw3DM(vertex_buffer);
-	}
+	NixSetTextures(texture, num_textures);
+	NixDraw3D(vertex_buffer);
 
 	pos_old = cur_cam->pos;
 	force_redraw = false;

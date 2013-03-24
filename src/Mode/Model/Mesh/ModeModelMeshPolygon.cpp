@@ -161,7 +161,7 @@ void ModeModelMeshPolygon::DrawPolygons()
 
 			// draw
 			NixSetTextures(m.Texture, num_tex);
-			NixDraw3DM(*vb);
+			NixDraw3D(*vb);
 			NixSetTexture(-1);
 		}
 	}

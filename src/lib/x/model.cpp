@@ -1647,20 +1647,16 @@ void Model::JustDraw(int mat_no, int detail)
 
 
 	NixSetWorldMatrix(_matrix);
-	if (m->num_textures == 1){
-		NixSetTexture(m->texture[0]);
-		NixDraw3D(sub->vertex_buffer);
-	}else{
-		NixSetTextures(m->texture, m->num_textures);
-		NixDraw3DM(sub->vertex_buffer);
-	}
-#ifdef _X_ALLOW_FX_
+	NixSetTextures(m->texture, m->num_textures);
+	NixDraw3D(sub->vertex_buffer);
+
+/*#ifdef _X_ALLOW_FX_
 	if ((m->cube_map >= 0) && (m->reflection_density > 0)){
 		//_Pos_ = *_matrix_get_translation_(_matrix);
 		NixSetMaterial(m->ambient, Black, Black, 0, m->emission);
 		FxCubeMapDraw(m->cube_map, sub->vertex_buffer, m->reflection_density);
 	}
-#endif
+#endif*/
 #endif
 	msg_db_l(5);
 }

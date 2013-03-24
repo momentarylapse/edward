@@ -27,6 +27,7 @@ ModeMaterial::ModeMaterial() :
 
 	AppearanceDialog = NULL;
 
+	MaterialVB[1] = VBTemp;
 	for (int i=2;i<MATERIAL_MAX_TEXTURE_LEVELS;i++)
 		MaterialVB[i] = NixCreateVBM(MATERIAL_NUMX * MATERIAL_NUMY * 2, i);
 }
@@ -166,19 +167,8 @@ void ModeMaterial::OnDrawWin(int win)
 {
 	data->ApplyForRendering();
 
-	int num_tex = data->EffectiveTextureLevels();
-	int vb = VBTemp;
-	if (num_tex > 1)
-		vb = MaterialVB[num_tex];
+	NixDraw3D(MaterialVB[max(data->Appearance.NumTextureLevels, 1)]);
 
-	if (num_tex > 1){
-		NixDraw3DM(vb);
-	}else{
-		NixDraw3D(vb);
-	}
-
-	int tex[] = {-1, -1, -1, -1, -1, -1, -1, -1};
-	NixSetTextures(tex, 8);
 	NixSetTexture(-1);
 	NixSetShader(-1);
 
@@ -247,9 +237,7 @@ void ModeMaterial::OnStart()
 	multi_view->MVRectable = false;
 
 
-	NixVBClear(VBTemp);
-	CreateTorus(VBTemp, v_0, e_z, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_NUMX, MATERIAL_NUMY, 1);
-	for (int i=2;i<MODEL_MAX_TEXTURES;i++){
+	for (int i=1;i<MODEL_MAX_TEXTURES;i++){
 		int vb = MaterialVB[i];
 		NixVBClear(vb);
 		CreateTorus(vb, v_0, e_z, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_NUMX, MATERIAL_NUMY, i);
