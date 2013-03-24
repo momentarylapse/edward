@@ -60,10 +60,7 @@ bool DataMaterial::Save(const string & _filename)
 	for (int i=0;i<6;i++)
 		f->WriteStr(Appearance.ReflectionTextureFile[i]);
 	f->WriteComment("// ShaderFile");
-	if (Appearance.ShaderFile.find(".fx.glsl"))
-		f->WriteStr(Appearance.ShaderFile.substr(0, -9));
-	else
-		f->WriteStr("");
+	f->WriteStr(Appearance.ShaderFile);
 	f->WriteComment("// Physics");
 	f->WriteInt(Physics.RCJump * 1000.0f);
 	f->WriteInt(Physics.RCStatic * 1000.0f);
@@ -141,9 +138,7 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 		for (int i=0;i<6;i++)
 			Appearance.ReflectionTextureFile[i] = f->ReadStr();
 		// ShaderFile
-		string sf = f->ReadStrC();
-		if (sf.num > 0)
-			Appearance.ShaderFile = sf + ".fx.glsl";
+		Appearance.ShaderFile = f->ReadStrC();
 		// Physics
 		Physics.RCJump = (float)f->ReadIntC() * 0.001f;
 		Physics.RCStatic = (float)f->ReadInt() * 0.001f;

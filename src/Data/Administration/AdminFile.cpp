@@ -131,8 +131,8 @@ sScriptLink ScriptLink[NumScriptLinks]={
 	{"SoundCreate"		,FDSound},
 	{"SoundEmit"		,FDSound},
 	{"MusicLoad"		,FDSound},
-	{"LoadXFont"		,FDFont},
-	{"StartScript"	,FDCameraFlight}
+	{"LoadFont"			,FDFont},
+	{"StartScript"		,FDCameraFlight}
 };
 
 

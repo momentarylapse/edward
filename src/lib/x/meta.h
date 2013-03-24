@@ -68,7 +68,7 @@ typedef void str_float_func(const string&,float);
 	void MetaCalcMove();
 
 // data to CMeta
-	void MetaSetDirs(const string &texture_dir, const string &map_dir, const string &object_dir, const string &sound_dir, const string &script_dir, const string &material_dir);
+	void MetaSetDirs(const string &texture_dir, const string &map_dir, const string &object_dir, const string &sound_dir, const string &script_dir, const string &material_dir, const string &font_dir);
 
 // models
 	Model *_cdecl MetaLoadModel(const string &filename);
@@ -81,7 +81,7 @@ typedef void str_float_func(const string&,float);
 	Material *MetaLoadMaterial(const string &filename,bool as_default=false);
 
 // fonts
-	int _cdecl MetaLoadXFont(const string &filename);
+	int _cdecl MetaLoadFont(const string &filename);
 
 // all
 	void _cdecl MetaDelete(void *p);
@@ -91,7 +91,7 @@ typedef void str_float_func(const string&,float);
 
 
 // game data
-	extern string MapDir, ObjectDir, SoundDir, ScriptDir, MaterialDir;
+	extern string MapDir, ObjectDir, SoundDir, ScriptDir, MaterialDir, FontDir;
 	extern void *MetaExitProgram,*MetaFindHosts,*MetaLoadWorld,*MetaScreenShot,*MetaLoadGameFromHost,*MetaSaveGameState,*MetaLoadGameState;
 	extern str_float_func *MetaDrawSplashScreen;
 	extern void *MetaObjectScriptInit;

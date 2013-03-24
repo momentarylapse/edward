@@ -14,7 +14,6 @@
 struct GameIniData
 {
 	string DefScript, DefWorld, SecondWorld, DefMaterial, DefFont;
-	string DefTextureFxMetal;
 	void reset();
 	void Load(const string &dir);
 	void Save(const string &dir);

@@ -469,7 +469,7 @@ void SIAddPackageX()
 	add_func("XFGetWidth",			TypeFloat,	meta_p(&XFGetWidth));
 		func_add_param("size",		TypeFloat);
 		func_add_param("s",		TypeString);
-	add_func("LoadFont",			TypeInt,	meta_p(&MetaLoadXFont));
+	add_func("LoadFont",			TypeInt,	meta_p(&MetaLoadFont));
 		func_add_param("filename",		TypeString);
 	add_func("CreatePicture",										TypePictureP,	gui_p(&Gui::CreatePicture));
 		func_add_param("pos",		TypeVector);

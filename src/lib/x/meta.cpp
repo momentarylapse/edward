@@ -58,7 +58,7 @@ Array<void*> MetaDeleteStuffList;
 
 
 // game data
-string MapDir, ObjectDir, ScriptDir, MaterialDir;
+string MapDir, ObjectDir, ScriptDir, MaterialDir, FontDir;
 void *MetaExitProgram,*MetaFindHosts,*MetaLoadWorld,*MetaScreenShot,*MetaLoadGameFromHost,*MetaSaveGameState,*MetaLoadGameState;
 str_float_func *MetaDrawSplashScreen;
 void *MetaObjectScriptInit;
@@ -197,7 +197,7 @@ void MetaReset()
 	msg_db_l(1);
 }
 
-void MetaSetDirs(const string &texture_dir, const string &map_dir, const string &object_dir, const string &sound_dir, const string &script_dir, const string &material_dir)
+void MetaSetDirs(const string &texture_dir, const string &map_dir, const string &object_dir, const string &sound_dir, const string &script_dir, const string &material_dir, const string &font_dir)
 {
 	NixTextureDir = texture_dir;
 	NixShaderDir = material_dir;
@@ -208,6 +208,7 @@ void MetaSetDirs(const string &texture_dir, const string &map_dir, const string 
 #endif
 	ScriptDir = script_dir;
 	MaterialDir = material_dir;
+	FontDir = font_dir;
 #ifdef _X_ALLOW_SCRIPT_
 	Script::Directory = script_dir;
 #endif
@@ -563,9 +564,7 @@ Material *MetaLoadMaterial(const string &filename, bool as_default)
 #endif
 		// ShaderFile
 		string ShaderFile = f->ReadStrC();
-		m->shader = -1;
-		if (ShaderFile.num > 0)
-			m->shader = NixLoadShader(ShaderFile + ".fx.glsl");
+		m->shader = NixLoadShader(ShaderFile);
 		// Physics
 		m->rc_jump=(float)f->ReadIntC()*0.001f;
 		m->rc_static=(float)f->ReadInt()*0.001f;
@@ -646,7 +645,7 @@ static string str_utf8_to_ubyte(const string &str)
 	return r;
 }
 
-int _cdecl MetaLoadXFont(const string &filename)
+int _cdecl MetaLoadFont(const string &filename)
 {
 	// "" -> default font
 	if (filename.num == 0)
@@ -655,7 +654,7 @@ int _cdecl MetaLoadXFont(const string &filename)
 	foreachi(XFont *ff, _XFont_, i)
 		if (ff->filename  == filename.sys_filename())
 			return i;
-	CFile *f = OpenFile(MaterialDir + filename + ".xfont");
+	CFile *f = OpenFile(FontDir + filename + ".xfont");
 	if (!f)
 		return -1;
 	int ffv=f->ReadFileFormatVersion();

@@ -72,7 +72,7 @@ extern render_func *FxRenderFunc;
 extern int MirrorLevelMax;
 extern bool FxLightFieldsEnabled;
 
-void FxInit(const string &tex_file, const string &tex_file_metal, const string &tex_file_water);
+void FxInit();
 void FxReset();
 
 // particles
@@ -128,7 +128,6 @@ void FxDrawTails();
 void FxAddShadow(Model *m, int detail);
 void FxDrawShadows();
 void FxDrawMirrors(Skin *s, const matrix &m);
-void FxDrawMetal(Skin *s, const matrix &m, float density);
 void FxAddLighField(const vector &min, const vector &max, bool sun, const color &ambient);
 void FxTestForLightField(const vector &pos);
 void FxResetLightField();

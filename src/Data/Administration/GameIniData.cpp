@@ -17,7 +17,6 @@ void GameIniData::Load(const string &dir)
 	SecondWorld = f->ReadStrC();
 	DefMaterial = f->ReadStrC();
 	DefFont = f->ReadStrC();
-	DefTextureFxMetal = f->ReadStrC();
 	delete(f);
 	msg_db_l(5);
 }
@@ -36,8 +35,6 @@ void GameIniData::Save(const string &dir)
 	f->WriteStr(DefMaterial);
 	f->WriteStr("// Default Font");
 	f->WriteStr(DefFont);
-	f->WriteStr("// Texture FX-metal");
-	f->WriteStr(DefTextureFxMetal);
 	f->WriteStr("#");
 	delete(f);
 	msg_db_l(5);
@@ -51,5 +48,4 @@ void GameIniData::reset()
 	SecondWorld = "";
 	DefMaterial = "";
 	DefFont = "";
-	DefTextureFxMetal = "";
 }

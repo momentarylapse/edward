@@ -193,7 +193,6 @@ void AdminFileList::add_from_game_ini(GameIniData &game_ini, AdminFile *f)
 	add_unchecked_ae(FDWorld,   game_ini.SecondWorld, f);
 	add_unchecked_ae(FDMaterial,game_ini.DefMaterial, f);
 	add_unchecked_ae(FDFont,    game_ini.DefFont, f);
-	add_unchecked_ae(FDTexture, game_ini.DefTextureFxMetal, f);
 }
 
 void AdminFileList::add_from_game_ini_export(AdminFileList *source, GameIniData &game_ini)
@@ -231,13 +230,6 @@ void AdminFileList::add_from_game_ini_export(AdminFileList *source, GameIniData 
 		a = source->get(FDFont,    game_ini.DefFont + ".xfont");
 		if (!a)
 			throw AdminGameExportException("game.ini: default font");
-		add_recursive(a);
-	}
-
-	if (game_ini.DefTextureFxMetal.num > 0){
-		a = source->get(FDTexture, game_ini.DefTextureFxMetal);
-		if (!a)
-			throw AdminGameExportException("game.ini: metal texture");
 		add_recursive(a);
 	}
 }

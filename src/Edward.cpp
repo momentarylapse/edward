@@ -168,6 +168,7 @@ Edward::Edward(Array<string> arg) :
 
 	LoadKeyCodes();
 
+	PossibleSubDir.add("Fonts");
 	PossibleSubDir.add("Maps");
 	PossibleSubDir.add("Materials");
 	PossibleSubDir.add("Objects");
@@ -228,7 +229,7 @@ Edward::Edward(Array<string> arg) :
 	HuiAddCommandM("abort_creation_mode", "hui:cancel", KEY_ESCAPE, this, &Edward::OnAbortCreationMode);
 
 	MetaInit();
-	FxInit("", "", "");
+	FxInit();
 	FxLightFieldsEnabled = false;
 	CameraInit();
 	GodInit();
@@ -570,7 +571,7 @@ void Edward::UpdateDialogDir(int kind)
 	if (kind==FDTerrain)		RootDirKind[kind] = MapDir;
 	if (kind==FDWorld)			RootDirKind[kind] = MapDir;
 	if (kind==FDShaderFile)		RootDirKind[kind] = MaterialDir;
-	if (kind==FDFont)			RootDirKind[kind] = MaterialDir;
+	if (kind==FDFont)			RootDirKind[kind] = FontDir;
 	if (kind==FDScript)			RootDirKind[kind] = ScriptDir;
 	if (kind==FDCameraFlight)	RootDirKind[kind] = ScriptDir;
 	if (kind==FDFile)			RootDirKind[kind] = RootDir;
@@ -579,7 +580,7 @@ void Edward::UpdateDialogDir(int kind)
 
 void Edward::SetRootDirectory(const string &directory)
 {
-	string object_dir, map_dir, texture_dir, sound_dir, script_dir, material_dir;
+	string object_dir, map_dir, texture_dir, sound_dir, script_dir, material_dir, font_dir;
 	bool ufd = (RootDir.find(directory) < 0) && (directory.find(RootDir) < 0);
 	RootDir = directory;
 	RootDir.dir_ensure_ending();
@@ -596,6 +597,8 @@ void Edward::SetRootDirectory(const string &directory)
 		dir_create(script_dir);
 		material_dir = RootDir + "Materials/";
 		dir_create(material_dir);
+		font_dir = RootDir + "Fonts/";
+		dir_create(font_dir);
 	}else{
 		map_dir = RootDir;
 		object_dir = RootDir;
@@ -603,8 +606,9 @@ void Edward::SetRootDirectory(const string &directory)
 		sound_dir = RootDir;
 		script_dir = RootDir;
 		material_dir = RootDir;
+		font_dir = RootDir;
 	}
-	MetaSetDirs(texture_dir,map_dir,object_dir,sound_dir,script_dir,material_dir);
+	MetaSetDirs(texture_dir, map_dir, object_dir, sound_dir, script_dir, material_dir, font_dir);
 #ifndef _X_USE_SOUND_
 	SoundDir = sound_dir;
 #endif
@@ -652,9 +656,9 @@ string Edward::GetRootDir(int kind)
 	if (kind==FDMaterial)		return MaterialDir;
 	if (kind==FDTerrain)		return MapDir;
 	if (kind==FDWorld)			return MapDir;
-	if (kind==FDShaderFile)	return MaterialDir;
-	if (kind==FDFont)			return MaterialDir;
-	if (kind==FDScript)		return ScriptDir;
+	if (kind==FDShaderFile)		return MaterialDir;
+	if (kind==FDFont)			return FontDir;
+	if (kind==FDScript)			return ScriptDir;
 	if (kind==FDCameraFlight)	return ScriptDir;
 	if (kind==FDFile)			return RootDir;
 	return RootDir;

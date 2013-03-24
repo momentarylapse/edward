@@ -251,7 +251,7 @@ void AdministrationDialog::OnEdit()
 				ed->SetMode(mode_material);
 			break;
 		case FDFont:
-			if (mode_font->data->Load(MaterialDir + a->Name, true))
+			if (mode_font->data->Load(FontDir + a->Name, true))
 				ed->SetMode(mode_font);
 			break;
 		case FDWorld:

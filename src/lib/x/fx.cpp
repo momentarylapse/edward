@@ -9,9 +9,9 @@
 \*----------------------------------------------------------------------------*/
 #include "x.h"
 
-string FxVersion = "0.3.2.0";
+string FxVersion = "0.3.3.0";
 
-	 
+
 
 #define FX_MAX_FORCEFIELDS		128
 #define FX_MAX_LIGHTS			1024
@@ -108,8 +108,6 @@ int MirrorLevelMax=1;
 
 vector CamDir;
 
-int FxTexMetal;
-
 int ShadowVB[2];
 int ShadowCounter = 0;
 bool ShadowRecalc = true;
@@ -117,12 +115,9 @@ bool ShadowRecalc = true;
 #define MODEL_MAX_TRIANGLES		65536
 #define MODEL_MAX_VERTICES		65536
 
-void FxInit(const string &tex_file, const string &tex_file_metal, const string &tex_file_water)
+void FxInit()
 {
 	msg_db_r("FxInit",0);
-#ifdef _X_ALLOW_FX_
-	FxTexMetal = NixLoadTexture(tex_file_metal);
-#endif
 	FxVB = NixCreateVB(MODEL_MAX_TRIANGLES * 4, 1);
 	ShadowVB[0] = NixCreateVB(32768, 1);
 	ShadowVB[1] = NixCreateVB(32768, 1);
@@ -1111,34 +1106,6 @@ void TCTransform(float &u,float &v,vector n,vector p)
 }
 
 static vector p[MODEL_MAX_VERTICES];
-
-void FxDrawMetal(Skin *s,const matrix &m,float density)
-{
-#if 0
-#ifdef _X_ALLOW_X_
-	float u[3],v[3];
-	for (int i=0;i<s->NumVertices;i++)
-		VecTransform(p[i],m,s->Vertex[i]);
-	NixVBClear(FxVB);
-	for (int i=0;i<s->NumTriangles;i++){
-		int a=s->TriangleIndex[i*3  ];
-		int b=s->TriangleIndex[i*3+1];
-		int c=s->TriangleIndex[i*3+2];
-		TCTransform(u[0],v[0],s->Normal[i*3  ],p[a]);
-		TCTransform(u[1],v[1],s->Normal[i*3+1],p[b]);
-		TCTransform(u[2],v[2],s->Normal[i*3+2],p[c]);
-		NixVBAddTria(FxVB,	s->Vertex[a],s->Normal[a],u[0],v[0],
-							s->Vertex[b],s->Normal[b],u[1],v[1],
-							s->Vertex[c],s->Normal[c],u[2],v[2]);
-	}
-	NixSetAlpha(density);
-	NixSpecularEnable(true);
-	NixDraw3D(FxTexMetal,FxVB,m);
-	NixSpecularEnable(false);
-	NixSetAlpha(AlphaNone);
-#endif
-#endif
-}
 
 void FxAddLighField(const vector &min,const vector &max,bool sun,const color &ambient)
 {
