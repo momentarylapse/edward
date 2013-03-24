@@ -556,8 +556,9 @@ Material *MetaLoadMaterial(const string &filename, bool as_default)
 			//m->cube_map = FxCubeMapNew(m->cube_map_size);
 			//FxCubeMapCreate(m->cube_map,cmt[0],cmt[1],cmt[2],cmt[3],cmt[4],cmt[5]);
 		}else if (m->reflection_mode == ReflectionCubeMapStatic){
-			m->cube_map = FxCubeMapNew(m->cube_map_size);
-			FxCubeMapCreate(m->cube_map,cmt[0],cmt[1],cmt[2],cmt[3],cmt[4],cmt[5]);
+			m->cube_map = NixCreateCubeMap(m->cube_map_size);
+			for (int i=0;i<6;i++)
+				NixFillCubeMap(m->cube_map, i, cmt[i]);
 		}
 #endif
 		// ShaderFile

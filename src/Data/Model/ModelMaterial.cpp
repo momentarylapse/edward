@@ -123,6 +123,11 @@ void ModelMaterial::ApplyForRendering()
 		}
 		NixSetShader(material->shader);
 	}
-	NixSetTextures(Texture, NumTextures);
+	if (material->cube_map >= 0){
+		// evil hack
+		Texture[3] = material->cube_map;
+		NixSetTextures(Texture, 4);
+	}else
+		NixSetTextures(Texture, NumTextures);
 }
 

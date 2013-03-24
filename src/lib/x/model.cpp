@@ -267,7 +267,12 @@ void Material::apply()
 		NixSetAlpha(AlphaNone);
 		_alpha_enabled_ = false;
 	}
-	NixSetTextures(texture, num_textures);
+	if (cube_map >= 0){
+		// evil hack
+		texture[3] = cube_map;
+		NixSetTextures(texture, 4);
+	}else
+		NixSetTextures(texture, num_textures);
 }
 
 void Material::copy_from(Model *model, Material *m2, bool user_colors)
@@ -295,12 +300,12 @@ void Material::copy_from(Model *model, Material *m2, bool user_colors)
 	reflection_mode = m2->reflection_mode;
 	reflection_density = m2->reflection_density;
 	cube_map = m2->cube_map;
-#ifdef _X_ALLOW_FX_
+/*#ifdef _X_ALLOW_FX_
 	if ((cube_map < 0) && (m2->cube_map_size > 0) && (reflection_mode == ReflectionCubeMapDynamical)){
 		cube_map = FxCubeMapNew(m2->cube_map_size);
 		FxCubeMapCreate(cube_map, model);
 	}
-#endif
+#endif*/
 	shader = m2->shader;
 	rc_static = m2->rc_static;
 	rc_sliding = m2->rc_sliding;
