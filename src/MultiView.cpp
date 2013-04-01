@@ -50,7 +50,7 @@ MultiView::MultiView(bool _mode3d) :
 	mode3d = _mode3d;
 
 	if (mode3d){
-		light = NixCreateLight();
+		light = 0;
 
 		view[0].type = ViewBack;
 		view[1].type = ViewLeft;
@@ -794,7 +794,15 @@ void MultiView::DrawWin(int win)
 	DrawGrid(win);
 
 	NixSetWire(wire_mode);
+	// light
+	vector dir=-ang.ang2dir();
+	color am=color(1,0.3f,0.3f,0.3f);
+	color di=color(1,0.6f,0.6f,0.6f);
+	color sp=color(1,0.4f,0.4f,0.4f);
+	NixSetLightDirectional(light,dir,am,di,sp);
+	NixEnableLight(light, true);
 	NixEnableLighting(light_enabled);
+	NixSetAmbientLight(Black);
 	NixSetMaterial(Black,White,Black,0,White);//Black);
 	NixSetColor(White);
 
@@ -879,15 +887,6 @@ void MultiView::OnDraw()
 
 	update_zoom;
 
-// light
-	vector dir=-ang.ang2dir();
-	color am=color(1,0.3f,0.3f,0.3f);
-	color di=color(1,0.6f,0.6f,0.6f);
-	color sp=color(1,0.4f,0.4f,0.4f);
-	NixSetLightDirectional(light,dir,am,di,sp);
-	NixEnableLight(light, true);
-	NixEnableLighting(true);
-	NixSetAmbientLight(Black);
 	NixSetZ(true,true);
 	NixSetColor(ColorText);
 

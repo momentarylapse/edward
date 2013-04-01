@@ -13,6 +13,8 @@
 
 void TestGLError(const string &);
 
+void NixUpdateLights();
+
 
 matrix NixViewMatrix, NixProjectionMatrix, NixInvProjectionMatrix;
 matrix NixProjectionMatrix2d;
@@ -160,45 +162,6 @@ void NixSetPerspectiveMode(int mode,float param1,float param2)
 		//PerspectiveModeRatio=mode;
 		NixView3DRatio=param1;
 	}
-}
-
-void NixUpdateLights()
-{
-	// OpenGL muss Lichter neu ausrichten, weil sie in Kamera-Koordinaten gespeichert werden!
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	//glLoadIdentity();
-	glLoadMatrixf((float*)&NixViewMatrix);
-
-	foreachi(sLight &l, NixLight, i){
-		if (!l.Used)
-			continue;
-		if (!l.Enabled)
-			continue;
-	//	if (OGLLightNo[i]<0)	continue;
-		float f[4];
-		/*f[0]=LightVector[i].x;	f[1]=LightVector[i].y;	f[2]=LightVector[i].z;
-		if (LightDirectional[i])
-			f[3]=0;
-		else
-			f[3]=1;
-		glLightfv(OGLLightNo[i],GL_POSITION,f);*/
-		if (l.Type == LightTypeDirectional){
-			f[0] = l.Dir.x;
-			f[1] = l.Dir.y;
-			f[2] = l.Dir.z;
-			f[3] = 0;
-		}else if (l.Type == LightTypeRadial){
-			f[0] = l.Pos.x;
-			f[1] = l.Pos.y;
-			f[2] = l.Pos.z;
-			f[3] = 1;
-		}
-		glLightfv(GL_LIGHT0+i,GL_POSITION,f);
-		//msg_write(i);
-	}
-	glPopMatrix();
-	TestGLError("UpdateLights");
 }
 
 static vector ViewPos,ViewDir;

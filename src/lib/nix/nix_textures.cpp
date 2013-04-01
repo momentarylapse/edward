@@ -25,8 +25,6 @@ void NixSetDefaultShaderData(int num_textures, const vector &cam_pos);
 extern vector _NixCamPos_;
 
 
-void TestGLError(const string &pos);
-
 
 //--------------------------------------------------------------------------------------------------
 // avi files

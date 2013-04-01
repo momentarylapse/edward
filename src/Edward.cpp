@@ -230,7 +230,6 @@ Edward::Edward(Array<string> arg) :
 
 	MetaInit();
 	FxInit();
-	FxLightFieldsEnabled = false;
 	CameraInit();
 	GodInit();
 

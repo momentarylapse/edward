@@ -584,6 +584,10 @@ void Terrain::Draw()
 			}
 	}
 
+#ifdef _X_ALLOW_LIGHT_
+	Light::Apply(cur_cam->pos);
+#endif
+
 	material.apply();
 
 	// the actual drawing

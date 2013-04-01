@@ -1,3 +1,10 @@
+#if !defined(PRESCRIPT_H__INCLUDED_)
+#define PRESCRIPT_H__INCLUDED_
+
+namespace Asm{
+	struct MetaInfo;
+};
+
 namespace Script{
 
 // character buffer and expressions (syntax analysis)
@@ -43,13 +50,6 @@ struct Define
 	string Source;
 	Array<string> Dest;
 };
-
-// single enum entries
-/*struct sEnum
-{
-	string Name;
-	int Value;
-};*/
 
 // for any type of constant used in the script
 struct Constant
@@ -243,7 +243,6 @@ public:
 	// neccessary conversions
 	void ConvertCallByReference();
 	void BreakDownComplicatedCommands();
-	void BreakDownHighLevelOperators();
 	void MapLocalVariablesToStack();
 
 	// data creation
@@ -287,10 +286,9 @@ public:
 
 	int NumOwnTypes;
 	Array<Type*> Types;
-	//Array<sEnum> Enum;
 	Array<Script*> Includes;
 	Array<Define> Defines;
-	char *AsmMetaInfo;
+	Asm::MetaInfo *AsmMetaInfo;
 	Array<AsmBlock> AsmBlocks;
 	Array<Constant> Constants;
 	Array<Block*> Blocks;
@@ -311,7 +309,6 @@ string Kind2Str(int kind);
 string Operator2Str(PreScript *s,int cmd);
 void clear_exp_buffer(ps_exp_buffer_t *e);
 void CreateAsmMetaInfo(PreScript* ps);
-extern Script *cur_script;
 
 
 
@@ -359,3 +356,5 @@ inline bool isSign(char c)
 }
 
 };
+
+#endif

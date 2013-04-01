@@ -8,7 +8,23 @@
 #include "nix.h"
 #include "nix_common.h"
 
-Array<sLight> NixLight;
+
+// light-sources
+/*enum{
+	LightTypeDirectional,
+	LightTypeRadial
+};
+struct sLight{
+	bool Used,Allowed,Enabled;
+	int Type;
+	int OGLLightNo;
+	int Light;
+	vector Pos,Dir;
+	float Radius;
+	color Ambient,Diffuse,Specular;
+};
+
+Array<sLight> NixLight;*/
 
 bool NixLightingEnabled;
 
@@ -27,53 +43,13 @@ void NixEnableLighting(bool Enabled)
 	TestGLError("EnableLighting");
 }
 
-int NixCreateLight()
-{
-	/*if (NumLights>=32)
-		return -1;*/
-/*#ifdef NIX_API_OPENGL
-	if (NixApi==NIX_API_OPENGL){
-		switch (NumLights){
-			case 0:	OGLLightNo[NumLights]=GL_LIGHT0;	break;
-			case 1:	OGLLightNo[NumLights]=GL_LIGHT1;	break;
-			case 2:	OGLLightNo[NumLights]=GL_LIGHT2;	break;
-			case 3:	OGLLightNo[NumLights]=GL_LIGHT3;	break;
-			case 4:	OGLLightNo[NumLights]=GL_LIGHT4;	break;
-			case 5:	OGLLightNo[NumLights]=GL_LIGHT5;	break;
-			case 6:	OGLLightNo[NumLights]=GL_LIGHT6;	break;
-			case 7:	OGLLightNo[NumLights]=GL_LIGHT7;	break;
-			default:OGLLightNo[NumLights]=-1;
-		}
-	}
-#endif
-	NumLights++;
-	return NumLights-1;*/
-	for (int i=0;i<NixLight.num;i++)
-		if (!NixLight[i].Used){
-			NixLight[i].Used = true;
-			NixLight[i].Enabled = false;
-			return i;
-		}
-	sLight l;
-	l.Used = true;
-	l.Enabled = false;
-	NixLight.add(l);
-	return NixLight.num - 1;
-}
-
-void NixDeleteLight(int index)
-{
-	if ((index < 0) || (index > NixLight.num))	return;
-	NixEnableLight(index, false);
-	NixLight[index].Used = false;
-}
-
 // Punkt-Quelle
 void NixSetLightRadial(int index,const vector &pos,float radius,const color &ambient,const color &diffuse,const color &specular)
 {
-	if ((index < 0) || (index > NixLight.num))	return;
-	NixLight[index].Pos = pos;
-	NixLight[index].Type = LightTypeRadial;
+	if ((index < 0))// || (index > NixLight.num))
+		return;
+	/*NixLight[index].Pos = pos;
+	NixLight[index].Type = LightTypeRadial;*/
 	//if (OGLLightNo[index]<0)	return;
 	glPushMatrix();
 	//glLoadIdentity();
@@ -95,9 +71,10 @@ void NixSetLightRadial(int index,const vector &pos,float radius,const color &amb
 // dir =Richtung, in die das Licht scheinen soll
 void NixSetLightDirectional(int index,const vector &dir,const color &ambient,const color &diffuse,const color &specular)
 {
-	if ((index < 0) || (index > NixLight.num))	return;
-	NixLight[index].Dir = dir;
-	NixLight[index].Type = LightTypeDirectional;
+	if ((index < 0))// || (index > NixLight.num))
+		return;
+	/*NixLight[index].Dir = dir;
+	NixLight[index].Type = LightTypeDirectional;*/
 	//if (OGLLightNo[index]<0)	return;
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -115,9 +92,9 @@ void NixSetLightDirectional(int index,const vector &dir,const color &ambient,con
 
 void NixEnableLight(int index,bool enabled)
 {
-	if ((index < 0) || (index > NixLight.num))	return;
-	NixLight[index].Enabled = enabled;
-//	if (OGLLightNo[index]<0)	return;
+	if ((index < 0))// || (index > NixLight.num))
+		return;
+	//NixLight[index].Enabled = enabled;
 	if (enabled)
 		glEnable(GL_LIGHT0 + index);
 	else
@@ -153,4 +130,47 @@ void NixSetMaterial(const color &ambient,const color &diffuse,const color &specu
 
 void NixSpecularEnable(bool enabled)
 {
+}
+
+
+
+void NixUpdateLights()
+{
+#if 0
+	// OpenGL muss Lichter neu ausrichten, weil sie in Kamera-Koordinaten gespeichert werden!
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	//glLoadIdentity();
+	glLoadMatrixf((float*)&NixViewMatrix);
+
+	foreachi(sLight &l, NixLight, i){
+		if (!l.Used)
+			continue;
+		if (!l.Enabled)
+			continue;
+	//	if (OGLLightNo[i]<0)	continue;
+		float f[4];
+		/*f[0]=LightVector[i].x;	f[1]=LightVector[i].y;	f[2]=LightVector[i].z;
+		if (LightDirectional[i])
+			f[3]=0;
+		else
+			f[3]=1;
+		glLightfv(OGLLightNo[i],GL_POSITION,f);*/
+		if (l.Type == LightTypeDirectional){
+			f[0] = l.Dir.x;
+			f[1] = l.Dir.y;
+			f[2] = l.Dir.z;
+			f[3] = 0;
+		}else if (l.Type == LightTypeRadial){
+			f[0] = l.Pos.x;
+			f[1] = l.Pos.y;
+			f[2] = l.Pos.z;
+			f[3] = 1;
+		}
+		glLightfv(GL_LIGHT0+i,GL_POSITION,f);
+		//msg_write(i);
+	}
+	glPopMatrix();
+	TestGLError("UpdateLights");
+#endif
 }

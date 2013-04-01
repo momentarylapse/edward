@@ -15,9 +15,9 @@ class Script;
 
 #include "../base/base.h"
 #include "../types/types.h"
-#include "dasm.h"
-#include "script_data.h"
-#include "pre_script.h"
+#include "asm/asm.h"
+#include "lib/script_data.h"
+#include "syntax/pre_script.h"
 
 namespace Script{
 
@@ -38,26 +38,6 @@ enum
 
 
 
-struct sSerialCommandParam
-{
-	int kind;
-	char *p;
-	Type *type;
-	int shift;
-	//int c_id, v_id;
-	bool operator == (const sSerialCommandParam &param) const
-	{	return (kind == param.kind) && (p == param.p) && (type == param.type) && (shift == param.shift);	}
-};
-
-struct sSerialCommand
-{
-	int inst;
-	sSerialCommandParam p1, p2;
-	int pos;
-};
-
-struct SerializerData;
-
 // executable (compiled) data
 class Script
 {
@@ -75,11 +55,6 @@ public:
 	void AllocateStack();
 	void AllocateOpcode();
 	void CompileFunction(Function *f, char *Opcode, int &OpcodeSize);
-	void SerializeFunction(SerializerData *d, Function *f);
-	void SerializeBlock(SerializerData *d, Block *block, int level);
-	void SerializeParameter(SerializerData *d, Command *link, int level, int index, sSerialCommandParam &param);
-	sSerialCommandParam SerializeCommand(SerializerData *d, Command *com, int level, int index);
-	void SerializeOperator(SerializerData *d, Command *com, sSerialCommandParam *param, sSerialCommandParam &ret);
 	void CompileOsEntryPoint();
 	void LinkOsEntryPoint();
 	void CompileTaskEntryPoint();

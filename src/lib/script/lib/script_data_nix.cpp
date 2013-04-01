@@ -1,10 +1,10 @@
-#include "../file/file.h"
-#include "script.h"
-#include "../00_config.h"
+#include "../../file/file.h"
+#include "../script.h"
+#include "../../config.h"
 #include "script_data_common.h"
 
 #ifdef _X_USE_NIX_
-	#include "../nix/nix.h"
+	#include "../../nix/nix.h"
 #endif
 
 namespace Script{
@@ -133,7 +133,6 @@ void SIAddPackageNix()
 	add_func("NixEnableLighting",											TypeVoid,	nix_p(&NixEnableLighting));
 		func_add_param("enabled",		TypeBool);
 
-	add_func("NixCreateLight",											TypeInt,	nix_p(&NixCreateLight));
 	add_func("NixSetLightRadial",										TypeVoid,	nix_p(&NixSetLightRadial));
 		func_add_param("light",			TypeInt);
 		func_add_param("pos",			TypeVector);
@@ -219,7 +218,7 @@ void SIAddPackageNix()
 	add_func("NixLoadShader",										TypeInt,	nix_p(&NixLoadShader));
 		func_add_param("filename",		TypeString);
 	add_func("NixCreateShader",										TypeInt,	nix_p(&NixCreateShader));
-		func_add_param("filename",		TypeString);
+		func_add_param("source",		TypeString);
 	add_func("NixUnrefShader",										TypeVoid,	nix_p(&NixUnrefShader));
 		func_add_param("index",		TypeInt);
 	add_func("NixSetShaderData",					TypeVoid,	nix_p(&NixSetShaderData));

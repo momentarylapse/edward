@@ -13,8 +13,6 @@ bool NixSmoothLines = false;
 static color NixColor = White;
 
 
-void TestGLError(const string &);
-
 
 void NixSetColor(const color &c)
 {
@@ -253,51 +251,6 @@ void NixDraw2D(const rect &src, const rect &dest, float depth)
 		glVertex3f(dest.x2,dest.y2,depth);
 	glEnd();
 	TestGLError("Draw2D");
-}
-
-void NixDraw3D(int buffer)
-{
-	if (buffer < 0)
-		return;
-	_NixSetMode3d();
-
-	sVertexBuffer &vb = NixVB[buffer];
-
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, vb.glVertices);
-	glNormalPointer(GL_FLOAT, 0, vb.glNormals);
-
-	// set multitexturing
-	if (OGLMultiTexturingSupport){
-		for (int i=0;i<vb.NumTextures;i++){
-			glClientActiveTexture(GL_TEXTURE0 + i);
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			glTexCoordPointer(2, GL_FLOAT, 0, vb.glTexCoords[i]);
-		}
-	}else{
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glTexCoordPointer(2, GL_FLOAT, 0, vb.glTexCoords[0]);
-	}
-
-	// draw
-	glDrawArrays(GL_TRIANGLES, 0, vb.NumTrias * 3);
-
-	// unset multitexturing
-	/*if (OGLMultiTexturingSupport){
-		for (int i=1;i<vb.NumTextures;i++){
-			glActiveTexture(GL_TEXTURE0 + i);
-			glDisable(GL_TEXTURE_2D);
-			glClientActiveTexture(GL_TEXTURE0 + i);
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		}
-		glActiveTexture(GL_TEXTURE0);
-		glClientActiveTexture(GL_TEXTURE0);
-	}*/
-
-	NixNumTrias += vb.NumTrias;
-	TestGLError("Draw3D");
 }
 
 void NixDraw3DCubeMapped(int cube_map,int buffer)

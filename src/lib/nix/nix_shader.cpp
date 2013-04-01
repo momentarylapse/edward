@@ -29,8 +29,6 @@ int NixGLCurrentProgram = 0;
 
 string NixShaderError;
 
-void TestGLError(const string&);
-
 int create_empty_shader_program()
 {
 	if (!OGLShaderSupport)

@@ -1,7 +1,7 @@
 #ifndef _GAME_EXISTS_
 #define _GAME_EXISTS_
 
-#include "../00_config.h"
+#include "../config.h"
 #include "../nix/nix.h"
 #include "../file/file.h"
 
@@ -86,6 +86,9 @@ enum
 #endif
 #ifdef _X_ALLOW_GUI_
 	#include "gui.h"
+#endif
+#ifdef _X_ALLOW_LIGHT_
+	#include "light.h"
 #endif
 
 #endif

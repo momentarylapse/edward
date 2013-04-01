@@ -113,36 +113,7 @@ extern bool NixEnabled3D;
 
 extern int NixFontGlyphWidth[256];
 
-
-// light-sources
-enum{
-	LightTypeDirectional,
-	LightTypeRadial
-};
-struct sLight{
-	bool Used,Allowed,Enabled;
-	int Type;
-	int OGLLightNo;
-	int Light;
-	vector Pos,Dir;
-	float Radius;
-	color Ambient,Diffuse,Specular;
-};
-
-extern Array<sLight> NixLight;
-
-
-struct sVertexBuffer
-{
-	int NumTrias, NumPoints, MaxTrias, NumTextures;
-	bool Indexed, Used, NotedFull;
-	//OGLVertex3D* glVertices;
-	vector *glVertices;
-	vector *glNormals;
-	float *glTexCoords[4];
-};
-
-extern Array<sVertexBuffer> NixVB;
+void TestGLError(const string &);
 
 
 
