@@ -24,12 +24,12 @@ PluginManager::~PluginManager()
 void PluginManager::Execute(const string & filename)
 {
 	Script::Directory = "";
-	Script::Script *s = new Script::Script(filename);
-	if (s->Error){
-		ed->ErrorBox(s->ErrorMsg);
-		return;
+	try{
+		Script::Script *s = Script::Load(filename);
+		s->Execute();
+	}catch(Script::Exception &e){
+		ed->ErrorBox(e.message);
 	}
-	s->Execute();
 
 	Script::DeleteAllScripts(true, true);
 }

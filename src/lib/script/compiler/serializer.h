@@ -14,10 +14,11 @@ struct sRegChannel
 	int first, last;
 };
 
+// high level instructions
 enum{
 	inst_marker = 10000,
 	inst_asm,
-	inst_end,
+	inst_func_init,
 };
 
 struct sLoopData
@@ -66,6 +67,9 @@ enum{
 
 struct Serializer
 {
+	Serializer(Script *script);
+	~Serializer();
+
 	Array<SerialCommand> cmd;
 	int NumMarkers;
 	Script *script;
@@ -87,7 +91,8 @@ struct Serializer
 
 	Array<sStuffToAdd> StuffToAdd;
 
-	bool Error;
+	Asm::InstructionWithParamsList *list;
+
 	void DoError(const string &msg);
 	void DoErrorLink(const string &msg);
 

@@ -94,17 +94,15 @@ void ModelFXDialog::OnFindScriptFile()
 		SetString("script_file", ed->DialogFile);
 
 		Script::Directory = ScriptDir;
-		Script::Script *s = new Script::Script(filename, true); // just analyse
-		Script::PreScript *ps = s->pre_script;
-		if (s->Error){
-			ed->ErrorBox(format(_("Fehler in Script-Datei: \"%s\"\n%s\n%s"), filename.c_str(), ps->ErrorMsgExt[0].c_str(), ps->ErrorMsgExt[1].c_str()));
-			msg_db_l(1);
-			return;
+		try{
+			Script::Script *s = Script::Load(filename, true); // just analyse
+			if (!s->MatchFunction("OnEffectCreate", "void", 1, "effect"))
+				ed->ErrorBox(_("Script-Datei enth&alt keine Funktion \"void OnEffectCreate( effect )\""));
+			else if (!s->MatchFunction("OnEffectIterate", "void", 1, "effect"))
+				ed->ErrorBox(_("Script-Datei enth&alt keine Funktion \"void OnEffectIterate( effect )\""));
+		}catch(Script::Exception &e){
+			ed->ErrorBox(_("Fehler in Script-Datei: ") + e.message);
 		}
-		if (!s->MatchFunction("OnEffectCreate", "void", 1, "effect"))
-			ed->ErrorBox(_("Script-Datei enth&alt keine Funktion \"void OnEffectCreate( effect )\""));
-		else if (!s->MatchFunction("OnEffectIterate", "void", 1, "effect"))
-			ed->ErrorBox(_("Script-Datei enth&alt keine Funktion \"void OnEffectIterate( effect )\""));
 	}
 }
 
