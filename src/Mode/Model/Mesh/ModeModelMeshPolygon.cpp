@@ -87,7 +87,7 @@ void ModeModelMeshPolygon::DrawPolygons()
 		vector dir = multi_view->ang.ang2dir();
 		foreach(ModelSurface &s, data->Surface){
 			foreach(ModelEdge &e, s.Edge){
-				if (min(data->Vertex[s.Vertex[e.Vertex[0]]].view_stage, data->Vertex[s.Vertex[e.Vertex[1]]].view_stage) < multi_view->view_stage)
+				if (min(data->Vertex[e.Vertex[0]].view_stage, data->Vertex[e.Vertex[1]].view_stage) < multi_view->view_stage)
 					continue;
 				float f = 0.7f - (s.Polygon[e.Polygon[0]].TempNormal * dir) * 0.3f;
 				NixSetColor(color(1, f, f, f));

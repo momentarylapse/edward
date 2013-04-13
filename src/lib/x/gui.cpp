@@ -100,7 +100,7 @@ Text *CreateText(const vector &pos, float size, const color &col, const string &
 	t->centric = false;
 	t->vertical = false;
 	t->pos = pos;
-	t->font = DefaultFont;
+	t->font = Engine.DefaultFont;
 	t->_color = col;
 	t->size = size;
 	t->text = str;

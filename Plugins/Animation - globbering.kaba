@@ -1,4 +1,4 @@
-#include "api.kaba"
+use "api.kaba"
 
 void main()
 	//HuiInfoBox(MainWin,i2s(Skin[1].NumVertices),i2s(move->NumFrames))

@@ -216,7 +216,7 @@ static void HandleCollisionsSemiOde(Object *o1, Object *o2, CollisionData *col, 
 {
 	if (o1->body_id == o2->body_id){
 		msg_error("HandleCollisionsSemiOde: beide Objekte id=id");
-		msg_write((int)o1->body_id);
+		msg_write(p2s(o1->body_id));
 		msg_write(o1->name);
 		msg_write(o2->name);
 		return;
@@ -320,8 +320,8 @@ void HandleCollision()
 #endif
 
 	float f;
-	o1->acc = -GlobalG;//o1->ForceExt;
-	o2->acc = -GlobalG;//o2->ForceExt;
+	o1->acc = -World.gravity;//o1->ForceExt;
+	o2->acc = -World.gravity;//o2->ForceExt;
 	f = -VecDotProduct(o1->acc,pColData->normal[i_max]);
 	if (f < 0){
 		if (o1->on_ground){

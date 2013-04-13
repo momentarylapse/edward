@@ -23,7 +23,7 @@ PluginManager::~PluginManager()
 
 void PluginManager::Execute(const string & filename)
 {
-	Script::Directory = "";
+	Script::config.Directory = "";
 	try{
 		Script::Script *s = Script::Load(filename);
 		s->Execute();
@@ -68,39 +68,40 @@ void PluginManager::Init()
 	msg_write("dm.fn: " + p2s(&mode_model->data->filename));
 	msg_write("dm.obs: " + p2s(dynamic_cast<Observable*>(mode_model->data)));*/
 
-	Script::LinkSemiExternalVar("TestVar", &TestVar);
-	Script::LinkSemiExternalFunc("TestFunc", (void*)&TestFunc);
-	Script::LinkSemiExternalVar("test", &test);
-	Script::LinkSemiExternalFunc("TestClass.func", (void*)&TestClass::func);
+	Script::LinkExternal("TestVar", &TestVar);
+	Script::LinkExternal("TestFunc", (void*)&TestFunc);
+	Script::LinkExternal("test", &test);
+	Script::LinkExternal("TestClass.func", (void*)&TestClass::func);
 
-	Script::LinkSemiExternalVar("edward", &ed);
-	Script::LinkSemiExternalVar("data_model", &mode_model->data);
-	Script::LinkSemiExternalFunc("DataModel.ClearSelection", (void*)&DataModel::ClearSelection);
-	Script::LinkSemiExternalFunc("DataModel.SelectionFromVertices", (void*)&DataModel::SelectionFromVertices);
-	Script::LinkSemiExternalFunc("DataModel.SelectionFromPolygons", (void*)&DataModel::SelectionFromPolygons);
-	Script::LinkSemiExternalFunc("DataModel.SelectionFromSurfaces", (void*)&DataModel::SelectionFromSurfaces);
-	Script::LinkSemiExternalFunc("DataModel.SelectOnlySurface", (void*)&DataModel::SelectOnlySurface);
-	Script::LinkSemiExternalFunc("DataModel.AddVertex", (void*)&DataModel::AddVertex);
-	Script::LinkSemiExternalFunc("DataModel.AddTriangle", (void*)&DataModel::AddTriangle);
-	Script::LinkSemiExternalFunc("DataModel.AddPolygon", (void*)&DataModel::AddPolygon);
-	Script::LinkSemiExternalFunc("DataModel.AddBall", (void*)&DataModel::AddBall);
-	Script::LinkSemiExternalFunc("DataModel.AddSphere", (void*)&DataModel::AddSphere);
-	Script::LinkSemiExternalFunc("DataModel.AddPlane", (void*)&DataModel::AddPlane);
-	Script::LinkSemiExternalFunc("DataModel.AddCube", (void*)&DataModel::AddCube);
-	Script::LinkSemiExternalFunc("DataModel.AddCylinder", (void*)&DataModel::AddCylinder);
-	Script::LinkSemiExternalFunc("DataModel.DeleteSelection", (void*)&DataModel::DeleteSelection);
-	Script::LinkSemiExternalFunc("DataModel.SubtractSelection", (void*)&DataModel::SubtractSelection);
-	Script::LinkSemiExternalFunc("DataModel.TriangulateSelection", (void*)&DataModel::TriangulateSelection);
-	Script::LinkSemiExternalFunc("DataModel.BevelSelectedVertices", (void*)&DataModel::BevelSelectedVertices);
-	Script::LinkSemiExternalFunc("DataModel.ExtrudeSelectedPolygons", (void*)&DataModel::ExtrudeSelectedPolygons);
-	Script::LinkSemiExternalFunc("DataModel.BeginActionGroup", (void*)&DataModel::BeginActionGroup);
-	Script::LinkSemiExternalFunc("DataModel.EndActionGroup", (void*)&DataModel::EndActionGroup);
-	Script::LinkSemiExternalVar("data_world", &mode_world->data);
-	Script::LinkSemiExternalFunc("DataWorld.AddObject", (void*)&DataWorld::AddObject);
-	Script::LinkSemiExternalFunc("DataWorld.AddTerrain", (void*)&DataWorld::AddTerrain);
-	Script::LinkSemiExternalFunc("DataWorld.AddNewTerrain", (void*)&DataWorld::AddNewTerrain);
-	Script::LinkSemiExternalFunc("DataWorld.BeginActionGroup", (void*)&DataWorld::BeginActionGroup);
-	Script::LinkSemiExternalFunc("DataWorld.EndActionGroup", (void*)&DataWorld::EndActionGroup);
+	Script::LinkExternal("edward", &ed);
+	Script::LinkExternal("data_model", &mode_model->data);
+	Script::LinkExternal("DataModel.ClearSelection", (void*)&DataModel::ClearSelection);
+	Script::LinkExternal("DataModel.InvertSelection", (void*)&DataModel::InvertSelection);
+	Script::LinkExternal("DataModel.SelectionFromVertices", (void*)&DataModel::SelectionFromVertices);
+	Script::LinkExternal("DataModel.SelectionFromPolygons", (void*)&DataModel::SelectionFromPolygons);
+	Script::LinkExternal("DataModel.SelectionFromSurfaces", (void*)&DataModel::SelectionFromSurfaces);
+	Script::LinkExternal("DataModel.SelectOnlySurface", (void*)&DataModel::SelectOnlySurface);
+	Script::LinkExternal("DataModel.AddVertex", (void*)&DataModel::AddVertex);
+	Script::LinkExternal("DataModel.AddTriangle", (void*)&DataModel::AddTriangle);
+	Script::LinkExternal("DataModel.AddPolygon", (void*)&DataModel::AddPolygon);
+	Script::LinkExternal("DataModel.AddBall", (void*)&DataModel::AddBall);
+	Script::LinkExternal("DataModel.AddSphere", (void*)&DataModel::AddSphere);
+	Script::LinkExternal("DataModel.AddPlane", (void*)&DataModel::AddPlane);
+	Script::LinkExternal("DataModel.AddCube", (void*)&DataModel::AddCube);
+	Script::LinkExternal("DataModel.AddCylinder", (void*)&DataModel::AddCylinder);
+	Script::LinkExternal("DataModel.DeleteSelection", (void*)&DataModel::DeleteSelection);
+	Script::LinkExternal("DataModel.SubtractSelection", (void*)&DataModel::SubtractSelection);
+	Script::LinkExternal("DataModel.TriangulateSelection", (void*)&DataModel::TriangulateSelection);
+	Script::LinkExternal("DataModel.BevelSelectedVertices", (void*)&DataModel::BevelSelectedVertices);
+	Script::LinkExternal("DataModel.ExtrudeSelectedPolygons", (void*)&DataModel::ExtrudeSelectedPolygons);
+	Script::LinkExternal("DataModel.BeginActionGroup", (void*)&DataModel::BeginActionGroup);
+	Script::LinkExternal("DataModel.EndActionGroup", (void*)&DataModel::EndActionGroup);
+	Script::LinkExternal("data_world", &mode_world->data);
+	Script::LinkExternal("DataWorld.AddObject", (void*)&DataWorld::AddObject);
+	Script::LinkExternal("DataWorld.AddTerrain", (void*)&DataWorld::AddTerrain);
+	Script::LinkExternal("DataWorld.AddNewTerrain", (void*)&DataWorld::AddNewTerrain);
+	Script::LinkExternal("DataWorld.BeginActionGroup", (void*)&DataWorld::BeginActionGroup);
+	Script::LinkExternal("DataWorld.EndActionGroup", (void*)&DataWorld::EndActionGroup);
 
 //	Script::LinkDynamicExternalData();
 }

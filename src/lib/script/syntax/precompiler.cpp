@@ -3,6 +3,9 @@
 
 namespace Script{
 
+
+#define SCRIPT_MAX_DEFINE_RECURSIONS	128
+
 //#define ScriptDebug
 
 extern int s2i2(const string &str);
@@ -46,19 +49,19 @@ static void left()
 #endif
 }
 
-void SetImmortal(PreScript *ps)
+void SetImmortal(SyntaxTree *ps)
 {
 	ps->FlagImmortal = true;
 	for (int i=0;i<ps->Includes.num;i++)
-		SetImmortal(ps->Includes[i]->pre_script);
+		SetImmortal(ps->Includes[i]->syntax);
 }
 
 // import data from an included script file
-void PreScript::AddIncludeData(Script *s)
+void SyntaxTree::AddIncludeData(Script *s)
 {
 	msg_db_f("AddIncludeData",5);
 	Includes.add(s);
-	PreScript *ps = s->pre_script;
+	SyntaxTree *ps = s->syntax;
 	s->ReferenceCounter ++;
 	if (FlagImmortal)
 		SetImmortal(ps);
@@ -67,21 +70,26 @@ void PreScript::AddIncludeData(Script *s)
 	for (int i=0;i<ps->Defines.num;i++)
 		Defines.add(ps->Defines[i]);
 
+	ExpressionBuffer::Line *cur_line = Exp.cur_line;
+	PreCompiler(script->JustAnalyse);
+	Exp.cur_line = cur_line;
+	Exp.cur_exp = 0;
+
+
 	// types
 //	Type.insert(Type.begin(), ps->Type.begin(), ps->Type.end()); // make sure foreign types precede the "own" types!
-	for (int i=0;i<ps->Types.num;i++)
+/*	for (int i=0;i<ps->Types.num;i++)
 		Types.insert(ps->Types[i], i);
 		//Type.insert(ps->Type[i + PreType.num], i);
 
 	// constants
 	foreach(Constant &c, ps->Constants)
 		if (c.name[0] != '-')
-			Constants.add(c);
+			Constants.add(c);*/
 	// TODO... ownership of "big" constants
 }
 
 enum{
-	MacroInclude,
 	MacroDefine,
 	MacroDisasm,
 	MacroNoExec,
@@ -97,7 +105,6 @@ enum{
 
 string MacroName[NumMacroNames] =
 {
-	"#include",
 	"#define",
 	"#disasm",
 	"#noexec",
@@ -110,12 +117,12 @@ string MacroName[NumMacroNames] =
 	"#code_origin"
 };
 
-void PreScript::HandleMacro(ps_line_t *l, int &line_no, int &NumIfDefs, bool *IfDefed, bool just_analyse)
+void SyntaxTree::HandleMacro(ExpressionBuffer::Line *l, int &line_no, int &NumIfDefs, bool *IfDefed, bool just_analyse)
 {
 	msg_db_f("HandleMacro", 4);
 	Exp.cur_line = l;
 	Exp.cur_exp = 0;
-	Exp._cur_ = Exp.cur_line->exp[Exp.cur_exp].name;
+	Exp.cur = Exp.cur_line->exp[Exp.cur_exp].name;
 	int ln;
 	string filename;
 	Script *include;
@@ -124,46 +131,20 @@ void PreScript::HandleMacro(ps_line_t *l, int &line_no, int &NumIfDefs, bool *If
 
 	int macro_no=-1;
 	for (int i=0;i<NumMacroNames;i++)
-		if (cur_name == MacroName[i])
+		if (Exp.cur == MacroName[i])
 			macro_no = i;
 	
 	switch(macro_no){
-		case MacroInclude:
-			next_exp();
-			/*if (!IsIfDefed(NumIfDefs, IfDefed))
-				continue;*/
-
-			filename = Filename.dirname() + cur_name.substr(1, cur_name.num - 2); // remove "
-			filename = filename.no_recursion();
-
-			so("lade Include-Datei");
-			right();
-
-			try{
-				include = Load(filename, true, just_analyse);
-			}catch(Exception &e){
-				string msg = "in included file:\n\"" + e.message + "\"";
-				DoError(msg);
-			}
-
-			left();
-			/*if ((!include) || (include->Error)){
-				IncludeLinkerError |= include->LinkerError;
-				DoError(format("error in inluded file \"%s\":\n[ %s (line %d:) ]", filename.c_str(), include->ErrorMsg.c_str(), include->ErrorLine, include->ErrorColumn));
-				return;
-			}*/
-			AddIncludeData(include);
-			break;
 		case MacroDefine:
 			// source
-			next_exp();
-			d.Source = cur_name;
+			Exp.next();
+			d.Source = Exp.cur;
 			// dests
 			while(true){
-				next_exp();
-				if (end_of_line())
+				Exp.next();
+				if (Exp.end_of_line())
 					break;
-				d.Dest.add(cur_name);
+				d.Dest.add(Exp.cur);
 			}
 			Defines.add(d);
 			break;
@@ -191,13 +172,13 @@ void PreScript::HandleMacro(ps_line_t *l, int &line_no, int &NumIfDefs, bool *If
 			break;
 		case MacroVariablesOffset:
 			FlagOverwriteVariablesOffset=true;
-			next_exp();
-			VariablesOffset=s2i2(cur_name);
+			Exp.next();
+			VariablesOffset=s2i2(Exp.cur);
 			break;
 		case MacroCodeOrigin:
-			next_exp();
-			CreateAsmMetaInfo(this);
-			((Asm::MetaInfo*)AsmMetaInfo)->CodeOrigin = s2i2(cur_name);
+			Exp.next();
+			CreateAsmMetaInfo();
+			((Asm::MetaInfo*)AsmMetaInfo)->CodeOrigin = s2i2(Exp.cur);
 			break;
 		default:
 			DoError("unknown makro atfer \"#\"");
@@ -209,9 +190,9 @@ void PreScript::HandleMacro(ps_line_t *l, int &line_no, int &NumIfDefs, bool *If
 	line_no --;
 }
 
-inline void insert_into_buffer(PreScript *ps, const char *name, int pos, int index = -1)
+inline void insert_into_buffer(SyntaxTree *ps, const char *name, int pos, int index = -1)
 {
-	ps_exp_t e;
+	ExpressionBuffer::Expression e;
 	e.name = ps->Exp.buf_cur;
 	ps->Exp.buf_cur += strlen(name) + 1;
 	strcpy(e.name, name);
@@ -223,13 +204,13 @@ inline void insert_into_buffer(PreScript *ps, const char *name, int pos, int ind
 		ps->Exp.cur_line->exp.insert(e, index);
 }
 
-inline void remove_from_buffer(PreScript *ps, int index)
+inline void remove_from_buffer(SyntaxTree *ps, int index)
 {
 	ps->Exp.cur_line->exp.erase(index);
 }
 
 // ... maybe some time later
-void PreScript::PreCompiler(bool just_analyse)
+void SyntaxTree::PreCompiler(bool just_analyse)
 {
 	msg_db_f("PreCompiler", 4);
 
@@ -242,36 +223,36 @@ void PreScript::PreCompiler(bool just_analyse)
 		if (Exp.line[i].exp[0].name[0] == '#'){
 			HandleMacro(Exp.cur_line, i, NumIfDefs, IfDefed, just_analyse);
 		}else{
-			Exp._cur_ = Exp.cur_line->exp[Exp.cur_exp].name;
+			Exp.cur = Exp.cur_line->exp[Exp.cur_exp].name;
 
 			// replace by definition?
 			int num_defs_inserted = 0;
-			while(!end_of_line()){
+			while(!Exp.end_of_line()){
 				foreachi(Define &d, Defines, j){
-					if (cur_name == d.Source){
+					if (Exp.cur == d.Source){
 						int pos = Exp.cur_line->exp[Exp.cur_exp].pos;
 						remove_from_buffer(this, Exp.cur_exp);
 						for (int k=0;k<d.Dest.num;k++){
 							insert_into_buffer(this, d.Dest[k].c_str(), pos, Exp.cur_exp);
-							next_exp();
+							Exp.next();
 						}
 						Exp.cur_exp -= d.Dest.num;
-						Exp._cur_ = Exp.cur_line->exp[Exp.cur_exp].name;
+						Exp.cur = Exp.cur_line->exp[Exp.cur_exp].name;
 						num_defs_inserted ++;
 						if (num_defs_inserted > SCRIPT_MAX_DEFINE_RECURSIONS)
 							DoError("recursion in #define macros");
 						break;
 					}
 				}
-				next_exp();
+				Exp.next();
 			}
 
 			// "-" in front of numbers (after ( , : [ = < >)
 			Exp.cur_exp = 1;
-			Exp._cur_ = Exp.cur_line->exp[Exp.cur_exp].name;
-			while(!end_of_line()){
-				if (cur_name == "-"){
-					string last = get_name(Exp.cur_exp - 1);
+			Exp.cur = Exp.cur_line->exp[Exp.cur_exp].name;
+			while(!Exp.end_of_line()){
+				if (Exp.cur == "-"){
+					string last = Exp.get_name(Exp.cur_exp - 1);
 					if ((last == "(") ||
 						(last == ",") ||
 						(last == ":") ||
@@ -280,15 +261,15 @@ void PreScript::PreCompiler(bool just_analyse)
 						(last == "<") ||
 						(last == ">")){
 						if (isNumber(last[0])){
-							string name = string("-") + get_name(Exp.cur_exp + 1);
+							string name = string("-") + Exp.get_name(Exp.cur_exp + 1);
 							int pos = Exp.cur_line->exp[Exp.cur_exp].pos;
-							remove_from_buffer(this, Exp.cur_exp);
-							remove_from_buffer(this, Exp.cur_exp);
-							insert_into_buffer(this, name.c_str(), pos, Exp.cur_exp);
+							Exp.remove(Exp.cur_exp);
+							Exp.remove(Exp.cur_exp);
+							Exp.insert(name.c_str(), pos, Exp.cur_exp);
 						}
 					}
 				}
-				next_exp();
+				Exp.next();
 			}
 		}
 	}

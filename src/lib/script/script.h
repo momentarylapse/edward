@@ -17,14 +17,11 @@ class Script;
 #include "../types/types.h"
 #include "asm/asm.h"
 #include "lib/script_data.h"
-#include "syntax/pre_script.h"
+#include "syntax/syntax_tree.h"
 
 namespace Script{
 
 extern string Version;
-
-
-extern bool UseConstAsGlobalVar;
 
 class Exception : public Asm::Exception
 {
@@ -82,7 +79,8 @@ public:
 
 // data
 
-	PreScript *pre_script;
+	string Filename;
+	SyntaxTree *syntax;
 
 	int ReferenceCounter;
 
@@ -97,7 +95,7 @@ public:
 	Array<t_func*> func;
 	t_func *first_execution, *continue_execution;
 
-	bool isCopy, isPrivate, JustAnalyse, ShowCompilerStats;
+	bool JustAnalyse, ShowCompilerStats;
 	Function *cur_func;
 	int WaitingMode;
 	float TimeToWait;
@@ -107,14 +105,11 @@ public:
 	int MemoryUsed;
 };
 
-extern Script *Load(const string &filename, bool is_public = true, bool just_analyse = false);
-extern void Remove(Script *s);
-extern string Directory;
-extern bool CompileSilently;
-extern bool ShowCompilerStats;
-extern void ExecutePublicScripts();
-extern void DeleteAllScripts(bool even_immortal = false, bool force = false);
-extern void ExecuteSingleScriptCommand(const string &cmd);
+Script *Load(const string &filename, bool just_analyse = false);
+void Remove(Script *s);
+void ExecutePublicScripts();
+void DeleteAllScripts(bool even_immortal = false, bool force = false);
+void ExecuteSingleScriptCommand(const string &cmd);
 
 };
 

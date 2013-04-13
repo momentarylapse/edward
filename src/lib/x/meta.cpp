@@ -25,10 +25,9 @@
 #include "x.h"
 #ifdef _X_ALLOW_SCRIPT_
 	#include "../script/script.h"
-	extern string Script::Directory;
 #endif
 
-string MetaVersion = "0.3.1.4";
+string MetaVersion = "0.3.2.0";
 
 float TimeScale=1.0f,TimeScaleLast,TimeScalePreBrake=1.0f,Elapsed,ElapsedRT;
 
@@ -37,19 +36,12 @@ int NumRealColTests;
 bool FileErrorsAreCritical=false;
 
 // game configuration
-bool Debug,ShowTimings,ConsoleEnabled,WireMode;
-bool Record;
-int DetailLevel;
-float DetailFactorInv;
+
+EngineData Engine;
 int ShadowLevel,ShadowLight;
 color ShadowColor;
-bool ShadowLowerDetail;
-float FpsMax,FpsMin;
-int Multisampling = 0;
-bool NetworkEnabled,CullingEnabled,SortingEnabled,ZBufferEnabled;
-int XFontIndex, DefaultFont;
+int XFontIndex;
 float XFontZ;
-bool ResettingGame = false;
 
 
 
@@ -97,23 +89,21 @@ Model *NoModel;
 void MetaInit()
 {
 	msg_db_r("Meta",1);
-	XFontIndex=0;
-	DefaultFont=0;
-	// unnessessary...
-	ModelOriginal.clear();
-	ModelCopy.clear();
-	_XFont_.clear();
+	XFontIndex = 0;
+	Engine.DefaultFont = 0;
 
-	ZBufferEnabled=true;
-	CullingEnabled=false;
-	SortingEnabled=false;
-	ConsoleEnabled=false;
+	Engine.ZBufferEnabled = true;
+	Engine.CullingEnabled = false;
+	Engine.SortingEnabled = false;
+	Engine.ConsoleEnabled = false;
+	Engine.ResettingGame = false;
 
-	FpsMax=60;
-	FpsMin=10;
+	Engine.FpsMax = 60;
+	Engine.FpsMin = 10;
 
-	DetailLevel=100;
-	DetailFactorInv=1.0f;
+	Engine.DetailLevel = 100;
+	Engine.DetailFactorInv = 1.0f;
+	Engine.MirrorLevelMax = 1;
 
 #ifdef _X_ALLOW_MODEL_
 	// create the default material's default values
@@ -188,11 +178,11 @@ void MetaReset()
 	MetaDeleteStuffList.clear();
 
 	ModelToIgnore=NULL;
-	DefaultFont=0;
+	Engine.DefaultFont=0;
 	XFontZ=0;
 	XFontIndex=0;
 	ShadowLight=0;
-	ShadowLowerDetail=false;
+	Engine.ShadowLowerDetail = false;
 	ShadowColor=color(0.5f,0,0,0);
 	msg_db_l(1);
 }
@@ -210,7 +200,7 @@ void MetaSetDirs(const string &texture_dir, const string &map_dir, const string 
 	MaterialDir = material_dir;
 	FontDir = font_dir;
 #ifdef _X_ALLOW_SCRIPT_
-	Script::Directory = script_dir;
+	Script::config.Directory = script_dir;
 #endif
 }
 
@@ -222,7 +212,7 @@ void MetaCalcMove()
 #endif*/
 	 msg_todo("MetaCalcMove...");
 	
-	DetailFactorInv=100.0f/(float)DetailLevel;
+	Engine.DetailFactorInv = 100.0f/(float)Engine.DetailLevel;
 }
 
 inline bool EqualChars(char a,char b)

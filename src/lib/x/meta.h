@@ -44,20 +44,30 @@ extern float TimeScale,TimeScaleLast,Elapsed,ElapsedRT;
 
 extern bool FileErrorsAreCritical;
 
+struct EngineData
+{
+	bool Debug, ShowTimings, ConsoleEnabled, WireMode;
+	bool Record;
+	float DetailLevel;
+	float DetailFactorInv;
+	int ShadowLevel;
+	bool ShadowLowerDetail;
+	float FpsMax, FpsMin;
+	int Multisampling;
+	bool CullingEnabled, SortingEnabled, ZBufferEnabled;
+	bool ResettingGame;
+	int DefaultFont;
+	string InitialWorldFile, SecondWorldFile;
+	bool PhysicsEnabled, CollisionsEnabled;
+	int MirrorLevelMax;
+};
+extern EngineData Engine;
+
 
 // game configuration
-extern bool Debug,ShowTimings,ConsoleEnabled,WireMode;
-extern bool Record;
-extern int DetailLevel;
-extern float DetailFactorInv;
-extern int ShadowLevel,ShadowLight;
+extern int ShadowLight;
 extern color ShadowColor;
-extern bool ShadowLowerDetail;
-extern float FpsMax,FpsMin;
-extern int Multisampling;
-extern bool NetworkEnabled,CullingEnabled,SortingEnabled,ZBufferEnabled;
-extern int XFontIndex,DefaultFont;
-extern bool ResettingGame;
+extern int XFontIndex;
 
 typedef void str_float_func(const string&,float);
 

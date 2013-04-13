@@ -36,7 +36,6 @@ inline void qode2x(const dQuaternion q, quaternion *qq)
 }
 #endif
 
-bool PhysicsEnabled, CollisionsEnabled;
 int PhysicsNumSteps, PhysicsNumLinkSteps;
 
 #ifdef _X_ALLOW_PHYSICS_DEBUG_
@@ -64,26 +63,21 @@ int NumForceFields;
 GodForceField *ForceField[GOD_MAX_FORCEFIELDS];
 MusicField *MusicFieldCurrent;
 
-vector GlobalG;
 GodLevelData LevelData;
-Array<float> ScriptVar;
 static int GodNumReservedObjects;
 
 
 // game data
-string InitialWorldFile, SecondWorldFile, CurrentWorldFile;
-color BackGroundColor;
-Array<Model*> SkyBox;
-color GlobalAmbient;
-Fog GlobalFog;
-int SunLight;
-float SpeedOfSound;
+WorldData World;
 
 
 Array<Terrain*> Terrains;
 
-
-
+#ifdef _X_ALLOW_X_
+extern bool NetworkEnabled;
+#else
+bool NetworkEnabled;
+#endif
 
 // partial models
 static Array<PartialModel> SortedNonTrans, SortedTrans;
@@ -159,7 +153,7 @@ void TestObjectSanity(const char *str)
 void GodInit()
 {
 	msg_db_r("GodInit",1);
-	GlobalG=v_0;
+	World.gravity = v_0;
 	NumForceFields = 0;
 
 	terrain_object = new Object();
@@ -236,24 +230,24 @@ void GodReset()
 
 	// skybox
 	//   (models deleted by meta)
-	SkyBox.clear();
+	World.skybox.clear();
 	
 
 	// initial data for empty world...
-	GlobalAmbient = color(1,0.4f,0.4f,0.4f);
-	GlobalFog._color = White;
-	GlobalFog.mode = FogExp;
-	GlobalFog.density = 0.001f;
-	GlobalFog.enabled = false;
-	GlobalFog.start = 0;
-	GlobalFog.end = 100000;
-	SpeedOfSound = 1000;
+	World.ambient = color(1,0.4f,0.4f,0.4f);
+	World.fog._color = White;
+	World.fog.mode = FogExp;
+	World.fog.density = 0.001f;
+	World.fog.enabled = false;
+	World.fog.start = 0;
+	World.fog.end = 100000;
+	World.speed_of_sound = 1000;
 
 	NixMaxDepth = 100000.0f;
 	NixMinDepth = 1.0f;
 	
-	PhysicsEnabled = false;
-	CollisionsEnabled = true;
+	Engine.PhysicsEnabled = false;
+	Engine.CollisionsEnabled = true;
 	PhysicsNumSteps = 10;
 	PhysicsNumLinkSteps = 5;
 
@@ -327,37 +321,37 @@ bool GodLoadWorldFromLevelData()
 	GodNetMsgEnabled = false;
 	bool ok = true;
 
-	GlobalG = LevelData.gravity;
-	GlobalFog = LevelData.fog;
+	World.gravity = LevelData.gravity;
+	World.fog = LevelData.fog;
 
 	// script var
-	ScriptVar = LevelData.script_var;
+	World.var = LevelData.script_var;
 
 	// set up light (sun and ambient)
-	GlobalAmbient = LevelData.ambient;
-	NixSetAmbientLight(GlobalAmbient);
+	World.ambient = LevelData.ambient;
+	NixSetAmbientLight(World.ambient);
 
 #ifdef _X_ALLOW_LIGHT_
-	SunLight = Light::Create();
-	Light::SetColors(SunLight,
+	World.sun = Light::Create();
+	Light::SetColors(World.sun,
 					LevelData.sun_color[0],
 					LevelData.sun_color[1],
 					LevelData.sun_color[2]);
-	Light::SetDirectional(SunLight, LevelData.sun_ang.ang2dir());
-	Light::Enable(SunLight, LevelData.sun_enabled);
+	Light::SetDirectional(World.sun, LevelData.sun_ang.ang2dir());
+	Light::Enable(World.sun, LevelData.sun_enabled);
 #endif
 
 	// skybox
-	SkyBox.resize(LevelData.skybox_filename.num);
-	for (int i=0;i<SkyBox.num;i++){
-		SkyBox[i] = MetaLoadModel(LevelData.skybox_filename[i]);
-		if (SkyBox[i])
-			SkyBox[i]->ang = LevelData.skybox_ang[i];
+	World.skybox.resize(LevelData.skybox_filename.num);
+	for (int i=0;i<World.skybox.num;i++){
+		World.skybox[i] = MetaLoadModel(LevelData.skybox_filename[i]);
+		if (World.skybox[i])
+			World.skybox[i]->ang = LevelData.skybox_ang[i];
 		LevelData.skybox_filename[i].clear();
 	}
 	LevelData.skybox_filename.clear();
 	LevelData.skybox_ang.clear();
-	BackGroundColor = LevelData.background_color;
+	World.background = LevelData.background_color;
 
 	// objects
 	Ego = NULL;
@@ -602,7 +596,7 @@ typedef void object_callback_func(Object*);
 
 Object *GodCreateObject(const string &filename, const string &name, const vector &pos, const vector &ang, int w_index)
 {
-	if (ResettingGame){
+	if (Engine.ResettingGame){
 		msg_error("CreateObject during game reset");
 		return NULL;
 	}
@@ -709,7 +703,7 @@ void GodDeleteObject(int index)
 #endif
 
 #ifdef USE_ODE
-	db_o(i2s((int)Objects[index]->body_id).c_str());
+	db_o(p2s(Objects[index]->body_id).c_str());
 	if (Objects[index]->body_id != 0){
 		db_o("bd");
 		dBodyDestroy(Objects[index]->body_id);
@@ -718,7 +712,7 @@ void GodDeleteObject(int index)
 	
 		db_o(".");
 	Objects[index]->body_id = 0;
-	db_o(i2s((int)Objects[index]->geom_id).c_str());
+	db_o(p2s(Objects[index]->geom_id).c_str());
 	if (Objects[index]->geom_id != 0){
 		db_o("gd");
 		dGeomDestroy(Objects[index]->geom_id);
@@ -858,7 +852,7 @@ void SetSoundState(bool paused,float scale,bool kill,bool restart)
 vector _cdecl GetG(vector &pos)
 {
 	// homogener, konstanter Anteil (Welt)
-	vector g=GlobalG;
+	vector g=World.gravity;
 /*		// radiale Kraftfelder
 		for (int i=0;i<FxNumForceFields;i++)
 			if (FxForceField[i]->Used)
@@ -971,7 +965,7 @@ void ApplyGravity()
 		if (Objects[i])
 			if (!Objects[i]->frozen){
 				float ttf = Objects[i]->time_till_freeze;
-				vector g = Objects[i]->mass * Objects[i]->g_factor * GlobalG;
+				vector g = Objects[i]->mass * Objects[i]->g_factor * World.gravity;
 				Objects[i]->AddForce(g, v_0);
 				//                                                     GetG(Objects[i]->Pos));
 				Objects[i]->time_till_freeze = ttf;
@@ -1002,14 +996,14 @@ void GodCalcMove()
 	TestObjectSanity("God::CM prae");
 
 	// no physics?
-	if (!PhysicsEnabled){
+	if (!Engine.PhysicsEnabled){
 		for (int i=0;i<Objects.num;i++)
 			if (Objects[i])
 				Objects[i]->UpdateMatrix();
 		ResetExternalForces();
 		msg_db_l(2);
 		return;
-	}else if (!CollisionsEnabled){
+	}else if (!Engine.CollisionsEnabled){
 		for (int i=0;i<Objects.num;i++)
 			if (Objects[i])
 				//if (!Objects[i]->Frozen)
@@ -1355,7 +1349,7 @@ void GodUnregisterModel(Model *m)
 		if (SortedNonTrans[i].model == m)
 			SortedNonTrans.erase(i);
 
-	if (!ResettingGame)
+	if (!Engine.ResettingGame)
 		for (int i=0;i<m->fx.num;i++)
 			if (m->fx[i])
 				FxEnable(m->fx[i], false);
@@ -1388,7 +1382,7 @@ inline void fill_pmv(vector &pos, Array<PartialModel> &p, Array<PartialModelView
 		
 		int detail = SkinHigh;
 		float dist = _vec_length_(dpos); // real distance to the camera
-		float dist_2 = dist * DetailFactorInv; // more adequate distance value
+		float dist_2 = dist * Engine.DetailFactorInv; // more adequate distance value
 
 		// ignore?
 		if (is_ignored(m))
@@ -1406,8 +1400,8 @@ inline void fill_pmv(vector &pos, Array<PartialModel> &p, Array<PartialModelView
 		vp.add(pmv);
 
 		// shadows...
-		if ((ShadowLevel > 0) && (detail == SkinHigh) && (p[i].mat_index == 0) && (m->allow_shadow)){
-			int sd = ShadowLowerDetail ? SkinMedium : SkinHigh;
+		if ((Engine.ShadowLevel > 0) && (detail == SkinHigh) && (p[i].mat_index == 0) && (m->allow_shadow)){
+			int sd = Engine.ShadowLowerDetail ? SkinMedium : SkinHigh;
 			if (m->skin[sd]->sub[p[i].mat_index].num_triangles > 0)
 				FxAddShadow(m, sd);
 		}
@@ -1487,14 +1481,14 @@ void GodDrawSorted()
 	//if (fill_frame > 10){
 		// TODO: refill when SortedNonTrans or SortedNonTrans change... pointers...vector allocation...
 		vector pos = cur_cam->pos;
-		fill_pmv(pos, SortedNonTrans, cur_cam->pmvd.opaque, SortingEnabled, true);
+		fill_pmv(pos, SortedNonTrans, cur_cam->pmvd.opaque, Engine.SortingEnabled, true);
 		fill_pmv(pos, SortedTrans, cur_cam->pmvd.trans, true, false);
 		fill_frame = 0;
 	//}
 
 // non-transparent models
 	// overlapping each other
-	if (ZBufferEnabled)
+	if (Engine.ZBufferEnabled)
 		NixSetZ(true,true);
 	else
 		NixSetZ(false,false);
@@ -1504,7 +1498,7 @@ void GodDrawSorted()
 
 //transparent models
 	// test but don't write
-	if (ZBufferEnabled)
+	if (Engine.ZBufferEnabled)
 		NixSetZ(false,true);
 
 	// drawing

@@ -1,4 +1,4 @@
-#include "api.kaba"
+use "api.kaba"
 
 const int MAX_LENGTH = 12
 const float BRANCH_PROB = 0.8

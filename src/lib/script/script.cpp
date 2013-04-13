@@ -31,20 +31,17 @@ string Version = "0.10.11.0";
 int GlobalWaitingMode;
 float GlobalTimeToWait;
 
-bool CompileSilently = false;
-bool ShowCompilerStats = true;
-
 
 Exception::Exception(const string &_message, const string &_expression, int _line, int _column, Script *s) :
 	Asm::Exception(_message, _expression, _line, _column)
 {
-	message +=  ", " + s->pre_script->Filename;
+	message +=  ", " + s->Filename;
 }
 
 Exception::Exception(const Asm::Exception &e, Script *s) :
 	Asm::Exception(e)
 {
-	message = "assembler: " + message + ", " + s->pre_script->Filename;
+	message = "assembler: " + message + ", " + s->Filename;
 }
 
 
@@ -89,52 +86,23 @@ void script_db_left()
 
 
 Array<Script*> PublicScript;
-Array<Script*> PrivateScript;
 Array<Script*> DeadScript;
 
 
-string Directory = "";
 
 
 
-
-Script *Load(const string &filename, bool is_public, bool just_analyse)
+Script *Load(const string &filename, bool just_analyse)
 {
 	//msg_write(string("Lade ",filename));
 	Script *s = NULL;
 
-	// public und private aus dem Speicher versuchen zu laden
-	if (is_public){
-		for (int i=0;i<PublicScript.num;i++)
-			if (PublicScript[i]->pre_script->Filename == filename.sys_filename())
-				return PublicScript[i];
-	}
-#if 0
-	int ae=-1;
-	for (int i=0;i<NumPublicScripts;i++)
-		if (strcmp(PublicScript[i].filename,SysFileName(filename))==0)
-			ae=i;
-	if (ae>=0){
-		if (is_public){
-			s=PublicScript[ae].script;
-			//so("...pointer");
-		}else{
-			s=new Script();
-			memcpy(s,PublicScript[ae].script,sizeof(Script));
-			s->WaitingMode=WaitingModeNone;
-			s->isCopy=true;
-			s->OpcodeSize=0;
-			s->Compiler();
-			s->isPrivate=!is_public;
-			s->ThisObject=-1;
-			//so("...kopiert (private)");
-			//msg_error(string("Script existiert schon!!! ",filename));
-		}
-		return s;
-	}
-#endif
-
+	// already loaded?
+	for (int i=0;i<PublicScript.num;i++)
+		if (PublicScript[i]->Filename == filename.sys_filename())
+			return PublicScript[i];
 	
+	// load
 	s = new Script();
 	try{
 		s->Load(filename, just_analyse);
@@ -142,76 +110,26 @@ Script *Load(const string &filename, bool is_public, bool just_analyse)
 		delete(s);
 		throw e;
 	}
-	s->isPrivate = !is_public;
 
 	// store script in database
-	if (is_public){
-		//so("...neu (public)");
-		PublicScript.add(s);
-	}else{
-		//so("...neu (private)");
-		PrivateScript.add(s);
-	}
-	//msg_error(i2s(NumPublicScripts));
+	PublicScript.add(s);
 	return s;
-}
-
-#if 0
-Script *LoadAsInclude(char *filename, bool just_analyse)
-{
-	msg_db_f("LoadAsInclude",4);
-	//so(string("Include ",filename));
-	// aus dem Speicher versuchen zu laden
-	for (int i=0;i<ublicScript.size();i++)
-		if (strcmp(PublicScript[i].filename, SysFileName(filename)) == 0){
-			//so("...pointer");
-			return PublicScript[i].script;
-		}
-
-	//so("nnneu");
-	Script *s = new Script(filename, just_analyse);
-	so("geladen....");
-	//msg_write("...neu");
-	s->isPrivate = false;
-
-	// als public speichern
-	PublicScript[NumPublicScripts].filename=new char[strlen(filename)+1];
-	strcpy(PublicScript[NumPublicScripts].filename,SysFileName(filename));
-	PublicScript[NumPublicScripts++].script=s;
-
-	return s;
-}
-#endif
-
-void ExecuteAllScripts()
-{
-	for (int i=0;i<PrivateScript.num;i++)
-		PrivateScript[i]->Execute();
-	
-	for (int i=0;i<PublicScript.num;i++)
-		PublicScript[i]->Execute();
 }
 
 void Remove(Script *s)
 {
 	msg_db_f("RemoveScript", 1);
 	// remove references
-	for (int i=0;i<s->pre_script->Includes.num;i++)
-		s->pre_script->Includes[i]->ReferenceCounter --;
+	for (int i=0;i<s->syntax->Includes.num;i++)
+		s->syntax->Includes[i]->ReferenceCounter --;
 
 	// put on to-delete-list
 	DeadScript.add(s);
 
 	// remove from normal list
-	if (s->isPrivate){
-		for (int i=0;i<PrivateScript.num;i++)
-			if (PrivateScript[i] == s)
-				PrivateScript.erase(i);
-	}else{
-		for (int i=0;i<PublicScript.num;i++)
-			if (PublicScript[i] == s)
-				PublicScript.erase(i);
-	}
+	for (int i=0;i<PublicScript.num;i++)
+		if (PublicScript[i] == s)
+			PublicScript.erase(i);
 
 	// delete all deletables
 	for (int i=DeadScript.num-1;i>=0;i--)
@@ -227,10 +145,7 @@ void DeleteAllScripts(bool even_immortal, bool force)
 
 	// try to erase them...
 	foreachb(Script *s, PublicScript)
-		if ((!s->pre_script->FlagImmortal) || (even_immortal))
-			Remove(s);
-	foreachb(Script *s, PrivateScript)
-		if ((!s->pre_script->FlagImmortal) || (even_immortal))
+		if ((!s->syntax->FlagImmortal) || (even_immortal))
 			Remove(s);
 
 	// undead... really KILL!
@@ -250,56 +165,32 @@ void DeleteAllScripts(bool even_immortal, bool force)
 	*/
 }
 
-void reset_script(Script *s)
-{
-	s->ReferenceCounter = 0;
-	s->isCopy = false;
-	s->isPrivate = false;
-	
-	s->cur_func = NULL;
-	s->WaitingMode = 0;
-	s->TimeToWait = 0;
-	s->ShowCompilerStats = (!CompileSilently) && ShowCompilerStats;
-	
-	s->pre_script = NULL;
-
-	s->Opcode = NULL;
-	s->OpcodeSize = 0;
-	s->ThreadOpcode = NULL;
-	s->ThreadOpcodeSize = 0;
-	s->Memory = NULL;
-	s->MemorySize = 0;
-	s->MemoryUsed = 0;
-	s->Stack = NULL;
-
-	//func.clear();
-	//g_var.clear();
-	//cnst.clear();
-}
-
 void Script::Load(const string &filename, bool just_analyse)
 {
 	msg_db_f("loading script", 1);
 	JustAnalyse = just_analyse;
-	pre_script->LoadAndParseFile(filename, just_analyse);
+	Filename = filename.sys_filename();
+	syntax->LoadAndParseFile(filename, just_analyse);
+
 
 	if (!JustAnalyse)
 		Compiler();
 	/*if (pre_script->FlagShow)
 		pre_script->Show();*/
-	if ((!JustAnalyse) && (pre_script->FlagDisassemble)){
-		msg_write("disasm");
-		msg_write(OpcodeSize);
-		msg_write(Asm::Disassemble(ThreadOpcode,ThreadOpcodeSize));
-		msg_write("\n\n");
-		//printf("%s\n\n", Asm::Disassemble(Opcode,OpcodeSize));
-		msg_write(Asm::Disassemble(Opcode,OpcodeSize));
+	if ((!JustAnalyse) && (syntax->FlagDisassemble)){
+		if (ThreadOpcodeSize > 0){
+			msg_write(format("ThreadOpcode: %d bytes", ThreadOpcodeSize));
+			msg_write(Asm::Disassemble(ThreadOpcode, ThreadOpcodeSize));
+			msg_write("\n\n");
+		}
+		msg_write(format("Opcode: %d bytes", OpcodeSize));
+		msg_write(Asm::Disassemble(Opcode, OpcodeSize));
 	}
 }
 
 void Script::DoError(const string &str, int overwrite_line)
 {
-	pre_script->DoError(str, overwrite_line);
+	syntax->DoError(str, overwrite_line);
 }
 
 void Script::DoErrorInternal(const string &str)
@@ -316,12 +207,12 @@ void Script::SetVariable(const string &name, void *data)
 {
 	msg_db_f("SetVariable", 4);
 	//msg_write(name);
-	for (int i=0;i<pre_script->RootOfAllEvil.var.num;i++)
-		if (pre_script->RootOfAllEvil.var[i].name == name){
+	for (int i=0;i<syntax->RootOfAllEvil.var.num;i++)
+		if (syntax->RootOfAllEvil.var[i].name == name){
 			/*msg_write("var");
 			msg_write(pre_script->RootOfAllEvil.Var[i].Type->Size);
 			msg_write((int)g_var[i]);*/
-			memcpy(g_var[i], data, pre_script->RootOfAllEvil.var[i].type->size);
+			memcpy(g_var[i], data, syntax->RootOfAllEvil.var[i].type->size);
 			return;
 		}
 	msg_error("CScript.SetVariable: variable " + name + " not found");
@@ -329,24 +220,33 @@ void Script::SetVariable(const string &name, void *data)
 
 Script::Script()
 {
-	so("creating empty script (for console)");
-	right();
-	reset_script(this);
+	Filename = "-empty script-";
+
+	ReferenceCounter = 0;
+
+	cur_func = NULL;
 	WaitingMode = WaitingModeFirst;
+	TimeToWait = 0;
+	ShowCompilerStats = (!config.CompileSilently) && ShowCompilerStats;
 
-	pre_script = new PreScript(this);
-	
-	pre_script->Filename = "-console script-";
+	Opcode = NULL;
+	OpcodeSize = 0;
+	ThreadOpcode = NULL;
+	ThreadOpcodeSize = 0;
+	Memory = NULL;
+	MemorySize = 0;
+	MemoryUsed = 0;
+	Stack = NULL;
 
-	so("-ok");
-	left();
+	syntax = new SyntaxTree(this);
 }
 
 Script::~Script()
 {
 	msg_db_f("~CScript", 4);
 	if ((Memory) && (!JustAnalyse)){
-		delete[](Memory);
+		//delete[](Memory);
+		int r=munmap(Memory,MemorySize);
 	}
 	if (Opcode){
 		#ifdef OS_WINDOWS
@@ -365,7 +265,7 @@ Script::~Script()
 	if (Stack)
 		delete[](Stack);
 	//msg_write(string2("-----------            Memory:         %p",Memory));
-	delete(pre_script);
+	delete(syntax);
 }
 
 
@@ -384,12 +284,12 @@ void ExecuteSingleScriptCommand(const string &cmd)
 
 	// empty script
 	Script *s = new Script();
-	PreScript *ps = s->pre_script;
+	SyntaxTree *ps = s->syntax;
 
 	try{
 
 // find expressions
-	ps->Analyse(single_command.c_str(), false);
+	ps->Exp.Analyse(ps, single_command.c_str());
 	if (ps->Exp.line[0].exp.num < 1){
 		//clear_exp_buffer(&ps->Exp);
 		delete(s);
@@ -403,9 +303,7 @@ void ExecuteSingleScriptCommand(const string &cmd)
 	func->_var_size = 0; // set to -1...
 
 	// parse
-	ps->Exp.cur_line = &ps->Exp.line[0];
-	ps->Exp.cur_exp = 0;
-	ps->Exp._cur_ = ps->Exp.cur_line->exp[ps->Exp.cur_exp].name;
+	ps->Exp.reset_parser();
 	ps->GetCompleteCommand(func->block, func);
 	//pre_script->GetCompleteCommand((pre_script->Exp->ExpNr,0,0,&func);
 
@@ -445,7 +343,7 @@ void *Script::MatchFunction(const string &name, const string &return_type, int n
 	va_end(marker);
 
 	// match
-	foreachi(Function *f, pre_script->Functions, i)
+	foreachi(Function *f, syntax->Functions, i)
 		if ((f->name == name) && (f->literal_return_type->name == return_type) && (num_params == f->num_params)){
 
 			bool params_ok = true;
@@ -454,52 +352,28 @@ void *Script::MatchFunction(const string &name, const string &return_type, int n
 				if (f->literal_param_type[j]->name != param_type[j])
 					params_ok = false;
 			if (params_ok){
-				if (func.num > 0)
-					return (void*)func[i];
+				if (JustAnalyse)
+					return (void*)0xdeadbeaf;
 				else
-					return (void*)0xdeadbeaf; // when just analyzing...
+					return (void*)func[i];
 			}
 		}
 
 	return NULL;
 }
 
+void print_var(void *p, const string &name, Type *t)
+{
+	msg_write(t->name + " " + name + " = " + t->var2str(p));
+}
+
 void Script::ShowVars(bool include_consts)
-{	
-/*	int ss=0;
-	int i;
-	string name;
-	Type *t;
-	int n=pre_script->RootOfAllEvil.Var.num;
-	if (include_consts)
-		n+=pre_script->Constant.num;
-	for (i=0;i<n;i++){
-		char *add=(char*)&Stack[ss];
-		if (i<pre_script->RootOfAllEvil.Var.num){
-			name = pre_script->RootOfAllEvil.Var[i].Name;
-			t=pre_script->RootOfAllEvil.Var[i].Type;
-		}else{
-			name = "---const---";
-			t=pre_script->Constant[i-pre_script->RootOfAllEvil.Var.num].type;
-		}
-		if (t == TypeInt)
-			msg_write(format("%p: %s = %d", &add, name.c_str(), *(int*)&Stack[ss]));
-		else if (t==TypeFloat)
-			msg_write(format("%p: %s = %.3f", &add, name.c_str(), *(float*)&Stack[ss]));
-		else if (t==TypeBool)
-			msg_write(format("%p: %s = (bool) %d", &add, name.c_str(), *(int*)&Stack[ss]));
-		else if (t==TypeVector)
-			msg_write(string(d2h((char*)&add,4,false),":  ",name,"  =  (",string(f2s(*(float*)&Stack[ss],3)," , ",f2s(*(float*)&Stack[ss+4],3)," , ",f2s(*(float*)&Stack[ss+8],3),")")));
-		else if ((t==TypeColor)||(t==TypeRect)||(t==TypeQuaternion))
-			msg_write(string(d2h((char*)&add,4,false),":  ",name,"  =  (",string(f2s(*(float*)&Stack[ss],3)," , ",f2s(*(float*)&Stack[ss+4],3),string(" , ",f2s(*(float*)&Stack[ss+8],3)," , ",f2s(*(float*)&Stack[ss+12],3),")"))));
-		else if (t->IsPointer)
-			msg_write(format("%p: %s = %p", &add, name.c_str(), Stack[ss]));
-		else if (t==TypeString)
-			msg_write(format("%p: %s = \"...\"", &add, name.c_str()));
-		else
-			msg_write(string(d2h((char*)&add,4,false),":  ",name,"  =  ??? (unbekannter Typ)"));
-		ss+=t->Size;
-	}*/
+{
+	foreachi(LocalVariable &v, syntax->RootOfAllEvil.var, i)
+		print_var((void*)g_var[i], v.name, v.type);
+	/*if (include_consts)
+		foreachi(LocalVariable &c, pre_script->Constant, i)
+			print_var((void*)g_var[i], c.name, c.type);*/
 }
 
 void Script::Execute()
@@ -511,7 +385,7 @@ void Script::Execute()
 	shift_right=0;
 	//msg_db_f(string("Execute ",pre_script->Filename),1);
 	msg_db_f("Execute", 1);{
-	msg_db_f(pre_script->Filename.c_str(),1);
+	msg_db_f(Filename.c_str(),1);
 
 	// handle wait-commands
 	if (WaitingMode==WaitingModeFirst){

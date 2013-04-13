@@ -1,4 +1,4 @@
-#include "api.kaba"
+use "api.kaba"
 
 const int N = 8
 const float R = 50.0
