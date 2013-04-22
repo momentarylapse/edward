@@ -74,9 +74,12 @@ WorldData World;
 Array<Terrain*> Terrains;
 
 #ifdef _X_ALLOW_X_
-extern bool NetworkEnabled;
+void DrawSplashScreen(const string &str, float per);
+void ScriptingObjectInit(Object *o);
+#include "../../networking.h"
 #else
-bool NetworkEnabled;
+void DrawSplashScreen(const string &str, float per){}
+void ScriptingObjectInit(Object *o){}
 #endif
 
 // partial models
@@ -87,7 +90,8 @@ bool GodNetMsgEnabled;
 s_net_message_list NetMsg;
 void AddNetMsg(int msg, int argi0, const string &args)
 {
-	if ((!GodNetMsgEnabled) || (!NetworkEnabled))
+#ifdef _X_ALLOW_X_
+	if ((!GodNetMsgEnabled) || (!Net.Enabled))
 		return;
 	if (NetMsg.num_msgs>=GOD_MAX_NET_MSGS){
 		//for (int i=0;i<NetMsg.num_msgs;i++)
@@ -97,6 +101,7 @@ void AddNetMsg(int msg, int argi0, const string &args)
 	NetMsg.arg_i[NetMsg.num_msgs][0] = argi0;
 	NetMsg.arg_s[NetMsg.num_msgs] = args;
 	NetMsg.msg[NetMsg.num_msgs++] = msg;
+#endif
 }
 
 
@@ -369,14 +374,14 @@ bool GodLoadWorldFromLevelData()
 			if (LevelData.ego_index == i)
 				Ego = oo;
 			if (i % 5 == 0)
-				MetaDrawSplashScreen("Objects", (float)i / (float)LevelData.object.num / 5 * 3);
+				DrawSplashScreen("Objects", (float)i / (float)LevelData.object.num / 5 * 3);
 		}
 	LevelData.object.clear();
 	AddAllObjectsToLists = true;
 
 	// terrains
 	foreachi(LevelDataTerrain &t, LevelData.terrain, i){
-		MetaDrawSplashScreen("Terrain...", 0.6f + (float)i / (float)LevelData.terrain.num * 0.4f);
+		DrawSplashScreen("Terrain...", 0.6f + (float)i / (float)LevelData.terrain.num * 0.4f);
 		Terrain *tt = new Terrain(t.filename, t.pos);
 		Terrains.add(tt);
 		ok &= !tt->error;
@@ -663,8 +668,7 @@ Object *GodCreateObject(const string &filename, const string &name, const vector
 
 	// object wants a script
 	if (o->_template->script_filename.num > 0){
-		if (MetaObjectScriptInit)
-			((object_callback_func*)MetaObjectScriptInit)(o);
+			ScriptingObjectInit(o);
 	}
 
 	AddNetMsg(NetMsgCreateObject, on, filename);
@@ -772,8 +776,8 @@ void DoForceFields()
 		}
 
 		// die eigendlichen Berechnungen
-		ForceField[f]->TimeToLife -= Elapsed;
-		ForceField[f]->Radius += Elapsed * ForceField[f]->Vel;
+		ForceField[f]->TimeToLife -= Engine.Elapsed;
+		ForceField[f]->Radius += Engine.Elapsed * ForceField[f]->Vel;
 		for (int o=0;o<Objects.num;o++)
 			if (Objects[o]->active_physics)
 				if (Objects[o]->pos.bounding_cube(ForceField[f]->Pos, ForceField[f]->Radius)){
@@ -783,13 +787,13 @@ void DoForceFields()
 						float d = n.length();
 						n /= d;
 						if (ForceField[f]->Kind == FFKindRadialConst)
-							Objects[o]->vel += ForceField[f]->Acc*Elapsed*n;
+							Objects[o]->vel += ForceField[f]->Acc*Engine.Elapsed*n;
 						if (ForceField[f]->Kind == FFKindRadialLinear)
-							Objects[o]->vel += ForceField[f]->Acc*Elapsed*n*(ForceField[f]->Radius-d)/ForceField[f]->Radius;
+							Objects[o]->vel += ForceField[f]->Acc*Engine.Elapsed*n*(ForceField[f]->Radius-d)/ForceField[f]->Radius;
 						if (ForceField[f]->Kind == FFKindDirectionalConst)
-							Objects[o]->vel += ForceField[f]->Acc*Elapsed*ForceField[f]->Dir;
+							Objects[o]->vel += ForceField[f]->Acc*Engine.Elapsed*ForceField[f]->Dir;
 						if (ForceField[f]->Kind == FFKindDirectionalLinear)
-							Objects[o]->vel += ForceField[f]->Acc*Elapsed*ForceField[f]->Dir*(ForceField[f]->Radius-d)/ForceField[f]->Radius;
+							Objects[o]->vel += ForceField[f]->Acc*Engine.Elapsed*ForceField[f]->Dir*(ForceField[f]->Radius-d)/ForceField[f]->Radius;
 					}
 				}
 	}
@@ -982,12 +986,12 @@ void ResetExternalForces()
 
 void GodCalcMove()
 {
-	if (Elapsed == 0)
+	if (Engine.Elapsed == 0)
 		return;
 
 	msg_db_r("GodCalcMove",2);
 	//CreateObjectLists();
-	NumRealColTests = 0;
+	Engine.NumRealColTests = 0;
 
 #ifdef _X_ALLOW_PHYSICS_DEBUG_
 	HuiGetTime(PhysicsTimer);
@@ -1021,8 +1025,8 @@ void GodCalcMove()
 	
 
 	// do the physics several times to increase precision!
-	float elapsed_temp = Elapsed;
-	Elapsed /= (float)PhysicsNumSteps;
+	float elapsed_temp = Engine.Elapsed;
+	Engine.Elapsed /= (float)PhysicsNumSteps;
 	for (int ttt=0;ttt<PhysicsNumSteps;ttt++){
 
 #ifdef USE_ODE
@@ -1062,7 +1066,7 @@ void GodCalcMove()
 
 #ifdef USE_ODE
 		// physics...
-		dWorldQuickStep(world_id, Elapsed);
+		dWorldQuickStep(world_id, Engine.Elapsed);
 		dJointGroupEmpty(contactgroup);
 		PhysicsDataFromODE();
 #endif
@@ -1071,7 +1075,7 @@ void GodCalcMove()
 
 
 	}
-	Elapsed = elapsed_temp;
+	Engine.Elapsed = elapsed_temp;
 
 	ResetExternalForces();
 

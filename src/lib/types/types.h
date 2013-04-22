@@ -33,6 +33,7 @@ struct quaternion;
 #include "rect.h"
 #include "complex.h"
 #include "interpolation.h"
+#include "random.h"
 
 
 

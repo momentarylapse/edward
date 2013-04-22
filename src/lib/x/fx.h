@@ -40,6 +40,7 @@ struct Effect : XContainer
 	effect_enable_func *func_enable;
 	float func_delta_t, elapsed;
 	Array<float> script_var;
+	Array<void*> script_var_p;
 	Model *model;
 	int vertex, type;
 };

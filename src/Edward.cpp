@@ -27,6 +27,8 @@ Edward *ed = NULL;
 string SoundDir;
 #endif
 
+extern string AppName;
+
 
 void read_color_4i(CFile *f,int *c)
 {

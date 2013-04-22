@@ -188,7 +188,7 @@ static void DoHit(Object *o1,Object *o2,CollisionData *col,int i_max,float rc_ju
 	//o2->Vel-=o2->VelS;
 
 	// wieder links-rechts
-	float rf=(float)pow(1-rc_rolling,Elapsed);
+	float rf=(float)pow(1-rc_rolling,Engine.Elapsed);
 	o1->rot=-w1*rf;
 	o2->rot=-w2*rf; // Reibung eigentlich ueber Differenzen...mit Tensor....
 
