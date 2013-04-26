@@ -468,16 +468,6 @@ void ModeWorld::OnDrawWin(int win)
 			if (t.view_stage < multi_view->view_stage)
 				continue;
 
-			/*if (TerrainShowTextureLevel<0){
-				NixSetShader(t.material->shader);
-				NixDraw3DM(t.Texture, t.VertexBuffer, m_id);
-				NixSetShader(-1);
-			}else{
-				int tex = -1;
-				if (TerrainShowTextureLevel < t.NumTextures)
-					tex = t.Texture[TerrainShowTextureLevel];
-				NixDraw3D(tex, t.VertexBufferSingle, m_id);
-			}*/
 			t.terrain->Draw();
 
 			if (t.is_selected)

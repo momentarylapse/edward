@@ -60,6 +60,16 @@ public:
 	void UpdateData();
 };
 
+class WorldLink: public MultiViewSingleData
+{
+public:
+	int type;
+	int object[2];
+	vector axis[2];
+	float param[4];
+	float friction;
+};
+
 class DataWorld: public Data
 {
 public:
@@ -85,6 +95,8 @@ public:
 	// objects
 	Array<WorldObject> Objects;
 	int EgoIndex;
+
+	Array<WorldLink> Links;
 
 	struct MetaData{
 

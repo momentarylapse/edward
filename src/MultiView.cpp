@@ -720,6 +720,7 @@ void MultiView::DrawWin(int win)
 	string view_kind;
 	MatrixIdentity(view[win].mat);
 	NixEnableLighting(false);
+	NixSetTexture(-1);
 
 	if (view[win].type == ViewPerspective){
 		NixSetPerspectiveMode(PerspectiveCenterAutoTarget);
@@ -813,6 +814,9 @@ void MultiView::DrawWin(int win)
 	//msg_db_l(2);
 
 	// draw multiview data
+	NixSetShader(-1);
+	NixSetAlpha(AlphaNone);
+	NixSetTexture(-1);
 	NixSetWire(false);
 	NixEnableLighting(false);
 	foreachi(MultiViewData &d, data, di){
