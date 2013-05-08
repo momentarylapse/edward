@@ -73,7 +73,7 @@ struct PolygonRelink
 			v.resize(p->Side.num * 2);
 			foreach(VertexToCome *&vv, v)
 				vv = NULL;
-			sv.resize(p->Side.num * 2 * MODEL_MAX_TEXTURES);
+			sv.resize(p->Side.num * 2 * MATERIAL_MAX_TEXTURES);
 		}
 	}
 	void relink(ModelPolygon *p, int side, VertexToCome *vv)
@@ -127,19 +127,19 @@ void ActionModelBevelPolygons::do_poly_relink(ModelPolygon &p, PolygonRelink &r,
 		if ((r.v[k*2]) && (r.v[k*2+1])){
 			//msg_write(format("%d: 2x", k));
 			v.add(r.v[k*2]->v);
-			for (int l=0; l<MODEL_MAX_TEXTURES; l++)
+			for (int l=0; l<MATERIAL_MAX_TEXTURES; l++)
 				sv.add(sg.get(r.v[k*2]->pos, l));
 			v.add(r.v[k*2+1]->v);
-			for (int l=0; l<MODEL_MAX_TEXTURES; l++)
+			for (int l=0; l<MATERIAL_MAX_TEXTURES; l++)
 				sv.add(sg.get(r.v[k*2+1]->pos, l));
 		}else if (r.v[k*2]){
 			//msg_write(format("%d: 1x", k));
 			v.add(r.v[k*2]->v);
-			for (int l=0; l<MODEL_MAX_TEXTURES; l++)
+			for (int l=0; l<MATERIAL_MAX_TEXTURES; l++)
 				sv.add(sg.get(r.v[k*2]->pos, l));
 		}else{
 			v.add(p.Side[k].Vertex);
-			for (int l=0; l<MODEL_MAX_TEXTURES; l++)
+			for (int l=0; l<MATERIAL_MAX_TEXTURES; l++)
 				sv.add(p.Side[k].SkinVertex[l]);
 		}
 	}
@@ -148,10 +148,10 @@ void ActionModelBevelPolygons::do_poly_relink(ModelPolygon &p, PolygonRelink &r,
 
 	// transpose sv
 	Array<vector> ssv;
-	ssv.resize(v.num * MODEL_MAX_TEXTURES);
+	ssv.resize(v.num * MATERIAL_MAX_TEXTURES);
 	for (int k=0; k<v.num; k++)
-		for (int l=0; l<MODEL_MAX_TEXTURES; l++)
-			ssv[k + l*v.num] = sv[k*MODEL_MAX_TEXTURES + l];
+		for (int l=0; l<MATERIAL_MAX_TEXTURES; l++)
+			ssv[k + l*v.num] = sv[k*MATERIAL_MAX_TEXTURES + l];
 
 	// relink
 	AddSubAction(new ActionModelSurfaceDeletePolygon(surface, i), m);

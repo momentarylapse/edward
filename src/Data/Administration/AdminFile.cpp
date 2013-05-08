@@ -13,6 +13,10 @@
 #include "../Material/DataMaterial.h"
 #include "../Font/DataFont.h"
 #include "../../Edward.h"
+#include "../../meta.h"
+#include "../../x/terrain.h"
+#include "../../x/model_manager.h"
+#include "../../lib/script/script.h"
 
 AdminFile::AdminFile()
 {
@@ -220,7 +224,7 @@ void AdminFile::check(AdminFileList &list)
 		WorldTerrain t;
 		if (t.Load(v_0, MapDir + Name, false)){
 			Time = 0; // TODO
-			for (int i=0;i<t.terrain->material.num_textures;i++)
+			for (int i=0;i<t.terrain->material->num_textures;i++)
 				add_possible_link(l, FDTexture, t.terrain->texture_file[i]);
 			add_possible_link(l, FDMaterial, t.terrain->material_file);
 		}else
@@ -267,7 +271,7 @@ void AdminFile::check(AdminFileList &list)
 		}else
 			Missing=true;
 	}else if (Kind==FDScript){
-		if (f->Open(ScriptDir + Name)){
+		if (f->Open(Script::config.Directory + Name)){
 			Time = f->GetDateModification().time;
 			f->SetBinaryMode(true);
 			string buf = f->ReadComplete();

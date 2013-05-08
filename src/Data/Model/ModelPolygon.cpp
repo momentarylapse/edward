@@ -38,9 +38,9 @@ Array<int> ModelPolygon::GetVertices() const
 Array<vector> ModelPolygon::GetSkinVertices() const
 {
 	Array<vector> sv;
-	sv.resize(Side.num * MODEL_MAX_TEXTURES);
+	sv.resize(Side.num * MATERIAL_MAX_TEXTURES);
 	int n = 0;
-	for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+	for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 		for (int i=0; i<Side.num; i++)
 			sv[n ++] = Side[i].SkinVertex[l];
 	return sv;

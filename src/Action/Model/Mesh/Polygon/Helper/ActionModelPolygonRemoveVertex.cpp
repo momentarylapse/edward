@@ -31,7 +31,7 @@ void *ActionModelPolygonRemoveVertex::compose(Data *d)
 
 	// remove vertex
 	v.erase(side);
-	for (int l=MODEL_MAX_TEXTURES-1;l>=0;l--)
+	for (int l=MATERIAL_MAX_TEXTURES-1;l>=0;l--)
 		_sv.erase(side + l * t.Side.num);
 
 	// delete

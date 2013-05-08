@@ -9,7 +9,7 @@
 #define ACTIONWORLDADDTERRAIN_H_
 
 #include "../Action.h"
-#include "../../lib/types/types.h"
+#include "../../lib/math/math.h"
 
 class ActionWorldAddTerrain : public Action
 {

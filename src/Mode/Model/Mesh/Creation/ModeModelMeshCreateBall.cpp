@@ -7,8 +7,8 @@
 
 #include "ModeModelMeshCreateBall.h"
 #include "../../ModeModel.h"
+#include "../../../../Data/Model/Geometry/ModelGeometrySphere.h"
 #include "../../../../Edward.h"
-#include "../../../../lib/x/x.h"
 
 ModeModelMeshCreateBall::ModeModelMeshCreateBall(Mode *_parent) :
 	ModeCreation("ModelMeshCreateBall", _parent)
@@ -83,7 +83,9 @@ void ModeModelMeshCreateBall::OnDrawWin(int win)
 {
 	if (pos_chosen){
 		mode_model->SetMaterialCreation();
-		FxDrawBall(pos, radius, 16,32);
+		ModelGeometrySphere s = ModelGeometrySphere(pos, radius, 8);
+		s.Preview(VBTemp);
+		NixDraw3D(VBTemp);
 	}
 }
 

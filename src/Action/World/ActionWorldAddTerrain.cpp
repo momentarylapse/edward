@@ -7,6 +7,7 @@
 
 #include "ActionWorldAddTerrain.h"
 #include "../../Data/World/DataWorld.h"
+#include "../../x/terrain.h"
 #include <assert.h>
 
 ActionWorldAddTerrain::ActionWorldAddTerrain(const vector &_pos, const string &_filename)
@@ -62,12 +63,12 @@ void *ActionWorldAddTerrain::execute(Data *d)
 		t.terrain->pattern.x = size.x / num_x;
 		t.terrain->pattern.y = 0;
 		t.terrain->pattern.z = size.z / num_z;
-		t.terrain->material.num_textures = 1;
-		t.terrain->material.texture[0] = -1;
+		t.terrain->material->num_textures = 1;
+		t.terrain->material->texture[0] = -1;
 		t.terrain->texture_scale[0].x = 1.0f / num_x;
 		t.terrain->texture_scale[0].y = 0;
 		t.terrain->texture_scale[0].z = 1.0f / num_z;
-		t.terrain->material = *MetaLoadMaterial("");
+		t.terrain->material->copy_from(NULL, LoadMaterial(""), false);
 		for (int x=0;x<num_x/32+1;x++)
 			for (int z=0;z<num_z/32+1;z++)
 				t.terrain->partition[x][z] = -1;

@@ -32,11 +32,11 @@ void *ActionModelSkinVerticesFromProjection::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+	for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 		old_pos[l].clear();
 	foreachi(int k, vert_on_tria, i){
 		ModelPolygon &t = m->Surface[surface[i]].Polygon[tria[i]];
-		for (int l=0;l<MODEL_MAX_TEXTURES;l++){
+		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++){
 			vector &v = t.Side[k].SkinVertex[l];
 			old_pos[l].add(v);
 			v = sg.get(m->Vertex[t.Side[k].Vertex].pos);
@@ -54,7 +54,7 @@ void ActionModelSkinVerticesFromProjection::undo(Data *d)
 
 	foreachi(int k, vert_on_tria, i){
 		ModelPolygon &t = m->Surface[surface[i]].Polygon[tria[i]];
-		for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 			t.Side[k].SkinVertex[l] = old_pos[l][i];
 	}
 }

@@ -8,7 +8,7 @@
 #include "ActionModelScaleSkinVertices.h"
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../lib/file/file.h"
-#include "../../../../lib/types/types.h"
+#include "../../../../lib/math/math.h"
 #include "../../../../Mode/Model/Mesh/ModeModelMeshTexture.h"
 
 ActionModelScaleSkinVertices::ActionModelScaleSkinVertices(DataModel *d, const vector &_param, const vector &_pos0) :

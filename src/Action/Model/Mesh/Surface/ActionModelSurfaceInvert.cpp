@@ -38,7 +38,7 @@ void ActionModelSurfaceInvert::InvertSurface(ModelSurface &s)
 			t.Side[kk].Vertex = v;
 
 			// swap skin vertices
-			for (int tl=0;tl<MODEL_MAX_TEXTURES;tl++){
+			for (int tl=0;tl<MATERIAL_MAX_TEXTURES;tl++){
 				vector tv = t.Side[k].SkinVertex[tl];
 				t.Side[k].SkinVertex[tl] = t.Side[kk].SkinVertex[tl];
 				t.Side[kk].SkinVertex[tl] = tv;

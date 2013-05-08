@@ -72,6 +72,7 @@ public:
 	void ToggleShowEffects();
 
 
+	Material temp_material;
 
 	// clip board
 	void Copy();

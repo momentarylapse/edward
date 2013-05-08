@@ -726,7 +726,7 @@ void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a,
 		}
 
 		// skin vertices
-		for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 			for (int i=0;i<c.num;i++)
 				if (c[i].type == sCol::TYPE_OLD_VERTEX)
 					sv.add(t->Side[c[i].side].SkinVertex[l]);

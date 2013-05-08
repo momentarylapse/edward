@@ -8,6 +8,8 @@
 #include "TerrainPropertiesDialog.h"
 #include "../../../Action/World/ActionWorldEditTerrain.h"
 #include "../../../Edward.h"
+#include "../../../x/terrain.h"
+#include "../../../x/material.h"
 #include <assert.h>
 
 string file_secure(const string &filename); // -> ModelPropertiesDialog
@@ -68,7 +70,7 @@ void TerrainPropertiesDialog::OnTextures()
 
 void TerrainPropertiesDialog::FillTextureList()
 {
-	Material *m = MetaLoadMaterial(GetString("material"));
+	Material *m = LoadMaterial(GetString("material"));
 
 	Reset("textures");
 	for (int i=0;i<temp.NumTextures;i++){
@@ -215,7 +217,7 @@ void TerrainPropertiesDialog::OnUpdate(Observable *o)
 	temp.NumX = t->num_x;
 	temp.NumZ = t->num_z;
 	temp.Pattern = t->pattern;
-	temp.NumTextures = t->material.num_textures;
+	temp.NumTextures = t->material->num_textures;
 	for (int i=0;i<temp.NumTextures;i++){
 		temp.TextureFile[i] = t->texture_file[i];
 		temp.TextureScale[i] = t->texture_scale[i];

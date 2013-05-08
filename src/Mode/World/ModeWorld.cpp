@@ -9,7 +9,12 @@
 #include "ModeWorld.h"
 #include "../../Data/World/DataWorld.h"
 #include "../../Data/World/DataCamera.h"
-#include "../../lib/x/x.h"
+#include "../../x/camera.h"
+#include "../../x/world.h"
+#include "../../x/material.h"
+#include "../../x/model.h"
+#include "../../x/object.h"
+#include "../../x/terrain.h"
 #include "Dialog/SelectionPropertiesDialog.h"
 #include "Dialog/ObjectPropertiesDialog.h"
 #include "Dialog/TerrainPropertiesDialog.h"
@@ -128,7 +133,7 @@ bool tvm[MODEL_MAX_VERTICES*5];
 
 bool IsMouseOverObject(int index, void *user_data, int win, vector &tp)
 {
-	Model *m = mode_world->data->Objects[index].object;
+	Object *m = mode_world->data->Objects[index].object;
 	if (!m)
 		return false;
 	int d = m->_detail_;
@@ -166,7 +171,7 @@ bool IsMouseOverObject(int index, void *user_data, int win, vector &tp)
 
 bool IsInRectObject(int index, void *user_data, int win, rect *r)
 {
-	Model *m = mode_world->data->Objects[index].object;
+	Object *m = mode_world->data->Objects[index].object;
 	if (!m)
 		return false;
 	int d = m->_detail_;
@@ -429,16 +434,20 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha)
 	NixSetAlpha(AlphaMaterial);
 
 	// save terrain data
-	Material temp = t->material;
+	Material *temp = t->material;
 
 	// alter data
-	t->material.ambient = Black;
-	t->material.diffuse = color(alpha, 0, 0, 0);
-	t->material.specular = Black;
-	t->material.emission = c;
-	t->material.shader = -1;
-	for (int i=0;i<t->material.num_textures;i++)
-		t->material.texture[i] = -1;
+	Material *m = &mode_world->temp_material;
+	m->ambient = Black;
+	m->diffuse = color(alpha, 0, 0, 0);
+	m->specular = Black;
+	m->emission = c;
+	m->shader = -1;
+	m->num_textures = t->material->num_textures;
+	for (int i=0;i<t->material->num_textures;i++)
+		m->texture[i] = -1;
+
+	t->material = m;
 
 	t->Draw();
 

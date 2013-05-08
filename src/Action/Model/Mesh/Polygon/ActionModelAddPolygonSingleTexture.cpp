@@ -23,7 +23,7 @@ void *ActionModelAddPolygonSingleTexture::compose(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	Array<vector> sv2;
-	for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+	for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 		for (int k=0;k<v.num;k++)
 			sv2.add(sv[k]);
 

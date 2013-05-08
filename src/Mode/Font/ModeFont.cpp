@@ -10,7 +10,7 @@
 #include "../../Data/Font/DataFont.h"
 #include "../../Data/Font/Import/ImporterCairo.h"
 #include "Dialog/FontDialog.h"
-#include "../../lib/x/x.h"
+#include "../../x/font.h"
 
 ModeFont *mode_font = NULL;
 

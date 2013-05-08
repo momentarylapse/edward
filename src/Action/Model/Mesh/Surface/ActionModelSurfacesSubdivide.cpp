@@ -78,8 +78,8 @@ void ActionModelSurfacesSubdivide::SubdivideSurface(DataModel *m, ModelSurface *
 		int mat = p.Material;
 
 		// average skin vertex
-		vector sv_med[MODEL_MAX_TEXTURES];
-		for (int l=0;l<MODEL_MAX_TEXTURES;l++){
+		vector sv_med[MATERIAL_MAX_TEXTURES];
+		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++){
 			sv_med[l] = v_0;
 			for (int k=0; k<p.Side.num; k++)
 				sv_med[l] += p.Side[k].SkinVertex[l];
@@ -95,7 +95,7 @@ void ActionModelSurfacesSubdivide::SubdivideSurface(DataModel *m, ModelSurface *
 			vv.add(nv_e0 + p.Side[(k + p.Side.num - 1) % p.Side.num].Edge);
 			nv.add(vv);
 			Array<vector> svv;
-			for (int l=0;l<MODEL_MAX_TEXTURES;l++){
+			for (int l=0;l<MATERIAL_MAX_TEXTURES;l++){
 				svv.add(p.Side[k].SkinVertex[l]);
 				svv.add((p.Side[k].SkinVertex[l] + p.Side[(k+1)%p.Side.num].SkinVertex[l]) / 2);
 				svv.add(sv_med[l]);

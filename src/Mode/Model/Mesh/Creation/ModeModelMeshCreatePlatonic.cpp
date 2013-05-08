@@ -8,7 +8,6 @@
 #include "ModeModelMeshCreatePlatonic.h"
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"
-#include "../../../../lib/x/x.h"
 #include "../../../../Data/Model/Geometry/ModelGeometryPlatonic.h"
 #include "../../../../Data/Model/Geometry/ModelGeometryTeapot.h"
 

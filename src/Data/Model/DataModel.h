@@ -11,7 +11,8 @@
 #include "../Data.h"
 #include "../../MultiView.h"
 #include "../../lib/base/set.h"
-#include "../../lib/x/x.h"
+#include "../../x/model.h"
+#include "../../x/material.h"
 #include "ModelPolygon.h"
 #include "ModelSurface.h"
 #include "ModelMaterial.h"
@@ -112,7 +113,7 @@ public:
 	int Vertex[3];
 	//int Edge[3];
 	//int EdgeDirection[3]; // which no of triangle in edge's list are we?
-	vector SkinVertex[MODEL_MAX_TEXTURES][3];
+	vector SkinVertex[MATERIAL_MAX_TEXTURES][3];
 	int NormalIndex[3];
 	vector Normal[3];
 	vector TempNormal;

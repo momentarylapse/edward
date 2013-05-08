@@ -7,7 +7,7 @@
 
 #include "ActionModelMoveSkinVertices.h"
 #include "../../../../Data/Model/DataModel.h"
-#include "../../../../lib/types/types.h"
+#include "../../../../lib/math/math.h"
 #include "../../../../Mode/Model/Mesh/ModeModelMeshTexture.h"
 
 ActionModelMoveSkinVertices::ActionModelMoveSkinVertices(DataModel *d, const vector &_param, const vector &_pos0) :

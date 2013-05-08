@@ -148,8 +148,8 @@ void ModelMaterialDialog::OnTransparencyMode()
 // textures
 void ModelMaterialDialog::OnMatAddTextureLevel()
 {
-	if (TempMaterial.NumTextures >= MODEL_MAX_TEXTURES){
-		ed->ErrorBox(format(_("H&ochstens %d Textur-Ebenen erlaubt!"), MODEL_MAX_TEXTURES));
+	if (TempMaterial.NumTextures >= MATERIAL_MAX_TEXTURES){
+		ed->ErrorBox(format(_("H&ochstens %d Textur-Ebenen erlaubt!"), MATERIAL_MAX_TEXTURES));
 		return;
 	}
 	TempMaterial.TextureFile[TempMaterial.NumTextures ++] = "";
@@ -256,7 +256,7 @@ void ModelMaterialDialog::ApplyData()
 	TempMaterial.Emission = GetColor("mat_em");
 	TempMaterial.Shininess = GetInt("mat_shininess");
 	TempMaterial.UserColor = !IsChecked("default_colors");
-	TempMaterial.material = MetaLoadMaterial(TempMaterial.MaterialFile);
+	TempMaterial.material = LoadMaterial(TempMaterial.MaterialFile);
 // transparency
 	TempMaterial.AlphaFactor = GetFloat("alpha_factor") * 0.01f;
 	TempMaterial.AlphaSource = GetInt("alpha_source");

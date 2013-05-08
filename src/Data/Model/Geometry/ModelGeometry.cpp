@@ -44,7 +44,7 @@ void ModelGeometry::AddPolygon(Array<int> &v, Array<vector> &sv)
 	p.Side.resize(v.num);
 	for (int k=0; k<v.num; k++){
 		p.Side[k].Vertex = v[k];
-		for (int l=0; l<MODEL_MAX_TEXTURES; l++)
+		for (int l=0; l<MATERIAL_MAX_TEXTURES; l++)
 			p.Side[k].SkinVertex[l] = sv[l*v.num + k];
 	}
 	p.Material = -1;
@@ -59,7 +59,7 @@ void ModelGeometry::AddPolygonAutoTexture(Array<int> &v)
 	sg.init_point_cloud_boundary(Vertex, v);
 
 	Array<vector> sv;
-	for (int l=0; l<MODEL_MAX_TEXTURES; l++)
+	for (int l=0; l<MATERIAL_MAX_TEXTURES; l++)
 		for (int k=0; k<v.num; k++)
 			sv.add(sg.get(Vertex[v[k]].pos));
 
@@ -69,7 +69,7 @@ void ModelGeometry::AddPolygonAutoTexture(Array<int> &v)
 void ModelGeometry::AddPolygonSingleTexture(Array<int> &v, Array<vector> &sv)
 {
 	Array<vector> sv2;
-	for (int l=0; l<MODEL_MAX_TEXTURES; l++)
+	for (int l=0; l<MATERIAL_MAX_TEXTURES; l++)
 		for (int k=0; k<v.num; k++)
 			sv2.add(sv[k]);
 

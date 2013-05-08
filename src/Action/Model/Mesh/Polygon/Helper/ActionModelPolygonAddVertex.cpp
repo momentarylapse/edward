@@ -17,7 +17,7 @@ ActionModelPolygonAddVertex::ActionModelPolygonAddVertex(int _surface,
 	poly = _poly;
 	side = _side;
 	vertex = _vertex;
-	for (int i=0;i<MODEL_MAX_TEXTURES;i++)
+	for (int i=0;i<MATERIAL_MAX_TEXTURES;i++)
 		sv[i] = _sv[i];
 }
 
@@ -35,7 +35,7 @@ void* ActionModelPolygonAddVertex::compose(Data* d)
 
 	// insert vertex
 	v.insert(vertex, side + 1);
-	for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+	for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 		_sv.insert(sv[l], side + 1 + l * t.Side.num);
 
 	// delete

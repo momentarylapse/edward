@@ -12,6 +12,7 @@
 #include "../../Action/Action.h"
 #include "../../Action/ActionManager.h"
 #include "../../Edward.h"
+#include "../../x/model_manager.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelAddVertex.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelNearifyVertices.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelCollapseVertices.h"
@@ -384,7 +385,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 				Bone[i].Parent = -1;
 			Bone[i].ModelFile = f->ReadStr();
 			if (deep)
-				Bone[i].model = MetaLoadModel(Bone[i].ModelFile);
+				Bone[i].model = LoadModel(Bone[i].ModelFile);
 			Bone[i].ConstPos = false;
 			Bone[i].is_selected = Bone[i].m_old = false;
 		}
@@ -654,7 +655,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 			Bone[i].Parent = f->ReadInt();
 			Bone[i].ModelFile = f->ReadStr();
 			if (deep)
-				Bone[i].model = MetaLoadModel(Bone[i].ModelFile);
+				Bone[i].model = LoadModel(Bone[i].ModelFile);
 			Bone[i].ConstPos = false;
 			Bone[i].is_selected = Bone[i].m_old = false;
 		}
@@ -944,7 +945,7 @@ void DataModel::ExportToTriangleSkin(int index)
 				for (int k=0;k<3;k++){
 					tt.Vertex[k] = t.Side[t.Side[i].Triangulation[k]].Vertex;
 					tt.Normal[k] = t.Side[t.Side[i].Triangulation[k]].Normal;
-					for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+					for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 						tt.SkinVertex[l][k] = t.Side[t.Side[i].Triangulation[k]].SkinVertex[l];
 				}
 				sk.Sub[t.Material].Triangle.add(tt);

@@ -9,7 +9,7 @@
 #define ACTIONMODELSKINVERTICESFROMPROJECTION_H_
 
 #include "../../../Action.h"
-#include "../../../../lib/x/x.h"
+#include "../../../../x/material.h"
 #include "../../../../Data/Model/SkinGenerator.h"
 class DataModel;
 
@@ -29,7 +29,7 @@ private:
 	Array<int> surface;
 	Array<int> tria;
 	Array<int> vert_on_tria;
-	Array<vector> old_pos[MODEL_MAX_TEXTURES];
+	Array<vector> old_pos[MATERIAL_MAX_TEXTURES];
 	SkinGenerator sg;
 };
 

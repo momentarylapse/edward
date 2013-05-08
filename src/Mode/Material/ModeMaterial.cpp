@@ -10,7 +10,6 @@
 #include "../../Data/Material/DataMaterial.h"
 #include "Dialog/MaterialPropertiesDialog.h"
 #include "Dialog/MaterialPhysicsDialog.h"
-#include "../../lib/x/x.h"
 
 const int MATERIAL_NUMX = 48;
 const int MATERIAL_NUMY = 24;
@@ -28,7 +27,7 @@ ModeMaterial::ModeMaterial() :
 	AppearanceDialog = NULL;
 
 	MaterialVB[1] = VBTemp;
-	for (int i=2;i<MATERIAL_MAX_TEXTURE_LEVELS;i++)
+	for (int i=2;i<MATERIAL_MAX_TEXTURES;i++)
 		MaterialVB[i] = NixCreateVB(MATERIAL_NUMX * MATERIAL_NUMY * 2, i);
 }
 
@@ -143,7 +142,7 @@ void CreateTorus(int buffer, const vector &pos, const vector dir, float radius1,
 										p10,n10,fx1,fy0,
 										p11,n11,fx1,fy1);
 			}else{
-				float t00[MODEL_MAX_TEXTURES], t01[MODEL_MAX_TEXTURES], t10[MODEL_MAX_TEXTURES], t11[MODEL_MAX_TEXTURES];
+				float t00[MATERIAL_MAX_TEXTURES], t01[MATERIAL_MAX_TEXTURES], t10[MATERIAL_MAX_TEXTURES], t11[MATERIAL_MAX_TEXTURES];
 				for (int k=0; k<num_tex;k++){
 					t00[k * 2    ] = fx0;	t00[k * 2 + 1] = fy0;
 					t01[k * 2    ] = fx0;	t01[k * 2 + 1] = fy1;
@@ -237,7 +236,7 @@ void ModeMaterial::OnStart()
 	multi_view->MVRectable = false;
 
 
-	for (int i=1;i<MODEL_MAX_TEXTURES;i++){
+	for (int i=1;i<MATERIAL_MAX_TEXTURES;i++){
 		int vb = MaterialVB[i];
 		NixVBClear(vb);
 		CreateTorus(vb, v_0, e_z, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_NUMX, MATERIAL_NUMY, i);

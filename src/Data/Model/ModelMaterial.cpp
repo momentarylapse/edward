@@ -6,7 +6,6 @@
  */
 
 #include "ModelMaterial.h"
-#include "../../lib/x/x.h"
 #include "../../lib/nix/nix.h"
 #include "../../Edward.h"
 
@@ -37,7 +36,7 @@ void ModelMaterial::reset()
 
 	// file
 	MaterialFile = "";
-	material = MetaLoadMaterial("");
+	material = LoadMaterial("");
 
 	// textures
 	NumTextures = 1;
@@ -47,7 +46,7 @@ void ModelMaterial::reset()
 
 void ModelMaterial::MakeConsistent()
 {
-	material = MetaLoadMaterial(MaterialFile);
+	material = LoadMaterial(MaterialFile);
 	CheckTextures();
 	CheckTransparency();
 	CheckColors();

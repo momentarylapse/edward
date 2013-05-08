@@ -10,7 +10,7 @@
 
 #include "../Data.h"
 #include "../../MultiView.h"
-#include "../../lib/x/x.h"
+#include "../../lib/math/math.h"
 
 
 #define CPKSetCamPos	0

@@ -7,7 +7,7 @@
 
 #include "ActionModelMoveBones.h"
 #include "../../../Data/Model/DataModel.h"
-#include "../../../lib/types/types.h"
+#include "../../../lib/math/math.h"
 
 ActionModelMoveBones::ActionModelMoveBones(DataModel *d, const vector &_param, const vector &_pos0) :
 	ActionMultiView(_param, _pos0)

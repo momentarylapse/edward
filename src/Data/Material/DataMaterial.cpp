@@ -349,7 +349,7 @@ void DataMaterial::ApplyForRendering()
 void DataMaterial::UpdateTextures()
 {
 	msg_db_r("Mat.UpdateTextures", 1);
-	for (int i=0;i<MATERIAL_MAX_TEXTURE_LEVELS;i++)
+	for (int i=0;i<MATERIAL_MAX_TEXTURES;i++)
 		Appearance.Texture[i] = -1;
 	for (int i=0;i<Appearance.NumTextureLevels;i++)
 		Appearance.Texture[i] = NixLoadTexture(Appearance.TextureFile[i]);

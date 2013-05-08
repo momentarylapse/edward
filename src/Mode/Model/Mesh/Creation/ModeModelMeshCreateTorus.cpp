@@ -9,7 +9,6 @@
 #include "../../ModeModel.h"
 #include "../../../../Data/Model/Geometry/ModelGeometryTorus.h"
 #include "../../../../Edward.h"
-#include "../../../../lib/x/x.h"
 
 #define RADIUS_FACTOR	0.5f
 

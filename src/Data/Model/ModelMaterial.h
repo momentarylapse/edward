@@ -8,7 +8,7 @@
 #ifndef MODELMATERIAL_H_
 #define MODELMATERIAL_H_
 
-#include "../../lib/x/x.h"
+#include "../../x/material.h"
 
 class ModelMaterial
 {
@@ -26,8 +26,8 @@ public:
 	string MaterialFile;
 	Material *material;
 	int NumTextures;
-	int Texture[MODEL_MAX_TEXTURES];
-	string TextureFile[MODEL_MAX_TEXTURES];
+	int Texture[MATERIAL_MAX_TEXTURES];
+	string TextureFile[MATERIAL_MAX_TEXTURES];
 
 	bool UserTransparency;
 	int TransparencyMode;

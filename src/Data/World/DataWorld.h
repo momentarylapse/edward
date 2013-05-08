@@ -10,9 +10,11 @@
 
 #include "../Data.h"
 #include "../../MultiView.h"
-#include "../../lib/x/x.h"
+#include "../../x/material.h"
 
 class DataWorld;
+class Terrain;
+class Object;
 
 
 #define WORLD_MAX_TEXTURES_PER_TERRAIN	8
@@ -46,8 +48,8 @@ public:
 	vector Pattern;
 	string MaterialFile;
 	int NumTextures;
-	string TextureFile[TERRAIN_MAX_TEXTURES];
-	vector TextureScale[TERRAIN_MAX_TEXTURES];
+	string TextureFile[MATERIAL_MAX_TEXTURES];
+	vector TextureScale[MATERIAL_MAX_TEXTURES];
 };
 
 class WorldObject: public MultiViewSingleData

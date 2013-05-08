@@ -9,7 +9,7 @@
 #define ACTIONMODELADDTORUS_H_
 
 #include "../../../ActionGroup.h"
-#include "../../../../lib/types/vector.h"
+#include "../../../../lib/math/vector.h"
 
 class ActionModelAddTorus: public ActionGroup
 {

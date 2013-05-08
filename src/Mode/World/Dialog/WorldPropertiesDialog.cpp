@@ -9,6 +9,7 @@
 #include "../../../Edward.h"
 #include "../ModeWorld.h"
 #include "../../../Action/World/ActionWorldEditData.h"
+#include "../../../lib/script/script.h"
 
 #define WorldPhysicsDec			3
 #define WorldLightDec			1
@@ -147,7 +148,7 @@ void WorldPropertiesDialog::OnRemoveSkybox()
 void WorldPropertiesDialog::OnAddScript()
 {
 	if (ed->FileDialog(FDScript, false, true)){
-		temp.ScriptFile.add(ed->DialogFileComplete.substr(ScriptDir.num, -1));
+		temp.ScriptFile.add(ed->DialogFileComplete.substr(Script::config.Directory.num, -1));
 		FillScriptList();
 	}
 }

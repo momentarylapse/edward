@@ -7,7 +7,8 @@
 
 #include "ActionWorldAddObject.h"
 #include "../../Data/World/DataWorld.h"
-#include "../../lib/x/x.h"
+#include "../../x/object.h"
+#include "../../x/model_manager.h"
 #include <assert.h>
 
 ActionWorldAddObject::ActionWorldAddObject(const string &_filename, const vector &_pos, const vector &_ang)
@@ -42,7 +43,7 @@ void *ActionWorldAddObject::execute(Data *d)
 	o.is_special = false;
 	o.FileName = filename;
 	o.view_stage = 0;//mode_world->ViewStage;
-	o.object = (Object*)MetaLoadModel(filename);
+	o.object = (Object*)LoadModel(filename);
 	w->Objects.add(o);
 
 	return &w->Objects.back();

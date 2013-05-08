@@ -9,7 +9,7 @@
 #define ACTIONMODELADDVERTEX_H_
 
 #include "../../../Action.h"
-#include "../../../../lib/types/types.h"
+#include "../../../../lib/math/math.h"
 
 class ActionModelAddVertex: public Action
 {

@@ -9,7 +9,7 @@
 #define ACTIONMODELSURFACESSUBDIVIDE_H_
 
 #include "../../../ActionGroup.h"
-#include "../../../../lib/types/types.h"
+#include "../../../../lib/math/math.h"
 class DataModel;
 class ModelSurface;
 template<class T>

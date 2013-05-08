@@ -90,8 +90,8 @@ void MaterialPropertiesDialog::OnUpdate(Observable *o)
 
 void MaterialPropertiesDialog::OnAddTextureLevel()
 {
-	if (temp.NumTextureLevels >= MATERIAL_MAX_TEXTURE_LEVELS)
-		ed->ErrorBox(format(_("H&ochstens %d Textur-Ebenen erlaubt!"), MATERIAL_MAX_TEXTURE_LEVELS));
+	if (temp.NumTextureLevels >= MATERIAL_MAX_TEXTURES)
+		ed->ErrorBox(format(_("H&ochstens %d Textur-Ebenen erlaubt!"), MATERIAL_MAX_TEXTURES));
 	else
 		temp.TextureFile[temp.NumTextureLevels ++] = "";
 	FillTextureList();

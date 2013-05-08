@@ -9,7 +9,8 @@
 #define ACTIONMODELPOLYGONADDVERTEX_H_
 
 #include "../../../../ActionGroup.h"
-#include "../../../../../lib/x/x.h"
+#include "../../../../../x/material.h"
+#include "../../../../../lib/math/math.h"
 
 class ActionModelPolygonAddVertex: public ActionGroup
 {
@@ -25,7 +26,7 @@ private:
 	int poly;
 	int side;
 	int vertex;
-	vector sv[MODEL_MAX_TEXTURES];
+	vector sv[MATERIAL_MAX_TEXTURES];
 };
 
 #endif /* ACTIONMODELPOLYGONADDVERTEX_H_ */

@@ -46,7 +46,7 @@ void *ActionModelSplitPolygon::compose(Data *d)
 		v.add(temp.Side[(k+1)%temp.Side.num].Vertex);
 		v.add(new_vertex);
 		Array<vector> sv;
-		for (int l=0;l<MODEL_MAX_TEXTURES;l++){
+		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++){
 			sv.add(temp.Side[k].SkinVertex[l]);
 			sv.add(temp.Side[(k+1)%temp.Side.num].SkinVertex[l]);
 			sv.add(sg.get(pos, l));

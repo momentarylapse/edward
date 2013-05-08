@@ -11,8 +11,8 @@
 #include "script.h"
 
 #include "../config.h"
-#ifdef _X_ALLOW_META_
-	#include "../x/x.h"
+#ifdef _X_ALLOW_X_
+	#include "../../meta.h"
 #endif
 
 #ifdef OS_LINUX
@@ -269,18 +269,13 @@ Script::~Script()
 }
 
 
-
-static string single_command;
-
-
 // bad:  should clean up in case of errors!
 void ExecuteSingleScriptCommand(const string &cmd)
 {
 	if (cmd.num < 1)
 		return;
 	msg_db_f("ExecuteSingleScriptCmd", 2);
-	single_command = cmd;
-	msg_write("script command: " + single_command);
+	msg_write("script command: " + cmd);
 
 	// empty script
 	Script *s = new Script();
@@ -289,7 +284,7 @@ void ExecuteSingleScriptCommand(const string &cmd)
 	try{
 
 // find expressions
-	ps->Exp.Analyse(ps, single_command.c_str());
+	ps->Exp.Analyse(ps, cmd + string("\0", 1));
 	if (ps->Exp.line[0].exp.num < 1){
 		//clear_exp_buffer(&ps->Exp);
 		delete(s);
@@ -395,7 +390,7 @@ void Script::Execute()
 		first_execution();
 		//msg_left();
 	}else{
-#ifdef _X_ALLOW_META_
+#ifdef _X_ALLOW_X_
 		if (WaitingMode==WaitingModeRT)
 			TimeToWait -= Engine.ElapsedRT;
 		else

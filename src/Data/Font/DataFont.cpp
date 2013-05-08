@@ -9,6 +9,7 @@
 #include "../../Edward.h"
 #include "../../Action/Font/ActionFontEditGlobal.h"
 #include "../../Action/Font/ActionFontEditGlyph.h"
+#include "../../x/font.h"
 
 DataFont::DataFont() :
 	Data(FDFont)

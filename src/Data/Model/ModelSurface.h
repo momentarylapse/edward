@@ -11,7 +11,7 @@
 #include "../../MultiView.h"
 #include "DataModel.h"
 #include "../../lib/base/set.h"
-#include "../../lib/types/types.h"
+#include "../../lib/math/math.h"
 
 class DataModel;
 class ModelSurface;

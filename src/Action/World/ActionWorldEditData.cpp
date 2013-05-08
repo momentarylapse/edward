@@ -6,6 +6,7 @@
  */
 
 #include "ActionWorldEditData.h"
+#include "../../x/terrain.h"
 
 ActionWorldEditData::ActionWorldEditData(const DataWorld::MetaData &_data)
 {

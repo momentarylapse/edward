@@ -1,5 +1,6 @@
 #include <algorithm>
 #include "../../file/file.h"
+#include "../../math/math.h"
 #include "../script.h"
 #include "../../config.h"
 #include "script_data_common.h"
@@ -272,6 +273,39 @@ float maxf(float a, float b)
 
 float minf(float a, float b)
 {	return (a < b) ? a : b;	}
+
+string _cdecl ff2s(complex &x){	return x.str();	}
+string _cdecl fff2s(vector &x){	return x.str();	}
+string _cdecl ffff2s(quaternion &x){	return x.str();	}
+
+
+char *get_type_cast_buf(int size);
+extern char CastTemp[];
+
+char *CastVector2StringP(vector *v)
+{
+	string s = v->str();
+	char *str = get_type_cast_buf(s.num + 1);
+	memcpy(str, s.data, s.num);
+	*(char**)&CastTemp[0] = str; // save the return address in CastTemp
+	return &CastTemp[0];
+}
+char *CastFFFF2StringP(quaternion *q)
+{
+	string s = q->str();
+	char *str = get_type_cast_buf(s.num + 1);
+	memcpy(str, s.data, s.num);
+	*(char**)&CastTemp[0] = str; // save the return address in CastTemp
+	return &CastTemp[0];
+}
+char *CastComplex2StringP(complex *z)
+{
+	string s = z->str();
+	char *str = get_type_cast_buf(s.num + 1);
+	memcpy(str, s.data, s.num);
+	*(char**)&CastTemp[0] = str; // save the return address in CastTemp
+	return &CastTemp[0];
+}
 
 // amd64 vector return wrappers
 void amd64_vec_dir2ang(vector &r, vector &v)
@@ -954,6 +988,28 @@ void SIAddPackageMath()
 	add_const("Orange", TypeColor, (void*)&Orange);
 	// rect
 	add_const("r_id", TypeRect, (void*)&r_id);
+
+
+
+	// internal type casts
+	add_func("-v2s-",				TypeString,	(void*)&fff2s);
+		func_add_param("v",		TypeVector);
+	add_func("-complex2s-",		TypeString,	(void*)&ff2s);
+		func_add_param("z",		TypeComplex);
+	add_func("-quaternion2s-",	TypeString,	(void*)&ffff2s);
+		func_add_param("q",		TypeQuaternion);
+	add_func("-plane2s-",			TypeString,	(void*)&ffff2s);
+		func_add_param("p",		TypePlane);
+	add_func("-color2s-",			TypeString,	(void*)&ffff2s);
+		func_add_param("c",		TypeColor);
+	add_func("-rect2s-",			TypeString,	(void*)&ffff2s);
+		func_add_param("r",		TypeRect);
+	add_type_cast(50,	TypeVector,		TypeString,	"-v2s-",	(void*)&CastVector2StringP);
+	add_type_cast(50,	TypeComplex,	TypeString,	"-complex2s-",	(void*)&CastComplex2StringP);
+	add_type_cast(50,	TypeColor,		TypeString,	"-color2s-",	(void*)&CastFFFF2StringP);
+	add_type_cast(50,	TypeQuaternion,	TypeString,	"-quaternion2s-",	(void*)&CastFFFF2StringP);
+	add_type_cast(50,	TypePlane,		TypeString,	"-plane2s-",	(void*)&CastFFFF2StringP);
+	add_type_cast(50,	TypeRect,		TypeString,	"-rect2s-",	(void*)&CastFFFF2StringP);
 }
 
 };

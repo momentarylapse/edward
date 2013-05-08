@@ -11,13 +11,15 @@
 class DataModel;
 class ModelVertex;
 
+#include "../../x/material.h"
+
 class ModelPolygonSide
 {
 public:
 	int Vertex;
 	int Edge;
 	int EdgeDirection; // which no of triangle in edge's list are we?
-	vector SkinVertex[MODEL_MAX_TEXTURES];
+	vector SkinVertex[MATERIAL_MAX_TEXTURES];
 	int NormalIndex;
 	vector Normal;
 	unsigned char Triangulation[3];

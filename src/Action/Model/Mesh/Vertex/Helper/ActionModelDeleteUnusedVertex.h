@@ -9,7 +9,7 @@
 #define ACTIONMODELDELETEUNUSEDVERTEX_H_
 
 #include "../../../../Action.h"
-#include "../../../../../lib/types/types.h"
+#include "../../../../../lib/math/math.h"
 class ModelEffect;
 
 class ActionModelDeleteUnusedVertex: public Action

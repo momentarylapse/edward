@@ -8,6 +8,7 @@
 #include "ActionWorldTerrainApplyHeightmap.h"
 #include "Helper/ActionWorldTerrainEditHeight.h"
 #include "../../lib/image/image.h"
+#include "../../x/terrain.h"
 
 static float c2f(const color &c)
 {

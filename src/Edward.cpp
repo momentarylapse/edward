@@ -17,7 +17,11 @@
 #include "Mode/Welcome/ModeWelcome.h"
 #include "Mode/ModeCreation.h"
 #include "MultiView.h"
-#include "lib/x/x.h"
+#include "x/world.h"
+#include "x/camera.h"
+#include "meta.h"
+#include "x/model_manager.h"
+#include "x/font.h"
 #include "lib/script/script.h"
 #include "lib/nix/nix.h"
 
@@ -231,7 +235,6 @@ Edward::Edward(Array<string> arg) :
 	HuiAddCommandM("abort_creation_mode", "hui:cancel", KEY_ESCAPE, this, &Edward::OnAbortCreationMode);
 
 	MetaInit();
-	FxInit();
 	CameraInit();
 	GodInit();
 

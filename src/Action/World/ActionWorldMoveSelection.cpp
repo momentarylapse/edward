@@ -7,6 +7,7 @@
 
 #include "ActionWorldMoveSelection.h"
 #include "../../Data/World/DataWorld.h"
+#include "../../x/terrain.h"
 
 ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const vector &_param, const vector &_pos0) :
 	ActionMultiView(_param, _pos0)

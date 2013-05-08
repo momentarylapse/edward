@@ -93,7 +93,6 @@ void ModelFXDialog::OnFindScriptFile()
 		string filename = ed->DialogFile;
 		SetString("script_file", ed->DialogFile);
 
-		Script::config.Directory = ScriptDir;
 		try{
 			Script::Script *s = Script::Load(filename, true); // just analyse
 			if (!s->MatchFunction("OnEffectCreate", "void", 1, "effect"))

@@ -33,7 +33,7 @@ void *ActionModelPasteGeometry::compose(Data *d)
 		for (int k=0;k<t.Side.num;k++)
 			v.add(nv + t.Side[k].Vertex);
 		Array<vector> sv;
-		for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 			for (int k=0;k<t.Side.num;k++)
 				sv.add(t.Side[k].SkinVertex[l]);
 		AddSubAction(new ActionModelAddPolygon(v, t.Material, sv), m);

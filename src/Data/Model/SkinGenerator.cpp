@@ -5,7 +5,7 @@
  *      Author: michi
  */
 
-#include "../../lib/types/types.h"
+#include "../../lib/math/math.h"
 #include "SkinGenerator.h"
 #include "../../MultiView.h"
 #include "../../Data/Model/DataModel.h"
@@ -147,13 +147,13 @@ vector SkinGenerator::get(const vector& v) const
 
 SkinGeneratorMulti::SkinGeneratorMulti()
 {
-	gen = new SkinGenerator[MODEL_MAX_TEXTURES];
+	gen = new SkinGenerator[MATERIAL_MAX_TEXTURES];
 }
 
 SkinGeneratorMulti::SkinGeneratorMulti(const SkinGenerator &sg)
 {
-	gen = new SkinGenerator[MODEL_MAX_TEXTURES];
-	for (int i=0;i<MODEL_MAX_TEXTURES;i++)
+	gen = new SkinGenerator[MATERIAL_MAX_TEXTURES];
+	for (int i=0;i<MATERIAL_MAX_TEXTURES;i++)
 		gen[i] = sg;
 }
 
@@ -164,7 +164,7 @@ SkinGeneratorMulti::~SkinGeneratorMulti()
 
 void SkinGeneratorMulti::init_polygon(DataModel *model, ModelPolygon &p)
 {
-	for (int i=0;i<MODEL_MAX_TEXTURES;i++)
+	for (int i=0;i<MATERIAL_MAX_TEXTURES;i++)
 		gen[i].init_polygon(model, p, i);
 }
 

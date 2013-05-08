@@ -26,7 +26,7 @@
 
 namespace Script{
 
-string DataVersion = "0.11.0.3";
+string DataVersion = "0.11.0.4";
 
 CompilerConfiguration config;
 
@@ -321,9 +321,6 @@ void add_ext_var(const string &name, Type *type, void *var)
 void _cdecl _cstringout(char *str){	msg_write(str);	}
 void _cdecl _stringout(string &str){	msg_write(str);	}
 int _cdecl _Float2Int(float f){	return (int)f;	}
-string _cdecl ff2s(complex &x){	return x.str();	}
-string _cdecl fff2s(vector &x){	return x.str();	}
-string _cdecl ffff2s(quaternion &x){	return x.str();	}
 
 
 Array<PreCommand> PreCommands;
@@ -462,7 +459,7 @@ void script_make_super_array(Type *t, SyntaxTree *ps)
 char type_cast_buffer[MAX_TYPE_CAST_BUFFER];
 int type_cast_buffer_size = 0;
 
-inline char *get_type_cast_buf(int size)
+char *get_type_cast_buf(int size)
 {
 	char *str = &type_cast_buffer[type_cast_buffer_size];
 	type_cast_buffer_size += size;
@@ -529,30 +526,6 @@ char *CastBool2StringP(bool *b)
 char *CastPointer2StringP(void *p)
 {
 	string s = p2s(p);
-	char *str = get_type_cast_buf(s.num + 1);
-	memcpy(str, s.data, s.num);
-	*(char**)&CastTemp[0] = str; // save the return address in CastTemp
-	return &CastTemp[0];
-}
-char *CastVector2StringP(vector *v)
-{
-	string s = v->str();
-	char *str = get_type_cast_buf(s.num + 1);
-	memcpy(str, s.data, s.num);
-	*(char**)&CastTemp[0] = str; // save the return address in CastTemp
-	return &CastTemp[0];
-}
-char *CastFFFF2StringP(quaternion *q)
-{
-	string s = q->str();
-	char *str = get_type_cast_buf(s.num + 1);
-	memcpy(str, s.data, s.num);
-	*(char**)&CastTemp[0] = str; // save the return address in CastTemp
-	return &CastTemp[0];
-}
-char *CastComplex2StringP(complex *z)
-{
-	string s = z->str();
 	char *str = get_type_cast_buf(s.num + 1);
 	memcpy(str, s.data, s.num);
 	*(char**)&CastTemp[0] = str; // save the return address in CastTemp
@@ -976,18 +949,6 @@ void SIAddCommands()
 		func_add_param("b",		TypeBool);
 	add_func("p2s",				TypeString,	(void*)&p2s);
 		func_add_param("p",		TypePointer);
-	add_func("-v2s-",				TypeString,	(void*)&fff2s);
-		func_add_param("v",		TypeVector);
-	add_func("-complex2s-",		TypeString,	(void*)&ff2s);
-		func_add_param("z",		TypeComplex);
-	add_func("-quaternion2s-",	TypeString,	(void*)&ffff2s);
-		func_add_param("q",		TypeQuaternion);
-	add_func("-plane2s-",			TypeString,	(void*)&ffff2s);
-		func_add_param("p",		TypePlane);
-	add_func("-color2s-",			TypeString,	(void*)&ffff2s);
-		func_add_param("c",		TypeColor);
-	add_func("-rect2s-",			TypeString,	(void*)&ffff2s);
-		func_add_param("r",		TypeRect);
 	add_func("-ia2s-",			TypeString,	(void*)&ia2s);
 		func_add_param("a",		TypeIntList);
 	add_func("-fa2s-",			TypeString,	(void*)&fa2s);
@@ -1093,12 +1054,6 @@ void Init(int instruction_set, int abi)
 	add_type_cast(50,	TypeFloat,		TypeString,	"-f2sf-",	(void*)&CastFloat2StringP);
 	add_type_cast(50,	TypeBool,		TypeString,	"-b2s-",	(void*)&CastBool2StringP);
 	add_type_cast(50,	TypePointer,	TypeString,	"p2s",	(void*)&CastPointer2StringP);
-	add_type_cast(50,	TypeVector,		TypeString,	"-v2s-",	(void*)&CastVector2StringP);
-	add_type_cast(50,	TypeComplex,	TypeString,	"-complex2s-",	(void*)&CastComplex2StringP);
-	add_type_cast(50,	TypeColor,		TypeString,	"-color2s-",	(void*)&CastFFFF2StringP);
-	add_type_cast(50,	TypeQuaternion,	TypeString,	"-quaternion2s-",	(void*)&CastFFFF2StringP);
-	add_type_cast(50,	TypePlane,		TypeString,	"-plane2s-",	(void*)&CastFFFF2StringP);
-	add_type_cast(50,	TypeRect,		TypeString,	"-rect2s-",	(void*)&CastFFFF2StringP);
 	//add_type_cast(50,	TypeClass,		TypeString,	"-f2s-",	(void*)&CastFloat2StringP);
 	add_type_cast(50,	TypeIntList,	TypeString,	"-ia2s-",	NULL);
 	add_type_cast(50,	TypeFloatList,	TypeString,	"-fa2s-",	NULL);

@@ -14,7 +14,6 @@ class Script;
 }
 
 #include "../base/base.h"
-#include "../types/types.h"
 #include "asm/asm.h"
 #include "lib/script_data.h"
 #include "syntax/syntax_tree.h"

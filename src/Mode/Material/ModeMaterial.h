@@ -44,7 +44,7 @@ public:
 	DataMaterial *data;
 	Data *GetData(){	return data;	}
 
-	int MaterialVB[MATERIAL_MAX_TEXTURE_LEVELS];
+	int MaterialVB[MATERIAL_MAX_TEXTURES];
 	MaterialPropertiesDialog *AppearanceDialog;
 };
 

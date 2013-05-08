@@ -10,7 +10,6 @@
 #include "../../../../Action/Model/Mesh/Polygon/ActionModelBevelPolygons.h"
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"
-#include "../../../../lib/x/x.h"
 
 #define INTERACTIVE
 

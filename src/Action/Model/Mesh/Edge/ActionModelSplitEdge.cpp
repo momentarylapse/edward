@@ -58,9 +58,9 @@ void *ActionModelSplitEdge::compose(Data *d)
 		int poly = ee.Polygon[i];
 		ModelPolygon &t = s.Polygon[poly];
 
-		vector isv[MODEL_MAX_TEXTURES];
+		vector isv[MATERIAL_MAX_TEXTURES];
 		float f = (i == 0) ? factor : 1 - factor;
-		for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 			isv[l] = t.Side[ee.Side[i]].SkinVertex[l] * (1 - f) + t.Side[(ee.Side[i] + 1) % t.Side.num].SkinVertex[l] * f;
 
 		AddSubAction(new ActionModelPolygonAddVertex(surface, poly, ee.Side[i], new_vertex, isv), m);

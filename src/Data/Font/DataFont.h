@@ -9,7 +9,6 @@
 #define DATAFONT_H_
 
 #include "../Data.h"
-#include "../../lib/x/x.h"
 
 class XFont;
 

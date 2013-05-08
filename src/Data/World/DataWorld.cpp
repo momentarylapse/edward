@@ -8,6 +8,11 @@
 #include "DataWorld.h"
 #include "../../Mode/World/ModeWorld.h"
 #include "../../Edward.h"
+#include "../../x/object.h"
+#include "../../x/model_manager.h"
+#include "../../x/terrain.h"
+#include "../../x/world.h"
+#include "../../meta.h"
 #include "../../Action/World/ActionWorldAddObject.h"
 #include "../../Action/World/ActionWorldAddTerrain.h"
 #include "../../Action/World/ActionWorldPaste.h"
@@ -266,7 +271,7 @@ bool DataWorld::Load(const string & _filename, bool deep)
 		}
 		for (int i=0;i<Objects.num;i++){
 			ed->progress->Set(format(_("Objekt %d von %d"), i, Objects.num), (float)i / (float)Objects.num / 2.0f + 0.5f);
-			Objects[i].object = (Object*)MetaLoadModel(Objects[i].FileName);
+			Objects[i].object = (Object*)LoadModel(Objects[i].FileName);
 			Objects[i].object->pos = Objects[i].pos;
 			Objects[i].object->ang = Objects[i].Ang;
 //			if (Objects[i].object)
@@ -350,7 +355,7 @@ void DataWorld::Reset()
 	// delete old data...
 	for (int i=0;i<Objects.num;i++)
 		if (Objects[i].object)
-			MetaDeleteModel(Objects[i].object);
+			DeleteModel(Objects[i].object);
 
 	Objects.clear();
 	Terrains.clear();

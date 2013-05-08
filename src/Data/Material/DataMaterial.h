@@ -9,9 +9,7 @@
 #define DATAMATERIAL_H_
 
 #include "../Data.h"
-#include "../../lib/x/x.h"
-
-#define MATERIAL_MAX_TEXTURE_LEVELS		8
+#include "../../x/material.h"
 
 class DataMaterial: public Data
 {
@@ -74,8 +72,8 @@ public:
 	{
 		// properties
 		int NumTextureLevels;
-		int Texture[MATERIAL_MAX_TEXTURE_LEVELS];
-		string TextureFile[MATERIAL_MAX_TEXTURE_LEVELS];
+		int Texture[MATERIAL_MAX_TEXTURES];
+		string TextureFile[MATERIAL_MAX_TEXTURES];
 
 		// color
 		color ColorAmbient, ColorDiffuse, ColorSpecular, ColorEmissive;
@@ -123,8 +121,8 @@ public:
 
 /*	// properties
 	int NumTextureLevels;
-	int Texture[MATERIAL_MAX_TEXTURE_LEVELS];
-	string TextureFile[MATERIAL_MAX_TEXTURE_LEVELS];
+	int Texture[MATERIAL_MAX_TEXTURES];
+	string TextureFile[MATERIAL_MAX_TEXTURES];
 
 	// appearance
 	color ColorAmbient, ColorDiffuse, ColorSpecular, ColorEmissive;

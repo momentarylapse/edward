@@ -36,7 +36,7 @@ void *ActionModelTriangulateSelection::compose(Data *d)
 					for (int k=0;k<3;k++)
 						v.add(temp.Side[vv[i*3+k]].Vertex);
 					Array<vector> sv;
-					for (int l=0;l<MODEL_MAX_TEXTURES;l++)
+					for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 						for (int k=0;k<3;k++)
 							sv.add(temp.Side[vv[i*3+k]].SkinVertex[l]);
 					AddSubAction(new ActionModelSurfaceAddPolygon(si, v, temp.Material, sv), m);

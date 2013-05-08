@@ -9,7 +9,7 @@
 #define ACTIONMODELADDTEAPOT_H_
 
 #include "../../../ActionGroup.h"
-#include "../../../../lib/types/vector.h"
+#include "../../../../lib/math/vector.h"
 class DataModel;
 
 class ActionModelAddTeapot: public ActionGroup

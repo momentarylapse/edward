@@ -8,7 +8,7 @@
 #ifndef SKINGENERATOR_H_
 #define SKINGENERATOR_H_
 
-#include "../../lib/types/matrix.h"
+#include "../../lib/math/math.h"
 class vector;
 class MultiView;
 class DataModel;

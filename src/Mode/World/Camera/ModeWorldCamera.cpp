@@ -8,7 +8,7 @@
 #include "ModeWorldCamera.h"
 #include "../../../Data/World/DataCamera.h"
 #include "../../../Edward.h"
-#include "../../../lib/types/interpolation.h"
+#include "../../../lib/math/interpolation.h"
 #include "Creation/ModeWorldCameraCreatePoint.h"
 #include "../../../Action/World/Camera/ActionCameraMoveTimeSelection.h"
 
