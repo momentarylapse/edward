@@ -137,7 +137,7 @@ void ModeModel::OnCommand(const string & id)
 		//SetSubMode(SubModeTextures);
 	if (id == "mode_properties")
 		ExecutePropertiesDialog(0);
-	if (id == "mode_model_material")
+	if (id == "edit_current_material")
 		ExecuteMaterialDialog(0);
 	if (id == "mode_model_materials")
 		ExecutePropertiesDialog(1);

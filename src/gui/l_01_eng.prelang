@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-583
+582
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -77,6 +77,8 @@ appearance
 Appearance...
 apply
 Apply
+automapping
+
 autoweld_surfaces
 
 bevel_vertices
@@ -125,8 +127,6 @@ create_lightmap
 Render lightmap...
 create_objects
 Objects...
-current_material
-Current material
 current_mode_font
 -Font-Mode-
 current_mode_model_skeleton
@@ -169,6 +169,8 @@ eat_estimate
 
 eat_quality
 quality factor
+edit_current_material
+
 edit_material
 edit
 edit_terrain_selectable
@@ -483,6 +485,8 @@ menu_font_edit
 Edit
 menu_help
 ?
+menu_mapping
+
 menu_material
 Material
 menu_material_properties
@@ -499,12 +503,14 @@ menu_model_export
 Export
 menu_model_file
 File
-menu_model_functions
-Functions
 menu_model_fx
 Effects
+menu_model_geometry
+
 menu_model_import
 Import
+menu_model_material
+
 menu_model_mode
 Mode
 menu_model_move
@@ -523,8 +529,6 @@ menu_model_view
 View
 menu_model_viewstage
 Viewstage
-menu_poly2_header
-
 menu_rightmouse
 Right mouse button
 menu_surface_header
@@ -569,8 +573,6 @@ mode_model_animation
 Animation
 mode_model_edge
 Edges
-mode_model_material
-Material...
 mode_model_materials
 Materials...
 mode_model_mesh
@@ -589,8 +591,6 @@ mode_model_vertex
 Vertices
 mode_properties
 Properties...
-model_colors
-Colors...
 model_dialog
 Model properties
 model_dialog_grp_details
@@ -1041,8 +1041,6 @@ texture_menu_sign
 Texture
 textures
 !format=tTTit\\Level\\Size X\\Size Z\\\\File
-transparency
-transparency...
 transparency_mode
   --none--\\color keyed (smooth)\\color keyed (hard)\\factor\\function
 transparency_mode:color_key
@@ -1170,7 +1168,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-218
+220
 // Data (ID,Text)
 
 
@@ -1226,6 +1224,8 @@ Arbeitsverzeichnis
 Working directory
 Arbeitsverzeichnis \"%s\" enthält keine \"game.ini\"-Datei. Soll diese erstellt werden?
 Woring directory \"%s\" does not contain a file named \"game.ini\". Do you want one to be created?
+Beispiel Text 0123456789
+
 Beschreibung
 Description
 Datei
@@ -1290,7 +1290,7 @@ Fehler
 Error
 Fehler beim Exportieren: 
 
-Fehler in Script-Datei: \"%s\"\n%s\n%s
+Fehler in Script-Datei: 
 
 Fehler in der Shader-Datei:\n
 
@@ -1302,6 +1302,8 @@ Flug
 
 Font
 Font
+Font importieren
+
 Font-Datei
 Font file
 Font-Dateien (*.xfont)

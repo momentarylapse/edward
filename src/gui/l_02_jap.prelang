@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-583
+582
 // Data (ID,Text)
 ad_dialog
 
@@ -77,6 +77,8 @@ appearance
 外観
 apply
 適用
+automapping
+
 autoweld_surfaces
 
 bevel_vertices
@@ -125,8 +127,6 @@ create_lightmap
 
 create_objects
 オブジェクト...
-current_material
-
 current_mode_font
 [フォント　の　モード]
 current_mode_model_skeleton
@@ -168,6 +168,8 @@ easify_skin
 eat_estimate
 
 eat_quality
+
+edit_current_material
 
 edit_material
 編集
@@ -483,6 +485,8 @@ menu_font_edit
 編集
 menu_help
 ヘルプ
+menu_mapping
+
 menu_material
 マテリアル
 menu_material_properties
@@ -499,12 +503,14 @@ menu_model_export
 エクスポート
 menu_model_file
 ファイル
-menu_model_functions
-機能
 menu_model_fx
 効果
+menu_model_geometry
+
 menu_model_import
 インポート
+menu_model_material
+
 menu_model_mode
 編集モード
 menu_model_move
@@ -523,8 +529,6 @@ menu_model_view
 表示
 menu_model_viewstage
 表示　の　レベル
-menu_poly2_header
-
 menu_rightmouse
 
 menu_surface_header
@@ -569,8 +573,6 @@ mode_model_animation
 
 mode_model_edge
 
-mode_model_material
-
 mode_model_materials
 
 mode_model_mesh
@@ -589,8 +591,6 @@ mode_model_vertex
 
 mode_properties
 設定...
-model_colors
-
 model_dialog
 
 model_dialog_grp_details
@@ -1041,8 +1041,6 @@ texture_menu_sign
 
 textures
 
-transparency
-透明...
 transparency_mode
   --none--\\color keyed (smooth)\\color keyed (hard)\\factor\\function
 transparency_mode:color_key
@@ -1170,7 +1168,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-218
+220
 // Data (ID,Text)
 
 
@@ -1225,6 +1223,8 @@ Anzahl der Texturen wurde an das Material angepasst!
 Arbeitsverzeichnis
 
 Arbeitsverzeichnis \"%s\" enthält keine \"game.ini\"-Datei. Soll diese erstellt werden?
+
+Beispiel Text 0123456789
 
 Beschreibung
 
@@ -1290,7 +1290,7 @@ Fehler
 
 Fehler beim Exportieren: 
 
-Fehler in Script-Datei: \"%s\"\n%s\n%s
+Fehler in Script-Datei: 
 
 Fehler in der Shader-Datei:\n
 
@@ -1301,6 +1301,8 @@ Fehlerbericht an Michi senden
 Flug
 
 Font
+
+Font importieren
 
 Font-Datei
 

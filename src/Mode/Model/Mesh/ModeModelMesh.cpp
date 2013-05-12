@@ -179,6 +179,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		MultiView *mv = mode_model_mesh_polygon->multi_view;
 		data->Execute(new ActionModelSkinVerticesFromProjection(data, mv));
 	}
+	if (id == "automapping")
+		data->Automap(data->CurrentMaterial, data->CurrentTextureLevel);
 	if (id == "easify_skin")
 		Easify();
 

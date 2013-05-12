@@ -35,6 +35,7 @@
 #include "../../Action/Model/Mesh/Surface/ActionModelSurfaceInvert.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelAutoWeldSelection.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelSurfacesSubdivide.h"
+#include "../../Action/Model/Mesh/Skin/ActionModelAutomap.h"
 #include "../../Action/Model/Mesh/Look/ActionModelSetMaterial.h"
 #include "../../Action/Model/Mesh/Look/ActionModelSetNormalModeSelection.h"
 #include "../../Action/Model/Mesh/Look/ActionModelSetNormalModeAll.h"
@@ -1976,6 +1977,9 @@ void DataModel::AutoWeldSurfaces(const Set<int> &surfaces, float epsilon)
 
 void DataModel::AutoWeldSelectedSurfaces(float epsilon)
 {	Execute(new ActionModelAutoWeldSelection(epsilon));	}
+
+void DataModel::Automap(int material, int texture_level)
+{	Execute(new ActionModelAutomap(material, texture_level));	}
 
 void DataModel::AnimationDuplicateCurrentFrame()
 {
