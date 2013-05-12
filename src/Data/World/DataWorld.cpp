@@ -142,6 +142,9 @@ bool DataWorld::Save(const string & _filename)
 	f->WriteFloat(meta_data.SunAng.y);
 	f->WriteComment("// Ambient");
 	write_color_3i(f, meta_data.Ambient);
+	f->WriteComment("// Physics");
+	f->WriteBool(meta_data.PhysicsEnabled);
+	f->WriteInt(0);
 	f->WriteComment("#");
 
 	delete(f);
@@ -254,6 +257,9 @@ bool DataWorld::Load(const string & _filename, bool deep)
 			meta_data.SunAng.y = f->ReadFloat();
 			f->ReadComment();
 			read_color_3i(f, meta_data.Ambient);
+			if (f->ReadStr() != "#"){
+				meta_data.PhysicsEnabled = f->ReadBool();
+			}
 		}
 
 	}else{
@@ -319,7 +325,7 @@ void DataWorld::MetaData::Reset()
 
 	BackGroundColor = color(1, 0.2f, 0.4f, 0.6f);
 
-	PhysicsEnabled = true;
+	PhysicsEnabled = false;
 	Gravity = vector(0, -981, 0);
 
 	ScriptFile.clear();

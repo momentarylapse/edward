@@ -19,6 +19,89 @@
 //                                           matrices                                             //
 //------------------------------------------------------------------------------------------------//
 
+
+matrix::matrix(const float f[16])
+{
+	for (int i=0;i<16;i++)
+		e[i]=f[i];
+}
+
+matrix::matrix(const vector &a, const vector &b, const vector &c)
+{
+	_00 = a.x;	_01 = b.x;	_02 = c.x;	_03 = 0;
+	_10 = a.y;	_11 = b.y;	_12 = c.y;	_13 = 0;
+	_20 = a.z;	_21 = b.z;	_22 = c.z;	_23 = 0;
+	_30 = 0;	_31 = 0;	_32 = 0;	_33 = 1;
+}
+
+matrix matrix::operator + (const matrix &m) const
+{
+	matrix r;
+	for (int i=0;i<16;i++)
+		r.e[i]=e[i]+m.e[i];
+	return r;
+}
+
+matrix matrix::operator - (const matrix &m) const
+{
+	matrix r;
+	for (int i=0;i<16;i++)
+		r.e[i]=e[i]-m.e[i];
+	return r;
+}
+
+matrix matrix::operator * (const matrix &m) const
+{
+	return MatrixMultiply2(*this, m);
+}
+
+matrix matrix::operator *= (const matrix &m)
+{
+	matrix r = (*this * m);
+	*this = r;
+	return *this;
+}
+
+vector matrix::operator * (const vector &v) const
+{
+	return vector(	v.x*_00 + v.y*_01 + v.z*_02 + _03,
+					v.x*_10 + v.y*_11 + v.z*_12 + _13,
+					v.x*_20 + v.y*_21 + v.z*_22 + _23);
+}
+
+vector matrix::transform_normal(const vector &v) const
+{
+	return vector(	v.x*_00 + v.y*_01 + v.z*_02,
+					v.x*_10 + v.y*_11 + v.z*_12,
+					v.x*_20 + v.y*_21 + v.z*_22);
+}
+vector matrix::untransform(const vector &v) const
+{
+	matrix i;
+	MatrixInverse(i, *this);
+	return i * v;
+}
+
+vector matrix::project(const vector &v) const
+{
+	return (*this * v) / (v.x*_30 + v.y*_31 + v.z*_32 + _33);
+}
+
+string matrix::str() const
+{
+	return format("(%f, %f, %f, %f; %f, %f, %f, %f; %f, %f, %f, %f; %f, %f, %f, %f)", _00, _01, _02, _03, _10, _11, _12, _13, _20, _21, _22, _23, _30, _31, _32, _33);
+}
+
+// kaba
+void matrix::imul(const matrix &m)
+{	*this *= m;	}
+matrix matrix::mul(const matrix &m) const
+{	return *this * m;	}
+
+vector matrix::mul_v(const vector &v) const
+{	return *this * v;	}
+
+
 #define _ps(a,b,i,j)	(a.__e[0][i]*b.__e[j][0] + a.__e[1][i]*b.__e[j][1] + a.__e[2][i]*b.__e[j][2] + a.__e[3][i]*b.__e[j][3])
 
 // combining two transformation matrices (first do m1, then m2:   m = m2 * m1 )

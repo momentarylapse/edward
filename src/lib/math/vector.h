@@ -10,43 +10,28 @@ class matrix3;
 struct vector
 {
 public:
-	float x,y,z;
+	float x, y, z;
 	vector(){};
-	vector(float x,float y,float z)
-	{	this->x=x;	this->y=y;	this->z=z;	}
+	vector(float x, float y, float z);
 	// assignment operators
-	vector& operator += (const vector& v)
-	{	x+=v.x;	y+=v.y;	z+=v.z;	return *this;	}
-	vector& operator -= (const vector& v)
-	{	x-=v.x;	y-=v.y;	z-=v.z;	return *this;	}
-	vector& operator *= (float f)
-	{	x*=f;	y*=f;	z*=f;	return *this;	}
-	vector& operator /= (float f)
-	{	x/=f;	y/=f;	z/=f;	return *this;	}
+	vector& operator += (const vector& v);
+	vector& operator -= (const vector& v);
+	vector& operator *= (float f);
+	vector& operator /= (float f);
 	// unitary operator(s)
-	vector operator - () const
-	{	return vector(-x,-y,-z);	}
+	vector operator - () const;
 	// binary operators
-	vector operator + (const vector &v) const
-	{	return vector( x+v.x , y+v.y , z+v.z );	}
-	vector operator - (const vector &v) const
-	{	return vector( x-v.x , y-v.y , z-v.z );	}
-	vector operator * (float f) const
-	{	return vector( x*f , y*f , z*f );	}
-	vector operator / (float f) const
-	{	return vector( x/f , y/f , z/f );	}
+	vector operator + (const vector &v) const;
+	vector operator - (const vector &v) const;
+	vector operator * (float f) const;
+	vector operator / (float f) const;
 	friend vector operator * (float f,const vector &v)
 	{	return v*f;	}
-	bool operator == (const vector &v) const
-	{	return ((x==v.x)&&(y==v.y)&&(z==v.z));	}
-	bool operator != (const vector &v) const
-	{	return !((x==v.x)&&(y==v.y)&&(z==v.z));	}
-	float operator * (const vector &v) const
-	{	return x*v.x + y*v.y + z*v.z;	}
-	vector operator ^ (const vector &v) const
-	{	return vector( y*v.z-z*v.y, z*v.x-x*v.z, x*v.y-y*v.x );	}
-	string str() const
-	{	return format("(%f, %f, %f)", x, y, z);	}
+	bool operator == (const vector &v) const;
+	bool operator != (const vector &v) const;
+	float operator * (const vector &v) const;
+	vector operator ^ (const vector &v) const;
+	string str() const;
 
 	float length() const;
 	float length_sqr() const;
@@ -60,6 +45,7 @@ public:
 	vector rotate(const vector &ang) const;
 	vector transform(const matrix &m) const;
 	vector transform_normal(const matrix &m) const;
+	vector untransform(const matrix &m) const;
 	vector transform3(const matrix3 &m) const;
 	void _min(const vector &test_partner);
 	void _max(const vector &test_partner);

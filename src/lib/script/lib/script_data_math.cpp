@@ -320,6 +320,8 @@ void amd64_vec_transform(vector &r, vector &v, matrix &m)
 {	r = v.transform(m);	}
 void amd64_vec_transform_normal(vector &r, vector &v, matrix &m)
 {	r = v.transform_normal(m);	}
+void amd64_vec_untransform(vector &r, vector &v, matrix &m)
+{	r = v.untransform(m);	}
 void amd64_vec_ortho(vector &r, vector &v)
 {	r = v.ortho();	}
 void amd64_quat_get_angles(vector &r, quaternion &q)
@@ -515,6 +517,10 @@ void SIAddPackageMath()
 			func_add_param("m",			TypeMatrix);
 		class_add_func("transform_normal",	TypeVector,	amd64_wrap(type_p(mf((tmf)&vector::transform_normal)), type_p(&amd64_vec_transform_normal)));
 			func_add_param("m",			TypeMatrix);
+		class_add_func("untransform",		TypeVector,	amd64_wrap(type_p(mf((tmf)&vector::untransform)), type_p(&amd64_vec_untransform)));
+			func_add_param("m",			TypeMatrix);
+		class_add_func("__div__",		TypeVector,	amd64_wrap(type_p(mf((tmf)&vector::untransform)), type_p(&amd64_vec_untransform)));
+			func_add_param("m",			TypeMatrix);
 		class_add_func("ortho",			TypeVector,	amd64_wrap(type_p(mf((tmf)&vector::ortho)), type_p(&amd64_vec_ortho)));
 		class_add_func("str",		TypeString,			type_p(mf((tmf)&vector::str)));
 	
@@ -539,6 +545,7 @@ void SIAddPackageMath()
 		class_add_element("y2",	TypeFloat,	12);
 		class_add_func("width",		TypeFloat,			mf((tmf)&rect::width));
 		class_add_func("height",	TypeFloat,			mf((tmf)&rect::height));
+		class_add_func("area",		TypeFloat,			mf((tmf)&rect::area));
 		class_add_func("inside",	TypeBool,			mf((tmf)&rect::inside));
 			func_add_param("x",	TypeFloat);
 			func_add_param("y",	TypeFloat);

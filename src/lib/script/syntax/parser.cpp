@@ -1451,6 +1451,7 @@ void SyntaxTree::ParseClass()
 		}
 		if (!found)
 			DoError(format("parental type in class definition after \":\" has to be a class, but (%s) is not", ancestor->name.c_str()));
+		_class->parent = ancestor;
 	}
 	ExpectNewline();
 
@@ -1498,7 +1499,20 @@ void SyntaxTree::ParseClass()
 				break;
 			}
 
+			// overwrite?
+			bool overwrite = false;
+			if (_class->parent){
+				foreachi(ClassElement &e, _class->parent->element, i)
+					if ((e.name == el.name) && e.type->is_pointer && el.type->is_pointer){
+						_class->element[i].type = el.type;
+						overwrite = true;
+					}
+			}
+			if (overwrite)
+				continue;
 
+
+			// add element
 			if (type_needs_alignment(type))
 				_offset = mem_align(_offset, 4);
 			_offset = ProcessClassOffset(_class->name, el.name, _offset);

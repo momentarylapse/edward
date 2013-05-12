@@ -9,9 +9,7 @@
 \*----------------------------------------------------------------------------*/
 #include "object.h"
 #include "world.h"
-#ifdef _X_ALLOW_X_
 #include "../meta.h"
-#endif
 #include "../lib/file/file.h"
 
 
@@ -79,8 +77,7 @@ Object::Object()
 
 void Object::AddForce(const vector &f, const vector &rho)
 {
-#ifdef _X_ALLOW_X_
-	if (Engine.Elapsed <= 0)
+	if (Engine.Elapsed<=0)
 		return;
 	if (!active_physics)
 		return;
@@ -90,20 +87,17 @@ void Object::AddForce(const vector &f, const vector &rho)
 	//TestVectorSanity(rho, "rho addf");
 	//TestVectorSanity(torque, "Torque addf");
 	unfreeze(this);
-#endif
 }
 
 void Object::AddTorque(const vector &t)
 {
-#ifdef _X_ALLOW_X_
-	if (Engine.Elapsed <= 0)
+	if (Engine.Elapsed<=0)
 		return;
 	if (!active_physics)
 		return;
 	torque_ext += t;
 	//TestVectorSanity(Torque,"Torque addt");
 	unfreeze(this);
-#endif
 }
 
 void Object::MakeVisible(bool _visible_)
@@ -119,7 +113,6 @@ void Object::MakeVisible(bool _visible_)
 
 void Object::DoPhysics()
 {
-#ifdef _X_ALLOW_X_
 	if (Engine.Elapsed<=0)
 		return;
 	msg_db_f("object::DoPhysics",2);
@@ -203,7 +196,6 @@ void Object::DoPhysics()
 		}else
 			on_ground = false;
 	}
-#endif
 }
 
 

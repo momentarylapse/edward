@@ -11,16 +11,9 @@ struct plane
 	float d;
 
 	plane(){}
-	plane(const vector &p, const vector &n)
-	{	this->n = n;	d = - (p*n);	}
-	plane(const vector &a, const vector &b, const vector &c)
-	{
-		n = (b-a) ^ (c - a);
-		n.normalize();
-		d= - (n*a);
-	}
-	string str() const
-	{	return format("(%f, %f, %f, %f)", n.x, n.y, n.z, d);	}
+	plane(const vector &p, const vector &n);
+	plane(const vector &a, const vector &b, const vector &c);
+	string str() const;
 
 	bool intersect_line(const vector &l1, const vector &l2, vector &i) const;
 	float distance(const vector &p) const;

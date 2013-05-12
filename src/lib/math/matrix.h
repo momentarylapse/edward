@@ -27,32 +27,11 @@ public:
 	};
 
 	matrix(){};
-	matrix(const float f[16]){
-		for (int i=0;i<16;i++)
-			e[i]=f[i];
-	};
-	matrix(const vector &a, const vector &b, const vector &c){
-		_00 = a.x;	_01 = b.x;	_02 = c.x;	_03 = 0;
-		_10 = a.y;	_11 = b.y;	_12 = c.y;	_13 = 0;
-		_20 = a.z;	_21 = b.z;	_22 = c.z;	_23 = 0;
-		_30 = 0;	_31 = 0;	_32 = 0;	_33 = 1;
-	}
-	matrix operator + (const matrix &m) const
-	{
-		matrix r;
-		for (int i=0;i<16;i++)
-			r.e[i]=e[i]+m.e[i];
-		return r;
-	}
-	matrix operator - (const matrix &m) const
-	{
-		matrix r;
-		for (int i=0;i<16;i++)
-			r.e[i]=e[i]-m.e[i];
-		return r;
-	}
-	matrix operator * (const matrix &m) const
-	{	return MatrixMultiply2(*this, m);	}
+	matrix(const float f[16]);
+	matrix(const vector &a, const vector &b, const vector &c);
+	matrix operator + (const matrix &m) const;
+	matrix operator - (const matrix &m) const;
+	matrix operator * (const matrix &m) const;
 	/*matrix operator * (float f) const
 	{
 		matrix r;
@@ -62,36 +41,17 @@ public:
 	}
 	friend matrix operator * (float f, const matrix &m)
 	{	return m*f;	}*/
-	matrix operator *= (const matrix &m)
-	{
-		matrix r = (*this * m);
-		*this = r;
-		return *this;
-	}
-	vector operator * (const vector &v) const
-	{
-		return vector(	v.x*_00 + v.y*_01 + v.z*_02 + _03,
-						v.x*_10 + v.y*_11 + v.z*_12 + _13,
-						v.x*_20 + v.y*_21 + v.z*_22 + _23);
-	}
-	vector transform_normal(const vector &v) const
-	{
-		return vector(	v.x*_00 + v.y*_01 + v.z*_02,
-						v.x*_10 + v.y*_11 + v.z*_12,
-						v.x*_20 + v.y*_21 + v.z*_22);
-	}
-	vector project(const vector &v) const
-	{	return (*this * v) / (v.x*_30 + v.y*_31 + v.z*_32 + _33);	}
-	string str() const
-	{	return format("(%f, %f, %f, %f; %f, %f, %f, %f; %f, %f, %f, %f; %f, %f, %f, %f)", _00, _01, _02, _03, _10, _11, _12, _13, _20, _21, _22, _23, _30, _31, _32, _33);	}
+	matrix operator *= (const matrix &m);
+	vector operator * (const vector &v) const;
+	vector transform_normal(const vector &v) const;
+	vector untransform(const vector &v) const;
+	vector project(const vector &v) const;
+	string str() const;
 
 	// kaba
-	void imul(const matrix &m)
-	{	*this *= m;	}
-	matrix mul(const matrix &m) const
-	{	return *this * m;	}
-	vector mul_v(const vector &v) const
-	{	return *this * v;	}
+	void imul(const matrix &m);
+	matrix mul(const matrix &m) const;
+	vector mul_v(const vector &v) const;
 };
 // matrices
 void _cdecl MatrixMultiply(matrix &m,const matrix &m2,const matrix &m1);

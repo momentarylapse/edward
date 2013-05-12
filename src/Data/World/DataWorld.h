@@ -17,8 +17,6 @@ class Terrain;
 class Object;
 
 
-#define WORLD_MAX_TEXTURES_PER_TERRAIN	8
-
 /*class WorldTerrainVertex: public MultiViewSingleData
 {
 public:

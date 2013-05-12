@@ -982,9 +982,6 @@ Model *Model::GetRoot()
 
 void Model::CalcMove(float elapsed)
 {
-	if (elapsed == 0)
-		return;
-
 	msg_db_f("model::CalcMove",3);
 
 	if (meta_move){

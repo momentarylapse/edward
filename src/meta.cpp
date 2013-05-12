@@ -23,9 +23,9 @@
 | last updated: 2009.12.09 (c) by MichiSoft TM                                 |
 \*----------------------------------------------------------------------------*/
 #include "lib/file/file.h"
-#include "lib/script/script.h"
 #include "meta.h"
 #include "lib/nix/nix.h"
+#include "lib/script/script.h"
 #ifdef _X_ALLOW_X_
 #include "world/model.h"
 #include "world/model_manager.h"
@@ -35,9 +35,10 @@
 #include "gui/gui.h"
 #include "gui/font.h"
 #include "fx/fx.h"
-#else
-#include "x/model_manager.h"
+#else // for use in Edward
 #include "x/material.h"
+#include "x/model.h"
+#include "x/model_manager.h"
 #include "x/font.h"
 #endif
 
@@ -79,7 +80,6 @@ void MetaInit()
 	Engine.TimeScale = 1.0f;
 	Engine.FileErrorsAreCritical = false;
 
-	Engine.BeginningOfGame = false;
 	Engine.FirstFrame = false;
 	Engine.GameRunning = false;
 

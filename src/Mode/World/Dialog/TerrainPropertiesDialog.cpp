@@ -175,8 +175,8 @@ void TerrainPropertiesDialog::OnClose()
 
 void TerrainPropertiesDialog::OnAddTextureLevel()
 {
-	if (temp.NumTextures >= WORLD_MAX_TEXTURES_PER_TERRAIN){
-		ed->ErrorBox(format(_("Es sind nur maximal %d Texturen pro Terrain erlaubt!"), WORLD_MAX_TEXTURES_PER_TERRAIN));
+	if (temp.NumTextures >= MATERIAL_MAX_TEXTURES){
+		ed->ErrorBox(format(_("Es sind nur maximal %d Texturen pro Terrain erlaubt!"), MATERIAL_MAX_TEXTURES));
 		return;
 	}
 	int l = temp.NumTextures;

@@ -75,6 +75,7 @@ struct GodLevelData
 	vector sun_ang;
 	color ambient;
 
+	bool physics_enabled;
 	vector gravity;
 	Fog fog;
 };

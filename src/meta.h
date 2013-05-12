@@ -40,7 +40,7 @@ struct EngineData
 	float FpsMax, FpsMin;
 	float TimeScale, Elapsed, ElapsedRT;
 
-	bool BeginningOfGame, FirstFrame;
+	bool FirstFrame;
 	bool GameRunning;
 
 	bool FileErrorsAreCritical;

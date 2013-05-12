@@ -8,58 +8,20 @@ class matrix;
 struct quaternion
 {
 public:
-	float x,y,z,w;
+	float x, y, z, w;
 	quaternion(){};
-	quaternion(const float w,const vector &v)
-	{	this->w=w;	this->x=v.x;	this->y=v.y;	this->z=v.z;	}
-	bool operator == (const quaternion& q) const
-	{	return ((x==q.x)&&(y==q.y)&&(z==q.z)&&(w==q.w));	}
-	bool operator != (const quaternion& q) const
-	{	return !((x==q.x)&&(y==q.y)&&(z==q.z)&&(w!=q.w));	}
-	quaternion& operator += (const quaternion& q)
-	{	x+=q.x;	y+=q.y;	z+=q.z;	w+=q.w;	return *this;	}
-	quaternion& operator -= (const quaternion& q)
-	{	x-=q.x;	y-=q.y;	z-=q.z;	w-=q.w;	return *this;	}
-	quaternion operator + (const quaternion &q) const
-	{
-		quaternion r;
-		r.x=q.x+x;
-		r.y=q.y+y;
-		r.z=q.z+z;
-		r.w=q.w+w;
-		return r;
-	}
-	quaternion operator - (const quaternion &q) const
-	{
-		quaternion r;
-		r.x=q.x-x;
-		r.y=q.y-y;
-		r.z=q.z-z;
-		r.w=q.w-w;
-		return r;
-	}
-	quaternion operator * (float f) const
-	{
-		quaternion r;
-		r.x=x*f;
-		r.y=y*f;
-		r.z=z*f;
-		r.w=w*f;
-		return r;
-	}
-	quaternion operator * (const quaternion &q) const
-	{
-		quaternion r;
-		r.w = w*q.w - x*q.x - y*q.y - z*q.z;
-		r.x = w*q.x + x*q.w + y*q.z - z*q.y;
-		r.y = w*q.y + y*q.w + z*q.x - x*q.z;
-		r.z = w*q.z + z*q.w + x*q.y - y*q.x;
-		return r;
-	}
+	quaternion(const float w,const vector &v);
+	bool operator == (const quaternion& q) const;
+	bool operator != (const quaternion& q) const;
+	quaternion& operator += (const quaternion& q);
+	quaternion& operator -= (const quaternion& q);
+	quaternion operator + (const quaternion &q) const;
+	quaternion operator - (const quaternion &q) const;
+	quaternion operator * (float f) const;
+	quaternion operator * (const quaternion &q) const;
 	friend quaternion operator * (float f,const quaternion &q)
 	{	return q*f;	}
-	string str() const
-	{	return format("(%f, %f, %f, %f)", x, y, z, w);	}
+	string str() const;
 
 	void normalize();
 	void inverse();
@@ -68,10 +30,8 @@ public:
 	vector get_angles() const;
 
 	// kaba
-	void imul(const quaternion &q)
-	{	*this = (*this) * q;	}
-	quaternion mul(const quaternion &q) const
-	{	return (*this) * q;	}
+	void imul(const quaternion &q);
+	quaternion mul(const quaternion &q) const;
 };
 // qaternions
 void _cdecl QuaternionRotationA(quaternion &q, const vector &axis, float w);

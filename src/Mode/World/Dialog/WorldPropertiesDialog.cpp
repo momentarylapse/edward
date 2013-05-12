@@ -246,6 +246,7 @@ void WorldPropertiesDialog::FillScriptList()
 
 void WorldPropertiesDialog::ApplyData()
 {
+	temp.PhysicsEnabled = IsChecked("physics_enabled");
 	temp.Gravity.x = GetFloat("gravitation_x");
 	temp.Gravity.y = GetFloat("gravitation_y");
 	temp.Gravity.z = GetFloat("gravitation_z");

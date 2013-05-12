@@ -454,27 +454,25 @@ void Camera::SetViewLocal()
 
 vector Camera::Project(const vector &v)
 {
-	float f[4];
-	f[0] = m_all._00 * v.x + m_all._01 * v.y + m_all._02 * v.z + m_all._03;
-	f[1] = m_all._10 * v.x + m_all._11 * v.y + m_all._12 * v.z + m_all._13;
-	f[2] = m_all._20 * v.x + m_all._21 * v.y + m_all._22 * v.z + m_all._23;
-	f[3] = m_all._30 * v.x + m_all._31 * v.y + m_all._32 * v.z + m_all._33;
-	if (f[3] <= 0)
+	float x = m_all._00 * v.x + m_all._01 * v.y + m_all._02 * v.z + m_all._03;
+	float y = m_all._10 * v.x + m_all._11 * v.y + m_all._12 * v.z + m_all._13;
+	float z = m_all._20 * v.x + m_all._21 * v.y + m_all._22 * v.z + m_all._23;
+	float w = m_all._30 * v.x + m_all._31 * v.y + m_all._32 * v.z + m_all._33;
+	if (w <= 0)
 		return vector(0, 0, -1);
-	return vector(f[0] / f[3] * 0.5f + 0.5f, 0.5f - f[1] / f[3] * 0.5f, f[2] / f[3]);
+	return vector(x/w * 0.5f + 0.5f, 0.5f - y/w * 0.5f, z/w * 0.5f + 0.5f);
 }
 
 vector Camera::Unproject(const vector &v)
 {
-	float f[4], g[3];
-	g[0] = (v.x - 0.5f) * 2;
-	g[1] = (0.5f - v.y) * 2;
-	g[2] = v.z;
-	f[0] = m_all._00 * g[0] + m_all._01 * g[1] + m_all._02 * g[2] + m_all._03;
-	f[1] = m_all._10 * g[0] + m_all._11 * g[1] + m_all._12 * g[2] + m_all._13;
-	f[2] = m_all._20 * g[0] + m_all._21 * g[1] + m_all._22 * g[2] + m_all._23;
-	f[3] = m_all._30 * g[0] + m_all._31 * g[1] + m_all._32 * g[2] + m_all._33;
-	return vector(f[0], f[1], f[2]);
+	float xx = (v.x - 0.5f) * 2;
+	float yy = (0.5f - v.y) * 2;
+	float zz = (v.z - 0.5f) * 2;
+	float x = im_all._00 * xx + im_all._01 * yy + im_all._02 * zz + im_all._03;
+	float y = im_all._10 * xx + im_all._11 * yy + im_all._12 * zz + im_all._13;
+	float z = im_all._20 * xx + im_all._21 * yy + im_all._22 * zz + im_all._23;
+	float w = im_all._30 * xx + im_all._31 * yy + im_all._32 * zz + im_all._33;
+	return vector(x, y, z) / w;
 }
 
 void CameraShiftAll(const vector &dpos)

@@ -15,6 +15,7 @@
 #include "model_manager.h"
 #include "terrain.h"
 #include "../meta.h"
+#include "../lib/nix/nix.h"
 #ifdef _X_ALLOW_X_
 #include "../physics/physics.h"
 #include "../physics/links.h"
@@ -22,7 +23,6 @@
 #include "../fx/fx.h"
 #include "../fx/light.h"
 #endif
-#include "../lib/nix/nix.h"
 #include "camera.h"
 
 
@@ -341,6 +341,8 @@ bool GodLoadWorldFromLevelData()
 	GodNetMsgEnabled = false;
 	bool ok = true;
 
+	Engine.PhysicsEnabled = LevelData.physics_enabled;
+	Engine.CollisionsEnabled = true;//LevelData.physics_enabled;
 	World.gravity = LevelData.gravity;
 	World.fog = LevelData.fog;
 
@@ -509,6 +511,9 @@ bool GodLoadWorld(const string &filename)
 		// Ambient
 		f->ReadComment();
 		LevelData.ambient = ReadColor3(f);
+		if (f->ReadStr() != "#"){
+			LevelData.physics_enabled = f->ReadBool();
+		}
 	}
 
 	// Fields
@@ -1002,15 +1007,17 @@ void GodCalcMove()
 #endif
 
 	TestObjectSanity("God::CM prae");
+	bool phys_en = Engine.PhysicsEnabled;// && (!Engine.FirstFrame);
+	bool coll_en = Engine.CollisionsEnabled;// && (!Engine.FirstFrame);
 
 	// no physics?
-	if (!Engine.PhysicsEnabled){
+	if (!phys_en){
 		for (int i=0;i<Objects.num;i++)
 			if (Objects[i])
 				Objects[i]->UpdateMatrix();
 		ResetExternalForces();
 		return;
-	}else if (!Engine.CollisionsEnabled){
+	}else if (!coll_en){
 		for (int i=0;i<Objects.num;i++)
 			if (Objects[i])
 				//if (!Objects[i]->Frozen)
