@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-michisoft-x-font">
+         <comment xml:lang="de">x9 Font</comment>
+         <comment xml:lang="en">x9 Font</comment>
+         <desktop:can-edit-with>michisoft-edward.desktop</desktop:can-edit-with>
+         <glob pattern="*.xfont"/>
+  </mime-type>
+</mime-info>

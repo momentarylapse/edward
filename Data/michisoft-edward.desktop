@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Edward Game Editor
+Name[de]=Edward Spiele Editor
+Comment=Editor for the MichiSoft x9 Game Engine
+Comment[de]=Editor der MichiSoft x9 Spiele-Engine
+Categories=Graphics;3DGraphics;
+TryExec=/usr/bin/edward
+Exec=/usr/bin/edward
+Icon=/usr/share/edward/Data/icon.svg
+MimeType=application/x-michisoft-x-model;application/x-michisoft-x-terrain;application/x-michisoft-x-world;application/x-michisoft-x-font;application/x-michisoft-x-material
+
