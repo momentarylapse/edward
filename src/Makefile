@@ -22,4 +22,9 @@ install : all
 	xdg-icon-resource install --context mimetypes --size  48 ../Data/icons/png/model_48.png  application-x-michisoft-x-model --noupdate
 	xdg-icon-resource install --context mimetypes --size  64 ../Data/icons/png/model_64.png  application-x-michisoft-x-model --noupdate
 	xdg-icon-resource install --context mimetypes --size  128 ../Data/icons/png/model_128.png  application-x-michisoft-x-model
+	xdg-mime install ../Data/michisoft-x-font.xml
+	xdg-icon-resource install --context mimetypes --size  32 ../Data/icons/png/font_32.png  application-x-michisoft-x-font --noupdate
+	xdg-icon-resource install --context mimetypes --size  48 ../Data/icons/png/font_48.png  application-x-michisoft-x-font --noupdate
+	xdg-icon-resource install --context mimetypes --size  64 ../Data/icons/png/font_64.png  application-x-michisoft-x-font --noupdate
+	xdg-icon-resource install --context mimetypes --size  128 ../Data/icons/png/font_128.png  application-x-michisoft-x-font
 	cp $(BIN) /usr/bin
