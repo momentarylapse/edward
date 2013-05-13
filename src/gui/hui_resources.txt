@@ -5903,7 +5903,7 @@ menu_model
 0
 
 
-155
+153
 ItemPopup
 menu_model_file
 
@@ -6701,7 +6701,7 @@ ItemPopup
 menu_model_appearance
 
 1
-15
+13
 0
 0
 0
@@ -6984,59 +6984,7 @@ ItemSeparator
 
 
 Item
-menu_poly2_header
-
-0
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-choose_material
-hui:open
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-text_from_bg
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemSeparator
-
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-current_material
+menu_model_material
 
 0
 0
@@ -7049,7 +6997,7 @@ current_material
 
 
 Item
-mode_model_material
+mode_model_materials
 
 1
 0
@@ -7062,21 +7010,8 @@ mode_model_material
 
 
 Item
-transparency
+edit_current_material
 
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-model_colors
-hui:select-color
 1
 0
 0
@@ -7100,6 +7035,19 @@ mode_model_texture
 0
 
 
+ItemImage
+choose_material
+hui:open
+1
+0
+0
+0
+0
+0
+0
+0
+
+
 ItemSeparator
 
 
@@ -7114,7 +7062,33 @@ ItemSeparator
 
 
 Item
-mode_model_materials
+menu_mapping
+
+0
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+text_from_bg
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+automapping
 
 1
 0
@@ -7127,7 +7101,7 @@ mode_model_materials
 
 
 ItemPopup
-menu_model_functions
+menu_model_geometry
 
 1
 25
@@ -16295,7 +16269,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-723
+722
 // Text
 ad_dialog
 Verwaltung
@@ -16381,6 +16355,8 @@ appearance
 Aussehen...
 apply
 Übernehmen
+automapping
+Automatisch (Alles)
 autoweld_surfaces
 Verschweißen
 bevel_vertices
@@ -16420,7 +16396,7 @@ Kamera-Fahrt laden...
 cancel
 Abbrechen
 choose_material
-Mit Material belegen...
+Polygone belegen...
 clear_texture_level
 Leeren
 connect
@@ -16433,8 +16409,6 @@ create_objects
 Objekte...
 creator
 
-current_material
-Aktuelles Material
 current_mode_font
 -Schrift-Modus-
 current_mode_model_skeleton
@@ -16493,6 +16467,8 @@ eat_quality
 !bold\\Qualitätsfaktor
 eat_vertices
 
+edit_current_material
+Aktuelles Material...
 edit_material
 !noexpandx\\Bearb.
 edit_object
@@ -16911,6 +16887,8 @@ menu_font_edit
 Bearbeiten
 menu_help
 ?
+menu_mapping
+Texture Mapping
 menu_material
 Material
 menu_material_properties
@@ -16927,12 +16905,14 @@ menu_model_export
 Exportieren
 menu_model_file
 Datei
-menu_model_functions
-Operationen
 menu_model_fx
 Effekte
+menu_model_geometry
+Geometrie
 menu_model_import
 Importieren
+menu_model_material
+Materialien
 menu_model_mode
 Bearbeitungsmodus
 menu_model_move
@@ -16957,8 +16937,6 @@ menu_move
 
 menu_nomode
 
-menu_poly2_header
-Polygone
 menu_rightmouse
 Rechte Maustaste
 menu_skeleton
@@ -17007,10 +16985,8 @@ mode_model_animation
 Animation
 mode_model_edge
 Kanten
-mode_model_material
-Material...
 mode_model_materials
-Materialien...
+Materialliste...
 mode_model_mesh
 Mesh
 mode_model_skeleton
@@ -17027,8 +17003,6 @@ mode_model_vertex
 Vertex-Punkte
 mode_properties
 Eigenschaften...
-model_colors
-Farben...
 model_description
 
 model_dialog
@@ -17570,7 +17544,7 @@ terrain_z
 text
 
 text_from_bg
-Texturkoordinaten aus Hintergrund
+Aus Hintergrund (Auswahl)
 texture
 Textur...
 texture_choose
@@ -17587,8 +17561,6 @@ texture_menu_sign
 Textur
 textures
 !format=tTTit\\Ebene\\Größe X\\Größe Z\\\\Datei
-transparency
-Transparenz...
 transparency_mode
   --keine--\\Color-Key (weich)\\Color-Key (hart)\\Faktor\\Funktion
 transparency_mode:color_key
@@ -17749,7 +17721,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-723
+722
 // Text
 ad_dialog
 Administration
@@ -17835,6 +17807,8 @@ appearance
 Appearance...
 apply
 Apply
+automapping
+
 autoweld_surfaces
 
 bevel_vertices
@@ -17887,8 +17861,6 @@ create_objects
 Objects...
 creator
 
-current_material
-Current material
 current_mode_font
 -Font-Mode-
 current_mode_model_skeleton
@@ -17946,6 +17918,8 @@ eat_polygons
 eat_quality
 quality factor
 eat_vertices
+
+edit_current_material
 
 edit_material
 edit
@@ -18365,6 +18339,8 @@ menu_font_edit
 Edit
 menu_help
 ?
+menu_mapping
+
 menu_material
 Material
 menu_material_properties
@@ -18381,12 +18357,14 @@ menu_model_export
 Export
 menu_model_file
 File
-menu_model_functions
-Functions
 menu_model_fx
 Effects
+menu_model_geometry
+
 menu_model_import
 Import
+menu_model_material
+
 menu_model_mode
 Mode
 menu_model_move
@@ -18410,8 +18388,6 @@ Viewstage
 menu_move
 
 menu_nomode
-
-menu_poly2_header
 
 menu_rightmouse
 Right mouse button
@@ -18461,8 +18437,6 @@ mode_model_animation
 Animation
 mode_model_edge
 Edges
-mode_model_material
-Material...
 mode_model_materials
 Materials...
 mode_model_mesh
@@ -18481,8 +18455,6 @@ mode_model_vertex
 Vertices
 mode_properties
 Properties...
-model_colors
-Colors...
 model_description
 
 model_dialog
@@ -19041,8 +19013,6 @@ texture_menu_sign
 Texture
 textures
 !format=tTTit\\Level\\Size X\\Size Z\\\\File
-transparency
-transparency...
 transparency_mode
   --none--\\color keyed (smooth)\\color keyed (hard)\\factor\\function
 transparency_mode:color_key
@@ -19503,7 +19473,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-723
+722
 // Text
 ad_dialog
 
@@ -19589,6 +19559,8 @@ appearance
 外観
 apply
 適用
+automapping
+
 autoweld_surfaces
 
 bevel_vertices
@@ -19640,8 +19612,6 @@ create_lightmap
 create_objects
 オブジェクト...
 creator
-
-current_material
 
 current_mode_font
 [フォント　の　モード]
@@ -19700,6 +19670,8 @@ eat_polygons
 eat_quality
 
 eat_vertices
+
+edit_current_material
 
 edit_material
 編集
@@ -20119,6 +20091,8 @@ menu_font_edit
 編集
 menu_help
 ヘルプ
+menu_mapping
+
 menu_material
 マテリアル
 menu_material_properties
@@ -20135,12 +20109,14 @@ menu_model_export
 エクスポート
 menu_model_file
 ファイル
-menu_model_functions
-機能
 menu_model_fx
 効果
+menu_model_geometry
+
 menu_model_import
 インポート
+menu_model_material
+
 menu_model_mode
 編集モード
 menu_model_move
@@ -20164,8 +20140,6 @@ menu_model_viewstage
 menu_move
 
 menu_nomode
-
-menu_poly2_header
 
 menu_rightmouse
 
@@ -20215,8 +20189,6 @@ mode_model_animation
 
 mode_model_edge
 
-mode_model_material
-
 mode_model_materials
 
 mode_model_mesh
@@ -20235,8 +20207,6 @@ mode_model_vertex
 
 mode_properties
 設定...
-model_colors
-
 model_description
 
 model_dialog
@@ -20795,8 +20765,6 @@ texture_menu_sign
 
 textures
 
-transparency
-透明...
 transparency_mode
   --none--\\color keyed (smooth)\\color keyed (hard)\\factor\\function
 transparency_mode:color_key

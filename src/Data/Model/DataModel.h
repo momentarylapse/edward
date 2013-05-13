@@ -311,6 +311,7 @@ public:
 	void PasteGeometry(ModelGeometry &geo);
 	void Easify(float factor);
 	void SubdivideSelectedSurfaces();
+	void Automap(int material, int texture_level);
 
 
 	// properties
