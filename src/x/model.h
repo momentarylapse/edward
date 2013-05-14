@@ -47,7 +47,7 @@ class CopyAsRefArray : public Array<T>
 	public:
 		void operator = (const CopyAsRefArray<T> &a)
 		{
-			set_ref(a);
+			this->set_ref(a);
 		}
 		void forget()
 		{

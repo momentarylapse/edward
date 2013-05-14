@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?fileVersion 4.0.0?>
-
-<cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="cdt.managedbuild.config.gnu.exe.debug.811115969">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.exe.debug.811115969" moduleId="org.eclipse.cdt.core.settings" name="Debug">
@@ -39,6 +37,7 @@
 								<option id="gnu.cpp.link.option.shared.1615178824" name="Shared (-shared)" superClass="gnu.cpp.link.option.shared"/>
 								<option id="gnu.cpp.link.option.libs.1904223039" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="GL"/>
+									<listOptionValue builtIn="false" value="X11"/>
 									<listOptionValue builtIn="false" value="GLU"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1887307735" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
@@ -93,6 +92,7 @@
 								<option id="gnu.cpp.link.option.shared.507306542" name="Shared (-shared)" superClass="gnu.cpp.link.option.shared"/>
 								<option id="gnu.cpp.link.option.libs.1226023394" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="GL"/>
+									<listOptionValue builtIn="false" value="X11"/>
 									<listOptionValue builtIn="false" value="GLU"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1032038941" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
@@ -383,4 +383,5 @@
 			</profile>
 		</scannerConfigBuildInfo>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 </cproject>
