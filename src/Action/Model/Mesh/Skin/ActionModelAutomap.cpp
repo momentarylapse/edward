@@ -136,6 +136,32 @@ void Island::map_primitive(DataModel *m)
 		}
 	}
 
+	// find rotation with smallest width
+	float phi_min = -1;
+	float w_min;
+	for (float phi=0; phi<pi; phi += 0.05f){
+		vector v = vector(cos(phi), sin(phi), 0);
+		float p_min = v * skin[0];
+		float p_max = v * skin[0];
+		for (int i=1; i<skin.num;i++){
+			float p = v * skin[i];
+			p_min = min(p_min, p);
+			p_max = max(p_max, p);
+		}
+		float w = p_max - p_min;
+		if ((w < w_min) || (phi == 0)){
+			w_min = w;
+			phi_min = phi;
+		}
+	}
+
+	// rotate
+	matrix rot;
+	MatrixRotationZ(rot, -phi_min);
+	foreach(vector &v, skin)
+		v = rot * v;
+
+
 	// find boundary box
 	r = rect(skin[0].x, skin[0].x, skin[0].y, skin[0].y);
 	foreach(vector &v, skin){
