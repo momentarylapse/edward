@@ -9,7 +9,6 @@
 #define ACTIONMODELAUTOMAP_H_
 
 #include "../../../Action.h"
-#include "../../../../x/material.h"
 #include "../../../../lib/math/math.h"
 class DataModel;
 
@@ -28,7 +27,7 @@ public:
 private:
 	int material;
 	int texture_level;
-	Array<vector> old_pos[MATERIAL_MAX_TEXTURES];
+	Array<vector> old_pos;
 };
 
 #endif /* ACTIONMODELAUTOMAP_H_ */
