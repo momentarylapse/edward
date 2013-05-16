@@ -64,7 +64,7 @@ void ModeModel::OnStart()
 	ed->ToolbarAddItemCheckable(_("Skelett"),_("Skelett"), dir + "mode_skeletton.png", "mode_model_skeleton");
 	ed->ToolbarAddItemCheckable(_("Animation"),_("Animation"), dir + "mode_move.png", "mode_model_animation");
 	//ed->ToolbarAddItem(_("Texturen"),_("Texturen"), dir + "mode_textures.png", "mode_model_texture");
-	ed->ToolbarAddItem(_("Material"),_("aktuelles Material"), dir + "mode_textures.png", "mode_model_material");
+	ed->ToolbarAddItem(_("Material"),_("aktuelles Material"), dir + "mode_textures.png", "edit_current_material");
 	//ed->ToolbarAddItem(_("Materialien"),_("Materialien"), dir + "mode_textures.png", "mode_model_materials");
 	ed->ToolbarAddItem(_("Eigenschaften"),_("Eigenschaften"), dir + "configure.png", "mode_properties");
 	ed->EnableToolbar(true);
