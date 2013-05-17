@@ -74,7 +74,7 @@ void ModeFont::OnDraw()
 	NixDrawRect(0, (float)MaxX, MaxY * 0.9f, (float)MaxY, 0);
 	NixSetColor(Black);
 	if (dialog)
-		XFDrawStr(0, (float)MaxY * 0.9f, (float)MaxY * 0.1f, 0, dialog->GetSampleText(), XFonts.num - 1);
+		XFDrawStr(0, (float)MaxY * 0.9f, 0, (float)MaxY * 0.1f, dialog->GetSampleText(), XFonts.num - 1);
 }
 
 
