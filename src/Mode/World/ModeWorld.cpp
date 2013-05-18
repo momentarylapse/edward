@@ -19,6 +19,7 @@
 #include "Dialog/ObjectPropertiesDialog.h"
 #include "Dialog/TerrainPropertiesDialog.h"
 #include "Dialog/TerrainHeightmapDialog.h"
+#include "Dialog/LightmapDialog.h"
 #include "Creation/ModeWorldCreateObject.h"
 #include "Creation/ModeWorldCreateTerrain.h"
 #include "Camera/ModeWorldCamera.h"
@@ -108,6 +109,8 @@ void ModeWorld::OnCommand(const string & id)
 			else
 				mode_world_camera->data->Reset();
 		}
+	if (id == "create_lightmap")
+		ExecuteLightmapDialog();
 
 	if (id == "own_figure")
 		SetEgo();
@@ -667,6 +670,14 @@ void ModeWorld::ExecuteObjectPropertiesDialog(int index)
 void ModeWorld::ExecuteTerrainPropertiesDialog(int index)
 {
 	TerrainPropertiesDialog *dlg = new TerrainPropertiesDialog(ed, false, data, index);
+	dlg->Update();
+
+	HuiWaitTillWindowClosed(dlg);
+}
+
+void ModeWorld::ExecuteLightmapDialog()
+{
+	LightmapDialog *dlg = new LightmapDialog(ed, false, data);
 	dlg->Update();
 
 	HuiWaitTillWindowClosed(dlg);

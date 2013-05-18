@@ -58,6 +58,7 @@ public:
 	void ExecuteWorldPropertiesDialog();
 	void ExecuteObjectPropertiesDialog(int index);
 	void ExecuteTerrainPropertiesDialog(int index);
+	void ExecuteLightmapDialog();
 	WorldPropertiesDialog *WorldDialog;
 
 	DataWorld *data;

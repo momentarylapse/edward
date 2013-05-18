@@ -1,30 +1,34 @@
 /*
- * Lightmap.cpp
+ * LightmapData.cpp
  *
  *  Created on: 18.05.2013
  *      Author: michi
  */
 
-#include "Lightmap.h"
+#include "LightmapData.h"
 #include "../../../Data/World/DataWorld.h"
 #include "../../../Data/Model/DataModel.h"
 #include "../../../x/object.h"
 #include "../../../x/model_manager.h"
 
-Lightmap::Lightmap()
+LightmapData::LightmapData(DataWorld *w)
 {
 	emissive_brightness = 1.0f;
 	allow_sun = true;
 	replace_objects = false;
 
 	color_exponent = 0.7f;
+
+	Init(w);
 }
 
-Lightmap::~Lightmap()
+LightmapData::~LightmapData()
 {
+	foreach(Model &m, Models)
+		delete(m.orig);
 }
 
-void Lightmap::Init(DataWorld *w)
+void LightmapData::Init(DataWorld *w)
 {
 	world_name_small = w->filename.basename().replace(".world", "");
 
@@ -78,7 +82,7 @@ void Lightmap::Init(DataWorld *w)
 }
 
 
-void Lightmap::AddModel(const string &filename, matrix &mat, int object_index)
+void LightmapData::AddModel(const string &filename, matrix &mat, int object_index)
 {
 	msg_db_r("lm_add_model", 1);
 

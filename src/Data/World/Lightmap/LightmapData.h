@@ -1,12 +1,12 @@
 /*
- * Lightmap.h
+ * LightmapData.h
  *
  *  Created on: 18.05.2013
  *      Author: michi
  */
 
-#ifndef LIGHTMAP_H_
-#define LIGHTMAP_H_
+#ifndef LIGHTMAPDATA_H_
+#define LIGHTMAPDATA_H_
 
 #include "../../../lib/base/base.h"
 #include "../../../lib/math/math.h"
@@ -14,11 +14,11 @@
 class DataModel;
 class DataWorld;
 
-class Lightmap
+class LightmapData
 {
 public:
-	Lightmap();
-	virtual ~Lightmap();
+	LightmapData(DataWorld *w);
+	virtual ~LightmapData();
 
 	float emissive_brightness;
 	bool allow_sun;
@@ -73,4 +73,4 @@ public:
 	Array<Light> Lights;
 };
 
-#endif /* LIGHTMAP_H_ */
+#endif /* LIGHTMAPDATA_H_ */
