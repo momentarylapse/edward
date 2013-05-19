@@ -21,10 +21,16 @@
 class LightmapPhotonMap : public Lightmap
 {
 public:
-	LightmapPhotonMap(LightmapData *data);
+	LightmapPhotonMap(LightmapData *data, int num_photons);
 	virtual ~LightmapPhotonMap();
 
 	virtual void Compute();
+	virtual Histogram GetHistogram();
+
+	int num_photons;
+	float e_all, e_per_photon;
+	Array<int> tria_i;
+	Array<float> tria_e;
 
 
 	struct PhotonEvent

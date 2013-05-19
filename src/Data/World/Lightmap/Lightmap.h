@@ -20,12 +20,18 @@ public:
 	virtual ~Lightmap();
 
 	void Create();
-	void Preview();
 	virtual void Compute(){};
 
 	LightmapData *data;
 
-	Array<float> histogram;
+	struct Histogram
+	{
+		float max;
+		Array<float> f;
+		void normalize();
+	};
+	Histogram Preview();
+	virtual Histogram GetHistogram();
 };
 
 #endif /* LIGHTMAP_H_ */

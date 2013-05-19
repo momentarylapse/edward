@@ -28,6 +28,7 @@ public:
 	float color_exponent;
 	vector min, max, center;
 	float large_distance;
+	float area;
 
 	void Init(DataWorld *w);
 	void AddModel(const string &filename, matrix &mat, int object_index);
@@ -58,6 +59,7 @@ public:
 		bool t_rot;
 		int ob_id;
 		color em;
+		float area;
 	};
 	Array<Triangle> Trias;
 

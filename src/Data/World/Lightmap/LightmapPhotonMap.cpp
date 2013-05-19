@@ -7,17 +7,31 @@
 
 #include "LightmapPhotonMap.h"
 #include "LightmapData.h"
+#include "../../../lib/file/file.h"
 
-LightmapPhotonMap::LightmapPhotonMap(LightmapData *_data) :
+LightmapPhotonMap::LightmapPhotonMap(LightmapData *_data, int _num_photons) :
 	Lightmap(_data)
 {
+	num_photons = _num_photons;
+
+	// distribute photons/energy
+	e_all = 0;
+
+	foreachi(LightmapData::Triangle &t, data->Trias, i){
+		if (t.em.r + t.em.g + t.em.b > 0.01f){
+			// emission * area
+			float e = (t.em.r + t.em.g + t.em.b) / 3 * t.area;
+			msg_write(f2s(e, 3));
+			e *= data->emissive_brightness;
+			tria_e.add(e);
+			e_all += e;
+			tria_i.add(i);
+		}
+	}
+	e_per_photon = e_all / (float)num_photons;
 }
 
 LightmapPhotonMap::~LightmapPhotonMap()
-{
-}
-
-void LightmapPhotonMap::Compute()
 {
 }
 
@@ -34,6 +48,35 @@ vector get_rand_dir(const vector &n)
 		dir = - dir;
 	dir.normalize();
 	return dir;
+}
+
+void LightmapPhotonMap::Compute()
+{
+	int work_id = 0;
+	for (int i=0;i<tria_i.num;i++){
+		int n_photons = (int)((float) num_photons * tria_e[i] /* / WorkGetNumThreads()*/ / e_all);
+		int ti = tria_i[i];
+		LightmapData::Triangle &t = data->Trias[ti];
+		msg_write("----");
+		for (int j=0;j<n_photons;j++){
+			float f, g;
+			do{
+				f = randf(1.0f);
+				g = randf(1.0f);
+			}while(f + g > 1);
+			vector p = t.v[0] + (t.v[1] - t.v[0]) * f + (t.v[2] - t.v[0]) * g;
+
+			vector dir = get_rand_dir(t.pl.n);
+			color c = t.em * (3.0f / (t.em.r + t.em.g + t.em.b));
+			//msg_write(format("%d / %d", j, n_photons));
+			Trace(thread_photon[work_id], p, dir, c * e_per_photon, ti, 0);
+			/*done ++;
+			if ((done % 100) == 99)
+				pm_num_done += 100;
+			//	Progress("", (float)done / (float)num_photons);*/
+		}
+	}
+	msg_write(thread_photon[work_id].num);
 }
 
 bool _LineIntersectsTriangle2_(const plane &pl,const vector &t1,const vector &t2,const vector &t3,const vector &l1,const vector &l2,vector &col,float &f, float &g)
@@ -85,6 +128,7 @@ void LightmapPhotonMap::Trace(Array<PhotonEvent> &ph, const vector &p, const vec
 	e.v = hit_p;
 	e.dir = dir;
 	e.c = c;
+	msg_write(c.str());
 	e.tria = hit_tria;
 	e.f = f;
 	e.g = g;
@@ -105,3 +149,25 @@ void LightmapPhotonMap::Trace(Array<PhotonEvent> &ph, const vector &p, const vec
 	}
 }
 
+
+Lightmap::Histogram LightmapPhotonMap::GetHistogram()
+{
+	msg_write(thread_photon[0].num);
+	Array<float> e;
+	e.resize(data->Trias.num);
+	foreach(PhotonEvent &ev, thread_photon[0]){
+		msg_write(ev.c.str());
+		e[ev.tria] += (ev.c.r + ev.c.g + ev.c.b) / 3.0f / data->Trias[ev.tria].area;
+	}
+	Lightmap::Histogram h;
+	h.max = 0;
+	foreach(float ee, e)
+		h.max = max(h.max, ee);
+	const int N = 128;
+	h.f.resize(N);
+	foreach(float ee, e)
+		if (ee > 0)
+			h.f[ee * N / h.max] += 1;
+	h.normalize();
+	return h;
+}

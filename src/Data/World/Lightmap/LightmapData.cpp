@@ -32,6 +32,7 @@ void LightmapData::Init(DataWorld *w)
 {
 	world_name_small = w->filename.basename().replace(".world", "");
 
+	area = 0;
 
 	// load data
 	foreachi(WorldObject &o, w->Objects, i)
@@ -49,6 +50,7 @@ void LightmapData::Init(DataWorld *w)
 		}
 	center = (min + max) / 2;
 	large_distance = 100 * (max - min).length();
+	msg_write(min.str() + " " + max.str() + " " + f2s(large_distance, 3));
 
 	/*for (int i=0;i<vertex.num;i++)
 		vertex[i].v -= lm_m;
@@ -114,6 +116,8 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 					t.n[l] = mat.transform_normal(p.Side[0].Normal);
 				}
 				t.em = m->Material[p.Material].Emission;
+				t.area = ((t.v[1] - t.v[0]) ^ (t.v[2] - t.v[0])).length() / 2;
+				area += t.area;
 				Trias.add(t);
 			}
 		}

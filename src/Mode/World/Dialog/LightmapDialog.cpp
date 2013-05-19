@@ -39,8 +39,10 @@ void LightmapDialog::OnOk()
 	msg_write("--------------------");
 	msg_write(lmd->Lights.num);
 	msg_write(lmd->Trias.num);
-	Lightmap *lm = new LightmapPhotonMap(lmd);
-	lm->Preview();
+	Lightmap *lm = new LightmapPhotonMap(lmd, 2000);
+	Lightmap::Histogram h = lm->Preview();
+	msg_write(f2s(h.max, 3));
+	msg_write(fa2s(h.f));
 	delete(lm);
 	delete(lmd);
 }
