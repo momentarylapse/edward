@@ -22,6 +22,8 @@ LightmapDialog::LightmapDialog(CHuiWindow *_parent, bool _allow_parent, DataWorl
 	EventM("ok", this, &LightmapDialog::OnOk);
 
 	//LoadData();
+	SetFloat("brightness", 1.0f);
+	SetInt("photons", 5000);
 }
 
 LightmapDialog::~LightmapDialog()
@@ -33,16 +35,48 @@ void LightmapDialog::OnClose()
 	delete(this);
 }
 
+static Lightmap::Histogram *hist_p;
+
+void OnHistDraw()
+{
+	HuiDrawingContext *c = HuiCurWindow->BeginDraw("area");
+	float w = c->width;
+	float h = c->height;
+	c->SetColor(White);
+	c->DrawRect(0, 0, w, h);
+	c->SetColor(Black);
+	for (int i=0;i<hist_p->f.num-1;i++){
+		c->DrawLine((w * i) / hist_p->f.num, h - h * hist_p->f[i], (w * (i + 1)) / hist_p->f.num, h - h * hist_p->f[i + 1]);
+	}
+	c->DrawStr(10, 10, f2s(hist_p->max, 3));
+	c->End();
+}
+
+void OnHistClose()
+{
+	delete(HuiCurWindow);
+}
+
+void ShowHistogram(Lightmap::Histogram &h, CHuiWindow *root)
+{
+	hist_p = &h;
+	CHuiWindow *dlg = HuiCreateDialog("Histogram", 400, 300, root, false);
+	dlg->AddDrawingArea("", 5, 5, 390, 290, "area");
+	dlg->EventX("area", "hui:redraw", &OnHistDraw);
+	dlg->Event("hui:close", &OnHistClose);
+	dlg->Update();
+
+	HuiWaitTillWindowClosed(dlg);
+}
+
 void LightmapDialog::OnOk()
 {
 	LightmapData *lmd = new LightmapData(data);
-	msg_write("--------------------");
-	msg_write(lmd->Lights.num);
-	msg_write(lmd->Trias.num);
-	Lightmap *lm = new LightmapPhotonMap(lmd, 2000);
+	lmd->emissive_brightness = GetFloat("brightness");
+	lmd->allow_sun = IsChecked("allow_sun");
+	Lightmap *lm = new LightmapPhotonMap(lmd, GetInt("photons"));
 	Lightmap::Histogram h = lm->Preview();
-	msg_write(f2s(h.max, 3));
-	msg_write(fa2s(h.f));
+	ShowHistogram(h, this);
 	delete(lm);
 	delete(lmd);
 }

@@ -75,8 +75,8 @@ void LightmapPhotonMap::Compute()
 				pm_num_done += 100;
 			//	Progress("", (float)done / (float)num_photons);*/
 		}
+		msg_write(thread_photon[work_id].num);
 	}
-	msg_write(thread_photon[work_id].num);
 }
 
 bool _LineIntersectsTriangle2_(const plane &pl,const vector &t1,const vector &t2,const vector &t3,const vector &l1,const vector &l2,vector &col,float &f, float &g)
@@ -128,7 +128,6 @@ void LightmapPhotonMap::Trace(Array<PhotonEvent> &ph, const vector &p, const vec
 	e.v = hit_p;
 	e.dir = dir;
 	e.c = c;
-	msg_write(c.str());
 	e.tria = hit_tria;
 	e.f = f;
 	e.g = g;
@@ -156,7 +155,6 @@ Lightmap::Histogram LightmapPhotonMap::GetHistogram()
 	Array<float> e;
 	e.resize(data->Trias.num);
 	foreach(PhotonEvent &ev, thread_photon[0]){
-		msg_write(ev.c.str());
 		e[ev.tria] += (ev.c.r + ev.c.g + ev.c.b) / 3.0f / data->Trias[ev.tria].area;
 	}
 	Lightmap::Histogram h;
