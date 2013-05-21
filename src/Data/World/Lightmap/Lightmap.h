@@ -33,6 +33,9 @@ public:
 	};
 	Histogram Preview();
 	virtual Histogram GetHistogram();
+
+	class AbortException
+	{};
 };
 
 #endif /* LIGHTMAP_H_ */

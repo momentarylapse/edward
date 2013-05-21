@@ -33,14 +33,17 @@ Lightmap::~Lightmap()
 
 void Lightmap::Create()
 {
-	ed->progress->Start(_("berechne Licht"), 0);
-	Compute();
-	ed->progress->End();
+	ed->progress->StartCancelable(_("berechne Licht"), 0);
+	try{
+		Compute();
+		ed->progress->End();
 
-	data->AddTextureLevels();
+		data->AddTextureLevels();
 
-	ed->progress->Start(_("berechne Textur"), 0);
-	RenderToTexture();
+		ed->progress->StartCancelable(_("berechne Textur"), 0);
+		RenderToTexture();
+	}catch(AbortException &e){
+	}
 	ed->progress->End();
 }
 
@@ -52,8 +55,11 @@ Lightmap::Histogram Lightmap::GetHistogram()
 
 Lightmap::Histogram Lightmap::Preview()
 {
-	ed->progress->Start(_("berechne Licht"), 0);
-	Compute();
+	ed->progress->StartCancelable(_("berechne Licht"), 0);
+	try{
+		Compute();
+	}catch(AbortException &e){
+	}
 	ed->progress->End();
 	return GetHistogram();
 }

@@ -82,6 +82,8 @@ void LightmapPhotonMap::Compute()
 			done ++;
 			if ((done & 255) == 0)
 				ed->progress->Set(format(_("%d von %d"), done, num_photons), (float)done / (float)num_photons);
+			if (ed->progress->IsCancelled())
+				throw Lightmap::AbortException();
 		}
 	}
 	photon.append(thread_photon[work_id]);
@@ -477,6 +479,8 @@ void LightmapPhotonMap::RenderToTexture()
 					}
 				}
 			ed->progress->Set(format(_("%d von %d"), i, data->Trias.num), (float)i / (float)data->Trias.num);
+			if (ed->progress->IsCancelled())
+				throw Lightmap::AbortException();
 		}
 
 		/*foreach(PhotonEvent &ev, photon){
