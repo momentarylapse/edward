@@ -10,6 +10,7 @@
 
 #include "../../../lib/hui/hui.h"
 class DataWorld;
+class LightmapData;
 
 class LightmapDialog: public CHuiWindow
 {
@@ -17,11 +18,15 @@ public:
 	LightmapDialog(CHuiWindow *_parent, bool _allow_parent, DataWorld *_data);
 	virtual ~LightmapDialog();
 
+	void SetData();
+
 	void OnOk();
+	void OnPreview();
 	void OnClose();
 
 private:
 	DataWorld *data;
+	LightmapData *lmd;
 };
 
 #endif /* LIGHTMAPDIALOG_H_ */

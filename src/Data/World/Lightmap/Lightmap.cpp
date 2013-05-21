@@ -7,6 +7,8 @@
 
 #include "Lightmap.h"
 #include "LightmapData.h"
+#include "../../../Edward.h"
+#include "../../../Stuff/Progress.h"
 
 void Lightmap::Histogram::normalize()
 {
@@ -31,7 +33,15 @@ Lightmap::~Lightmap()
 
 void Lightmap::Create()
 {
+	ed->progress->Start(_("berechne Licht"), 0);
 	Compute();
+	ed->progress->End();
+
+	data->AddTextureLevels();
+
+	ed->progress->Start(_("berechne Textur"), 0);
+	RenderToTexture();
+	ed->progress->End();
 }
 
 Lightmap::Histogram Lightmap::GetHistogram()

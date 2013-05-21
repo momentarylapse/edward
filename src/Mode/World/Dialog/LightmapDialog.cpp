@@ -20,19 +20,35 @@ LightmapDialog::LightmapDialog(CHuiWindow *_parent, bool _allow_parent, DataWorl
 	EventM("cancel", this, &LightmapDialog::OnClose);
 	EventM("hui:close", this, &LightmapDialog::OnClose);
 	EventM("ok", this, &LightmapDialog::OnOk);
+	EventM("preview", this, &LightmapDialog::OnPreview);
 
 	//LoadData();
-	SetFloat("brightness", 1.0f);
+	SetFloat("brightness", 10.0f);
+	SetFloat("exponent", 1.0f);
 	SetInt("photons", 5000);
+
+	lmd = new LightmapData(data);
+
+	foreach(LightmapData::Model &m, lmd->Models)
+		AddString("lightmap_list", m.orig_name);
+	Enable("ok", lmd->Models.num > 0);
 }
 
 LightmapDialog::~LightmapDialog()
 {
+	delete(lmd);
 }
 
 void LightmapDialog::OnClose()
 {
 	delete(this);
+}
+
+void LightmapDialog::SetData()
+{
+	lmd->emissive_brightness = GetFloat("brightness");
+	lmd->color_exponent = GetFloat("exponent");
+	lmd->allow_sun = IsChecked("allow_sun");
 }
 
 static Lightmap::Histogram *hist_p;
@@ -69,15 +85,21 @@ void ShowHistogram(Lightmap::Histogram &h, CHuiWindow *root)
 	HuiWaitTillWindowClosed(dlg);
 }
 
-void LightmapDialog::OnOk()
+void LightmapDialog::OnPreview()
 {
-	LightmapData *lmd = new LightmapData(data);
-	lmd->emissive_brightness = GetFloat("brightness");
-	lmd->allow_sun = IsChecked("allow_sun");
+	SetData();
 	Lightmap *lm = new LightmapPhotonMap(lmd, GetInt("photons"));
 	Lightmap::Histogram h = lm->Preview();
 	ShowHistogram(h, this);
 	delete(lm);
-	delete(lmd);
+}
+
+void LightmapDialog::OnOk()
+{
+	SetData();
+	Lightmap *lm = new LightmapPhotonMap(lmd, GetInt("photons"));
+	lm->Create();
+	delete(lm);
+	delete(this);
 }
 

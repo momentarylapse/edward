@@ -30,6 +30,7 @@ LightmapData::~LightmapData()
 
 void LightmapData::Init(DataWorld *w)
 {
+	msg_db_f("LightmapData.Init", 1);
 	world_name_small = w->filename.basename().replace(".world", "");
 
 	area = 0;
@@ -41,6 +42,8 @@ void LightmapData::Init(DataWorld *w)
 			msg_write(o.FileName);
 			AddModel(o.FileName, o.object->_matrix, i);
 		}
+	if (Trias.num == 0)
+		return;
 
 	min =  max = Trias[0].v[0];
 	for (int i=0;i<Trias.num;i++)
@@ -50,7 +53,7 @@ void LightmapData::Init(DataWorld *w)
 		}
 	center = (min + max) / 2;
 	large_distance = 100 * (max - min).length();
-	msg_write(min.str() + " " + max.str() + " " + f2s(large_distance, 3));
+	//msg_write(min.str() + " " + max.str() + " " + f2s(large_distance, 3));
 
 	/*for (int i=0;i<vertex.num;i++)
 		vertex[i].v -= lm_m;
@@ -86,10 +89,10 @@ void LightmapData::Init(DataWorld *w)
 
 void LightmapData::AddModel(const string &filename, matrix &mat, int object_index)
 {
-	msg_db_r("lm_add_model", 1);
+	msg_db_f("lm_add_model", 1);
 
 	Model mod;
-	mod.id = Models.num + 1;
+	mod.id = Models.num;
 
 	mod.orig_name = filename.basename();
 	msg_write(mod.orig_name);
@@ -103,18 +106,23 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 
 	mod.new_name = format("Lightmap/%s/%s_%d", world_name_small.c_str(), mod.orig_name.c_str(), mod.id);
 
-	foreach(ModelSurface &s, m->Surface){
+	foreachi(ModelSurface &s, m->Surface, surf){
 		s.UpdateNormals();
-		foreach(ModelPolygon &p, s.Polygon){
+		foreachi(ModelPolygon &p, s.Polygon, i){
 			if (p.TriangulationDirty)
 				p.UpdateTriangulation(m);
 			for (int k=0;k<p.Side.num-2;k++){
 				Triangle t;
+				t.mod_id = mod.id;
+				t.surf = surf;
+				t.poly = i;
+				t.side = k;
 				for (int l=0;l<3;l++){
 					int n = p.Side[k].Triangulation[l];
 					t.v[l] = mat * m->Vertex[p.Side[n].Vertex].pos;
 					t.n[l] = mat.transform_normal(p.Side[0].Normal);
 				}
+				PlaneFromPoints(t.pl, t.v[0], t.v[1], t.v[2]);
 				t.em = m->Material[p.Material].Emission;
 				t.area = ((t.v[1] - t.v[0]) ^ (t.v[2] - t.v[0])).length() / 2;
 				area += t.area;
@@ -150,7 +158,15 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 
 	mod.num_trias = Trias.num - mod.offset;
 	Models.add(mod);
+}
 
-	msg_db_l(1);
+void LightmapData::AddTextureLevels()
+{
+	foreach(Model &m, Models){
+		foreach(ModelMaterial &mat, m.orig->Material){
+			mat.NumTextures ++;
+		}
+		m.orig->Automap(-1, 1); // TODO...
+	}
 }
 

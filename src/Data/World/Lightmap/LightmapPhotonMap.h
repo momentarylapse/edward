@@ -25,7 +25,10 @@ public:
 	virtual ~LightmapPhotonMap();
 
 	virtual void Compute();
+	virtual void RenderToTexture();
 	virtual Histogram GetHistogram();
+
+	void CreateBalancedTree();
 
 	int num_photons;
 	float e_all, e_per_photon;

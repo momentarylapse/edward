@@ -14383,7 +14383,7 @@ lightmap_dialog
 0
 
 
-16
+17
 DefButton
 ok
 hui:ok
@@ -14585,7 +14585,20 @@ replace_objects
 1
 10
 445
-100
+90
+25
+-1
+0
+0
+
+
+Button
+preview
+
+1
+110
+445
+90
 25
 -1
 0
@@ -17280,7 +17293,7 @@ pos_y
 pos_z
 
 preview
-
+Vorschau
 progress_bar
 
 progress_cancelable_dialog

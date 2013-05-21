@@ -1,46 +1,25 @@
-// IDs
-enum{
-	HMM_LIGHTMAP_DIALOG,
-	HMM_OK,
-	HMM_CANCEL,
-	HMM_LIGHTMAP_LIST,
-	HMM_LMT_SPACIAL_RESOLUTION,
-	HMM_RESOLUTION,
-	HMM_LU,
-	HMM_LIGHTMAP_TYPE,
-	HMM_LIGHTMAP_SIZE,
-	HMM_LMT_PHOTONS,
-	HMM_PHOTONS,
-	HMM_LMT_BRIGHTNESS,
-	HMM_BRIGHTNESS,
-	HMM_ALLOW_SUN,
-	HMM_LMT_EXPONENT,
-	HMM_EXPONENT,
-	HMM_REPLACE_OBJECTS
-};
-
-
 	// dialog
-	LightmapDialog=HuiCreateDialog("Lightmap erzeugen",420,485,MainWin,false,&LightmapDialogFunction);
-	LightmapDialog->SetID(HMM_LIGHTMAP_DIALOG);
-	LightmapDialog->AddDefButton("OK",310,445,100,25,HMM_OK);
-	LightmapDialog->SetImage(HMM_OK,HuiImageOk);
-	LightmapDialog->AddButton("Abbrechen",205,445,100,25,HMM_CANCEL);
-	LightmapDialog->SetImage(HMM_CANCEL,HuiImageCancel);
-	LightmapDialog->AddListView("!nobar\\a",10,10,400,265,HMM_LIGHTMAP_LIST);
-	LightmapDialog->AddText("R&aumliche Aufl&osung",10,310,160,25,HMM_LMT_SPACIAL_RESOLUTION);
-	LightmapDialog->AddSpinButton("\\0\\1000\\0.1",175,310,85,25,HMM_RESOLUTION);
-	LightmapDialog->AddText("le",265,310,30,25,HMM_LU);
-	LightmapDialog->AddComboBox("Raytracing\\Radiosity\\Radiosity schnell\\Photon Map",10,280,400,25,HMM_LIGHTMAP_TYPE);
-	LightmapDialog->AddComboBox("32 x 32\\64 x 64\\128 x 128\\256 x 256\\512 x 512\\1024 x 1024",300,310,110,25,HMM_LIGHTMAP_SIZE);
-	LightmapDialog->AddText("Zahl der Photonen",10,340,160,25,HMM_LMT_PHOTONS);
-	LightmapDialog->AddSpinButton("\\0",175,340,85,25,HMM_PHOTONS);
-	LightmapDialog->AddText("Oberfl&achen-Helligkeit",10,370,160,25,HMM_LMT_BRIGHTNESS);
-	LightmapDialog->AddSpinButton("\\0\\100\\0.1",175,370,85,25,HMM_BRIGHTNESS);
-	LightmapDialog->AddCheckBox("Sonne erlauben",265,370,145,25,HMM_ALLOW_SUN);
-	LightmapDialog->AddText("Helligkeits-Exponent",10,400,160,25,HMM_LMT_EXPONENT);
-	LightmapDialog->AddSpinButton("\\0\\10\\0.05",175,400,85,25,HMM_EXPONENT);
-	LightmapDialog->AddCheckBox("Ersetzen",10,445,100,25,HMM_REPLACE_OBJECTS);
+	LightmapDialog = HuiCreateDialog("Lightmap erzeugen", 420, 485, MainWin, false);
+	LightmapDialog->SetID("lightmap_dialog");
+	LightmapDialog->AddDefButton("OK", 310, 445, 100, 25, "ok");
+	LightmapDialog->SetImage("ok", "hui:ok");
+	LightmapDialog->AddButton("Abbrechen", 205, 445, 100, 25, "cancel");
+	LightmapDialog->SetImage("cancel", "hui:cancel");
+	LightmapDialog->AddListView("!nobar\\a", 10, 10, 400, 265, "lightmap_list");
+	LightmapDialog->AddText("R&aumliche Aufl&osung", 10, 310, 160, 25, "lmt_spacial_resolution");
+	LightmapDialog->AddSpinButton("\\0\\1000\\0.1", 175, 310, 85, 25, "resolution");
+	LightmapDialog->AddText("le", 265, 310, 30, 25, "lu");
+	LightmapDialog->AddComboBox("Raytracing\\Radiosity\\Radiosity schnell\\Photon Map", 10, 280, 400, 25, "lightmap_type");
+	LightmapDialog->AddComboBox("32 x 32\\64 x 64\\128 x 128\\256 x 256\\512 x 512\\1024 x 1024", 300, 310, 110, 25, "lightmap_size");
+	LightmapDialog->AddText("Zahl der Photonen", 10, 340, 160, 25, "lmt_photons");
+	LightmapDialog->AddSpinButton("\\0", 175, 340, 85, 25, "photons");
+	LightmapDialog->AddText("Oberfl&achen-Helligkeit", 10, 370, 160, 25, "lmt_brightness");
+	LightmapDialog->AddSpinButton("\\0\\100\\0.1", 175, 370, 85, 25, "brightness");
+	LightmapDialog->AddCheckBox("Sonne erlauben", 265, 370, 145, 25, "allow_sun");
+	LightmapDialog->AddText("Helligkeits-Exponent", 10, 400, 160, 25, "lmt_exponent");
+	LightmapDialog->AddSpinButton("\\0\\10\\0.05", 175, 400, 85, 25, "exponent");
+	LightmapDialog->AddCheckBox("Ersetzen", 10, 445, 90, 25, "replace_objects");
+	LightmapDialog->AddButton("Vorschau", 110, 445, 90, 25, "preview");
 	LightmapDialog->Update();
 
 

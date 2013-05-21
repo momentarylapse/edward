@@ -21,6 +21,7 @@ public:
 
 	void Create();
 	virtual void Compute(){};
+	virtual void RenderToTexture(){};
 
 	LightmapData *data;
 

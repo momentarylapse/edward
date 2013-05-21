@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-582
+583
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -821,6 +821,8 @@ physics
 Physics...
 physics_enabled
 Enables
+preview
+
 progress_cancelable_dialog
 working
 progress_dialog
@@ -1168,7 +1170,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-220
+222
 // Data (ID,Text)
 
 
@@ -1252,6 +1254,8 @@ Editor für Spiele-Daten der x9-Engine
 Editor for game data of the x9 engine
 Eigenschaften
 Properties
+Error
+
 Erstelle Datenbank
 Creating database
 Es existiert bereits eine Animation mit diesem Index. Bitte einen anderen wählen.
@@ -1494,6 +1498,8 @@ Textur-Datei
 Texture file
 Textur-Datei nicht ladbar: %s
 Texture file not loadable: %s
+Textur-Größe zu klein um alle Dreiecke aufzunehmen.
+
 Textur-Koordinaten
 Texture coordinates
 Texturen

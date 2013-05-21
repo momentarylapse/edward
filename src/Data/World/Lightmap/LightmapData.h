@@ -32,6 +32,7 @@ public:
 
 	void Init(DataWorld *w);
 	void AddModel(const string &filename, matrix &mat, int object_index);
+	void AddTextureLevels();
 
 	struct Model
 	{
@@ -51,13 +52,13 @@ public:
 	{
 		vector v[3], n[3], m;
 		float r;
-		bool inv;
-		int permutation;
+		/*bool inv;
+		int permutation;*/
 		plane pl;
-		int nb, nc;
+		/*int nb, nc;
 		int x, y;
-		bool t_rot;
-		int ob_id;
+		bool t_rot;*/
+		int mod_id, surf, poly, side;
 		color em;
 		float area;
 	};

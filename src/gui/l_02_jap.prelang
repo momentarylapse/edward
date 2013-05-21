@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-582
+583
 // Data (ID,Text)
 ad_dialog
 
@@ -821,6 +821,8 @@ physics
 物理学...
 physics_enabled
 
+preview
+
 progress_cancelable_dialog
 
 progress_dialog
@@ -1168,7 +1170,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-220
+222
 // Data (ID,Text)
 
 
@@ -1251,6 +1253,8 @@ Ebene: zweiter Punkt
 Editor für Spiele-Daten der x9-Engine
 
 Eigenschaften
+
+Error
 
 Erstelle Datenbank
 
@@ -1493,6 +1497,8 @@ Textur
 Textur-Datei
 
 Textur-Datei nicht ladbar: %s
+
+Textur-Größe zu klein um alle Dreiecke aufzunehmen.
 
 Textur-Koordinaten
 
