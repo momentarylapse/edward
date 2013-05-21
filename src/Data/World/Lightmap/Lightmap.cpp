@@ -52,7 +52,9 @@ Lightmap::Histogram Lightmap::GetHistogram()
 
 Lightmap::Histogram Lightmap::Preview()
 {
+	ed->progress->Start(_("berechne Licht"), 0);
 	Compute();
+	ed->progress->End();
 	return GetHistogram();
 }
 

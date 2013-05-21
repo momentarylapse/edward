@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-583
+582
 // Data (ID,Text)
 ad_dialog
 
@@ -382,8 +382,6 @@ light
 lightmap_dialog
 
 lightmap_list
-
-lightmap_size
 
 lightmap_type
 
@@ -1170,7 +1168,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-222
+225
 // Data (ID,Text)
 
 
@@ -1195,6 +1193,8 @@ zzz_setbgimage
 %d Vertizes, %d Dreiecke kopiert
 
 %d geschlossene Flächen subtrahiert
+
+%d von %d
 
 (anonym)
 
@@ -1571,6 +1571,10 @@ administrieren
 aktuelles Material
 
 beliebige Datei
+
+berechne Licht
+
+berechne Textur
 
 frontales Licht
 

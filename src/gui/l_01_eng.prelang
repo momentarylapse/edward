@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-583
+582
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -383,8 +383,6 @@ lightmap_dialog
 Create lightmap
 lightmap_list
 !nobar\\a
-lightmap_size
-32 x 32\\64 x 64\\128 x 128\\256 x 256\\512 x 512\\1024 x 1024
 lightmap_type
 Raytracing\\Radiosity\\Radiosity schnell\\Photon Map
 lmt_brightness
@@ -1170,7 +1168,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-222
+225
 // Data (ID,Text)
 
 
@@ -1196,6 +1194,8 @@ Set background image
 %d vertices, %d triangles copied
 %d geschlossene Flächen subtrahiert
 %d closed surfaces subtracted
+%d von %d
+
 (anonym)
 (anonymous)
 - Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- Häkchen bei \"Aktiv\" zur Auswahl für folgende neue Polygone
@@ -1572,6 +1572,10 @@ aktuelles Material
 
 beliebige Datei
 arbitrary file
+berechne Licht
+
+berechne Textur
+
 frontales Licht
 
 fügt eine weitere Textur-Schicht hinzu (multitexturing)

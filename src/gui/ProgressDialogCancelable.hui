@@ -1,9 +1,10 @@
 	// dialog
-	ProgressDialog = HuiCreateDialog("in Arbeit", 310, 65, MainWin, false);
+	ProgressDialog = HuiCreateDialog("in Arbeit", 310, 95, MainWin, false);
 	ProgressDialog->SetID("progress_cancelable_dialog");
-	ProgressDialog->AddProgressBar("", 5, 5, 300, 25, "progress_bar");
-	ProgressDialog->AddButton("Abbrechen", 5, 35, 300, 25, "cancel");
+	ProgressDialog->AddProgressBar("", 5, 35, 300, 25, "progress_bar");
+	ProgressDialog->AddButton("Abbrechen", 5, 65, 300, 25, "cancel");
 	ProgressDialog->SetImage("cancel", "hui:cancel");
+	ProgressDialog->AddText("", 5, 5, 300, 25, "progress_message");
 	ProgressDialog->Update();
 
 

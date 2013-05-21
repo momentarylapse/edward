@@ -5,12 +5,11 @@
 	LightmapDialog->SetImage("ok", "hui:ok");
 	LightmapDialog->AddButton("Abbrechen", 205, 445, 100, 25, "cancel");
 	LightmapDialog->SetImage("cancel", "hui:cancel");
-	LightmapDialog->AddListView("!nobar\\a", 10, 10, 400, 265, "lightmap_list");
+	LightmapDialog->AddListView("Objekt\\Textur\\Aufl&osung", 10, 10, 400, 265, "lightmap_list");
 	LightmapDialog->AddText("R&aumliche Aufl&osung", 10, 310, 160, 25, "lmt_spacial_resolution");
 	LightmapDialog->AddSpinButton("\\0\\1000\\0.1", 175, 310, 85, 25, "resolution");
 	LightmapDialog->AddText("le", 265, 310, 30, 25, "lu");
 	LightmapDialog->AddComboBox("Raytracing\\Radiosity\\Radiosity schnell\\Photon Map", 10, 280, 400, 25, "lightmap_type");
-	LightmapDialog->AddComboBox("32 x 32\\64 x 64\\128 x 128\\256 x 256\\512 x 512\\1024 x 1024", 300, 310, 110, 25, "lightmap_size");
 	LightmapDialog->AddText("Zahl der Photonen", 10, 340, 160, 25, "lmt_photons");
 	LightmapDialog->AddSpinButton("\\0", 175, 340, 85, 25, "photons");
 	LightmapDialog->AddText("Oberfl&achen-Helligkeit", 10, 370, 160, 25, "lmt_brightness");

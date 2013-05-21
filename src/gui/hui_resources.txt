@@ -12299,7 +12299,7 @@ progress_dialog
 
 1
 310
-35
+65
 0
 0
 0
@@ -12307,9 +12307,22 @@ progress_dialog
 0
 
 
-1
+2
 ProgressBar
 progress_bar
+
+1
+5
+35
+300
+25
+-1
+0
+0
+
+
+Text
+progress_message
 
 1
 5
@@ -12327,7 +12340,7 @@ progress_cancelable_dialog
 
 1
 310
-65
+95
 0
 0
 0
@@ -12335,13 +12348,13 @@ progress_cancelable_dialog
 0
 
 
-2
+3
 ProgressBar
 progress_bar
 
 1
 5
-5
+35
 300
 25
 -1
@@ -12354,7 +12367,20 @@ cancel
 hui:cancel
 1
 5
-35
+65
+300
+25
+-1
+0
+0
+
+
+Text
+progress_message
+
+1
+5
+5
 300
 25
 -1
@@ -14383,7 +14409,7 @@ lightmap_dialog
 0
 
 
-17
+16
 DefButton
 ok
 hui:ok
@@ -14469,19 +14495,6 @@ lightmap_type
 10
 280
 400
-25
--1
-0
-0
-
-
-ComboBox
-lightmap_size
-
-1
-300
-310
-110
 25
 -1
 0
@@ -16781,9 +16794,7 @@ light_radius
 lightmap_dialog
 Lightmap erzeugen
 lightmap_list
-!nobar\\a
-lightmap_size
-32 x 32\\64 x 64\\128 x 128\\256 x 256\\512 x 512\\1024 x 1024
+Objekt\\Textur\\Auflösung
 lightmap_type
 Raytracing\\Radiosity\\Radiosity schnell\\Photon Map
 lmt_brightness
@@ -17300,6 +17311,8 @@ progress_cancelable_dialog
 in Arbeit
 progress_dialog
 in Arbeit
+progress_message
+
 property_list
 Typ\\Index\\Name
 quality_factor
@@ -18234,8 +18247,6 @@ lightmap_dialog
 Create lightmap
 lightmap_list
 !nobar\\a
-lightmap_size
-32 x 32\\64 x 64\\128 x 128\\256 x 256\\512 x 512\\1024 x 1024
 lightmap_type
 Raytracing\\Radiosity\\Radiosity schnell\\Photon Map
 lmt_brightness
@@ -18752,6 +18763,8 @@ progress_cancelable_dialog
 working
 progress_dialog
 working
+progress_message
+
 property_list
 type\\index\\name
 quality_factor
@@ -19986,8 +19999,6 @@ lightmap_dialog
 
 lightmap_list
 
-lightmap_size
-
 lightmap_type
 
 lmt_brightness
@@ -20503,6 +20514,8 @@ progress_bar
 progress_cancelable_dialog
 
 progress_dialog
+
+progress_message
 
 property_list
 type\\index\\name

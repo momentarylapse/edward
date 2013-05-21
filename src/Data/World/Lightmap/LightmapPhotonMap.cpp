@@ -58,11 +58,11 @@ vector get_rand_dir(const vector &n)
 void LightmapPhotonMap::Compute()
 {
 	int work_id = 0;
+	int done = 0;
 	for (int i=0;i<tria_i.num;i++){
 		int n_photons = (int)((float) num_photons * tria_e[i] /* / WorkGetNumThreads()*/ / e_all);
 		int ti = tria_i[i];
 		LightmapData::Triangle &t = data->Trias[ti];
-		msg_write("----");
 		for (int j=0;j<n_photons;j++){
 			float f, g;
 			do{
@@ -79,8 +79,10 @@ void LightmapPhotonMap::Compute()
 			if ((done % 100) == 99)
 				pm_num_done += 100;
 			//	Progress("", (float)done / (float)num_photons);*/
+			done ++;
+			if ((done & 255) == 0)
+				ed->progress->Set(format(_("%d von %d"), done, num_photons), (float)done / (float)num_photons);
 		}
-		msg_write(thread_photon[work_id].num);
 	}
 	photon.append(thread_photon[work_id]);
 	thread_photon[work_id].clear();
@@ -296,7 +298,7 @@ void LightmapPhotonMap::CreateBalancedTree()
 }
 
 
-inline void pm_insert(LightmapPhotonMap::PhotonEvent *p, LightmapPhotonMap::PhotonEvent **l, int &lnum, int thread_id)
+inline void pm_insert(LightmapPhotonMap::PhotonEvent *p, LightmapPhotonMap::PhotonEvent *l[], int &lnum, int thread_id)
 {
 	for (int i=0;i<lnum;i++)
 		if (p->tree_r2[thread_id] < l[i]->tree_r2[thread_id]){
@@ -312,8 +314,7 @@ inline void pm_insert(LightmapPhotonMap::PhotonEvent *p, LightmapPhotonMap::Phot
 }
 
 int nsearch, nadd;
-#if 1
-void pm_tree_get_list(LightmapPhotonMap *lm, const vector &p, const vector &n, int b, LightmapPhotonMap::PhotonEvent **l, int &lnum, float &max_r2, int thread_id)
+void pm_tree_get_list(LightmapPhotonMap *lm, const vector &p, const vector &n, int b, LightmapPhotonMap::PhotonEvent *l[], int &lnum, float &max_r2, int thread_id)
 {
 	if (b >= lm->tree.num)
 		return;
@@ -353,9 +354,8 @@ void pm_tree_get_list(LightmapPhotonMap *lm, const vector &p, const vector &n, i
 		}
 	}
 }
-#endif
 
-void pm_get_list(LightmapPhotonMap *lm, const vector &p, const vector &n, LightmapPhotonMap::PhotonEvent **l, int &lnum, float max_r2, int thread_id)
+void pm_get_list(LightmapPhotonMap *lm, const vector &p, const vector &n, LightmapPhotonMap::PhotonEvent *l[], int &lnum, float max_r2, int thread_id)
 {
 	for (int i=0;i<lm->photon.num;i++){
 

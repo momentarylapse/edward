@@ -56,15 +56,31 @@ static Lightmap::Histogram *hist_p;
 void OnHistDraw()
 {
 	HuiDrawingContext *c = HuiCurWindow->BeginDraw("area");
+	c->SetFontSize(10);
 	float w = c->width;
 	float h = c->height;
+	float hh = h - 40;
+	float scale = w / hist_p->max;
 	c->SetColor(White);
-	c->DrawRect(0, 0, w, h);
+	c->DrawRect(0, 0, w, hh);
 	c->SetColor(Black);
-	for (int i=0;i<hist_p->f.num-1;i++){
-		c->DrawLine((w * i) / hist_p->f.num, h - h * hist_p->f[i], (w * (i + 1)) / hist_p->f.num, h - h * hist_p->f[i + 1]);
+	c->SetLineWidth(0.8f);
+	c->DrawLine(0, hh, w, hh);
+	float grid_dist_min = 40 / scale; // 40 pixel
+	float d = pow(10, floor(log10(grid_dist_min)) + 1);
+	if (d > grid_dist_min * 2)
+		d /= 2;
+	c->SetColor(Grey);
+	for (float x=0; x<hist_p->max; x+=d){
+		c->DrawStr(scale * x, hh + 3, f2s(x, 2));
+		c->DrawLine(scale * x, 0, scale * x, hh);
 	}
-	c->DrawStr(10, 10, f2s(hist_p->max, 3));
+	c->SetColor(Black);
+	c->SetFont("Sans", 12, true, false);
+	c->DrawStr(w / 2 - 40, hh + 20, _("Helligkeit"));
+	c->SetLineWidth(1.5f);
+	for (int i=0;i<hist_p->f.num-1;i++)
+		c->DrawLine((w * i) / hist_p->f.num, hh - hh * hist_p->f[i], (w * (i + 1)) / hist_p->f.num, hh - hh * hist_p->f[i + 1]);
 	c->End();
 }
 
@@ -76,10 +92,15 @@ void OnHistClose()
 void ShowHistogram(Lightmap::Histogram &h, CHuiWindow *root)
 {
 	hist_p = &h;
-	CHuiWindow *dlg = HuiCreateDialog("Histogram", 400, 300, root, false);
-	dlg->AddDrawingArea("", 5, 5, 390, 290, "area");
+	CHuiWindow *dlg = HuiCreateSizableDialog("Histogram", 400, 300, root, false);
+	dlg->AddControlTable("", 0, 0, 1, 2, "table");
+	dlg->SetTarget("table", 0);
+	dlg->AddDrawingArea("", 0, 0, 0, 0, "area");
+	dlg->AddButton(_("Schlie&sen"), 0, 1, 0, 0, "close");
+	dlg->SetImage("close", "hui:close");
 	dlg->EventX("area", "hui:redraw", &OnHistDraw);
 	dlg->Event("hui:close", &OnHistClose);
+	dlg->Event("close", &OnHistClose);
 	dlg->Update();
 
 	HuiWaitTillWindowClosed(dlg);
