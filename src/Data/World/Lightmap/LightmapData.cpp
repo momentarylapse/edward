@@ -84,6 +84,26 @@ void LightmapData::Init(DataWorld *w)
 			ok = false;
 			break;
 		}*/
+
+	SetResolution(GuessResolution());
+}
+
+float LightmapData::GuessResolution()
+{
+	float area_max = 0;
+	foreach(Model &m, Models)
+		if (m.area > area_max)
+			area_max = m.area;
+	return sqrt(area_max) / 512;
+}
+
+void LightmapData::SetResolution(float res)
+{
+	resolution = res;
+	foreach(Model &m, Models){
+		m.tex_width = min(1 << (int)(log2(sqrt(m.area) / resolution) - 0.5f), 1024);
+		m.tex_height = m.tex_width;
+	}
 }
 
 
@@ -98,6 +118,7 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 	msg_write(mod.orig_name);
 	mod.offset = Trias.num;
 	mod.object_index = object_index;
+	mod.area = 0;
 
 	DataModel *m = new DataModel();
 	mod.orig = m;
@@ -125,11 +146,12 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 				PlaneFromPoints(t.pl, t.v[0], t.v[1], t.v[2]);
 				t.em = m->Material[p.Material].Emission;
 				t.area = ((t.v[1] - t.v[0]) ^ (t.v[2] - t.v[0])).length() / 2;
-				area += t.area;
+				mod.area += t.area;
 				Trias.add(t);
 			}
 		}
 	}
+	area += mod.area;
 
 
 

@@ -30,19 +30,26 @@ public:
 	float large_distance;
 	float area;
 
+	float resolution;
+
 	void Init(DataWorld *w);
 	void AddModel(const string &filename, matrix &mat, int object_index);
 	void AddTextureLevels();
+
+	void SetResolution(float res);
+	float GuessResolution();
 
 	struct Model
 	{
 		int id;
 		DataModel *orig;
 		int offset, num_trias;
-		string tex_name;
 		string orig_name;
 		string new_name;
 		int object_index;
+		float area;
+		string tex_name;
+		int tex_width, tex_height;
 	};
 
 	Array<Model> Models;

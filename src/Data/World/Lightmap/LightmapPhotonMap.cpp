@@ -450,8 +450,8 @@ rect get_tria_skin_boundary(vector sv[3])
 void LightmapPhotonMap::RenderToTexture()
 {
 	foreach(LightmapData::Model &m, data->Models){
-		int w = 512;
-		int h = 512;
+		int w = m.tex_width;
+		int h = m.tex_height;
 		Image im;
 		im.Create(w, h, Black);
 

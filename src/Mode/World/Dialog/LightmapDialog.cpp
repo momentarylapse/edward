@@ -21,6 +21,7 @@ LightmapDialog::LightmapDialog(CHuiWindow *_parent, bool _allow_parent, DataWorl
 	EventM("hui:close", this, &LightmapDialog::OnClose);
 	EventM("ok", this, &LightmapDialog::OnOk);
 	EventM("preview", this, &LightmapDialog::OnPreview);
+	EventM("resolution", this, &LightmapDialog::OnResolution);
 
 	//LoadData();
 	SetFloat("brightness", 10.0f);
@@ -29,14 +30,22 @@ LightmapDialog::LightmapDialog(CHuiWindow *_parent, bool _allow_parent, DataWorl
 
 	lmd = new LightmapData(data);
 
-	foreach(LightmapData::Model &m, lmd->Models)
-		AddString("lightmap_list", m.orig_name);
+	SetFloat("resolution", lmd->resolution);
+
+	FillList();
 	Enable("ok", lmd->Models.num > 0);
 }
 
 LightmapDialog::~LightmapDialog()
 {
 	delete(lmd);
+}
+
+void LightmapDialog::FillList()
+{
+	Reset("lightmap_list");
+	foreach(LightmapData::Model &m, lmd->Models)
+		AddString("lightmap_list", m.orig_name + format("\\%dx%d\\%f", m.tex_width, m.tex_height, sqrt(m.area) / m.tex_width));
 }
 
 void LightmapDialog::OnClose()
@@ -113,6 +122,12 @@ void LightmapDialog::OnPreview()
 	Lightmap::Histogram h = lm->Preview();
 	ShowHistogram(h, this);
 	delete(lm);
+}
+
+void LightmapDialog::OnResolution()
+{
+	lmd->SetResolution(GetFloat(""));
+	FillList();
 }
 
 void LightmapDialog::OnOk()

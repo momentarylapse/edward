@@ -19,7 +19,9 @@ public:
 	virtual ~LightmapDialog();
 
 	void SetData();
+	void FillList();
 
+	void OnResolution();
 	void OnOk();
 	void OnPreview();
 	void OnClose();
