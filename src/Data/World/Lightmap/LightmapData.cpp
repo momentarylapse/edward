@@ -103,7 +103,7 @@ void LightmapData::Init(DataWorld *w)
 	if (w->meta_data.SunEnabled){
 		Light l;
 		l.Directional = true;
-		l.Dir = w->meta_data.SunAng.ang2dir();
+		l.Dir = -w->meta_data.SunAng.ang2dir();
 		l.Ambient = Black;//w->meta_data.SunColor;
 		l.Diffuse = w->meta_data.SunDiffuse;
 		l.Specular = Black;
@@ -167,7 +167,7 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 				for (int l=0;l<3;l++){
 					int n = p.Side[k].Triangulation[l];
 					t.v[l] = mat * m->Vertex[p.Side[n].Vertex].pos;
-					t.n[l] = mat.transform_normal(p.Side[0].Normal);
+					t.n[l] = mat.transform_normal(p.Side[n].Normal);
 				}
 				PlaneFromPoints(t.pl, t.v[0], t.v[1], t.v[2]);
 				t.ray[0] = Ray(t.v[0], t.v[1]);

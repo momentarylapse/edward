@@ -89,6 +89,7 @@ Lightmap::Histogram Lightmap::Preview()
 color Lightmap::RenderVertex(LightmapData::Vertex &v)
 {
 	color r = v.rad;
+	r.a = 1;
 	r.clamp();
 	if (data->color_exponent != 1){
 		r.r = pow(r.r, data->color_exponent);
@@ -96,6 +97,23 @@ color Lightmap::RenderVertex(LightmapData::Vertex &v)
 		r.b = pow(r.b, data->color_exponent);
 	}
 	return r;
+}
+
+void fuzzy_image(Image &im)
+{
+	Array<color> c;
+	for (int x=0;x<im.width;x++)
+		for (int y=0;y<im.height;y++)
+			c.add(im.GetPixel(x, y));
+	for (int x=1;x<im.width-1;x++)
+		for (int y=1;y<im.height-1;y++){
+			color c0 = c[y + x * im.height];
+			color c1 = c[y + (x-1) * im.height];
+			color c2 = c[y + (x+1) * im.height];
+			color c3 = c[(y-1) + x * im.height];
+			color c4 = c[(y+1) + x * im.height];
+			im.SetPixel(x, y, (c0 + c1 + c2 + c3 + c4) * 0.2f);
+		}
 }
 
 void Lightmap::RenderTextures()
@@ -123,12 +141,17 @@ void Lightmap::RenderTextures()
 		}
 
 		m.tex_name = data->texture_out_dir + i2s(mid) + ".tga";
+		fuzzy_image(im);
 		im.Save(NixTextureDir + m.tex_name);
 
 		// edit model
 		foreach(ModelMaterial &mat, m.orig->Material){
 			mat.NumTextures = 2;
 			mat.TextureFile[1] = m.tex_name;
+			mat.Ambient = White;
+			mat.Diffuse = Black;
+			mat.Emission = Black;
+			mat.UserColor = true;
 		}
 		m.new_name = data->model_out_dir + i2s(mid);
 		m.orig->Save(ObjectDir + m.new_name + ".model");

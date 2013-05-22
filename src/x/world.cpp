@@ -359,7 +359,7 @@ bool GodLoadWorldFromLevelData()
 					LevelData.sun_color[0],
 					LevelData.sun_color[1],
 					LevelData.sun_color[2]);
-	Light::SetDirectional(World.sun, LevelData.sun_ang.ang2dir());
+	Light::SetDirectional(World.sun, -LevelData.sun_ang.ang2dir());
 	Light::Enable(World.sun, LevelData.sun_enabled);
 #endif
 
