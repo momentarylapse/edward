@@ -39,9 +39,3 @@ void LightmapRayTracing::Compute()
 	}
 }
 
-Lightmap::Histogram LightmapRayTracing::GetHistogram()
-{
-	Lightmap::Histogram h;
-	return h;
-}
-

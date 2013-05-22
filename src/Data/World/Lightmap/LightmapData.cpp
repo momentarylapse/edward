@@ -33,6 +33,19 @@ bool Ray::intersect_plane(const plane &pl, vector &c) const
 	return true;
 }
 
+bool LightmapData::Triangle::intersect(const Ray &r, vector &cp) const
+{
+	bool r0 = (r.dot(ray[0]) > 0);
+	bool r1 = (r.dot(ray[1]) > 0);
+	if (r1 != r0)
+		return false;
+	bool r2 = (r.dot(ray[2]) > 0);
+	if (r2 != r0)
+		return false;
+
+	return r.intersect_plane(pl, cp);
+}
+
 LightmapData::LightmapData(DataWorld *w)
 {
 	emissive_brightness = 1.0f;
@@ -300,18 +313,11 @@ bool LightmapData::IsVisible(Vertex &a, Vertex &b)
 /*		if (VecLineDistance(tria[t].m, p, p2) > tria[t].r)
 		//if (_vec_line_distance_(tria[t].m, p1, p2) > tria[t].r)
 			continue;*/
-		bool r0 = (r.dot(t.ray[0]) > 0);
-		bool r1 = (r.dot(t.ray[1]) > 0);
-		if (r1 != r0)
-			continue;
-		bool r2 = (r.dot(t.ray[2]) > 0);
-		if (r2 != r0)
+		if (!t.intersect(r, cp))
 			continue;
 
-		if (r.intersect_plane(t.pl, cp)){
-			if (_vec_between_(cp, a.pos, b.pos))
-				return false;
-		}
+		if (_vec_between_(cp, a.pos, b.pos))
+			return false;
 	}
 	return true;
 }

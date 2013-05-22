@@ -31,14 +31,18 @@ public:
 	void CreateBalancedTree();
 
 	int num_photons;
-	float e_all, e_per_photon;
-	Array<int> tria_i;
-	Array<float> tria_e;
+	float total_energy, energy_per_photon;
+	struct Emitter
+	{
+		int tria;
+		float energy;
+	};
+	Array<Emitter> Emitters;
 
 
 	struct PhotonEvent
 	{
-		vector v, n, dir;
+		vector pos, n, dir;
 		color c; // power
 		int tria;
 		float f, g;
@@ -62,7 +66,7 @@ public:
 	};
 	Array<Branch> tree;
 
-	void Trace(Array<PhotonEvent> &ph, const vector &p, const vector &dir, const color &c, int ignore_tria, int n);
+	void Trace(Array<PhotonEvent> &ph, const vector &pos, const vector &dir, const color &c, int ignore_tria, int n);
 };
 
 #endif /* LIGHTMAPPHOTONMAP_H_ */

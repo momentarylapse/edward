@@ -21,19 +21,21 @@ LightmapPhotonMap::LightmapPhotonMap(LightmapData *_data, int _num_photons) :
 	num_photons = _num_photons;
 
 	// distribute photons/energy
-	e_all = 0;
+	total_energy = 0;
 
 	foreachi(LightmapData::Triangle &t, data->Trias, i){
 		if (t.em.r + t.em.g + t.em.b > 0.01f){
 			// emission * area
 			float e = (t.em.r + t.em.g + t.em.b) / 3 * t.area;
 			e *= data->emissive_brightness;
-			tria_e.add(e);
-			e_all += e;
-			tria_i.add(i);
+			Emitter em;
+			em.tria = i;
+			em.energy = e;
+			Emitters.add(em);
+			total_energy += e;
 		}
 	}
-	e_per_photon = e_all / (float)num_photons;
+	energy_per_photon = total_energy / (float)num_photons;
 }
 
 LightmapPhotonMap::~LightmapPhotonMap()
@@ -59,10 +61,9 @@ void LightmapPhotonMap::Compute()
 {
 	int work_id = 0;
 	int done = 0;
-	for (int i=0;i<tria_i.num;i++){
-		int n_photons = (int)((float) num_photons * tria_e[i] /* / WorkGetNumThreads()*/ / e_all);
-		int ti = tria_i[i];
-		LightmapData::Triangle &t = data->Trias[ti];
+	foreach(Emitter &em, Emitters){
+		int n_photons = (int)((float) num_photons * em.energy /* / WorkGetNumThreads()*/ / total_energy);
+		LightmapData::Triangle &t = data->Trias[em.tria];
 		for (int j=0;j<n_photons;j++){
 			float f, g;
 			do{
@@ -74,13 +75,13 @@ void LightmapPhotonMap::Compute()
 			vector dir = get_rand_dir(t.pl.n);
 			color c = t.em * (3.0f / (t.em.r + t.em.g + t.em.b));
 			//msg_write(format("%d / %d", j, n_photons));
-			Trace(thread_photon[work_id], p, dir, c * e_per_photon, ti, 0);
+			Trace(thread_photon[work_id], p, dir, c * energy_per_photon, em.tria, 0);
 			/*done ++;
 			if ((done % 100) == 99)
 				pm_num_done += 100;
 			//	Progress("", (float)done / (float)num_photons);*/
 			done ++;
-			if ((done & 255) == 0)
+			if ((done & 1023) == 0)
 				ed->progress->Set(format(_("%d von %d"), done, num_photons), (float)done / (float)num_photons);
 			if (ed->progress->IsCancelled())
 				throw Lightmap::AbortException();
@@ -90,16 +91,6 @@ void LightmapPhotonMap::Compute()
 	thread_photon[work_id].clear();
 
 	CreateBalancedTree();
-}
-
-bool _LineIntersectsTriangle2_(const plane &pl,const vector &t1,const vector &t2,const vector &t3,const vector &l1,const vector &l2,vector &col,float &f, float &g)
-{
-	if (!pl.intersect_line(l1, l2, col))
-		return false;
-	GetBaryCentric(col,t1,t2,t3,f,g);
-	if ((f>0)&&(g>0)&&(f+g<1))
-		return true;
-	return false;
 }
 
 void LightmapPhotonMap::Trace(Array<PhotonEvent> &ph, const vector &p, const vector &dir, const color &c, int ignore_tria, int n)
@@ -115,18 +106,10 @@ void LightmapPhotonMap::Trace(Array<PhotonEvent> &ph, const vector &p, const vec
 	for (int ti=0;ti<data->Trias.num;ti++){
 		if (ti == ignore_tria)
 			continue;
-		LightmapData::Triangle &t= data->Trias[ti];
+		LightmapData::Triangle &t = data->Trias[ti];
 		vector cp;
 
-		bool r0 = (r.dot(t.ray[0]) > 0);
-		bool r1 = (r.dot(t.ray[1]) > 0);
-		if (r1 != r0)
-			continue;
-		bool r2 = (r.dot(t.ray[2]) > 0);
-		if (r2 != r0)
-			continue;
-
-		if (!r.intersect_plane(t.pl, cp))
+		if (!t.intersect(r, cp))
 			continue;
 		if (!_vec_between_(cp, p, p2))
 			continue;
@@ -145,7 +128,7 @@ void LightmapPhotonMap::Trace(Array<PhotonEvent> &ph, const vector &p, const vec
 		return;
 
 	PhotonEvent e;
-	e.v = hit_p;
+	e.pos = hit_p;
 	e.dir = dir;
 	e.c = c;
 	e.tria = hit_tria;
@@ -171,23 +154,12 @@ void LightmapPhotonMap::Trace(Array<PhotonEvent> &ph, const vector &p, const vec
 
 Lightmap::Histogram LightmapPhotonMap::GetHistogram()
 {
-	msg_write(photon.num);
 	Array<float> e;
 	e.resize(data->Trias.num);
-	foreach(PhotonEvent &ev, photon){
+	foreach(PhotonEvent &ev, photon)
 		e[ev.tria] += (ev.c.r + ev.c.g + ev.c.b) / 3.0f / data->Trias[ev.tria].area;
-	}
-	Lightmap::Histogram h;
-	h.max = 0;
-	foreach(float ee, e)
-		h.max = max(h.max, ee);
-	const int N = 128;
-	h.f.resize(N);
-	foreach(float ee, e)
-		if (ee > 0)
-			h.f[ee * N / h.max] += 1;
-	h.normalize();
-	return h;
+
+	return Lightmap::Histogram(e);
 }
 
 
@@ -244,8 +216,8 @@ void pm_balance(int b, LightmapPhotonMap::PhotonEvent** p, int pnum, LightmapPho
 	t->left = t->right = NULL;
 
 	// bounding box
-	t->min = p[0]->v;
-	t->max = p[0]->v;
+	t->min = p[0]->pos;
+	t->max = p[0]->pos;
 
 	if (pnum == 1){
 		t->p = p[0];
@@ -253,8 +225,8 @@ void pm_balance(int b, LightmapPhotonMap::PhotonEvent** p, int pnum, LightmapPho
 	}
 
 	for (int i=1;i<pnum;i++){
-		t->min._min(p[i]->v);
-		t->max._max(p[i]->v);
+		t->min._min(p[i]->pos);
+		t->max._max(p[i]->pos);
 	}
 
 	// plane
@@ -269,7 +241,7 @@ void pm_balance(int b, LightmapPhotonMap::PhotonEvent** p, int pnum, LightmapPho
 
 	int med = pnum / 2;
 	for (int i=0;i<pnum;i++)
-		p[i]->tree_c = gc(p[i]->v);
+		p[i]->tree_c = gc(p[i]->pos);
 
 
 	// divide....
@@ -332,11 +304,11 @@ void pm_tree_get_list(LightmapPhotonMap *lm, const vector &p, const vector &n, i
 		nsearch ++;
 		float delta;
 		if (t->dir == 0)
-			delta = (p.x - t->p->v.x);
+			delta = (p.x - t->p->pos.x);
 		else if (t->dir == 1)
-			delta = (p.y - t->p->v.y);
+			delta = (p.y - t->p->pos.y);
 		else
-			delta = (p.z - t->p->v.z);
+			delta = (p.z - t->p->pos.z);
 		//printf("%f\n", delta);
 
 		if (delta < 0){
@@ -352,7 +324,7 @@ void pm_tree_get_list(LightmapPhotonMap *lm, const vector &p, const vector &n, i
 		if (t->p->n * n < 0)
 			return;
 
-		float d2 = (p - t->p->v).length_sqr();
+		float d2 = (p - t->p->pos).length_sqr();
 		//printf("%f  %d\n", d2, b);
 		if ((d2 < max_r2) && (VecDotProduct(n, t->p->n) > 0.7f)){
 			//printf("----found!!! %f\n", d2);
@@ -368,7 +340,7 @@ void pm_get_list(LightmapPhotonMap *lm, const vector &p, const vector &n, Lightm
 {
 	for (int i=0;i<lm->photon.num;i++){
 
-		float d2 = (p - lm->photon[i].v).length_sqr();
+		float d2 = (p - lm->photon[i].pos).length_sqr();
 		//printf("%f  %d\n", d2, b);
 		if (d2 < max_r2){
 			//printf("----found!!!\n");
@@ -445,64 +417,3 @@ color LightmapPhotonMap::RenderVertex(LightmapData::Vertex &v)//(int work_id, co
 	e.clamp();
 	return e;
 }
-
-#if 0
-rect get_tria_skin_boundary(vector sv[3]);
-
-void LightmapPhotonMap::RenderToTexture()
-{
-	foreachi(LightmapData::Model &m, data->Models, mid){
-		int w = m.tex_width;
-		int h = m.tex_height;
-		Image im;
-		im.Create(w, h, Black);
-
-		/*foreach(LightmapData::Vertex &v, data->Vertices){
-			if (v.mod_id != mid)
-				continue;
-			im.SetPixel(v.x, v.y, RenderTreeVertex(0, v.pos, v.n, this, data->Trias[v.tria_id]));
-		}*/
-
-		for (int i=m.offset;i<m.offset + m.num_trias;i++){
-			LightmapData::Triangle &t = data->Trias[i];
-			ModelPolygon &p = m.orig->Surface[t.surf].Polygon[t.poly];
-			vector v[3], sv[3];
-			vector n = p.TempNormal;
-			for (int k=0;k<3;k++){
-				int si = p.Side[t.side].Triangulation[k];
-				v[k] = m.orig->Vertex[p.Side[si].Vertex].pos;
-				sv[k] = p.Side[si].SkinVertex[1];
-				sv[k].x *= w;
-				sv[k].y *= h;
-			}
-			rect r = get_tria_skin_boundary(sv);
-			for (int x=r.x1-1;x<r.x2+1;x++)
-				for (int y=r.y1-1;y<r.y2+1;y++){
-					vector c = vector(x, y, 0);
-					float f, g;
-					GetBaryCentric(c, sv[0], sv[1], sv[2], f, g);
-					if ((f >= 0) && (g >= 0) && (f + g <= 1)){
-						vector pos = v[0] + f * (v[1] - v[0]) + g * (v[2] - v[0]);
-						im.SetPixel(x, y, RenderTreeVertex(0, pos, n, this, t));
-					}
-				}
-			ed->progress->Set(format(_("%d von %d"), i, data->Trias.num), (float)i / (float)data->Trias.num);
-			if (ed->progress->IsCancelled())
-				throw Lightmap::AbortException();
-		}
-
-		/*foreach(PhotonEvent &ev, photon){
-			LightmapData::Triangle &t = data->Trias[ev.tria];
-			ModelPolygon &p = m.orig->Surface[t.surf].Polygon[t.poly];
-			vector sv[3];
-			for (int k=0;k<3;k++)
-				sv[k] = p.Side[p.Side[t.side].Triangulation[k]].SkinVertex[1];
-			vector s = sv[0] + ev.f * (sv[1] - sv[0]) + ev.g * (sv[2] - sv[0]);
-			ev.c.clamp();
-			im.SetPixel(s.x * w, s.y * h, ev.c);
-		}*/
-
-		im.Save("new_lightmap.tga");
-	}
-}
-#endif

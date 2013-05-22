@@ -30,6 +30,7 @@ public:
 
 	struct Histogram
 	{
+		Histogram(Array<float> &e);
 		float max;
 		Array<float> f;
 		void normalize();

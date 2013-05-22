@@ -18,7 +18,6 @@ public:
 	virtual ~LightmapRayTracing();
 
 	virtual void Compute();
-	virtual Histogram GetHistogram();
 };
 
 #endif /* LIGHTMAPRAYTRACING_H_ */

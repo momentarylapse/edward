@@ -5,10 +5,25 @@
  *      Author: michi
  */
 
+#include <algorithm>
 #include "Lightmap.h"
 #include "LightmapData.h"
 #include "../../../Edward.h"
 #include "../../../Stuff/Progress.h"
+
+
+Lightmap::Histogram::Histogram(Array<float> &e)
+{
+	max = 0;
+	foreach(float ee, e)
+		max = max(max, ee);
+	const int N = 64;
+	f.resize(N);
+	foreach(float ee, e)
+		if (ee > 0)
+			f[ee * N / max] += 1;
+	normalize();
+}
 
 void Lightmap::Histogram::normalize()
 {
@@ -49,8 +64,11 @@ void Lightmap::Create()
 
 Lightmap::Histogram Lightmap::GetHistogram()
 {
-	Lightmap::Histogram h;
-	return h;
+	Array<float> e;
+	foreach(LightmapData::Vertex &v, data->Vertices)
+		e.add((v.rad.r + v.rad.g + v.rad.b) / 3.0f / data->Trias[v.tria_id].area);
+
+	return Lightmap::Histogram(e);
 }
 
 Lightmap::Histogram Lightmap::Preview()

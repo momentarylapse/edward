@@ -79,6 +79,7 @@ public:
 		int mod_id, surf, poly, side;
 		color em;
 		float area;
+		bool intersect(const Ray &r, vector &cp) const;
 	};
 	Array<Triangle> Trias;
 

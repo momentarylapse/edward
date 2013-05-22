@@ -18,7 +18,6 @@ public:
 	virtual ~LightmapRadiosity();
 
 	virtual void Compute();
-	virtual Histogram GetHistogram();
 
 	void Iterate();
 };

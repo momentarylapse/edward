@@ -95,9 +95,3 @@ void LightmapRadiosity::Iterate()
 	}
 }
 
-Lightmap::Histogram LightmapRadiosity::GetHistogram()
-{
-	Lightmap::Histogram h;
-	return h;
-}
-
