@@ -85,6 +85,8 @@ public:
 	};
 	Array<Vertex> Vertices;
 
+	bool IsVisible(Vertex &a, Vertex &b);
+
 
 	struct Light
 	{

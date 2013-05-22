@@ -240,6 +240,8 @@ void LightmapData::CreateVertices()
 						vv.y = y;
 						vv.tria_id = i;
 						vv.mod_id = t.mod_id;
+						vv.am = m.orig->Material[m.orig->Surface[t.surf].Polygon[t.poly].Material].Ambient;
+						vv.dif = m.orig->Material[m.orig->Surface[t.surf].Polygon[t.poly].Material].Diffuse;
 						vv.em = t.em;
 						Vertices.add(vv);
 					}
@@ -251,5 +253,45 @@ void LightmapData::CreateVertices()
 		}
 	}
 	msg_write("Vertices: " + i2s(Vertices.num));
+}
+
+bool _LineIntersectsTriangle3_(const plane &pl,const vector &t1,const vector &t2,const vector &t3,const vector &l1,const vector &l2,vector &col,float &f, float &g)
+{
+	if (!pl.intersect_line(l1, l2, col))
+		return false;
+	GetBaryCentric(col,t1,t2,t3,f,g);
+	if ((f>0)&&(g>0)&&(f+g<1))
+		return true;
+	return false;
+}
+
+bool LightmapData::IsVisible(Vertex &a, Vertex &b)
+{
+	if (a.tria_id == b.tria_id)
+		return false;
+	vector dir = b.pos - a.pos;
+	if (a.n * dir < 0)
+		return false;
+	if (b.n * dir > 0)
+		return false;
+
+	for (int ti=0;ti<Trias.num;ti++){
+		if ((ti == a.tria_id) || (ti == b.tria_id))
+			continue;
+		LightmapData::Triangle &t = Trias[ti];
+		vector cp;
+/*		if (VecLineDistance(tria[t].m, p, p2) > tria[t].r)
+		//if (_vec_line_distance_(tria[t].m, p1, p2) > tria[t].r)
+			continue;*/
+
+
+		float ff, gg;
+		if (_LineIntersectsTriangle3_(t.pl, t.v[0], t.v[1], t.v[2], a.pos, b.pos, cp, ff, gg)){
+			if (_vec_between_(cp, a.pos, b.pos)){
+				return false;
+			}
+		}
+	}
+	return true;
 }
 

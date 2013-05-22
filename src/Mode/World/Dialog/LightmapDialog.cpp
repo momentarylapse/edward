@@ -8,6 +8,8 @@
 #include "LightmapDialog.h"
 #include "../../../Data/World/Lightmap/LightmapData.h"
 #include "../../../Data/World/Lightmap/LightmapPhotonMap.h"
+#include "../../../Data/World/Lightmap/LightmapRayTracing.h"
+#include "../../../Data/World/Lightmap/LightmapRadiosity.h"
 
 LightmapDialog::LightmapDialog(CHuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
 	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls, true)
@@ -119,7 +121,15 @@ void ShowHistogram(Lightmap::Histogram &h, CHuiWindow *root)
 void LightmapDialog::OnPreview()
 {
 	SetData();
-	Lightmap *lm = new LightmapPhotonMap(lmd, GetInt("photons"));
+	Lightmap *lm;
+	int type = GetInt("lightmap_type");
+	if (type == 3){
+		lm = new LightmapPhotonMap(lmd, GetInt("photons"));
+	}else if ((type == 1) || (type == 2)){
+		lm = new LightmapRadiosity(lmd);
+	}else{
+		lm = new LightmapRayTracing(lmd);
+	}
 	Lightmap::Histogram h = lm->Preview();
 	ShowHistogram(h, this);
 	delete(lm);
@@ -134,7 +144,15 @@ void LightmapDialog::OnResolution()
 void LightmapDialog::OnOk()
 {
 	SetData();
-	Lightmap *lm = new LightmapPhotonMap(lmd, GetInt("photons"));
+	Lightmap *lm;
+	int type = GetInt("lightmap_type");
+	if (type == 3){
+		lm = new LightmapPhotonMap(lmd, GetInt("photons"));
+	}else if ((type == 1) || (type == 2)){
+		lm = new LightmapRadiosity(lmd);
+	}else{
+		lm = new LightmapRayTracing(lmd);
+	}
 	lm->Create();
 	delete(lm);
 	delete(this);
