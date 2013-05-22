@@ -9,6 +9,10 @@
 #include "../../../Stuff/Progress.h"
 #include "../../../Edward.h"
 
+static float d_max = 20.0f;
+static float r_min = d_max * 0.5f;
+static float reflection = 0.9f;
+
 LightmapRayTracing::LightmapRayTracing(LightmapData *_data) :
 	Lightmap(_data)
 {
@@ -22,15 +26,29 @@ void LightmapRayTracing::Compute()
 {
 	Array<int> vem;
 	foreachi(LightmapData::Vertex &v, data->Vertices, vi){
-		v.rad = Black;
+		v.rad = v.em;
 		if (v.em.r + v.em.g + v.em.b > 0)
 			vem.add(vi);
 	}
 	foreachi(int vi, vem, ii){
-		LightmapData::Vertex &v_a = data->Vertices[vi];
-		foreach(LightmapData::Vertex &v_b, data->Vertices){
-			if (data->IsVisible(v_a, v_b)){
-				v_b.rad = v_a.em;
+		LightmapData::Vertex &a = data->Vertices[vi];
+		foreach(LightmapData::Vertex &b, data->Vertices){
+			if (data->IsVisible(a, b)){
+
+
+				vector d = b.pos - a.pos;
+				float r = d.length();
+				if (r < r_min)
+					r = r_min;
+				//msg_write(f2s(r, 3));
+				d /= r;
+				float f;//=1/(pi*r*r)*VecDotProduct(d,n1)*VecDotProduct(d,n2)*d_max*d_max/2;
+				f = reflection / pi / (r*r) * (d * a.n) * (d * b.n);
+				//f = reflection / pi * pow(r, -1.9) *0.5f * VecDotProduct(d, v->n) * VecDotProduct(d, w->n);
+				if (f < 0)
+					f = -f;
+
+				b.rad += a.em * f * a.area * data->emissive_brightness;
 			}
 		}
 		ed->progress->Set(format(_("%d von %d"), ii, vem.num), (float)ii / (float)vem.num);

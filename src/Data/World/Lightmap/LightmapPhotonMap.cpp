@@ -415,5 +415,10 @@ color LightmapPhotonMap::RenderVertex(LightmapData::Vertex &v)//(int work_id, co
 	//e /= 25000.0f;
 	e.a = 1;
 	e.clamp();
+	if (data->color_exponent != 1){
+		e.r = pow(e.r, data->color_exponent);
+		e.g = pow(e.g, data->color_exponent);
+		e.b = pow(e.b, data->color_exponent);
+	}
 	return e;
 }

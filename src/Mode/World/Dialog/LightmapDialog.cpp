@@ -79,12 +79,13 @@ void OnHistDraw()
 	c->SetLineWidth(0.8f);
 	c->DrawLine(0, hh, w, hh);
 	float grid_dist_min = 40 / scale; // 40 pixel
-	float d = pow(10, floor(log10(grid_dist_min)) + 1);
+	int dec = floor(log10(grid_dist_min)) + 1;
+	float d = pow(10, dec);
 	if (d > grid_dist_min * 2)
 		d /= 2;
 	c->SetColor(Grey);
 	for (float x=0; x<hist_p->max; x+=d){
-		c->DrawStr(scale * x, hh + 3, f2s(x, 2));
+		c->DrawStr(scale * x, hh + 3, f2s(x, max(0, 1-dec)));
 		c->DrawLine(scale * x, 0, scale * x, hh);
 	}
 	c->SetColor(Black);

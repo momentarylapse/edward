@@ -21,7 +21,7 @@ Lightmap::Histogram::Histogram(Array<float> &e)
 	f.resize(N);
 	foreach(float ee, e)
 		if (ee > 0)
-			f[ee * N / max] += 1;
+			f[ee * (N - 0.1f) / max] += 1;
 	normalize();
 }
 
@@ -66,7 +66,7 @@ Lightmap::Histogram Lightmap::GetHistogram()
 {
 	Array<float> e;
 	foreach(LightmapData::Vertex &v, data->Vertices)
-		e.add((v.rad.r + v.rad.g + v.rad.b) / 3.0f / data->Trias[v.tria_id].area);
+		e.add((v.rad.r + v.rad.g + v.rad.b) / 3.0f);
 
 	return Lightmap::Histogram(e);
 }
@@ -86,7 +86,14 @@ Lightmap::Histogram Lightmap::Preview()
 
 color Lightmap::RenderVertex(LightmapData::Vertex &v)
 {
-	return v.rad;
+	color r = v.rad;
+	r.clamp();
+	if (data->color_exponent != 1){
+		r.r = pow(r.r, data->color_exponent);
+		r.g = pow(r.g, data->color_exponent);
+		r.b = pow(r.b, data->color_exponent);
+	}
+	return r;
 }
 
 void Lightmap::RenderTextures()

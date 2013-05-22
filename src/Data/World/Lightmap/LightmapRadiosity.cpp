@@ -26,7 +26,7 @@ LightmapRadiosity::~LightmapRadiosity()
 void LightmapRadiosity::Compute()
 {
 	foreachi(LightmapData::Vertex &a, data->Vertices, i_a){
-		a.rad = a.em;
+		a.rad = a.em * data->emissive_brightness;
 		foreachi(LightmapData::Vertex &b, data->Vertices, i_b){
 			if (i_b <= i_a)
 				continue;
@@ -50,7 +50,7 @@ void LightmapRadiosity::Compute()
 				a.coeff.add(f);
 			}
 		}
-		ed->progress->Set(format(_("%d von %d"), i_a, data->Vertices.num), pow((float)i_a / (float)data->Vertices.num, 2));
+		ed->progress->Set(format(_("%d von %d"), i_a, data->Vertices.num), sqrt((float)i_a / (float)data->Vertices.num));
 		if (ed->progress->IsCancelled())
 			throw AbortException();
 	}
@@ -64,7 +64,7 @@ void LightmapRadiosity::Iterate()
 
 	// reset
 	foreach(LightmapData::Vertex &v, data->Vertices)
-		v.rad2 = v.em;
+		v.rad2 = v.em * data->emissive_brightness;
 
 	// iterate
 	foreach(LightmapData::Vertex &a, data->Vertices){
@@ -72,9 +72,9 @@ void LightmapRadiosity::Iterate()
 			LightmapData::Vertex &b = data->Vertices[i];
 			/*msg_write(f2s(a.coeff[ii]  * b.area, 6));
 			msg_write((b.rad * a.dif).str());*/
-			a.rad2 += b.rad * a.dif * a.coeff[ii]  * b.area;
-			/*if (raster_visibility)
-				b.rad2 += a.rad * b.dif * a.coeff[ii] * a.area;*/
+			a.rad2 += b.rad * a.dif * a.coeff[ii] * b.area;
+			//if (raster_visibility)
+			b.rad2 += a.rad * b.dif * a.coeff[ii] * a.area;
 			//v_rad[i]+=v_em[j]*0.005f;
 			//v_rad[j]+=v_em[i]*0.005f;
 		}
