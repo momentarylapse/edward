@@ -11,6 +11,8 @@
 #include "../../../lib/base/base.h"
 #include "../../../lib/math/math.h"
 
+#include "LightmapData.h"
+
 class LightmapData;
 
 class Lightmap
@@ -21,7 +23,8 @@ public:
 
 	void Create();
 	virtual void Compute(){};
-	virtual void RenderToTexture(){};
+	void RenderTextures();
+	virtual color RenderVertex(LightmapData::Vertex &v);
 
 	LightmapData *data;
 

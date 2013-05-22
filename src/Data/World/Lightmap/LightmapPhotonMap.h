@@ -25,7 +25,7 @@ public:
 	virtual ~LightmapPhotonMap();
 
 	virtual void Compute();
-	virtual void RenderToTexture();
+	virtual color RenderVertex(LightmapData::Vertex &v);
 	virtual Histogram GetHistogram();
 
 	void CreateBalancedTree();

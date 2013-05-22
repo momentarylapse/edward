@@ -27,6 +27,7 @@ LightmapDialog::LightmapDialog(CHuiWindow *_parent, bool _allow_parent, DataWorl
 	SetFloat("brightness", 10.0f);
 	SetFloat("exponent", 1.0f);
 	SetInt("photons", 5000);
+	SetInt("lightmap_type", 3);
 
 	lmd = new LightmapData(data);
 

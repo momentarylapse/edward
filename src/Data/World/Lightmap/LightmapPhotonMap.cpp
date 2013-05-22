@@ -371,13 +371,14 @@ void pm_get_list(LightmapPhotonMap *lm, const vector &p, const vector &n, Lightm
 	}
 }
 
-color RenderTreeVertex(int work_id, const vector &pos, const vector &n, LightmapPhotonMap *lm, LightmapData::Triangle &tria)
+color LightmapPhotonMap::RenderVertex(LightmapData::Vertex &v)//(int work_id, const vector &pos, const vector &n, LightmapPhotonMap *lm, LightmapData::Triangle &tria)
 {
+	int work_id = 0;
 	//int t = vertex[v].tria_all;
 
 	// emitting -> set color
-	if (tria.em.r + tria.em.g + tria.em.b > 0.01f){
-		return tria.em;
+	if (v.em.r + v.em.g + v.em.b > 0.01f){
+		return v.em;
 	}
 
 
@@ -389,8 +390,8 @@ color RenderTreeVertex(int work_id, const vector &pos, const vector &n, Lightmap
 	nadd = 0;
 	LightmapPhotonMap::PhotonEvent* l[MAX_PHOTONS_PER_VERTEX + 10];
 	int lnum = 0;
-	pm_tree_get_list(lm, pos, n, 1, l, lnum, search_r2, work_id);
-	//pm_get_list(lm, pos, n, l, lnum, search_r2, work_id);
+	pm_tree_get_list(this, v.pos, v.n, 1, l, lnum, search_r2, work_id);
+	//pm_get_list(this, v.pos, v.n, l, lnum, search_r2, work_id);
 	//printf("%d  %d\n", nsearch, lnum);
 
 	/*sPhotonEvent* l2[MAX_PHOTONS_PER_VERTEX + 10];
@@ -433,27 +434,27 @@ color RenderTreeVertex(int work_id, const vector &pos, const vector &n, Lightmap
 
 	//e = (float)lnum / 1000.0f;
 	//e /= 25000.0f;
-	return SetColorSave(1, e.r, e.g, e.b);
+	e.a = 1;
+	e.clamp();
+	return e;
 }
 
-rect get_tria_skin_boundary(vector sv[3])
-{
-	vector _min = sv[0];
-	_min._min(sv[1]);
-	_min._min(sv[2]);
-	vector _max = sv[0];
-	_max._max(sv[1]);
-	_max._max(sv[2]);
-	return rect(_min.x, _max.x, _min.y, _max.y);
-}
+#if 0
+rect get_tria_skin_boundary(vector sv[3]);
 
 void LightmapPhotonMap::RenderToTexture()
 {
-	foreach(LightmapData::Model &m, data->Models){
+	foreachi(LightmapData::Model &m, data->Models, mid){
 		int w = m.tex_width;
 		int h = m.tex_height;
 		Image im;
 		im.Create(w, h, Black);
+
+		/*foreach(LightmapData::Vertex &v, data->Vertices){
+			if (v.mod_id != mid)
+				continue;
+			im.SetPixel(v.x, v.y, RenderTreeVertex(0, v.pos, v.n, this, data->Trias[v.tria_id]));
+		}*/
 
 		for (int i=m.offset;i<m.offset + m.num_trias;i++){
 			LightmapData::Triangle &t = data->Trias[i];
@@ -497,3 +498,4 @@ void LightmapPhotonMap::RenderToTexture()
 		im.Save("new_lightmap.tga");
 	}
 }
+#endif

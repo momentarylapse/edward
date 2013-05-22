@@ -34,7 +34,8 @@ public:
 
 	void Init(DataWorld *w);
 	void AddModel(const string &filename, matrix &mat, int object_index);
-	void AddTextureLevels();
+	void AddTextureLevels(bool modify = true);
+	void CreateVertices();
 
 	void SetResolution(float res);
 	float GuessResolution();
@@ -70,6 +71,19 @@ public:
 		float area;
 	};
 	Array<Triangle> Trias;
+
+	// a small sub triangle...
+	struct Vertex
+	{
+		int x, y;
+		vector pos, n;
+		float area;
+		color rad, rad2, am, dif, em;
+		int tria_id, mod_id;
+		Array<int> visible;
+		Array<float> coeff;
+	};
+	Array<Vertex> Vertices;
 
 
 	struct Light
