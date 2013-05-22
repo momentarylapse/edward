@@ -11,6 +11,28 @@
 #include "../../../x/object.h"
 #include "../../../x/model_manager.h"
 
+Ray::Ray(){}
+
+Ray::Ray(const vector &a, const vector &b)
+{
+	u = b - a;
+	v = b ^ a;
+}
+
+float Ray::dot(const Ray &r) const
+{
+	return (u * r.v) + (v * r.u);
+}
+
+bool Ray::intersect_plane(const plane &pl, vector &c) const
+{
+	float w = u * pl.n;
+	if (w == 0)
+		return false;
+	c = ((v ^ pl.n) - u * pl.d) / w;
+	return true;
+}
+
 LightmapData::LightmapData(DataWorld *w)
 {
 	emissive_brightness = 1.0f;
@@ -144,6 +166,9 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 					t.n[l] = mat.transform_normal(p.Side[0].Normal);
 				}
 				PlaneFromPoints(t.pl, t.v[0], t.v[1], t.v[2]);
+				t.ray[0] = Ray(t.v[0], t.v[1]);
+				t.ray[1] = Ray(t.v[1], t.v[2]);
+				t.ray[2] = Ray(t.v[2], t.v[0]);
 				t.em = m->Material[p.Material].Emission;
 				t.area = ((t.v[1] - t.v[0]) ^ (t.v[2] - t.v[0])).length() / 2;
 				mod.area += t.area;
@@ -255,16 +280,6 @@ void LightmapData::CreateVertices()
 	msg_write("Vertices: " + i2s(Vertices.num));
 }
 
-bool _LineIntersectsTriangle3_(const plane &pl,const vector &t1,const vector &t2,const vector &t3,const vector &l1,const vector &l2,vector &col,float &f, float &g)
-{
-	if (!pl.intersect_line(l1, l2, col))
-		return false;
-	GetBaryCentric(col,t1,t2,t3,f,g);
-	if ((f>0)&&(g>0)&&(f+g<1))
-		return true;
-	return false;
-}
-
 bool LightmapData::IsVisible(Vertex &a, Vertex &b)
 {
 	if (a.tria_id == b.tria_id)
@@ -275,6 +290,8 @@ bool LightmapData::IsVisible(Vertex &a, Vertex &b)
 	if (b.n * dir > 0)
 		return false;
 
+	Ray r = Ray(a.pos, b.pos);
+
 	for (int ti=0;ti<Trias.num;ti++){
 		if ((ti == a.tria_id) || (ti == b.tria_id))
 			continue;
@@ -283,13 +300,17 @@ bool LightmapData::IsVisible(Vertex &a, Vertex &b)
 /*		if (VecLineDistance(tria[t].m, p, p2) > tria[t].r)
 		//if (_vec_line_distance_(tria[t].m, p1, p2) > tria[t].r)
 			continue;*/
+		bool r0 = (r.dot(t.ray[0]) > 0);
+		bool r1 = (r.dot(t.ray[1]) > 0);
+		if (r1 != r0)
+			continue;
+		bool r2 = (r.dot(t.ray[2]) > 0);
+		if (r2 != r0)
+			continue;
 
-
-		float ff, gg;
-		if (_LineIntersectsTriangle3_(t.pl, t.v[0], t.v[1], t.v[2], a.pos, b.pos, cp, ff, gg)){
-			if (_vec_between_(cp, a.pos, b.pos)){
+		if (r.intersect_plane(t.pl, cp)){
+			if (_vec_between_(cp, a.pos, b.pos))
 				return false;
-			}
 		}
 	}
 	return true;

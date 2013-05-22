@@ -106,32 +106,39 @@ void LightmapPhotonMap::Trace(Array<PhotonEvent> &ph, const vector &p, const vec
 {
 //	msg_db_f("PMTrace", 1);
 	vector p2 = p + dir * data->large_distance;
+	Ray r = Ray(p, p2);
 	//printf("%f   %f   %f\n", dir.x, dir.y, dir.z);
 	// trace
 	int hit_tria = -1;
 	vector hit_p;
 	float f, g;
-	for (int t=0;t<data->Trias.num;t++){
-		if (t == ignore_tria)
+	for (int ti=0;ti<data->Trias.num;ti++){
+		if (ti == ignore_tria)
 			continue;
-		LightmapData::Triangle &tria = data->Trias[t];
+		LightmapData::Triangle &t= data->Trias[ti];
 		vector cp;
-		bool vm = false; // ???
-/*		if (VecLineDistance(tria[t].m, p, p2) > tria[t].r)
-		//if (_vec_line_distance_(tria[t].m, p1, p2) > tria[t].r)
-			continue;*/
 
-		// FIXME:  LineIntersectsTriangleF/G lokal!!!
+		bool r0 = (r.dot(t.ray[0]) > 0);
+		bool r1 = (r.dot(t.ray[1]) > 0);
+		if (r1 != r0)
+			continue;
+		bool r2 = (r.dot(t.ray[2]) > 0);
+		if (r2 != r0)
+			continue;
+
+		if (!r.intersect_plane(t.pl, cp))
+			continue;
+		if (!_vec_between_(cp, p, p2))
+			continue;
+
 		float ff, gg;
-		if (_LineIntersectsTriangle2_(tria.pl, tria.v[0], tria.v[1], tria.v[2], p, p2, cp, ff, gg)){
-			if (_vec_between_(cp, p, p2)){
-				hit_tria = t;
-				hit_p = cp;
-				p2 = cp;
-				f = ff;
-				g = gg;
-			}
-		}
+		GetBaryCentric(cp, t.v[0], t.v[1], t.v[2], ff, gg);
+
+		hit_tria = ti;
+		hit_p = cp;
+		p2 = cp;
+		f = ff;
+		g = gg;
 	}
 
 	if (hit_tria < 0)

@@ -70,8 +70,8 @@ void LightmapRadiosity::Iterate()
 	foreach(LightmapData::Vertex &a, data->Vertices){
 		foreachi(int i, a.visible, ii){
 			LightmapData::Vertex &b = data->Vertices[i];
-			msg_write(f2s(a.coeff[ii]  * b.area, 6));
-			msg_write((b.rad * a.dif).str());
+			/*msg_write(f2s(a.coeff[ii]  * b.area, 6));
+			msg_write((b.rad * a.dif).str());*/
 			a.rad2 += b.rad * a.dif * a.coeff[ii]  * b.area;
 			/*if (raster_visibility)
 				b.rad2 += a.rad * b.dif * a.coeff[ii] * a.area;*/
