@@ -27,6 +27,9 @@ public:
 private:
 	CHuiWindow *dlg;
 	bool Cancelled;
+	string message;
+	int timer;
+	float time_running;
 };
 
 #endif /* PROGRESS_H_ */
