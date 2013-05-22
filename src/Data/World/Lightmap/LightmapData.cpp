@@ -74,7 +74,6 @@ void LightmapData::Init(DataWorld *w)
 	foreachi(WorldObject &o, w->Objects, i)
 		if (o.is_selected){
 			o.object->UpdateMatrix();
-			msg_write(o.FileName);
 			AddModel(o.FileName, o.object->_matrix, i);
 		}
 	if (Trias.num == 0)
@@ -88,7 +87,6 @@ void LightmapData::Init(DataWorld *w)
 		}
 	center = (min + max) / 2;
 	large_distance = 100 * (max - min).length();
-	//msg_write(min.str() + " " + max.str() + " " + f2s(large_distance, 3));
 
 	/*for (int i=0;i<vertex.num;i++)
 		vertex[i].v -= lm_m;
@@ -107,18 +105,10 @@ void LightmapData::Init(DataWorld *w)
 		l.Directional = true;
 		l.Dir = w->meta_data.SunAng.ang2dir();
 		l.Ambient = Black;//w->meta_data.SunColor;
-		l.Diffuse = Gray;
+		l.Diffuse = w->meta_data.SunDiffuse;
 		l.Specular = Black;
 		Lights.add(l);
 	}
-
-	/*bool ok = true;
-	for (int i=0;i<lmmodel.num;i++)
-		if (!MapTriasToTexture(&lmmodel[i])){
-			HuiErrorBox(LightmapDialog, _("Error"), _("Textur-Gr&o&se zu klein um alle Dreiecke aufzunehmen."));
-			ok = false;
-			break;
-		}*/
 
 	SetResolution(GuessResolution());
 }
@@ -147,6 +137,7 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 	msg_db_f("lm_add_model", 1);
 
 	Model mod;
+	mod.mat = mat;
 	mod.id = Models.num;
 
 	mod.orig_name = filename.basename();
@@ -182,6 +173,8 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 				t.ray[0] = Ray(t.v[0], t.v[1]);
 				t.ray[1] = Ray(t.v[1], t.v[2]);
 				t.ray[2] = Ray(t.v[2], t.v[0]);
+				t.am = m->Material[p.Material].Ambient;
+				t.di = m->Material[p.Material].Diffuse;
 				t.em = m->Material[p.Material].Emission;
 				t.area = ((t.v[1] - t.v[0]) ^ (t.v[2] - t.v[0])).length() / 2;
 				mod.area += t.area;
@@ -192,28 +185,20 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 	area += mod.area;
 
 
-
-		// lights
-	/*	if (m->fx){
-			msg_write("-fx-");
-			sModelEffectData *fxd = m->fx_data;
-			sEffect **_fx=(sEffect**)m->fx;
-			while(*_fx){
-				msg_write("......fx");
-				if (fxd->type == FXTypeLight){
-					msg_write("......light");
-					sLightMapLight l;
-					l.Directional = false;
-					l.Pos = m->Skin[0]->Vertex[fxd->vertex];
-					l.Radius = fxd->paramsf[0];
-					l.Ambient = *(color*)&fxd->paramsf[1];
-					l.Diffuse = *(color*)&fxd->paramsf[5];
-					l.Specular = *(color*)&fxd->paramsf[9];
-					light.add(l);
-				}
-				_fx ++;
-			}
-		}*/
+	// lights
+	foreach(ModelEffect &fx, m->Fx){
+		if (fx.Kind == FXTypeLight){
+			msg_write("......fx light");
+			Light l;
+			l.Directional = false;
+			l.Pos = mat * m->Vertex[fx.Vertex].pos;
+			l.Radius = fx.Size;
+			l.Ambient = fx.Colors[0];
+			l.Diffuse = fx.Colors[1];
+			l.Specular = fx.Colors[2];
+			Lights.add(l);
+		}
+	}
 
 
 	mod.num_trias = Trias.num - mod.offset;
@@ -252,11 +237,9 @@ void LightmapData::CreateVertices()
 		for (int i=m.offset;i<m.offset + m.num_trias;i++){
 			LightmapData::Triangle &t = Trias[i];
 			ModelPolygon &p = m.orig->Surface[t.surf].Polygon[t.poly];
-			vector v[3], sv[3];
-			vector n = p.TempNormal;
+			vector sv[3];
 			for (int k=0;k<3;k++){
 				int si = p.Side[t.side].Triangulation[k];
-				v[k] = m.orig->Vertex[p.Side[si].Vertex].pos;
 				sv[k] = p.Side[si].SkinVertex[1];
 				sv[k].x *= w;
 				sv[k].y *= h;
@@ -272,14 +255,14 @@ void LightmapData::CreateVertices()
 					GetBaryCentric(c, sv[0], sv[1], sv[2], f, g);
 					if ((f >= 0) && (g >= 0) && (f + g <= 1)){
 						Vertex vv;
-						vv.pos = v[0] + f * (v[1] - v[0]) + g * (v[2] - v[0]);
-						vv.n = n;
+						vv.pos = t.v[0] + f * (t.v[1] - t.v[0]) + g * (t.v[2] - t.v[0]);
+						vv.n = t.n[0] + f * (t.n[1] - t.n[0]) + g * (t.n[2] - t.n[0]);
 						vv.x = x;
 						vv.y = y;
 						vv.tria_id = i;
 						vv.mod_id = t.mod_id;
-						vv.am = m.orig->Material[m.orig->Surface[t.surf].Polygon[t.poly].Material].Ambient;
-						vv.dif = m.orig->Material[m.orig->Surface[t.surf].Polygon[t.poly].Material].Diffuse;
+						vv.am = t.am;
+						vv.dif = t.di;
 						vv.em = t.em;
 						Vertices.add(vv);
 					}
@@ -293,6 +276,27 @@ void LightmapData::CreateVertices()
 	msg_write("Vertices: " + i2s(Vertices.num));
 }
 
+bool LightmapData::IsVisible(const vector &a, const vector &b, int ignore_tria1, int ignore_tria2)
+{
+	Ray r = Ray(a, b);
+
+	for (int ti=0;ti<Trias.num;ti++){
+		if ((ti == ignore_tria1) || (ti == ignore_tria2))
+			continue;
+		LightmapData::Triangle &t = Trias[ti];
+		vector cp;
+/*		if (VecLineDistance(tria[t].m, p, p2) > tria[t].r)
+		//if (_vec_line_distance_(tria[t].m, p1, p2) > tria[t].r)
+			continue;*/
+		if (!t.intersect(r, cp))
+			continue;
+
+		if (_vec_between_(cp, a, b))
+			return false;
+	}
+	return true;
+}
+
 bool LightmapData::IsVisible(Vertex &a, Vertex &b)
 {
 	if (a.tria_id == b.tria_id)
@@ -303,22 +307,6 @@ bool LightmapData::IsVisible(Vertex &a, Vertex &b)
 	if (b.n * dir > 0)
 		return false;
 
-	Ray r = Ray(a.pos, b.pos);
-
-	for (int ti=0;ti<Trias.num;ti++){
-		if ((ti == a.tria_id) || (ti == b.tria_id))
-			continue;
-		LightmapData::Triangle &t = Trias[ti];
-		vector cp;
-/*		if (VecLineDistance(tria[t].m, p, p2) > tria[t].r)
-		//if (_vec_line_distance_(tria[t].m, p1, p2) > tria[t].r)
-			continue;*/
-		if (!t.intersect(r, cp))
-			continue;
-
-		if (_vec_between_(cp, a.pos, b.pos))
-			return false;
-	}
-	return true;
+	return IsVisible(a.pos, b.pos, a.tria_id, b.tria_id);
 }
 

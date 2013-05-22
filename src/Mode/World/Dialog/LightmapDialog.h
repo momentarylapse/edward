@@ -22,6 +22,7 @@ public:
 	void FillList();
 
 	void OnResolution();
+	void OnFindNewWorld();
 	void OnOk();
 	void OnPreview();
 	void OnClose();

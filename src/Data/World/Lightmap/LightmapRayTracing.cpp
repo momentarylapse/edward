@@ -55,5 +55,20 @@ void LightmapRayTracing::Compute()
 		if (ed->progress->IsCancelled())
 			throw AbortException();
 	}
+	foreach(LightmapData::Light &l, data->Lights){
+		if (l.Directional && (!data->allow_sun))
+			continue;
+		vector p = l.Pos;
+		foreachi(LightmapData::Vertex &v, data->Vertices, vi){
+			if (l.Directional)
+				p = v.pos - l.Dir * data->large_distance;
+			if (!data->IsVisible(v.pos, p, v.tria_id, -1))
+				continue;
+			if (l.Directional){
+				v.rad += (v.dif * l.Diffuse) * (v.n * l.Dir);
+			}else{
+			}
+		}
+	}
 }
 

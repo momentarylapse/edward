@@ -10,6 +10,8 @@
 #include "LightmapData.h"
 #include "../../../Edward.h"
 #include "../../../Stuff/Progress.h"
+#include "../../../Data/Model/DataModel.h"
+#include "../../../x/model_manager.h"
 
 
 Lightmap::Histogram::Histogram(Array<float> &e)
@@ -99,6 +101,8 @@ color Lightmap::RenderVertex(LightmapData::Vertex &v)
 void Lightmap::RenderTextures()
 {
 	ed->progress->StartCancelable(_("berechne Textur"), 0);
+	dir_create(NixTextureDir + data->texture_out_dir);
+	dir_create(ObjectDir + data->model_out_dir);
 	try{
 	foreachi(LightmapData::Model &m, data->Models, mid){
 		int w = m.tex_width;
@@ -118,7 +122,16 @@ void Lightmap::RenderTextures()
 			}
 		}
 
-		im.Save("new_lightmap.tga");
+		m.tex_name = data->texture_out_dir + i2s(mid) + ".tga";
+		im.Save(NixTextureDir + m.tex_name);
+
+		// edit model
+		foreach(ModelMaterial &mat, m.orig->Material){
+			mat.NumTextures = 2;
+			mat.TextureFile[1] = m.tex_name;
+		}
+		m.new_name = data->model_out_dir + i2s(mid);
+		m.orig->Save(ObjectDir + m.new_name + ".model");
 	}
 	}catch(AbortException &e){
 	}

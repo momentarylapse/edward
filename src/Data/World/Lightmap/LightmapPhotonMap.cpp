@@ -145,7 +145,8 @@ void LightmapPhotonMap::Trace(Array<PhotonEvent> &ph, const vector &p, const vec
 	if (u < 0.5f){
 		// reflect
 		vector dir2 = get_rand_dir(data->Trias[hit_tria].pl.n);
-		Trace(ph, hit_p, dir2, c, hit_tria, n + 1);
+		color c2 = c * data->Trias[hit_tria].di;
+		Trace(ph, hit_p, dir2, c2, hit_tria, n + 1);
 	}else{
 		// absorb
 	}

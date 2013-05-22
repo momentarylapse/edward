@@ -34,6 +34,8 @@ public:
 	bool replace_objects;
 
 	string world_name_small;
+	string model_out_dir;
+	string texture_out_dir;
 	float color_exponent;
 	vector min, max, center;
 	float large_distance;
@@ -53,6 +55,7 @@ public:
 	{
 		int id;
 		DataModel *orig;
+		matrix mat;
 		int offset, num_trias;
 		string orig_name;
 		string new_name;
@@ -77,7 +80,7 @@ public:
 		int x, y;
 		bool t_rot;*/
 		int mod_id, surf, poly, side;
-		color em;
+		color am, di, em;
 		float area;
 		bool intersect(const Ray &r, vector &cp) const;
 	};
@@ -96,6 +99,7 @@ public:
 	};
 	Array<Vertex> Vertices;
 
+	bool IsVisible(const vector &a, const vector &b, int ignore_tria1, int ignore_tria2);
 	bool IsVisible(Vertex &a, Vertex &b);
 
 

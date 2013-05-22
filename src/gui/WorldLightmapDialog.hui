@@ -1,24 +1,28 @@
 	// dialog
-	LightmapDialog = HuiCreateDialog("Lightmap erzeugen", 420, 485, MainWin, false);
+	LightmapDialog = HuiCreateDialog("Lightmap erzeugen", 420, 540, MainWin, false);
 	LightmapDialog->SetID("lightmap_dialog");
-	LightmapDialog->AddDefButton("OK", 310, 445, 100, 25, "ok");
+	LightmapDialog->AddDefButton("OK", 310, 500, 100, 25, "ok");
 	LightmapDialog->SetImage("ok", "hui:ok");
-	LightmapDialog->AddButton("Abbrechen", 205, 445, 100, 25, "cancel");
+	LightmapDialog->AddButton("Abbrechen", 205, 500, 100, 25, "cancel");
 	LightmapDialog->SetImage("cancel", "hui:cancel");
 	LightmapDialog->AddListView("Objekt\\Textur\\Aufl&osung", 10, 10, 400, 265, "lightmap_list");
 	LightmapDialog->AddText("R&aumliche Aufl&osung", 10, 310, 160, 25, "lmt_spacial_resolution");
-	LightmapDialog->AddSpinButton("\\0\\1000\\0.1", 175, 310, 85, 25, "resolution");
-	LightmapDialog->AddText("le", 265, 310, 30, 25, "lu");
+	LightmapDialog->AddSpinButton("\\0\\1000\\0.1", 175, 310, 200, 25, "resolution");
+	LightmapDialog->AddText("le", 380, 310, 30, 25, "lu");
 	LightmapDialog->AddComboBox("Raytracing\\Radiosity\\Radiosity schnell\\Photon Map", 10, 280, 400, 25, "lightmap_type");
 	LightmapDialog->AddText("Zahl der Photonen", 10, 340, 160, 25, "lmt_photons");
-	LightmapDialog->AddSpinButton("\\0", 175, 340, 85, 25, "photons");
+	LightmapDialog->AddSpinButton("\\0", 175, 340, 200, 25, "photons");
 	LightmapDialog->AddText("Oberfl&achen-Helligkeit", 10, 370, 160, 25, "lmt_brightness");
-	LightmapDialog->AddSpinButton("\\0\\100\\0.1", 175, 370, 85, 25, "brightness");
-	LightmapDialog->AddCheckBox("Sonne erlauben", 265, 370, 145, 25, "allow_sun");
+	LightmapDialog->AddSpinButton("\\0\\100\\0.1", 175, 370, 200, 25, "brightness");
+	LightmapDialog->AddCheckBox("Sonne erlauben", 10, 430, 365, 25, "allow_sun");
 	LightmapDialog->AddText("Helligkeits-Exponent", 10, 400, 160, 25, "lmt_exponent");
-	LightmapDialog->AddSpinButton("\\0\\10\\0.05", 175, 400, 85, 25, "exponent");
-	LightmapDialog->AddCheckBox("Ersetzen", 10, 445, 90, 25, "replace_objects");
-	LightmapDialog->AddButton("Vorschau", 110, 445, 90, 25, "preview");
+	LightmapDialog->AddSpinButton("\\0\\10\\0.05", 175, 400, 200, 25, "exponent");
+	LightmapDialog->AddButton("Vorschau", 110, 500, 90, 25, "preview");
+	LightmapDialog->AddEdit("", 175, 460, 200, 25, "new_world_name");
+	LightmapDialog->Enable("new_world_name", false);
+	LightmapDialog->AddText("Neuer Weltname", 10, 460, 160, 25, "lmt_new_world");
+	LightmapDialog->AddButton("", 380, 460, 30, 25, "find_new_world");
+	LightmapDialog->SetImage("find_new_world", "hui:save-as");
 	LightmapDialog->Update();
 
 

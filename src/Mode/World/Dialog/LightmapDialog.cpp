@@ -10,6 +10,9 @@
 #include "../../../Data/World/Lightmap/LightmapPhotonMap.h"
 #include "../../../Data/World/Lightmap/LightmapRayTracing.h"
 #include "../../../Data/World/Lightmap/LightmapRadiosity.h"
+#include "../../../Data/World/DataWorld.h"
+#include "../../../x/model_manager.h"
+#include "../../../Edward.h"
 
 LightmapDialog::LightmapDialog(CHuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
 	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls, true)
@@ -30,10 +33,12 @@ LightmapDialog::LightmapDialog(CHuiWindow *_parent, bool _allow_parent, DataWorl
 	SetFloat("exponent", 1.0f);
 	SetInt("photons", 5000);
 	SetInt("lightmap_type", 3);
+	SetString("new_world_name", data->filename.basename().replace(".world", "") + "Lightmap");
 
 	lmd = new LightmapData(data);
 
 	SetFloat("resolution", lmd->resolution);
+	Check("allow_sun", lmd->allow_sun);
 
 	FillList();
 	Enable("ok", lmd->Models.num > 0);
@@ -58,9 +63,12 @@ void LightmapDialog::OnClose()
 
 void LightmapDialog::SetData()
 {
+	string new_world = GetString("new_world_name");
 	lmd->emissive_brightness = GetFloat("brightness");
 	lmd->color_exponent = GetFloat("exponent");
 	lmd->allow_sun = IsChecked("allow_sun");
+	lmd->texture_out_dir = "Lightmap/" + new_world + "/";
+	lmd->model_out_dir = "Lightmap/" + new_world + "/";
 }
 
 static Lightmap::Histogram *hist_p;
@@ -140,6 +148,12 @@ void LightmapDialog::OnResolution()
 {
 	lmd->SetResolution(GetFloat(""));
 	FillList();
+}
+
+void LightmapDialog::OnFindNewWorld()
+{
+	if (ed->FileDialog(FDModel, true, true))
+		SetString("new_world_name", ed->DialogFileNoEnding);
 }
 
 void LightmapDialog::OnOk()

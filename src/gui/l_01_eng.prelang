@@ -389,6 +389,8 @@ lmt_brightness
 Surface brightness
 lmt_exponent
 Brightness exponent
+lmt_new_world
+
 lmt_photons
 Number of Photons
 lmt_spacial_resolution
@@ -847,8 +849,6 @@ remove_skybox
 Remove
 rename
 Rename
-replace_objects
-Replace
 resolution
 \\0\\1000\\0.1
 rotate
@@ -1254,8 +1254,6 @@ Editor für Spiele-Daten der x9-Engine
 Editor for game data of the x9 engine
 Eigenschaften
 Properties
-Error
-
 Erstelle Datenbank
 Creating database
 Es existiert bereits eine Animation mit diesem Index. Bitte einen anderen wählen.
@@ -1319,6 +1317,8 @@ Generelles Umgebungslicht zusätzlich zu allen Lichtquellen
 Gespeichert!
 Saved!
 Glanzlicht
+
+Helligkeit
 
 Hinten
 Back
@@ -1452,6 +1452,8 @@ Reines Grün wird transparent
 
 Rotieren
 Rotate
+Schließen
+
 Script
 Script
 Script-Datei
@@ -1498,8 +1500,6 @@ Textur-Datei
 Texture file
 Textur-Datei nicht ladbar: %s
 Texture file not loadable: %s
-Textur-Größe zu klein um alle Dreiecke aufzunehmen.
-
 Textur-Koordinaten
 Texture coordinates
 Texturen

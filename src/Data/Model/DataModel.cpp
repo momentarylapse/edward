@@ -1126,10 +1126,10 @@ bool DataModel::Save(const string & _filename)
 	    // skin vertices
 		int num_skin_v = 0;
 		for (int m=0;m<Material.num;m++)
-			num_skin_v += s->Sub[m].Triangle.num * s->Sub[m].NumTextures * 3;
+			num_skin_v += s->Sub[m].Triangle.num * Material[m].NumTextures * 3;
 		f->WriteInt(num_skin_v);
 		for (int m=0;m<Material.num;m++)
-			for (int tl=0;tl<s->Sub[m].NumTextures;tl++)
+			for (int tl=0;tl<Material[m].NumTextures;tl++)
 		    	for (int j=0;j<s->Sub[m].Triangle.num;j++)
 					for (int k=0;k<3;k++){
 						f->WriteFloat(s->Sub[m].Triangle[j].SkinVertex[tl][k].x);
@@ -1151,7 +1151,7 @@ bool DataModel::Save(const string & _filename)
 					f->WriteInt(sub->Triangle[j].Vertex[k]);
 
 			// skin index
-			for (int tl=0;tl<sub->NumTextures;tl++)
+			for (int tl=0;tl<Material[m].NumTextures;tl++)
 		    	for (int j=0;j<sub->Triangle.num;j++)
 					for (int k=0;k<3;k++)
 						f->WriteInt(svi ++);

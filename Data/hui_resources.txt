@@ -14401,7 +14401,7 @@ lightmap_dialog
 
 1
 420
-485
+540
 0
 0
 0
@@ -14409,13 +14409,13 @@ lightmap_dialog
 0
 
 
-16
+18
 DefButton
 ok
 hui:ok
 1
 310
-445
+500
 100
 25
 -1
@@ -14428,7 +14428,7 @@ cancel
 hui:cancel
 1
 205
-445
+500
 100
 25
 -1
@@ -14468,7 +14468,7 @@ resolution
 1
 175
 310
-85
+200
 25
 -1
 0
@@ -14479,7 +14479,7 @@ Text
 lu
 
 1
-265
+380
 310
 30
 25
@@ -14520,7 +14520,7 @@ photons
 1
 175
 340
-85
+200
 25
 -1
 0
@@ -14546,7 +14546,7 @@ brightness
 1
 175
 370
-85
+200
 25
 -1
 0
@@ -14557,9 +14557,9 @@ CheckBox
 allow_sun
 
 1
-265
-370
-145
+10
+430
+365
 25
 -1
 0
@@ -14585,20 +14585,7 @@ exponent
 1
 175
 400
-85
-25
--1
-0
-0
-
-
-CheckBox
-replace_objects
-
-1
-10
-445
-90
+200
 25
 -1
 0
@@ -14610,8 +14597,47 @@ preview
 
 1
 110
-445
+500
 90
+25
+-1
+0
+0
+
+
+Edit
+new_world_name
+
+0
+175
+460
+200
+25
+-1
+0
+0
+
+
+Text
+lmt_new_world
+
+1
+10
+460
+160
+25
+-1
+0
+0
+
+
+Button
+find_new_world
+hui:save-as
+1
+380
+460
+30
 25
 -1
 0
@@ -16295,7 +16321,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-722
+724
 // Text
 ad_dialog
 Verwaltung
@@ -16575,6 +16601,8 @@ find_default_world
 
 find_material
 
+find_new_world
+
 find_object
 
 find_rootdir
@@ -16801,6 +16829,8 @@ lmt_brightness
 Oberflächen-Helligkeit
 lmt_exponent
 Helligkeits-Exponent
+lmt_new_world
+Neuer Weltname
 lmt_photons
 Zahl der Photonen
 lmt_spacial_resolution
@@ -17231,6 +17261,8 @@ new_torus_dialog
 neuer Torus
 new_tria
 Polygon
+new_world_name
+
 normal_all_angular
 Winkelabhängig
 normal_all_hard
@@ -17345,8 +17377,6 @@ remove_skybox
 Entfernen
 rename
 Umbenennen
-replace_objects
-Ersetzen
 resolution
 \\0\\1000\\0.1
 rootdir
@@ -17747,7 +17777,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-722
+724
 // Text
 ad_dialog
 Administration
@@ -18027,6 +18057,8 @@ find_default_world
 
 find_material
 
+find_new_world
+
 find_object
 
 find_rootdir
@@ -18253,6 +18285,8 @@ lmt_brightness
 Surface brightness
 lmt_exponent
 Brightness exponent
+lmt_new_world
+
 lmt_photons
 Number of Photons
 lmt_spacial_resolution
@@ -18683,6 +18717,8 @@ new_torus_dialog
 
 new_tria
 New triangle
+new_world_name
+
 normal_all_angular
 Angular
 normal_all_hard
@@ -18797,8 +18833,6 @@ remove_skybox
 Remove
 rename
 Rename
-replace_objects
-Replace
 resolution
 \\0\\1000\\0.1
 rootdir
@@ -19499,7 +19533,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-722
+724
 // Text
 ad_dialog
 
@@ -19779,6 +19813,8 @@ find_default_world
 
 find_material
 
+find_new_world
+
 find_object
 
 find_rootdir
@@ -20004,6 +20040,8 @@ lightmap_type
 lmt_brightness
 
 lmt_exponent
+
+lmt_new_world
 
 lmt_photons
 
@@ -20435,6 +20473,8 @@ new_torus_dialog
 
 new_tria
 新しい　三角形
+new_world_name
+
 normal_all_angular
 
 normal_all_hard
@@ -20548,8 +20588,6 @@ remove_script
 remove_skybox
 削除
 rename
-
-replace_objects
 
 resolution
 
