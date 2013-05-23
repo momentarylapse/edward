@@ -2,13 +2,13 @@
 96
 // KeyCodes
 new
-21
+312
 open
-29
+313
 save
-25
+317
 help
-277
+21
 exit
 321
 copy
@@ -74,7 +74,7 @@ new_cylinder
 new_konv_poly
 314
 new_spat
-317
+-1
 new_extract
 -1
 select_recursive
@@ -84,7 +84,7 @@ select_cw
 invert_trias
 -1
 connect
-313
+-1
 nearify
 569
 cut_out
