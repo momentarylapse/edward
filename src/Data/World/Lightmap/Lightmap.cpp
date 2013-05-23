@@ -105,14 +105,22 @@ void fuzzy_image(Image &im)
 	for (int x=0;x<im.width;x++)
 		for (int y=0;y<im.height;y++)
 			c.add(im.GetPixel(x, y));
-	for (int x=1;x<im.width-1;x++)
-		for (int y=1;y<im.height-1;y++){
+	for (int x=0;x<im.width;x++)
+		for (int y=0;y<im.height;y++){
 			color c0 = c[y + x * im.height];
-			color c1 = c[y + (x-1) * im.height];
-			color c2 = c[y + (x+1) * im.height];
-			color c3 = c[(y-1) + x * im.height];
-			color c4 = c[(y+1) + x * im.height];
-			im.SetPixel(x, y, (c0 + c1 + c2 + c3 + c4) * 0.2f);
+			color c1 = c[y + max(x-1,0) * im.height];
+			color c2 = c[y + min(x+1,im.width-1) * im.height];
+			color c3 = c[max(y-1,0) + x * im.height];
+			color c4 = c[min(y+1,im.height-1) + x * im.height];
+
+			// rendered pixel -> blur with neighbors
+			// undefined pixel -> copy neighbor
+			c0 = c0 + c1 + c2 + c3 + c4;
+			if (c0.a > 0)
+				im.SetPixel(x, y, c0 * (1.0f / c0.a));
+			else
+				// no neighbors -> blue
+				im.SetPixel(x, y, color(1, 0.3f, 0.3f, 1));
 		}
 }
 
@@ -126,7 +134,7 @@ void Lightmap::RenderTextures()
 		int w = m.tex_width;
 		int h = m.tex_height;
 		Image im;
-		im.Create(w, h, Black);
+		im.Create(w, h, color(0,0,0,0));
 
 		foreachi(LightmapData::Vertex &v, data->Vertices, vi){
 			if (v.mod_id != mid)

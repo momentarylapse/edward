@@ -104,11 +104,12 @@ void LightmapData::Init(DataWorld *w)
 		Light l;
 		l.Directional = true;
 		l.Dir = -w->meta_data.SunAng.ang2dir();
-		l.Ambient = Black;//w->meta_data.SunColor;
+		l.Ambient = w->meta_data.SunAmbient;
 		l.Diffuse = w->meta_data.SunDiffuse;
 		l.Specular = Black;
 		Lights.add(l);
 	}
+	Ambient = w->meta_data.Ambient;
 
 	SetResolution(GuessResolution());
 }
@@ -250,7 +251,7 @@ void LightmapData::CreateVertices()
 			int v_offset = Vertices.num;
 			for (int x=r.x1-1;x<r.x2+1;x++)
 				for (int y=r.y1-1;y<r.y2+1;y++){
-					vector c = vector(x, y, 0);
+					vector c = vector((float)x + 0.5f, (float)y + 0.5f, 0);
 					float f, g;
 					GetBaryCentric(c, sv[0], sv[1], sv[2], f, g);
 					if ((f >= 0) && (g >= 0) && (f + g <= 1)){

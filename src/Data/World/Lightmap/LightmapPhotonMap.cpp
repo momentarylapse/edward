@@ -127,14 +127,15 @@ void LightmapPhotonMap::Trace(Array<PhotonEvent> &ph, const vector &p, const vec
 	if (hit_tria < 0)
 		return;
 
+	LightmapData::Triangle &t = data->Trias[hit_tria];
 	PhotonEvent e;
 	e.pos = hit_p;
 	e.dir = dir;
-	e.c = c;
+	e.c = c * data->Trias[hit_tria].di;
 	e.tria = hit_tria;
 	e.f = f;
 	e.g = g;
-	e.n = data->Trias[hit_tria].n[0] + (data->Trias[hit_tria].n[1] - data->Trias[hit_tria].n[0]) * f + (data->Trias[hit_tria].n[2] - data->Trias[hit_tria].n[0]) * g;
+	e.n = t.n[0] + (t.n[1] - t.n[0]) * f + (t.n[2] - t.n[0]) * g;
 	e.n.normalize();
 	ph.add(e);
 
@@ -144,9 +145,8 @@ void LightmapPhotonMap::Trace(Array<PhotonEvent> &ph, const vector &p, const vec
 	float u = randf(1);
 	if (u < 0.5f){
 		// reflect
-		vector dir2 = get_rand_dir(data->Trias[hit_tria].pl.n);
-		color c2 = c * data->Trias[hit_tria].di;
-		Trace(ph, hit_p, dir2, c2, hit_tria, n + 1);
+		vector dir2 = get_rand_dir(t.pl.n);
+		Trace(ph, hit_p, dir2, e.c, hit_tria, n + 1);
 	}else{
 		// absorb
 	}
@@ -357,9 +357,8 @@ color LightmapPhotonMap::RenderVertex(LightmapData::Vertex &v)//(int work_id, co
 	//int t = vertex[v].tria_all;
 
 	// emitting -> set color
-	if (v.em.r + v.em.g + v.em.b > 0.01f){
-		return v.em;
-	}
+	if (v.em.r + v.em.g + v.em.b > 0.01f)
+		return color(1, v.em.r, v.em.g, v.em.b);
 
 
 	// hard cut off for search area

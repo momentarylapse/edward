@@ -21,6 +21,7 @@ public:
 	void SetData();
 	void FillList();
 
+	void OnType();
 	void OnResolution();
 	void OnFindNewWorld();
 	void OnOk();

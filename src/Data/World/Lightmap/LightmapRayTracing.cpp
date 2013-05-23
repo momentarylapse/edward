@@ -26,10 +26,12 @@ void LightmapRayTracing::Compute()
 {
 	Array<int> vem;
 	foreachi(LightmapData::Vertex &v, data->Vertices, vi){
-		v.rad = v.em;
+		v.rad = v.em + v.am * data->Ambient;
 		if (v.em.r + v.em.g + v.em.b > 0)
 			vem.add(vi);
 	}
+
+	// emitting vertices
 	foreachi(int vi, vem, ii){
 		LightmapData::Vertex &a = data->Vertices[vi];
 		foreach(LightmapData::Vertex &b, data->Vertices){
@@ -55,13 +57,17 @@ void LightmapRayTracing::Compute()
 		if (ed->progress->IsCancelled())
 			throw AbortException();
 	}
+
+	// lights
 	foreach(LightmapData::Light &l, data->Lights){
 		if (l.Directional && (!data->allow_sun))
 			continue;
 		vector p = l.Pos;
 		foreachi(LightmapData::Vertex &v, data->Vertices, vi){
-			if (l.Directional)
-				p = v.pos - l.Dir * data->large_distance;
+			if (l.Directional){
+				v.rad += v.am * l.Ambient;
+				p = v.pos + l.Dir * data->large_distance;
+			}
 			if (!data->IsVisible(v.pos, p, v.tria_id, -1))
 				continue;
 			if (l.Directional){

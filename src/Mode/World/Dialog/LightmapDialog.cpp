@@ -27,12 +27,14 @@ LightmapDialog::LightmapDialog(CHuiWindow *_parent, bool _allow_parent, DataWorl
 	EventM("ok", this, &LightmapDialog::OnOk);
 	EventM("preview", this, &LightmapDialog::OnPreview);
 	EventM("resolution", this, &LightmapDialog::OnResolution);
+	EventM("lightmap_type", this, &LightmapDialog::OnType);
 
 	//LoadData();
 	SetFloat("brightness", 10.0f);
 	SetFloat("exponent", 1.0f);
-	SetInt("photons", 5000);
+	SetInt("photons", 500000);
 	SetInt("lightmap_type", 3);
+	Enable("photons", true);
 	SetString("new_world_name", data->filename.basename().replace(".world", "") + "Lightmap");
 
 	lmd = new LightmapData(data);
@@ -59,6 +61,11 @@ void LightmapDialog::FillList()
 void LightmapDialog::OnClose()
 {
 	delete(this);
+}
+
+void LightmapDialog::OnType()
+{
+	Enable("photons", (GetInt("lightmap_type") == 3));
 }
 
 void LightmapDialog::SetData()

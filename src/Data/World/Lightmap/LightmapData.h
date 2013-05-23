@@ -112,6 +112,7 @@ public:
 		//Array<int> visible[light_num_diffuse];
 	};
 	Array<Light> Lights;
+	color Ambient;
 };
 
 #endif /* LIGHTMAPDATA_H_ */
