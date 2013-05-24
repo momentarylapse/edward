@@ -1292,16 +1292,17 @@ void CHuiWindow::SetString(const string &_id, const string &str)
 		const char *str2 = sys_str(str);
 		gtk_text_buffer_set_text(tb, str2, strlen(str2));
 	}else if (c->type==HuiKindEdit){
-		gtk_entry_set_text(GTK_ENTRY(c->widget),sys_str(str));
+		gtk_entry_set_text(GTK_ENTRY(c->widget), sys_str(str));
 	}else if ((c->type==HuiKindListView)||(c->type==HuiKindTreeView)){
 		AddString(_id, str);
 	}else if (c->type==HuiKindComboBox){
 		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(c->widget),sys_str(str));
 		c->_item_.add(dummy_iter);
-	}else if (c->type==HuiKindProgressBar)
-		gtk_progress_bar_set_text(GTK_PROGRESS_BAR(c->widget),sys_str(str));
-	else if (c->type==HuiKindButton)
-		gtk_button_set_label(GTK_BUTTON(c->widget),sys_str(str));
+	}else if (c->type==HuiKindProgressBar){
+		gtk_progress_bar_set_show_text(GTK_PROGRESS_BAR(c->widget), true);
+		gtk_progress_bar_set_text(GTK_PROGRESS_BAR(c->widget), sys_str(str));
+	}else if (c->type==HuiKindButton)
+		gtk_button_set_label(GTK_BUTTON(c->widget), sys_str(str));
 	else if (c->type==HuiKindSpinButton)
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(c->widget), s2f(str));
 	else if (c->type==HuiKindImage)

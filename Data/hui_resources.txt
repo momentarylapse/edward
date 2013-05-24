@@ -12299,30 +12299,17 @@ progress_dialog
 
 1
 310
-65
+35
 0
 0
 0
 0
 0
 
-
-2
-ProgressBar
-progress_bar
 
 1
-5
-35
-300
-25
--1
-0
-0
-
-
-Text
-progress_message
+ProgressBar
+progress_bar
 
 1
 5
@@ -12340,7 +12327,7 @@ progress_cancelable_dialog
 
 1
 310
-95
+65
 0
 0
 0
@@ -12348,13 +12335,13 @@ progress_cancelable_dialog
 0
 
 
-3
+2
 ProgressBar
 progress_bar
 
 1
 5
-35
+5
 300
 25
 -1
@@ -12367,20 +12354,7 @@ cancel
 hui:cancel
 1
 5
-65
-300
-25
--1
-0
-0
-
-
-Text
-progress_message
-
-1
-5
-5
+35
 300
 25
 -1
@@ -16321,7 +16295,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-724
+723
 // Text
 ad_dialog
 Verwaltung
@@ -17343,8 +17317,6 @@ progress_cancelable_dialog
 in Arbeit
 progress_dialog
 in Arbeit
-progress_message
-
 property_list
 Typ\\Index\\Name
 quality_factor
@@ -17777,7 +17749,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-724
+723
 // Text
 ad_dialog
 Administration
@@ -18799,8 +18771,6 @@ progress_cancelable_dialog
 working
 progress_dialog
 working
-progress_message
-
 property_list
 type\\index\\name
 quality_factor
@@ -19533,7 +19503,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-724
+723
 // Text
 ad_dialog
 
@@ -20554,8 +20524,6 @@ progress_bar
 progress_cancelable_dialog
 
 progress_dialog
-
-progress_message
 
 property_list
 type\\index\\name

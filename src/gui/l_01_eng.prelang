@@ -1168,7 +1168,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-225
+227
 // Data (ID,Text)
 
 
@@ -1176,6 +1176,10 @@ Set background image
                   Close dialog box to exit program.
    - ohne Datei -
    - no file -
+ (noch %.0d min)
+
+ (noch %.0d s)
+
  -- Komplette Welt -- 
  -- Whole world -- 
  ist abgestürzt!\t\tDie letzten Zeilen der Datei message.txt:

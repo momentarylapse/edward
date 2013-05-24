@@ -1168,13 +1168,17 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-225
+227
 // Data (ID,Text)
 
 
                   Close dialog box to exit program.
 
    - ohne Datei -
+
+ (noch %.0d min)
+
+ (noch %.0d s)
 
  -- Komplette Welt -- 
 
