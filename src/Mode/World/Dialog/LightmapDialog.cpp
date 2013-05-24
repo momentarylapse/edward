@@ -146,8 +146,10 @@ void LightmapDialog::OnPreview()
 	}else{
 		lm = new LightmapRayTracing(lmd);
 	}
-	Lightmap::Histogram h = lm->Preview();
-	ShowHistogram(h, this);
+	if (lm->Preview()){
+		Lightmap::Histogram h = lm->GetHistogram();
+		ShowHistogram(h, this);
+	}
 	delete(lm);
 }
 
@@ -175,8 +177,9 @@ void LightmapDialog::OnOk()
 	}else{
 		lm = new LightmapRayTracing(lmd);
 	}
-	lm->Create();
+	bool ok = lm->Create();
 	delete(lm);
-	delete(this);
+	if (ok)
+		delete(this);
 }
 

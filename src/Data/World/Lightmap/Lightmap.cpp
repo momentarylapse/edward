@@ -48,7 +48,7 @@ Lightmap::~Lightmap()
 {
 }
 
-void Lightmap::Create()
+bool Lightmap::Create()
 {
 	ed->progress->StartCancelable(_("berechne Licht"), 0);
 	data->AddTextureLevels();
@@ -59,9 +59,9 @@ void Lightmap::Create()
 
 	}catch(AbortException &e){
 		ed->progress->End();
-		return;
+		return false;
 	}
-	RenderTextures();
+	return RenderTextures();
 }
 
 Lightmap::Histogram Lightmap::GetHistogram()
@@ -73,7 +73,7 @@ Lightmap::Histogram Lightmap::GetHistogram()
 	return Lightmap::Histogram(e);
 }
 
-Lightmap::Histogram Lightmap::Preview()
+bool Lightmap::Preview()
 {
 	ed->progress->StartCancelable(_("berechne Licht"), 0);
 	data->AddTextureLevels(false);
@@ -81,9 +81,11 @@ Lightmap::Histogram Lightmap::Preview()
 	try{
 		Compute();
 	}catch(AbortException &e){
+		ed->progress->End();
+		return false;
 	}
 	ed->progress->End();
-	return GetHistogram();
+	return true;
 }
 
 color Lightmap::RenderVertex(LightmapData::Vertex &v)
@@ -124,7 +126,7 @@ void fuzzy_image(Image &im)
 		}
 }
 
-void Lightmap::RenderTextures()
+bool Lightmap::RenderTextures()
 {
 	ed->progress->StartCancelable(_("berechne Textur"), 0);
 	dir_create(NixTextureDir + data->texture_out_dir);
@@ -165,8 +167,11 @@ void Lightmap::RenderTextures()
 		m.orig->Save(ObjectDir + m.new_name + ".model");
 	}
 	}catch(AbortException &e){
+		ed->progress->End();
+		return false;
 	}
 	ed->progress->End();
+	return true;
 }
 
 

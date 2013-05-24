@@ -21,9 +21,9 @@ public:
 	Lightmap(LightmapData *data);
 	virtual ~Lightmap();
 
-	void Create();
+	bool Create();
 	virtual void Compute(){};
-	void RenderTextures();
+	bool RenderTextures();
 	virtual color RenderVertex(LightmapData::Vertex &v);
 
 	LightmapData *data;
@@ -35,7 +35,7 @@ public:
 		Array<float> f;
 		void normalize();
 	};
-	Histogram Preview();
+	bool Preview();
 	virtual Histogram GetHistogram();
 
 	class AbortException
