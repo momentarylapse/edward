@@ -38,7 +38,6 @@
 #include "../../Action/Model/Mesh/Skin/ActionModelAutomap.h"
 #include "../../Action/Model/Mesh/Look/ActionModelSetMaterial.h"
 #include "../../Action/Model/Mesh/Look/ActionModelSetNormalModeSelection.h"
-#include "../../Action/Model/Mesh/Look/ActionModelSetNormalModeAll.h"
 #include "../../Action/Model/Mesh/Effects/ActionModelAddEffects.h"
 #include "../../Action/Model/Mesh/Effects/ActionModelClearEffects.h"
 #include "../../Action/Model/Mesh/Effects/ActionModelEditEffect.h"
@@ -140,7 +139,6 @@ void DataModel::Reset()
 	filename = "";
 	for (int i=0;i<4;i++){
 		Skin[i].Vertex.clear();
-		Skin[i].NormalModeAll = NormalModeAngular;
 		for (int j=0;j<Material.num;j++)
 			Skin[i].Sub[j].Triangle.clear();
 		Skin[i].Sub.resize(1);
@@ -152,7 +150,6 @@ void DataModel::Reset()
 	Fx.clear();
 	Material.resize(1);
 	Material[0].reset();
-	NormalModeAll = NormalModeAngular;
 
 	CurrentMaterial = 0;
 	CurrentTextureLevel = 0;
@@ -335,9 +332,9 @@ bool DataModel::Load(const string & _filename, bool deep)
 
 	// Skin[i]
 		for (int i=1;i<4;i++){
-			Skin[i].NormalModeAll = f->ReadIntC();
-			bool pre_normals = (Skin[i].NormalModeAll & NormalModePre) > 0;
-			Skin[i].NormalModeAll -= (Skin[i].NormalModeAll & NormalModePre);
+			int normal_mode_all = f->ReadIntC();
+			bool pre_normals = (normal_mode_all & NormalModePre) > 0;
+			normal_mode_all -= (normal_mode_all & NormalModePre);
 
 			// vertices
 			Skin[i].Vertex.resize(f->ReadInt());
@@ -346,10 +343,10 @@ bool DataModel::Load(const string & _filename, bool deep)
 				if (Skin[i].Vertex[j].BoneIndex < 0)
 					Skin[i].Vertex[j].BoneIndex = 0;
 				f->ReadVector(&Skin[i].Vertex[j].pos);
-				if (Skin[i].NormalModeAll == NormalModePerVertex)
+				if (normal_mode_all == NormalModePerVertex)
 					Skin[i].Vertex[j].NormalMode = f->ReadByte();
 				else
-					Skin[i].Vertex[j].NormalMode = Skin[i].NormalModeAll;
+					Skin[i].Vertex[j].NormalMode = normal_mode_all;
 				Skin[i].Vertex[j].NormalDirty = true;
 			}
 
@@ -789,19 +786,18 @@ bool DataModel::Load(const string & _filename, bool deep)
 		f->ReadComment();
 		for (int i=1;i<4;i++){
 			ModelSkin *s = &Skin[i];
-			s->NormalModeAll = f->ReadInt();
-			if (s->NormalModeAll == NormalModePerVertex){
+			int normal_mode_all = f->ReadInt();
+			if (normal_mode_all == NormalModePerVertex){
 				foreach(ModelVertex &v, s->Vertex)
 					v.NormalMode = f->ReadInt();
 			}else{
 				foreach(ModelVertex &v, s->Vertex)
-					v.NormalMode = s->NormalModeAll;
+					v.NormalMode = normal_mode_all;
 			}
-		   }
+		}
 
 		// Polygons
 		if (f->ReadStr() == "// Polygons"){
-			NormalModeAll = Skin[1].NormalModeAll;
 			foreachi(ModelVertex &v, Skin[1].Vertex, i)
 				AddVertex(v.pos, v.BoneIndex, v.NormalMode);
 			int ns = f->ReadInt();
@@ -905,7 +901,6 @@ void DataModel::ImportFromTriangleSkin(int index)
 
 	ModelSkin &s = Skin[index];
 	NotifyBegin();
-	NormalModeAll = s.NormalModeAll;
 	foreachi(ModelVertex &v, s.Vertex, i){
 		AddVertex(v.pos);
 		Vertex[i].BoneIndex = v.BoneIndex;
@@ -933,7 +928,6 @@ void DataModel::ImportFromTriangleSkin(int index)
 void DataModel::ExportToTriangleSkin(int index)
 {
 	ModelSkin &sk = Skin[index];
-	sk.NormalModeAll = NormalModeAll;
 	sk.Vertex = Vertex;
 	sk.Sub.clear();
 	sk.Sub.resize(Material.num);
@@ -1312,11 +1306,9 @@ bool DataModel::Save(const string & _filename)
 	f->WriteComment("// Normals");
 	for (int i=1;i<4;i++){
 		ModelSkin *s = &Skin[i];
-		f->WriteInt(s->NormalModeAll);
-		if (s->NormalModeAll == NormalModePerVertex){
-			foreach(ModelVertex &v, s->Vertex)
-				f->WriteInt(v.NormalMode);
-		}
+		f->WriteInt(NormalModePerVertex);
+		foreach(ModelVertex &v, s->Vertex)
+			f->WriteInt(v.NormalMode);
 	}
 	f->WriteComment("// Polygons");
 	f->WriteInt(Surface.num);
@@ -1947,9 +1939,6 @@ void DataModel::CollapseSelectedVertices()
 
 void DataModel::SetNormalModeSelection(int mode)
 {	Execute(new ActionModelSetNormalModeSelection(this, mode));	}
-
-void DataModel::SetNormalModeAll(int mode)
-{	Execute(new ActionModelSetNormalModeAll(mode));	}
 
 void DataModel::SetMaterialSelection(int material)
 {	Execute(new ActionModelSetMaterial(this, material));	}

@@ -248,7 +248,6 @@ class DataModel : Data
 	// geometry
 	ModelVertex Vertex[]
 	ModelSurface Surface[]
-	int NormalModeAll
 	MultiViewSingleData SkinVertex[] // only temporary...
 	int SkinVertMat, SkinVertTL
 

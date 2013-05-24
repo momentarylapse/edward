@@ -190,12 +190,6 @@ void ModeModelMesh::OnCommand(const string & id)
 		data->SetNormalModeSelection(NormalModeHard);
 	if (id == "normal_this_angular")
 		data->SetNormalModeSelection(NormalModeAngular);
-	if (id == "normal_all_smooth")
-		data->SetNormalModeAll(NormalModeSmooth);
-	if (id == "normal_all_hard")
-		data->SetNormalModeAll(NormalModeHard);
-	if (id == "normal_all_angular")
-		data->SetNormalModeAll(NormalModeAngular);
 
 	if (id == "fx_new_light")
 		AddEffects(FXKindLight);
@@ -251,11 +245,6 @@ void ModeModelMesh::OnUpdateMenu()
 	ed->Check("scale", right_mouse_function == RMFScale);
 	ed->Check("scale_2d", right_mouse_function == RMFScale2d);
 	ed->Check("mirror", right_mouse_function == RMFMirror);
-
-	ed->Check("normal_all_hard", data->NormalModeAll == NormalModeHard);
-	ed->Check("normal_all_smooth", data->NormalModeAll == NormalModeSmooth);
-	ed->Check("normal_all_angular", data->NormalModeAll == NormalModeAngular);
-	ed->Check("normal_all_per_vertex", data->NormalModeAll == NormalModePerVertex);
 }
 
 bool ModeModelMesh::OptimizeView()

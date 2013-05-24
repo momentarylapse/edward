@@ -210,14 +210,6 @@ enum{
 			sub_menu_746->AddEntry("Rund",HMM_NORMAL_THIS_SMOOTH);
 			sub_menu_746->AddEntry("Eckig",HMM_NORMAL_THIS_HARD);
 			sub_menu_746->AddEntry("Winkelabh&angig",HMM_NORMAL_THIS_ANGULAR);
-			sub_menu_746->AddSeparator();
-			sub_menu_746->AddEntry("Alles",HMM_ALL);
-			sub_menu_746->EnableItem(HMM_ALL,false);
-			sub_menu_746->AddEntryCheckable("Rund",HMM_NORMAL_ALL_SMOOTH);
-			sub_menu_746->AddEntryCheckable("Eckig",HMM_NORMAL_ALL_HARD);
-			sub_menu_746->AddEntryCheckable("Winkelabh&angig",HMM_NORMAL_ALL_ANGULAR);
-			sub_menu_746->AddEntryCheckable("Per Vertex",HMM_NORMAL_ALL_PER_VERTEX);
-			sub_menu_746->EnableItem(HMM_NORMAL_ALL_PER_VERTEX,false);
 		sub_menu_895->AddSubMenu("Normalenart",HMM_MENU_MODEL_NORMALS,sub_menu_746);
 			CHuiMenu *sub_menu_688=new CHuiMenu();
 			sub_menu_688->AddEntry("Markierte Punkte",HMM_FX_HEADLINE);

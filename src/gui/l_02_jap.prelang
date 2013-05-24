@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-582
+577
 // Data (ID,Text)
 ad_dialog
 
@@ -31,8 +31,6 @@ adt_source
 
 align_to_grid
 
-all
-全て
 allow_sun
 
 alpha_dest
@@ -767,14 +765,6 @@ new_torus_dialog
 
 new_tria
 新しい　三角形
-normal_all_angular
-
-normal_all_hard
-
-normal_all_per_vertex
-
-normal_all_smooth
-
 normal_this_angular
 
 normal_this_hard

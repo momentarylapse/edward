@@ -5903,7 +5903,7 @@ menu_model
 0
 
 
-153
+147
 ItemPopup
 menu_model_file
 
@@ -6727,7 +6727,7 @@ ItemPopup
 menu_model_normals
 
 1
-10
+4
 0
 0
 0
@@ -6779,84 +6779,6 @@ Item
 normal_this_angular
 
 1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemSeparator
-
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
-all
-
-0
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemCheckable
-normal_all_smooth
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemCheckable
-normal_all_hard
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemCheckable
-normal_all_angular
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemCheckable
-normal_all_per_vertex
-
-0
 0
 0
 0
@@ -16295,7 +16217,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-723
+718
 // Text
 ad_dialog
 Verwaltung
@@ -16327,8 +16249,6 @@ adt_source
 !bold\\gefordert von
 align_to_grid
 Am Raster ausrichten
-all
-Alles
 allow_sun
 Sonne erlauben
 alpha_dest
@@ -17237,14 +17157,6 @@ new_tria
 Polygon
 new_world_name
 
-normal_all_angular
-Winkelabhängig
-normal_all_hard
-Eckig
-normal_all_per_vertex
-Per Vertex
-normal_all_smooth
-Rund
 normal_this_angular
 Winkelabhängig
 normal_this_hard
@@ -17749,7 +17661,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-723
+718
 // Text
 ad_dialog
 Administration
@@ -17781,8 +17693,6 @@ adt_source
 !bold\\Needed by
 align_to_grid
 Align to grid
-all
-All
 allow_sun
 Allow sun
 alpha_dest
@@ -18691,14 +18601,6 @@ new_tria
 New triangle
 new_world_name
 
-normal_all_angular
-Angular
-normal_all_hard
-Edgy
-normal_all_per_vertex
-Per vertex
-normal_all_smooth
-Smooth
 normal_this_angular
 Angular
 normal_this_hard
@@ -19503,7 +19405,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-723
+718
 // Text
 ad_dialog
 
@@ -19535,8 +19437,6 @@ adt_source
 
 align_to_grid
 
-all
-全て
 allow_sun
 
 alpha_dest
@@ -20444,14 +20344,6 @@ new_torus_dialog
 new_tria
 新しい　三角形
 new_world_name
-
-normal_all_angular
-
-normal_all_hard
-
-normal_all_per_vertex
-
-normal_all_smooth
 
 normal_this_angular
 

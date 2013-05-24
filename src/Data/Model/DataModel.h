@@ -135,9 +135,6 @@ struct ModelSubSkin
 // geometry
 struct ModelSkin
 {
-	// general properties
-	int NormalModeAll;
-
 	// vertices
 	Array<ModelVertex> Vertex;
 
@@ -305,7 +302,6 @@ public:
 	void AutoWeldSurfaces(const Set<int> &surfaces, float d);
 	void AutoWeldSelectedSurfaces(float d);
 	void SetNormalModeSelection(int mode);
-	void SetNormalModeAll(int mode);
 	void SetMaterialSelection(int material);
 	void CopyGeometry(ModelGeometry &geo); // not an action...
 	void PasteGeometry(ModelGeometry &geo);
@@ -352,7 +348,6 @@ public:
 	// geometry
 	Array<ModelVertex> Vertex;
 	Array<ModelSurface> Surface;
-	int NormalModeAll;
 	Array<MultiViewSingleData> SkinVertex; // only temporary...
 	int SkinVertMat, SkinVertTL;
 

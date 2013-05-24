@@ -25,7 +25,6 @@ private:
 	int mode;
 	Array<int> index;
 	Array<int> old_mode;
-	int old_mode_all;
 };
 
 #endif /* ACTIONMODELSETNORMALMODESELECTION_H_ */

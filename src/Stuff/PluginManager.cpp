@@ -113,7 +113,6 @@ void PluginManager::Init()
 	Script::DeclareClassOffset("DataModel", "Material", offsetof(DataModel, Material));
 	Script::DeclareClassOffset("DataModel", "Fx", offsetof(DataModel, Fx));
 	Script::DeclareClassOffset("DataModel", "meta_data", offsetof(DataModel, meta_data));
-	Script::DeclareClassOffset("DataModel", "NormalModeAll", offsetof(DataModel, NormalModeAll));
 	Script::DeclareClassOffset("DataModel", "Min", offsetof(DataModel, Min));
 	Script::DeclareClassOffset("DataModel", "Max", offsetof(DataModel, Max));
 	Script::DeclareClassOffset("DataModel", "CurrentMaterial", offsetof(DataModel, CurrentMaterial));

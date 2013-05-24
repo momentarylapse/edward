@@ -30,12 +30,9 @@ void *ActionModelAddVertex::execute(Data *d)
 	// new vertex
 	ModelVertex vv;
 	vv.pos = pos;
-	if (normal_mode < 0){
-		if (m->NormalModeAll != NormalModePerVertex)
-			vv.NormalMode = m->NormalModeAll;
-		else
-			vv.NormalMode = NormalModeAngular;
-	}else
+	if (normal_mode < 0)
+		vv.NormalMode = NormalModeAngular;
+	else
 		vv.NormalMode = normal_mode;
 	vv.BoneIndex = bone_index;
 	vv.is_selected = false;

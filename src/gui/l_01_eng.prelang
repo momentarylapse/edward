@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-582
+577
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -31,8 +31,6 @@ adt_source
 !bold\\Needed by
 align_to_grid
 Align to grid
-all
-All
 allow_sun
 Allow sun
 alpha_dest
@@ -767,14 +765,6 @@ new_torus_dialog
 
 new_tria
 New triangle
-normal_all_angular
-Angular
-normal_all_hard
-Edgy
-normal_all_per_vertex
-Per vertex
-normal_all_smooth
-Smooth
 normal_this_angular
 Angular
 normal_this_hard

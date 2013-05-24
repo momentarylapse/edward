@@ -24,14 +24,6 @@ void *ActionModelSetNormalModeSelection::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	// mode all
-	old_mode_all = m->NormalModeAll;
-	if (m->NormalModeAll != NormalModePerVertex){
-		foreach(ModelVertex &v, m->Vertex)
-			v.NormalMode = mode;
-		m->NormalModeAll = NormalModePerVertex;
-	}
-
 	// per vertex
 	old_mode.clear();
 	foreach(int i, index){
@@ -49,17 +41,9 @@ void ActionModelSetNormalModeSelection::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-
-	// mode all
-	if (old_mode_all != NormalModePerVertex){
-		m->NormalModeAll = old_mode_all;
-		foreach(ModelVertex &v, m->Vertex)
-			v.NormalMode = old_mode_all;
-	}else{
-		// per vertex
-		foreach(int i, index)
-			m->Vertex[i].NormalMode = old_mode[i];
-	}
+	// per vertex
+	foreachi(int i, index, ii)
+		m->Vertex[i].NormalMode = old_mode[ii];
 
 	m->SetNormalsDirtyByVertices(index);
 }
