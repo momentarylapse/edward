@@ -34,47 +34,98 @@ void PluginManager::Execute(const string & filename)
 	Script::DeleteAllScripts(true, true);
 }
 
-class TestClass
-{
-public:
-	string name;
-	int i;
-	void func(){	msg_write("TestClass.func() " + name + ": " + i2s(i));	}
-};
-
-static TestClass test;
-
-static string TestVar;
-void TestFunc()
-{
-	msg_write("execute test func!");
-}
-
-char *ppp;
 #define _offsetof(t, x)	((int)(long)((char*)&(((t*)ppp)->x) - ppp))
 
 void PluginManager::Init()
 {
 	Script::Init();
-	TestVar = "tes test var!";
-	test.name = "test.name";
-	test.i = 13;
-
-	msg_write("_offsetof:");
-	msg_write(_offsetof(DataModel, filename));
-
-	/*msg_write("dm: " + p2s(mode_model->data));
-	msg_write("dm.bone: " + p2s(&mode_model->data->Bone));
-	msg_write("dm.fn: " + p2s(&mode_model->data->filename));
-	msg_write("dm.obs: " + p2s(dynamic_cast<Observable*>(mode_model->data)));*/
-
-	Script::LinkExternal("TestVar", &TestVar);
-	Script::LinkExternal("TestFunc", (void*)&TestFunc);
-	Script::LinkExternal("test", &test);
-	Script::LinkExternal("TestClass.func", (void*)&TestClass::func);
 
 	Script::LinkExternal("edward", &ed);
 	Script::LinkExternal("data_model", &mode_model->data);
+	Script::LinkExternal("data_world", &mode_world->data);
+
+	Script::DeclareClassSize("Observable", sizeof(Observable));
+	//Script::DeclareClassOffset("Observable", "observable_name", offsetof(Observable, observable_name));
+
+	Script::DeclareClassSize("Data", sizeof(Data));
+	Script::DeclareClassOffset("Data", "filename", offsetof(Data, filename));
+	Script::DeclareClassOffset("Data", "file_time", offsetof(Data, file_time));
+	Script::DeclareClassOffset("Data", "binary_file_format", offsetof(Data, binary_file_format));
+	Script::DeclareClassOffset("Data", "type", offsetof(Data, type));
+	Script::LinkExternal("Data.BeginActionGroup", (void*)&Data::BeginActionGroup);
+	Script::LinkExternal("Data.EndActionGroup", (void*)&Data::EndActionGroup);
+
+	Script::DeclareClassSize("MultiViewSingleData", sizeof(MultiViewSingleData));
+	Script::DeclareClassOffset("MultiViewSingleData", "pos", offsetof(MultiViewSingleData, pos));
+	Script::DeclareClassOffset("MultiViewSingleData", "view_stage", offsetof(MultiViewSingleData, view_stage));
+	Script::DeclareClassOffset("MultiViewSingleData", "is_selected", offsetof(MultiViewSingleData, is_selected));
+	Script::DeclareClassOffset("MultiViewSingleData", "m_delta", offsetof(MultiViewSingleData, m_delta));
+	Script::DeclareClassOffset("MultiViewSingleData", "m_old", offsetof(MultiViewSingleData, m_old));
+	Script::DeclareClassOffset("MultiViewSingleData", "is_special", offsetof(MultiViewSingleData, is_special));
+
+	// model
+
+	Script::DeclareClassSize("ModelEffect", sizeof(ModelEffect));
+	Script::DeclareClassOffset("ModelEffect", "Kind", offsetof(ModelEffect, Kind));
+	Script::DeclareClassOffset("ModelEffect", "Surface", offsetof(ModelEffect, Surface));
+	Script::DeclareClassOffset("ModelEffect", "Vertex", offsetof(ModelEffect, Vertex));
+	Script::DeclareClassOffset("ModelEffect", "Size", offsetof(ModelEffect, Size));
+	Script::DeclareClassOffset("ModelEffect", "Speed", offsetof(ModelEffect, Speed));
+	Script::DeclareClassOffset("ModelEffect", "Intensity", offsetof(ModelEffect, Intensity));
+	Script::DeclareClassOffset("ModelEffect", "Colors", offsetof(ModelEffect, Colors));
+	Script::DeclareClassOffset("ModelEffect", "InvQuad", offsetof(ModelEffect, InvQuad));
+	Script::DeclareClassOffset("ModelEffect", "File", offsetof(ModelEffect, File));
+
+	Script::DeclareClassSize("ModelVertex", sizeof(ModelVertex));
+	Script::DeclareClassOffset("ModelVertex", "NormalMode", offsetof(ModelVertex, NormalMode));
+	Script::DeclareClassOffset("ModelVertex", "BoneIndex", offsetof(ModelVertex, BoneIndex));
+	Script::DeclareClassOffset("ModelVertex", "AnimatedPos", offsetof(ModelVertex, AnimatedPos));
+	Script::DeclareClassOffset("ModelVertex", "NormalDirty", offsetof(ModelVertex, NormalDirty));
+	Script::DeclareClassOffset("ModelVertex", "RefCount", offsetof(ModelVertex, RefCount));
+	Script::DeclareClassOffset("ModelVertex", "Surface", offsetof(ModelVertex, Surface));
+
+	Script::DeclareClassSize("ModelPolygonSide", sizeof(ModelPolygonSide));
+	Script::DeclareClassOffset("ModelPolygonSide", "Vertex", offsetof(ModelPolygonSide, Vertex));
+	Script::DeclareClassOffset("ModelPolygonSide", "Edge", offsetof(ModelPolygonSide, Edge));
+	Script::DeclareClassOffset("ModelPolygonSide", "EdgeDirection", offsetof(ModelPolygonSide, EdgeDirection));
+	Script::DeclareClassOffset("ModelPolygonSide", "SkinVertex", offsetof(ModelPolygonSide, SkinVertex));
+	Script::DeclareClassOffset("ModelPolygonSide", "NormalIndex", offsetof(ModelPolygonSide, NormalIndex));
+	Script::DeclareClassOffset("ModelPolygonSide", "Normal", offsetof(ModelPolygonSide, Normal));
+	Script::DeclareClassOffset("ModelPolygonSide", "Triangulation", offsetof(ModelPolygonSide, Triangulation));
+
+	Script::DeclareClassSize("ModelPolygon", sizeof(ModelPolygon));
+	Script::DeclareClassOffset("ModelPolygon", "Side", offsetof(ModelPolygon, Side));
+	Script::DeclareClassOffset("ModelPolygon", "TempNormal", offsetof(ModelPolygon, TempNormal));
+	Script::DeclareClassOffset("ModelPolygon", "NormalDirty", offsetof(ModelPolygon, NormalDirty));
+	Script::DeclareClassOffset("ModelPolygon", "TriangulationDirty", offsetof(ModelPolygon, TriangulationDirty));
+	Script::DeclareClassOffset("ModelPolygon", "Material", offsetof(ModelPolygon, Material));
+
+	Script::DeclareClassSize("DataModel", sizeof(DataModel));
+	Script::DeclareClassOffset("DataModel", "Bone", offsetof(DataModel, Bone));
+	Script::DeclareClassOffset("DataModel", "Move", offsetof(DataModel, Move));
+	Script::DeclareClassOffset("DataModel", "move", offsetof(DataModel, move));
+	Script::DeclareClassOffset("DataModel", "CurrentMove", offsetof(DataModel, CurrentMove));
+	Script::DeclareClassOffset("DataModel", "CurrentFrame", offsetof(DataModel, CurrentFrame));
+	Script::DeclareClassOffset("DataModel", "Vertex", offsetof(DataModel, Vertex));
+	Script::DeclareClassOffset("DataModel", "Surface", offsetof(DataModel, Surface));
+	Script::DeclareClassOffset("DataModel", "Ball", offsetof(DataModel, Ball));
+	Script::DeclareClassOffset("DataModel", "Poly", offsetof(DataModel, Poly));
+	Script::DeclareClassOffset("DataModel", "Material", offsetof(DataModel, Material));
+	Script::DeclareClassOffset("DataModel", "Fx", offsetof(DataModel, Fx));
+	Script::DeclareClassOffset("DataModel", "meta_data", offsetof(DataModel, meta_data));
+	Script::DeclareClassOffset("DataModel", "NormalModeAll", offsetof(DataModel, NormalModeAll));
+	Script::DeclareClassOffset("DataModel", "Min", offsetof(DataModel, Min));
+	Script::DeclareClassOffset("DataModel", "Max", offsetof(DataModel, Max));
+	Script::DeclareClassOffset("DataModel", "CurrentMaterial", offsetof(DataModel, CurrentMaterial));
+	Script::DeclareClassOffset("DataModel", "CurrentTextureLevel", offsetof(DataModel, CurrentTextureLevel));
+	Script::DeclareClassOffset("DataModel", "SkinVertex", offsetof(DataModel, SkinVertex));
+	Script::DeclareClassOffset("DataModel", "SkinVertMat", offsetof(DataModel, SkinVertMat));
+	Script::DeclareClassOffset("DataModel", "SkinVertTL", offsetof(DataModel, SkinVertTL));
+	Script::DeclareClassOffset("DataModel", "Playing", offsetof(DataModel, Playing));
+	Script::DeclareClassOffset("DataModel", "PlayLoop", offsetof(DataModel, PlayLoop));
+	Script::DeclareClassOffset("DataModel", "TimeScale", offsetof(DataModel, TimeScale));
+	Script::DeclareClassOffset("DataModel", "TimeParam", offsetof(DataModel, TimeParam));
+	Script::DeclareClassOffset("DataModel", "SimFrame", offsetof(DataModel, SimFrame));
 	Script::LinkExternal("DataModel.ClearSelection", (void*)&DataModel::ClearSelection);
 	Script::LinkExternal("DataModel.InvertSelection", (void*)&DataModel::InvertSelection);
 	Script::LinkExternal("DataModel.SelectionFromVertices", (void*)&DataModel::SelectionFromVertices);
@@ -94,16 +145,16 @@ void PluginManager::Init()
 	Script::LinkExternal("DataModel.TriangulateSelection", (void*)&DataModel::TriangulateSelection);
 	Script::LinkExternal("DataModel.BevelSelectedVertices", (void*)&DataModel::BevelSelectedVertices);
 	Script::LinkExternal("DataModel.ExtrudeSelectedPolygons", (void*)&DataModel::ExtrudeSelectedPolygons);
-	Script::LinkExternal("DataModel.BeginActionGroup", (void*)&DataModel::BeginActionGroup);
-	Script::LinkExternal("DataModel.EndActionGroup", (void*)&DataModel::EndActionGroup);
-	Script::LinkExternal("data_world", &mode_world->data);
+
+	// world
+
+	Script::DeclareClassSize("DataWorld", sizeof(DataWorld));
+	Script::DeclareClassOffset("DataWorld", "Terrains", offsetof(DataWorld, Terrains));
+	Script::DeclareClassOffset("DataWorld", "Objects", offsetof(DataWorld, Objects));
+	Script::DeclareClassOffset("DataWorld", "EgoIndex", offsetof(DataWorld, EgoIndex));
 	Script::LinkExternal("DataWorld.AddObject", (void*)&DataWorld::AddObject);
 	Script::LinkExternal("DataWorld.AddTerrain", (void*)&DataWorld::AddTerrain);
 	Script::LinkExternal("DataWorld.AddNewTerrain", (void*)&DataWorld::AddNewTerrain);
-	Script::LinkExternal("DataWorld.BeginActionGroup", (void*)&DataWorld::BeginActionGroup);
-	Script::LinkExternal("DataWorld.EndActionGroup", (void*)&DataWorld::EndActionGroup);
-
-//	Script::LinkDynamicExternalData();
 }
 
 

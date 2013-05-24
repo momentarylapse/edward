@@ -1,23 +1,16 @@
-
 class Observable
-	int _CPLUSPLUS_CLASS_
-	string observable_name
-
-	// observers
-	void *observer[]
-	string observer_message[]
-
-	// current notifies
-	string message_queue[]
-	string cur_message
-	int notify_level
+	int dummy
+	
+class Observer
+	//virtual void OnUpdate(Observable o)
 
 class Data : Observable
 	string filename
 	int file_time
 	bool binary_file_format
 	int type
-	void *action_manager
+	extern void BeginActionGroup(string name)
+	extern void EndActionGroup()
 
 
 // "des Pudels Kern", don't change!!!!!!!
@@ -55,7 +48,7 @@ class ModelEffect
 	int Size, Speed, Intensity
 	color Colors[3]
 	bool InvQuad
-	string File, Function
+	string File
 	void __assign__(ModelEffect other)
 		nil
 
@@ -237,14 +230,7 @@ class ModelMetaData
 	float ScriptVar[]
 	void __assign__(ModelMetaData other)
 
-class sAutoTexturingData
-	bool enabled
-	// linear
-	vector p0, dir_u, dir_v
-	int prev_material
-
 class DataModel : Data
-	sAutoTexturingData AutoTexturingData
 	
 	// properties
 	ModelBone Bone[]
@@ -258,12 +244,6 @@ class DataModel : Data
 
 	bool Playing,PlayLoop
 	float TimeScale,TimeParam,SimFrame
-
-	bool ShowSkeleton
-
-
-	bool TextureMVNeedsUpdate
-	int NewRootPoint
 
 	// geometry
 	ModelVertex Vertex[]
@@ -321,8 +301,6 @@ class DataModel : Data
 //	extern void SetMaterialSelection(int material)
 //	extern void Easify(float factor)
 	
-	extern void BeginActionGroup(string name)
-	extern void EndActionGroup()
 	void __assign__(DataModel other)
 
 
@@ -330,8 +308,12 @@ class DataModel : Data
 
 
 class WorldTerrain: MultiViewSingleData
-	int _TODO_
-
+	string FileName
+	//WorldTerrainVertex Vertex[]
+	int VertexBufferSingle
+	int ShowTexture
+	bool Changed
+	Terrain *terrain
 
 
 class WorldObject: MultiViewSingleData
@@ -342,45 +324,17 @@ class WorldObject: MultiViewSingleData
 
 
 class DataWorld: Data
-	int _TODO_
+	WorldObject Objects[]
+	WorldTerrain Terrains[]
+	int EgoIndex
 
 	// actions
 	extern WorldObject *AddObject(string filename, vector pos)
-//	extern WorldTerrain *AddTerrainLoad(string filename, vector pos)
-	extern WorldTerrain *AddTerrain(vector pos, vector size, int num_x, int num_z)
-	extern void BeginActionGroup(string name)
-	extern void EndActionGroup()
-
+	extern WorldTerrain *AddTerrain(string filename, vector pos)
+	extern WorldTerrain *AddNewTerrain(vector pos, vector size, int num_x, int num_z)
 
 
 extern DataModel *data_model
 extern DataWorld *data_world
 extern window edward
 
-/*void main()
-	print "dm: " + data_model
-	print "dm.Bone: " + &(data_model.Bone)
-	print "dm.obs_name: " + &(data_model.observable_name)
-	print "dm.filename: " + &(data_model.filename)
-	print data_model.observable_name
-	print data_model.filename
-	print "bone: " + data_model.Bone.num
-	print "vertex: " + data_model.Vertex.num
-	print "surf: " + data_model.Surface.num*/
-
-/*class TestClass
-	string name
-	int i
-	extern void func()
-
-extern TestClass test
-extern string TestVar
-extern void TestFunc()
-
-void main()
-	print "test"
-	print TestVar
-	TestFunc()
-	print test.name
-	print test.i
-	test.func()*/
