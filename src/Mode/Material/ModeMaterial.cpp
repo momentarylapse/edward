@@ -11,6 +11,9 @@
 #include "Dialog/MaterialPropertiesDialog.h"
 #include "Dialog/MaterialPhysicsDialog.h"
 #include "../../Data/Model/DataModel.h"
+#include "../../Data/Model/Geometry/ModelGeometryCube.h"
+#include "../../Data/Model/Geometry/ModelGeometryBall.h"
+#include "../../Data/Model/Geometry/ModelGeometryPlatonic.h"
 #include "../../Data/Model/Geometry/ModelGeometryTorus.h"
 #include "../../Data/Model/Geometry/ModelGeometryTeapot.h"
 
@@ -32,6 +35,9 @@ ModeMaterial::ModeMaterial() :
 	MaterialVB[1] = VBTemp;
 	for (int i=2;i<MATERIAL_MAX_TEXTURES;i++)
 		MaterialVB[i] = NixCreateVB(MATERIAL_NUMX * MATERIAL_NUMY * 2, i);
+
+	shape_type = HuiConfigReadStr("MaterialShapeType", "teapot");
+	shape_smooth = HuiConfigReadBool("MaterialShapeSmooth", true);
 }
 
 ModeMaterial::~ModeMaterial()
@@ -93,6 +99,21 @@ void ModeMaterial::OnCommand(const string & id)
 		data->Undo();
 	if (id == "redo")
 		data->Redo();
+
+	if (id == "material_shape_smooth")
+		SetShapeSmooth(!shape_smooth);
+	if (id == "material_shape_cube")
+		SetShapeType("cube");
+	if (id == "material_shape_ball")
+		SetShapeType("ball");
+	if (id == "material_shape_torus")
+		SetShapeType("torus");
+	if (id == "material_shape_torusknot")
+		SetShapeType("torusknot");
+	if (id == "material_shape_icosahedron")
+		SetShapeType("icosahedron");
+	if (id == "material_shape_teapot")
+		SetShapeType("teapot");
 }
 
 void ModeMaterial::ExecuteAppearanceDialog()
@@ -188,15 +209,47 @@ void ModeMaterial::OnStart()
 	ed->EnableToolbar(false);
 	multi_view->MVRectable = false;
 
-	//ModelGeometryTorus geo = ModelGeometryTorus(v_0, e_z, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_NUMX, MATERIAL_NUMY);
-	ModelGeometryTeapot geo = ModelGeometryTeapot(v_0, MATERIAL_RADIUS1, 6);
-	geo.Smoothen();
+	UpdateShape();
+}
+
+void ModeMaterial::SetShapeType(const string &type)
+{
+	shape_type = type;
+	HuiConfigWriteStr("MaterialShapeType", shape_type);
+	UpdateShape();
+}
+
+void ModeMaterial::SetShapeSmooth(bool smooth)
+{
+	shape_smooth = smooth;
+	HuiConfigWriteBool("MaterialShapeSmooth", shape_smooth);
+	UpdateShape();
+}
+
+void ModeMaterial::UpdateShape()
+{
+	ModelGeometry *geo;
+	if (shape_type == "torus")
+		geo = new ModelGeometryTorus(v_0, e_z, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_NUMX, MATERIAL_NUMY);
+	else if (shape_type == "teapot")
+		geo = new ModelGeometryTeapot(v_0, MATERIAL_RADIUS1, 6);
+	else if (shape_type == "cube")
+		geo = new ModelGeometryCube(-vector(1,1,1) * MATERIAL_RADIUS1/2, e_x * MATERIAL_RADIUS1, e_y * MATERIAL_RADIUS1, e_z * MATERIAL_RADIUS1, 1, 1, 1);
+		//geo = new ModelGeometryPlatonic(v_0, MATERIAL_RADIUS1, 6);
+	else if (shape_type == "icosahedron")
+		geo = new ModelGeometryPlatonic(v_0, MATERIAL_RADIUS1, 20);
+	else //if (shape_type == "ball")
+		geo = new ModelGeometryBall(v_0, MATERIAL_RADIUS1, 32, 16);
+	if (shape_smooth)
+		geo->Smoothen();
 
 	for (int i=1;i<MATERIAL_MAX_TEXTURES;i++){
 		int vb = MaterialVB[i];
 		NixVBClear(vb);
-		geo.Preview(vb, i);
+		geo->Preview(vb, i);
 	}
+	delete(geo);
+	OnUpdateMenu();
 }
 
 bool ModeMaterial::OptimizeView()
@@ -205,6 +258,17 @@ bool ModeMaterial::OptimizeView()
 	vector r = vector(MATERIAL_RADIUS1 + MATERIAL_RADIUS2, MATERIAL_RADIUS1 + MATERIAL_RADIUS2, MATERIAL_RADIUS2);
 	multi_view->SetViewBox(-r, r);
 	return true;
+}
+
+void ModeMaterial::OnUpdateMenu()
+{
+	ed->Check("material_shape_smooth", shape_smooth);
+	ed->Check("material_shape_cube", shape_type == "cube");
+	ed->Check("material_shape_ball", shape_type == "ball");
+	ed->Check("material_shape_torus", shape_type == "torus");
+	ed->Check("material_shape_torusknot", shape_type == "torusknot");
+	ed->Check("material_shape_teapot", shape_type == "teapot");
+	ed->Check("material_shape_icosahedron", shape_type == "icosahedron");
 }
 
 

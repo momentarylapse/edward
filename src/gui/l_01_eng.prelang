@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-577
+585
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -465,6 +465,20 @@ material_physics_dialog_t_rvjump
 jumping:
 material_physics_dialog_t_rvstatic
 gliding:
+material_shape_ball
+
+material_shape_cube
+
+material_shape_icosahedron
+
+material_shape_smooth
+
+material_shape_teapot
+
+material_shape_torus
+
+material_shape_torusknot
+
 material_sound_dialog
 Sounds
 max_script_vars
@@ -489,6 +503,8 @@ menu_material
 Material
 menu_material_properties
 Properties
+menu_material_shape
+
 menu_model
 Model
 menu_model_appearance

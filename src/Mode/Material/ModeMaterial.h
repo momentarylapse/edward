@@ -21,31 +21,40 @@ public:
 	ModeMaterial();
 	virtual ~ModeMaterial();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnCommand(const string &id);
-	void OnUpdate(Observable *o);
+	virtual void OnCommand(const string &id);
+	virtual void OnUpdate(Observable *o);
 
-	void OnDraw();
-	void OnDrawWin(int win);
+	virtual void OnDraw();
+	virtual void OnDrawWin(int win);
+
+	virtual void OnUpdateMenu();
 
 
-	void New();
-	bool Open();
-	bool Save();
-	bool SaveAs();
+	virtual void New();
+	virtual bool Open();
+	virtual bool Save();
+	virtual bool SaveAs();
 
 	void ExecuteAppearanceDialog();
 	void ExecutePhysicsDialog();
 
-	bool OptimizeView();
+	virtual bool OptimizeView();
 
 	DataMaterial *data;
-	Data *GetData(){	return data;	}
+	virtual Data *GetData(){	return data;	}
 
 	int MaterialVB[MATERIAL_MAX_TEXTURES];
 	MaterialPropertiesDialog *AppearanceDialog;
+
+	string shape_type;
+	bool shape_smooth;
+
+	void SetShapeType(const string &type);
+	void SetShapeSmooth(bool smooth);
+	void UpdateShape();
 };
 
 extern ModeMaterial* mode_material;

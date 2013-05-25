@@ -156,9 +156,9 @@ void ModeModelMeshPolygon::FillSelectionBuffers()
 			foreach(ModelPolygon &t, s.Polygon)
 				/*if (t.view_stage >= ViewStage)*/{
 				if (t.is_selected)
-					add_poly(VBMarked, data, t);
+					t.AddToVertexBuffer(data->Vertex, VBMarked, 1);
 				if ((&t == mmo) || (s_mo))
-					add_poly(VBMouseOver, data, t);
+					t.AddToVertexBuffer(data->Vertex, VBMouseOver, 1);
 			}
 		}
 	}/*else if (EditMode == EditModeSurface){
