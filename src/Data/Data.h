@@ -34,6 +34,7 @@ public:
 	void Undo();
 	void Redo();
 
+	virtual void OnPostActionUpdate(){}
 	virtual bool TestSanity(const string &loc){	return true;	}
 
 	string filename;

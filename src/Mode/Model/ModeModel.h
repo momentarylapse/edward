@@ -22,19 +22,18 @@ public:
 	ModeModel();
 	virtual ~ModeModel();
 
-	void OnStart();
-	void OnEnd();
-	void OnEnter();
+	virtual void OnStart();
+	virtual void OnEnd();
+	virtual void OnEnter();
 
-	void OnCommand(const string &id);
-	void OnUpdate(Observable *o);
-	void OnUpdateMenu();
+	virtual void OnCommand(const string &id);
+	virtual void OnUpdateMenu();
 
 
-	void New();
-	bool Open();
-	bool Save();
-	bool SaveAs();
+	virtual void New();
+	virtual bool Open();
+	virtual bool Save();
+	virtual bool SaveAs();
 
 	bool ImportOpen3ds();
 	bool ImportLoad3ds(const string &filename);
@@ -47,7 +46,7 @@ public:
 	void ExecuteMaterialDialog(int initial_tab_page = 0, bool allow_parent = true);
 
 	DataModel *data;
-	Data *GetData(){	return data;	}
+	virtual Data *GetData(){	return data;	}
 
 	ModelPropertiesDialog *PropertiesDialog;
 	ModelMaterialDialog *MaterialDialog;

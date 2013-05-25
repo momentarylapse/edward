@@ -202,6 +202,11 @@ bool DataModel::TestSanity(const string &loc)
 	return true;
 }
 
+void DataModel::OnPostActionUpdate()
+{
+	UpdateNormals();
+}
+
 
 
 int get_normal_index(vector &n)
@@ -798,6 +803,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 
 		// Polygons
 		if (f->ReadStr() == "// Polygons"){
+			BeginActionGroup("LoadPolygonData");
 			foreachi(ModelVertex &v, Skin[1].Vertex, i)
 				AddVertex(v.pos, v.BoneIndex, v.NormalMode);
 			int ns = f->ReadInt();
@@ -830,6 +836,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 			}
 			foreach(ModelSurface &s, Surface)
 				s.BuildFromPolygons();
+			EndActionGroup();
 		}
 
 
@@ -889,7 +896,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 	ResetHistory();
 
 	if (deep)
-		UpdateNormals();
+		OnPostActionUpdate();
 	msg_db_l(1);
 	return !error;
 }
@@ -900,7 +907,7 @@ void DataModel::ImportFromTriangleSkin(int index)
 	Surface.clear();
 
 	ModelSkin &s = Skin[index];
-	NotifyBegin();
+	BeginActionGroup("ImportFromTriangleSkin");
 	foreachi(ModelVertex &v, s.Vertex, i){
 		AddVertex(v.pos);
 		Vertex[i].BoneIndex = v.BoneIndex;
@@ -921,7 +928,7 @@ void DataModel::ImportFromTriangleSkin(int index)
 		}
 	}
 	ClearSelection();
-	NotifyEnd();
+	EndActionGroup();
 	action_manager->Reset();
 }
 
@@ -1359,11 +1366,17 @@ void DataModel::SetAllNormalsDirty()
 			t.NormalDirty = true;
 }
 
+int un_timer = -1;
 
 void DataModel::UpdateNormals()
 {
+	if (un_timer < 0)
+		un_timer = HuiCreateTimer();
+	HuiGetTime(un_timer);
 	foreach(ModelSurface &s, Surface)
 		s.UpdateNormals();
+	float dt = HuiGetTime(un_timer);
+	msg_write(format("normals: %f", dt));
 }
 
 ModelSurface *DataModel::AddSurface(int surf_no)

@@ -210,15 +210,16 @@ public:
 	DataModel();
 	virtual ~DataModel();
 
-	void Reset();
-	bool Load(const string &_filename, bool deep = true);
-	bool Save(const string &_filename);
+	virtual void Reset();
+	virtual bool Load(const string &_filename, bool deep = true);
+	virtual bool Save(const string &_filename);
 
 	void ImportFromTriangleSkin(int index);
 	void ExportToTriangleSkin(int index);
 
 	void DebugShow();
-	bool TestSanity(const string &loc);
+	virtual bool TestSanity(const string &loc);
+	virtual void OnPostActionUpdate();
 
 	void SetNormalsDirtyByVertices(const Array<int> &index);
 	void SetAllNormalsDirty();

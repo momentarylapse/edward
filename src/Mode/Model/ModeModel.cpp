@@ -30,7 +30,6 @@ ModeModel::ModeModel() :
 	mode_model_mesh = new ModeModelMesh(this, data);
 	mode_model_skeleton = new ModeModelSkeleton(this, data);
 	mode_model_animation = new ModeModelAnimation(this, data);
-	Subscribe(data);
 }
 
 ModeModel::~ModeModel()
@@ -149,13 +148,6 @@ void ModeModel::OnCommand(const string & id)
 		data->ImportFromTriangleSkin(2);
 	if (id == "detail_3")
 		data->ImportFromTriangleSkin(3);
-}
-
-
-
-void ModeModel::OnUpdate(Observable *o)
-{
-	data->UpdateNormals();
 }
 
 

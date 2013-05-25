@@ -69,7 +69,10 @@ void *ActionManager::Execute(Action *a)
 		void *p = a->execute_logged(data);
 		if (!a->was_trivial())
 			add(a);
-		data->Notify("Change");
+		if (!cur_group){
+			data->OnPostActionUpdate();
+			data->Notify("Change");
+		}
 		data->NotifyEnd();
 		return p;
 	}catch(ActionException &e){
@@ -93,6 +96,7 @@ void ActionManager::Undo()
 	if (Undoable()){
 		data->NotifyBegin();
 		action[-- cur_pos]->undo_logged(data);
+		data->OnPostActionUpdate();
 		data->Notify("Change");
 		data->NotifyEnd();
 	}
@@ -106,6 +110,7 @@ void ActionManager::Redo()
 	if (Redoable()){
 		data->NotifyBegin();
 		action[cur_pos ++]->redo_logged(data);
+		data->OnPostActionUpdate();
 		data->Notify("Change");
 		data->NotifyEnd();
 	}
@@ -143,6 +148,7 @@ void ActionManager::EndActionGroup()
 		ActionGroup *g = cur_group;
 		cur_group = NULL;
 		Execute(g);
+		data->OnPostActionUpdate();
 		data->Notify("Change");
 	}
 }

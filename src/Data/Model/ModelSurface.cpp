@@ -41,7 +41,7 @@ void ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, in
 	if (int_array_has_duplicates(v))
 		throw GeometryException("AddPolygon: duplicate vertices");
 
-	msg_db_r("Surf.AddTria", 1);
+	msg_db_f("Surf.AddTria", 1);
 
 	if (material < 0)
 		material = model->CurrentMaterial;
@@ -66,7 +66,6 @@ void ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, in
 						if (Edge[i].RefCount == 0)
 							Edge.resize(i);
 					}
-			msg_db_l(1);
 			throw(e);
 		}
 	}
@@ -95,8 +94,6 @@ void ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, in
 			Edge[Polygon[index].Side[k].Edge].Polygon[Polygon[index].Side[k].EdgeDirection] = index;
 	}else
 		Polygon.add(t);
-
-	msg_db_l(1);
 }
 
 int ModelSurface::AddEdgeForNewPolygon(int a, int b, int tria, int side)
@@ -150,25 +147,32 @@ inline int find_other_tria_from_edge(ModelSurface *s, int e, int t)
 	return s->Edge[e].Polygon[0];
 }
 
+
+struct PolySideData
+{
+	int poly;
+	int side;
+};
+
 // return: closed circle... don't run again to the left
-inline bool find_tria_top(ModelSurface *s, const Array<int> &ti, const Array<int> &tv, Set<int> &used, bool to_the_right)
+inline bool find_tria_top(ModelSurface *s, const Array<PolySideData> &pd, Set<int> &used, bool to_the_right)
 {
 	int t0 = 0;
 	while(true){
-		int ne = tv[t0];
+		int ne = pd[t0].side;
 		if (!to_the_right){
-			int ns = s->Polygon[ti[t0]].Side.num;
+			int ns = s->Polygon[pd[t0].poly].Side.num;
 			ne = (ne + ns - 1) % ns;
 		}
-		int e = s->Polygon[ti[t0]].Side[ne].Edge;
+		int e = s->Polygon[pd[t0].poly].Side[ne].Edge;
 		if (!s->Edge[e].IsRound)
 			return false;
-		int tt = find_other_tria_from_edge(s, e, ti[t0]);
+		int tt = find_other_tria_from_edge(s, e, pd[t0].poly);
 		if (tt < 0)
 			return false;
 		t0 = -1;
-		for (int i=0;i<ti.num;i++)
-			if (ti[i] == tt)
+		for (int i=0;i<pd.num;i++)
+			if (pd[i].poly == tt)
 				t0 = i;
 		if (t0 <= 0)
 			return (t0 == 0);
@@ -190,7 +194,7 @@ void ModelSurface::UpdateClosed()
 
 void ModelSurface::RemoveObsoleteEdge(int index)
 {
-	msg_db_r("Surf.RemoveObsoleteEdge", 2);
+	msg_db_f("Surf.RemoveObsoleteEdge", 2);
 	// correct triangle references
 	foreach(ModelPolygon &t, Polygon)
 		for (int k=0;k<t.Side.num;k++)
@@ -201,12 +205,11 @@ void ModelSurface::RemoveObsoleteEdge(int index)
 
 	// delete
 	Edge.erase(index);
-	msg_db_l(2);
 }
 
 void ModelSurface::MergeEdges()
 {
-	msg_db_r("Surf.MergeEdges", 1);
+	msg_db_f("Surf.MergeEdges", 1);
 
 	TestSanity("MergeEdges prae");
 
@@ -235,12 +238,11 @@ void ModelSurface::MergeEdges()
 		}
 	}
 	TestSanity("MergeEdges post");
-	msg_db_l(1);
 }
 
 void ModelSurface::UpdateNormals()
 {
-	msg_db_r("Surf.UpdateNormals", 2);
+	msg_db_f("Surf.UpdateNormals", 2);
 	Set<int> edge, vert;
 
 	// "flat" triangle normals
@@ -250,15 +252,12 @@ void ModelSurface::UpdateNormals()
 
 			t.TempNormal = t.GetNormal(model->Vertex);
 
-			for (int k=0;k<t.Side.num;k++)
+			for (int k=0;k<t.Side.num;k++){
 				t.Side[k].Normal = t.TempNormal;
-
-			foreachi(ModelEdge &e, Edge, i)
-				if (e.RefCount == 2){
-					for (int k=0;k<t.Side.num;k++)
-						if (edge_equal(e, t.Side[k].Vertex, t.Side[(k + 1) % t.Side.num].Vertex))
-							edge.add(i);
-				}
+				int e = t.Side[k].Edge;
+				if (Edge[e].RefCount == 2)
+					edge.add(e);
+			}
 		}
 
 	// round edges?
@@ -294,76 +293,79 @@ void ModelSurface::UpdateNormals()
 		}*/
 	}
 
+	// find all triangles shared by each found vertex
+	Array<Array<PolySideData> > poly_side;
+	poly_side.resize(vert.num);
+	foreachi(ModelPolygon &t, Polygon, i){
+		for (int k=0;k<t.Side.num;k++){
+			int n = vert.find(t.Side[k].Vertex);
+			if (n >= 0){
+				t.Side[k].Normal = t.TempNormal;
+				PolySideData d;
+				d.poly = i;
+				d.side = k;
+				poly_side[n].add(d);
+			}
+		}
+	}
+
 	// per vertex...
-	foreach(int ip, vert){
+	foreachi(int ip, vert, nn){
 
 		// hard vertex -> nothing to do
 		if (model->Vertex[ip].NormalMode == NormalModeHard)
 			continue;
 
-		// find all triangles shared by this vertex
-		Array<int> ti, tv;
-		foreachi(ModelPolygon &t, Polygon, i){
-			for (int k=0;k<t.Side.num;k++){
-				if (t.Side[k].Vertex == ip){
-					t.Side[k].Normal = t.TempNormal;
-					ti.add(i);
-					tv.add(k);
-				}
-			}
-		}
+		Array<PolySideData> &pd = poly_side[nn];
 
 		// smooth vertex
 		if (model->Vertex[ip].NormalMode == NormalModeSmooth){
 
 			// average normal
 			vector n = v_0;
-			for (int i=0;i<ti.num;i++)
-				n += Polygon[ti[i]].Side[tv[i]].Normal;
+			for (int i=0;i<pd.num;i++)
+				n += Polygon[pd[i].poly].Side[pd[i].side].Normal;
 			n.normalize();
 			// apply normal...
-			for (int i=0;i<ti.num;i++)
-				Polygon[ti[i]].Side[tv[i]].Normal = n;
+			for (int i=0;i<pd.num;i++)
+				Polygon[pd[i].poly].Side[pd[i].side].Normal = n;
 			continue;
 		}
 
 		// angular vertex...
 
 		// find groups of triangles that are connected by round edges
-		while (ti.num > 0){
+		while (pd.num > 0){
 
 			// start with the 1st triangle
 			Set<int> used;
 			used.add(0);
 
 			// search to the right
-			bool closed = find_tria_top(this, ti, tv, used, true);
+			bool closed = find_tria_top(this, pd, used, true);
 
 			// search to the left
 			if (!closed)
-				find_tria_top(this, ti, tv, used, false);
+				find_tria_top(this, pd, used, false);
 
 			if (used.num == 1){
 				// no smoothly connected triangles...
-				ti.erase(0);
-				tv.erase(0);
+				pd.erase(0);
 				continue;
 			}
 
 			// average normal
 			vector n = v_0;
 			for (int i=0;i<used.num;i++)
-				n += Polygon[ti[used[i]]].Side[tv[used[i]]].Normal;
+				n += Polygon[pd[used[i]].poly].Side[pd[used[i]].side].Normal;
 			n.normalize();
 			// apply normal... and remove from list
 			for (int i=used.num-1;i>=0;i--){
-				Polygon[ti[used[i]]].Side[tv[used[i]]].Normal = n;
-				ti.erase(used[i]);
-				tv.erase(used[i]);
+				Polygon[pd[used[i]].poly].Side[pd[used[i]].side].Normal = n;
+				pd.erase(used[i]);
 			}
 		}
 	}
-	msg_db_l(2);
 }
 
 
