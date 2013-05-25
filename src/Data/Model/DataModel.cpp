@@ -1366,17 +1366,10 @@ void DataModel::SetAllNormalsDirty()
 			t.NormalDirty = true;
 }
 
-int un_timer = -1;
-
 void DataModel::UpdateNormals()
 {
-	if (un_timer < 0)
-		un_timer = HuiCreateTimer();
-	HuiGetTime(un_timer);
 	foreach(ModelSurface &s, Surface)
 		s.UpdateNormals();
-	float dt = HuiGetTime(un_timer);
-	msg_write(format("normals: %f", dt));
 }
 
 ModelSurface *DataModel::AddSurface(int surf_no)
@@ -1622,10 +1615,16 @@ void DataModel::GenerateDetailDists(float *dist)
 
 #define n_theta		16
 
+int it_timer = -1;
+
 matrix3 DataModel::GenerateInertiaTensor(float mass)
 {
 	msg_db_r("GenerateInertiaTensor", 3);
 //	sModeModelSkin *p = &Skin[0];
+
+	if (it_timer < 0)
+		it_timer = HuiCreateTimer();
+	HuiGetTime(it_timer);
 
 	// estimate size
 	vector min = v_0, max = v_0;
@@ -1651,6 +1650,9 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 	for (int i=0;i<9;i++)
 		t.e[i] = 0;
 
+	foreach(ModelSurface &s, Surface)
+		s.BeginInsideTests();
+
 	for (int i=0;i<n_theta;i++){
 		float x=min.x+(float(i)+0.5f)*(max.x-min.x)/n_theta;
 		for (int j=0;j<n_theta;j++){
@@ -1667,7 +1669,7 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 						inside=true;
 				}*/
 				foreach(ModelSurface &s, Surface)
-					if (s.IsInside(r)){
+					if (s.InsideTest(r)){
 						inside = true;
 						break;
 					}
@@ -1685,6 +1687,10 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 		}
 	}
 
+
+	foreach(ModelSurface &s, Surface)
+		s.EndInsideTests();
+
 	if (num_ds>0){
 		float f = mass / num_ds;
 		t *= f;
@@ -1694,6 +1700,8 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 	}else
 		Matrix3Identity(t);
 
+	float dt = HuiGetTime(it_timer);
+	msg_write(format("Tensor: %f", dt));
 	msg_db_l(3);
 	return t;
 }

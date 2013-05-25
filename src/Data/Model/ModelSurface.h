@@ -18,9 +18,12 @@ class ModelSurface;
 struct ModelEdge;
 struct ModelPolygon;
 
+struct SurfaceInsideTestData;
+
 class ModelSurface: public MultiViewSingleData
 {
 public:
+	ModelSurface();
 
 	Array<ModelPolygon> Polygon;
 	Array<ModelEdge> Edge;
@@ -29,6 +32,7 @@ public:
 	bool IsClosed;
 
 	DataModel *model;
+	SurfaceInsideTestData *inside_data;
 
 	void AddVertex(int v);
 	void AddPolygon(Array<int> &v, int material, Array<vector> &sv, int index = -1);
@@ -44,6 +48,9 @@ public:
 	int FindEdge(int vertex0, int vertex1);
 
 	bool IsInside(const vector &p);
+	void BeginInsideTests();
+	bool InsideTest(const vector &p);
+	void EndInsideTests();
 	Array<int> GetBoundaryLoop(int v0);
 	Array<Array<int> > GetConnectedComponents();
 

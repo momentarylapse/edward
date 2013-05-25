@@ -66,21 +66,23 @@ libraries to link:
 #endif
 
 
-void TestGLError(const string &pos)
+void TestGLError(const char *pos)
 {
+#if 0
 	int err = glGetError();
 	if (err == GL_NO_ERROR)
 	{}//msg_write("GL_NO_ERROR");
 	else if (err == GL_INVALID_ENUM)
-		msg_error("GL_INVALID_ENUM at " + pos);
+		msg_error("GL_INVALID_ENUM at " + string(pos));
 	else if (err == GL_INVALID_VALUE)
-		msg_error("GL_INVALID_VALUE at " + pos);
+		msg_error("GL_INVALID_VALUE at " + string(pos));
 	else if (err == GL_INVALID_OPERATION)
-		msg_error("GL_INVALID_OPERATION at " + pos);
+		msg_error("GL_INVALID_OPERATION at " + string(pos));
 	else if (err == GL_INVALID_FRAMEBUFFER_OPERATION)
-		msg_error("GL_INVALID_FRAMEBUFFER_OPERATION at " + pos);
+		msg_error("GL_INVALID_FRAMEBUFFER_OPERATION at " + string(pos));
 	else
-		msg_error(i2s(err) + " at " + pos);
+		msg_error(i2s(err) + " at " + string(pos));
+#endif
 }
 
 

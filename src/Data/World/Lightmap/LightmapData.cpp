@@ -11,28 +11,6 @@
 #include "../../../x/object.h"
 #include "../../../x/model_manager.h"
 
-Ray::Ray(){}
-
-Ray::Ray(const vector &a, const vector &b)
-{
-	u = b - a;
-	v = b ^ a;
-}
-
-float Ray::dot(const Ray &r) const
-{
-	return (u * r.v) + (v * r.u);
-}
-
-bool Ray::intersect_plane(const plane &pl, vector &c) const
-{
-	float w = u * pl.n;
-	if (w == 0)
-		return false;
-	c = ((v ^ pl.n) - u * pl.d) / w;
-	return true;
-}
-
 bool LightmapData::Triangle::intersect(const Ray &r, vector &cp) const
 {
 	bool r0 = (r.dot(ray[0]) > 0);

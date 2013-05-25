@@ -9,6 +9,18 @@
 #include "DataModel.h"
 #include "../../Edward.h"
 
+struct SurfaceInsideTestData
+{
+	int num_trias;
+	Array<Ray> ray;
+	Array<plane> pl;
+};
+
+ModelSurface::ModelSurface()
+{
+	inside_data = NULL;
+}
+
 void ModelSurface::AddVertex(int v)
 {
 	int surf = model->get_surf_no(this);
@@ -458,8 +470,8 @@ void ModelSurface::RemovePolygon(int index)
 	foreachb(int o, obsolete)
 		RemoveObsoleteEdge(o);
 
-	if (!TestSanity("rem poly"))
-		throw GeometryException("RemoveTriangle: TestSanity failed");
+/*	if (!TestSanity("rem poly"))
+		throw GeometryException("RemoveTriangle: TestSanity failed");*/
 }
 
 bool ModelSurface::TestSanity(const string &loc)
@@ -504,9 +516,81 @@ bool ModelSurface::IsInside(const vector &p)
 {
 	if (!IsClosed)
 		return false;
+	BeginInsideTests();
+	bool r = InsideTest(p);
+	EndInsideTests();
+	return r;
+}
+
+void ModelSurface::BeginInsideTests()
+{
+	if (!IsClosed)
+		return;
+	inside_data = new SurfaceInsideTestData;
+	inside_data->num_trias = 0;
+	foreach(ModelPolygon &t, Polygon)
+		inside_data->num_trias += (t.Side.num - 2);
+	inside_data->ray.resize(inside_data->num_trias * 3);
+	inside_data->pl.resize(inside_data->num_trias);
+	Ray *r = &inside_data->ray[0];
+	plane *pl = &inside_data->pl[0];
+	foreach(ModelPolygon &t, Polygon){
+		if (t.TriangulationDirty)
+			t.UpdateTriangulation(model);
+		*(pl ++) = plane(model->Vertex[t.Side[0].Vertex].pos, t.TempNormal);
+		for (int k=0;k<t.Side.num-2;k++){
+			*(r ++) = Ray(model->Vertex[t.Side[t.Side[k].Triangulation[0]].Vertex].pos, model->Vertex[t.Side[t.Side[k].Triangulation[1]].Vertex].pos);
+			*(r ++) = Ray(model->Vertex[t.Side[t.Side[k].Triangulation[1]].Vertex].pos, model->Vertex[t.Side[t.Side[k].Triangulation[2]].Vertex].pos);
+			*(r ++) = Ray(model->Vertex[t.Side[t.Side[k].Triangulation[2]].Vertex].pos, model->Vertex[t.Side[t.Side[k].Triangulation[0]].Vertex].pos);
+		}
+	}
+}
+
+void ModelSurface::EndInsideTests()
+{
+	if (inside_data)
+		delete(inside_data);
+}
+
+inline bool ray_intersect_tria(Ray &r, Ray *pr, plane *pl, vector &cp)
+{
+	bool r0 = (r.dot(pr[0]) > 0);
+	bool r1 = (r.dot(pr[1]) > 0);
+	if (r1 != r0)
+		return false;
+	bool r2 = (r.dot(pr[2]) > 0);
+	if (r2 != r0)
+		return false;
+
+	return r.intersect_plane(*pl, cp);
+}
+
+bool ModelSurface::InsideTest(const vector &p)
+{
+	if (!inside_data)
+		return false;
+
+	Ray r = Ray(p, p + e_x);
+
 	// how often does a ray from p intersect the surface?
 	int n = 0;
-	Array<vector> v;
+	Ray *pr = &inside_data->ray[0];
+	Ray *pr_end = pr + inside_data->num_trias * 3;
+	plane *pl = &inside_data->pl[0];
+	for (;pr < pr_end; pr += 3, pl ++){
+
+		// plane test
+		if ((p * pl->n + pl->d  > 0) == (pl->n.x > 0))
+			continue;
+
+		vector cp;
+		if (!ray_intersect_tria(r, pr, pl, cp))
+			continue;
+
+		if (cp.x > p.x)
+			n ++;
+	}
+	/*Array<vector> v;
 	foreach(ModelPolygon &t, Polygon){
 
 		// plane test
@@ -545,7 +629,7 @@ bool ModelSurface::IsInside(const vector &p)
 			if (LineIntersectsTriangle(v[t.Side[k].Triangulation[0]], v[t.Side[k].Triangulation[1]], v[t.Side[k].Triangulation[2]], p, p + e_x, col, false))
 				if (col.x > p.x)
 					n ++;
-	}
+	}*/
 
 	// even or odd?
 	return ((n % 2) == 1);

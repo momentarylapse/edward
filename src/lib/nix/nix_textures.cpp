@@ -454,8 +454,9 @@ void NixSetTextures(int *texture, int num_textures)
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D,NixTextures[texture[i]].glTexture);
 		}
-		TestGLError("SetTex"+i2s(i));
+		//TestGLError("SetTex"+i2s(i));
 	}
+	TestGLError("SetTextures");
 
 	_nix_num_textures_activated_ = num_textures;
 	if (NixGLCurrentProgram > 0)

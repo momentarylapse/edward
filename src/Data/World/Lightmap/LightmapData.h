@@ -14,14 +14,6 @@
 class DataModel;
 class DataWorld;
 
-struct Ray
-{
-	Ray();
-	Ray(const vector &a, const vector &b);
-	vector u, v;
-	float dot(const Ray &r) const;
-	bool intersect_plane(const plane &pl, vector &c) const;
-};
 
 class LightmapData
 {

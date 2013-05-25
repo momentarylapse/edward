@@ -113,7 +113,7 @@ extern bool NixEnabled3D;
 
 extern int NixFontGlyphWidth[256];
 
-void TestGLError(const string &);
+void TestGLError(const char *);
 
 
 
