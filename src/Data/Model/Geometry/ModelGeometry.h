@@ -32,6 +32,8 @@ public:
 	void Weld(float epsilon);
 	void Weld(ModelGeometry &geo, float epsilon);
 
+	void Smoothen();
+
 	void Preview(int vb) const;
 
 	Array<ModelVertex> Vertex;

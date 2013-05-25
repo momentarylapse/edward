@@ -50,6 +50,9 @@ void ModelGeometry::AddPolygon(Array<int> &v, Array<vector> &sv)
 	p.Material = -1;
 	p.NormalDirty = true;
 	p.TriangulationDirty = true;
+	p.TempNormal = p.GetNormal(Vertex);
+	for (int k=0;k<p.Side.num;k++)
+		p.Side[k].Normal = p.TempNormal;
 	Polygon.add(p);
 }
 
@@ -210,16 +213,37 @@ void ModelGeometry::Weld(ModelGeometry &geo, float epsilon)
 {
 }
 
+void ModelGeometry::Smoothen()
+{
+	Array<vector> n;
+	n.resize(Vertex.num);
+
+	// sum all normals (per vertex)
+	foreach(ModelPolygon &p, Polygon){
+		for (int k=0;k<p.Side.num;k++)
+			n[p.Side[k].Vertex] += p.TempNormal;
+	}
+
+	// normalize
+	for (int i=0;i<n.num;i++)
+		n[i].normalize();
+
+	// apply
+	foreach(ModelPolygon &p, Polygon){
+		for (int k=0;k<p.Side.num;k++)
+			p.Side[k].Normal = n[p.Side[k].Vertex];
+	}
+}
+
 void ModelGeometry::Preview(int vb) const
 {
 	NixVBClear(vb);
 	foreach(ModelPolygon &p, const_cast<Array<ModelPolygon>&>(Polygon)){
 		Array<int> v = p.Triangulate(Vertex);
-		vector n = p.GetNormal(Vertex);
 		for (int i=0; i<v.num; i+=3)
-			NixVBAddTria(vb, Vertex[p.Side[v[i]].Vertex].pos, n, 0,0,
-					Vertex[p.Side[v[i+1]].Vertex].pos, n, 0,0,
-					Vertex[p.Side[v[i+2]].Vertex].pos, n, 0,0);
+			NixVBAddTria(vb, Vertex[p.Side[v[i]].Vertex].pos, p.Side[v[i]].Normal, 0,0,
+					Vertex[p.Side[v[i+1]].Vertex].pos, p.Side[v[i+1]].Normal, 0,0,
+					Vertex[p.Side[v[i+2]].Vertex].pos, p.Side[v[i+2]].Normal, 0,0);
 	}
 }
 
