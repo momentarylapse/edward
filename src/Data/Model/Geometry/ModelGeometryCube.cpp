@@ -1,19 +1,18 @@
 /*
- * ActionModelAddCube.cpp
+ * ModelGeometryCube.cpp
  *
- *  Created on: 06.03.2012
+ *  Created on: 25.05.2013
  *      Author: michi
  */
 
-#include "ActionModelAddCube.h"
-#include "../Vertex/ActionModelAddVertex.h"
-#include "../Polygon/ActionModelAddPolygonSingleTexture.h"
-#include "../Surface/ActionModelSurfaceAutoWeld.h"
-#include "../../../../Data/Model/DataModel.h"
+#include "ModelGeometryCube.h"
+#include "../DataModel.h"
 
-ActionModelAddCube::ActionModelAddCube(const vector &_pos, const vector &dv1, const vector &dv2, const vector &dv3, int num_1, int num_2, int num_3)
+ModelGeometryCube::ModelGeometryCube(const vector &_pos, const vector &dv1, const vector &dv2, const vector &dv3, int num_1, int num_2, int num_3)
 {
-	pos = _pos;
+	vector pos = _pos;
+	vector dv[3];
+	int num[3];
 	dv[0] = dv1;
 	dv[1] = dv2;
 	dv[2] = dv3;
@@ -26,18 +25,8 @@ ActionModelAddCube::ActionModelAddCube(const vector &_pos, const vector &dv1, co
 		pos += dv[2];
 		dv[2] = - dv[2];
 	}
-}
 
-ActionModelAddCube::~ActionModelAddCube()
-{
-}
-
-void *ActionModelAddCube::compose(Data *d)
-{
-	DataModel *m = dynamic_cast<DataModel*>(d);
-	int nv = m->Vertex.num;
-	int material = m->CurrentMaterial;
-
+	int nv = 0;
 	for (int f=0;f<6;f++){
 	//	nv = Vertex.num;
 		int nz = f % 3;
@@ -50,7 +39,7 @@ void *ActionModelAddCube::compose(Data *d)
 			for (int y=0;y<=num[ny];y++){
 				int xx = ((nz == 2) ^ (z == 0)) ? x : num[nx] - x;
 				vector dp = dv[nx] * (float)xx / (float)num[nx] + dv[ny] * (float)y / (float)num[ny] + dv[nz] * z;
-				AddSubAction(new ActionModelAddVertex(pos + dp), m);
+				AddVertex(pos + dp);
 			}
 		// create new triangles
 		for (int x=0;x<num[nx];x++)
@@ -65,7 +54,7 @@ void *ActionModelAddCube::compose(Data *d)
 				sv.add(vector((float) x   /(float)num[nx],(float) y   /(float)num[ny],0));
 				sv.add(vector((float)(x+1)/(float)num[nx],(float) y   /(float)num[ny],0));
 				sv.add(vector((float)(x+1)/(float)num[nx],(float)(y+1)/(float)num[ny],0));
-				AddSubAction(new ActionModelAddPolygonSingleTexture(v, material, sv), m);
+				AddPolygonSingleTexture(v, sv);
 			}
 		nv += (num[nx] + 1) * (num[ny] + 1);
 	}
@@ -73,10 +62,7 @@ void *ActionModelAddCube::compose(Data *d)
 	float epsilon = min(min(dv[0].length() / (float)num[0], dv[1].length() / (float)num[1]), dv[2].length() / (float)num[2]) * 0.01f;
 
 	// weld together
-	for (int f=1;f<6;f++)
-		AddSubAction(new ActionModelSurfaceAutoWeld(m->Surface.num - 2, m->Surface.num - 1, epsilon), m);
+	Weld(epsilon);
 
-	return &m->Surface.back();
 }
-
 

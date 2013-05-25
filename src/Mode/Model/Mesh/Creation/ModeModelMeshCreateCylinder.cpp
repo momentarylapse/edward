@@ -58,7 +58,7 @@ void ModeModelMeshCreateCylinder::UpdateGeometry()
 
 		Array<float> r = radius;
 		r += radius;
-		geo = new ModelGeometryCylinder(pos, r, rings, edges, true);
+		geo = new ModelGeometryCylinder(pos, r, rings, edges, false);
 	}
 }
 

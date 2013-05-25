@@ -24,13 +24,6 @@
 #include "../../Action/Model/Mesh/Polygon/ActionModelTriangulateSelection.h"
 #include "../../Action/Model/Mesh/Polygon/ActionModelMergePolygonsSelection.h"
 #include "../../Action/Model/Mesh/Polygon/ActionModelCutOutPolygons.h"
-#include "../../Action/Model/Mesh/Shape/ActionModelAddCube.h"
-#include "../../Action/Model/Mesh/Shape/ActionModelAddPlane.h"
-#include "../../Action/Model/Mesh/Shape/ActionModelAddCylinder.h"
-#include "../../Action/Model/Mesh/Shape/ActionModelAddBall.h"
-#include "../../Action/Model/Mesh/Shape/ActionModelAddSphere.h"
-#include "../../Action/Model/Mesh/Shape/ActionModelAddTorus.h"
-#include "../../Action/Model/Mesh/Shape/ActionModelAddPlatonic.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelSurfaceSubtract.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelSurfaceInvert.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelAutoWeldSelection.h"
@@ -48,6 +41,14 @@
 #include "../../Action/Model/Animation/ActionModelDeleteAnimation.h"
 #include "../../Action/Model/Animation/ActionModelAnimationAddFrame.h"
 #include "../../Action/Model/Animation/ActionModelAnimationDeleteFrame.h"
+#include "Geometry/ModelGeometryBall.h"
+#include "Geometry/ModelGeometryCube.h"
+#include "Geometry/ModelGeometryCylinder.h"
+#include "Geometry/ModelGeometryPlane.h"
+#include "Geometry/ModelGeometryPlatonic.h"
+#include "Geometry/ModelGeometrySphere.h"
+#include "Geometry/ModelGeometryTeapot.h"
+#include "Geometry/ModelGeometryTorus.h"
 
 ModelMove *EmptyMove = NULL;
 
@@ -1765,25 +1766,46 @@ int DataModel::GetNumPolygons()
 }
 
 ModelSurface* DataModel::AddBall(const vector& pos, float radius, int num_x, int num_y)
-{	return (ModelSurface*)Execute(new ActionModelAddBall(pos, radius, num_x, num_y));	}
+{
+	ModelGeometryBall geo = ModelGeometryBall(pos, radius, num_x, num_y);
+	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo));
+}
 
 ModelSurface* DataModel::AddSphere(const vector& pos, float radius, int num)
-{	return (ModelSurface*)Execute(new ActionModelAddSphere(pos, radius, num));	}
+{
+	ModelGeometrySphere geo = ModelGeometrySphere(pos, radius, num);
+	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo));
+}
 
 ModelSurface* DataModel::AddPlane(const vector& pos, const vector& dv1, const vector& dv2, int num_x, int num_y)
-{	return (ModelSurface*)Execute(new ActionModelAddPlane(pos, dv1, dv2, num_x, num_y));	}
+{
+	ModelGeometryPlane geo = ModelGeometryPlane(pos, dv1, dv2, num_x, num_y);
+	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo));
+}
 
 ModelSurface* DataModel::AddCube(const vector& pos, const vector& dv1, const vector& dv2, const vector& dv3, int num_1, int num_2, int num_3)
-{	return (ModelSurface*)Execute(new ActionModelAddCube(pos, dv1, dv2, dv3, num_1, num_2, num_3));	}
+{
+	ModelGeometryCube geo = ModelGeometryCube(pos, dv1, dv2, dv3, num_1, num_2, num_3);
+	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo));
+}
 
 ModelSurface* DataModel::AddCylinder(Array<vector>& pos, Array<float> &radius, int rings, int edges, bool closed)
-{	return (ModelSurface*)Execute(new ActionModelAddCylinder(pos, radius, rings, edges, closed));	}
+{
+	ModelGeometryCylinder geo = ModelGeometryCylinder(pos, radius, rings, edges, closed);
+	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo));
+}
 
 ModelSurface *DataModel::AddTorus(const vector &pos, const vector &axis, float radius1, float radius2, int num_x, int num_y)
-{	return (ModelSurface*)Execute(new ActionModelAddTorus(pos, axis, radius1, radius2, num_x, num_y));	}
+{
+	ModelGeometryTorus geo = ModelGeometryTorus(pos, axis, radius1, radius2, num_x, num_y);
+	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo));
+}
 
 ModelSurface *DataModel::AddPlatonic(const vector &pos, float radius, int type)
-{	return (ModelSurface*)Execute(new ActionModelAddPlatonic(pos, radius, type));	}
+{
+	ModelGeometryPlatonic geo = ModelGeometryPlatonic(pos, radius, type);
+	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo));
+}
 
 void DataModel::SetCurrentMove(int move_no)
 {

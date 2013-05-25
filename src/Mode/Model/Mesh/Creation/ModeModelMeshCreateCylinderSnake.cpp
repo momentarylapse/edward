@@ -63,7 +63,7 @@ void ModeModelMeshCreateCylinderSnake::UpdateGeometry()
 
 		Array<float> r = radius;
 		r += radius;
-		geo = new ModelGeometryCylinder(pos, r, rings * (pos.num - 1), edges, true);
+		geo = new ModelGeometryCylinder(pos, r, rings * (pos.num - 1), edges, false);
 	}
 }
 

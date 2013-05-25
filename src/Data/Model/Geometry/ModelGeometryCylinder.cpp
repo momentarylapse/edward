@@ -21,6 +21,40 @@ ModelGeometryCylinder::ModelGeometryCylinder(Array<vector> &pos, Array<float> &r
 	Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
 	foreach(vector &p, pos)
 		inter.add(p);
+
+	BuildFromPath(inter, inter_r, rings, edges, closed);
+}
+
+ModelGeometryCylinder::ModelGeometryCylinder(Array<vector> &pos, float radius, int rings, int edges, bool closed)
+{
+	Interpolator<float> inter_r(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
+	inter_r.add(radius);
+	inter_r.add(radius);
+
+	// vertices (interpolated on path)
+	Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
+	foreach(vector &p, pos)
+		inter.add(p);
+
+	BuildFromPath(inter, inter_r, rings, edges, closed);
+}
+
+ModelGeometryCylinder::ModelGeometryCylinder(vector &pos1, vector &pos2, float radius, int rings, int edges, bool closed)
+{
+	Interpolator<float> inter_r(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
+	inter_r.add(radius);
+	inter_r.add(radius);
+
+	// vertices (interpolated on path)
+	Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
+	inter.add(pos1);
+	inter.add(pos2);
+
+	BuildFromPath(inter, inter_r, rings, edges, closed);
+}
+
+void ModelGeometryCylinder::BuildFromPath(Interpolator<vector> &inter, Interpolator<float> &inter_r, int rings, int edges, bool closed)
+{
 	Array<vector> sv;
 	vector r_last = v_0;
 	for (int i=0;i<=rings;i++){
@@ -65,47 +99,48 @@ ModelGeometryCylinder::ModelGeometryCylinder(Array<vector> &pos, Array<float> &r
 			AddPolygonSingleTexture(v, _sv);
 		}
 
+	if (closed)
+		return;
+
 // the endings
-	if (closed){
-		int nv2 = Vertex.num;
+	int nv2 = Vertex.num;
 
-		// center points
-		AddVertex(inter.get(0));
-		AddVertex(inter.get(1));
+	// center points
+	AddVertex(inter.get(0));
+	AddVertex(inter.get(1));
 
-		// skin vertices
-		sv.clear();
-		for (int i=0;i<2;i++){
-			sv.add(vector(0.5f,0.5f,0));
-			for (int j=0;j<edges;j++){
-				float w=pi*2*(float)j/(float)edges;
-				sv.add(vector(0.5f+(float)sin(w)/2,0.5f+(float)cos(w)/2,0));
-			}
-		}
-
-		// triangles
+	// skin vertices
+	sv.clear();
+	for (int i=0;i<2;i++){
+		sv.add(vector(0.5f,0.5f,0));
 		for (int j=0;j<edges;j++){
-			Array<int> v;
-			v.add(nv2);
-			v.add(j);
-			v.add((j+1)%edges);
-			Array<vector> _sv;
-			_sv.add(sv[0]);
-			_sv.add(sv[1+j]);
-			_sv.add(sv[1+(j+1)%edges]);
-			AddPolygonSingleTexture(v, _sv);
+			float w=pi*2*(float)j/(float)edges;
+			sv.add(vector(0.5f+(float)sin(w)/2,0.5f+(float)cos(w)/2,0));
 		}
-		for (int j=0;j<edges;j++){
-			Array<int> v;
-			v.add(nv2+1);
-			v.add(nv2-edges+(j+1)%edges);
-			v.add(nv2-edges+j);
-			Array<vector> _sv;
-			_sv.add(sv[edges+1]);
-			_sv.add(sv[edges+2+(j+1)%edges]);
-			_sv.add(sv[edges+2+j]);
-			AddPolygonSingleTexture(v, _sv);
-		}
+	}
+
+	// triangles
+	for (int j=0;j<edges;j++){
+		Array<int> v;
+		v.add(nv2);
+		v.add(j);
+		v.add((j+1)%edges);
+		Array<vector> _sv;
+		_sv.add(sv[0]);
+		_sv.add(sv[1+j]);
+		_sv.add(sv[1+(j+1)%edges]);
+		AddPolygonSingleTexture(v, _sv);
+	}
+	for (int j=0;j<edges;j++){
+		Array<int> v;
+		v.add(nv2+1);
+		v.add(nv2-edges+(j+1)%edges);
+		v.add(nv2-edges+j);
+		Array<vector> _sv;
+		_sv.add(sv[edges+1]);
+		_sv.add(sv[edges+2+(j+1)%edges]);
+		_sv.add(sv[edges+2+j]);
+		AddPolygonSingleTexture(v, _sv);
 	}
 }
 
