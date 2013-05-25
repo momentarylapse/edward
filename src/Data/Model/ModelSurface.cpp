@@ -536,7 +536,7 @@ void ModelSurface::BeginInsideTests()
 	plane *pl = &inside_data->pl[0];
 	foreach(ModelPolygon &t, Polygon){
 		if (t.TriangulationDirty)
-			t.UpdateTriangulation(model);
+			t.UpdateTriangulation(model->Vertex);
 		*(pl ++) = plane(model->Vertex[t.Side[0].Vertex].pos, t.TempNormal);
 		for (int k=0;k<t.Side.num-2;k++){
 			*(r ++) = Ray(model->Vertex[t.Side[t.Side[k].Triangulation[0]].Vertex].pos, model->Vertex[t.Side[t.Side[k].Triangulation[1]].Vertex].pos);

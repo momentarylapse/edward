@@ -10,6 +10,9 @@
 #include "../../Data/Material/DataMaterial.h"
 #include "Dialog/MaterialPropertiesDialog.h"
 #include "Dialog/MaterialPhysicsDialog.h"
+#include "../../Data/Model/DataModel.h"
+#include "../../Data/Model/Geometry/ModelGeometryTorus.h"
+#include "../../Data/Model/Geometry/ModelGeometryTeapot.h"
 
 const int MATERIAL_NUMX = 48;
 const int MATERIAL_NUMY = 24;
@@ -111,56 +114,6 @@ void ModeMaterial::ExecutePhysicsDialog()
 	HuiWaitTillWindowClosed(dlg);
 }
 
-void CreateTorus(int buffer, const vector &pos, const vector dir, float radius1, float radius2, int nx, int ny, int num_tex)
-{
-	vector dir2 = dir.ortho();
-	dir2.normalize();
-	vector dir3 = dir ^ dir2;
-	for (int x=0;x<nx;x++){
-		float fx0 = float(x  )/(float)nx;
-		float fx1 = float(x+1)/(float)nx;
-		vector rdir0 = dir2 * cos(2 * pi * fx0) + dir3 * sin(2 * pi * fx0);
-		vector rdir1 = dir2 * cos(2 * pi * fx1) + dir3 * sin(2 * pi * fx1);
-		vector pp0 = pos + rdir0 * radius1;
-		vector pp1 = pos + rdir1 * radius1;
-		for (int y=0;y<ny;y++){
-			float fy0 = float(y  )/(float)ny;
-			float fy1 = float(y+1)/(float)ny;
-			vector n00 = rdir0 * cos(2 * pi * fy0) + dir * sin(2 * pi * fy0);
-			vector n01 = rdir0 * cos(2 * pi * fy1) + dir * sin(2 * pi * fy1);
-			vector n10 = rdir1 * cos(2 * pi * fy0) + dir * sin(2 * pi * fy0);
-			vector n11 = rdir1 * cos(2 * pi * fy1) + dir * sin(2 * pi * fy1);
-			vector p00 = pp0 + n00 * radius2;
-			vector p01 = pp0 + n01 * radius2;
-			vector p10 = pp1 + n10 * radius2;
-			vector p11 = pp1 + n11 * radius2;
-			if (num_tex == 1){
-				NixVBAddTria(buffer,	p01,n01,fx0,fy1,
-										p00,n00,fx0,fy0,
-										p10,n10,fx1,fy0);
-				NixVBAddTria(buffer,	p01,n01,fx0,fy1,
-										p10,n10,fx1,fy0,
-										p11,n11,fx1,fy1);
-			}else{
-				float t00[MATERIAL_MAX_TEXTURES], t01[MATERIAL_MAX_TEXTURES], t10[MATERIAL_MAX_TEXTURES], t11[MATERIAL_MAX_TEXTURES];
-				for (int k=0; k<num_tex;k++){
-					t00[k * 2    ] = fx0;	t00[k * 2 + 1] = fy0;
-					t01[k * 2    ] = fx0;	t01[k * 2 + 1] = fy1;
-					t10[k * 2    ] = fx1;	t10[k * 2 + 1] = fy0;
-					t11[k * 2    ] = fx1;	t11[k * 2 + 1] = fy1;
-				}
-				NixVBAddTriaM(buffer,	p01,n01,t01,
-										p00,n00,t00,
-										p10,n10,t10);
-				NixVBAddTriaM(buffer,	p01,n01,t01,
-										p10,n10,t10,
-										p11,n11,t11);
-
-			}
-		}
-	}
-}
-
 
 void ModeMaterial::OnDrawWin(int win)
 {
@@ -235,11 +188,14 @@ void ModeMaterial::OnStart()
 	ed->EnableToolbar(false);
 	multi_view->MVRectable = false;
 
+	//ModelGeometryTorus geo = ModelGeometryTorus(v_0, e_z, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_NUMX, MATERIAL_NUMY);
+	ModelGeometryTeapot geo = ModelGeometryTeapot(v_0, MATERIAL_RADIUS1, 6);
+	geo.Smoothen();
 
 	for (int i=1;i<MATERIAL_MAX_TEXTURES;i++){
 		int vb = MaterialVB[i];
 		NixVBClear(vb);
-		CreateTorus(vb, v_0, e_z, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_NUMX, MATERIAL_NUMY, i);
+		geo.Preview(vb, i);
 	}
 }
 

@@ -235,15 +235,23 @@ void ModelGeometry::Smoothen()
 	}
 }
 
-void ModelGeometry::Preview(int vb) const
+void ModelGeometry::Transform(const matrix &mat)
+{
+	foreach(ModelVertex &v, Vertex)
+		v.pos = mat * v.pos;
+	foreach(ModelPolygon &p, Polygon){
+		p.TempNormal = mat.transform_normal(p.TempNormal);
+		for (int k=0;k<p.Side.num;k++)
+			p.Side[k].Normal = mat.transform_normal(p.Side[k].Normal);
+	}
+}
+
+void ModelGeometry::Preview(int vb, int num_textures) const
 {
 	NixVBClear(vb);
 	foreach(ModelPolygon &p, const_cast<Array<ModelPolygon>&>(Polygon)){
-		Array<int> v = p.Triangulate(Vertex);
-		for (int i=0; i<v.num; i+=3)
-			NixVBAddTria(vb, Vertex[p.Side[v[i]].Vertex].pos, p.Side[v[i]].Normal, 0,0,
-					Vertex[p.Side[v[i+1]].Vertex].pos, p.Side[v[i+1]].Normal, 0,0,
-					Vertex[p.Side[v[i+2]].Vertex].pos, p.Side[v[i+2]].Normal, 0,0);
+		p.TriangulationDirty = true;
+		p.AddToVertexBuffer(Vertex, vb, num_textures);
 	}
 }
 

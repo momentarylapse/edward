@@ -60,7 +60,7 @@ inline void add_poly(int vb, const DataModel *data, ModelPolygon &t)
 	}
 #else
 	if (t.TriangulationDirty)
-		t.UpdateTriangulation(data);
+		t.UpdateTriangulation(data->Vertex);
 	for (int k=t.Side.num-3; k>=0; k--){
 		int a = t.Side[k].Triangulation[0];
 		int b = t.Side[k].Triangulation[1];
@@ -104,57 +104,22 @@ void ModeModelMeshPolygon::DrawPolygons()
 	// draw all materials separately
 	foreachi(ModelMaterial &m, data->Material, mi){
 		int *vb = &VBModel;
-
-		// single texture
-		if (m.NumTextures == 1){
-			NixVBClear(VBModel);
-
-			foreach(ModelSurface &surf, data->Surface)
-				foreach(ModelPolygon &t, surf.Polygon)
-					if ((t.view_stage >= multi_view->view_stage) && (t.Material == mi))
-						add_poly(VBModel, data, t);
-
-		// multi texture
-		}else{
-			int num_tex = m.NumTextures;
-			if (num_tex > 4)
-				num_tex = 4;
+		int num_tex = min(m.NumTextures, 4);
+		if (num_tex == 2)
 			vb = &VBModel2;
-			if (num_tex == 3)
-				vb = &VBModel3;
-			if (num_tex == 4)
-				vb = &VBModel4;
-			if (*vb < 0)
-				*vb = NixCreateVB(65536, num_tex);
+		else if (num_tex == 3)
+			vb = &VBModel3;
+		else if (num_tex == 4)
+			vb = &VBModel4;
+		if (*vb < 0)
+			*vb = NixCreateVB(65536, num_tex);
 
-			NixVBClear(*vb);
+		NixVBClear(*vb);
 
-			foreach(ModelSurface &surf, data->Surface)
-				foreach(ModelPolygon &t, surf.Polygon)
-					if ((t.view_stage >= multi_view->view_stage) && (t.Material == mi)){
-						if (t.TriangulationDirty)
-							t.UpdateTriangulation(data);
-						for (int k=t.Side.num-3; k>=0; k--){
-							int a = t.Side[k].Triangulation[0];
-							int b = t.Side[k].Triangulation[1];
-							int c = t.Side[k].Triangulation[2];
-							float t1[8], t2[8], t3[8];
-							for (int tl=0;tl<num_tex;tl++){
-								t1[tl*2  ] = t.Side[a].SkinVertex[tl].x;
-								t1[tl*2+1] = t.Side[a].SkinVertex[tl].y;
-								t2[tl*2  ] = t.Side[b].SkinVertex[tl].x;
-								t2[tl*2+1] = t.Side[b].SkinVertex[tl].y;
-								t3[tl*2  ] = t.Side[c].SkinVertex[tl].x;
-								t3[tl*2+1] = t.Side[c].SkinVertex[tl].y;
-							}
-							NixVBAddTriaM(	*vb,
-											GetVertex(t.Side[a].Vertex), t.Side[a].Normal, t1,
-											GetVertex(t.Side[b].Vertex), t.Side[b].Normal, t2,
-											GetVertex(t.Side[c].Vertex), t.Side[c].Normal, t3);
-						}
-					}
-
-		}
+		foreach(ModelSurface &surf, data->Surface)
+			foreach(ModelPolygon &t, surf.Polygon)
+				if ((t.view_stage >= multi_view->view_stage) && (t.Material == mi))
+					t.AddToVertexBuffer(data->Vertex, *vb, m.NumTextures);
 
 		// draw
 		m.ApplyForRendering();
@@ -311,7 +276,7 @@ bool PolygonIsMouseOver(int index, void *user_data, int win, vector &tp)
 
 	// test all sub-triangles
 	if (t->TriangulationDirty)
-		t->UpdateTriangulation(m);
+		t->UpdateTriangulation(m->Vertex);
 	vector M = vector(float(ed->multi_view_3d->mx), float(ed->multi_view_3d->my), 0);
 	for (int k=t->Side.num-3; k>=0; k--){
 		int a = t->Side[k].Triangulation[0];

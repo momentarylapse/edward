@@ -8,11 +8,13 @@
 #ifndef MODELGEOMETRY_H_
 #define MODELGEOMETRY_H_
 
-#include "../../../lib/base/base.h"
+#include "../DataModel.h"
+#include "../ModelPolygon.h"
 
 class ModelVertex;
 class ModelPolygon;
 class vector;
+class matrix;
 
 class ModelGeometry
 {
@@ -32,9 +34,10 @@ public:
 	void Weld(float epsilon);
 	void Weld(ModelGeometry &geo, float epsilon);
 
+	void Transform(const matrix &mat);
 	void Smoothen();
 
-	void Preview(int vb) const;
+	void Preview(int vb, int num_textures = 1) const;
 
 	Array<ModelVertex> Vertex;
 	Array<ModelPolygon> Polygon;

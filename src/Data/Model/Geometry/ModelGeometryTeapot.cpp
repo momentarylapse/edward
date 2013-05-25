@@ -369,5 +369,10 @@ ModelGeometryTeapot::ModelGeometryTeapot(const vector &pos, float radius, int sa
 	addBezier(229,232,233,212,257,264,265,234,260,266,267,238,263,268,269,242);
 
 	Weld(radius / samples * 0.01f);
+
+	matrix rot, trans;
+	MatrixRotationX(rot, - pi / 2);
+	MatrixTranslation(trans, - e_y * radius / 2);
+	Transform(trans * rot);
 }
 

@@ -136,7 +136,7 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 		s.UpdateNormals();
 		foreachi(ModelPolygon &p, s.Polygon, i){
 			if (p.TriangulationDirty)
-				p.UpdateTriangulation(m);
+				p.UpdateTriangulation(m->Vertex);
 			for (int k=0;k<p.Side.num-2;k++){
 				Triangle t;
 				t.mod_id = mod.id;

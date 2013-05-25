@@ -942,7 +942,7 @@ void DataModel::ExportToTriangleSkin(int index)
 	foreach(ModelSurface &s, Surface)
 		foreach(ModelPolygon &t, s.Polygon){
 			if (t.TriangulationDirty)
-				t.UpdateTriangulation(this);
+				t.UpdateTriangulation(Vertex);
 			for (int i=0;i<t.Side.num-2;i++){
 				ModelTriangle tt;
 				for (int k=0;k<3;k++){

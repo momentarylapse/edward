@@ -141,11 +141,42 @@ Array<int> ModelPolygon::Triangulate(const Array<ModelVertex> &vertex) const
 	return output;
 }
 
-void ModelPolygon::UpdateTriangulation(const DataModel *m)
+void ModelPolygon::UpdateTriangulation(const Array<ModelVertex> &vertex)
 {
-	Array<int> v = Triangulate(m->Vertex);
+	Array<int> v = Triangulate(vertex);
 	for (int i=0; i<v.num; i+=3)
 		for (int k=0; k<3; k++)
 			Side[i/3].Triangulation[k] = v[i + k];
 	TriangulationDirty = false;
+}
+
+void ModelPolygon::AddToVertexBuffer(const Array<ModelVertex> &vertex, int buffer, int num_textures)
+{
+	if (TriangulationDirty)
+		UpdateTriangulation(vertex);
+	for (int i=0; i<Side.num-2; i++){
+		const ModelPolygonSide &a = Side[Side[i].Triangulation[0]];
+		const ModelPolygonSide &b = Side[Side[i].Triangulation[1]];
+		const ModelPolygonSide &c = Side[Side[i].Triangulation[2]];
+		if (num_textures > 1){
+			float ta[MATERIAL_MAX_TEXTURES * 2], tb[MATERIAL_MAX_TEXTURES * 2], tc[MATERIAL_MAX_TEXTURES * 2];
+			for (int l=0;l<num_textures;l++){
+				ta[l*2  ] = a.SkinVertex[l].x;
+				ta[l*2+1] = a.SkinVertex[l].y;
+				tb[l*2  ] = b.SkinVertex[l].x;
+				tb[l*2+1] = b.SkinVertex[l].y;
+				tc[l*2  ] = c.SkinVertex[l].x;
+				tc[l*2+1] = c.SkinVertex[l].y;
+			}
+			NixVBAddTriaM(buffer,
+					vertex[a.Vertex].pos, a.Normal, ta,
+					vertex[b.Vertex].pos, b.Normal, tb,
+					vertex[c.Vertex].pos, c.Normal, tc);
+		}else{
+			NixVBAddTria(buffer,
+					vertex[a.Vertex].pos, a.Normal, a.SkinVertex[0].x, a.SkinVertex[0].y,
+					vertex[b.Vertex].pos, b.Normal, b.SkinVertex[0].x, b.SkinVertex[0].y,
+					vertex[c.Vertex].pos, c.Normal, c.SkinVertex[0].x, c.SkinVertex[0].y);
+		}
+	}
 }

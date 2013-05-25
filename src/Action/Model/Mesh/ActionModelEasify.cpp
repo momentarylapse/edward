@@ -14,7 +14,7 @@
 static vector get_area(DataModel *m, ModelPolygon &t)
 {
 	if (t.NormalDirty)
-		t.UpdateTriangulation(m);
+		t.UpdateTriangulation(m->Vertex);
 	vector a = v_0;
 	for (int k=0;k<t.Side.num-2;k++){
 		int va = t.Side[t.Side[k].Triangulation[0]].Vertex;
