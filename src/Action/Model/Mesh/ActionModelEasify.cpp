@@ -33,37 +33,38 @@ static vector get_deformed_area(DataModel *m, ModelPolygon &t, int index, const 
 	return n * 0.5f;
 }
 
-static int edge_other_vertex(ModelEdge &e, int v)
+struct PolyRef
 {
-	if (e.Vertex[0] == v)
-		return e.Vertex[1];
-	if (e.Vertex[1] == v)
-		return e.Vertex[0];
-	throw ActionException("edge_other_vertex");
-	return e.Vertex[0];
-}
+	int poly;
+	int side;
+};
 
-static float get_weight(DataModel *m, ModelSurface &s, ModelEdge &e)
+// all weights are of dimension [area]
+static float get_weight(DataModel *m, ModelSurface &s, ModelEdge &e, Array<Array<PolyRef> > &ref)
 {
 	float w = 0;
 	int a = e.Vertex[0];
 	int b = e.Vertex[1];
 	vector new_pos = (m->Vertex[a].pos + m->Vertex[b].pos) / 2;
 
-	// triangle plane change
-	foreachi(ModelPolygon &t, s.Polygon, ti){
+	Array<PolyRef> rr;
+	rr.append(ref[a]);
+	rr.append(ref[b]);
+
+	// polygon plane change
+	for (int i=0;i<rr.num;i++){
 		// find all polygons sharing a vertex with <e>
 		// ...but not containing <e>
-		if (ti == e.Polygon[0])
+		if (rr[i].poly == e.Polygon[0])
 			continue;
-		if ((e.RefCount > 1) && (ti == e.Polygon[1]))
+		if ((e.RefCount > 1) && (rr[i].poly == e.Polygon[1]))
 			continue;
-		for (int k=0;k<t.Side.num;k++)
-			if ((t.Side[k].Vertex == a) || (t.Side[k].Vertex == b)){
-				vector area = t.GetAreaVector(m->Vertex);
-				vector area2 = get_deformed_area(m, t, k, new_pos);
-				w += (area ^ area2).length() / (area.length() + area2.length()) * 4;
-			}
+		ModelPolygon &p = s.Polygon[rr[i].poly];
+
+		// how much does the plane change
+		vector area = p.GetAreaVector(m->Vertex);
+		vector area2 = get_deformed_area(m, p, rr[i].side, new_pos);
+		w += (area ^ area2).length() / (area.length() + area2.length()) * 4;
 	}
 
 	// edge length
@@ -77,21 +78,38 @@ void ActionModelEasify::CalculateWeights(DataModel *m)
 
 	foreachi(ModelSurface &s, m->Surface, si){
 
+		// find all polygon sides for each vertex
+		Array<Array<PolyRef> > ref;
+		ref.resize(m->Vertex.num);
+
+		foreachi(ModelPolygon &p, s.Polygon, ti){
+			for (int k=0;k<p.Side.num;k++){
+				PolyRef r;
+				r.poly = ti;
+				r.side = k;
+				ref[p.Side[k].Vertex].add(r);
+			}
+		}
+
+
 		// calculate edge weights
 		foreach(ModelEdge &e, s.Edge)
-			e.Weight = get_weight(m, s, e);
+			e.Weight = get_weight(m, s, e, ref);
 
+		// correction for boundary edges
 		foreachi(ModelEdge &e, s.Edge, ei)
 			if (e.RefCount == 1){
 				// find all edges sharing a vertex with e
+				Array<PolyRef> rr;
+				rr.append(ref[e.Vertex[0]]);
+				rr.append(ref[e.Vertex[1]]);
 				Set<int> ee;
-				foreach(ModelPolygon &t, s.Polygon)
-					for (int k=0;k<t.Side.num;k++)
-						for (int l=0;l<2;l++)
-							if (t.Side[k].Vertex == e.Vertex[l]){
-								ee.add(t.Side[k].Edge);
-								ee.add(t.Side[(k-1+t.Side.num) % t.Side.num].Edge);
-							}
+				for (int i=0;i<rr.num;i++){
+					ModelPolygon &p = s.Polygon[rr[i].poly];
+					int k = rr[i].side;
+					ee.add(p.Side[k].Edge);
+					ee.add(p.Side[(k-1+p.Side.num) % p.Side.num].Edge);
+				}
 
 				// compute damage...
 				foreach(int eee, ee)
