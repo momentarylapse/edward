@@ -239,10 +239,11 @@ void ModelGeometry::Transform(const matrix &mat)
 {
 	foreach(ModelVertex &v, Vertex)
 		v.pos = mat * v.pos;
+	matrix mat2 = mat * (float)pow(mat.determinant(), - 1.0f / 3.0f);
 	foreach(ModelPolygon &p, Polygon){
-		p.TempNormal = mat.transform_normal(p.TempNormal);
+		p.TempNormal = mat2.transform_normal(p.TempNormal);
 		for (int k=0;k<p.Side.num;k++)
-			p.Side[k].Normal = mat.transform_normal(p.Side[k].Normal);
+			p.Side[k].Normal = mat2.transform_normal(p.Side[k].Normal);
 	}
 }
 

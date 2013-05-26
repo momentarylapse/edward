@@ -55,8 +55,13 @@ ModelGeometryCylinder::ModelGeometryCylinder(vector &pos1, vector &pos2, float r
 
 void ModelGeometryCylinder::BuildFromPath(Interpolator<vector> &inter, Interpolator<float> &inter_r, int rings, int edges, bool closed)
 {
+	if (closed){
+		inter.close();
+		inter_r.close();
+	}
 	Array<vector> sv;
 	vector r_last = v_0;
+	int rings_vertex = closed ? rings : (rings + 1);
 	for (int i=0;i<=rings;i++){
 		// interpolated point on path
 		float t = (float)i / (float)rings;
@@ -77,14 +82,14 @@ void ModelGeometryCylinder::BuildFromPath(Interpolator<vector> &inter, Interpola
 		for (int j=0;j<=edges;j++){
 			float w = pi*2*(float)j/(float)edges;
 			vector p = p0+((float)sin(w)*u+(float)cos(w)*r)*radius;
-			if (j < edges)
+			if ((j < edges) && (i < rings_vertex))
 				AddVertex(p);
 			sv.add(vector((float)j/(float)edges,t,0));
 		}
 	}
 
 // the curved surface
-	for (int i=0;i<rings;i++)
+	for (int i=0;i<rings_vertex-1;i++)
 		for (int j=0;j<edges;j++){
 			Array<int> v;
 			v.add(_cyl_vert(i+1, j+1));
@@ -99,8 +104,35 @@ void ModelGeometryCylinder::BuildFromPath(Interpolator<vector> &inter, Interpola
 			AddPolygonSingleTexture(v, _sv);
 		}
 
-	if (closed)
+	if (closed){
+		// how much did the 3-bein rotate?
+		vector dir0 = inter.get_tang(0);
+		vector u0 = dir0.ortho();
+		u0.normalize();
+		vector r0 = dir0 ^ u0;
+		r0.normalize();
+		float phi = atan2(u0 * r_last, r0 * r_last);
+		int dj = (int)((float)edges * (phi / 2 / pi));
+		if (dj < edges)
+			dj += (1-dj/edges) * edges;
+
+		// close the last gap
+		int i = rings - 1;
+		for (int j=0;j<edges;j++){
+			Array<int> v;
+			v.add(_cyl_vert(0, j+1+dj));
+			v.add(_cyl_vert(i, j+1));
+			v.add(_cyl_vert(i, j));
+			v.add(_cyl_vert(0, j+dj));
+			Array<vector> _sv;
+			_sv.add(_cyl_svert(rings, j+1));
+			_sv.add(_cyl_svert(i, j+1));
+			_sv.add(_cyl_svert(i, j));
+			_sv.add(_cyl_svert(rings, j));
+			AddPolygonSingleTexture(v, _sv);
+		}
 		return;
+	}
 
 // the endings
 	int nv2 = Vertex.num;

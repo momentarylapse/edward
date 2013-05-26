@@ -32,17 +32,12 @@ public:
 	matrix operator + (const matrix &m) const;
 	matrix operator - (const matrix &m) const;
 	matrix operator * (const matrix &m) const;
-	/*matrix operator * (float f) const
-	{
-		matrix r;
-		for (int i=0;i<16;i++)
-			r.e[i]=e[i]*f;
-		return r;
-	}
+	matrix operator * (float f) const;
 	friend matrix operator * (float f, const matrix &m)
-	{	return m*f;	}*/
+	{	return m*f;	}
 	matrix operator *= (const matrix &m);
 	vector operator * (const vector &v) const;
+	float determinant() const;
 	vector transform_normal(const vector &v) const;
 	vector untransform(const vector &v) const;
 	vector project(const vector &v) const;

@@ -69,6 +69,14 @@ vector matrix::operator * (const vector &v) const
 					v.x*_20 + v.y*_21 + v.z*_22 + _23);
 }
 
+matrix matrix::operator * (float f) const
+{
+	matrix r;
+	for (int i=0;i<16;i++)
+		r.e[i] = e[i] * f;
+	return r;
+}
+
 vector matrix::transform_normal(const vector &v) const
 {
 	return vector(	v.x*_00 + v.y*_01 + v.z*_02,
@@ -142,7 +150,7 @@ void MatrixIdentity(matrix &m)
 	m._30=0;	m._31=0;	m._32=0;	m._33=1;*/
 }
 
-float _Determinant(float m[16])
+inline float _Determinant(const float m[16])
 {
 	return
 		m[12]*m[9]*m[6]*m[3]-
@@ -170,6 +178,9 @@ float _Determinant(float m[16])
 		m[4]*m[1]*m[10]*m[15]+
 		m[0]*m[5]*m[10]*m[15];
 }
+
+float matrix::determinant() const
+{	return _Determinant(e);		}
 
 // inverting the transformation
 void MatrixInverse(matrix &mo,const matrix &mi)

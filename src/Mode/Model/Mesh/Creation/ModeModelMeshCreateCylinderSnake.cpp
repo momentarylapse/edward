@@ -10,8 +10,7 @@
 #include "../../../../Data/Model/Geometry/ModelGeometryCylinder.h"
 #include "../../../../Edward.h"
 
-// -> ModeModelMeshCreateCylinder.cpp
-void CreateCylinderBuffer(int buffer, const vector &pos, const vector &length, float radius);
+const float CYLINDER_CLOSING_DISTANCE = 20;
 
 
 ModeModelMeshCreateCylinderSnake::ModeModelMeshCreateCylinderSnake(Mode *_parent) :
@@ -22,6 +21,7 @@ ModeModelMeshCreateCylinderSnake::ModeModelMeshCreateCylinderSnake(Mode *_parent
 	message = _("Zylinderschlange... Punkte + Shift Return");
 
 	radius = 0;
+	closed = false;
 	ready_for_scaling = false;
 	geo = NULL;
 }
@@ -61,9 +61,7 @@ void ModeModelMeshCreateCylinderSnake::UpdateGeometry()
 		HuiConfigWriteInt("NewCylinderRings", rings);
 		HuiConfigWriteInt("NewCylinderEdges", edges);
 
-		Array<float> r = radius;
-		r += radius;
-		geo = new ModelGeometryCylinder(pos, r, rings * (pos.num - 1), edges, false);
+		geo = new ModelGeometryCylinder(pos, radius, rings * (pos.num - 1), edges, closed);
 	}
 }
 
@@ -91,6 +89,20 @@ void ModeModelMeshCreateCylinderSnake::OnLeftButtonDown()
 
 		Abort();
 	}else{
+		if (pos.num > 2){
+			vector pp = multi_view->VecProject(pos[0], multi_view->mouse_win);
+			pp.z = 0;
+			if ((pp - vector(multi_view->mx, multi_view->my, 0)).length_fuzzy() < CYLINDER_CLOSING_DISTANCE){
+				closed = true;
+				ready_for_scaling = true;
+				OnMouseMove();
+				message = _("Zylinder: Radius");
+				UpdateGeometry();
+				ed->ForceRedraw();
+				return;
+			}
+
+		}
 		if (multi_view->Selected >= 0)
 			pos.add(data->Vertex[multi_view->Selected].pos);
 		else
@@ -147,6 +159,12 @@ void ModeModelMeshCreateCylinderSnake::OnDrawWin(int win)
 		NixEnableLighting(true);
 		mode_model->SetMaterialCreation();
 		NixDraw3D(VBTemp);
+	}else if (pos.num > 2){
+		vector pp = multi_view->VecProject(pos[0], multi_view->mouse_win);
+		pp.z = 0;
+		if ((pp - vector(multi_view->mx, multi_view->my, 0)).length_fuzzy() < CYLINDER_CLOSING_DISTANCE){
+			ed->DrawStr(pp.x, pp.y, _("Pfad schlie&sen"));
+		}
 	}
 }
 

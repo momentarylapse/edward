@@ -322,18 +322,17 @@ const vector tp_vert[] = {
 
 #define fill_array(i0,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15) \
 	v.clear(); \
-	v.add(pos+r*tp_vert[i0]);	v.add(pos+r*tp_vert[i1]);	v.add(pos+r*tp_vert[i2]);	v.add(pos+r*tp_vert[i3]); \
-	v.add(pos+r*tp_vert[i4]);	v.add(pos+r*tp_vert[i5]);	v.add(pos+r*tp_vert[i6]);	v.add(pos+r*tp_vert[i7]); \
-	v.add(pos+r*tp_vert[i8]);	v.add(pos+r*tp_vert[i9]);	v.add(pos+r*tp_vert[i10]);	v.add(pos+r*tp_vert[i11]); \
-	v.add(pos+r*tp_vert[i12]);	v.add(pos+r*tp_vert[i13]);	v.add(pos+r*tp_vert[i14]);	v.add(pos+r*tp_vert[i15]);
+	v.add(tp_vert[i0]);	v.add(tp_vert[i1]);	v.add(tp_vert[i2]);	v.add(tp_vert[i3]); \
+	v.add(tp_vert[i4]);	v.add(tp_vert[i5]);	v.add(tp_vert[i6]);	v.add(tp_vert[i7]); \
+	v.add(tp_vert[i8]);	v.add(tp_vert[i9]);	v.add(tp_vert[i10]);	v.add(tp_vert[i11]); \
+	v.add(tp_vert[i12]);	v.add(tp_vert[i13]);	v.add(tp_vert[i14]);	v.add(tp_vert[i15]);
 
 #define addBezier(i0,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15) \
 	fill_array(i0,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15); \
-	AddBezier3(v, samples, samples, r / samples * 0.01f)
+	AddBezier3(v, samples, samples, 0.01f / samples)
 
 ModelGeometryTeapot::ModelGeometryTeapot(const vector &pos, float radius, int samples)
 {
-	float r = radius / 3;
 	Array<vector> v;
 	addBezier(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16);
 	addBezier(4,17,18,19,8,20,21,22,12,23,24,25,16,26,27,28);
@@ -368,11 +367,12 @@ ModelGeometryTeapot::ModelGeometryTeapot(const vector &pos, float radius, int sa
 	addBezier(222,227,228,229,248,255,256,257,251,258,259,260,254,261,262,263);
 	addBezier(229,232,233,212,257,264,265,234,260,266,267,238,263,268,269,242);
 
-	Weld(radius / samples * 0.01f);
+	Weld(0.01f / samples);
 
-	matrix rot, trans;
+	matrix rot, trans, scale;
 	MatrixRotationX(rot, - pi / 2);
-	MatrixTranslation(trans, - e_y * radius / 2);
-	Transform(trans * rot);
+	MatrixTranslation(trans, pos - e_y * radius / 2);
+	MatrixScale(scale, radius / 3, radius / 3, radius / 3);
+	Transform(trans * rot * scale);
 }
 

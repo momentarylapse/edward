@@ -38,6 +38,7 @@ private:
 	bool ready_for_scaling;
 	vector length;
 	float radius;
+	bool closed;
 	ModelGeometry *geo;
 };
 
