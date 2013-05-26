@@ -37,6 +37,8 @@ public:
 	void Transform(const matrix &mat);
 	void Smoothen();
 
+	void GetBoundingBox(vector &min, vector &max);
+
 	void Preview(int vb, int num_textures = 1) const;
 
 	Array<ModelVertex> Vertex;

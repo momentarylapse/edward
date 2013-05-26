@@ -247,6 +247,19 @@ void ModelGeometry::Transform(const matrix &mat)
 	}
 }
 
+void ModelGeometry::GetBoundingBox(vector &min, vector &max)
+{
+	if (Vertex.num > 0){
+		min = max = Vertex[0].pos;
+		foreach(ModelVertex &v, Vertex){
+			min._min(v.pos);
+			max._max(v.pos);
+		}
+	}else{
+		min = max = v_0;
+	}
+}
+
 void ModelGeometry::Preview(int vb, int num_textures) const
 {
 	NixVBClear(vb);

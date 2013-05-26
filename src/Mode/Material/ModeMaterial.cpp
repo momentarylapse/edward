@@ -15,6 +15,7 @@
 #include "../../Data/Model/Geometry/ModelGeometryBall.h"
 #include "../../Data/Model/Geometry/ModelGeometryPlatonic.h"
 #include "../../Data/Model/Geometry/ModelGeometryTorus.h"
+#include "../../Data/Model/Geometry/ModelGeometryTorusKnot.h"
 #include "../../Data/Model/Geometry/ModelGeometryTeapot.h"
 
 const int MATERIAL_NUMX = 48;
@@ -27,6 +28,7 @@ ModeMaterial *mode_material = NULL;
 ModeMaterial::ModeMaterial() :
 	Mode("Material", NULL, new DataMaterial, ed->multi_view_3d, "menu_material")
 {
+	geo = NULL;
 	data = dynamic_cast<DataMaterial*>(data_generic);
 	Subscribe(data);
 
@@ -42,6 +44,8 @@ ModeMaterial::ModeMaterial() :
 
 ModeMaterial::~ModeMaterial()
 {
+	if (geo)
+		delete(geo);
 }
 
 void ModeMaterial::New()
@@ -228,9 +232,13 @@ void ModeMaterial::SetShapeSmooth(bool smooth)
 
 void ModeMaterial::UpdateShape()
 {
-	ModelGeometry *geo;
+	bool needs_opt_view = !geo;
+	if (geo)
+		delete(geo);
 	if (shape_type == "torus")
 		geo = new ModelGeometryTorus(v_0, e_z, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_NUMX, MATERIAL_NUMY);
+	else if (shape_type == "torusknot")
+		geo = new ModelGeometryTorusKnot(v_0, e_z, MATERIAL_RADIUS1, 40, 22, 2, 5, 60, 16);
 	else if (shape_type == "teapot")
 		geo = new ModelGeometryTeapot(v_0, MATERIAL_RADIUS1, 6);
 	else if (shape_type == "cube")
@@ -248,15 +256,19 @@ void ModeMaterial::UpdateShape()
 		NixVBClear(vb);
 		geo->Preview(vb, i);
 	}
-	delete(geo);
 	OnUpdateMenu();
+	if (needs_opt_view)
+		OptimizeView();
 }
 
 bool ModeMaterial::OptimizeView()
 {
 	multi_view->ResetView();
-	vector r = vector(MATERIAL_RADIUS1 + MATERIAL_RADIUS2, MATERIAL_RADIUS1 + MATERIAL_RADIUS2, MATERIAL_RADIUS2);
-	multi_view->SetViewBox(-r, r);
+	if (geo){
+		vector min, max;
+		geo->GetBoundingBox(min, max);
+		multi_view->SetViewBox(min, max);
+	}
 	return true;
 }
 

@@ -14,6 +14,7 @@
 class Mode;
 class DataMaterial;
 class MaterialPropertiesDialog;
+class ModelGeometry;
 
 class ModeMaterial: public Mode
 {
@@ -51,6 +52,7 @@ public:
 
 	string shape_type;
 	bool shape_smooth;
+	ModelGeometry *geo;
 
 	void SetShapeType(const string &type);
 	void SetShapeSmooth(bool smooth);
