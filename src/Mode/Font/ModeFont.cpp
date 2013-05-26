@@ -114,9 +114,6 @@ void ModeFont::OnCommand(const string & id)
 	if (id == "redo")
 		data->Redo();
 
-	if (id == "opt_view")
-		OptimizeView();
-
 	if (id == "import")
 		Import();
 }

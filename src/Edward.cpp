@@ -710,6 +710,8 @@ void Edward::OnCommand(const string &id)
 		SetMode(mode_administration);
 	if (id == "exit")
 		OnClose();
+	if (id == "opt_view")
+		OptimizeCurrentView();
 }
 
 

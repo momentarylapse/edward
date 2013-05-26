@@ -92,9 +92,6 @@ void ModeModelMesh::OnEnd()
 
 void ModeModelMesh::OnCommand(const string & id)
 {
-	if (id == "opt_view")
-		OptimizeView();
-
 	if (id == "delete")
 		data->DeleteSelection(ed->cur_mode == mode_model_mesh_vertex);
 	if (id == "copy")

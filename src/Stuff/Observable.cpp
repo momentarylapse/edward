@@ -57,9 +57,13 @@ void Observable::NotifySend()
 	foreach(string &m, message_queue){
 		cur_message = m;
 		//msg_write("send " + observable_name + ": " + m);
-		foreachi(Observer *o, observer, i)
+
+		// foreachi(Observer *o, observer, i) might break when OnUpdate causes
+		// new subscription!
+
+		for (int i=0;i<observer.num;i++)
 			if ((observer_message[i] == m) or (observer_message[i].num == 0))
-				o->OnUpdate(this);
+				observer[i]->OnUpdate(this);
 	}
 
 	// clear queue
@@ -81,13 +85,11 @@ void Observable::NotifyEnqueue(const string &message)
 void Observable::NotifyBegin()
 {
 	notify_level ++;
-	//msg_write("notify ++");
 }
 
 void Observable::NotifyEnd()
 {
 	notify_level --;
-	//msg_write("notify --");
 	if (notify_level == 0)
 		NotifySend();
 }

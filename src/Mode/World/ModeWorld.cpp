@@ -120,8 +120,6 @@ void ModeWorld::OnCommand(const string & id)
 	if (id == "selection_properties")
 		ExecutePropertiesDialog();
 
-	if (id == "opt_view")
-		OptimizeView();
 	if (id == "show_objects")
 		ToggleShowObjects();
 	if (id == "show_terrains")
