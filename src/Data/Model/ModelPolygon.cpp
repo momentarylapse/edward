@@ -10,6 +10,21 @@
 #include "DataModel.h"
 #include "ModelPolygon.h"
 
+vector ModelPolygon::GetAreaVector(const Array<ModelVertex> &vertex) const
+{
+	// Newell's method
+	vector n = v_0;
+	vector p1 = vertex[Side.back().Vertex].pos;
+	for (int i=0; i<Side.num; i++){
+		vector p0 = p1;
+		p1 = vertex[Side[i].Vertex].pos;
+		n.x += (p0.y - p1.y) * (p0.z + p1.z);
+		n.y += (p0.z - p1.z) * (p0.x + p1.x);
+		n.z += (p0.x - p1.x) * (p0.y + p1.y);
+	}
+	return n * 0.5f;
+}
+
 vector ModelPolygon::GetNormal(const Array<ModelVertex> &vertex) const
 {
 	// Newell's method

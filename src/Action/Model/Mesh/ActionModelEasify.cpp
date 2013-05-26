@@ -10,19 +10,27 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
 
+int timer = -1;
+
 #if 1
-static vector get_area(DataModel *m, ModelPolygon &t)
+static vector get_deformed_area(DataModel *m, ModelPolygon &t, int index, const vector &new_pos)
 {
-	if (t.NormalDirty)
-		t.UpdateTriangulation(m->Vertex);
-	vector a = v_0;
-	for (int k=0;k<t.Side.num-2;k++){
-		int va = t.Side[t.Side[k].Triangulation[0]].Vertex;
-		int vb = t.Side[t.Side[k].Triangulation[1]].Vertex;
-		int vc = t.Side[t.Side[k].Triangulation[2]].Vertex;
-		a += (m->Vertex[vb].pos - m->Vertex[va].pos) ^ (m->Vertex[vc].pos - m->Vertex[va].pos);
+	// Newell's method
+	vector n = v_0;
+	vector p1 = m->Vertex[t.Side.back().Vertex].pos;
+	if ((t.Side.num - 1) == index)
+		p1 = new_pos;
+	for (int i=0; i<t.Side.num; i++){
+		vector p0 = p1;
+		if (i == index)
+			p1 = new_pos;
+		else
+			p1 = m->Vertex[t.Side[i].Vertex].pos;
+		n.x += (p0.y - p1.y) * (p0.z + p1.z);
+		n.y += (p0.z - p1.z) * (p0.x + p1.x);
+		n.z += (p0.x - p1.x) * (p0.y + p1.y);
 	}
-	return a;
+	return n * 0.5f;
 }
 
 static int edge_other_vertex(ModelEdge &e, int v)
@@ -38,25 +46,24 @@ static int edge_other_vertex(ModelEdge &e, int v)
 static float get_weight(DataModel *m, ModelSurface &s, ModelEdge &e)
 {
 	float w = 0;
-	vector v = (m->Vertex[e.Vertex[0]].pos + m->Vertex[e.Vertex[1]].pos) / 2;
+	int a = e.Vertex[0];
+	int b = e.Vertex[1];
+	vector new_pos = (m->Vertex[a].pos + m->Vertex[b].pos) / 2;
 
 	// triangle plane change
 	foreachi(ModelPolygon &t, s.Polygon, ti){
+		// find all polygons sharing a vertex with <e>
+		// ...but not containing <e>
 		if (ti == e.Polygon[0])
 			continue;
 		if ((e.RefCount > 1) && (ti == e.Polygon[1]))
 			continue;
-		for (int l=0;l<e.RefCount;l++)
-			for (int k=0;k<t.Side.num;k++)
-				if (t.Side[k].Vertex == e.Vertex[l]){
-					vector area = get_area(m, t);
-					vector vv[3];
-					for (int i=0;i<3;i++)
-						vv[i] = (i == k) ? v : m->Vertex[t.Side[i].Vertex].pos;
-					vector area2 = (vv[1] - vv[0]) ^ (vv[2] - vv[0]);
-					w += (area ^ area2).length() / (area.length() + area2.length());
-					//w += VecLength(area - area2);
-				}
+		for (int k=0;k<t.Side.num;k++)
+			if ((t.Side[k].Vertex == a) || (t.Side[k].Vertex == b)){
+				vector area = t.GetAreaVector(m->Vertex);
+				vector area2 = get_deformed_area(m, t, k, new_pos);
+				w += (area ^ area2).length() / (area.length() + area2.length()) * 4;
+			}
 	}
 
 	// edge length
@@ -145,6 +152,9 @@ ActionModelEasify::ActionModelEasify(float _factor)
 void *ActionModelEasify::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
+	if (timer < 0)
+		timer = HuiCreateTimer();
+	HuiGetTime(timer);
 #if 1
 	//CalculateWeights(m);
 	int n = (int)((float)m->GetNumPolygons() * factor);
@@ -152,6 +162,8 @@ void *ActionModelEasify::compose(Data *d)
 		if (!EasifyStep(m))
 			break;
 #endif
+	float dt = HuiGetTime(timer);
+	msg_write(format("easify: %f", dt));
 	return NULL;
 }
 

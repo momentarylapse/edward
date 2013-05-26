@@ -36,6 +36,7 @@ public:
 	Array<int> Triangulate(const Array<ModelVertex> &vertex) const;
 	void UpdateTriangulation(const Array<ModelVertex> &vertex);
 	vector GetNormal(const Array<ModelVertex> &vertex) const;
+	vector GetAreaVector(const Array<ModelVertex> &vertex) const;
 	Array<int> GetVertices() const;
 	Array<vector> GetSkinVertices() const;
 	void AddToVertexBuffer(const Array<ModelVertex> &vertex, int buffer, int num_textures);
