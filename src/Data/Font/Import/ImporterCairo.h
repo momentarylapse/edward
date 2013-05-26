@@ -9,6 +9,7 @@
 #define IMPORTERCAIRO_H_
 
 #include "../DataFont.h"
+class Image;
 
 class ImporterCairo
 {
@@ -17,7 +18,7 @@ public:
 	virtual ~ImporterCairo();
 
 	bool Import(DataFont *f, const string &font_name);
-	bool TryImport(DataFont *f, const string &font_name, int w, int h);
+	bool TryImport(DataFont *f, const string &font_name, int w, int h, Image &im);
 };
 
 #endif /* IMPORTERCAIRO_H_ */
