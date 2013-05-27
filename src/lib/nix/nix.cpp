@@ -256,25 +256,6 @@ void mout(matrix &m)
 	msg_write(format("		%f	%f	%f	%f",m._30,m._31,m._32,m._33));
 }
 
-#if 0
-/* stuff about our window grouped together */
-typedef struct {
-    Display *dpy;
-    int screen;
-    Window win;
-    GLXContext ctx;
-    XSetWindowAttributes attr;
-    Bool fs;
-    Bool doubleBuffered;
-    XF86VidModeModeInfo deskMode;
-    int x, y;
-    unsigned int width, height;
-    unsigned int depth;    
-} GLWindow;
-
-GLWindow GLWin;
-#endif
-
 #ifdef OS_LINUX
 /* attributes for a single buffered visual in RGBA format with at least
  * 4 bits per color and a 16 bit depth buffer */
@@ -396,135 +377,6 @@ XVisualInfo *choose_visual()
 }
 #endif
 
-#if 0
-/* this function creates our window and sets it up properly */
-/* FIXME: bits is currently unused */
-Bool createGLWindow(const char* title, int width, int height, int bits,
-                    Bool fullscreenflag)
-{
-    XVisualInfo *vi;
-    int i;
-    Atom wmDelete;
-    Window winDummy;
-    unsigned int borderDummy;
-    
-    /* get a connection */
-    GLWin.dpy = hui_x_display;//XOpenDisplay(0);
-    GLWin.screen = DefaultScreen(GLWin.dpy);
-
-#if 0
-	int n_fb_conf;
-	GLXFBConfig *fb_conf = glXChooseFBConfig(GLWin.dpy, GLWin.screen, attrListDbl, &n_fb_conf);
-	for (int i=0;i<n_fb_conf;i++){
-		int value;
-		if (glXGetFBConfigAttrib(GLWin.dpy, fb_conf[i], GLX_VISUAL_ID, &value) == Success)
-			if (value == XVisualIDFromVisual(GDK_VISUAL_XVISUAL(gdk_window_get_visual(NixWindow->gl_widget->window)))){
-				msg_write("-----------hurraaaaaaaaaaaaaa");
-			}
-	}
-
-
-	
-    /* get an appropriate visual */
-    vi = glXChooseVisual(GLWin.dpy, GLWin.screen, attrListDbl);
-    if (vi == NULL)
-    {
-        vi = glXChooseVisual(GLWin.dpy, GLWin.screen, attrListSgl);
-        GLWin.doubleBuffered = False;
-        printf("Only Singlebuffered Visual!\n");
-    }
-    else
-    {
-        GLWin.doubleBuffered = True;
-        printf("Got Doublebuffered Visual!\n");
-    }
-
-
-	GdkVisual *gv = gdk_window_get_visual(NixWindow->gl_widget->window);
-	int num_vi;
-	XVisualInfo *vilist = XGetVisualInfo(hui_x_display, VisualAllMask, vi, &num_vi);
-	//msg_write(vi->class);
-	msg_write(" - neu");
-	//GdkVisual *vi_gdk = gdk_x11_screen_lookup_visual(gdk_screen_get_default(), vi->visual->visualid);
-	msg_write(vi->visualid);
-	msg_write(vi->depth);
-	msg_write(vi->red_mask);
-	msg_write(vi->green_mask);
-	msg_write(vi->blue_mask);
-	msg_write(" - gdk");
-	msg_write(XVisualIDFromVisual(GDK_VISUAL_XVISUAL(gv)));
-	unsigned int mmask;
-	int sshift, pprec;
-	gdk_visual_get_red_pixel_details(gv, &mmask, &sshift, &pprec);
-	msg_write(mmask);
-	gdk_visual_get_green_pixel_details(gv, &mmask, &sshift, &pprec);
-	msg_write(mmask);
-	gdk_visual_get_blue_pixel_details(gv, &mmask, &sshift, &pprec);
-	msg_write(mmask);
-	msg_write(" - gdk system");
-	msg_write(XVisualIDFromVisual(GDK_VISUAL_XVISUAL(gdk_visual_get_system())));
-	msg_write(" - gdk best");
-	msg_write(XVisualIDFromVisual(GDK_VISUAL_XVISUAL(gdk_visual_get_best())));
-	msg_write("--------------------");
-	msg_write(num_vi);
-	for (int i=0;i<num_vi;i++){
-		msg_write(vilist[i].visualid);
-		if (XVisualIDFromVisual(GDK_VISUAL_XVISUAL(gv)) == vilist[i].visualid)
-			msg_write("passt");
-	}
-
-	msg_write("-----------");
-	XVisualInfo vinfo_return;
-	msg_write(XMatchVisualInfo(hui_x_display, GLWin.screen, 32, TrueColor, &vinfo_return));
-//	vi = &vinfo_return;
-	//msg_write(p2s(vinfo_return));
-	vi->visual = GDK_VISUAL_XVISUAL(gv);
-	vi->visualid = XVisualIDFromVisual(GDK_VISUAL_XVISUAL(gv));
-#endif
-
-	vi = choose_visual();
-	
-    /* create a GLX context */
-    GLWin.ctx = glXCreateContext(GLWin.dpy, vi, 0, GL_TRUE);
-    
-
-#if 0
-	/* create a color map */
-    Colormap cmap = XCreateColormap(GLWin.dpy, RootWindow(GLWin.dpy, vi->screen),
-        vi->visual, AllocNone);
-    GLWin.attr.colormap = cmap;
-    GLWin.attr.border_pixel = 0;
-
-	
-        /* create a window in window mode*/
-        GLWin.attr.event_mask = ExposureMask | KeyPressMask | ButtonPressMask |
-            StructureNotifyMask;
-        GLWin.win = XCreateWindow(GLWin.dpy, RootWindow(GLWin.dpy, vi->screen),
-            0, 0, width, height, 0, vi->depth, InputOutput, vi->visual,
-            CWBorderPixel | CWColormap | CWEventMask, &GLWin.attr);
-        /* only set window title and handle wm_delete_events if in windowed mode */
-        wmDelete = XInternAtom(GLWin.dpy, "WM_DELETE_WINDOW", True);
-        XSetWMProtocols(GLWin.dpy, GLWin.win, &wmDelete, 1);
-        XSetStandardProperties(GLWin.dpy, GLWin.win, title,
-            title, None, NULL, 0, NULL);
-        XMapRaised(GLWin.dpy, GLWin.win);
-#endif
-	GLWin.win = GDK_WINDOW_XWINDOW(NixWindow->gl_widget->window);
-   
-    /* connect the glx-context to the window */
-    glXMakeCurrent(GLWin.dpy, GLWin.win, GLWin.ctx);
-    /*XGetGeometry(GLWin.dpy, GLWin.win, &winDummy, &GLWin.x, &GLWin.y,
-        &GLWin.width, &GLWin.height, &borderDummy, &GLWin.depth);
-    printf("Depth %d\n", GLWin.depth);*/
-    if (glXIsDirect(GLWin.dpy, GLWin.ctx)) 
-        printf("Congrats, you have Direct Rendering!\n");
-    else
-        printf("Sorry, no Direct Rendering possible!\n");
-
-    //initGL();
-    return True;    
-}
-#endif
 
 void NixInit(const string &api,int xres,int yres,int depth,bool fullscreen,CHuiWindow *win)
 {
@@ -607,6 +459,7 @@ void NixInit(const string &api,int xres,int yres,int depth,bool fullscreen,CHuiW
 	// default values of the engine
 	MatrixIdentity(NixViewMatrix);
 	MatrixIdentity(NixProjectionMatrix);
+	NixView3DFovY = 60.0f / 180.0f * pi;
 	NixSetPerspectiveMode(PerspectiveSizeAutoScreen);
 	NixSetPerspectiveMode(PerspectiveCenterAutoTarget);
 	NixSetPerspectiveMode(Perspective2DScaleSet, 1, 1);

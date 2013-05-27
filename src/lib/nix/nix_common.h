@@ -105,7 +105,7 @@ extern int NixGLCurrentProgram;
 extern matrix NixViewMatrix, NixProjectionMatrix, NixInvProjectionMatrix;
 extern matrix NixWorldMatrix, NixWorldViewProjectionMatrix;
 
-extern float NixView3DRatio;
+extern float NixView3DRatio, NixView3DFovY;
 extern vector NixViewScale;
 
 extern bool NixUsable, NixDoingEvilThingsToTheDevice;

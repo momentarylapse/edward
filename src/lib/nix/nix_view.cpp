@@ -20,7 +20,7 @@ matrix NixViewMatrix, NixProjectionMatrix, NixInvProjectionMatrix;
 matrix NixProjectionMatrix2d;
 matrix NixWorldMatrix, NixWorldViewProjectionMatrix;
 vector _NixCamPos_;
-float View3DWidth,View3DHeight,View3DCenterX,View3DCenterY,NixView3DRatio;	// 3D transformation
+float View3DWidth,View3DHeight,View3DCenterX,View3DCenterY,NixView3DRatio, NixView3DFovY;	// 3D transformation
 float View2DScaleX,View2DScaleY;				// 2D transformation
 int PerspectiveModeSize, PerspectiveModeCenter, PerspectiveMode2DScale;
 vector NixViewScale = vector(1,1,1);
@@ -217,18 +217,16 @@ void NixSetProjection(bool perspective, bool relative)
 	NixProjectionMatrix2d = s * t;
 
 	if (perspective){
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glTranslatef(((float)View3DCenterX + NixViewJitterX) / float(NixTargetWidth) * 2.0f - 1,
-		             1 - ((float)View3DCenterY + NixViewJitterY) / float(NixTargetHeight) * 2.0f,
-		             0);
-		// perspektivische Verzerrung
-		gluPerspective(60.0f,NixView3DRatio,NixMinDepth,NixMaxDepth);
-		glScalef(View3DWidth / (float)NixTargetWidth,
-		         View3DHeight / (float)NixTargetHeight,
-		         -1); // -1: Koordinatensystem: Links vs Rechts
-		glScalef(NixViewScale.x, NixViewScale.y, NixViewScale.z);
-		glGetFloatv(GL_PROJECTION_MATRIX,(float*)&NixProjectionMatrix);
+		matrix trans, persp, scale;
+		MatrixTranslation(trans,
+			vector(((float)View3DCenterX + NixViewJitterX) / float(NixTargetWidth) * 2.0f - 1,
+				1 - ((float)View3DCenterY + NixViewJitterY) / float(NixTargetHeight) * 2.0f,
+				0));
+		MatrixPerspective(persp, NixView3DFovY, NixView3DRatio, NixMinDepth, NixMaxDepth);
+		MatrixScale(scale, (View3DWidth / (float)NixTargetWidth) * NixViewScale.x,
+				(View3DHeight / (float)NixTargetHeight) * NixViewScale.y,
+				- NixViewScale.z); // z reflection: right/left handedness
+		NixProjectionMatrix = trans * persp * scale;
 	}else if (relative){
 		MatrixTranslation(t, vector(-0.5f, -0.5f, 0));
 		MatrixScale(s, 2 * View2DScaleX, -2 * View2DScaleY, 1.0f / (float)NixMaxDepth);
