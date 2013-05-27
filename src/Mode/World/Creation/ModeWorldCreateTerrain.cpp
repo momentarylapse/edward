@@ -9,11 +9,9 @@
 #include "../../../Data/World/DataWorld.h"
 #include "../../../Edward.h"
 
-ModeWorldCreateTerrain::ModeWorldCreateTerrain(Mode *_parent) :
-	ModeCreation("WorldCreateTerrain", _parent)
+ModeWorldCreateTerrain::ModeWorldCreateTerrain(ModeBase *_parent) :
+	ModeCreation<DataWorld>("WorldCreateTerrain", _parent)
 {
-	data = (DataWorld*)_parent->GetData();
-
 	message = _("neues Terrain...");
 }
 

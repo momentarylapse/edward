@@ -11,36 +11,32 @@
 #include "../../Mode.h"
 #include "../../../Data/Model/DataModel.h"
 
-class Mode;
 class DataModel;
 
-class ModeModelMeshEdge: public Mode
+class ModeModelMeshEdge: public Mode<DataModel>
 {
 public:
-	ModeModelMeshEdge(Mode *_parent, DataModel *_data);
+	ModeModelMeshEdge(ModeBase *parent);
 	virtual ~ModeModelMeshEdge();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnMouseMove();
-	void OnLeftButtonDown();
-	void OnLeftButtonUp();
-	void OnMiddleButtonDown();
-	void OnMiddleButtonUp();
-	void OnRightButtonDown();
-	void OnRightButtonUp();
-	void OnKeyDown();
-	void OnKeyUp();
-	void OnCommand(const string &id);
-	void OnUpdate(Observable *o);
-	void OnUpdateMenu();
+	virtual void OnMouseMove();
+	virtual void OnLeftButtonDown();
+	virtual void OnLeftButtonUp();
+	virtual void OnMiddleButtonDown();
+	virtual void OnMiddleButtonUp();
+	virtual void OnRightButtonDown();
+	virtual void OnRightButtonUp();
+	virtual void OnKeyDown();
+	virtual void OnKeyUp();
+	virtual void OnCommand(const string &id);
+	virtual void OnUpdate(Observable *o);
+	virtual void OnUpdateMenu();
 
-	void OnDraw();
-	void OnDrawWin(MultiViewWindow *win);
-
-	DataModel *data;
-	Data *GetData(){	return data;	}
+	virtual void OnDraw();
+	virtual void OnDrawWin(MultiViewWindow *win);
 };
 
 extern ModeModelMeshEdge *mode_model_mesh_edge;

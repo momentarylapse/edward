@@ -12,24 +12,21 @@
 #include "../../../../Data/Model/DataModel.h"
 class ModelGeometry;
 
-class ModeModelMeshCreatePlatonic: public ModeCreation
+class ModeModelMeshCreatePlatonic: public ModeCreation<DataModel>
 {
 public:
-	ModeModelMeshCreatePlatonic(Mode *parent, int type);
+	ModeModelMeshCreatePlatonic(ModeBase *parent, int type);
 	virtual ~ModeModelMeshCreatePlatonic();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnMouseMove();
-	void OnLeftButtonDown();
+	virtual void OnMouseMove();
+	virtual void OnLeftButtonDown();
 
-	void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiViewWindow *win);
 
 	void UpdateGeometry();
-
-	DataModel *data;
-	Data *GetData(){	return data;	}
 
 private:
 	ModelGeometry *geo;

@@ -13,16 +13,13 @@
 
 ModeModelAnimationSkeleton *mode_model_animation_skeleton = NULL;
 
-ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(Mode* _parent,
-		DataModel* _data) :
-	Mode("ModelAnimationSkeleton", _parent, _data, ed->multi_view_3d, "menu_move")
+ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(ModeBase* _parent) :
+	Mode<DataModel>("ModelAnimationSkeleton", _parent, ed->multi_view_3d, "menu_move")
 {
-	data = _data;
 }
 
 ModeModelAnimationSkeleton::~ModeModelAnimationSkeleton()
 {
-	// TODO Auto-generated destructor stub
 }
 
 void ModeModelAnimationSkeleton::OnStart()

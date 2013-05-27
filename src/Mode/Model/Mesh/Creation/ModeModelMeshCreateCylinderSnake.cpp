@@ -13,11 +13,9 @@
 const float CYLINDER_CLOSING_DISTANCE = 20;
 
 
-ModeModelMeshCreateCylinderSnake::ModeModelMeshCreateCylinderSnake(Mode *_parent) :
-	ModeCreation("ModelMeshCreateCylinderSnake", _parent)
+ModeModelMeshCreateCylinderSnake::ModeModelMeshCreateCylinderSnake(ModeBase *_parent) :
+	ModeCreation<DataModel>("ModelMeshCreateCylinderSnake", _parent)
 {
-	data = (DataModel*)_parent->GetData();
-
 	message = _("Zylinderschlange... Punkte + Shift Return");
 
 	radius = 0;

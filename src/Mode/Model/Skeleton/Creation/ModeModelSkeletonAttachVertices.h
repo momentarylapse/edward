@@ -11,21 +11,18 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelSkeletonAttachVertices: public ModeCreation
+class ModeModelSkeletonAttachVertices: public ModeCreation<DataModel>
 {
 public:
-	ModeModelSkeletonAttachVertices(Mode *_parent, int _bone_index);
+	ModeModelSkeletonAttachVertices(ModeBase *_parent, int _bone_index);
 	virtual ~ModeModelSkeletonAttachVertices();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnKeyDown();
+	virtual void OnKeyDown();
 
-	void OnDrawWin(MultiViewWindow *win);
-
-	DataModel *data;
-	Data *GetData(){	return data;	}
+	virtual void OnDrawWin(MultiViewWindow *win);
 
 private:
 	int bone_index;

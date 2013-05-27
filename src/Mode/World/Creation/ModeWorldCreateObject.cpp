@@ -11,11 +11,9 @@
 
 static string LastObjectFilename;
 
-ModeWorldCreateObject::ModeWorldCreateObject(Mode *_parent) :
-	ModeCreation("WorldCreateObject", _parent)
+ModeWorldCreateObject::ModeWorldCreateObject(ModeBase *_parent) :
+	ModeCreation<DataWorld>("WorldCreateObject", _parent)
 {
-	data = (DataWorld*)_parent->GetData();
-
 	message = _("neues Objekt ausw&ahlen");
 }
 

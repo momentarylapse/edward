@@ -11,27 +11,23 @@
 #include "../../Mode.h"
 #include "../../../Data/Model/DataModel.h"
 
-class Mode;
 class DataModel;
 
-class ModeModelSkeleton: public Mode
+class ModeModelSkeleton: public Mode<DataModel>
 {
 public:
-	ModeModelSkeleton(Mode *_parent, DataModel *_data);
+	ModeModelSkeleton(ModeBase *_parent);
 	virtual ~ModeModelSkeleton();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnCommand(const string &id);
-	void OnUpdate(Observable *o);
-	void OnUpdateMenu();
+	virtual void OnCommand(const string &id);
+	virtual void OnUpdate(Observable *o);
+	virtual void OnUpdateMenu();
 
-	void OnDraw();
-	void OnDrawWin(MultiViewWindow *win);
-
-	DataModel *data;
-	Data *GetData(){	return data;	}
+	virtual void OnDraw();
+	virtual void OnDrawWin(MultiViewWindow *win);
 };
 
 extern ModeModelSkeleton *mode_model_skeleton;

@@ -11,24 +11,21 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshCreateTorus: public ModeCreation
+class ModeModelMeshCreateTorus: public ModeCreation<DataModel>
 {
 public:
-	ModeModelMeshCreateTorus(Mode *_parent);
+	ModeModelMeshCreateTorus(ModeBase *parent);
 	virtual ~ModeModelMeshCreateTorus();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnMouseMove();
-	void OnLeftButtonDown();
+	virtual void OnMouseMove();
+	virtual void OnLeftButtonDown();
 
-	void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiViewWindow *win);
 
 	void UpdateGeometry();
-
-	DataModel *data;
-	Data *GetData(){	return data;	}
 
 private:
 	vector pos, axis;

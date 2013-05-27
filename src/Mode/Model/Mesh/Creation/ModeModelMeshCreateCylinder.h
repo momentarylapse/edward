@@ -13,24 +13,21 @@
 
 class ModelGeometry;
 
-class ModeModelMeshCreateCylinder: public ModeCreation
+class ModeModelMeshCreateCylinder: public ModeCreation<DataModel>
 {
 public:
-	ModeModelMeshCreateCylinder(Mode *_parent);
+	ModeModelMeshCreateCylinder(ModeBase *parent);
 	virtual ~ModeModelMeshCreateCylinder();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnMouseMove();
-	void OnLeftButtonDown();
+	virtual void OnMouseMove();
+	virtual void OnLeftButtonDown();
 
-	void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiViewWindow *win);
 
 	void UpdateGeometry();
-
-	DataModel *data;
-	Data *GetData(){	return data;	}
 
 private:
 	Array<vector> pos;

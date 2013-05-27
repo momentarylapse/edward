@@ -12,10 +12,9 @@
 
 ModeModelMeshEdge *mode_model_mesh_edge = NULL;
 
-ModeModelMeshEdge::ModeModelMeshEdge(Mode *_parent, DataModel *_data) :
-	Mode("ModelMeshEdge", _parent, _data, ed->multi_view_3d, "menu_model")
+ModeModelMeshEdge::ModeModelMeshEdge(ModeBase *_parent) :
+	Mode<DataModel>("ModelMeshEdge", _parent, ed->multi_view_3d, "menu_model")
 {
-	data = _data;
 }
 
 

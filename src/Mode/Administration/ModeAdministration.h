@@ -12,23 +12,21 @@
 class DataAdministration;
 class AdministrationDialog;
 
-class ModeAdministration: public Mode {
+class ModeAdministration: public Mode<DataAdministration> {
 public:
 	ModeAdministration();
 	virtual ~ModeAdministration();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnCommand(const string &id);
-	void OnUpdate(Observable *o);
+	virtual void OnCommand(const string &id);
+	virtual void OnUpdate(Observable *o);
 
 	void BasicSettings();
 	void ExportGame();
 
 	AdministrationDialog *dialog;
-
-	DataAdministration *data;
 };
 
 extern ModeAdministration *mode_administration;

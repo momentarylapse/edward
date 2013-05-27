@@ -10,11 +10,9 @@
 #include "../../../../Data/Model/Geometry/ModelGeometryCylinder.h"
 #include "../../../../Edward.h"
 
-ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(Mode *_parent) :
-	ModeCreation("ModelMeshCreateCylinder", _parent)
+ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(ModeBase *_parent) :
+	ModeCreation<DataModel>("ModelMeshCreateCylinder", _parent)
 {
-	data = (DataModel*)_parent->GetData();
-
 	message = _("Zylinder: Startpunkt");
 
 	radius = 0;

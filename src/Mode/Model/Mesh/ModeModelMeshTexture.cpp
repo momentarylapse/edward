@@ -13,10 +13,9 @@
 
 ModeModelMeshTexture *mode_model_mesh_texture = NULL;
 
-ModeModelMeshTexture::ModeModelMeshTexture(Mode *_parent, DataModel *_data) :
-	Mode("ModelMeshTexture", _parent, _data, ed->multi_view_2d, "menu_model")
+ModeModelMeshTexture::ModeModelMeshTexture(ModeBase *_parent) :
+	Mode<DataModel>("ModelMeshTexture", _parent, ed->multi_view_2d, "menu_model")
 {
-	data = _data;
 }
 
 

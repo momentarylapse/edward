@@ -11,22 +11,19 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshCreateCube: public ModeCreation
+class ModeModelMeshCreateCube: public ModeCreation<DataModel>
 {
 public:
-	ModeModelMeshCreateCube(Mode *_parent);
+	ModeModelMeshCreateCube(ModeBase *_parent);
 	virtual ~ModeModelMeshCreateCube();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnMouseMove();
-	void OnLeftButtonDown();
+	virtual void OnMouseMove();
+	virtual void OnLeftButtonDown();
 
-	void OnDrawWin(MultiViewWindow *win);
-
-	DataModel *data;
-	Data *GetData(){	return data;	}
+	virtual void OnDrawWin(MultiViewWindow *win);
 
 private:
 	vector pos, pos2;

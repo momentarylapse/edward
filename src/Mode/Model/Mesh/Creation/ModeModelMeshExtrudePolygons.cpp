@@ -9,11 +9,9 @@
 #include "../../../../Edward.h"
 #include "../../../../Action/Model/Mesh/Polygon/ActionModelExtrudePolygons.h"
 
-ModeModelMeshExtrudePolygons::ModeModelMeshExtrudePolygons(Mode *_parent) :
-	ModeCreation("ModelMeshExtrudePolygons", _parent)
+ModeModelMeshExtrudePolygons::ModeModelMeshExtrudePolygons(ModeBase *_parent) :
+	ModeCreation<DataModel>("ModelMeshExtrudePolygons", _parent)
 {
-	data = (DataModel*)_parent->GetData();
-
 	data->GetSelectionState(selection);
 
 	offset = 0;

@@ -11,30 +11,26 @@
 #include "../../Mode.h"
 #include "../../../Data/Model/DataModel.h"
 
-class Mode;
 class DataModel;
 
-class ModeModelMeshPolygon: public Mode
+class ModeModelMeshPolygon: public Mode<DataModel>
 {
 public:
-	ModeModelMeshPolygon(Mode *_parent, DataModel *_data);
+	ModeModelMeshPolygon(ModeBase *parent);
 	virtual ~ModeModelMeshPolygon();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnCommand(const string &id);
-	void OnUpdateMenu();
-	void OnUpdate(Observable *o);
+	virtual void OnCommand(const string &id);
+	virtual void OnUpdateMenu();
+	virtual void OnUpdate(Observable *o);
 
-	void OnDraw();
-	void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDraw();
+	virtual void OnDrawWin(MultiViewWindow *win);
 	void DrawPolygons();
 
 	void FillSelectionBuffers();
-
-	DataModel *data;
-	Data *GetData(){	return data;	}
 
 	void ToggleSelectCW();
 	bool SelectCW;

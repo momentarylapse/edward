@@ -18,10 +18,9 @@
 ModeModelSkeleton *mode_model_skeleton = NULL;
 
 
-ModeModelSkeleton::ModeModelSkeleton(Mode *_parent, DataModel *_data) :
-	Mode("ModelSkeleton", _parent, _data, ed->multi_view_3d, "menu_skeleton")
+ModeModelSkeleton::ModeModelSkeleton(ModeBase *_parent) :
+	Mode<DataModel>("ModelSkeleton", _parent, ed->multi_view_3d, "menu_skeleton")
 {
-	data = _data;
 }
 
 ModeModelSkeleton::~ModeModelSkeleton()

@@ -11,24 +11,21 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshExtrudePolygons: public ModeCreation
+class ModeModelMeshExtrudePolygons: public ModeCreation<DataModel>
 {
 public:
-	ModeModelMeshExtrudePolygons(Mode *_parent);
+	ModeModelMeshExtrudePolygons(ModeBase *parent);
 	virtual ~ModeModelMeshExtrudePolygons();
 
-	void OnEnd();
+	virtual void OnEnd();
 
-	void OnLeftButtonDown();
-	void OnMouseMove();
+	virtual void OnLeftButtonDown();
+	virtual void OnMouseMove();
 
-	void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiViewWindow *win);
 
 	void Preview();
 	void CleanUp();
-
-	DataModel *data;
-	Data *GetData(){	return data;	}
 
 private:
 	float offset;

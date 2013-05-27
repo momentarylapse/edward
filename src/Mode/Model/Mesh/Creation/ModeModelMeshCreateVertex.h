@@ -11,16 +11,13 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshCreateVertex: public ModeCreation
+class ModeModelMeshCreateVertex: public ModeCreation<DataModel>
 {
 public:
-	ModeModelMeshCreateVertex(Mode *_parent);
+	ModeModelMeshCreateVertex(ModeBase *parent);
 	virtual ~ModeModelMeshCreateVertex();
 
-	void OnLeftButtonDown();
-
-	DataModel *data;
-	Data *GetData(){	return data;	}
+	virtual void OnLeftButtonDown();
 };
 
 #endif /* MODEMODELMESHCREATEVERTEX_H_ */

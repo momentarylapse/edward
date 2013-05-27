@@ -13,26 +13,25 @@
 #include "../../../Data/Model/Geometry/ModelGeometry.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
 
-class Mode;
 class DataModel;
 
-class ModeModelMesh: public Mode
+class ModeModelMesh: public Mode<DataModel>
 {
 public:
-	ModeModelMesh(Mode *_parent, DataModel *_data);
+	ModeModelMesh(ModeBase *parent);
 	virtual ~ModeModelMesh();
 
-	void OnStart();
-	void OnEnter();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnter();
+	virtual void OnEnd();
 
-	void OnCommand(const string &id);
-	void OnUpdate(Observable *o);
-	void OnUpdateMenu();
+	virtual void OnCommand(const string &id);
+	virtual void OnUpdate(Observable *o);
+	virtual void OnUpdateMenu();
 
-	void OnDraw();
+	virtual void OnDraw();
 
-	bool OptimizeView();
+	virtual bool OptimizeView();
 
 	void Easify();
 
@@ -45,9 +44,6 @@ public:
 	void AddEffects(int type);
 	void EditEffects();
 	void ClearEffects();
-
-	DataModel *data;
-	Data *GetData(){	return data;	}
 
 	ModelMaterialSelectionDialog *MaterialSelectionDialog;
 

@@ -8,11 +8,9 @@
 #include "ModeModelMeshCreateVertex.h"
 #include "../../../../Edward.h"
 
-ModeModelMeshCreateVertex::ModeModelMeshCreateVertex(Mode *_parent) :
-	ModeCreation("ModelMeshCreateVertex", _parent)
+ModeModelMeshCreateVertex::ModeModelMeshCreateVertex(ModeBase *_parent) :
+	ModeCreation<DataModel>("ModelMeshCreateVertex", _parent)
 {
-	data = (DataModel*)_parent->GetData();
-
 	message = _("neue Punkte setzen");
 }
 

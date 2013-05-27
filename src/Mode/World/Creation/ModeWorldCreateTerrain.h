@@ -11,22 +11,20 @@
 #include "../../ModeCreation.h"
 class DataWorld;
 
-class ModeWorldCreateTerrain: public ModeCreation, public HuiEventHandler
+class ModeWorldCreateTerrain: public ModeCreation<DataWorld>, public HuiEventHandler
 {
 public:
-	ModeWorldCreateTerrain(Mode *_parent);
+	ModeWorldCreateTerrain(ModeBase *_parent);
 	virtual ~ModeWorldCreateTerrain();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiViewWindow *win);
 
 	void OnOk();
 	void OnClose();
 	void OnSizeChange();
-
-	DataWorld *data;
 };
 
 #endif /* MODEWORLDCREATETERRAIN_H_ */

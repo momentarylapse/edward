@@ -15,11 +15,9 @@
 
 ModeModelMeshPolygon *mode_model_mesh_polygon = NULL;
 
-ModeModelMeshPolygon::ModeModelMeshPolygon(Mode *_parent, DataModel *_data) :
-	Mode("ModelMeshSkin", _parent, _data, ed->multi_view_3d, "menu_model")
+ModeModelMeshPolygon::ModeModelMeshPolygon(ModeBase *_parent) :
+	Mode<DataModel>("ModelMeshSkin", _parent, ed->multi_view_3d, "menu_model")
 {
-	data = _data;
-
 	// vertex buffers
 	VBMarked = NixCreateVB(65536, 1);
 	VBModel = NixCreateVB(65536, 1);

@@ -11,15 +11,13 @@
 #include "../../../ModeCreation.h"
 class DataCamera;
 
-class ModeWorldCameraCreatePoint: public ModeCreation
+class ModeWorldCameraCreatePoint: public ModeCreation<DataCamera>
 {
 public:
-	ModeWorldCameraCreatePoint(Mode *_parent);
+	ModeWorldCameraCreatePoint(ModeBase *_parent);
 	virtual ~ModeWorldCameraCreatePoint();
 
-	void OnLeftButtonDown();
-
-	DataCamera *data;
+	virtual void OnLeftButtonDown();
 
 	string filename;
 };

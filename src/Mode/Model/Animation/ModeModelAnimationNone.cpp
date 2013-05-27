@@ -12,10 +12,9 @@
 
 ModeModelAnimationNone *mode_model_animation_none = NULL;
 
-ModeModelAnimationNone::ModeModelAnimationNone(Mode* _parent, DataModel* _data) :
-	Mode("ModelAnimationNone", _parent, _data, ed->multi_view_3d, "menu_move")
+ModeModelAnimationNone::ModeModelAnimationNone(ModeBase* _parent) :
+	Mode<DataModel>("ModelAnimationNone", _parent, ed->multi_view_3d, "menu_move")
 {
-	data = _data;
 }
 
 ModeModelAnimationNone::~ModeModelAnimationNone()

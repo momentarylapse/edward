@@ -12,20 +12,18 @@
 #include "../../../lib/hui/hui.h"
 class DataWorld;
 
-class ModeWorldCreateObject: public ModeCreation, public HuiEventHandler
+class ModeWorldCreateObject: public ModeCreation<DataWorld>, public HuiEventHandler
 {
 public:
-	ModeWorldCreateObject(Mode *_parent);
+	ModeWorldCreateObject(ModeBase *_parent);
 	virtual ~ModeWorldCreateObject();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
 	void OnFindObject();
 
 	void OnLeftButtonDown();
-
-	DataWorld *data;
 
 	string filename;
 };

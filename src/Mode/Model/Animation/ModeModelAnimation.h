@@ -11,26 +11,22 @@
 #include "../../Mode.h"
 #include "../../../Data/Model/DataModel.h"
 
-class Mode;
 class DataModel;
 
-class ModeModelAnimation: public Mode
+class ModeModelAnimation: public Mode<DataModel>
 {
 public:
-	ModeModelAnimation(Mode *_parent, DataModel *_data);
+	ModeModelAnimation(ModeBase *parent);
 	virtual ~ModeModelAnimation();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnCommand(const string &id);
-	void OnUpdate(Observable *o);
-	void OnUpdateMenu();
+	virtual void OnCommand(const string &id);
+	virtual void OnUpdate(Observable *o);
+	virtual void OnUpdateMenu();
 
-	void OnDrawWin(MultiViewWindow *win);
-
-	DataModel *data;
-	Data *GetData(){	return data;	}
+	virtual void OnDrawWin(MultiViewWindow *win);
 
 	CHuiWindow *dialog;
 };

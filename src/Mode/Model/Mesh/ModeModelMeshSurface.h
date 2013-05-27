@@ -11,25 +11,21 @@
 #include "../../Mode.h"
 #include "../../../Data/Model/DataModel.h"
 
-class Mode;
 class DataModel;
 
-class ModeModelMeshSurface: public Mode
+class ModeModelMeshSurface: public Mode<DataModel>
 {
 public:
-	ModeModelMeshSurface(Mode *_parent, DataModel *_data);
+	ModeModelMeshSurface(ModeBase *parent);
 	virtual ~ModeModelMeshSurface();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnUpdate(Observable *o);
+	virtual void OnUpdate(Observable *o);
 
-	void OnDraw();
-	void OnDrawWin(MultiViewWindow *win);
-
-	DataModel *data;
-	Data *GetData(){	return data;	}
+	virtual void OnDraw();
+	virtual void OnDrawWin(MultiViewWindow *win);
 };
 
 extern ModeModelMeshSurface *mode_model_mesh_surface;

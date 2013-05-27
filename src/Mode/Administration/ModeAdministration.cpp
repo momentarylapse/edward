@@ -14,9 +14,8 @@
 ModeAdministration *mode_administration;
 
 ModeAdministration::ModeAdministration():
-	Mode("Administration", NULL, new DataAdministration, NULL, "menu_administration")
+	Mode<DataAdministration>("Administration", NULL, new DataAdministration, NULL, "menu_administration")
 {
-	data = (DataAdministration*)data_generic;
 }
 
 ModeAdministration::~ModeAdministration()

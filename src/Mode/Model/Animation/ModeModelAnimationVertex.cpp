@@ -12,10 +12,9 @@
 
 ModeModelAnimationVertex *mode_model_animation_vertex = NULL;
 
-ModeModelAnimationVertex::ModeModelAnimationVertex(Mode* _parent, DataModel* _data) :
-	Mode("ModelAnimationVertex", _parent, _data, ed->multi_view_3d, "menu_move")
+ModeModelAnimationVertex::ModeModelAnimationVertex(ModeBase* _parent) :
+	Mode<DataModel>("ModelAnimationVertex", _parent, ed->multi_view_3d, "menu_move")
 {
-	data = _data;
 }
 
 ModeModelAnimationVertex::~ModeModelAnimationVertex()

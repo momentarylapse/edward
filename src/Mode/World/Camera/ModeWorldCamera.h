@@ -15,19 +15,19 @@ template<class T>
 class Interpolator;
 class ActionCameraMoveTimeSelection;
 
-class ModeWorldCamera: public Mode, public HuiEventHandler
+class ModeWorldCamera: public Mode<DataCamera>, public HuiEventHandler
 {
 public:
-	ModeWorldCamera(Mode *_parent, Data *_data);
+	ModeWorldCamera(ModeBase *_parent, Data *_data);
 	virtual ~ModeWorldCamera();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnCommand(const string &id);
-	void OnUpdateMenu();
+	virtual void OnCommand(const string &id);
+	virtual void OnUpdateMenu();
 
-	void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiViewWindow *win);
 
 	void OnAddPoint();
 	void OnDeletePoint();
@@ -47,17 +47,15 @@ public:
 
 	void LoadData();
 
-	void OnUpdate(Observable *obs);
+	virtual void OnUpdate(Observable *obs);
 
-	void New();
-	bool Open();
-	bool Save();
-	bool SaveAs();
+	virtual void New();
+	virtual bool Open();
+	virtual bool Save();
+	virtual bool SaveAs();
 
 	void PreviewUpdate();
 	void UpdateTimePos();
-
-	DataCamera *data;
 
 	CHuiWindow *dialog;
 

@@ -9,11 +9,9 @@
 #include "../../../../Data/World/DataCamera.h"
 #include "../../../../Action/World/Camera/ActionCameraAddPoint.h"
 
-ModeWorldCameraCreatePoint::ModeWorldCameraCreatePoint(Mode *_parent) :
-	ModeCreation("WorldCameraCreatePoint", _parent)
+ModeWorldCameraCreatePoint::ModeWorldCameraCreatePoint(ModeBase *_parent) :
+	ModeCreation<DataCamera>("WorldCameraCreatePoint", _parent)
 {
-	data = (DataCamera*)_parent->GetData();
-
 	message = _("Punkt setzen");
 }
 

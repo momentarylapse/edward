@@ -10,11 +10,9 @@
 #include "../../../../Action/Model/Mesh/Polygon/ActionModelSplitPolygon.h"
 #include "../../../../Action/Model/Mesh/Edge/ActionModelSplitEdge.h"
 
-ModeModelMeshSplitPolygon::ModeModelMeshSplitPolygon(Mode *_parent) :
-	ModeCreation("ModelMeshSplitPolygon", _parent)
+ModeModelMeshSplitPolygon::ModeModelMeshSplitPolygon(ModeBase *_parent) :
+	ModeCreation<DataModel>("ModelMeshSplitPolygon", _parent)
 {
-	data = (DataModel*)_parent->GetData();
-
 	surface = -1;
 	triangle = -1;
 	factor = 0;

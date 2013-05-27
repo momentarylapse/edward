@@ -10,12 +10,10 @@
 #include "../../../../Edward.h"
 #include "../../../../Action/Model/Skeleton/ActionModelAddBone.h"
 
-ModeModelSkeletonCreateBone::ModeModelSkeletonCreateBone(Mode *_parent) :
-	ModeCreation("ModelSkeletonCreateBone", _parent)
+ModeModelSkeletonCreateBone::ModeModelSkeletonCreateBone(ModeBase *_parent) :
+	ModeCreation<DataModel>("ModelSkeletonCreateBone", _parent)
 {
-	data = (DataModel*)_parent->GetData();
-
-	message = _("Knochen setzen oder Wurzel-Knochen waehlen");
+	message = _("Knochen setzen oder Wurzel-Knochen w&ahlen");
 	pos_chosen = false;
 	bone_parent = -1;
 }

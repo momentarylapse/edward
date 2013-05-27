@@ -41,9 +41,8 @@ ModeWorld *mode_world = NULL;
 #define TMouseOverAlpha				0.20f
 
 ModeWorld::ModeWorld() :
-	Mode("World", NULL, new DataWorld, ed->multi_view_3d, "menu_world")
+	Mode<DataWorld>("World", NULL, new DataWorld, ed->multi_view_3d, "menu_world")
 {
-	data = dynamic_cast<DataWorld*>(data_generic);
 	Subscribe(data);
 
 	WorldDialog = NULL;

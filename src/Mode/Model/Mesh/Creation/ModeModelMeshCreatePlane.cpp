@@ -10,11 +10,9 @@
 #include "../../../../Edward.h"
 #include "../../../../lib/nix/nix.h"
 
-ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(Mode *_parent) :
-	ModeCreation("ModelMeshCreatePlane", _parent)
+ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(ModeBase *_parent) :
+	ModeCreation<DataModel>("ModelMeshCreatePlane", _parent)
 {
-	data = (DataModel*)_parent->GetData();
-
 	message = _("Ebene: erster Punkt");
 	pos_chosen = false;
 	length[0] = length[1] = v_0;

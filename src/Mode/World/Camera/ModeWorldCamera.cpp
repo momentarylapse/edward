@@ -31,11 +31,9 @@ ModeWorldCamera *mode_world_camera = NULL;
 	return "???";
 }*/
 
-ModeWorldCamera::ModeWorldCamera(Mode *_parent, Data *_data) :
-	Mode("WorldCamera", _parent, _data, ed->multi_view_3d, "")
+ModeWorldCamera::ModeWorldCamera(ModeBase *_parent, Data *_data) :
+	Mode<DataCamera>("WorldCamera", _parent, _data, ed->multi_view_3d, "")
 {
-	data = (DataCamera*)_data;
-
 	edit_vel = false;
 	edit_ang = false;
 

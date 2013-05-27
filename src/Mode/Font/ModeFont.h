@@ -11,39 +11,34 @@
 #include "../Mode.h"
 #include "../../Data/Font/DataFont.h"
 
-class Mode;
-class DataFont;
 class FontDialog;
 
-class ModeFont: public Mode
+class ModeFont: public Mode<DataFont>
 {
 public:
 	ModeFont();
 	virtual ~ModeFont();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnMouseMove();
-	void OnLeftButtonDown();
-	void OnCommand(const string &id);
-	void OnUpdate(Observable *o);
-	void OnUpdateMenu();
+	virtual void OnMouseMove();
+	virtual void OnLeftButtonDown();
+	virtual void OnCommand(const string &id);
+	virtual void OnUpdate(Observable *o);
+	virtual void OnUpdateMenu();
 
-	void OnDraw();
-	void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDraw();
+	virtual void OnDrawWin(MultiViewWindow *win);
 
 
-	void New();
-	bool Open();
-	bool Save();
-	bool SaveAs();
+	virtual void New();
+	virtual bool Open();
+	virtual bool Save();
+	virtual bool SaveAs();
 
 	void Import();
 	bool OptimizeView();
-
-	DataFont *data;
-	Data *GetData(){	return data;	}
 
 	FontDialog *dialog;
 };

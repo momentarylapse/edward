@@ -11,19 +11,16 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelSkeletonCreateBone: public ModeCreation
+class ModeModelSkeletonCreateBone: public ModeCreation<DataModel>
 {
 public:
-	ModeModelSkeletonCreateBone(Mode *_parent);
+	ModeModelSkeletonCreateBone(ModeBase *_parent);
 	virtual ~ModeModelSkeletonCreateBone();
 
-	void OnMouseMove();
-	void OnLeftButtonDown();
+	virtual void OnMouseMove();
+	virtual void OnLeftButtonDown();
 
-	void OnDrawWin(MultiViewWindow *win);
-
-	DataModel *data;
-	Data *GetData(){	return data;	}
+	virtual void OnDrawWin(MultiViewWindow *win);
 
 private:
 	vector pos;

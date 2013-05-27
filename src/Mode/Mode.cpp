@@ -7,11 +7,10 @@
 
 #include "Mode.h"
 
-Mode::Mode(const string &_name, Mode *_parent, Data *_data, MultiView *_multi_view, const string &_menu)
+ModeBase::ModeBase(const string &_name, ModeBase *_parent, MultiView *_multi_view, const string &_menu)
 {
 	parent = _parent;
 	name = _name;
-	data_generic = _data;
 	multi_view = _multi_view;
 	menu = NULL;
 	if (_menu.num > 0)
@@ -20,11 +19,11 @@ Mode::Mode(const string &_name, Mode *_parent, Data *_data, MultiView *_multi_vi
 		menu = parent->menu;*/
 }
 
-Mode::~Mode()
+ModeBase::~ModeBase()
 {
 }
 
-void Mode::OnCommandRecursive(const string & id, bool multi_view_handled)
+void ModeBase::OnCommandRecursive(const string & id, bool multi_view_handled)
 {
 	if ((multi_view) && (!multi_view_handled)){
 		multi_view->OnCommand(id);
@@ -36,7 +35,7 @@ void Mode::OnCommandRecursive(const string & id, bool multi_view_handled)
 }
 
 #define CREATE_EVENT_HANDLER(_name_rec_, _name_)	\
-void Mode::_name_rec_(bool multi_view_handled) \
+void ModeBase::_name_rec_(bool multi_view_handled) \
 { \
 	if ((multi_view) && (!multi_view_handled)){ \
 		multi_view->_name_(); \
@@ -58,21 +57,21 @@ CREATE_EVENT_HANDLER(OnKeyDownRecursive, OnKeyDown)
 CREATE_EVENT_HANDLER(OnKeyUpRecursive, OnKeyUp)
 CREATE_EVENT_HANDLER(OnDrawRecursive, OnDraw)
 
-void Mode::OnUpdateMenuRecursive(bool multi_view_handled)
+void ModeBase::OnUpdateMenuRecursive(bool multi_view_handled)
 {
 	if (parent)
 		parent->OnUpdateMenuRecursive();
 	OnUpdateMenu();
 }
 
-void Mode::OnDrawWinRecursive(MultiViewWindow *win)
+void ModeBase::OnDrawWinRecursive(MultiViewWindow *win)
 {
 	if (parent)
 		parent->OnDrawWinRecursive(win);
 	OnDrawWin(win);
 }
 
-void Mode::OptimizeViewRecursice()
+void ModeBase::OptimizeViewRecursice()
 {
 	if (OptimizeView())
 		return;
@@ -82,14 +81,14 @@ void Mode::OptimizeViewRecursice()
 
 
 
-Mode *Mode::GetRoot()
+ModeBase *ModeBase::GetRoot()
 {
 	if (parent)
 		return parent->GetRoot();
 	return this;
 }
 
-bool Mode::IsAncestorOf(Mode *m)
+bool ModeBase::IsAncestorOf(ModeBase *m)
 {
 	if (m == this)
 		return true;
@@ -99,7 +98,7 @@ bool Mode::IsAncestorOf(Mode *m)
 }
 
 
-Mode *Mode::GetNextChildTo(Mode *target)
+ModeBase *ModeBase::GetNextChildTo(ModeBase *target)
 {
 	while(target){
 		if (this == target->parent)
@@ -110,20 +109,20 @@ Mode *Mode::GetNextChildTo(Mode *target)
 }
 
 
-bool Mode::EqualRoots(Mode *m)
+bool ModeBase::EqualRoots(ModeBase *m)
 {
 	if (!m)
 		return false;
 	return GetRoot() == m->GetRoot();
 }
 
-void Mode::New()
+void ModeBase::New()
 {
 	if (parent)
 		parent->New();
 }
 
-bool Mode::Save()
+bool ModeBase::Save()
 {
 	if (parent)
 		return parent->Save();
@@ -132,7 +131,7 @@ bool Mode::Save()
 
 
 
-bool Mode::SaveAs()
+bool ModeBase::SaveAs()
 {
 	if (parent)
 		return parent->SaveAs();
@@ -141,7 +140,7 @@ bool Mode::SaveAs()
 
 
 
-bool Mode::Open()
+bool ModeBase::Open()
 {
 	if (parent)
 		return parent->Open();

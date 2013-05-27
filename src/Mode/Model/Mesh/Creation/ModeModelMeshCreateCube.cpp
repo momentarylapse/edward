@@ -9,11 +9,9 @@
 #include "ModeModelMeshCreateCube.h"
 #include "../../../../Edward.h"
 
-ModeModelMeshCreateCube::ModeModelMeshCreateCube(Mode *_parent) :
-	ModeCreation("ModelMeshCreateCube", _parent)
+ModeModelMeshCreateCube::ModeModelMeshCreateCube(ModeBase *_parent) :
+	ModeCreation<DataModel>("ModelMeshCreateCube", _parent)
 {
-	data = (DataModel*)_parent->GetData();
-
 	message = _("W&urfel: Punkt 1 / 3");
 	pos_chosen = false;
 	pos2_chosen = false;

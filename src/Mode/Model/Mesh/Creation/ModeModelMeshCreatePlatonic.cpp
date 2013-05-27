@@ -13,10 +13,9 @@
 
 //extern int FxVB;
 
-ModeModelMeshCreatePlatonic::ModeModelMeshCreatePlatonic(Mode *_parent, int _type) :
-	ModeCreation("ModelMeshCreatePlatonic", _parent)
+ModeModelMeshCreatePlatonic::ModeModelMeshCreatePlatonic(ModeBase *_parent, int _type) :
+	ModeCreation<DataModel>("ModelMeshCreatePlatonic", _parent)
 {
-	data = (DataModel*)_parent->GetData();
 	type = _type;
 
 	message = _("Zentrum w&ahlen");

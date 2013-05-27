@@ -11,22 +11,20 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshCreatePolygon: public ModeCreation
+class ModeModelMeshCreatePolygon: public ModeCreation<DataModel>
 {
 public:
-	ModeModelMeshCreatePolygon(Mode *_parent);
+	ModeModelMeshCreatePolygon(ModeBase *parent);
 	virtual ~ModeModelMeshCreatePolygon();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnLeftButtonDown();
-	void OnKeyDown();
+	virtual void OnLeftButtonDown();
+	virtual void OnKeyDown();
 
-	void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiViewWindow *win);
 
-	DataModel *data;
-	Data *GetData(){	return data;	}
 	Array<int> selection;
 };
 

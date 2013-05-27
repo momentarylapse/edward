@@ -12,11 +12,9 @@
 
 #define RADIUS_FACTOR	0.5f
 
-ModeModelMeshCreateTorus::ModeModelMeshCreateTorus(Mode *_parent) :
-	ModeCreation("ModelMeshCreateTorus", _parent)
+ModeModelMeshCreateTorus::ModeModelMeshCreateTorus(ModeBase *_parent) :
+	ModeCreation<DataModel>("ModelMeshCreateTorus", _parent)
 {
-	data = (DataModel*)_parent->GetData();
-
 	message = _("Toruszentrum w&ahlen");
 
 	pos_chosen = false;

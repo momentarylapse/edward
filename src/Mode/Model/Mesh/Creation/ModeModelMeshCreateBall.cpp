@@ -10,11 +10,9 @@
 #include "../../../../Data/Model/Geometry/ModelGeometrySphere.h"
 #include "../../../../Edward.h"
 
-ModeModelMeshCreateBall::ModeModelMeshCreateBall(Mode *_parent) :
-	ModeCreation("ModelMeshCreateBall", _parent)
+ModeModelMeshCreateBall::ModeModelMeshCreateBall(ModeBase *_parent) :
+	ModeCreation<DataModel>("ModelMeshCreateBall", _parent)
 {
-	data = (DataModel*)_parent->GetData();
-
 	message = _("Kugelzentrum w&ahlen");
 
 	pos_chosen = false;

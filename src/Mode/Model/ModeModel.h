@@ -13,10 +13,8 @@
 #include "Dialog/ModelPropertiesDialog.h"
 #include "Dialog/ModelMaterialDialog.h"
 
-class Mode;
-class DataModel;
 
-class ModeModel: public Mode
+class ModeModel: public Mode<DataModel>
 {
 public:
 	ModeModel();
@@ -44,9 +42,6 @@ public:
 
 	void ExecutePropertiesDialog(int initial_tab_page = 0);
 	void ExecuteMaterialDialog(int initial_tab_page = 0, bool allow_parent = true);
-
-	DataModel *data;
-	virtual Data *GetData(){	return data;	}
 
 	ModelPropertiesDialog *PropertiesDialog;
 	ModelMaterialDialog *MaterialDialog;

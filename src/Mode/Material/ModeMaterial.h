@@ -11,12 +11,10 @@
 #include "../Mode.h"
 #include "../../Data/Material/DataMaterial.h"
 
-class Mode;
-class DataMaterial;
 class MaterialPropertiesDialog;
 class ModelGeometry;
 
-class ModeMaterial: public Mode
+class ModeMaterial: public Mode<DataMaterial>
 {
 public:
 	ModeMaterial();
@@ -43,9 +41,6 @@ public:
 	void ExecutePhysicsDialog();
 
 	virtual bool OptimizeView();
-
-	DataMaterial *data;
-	virtual Data *GetData(){	return data;	}
 
 	int MaterialVB[MATERIAL_MAX_TEXTURES];
 	MaterialPropertiesDialog *AppearanceDialog;

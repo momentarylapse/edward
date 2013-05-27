@@ -9,12 +9,10 @@
 #include "../../../../Action/Model/Skeleton/ActionModelAttachVerticesToBone.h"
 #include "../../../../Edward.h"
 
-ModeModelSkeletonAttachVertices::ModeModelSkeletonAttachVertices(Mode* _parent,
+ModeModelSkeletonAttachVertices::ModeModelSkeletonAttachVertices(ModeBase* _parent,
 		int _bone_index) :
-		ModeCreation("ModelSkeletonAttachVertices", _parent)
+		ModeCreation<DataModel>("ModelSkeletonAttachVertices", _parent)
 {
-	data = (DataModel*)_parent->GetData();
-
 	message = _("Vertices ausw&ahlen");
 	bone_index = _bone_index;
 }

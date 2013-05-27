@@ -14,10 +14,9 @@
 ModeModelMeshSurface *mode_model_mesh_surface = NULL;
 
 
-ModeModelMeshSurface::ModeModelMeshSurface(Mode *_parent, DataModel *_data) :
-	Mode("ModelMeshSurface", _parent, _data, ed->multi_view_3d, "menu_model")
+ModeModelMeshSurface::ModeModelMeshSurface(ModeBase *_parent) :
+	Mode("ModelMeshSurface", _parent, ed->multi_view_3d, "menu_model")
 {
-	data = _data;
 }
 
 ModeModelMeshSurface::~ModeModelMeshSurface()

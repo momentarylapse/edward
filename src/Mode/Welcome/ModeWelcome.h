@@ -10,20 +10,22 @@
 
 #include "../Mode.h"
 
-class ModeWelcome: public Mode {
+class ModeWelcome: public ModeBase {
 public:
 	ModeWelcome();
 	virtual ~ModeWelcome();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnMouseMove();
-	void OnLeftButtonUp();
-	void OnCommand(const string &id);
-	void OnUpdate(Observable *o);
+	virtual void OnMouseMove();
+	virtual void OnLeftButtonUp();
+	virtual void OnCommand(const string &id);
+	virtual void OnUpdate(Observable *o);
 
-	void OnDraw();
+	virtual void OnDraw();
+
+	virtual Data *GetData(){	return NULL;	};
 
 	void DrawIcon(int x, int y, int index, int pic_index, const string &name);
 

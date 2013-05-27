@@ -29,7 +29,6 @@ ModeMaterial::ModeMaterial() :
 	Mode("Material", NULL, new DataMaterial, ed->multi_view_3d, "menu_material")
 {
 	geo = NULL;
-	data = dynamic_cast<DataMaterial*>(data_generic);
 	Subscribe(data);
 
 	AppearanceDialog = NULL;

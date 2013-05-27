@@ -12,41 +12,38 @@
 #include "../../Data/World/DataWorld.h"
 #include "Dialog/WorldPropertiesDialog.h"
 
-class Mode;
-class DataWorld;
-
-class ModeWorld: public Mode
+class ModeWorld: public Mode<DataWorld>
 {
 public:
 	ModeWorld();
 	virtual ~ModeWorld();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnMouseMove();
-	void OnLeftButtonDown();
-	void OnLeftButtonUp();
-	void OnMiddleButtonDown();
-	void OnMiddleButtonUp();
-	void OnRightButtonDown();
-	void OnRightButtonUp();
-	void OnKeyDown();
-	void OnKeyUp();
-	void OnCommand(const string &id);
-	void OnUpdate(Observable *o);
-	void OnUpdateMenu();
+	virtual void OnMouseMove();
+	virtual void OnLeftButtonDown();
+	virtual void OnLeftButtonUp();
+	virtual void OnMiddleButtonDown();
+	virtual void OnMiddleButtonUp();
+	virtual void OnRightButtonDown();
+	virtual void OnRightButtonUp();
+	virtual void OnKeyDown();
+	virtual void OnKeyUp();
+	virtual void OnCommand(const string &id);
+	virtual void OnUpdate(Observable *o);
+	virtual void OnUpdateMenu();
 
-	void OnDraw();
-	void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDraw();
+	virtual void OnDrawWin(MultiViewWindow *win);
 
 
-	void New();
-	bool Open();
-	bool Save();
-	bool SaveAs();
+	virtual void New();
+	virtual bool Open();
+	virtual bool Save();
+	virtual bool SaveAs();
 
-	bool OptimizeView();
+	virtual bool OptimizeView();
 
 	void ImportWorldProperties();
 	void LoadTerrain();
@@ -60,8 +57,6 @@ public:
 	void ExecuteTerrainPropertiesDialog(int index);
 	void ExecuteLightmapDialog();
 	WorldPropertiesDialog *WorldDialog;
-
-	DataWorld *data;
 
 	bool ShowTerrains;
 	bool ShowObjects;

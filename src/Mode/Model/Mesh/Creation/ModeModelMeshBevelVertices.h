@@ -11,21 +11,18 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshBevelVertices: public ModeCreation
+class ModeModelMeshBevelVertices: public ModeCreation<DataModel>
 {
 public:
-	ModeModelMeshBevelVertices(Mode *_parent);
+	ModeModelMeshBevelVertices(ModeBase *_parent);
 	virtual ~ModeModelMeshBevelVertices();
 
-	void OnEnd();
+	virtual void OnEnd();
 
-	void OnMouseMove();
-	void OnLeftButtonDown();
+	virtual void OnMouseMove();
+	virtual void OnLeftButtonDown();
 
-	void OnDrawWin(MultiViewWindow *win);
-
-	DataModel *data;
-	Data *GetData(){	return data;	}
+	virtual void OnDrawWin(MultiViewWindow *win);
 
 private:
 	float radius;

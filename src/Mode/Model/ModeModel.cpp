@@ -21,15 +21,14 @@
 ModeModel *mode_model = NULL;
 
 ModeModel::ModeModel() :
-	Mode("Model", NULL, new DataModel, NULL, "")
+	Mode<DataModel>("Model", NULL, new DataModel, NULL, "")
 {
-	data = dynamic_cast<DataModel*>(data_generic);
 	PropertiesDialog = NULL;
 	MaterialDialog = NULL;
 
-	mode_model_mesh = new ModeModelMesh(this, data);
-	mode_model_skeleton = new ModeModelSkeleton(this, data);
-	mode_model_animation = new ModeModelAnimation(this, data);
+	mode_model_mesh = new ModeModelMesh(this);
+	mode_model_skeleton = new ModeModelSkeleton(this);
+	mode_model_animation = new ModeModelAnimation(this);
 }
 
 ModeModel::~ModeModel()

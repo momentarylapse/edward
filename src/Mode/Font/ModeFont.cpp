@@ -17,7 +17,6 @@ ModeFont *mode_font = NULL;
 ModeFont::ModeFont() :
 	Mode("Font", NULL, new DataFont, ed->multi_view_2d, "menu_font")
 {
-	data = dynamic_cast<DataFont*>(data_generic);
 	Subscribe(data);
 
 	XFont *f = new XFont;

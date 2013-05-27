@@ -34,21 +34,20 @@
 
 ModeModelMesh *mode_model_mesh = NULL;
 
-ModeModelMesh::ModeModelMesh(Mode *_parent, DataModel *_data) :
-	Mode("ModelMesh", _parent, _data, NULL, "")
+ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
+	Mode<DataModel>("ModelMesh", _parent, NULL, "")
 {
-	data = _data;
 	Subscribe(data);
 
 	MaterialSelectionDialog = NULL;
 
 	right_mouse_function = RMFRotate;
 
-	mode_model_mesh_vertex = new ModeModelMeshVertex(this, data);
-	mode_model_mesh_edge = new ModeModelMeshEdge(this, data);
-	mode_model_mesh_polygon = new ModeModelMeshPolygon(this, data);
-	mode_model_mesh_surface = new ModeModelMeshSurface(this, data);
-	mode_model_mesh_texture = new ModeModelMeshTexture(this, data);
+	mode_model_mesh_vertex = new ModeModelMeshVertex(this);
+	mode_model_mesh_edge = new ModeModelMeshEdge(this);
+	mode_model_mesh_polygon = new ModeModelMeshPolygon(this);
+	mode_model_mesh_surface = new ModeModelMeshSurface(this);
+	mode_model_mesh_texture = new ModeModelMeshTexture(this);
 }
 
 ModeModelMesh::~ModeModelMesh()

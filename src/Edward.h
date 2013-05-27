@@ -73,7 +73,7 @@ public:
 
 	void OnAbout();
 	void OnSendBugReport();
-	void SetMode(Mode *m);
+	void SetMode(ModeBase *m);
 
 	void OnUpdate(Observable *o);
 	void OnCommand(const string &id);
@@ -119,8 +119,8 @@ public:
 	void UpdateMenu();
 	void OptimizeCurrentView();
 
-	Mode *cur_mode;
-	Array<Mode*> mode_queue;
+	ModeBase *cur_mode;
+	Array<ModeBase*> mode_queue;
 
 	string RootDir;
 	bool RootDirCorrect;

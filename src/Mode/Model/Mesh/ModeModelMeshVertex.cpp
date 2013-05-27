@@ -14,10 +14,9 @@
 
 ModeModelMeshVertex *mode_model_mesh_vertex = NULL;
 
-ModeModelMeshVertex::ModeModelMeshVertex(Mode *_parent, DataModel *_data) :
-	Mode("ModelMeshVertex", _parent, _data, ed->multi_view_3d, "menu_model")
+ModeModelMeshVertex::ModeModelMeshVertex(ModeBase *_parent) :
+	Mode<DataModel>("ModelMeshVertex", _parent, ed->multi_view_3d, "menu_model")
 {
-	data = _data;
 }
 
 ModeModelMeshVertex::~ModeModelMeshVertex()

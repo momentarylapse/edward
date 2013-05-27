@@ -12,28 +12,24 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../lib/file/file.h"
 
-class Mode;
 class DataModel;
 
-class ModeModelMeshTexture: public Mode
+class ModeModelMeshTexture: public Mode<DataModel>
 {
 public:
-	ModeModelMeshTexture(Mode *_parent, DataModel *_data);
+	ModeModelMeshTexture(ModeBase *parent);
 	virtual ~ModeModelMeshTexture();
 
-	void OnStart();
-	void OnEnd();
+	virtual void OnStart();
+	virtual void OnEnd();
 
-	void OnUpdate(Observable *o);
+	virtual void OnUpdate(Observable *o);
 
-	void OnDraw();
-	void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDraw();
+	virtual void OnDrawWin(MultiViewWindow *win);
 
 	// for MultiView actions
 	void GetSelectedSkinVertices(Array<int> &surf, Array<int> &tria, Array<int> &index);
-
-	DataModel *data;
-	Data *GetData(){	return data;	}
 
 	Array<ModelSkinVertexDummy> skin_vertex;
 

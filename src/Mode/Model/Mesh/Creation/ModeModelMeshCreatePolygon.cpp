@@ -10,11 +10,9 @@
 #include "../../../../Action/Model/Mesh/Polygon/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../lib/nix/nix.h"
 
-ModeModelMeshCreatePolygon::ModeModelMeshCreatePolygon(Mode *_parent) :
-	ModeCreation("ModelMeshCreatePolygon", _parent)
+ModeModelMeshCreatePolygon::ModeModelMeshCreatePolygon(ModeBase *_parent) :
+	ModeCreation<DataModel>("ModelMeshCreatePolygon", _parent)
 {
-	data = (DataModel*)_parent->GetData();
-
 	message = format(_("Polygon w&ahlen: %d -> Shift + Return"), 0);
 }
 

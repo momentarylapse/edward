@@ -16,13 +16,12 @@
 
 ModeModelAnimation *mode_model_animation = NULL;
 
-ModeModelAnimation::ModeModelAnimation(Mode *_parent, DataModel *_data) :
-	Mode("ModelAnimation", _parent, _data, NULL, "menu_move")
+ModeModelAnimation::ModeModelAnimation(ModeBase *_parent) :
+	Mode<DataModel>("ModelAnimation", _parent, NULL, "menu_move")
 {
-	data = _data;
-	mode_model_animation_none = new ModeModelAnimationNone(this, data);
-	mode_model_animation_skeleton = new ModeModelAnimationSkeleton(this, data);
-	mode_model_animation_vertex = new ModeModelAnimationVertex(this, data);
+	mode_model_animation_none = new ModeModelAnimationNone(this);
+	mode_model_animation_skeleton = new ModeModelAnimationSkeleton(this);
+	mode_model_animation_vertex = new ModeModelAnimationVertex(this);
 }
 
 

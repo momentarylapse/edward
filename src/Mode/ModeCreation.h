@@ -9,18 +9,30 @@
 #define MODECREATION_H_
 
 #include "Mode.h"
-#include "../lib/hui/hui.h"
-#include "../lib/file/file.h"
 
-class ModeCreation: public Mode
+class ModeCreationBase : public ModeBase
 {
 public:
-	ModeCreation(const string &_name, Mode *_parent);
+	ModeCreationBase(const string &_name, ModeBase *_parent);
+	virtual ~ModeCreationBase(){}
 	virtual void OnDrawRecursive(bool multi_view_handled = false);
-
 	virtual void Abort();
 	string message;
 	CHuiWindow *dialog;
+};
+
+template<class T>
+class ModeCreation: public ModeCreationBase
+{
+public:
+	ModeCreation(const string &_name, ModeBase *_parent) :
+		ModeCreationBase(_name, _parent)
+	{
+		data = (T*)_parent->GetData();
+	}
+	virtual ~ModeCreation(){}
+	T *data;
+	virtual Data *GetData(){	return data;	}
 };
 
 #endif /* MODECREATION_H_ */

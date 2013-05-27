@@ -141,7 +141,7 @@ void Edward::OnEvent()
 
 void Edward::OnAbortCreationMode()
 {
-	ModeCreation *m = dynamic_cast<ModeCreation*>(cur_mode);
+	ModeCreationBase *m = dynamic_cast<ModeCreationBase*>(cur_mode);
 	if (m)
 		m->Abort();
 }
@@ -399,14 +399,14 @@ void Edward::OptimizeCurrentView()
 
 // do we change roots?
 //  -> data loss?
-bool mode_switch_allowed(Mode *m)
+bool mode_switch_allowed(ModeBase *m)
 {
 	if (m->EqualRoots(ed->cur_mode))
 		return true;
 	return ed->AllowTermination();
 }
 
-void Edward::SetMode(Mode *m)
+void Edward::SetMode(ModeBase *m)
 {
 	if (cur_mode == m)
 		return;
@@ -421,8 +421,8 @@ void Edward::SetMode(Mode *m)
 	msg_db_r("SetMode", 1);
 	if (cur_mode){
 		cur_mode->OnLeave();
-		if (cur_mode->data_generic)
-			Unsubscribe(cur_mode->data_generic->action_manager);
+		if (cur_mode->GetData())
+			Unsubscribe(cur_mode->GetData()->action_manager);
 	}
 
 	m = mode_queue[0];
@@ -458,8 +458,8 @@ void Edward::SetMode(Mode *m)
 	SetMenu(cur_mode->menu);
 	UpdateMenu();
 	cur_mode->OnEnter();
-	if (cur_mode->data_generic)
-		Subscribe(cur_mode->data_generic->action_manager);
+	if (cur_mode->GetData())
+		Subscribe(cur_mode->GetData()->action_manager);
 
 	ForceRedraw();
 

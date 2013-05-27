@@ -11,18 +11,15 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshSplitPolygon: public ModeCreation
+class ModeModelMeshSplitPolygon: public ModeCreation<DataModel>
 {
 public:
-	ModeModelMeshSplitPolygon(Mode *_parent);
+	ModeModelMeshSplitPolygon(ModeBase *parent);
 	virtual ~ModeModelMeshSplitPolygon();
 
-	void OnLeftButtonDown();
+	virtual void OnLeftButtonDown();
 
-	void OnDrawWin(MultiViewWindow *win);
-
-	DataModel *data;
-	Data *GetData(){	return data;	}
+	virtual void OnDrawWin(MultiViewWindow *win);
 
 private:
 	int surface, triangle;

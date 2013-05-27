@@ -13,11 +13,9 @@
 
 #define INTERACTIVE
 
-ModeModelMeshBevelVertices::ModeModelMeshBevelVertices(Mode *_parent) :
-	ModeCreation("ModelMeshBevelVertices", _parent)
+ModeModelMeshBevelVertices::ModeModelMeshBevelVertices(ModeBase *_parent) :
+	ModeCreation<DataModel>("ModelMeshBevelVertices", _parent)
 {
-	data = (DataModel*)_parent->GetData();
-
 	message = _("Radius skalieren [Linke Maustaste = fertig]");
 
 
