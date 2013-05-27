@@ -73,7 +73,7 @@ void ModeWorldCreateTerrain::OnSizeChange()
 	dialog->SetFloat("pattern_z", dialog->GetFloat("terrain_z") / (float)dialog->GetInt("num_z"));
 }
 
-void ModeWorldCreateTerrain::OnDrawWin(int win)
+void ModeWorldCreateTerrain::OnDrawWin(MultiViewWindow *win)
 {
 }
 

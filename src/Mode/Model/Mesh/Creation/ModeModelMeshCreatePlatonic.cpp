@@ -88,7 +88,7 @@ void ModeModelMeshCreatePlatonic::OnLeftButtonDown()
 }
 
 
-void ModeModelMeshCreatePlatonic::OnDrawWin(int win)
+void ModeModelMeshCreatePlatonic::OnDrawWin(MultiViewWindow *win)
 {
 	if (pos_chosen){
 		mode_model->SetMaterialCreation();

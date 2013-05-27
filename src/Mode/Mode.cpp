@@ -65,7 +65,7 @@ void Mode::OnUpdateMenuRecursive(bool multi_view_handled)
 	OnUpdateMenu();
 }
 
-void Mode::OnDrawWinRecursive(int win)
+void Mode::OnDrawWinRecursive(MultiViewWindow *win)
 {
 	if (parent)
 		parent->OnDrawWinRecursive(win);

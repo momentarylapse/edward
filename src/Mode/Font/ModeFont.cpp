@@ -223,7 +223,7 @@ void DrawLineV(int x, int y1, int y2)
 }
 
 
-void ModeFont::OnDrawWin(int win)
+void ModeFont::OnDrawWin(MultiViewWindow *win)
 {
 	int NumY = data->TextureHeight / data->global.GlyphHeight;
 

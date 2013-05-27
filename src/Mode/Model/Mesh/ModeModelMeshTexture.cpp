@@ -72,13 +72,13 @@ void ModeModelMeshTexture::OnEnd()
 #define cur_tex			data->Material[data->CurrentMaterial].Texture[data->CurrentTextureLevel]
 
 
-void ModeModelMeshTexture::OnDrawWin(int win)
+void ModeModelMeshTexture::OnDrawWin(MultiViewWindow *win)
 {
 	rect s,r;
 	color c;
 
-	vector a = multi_view->VecUnProject(v_0, win);
-	vector b = multi_view->VecUnProject(vector((float)MaxX,(float)MaxY,0),win);
+	vector a = win->Unproject(v_0);
+	vector b = win->Unproject(vector((float)MaxX,(float)MaxY,0));
 
 	s.x1=a.x;
 	s.x2=b.x;
@@ -109,8 +109,8 @@ void ModeModelMeshTexture::OnDrawWin(int win)
 	NixSetAlphaM(AlphaNone);
 
 	// rectangle of unity
-	a = multi_view->VecProject(v_0, win);
-	b = multi_view->VecProject(vector(1, 1, 0), win);
+	a = win->Project(v_0);
+	b = win->Project(vector(1, 1, 0));
 	NixSetColor(Red);
 	NixDrawLine(a.x, a.y, b.x, a.y, 0.98f);
 	NixDrawLine(b.x, a.y, b.x, b.y, 0.98f);
@@ -127,7 +127,7 @@ void ModeModelMeshTexture::OnDrawWin(int win)
 				continue;
 			Array<vector> v;
 			for (int k=0;k<t.Side.num;k++)
-				v.add(multi_view->VecProject(t.Side[k].SkinVertex[data->CurrentTextureLevel],win));
+				v.add(win->Project(t.Side[k].SkinVertex[data->CurrentTextureLevel]));
 			v.add(v[0]);
 			for (int k=0;k<t.Side.num;k++)
 				NixDrawLine(	v[k].x,v[k].y,

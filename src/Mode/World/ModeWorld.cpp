@@ -6,6 +6,7 @@
  */
 
 #include "../../Edward.h"
+#include "../../MultiView.h"
 #include "ModeWorld.h"
 #include "../../Data/World/DataWorld.h"
 #include "../../Data/World/DataCamera.h"
@@ -132,18 +133,18 @@ void ModeWorld::OnCommand(const string & id)
 vector tmv[MODEL_MAX_VERTICES*5],pmv[MODEL_MAX_VERTICES*5];
 bool tvm[MODEL_MAX_VERTICES*5];
 
-bool IsMouseOverObject(int index, void *user_data, int win, vector &tp)
+bool IsMouseOverObject(int index, void *user_data, MultiViewWindow *win, vector &tp)
 {
 	Object *m = mode_world->data->Objects[index].object;
 	if (!m)
 		return false;
 	int d = m->_detail_;
-	vector mv = vector(float(ed->multi_view_3d->mx), float(ed->multi_view_3d->my), 0);
+	vector mv = win->multi_view->m;
 	if ((d<0)||(d>2))
 		return false;
 	for (int i=0;i<m->skin[d]->vertex.num;i++){
 		tmv[i] = m->_matrix * m->skin[d]->vertex[i];
-		pmv[i] = mode_world->multi_view->VecProject(tmv[i],win);
+		pmv[i] = win->Project(tmv[i]);
 	}
 	float z_min=1;
 	for (int mm=0;mm<m->material.num;mm++)
@@ -170,7 +171,7 @@ bool IsMouseOverObject(int index, void *user_data, int win, vector &tp)
 	return (z_min<1);
 }
 
-bool IsInRectObject(int index, void *user_data, int win, rect *r)
+bool IsInRectObject(int index, void *user_data, MultiViewWindow *win, rect *r)
 {
 	Object *m = mode_world->data->Objects[index].object;
 	if (!m)
@@ -181,7 +182,7 @@ bool IsInRectObject(int index, void *user_data, int win, rect *r)
 	vector min, max;
 	for (int i=0;i<m->skin[d]->vertex.num;i++){
 		tmv[i] = m->_matrix * m->skin[d]->vertex[i];
-		pmv[i] = mode_world->multi_view->VecProject(tmv[i],win);
+		pmv[i] = win->Project(tmv[i]);
 	}
 	for (int mm=0;mm<m->material.num;mm++)
 	for (int i=0;i<m->skin[d]->sub[mm].num_triangles;i++){
@@ -202,7 +203,7 @@ bool IsInRectObject(int index, void *user_data, int win, rect *r)
 	return ((min.x>=r->x1)&&(min.y>=r->y1)&&(max.x<=r->x2)&&(max.y<=r->y2));
 }
 
-bool IsMouseOverTerrain(int index, void *user_data, int win, vector &tp)
+bool IsMouseOverTerrain(int index, void *user_data, MultiViewWindow *win, vector &tp)
 {
 	//msg_db_r(format("IMOT index= %d",index).c_str(),3);
 	Terrain *t = mode_world->data->Terrains[index].terrain;
@@ -217,7 +218,7 @@ bool IsMouseOverTerrain(int index, void *user_data, int win, vector &tp)
 	vector dir = v0;
 	return t->Trace(a, b, dir, 1000000000000, tp, false);
 #else
-	vector mv = vector(float(ed->multi_view_3d->mx), float(ed->multi_view_3d->my), 0);
+	vector mv = win->multi_view->m;
 	float z_min=1;
 	int x1,z1,x,z;
 	for (x1=0;x1<(t->num_x-1)/32+1;x1++)
@@ -232,7 +233,7 @@ bool IsMouseOverTerrain(int index, void *user_data, int win, vector &tp)
 				for (int dz=0;dz<=lz;dz+=e){
 					int di=dx*(32+1)+dz;
 					int i=(dx + x0)*(t->num_z+1)+(dz + z0);
-					pmv[di] = mode_world->multi_view->VecProject(t->vertex[i],win);
+					pmv[di] = win->Project(t->vertex[i]);
 				}
 			for (int dx=0;dx<lx;dx+=e)
 				for (int dz=0;dz<lz;dz+=e)
@@ -267,13 +268,13 @@ bool IsMouseOverTerrain(int index, void *user_data, int win, vector &tp)
 #endif
 }
 
-bool IsInRectTerrain(int index, void *user_data, int win, rect *r)
+bool IsInRectTerrain(int index, void *user_data, MultiViewWindow *win, rect *r)
 {
 	Terrain *t = mode_world->data->Terrains[index].terrain;
 	vector min,max;
 	for (int i=0;i<8;i++){
 		vector v=t->pos+vector((i%2)==0?t->min.x:t->max.x,((i/2)%2)==0?t->min.y:t->max.y,((i/4)%2)==0?t->min.z:t->max.z);
-		vector p = mode_world->multi_view->VecProject(v,win);
+		vector p = win->Project(v);
 		if (i==0)
 			min=max=p;
 		min._min(p);
@@ -460,12 +461,12 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha)
 	NixEnableLighting(mode_world->multi_view->light_enabled);
 }
 
-void ModeWorld::OnDrawWin(int win)
+void ModeWorld::OnDrawWin(MultiViewWindow *win)
 {
 	msg_db_r("World::DrawWin",2);
 
 	if (ShowEffects){
-		if (multi_view->view[win].type == ViewPerspective)
+		if (win->type == ViewPerspective)
 			data->meta_data.DrawBackground();
 		data->meta_data.ApplyToDraw();
 	}

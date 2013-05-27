@@ -11,7 +11,7 @@
 
 ActionModelSkinVerticesFromProjection::ActionModelSkinVerticesFromProjection(DataModel *m, MultiView *mv)
 {
-	sg.init_projective(mv, mv->mouse_win);
+	sg.init_projective(mv->mouse_win);
 
 	// list of selected skin vertices and save old pos
 	foreachi(ModelSurface &s, m->Surface, si)

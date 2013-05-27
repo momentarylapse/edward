@@ -27,7 +27,7 @@ public:
 	void OnCommand(const string &id);
 	void OnUpdateMenu();
 
-	void OnDrawWin(int win);
+	void OnDrawWin(MultiViewWindow *win);
 
 	void OnAddPoint();
 	void OnDeletePoint();

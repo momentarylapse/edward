@@ -442,7 +442,7 @@ void ModeWorldCamera::LoadData()
 	ed->ForceRedraw();
 }
 
-void ModeWorldCamera::OnDrawWin(int win)
+void ModeWorldCamera::OnDrawWin(MultiViewWindow *win)
 {
 	NixEnableLighting(false);
 	NixSetWorldMatrix(m_id);

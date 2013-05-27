@@ -102,14 +102,14 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 	}
 }
 
-void ModeModelMeshCreateCylinder::OnDrawWin(int win)
+void ModeModelMeshCreateCylinder::OnDrawWin(MultiViewWindow *win)
 {
 	if (pos.num > 0){
 		NixEnableLighting(false);
 		NixSetColor(Green);
 		// control polygon
 		for (int i=0;i<pos.num;i++){
-			vector pp = multi_view->VecProject(pos[i], win);
+			vector pp = win->Project(pos[i]);
 			NixDrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
 		}
 		if (pos.num == 2)

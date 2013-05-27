@@ -42,7 +42,7 @@ void ModeModelMeshVertex::OnEnd()
 
 
 
-void ModeModelMeshVertex::OnDrawWin(int win)
+void ModeModelMeshVertex::OnDrawWin(MultiViewWindow *win)
 {
 	mode_model_mesh_polygon->OnDrawWin(win);
 	DrawEffects(win);
@@ -70,11 +70,11 @@ void ModeModelMeshVertex::OnUpdate(Observable *o)
 	mode_model_mesh_polygon->FillSelectionBuffers();
 }
 
-void ModeModelMeshVertex::DrawEffects(int win)
+void ModeModelMeshVertex::DrawEffects(MultiViewWindow *win)
 {
 	NixEnableLighting(false);
 	foreach(ModelEffect &fx, data->Fx){
-		vector p = multi_view->VecProject(data->Vertex[fx.Vertex].pos, win);
+		vector p = win->Project(data->Vertex[fx.Vertex].pos);
 		if ((p.z > 0) && (p.z < 1))
 			ed->DrawStr(p.x, p.y, fx.get_type());
 	}

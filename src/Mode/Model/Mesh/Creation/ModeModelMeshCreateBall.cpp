@@ -79,7 +79,7 @@ void ModeModelMeshCreateBall::OnLeftButtonDown()
 }
 
 
-void ModeModelMeshCreateBall::OnDrawWin(int win)
+void ModeModelMeshCreateBall::OnDrawWin(MultiViewWindow *win)
 {
 	if (pos_chosen){
 		mode_model->SetMaterialCreation();

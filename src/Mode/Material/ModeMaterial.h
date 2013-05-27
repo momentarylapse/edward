@@ -29,7 +29,7 @@ public:
 	virtual void OnUpdate(Observable *o);
 
 	virtual void OnDraw();
-	virtual void OnDrawWin(int win);
+	virtual void OnDrawWin(MultiViewWindow *win);
 
 	virtual void OnUpdateMenu();
 

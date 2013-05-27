@@ -83,7 +83,7 @@ void ModeModelAnimation::OnUpdate(Observable *o)
 
 
 
-void ModeModelAnimation::OnDrawWin(int win)
+void ModeModelAnimation::OnDrawWin(MultiViewWindow *win)
 {
 }
 

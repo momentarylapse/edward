@@ -26,9 +26,9 @@ public:
 	void OnUpdate(Observable *o);
 
 	void OnDraw();
-	void OnDrawWin(int win);
+	void OnDrawWin(MultiViewWindow *win);
 
-	void DrawEffects(int win);
+	void DrawEffects(MultiViewWindow *win);
 
 	DataModel *data;
 	Data *GetData(){	return data;	}

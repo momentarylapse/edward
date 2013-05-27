@@ -40,7 +40,7 @@ public:
 	virtual void OnUpdateMenu(){};
 
 	virtual void OnDraw(){};
-	virtual void OnDrawWin(int win){};
+	virtual void OnDrawWin(MultiViewWindow *win){};
 
 	virtual bool OptimizeView(){ return false; };
 	virtual void OptimizeViewRecursice();
@@ -60,7 +60,7 @@ public:
 	virtual void OnUpdateMenuRecursive(bool multi_view_handled = false);
 
 	virtual void OnDrawRecursive(bool multi_view_handled = false);
-	virtual void OnDrawWinRecursive(int win);
+	virtual void OnDrawWinRecursive(MultiViewWindow *win);
 
 	Mode *GetRoot();
 	bool IsAncestorOf(Mode *m);

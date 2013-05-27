@@ -140,7 +140,7 @@ void ModeMaterial::ExecutePhysicsDialog()
 }
 
 
-void ModeMaterial::OnDrawWin(int win)
+void ModeMaterial::OnDrawWin(MultiViewWindow *win)
 {
 	data->ApplyForRendering();
 

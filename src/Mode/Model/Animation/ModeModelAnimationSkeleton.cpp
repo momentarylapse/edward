@@ -71,7 +71,7 @@ void ModeModelAnimationSkeleton::OnUpdateMenu()
 {
 }
 
-void ModeModelAnimationSkeleton::OnDrawWin(int win)
+void ModeModelAnimationSkeleton::OnDrawWin(MultiViewWindow *win)
 {
 	mode_model_skeleton->OnDrawWin(win);
 }

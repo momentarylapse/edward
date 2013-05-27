@@ -81,7 +81,7 @@ void ModeModelMeshBevelVertices::OnLeftButtonDown()
 	Abort();
 }
 
-void ModeModelMeshBevelVertices::OnDrawWin(int win)
+void ModeModelMeshBevelVertices::OnDrawWin(MultiViewWindow *win)
 {
 #ifndef INTERACTIVE
 	mode_model->SetMaterialCreation();

@@ -49,7 +49,7 @@ void ModeModelAnimationNone::OnUpdateMenu()
 {
 }
 
-void ModeModelAnimationNone::OnDrawWin(int win)
+void ModeModelAnimationNone::OnDrawWin(MultiViewWindow *win)
 {
 	mode_model_mesh_polygon->OnDrawWin(win);
 }

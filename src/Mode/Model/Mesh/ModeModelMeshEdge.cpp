@@ -104,7 +104,7 @@ void ModeModelMeshEdge::OnLeftButtonDown()
 
 
 
-void ModeModelMeshEdge::OnDrawWin(int win)
+void ModeModelMeshEdge::OnDrawWin(MultiViewWindow *win)
 {
 }
 

@@ -22,7 +22,7 @@ public:
 
 	void OnKeyDown();
 
-	void OnDrawWin(int win);
+	void OnDrawWin(MultiViewWindow *win);
 
 	DataModel *data;
 	Data *GetData(){	return data;	}

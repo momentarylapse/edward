@@ -37,14 +37,14 @@ void SkinGenerator::init_projective(const matrix &_m)
 	m = _m;
 }
 
-void SkinGenerator::init_projective(MultiView *mv, int win)
+void SkinGenerator::init_projective(MultiViewWindow *win)
 {
-	rect d = mv->view[win].dest;
+	rect d = win->dest;
 	matrix s, t1, t2;
 	MatrixScale(s, MaxX / (d.x2 - d.x1) / 2, - MaxY / (d.y2 - d.y1) / 2, 1);
 	MatrixTranslation(t2, vector(- d.x1 / MaxX * 2, - d.y1 / MaxY * 2, 0));
 	MatrixTranslation(t1, vector(1, -1, 0));
-	init_projective(t2 * s * t1 * mv->view[win].projection * mv->view[win].mat);
+	init_projective(t2 * s * t1 * win->projection * win->mat);
 }
 
 void SkinGenerator::init_polygon(DataModel *model, ModelPolygon &p, int level)

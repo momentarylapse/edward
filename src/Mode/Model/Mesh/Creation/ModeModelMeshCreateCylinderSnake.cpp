@@ -90,9 +90,9 @@ void ModeModelMeshCreateCylinderSnake::OnLeftButtonDown()
 		Abort();
 	}else{
 		if (pos.num > 2){
-			vector pp = multi_view->VecProject(pos[0], multi_view->mouse_win);
+			vector pp = multi_view->mouse_win->Project(pos[0]);
 			pp.z = 0;
-			if ((pp - vector(multi_view->mx, multi_view->my, 0)).length_fuzzy() < CYLINDER_CLOSING_DISTANCE){
+			if ((pp - multi_view->m).length_fuzzy() < CYLINDER_CLOSING_DISTANCE){
 				closed = true;
 				ready_for_scaling = true;
 				OnMouseMove();
@@ -129,13 +129,13 @@ void ModeModelMeshCreateCylinderSnake::OnKeyDown()
 
 
 
-void ModeModelMeshCreateCylinderSnake::OnDrawWin(int win)
+void ModeModelMeshCreateCylinderSnake::OnDrawWin(MultiViewWindow *win)
 {
 	if (pos.num > 0){
 		NixEnableLighting(false);
 		// control polygon
 		for (int i=0;i<pos.num;i++){
-			vector pp = multi_view->VecProject(pos[i], win);
+			vector pp = win->Project(pos[i]);
 			NixSetColor(Green);
 			NixDrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
 			NixSetColor(White);
@@ -160,9 +160,9 @@ void ModeModelMeshCreateCylinderSnake::OnDrawWin(int win)
 		mode_model->SetMaterialCreation();
 		NixDraw3D(VBTemp);
 	}else if (pos.num > 2){
-		vector pp = multi_view->VecProject(pos[0], multi_view->mouse_win);
+		vector pp = multi_view->mouse_win->Project(pos[0]);
 		pp.z = 0;
-		if ((pp - vector(multi_view->mx, multi_view->my, 0)).length_fuzzy() < CYLINDER_CLOSING_DISTANCE){
+		if ((pp - multi_view->m).length_fuzzy() < CYLINDER_CLOSING_DISTANCE){
 			ed->DrawStr(pp.x, pp.y, _("Pfad schlie&sen"));
 		}
 	}

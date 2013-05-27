@@ -26,7 +26,7 @@ public:
 	void OnLeftButtonDown();
 	void OnKeyDown();
 
-	void OnDrawWin(int win);
+	void OnDrawWin(MultiViewWindow *win);
 
 	void UpdateGeometry();
 

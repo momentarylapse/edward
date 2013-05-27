@@ -38,12 +38,12 @@ void ModeModelMeshCreatePolygon::OnEnd()
 }
 
 
-void ModeModelMeshCreatePolygon::OnDrawWin(int win)
+void ModeModelMeshCreatePolygon::OnDrawWin(MultiViewWindow *win)
 {
 	for (int i=1;i<selection.num;i++){
 		NixEnableLighting(false);
-		vector pa = multi_view->VecProject(data->Vertex[selection[i - 1]].pos, win);
-		vector pb = multi_view->VecProject(data->Vertex[selection[i    ]].pos, win);
+		vector pa = win->Project(data->Vertex[selection[i - 1]].pos);
+		vector pb = win->Project(data->Vertex[selection[i    ]].pos);
 		NixSetColor(Green);
 		if ((pa.z >= 0) and (pa.z < 1) and (pb.z >= 0) and (pb.z <= 1))
 			NixDrawLine(pa.x, pa.y, pb.x, pb.y, 0);

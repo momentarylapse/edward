@@ -15,6 +15,7 @@
 #include "MultiView.h"
 #include "Stuff/Observable.h"
 
+class MultiView;
 class ActionMultiView;
 class Data;
 class Observable;
@@ -43,7 +44,7 @@ public:
 	vector pos;
 };
 
-struct MultiViewView
+struct MultiViewWindow
 {
 	int type;
 	matrix mat;
@@ -51,11 +52,22 @@ struct MultiViewView
 	rect name_dest;
 	vector ang;
 	matrix projection;
+	MultiView *multi_view;
+
+	void Draw();
+	void DrawGrid();
+	vector Project(const vector &p);
+	vector Unproject(const vector &p);
+	vector Unproject(const vector &p, const vector &o);
+	vector GetDirection();
+	vector GetDirectionUp();
+	vector GetDirectionRight();
+	void GetMovingFrame(vector &dir, vector &up, vector &right);
 };
 
 
-typedef bool t_is_mouse_over_func(int index, void *user_data, int win, vector &tp);
-typedef bool t_is_in_rect_func(int index, void *user_data, int win, rect *r);
+typedef bool t_is_mouse_over_func(int index, void *user_data, MultiViewWindow *win, vector &tp);
+typedef bool t_is_in_rect_func(int index, void *user_data, MultiViewWindow *win, rect *r);
 
 
 struct MultiViewData{
@@ -108,9 +120,7 @@ public:
 	void OnCommand(const string &id);
 
 	void OnDraw();
-	void DrawWin(int win);
 	void DrawMousePos();
-	void DrawGrid(int win);
 	void ToggleWholeWindow();
 	void ToggleGrid();
 	void ToggleLight();
@@ -150,14 +160,6 @@ public:
 
 	float GetGridD();
 
-	rect GetRect(int win);
-	vector VecProject(const vector &p, int win);
-	vector VecUnProject(const vector &p, int win);
-	vector VecUnProject2(const vector &p, const vector &o, int win);
-	vector GetDirection(int win);
-	vector GetDirectionUp(int win);
-	vector GetDirectionRight(int win);
-	void GetMovingFrame(vector &dir, vector &up, vector &right, int win);
 	vector GetCursor3d();
 	vector GetCursor3d(const vector &depth_reference);
 
@@ -175,8 +177,9 @@ public:
 
 	int light;
 
-	MultiViewView view[5];
-	int cur_view, cur_view_rect;
+	MultiViewWindow win[5];
+	MultiViewWindow *cur_projection_win;
+	MultiViewWindow *active_win;
 	int view_stage;
 
 	MultiViewMouseAction action[3];
@@ -204,16 +207,13 @@ public:
 	vector MouseOverTP,SelectedTP,MovingDPos,RFPos,LFPos;
 	bool EditingStart, EditingEnd, DataChanged, Changed;
 
-	int ViewMoving;
-
-	int mouse_win;
-	float mx, my;
-	float vx, vy;
+	MultiViewWindow *ViewMoving;
+	MultiViewWindow *mouse_win;
+	vector m, v;
 	bool HoldingCursor;
 	float HoldingX, HoldingY;
 	bool MVRect,MVRectable;
 	float RectX,RectY;
-	int RectWin;
 
 	bool MultiViewSelectionChanged;
 

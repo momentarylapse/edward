@@ -44,7 +44,7 @@ void ModeModelMeshSplitPolygon::OnLeftButtonDown()
 	}
 }
 
-void ModeModelMeshSplitPolygon::OnDrawWin(int win)
+void ModeModelMeshSplitPolygon::OnDrawWin(MultiViewWindow *win)
 {
 	triangle = multi_view->MouseOver;
 	surface = multi_view->MouseOverSet;
@@ -52,13 +52,13 @@ void ModeModelMeshSplitPolygon::OnDrawWin(int win)
 	edge = -1;
 
 	if ((triangle >= 0) && (surface >= 0)){
-		vector pp = multi_view->VecProject(pos, win);
+		vector pp = win->Project(pos);
 		pp.z = 0;
 		ModelPolygon &poly = data->Surface[surface].Polygon[triangle];
 		Array<vector> v, p;
 		for (int k=0;k<poly.Side.num;k++){
 			v.add(data->Vertex[poly.Side[k].Vertex].pos);
-			p.add(multi_view->VecProject(v[k], win));
+			p.add(win->Project(v[k]));
 			p.back().z = 0;
 		}
 
@@ -67,7 +67,7 @@ void ModeModelMeshSplitPolygon::OnDrawWin(int win)
 			if (VecLineDistance(pp, p[k], p[(k + 1) % v.num]) < 10){
 				float f = (pp - p[k]).length() / (p[k] - p[(k + 1) % v.num]).length();
 				pos = v[k] * (1 - f) + v[(k + 1) % v.num] * f;
-				pp = multi_view->VecProject(pos, win);
+				pp = win->Project(pos);
 				edge = poly.Side[k].Edge;
 				factor = f;
 			}

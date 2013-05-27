@@ -24,7 +24,7 @@ ModeModelSkeletonCreateBone::~ModeModelSkeletonCreateBone()
 {
 }
 
-void ModeModelSkeletonCreateBone::OnDrawWin(int win)
+void ModeModelSkeletonCreateBone::OnDrawWin(MultiViewWindow *win)
 {
 }
 

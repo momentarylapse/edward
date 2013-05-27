@@ -73,7 +73,7 @@ void ModeModelMeshCreatePlane::OnLeftButtonDown()
 
 
 
-void ModeModelMeshCreatePlane::OnDrawWin(int win)
+void ModeModelMeshCreatePlane::OnDrawWin(MultiViewWindow *win)
 {
 	if (pos_chosen){
 		vector n = length[0] ^ length[1];
@@ -99,9 +99,8 @@ void ModeModelMeshCreatePlane::OnMouseMove()
 {
 	if (pos_chosen){
 		vector pos2 = multi_view->GetCursor3d();
-		vector dir0 = multi_view->GetDirection(multi_view->mouse_win);
-		vector dir1 = multi_view->GetDirectionUp(multi_view->mouse_win);
-		vector dir2 = multi_view->GetDirectionRight(multi_view->mouse_win);
+		vector dir0, dir1, dir2;
+		multi_view->mouse_win->GetMovingFrame(dir0, dir1, dir2);
 		length[0] = dir1 * VecDotProduct(dir1, pos2 - pos);
 		length[1] = dir2 * VecDotProduct(dir2, pos2 - pos);
 		invert = (((length[0] ^ length[1]) * dir0) > 0);

@@ -204,7 +204,7 @@ void SetMaterialCreation()
 	NixSetMaterial(Black,color(0.3f,0.3f,1,0.3f),Black,0,color(1,0.1f,0.4f,0.1f));
 }
 
-void ModeModelMeshPolygon::OnDrawWin(int win)
+void ModeModelMeshPolygon::OnDrawWin(MultiViewWindow *win)
 {
 	msg_db_r("skin.DrawWin",4);
 
@@ -254,13 +254,13 @@ void ModeModelMeshPolygon::OnStart()
 
 
 
-bool PolygonIsMouseOver(int index, void *user_data, int win, vector &tp)
+bool PolygonIsMouseOver(int index, void *user_data, MultiViewWindow *win, vector &tp)
 {
 	ModelSurface *surf = (ModelSurface*)user_data;
 	ModelPolygon *t = &surf->Polygon[index];
 
 	// care for the sense of rotation?
-	if (t->TempNormal * ed->multi_view_3d->GetDirection(win) > 0)
+	if (t->TempNormal * win->GetDirection() > 0)
 		return false;
 
 	DataModel *m = mode_model_mesh_polygon->data; // surf->model;
@@ -268,7 +268,7 @@ bool PolygonIsMouseOver(int index, void *user_data, int win, vector &tp)
 	// project all points
 	Array<vector> p;
 	for (int k=0;k<t->Side.num;k++){
-		vector pp = ed->multi_view_3d->VecProject(m->Vertex[t->Side[k].Vertex].pos, win); // mmodel->GetVertex(ia)
+		vector pp = win->Project(m->Vertex[t->Side[k].Vertex].pos); // mmodel->GetVertex(ia)
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
 		p.add(pp);
@@ -277,7 +277,7 @@ bool PolygonIsMouseOver(int index, void *user_data, int win, vector &tp)
 	// test all sub-triangles
 	if (t->TriangulationDirty)
 		t->UpdateTriangulation(m->Vertex);
-	vector M = vector(float(ed->multi_view_3d->mx), float(ed->multi_view_3d->my), 0);
+	vector M = win->multi_view->m;
 	for (int k=t->Side.num-3; k>=0; k--){
 		int a = t->Side[k].Triangulation[0];
 		int b = t->Side[k].Triangulation[1];
@@ -301,21 +301,21 @@ inline bool in_irect(const vector &p, rect *r)
 	return ((p.x > r->x1) and (p.x < r->x2) and (p.y > r->y1) and (p.y < r->y2));
 }
 
-bool PolygonInRect(int index, void *user_data, int win, rect *r)
+bool PolygonInRect(int index, void *user_data, MultiViewWindow *win, rect *r)
 {
 	ModelSurface *surf = (ModelSurface*)user_data;
 	ModelPolygon *t = &surf->Polygon[index];
 
 	// care for the sense of rotation?
 	if (mode_model_mesh_polygon->SelectCW)
-		if (t->TempNormal * ed->multi_view_3d->GetDirection(win) > 0)
+		if (t->TempNormal * win->GetDirection() > 0)
 			return false;
 
 	DataModel *m = mode_model_mesh_polygon->data; // surf->model;
 
 	// all vertices within rectangle?
 	for (int k=0;k<t->Side.num;k++){
-		vector pp = ed->multi_view_3d->VecProject(m->Vertex[t->Side[k].Vertex].pos, win); // mmodel->GetVertex(ia)
+		vector pp = win->Project(m->Vertex[t->Side[k].Vertex].pos); // mmodel->GetVertex(ia)
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
 		if (!in_irect(pp, r))

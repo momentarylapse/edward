@@ -13,6 +13,7 @@ const color ColorBackGround3D = color(1,0,0,0.15f);
 const color ColorBackGround2D = color(1,0,0,0.10f);
 const color ColorGrid = color(1,0.7f,0.7f,0.7f);
 const color ColorText = White;
+const color ColorWindowType = color(1, 0.7f, 0.7f, 0.7f);
 
 const float SPEED_MOVE = 0.05f;
 const float SPEED_ZOOM_KEY = 1.15f;
@@ -52,11 +53,11 @@ MultiView::MultiView(bool _mode3d) :
 	if (mode3d){
 		light = 0;
 
-		view[0].type = ViewBack;
-		view[1].type = ViewLeft;
-		view[2].type = ViewTop;
-		view[3].type = ViewPerspective;
-		view[4].type = ViewPerspective;
+		win[0].type = ViewBack;
+		win[1].type = ViewLeft;
+		win[2].type = ViewTop;
+		win[3].type = ViewPerspective;
+		win[4].type = ViewPerspective;
 
 		// Menu
 		menu = new CHuiMenu();
@@ -72,10 +73,12 @@ MultiView::MultiView(bool _mode3d) :
 		menu->AddItem(_("Isometrisch"), "view_isometric");
 		menu->AddItem(_("Perspektive"), "view_perspective");
 	}else{
-		view[0].type = View2D;
+		win[0].type = View2D;
 		light = -1;
 	}
-	mx = my = 0;
+	for (int i=0;i<5;i++)
+		win[i].multi_view = this;
+	m = v_0;
 	HoldingCursor = false;
 	HoldingX = HoldingY = 0;
 
@@ -89,9 +92,10 @@ MultiView::~MultiView()
 void MultiView::Reset()
 {
 	MVRectable = MVRect = false;
-	mouse_win = 0;
+	mouse_win = &win[0];
+	active_win = &win[0];
 
-	ViewMoving = -1;
+	ViewMoving = NULL;
 
 	ResetData(NULL);
 	ResetMouseAction();
@@ -159,26 +163,25 @@ void MultiView::DoZoom(float factor)
 {
 	vector mup;
 	if (mode3d){
-		if (view[mouse_win].type != ViewPerspective)
-			mup = VecUnProject(vector(mx,my,0),mouse_win);
+		if (mouse_win->type != ViewPerspective)
+			mup = mouse_win->Unproject(m);
 		radius /= factor;
 		update_zoom;
-		if (view[mouse_win].type != ViewPerspective)
-			pos += mup - VecUnProject(vector(mx,my,0),mouse_win);
+		if (mouse_win->type != ViewPerspective)
+			pos += mup - mouse_win->Unproject(m);
 	}else{
-		mup = VecUnProject(vector(mx,my,0),mouse_win);
+		mup = mouse_win->Unproject(m);
 		radius /= factor;
 		update_zoom;
-		pos += mup - VecUnProject(vector(mx,my,0),mouse_win);
+		pos += mup - mouse_win->Unproject(m);
 	}
 	Notify("Update");
 }
 
 void MultiView::DoMove(const vector &dir)
 {
-	vector d = GetDirection(mouse_win);
-	vector u = GetDirectionUp(mouse_win);
-	vector r = GetDirectionRight(mouse_win);
+	vector d, u, r;
+	mouse_win->GetMovingFrame(d, u, r);
 	if (mode3d)
 		pos += radius*(r*dir.x+u*dir.y+d*dir.z) * SPEED_MOVE;
 	else
@@ -199,7 +202,12 @@ void MultiView::SetViewBox(const vector &min, const vector &max)
 void MultiView::ToggleWholeWindow()
 {
 	whole_window = !whole_window;
-	view[4].type = view[mouse_win].type;
+	if (whole_window){
+		win[4].type = active_win->type;
+		active_win = &win[4];
+	}else{
+		active_win = &win[0];
+	}
 	Notify("SettingsChange");
 }
 
@@ -235,21 +243,21 @@ void MultiView::OnCommand(const string & id)
 		InvertSelection();
 
 	if (id == "view_right")
-		view[mouse_win].type = ViewRight;
+		active_win->type = ViewRight;
 	if (id == "view_left")
-		view[mouse_win].type = ViewLeft;
+		active_win->type = ViewLeft;
 	if (id == "view_front")
-		view[mouse_win].type = ViewFront;
+		active_win->type = ViewFront;
 	if (id == "view_back")
-		view[mouse_win].type = ViewBack;
+		active_win->type = ViewBack;
 	if (id == "view_top")
-		view[mouse_win].type = ViewTop;
+		active_win->type = ViewTop;
 	if (id == "view_bottom")
-		view[mouse_win].type = ViewBottom;
+		active_win->type = ViewBottom;
 	if (id == "view_perspective")
-		view[mouse_win].type = ViewPerspective;
+		active_win->type = ViewPerspective;
 	if (id == "view_isometric")
-		view[mouse_win].type = ViewIsometric;
+		active_win->type = ViewIsometric;
 	if (id == "whole_window")
 		ToggleWholeWindow();
 	if (id == "grid")
@@ -309,15 +317,16 @@ int get_select_mode()
 
 void MultiView::OnLeftButtonDown()
 {
+	active_win = mouse_win;
 	// menu for selection of view type
-	if (view[mouse_win].name_dest.inside(mx, my)){
-		menu->OpenPopup(ed, mx, my);
+	if ((menu) && (active_win->name_dest.inside(m.x, m.y))){
+		menu->OpenPopup(ed, m.x, m.y);
 		return;
 	}
 
 	MouseMovedSinceClick = 0;
 	Moved = false;
-	vx = vy = 0;
+	v = v_0;
 	GetSelected(get_select_mode());
 
 	if (Selected<0){
@@ -331,6 +340,7 @@ void MultiView::OnLeftButtonDown()
 
 void MultiView::OnMiddleButtonDown()
 {
+	active_win = mouse_win;
 	bool allow = true;
 	if ((MouseOverType >= 0) && (MouseOver >= 0))
 		if (MVGetSingleData(data[MouseOverSet], MouseOver)->is_selected)
@@ -338,15 +348,17 @@ void MultiView::OnMiddleButtonDown()
 	if (allow){
 // move camera?
 		HoldCursor(true);
-		ViewMoving = mouse_win;
+		ViewMoving = active_win;
 		Selected = -1;
 	}
+	Notify("Update");
 }
 
 
 
 void MultiView::OnRightButtonDown()
 {
+	active_win = mouse_win;
 	bool allow = true;
 	if ((MouseOverType >= 0) && (MouseOver >= 0))
 		if (MVGetSingleData(data[MouseOverSet], MouseOver)->is_selected)
@@ -354,20 +366,21 @@ void MultiView::OnRightButtonDown()
 	if (allow){
 // move camera?
 		HoldCursor(true);
-		ViewMoving = mouse_win;
+		ViewMoving = active_win;
 		Selected = -1;
 	}else{
 		MouseMovedSinceClick = 0;
 		GetSelected();
 	}
+	Notify("Update");
 }
 
 
 
 void MultiView::OnMiddleButtonUp()
 {
-	if (ViewMoving >= 0){
-		ViewMoving = -1;
+	if (ViewMoving){
+		ViewMoving = NULL;
 		HoldCursor(false);
 	}
 	MouseActionEnd(true);
@@ -377,8 +390,8 @@ void MultiView::OnMiddleButtonUp()
 
 void MultiView::OnRightButtonUp()
 {
-	if (ViewMoving >= 0){
-		ViewMoving = -1;
+	if (ViewMoving){
+		ViewMoving = NULL;
 		HoldCursor(false);
 	}
 	MouseActionEnd(true);
@@ -403,10 +416,10 @@ void MultiView::OnLeftButtonUp()
 
 void MultiView::OnMouseMove()
 {
-	mx = HuiGetEvent()->mx;
-	my = HuiGetEvent()->my;
-	vx = HuiGetEvent()->dx;
-	vy = HuiGetEvent()->dy;
+	m.x = HuiGetEvent()->mx;
+	m.y = HuiGetEvent()->my;
+	v.x = HuiGetEvent()->dx;
+	v.y = HuiGetEvent()->dy;
 
 	bool lbut = HuiGetEvent()->lbut;
 	bool mbut = HuiGetEvent()->mbut;
@@ -414,20 +427,18 @@ void MultiView::OnMouseMove()
 
 
 	// which window is the cursor in?
-	if (!cur_action){
-		if ((mx<MaxX/2)&&(my<MaxY/2))
-			mouse_win=0;
-		if ((mx>MaxX/2)&&(my<MaxY/2))
-			mouse_win=1;
-		if ((mx<MaxX/2)&&(my>MaxY/2))
-			mouse_win=2;
-		if ((mx>MaxX/2)&&(my>MaxY/2))
-			mouse_win=3;
-		if (whole_window)
-			mouse_win=4;
-		if (!mode3d)
-			mouse_win = 0;
-	}
+	if ((m.x<MaxX/2)&&(m.y<MaxY/2))
+		mouse_win = &win[0];
+	if ((m.x>MaxX/2)&&(m.y<MaxY/2))
+		mouse_win = &win[1];
+	if ((m.x<MaxX/2)&&(m.y>MaxY/2))
+		mouse_win = &win[2];
+	if ((m.x>MaxX/2)&&(m.y>MaxY/2))
+		mouse_win = &win[3];
+	if (whole_window)
+		mouse_win = &win[4];
+	if (!mode3d)
+		mouse_win = &win[0];
 
 
 	// hover
@@ -441,7 +452,7 @@ void MultiView::OnMouseMove()
 	// left button -> move data
 	//msg_write(lbut);
 	if ((lbut) or (mbut) or (rbut)){
-		int d = abs(vx) + abs(vy);
+		int d = abs(v.x) + abs(v.y);
 		MouseMovedSinceClick += d;
 		if ((MouseMovedSinceClick >= MinMouseMoveToInteract) and (MouseMovedSinceClick - d < MinMouseMoveToInteract)){
 			MultiViewEditing = true;
@@ -453,29 +464,28 @@ void MultiView::OnMouseMove()
 	}
 
 
-	if (ViewMoving >= 0){
-		int t = view[ViewMoving].type;
+	if (ViewMoving){
+		int t = ViewMoving->type;
 		if ((t == ViewPerspective) || (t == ViewIsometric)){
 // camera rotation
 			bool RotatingOwn = (mbut || (NixGetKey(KEY_CONTROL)));
 			if (RotatingOwn)
 				pos -= radius * ang.ang2dir();
-			vector dang = vector((float)vy, (float)vx, 0) * MouseRotationSpeed;
+			vector dang = vector(v.y, v.x, 0) * MouseRotationSpeed;
 			ang = VecAngAdd(dang, ang);
 			if (RotatingOwn)
 				pos += radius * ang.ang2dir();
 		}else{
 // camera translation
-			if (t == View2D)
-				pos += float(vx) / zoom * GetDirectionRight(ViewMoving) + float(vy) / zoom * GetDirectionUp(ViewMoving);
-			else
-				pos += float(vx) / zoom * GetDirectionRight(ViewMoving) + float(vy) / zoom * GetDirectionUp(ViewMoving);
+			vector r = ViewMoving->GetDirectionRight();
+			vector u = ViewMoving->GetDirectionUp();
+			pos += float(v.x) / zoom * r + float(v.y) / zoom * u;
 		}
 	}
 
 	// ignore mouse, while "holding"
 	if (HoldingCursor){
-		if (fabs(mx - HoldingX) + fabs(my - HoldingY) > 100)
+		if (fabs(m.x - HoldingX) + fabs(m.y - HoldingY) > 100)
 			ed->SetCursorPos(HoldingX, HoldingY);
 	}
 
@@ -487,10 +497,9 @@ void MultiView::OnMouseMove()
 
 void MultiView::StartRect()
 {
-	MVRect=true;
-	RectWin=mouse_win;
-	RectX=mx;
-	RectY=my;
+	MVRect = true;
+	RectX = m.x;
+	RectY = m.y;
 
 	// reset selection data
 	foreach(MultiViewData &d, data)
@@ -508,8 +517,7 @@ void MultiView::EndRect()
 	/*if (PostEndRect)
 		PostEndRect();*/
 
-	MVRect=false;
-	RectWin=-1;
+	MVRect = false;
 
 	Notify("Update");
 }
@@ -547,10 +555,9 @@ float GetDensity(int i,float t)
 }
 
 
-void MultiView::DrawGrid(int win)
+void MultiViewWindow::DrawGrid()
 {
-	int vt=view[win].type;
-	if (vt == ViewIsometric)
+	if (type == ViewIsometric)
 		return;
 	rect d;
 	vector bg_a,bg_b;
@@ -570,18 +577,15 @@ void MultiView::DrawGrid(int win)
 	}*/
 
 // grid of coordinates
-	if (!grid_enabled)
-		return;
 
-	if (vt == View2D){
+	if (type == View2D)
 		return;
-	}
 
 	// spherical for perspective view
-	if (vt==ViewPerspective){
-		vector PerspectiveViewPos = radius * ang.ang2dir() - pos;
+	if (type == ViewPerspective){
+		vector PerspectiveViewPos = multi_view->radius * multi_view->ang.ang2dir() - multi_view->pos;
 		//NixSetZ(false,false);
-		// horizontale
+		// horizontal
 		float r=NixMaxDepth*0.6f;
 		for (int j=-16;j<16;j++)
 			for (int i=0;i<64;i++){
@@ -590,7 +594,7 @@ void MultiView::DrawGrid(int win)
 				NixSetColor(ColorInterpolate(ColorBackGround2D,ColorGrid,j==0?0.6f:0.1f));
 				NixDrawLine3D(pa,pb);
 			}
-		// vertikale
+		// vertical
 		for (int j=0;j<32;j++)
 			for (int i=0;i<64;i++){
 				vector pa = vector(float(i  )/32*pi,float(j)/32*pi,0).ang2dir() * r - PerspectiveViewPos;
@@ -603,18 +607,17 @@ void MultiView::DrawGrid(int win)
 	}
 
 	// rectangular
-	float D = GetGridD();
+	float D = multi_view->GetGridD();
 	int a,b;
 	float fa,fb,t;
 
-	rect dest = GetRect(win);
-	vector vux1 = VecUnProject(vector(dest.x1,0,0), win);
-	vector vux2 = VecUnProject(vector(dest.x2,0,0), win);
-	vector vuy1 = VecUnProject(vector(0,dest.y1,0), win);
-	vector vuy2 = VecUnProject(vector(0,dest.y2,0), win);
+	vector vux1 = Unproject(vector(dest.x1,0,0));
+	vector vux2 = Unproject(vector(dest.x2,0,0));
+	vector vuy1 = Unproject(vector(0,dest.y1,0));
+	vector vuy2 = Unproject(vector(0,dest.y2,0));
 	vector n,va,vb;
 
-	// vertikal
+	// vertical
 	n=vux2-vux1;
 	n/=n.length_fuzzy();	//n.normalize();
 	va=n*VecDotProduct(n,vux1);
@@ -625,7 +628,7 @@ void MultiView::DrawGrid(int win)
 	a=(int)fa;
 	b=(int)fb+1;
 	for (int i=a;i<b;i++){
-		int x=(int)VecProject(vector((float)i*D,(float)i*D,(float)i*D),win).x;
+		int x=(int)Project(vector((float)i*D,(float)i*D,(float)i*D)).x;
 		NixSetColor(ColorInterpolate(ColorBackGround2D,ColorGrid,GetDensity(i,(float)MaxX/(fb-fa))));
 		NixDrawLineV(x,dest.y1,dest.y2,0.99998f-GetDensity(i,(float)MaxX/(fb-fa))*0.00005f);
 	}
@@ -641,7 +644,7 @@ void MultiView::DrawGrid(int win)
 	a=(int)fa;
 	b=(int)fb+1;
 	for (int i=a;i<b;i++){
-		int y=(int)VecProject(vector((float)i*D,(float)i*D,(float)i*D),win).y;
+		int y=(int)Project(vector((float)i*D,(float)i*D,(float)i*D)).y;
 		NixSetColor(ColorInterpolate(ColorBackGround2D,ColorGrid,GetDensity(i,(float)MaxX/(fb-fa))));
 		NixDrawLineH(dest.x1,dest.x2,y,0.99998f-GetDensity(i,(float)MaxX/(fb-fa))*0.00005f);
 	}
@@ -700,7 +703,7 @@ void MultiView::DrawMousePos()
 	string sy = f2s(m.y,2) + " " + unit;
 	string sz = f2s(m.z,2) + " " + unit;
 
-	if (view[mouse_win].type == View2D){
+	if (mouse_win->type == View2D){
 		ed->DrawStr(MaxX, MaxY - 60, sx, Edward::AlignRight);
 		ed->DrawStr(MaxX, MaxY - 40, sy, Edward::AlignRight);
 	}else{
@@ -711,98 +714,98 @@ void MultiView::DrawMousePos()
 }
 
 
-void MultiView::DrawWin(int win)
+void MultiViewWindow::Draw()
 {
 	msg_db_r("MultiView.DrawWin",2);
 	matrix r, t;
-	rect dest = GetRect(win);
 	NixStartPart(dest.x1, dest.y1, dest.x2, dest.y2, true);
 	string view_kind;
-	MatrixIdentity(view[win].mat);
+	MatrixIdentity(mat);
 	NixEnableLighting(false);
 	NixSetTexture(-1);
 
-	if (view[win].type == ViewPerspective){
+	if (type == ViewPerspective){
 		NixSetPerspectiveMode(PerspectiveCenterAutoTarget);
-		if (whole_window)
+		if (multi_view->whole_window)
 			NixSetPerspectiveMode(PerspectiveSizeSet,(float)NixScreenWidth,(float)NixScreenHeight);
 		else
 			NixSetPerspectiveMode(PerspectiveSizeSet,(float)NixScreenWidth/2,(float)NixScreenHeight/2);
 		NixSetPerspectiveMode(PerspectiveCenterSet, (dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2);
 		NixSetProjection(true, true);
-		view[win].projection = NixProjectionMatrix;
+		projection = NixProjectionMatrix;
 		NixSetColor(ColorBackGround3D);
 		NixDraw2D(r_id,NixTargetRect,0.9999999f);
-	}else if (view[win].type == View2D){
-		NixSetPerspectiveMode(Perspective2DScaleSet, zoom, zoom);
+	}else if (type == View2D){
+		NixSetPerspectiveMode(Perspective2DScaleSet, multi_view->zoom, multi_view->zoom);
 		NixSetColor(ColorBackGround2D);
 		NixDraw2D(r_id,NixTargetRect,0.9999999f);
 	}else{
 		matrix s;
 		MatrixTranslation(t, vector((dest.x2 + dest.x1) / 2, (dest.y2 + dest.y1) / 2, 0));
-		MatrixScale(s, zoom, -zoom, zoom / 1000);
-		view[win].projection = NixProjectionMatrix2d * t * s;
-		NixSetProjectionMatrix(view[win].projection);
+		MatrixScale(s, multi_view->zoom, -multi_view->zoom, multi_view->zoom / 1000);
+		projection = NixProjectionMatrix2d * t * s;
+		NixSetProjectionMatrix(projection);
 		NixSetColor(ColorBackGround2D);
 		NixDraw2D(r_id,NixTargetRect,0.9999999f);
 	}
 
 	// camera position
-	vector vt=-pos;
+	vector vt = -multi_view->pos;
 	MatrixTranslation(t,vt);
-	if (view[win].type == ViewFront){
+	if (type == ViewFront){
 		view_kind = _("Vorne");
-		view[win].ang = - e_y * pi;
-	}else if (view[win].type == ViewBack){
+		ang = - e_y * pi;
+	}else if (type == ViewBack){
 		view_kind = _("Hinten");
-		view[win].ang = v_0;
-	}else if (view[win].type == ViewRight){
+		ang = v_0;
+	}else if (type == ViewRight){
 		view_kind = _("Rechts");
-		view[win].ang = - e_y * pi / 2;
-	}else if (view[win].type == ViewLeft){
+		ang = - e_y * pi / 2;
+	}else if (type == ViewLeft){
 		view_kind = _("Links");
-		view[win].ang = e_y * pi / 2;
-	}else if (view[win].type == ViewTop){
+		ang = e_y * pi / 2;
+	}else if (type == ViewTop){
 		view_kind = _("Oben");
-		view[win].ang = e_x * pi / 2;
-	}else if (view[win].type == ViewBottom){
+		ang = e_x * pi / 2;
+	}else if (type == ViewBottom){
 		view_kind = _("Unten");
-		view[win].ang = - e_x * pi / 2;
-	}else if (view[win].type == ViewPerspective){
+		ang = - e_x * pi / 2;
+	}else if (type == ViewPerspective){
 		view_kind = _("Perspektive");
-		float _radius = ignore_radius ? 0 : radius;
-		MatrixTranslation(t, _radius * ang.ang2dir() + vt);
-		view[win].ang = ang;
-	}else if (view[win].type == ViewIsometric){
+		float _radius = multi_view->ignore_radius ? 0 : multi_view->radius;
+		MatrixTranslation(t, _radius * multi_view->ang.ang2dir() + vt);
+		ang = multi_view->ang;
+	}else if (type == ViewIsometric){
 		view_kind = _("Isometrisch");
-		float _radius = ignore_radius? 0 : radius;
-		MatrixTranslation(t, _radius * ang.ang2dir() + vt);
-		view[win].ang = ang;
-	}else if (view[win].type == View2D){
+		float _radius = multi_view->ignore_radius ? 0 : multi_view->radius;
+		MatrixTranslation(t, _radius * multi_view->ang.ang2dir() + vt);
+		ang = multi_view->ang;
+	}else if (type == View2D){
 		view_kind = _("2D");
-		vt=-pos;
+		vt = -multi_view->pos;
 		MatrixTranslation(t,vt);
-		view[win].ang = - pi * e_y;
+		ang = - pi * e_y;
 	}
-	MatrixRotationView(r, view[win].ang);
-	view[win].mat = r * t;
-	cur_view = cur_view_rect = win;
-	NixSetViewM(view[win].mat);
+	MatrixRotationView(r, ang);
+	mat = r * t;
+	multi_view->cur_projection_win = this;
+	NixSetViewM(mat);
 	//NixSetView(true,vector(0,0,-200),vector(0,0,0));
 	NixSetZ(true,true);
 	NixSetWire(false);
 	NixEnableLighting(false);
-	DrawGrid(win);
+	if (multi_view->grid_enabled)
+		DrawGrid();
 
-	NixSetWire(wire_mode);
+	NixSetWire(multi_view->wire_mode);
 	// light
-	vector dir=-ang.ang2dir();
+	vector dir=-multi_view->ang.ang2dir();
 	color am=color(1,0.3f,0.3f,0.3f);
 	color di=color(1,0.6f,0.6f,0.6f);
 	color sp=color(1,0.4f,0.4f,0.4f);
-	NixSetLightDirectional(light,dir,am,di,sp);
-	NixEnableLight(light, true);
-	NixEnableLighting(light_enabled);
+	NixSetLightDirectional(multi_view->light,dir,am,di,sp);
+	NixEnableLight(multi_view->light, true);
+	NixEnableLighting(multi_view->light_enabled);
 	NixSetAmbientLight(Black);
 	NixSetMaterial(Black,White,Black,0,White);//Black);
 	NixSetColor(White);
@@ -810,7 +813,7 @@ void MultiView::DrawWin(int win)
 	// draw the actual data
 	//msg_db_r("sub",2);
 	if (ed->cur_mode)
-		ed->cur_mode->OnDrawWinRecursive(win);
+		ed->cur_mode->OnDrawWinRecursive(this);
 	//msg_db_l(2);
 
 	// draw multiview data
@@ -819,25 +822,25 @@ void MultiView::DrawWin(int win)
 	NixSetTexture(-1);
 	NixSetWire(false);
 	NixEnableLighting(false);
-	foreachi(MultiViewData &d, data, di){
+	foreachi(MultiViewData &d, multi_view->data, di){
 		if ((d.Drawable)||(d.Indexable)){
 			for (int i=0;i<d.data->num;i++){
 
 				MultiViewSingleData *sd = MVGetSingleData(d, i);
-				if (sd->view_stage < view_stage)
+				if (sd->view_stage < multi_view->view_stage)
 					continue;
 
 				bool _di = ((d.Indexable) && (sd->is_selected) && (NixGetKey(KEY_I)));
 				if ((!d.Drawable) && (!_di))
 					continue;
-				vector p = VecProject(sd->pos,win);
+				vector p = Project(sd->pos);
 				if ((p.x<dest.x1)||(p.y<dest.y1)||(p.x>dest.x2)||(p.y>dest.y2)||(p.z<=0)||(p.z>=1))
 					continue;
 				if (_di)
 					NixDrawStr(p.x+3, p.y, i2s(i));
 				if (d.Drawable){
 					color c=Blue;
-					float radius=(float)PointRadius;
+					float radius = (float)PointRadius;
 					float z=0.1f;
 					if (sd->is_selected){
 						c=Red;
@@ -845,10 +848,10 @@ void MultiView::DrawWin(int win)
 					}
 					if (sd->is_special)
 						c = Green;
-					if ((MouseOverSet==di)&&(i==MouseOver)){
+					if ((multi_view->MouseOverSet==di)&&(i==multi_view->MouseOver)){
 						c=color(c.a,c.r+0.4f,c.g+0.4f,c.b+0.4f);
 						z=0.0f;
-						radius=(float)PointRadiusMouseOver;
+						radius = (float)PointRadiusMouseOver;
 					}
 					NixSetColor(c);
 					NixDrawRect(	p.x-radius,
@@ -867,15 +870,15 @@ void MultiView::DrawWin(int win)
 
 	// type of view
 
-	view[win].name_dest = rect(dest.x1 + 3, dest.x1 + 3 + NixGetStrWidth(view_kind), dest.y1, dest.y1 + 20);
-	NixSetColor(ColorText);
-	if (view[win].name_dest.inside(mx, my))
+	name_dest = rect(dest.x1 + 3, dest.x1 + 3 + NixGetStrWidth(view_kind), dest.y1, dest.y1 + 20);
+	NixSetColor((this == multi_view->active_win) ? ColorText : ColorWindowType);
+	if (name_dest.inside(multi_view->m.x, multi_view->m.y))
 		NixSetColor(Red);
 	ed->DrawStr(dest.x1 + 3, dest.y1, view_kind);
 	NixSetColor(ColorText);
 
-	foreach(Message3d &m, message3d){
-		vector p = VecProject(m.pos, win);
+	foreach(MultiView::Message3d &m, multi_view->message3d){
+		vector p = Project(m.pos);
 		if (p.z > 0)
 			ed->DrawStr(p.x, p.y, m.str);
 	}
@@ -895,29 +898,29 @@ void MultiView::OnDraw()
 	NixSetColor(ColorText);
 
 
-	view[0].dest = rect(0,MaxX/2,0,MaxY/2);
-	view[1].dest = rect(MaxX/2,MaxX,0,MaxY/2);
-	view[2].dest = rect(0,MaxX/2,MaxY/2,MaxY);
-	view[3].dest = rect(MaxX/2,MaxX,MaxY/2,MaxY);
-	view[4].dest = rect(0,MaxX,0,MaxY);
+	win[0].dest = rect(0,MaxX/2,0,MaxY/2);
+	win[1].dest = rect(MaxX/2,MaxX,0,MaxY/2);
+	win[2].dest = rect(0,MaxX/2,MaxY/2,MaxY);
+	win[3].dest = rect(MaxX/2,MaxX,MaxY/2,MaxY);
+	win[4].dest = rect(0,MaxX,0,MaxY);
 
 	if (!mode3d){
-		view[0].dest = rect(0,MaxX,0,MaxY);
-		DrawWin(0);
+		win[0].dest = rect(0,MaxX,0,MaxY);
+		win[0].Draw();
 	}else if (whole_window){
-		DrawWin(4);
+		win[4].Draw();
 	}else{
 		// top left
-		DrawWin(0);
+		win[0].Draw();
 
 		// top right
-		DrawWin(1);
+		win[1].Draw();
 
 		// bottom left
-		DrawWin(2);
+		win[2].Draw();
 
 		// bottom right
-		DrawWin(3);
+		win[3].Draw();
 
 		NixStartPart(-1,-1,-1,-1,true);
 		NixEnableLighting(false);
@@ -925,20 +928,19 @@ void MultiView::OnDraw()
 		NixDrawRect(0, MaxX, MaxY/2-1, MaxY/2+2, 0);
 		NixDrawRect(MaxX/2-1, MaxX/2+2, 0, MaxY, 0);
 	}
-	cur_view = -1;
-	cur_view_rect = -1;
+	cur_projection_win = NULL;
 	NixEnableLighting(false);
 
 	if ((MVRectable)&&(MVRect)){
 		NixSetZ(false, false);
 		NixSetAlphaM(AlphaMaterial);
 		NixSetColor(color(0.2f,0,0,1));
-		NixDrawRect(mx,RectX,my,RectY,0);
+		NixDrawRect(m.x, RectX, m.y, RectY, 0);
 		NixSetColor(color(0.7f,0,0,1));
-		NixDrawLineV(RectX	,RectY	,my		,0);
-		NixDrawLineV(mx		,RectY	,my		,0);
-		NixDrawLineH(RectX	,mx		,RectY	,0);
-		NixDrawLineH(RectX	,mx		,my		,0);
+		NixDrawLineV(RectX	,RectY	,m.y	,0);
+		NixDrawLineV(m.x	,RectY	,m.y	,0);
+		NixDrawLineH(RectX	,m.x	,RectY	,0);
+		NixDrawLineH(RectX	,m.x	,m.y	,0);
 		NixSetAlphaM(AlphaNone);
 		NixSetZ(true, true);
 	}
@@ -970,50 +972,51 @@ void MultiView::OnDraw()
 	msg_db_l(2);
 }
 
-vector MultiView::VecUnProject2(const vector &p, const vector &o, int win)
+vector MultiViewWindow::Unproject(const vector &p, const vector &o)
 {
 	vector r;
-	int t=view[win].type;
 	vector pp = p;
-	if ((t==ViewPerspective) || (t==ViewIsometric)){ // 3D
-		if (cur_view!=win){
-			cur_view=win;
-			NixSetProjectionMatrix(view[win].projection);
-			NixSetView(view[win].mat);
+	if ((type == ViewPerspective) || (type == ViewIsometric)){ // 3D
+		if (multi_view->cur_projection_win != this){
+			multi_view->cur_projection_win = this;
+			NixSetProjectionMatrix(projection);
+			NixSetView(mat);
 		}
 		vector p_o;
-		NixGetVecProject(p_o,o);
-		pp.z=p_o.z;
-		NixGetVecUnproject(r,pp);
-	}else if (t==View2D){
-		r.x=(p.x-MaxX/2)/zoom+pos.x;
-		r.y=(p.y-MaxY/2)/zoom+pos.y;
+		NixGetVecProject(p_o, o);
+		pp.z = p_o.z;
+		NixGetVecUnproject(r, pp);
+	}else if (type == View2D){
+		r.x=(p.x-MaxX/2)/multi_view->zoom+multi_view->pos.x;
+		r.y=(p.y-MaxY/2)/multi_view->zoom+multi_view->pos.y;
 		r.z=0;
 	}else{ // 2D
 		r=o;
-		if (whole_window){
+		if (multi_view->whole_window){
 			pp.x-=MaxX/4;
 			pp.y-=MaxY/4;
 		}else{
-			pp.x-=MaxX/2*float(win%2);
-			pp.y-=MaxY/2*float(win/2);
+			pp.x-=dest.x1;
+			pp.y-=dest.y1;
 		}
-		if (t==ViewFront){
+		float zoom = multi_view->zoom;
+		vector &pos = multi_view->pos;
+		if (type == ViewFront){
 			r.x=-(pp.x-MaxX/4)/zoom+pos.x;
 			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
-		}else if (t==ViewBack){
+		}else if (type == ViewBack){
 			r.x= (pp.x-MaxX/4)/zoom+pos.x;
 			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
-		}else if (t==ViewRight){
+		}else if (type == ViewRight){
 			r.z= (pp.x-MaxX/4)/zoom+pos.z;
 			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
-		}else if (t==ViewLeft){
+		}else if (type == ViewLeft){
 			r.z=-(pp.x-MaxX/4)/zoom+pos.z;
 			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
-		}else if (t==ViewTop){
+		}else if (type == ViewTop){
 			r.x= (pp.x-MaxX/4)/zoom+pos.x;
 			r.z=-(pp.y-MaxY/4)/zoom+pos.z;
-		}else if (t==ViewBottom){
+		}else if (type == ViewBottom){
 			r.x= (pp.x-MaxX/4)/zoom+pos.x;
 			r.z= (pp.y-MaxY/4)/zoom+pos.z;
 		}
@@ -1021,94 +1024,96 @@ vector MultiView::VecUnProject2(const vector &p, const vector &o, int win)
 	return r;
 }
 
-vector MultiView::VecProject(const vector &p,int win)
+vector MultiViewWindow::Project(const vector &p)
 {
 	vector r;
-	int t=view[win].type;
-	if ((t==ViewPerspective) || (t==ViewIsometric)){ // 3D
-		if (cur_view!=win){
-			cur_view=win;
-			NixSetProjectionMatrix(view[win].projection);
-			NixSetView(view[win].mat);
+	if ((type == ViewPerspective) || (type == ViewIsometric)){ // 3D
+		if (multi_view->cur_projection_win != this){
+			multi_view->cur_projection_win = this;
+			NixSetProjectionMatrix(projection);
+			NixSetView(mat);
 		}
 		NixGetVecProject(r,p);
-	}else if (t==View2D){
-		r.x=MaxX/2+(p.x-pos.x)*zoom;
-		r.y=MaxY/2+(p.y-pos.y)*zoom;
+	}else if (type == View2D){
+		r.x=MaxX/2+(p.x-multi_view->pos.x)*multi_view->zoom;
+		r.y=MaxY/2+(p.y-multi_view->pos.y)*multi_view->zoom;
 		r.z=0.5f;
 	}else{ // 2D
-		if (t==ViewFront){
+		float zoom = multi_view->zoom;
+		vector &pos = multi_view->pos;
+		if (type == ViewFront){
 			r.x=MaxX/4-(p.x-pos.x)*zoom;
 			r.y=MaxY/4-(p.y-pos.y)*zoom;
-		}else if (t==ViewBack){
+		}else if (type == ViewBack){
 			r.x=MaxX/4+(p.x-pos.x)*zoom;
 			r.y=MaxY/4-(p.y-pos.y)*zoom;
-		}else if (t==ViewRight){
+		}else if (type == ViewRight){
 			r.x=MaxX/4+(p.z-pos.z)*zoom;
 			r.y=MaxY/4-(p.y-pos.y)*zoom;
-		}else if (t==ViewLeft){
+		}else if (type == ViewLeft){
 			r.x=MaxX/4-(p.z-pos.z)*zoom;
 			r.y=MaxY/4-(p.y-pos.y)*zoom;
-		}else if (t==ViewTop){
+		}else if (type == ViewTop){
 			r.x=MaxX/4+(p.x-pos.x)*zoom;
 			r.y=MaxY/4-(p.z-pos.z)*zoom;
-		}else if (t==ViewBottom){
+		}else if (type == ViewBottom){
 			r.x=MaxX/4+(p.x-pos.x)*zoom;
 			r.y=MaxY/4+(p.z-pos.z)*zoom;
 		}
-		if (whole_window){
+		if (multi_view->whole_window){
 			r.x+=MaxX/4;
 			r.y+=MaxY/4;
 		}else{
-			r.x+=MaxX/2*float(win%2);
-			r.y+=MaxY/2*float(win/2);
+			r.x+=dest.x1;
+			r.y+=dest.y1;
 		}
-		r.z=0.5f+VecDotProduct(p-pos,GetDirection(win))/radius/32;
+		r.z=0.5f+VecDotProduct(p-pos,GetDirection())/multi_view->radius/32;
 	}
 	return r;
 }
 
-vector MultiView::VecUnProject(const vector &p,int win)
+vector MultiViewWindow::Unproject(const vector &p)
 {
 	vector r;
-	int t=view[win].type;
 	vector pp = p;
-	if ((t==ViewPerspective) || (t==ViewIsometric)){ // 3D
-		if (cur_view!=win){
-			cur_view=win;
-			NixSetProjectionMatrix(view[win].projection);
-			NixSetView(view[win].mat);
+	if ((type == ViewPerspective) || (type == ViewIsometric)){ // 3D
+		if (multi_view->cur_projection_win != this){
+			multi_view->cur_projection_win = this;
+			NixSetProjectionMatrix(projection);
+			NixSetView(mat);
 		}
 		NixGetVecUnproject(r,pp);
-	}else if (t==View2D){
-		r.x=(pp.x-MaxX/2)/zoom+pos.x;
-		r.y=(pp.y-MaxY/2)/zoom+pos.y;
+	}else if (type == View2D){
+		r.x=(pp.x-MaxX/2)/multi_view->zoom+multi_view->pos.x;
+		r.y=(pp.y-MaxY/2)/multi_view->zoom+multi_view->pos.y;
 		r.z=0;
 	}else{ // 2D
-		if (whole_window){
+		if (multi_view->whole_window){
 			pp.x-=MaxX/4;
 			pp.y-=MaxY/4;
 		}else{
-			pp.x-=MaxX/2*float(win%2);
-			pp.y-=MaxY/2*float(win/2);
+			pp.x-=dest.x1;
+			pp.y-=dest.y1;
 		}
-		r=pos;
-		if (t==ViewFront){
+		r=multi_view->pos;
+		float zoom = multi_view->zoom;
+		vector &pos = multi_view->pos;
+		if (type == ViewFront){
 			r.x=-(pp.x-MaxX/4)/zoom+pos.x;
 			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
-		}else if (t==ViewBack){
+		}else if (type == ViewBack){
 			r.x= (pp.x-MaxX/4)/zoom+pos.x;
 			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
-		}else if (t==ViewRight){
+		}else if (type == ViewRight){
 			r.z= (pp.x-MaxX/4)/zoom+pos.z;
 			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
-		}else if (t==ViewLeft){
+		}else if (type == ViewLeft){
 			r.z=-(pp.x-MaxX/4)/zoom+pos.z;
 			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
-		}else if (t==ViewTop){
+		}else if (type == ViewTop){
 			r.x= (pp.x-MaxX/4)/zoom+pos.x;
 			r.z=-(pp.y-MaxY/4)/zoom+pos.z;
-		}else if (t==ViewBottom){
+		}else if (type == ViewBottom){
 			r.x= (pp.x-MaxX/4)/zoom+pos.x;
 			r.z= (pp.y-MaxY/4)/zoom+pos.z;
 		}
@@ -1116,9 +1121,9 @@ vector MultiView::VecUnProject(const vector &p,int win)
 	return r;
 }
 
-vector MultiView::GetDirection(int win)
+vector MultiViewWindow::GetDirection()
 {
-	int t=view[win].type;
+	int t=type;
 	if ((t==ViewFront)||(t==View2D))
 		return vector(0,0,-1);
 	else if (t==ViewBack)
@@ -1132,13 +1137,13 @@ vector MultiView::GetDirection(int win)
 	else if (t==ViewBottom)
 		return vector(0,1,0);
 	else if ((t==ViewPerspective) || (t==ViewIsometric))
-		return ang.ang2dir();
+		return multi_view->ang.ang2dir();
 	return v_0;
 }
 
-vector MultiView::GetDirectionUp(int win)
+vector MultiViewWindow::GetDirectionUp()
 {
-	int t=view[win].type;
+	int t=type;
 	if (t==View2D)
 		return vector(0,-1,0);
 	else if (t==ViewFront)
@@ -1154,27 +1159,22 @@ vector MultiView::GetDirectionUp(int win)
 	else if (t==ViewBottom)
 		return vector(0,0,1);
 	else if ((t==ViewPerspective) || (t==ViewIsometric))
-		return VecAngAdd(vector(-pi/2,0,0), ang).ang2dir();
+		return VecAngAdd(vector(-pi/2,0,0), multi_view->ang).ang2dir();
 	return v_0;
 }
 
-vector MultiView::GetDirectionRight(int win)
+vector MultiViewWindow::GetDirectionRight()
 {
-	vector d=GetDirection(win);
-	vector u=GetDirectionUp(win);
+	vector d=GetDirection();
+	vector u=GetDirectionUp();
 	return VecCrossProduct(d,u);
 }
 
-void MultiView::GetMovingFrame(vector &dir, vector &up, vector &right, int win)
+void MultiViewWindow::GetMovingFrame(vector &dir, vector &up, vector &right)
 {
-	dir = GetDirection(win);
-	up = GetDirectionUp(win);
+	dir = GetDirection();
+	up = GetDirectionUp();
 	right = dir ^ up;
-}
-
-rect MultiView::GetRect(int win)
-{
-	return view[win].dest;
 }
 
 void MultiView::SetMouseAction(int button, const string & name, int mode)
@@ -1219,12 +1219,12 @@ void MultiView::InvertSelection()
 
 vector MultiView::GetCursor3d()
 {
-	return VecUnProject2(vector(mx, my, 0), pos, mouse_win);
+	return mouse_win->Unproject(m, pos);
 }
 
 vector MultiView::GetCursor3d(const vector &depth_reference)
 {
-	return VecUnProject2(vector(mx, my, 0), depth_reference, mouse_win);
+	return mouse_win->Unproject(m, depth_reference);
 }
 
 
@@ -1245,10 +1245,10 @@ void MultiView::GetMouseOver()
 				bool mo=false;
 				vector mop;
 				if (d.Drawable){
-					vector p=VecProject(sd->pos, mouse_win);
+					vector p = mouse_win->Project(sd->pos);
 					if ((p.z<=0)||(p.z>=1))
 						continue;
-					mo=((mx>=p.x-_radius)&&(mx<=p.x+_radius)&&(my>=p.y-_radius)&&(my<=p.y+_radius));
+					mo=((m.x>=p.x-_radius)&&(m.x<=p.x+_radius)&&(m.y>=p.y-_radius)&&(m.y<=p.y+_radius));
 					if (mo){
 						mop=sd->pos;
 						z_min=0;
@@ -1258,7 +1258,7 @@ void MultiView::GetMouseOver()
 					vector tp;
 					mo=d.IsMouseOver(i, d.user_data, mouse_win, tp);
 					if (mo){
-						float z=VecProject(tp, mouse_win).z;
+						float z = mouse_win->Project(tp).z;
 						if (z<z_min){
 							z_min=z;
 							mop=tp;
@@ -1336,7 +1336,7 @@ void MultiView::SelectAllInRectangle(int mode)
 	// reset data
 	UnselectAll();
 
-	rect r = rect(min(mx, RectX), max(mx, RectX), min(my, RectY), max(my, RectY));
+	rect r = rect(min(m.x, RectX), max(m.x, RectX), min(m.y, RectY), max(m.y, RectY));
 
 	// select
 	foreach(MultiViewData &d, data)
@@ -1349,9 +1349,9 @@ void MultiView::SelectAllInRectangle(int mode)
 				// selected?
 				sd->m_delta=false;
 				if (d.IsInRect){
-					sd->m_delta = d.IsInRect(i, d.user_data, RectWin, &r);
+					sd->m_delta = d.IsInRect(i, d.user_data, active_win, &r);
 				}else{// if (!sd->m_delta){
-					vector p = VecProject(sd->pos,RectWin);
+					vector p = active_win->Project(sd->pos);
 					sd->m_delta = r.inside(p.x, p.y);
 				}
 
@@ -1372,8 +1372,8 @@ void MultiView::SelectAllInRectangle(int mode)
 
 void MultiView::HoldCursor(bool holding)
 {
-	HoldingX = mx;
-	HoldingY = my;
+	HoldingX = m.x;
+	HoldingY = m.y;
 	HoldingCursor = holding;
 	ed->ShowCursor(!holding);
 }
@@ -1393,8 +1393,10 @@ void MultiView::MouseActionStart(int button)
 
 		active_mouse_action = button;
 		mouse_action_pos0 = MouseOverTP;
+		vector d, u, r;
+		mouse_win->GetMovingFrame(d, u, r);
 		cur_action = ActionMultiViewFactory(action[button].name, _data_, mouse_action_param, mouse_action_pos0,
-				GetDirectionRight(mouse_win), GetDirectionUp(mouse_win), GetDirection(mouse_win));
+				r, u, d);
 		cur_action->execute(_data_);
 		_data_->Notify("Change");
 		Notify("ActionStart");
@@ -1405,7 +1407,7 @@ void MultiView::MouseActionStart(int button)
 vector transform_ang(MultiView *mv, const vector &ang)
 {
 	quaternion qmv, mqmv, qang, q;
-	QuaternionRotationV(qmv,  mv->view[mv->mouse_win].ang);
+	QuaternionRotationV(qmv,  mv->active_win->ang);
 	QuaternionRotationV(qang, ang);
 	mqmv = qmv;
 	mqmv.inverse();
@@ -1419,10 +1421,10 @@ void MultiView::MouseActionUpdate()
 	if (cur_action){
 		//msg_write("mouse action update");
 
-		vector v2p = vector(mx, my, 0);
-		vector v2  = VecUnProject2(v2p, mouse_action_pos0, mouse_win);
+		vector v2p = m;
+		vector v2  = active_win->Unproject(v2p, mouse_action_pos0);
 		vector v1  = mouse_action_pos0;
-		vector v1p = VecProject(v1, mouse_win);
+		vector v1p = active_win->Project(v1);
 		int mode = action[active_mouse_action].mode;
 		if (mode == ActionMove)
 			mouse_action_param = v2 - v1;
@@ -1435,13 +1437,15 @@ void MultiView::MouseActionUpdate()
 		else if (mode == ActionScale2d)
 			mouse_action_param = vector(1 + (v2p.x - v1p.x) * 0.01f, 1 - (v2p.y - v1p.y) * 0.01f, 1);
 		else if (mode == ActionOnce)
-			mouse_action_param = GetDirectionRight(mouse_win);
+			mouse_action_param = active_win->GetDirectionRight();
 		else
 			mouse_action_param = v_0;
 		cur_action->undo(_data_);
 		delete(cur_action);
+		vector d, u, r;
+		active_win->GetMovingFrame(d, u, r);
 		cur_action = ActionMultiViewFactory(action[active_mouse_action].name, _data_, mouse_action_param, mouse_action_pos0,
-				GetDirectionRight(mouse_win), GetDirectionUp(mouse_win), GetDirection(mouse_win));
+				r, u, d);
 		cur_action->execute(_data_);
 		_data_->Notify("Changed");
 
@@ -1456,10 +1460,12 @@ void MultiView::MouseActionEnd(bool set)
 	if (cur_action){
 		msg_write("mouse action end");
 		if (set){
+			vector d, u, r;
+			active_win->GetMovingFrame(d, u, r);
 			cur_action->undo(_data_);
 					delete(cur_action);
 			cur_action = ActionMultiViewFactory(action[active_mouse_action].name, _data_, mouse_action_param, mouse_action_pos0,
-					GetDirectionRight(mouse_win), GetDirectionUp(mouse_win), GetDirection(mouse_win));
+					r, u, d);
 			_data_->Execute(cur_action);
 			Notify("ActionExecute");
 		}else{

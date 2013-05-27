@@ -93,7 +93,7 @@ void ModeModelMeshCreateTorus::OnLeftButtonDown()
 }
 
 
-void ModeModelMeshCreateTorus::OnDrawWin(int win)
+void ModeModelMeshCreateTorus::OnDrawWin(MultiViewWindow *win)
 {
 	if (pos_chosen){
 		mode_model->SetMaterialCreation();
@@ -108,7 +108,7 @@ void ModeModelMeshCreateTorus::OnDrawWin(int win)
 
 void ModeModelMeshCreateTorus::OnMouseMove()
 {
-	axis = multi_view->GetDirection(multi_view->mouse_win);
+	axis = multi_view->mouse_win->GetDirection();
 	if (pos_chosen){
 		vector pos2 = multi_view->GetCursor3d(pos);
 		if (rad_chosen){

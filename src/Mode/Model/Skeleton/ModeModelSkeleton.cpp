@@ -114,10 +114,10 @@ void ModeModelSkeleton::OnUpdate(Observable *o)
 
 
 
-void DrawBone(const vector &r, const vector &d, const color &c, int win)
+void DrawBone(const vector &r, const vector &d, const color &c, MultiViewWindow *win)
 {
-	vector pr=mode_model_skeleton->multi_view->VecProject(r,win);
-	vector pd=mode_model_skeleton->multi_view->VecProject(d,win);
+	vector pr = win->Project(r);
+	vector pd = win->Project(d);
 	if ((pr.z>0)&&(pd.z>0)&&(pr.z<1)&&(pd.z<1)){
 		float z=(pr.z+pd.z)/2;
 		pr.z=pd.z=0;
@@ -149,7 +149,7 @@ void DrawCoordBasis(const ModelBone *b)
 	}
 }
 
-void ModeModelSkeleton::OnDrawWin(int win)
+void ModeModelSkeleton::OnDrawWin(MultiViewWindow *win)
 {
 	mode_model_mesh_polygon->DrawPolygons();
 

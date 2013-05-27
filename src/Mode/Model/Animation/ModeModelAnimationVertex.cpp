@@ -77,7 +77,7 @@ void ModeModelAnimationVertex::OnUpdateMenu()
 {
 }
 
-void ModeModelAnimationVertex::OnDrawWin(int win)
+void ModeModelAnimationVertex::OnDrawWin(MultiViewWindow *win)
 {
 	mode_model_mesh_polygon->OnDrawWin(win);
 }

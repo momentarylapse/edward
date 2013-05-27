@@ -77,8 +77,8 @@ void ModeModelMeshCreateCube::OnMouseMove()
 	if (pos_chosen){
 		if (!pos2_chosen){
 			vector pos2 = multi_view->GetCursor3d();
-			vector dir0 = multi_view->GetDirectionRight(multi_view->mouse_win);
-			vector dir1 = multi_view->GetDirectionUp(multi_view->mouse_win);
+			vector dir0 = multi_view->mouse_win->GetDirectionRight();
+			vector dir1 = multi_view->mouse_win->GetDirectionUp();
 			length[0] = dir0 * VecDotProduct(dir0, pos2 - pos);
 			length[1] = dir1 * VecDotProduct(dir1, pos2 - pos);
 		}else{
@@ -109,7 +109,7 @@ void ModeModelMeshCreateCube::OnEnd()
 	delete(dialog);
 }
 
-void ModeModelMeshCreateCube::OnDrawWin(int win)
+void ModeModelMeshCreateCube::OnDrawWin(MultiViewWindow *win)
 {
 	mode_model->SetMaterialCreation();
 	if (pos_chosen){

@@ -22,7 +22,7 @@ public:
 	void OnLeftButtonDown();
 	void OnMouseMove();
 
-	void OnDrawWin(int win);
+	void OnDrawWin(MultiViewWindow *win);
 
 	void Preview();
 	void CleanUp();

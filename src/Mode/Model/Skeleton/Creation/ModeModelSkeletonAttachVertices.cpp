@@ -61,7 +61,7 @@ void ModeModelSkeletonAttachVertices::OnKeyDown()
 	}
 }
 
-void ModeModelSkeletonAttachVertices::OnDrawWin(int win)
+void ModeModelSkeletonAttachVertices::OnDrawWin(MultiViewWindow *win)
 {
 }
 
