@@ -29,7 +29,7 @@ void set_dpos3(vector *length, const vector &dpos)
 	vector n = length[0] ^ length[1];
 	n.normalize();
 	length[2] = n * (n * dpos);
-	float min_thick = 10 / ed->multi_view_3d->zoom; // 10 px
+	float min_thick = 10 / ed->multi_view_3d->cam.zoom; // 10 px
 	if (length[2].length() < min_thick)
 		length[2] = n * min_thick;
 }

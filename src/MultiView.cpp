@@ -25,10 +25,11 @@ const float MouseRotationSpeed = 0.0033f;
 const int PointRadius = 2;
 const int PointRadiusMouseOver = 4;
 
-#define update_zoom		if (mode3d) \
-							zoom = ((float)NixScreenHeight / (whole_window ? 1.0f : 2.0f) / radius); \
-						else \
-							zoom = (float)NixScreenHeight * 0.8f / radius;
+#define update_zoom		\
+	if (mode3d) \
+		cam.zoom = ((float)NixScreenHeight / (whole_window ? 1.0f : 2.0f) / cam.radius); \
+	else \
+		cam.zoom = (float)NixScreenHeight * 0.8f / cam.radius;
 #define MVGetSingleData(d, index)	((MultiViewSingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 //#define MVGetSingleData(d, index)	( dynamic_cast<MultiViewSingleData*> ((char*)(d).data + (d).DataSingleSize * index))
 
@@ -57,7 +58,6 @@ MultiView::MultiView(bool _mode3d) :
 		win[1].type = ViewLeft;
 		win[2].type = ViewTop;
 		win[3].type = ViewPerspective;
-		win[4].type = ViewPerspective;
 
 		// Menu
 		menu = new CHuiMenu();
@@ -76,8 +76,10 @@ MultiView::MultiView(bool _mode3d) :
 		win[0].type = View2D;
 		light = -1;
 	}
-	for (int i=0;i<5;i++)
+	for (int i=0;i<4;i++){
 		win[i].multi_view = this;
+		win[i].cam = &cam;
+	}
 	m = v_0;
 	HoldingCursor = false;
 	HoldingX = HoldingY = 0;
@@ -95,7 +97,7 @@ void MultiView::Reset()
 	mouse_win = &win[0];
 	active_win = &win[0];
 
-	ViewMoving = NULL;
+	ViewMoving = false;
 
 	ResetData(NULL);
 	ResetMouseAction();
@@ -104,17 +106,17 @@ void MultiView::Reset()
 
 void MultiView::ResetView()
 {
-	pos = v_0;
-	ang = v_0;
+	cam.pos = v_0;
+	cam.ang = v_0;
 	if (mode3d)
-		radius = 100;
+		cam.radius = 100;
 	else
-		radius = 1;
-	zoom = 1;
+		cam.radius = 1;
+	cam.zoom = 1;
 	whole_window = false;
 	grid_enabled = true;
 	light_enabled = true;
-	ignore_radius = false;
+	cam.ignore_radius = false;
 	wire_mode = false;
 
 	view_stage = 0;
@@ -165,15 +167,15 @@ void MultiView::DoZoom(float factor)
 	if (mode3d){
 		if (mouse_win->type != ViewPerspective)
 			mup = mouse_win->Unproject(m);
-		radius /= factor;
+		cam.radius /= factor;
 		update_zoom;
 		if (mouse_win->type != ViewPerspective)
-			pos += mup - mouse_win->Unproject(m);
+			cam.pos += mup - mouse_win->Unproject(m);
 	}else{
 		mup = mouse_win->Unproject(m);
-		radius /= factor;
+		cam.radius /= factor;
 		update_zoom;
-		pos += mup - mouse_win->Unproject(m);
+		cam.pos += mup - mouse_win->Unproject(m);
 	}
 	Notify("Update");
 }
@@ -183,18 +185,18 @@ void MultiView::DoMove(const vector &dir)
 	vector d, u, r;
 	mouse_win->GetMovingFrame(d, u, r);
 	if (mode3d)
-		pos += radius*(r*dir.x+u*dir.y+d*dir.z) * SPEED_MOVE;
+		cam.pos += cam.radius*(r*dir.x+u*dir.y+d*dir.z) * SPEED_MOVE;
 	else
-		pos += (float)NixScreenHeight / zoom*(r*dir.x+u*dir.y) * SPEED_MOVE;
+		cam.pos += (float)NixScreenHeight / cam.zoom*(r*dir.x+u*dir.y) * SPEED_MOVE;
 	Notify("Update");
 }
 
 void MultiView::SetViewBox(const vector &min, const vector &max)
 {
-	pos = (min + max) / 2;
+	cam.pos = (min + max) / 2;
 	float r = (max - min).length_fuzzy() * 1.3f * ((float)NixScreenWidth / (float)NixTargetWidth);
 	if (r > 0)
-		radius = r;
+		cam.radius = r;
 	update_zoom;
 	Notify("Update");
 }
@@ -202,12 +204,6 @@ void MultiView::SetViewBox(const vector &min, const vector &max)
 void MultiView::ToggleWholeWindow()
 {
 	whole_window = !whole_window;
-	if (whole_window){
-		win[4].type = active_win->type;
-		active_win = &win[4];
-	}else{
-		active_win = &win[0];
-	}
 	Notify("SettingsChange");
 }
 
@@ -348,7 +344,7 @@ void MultiView::OnMiddleButtonDown()
 	if (allow){
 // move camera?
 		HoldCursor(true);
-		ViewMoving = active_win;
+		ViewMoving = true;
 		Selected = -1;
 	}
 	Notify("Update");
@@ -366,7 +362,7 @@ void MultiView::OnRightButtonDown()
 	if (allow){
 // move camera?
 		HoldCursor(true);
-		ViewMoving = active_win;
+		ViewMoving = true;
 		Selected = -1;
 	}else{
 		MouseMovedSinceClick = 0;
@@ -380,7 +376,7 @@ void MultiView::OnRightButtonDown()
 void MultiView::OnMiddleButtonUp()
 {
 	if (ViewMoving){
-		ViewMoving = NULL;
+		ViewMoving = false;
 		HoldCursor(false);
 	}
 	MouseActionEnd(true);
@@ -391,7 +387,7 @@ void MultiView::OnMiddleButtonUp()
 void MultiView::OnRightButtonUp()
 {
 	if (ViewMoving){
-		ViewMoving = NULL;
+		ViewMoving = false;
 		HoldCursor(false);
 	}
 	MouseActionEnd(true);
@@ -427,18 +423,22 @@ void MultiView::OnMouseMove()
 
 
 	// which window is the cursor in?
-	if ((m.x<MaxX/2)&&(m.y<MaxY/2))
+	if (mode3d){
+		if (whole_window){
+			mouse_win = active_win;
+		}else{
+			if ((m.x<MaxX/2)&&(m.y<MaxY/2))
+				mouse_win = &win[0];
+			if ((m.x>MaxX/2)&&(m.y<MaxY/2))
+				mouse_win = &win[1];
+			if ((m.x<MaxX/2)&&(m.y>MaxY/2))
+				mouse_win = &win[2];
+			if ((m.x>MaxX/2)&&(m.y>MaxY/2))
+				mouse_win = &win[3];
+		}
+	}else{
 		mouse_win = &win[0];
-	if ((m.x>MaxX/2)&&(m.y<MaxY/2))
-		mouse_win = &win[1];
-	if ((m.x<MaxX/2)&&(m.y>MaxY/2))
-		mouse_win = &win[2];
-	if ((m.x>MaxX/2)&&(m.y>MaxY/2))
-		mouse_win = &win[3];
-	if (whole_window)
-		mouse_win = &win[4];
-	if (!mode3d)
-		mouse_win = &win[0];
+	}
 
 
 	// hover
@@ -465,21 +465,21 @@ void MultiView::OnMouseMove()
 
 
 	if (ViewMoving){
-		int t = ViewMoving->type;
+		int t = active_win->type;
 		if ((t == ViewPerspective) || (t == ViewIsometric)){
 // camera rotation
 			bool RotatingOwn = (mbut || (NixGetKey(KEY_CONTROL)));
 			if (RotatingOwn)
-				pos -= radius * ang.ang2dir();
+				cam.pos -= cam.radius * cam.ang.ang2dir();
 			vector dang = vector(v.y, v.x, 0) * MouseRotationSpeed;
-			ang = VecAngAdd(dang, ang);
+			cam.ang = VecAngAdd(dang, cam.ang);
 			if (RotatingOwn)
-				pos += radius * ang.ang2dir();
+				cam.pos += cam.radius * cam.ang.ang2dir();
 		}else{
 // camera translation
-			vector r = ViewMoving->GetDirectionRight();
-			vector u = ViewMoving->GetDirectionUp();
-			pos += float(v.x) / zoom * r + float(v.y) / zoom * u;
+			vector r = active_win->GetDirectionRight();
+			vector u = active_win->GetDirectionUp();
+			cam.pos += float(v.x) / cam.zoom * r + float(v.y) / cam.zoom * u;
 		}
 	}
 
@@ -527,7 +527,7 @@ void MultiView::EndRect()
 
 float MultiView::GetGridD()
 {
-	float z = zoom,d=1.0f;
+	float z = cam.zoom,d=1.0f;
 	if (z<GridConst){
 		for (int i=0;i<40;i++){
 			d*=10.0f;
@@ -583,7 +583,7 @@ void MultiViewWindow::DrawGrid()
 
 	// spherical for perspective view
 	if (type == ViewPerspective){
-		vector PerspectiveViewPos = multi_view->radius * multi_view->ang.ang2dir() - multi_view->pos;
+		vector PerspectiveViewPos = cam->radius * cam->ang.ang2dir() - cam->pos;
 		//NixSetZ(false,false);
 		// horizontal
 		float r=NixMaxDepth*0.6f;
@@ -736,13 +736,13 @@ void MultiViewWindow::Draw()
 		NixSetColor(ColorBackGround3D);
 		NixDraw2D(r_id,NixTargetRect,0.9999999f);
 	}else if (type == View2D){
-		NixSetPerspectiveMode(Perspective2DScaleSet, multi_view->zoom, multi_view->zoom);
+		NixSetPerspectiveMode(Perspective2DScaleSet, cam->zoom, cam->zoom);
 		NixSetColor(ColorBackGround2D);
 		NixDraw2D(r_id,NixTargetRect,0.9999999f);
 	}else{
 		matrix s;
 		MatrixTranslation(t, vector((dest.x2 + dest.x1) / 2, (dest.y2 + dest.y1) / 2, 0));
-		MatrixScale(s, multi_view->zoom, -multi_view->zoom, multi_view->zoom / 1000);
+		MatrixScale(s, cam->zoom, -cam->zoom, cam->zoom / 1000);
 		projection = NixProjectionMatrix2d * t * s;
 		NixSetProjectionMatrix(projection);
 		NixSetColor(ColorBackGround2D);
@@ -750,7 +750,7 @@ void MultiViewWindow::Draw()
 	}
 
 	// camera position
-	vector vt = -multi_view->pos;
+	vector vt = -cam->pos;
 	MatrixTranslation(t,vt);
 	if (type == ViewFront){
 		view_kind = _("Vorne");
@@ -772,17 +772,17 @@ void MultiViewWindow::Draw()
 		ang = - e_x * pi / 2;
 	}else if (type == ViewPerspective){
 		view_kind = _("Perspektive");
-		float _radius = multi_view->ignore_radius ? 0 : multi_view->radius;
-		MatrixTranslation(t, _radius * multi_view->ang.ang2dir() + vt);
-		ang = multi_view->ang;
+		float _radius = cam->ignore_radius ? 0 : cam->radius;
+		MatrixTranslation(t, _radius * cam->ang.ang2dir() + vt);
+		ang = cam->ang;
 	}else if (type == ViewIsometric){
 		view_kind = _("Isometrisch");
-		float _radius = multi_view->ignore_radius ? 0 : multi_view->radius;
-		MatrixTranslation(t, _radius * multi_view->ang.ang2dir() + vt);
-		ang = multi_view->ang;
+		float _radius = cam->ignore_radius ? 0 : cam->radius;
+		MatrixTranslation(t, _radius * cam->ang.ang2dir() + vt);
+		ang = cam->ang;
 	}else if (type == View2D){
 		view_kind = _("2D");
-		vt = -multi_view->pos;
+		vt = -cam->pos;
 		MatrixTranslation(t,vt);
 		ang = - pi * e_y;
 	}
@@ -799,10 +799,10 @@ void MultiViewWindow::Draw()
 
 	NixSetWire(multi_view->wire_mode);
 	// light
-	vector dir=-multi_view->ang.ang2dir();
-	color am=color(1,0.3f,0.3f,0.3f);
-	color di=color(1,0.6f,0.6f,0.6f);
-	color sp=color(1,0.4f,0.4f,0.4f);
+	vector dir = -cam->ang.ang2dir();
+	color am = color(1,0.3f,0.3f,0.3f);
+	color di = color(1,0.6f,0.6f,0.6f);
+	color sp = color(1,0.4f,0.4f,0.4f);
 	NixSetLightDirectional(multi_view->light,dir,am,di,sp);
 	NixEnableLight(multi_view->light, true);
 	NixEnableLighting(multi_view->light_enabled);
@@ -889,8 +889,8 @@ void MultiViewWindow::Draw()
 void MultiView::OnDraw()
 {
 	msg_db_r("Multiview.OnDraw",2);
-	NixMaxDepth = radius * 1000;
-	NixMinDepth = radius / 1000;
+	NixMaxDepth = cam.radius * 1000;
+	NixMinDepth = cam.radius / 1000;
 
 	update_zoom;
 
@@ -898,28 +898,28 @@ void MultiView::OnDraw()
 	NixSetColor(ColorText);
 
 
-	win[0].dest = rect(0,MaxX/2,0,MaxY/2);
-	win[1].dest = rect(MaxX/2,MaxX,0,MaxY/2);
-	win[2].dest = rect(0,MaxX/2,MaxY/2,MaxY);
-	win[3].dest = rect(MaxX/2,MaxX,MaxY/2,MaxY);
-	win[4].dest = rect(0,MaxX,0,MaxY);
 
 	if (!mode3d){
 		win[0].dest = rect(0,MaxX,0,MaxY);
 		win[0].Draw();
 	}else if (whole_window){
-		win[4].Draw();
+		active_win->dest = rect(0,MaxX,0,MaxY);
+		active_win->Draw();
 	}else{
 		// top left
+		win[0].dest = rect(0,MaxX/2,0,MaxY/2);
 		win[0].Draw();
 
 		// top right
+		win[1].dest = rect(MaxX/2,MaxX,0,MaxY/2);
 		win[1].Draw();
 
 		// bottom left
+		win[2].dest = rect(0,MaxX/2,MaxY/2,MaxY);
 		win[2].Draw();
 
 		// bottom right
+		win[3].dest = rect(MaxX/2,MaxX,MaxY/2,MaxY);
 		win[3].Draw();
 
 		NixStartPart(-1,-1,-1,-1,true);
@@ -987,8 +987,8 @@ vector MultiViewWindow::Unproject(const vector &p, const vector &o)
 		pp.z = p_o.z;
 		NixGetVecUnproject(r, pp);
 	}else if (type == View2D){
-		r.x=(p.x-MaxX/2)/multi_view->zoom+multi_view->pos.x;
-		r.y=(p.y-MaxY/2)/multi_view->zoom+multi_view->pos.y;
+		r.x=(p.x-MaxX/2)/cam->zoom+cam->pos.x;
+		r.y=(p.y-MaxY/2)/cam->zoom+cam->pos.y;
 		r.z=0;
 	}else{ // 2D
 		r=o;
@@ -999,8 +999,8 @@ vector MultiViewWindow::Unproject(const vector &p, const vector &o)
 			pp.x-=dest.x1;
 			pp.y-=dest.y1;
 		}
-		float zoom = multi_view->zoom;
-		vector &pos = multi_view->pos;
+		float zoom = cam->zoom;
+		vector &pos = cam->pos;
 		if (type == ViewFront){
 			r.x=-(pp.x-MaxX/4)/zoom+pos.x;
 			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
@@ -1035,12 +1035,12 @@ vector MultiViewWindow::Project(const vector &p)
 		}
 		NixGetVecProject(r,p);
 	}else if (type == View2D){
-		r.x=MaxX/2+(p.x-multi_view->pos.x)*multi_view->zoom;
-		r.y=MaxY/2+(p.y-multi_view->pos.y)*multi_view->zoom;
+		r.x=MaxX/2+(p.x-cam->pos.x)*cam->zoom;
+		r.y=MaxY/2+(p.y-cam->pos.y)*cam->zoom;
 		r.z=0.5f;
 	}else{ // 2D
-		float zoom = multi_view->zoom;
-		vector &pos = multi_view->pos;
+		float zoom = cam->zoom;
+		vector &pos = cam->pos;
 		if (type == ViewFront){
 			r.x=MaxX/4-(p.x-pos.x)*zoom;
 			r.y=MaxY/4-(p.y-pos.y)*zoom;
@@ -1067,7 +1067,7 @@ vector MultiViewWindow::Project(const vector &p)
 			r.x+=dest.x1;
 			r.y+=dest.y1;
 		}
-		r.z=0.5f+VecDotProduct(p-pos,GetDirection())/multi_view->radius/32;
+		r.z=0.5f+VecDotProduct(p-pos,GetDirection())/cam->radius/32;
 	}
 	return r;
 }
@@ -1084,8 +1084,8 @@ vector MultiViewWindow::Unproject(const vector &p)
 		}
 		NixGetVecUnproject(r,pp);
 	}else if (type == View2D){
-		r.x=(pp.x-MaxX/2)/multi_view->zoom+multi_view->pos.x;
-		r.y=(pp.y-MaxY/2)/multi_view->zoom+multi_view->pos.y;
+		r.x=(pp.x-MaxX/2)/cam->zoom+cam->pos.x;
+		r.y=(pp.y-MaxY/2)/cam->zoom+cam->pos.y;
 		r.z=0;
 	}else{ // 2D
 		if (multi_view->whole_window){
@@ -1095,9 +1095,9 @@ vector MultiViewWindow::Unproject(const vector &p)
 			pp.x-=dest.x1;
 			pp.y-=dest.y1;
 		}
-		r=multi_view->pos;
-		float zoom = multi_view->zoom;
-		vector &pos = multi_view->pos;
+		r=cam->pos;
+		float zoom = cam->zoom;
+		vector &pos = cam->pos;
 		if (type == ViewFront){
 			r.x=-(pp.x-MaxX/4)/zoom+pos.x;
 			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
@@ -1137,7 +1137,7 @@ vector MultiViewWindow::GetDirection()
 	else if (t==ViewBottom)
 		return vector(0,1,0);
 	else if ((t==ViewPerspective) || (t==ViewIsometric))
-		return multi_view->ang.ang2dir();
+		return cam->ang.ang2dir();
 	return v_0;
 }
 
@@ -1159,7 +1159,7 @@ vector MultiViewWindow::GetDirectionUp()
 	else if (t==ViewBottom)
 		return vector(0,0,1);
 	else if ((t==ViewPerspective) || (t==ViewIsometric))
-		return VecAngAdd(vector(-pi/2,0,0), multi_view->ang).ang2dir();
+		return VecAngAdd(vector(-pi/2,0,0), cam->ang).ang2dir();
 	return v_0;
 }
 
@@ -1219,7 +1219,7 @@ void MultiView::InvertSelection()
 
 vector MultiView::GetCursor3d()
 {
-	return mouse_win->Unproject(m, pos);
+	return mouse_win->Unproject(m, cam.pos);
 }
 
 vector MultiView::GetCursor3d(const vector &depth_reference)

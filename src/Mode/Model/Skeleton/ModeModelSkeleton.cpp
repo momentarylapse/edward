@@ -144,7 +144,7 @@ void DrawCoordBasis(const ModelBone *b)
 			e[i] = b->Matrix.transform_normal(e[i]);
 	for (int i=0;i<3;i++){
 		NixSetColor(color(1,0,(i==0)?1:0.5f,0));
-		NixDrawLine3D(o, o + e[i] * 30 / ed->multi_view_3d->zoom);
+		NixDrawLine3D(o, o + e[i] * 30 / ed->multi_view_3d->cam.zoom);
 	}
 }
 

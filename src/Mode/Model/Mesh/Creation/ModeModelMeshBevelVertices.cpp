@@ -57,7 +57,7 @@ void ModeModelMeshBevelVertices::OnMouseMove()
 	data->action_manager->ClearPreview();
 #endif
 
-	radius += (HuiGetEvent()->dx) / multi_view->zoom;
+	radius += (HuiGetEvent()->dx) / multi_view->cam.zoom;
 	radius = clampf(radius, rad_max * 0.001f, rad_max);
 
 #ifdef INTERACTIVE

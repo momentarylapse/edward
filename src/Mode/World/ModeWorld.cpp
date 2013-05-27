@@ -380,7 +380,7 @@ void ModeWorld::OnLeftButtonUp()
 
 void ModeWorld::OnDraw()
 {
-	cur_cam->pos = multi_view->pos;
+	cur_cam->pos = multi_view->cam.pos;
 
 	int num_ob = data->GetSelectedObjects();
 	int num_te = data->GetSelectedTerrains();
@@ -698,7 +698,7 @@ bool ModeWorld::OptimizeView()
 void ModeWorld::LoadTerrain()
 {
 	if (ed->FileDialog(FDTerrain, false, true))
-		data->AddTerrain(ed->DialogFileNoEnding, multi_view->pos);
+		data->AddTerrain(ed->DialogFileNoEnding, multi_view->cam.pos);
 }
 
 void ModeWorld::SetEgo()

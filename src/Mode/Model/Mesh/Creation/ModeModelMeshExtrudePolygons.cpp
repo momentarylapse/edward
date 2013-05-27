@@ -42,7 +42,7 @@ void ModeModelMeshExtrudePolygons::OnMouseMove()
 {
 	CleanUp();
 
-	offset += (HuiGetEvent()->dx) / multi_view->zoom;
+	offset += (HuiGetEvent()->dx) / multi_view->cam.zoom;
 	Preview();
 }
 

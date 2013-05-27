@@ -44,6 +44,13 @@ public:
 	vector pos;
 };
 
+struct MultiViewCamera
+{
+	vector pos, ang;
+	float zoom, radius;
+	bool ignore_radius;
+};
+
 struct MultiViewWindow
 {
 	int type;
@@ -53,6 +60,7 @@ struct MultiViewWindow
 	vector ang;
 	matrix projection;
 	MultiView *multi_view;
+	MultiViewCamera *cam;
 
 	void Draw();
 	void DrawGrid();
@@ -165,11 +173,7 @@ public:
 
 	bool mode3d;
 
-	vector pos, ang;
-	float radius;
-	float zoom;
-	bool whole_window;
-	bool ignore_radius;
+	MultiViewCamera cam;
 
 	bool wire_mode;
 	bool grid_enabled;
@@ -177,9 +181,10 @@ public:
 
 	int light;
 
-	MultiViewWindow win[5];
+	MultiViewWindow win[4];
 	MultiViewWindow *cur_projection_win;
 	MultiViewWindow *active_win;
+	bool whole_window;
 	int view_stage;
 
 	MultiViewMouseAction action[3];
@@ -207,13 +212,13 @@ public:
 	vector MouseOverTP,SelectedTP,MovingDPos,RFPos,LFPos;
 	bool EditingStart, EditingEnd, DataChanged, Changed;
 
-	MultiViewWindow *ViewMoving;
 	MultiViewWindow *mouse_win;
 	vector m, v;
 	bool HoldingCursor;
 	float HoldingX, HoldingY;
 	bool MVRect,MVRectable;
 	float RectX,RectY;
+	bool ViewMoving;
 
 	bool MultiViewSelectionChanged;
 

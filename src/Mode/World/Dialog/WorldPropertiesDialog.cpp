@@ -118,8 +118,8 @@ void WorldPropertiesDialog::OnSunEnabled()
 
 void WorldPropertiesDialog::OnSunAngFromCamera()
 {
-	SetFloat("sun_ang_x", ed->multi_view_3d->ang.x * 180.0f / pi);
-	SetFloat("sun_ang_y", ed->multi_view_3d->ang.y * 180.0f / pi);
+	SetFloat("sun_ang_x", ed->multi_view_3d->cam.ang.x * 180.0f / pi);
+	SetFloat("sun_ang_y", ed->multi_view_3d->cam.ang.y * 180.0f / pi);
 }
 
 

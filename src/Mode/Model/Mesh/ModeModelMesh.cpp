@@ -109,7 +109,7 @@ void ModeModelMesh::OnCommand(const string & id)
 		ed->SetMode(new ModeModelMeshExtrudePolygons(ed->cur_mode));
 		//data->ExtrudeSelectedTriangles(40 / mode_model_mesh_vertex->multi_view->zoom);
 	if (id == "autoweld_surfaces")
-		data->AutoWeldSelectedSurfaces(0.1f / mode_model_mesh_vertex->multi_view->zoom);
+		data->AutoWeldSelectedSurfaces(0.1f / mode_model_mesh_vertex->multi_view->cam.zoom);
 	if (id == "triangulate_selection")
 		data->TriangulateSelection();
 	if (id == "untriangulate_selection")
@@ -260,7 +260,7 @@ bool ModeModelMesh::OptimizeView()
 	}
 
 	ed->multi_view_2d->ResetView();
-	ed->multi_view_2d->pos = vector(0.5f, 0.5f, 0);
+	ed->multi_view_2d->cam.pos = vector(0.5f, 0.5f, 0);
 	/*if ((Bone.num > 0) && (Vertex.num <= 0))
 		SetSubMode(SubModeSkeleton);
 	if (SubMode == SubModeSkeleton)

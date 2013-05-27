@@ -322,7 +322,7 @@ void ModeWorldCamera::OnCamPreview()
 	dialog->Enable("cam_stop", true);
 	preview_time = 0;
 	preview = true;
-	multi_view->ignore_radius = true;
+	multi_view->cam.ignore_radius = true;
 	HuiRunLaterM(20, (HuiEventHandler*)this, &ModeWorldCamera::PreviewUpdate);
 }
 
@@ -330,7 +330,7 @@ void ModeWorldCamera::OnCamStop()
 {
 	dialog->Enable("cam_stop", false);
 	preview = false;
-	multi_view->ignore_radius = false;
+	multi_view->cam.ignore_radius = false;
 	ed->ForceRedraw();
 }
 
@@ -347,8 +347,8 @@ void ModeWorldCamera::PreviewUpdate()
 	preview_time += 0.050f;
 	dialog->Redraw("cam_area");
 	float duration = data->GetDuration();
-	multi_view->pos = inter_pos->get(preview_time / duration);
-	multi_view->ang = inter_ang->get(preview_time / duration);
+	multi_view->cam.pos = inter_pos->get(preview_time / duration);
+	multi_view->cam.ang = inter_ang->get(preview_time / duration);
 
 	ed->ForceRedraw();
 	if (preview_time > duration)

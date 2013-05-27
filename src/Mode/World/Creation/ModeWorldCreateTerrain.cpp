@@ -38,8 +38,8 @@ void ModeWorldCreateTerrain::OnStart()
 	dialog->SetFloat("height_factor", 100);
 	dialog->SetInt("num_x", 64);
 	dialog->SetInt("num_z", 64);
-	dialog->SetFloat("terrain_x", multi_view->radius);//1000);
-	dialog->SetFloat("terrain_z", multi_view->radius);//1000);
+	dialog->SetFloat("terrain_x", multi_view->cam.radius);//1000);
+	dialog->SetFloat("terrain_z", multi_view->cam.radius);//1000);
 	OnSizeChange();
 
 }
@@ -53,7 +53,7 @@ void ModeWorldCreateTerrain::OnEnd()
 void ModeWorldCreateTerrain::OnOk()
 {
 	vector size = vector(dialog->GetFloat("terrain_x"), 0, dialog->GetFloat("terrain_z"));
-	vector pos = multi_view->pos - size / 2;
+	vector pos = multi_view->cam.pos - size / 2;
 	int num_x = dialog->GetInt("num_x");
 	int num_z = dialog->GetInt("num_z");
 	data->AddNewTerrain(pos, size, num_x, num_z);

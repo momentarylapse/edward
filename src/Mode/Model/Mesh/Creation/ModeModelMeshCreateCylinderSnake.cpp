@@ -69,7 +69,7 @@ void ModeModelMeshCreateCylinderSnake::OnMouseMove()
 	if (ready_for_scaling){
 		vector p = multi_view->GetCursor3d(pos.back());
 		radius = (p - pos.back()).length();
-		float min_rad = 10 / multi_view->zoom; // 10 px
+		float min_rad = 10 / multi_view->cam.zoom; // 10 px
 		if (radius < min_rad)
 			radius = min_rad;
 		UpdateGeometry();

@@ -194,10 +194,10 @@ void Draw2D(const rect &source, const rect *dest)
 	MultiView *mv = mode_font->multi_view;
 	rect d;
 	if (dest){
-		d=rect(	MaxX/2-(mv->pos.x-dest->x1)*mv->zoom,
-				MaxX/2-(mv->pos.x-dest->x2)*mv->zoom,
-				MaxY/2-(mv->pos.y-dest->y1)*mv->zoom,
-				MaxY/2-(mv->pos.y-dest->y2)*mv->zoom);
+		d=rect(	MaxX/2-(mv->cam.pos.x-dest->x1)*mv->cam.zoom,
+				MaxX/2-(mv->cam.pos.x-dest->x2)*mv->cam.zoom,
+				MaxY/2-(mv->cam.pos.y-dest->y1)*mv->cam.zoom,
+				MaxY/2-(mv->cam.pos.y-dest->y2)*mv->cam.zoom);
 		NixDraw2D(source, d, 0);
 	}else
 		NixDraw2D(source, NixTargetRect, 0);
@@ -206,18 +206,18 @@ void Draw2D(const rect &source, const rect *dest)
 void DrawLineH(int x1, int x2, int y)
 {
 	MultiView *mv = mode_font->multi_view;
-	x1 = int(MaxX/2-(mv->pos.x - x1)*mv->zoom);
-	x2 = int(MaxX/2-(mv->pos.x - x2)*mv->zoom);
-	y  = int(MaxY/2-(mv->pos.y - y )*mv->zoom);
+	x1 = int(MaxX/2-(mv->cam.pos.x - x1)*mv->cam.zoom);
+	x2 = int(MaxX/2-(mv->cam.pos.x - x2)*mv->cam.zoom);
+	y  = int(MaxY/2-(mv->cam.pos.y - y )*mv->cam.zoom);
 	NixDrawLineH(x1, x2,y, 0);
 }
 
 void DrawLineV(int x, int y1, int y2)
 {
 	MultiView *mv = mode_font->multi_view;
-	x  = int(MaxX/2-(mv->pos.x - x )*mv->zoom);
-	y1 = int(MaxY/2-(mv->pos.y - y1)*mv->zoom);
-	y2 = int(MaxY/2-(mv->pos.y - y2)*mv->zoom);
+	x  = int(MaxX/2-(mv->cam.pos.x - x )*mv->cam.zoom);
+	y1 = int(MaxY/2-(mv->cam.pos.y - y1)*mv->cam.zoom);
+	y2 = int(MaxY/2-(mv->cam.pos.y - y2)*mv->cam.zoom);
 	NixDrawLineV(x, y1, y2, 0);
 }
 

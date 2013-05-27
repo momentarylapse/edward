@@ -82,7 +82,7 @@ void ModeModelMeshPolygon::DrawPolygons()
 	if (multi_view->wire_mode){
 		NixSetWire(false);
 		NixEnableLighting(false);
-		vector dir = multi_view->ang.ang2dir();
+		vector dir = multi_view->cam.ang.ang2dir();
 		foreach(ModelSurface &s, data->Surface){
 			foreach(ModelEdge &e, s.Edge){
 				if (min(data->Vertex[e.Vertex[0]].view_stage, data->Vertex[e.Vertex[1]].view_stage) < multi_view->view_stage)
