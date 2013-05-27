@@ -7,6 +7,8 @@
 
 #include "../../ModeModel.h"
 #include "ModeModelMeshCreateCube.h"
+#include "../../../../Data/Model/Geometry/ModelGeometryCube.h"
+#include "../../../../Data/Model/Geometry/ModelGeometryPlane.h"
 #include "../../../../Edward.h"
 
 ModeModelMeshCreateCube::ModeModelMeshCreateCube(ModeBase *_parent) :
@@ -17,10 +19,31 @@ ModeModelMeshCreateCube::ModeModelMeshCreateCube(ModeBase *_parent) :
 	pos2_chosen = false;
 	for (int i=0;i<3;i++)
 		length[i] = v_0;
+	geo = NULL;
 }
 
 ModeModelMeshCreateCube::~ModeModelMeshCreateCube()
 {
+	if (geo)
+		delete(geo);
+}
+
+void ModeModelMeshCreateCube::UpdateGeometry()
+{
+	if (geo)
+		delete(geo);
+	if (pos2_chosen){
+		int num_1 = dialog->GetInt("nc_x");
+		int num_2 = dialog->GetInt("nc_y");
+		int num_3 = dialog->GetInt("nc_z");
+		HuiConfigWriteInt("NewCubeNumX", num_1);
+		HuiConfigWriteInt("NewCubeNumY", num_2);
+		HuiConfigWriteInt("NewCubeNumZ", num_3);
+
+		geo = new ModelGeometryCube(pos, length[0], length[1], length[2], num_1, num_2, num_3);
+	}else{
+		geo = new ModelGeometryPlane(pos, length[0], length[1], 1, 1);
+	}
 }
 
 
@@ -40,15 +63,9 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 {
 	if (pos_chosen){
 		if (pos2_chosen){
-			int num_1 = dialog->GetInt("nc_x");
-			int num_2 = dialog->GetInt("nc_y");
-			int num_3 = dialog->GetInt("nc_z");
-			HuiConfigWriteInt("NewCubeNumX", num_1);
-			HuiConfigWriteInt("NewCubeNumY", num_2);
-			HuiConfigWriteInt("NewCubeNumZ", num_3);
 
-			ModelSurface *s = data->AddCube(pos, length[0], length[1], length[2], num_1, num_2, num_3);
-			data->SelectOnlySurface(s);
+			data->PasteGeometry(*geo);
+			data->SelectOnlySurface(&data->Surface.back());
 
 			Abort();
 		}else{
@@ -59,6 +76,7 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 			message = _("W&urfel: Punkt 3 / 3");
 			pos2_chosen = true;
 			set_dpos3(length, v_0);
+			UpdateGeometry();
 		}
 	}else{
 		if (multi_view->Selected >= 0)
@@ -67,6 +85,7 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 			pos = multi_view->GetCursor3d();
 		message = _("W&urfel: Punkt 2 / 3");
 		pos_chosen = true;
+		UpdateGeometry();
 	}
 }
 
@@ -79,8 +98,10 @@ void ModeModelMeshCreateCube::OnMouseMove()
 			vector dir1 = multi_view->mouse_win->GetDirectionUp();
 			length[0] = dir0 * VecDotProduct(dir0, pos2 - pos);
 			length[1] = dir1 * VecDotProduct(dir1, pos2 - pos);
+			UpdateGeometry();
 		}else{
 			set_dpos3(length, multi_view->GetCursor3d() - pos);
+			UpdateGeometry();
 		}
 	}
 }
@@ -111,63 +132,10 @@ void ModeModelMeshCreateCube::OnDrawWin(MultiViewWindow *win)
 {
 	mode_model->SetMaterialCreation();
 	if (pos_chosen){
-		NixVBClear(VBTemp);
-		if (!pos2_chosen){
-			vector n = length[0] ^ length[1];
-			n.normalize();
-			/// vertices
-			vector a = pos;
-			vector b = pos + length[0];
-			vector c = pos + length[1];
-			vector d = pos + length[0] + length[1];
-			NixVBClear(VBTemp);
-			NixVBAddTria(VBTemp, a, -n, 0, 0, c, -n, 0, 0, d, -n, 0, 0);
-			NixVBAddTria(VBTemp, a, -n, 0, 0, d, -n, 0, 0, b, -n, 0, 0);
-			NixVBAddTria(VBTemp, b,  n, 0, 0, d,  n, 0, 0, c,  n, 0, 0);
-			NixVBAddTria(VBTemp, b,  n, 0, 0, c,  n, 0, 0, a,  n, 0, 0);
-		}else{
-			vector d[3];
-			for (int i=0;i<3;i++)
-				d[i] = length[i];
-			if ((d[0] ^ d[1]) * d[2] < 0){
-				d[0] = length[1];
-				d[1] = length[0];
-			}
-			// 8 vertices
-			vector _0 = pos;
-			vector _1 = pos + d[0];
-			vector _2 = pos        + d[1];
-			vector _3 = pos + d[0] + d[1];
-			vector _4 = pos               + d[2];
-			vector _5 = pos + d[0]        + d[2];
-			vector _6 = pos        + d[1] + d[2];
-			vector _7 = pos + d[0] + d[1] + d[2];
-			vector n0 = d[0];
-			n0.normalize();
-			vector n1 = d[1];
-			n1.normalize();
-			vector n2 = d[2];
-			n2.normalize();
-			// front
-			NixVBAddTria(VBTemp,_0,-n0,0,0,_2,-n0,0,0,_3,-n0,0,0);
-			NixVBAddTria(VBTemp,_0,-n0,0,0,_3,-n0,0,0,_1,-n0,0,0);
-			// top
-			NixVBAddTria(VBTemp,_2, n1,0,0,_6, n1,0,0,_7, n1,0,0);
-			NixVBAddTria(VBTemp,_2, n1,0,0,_7, n1,0,0,_3, n1,0,0);
-			// bottom
-			NixVBAddTria(VBTemp,_4,-n1,0,0,_0,-n1,0,0,_1,-n1,0,0);
-			NixVBAddTria(VBTemp,_4,-n1,0,0,_1,-n1,0,0,_5,-n1,0,0);
-			// left
-			NixVBAddTria(VBTemp,_4,-n2,0,0,_6,-n2,0,0,_2,-n2,0,0);
-			NixVBAddTria(VBTemp,_4,-n2,0,0,_2,-n2,0,0,_0,-n2,0,0);
-			// right
-			NixVBAddTria(VBTemp,_1, n2,0,0,_3, n2,0,0,_7, n2,0,0);
-			NixVBAddTria(VBTemp,_1, n2,0,0,_7, n2,0,0,_5, n2,0,0);
-			// back
-			NixVBAddTria(VBTemp,_5, n0,0,0,_7, n0,0,0,_6, n0,0,0);
-			NixVBAddTria(VBTemp,_5, n0,0,0,_6, n0,0,0,_4, n0,0,0);
-		}
+		geo->Preview(VBTemp);
+		NixSetCull(pos2_chosen ? CullCCW : CullNone);
 		NixDraw3D(VBTemp);
+		NixSetCull(CullCCW);
 	}
 }
 

@@ -7,6 +7,7 @@
 
 #include "ModeModelMeshCreateBall.h"
 #include "../../ModeModel.h"
+#include "../../../../Data/Model/Geometry/ModelGeometryBall.h"
 #include "../../../../Data/Model/Geometry/ModelGeometrySphere.h"
 #include "../../../../Edward.h"
 
@@ -17,10 +18,13 @@ ModeModelMeshCreateBall::ModeModelMeshCreateBall(ModeBase *_parent) :
 
 	pos_chosen = false;
 	radius = 0;
+	geo = NULL;
 }
 
 ModeModelMeshCreateBall::~ModeModelMeshCreateBall()
 {
+	if (geo)
+		delete(geo);
 }
 
 void ModeModelMeshCreateBall::OnStart()
@@ -45,10 +49,10 @@ void ModeModelMeshCreateBall::OnEnd()
 	delete(dialog);
 }
 
-
-
-void ModeModelMeshCreateBall::OnLeftButtonDown()
+void ModeModelMeshCreateBall::UpdateGeometry()
 {
+	if (geo)
+		delete(geo);
 	if (pos_chosen){
 		bool sphere = (dialog->GetInt("nb_tab_control") == 1);
 		int nx = dialog->GetInt("nb_x");
@@ -58,12 +62,20 @@ void ModeModelMeshCreateBall::OnLeftButtonDown()
 		HuiConfigWriteInt("NewBallNumY", ny);
 		HuiConfigWriteInt("NewBallComplexity", complexity);
 		HuiConfigWriteBool("NewBallSphere", sphere);
-		ModelSurface *s;
 		if (sphere)
-			s = data->AddSphere(pos, radius, complexity);
+			geo = new ModelGeometrySphere(pos, radius, complexity);
 		else
-			s = data->AddBall(pos, radius, nx, ny);
-		data->SelectOnlySurface(s);
+			geo = new ModelGeometryBall(pos, radius, nx, ny);
+	}
+}
+
+
+
+void ModeModelMeshCreateBall::OnLeftButtonDown()
+{
+	if (pos_chosen){
+		data->PasteGeometry(*geo);
+		data->SelectOnlySurface(&data->Surface.back());
 
 		Abort();
 	}else{
@@ -73,6 +85,7 @@ void ModeModelMeshCreateBall::OnLeftButtonDown()
 			pos = multi_view->GetCursor3d();
 		message = _("Kugel skalieren");
 		pos_chosen = true;
+		UpdateGeometry();
 	}
 }
 
@@ -81,8 +94,7 @@ void ModeModelMeshCreateBall::OnDrawWin(MultiViewWindow *win)
 {
 	if (pos_chosen){
 		mode_model->SetMaterialCreation();
-		ModelGeometrySphere s = ModelGeometrySphere(pos, radius, 8);
-		s.Preview(VBTemp);
+		geo->Preview(VBTemp);
 		NixDraw3D(VBTemp);
 	}
 }
@@ -94,6 +106,7 @@ void ModeModelMeshCreateBall::OnMouseMove()
 	if (pos_chosen){
 		vector pos2 = multi_view->GetCursor3d(pos);
 		radius = (pos2 - pos).length();
+		UpdateGeometry();
 	}
 }
 
