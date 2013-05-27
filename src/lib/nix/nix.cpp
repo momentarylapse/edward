@@ -463,7 +463,7 @@ void NixInit(const string &api,int xres,int yres,int depth,bool fullscreen,CHuiW
 	NixSetPerspectiveMode(PerspectiveSizeAutoScreen);
 	NixSetPerspectiveMode(PerspectiveCenterAutoTarget);
 	NixSetPerspectiveMode(Perspective2DScaleSet, 1, 1);
-	NixSetPerspectiveMode(PerspectiveRatioSet, 4.0f / 3.0f);
+	NixSetPerspectiveMode(PerspectiveRatioSet, (float)NixScreenWidth / (float)NixScreenHeight); //4.0f / 3.0f);
 	NixMouseMappingWidth = 1024;
 	NixMouseMappingHeight = 768;
 	NixMaxDepth = 100000.0f;

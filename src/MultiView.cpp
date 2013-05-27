@@ -13,7 +13,7 @@ const color ColorBackGround3D = color(1,0,0,0.15f);
 const color ColorBackGround2D = color(1,0,0,0.10f);
 const color ColorGrid = color(1,0.7f,0.7f,0.7f);
 const color ColorText = White;
-const color ColorWindowType = color(1, 0.7f, 0.7f, 0.7f);
+const color ColorWindowType = color(1, 0.5f, 0.5f, 0.5f);
 
 const float SPEED_MOVE = 0.05f;
 const float SPEED_ZOOM_KEY = 1.15f;
