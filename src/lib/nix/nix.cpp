@@ -14,7 +14,7 @@
 #include "nix_common.h"
 
 
-string NixVersion = "0.10.1.0";
+string NixVersion = "0.11.0.0";
 
 
 // libraries (in case Visual C++ is used)
@@ -93,7 +93,6 @@ bool NixUsable,NixDoingEvilThingsToTheDevice;
 
 // things'n'stuff
 static bool WireFrame;
-static matrix *PostProjectionMatrix; // for creating the NixProjectionMatrix
 static int ClipPlaneMask;
 int NixFontGlyphWidth[256];
 
@@ -459,11 +458,6 @@ void NixInit(const string &api,int xres,int yres,int depth,bool fullscreen,CHuiW
 	// default values of the engine
 	MatrixIdentity(NixViewMatrix);
 	MatrixIdentity(NixProjectionMatrix);
-	NixView3DFovY = 60.0f / 180.0f * pi;
-	NixSetPerspectiveMode(PerspectiveSizeAutoScreen);
-	NixSetPerspectiveMode(PerspectiveCenterAutoTarget);
-	NixSetPerspectiveMode(Perspective2DScaleSet, 1, 1);
-	NixSetPerspectiveMode(PerspectiveRatioSet, (float)NixScreenWidth / (float)NixScreenHeight); //4.0f / 3.0f);
 	NixMouseMappingWidth = 1024;
 	NixMouseMappingHeight = 768;
 	NixMaxDepth = 100000.0f;
@@ -490,7 +484,6 @@ void NixInit(const string &api,int xres,int yres,int depth,bool fullscreen,CHuiW
 		NixTargetHeight = 600;
 	}
 	NixTargetRect = rect(0, NixTargetWidth, 0, NixTargetHeight);
-	NixSetPerspectiveMode(PerspectiveSizeAutoScreen);
 	NixSetCull(CullDefault);
 	NixSetWire(false);
 	NixSetAlpha(AlphaNone);
@@ -499,7 +492,7 @@ void NixInit(const string &api,int xres,int yres,int depth,bool fullscreen,CHuiW
 	NixSetAmbientLight(Black);
 	NixSpecularEnable(false);
 	NixCullingInverted = false;
-	NixSetProjection(true, true);
+	NixSetProjectionPerspective();
 	NixResize();
 
 	NixInputInit();
@@ -1051,11 +1044,6 @@ void NixSetWire(bool enabled)
 
 void NixSetCull(int mode)
 {
-	// Sicht-Feld gespiegelt?
-	if ((NixViewScale.x*NixViewScale.y*NixViewScale.z<0)!=(NixCullingInverted)){
-		if (mode==CullCCW)	mode=CullCW;
-		else	if (mode==CullCW)	mode=CullCCW;
-	}
 	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CCW);
 	if (mode==CullNone)		glDisable(GL_CULL_FACE);

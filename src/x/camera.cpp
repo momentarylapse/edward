@@ -395,10 +395,10 @@ void Camera::Start()
 	if (output_texture >= 0){
 		NixStart(output_texture);
 	}else{
-		NixStartPart(	int((float)MaxX * dest.x1),
-						int((float)MaxY * dest.y1),
-						int((float)MaxX * dest.x2),
-						int((float)MaxY * dest.y2),true);
+		NixScissor(rect((float)MaxX * dest.x1,
+					(float)MaxY * dest.y1,
+					(float)MaxX * dest.x2,
+					(float)MaxY * dest.y2));
 	}
 }
 
@@ -406,8 +406,6 @@ int num_used_clipping_planes = 0;
 
 void Camera::SetView()
 {
-	vector scale = vector(zoom, zoom, 1);
-
 	// Kamera-Position der Ansicht
 	// im Spiegel: Pos!=ViewPos...
 	view_pos = pos;
@@ -416,10 +414,11 @@ void Camera::SetView()
 		NixEnableClipPlane(i, false);
 
 	// View-Transformation setzen (Kamera)
-	NixMinDepth = min_depth;
-	NixMaxDepth = max_depth;
-	NixSetProjection(true, true);
-	NixSetView(view_pos, ang, scale);
+	float center_x = (float)MaxX * (dest.x1 + dest.x2) / 2;
+	float center_y = (float)MaxY * (dest.y1 + dest.y2) / 2;
+	float height = (float)MaxY * (dest.y2 - dest.y1) / zoom;
+	NixSetProjectionPerspectiveExt(center_x, center_y, height, height, min_depth, max_depth);
+	NixSetView(view_pos, ang);
 	
 	m_all = NixProjectionMatrix * NixViewMatrix;
 	MatrixInverse(im_all, m_all);
@@ -436,17 +435,16 @@ void Camera::SetView()
 
 void Camera::SetViewLocal()
 {
-	vector scale = vector(zoom, zoom, 1);
-
 	// Kamera-Position der Ansicht
 	// im Spiegel: Pos!=ViewPos...
 	view_pos = pos;
 
 	// View-Transformation setzen (Kamera)
-	NixMinDepth = 0.01f;
-	NixMaxDepth = 1000000.0f;
-	NixSetProjection(true, true);
-	NixSetView(v_0, ang, scale);
+	float center_x = (float)MaxX * (dest.x1 + dest.x2) / 2;
+	float center_y = (float)MaxY * (dest.y1 + dest.y2) / 2;
+	float height = (float)MaxY * (dest.y2 - dest.y1) / zoom;
+	NixSetProjectionPerspectiveExt(center_x, center_y, height, height, 0.01f, 1000000.0f);
+	NixSetView(v_0, ang);
 	
 	m_all = NixProjectionMatrix * NixViewMatrix;
 	MatrixInverse(im_all, m_all);

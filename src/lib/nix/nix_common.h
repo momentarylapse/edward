@@ -102,11 +102,8 @@ extern int NixOGLFontDPList;
 extern int NixGLCurrentProgram;
 
 
-extern matrix NixViewMatrix, NixProjectionMatrix, NixInvProjectionMatrix;
+extern matrix NixViewMatrix, NixProjectionMatrix;
 extern matrix NixWorldMatrix, NixWorldViewProjectionMatrix;
-
-extern float NixView3DRatio, NixView3DFovY;
-extern vector NixViewScale;
 
 extern bool NixUsable, NixDoingEvilThingsToTheDevice;
 extern bool NixEnabled3D;

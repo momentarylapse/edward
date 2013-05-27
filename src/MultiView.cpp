@@ -33,8 +33,8 @@ const int PointRadiusMouseOver = 4;
 #define MVGetSingleData(d, index)	((MultiViewSingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 //#define MVGetSingleData(d, index)	( dynamic_cast<MultiViewSingleData*> ((char*)(d).data + (d).DataSingleSize * index))
 
+extern matrix NixViewMatrix;
 extern matrix NixProjectionMatrix;
-extern matrix NixProjectionMatrix2d;
 
 MultiViewSingleData::MultiViewSingleData()
 {
@@ -586,7 +586,7 @@ void MultiViewWindow::DrawGrid()
 		vector PerspectiveViewPos = cam->radius * cam->ang.ang2dir() - cam->pos;
 		//NixSetZ(false,false);
 		// horizontal
-		float r=NixMaxDepth*0.6f;
+		float r = cam->radius * 1000 * 0.6f;
 		for (int j=-16;j<16;j++)
 			for (int i=0;i<64;i++){
 				vector pa = vector(float(j)/32*pi,float(i  )/32*pi,0).ang2dir() * r - PerspectiveViewPos;
@@ -717,41 +717,37 @@ void MultiView::DrawMousePos()
 void MultiViewWindow::Draw()
 {
 	msg_db_r("MultiView.DrawWin",2);
-	matrix r, t;
-	NixStartPart(dest.x1, dest.y1, dest.x2, dest.y2, true);
+	matrix rot, trans;
+	NixScissor(dest);
 	string view_kind;
 	MatrixIdentity(mat);
 	NixEnableLighting(false);
 	NixSetTexture(-1);
 
-	if (type == ViewPerspective){
-		NixSetPerspectiveMode(PerspectiveCenterAutoTarget);
-		if (multi_view->whole_window)
-			NixSetPerspectiveMode(PerspectiveSizeSet,(float)NixScreenWidth,(float)NixScreenHeight);
-		else
-			NixSetPerspectiveMode(PerspectiveSizeSet,(float)NixScreenWidth/2,(float)NixScreenHeight/2);
-		NixSetPerspectiveMode(PerspectiveCenterSet, (dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2);
-		NixSetProjection(true, true);
-		projection = NixProjectionMatrix;
-		NixSetColor(ColorBackGround3D);
-		NixDraw2D(r_id,NixTargetRect,0.9999999f);
-	}else if (type == View2D){
-		NixSetPerspectiveMode(Perspective2DScaleSet, cam->zoom, cam->zoom);
-		NixSetColor(ColorBackGround2D);
-		NixDraw2D(r_id,NixTargetRect,0.9999999f);
-	}else{
-		matrix s;
-		MatrixTranslation(t, vector((dest.x2 + dest.x1) / 2, (dest.y2 + dest.y1) / 2, 0));
-		MatrixScale(s, cam->zoom, -cam->zoom, cam->zoom / 1000);
-		projection = NixProjectionMatrix2d * t * s;
-		NixSetProjectionMatrix(projection);
-		NixSetColor(ColorBackGround2D);
-		NixDraw2D(r_id,NixTargetRect,0.9999999f);
-	}
+	color bg = ColorBackGround2D;
+	float height = NixScreenHeight;
+	if (!multi_view->whole_window)
+		height /= 2;
 
-	// camera position
-	vector vt = -cam->pos;
-	MatrixTranslation(t,vt);
+	// projection matrix
+	if (type == ViewPerspective){
+		NixSetProjectionPerspectiveExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, height, cam->zoom / 1000, cam->zoom * 1000);
+		bg = ColorBackGround3D;
+	}else if (type == View2D){
+		height = cam->zoom;
+		NixSetProjectionOrthoExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, -height, 0, 1);
+	}else{
+		height = cam->zoom;
+		NixSetProjectionOrthoExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, -height, - cam->zoom * 1000, cam->zoom * 1000);
+	}
+	projection = NixProjectionMatrix;
+
+	// background color
+	NixSetColor(ColorBackGround3D);
+	NixDraw2D(r_id,NixTargetRect,0.9999999f);
+
+	// camera matrix
+	vector pos = cam->pos;
 	if (type == ViewFront){
 		view_kind = _("Vorne");
 		ang = - e_y * pi;
@@ -772,25 +768,19 @@ void MultiViewWindow::Draw()
 		ang = - e_x * pi / 2;
 	}else if (type == ViewPerspective){
 		view_kind = _("Perspektive");
-		float _radius = cam->ignore_radius ? 0 : cam->radius;
-		MatrixTranslation(t, _radius * cam->ang.ang2dir() + vt);
+		if (!cam->ignore_radius)
+			pos -= cam->radius * cam->ang.ang2dir();
 		ang = cam->ang;
 	}else if (type == ViewIsometric){
 		view_kind = _("Isometrisch");
-		float _radius = cam->ignore_radius ? 0 : cam->radius;
-		MatrixTranslation(t, _radius * cam->ang.ang2dir() + vt);
 		ang = cam->ang;
 	}else if (type == View2D){
 		view_kind = _("2D");
-		vt = -cam->pos;
-		MatrixTranslation(t,vt);
 		ang = - pi * e_y;
 	}
-	MatrixRotationView(r, ang);
-	mat = r * t;
 	multi_view->cur_projection_win = this;
-	NixSetViewM(mat);
-	//NixSetView(true,vector(0,0,-200),vector(0,0,0));
+	NixSetView(pos, ang);
+	mat = NixViewMatrix;
 	NixSetZ(true,true);
 	NixSetWire(false);
 	NixEnableLighting(false);
@@ -889,8 +879,6 @@ void MultiViewWindow::Draw()
 void MultiView::OnDraw()
 {
 	msg_db_r("Multiview.OnDraw",2);
-	NixMaxDepth = cam.radius * 1000;
-	NixMinDepth = cam.radius / 1000;
 
 	update_zoom;
 
@@ -922,7 +910,7 @@ void MultiView::OnDraw()
 		win[3].dest = rect(MaxX/2,MaxX,MaxY/2,MaxY);
 		win[3].Draw();
 
-		NixStartPart(-1,-1,-1,-1,true);
+		NixScissor(NixTargetRect);
 		NixEnableLighting(false);
 		NixSetColor(color(1,0.1f,0.1f,0.5f));
 		NixDrawRect(0, MaxX, MaxY/2-1, MaxY/2+2, 0);

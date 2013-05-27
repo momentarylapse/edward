@@ -263,9 +263,6 @@ void GodReset()
 	World.fog.start = 0;
 	World.fog.end = 100000;
 	World.speed_of_sound = 1000;
-
-	NixMaxDepth = 100000.0f;
-	NixMinDepth = 1.0f;
 	
 	Engine.PhysicsEnabled = false;
 	Engine.CollisionsEnabled = true;
