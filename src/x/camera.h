@@ -54,6 +54,7 @@ public:
 	int output_texture, input_texture;
 	int shader;
 	bool shaded_displays;
+	float scale_x;
 
 	float min_depth, max_depth;
 	

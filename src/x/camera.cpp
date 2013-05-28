@@ -55,6 +55,7 @@ void Camera::reset()
 	pmvd.trans.clear();
 
 	zoom = 1.0f;
+	scale_x = 1;
 	z = 0.999999f;
 	min_depth = 1.0f;
 	max_depth = 100000.0f;
@@ -396,8 +397,8 @@ void Camera::Start()
 		NixStart(output_texture);
 	}else{
 		NixScissor(rect((float)MaxX * dest.x1,
-					(float)MaxY * dest.y1,
 					(float)MaxX * dest.x2,
+					(float)MaxY * dest.y1,
 					(float)MaxY * dest.y2));
 	}
 }
@@ -417,7 +418,7 @@ void Camera::SetView()
 	float center_x = (float)MaxX * (dest.x1 + dest.x2) / 2;
 	float center_y = (float)MaxY * (dest.y1 + dest.y2) / 2;
 	float height = (float)MaxY * (dest.y2 - dest.y1) / zoom;
-	NixSetProjectionPerspectiveExt(center_x, center_y, height, height, min_depth, max_depth);
+	NixSetProjectionPerspectiveExt(center_x, center_y, height * scale_x, height, min_depth, max_depth);
 	NixSetView(view_pos, ang);
 	
 	m_all = NixProjectionMatrix * NixViewMatrix;
@@ -443,7 +444,7 @@ void Camera::SetViewLocal()
 	float center_x = (float)MaxX * (dest.x1 + dest.x2) / 2;
 	float center_y = (float)MaxY * (dest.y1 + dest.y2) / 2;
 	float height = (float)MaxY * (dest.y2 - dest.y1) / zoom;
-	NixSetProjectionPerspectiveExt(center_x, center_y, height, height, 0.01f, 1000000.0f);
+	NixSetProjectionPerspectiveExt(center_x, center_y, height * scale_x, height, 0.01f, 1000000.0f);
 	NixSetView(v_0, ang);
 	
 	m_all = NixProjectionMatrix * NixViewMatrix;

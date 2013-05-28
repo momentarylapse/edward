@@ -354,11 +354,14 @@ bool NixStart(int texture)
 	return true;
 }
 
-void NixScissor(const rect &r)
+void NixScissor(const rect &_r)
 {
 	bool enable_scissors = true;
-	if (r.x1 < 0)
+	rect r = _r;
+	if (r.x1 < 0){
 		enable_scissors=false;
+		r = NixTargetRect;
+	}
 	if (enable_scissors)
 		glEnable(GL_SCISSOR_TEST);
 	else
