@@ -16,6 +16,7 @@ ModeModelMeshTexture *mode_model_mesh_texture = NULL;
 ModeModelMeshTexture::ModeModelMeshTexture(ModeBase *_parent) :
 	Mode<DataModel>("ModelMeshTexture", _parent, ed->multi_view_2d, "menu_model")
 {
+	CurrentTextureLevel = 0;
 }
 
 
@@ -25,13 +26,12 @@ ModeModelMeshTexture::~ModeModelMeshTexture()
 }
 
 
-
-void ModeModelMeshTexture::OnStart()
+void ModeModelMeshTexture::FetchData()
 {
 	skin_vertex.clear();
 	foreach(ModelSurface &surf, data->Surface)
 		foreach(ModelPolygon &t, surf.Polygon){
-			if (t.Material != data->CurrentMaterial)
+			if (t.Material != mode_model_mesh->CurrentMaterial)
 				continue;
 			ModelSkinVertexDummy v;
 			v.m_delta = v.m_old = false;
@@ -40,10 +40,25 @@ void ModeModelMeshTexture::OnStart()
 			for (int k=0;k<t.Side.num;k++){
 				v.is_selected = data->Vertex[t.Side[k].Vertex].is_selected;
 				v.view_stage = t.view_stage;
-				v.pos = t.Side[k].SkinVertex[data->CurrentTextureLevel];
+				v.pos = t.Side[k].SkinVertex[CurrentTextureLevel];
 				skin_vertex.add(v);
 			}
 		}
+}
+
+int ModeModelMeshTexture::GetNumSelected()
+{
+	int r = 0;
+	foreach(ModelSkinVertexDummy &v, skin_vertex)
+		if (v.is_selected)
+			r ++;
+	return r;
+}
+
+
+void ModeModelMeshTexture::OnStart()
+{
+	FetchData();
 
 	multi_view->view_stage = ed->multi_view_3d->view_stage;
 
@@ -68,7 +83,7 @@ void ModeModelMeshTexture::OnEnd()
 	delete(dialog);
 }
 
-#define cur_tex			data->Material[data->CurrentMaterial].Texture[data->CurrentTextureLevel]
+#define cur_tex			data->Material[mode_model_mesh->CurrentMaterial].Texture[CurrentTextureLevel]
 
 
 void ModeModelMeshTexture::OnDrawWin(MultiViewWindow *win)
@@ -120,13 +135,13 @@ void ModeModelMeshTexture::OnDrawWin(MultiViewWindow *win)
 	// draw triangles (outlines) of current material
 	foreach(ModelSurface &surf, data->Surface)
 		foreach(ModelPolygon &t, surf.Polygon){
-			if (t.Material != data->CurrentMaterial)
+			if (t.Material != mode_model_mesh->CurrentMaterial)
 				continue;
 			if (t.view_stage < multi_view->view_stage)
 				continue;
 			Array<vector> v;
 			for (int k=0;k<t.Side.num;k++)
-				v.add(win->Project(t.Side[k].SkinVertex[data->CurrentTextureLevel]));
+				v.add(win->Project(t.Side[k].SkinVertex[CurrentTextureLevel]));
 			v.add(v[0]);
 			for (int k=0;k<t.Side.num;k++)
 				NixDrawLine(	v[k].x,v[k].y,
@@ -134,8 +149,8 @@ void ModeModelMeshTexture::OnDrawWin(MultiViewWindow *win)
 								0.9f);
 		}
 
-	ed->DrawStr(180, MaxY - 20, format("%d von %d: %s", data->CurrentTextureLevel + 1, data->Material[data->CurrentMaterial].NumTextures,
-			data->Material[data->CurrentMaterial].TextureFile[data->CurrentTextureLevel].c_str()));
+	ed->DrawStr(180, MaxY - 20, format("%d von %d: %s", CurrentTextureLevel + 1, data->Material[mode_model_mesh->CurrentMaterial].NumTextures,
+			data->Material[mode_model_mesh->CurrentMaterial].TextureFile[CurrentTextureLevel].c_str()));
 }
 
 
@@ -143,7 +158,7 @@ void ModeModelMeshTexture::OnDrawWin(MultiViewWindow *win)
 void ModeModelMeshTexture::OnDraw()
 {
 	if (data->GetNumSelectedVertices() > 0){
-		NixDrawStr(20, 160, format(_("skin: %d"), data->GetNumSelectedSkinVertices()));
+		ed->DrawStr(20, 160, format(_("skin: %d"), GetNumSelected()));
 	}
 }
 
@@ -157,10 +172,10 @@ void ModeModelMeshTexture::OnUpdate(Observable *o)
 		int svi = 0;
 		foreach(ModelSurface &surf, data->Surface)
 			foreach(ModelPolygon &t, surf.Polygon){
-				if (t.Material != data->CurrentMaterial)
+				if (t.Material != mode_model_mesh->CurrentMaterial)
 					continue;
 				for (int k=0;k<t.Side.num;k++)
-					skin_vertex[svi ++].pos = t.Side[k].SkinVertex[data->CurrentTextureLevel];
+					skin_vertex[svi ++].pos = t.Side[k].SkinVertex[CurrentTextureLevel];
 			}
 
 		multi_view->ResetData(data);
@@ -184,7 +199,7 @@ void ModeModelMeshTexture::GetSelectedSkinVertices(Array<int> & surf, Array<int>
 	int i = 0;
 	foreachi(ModelSurface &s, data->Surface, si)
 		foreachi(ModelPolygon &t, s.Polygon, ti)
-			if (t.Material == data->CurrentMaterial){
+			if (t.Material == mode_model_mesh->CurrentMaterial){
 				for (int k=0;k<t.Side.num;k++){
 					if (skin_vertex[i].is_selected){
 						index.add(k);

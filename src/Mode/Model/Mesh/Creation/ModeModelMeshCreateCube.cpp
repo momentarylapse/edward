@@ -6,6 +6,7 @@
  */
 
 #include "../../ModeModel.h"
+#include "../ModeModelMesh.h"
 #include "ModeModelMeshCreateCube.h"
 #include "../../../../Data/Model/Geometry/ModelGeometryCube.h"
 #include "../../../../Data/Model/Geometry/ModelGeometryPlane.h"
@@ -64,7 +65,7 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 	if (pos_chosen){
 		if (pos2_chosen){
 
-			data->PasteGeometry(*geo);
+			data->PasteGeometry(*geo, mode_model_mesh->CurrentMaterial);
 			data->SelectOnlySurface(&data->Surface.back());
 
 			Abort();

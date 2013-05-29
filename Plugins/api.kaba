@@ -238,18 +238,18 @@ class DataModel : Data
 
 	// properties
 	ModelMove Move[]
-	ModelMove *move
+//	ModelMove *move
 
-	int CurrentMove,CurrentFrame
+//	int CurrentMove,CurrentFrame
 
-	bool Playing,PlayLoop
-	float TimeScale,TimeParam,SimFrame
+//	bool Playing,PlayLoop
+//	float TimeScale,TimeParam,SimFrame
 
 	// geometry
 	ModelVertex Vertex[]
 	ModelSurface Surface[]
-	MultiViewSingleData SkinVertex[] // only temporary...
-	int SkinVertMat, SkinVertTL
+//	MultiViewSingleData SkinVertex[] // only temporary...
+//	int SkinVertMat, SkinVertTL
 
 	// old geometry
 	ModelSkin Skin[4]
@@ -260,7 +260,7 @@ class DataModel : Data
 
 	// general properties
 	ModelMaterial Material[]
-	int CurrentMaterial, CurrentTextureLevel
+//	int CurrentMaterial, CurrentTextureLevel
 	vector Min, Max
 
 	// effects

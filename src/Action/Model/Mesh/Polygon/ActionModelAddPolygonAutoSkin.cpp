@@ -10,9 +10,10 @@
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../Data/Model/SkinGenerator.h"
 
-ActionModelAddPolygonAutoSkin::ActionModelAddPolygonAutoSkin(Array<int> &_vertex)
+ActionModelAddPolygonAutoSkin::ActionModelAddPolygonAutoSkin(Array<int> &_vertex, int _material)
 {
 	vertex = _vertex;
+	material = _material;
 }
 
 void *ActionModelAddPolygonAutoSkin::compose(Data *d)
@@ -22,6 +23,6 @@ void *ActionModelAddPolygonAutoSkin::compose(Data *d)
 	SkinGenerator sg;
 	sg.init_point_cloud_boundary(m->Vertex, vertex);
 
-	return AddSubAction(new ActionModelAddPolygonWithSkinGenerator(vertex, m->CurrentMaterial, sg), m);
+	return AddSubAction(new ActionModelAddPolygonWithSkinGenerator(vertex, material, sg), m);
 }
 

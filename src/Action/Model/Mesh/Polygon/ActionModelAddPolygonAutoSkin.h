@@ -14,7 +14,7 @@ class DataModel;
 class ActionModelAddPolygonAutoSkin: public ActionGroup
 {
 public:
-	ActionModelAddPolygonAutoSkin(Array<int> &_vertex);
+	ActionModelAddPolygonAutoSkin(Array<int> &vertex, int material);
 	virtual ~ActionModelAddPolygonAutoSkin(){}
 	string name(){	return "ModelAddPolygonAutoSkin";	}
 
@@ -22,6 +22,7 @@ public:
 
 private:
 	Array<int> vertex;
+	int material;
 };
 
 #endif /* ACTIONMODELADDPOLYGONAUTOSKIN_H_ */

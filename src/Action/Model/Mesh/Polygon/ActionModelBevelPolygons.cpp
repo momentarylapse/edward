@@ -14,6 +14,7 @@
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../Data/Model/SkinGenerator.h"
 #include "../../../../lib/base/map.h"
+#include "../../../../Mode/Model/Mesh/ModeModelMesh.h"
 #include <assert.h>
 
 ActionModelBevelPolygons::ActionModelBevelPolygons(float _length)
@@ -335,7 +336,7 @@ void ActionModelBevelPolygons::BevelSurface(DataModel *m, ModelSurface *s, int s
 		for (int k=0;k<p.v.num;k++)
 			v.add(p.v[k]->v);
 		//msg_write(ia2s(v));
-		AddSubAction(new ActionModelAddPolygonAutoSkin(v), m);
+		AddSubAction(new ActionModelAddPolygonAutoSkin(v, mode_model_mesh->CurrentMaterial), m);
 	}
 
 	// remove obsolete vertices

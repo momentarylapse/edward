@@ -15,7 +15,7 @@ class DataModel;
 class ActionModelMirrorSkinVertices: public ActionMultiView
 {
 public:
-	ActionModelMirrorSkinVertices(DataModel *d, const vector &_param, const vector &_pos0);
+	ActionModelMirrorSkinVertices(DataModel *d, const vector &param, const vector &pos0, int texture_level);
 	virtual ~ActionModelMirrorSkinVertices();
 	string name(){	return "ModelMirrorSkinVertices";	}
 
@@ -23,7 +23,7 @@ public:
 	void undo(Data *d);
 
 private:
-	int material, texture_level;
+	int texture_level;
 	Array<int> surface;
 	Array<int> tria;
 };

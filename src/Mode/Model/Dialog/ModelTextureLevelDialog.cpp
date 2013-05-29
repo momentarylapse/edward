@@ -6,6 +6,8 @@
  */
 
 #include "ModelTextureLevelDialog.h"
+#include "../Mesh/ModeModelMesh.h"
+#include "../Mesh/ModeModelMeshTexture.h"
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
 
@@ -48,12 +50,12 @@ void ModelTextureLevelDialog::FillTextureList()
 	Reset("texture_list");
 	foreachi(ModelMaterial &m, data->Material, i){
 		string im = render_material(&m);
-		AddString("texture_list", format("%d\\%s\\%s\\%s", i, (i == data->CurrentMaterial) ? "true" : "false", im.c_str(), file_secure(m.MaterialFile).c_str()));
+		AddString("texture_list", format("%d\\%s\\%s\\%s", i, (i == mode_model_mesh->CurrentMaterial) ? "true" : "false", im.c_str(), file_secure(m.MaterialFile).c_str()));
 	}
 	foreachi(ModelMaterial &m, data->Material, i)
 		for (int j=0;j<m.NumTextures;j++){
 			string im = ed->get_tex_image(m.Texture[j]);
-			AddChildString("texture_list", i, format("%d\\%s\\%s\\%s", j, ((i == data->CurrentMaterial) && (j == data->CurrentTextureLevel)) ? "true" : "false", im.c_str(), file_secure(m.TextureFile[j]).c_str()));
+			AddChildString("texture_list", i, format("%d\\%s\\%s\\%s", j, ((i == mode_model_mesh->CurrentMaterial) && (j == mode_model_mesh_texture->CurrentTextureLevel)) ? "true" : "false", im.c_str(), file_secure(m.TextureFile[j]).c_str()));
 		}
 	ExpandAll("texture_list", true);
 }
@@ -84,15 +86,15 @@ void ModelTextureLevelDialog::OnTextureList()
 	if (n < 0)
 		return;
 	if (n < data->Material.num){
-		data->CurrentMaterial = n;
-		data->CurrentTextureLevel = 0;
+		mode_model_mesh->CurrentMaterial = n;
+		mode_model_mesh_texture->CurrentTextureLevel = 0;
 		data->Notify("Change");
 	}else{
 		n -= data->Material.num;
 		foreachi(ModelMaterial &m, data->Material, i)
 			if (n < m.NumTextures){
-				data->CurrentMaterial = i;
-				data->CurrentTextureLevel = n;
+				mode_model_mesh->CurrentMaterial = i;
+				mode_model_mesh_texture->CurrentTextureLevel = n;
 				data->Notify("Change");
 				return;
 			}else

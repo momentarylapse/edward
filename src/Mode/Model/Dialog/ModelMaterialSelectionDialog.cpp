@@ -8,6 +8,7 @@
 #include "ModelMaterialSelectionDialog.h"
 #include "../../../Data/Model/DataModel.h"
 #include "../Mesh/ModeModelMesh.h"
+#include "../Mesh/ModeModelMeshTexture.h"
 #include "../../../Action/Model/Data/ActionModelAddMaterial.h"
 #include "../ModeModel.h"
 
@@ -53,7 +54,7 @@ void ModelMaterialSelectionDialog::FillMaterialList()
 			if (t.Material == i)
 				nt ++;
 		string im = render_material(&data->Material[i]);
-		AddString("material_list", format("%d\\%d\\%s\\%s\\%s", i, nt, (i == data->CurrentMaterial) ? "true" : "false", im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
+		AddString("material_list", format("%d\\%d\\%s\\%s\\%s", i, nt, (i == mode_model_mesh->CurrentMaterial) ? "true" : "false", im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
 	}
 	Enable("edit_material", false);
 }
@@ -80,8 +81,8 @@ void ModelMaterialSelectionDialog::OnMaterialList()
 
 void ModelMaterialSelectionDialog::OnMaterialListCheck()
 {
-	data->CurrentMaterial = HuiGetEvent()->row;
-	data->CurrentTextureLevel = 0;
+	mode_model_mesh->CurrentMaterial = HuiGetEvent()->row;
+	mode_model_mesh_texture->CurrentTextureLevel = 0;
 	FillMaterialList();
 }
 
@@ -101,8 +102,8 @@ void ModelMaterialSelectionDialog::OnMaterialEdit()
 	if (s < 0)
 		return;
 
-	data->CurrentMaterial = s;
-	data->CurrentTextureLevel = 0;
+	mode_model_mesh->CurrentMaterial = s;
+	mode_model_mesh_texture->CurrentTextureLevel = 0;
 	mode_model->ExecuteMaterialDialog(0, false);
 	FillMaterialList();
 }

@@ -8,6 +8,7 @@
 #include "ModelAnimationDialog.h"
 #include "../../../Data/Model/DataModel.h"
 #include "ModelNewAnimationDialog.h"
+#include "../Animation/ModeModelAnimation.h"
 
 static DataModel *__data = NULL;
 static int timer = -1;
@@ -17,11 +18,12 @@ void _later_func_()
 	if (!__data)
 		return;
 	float dt = HuiGetTime(timer);
-	if (__data->Playing){
-		__data->SimFrame += dt * (__data->move->FramesPerSecConst + __data->move->FramesPerSecFactor * __data->TimeParam) * __data->TimeScale;
-		if (__data->SimFrame > __data->move->Frame.num)
-			__data->SimFrame = 0;
-		__data->UpdateAnimation();
+	mode_model_animation->IterateAnimation(dt);
+	if (mode_model_animation->Playing){
+		mode_model_animation->SimFrame += dt * (mode_model_animation->move->FramesPerSecConst + mode_model_animation->move->FramesPerSecFactor * mode_model_animation->TimeParam) * mode_model_animation->TimeScale;
+		if (mode_model_animation->SimFrame > mode_model_animation->move->Frame.num)
+			mode_model_animation->SimFrame = 0;
+		mode_model_animation->UpdateAnimation();
 		HuiRunLater(20, &_later_func_);
 	}else
 		HuiRunLater(200, &_later_func_);
@@ -83,23 +85,23 @@ void ModelAnimationDialog::LoadData()
 				str += "???";
 			str += format("\\%d\\", m.Frame.num) + m.Name;
 			AddString("animation_list", str);
-			if (i == data->CurrentMove)
+			if (i == mode_model_animation->CurrentMove)
 				SetInt("animation_list", n);
 			n ++;
 		}
 	FillAnimation();
 	SetDecimals(1);
-	SetFloat("speed", data->TimeScale * 100.0f);
+	SetFloat("speed", mode_model_animation->TimeScale * 100.0f);
 	SetDecimals(3);
-	SetFloat("parameter", data->TimeParam);
+	SetFloat("parameter", mode_model_animation->TimeParam);
 }
 
 void ModelAnimationDialog::FillAnimation()
 {
 	bool b = false;
-	if ((data->CurrentMove >= 0) && (data->CurrentMove < data->Move.num)){
-		data->move = &data->Move[data->CurrentMove];
-		b = data->move->Frame.num > 0;
+	if ((mode_model_animation->CurrentMove >= 0) && (mode_model_animation->CurrentMove < data->Move.num)){
+		mode_model_animation->move = &data->Move[mode_model_animation->CurrentMove];
+		b = mode_model_animation->move->Frame.num > 0;
 	}
 	Enable("name", b);
 	Enable("frame", b);
@@ -114,15 +116,16 @@ void ModelAnimationDialog::FillAnimation()
 	Enable("interpolate_quad", b);
 	Enable("interpolate_loop", b);
 	if (b){
-		SetString("name", data->move->Name);
-		SetInt("frame", data->CurrentFrame);
-		SetInt("num_frames_wanted", data->move->Frame.num);
-		SetFloat("fps_const", data->move->FramesPerSecConst);
-		SetFloat("fps_factor", data->move->FramesPerSecFactor);
-		Enable("interpolate_quad", data->move->Type==MoveTypeSkeletal);
-		Check("interpolate_quad", data->move->InterpolatedQuadratic && data->move->Type==MoveTypeSkeletal);
-		Enable("interpolate_loop", data->move->InterpolatedQuadratic && data->move->Type==MoveTypeSkeletal);
-		Check("interpolate_loop", data->move->InterpolatedLoop && data->move->Type==MoveTypeSkeletal);
+		ModelMove *move = mode_model_animation->move;
+		SetString("name", move->Name);
+		SetInt("frame", mode_model_animation->CurrentFrame);
+		SetInt("num_frames_wanted", move->Frame.num);
+		SetFloat("fps_const", move->FramesPerSecConst);
+		SetFloat("fps_factor", move->FramesPerSecFactor);
+		Enable("interpolate_quad", move->Type==MoveTypeSkeletal);
+		Check("interpolate_quad", move->InterpolatedQuadratic && move->Type==MoveTypeSkeletal);
+		Enable("interpolate_loop", move->InterpolatedQuadratic && move->Type==MoveTypeSkeletal);
+		Check("interpolate_loop", move->InterpolatedLoop && move->Type==MoveTypeSkeletal);
 	}
 }
 
@@ -144,7 +147,7 @@ int ModelAnimationDialog::GetSelectedAnimation()
 void ModelAnimationDialog::OnAnimationList()
 {
 	int s = GetSelectedAnimation();
-	data->SetCurrentMove(s);
+	mode_model_animation->SetCurrentMove(s);
 	if (s >= 0)
 		SetInt("animation_dialog_tab_control", 1);
 }
@@ -152,7 +155,7 @@ void ModelAnimationDialog::OnAnimationList()
 void ModelAnimationDialog::OnAnimationListSelect()
 {
 	int s = GetSelectedAnimation();
-	data->SetCurrentMove(s);
+	mode_model_animation->SetCurrentMove(s);
 }
 
 void ModelAnimationDialog::OnClose()
@@ -179,60 +182,60 @@ void ModelAnimationDialog::OnDeleteAnimation()
 
 void ModelAnimationDialog::OnFrameInc()
 {
-	data->SetCurrentFrameNext();
+	mode_model_animation->SetCurrentFrameNext();
 }
 
 void ModelAnimationDialog::OnFrameDec()
 {
-	data->SetCurrentFramePrevious();
+	mode_model_animation->SetCurrentFramePrevious();
 }
 
 void ModelAnimationDialog::OnFrame()
 {
-	data->SetCurrentFrame(GetInt(""));
+	mode_model_animation->SetCurrentFrame(GetInt(""));
 }
 
 void ModelAnimationDialog::OnAddFrame()
 {
-	data->AnimationDuplicateCurrentFrame();
+	mode_model_animation->AnimationDuplicateCurrentFrame();
 }
 
 void ModelAnimationDialog::OnDeleteFrame()
 {
-	data->AnimationDeleteCurrentFrame();
+	mode_model_animation->AnimationDeleteCurrentFrame();
 }
 
 void ModelAnimationDialog::OnName()
 {
-	data->move->Name = GetString("");
+	mode_model_animation->move->Name = GetString("");
 }
 
 void ModelAnimationDialog::OnFpsConst()
 {
-	data->move->FramesPerSecConst = GetFloat("");
+	mode_model_animation->move->FramesPerSecConst = GetFloat("");
 }
 
 void ModelAnimationDialog::OnFpsFactor()
 {
-	data->move->FramesPerSecFactor = GetFloat("");
+	mode_model_animation->move->FramesPerSecFactor = GetFloat("");
 }
 
 void ModelAnimationDialog::OnSpeed()
 {
-	data->TimeScale = GetFloat("") / 100.0f;
+	mode_model_animation->TimeScale = GetFloat("") / 100.0f;
 }
 
 void ModelAnimationDialog::OnParameter()
 {
-	data->TimeParam = GetFloat("");
+	mode_model_animation->TimeParam = GetFloat("");
 }
 
 void ModelAnimationDialog::OnTabControl()
 {
 	int s = GetInt("");
-	data->Playing = (s == 2) && (data->move->Frame.num > 0);
-	data->SimFrame = 0;
-	data->UpdateAnimation();
+	mode_model_animation->Playing = (s == 2) && (mode_model_animation->move->Frame.num > 0);
+	mode_model_animation->SimFrame = 0;
+	mode_model_animation->UpdateAnimation();
 }
 
 void ModelAnimationDialog::OnUpdate(Observable *o)

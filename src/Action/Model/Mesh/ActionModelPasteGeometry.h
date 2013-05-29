@@ -15,13 +15,14 @@ class ModelGeometry;
 class ActionModelPasteGeometry : public ActionGroup
 {
 public:
-	ActionModelPasteGeometry(ModelGeometry &_geo);
+	ActionModelPasteGeometry(ModelGeometry &geo, int material);
 	virtual ~ActionModelPasteGeometry(){}
 	string name(){	return "ModelPasteGeometry";	}
 
 	void *compose(Data *d);
 private:
 	ModelGeometry &geo;
+	int material;
 };
 
 #endif /* ACTIONMODELPASTEGEOMETRY_H_ */

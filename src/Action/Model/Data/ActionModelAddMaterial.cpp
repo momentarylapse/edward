@@ -32,8 +32,6 @@ void ActionModelAddMaterial::undo(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	m->Material.pop();
-	if (m->CurrentMaterial >= m->Material.num)
-		m->CurrentMaterial = m->Material.num - 1;
 }
 
 

@@ -6,6 +6,7 @@
  */
 
 #include "ModeModelMeshCreateTorus.h"
+#include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
 #include "../../../../Data/Model/Geometry/ModelGeometryTorus.h"
 #include "../../../../Edward.h"
@@ -71,7 +72,7 @@ void ModeModelMeshCreateTorus::OnLeftButtonDown()
 	if (pos_chosen){
 		if (rad_chosen){
 
-			data->PasteGeometry(*geo);
+			data->PasteGeometry(*geo, mode_model_mesh->CurrentMaterial);
 			data->SelectOnlySurface(&data->Surface.back());
 
 			Abort();

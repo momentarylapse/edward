@@ -6,6 +6,7 @@
  */
 
 #include "ModeModelMeshCreateCylinderSnake.h"
+#include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
 #include "../../../../Data/Model/Geometry/ModelGeometryCylinder.h"
 #include "../../../../Edward.h"
@@ -82,7 +83,7 @@ void ModeModelMeshCreateCylinderSnake::OnLeftButtonDown()
 {
 	if (ready_for_scaling){
 
-		data->PasteGeometry(*geo);
+		data->PasteGeometry(*geo, mode_model_mesh->CurrentMaterial);
 		data->SelectOnlySurface(&data->Surface.back());
 
 		Abort();

@@ -11,6 +11,7 @@
 #include "../Polygon/Helper/ActionModelPolygonRemoveVertex.h"
 #include "../Polygon/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Mode/Model/Mesh/ModeModelMesh.h"
 #include <assert.h>
 
 void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
@@ -83,7 +84,7 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 	if (closed){
 		Array<int> loop = s.GetBoundaryLoop(m->Vertex.num - 1);
 		loop.reverse();
-		AddSubAction(new ActionModelAddPolygonAutoSkin(loop), m);
+		AddSubAction(new ActionModelAddPolygonAutoSkin(loop, mode_model_mesh->CurrentMaterial), m);
 	}
 
 	// delete vertex

@@ -11,9 +11,10 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Data/Model/Geometry/ModelGeometry.h"
 
-ActionModelPasteGeometry::ActionModelPasteGeometry(ModelGeometry &_geo) :
+ActionModelPasteGeometry::ActionModelPasteGeometry(ModelGeometry &_geo, int _material) :
 	geo(_geo)
 {
+	material = _material;
 }
 
 void *ActionModelPasteGeometry::compose(Data *d)
@@ -36,7 +37,8 @@ void *ActionModelPasteGeometry::compose(Data *d)
 		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 			for (int k=0;k<t.Side.num;k++)
 				sv.add(t.Side[k].SkinVertex[l]);
-		AddSubAction(new ActionModelAddPolygon(v, t.Material, sv), m);
+		int mat = (material >= 0) ? material : t.Material;
+		AddSubAction(new ActionModelAddPolygon(v, mat, sv), m);
 	}
 	return NULL;
 }

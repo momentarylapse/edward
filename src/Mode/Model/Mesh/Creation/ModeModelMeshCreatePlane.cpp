@@ -6,6 +6,7 @@
  */
 
 #include "../../ModeModel.h"
+#include "../ModeModelMesh.h"
 #include "ModeModelMeshCreatePlane.h"
 #include "../../../../Edward.h"
 #include "../../../../lib/nix/nix.h"
@@ -55,7 +56,7 @@ void ModeModelMeshCreatePlane::OnLeftButtonDown()
 			length[0] = -length[0];
 		}
 
-		ModelSurface *s = data->AddPlane(pos, length[0], length[1], nx, ny);
+		ModelSurface *s = data->AddPlane(pos, length[0], length[1], nx, ny, mode_model_mesh->CurrentMaterial);
 		data->SelectOnlySurface(s);
 
 		Abort();

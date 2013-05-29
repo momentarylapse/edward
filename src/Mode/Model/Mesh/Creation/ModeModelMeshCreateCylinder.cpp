@@ -6,6 +6,7 @@
  */
 
 #include "ModeModelMeshCreateCylinder.h"
+#include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
 #include "../../../../Data/Model/Geometry/ModelGeometryCylinder.h"
 #include "../../../../Edward.h"
@@ -79,7 +80,7 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 	if (pos.num == 2){
 
 
-		data->PasteGeometry(*geo);
+		data->PasteGeometry(*geo, mode_model_mesh->CurrentMaterial);
 		data->SelectOnlySurface(&data->Surface.back());
 
 		Abort();

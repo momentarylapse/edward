@@ -11,6 +11,7 @@
 #include "../Vertex/ActionModelAddVertex.h"
 #include "../Vertex/Helper/ActionModelMoveVertex.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Mode/Model/Mesh/ModeModelMesh.h"
 #include <assert.h>
 
 ActionModelExtrudePolygons::ActionModelExtrudePolygons(float _offset)
@@ -108,7 +109,7 @@ void ActionModelExtrudePolygons::ExtrudeSurface(ModelSurface &s, int surface, Da
 				sv.add(vector(0,0,0));
 				sv.add(vector(0,1,0));
 				sv.add(vector(1,1,0));
-				AddSubAction(new ActionModelAddPolygonSingleTexture(v, m->CurrentMaterial, sv), m);
+				AddSubAction(new ActionModelAddPolygonSingleTexture(v, mode_model_mesh->CurrentMaterial, sv), m);
 				_foreach_it_.update(); // TODO
 			}
 		}

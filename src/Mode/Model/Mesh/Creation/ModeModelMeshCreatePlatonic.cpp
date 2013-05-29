@@ -6,6 +6,7 @@
  */
 
 #include "ModeModelMeshCreatePlatonic.h"
+#include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"
 #include "../../../../Data/Model/Geometry/ModelGeometryPlatonic.h"
@@ -72,7 +73,7 @@ void ModeModelMeshCreatePlatonic::UpdateGeometry()
 void ModeModelMeshCreatePlatonic::OnLeftButtonDown()
 {
 	if (pos_chosen){
-		data->PasteGeometry(*geo);
+		data->PasteGeometry(*geo, mode_model_mesh->CurrentMaterial);
 
 		Abort();
 	}else{

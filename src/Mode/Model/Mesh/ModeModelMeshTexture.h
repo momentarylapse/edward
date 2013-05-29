@@ -31,7 +31,13 @@ public:
 	// for MultiView actions
 	void GetSelectedSkinVertices(Array<int> &surf, Array<int> &tria, Array<int> &index);
 
+
+	void FetchData();
+	int GetNumSelected();
+
 	Array<ModelSkinVertexDummy> skin_vertex;
+
+	int CurrentTextureLevel;
 
 	CHuiWindow *dialog;
 };

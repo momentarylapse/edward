@@ -60,6 +60,9 @@ public:
 	bool Copyable();
 	bool Pasteable();
 	ModelGeometry TempGeo;
+
+
+	int CurrentMaterial;
 };
 
 extern ModeModelMesh *mode_model_mesh;

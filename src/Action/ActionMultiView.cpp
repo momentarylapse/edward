@@ -21,6 +21,7 @@
 #include "World/ActionWorldMoveSelection.h"
 #include "World/ActionWorldRotateObjects.h"
 #include "World/Camera/ActionCameraMoveSelection.h"
+#include "../Mode/Model/Mesh/ModeModelMeshTexture.h"
 #include <assert.h>
 
 ActionMultiView::ActionMultiView(const vector &_param, const vector &_pos0)
@@ -59,13 +60,13 @@ ActionMultiView *ActionMultiViewFactory(const string &name, Data *d, const vecto
 	else if (name == "ActionModelMirrorVertices")
 		return new ActionModelMirrorVertices((DataModel*)d, _param, _pos0);
 	else if (name == "ActionModelMoveSkinVertices")
-		return new ActionModelMoveSkinVertices((DataModel*)d, _param, _pos0);
+		return new ActionModelMoveSkinVertices((DataModel*)d, _param, _pos0, mode_model_mesh_texture->CurrentTextureLevel);
 	else if (name == "ActionModelScaleSkinVertices")
-		return new ActionModelScaleSkinVertices((DataModel*)d, _param, _pos0);
+		return new ActionModelScaleSkinVertices((DataModel*)d, _param, _pos0, mode_model_mesh_texture->CurrentTextureLevel);
 	else if (name == "ActionModelRotateSkinVertices")
-		return new ActionModelRotateSkinVertices((DataModel*)d, _param, _pos0);
+		return new ActionModelRotateSkinVertices((DataModel*)d, _param, _pos0, mode_model_mesh_texture->CurrentTextureLevel);
 	else if (name == "ActionModelMirrorSkinVertices")
-		return new ActionModelMirrorSkinVertices((DataModel*)d, _param, _pos0);
+		return new ActionModelMirrorSkinVertices((DataModel*)d, _param, _pos0, mode_model_mesh_texture->CurrentTextureLevel);
 	else if (name == "ActionModelMoveBones")
 		return new ActionModelMoveBones((DataModel*)d, _param, _pos0);
 	else if (name == "ActionModelAnimationRotateBones")

@@ -22,6 +22,18 @@ ModeModelAnimation::ModeModelAnimation(ModeBase *_parent) :
 	mode_model_animation_none = new ModeModelAnimationNone(this);
 	mode_model_animation_skeleton = new ModeModelAnimationSkeleton(this);
 	mode_model_animation_vertex = new ModeModelAnimationVertex(this);
+
+	// create one dummy animation
+	EmptyMove = new ModelMove;
+	EmptyMove->Name = "-empty move-";
+	EmptyMove->Type = MoveTypeNone;
+	EmptyMove->Frame.resize(1);
+	EmptyMove->FramesPerSecConst = 1;
+	EmptyMove->FramesPerSecFactor = 0;
+	EmptyMove->InterpolatedQuadratic = 0;
+	EmptyMove->InterpolatedLoop = false;
+
+	move = EmptyMove;
 }
 
 
@@ -34,23 +46,30 @@ ModeModelAnimation::~ModeModelAnimation()
 void ModeModelAnimation::OnCommand(const string & id)
 {
 	if (id == "move_frame_inc")
-		data->SetCurrentFrameNext();
+		SetCurrentFrameNext();
 	if (id == "move_frame_dec")
-		data->SetCurrentFramePrevious();
+		SetCurrentFramePrevious();
 	if (id == "move_frame_delete")
-		data->AnimationDeleteCurrentFrame();
+		AnimationDeleteCurrentFrame();
 	if (id == "move_frame_insert")
-		data->AnimationDuplicateCurrentFrame();
+		AnimationDuplicateCurrentFrame();
 }
 
 
 
 void ModeModelAnimation::OnStart()
 {
+	TimeScale = 1;
+	TimeParam = 0;
+	Playing = false;
+	PlayLoop = true;
+	CurrentMove = -1;
+	CurrentFrame = 0;
+
 	dialog = new ModelAnimationDialog(ed, true, data);
 	dialog->Update();
 
-	data->UpdateAnimation();
+	UpdateAnimation();
 	Subscribe(data);
 	OnUpdate(data);
 }
@@ -70,11 +89,136 @@ void ModeModelAnimation::OnEnd()
 
 
 
+void ModeModelAnimation::SetCurrentMove(int move_no)
+{
+	move = EmptyMove;
+	CurrentMove = -1;
+	if ((move_no >= 0) && (move_no < data->Move.num))
+		if (data->Move[move_no].Frame.num > 0){
+			move = &data->Move[move_no];
+			CurrentMove = move_no;
+		}
+	SetCurrentFrame(0);
+}
+
+void ModeModelAnimation::SetCurrentFrame(int frame_no)
+{
+	if ((frame_no >= 0) && (frame_no < move->Frame.num)){
+		CurrentFrame = frame_no;
+		UpdateAnimation();
+	}
+}
+
+void ModeModelAnimation::SetCurrentFrameNext()
+{
+	SetCurrentFrame((CurrentFrame + 1) % move->Frame.num);
+}
+
+void ModeModelAnimation::SetCurrentFramePrevious()
+{
+	SetCurrentFrame((CurrentFrame - 1 + move->Frame.num) % move->Frame.num);
+}
+
+void ModeModelAnimation::UpdateAnimation()
+{
+	if (move->Type == MoveTypeSkeletal){
+		UpdateSkeleton();
+		foreach(ModelVertex &v, data->Vertex){
+			if (v.BoneIndex >= data->Bone.num)
+				v.AnimatedPos = v.pos;
+			else
+				v.AnimatedPos = data->Bone[v.BoneIndex].Matrix * (v.pos - data->GetBonePos(v.BoneIndex));
+		}
+	}else if (move->Type == MoveTypeVertex){
+		int frame0 = CurrentFrame;
+		int frame1 = CurrentFrame;
+		float t = 0;
+		if (Playing){
+			frame0 = SimFrame;
+			frame1 = (frame0 + 1) % move->Frame.num;
+			t = SimFrame - frame0;
+		}
+		foreachi(ModelVertex &v, data->Vertex, i){
+			v.AnimatedPos = v.pos + (1 - t) * move->Frame[frame0].VertexDPos[i] + t * move->Frame[frame1].VertexDPos[i];
+		}
+	}else{
+		foreach(ModelVertex &v, data->Vertex){
+			v.AnimatedPos = v.pos;
+		}
+	}
+	data->Notify("Change");
+}
+
+void ModeModelAnimation::UpdateSkeleton()
+{
+	if (move->Type != MoveTypeSkeletal){
+		foreachi(ModelBone &b, data->Bone, i){
+			if (b.Parent < 0)
+				b.pos = b.DeltaPos;
+			else
+				b.pos = data->Bone[b.Parent].pos + b.DeltaPos;
+		}
+		return;
+	}
+	int frame0 = CurrentFrame;
+	int frame1 = CurrentFrame;
+	float t = 0;
+	if (Playing){
+		frame0 = SimFrame;
+		frame1 = (frame0 + 1) % move->Frame.num;
+		t = SimFrame - frame0;
+	}
+
+	foreachi(ModelBone &b, data->Bone, i){
+		if (b.Parent < 0){
+			b.pos = b.DeltaPos + (1 - t) * move->Frame[frame0].SkelDPos[i] + t * move->Frame[frame1].SkelDPos[i];
+		}else{
+			vector dp = data->Bone[b.Parent].Matrix.transform_normal(b.DeltaPos);
+			b.pos = data->Bone[b.Parent].pos + dp;
+		}
+		matrix trans;
+		MatrixTranslation(trans, b.pos);
+		quaternion q0, q1, q;
+		QuaternionRotationV(q0, move->Frame[frame0].SkelAng[i]);
+		QuaternionRotationV(q1, move->Frame[frame1].SkelAng[i]);
+		QuaternionInterpolate(q, q0, q1, t);
+		MatrixRotationQ(b.RotMatrix, q);
+		b.Matrix = trans * b.RotMatrix;
+	}
+}
+
+void ModeModelAnimation::AnimationDeleteCurrentFrame()
+{
+	data->AnimationDeleteFrame(CurrentMove, CurrentFrame);
+	SetCurrentMove(-1);
+}
+
+void ModeModelAnimation::AnimationDuplicateCurrentFrame()
+{
+	data->AnimationAddFrame(CurrentMove, CurrentFrame + 1);
+	SetCurrentFrame(CurrentFrame + 1);
+}
+
+void ModeModelAnimation::IterateAnimation(float dt)
+{
+	if (Playing){
+		SimFrame += dt * (move->FramesPerSecConst + move->FramesPerSecFactor * TimeParam) * TimeScale;
+		if (SimFrame > move->Frame.num)
+			SimFrame = 0;
+		UpdateAnimation();
+	}
+}
+
 void ModeModelAnimation::OnUpdate(Observable *o)
 {
-	if (data->move->Type == MoveTypeSkeletal)
+	UpdateAnimation();
+	// valid move
+	/*if (...data->Move[CurrentMove] == index)
+		SetCurrentMove(-1);*/
+
+	if (move->Type == MoveTypeSkeletal)
 		ed->SetMode(mode_model_animation_skeleton);
-	else if (data->move->Type == MoveTypeVertex)
+	else if (move->Type == MoveTypeVertex)
 		ed->SetMode(mode_model_animation_vertex);
 	else
 		ed->SetMode(mode_model_animation_none);

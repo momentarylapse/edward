@@ -232,7 +232,6 @@ public:
 	int GetNumSelectedPolygons();
 	int GetNumSelectedSurfaces();
 	//int GetNumSelectedBalls();
-	//int GetNumSelectedPolys();
 	int GetNumSelectedBones();
 	int GetNumPolygons();
 
@@ -247,25 +246,11 @@ public:
 	void SelectOnlySurface(ModelSurface *s);
 
 
-	float GetDiameter();
+	float GetRadius();
 	void GetBoundingBox(vector &min, vector &max);
 	void GenerateDetailDists(float *dist);
 	matrix3 GenerateInertiaTensor(float mass);
 	void CreateSkin(ModelSkin *src, ModelSkin *dst, float quality_factor);
-
-	void ResetAutoTexturing();
-	void ApplyAutoTexturing(int a, int b, int c, vector *sv);
-
-
-	struct sAutoTexturingData
-	{
-		bool enabled;
-		// linear
-		vector p0, dir_u, dir_v;
-
-		int prev_material;
-	};
-	sAutoTexturingData AutoTexturingData;
 
 	// low level (un-action'ed)
 	//void LowLevelAddVertex(const vector &vd);
@@ -275,17 +260,17 @@ public:
 
 	// high level (actions)
 	void AddVertex(const vector &pos, int bone_index = 0, int normal_mode = -1);
-	ModelPolygon *AddTriangle(int a, int b, int c);
-	ModelPolygon *AddPolygon(Array<int> &v);
-	ModelPolygon *AddPolygonWithSkin(Array<int> &v, Array<vector> &sv);
-	ModelSurface *AddBall(const vector &pos, float radius, int num_x, int num_y);
-	ModelSurface *AddSphere(const vector &pos, float radius, int num);
-	ModelSurface *AddPlane(const vector &pos, const vector &dv1, const vector &dv2, int num_x, int num_y);
-	ModelSurface *AddCube(const vector &pos, const vector &dv1, const vector &dv2, const vector &dv3, int num_1, int num_2, int num_3);
-	ModelSurface *AddCylinder(Array<vector> &pos, Array<float> &radius, int rings, int edges, bool closed);
-	ModelSurface *AddTorus(const vector &pos, const vector &axis, float radius1, float radius2, int num_x, int num_y);
-	ModelSurface *AddPlatonic(const vector &pos, float radius, int type);
-	ModelSurface *AddTeapot(const vector &pos, float radius, int samples);
+	ModelPolygon *AddTriangle(int a, int b, int c, int material);
+	ModelPolygon *AddPolygon(Array<int> &v, int material);
+	ModelPolygon *AddPolygonWithSkin(Array<int> &v, Array<vector> &sv, int material);
+	ModelSurface *AddBall(const vector &pos, float radius, int num_x, int num_y, int material);
+	ModelSurface *AddSphere(const vector &pos, float radius, int num, int material);
+	ModelSurface *AddPlane(const vector &pos, const vector &dv1, const vector &dv2, int num_x, int num_y, int material);
+	ModelSurface *AddCube(const vector &pos, const vector &dv1, const vector &dv2, const vector &dv3, int num_1, int num_2, int num_3, int material);
+	ModelSurface *AddCylinder(Array<vector> &pos, Array<float> &radius, int rings, int edges, bool closed, int material);
+	ModelSurface *AddTorus(const vector &pos, const vector &axis, float radius1, float radius2, int num_x, int num_y, int material);
+	ModelSurface *AddPlatonic(const vector &pos, float radius, int type, int material);
+	ModelSurface *AddTeapot(const vector &pos, float radius, int samples, int material);
 
 	void DeleteSelection(bool greedy = false);
 	void InvertSelection();
@@ -305,7 +290,7 @@ public:
 	void SetNormalModeSelection(int mode);
 	void SetMaterialSelection(int material);
 	void CopyGeometry(ModelGeometry &geo); // not an action...
-	void PasteGeometry(ModelGeometry &geo);
+	void PasteGeometry(ModelGeometry &geo, int material = -1);
 	void Easify(float factor);
 	void SubdivideSelectedSurfaces();
 	void Automap(int material, int texture_level);
@@ -317,15 +302,6 @@ public:
 
 	// properties
 	Array<ModelMove> Move;
-	ModelMove *move;
-
-	int CurrentMove,CurrentFrame;
-	void SetCurrentMove(int move);
-	void SetCurrentFrame(int frame);
-	void SetCurrentFrameNext();
-	void SetCurrentFramePrevious();
-	void UpdateAnimation();
-	void UpdateSkeleton();
 	vector GetBonePos(int index);
 	vector GetBonePosAnimated(int index);
 
@@ -334,23 +310,11 @@ public:
 	void DeleteAnimation(int index);
 	void AnimationAddFrame(int index, int frame);
 	void AnimationDeleteFrame(int index, int frame);
-	void AnimationDeleteCurrentFrame();
-	void AnimationDuplicateCurrentFrame();
-
-	bool Playing,PlayLoop;
-	float TimeScale,TimeParam,SimFrame;
-
-	bool ShowSkeleton;
-
-
-	bool TextureMVNeedsUpdate;
-	int NewRootPoint;
 
 	// geometry
 	Array<ModelVertex> Vertex;
 	Array<ModelSurface> Surface;
-	Array<MultiViewSingleData> SkinVertex; // only temporary...
-	int SkinVertMat, SkinVertTL;
+	Array<ModelSkinVertexDummy> SkinVertex; // only temporary...
 
 	// old geometry
 	ModelSkin Skin[4];
@@ -361,7 +325,6 @@ public:
 
 	// general properties
 	Array<ModelMaterial> Material;
-	int CurrentMaterial, CurrentTextureLevel;
 	vector Min, Max;
 
 	// effects

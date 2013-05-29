@@ -103,9 +103,9 @@ void PluginManager::Init()
 	Script::DeclareClassSize("DataModel", sizeof(DataModel));
 	Script::DeclareClassOffset("DataModel", "Bone", offsetof(DataModel, Bone));
 	Script::DeclareClassOffset("DataModel", "Move", offsetof(DataModel, Move));
-	Script::DeclareClassOffset("DataModel", "move", offsetof(DataModel, move));
-	Script::DeclareClassOffset("DataModel", "CurrentMove", offsetof(DataModel, CurrentMove));
-	Script::DeclareClassOffset("DataModel", "CurrentFrame", offsetof(DataModel, CurrentFrame));
+	//Script::DeclareClassOffset("DataModel", "move", offsetof(DataModel, move));
+	//Script::DeclareClassOffset("DataModel", "CurrentMove", offsetof(DataModel, CurrentMove));
+	//Script::DeclareClassOffset("DataModel", "CurrentFrame", offsetof(DataModel, CurrentFrame));
 	Script::DeclareClassOffset("DataModel", "Vertex", offsetof(DataModel, Vertex));
 	Script::DeclareClassOffset("DataModel", "Surface", offsetof(DataModel, Surface));
 	Script::DeclareClassOffset("DataModel", "Ball", offsetof(DataModel, Ball));
@@ -115,16 +115,16 @@ void PluginManager::Init()
 	Script::DeclareClassOffset("DataModel", "meta_data", offsetof(DataModel, meta_data));
 	Script::DeclareClassOffset("DataModel", "Min", offsetof(DataModel, Min));
 	Script::DeclareClassOffset("DataModel", "Max", offsetof(DataModel, Max));
-	Script::DeclareClassOffset("DataModel", "CurrentMaterial", offsetof(DataModel, CurrentMaterial));
-	Script::DeclareClassOffset("DataModel", "CurrentTextureLevel", offsetof(DataModel, CurrentTextureLevel));
-	Script::DeclareClassOffset("DataModel", "SkinVertex", offsetof(DataModel, SkinVertex));
-	Script::DeclareClassOffset("DataModel", "SkinVertMat", offsetof(DataModel, SkinVertMat));
-	Script::DeclareClassOffset("DataModel", "SkinVertTL", offsetof(DataModel, SkinVertTL));
+	//Script::DeclareClassOffset("DataModel", "CurrentMaterial", offsetof(DataModel, CurrentMaterial));
+	//Script::DeclareClassOffset("DataModel", "CurrentTextureLevel", offsetof(DataModel, CurrentTextureLevel));
+	//Script::DeclareClassOffset("DataModel", "SkinVertex", offsetof(DataModel, SkinVertex));
+	//Script::DeclareClassOffset("DataModel", "SkinVertMat", offsetof(DataModel, SkinVertMat));
+	/*Script::DeclareClassOffset("DataModel", "SkinVertTL", offsetof(DataModel, SkinVertTL));
 	Script::DeclareClassOffset("DataModel", "Playing", offsetof(DataModel, Playing));
 	Script::DeclareClassOffset("DataModel", "PlayLoop", offsetof(DataModel, PlayLoop));
 	Script::DeclareClassOffset("DataModel", "TimeScale", offsetof(DataModel, TimeScale));
 	Script::DeclareClassOffset("DataModel", "TimeParam", offsetof(DataModel, TimeParam));
-	Script::DeclareClassOffset("DataModel", "SimFrame", offsetof(DataModel, SimFrame));
+	Script::DeclareClassOffset("DataModel", "SimFrame", offsetof(DataModel, SimFrame));*/
 	Script::LinkExternal("DataModel.ClearSelection", (void*)&DataModel::ClearSelection);
 	Script::LinkExternal("DataModel.InvertSelection", (void*)&DataModel::InvertSelection);
 	Script::LinkExternal("DataModel.SelectionFromVertices", (void*)&DataModel::SelectionFromVertices);

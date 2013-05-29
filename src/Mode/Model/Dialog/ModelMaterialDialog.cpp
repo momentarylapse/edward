@@ -7,6 +7,7 @@
 
 #include "ModelMaterialDialog.h"
 #include "../ModeModel.h"
+#include "../Mesh/ModeModelMesh.h"
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
 #include "../../../Action/Model/Data/ActionModelEditMaterial.h"
@@ -56,7 +57,7 @@ ModelMaterialDialog::ModelMaterialDialog(CHuiWindow *_parent, bool _allow_parent
 	EventM("edit_material", this, &ModelMaterialDialog::OnEditMaterial);
 	EventM("default_colors", this, &ModelMaterialDialog::OnDefaultColors);
 
-	index = data->CurrentMaterial;
+	index = mode_model_mesh->CurrentMaterial;
 	TempMaterial = data->Material[index];
 	LoadData();
 

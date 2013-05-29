@@ -10,11 +10,10 @@
 #include "../../../../lib/math/math.h"
 #include "../../../../Mode/Model/Mesh/ModeModelMeshTexture.h"
 
-ActionModelRotateSkinVertices::ActionModelRotateSkinVertices(DataModel *d, const vector &_param, const vector &_pos0) :
+ActionModelRotateSkinVertices::ActionModelRotateSkinVertices(DataModel *d, const vector &_param, const vector &_pos0, int _texture_level) :
 	ActionMultiView(_param, _pos0)
 {
-	material = d->CurrentMaterial;
-	texture_level = d->CurrentTextureLevel;
+	texture_level = _texture_level;
 
 	// list of selected skin vertices and save old pos
 	mode_model_mesh_texture->GetSelectedSkinVertices(surface, tria, index);

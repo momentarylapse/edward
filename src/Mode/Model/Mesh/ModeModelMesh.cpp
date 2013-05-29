@@ -76,6 +76,8 @@ void ModeModelMesh::OnStart()
 
 void ModeModelMesh::OnEnter()
 {
+	CurrentMaterial = 0;
+
 	ed->SetMode(mode_model_mesh_vertex);
 	//ed->SetMode(mode_model_mesh_skin);
 }
@@ -176,7 +178,7 @@ void ModeModelMesh::OnCommand(const string & id)
 		data->Execute(new ActionModelSkinVerticesFromProjection(data, mv));
 	}
 	if (id == "automapping")
-		data->Automap(data->CurrentMaterial, data->CurrentTextureLevel);
+		data->Automap(CurrentMaterial, mode_model_mesh_texture->CurrentTextureLevel);
 	if (id == "easify_skin")
 		Easify();
 
@@ -216,6 +218,8 @@ void ModeModelMesh::OnDraw()
 
 void ModeModelMesh::OnUpdate(Observable *o)
 {
+	if (CurrentMaterial >= data->Material.num)
+		CurrentMaterial = data->Material.num - 1;
 	//data->DebugShow();
 }
 

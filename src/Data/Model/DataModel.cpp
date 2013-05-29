@@ -50,8 +50,6 @@
 #include "Geometry/ModelGeometryTeapot.h"
 #include "Geometry/ModelGeometryTorus.h"
 
-ModelMove *EmptyMove = NULL;
-
 
 
 string ModelEffect::get_type()
@@ -83,19 +81,6 @@ void ModelEffect::clear()
 DataModel::DataModel() :
 	Data(FDModel)
 {
-	AutoTexturingData.enabled = false;
-
-	if (!EmptyMove){
-		// create one dummy animation
-		EmptyMove = new ModelMove;
-		EmptyMove->Name = "-empty move-";
-		EmptyMove->Type = MoveTypeNone;
-		EmptyMove->Frame.resize(1);
-		EmptyMove->FramesPerSecConst = 1;
-		EmptyMove->FramesPerSecFactor = 0;
-		EmptyMove->InterpolatedQuadratic = 0;
-		EmptyMove->InterpolatedLoop = false;
-	}
 }
 
 DataModel::~DataModel()
@@ -152,22 +137,10 @@ void DataModel::Reset()
 	Material.resize(1);
 	Material[0].reset();
 
-	CurrentMaterial = 0;
-	CurrentTextureLevel = 0;
-
-	SkinVertMat = SkinVertTL = -1;
-
 	// skeleton
 	Bone.clear();
 
 	Move.clear();
-	move = EmptyMove;
-	CurrentMove = -1;
-	CurrentFrame = 0;
-	TimeScale = 1;
-	TimeParam = 0;
-	Playing = false;
-	PlayLoop = true;
 
 
 	for (int i=0;i<4;i++){
@@ -914,7 +887,6 @@ void DataModel::ImportFromTriangleSkin(int index)
 		Vertex[i].BoneIndex = v.BoneIndex;
 	}
 	for (int i=0;i<Material.num;i++){
-		CurrentMaterial = i;
 		foreach(ModelTriangle &t, s.Sub[i].Triangle){
 			if ((t.Vertex[0] == t.Vertex[1]) || (t.Vertex[1] == t.Vertex[2]) || (t.Vertex[2] == t.Vertex[0]))
 				continue;
@@ -925,7 +897,7 @@ void DataModel::ImportFromTriangleSkin(int index)
 			for (int tl=0;tl<Material[i].NumTextures;tl++)
 				for (int k=0;k<3;k++)
 					sv.add(t.SkinVertex[tl][k]);
-			AddPolygonWithSkin(v, sv);
+			AddPolygonWithSkin(v, sv, i);
 		}
 	}
 	ClearSelection();
@@ -1017,8 +989,8 @@ bool DataModel::Save(const string & _filename)
 //	PrecreatePhysicalData();
 
 	GetBoundingBox(Min, Max);
-	GetDiameter();
-	Radius = GetDiameter() * 0.6f;
+	GetRadius();
+	Radius = GetRadius() * 1.1f;
 
 
 	// so the materials don't get mixed up
@@ -1465,7 +1437,7 @@ void DataModel::SelectOnlySurface(ModelSurface *s)
 	SelectionFromSurfaces();
 }
 
-ModelPolygon *DataModel::AddTriangle(int a, int b, int c)
+ModelPolygon *DataModel::AddTriangle(int a, int b, int c, int material)
 {
 	Array<int> v;
 	v.add(a);
@@ -1475,23 +1447,22 @@ ModelPolygon *DataModel::AddTriangle(int a, int b, int c)
 	sv.add(e_y);
 	sv.add(v_0);
 	sv.add(e_x);
-	//ApplyAutoTexturing(this, a, b, c, sv);
-	return (ModelPolygon*) Execute(new ActionModelAddPolygonSingleTexture(v, CurrentMaterial, sv));
+	return (ModelPolygon*) Execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
 }
 
-ModelPolygon *DataModel::AddPolygon(Array<int> &v)
+ModelPolygon *DataModel::AddPolygon(Array<int> &v, int material)
 {
 	Array<vector> sv;
 	for (int i=0;i<v.num;i++){
 		float w = (float)i / (float)v.num * 2 * pi;
 		sv.add(vector(0.5f + cos(w) * 0.5f, 0.5f + sin(w), 0));
 	}
-	return (ModelPolygon*)Execute(new ActionModelAddPolygonSingleTexture(v, CurrentMaterial, sv));
+	return (ModelPolygon*)Execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
 }
 
-ModelPolygon *DataModel::AddPolygonWithSkin(Array<int> &v, Array<vector> &sv)
+ModelPolygon *DataModel::AddPolygonWithSkin(Array<int> &v, Array<vector> &sv, int material)
 {
-	return (ModelPolygon*)Execute(new ActionModelAddPolygonSingleTexture(v, CurrentMaterial, sv));
+	return (ModelPolygon*)Execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
 }
 
 
@@ -1546,25 +1517,6 @@ ModelSurface *DataModel::SurfaceJoin(ModelSurface *a, ModelSurface *b)
 	return a;
 }
 
-void DataModel::ResetAutoTexturing()
-{
-	if (AutoTexturingData.enabled)
-		CurrentMaterial = AutoTexturingData.prev_material;
-	AutoTexturingData.enabled = false;
-}
-
-void DataModel::ApplyAutoTexturing(int a, int b, int c, vector *sv)
-{
-	if (AutoTexturingData.enabled){
-		vector v[3];
-		v[0] = Vertex[a].pos;
-		v[1] = Vertex[b].pos;
-		v[2] = Vertex[c].pos;
-		for (int k=0;k<3;k++)
-			sv[k] = vector( (v[k] - AutoTexturingData.p0) * AutoTexturingData.dir_u, (v[k] - AutoTexturingData.p0) * AutoTexturingData.dir_v, 0);
-	}
-}
-
 void DataModel::CreateSkin(ModelSkin *src, ModelSkin *dst, float quality_factor)
 {
 	msg_todo("DataModel::CreateSkin");
@@ -1573,20 +1525,12 @@ void DataModel::CreateSkin(ModelSkin *src, ModelSkin *dst, float quality_factor)
 
 
 
-float DataModel::GetDiameter()
+float DataModel::GetRadius()
 {
-	float Diameter=0;
-	foreach(ModelVertex &v, Vertex){
-		float d = v.pos.length() * 2;
-		if (d > Diameter)
-			Diameter = d;
-	}
-			/*for (int p2=p1+1;p2<Skin[m].Vertex.num;p2++){
-				float d=VecLength(GetVertex(&Skin[m],p1)-GetVertex(&Skin[m],p2));
-				if (d>Diameter)
-					Diameter=d;
-			}*/
-	return Diameter;
+	float radius = 0;
+	foreach(ModelVertex &v, Vertex)
+		radius = max(v.pos.length(), radius);
+	return radius;
 }
 
 float DetailDistTemp1,DetailDistTemp2,DetailDistTemp3;
@@ -1602,10 +1546,10 @@ int get_num_trias(DataModel *m, ModelSkin *s)
 void DataModel::GenerateDetailDists(float *dist)
 {
 	msg_db_r("GenerateDetailDists", 3);
-	float Diameter = GetDiameter();
-	dist[0] = Diameter * 5;
-	dist[1] = Diameter * 20;
-	dist[2] = Diameter * 40;
+	float radius = GetRadius();
+	dist[0] = radius * 10;
+	dist[1] = radius * 40;
+	dist[2] = radius * 80;
 	if (get_num_trias(this, &Skin[3]) == 0)
 		dist[1] = dist[2];
 	if (get_num_trias(this, &Skin[2]) == 0)
@@ -1725,7 +1669,10 @@ int DataModel::GetNumSelectedVertices()
 
 int DataModel::GetNumSelectedSkinVertices()
 {
-	int r=0;
+	int r = 0;
+	foreach(ModelSkinVertexDummy &v, SkinVertex)
+		if (v.is_selected)
+			r ++;
 	return r;
 }
 
@@ -1765,76 +1712,46 @@ int DataModel::GetNumPolygons()
 	return r;
 }
 
-ModelSurface* DataModel::AddBall(const vector& pos, float radius, int num_x, int num_y)
+ModelSurface* DataModel::AddBall(const vector& pos, float radius, int num_x, int num_y, int material)
 {
 	ModelGeometryBall geo = ModelGeometryBall(pos, radius, num_x, num_y);
-	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo));
+	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo, material));
 }
 
-ModelSurface* DataModel::AddSphere(const vector& pos, float radius, int num)
+ModelSurface* DataModel::AddSphere(const vector& pos, float radius, int num, int material)
 {
 	ModelGeometrySphere geo = ModelGeometrySphere(pos, radius, num);
-	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo));
+	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo, material));
 }
 
-ModelSurface* DataModel::AddPlane(const vector& pos, const vector& dv1, const vector& dv2, int num_x, int num_y)
+ModelSurface* DataModel::AddPlane(const vector& pos, const vector& dv1, const vector& dv2, int num_x, int num_y, int material)
 {
 	ModelGeometryPlane geo = ModelGeometryPlane(pos, dv1, dv2, num_x, num_y);
-	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo));
+	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo, material));
 }
 
-ModelSurface* DataModel::AddCube(const vector& pos, const vector& dv1, const vector& dv2, const vector& dv3, int num_1, int num_2, int num_3)
+ModelSurface* DataModel::AddCube(const vector& pos, const vector& dv1, const vector& dv2, const vector& dv3, int num_1, int num_2, int num_3, int material)
 {
 	ModelGeometryCube geo = ModelGeometryCube(pos, dv1, dv2, dv3, num_1, num_2, num_3);
-	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo));
+	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo, material));
 }
 
-ModelSurface* DataModel::AddCylinder(Array<vector>& pos, Array<float> &radius, int rings, int edges, bool closed)
+ModelSurface* DataModel::AddCylinder(Array<vector>& pos, Array<float> &radius, int rings, int edges, bool closed, int material)
 {
 	ModelGeometryCylinder geo = ModelGeometryCylinder(pos, radius, rings, edges, closed);
-	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo));
+	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo, material));
 }
 
-ModelSurface *DataModel::AddTorus(const vector &pos, const vector &axis, float radius1, float radius2, int num_x, int num_y)
+ModelSurface *DataModel::AddTorus(const vector &pos, const vector &axis, float radius1, float radius2, int num_x, int num_y, int material)
 {
 	ModelGeometryTorus geo = ModelGeometryTorus(pos, axis, radius1, radius2, num_x, num_y);
-	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo));
+	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo, material));
 }
 
-ModelSurface *DataModel::AddPlatonic(const vector &pos, float radius, int type)
+ModelSurface *DataModel::AddPlatonic(const vector &pos, float radius, int type, int material)
 {
 	ModelGeometryPlatonic geo = ModelGeometryPlatonic(pos, radius, type);
-	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo));
-}
-
-void DataModel::SetCurrentMove(int move_no)
-{
-	move = EmptyMove;
-	CurrentMove = -1;
-	if ((move_no >= 0) && (move_no < Move.num))
-		if (Move[move_no].Frame.num > 0){
-			move = &Move[move_no];
-			CurrentMove = move_no;
-		}
-	SetCurrentFrame(0);
-}
-
-void DataModel::SetCurrentFrame(int frame_no)
-{
-	if ((frame_no >= 0) && (frame_no < move->Frame.num)){
-		CurrentFrame = frame_no;
-		UpdateAnimation();
-	}
-}
-
-void DataModel::SetCurrentFrameNext()
-{
-	SetCurrentFrame((CurrentFrame + 1) % move->Frame.num);
-}
-
-void DataModel::SetCurrentFramePrevious()
-{
-	SetCurrentFrame((CurrentFrame - 1 + move->Frame.num) % move->Frame.num);
+	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo, material));
 }
 
 void DataModel::AddAnimation(int index, int type)
@@ -1845,74 +1762,6 @@ void DataModel::DeleteAnimation(int index)
 
 void DataModel::AnimationAddFrame(int index, int frame)
 {	Execute(new ActionModelAnimationAddFrame(index, frame));	}
-
-void DataModel::UpdateAnimation()
-{
-	if (move->Type == MoveTypeSkeletal){
-		UpdateSkeleton();
-		foreach(ModelVertex &v, Vertex){
-			if (v.BoneIndex >= Bone.num)
-				v.AnimatedPos = v.pos;
-			else
-				v.AnimatedPos = Bone[v.BoneIndex].Matrix * (v.pos - GetBonePos(v.BoneIndex));
-		}
-	}else if (move->Type == MoveTypeVertex){
-		int frame0 = CurrentFrame;
-		int frame1 = CurrentFrame;
-		float t = 0;
-		if (Playing){
-			frame0 = SimFrame;
-			frame1 = (frame0 + 1) % move->Frame.num;
-			t = SimFrame - frame0;
-		}
-		foreachi(ModelVertex &v, Vertex, i){
-			v.AnimatedPos = v.pos + (1 - t) * move->Frame[frame0].VertexDPos[i] + t * move->Frame[frame1].VertexDPos[i];
-		}
-	}else{
-		foreach(ModelVertex &v, Vertex){
-			v.AnimatedPos = v.pos;
-		}
-	}
-	Notify("Change");
-}
-
-void DataModel::UpdateSkeleton()
-{
-	if (move->Type != MoveTypeSkeletal){
-		foreachi(ModelBone &b, Bone, i){
-			if (b.Parent < 0)
-				b.pos = b.DeltaPos;
-			else
-				b.pos = Bone[b.Parent].pos + b.DeltaPos;
-		}
-		return;
-	}
-	int frame0 = CurrentFrame;
-	int frame1 = CurrentFrame;
-	float t = 0;
-	if (Playing){
-		frame0 = SimFrame;
-		frame1 = (frame0 + 1) % move->Frame.num;
-		t = SimFrame - frame0;
-	}
-
-	foreachi(ModelBone &b, Bone, i){
-		if (b.Parent < 0){
-			b.pos = b.DeltaPos + (1 - t) * move->Frame[frame0].SkelDPos[i] + t * move->Frame[frame1].SkelDPos[i];
-		}else{
-			vector dp = Bone[b.Parent].Matrix.transform_normal(b.DeltaPos);
-			b.pos = Bone[b.Parent].pos + dp;
-		}
-		matrix trans;
-		MatrixTranslation(trans, b.pos);
-		quaternion q0, q1, q;
-		QuaternionRotationV(q0, move->Frame[frame0].SkelAng[i]);
-		QuaternionRotationV(q1, move->Frame[frame1].SkelAng[i]);
-		QuaternionInterpolate(q, q0, q1, t);
-		MatrixRotationQ(b.RotMatrix, q);
-		b.Matrix = trans * b.RotMatrix;
-	}
-}
 
 vector DataModel::GetBonePos(int index)
 {
@@ -1928,11 +1777,6 @@ vector DataModel::GetBonePosAnimated(int index)
 
 void DataModel::AnimationDeleteFrame(int index, int frame)
 {	Execute(new ActionModelAnimationDeleteFrame(index, frame));	}
-
-void DataModel::AnimationDeleteCurrentFrame()
-{
-	AnimationDeleteFrame(CurrentMove, CurrentFrame);
-}
 
 void DataModel::CopyGeometry(ModelGeometry &geo)
 {
@@ -1986,8 +1830,8 @@ void DataModel::SetNormalModeSelection(int mode)
 void DataModel::SetMaterialSelection(int material)
 {	Execute(new ActionModelSetMaterial(this, material));	}
 
-void DataModel::PasteGeometry(ModelGeometry& geo)
-{	Execute(new ActionModelPasteGeometry(geo));	}
+void DataModel::PasteGeometry(ModelGeometry& geo, int material)
+{	Execute(new ActionModelPasteGeometry(geo, material));	}
 
 void DataModel::Easify(float factor)
 {	Execute(new ActionModelEasify(factor));	}
@@ -2012,12 +1856,6 @@ void DataModel::AutoWeldSelectedSurfaces(float epsilon)
 
 void DataModel::Automap(int material, int texture_level)
 {	Execute(new ActionModelAutomap(material, texture_level));	}
-
-void DataModel::AnimationDuplicateCurrentFrame()
-{
-	AnimationAddFrame(CurrentMove, CurrentFrame + 1);
-	SetCurrentFrame(CurrentFrame + 1);
-}
 
 void DataModel::SelectionAddEffects(const ModelEffect& effect)
 {	Execute(new ActionModelAddEffects(this, effect));	}

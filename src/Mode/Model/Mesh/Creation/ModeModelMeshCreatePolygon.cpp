@@ -6,6 +6,7 @@
  */
 
 #include "ModeModelMeshCreatePolygon.h"
+#include "../ModeModelMesh.h"
 #include "../../../../Edward.h"
 #include "../../../../Action/Model/Mesh/Polygon/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../lib/nix/nix.h"
@@ -55,7 +56,7 @@ void ModeModelMeshCreatePolygon::OnDrawWin(MultiViewWindow *win)
 void ModeModelMeshCreatePolygon::OnKeyDown()
 {
 	if (HuiGetEvent()->key_code == KEY_SHIFT + KEY_RETURN){
-		data->Execute(new ActionModelAddPolygonAutoSkin(selection));
+		data->Execute(new ActionModelAddPolygonAutoSkin(selection, mode_model_mesh->CurrentMaterial));
 		Abort();
 	}
 }
@@ -67,7 +68,7 @@ void ModeModelMeshCreatePolygon::OnLeftButtonDown()
 		// closed loop -> done
 		if (selection.num > 0)
 			if (multi_view->Selected == selection[0]){
-				data->Execute(new ActionModelAddPolygonAutoSkin(selection));
+				data->Execute(new ActionModelAddPolygonAutoSkin(selection, mode_model_mesh->CurrentMaterial));
 				Abort();
 				return;
 			}

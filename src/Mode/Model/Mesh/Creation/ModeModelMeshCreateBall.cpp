@@ -6,6 +6,7 @@
  */
 
 #include "ModeModelMeshCreateBall.h"
+#include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
 #include "../../../../Data/Model/Geometry/ModelGeometryBall.h"
 #include "../../../../Data/Model/Geometry/ModelGeometrySphere.h"
@@ -74,7 +75,7 @@ void ModeModelMeshCreateBall::UpdateGeometry()
 void ModeModelMeshCreateBall::OnLeftButtonDown()
 {
 	if (pos_chosen){
-		data->PasteGeometry(*geo);
+		data->PasteGeometry(*geo, mode_model_mesh->CurrentMaterial);
 		data->SelectOnlySurface(&data->Surface.back());
 
 		Abort();

@@ -29,6 +29,28 @@ public:
 	virtual void OnDrawWin(MultiViewWindow *win);
 
 	CHuiWindow *dialog;
+
+	ModelMove *EmptyMove;
+
+	ModelMove *move;
+	int CurrentMove,CurrentFrame;
+
+	float TimeScale;
+	float TimeParam;
+	bool Playing;
+	float PlayLoop;
+	float SimFrame;
+
+	void SetCurrentMove(int move);
+	void SetCurrentFrame(int frame);
+	void SetCurrentFrameNext();
+	void SetCurrentFramePrevious();
+	void AnimationDeleteCurrentFrame();
+	void AnimationDuplicateCurrentFrame();
+
+	void UpdateAnimation();
+	void UpdateSkeleton();
+	void IterateAnimation(float dt);
 };
 
 extern ModeModelAnimation *mode_model_animation;
