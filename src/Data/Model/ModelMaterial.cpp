@@ -13,6 +13,13 @@
 ModelMaterial::ModelMaterial()
 {	reset();	}
 
+ModelMaterial::ModelMaterial(const string &filename)
+{
+	reset();
+	MaterialFile = filename;
+	MakeConsistent();
+}
+
 ModelMaterial::~ModelMaterial()
 {}
 
@@ -124,6 +131,8 @@ void ModelMaterial::ApplyForRendering()
 	}
 	if (material->cube_map >= 0){
 		// evil hack
+		for (int i=material->num_textures+1;i<4;i++)
+			Texture[i] = -1;
 		Texture[3] = material->cube_map;
 		NixSetTextures(Texture, 4);
 	}else

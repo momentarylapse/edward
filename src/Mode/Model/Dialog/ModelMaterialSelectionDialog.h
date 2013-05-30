@@ -22,6 +22,7 @@ public:
 	void OnMaterialList();
 	void OnMaterialListCheck();
 	void OnMaterialListSelect();
+	void OnMaterialAddNew();
 	void OnMaterialAdd();
 	void OnMaterialEdit();
 

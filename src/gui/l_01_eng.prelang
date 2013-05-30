@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-585
+586
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -15,6 +15,8 @@ ad_tab_control
 Current game\\All files\\Details\\Not needed\\Missing
 add_material
 New...
+add_new_material
+
 add_point
 
 add_script
@@ -1518,7 +1520,7 @@ Texturen
 Textures
 Texturen (bmp,jpg,tga,avi)
 Textures (bmp,jpg,tga,avi)
-Texturen der einzelnen Materialien\n- Doppelklick zum Bearbeiten der Texturkoordinaten
+Texturen der einzelnen Materialien\n- Klick zum Bearbeiten der Texturkoordinaten
 
 Torus außen skalieren
 

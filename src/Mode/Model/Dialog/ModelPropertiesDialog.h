@@ -30,6 +30,7 @@ public:
 	void OnMaterialList();
 	void OnMaterialListCheck();
 	void OnMaterialListSelect();
+	void OnAddNewMaterial();
 	void OnAddMaterial();
 	void OnDeleteMaterial();
 	void OnPhysicsPassive();

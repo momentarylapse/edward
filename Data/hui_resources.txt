@@ -6031,7 +6031,7 @@ model_material_selection_dialog
 0
 
 
-5
+6
 ControlTable
 msd_table_1
 
@@ -6064,7 +6064,7 @@ msd_table_2
 1
 0
 1
-2
+3
 1
 0
 0
@@ -6072,7 +6072,7 @@ msd_table_2
 msd_table_1
 
 Button
-add_material
+add_new_material
 hui:add
 1
 0
@@ -6085,10 +6085,23 @@ hui:add
 msd_table_2
 
 Button
+add_material
+hui:open
+1
+1
+0
+0
+0
+0
+0
+0
+msd_table_2
+
+Button
 edit_material
 hui:edit
 1
-1
+2
 0
 0
 0
@@ -9598,7 +9611,7 @@ model_dialog
 0
 
 
-57
+58
 ControlTable
 mpd_table_main
 
@@ -9722,7 +9735,7 @@ mpd_table_mat_buttons
 1
 0
 1
-2
+3
 1
 0
 0
@@ -9730,7 +9743,7 @@ mpd_table_mat_buttons
 mpd_table_material
 
 Button
-add_material
+add_new_material
 hui:add
 1
 0
@@ -9743,10 +9756,23 @@ hui:add
 mpd_table_mat_buttons
 
 Button
+add_material
+hui:open
+1
+1
+0
+0
+0
+0
+0
+0
+mpd_table_mat_buttons
+
+Button
 delete_material
 hui:delete
 1
-1
+2
 0
 0
 0
@@ -16425,7 +16451,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-726
+727
 // Text
 ad_dialog
 Verwaltung
@@ -16438,7 +16464,9 @@ Grundeinstellungen
 ad_tab_control
 Aktuelles Spiel\\Alle Dateien\\Details\\Überflüssig\\Fehlend
 add_material
-neu...
+laden...
+add_new_material
+neu
 add_point
 Hinzufügen
 add_script
@@ -17885,7 +17913,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-726
+727
 // Text
 ad_dialog
 Administration
@@ -17899,6 +17927,8 @@ ad_tab_control
 Current game\\All files\\Details\\Not needed\\Missing
 add_material
 New...
+add_new_material
+
 add_point
 
 add_script
@@ -19645,7 +19675,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-726
+727
 // Text
 ad_dialog
 
@@ -19658,6 +19688,8 @@ ad_rudimentary_configuration
 ad_tab_control
 
 add_material
+
+add_new_material
 
 add_point
 

@@ -17,11 +17,13 @@
 	PropertiesDialog->AddControlTable("", 0, 0, 1, 2, "mpd_table_material");
 	PropertiesDialog->SetTarget("mpd_table_material", 0);
 	PropertiesDialog->AddListView("!format=ttCit\\#\\Dreiecke\\Aktiv\\\\Datei", 0, 0, 0, 0, "material_list");
-	PropertiesDialog->AddControlTable("!noexpandy", 0, 1, 2, 1, "mpd_table_mat_buttons");
+	PropertiesDialog->AddControlTable("!noexpandy", 0, 1, 3, 1, "mpd_table_mat_buttons");
 	PropertiesDialog->SetTarget("mpd_table_mat_buttons", 0);
-	PropertiesDialog->AddButton("neu...", 0, 0, 0, 0, "add_material");
-	PropertiesDialog->SetImage("add_material", "hui:add");
-	PropertiesDialog->AddButton("l&oschen", 1, 0, 0, 0, "delete_material");
+	PropertiesDialog->AddButton("neu", 0, 0, 0, 0, "add_new_material");
+	PropertiesDialog->SetImage("add_new_material", "hui:add");
+	PropertiesDialog->AddButton("laden...", 1, 0, 0, 0, "add_material");
+	PropertiesDialog->SetImage("add_material", "hui:open");
+	PropertiesDialog->AddButton("l&oschen", 2, 0, 0, 0, "delete_material");
 	PropertiesDialog->SetImage("delete_material", "hui:delete");
 	PropertiesDialog->SetTarget("model_dialog_tab_control", 3);
 	PropertiesDialog->AddControlTable("", 0, 0, 1, 2, "mpd_table_inventary");

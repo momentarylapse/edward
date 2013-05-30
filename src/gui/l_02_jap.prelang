@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-585
+586
 // Data (ID,Text)
 ad_dialog
 
@@ -14,6 +14,8 @@ ad_rudimentary_configuration
 ad_tab_control
 
 add_material
+
+add_new_material
 
 add_point
 
@@ -1518,7 +1520,7 @@ Texturen
 
 Texturen (bmp,jpg,tga,avi)
 
-Texturen der einzelnen Materialien\n- Doppelklick zum Bearbeiten der Texturkoordinaten
+Texturen der einzelnen Materialien\n- Klick zum Bearbeiten der Texturkoordinaten
 
 Torus außen skalieren
 

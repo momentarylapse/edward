@@ -39,6 +39,7 @@ ModelPropertiesDialog::ModelPropertiesDialog(CHuiWindow *_parent, bool _allow_pa
 	EventM("material_list", this, &ModelPropertiesDialog::OnMaterialList);
 	EventMX("material_list", "hui:change", this, &ModelPropertiesDialog::OnMaterialListCheck);
 	EventMX("material_list", "hui:select", this, &ModelPropertiesDialog::OnMaterialListSelect);
+	EventM("add_new_material", this, &ModelPropertiesDialog::OnAddNewMaterial);
 	EventM("add_material", this, &ModelPropertiesDialog::OnAddMaterial);
 	EventM("delete_material", this, &ModelPropertiesDialog::OnDeleteMaterial);
 	EventM("ph_passive", this, &ModelPropertiesDialog::OnPhysicsPassive);
@@ -256,9 +257,15 @@ void ModelPropertiesDialog::OnMaterialListSelect()
 	Enable("delete_material", s >= 0);
 }
 
+void ModelPropertiesDialog::OnAddNewMaterial()
+{
+	data->Execute(new ActionModelAddMaterial(""));
+}
+
 void ModelPropertiesDialog::OnAddMaterial()
 {
-	data->Execute(new ActionModelAddMaterial());
+	if (ed->FileDialog(FDMaterial, false, true))
+		data->Execute(new ActionModelAddMaterial(ed->DialogFileNoEnding));
 }
 
 void ModelPropertiesDialog::OnDeleteMaterial()

@@ -8,8 +8,9 @@
 #include "ActionModelAddMaterial.h"
 #include "../../../Data/Model/DataModel.h"
 
-ActionModelAddMaterial::ActionModelAddMaterial()
+ActionModelAddMaterial::ActionModelAddMaterial(const string &_filename)
 {
+	filename = _filename;
 }
 
 ActionModelAddMaterial::~ActionModelAddMaterial()
@@ -20,7 +21,7 @@ void *ActionModelAddMaterial::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModelMaterial mat;
+	ModelMaterial mat = ModelMaterial(filename);
 	m->Material.add(mat);
 	return &m->Material.back();
 }

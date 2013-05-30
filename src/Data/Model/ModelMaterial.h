@@ -14,6 +14,7 @@ class ModelMaterial
 {
 public:
 	ModelMaterial();
+	ModelMaterial(const string &filename);
 	virtual ~ModelMaterial();
 
 	void reset();

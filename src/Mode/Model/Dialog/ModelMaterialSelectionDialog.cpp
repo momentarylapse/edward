@@ -11,6 +11,7 @@
 #include "../Mesh/ModeModelMeshTexture.h"
 #include "../../../Action/Model/Data/ActionModelAddMaterial.h"
 #include "../ModeModel.h"
+#include "../../../Edward.h"
 
 string file_secure(const string &filename);
 string render_material(ModelMaterial *m);
@@ -30,6 +31,7 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(CHuiWindow *_parent, 
 	EventMX("material_list", "hui:activate", this, &ModelMaterialSelectionDialog::OnMaterialList);
 	EventMX("material_list", "hui:change", this, &ModelMaterialSelectionDialog::OnMaterialListCheck);
 	EventMX("material_list", "hui:select", this, &ModelMaterialSelectionDialog::OnMaterialListSelect);
+	EventM("add_new_material", this, &ModelMaterialSelectionDialog::OnMaterialAddNew);
 	EventM("add_material", this, &ModelMaterialSelectionDialog::OnMaterialAdd);
 	EventM("edit_material", this, &ModelMaterialSelectionDialog::OnMaterialEdit);
 
@@ -91,9 +93,15 @@ void ModelMaterialSelectionDialog::OnMaterialListSelect()
 	Enable("edit_material", GetInt("") >= 0);
 }
 
+void ModelMaterialSelectionDialog::OnMaterialAddNew()
+{
+	data->Execute(new ActionModelAddMaterial(""));
+}
+
 void ModelMaterialSelectionDialog::OnMaterialAdd()
 {
-	data->Execute(new ActionModelAddMaterial());
+	if (ed->FileDialog(FDMaterial, false, true))
+		data->Execute(new ActionModelAddMaterial(ed->DialogFileNoEnding));
 }
 
 void ModelMaterialSelectionDialog::OnMaterialEdit()

@@ -13,12 +13,14 @@
 class ActionModelAddMaterial : public Action
 {
 public:
-	ActionModelAddMaterial();
+	ActionModelAddMaterial(const string &filename);
 	virtual ~ActionModelAddMaterial();
-	string name(){	return "ModelAddMaterial";	}
+	virtual string name(){	return "ModelAddMaterial";	}
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	virtual void *execute(Data *d);
+	virtual void undo(Data *d);
+private:
+	string filename;
 };
 
 #endif /* ACTIONMODELADDMATERIAL_H_ */
