@@ -738,7 +738,7 @@ void MultiViewWindow::Draw()
 		NixSetProjectionOrthoExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, -height, 0, 1);
 	}else{
 		height = cam->zoom;
-		NixSetProjectionOrthoExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, -height, - cam->zoom * 1000, cam->zoom * 1000);
+		NixSetProjectionOrthoExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, -height, - cam->radius * 100, cam->radius * 100);
 	}
 	projection = NixProjectionMatrix;
 
