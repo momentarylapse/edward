@@ -17718,7 +17718,7 @@ Löschen
 texture_empty
 Leeren
 texture_list
-!format=tCit\\#\\Aktiv\\\\Datei
+!format=tit\\#\\\\Datei
 texture_map_complete
 auf ganzes Terrain
 texture_menu_sign

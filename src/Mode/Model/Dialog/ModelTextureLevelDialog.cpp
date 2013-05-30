@@ -23,11 +23,12 @@ ModelTextureLevelDialog::ModelTextureLevelDialog(CHuiWindow *_parent, bool _allo
 	FromResource("model_texture_level_dialog");
 	SetPositionSpecial(_parent, HuiRight | HuiTop);
 
-	SetTooltip("texture_list", _("Texturen der einzelnen Materialien\n- Doppelklick zum Bearbeiten der Texturkoordinaten"));
+	SetTooltip("texture_list", _("Texturen der einzelnen Materialien\n- Klick zum Bearbeiten der Texturkoordinaten"));
 
 	EventM("hui:close", this, &ModelTextureLevelDialog::OnClose);
-	EventMX("texture_list", "hui:change", this, &ModelTextureLevelDialog::OnTextureListCheck);
-	EventMX("texture_list", "hui:activate", this, &ModelTextureLevelDialog::OnTextureList);
+	//EventMX("texture_list", "hui:change", this, &ModelTextureLevelDialog::OnTextureListCheck);
+	//EventMX("texture_list", "hui:activate", this, &ModelTextureLevelDialog::OnTextureList);
+	EventMX("texture_list", "hui:select", this, &ModelTextureLevelDialog::OnTextureList);
 
 	Subscribe(data);
 
@@ -48,16 +49,22 @@ void ModelTextureLevelDialog::ApplyData()
 void ModelTextureLevelDialog::FillTextureList()
 {
 	Reset("texture_list");
+	int n_sel = -1;
 	foreachi(ModelMaterial &m, data->Material, i){
 		string im = render_material(&m);
-		AddString("texture_list", format("%d\\%s\\%s\\%s", i, (i == mode_model_mesh->CurrentMaterial) ? "true" : "false", im.c_str(), file_secure(m.MaterialFile).c_str()));
+		AddString("texture_list", format("Mat[%d]\\%s\\%s", i, im.c_str(), file_secure(m.MaterialFile).c_str()));
 	}
+	int n = data->Material.num;
 	foreachi(ModelMaterial &m, data->Material, i)
 		for (int j=0;j<m.NumTextures;j++){
 			string im = ed->get_tex_image(m.Texture[j]);
-			AddChildString("texture_list", i, format("%d\\%s\\%s\\%s", j, ((i == mode_model_mesh->CurrentMaterial) && (j == mode_model_mesh_texture->CurrentTextureLevel)) ? "true" : "false", im.c_str(), file_secure(m.TextureFile[j]).c_str()));
+			AddChildString("texture_list", i, format("Tex[%d]\\%s\\%s", j, im.c_str(), file_secure(m.TextureFile[j]).c_str()));
+			if ((i == mode_model_mesh->CurrentMaterial) && (j == mode_model_mesh_texture->CurrentTextureLevel))
+				n_sel = n;
+			n ++;
 		}
 	ExpandAll("texture_list", true);
+	SetInt("texture_list", n_sel);
 }
 
 

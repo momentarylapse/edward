@@ -1174,7 +1174,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-227
+228
 // Data (ID,Text)
 
 
@@ -1374,7 +1374,7 @@ Keine geschlossene Flächen markiert
 
 Knochen setzen
 
-Knochen setzen oder Wurzel-Knochen waehlen
+Knochen setzen oder Wurzel-Knochen wählen
 
 Kompassrichtung entlang des Horizonts
 
@@ -1435,6 +1435,8 @@ Objekt
 Objekt %d von %d
 
 Perspektive
+
+Pfad schließen
 
 Polygon
 
