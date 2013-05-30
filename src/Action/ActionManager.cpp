@@ -71,7 +71,6 @@ void *ActionManager::Execute(Action *a)
 			add(a);
 		if (!cur_group){
 			data->OnPostActionUpdate();
-			data->Notify("Change");
 		}
 		data->NotifyEnd();
 		return p;
@@ -97,7 +96,6 @@ void ActionManager::Undo()
 		data->NotifyBegin();
 		action[-- cur_pos]->undo_logged(data);
 		data->OnPostActionUpdate();
-		data->Notify("Change");
 		data->NotifyEnd();
 	}
 }
@@ -111,7 +109,6 @@ void ActionManager::Redo()
 		data->NotifyBegin();
 		action[cur_pos ++]->redo_logged(data);
 		data->OnPostActionUpdate();
-		data->Notify("Change");
 		data->NotifyEnd();
 	}
 }
@@ -149,14 +146,13 @@ void ActionManager::EndActionGroup()
 		cur_group = NULL;
 		Execute(g);
 		data->OnPostActionUpdate();
-		data->Notify("Change");
 	}
 }
 
 void ActionManager::MarkCurrentAsSave()
 {
 	save_pos = cur_pos;
-	data->Notify("Change");
+	Notify("Change");
 }
 
 
@@ -172,7 +168,6 @@ bool ActionManager::Preview(Action *a)
 	ClearPreview();
 	try{
 		a->execute_logged(data);
-		data->Notify("Change");
 		preview = a;
 	}catch(ActionException &e){
 		e.add_parent(a->name());
@@ -181,7 +176,6 @@ bool ActionManager::Preview(Action *a)
 		a->abort(data);
 		delete(a);
 		Notify("Failed");
-		data->Notify("Change");
 		return false;
 	}
 	return true;
@@ -192,7 +186,6 @@ void ActionManager::ClearPreview()
 {
 	if (preview){
 		preview->undo_logged(data);
-		data->Notify("Change");
 		delete(preview);
 		preview = NULL;
 	}

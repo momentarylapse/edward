@@ -17,10 +17,11 @@ class ActionModelScaleSkinVertices: public ActionMultiView
 public:
 	ActionModelScaleSkinVertices(DataModel *d, const vector &param, const vector &pos0, int texture_level);
 	virtual ~ActionModelScaleSkinVertices();
-	string name(){	return "ModelScaleSkinVertices";	}
+	virtual string name(){	return "ModelScaleSkinVertices";	}
+	virtual string message(){	return "SkinChange";	}
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	virtual void *execute(Data *d);
+	virtual void undo(Data *d);
 
 private:
 	int texture_level;

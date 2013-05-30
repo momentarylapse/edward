@@ -1385,8 +1385,7 @@ void MultiView::MouseActionStart(int button)
 		mouse_win->GetMovingFrame(d, u, r);
 		cur_action = ActionMultiViewFactory(action[button].name, _data_, mouse_action_param, mouse_action_pos0,
 				r, u, d);
-		cur_action->execute(_data_);
-		_data_->Notify("Change");
+		cur_action->execute_logged(_data_);
 		Notify("ActionStart");
 	}
 }
@@ -1434,8 +1433,7 @@ void MultiView::MouseActionUpdate()
 		active_win->GetMovingFrame(d, u, r);
 		cur_action = ActionMultiViewFactory(action[active_mouse_action].name, _data_, mouse_action_param, mouse_action_pos0,
 				r, u, d);
-		cur_action->execute(_data_);
-		_data_->Notify("Changed");
+		cur_action->execute_logged(_data_);
 
 		Notify("ActionUpdate");
 	}

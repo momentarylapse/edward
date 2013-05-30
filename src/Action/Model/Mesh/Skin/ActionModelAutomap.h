@@ -19,10 +19,11 @@ class ActionModelAutomap : public Action
 public:
 	ActionModelAutomap(int material, int texture_level);
 	virtual ~ActionModelAutomap();
-	string name(){	return "ModelAutoMap";	}
+	virtual string name(){	return "ModelAutoMap";	}
+	virtual string message(){	return "SkinChange";	}
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	virtual void *execute(Data *d);
+	virtual void undo(Data *d);
 
 private:
 	int material;

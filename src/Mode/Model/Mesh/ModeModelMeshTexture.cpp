@@ -44,6 +44,14 @@ void ModeModelMeshTexture::FetchData()
 				skin_vertex.add(v);
 			}
 		}
+
+	multi_view->ResetData(data);
+	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
+	multi_view->SetData(	MVDModelSkinVertex,
+			skin_vertex,
+			NULL,
+			MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
+			NULL, NULL);
 }
 
 int ModeModelMeshTexture::GetNumSelected()
@@ -58,15 +66,14 @@ int ModeModelMeshTexture::GetNumSelected()
 
 void ModeModelMeshTexture::OnStart()
 {
-	FetchData();
-
 	multi_view->view_stage = ed->multi_view_3d->view_stage;
+	mode_model_mesh->ApplyRightMouseFunction(multi_view);
+	multi_view->MVRectable = true;
+
+	FetchData();
 
 	Subscribe(data);
 	Subscribe(multi_view, "SelectionChange");
-	mode_model_mesh->ApplyRightMouseFunction(multi_view);
-	multi_view->MVRectable = true;
-	OnUpdate(data);
 
 	dialog = new ModelTextureLevelDialog(ed, true, data);
 	dialog->Update();
@@ -167,24 +174,18 @@ void ModeModelMeshTexture::OnDraw()
 void ModeModelMeshTexture::OnUpdate(Observable *o)
 {
 	if (o->GetName() == "Data"){
-
-
-		int svi = 0;
-		foreach(ModelSurface &surf, data->Surface)
-			foreach(ModelPolygon &t, surf.Polygon){
-				if (t.Material != mode_model_mesh->CurrentMaterial)
-					continue;
-				for (int k=0;k<t.Side.num;k++)
-					skin_vertex[svi ++].pos = t.Side[k].SkinVertex[CurrentTextureLevel];
-			}
-
-		multi_view->ResetData(data);
-		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		multi_view->SetData(	MVDModelSkinVertex,
-				skin_vertex,
-				NULL,
-				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
-				NULL, NULL);
+		if (o->GetMessage() == "SkinChange"){
+			int svi = 0;
+			foreach(ModelSurface &surf, data->Surface)
+				foreach(ModelPolygon &t, surf.Polygon){
+					if (t.Material != mode_model_mesh->CurrentMaterial)
+						continue;
+					for (int k=0;k<t.Side.num;k++)
+						skin_vertex[svi ++].pos = t.Side[k].SkinVertex[CurrentTextureLevel];
+				}
+		}else if (o->GetMessage() == "Change"){
+			FetchData();
+		}
 	}else if (o->GetName() == "MultiView"){
 		//data->SelectionTrianglesFromVertices();
 		//data->SelectionSurfacesFromTriangles();
@@ -193,7 +194,7 @@ void ModeModelMeshTexture::OnUpdate(Observable *o)
 }
 
 
-
+// used by actions
 void ModeModelMeshTexture::GetSelectedSkinVertices(Array<int> & surf, Array<int> &tria, Array<int> & index)
 {
 	int i = 0;

@@ -46,7 +46,7 @@ void ActionMultiView::abort(Data *d)
 void ActionMultiView::abort_and_notify(Data *d)
 {
 	abort(d);
-	d->Notify("Change");
+	d->Notify(message());
 }
 
 ActionMultiView *ActionMultiViewFactory(const string &name, Data *d, const vector &_param, const vector &_pos0, const vector &_ex, const vector &_ey, const vector &_ez)

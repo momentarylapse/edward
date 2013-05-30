@@ -24,9 +24,9 @@ public:
 
 	virtual void *compose(Data *d){	return NULL;	}
 
-	void *execute(Data *d);
-	void undo(Data *d);
-	void redo(Data *d);
+	virtual void *execute(Data *d);
+	virtual void undo(Data *d);
+	virtual void redo(Data *d);
 
 	virtual void abort(Data *d);
 	virtual bool was_trivial();

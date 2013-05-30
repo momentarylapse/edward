@@ -20,10 +20,11 @@ class ActionModelSkinVerticesFromProjection : public Action
 public:
 	ActionModelSkinVerticesFromProjection(DataModel *m, MultiView *mv);
 	virtual ~ActionModelSkinVerticesFromProjection();
-	string name(){	return "ModelSkinVerticesFromProjection";	}
+	virtual string name(){	return "ModelSkinVerticesFromProjection";	}
+	virtual string message(){	return "SkinChange";	}
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	virtual void *execute(Data *d);
+	virtual void undo(Data *d);
 
 private:
 	Array<int> surface;

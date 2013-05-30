@@ -35,6 +35,7 @@ void* Action::execute_logged(Data* d)
 	msg_write("do " + name());
 #endif
 	void *r = execute(d);
+	d->Notify(message());
 #ifdef ACTION_DEBUG
 	d->TestSanity("do " + name());
 #endif
@@ -47,6 +48,7 @@ void Action::undo_logged(Data* d)
 	msg_write("undo " + name());
 #endif
 	undo(d);
+	d->Notify(message());
 #ifdef ACTION_DEBUG
 	d->TestSanity("undo " + name());
 #endif
@@ -58,6 +60,7 @@ void Action::redo_logged(Data* d)
 	msg_write("redo " + name());
 #endif
 	redo(d);
+	d->Notify(message());
 #ifdef ACTION_DEBUG
 	d->TestSanity("redo " + name());
 #endif

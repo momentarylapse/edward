@@ -30,6 +30,7 @@ public:
 	virtual ~Action();
 
 	virtual string name() = 0;
+	virtual string message(){	return "Change"	;	}
 
 	virtual bool allowed(Data *d){	return true;	}
 	virtual void abort(Data *d){	undo_logged(d);	}
