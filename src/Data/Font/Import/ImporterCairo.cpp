@@ -43,7 +43,7 @@ bool ImporterCairo::Import(DataFont *f, const string &font_name)
 		if (ok){
 			f->global.TextureFile = "Font/" + font_name + ".tga";
 			im.Save(NixTextureDir + f->global.TextureFile);
-			f->Notify("Changed");
+			f->Notify("Change");
 			return true;
 		}
 		n ++;

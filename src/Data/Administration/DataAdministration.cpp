@@ -166,7 +166,7 @@ bool DataAdministration::Load(const string &_filename, bool deep)
 		}
 	}
 	admin_file->Close();
-	Notify("Changed");
+	Notify("Change");
 	msg_db_l(5);
 	return true;
 }
@@ -276,7 +276,7 @@ void DataAdministration::UpdateDatabase()
 
 	ed->progress->End();
 	SaveDatabase();
-	Notify("Changed");
+	Notify("Change");
 	msg_db_l(0);
 }
 
