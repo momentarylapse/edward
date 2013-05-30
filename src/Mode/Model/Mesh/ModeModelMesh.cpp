@@ -218,6 +218,7 @@ void ModeModelMesh::OnDraw()
 
 void ModeModelMesh::OnUpdate(Observable *o)
 {
+	// consistency checks
 	if (CurrentMaterial >= data->Material.num)
 		CurrentMaterial = data->Material.num - 1;
 	//data->DebugShow();

@@ -155,9 +155,6 @@ void ModeModelMeshTexture::OnDrawWin(MultiViewWindow *win)
 								v[k+1].x,v[k+1].y,
 								0.9f);
 		}
-
-	ed->DrawStr(180, MaxY - 20, format("%d von %d: %s", CurrentTextureLevel + 1, data->Material[mode_model_mesh->CurrentMaterial].NumTextures,
-			data->Material[mode_model_mesh->CurrentMaterial].TextureFile[CurrentTextureLevel].c_str()));
 }
 
 
@@ -174,6 +171,10 @@ void ModeModelMeshTexture::OnDraw()
 void ModeModelMeshTexture::OnUpdate(Observable *o)
 {
 	if (o->GetName() == "Data"){
+		// consistency checks
+		if (CurrentTextureLevel >= data->Material[mode_model_mesh->CurrentMaterial].NumTextures)
+			CurrentTextureLevel = data->Material[mode_model_mesh->CurrentMaterial].NumTextures - 1;
+
 		if (o->GetMessage() == "SkinChange"){
 			int svi = 0;
 			foreach(ModelSurface &surf, data->Surface)
@@ -184,6 +185,7 @@ void ModeModelMeshTexture::OnUpdate(Observable *o)
 						skin_vertex[svi ++].pos = t.Side[k].SkinVertex[CurrentTextureLevel];
 				}
 		}else if (o->GetMessage() == "Change"){
+
 			FetchData();
 		}
 	}else if (o->GetName() == "MultiView"){
