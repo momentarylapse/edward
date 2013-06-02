@@ -17,7 +17,8 @@
 ModeModelAnimation *mode_model_animation = NULL;
 
 ModeModelAnimation::ModeModelAnimation(ModeBase *_parent) :
-	Mode<DataModel>("ModelAnimation", _parent, NULL, "menu_move")
+	Mode<DataModel>("ModelAnimation", _parent, NULL, "menu_move"),
+	Observable("ModelAnimation")
 {
 	mode_model_animation_none = new ModeModelAnimationNone(this);
 	mode_model_animation_skeleton = new ModeModelAnimationSkeleton(this);
@@ -34,11 +35,16 @@ ModeModelAnimation::ModeModelAnimation(ModeBase *_parent) :
 	EmptyMove->InterpolatedLoop = false;
 
 	move = EmptyMove;
+	timer = HuiCreateTimer();
 }
 
 
 ModeModelAnimation::~ModeModelAnimation()
 {
+	delete(mode_model_animation_none);
+	delete(mode_model_animation_skeleton);
+	delete(mode_model_animation_vertex);
+	delete(EmptyMove);
 }
 
 
@@ -70,8 +76,14 @@ void ModeModelAnimation::OnStart()
 	dialog->Update();
 
 	UpdateAnimation();
-	Subscribe(data);
+	Observer::Subscribe(data);
 	OnUpdate(data);
+
+	HuiGetTime(timer);
+	HuiRunLaterM(200, this, &ModeModelAnimation::IdleFunction);
+
+	ed->SetMode(mode_model_animation_none);
+	Notify("Change");
 }
 
 
@@ -83,7 +95,7 @@ void ModeModelAnimation::OnUpdateMenu()
 
 void ModeModelAnimation::OnEnd()
 {
-	Unsubscribe(data);
+	Observer::Unsubscribe(data);
 	delete(dialog);
 }
 
@@ -99,6 +111,13 @@ void ModeModelAnimation::SetCurrentMove(int move_no)
 			CurrentMove = move_no;
 		}
 	SetCurrentFrame(0);
+
+	if (move->Type == MoveTypeSkeletal)
+		ed->SetMode(mode_model_animation_skeleton);
+	else if (move->Type == MoveTypeVertex)
+		ed->SetMode(mode_model_animation_vertex);
+	else
+		ed->SetMode(mode_model_animation_none);
 }
 
 void ModeModelAnimation::SetCurrentFrame(int frame_no)
@@ -106,6 +125,7 @@ void ModeModelAnimation::SetCurrentFrame(int frame_no)
 	if ((frame_no >= 0) && (frame_no < move->Frame.num)){
 		CurrentFrame = frame_no;
 		UpdateAnimation();
+		Notify("Change");
 	}
 }
 
@@ -146,7 +166,8 @@ void ModeModelAnimation::UpdateAnimation()
 			v.AnimatedPos = v.pos;
 		}
 	}
-	data->Notify("Change");
+	//data->Notify("Change");
+	ed->ForceRedraw();
 }
 
 void ModeModelAnimation::UpdateSkeleton()
@@ -211,23 +232,29 @@ void ModeModelAnimation::IterateAnimation(float dt)
 
 void ModeModelAnimation::OnUpdate(Observable *o)
 {
+	msg_write("..up");
 	UpdateAnimation();
 	// valid move
 	/*if (...data->Move[CurrentMove] == index)
 		SetCurrentMove(-1);*/
-
-	if (move->Type == MoveTypeSkeletal)
-		ed->SetMode(mode_model_animation_skeleton);
-	else if (move->Type == MoveTypeVertex)
-		ed->SetMode(mode_model_animation_vertex);
-	else
-		ed->SetMode(mode_model_animation_none);
 }
 
 
 
 void ModeModelAnimation::OnDrawWin(MultiViewWindow *win)
 {
+}
+
+void ModeModelAnimation::IdleFunction()
+{
+	if (!IsAncestorOf(ed->cur_mode))
+		return;
+	float dt = HuiGetTime(timer);
+	IterateAnimation(dt);
+	if (Playing)
+		HuiRunLaterM(20, this, &ModeModelAnimation::IdleFunction);
+	else
+		HuiRunLaterM(200, this, &ModeModelAnimation::IdleFunction);
 }
 
 

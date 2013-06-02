@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-586
+581
 // Data (ID,Text)
 ad_dialog
 
@@ -51,8 +51,6 @@ animation_dialog
 
 animation_dialog__grp_animproperties
 
-animation_dialog_grp_animinterpolate
-
 animation_dialog_t_animfps_factor
 
 animation_dialog_t_animfpsconst
@@ -61,14 +59,12 @@ animation_dialog_t_animframeindex
 
 animation_dialog_t_animname
 名前
-animation_dialog_t_animnumframes
-
 animation_dialog_t_simparam
 
 animation_dialog_t_simspeed
 
 animation_dialog_tab_control
-overview\\animation\\sim\\import
+
 animation_list
 #\\type\\num frames\\name
 animation_new
@@ -357,10 +353,6 @@ import_group
 
 import_world_properties
 
-interpolate_loop
-
-interpolate_quad
-
 invert_selection
 
 invert_trias
@@ -373,8 +365,6 @@ key_dialog_t_key
 
 key_list
 !tree\\command\\keys
-l
-L
 level
 
 light

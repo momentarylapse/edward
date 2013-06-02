@@ -736,7 +736,7 @@ animation_dialog
 0
 
 
-29
+22
 TabControl
 animation_dialog_tab_control
 
@@ -749,19 +749,6 @@ animation_dialog_tab_control
 0
 0
 
-
-Text
-animation_dialog_grp_animinterpolate
-
-1
-10
-190
-230
-25
-1
-0
-0
-animation_dialog_tab_control
 
 Text
 animation_dialog__grp_animproperties
@@ -855,45 +842,6 @@ hui:remove
 animation_dialog_tab_control
 
 Text
-animation_dialog_t_animnumframes
-
-1
-25
-215
-75
-25
-1
-0
-0
-animation_dialog_tab_control
-
-Edit
-num_frames_wanted
-
-1
-100
-215
-85
-25
-1
-0
-0
-animation_dialog_tab_control
-
-Button
-num_frames_set
-hui:refresh
-1
-190
-215
-45
-25
-1
-0
-0
-animation_dialog_tab_control
-
-Text
 animation_dialog_t_animname
 
 1
@@ -965,45 +913,6 @@ fps_factor
 130
 95
 105
-25
-1
-0
-0
-animation_dialog_tab_control
-
-CheckBox
-interpolate_quad
-
-1
-25
-125
-210
-25
-1
-0
-0
-animation_dialog_tab_control
-
-CheckBox
-interpolate_loop
-
-1
-45
-155
-190
-25
-1
-0
-0
-animation_dialog_tab_control
-
-Text
-l
-
-1
-30
-150
-15
 25
 1
 0
@@ -16451,7 +16360,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-727
+720
 // Text
 ad_dialog
 Verwaltung
@@ -16511,8 +16420,6 @@ animation_dialog
 Animations-Kontrolle
 animation_dialog__grp_animproperties
 !bold\\Eigenschaften
-animation_dialog_grp_animinterpolate
-!bold\\Streckung
 animation_dialog_t_animfps_factor
 Frames/s factor
 animation_dialog_t_animfpsconst
@@ -16521,14 +16428,12 @@ animation_dialog_t_animframeindex
 !bold\\Frame nr.
 animation_dialog_t_animname
 Name
-animation_dialog_t_animnumframes
-Num.Frames
 animation_dialog_t_simparam
 Parameter
 animation_dialog_t_simspeed
 Geschwindigkeit
 animation_dialog_tab_control
-Übersicht\\Animation\\Sim\\Import
+Übersicht\\Animation\\Sim
 animation_list
 #\\Typ\\Frames\\Name
 animation_new
@@ -16917,10 +16822,6 @@ index
 
 intensity
 
-interpolate_loop
-für Schleife optimieren
-interpolate_quad
-quadrat. Interpolation
 invert_selection
 Invertieren
 invert_trias
@@ -16939,8 +16840,6 @@ key_reset
 
 kind
 
-l
-L
 language
 
 level
@@ -17424,10 +17323,6 @@ Streifen
 ntp_samples
 \\1
 num
-
-num_frames_set
-
-num_frames_wanted
 
 num_items
 \\0
@@ -17913,7 +17808,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-727
+720
 // Text
 ad_dialog
 Administration
@@ -17972,25 +17867,21 @@ Delete
 animation_dialog
 Animation
 animation_dialog__grp_animproperties
-!bold\\properties
-animation_dialog_grp_animinterpolate
-Streching
+
 animation_dialog_t_animfps_factor
 frames /s factor
 animation_dialog_t_animfpsconst
 frames /s const
 animation_dialog_t_animframeindex
-frame no.
+
 animation_dialog_t_animname
 name
-animation_dialog_t_animnumframes
-num.frames
 animation_dialog_t_simparam
 parameter
 animation_dialog_t_simspeed
 speed
 animation_dialog_tab_control
-overview\\animation\\sim\\import
+
 animation_list
 #\\type\\num frames\\name
 animation_new
@@ -18076,7 +17967,7 @@ degree
 delete
 Delete
 delete_frame
-delete frame
+
 delete_item
 Delete item
 delete_material
@@ -18379,10 +18270,6 @@ index
 
 intensity
 
-interpolate_loop
-optimize for loop
-interpolate_quad
-quadratic interpolation
 invert_selection
 Invert
 invert_trias
@@ -18401,8 +18288,6 @@ key_reset
 
 kind
 
-l
-L
 language
 
 level
@@ -18836,7 +18721,7 @@ new_dodecahedron
 new_extract
 Extract
 new_frame
-new frame
+
 new_icosahedron
 
 new_octahedron
@@ -18886,10 +18771,6 @@ ntdt_slides
 ntp_samples
 
 num
-
-num_frames_set
-
-num_frames_wanted
 
 num_items
 \\0
@@ -19675,7 +19556,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-727
+720
 // Text
 ad_dialog
 
@@ -19735,8 +19616,6 @@ animation_dialog
 
 animation_dialog__grp_animproperties
 
-animation_dialog_grp_animinterpolate
-
 animation_dialog_t_animfps_factor
 
 animation_dialog_t_animfpsconst
@@ -19745,14 +19624,12 @@ animation_dialog_t_animframeindex
 
 animation_dialog_t_animname
 名前
-animation_dialog_t_animnumframes
-
 animation_dialog_t_simparam
 
 animation_dialog_t_simspeed
 
 animation_dialog_tab_control
-overview\\animation\\sim\\import
+
 animation_list
 #\\type\\num frames\\name
 animation_new
@@ -20141,10 +20018,6 @@ index
 
 intensity
 
-interpolate_loop
-
-interpolate_quad
-
 invert_selection
 
 invert_trias
@@ -20163,8 +20036,6 @@ key_reset
 
 kind
 
-l
-L
 language
 
 level
@@ -20648,10 +20519,6 @@ ntdt_slides
 ntp_samples
 
 num
-
-num_frames_set
-
-num_frames_wanted
 
 num_items
 

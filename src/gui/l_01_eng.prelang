@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-586
+581
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -50,25 +50,21 @@ Delete
 animation_dialog
 Animation
 animation_dialog__grp_animproperties
-!bold\\properties
-animation_dialog_grp_animinterpolate
-Streching
+
 animation_dialog_t_animfps_factor
 frames /s factor
 animation_dialog_t_animfpsconst
 frames /s const
 animation_dialog_t_animframeindex
-frame no.
+
 animation_dialog_t_animname
 name
-animation_dialog_t_animnumframes
-num.frames
 animation_dialog_t_simparam
 parameter
 animation_dialog_t_simspeed
 speed
 animation_dialog_tab_control
-overview\\animation\\sim\\import
+
 animation_list
 #\\type\\num frames\\name
 animation_new
@@ -142,7 +138,7 @@ degree
 delete
 Delete
 delete_frame
-delete frame
+
 delete_item
 Delete item
 delete_material
@@ -357,10 +353,6 @@ import_group
 Groupe...
 import_world_properties
 World properties...
-interpolate_loop
-optimize for loop
-interpolate_quad
-quadratic interpolation
 invert_selection
 Invert
 invert_trias
@@ -373,8 +365,6 @@ key_dialog_t_key
 combination:
 key_list
 !tree\\command\\keys
-l
-L
 level
 0
 light
@@ -750,7 +740,7 @@ new_dodecahedron
 new_extract
 Extract
 new_frame
-new frame
+
 new_icosahedron
 
 new_octahedron

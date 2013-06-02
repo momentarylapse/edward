@@ -10,32 +10,11 @@
 #include "ModelNewAnimationDialog.h"
 #include "../Animation/ModeModelAnimation.h"
 
-static DataModel *__data = NULL;
-static int timer = -1;
-
-void _later_func_()
-{
-	if (!__data)
-		return;
-	float dt = HuiGetTime(timer);
-	mode_model_animation->IterateAnimation(dt);
-	if (mode_model_animation->Playing){
-		mode_model_animation->SimFrame += dt * (mode_model_animation->move->FramesPerSecConst + mode_model_animation->move->FramesPerSecFactor * mode_model_animation->TimeParam) * mode_model_animation->TimeScale;
-		if (mode_model_animation->SimFrame > mode_model_animation->move->Frame.num)
-			mode_model_animation->SimFrame = 0;
-		mode_model_animation->UpdateAnimation();
-		HuiRunLater(20, &_later_func_);
-	}else
-		HuiRunLater(200, &_later_func_);
-}
 
 ModelAnimationDialog::ModelAnimationDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data) :
 	CHuiWindow("dummy", -1, -1, 230, 400, _parent, _allow_parent, HuiWinModeControls, true)
 {
 	data = _data;
-	__data = data;
-	if (timer < 0)
-		timer = HuiCreateTimer();
 
 	// dialog
 	FromResource("animation_dialog");
@@ -59,15 +38,15 @@ ModelAnimationDialog::ModelAnimationDialog(CHuiWindow *_parent, bool _allow_pare
 	EventM("animation_dialog_tab_control", this, &ModelAnimationDialog::OnTabControl);
 
 	Subscribe(data);
+	Subscribe(mode_model_animation);
 
 	LoadData();
-	HuiRunLater(200, &_later_func_);
 }
 
 ModelAnimationDialog::~ModelAnimationDialog()
 {
+	Unsubscribe(mode_model_animation);
 	Unsubscribe(data);
-	__data = NULL;
 }
 
 void ModelAnimationDialog::LoadData()
@@ -98,34 +77,21 @@ void ModelAnimationDialog::LoadData()
 
 void ModelAnimationDialog::FillAnimation()
 {
-	bool b = false;
-	if ((mode_model_animation->CurrentMove >= 0) && (mode_model_animation->CurrentMove < data->Move.num)){
-		mode_model_animation->move = &data->Move[mode_model_animation->CurrentMove];
-		b = mode_model_animation->move->Frame.num > 0;
-	}
+	bool b = mode_model_animation->move->Frame.num > 0;
 	Enable("name", b);
 	Enable("frame", b);
 	Enable("frame_inc", b);
 	Enable("frame_dec", b);
 	Enable("new_frame", b);
 	Enable("delete_frame", b);
-	Enable("num_frames_set", b);
-	Enable("num_frames_wanted", b);
 	Enable("fps_const", b);
 	Enable("fps_factor", b);
-	Enable("interpolate_quad", b);
-	Enable("interpolate_loop", b);
 	if (b){
 		ModelMove *move = mode_model_animation->move;
 		SetString("name", move->Name);
 		SetInt("frame", mode_model_animation->CurrentFrame);
-		SetInt("num_frames_wanted", move->Frame.num);
 		SetFloat("fps_const", move->FramesPerSecConst);
 		SetFloat("fps_factor", move->FramesPerSecFactor);
-		Enable("interpolate_quad", move->Type==MoveTypeSkeletal);
-		Check("interpolate_quad", move->InterpolatedQuadratic && move->Type==MoveTypeSkeletal);
-		Enable("interpolate_loop", move->InterpolatedQuadratic && move->Type==MoveTypeSkeletal);
-		Check("interpolate_loop", move->InterpolatedLoop && move->Type==MoveTypeSkeletal);
 	}
 }
 
@@ -240,6 +206,10 @@ void ModelAnimationDialog::OnTabControl()
 
 void ModelAnimationDialog::OnUpdate(Observable *o)
 {
-	LoadData();
+	if (o->GetName() == "Data"){
+		LoadData();
+	}else{
+		FillAnimation();
+	}
 }
 

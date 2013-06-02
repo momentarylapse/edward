@@ -13,6 +13,8 @@
 
 ModeModelAnimationSkeleton *mode_model_animation_skeleton = NULL;
 
+void DrawBone(const vector &r, const vector &d, const color &c, MultiViewWindow *win);
+
 ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(ModeBase* _parent) :
 	Mode<DataModel>("ModelAnimationSkeleton", _parent, ed->multi_view_3d, "menu_move")
 {
@@ -71,6 +73,26 @@ void ModeModelAnimationSkeleton::OnUpdateMenu()
 void ModeModelAnimationSkeleton::OnDrawWin(MultiViewWindow *win)
 {
 	mode_model_skeleton->OnDrawWin(win);
+#if 0
+	NixSetZ(false, false);
+	NixEnableLighting(false);
+	NixSetWire(false);
+
+	foreach(ModelBone &b, data->Bone){
+		/*if (b.view_stage<=ViewStage)
+			continue;*/
+//		if (b.is_selected)
+//			DrawCoordBasis(&b);
+		int r = b.Parent;
+		if (r < 0)
+			continue;
+		color c = data->Bone[r].is_selected ? Red : Blue;
+		if (multi_view->MouseOver == r)
+			c = ColorInterpolate(c, White, 0.3f);
+		DrawBone(data->Bone[r].pos, b.pos, c, win);
+	}
+	NixSetZ(true, true);
+#endif
 }
 
 

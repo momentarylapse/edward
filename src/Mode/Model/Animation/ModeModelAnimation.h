@@ -13,7 +13,7 @@
 
 class DataModel;
 
-class ModeModelAnimation: public Mode<DataModel>
+class ModeModelAnimation: public Mode<DataModel>, public Observable, public HuiEventHandler
 {
 public:
 	ModeModelAnimation(ModeBase *parent);
@@ -33,13 +33,17 @@ public:
 	ModelMove *EmptyMove;
 
 	ModelMove *move;
-	int CurrentMove,CurrentFrame;
+	int CurrentMove, CurrentFrame;
 
 	float TimeScale;
 	float TimeParam;
 	bool Playing;
 	float PlayLoop;
 	float SimFrame;
+
+	int timer;
+
+	void IdleFunction();
 
 	void SetCurrentMove(int move);
 	void SetCurrentFrame(int frame);
