@@ -62,8 +62,6 @@ public:
 	int NormalMode;
 	int BoneIndex;
 
-	vector AnimatedPos;
-
 	bool NormalDirty;
 	int RefCount; // polygons
 	int Surface;

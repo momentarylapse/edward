@@ -150,7 +150,7 @@ void DrawCoordBasis(const ModelBone *b)
 
 void ModeModelSkeleton::OnDrawWin(MultiViewWindow *win)
 {
-	mode_model_mesh_polygon->DrawPolygons();
+	mode_model_mesh_polygon->DrawPolygons(data->Vertex);
 
 #ifdef USE_MODELS
 	// sub models

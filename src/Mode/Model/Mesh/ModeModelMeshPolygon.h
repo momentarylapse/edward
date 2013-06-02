@@ -28,9 +28,14 @@ public:
 
 	virtual void OnDraw();
 	virtual void OnDrawWin(MultiViewWindow *win);
-	void DrawPolygons();
+	void DrawPolygons(Array<ModelVertex> &vertex);
 
-	void FillSelectionBuffers();
+
+	void SetMaterialMarked();
+	void SetMaterialMouseOver();
+	void SetMaterialCreation();
+
+	void FillSelectionBuffers(Array<ModelVertex> &vertex);
 
 	void ToggleSelectCW();
 	bool SelectCW;

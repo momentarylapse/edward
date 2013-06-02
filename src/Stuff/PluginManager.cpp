@@ -79,7 +79,6 @@ void PluginManager::Init()
 	Script::DeclareClassSize("ModelVertex", sizeof(ModelVertex));
 	Script::DeclareClassOffset("ModelVertex", "NormalMode", offsetof(ModelVertex, NormalMode));
 	Script::DeclareClassOffset("ModelVertex", "BoneIndex", offsetof(ModelVertex, BoneIndex));
-	Script::DeclareClassOffset("ModelVertex", "AnimatedPos", offsetof(ModelVertex, AnimatedPos));
 	Script::DeclareClassOffset("ModelVertex", "NormalDirty", offsetof(ModelVertex, NormalDirty));
 	Script::DeclareClassOffset("ModelVertex", "RefCount", offsetof(ModelVertex, RefCount));
 	Script::DeclareClassOffset("ModelVertex", "Surface", offsetof(ModelVertex, Surface));

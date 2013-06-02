@@ -6,6 +6,7 @@
  */
 
 #include "ModeModelAnimationVertex.h"
+#include "ModeModelAnimation.h"
 #include "../../../Edward.h"
 #include "../../../MultiView.h"
 #include "../Mesh/ModeModelMeshPolygon.h"
@@ -34,9 +35,6 @@ void ModeModelAnimationVertex::OnStart()
 	Subscribe(data);
 	Subscribe(multi_view, "SelectionChange");
 	OnUpdate(data);
-
-	foreachi(ModelVertex &v, data->Vertex, i)
-		vertex[i].is_selected = v.is_selected;
 }
 
 void ModeModelAnimationVertex::OnEnd()
@@ -44,7 +42,6 @@ void ModeModelAnimationVertex::OnEnd()
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
 	multi_view->ResetData(NULL);
-	vertex.clear();
 }
 
 void ModeModelAnimationVertex::OnCommand(const string& id)
@@ -60,16 +57,16 @@ void ModeModelAnimationVertex::OnUpdate(Observable* o)
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 
 		multi_view->SetData(	MVDModelVertex,
-				vertex,
+				mode_model_animation->vertex,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect,
 				NULL, NULL);
 	}else if (o->GetName() == "MultiView"){
 		foreachi(ModelVertex &v, data->Vertex, i)
-			v.is_selected = vertex[i].is_selected;
+			v.is_selected = mode_model_animation->vertex[i].is_selected;
 		data->SelectionFromVertices();
 	}
-	mode_model_mesh_polygon->FillSelectionBuffers();
+	mode_model_mesh_polygon->FillSelectionBuffers(mode_model_animation->vertex);
 }
 
 void ModeModelAnimationVertex::OnUpdateMenu()
@@ -78,14 +75,28 @@ void ModeModelAnimationVertex::OnUpdateMenu()
 
 void ModeModelAnimationVertex::OnDrawWin(MultiViewWindow *win)
 {
-	mode_model_mesh_polygon->OnDrawWin(win);
+	msg_db_f("skin.DrawWin",4);
+
+	mode_model_mesh_polygon->DrawPolygons(mode_model_animation->vertex);
+	NixSetShader(-1);
+	NixSetWire(false);
+	NixSetZ(true,true);
+	NixSetAlpha(AlphaNone);
+	NixEnableLighting(true);
+	msg_db_m("----a",4);
+
+	mode_model_mesh_polygon->SetMaterialMarked();
+	NixDraw3D(mode_model_mesh_polygon->VBMarked);
+	NixSetMaterial(White,White,Black,0,Black);
+	NixSetAlpha(AlphaNone);
 }
 
 void ModeModelAnimationVertex::UpdateVertices()
 {
-	vertex.resize(data->Vertex.num);
+	// deprecated by mode_model_animation->vertex
+	/*vertex.resize(data->Vertex.num);
 	foreachi(ModelVertex &v, vertex, i)
-		v.pos = data->Vertex[i].AnimatedPos;
+		v.pos = data->Vertex[i].AnimatedPos;*/
 }
 
 

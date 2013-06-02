@@ -75,7 +75,7 @@ void ModeModelMeshSurface::OnUpdate(Observable *o)
 	}else if (o->GetName() == "MultiView"){
 		data->SelectionFromSurfaces();
 	}
-	mode_model_mesh_polygon->FillSelectionBuffers();
+	mode_model_mesh_polygon->FillSelectionBuffers(data->Vertex);
 }
 
 
@@ -93,7 +93,7 @@ void ModeModelMeshSurface::OnStart()
 
 void ModeModelMeshSurface::OnDraw()
 {
-	mode_model_mesh_polygon->FillSelectionBuffers();
+	mode_model_mesh_polygon->FillSelectionBuffers(data->Vertex);
 }
 
 

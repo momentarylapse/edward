@@ -55,8 +55,6 @@ class ModelEffect
 class ModelVertex: MultiViewSingleData
 	int NormalMode
 	int BoneIndex
-	
-	vector AnimatedPos
 
 	bool NormalDirty
 	int RefCount // triangles

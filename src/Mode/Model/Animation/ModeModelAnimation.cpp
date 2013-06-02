@@ -141,13 +141,19 @@ void ModeModelAnimation::SetCurrentFramePrevious()
 
 void ModeModelAnimation::UpdateAnimation()
 {
+	vertex.resize(data->Vertex.num);
+	foreachi(ModelVertex &v, data->Vertex, i){
+		vertex[i].view_stage = v.view_stage;
+		vertex[i].is_selected = v.is_selected;
+	}
+
 	if (move->Type == MoveTypeSkeletal){
 		UpdateSkeleton();
-		foreach(ModelVertex &v, data->Vertex){
+		foreachi(ModelVertex &v, data->Vertex, i){
 			if (v.BoneIndex >= data->Bone.num)
-				v.AnimatedPos = v.pos;
+				vertex[i].pos = v.pos;
 			else
-				v.AnimatedPos = data->Bone[v.BoneIndex].Matrix * (v.pos - data->GetBonePos(v.BoneIndex));
+				vertex[i].pos = data->Bone[v.BoneIndex].Matrix * (v.pos - data->GetBonePos(v.BoneIndex));
 		}
 	}else if (move->Type == MoveTypeVertex){
 		int frame0 = CurrentFrame;
@@ -159,12 +165,10 @@ void ModeModelAnimation::UpdateAnimation()
 			t = SimFrame - frame0;
 		}
 		foreachi(ModelVertex &v, data->Vertex, i){
-			v.AnimatedPos = v.pos + (1 - t) * move->Frame[frame0].VertexDPos[i] + t * move->Frame[frame1].VertexDPos[i];
+			vertex[i].pos = v.pos + (1 - t) * move->Frame[frame0].VertexDPos[i] + t * move->Frame[frame1].VertexDPos[i];
 		}
 	}else{
-		foreach(ModelVertex &v, data->Vertex){
-			v.AnimatedPos = v.pos;
-		}
+		vertex = data->Vertex;
 	}
 	//data->Notify("Change");
 	ed->ForceRedraw();

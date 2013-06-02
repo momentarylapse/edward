@@ -66,7 +66,7 @@ void ModeModelMeshVertex::OnUpdate(Observable *o)
 	}else if (o->GetName() == "MultiView"){
 		data->SelectionFromVertices();
 	}
-	mode_model_mesh_polygon->FillSelectionBuffers();
+	mode_model_mesh_polygon->FillSelectionBuffers(data->Vertex);
 }
 
 void ModeModelMeshVertex::DrawEffects(MultiViewWindow *win)
