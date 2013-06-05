@@ -12,10 +12,10 @@
 #include "../../../Data/Font/DataFont.h"
 #include "../../../Stuff/Observer.h"
 
-class FontDialog: public CHuiWindow, public Observer
+class FontDialog: public HuiWindow, public Observer
 {
 public:
-	FontDialog(CHuiWindow *_parent, bool _allow_parent, DataFont *_data);
+	FontDialog(HuiWindow *_parent, bool _allow_parent, DataFont *_data);
 	virtual ~FontDialog();
 
 	void LoadData();

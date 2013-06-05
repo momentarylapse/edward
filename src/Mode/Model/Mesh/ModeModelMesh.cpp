@@ -335,8 +335,7 @@ void ModeModelMesh::ChooseMaterialForSelection()
 	MaterialSelectionDialog = new ModelMaterialSelectionDialog(ed, false, data);
 	MaterialSelectionDialog->PutAnswer(&SelectionDialogReturnIndex);
 	//FillMaterialList(MaterialSelectionDialog);
-	MaterialSelectionDialog->Update();
-	HuiWaitTillWindowClosed(MaterialSelectionDialog);
+	MaterialSelectionDialog->Run();
 
 	if (SelectionDialogReturnIndex >= 0)
 		data->SetMaterialSelection(SelectionDialogReturnIndex);
@@ -403,8 +402,7 @@ void ModeModelMesh::AddEffects(int type)
 		return;
 	}
 	ModelFXDialog *dlg = new ModelFXDialog(ed, false, data, type, -1);
-	dlg->Update();
-	HuiWaitTillWindowClosed(dlg);
+	dlg->Run();
 }
 
 void ModeModelMesh::EditEffects()
@@ -421,8 +419,7 @@ void ModeModelMesh::EditEffects()
 		return;
 	}
 	ModelFXDialog *dlg = new ModelFXDialog(ed, false, data, -1, index);
-	dlg->Update();
-	HuiWaitTillWindowClosed(dlg);
+	dlg->Run();
 }
 
 void ModeModelMesh::ClearEffects()
@@ -446,8 +443,7 @@ bool ModeModelMesh::Pasteable()
 void ModeModelMesh::Easify()
 {
 	ModelEasifyDialog *dlg = new ModelEasifyDialog(ed, false, data);
-	dlg->Update();
-	HuiWaitTillWindowClosed(dlg);
+	dlg->Run();
 }
 
 

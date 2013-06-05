@@ -127,7 +127,7 @@ enum{
 extern int NixFontHeight;
 extern string NixFontName;
 
-extern CHuiWindow *NixWindow;
+extern HuiWindow *NixWindow;
 
 extern int NixApi;
 extern string NixApiName;

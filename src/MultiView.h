@@ -229,7 +229,7 @@ public:
 	vector MovingStart, MovingDP;
 	bool MultiViewEditing;
 
-	CHuiMenu *menu;
+	HuiMenu *menu;
 
 	struct Message3d
 	{

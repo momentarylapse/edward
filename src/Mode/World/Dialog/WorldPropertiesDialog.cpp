@@ -15,13 +15,10 @@
 #define WorldLightDec			1
 #define WorldFogDec				6
 
-WorldPropertiesDialog::WorldPropertiesDialog(CHuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
-	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls, true)
+WorldPropertiesDialog::WorldPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
+	HuiWindow("world_dialog", _parent, _allow_parent)
 {
 	data = _data;
-
-	// dialog
-	FromResource("world_dialog");
 
 	SetTooltip("bgc", _("Farbe des Himmels"));
 	SetTooltip("skybox", _("Modelle, die &uber die Hintergrundfarge gemalt werden\n- Doppelklick um ein Modell zu w&ahlen"));

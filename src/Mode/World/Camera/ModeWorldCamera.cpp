@@ -57,7 +57,7 @@ void ModeWorldCamera::OnStart()
 	// Dialog
 	dialog = HuiCreateResourceDialog("world_camera_dialog", ed);
 	dialog->SetPositionSpecial(ed, HuiBottom);
-	dialog->Update();
+	dialog->Show();
 
 	dialog->EventMX("cam_area", "hui:redraw", this, &ModeWorldCamera::OnAreaDraw);
 	dialog->EventMX("cam_area", "hui:left-button-down", this, &ModeWorldCamera::OnAreaLeftButtonDown);

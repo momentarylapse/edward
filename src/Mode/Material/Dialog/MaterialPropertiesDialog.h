@@ -12,10 +12,10 @@
 #include "../../../Data/Material/DataMaterial.h"
 #include "../../../Stuff/Observer.h"
 
-class MaterialPropertiesDialog: public CHuiWindow, public Observer
+class MaterialPropertiesDialog: public HuiWindow, public Observer
 {
 public:
-	MaterialPropertiesDialog(CHuiWindow *_parent, bool _allow_parent, DataMaterial *_data);
+	MaterialPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataMaterial *_data);
 	virtual ~MaterialPropertiesDialog();
 
 	void LoadData();

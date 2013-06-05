@@ -8,17 +8,14 @@
 #include "SelectionPropertiesDialog.h"
 #include "../../../Edward.h"
 
-SelectionPropertiesDialog::SelectionPropertiesDialog(CHuiWindow *_parent, bool _allow_parent, DataWorld *_data, int *_selected_type, int *_selected_index):
-	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls | HuiWinModeResizable, true)
+SelectionPropertiesDialog::SelectionPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data, int *_selected_type, int *_selected_index):
+	HuiWindow("world_ps_dialog", _parent, _allow_parent)
 {
 	data = _data;
 	selected_index = _selected_index;
 	selected_type = _selected_type;
 	*selected_index = -1;
 	*selected_type = -1;
-
-	// dialog
-	FromResource("world_ps_dialog");
 
 	EventM("hui:close", this, &SelectionPropertiesDialog::OnClose);
 	EventM("property_list", this, &SelectionPropertiesDialog::OnPropertyList);

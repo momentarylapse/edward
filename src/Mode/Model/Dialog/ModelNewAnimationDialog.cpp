@@ -9,12 +9,9 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
 
-ModelNewAnimationDialog::ModelNewAnimationDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data, int index):
-	CHuiWindow("dummy", -1, -1, 320, 450, _parent, _allow_parent, HuiWinModeControls , true)
+ModelNewAnimationDialog::ModelNewAnimationDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data, int index):
+	HuiWindow("new_animation_dialog", _parent, _allow_parent)
 {
-	// dialog
-	FromResource("new_animation_dialog");
-
 	data = _data;
 
 	SetInt("new_animation_index", index);

@@ -8,13 +8,10 @@
 #include "TerrainCreationDialog.h"
 #include "../../../Edward.h"
 
-TerrainCreationDialog::TerrainCreationDialog(CHuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
-	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls, true)
+TerrainCreationDialog::TerrainCreationDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
+	HuiWindow("new_terrain_dialog", _parent, _allow_parent)
 {
 	data = _data;
-
-	// dialog
-	FromResource("new_terrain_dialog");
 
 	EventM("cancel", this, &TerrainCreationDialog::OnClose);
 	EventM("hui:close", this, &TerrainCreationDialog::OnClose);

@@ -12,14 +12,11 @@
 
 bool SettingDialogData=true;
 
-FontDialog::FontDialog(CHuiWindow *_parent, bool _allow_parent, DataFont *_data) :
-	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls, true)
+FontDialog::FontDialog(HuiWindow *_parent, bool _allow_parent, DataFont *_data) :
+	HuiWindow("font_dialog", _parent, _allow_parent)
 {
 	data = _data;
 	SettingData = false;
-
-	// dialog
-	FromResource("font_dialog");
 
 
 	SetString("text", _("Beispiel Text 0123456789"));

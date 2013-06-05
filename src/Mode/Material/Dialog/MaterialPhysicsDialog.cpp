@@ -10,13 +10,12 @@
 #include "../ModeMaterial.h"
 #include "../../../Action/Material/ActionMaterialEditPhysics.h"
 
-MaterialPhysicsDialog::MaterialPhysicsDialog(CHuiWindow* _parent, bool _allow_parent, DataMaterial* _data) :
-	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls, true)
+MaterialPhysicsDialog::MaterialPhysicsDialog(HuiWindow* _parent, bool _allow_parent, DataMaterial* _data) :
+	HuiWindow("material_physics_dialog", _parent, _allow_parent)
 {
 	data = _data;
 
 	// dialog
-	FromResource("material_physics_dialog");
 	EventM("cancel", this, &MaterialPhysicsDialog::OnClose);
 	EventM("hui:close", this, &MaterialPhysicsDialog::OnClose);
 	EventM("ok", this, &MaterialPhysicsDialog::OnOk);

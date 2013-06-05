@@ -36,7 +36,7 @@ void ModeModelMeshCreateCylinderSnake::OnStart()
 	dialog->SetInt("ncy_rings", HuiConfigReadInt("NewCylinderRings", 4));
 	dialog->SetInt("ncy_edges", HuiConfigReadInt("NewCylinderEdges", 8));
 	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
-	dialog->Update();
+	dialog->Show();
 	dialog->Event("hui:close", &HuiFuncIgnore);
 
 	ed->Activate();

@@ -27,7 +27,7 @@ void ModeAdministration::OnStart()
 	data->LoadDatabase();
 	data->UpdateDatabase();
 	dialog = new AdministrationDialog(ed, true, data);
-	dialog->Update();
+	dialog->Show();
 }
 
 void ModeAdministration::OnEnd()
@@ -50,15 +50,13 @@ void ModeAdministration::OnUpdate(Observable* o)
 void ModeAdministration::BasicSettings()
 {
 	ConfigurationDialog *dlg = new ConfigurationDialog(HuiCurWindow, false, data, false);
-	dlg->Update();
-	HuiWaitTillWindowClosed(dlg);
+	dlg->Run();
 }
 
 void ModeAdministration::ExportGame()
 {
 	ConfigurationDialog *dlg = new ConfigurationDialog(HuiCurWindow, false, data, true);
-	dlg->Update();
-	HuiWaitTillWindowClosed(dlg);
+	dlg->Run();
 
 	// data->ExportGame(...);
 }

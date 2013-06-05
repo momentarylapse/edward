@@ -15,13 +15,12 @@ string file_secure(const string &filename); // -> ModelPropertiesDialog
 
 extern string NixShaderError; // -> nix
 
-MaterialPropertiesDialog::MaterialPropertiesDialog(CHuiWindow *_parent, bool _allow_parent, DataMaterial *_data):
-	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls, true)
+MaterialPropertiesDialog::MaterialPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataMaterial *_data):
+	HuiWindow("material_dialog", _parent, _allow_parent)
 {
 	data = _data;
 
 	// dialog
-	FromResource("material_dialog");
 	EventM("cancel", this, &MaterialPropertiesDialog::OnClose);
 	EventM("hui:close", this, &MaterialPropertiesDialog::OnClose);
 	EventM("set", this, &MaterialPropertiesDialog::ApplyData);

@@ -23,7 +23,7 @@ void ModeWorldCreateTerrain::OnStart()
 {
 	// Dialog
 	dialog = HuiCreateResourceDialog("new_terrain_dialog", ed);
-	dialog->Update();
+	dialog->Show();
 
 	dialog->EventM("cancel", this, &ModeWorldCreateTerrain::OnClose);
 	dialog->EventM("hui:close", this, &ModeWorldCreateTerrain::OnClose);

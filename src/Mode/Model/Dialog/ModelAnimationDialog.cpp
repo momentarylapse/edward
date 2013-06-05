@@ -11,13 +11,12 @@
 #include "../Animation/ModeModelAnimation.h"
 
 
-ModelAnimationDialog::ModelAnimationDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data) :
-	CHuiWindow("dummy", -1, -1, 230, 400, _parent, _allow_parent, HuiWinModeControls, true)
+ModelAnimationDialog::ModelAnimationDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data) :
+	HuiWindow("animation_dialog", _parent, _allow_parent)
 {
 	data = _data;
 
 	// dialog
-	FromResource("animation_dialog");
 	SetPositionSpecial(_parent, HuiRight | HuiTop);
 
 	EventM("hui:close", this, &ModelAnimationDialog::OnClose);
@@ -135,8 +134,7 @@ void ModelAnimationDialog::ApplyData()
 void ModelAnimationDialog::OnAddAnimation()
 {
 	ModelNewAnimationDialog *dlg = new ModelNewAnimationDialog(this, false, data, 0);
-	dlg->Update();
-	HuiWaitTillWindowClosed(dlg);
+	dlg->Run();
 }
 
 void ModelAnimationDialog::OnDeleteAnimation()

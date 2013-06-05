@@ -16,12 +16,9 @@
 string file_secure(const string &filename);
 string render_material(ModelMaterial *m);
 
-ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data):
-	CHuiWindow("dummy", -1, -1, 320, 450, _parent, _allow_parent, HuiWinModeControls | HuiWinModeResizable, true)
+ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data):
+	HuiWindow("model_material_selection_dialog", _parent, _allow_parent)
 {
-	// dialog
-	FromResource("model_material_selection_dialog");
-
 	data = _data;
 	FillMaterialList();
 

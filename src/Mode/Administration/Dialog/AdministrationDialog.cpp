@@ -21,14 +21,13 @@
 #include "../ModeAdministration.h"
 #include <assert.h>
 
-AdministrationDialog::AdministrationDialog(CHuiWindow* _parent, bool _allow_parent, DataAdministration *_data):
-	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls | HuiWinModeResizable, true)
+AdministrationDialog::AdministrationDialog(HuiWindow* _parent, bool _allow_parent, DataAdministration *_data):
+	HuiWindow("ad_dialog", _parent, _allow_parent)
 {
 	data = _data;
 	file_list.resize(6);
 
 	// dialog
-	FromResource("ad_dialog");
 	EventM("hui:close", this, &AdministrationDialog::OnClose);
 	EventM("exit", this, &AdministrationDialog::OnExit);
 	EventM("ad_edit", this, &AdministrationDialog::OnEdit);

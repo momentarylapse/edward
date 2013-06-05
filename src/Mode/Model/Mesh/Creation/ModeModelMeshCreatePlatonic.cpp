@@ -40,7 +40,7 @@ void ModeModelMeshCreatePlatonic::OnStart()
 	dialog = HuiCreateResourceDialog("new_teapot_dialog", ed);
 	dialog->SetInt("ntp_samples", HuiConfigReadInt("NewTeapotSamples", 4));
 	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
-	dialog->Update();
+	dialog->Show();
 	dialog->Event("hui:close", &HuiFuncIgnore);
 
 	ed->Activate();

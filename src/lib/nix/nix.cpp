@@ -88,7 +88,7 @@ void TestGLError(const char *pos)
 
 
 // environment
-CHuiWindow *NixWindow;
+HuiWindow *NixWindow;
 bool NixUsable,NixDoingEvilThingsToTheDevice;
 
 // things'n'stuff
@@ -377,7 +377,7 @@ XVisualInfo *choose_visual()
 #endif
 
 
-void NixInit(const string &api,int xres,int yres,int depth,bool fullscreen,CHuiWindow *win)
+void NixInit(const string &api,int xres,int yres,int depth,bool fullscreen,HuiWindow *win)
 {
 	NixUsable = false;
 	if (!msg_inited)

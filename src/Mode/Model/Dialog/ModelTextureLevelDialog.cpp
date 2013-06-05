@@ -14,13 +14,12 @@
 string file_secure(const string &filename);
 string render_material(ModelMaterial *m);
 
-ModelTextureLevelDialog::ModelTextureLevelDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data):
-	CHuiWindow("dummy", -1, -1, 230, 400, _parent, _allow_parent, HuiWinModeControls | HuiWinModeResizable, true)
+ModelTextureLevelDialog::ModelTextureLevelDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data):
+	HuiWindow("model_texture_level_dialog", _parent, _allow_parent)
 {
 	data = _data;
 
 	// dialog
-	FromResource("model_texture_level_dialog");
 	SetPositionSpecial(_parent, HuiRight | HuiTop);
 
 	SetTooltip("texture_list", _("Texturen der einzelnen Materialien\n- Klick zum Bearbeiten der Texturkoordinaten"));

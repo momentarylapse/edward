@@ -14,16 +14,13 @@
 
 string file_secure(const string &filename); // -> ModelPropertiesDialog
 
-TerrainPropertiesDialog::TerrainPropertiesDialog(CHuiWindow *_parent, bool _allow_parent, DataWorld *_data, int _index) :
-	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls, true)
+TerrainPropertiesDialog::TerrainPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data, int _index) :
+	HuiWindow("terrain_dialog", _parent, _allow_parent)
 {
 	data = _data;
 	index = _index;
 	assert(index >= 0);
 	assert(index < data->Terrains.num);
-
-	// dialog
-	FromResource("terrain_dialog");
 
 	EventM("cancel", this, &TerrainPropertiesDialog::OnClose);
 	EventM("hui:close", this, &TerrainPropertiesDialog::OnClose);

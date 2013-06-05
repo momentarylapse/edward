@@ -14,13 +14,10 @@
 #include "../../../x/model_manager.h"
 #include "../../../Edward.h"
 
-LightmapDialog::LightmapDialog(CHuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
-	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls, true)
+LightmapDialog::LightmapDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
+	HuiWindow("lightmap_dialog", _parent, _allow_parent)
 {
 	data = _data;
-
-	// dialog
-	FromResource("lightmap_dialog");
 
 	EventM("cancel", this, &LightmapDialog::OnClose);
 	EventM("hui:close", this, &LightmapDialog::OnClose);
@@ -117,10 +114,10 @@ void OnHistClose()
 	delete(HuiCurWindow);
 }
 
-void ShowHistogram(Lightmap::Histogram &h, CHuiWindow *root)
+void ShowHistogram(Lightmap::Histogram &h, HuiWindow *root)
 {
 	hist_p = &h;
-	CHuiWindow *dlg = HuiCreateSizableDialog("Histogram", 400, 300, root, false);
+	HuiWindow *dlg = HuiCreateSizableDialog("Histogram", 400, 300, root, false);
 	dlg->AddControlTable("", 0, 0, 1, 2, "table");
 	dlg->SetTarget("table", 0);
 	dlg->AddDrawingArea("", 0, 0, 0, 0, "area");
@@ -129,9 +126,7 @@ void ShowHistogram(Lightmap::Histogram &h, CHuiWindow *root)
 	dlg->EventX("area", "hui:redraw", &OnHistDraw);
 	dlg->Event("hui:close", &OnHistClose);
 	dlg->Event("close", &OnHistClose);
-	dlg->Update();
-
-	HuiWaitTillWindowClosed(dlg);
+	dlg->Run();
 }
 
 void LightmapDialog::OnPreview()

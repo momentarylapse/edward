@@ -31,7 +31,7 @@ void ModeWorldCreateObject::OnStart()
 	dialog->SetString("kind", filename);
 	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
 	dialog->Enable("name", false);
-	dialog->Update();
+	dialog->Show();
 	dialog->Event("hui:close", &HuiFuncIgnore);
 	dialog->EventM("find_object", this, &ModeWorldCreateObject::OnFindObject);
 

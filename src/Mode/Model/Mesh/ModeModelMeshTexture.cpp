@@ -76,7 +76,7 @@ void ModeModelMeshTexture::OnStart()
 	Subscribe(multi_view, "SelectionChange");
 
 	dialog = new ModelTextureLevelDialog(ed, true, data);
-	dialog->Update();
+	dialog->Show();
 }
 
 

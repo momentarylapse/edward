@@ -12,10 +12,10 @@
 #include "../../../Data/World/DataWorld.h"
 #include "../../../Stuff/Observer.h"
 
-class TerrainHeightmapDialog: public CHuiWindow, public Observer
+class TerrainHeightmapDialog: public HuiWindow, public Observer
 {
 public:
-	TerrainHeightmapDialog(CHuiWindow *_parent, bool _allow_parent, DataWorld *_data);
+	TerrainHeightmapDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data);
 	virtual ~TerrainHeightmapDialog();
 
 	void LoadData();

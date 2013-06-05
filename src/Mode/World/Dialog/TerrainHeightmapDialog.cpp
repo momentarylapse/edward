@@ -9,13 +9,10 @@
 #include "../../../Action/World/ActionWorldTerrainApplyHeightmap.h"
 #include "../../../Edward.h"
 
-TerrainHeightmapDialog::TerrainHeightmapDialog(CHuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
-	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls, true)
+TerrainHeightmapDialog::TerrainHeightmapDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
+	HuiWindow("terrain_heightmap_dialog", _parent, _allow_parent)
 {
 	data = _data;
-
-	// dialog
-	FromResource("terrain_heightmap_dialog");
 
 	EventM("cancel", this, &TerrainHeightmapDialog::OnClose);
 	EventM("hui:close", this, &TerrainHeightmapDialog::OnClose);

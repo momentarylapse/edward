@@ -16,13 +16,10 @@
 
 string file_secure(const string &filename); // -> ModelPropertiesDialog
 
-ModelMaterialDialog::ModelMaterialDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data):
-	CHuiWindow("dummy", -1, -1, 300, 300, _parent, _allow_parent, HuiWinModeControls | HuiWinModeResizable, true)
+ModelMaterialDialog::ModelMaterialDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data):
+	HuiWindow("model_material_dialog", _parent, _allow_parent)
 {
 	data = _data;
-
-	// dialog
-	FromResource("model_material_dialog");
 
 	SetTooltip("mat_textures", _("&Ubereinanderliegende Textur-Schichten (multitexturing)\n- Doppelklick um eine Texturdatei zu w&ahlen"));
 	SetTooltip("mat_add_texture_level", _("f&ugt eine weitere Textur-Schicht hinzu (multitexturing)"));

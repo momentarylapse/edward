@@ -60,7 +60,7 @@ MultiView::MultiView(bool _mode3d) :
 		win[3].type = ViewPerspective;
 
 		// Menu
-		menu = new CHuiMenu();
+		menu = new HuiMenu;
 		menu->AddItem(_("Ansicht"), "view_menu_sign");
 		menu->EnableItem("view_menu_sign", false);
 		menu->AddSeparator();

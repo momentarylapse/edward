@@ -28,7 +28,7 @@ public:
 
 	virtual void OnDrawWin(MultiViewWindow *win);
 
-	CHuiWindow *dialog;
+	HuiWindow *dialog;
 
 	ModelMove *EmptyMove;
 

@@ -27,8 +27,6 @@ public:
 	virtual void OnUpdateMenu();
 
 	virtual void OnDrawWin(MultiViewWindow *win);
-
-	CHuiWindow *dialog;
 };
 
 extern ModeModelAnimationNone *mode_model_animation_none;

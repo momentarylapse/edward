@@ -10,17 +10,13 @@
 #include "../../../Data/Administration/GameIniData.h"
 #include "../../../Edward.h"
 
-ConfigurationDialog::ConfigurationDialog(CHuiWindow* _parent, bool _allow_parent, DataAdministration *_data, bool _exporting):
-	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls, true)
+ConfigurationDialog::ConfigurationDialog(HuiWindow* _parent, bool _allow_parent, DataAdministration *_data, bool _exporting):
+	HuiWindow(_exporting ? "ge_dialog" : "rc_dialog", _parent, _allow_parent)
 {
 	exporting = _exporting;
 	data = _data;
 
 	// dialog
-	if (exporting)
-		FromResource("ge_dialog");
-	else
-		FromResource("rc_dialog");
 	EventM("hui:close", this, &ConfigurationDialog::OnClose);
 	EventM("cancel", this, &ConfigurationDialog::OnClose);
 	EventM("ok", this, &ConfigurationDialog::OnOk);

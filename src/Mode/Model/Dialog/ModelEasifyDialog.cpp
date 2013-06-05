@@ -9,11 +9,9 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
 
-ModelEasifyDialog::ModelEasifyDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data):
-	CHuiWindow("dummy", -1, -1, 320, 450, _parent, _allow_parent, HuiWinModeControls , true)
+ModelEasifyDialog::ModelEasifyDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data):
+	HuiWindow("easify_dialog", _parent, _allow_parent)
 {
-	// dialog
-	FromResource("easify_dialog");
 
 	data = _data;
 	factor = 0.5f;

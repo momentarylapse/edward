@@ -12,10 +12,10 @@
 #include "../../../Stuff/Observer.h"
 class DataModel;
 
-class ModelEasifyDialog: public CHuiWindow, public Observer
+class ModelEasifyDialog: public HuiWindow, public Observer
 {
 public:
-	ModelEasifyDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data);
+	ModelEasifyDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data);
 	virtual ~ModelEasifyDialog();
 
 	void LoadData();

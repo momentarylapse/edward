@@ -21,13 +21,10 @@
 extern matrix3 InertiaTensorTemp;
 extern float DetailDistTemp1, DetailDistTemp2, DetailDistTemp3;
 
-ModelPropertiesDialog::ModelPropertiesDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data):
-	CHuiWindow("dummy", -1, -1, 400, 400, _parent, _allow_parent, HuiWinModeResizable | HuiWinModeControls, true)
+ModelPropertiesDialog::ModelPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data):
+	HuiWindow("model_dialog", _parent, _allow_parent)
 {
 	data = _data;
-
-	// dialog
-	FromResource("model_dialog");
 
 	SetTooltip("material_list", _("- Doppelklick um ein Material zu editieren\n- selektieren und den Knopf \"l&oschen.\" zum L&oschen\n- H&akchen bei \"Aktiv\" zur Auswahl f&ur folgende neue Polygone"));
 

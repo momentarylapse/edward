@@ -79,7 +79,7 @@ public:
 	ModeBase *parent;
 	MultiView *multi_view;
 
-	CHuiMenu *menu;
+	HuiMenu *menu;
 };
 
 template<class T>

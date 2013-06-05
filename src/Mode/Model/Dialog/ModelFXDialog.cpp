@@ -10,8 +10,8 @@
 #include "../../../lib/script/script.h"
 #include "../../../Edward.h"
 
-ModelFXDialog::ModelFXDialog(CHuiWindow* _parent, bool _allow_parent, DataModel* _data, int _type, int _index) :
-CHuiWindow("dummy", -1, -1, 230, 400, _parent, _allow_parent, HuiWinModeControls, true)
+ModelFXDialog::ModelFXDialog(HuiWindow* _parent, bool _allow_parent, DataModel* _data, int _type, int _index) :
+	HuiWindow("fx_dialog", _parent, _allow_parent)
 {
 	data = _data;
 	index = _index;
@@ -21,9 +21,6 @@ CHuiWindow("dummy", -1, -1, 230, 400, _parent, _allow_parent, HuiWinModeControls
 		temp.clear();
 		temp.Kind = _type;
 	}
-
-	// dialog
-	FromResource("fx_dialog");
 
 	EventM("hui:close", this, &ModelFXDialog::OnClose);
 	EventM("cancel", this, &ModelFXDialog::OnClose);

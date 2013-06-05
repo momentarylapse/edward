@@ -167,7 +167,7 @@ void ModeFont::OnStart()
 
 	dialog = new FontDialog(ed, true, data);
 	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
-	dialog->Update();
+	dialog->Show();
 
 	OnUpdate(data);
 }

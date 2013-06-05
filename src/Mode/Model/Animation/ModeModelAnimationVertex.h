@@ -28,8 +28,6 @@ public:
 
 	virtual void OnDrawWin(MultiViewWindow *win);
 
-	CHuiWindow *dialog;
-
 	void UpdateVertices();
 };
 

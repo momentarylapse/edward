@@ -12,10 +12,10 @@
 #include "../../../Stuff/Observer.h"
 class DataModel;
 
-class ModelMaterialSelectionDialog: public CHuiWindow, public Observer
+class ModelMaterialSelectionDialog: public HuiWindow, public Observer
 {
 public:
-	ModelMaterialSelectionDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data);
+	ModelMaterialSelectionDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data);
 	virtual ~ModelMaterialSelectionDialog();
 
 	void OnClose();

@@ -597,7 +597,7 @@ void ModeWorld::ExecuteWorldPropertiesDialog()
 		return;
 
 	WorldDialog = new WorldPropertiesDialog(ed, true, data);
-	WorldDialog->Update();
+	WorldDialog->Show();
 	//HuiWaitTillWindowClosed(WorldDialog);
 }
 
@@ -635,9 +635,7 @@ void ModeWorld::ExecuteSelectionPropertiesDialog()
 	int sel_type, sel_index;
 
 	SelectionPropertiesDialog *dlg = new SelectionPropertiesDialog(ed, false, data, &sel_type, &sel_index);
-	dlg->Update();
-
-	HuiWaitTillWindowClosed(dlg);
+	dlg->Run();
 
 	if (sel_type >= 0){
 		if (sel_type == FDWorld){
@@ -658,9 +656,7 @@ void ModeWorld::ExecuteSelectionPropertiesDialog()
 void ModeWorld::ExecuteObjectPropertiesDialog(int index)
 {
 	ObjectPropertiesDialog *dlg = new ObjectPropertiesDialog(ed, false, data, index);
-	dlg->Update();
-
-	HuiWaitTillWindowClosed(dlg);
+	dlg->Run();
 }
 
 
@@ -668,17 +664,13 @@ void ModeWorld::ExecuteObjectPropertiesDialog(int index)
 void ModeWorld::ExecuteTerrainPropertiesDialog(int index)
 {
 	TerrainPropertiesDialog *dlg = new TerrainPropertiesDialog(ed, false, data, index);
-	dlg->Update();
-
-	HuiWaitTillWindowClosed(dlg);
+	dlg->Run();
 }
 
 void ModeWorld::ExecuteLightmapDialog()
 {
 	LightmapDialog *dlg = new LightmapDialog(ed, false, data);
-	dlg->Update();
-
-	HuiWaitTillWindowClosed(dlg);
+	dlg->Run();
 }
 
 
@@ -756,9 +748,7 @@ void ModeWorld::ApplyHeightmap()
 		return;
 	}
 	TerrainHeightmapDialog *dlg = new TerrainHeightmapDialog(ed, false, data);
-	dlg->Update();
-
-	HuiWaitTillWindowClosed(dlg);
+	dlg->Run();
 }
 
 

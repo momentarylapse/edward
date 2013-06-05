@@ -12,10 +12,10 @@
 class DataWorld;
 class LightmapData;
 
-class LightmapDialog: public CHuiWindow
+class LightmapDialog: public HuiWindow
 {
 public:
-	LightmapDialog(CHuiWindow *_parent, bool _allow_parent, DataWorld *_data);
+	LightmapDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data);
 	virtual ~LightmapDialog();
 
 	void SetData();

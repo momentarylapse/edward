@@ -40,7 +40,7 @@ void ModeModelMeshCreateTorus::OnStart()
 	dialog->SetInt("nc_x", HuiConfigReadInt("NewTorusNumX", 32));
 	dialog->SetInt("nc_y", HuiConfigReadInt("NewTorusNumY", 16));
 	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
-	dialog->Update();
+	dialog->Show();
 	dialog->Event("hui:close", &HuiFuncIgnore);
 
 	ed->Activate();

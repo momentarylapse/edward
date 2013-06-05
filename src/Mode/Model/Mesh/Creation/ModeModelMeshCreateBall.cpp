@@ -38,7 +38,7 @@ void ModeModelMeshCreateBall::OnStart()
 	dialog->SetInt("nb_complexity", HuiConfigReadInt("NewBallComplexity", 8));
 	dialog->SetInt("nb_tab_control", HuiConfigReadBool("NewBallSphere", false) ? 1 : 0);
 	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
-	dialog->Update();
+	dialog->Show();
 	dialog->Event("hui:close", &HuiFuncIgnore);
 
 	ed->Activate();

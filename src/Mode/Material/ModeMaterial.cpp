@@ -126,16 +126,14 @@ void ModeMaterial::ExecuteAppearanceDialog()
 
 	AppearanceDialog = new MaterialPropertiesDialog(ed, true, data);
 
-	AppearanceDialog->Update();
-	//HuiWaitTillWindowClosed(AppearanceDialog);
+	AppearanceDialog->Show();
+	//AppearanceDialog->Run();
 }
 
 void ModeMaterial::ExecutePhysicsDialog()
 {
-	CHuiWindow *dlg = new MaterialPhysicsDialog(ed, true, data);
-
-	dlg->Update();
-	HuiWaitTillWindowClosed(dlg);
+	MaterialPhysicsDialog *dlg = new MaterialPhysicsDialog(ed, true, data);
+	dlg->Run();
 }
 
 

@@ -12,10 +12,10 @@
 #include "../../../Stuff/Observer.h"
 class DataModel;
 
-class ModelTextureLevelDialog: public CHuiWindow, public Observer
+class ModelTextureLevelDialog: public HuiWindow, public Observer
 {
 public:
-	ModelTextureLevelDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data);
+	ModelTextureLevelDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data);
 	virtual ~ModelTextureLevelDialog();
 
 	void LoadData();

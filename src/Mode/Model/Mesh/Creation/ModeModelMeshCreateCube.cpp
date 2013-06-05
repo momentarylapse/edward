@@ -118,7 +118,7 @@ void ModeModelMeshCreateCube::OnStart()
 	dialog->SetInt("nc_y", HuiConfigReadInt("NewCubeNumY", 1));
 	dialog->SetInt("nc_z", HuiConfigReadInt("NewCubeNumZ", 1));
 	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
-	dialog->Update();
+	dialog->Show();
 	dialog->Event("hui:close", &HuiFuncIgnore);
 
 	ed->Activate();

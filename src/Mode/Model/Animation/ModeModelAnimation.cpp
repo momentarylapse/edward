@@ -73,7 +73,7 @@ void ModeModelAnimation::OnStart()
 	CurrentFrame = 0;
 
 	dialog = new ModelAnimationDialog(ed, true, data);
-	dialog->Update();
+	dialog->Show();
 
 	UpdateAnimation();
 	Observer::Subscribe(data);

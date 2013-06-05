@@ -9,7 +9,7 @@
 #define MODEWORLDCAMERA_H_
 
 #include "../../Mode.h"
-class CHuiWindow;
+class HuiWindow;
 class DataCamera;
 template<class T>
 class Interpolator;
@@ -57,7 +57,7 @@ public:
 	void PreviewUpdate();
 	void UpdateTimePos();
 
-	CHuiWindow *dialog;
+	HuiWindow *dialog;
 
 	bool edit_vel, edit_ang;
 	float time_scale, time_offset;

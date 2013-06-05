@@ -12,10 +12,10 @@
 #include "../../../Data/World/DataWorld.h"
 #include "../../../Stuff/Observer.h"
 
-class TerrainPropertiesDialog: public CHuiWindow, public Observer
+class TerrainPropertiesDialog: public HuiWindow, public Observer
 {
 public:
-	TerrainPropertiesDialog(CHuiWindow *_parent, bool _allow_parent, DataWorld *_data, int _index);
+	TerrainPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data, int _index);
 	virtual ~TerrainPropertiesDialog();
 
 	void LoadData();

@@ -11,10 +11,10 @@
 #include "../../../lib/hui/hui.h"
 #include "../../../Data/Model/DataModel.h"
 
-class ModelFXDialog: public CHuiWindow
+class ModelFXDialog: public HuiWindow
 {
 public:
-	ModelFXDialog(CHuiWindow *_parent, bool _allow_parent, DataModel *_data, int _type, int _index);
+	ModelFXDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data, int _type, int _index);
 	virtual ~ModelFXDialog();
 
 	void LoadData();

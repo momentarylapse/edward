@@ -39,7 +39,7 @@ public:
 
 	int CurrentTextureLevel;
 
-	CHuiWindow *dialog;
+	HuiWindow *dialog;
 };
 
 extern ModeModelMeshTexture *mode_model_mesh_texture;

@@ -160,7 +160,7 @@ void Edward::IdleFunction()
 
 
 Edward::Edward(Array<string> arg) :
-	CHuiWindow(AppName, -1, -1, 800, 600, NULL, false, HuiWinModeResizable | HuiWinModeNix, true)
+	HuiWindow(AppName, -1, -1, 800, 600, NULL, false, HuiWinModeResizable | HuiWinModeNix)
 {
 	msg_db_r("Init", 1);
 
@@ -210,7 +210,7 @@ Edward::Edward(Array<string> arg) :
 	// create the main window
 	HuiCreateNixWindow(AppName, x, y, w, h);
 	SetMaximized(maximized);
-	Update();
+	Show();
 
 	// initialize engine
 	NixInit("OpenGL", 1024, 768, 32, false, this);

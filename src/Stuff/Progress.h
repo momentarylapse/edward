@@ -25,7 +25,7 @@ public:
 	bool IsCancelled();
 
 private:
-	CHuiWindow *dlg;
+	HuiWindow *dlg;
 	bool Cancelled;
 	string message;
 	int timer;

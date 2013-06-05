@@ -18,7 +18,7 @@ public:
 	virtual void OnDrawRecursive(bool multi_view_handled = false);
 	virtual void Abort();
 	string message;
-	CHuiWindow *dialog;
+	HuiWindow *dialog;
 };
 
 template<class T>

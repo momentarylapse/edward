@@ -11,10 +11,10 @@
 #include "../../../lib/hui/hui.h"
 #include "../../../Data/Material/DataMaterial.h"
 
-class MaterialPhysicsDialog: public CHuiWindow
+class MaterialPhysicsDialog: public HuiWindow
 {
 public:
-	MaterialPhysicsDialog(CHuiWindow *_parent, bool _allow_parent, DataMaterial *_data);
+	MaterialPhysicsDialog(HuiWindow *_parent, bool _allow_parent, DataMaterial *_data);
 	virtual ~MaterialPhysicsDialog();
 
 	void LoadData();

@@ -9,16 +9,13 @@
 #include "../../../Action/World/ActionWorldEditObject.h"
 #include <assert.h>
 
-ObjectPropertiesDialog::ObjectPropertiesDialog(CHuiWindow *_parent, bool _allow_parent, DataWorld *_data, int _index) :
-	CHuiWindow("dummy", -1, -1, 800, 600, _parent, _allow_parent, HuiWinModeControls, true)
+ObjectPropertiesDialog::ObjectPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data, int _index) :
+	HuiWindow("world_object_dialog", _parent, _allow_parent)
 {
 	data = _data;
 	index = _index;
 	assert(index >= 0);
 	assert(index < data->Objects.num);
-
-	// dialog
-	FromResource("world_object_dialog");
 
 	EventM("cancel", this, &ObjectPropertiesDialog::OnClose);
 	EventM("hui:close", this, &ObjectPropertiesDialog::OnClose);
