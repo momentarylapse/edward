@@ -11,9 +11,6 @@
 
 struct ThreadInternal
 {
-	bool running;
-	void *p;
-	thread_func_t *f;
 #ifdef OS_WINDOWS
 	HANDLE thread;
 #endif
@@ -132,29 +129,30 @@ int ThreadGetId()
 
 void Thread::__init__()
 {
-	internal = new ThreadInternal;
-	internal->running = false;
+	internal = NULL;
+	running = false;
 	_Thread_List_.add(this);
 }
 
 static void *thread_start_func(void *p)
 {
 	Thread *t = (Thread*)p;
-	t->internal->f(t->internal->p);
-	t->internal->running = false;
+	t->OnRun();
+	t->running = false;
 	return NULL;
 }
 
+
 // create and run a new thread
-void Thread::Call(thread_func_t *f, void *param)
+void Thread::Run()
 {
-	internal->f = f;
-	internal->p = param;
-	internal->running = true;
+	if (!internal)
+		internal = new ThreadInternal;
+	running = true;
 	int ret = pthread_create(&internal->thread, NULL, &thread_start_func, (void*)this);
 
 	if (ret != 0)
-		internal->running = false;
+		running = false;
 }
 
 
@@ -164,21 +162,22 @@ void Thread::__delete__()
 	for (int i=0;i<_Thread_List_.num;i++)
 		if (_Thread_List_[i] == this)
 			_Thread_List_.erase(i);
-	delete(internal);
+	if (internal)
+		delete(internal);
 }
 
 void Thread::Kill()
 {
-	if (internal->running)
+	if (running)
 		pthread_cancel(internal->thread);
-	internal->running = false;
+	running = false;
 }
 
 void Thread::Join()
 {
-	if (internal->running)
+	if (running)
 		pthread_join(internal->thread, NULL);
-	internal->running = false;
+	running = false;
 }
 
 void ThreadExit()
@@ -201,22 +200,6 @@ Thread *ThreadSelf()
 
 bool Thread::IsDone()
 {
-	return !internal->running;
-}
-
-
-ThreadBase::ThreadBase(){}
-
-ThreadBase::~ThreadBase(){}
-
-static void _thread_base_run_(void *p)
-{
-	ThreadBase *t = (ThreadBase*)p;
-	t->OnRun();
-}
-
-void ThreadBase::Run()
-{
-	Call(&_thread_base_run_, this);
+	return !running;
 }
 

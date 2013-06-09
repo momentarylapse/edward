@@ -14,7 +14,7 @@ void CreateTorusKnot(int nx, int ny, int rings, int edges, float r1, float r2, f
 		pos.add(er * r1 + (er * cos(wy) + e_z * sin(wy)) * r2)
 		r.add(r3)
 
-	data_model.AddCylinder(pos, r, rings, edges, true)
+	data_model.AddCylinder(pos, r, rings, edges, true, 0)
 
 int gcd(int a, int b)
 	while b != 0
@@ -54,9 +54,8 @@ void main()
 	dlg.AddText("Radius Knot", 0, 6, 0, 0, "")
 	dlg.AddSpinButton("15\\0\\100000000000000\\0.1", 1, 6, 0, 0, "radius3")
 	dlg.AddButton("Ok", 1, 7, 0, 0, "ok")
-	dlg.Update()
 	
 	dlg.Event("ok", &OnOk)
 	dlg.Event("hui:close", &OnClose)
 	
-	HuiWaitTillWindowClosed(dlg)
+	dlg.Run()

@@ -9,7 +9,7 @@ void add5(int nv, int v0, int v1, int v2, int v3, int v4)
 	v.add(nv + v2)
 	v.add(nv + v3)
 	v.add(nv + v4)
-	data_model.AddPolygon(v)
+	data_model.AddPolygon(v, 0)
 
 void main()
 	int nv = data_model.Vertex.num
