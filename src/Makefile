@@ -27,6 +27,11 @@ install : all
 	xdg-icon-resource install --context mimetypes --size  48 ../Data/icons/png/font_48.png  application-x-michisoft-x-font --noupdate
 	xdg-icon-resource install --context mimetypes --size  64 ../Data/icons/png/font_64.png  application-x-michisoft-x-font --noupdate
 	xdg-icon-resource install --context mimetypes --size  128 ../Data/icons/png/font_128.png  application-x-michisoft-x-font
+	xdg-mime install ../Data/michisoft-x-material.xml
+	xdg-icon-resource install --context mimetypes --size  32 ../Data/icons/png/material_32.png  application-x-michisoft-x-material --noupdate
+	xdg-icon-resource install --context mimetypes --size  48 ../Data/icons/png/material_48.png  application-x-michisoft-x-material --noupdate
+	xdg-icon-resource install --context mimetypes --size  64 ../Data/icons/png/material_64.png  application-x-michisoft-x-material --noupdate
+	xdg-icon-resource install --context mimetypes --size  128 ../Data/icons/png/material_128.png  application-x-michisoft-x-material
 	xdg-mime install ../Data/michisoft-x-world.xml
 	xdg-icon-resource install --context mimetypes --size  32 ../Data/icons/png/world_32.png  application-x-michisoft-x-world --noupdate
 	xdg-icon-resource install --context mimetypes --size  48 ../Data/icons/png/world_48.png  application-x-michisoft-x-world --noupdate
