@@ -31,6 +31,7 @@ public:
 	virtual Histogram GetHistogram();
 
 	void CreateBalancedTree();
+	void CreateTextures();
 
 	int num_photons;
 	int done;

@@ -216,22 +216,21 @@ void LightmapData::CreateVertices()
 		for (int i=m.offset;i<m.offset + m.num_trias;i++){
 			LightmapData::Triangle &t = Trias[i];
 			ModelPolygon &p = m.orig->Surface[t.surf].Polygon[t.poly];
-			vector sv[3];
 			for (int k=0;k<3;k++){
 				int si = p.Side[t.side].Triangulation[k];
-				sv[k] = p.Side[si].SkinVertex[1];
-				sv[k].x *= w;
-				sv[k].y *= h;
+				t.sv[k] = p.Side[si].SkinVertex[1];
+				t.sv[k].x *= w;
+				t.sv[k].y *= h;
 			}
 
 			// rasterize triangle
-			rect r = get_tria_skin_boundary(sv);
+			rect r = get_tria_skin_boundary(t.sv);
 			int v_offset = Vertices.num;
 			for (int x=r.x1-1;x<r.x2+1;x++)
 				for (int y=r.y1-1;y<r.y2+1;y++){
 					vector c = vector((float)x + 0.5f, (float)y + 0.5f, 0);
 					float f, g;
-					GetBaryCentric(c, sv[0], sv[1], sv[2], f, g);
+					GetBaryCentric(c, t.sv[0], t.sv[1], t.sv[2], f, g);
 					if ((f >= 0) && (g >= 0) && (f + g <= 1)){
 						Vertex vv;
 						vv.pos = t.v[0] + f * (t.v[1] - t.v[0]) + g * (t.v[2] - t.v[0]);
@@ -246,10 +245,11 @@ void LightmapData::CreateVertices()
 						Vertices.add(vv);
 					}
 				}
+			t.num_vertices = Vertices.num - v_offset;
 
 			// guess vertex areas
 			for (int j=v_offset;j<Vertices.num;j++)
-				Vertices[j].area = t.area / (Vertices.num - v_offset);
+				Vertices[j].area = t.area / t.num_vertices;
 		}
 	}
 	msg_write("Vertices: " + i2s(Vertices.num));

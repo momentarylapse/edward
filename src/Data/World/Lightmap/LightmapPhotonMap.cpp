@@ -97,6 +97,45 @@ void LightmapPhotonMap::Compute()
 	}
 
 	CreateBalancedTree();
+	CreateTextures();
+}
+
+struct PseudoImage
+{
+	int w, h;
+	Array<color> c;
+};
+
+void LightmapPhotonMap::CreateTextures()
+{
+	Array<PseudoImage> psi;
+	psi.resize(data->Models.num);
+	foreachi(LightmapData::Model &m, data->Models, mid){
+		psi[mid].w = m.tex_width;
+		psi[mid].h = m.tex_height;
+		psi[mid].c.resize(m.tex_width * m.tex_height);
+	}
+
+	foreach(PhotonEvent &p, photon){
+		LightmapData::Triangle &t = data->Trias[p.tria];
+		vector sv = t.sv[0] + (t.sv[1] - t.sv[0]) * p.f + (t.sv[2] - t.sv[0]) * p.g;
+		int x = sv.x + 0.5f;
+		int y = sv.y + 0.5f;
+		float v_inv_area = t.num_vertices / t.area;
+		psi[t.mod_id].c[x + y * psi[t.mod_id].w] += p.c * v_inv_area;
+	}
+
+
+	foreachi(LightmapData::Model &m, data->Models, mid){
+		Image im;
+		im.Create(psi[mid].w, psi[mid].h, Black);
+		for (int x=0; x<psi[mid].w; x++)
+			for (int y=0; y<psi[mid].h; y++){
+				psi[mid].c[x + y * psi[mid].w].clamp();
+				im.SetPixel(x, y, psi[mid].c[x + y * psi[mid].w]);
+			}
+		im.Save(i2s(mid) + ".bmp");
+	}
 }
 
 void LightmapPhotonMap::Trace(Array<PhotonEvent> &ph, const vector &p, const vector &dir, const color &c, int ignore_tria, int n)

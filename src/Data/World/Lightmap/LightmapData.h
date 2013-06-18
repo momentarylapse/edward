@@ -62,7 +62,7 @@ public:
 	// a "real" polygon in the models
 	struct Triangle
 	{
-		vector v[3], n[3], m;
+		vector v[3], sv[3], n[3], m;
 		Ray ray[3];
 		float r;
 		/*bool inv;
@@ -74,6 +74,7 @@ public:
 		int mod_id, surf, poly, side;
 		color am, di, em;
 		float area;
+		int num_vertices;
 		bool intersect(const Ray &r, vector &cp) const;
 	};
 	Array<Triangle> Trias;
