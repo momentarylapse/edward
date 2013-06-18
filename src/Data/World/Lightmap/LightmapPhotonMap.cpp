@@ -57,38 +57,44 @@ vector get_rand_dir(const vector &n)
 	return dir;
 }
 
+void LightmapPhotonMap::DoStep(int index, int worker_id)
+{
+	LightmapData::Triangle &t = data->Trias[cur_em_tria];
+	float f, g;
+	do{
+		f = randf(1.0f);
+		g = randf(1.0f);
+	}while(f + g > 1);
+	vector p = t.v[0] + (t.v[1] - t.v[0]) * f + (t.v[2] - t.v[0]) * g;
+
+	vector dir = get_rand_dir(t.pl.n);
+	color c = t.em * (3.0f / (t.em.r + t.em.g + t.em.b));
+	//msg_write(format("%d / %d", j, n_photons));
+	Trace(thread_photon[worker_id], p, dir, c * energy_per_photon, cur_em_tria, 0);
+}
+
+bool LightmapPhotonMap::OnStatus()
+{
+	HuiSleep(50);
+	int cur = done + GetDone();
+	ed->progress->Set(format(_("%d von %d"), cur, num_photons), (float)cur / (float)num_photons);
+	return !ed->progress->IsCancelled();
+}
+
 void LightmapPhotonMap::Compute()
 {
-	int work_id = 0;
-	int done = 0;
+	done = 0;
 	foreach(Emitter &em, Emitters){
-		int n_photons = (int)((float) num_photons * em.energy /* / WorkGetNumThreads()*/ / total_energy);
-		LightmapData::Triangle &t = data->Trias[em.tria];
-		for (int j=0;j<n_photons;j++){
-			float f, g;
-			do{
-				f = randf(1.0f);
-				g = randf(1.0f);
-			}while(f + g > 1);
-			vector p = t.v[0] + (t.v[1] - t.v[0]) * f + (t.v[2] - t.v[0]) * g;
-
-			vector dir = get_rand_dir(t.pl.n);
-			color c = t.em * (3.0f / (t.em.r + t.em.g + t.em.b));
-			//msg_write(format("%d / %d", j, n_photons));
-			Trace(thread_photon[work_id], p, dir, c * energy_per_photon, em.tria, 0);
-			/*done ++;
-			if ((done % 100) == 99)
-				pm_num_done += 100;
-			//	Progress("", (float)done / (float)num_photons);*/
-			done ++;
-			if ((done & 1023) == 0)
-				ed->progress->Set(format(_("%d von %d"), done, num_photons), (float)done / (float)num_photons);
-			if (ed->progress->IsCancelled())
-				throw Lightmap::AbortException();
-		}
+		int n_photons = (int)((float) num_photons * em.energy / total_energy);
+		cur_em_tria = em.tria;
+		if (!Run(n_photons, 256))
+			throw Lightmap::AbortException();
+		done += n_photons;
 	}
-	photon.append(thread_photon[work_id]);
-	thread_photon[work_id].clear();
+	for (int w=0; w<thread.num; w++){
+		photon.append(thread_photon[w]);
+		thread_photon[w].clear();
+	}
 
 	CreateBalancedTree();
 }

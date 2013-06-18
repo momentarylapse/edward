@@ -9,28 +9,32 @@
 #define LIGHTMAPPHOTONMAP_H_
 
 #include "Lightmap.h"
+#include "../../../lib/threads/threads.h"
+#include "../../../lib/threads/work.h"
 
 #define MAX_PM_HITS			8
 
 //#define MAX_PHOTONS_PER_VERTEX	1500
 #define MAX_PHOTONS_PER_VERTEX	500
 
-#define MAX_THREADS		8
 
-
-class LightmapPhotonMap : public Lightmap
+class LightmapPhotonMap : public Lightmap, public ThreadedWork
 {
 public:
 	LightmapPhotonMap(LightmapData *data, int num_photons);
 	virtual ~LightmapPhotonMap();
 
 	virtual void Compute();
+	virtual void DoStep(int index, int worker_id);
+	virtual bool OnStatus();
 	virtual color RenderVertex(LightmapData::Vertex &v);
 	virtual Histogram GetHistogram();
 
 	void CreateBalancedTree();
 
 	int num_photons;
+	int done;
+	int cur_em_tria;
 	float total_energy, energy_per_photon;
 	struct Emitter
 	{
