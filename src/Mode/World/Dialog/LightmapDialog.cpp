@@ -25,6 +25,7 @@ LightmapDialog::LightmapDialog(HuiWindow *_parent, bool _allow_parent, DataWorld
 	EventM("preview", this, &LightmapDialog::OnPreview);
 	EventM("resolution", this, &LightmapDialog::OnResolution);
 	EventM("lightmap_type", this, &LightmapDialog::OnType);
+	EventM("find_new_world", this, &LightmapDialog::OnFindNewWorld);
 
 	//LoadData();
 	SetFloat("brightness", 10.0f);
@@ -156,7 +157,7 @@ void LightmapDialog::OnResolution()
 
 void LightmapDialog::OnFindNewWorld()
 {
-	if (ed->FileDialog(FDModel, true, true))
+	if (ed->FileDialog(FDWorld, true, true))
 		SetString("new_world_name", ed->DialogFileNoEnding);
 }
 
