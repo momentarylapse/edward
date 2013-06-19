@@ -131,6 +131,9 @@ bool Lightmap::RenderTextures()
 	ed->progress->StartCancelable(_("berechne Textur"), 0);
 	dir_create(NixTextureDir + data->texture_out_dir);
 	dir_create(ObjectDir + data->model_out_dir);
+
+	PrepareTextureRendering();
+
 	try{
 	foreachi(LightmapData::Model &m, data->Models, mid){
 		int w = m.tex_width;

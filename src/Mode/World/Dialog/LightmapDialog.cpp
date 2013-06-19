@@ -8,6 +8,7 @@
 #include "LightmapDialog.h"
 #include "../../../Data/World/Lightmap/LightmapData.h"
 #include "../../../Data/World/Lightmap/LightmapPhotonMap.h"
+#include "../../../Data/World/Lightmap/LightmapPhotonMapImageSpace.h"
 #include "../../../Data/World/Lightmap/LightmapRayTracing.h"
 #include "../../../Data/World/Lightmap/LightmapRadiosity.h"
 #include "../../../Data/World/DataWorld.h"
@@ -29,11 +30,12 @@ LightmapDialog::LightmapDialog(HuiWindow *_parent, bool _allow_parent, DataWorld
 
 	//LoadData();
 	SetFloat("brightness", 10.0f);
-	SetFloat("exponent", 1.0f);
+	SetFloat("exponent", 0.8f);
 	SetInt("photons", 500000);
-	SetInt("lightmap_type", 3);
+	SetInt("lightmap_type", 4);
 	Enable("photons", true);
-	SetString("new_world_name", data->filename.basename().replace(".world", "") + "Lightmap");
+	//SetString("new_world_name", data->filename.basename().replace(".world", "") + "Lightmap");
+	SetString("new_world_name", "temp");
 
 	lmd = new LightmapData(data);
 
@@ -135,7 +137,9 @@ void LightmapDialog::OnPreview()
 	SetData();
 	Lightmap *lm;
 	int type = GetInt("lightmap_type");
-	if (type == 3){
+	if (type == 4){
+		lm = new LightmapPhotonMapImageSpace(lmd, GetInt("photons"));
+	}else if (type == 3){
 		lm = new LightmapPhotonMap(lmd, GetInt("photons"));
 	}else if ((type == 1) || (type == 2)){
 		lm = new LightmapRadiosity(lmd);
@@ -166,7 +170,9 @@ void LightmapDialog::OnOk()
 	SetData();
 	Lightmap *lm;
 	int type = GetInt("lightmap_type");
-	if (type == 3){
+	if (type == 4){
+		lm = new LightmapPhotonMapImageSpace(lmd, GetInt("photons"));
+	}else if (type == 3){
 		lm = new LightmapPhotonMap(lmd, GetInt("photons"));
 	}else if ((type == 1) || (type == 2)){
 		lm = new LightmapRadiosity(lmd);

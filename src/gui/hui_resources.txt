@@ -16853,7 +16853,7 @@ Lightmap erzeugen
 lightmap_list
 Objekt\\Textur\\Auflösung
 lightmap_type
-Raytracing\\Radiosity\\Radiosity schnell\\Photon Map
+Raytracing\\Radiosity\\Radiosity schnell\\Photon Map\\Photon Map schnell
 lmt_brightness
 Oberflächen-Helligkeit
 lmt_exponent

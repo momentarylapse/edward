@@ -27,11 +27,12 @@ public:
 	virtual void Compute();
 	virtual void DoStep(int index, int worker_id);
 	virtual bool OnStatus();
+
+	virtual void PrepareTextureRendering();
 	virtual color RenderVertex(LightmapData::Vertex &v);
 	virtual Histogram GetHistogram();
 
 	void CreateBalancedTree();
-	void CreateTextures();
 
 	int num_photons;
 	int done;

@@ -9,7 +9,7 @@
 	LightmapDialog->AddText("R&aumliche Aufl&osung", 10, 310, 160, 25, "lmt_spacial_resolution");
 	LightmapDialog->AddSpinButton("\\0\\1000\\0.1", 175, 310, 200, 25, "resolution");
 	LightmapDialog->AddText("le", 380, 310, 30, 25, "lu");
-	LightmapDialog->AddComboBox("Raytracing\\Radiosity\\Radiosity schnell\\Photon Map", 10, 280, 400, 25, "lightmap_type");
+	LightmapDialog->AddComboBox("Raytracing\\Radiosity\\Radiosity schnell\\Photon Map\\Photon Map schnell", 10, 280, 400, 25, "lightmap_type");
 	LightmapDialog->AddText("Zahl der Photonen", 10, 340, 160, 25, "lmt_photons");
 	LightmapDialog->AddSpinButton("\\0", 175, 340, 200, 25, "photons");
 	LightmapDialog->AddText("Oberfl&achen-Helligkeit", 10, 370, 160, 25, "lmt_brightness");

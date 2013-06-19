@@ -22,7 +22,8 @@ public:
 	virtual ~Lightmap();
 
 	bool Create();
-	virtual void Compute(){};
+	virtual void Compute(){}
+	virtual void PrepareTextureRendering(){}
 	bool RenderTextures();
 	virtual color RenderVertex(LightmapData::Vertex &v);
 
