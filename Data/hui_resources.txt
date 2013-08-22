@@ -6033,7 +6033,7 @@ menu_model
 0
 
 
-147
+148
 ItemPopup
 menu_model_file
 
@@ -7156,7 +7156,7 @@ ItemPopup
 menu_model_geometry
 
 1
-25
+26
 0
 0
 0
@@ -7310,6 +7310,19 @@ bevel_vertices
 
 Item
 flatten_vertices
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+brush_extrude_vertices
 
 1
 0
@@ -16360,7 +16373,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-720
+721
 // Text
 ad_dialog
 Verwaltung
@@ -16452,6 +16465,8 @@ bgc
 !alpha
 brightness
 \\0\\100\\0.1
+brush_extrude_vertices
+Z-Pinsel
 cam_area
 
 cam_edit_ang
@@ -17808,7 +17823,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-720
+721
 // Text
 ad_dialog
 Administration
@@ -17900,6 +17915,8 @@ bgc
 !alpha
 brightness
 \\0\\100\\0.1
+brush_extrude_vertices
+
 cam_area
 
 cam_edit_ang
@@ -19251,7 +19268,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-150
+147
 // Text
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -19261,10 +19278,6 @@ Set background image
  -- Whole world -- 
  ist abgestürzt!\t\tDie letzten Zeilen der Datei message.txt:
  has crashed!\t\tLast lines from message.txt:
-!bold\\Kommentar/Geschehnisse:
-!bold\\Comment/What happened:
-!bold\\Name:
-!bold\\Name:
 %d Vertizes, %d Dreiecke eingefügt
 %d vertices, %d triangles pasted
 %d Vertizes, %d Dreiecke kopiert
@@ -19417,8 +19430,6 @@ Modelle (*.model)
 Models (*.model)
 Nachrichten
 Messages
-Neben diesen Angaben wird noch der Inhalt der Datei message.txt geschickt
-Additionally to this information I will send the file message.txt
 OK
 OK
 Oben
@@ -19556,7 +19567,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-720
+721
 // Text
 ad_dialog
 
@@ -19647,6 +19658,8 @@ bevel_vertices
 bgc
 !alpha
 brightness
+
+brush_extrude_vertices
 
 cam_area
 

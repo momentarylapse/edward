@@ -18,6 +18,7 @@
 #include "../../Action/Model/Mesh/Vertex/ActionModelCollapseVertices.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelAlignToGrid.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelFlattenVertices.h"
+#include "../../Action/Model/Mesh/Vertex/ActionModelBrushExtrudeVertices.h"
 #include "../../Action/Model/Mesh/Polygon/ActionModelBevelPolygons.h"
 #include "../../Action/Model/Mesh/Polygon/ActionModelAddPolygonSingleTexture.h"
 #include "../../Action/Model/Mesh/Polygon/ActionModelExtrudePolygons.h"
@@ -1840,6 +1841,9 @@ void DataModel::BevelSelectedVertices(float radius)
 
 void DataModel::FlattenSelectedVertices()
 {	Execute(new ActionModelFlattenVertices(this));	}
+
+void DataModel::BrushExtrudeVertices(const vector &pos, const vector &n, float radius, float depth)
+{	Execute(new ActionModelBrushExtrudeVertices(pos, n, radius, depth));	}
 
 void DataModel::ExtrudeSelectedPolygons(float offset)
 {	Execute(new ActionModelExtrudePolygons(offset));	}

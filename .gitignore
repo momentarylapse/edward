@@ -4,3 +4,8 @@ Release
 .settings
 Data/config.txt
 Data/admin_database.txt
+*~
+*.o
+*.a
+edward
+

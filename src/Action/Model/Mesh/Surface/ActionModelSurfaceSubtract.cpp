@@ -367,8 +367,13 @@ void ActionModelSurfaceSubtract::find_contours(DataModel *m, ModelPolygon *t, Mo
 		msg_write("contour");
 		foreachi(sCol &c, cc, i)
 			msg_write(i2s(i) + " " + c.str());
-		if (cc.num < 3)
+		if (cc.num < 3){
+			for (int i=0;i<t->Side.num;i++)
+				ed->multi_view_3d->AddMessage3d("p"+i2s(i), m->Vertex[t->Side[i].Vertex].pos);
+			foreachi(sCol &c, cc, i)
+				ed->multi_view_3d->AddMessage3d("x"+i2s(i), c.p);
 			throw ActionException("contour with num<3");
+		}
 	}
 }
 

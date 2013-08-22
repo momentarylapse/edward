@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-581
+582
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -83,6 +83,8 @@ bgc
 !alpha
 brightness
 \\0\\100\\0.1
+brush_extrude_vertices
+
 cam_edit_ang
 
 cam_edit_vel
@@ -1182,10 +1184,12 @@ Set background image
  -- Whole world -- 
  ist abgestürzt!\t\tDie letzten Zeilen der Datei message.txt:
  has crashed!\t\tLast lines from message.txt:
-!bold\\Kommentar/Geschehnisse:
-!bold\\Comment/What happened:
-!bold\\Name:
-!bold\\Name:
+!bold$Kommentar/Geschehnisse:
+
+!bold$Name:
+
+!wrap$Neben diesen Angaben wird noch der Inhalt der Datei message.txt geschickt
+
 %d Objekte, %d Terrains eingefügt
 
 %d Objekte, %d Terrains kopiert
@@ -1222,6 +1226,8 @@ Animation
 Animation
 Ansicht
 View
+Anwendung ohne Netzwerk-Unterstützung compiliert...
+
 Anzahl der Texturen wurde an das Material angepasst!
 Number of textures changed to comply with the material!
 Arbeitsverzeichnis
@@ -1412,8 +1418,6 @@ Nachrichten
 Messages
 Nebelintensität = exp( - Dichte * Entfernung )
 
-Neben diesen Angaben wird noch der Inhalt der Datei message.txt geschickt
-Additionally to this information I will send the file message.txt
 OK
 OK
 Oben
@@ -1572,8 +1576,6 @@ Zylinderschlange... Punkte + Shift Return
 \\\\   - no textures -
 administrieren
 administrate
-aktuelles Material
-
 beliebige Datei
 arbitrary file
 berechne Licht
