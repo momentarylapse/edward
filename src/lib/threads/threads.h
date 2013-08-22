@@ -6,6 +6,8 @@
 #if !defined(THREADS_H_INCLUDED)
 #define THREADS_H_INCLUDED
 
+#include "../base/base.h"
+
 // auxiliary
 int ThreadGetNumCores();
 
@@ -14,27 +16,27 @@ int ThreadGetNumCores();
 
 struct ThreadInternal;
 
-class Thread
+class Thread : public VirtualBase
 {
 public:
 	Thread();
 	virtual ~Thread();
-	void Run();
-	bool IsDone();
-	void Kill();
-	void Join();
+	void _cdecl Run();
+	bool _cdecl IsDone();
+	void _cdecl Kill();
+	void _cdecl Join();
 
-	virtual void OnRun(){}// = 0;
+	virtual void _cdecl OnRun(){}// = 0;
 
-	void __init__();
-	void __delete__();
+	void _cdecl __init__();
+	virtual void _cdecl __delete__();
 
 	bool running;
 	ThreadInternal *internal;
 };
 
-void ThreadExit();
-Thread *ThreadSelf();
+void _cdecl ThreadExit();
+Thread *_cdecl ThreadSelf();
 
 
 #endif

@@ -27,6 +27,7 @@
 #include "../lib/nix/nix.h"
 #ifdef _X_ALLOW_X_
 #include "../fx/fx.h"
+#include "../lib/script/script.h"
 #endif
 
 
@@ -41,7 +42,11 @@
 
 void MoveTimeAdd(Model *m,int operation_no,float elapsed,float v,bool loop);
 
+#ifdef _X_ALLOW_X_
+void *ScriptCreateInstance(Script::Script *s, const string &base_class);
+#endif
 
+bool Model::AllowDeleteRecursive = true;
 
 
 // make a copy of all the data
@@ -243,7 +248,6 @@ void Model::ResetData()
 	registered = false;
 	object_id = -1;
 	parent = NULL;
-	script_data = NULL;
 	
 	for (int i=0;i<MODEL_NUM_SKINS;i++){
 		_detail_needed_[i] = false;
@@ -280,21 +284,13 @@ void Model::ResetData()
 #ifdef _X_ALLOW_X_
 	foreachi(ModelEffectData &tf, _template->fx, i){
 		if (tf.type == FXTypeLight)
-			fx[i] = FxCreateLight(this, tf.vertex, tf.radius, tf.am, tf.di, tf.sp);
+			fx[i] = Fx::CreateLight(this, tf.vertex, tf.radius, tf.am, tf.di, tf.sp);
 		else if (tf.type == FXTypeSound)
-			fx[i] = FxCreateSound(this, tf.vertex, tf.filename, tf.radius, tf.speed);
+			fx[i] = Fx::CreateSound(this, tf.vertex, tf.filename, tf.radius, tf.speed);
 		else if (tf.type == FXTypeScript)
-			fx[i] = FxCreateScript(this, tf.vertex, tf.filename);
+			fx[i] = Fx::CreateScript(this, tf.vertex, tf.filename);
 	}
 #endif
-
-	// script vars
-	script_var = _template->script_var;
-
-	// inventary
-	inventary.resize(_template->item.num);
-	for (int i=0;i<_template->item.num;i++)
-		inventary[i] = LoadModel(_template->item[i]);
 
 	if (material.num > 0)
 		SetMaterial(&material[0], SetMaterialFriction);
@@ -318,6 +314,7 @@ void Model::reset()
 	error = false;
 	pos = ang = vel = rot = v_0;
 	object_id = -1;
+	registered = false;
 	on_ground = false;
 	visible = true;
 	rotating  = true;
@@ -328,6 +325,22 @@ void Model::reset()
 	ground_normal = v_0;
 	_detail_ = -1;
 
+	is_copy = false;
+	_template = NULL;
+
+	for (int i=0;i<MODEL_NUM_SKINS;i++){
+		skin_is_reference[i] = false;
+		skin[i] = NULL;
+		vertex_dyn[i] = NULL;
+		normal_dyn[i] = NULL;
+	}
+	meta_move = NULL;
+	phys = NULL;
+
+	phys_absolute.p = NULL;
+	phys_absolute.pl = NULL;
+
+	material_is_reference = false;
 
 	vel_surf = acc = v_0;
 	force_int = torque_int = v_0;
@@ -337,13 +350,18 @@ void Model::reset()
 // completely load an original model (all data is its own)
 Model::Model(const string &filename)
 {
-	msg_db_f("loading model", 1);
 	reset();
+	Load(filename);
+}
+
+void Model::Load(const string &filename)
+{
+	msg_db_f("loading model", 1);
 	msg_write("loading model: " + filename);
 	msg_right();
 
 	// load model from file
-	CFile *f = OpenFile(ObjectDir + filename + ".model");
+	CFile *f = FileOpen(ObjectDir + filename + ".model");
 	if (!f){
 		error = true;
 		msg_error("-failed");
@@ -360,8 +378,7 @@ Model::Model(const string &filename)
 	}
 
 	Array<float> temp_sv;
-	_template = new ModelTemplate;
-	_template->reset();
+	_template = new ModelTemplate(this);
 	_template->filename = filename;
 
 // file format 11...
@@ -532,6 +549,7 @@ Model::Model(const string &filename)
 		meta_move->num_frames_vertex = num_frames_vert;
 
 		meta_move->move = new Move[num_anims_all];
+		memset(meta_move->move, 0, sizeof(Move) * num_anims_all);
 		if (num_frames_vert > 0)
 			for (int i=0;i<4;i++){
 				int n_vert = 0;
@@ -658,17 +676,17 @@ Model::Model(const string &filename)
 	description = f->ReadStr();
 
 	// Inventary
-	_template->item.resize(f->ReadIntC());
-	for (int i=0;i<_template->item.num;i++){
-		_template->item[i] = f->ReadStr();
+	inventary.resize(f->ReadIntC());
+	for (int i=0;i<inventary.num;i++){
+		inventary[i] = LoadModel(f->ReadStr());
 		f->ReadInt();
 	}
 
 	// Script
 	_template->script_filename = f->ReadStrC();
-	_template->script_var.resize(f->ReadInt());
-	for (int i=0;i<_template->script_var.num;i++)
-		_template->script_var[i] = f->ReadFloat();
+	script_var.resize(f->ReadInt());
+	for (int i=0;i<script_var.num;i++)
+		script_var[i] = f->ReadFloat();
 
 	msg_db_m("deleting file",1);
 	FileClose(f);
@@ -701,15 +719,20 @@ Model::Model(const string &filename)
 
 	is_copy = false;
 	ResetData();
+	RegisterModel(this);
 
 	msg_left();
 }
 
 
-// only used by GetCopy() !!!
 Model::Model()
 {
-	_template = (ModelTemplate*)0x42;
+	reset();
+}
+
+void Model::__init__()
+{
+	new(this) Model;
 }
 
 void Model::SetMaterial(Material *m, int mode)
@@ -728,16 +751,23 @@ void CopyPhysicalSkin(PhysicalSkin *orig, PhysicalSkin **copy)
 	(**copy) = (*orig);
 }
 
-Model *Model::GetCopy(int mode)
+Model *Model::GetCopy(bool allow_script_init)
 {
 	msg_db_f("model::GetCopy",1);
 
 	if (is_copy)
 		msg_error("model: copy of copy");
 
-
-	Model *m = new Model();
-	//memcpy(m, this, sizeof(Model));
+	Model *m = NULL;
+	//msg_write("copy  " + GetFilename());
+#ifdef _X_ALLOW_X_
+	if (_template->script)
+		m = (Model*)ScriptCreateInstance((Script::Script*)_template->script, "Model");
+	else
+		m = new Model();
+#else
+	m = new Model();
+#endif
 	*m = *this;
 
 	//Fx.forget(); ...
@@ -757,15 +787,7 @@ Model *Model::GetCopy(int mode)
 	m->visible = true;
 
 	// skins
-	if ((mode & ModelCopyChangeable) > 0){
-		msg_db_m("-new skins",2);
-		for (int i=0;i<MODEL_NUM_SKINS;i++){
-			CopySkinNew(this, skin[i], &m->skin[i]);
-			m->skin_is_reference[i] = false;
-		}
-		CopyPhysicalSkin(phys, &m->phys);
-		m->phys_is_reference = false;
-	}else if ((meta_move) || (bone.num > 0)){
+	if ((meta_move) || (bone.num > 0)){
 		msg_db_m("-new skins ref",2);
 		for (int i=0;i<MODEL_NUM_SKINS;i++){
 			CopySkinAsReference(this, skin[i], &m->skin[i]);
@@ -779,14 +801,9 @@ Model *Model::GetCopy(int mode)
 		m->bone_pos_0 = new vector[bone.num];
 		memcpy(m->bone_pos_0, bone_pos_0, sizeof(vector) * bone.num);
 		// copy already done by "*m = *this"...
-		for (int i=0;i<bone.num;i++){
-			if (((mode & ModelCopyRecursive) > 0) && bone[i].model)
-				m->bone[i].model = CopyModel(bone[i].model);
-			else if ((mode & ModelCopyKeepSubModels) > 0)
-				m->bone[i].model = bone[i].model;
-			else
-				m->bone[i].model = NULL;
-		}
+		for (int i=0;i<bone.num;i++)
+			if (bone[i].model)
+				m->bone[i].model = CopyModel(bone[i].model, allow_script_init);
 	}
 
 	// effects
@@ -799,28 +816,35 @@ Model *Model::GetCopy(int mode)
 
 
 	// reset
-	if ((mode & ModelCopyInverse) > 0)
-		ResetData();
-	else
-		m->ResetData();
-
-#ifdef _X_DEBUG_MODEL_MANAGER_
-	msg_write(p2s(Template));
-	msg_write(p2s(m->Template));
-#endif
+	m->ResetData();
+	RegisterModel(m, allow_script_init);
 
 	return m;
 }
 
 // delete only the data owned by this model
 //    don't delete sub models ...done by meta
-Model::~Model()
+void Model::DeleteBaseModel()
 {
-	msg_db_f("~model",1);
-#ifdef _X_DEBUG_MODEL_MANAGER_
-	msg_write(p2s(this));
-	msg_write(isCopy);
-#endif
+	msg_db_f("~model", 1);
+
+	UnregisterModel(this);
+
+	if (object_id >= 0)
+		GodUnregisterObject(this);
+	GodUnregisterModel(this);
+
+	if (AllowDeleteRecursive){
+		// delete sub models
+		foreach(Bone &b, bone)
+				if (b.model)
+					delete(b.model);
+
+		// delete inventary
+		foreach(Model *i, inventary)
+			if (i)
+				delete(i);
+	}
 
 	// own data
 	for (int i=0;i<MODEL_NUM_SKINS;i++){
@@ -844,7 +868,7 @@ Model::~Model()
 	}
 
 	// physical
-	if (!phys_is_reference){
+	if (phys && !phys_is_reference){
 		msg_db_m("del phys", 2);
 		delete[](phys->bone_nr);
 		delete[](phys->vertex);
@@ -865,7 +889,7 @@ Model::~Model()
 
 	// skin
 	for (int i=0;i<MODEL_NUM_SKINS;i++)
-		if (!skin_is_reference[i]){
+		if (skin[i] && !skin_is_reference[i]){
 			msg_db_m(format("del skin[%d]",i).c_str(), 2);
 			Skin *s = skin[i];
 
@@ -898,11 +922,10 @@ Model::~Model()
 			delete(skin[i]);
 		}
 
-	// skeletton
-	if (bone.num > 0){
-		bone.clear();
+	// skeleton
+	if (bone.num > 0)
 		delete[](bone_pos_0);
-	}
+	bone.clear();
 
 	// material
 	if (material_is_reference)
@@ -914,21 +937,29 @@ Model::~Model()
 #ifdef _X_ALLOW_X_
 	for (int i=0;i<fx.num;i++)
 		if (fx[i])
-			FxDelete(fx[i]);
+			delete(fx[i]);
 #endif
 	fx.clear();
 
 	script_var.clear();
 	inventary.clear();
 
+	name.clear();
+	description.clear();
+
 	// template
-	if (!is_copy){
-		_template->script_var.clear();
-		for (int i=0;i<_template->item.num;i++)
-			_template->item[i].clear();
-		_template->item.clear();
+	if (!is_copy)
 		delete(_template);
-	}
+}
+
+Model::~Model()
+{
+	DeleteBaseModel();
+}
+
+void Model::__delete__()
+{
+	DeleteBaseModel();
 }
 
 // non-animated state
@@ -1031,6 +1062,7 @@ void Model::CalcMove(float elapsed)
 		for (int op=0;op<num_ops;op++){
 			if (move_operation[op].move<0)	continue;
 			Move *m = &meta_move->move[move_operation[op].move];
+			//msg_write(GetFilename() + format(" %d %d %p %d", op, move_operation[op].move, m, m->num_frames));
 			if (m->num_frames == 0)
 				continue;
 
@@ -1406,8 +1438,12 @@ bool Model::Animate(int mode, float param1, float param2, int move_no, float &ti
 	if (!meta_move)
 		return false;
 	msg_db_f("model::Move",3);
-	if (num_move_operations < 0)
+	if (num_move_operations < 0){
 		num_move_operations = 0;
+	}else if (num_move_operations >= MODEL_MAX_MOVE_OPS - 1){
+		msg_error("Model.Animate(): no more than " + i2s(MODEL_MAX_MOVE_OPS) + " animation layers allowed");
+		return false;
+	}
 	int n = num_move_operations ++;
 	move_operation[n].move = move_no;
 	move_operation[n].operation = mode;
@@ -1444,7 +1480,7 @@ void Model::BeginEditAnimation()
 void Model::BeginEdit(int detail)
 {
 	msg_db_f("model.BeginEdit", 1);
-	ModelMakeEditable(this);
+	MakeEditable();
 	if (skin_is_reference[detail]){
 		Skin *o = skin[detail];
 		CopySkinNew(this, o, &skin[detail]);
@@ -1469,9 +1505,6 @@ void Model::EndEdit(int detail)
 void Model::MakeEditable()
 {
 	msg_db_f("model.MakeEditable", 1);
-	// original -> create copy
-	if (!is_copy)
-		ModelMakeEditable(this);
 
 	// must have its own materials
 	if (material_is_reference){
@@ -1482,7 +1515,9 @@ void Model::MakeEditable()
 
 string Model::GetFilename()
 {
-	return _template->filename;
+	if (_template)
+		return _template->filename;
+	return "?";
 }
 
 

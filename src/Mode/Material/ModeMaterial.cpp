@@ -174,9 +174,9 @@ void ModeMaterial::OnEnd()
 		delete(AppearanceDialog);
 	AppearanceDialog = NULL;
 
-	ed->ToolbarSetCurrent(HuiToolbarTop);
-	ed->ToolbarReset();
-	ed->EnableToolbar(false);
+	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
+	t->Reset();
+	t->Enable(false);
 }
 
 
@@ -193,21 +193,21 @@ bool ModeMaterial::SaveAs()
 void ModeMaterial::OnStart()
 {
 	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
-	ed->ToolbarSetCurrent(HuiToolbarTop);
-	ed->ToolbarReset();
-	ed->ToolbarAddItem(L("new"),L("new"),dir + "new.png","new");
-	ed->ToolbarAddItem(L("open"),L("open"),dir + "open.png","open");
-	ed->ToolbarAddItem(L("save"),L("save"),dir + "save.png","save");
-	ed->ToolbarAddSeparator();
-	ed->ToolbarAddItem(L("undo"),L("undo"),dir + "undo.png","undo");
-	ed->ToolbarAddItem(L("redo"),L("redo"),dir + "redo.png","redo");
-	ed->ToolbarAddSeparator();
-	ed->ToolbarAddItem(_("Eigenschaften"),_("Eigenschaften"), dir + "configure.png", "appearance");
-	ed->EnableToolbar(true);
-	ed->ToolbarConfigure(false,true);
-	ed->ToolbarSetCurrent(HuiToolbarLeft);
-	ed->ToolbarReset();
-	ed->EnableToolbar(false);
+	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
+	t->Reset();
+	t->AddItem(L("new"),dir + "new.png","new");
+	t->AddItem(L("open"),dir + "open.png","open");
+	t->AddItem(L("save"),dir + "save.png","save");
+	t->AddSeparator();
+	t->AddItem(L("undo"),dir + "undo.png","undo");
+	t->AddItem(L("redo"),dir + "redo.png","redo");
+	t->AddSeparator();
+	t->AddItem(_("Eigenschaften"),dir + "configure.png", "appearance");
+	t->Enable(true);
+	t->Configure(false,true);
+	t = ed->toolbar[HuiToolbarLeft];
+	t->Reset();
+	t->Enable(false);
 	multi_view->MVRectable = false;
 
 	UpdateShape();

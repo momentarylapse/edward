@@ -29,9 +29,12 @@
 #include "../lib/math/math.h"
 
 class Model;
+namespace Fx{
 class Effect;
+};
 class Material;
-struct TraceData;
+class TraceData;
+class Terrain;
 
 
 #define MODEL_MAX_POLY_FACES			32
@@ -67,8 +70,9 @@ class CopyAsRefArray : public Array<T>
 };
 
 
-struct SubSkin
+class SubSkin
 {
+public:
 	int num_triangles;
 	
 	// vertices
@@ -87,8 +91,9 @@ struct SubSkin
 };
 
 // visual skin
-struct Skin
+class Skin
 {
+public:
 	CopyAsRefArray<int> bone_index; // skeletal reference
 	CopyAsRefArray<vector> vertex;
 
@@ -101,16 +106,18 @@ struct Skin
 };
 
 // the face of a polyhedron (=> a polygon)
-struct ConvexPolyhedronFace
+class ConvexPolyhedronFace
 {
+public:
 	int num_vertices;
 	int index[MODEL_MAX_POLY_VERTICES_PER_FACE];
 	plane pl; // in model space
 };
 
 // a convex polyhedron (for the physical skin)
-struct ConvexPolyhedron
+class ConvexPolyhedron
 {
+public:
 	int num_faces;
 	ConvexPolyhedronFace face[MODEL_MAX_POLY_FACES];
 
@@ -128,15 +135,17 @@ struct ConvexPolyhedron
 };
 
 // a ball (for the physical skin)
-struct Ball
+class Ball
 {
+public:
 	int index;
 	float radius;
 };
 
 // data for collision detection
-struct PhysicalSkin
+class PhysicalSkin
 {
+public:
 	int num_vertices;
 	int *bone_nr;
 	vector *vertex; // original vertices
@@ -156,16 +165,18 @@ struct PhysicalSkin
 };
 
 // physical skin, but in world coordinates
-struct PhysicalSkinAbsolute
+class PhysicalSkinAbsolute
 {
+public:
 	bool is_ok;
 	vector *p;
 	plane *pl;
 };
 
 // single animation
-struct Move
+class Move
 {
+public:
 	int type; // skeletal/vertex
 	int num_frames;
 	int frame0;
@@ -176,8 +187,9 @@ struct Move
 };
 
 // a list of animations
-struct MetaMove
+class MetaMove
 {
+public:
 	// universal animation data
 	int num_moves;
 	Move *move;
@@ -205,15 +217,17 @@ enum
 };
 
 // commands for animation (move operations)
-struct MoveOperation
+class MoveOperation
 {
+public:
 	int move, operation;
 	float time, param1, param2;
 };
 
 // to store data to create effects (when copying models)
-struct ModelEffectData
+class ModelEffectData
 {
+public:
 	int vertex;
 	int type;
 	string filename;
@@ -221,8 +235,9 @@ struct ModelEffectData
 	color am, di, sp;
 };
 
-struct Bone
+class Bone
 {
+public:
 	int parent;
 	vector pos;
 	Model *model;
@@ -245,68 +260,50 @@ enum{
 #define SkinPhysical				42
 #define SkinDynamicPhysical			43
 
-struct ModelTemplate
+class ModelTemplate
 {
+public:
 	string filename, script_filename;
-	Array<float> script_var;
-	Array<string> item;
+	Model *model;
 	Array<ModelEffectData> fx;
-	
-	// TODO... script has only single instance... global var "this"... changed by x
-	void *script_on_init;
-	void *script_on_iterate;
-	void *script_on_kill;
-	void *script_on_collide_object;
-	void *script_on_collide_terrain;
 	void *script;
 
-	void reset()
+	ModelTemplate(Model *m)
 	{
 		filename = "";
 		script_filename = "";
-		script_var.clear();
-		item.clear();
 		fx.clear();
-		script_on_init = NULL;
-		script_on_iterate = NULL;
-		script_on_kill = NULL;
-		script_on_collide_object = NULL;
-		script_on_collide_terrain = NULL;
 		script = NULL;
+		model = m;
 	}
 };
 
-typedef Model *pModel;
-typedef void *_fx_pointer_;
-
-enum{
-	ModelCopyChangeable = 1,
-	ModelCopyNoSubModels = 2,
-	ModelCopyRecursive = 4,
-	ModelCopyKeepSubModels = 8,
-	ModelCopyInverse = 16
-};
-
-class Model
+class Model : public VirtualBase
 {
 public:
-	// creation
 	Model(const string &filename);
-	Model(); // only used by GetCopy()
-	Model *GetCopy(int mode);
+	Model();
+	void Load(const string &filename);
+	Model *GetCopy(bool allow_script_init);
 	void ResetData();
-	void MakeEditable();
+	void _cdecl MakeEditable();
 	void SetMaterial(Material *material, int mode);
 	//void Update();
 	void reset();
-	~Model();
+	virtual ~Model();
+	void DeleteBaseModel();
+
+	static bool AllowDeleteRecursive;
+
+	void _cdecl __init__();
+	virtual void _cdecl __delete__();
 
 	// animate me
 	void CalcMove(float elapsed);
 
 	// skeleton
-	vector _GetBonePos(int index);
-	void SetBoneModel(int index, Model *sub);
+	vector _cdecl _GetBonePos(int index);
+	void _cdecl SetBoneModel(int index, Model *sub);
 
 	// animation
 	vector _cdecl GetVertex(int index,int skin);
@@ -315,16 +312,16 @@ public:
 	void _UpdatePhysAbsolute_();
 	void _ResetPhysAbsolute_();
 
-	bool Trace(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test);
+	bool _cdecl Trace(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test);
 
 	// animation
-	void ResetAnimation();
-	bool IsAnimationDone(int operation_no);
-	bool Animate(int mode, float param1, float param2, int move_no, float &time, float elapsed, float vel_param, bool loop);
-	int GetFrames(int move_no);
-	void BeginEditAnimation();
-	void BeginEdit(int detail);
-	void EndEdit(int detail);
+	void _cdecl ResetAnimation();
+	bool _cdecl IsAnimationDone(int operation_no);
+	bool _cdecl Animate(int mode, float param1, float param2, int move_no, float &time, float elapsed, float vel_param, bool loop);
+	int _cdecl GetFrames(int move_no);
+	void _cdecl BeginEditAnimation();
+	void _cdecl BeginEdit(int detail);
+	void _cdecl EndEdit(int detail);
 
 	// drawing
 	void Draw(int detail, bool set_fx, bool allow_shadow);
@@ -363,11 +360,10 @@ public:
 	string name, description;
 	Array<Model*> inventary;
 	Array<float> script_var;
-	void *script_data;
 
 	int object_id;
 	Model *parent;
-	Model *GetRoot();
+	Model *_cdecl GetRoot();
 	bool on_ground, visible, rotating, moved, frozen;
 	float time_till_freeze;
 	int ground_id;
@@ -385,7 +381,7 @@ public:
 
 	// template (shared)
 	ModelTemplate *_template;
-	string GetFilename();
+	string _cdecl GetFilename();
 
 	// engine data
 	bool registered;
@@ -393,7 +389,7 @@ public:
 	int _detail_; // per view (more than once a frame...)
 
 	// effects (own)
-	Array<Effect*> fx;
+	Array<Fx::Effect*> fx;
 
 	// skeleton (own)
 	Array<Bone> bone;
@@ -406,6 +402,12 @@ public:
 
 	/*dBodyID*/ void* body_id;
 	/*dGeomID*/ void* geom_id;
+
+	virtual void _cdecl OnInit(){}
+	virtual void _cdecl OnDelete(){}
+	virtual void _cdecl OnCollideM(Model *o){}
+	virtual void _cdecl OnCollideT(Terrain *t){}
+	virtual void _cdecl OnIterate(){}
 };
 
 

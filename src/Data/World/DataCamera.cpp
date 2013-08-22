@@ -32,7 +32,7 @@ bool DataCamera::Load(const string& _filename, bool deep)
 	Reset();
 
 	filename = _filename;
-	CFile *f = OpenFile(filename);
+	CFile *f = FileOpen(filename);
 	if (!f){
 		ed->SetMessage("nicht lesbar");
 		return false;
@@ -89,7 +89,7 @@ bool DataCamera::Load(const string& _filename, bool deep)
 bool DataCamera::Save(const string& _filename)
 {
 	filename = _filename;
-	CFile *f = CreateFile(filename);
+	CFile *f = FileCreate(filename);
 	f->FloatDecimals = 4;
 	f->WriteFileFormatVersion(false, 2);
 

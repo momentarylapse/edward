@@ -23,7 +23,7 @@ namespace Script{
 extern string DataVersion;
 
 class SyntaxTree;
-struct Type;
+class Type;
 
 
 void script_make_super_array(Type *t, SyntaxTree *ps = NULL);
@@ -243,11 +243,36 @@ extern Array<TypeCast> TypeCasts;
 
 
 typedef void t_func();
-class DummyClass
+/*class DummyClass
 {
 public:
-	void func(){}
+	void _cdecl func(){}
 };
+
+class DummyClassVirtual
+{
+public:
+	virtual void _cdecl func(){}
+	virtual void _cdecl func2(){}
+};
+
+typedef void (_cdecl DummyClass::*tmf)();
+typedef char *tcpa[4];
+void *mf(tmf vmf);
+	
+typedef void (_cdecl DummyClassVirtual::*vtmf)();
+void *vmf(vtmf vmf);*/
+
+template<typename T>
+void* mf(T tmf)
+{
+	union{
+		T f;
+		void *p;
+	}pp;
+	pp.f = tmf;
+	return pp.p;
+}
 
 enum
 {
@@ -261,6 +286,7 @@ struct CompilerConfiguration
 {
 	int instruction_set;
 	int abi;
+	bool allow_std_lib;
 
 	int StackSize;
 	int PointerSize;
@@ -282,25 +308,26 @@ struct CompilerConfiguration
 
 extern CompilerConfiguration config;
 
-void Init(int instruction_set = -1, int abi = -1);
+void Init(int instruction_set = -1, int abi = -1, bool allow_std_lib = true);
 void End();
 
 
 
 void ResetExternalData();
 void LinkExternal(const string &name, void *pointer);
-void _LinkExternalClassFunc(const string &name, void (DummyClass::*function)());
 template<typename T>
 void LinkExternalClassFunc(const string &name, T pointer)
 {
-	_LinkExternalClassFunc(name, (void(DummyClass::*)())pointer);
+	LinkExternal(name, mf(pointer));
 }
 void DeclareClassSize(const string &class_name, int offset);
 void DeclareClassOffset(const string &class_name, const string &element, int offset);
+void DeclareClassVirtualIndex(const string &class_name, const string &func, void *p, void *instance);
 
 void *GetExternalLink(const string &name);
 int ProcessClassOffset(const string &class_name, const string &element, int offset);
 int ProcessClassSize(const string &class_name, int size);
+int ProcessClassNumVirtuals(const string &class_name, int num_virtual);
 
 
 

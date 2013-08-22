@@ -148,29 +148,25 @@ void Edward::OnAbortCreationMode()
 
 void Edward::IdleFunction()
 {
-	msg_db_r("Idle", 3);
+	msg_db_f("Idle", 3);
 
 	if (force_redraw)
 		OnDraw();
 	else
-		HuiSleep(10);
-
-	msg_db_l(3);
+		HuiSleep(0.010f);
 }
 
 
 Edward::Edward(Array<string> arg) :
-	HuiWindow(AppName, -1, -1, 800, 600, NULL, false, HuiWinModeResizable | HuiWinModeNix)
+	HuiNixWindow(AppName, -1, -1, 800, 600)
 {
-	msg_db_r("Init", 1);
+	msg_db_f("Init", 1);
 
 	ed = this;
 	cur_mode = NULL;
 	force_redraw = false;
 
 	progress = new Progress;
-
-	timer = HuiCreateTimer();
 
 	LoadKeyCodes();
 
@@ -208,7 +204,6 @@ Edward::Edward(Array<string> arg) :
 	LoadScriptVarNames(2, "");*/
 
 	// create the main window
-	HuiCreateNixWindow(AppName, x, y, w, h);
 	SetMaximized(maximized);
 	Show();
 
@@ -219,15 +214,6 @@ Edward::Edward(Array<string> arg) :
 	EventM("hui:close", this, &Edward::OnClose);
 	EventM("exit", this, &Edward::OnClose);
 	EventM("hui:redraw", this, &Edward::OnDraw);
-	EventM("hui:key-down", this, &Edward::OnKeyDown);
-	EventM("hui:key-up", this, &Edward::OnKeyUp);
-	EventM("hui:mouse-move", this, &Edward::OnMouseMove);
-	EventM("hui:left-button-down", this, &Edward::OnLeftButtonDown);
-	EventM("hui:left-button-up", this, &Edward::OnLeftButtonUp);
-	EventM("hui:middle-button-down", this, &Edward::OnMiddleButtonDown);
-	EventM("hui:middle-button-up", this, &Edward::OnMiddleButtonUp);
-	EventM("hui:right-button-down", this, &Edward::OnRightButtonDown);
-	EventM("hui:right-button-up", this, &Edward::OnRightButtonUp);
 	EventM("*", this, &Edward::OnEvent);
 	EventM("what_the_fuck", this, &Edward::OnAbout);
 	EventM("send_bug_report", this, &Edward::OnSendBugReport);
@@ -277,10 +263,8 @@ Edward::Edward(Array<string> arg) :
 		SetMode(mode_welcome);
 
 	HuiSetIdleFunctionM(this, &Edward::IdleFunction);
-	HuiRunLaterM(10, this, &Edward::ForceRedraw);
-	HuiRunLaterM(100, this, &Edward::OptimizeCurrentView);
-
-	msg_db_l(1);
+	HuiRunLaterM(0.010f, this, &Edward::ForceRedraw);
+	HuiRunLaterM(0.100f, this, &Edward::OptimizeCurrentView);
 }
 
 Edward::~Edward()
@@ -307,7 +291,7 @@ bool Edward::HandleArguments(Array<string> arg)
 {
 	if (arg.num < 2)
 		return false;
-	msg_db_r("LoadParam", 1);
+	msg_db_f("LoadParam", 1);
 
 	for (int i=1; i<arg.num; i++){
 		string param = arg[i];
@@ -386,7 +370,6 @@ bool Edward::HandleArguments(Array<string> arg)
 		HuiEnd();
 	}
 	}
-	msg_db_l(1);
 	return true;
 }
 
@@ -418,7 +401,7 @@ void Edward::SetMode(ModeBase *m)
 	if (mode_queue.num > 1)
 		return;
 
-	msg_db_r("SetMode", 1);
+	msg_db_f("SetMode", 1);
 	if (cur_mode){
 		cur_mode->OnLeave();
 		if (cur_mode->GetData())
@@ -462,8 +445,6 @@ void Edward::SetMode(ModeBase *m)
 		Subscribe(cur_mode->GetData()->action_manager);
 
 	ForceRedraw();
-
-	msg_db_l(1);
 }
 
 void Edward::OnAbout()
@@ -474,7 +455,7 @@ void Edward::OnSendBugReport()
 
 void Edward::OnUpdate(Observable *o)
 {
-	msg_db_r("Edward.OnUpdate", 2);
+	msg_db_f("Edward.OnUpdate", 2);
 	//msg_write("ed: " + o->GetName() + " - " + o->GetMessage());
 	if (o->GetName() == "MultiView"){
 		if (o->GetMessage() == "SettingsChange")
@@ -489,7 +470,6 @@ void Edward::OnUpdate(Observable *o)
 		ForceRedraw();
 		UpdateMenu();
 	}
-	msg_db_l(2);
 }
 
 void Edward::OnExecutePlugin()
@@ -544,10 +524,10 @@ void Edward::OnDraw()
 
 void Edward::LoadKeyCodes()
 {
-	msg_db_r("LoadKeyCodes", 1);
-	CFile *f = OpenFile(HuiAppDirectory + "Data/keys.txt");
+	msg_db_f("LoadKeyCodes", 1);
+	CFile *f = FileOpen(HuiAppDirectory + "Data/keys.txt");
 	if (!f)
-		f = OpenFile(HuiAppDirectoryStatic + "Data/keys.txt");
+		f = FileOpen(HuiAppDirectoryStatic + "Data/keys.txt");
 	int nk = f->ReadIntC();
 	f->ReadComment();
 	for (int i=0;i<nk;i++){
@@ -561,7 +541,6 @@ void Edward::LoadKeyCodes()
 
 	HuiAddKeyCode("easify_skin", KEY_CONTROL + KEY_7); // TODO ...
 	FileClose(f);
-	msg_db_l(1);
 }
 
 
@@ -626,7 +605,7 @@ void Edward::SetRootDirectory(const string &directory)
 
 void Edward::MakeDirs(const string &original_dir, bool as_root_dir)
 {
-	msg_db_r("MakeDirs", 1);
+	msg_db_f("MakeDirs", 1);
 	string dir = original_dir;
 	if (dir.num > 0)
 		dir = dir.dirname();
@@ -647,7 +626,6 @@ void Edward::MakeDirs(const string &original_dir, bool as_root_dir)
 		RootDirCorrect = file_test_existence(dir + "game.ini");
 	}
 	SetRootDirectory(dir);
-	msg_db_l(1);
 }
 
 
@@ -679,7 +657,7 @@ void Edward::SetMessage(const string &message)
 	msg_write(message);
 	message_str.add(message);
 	ForceRedraw();
-	HuiRunLaterM(2000, this, &Edward::RemoveMessage);
+	HuiRunLaterM(2.0f, this, &Edward::RemoveMessage);
 }
 
 

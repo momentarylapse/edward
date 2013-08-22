@@ -55,7 +55,12 @@ bool Type::is_simple_class()
 		return false;
 	if (vtable)
 		return false;
-	if (GetConstructor())
+	if (parent)
+		if (!parent->is_simple_class())
+			return false;
+	if (GetDefaultConstructor())
+		return false;
+	if (GetComplexConstructor())
 		return false;
 	if (GetDestructor())
 		return false;
@@ -86,10 +91,18 @@ int Type::GetFunc(const string &name)
 	return -1;
 }
 
-ClassFunction *Type::GetConstructor()
+ClassFunction *Type::GetDefaultConstructor()
 {
 	foreach(ClassFunction &f, function)
 		if ((f.name == "__init__") && (f.return_type == TypeVoid) && (f.param_type.num == 0))
+			return &f;
+	return NULL;
+}
+
+ClassFunction *Type::GetComplexConstructor()
+{
+	foreach(ClassFunction &f, function)
+		if ((f.name == "__init__") && (f.return_type == TypeVoid) && (f.param_type.num > 0))
 			return &f;
 	return NULL;
 }
@@ -115,13 +128,82 @@ void Type::LinkVirtualTable()
 	if (!vtable)
 		return;
 
+	//msg_write("link vtable " + name);
+	// derive from parent
+	if (parent)
+		for (int i=0;i<parent->num_virtual;i++)
+			vtable[i] = parent->vtable[i];
+	if (config.abi == AbiWindows32)
+		vtable[0] = mf(&VirtualBase::__delete_external__);
+	else
+		vtable[1] = mf(&VirtualBase::__delete_external__);
+
 	// link virtual functions into vtable
 	foreach(ClassFunction &cf, function)
 		if (cf.virtual_index >= 0){
-			if (cf.nr >= 0)
+			if (cf.nr >= 0){
+				//msg_write(i2s(cf.virtual_index) + ": " + cf.script->syntax->Functions[cf.nr]->name);
 				vtable[cf.virtual_index] = (void*)cf.script->func[cf.nr];
+			}
 			num_virtual = max(cf.virtual_index + 1, num_virtual);
 		}
+}
+
+void Type::LinkExternalVirtualTable(void *p)
+{
+	// link script functions according to external vtable
+	VirtualTable *t = (VirtualTable*)p;
+	num_virtual = 0;
+	foreach(ClassFunction &cf, function)
+		if (cf.virtual_index >= 0){
+			if (cf.nr >= 0)
+				cf.script->func[cf.nr] = (t_func*)t[cf.virtual_index];
+			num_virtual = max(cf.virtual_index + 1, num_virtual);
+		}
+
+	vtable = new VirtualTable[num_virtual];
+	for (int i=0;i<num_virtual;i++)
+		vtable[i] = t[i];
+	// this should also link the "real" c++ destructor
+	if (config.abi == AbiWindows32)
+		vtable[0] = mf(&VirtualBase::__delete_external__);
+	else
+		vtable[1] = mf(&VirtualBase::__delete_external__);
+}
+
+bool Type::DeriveFrom(Type* root)
+{
+	parent = root;
+	bool found = false;
+	if (parent->element.num > 0){
+		// inheritance of elements
+		element = parent->element;
+		found = true;
+	}
+	if (parent->function.num > 0){
+		// inheritance of functions
+		foreach(ClassFunction &f, parent->function){
+			if ((f.name != "__init__") && (f.name != "__assign__"))
+				function.add(f);
+		}
+		found = true;
+	}
+	size += parent->size;
+	num_virtual += parent->num_virtual;
+	return found;
+}
+
+void *Type::CreateInstance()
+{
+	void *p = malloc(size);
+	ClassFunction *c = GetDefaultConstructor();
+	if (c){
+		typedef void con_func(void *);
+		con_func * f = (con_func*)c->script->func[c->nr];
+		if (f)
+			f(p);
+	}
+	return p;
 }
 
 string Type::var2str(void *p)

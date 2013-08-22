@@ -12,10 +12,11 @@ extern string ObjectDir;
 extern Model *ModelToIgnore;
 
 // models
+Model *_cdecl LoadModelX(const string &filename, bool allow_scripting);
 Model *_cdecl LoadModel(const string &filename);
-Model *CopyModel(Model *m);
-void _cdecl DeleteModel(Model *m);
-void _cdecl ModelMakeEditable(Model *m);
-int _cdecl GetModelOID(Model *m);
+Model *CopyModel(Model *m, bool allow_script_init);
+bool IsModel(void *m);
+void RegisterModel(Model *m, bool allow_script_init = true);
+void UnregisterModel(Model *m);
 
 #endif

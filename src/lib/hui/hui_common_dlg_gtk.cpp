@@ -114,6 +114,7 @@ bool HuiSelectColor(HuiWindow *win,int r,int g,int b)
 
 bool HuiSelectFont(HuiWindow *win, const string &title)
 {
+#if GTK_MAJOR_VERSION >= 3
 	msg_db_r("HuiSelectFont",1);
 	GtkWindow *w = get_window_save(win);
 	msg_db_m("dialog_new",1);
@@ -131,6 +132,8 @@ bool HuiSelectFont(HuiWindow *win, const string &title)
 	gtk_widget_destroy(dlg);
 	msg_db_l(1);
 	return (r == GTK_RESPONSE_OK);
+#endif
+	return false;
 }
 
 string HuiQuestionBox(HuiWindow *win,const string &title,const string &text,bool allow_cancel)
@@ -186,16 +189,16 @@ void HuiAboutBox(HuiWindow *win)
 	}
 	_a_.add(NULL);
 	GError *error = NULL;
-	GdkPixbuf *_logo = gdk_pixbuf_new_from_file(HuiPropLogo.c_str(), &error);
+	GdkPixbuf *_logo = gdk_pixbuf_new_from_file(HuiGetProperty("logo").c_str(), &error);
 	gtk_show_about_dialog(NULL,
-		"program-name", HuiPropName.c_str(),
-		"website", HuiPropWebsite.c_str(),
-		"version", HuiPropVersion.c_str(),
-		"license", HuiPropLicense.c_str(),
-		"comments", sys_str(HuiPropComment.c_str()),
+		"program-name", HuiGetProperty("name").c_str(),
+		"website", HuiGetProperty("website").c_str(),
+		"version", HuiGetProperty("version").c_str(),
+		"license", HuiGetProperty("license").c_str(),
+		"comments", sys_str(HuiGetProperty("comment").c_str()),
 		"authors", _a_.data,
 		"logo", _logo,
-		"copyright", HuiPropCopyright.c_str(),
+		"copyright", HuiGetProperty("copyright").c_str(),
 		NULL);
 
 	foreach(char *aa, _a_)

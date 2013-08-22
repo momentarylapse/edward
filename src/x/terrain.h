@@ -13,7 +13,7 @@
 #include "../lib/math/math.h"
 #include "material.h"
 class Material;
-struct TraceData;
+class TraceData;
 
 enum{
 	TerrainTypeContingous,
@@ -27,8 +27,9 @@ enum{
 
 
 // a list of triangles for collision detection
-struct TriangleHull
+class TriangleHull
 {
+public:
 	// large list of vertices
 	vector *p;
 
@@ -51,13 +52,13 @@ public:
 	bool Load(const string &filename, const vector &pos, bool deep = true);
 	~Terrain();
 	void reset();
-	void Update(int x1,int x2,int z1,int z2,int mode);
-	float gimme_height(const vector &p);
-	float gimme_height_n(const vector &p, vector &n);
+	void _cdecl Update(int x1,int x2,int z1,int z2,int mode);
+	float _cdecl gimme_height(const vector &p);
+	float _cdecl gimme_height_n(const vector &p, vector &n);
 
 	void GetTriangleHull(TriangleHull *hull, vector &pos, float radius);
 
-	bool Trace(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test);
+	bool _cdecl Trace(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test);
 
 	void CalcDetail();
 	void Draw();

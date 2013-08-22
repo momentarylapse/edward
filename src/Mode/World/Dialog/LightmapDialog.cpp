@@ -82,7 +82,7 @@ static Lightmap::Histogram *hist_p;
 
 void OnHistDraw()
 {
-	HuiDrawingContext *c = HuiCurWindow->BeginDraw("area");
+	HuiPainter *c = HuiCurWindow->BeginDraw("area");
 	c->SetFontSize(10);
 	float w = c->width;
 	float h = c->height;
@@ -120,7 +120,7 @@ void OnHistClose()
 void ShowHistogram(Lightmap::Histogram &h, HuiWindow *root)
 {
 	hist_p = &h;
-	HuiWindow *dlg = HuiCreateSizableDialog("Histogram", 400, 300, root, false);
+	HuiWindow *dlg = new HuiDialog("Histogram", 400, 300, root, false);
 	dlg->AddControlTable("", 0, 0, 1, 2, "table");
 	dlg->SetTarget("table", 0);
 	dlg->AddDrawingArea("", 0, 0, 0, 0, "area");

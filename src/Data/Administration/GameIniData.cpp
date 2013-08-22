@@ -11,7 +11,7 @@
 void GameIniData::Load(const string &dir)
 {
 	msg_db_r("LoadGameIni",5);
-	CFile *f = OpenFile(dir + "game.ini");
+	CFile *f = FileOpen(dir + "game.ini");
 	DefScript = f->ReadStrC();
 	DefWorld = f->ReadStrC();
 	SecondWorld = f->ReadStrC();
@@ -24,7 +24,7 @@ void GameIniData::Load(const string &dir)
 void GameIniData::Save(const string &dir)
 {
 	msg_db_r("SaveGameIni",5);
-	CFile *f = CreateFile(dir + "game.ini");
+	CFile *f = FileCreate(dir + "game.ini");
 	f->WriteStr("// Main Script");
 	f->WriteStr(DefScript);
 	f->WriteStr("// Default World");

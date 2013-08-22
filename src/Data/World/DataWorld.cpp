@@ -73,7 +73,7 @@ bool DataWorld::Save(const string & _filename)
 		return;*/
 	filename = _filename;
 	ed->MakeDirs(filename);
-	CFile *f = CreateFile(filename);
+	CFile *f = FileCreate(filename);
 	f->FloatDecimals = 6;
 
 	f->WriteFileFormatVersion(false, 10);
@@ -168,7 +168,7 @@ bool DataWorld::Load(const string & _filename, bool deep)
 	if (this == mode_world->data)
 		ed->MakeDirs(filename);
 
-	CFile *f = OpenFile(filename);
+	CFile *f = FileOpen(filename);
 	if (!f){
 		msg_db_l(1);
 		return false;
@@ -361,7 +361,7 @@ void DataWorld::Reset()
 	// delete old data...
 	for (int i=0;i<Objects.num;i++)
 		if (Objects[i].object)
-			DeleteModel(Objects[i].object);
+			delete(Objects[i].object);
 
 	Objects.clear();
 	Terrains.clear();

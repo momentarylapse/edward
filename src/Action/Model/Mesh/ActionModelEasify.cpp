@@ -10,7 +10,6 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
 
-int timer = -1;
 
 #if 1
 static vector get_deformed_area(DataModel *m, ModelPolygon &t, int index, const vector &new_pos)
@@ -170,9 +169,7 @@ ActionModelEasify::ActionModelEasify(float _factor)
 void *ActionModelEasify::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	if (timer < 0)
-		timer = HuiCreateTimer();
-	HuiGetTime(timer);
+	HuiTimer t;
 #if 1
 	//CalculateWeights(m);
 	int n = (int)((float)m->GetNumPolygons() * factor);
@@ -180,7 +177,7 @@ void *ActionModelEasify::compose(Data *d)
 		if (!EasifyStep(m))
 			break;
 #endif
-	float dt = HuiGetTime(timer);
+	float dt = t.get();
 	msg_write(format("easify: %f", dt));
 	return NULL;
 }

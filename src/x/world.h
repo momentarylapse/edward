@@ -24,42 +24,48 @@ class Object;
 class Material;
 class Terrain;
 
-struct GodForceField
+class GodForceField
 {
+public:
 	vector Pos,Dir;
 	int Shape,Kind;
 	float Radius,Vel,Acc,TimeToLife;
 	bool Visible;
 };
 
-struct Fog
+class Fog
 {
+public:
 	bool enabled;
 	int mode;
 	float start, end, density;
 	color _color;
 };
 
-struct LevelDataTerrain
+class LevelDataTerrain
 {
+public:
 	string filename;
 	vector pos;
 };
 
-struct LevelDataObject
+class LevelDataObject
 {
+public:
 	string filename, name;
 	vector pos, ang, vel, rot;
 };
 
-struct LevelDataScriptRule
+class LevelDataScriptRule
 {
+public:
 	string function;
 	int location;
 };
 
-struct GodLevelData
+class GodLevelData
 {
+public:
 	string world_filename;
 	Array<string> skybox_filename;
 	Array<vector> skybox_ang;
@@ -98,8 +104,9 @@ struct PartialModel{
 
 
 // game data
-struct WorldData
+class WorldData
 {
+public:
 	string filename;
 	color background;
 	Array<Model*> skybox;
@@ -131,18 +138,18 @@ bool GodLoadWorld(const string &filename);
 
 extern bool GodNetMsgEnabled;
 Object* _cdecl GodCreateObject(const string &filename, const string &name, const vector &pos, const vector &ang, int w_index=-1);
-void GodDeleteObject(int index);
+void GodRegisterObject(Model *m, int index = -1);
+void GodUnregisterObject(Model *m);
 void GodRegisterModel(Model *m);
 void GodUnregisterModel(Model *m);
 void AddNewForceField(vector pos,vector dir,int kind,int shape,float r,float v,float a,bool visible,float t);
-void WorldShiftAll(const vector &dpos);
+void _cdecl WorldShiftAll(const vector &dpos);
 //void DoSounds();
 void SetSoundState(bool paused,float scale,bool kill,bool restart);
 vector _cdecl GetG(vector &pos);
 void GodCalcMove();
 void GodCalcMove2(); // debug
 void GodDoCollisionDetection();
-void GodRegisterModel(Model *m);
 void GodDraw();
 Object *_cdecl GetObjectByName(const string &name);
 bool _cdecl NextObject(Object **o);
@@ -161,8 +168,9 @@ enum
 	TraceTypeModel
 };
 
-struct TraceData
+class TraceData
 {
+public:
 	int type;
 	vector point;
 	Terrain *terrain;

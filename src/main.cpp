@@ -8,12 +8,12 @@
 #include "lib/hui/hui.h"
 #include "Edward.h"
 
-string AppVersion = "0.3.15.0";
+string AppVersion = "0.3.15.1";
 string AppName = "Edward";
 
 int hui_main(Array<string> arg)
 {
-	HuiInitExtended("edward", AppName + " " + AppVersion, NULL, true, "Deutsch");
+	HuiInit("edward", true, "Deutsch");
 	HuiSetProperty("name", AppName);
 	HuiSetProperty("version", AppVersion);
 	HuiSetProperty("copyright", "© 2006-2013 by MichiSoft TM"); // ??? min=2004 (objectmaker) max=2006

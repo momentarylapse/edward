@@ -15,8 +15,9 @@ class Model;
 class Object;
 class Terrain;
 
-struct EngineData
+class EngineData
 {
+public:
 	string AppName, Version;
 	bool Debug, ShowTimings, ConsoleEnabled, WireMode;
 	bool Record;
@@ -108,10 +109,16 @@ enum{
 
 
 
-struct XContainer
+class XContainer : public VirtualBase
 {
+public:
 	int type;
-	bool used, enabled;
+	bool enabled;
+
+	virtual ~XContainer(){}
+	virtual void _cdecl OnIterate(){}
+	virtual void _cdecl OnInit(){}
+	virtual void _cdecl OnDelete(){}
 };
 
 enum
@@ -120,27 +127,23 @@ enum
 	XContainerParticle,
 	XContainerParticleRot,
 	XContainerParticleBeam,
-	XContainerPicture,
-	XContainerText,
-	XContainerPicture3d,
-	XContainerGrouping,
-	XContainerView,
+	XContainerGuiLayer,
+	XContainerCamera,
 	XContainerModel
 };
 
-#define xcont_find_new(xtype, var_type, var, array)	\
-	var_type *var = NULL;\
-	for (int i=0;i<array.num;i++)\
-		if (!array[i]->used){\
-			var = array[i];\
-			break;\
-		}\
-	if (!var){\
-		var = new var_type;\
-		array.add(var);\
-	}\
-	var->type = xtype;\
-	var->used = true;
+extern bool AllowXContainer;
+
+#define xcon_reg(xtype, var, array) \
+	if (AllowXContainer) \
+		array.add(var); \
+	var->type = xtype;
+
+#define xcon_unreg(var, array) \
+	if (AllowXContainer) \
+		for (int i=0;i<array.num;i++) \
+			if (array[i] == var) \
+				array.erase(i);
 
 #endif
 

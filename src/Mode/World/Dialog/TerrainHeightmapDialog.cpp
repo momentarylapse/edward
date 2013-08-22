@@ -101,7 +101,7 @@ static float im_interpolate(const Image &im, float x, float y, float stretch_x, 
 
 void TerrainHeightmapDialog::OnPreviewDraw()
 {
-	HuiDrawingContext *c = BeginDraw("preview");
+	HuiPainter *c = BeginDraw("preview");
 	if (heightmap.Empty()){
 		c->SetColor(Black);
 		c->DrawRect(0, 0, c->width, c->height);

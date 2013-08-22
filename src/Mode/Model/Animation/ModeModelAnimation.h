@@ -42,7 +42,7 @@ public:
 	float PlayLoop;
 	float SimFrame;
 
-	int timer;
+	HuiTimer timer;
 
 	void IdleFunction();
 

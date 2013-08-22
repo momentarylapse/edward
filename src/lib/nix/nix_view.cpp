@@ -63,13 +63,13 @@ void NixResize()
 	if (!NixUsable)
 		return;
 
-	msg_db_r("NixResize",5);
+	msg_db_f("NixResize",5);
 
 	if (NixTargetWidth<=0)
 		NixTargetWidth=1;
 	if (NixTargetHeight<=0)
 		NixTargetHeight=1;
-	NixTargetRect = rect(0, NixTargetWidth, 0, NixTargetHeight);
+	NixTargetRect = rect(0, (float)NixTargetWidth, 0, (float)NixTargetHeight);
 
 	// screen
 	glViewport(0,0,NixTargetWidth,NixTargetHeight);
@@ -84,7 +84,6 @@ void NixResize()
 	NixSetView(NixViewMatrix);
 
 	TestGLError("Resize");
-	msg_db_l(5);
 }
 
 void NixSetWorldMatrix(const matrix &mat)
@@ -149,7 +148,7 @@ void create_pixel_projection_matrix(matrix &m)
 
 void NixSetProjectionPerspective()
 {
-	NixSetProjectionPerspectiveExt(NixTargetWidth / 2, NixTargetHeight / 2, NixTargetHeight, NixTargetHeight, 1, 10000);
+	NixSetProjectionPerspectiveExt((float)NixTargetWidth / 2, (float)NixTargetHeight / 2, (float)NixTargetHeight, (float)NixTargetHeight, 1, 10000);
 }
 
 // center_x/y: pixel coordinates of perspective center
@@ -278,7 +277,7 @@ bool NixStart(int texture)
 	if (NixDoingEvilThingsToTheDevice)
 		return false;
 
-	msg_db_r("NixStart", 2);
+	msg_db_f("NixStart", 2);
 	TestGLError("Start prae");
 
 	NixNumTrias=0;
@@ -291,7 +290,6 @@ bool NixStart(int texture)
 			if (!wglMakeCurrent(hDC,hRC)){
 				msg_error("wglMakeCurrent");
 				msg_write(GetLastError());
-				msg_db_l(2);
 				return false;
 			}
 		#endif
@@ -311,7 +309,6 @@ bool NixStart(int texture)
 				//msg_write("hurra");
 			}else{
 				msg_write("we're screwed! (NixStart with dynamic texture target)");
-				msg_db_l(2);
 				return false;
 			}
 		}
@@ -350,7 +347,6 @@ bool NixStart(int texture)
 
 	//msg_write("-ok?");
 	TestGLError("Start post");
-	msg_db_l(2);
 	return true;
 }
 
@@ -366,7 +362,7 @@ void NixScissor(const rect &_r)
 		glEnable(GL_SCISSOR_TEST);
 	else
 		glDisable(GL_SCISSOR_TEST);
-	glScissor(r.x1, NixTargetHeight - r.y2, r.x2 - r.x1, r.y2 - r.y1);
+	glScissor((int)r.x1, NixTargetHeight - (int)r.y2, (int)r.width(), (int)r.height());
 	glClearDepth(1.0f);
 	TestGLError("StartPart");
 }
@@ -375,7 +371,7 @@ void NixEnd()
 {
 	if (!Rendering)
 		return;
-	msg_db_r("NixEnd", 2);
+	msg_db_f("NixEnd", 2);
 	TestGLError("End prae");
 	Rendering=false;
 	NixSetTexture(-1);
@@ -401,7 +397,6 @@ void NixEnd()
 
 	NixProgressTextureLifes();
 	TestGLError("End post");
-	msg_db_l(2);
 }
 
 void NixSetClipPlane(int index,const plane &pl)

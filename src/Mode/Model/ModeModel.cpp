@@ -40,36 +40,38 @@ ModeModel::~ModeModel()
 void ModeModel::OnStart()
 {
 	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
-	ed->ToolbarSetCurrent(HuiToolbarTop);
-	ed->ToolbarReset();
-	ed->ToolbarAddItem(L("new"),L("new"),dir + "new.png","new");
-	ed->ToolbarAddItem(L("open"),L("open"),dir + "open.png","open");
-	ed->ToolbarAddItem(L("save"),L("save"),dir + "save.png","save");
-	ed->ToolbarAddSeparator();
-	ed->ToolbarAddItem(L("undo"),L("undo"),dir + "undo.png","undo");
-	ed->ToolbarAddItem(L("redo"),L("redo"),dir + "redo.png","redo");
-	ed->ToolbarAddSeparator();
-	ed->ToolbarAddItem(_("Push"),_("ViewStage Push"),dir + "view_push.png","view_push");
-	ed->ToolbarAddItem(_("Pop"),_("ViewStage Pop"),dir + "view_pop.png","view_pop");
-	ed->ToolbarAddSeparator();
-	ed->ToolbarAddItemCheckable(_("Vertices"),_("Vertices"),dir + "model_vertex.svg","mode_model_vertex");
-	ed->ToolbarAddItemCheckable(_("Kanten"),_("Kanten"),dir + "model_edge.svg","mode_model_edge");
-	ed->ToolbarAddItemCheckable(_("Polygone"),_("Polygone"),dir + "model_polygon.svg","mode_model_triangle");
-	ed->ToolbarAddItemCheckable(_("Oberfl&achen"),_("Oberfl&achen"),dir + "model_surface.svg","mode_model_surface");
-	ed->ToolbarAddItemCheckable(_("Textur-Koordinaten"),_("Textur-Koordinaten"),dir + "model_skin.svg","mode_model_texture_coord");
-	ed->ToolbarAddSeparator();
-	ed->ToolbarAddItemCheckable(_("Mesh"),_("Mesh"), dir + "model_mesh.svg", "mode_model_mesh");
-	ed->ToolbarAddItemCheckable(_("Skelett"),_("Skelett"), dir + "mode_skeletton.png", "mode_model_skeleton");
-	ed->ToolbarAddItemCheckable(_("Animation"),_("Animation"), dir + "mode_move.png", "mode_model_animation");
-	//ed->ToolbarAddItem(_("Texturen"),_("Texturen"), dir + "mode_textures.png", "mode_model_texture");
-	ed->ToolbarAddItem(_("Material"),_("aktuelles Material"), dir + "mode_textures.png", "edit_current_material");
-	//ed->ToolbarAddItem(_("Materialien"),_("Materialien"), dir + "mode_textures.png", "mode_model_materials");
-	ed->ToolbarAddItem(_("Eigenschaften"),_("Eigenschaften"), dir + "configure.png", "mode_properties");
-	ed->EnableToolbar(true);
-	ed->ToolbarConfigure(false,true);
-	ed->ToolbarSetCurrent(HuiToolbarLeft);
-	ed->ToolbarReset();
-	ed->EnableToolbar(false);
+	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
+	t->Reset();
+	t->AddItem(L("new"),dir + "new.png","new");
+	t->AddItem(L("open"),dir + "open.png","open");
+	t->AddItem(L("save"),dir + "save.png","save");
+	t->AddSeparator();
+	t->AddItem(L("undo"),dir + "undo.png","undo");
+	t->AddItem(L("redo"),dir + "redo.png","redo");
+	t->AddSeparator();
+	t->AddItem(_("Push"),dir + "view_push.png","view_push");
+	ed->SetTooltip("view_push", _("ViewStage Push"));
+	t->AddItem(_("Pop"),dir + "view_pop.png","view_pop");
+	ed->SetTooltip("view_pop", _("ViewStage Pop"));
+	t->AddSeparator();
+	t->AddItemCheckable(_("Vertices"),dir + "model_vertex.svg","mode_model_vertex");
+	t->AddItemCheckable(_("Kanten"),dir + "model_edge.svg","mode_model_edge");
+	t->AddItemCheckable(_("Polygone"),dir + "model_polygon.svg","mode_model_triangle");
+	t->AddItemCheckable(_("Oberfl&achen"),dir + "model_surface.svg","mode_model_surface");
+	t->AddItemCheckable(_("Textur-Koordinaten"),dir + "model_skin.svg","mode_model_texture_coord");
+	t->AddSeparator();
+	t->AddItemCheckable(_("Mesh"), dir + "model_mesh.svg", "mode_model_mesh");
+	t->AddItemCheckable(_("Skelett"), dir + "mode_skeletton.png", "mode_model_skeleton");
+	t->AddItemCheckable(_("Animation"), dir + "mode_move.png", "mode_model_animation");
+	//t->AddItem(_("Texturen"), dir + "mode_textures.png", "mode_model_texture");
+	t->AddItem(_("Material"), dir + "mode_textures.png", "edit_current_material");
+	//t->AddItem(_("Materialien"), dir + "mode_textures.png", "mode_model_materials");
+	t->AddItem(_("Eigenschaften"), dir + "configure.png", "mode_properties");
+	t->Enable(true);
+	t->Configure(false,true);
+	t = ed->toolbar[HuiToolbarLeft];
+	t->Reset();
+	t->Enable(false);
 }
 
 
@@ -89,9 +91,9 @@ void ModeModel::OnEnd()
 		delete(MaterialDialog);
 	MaterialDialog = NULL;
 
-	ed->ToolbarSetCurrent(HuiToolbarTop);
-	ed->ToolbarReset();
-	ed->EnableToolbar(false);
+	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
+	t->Reset();
+	t->Enable(false);
 }
 
 

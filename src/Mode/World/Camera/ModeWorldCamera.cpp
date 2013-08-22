@@ -78,22 +78,24 @@ void ModeWorldCamera::OnStart()
 
 
 	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
-	ed->ToolbarSetCurrent(HuiToolbarTop);
-	ed->ToolbarReset();
-	ed->ToolbarAddItem(L("new"),L("new"),dir + "new.png","cam_new");
-	ed->ToolbarAddItem(L("open"),L("open"),dir + "open.png","cam_open");
-	ed->ToolbarAddItem(L("save"),L("save"),dir + "save.png","cam_save");
-	ed->ToolbarAddSeparator();
-	ed->ToolbarAddItem(L("undo"),L("undo"),dir + "undo.png","cam_undo");
-	ed->ToolbarAddItem(L("redo"),L("redo"),dir + "redo.png","cam_redo");
-	ed->ToolbarAddSeparator();
-	ed->ToolbarAddItem(_("Push"),_("ViewStage Push"),dir + "view_push.png","view_push");
-	ed->ToolbarAddItem(_("Pop"),_("ViewStage Pop"),dir + "view_pop.png","view_pop");
-	ed->EnableToolbar(true);
-	ed->ToolbarConfigure(false,true);
-	ed->ToolbarSetCurrent(HuiToolbarLeft);
-	ed->ToolbarReset();
-	ed->EnableToolbar(false);
+	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
+	t->Reset();
+	t->AddItem(L("new"),dir + "new.png","cam_new");
+	t->AddItem(L("open"),dir + "open.png","cam_open");
+	t->AddItem(L("save"),dir + "save.png","cam_save");
+	t->AddSeparator();
+	t->AddItem(L("undo"),dir + "undo.png","cam_undo");
+	t->AddItem(L("redo"),dir + "redo.png","cam_redo");
+	t->AddSeparator();
+	t->AddItem(_("Push"),dir + "view_push.png","view_push");
+	ed->SetTooltip("view_push", _("ViewStage Push"));
+	t->AddItem(_("Pop"),dir + "view_pop.png","view_pop");
+	ed->SetTooltip("view_pop", _("ViewStage Pop"));
+	t->Enable(true);
+	t->Configure(false,true);
+	t = ed->toolbar[HuiToolbarLeft];
+	t->Reset();
+	t->Enable(false);
 
 	multi_view->ResetMouseAction();
 
@@ -152,7 +154,7 @@ void ModeWorldCamera::OnAreaDraw()
 	color bg = White;
 	color ColorGrid = color(1, 0.75f, 0.75f, 0.75f);
 
-	HuiDrawingContext *c = dialog->BeginDraw("cam_area");
+	HuiPainter *c = dialog->BeginDraw("cam_area");
 	c->SetLineWidth(0.8f);
 	c->SetColor(bg);
 	c->DrawRect(0, 0, c->width, c->height);
@@ -323,7 +325,7 @@ void ModeWorldCamera::OnCamPreview()
 	preview_time = 0;
 	preview = true;
 	multi_view->cam.ignore_radius = true;
-	HuiRunLaterM(20, (HuiEventHandler*)this, &ModeWorldCamera::PreviewUpdate);
+	HuiRunLaterM(0.020f, (HuiEventHandler*)this, &ModeWorldCamera::PreviewUpdate);
 }
 
 void ModeWorldCamera::OnCamStop()
@@ -354,7 +356,7 @@ void ModeWorldCamera::PreviewUpdate()
 	if (preview_time > duration)
 		OnCamStop();
 	if (preview)
-		HuiRunLaterM(50, (HuiEventHandler*)this, &ModeWorldCamera::PreviewUpdate);
+		HuiRunLaterM(0.050f, (HuiEventHandler*)this, &ModeWorldCamera::PreviewUpdate);
 }
 
 void ModeWorldCamera::UpdateTimePos()

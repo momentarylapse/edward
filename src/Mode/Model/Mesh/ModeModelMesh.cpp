@@ -57,21 +57,21 @@ ModeModelMesh::~ModeModelMesh()
 void ModeModelMesh::OnStart()
 {
 	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
-	ed->ToolbarSetCurrent(HuiToolbarLeft);
-	ed->ToolbarReset();
-	ed->ToolbarAddSeparator();
-	ed->ToolbarAddItemCheckable(_("Polygon"),_("Polygon"), dir + "new_triangle.png", "new_tria");
-	ed->ToolbarAddItemCheckable(_("Ebene"),_("Ebene"), dir + "new_plane.png", "new_plane");
-	ed->ToolbarAddItemCheckable(_("Quader"),_("Quader"), dir + "mode_skin.png", "new_cube");
-	ed->ToolbarAddItemCheckable(_("Kugel"),_("Kugel"), dir + "new_ball.png", "new_ball");
-	ed->ToolbarAddItemCheckable(_("Zylinder"),_("Zylinder"), dir + "new_cylinder.png", "new_cylinder");
-	ed->ToolbarAddSeparator();
-	ed->ToolbarAddItemCheckable(_("Rotieren"),_("Rotieren"), dir + "rf_rotate.png", "rotate");
-	ed->ToolbarAddItemCheckable(_("Skalieren"),_("Skalieren"), dir + "rf_scale.png", "scale");
-	ed->ToolbarAddItemCheckable(_("Skalieren (2D)"),_("Skalieren (2D)"), dir + "rf_scale2d.png", "scale_2d");
-	ed->ToolbarAddItemCheckable(_("Spiegeln"),_("Spiegeln"), dir + "rf_mirror.png", "mirror");
-	ed->EnableToolbar(true);
-	ed->ToolbarConfigure(false,true);
+	HuiToolbar *t = ed->toolbar[HuiToolbarLeft];
+	t->Reset();
+	t->AddSeparator();
+	t->AddItemCheckable(_("Polygon"),dir + "new_triangle.png", "new_tria");
+	t->AddItemCheckable(_("Ebene"),dir + "new_plane.png", "new_plane");
+	t->AddItemCheckable(_("Quader"),dir + "mode_skin.png", "new_cube");
+	t->AddItemCheckable(_("Kugel"), dir + "new_ball.png", "new_ball");
+	t->AddItemCheckable(_("Zylinder"), dir + "new_cylinder.png", "new_cylinder");
+	t->AddSeparator();
+	t->AddItemCheckable(_("Rotieren"), dir + "rf_rotate.png", "rotate");
+	t->AddItemCheckable(_("Skalieren"), dir + "rf_scale.png", "scale");
+	t->AddItemCheckable(_("Skalieren (2D)"), dir + "rf_scale2d.png", "scale_2d");
+	t->AddItemCheckable(_("Spiegeln"),dir + "rf_mirror.png", "mirror");
+	t->Enable(true);
+	t->Configure(false,true);
 }
 
 void ModeModelMesh::OnEnter()
@@ -84,9 +84,9 @@ void ModeModelMesh::OnEnter()
 
 void ModeModelMesh::OnEnd()
 {
-	ed->ToolbarSetCurrent(HuiToolbarLeft);
-	ed->ToolbarReset();
-	ed->EnableToolbar(false);
+	HuiToolbar *t = ed->toolbar[HuiToolbarLeft];
+	t->Reset();
+	t->Enable(false);
 }
 
 

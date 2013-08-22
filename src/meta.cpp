@@ -53,6 +53,8 @@ EngineData Engine;
 
 Array<void*> MetaDeleteStuffList;
 
+bool AllowXContainer = true;
+
 
 
 // game data
@@ -83,6 +85,7 @@ void MetaInit()
 	Engine.FirstFrame = false;
 	Engine.GameRunning = false;
 
+	ModelManagerReset();
 	MaterialInit();
 }
 
@@ -137,26 +140,20 @@ void _cdecl MetaDelete(void *p)
 	if (!p)	return;
 	msg_db_f("MetaDelete", 2);
 	int type = ((XContainer*)p)->type;
-	if (type == XContainerPicture)
-		Gui::DeletePicture((Gui::Picture*)p);
-	else if (type == XContainerPicture3d)
-		Gui::DeletePicture3d((Gui::Picture3d*)p);
-	else if (type == XContainerText)
-		Gui::DeleteText((Gui::Text*)p);
-	else if (type == XContainerGrouping)
-		Gui::DeleteGrouping((Gui::Grouping*)p);
+	if (type == XContainerGuiLayer)
+		delete((Gui::Layer*)p);
 	else if (type == XContainerParticle)
-		FxParticleDelete((Particle*)p);
+		delete((Fx::Particle*)p);
 	else if (type == XContainerParticleRot)
-		FxParticleDelete((Particle*)p);
+		delete((Fx::Particle*)p);
 	else if (type == XContainerParticleBeam)
-		FxParticleDelete((Particle*)p);
+		delete((Fx::Beam*)p);
 	else if (type == XContainerEffect)
-		FxDelete((Effect*)p);
-	else if (type == XContainerView)
-		DeleteCamera((Camera*)p);
-	else // TODO: recognize models!
-		DeleteModel((Model*)p);
+		delete((Fx::Effect*)p);
+	else if (type == XContainerCamera)
+		delete((Camera*)p);
+	else if (IsModel(p))
+		delete((Model*)p);
 #endif
 }
 

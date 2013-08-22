@@ -30,7 +30,7 @@ bool DataMaterial::Save(const string & _filename)
 	filename = _filename;
 	ed->MakeDirs(filename);
 
-	CFile *f = CreateFile(filename);
+	CFile *f = FileCreate(filename);
 	f->WriteFileFormatVersion(false, 4);
 
 	f->WriteComment("// Textures");

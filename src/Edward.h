@@ -59,7 +59,7 @@ void read_color_3i(CFile *f, color &c);
 void write_color_3i(CFile *f, const color &c);
 color i42c(int *c);
 
-class Edward : public Observer, public HuiWindow
+class Edward : public Observer, public HuiNixWindow
 {
 public:
 	Edward(Array<string> arg);
@@ -80,15 +80,15 @@ public:
 	void OnClose();
 	void OnDraw();
 
-	void OnKeyDown();
-	void OnKeyUp();
-	void OnMouseMove();
-	void OnLeftButtonDown();
-	void OnLeftButtonUp();
-	void OnMiddleButtonDown();
-	void OnMiddleButtonUp();
-	void OnRightButtonDown();
-	void OnRightButtonUp();
+	virtual void OnKeyDown();
+	virtual void OnKeyUp();
+	virtual void OnMouseMove();
+	virtual void OnLeftButtonDown();
+	virtual void OnLeftButtonUp();
+	virtual void OnMiddleButtonDown();
+	virtual void OnMiddleButtonUp();
+	virtual void OnRightButtonDown();
+	virtual void OnRightButtonUp();
 	void OnEvent();
 	void OnAbortCreationMode();
 
@@ -140,7 +140,7 @@ public:
 	Array<string> icon_image;
 	string get_tex_image(int tex);
 
-	int timer;
+	HuiTimer timer;
 };
 
 extern Edward *ed;

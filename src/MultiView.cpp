@@ -62,7 +62,7 @@ MultiView::MultiView(bool _mode3d) :
 		// Menu
 		menu = new HuiMenu;
 		menu->AddItem(_("Ansicht"), "view_menu_sign");
-		menu->EnableItem("view_menu_sign", false);
+		//menu->EnableItem("view_menu_sign", false);
 		menu->AddSeparator();
 		menu->AddItem(_("Rechts (-x)"), "view_right");
 		menu->AddItem(_("Links (x)"), "view_left");

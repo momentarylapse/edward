@@ -28,7 +28,7 @@ public:
 		work->mx_list->Unlock();
 		return true;
 	}
-	virtual void OnRun()
+	virtual void _cdecl OnRun()
 	{
 		while(Schedule()){
 			for (int i=0;i<num;i++)
@@ -87,11 +87,6 @@ bool ThreadedWork::Run(int _total_size, int _partition_size)
 	bool all_done = false;
 	bool thread_abort = false;
 	while((!all_done) && (!thread_abort)){
-
-/*#ifdef _X_USE_HUI_
-		HuiDoSingleMainLoop();
-		HuiSleep(30);
-#endif*/
 
 		thread_abort = !OnStatus();
 		all_done = true;

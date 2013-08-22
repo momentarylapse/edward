@@ -32,17 +32,6 @@ Array<XFont*> XFonts;
 
 
 
-
-#define _xfont_char_ae_		248
-#define _xfont_char_oe_		249
-#define _xfont_char_ue_		250
-#define _xfont_char_Ae_		251
-#define _xfont_char_Oe_		252
-#define _xfont_char_Ue_		253
-#define _xfont_char_ss_		254
-
-
-
 void FontInit()
 {}
 
@@ -58,7 +47,7 @@ static string str_utf8_to_ubyte(const string &str)
 {
 	string r;
 	for (int i=0;i<str.num;i++)
-		if (((unsigned int)str[i] & 0x80) > 0){
+		if ((((unsigned int)str[i] & 0x80) > 0) && (i < str.num - 1)){
 			r.add(((str[i] & 0x1f) << 6) + (str[i + 1] & 0x3f));
 			i ++;
 		}else
@@ -75,7 +64,7 @@ int _cdecl LoadFont(const string &filename)
 	foreachi(XFont *ff, XFonts, i)
 		if (ff->filename  == filename.sys_filename())
 			return i;
-	CFile *f = OpenFile(FontDir + filename + ".xfont");
+	CFile *f = FileOpen(FontDir + filename + ".xfont");
 	if (!f)
 		return -1;
 	int ffv=f->ReadFileFormatVersion();

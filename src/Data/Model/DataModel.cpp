@@ -999,7 +999,7 @@ bool DataModel::Save(const string & _filename)
 	filename = _filename;
 	ed->MakeDirs(filename);
 
-	CFile *f = CreateFile(filename);
+	CFile *f = FileCreate(filename);
 	f->WriteFileFormatVersion(false, 11);//FFVBinary, 11);
 	f->FloatDecimals = 5;
 
@@ -1560,16 +1560,12 @@ void DataModel::GenerateDetailDists(float *dist)
 
 #define n_theta		16
 
-int it_timer = -1;
-
 matrix3 DataModel::GenerateInertiaTensor(float mass)
 {
 	msg_db_r("GenerateInertiaTensor", 3);
 //	sModeModelSkin *p = &Skin[0];
 
-	if (it_timer < 0)
-		it_timer = HuiCreateTimer();
-	HuiGetTime(it_timer);
+	HuiTimer it_timer;
 
 	// estimate size
 	vector min = v_0, max = v_0;
@@ -1645,7 +1641,7 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 	}else
 		Matrix3Identity(t);
 
-	float dt = HuiGetTime(it_timer);
+	float dt = it_timer.get();
 	msg_write(format("Tensor: %f", dt));
 	msg_db_l(3);
 	return t;

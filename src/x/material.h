@@ -10,8 +10,9 @@ class Model;
 
 
 // visual and physical properties
-struct Material
+class Material
 {
+public:
 	// name of the material
 	string name;
 

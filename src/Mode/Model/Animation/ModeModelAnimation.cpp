@@ -35,7 +35,6 @@ ModeModelAnimation::ModeModelAnimation(ModeBase *_parent) :
 	EmptyMove->InterpolatedLoop = false;
 
 	move = EmptyMove;
-	timer = HuiCreateTimer();
 }
 
 
@@ -79,8 +78,8 @@ void ModeModelAnimation::OnStart()
 	Observer::Subscribe(data);
 	OnUpdate(data);
 
-	HuiGetTime(timer);
-	HuiRunLaterM(200, this, &ModeModelAnimation::IdleFunction);
+	timer.reset();
+	HuiRunLaterM(0.200f, this, &ModeModelAnimation::IdleFunction);
 
 	ed->SetMode(mode_model_animation_none);
 	Notify("Change");
@@ -253,12 +252,12 @@ void ModeModelAnimation::IdleFunction()
 {
 	if (!IsAncestorOf(ed->cur_mode))
 		return;
-	float dt = HuiGetTime(timer);
+	float dt = timer.get();
 	IterateAnimation(dt);
 	if (Playing)
-		HuiRunLaterM(20, this, &ModeModelAnimation::IdleFunction);
+		HuiRunLaterM(0.020f, this, &ModeModelAnimation::IdleFunction);
 	else
-		HuiRunLaterM(200, this, &ModeModelAnimation::IdleFunction);
+		HuiRunLaterM(0.200f, this, &ModeModelAnimation::IdleFunction);
 }
 
 

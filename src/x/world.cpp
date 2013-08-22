@@ -228,7 +228,7 @@ void GodReset()
 	msg_db_m("-objects",2);
 	for (int i=0;i<Objects.num;i++)
 		if (Objects[i])
-			GodDeleteObject(i);
+			GodUnregisterObject(Objects[i]); // actual deleting done by ModelManager
 	Objects.clear();
 	GodNumReservedObjects = 0;
 	
@@ -413,7 +413,7 @@ bool GodLoadWorld(const string &filename)
 
 // read world file
 //   and put the data into LevelData
-	CFile *f = OpenFile(MapDir + filename + ".world");
+	CFile *f = FileOpen(MapDir + filename + ".world");
 	if (!f)
 		return false;
 
@@ -618,69 +618,24 @@ Object *GodCreateObject(const string &filename, const string &name, const vector
 		return NULL;
 	}
 	msg_db_f("GodCreateObject", 2);
-	int on=w_index;
-	if (on<0){
-		// ..... better use a list of "empty" objects???
-		for (int i=GodNumReservedObjects;i<Objects.num;i++)
-			if (!Objects[i])
-				on=i;
-	}else{
-		if (on >= Objects.num)
-			Objects.resize(on+1);
-		if (Objects[on]){
-			msg_error("CreateObject:  object index already in use " + i2s(on));
-			return Objects[on];
-		}
-	}
-	if (on<0){
-		on = Objects.num;
-		Object *p = NULL;
-		Objects.add(p);
-	}
 	//msg_write(on);
-	Object *o = (Object*)LoadModel(filename);
-	if (!o)
+	Model *m = LoadModelX(filename, false);
+	if (!m)
 		return NULL;
-	//Object *o = new Object(filename, name, pos);
-	Objects[on] = o;
-	GodRegisterModel((Model*)o);
-	o->object_id = on;
-	o->name = name;
-	o->pos = pos;
-	o->ang = ang;
+
+	Object *o = (Object*)m;
+	m->name = name;
+	m->pos = pos;
+	m->ang = ang;
 	o->UpdateMatrix();
 	o->UpdateTheta();
-//	strcpy(ObjectFilename[on], filename);
-
-#ifdef USE_ODE
-	if (o->active_physics){
-		o->body_id = dBodyCreate(world_id);
-		dBodySetPosition((dBodyID)o->body_id, pos.x, pos.y, pos.z);
-		dMass m;
-		dMassSetParameters(&m, o->mass, 0, 0, 0, o->theta._00, o->theta._11, o->theta._22, o->theta._01, o->theta._02, o->theta._12);
-		dBodySetMass((dBodyID)o->body_id, &m);
-		dBodySetData((dBodyID)o->body_id, o);
-		dQuaternion qq;
-		quaternion q;
-		QuaternionRotationV(q, ang);
-		qx2ode(&q, qq);
-		dBodySetQuaternion((dBodyID)o->body_id, qq);
-	}else
-		o->body_id = 0;
-
-	vector d = o->max - o->min;
-	o->geom_id = dCreateBox(space_id, d.x, d.y, d.z); //dCreateSphere(0, 1); // space, radius
-//	msg_write((int)o->geom_id);
-	dGeomSetBody((dGeomID)o->geom_id, (dBodyID)o->body_id);
-#endif
 
 
-	// object wants a script
-	if (o->_template->script_filename.num > 0){
-			ScriptingObjectInit(o);
-	}
+	GodRegisterObject(m, w_index);
 
-	AddNetMsg(NetMsgCreateObject, on, filename);
+	m->OnInit();
+
+	AddNetMsg(NetMsgCreateObject, m->object_id, filename);
 
 	return o;
 }
@@ -689,71 +644,6 @@ Object *GodCreateObject(const string &filename, const string &name, const vector
 Object *_cdecl _CreateObject(const string &filename, const vector &pos)
 {
 	return GodCreateObject(filename, filename, pos, v_0);
-}
-
-void db_o(const char *msg)
-{
-#ifdef _X_DEBUG_MODEL_MANAGER_
-	msg_write(msg);
-#endif
-}
-
-// un-object a model
-void GodDeleteObject(int index)
-{
-	if (!Objects[index])
-		return;
-	if (Objects[index]->object_id < 0)
-		return;
-	msg_db_f("DeleteObject",1);
-#ifdef _X_DEBUG_MODEL_MANAGER_
-	msg_write("del ob");
-	msg_write(index);
-	msg_write(p2s(Objects[index]));
-	msg_write(p2s(Objects[index]->Template));
-	msg_write(Objects[index]->Template->Filename);
-#endif
-
-#ifdef USE_ODE
-	db_o(p2s(Objects[index]->body_id).c_str());
-	if (Objects[index]->body_id != 0){
-		db_o("bd");
-		dBodyDestroy((dBodyID)Objects[index]->body_id);
-		db_o("/bd");
-	}
-	
-		db_o(".");
-	Objects[index]->body_id = 0;
-	db_o(p2s(Objects[index]->geom_id).c_str());
-	if (Objects[index]->geom_id != 0){
-		db_o("gd");
-		dGeomDestroy((dGeomID)Objects[index]->geom_id);
-		db_o("/gd");
-	}
-	db_o(".");
-	Objects[index]->geom_id = 0;
-#endif
-
-	db_o("a");
-
-	// script callback
-	if (Objects[index]->_template->script_on_kill)
-		((object_callback_func*)Objects[index]->_template->script_on_kill)(Objects[index]);
-	db_o("b");
-
-	// ego...
-	if (Objects[index] == Ego)
-		Ego = NULL;
-
-	// remove from list
-	Objects[index]->object_id = -1;
-	Objects[index] = NULL;
-	db_o("c");
-
-	// the actual deletion of the model will be done by MetaDelete
-
-	AddNetMsg(NetMsgDeleteObject, index, "");
-	db_o("/del");
 }
 
 void AddNewForceField(vector pos,vector dir,int kind,int shape,float r,float v,float a,bool visible,float t)
@@ -1122,8 +1012,7 @@ void Test4Ground(Object *o)
 				msg_error("inf   Test4Ground Vel 1");
 
 			// script callback function
-			if (o->_template->script_on_collide_terrain)
-				((on_collide_terrain_func*)o->_template->script_on_collide_terrain)(o, Terrains[i]);
+			o->OnCollideT(Terrains[i]);
 
 			terrain_object->SetMaterial(Terrains[i]->material, SetMaterialFriction);
 			terrain_object->object_id = i + 0x40000000; //(1<<30);
@@ -1167,11 +1056,8 @@ void Test4Object(Object *o1,Object *o2)
 			msg_error("inf   Test4Object Vel 1   (2)");
 
 	// script callback functions
-	if (o1->_template->script_on_collide_object)
-		((on_collide_object_func*)o1->_template->script_on_collide_object)(o1, o2);
-	
-	if (o2->_template->script_on_collide_object)
-		((on_collide_object_func*)o2->_template->script_on_collide_object)(o2, o1);
+	o1->OnCollideM(o2);
+	o2->OnCollideM(o1);
 
 	// physical reaction
 #ifdef _X_ALLOW_PHYSICS_DEBUG_
@@ -1276,7 +1162,7 @@ void GodDraw()
 		if (ForceField[i]->Visible){
 			color c=color(ForceField[i]->TimeToLife/4,1,1,1);
 			NixSetMaterial(c,c,Black,0,Black);
-			FxDrawBall(ForceField[i]->Pos,ForceField[i]->Radius,8,16);
+			Fx::DrawBall(ForceField[i]->Pos,ForceField[i]->Radius,8,16);
 		}
 	NixSetZ(true,true);
 	NixSetCull(CullDefault);
@@ -1284,10 +1170,93 @@ void GodDraw()
 #endif
 }
 
+void GodRegisterObject(Model *o, int index)
+{
+	msg_db_f("GodRegisterObject", 2);
+	int on = index;
+	if (on < 0){
+		// ..... better use a list of "empty" objects???
+		for (int i=GodNumReservedObjects;i<Objects.num;i++)
+			if (!Objects[i])
+				on = i;
+	}else{
+		if (on >= Objects.num)
+			Objects.resize(on+1);
+		if (Objects[on]){
+			msg_error("CreateObject:  object index already in use " + i2s(on));
+			return;
+		}
+	}
+	if (on < 0){
+		on = Objects.num;
+		Objects.add(NULL);
+	}
+	Objects[on] = (Object*)o;
+
+	GodRegisterModel(o);
+
+	o->object_id = on;
+//	strcpy(ObjectFilename[on], filename);
+
+#ifdef USE_ODE
+	if (o->active_physics){
+		o->body_id = dBodyCreate(world_id);
+		dBodySetPosition((dBodyID)o->body_id, o->pos.x, o->pos.y, o->pos.z);
+		dMass m;
+		dMassSetParameters(&m, o->mass, 0, 0, 0, o->theta._00, o->theta._11, o->theta._22, o->theta._01, o->theta._02, o->theta._12);
+		dBodySetMass((dBodyID)o->body_id, &m);
+		dBodySetData((dBodyID)o->body_id, o);
+		dQuaternion qq;
+		quaternion q;
+		QuaternionRotationV(q, o->ang);
+		qx2ode(&q, qq);
+		dBodySetQuaternion((dBodyID)o->body_id, qq);
+	}else
+		o->body_id = 0;
+
+	vector d = o->max - o->min;
+	o->geom_id = dCreateBox(space_id, d.x, d.y, d.z); //dCreateSphere(0, 1); // space, radius
+//	msg_write((int)o->geom_id);
+	dGeomSetBody((dGeomID)o->geom_id, (dBodyID)o->body_id);
+#endif
+}
+
+
+
+// un-object a model
+void GodUnregisterObject(Model *m)
+{
+	if (m->object_id < 0)
+		return;
+	msg_db_f("GodUnregisterObject", 2);
+
+#ifdef USE_ODE
+	if (m->body_id != 0)
+		dBodyDestroy((dBodyID)m->body_id);
+	m->body_id = 0;
+
+	if (m->geom_id != 0)
+		dGeomDestroy((dGeomID)m->geom_id);
+	m->geom_id = 0;
+#endif
+
+	// ego...
+	if (m == Ego)
+		Ego = NULL;
+
+	AddNetMsg(NetMsgDeleteObject, m->object_id, "");
+
+	// remove from list
+	Objects[m->object_id] = NULL;
+	m->object_id = -1;
+}
+
 // add a model to the (possible) rendering list
 void GodRegisterModel(Model *m)
 {
-	msg_db_f("GodRegisterModel",2);
+	if (m->registered)
+		return;
+	msg_db_f("GodRegisterModel", 2);
 	
 	for (int i=0;i<m->material.num;i++){
 		Material *mat = &m->material[i];
@@ -1314,7 +1283,7 @@ void GodRegisterModel(Model *m)
 #ifdef _X_ALLOW_X_
 	for (int i=0;i<m->fx.num;i++)
 		if (m->fx[i])
-			FxEnable(m->fx[i], true);
+			m->fx[i]->Enable(true);
 #endif
 	
 	m->registered = true;
@@ -1328,7 +1297,9 @@ void GodRegisterModel(Model *m)
 // remove a model from the (possible) rendering list
 void GodUnregisterModel(Model *m)
 {
-	msg_db_f("GodUnregisterModel",2);
+	if (!m->registered)
+		return;
+	msg_db_f("GodUnregisterModel", 2);
 	//printf("%p   %s\n", m, MetaGetModelFilename(m));
 	
 	for (int i=SortedTrans.num-1;i>=0;i--)
@@ -1342,7 +1313,7 @@ void GodUnregisterModel(Model *m)
 	if (!Engine.ResettingGame)
 		for (int i=0;i<m->fx.num;i++)
 			if (m->fx[i])
-				FxEnable(m->fx[i], false);
+				m->fx[i]->Enable(false);
 #endif
 	
 	m->registered = false;
@@ -1363,7 +1334,7 @@ void WorldShiftAll(const vector &dpos)
 	foreach(Terrain *t, Terrains)
 		t->pos += dpos;
 #ifdef _X_ALLOW_X_
-	FxShiftAll(dpos);
+	Fx::ShiftAll(dpos);
 	Light::ShiftAll(dpos);
 #endif
 	CameraShiftAll(dpos);
@@ -1408,7 +1379,7 @@ inline void fill_pmv(vector &pos, Array<PartialModel> &p, Array<PartialModelView
 		if ((Engine.ShadowLevel > 0) && (detail == SkinHigh) && (p[i].mat_index == 0) && (m->allow_shadow)){
 			int sd = Engine.ShadowLowerDetail ? SkinMedium : SkinHigh;
 			if (m->skin[sd]->sub[p[i].mat_index].num_triangles > 0)
-				FxAddShadow(m, sd);
+				Fx::AddShadow(m, sd);
 		}
 #endif
 	}
@@ -1427,13 +1398,13 @@ inline void draw_pmv(Array<PartialModelView> &vp)
 	vector pos = cur_cam->pos;
 	vector dir = cur_cam->ang.ang2dir();
 	vector a2;
-	a2 = VecAngAdd(vector(0, +0.9, 0), cur_cam->ang);
+	a2 = VecAngAdd(vector(0, +0.9f, 0), cur_cam->ang);
 	vector dir_l = a2.ang2dir();
-	a2 = VecAngAdd(vector(0, -0.9, 0), cur_cam->ang);
+	a2 = VecAngAdd(vector(0, -0.9f, 0), cur_cam->ang);
 	vector dir_r = a2.ang2dir();
-	a2 = VecAngAdd(vector(+1.0, 0, 0), cur_cam->ang);
+	a2 = VecAngAdd(vector(+1.0f, 0, 0), cur_cam->ang);
 	vector dir_t = a2.ang2dir();
-	a2 = VecAngAdd(vector(-1.0, 0, 0), cur_cam->ang);
+	a2 = VecAngAdd(vector(-1.0f, 0, 0), cur_cam->ang);
 	vector dir_b = a2.ang2dir();
 	
 	for (int i=0;i<vp.num;i++){

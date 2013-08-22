@@ -52,7 +52,7 @@ bool Terrain::Load(const string &_filename_, const vector &_pos_, bool deep)
 	reset();
 
 	filename = _filename_;
-	CFile *f = OpenFile(MapDir + filename + ".map");
+	CFile *f = FileOpen(MapDir + filename + ".map");
 	if (f){
 
 		int ffv = f->ReadFileFormatVersion();

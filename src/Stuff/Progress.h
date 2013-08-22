@@ -28,7 +28,7 @@ private:
 	HuiWindow *dlg;
 	bool Cancelled;
 	string message;
-	int timer;
+	HuiTimer timer;
 	float time_running;
 };
 

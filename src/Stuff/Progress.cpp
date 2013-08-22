@@ -13,7 +13,6 @@ Progress::Progress() :
 	dlg(NULL)
 {
 	_progress_ = this;
-	timer = HuiCreateTimer();
 }
 
 Progress::~Progress()
@@ -25,7 +24,7 @@ void Progress::Set(const string &str, float progress)
 {
 	if (!dlg)
 		return;
-	time_running += HuiGetTime(timer);
+	time_running += timer.get();
 	if (time_running < 5){
 		dlg->SetString("progress_bar", str);
 	}else{
@@ -59,7 +58,7 @@ void Progress::Start(const string &str, float progress)
 	HuiDoSingleMainLoop();
 	Cancelled = false;
 	time_running = 0;
-	HuiGetTime(timer);
+	timer.reset();
 }
 
 void Progress::Cancel()
@@ -87,7 +86,7 @@ void Progress::StartCancelable(const string &str, float progress)
 	HuiDoSingleMainLoop();
 	Cancelled = false;
 	time_running = 0;
-	HuiGetTime(timer);
+	timer.get();
 }
 
 void Progress::End()

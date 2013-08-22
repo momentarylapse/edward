@@ -24,7 +24,7 @@
 
 namespace Script{
 
-string Version = "0.12.0.0";
+string Version = "0.12.5.2";
 
 //#define ScriptDebug
 
@@ -225,6 +225,7 @@ Script::Script()
 	ReferenceCounter = 0;
 
 	cur_func = NULL;
+	first_execution = NULL;
 	WaitingMode = WaitingModeFirst;
 	TimeToWait = 0;
 	ShowCompilerStats = !config.CompileSilently;
@@ -246,20 +247,24 @@ Script::~Script()
 	msg_db_f("~CScript", 4);
 	if ((Memory) && (!JustAnalyse)){
 		//delete[](Memory);
-		int r=munmap(Memory,MemorySize);
+		#ifdef OS_WINDOWS
+			VirtualFree(Memory, 0, MemorySize);
+		#else
+			int r = munmap(Memory, MemorySize);
+		#endif
 	}
 	if (Opcode){
 		#ifdef OS_WINDOWS
-			VirtualFree(Opcode,0,MEM_RELEASE);
+			VirtualFree(Opcode, 0, MEM_RELEASE);
 		#else
-			int r=munmap(Opcode,SCRIPT_MAX_OPCODE);
+			int r = munmap(Opcode, SCRIPT_MAX_OPCODE);
 		#endif
 	}
 	if (ThreadOpcode){
 		#ifdef OS_WINDOWS
-			VirtualFree(ThreadOpcode,0,MEM_RELEASE);
+			VirtualFree(ThreadOpcode, 0, MEM_RELEASE);
 		#else
-			int r=munmap(ThreadOpcode,SCRIPT_MAX_THREAD_OPCODE);
+			int r = munmap(ThreadOpcode, SCRIPT_MAX_THREAD_OPCODE);
 		#endif
 	}
 	if (Stack)
@@ -414,7 +419,8 @@ void Script::ShowVars(bool include_consts)
 
 void Script::Execute()
 {
-	if (WaitingMode==WaitingModeNone)	return;
+	if (WaitingMode == WaitingModeNone)
+		return;
 	#ifdef ScriptDebug
 		//so("\n\n\n################### fuehre aus ######################\n\n\n");
 	#endif
@@ -424,8 +430,8 @@ void Script::Execute()
 	msg_db_f(Filename.c_str(),1);
 
 	// handle wait-commands
-	if (WaitingMode==WaitingModeFirst){
-		GlobalWaitingMode=WaitingModeNone;
+	if (WaitingMode == WaitingModeFirst){
+		GlobalWaitingMode = WaitingModeNone;
 		msg_db_f("->First",1);
 		//msg_right();
 		first_execution();

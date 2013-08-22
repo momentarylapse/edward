@@ -43,6 +43,8 @@ class Camera : public XContainer
 {
 public:
 	Camera();
+	Camera(const vector &pos, const vector &ang, const rect &dest);
+	virtual ~Camera();
 	void reset();
 	
 	rect dest;
@@ -71,22 +73,27 @@ public:
 	void SetView();
 	void SetViewLocal();
 	// camera scripts
-	void StartScript(const string &filename, const vector &dpos);
-	void StopScript();
+	void _cdecl StartScript(const string &filename, const vector &dpos);
+	void _cdecl StopScript();
 
 	Array<plane> clipping_plane;
 	Array<Model*> ignore;
 
 	matrix m_all, im_all;
-	vector Project(const vector &v);
-	vector Unproject(const vector &v);
+	vector _cdecl Project(const vector &v);
+	vector _cdecl Unproject(const vector &v);
+
+	virtual void _cdecl OnIterate();
+
+	void _cdecl __init__();
+	void _cdecl __init_ext__(const vector &pos, const vector &ang, const rect &dest);
+	virtual void _cdecl __delete__();
 };
 
 void CameraInit();
 void CameraReset();
 void CameraCalcMove();
-Camera *_cdecl CreateCamera(const vector &pos, const vector &ang, const rect &dest, bool show);
-void DeleteCamera(Camera *am);
+Camera *_cdecl CreateCamera(const vector &pos, const vector &ang, const rect &dest);
 void CameraShiftAll(const vector &dpos);
 
 extern Array<Camera*> camera;

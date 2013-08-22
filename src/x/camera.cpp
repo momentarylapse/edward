@@ -40,12 +40,14 @@ void CameraInit()
 void CameraReset()
 {
 	msg_db_f("CameraReset",1);
+	AllowXContainer = false;
 	foreach(Camera *c, camera)
 		delete(c);
 	camera.clear();
+	AllowXContainer = true;
 
 	// create the main-view ("cam")
-	Cam = CreateCamera(v_0, v_0, r_id, true);
+	Cam = CreateCamera(v_0, v_0, r_id);
 	cur_cam = Cam;
 }
 
@@ -65,7 +67,7 @@ void Camera::reset()
 	shaded_displays = true;
 
 	enabled = false;
-	dest = rect(0, 0, 0, 0);
+	dest = r_id;
 	cam_point_nr = -1;
 	cam_point.clear();
 
@@ -96,25 +98,54 @@ Camera::Camera()
 	auto_over = -1;
 	cam_point_nr = -1;
 	jump_to_pos = false;
+
+	// register
+	xcon_reg(XContainerCamera, this, camera);
 }
 
-Camera *CreateCamera(const vector &pos,const vector &ang,const rect &dest,bool show)
+Camera::Camera(const vector &_pos, const vector &_ang, const rect &_dest)
+{
+	new(this) Camera;
+	pos = _pos;
+	ang = _ang;
+	dest = _dest;
+}
+
+Camera::~Camera()
+{
+	// unregister
+	xcon_unreg(this, camera);
+}
+
+
+void Camera::__init__()
+{
+	new(this) Camera;
+}
+
+void Camera::__init_ext__(const vector &_pos, const vector &_ang, const rect &_dest)
+{
+	new(this) Camera(_pos, _ang, _dest);
+}
+
+void Camera::__delete__()
+{
+	//this->~Camera();
+	// unregister
+	for (int i=0;i<camera.num;i++)
+		if (camera[i] == this)
+			camera.erase(i);
+}
+
+Camera *CreateCamera(const vector &pos, const vector &ang, const rect &dest)
 {
 	msg_db_f("CreateCamera",1);
-	xcont_find_new(XContainerView, Camera, v, camera);
+	Camera *v = new Camera;
 	// initial data
 	v->pos = pos;
 	v->ang = ang;
 	v->dest = dest;
-	v->show = show;
 	return v;
-}
-
-void DeleteCamera(Camera *v)
-{
-	v->enabled = false;
-	v->show = false;
-	v->used = false;
 }
 
 void SetAim(Camera *view,vector &pos,vector &vel,vector &ang,float time,bool real_time)
@@ -157,7 +188,7 @@ void Camera::StartScript(const string &filename,const vector &dpos)
 	cam_point_nr = -1;
 
 
-	CFile *f = OpenFile(ScriptDir + filename + ".camera");
+	CFile *f = FileOpen(ScriptDir + filename + ".camera");
 	float x,y,z;
 	if (f){
 		int ffv=f->ReadFileFormatVersion();
@@ -314,6 +345,77 @@ void ExecuteCamPoint(Camera *view)
 	view->script_ang[1] = view->script_ang[0];
 }
 
+void Camera::OnIterate()
+{
+	msg_db_f("Cam.OnIterate",2);
+
+	// ???
+	if (auto_over >= 0)
+		auto_over ++;
+	if (auto_over >= 4){
+		auto_over = -1;
+		//ang = prae_ang;
+	}
+
+	if (automatic){
+
+		// script-controlled camera animation
+		auto_over = 0;
+		if (real_time)
+			flight_time_el += Engine.ElapsedRT;
+		else
+			flight_time_el += Engine.Elapsed;
+		if (flight_time_el >= flight_time){
+			//Pos=Pos1;
+			//Vel=Vel1;
+			if (real_time){
+				vel_rt = vel_1;
+				vel = vel_rt / Engine.TimeScale;
+			}else{
+				vel = vel_1;
+				vel_rt = vel * Engine.TimeScale;
+			}
+			ang = ang_1;
+			if (cam_point_nr >= 0){
+				cam_point_nr ++;
+				ExecuteCamPoint(this);
+			}
+			if (cam_point_nr < 0){ // even(!), if the last CamPoint was the last one in the script
+				automatic = false;
+			}
+			auto_over = 1;
+		}else{
+			float t=flight_time_el;
+			float t2=t*t; // t^2
+			float t3=t2*t; // t^3
+			// cubic position interpolation
+			pos = a_pos*t3 + b_pos*t2 + vel_0*t + pos_0;
+			if (real_time){
+				vel_rt = vel_0 + 3*a_pos*t2 + 2*b_pos*t;
+				vel = vel_rt / Engine.TimeScale;
+			}else{
+				vel = vel_0 + 3*a_pos*t2 + 2*b_pos*t;
+				vel_rt = vel * Engine.TimeScale;
+			}
+			// linear angular interpolation
+			//View[i]->Ang=VecAngInterpolate(    ...View[i]->Ang0 + View[i]->Rot*t;
+			// cubic angular interpolation
+			ang= a_ang*t3 + b_ang*t2 + script_rot_0*t + ang_0;
+		}
+	}else{
+
+		float elapsed = Engine.Elapsed;
+		if (elapsed==0)
+			elapsed=0.000001f;
+		vel = (pos - last_pos) / elapsed;
+		vel_rt = (pos - last_pos) / Engine.ElapsedRT;
+	}
+	if (jump_to_pos)
+		vel = vel_rt = v_0;
+	last_pos = pos;
+	jump_to_pos = false;
+}
+
 void CameraCalcMove()
 {
 	msg_db_f("CamCalcMove",2);
@@ -321,72 +423,7 @@ void CameraCalcMove()
 	foreach(Camera *v, camera){
 		if (!v->enabled)
 			continue;
-
-		// ???
-		if (v->auto_over >= 0)
-			v->auto_over ++;
-		if (v->auto_over >= 4){
-			v->auto_over = -1;
-			//v->ang = v->prae_ang;
-		}
-
-		if (v->automatic){
-
-		// script-controlled camera animation
-			v->auto_over = 0;
-			if (v->real_time)
-				v->flight_time_el += Engine.ElapsedRT;
-			else
-				v->flight_time_el += Engine.Elapsed;
-			if (v->flight_time_el >= v->flight_time){
-				//v->Pos=v->Pos1;
-				//v->Vel=v->Vel1;
-				if (v->real_time){
-					v->vel_rt = v->vel_1;
-					v->vel = v->vel_rt / Engine.TimeScale;
-				}else{
-					v->vel = v->vel_1;
-					v->vel_rt = v->vel * Engine.TimeScale;
-				}
-				v->ang = v->ang_1;
-				if (v->cam_point_nr >= 0){
-					v->cam_point_nr ++;
-					ExecuteCamPoint(v);
-				}
-				if (v->cam_point_nr < 0){ // even(!), if the last CamPoint was the last one in the script
-					v->automatic = false;
-				}
-				v->auto_over = 1;
-			}else{
-				float t=v->flight_time_el;
-				float t2=t*t; // t^2
-				float t3=t2*t; // t^3
-				// cubic position interpolation
-				v->pos = v->a_pos*t3 + v->b_pos*t2 + v->vel_0*t + v->pos_0;
-				if (v->real_time){
-					v->vel_rt = v->vel_0 + 3*v->a_pos*t2 + 2*v->b_pos*t;
-					v->vel = v->vel_rt / Engine.TimeScale;
-				}else{
-					v->vel = v->vel_0 + 3*v->a_pos*t2 + 2*v->b_pos*t;
-					v->vel_rt = v->vel * Engine.TimeScale;
-				}
-				// linear angular interpolation
-				//View[i]->Ang=VecAngInterpolate(    ...View[i]->Ang0 + View[i]->Rot*t;
-				// cubic angular interpolation
-				v->ang= v->a_ang*t3 + v->b_ang*t2 + v->script_rot_0*t + v->ang_0;
-			}
-		}else{
-
-			float elapsed = Engine.Elapsed;
-			if (elapsed==0)
-				elapsed=0.000001f;
-			v->vel = (v->pos - v->last_pos) / elapsed;
-			v->vel_rt = (v->pos - v->last_pos) / Engine.ElapsedRT;
-		}
-		if (v->jump_to_pos)
-			v->vel = v->vel_rt = v_0;
-		v->last_pos = v->pos;
-		v->jump_to_pos = false;
+		v->OnIterate();
 	}
 }
 

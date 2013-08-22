@@ -22,7 +22,7 @@ public:
 //	~Object();
 	void UpdateMatrix();
 
-	void UpdateData(); // script...
+	void _cdecl UpdateData(); // script...
 
 	void UpdateTheta();
 //	void SetMaterial(Material *material, int mode);
@@ -31,10 +31,10 @@ public:
 //	CObject *CuttingPlane(plane pl);
 //	void CorrectVel(Object *partner);
 
-	void AddForce(const vector &f, const vector &rho);
-	void AddTorque(const vector &t);
+	void _cdecl AddForce(const vector &f, const vector &rho);
+	void _cdecl AddTorque(const vector &t);
 
-	void MakeVisible(bool visible);
+	void _cdecl MakeVisible(bool visible);
 };
 
 

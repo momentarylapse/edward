@@ -16,29 +16,9 @@ static Array<Material*> Materials;
 
 void MaterialInit()
 {
-	// create the default material's default values
+	// create the default material
 	Material *m = new Material;
 	m->name = "-default-";
-	m->num_textures = 0;
-	m->ambient = White;
-	m->diffuse = White;
-	m->specular = Black;
-	m->shininess = 0;
-	m->emission = Black;
-	m->transparency_mode = TransparencyModeNone;
-	m->alpha_source = 0;
-	m->alpha_destination = 0;
-	m->alpha_factor = 1;
-	m->alpha_z_buffer = true;
-	m->shader = -1;
-	m->reflection_mode = ReflectionNone;
-	m->reflection_density = 0;
-	m->cube_map = -1;
-	m->cube_map_size = 0;
-	m->rc_jump = 0.5f;
-	m->rc_static = 0.8f;
-	m->rc_sliding = 0.4f;
-	m->rc_rolling = 0.90f;
 	Materials.add(m);
 }
 
@@ -59,11 +39,30 @@ void MaterialReset()
 
 Material::Material()
 {
+	// default values
 	num_textures = 0;
 	for (int i=0;i<MATERIAL_MAX_TEXTURES;i++)
 		texture[i] = -1;
 	cube_map = -1;
 	shader = -1;
+
+	ambient = White;
+	diffuse = White;
+	specular = Black;
+	shininess = 0;
+	emission = Black;
+	transparency_mode = TransparencyModeNone;
+	alpha_source = 0;
+	alpha_destination = 0;
+	alpha_factor = 1;
+	alpha_z_buffer = true;
+	reflection_mode = ReflectionNone;
+	reflection_density = 0;
+	cube_map_size = 0;
+	rc_jump = 0.5f;
+	rc_static = 0.8f;
+	rc_sliding = 0.4f;
+	rc_rolling = 0.90f;
 }
 
 Material::~Material()
@@ -153,7 +152,7 @@ Material *LoadMaterial(const string &filename, bool as_default)
 			if (Materials[i]->name == filename)
 				return Materials[i];
 	}
-	CFile *f = OpenFile(MaterialDir + filename + ".material");
+	CFile *f = FileOpen(MaterialDir + filename + ".material");
 	if (!f){
 #ifdef _X_ALLOW_X_
 	if (Engine.FileErrorsAreCritical)

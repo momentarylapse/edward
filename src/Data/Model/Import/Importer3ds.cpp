@@ -19,7 +19,7 @@ bool Importer3ds::Import(DataModel *m, const string &filename)
 {
 	m->Reset();
 
-	CFile *f = OpenFile(filename);
+	CFile *f = FileOpen(filename);
 	f->SetBinaryMode(true);
 
 	while(true){
