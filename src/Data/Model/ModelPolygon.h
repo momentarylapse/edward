@@ -39,6 +39,7 @@ public:
 	vector GetAreaVector(const Array<ModelVertex> &vertex) const;
 	Array<int> GetVertices() const;
 	Array<vector> GetSkinVertices() const;
+	void Invert();
 	void AddToVertexBuffer(const Array<ModelVertex> &vertex, int buffer, int num_textures);
 };
 

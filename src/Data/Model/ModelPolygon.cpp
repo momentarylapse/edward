@@ -195,3 +195,10 @@ void ModelPolygon::AddToVertexBuffer(const Array<ModelVertex> &vertex, int buffe
 		}
 	}
 }
+
+void ModelPolygon::Invert()
+{
+	ModelPolygon pp = *this;
+	for (int i=0;i<Side.num;i++)
+		Side[i].Vertex = pp.Side[Side.num - i - 1].Vertex;
+}

@@ -380,11 +380,8 @@ bool ModelGeometry::IsInside(const vector &p) const
 
 void ModelGeometry::Invert()
 {
-	foreach(ModelPolygon &p, Polygon){
-		ModelPolygon pp = p;
-		for (int i=0;i<p.Side.num;i++)
-			p.Side[i].Vertex = pp.Side[p.Side.num - i - 1].Vertex;
-	}
+	foreach(ModelPolygon &p, Polygon)
+		p.Invert();
 }
 
 void ModelGeometry::RemoveUnusedVertices()

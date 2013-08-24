@@ -759,13 +759,13 @@ bool SurfaceSubtractUnary(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out
 			PolygonSubtract(a, &p, i, b, out, inverse);
 			has_changes = true;
 		}else if (PolygonInsideSurface(a, &p, b) == inverse){
-			out.Polygon.add(p);
+			ModelPolygon pp = p;
+			if (inverse)
+				pp.Invert();
+			out.Polygon.add(pp);
 		}else{
 			has_changes = true;
 		}
-
-	if (inverse)
-		a.Invert();
 
 	out.RemoveUnusedVertices();
 	return has_changes;
