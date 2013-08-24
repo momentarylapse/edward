@@ -66,3 +66,7 @@ ModelGeometryCube::ModelGeometryCube(const vector &_pos, const vector &dv1, cons
 
 }
 
+void ModelGeometryCube::__init__(const vector& pos, const vector& dv1, const vector& dv2, const vector& dv3, int num_1, int num_2, int num_3)
+{
+	new (this) ModelGeometryCube(pos, dv1, dv2, dv3, num_1, num_2, num_3);
+}

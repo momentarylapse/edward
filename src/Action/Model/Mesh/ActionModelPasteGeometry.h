@@ -22,7 +22,7 @@ public:
 	void *compose(Data *d);
 private:
 	ModelGeometry &geo;
-	int material;
+	int default_material;
 };
 
 #endif /* ACTIONMODELPASTEGEOMETRY_H_ */

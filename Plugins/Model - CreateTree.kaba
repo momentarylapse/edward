@@ -1,7 +1,7 @@
 use "api.kaba"
 
 const int MAX_LENGTH = 12
-const float BRANCH_PROB = 0.8
+const float BRANCH_PROB = 2.8
 const float BRANCH_FACTOR = 0.7
 const float BRANCH_ANGLE = 0.5
 const float DIR_RAND = 0.2
@@ -36,7 +36,9 @@ void branch(vector pos0, vector dir0, int num, float radius, float length)
 	float r[]
 	r.add(radius)
 	r.add(0)
-	data_model.AddCylinder(pos, r, 5, 16, false, 0)
+	ModelGeometry *g = new ModelGeometryCylinderComplex(pos, r, 5, 16, false)
+	data_model.PasteGeometry(*g, 0)
+	delete(g)
 
 void main()
 	branch(v_0, e_y, MAX_LENGTH, 5, 40)

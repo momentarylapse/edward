@@ -11,7 +11,6 @@
 #include "../../lib/math/math.h"
 class vector;
 class MultiViewWindow;
-class DataModel;
 class ModelPolygon;
 class ModelVertex;
 
@@ -23,7 +22,7 @@ public:
 	void init_affine(const vector &dir_u, float f_u, const vector &dir_v, float f_v);
 	void init_projective(const matrix &_m);
 	void init_projective(MultiViewWindow *win);
-	void init_polygon(DataModel *model, ModelPolygon &p, int level);
+	void init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, int level);
 	void init_point_cloud_boundary(const Array<ModelVertex> &p, const Array<int> &v);
 
 	vector get(const vector &v) const;
@@ -38,7 +37,7 @@ public:
 	SkinGeneratorMulti();
 	SkinGeneratorMulti(const SkinGenerator &sg);
 	virtual ~SkinGeneratorMulti();
-	void init_polygon(DataModel *model, ModelPolygon &p);
+	void init_polygon(const Array<ModelVertex> &v, ModelPolygon &p);
 
 	vector get(const vector &v, int level) const;
 

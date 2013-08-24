@@ -269,3 +269,138 @@ void ModelGeometry::Preview(int vb, int num_textures) const
 	}
 }
 
+
+int ModelGeometry::AddEdge(int a, int b, int tria, int side)
+{
+	foreachi(ModelEdge &e, Edge, i){
+		if ((e.Vertex[0] == a) && (e.Vertex[1] == b)){
+			throw GeometryException("the new polygon would have neighbors of opposite orientation");
+			/*e.RefCount ++;
+			msg_error("surface error? inverse edge");
+			e.Polygon[1] = tria;
+			e.Side[1] = side;
+			return i;*/
+		}
+		if ((e.Vertex[0] == b) && (e.Vertex[1] == a)){
+			if (e.Polygon[0] == tria)
+				throw GeometryException("the new polygon would contain the same edge twice");
+			if (e.RefCount > 1)
+				throw GeometryException("there would be more than 2 polygons sharing an egde");
+			e.RefCount ++;
+			e.Polygon[1] = tria;
+			e.Side[1] = side;
+			return i;
+		}
+	}
+	ModelEdge ee;
+	ee.Vertex[0] = a;
+	ee.Vertex[1] = b;
+	ee.is_selected = false;
+	ee.is_special = false;
+	ee.IsRound = false;
+	ee.RefCount = 1;
+	ee.Polygon[0] = tria;
+	ee.Side[0] = side;
+	ee.Polygon[1] = -1;
+	Edge.add(ee);
+	return Edge.num - 1;
+}
+
+void ModelGeometry::UpdateTopology()
+{
+	// clear
+	Edge.clear();
+
+	// add all triangles
+	foreachi(ModelPolygon &t, Polygon, ti){
+
+		// edges
+		for (int k=0;k<t.Side.num;k++){
+			t.Side[k].Edge = AddEdge(t.Side[k].Vertex, t.Side[(k + 1) % t.Side.num].Vertex, ti, k);
+			t.Side[k].EdgeDirection = Edge[t.Side[k].Edge].RefCount - 1;
+		}
+	}
+	// closed?
+	IsClosed = true;
+	foreach(ModelEdge &e, Edge)
+		if (e.RefCount != 2){
+			IsClosed = false;
+			break;
+		}
+}
+
+bool ModelGeometry::IsInside(const vector &p) const
+{
+	// how often does a ray from p intersect the surface?
+	int n = 0;
+	Array<vector> v;
+	foreach(ModelPolygon &t, *(Array<ModelPolygon>*)(&Polygon)){
+
+		// plane test
+		if (((p - Vertex[t.Side[0].Vertex].pos) * t.TempNormal > 0) == (t.TempNormal.x > 0))
+			continue;
+
+		// polygon data
+		if (v.num < t.Side.num)
+			v.resize(t.Side.num);
+		for (int k=0;k<t.Side.num;k++)
+			v[k] = Vertex[t.Side[k].Vertex].pos;
+
+		// bounding box tests
+		bool smaller = true;
+		for (int k=0;k<t.Side.num;k++)
+			if (v[k].x >= p.x)
+				smaller = false;
+		if (smaller)
+			continue;
+
+		smaller = true;
+		for (int k=1;k<t.Side.num;k++){
+			if ((v[0].y < p.y) !=  (v[k].y < p.y))
+				smaller = false;
+			if ((v[0].z < p.z) !=  (v[k].z < p.z))
+				smaller = false;
+		}
+		if (smaller)
+			continue;
+
+		// real intersection
+		vector col;
+		if (t.TriangulationDirty)
+			t.UpdateTriangulation(Vertex);
+		for (int k=t.Side.num-2;k>=0;k--)
+			if (LineIntersectsTriangle(v[t.Side[k].Triangulation[0]], v[t.Side[k].Triangulation[1]], v[t.Side[k].Triangulation[2]], p, p + e_x, col, false))
+				if (col.x > p.x)
+					n ++;
+	}
+
+	// even or odd?
+	return ((n % 2) == 1);
+}
+
+void ModelGeometry::Invert()
+{
+	foreach(ModelPolygon &p, Polygon){
+		ModelPolygon pp = p;
+		for (int i=0;i<p.Side.num;i++)
+			p.Side[i].Vertex = pp.Side[p.Side.num - i - 1].Vertex;
+	}
+}
+
+void ModelGeometry::RemoveUnusedVertices()
+{
+	foreach(ModelVertex &v, Vertex)
+		v.RefCount = 0;
+	foreach(ModelPolygon &p, Polygon)
+		for (int i=0;i<p.Side.num;i++)
+			Vertex[p.Side[i].Vertex].RefCount ++;
+	foreachib(ModelVertex &v, Vertex, vi)
+		if (v.RefCount == 0){
+			Vertex.erase(vi);
+			// correct vertex indices
+			foreach(ModelPolygon &p, Polygon)
+				for (int i=0;i<p.Side.num;i++)
+					if (p.Side[i].Vertex > vi)
+						p.Side[i].Vertex --;
+		}
+}

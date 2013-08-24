@@ -3,18 +3,9 @@ use "api.kaba"
 window dlg
 
 void CreateTorusKnot(int nx, int ny, int rings, int edges, float r1, float r2, float r3)
-	vector pos[]
-	float r[]
-	for int i, 0, rings
-		float t = i2f(i) / rings
-		float wx = 2 * pi * t * nx
-		float wy = 2 * pi * t * ny
-		
-		vector er = vector(cos(wx), sin(wx), 0)
-		pos.add(er * r1 + (er * cos(wy) + e_z * sin(wy)) * r2)
-		r.add(r3)
-
-	data_model.AddCylinder(pos, r, rings, edges, true, 0)
+	ModelGeometry *g = new ModelGeometryTorusKnot(v_0, e_z, r1, r2, r3, nx, ny, rings, edges)
+	data_model.PasteGeometry(*g, 0)
+	delete(g)
 
 int gcd(int a, int b)
 	while b != 0
@@ -30,13 +21,10 @@ void OnOk()
 		HuiErrorBox(dlg, "Error", "GreatestCommonDivisor(Loops, Twists) = 1 violated")
 	else
 		CreateTorusKnot(nx, ny, dlg.GetInt("rings"), dlg.GetInt("edges"), dlg.GetFloat("radius1"), dlg.GetFloat("radius2"), dlg.GetFloat("radius3"))
-		HuiWinClose(dlg)
-
-void OnClose()
-	HuiWinClose(dlg)
+		delete(dlg)
 
 void main()
-	dlg = HuiCreateSizableDialog("Torus Knot", 300, 300, edward, false)
+	dlg = new Dialog("Torus Knot", 300, 300, edward, false)
 	dlg.AddControlTable("", 0, 0, 2, 5, "table")
 	dlg.SetTarget("table", 0)
 	dlg.AddText("Loops", 0, 0, 0, 0, "")
@@ -56,6 +44,5 @@ void main()
 	dlg.AddButton("Ok", 1, 7, 0, 0, "ok")
 	
 	dlg.Event("ok", &OnOk)
-	dlg.Event("hui:close", &OnClose)
 	
 	dlg.Run()

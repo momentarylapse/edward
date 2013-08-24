@@ -121,7 +121,7 @@ void ActionModelBevelPolygons::do_poly_relink(ModelPolygon &p, PolygonRelink &r,
 	Array<vector> sv;
 
 	SkinGeneratorMulti sg;
-	sg.init_polygon(m, p);
+	sg.init_polygon(m->Vertex, p);
 
 	//msg_write("r!");
 	for (int k=0;k<p.Side.num;k++){

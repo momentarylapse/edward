@@ -15,6 +15,7 @@ class ModelGeometrySphere : public ModelGeometry
 {
 public:
 	ModelGeometrySphere(const vector &pos, float radius, int num);
+	_cdecl void __init__(const vector &pos, float radius, int num);
 };
 
 #endif /* MODELGEOMETRYSPHERE_H_ */

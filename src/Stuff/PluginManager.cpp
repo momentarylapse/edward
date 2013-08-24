@@ -11,6 +11,15 @@
 #include "../Edward.h"
 #include "../Mode/Model/ModeModel.h"
 #include "../Mode/World/ModeWorld.h"
+#include "../Data/Model/Geometry/ModelGeometryBall.h"
+#include "../Data/Model/Geometry/ModelGeometryCube.h"
+#include "../Data/Model/Geometry/ModelGeometryCylinder.h"
+#include "../Data/Model/Geometry/ModelGeometryPlane.h"
+#include "../Data/Model/Geometry/ModelGeometryPlatonic.h"
+#include "../Data/Model/Geometry/ModelGeometrySphere.h"
+#include "../Data/Model/Geometry/ModelGeometryTeapot.h"
+#include "../Data/Model/Geometry/ModelGeometryTorus.h"
+#include "../Data/Model/Geometry/ModelGeometryTorusKnot.h"
 
 PluginManager::PluginManager()
 {
@@ -133,16 +142,27 @@ void PluginManager::Init()
 	Script::LinkExternal("DataModel.AddVertex", (void*)&DataModel::AddVertex);
 	Script::LinkExternal("DataModel.AddTriangle", (void*)&DataModel::AddTriangle);
 	Script::LinkExternal("DataModel.AddPolygon", (void*)&DataModel::AddPolygon);
-	Script::LinkExternal("DataModel.AddBall", (void*)&DataModel::AddBall);
-	Script::LinkExternal("DataModel.AddSphere", (void*)&DataModel::AddSphere);
-	Script::LinkExternal("DataModel.AddPlane", (void*)&DataModel::AddPlane);
-	Script::LinkExternal("DataModel.AddCube", (void*)&DataModel::AddCube);
-	Script::LinkExternal("DataModel.AddCylinder", (void*)&DataModel::AddCylinder);
 	Script::LinkExternal("DataModel.DeleteSelection", (void*)&DataModel::DeleteSelection);
 	Script::LinkExternal("DataModel.SubtractSelection", (void*)&DataModel::SubtractSelection);
 	Script::LinkExternal("DataModel.TriangulateSelection", (void*)&DataModel::TriangulateSelection);
 	Script::LinkExternal("DataModel.BevelSelectedVertices", (void*)&DataModel::BevelSelectedVertices);
 	Script::LinkExternal("DataModel.ExtrudeSelectedPolygons", (void*)&DataModel::ExtrudeSelectedPolygons);
+	Script::LinkExternal("DataModel.PasteGeometry", (void*)&DataModel::PasteGeometry);
+
+
+
+	Script::DeclareClassSize("ModelGeometry", sizeof(ModelGeometry));
+	Script::LinkExternal("ModelGeometryBall.__init__", (void*)&ModelGeometryBall::__init__);
+	Script::LinkExternal("ModelGeometryCube.__init__", (void*)&ModelGeometryCube::__init__);
+	Script::LinkExternal("ModelGeometrySphere.__init__", (void*)&ModelGeometrySphere::__init__);
+	Script::LinkExternal("ModelGeometryCylinder.__init__", (void*)&ModelGeometryCylinder::__init__);
+	Script::LinkExternal("ModelGeometryCylinderComplex.__init__", (void*)&ModelGeometryCylinder::__init2__);
+	Script::LinkExternal("ModelGeometryTorus.__init__", (void*)&ModelGeometryTorus::__init__);
+	Script::LinkExternal("ModelGeometryTorusKnot.__init__", (void*)&ModelGeometryTorusKnot::__init__);
+	Script::LinkExternal("ModelGeometryPlane.__init__", (void*)&ModelGeometryPlane::__init__);
+	Script::LinkExternal("ModelGeometryPlatonic.__init__", (void*)&ModelGeometryPlatonic::__init__);
+	Script::LinkExternal("ModelGeometryTeapot.__init__", (void*)&ModelGeometryTeapot::__init__);
+	Script::LinkExternal("ModelGeometrySubtract", (void*)&ModelGeometrySubtract);
 
 	// world
 

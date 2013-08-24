@@ -1827,8 +1827,8 @@ void DataModel::SetNormalModeSelection(int mode)
 void DataModel::SetMaterialSelection(int material)
 {	Execute(new ActionModelSetMaterial(this, material));	}
 
-void DataModel::PasteGeometry(ModelGeometry& geo, int material)
-{	Execute(new ActionModelPasteGeometry(geo, material));	}
+void DataModel::PasteGeometry(ModelGeometry& geo, int default_material)
+{	Execute(new ActionModelPasteGeometry(geo, default_material));	}
 
 void DataModel::Easify(float factor)
 {	Execute(new ActionModelEasify(factor));	}

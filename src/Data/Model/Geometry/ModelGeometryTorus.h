@@ -15,6 +15,7 @@ class ModelGeometryTorus : public ModelGeometry
 {
 public:
 	ModelGeometryTorus(const vector &pos, const vector &axis, float radius1, float radius2, int num_x, int num_y);
+	_cdecl void __init__(const vector &pos, const vector &axis, float radius1, float radius2, int num_x, int num_y);
 };
 
 #endif /* MODELGEOMETRYTORUS_H_ */

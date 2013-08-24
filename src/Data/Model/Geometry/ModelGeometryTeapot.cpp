@@ -376,3 +376,7 @@ ModelGeometryTeapot::ModelGeometryTeapot(const vector &pos, float radius, int sa
 	Transform(trans * rot * scale);
 }
 
+void ModelGeometryTeapot::__init__(const vector& pos, float radius, int samples)
+{
+	new (this) ModelGeometryTeapot(pos, radius, samples);
+}

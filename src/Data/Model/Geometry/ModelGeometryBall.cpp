@@ -61,3 +61,8 @@ ModelGeometryBall::ModelGeometryBall(const vector &pos, float radius, int num_x,
 		}
 }
 
+void ModelGeometryBall::__init__(const vector &pos, float radius, int num_x, int num_y)
+{
+	new(this) ModelGeometryBall(pos, radius, num_x, num_y);
+}
+

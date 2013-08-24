@@ -1,38 +1,71 @@
 /*
- * ActionModelSurfaceSubtract.cpp
+ * ModelGeometrySubtract.cpp
  *
- *  Created on: 03.06.2012
+ *  Created on: 23.08.2013
  *      Author: michi
  */
 
-#include "ActionModelSurfaceSubtract.h"
-#include "ActionModelSurfaceAutoWeld.h"
-#include "ActionModelSurfaceInvert.h"
-#include "Helper/ActionModelSurfaceDeletePolygon.h"
-#include "../Vertex/ActionModelAddVertex.h"
-#include "../Polygon/ActionModelAddPolygon.h"
-#include "ActionModelSurfaceCopy.h"
-#include "../../../../Data/Model/DataModel.h"
-#include "../../../../Data/Model/SkinGenerator.h"
-#include "../../../../Edward.h"
+#include "ModelGeometry.h"
+#include "../SkinGenerator.h"
+#include "../../../Edward.h"
 
-#define ALLOW_WELD		0
 
-float ActionModelSurfaceSubtract::sCol::get_f(DataModel *m, ModelPolygon *t)
+
+	class sCol
+	{
+	public:
+		enum{
+			TYPE_OWN_EDGE_IN,
+			TYPE_OWN_EDGE_OUT,
+			TYPE_OTHER_EDGE,
+			TYPE_OLD_VERTEX
+		};
+		sCol(){}
+		sCol(const vector &_p, int _side);
+		sCol(const vector &_p, int _type, int _polygon, int _edge, int _side);
+		float get_f(ModelGeometry &m, ModelPolygon *t);
+		bool operator==(const sCol &other) const;
+		vector p;
+		int type;
+		int polygon, edge, side;
+		string str() const;
+	};
+
+	Array<sCol> col;
+
+	bool CollidePolygons(ModelGeometry &m, ModelPolygon *t1, ModelPolygon *t2, int t2_index);
+	bool CollidePolygonSurface(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s, int t_index);
+	bool PolygonInsideSurface(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s);
+	void find_contours(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s, Array<Array<sCol> > &c_out, bool inverse);
+	bool find_contour_boundary(ModelGeometry &s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse);
+	bool find_contour_inside(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse);
+	float get_ang(Array<sCol> &c, int i, const vector &flat_n);
+	bool vertex_in_tria(sCol &a, sCol &b, sCol &c, sCol &v, float &slope);
+	void combine_contours(Array<Array<sCol> > &c, int ca, int ia, int cb, int ib);
+	void triangulate_contours(ModelGeometry &m, ModelPolygon *t, Array<Array<sCol> > &c);
+	bool combine_polygons(Array<Array<sCol> > &c, int ia, int ib);
+	void simplify_filling(Array<Array<sCol> > &c);
+	void sort_and_join_contours(ModelGeometry &m, ModelPolygon *t, ModelGeometry &b, Array<Array<sCol> > &c, bool inverse);
+void PolygonSubtract(ModelGeometry &a, ModelPolygon *t, int t_index, ModelGeometry &b, ModelGeometry &out, bool inverse);
+void SurfaceSubtractUnary(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out, bool inverse);
+
+
+
+float sCol::get_f(ModelGeometry &m, ModelPolygon *t)
 {
 	if (type == TYPE_OLD_VERTEX)
 		return 0;
 	if ((type == TYPE_OWN_EDGE_OUT) || (type == TYPE_OWN_EDGE_IN))
-		return p.factor_between(m->Vertex[t->Side[side].Vertex].pos, m->Vertex[t->Side[(side + 1) % t->Side.num].Vertex].pos);
+		return p.factor_between(m.Vertex[t->Side[side].Vertex].pos, m.Vertex[t->Side[(side + 1) % t->Side.num].Vertex].pos);
 	throw ActionException("unhandled col type");
 }
 
-string ActionModelSurfaceSubtract::sCol::str() const
+string sCol::str() const
 {
 	return format("[%d]\tp=%d\te=%d\ts=%d\t%.1f\t%.1f\t%.1f", type, polygon, edge, side, p.x, p.y, p.z);
 }
 
-ActionModelSurfaceSubtract::sCol::sCol(const vector &_p, int _side)
+sCol::sCol(const vector &_p, int _side)
 {
 	p = _p;
 	type = TYPE_OLD_VERTEX;
@@ -41,7 +74,7 @@ ActionModelSurfaceSubtract::sCol::sCol(const vector &_p, int _side)
 	side = _side;
 }
 
-ActionModelSurfaceSubtract::sCol::sCol(const vector &_p, int _type, int _polygon, int _edge, int _side)
+sCol::sCol(const vector &_p, int _type, int _polygon, int _edge, int _side)
 {
 	p = _p;
 	type = _type;
@@ -50,41 +83,9 @@ ActionModelSurfaceSubtract::sCol::sCol(const vector &_p, int _type, int _polygon
 	side = _side;
 }
 
-bool ActionModelSurfaceSubtract::sCol::operator==(const sCol &other) const
+bool sCol::operator==(const sCol &other) const
 {
 	return (type == other.type) && (p == other.p) && (edge == other.edge) && (side == other.side);
-}
-
-
-ActionModelSurfaceSubtract::ActionModelSurfaceSubtract()
-{}
-
-void *ActionModelSurfaceSubtract::compose(Data *d)
-{
-	DataModel *m = dynamic_cast<DataModel*>(d);
-	int n = 0;
-	foreach(ModelSurface &s, m->Surface)
-		if ((s.is_selected) && (s.IsClosed))
-			n ++;
-	if (n == 0){
-		throw ActionException("no closed surfaces selected");
-		//ed->SetMessage(_("Keine geschlossene Fl&achen markiert"));
-		//return;
-	}
-
-	msg_db_r("Subtract", 1);
-	for (int bi=m->Surface.num-1; bi>=0; bi--){
-		if (m->Surface[bi].is_selected){
-			for (int ai=m->Surface.num-1; ai>=0; ai--){
-				ModelSurface *a = &m->Surface[ai];
-				if ((a->view_stage >= ed->multi_view_3d->view_stage) && (!a->is_selected))
-					SurfaceSubtract(m, a, &m->Surface[bi]);
-			}
-		}
-	}
-	ed->SetMessage(format(_("%d geschlossene Fl&achen subtrahiert"), n));
-	msg_db_l(1);
-	return NULL;
 }
 
 #if 0
@@ -152,25 +153,25 @@ bool ActionModelSurfaceSubtract::CollidePolygons(DataModel *m, ModelPolygon *t1,
 }
 #endif
 
-bool ActionModelSurfaceSubtract::CollidePolygonSurface(DataModel *m, ModelPolygon *t, ModelSurface *s, int t_index)
+bool CollidePolygonSurface(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s, int t_index)
 {
-	msg_db_r("CollidePolygonSurface", 0);
+	msg_db_f("CollidePolygonSurface", 0);
 	col.clear();
 
 	// polygon's data
 	Array<vector> v;
 	for (int k=0;k<t->Side.num;k++)
-		v.add(m->Vertex[t->Side[k].Vertex].pos);
+		v.add(m.Vertex[t->Side[k].Vertex].pos);
 	plane pl;
-	PlaneFromPointNormal(pl, m->Vertex[t->Side[0].Vertex].pos, t->TempNormal);
+	PlaneFromPointNormal(pl, m.Vertex[t->Side[0].Vertex].pos, t->TempNormal);
 
-	Array<int> vv = t->Triangulate(m->Vertex);
+	Array<int> vv = t->Triangulate(m.Vertex);
 
 	// collide polygon <-> surface's edges
-	foreachi(ModelEdge &e, s->Edge, ei){
+	foreachi(ModelEdge &e, s.Edge, ei){
 		vector ve[2];
 		for (int k=0;k<2;k++)
-			ve[k] = m->Vertex[e.Vertex[k]].pos;
+			ve[k] = s.Vertex[e.Vertex[k]].pos;
 
 		// crossing plane?
 		if (pl.distance(ve[0]) * pl.distance(ve[1]) > 0)
@@ -185,19 +186,19 @@ bool ActionModelSurfaceSubtract::CollidePolygonSurface(DataModel *m, ModelPolygo
 	}
 
 	// collide polygon's edges <-> surface's polygons
-	foreachi(ModelPolygon &t2, s->Polygon, ti){
+	foreachi(ModelPolygon &t2, s.Polygon, ti){
 		// polygon's data
 		Array<vector> v2;
 		for (int k=0;k<t2.Side.num;k++)
-			v2.add(m->Vertex[t2.Side[k].Vertex].pos);
+			v2.add(s.Vertex[t2.Side[k].Vertex].pos);
 		plane pl2;
-		PlaneFromPointNormal(pl2, m->Vertex[t2.Side[0].Vertex].pos, t2.TempNormal);
+		PlaneFromPointNormal(pl2, s.Vertex[t2.Side[0].Vertex].pos, t2.TempNormal);
 
-		Array<int> vv2 = t2.Triangulate(m->Vertex);
+		Array<int> vv2 = t2.Triangulate(s.Vertex);
 		for (int kk=0;kk<t->Side.num;kk++){
 			vector ve[2];
 			for (int k=0;k<2;k++)
-				ve[k] = m->Vertex[t->Side[(kk + k) % t->Side.num].Vertex].pos;
+				ve[k] = m.Vertex[t->Side[(kk + k) % t->Side.num].Vertex].pos;
 
 			// crossing plane?
 			if (pl2.distance(ve[0]) * pl2.distance(ve[1]) > 0)
@@ -216,20 +217,19 @@ bool ActionModelSurfaceSubtract::CollidePolygonSurface(DataModel *m, ModelPolygo
 	// FIXME debug
 	/*foreach(sCol &c, col)
 		AddSubAction(new ActionModelAddVertex(c.p), m);*/
-	msg_db_l(0);
 	return col.num > 0;
 }
 
 // we assume t does not collide with s...!
-bool ActionModelSurfaceSubtract::PolygonInsideSurface(DataModel *m, ModelPolygon *t, ModelSurface *s)
+bool PolygonInsideSurface(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s)
 {
 	foreach(ModelPolygonSide &side, t->Side)
-		if (!s->IsInside(m->Vertex[side.Vertex].pos))
+		if (!s.IsInside(m.Vertex[side.Vertex].pos))
 			return false;
 	return true;
 }
 
-bool ActionModelSurfaceSubtract::find_contour_boundary(ModelSurface *s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse)
+bool find_contour_boundary(ModelGeometry &s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse)
 {
 	// find first
 	int last_poly = -1;
@@ -252,10 +252,10 @@ bool ActionModelSurfaceSubtract::find_contour_boundary(ModelSurface *s, Array<sC
 		foreachi(sCol &c, c_in, i)
 			if (c.type == c.TYPE_OTHER_EDGE){
 				for (int k=0;k<2;k++)
-					if (s->Edge[c.edge].Polygon[k] == last_poly){
+					if (s.Edge[c.edge].Polygon[k] == last_poly){
 						//msg_write(format("%d  %d  - %d", c.type, c.polygon, c.edge));
 						c_out.add(c);
-						last_poly = s->Edge[c.edge].Polygon[1 - k];
+						last_poly = s.Edge[c.edge].Polygon[1 - k];
 						c_in.erase(i);
 						found = true;
 						break;
@@ -287,7 +287,7 @@ bool ActionModelSurfaceSubtract::find_contour_boundary(ModelSurface *s, Array<sC
 	return false;
 }
 
-bool ActionModelSurfaceSubtract::find_contour_inside(DataModel *m, ModelPolygon *t, ModelSurface *s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse)
+bool find_contour_inside(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse)
 {
 	if (c_in.num == 0)
 		return false;
@@ -296,10 +296,10 @@ bool ActionModelSurfaceSubtract::find_contour_inside(DataModel *m, ModelPolygon 
 		throw ActionException("internal contour without internal point..." + i2s(c_in[0].type));
 	c_out.add(c_in[0]);
 	c_in.erase(0);
-	vector edge_dir = m->Vertex[s->Edge[c_out[0].edge].Vertex[1]].pos - m->Vertex[s->Edge[c_out[0].edge].Vertex[0]].pos;
-	int last_poly = s->Edge[c_out[0].edge].Polygon[0];
+	vector edge_dir = m.Vertex[s.Edge[c_out[0].edge].Vertex[1]].pos - m.Vertex[s.Edge[c_out[0].edge].Vertex[0]].pos;
+	int last_poly = s.Edge[c_out[0].edge].Polygon[0];
 	if (t->TempNormal * edge_dir < 0)
-		last_poly = s->Edge[c_out[0].edge].Polygon[1];
+		last_poly = s.Edge[c_out[0].edge].Polygon[1];
 
 
 	//throw ActionException("internal contour not implemented");
@@ -310,10 +310,10 @@ bool ActionModelSurfaceSubtract::find_contour_inside(DataModel *m, ModelPolygon 
 		foreachi(sCol &c, c_in, i)
 			if (c.type == c.TYPE_OTHER_EDGE){
 				for (int k=0;k<2;k++)
-					if (s->Edge[c.edge].Polygon[k] == last_poly){
+					if (s.Edge[c.edge].Polygon[k] == last_poly){
 						//msg_write(format("%d  %d  - %d", c.type, c.polygon, c.edge));
 						c_out.add(c);
-						last_poly = s->Edge[c.edge].Polygon[1 - k];
+						last_poly = s.Edge[c.edge].Polygon[1 - k];
 						c_in.erase(i);
 						found = true;
 						break;
@@ -332,7 +332,7 @@ bool ActionModelSurfaceSubtract::find_contour_inside(DataModel *m, ModelPolygon 
 	return false;
 }
 
-void ActionModelSurfaceSubtract::find_contours(DataModel *m, ModelPolygon *t, ModelSurface *s, Array<Array<sCol> > &c_out, bool inverse)
+void find_contours(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s, Array<Array<sCol> > &c_out, bool inverse)
 {
 	int ni = 0, no = 0;
 	foreach(sCol &cc, col){
@@ -369,7 +369,7 @@ void ActionModelSurfaceSubtract::find_contours(DataModel *m, ModelPolygon *t, Mo
 			msg_write(i2s(i) + " " + c.str());
 		if (cc.num < 3){
 			for (int i=0;i<t->Side.num;i++)
-				ed->multi_view_3d->AddMessage3d("p"+i2s(i), m->Vertex[t->Side[i].Vertex].pos);
+				ed->multi_view_3d->AddMessage3d("p"+i2s(i), m.Vertex[t->Side[i].Vertex].pos);
 			foreachi(sCol &c, cc, i)
 				ed->multi_view_3d->AddMessage3d("x"+i2s(i), c.p);
 			throw ActionException("contour with num<3");
@@ -377,15 +377,15 @@ void ActionModelSurfaceSubtract::find_contours(DataModel *m, ModelPolygon *t, Mo
 	}
 }
 
-void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolygon *t, ModelSurface *b, Array<Array<sCol> > &c_in, bool inverse)
+void sort_and_join_contours(ModelGeometry &m, ModelPolygon *t, ModelGeometry &b, Array<Array<sCol> > &c_in, bool inverse)
 {
 	msg_db_r("sort_and_join_contours", 1);
 
 	// find old vertices
 	Array<sCol> v;
 	for (int k=0;k<t->Side.num;k++){
-		vector pos = m->Vertex[t->Side[k].Vertex].pos;
-		if (b->IsInside(pos) == inverse)
+		vector pos = m.Vertex[t->Side[k].Vertex].pos;
+		if (b.IsInside(pos) == inverse)
 			v.add(sCol(pos, k));
 	}
 
@@ -479,7 +479,7 @@ void ActionModelSurfaceSubtract::sort_and_join_contours(DataModel *m, ModelPolyg
 }
 
 
-float ActionModelSurfaceSubtract::get_ang(Array<sCol> &c, int i, const vector &flat_n)
+float get_ang(Array<sCol> &c, int i, const vector &flat_n)
 {
 	int ia = i - 1;
 	int ic = i + 1;
@@ -496,7 +496,7 @@ float ActionModelSurfaceSubtract::get_ang(Array<sCol> &c, int i, const vector &f
 	return atan2(x, y);
 }
 
-bool ActionModelSurfaceSubtract::vertex_in_tria(sCol &a, sCol &b, sCol &c, sCol &v, float &slope)
+bool vertex_in_tria(sCol &a, sCol &b, sCol &c, sCol &v, float &slope)
 {
 	float f, g;
 	GetBaryCentric(v.p, b.p, c.p, a.p, f, g);
@@ -504,7 +504,7 @@ bool ActionModelSurfaceSubtract::vertex_in_tria(sCol &a, sCol &b, sCol &c, sCol 
 	return ((f > 0) && (g > 0) && (f + g < 1));
 }
 
-void ActionModelSurfaceSubtract::combine_contours(Array<Array<sCol> > &c, int ca, int ia, int cb, int ib)
+void combine_contours(Array<Array<sCol> > &c, int ca, int ia, int cb, int ib)
 {
 	Array<sCol> temp = c[ca].sub(ia, c[ca].num - ia) + c[ca].sub(0, ia);
 	c[ca] = temp;
@@ -516,7 +516,7 @@ void ActionModelSurfaceSubtract::combine_contours(Array<Array<sCol> > &c, int ca
 	c.erase(cb);
 }
 
-void ActionModelSurfaceSubtract::triangulate_contours(DataModel *m, ModelPolygon *t, Array<Array<sCol> > &contours)
+void triangulate_contours(ModelGeometry &m, ModelPolygon *t, Array<Array<sCol> > &contours)
 {
 	if (contours.num == 1)
 		return;
@@ -618,7 +618,7 @@ void ActionModelSurfaceSubtract::triangulate_contours(DataModel *m, ModelPolygon
 	contours = output;
 }
 
-bool ActionModelSurfaceSubtract::combine_polygons(Array<Array<sCol> > &c, int ia, int ib)
+bool combine_polygons(Array<Array<sCol> > &c, int ia, int ib)
 {
 	Array<int> equals;
 	foreachi(sCol &a, c[ia], cia)
@@ -665,7 +665,7 @@ bool ActionModelSurfaceSubtract::combine_polygons(Array<Array<sCol> > &c, int ia
 	return true;
 }
 
-void ActionModelSurfaceSubtract::simplify_filling(Array<Array<sCol> > &c)
+void simplify_filling(Array<Array<sCol> > &c)
 {
 	if (c.num == 1)
 		return;
@@ -698,24 +698,21 @@ void ActionModelSurfaceSubtract::simplify_filling(Array<Array<sCol> > &c)
 		}*/
 }
 
-void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a, ModelPolygon *t, int t_index, ModelSurface *&b, bool inverse)
+
+void PolygonSubtract(ModelGeometry &a, ModelPolygon *t, int t_index, ModelGeometry &b, ModelGeometry &out, bool inverse)
 {
-	msg_db_r("PolygonSubtract", 0);
-	a->TestSanity("tria sub a prae");
-	b->TestSanity("tria sub b prae");
-	int a_i = m->get_surf_no(a);
-	int b_i = m->get_surf_no(b);
+	msg_db_f("PolygonSubtract", 0);
 
 	// find contours
 	Array<Array<sCol> > contours;
-	find_contours(m, t, b, contours, inverse);
+	find_contours(a, t, b, contours, inverse);
 
-	triangulate_contours(m, t, contours);
+	triangulate_contours(a, t, contours);
 
 	simplify_filling(contours);
 
 	SkinGeneratorMulti sg;
-	sg.init_polygon(m->Vertex, *t);
+	sg.init_polygon(a.Vertex, *t);
 
 	// create new surfaces
 	foreach(Array<sCol> &c, contours){
@@ -726,8 +723,8 @@ void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a,
 		Array<int> vv;
 		Array<vector> sv;
 		for (int i=0;i<c.num;i++){
-			vv.add(m->Vertex.num);
-			AddSubAction(new ActionModelAddVertex(c[i].p), m);
+			vv.add(out.Vertex.num);
+			out.AddVertex(c[i].p);
 		}
 
 		// skin vertices
@@ -739,89 +736,62 @@ void ActionModelSurfaceSubtract::PolygonSubtract(DataModel *m, ModelSurface *&a,
 					sv.add(sg.get(c[i].p, l));
 
 		// fill contour with polygons
-		AddSubAction(new ActionModelAddPolygon(vv, t->Material, sv), m);
-
-		a = &m->Surface[a_i];
-		b = &m->Surface[b_i];
-		a->TestSanity("tria sub a post");
-
-		t = &a->Polygon[t_index];
+		out.AddPolygon(vv, sv);
+		out.Polygon.back().Material = t->Material;
 	}
-
-
-	msg_db_l(0);
 }
 
-void ActionModelSurfaceSubtract::SurfaceSubtractUnary(DataModel *m, ModelSurface *& a, ModelSurface *& b, bool inverse)
+// out = a - b (just surface diff)
+void SurfaceSubtractUnary(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out, bool inverse)
 {
-	msg_db_r("SurfSubtractUnary", 0);
-	a->TestSanity("surf sub a prae");
-	b->TestSanity("surf sub b prae");
-	int nsurf = m->Surface.num;
-	int ai = m->get_surf_no(a);
-	int bi = m->get_surf_no(b);
+	msg_db_f("SurfSubtractUnary", 0);
 
-	// collide both surfaces and create additional polygons (as new surfaces...)
+	out.Vertex = a.Vertex;
+
+	// collide both surfaces and create additional polygons
 	Set<int> to_del;
-	for (int i=a->Polygon.num-1; i>=0; i--)
-		if (CollidePolygonSurface(m, &a->Polygon[i], b, i)){
-			a->TestSanity("tria sub (ext) a prae");
-			PolygonSubtract(m, a, &a->Polygon[i], i, b, inverse);
-			a->TestSanity("tria sub (ext) a post");
-			to_del.add(i);
-		}else if (PolygonInsideSurface(m, &a->Polygon[i], b) != inverse){
-			to_del.add(i);
+	foreachi(ModelPolygon &p, a.Polygon, i)
+		if (CollidePolygonSurface(a, &p, b, i)){
+			PolygonSubtract(a, &p, i, b, out, inverse);
+		}else if (PolygonInsideSurface(a, &p, b) == inverse){
+			out.Polygon.add(p);
 		}
-	a->TestSanity("surf sub a med");
-	b->TestSanity("surf sub b med");
-
-	// remove obsolete polygons
-	foreachb(int p, to_del)
-		AddSubAction(new ActionModelSurfaceDeletePolygon(ai, p), m);
-	a->TestSanity("tria sub a med");
-
-	// connect separate parts
-#if ALLOW_WELD
-	for (int i=m->Surface.num-1;i>=nsurf;i--)
-		AddSubAction(new ActionModelSurfaceAutoWeld(ai, m->Surface.num - 1, 0.00001f), m);
-#endif
-	a = &m->Surface[ai];
-	b = &m->Surface[bi];
-	a->TestSanity("surf sub a post");
-	b->TestSanity("surf sub b post");
 
 	if (inverse)
-		AddSubAction(new ActionModelSurfaceInvert(ai), m);
+		a.Invert();
 
-	msg_db_l(0);
+	out.RemoveUnusedVertices();
 }
 
 
-void ActionModelSurfaceSubtract::SurfaceSubtract(DataModel *m, ModelSurface *a, ModelSurface *b)
+// out = a - b
+bool ModelGeometrySubtract(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out)
 {
-	msg_db_r("SurfSubtract", 0);
+	msg_db_f("ModelGeometrySubtract", 0);
 
-	int ai = m->get_surf_no(a);
-	int bi = m->get_surf_no(b);
-	bool closed = a->IsClosed;
-	ModelSurface *c;
-	int ci;
+	a.UpdateTopology();
+	b.UpdateTopology();
+	foreach(ModelPolygon &p, a.Polygon)
+		p.TempNormal = p.GetNormal(a.Vertex);
+	foreach(ModelPolygon &p, b.Polygon)
+		p.TempNormal = p.GetNormal(b.Vertex);
+	if (!b.IsClosed)
+		return false;
 
-	if (closed){
-		c = (ModelSurface*)AddSubAction(new ActionModelSurfaceCopy(bi), m);
-		ci = m->get_surf_no(c);
-		a = &m->Surface[ai];
-		SurfaceSubtractUnary(m, c, a, true);
-		b = &m->Surface[bi];
+
+
+	SurfaceSubtractUnary(a, b, out, false);
+
+	if (a.IsClosed){
+		ModelGeometry t;
+		SurfaceSubtractUnary(b, a, t, true);
+		out.Add(t);
 	}
 
-	SurfaceSubtractUnary(m, a, b, false);
-	//SurfaceSubtractUnary(m, a, b, true);
 
-#if ALLOW_WELD
-	if (closed)
-		AddSubAction(new ActionModelSurfaceAutoWeld(ai, ci, 0.00001f), m);
-#endif
+	out.Weld(0.00001f);
 
-	msg_db_l(0);
+	return true;
 }
+
+

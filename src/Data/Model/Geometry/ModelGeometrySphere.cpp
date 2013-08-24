@@ -50,3 +50,7 @@ ModelGeometrySphere::ModelGeometrySphere(const vector &pos, float radius, int nu
 	Weld(radius / num * 0.01f);
 }
 
+void ModelGeometrySphere::__init__(const vector& pos, float radius, int num)
+{
+	new (this) ModelGeometrySphere(pos, radius, num);
+}

@@ -43,3 +43,7 @@ ModelGeometryTorus::ModelGeometryTorus(const vector &pos, const vector &axis, fl
 		}
 }
 
+void ModelGeometryTorus::__init__(const vector& pos, const vector& axis, float radius1, float radius2, int num_x, int num_y)
+{
+	new (this) ModelGeometryTorus(pos, axis, radius1, radius2, num_x, num_y);
+}

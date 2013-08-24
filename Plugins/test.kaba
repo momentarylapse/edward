@@ -6,6 +6,6 @@ void main()
 	data_model.AddVertex(vector(10,10,0), 0, -1)
 	data_model.AddVertex(vector(10,0,0), 0, -1)
 	data_model.AddVertex(vector(0,0,0), 0, -1)
-	data_model.AddTriangle(n + 0, n + 1, n + 2)
+	data_model.AddTriangle(n + 0, n + 1, n + 2, 0)
 	data_model.EndActionGroup()
 	

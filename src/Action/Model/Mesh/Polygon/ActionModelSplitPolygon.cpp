@@ -30,7 +30,7 @@ void *ActionModelSplitPolygon::compose(Data *d)
 
 	// skin interpolation
 	SkinGeneratorMulti sg;
-	sg.init_polygon(m, t);
+	sg.init_polygon(m->Vertex, t);
 
 	// delete old triangle
 	AddSubAction(new ActionModelSurfaceDeletePolygon(surface, polygon), m);

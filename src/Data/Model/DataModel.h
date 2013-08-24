@@ -289,7 +289,7 @@ public:
 	void SetNormalModeSelection(int mode);
 	void SetMaterialSelection(int material);
 	void CopyGeometry(ModelGeometry &geo); // not an action...
-	void PasteGeometry(ModelGeometry &geo, int material = -1);
+	void PasteGeometry(ModelGeometry &geo, int default_material);
 	void Easify(float factor);
 	void SubdivideSelectedSurfaces();
 	void Automap(int material, int texture_level);

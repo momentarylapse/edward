@@ -97,6 +97,11 @@ void ModelGeometryPlatonic::AddDodecahedron(const vector &pos, float radius)
 	Add5(nv, 8, 10, 2, 16, 0);
 }
 
+void ModelGeometryPlatonic::__init__(const vector& pos, float radius, int type)
+{
+	new (this) ModelGeometryPlatonic(pos, radius, type);
+}
+
 void ModelGeometryPlatonic::AddIcosahedron(const vector &pos, float radius)
 {
 	int nv = Vertex.num;

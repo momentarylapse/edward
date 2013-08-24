@@ -47,7 +47,7 @@ void SkinGenerator::init_projective(MultiViewWindow *win)
 	init_projective(t2 * s * t1 * win->projection * win->mat);
 }
 
-void SkinGenerator::init_polygon(DataModel *model, ModelPolygon &p, int level)
+void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, int level)
 {
 	vector n = p.TempNormal;
 	vector d1 = n.ortho();
@@ -55,8 +55,8 @@ void SkinGenerator::init_polygon(DataModel *model, ModelPolygon &p, int level)
 	matrix R = matrix(d1, d2, n);
 	float sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0, su = 0, sv = 0, sux = 0, suy = 0, svx = 0, svy = 0;
 	foreach(ModelPolygonSide &s, p.Side){
-		float x = d1 * model->Vertex[s.Vertex].pos;
-		float y = d2 * model->Vertex[s.Vertex].pos;
+		float x = d1 * v[s.Vertex].pos;
+		float y = d2 * v[s.Vertex].pos;
 		float u = s.SkinVertex[level].x;
 		float v = s.SkinVertex[level].y;
 		sx += x;
@@ -162,10 +162,10 @@ SkinGeneratorMulti::~SkinGeneratorMulti()
 	delete[](gen);
 }
 
-void SkinGeneratorMulti::init_polygon(DataModel *model, ModelPolygon &p)
+void SkinGeneratorMulti::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p)
 {
 	for (int i=0;i<MATERIAL_MAX_TEXTURES;i++)
-		gen[i].init_polygon(model, p, i);
+		gen[i].init_polygon(v, p, i);
 }
 
 vector SkinGeneratorMulti::get(const vector& v, int level) const

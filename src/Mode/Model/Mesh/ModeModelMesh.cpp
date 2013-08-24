@@ -14,6 +14,7 @@
 #include "ModeModelMeshSurface.h"
 #include "ModeModelMeshTexture.h"
 #include "../../ModeCreation.h"
+#include "../../../Data/Model/Geometry/ModelGeometryCube.h"
 #include "Creation/ModeModelMeshCreateVertex.h"
 #include "Creation/ModeModelMeshCreatePolygon.h"
 #include "Creation/ModeModelMeshCreateBall.h"
@@ -41,6 +42,7 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	Subscribe(data);
 
 	MaterialSelectionDialog = NULL;
+	CurrentMaterial = 0;
 
 	right_mouse_function = RMFRotate;
 
@@ -389,7 +391,7 @@ void ModeModelMesh::Copy()
 
 void ModeModelMesh::Paste()
 {
-	data->PasteGeometry(TempGeo);
+	data->PasteGeometry(TempGeo, CurrentMaterial);
 	ed->SetMessage(format(_("%d Vertizes, %d Dreiecke eingef&ugt"), TempGeo.Vertex.num, TempGeo.Polygon.num));
 }
 

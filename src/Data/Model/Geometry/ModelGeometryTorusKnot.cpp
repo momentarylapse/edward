@@ -23,3 +23,7 @@ ModelGeometryTorusKnot::ModelGeometryTorusKnot(const vector &_pos, const vector 
 	Add(geo);
 }
 
+void ModelGeometryTorusKnot::__init__(const vector& pos, const vector& axis, float radius1, float radius2, float radius3, int turns, int twists, int rings, int edges)
+{
+	new (this) ModelGeometryTorusKnot(pos, axis, radius1, radius2, radius3, turns, twists, rings, edges);
+}

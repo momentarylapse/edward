@@ -34,8 +34,15 @@ public:
 	void Weld(float epsilon);
 	void Weld(ModelGeometry &geo, float epsilon);
 
+	void Invert();
+
 	void Transform(const matrix &mat);
 	void Smoothen();
+
+	int AddEdge(int a, int b, int tria, int side);
+	void UpdateTopology();
+	void RemoveUnusedVertices();
+	bool IsInside(const vector &v) const;
 
 	void GetBoundingBox(vector &min, vector &max);
 
@@ -43,6 +50,11 @@ public:
 
 	Array<ModelVertex> Vertex;
 	Array<ModelPolygon> Polygon;
+	Array<ModelEdge> Edge;
+
+	bool IsClosed;
 };
+
+bool ModelGeometrySubtract(ModelGeometry &a, ModelGeometry &b, ModelGeometry &c);
 
 #endif /* MODELGEOMETRY_H_ */

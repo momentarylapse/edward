@@ -37,3 +37,7 @@ ModelGeometryPlane::ModelGeometryPlane(const vector &pos, const vector &dv1, con
 		}
 }
 
+void ModelGeometryPlane::__init__(const vector& pos, const vector& dv1, const vector& dv2, int num_x, int num_y)
+{
+	new (this) ModelGeometryPlane(pos, dv1, dv2, num_x, num_y);
+}
