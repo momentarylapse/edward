@@ -364,5 +364,5 @@ extern DataModel *data_model
 extern DataWorld *data_world
 extern window edward
 
-extern bool ModelGeometrySubtract(ModelGeometry a, ModelGeometry b, ModelGeometry out)
+extern int ModelGeometrySubtract(ModelGeometry a, ModelGeometry b, ModelGeometry out)
 

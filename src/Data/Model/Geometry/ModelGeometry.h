@@ -55,6 +55,6 @@ public:
 	bool IsClosed;
 };
 
-bool ModelGeometrySubtract(ModelGeometry &a, ModelGeometry &b, ModelGeometry &c);
+int ModelGeometrySubtract(ModelGeometry &a, ModelGeometry &b, ModelGeometry &c);
 
 #endif /* MODELGEOMETRY_H_ */

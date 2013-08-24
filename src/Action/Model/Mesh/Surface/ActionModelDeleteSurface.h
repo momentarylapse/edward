@@ -13,9 +13,14 @@
 class ActionModelDeleteSurface: public ActionGroup
 {
 public:
-	ActionModelDeleteSurface();
+	ActionModelDeleteSurface(int index);
 	virtual ~ActionModelDeleteSurface();
 	string name(){	return "ModelDeleteSurface";	}
+
+	virtual void *compose(Data *d);
+
+private:
+	int index;
 };
 
 #endif /* ACTIONMODELDELETESURFACE_H_ */

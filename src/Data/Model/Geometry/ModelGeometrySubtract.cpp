@@ -11,43 +11,43 @@
 
 
 
-	class sCol
-	{
-	public:
-		enum{
-			TYPE_OWN_EDGE_IN,
-			TYPE_OWN_EDGE_OUT,
-			TYPE_OTHER_EDGE,
-			TYPE_OLD_VERTEX
-		};
-		sCol(){}
-		sCol(const vector &_p, int _side);
-		sCol(const vector &_p, int _type, int _polygon, int _edge, int _side);
-		float get_f(ModelGeometry &m, ModelPolygon *t);
-		bool operator==(const sCol &other) const;
-		vector p;
-		int type;
-		int polygon, edge, side;
-		string str() const;
+class sCol
+{
+public:
+	enum{
+		TYPE_OWN_EDGE_IN,
+		TYPE_OWN_EDGE_OUT,
+		TYPE_OTHER_EDGE,
+		TYPE_OLD_VERTEX
 	};
+	sCol(){}
+	sCol(const vector &_p, int _side);
+	sCol(const vector &_p, int _type, int _polygon, int _edge, int _side);
+	float get_f(ModelGeometry &m, ModelPolygon *t);
+	bool operator==(const sCol &other) const;
+	vector p;
+	int type;
+	int polygon, edge, side;
+	string str() const;
+};
 
-	Array<sCol> col;
+Array<sCol> col;
 
-	bool CollidePolygons(ModelGeometry &m, ModelPolygon *t1, ModelPolygon *t2, int t2_index);
-	bool CollidePolygonSurface(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s, int t_index);
-	bool PolygonInsideSurface(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s);
-	void find_contours(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s, Array<Array<sCol> > &c_out, bool inverse);
-	bool find_contour_boundary(ModelGeometry &s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse);
-	bool find_contour_inside(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse);
-	float get_ang(Array<sCol> &c, int i, const vector &flat_n);
-	bool vertex_in_tria(sCol &a, sCol &b, sCol &c, sCol &v, float &slope);
-	void combine_contours(Array<Array<sCol> > &c, int ca, int ia, int cb, int ib);
-	void triangulate_contours(ModelGeometry &m, ModelPolygon *t, Array<Array<sCol> > &c);
-	bool combine_polygons(Array<Array<sCol> > &c, int ia, int ib);
-	void simplify_filling(Array<Array<sCol> > &c);
-	void sort_and_join_contours(ModelGeometry &m, ModelPolygon *t, ModelGeometry &b, Array<Array<sCol> > &c, bool inverse);
+bool CollidePolygons(ModelGeometry &m, ModelPolygon *t1, ModelPolygon *t2, int t2_index);
+bool CollidePolygonSurface(ModelGeometry &a, ModelPolygon *pa, ModelGeometry &b, int t_index);
+bool PolygonInsideSurface(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s);
+void find_contours(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s, Array<Array<sCol> > &c_out, bool inverse);
+bool find_contour_boundary(ModelGeometry &s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse);
+bool find_contour_inside(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse);
+float get_ang(Array<sCol> &c, int i, const vector &flat_n);
+bool vertex_in_tria(sCol &a, sCol &b, sCol &c, sCol &v, float &slope);
+void combine_contours(Array<Array<sCol> > &c, int ca, int ia, int cb, int ib);
+void triangulate_contours(ModelGeometry &m, ModelPolygon *t, Array<Array<sCol> > &c);
+bool combine_polygons(Array<Array<sCol> > &c, int ia, int ib);
+void simplify_filling(Array<Array<sCol> > &c);
+void sort_and_join_contours(ModelGeometry &m, ModelPolygon *t, ModelGeometry &b, Array<Array<sCol> > &c, bool inverse);
 void PolygonSubtract(ModelGeometry &a, ModelPolygon *t, int t_index, ModelGeometry &b, ModelGeometry &out, bool inverse);
-void SurfaceSubtractUnary(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out, bool inverse);
+bool SurfaceSubtractUnary(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out, bool inverse);
 
 
 
@@ -153,25 +153,25 @@ bool ActionModelSurfaceSubtract::CollidePolygons(DataModel *m, ModelPolygon *t1,
 }
 #endif
 
-bool CollidePolygonSurface(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s, int t_index)
+bool CollidePolygonSurface(ModelGeometry &a, ModelPolygon *pa, ModelGeometry &b, int t_index)
 {
 	msg_db_f("CollidePolygonSurface", 0);
 	col.clear();
 
 	// polygon's data
 	Array<vector> v;
-	for (int k=0;k<t->Side.num;k++)
-		v.add(m.Vertex[t->Side[k].Vertex].pos);
+	for (int k=0;k<pa->Side.num;k++)
+		v.add(a.Vertex[pa->Side[k].Vertex].pos);
 	plane pl;
-	PlaneFromPointNormal(pl, m.Vertex[t->Side[0].Vertex].pos, t->TempNormal);
+	PlaneFromPointNormal(pl, a.Vertex[pa->Side[0].Vertex].pos, pa->TempNormal);
 
-	Array<int> vv = t->Triangulate(m.Vertex);
+	Array<int> vv = pa->Triangulate(a.Vertex);
 
 	// collide polygon <-> surface's edges
-	foreachi(ModelEdge &e, s.Edge, ei){
+	foreachi(ModelEdge &e, b.Edge, ei){
 		vector ve[2];
 		for (int k=0;k<2;k++)
-			ve[k] = s.Vertex[e.Vertex[k]].pos;
+			ve[k] = b.Vertex[e.Vertex[k]].pos;
 
 		// crossing plane?
 		if (pl.distance(ve[0]) * pl.distance(ve[1]) > 0)
@@ -186,19 +186,19 @@ bool CollidePolygonSurface(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s, 
 	}
 
 	// collide polygon's edges <-> surface's polygons
-	foreachi(ModelPolygon &t2, s.Polygon, ti){
+	foreachi(ModelPolygon &pb, b.Polygon, ti){
 		// polygon's data
 		Array<vector> v2;
-		for (int k=0;k<t2.Side.num;k++)
-			v2.add(s.Vertex[t2.Side[k].Vertex].pos);
+		for (int k=0;k<pb.Side.num;k++)
+			v2.add(b.Vertex[pb.Side[k].Vertex].pos);
 		plane pl2;
-		PlaneFromPointNormal(pl2, s.Vertex[t2.Side[0].Vertex].pos, t2.TempNormal);
+		PlaneFromPointNormal(pl2, b.Vertex[pb.Side[0].Vertex].pos, pb.TempNormal);
 
-		Array<int> vv2 = t2.Triangulate(s.Vertex);
-		for (int kk=0;kk<t->Side.num;kk++){
+		Array<int> vv2 = pb.Triangulate(b.Vertex);
+		for (int kk=0;kk<pa->Side.num;kk++){
 			vector ve[2];
 			for (int k=0;k<2;k++)
-				ve[k] = m.Vertex[t->Side[(kk + k) % t->Side.num].Vertex].pos;
+				ve[k] = a.Vertex[pa->Side[(kk + k) % pa->Side.num].Vertex].pos;
 
 			// crossing plane?
 			if (pl2.distance(ve[0]) * pl2.distance(ve[1]) > 0)
@@ -209,7 +209,7 @@ bool CollidePolygonSurface(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s, 
 				if (!LineIntersectsTriangle2(pl2, v2[vv2[i+0]], v2[vv2[i+1]], v2[vv2[i+2]], ve[0], ve[1], pos, false))
 					continue;
 				int type = (pl2.distance(ve[0]) > 0) ? sCol::TYPE_OWN_EDGE_IN : sCol::TYPE_OWN_EDGE_OUT;
-				col.add(sCol(pos, type, ti, t->Side[kk].Edge, kk));
+				col.add(sCol(pos, type, ti, pa->Side[kk].Edge, kk));
 			}
 		}
 	}
@@ -296,7 +296,7 @@ bool find_contour_inside(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s, Ar
 		throw ActionException("internal contour without internal point..." + i2s(c_in[0].type));
 	c_out.add(c_in[0]);
 	c_in.erase(0);
-	vector edge_dir = m.Vertex[s.Edge[c_out[0].edge].Vertex[1]].pos - m.Vertex[s.Edge[c_out[0].edge].Vertex[0]].pos;
+	vector edge_dir = s.Vertex[s.Edge[c_out[0].edge].Vertex[1]].pos - s.Vertex[s.Edge[c_out[0].edge].Vertex[0]].pos;
 	int last_poly = s.Edge[c_out[0].edge].Polygon[0];
 	if (t->TempNormal * edge_dir < 0)
 		last_poly = s.Edge[c_out[0].edge].Polygon[1];
@@ -703,6 +703,9 @@ void PolygonSubtract(ModelGeometry &a, ModelPolygon *t, int t_index, ModelGeomet
 {
 	msg_db_f("PolygonSubtract", 0);
 
+	msg_write("-----sub");
+	msg_write(col.num);
+
 	// find contours
 	Array<Array<sCol> > contours;
 	find_contours(a, t, b, contours, inverse);
@@ -742,9 +745,10 @@ void PolygonSubtract(ModelGeometry &a, ModelPolygon *t, int t_index, ModelGeomet
 }
 
 // out = a - b (just surface diff)
-void SurfaceSubtractUnary(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out, bool inverse)
+bool SurfaceSubtractUnary(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out, bool inverse)
 {
 	msg_db_f("SurfSubtractUnary", 0);
+	bool has_changes = false;
 
 	out.Vertex = a.Vertex;
 
@@ -753,19 +757,23 @@ void SurfaceSubtractUnary(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out
 	foreachi(ModelPolygon &p, a.Polygon, i)
 		if (CollidePolygonSurface(a, &p, b, i)){
 			PolygonSubtract(a, &p, i, b, out, inverse);
+			has_changes = true;
 		}else if (PolygonInsideSurface(a, &p, b) == inverse){
 			out.Polygon.add(p);
+		}else{
+			has_changes = true;
 		}
 
 	if (inverse)
 		a.Invert();
 
 	out.RemoveUnusedVertices();
+	return has_changes;
 }
 
 
 // out = a - b
-bool ModelGeometrySubtract(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out)
+int ModelGeometrySubtract(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out)
 {
 	msg_db_f("ModelGeometrySubtract", 0);
 
@@ -776,22 +784,29 @@ bool ModelGeometrySubtract(ModelGeometry &a, ModelGeometry &b, ModelGeometry &ou
 	foreach(ModelPolygon &p, b.Polygon)
 		p.TempNormal = p.GetNormal(b.Vertex);
 	if (!b.IsClosed)
-		return false;
+		return -1;
 
+	bool diff = false;
 
+	//try{
 
-	SurfaceSubtractUnary(a, b, out, false);
+	diff |= SurfaceSubtractUnary(a, b, out, false);
 
 	if (a.IsClosed){
 		ModelGeometry t;
-		SurfaceSubtractUnary(b, a, t, true);
+		diff |= SurfaceSubtractUnary(b, a, t, true);
 		out.Add(t);
 	}
+
+	/*}catch(ActionException &e){
+		msg_error(e.message);
+		return false;
+	}*/
 
 
 	out.Weld(0.00001f);
 
-	return true;
+	return diff ? 1 : 0;
 }
 
 
