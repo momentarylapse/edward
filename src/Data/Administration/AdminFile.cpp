@@ -16,6 +16,7 @@
 #include "../../meta.h"
 #include "../../x/terrain.h"
 #include "../../x/model_manager.h"
+#include "../../x/font.h"
 #include "../../lib/script/script.h"
 
 AdminFile::AdminFile()
@@ -265,7 +266,7 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FDFont){
 		DataFont f;
-		if (f.Load(MaterialDir + Name,false)){
+		if (f.Load(FontDir + Name,false)){
 			Time = f.file_time;
 			add_possible_link(l, FDTexture, f.global.TextureFile);
 		}else

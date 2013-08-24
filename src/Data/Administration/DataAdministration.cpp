@@ -307,9 +307,12 @@ void DataAdministration::ExportGame(const string &dir, GameIniData &game_ini)
 		}else if (a->Kind == FDModel){
 			source += "Objects/";
 			target += "Objects/";
-		}else if ((a->Kind == FDMaterial) || (a->Kind == FDFont) || (a->Kind == FDShaderFile)){
+		}else if ((a->Kind == FDMaterial) || (a->Kind == FDShaderFile)){
 			source += "Materials/";
 			target += "Materials/";
+		}else if (a->Kind == FDFont){
+			source += "Fonts/";
+			target += "Fonts/";
 		}else if ((a->Kind == FDScript) || (a->Kind == FDCameraFlight)){
 			source += "Scripts/";
 			target += "Scripts/";
