@@ -28,6 +28,13 @@ void *ActionModelDeleteEmptySurface::execute(Data *d)
 	is_physical = m->Surface[surface].IsPhysical;
 	is_visible = m->Surface[surface].IsVisible;
 	m->Surface.erase(surface);
+
+	// correct vertex/surface references
+	foreach(ModelVertex &v, m->Vertex){
+		assert(v.Surface != surface);
+		if (v.Surface > surface)
+			v.Surface --;
+	}
 	return NULL;
 }
 
@@ -40,6 +47,11 @@ void ActionModelDeleteEmptySurface::undo(Data *d)
 	ModelSurface *s = m->AddSurface(surface);
 	s->IsPhysical = is_physical;
 	s->IsVisible = is_visible;
+
+	// correct vertex/surface references
+	foreach(ModelVertex &v, m->Vertex)
+		if (v.Surface >= surface)
+			v.Surface ++;
 }
 
 
