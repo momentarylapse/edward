@@ -1,0 +1,75 @@
+use "api.kaba"
+
+void main()
+	if !HuiFileDialogSave(edward, "Save JSON", "", "*.js", "*.js")
+		return
+	file f = FileCreate(HuiFilename)
+	
+	/*int n_tria = 0
+	for int is, 0, data_model.Surface.num
+		ModelSurface *s = &data_model.Surface[is]
+		for int ip, 0, s.Polygon.num
+			ModelPolygon *p = &s.Polygon[ip]
+			n_tria += p.Side.num - 2*/
+	
+	string str = "{'metadata':{\n"
+	str += "	'formatVersion': 3\n"
+	/*str += "	'formatVersion': 3,\n"
+	str += "	'generatedBy': 'Edward',\n"
+	str += "	'vertices': " + data_model.Vertex.num.str() + ",\n"
+	str += "	'faces': " + n_tria.str() + ",\n"
+	str += "	'morphTargets': 0\n"*/
+	str += "},\n"
+	str += "'scale': 1.000,\n"
+	str += "'materials': [\n"
+	str += "	{\n"
+	str += "		'DbgColor' : 15658734,\n"
+	str += "		'DbgIndex' : 0,\n"
+	str += "		'DbgName' : 'Android',\n"
+	str += "		'blending' : 'NormalBlending',\n"
+	str += "		'colorAmbient' : [0.75, 0.75, 0.75],\n"
+	str += "		'colorDiffuse' : [1.0, 1.0, 1.0],\n"
+	str += "		'colorSpecular' : [0.5, 0.5, 0.5],\n"
+	str += "		'depthTest' : true,\n"
+	str += "		'depthWrite' : true,\n"
+	str += "		'shading' : 'Lambert',\n"
+	str += "		'specularCoef' : 50,\n"
+	str += "		'transparency' : 1.0,\n"
+	str += "		'transparent' : false,\n"
+	str += "		'vertexColors' : false\n"
+	str += "	}],\n"
+	/*str += "'materials': [\n"
+	for int i, 0, data_model.Material.num
+		str += "	{\n"
+		str += "	}"
+		if i < data_model.Material.num - 1
+			str += ",\n"
+	str += "],\n"*/
+	str += "'vertices': [\n"
+	for int i, 0, data_model.Vertex.num
+		vector v = data_model.Vertex[i].pos
+		str += "	" + v.x.str() + ", " + v.y.str() + ", " + v.z.str()
+		if i < data_model.Vertex.num - 1
+			str += ",\n"
+	str += "],\n"
+	str += "'faces': [\n"
+	for int is, 0, data_model.Surface.num
+		ModelSurface *s = &data_model.Surface[is]
+		for int ip, 0, s.Polygon.num
+			ModelPolygon *p = &s.Polygon[ip]
+			for int k, 0, p.Side.num - 2
+				int a = p.Side[k].Triangulation[0]
+				int b = p.Side[k].Triangulation[1]
+				int c = p.Side[k].Triangulation[2]
+				int va = p.Side[a].Vertex
+				int vb = p.Side[b].Vertex
+				int vc = p.Side[c].Vertex
+				vector n = p.TempNormal
+				str += "	0, " + va.str() + ", " + vb.str() + ", " + vc.str()
+				if (is < data_model.Surface.num - 1) or (ip < s.Polygon.num - 1) or (k < p.Side.num - 3)
+					str += ",\n"
+	str += "]\n"
+	str += "}"
+	str = str.replace("'", "\"")
+	f.WriteStr(str)
+	FileClose(f)

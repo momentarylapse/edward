@@ -108,6 +108,15 @@ void PluginManager::Init()
 	Script::DeclareClassOffset("ModelPolygon", "TriangulationDirty", offsetof(ModelPolygon, TriangulationDirty));
 	Script::DeclareClassOffset("ModelPolygon", "Material", offsetof(ModelPolygon, Material));
 
+	Script::DeclareClassSize("ModelSurface", sizeof(ModelSurface));
+	Script::DeclareClassOffset("ModelSurface", "Polygon", offsetof(ModelSurface, Polygon));
+	Script::DeclareClassOffset("ModelSurface", "Edge", offsetof(ModelSurface, Edge));
+	Script::DeclareClassOffset("ModelSurface", "Vertex", offsetof(ModelSurface, Vertex));
+	Script::DeclareClassOffset("ModelSurface", "IsClosed", offsetof(ModelSurface, IsClosed));
+	Script::DeclareClassOffset("ModelSurface", "IsPhysical", offsetof(ModelSurface, IsPhysical));
+	Script::DeclareClassOffset("ModelSurface", "IsVisible", offsetof(ModelSurface, IsVisible));
+	Script::DeclareClassOffset("ModelSurface", "model", offsetof(ModelSurface, model));
+
 	Script::DeclareClassSize("DataModel", sizeof(DataModel));
 	Script::DeclareClassOffset("DataModel", "Bone", offsetof(DataModel, Bone));
 	Script::DeclareClassOffset("DataModel", "Move", offsetof(DataModel, Move));
