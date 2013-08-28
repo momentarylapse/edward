@@ -62,7 +62,7 @@ float sCol::get_f(ModelGeometry &m, ModelPolygon *t)
 
 string sCol::str() const
 {
-	return format("[%d]\tp=%d\te=%d\ts=%d\t%.1f\t%.1f\t%.1f", type, polygon, edge, side, p.x, p.y, p.z);
+	return format("[%d]\tp=%d\te=%d\ts=%d\t(%.1f\t%.1f\t%.1f)", type, polygon, edge, side, p.x, p.y, p.z);
 }
 
 sCol::sCol(const vector &_p, int _side)
@@ -523,6 +523,7 @@ void triangulate_contours(ModelGeometry &m, ModelPolygon *t, Array<Array<sCol> >
 	Array<Array<sCol> > temp = contours;
 	Array<Array<sCol> > output;
 
+
 	while(contours.num > 0){
 
 		// find largest angle (sharpest)
@@ -530,41 +531,43 @@ void triangulate_contours(ModelGeometry &m, ModelPolygon *t, Array<Array<sCol> >
 		int i_max = -1;
 		int c_max;
 		float f_max = 0;
-		int inside_i, inside_c;
-		float inside_slope;
+		int inside_i = -1, inside_c;
 		foreachi(Array<sCol> &c, contours, ci)
 		for (int i=0;i<c.num;i++){
-			float f = get_ang(c, (i+1) % c.num, t->TempNormal);
+			int i_p1 = (i+1) % c.num;
+			int i_p2 = (i+2) % c.num;
+			float f = get_ang(c, i_p1, t->TempNormal);
 			if (f < 0)
 				continue;
 			// cheat: ...
-			float f_n = get_ang(c, (i+2) % c.num, t->TempNormal);
+			float f_n = get_ang(c, i_p2, t->TempNormal);
 			float f_l = get_ang(c, i, t->TempNormal);
 			if (f_n >= 0)
-				f += 0.01f / (f_n + 0.01f);
+				f += 0.001f / (f_n + 0.001f);
 			if (f_l >= 0)
-				f += 0.01f / (f_l + 0.01f);
+				f += 0.001f / (f_l + 0.001f);
 
 			if (f > f_max){
-				inside_i = -1;
-				inside_slope = -1;
+				int cur_inside_i = -1;
+				int cur_inside_c = -1;
+				float cur_inside_slope = -1;
 				// other vertices within this triangle?
 				bool ok = true;
 				foreachi(Array<sCol> &other, contours, cj)
 				for (int j=0;j<other.num;j++){
 					if (&c == &other)
-						if ((j == i) || (j == ((i+1) % c.num)) || (j == ((i+2) % c.num)))
+						if ((j == i) || (j == i_p1) || (j == i_p2))
 							continue;
 					float slope;
-					if (vertex_in_tria(c[i], c[(i+1) % c.num], c[(i+2) % c.num], other[j], slope)){
+					if (vertex_in_tria(c[i], c[i_p1], c[i_p2], other[j], slope)){
 						if (&c == &other){
 							ok = false;
 							break;
 						}
-						if ((slope < inside_slope) || (inside_i < 0)){
-							inside_i = j;
-							inside_c = cj;
-							inside_slope = slope;
+						if ((slope < cur_inside_slope) || (cur_inside_i < 0)){
+							cur_inside_i = j;
+							cur_inside_c = cj;
+							cur_inside_slope = slope;
 						}
 					}
 				}
@@ -573,20 +576,25 @@ void triangulate_contours(ModelGeometry &m, ModelPolygon *t, Array<Array<sCol> >
 					f_max = f;
 					i_max = i;
 					c_max = ci;
+					inside_i = cur_inside_i;
+					inside_c = cur_inside_c;
 				}
 			}
 		}
 
 		if (i_max < 0){
-			msg_error("could not fill contours");
-			break;
-			//throw ActionException("could not fill contours");
+			/*for (int i=0;i<contours.num;i++)
+				for (int j=0;j<contours[i].num;j++){
+					ed->multi_view_3d->AddMessage3d(format("%d:%d", i, j), contours[i][j].p);
+				}*/
+			throw ActionException("could not fill contours");
 		}
 
 
 		if (inside_i < 0){
-			//msg_write("--");
-			//msg_write(format("%d  %d", c_max, i_max));
+			/*msg_write("--");
+			msg_write(format("%d  %d", c_max, i_max));
+			msg_write(format("%d %d %d", i_max, (i_max+1) % contours[c_max].num, (i_max+2) % contours[c_max].num));*/
 			Array<sCol> tt;
 			tt.add(contours[c_max][i_max]);
 			tt.add(contours[c_max][(i_max+1) % contours[c_max].num]);
@@ -597,8 +605,8 @@ void triangulate_contours(ModelGeometry &m, ModelPolygon *t, Array<Array<sCol> >
 			if (contours[c_max].num < 3)
 				contours.erase(c_max);
 		}else{
-			//msg_write("-- inside");
-			//msg_write(format("%d  %d   %d %d", c_max, i_max, inside_c, inside_i));
+			/*msg_write("-- inside");
+			msg_write(format("%d  %d   %d %d", c_max, i_max, inside_c, inside_i));*/
 			Array<sCol> tt;
 			tt.add(contours[c_max][i_max]);
 			tt.add(contours[c_max][(i_max+1) % contours[c_max].num]);
