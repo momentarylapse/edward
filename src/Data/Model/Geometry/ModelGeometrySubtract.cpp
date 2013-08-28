@@ -812,7 +812,9 @@ int ModelGeometrySubtract(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out
 	}*/
 
 
-	out.Weld(0.00001f);
+	vector min, max;
+	out.GetBoundingBox(min, max);
+	out.Weld((max - min).length() / 4000);
 
 	return diff ? 1 : 0;
 }
