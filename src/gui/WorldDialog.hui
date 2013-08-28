@@ -16,12 +16,12 @@
 	WorldDialog->AddButton("Entfernen", 270, 295, 120, 25, "remove_skybox");
 	WorldDialog->SetImage("remove_skybox", "hui:delete");
 	WorldDialog->SetTabCreationPage("world_dialog_tab_control", 1);
-	WorldDialog->AddText("Entfernung", 35, 70, 100, 25, "world_dialog_t_fog_distance");
+	WorldDialog->AddText("Entfernung", 35, 70, 100, 25, "world_dialog_t_fog_start");
 	WorldDialog->AddEdit("", 140, 70, 250, 25, "fog_start");
-	WorldDialog->AddText("bis", 35, 100, 100, 25, "world_dialog_t_fog_to");
+	WorldDialog->AddText("bis", 35, 100, 100, 25, "world_dialog_t_fog_end");
 	WorldDialog->AddEdit("", 140, 100, 250, 25, "fog_end");
-	WorldDialog->AddText("Dichte", 40, 160, 95, 25, "world_dialog_t_fog_density");
-	WorldDialog->AddEdit("", 140, 160, 250, 25, "fog_density");
+	WorldDialog->AddText("Sichtweite", 40, 160, 95, 25, "world_dialog_t_fog_distance");
+	WorldDialog->AddEdit("", 140, 160, 250, 25, "fog_distance");
 	WorldDialog->AddText("Farbe", 20, 190, 115, 25, "world_dialog_t_fog_color");
 	WorldDialog->AddColorButton("", 140, 190, 250, 25, "fog_color");
 	WorldDialog->AddRadioButton("Linear", 20, 40, 370, 25, "fog_mode:linear");

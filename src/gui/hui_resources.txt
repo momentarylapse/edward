@@ -13876,7 +13876,7 @@ hui:delete
 world_dialog_tab_control
 
 Text
-world_dialog_t_fog_distance
+world_dialog_t_fog_start
 
 1
 35
@@ -13902,7 +13902,7 @@ fog_start
 world_dialog_tab_control
 
 Text
-world_dialog_t_fog_to
+world_dialog_t_fog_end
 
 1
 35
@@ -13928,7 +13928,7 @@ fog_end
 world_dialog_tab_control
 
 Text
-world_dialog_t_fog_density
+world_dialog_t_fog_distance
 
 1
 40
@@ -13941,7 +13941,7 @@ world_dialog_t_fog_density
 world_dialog_tab_control
 
 Edit
-fog_density
+fog_distance
 
 1
 140
@@ -16667,7 +16667,7 @@ flatten_vertices
 Einebnen
 fog_color
 
-fog_density
+fog_distance
 
 fog_end
 
@@ -17751,12 +17751,12 @@ world_dialog_grp_sun
 !bold\\Sonne
 world_dialog_t_fog_color
 Farbe
-world_dialog_t_fog_density
-Dichte
 world_dialog_t_fog_distance
-Entfernung
-world_dialog_t_fog_to
+Sichtweite
+world_dialog_t_fog_end
 bis
+world_dialog_t_fog_start
+Entfernung
 world_dialog_t_max_script_vars
 Anzahl:
 world_dialog_t_sun_ang_x
@@ -18117,7 +18117,7 @@ flatten_vertices
 Flatten
 fog_color
 
-fog_density
+fog_distance
 
 fog_end
 
@@ -19201,12 +19201,12 @@ world_dialog_grp_sun
 !bold\\Sun
 world_dialog_t_fog_color
 color
-world_dialog_t_fog_density
-density (\"Density\")
 world_dialog_t_fog_distance
 Distance
-world_dialog_t_fog_to
-to
+world_dialog_t_fog_end
+
+world_dialog_t_fog_start
+
 world_dialog_t_max_script_vars
 number (max):
 world_dialog_t_sun_ang_x
@@ -19268,7 +19268,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-147
+146
 // Text
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -19394,8 +19394,6 @@ Karten (*.map)
 Terrains (*.map)
 Karten-Datei
 Terrain files
-Keine geschlossene Flächen markiert
-No closed surfaces selected!
 Knochen setzen
 Set bone
 Kugel
@@ -19861,7 +19859,7 @@ flatten_vertices
 
 fog_color
 
-fog_density
+fog_distance
 
 fog_end
 
@@ -20945,11 +20943,11 @@ world_dialog_grp_sun
 
 world_dialog_t_fog_color
 色
-world_dialog_t_fog_density
-
 world_dialog_t_fog_distance
 
-world_dialog_t_fog_to
+world_dialog_t_fog_end
+
+world_dialog_t_fog_start
 
 world_dialog_t_max_script_vars
 

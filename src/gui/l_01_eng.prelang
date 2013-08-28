@@ -1109,12 +1109,12 @@ world_dialog_grp_sun
 !bold\\Sun
 world_dialog_t_fog_color
 color
-world_dialog_t_fog_density
-density (\"Density\")
 world_dialog_t_fog_distance
 Distance
-world_dialog_t_fog_to
-to
+world_dialog_t_fog_end
+
+world_dialog_t_fog_start
+
 world_dialog_t_max_script_vars
 number (max):
 world_dialog_t_sun_ang_x
@@ -1168,7 +1168,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-228
+231
 // Data (ID,Text)
 
 
@@ -1252,6 +1252,8 @@ Dateien (*.*)
 Files (*.*)
 Demütige aber höfliche Frage
 Quite a polite question
+Dicke
+
 Ebene
 Plane
 Ebene: erster Punkt
@@ -1368,8 +1370,6 @@ Kein Punkt markiert!
 
 Kein Punkt mit Effekt markiert!
 
-Keine geschlossene Flächen markiert
-No closed surfaces selected!
 Knochen setzen
 Set bone
 Knochen setzen oder Wurzel-Knochen wählen
@@ -1416,7 +1416,7 @@ Modelle, die über die Hintergrundfarge gemalt werden\n- Doppelklick um ein Mode
 
 Nachrichten
 Messages
-Nebelintensität = exp( - Dichte * Entfernung )
+Nebelintensität = exp( - Entfernung / Sichtweite )
 
 OK
 OK
@@ -1434,6 +1434,8 @@ Perspektive
 Perspective
 Pfad schließen
 
+Pinsel
+
 Polygon
 
 Polygon wählen: %d -> Shift + Return
@@ -1445,6 +1447,8 @@ Polygone: %d (von %d)
 Pop
 Pop
 Punkt setzen
+
+Punkte auf der Oberfläche anklicken
 
 Push
 Push
@@ -1515,6 +1519,8 @@ Textures
 Texturen (bmp,jpg,tga,avi)
 Textures (bmp,jpg,tga,avi)
 Texturen der einzelnen Materialien\n- Klick zum Bearbeiten der Texturkoordinaten
+
+Tiefe
 
 Torus außen skalieren
 

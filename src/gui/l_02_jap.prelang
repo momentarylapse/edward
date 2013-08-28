@@ -1109,11 +1109,11 @@ world_dialog_grp_sun
 
 world_dialog_t_fog_color
 色
-world_dialog_t_fog_density
-
 world_dialog_t_fog_distance
 
-world_dialog_t_fog_to
+world_dialog_t_fog_end
+
+world_dialog_t_fog_start
 
 world_dialog_t_max_script_vars
 
@@ -1168,7 +1168,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-228
+231
 // Data (ID,Text)
 
 
@@ -1251,6 +1251,8 @@ Datei-Format unlesbar!
 Dateien (*.*)
 
 Demütige aber höfliche Frage
+
+Dicke
 
 Ebene
 
@@ -1368,8 +1370,6 @@ Kein Punkt markiert!
 
 Kein Punkt mit Effekt markiert!
 
-Keine geschlossene Flächen markiert
-
 Knochen setzen
 
 Knochen setzen oder Wurzel-Knochen wählen
@@ -1416,7 +1416,7 @@ Modelle, die über die Hintergrundfarge gemalt werden\n- Doppelklick um ein Mode
 
 Nachrichten
 
-Nebelintensität = exp( - Dichte * Entfernung )
+Nebelintensität = exp( - Entfernung / Sichtweite )
 
 OK
 
@@ -1434,6 +1434,8 @@ Perspektive
 
 Pfad schließen
 
+Pinsel
+
 Polygon
 
 Polygon wählen: %d -> Shift + Return
@@ -1445,6 +1447,8 @@ Polygone: %d (von %d)
 Pop
 
 Punkt setzen
+
+Punkte auf der Oberfläche anklicken
 
 Push
 
@@ -1515,6 +1519,8 @@ Texturen
 Texturen (bmp,jpg,tga,avi)
 
 Texturen der einzelnen Materialien\n- Klick zum Bearbeiten der Texturkoordinaten
+
+Tiefe
 
 Torus außen skalieren
 

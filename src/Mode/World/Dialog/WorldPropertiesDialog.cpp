@@ -25,7 +25,7 @@ WorldPropertiesDialog::WorldPropertiesDialog(HuiWindow *_parent, bool _allow_par
 
 	SetTooltip("fog_start", _("Abstand, ab dem der Nebel beginnt (Intensit&at 0)"));
 	SetTooltip("fog_end", _("maximale Sichtweite, dahinter hat der Nebel volle Intensit&at"));
-	SetTooltip("fog_density", _("Nebelintensit&at = exp( - Dichte * Entfernung )"));
+	SetTooltip("fog_distance", _("Nebelintensit&at = exp( - Entfernung / Sichtweite )"));
 
 	SetTooltip("ambient", _("Generelles Umgebungslicht zus&atzlich zu allen Lichtquellen"));
 	SetTooltip("sun_am", _("ungerichtetes Umgebungslicht"));
@@ -167,7 +167,7 @@ void WorldPropertiesDialog::OnFogModeNone()
 {
 	Enable("fog_start", false);
 	Enable("fog_end", false);
-	Enable("fog_density", false);
+	Enable("fog_distance", false);
 	Enable("fog_color", false);
 }
 
@@ -175,7 +175,7 @@ void WorldPropertiesDialog::OnFogModeLinear()
 {
 	Enable("fog_start", true);
 	Enable("fog_end", true);
-	Enable("fog_density", false);
+	Enable("fog_distance", false);
 	Enable("fog_color", true);
 }
 
@@ -183,7 +183,7 @@ void WorldPropertiesDialog::OnFogModeExp()
 {
 	Enable("fog_start", false);
 	Enable("fog_end", false);
-	Enable("fog_density", true);
+	Enable("fog_distance", true);
 	Enable("fog_color", true);
 }
 
@@ -257,7 +257,7 @@ void WorldPropertiesDialog::ApplyData()
 		temp.FogMode = FogExp2;
 	temp.FogStart = GetFloat("fog_start");
 	temp.FogEnd = GetFloat("fog_end");
-	temp.FogDensity = GetFloat("fog_density");
+	temp.FogDensity = 1.0f / GetFloat("fog_distance");
 	temp.FogColor = GetColor("fog_color");
 
 	temp.SunEnabled = IsChecked("sun_enabled");
@@ -311,11 +311,11 @@ void WorldPropertiesDialog::LoadData()
 	}
 	SetFloat("fog_start", temp.FogStart);
 	SetFloat("fog_end", temp.FogEnd);
-	SetFloat("fog_density", temp.FogDensity);
+	SetFloat("fog_distance", 1.0f / temp.FogDensity);
 	SetColor("fog_color", temp.FogColor);
 	Enable("fog_start", temp.FogEnabled && (temp.FogMode == FogLinear));
 	Enable("fog_end", temp.FogEnabled && (temp.FogMode == FogLinear));
-	Enable("fog_density", temp.FogEnabled && ((temp.FogMode == FogExp) || (temp.FogMode == FogExp2)));
+	Enable("fog_distance", temp.FogEnabled && ((temp.FogMode == FogExp) || (temp.FogMode == FogExp2)));
 	Enable("fog_color", temp.FogEnabled);
 
 	SetDecimals(WorldLightDec);
