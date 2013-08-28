@@ -168,12 +168,12 @@ inline bool find_tria_top(ModelSurface *s, const Array<PolySideData> &pd, Set<in
 {
 	int t0 = 0;
 	while(true){
-		int ne = pd[t0].side;
+		int side = pd[t0].side;
 		if (!to_the_right){
 			int ns = s->Polygon[pd[t0].poly].Side.num;
-			ne = (ne + ns - 1) % ns;
+			side = (side + ns - 1) % ns;
 		}
-		int e = s->Polygon[pd[t0].poly].Side[ne].Edge;
+		int e = s->Polygon[pd[t0].poly].Side[side].Edge;
 		if (!s->Edge[e].IsRound)
 			return false;
 		int tt = find_other_tria_from_edge(s, e, pd[t0].poly);
@@ -283,7 +283,7 @@ void ModelSurface::UpdateNormals()
 		// round?
 		e.IsRound = false;
 		if ((v1.NormalMode == NormalModeAngular) || (v2.NormalMode == NormalModeAngular))
-			e.IsRound = (fabs(t1.TempNormal * t2.TempNormal) > 0.5f);
+			e.IsRound = (t1.TempNormal * t2.TempNormal > 0.6f);
 
 		if (((v1.NormalMode == NormalModeAngular) && (e.IsRound)) || (v1.NormalMode == NormalModeSmooth))
 			vert.add(e.Vertex[0]);
