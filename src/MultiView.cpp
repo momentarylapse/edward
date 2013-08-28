@@ -784,6 +784,8 @@ void MultiViewWindow::Draw()
 	NixSetZ(true,true);
 	NixSetWire(false);
 	NixEnableLighting(false);
+	NixEnableFog(false);
+	NixSetFog(FogExp, 0, 1000, 0, Black); // some shaders need correct fog values
 	if (multi_view->grid_enabled)
 		DrawGrid();
 
