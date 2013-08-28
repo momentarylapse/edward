@@ -418,12 +418,13 @@ void DrawSelectionObject(Model *o, float alpha, const color &c)
 	if ((d<0)||(d>3))
 		return;
 	for (int i=0;i<o->material.num;i++){
-		int t = o->material[i].texture[0];
-		o->material[i].texture[0] = -1;
+		int t[8];
+		for (int j=0;j<o->material[i].num_textures;j++)
+			t[j] = -1;
+		NixSetTextures(t, o->material[i].num_textures);
 		NixSetAlpha(AlphaMaterial);
 		NixSetMaterial(Black, color(alpha, 0, 0, 0), Black, 0, c);
 		o->JustDraw(i, d);
-		o->material[i].texture[0] = t;
 	}
 }
 
