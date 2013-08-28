@@ -23,22 +23,23 @@ void *ActionModelSurfaceSubtract::compose(Data *d)
 	foreach(ModelSurface &s, m->Surface)
 		if ((s.is_selected) && (s.IsClosed))
 			n ++;
-	if (n == 0){
+	if (n == 0)
 		throw ActionException("no closed surfaces selected");
-		//ed->SetMessage(_("Keine geschlossene Fl&achen markiert"));
-		//return;
-	}
 
 	msg_db_f("Subtract", 1);
+	Array<ModelGeometry> geos;
 	for (int bi=m->Surface.num-1; bi>=0; bi--){
 		if (m->Surface[bi].is_selected){
 			for (int ai=m->Surface.num-1; ai>=0; ai--){
 				ModelSurface *a = &m->Surface[ai];
 				if ((a->view_stage >= ed->multi_view_3d->view_stage) && (!a->is_selected))
-					SurfaceSubtract(m, a, ai, &m->Surface[bi]);
+					SurfaceSubtract(m, a, ai, &m->Surface[bi], geos);
 			}
 		}
 	}
+	foreach(ModelGeometry &g, geos)
+		AddSubAction(new ActionModelPasteGeometry(g, 0), m);
+
 	ed->SetMessage(format(_("%d geschlossene Fl&achen subtrahiert"), n));
 	return NULL;
 }
@@ -56,7 +57,7 @@ void surf2geo(ModelSurface *s, ModelGeometry &g)
 	}
 }
 
-void ActionModelSurfaceSubtract::SurfaceSubtract(DataModel *m, ModelSurface *a, int ai, ModelSurface *b)
+void ActionModelSurfaceSubtract::SurfaceSubtract(DataModel *m, ModelSurface *a, int ai, ModelSurface *b, Array<ModelGeometry> &geos)
 {
 	msg_db_f("SurfSubtract", 0);
 	ModelGeometry ga, gb, gc;
@@ -65,7 +66,7 @@ void ActionModelSurfaceSubtract::SurfaceSubtract(DataModel *m, ModelSurface *a, 
 	int status = ModelGeometrySubtract(ga, gb, gc);
 
 	if (status == 1){
-		AddSubAction(new ActionModelPasteGeometry(gc, 0), m);
+		geos.add(gc);
 		AddSubAction(new ActionModelDeleteSurface(ai), m);
 	}
 }
