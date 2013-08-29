@@ -12,6 +12,7 @@
 #include "ModeModelMesh.h"
 #include "../Animation/ModeModelAnimation.h"
 
+#include <GL/gl.h>
 
 
 ModeModelMeshPolygon *mode_model_mesh_polygon = NULL;
@@ -66,7 +67,11 @@ void ModeModelMeshPolygon::DrawPolygons(MultiViewWindow *win, Array<ModelVertex>
 
 		// draw
 		m.ApplyForRendering();
+		glEnable(GL_POLYGON_OFFSET_FILL);
+		glPolygonOffset(1.0f, 1.0f);
 		NixDraw3D(*vb);
+		glDisable(GL_POLYGON_OFFSET_FILL);
+		glPolygonOffset(0, 0);
 		NixSetShader(-1);
 		NixSetTexture(-1);
 	}
@@ -132,6 +137,8 @@ void ModeModelMeshPolygon::DrawSelection(MultiViewWindow *win)
 	NixSetAlpha(AlphaNone);
 	NixEnableLighting(true);
 
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(1.0f, 1.0f);
 	SetMaterialMarked();
 	NixDraw3D(VBMarked);
 	SetMaterialMouseOver();
@@ -140,6 +147,8 @@ void ModeModelMeshPolygon::DrawSelection(MultiViewWindow *win)
 	NixDraw3D(VBCreation);
 	NixSetMaterial(White,White,Black,0,Black);
 	NixSetAlpha(AlphaNone);
+	glDisable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(0, 0);
 }
 
 void ModeModelMeshPolygon::OnDrawWin(MultiViewWindow *win)
