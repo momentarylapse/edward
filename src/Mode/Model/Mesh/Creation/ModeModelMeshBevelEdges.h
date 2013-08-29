@@ -1,21 +1,21 @@
 /*
- * ModeModelMeshBevelVertices.h
+ * ModeModelMeshBevelEdges.h
  *
  *  Created on: 23.09.2012
  *      Author: michi
  */
 
-#ifndef MODEMODELMESHBEVELVERTICES_H_
-#define MODEMODELMESHBEVELVERTICES_H_
+#ifndef MODEMODELMESHBEVELEDGES_H_
+#define MODEMODELMESHBEVELEDGES_H_
 
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshBevelVertices: public ModeCreation<DataModel>
+class ModeModelMeshBevelEdges: public ModeCreation<DataModel>
 {
 public:
-	ModeModelMeshBevelVertices(ModeBase *_parent);
-	virtual ~ModeModelMeshBevelVertices();
+	ModeModelMeshBevelEdges(ModeBase *_parent);
+	virtual ~ModeModelMeshBevelEdges();
 
 	virtual void OnEnd();
 
@@ -30,4 +30,4 @@ private:
 	ModelSelectionState selection;
 };
 
-#endif /* MODEMODELMESHBEVELVERTICES_H_ */
+#endif /* MODEMODELMESHBEVELEDGES_H_ */

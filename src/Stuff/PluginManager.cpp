@@ -154,7 +154,7 @@ void PluginManager::Init()
 	Script::LinkExternal("DataModel.DeleteSelection", (void*)&DataModel::DeleteSelection);
 	Script::LinkExternal("DataModel.SubtractSelection", (void*)&DataModel::SubtractSelection);
 	Script::LinkExternal("DataModel.TriangulateSelection", (void*)&DataModel::TriangulateSelection);
-	Script::LinkExternal("DataModel.BevelSelectedVertices", (void*)&DataModel::BevelSelectedVertices);
+	Script::LinkExternal("DataModel.BevelSelectedVertices", (void*)&DataModel::BevelSelectedEdges);
 	Script::LinkExternal("DataModel.ExtrudeSelectedPolygons", (void*)&DataModel::ExtrudeSelectedPolygons);
 	Script::LinkExternal("DataModel.PasteGeometry", (void*)&DataModel::PasteGeometry);
 

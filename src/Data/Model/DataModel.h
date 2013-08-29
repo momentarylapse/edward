@@ -194,10 +194,16 @@ public:
 class ModelSelectionState
 {
 public:
+	struct EdgeSelection
+	{
+		EdgeSelection(){};
+		EdgeSelection(int v[2]);
+		int v[2];
+	};
 	Set<int> Vertex;
 	Set<int> Surface;
 	Array<Set<int> > Polygon;
-	Array<Set<int> > Edge;
+	Array<Array<EdgeSelection> > Edge;
 	void clear();
 };
 
@@ -262,14 +268,6 @@ public:
 	ModelPolygon *AddTriangle(int a, int b, int c, int material);
 	ModelPolygon *AddPolygon(Array<int> &v, int material);
 	ModelPolygon *AddPolygonWithSkin(Array<int> &v, Array<vector> &sv, int material);
-	ModelSurface *AddBall(const vector &pos, float radius, int num_x, int num_y, int material);
-	ModelSurface *AddSphere(const vector &pos, float radius, int num, int material);
-	ModelSurface *AddPlane(const vector &pos, const vector &dv1, const vector &dv2, int num_x, int num_y, int material);
-	ModelSurface *AddCube(const vector &pos, const vector &dv1, const vector &dv2, const vector &dv3, int num_1, int num_2, int num_3, int material);
-	ModelSurface *AddCylinder(Array<vector> &pos, Array<float> &radius, int rings, int edges, bool closed, int material);
-	ModelSurface *AddTorus(const vector &pos, const vector &axis, float radius1, float radius2, int num_x, int num_y, int material);
-	ModelSurface *AddPlatonic(const vector &pos, float radius, int type, int material);
-	ModelSurface *AddTeapot(const vector &pos, float radius, int samples, int material);
 
 	void DeleteSelection(bool greedy = false);
 	void InvertSelection();
@@ -281,7 +279,7 @@ public:
 	void AlignToGridSelection(float grid_d);
 	void NearifySelectedVertices();
 	void CollapseSelectedVertices();
-	void BevelSelectedVertices(float radius);
+	void BevelSelectedEdges(float radius);
 	void FlattenSelectedVertices();
 	void BrushExtrudeVertices(const vector &pos, const vector &n, float radius, float depth);
 	void ExtrudeSelectedPolygons(float offset);

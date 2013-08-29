@@ -1,28 +1,28 @@
 /*
- * ActionModelBevelPolygons.cpp
+ * ActionModelBevelEdges.cpp
  *
  *  Created on: 06.01.2013
  *      Author: michi
  */
 
-#include "ActionModelBevelPolygons.h"
+#include "ActionModelBevelEdges.h"
 #include "../Vertex/Helper/ActionModelDeleteUnusedVertex.h"
 #include "../Vertex/ActionModelAddVertex.h"
 #include "../Surface/Helper/ActionModelSurfaceDeletePolygon.h"
 #include "../Surface/Helper/ActionModelSurfaceAddPolygon.h"
-#include "ActionModelAddPolygonAutoSkin.h"
+#include "../Polygon/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../Data/Model/SkinGenerator.h"
 #include "../../../../lib/base/map.h"
 #include "../../../../Mode/Model/Mesh/ModeModelMesh.h"
 #include <assert.h>
 
-ActionModelBevelPolygons::ActionModelBevelPolygons(float _length)
+ActionModelBevelEdges::ActionModelBevelEdges(float _length)
 {
 	length = _length;
 }
 
-void *ActionModelBevelPolygons::compose(Data *d)
+void *ActionModelBevelEdges::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
@@ -105,7 +105,7 @@ int get_next_edge(ModelSurface *s, int edge, int ek, int dir, int &next_dir)
 	return p.Side[side].Edge;
 }
 
-void ActionModelBevelPolygons::build_vertices(Array<VertexToCome> &vv, DataModel *m)
+void ActionModelBevelEdges::build_vertices(Array<VertexToCome> &vv, DataModel *m)
 {
 	foreach(VertexToCome &v, vv)
 		if (v.ref_count > 0){
@@ -114,7 +114,7 @@ void ActionModelBevelPolygons::build_vertices(Array<VertexToCome> &vv, DataModel
 		}
 }
 
-void ActionModelBevelPolygons::do_poly_relink(ModelPolygon &p, PolygonRelink &r, int i, int surface, DataModel *m)
+void ActionModelBevelEdges::do_poly_relink(ModelPolygon &p, PolygonRelink &r, int i, int surface, DataModel *m)
 {
 	Array<int> v;
 	int material = p.Material;
@@ -175,12 +175,8 @@ void add_edge_neighbour(ModelSurface *s, ModelEdge &e, int k, int dir, PolygonTo
 	}
 }
 
-void ActionModelBevelPolygons::BevelSurface(DataModel *m, ModelSurface *s, int surface)
+void ActionModelBevelEdges::BevelSurface(DataModel *m, ModelSurface *s, int surface)
 {
-	// update edge selection...
-	foreach(ModelEdge &e, s->Edge)
-		e.is_selected = m->Vertex[e.Vertex[0]].is_selected && m->Vertex[e.Vertex[1]].is_selected;
-
 	ev[0].resize(s->Edge.num);
 	ev[1].resize(s->Edge.num);
 	pv.resize(s->Polygon.num);

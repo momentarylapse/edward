@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-582
+583
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -77,8 +77,8 @@ automapping
 
 autoweld_surfaces
 
-bevel_vertices
-Bevel
+bevel_edges
+
 bgc
 !alpha
 brightness
@@ -483,6 +483,8 @@ menu_administration_game
 Game
 menu_all_header
 All
+menu_edge_header
+
 menu_file
 File
 menu_font

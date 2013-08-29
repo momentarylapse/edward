@@ -14,7 +14,6 @@
 #include "ModeModelMeshSurface.h"
 #include "ModeModelMeshTexture.h"
 #include "../../ModeCreation.h"
-#include "../../../Data/Model/Geometry/ModelGeometryCube.h"
 #include "Creation/ModeModelMeshCreateVertex.h"
 #include "Creation/ModeModelMeshCreatePolygon.h"
 #include "Creation/ModeModelMeshCreateBall.h"
@@ -25,11 +24,10 @@
 #include "Creation/ModeModelMeshCreateTorus.h"
 #include "Creation/ModeModelMeshCreatePlatonic.h"
 #include "Creation/ModeModelMeshSplitPolygon.h"
-#include "Creation/ModeModelMeshBevelVertices.h"
+#include "Creation/ModeModelMeshBevelEdges.h"
 #include "Creation/ModeModelMeshBrushExtrudeVertices.h"
 #include "Creation/ModeModelMeshExtrudePolygons.h"
 #include "../../../Action/Model/Mesh/Skin/ActionModelSkinVerticesFromProjection.h"
-#include "../../../Action/Model/Mesh/Polygon/ActionModelBevelPolygons.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
 #include "../Dialog/ModelEasifyDialog.h"
 #include "../Dialog/ModelFXDialog.h"
@@ -158,8 +156,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		ed->SetMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 306));
 	if (id == "new_extract")
 		ed->SetMode(new ModeModelMeshSplitPolygon(mode_model_mesh_polygon));
-	if (id == "bevel_vertices")
-		ed->SetMode(new ModeModelMeshBevelVertices(mode_model_mesh_vertex));
+	if (id == "bevel_edges")
+		ed->SetMode(new ModeModelMeshBevelEdges(mode_model_mesh_vertex));
 	if (id == "brush_extrude_vertices")
 		ed->SetMode(new ModeModelMeshBrushExtrudeVertices(mode_model_mesh_polygon));
 	if (id == "flatten_vertices")

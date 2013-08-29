@@ -6033,7 +6033,7 @@ menu_model
 0
 
 
-148
+150
 ItemPopup
 menu_model_file
 
@@ -7156,7 +7156,7 @@ ItemPopup
 menu_model_geometry
 
 1
-26
+28
 0
 0
 0
@@ -7296,19 +7296,6 @@ nearify
 
 
 Item
-bevel_vertices
-
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-Item
 flatten_vertices
 
 1
@@ -7323,6 +7310,45 @@ flatten_vertices
 
 Item
 brush_extrude_vertices
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemSeparator
+
+
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+menu_edge_header
+
+0
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+bevel_edges
 
 1
 0
@@ -16373,7 +16399,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-721
+722
 // Text
 ad_dialog
 Verwaltung
@@ -16459,7 +16485,7 @@ automapping
 Automatisch (Alles)
 autoweld_surfaces
 Verschweißen
-bevel_vertices
+bevel_edges
 Abfräsen
 bgc
 !alpha
@@ -16991,6 +17017,8 @@ menu_administration_game
 Spiel
 menu_all_header
 Komplett
+menu_edge_header
+Auf Kanten
 menu_file
 Datei
 menu_font
@@ -17823,7 +17851,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-721
+722
 // Text
 ad_dialog
 Administration
@@ -17909,8 +17937,8 @@ automapping
 
 autoweld_surfaces
 
-bevel_vertices
-Bevel
+bevel_edges
+
 bgc
 !alpha
 brightness
@@ -18441,6 +18469,8 @@ menu_administration_game
 Game
 menu_all_header
 All
+menu_edge_header
+
 menu_file
 File
 menu_font
@@ -19565,7 +19595,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-721
+722
 // Text
 ad_dialog
 
@@ -19651,7 +19681,7 @@ automapping
 
 autoweld_surfaces
 
-bevel_vertices
+bevel_edges
 
 bgc
 !alpha
@@ -20182,6 +20212,8 @@ menu_administration_file
 menu_administration_game
 
 menu_all_header
+
+menu_edge_header
 
 menu_file
 ファイル

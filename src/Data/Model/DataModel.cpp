@@ -19,7 +19,7 @@
 #include "../../Action/Model/Mesh/Vertex/ActionModelAlignToGrid.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelFlattenVertices.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelBrushExtrudeVertices.h"
-#include "../../Action/Model/Mesh/Polygon/ActionModelBevelPolygons.h"
+#include "../../Action/Model/Mesh/Edge/ActionModelBevelEdges.h"
 #include "../../Action/Model/Mesh/Polygon/ActionModelAddPolygonSingleTexture.h"
 #include "../../Action/Model/Mesh/Polygon/ActionModelExtrudePolygons.h"
 #include "../../Action/Model/Mesh/Polygon/ActionModelTriangulateSelection.h"
@@ -42,14 +42,6 @@
 #include "../../Action/Model/Animation/ActionModelDeleteAnimation.h"
 #include "../../Action/Model/Animation/ActionModelAnimationAddFrame.h"
 #include "../../Action/Model/Animation/ActionModelAnimationDeleteFrame.h"
-#include "Geometry/ModelGeometryBall.h"
-#include "Geometry/ModelGeometryCube.h"
-#include "Geometry/ModelGeometryCylinder.h"
-#include "Geometry/ModelGeometryPlane.h"
-#include "Geometry/ModelGeometryPlatonic.h"
-#include "Geometry/ModelGeometrySphere.h"
-#include "Geometry/ModelGeometryTeapot.h"
-#include "Geometry/ModelGeometryTorus.h"
 
 
 
@@ -1739,48 +1731,6 @@ int DataModel::GetNumPolygons()
 	return r;
 }
 
-ModelSurface* DataModel::AddBall(const vector& pos, float radius, int num_x, int num_y, int material)
-{
-	ModelGeometryBall geo = ModelGeometryBall(pos, radius, num_x, num_y);
-	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo, material));
-}
-
-ModelSurface* DataModel::AddSphere(const vector& pos, float radius, int num, int material)
-{
-	ModelGeometrySphere geo = ModelGeometrySphere(pos, radius, num);
-	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo, material));
-}
-
-ModelSurface* DataModel::AddPlane(const vector& pos, const vector& dv1, const vector& dv2, int num_x, int num_y, int material)
-{
-	ModelGeometryPlane geo = ModelGeometryPlane(pos, dv1, dv2, num_x, num_y);
-	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo, material));
-}
-
-ModelSurface* DataModel::AddCube(const vector& pos, const vector& dv1, const vector& dv2, const vector& dv3, int num_1, int num_2, int num_3, int material)
-{
-	ModelGeometryCube geo = ModelGeometryCube(pos, dv1, dv2, dv3, num_1, num_2, num_3);
-	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo, material));
-}
-
-ModelSurface* DataModel::AddCylinder(Array<vector>& pos, Array<float> &radius, int rings, int edges, bool closed, int material)
-{
-	ModelGeometryCylinder geo = ModelGeometryCylinder(pos, radius, rings, edges, closed);
-	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo, material));
-}
-
-ModelSurface *DataModel::AddTorus(const vector &pos, const vector &axis, float radius1, float radius2, int num_x, int num_y, int material)
-{
-	ModelGeometryTorus geo = ModelGeometryTorus(pos, axis, radius1, radius2, num_x, num_y);
-	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo, material));
-}
-
-ModelSurface *DataModel::AddPlatonic(const vector &pos, float radius, int type, int material)
-{
-	ModelGeometryPlatonic geo = ModelGeometryPlatonic(pos, radius, type);
-	return (ModelSurface*)Execute(new ActionModelPasteGeometry(geo, material));
-}
-
 void DataModel::AddAnimation(int index, int type)
 {	Execute(new ActionModelAddAnimation(index, type));	}
 
@@ -1866,8 +1816,8 @@ void DataModel::Easify(float factor)
 void DataModel::SubdivideSelectedSurfaces()
 {	Execute(new ActionModelSurfacesSubdivide(GetSelectedSurfaces()));	}
 
-void DataModel::BevelSelectedVertices(float radius)
-{	Execute(new ActionModelBevelPolygons(radius));	}
+void DataModel::BevelSelectedEdges(float radius)
+{	Execute(new ActionModelBevelEdges(radius));	}
 
 void DataModel::FlattenSelectedVertices()
 {	Execute(new ActionModelFlattenVertices(this));	}
@@ -1945,11 +1895,11 @@ void DataModel::GetSelectionState(ModelSelectionState& s)
 			if (t.is_selected)
 				sel.add(j);
 		s.Polygon.add(sel);
-		sel.clear();
+		Array<ModelSelectionState::EdgeSelection> esel;
 		foreachi(ModelEdge &e, surf.Edge, j)
 			if (e.is_selected)
-				sel.add(j);
-		s.Edge.add(sel);
+				esel.add(e.Vertex);
+		s.Edge.add(esel);
 	}
 }
 
@@ -1964,8 +1914,11 @@ void DataModel::SetSelectionState(ModelSelectionState& s)
 		foreach(int j, s.Polygon[i])
 			Surface[i].Polygon[j].is_selected = true;
 	for (int i=0;i<s.Edge.num;i++)
-		foreach(int j, s.Edge[i])
-			Surface[i].Edge[j].is_selected = true;
+		foreach(ModelSelectionState::EdgeSelection &es, s.Edge[i]){
+			int ne = Surface[i].FindEdge(es.v[0], es.v[1]);
+			if (ne >= 0)
+				Surface[i].Edge[ne].is_selected = true;
+		}
 	Notify("Selection");
 }
 
@@ -1990,4 +1943,10 @@ int DataModel::GetNumMarkedKonvPolys()
 		if (Poly[i].IsSelected)
 			r++;
 	return r;
-}*/
+ }*/
+
+ModelSelectionState::EdgeSelection::EdgeSelection(int _v[2])
+{
+	v[0] = _v[0];
+	v[1] = _v[1];
+}

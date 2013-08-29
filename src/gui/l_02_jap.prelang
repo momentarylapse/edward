@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-582
+583
 // Data (ID,Text)
 ad_dialog
 
@@ -77,7 +77,7 @@ automapping
 
 autoweld_surfaces
 
-bevel_vertices
+bevel_edges
 
 bgc
 !alpha
@@ -482,6 +482,8 @@ menu_administration_file
 menu_administration_game
 
 menu_all_header
+
+menu_edge_header
 
 menu_file
 ファイル

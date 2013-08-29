@@ -213,11 +213,13 @@ void ModeModelMeshEdge::OnDrawWin(MultiViewWindow *win)
 
 	if (multi_view->MouseOver >= 0){
 		NixSetWire(false);
+		NixSetZ(false, false);
 		NixEnableLighting(false);
 		NixSetColor(color(1, 0.7f, 0.7f, 1));
 		ModelEdge &e = data->Surface[multi_view->MouseOverSet].Edge[multi_view->MouseOver];
 		NixDrawLine3D(data->Vertex[e.Vertex[0]].pos, data->Vertex[e.Vertex[1]].pos);
 		NixSetColor(White);
+		NixSetZ(true, true);
 		NixSetWire(win->multi_view->wire_mode);
 		NixEnableLighting(multi_view->light_enabled);
 	}

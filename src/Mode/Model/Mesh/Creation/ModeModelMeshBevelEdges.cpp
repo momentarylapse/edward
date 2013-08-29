@@ -1,20 +1,19 @@
 /*
- * ModeModelMeshBevelVertices.cpp
+ * ModeModelMeshBevelEdges.cpp
  *
  *  Created on: 23.09.2012
  *      Author: michi
  */
 
-#include "ModeModelMeshBevelVertices.h"
-//#include "../../../../Action/Model/Mesh/Vertex/ActionModelBevelVertices.h"
-#include "../../../../Action/Model/Mesh/Polygon/ActionModelBevelPolygons.h"
+#include "ModeModelMeshBevelEdges.h"
+#include "../../../../Action/Model/Mesh/Edge/ActionModelBevelEdges.h"
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"
 
 #define INTERACTIVE
 
-ModeModelMeshBevelVertices::ModeModelMeshBevelVertices(ModeBase *_parent) :
-	ModeCreation<DataModel>("ModelMeshBevelVertices", _parent)
+ModeModelMeshBevelEdges::ModeModelMeshBevelEdges(ModeBase *_parent) :
+	ModeCreation<DataModel>("ModelMeshBevelEdges", _parent)
 {
 	message = _("Radius skalieren [Linke Maustaste = fertig]");
 
@@ -35,23 +34,23 @@ ModeModelMeshBevelVertices::ModeModelMeshBevelVertices(ModeBase *_parent) :
 
 	radius = rad_max / 4;
 #ifdef INTERACTIVE
-	if (!data->action_manager->Preview(new ActionModelBevelPolygons(radius)))
+	if (!data->action_manager->Preview(new ActionModelBevelEdges(radius)))
 		Abort();
 #endif
 }
 
-ModeModelMeshBevelVertices::~ModeModelMeshBevelVertices()
+ModeModelMeshBevelEdges::~ModeModelMeshBevelEdges()
 {
 }
 
-void ModeModelMeshBevelVertices::OnEnd()
+void ModeModelMeshBevelEdges::OnEnd()
 {
 #ifdef INTERACTIVE
 	data->action_manager->ClearPreview();
 #endif
 }
 
-void ModeModelMeshBevelVertices::OnMouseMove()
+void ModeModelMeshBevelEdges::OnMouseMove()
 {
 #ifdef INTERACTIVE
 	data->action_manager->ClearPreview();
@@ -63,23 +62,23 @@ void ModeModelMeshBevelVertices::OnMouseMove()
 #ifdef INTERACTIVE
 
 	data->SetSelectionState(selection);
-	if (!data->action_manager->Preview(new ActionModelBevelPolygons(radius)))
+	if (!data->action_manager->Preview(new ActionModelBevelEdges(radius)))
 		Abort();
 #endif
 }
 
-void ModeModelMeshBevelVertices::OnLeftButtonDown()
+void ModeModelMeshBevelEdges::OnLeftButtonDown()
 {
 #ifdef INTERACTIVE
 	data->action_manager->ClearPreview();
 #endif
 
 	data->SetSelectionState(selection);
-	data->BevelSelectedVertices(radius);
+	data->BevelSelectedEdges(radius);
 	Abort();
 }
 
-void ModeModelMeshBevelVertices::OnDrawWin(MultiViewWindow *win)
+void ModeModelMeshBevelEdges::OnDrawWin(MultiViewWindow *win)
 {
 #ifndef INTERACTIVE
 	mode_model->SetMaterialCreation();

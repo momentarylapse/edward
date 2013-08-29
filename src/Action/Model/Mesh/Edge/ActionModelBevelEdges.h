@@ -1,12 +1,12 @@
 /*
- * ActionModelBevelPolygons.h
+ * ActionModelBevelEdges.h
  *
  *  Created on: 06.01.2013
  *      Author: michi
  */
 
-#ifndef ACTIONMODELBEVELPOLYGONS_H_
-#define ACTIONMODELBEVELPOLYGONS_H_
+#ifndef ACTIONMODELBEVELEDGES_H_
+#define ACTIONMODELBEVELEDGES_H_
 
 #include "../../../ActionGroup.h"
 class DataModel;
@@ -15,12 +15,12 @@ class ModelPolygon;
 class VertexToCome;
 class PolygonRelink;
 
-class ActionModelBevelPolygons: public ActionGroup
+class ActionModelBevelEdges: public ActionGroup
 {
 public:
-	ActionModelBevelPolygons(float _length);
-	virtual ~ActionModelBevelPolygons(){}
-	string name(){	return "ModelBevelPolygons";	}
+	ActionModelBevelEdges(float _length);
+	virtual ~ActionModelBevelEdges(){}
+	string name(){	return "ModelBevelEdges";	}
 
 	void *compose(Data *d);
 
@@ -31,4 +31,4 @@ private:
 	float length;
 };
 
-#endif /* ACTIONMODELBEVELPOLYGONS_H_ */
+#endif /* ACTIONMODELBEVELEDGES_H_ */
