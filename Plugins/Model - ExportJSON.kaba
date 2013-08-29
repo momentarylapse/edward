@@ -52,7 +52,20 @@ void main()
 		if i < data_model.Vertex.num - 1
 			str += ",\n"
 	str += "],\n"
+	str += "'uvs': [[0,0]],\n"
+	str += "'normals': [\n"
+	for int is, 0, data_model.Surface.num
+		ModelSurface *s = &data_model.Surface[is]
+		for int ip, 0, s.Polygon.num
+			ModelPolygon *p = &s.Polygon[ip]
+			for int k, 0, p.Side.num
+				vector n = p.Side[k].Normal
+				str += "	" + n.x.str() + ", " + n.y.str() + ", " + n.z.str()
+				if (is < data_model.Surface.num - 1) or (ip < s.Polygon.num - 1) or (k < p.Side.num - 1)
+					str += ",\n"
+	str += "],\n"
 	str += "'faces': [\n"
+	int n_normals = 0
 	for int is, 0, data_model.Surface.num
 		ModelSurface *s = &data_model.Surface[is]
 		for int ip, 0, s.Polygon.num
@@ -64,10 +77,15 @@ void main()
 				int va = p.Side[a].Vertex
 				int vb = p.Side[b].Vertex
 				int vc = p.Side[c].Vertex
+				int na = n_normals + a
+				int nb = n_normals + b
+				int nc = n_normals + c
 				vector n = p.TempNormal
-				str += "	0, " + va.str() + ", " + vb.str() + ", " + vc.str()
+				str += "	34, " + va.str() + ", " + vb.str() + ", " + vc.str() + ", 0, "
+				str += na.str() + ", " + nb.str() + ", " + nc.str()
 				if (is < data_model.Surface.num - 1) or (ip < s.Polygon.num - 1) or (k < p.Side.num - 3)
 					str += ",\n"
+			n_normals += p.Side.num
 	str += "]\n"
 	str += "}"
 	str = str.replace("'", "\"")
