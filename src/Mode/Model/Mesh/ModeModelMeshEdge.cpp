@@ -102,8 +102,25 @@ bool EdgeIsMouseOver(int index, void *user_data, MultiViewWindow *win, vector &t
 	vector pp1 = win->Project(m->Vertex[e->Vertex[1]].pos);
 	if ((pp1.z <= 0) or (pp1.z >= 1))
 		return false;
+	const float rr = 5;
+	rect r = rect(min(pp0.x, pp1.x) - rr, max(pp0.x, pp1.x) + rr, min(pp0.y, pp1.y) - rr, max(pp0.y, pp1.y) + rr);
+	vector M = win->multi_view->m;
+	if (!r.inside(M.x, M.y))
+		return false;
+	pp0.z = pp1.z = 0;
+	vector d = pp1 - pp0;
+	float l = d.length();
+	if (l < 2)
+		return false;
+	d /= l;
+	vector d2 = vector(d.y, -d.x, 0);
+	float dd = fabs(d2 * (M - pp0));
+	if (dd > rr)
+		return false;
 
-	return false;
+	float f = (pp0 + d * ((M - pp0) * d)).factor_between(pp0, pp1);
+	tp = m->Vertex[e->Vertex[0]].pos * (1 - f) + m->Vertex[e->Vertex[1]].pos * f;
+	return true;
 }
 
 inline bool in_irect(const vector &p, rect *r)
@@ -169,19 +186,19 @@ void ModeModelMeshEdge::DrawEdges(MultiViewWindow *win, Array<ModelVertex> &vert
 		foreach(ModelEdge &e, s.Edge){
 			if (min(vertex[e.Vertex[0]].view_stage, vertex[e.Vertex[1]].view_stage) < multi_view->view_stage)
 				continue;
-			if (e.is_selected){
-				NixSetColor(Red);
-			}else if (!only_selected){
-				float w = max(s.Polygon[e.Polygon[0]].TempNormal * dir, s.Polygon[e.Polygon[1]].TempNormal * dir);
-				float f = 0.7f - 0.3f * w;
-				NixSetColor(color(1, f, f, f));
-			}else
+			if (!e.is_selected && only_selected)
 				continue;
+			float w = max(s.Polygon[e.Polygon[0]].TempNormal * dir, s.Polygon[e.Polygon[1]].TempNormal * dir);
+			float f = 0.7f - 0.3f * w;
+			if (e.is_selected)
+				NixSetColor(color(1, f, 0, 0));
+			else
+				NixSetColor(color(1, f, f, f));
 			NixDrawLine3D(vertex[e.Vertex[0]].pos, vertex[e.Vertex[1]].pos);
 		}
 	}
 	NixSetColor(White);
-	NixSetWire(true);
+	NixSetWire(win->multi_view->wire_mode);
 	NixEnableLighting(multi_view->light_enabled);
 }
 
@@ -193,6 +210,17 @@ void ModeModelMeshEdge::OnDrawWin(MultiViewWindow *win)
 		mode_model_mesh_polygon->DrawSelection(win);
 	}
 	DrawEdges(win, data->Vertex, false);
+
+	if (multi_view->MouseOver >= 0){
+		NixSetWire(false);
+		NixEnableLighting(false);
+		NixSetColor(color(1, 0.7f, 0.7f, 1));
+		ModelEdge &e = data->Surface[multi_view->MouseOverSet].Edge[multi_view->MouseOver];
+		NixDrawLine3D(data->Vertex[e.Vertex[0]].pos, data->Vertex[e.Vertex[1]].pos);
+		NixSetColor(White);
+		NixSetWire(win->multi_view->wire_mode);
+		NixEnableLighting(multi_view->light_enabled);
+	}
 }
 
 
