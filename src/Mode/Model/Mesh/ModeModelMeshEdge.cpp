@@ -205,10 +205,9 @@ void ModeModelMeshEdge::DrawEdges(MultiViewWindow *win, Array<ModelVertex> &vert
 
 void ModeModelMeshEdge::OnDrawWin(MultiViewWindow *win)
 {
-	if (!multi_view->wire_mode){
+	if (!multi_view->wire_mode)
 		mode_model_mesh_polygon->DrawPolygons(win, data->Vertex);
-		mode_model_mesh_polygon->DrawSelection(win);
-	}
+	mode_model_mesh_polygon->DrawSelection(win);
 	DrawEdges(win, data->Vertex, false);
 
 	if (multi_view->MouseOver >= 0){
