@@ -77,7 +77,7 @@ void ModeModelAnimationVertex::OnDrawWin(MultiViewWindow *win)
 {
 	msg_db_f("skin.DrawWin",4);
 
-	mode_model_mesh_polygon->DrawPolygons(mode_model_animation->vertex);
+	mode_model_mesh_polygon->DrawPolygons(win, mode_model_animation->vertex);
 	NixSetShader(-1);
 	NixSetWire(false);
 	NixSetZ(true,true);

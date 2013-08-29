@@ -28,7 +28,8 @@ public:
 
 	virtual void OnDraw();
 	virtual void OnDrawWin(MultiViewWindow *win);
-	void DrawPolygons(Array<ModelVertex> &vertex);
+	void DrawPolygons(MultiViewWindow *win, Array<ModelVertex> &vertex);
+	void DrawSelection(MultiViewWindow *win);
 
 
 	void SetMaterialMarked();

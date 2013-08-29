@@ -160,10 +160,39 @@ void ModeModelMeshEdge::OnLeftButtonDown()
 }
 
 
+void ModeModelMeshEdge::DrawEdges(MultiViewWindow *win, Array<ModelVertex> &vertex, bool only_selected)
+{
+	NixSetWire(false);
+	NixEnableLighting(false);
+	vector dir = win->GetDirection();
+	foreach(ModelSurface &s, data->Surface){
+		foreach(ModelEdge &e, s.Edge){
+			if (min(vertex[e.Vertex[0]].view_stage, vertex[e.Vertex[1]].view_stage) < multi_view->view_stage)
+				continue;
+			if (e.is_selected){
+				NixSetColor(Red);
+			}else if (!only_selected){
+				float w = max(s.Polygon[e.Polygon[0]].TempNormal * dir, s.Polygon[e.Polygon[1]].TempNormal * dir);
+				float f = 0.7f - 0.3f * w;
+				NixSetColor(color(1, f, f, f));
+			}else
+				continue;
+			NixDrawLine3D(vertex[e.Vertex[0]].pos, vertex[e.Vertex[1]].pos);
+		}
+	}
+	NixSetColor(White);
+	NixSetWire(true);
+	NixEnableLighting(multi_view->light_enabled);
+}
+
 
 void ModeModelMeshEdge::OnDrawWin(MultiViewWindow *win)
 {
-	mode_model_mesh_polygon->OnDrawWin(win);
+	if (!multi_view->wire_mode){
+		mode_model_mesh_polygon->DrawPolygons(win, data->Vertex);
+		mode_model_mesh_polygon->DrawSelection(win);
+	}
+	DrawEdges(win, data->Vertex, false);
 }
 
 

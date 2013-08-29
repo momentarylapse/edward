@@ -37,6 +37,8 @@ public:
 
 	virtual void OnDraw();
 	virtual void OnDrawWin(MultiViewWindow *win);
+
+	void DrawEdges(MultiViewWindow *win, Array<ModelVertex> &vertex, bool only_selected);
 };
 
 extern ModeModelMeshEdge *mode_model_mesh_edge;

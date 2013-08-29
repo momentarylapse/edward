@@ -8,6 +8,7 @@
 #include "../../../Edward.h"
 #include "../../../MultiView.h"
 #include "ModeModelMeshPolygon.h"
+#include "ModeModelMeshEdge.h"
 #include "ModeModelMesh.h"
 #include "../Animation/ModeModelAnimation.h"
 
@@ -34,30 +35,12 @@ ModeModelMeshPolygon::~ModeModelMeshPolygon()
 {
 }
 
-void ModeModelMeshPolygon::DrawPolygons(Array<ModelVertex> &vertex)
+void ModeModelMeshPolygon::DrawPolygons(MultiViewWindow *win, Array<ModelVertex> &vertex)
 {
 	msg_db_f("ModelSkin.DrawPolys",2);
 
 	if (multi_view->wire_mode){
-		NixSetWire(false);
-		NixEnableLighting(false);
-		vector dir = multi_view->cam.ang.ang2dir();
-		foreach(ModelSurface &s, data->Surface){
-			foreach(ModelEdge &e, s.Edge){
-				if (min(vertex[e.Vertex[0]].view_stage, vertex[e.Vertex[1]].view_stage) < multi_view->view_stage)
-					continue;
-				if (e.is_selected){
-					NixSetColor(Red);
-				}else{
-					float f = 0.7f - (s.Polygon[e.Polygon[0]].TempNormal * dir) * 0.3f;
-					NixSetColor(color(1, f, f, f));
-				}
-				NixDrawLine3D(vertex[e.Vertex[0]].pos, vertex[e.Vertex[1]].pos);
-			}
-		}
-		NixSetColor(White);
-		NixSetWire(true);
-		NixEnableLighting(multi_view->light_enabled);
+		mode_model_mesh_edge->DrawEdges(win, vertex, false);
 		return;
 	}
 
@@ -84,8 +67,11 @@ void ModeModelMeshPolygon::DrawPolygons(Array<ModelVertex> &vertex)
 		// draw
 		m.ApplyForRendering();
 		NixDraw3D(*vb);
+		NixSetShader(-1);
 		NixSetTexture(-1);
 	}
+
+	mode_model_mesh_edge->DrawEdges(win, vertex, true);
 }
 
 void ModeModelMeshPolygon::OnCommand(const string & id)
@@ -139,21 +125,12 @@ void ModeModelMeshPolygon::SetMaterialCreation()
 	NixSetMaterial(Black,color(0.3f,0.3f,1,0.3f),Black,0,color(1,0.1f,0.4f,0.1f));
 }
 
-void ModeModelMeshPolygon::OnDrawWin(MultiViewWindow *win)
+void ModeModelMeshPolygon::DrawSelection(MultiViewWindow *win)
 {
-	msg_db_f("skin.DrawWin",4);
-
-	/*if (Detail==DetailPhysical){
-		SetMaterialPhysical();
-		NixDraw3D(-1,VBModel,m_id);
-	}else*/
-		DrawPolygons(data->Vertex);
-	NixSetShader(-1);
 	NixSetWire(false);
 	NixSetZ(true,true);
 	NixSetAlpha(AlphaNone);
 	NixEnableLighting(true);
-	msg_db_m("----a",4);
 
 	SetMaterialMarked();
 	NixDraw3D(VBMarked);
@@ -163,6 +140,14 @@ void ModeModelMeshPolygon::OnDrawWin(MultiViewWindow *win)
 	NixDraw3D(VBCreation);
 	NixSetMaterial(White,White,Black,0,Black);
 	NixSetAlpha(AlphaNone);
+}
+
+void ModeModelMeshPolygon::OnDrawWin(MultiViewWindow *win)
+{
+	msg_db_f("skin.DrawWin",4);
+
+	DrawPolygons(win, data->Vertex);
+	DrawSelection(win);
 }
 
 
