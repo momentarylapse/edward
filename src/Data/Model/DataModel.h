@@ -236,6 +236,7 @@ public:
 	void ClearSelection();
 	void SelectionFromVertices();
 	void SelectionFromPolygons();
+	void SelectionFromEdges();
 	void SelectionFromSurfaces();
 	void GetSelectionState(ModelSelectionState &s);
 	void SetSelectionState(ModelSelectionState &s);

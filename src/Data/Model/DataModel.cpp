@@ -1401,11 +1401,16 @@ void DataModel::SelectionFromPolygons()
 {
 	foreach(ModelVertex &v, Vertex)
 		v.is_selected = false;
-	foreach(ModelSurface &s, Surface)
+	foreach(ModelSurface &s, Surface){
+		foreach(ModelEdge &e, s.Edge)
+			e.is_selected = false;
 		foreach(ModelPolygon &t, s.Polygon)
 			if (t.is_selected)
-				for (int k=0;k<t.Side.num;k++)
+				for (int k=0;k<t.Side.num;k++){
 					Vertex[t.Side[k].Vertex].is_selected = true;
+					s.Edge[t.Side[k].Edge].is_selected = true;
+				}
+	}
 	foreach(ModelSurface &s, Surface){
 		s.is_selected = true;
 		foreach(ModelPolygon &t, s.Polygon)
@@ -1414,10 +1419,35 @@ void DataModel::SelectionFromPolygons()
 	Notify("Selection");
 }
 
+void DataModel::SelectionFromEdges()
+{
+	foreach(ModelVertex &v, Vertex)
+		v.is_selected = false;
+	foreach(ModelSurface &s, Surface){
+		foreach(ModelEdge &e, s.Edge)
+			if (e.is_selected)
+				for (int k=0;k<2;k++)
+					Vertex[e.Vertex[k]].is_selected = true;
+		foreach(ModelPolygon &p, s.Polygon){
+			p.is_selected = true;
+			for (int k=0;k<p.Side.num;k++)
+				p.is_selected &= s.Edge[p.Side[k].Edge].is_selected;
+		}
+		s.is_selected = true;
+		foreach(ModelEdge &e, s.Edge)
+			s.is_selected &= e.is_selected;
+	}
+	Notify("Selection");
+}
+
 void DataModel::SelectionFromVertices()
 {
 	foreach(ModelSurface &s, Surface){
 		s.is_selected = true;
+		foreach(ModelEdge &e, s.Edge){
+			e.is_selected = (Vertex[e.Vertex[0]].is_selected && Vertex[e.Vertex[1]].is_selected);
+			e.view_stage = min(Vertex[e.Vertex[0]].view_stage, Vertex[e.Vertex[1]].view_stage);
+		}
 		foreach(ModelPolygon &t, s.Polygon){
 			t.is_selected = true;
 			t.view_stage = Vertex[t.Side[0].Vertex].view_stage;

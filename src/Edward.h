@@ -38,6 +38,7 @@ enum{
 	MVDModelVertex,
 	MVDModelSkinVertex,
 	MVDModelPolygon,
+	MVDModelEdge,
 	MVDModelBall,
 	MVDModelPolyhedron,
 	MVDSkeletonPoint,

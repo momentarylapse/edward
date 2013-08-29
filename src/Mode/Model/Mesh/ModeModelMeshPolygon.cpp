@@ -46,8 +46,12 @@ void ModeModelMeshPolygon::DrawPolygons(Array<ModelVertex> &vertex)
 			foreach(ModelEdge &e, s.Edge){
 				if (min(vertex[e.Vertex[0]].view_stage, vertex[e.Vertex[1]].view_stage) < multi_view->view_stage)
 					continue;
-				float f = 0.7f - (s.Polygon[e.Polygon[0]].TempNormal * dir) * 0.3f;
-				NixSetColor(color(1, f, f, f));
+				if (e.is_selected){
+					NixSetColor(Red);
+				}else{
+					float f = 0.7f - (s.Polygon[e.Polygon[0]].TempNormal * dir) * 0.3f;
+					NixSetColor(color(1, f, f, f));
+				}
 				NixDrawLine3D(vertex[e.Vertex[0]].pos, vertex[e.Vertex[1]].pos);
 			}
 		}
