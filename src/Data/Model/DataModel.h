@@ -281,7 +281,6 @@ public:
 	void CollapseSelectedVertices();
 	void BevelSelectedEdges(float radius);
 	void FlattenSelectedVertices();
-	void BrushExtrudeVertices(const vector &pos, const vector &n, float radius, float depth);
 	void ExtrudeSelectedPolygons(float offset);
 	void AutoWeldSurfaces(const Set<int> &surfaces, float d);
 	void AutoWeldSelectedSurfaces(float d);

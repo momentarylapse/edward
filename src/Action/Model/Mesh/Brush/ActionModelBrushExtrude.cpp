@@ -1,14 +1,14 @@
 /*
- * ActionModelBrushExtrudeVertices.cpp
+ * ActionModelBrushExtrude.cpp
  *
  *  Created on: 22.08.2013
  *      Author: michi
  */
 
-#include "ActionModelBrushExtrudeVertices.h"
+#include "ActionModelBrushExtrude.h"
 #include "../../../../Data/Model/DataModel.h"
 
-ActionModelBrushExtrudeVertices::ActionModelBrushExtrudeVertices(const vector &_pos, const vector &_n, float _radius, float _depth)
+ActionModelBrushExtrude::ActionModelBrushExtrude(const vector &_pos, const vector &_n, float _radius, float _depth)
 {
 	pos = _pos;
 	n = _n;
@@ -16,11 +16,11 @@ ActionModelBrushExtrudeVertices::ActionModelBrushExtrudeVertices(const vector &_
 	depth = _depth;
 }
 
-ActionModelBrushExtrudeVertices::~ActionModelBrushExtrudeVertices()
+ActionModelBrushExtrude::~ActionModelBrushExtrude()
 {
 }
 
-void* ActionModelBrushExtrudeVertices::execute(Data* d)
+void* ActionModelBrushExtrude::execute(Data* d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
@@ -40,7 +40,7 @@ void* ActionModelBrushExtrudeVertices::execute(Data* d)
 	return NULL;
 }
 
-void ActionModelBrushExtrudeVertices::undo(Data* d)
+void ActionModelBrushExtrude::undo(Data* d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 

@@ -25,7 +25,7 @@
 #include "Creation/ModeModelMeshCreatePlatonic.h"
 #include "Creation/ModeModelMeshSplitPolygon.h"
 #include "Creation/ModeModelMeshBevelEdges.h"
-#include "Creation/ModeModelMeshBrushExtrudeVertices.h"
+#include "Creation/ModeModelMeshBrush.h"
 #include "Creation/ModeModelMeshExtrudePolygons.h"
 #include "../../../Action/Model/Mesh/Skin/ActionModelSkinVerticesFromProjection.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
@@ -158,8 +158,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		ed->SetMode(new ModeModelMeshSplitPolygon(mode_model_mesh_polygon));
 	if (id == "bevel_edges")
 		ed->SetMode(new ModeModelMeshBevelEdges(mode_model_mesh_vertex));
-	if (id == "brush_extrude_vertices")
-		ed->SetMode(new ModeModelMeshBrushExtrudeVertices(mode_model_mesh_polygon));
+	if (id == "deformation_brush")
+		ed->SetMode(new ModeModelMeshBrush(mode_model_mesh_polygon));
 	if (id == "flatten_vertices")
 		data->FlattenSelectedVertices();
 

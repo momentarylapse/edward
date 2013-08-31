@@ -7309,7 +7309,7 @@ flatten_vertices
 
 
 Item
-brush_extrude_vertices
+deformation_brush
 
 1
 0
@@ -16335,8 +16335,6 @@ bgc
 !alpha
 brightness
 \\0\\100\\0.1
-brush_extrude_vertices
-Z-Pinsel
 cam_area
 
 cam_edit_ang
@@ -16399,6 +16397,8 @@ default_second_world
 
 default_world
 
+deformation_brush
+Z-Pinsel
 degree
 °
 delete
@@ -17787,8 +17787,6 @@ bgc
 !alpha
 brightness
 \\0\\100\\0.1
-brush_extrude_vertices
-
 cam_area
 
 cam_edit_ang
@@ -17850,6 +17848,8 @@ default_script
 default_second_world
 
 default_world
+
+deformation_brush
 
 degree
 °
@@ -19531,8 +19531,6 @@ bgc
 !alpha
 brightness
 
-brush_extrude_vertices
-
 cam_area
 
 cam_edit_ang
@@ -19594,6 +19592,8 @@ default_script
 default_second_world
 
 default_world
+
+deformation_brush
 
 degree
 °

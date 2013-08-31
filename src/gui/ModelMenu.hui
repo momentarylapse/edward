@@ -248,7 +248,7 @@ enum{
 		sub_menu_858->AddEntry("--Vereinen",HMM_CONNECT);
 		sub_menu_858->AddEntry("Ann&ahern",HMM_NEARIFY);
 		sub_menu_858->AddEntry("Einebnen",HMM_FLATTEN_VERTICES);
-		sub_menu_858->AddEntry("Z-Pinsel",HMM_BRUSH_EXTRUDE_VERTICES);
+		sub_menu_858->AddEntry("Z-Pinsel",HMM_DEFORMATION_BRUSH);
 		sub_menu_858->AddSeparator();
 		sub_menu_858->AddEntry("Auf Kanten",HMM_MENU_EDGE_HEADER);
 		sub_menu_858->EnableItem(HMM_MENU_EDGE_HEADER,false);

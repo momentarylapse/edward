@@ -83,8 +83,6 @@ bgc
 !alpha
 brightness
 \\0\\100\\0.1
-brush_extrude_vertices
-
 cam_edit_ang
 
 cam_edit_vel
@@ -135,6 +133,8 @@ default_colors
 Use colors from material
 default_material
 use default material
+deformation_brush
+
 degree
 °
 delete
@@ -1170,7 +1170,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-231
+233
 // Data (ID,Text)
 
 
@@ -1372,6 +1372,8 @@ Kein Punkt markiert!
 
 Kein Punkt mit Effekt markiert!
 
+Kein Terrain markiert
+
 Knochen setzen
 Set bone
 Knochen setzen oder Wurzel-Knochen wählen
@@ -1449,8 +1451,6 @@ Polygone: %d (von %d)
 Pop
 Pop
 Punkt setzen
-
-Punkte auf der Oberfläche anklicken
 
 Push
 Push
@@ -1584,6 +1584,8 @@ Zylinderschlange... Punkte + Shift Return
 \\\\   - no textures -
 administrieren
 administrate
+auf der Oberfläche malen
+
 beliebige Datei
 arbitrary file
 berechne Licht
@@ -1603,6 +1605,8 @@ No double points allowed!
 löscht die Textur der ausgewählten Textur-Schicht
 
 löscht die ausgewählte Textur-Schicht
+
+malen...
 
 maximale Sichtweite, dahinter hat der Nebel volle Intensität
 
