@@ -94,8 +94,8 @@ void TerrainPropertiesDialog::LoadData()
 	FillTextureList();
 
 	SetString("filename", temp.FileName);
-	SetFloat("num_x", temp.NumX);
-	SetFloat("num_z", temp.NumZ);
+	SetInt("num_x", temp.NumX);
+	SetInt("num_z", temp.NumZ);
 	SetFloat("pattern_x", temp.Pattern.x);
 	SetFloat("pattern_z", temp.Pattern.z);
 }

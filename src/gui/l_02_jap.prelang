@@ -789,6 +789,12 @@ np_num_y
 
 ntdt_slides
 
+nterrain_dialog_t_raster
+
+nterrain_dialog_t_stripes
+
+nterrain_dialog_t_terrainsize
+
 ntp_samples
 
 num_items
@@ -969,15 +975,9 @@ terrain_dialog
 
 terrain_dialog_grp_apply
 
-terrain_dialog_grp_heightmap
-
-terrain_dialog_grp_size
-
 terrain_dialog_t_filename
 
 terrain_dialog_t_filter
-
-terrain_dialog_t_gray
 
 terrain_dialog_t_heightmap
 
@@ -986,8 +986,6 @@ terrain_dialog_t_material
 terrain_dialog_t_raster
 
 terrain_dialog_t_stripes
-
-terrain_dialog_t_terrainsize
 
 terrain_dialog_tab_control
 properties\\textures\\material\\import
@@ -1004,6 +1002,8 @@ terrain_hm_dialog_t_op
 terrain_hm_dialog_t_stretch
 
 terrain_load
+
+terrain_rescale
 
 terrain_save_as
 保存...

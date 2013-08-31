@@ -157,8 +157,9 @@ enum{
 		CHuiMenu *sub_menu_op=new CHuiMenu();
 		sub_menu_op->AddEntry("Terrain",HMM_MENU_WORLD_SIGN_TERRAIN);
 		sub_menu_op->EnableItem(HMM_MENU_WORLD_SIGN_TERRAIN,false);
-		sub_menu_op->AddEntryImage("--Vertices bearbeiten",HuiImageEdit,HMM_EDIT_TERRAIN_VERTICES);
+		sub_menu_op->AddEntryImage("Höhen bearbeiten",HuiImageEdit,HMM_EDIT_TERRAIN_VERTICES);
 		sub_menu_op->AddEntryImage("Höhenarte",HuiImageEdit,HMM_TERRAIN_HEIGHTMAP);
+		sub_menu_op->AddEntryImage("Streifenzahl &andern",HuiImageEdit,HMM_TERRAIN_RESCALE);
 		sub_menu_op->AddSeparator();
 		sub_menu_op->AddEntry("Objekte",HMM_MENU_WORLD_SIGN_OBJECT);
 		sub_menu_op->EnableItem(HMM_MENU_WORLD_SIGN_OBJECT,false);

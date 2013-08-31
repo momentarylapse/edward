@@ -789,6 +789,12 @@ np_num_y
 \\1
 ntdt_slides
 
+nterrain_dialog_t_raster
+
+nterrain_dialog_t_stripes
+
+nterrain_dialog_t_terrainsize
+
 ntp_samples
 
 num_items
@@ -969,16 +975,10 @@ terrain_dialog
 Terrain properties
 terrain_dialog_grp_apply
 !bold\\Apply
-terrain_dialog_grp_heightmap
-!bold\\New terrain from heightmap
-terrain_dialog_grp_size
-!bold\\Geometry
 terrain_dialog_t_filename
 terrain file:
 terrain_dialog_t_filter
 Filter (optional)
-terrain_dialog_t_gray
-1 level of gray =
 terrain_dialog_t_heightmap
 heightmap
 terrain_dialog_t_material
@@ -987,8 +987,6 @@ terrain_dialog_t_raster
 raster size
 terrain_dialog_t_stripes
 # stripes
-terrain_dialog_t_terrainsize
-Terrain size
 terrain_dialog_tab_control
 properties\\textures\\material\\import
 terrain_heightmap
@@ -1005,6 +1003,8 @@ terrain_hm_dialog_t_stretch
 Zoom
 terrain_load
 Terrain (load)...
+terrain_rescale
+
 terrain_save_as
 Save...
 terrain_show_texture_final

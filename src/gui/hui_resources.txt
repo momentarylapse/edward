@@ -11762,7 +11762,7 @@ new_terrain_dialog
 
 1
 405
-280
+245
 0
 0
 0
@@ -11770,13 +11770,13 @@ new_terrain_dialog
 0
 
 
-25
+15
 DefButton
 ok
 hui:ok
 1
 295
-240
+205
 100
 25
 -1
@@ -11789,7 +11789,7 @@ cancel
 hui:cancel
 1
 190
-240
+205
 100
 25
 -1
@@ -11797,26 +11797,13 @@ hui:cancel
 0
 
 
-Group
-terrain_dialog_t_raster
-
-1
-140
-140
-125
-85
--1
-0
-0
-
-
 Text
-lu
+nterrain_dialog_t_raster
 
 1
-240
-160
-20
+5
+70
+385
 25
 -1
 0
@@ -11827,9 +11814,9 @@ Edit
 pattern_x
 
 0
+45
+100
 150
-160
-85
 25
 -1
 0
@@ -11840,9 +11827,9 @@ Edit
 pattern_z
 
 0
+215
+100
 150
-190
-85
 25
 -1
 0
@@ -11853,8 +11840,8 @@ Text
 lu
 
 1
-240
-190
+370
+100
 20
 25
 -1
@@ -11862,14 +11849,14 @@ lu
 0
 
 
-Group
-terrain_dialog_t_stripes
+Text
+nterrain_dialog_t_stripes
 
 1
-30
-140
-105
-85
+5
+5
+385
+25
 -1
 0
 0
@@ -11879,8 +11866,8 @@ Text
 x
 
 1
-40
-160
+20
+35
 20
 25
 -1
@@ -11892,9 +11879,9 @@ SpinButton
 num_x
 
 1
-60
-160
-60
+40
+35
+150
 25
 -1
 0
@@ -11905,8 +11892,8 @@ Text
 z
 
 1
-40
-190
+195
+35
 20
 25
 -1
@@ -11918,9 +11905,9 @@ SpinButton
 num_z
 
 1
-60
-190
-60
+215
+35
+150
 25
 -1
 0
@@ -11928,116 +11915,12 @@ num_z
 
 
 Text
-terrain_dialog_grp_heightmap
+nterrain_dialog_t_terrainsize
 
 1
-10
-10
+5
+130
 385
-25
--1
-0
-0
-
-
-Text
-terrain_dialog_t_heightmap
-
-1
-30
-40
-100
-25
--1
-0
-0
-
-
-Edit
-height_image
-
-0
-130
-40
-235
-25
--1
-0
-0
-
-
-Button
-height_image_find
-hui:open
-1
-370
-40
-25
-25
--1
-0
-0
-
-
-Text
-terrain_dialog_t_gray
-
-1
-30
-70
-100
-25
--1
-0
-0
-
-
-Edit
-height_factor
-
-1
-130
-70
-235
-25
--1
-0
-0
-
-
-Text
-lu
-
-1
-370
-70
-25
-25
--1
-0
-0
-
-
-Group
-terrain_dialog_t_terrainsize
-
-1
-270
-140
-125
-85
--1
-0
-0
-
-
-Text
-lu
-
-1
-370
-160
-20
 25
 -1
 0
@@ -12048,9 +11931,9 @@ Edit
 terrain_x
 
 1
-280
+45
 160
-85
+150
 25
 -1
 0
@@ -12061,9 +11944,9 @@ Edit
 terrain_z
 
 1
-280
-190
-85
+215
+160
+150
 25
 -1
 0
@@ -12075,21 +11958,8 @@ lu
 
 1
 370
-190
+160
 20
-25
--1
-0
-0
-
-
-Text
-terrain_dialog_grp_size
-
-1
-10
-110
-385
 25
 -1
 0
@@ -12798,7 +12668,7 @@ terrain_dialog
 0
 
 
-28
+25
 DefButton
 ok
 hui:ok
@@ -12851,27 +12721,27 @@ hui:apply
 0
 
 
-Group
+Text
 terrain_dialog_t_stripes
 
 1
-85
-65
+10
+75
 105
-85
+25
 0
 0
 0
 terrain_dialog_tab_control
 
-Group
+Text
 terrain_dialog_t_raster
 
 1
-195
-65
+10
+105
 125
-85
+25
 0
 0
 0
@@ -12881,8 +12751,8 @@ Text
 x
 
 1
-95
-85
+170
+50
 20
 25
 0
@@ -12890,13 +12760,13 @@ x
 0
 terrain_dialog_tab_control
 
-SpinButton
+Edit
 num_x
 
-1
-115
-85
-60
+0
+140
+75
+120
 25
 0
 0
@@ -12907,8 +12777,8 @@ Text
 z
 
 1
-95
-115
+300
+50
 20
 25
 0
@@ -12916,13 +12786,13 @@ z
 0
 terrain_dialog_tab_control
 
-SpinButton
+Edit
 num_z
 
-1
-115
-115
-60
+0
+265
+75
+120
 25
 0
 0
@@ -12933,8 +12803,8 @@ Text
 lu
 
 1
-290
-85
+390
+105
 25
 25
 0
@@ -12968,39 +12838,13 @@ filename
 0
 terrain_dialog_tab_control
 
-Text
-x
-
-1
-205
-85
-20
-25
-0
-0
-0
-terrain_dialog_tab_control
-
 Edit
 pattern_x
 
 1
-225
-85
-60
-25
-0
-0
-0
-terrain_dialog_tab_control
-
-Text
-z
-
-1
-205
-115
-20
+140
+105
+120
 25
 0
 0
@@ -13011,22 +12855,9 @@ Edit
 pattern_z
 
 1
-225
-115
-60
-25
-0
-0
-0
-terrain_dialog_tab_control
-
-Text
-lu
-
-1
-290
-115
-25
+265
+105
+120
 25
 0
 0
@@ -14736,7 +14567,7 @@ menu_world
 0
 
 
-96
+97
 ItemPopup
 menu_world_file
 
@@ -15443,7 +15274,7 @@ ItemPopup
 menu_world_operation
 
 1
-9
+10
 0
 0
 0
@@ -15480,6 +15311,19 @@ hui:edit
 
 ItemImage
 terrain_heightmap
+hui:edit
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+ItemImage
+terrain_rescale
 hui:edit
 1
 0
@@ -16604,7 +16448,7 @@ edit_object
 edit_terrain_selectable
 Terrains Markierbar
 edit_terrain_vertices
---Vertices bearbeiten
+Höhen bearbeiten
 editor_dialog
 Edward
 editor_dialog_t_adress
@@ -17363,6 +17207,12 @@ np_num_y
 \\1
 ntdt_slides
 Streifen
+nterrain_dialog_t_raster
+!bold\\Raster-Größe
+nterrain_dialog_t_stripes
+!bold\\Streifen-Zahl
+nterrain_dialog_t_terrainsize
+!bold\\Terrain-Größe
 ntp_samples
 \\1
 num
@@ -17611,16 +17461,10 @@ terrain_dialog
 Terrain-Eigenschaften
 terrain_dialog_grp_apply
 !bold\\Anwenden
-terrain_dialog_grp_heightmap
-!bold\\Höhen aus Graustufen einer Bilddatei
-terrain_dialog_grp_size
-!bold\\Abmessungen
 terrain_dialog_t_filename
 Terrain-Datei:
 terrain_dialog_t_filter
 Filter (optional)
-terrain_dialog_t_gray
-1 Graustufe =
 terrain_dialog_t_heightmap
 Höhenkarte
 terrain_dialog_t_material
@@ -17629,8 +17473,6 @@ terrain_dialog_t_raster
 Raster-Größe
 terrain_dialog_t_stripes
 Streifen-Zahl
-terrain_dialog_t_terrainsize
-Terrain-Größe
 terrain_dialog_tab_control
 Eigenschaften\\Texturen\\Material
 terrain_heightmap
@@ -17647,6 +17489,8 @@ terrain_hm_dialog_t_stretch
 Streckung
 terrain_load
 Terrain laden...
+terrain_rescale
+Streifenzahl ändern
 terrain_save_as
 Speichern...
 terrain_show_texture_final
@@ -18815,6 +18659,12 @@ np_num_y
 \\1
 ntdt_slides
 
+nterrain_dialog_t_raster
+
+nterrain_dialog_t_stripes
+
+nterrain_dialog_t_terrainsize
+
 ntp_samples
 
 num
@@ -19063,16 +18913,10 @@ terrain_dialog
 Terrain properties
 terrain_dialog_grp_apply
 !bold\\Apply
-terrain_dialog_grp_heightmap
-!bold\\New terrain from heightmap
-terrain_dialog_grp_size
-!bold\\Geometry
 terrain_dialog_t_filename
 terrain file:
 terrain_dialog_t_filter
 Filter (optional)
-terrain_dialog_t_gray
-1 level of gray =
 terrain_dialog_t_heightmap
 heightmap
 terrain_dialog_t_material
@@ -19081,8 +18925,6 @@ terrain_dialog_t_raster
 raster size
 terrain_dialog_t_stripes
 # stripes
-terrain_dialog_t_terrainsize
-Terrain size
 terrain_dialog_tab_control
 properties\\textures\\material\\import
 terrain_heightmap
@@ -19099,6 +18941,8 @@ terrain_hm_dialog_t_stretch
 Zoom
 terrain_load
 Terrain (load)...
+terrain_rescale
+
 terrain_save_as
 Save...
 terrain_show_texture_final
@@ -20559,6 +20403,12 @@ np_num_y
 
 ntdt_slides
 
+nterrain_dialog_t_raster
+
+nterrain_dialog_t_stripes
+
+nterrain_dialog_t_terrainsize
+
 ntp_samples
 
 num
@@ -20807,15 +20657,9 @@ terrain_dialog
 
 terrain_dialog_grp_apply
 
-terrain_dialog_grp_heightmap
-
-terrain_dialog_grp_size
-
 terrain_dialog_t_filename
 
 terrain_dialog_t_filter
-
-terrain_dialog_t_gray
 
 terrain_dialog_t_heightmap
 
@@ -20824,8 +20668,6 @@ terrain_dialog_t_material
 terrain_dialog_t_raster
 
 terrain_dialog_t_stripes
-
-terrain_dialog_t_terrainsize
 
 terrain_dialog_tab_control
 properties\\textures\\material\\import
@@ -20842,6 +20684,8 @@ terrain_hm_dialog_t_op
 terrain_hm_dialog_t_stretch
 
 terrain_load
+
+terrain_rescale
 
 terrain_save_as
 保存...
