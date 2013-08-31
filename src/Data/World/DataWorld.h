@@ -35,6 +35,7 @@ public:
 	Terrain *terrain;
 
 	bool Load(const vector &pos, const string &filename, bool deep = true);
+	bool Save(const string &filename);
 	void UpdateData();
 };
 

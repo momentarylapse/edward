@@ -29,7 +29,7 @@ void WorldObject::UpdateData()
 
 bool WorldTerrain::Load(const vector &_pos, const string &filename, bool deep)
 {
-	msg_db_r("Terrain.LoadFromFile", 1);
+	msg_db_f("Terrain.LoadFromFile", 1);
 	view_stage = 0;
 	is_selected = false;
 	is_special = false;
@@ -47,8 +47,50 @@ bool WorldTerrain::Load(const vector &_pos, const string &filename, bool deep)
 		terrain = NULL;
 	}
 
-	msg_db_l(1);
 	return !Error;
+}
+
+bool WorldTerrain::Save(const string &filename)
+{
+	msg_db_f("Terrain.LoadFromFile", 1);
+
+	ed->MakeDirs(filename);
+	FileName = filename.substr(MapDir.num, -1);
+	FileName.resize(FileName.num - 4);
+
+
+	CFile *f = FileCreate(filename);
+	if (!f)
+		return false;
+
+	f->WriteFileFormatVersion(true, 4);
+	f->WriteByte(0);
+
+	// Metrics
+	f->WriteComment("// Metrics");
+	f->WriteInt(terrain->num_x);
+	f->WriteInt(terrain->num_z);
+	f->WriteFloat(terrain->pattern.x);
+	f->WriteFloat(terrain->pattern.z);
+
+	// Textures
+	f->WriteComment("// Textures");
+	f->WriteInt(terrain->material->num_textures);
+	for (int i=0;i<terrain->material->num_textures;i++){
+		f->WriteStr(terrain->texture_file[i]);
+		f->WriteFloat(terrain->texture_scale[i].x);
+		f->WriteFloat(terrain->texture_scale[i].z);
+	}
+	f->WriteStr(terrain->material_file);
+
+	// height
+	for (int x=0;x<terrain->num_x+1;x++)
+		for (int z=0;z<terrain->num_z+1;z++)
+			f->WriteFloat(terrain->height[x*(terrain->num_z+1) + z]);
+
+	FileClose(f);
+
+	return true;
 }
 
 void WorldTerrain::UpdateData()
@@ -158,7 +200,7 @@ bool DataWorld::Save(const string & _filename)
 
 bool DataWorld::Load(const string & _filename, bool deep)
 {
-	msg_db_r("World.Load", 1);
+	msg_db_f("World.Load", 1);
 	bool Error=false;
 	int ffv;
 
@@ -169,10 +211,8 @@ bool DataWorld::Load(const string & _filename, bool deep)
 		ed->MakeDirs(filename);
 
 	CFile *f = FileOpen(filename);
-	if (!f){
-		msg_db_l(1);
+	if (!f)
 		return false;
-	}
 	file_time = f->GetDateModification().time;
 
 	ffv = f->ReadFileFormatVersion();
@@ -296,7 +336,6 @@ bool DataWorld::Load(const string & _filename, bool deep)
 	ResetHistory();
 	Notify("Change");
 
-	msg_db_l(1);
 	return !Error;
 }
 

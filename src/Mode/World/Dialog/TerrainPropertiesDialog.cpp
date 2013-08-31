@@ -36,6 +36,7 @@ TerrainPropertiesDialog::TerrainPropertiesDialog(HuiWindow *_parent, bool _allow
 	EventMX("textures", "hui:select", this, &TerrainPropertiesDialog::OnTexturesSelect);
 	EventM("material_find", this, &TerrainPropertiesDialog::OnMaterialFind);
 	EventM("default_material", this, &TerrainPropertiesDialog::OnDefaultMaterial);
+	EventM("terrain_save_as", this, &TerrainPropertiesDialog::OnSaveAs);
 
 	Subscribe(data);
 
@@ -92,7 +93,7 @@ void TerrainPropertiesDialog::LoadData()
 	Enable("material", false);//(temp.MaterialFile != ""));
 	FillTextureList();
 
-	SetString("", temp.FileName);
+	SetString("filename", temp.FileName);
 	SetFloat("num_x", temp.NumX);
 	SetFloat("num_z", temp.NumZ);
 	SetFloat("pattern_x", temp.Pattern.x);
@@ -115,6 +116,10 @@ void TerrainPropertiesDialog::OnTexturesEdit()
 
 void TerrainPropertiesDialog::OnSaveAs()
 {
+	if (!ed->FileDialog(FDTerrain, true, true))
+		return;
+	data->Terrains[index].Save(ed->DialogFileComplete);
+	SetString("filename", ed->DialogFileNoEnding);
 }
 
 

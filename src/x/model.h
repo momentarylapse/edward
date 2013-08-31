@@ -419,6 +419,7 @@ enum
 	NormalModeSmoothEdges,
 	NormalModeAngular,
 	NormalModePerVertex,
+	NormalModePerEdge,
 	NormalModePre=16,
 };
 
