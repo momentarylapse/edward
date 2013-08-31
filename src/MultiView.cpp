@@ -83,6 +83,7 @@ MultiView::MultiView(bool _mode3d) :
 	m = v_0;
 	HoldingCursor = false;
 	HoldingX = HoldingY = 0;
+	allow_mouse_actions = true;
 
 	Reset();
 }
@@ -442,7 +443,7 @@ void MultiView::OnMouseMove()
 
 
 	// hover
-	if ((!lbut) && (!mbut) && (!rbut))
+	if (((!lbut) && (!mbut) && (!rbut)) || (!allow_mouse_actions))
 		GetMouseOver();
 
 	// rectangle
@@ -451,7 +452,7 @@ void MultiView::OnMouseMove()
 
 	// left button -> move data
 	//msg_write(lbut);
-	if ((lbut) or (mbut) or (rbut)){
+	if (((lbut) or (mbut) or (rbut)) && allow_mouse_actions){
 		int d = abs(v.x) + abs(v.y);
 		MouseMovedSinceClick += d;
 		if ((MouseMovedSinceClick >= MinMouseMoveToInteract) and (MouseMovedSinceClick - d < MinMouseMoveToInteract)){
@@ -1372,6 +1373,8 @@ void MultiView::MouseActionStart(int button)
 {
 	if (cur_action)
 		MouseActionEnd(false);
+	if (!allow_mouse_actions)
+		return;
 	if (action[button].name != ""){
 		msg_write("mouse action start " + action[button].name);
 

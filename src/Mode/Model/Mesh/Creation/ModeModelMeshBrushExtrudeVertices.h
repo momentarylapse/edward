@@ -21,12 +21,14 @@ public:
 	virtual void OnEnd();
 
 	virtual void OnLeftButtonDown();
+	virtual void OnLeftButtonUp();
+	virtual void OnMouseMove();
 
 	virtual void OnDrawWin(MultiViewWindow *win);
 
 private:
-	int surface, triangle;
-	vector pos;
+	float distance;
+	vector last_pos;
 };
 
 #endif /* MODEMODELMESHBRUSHEXTRUDEVERTICES_H_ */

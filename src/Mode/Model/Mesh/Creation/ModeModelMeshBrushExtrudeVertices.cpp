@@ -23,6 +23,8 @@ ModeModelMeshBrushExtrudeVertices::~ModeModelMeshBrushExtrudeVertices()
 
 void ModeModelMeshBrushExtrudeVertices::OnStart()
 {
+	multi_view->allow_mouse_actions = false;
+
 	// Dialog
 	dialog = new HuiFixedDialog(_("Pinsel"), 300, 100, ed, true);//HuiCreateResourceDialog("new_ball_dialog", ed);
 	dialog->AddText(_("Dicke"), 5, 5, 80, 25, "");
@@ -30,7 +32,7 @@ void ModeModelMeshBrushExtrudeVertices::OnStart()
 	dialog->AddEdit("", 90, 5, 80, 25, "radius");
 	dialog->AddEdit("", 90, 35, 80, 25, "depth");
 
-	dialog->SetString("radius", f2s(multi_view->cam.radius * 0.2f, 2));
+	dialog->SetString("radius", f2s(multi_view->cam.radius * 0.1f, 2));
 	dialog->SetString("depth", f2s(multi_view->cam.radius * 0.02f, 2));
 	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
 	dialog->Show();
@@ -42,18 +44,45 @@ void ModeModelMeshBrushExtrudeVertices::OnStart()
 void ModeModelMeshBrushExtrudeVertices::OnEnd()
 {
 	delete(dialog);
+	multi_view->allow_mouse_actions = true;
 }
 
 void ModeModelMeshBrushExtrudeVertices::OnLeftButtonDown()
 {
-	if (multi_view->Selected < 0)
+	if (multi_view->MouseOver < 0)
 		return;
 	vector pos = multi_view->MouseOverTP;
-	vector n = data->Surface[multi_view->SelectedSet].Polygon[multi_view->Selected].TempNormal;
+	vector n = data->Surface[multi_view->MouseOverSet].Polygon[multi_view->MouseOver].TempNormal;
 	float radius = dialog->GetFloat("radius");
 	float depth = dialog->GetFloat("depth");
+	distance = 0;
+	last_pos = pos;
 
 	data->BrushExtrudeVertices(pos, n, radius, depth);
+}
+
+void ModeModelMeshBrushExtrudeVertices::OnLeftButtonUp()
+{
+}
+
+void ModeModelMeshBrushExtrudeVertices::OnMouseMove()
+{
+	if (!HuiGetEvent()->lbut)
+		return;
+	if (multi_view->MouseOver < 0)
+		return;
+	float radius = dialog->GetFloat("radius");
+	float depth = dialog->GetFloat("depth");
+	if (ed->GetKey(KEY_CONTROL))
+		depth = - depth;
+	vector pos = multi_view->MouseOverTP;
+	vector n = data->Surface[multi_view->MouseOverSet].Polygon[multi_view->MouseOver].TempNormal;
+	distance += (pos - last_pos).length();
+	last_pos = pos;
+	if (distance > radius * 0.7f){
+		distance = 0;
+		data->BrushExtrudeVertices(pos, n, radius, depth);
+	}
 }
 
 void ModeModelMeshBrushExtrudeVertices::OnDrawWin(MultiViewWindow* win)
@@ -64,6 +93,8 @@ void ModeModelMeshBrushExtrudeVertices::OnDrawWin(MultiViewWindow* win)
 	vector n = data->Surface[multi_view->MouseOverSet].Polygon[multi_view->MouseOver].TempNormal;
 	float radius = dialog->GetFloat("radius");
 	float depth = dialog->GetFloat("depth");
+	if (ed->GetKey(KEY_CONTROL))
+		depth = - depth;
 
 	NixSetColor(Green);
 	NixEnableLighting(false);

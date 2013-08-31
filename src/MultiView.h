@@ -187,6 +187,7 @@ public:
 	bool whole_window;
 	int view_stage;
 
+	bool allow_mouse_actions;
 	MultiViewMouseAction action[3];
 	int active_mouse_action;
 	ActionMultiView *cur_action;
