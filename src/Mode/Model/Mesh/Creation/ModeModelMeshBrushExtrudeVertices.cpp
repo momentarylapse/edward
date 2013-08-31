@@ -15,6 +15,7 @@ ModeModelMeshBrushExtrudeVertices::ModeModelMeshBrushExtrudeVertices(ModeBase* _
 	ModeCreation<DataModel>("ModelMeshBrushExtrudeVertices", _parent)
 {
 	message = _("Punkte auf der Oberfl&ache anklicken");
+	brushing = false;
 }
 
 ModeModelMeshBrushExtrudeVertices::~ModeModelMeshBrushExtrudeVertices()
@@ -45,24 +46,31 @@ void ModeModelMeshBrushExtrudeVertices::OnEnd()
 {
 	delete(dialog);
 	multi_view->allow_mouse_actions = true;
+	if (brushing)
+		data->EndActionGroup();
 }
 
 void ModeModelMeshBrushExtrudeVertices::OnLeftButtonDown()
 {
 	if (multi_view->MouseOver < 0)
 		return;
+	data->BeginActionGroup("brush");
 	vector pos = multi_view->MouseOverTP;
 	vector n = data->Surface[multi_view->MouseOverSet].Polygon[multi_view->MouseOver].TempNormal;
 	float radius = dialog->GetFloat("radius");
 	float depth = dialog->GetFloat("depth");
 	distance = 0;
 	last_pos = pos;
+	brushing = true;
 
 	data->BrushExtrudeVertices(pos, n, radius, depth);
 }
 
 void ModeModelMeshBrushExtrudeVertices::OnLeftButtonUp()
 {
+	if (brushing)
+		data->EndActionGroup();
+	brushing = false;
 }
 
 void ModeModelMeshBrushExtrudeVertices::OnMouseMove()

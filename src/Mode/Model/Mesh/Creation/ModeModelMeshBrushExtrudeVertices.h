@@ -27,6 +27,7 @@ public:
 	virtual void OnDrawWin(MultiViewWindow *win);
 
 private:
+	bool brushing;
 	float distance;
 	vector last_pos;
 };
