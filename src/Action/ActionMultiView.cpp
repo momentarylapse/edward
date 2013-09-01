@@ -19,7 +19,7 @@
 #include "Model/Animation/ActionModelAnimationMoveVertices.h"
 #include "Model/Animation/ActionModelAnimationRotateVertices.h"
 #include "World/ActionWorldMoveSelection.h"
-#include "World/ActionWorldRotateObjects.h"
+#include "World/Object/ActionWorldRotateObjects.h"
 #include "World/Camera/ActionCameraMoveSelection.h"
 #include "../Mode/Model/Mesh/ModeModelMeshTexture.h"
 #include <assert.h>

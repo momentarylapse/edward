@@ -6,7 +6,7 @@
  */
 
 #include "ActionWorldEditTerrain.h"
-#include "../../x/terrain.h"
+#include "../../../x/terrain.h"
 #include <assert.h>
 
 ActionWorldEditTerrain::ActionWorldEditTerrain(int _index, const WorldEditingTerrain &_data)

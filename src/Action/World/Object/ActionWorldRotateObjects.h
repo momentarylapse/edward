@@ -8,7 +8,7 @@
 #ifndef ACTIONWORLDROTATEOBJECTS_H_
 #define ACTIONWORLDROTATEOBJECTS_H_
 
-#include "../ActionMultiView.h"
+#include "../../ActionMultiView.h"
 class DataWorld;
 class vector;
 

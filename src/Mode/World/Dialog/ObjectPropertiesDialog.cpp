@@ -6,7 +6,7 @@
  */
 
 #include "ObjectPropertiesDialog.h"
-#include "../../../Action/World/ActionWorldEditObject.h"
+#include "../../../Action/World/Object/ActionWorldEditObject.h"
 #include <assert.h>
 
 ObjectPropertiesDialog::ObjectPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data, int _index) :

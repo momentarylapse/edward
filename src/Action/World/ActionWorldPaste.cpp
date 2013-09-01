@@ -6,8 +6,8 @@
  */
 
 #include "ActionWorldPaste.h"
-#include "ActionWorldAddObject.h"
-#include "ActionWorldAddTerrain.h"
+#include "Object/ActionWorldAddObject.h"
+#include "Terrain/ActionWorldAddTerrain.h"
 #include "../../Data/World/DataWorld.h"
 
 

@@ -8,8 +8,8 @@
 #ifndef ACTIONWORLDADDTERRAIN_H_
 #define ACTIONWORLDADDTERRAIN_H_
 
-#include "../Action.h"
-#include "../../lib/math/math.h"
+#include "../../Action.h"
+#include "../../../lib/math/math.h"
 
 class ActionWorldAddTerrain : public Action
 {

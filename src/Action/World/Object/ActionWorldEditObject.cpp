@@ -6,7 +6,6 @@
  */
 
 #include "ActionWorldEditObject.h"
-#include "../../x/terrain.h"
 #include <assert.h>
 
 ActionWorldEditObject::ActionWorldEditObject(int _index, const WorldObject &_data)

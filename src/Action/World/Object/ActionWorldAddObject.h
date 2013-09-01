@@ -8,8 +8,8 @@
 #ifndef ACTIONWORLDADDOBJECT_H_
 #define ACTIONWORLDADDOBJECT_H_
 
-#include "../Action.h"
-#include "../../lib/math/math.h"
+#include "../../Action.h"
+#include "../../../lib/math/math.h"
 
 class ActionWorldAddObject : public Action
 {

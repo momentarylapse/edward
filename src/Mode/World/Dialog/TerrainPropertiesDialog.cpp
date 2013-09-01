@@ -6,7 +6,7 @@
  */
 
 #include "TerrainPropertiesDialog.h"
-#include "../../../Action/World/ActionWorldEditTerrain.h"
+#include "../../../Action/World/Terrain/ActionWorldEditTerrain.h"
 #include "../../../Edward.h"
 #include "../../../x/terrain.h"
 #include "../../../x/material.h"

@@ -8,8 +8,8 @@
 #ifndef ACTIONWORLDTERRAINAPPLYHEIGHTMAP_H_
 #define ACTIONWORLDTERRAINAPPLYHEIGHTMAP_H_
 
-#include "../ActionGroup.h"
-#include "../../Data/World/DataWorld.h"
+#include "../../ActionGroup.h"
+#include "../../../Data/World/DataWorld.h"
 
 class ActionWorldTerrainApplyHeightmap : public ActionGroup
 {

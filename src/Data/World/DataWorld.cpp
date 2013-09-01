@@ -13,8 +13,8 @@
 #include "../../x/terrain.h"
 #include "../../x/world.h"
 #include "../../meta.h"
-#include "../../Action/World/ActionWorldAddObject.h"
-#include "../../Action/World/ActionWorldAddTerrain.h"
+#include "../../Action/World/Object/ActionWorldAddObject.h"
+#include "../../Action/World/Terrain/ActionWorldAddTerrain.h"
 #include "../../Action/World/ActionWorldPaste.h"
 
 

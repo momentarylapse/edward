@@ -6,7 +6,7 @@
  */
 
 #include "TerrainHeightmapDialog.h"
-#include "../../../Action/World/ActionWorldTerrainApplyHeightmap.h"
+#include "../../../Action/World/Terrain/ActionWorldTerrainApplyHeightmap.h"
 #include "../../../Edward.h"
 
 TerrainHeightmapDialog::TerrainHeightmapDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data) :

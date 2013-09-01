@@ -6,7 +6,7 @@
  */
 
 #include "ActionWorldRotateObjects.h"
-#include "../../Data/World/DataWorld.h"
+#include "../../../Data/World/DataWorld.h"
 
 ActionWorldRotateObjects::ActionWorldRotateObjects(DataWorld *d, const vector &_param, const vector &_pos0) :
 	ActionMultiView(_param, _pos0)

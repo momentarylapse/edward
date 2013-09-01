@@ -8,8 +8,8 @@
 #ifndef ACTIONWORLDEDITOBJECT_H_
 #define ACTIONWORLDEDITOBJECT_H_
 
-#include "../Action.h"
-#include "../../Data/World/DataWorld.h"
+#include "../../Action.h"
+#include "../../../Data/World/DataWorld.h"
 
 class ActionWorldEditObject : public Action
 {

@@ -8,8 +8,8 @@
 #ifndef ACTIONWORLDEDITTERRAIN_H_
 #define ACTIONWORLDEDITTERRAIN_H_
 
-#include "../Action.h"
-#include "../../Data/World/DataWorld.h"
+#include "../../Action.h"
+#include "../../../Data/World/DataWorld.h"
 
 class ActionWorldEditTerrain : public Action
 {

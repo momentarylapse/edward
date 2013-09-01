@@ -6,8 +6,8 @@
  */
 
 #include "ActionWorldAddTerrain.h"
-#include "../../Data/World/DataWorld.h"
-#include "../../x/terrain.h"
+#include "../../../Data/World/DataWorld.h"
+#include "../../../x/terrain.h"
 #include <assert.h>
 
 ActionWorldAddTerrain::ActionWorldAddTerrain(const vector &_pos, const string &_filename)
