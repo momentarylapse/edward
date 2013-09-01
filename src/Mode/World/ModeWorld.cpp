@@ -24,6 +24,7 @@
 #include "Creation/ModeWorldCreateObject.h"
 #include "Creation/ModeWorldCreateTerrain.h"
 #include "Camera/ModeWorldCamera.h"
+#include "Terrain/ModeWorldEditTerrain.h"
 #include "../../Action/World/ActionWorldEditData.h"
 #include "../../Action/World/ActionWorldSetEgo.h"
 
@@ -109,6 +110,16 @@ void ModeWorld::OnCommand(const string & id)
 			else
 				mode_world_camera->data->Reset();
 		}
+	if (id == "edit_terrain_vertices"){
+		int index = -1;
+		foreachi(WorldTerrain &t, data->Terrains, i)
+			if (t.is_selected)
+				index = i;
+		if (index >= 0)
+			ed->SetMode(new ModeWorldEditTerrain(ed->cur_mode, index));
+		else
+			ed->SetMessage(_("Kein Terrain markiert"));
+	}
 	if (id == "create_lightmap")
 		ExecuteLightmapDialog();
 
@@ -204,67 +215,18 @@ bool IsInRectObject(int index, void *user_data, MultiViewWindow *win, rect *r)
 
 bool IsMouseOverTerrain(int index, void *user_data, MultiViewWindow *win, vector &tp)
 {
-	//msg_db_r(format("IMOT index= %d",index).c_str(),3);
+	//msg_db_f(format("IMOT index= %d",index).c_str(),3);
 	Terrain *t = mode_world->data->Terrains[index].terrain;
 	if (!t)
 		return false;
-#if 0
-	MultiView *mv = ed->multi_view_3d;
-	float mx = mv->mx;
-	float my = mv->my;
-	vector a = mv->VecUnProject(vector(mx, my, 0) ,win);
-	vector b = mv->VecUnProject2(vector(mx, my, 0), mv->pos + mv->GetDirection(win) * mv->radius * 100, win);
-	vector dir = v0;
-	return t->Trace(a, b, dir, 1000000000000, tp, false);
-#else
 	vector mv = win->multi_view->m;
-	float z_min=1;
-	int x1,z1,x,z;
-	for (x1=0;x1<(t->num_x-1)/32+1;x1++)
-		for (z1=0;z1<(t->num_z-1)/32+1;z1++){
-			int lx=(x1*32>t->num_x-32)?(t->num_x%32):32;
-			int lz=(z1*32>t->num_z-32)?(t->num_z%32):32;
-			int x0=x1*32;
-			int z0=z1*32;
-			int e=t->partition[x1][z1];
-			if (e<0)	continue;
-			for (int dx=0;dx<=lx;dx+=e)
-				for (int dz=0;dz<=lz;dz+=e){
-					int di=dx*(32+1)+dz;
-					int i=(dx + x0)*(t->num_z+1)+(dz + z0);
-					pmv[di] = win->Project(t->vertex[i]);
-				}
-			for (int dx=0;dx<lx;dx+=e)
-				for (int dz=0;dz<lz;dz+=e)
-					for (int i=0;i<2;i++){
-						int _a_,_b_,_c_;
-						if (i==0){
-							_a_= dx   *(32+1)+dz  ;
-							_b_= dx   *(32+1)+dz+e;
-							_c_=(dx+e)*(32+1)+dz+e;
-						}else{
-							_a_= dx   *(32+1)+dz  ;
-							_b_=(dx+e)*(32+1)+dz+e;
-							_c_=(dx+e)*(32+1)+dz  ;
-						}
-						vector a=pmv[_a_],b=pmv[_b_],c=pmv[_c_];
-						if ((a.z<=0)||(b.z<=0)||(c.z<=0)||(a.z>=1)||(b.z>=1)||(c.z>=1))	continue;
-						float f,g;
-						float az=a.z,bz=b.z,cz=c.z;
-						a.z=b.z=c.z=0;
-						GetBaryCentric(mv,a,b,c,f,g);
-						if ((f>=0)&&(g>=0)&&(f+g<=1)){
-							float z=az + f*(bz-az) + g*(cz-az);
-							if (z<z_min){
-								z_min=z;
-								tp=t->vertex[_a_] + f*(t->vertex[_b_]-t->vertex[_a_]) + g*(t->vertex[_c_]-t->vertex[_a_]);
-							}
-						}
-				}
-		}
-	//msg_db_l(3);
-	return (z_min<1);
-#endif
+	float r = win->cam->radius * 100;
+	vector a = win->Unproject(mv);
+	vector b = win->Unproject(mv, win->cam->pos + win->GetDirection() * r);
+	TraceData td;
+	bool hit = t->Trace(a, b, v_0, r, td, false);
+	tp = td.point;
+	return hit;
 }
 
 bool IsInRectTerrain(int index, void *user_data, MultiViewWindow *win, rect *r)
