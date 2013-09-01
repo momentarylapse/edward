@@ -11,8 +11,9 @@
 
 #include "../../ModeCreation.h"
 #include "../../../Data/World/DataWorld.h"
+#include "../../../lib/hui/hui.h"
 
-class ModeWorldEditTerrain: public ModeCreation<DataWorld>
+class ModeWorldEditTerrain: public ModeCreation<DataWorld>, public HuiEventHandler
 {
 public:
 	ModeWorldEditTerrain(ModeBase *_parent, int index);
@@ -28,8 +29,19 @@ public:
 
 	virtual void OnDrawWin(MultiViewWindow *win);
 
+	Action *GetAction();
+	void Apply();
+
+	void OnDepthSlider();
+	void OnDiameterSlider();
+
+private:
 	WorldTerrain *terrain;
 	int index;
+	float base_diameter, base_depth;
+	bool brushing;
+	float distance;
+	vector last_pos;
 };
 
 #endif /* MODEWORLDEDITTERRAIN_H_ */
