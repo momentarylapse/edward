@@ -11,8 +11,9 @@
 #include "../Data.h"
 
 
-struct GameIniData
+class GameIniData
 {
+public:
 	string DefScript, DefWorld, SecondWorld, DefMaterial, DefFont;
 	void reset();
 	void Load(const string &dir);

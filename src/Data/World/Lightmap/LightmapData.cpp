@@ -105,7 +105,7 @@ void LightmapData::SetResolution(float res)
 {
 	resolution = res;
 	foreach(Model &m, Models){
-		m.tex_width = min(1 << (int)(log2(sqrt(m.area) / resolution) - 0.5f), 1024);
+		m.tex_width = min(1 << (int)(log(sqrt(m.area) / resolution)/log(2.0f) - 0.5f), 1024);
 		m.tex_height = m.tex_width;
 	}
 }

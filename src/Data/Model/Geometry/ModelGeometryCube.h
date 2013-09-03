@@ -14,7 +14,7 @@ class ModelGeometryCube : public ModelGeometry
 {
 public:
 	ModelGeometryCube(const vector &pos, const vector &dv1, const vector &dv2, const vector &dv3, int num_1, int num_2, int num_3);
-	_cdecl void __init__(const vector &pos, const vector &dv1, const vector &dv2, const vector &dv3, int num_1, int num_2, int num_3);
+	void _cdecl __init__(const vector &pos, const vector &dv1, const vector &dv2, const vector &dv3, int num_1, int num_2, int num_3);
 };
 
 #endif /* MODELGEOMETRYCUBE_H_ */

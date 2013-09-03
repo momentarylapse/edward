@@ -11,6 +11,10 @@
 #include "Observer.h"
 #include "../lib/file/file.h"
 
+#ifdef GetMessage
+#undef GetMessage
+#endif
+
 class Observer;
 
 class Observable

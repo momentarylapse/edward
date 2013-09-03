@@ -85,7 +85,7 @@ public:
 		int x, y;
 		vector pos, n;
 		float area;
-		color rad, rad2, am, dif, em;
+		color rad, _rad2, am, dif, em;
 		int tria_id, mod_id;
 		Array<int> visible;
 		Array<float> coeff;

@@ -10,7 +10,7 @@
 
 #include "../Data.h"
 
-class XFont;
+struct XFont;
 
 
 class DataFont: public Data

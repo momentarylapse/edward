@@ -12,7 +12,8 @@
 
 class AdminFileList;
 
-struct AdminFile{
+class AdminFile{
+public:
 	string Name;
 	int Kind;
 	bool Missing;

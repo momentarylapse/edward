@@ -8,7 +8,6 @@
 #ifndef OBSERVER_H_
 #define OBSERVER_H_
 
-#include "Observable.h"
 #include "../lib/file/file.h"
 
 class Observable;

@@ -15,7 +15,7 @@ class ModelGeometryTeapot : public ModelGeometry
 {
 public:
 	ModelGeometryTeapot(const vector &pos, float radius, int samples);
-	_cdecl void __init__(const vector &pos, float radius, int samples);
+	void _cdecl __init__(const vector &pos, float radius, int samples);
 };
 
 #endif /* MODELGEOMETRYTEAPOT_H_ */

@@ -61,8 +61,8 @@ void PluginManager::Init()
 	Script::DeclareClassOffset("Data", "file_time", offsetof(Data, file_time));
 	Script::DeclareClassOffset("Data", "binary_file_format", offsetof(Data, binary_file_format));
 	Script::DeclareClassOffset("Data", "type", offsetof(Data, type));
-	Script::LinkExternal("Data.BeginActionGroup", (void*)&Data::BeginActionGroup);
-	Script::LinkExternal("Data.EndActionGroup", (void*)&Data::EndActionGroup);
+	Script::LinkExternal("Data.BeginActionGroup", Script::mf(&Data::BeginActionGroup));
+	Script::LinkExternal("Data.EndActionGroup", Script::mf(&Data::EndActionGroup));
 
 	Script::DeclareClassSize("MultiViewSingleData", sizeof(MultiViewSingleData));
 	Script::DeclareClassOffset("MultiViewSingleData", "pos", offsetof(MultiViewSingleData, pos));
@@ -142,36 +142,36 @@ void PluginManager::Init()
 	Script::DeclareClassOffset("DataModel", "TimeScale", offsetof(DataModel, TimeScale));
 	Script::DeclareClassOffset("DataModel", "TimeParam", offsetof(DataModel, TimeParam));
 	Script::DeclareClassOffset("DataModel", "SimFrame", offsetof(DataModel, SimFrame));*/
-	Script::LinkExternal("DataModel.ClearSelection", (void*)&DataModel::ClearSelection);
-	Script::LinkExternal("DataModel.InvertSelection", (void*)&DataModel::InvertSelection);
-	Script::LinkExternal("DataModel.SelectionFromVertices", (void*)&DataModel::SelectionFromVertices);
-	Script::LinkExternal("DataModel.SelectionFromPolygons", (void*)&DataModel::SelectionFromPolygons);
-	Script::LinkExternal("DataModel.SelectionFromSurfaces", (void*)&DataModel::SelectionFromSurfaces);
-	Script::LinkExternal("DataModel.SelectOnlySurface", (void*)&DataModel::SelectOnlySurface);
-	Script::LinkExternal("DataModel.AddVertex", (void*)&DataModel::AddVertex);
-	Script::LinkExternal("DataModel.AddTriangle", (void*)&DataModel::AddTriangle);
-	Script::LinkExternal("DataModel.AddPolygon", (void*)&DataModel::AddPolygon);
-	Script::LinkExternal("DataModel.DeleteSelection", (void*)&DataModel::DeleteSelection);
-	Script::LinkExternal("DataModel.SubtractSelection", (void*)&DataModel::SubtractSelection);
-	Script::LinkExternal("DataModel.TriangulateSelection", (void*)&DataModel::TriangulateSelection);
-	Script::LinkExternal("DataModel.BevelSelectedVertices", (void*)&DataModel::BevelSelectedEdges);
-	Script::LinkExternal("DataModel.ExtrudeSelectedPolygons", (void*)&DataModel::ExtrudeSelectedPolygons);
-	Script::LinkExternal("DataModel.PasteGeometry", (void*)&DataModel::PasteGeometry);
+	Script::LinkExternal("DataModel.ClearSelection", Script::mf(&DataModel::ClearSelection));
+	Script::LinkExternal("DataModel.InvertSelection", Script::mf(&DataModel::InvertSelection));
+	Script::LinkExternal("DataModel.SelectionFromVertices", Script::mf(&DataModel::SelectionFromVertices));
+	Script::LinkExternal("DataModel.SelectionFromPolygons", Script::mf(&DataModel::SelectionFromPolygons));
+	Script::LinkExternal("DataModel.SelectionFromSurfaces", Script::mf(&DataModel::SelectionFromSurfaces));
+	Script::LinkExternal("DataModel.SelectOnlySurface", Script::mf(&DataModel::SelectOnlySurface));
+	Script::LinkExternal("DataModel.AddVertex", Script::mf(&DataModel::AddVertex));
+	Script::LinkExternal("DataModel.AddTriangle", Script::mf(&DataModel::AddTriangle));
+	Script::LinkExternal("DataModel.AddPolygon", Script::mf(&DataModel::AddPolygon));
+	Script::LinkExternal("DataModel.DeleteSelection", Script::mf(&DataModel::DeleteSelection));
+	Script::LinkExternal("DataModel.SubtractSelection", Script::mf(&DataModel::SubtractSelection));
+	Script::LinkExternal("DataModel.TriangulateSelection", Script::mf(&DataModel::TriangulateSelection));
+	Script::LinkExternal("DataModel.BevelSelectedVertices", Script::mf(&DataModel::BevelSelectedEdges));
+	Script::LinkExternal("DataModel.ExtrudeSelectedPolygons", Script::mf(&DataModel::ExtrudeSelectedPolygons));
+	Script::LinkExternal("DataModel.PasteGeometry", Script::mf(&DataModel::PasteGeometry));
 
 
 
 	Script::DeclareClassSize("ModelGeometry", sizeof(ModelGeometry));
-	Script::LinkExternal("ModelGeometryBall.__init__", (void*)&ModelGeometryBall::__init__);
-	Script::LinkExternal("ModelGeometryCube.__init__", (void*)&ModelGeometryCube::__init__);
-	Script::LinkExternal("ModelGeometrySphere.__init__", (void*)&ModelGeometrySphere::__init__);
-	Script::LinkExternal("ModelGeometryCylinder.__init__", (void*)&ModelGeometryCylinder::__init__);
-	Script::LinkExternal("ModelGeometryCylinderComplex.__init__", (void*)&ModelGeometryCylinder::__init2__);
-	Script::LinkExternal("ModelGeometryTorus.__init__", (void*)&ModelGeometryTorus::__init__);
-	Script::LinkExternal("ModelGeometryTorusKnot.__init__", (void*)&ModelGeometryTorusKnot::__init__);
-	Script::LinkExternal("ModelGeometryPlane.__init__", (void*)&ModelGeometryPlane::__init__);
-	Script::LinkExternal("ModelGeometryPlatonic.__init__", (void*)&ModelGeometryPlatonic::__init__);
-	Script::LinkExternal("ModelGeometryTeapot.__init__", (void*)&ModelGeometryTeapot::__init__);
-	Script::LinkExternal("ModelGeometrySubtract", (void*)&ModelGeometrySubtract);
+	Script::LinkExternal("ModelGeometryBall.__init__", Script::mf(&ModelGeometryBall::__init__));
+	Script::LinkExternal("ModelGeometryCube.__init__", Script::mf(&ModelGeometryCube::__init__));
+	Script::LinkExternal("ModelGeometrySphere.__init__", Script::mf(&ModelGeometrySphere::__init__));
+	Script::LinkExternal("ModelGeometryCylinder.__init__", Script::mf(&ModelGeometryCylinder::__init__));
+	Script::LinkExternal("ModelGeometryCylinderComplex.__init__", Script::mf(&ModelGeometryCylinder::__init2__));
+	Script::LinkExternal("ModelGeometryTorus.__init__", Script::mf(&ModelGeometryTorus::__init__));
+	Script::LinkExternal("ModelGeometryTorusKnot.__init__", Script::mf(&ModelGeometryTorusKnot::__init__));
+	Script::LinkExternal("ModelGeometryPlane.__init__", Script::mf(&ModelGeometryPlane::__init__));
+	Script::LinkExternal("ModelGeometryPlatonic.__init__", Script::mf(&ModelGeometryPlatonic::__init__));
+	Script::LinkExternal("ModelGeometryTeapot.__init__", Script::mf(&ModelGeometryTeapot::__init__));
+	Script::LinkExternal("ModelGeometrySubtract", Script::mf(&ModelGeometrySubtract));
 
 	// world
 
@@ -179,9 +179,9 @@ void PluginManager::Init()
 	Script::DeclareClassOffset("DataWorld", "Terrains", offsetof(DataWorld, Terrains));
 	Script::DeclareClassOffset("DataWorld", "Objects", offsetof(DataWorld, Objects));
 	Script::DeclareClassOffset("DataWorld", "EgoIndex", offsetof(DataWorld, EgoIndex));
-	Script::LinkExternal("DataWorld.AddObject", (void*)&DataWorld::AddObject);
-	Script::LinkExternal("DataWorld.AddTerrain", (void*)&DataWorld::AddTerrain);
-	Script::LinkExternal("DataWorld.AddNewTerrain", (void*)&DataWorld::AddNewTerrain);
+	Script::LinkExternal("DataWorld.AddObject", Script::mf(&DataWorld::AddObject));
+	Script::LinkExternal("DataWorld.AddTerrain", Script::mf(&DataWorld::AddTerrain));
+	Script::LinkExternal("DataWorld.AddNewTerrain", Script::mf(&DataWorld::AddNewTerrain));
 }
 
 

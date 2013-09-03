@@ -6,6 +6,7 @@
  */
 
 #include "Observer.h"
+#include "Observable.h"
 
 Observer::Observer()
 {

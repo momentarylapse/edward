@@ -14,7 +14,7 @@ class ModelGeometryBall : public ModelGeometry
 {
 public:
 	ModelGeometryBall(const vector &pos, float radius, int num_x, int num_y);
-	_cdecl void __init__(const vector &pos, float radius, int num_x, int num_y);
+	void _cdecl __init__(const vector &pos, float radius, int num_x, int num_y);
 };
 
 #endif /* MODELGEOMETRYBALL_H_ */

@@ -81,15 +81,15 @@ public:
 	void OnClose();
 	void OnDraw();
 
-	virtual void OnKeyDown();
-	virtual void OnKeyUp();
-	virtual void OnMouseMove();
-	virtual void OnLeftButtonDown();
-	virtual void OnLeftButtonUp();
-	virtual void OnMiddleButtonDown();
-	virtual void OnMiddleButtonUp();
-	virtual void OnRightButtonDown();
-	virtual void OnRightButtonUp();
+	virtual void _cdecl OnKeyDown();
+	virtual void _cdecl OnKeyUp();
+	virtual void _cdecl OnMouseMove();
+	virtual void _cdecl OnLeftButtonDown();
+	virtual void _cdecl OnLeftButtonUp();
+	virtual void _cdecl OnMiddleButtonDown();
+	virtual void _cdecl OnMiddleButtonUp();
+	virtual void _cdecl OnRightButtonDown();
+	virtual void _cdecl OnRightButtonUp();
 	void OnEvent();
 	void OnAbortCreationMode();
 

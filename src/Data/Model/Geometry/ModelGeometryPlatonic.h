@@ -15,7 +15,7 @@ class ModelGeometryPlatonic : public ModelGeometry
 {
 public:
 	ModelGeometryPlatonic(const vector &pos, float radius, int type);
-	_cdecl void __init__(const vector &pos, float radius, int type);
+	void _cdecl __init__(const vector &pos, float radius, int type);
 	void AddTetrahedron(const vector &pos, float radius);
 	void AddOctahedron(const vector &pos, float radius);
 	void AddDodecahedron(const vector &pos, float radius);

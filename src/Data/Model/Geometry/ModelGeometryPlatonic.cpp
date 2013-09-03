@@ -25,11 +25,11 @@ void ModelGeometryPlatonic::AddTetrahedron(const vector &pos, float radius)
 {
 	int nv = Vertex.num;
 
-	float r = radius / sqrt(3/2);
-	AddVertex(pos + vector( 1, 0, -1/sqrt(2)) * r);
-	AddVertex(pos + vector(-1, 0, -1/sqrt(2)) * r);
-	AddVertex(pos + vector( 0, 1,  1/sqrt(2)) * r);
-	AddVertex(pos + vector( 0,-1,  1/sqrt(2)) * r);
+	float r = radius / sqrt(3.0f/2);
+	AddVertex(pos + vector( 1, 0, -1/sqrt(2.0f)) * r);
+	AddVertex(pos + vector(-1, 0, -1/sqrt(2.0f)) * r);
+	AddVertex(pos + vector( 0, 1,  1/sqrt(2.0f)) * r);
+	AddVertex(pos + vector( 0,-1,  1/sqrt(2.0f)) * r);
 	Add3(nv, 0, 1, 2);
 	Add3(nv, 1, 0, 3);
 	Add3(nv, 0, 2, 3);
@@ -61,8 +61,8 @@ void ModelGeometryPlatonic::AddDodecahedron(const vector &pos, float radius)
 {
 	int nv = Vertex.num;
 
-	float phi = (1 + sqrt(5))/2;
-	float r = radius / sqrt(3);
+	float phi = (1 + sqrt(5.0f))/2;
+	float r = radius / sqrt(3.0f);
 	AddVertex(pos + vector( 1, 1, 1) * r);
 	AddVertex(pos + vector( 1, 1,-1) * r);
 	AddVertex(pos + vector( 1,-1, 1) * r);
@@ -106,8 +106,8 @@ void ModelGeometryPlatonic::AddIcosahedron(const vector &pos, float radius)
 {
 	int nv = Vertex.num;
 
-	float phi = (1 + sqrt(5))/2;
-	float r = radius / sqrt(phi * sqrt(5));
+	float phi = (1 + sqrt(5.0f))/2;
+	float r = radius / sqrt(phi * sqrt(5.0f));
 	AddVertex(pos + vector( 0, 1, phi) * r);
 	AddVertex(pos + vector( 0, 1,-phi) * r);
 	AddVertex(pos + vector( 0,-1, phi) * r);

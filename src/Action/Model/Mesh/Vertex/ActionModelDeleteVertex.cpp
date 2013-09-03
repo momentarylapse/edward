@@ -26,6 +26,7 @@ void ActionModelDeleteVertex::undo(Data *d)
 
 void *ActionModelDeleteVertex::execute(Data *d)
 {
+	return NULL;
 }
 
 

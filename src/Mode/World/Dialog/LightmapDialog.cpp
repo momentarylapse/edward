@@ -95,7 +95,7 @@ void OnHistDraw()
 	c->DrawLine(0, hh, w, hh);
 	float grid_dist_min = 40 / scale; // 40 pixel
 	int dec = floor(log10(grid_dist_min)) + 1;
-	float d = pow(10, dec);
+	float d = pow(10.0f, (float)dec);
 	if (d > grid_dist_min * 2)
 		d /= 2;
 	c->SetColor(Grey);

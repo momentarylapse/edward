@@ -15,8 +15,8 @@
 
 class DataModel;
 class ModelSurface;
-struct ModelEdge;
-struct ModelPolygon;
+class ModelEdge;
+class ModelPolygon;
 
 struct SurfaceInsideTestData;
 

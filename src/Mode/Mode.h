@@ -99,7 +99,7 @@ public:
 	virtual ~Mode(){}
 	T *data;
 	virtual Data *GetData()
-	{	return data;	}
+	{	return (Data*)data;	}
 };
 
 #endif /* MODE_H_ */

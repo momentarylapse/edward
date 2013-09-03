@@ -14,7 +14,7 @@ class ModelGeometryTorusKnot : public ModelGeometry
 {
 public:
 	ModelGeometryTorusKnot(const vector &pos, const vector &axis, float radius1, float radius2, float radius3, int turns, int twists, int rings, int edges);
-	_cdecl void __init__(const vector &pos, const vector &axis, float radius1, float radius2, float radius3, int turns, int twists, int rings, int edges);
+	void _cdecl __init__(const vector &pos, const vector &axis, float radius1, float radius2, float radius3, int turns, int twists, int rings, int edges);
 };
 
 #endif /* MODELGEOMETRYTORUSKNOT_H_ */

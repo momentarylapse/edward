@@ -8,4 +8,8 @@ Data/admin_database.txt
 *.o
 *.a
 edward
+Edward.suo
+Edward.sdf
+Edward.opensdf
+ipch
 

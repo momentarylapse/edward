@@ -25,8 +25,8 @@ public:
 	virtual ~LightmapPhotonMap();
 
 	virtual void Compute();
-	virtual void DoStep(int index, int worker_id);
-	virtual bool OnStatus();
+	virtual void _cdecl DoStep(int index, int worker_id);
+	virtual bool _cdecl OnStatus();
 
 	virtual void PrepareTextureRendering();
 	virtual color RenderVertex(LightmapData::Vertex &v);
