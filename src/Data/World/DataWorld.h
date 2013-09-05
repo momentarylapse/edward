@@ -147,6 +147,7 @@ public:
 	WorldTerrain *AddNewTerrain(const vector &pos, const vector &size, int num_x, int num_z);
 	void Copy(Array<WorldObject> &objects, Array<WorldTerrain> &terrains); // actually not an action
 	void Paste(Array<WorldObject> &objects, Array<WorldTerrain> &terrains);
+	void DeleteSelection();
 };
 
 #endif /* DATAWORLD_H_ */

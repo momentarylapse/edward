@@ -90,6 +90,8 @@ void ModeWorld::OnCommand(const string & id)
 		Copy();
 	if (id == "paste")
 		Paste();
+	if (id == "delete")
+		data->DeleteSelection();
 
 	if (id == "import_world_properties")
 		ImportWorldProperties();

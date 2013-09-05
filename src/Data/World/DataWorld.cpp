@@ -16,6 +16,7 @@
 #include "../../Action/World/Object/ActionWorldAddObject.h"
 #include "../../Action/World/Terrain/ActionWorldAddTerrain.h"
 #include "../../Action/World/ActionWorldPaste.h"
+#include "../../Action/World/ActionWorldDeleteSelection.h"
 
 
 void WorldObject::UpdateData()
@@ -513,3 +514,6 @@ void DataWorld::Copy(Array<WorldObject> &objects, Array<WorldTerrain> &terrains)
 
 void DataWorld::Paste(Array<WorldObject> &objects, Array<WorldTerrain> &terrains)
 {	Execute(new ActionWorldPaste(objects, terrains));	}
+
+void DataWorld::DeleteSelection()
+{	Execute(new ActionWorldDeleteSelection());	}
