@@ -125,7 +125,7 @@ void ModeModelMeshBrush::OnLeftButtonUp()
 
 void ModeModelMeshBrush::OnMouseMove()
 {
-	if (!HuiGetEvent()->lbut)
+	if (!brushing)
 		return;
 	if (multi_view->MouseOver < 0)
 		return;

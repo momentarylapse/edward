@@ -9,12 +9,10 @@
 #include "../../../Action/World/Terrain/ActionWorldTerrainBrushExtrude.h"
 #include "../../../Edward.h"
 
-ModeWorldEditTerrain::ModeWorldEditTerrain(ModeBase* _parent, int _index) :
+ModeWorldEditTerrain::ModeWorldEditTerrain(ModeBase* _parent) :
 	ModeCreation("WorldEditTerrain", _parent)
 {
-	index = _index;
 	brushing = false;
-	terrain = &data->Terrains[index];
 	message = _("auf das Terrain malen");
 }
 
@@ -34,7 +32,7 @@ Action *ModeWorldEditTerrain::GetAction()
 
 	Action *a = NULL;
 	if (type == 0)
-		a = new ActionWorldTerrainBrushExtrude(index, pos, radius, depth);
+		a = new ActionWorldTerrainBrushExtrude(multi_view->MouseOver, pos, radius, depth);
 	return a;
 }
 
@@ -65,7 +63,7 @@ void ModeWorldEditTerrain::OnStart()
 	base_depth = multi_view->cam.radius * 0.02f;
 
 	dialog->AddString("brush_type", _("Ausbeulen/Eindellen"));
-	dialog->AddString("brush_type", _("Gl&atten"));
+//	dialog->AddString("brush_type", _("Gl&atten"));
 	dialog->SetFloat("diameter_slider", 0.5f);
 	dialog->SetFloat("depth_slider", 0.5f);
 	dialog->SetString("diameter", f2s(base_diameter, 2));
@@ -100,9 +98,9 @@ void ModeWorldEditTerrain::OnDepthSlider()
 
 void ModeWorldEditTerrain::OnMouseMove()
 {
-	if (!HuiGetEvent()->lbut)
+	if (!brushing)
 		return;
-	if (multi_view->MouseOver < 0)
+	if ((multi_view->MouseOver < 0) || (multi_view->MouseOverType != MVDWorldTerrain))
 		return;
 	vector pos = multi_view->MouseOverTP;
 	float radius = dialog->GetFloat("diameter") / 2;
@@ -116,7 +114,7 @@ void ModeWorldEditTerrain::OnMouseMove()
 
 void ModeWorldEditTerrain::OnLeftButtonDown()
 {
-	if (multi_view->MouseOver < 0)
+	if ((multi_view->MouseOver < 0) || (multi_view->MouseOverType != MVDWorldTerrain))
 		return;
 	data->BeginActionGroup("brush");
 	vector pos = multi_view->MouseOverTP;
@@ -140,7 +138,7 @@ void ModeWorldEditTerrain::OnCommand(const string& id)
 
 void ModeWorldEditTerrain::OnDrawWin(MultiViewWindow* win)
 {
-	if (multi_view->MouseOver < 0)
+	if ((multi_view->MouseOver < 0) || (multi_view->MouseOverType != MVDWorldTerrain))
 		return;
 	vector pos = multi_view->MouseOverTP;
 	float radius = dialog->GetFloat("diameter") / 2;

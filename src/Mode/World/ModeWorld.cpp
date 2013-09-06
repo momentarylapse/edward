@@ -112,16 +112,8 @@ void ModeWorld::OnCommand(const string & id)
 			else
 				mode_world_camera->data->Reset();
 		}
-	if (id == "edit_terrain_vertices"){
-		int index = -1;
-		foreachi(WorldTerrain &t, data->Terrains, i)
-			if (t.is_selected)
-				index = i;
-		if (index >= 0)
-			ed->SetMode(new ModeWorldEditTerrain(ed->cur_mode, index));
-		else
-			ed->SetMessage(_("Kein Terrain markiert"));
-	}
+	if (id == "edit_terrain_vertices")
+		ed->SetMode(new ModeWorldEditTerrain(ed->cur_mode));
 	if (id == "create_lightmap")
 		ExecuteLightmapDialog();
 

@@ -16,7 +16,7 @@
 class ModeWorldEditTerrain: public ModeCreation<DataWorld>, public HuiEventHandler
 {
 public:
-	ModeWorldEditTerrain(ModeBase *_parent, int index);
+	ModeWorldEditTerrain(ModeBase *_parent);
 	virtual ~ModeWorldEditTerrain();
 
 	virtual void OnStart();
@@ -36,8 +36,6 @@ public:
 	void OnDiameterSlider();
 
 private:
-	WorldTerrain *terrain;
-	int index;
 	float base_diameter, base_depth;
 	bool brushing;
 	float distance;

@@ -717,7 +717,7 @@ void MultiView::DrawMousePos()
 
 void MultiViewWindow::Draw()
 {
-	msg_db_r("MultiView.DrawWin",2);
+	msg_db_f("MultiView.DrawWin",2);
 	matrix rot, trans;
 	NixScissor(dest);
 	string view_kind;
@@ -875,13 +875,11 @@ void MultiViewWindow::Draw()
 		if (p.z > 0)
 			ed->DrawStr(p.x, p.y, m.str);
 	}
-
-	msg_db_l(2);
 }
 
 void MultiView::OnDraw()
 {
-	msg_db_r("Multiview.OnDraw",2);
+	msg_db_f("Multiview.OnDraw",2);
 
 	update_zoom;
 
@@ -959,8 +957,6 @@ void MultiView::OnDraw()
 			ed->DrawStr(150, 120, f2s(mouse_action_param.y * 100.0f, 2) + "%", Edward::AlignRight);
 		}
 	}
-
-	msg_db_l(2);
 }
 
 vector MultiViewWindow::Unproject(const vector &p, const vector &o)
@@ -1221,7 +1217,7 @@ vector MultiView::GetCursor3d(const vector &depth_reference)
 
 void MultiView::GetMouseOver()
 {
-	msg_db_r("GetMouseOver",6);
+	msg_db_f("GetMouseOver",6);
 	MouseOver=MouseOverType=MouseOverSet=-1;
 	/*if (!MVSelectable)
 		return;*/
@@ -1266,13 +1262,10 @@ void MultiView::GetMouseOver()
 					MouseOverSet=di;
 					MouseOverType=d.Type;
 					MouseOverTP=mop;
-					if (sd->is_selected){
-						msg_db_l(6);
+					if (sd->is_selected)
 						return;
-					}
 				}
 			}
-	msg_db_l(6);
 }
 
 void MultiView::UnselectAll()
@@ -1289,7 +1282,7 @@ void MultiView::UnselectAll()
 
 void MultiView::GetSelected(int mode)
 {
-	msg_db_r("GetSelected",4);
+	msg_db_f("GetSelected",4);
 	NotifyBegin();
 	Selected=MouseOver;
 	SelectedType=MouseOverType;
@@ -1317,12 +1310,11 @@ void MultiView::GetSelected(int mode)
 	MultiViewSelectionChanged=true;
 	Notify("SelectionChange");
 	NotifyEnd();
-	msg_db_l(4);
 }
 
 void MultiView::SelectAllInRectangle(int mode)
 {
-	msg_db_r("SelAllInRect",4);
+	msg_db_f("SelAllInRect",4);
 	NotifyBegin();
 	// reset data
 	UnselectAll();
@@ -1357,8 +1349,6 @@ void MultiView::SelectAllInRectangle(int mode)
 
 	Notify("SelectionChange");
 	NotifyEnd();
-
-	msg_db_l(4);
 }
 
 void MultiView::HoldCursor(bool holding)
