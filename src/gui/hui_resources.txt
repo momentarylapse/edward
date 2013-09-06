@@ -6033,7 +6033,7 @@ menu_model
 0
 
 
-150
+151
 ItemPopup
 menu_model_file
 
@@ -7156,7 +7156,7 @@ ItemPopup
 menu_model_geometry
 
 1
-28
+29
 0
 0
 0
@@ -7504,8 +7504,21 @@ autoweld_surfaces
 
 
 ItemImage
-subtract_surface
+volume_subtract
 hui:cut
+1
+0
+0
+0
+0
+0
+0
+0
+
+
+Item
+volume_and
+
 1
 0
 0
@@ -16243,7 +16256,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-722
+723
 // Text
 ad_dialog
 Verwaltung
@@ -17413,8 +17426,6 @@ stretch_z
 1\\0\\1000\\0.01
 subdivide_surfaces
 Verfeinern
-subtract_surface
-Volumen ausschneiden
 sun_am
 
 sun_ang_from_camera
@@ -17587,6 +17598,10 @@ view_right
 Rechts (-x)
 view_top
 Oben (-y)
+volume_and
+Volumen einschränken
+volume_subtract
+Volumen ausschneiden
 wait
 
 wcd_table_1
@@ -17695,7 +17710,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-722
+723
 // Text
 ad_dialog
 Administration
@@ -18865,8 +18880,6 @@ stretch_z
 1\\0\\1000\\0.01
 subdivide_surfaces
 
-subtract_surface
-
 sun_am
 
 sun_ang_from_camera
@@ -19039,6 +19052,10 @@ view_right
 Right (-x)
 view_top
 Top (-y)
+volume_and
+
+volume_subtract
+
 wait
 
 wcd_table_1
@@ -19439,7 +19456,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-722
+723
 // Text
 ad_dialog
 
@@ -20609,8 +20626,6 @@ stretch_z
 
 subdivide_surfaces
 
-subtract_surface
-
 sun_am
 
 sun_ang_from_camera
@@ -20783,6 +20798,10 @@ view_right
 右 (-x)
 view_top
 上 (-y)
+volume_and
+
+volume_subtract
+
 wait
 
 wcd_table_1

@@ -24,7 +24,8 @@
 #include "../../Action/Model/Mesh/Polygon/ActionModelTriangulateSelection.h"
 #include "../../Action/Model/Mesh/Polygon/ActionModelMergePolygonsSelection.h"
 #include "../../Action/Model/Mesh/Polygon/ActionModelCutOutPolygons.h"
-#include "../../Action/Model/Mesh/Surface/ActionModelSurfaceSubtract.h"
+#include "../../Action/Model/Mesh/Surface/ActionModelSurfaceVolumeSubtract.h"
+#include "../../Action/Model/Mesh/Surface/ActionModelSurfaceVolumeAnd.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelSurfaceInvert.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelAutoWeldSelection.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelSurfacesSubdivide.h"
@@ -1789,7 +1790,10 @@ void DataModel::InvertSelection()
 {	InvertSurfaces(GetSelectedSurfaces());	}
 
 void DataModel::SubtractSelection()
-{	Execute(new ActionModelSurfaceSubtract());	}
+{	Execute(new ActionModelSurfaceVolumeSubtract());	}
+
+void DataModel::AndSelection()
+{	Execute(new ActionModelSurfaceVolumeAnd());	}
 
 void DataModel::AlignToGridSelection(float grid_d)
 {	Execute(new ActionModelAlignToGrid(this, grid_d));	}

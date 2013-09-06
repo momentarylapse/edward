@@ -56,5 +56,6 @@ public:
 };
 
 int ModelGeometrySubtract(ModelGeometry &a, ModelGeometry &b, ModelGeometry &c);
+int ModelGeometryAnd(ModelGeometry &a, ModelGeometry &b, ModelGeometry &c);
 
 #endif /* MODELGEOMETRY_H_ */

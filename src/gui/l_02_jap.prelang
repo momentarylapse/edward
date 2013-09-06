@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-583
+584
 // Data (ID,Text)
 ad_dialog
 
@@ -939,8 +939,6 @@ stretch_z
 
 subdivide_surfaces
 
-subtract_surface
-
 sun_ang_from_camera
 
 sun_enabled
@@ -1083,6 +1081,10 @@ view_right
 右 (-x)
 view_top
 上 (-y)
+volume_and
+
+volume_subtract
+
 wcd_table_t
 
 welcome_dialog
@@ -1170,7 +1172,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-233
+235
 // Data (ID,Text)
 
 
@@ -1235,6 +1237,8 @@ Anzahl der Texturen wurde an das Material angepasst!
 Arbeitsverzeichnis
 
 Arbeitsverzeichnis \"%s\" enthält keine \"game.ini\"-Datei. Soll diese erstellt werden?
+
+Ausbeulen/Eindellen
 
 Beispiel Text 0123456789
 
@@ -1329,6 +1333,8 @@ Generelles Umgebungslicht zusätzlich zu allen Lichtquellen
 Gespeichert!
 
 Glanzlicht
+
+Glätten
 
 Helligkeit
 
@@ -1584,6 +1590,8 @@ Zylinderschlange... Punkte + Shift Return
 
 administrieren
 
+auf das Terrain malen
+
 auf der Oberfläche malen
 
 beliebige Datei
@@ -1605,8 +1613,6 @@ keine doppelten Punkte erlaubt!
 löscht die Textur der ausgewählten Textur-Schicht
 
 löscht die ausgewählte Textur-Schicht
-
-malen...
 
 maximale Sichtweite, dahinter hat der Nebel volle Intensität
 

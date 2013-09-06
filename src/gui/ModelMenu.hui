@@ -266,7 +266,8 @@ enum{
 		sub_menu_858->EnableItem(HMM_MENU_SURFACE_HEADER,false);
 		sub_menu_858->AddEntry("Dreiecke umkehren",HMM_INVERT_TRIAS);
 		sub_menu_858->AddEntry("Verschwei&sen",HMM_AUTOWELD_SURFACES);
-		sub_menu_858->AddEntryImage("Volumen ausschneiden",HuiImageCut,HMM_SUBTRACT_SURFACE);
+		sub_menu_858->AddEntryImage("Volumen ausschneiden",HuiImageCut,HMM_VOLUME_SUBTRACT);
+		sub_menu_858->AddEntry("Volumen einschr&anken",HMM_VOLUME_AND);
 		sub_menu_858->AddEntry("--Umriss",HMM_NEW_OUTLINE);
 		sub_menu_858->AddEntry("Verfeinern",HMM_SUBDIVIDE_SURFACES);
 		sub_menu_858->AddSeparator();

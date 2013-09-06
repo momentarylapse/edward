@@ -1,11 +1,11 @@
 /*
- * ActionModelSurfaceSubtract.cpp
+ * ActionModelSurfaceVolumeSubtract.cpp
  *
  *  Created on: 03.06.2012
  *      Author: michi
  */
 
-#include "ActionModelSurfaceSubtract.h"
+#include "ActionModelSurfaceVolumeSubtract.h"
 #include "ActionModelDeleteSurface.h"
 #include "../ActionModelPasteGeometry.h"
 #include "../../../../Data/Model/DataModel.h"
@@ -13,10 +13,10 @@
 #include "../../../../Edward.h"
 
 
-ActionModelSurfaceSubtract::ActionModelSurfaceSubtract()
+ActionModelSurfaceVolumeSubtract::ActionModelSurfaceVolumeSubtract()
 {}
 
-void *ActionModelSurfaceSubtract::compose(Data *d)
+void *ActionModelSurfaceVolumeSubtract::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	int n = 0;
@@ -57,7 +57,7 @@ void surf2geo(ModelSurface *s, ModelGeometry &g)
 	}
 }
 
-void ActionModelSurfaceSubtract::SurfaceSubtract(DataModel *m, ModelSurface *a, int ai, ModelSurface *b, Array<ModelGeometry> &geos)
+void ActionModelSurfaceVolumeSubtract::SurfaceSubtract(DataModel *m, ModelSurface *a, int ai, ModelSurface *b, Array<ModelGeometry> &geos)
 {
 	msg_db_f("SurfSubtract", 0);
 	ModelGeometry ga, gb, gc;

@@ -104,8 +104,10 @@ void ModeModelMesh::OnCommand(const string & id)
 	if (id == "select_cw")
 		mode_model_mesh_polygon->ToggleSelectCW();
 
-	if (id == "subtract_surface")
+	if (id == "volume_subtract")
 		data->SubtractSelection();
+	if (id == "volume_and")
+		data->AndSelection();
 	if (id == "invert_trias")
 		data->InvertSelection();
 	if (id == "extrude_triangles")

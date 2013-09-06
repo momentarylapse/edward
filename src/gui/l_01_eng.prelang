@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-583
+584
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -939,8 +939,6 @@ stretch_z
 1\\0\\1000\\0.01
 subdivide_surfaces
 
-subtract_surface
-
 sun_ang_from_camera
 Direction from camera
 sun_enabled
@@ -1083,6 +1081,10 @@ view_right
 Right (-x)
 view_top
 Top (-y)
+volume_and
+
+volume_subtract
+
 wcd_table_t
 
 welcome_dialog
@@ -1170,7 +1172,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-233
+235
 // Data (ID,Text)
 
 
@@ -1236,6 +1238,8 @@ Arbeitsverzeichnis
 Working directory
 Arbeitsverzeichnis \"%s\" enthält keine \"game.ini\"-Datei. Soll diese erstellt werden?
 Woring directory \"%s\" does not contain a file named \"game.ini\". Do you want one to be created?
+Ausbeulen/Eindellen
+
 Beispiel Text 0123456789
 
 Beschreibung
@@ -1329,6 +1333,8 @@ Generelles Umgebungslicht zusätzlich zu allen Lichtquellen
 Gespeichert!
 Saved!
 Glanzlicht
+
+Glätten
 
 Helligkeit
 
@@ -1584,6 +1590,8 @@ Zylinderschlange... Punkte + Shift Return
 \\\\   - no textures -
 administrieren
 administrate
+auf das Terrain malen
+
 auf der Oberfläche malen
 
 beliebige Datei
@@ -1605,8 +1613,6 @@ No double points allowed!
 löscht die Textur der ausgewählten Textur-Schicht
 
 löscht die ausgewählte Textur-Schicht
-
-malen...
 
 maximale Sichtweite, dahinter hat der Nebel volle Intensität
 

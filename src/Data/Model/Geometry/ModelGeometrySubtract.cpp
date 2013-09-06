@@ -46,8 +46,8 @@ void triangulate_contours(ModelGeometry &m, ModelPolygon *t, Array<Array<sCol> >
 bool combine_polygons(Array<Array<sCol> > &c, int ia, int ib);
 void simplify_filling(Array<Array<sCol> > &c);
 void sort_and_join_contours(ModelGeometry &m, ModelPolygon *t, ModelGeometry &b, Array<Array<sCol> > &c, bool inverse);
-void PolygonSubtract(ModelGeometry &a, ModelPolygon *t, int t_index, ModelGeometry &b, ModelGeometry &out, bool inverse);
-bool SurfaceSubtractUnary(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out, bool inverse);
+void PolygonSubtract(ModelGeometry &a, ModelPolygon *t, int t_index, ModelGeometry &b, ModelGeometry &out, bool keep_inside);
+bool SurfaceSubtractUnary(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out, bool keep_inside);
 
 
 
@@ -707,9 +707,10 @@ void simplify_filling(Array<Array<sCol> > &c)
 }
 
 
-void PolygonSubtract(ModelGeometry &a, ModelPolygon *t, int t_index, ModelGeometry &b, ModelGeometry &out, bool inverse)
+void PolygonSubtract(ModelGeometry &a, ModelPolygon *t, int t_index, ModelGeometry &b, ModelGeometry &out, bool keep_inside)
 {
 	msg_db_f("PolygonSubtract", 0);
+	bool inverse = keep_inside;
 
 	msg_write("-----sub");
 	msg_write(col.num);
@@ -727,8 +728,8 @@ void PolygonSubtract(ModelGeometry &a, ModelPolygon *t, int t_index, ModelGeomet
 
 	// create new surfaces
 	foreach(Array<sCol> &c, contours){
-		if (inverse)
-			c.reverse();
+		//if (inverse)
+		//	c.reverse();
 
 		// create contour vertices
 		Array<int> vv;
@@ -753,7 +754,7 @@ void PolygonSubtract(ModelGeometry &a, ModelPolygon *t, int t_index, ModelGeomet
 }
 
 // out = a - b (just surface diff)
-bool SurfaceSubtractUnary(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out, bool inverse)
+bool SurfaceSubtractUnary(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out, bool keep_inside)
 {
 	msg_db_f("SurfSubtractUnary", 0);
 	bool has_changes = false;
@@ -761,15 +762,12 @@ bool SurfaceSubtractUnary(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out
 	out.Vertex = a.Vertex;
 
 	// collide both surfaces and create additional polygons
-	Set<int> to_del;
 	foreachi(ModelPolygon &p, a.Polygon, i)
 		if (CollidePolygonSurface(a, &p, b, i)){
-			PolygonSubtract(a, &p, i, b, out, inverse);
+			PolygonSubtract(a, &p, i, b, out, keep_inside);
 			has_changes = true;
-		}else if (PolygonInsideSurface(a, &p, b) == inverse){
+		}else if (PolygonInsideSurface(a, &p, b) == keep_inside){
 			ModelPolygon pp = p;
-			if (inverse)
-				pp.Invert();
 			out.Polygon.add(pp);
 		}else{
 			has_changes = true;
@@ -799,6 +797,46 @@ int ModelGeometrySubtract(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out
 	//try{
 
 	diff |= SurfaceSubtractUnary(a, b, out, false);
+
+	if (a.IsClosed){
+		ModelGeometry t;
+		diff |= SurfaceSubtractUnary(b, a, t, true);
+		t.Invert();
+		out.Add(t);
+	}
+
+	/*}catch(ActionException &e){
+		msg_error(e.message);
+		return false;
+	}*/
+
+
+	vector min, max;
+	out.GetBoundingBox(min, max);
+	out.Weld((max - min).length() / 4000);
+
+	return diff ? 1 : 0;
+}
+
+// out = a & b
+int ModelGeometryAnd(ModelGeometry &a, ModelGeometry &b, ModelGeometry &out)
+{
+	msg_db_f("ModelGeometryAnd", 0);
+
+	a.UpdateTopology();
+	b.UpdateTopology();
+	foreach(ModelPolygon &p, a.Polygon)
+		p.TempNormal = p.GetNormal(a.Vertex);
+	foreach(ModelPolygon &p, b.Polygon)
+		p.TempNormal = p.GetNormal(b.Vertex);
+	if (!b.IsClosed)
+		return -1;
+
+	bool diff = false;
+
+	//try{
+
+	diff |= SurfaceSubtractUnary(a, b, out, true);
 
 	if (a.IsClosed){
 		ModelGeometry t;

@@ -365,4 +365,5 @@ extern DataWorld *data_world
 extern window edward
 
 extern int ModelGeometrySubtract(ModelGeometry a, ModelGeometry b, ModelGeometry out)
+extern int ModelGeometryAnd(ModelGeometry a, ModelGeometry b, ModelGeometry out)
 

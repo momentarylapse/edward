@@ -273,6 +273,7 @@ public:
 	void InvertSelection();
 	void InvertSurfaces(const Set<int> &surfaces);
 	void SubtractSelection();
+	void AndSelection();
 	void CutOutSelection();
 	void TriangulateSelection();
 	void MergePolygonsSelection();

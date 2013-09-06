@@ -172,6 +172,7 @@ void PluginManager::Init()
 	Script::LinkExternal("ModelGeometryPlatonic.__init__", Script::mf(&ModelGeometryPlatonic::__init__));
 	Script::LinkExternal("ModelGeometryTeapot.__init__", Script::mf(&ModelGeometryTeapot::__init__));
 	Script::LinkExternal("ModelGeometrySubtract", Script::mf(&ModelGeometrySubtract));
+	Script::LinkExternal("ModelGeometryAnd", Script::mf(&ModelGeometryAnd));
 
 	// world
 
