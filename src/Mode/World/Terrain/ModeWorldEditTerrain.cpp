@@ -9,6 +9,8 @@
 #include "../../../Action/World/Terrain/ActionWorldTerrainBrushExtrude.h"
 #include "../../../Edward.h"
 
+const float BRUSH_PARTITION = 0.3f;
+
 ModeWorldEditTerrain::ModeWorldEditTerrain(ModeBase* _parent) :
 	ModeCreation("WorldEditTerrain", _parent)
 {
@@ -21,11 +23,10 @@ ModeWorldEditTerrain::~ModeWorldEditTerrain()
 }
 
 
-Action *ModeWorldEditTerrain::GetAction()
+Action *ModeWorldEditTerrain::GetAction(const vector &pos)
 {
-	vector pos = multi_view->MouseOverTP;
 	float radius = dialog->GetFloat("diameter") / 2;
-	float depth = dialog->GetFloat("depth");
+	float depth = dialog->GetFloat("depth") * BRUSH_PARTITION;
 	int type = dialog->GetInt("brush_type");
 	if (ed->GetKey(KEY_CONTROL))
 		depth = - depth;
@@ -36,10 +37,11 @@ Action *ModeWorldEditTerrain::GetAction()
 	return a;
 }
 
-void ModeWorldEditTerrain::Apply()
+void ModeWorldEditTerrain::Apply(const vector &pos)
 {
-	Action *a = GetAction();
+	Action *a = GetAction(pos);
 	data->Execute(a);
+	last_pos = pos;
 }
 
 void ModeWorldEditTerrain::OnStart()
@@ -104,11 +106,11 @@ void ModeWorldEditTerrain::OnMouseMove()
 		return;
 	vector pos = multi_view->MouseOverTP;
 	float radius = dialog->GetFloat("diameter") / 2;
-	distance += (pos - last_pos).length();
-	last_pos = pos;
-	if (distance > radius * 0.7f){
-		distance = 0;
-		Apply();
+	vector dir = pos - last_pos;
+	dir.normalize();
+	float dl = radius * BRUSH_PARTITION;
+	while ((pos - last_pos).length() > dl){
+		Apply(last_pos + dl * dir);
 	}
 }
 
@@ -116,13 +118,11 @@ void ModeWorldEditTerrain::OnLeftButtonDown()
 {
 	if ((multi_view->MouseOver < 0) || (multi_view->MouseOverType != MVDWorldTerrain))
 		return;
-	data->BeginActionGroup("brush");
+	data->BeginActionGroup("TerrainBrush");
 	vector pos = multi_view->MouseOverTP;
-	distance = 0;
-	last_pos = pos;
 	brushing = true;
 
-	Apply();
+	Apply(pos);
 }
 
 void ModeWorldEditTerrain::OnLeftButtonUp()

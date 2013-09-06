@@ -29,8 +29,8 @@ public:
 
 	virtual void OnDrawWin(MultiViewWindow *win);
 
-	Action *GetAction();
-	void Apply();
+	Action *GetAction(const vector &pos);
+	void Apply(const vector &pos);
 
 	void OnDepthSlider();
 	void OnDiameterSlider();
@@ -38,7 +38,6 @@ public:
 private:
 	float base_diameter, base_depth;
 	bool brushing;
-	float distance;
 	vector last_pos;
 };
 
