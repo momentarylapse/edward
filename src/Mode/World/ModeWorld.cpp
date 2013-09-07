@@ -418,7 +418,7 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha)
 
 void ModeWorld::OnDrawWin(MultiViewWindow *win)
 {
-	msg_db_r("World::DrawWin",2);
+	msg_db_f("World::DrawWin",2);
 
 	if (ShowEffects){
 		if (win->type == ViewPerspective)
@@ -476,8 +476,6 @@ void ModeWorld::OnDrawWin(MultiViewWindow *win)
 
 	NixSetZ(true,true);
 	NixEnableFog(false);
-
-	msg_db_l(2);
 }
 
 

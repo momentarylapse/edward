@@ -10,7 +10,7 @@
 
 void GameIniData::Load(const string &dir)
 {
-	msg_db_r("LoadGameIni",5);
+	msg_db_f("LoadGameIni",5);
 	CFile *f = FileOpen(dir + "game.ini");
 	DefScript = f->ReadStrC();
 	DefWorld = f->ReadStrC();
@@ -18,12 +18,11 @@ void GameIniData::Load(const string &dir)
 	DefMaterial = f->ReadStrC();
 	DefFont = f->ReadStrC();
 	delete(f);
-	msg_db_l(5);
 }
 
 void GameIniData::Save(const string &dir)
 {
-	msg_db_r("SaveGameIni",5);
+	msg_db_f("SaveGameIni",5);
 	CFile *f = FileCreate(dir + "game.ini");
 	f->WriteStr("// Main Script");
 	f->WriteStr(DefScript);
@@ -37,7 +36,6 @@ void GameIniData::Save(const string &dir)
 	f->WriteStr(DefFont);
 	f->WriteStr("#");
 	delete(f);
-	msg_db_l(5);
 }
 
 

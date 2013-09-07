@@ -25,7 +25,7 @@ AdminFile *AdminFileList::add_unchecked(int kind, const string &filename, AdminF
 {
 	if (filename.num <= 0)
 		return NULL;
-	msg_db_r("AddAdminFileUnchecked",5);
+	msg_db_f("AddAdminFileUnchecked",5);
 	msg_db_m(filename.c_str(),5);
 
 	string _filename = filename.sys_filename();
@@ -42,8 +42,6 @@ AdminFile *AdminFileList::add_unchecked(int kind, const string &filename, AdminF
 	// link to meta
 	if (source)
 		source->add_child(a);
-
-	msg_db_l(5);
 	return a;
 }
 
@@ -89,7 +87,7 @@ void AdminFileList::add_recursive(AdminFile *to_add)
 
 void AdminFileList::sort()
 {
-	msg_db_r("AdminFileList.sort",1);
+	msg_db_f("AdminFileList.sort",1);
 
 	// sorting (by type)
 	for (int i=0;i<num-1;i++)
@@ -103,7 +101,6 @@ void AdminFileList::sort()
 				if ((*this)[i]->Kind == (*this)[j]->Kind)
 					if ((*this)[i]->Name.compare((*this)[j]->Name) > 0)
 						swap(i, j);
-	msg_db_l(1);
 }
 
 void AdminFileList::clear()

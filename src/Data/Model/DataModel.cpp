@@ -205,7 +205,7 @@ vector get_normal_by_index(int index)
 
 bool DataModel::Load(const string & _filename, bool deep)
 {
-	msg_db_r("Model::LoadFromFile",1);
+	msg_db_f("Model::LoadFromFile",1);
 	//if (allow_load)
 	Reset();
 	bool error=false;
@@ -222,7 +222,6 @@ bool DataModel::Load(const string & _filename, bool deep)
 	if (!f->Open(filename)){
 		delete(f);
 		ed->SetMessage(_("Datei ist nicht in der Stimmung, ge&offnet zu werden"));
-		msg_db_l(1);
 		return false;
 	}
 	file_time = f->GetDateModification().time;
@@ -231,7 +230,6 @@ bool DataModel::Load(const string & _filename, bool deep)
 
 	if (ffv<0){
 		ed->ErrorBox(_("Datei-Format unlesbar!"));
-		msg_db_l(1);
 		error=true;
 
 	}else if (ffv==10){ // old format
@@ -864,7 +862,6 @@ bool DataModel::Load(const string & _filename, bool deep)
 
 	if (deep)
 		OnPostActionUpdate();
-	msg_db_l(1);
 	return !error;
 }
 
@@ -946,7 +943,7 @@ void DataModel::GetBoundingBox(vector &min, vector &max)
 
 bool DataModel::Save(const string & _filename)
 {
-	msg_db_r("DataModel.Save",1);
+	msg_db_f("DataModel.Save",1);
 
 	/*if (AutoGenerateSkin[1])
 		CreateSkin(&Skin[1],&Skin[2],(float)DetailFactor[1]*0.01f);
@@ -1308,7 +1305,6 @@ bool DataModel::Save(const string & _filename)
 
 	ed->SetMessage(_("Gespeichert!"));
 	action_manager->MarkCurrentAsSave();
-	msg_db_l(1);
 	return true;
 }
 
@@ -1500,7 +1496,7 @@ int DataModel::get_surf_no(ModelSurface *s)
 
 ModelSurface *DataModel::SurfaceJoin(ModelSurface *a, ModelSurface *b)
 {
-	msg_db_r("SurfJoin", 1);
+	msg_db_f("SurfJoin", 1);
 
 	a->TestSanity("Join prae a");
 	b->TestSanity("Join prae b");
@@ -1536,7 +1532,6 @@ ModelSurface *DataModel::SurfaceJoin(ModelSurface *a, ModelSurface *b)
 	a = &Surface[ai];
 	a->TestSanity("Join post a");
 
-	msg_db_l(1);
 	return a;
 }
 
@@ -1568,7 +1563,7 @@ int get_num_trias(DataModel *m, ModelSkin *s)
 
 void DataModel::GenerateDetailDists(float *dist)
 {
-	msg_db_r("GenerateDetailDists", 3);
+	msg_db_f("GenerateDetailDists", 3);
 	float radius = GetRadius();
 	dist[0] = radius * 10;
 	dist[1] = radius * 40;
@@ -1577,7 +1572,6 @@ void DataModel::GenerateDetailDists(float *dist)
 		dist[1] = dist[2];
 	if (get_num_trias(this, &Skin[2]) == 0)
 		dist[0] = dist[1];
-	msg_db_l(3);
 }
 
 
@@ -1585,7 +1579,7 @@ void DataModel::GenerateDetailDists(float *dist)
 
 matrix3 DataModel::GenerateInertiaTensor(float mass)
 {
-	msg_db_r("GenerateInertiaTensor", 3);
+	msg_db_f("GenerateInertiaTensor", 3);
 //	sModeModelSkin *p = &Skin[0];
 
 	HuiTimer it_timer;
@@ -1666,7 +1660,6 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 
 	float dt = it_timer.get();
 	msg_write(format("Tensor: %f", dt));
-	msg_db_l(3);
 	return t;
 }
 

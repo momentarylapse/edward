@@ -11,7 +11,9 @@
 #include "../../../Edward.h"
 #include "../../../Stuff/Progress.h"
 #include "../../../Data/Model/DataModel.h"
+#include "../../../Data/World/DataWorld.h"
 #include "../../../x/model_manager.h"
+#include "../../../meta.h"
 
 
 Lightmap::Histogram::Histogram(Array<float> &e)
@@ -169,6 +171,8 @@ bool Lightmap::RenderTextures()
 		m.new_name = data->model_out_dir + i2s(mid);
 		m.orig->Save(ObjectDir + m.new_name + ".model");
 	}
+
+	CreateNewWorld();
 	}catch(AbortException &e){
 		ed->progress->End();
 		return false;
@@ -177,4 +181,16 @@ bool Lightmap::RenderTextures()
 	return true;
 }
 
+void Lightmap::CreateNewWorld()
+{
+	DataWorld w;
+	w.meta_data = data->source_world->meta_data;
+	w.EgoIndex = data->source_world->EgoIndex;
+	w.Objects = data->source_world->Objects;
+	w.Terrains = data->source_world->Terrains;
+	foreach(LightmapData::Model &m, data->Models)
+		w.Objects[m.id].FileName = m.new_name;
+
+	w.Save(MapDir + data->new_world_name + ".world");
+}
 

@@ -44,6 +44,7 @@ LightmapData::~LightmapData()
 void LightmapData::Init(DataWorld *w)
 {
 	msg_db_f("LightmapData.Init", 1);
+	source_world = w;
 	world_name_small = w->filename.basename().replace(".world", "");
 
 	area = 0;

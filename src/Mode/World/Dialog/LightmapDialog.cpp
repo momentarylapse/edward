@@ -70,12 +70,12 @@ void LightmapDialog::OnType()
 
 void LightmapDialog::SetData()
 {
-	string new_world = GetString("new_world_name");
+	lmd->new_world_name = GetString("new_world_name");
 	lmd->emissive_brightness = GetFloat("brightness");
 	lmd->color_exponent = GetFloat("exponent");
 	lmd->allow_sun = IsChecked("allow_sun");
-	lmd->texture_out_dir = "Lightmap/" + new_world + "/";
-	lmd->model_out_dir = "Lightmap/" + new_world + "/";
+	lmd->texture_out_dir = "Lightmap/" + lmd->new_world_name + "/";
+	lmd->model_out_dir = "Lightmap/" + lmd->new_world_name + "/";
 }
 
 static Lightmap::Histogram *hist_p;

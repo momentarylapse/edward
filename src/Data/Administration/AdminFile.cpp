@@ -40,7 +40,7 @@ void AdminFile::add_child(AdminFile *child)
 {
 	if (!child)
 		return;
-	msg_db_r("AdminFile.add_child",5);
+	msg_db_f("AdminFile.add_child",5);
 	msg_db_m(format("link:   %s  ->  %s",Name.c_str(),child->Name.c_str()).c_str(),1);
 
 	// as parent of child
@@ -58,20 +58,17 @@ void AdminFile::add_child(AdminFile *child)
 			add = false;
 	if (add)
 		Child.add(child);
-
-	msg_db_l(5);
 }
 
 void AdminFile::remove_child(AdminFile *child)
 {
-	msg_db_r("AdminFile.remove_child",5);
+	msg_db_f("AdminFile.remove_child",5);
 	for (int i=child->Parent.num-1;i>=0;i--)
 		if (child->Parent[i] == this)
 			child->Parent.erase(i);
 	for (int i=Child.num-1;i>=0;i--)
 		if (Child[i] == child)
 			Child.erase(i);
-	msg_db_l(5);
 }
 
 void AdminFile::remove_all_children()
@@ -167,7 +164,7 @@ void add_possible_link(Array<s_admin_link> &l, int type, const string &filename)
 
 void AdminFile::check(AdminFileList &list)
 {
-	msg_db_r("AdminFile.check", 5);
+	msg_db_f("AdminFile.check", 5);
 	msg_db_m(Name.c_str(), 5);
 
 
@@ -200,10 +197,8 @@ void AdminFile::check(AdminFileList &list)
 
 
 	// rescan file?
-	if (!really_scan){
-		msg_db_l(5);
+	if (!really_scan)
 		return;
-	}
 
 	// find links
 	Array<s_admin_link> l;
@@ -300,6 +295,4 @@ void AdminFile::check(AdminFileList &list)
 	// recursively scan linked files
 	for (int i=0;i<l.num;i++)
 		list.add_unchecked_ae(l[i].type, l[i].file, this);
-
-	msg_db_l(5);
 }

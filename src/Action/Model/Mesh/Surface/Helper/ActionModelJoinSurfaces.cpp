@@ -34,7 +34,7 @@ ActionModelJoinSurfaces::~ActionModelJoinSurfaces()
 
 void *ActionModelJoinSurfaces::execute(Data *d)
 {
-	msg_db_r("SurfJoin", 1);
+	msg_db_f("SurfJoin", 1);
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	assert(surface1 < m->Surface.num);
@@ -82,8 +82,6 @@ void *ActionModelJoinSurfaces::execute(Data *d)
 	foreach(ModelVertex &v, m->Vertex)
 		if (v.Surface >= surface2)
 			v.Surface --;
-
-	msg_db_l(1);
 	return a;
 }
 

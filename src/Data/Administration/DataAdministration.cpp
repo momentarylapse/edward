@@ -34,7 +34,7 @@ DataAdministration::~DataAdministration()
 
 void DataAdministration::FraesDir(const string &root_dir, const string &dir, const string &extension)
 {
-	msg_db_r("FraesDir",1);
+	msg_db_f("FraesDir",1);
 	msg_db_m(dir.c_str(),1);
 	Array<DirEntry> list = dir_search(root_dir + dir, "*" + extension, true);
 	foreach(DirEntry &e, list){
@@ -45,12 +45,11 @@ void DataAdministration::FraesDir(const string &root_dir, const string &dir, con
 			cft.add(dir + e.name);
 		}
 	}
-	msg_db_l(1);
 }
 
 void DataAdministration::MetaFraesDir(int kind)
 {
-	msg_db_r("MetaFraesDir",5);
+	msg_db_f("MetaFraesDir",5);
 	string extension ="x";
 	cft.clear();
 
@@ -65,13 +64,10 @@ void DataAdministration::MetaFraesDir(int kind)
 	if (kind==FDCameraFlight)extension = ".camera";
 	if (kind==FDTexture)	extension = "";
 	if (kind==FDSound)		extension = "";
-	if (extension == "x"){
-		msg_db_l(5);
+	if (extension == "x")
 		return;
-	}
 	msg_db_m(("suche... (" + extension + ")\n").c_str(),5);
 	FraesDir(dir, "", extension);
-	msg_db_l(5);
 }
 
 void DataAdministration::TestRootDirectory()
@@ -89,7 +85,7 @@ void DataAdministration::TestRootDirectory()
 
 bool DataAdministration::Save(const string &_filename)
 {
-	msg_db_r("Admin.Save",5);
+	msg_db_f("Admin.Save",5);
 	filename = _filename;
 	admin_file->Create(filename);
 	admin_file->WriteComment("// Number Of Files");
@@ -116,7 +112,6 @@ bool DataAdministration::Save(const string &_filename)
 	}
 	admin_file->WriteStr("#");
 	admin_file->Close();
-	msg_db_l(5);
 	return true;
 }
 
@@ -127,21 +122,18 @@ void DataAdministration::SaveDatabase()
 
 void DataAdministration::Reset()
 {
-	msg_db_r("Admin.Reset",5);
+	msg_db_f("Admin.Reset",5);
 	file_list->clear_deep();
-	msg_db_l(5);
 }
 
 bool DataAdministration::Load(const string &_filename, bool deep)
 {
-	msg_db_r("Admin.Load",5);
+	msg_db_f("Admin.Load",5);
 	Reset();
 	filename = _filename;
 
-	if (!admin_file->Open(filename)){
-		msg_db_l(5);
+	if (!admin_file->Open(filename))
 		return false;
-	}
 	int num = admin_file->ReadIntC();
 	for (int i=0;i<num;i++){
 		AdminFile *a = new AdminFile;
@@ -167,7 +159,6 @@ bool DataAdministration::Load(const string &_filename, bool deep)
 	}
 	admin_file->Close();
 	Notify("Change");
-	msg_db_l(5);
 	return true;
 }
 
@@ -237,7 +228,7 @@ void AdminFileList::add_from_game_ini_export(AdminFileList *source, GameIniData 
 
 void DataAdministration::UpdateDatabase()
 {
-	msg_db_r("UpdateDatebase",0);
+	msg_db_f("UpdateDatebase",0);
 	ed->progress->Start(_("Erstelle Datenbank"), 0);
 	ed->progress->Set(_("Initialisierung"), 0);
 
@@ -277,7 +268,6 @@ void DataAdministration::UpdateDatabase()
 	ed->progress->End();
 	SaveDatabase();
 	Notify("Change");
-	msg_db_l(0);
 }
 
 void DataAdministration::ExportGame(const string &dir, GameIniData &game_ini)

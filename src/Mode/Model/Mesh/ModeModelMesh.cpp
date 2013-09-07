@@ -255,7 +255,7 @@ void ModeModelMesh::OnUpdateMenu()
 
 bool ModeModelMesh::OptimizeView()
 {
-	msg_db_r("OptimizeView", 1);
+	msg_db_f("OptimizeView", 1);
 	MultiView *mv = ed->multi_view_3d;
 	bool ww = mv->whole_window;
 	mv->ResetView();
@@ -275,7 +275,6 @@ bool ModeModelMesh::OptimizeView()
 		SetSubMode(SubModeSkeleton);
 	if (SubMode == SubModeSkeleton)
 		SkeletonOptimizeView();*/
-	msg_db_l(1);
 	return true;
 }
 
@@ -284,10 +283,9 @@ bool ModeModelMesh::OptimizeView()
 void ModeModelMesh::CreateNewMaterialForSelection()
 {
 #if 0
-	msg_db_r("CreateNewMaterialForSelection", 2);
+	msg_db_f("CreateNewMaterialForSelection", 2);
 	if (0 == data->GetNumSelectedPolygons()){
 		ed->SetMessage(_("kein Dreieck ausgew&ahlt"));
-		msg_db_l(2);
 		return;
 	}
 
@@ -320,16 +318,14 @@ void ModeModelMesh::CreateNewMaterialForSelection()
 	}
 
 	//EndChanging();
-	msg_db_l(2);
 #endif
 }
 
 void ModeModelMesh::ChooseMaterialForSelection()
 {
-	msg_db_r("ChooseMaterialForSelection", 2);
+	msg_db_f("ChooseMaterialForSelection", 2);
 	if (0 == data->GetNumSelectedPolygons()){
 		ed->SetMessage(_("kein Dreieck ausgew&ahlt"));
-		msg_db_l(2);
 		return;
 	}
 
@@ -344,8 +340,6 @@ void ModeModelMesh::ChooseMaterialForSelection()
 
 	if (SelectionDialogReturnIndex >= 0)
 		data->SetMaterialSelection(SelectionDialogReturnIndex);
-
-	msg_db_l(2);
 }
 
 void ModeModelMesh::ChooseRightMouseFunction(int f)

@@ -105,7 +105,7 @@ void ModeWelcome::OnUpdate(Observable *o)
 
 void ModeWelcome::DrawIcon(int x, int y, int index, int pic_index, const string &name)
 {
-	msg_db_r("DrawIcon", 2);
+	msg_db_f("DrawIcon", 2);
 	rect s,d;
 	y+=30;
 	float rad=25;
@@ -147,12 +147,11 @@ void ModeWelcome::DrawIcon(int x, int y, int index, int pic_index, const string 
 		// title
 		//NixDrawStr(x+10,y-3,name);
 	NixDrawStr(x-25,y-52,name);
-	msg_db_l(2);
 }
 
 void ModeWelcome::OnDraw()
 {
-	msg_db_r("Welcome.Draw", 1);
+	msg_db_f("Welcome.Draw", 1);
 	NixSetColor(Black);
 	NixDraw2D(r_id, NixTargetRect, 0.999999f);
 	// logo
@@ -194,6 +193,4 @@ void ModeWelcome::OnDraw()
 	//NixSetFontColor(color(1,0.6f,0,0));
 	NixDrawStr(0,MaxY-20,"(c) by MichiSoft TM 2013");
 	NixSetColor(White);
-
-	msg_db_l(1);
 }

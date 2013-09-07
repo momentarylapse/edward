@@ -26,6 +26,7 @@ public:
 	virtual void PrepareTextureRendering(){}
 	bool RenderTextures();
 	virtual color RenderVertex(LightmapData::Vertex &v);
+	void CreateNewWorld();
 
 	LightmapData *data;
 

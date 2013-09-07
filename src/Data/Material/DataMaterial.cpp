@@ -348,7 +348,7 @@ void DataMaterial::ApplyForRendering()
 
 void DataMaterial::UpdateTextures()
 {
-	msg_db_r("Mat.UpdateTextures", 1);
+	msg_db_f("Mat.UpdateTextures", 1);
 	for (int i=0;i<MATERIAL_MAX_TEXTURES;i++)
 		Appearance.Texture[i] = -1;
 	for (int i=0;i<Appearance.NumTextureLevels;i++)
@@ -357,7 +357,6 @@ void DataMaterial::UpdateTextures()
 		NixFillCubeMap(Appearance.CubeMap, i, NixLoadTexture(Appearance.ReflectionTextureFile[i]));
 	if ((Appearance.ReflectionMode == ReflectionCubeMapStatic) || (Appearance.ReflectionMode == ReflectionCubeMapDynamical))
 		Appearance.Texture[3] = Appearance.CubeMap;
-	msg_db_l(1);
 }
 
 

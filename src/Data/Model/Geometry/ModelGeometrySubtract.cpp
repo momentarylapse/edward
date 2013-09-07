@@ -379,7 +379,7 @@ void find_contours(ModelGeometry &m, ModelPolygon *t, ModelGeometry &s, Array<Ar
 
 void sort_and_join_contours(ModelGeometry &m, ModelPolygon *t, ModelGeometry &b, Array<Array<sCol> > &c_in, bool inverse)
 {
-	msg_db_r("sort_and_join_contours", 1);
+	msg_db_f("sort_and_join_contours", 1);
 
 	// find old vertices
 	Array<sCol> v;
@@ -475,7 +475,6 @@ void sort_and_join_contours(ModelGeometry &m, ModelPolygon *t, ModelGeometry &b,
 
 
 	c_in = c_out;
-	msg_db_l(1);
 }
 
 

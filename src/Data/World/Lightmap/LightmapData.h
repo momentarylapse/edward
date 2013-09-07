@@ -26,6 +26,7 @@ public:
 	bool replace_objects;
 
 	string world_name_small;
+	string new_world_name;
 	string model_out_dir;
 	string texture_out_dir;
 	float color_exponent;
@@ -106,6 +107,8 @@ public:
 	};
 	Array<Light> Lights;
 	color Ambient;
+
+	DataWorld *source_world;
 };
 
 #endif /* LIGHTMAPDATA_H_ */
