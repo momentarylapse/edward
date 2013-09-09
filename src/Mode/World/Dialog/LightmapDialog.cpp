@@ -56,6 +56,8 @@ void LightmapDialog::FillList()
 	Reset("lightmap_list");
 	foreach(LightmapData::Model &m, lmd->Models)
 		AddString("lightmap_list", m.orig_name + format("\\%dx%d\\%f", m.tex_width, m.tex_height, sqrt(m.area) / m.tex_width));
+	foreach(LightmapData::Terrain &t, lmd->Terrains)
+		AddString("lightmap_list", t.orig_name + format("\\%dx%d\\%f", t.tex_width, t.tex_height, sqrt(t.area) / t.tex_width));
 }
 
 void LightmapDialog::OnClose()

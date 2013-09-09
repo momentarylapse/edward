@@ -10,6 +10,7 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../x/object.h"
 #include "../../../x/model_manager.h"
+#include "../../../x/terrain.h"
 
 bool LightmapData::Triangle::intersect(const Ray &r, vector &cp) const
 {
@@ -55,6 +56,9 @@ void LightmapData::Init(DataWorld *w)
 			o.object->UpdateMatrix();
 			AddModel(o.FileName, o.object->_matrix, i);
 		}
+	foreachi(WorldTerrain &t, w->Terrains, i)
+		if (t.is_selected)
+			AddTerrain(t, i);
 	if (Trias.num == 0)
 		return;
 
@@ -99,6 +103,9 @@ float LightmapData::GuessResolution()
 	foreach(Model &m, Models)
 		if (m.area > area_max)
 			area_max = m.area;
+	/*foreach(Terrain &t, Terrains)
+		if (t.area > area_max)
+			area_max = t.area;*/
 	return sqrt(area_max) / 512;
 }
 
@@ -109,8 +116,35 @@ void LightmapData::SetResolution(float res)
 		m.tex_width = min(1 << (int)(log(sqrt(m.area) / resolution)/log(2.0f) - 0.5f), 1024);
 		m.tex_height = m.tex_width;
 	}
+	foreach(Terrain &t, Terrains){
+		t.tex_width = min(1 << (int)(log(sqrt(t.area) / resolution)/log(2.0f) - 0.5f), 1024);
+		t.tex_height = t.tex_width;
+	}
 }
 
+
+static void update_tria(LightmapData::Triangle &t)
+{
+	PlaneFromPoints(t.pl, t.v[0], t.v[1], t.v[2]);
+	t.ray[0] = Ray(t.v[0], t.v[1]);
+	t.ray[1] = Ray(t.v[1], t.v[2]);
+	t.ray[2] = Ray(t.v[2], t.v[0]);
+	t.area = ((t.v[1] - t.v[0]) ^ (t.v[2] - t.v[0])).length() / 2;
+}
+
+static void tria_set_mat(LightmapData::Triangle &t, Material *m)
+{
+	t.am = m->ambient;
+	t.di = m->diffuse;
+	t.em = m->emission;
+}
+
+static void tria_set_mat(LightmapData::Triangle &t, ModelMaterial *m)
+{
+	t.am = m->Ambient;
+	t.di = m->Diffuse;
+	t.em = m->Emission;
+}
 
 void LightmapData::AddModel(const string &filename, matrix &mat, int object_index)
 {
@@ -141,6 +175,7 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 			for (int k=0;k<p.Side.num-2;k++){
 				Triangle t;
 				t.mod_id = mod.id;
+				t.ter_id = -1;
 				t.surf = surf;
 				t.poly = i;
 				t.side = k;
@@ -149,14 +184,8 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 					t.v[l] = mat * m->Vertex[p.Side[n].Vertex].pos;
 					t.n[l] = mat.transform_normal(p.Side[n].Normal);
 				}
-				PlaneFromPoints(t.pl, t.v[0], t.v[1], t.v[2]);
-				t.ray[0] = Ray(t.v[0], t.v[1]);
-				t.ray[1] = Ray(t.v[1], t.v[2]);
-				t.ray[2] = Ray(t.v[2], t.v[0]);
-				t.am = m->Material[p.Material].Ambient;
-				t.di = m->Material[p.Material].Diffuse;
-				t.em = m->Material[p.Material].Emission;
-				t.area = ((t.v[1] - t.v[0]) ^ (t.v[2] - t.v[0])).length() / 2;
+				update_tria(t);
+				tria_set_mat(t, &m->Material[p.Material]);
 				mod.area += t.area;
 				Trias.add(t);
 			}
@@ -185,6 +214,64 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 	Models.add(mod);
 }
 
+
+void LightmapData::AddTerrain(WorldTerrain &wt, int terrain_index)
+{
+	msg_db_f("lm_add_terrain", 1);
+
+	Terrain ter;
+	ter.id = Terrains.num;
+
+	ter.orig_name = wt.FileName.basename();
+	msg_write(ter.orig_name);
+	ter.offset = Trias.num;
+	ter.terrain_index = terrain_index;
+	ter.area = 0;
+
+	ter.orig = wt.terrain;
+	::Terrain *tt = wt.terrain;
+
+	ter.new_name = format("Lightmap/%s/%s_%d", world_name_small.c_str(), ter.orig_name.c_str(), ter.id);
+
+	for (int x=0;x<tt->num_x;x++)
+		for (int z=0;z<tt->num_z;z++){
+			int a = x*(tt->num_z+1)+z;
+			int b = x*(tt->num_z+1)+z+1;
+			int c = (x+1)*(tt->num_z+1)+z;
+			int d = (x+1)*(tt->num_z+1)+z+1;
+			Triangle t;
+			t.mod_id = -1;
+			t.ter_id = ter.id;
+			t.poly = a * 2;
+			t.v[0] = tt->vertex[a];
+			t.v[1] = tt->vertex[b];
+			t.v[2] = tt->vertex[d];
+			t.n[0] = tt->normal[a];
+			t.n[1] = tt->normal[b];
+			t.n[2] = tt->normal[d];
+			update_tria(t);
+			tria_set_mat(t, tt->material);
+			ter.area += t.area;
+			Trias.add(t);
+			t.poly = a * 2 + 1;
+			t.v[0] = tt->vertex[a];
+			t.v[1] = tt->vertex[d];
+			t.v[2] = tt->vertex[c];
+			t.n[0] = tt->normal[a];
+			t.n[1] = tt->normal[d];
+			t.n[2] = tt->normal[c];
+			update_tria(t);
+			tria_set_mat(t, tt->material);
+			ter.area += t.area;
+			Trias.add(t);
+		}
+	area += ter.area;
+
+
+	ter.num_trias = Trias.num - ter.offset;
+	Terrains.add(ter);
+}
+
 void LightmapData::AddTextureLevels(bool modify)
 {
 	foreach(Model &m, Models){
@@ -207,6 +294,38 @@ rect get_tria_skin_boundary(vector sv[3])
 	return rect(_min.x, _max.x, _min.y, _max.y);
 }
 
+void LightmapData::Triangle::Rasterize(LightmapData *l, int i)
+{
+	// rasterize triangle
+	rect r = get_tria_skin_boundary(sv);
+	int v_offset = l->Vertices.num;
+	for (int x=r.x1-1;x<r.x2+1;x++)
+		for (int y=r.y1-1;y<r.y2+1;y++){
+			vector c = vector((float)x + 0.5f, (float)y + 0.5f, 0);
+			float f, g;
+			GetBaryCentric(c, sv[0], sv[1], sv[2], f, g);
+			if ((f >= 0) && (g >= 0) && (f + g <= 1)){
+				Vertex vv;
+				vv.pos = v[0] + f * (v[1] - v[0]) + g * (v[2] - v[0]);
+				vv.n = n[0] + f * (n[1] - n[0]) + g * (n[2] - n[0]);
+				vv.x = x;
+				vv.y = y;
+				vv.tria_id = i;
+				vv.mod_id = mod_id;
+				vv.ter_id = ter_id;
+				vv.am = am;
+				vv.dif = di;
+				vv.em = em;
+				l->Vertices.add(vv);
+			}
+		}
+	num_vertices = l->Vertices.num - v_offset;
+
+	// guess vertex areas
+	for (int j=v_offset;j<l->Vertices.num;j++)
+		l->Vertices[j].area = area / num_vertices;
+}
+
 void LightmapData::CreateVertices()
 {
 	Vertices.clear();
@@ -224,33 +343,24 @@ void LightmapData::CreateVertices()
 				t.sv[k].y *= h;
 			}
 
-			// rasterize triangle
-			rect r = get_tria_skin_boundary(t.sv);
-			int v_offset = Vertices.num;
-			for (int x=r.x1-1;x<r.x2+1;x++)
-				for (int y=r.y1-1;y<r.y2+1;y++){
-					vector c = vector((float)x + 0.5f, (float)y + 0.5f, 0);
-					float f, g;
-					GetBaryCentric(c, t.sv[0], t.sv[1], t.sv[2], f, g);
-					if ((f >= 0) && (g >= 0) && (f + g <= 1)){
-						Vertex vv;
-						vv.pos = t.v[0] + f * (t.v[1] - t.v[0]) + g * (t.v[2] - t.v[0]);
-						vv.n = t.n[0] + f * (t.n[1] - t.n[0]) + g * (t.n[2] - t.n[0]);
-						vv.x = x;
-						vv.y = y;
-						vv.tria_id = i;
-						vv.mod_id = t.mod_id;
-						vv.am = t.am;
-						vv.dif = t.di;
-						vv.em = t.em;
-						Vertices.add(vv);
-					}
-				}
-			t.num_vertices = Vertices.num - v_offset;
+			t.Rasterize(this, i);
+		}
+	}
+	foreach(Terrain &ter, Terrains){
+		int w = ter.tex_width;
+		int h = ter.tex_height;
 
-			// guess vertex areas
-			for (int j=v_offset;j<Vertices.num;j++)
-				Vertices[j].area = t.area / t.num_vertices;
+		for (int i=ter.offset;i<ter.offset + ter.num_trias;i++){
+			LightmapData::Triangle &t = Trias[i];
+			for (int k=0;k<3;k++){
+				t.sv[k].x = t.v[k].x - ter.orig->pos.x;
+				t.sv[k].y = t.v[k].z - ter.orig->pos.z;
+				t.sv[k].z = 0;
+				t.sv[k].x *= (float)w / (ter.orig->pattern.x * ter.orig->num_x);
+				t.sv[k].y *= (float)h / (ter.orig->pattern.z * ter.orig->num_z);
+			}
+
+			t.Rasterize(this, i);
 		}
 	}
 	msg_write("Vertices: " + i2s(Vertices.num));

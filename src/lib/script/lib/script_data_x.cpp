@@ -65,6 +65,8 @@ Type *TypeMaterial;
 Type *TypeMaterialP;
 Type *TypeMaterialList;
 Type *TypeFog;
+Type *TypeLight;
+Type *TypeLightP;
 Type *TypeTraceData;
 Type *TypeTerrain;
 Type *TypeTerrainP;
@@ -114,14 +116,16 @@ extern Type *TypeSocketList;
 	static Material *_material;
 	#define	GetDAMaterial(x)	long(&_material->x)-long(_material)
 	static Fog *_fog;
-	static WorldData *_world_data;
-	static EngineData *_engine_data;
-	static NetworkData *_network_data;
-	static HostData *_host_data;
 	#define	GetDAFog(x)			long(&_fog->x)-long(_fog)
+	static Light::Light *_light;
+	#define	GetDALight(x)			long(&_light->x)-long(_light)
+	static WorldData *_world_data;
 	#define	GetDAWorld(x)			long(&_world_data->x)-long(_world_data)
+	static EngineData *_engine_data;
 	#define	GetDAEngine(x)			long(&_engine_data->x)-long(_engine_data)
+	static NetworkData *_network_data;
 	#define	GetDANetwork(x)			long(&_network_data->x)-long(_network_data)
+	static HostData *_host_data;
 	#define	GetDAHostData(x)			long(&_host_data->x)-long(_host_data)
 	class HostDataList : public Array<HostData>
 	{
@@ -144,6 +148,9 @@ extern Type *TypeSocketList;
 	typedef int Effect;
 	typedef int Camera;
 	typedef int Fog;
+	namespace Light{
+	typedef int Light;
+	};
 	#define	GetDAText(x)		0
 	#define	GetDAPicture(x)		0
 	#define	GetDAPicture3D(x)	0
@@ -158,6 +165,7 @@ extern Type *TypeSocketList;
 	#define	GetDASubSkin(x)		0
 	#define	GetDAMaterial(x)	0
 	#define	GetDAFog(x)			0
+	#define	GetDALight(x)		0
 	#define	GetDAWorld(x)		0
 	#define	GetDAEngine(x)		0
 	#define	GetDANetwork(x)		0
@@ -232,6 +240,8 @@ void SIAddPackageX()
 	TypeMaterialP		= add_type_p("Material*",	TypeMaterial);
 	TypeMaterialList	= add_type_a("Material[]",	TypeMaterial, -1);
 	TypeFog				= add_type  ("Fog",			sizeof(Fog));
+	TypeLight			= add_type  ("Light",		sizeof(Light::Light));
+	TypeLightP			= add_type_p("Light*",		TypeLight);
 	TypeTraceData		= add_type  ("TraceData",	sizeof(TraceData));
 	TypeTerrain			= add_type  ("Terrain",		sizeof(Terrain));
 	TypeTerrainP		= add_type_p("terrain",		TypeTerrain);
@@ -411,6 +421,24 @@ void SIAddPackageX()
 		class_add_func_virtual("OnEnable", TypeVoid, x_p(mf(&Effect::OnEnable)));
 			func_add_param("enabled", TypeBool);
 		class_set_vtable_x(Effect);
+
+
+	add_class(TypeLight);
+		class_add_element("enabled",		TypeBool,		GetDALight(enabled));
+		class_add_element("directional",	TypeBool,		GetDALight(directional));
+		class_add_element("pos",			TypeVector,		GetDALight(pos));
+		class_add_element("dir",			TypeVector,		GetDALight(dir));
+		class_add_func("__init__", TypeVoid, x_p(mf(&Light::Light::__init__)));
+		class_add_func("__delete__", TypeVoid, x_p(mf(&Light::Light::__delete__)));
+		class_add_func("SetDirectional", TypeVoid, x_p(mf(&Light::Light::SetDirectional)));
+			func_add_param("dir", TypeVector);
+		class_add_func("SetRadial", TypeVoid, x_p(mf(&Light::Light::SetRadial)));
+			func_add_param("pos", TypeVector);
+			func_add_param("radius", TypeFloat);
+		class_add_func("SetColors", TypeVoid, x_p(mf(&Light::Light::SetColors)));
+			func_add_param("am", TypeColor);
+			func_add_param("di", TypeColor);
+			func_add_param("sp", TypeColor);
 
 	add_class(TypeSkin);
 		class_add_element("vertex",			TypeVectorList,	GetDASkin(vertex));
@@ -609,7 +637,7 @@ void SIAddPackageX()
 		class_add_element("fog",		TypeFog,		GetDAWorld(fog));
 		class_add_element("var",		TypeFloatList,		GetDAWorld(var));
 		class_add_element("ambient",		TypeColor,		GetDAWorld(ambient));
-		class_add_element("sun",		TypeInt,		GetDAWorld(sun));
+		class_add_element("sun",		TypeLightP,		GetDAWorld(sun));
 		class_add_element("speed_of_sound",		TypeFloat,		GetDAWorld(speed_of_sound));
 
 	add_class(TypeEngineData);
@@ -630,7 +658,7 @@ void SIAddPackageX()
 		class_add_element("console_enabled",		TypeBool,		GetDAEngine(ConsoleEnabled));
 		class_add_element("record",		TypeBool,		GetDAEngine(Record));
 		class_add_element("resetting_game",		TypeBool,		GetDAEngine(ResettingGame));
-		class_add_element("shadow_light",		TypeInt,		GetDAEngine(ShadowLight));
+		class_add_element("shadow_light",		TypeLightP,		GetDAEngine(ShadowLight));
 		class_add_element("shadow_color",		TypeColor,		GetDAEngine(ShadowColor));
 		class_add_element("shadow_lower_detail",		TypeBool,		GetDAEngine(ShadowLowerDetail));
 		class_add_element("shadow_level",		TypeInt,		GetDAEngine(ShadowLevel));
@@ -694,25 +722,6 @@ void SIAddPackageX()
 		func_add_param("filename",		TypeString);*/
 	
 	// engine
-	// effects
-	add_func("LightCreate",							TypeInt,	x_p(&Light::Create));
-	add_func("LightSetColors",			TypeVoid,	x_p(&Light::SetColors));
-		func_add_param("index",		TypeInt);
-		func_add_param("ambient",		TypeColor);
-		func_add_param("diffuse",		TypeColor);
-		func_add_param("specular",		TypeColor);
-	add_func("LightSetDirectional",			TypeVoid,	x_p(&Light::SetDirectional));
-		func_add_param("index",		TypeInt);
-		func_add_param("dir",		TypeVector);
-	add_func("LightSetRadial",					TypeVoid,	x_p(&Light::SetRadial));
-		func_add_param("index",		TypeInt);
-		func_add_param("pos",		TypeVector);
-		func_add_param("radius",		TypeFloat);
-	add_func("LightEnable",							TypeVoid,	x_p(&Light::Enable));
-		func_add_param("index",		TypeInt);
-		func_add_param("enabled",		TypeBool);
-	add_func("LightDelete",							TypeVoid,	x_p(&Light::Delete));
-		func_add_param("index",		TypeInt);
 	// game
 	add_func("ExitProgram",									TypeVoid,	x_p(ExitProgram));
 	add_func("ScreenShot",									TypeVoid,	x_p(ScreenShot));

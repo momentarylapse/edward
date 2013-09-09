@@ -455,6 +455,8 @@ void ModeWorld::OnDrawWin(MultiViewWindow *win)
 			if (o.view_stage < multi_view->view_stage)
 				continue;
 			if (o.object){
+				for (int i=0;i<o.object->material.num;i++)
+					o.object->material[i].shader = -1;
 				o.object->Draw(0, false, false);
 				o.object->_detail_ = 0;
 			}

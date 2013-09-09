@@ -13,6 +13,8 @@
 
 class DataModel;
 class DataWorld;
+class WorldTerrain;
+class Terrain;
 
 
 class LightmapData
@@ -38,6 +40,7 @@ public:
 
 	void Init(DataWorld *w);
 	void AddModel(const string &filename, matrix &mat, int object_index);
+	void AddTerrain(WorldTerrain &t, int terrain_index);
 	void AddTextureLevels(bool modify = true);
 	void CreateVertices();
 
@@ -60,6 +63,22 @@ public:
 
 	Array<Model> Models;
 
+
+	struct Terrain
+	{
+		int id;
+		::Terrain *orig;
+		int offset, num_trias;
+		string orig_name;
+		string new_name;
+		int terrain_index;
+		float area;
+		string tex_name;
+		int tex_width, tex_height;
+	};
+
+	Array<Terrain> Terrains;
+
 	// a "real" polygon in the models
 	struct Triangle
 	{
@@ -72,11 +91,12 @@ public:
 		/*int nb, nc;
 		int x, y;
 		bool t_rot;*/
-		int mod_id, surf, poly, side;
+		int ter_id, mod_id, surf, poly, side;
 		color am, di, em;
 		float area;
 		int num_vertices;
 		bool intersect(const Ray &r, vector &cp) const;
+		void Rasterize(LightmapData *l, int i);
 	};
 	Array<Triangle> Trias;
 
@@ -87,7 +107,7 @@ public:
 		vector pos, n;
 		float area;
 		color rad, _rad2, am, dif, em;
-		int tria_id, mod_id;
+		int tria_id, mod_id, ter_id;
 		Array<int> visible;
 		Array<float> coeff;
 	};

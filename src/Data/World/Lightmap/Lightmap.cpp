@@ -13,6 +13,7 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Data/World/DataWorld.h"
 #include "../../../x/model_manager.h"
+#include "../../../x/terrain.h"
 #include "../../../meta.h"
 
 
@@ -133,6 +134,7 @@ bool Lightmap::RenderTextures()
 	ed->progress->StartCancelable(_("berechne Textur"), 0);
 	dir_create(NixTextureDir + data->texture_out_dir);
 	dir_create(ObjectDir + data->model_out_dir);
+	dir_create(MapDir + data->model_out_dir);
 
 	PrepareTextureRendering();
 
@@ -170,6 +172,36 @@ bool Lightmap::RenderTextures()
 		}
 		m.new_name = data->model_out_dir + i2s(mid);
 		m.orig->Save(ObjectDir + m.new_name + ".model");
+	}
+
+	foreachi(LightmapData::Terrain &t, data->Terrains, tid){
+		int w = t.tex_width;
+		int h = t.tex_height;
+		Image im;
+		im.Create(w, h, color(0,0,0,0));
+
+		foreachi(LightmapData::Vertex &v, data->Vertices, vi){
+			if (v.ter_id != tid)
+				continue;
+			im.SetPixel(v.x, v.y, RenderVertex(v));
+
+			if ((vi & 127) == 0){
+				ed->progress->Set(format(_("%d von %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
+				if (ed->progress->IsCancelled())
+					throw Lightmap::AbortException();
+			}
+		}
+
+		t.tex_name = data->texture_out_dir + "t" + i2s(tid) + ".tga";
+		fuzzy_image(im);
+		im.Save(NixTextureDir + t.tex_name);
+
+		// edit Terrain
+		t.orig->texture_file[t.orig->material->num_textures] = t.tex_name;
+		t.orig->texture_scale[t.orig->material->num_textures] = vector(1.0f / t.orig->num_x, 0, 1.0f / t.orig->num_z);
+		t.orig->material->num_textures ++;
+		t.new_name = data->model_out_dir + i2s(tid);
+		data->source_world->Terrains[tid].Save(MapDir + t.new_name + ".map");
 	}
 
 	CreateNewWorld();

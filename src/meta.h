@@ -14,6 +14,9 @@
 class Model;
 class Object;
 class Terrain;
+namespace Light{
+	class Light;
+}
 
 class EngineData
 {
@@ -25,7 +28,7 @@ public:
 	float DetailFactorInv;
 	int ShadowLevel;
 	bool ShadowLowerDetail;
-	int ShadowLight;
+	Light::Light *ShadowLight;
 	color ShadowColor;
 	
 	int Multisampling;

@@ -351,13 +351,12 @@ bool GodLoadWorldFromLevelData()
 	NixSetAmbientLight(World.ambient);
 
 #ifdef _X_ALLOW_X_
-	World.sun = Light::Create();
-	Light::SetColors(World.sun,
-					LevelData.sun_color[0],
-					LevelData.sun_color[1],
-					LevelData.sun_color[2]);
-	Light::SetDirectional(World.sun, -LevelData.sun_ang.ang2dir());
-	Light::Enable(World.sun, LevelData.sun_enabled);
+	World.sun = new Light::Light;
+	World.sun->SetColors(LevelData.sun_color[0],
+	                     LevelData.sun_color[1],
+	                     LevelData.sun_color[2]);
+	World.sun->SetDirectional(-LevelData.sun_ang.ang2dir());
+	World.sun->enabled = LevelData.sun_enabled;
 #endif
 
 	// skybox

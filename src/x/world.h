@@ -23,6 +23,9 @@ class Model;
 class Object;
 class Material;
 class Terrain;
+namespace Light{
+	class Light;
+};
 
 class GodForceField
 {
@@ -112,7 +115,7 @@ public:
 	Array<Model*> skybox;
 	color ambient;
 	Fog fog;
-	int sun;
+	Light::Light *sun;
 	float speed_of_sound;
 
 	vector gravity;

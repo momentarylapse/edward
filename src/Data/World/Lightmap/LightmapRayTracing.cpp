@@ -64,6 +64,11 @@ void LightmapRayTracing::Compute()
 			continue;
 		vector p = l.Pos;
 		foreachi(LightmapData::Vertex &v, data->Vertices, vi){
+			if ((vi & 255) == 0){
+				ed->progress->Set(format(_("%d von %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
+				if (ed->progress->IsCancelled())
+					throw AbortException();
+			}
 			if (l.Directional){
 				v.rad += v.am * l.Ambient;
 				p = v.pos + l.Dir * data->large_distance;
@@ -74,6 +79,7 @@ void LightmapRayTracing::Compute()
 				v.rad += (v.dif * l.Diffuse) * (v.n * l.Dir);
 			}else{
 			}
+			v.rad = White;
 		}
 	}
 }
