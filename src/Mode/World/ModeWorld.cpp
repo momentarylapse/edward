@@ -450,7 +450,6 @@ void ModeWorld::OnDrawWin(MultiViewWindow *win)
 		//GodDraw();
 		//MetaDrawSorted();
 		//NixSetWire(false);
-		NixEnableLighting(true);
 
 		foreach(WorldObject &o, data->Objects){
 			if (o.view_stage < multi_view->view_stage)
@@ -461,6 +460,7 @@ void ModeWorld::OnDrawWin(MultiViewWindow *win)
 			}
 		}
 		NixSetWire(false);
+		NixEnableLighting(true);
 
 		// object selection
 		foreachi(WorldObject &o, data->Objects, i)
@@ -471,6 +471,7 @@ void ModeWorld::OnDrawWin(MultiViewWindow *win)
 		if ((multi_view->MouseOver>=0)&&(multi_view->MouseOverType==MVDWorldObject))
 			DrawSelectionObject(data->Objects[multi_view->MouseOver].object, OSelectionAlpha, White);
 		NixSetAlpha(AlphaNone);
+		NixEnableLighting(multi_view->light_enabled);
 	}
 
 
