@@ -158,9 +158,19 @@ void Edward::IdleFunction()
 
 
 Edward::Edward(Array<string> arg) :
-	HuiNixWindow(AppName, -1, -1, 800, 600)
+	HuiWindow(AppName, -1, -1, 800, 600)
 {
 	msg_db_f("Init", 1);
+	
+	AddControlTable("", 0, 0, 2, 1, "table1");
+	SetTarget("table1", 0);
+	AddDrawingArea("!grabfocus", 0, 0, 0, 0, "nix_area");
+	AddControlTable("", 1, 0, 1, 5, "table2");
+	SetTarget("table2", 0);
+	AddButton("test", 0, 0, 0, 0, "button1");
+	AddButton("test1", 0, 1, 0, 0, "button2");
+	AddButton("test2", 0, 2, 0, 0, "button3");
+	AddEdit("test", 0, 3, 0, 0, "edit");
 
 	ed = this;
 	cur_mode = NULL;
@@ -208,12 +218,12 @@ Edward::Edward(Array<string> arg) :
 	Show();
 
 	// initialize engine
-	NixInit("OpenGL", 1024, 768, 32, false, this);
+	NixInit("OpenGL", this, "nix_area");
 	NixTextureIconSize = 32;
 
 	EventM("hui:close", this, &Edward::OnClose);
 	EventM("exit", this, &Edward::OnClose);
-	EventM("hui:redraw", this, &Edward::OnDraw);
+	EventMX("nix_area", "hui:redraw", this, &Edward::OnDraw);
 	EventM("*", this, &Edward::OnEvent);
 	EventM("what_the_fuck", this, &Edward::OnAbout);
 	EventM("send_bug_report", this, &Edward::OnSendBugReport);

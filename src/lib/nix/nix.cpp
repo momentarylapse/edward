@@ -12,6 +12,7 @@
 \*----------------------------------------------------------------------------*/
 #include "nix.h"
 #include "nix_common.h"
+#include "../hui/Controls/HuiControl.h"
 
 
 string NixVersion = "0.11.0.1";
@@ -89,6 +90,7 @@ void TestGLError(const char *pos)
 
 // environment
 HuiWindow *NixWindow;
+string NixControlID;
 bool NixUsable,NixDoingEvilThingsToTheDevice;
 
 // things'n'stuff
@@ -365,7 +367,7 @@ XVisualInfo *choose_visual()
 #endif
 
 
-void NixInit(const string &api,int xres,int yres,int depth,bool fullscreen,HuiWindow *win)
+void NixInit(const string &api, HuiWindow *win, const string &id)
 {
 	NixUsable = false;
 	if (!msg_inited)
@@ -376,8 +378,7 @@ void NixInit(const string &api,int xres,int yres,int depth,bool fullscreen,HuiWi
 	msg_write("[" + NixVersion + "]");
 	
 	NixWindow = win;
-	/*if (NixWindow)
-		NixWindow->used_by_nix = true;*/
+	NixControlID = id;
 	NixFullscreen = false; // before nix is started, we're hopefully not in fullscreen mode
 
 #ifdef HUI_API_WIN
@@ -455,7 +456,7 @@ void NixInit(const string &api,int xres,int yres,int depth,bool fullscreen,HuiWi
 	NixCullingInverted = false;
 
 	// set the new video mode
-	NixSetVideoMode(api, xres, yres, depth, fullscreen);
+	NixSetVideoMode(api, 640, 480, false);
 	if (NixFatalError != FatalErrorNone){
 		msg_left();
 		return;
@@ -552,8 +553,12 @@ void NixReincarnateDeviceObjects()
 bool nixDevNeedsUpdate = true;
 
 
-void set_video_mode_gl(int xres, int yres, int depth)
+void set_video_mode_gl(int xres, int yres)
 {
+	HuiControl *c = NixWindow->_GetControl_(NixControlID);
+	NixWindow->gl_widget = c->widget;
+
+
 	#ifdef OS_WINDOWS
 
 #ifdef NIX_GL_IN_WIDGET
@@ -587,7 +592,7 @@ void set_video_mode_gl(int xres, int yres, int depth)
 		dmScreenSettings.dmSize=sizeof(dmScreenSettings);
 		dmScreenSettings.dmPelsWidth=xres;
 		dmScreenSettings.dmPelsHeight=yres;
-		dmScreenSettings.dmBitsPerPel=depth;
+		dmScreenSettings.dmBitsPerPel=32;
 		dmScreenSettings.dmFields=DM_BITSPERPEL|DM_PELSWIDTH|DM_PELSHEIGHT;
 		ChangeDisplaySettings(&dmScreenSettings,CDS_FULLSCREEN);
 	}
@@ -596,7 +601,7 @@ void set_video_mode_gl(int xres, int yres, int depth)
 								1,						// versions nummer
 								PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
 								PFD_TYPE_RGBA,
-								32,//NixFullscreen?depth:NixDesktopDepth,
+								32,
 								//8, 0, 8, 8, 8, 16, 8, 24,
 								0, 0, 0, 0, 0, 0, 0, 0, 0,
 								0, 0, 0, 0,
@@ -904,7 +909,7 @@ int event_mask = ExposureMask | KeyPressMask | ButtonPressMask |
 
 }
 
-void NixSetVideoMode(const string &api, int xres, int yres, int depth, bool fullscreen)
+void NixSetVideoMode(const string &api, int xres, int yres, bool fullscreen)
 {
 	msg_db_r("setting video mode",0);
 
@@ -914,7 +919,7 @@ void NixSetVideoMode(const string &api, int xres, int yres, int depth, bool full
 	if (NixApiName == "NoApi")
 		fullscreen=false;
 	if (fullscreen){
-		msg_db_m(format("[ %s - fullscreen - %d x %d x %d ]", NixApiName.c_str(), xres, yres, depth).c_str(), 0);
+		msg_db_m(format("[ %s - fullscreen - %d x %d ]", NixApiName.c_str(), xres, yres).c_str(), 0);
 	}else{
 		msg_db_m(format("[ %s - window mode ]", NixApiName.c_str()).c_str(), 0);
 		xres=NixDesktopWidth;
@@ -943,7 +948,7 @@ void NixSetVideoMode(const string &api, int xres, int yres, int depth, bool full
 	NixKillDeviceObjects();
 
 
-	set_video_mode_gl(xres, yres, depth);
+	set_video_mode_gl(xres, yres);
 
 	
 
@@ -988,7 +993,7 @@ void NixSetVideoMode(const string &api, int xres, int yres, int depth, bool full
 	if (NixFullscreen){
 		NixScreenWidth=xres;
 		NixScreenHeight=yres;
-		NixScreenDepth=depth;
+		NixScreenDepth=32;
 	}else{
 		NixScreenWidth			=NixDesktopWidth;
 		NixScreenHeight			=NixDesktopHeight;
