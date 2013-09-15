@@ -221,7 +221,7 @@ void Lightmap::CreateNewWorld()
 	w.Objects = data->source_world->Objects;
 	w.Terrains = data->source_world->Terrains;
 	foreach(LightmapData::Model &m, data->Models)
-		w.Objects[m.id].FileName = m.new_name;
+		w.Objects[m.object_index].FileName = m.new_name;
 
 	w.Save(MapDir + data->new_world_name + ".world");
 }

@@ -52,7 +52,7 @@ void LightmapData::Init(DataWorld *w)
 
 	// load data
 	foreachi(WorldObject &o, w->Objects, i)
-		if (o.is_selected){
+		if ((o.is_selected) && (!o.object->active_physics)){
 			o.object->UpdateMatrix();
 			AddModel(o.FileName, o.object->_matrix, i);
 		}
