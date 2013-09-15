@@ -272,12 +272,12 @@ bool NixIsInFrustrum(const vector &pos,float radius)
 bool Rendering=false;
 
 
-extern HWND hWndSubWindow;
-extern bool nixDevNeedsUpdate;
 #ifdef OS_WINDOWS
 	#ifdef HUI_API_GTK
 		#include <gdk/gdkwin32.h>
 	#endif
+	extern HWND hWndSubWindow;
+	extern bool nixDevNeedsUpdate;
 #endif
 
 bool NixStart(int texture)
@@ -289,6 +289,7 @@ bool NixStart(int texture)
 	TestGLError("Start prae");
 
 
+#ifdef OS_WINDOWS
 	if (nixDevNeedsUpdate){
 		wglDeleteContext(hRC);
 	PIXELFORMATDESCRIPTOR pfd={	sizeof(PIXELFORMATDESCRIPTOR),
@@ -326,6 +327,7 @@ bool NixStart(int texture)
 		NixSetCull(CullDefault);
 		nixDevNeedsUpdate = false;
 	}
+#endif
 
 	NixNumTrias=0;
 	RenderingToTexture=texture;
