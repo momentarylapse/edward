@@ -34,8 +34,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Program Files %28x86%29\GTK+-Bundle-3.6.1\include\atk-1.0;C:\Program Files %28x86%29\GTK+-Bundle-3.6.1\include\gdk-pixbuf-2.0;C:\Program Files %28x86%29\GTK+-Bundle-3.6.1\include\cairo;C:\Program Files %28x86%29\GTK+-Bundle-3.6.1\lib\glib-2.0\include;C:\Program Files %28x86%29\GTK+-Bundle-3.6.1\include\pango-1.0;C:\Program Files %28x86%29\GTK+-Bundle-3.6.1\include\atk-1.0\atk;C:\Program Files %28x86%29\GTK+-Bundle-3.6.1\include\glib-2.0;C:\Program Files %28x86%29\GTK+-Bundle-3.6.1\include\gtk-3.0;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\GTK+-Bundle-3.6.1\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\GTK+-Bundle-3.6.1\include\gtk-3.0;C:\Program Files\GTK+-Bundle-3.6.1\include\atk-1.0;C:\Program Files\GTK+-Bundle-3.6.1\include\gdk-pixbuf-2.0;C:\Program Files\GTK+-Bundle-3.6.1\include\cairo;C:\Program Files\GTK+-Bundle-3.6.1\lib\glib-2.0\include;C:\Program Files\GTK+-Bundle-3.6.1\include\pango-1.0;C:\Program Files\GTK+-Bundle-3.6.1\include\atk-1.0\atk;C:\Program Files\GTK+-Bundle-3.6.1\include\glib-2.0;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\GTK+-Bundle-3.6.1\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -126,7 +126,8 @@
     <ClCompile Include="src\action\model\mesh\surface\ActionModelSurfaceCopy.cpp" />
     <ClCompile Include="src\action\model\mesh\surface\ActionModelSurfaceInvert.cpp" />
     <ClCompile Include="src\action\model\mesh\surface\ActionModelSurfacesSubdivide.cpp" />
-    <ClCompile Include="src\action\model\mesh\surface\ActionModelSurfaceSubtract.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceVolumeAnd.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceVolumeSubtract.cpp" />
     <ClCompile Include="src\action\model\mesh\surface\helper\ActionModelAddEmptySurface.cpp" />
     <ClCompile Include="src\action\model\mesh\surface\helper\ActionModelDeleteEmptySurface.cpp" />
     <ClCompile Include="src\action\model\mesh\surface\helper\ActionModelJoinSurfaces.cpp" />
@@ -151,6 +152,7 @@
     <ClCompile Include="src\action\model\skeleton\ActionModelDeleteBone.cpp" />
     <ClCompile Include="src\action\model\skeleton\ActionModelDeleteBoneSelection.cpp" />
     <ClCompile Include="src\action\model\skeleton\ActionModelMoveBones.cpp" />
+    <ClCompile Include="src\Action\World\ActionWorldDeleteSelection.cpp" />
     <ClCompile Include="src\action\world\ActionWorldEditData.cpp" />
     <ClCompile Include="src\action\world\ActionWorldMoveSelection.cpp" />
     <ClCompile Include="src\action\world\ActionWorldPaste.cpp" />
@@ -160,9 +162,11 @@
     <ClCompile Include="src\action\world\camera\ActionCameraMoveTimeSelection.cpp" />
     <ClCompile Include="src\action\world\helper\ActionWorldTerrainEditHeight.cpp" />
     <ClCompile Include="src\action\world\object\ActionWorldAddObject.cpp" />
+    <ClCompile Include="src\Action\World\Object\ActionWorldDeleteObject.cpp" />
     <ClCompile Include="src\action\world\object\ActionWorldEditObject.cpp" />
     <ClCompile Include="src\action\world\object\ActionWorldRotateObjects.cpp" />
     <ClCompile Include="src\action\world\terrain\ActionWorldAddTerrain.cpp" />
+    <ClCompile Include="src\Action\World\Terrain\ActionWorldDeleteTerrain.cpp" />
     <ClCompile Include="src\action\world\terrain\ActionWorldEditTerrain.cpp" />
     <ClCompile Include="src\action\world\terrain\ActionWorldTerrainApplyHeightmap.cpp" />
     <ClCompile Include="src\action\world\terrain\ActionWorldTerrainBrushExtrude.cpp" />
@@ -438,7 +442,8 @@
     <ClInclude Include="src\action\model\mesh\surface\ActionModelSurfaceCopy.h" />
     <ClInclude Include="src\action\model\mesh\surface\ActionModelSurfaceInvert.h" />
     <ClInclude Include="src\action\model\mesh\surface\ActionModelSurfacesSubdivide.h" />
-    <ClInclude Include="src\action\model\mesh\surface\ActionModelSurfaceSubtract.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceVolumeAnd.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceVolumeSubtract.h" />
     <ClInclude Include="src\action\model\mesh\surface\helper\ActionModelAddEmptySurface.h" />
     <ClInclude Include="src\action\model\mesh\surface\helper\ActionModelDeleteEmptySurface.h" />
     <ClInclude Include="src\action\model\mesh\surface\helper\ActionModelJoinSurfaces.h" />
@@ -463,6 +468,7 @@
     <ClInclude Include="src\action\model\skeleton\ActionModelDeleteBone.h" />
     <ClInclude Include="src\action\model\skeleton\ActionModelDeleteBoneSelection.h" />
     <ClInclude Include="src\action\model\skeleton\ActionModelMoveBones.h" />
+    <ClInclude Include="src\Action\World\ActionWorldDeleteSelection.h" />
     <ClInclude Include="src\action\world\ActionWorldEditData.h" />
     <ClInclude Include="src\action\world\ActionWorldMoveSelection.h" />
     <ClInclude Include="src\action\world\ActionWorldPaste.h" />
@@ -472,9 +478,11 @@
     <ClInclude Include="src\action\world\camera\ActionCameraMoveTimeSelection.h" />
     <ClInclude Include="src\action\world\helper\ActionWorldTerrainEditHeight.h" />
     <ClInclude Include="src\action\world\object\ActionWorldAddObject.h" />
+    <ClInclude Include="src\Action\World\Object\ActionWorldDeleteObject.h" />
     <ClInclude Include="src\action\world\object\ActionWorldEditObject.h" />
     <ClInclude Include="src\action\world\object\ActionWorldRotateObjects.h" />
     <ClInclude Include="src\action\world\terrain\ActionWorldAddTerrain.h" />
+    <ClInclude Include="src\Action\World\Terrain\ActionWorldDeleteTerrain.h" />
     <ClInclude Include="src\action\world\terrain\ActionWorldEditTerrain.h" />
     <ClInclude Include="src\action\world\terrain\ActionWorldTerrainApplyHeightmap.h" />
     <ClInclude Include="src\action\world\terrain\ActionWorldTerrainBrushExtrude.h" />

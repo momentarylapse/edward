@@ -542,6 +542,9 @@ void HuiWindow::_Init_(const string &title, int x, int y, int width, int height,
 		gtk_widget_set_can_focus(gl_widget, true);
 #endif
 		gtk_widget_grab_focus(gl_widget);
+		GtkWidget *ww = gtk_button_new_with_label("test");
+		gtk_widget_show(ww);
+		gtk_box_pack_start(GTK_BOX(hbox), ww, TRUE, TRUE, 0);
 	}else if (ControlMode){
 		if (is_resizable){
 			// free to use...

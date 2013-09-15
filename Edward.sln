@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C++ Express 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Edward", "Edward.vcxproj", "{80A5798D-8AA7-47BB-7305-2D91CA66B93F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Edward", "Edward.vcxproj", "{28BECB28-CB99-C4D6-CF5D-7D8CAA0BB342}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +9,10 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{80A5798D-8AA7-47BB-7305-2D91CA66B93F}.Debug|Win32.ActiveCfg = Debug|Win32
-		{80A5798D-8AA7-47BB-7305-2D91CA66B93F}.Debug|Win32.Build.0 = Debug|Win32
-		{80A5798D-8AA7-47BB-7305-2D91CA66B93F}.Release|Win32.ActiveCfg = Release|Win32
-		{80A5798D-8AA7-47BB-7305-2D91CA66B93F}.Release|Win32.Build.0 = Release|Win32
+		{28BECB28-CB99-C4D6-CF5D-7D8CAA0BB342}.Debug|Win32.ActiveCfg = Debug|Win32
+		{28BECB28-CB99-C4D6-CF5D-7D8CAA0BB342}.Debug|Win32.Build.0 = Debug|Win32
+		{28BECB28-CB99-C4D6-CF5D-7D8CAA0BB342}.Release|Win32.ActiveCfg = Release|Win32
+		{28BECB28-CB99-C4D6-CF5D-7D8CAA0BB342}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

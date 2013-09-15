@@ -72,12 +72,11 @@ void NixResize()
 	NixTargetRect = rect(0, (float)NixTargetWidth, 0, (float)NixTargetHeight);
 
 	// screen
-	glViewport(0,0,NixTargetWidth,NixTargetHeight);
-	//glViewport(0,0,NixTargetWidth,NixTargetHeight);
-	OGLViewPort[0]=0;
-	OGLViewPort[1]=0;
-	OGLViewPort[2]=NixTargetWidth;
-	OGLViewPort[3]=NixTargetHeight;
+	glViewport(0, 0, NixTargetWidth, NixTargetHeight);
+	OGLViewPort[0] = 0;
+	OGLViewPort[1] = 0;
+	OGLViewPort[2] = NixTargetWidth;
+	OGLViewPort[3] = NixTargetHeight;
 
 	// camera
 	NixSetProjectionMatrix(NixProjectionMatrix);
@@ -272,6 +271,15 @@ bool NixIsInFrustrum(const vector &pos,float radius)
 
 bool Rendering=false;
 
+
+extern HWND hWndSubWindow;
+extern bool nixDevNeedsUpdate;
+#ifdef OS_WINDOWS
+	#ifdef HUI_API_GTK
+		#include <gdk/gdkwin32.h>
+	#endif
+#endif
+
 bool NixStart(int texture)
 {
 	if (NixDoingEvilThingsToTheDevice)
@@ -280,18 +288,57 @@ bool NixStart(int texture)
 	msg_db_f("NixStart", 2);
 	TestGLError("Start prae");
 
+
+	if (nixDevNeedsUpdate){
+		wglDeleteContext(hRC);
+	PIXELFORMATDESCRIPTOR pfd={	sizeof(PIXELFORMATDESCRIPTOR),
+								1,						// versions nummer
+								PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
+								PFD_TYPE_RGBA,
+								32,//NixFullscreen?depth:NixDesktopDepth,
+								//8, 0, 8, 8, 8, 16, 8, 24,
+								0, 0, 0, 0, 0, 0, 0, 0, 0,
+								0, 0, 0, 0,
+								24,						// 24bit Z-Buffer
+								8,						// 8bit stencil buffer
+								0,						// no "Auxiliary"-buffer
+								PFD_MAIN_PLANE,
+								0, 0, 0, 0 };
+	
+		hDC = GetDC((HWND)GDK_WINDOW_HWND(gtk_widget_get_window(NixWindow->gl_widget)));
+		//hDC = GetDC(hWndSubWindow);
+		if (!hDC){
+			HuiErrorBox(NixWindow, "Fehler", "GetDC..." + i2s(GetLastError()));
+			exit(0);
+		}
+		int OGLPixelFormat = ChoosePixelFormat(hDC, &pfd);
+		SetPixelFormat(hDC, OGLPixelFormat, &pfd);
+		hRC=wglCreateContext(hDC);
+		if (!hRC){
+			HuiErrorBox(NixWindow, "Fehler", "wglCreateContext...");
+			exit(0);
+		}
+		int rr=wglMakeCurrent(hDC, hRC);
+		if (rr != 1){
+			HuiErrorBox(NixWindow, "Fehler", "wglMakeCurrent...");
+			exit(0);
+		}
+		NixSetCull(CullDefault);
+		nixDevNeedsUpdate = false;
+	}
+
 	NixNumTrias=0;
 	RenderingToTexture=texture;
-	//msg_write(string("Start ",i2s(texture)));
+	msg_write("Start " + i2s(texture));
 	if (texture<0){
 		#ifdef OS_WINDOWS
-			if (OGLDynamicTextureSupport)
-				glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-			if (!wglMakeCurrent(hDC,hRC)){
+	//		if (OGLDynamicTextureSupport)
+	//			glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+			/*if (!wglMakeCurrent(hDC,hRC)){
 				msg_error("wglMakeCurrent");
 				msg_write(GetLastError());
 				return false;
-			}
+			}*/
 		#endif
 
 		#ifdef OS_LINUX
@@ -317,8 +364,8 @@ bool NixStart(int texture)
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
 	glDisable(GL_SCISSOR_TEST);
 	//glClearStencil(0);
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	//glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	//glClear(GL_COLOR_BUFFER_BIT);
 	TestGLError("Start 2");
 

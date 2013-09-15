@@ -57,7 +57,7 @@ libraries to link:
 */
 
 
-//#define NIX_GL_IN_WIDGET
+#define NIX_GL_IN_WIDGET
 
 #ifdef OS_WINDOWS
 	#ifdef HUI_API_GTK
@@ -472,6 +472,7 @@ void NixInit(const string &api,int xres,int yres,int depth,bool fullscreen,HuiWi
 		NixTargetHeight = 600;
 	}
 	NixTargetRect = rect(0, (float)NixTargetWidth, 0, (float)NixTargetHeight);
+
 	NixSetCull(CullDefault);
 	NixSetWire(false);
 	NixSetAlpha(AlphaNone);
@@ -548,6 +549,8 @@ void NixReincarnateDeviceObjects()
 }
 
 
+bool nixDevNeedsUpdate = true;
+
 
 void set_video_mode_gl(int xres, int yres, int depth)
 {
@@ -557,8 +560,14 @@ void set_video_mode_gl(int xres, int yres, int depth)
 	// realize the widget...
 	gtk_widget_show(NixWindow->gl_widget);
 	gtk_widget_realize(NixWindow->gl_widget);
-	gdk_window_invalidate_rect(NixWindow->gl_widget->window, NULL, false);
+	gdk_window_invalidate_rect(gtk_widget_get_window(NixWindow->gl_widget), NULL, false);
 	gdk_window_process_all_updates();
+	
+	/*HuiSleep(1);
+	for (int i=0;i<20;i++)
+		HuiDoSingleMainLoop();
+	HuiSleep(1);*/
+
 #endif
 	
 	bool was_fullscreen = NixFullscreen;
@@ -587,21 +596,28 @@ void set_video_mode_gl(int xres, int yres, int depth)
 								1,						// versions nummer
 								PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
 								PFD_TYPE_RGBA,
-								NixFullscreen?depth:NixDesktopDepth,
+								32,//NixFullscreen?depth:NixDesktopDepth,
 								//8, 0, 8, 8, 8, 16, 8, 24,
 								0, 0, 0, 0, 0, 0, 0, 0, 0,
 								0, 0, 0, 0,
-								24,						// 24Bit Z-Buffer
-								1,						// one stencil buffer
+								24,						// 24bit Z-Buffer
+								8,						// 8bit stencil buffer
 								0,						// no "Auxiliary"-buffer
 								PFD_MAIN_PLANE,
 								0, 0, 0, 0 };
 #ifdef HUI_API_WIN
 		hDC = GetDC(NixWindow->hWnd);
 #else
+
+	
+
+
 	NixWindow->hWnd = (HWND)GDK_WINDOW_HWND(gtk_widget_get_window(NixWindow->window));
+//	msg_write(p2s((HWND)GDK_WINDOW_HWND(gtk_widget_get_window(NixWindow->window))));
+//	msg_write(p2s((HWND)GDK_WINDOW_HWND(gtk_widget_get_window(NixWindow->gl_widget))));
 	#ifdef NIX_GL_IN_WIDGET
-		hDC = GetDC((HWND)gdk_win32_drawable_get_handle(NixWindow->gl_widget->window));
+		//hDC = GetDC((HWND)gdk_win32_drawable_get_handle(NixWindow->gl_widget->window));
+		hDC = GetDC((HWND)GDK_WINDOW_HWND(gtk_widget_get_window(NixWindow->gl_widget)));
 	#else
 		hDC = GetDC(NixWindow->hWnd);
 	#endif
@@ -929,6 +945,8 @@ void NixSetVideoMode(const string &api, int xres, int yres, int depth, bool full
 
 	set_video_mode_gl(xres, yres, depth);
 
+	
+
 	/*			char *ext = (char*)glGetString( GL_EXTENSIONS );
 				if (ext){
 					msg_write(strlen(ext));
@@ -941,6 +959,7 @@ void NixSetVideoMode(const string &api, int xres, int yres, int depth, bool full
 
 
 	NixDoingEvilThingsToTheDevice = false;
+
 	CreateFontGlyphWidth();
 
 	// adjust window for new mode
@@ -984,7 +1003,10 @@ void NixSetVideoMode(const string &api, int xres, int yres, int depth, bool full
 						SWP_SHOWWINDOW );
 #endif*/
 	}
-
+	
+	NixStart(-1);
+	NixDrawStr(100, 100, "test");
+	NixEnd();
 
 // recreate vertex buffers and textures
 	NixReincarnateDeviceObjects();

@@ -189,9 +189,6 @@
     <ClCompile Include="src\action\model\mesh\surface\ActionModelSurfacesSubdivide.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\action\model\mesh\surface\ActionModelSurfaceSubtract.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\action\model\mesh\surface\helper\ActionModelAddEmptySurface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -945,6 +942,21 @@
     <ClCompile Include="src\x\world.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceVolumeAnd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceVolumeSubtract.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Action\World\ActionWorldDeleteSelection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Action\World\Terrain\ActionWorldDeleteTerrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Action\World\Object\ActionWorldDeleteObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Edward.h">
@@ -1116,9 +1128,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\action\model\mesh\surface\ActionModelSurfacesSubdivide.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\action\model\mesh\surface\ActionModelSurfaceSubtract.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\action\model\mesh\surface\helper\ActionModelAddEmptySurface.h">
@@ -1821,6 +1830,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\x\world.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceVolumeAnd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceVolumeSubtract.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Action\World\ActionWorldDeleteSelection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Action\World\Terrain\ActionWorldDeleteTerrain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Action\World\Object\ActionWorldDeleteObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
