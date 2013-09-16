@@ -25,7 +25,10 @@ HuiControl::HuiControl(int _type, const string &_id)
 
 HuiControl::~HuiControl()
 {
+	//msg_write("del " + id);
 	if (win){
+		foreach(HuiControl *c, children)
+			delete(c);
 		for (int i=0;i<win->control.num;i++)
 			if (win->control[i] == this)
 				win->control.erase(i);

@@ -142,6 +142,7 @@ void HuiWindow::_InitGeneric_(HuiWindow *_root, bool _allow_root, int _mode)
 	toolbar[HuiToolbarBottom] = new HuiToolbar(this);
 	input.reset();
 	tab_creation_page = -1;
+	root_control = NULL;
 
 	id = "";
 	num_float_decimals = 3;
@@ -706,6 +707,13 @@ bool HuiWindow::IsExpanded(const string &_id, int row)
 	test_controls(_id, c)
 		return false;
 	return false;
+}
+
+void HuiWindow::DeleteControl(const string &_id)
+{
+	for(int i=control.num-1;i>=0;i--)
+		if (control[i]->id == _id)
+			delete(control[i]);
 }
 
 

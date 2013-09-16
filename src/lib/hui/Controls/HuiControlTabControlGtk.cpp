@@ -70,4 +70,9 @@ int HuiControlTabControl::GetInt()
 	return cur_page;
 }
 
+void HuiControlTabControl::Add(HuiControl *child, int page)
+{
+	children.add(child);
+}
+
 #endif

@@ -20,6 +20,7 @@ public:
 	virtual void __SetString(const string &str);
 	virtual void __SetInt(int i);
 	virtual int GetInt();
+	void Add(HuiControl *child, int page);
 
 	int cur_page;
 };

@@ -126,6 +126,7 @@ void HuiWindow::_InsertControl_(HuiControl *c, int x, int y, int width, int heig
 				gtk_container_set_border_width(GTK_CONTAINER(target_widget), 0);
 			else*/
 				gtk_container_set_border_width(GTK_CONTAINER(target_widget), border_width);
+			root_control = c;
 		}else if (root_type == HuiGtkInsertTable){
 			GtkAttachOptions op_x = GtkAttachOptions(GTK_FILL | GTK_EXPAND);
 			GtkAttachOptions op_y = GtkAttachOptions(GTK_FILL | GTK_EXPAND);
@@ -202,9 +203,11 @@ void HuiWindow::_InsertControl_(HuiControl *c, int x, int y, int width, int heig
 			gtk_table_attach(GTK_TABLE(target_widget), frame, x, x+1, y, y+1, op_x, op_y, 0, 0);
 			if (root_is_button_bar)
 				gtk_container_child_set(GTK_CONTAINER(target_widget), frame, "y-padding", 7, NULL);
+			((HuiControlGrid*)root_ctrl)->Add(c, x, y);
 		}else if (root_type == HuiGtkInsertTabControl){
 			gtk_container_add(GTK_CONTAINER(target_widget), frame);
 			gtk_container_set_border_width(GTK_CONTAINER(target_widget), border_width);
+			((HuiControlTabControl*)root_ctrl)->Add(c, tab_creation_page);
 		}
 	}else{
 		if ((c->type == HuiKindButton) || (c->type == HuiKindColorButton) || (c->type == HuiKindComboBox)){

@@ -206,6 +206,7 @@ public:
 	void _cdecl Enable(const string &id, bool enabled);
 	bool _cdecl IsEnabled(const string &id);
 	void _cdecl HideControl(const string &id, bool hide);
+	void _cdecl DeleteControl(const string &id);
 	void _cdecl Check(const string &id, bool checked);
 	bool _cdecl IsChecked(const string &id);
 	void _cdecl SetImage(const string &id, const string &image);
@@ -280,6 +281,7 @@ private:
 	int border_width;
 	Array<HuiControl*> control;
 	HuiControl *cur_control;
+	HuiControl *root_control;
 	Array<HuiEventListener> event;
 	HuiMenu *menu, *popup;
 	bool statusbar_enabled;

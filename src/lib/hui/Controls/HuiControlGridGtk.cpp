@@ -23,4 +23,10 @@ HuiControlGrid::~HuiControlGrid() {
 	// TODO Auto-generated destructor stub
 }
 
+void HuiControlGrid::Add(HuiControl *child, int x, int y)
+{
+	//msg_write("Grid.Add " + id + " " + child->id);
+	children.add(child);
+}
+
 #endif
