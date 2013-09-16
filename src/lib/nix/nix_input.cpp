@@ -27,6 +27,7 @@ static vector _NixMouseDSum;
 int NixKeyRep;
 
 extern string NixControlID;
+HuiInputData NixInputAccum;
 
 void NixOnEvent()
 {
@@ -34,6 +35,8 @@ void NixOnEvent()
 	//msg_write(e->message);
 	_NixMouseDSum += vector(e->dx, e->dy, e->dz);
 	if (e->message == "hui:mouse-move"){
+		NixInputAccum.x = e->mx;
+		NixInputAccum.y = e->my;
 		//msg_write(format("d:  %d  %d", e->dx, e->dy));
 		if (NixMouseStolen){
 			int x0 = MaxX / 2;
@@ -53,6 +56,8 @@ HuiInputData NixInputDataCurrent, NixInputDataLast;
 
 void NixInputInit()
 {
+	NixWindow->AllowEvents("key,mouse,scroll,draw");
+
 	NixInputDataCurrent.reset();
 	NixInputDataLast.reset();
 
@@ -241,7 +246,7 @@ void NixUpdateInput()
 		NixInputDataCurrent.y = clampf(NixInputDataCurrent.y, 0, NixTargetHeight - 1);
 		//msg_write(format("%f  %f", NixInputDataCurrent.x, NixWindow->input.x));
 	}else
-		NixInputDataCurrent = NixWindow->input;
+		NixInputDataCurrent = NixInputAccum;
 
 	NixInputEvent.clear();
 	NixWindow->input.dx = NixWindow->input.dy = 0;

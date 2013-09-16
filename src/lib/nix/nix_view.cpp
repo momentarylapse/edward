@@ -331,7 +331,7 @@ bool NixStart(int texture)
 
 	NixNumTrias=0;
 	RenderingToTexture=texture;
-	msg_write("Start " + i2s(texture));
+	//msg_write("Start " + i2s(texture));
 	if (texture<0){
 		#ifdef OS_WINDOWS
 	//		if (OGLDynamicTextureSupport)
