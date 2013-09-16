@@ -27,7 +27,7 @@ void EmbeddedDialog::Init(HuiWindow *_win, const string &target_id, int x, int y
 	win->SetBorderWidth(5);
 	win->SetTarget(target_id, 0);
 	if (width > 0)
-		win->AddControlTable("!width="+i2s(width), x, y, 1, 1, uid);
+		win->AddControlTable("!width=" + i2s(width), x, y, 1, 1, uid);
 	else
 		win->AddControlTable("!width=250", x, y, 1, 1, uid);
 	win->SetTarget(uid, 0);

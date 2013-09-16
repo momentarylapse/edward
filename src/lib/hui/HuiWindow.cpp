@@ -121,6 +121,7 @@ void HuiWindow::_InitGeneric_(HuiWindow *_root, bool _allow_root, int _mode)
 
 	_HuiClosedWindow_.clear();
 
+	cleaning_up = false;
 	used_by_nix = false;
 	is_resizable = ((_mode & HuiWinModeResizable) > 0);
 	border_width = 5;
@@ -156,6 +157,7 @@ void HuiWindow::_InitGeneric_(HuiWindow *_root, bool _allow_root, int _mode)
 void HuiWindow::_CleanUp_()
 {
 	msg_db_f("Window::_CleanUp_", 2);
+	cleaning_up = true;
 	HuiClosedWindow c;
 	c.unique_id = unique_id;
 	c.win = this;
