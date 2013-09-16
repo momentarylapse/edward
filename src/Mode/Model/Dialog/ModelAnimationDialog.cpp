@@ -44,7 +44,6 @@ ModelAnimationDialog::~ModelAnimationDialog()
 {
 	Unsubscribe(mode_model_animation);
 	Unsubscribe(data);
-	win->RemoveEventHandlers(this);
 }
 
 void ModelAnimationDialog::LoadData()

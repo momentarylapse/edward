@@ -12,8 +12,8 @@
 
 bool SettingDialogData=true;
 
-FontDialog::FontDialog(HuiWindow *_parent, bool _allow_parent, DataFont *_data) :
-	HuiWindow("font_dialog", _parent, _allow_parent)
+FontDialog::FontDialog(HuiWindow *_parent, DataFont *_data) :
+	EmbeddedDialog(_parent, "font_dialog", "root-table", 1, 0, 250, -1)
 {
 	data = _data;
 	SettingData = false;
@@ -21,18 +21,17 @@ FontDialog::FontDialog(HuiWindow *_parent, bool _allow_parent, DataFont *_data) 
 
 	SetString("text", _("Beispiel Text 0123456789"));
 
-	EventM("hui:close", this, &FontDialog::OnClose);
-	EventM("height", this, &FontDialog::OnHeight);
-	EventM("y1", this, &FontDialog::OnY1);
-	EventM("y2", this, &FontDialog::OnY2);
-	EventM("factorx", this, &FontDialog::OnFactorX);
-	EventM("factory", this, &FontDialog::OnFactorY);
-	EventM("unknown", this, &FontDialog::OnUnknown);
-	EventM("name", this, &FontDialog::OnName);
-	EventM("x1", this, &FontDialog::OnX1);
-	EventM("x2", this, &FontDialog::OnX2);
-	EventM("width", this, &FontDialog::OnWidth);
-	EventM("text", this, &FontDialog::OnText);
+	win->EventM("height", this, &FontDialog::OnHeight);
+	win->EventM("y1", this, &FontDialog::OnY1);
+	win->EventM("y2", this, &FontDialog::OnY2);
+	win->EventM("factorx", this, &FontDialog::OnFactorX);
+	win->EventM("factory", this, &FontDialog::OnFactorY);
+	win->EventM("unknown", this, &FontDialog::OnUnknown);
+	win->EventM("name", this, &FontDialog::OnName);
+	win->EventM("x1", this, &FontDialog::OnX1);
+	win->EventM("x2", this, &FontDialog::OnX2);
+	win->EventM("width", this, &FontDialog::OnWidth);
+	win->EventM("text", this, &FontDialog::OnText);
 
 	Subscribe(data);
 
@@ -42,10 +41,6 @@ FontDialog::FontDialog(HuiWindow *_parent, bool _allow_parent, DataFont *_data) 
 FontDialog::~FontDialog()
 {
 	Unsubscribe(data);
-}
-
-void FontDialog::OnClose()
-{
 }
 
 void FontDialog::LoadData()

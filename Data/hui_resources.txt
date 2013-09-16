@@ -1364,12 +1364,12 @@ key_list
 editor_dialog_tab_control
 
 // Resource
-Dialog
+SizableDialog
 font_dialog
 
 1
-210
-255
+400
+730
 0
 0
 0
@@ -1377,357 +1377,396 @@ font_dialog
 0
 
 
-27
-TabControl
-font_dialog_tab_control
+30
+ControlTable
+font_table_1
 
 1
-5
-5
-200
-245
+0
+0
+1
+6
 -1
 0
 0
 
 
 Text
-font_dialog_t_numglyphs
+font_dt_font
 
 1
-10
-10
-100
-25
 0
 0
 0
-font_dialog_tab_control
+0
+0
+0
+0
+font_table_1
+
+ControlTable
+font_table_2
+
+1
+0
+1
+4
+7
+0
+0
+0
+font_table_1
 
 Text
-font_dialog_t_glyphheight
+font_dt_character
 
 1
-10
-40
-100
-25
+0
+2
 0
 0
 0
-font_dialog_tab_control
+0
+0
+font_table_1
+
+ControlTable
+font_table_3
+
+1
+0
+3
+4
+4
+0
+0
+0
+font_table_1
 
 Text
-font_dialog_t_factor_x
+font_dt_example
 
 1
-10
-130
-100
-25
+0
+4
 0
 0
 0
-font_dialog_tab_control
+0
+0
+font_table_1
 
-Text
-font_dialog_t_faktor_y
+ControlTable
+font_table_4
 
 1
-10
-160
-100
-25
+0
+5
+3
+1
 0
 0
 0
-font_dialog_tab_control
+font_table_1
 
-Edit
+SpinButton
 num
 
 1
-110
-10
-80
-25
+3
 0
 0
 0
-font_dialog_tab_control
+0
+0
+0
+font_table_2
 
-Edit
+SpinButton
 height
 
 1
-110
-40
-80
-25
-0
-0
-0
-font_dialog_tab_control
-
-Edit
-factorx
-
+3
 1
-110
-130
-60
-25
 0
 0
 0
-font_dialog_tab_control
+0
+0
+font_table_2
 
-Edit
-factory
-
-1
-110
-160
-60
-25
-0
-0
-0
-font_dialog_tab_control
-
-Text
-font_dialog_t_y1
-
-1
-10
-70
-100
-25
-0
-0
-0
-font_dialog_tab_control
-
-Text
-font_dialog_t_y2
-
-1
-10
-100
-100
-25
-0
-0
-0
-font_dialog_tab_control
-
-Edit
+SpinButton
 y1
 
 1
-110
-70
-80
-25
+3
+2
 0
 0
 0
-font_dialog_tab_control
+0
+0
+font_table_2
 
-Edit
+SpinButton
 y2
 
 1
-110
-100
-80
-25
+3
+3
 0
 0
 0
-font_dialog_tab_control
+0
+0
+font_table_2
 
-Text
-font_dialog_t_unknownchar
+SpinButton
+factorx
 
 1
-10
-190
-100
-25
+3
+4
 0
 0
 0
-font_dialog_tab_control
+0
+0
+font_table_2
+
+SpinButton
+factory
+
+1
+3
+5
+0
+0
+0
+0
+0
+font_table_2
 
 Edit
 unknown
 
 1
-110
-190
-80
-25
+3
+6
 0
 0
 0
-font_dialog_tab_control
+0
+0
+font_table_2
 
 Text
-percent
+font_dt_unknown
 
 1
-175
-130
-20
-25
+2
+6
 0
 0
 0
-font_dialog_tab_control
+0
+0
+font_table_2
 
 Text
-percent
+font_dt_scaley
 
 1
-175
-160
-20
-25
+2
+5
 0
 0
 0
-font_dialog_tab_control
-
-Text
-font_dialog_t_glyph
-
-1
-10
-40
-100
-25
-1
 0
 0
-font_dialog_tab_control
+font_table_2
 
 Text
-font_dialog_t_x1
+font_dt_scalex
 
 1
-10
-70
-100
-25
+2
+4
+0
+0
+0
+0
+0
+font_table_2
+
+Text
+font_dt_y2
+
+1
+2
+3
+0
+0
+0
+0
+0
+font_table_2
+
+Text
+font_dt_y1
+
+1
+2
+2
+0
+0
+0
+0
+0
+font_table_2
+
+Text
+font_dt_height
+
+1
+2
 1
 0
 0
-font_dialog_tab_control
+0
+0
+0
+font_table_2
+
+Text
+font_dt_numglyphs
+
+1
+2
+0
+0
+0
+0
+0
+0
+font_table_2
 
 Edit
 name
 
 1
-110
-40
-80
-25
-1
+3
 0
 0
-font_dialog_tab_control
+0
+0
+0
+0
+font_table_3
 
-Edit
+SpinButton
 x1
 
 1
-110
-70
-80
-25
+3
 1
 0
 0
-font_dialog_tab_control
-
-Text
-font_dialog_t_x2
-
-1
-10
-100
-100
-25
-1
 0
 0
-font_dialog_tab_control
+0
+font_table_3
 
-Edit
+SpinButton
 x2
 
 1
-110
-100
-80
-25
-1
-0
-0
-font_dialog_tab_control
-
-Text
-font_dialog_t_glyphwidth
-
-1
-10
-130
-100
-25
-1
-0
-0
-font_dialog_tab_control
-
-Edit
-width
-
-1
-110
-130
-80
-25
-1
-0
-0
-font_dialog_tab_control
-
-Text
-font_dialog_t_text
-
-1
-10
-50
-100
-25
+3
 2
 0
 0
-font_dialog_tab_control
+0
+0
+0
+font_table_3
+
+SpinButton
+width
+
+1
+3
+3
+0
+0
+0
+0
+0
+font_table_3
+
+Text
+font_dt_width
+
+1
+2
+3
+0
+0
+0
+0
+0
+font_table_3
+
+Text
+font_dt_x2
+
+1
+2
+2
+0
+0
+0
+0
+0
+font_table_3
+
+Text
+font_dt_x1
+
+1
+2
+1
+0
+0
+0
+0
+0
+font_table_3
+
+Text
+font_dt_name
+
+1
+2
+0
+0
+0
+0
+0
+0
+font_table_3
 
 Edit
 text
 
 1
-10
-80
-180
-25
 2
 0
 0
-font_dialog_tab_control
+0
+0
+0
+0
+font_table_4
 
 // Resource
 Menu
@@ -16386,7 +16425,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-733
+738
 // Text
 ad_dialog
 Verwaltung
@@ -16647,9 +16686,9 @@ Welt
 extrude_triangles
 Extrudieren
 factorx
-
+0
 factory
-
+0
 file_details
 
 file_list_all
@@ -16716,36 +16755,46 @@ fog_start
 
 font_dialog
 Font Eigenschaften
-font_dialog_t_factor_x
-Größenfaktor X
-font_dialog_t_faktor_y
-Größenfaktor Y
-font_dialog_t_glyph
-Zeichen
-font_dialog_t_glyphheight
+font_dt_character
+!bold\\Zeichen
+font_dt_example
+!bold\\Vorschautext
+font_dt_font
+!bold\\Font
+font_dt_height
 Zeichenhöhe
-font_dialog_t_glyphwidth
-Breite
-font_dialog_t_numglyphs
+font_dt_name
+Zeichen
+font_dt_numglyphs
 Zeichenzahl
-font_dialog_t_text
-Text:
-font_dialog_t_unknownchar
-unbek. Zeichen
-font_dialog_t_x1
-X1
-font_dialog_t_x2
-X2
-font_dialog_t_y1
-Y1
-font_dialog_t_y2
-Y2
-font_dialog_tab_control
-Font\\Zeichen\\Beispiel
+font_dt_scalex
+Skalierung X
+font_dt_scaley
+Skalierung Y
+font_dt_unknown
+Unbekanntes Zeichen
+font_dt_width
+Breite
+font_dt_x1
+Linke Kante
+font_dt_x2
+Rechte Kante
+font_dt_y1
+Obere Kante
+font_dt_y2
+Untere Kante
 font_new
 Neu
 font_open
 Öffnen...
+font_table_1
+
+font_table_2
+!noexpandy
+font_table_3
+!noexpandy
+font_table_4
+!noexpandy
 forcefield_radius
 
 formula
@@ -16835,7 +16884,7 @@ gravitation_z
 grid
 Raster
 height
-
+0
 height_factor
 
 height_image
@@ -17375,7 +17424,7 @@ nterrain_dialog_t_terrainsize
 ntp_samples
 \\1
 num
-
+0
 num_items
 \\0
 num_lod
@@ -17767,7 +17816,7 @@ what_the_fuck
 whole_window
 Ganzes Fenster
 width
-
+0
 wire
 Drahtgitter
 working_directory
@@ -17837,15 +17886,15 @@ Name der Funktion:
 x
 X
 x1
-
+0
 x2
-
+0
 y
 Y
 y1
-
+0
 y2
-
+0
 z
 Z
 zzz_enableselection
@@ -17860,7 +17909,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-733
+738
 // Text
 ad_dialog
 Administration
@@ -18190,36 +18239,46 @@ fog_start
 
 font_dialog
 Font properties
-font_dialog_t_factor_x
-scaling factor X
-font_dialog_t_faktor_y
-scaling factor Y
-font_dialog_t_glyph
-glyph
-font_dialog_t_glyphheight
-height of glyphs
-font_dialog_t_glyphwidth
-width
-font_dialog_t_numglyphs
-# glyphs
-font_dialog_t_text
-text:
-font_dialog_t_unknownchar
-unknown char
-font_dialog_t_x1
-X1
-font_dialog_t_x2
-X2
-font_dialog_t_y1
-Y1
-font_dialog_t_y2
-Y2
-font_dialog_tab_control
-font\\glyph\\demo
+font_dt_character
+
+font_dt_example
+
+font_dt_font
+
+font_dt_height
+
+font_dt_name
+
+font_dt_numglyphs
+
+font_dt_scalex
+
+font_dt_scaley
+
+font_dt_unknown
+
+font_dt_width
+
+font_dt_x1
+
+font_dt_x2
+
+font_dt_y1
+
+font_dt_y2
+
 font_new
 New
 font_open
 Open...
+font_table_1
+
+font_table_2
+
+font_table_3
+
+font_table_4
+
 forcefield_radius
 
 formula
@@ -19626,7 +19685,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-733
+738
 // Text
 ad_dialog
 
@@ -19956,36 +20015,46 @@ fog_start
 
 font_dialog
 
-font_dialog_t_factor_x
+font_dt_character
 
-font_dialog_t_faktor_y
+font_dt_example
 
-font_dialog_t_glyph
+font_dt_font
 
-font_dialog_t_glyphheight
+font_dt_height
 
-font_dialog_t_glyphwidth
+font_dt_name
 
-font_dialog_t_numglyphs
+font_dt_numglyphs
 
-font_dialog_t_text
+font_dt_scalex
 
-font_dialog_t_unknownchar
+font_dt_scaley
 
-font_dialog_t_x1
-X1
-font_dialog_t_x2
-X2
-font_dialog_t_y1
-Y1
-font_dialog_t_y2
-Y2
-font_dialog_tab_control
-font\\glyph\\demo
+font_dt_unknown
+
+font_dt_width
+
+font_dt_x1
+
+font_dt_x2
+
+font_dt_y1
+
+font_dt_y2
+
 font_new
 新規
 font_open
 開く...
+font_table_1
+
+font_table_2
+
+font_table_3
+
+font_table_4
+
 forcefield_radius
 
 formula

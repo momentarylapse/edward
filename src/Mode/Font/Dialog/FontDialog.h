@@ -10,12 +10,13 @@
 
 #include "../../../lib/hui/hui.h"
 #include "../../../Data/Font/DataFont.h"
+#include "../../../Stuff/EmbeddedDialog.h"
 #include "../../../Stuff/Observer.h"
 
-class FontDialog: public HuiWindow, public Observer
+class FontDialog: public EmbeddedDialog, public Observer
 {
 public:
-	FontDialog(HuiWindow *_parent, bool _allow_parent, DataFont *_data);
+	FontDialog(HuiWindow *_parent, DataFont *_data);
 	virtual ~FontDialog();
 
 	void LoadData();
@@ -34,8 +35,6 @@ public:
 	void OnX2();
 	void OnWidth();
 	void OnText();
-
-	void OnClose();
 
 	string GetSampleText();
 

@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-596
+609
 // Data (ID,Text)
 ad_dialog
 
@@ -219,6 +219,10 @@ export_world
 
 extrude_triangles
 
+factorx
+
+factory
+
 file_list_all
 
 file_list_cur
@@ -243,36 +247,44 @@ fog_mode:none
 
 font_dialog
 
-font_dialog_t_factor_x
+font_dt_character
 
-font_dialog_t_faktor_y
+font_dt_example
 
-font_dialog_t_glyph
+font_dt_font
 
-font_dialog_t_glyphheight
+font_dt_height
 
-font_dialog_t_glyphwidth
+font_dt_name
 
-font_dialog_t_numglyphs
+font_dt_numglyphs
 
-font_dialog_t_text
+font_dt_scalex
 
-font_dialog_t_unknownchar
+font_dt_scaley
 
-font_dialog_t_x1
-X1
-font_dialog_t_x2
-X2
-font_dialog_t_y1
-Y1
-font_dialog_t_y2
-Y2
-font_dialog_tab_control
-font\\glyph\\demo
+font_dt_unknown
+
+font_dt_width
+
+font_dt_x1
+
+font_dt_x2
+
+font_dt_y1
+
+font_dt_y2
+
 font_new
 新規
 font_open
 開く...
+font_table_2
+
+font_table_3
+
+font_table_4
+
 formula
 Linear\\1/r^2
 fps_const
@@ -351,6 +363,8 @@ generate_tensor_auto
 
 grid
 グリッド
+height
+
 height_op:add
 
 height_op:set
@@ -813,6 +827,8 @@ nterrain_dialog_t_terrainsize
 
 ntp_samples
 
+num
+
 num_items
 
 num_lod
@@ -1119,6 +1135,8 @@ what_the_fuck
 
 whole_window
 
+width
+
 wire
 
 world_camera_dialog
@@ -1185,8 +1203,16 @@ world_scriptfunc_dialog_t_name
 
 x
 X
+x1
+
+x2
+
 y
 Y
+y1
+
+y2
+
 z
 Z
 zzz_enableselection

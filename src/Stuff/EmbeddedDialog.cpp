@@ -35,6 +35,7 @@ void EmbeddedDialog::Init(HuiWindow *_win, const string &target_id, int x, int y
 
 EmbeddedDialog::~EmbeddedDialog()
 {
+	win->RemoveEventHandlers(this);
 	win->DeleteControl(uid);
 }
 

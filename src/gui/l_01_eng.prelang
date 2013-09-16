@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-596
+609
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -219,6 +219,10 @@ export_world
 Export world
 extrude_triangles
 Extrude
+factorx
+
+factory
+
 file_list_all
 !format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
 file_list_cur
@@ -243,36 +247,44 @@ fog_mode:none
 
 font_dialog
 Font properties
-font_dialog_t_factor_x
-scaling factor X
-font_dialog_t_faktor_y
-scaling factor Y
-font_dialog_t_glyph
-glyph
-font_dialog_t_glyphheight
-height of glyphs
-font_dialog_t_glyphwidth
-width
-font_dialog_t_numglyphs
-# glyphs
-font_dialog_t_text
-text:
-font_dialog_t_unknownchar
-unknown char
-font_dialog_t_x1
-X1
-font_dialog_t_x2
-X2
-font_dialog_t_y1
-Y1
-font_dialog_t_y2
-Y2
-font_dialog_tab_control
-font\\glyph\\demo
+font_dt_character
+
+font_dt_example
+
+font_dt_font
+
+font_dt_height
+
+font_dt_name
+
+font_dt_numglyphs
+
+font_dt_scalex
+
+font_dt_scaley
+
+font_dt_unknown
+
+font_dt_width
+
+font_dt_x1
+
+font_dt_x2
+
+font_dt_y1
+
+font_dt_y2
+
 font_new
 New
 font_open
 Open...
+font_table_2
+
+font_table_3
+
+font_table_4
+
 formula
 Linear\\1/r^2
 fps_const
@@ -351,6 +363,8 @@ generate_tensor_auto
 auto
 grid
 Grid
+height
+
 height_op:add
 Add
 height_op:set
@@ -813,6 +827,8 @@ nterrain_dialog_t_terrainsize
 
 ntp_samples
 
+num
+
 num_items
 \\0
 num_lod
@@ -1119,6 +1135,8 @@ what_the_fuck
 \"about\"
 whole_window
 Use complete window
+width
+
 wire
 Wire frame
 world_camera_dialog
@@ -1185,8 +1203,16 @@ world_scriptfunc_dialog_t_name
 name of function:
 x
 X
+x1
+
+x2
+
 y
 Y
+y1
+
+y2
+
 z
 Z
 zzz_enableselection
