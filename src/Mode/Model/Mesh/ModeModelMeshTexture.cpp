@@ -75,8 +75,12 @@ void ModeModelMeshTexture::OnStart()
 	Subscribe(data);
 	Subscribe(multi_view, "SelectionChange");
 
-	dialog = new ModelTextureLevelDialog(ed, true, data);
-	dialog->Show();
+	/*ed->SetTarget("root_table", 0);
+	ed->AddControlTable("", 1, 0, 1, 5, "side_table");
+	ed->DeleteControl("side_table");
+	ed->EmbedDialog()*/
+
+	dialog = new ModelTextureLevelDialog(ed, data);
 }
 
 

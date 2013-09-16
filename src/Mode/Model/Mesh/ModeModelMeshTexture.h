@@ -13,6 +13,7 @@
 #include "../../../lib/file/file.h"
 
 class DataModel;
+class ModelTextureLevelDialog;
 
 class ModeModelMeshTexture: public Mode<DataModel>
 {
@@ -39,7 +40,7 @@ public:
 
 	int CurrentTextureLevel;
 
-	HuiWindow *dialog;
+	ModelTextureLevelDialog *dialog;
 };
 
 extern ModeModelMeshTexture *mode_model_mesh_texture;

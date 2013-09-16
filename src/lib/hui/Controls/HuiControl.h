@@ -42,6 +42,7 @@ public:
 	bool enabled;
 	bool is_button_bar;
 	HuiWindow *win;
+	HuiControl *parent;
 	Array<HuiControl*> children;
 
 	virtual void __Reset(){}

@@ -72,8 +72,6 @@ void ModeModel::OnStart()
 	t = ed->toolbar[HuiToolbarLeft];
 	t->Reset();
 	t->Enable(false);
-
-	ed->DeleteControl("table2");
 }
 
 

@@ -14,20 +14,16 @@
 string file_secure(const string &filename);
 string render_material(ModelMaterial *m);
 
-ModelTextureLevelDialog::ModelTextureLevelDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data):
-	HuiWindow("model_texture_level_dialog", _parent, _allow_parent)
+ModelTextureLevelDialog::ModelTextureLevelDialog(HuiWindow *_parent, DataModel *_data):
+	EmbeddedDialog(_parent, "model_texture_level_dialog", "root-table", 1, 0, 250, -1)
 {
 	data = _data;
 
-	// dialog
-	SetPositionSpecial(_parent, HuiRight | HuiTop);
+	win->SetTooltip("texture_list", _("Texturen der einzelnen Materialien\n- Klick zum Bearbeiten der Texturkoordinaten"));
 
-	SetTooltip("texture_list", _("Texturen der einzelnen Materialien\n- Klick zum Bearbeiten der Texturkoordinaten"));
-
-	EventM("hui:close", this, &ModelTextureLevelDialog::OnClose);
-	//EventMX("texture_list", "hui:change", this, &ModelTextureLevelDialog::OnTextureListCheck);
-	//EventMX("texture_list", "hui:activate", this, &ModelTextureLevelDialog::OnTextureList);
-	EventMX("texture_list", "hui:select", this, &ModelTextureLevelDialog::OnTextureList);
+	//win->EventMX("texture_list", "hui:change", this, &ModelTextureLevelDialog::OnTextureListCheck);
+	//win->EventMX("texture_list", "hui:activate", this, &ModelTextureLevelDialog::OnTextureList);
+	win->EventMX("texture_list", "hui:select", this, &ModelTextureLevelDialog::OnTextureList);
 
 	Subscribe(data);
 
@@ -57,12 +53,12 @@ void ModelTextureLevelDialog::FillTextureList()
 	foreachi(ModelMaterial &m, data->Material, i)
 		for (int j=0;j<m.NumTextures;j++){
 			string im = ed->get_tex_image(m.Texture[j]);
-			AddChildString("texture_list", i, format("Tex[%d]\\%s\\%s", j, im.c_str(), file_secure(m.TextureFile[j]).c_str()));
+			win->AddChildString("texture_list", i, format("Tex[%d]\\%s\\%s", j, im.c_str(), file_secure(m.TextureFile[j]).c_str()));
 			if ((i == mode_model_mesh->CurrentMaterial) && (j == mode_model_mesh_texture->CurrentTextureLevel))
 				n_sel = n;
 			n ++;
 		}
-	ExpandAll("texture_list", true);
+	win->ExpandAll("texture_list", true);
 	SetInt("texture_list", n_sel);
 }
 
@@ -71,12 +67,6 @@ void ModelTextureLevelDialog::FillTextureList()
 void ModelTextureLevelDialog::OnUpdate(Observable *o)
 {
 	LoadData();
-}
-
-
-
-void ModelTextureLevelDialog::OnClose()
-{
 }
 
 

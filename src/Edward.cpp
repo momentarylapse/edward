@@ -162,15 +162,13 @@ Edward::Edward(Array<string> arg) :
 {
 	msg_db_f("Init", 1);
 	
-	AddControlTable("", 0, 0, 2, 1, "table1");
-	SetTarget("table1", 0);
-	AddDrawingArea("!grabfocus", 0, 0, 0, 0, "nix_area");
-	AddControlTable("", 1, 0, 1, 5, "table2");
-	SetTarget("table2", 0);
-	AddButton("test", 0, 0, 0, 0, "button1");
-	AddButton("test1", 0, 1, 0, 0, "button2");
-	AddButton("test2", 0, 2, 0, 0, "button3");
-	AddEdit("test", 0, 3, 0, 0, "edit");
+	SetBorderWidth(0);
+	AddControlTable("", 0, 0, 2, 1, "root-table");
+	SetTarget("root-table", 0);
+	AddDrawingArea("!grabfocus", 0, 0, 0, 0, "nix-area");
+	SetBorderWidth(5);
+	/*AddControlTable("", 1, 0, 1, 5, "side-table");
+	HideControl("side-table", true);*/
 
 	ed = this;
 	cur_mode = NULL;
@@ -218,7 +216,7 @@ Edward::Edward(Array<string> arg) :
 	Show();
 
 	// initialize engine
-	NixInit("OpenGL", this, "nix_area");
+	NixInit("OpenGL", this, "nix-area");
 	NixTextureIconSize = 32;
 
 	EventM("hui:close", this, &Edward::OnClose);

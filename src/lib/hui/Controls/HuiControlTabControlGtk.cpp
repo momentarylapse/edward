@@ -72,6 +72,7 @@ int HuiControlTabControl::GetInt()
 
 void HuiControlTabControl::Add(HuiControl *child, int page)
 {
+	child->parent = this;
 	children.add(child);
 }
 

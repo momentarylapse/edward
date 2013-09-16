@@ -9,13 +9,14 @@
 #define MODELTEXTURELEVELDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
+#include "../../../Stuff/EmbeddedDialog.h"
 #include "../../../Stuff/Observer.h"
 class DataModel;
 
-class ModelTextureLevelDialog: public HuiWindow, public Observer
+class ModelTextureLevelDialog: public EmbeddedDialog, public Observer
 {
 public:
-	ModelTextureLevelDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data);
+	ModelTextureLevelDialog(HuiWindow *_parent, DataModel *_data);
 	virtual ~ModelTextureLevelDialog();
 
 	void LoadData();
@@ -24,7 +25,6 @@ public:
 	void FillTextureList();
 	void OnTextureList();
 	void OnTextureListCheck();
-	void OnClose();
 
 	void OnUpdate(Observable *o);
 
