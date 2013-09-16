@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-584
+596
 // Data (ID,Text)
 ad_dialog
 
@@ -45,25 +45,35 @@ alpha_z_buffer
 
 ambient
 周辺光
+ani_dt_frame
+
+ani_dt_framesconst
+
+ani_dt_framesfactor
+
+ani_dt_list
+
+ani_dt_name
+
+ani_dt_properties
+
+ani_dt_sim_param
+
+ani_dt_sim_speed
+
+ani_dt_simulation
+
+ani_table_3
+
+ani_table_4
+
+ani_table_5
+
+ani_table_7
+
 animation_delete
 削除
 animation_dialog
-
-animation_dialog__grp_animproperties
-
-animation_dialog_t_animfps_factor
-
-animation_dialog_t_animfpsconst
-
-animation_dialog_t_animframeindex
-
-animation_dialog_t_animname
-名前
-animation_dialog_t_simparam
-
-animation_dialog_t_simspeed
-
-animation_dialog_tab_control
 
 animation_list
 #\\type\\num frames\\name
@@ -265,6 +275,12 @@ font_open
 開く...
 formula
 Linear\\1/r^2
+fps_const
+
+fps_factor
+
+frame
+
 fx_dialog
 
 fx_edit
@@ -815,6 +831,8 @@ opt_view
 
 own_figure
 
+parameter
+
 paste
 貼り付け
 percent
@@ -909,6 +927,10 @@ show_points
 ベクトル
 show_terrains
 陸
+sim_start
+
+sim_stop
+
 skeleton_add_model
 
 skeleton_edit_bone
@@ -933,6 +955,8 @@ sounds
 音...
 specular
 反射光
+speed
+
 stretch_x
 
 stretch_z
@@ -1172,7 +1196,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-235
+234
 // Data (ID,Text)
 
 
@@ -1377,8 +1401,6 @@ Karten-Datei
 Kein Punkt markiert!
 
 Kein Punkt mit Effekt markiert!
-
-Kein Terrain markiert
 
 Knochen setzen
 

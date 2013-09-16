@@ -9,13 +9,14 @@
 #define MODELANIMATIONDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
+#include "../../../Stuff/EmbeddedDialog.h"
 #include "../../../Stuff/Observer.h"
 class DataModel;
 
-class ModelAnimationDialog: public HuiWindow, public Observer
+class ModelAnimationDialog: public EmbeddedDialog, public Observer
 {
 public:
-	ModelAnimationDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data);
+	ModelAnimationDialog(HuiWindow *_parent, DataModel *_data);
 	virtual ~ModelAnimationDialog();
 
 	void LoadData();
@@ -26,8 +27,6 @@ public:
 	void OnAnimationListSelect();
 	void OnAddAnimation();
 	void OnDeleteAnimation();
-	void OnFrameInc();
-	void OnFrameDec();
 	void OnFrame();
 	void OnAddFrame();
 	void OnDeleteFrame();
@@ -36,7 +35,8 @@ public:
 	void OnFpsFactor();
 	void OnSpeed();
 	void OnParameter();
-	void OnTabControl();
+	void OnSimulationPlay();
+	void OnSimulationStop();
 	void OnClose();
 
 	void OnUpdate(Observable *o);

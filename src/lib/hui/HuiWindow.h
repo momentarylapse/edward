@@ -133,6 +133,7 @@ public:
 	template<typename T>
 	void _cdecl EventMX(const string &id, const string &msg, HuiEventHandler* handler, T fun)
 	{	_EventMX(id, msg, handler, (void(HuiEventHandler::*)())fun);	}
+	void RemoveEventHandlers(HuiEventHandler *handler);
 	bool _SendEvent_(HuiEvent *e);
 
 	// events by overwriting

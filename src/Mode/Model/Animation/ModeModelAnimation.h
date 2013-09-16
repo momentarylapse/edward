@@ -12,6 +12,7 @@
 #include "../../../Data/Model/DataModel.h"
 
 class DataModel;
+class ModelAnimationDialog;
 
 class ModeModelAnimation: public Mode<DataModel>, public Observable, public HuiEventHandler
 {
@@ -28,7 +29,7 @@ public:
 
 	virtual void OnDrawWin(MultiViewWindow *win);
 
-	HuiWindow *dialog;
+	ModelAnimationDialog *dialog;
 
 	ModelMove *EmptyMove;
 

@@ -323,6 +323,13 @@ void HuiWindow::_EventMX(const string &id, const string &msg, HuiEventHandler *h
 	event.add(e);
 }
 
+void HuiWindow::RemoveEventHandlers(HuiEventHandler *handler)
+{
+	for (int i=event.num-1;i>=0;i--)
+		if (event[i].function.has_handler(handler))
+			event.erase(i);
+}
+
 bool HuiWindow::_SendEvent_(HuiEvent *e)
 {
 	if (!allow_input)
@@ -371,6 +378,7 @@ bool HuiWindow::_SendEvent_(HuiEvent *e)
 		foreach(HuiClosedWindow &cw, _HuiClosedWindow_)
 			if (cw.win == this)
 				return sent;
+		_foreach_it_.update();
 	}
 
 	// reset

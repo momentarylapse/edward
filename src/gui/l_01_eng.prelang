@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-584
+596
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -45,26 +45,36 @@ alpha_z_buffer
 Z-buffer enabled
 ambient
 ambient
+ani_dt_frame
+
+ani_dt_framesconst
+
+ani_dt_framesfactor
+
+ani_dt_list
+
+ani_dt_name
+
+ani_dt_properties
+
+ani_dt_sim_param
+
+ani_dt_sim_speed
+
+ani_dt_simulation
+
+ani_table_3
+
+ani_table_4
+
+ani_table_5
+
+ani_table_7
+
 animation_delete
 Delete
 animation_dialog
 Animation
-animation_dialog__grp_animproperties
-
-animation_dialog_t_animfps_factor
-frames /s factor
-animation_dialog_t_animfpsconst
-frames /s const
-animation_dialog_t_animframeindex
-
-animation_dialog_t_animname
-name
-animation_dialog_t_simparam
-parameter
-animation_dialog_t_simspeed
-speed
-animation_dialog_tab_control
-
 animation_list
 #\\type\\num frames\\name
 animation_new
@@ -265,6 +275,12 @@ font_open
 Open...
 formula
 Linear\\1/r^2
+fps_const
+
+fps_factor
+
+frame
+
 fx_dialog
 Add a new effect...
 fx_edit
@@ -815,6 +831,8 @@ opt_view
 Optimal
 own_figure
 Own character
+parameter
+
 paste
 Paste
 percent
@@ -909,6 +927,10 @@ show_points
 Points
 show_terrains
 Terrains
+sim_start
+
+sim_stop
+
 skeleton_add_model
 Add model
 skeleton_edit_bone
@@ -933,6 +955,8 @@ sounds
 Sounds...
 specular
 specular
+speed
+
 stretch_x
 1\\0\\1000\\0.01
 stretch_z
@@ -1172,7 +1196,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-235
+234
 // Data (ID,Text)
 
 
@@ -1377,8 +1401,6 @@ Terrain files
 Kein Punkt markiert!
 
 Kein Punkt mit Effekt markiert!
-
-Kein Terrain markiert
 
 Knochen setzen
 Set bone

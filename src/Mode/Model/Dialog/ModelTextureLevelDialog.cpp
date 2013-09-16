@@ -33,6 +33,7 @@ ModelTextureLevelDialog::ModelTextureLevelDialog(HuiWindow *_parent, DataModel *
 ModelTextureLevelDialog::~ModelTextureLevelDialog()
 {
 	Unsubscribe(data);
+	win->RemoveEventHandlers(this);
 }
 
 void ModelTextureLevelDialog::ApplyData()
