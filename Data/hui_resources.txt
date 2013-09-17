@@ -9261,110 +9261,162 @@ hui:about
 
 
 // Resource
-Dialog
+SizableDialog
 new_ball_dialog
 
 1
-230
-105
-0
-0
-0
-1
-0
-
-
-7
-TabControl
-nb_tab_control
-
-1
-5
-5
 220
-95
+80
+0
+0
+0
+1
+0
+
+
+11
+ControlTable
+new_ball_dialog_table_1
+
+1
+0
+0
+1
+4
 -1
 0
 0
 
 
+RadioButton
+ball_type:ball
+
+1
+0
+0
+0
+0
+0
+0
+0
+new_ball_dialog_table_1
+
+RadioButton
+ball_type:sphere
+
+1
+0
+2
+0
+0
+0
+0
+0
+new_ball_dialog_table_1
+
+ControlTable
+new_ball_dialog_table_2
+
+1
+0
+1
+4
+2
+0
+0
+0
+new_ball_dialog_table_1
+
+ControlTable
+new_ball_dialog_table_3
+
+1
+0
+3
+4
+1
+0
+0
+0
+new_ball_dialog_table_1
+
 Text
 new_ball_dialog_t_x
 
 1
-10
-10
-140
-25
+2
 0
 0
 0
-nb_tab_control
-
-SpinButton
-nb_x
-
-1
-150
-10
-60
-25
 0
 0
 0
-nb_tab_control
+new_ball_dialog_table_2
 
 Text
 new_ball_dialog_t_y
 
 1
-10
-40
-140
-25
+2
+1
 0
 0
 0
-nb_tab_control
+0
+0
+new_ball_dialog_table_2
+
+SpinButton
+nb_x
+
+1
+3
+0
+0
+0
+0
+0
+0
+new_ball_dialog_table_2
 
 SpinButton
 nb_y
 
 1
-150
-40
-60
-25
+3
+1
 0
 0
 0
-nb_tab_control
+0
+0
+new_ball_dialog_table_2
 
 Text
 new_ball_dialog_t_comp
 
 1
-10
-10
-140
-25
-1
+2
 0
 0
-nb_tab_control
+0
+0
+0
+0
+new_ball_dialog_table_3
 
 SpinButton
 nb_complexity
 
 1
-150
-10
-60
-25
-1
+3
 0
 0
-nb_tab_control
+0
+0
+0
+0
+new_ball_dialog_table_3
 
 // Resource
 Dialog
@@ -16425,7 +16477,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-738
+742
 // Text
 ad_dialog
 Verwaltung
@@ -16531,6 +16583,10 @@ automapping
 Automatisch (Alles)
 autoweld_surfaces
 Verschweißen
+ball_type:ball
+aus Scheiben
+ball_type:sphere
+Sphäre
 bevel_edges
 Abfräsen
 bgc
@@ -17307,8 +17363,6 @@ name
 
 nb_complexity
 \\1
-nb_tab_control
-aus Scheiben\\Sphäre
 nb_x
 \\1
 nb_y
@@ -17349,6 +17403,12 @@ new_ball_dialog_t_x
 Anzahl der Scheiben
 new_ball_dialog_t_y
 Punkte pro Scheibe
+new_ball_dialog_table_1
+
+new_ball_dialog_table_2
+!noexpandy
+new_ball_dialog_table_3
+!noexpandy
 new_cube
 Quader
 new_cube_dialog
@@ -17909,7 +17969,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-738
+742
 // Text
 ad_dialog
 Administration
@@ -18014,6 +18074,10 @@ Apply
 automapping
 
 autoweld_surfaces
+
+ball_type:ball
+
+ball_type:sphere
 
 bevel_edges
 
@@ -18791,8 +18855,6 @@ name
 
 nb_complexity
 \\1
-nb_tab_control
-Discs\\Sphere
 nb_x
 \\1
 nb_y
@@ -18833,6 +18895,12 @@ new_ball_dialog_t_x
 # discs
 new_ball_dialog_t_y
 # vertices per disc
+new_ball_dialog_table_1
+
+new_ball_dialog_table_2
+
+new_ball_dialog_table_3
+
 new_cube
 Cube
 new_cube_dialog
@@ -19685,7 +19753,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-738
+742
 // Text
 ad_dialog
 
@@ -19790,6 +19858,10 @@ apply
 automapping
 
 autoweld_surfaces
+
+ball_type:ball
+
+ball_type:sphere
 
 bevel_edges
 
@@ -20567,8 +20639,6 @@ name
 
 nb_complexity
 
-nb_tab_control
-Discs\\Sphere
 nb_x
 
 nb_y
@@ -20608,6 +20678,12 @@ new_ball_dialog_t_comp
 new_ball_dialog_t_x
 
 new_ball_dialog_t_y
+
+new_ball_dialog_table_1
+
+new_ball_dialog_table_2
+
+new_ball_dialog_table_3
 
 new_cube
 正六面体

@@ -13,7 +13,7 @@
 
 class ModelGeometry;
 
-class ModeModelMeshCreateBall: public ModeCreation<DataModel>
+class ModeModelMeshCreateBall: public ModeCreation<DataModel>, public HuiEventHandler
 {
 public:
 	ModeModelMeshCreateBall(ModeBase *_parent);
@@ -28,6 +28,8 @@ public:
 	virtual void OnDrawWin(MultiViewWindow *win);
 
 	void UpdateGeometry();
+	void OnTypeBall();
+	void OnTypeSphere();
 
 private:
 	vector pos;

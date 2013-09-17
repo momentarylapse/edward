@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-609
+612
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -86,6 +86,10 @@ Apply
 automapping
 
 autoweld_surfaces
+
+ball_type:ball
+
+ball_type:sphere
 
 bevel_edges
 
@@ -713,8 +717,6 @@ mu
 
 nb_complexity
 \\1
-nb_tab_control
-Discs\\Sphere
 nb_x
 \\1
 nb_y
@@ -755,6 +757,10 @@ new_ball_dialog_t_x
 # discs
 new_ball_dialog_t_y
 # vertices per disc
+new_ball_dialog_table_2
+
+new_ball_dialog_table_3
+
 new_cube
 Cube
 new_cube_dialog
