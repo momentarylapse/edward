@@ -280,7 +280,6 @@ private:
 	bool used_by_nix;
 	bool is_resizable;
 	int border_width;
-	bool cleaning_up;
 	Array<HuiControl*> control;
 	HuiControl *cur_control;
 	HuiControl *root_control;

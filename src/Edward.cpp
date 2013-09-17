@@ -107,7 +107,13 @@ color i42c(int *c)
 void Edward::OnClose()
 {
 	if (AllowTermination())
-		delete(this);
+		Exit();
+}
+
+void Edward::Exit()
+{
+	delete(this);
+	HuiEnd();
 }
 
 #define IMPLEMENT_EVENT(event, pre_event, param_list, param)	\
@@ -279,11 +285,11 @@ Edward::~Edward()
 {
 	// saving the configuration data...
 	irect r = GetOuteriorDesired();
-	HuiConfigWriteInt("X", -1);//r.x1);
-	HuiConfigWriteInt("Y", -1);//r.y1);
-	HuiConfigWriteInt("Width", r.x2 - r.x1);
-	HuiConfigWriteInt("Height", r.y2 - r.y1);
-	HuiConfigWriteBool("Maximized", IsMaximized());
+	HuiConfigWriteInt("Window.X", -1);//r.x1);
+	HuiConfigWriteInt("Window.Y", -1);//r.y1);
+	HuiConfigWriteInt("Window.Width", r.x2 - r.x1);
+	HuiConfigWriteInt("Window.Height", r.y2 - r.y1);
+	HuiConfigWriteBool("Window.Maximized", IsMaximized());
 	HuiConfigWriteStr("RootDir", RootDir);
 	HuiConfigWriteStr("Language", HuiGetCurLanguage());
 	/*HuiConfigWriteBool("LocalDocumentation", LocalDocumentation);
@@ -291,8 +297,6 @@ Edward::~Edward()
 	HuiConfigWriteStr("ObjectScriptVarFile", ObjectScriptVarFile);
 	HuiConfigWriteStr("ItemScriptVarFile", ItemScriptVarFile);*/
 	//HuiConfigWriteInt("UpdateNormalMaxTime (ms)", int(UpdateNormalMaxTime * 1000.0f));
-
-	HuiEnd();
 }
 
 bool Edward::HandleArguments(Array<string> arg)
@@ -694,8 +698,6 @@ void Edward::OnCommand(const string &id)
 		mode_font->Open();
 	if (id == "administrate")
 		SetMode(mode_administration);
-	if (id == "exit")
-		OnClose();
 	if (id == "opt_view")
 		OptimizeCurrentView();
 }

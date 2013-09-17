@@ -69,6 +69,7 @@ public:
 	bool HandleArguments(Array<string> arg);
 	void LoadKeyCodes();
 	int Run();
+	void Exit();
 
 	void IdleFunction();
 
