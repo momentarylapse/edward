@@ -227,7 +227,7 @@ Edward::Edward(Array<string> arg) :
 
 	EventM("hui:close", this, &Edward::OnClose);
 	EventM("exit", this, &Edward::OnClose);
-	EventMX("nix_area", "hui:redraw", this, &Edward::OnDraw);
+	EventMX("nix-area", "hui:redraw", this, &Edward::OnDraw);
 	EventM("*", this, &Edward::OnEvent);
 	EventM("what_the_fuck", this, &Edward::OnAbout);
 	EventM("send_bug_report", this, &Edward::OnSendBugReport);

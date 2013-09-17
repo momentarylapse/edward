@@ -557,6 +557,7 @@ void set_video_mode_gl(int xres, int yres)
 {
 	HuiControl *c = NixWindow->_GetControl_(NixControlID);
 	NixWindow->gl_widget = c->widget;
+	gtk_widget_set_double_buffered(NixWindow->gl_widget, false);
 
 
 	#ifdef OS_WINDOWS
