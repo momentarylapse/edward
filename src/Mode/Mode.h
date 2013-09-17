@@ -16,7 +16,7 @@
 class ModeBase : public Observer
 {
 public:
-	ModeBase(const string &name, ModeBase *parent, MultiView *multi_view, const string &menu);
+	ModeBase(const string &name, ModeBase *parent, MultiView *multi_view, const string &menu_id);
 	virtual ~ModeBase();
 
 	// Start/End: (once) entering this mode or a sub mode
@@ -79,7 +79,7 @@ public:
 	ModeBase *parent;
 	MultiView *multi_view;
 
-	HuiMenu *menu;
+	string menu_id;
 };
 
 template<class T>

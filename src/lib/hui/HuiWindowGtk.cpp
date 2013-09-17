@@ -741,12 +741,13 @@ void HuiWindow::SetMenu(HuiMenu *_menu)
 		}
 		gtk_menu.clear();
 		gtk_num_menus = 0;
-		menu->set_win(NULL);
+		/*menu->set_win(NULL);
 		foreach(HuiControl *c, list){
 			for (int i=0;i<control.num;i++)
 				if (control[i] == c)
 					control.erase(i);
-		}
+		}*/
+		delete(menu);
 	}
 
 	

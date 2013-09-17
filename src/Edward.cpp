@@ -450,7 +450,7 @@ void Edward::SetMode(ModeBase *m)
 			m = mode_queue[0];
 	}
 
-	SetMenu(cur_mode->menu);
+	SetMenu(HuiCreateResourceMenu(cur_mode->menu_id));
 	UpdateMenu();
 	cur_mode->OnEnter();
 	if (cur_mode->GetData())

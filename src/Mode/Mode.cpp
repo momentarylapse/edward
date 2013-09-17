@@ -12,9 +12,7 @@ ModeBase::ModeBase(const string &_name, ModeBase *_parent, MultiView *_multi_vie
 	parent = _parent;
 	name = _name;
 	multi_view = _multi_view;
-	menu = NULL;
-	if (_menu.num > 0)
-		menu = HuiCreateResourceMenu(_menu);
+	menu_id = _menu;
 	/*if ((!menu) && (parent))
 		menu = parent->menu;*/
 }

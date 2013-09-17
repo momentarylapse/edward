@@ -26,7 +26,6 @@ HuiControlGrid::~HuiControlGrid() {
 void HuiControlGrid::Add(HuiControl *child, int x, int y)
 {
 	child->parent = this;
-	//msg_write("Grid.Add " + id + " " + child->id);
 	children.add(child);
 }
 

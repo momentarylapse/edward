@@ -26,14 +26,15 @@ HuiControl::HuiControl(int _type, const string &_id)
 
 HuiControl::~HuiControl()
 {
-	//msg_write("del " + id);
 	if (parent){
 		for (int i=0;i<parent->children.num;i++)
 			if (parent->children[i] == this)
 				parent->children.erase(i);
 	}
-	foreach(HuiControl *c, children)
+	while (children.num > 0){
+		HuiControl *c = children.pop();
 		delete(c);
+	}
 	if (win){
 		for (int i=0;i<win->control.num;i++)
 			if (win->control[i] == this)

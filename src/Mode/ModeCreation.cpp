@@ -17,7 +17,7 @@ ModeCreationBase::ModeCreationBase(const string &_name, ModeBase *_parent) :
 		parent = parent->parent;
 
 	assert(parent);
-	menu = parent->menu;
+	menu_id = parent->menu_id;
 	dialog = NULL;
 }
 
