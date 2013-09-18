@@ -478,9 +478,6 @@ void image_load_jpg(const string &filename, Image &image)
 					ci.q[c-1]=b[i*3+8];
 				}
 				b+=seg_len;
-			}else if (b[1]==0xc2){	// dimensions/color sampling
-				msg_error("jpg: progressive image not supported");
-				break;
 			}else if (b[1]==0xc4){	// HuffmanTable
 				//msg_write("DHT");
 				seg_len=b[2]*256+b[3]-2;
@@ -505,7 +502,6 @@ void image_load_jpg(const string &filename, Image &image)
 				int nc=*(b++);
 				if (nc!=3){
 					msg_error("jpg: number of colors != 3 (unsupported)");
-					msg_write(nc);
 					break;
 				}
 				for (int i=0;i<3;i++){
@@ -517,8 +513,7 @@ void image_load_jpg(const string &filename, Image &image)
 				jpg_decode(b,ci);
 				b+=seg_len;
 			}else{
-				msg_error("jpg: unknown seg");
-				msg_write(d2h(&b[1], 1));
+				//msg_error("jpg: unknown seg");
 				seg_len=b[2]*256+b[3]-2;
 				b+=4;
 				//msg_write(seg_len);

@@ -71,6 +71,8 @@ Type *TypeTraceData;
 Type *TypeTerrain;
 Type *TypeTerrainP;
 Type *TypeTerrainPList;
+Type *TypeLink;
+Type *TypeLinkP;
 Type *TypeEngineData;
 Type *TypeWorldData;
 Type *TypeNetworkData;
@@ -139,6 +141,8 @@ extern Type *TypeSocketList;
 	static TraceData *_tracedata;
 	#define	GetDATraceData(x)		long(&_tracedata->x)-long(_tracedata)
 	#define class_set_vtable_x(x)	class_set_vtable(x)
+	static Link *_link;
+	#define	GetDALink(x)			long(&_link->x)-long(_link)
 #else
 	typedef int Picture;
 	typedef int Picture3d;
@@ -173,6 +177,7 @@ extern Type *TypeSocketList;
 	#define	GetDACamera(x)		0
 	#define	GetDATerrain(x)		0
 	#define	GetDATraceData(x)	0
+	#define	GetDALink(x)			0
 	typedef int TraceData;
 	typedef int Bone;
 	typedef int Model;
@@ -181,6 +186,7 @@ extern Type *TypeSocketList;
 	typedef int SubSkin;
 	typedef int HostData;
 	typedef int Material;
+	typedef int Link;
 	#define class_set_vtable_x(x)
 #endif
 
@@ -246,6 +252,8 @@ void SIAddPackageX()
 	TypeTerrain			= add_type  ("Terrain",		sizeof(Terrain));
 	TypeTerrainP		= add_type_p("terrain",		TypeTerrain);
 	TypeTerrainPList	= add_type_a("terrain[]",	TypeTerrainP, -1);
+	TypeLink			= add_type  ("Link",		sizeof(Link));
+	TypeLinkP			= add_type_p("Link*",		TypeLink);
 	TypeWorldData		= add_type  ("WorldData",	0);
 	TypeEngineData		= add_type  ("EngineData",	0);
 	TypeNetworkData		= add_type  ("NetworkData",	0);
@@ -628,6 +636,29 @@ void SIAddPackageX()
 		class_add_func("Unproject",		TypeVector,	amd64_wrap(mf(&Camera::Unproject), &amd64_camera_unproject));
 			func_add_param("v",			TypeVector);
 		class_set_vtable_x(Camera);
+
+
+	add_class(TypeLink);
+		class_add_func("SetTorque", TypeVoid, x_p(mf(&Link::SetTorque)));
+			func_add_param("torque", TypeFloat);
+		class_add_func("SetTorqueAxis", TypeVoid, x_p(mf(&Link::SetTorqueAxis)));
+			func_add_param("axis", TypeInt);
+			func_add_param("torque", TypeFloat);
+		class_add_func("SetRange", TypeVoid, x_p(mf(&Link::SetRange)));
+			func_add_param("min", TypeFloat);
+			func_add_param("max", TypeFloat);
+		class_add_func("SetRangeAxis", TypeVoid, x_p(mf(&Link::SetRangeAxis)));
+			func_add_param("axis", TypeInt);
+			func_add_param("min", TypeFloat);
+			func_add_param("max", TypeFloat);
+		class_add_func("SetFriction", TypeVoid, x_p(mf(&Link::SetFriction)));
+			func_add_param("friction", TypeFloat);
+		/*class_add_func("SetFrictionAxis", TypeVoid, x_p(mf(&Link::SetFrictionAxis)));
+			func_add_param("axis", TypeInt);
+			func_add_param("friction", TypeFloat);*/
+		class_add_func("GetPosition", TypeFloat, x_p(mf(&Link::GetPosition)));
+		class_add_func("GetPositionAxis", TypeFloat, x_p(mf(&Link::GetPositionAxis)));
+			func_add_param("axis", TypeInt);
 	
 	add_class(TypeWorldData);
 		class_add_element("filename",		TypeString,		GetDAWorld(filename));
@@ -761,66 +792,38 @@ void SIAddPackageX()
 		func_add_param("d",			TypeTraceData);
 		func_add_param("simple_test",	TypeBool);
 		func_add_param("o_ignore",		TypeInt);
-	add_func("LinkAddSpring",							TypeInt,	x_p(&AddLinkSpring));
+	add_func("LinkAddSpring",							TypeLinkP,	x_p(&AddLinkSpring));
 		func_add_param("o1",		TypeModelP);
 		func_add_param("o2",		TypeModelP);
 		func_add_param("p1",		TypeVector);
 		func_add_param("p2",		TypeVector);
 		func_add_param("dx0",		TypeFloat);
 		func_add_param("k",			TypeFloat);
-	add_func("LinkAddBall",									TypeInt,	x_p(&AddLinkBall));
+	add_func("LinkAddBall",									TypeLinkP,	x_p(&AddLinkBall));
 		func_add_param("o1",		TypeModelP);
 		func_add_param("o2",		TypeModelP);
 		func_add_param("p",			TypeVector);
-	add_func("LinkAddHinge",							TypeInt,	x_p(&AddLinkHinge));
+	add_func("LinkAddHinge",							TypeLinkP,	x_p(&AddLinkHinge));
 		func_add_param("o1",		TypeModelP);
 		func_add_param("o2",		TypeModelP);
 		func_add_param("p"	,		TypeVector);
 		func_add_param("ax",		TypeVector);
-	add_func("LinkAddHinge2",							TypeInt,	x_p(&AddLinkHinge2));
+	add_func("LinkAddHinge2",							TypeLinkP,	x_p(&AddLinkHinge2));
 		func_add_param("o1",		TypeModelP);
 		func_add_param("o2",		TypeModelP);
 		func_add_param("p"	,		TypeVector);
 		func_add_param("ax1",		TypeVector);
 		func_add_param("ax2",		TypeVector);
-	add_func("LinkAddSlider",									TypeInt,	x_p(&AddLinkSlider));
+	add_func("LinkAddSlider",									TypeLinkP,	x_p(&AddLinkSlider));
 		func_add_param("o1",		TypeModelP);
 		func_add_param("o2",		TypeModelP);
 		func_add_param("ax",		TypeVector);
-	add_func("LinkAddUniversal",									TypeInt,	x_p(&AddLinkUniversal));
+	add_func("LinkAddUniversal",									TypeLinkP,	x_p(&AddLinkUniversal));
 		func_add_param("o1",		TypeModelP);
 		func_add_param("o2",		TypeModelP);
 		func_add_param("p",			TypeVector);
 		func_add_param("ax1",		TypeVector);
 		func_add_param("ax2",		TypeVector);
-	add_func("LinkSetTorque",					TypeVoid,	x_p(&LinkSetTorque));
-		func_add_param("link",		TypeInt);
-		func_add_param("torque",	TypeFloat);
-	add_func("LinkSetTorqueAxis",					TypeVoid,	x_p(&LinkSetTorqueAxis));
-		func_add_param("link",		TypeInt);
-		func_add_param("axis",		TypeInt);
-		func_add_param("torque",	TypeFloat);
-	add_func("LinkSetRange",					TypeVoid,	x_p(&LinkSetRange));
-		func_add_param("link",		TypeInt);
-		func_add_param("min",		TypeFloat);
-		func_add_param("max",		TypeFloat);
-	add_func("LinkSetRangeAxis",					TypeVoid,	x_p(&LinkSetRangeAxis));
-		func_add_param("link",		TypeInt);
-		func_add_param("axis",		TypeInt);
-		func_add_param("min",		TypeFloat);
-		func_add_param("max",		TypeFloat);
-	add_func("LinkSetFriction",		TypeVoid,	x_p(&LinkSetFriction));
-		func_add_param("link",		TypeInt);
-		func_add_param("friction",	TypeFloat);
-	/*add_func("LinkSetFrictionAxis",		TypeVoid,	x_p(&LinkSetFrictionAxis));
-		func_add_param("link",		TypeInt);
-		func_add_param("axis",		TypeInt);
-		func_add_param("friction",	TypeFloat);*/
-	add_func("LinkGetPosition",					TypeFloat,	x_p(&LinkGetPosition));
-		func_add_param("link",		TypeInt);
-	add_func("LinkGetPositionAxis",					TypeFloat,	x_p(&LinkGetPositionAxis));
-		func_add_param("link",		TypeInt);
-		func_add_param("axis",		TypeInt);
 
 	
 

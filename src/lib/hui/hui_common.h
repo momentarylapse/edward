@@ -87,6 +87,9 @@ enum{
 	HuiKindSpinButton,
 	HuiKindRadioButton,
 	HuiKindToggleButton,
+	HuiKindExpander,
+	HuiKindScroller,
+	HuiKindPaned,
 
 	HuiKindToolButton,
 	HuiKindToolToggleButton,

@@ -88,6 +88,8 @@ public:
 	virtual void CompletionAdd(const string &text){}
 	virtual void CompletionClear(){}
 
+	virtual void add(HuiControl *child, int x, int y){}
+
 	void Notify(const string &message = "", bool is_default = true);
 };
 

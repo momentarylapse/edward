@@ -70,10 +70,17 @@ int HuiControlTabControl::GetInt()
 	return cur_page;
 }
 
-void HuiControlTabControl::Add(HuiControl *child, int page)
+void HuiControlTabControl::add(HuiControl *child, int x, int y)
 {
-	child->parent = this;
+	GtkWidget *child_widget = child->widget;
+	if (child->frame)
+		child_widget = child->frame;
+	GtkWidget *target_widget = gtk_notebook_get_nth_page(GTK_NOTEBOOK(widget), x);
+	gtk_container_add(GTK_CONTAINER(target_widget), child_widget);
+	if (win)
+		gtk_container_set_border_width(GTK_CONTAINER(target_widget), win->border_width);
 	children.add(child);
+	child->parent = this;
 }
 
 #endif

@@ -439,6 +439,12 @@ void HuiWindowAddControl(HuiWindow *win, const string &type, const string &title
 		win->AddRadioButton(title, x, y, width, height, id);
 	else if (type == "ToggleButton")
 		win->AddToggleButton(title, x, y, width, height, id);
+	else if (type == "Expander")
+		win->AddExpander(title, x, y, width, height, id);
+	else if (type == "Scroller")
+		win->AddScroller(title, x, y, width, height, id);
+	else if (type == "Paned")
+		win->AddPaned(title, x, y, width, height, id);
 }
 
 void HuiWindow::FromResource(const string &id)
