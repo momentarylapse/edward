@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-612
+598
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -23,6 +23,8 @@ add_script
 Add
 add_texture_level
 New
+admin_button_bar
+
 administrate
 Administrate
 adt_dest
@@ -45,31 +47,9 @@ alpha_z_buffer
 Z-buffer enabled
 ambient
 ambient
-ani_dt_frame
-
-ani_dt_framesconst
-
-ani_dt_framesfactor
-
-ani_dt_list
-
-ani_dt_name
-
-ani_dt_properties
-
 ani_dt_sim_param
 
 ani_dt_sim_speed
-
-ani_dt_simulation
-
-ani_table_3
-
-ani_table_4
-
-ani_table_5
-
-ani_table_7
 
 animation_delete
 Delete
@@ -173,6 +153,10 @@ detail_3
 Low-precicion skin
 diffuse
 diffuse
+dummy_t
+
+dummy_text
+
 easify_dialog
 Easify skin
 easify_skin
@@ -283,12 +267,6 @@ font_new
 New
 font_open
 Open...
-font_table_2
-
-font_table_3
-
-font_table_4
-
 formula
 Linear\\1/r^2
 fps_const
@@ -433,42 +411,46 @@ look_for_updates
 Look for updates at program start
 lu
 lu
-lus
-lu/s
 luss
 lu/s^2
+mass
+
 mat_add_texture_level
 new level
+mat_am
+
 mat_delete_texture_level
 delete level
 mat_di
 !alpha
+mat_dialog_buttonbar
+
 mat_empty_texture_level
 Empty
+mat_phys_buttonbar
+
+mat_phys_grp_friction
+
 mat_shininess
 \\0\\10000\\0.1
 mat_textures
 Level\\Texture
+mat_transp_alpha_grid
+
+mat_transp_function_grid
+
 material_dialog
 Material appearance
-material_dialog_func_grp
-!bold\\Function
 material_dialog_t_refl_density
 density:
-material_dialog_t_refl_texturesize
-texture size:
-material_dialog_t_refl_type
-type:
 material_dialog_t_trans_dest
 dest
-material_dialog_t_trans_factor
-factor:
 material_dialog_t_trans_source
 source
-material_dialog_t_trans_type
-type:
 material_dialog_tab_control
 colors\\transparency\\reflection\\additional
+material_file
+
 material_list
 Material\\Triangles\\File
 material_new
@@ -477,22 +459,14 @@ material_open
 Open...
 material_physics_dialog
 Physical properties
-material_physics_dialog_grp_friction
-!bold\\friction
-material_physics_dialog_grp_minvel
-!bold\\minimal velocities
 material_physics_dialog_t_rcjump
 jumping:
-material_physics_dialog_t_rcrolling
-rolling:
+material_physics_dialog_t_rcroll
+
 material_physics_dialog_t_rcsliding
 sliding:
 material_physics_dialog_t_rcstatic
 static:
-material_physics_dialog_t_rvjump
-jumping:
-material_physics_dialog_t_rvstatic
-gliding:
 material_shape_ball
 
 material_shape_cube
@@ -613,6 +587,12 @@ menu_world_view
 View
 mirror
 mirror
+mmat_buttonbar
+
+mmat_transp_alpha_grid
+
+mmat_transp_function_grid
+
 mode_model_animation
 Animation
 mode_model_edge
@@ -637,8 +617,8 @@ mode_properties
 Properties...
 model_dialog
 Model properties
-model_dialog_grp_details
-!bold\\view range
+model_dialog_button_bar
+
 model_dialog_grp_material_file
 !bold\\Material file
 model_dialog_grp_physics
@@ -691,29 +671,13 @@ move_frame_sign
 Frame
 move_reset
 Reset
-mpd_table_buttons
-
-mpd_table_inv_1
-
-mpd_table_lod3
-
-mpd_table_mass
-
-mpd_table_mat_buttons
-
-mpd_table_phys_gen
-
-mpd_table_physics
-
-mpd_table_scriptfile
-
-mpd_table_var_control
-
 ms
 ms
 msd_table_2
 
 mu
+
+name
 
 nb_complexity
 \\1
@@ -721,6 +685,10 @@ nb_x
 \\1
 nb_y
 \\1
+nbd_grid_ball
+
+nbd_grid_sphere
+
 nc_x
 \\1
 nc_y
@@ -757,10 +725,6 @@ new_ball_dialog_t_x
 # discs
 new_ball_dialog_t_y
 # vertices per disc
-new_ball_dialog_table_2
-
-new_ball_dialog_table_3
-
 new_cube
 Cube
 new_cube_dialog
@@ -879,14 +843,28 @@ property_list
 type\\index\\name
 quality_factor
 \\0\\100\\0.1
+rand_id_72651
+
 rc_dialog
 Rudimentary configuration
+rcjump
+
+rcroll
+
+rcsliding
+
+rcstatic
+
 redo
 Redo
-reflection
-  --none--\\metal\\mirror (flat)\\CubeMap static\\CubeMap dynamic
 reflection_density
 \\0\\100\\1
+reflection_mode:cube_dynamic
+
+reflection_mode:cube_static
+
+reflection_mode:none
+
 reflection_size
 \\1\\10000\\1
 reflection_textures
@@ -915,6 +893,8 @@ scale_2d
 Scale 2D
 scaling_dialog
 Scaling
+script
+
 script_list
 !nobar\\File
 script_vars
@@ -939,6 +919,8 @@ set
 apply
 settings
 Settings...
+shader_file
+
 shininess
 shininess
 show_fx
@@ -989,28 +971,22 @@ sun_ang_from_camera
 Direction from camera
 sun_enabled
 enabled
-table_1
-ControlTable 1
-table_10
-!noexpandy
-table_11
-!noexpandy
-table_2
-!noexpandy
-table_3
-ControlTable 3
-table_4
-!noexpandy
-table_5
-ControlTable 5
-table_6
-ControlTable 6
-table_7
-ControlTable 7
-table_8
-ControlTable 8
-table_9
-ControlTable 9
+t_animationfpsconst
+
+t_animationfpsfactor
+
+t_dummy
+
+t_frame
+
+t_list
+
+t_name
+
+t_properties
+
+t_simulate
+
 tensor
 
 terrain_create
@@ -1087,8 +1063,6 @@ texture_menu_sign
 Texture
 textures
 !format=tTTit\\Level\\Size X\\Size Z\\\\File
-transparency_mode
-  --none--\\color keyed (smooth)\\color keyed (hard)\\factor\\function
 transparency_mode:color_key
 Color key
 transparency_mode:factor
@@ -1130,8 +1104,6 @@ Top (-y)
 volume_and
 
 volume_subtract
-
-wcd_table_t
 
 welcome_dialog
 Welcome to Edward.

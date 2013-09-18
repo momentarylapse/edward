@@ -38,6 +38,7 @@ public:
 #ifdef HUI_API_GTK
     GtkWidget *widget;
     GtkWidget *frame;
+    GtkWidget *get_frame();
 #endif
 	bool enabled;
 	bool is_button_bar;
@@ -89,6 +90,7 @@ public:
 	virtual void CompletionClear(){}
 
 	virtual void add(HuiControl *child, int x, int y){}
+	void SetOptions(const string &options);
 
 	void Notify(const string &message = "", bool is_default = true);
 };

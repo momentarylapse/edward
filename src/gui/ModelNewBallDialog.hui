@@ -1,20 +1,14 @@
-	// dialog
-	NewBallDialog = HuiCreateSizableDialog("neue Kugel", 220, 80, MainWin, true);
-	NewBallDialog->SetID("new_ball_dialog");
-	NewBallDialog->AddControlTable("", 0, 0, 1, 4, "new_ball_dialog_table_1");
-	NewBallDialog->SetTarget("new_ball_dialog_table_1", 0);
-	NewBallDialog->AddRadioButton("aus Scheiben", 0, 0, 0, 0, "ball_type:ball");
-	NewBallDialog->AddRadioButton("Sph&are", 0, 2, 0, 0, "ball_type:sphere");
-	NewBallDialog->AddControlTable("!noexpandy", 0, 1, 4, 2, "new_ball_dialog_table_2");
-	NewBallDialog->AddControlTable("!noexpandy", 0, 3, 4, 1, "new_ball_dialog_table_3");
-	NewBallDialog->SetTarget("new_ball_dialog_table_2", 0);
-	NewBallDialog->AddText("Anzahl der Scheiben", 2, 0, 0, 0, "new_ball_dialog_t_x");
-	NewBallDialog->AddText("Punkte pro Scheibe", 2, 1, 0, 0, "new_ball_dialog_t_y");
-	NewBallDialog->AddSpinButton("\\1", 3, 0, 0, 0, "nb_x");
-	NewBallDialog->AddSpinButton("\\1", 3, 1, 0, 0, "nb_y");
-	NewBallDialog->SetTarget("new_ball_dialog_table_3", 0);
-	NewBallDialog->AddText("Komplexit&at", 2, 0, 0, 0, "new_ball_dialog_t_comp");
-	NewBallDialog->AddSpinButton("\\1", 3, 0, 0, 0, "nb_complexity");
-	NewBallDialog->Update();
+Dialog new_ball_dialog "neue Kugel" 220 119 allow-root
+	Grid ? "" 1 4
+		RadioButton ball_type:ball "aus Scheiben"
+		Grid nbd_grid_ball "" 2 2 indent
+			Text new_ball_dialog_t_x "Anzahl der Scheiben"
+			SpinButton nb_x "\\1"
+			Text new_ball_dialog_t_y "Punkte pro Scheibe"
+			SpinButton nb_y "\\1"
+		RadioButton ball_type:sphere "Sphäre"
+		Grid nbd_grid_sphere "" 2 1 indent
+			Text new_ball_dialog_t_comp "Komplexität"
+			SpinButton nb_complexity "\\1"
 
 

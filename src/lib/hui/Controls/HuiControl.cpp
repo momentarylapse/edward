@@ -68,6 +68,14 @@ void HuiControl::Focus()
 
 #ifdef HUI_API_GTK
 
+
+GtkWidget *HuiControl::get_frame()
+{
+	if (frame)
+		return frame;
+	return widget;
+}
+
 void HuiControl::Enable(bool _enabled)
 {
     enabled = _enabled;
@@ -90,6 +98,44 @@ void HuiControl::SetTooltip(const string& str)
 void HuiControl::Focus()
 {
 	gtk_widget_grab_focus(widget);
+}
+
+void HuiControl::SetOptions(const string &options)
+{
+	Array<string> a = options.explode(",");
+	int width = -1;
+	int height = -1;
+	foreach(string &aa, a){
+		int eq = aa.find("=");
+		if (aa == "expandx")
+			gtk_widget_set_hexpand(widget, true);
+		else if (aa == "noexpandx")
+			gtk_widget_set_hexpand(widget, false);
+		else if (aa == "expandy")
+			gtk_widget_set_vexpand(widget, true);
+		else if (aa == "noexpandy")
+			gtk_widget_set_vexpand(widget, false);
+		else if (aa == "indent")
+			gtk_widget_set_margin_left(widget, 20);
+		else if (eq >= 0){
+			string a0 = aa.head(eq);
+			string a1 = aa.tail(aa.num-eq-1);
+			if (a0 == "width")
+				width = a1._int();
+			else if (a0 == "height")
+				height = a1._int();
+			else if (a0 == "margin-left")
+				gtk_widget_set_margin_left(widget, a1._int());
+			else if (a0 == "margin-right")
+				gtk_widget_set_margin_right(widget, a1._int());
+			else if (a0 == "margin-top")
+				gtk_widget_set_margin_top(widget, a1._int());
+			else if (a0 == "margin-bottom")
+				gtk_widget_set_margin_bottom(widget, a1._int());
+		}
+	}
+	if ((width >= 0) || (height >= 0))
+		gtk_widget_set_size_request(get_frame(), width, height);
 }
 
 #endif

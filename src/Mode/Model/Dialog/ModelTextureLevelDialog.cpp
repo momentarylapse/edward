@@ -15,7 +15,7 @@ string file_secure(const string &filename);
 string render_material(ModelMaterial *m);
 
 ModelTextureLevelDialog::ModelTextureLevelDialog(HuiWindow *_parent, DataModel *_data):
-	EmbeddedDialog(_parent, "model_texture_level_dialog", "root-table", 1, 0, 250, -1)
+	EmbeddedDialog(_parent, "model_texture_level_dialog", "root-table", 1, 0, "width=250,noexpandx")
 {
 	data = _data;
 

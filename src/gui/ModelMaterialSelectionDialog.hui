@@ -1,17 +1,9 @@
-	// dialog
-	PropertiesDialog = HuiCreateSizableDialog("Ein Material ausw&ahlen", 355, 360, MainWin, false);
-	PropertiesDialog->SetID("model_material_selection_dialog");
-	PropertiesDialog->AddControlTable("", 0, 0, 1, 2, "msd_table_1")
-	PropertiesDialog->SetTarget("msd_table_1", 0)
-	PropertiesDialog->AddListView("!format=ttCit\\#\\Dreiecke\\Aktiv\\\\Datei", 0, 0, 0, 0, "material_list");
-	PropertiesDialog->AddControlTable("!noexpandy", 0, 1, 3, 1, "msd_table_2")
-	PropertiesDialog->SetTarget("msd_table_2", 0)
-	PropertiesDialog->AddButton("neu", 0, 0, 0, 0, "add_new_material")
-	PropertiesDialog->SetImage("add_new_material", "hui:add")
-	PropertiesDialog->AddButton("laden...", 1, 0, 0, 0, "add_material")
-	PropertiesDialog->SetImage("add_material", "hui:open")
-	PropertiesDialog->AddButton("bearbeiten", 2, 0, 0, 0, "edit_material")
-	PropertiesDialog->SetImage("edit_material", "hui:edit")
-	PropertiesDialog->Update();
+Dialog model_material_selection_dialog "Ein Material auswählen" 355 360
+	Grid msd_table_1 "" 1 2
+		ListView material_list "#\\Dreiecke\\Aktiv\\\\Datei" format=ttCit
+		Grid msd_table_2 "" 3 1 buttonbar
+			Button add_new_material "neu" image=hui:add
+			Button add_material "laden..." image=hui:open
+			Button edit_material "bearbeiten" image=hui:edit
 
 

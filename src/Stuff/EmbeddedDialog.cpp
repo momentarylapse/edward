@@ -9,27 +9,27 @@
 #include "../lib/math/math.h"
 
 
-EmbeddedDialog::EmbeddedDialog(HuiWindow *_win, const string &target_id, int x, int y, int width, int height)
+EmbeddedDialog::EmbeddedDialog(HuiWindow *_win, const string &target_id, int x, int y, const string &options)
 {
-	Init(_win, target_id, x, y, width, height);
+	Init(_win, target_id, x, y, options);
 }
 
-EmbeddedDialog::EmbeddedDialog(HuiWindow *_win, const string &dialog_id, const string &target_id, int x, int y, int width, int height)
+EmbeddedDialog::EmbeddedDialog(HuiWindow *_win, const string &dialog_id, const string &target_id, int x, int y, const string &options)
 {
-	Init(_win, target_id, x, y, width, height);
+	Init(_win, target_id, x, y, options);
 	win->EmbedDialog(dialog_id, 0, 0);
 }
 
-void EmbeddedDialog::Init(HuiWindow *_win, const string &target_id, int x, int y, int width, int height)
+void EmbeddedDialog::Init(HuiWindow *_win, const string &target_id, int x, int y, const string &options)
 {
 	win = _win;
 	uid = "embedded-" + i2s(randi(1000000));
 	win->SetBorderWidth(5);
 	win->SetTarget(target_id, 0);
-	if (width > 0)
-		win->AddControlTable("!width=" + i2s(width), x, y, 1, 1, uid);
+	if (options.num > 0)
+		win->AddControlTable("!" + options, x, y, 1, 1, uid);
 	else
-		win->AddControlTable("!width=250", x, y, 1, 1, uid);
+		win->AddControlTable("", x, y, 1, 1, uid);
 	win->SetTarget(uid, 0);
 }
 

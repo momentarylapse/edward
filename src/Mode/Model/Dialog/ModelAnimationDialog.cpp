@@ -12,7 +12,7 @@
 
 
 ModelAnimationDialog::ModelAnimationDialog(HuiWindow *_parent, DataModel *_data) :
-	EmbeddedDialog(_parent, "animation_dialog", "root-table", 1, 0, 250, -1)
+	EmbeddedDialog(_parent, "animation_dialog", "root-table", 1, 0, "noexpandx")
 {
 	data = _data;
 

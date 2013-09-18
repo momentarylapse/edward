@@ -13,7 +13,7 @@
 bool SettingDialogData=true;
 
 FontDialog::FontDialog(HuiWindow *_parent, DataFont *_data) :
-	EmbeddedDialog(_parent, "font_dialog", "root-table", 1, 0, 250, -1)
+	EmbeddedDialog(_parent, "font_dialog", "root-table", 1, 0, "noexpandx")
 {
 	data = _data;
 	SettingData = false;

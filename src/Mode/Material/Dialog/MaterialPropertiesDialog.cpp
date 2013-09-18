@@ -30,8 +30,13 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(HuiWindow *_parent, bool _all
 	EventMX("mat_textures", "hui:select", this, &MaterialPropertiesDialog::OnTexturesSelect);
 	EventM("mat_delete_texture_level", this, &MaterialPropertiesDialog::OnDeleteTextureLevel);
 	EventM("mat_empty_texture_level", this, &MaterialPropertiesDialog::OnEmptyTextureLevel);
-	EventM("transparency_mode", this, &MaterialPropertiesDialog::OnTransparencyMode);
-	EventM("reflection", this, &MaterialPropertiesDialog::OnReflection);
+	EventM("transparency_mode:none", this, &MaterialPropertiesDialog::OnTransparencyMode);
+	EventM("transparency_mode:function", this, &MaterialPropertiesDialog::OnTransparencyMode);
+	EventM("transparency_mode:color_key", this, &MaterialPropertiesDialog::OnTransparencyMode);
+	EventM("transparency_mode:factor", this, &MaterialPropertiesDialog::OnTransparencyMode);
+	EventM("reflection_mode:none", this, &MaterialPropertiesDialog::OnReflection);
+	EventM("reflection_mode:cube_static", this, &MaterialPropertiesDialog::OnReflection);
+	EventM("reflection_mode:cube_dynamic", this, &MaterialPropertiesDialog::OnReflection);
 	EventM("reflection_textures", this, &MaterialPropertiesDialog::OnReflectionTextures);
 	EventM("find_shader", this, &MaterialPropertiesDialog::OnFindShader);
 
@@ -48,25 +53,31 @@ void MaterialPropertiesDialog::LoadData()
 	SetColor("mat_sp", temp.ColorSpecular);
 	SetColor("mat_em", temp.ColorEmissive);
 	SetFloat("mat_shininess", temp.ColorShininess);
-	if (temp.TransparencyMode==TransparencyModeColorKeySmooth)
-		SetInt("transparency_mode",1);
-	else if (temp.TransparencyMode==TransparencyModeColorKeyHard)
-		SetInt("transparency_mode",2);
-	else if(temp.TransparencyMode==TransparencyModeFactor)
-		SetInt("transparency_mode",3);
-	else if(temp.TransparencyMode==TransparencyModeFunctions)
-		SetInt("transparency_mode",4);
+
+	if (temp.TransparencyMode == TransparencyModeColorKeySmooth)
+		Check("transparency_mode:color_key", true);
+	else if (temp.TransparencyMode == TransparencyModeColorKeyHard)
+		Check("transparency_mode:color_key", true);
+	else if (temp.TransparencyMode == TransparencyModeFactor)
+		Check("transparency_mode:factor", true);
+	else if (temp.TransparencyMode == TransparencyModeFunctions)
+		Check("transparency_mode:function", true);
 	else
-		SetInt("transparency_mode",0);
-	Enable("alpha_factor", temp.TransparencyMode==TransparencyModeFactor);
-	Enable("alpha_source", temp.TransparencyMode==TransparencyModeFunctions);
-	Enable("alpha_dest", temp.TransparencyMode==TransparencyModeFunctions);
+		Check("transparency_mode:none", true);
+	Enable("alpha_factor", temp.TransparencyMode == TransparencyModeFactor);
+	Enable("alpha_source", temp.TransparencyMode == TransparencyModeFunctions);
+	Enable("alpha_dest", temp.TransparencyMode == TransparencyModeFunctions);
 	SetFloat("alpha_factor", temp.AlphaFactor * 100.0f);
 	Check("alpha_z_buffer", temp.AlphaZBuffer);
 	SetInt("alpha_source", temp.AlphaSource);
 	SetInt("alpha_dest", temp.AlphaDestination);
 
-	SetInt("reflection", temp.ReflectionMode);
+	if (temp.ReflectionMode == ReflectionCubeMapStatic)
+		Check("reflection_mode:cube_static", true);
+	else if (temp.ReflectionMode == ReflectionCubeMapDynamical)
+		Check("reflection_mode:cube_dynamic", true);
+	else
+		Check("reflection_mode:none", true);
 	SetInt("reflection_size", temp.ReflectionSize);
 	SetInt("reflection_density", temp.ReflectionDensity);
 	RefillReflTexView();
@@ -136,19 +147,30 @@ void MaterialPropertiesDialog::OnEmptyTextureLevel()
 
 void MaterialPropertiesDialog::OnTransparencyMode()
 {
-	int sel = GetInt("");
-	Enable("alpha_factor",sel==3);
-	Enable("alpha_source",sel==4);
-	Enable("alpha_dest",sel==4);
-	Check("alpha_z_buffer",(sel!=3)&&(sel!=4));
+	if (IsChecked("transparency_mode:function"))
+		temp.TransparencyMode = TransparencyModeFunctions;
+	else if (IsChecked("transparency_mode:color_key"))
+		temp.TransparencyMode = TransparencyModeColorKeyHard;
+	else if (IsChecked("transparency_mode:factor"))
+		temp.TransparencyMode = TransparencyModeFactor;
+	else
+		temp.TransparencyMode = TransparencyModeNone;
+	Enable("alpha_factor", temp.TransparencyMode == TransparencyModeFactor);
+	Enable("alpha_source", temp.TransparencyMode == TransparencyModeFunctions);
+	Enable("alpha_dest", temp.TransparencyMode == TransparencyModeFunctions);
 }
 
 void MaterialPropertiesDialog::OnReflection()
 {
-	int sel=GetInt("");
-	Enable("reflection_size",((sel==ReflectionCubeMapStatic)||(sel==ReflectionCubeMapDynamical)));
-	Enable("reflection_textures",(sel==ReflectionCubeMapStatic));
-	Enable("reflection_density",(sel!=ReflectionNone));
+	if (IsChecked("reflection_mode:cube_static"))
+		temp.ReflectionMode = ReflectionCubeMapStatic;
+	else if (IsChecked("reflection_mode:cube_dynamic"))
+		temp.ReflectionMode = ReflectionCubeMapDynamical;
+	else
+		temp.ReflectionMode = ReflectionNone;
+	Enable("reflection_size", ((temp.ReflectionMode == ReflectionCubeMapStatic) || (temp.ReflectionMode == ReflectionCubeMapDynamical)));
+	Enable("reflection_textures", (temp.ReflectionMode == ReflectionCubeMapStatic));
+	Enable("reflection_density", (temp.ReflectionMode != ReflectionNone));
 }
 
 void MaterialPropertiesDialog::OnReflectionTextures()
@@ -197,23 +219,11 @@ void MaterialPropertiesDialog::ApplyData()
 	temp.ColorSpecular = GetColor("mat_sp");
 	temp.ColorEmissive = GetColor("mat_em");
 	temp.ColorShininess = GetFloat("mat_shininess");
-	int n = GetInt("transparency_mode");
-	if (n == 1)
-		temp.TransparencyMode = TransparencyModeColorKeySmooth;
-	else if (n == 2)
-		temp.TransparencyMode = TransparencyModeColorKeyHard;
-	else if (n == 3)
-		temp.TransparencyMode = TransparencyModeFactor;
-	else if (n == 4)
-		temp.TransparencyMode = TransparencyModeFunctions;
-	else
-		temp.TransparencyMode = TransparencyModeNone;
 	temp.AlphaZBuffer = IsChecked("alpha_z_buffer");
 	temp.AlphaFactor = GetFloat("alpha_factor") * 0.01f;
 	temp.AlphaSource = GetInt("alpha_source");
 	temp.AlphaDestination = GetInt("alpha_dest");
 
-	temp.ReflectionMode = GetInt("reflection");
 	temp.ReflectionDensity = GetInt("reflection_density");
 	temp.ReflectionSize = GetInt("reflection_size");
 

@@ -1,53 +1,36 @@
-	// dialog
-	AnimationDialog = HuiCreateSizableDialog("Animations-Kontrolle", 324, 705, MainWin, true);
-	AnimationDialog->SetID("animation_dialog");
-	AnimationDialog->AddControlTable("", 0, 0, 1, 8, "ani_table_1");
-	AnimationDialog->SetTarget("ani_table_1", 0);
-	AnimationDialog->AddText("!bold\\&Ubersicht", 0, 0, 0, 0, "ani_dt_list");
-	AnimationDialog->AddControlTable("", 0, 1, 3, 2, "ani_table_2");
-	AnimationDialog->AddText("!bold\\Eigenschaften", 0, 2, 0, 0, "ani_dt_properties");
-	AnimationDialog->AddControlTable("!noexpandy", 0, 3, 4, 3, "ani_table_4");
-	AnimationDialog->AddText("!bold\\Frame", 0, 4, 0, 0, "ani_dt_frame");
-	AnimationDialog->AddControlTable("!noexpandy", 0, 5, 3, 2, "ani_table_5");
-	AnimationDialog->AddText("!bold\\Vorschau", 0, 6, 0, 0, "ani_dt_simulation");
-	AnimationDialog->AddControlTable("!noexpandy", 0, 7, 3, 2, "ani_table_7");
-	AnimationDialog->SetTarget("ani_table_2", 0);
-	AnimationDialog->AddListView("#\\Typ\\Frames\\Name", 2, 0, 0, 0, "animation_list");
-	AnimationDialog->AddControlTable("!noexpandy", 2, 1, 2, 1, "ani_table_3");
-	AnimationDialog->SetTarget("ani_table_3", 0);
-	AnimationDialog->AddButton("Neu", 0, 0, 0, 0, "animation_new");
-	AnimationDialog->SetImage("animation_new", "hui:new");
-	AnimationDialog->AddButton("L&oschen", 1, 0, 0, 0, "animation_delete");
-	AnimationDialog->SetImage("animation_delete", "hui:delete");
-	AnimationDialog->SetTarget("ani_table_4", 0);
-	AnimationDialog->AddText("Name", 2, 0, 0, 0, "ani_dt_name");
-	AnimationDialog->AddText("Frames/s const", 2, 1, 0, 0, "ani_dt_framesconst");
-	AnimationDialog->AddText("Frames/s factor", 2, 2, 0, 0, "ani_dt_framesfactor");
-	AnimationDialog->AddEdit("", 3, 0, 0, 0, "name");
-	AnimationDialog->AddSpinButton("\\0\\100\\0.01", 3, 1, 0, 0, "fps_const");
-	AnimationDialog->AddSpinButton("\\0\\100\\0.01", 3, 2, 0, 0, "fps_factor");
-	AnimationDialog->SetTarget("ani_table_5", 0);
-	AnimationDialog->AddSpinButton("0\\-1", 2, 0, 0, 0, "frame");
-	AnimationDialog->AddControlTable("", 2, 1, 2, 1, "ani_table_6");
-	AnimationDialog->SetTarget("ani_table_6", 0);
-	AnimationDialog->AddButton("neuer Frame", 0, 0, 0, 0, "new_frame");
-	AnimationDialog->SetImage("new_frame", "hui:new");
-	AnimationDialog->AddButton("l&oschen", 1, 0, 0, 0, "delete_frame");
-	AnimationDialog->SetImage("delete_frame", "hui:delete");
-	AnimationDialog->SetTarget("ani_table_7", 0);
-	AnimationDialog->AddControlTable("", 2, 0, 3, 2, "ani_table_8");
-	AnimationDialog->AddControlTable("", 2, 1, 2, 1, "ani_table_9");
-	AnimationDialog->SetTarget("ani_table_8", 0);
-	AnimationDialog->AddText("Geschwindigkeit", 0, 0, 0, 0, "ani_dt_sim_speed");
-	AnimationDialog->AddText("Parameter", 0, 1, 0, 0, "ani_dt_sim_param");
-	AnimationDialog->AddSpinButton("0", 1, 0, 0, 0, "speed");
-	AnimationDialog->AddSpinButton("0", 1, 1, 0, 0, "parameter");
-	AnimationDialog->AddText("%", 2, 0, 0, 0, "percent");
-	AnimationDialog->SetTarget("ani_table_9", 0);
-	AnimationDialog->AddButton("Start", 0, 0, 0, 0, "sim_start");
-	AnimationDialog->SetImage("sim_start", "hui:media-play");
-	AnimationDialog->AddButton("Stopp", 1, 0, 0, 0, "sim_stop");
-	AnimationDialog->SetImage("sim_stop", "hui:media-stop");
-	AnimationDialog->Update();
+Dialog animation_dialog "Animations-Kontrolle" 260 400
+	Grid ? "" 1 4
+		Group t_list "Übersicht"
+			Grid ? "" 1 2
+				ListView animation_list "#\\Typ\\Frames\\Name"
+				Grid ? "" 2 1
+					Button animation_new "Neu" image=hui:new
+					Button animation_delete "Löschen" image=hui:delete
+		Group t_properties "Eigenschaften"
+			Grid ? "" 2 3
+				Text t_name "Name"
+				Edit name "" expandx
+				Text t_animationfpsconst "Frames/s const"
+				SpinButton fps_const "\\0\\100\\0.01"
+				Text t_animationfpsfactor "Frames/s factor"
+				SpinButton fps_factor "\\0\\100\\0.01"
+		Group t_frame "Frame"
+			Grid ? "" 1 2
+				SpinButton frame "" expandx
+				Grid ? "" 2 1
+					Button new_frame "neuer Frame" image=hui:new
+					Button delete_frame "löschen" image=hui:delete
+		Group t_simulate "Vorschau"
+			Grid ? "" 1 2
+				Grid ? "" 3 2
+					Text ani_dt_sim_speed "Geschwindigkeit"
+					SpinButton speed "\\0" expandx
+					Text percent "%"
+					Text ani_dt_sim_param "Parameter"
+					SpinButton parameter "0"
+					.
+				Grid ? "" 2 1
+					Button sim_start "Start" image=hui:media-play
+					Button sim_stop "Stopp" image=hui:media-stop
 
 

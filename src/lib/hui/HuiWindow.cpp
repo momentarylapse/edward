@@ -732,6 +732,12 @@ void HuiWindow::DeleteControl(const string &_id)
 			delete(control[i]);
 }
 
+void HuiWindow::SetOptions(const string &_id, const string &options)
+{
+	test_controls(_id, c)
+		c->SetOptions(options);
+}
+
 
 
 

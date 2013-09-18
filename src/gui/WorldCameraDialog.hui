@@ -1,21 +1,12 @@
-	// dialog
-	CHuiWindow *dlg = HuiCreateSizableDialog("Kamera-Fahrt", 719, 160, MainWin, true);
-	dlg->SetID("world_camera_dialog");
-	dlg->AddControlTable("", 0, 0, 1, 2, "wcd_table_1");
-	dlg->SetTarget("wcd_table_1", 0);
-	dlg->AddDrawingArea("", 0, 0, 0, 0, "cam_area");
-	dlg->AddControlTable("!noexpandy", 0, 1, 6, 1, "wcd_table_t");
-	dlg->SetTarget("wcd_table_t", 0);
-	dlg->AddButton("Hinzuf&ugen", 0, 0, 0, 0, "add_point");
-	dlg->SetImage("add_point", "hui:add");
-	dlg->AddButton("L&oschen", 1, 0, 0, 0, "delete_point");
-	dlg->SetImage("delete_point", "hui:delete");
-	dlg->AddCheckBox("Geschwindigkeit editieren", 2, 0, 0, 0, "cam_edit_vel");
-	dlg->AddCheckBox("Blickrichtung editieren", 3, 0, 0, 0, "cam_edit_ang");
-	dlg->AddButton("Vorschau", 4, 0, 0, 0, "cam_preview");
-	dlg->SetImage("cam_preview", "hui:media-play");
-	dlg->AddButton("Stopp", 5, 0, 0, 0, "cam_stop");
-	dlg->SetImage("cam_stop", "hui:media-stop");
-	dlg->Update();
+Dialog world_camera_dialog "Kamera-Fahrt" 719 160
+	Grid wcd_table_1 "" 1 2
+		DrawingArea cam_area ""
+		Grid wcd_table_t "" 6 1
+			Button add_point "Hinzufügen" image=hui:add
+			Button delete_point "Löschen" image=hui:delete
+			CheckBox cam_edit_vel "Geschwindigkeit editieren"
+			CheckBox cam_edit_ang "Blickrichtung editieren"
+			Button cam_preview "Vorschau" image=hui:media-play
+			Button cam_stop "Stopp" image=hui:media-stop
 
 

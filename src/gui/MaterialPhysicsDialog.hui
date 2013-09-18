@@ -1,51 +1,16 @@
-// IDs
-enum{
-	HMM_MATERIAL_PHYSICS_DIALOG,
-	HMM_MATERIAL_PHYSICS_DIALOG_GRP_MINVEL,
-	HMM_MATERIAL_PHYSICS_DIALOG_GRP_FRICTION,
-	HMM_OK,
-	HMM_CANCEL,
-	HMM_RCJUMP,
-	HMM_RCSTATIC,
-	HMM_MATERIAL_PHYSICS_DIALOG_T_RCJUMP,
-	HMM_MATERIAL_PHYSICS_DIALOG_T_RCSTATIC,
-	HMM_RCSLIDING,
-	HMM_RCROLLING,
-	HMM_MATERIAL_PHYSICS_DIALOG_T_RCSLIDING,
-	HMM_MATERIAL_PHYSICS_DIALOG_T_RCROLLING,
-	HMM_RVSTATIC,
-	HMM_MATERIAL_PHYSICS_DIALOG_T_RVSTATIC,
-	HMM_LUS,
-	HMM_RVJUMP,
-	HMM_MATERIAL_PHYSICS_DIALOG_T_RVJUMP
-};
-
-
-
-	// dialog
-	PhysicsDialog=HuiCreateDialog("Physik-Eigenschaften",290,320,MainWin,false,&PhysicsDialogFunc);
-	PhysicsDialog->SetID(HMM_MATERIAL_PHYSICS_DIALOG);
-	PhysicsDialog->AddText("!bold\\Minimal-Geschwindigkeiten",10,170,270,25,HMM_MATERIAL_PHYSICS_DIALOG_GRP_MINVEL);
-	PhysicsDialog->AddText("!bold\\Reibungs-Konstanten",10,10,270,25,HMM_MATERIAL_PHYSICS_DIALOG_GRP_FRICTION);
-	PhysicsDialog->AddDefButton("OK",185,275,95,25,HMM_OK);
-	PhysicsDialog->SetImage(HMM_OK,HuiImageOk);
-	PhysicsDialog->AddButton("Abbrechen",85,275,95,25,HMM_CANCEL);
-	PhysicsDialog->SetImage(HMM_CANCEL,HuiImageCancel);
-	PhysicsDialog->AddEdit("",90,100,150,25,HMM_RCJUMP);
-	PhysicsDialog->AddEdit("",90,40,150,25,HMM_RCSTATIC);
-	PhysicsDialog->AddText("Sprung:",30,100,55,25,HMM_MATERIAL_PHYSICS_DIALOG_T_RCJUMP);
-	PhysicsDialog->AddText("Haft:",30,40,55,25,HMM_MATERIAL_PHYSICS_DIALOG_T_RCSTATIC);
-	PhysicsDialog->AddEdit("",90,70,150,25,HMM_RCSLIDING);
-	PhysicsDialog->AddEdit("",90,130,150,25,HMM_RCROLLING);
-	PhysicsDialog->AddText("Gleit:",30,70,55,25,HMM_MATERIAL_PHYSICS_DIALOG_T_RCSLIDING);
-	PhysicsDialog->AddText("Roll:",30,130,55,25,HMM_MATERIAL_PHYSICS_DIALOG_T_RCROLLING);
-	PhysicsDialog->AddEdit("",90,200,150,25,HMM_RVSTATIC);
-	PhysicsDialog->AddText("Haft:",30,200,55,25,HMM_MATERIAL_PHYSICS_DIALOG_T_RVSTATIC);
-	PhysicsDialog->AddText("le/s",245,200,30,25,HMM_LUS);
-	PhysicsDialog->AddEdit("",90,230,150,25,HMM_RVJUMP);
-	PhysicsDialog->AddText("Sprung:",30,230,55,25,HMM_MATERIAL_PHYSICS_DIALOG_T_RVJUMP);
-	PhysicsDialog->AddText("le/s",245,230,30,25,HMM_LUS);
-	PhysicsDialog->Update();
-
-
-
+Dialog material_physics_dialog "Physik-Eigenschaften" 200 150
+	Grid ? "" 1 2
+		Group mat_phys_grp_friction "Reibungs-Konstanten"
+			Grid ? "" 2 4
+				Text material_physics_dialog_t_rcstatic "Haftreibung"
+				SpinButton rcstatic "\\0\\100\\0.01"
+				Text material_physics_dialog_t_rcsliding "Gleitreibung"
+				SpinButton rcsliding "\\0\\100\\0.01"
+				Text material_physics_dialog_t_rcjump "Sprungreibung"
+				SpinButton rcjump "\\0\\100\\0.01"
+				Text material_physics_dialog_t_rcroll "Rollreibung"
+				SpinButton rcroll "\\0\\100\\0.01"
+		Grid mat_phys_buttonbar "" 3 1 buttonbar
+			Text dummy_t "" expandx
+			Button cancel "Abbrechen" image=hui:cancel
+			DefButton ok "OK" image=hui:ok

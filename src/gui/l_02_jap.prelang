@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-612
+598
 // Data (ID,Text)
 ad_dialog
 
@@ -22,6 +22,8 @@ add_point
 add_script
 
 add_texture_level
+
+admin_button_bar
 
 administrate
 
@@ -45,31 +47,9 @@ alpha_z_buffer
 
 ambient
 周辺光
-ani_dt_frame
-
-ani_dt_framesconst
-
-ani_dt_framesfactor
-
-ani_dt_list
-
-ani_dt_name
-
-ani_dt_properties
-
 ani_dt_sim_param
 
 ani_dt_sim_speed
-
-ani_dt_simulation
-
-ani_table_3
-
-ani_table_4
-
-ani_table_5
-
-ani_table_7
 
 animation_delete
 削除
@@ -173,6 +153,10 @@ detail_3
 
 diffuse
 拡散光
+dummy_t
+
+dummy_text
+
 easify_dialog
 
 easify_skin
@@ -283,12 +267,6 @@ font_new
 新規
 font_open
 開く...
-font_table_2
-
-font_table_3
-
-font_table_4
-
 formula
 Linear\\1/r^2
 fps_const
@@ -433,42 +411,46 @@ look_for_updates
 
 lu
 lu
-lus
-lu/s
 luss
 lu/s^2
+mass
+
 mat_add_texture_level
+
+mat_am
 
 mat_delete_texture_level
 
 mat_di
 !alpha
+mat_dialog_buttonbar
+
 mat_empty_texture_level
+
+mat_phys_buttonbar
+
+mat_phys_grp_friction
 
 mat_shininess
 
 mat_textures
 
-material_dialog
+mat_transp_alpha_grid
 
-material_dialog_func_grp
+mat_transp_function_grid
+
+material_dialog
 
 material_dialog_t_refl_density
 
-material_dialog_t_refl_texturesize
-
-material_dialog_t_refl_type
-
 material_dialog_t_trans_dest
-
-material_dialog_t_trans_factor
 
 material_dialog_t_trans_source
 
-material_dialog_t_trans_type
-
 material_dialog_tab_control
 colors\\transparency\\reflection\\additional
+material_file
+
 material_list
 
 material_new
@@ -477,21 +459,13 @@ material_open
 開く...
 material_physics_dialog
 
-material_physics_dialog_grp_friction
-
-material_physics_dialog_grp_minvel
-
 material_physics_dialog_t_rcjump
 
-material_physics_dialog_t_rcrolling
+material_physics_dialog_t_rcroll
 
 material_physics_dialog_t_rcsliding
 
 material_physics_dialog_t_rcstatic
-
-material_physics_dialog_t_rvjump
-
-material_physics_dialog_t_rvstatic
 
 material_shape_ball
 
@@ -613,6 +587,12 @@ menu_world_view
 表示
 mirror
 鏡
+mmat_buttonbar
+
+mmat_transp_alpha_grid
+
+mmat_transp_function_grid
+
 mode_model_animation
 
 mode_model_edge
@@ -637,7 +617,7 @@ mode_properties
 設定...
 model_dialog
 
-model_dialog_grp_details
+model_dialog_button_bar
 
 model_dialog_grp_material_file
 
@@ -691,35 +671,23 @@ move_frame_sign
 フレーム
 move_reset
 リセット
-mpd_table_buttons
-
-mpd_table_inv_1
-
-mpd_table_lod3
-
-mpd_table_mass
-
-mpd_table_mat_buttons
-
-mpd_table_phys_gen
-
-mpd_table_physics
-
-mpd_table_scriptfile
-
-mpd_table_var_control
-
 ms
 ms
 msd_table_2
 
 mu
 
+name
+
 nb_complexity
 
 nb_x
 
 nb_y
+
+nbd_grid_ball
+
+nbd_grid_sphere
 
 nc_x
 
@@ -756,10 +724,6 @@ new_ball_dialog_t_comp
 new_ball_dialog_t_x
 
 new_ball_dialog_t_y
-
-new_ball_dialog_table_2
-
-new_ball_dialog_table_3
 
 new_cube
 正六面体
@@ -879,13 +843,27 @@ property_list
 type\\index\\name
 quality_factor
 
+rand_id_72651
+
 rc_dialog
+
+rcjump
+
+rcroll
+
+rcsliding
+
+rcstatic
 
 redo
 やり直す
-reflection
-  --none--\\metal\\mirror (flat)\\CubeMap static\\CubeMap dynamic
 reflection_density
+
+reflection_mode:cube_dynamic
+
+reflection_mode:cube_static
+
+reflection_mode:none
 
 reflection_size
 
@@ -915,6 +893,8 @@ scale_2d
 倍率 2D
 scaling_dialog
 
+script
+
 script_list
 
 script_vars
@@ -938,6 +918,8 @@ send_bug_report
 set
 適用
 settings
+
+shader_file
 
 shininess
 
@@ -989,27 +971,21 @@ sun_ang_from_camera
 
 sun_enabled
 
-table_1
+t_animationfpsconst
 
-table_10
+t_animationfpsfactor
 
-table_11
+t_dummy
 
-table_2
+t_frame
 
-table_3
+t_list
 
-table_4
+t_name
 
-table_5
+t_properties
 
-table_6
-
-table_7
-
-table_8
-
-table_9
+t_simulate
 
 tensor
 
@@ -1087,8 +1063,6 @@ texture_menu_sign
 
 textures
 
-transparency_mode
-  --none--\\color keyed (smooth)\\color keyed (hard)\\factor\\function
 transparency_mode:color_key
 
 transparency_mode:factor
@@ -1130,8 +1104,6 @@ view_top
 volume_and
 
 volume_subtract
-
-wcd_table_t
 
 welcome_dialog
 

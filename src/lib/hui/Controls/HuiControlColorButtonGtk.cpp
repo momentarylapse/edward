@@ -19,6 +19,7 @@ HuiControlColorButton::HuiControlColorButton(const string &title, const string &
 	if (OptionString.find("alpha") >= 0)
 		gtk_color_button_set_use_alpha(GTK_COLOR_BUTTON(widget), true);
 	g_signal_connect(G_OBJECT(widget), "clicked", G_CALLBACK(&OnGtkButtonPress), this);
+	SetOptions(OptionString);
 }
 
 HuiControlColorButton::~HuiControlColorButton() {

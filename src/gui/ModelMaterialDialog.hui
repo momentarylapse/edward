@@ -1,75 +1,59 @@
-	// dialog
-	AppearanceDialog = HuiCreateSizableDialog("Material", 468, 371, MainWin, true);
-	AppearanceDialog->SetID("model_material_dialog");
-	AppearanceDialog->AddControlTable("ControlTable 1", 180, 195, 1, 2, "table_1");
-	AppearanceDialog->SetTarget("table_1", 0);
-	AppearanceDialog->AddTabControl("Generell\\Texturen\\Farben\\Transparenz", 0, 0, 0, 0, "model_material_dialog_tab_control");
-	AppearanceDialog->AddControlTable("!noexpandy", 0, 1, 4, 1, "table_2");
-	AppearanceDialog->SetTarget("table_2", 0);
-	AppearanceDialog->AddButton("OK", 3, 0, 0, 0, "ok");
-	AppearanceDialog->AddButton("Abbrechen", 2, 0, 0, 0, "cancel");
-	AppearanceDialog->AddButton("&Ubernehmen", 1, 0, 0, 0, "apply");
-	AppearanceDialog->AddText("", 0, 0, 0, 0, "dummy_t");
-	AppearanceDialog->SetTarget("model_material_dialog_tab_control", 1);
-	AppearanceDialog->AddControlTable("ControlTable 3", 0, 0, 1, 2, "table_3");
-	AppearanceDialog->SetTarget("table_3", 0);
-	AppearanceDialog->AddListView("!format=tit\\Ebene\\\\Textur", 0, 0, 0, 0, "mat_textures");
-	AppearanceDialog->AddControlTable("!noexpandy", 0, 1, 3, 1, "table_4");
-	AppearanceDialog->SetTarget("table_4", 0);
-	AppearanceDialog->AddButton("neue Ebene", 0, 0, 0, 0, "mat_add_texture_level");
-	AppearanceDialog->SetImage("mat_add_texture_level", "hui:add");
-	AppearanceDialog->AddButton("L&oschen", 1, 0, 0, 0, "mat_delete_texture_level");
-	AppearanceDialog->SetImage("mat_delete_texture_level", "hui:delete");
-	AppearanceDialog->AddButton("Leeren", 2, 0, 0, 0, "mat_empty_texture_level");
-	AppearanceDialog->SetImage("mat_empty_texture_level", "hui:clear");
-	AppearanceDialog->SetTarget("model_material_dialog_tab_control", 0);
-	AppearanceDialog->AddControlTable("ControlTable 5", 0, 0, 1, 7, "table_5");
-	AppearanceDialog->SetTarget("table_5", 0);
-	AppearanceDialog->AddCheckBox("Standard-Material verwenden", 0, 0, 0, 0, "default_material");
-	AppearanceDialog->AddText("!bold\\Material-Datei", 0, 2, 0, 0, "model_dialog_grp_material_file");
-	AppearanceDialog->AddControlTable("ControlTable 6", 0, 3, 5, 1, "table_6");
-	AppearanceDialog->AddText("!wrap\\Die Eigenschaften dieser Material-Datei k&onnen in den folgenden Tab-Seiten &uberschrieben werden.", 0, 5, 0, 0, "model_dialog_t_comment");
-	AppearanceDialog->SetTarget("table_6", 0);
-	AppearanceDialog->AddEdit("", 2, 0, 0, 0, "material_file");
-	AppearanceDialog->AddButton("", 3, 0, 0, 0, "find_material");
-	AppearanceDialog->SetImage("find_material", "hui:open");
-	AppearanceDialog->AddButton("!noexpandx\\Bearb.", 4, 0, 0, 0, "edit_material");
-	AppearanceDialog->SetImage("edit_material", "hui:edit");
-	AppearanceDialog->SetTarget("model_material_dialog_tab_control", 2);
-	AppearanceDialog->AddControlTable("ControlTable 7", 0, 0, 1, 2, "table_7");
-	AppearanceDialog->SetTarget("table_7", 0);
-	AppearanceDialog->AddCheckBox("Farben aus der Datei verwenden", 0, 0, 0, 0, "default_colors");
-	AppearanceDialog->AddControlTable("ControlTable 8", 0, 1, 6, 4, "table_8");
-	AppearanceDialog->SetTarget("table_8", 0);
-	AppearanceDialog->AddText("Ambient", 2, 0, 0, 0, "ambient");
-	AppearanceDialog->AddText("Diffuse", 2, 1, 0, 0, "diffuse");
-	AppearanceDialog->AddText("Specular", 2, 2, 0, 0, "specular");
-	AppearanceDialog->AddText("Emission", 2, 3, 0, 0, "emission");
-	AppearanceDialog->AddColorButton("", 3, 0, 0, 0, "mat_am");
-	AppearanceDialog->AddColorButton("", 3, 2, 0, 0, "mat_sp");
-	AppearanceDialog->AddColorButton("!alpha", 3, 1, 0, 0, "mat_di");
-	AppearanceDialog->AddColorButton("", 3, 3, 0, 0, "mat_em");
-	AppearanceDialog->AddText("Shininess", 4, 2, 0, 0, "shininess");
-	AppearanceDialog->AddSpinButton("\\0\\10000\\0.1", 5, 2, 0, 0, "mat_shininess");
-	AppearanceDialog->SetTarget("model_material_dialog_tab_control", 3);
-	AppearanceDialog->AddControlTable("ControlTable 9", 0, 0, 1, 10, "table_9");
-	AppearanceDialog->SetTarget("table_9", 0);
-	AppearanceDialog->AddRadioButton("Transparenz aus der Datei verwenden", 0, 0, 0, 0, "transparency_mode:material");
-	AppearanceDialog->AddRadioButton("Keine Transparenz", 0, 1, 0, 0, "transparency_mode:none");
-	AppearanceDialog->AddRadioButton("Color-Key", 0, 2, 0, 0, "transparency_mode:color_key");
-	AppearanceDialog->AddRadioButton("Funktion", 0, 3, 0, 0, "transparency_mode:function");
-	AppearanceDialog->AddControlTable("!noexpandy", 0, 4, 6, 1, "table_10");
-	AppearanceDialog->AddRadioButton("Faktor", 0, 5, 0, 0, "transparency_mode:factor");
-	AppearanceDialog->AddControlTable("!noexpandy", 0, 6, 4, 1, "table_11");
-	AppearanceDialog->AddCheckBox("Z-Buffer aktiviert", 0, 9, 0, 0, "alpha_z_buffer");
-	AppearanceDialog->SetTarget("table_10", 0);
-	AppearanceDialog->AddText("Quelle", 2, 0, 0, 0, "material_dialog_t_trans_source");
-	AppearanceDialog->AddText("Ziel", 4, 0, 0, 0, "material_dialog_t_trans_dest");
-	AppearanceDialog->AddComboBox("Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha", 5, 0, 0, 0, "alpha_dest");
-	AppearanceDialog->AddComboBox("Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha", 3, 0, 0, 0, "alpha_source");
-	AppearanceDialog->SetTarget("table_11", 0);
-	AppearanceDialog->AddSpinButton("\\0\\100\\1", 2, 0, 0, 0, "alpha_factor");
-	AppearanceDialog->AddText("%", 3, 0, 0, 0, "percent");
-	AppearanceDialog->Update();
+Dialog model_material_dialog "Material" 350 371
+	Grid ? "" 1 2
+		TabControl model_material_dialog_tab_control "Generell\\Texturen\\Farben\\Transparenz"
+			Grid ? "" 1 7
+				CheckBox default_material "Standard-Material verwenden"
+				.
+				Text model_dialog_grp_material_file "Material-Datei" bold
+				Grid ? "" 5 1
+					.
+					.
+					Edit material_file "" expandx
+					Button find_material "" image=hui:open
+					Button edit_material "Bearb." image=hui:edit
+				.
+				Text model_dialog_t_comment "Die Eigenschaften dieser Material-Datei können in den folgenden Tab-Seiten überschrieben werden." wrap
+				.
+			Grid ? "" 1 2
+				ListView mat_textures "Ebene\\\\Textur" format=tit
+				Grid ? "" 3 1
+					Button mat_add_texture_level "neue Ebene" image=hui:add
+					Button mat_delete_texture_level "Löschen" image=hui:delete
+					Button mat_empty_texture_level "Leeren" image=hui:clear
+			Grid ? "" 1 2
+				CheckBox default_colors "Farben aus der Datei verwenden"
+				Grid ? "" 2 5
+					Text ambient "Ambient"
+					ColorButton mat_am "" expandx
+					Text diffuse "Diffuse"
+					ColorButton mat_di "" alpha
+					Text specular "Specular"
+					ColorButton mat_sp ""
+					Text shininess "Shininess"
+					SpinButton mat_shininess "\\0\\10000\\0.1"
+					Text emission "Emission"
+					ColorButton mat_em ""
+			Grid ? "" 1 10
+				RadioButton transparency_mode:material "Transparenz aus der Datei verwenden"
+				RadioButton transparency_mode:none "Keine Transparenz"
+				RadioButton transparency_mode:color_key "Color-Key"
+				RadioButton transparency_mode:function "Funktion"
+				Grid mmat_transp_function_grid "" 2 2 indent
+					Text material_dialog_t_trans_source "Quelle"
+					ComboBox alpha_source "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
+					Text material_dialog_t_trans_dest "Ziel"
+					ComboBox alpha_dest "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
+				RadioButton transparency_mode:factor "Faktor"
+				Grid mmat_transp_alpha_grid "" 2 1 indent
+					SpinButton alpha_factor "\\0\\100\\1"
+					Text percent "%"
+				.
+				.
+				CheckBox alpha_z_buffer "Z-Buffer aktiviert"
+		Grid mmat_buttonbar "" 4 1 buttonbar
+			Text dummy_t "" expandx
+			Button apply "Übernehmen"
+			Button cancel "Abbrechen"
+			Button ok "OK"
 
 

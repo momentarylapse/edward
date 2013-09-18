@@ -1,40 +1,32 @@
-	// dialog
-	FontDialog = HuiCreateSizableDialog("Font Eigenschaften", 400, 730, MainWin, true);
-	FontDialog->SetID("font_dialog");
-	FontDialog->AddControlTable("", 0, 0, 1, 6, "font_table_1");
-	FontDialog->SetTarget("font_table_1", 0);
-	FontDialog->AddText("!bold\\Font", 0, 0, 0, 0, "font_dt_font");
-	FontDialog->AddControlTable("!noexpandy", 0, 1, 4, 7, "font_table_2");
-	FontDialog->AddText("!bold\\Zeichen", 0, 2, 0, 0, "font_dt_character");
-	FontDialog->AddControlTable("!noexpandy", 0, 3, 4, 4, "font_table_3");
-	FontDialog->AddText("!bold\\Vorschautext", 0, 4, 0, 0, "font_dt_example");
-	FontDialog->AddControlTable("!noexpandy", 0, 5, 3, 1, "font_table_4");
-	FontDialog->SetTarget("font_table_2", 0);
-	FontDialog->AddSpinButton("0", 3, 0, 0, 0, "num");
-	FontDialog->AddSpinButton("0", 3, 1, 0, 0, "height");
-	FontDialog->AddSpinButton("0", 3, 2, 0, 0, "y1");
-	FontDialog->AddSpinButton("0", 3, 3, 0, 0, "y2");
-	FontDialog->AddSpinButton("0", 3, 4, 0, 0, "factorx");
-	FontDialog->AddSpinButton("0", 3, 5, 0, 0, "factory");
-	FontDialog->AddEdit("", 3, 6, 0, 0, "unknown");
-	FontDialog->AddText("Unbekanntes Zeichen", 2, 6, 0, 0, "font_dt_unknown");
-	FontDialog->AddText("Skalierung Y", 2, 5, 0, 0, "font_dt_scaley");
-	FontDialog->AddText("Skalierung X", 2, 4, 0, 0, "font_dt_scalex");
-	FontDialog->AddText("Untere Kante", 2, 3, 0, 0, "font_dt_y2");
-	FontDialog->AddText("Obere Kante", 2, 2, 0, 0, "font_dt_y1");
-	FontDialog->AddText("Zeichenh&ohe", 2, 1, 0, 0, "font_dt_height");
-	FontDialog->AddText("Zeichenzahl", 2, 0, 0, 0, "font_dt_numglyphs");
-	FontDialog->SetTarget("font_table_3", 0);
-	FontDialog->AddEdit("", 3, 0, 0, 0, "name");
-	FontDialog->AddSpinButton("0", 3, 1, 0, 0, "x1");
-	FontDialog->AddSpinButton("0", 3, 2, 0, 0, "x2");
-	FontDialog->AddSpinButton("0", 3, 3, 0, 0, "width");
-	FontDialog->AddText("Breite", 2, 3, 0, 0, "font_dt_width");
-	FontDialog->AddText("Rechte Kante", 2, 2, 0, 0, "font_dt_x2");
-	FontDialog->AddText("Linke Kante", 2, 1, 0, 0, "font_dt_x1");
-	FontDialog->AddText("Zeichen", 2, 0, 0, 0, "font_dt_name");
-	FontDialog->SetTarget("font_table_4", 0);
-	FontDialog->AddEdit("", 2, 0, 0, 0, "text");
-	FontDialog->Update();
+Dialog font_dialog "Font Eigenschaften" 400 730
+	Grid ? "" 1 3
+		Group font_dt_font "Font"
+			Grid ? "" 2 7
+				Text font_dt_numglyphs "Zeichenzahl"
+				SpinButton num "0" expandx
+				Text font_dt_height "Zeichenhöhe"
+				SpinButton height "0"
+				Text font_dt_y1 "Obere Kante"
+				SpinButton y1 "0"
+				Text font_dt_y2 "Untere Kante"
+				SpinButton y2 "0"
+				Text font_dt_scalex "Skalierung X"
+				SpinButton factorx "0"
+				Text font_dt_scaley "Skalierung Y"
+				SpinButton factory "0"
+				Text font_dt_unknown "Unbekanntes Zeichen"
+				Edit unknown ""
+		Group font_dt_character "Zeichen"
+			Grid ? "" 2 4
+				Text font_dt_name "Zeichen"
+				Edit name "" expandx
+				Text font_dt_x1 "Linke Kante"
+				SpinButton x1 "0"
+				Text font_dt_x2 "Rechte Kante"
+				SpinButton x2 "0"
+				Text font_dt_width "Breite"
+				SpinButton width "0"
+		Group font_dt_example "Vorschautext"
+			Edit text ""
 
 

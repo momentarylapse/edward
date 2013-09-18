@@ -1,7 +1,4 @@
-	// dialog
-	PropertySeletcionDialog = HuiCreateSizableDialog("Zu bearbeitende Eigenschaften w&ahlen", 370, 380, MainWin, false);
-	PropertySeletcionDialog->SetID("world_ps_dialog");
-	PropertySeletcionDialog->AddListView("Typ\\Index\\Name", 0, 0, 0, 0, "property_list");
-	PropertySeletcionDialog->Update();
+Dialog world_ps_dialog "Zu bearbeitende Eigenschaften wählen" 370 380
+	ListView property_list "Typ\\Index\\Name"
 
 

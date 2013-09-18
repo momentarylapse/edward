@@ -13,9 +13,9 @@
 class EmbeddedDialog : public HuiEventHandler
 {
 public:
-	EmbeddedDialog(HuiWindow *win, const string &target_id, int x, int y, int width = -1, int height = -1);
-	EmbeddedDialog(HuiWindow *win, const string &dialog_id, const string &target_id, int x, int y, int width = -1, int height = -1);
-	void Init(HuiWindow *win, const string &target_id, int x, int y, int width, int height);
+	EmbeddedDialog(HuiWindow *win, const string &target_id, int x, int y, const string &options = "");
+	EmbeddedDialog(HuiWindow *win, const string &dialog_id, const string &target_id, int x, int y, const string &options = "");
+	void Init(HuiWindow *win, const string &target_id, int x, int y, const string &options);
 	virtual ~EmbeddedDialog();
 
 	void Enable(const string &id, bool enabled);

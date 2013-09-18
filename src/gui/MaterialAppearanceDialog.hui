@@ -1,60 +1,55 @@
-	// dialog
-	AppearanceDialog = HuiCreateDialog("Material-Aussehen", 365, 320, MainWin, true);
-	AppearanceDialog->SetID("material_dialog");
-	AppearanceDialog->AddDefButton("OK", 260, 280, 95, 25, "ok");
-	AppearanceDialog->SetImage("ok", "hui:ok");
-	AppearanceDialog->AddButton("Abbrechen", 135, 280, 120, 25, "cancel");
-	AppearanceDialog->SetImage("cancel", "hui:cancel");
-	AppearanceDialog->AddButton("&Ubernehmen", 10, 280, 120, 25, "set");
-	AppearanceDialog->SetImage("set", "hui:apply");
-	AppearanceDialog->AddTabControl("Farben\\Texturen\\Transparenz\\Reflexion\\Shader", 5, 5, 355, 260, "material_dialog_tab_control");
-	AppearanceDialog->SetTabCreationPage("material_dialog_tab_control", 0);
-	AppearanceDialog->AddText("Ambient", 25, 10, 65, 25, "ambient");
-	AppearanceDialog->AddText("Diffuse", 25, 40, 65, 25, "diffuse");
-	AppearanceDialog->AddText("Specular", 25, 70, 65, 25, "specular");
-	AppearanceDialog->AddText("Emission", 25, 130, 65, 25, "emission");
-	AppearanceDialog->AddText("Shininess", 25, 100, 65, 25, "shininess");
-	AppearanceDialog->AddSpinButton("\\0\\10000\\0.1", 95, 100, 100, 25, "mat_shininess");
-	AppearanceDialog->AddColorButton("", 95, 10, 100, 25, "mat_am");
-	AppearanceDialog->AddColorButton("!alpha", 95, 40, 100, 25, "mat_di");
-	AppearanceDialog->AddColorButton("", 95, 70, 100, 25, "mat_sp");
-	AppearanceDialog->AddColorButton("", 95, 130, 100, 25, "mat_em");
-	AppearanceDialog->SetTabCreationPage("material_dialog_tab_control", 1);
-	AppearanceDialog->AddButton("L&oschen", 130, 190, 105, 25, "mat_delete_texture_level");
-	AppearanceDialog->SetImage("mat_delete_texture_level", "hui:delete");
-	AppearanceDialog->AddListView("!format=tit\\Ebene\\\\Textur", 5, 5, 345, 180, "mat_textures");
-	AppearanceDialog->AddButton("neue Ebene", 5, 190, 120, 25, "mat_add_texture_level");
-	AppearanceDialog->SetImage("mat_add_texture_level", "hui:new");
-	AppearanceDialog->AddButton("Leeren", 240, 190, 105, 25, "mat_empty_texture_level");
-	AppearanceDialog->SetImage("mat_empty_texture_level", "hui:clear");
-	AppearanceDialog->SetTabCreationPage("material_dialog_tab_control", 2);
-	AppearanceDialog->AddComboBox("Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha", 90, 100, 255, 25, "alpha_source");
-	AppearanceDialog->AddComboBox("Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha", 90, 130, 255, 25, "alpha_dest");
-	AppearanceDialog->AddComboBox("  --keine--\\Color-Key (weich)\\Color-Key (hart)\\Faktor\\Funktion", 60, 10, 285, 25, "transparency_mode");
-	AppearanceDialog->AddText("Art:", 30, 10, 30, 25, "material_dialog_t_trans_type");
-	AppearanceDialog->AddText("Quelle", 30, 100, 60, 25, "material_dialog_t_trans_source");
-	AppearanceDialog->AddText("Ziel", 30, 130, 60, 25, "material_dialog_t_trans_dest");
-	AppearanceDialog->AddText("Faktor:", 30, 195, 60, 25, "material_dialog_t_trans_factor");
-	AppearanceDialog->AddSpinButton("\\0\\100\\1", 265, 195, 50, 25, "alpha_factor");
-	AppearanceDialog->AddText("%", 320, 195, 25, 25, "percent");
-	AppearanceDialog->AddCheckBox("Z-Buffer aktiviert", 30, 40, 315, 25, "alpha_z_buffer");
-	AppearanceDialog->AddText("!bold\\Funktion", 10, 75, 335, 25, "material_dialog_func_grp");
-	AppearanceDialog->AddText("!bold\\Faktor", 10, 170, 335, 25, "");
-	AppearanceDialog->AddSlider("", 90, 195, 170, 25, "alpha_slider");
-	AppearanceDialog->Enable("alpha_slider", false);
-	AppearanceDialog->SetTabCreationPage("material_dialog_tab_control", 3);
-	AppearanceDialog->AddComboBox("  --keine--\\Metall\\Spiegel (flach)\\CubeMap statisch\\CubeMap dynamisch", 40, 10, 305, 25, "reflection");
-	AppearanceDialog->AddText("Art:", 10, 10, 30, 25, "material_dialog_t_refl_type");
-	AppearanceDialog->AddText("Intensit&at:", 10, 40, 75, 25, "material_dialog_t_refl_density");
-	AppearanceDialog->AddSpinButton("\\0\\100\\1", 85, 40, 40, 25, "reflection_density");
-	AppearanceDialog->AddText("%", 130, 40, 15, 25, "percent");
-	AppearanceDialog->AddListView("Seite\\Textur", 10, 70, 335, 155, "reflection_textures");
-	AppearanceDialog->AddText("Texturgr&o&se:", 180, 40, 90, 25, "material_dialog_t_refl_texturesize");
-	AppearanceDialog->AddSpinButton("\\0\\1024\\1", 270, 40, 40, 25, "reflection_size");
-	AppearanceDialog->SetTabCreationPage("material_dialog_tab_control", 4);
-	AppearanceDialog->AddEdit("", 10, 10, 290, 25, "shader_file");
-	AppearanceDialog->AddButton("", 305, 10, 40, 25, "find_shader");
-	AppearanceDialog->SetImage("find_shader", "hui:open");
-	AppearanceDialog->Update();
-
-
+Dialog material_dialog "Material-Aussehen" 365 320 allow-root
+	Grid ? "" 1 2
+		TabControl material_dialog_tab_control "Farben\\Texturen\\Transparenz\\Reflexion\\Shader"
+			Grid ? "" 2 5
+				Text ambient "Ambient"
+				ColorButton mat_am "" expandx
+				Text diffuse "Diffuse"
+				ColorButton mat_di "" alpha
+				Text specular "Specular"
+				ColorButton mat_sp ""
+				Text shininess "Shininess"
+				SpinButton mat_shininess "\\0\\10000\\0.1"
+				Text emission "Emission"
+				ColorButton mat_em ""
+			Grid ? "" 1 2
+				ListView mat_textures "Ebene\\\\Textur" format=tit
+				Grid ? "" 3 1
+					Button mat_add_texture_level "neue Ebene" image=hui:add
+					Button mat_delete_texture_level "Löschen" image=hui:delete
+					Button mat_empty_texture_level "Leeren" image=hui:clear
+			
+			Grid ? "" 1 9
+				RadioButton transparency_mode:none "Keine Transparenz"
+				RadioButton transparency_mode:color_key "Color-Key"
+				RadioButton transparency_mode:function "Funktion"
+				Grid mat_transp_function_grid "" 2 2 indent
+					Text material_dialog_t_trans_source "Quelle"
+					ComboBox alpha_source "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
+					Text material_dialog_t_trans_dest "Ziel"
+					ComboBox alpha_dest "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
+				RadioButton transparency_mode:factor "Faktor"
+				Grid mat_transp_alpha_grid "" 2 1 indent
+					SpinButton alpha_factor "\\0\\100\\1"
+					Text percent "%"
+				.
+				.
+				CheckBox alpha_z_buffer "Z-Buffer aktiviert"
+			Grid ? "" 1 10
+				RadioButton reflection_mode:none "Keine Reflexion"
+				RadioButton reflection_mode:cube_static "CubeMap statisch"
+				ListView reflection_textures "Seite\\Textur" indent
+				RadioButton reflection_mode:cube_dynamic "CubeMap dynamisch"
+				ComboBox reflection_size "64 x 64\\128 x 128\\256 x 256\\512 x 512" indent
+				Grid ? "" 3 1
+					Text material_dialog_t_refl_density "Intensität"
+					SpinButton reflection_density "\\0\\100\\1"
+					Text percent "%"
+			Grid ? "" 2 1
+				Edit shader_file "" expandx
+				Button find_shader "" image=hui:open
+		Grid mat_dialog_buttonbar "" 4 1 buttonbar
+			Text dummy_t "" expandx
+			Button set "Übernehmen" image=hui:apply
+			Button cancel "Abbrechen" image=hui:cancel
+			DefButton ok "OK" image=hui:ok

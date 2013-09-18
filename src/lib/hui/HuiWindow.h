@@ -219,6 +219,7 @@ public:
 	void _cdecl SetMultiSelection(const string &id, Array<int> &sel);
 	void _cdecl Reset(const string &id);
 	void _cdecl RemoveControl(const string &id);
+	void _cdecl SetOptions(const string &id, const string &options);
 
 	// edit completion
 	void _cdecl CompletionAdd(const string &id, const string &text);

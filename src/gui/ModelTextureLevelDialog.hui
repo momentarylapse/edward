@@ -1,7 +1,4 @@
-	// dialog
-	PropertiesDialog = HuiCreateSizableDialog("Textur-Ebenen", 268, 360, MainWin, false);
-	PropertiesDialog->SetID("model_texture_level_dialog");
-	PropertiesDialog->AddTreeView("!format=tit\\#\\\\Datei", 0, 0, 0, 0, "texture_list");
-	PropertiesDialog->Update();
+Dialog model_texture_level_dialog "Textur-Ebenen" 268 360
+	TreeView texture_list "#\\\\Datei" format=tit
 
 

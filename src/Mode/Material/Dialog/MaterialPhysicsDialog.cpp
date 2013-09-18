@@ -34,8 +34,6 @@ void MaterialPhysicsDialog::LoadData()
     SetFloat("rcstatic", temp.RCStatic);
     SetFloat("rcsliding", temp.RCSliding);
     SetFloat("rcrolling", temp.RCRolling);
-    SetFloat("rvjump", temp.RCVJumpMin);
-    SetFloat("rvstatic", temp.RCVSlidingMin);
 }
 
 void MaterialPhysicsDialog::ApplyData()
@@ -44,8 +42,6 @@ void MaterialPhysicsDialog::ApplyData()
 	temp.RCStatic = GetFloat("rcstatic");
 	temp.RCSliding = GetFloat("rcsliding");
 	temp.RCRolling = GetFloat("rcrolling");
-	temp.RCVJumpMin = GetFloat("rvjump");
-	temp.RCVSlidingMin = GetFloat("rvstatic");
 
 	data->Execute(new ActionMaterialEditPhysics(temp));
 }

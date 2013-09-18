@@ -44,6 +44,7 @@ HuiControlTabControl::HuiControlTabControl(const string &title, const string &id
 	gtk_notebook_set_scrollable(GTK_NOTEBOOK(widget), true);
 	if (OptionString.find("nobar") >= 0)
 		gtk_notebook_set_show_tabs(GTK_NOTEBOOK(widget), false);
+	SetOptions(OptionString);
 }
 
 HuiControlTabControl::~HuiControlTabControl() {
