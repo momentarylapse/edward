@@ -1,7 +1,7 @@
 	// dialog
 	TerrainDialog = HuiCreateDialog("neues Terrain", 405, 245, MainWin, false);
 	TerrainDialog->SetID("new_terrain_dialog");
-	TerrainDialog->AddDefButton("Ok", 295, 205, 100, 25, "ok");
+	TerrainDialog->AddDefButton("OK", 295, 205, 100, 25, "ok");
 	TerrainDialog->SetImage("ok", "hui:ok");
 	TerrainDialog->AddButton("Abbrechen", 190, 205, 100, 25, "cancel");
 	TerrainDialog->SetImage("cancel", "hui:cancel");

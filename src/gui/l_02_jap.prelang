@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-594
+602
 // Data (ID,Text)
 ad_dialog
 
@@ -223,6 +223,10 @@ file_list_super
 
 flatten_vertices
 
+fog_distance
+
+fog_end
+
 fog_mode:exp
 
 fog_mode:exp2
@@ -230,6 +234,8 @@ fog_mode:exp2
 fog_mode:linear
 
 fog_mode:none
+
+fog_start
 
 font_dialog
 
@@ -340,6 +346,12 @@ generate_dists_auto
 generate_skin_auto
 
 generate_tensor_auto
+
+gravitation_x
+
+gravitation_y
+
+gravitation_z
 
 grid
 グリッド
@@ -839,7 +851,7 @@ property_list
 type\\index\\name
 quality_factor
 
-rand_id_142533
+rand_id_96223
 
 rc_dialog
 
@@ -1097,6 +1109,8 @@ volume_and
 
 volume_subtract
 
+wcd_table_t
+
 welcome_dialog
 
 welcome_list
@@ -1109,9 +1123,15 @@ width
 
 wire
 
+word_dialog_fog_exp_grid
+
+word_dialog_fog_lin_grid
+
 world_camera_dialog
 
 world_dialog
+
+world_dialog_buttonbar
 
 world_dialog_grp_ambient
 
@@ -1123,8 +1143,6 @@ world_dialog_grp_skybox
 
 world_dialog_grp_sun
 
-world_dialog_t_fog_color
-色
 world_dialog_t_fog_distance
 
 world_dialog_t_fog_end
@@ -1136,8 +1154,6 @@ world_dialog_t_max_script_vars
 world_dialog_t_sun_ang_x
 
 world_dialog_t_sun_ang_y
-
-world_dialog_t_sun_dir
 
 world_dialog_tab_control
 common\\background\\script variables

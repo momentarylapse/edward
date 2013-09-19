@@ -1,72 +1,76 @@
-	// dialog
-	WorldDialog = HuiCreateDialog("Welt-Eigenschaften", 410, 420, MainWin, false);
-	WorldDialog->SetID("world_dialog");
-	WorldDialog->AddDefButton("OK", 300, 380, 100, 25, "ok");
-	WorldDialog->SetImage("ok", "hui:ok");
-	WorldDialog->AddButton("Abbrechen", 195, 380, 100, 25, "cancel");
-	WorldDialog->SetImage("cancel", "hui:cancel");
-	WorldDialog->AddButton("&Ubernehmen", 80, 380, 110, 25, "apply");
-	WorldDialog->SetImage("apply", "hui:ok");
-	WorldDialog->AddTabControl("Hintergrund\\Nebel\\Licht\\Physik\\Scripte\\Variablen", 5, 5, 400, 360, "world_dialog_tab_control");
-	WorldDialog->SetTabCreationPage("world_dialog_tab_control", 0);
-	WorldDialog->AddText("!bold\\Farbe", 10, 10, 380, 25, "world_dialog_grp_bg_color");
-	WorldDialog->AddColorButton("!alpha", 20, 35, 370, 25, "bgc");
-	WorldDialog->AddText("!bold\\Skybox Modelle", 10, 70, 380, 25, "world_dialog_grp_skybox");
-	WorldDialog->AddListView("#\\Modell", 20, 95, 370, 195, "skybox");
-	WorldDialog->AddButton("Entfernen", 270, 295, 120, 25, "remove_skybox");
-	WorldDialog->SetImage("remove_skybox", "hui:delete");
-	WorldDialog->SetTabCreationPage("world_dialog_tab_control", 1);
-	WorldDialog->AddText("Entfernung", 35, 70, 100, 25, "world_dialog_t_fog_start");
-	WorldDialog->AddEdit("", 140, 70, 250, 25, "fog_start");
-	WorldDialog->AddText("bis", 35, 100, 100, 25, "world_dialog_t_fog_end");
-	WorldDialog->AddEdit("", 140, 100, 250, 25, "fog_end");
-	WorldDialog->AddText("Sichtweite", 40, 160, 95, 25, "world_dialog_t_fog_distance");
-	WorldDialog->AddEdit("", 140, 160, 250, 25, "fog_distance");
-	WorldDialog->AddText("Farbe", 20, 190, 115, 25, "world_dialog_t_fog_color");
-	WorldDialog->AddColorButton("", 140, 190, 250, 25, "fog_color");
-	WorldDialog->AddRadioButton("Linear", 20, 40, 370, 25, "fog_mode:linear");
-	WorldDialog->AddRadioButton("Exponentiell", 20, 130, 170, 25, "fog_mode:exp");
-	WorldDialog->AddRadioButton("Quadratisch exponentiell", 195, 130, 195, 25, "fog_mode:exp2");
-	WorldDialog->AddRadioButton("Deaktiviert", 20, 10, 370, 25, "fog_mode:none");
-	WorldDialog->SetTabCreationPage("world_dialog_tab_control", 2);
-	WorldDialog->AddText("!bold\\Ambient", 10, 10, 145, 25, "world_dialog_grp_ambient");
-	WorldDialog->AddColorButton("", 20, 35, 370, 25, "ambient");
-	WorldDialog->AddText("!bold\\Sonne", 10, 70, 145, 25, "world_dialog_grp_sun");
-	WorldDialog->AddCheckBox("aktiviert", 20, 95, 370, 25, "sun_enabled");
-	WorldDialog->AddText("Ambient", 20, 125, 100, 25, "ambient");
-	WorldDialog->AddText("Diffuse", 20, 155, 100, 25, "diffuse");
-	WorldDialog->AddText("Specular", 20, 185, 100, 25, "specular");
-	WorldDialog->AddColorButton("", 125, 125, 265, 25, "sun_am");
-	WorldDialog->AddColorButton("", 125, 155, 265, 25, "sun_di");
-	WorldDialog->AddColorButton("", 125, 185, 265, 25, "sun_sp");
-	WorldDialog->AddText("Richtung", 20, 215, 100, 25, "world_dialog_t_sun_dir");
-	WorldDialog->AddText("X", 125, 215, 15, 25, "world_dialog_t_sun_ang_x");
-	WorldDialog->AddSpinButton("", 145, 215, 80, 25, "sun_ang_x");
-	WorldDialog->AddText("Y", 235, 215, 15, 25, "world_dialog_t_sun_ang_y");
-	WorldDialog->AddSpinButton("", 255, 215, 80, 25, "sun_ang_y");
-	WorldDialog->AddText("°", 340, 215, 20, 25, "degree");
-	WorldDialog->AddButton("Richtung aus Kamerawinkel", 20, 245, 370, 25, "sun_ang_from_camera");
-	WorldDialog->SetImage("sun_ang_from_camera", "hui:media-record");
-	WorldDialog->SetTabCreationPage("world_dialog_tab_control", 3);
-	WorldDialog->AddCheckBox("Aktiviert", 10, 10, 200, 25, "physics_enabled");
-	WorldDialog->AddText("!bold\\Gravitation", 10, 40, 145, 25, "world_dialog_grp_gravitation");
-	WorldDialog->AddText("X", 20, 70, 20, 25, "x");
-	WorldDialog->AddEdit("", 40, 70, 75, 25, "gravitation_x");
-	WorldDialog->AddText("Y", 125, 70, 20, 25, "y");
-	WorldDialog->AddEdit("", 145, 70, 75, 25, "gravitation_y");
-	WorldDialog->AddText("Z", 230, 70, 20, 25, "z");
-	WorldDialog->AddEdit("", 250, 70, 75, 25, "gravitation_z");
-	WorldDialog->AddText("le/s^2", 330, 70, 45, 25, "luss");
-	WorldDialog->SetTabCreationPage("world_dialog_tab_control", 4);
-	WorldDialog->AddListView("!nobar\\Datei", 10, 10, 380, 280, "script_list");
-	WorldDialog->AddButton("Hinzuf&ugen", 10, 295, 190, 25, "add_script");
-	WorldDialog->SetImage("add_script", "hui:add");
-	WorldDialog->AddButton("Entfernen", 205, 295, 185, 25, "remove_script");
-	WorldDialog->SetImage("remove_script", "hui:delete");
-	WorldDialog->SetTabCreationPage("world_dialog_tab_control", 5);
-	WorldDialog->AddText("Anzahl:", 20, 10, 80, 25, "world_dialog_t_max_script_vars");
-	WorldDialog->AddSpinButton("\\0", 105, 10, 100, 25, "max_script_vars");
-	WorldDialog->AddListView("!format=ttT\\#\\Name\\Wert", 10, 40, 380, 280, "script_vars");
-	WorldDialog->Update();
-
-
+Dialog world_dialog "Welt-Eigenschaften" 410 420
+	Grid ? "" 1 2
+		TabControl world_dialog_tab_control "Hintergrund\\Nebel\\Licht\\Physik\\Scripte\\Variablen"
+			Grid ? "" 1 2
+				Group world_dialog_grp_bg_color "Farbe"
+					ColorButton bgc "" alpha
+				Group world_dialog_grp_skybox "Skybox Modelle"
+					Grid ? "" 1 2
+						ListView skybox "#\\Modell"
+						Button remove_skybox "Entfernen" image=hui:delete
+			Grid ? "" 1 7
+				RadioButton fog_mode:none "Deaktiviert" expandx
+				RadioButton fog_mode:linear "Linear"
+				Grid word_dialog_fog_lin_grid "" 2 2 indent
+					Text world_dialog_t_fog_start "Entfernung"
+					SpinButton fog_start "\\0\\1000000000\\0.1"
+					Text world_dialog_t_fog_end "bis"
+					SpinButton fog_end "\\0\\1000000000\\0.1"
+				Grid ? "" 2 1
+					RadioButton fog_mode:exp "Exponentiell"
+					RadioButton fog_mode:exp2 "Quadratisch exponentiell"
+				Grid word_dialog_fog_exp_grid "" 2 1 indent
+					Text world_dialog_t_fog_distance "Sichtweite"
+					SpinButton fog_distance "\\0\\1000000000\\0.1"
+				ColorButton fog_color ""
+			Grid ? "" 1 2
+				Group world_dialog_grp_ambient "Ambient"
+					ColorButton ambient ""
+				Group world_dialog_grp_sun "Sonne"
+					Grid ? "" 1 3
+						CheckBox sun_enabled "aktiviert" expandx
+						Grid ? "" 3 5
+							Text ambient "Ambient"
+							ColorButton sun_am ""
+							.
+							Text diffuse "Diffuse"
+							ColorButton sun_di ""
+							.
+							Text specular "Specular"
+							ColorButton sun_sp ""
+							.
+							Text world_dialog_t_sun_ang_x "Richtung X"
+							SpinButton sun_ang_x ""
+							Text degree "°"
+							Text world_dialog_t_sun_ang_y "Richtung Y"
+							SpinButton sun_ang_y ""
+							Text degree "°"
+						Button sun_ang_from_camera "Richtung aus Kamerawinkel" image=hui:media-record
+			Grid ? "" 1 2
+				CheckBox physics_enabled "Aktiviert"
+				Group world_dialog_grp_gravitation "Gravitation"
+					Grid ? "" 3 3
+						Text x "X"
+						SpinButton gravitation_x "\\\\\\0.1"
+						Text luss "le/s^2"
+						Text y "Y"
+						SpinButton gravitation_y "\\\\\\0.1"
+						Text luss "le/s^2"
+						Text z "Z"
+						SpinButton gravitation_z "\\\\\\0.1"
+						Text luss "le/s^2"
+			Grid ? "" 1 2
+				ListView script_list "Datei" nobar
+				Grid ? "" 2 1
+					Button add_script "Hinzufügen" image=hui:add
+					Button remove_script "Entfernen" image=hui:delete
+			Grid ? "" 1 2
+				Grid ? "" 2 1
+					Text world_dialog_t_max_script_vars "Anzahl:"
+					SpinButton max_script_vars "\\0"
+				ListView script_vars "#\\Name\\Wert" format=ttT
+		Grid world_dialog_buttonbar "" 4 1 buttonbar
+			Text t_dummy "" expandx
+			Button apply "Übernehmen" image=hui:apply
+			Button cancel "Abbrechen" image=hui:cancel
+			DefButton ok "OK" image=hui:ok

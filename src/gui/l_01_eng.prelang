@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-594
+602
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -223,6 +223,10 @@ file_list_super
 !format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
 flatten_vertices
 Flatten
+fog_distance
+
+fog_end
+
 fog_mode:exp
 
 fog_mode:exp2
@@ -230,6 +234,8 @@ fog_mode:exp2
 fog_mode:linear
 
 fog_mode:none
+
+fog_start
 
 font_dialog
 Font properties
@@ -341,6 +347,12 @@ generate_skin_auto
 
 generate_tensor_auto
 auto
+gravitation_x
+
+gravitation_y
+
+gravitation_z
+
 grid
 Grid
 height
@@ -839,7 +851,7 @@ property_list
 type\\index\\name
 quality_factor
 \\0\\100\\0.1
-rand_id_142533
+rand_id_96223
 
 rc_dialog
 Rudimentary configuration
@@ -1097,6 +1109,8 @@ volume_and
 
 volume_subtract
 
+wcd_table_t
+
 welcome_dialog
 Welcome to Edward.
 welcome_list
@@ -1109,10 +1123,16 @@ width
 
 wire
 Wire frame
+word_dialog_fog_exp_grid
+
+word_dialog_fog_lin_grid
+
 world_camera_dialog
 
 world_dialog
 World properties
+world_dialog_buttonbar
+
 world_dialog_grp_ambient
 ambient
 world_dialog_grp_bg_color
@@ -1123,8 +1143,6 @@ world_dialog_grp_skybox
 !bold\\Skybox models
 world_dialog_grp_sun
 !bold\\Sun
-world_dialog_t_fog_color
-color
 world_dialog_t_fog_distance
 Distance
 world_dialog_t_fog_end
@@ -1137,8 +1155,6 @@ world_dialog_t_sun_ang_x
 X: Altitude above horizon (X-Z-plane)
 world_dialog_t_sun_ang_y
 Y: Direction (Angle to Z-axis)
-world_dialog_t_sun_dir
-Direction
 world_dialog_tab_control
 common\\background\\script variables
 world_new
