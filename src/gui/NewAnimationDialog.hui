@@ -1,26 +1,11 @@
-// IDs
-enum{
-	HMM_NEW_ANIMATION_DIALOG,
-	HMM_OK,
-	HMM_CANCEL,
-	HMM_NEW_ANIMATION_TYPE,
-	HMM_NEW_ANIMATION_T_TYPE,
-	HMM_NEW_ANIMATION_T_INDEX,
-	HMM_NEW_ANIMATION_INDEX
-};
-
-
-	// dialog
-	NewAnimationDialog=HuiCreateDialog("Neue Animation",280,75,AnimationDialog,false,&NewAnimationDialogFunc);
-	NewAnimationDialog->SetID(HMM_NEW_ANIMATION_DIALOG);
-	NewAnimationDialog->AddDefButton("OK",165,10,100,25,HMM_OK);
-	NewAnimationDialog->SetImage(HMM_OK,HuiImageOk);
-	NewAnimationDialog->AddButton("Abbrechen",165,40,100,25,HMM_CANCEL);
-	NewAnimationDialog->SetImage(HMM_CANCEL,HuiImageCancel);
-	NewAnimationDialog->AddComboBox("Vertex\\Skelett",60,40,80,25,HMM_NEW_ANIMATION_TYPE);
-	NewAnimationDialog->AddText("Typ:",10,40,50,25,HMM_NEW_ANIMATION_T_TYPE);
-	NewAnimationDialog->AddText("Index",10,10,50,25,HMM_NEW_ANIMATION_T_INDEX);
-	NewAnimationDialog->AddSpinButton("\\0",60,10,80,25,HMM_NEW_ANIMATION_INDEX);
-	NewAnimationDialog->Update();
-
-
+Dialog new_animation_dialog "Neue Animation" 100 50
+	Grid ? "" 1 2
+		Grid ? "" 2 2
+			Text new_animation_t_type "Typ"
+			ComboBox new_animation_type "Vertex\\Skelett"
+			Text new_animation_t_index "Index"
+			SpinButton new_animation_index "\\0"
+		Grid new_animation_buttonbar "" 3 1 buttonbar
+			Text t_dummy "" expandx
+			Button cancel "Abbrechen" image=hui:cancel
+			DefButton ok "OK" image=hui:ok

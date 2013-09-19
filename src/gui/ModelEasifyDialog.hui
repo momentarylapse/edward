@@ -1,17 +1,15 @@
-	// dialog
-	EasifyDialog = HuiCreateDialog("Geometrie vereinfachen", 335, 200, MainWin, false);
-	EasifyDialog->SetID("easify_dialog");
-	EasifyDialog->AddText("", 25, 90, 300, 25, "eat_vertices");
-	EasifyDialog->AddText("", 25, 120, 300, 25, "eat_polygons");
-	EasifyDialog->AddText("!bold\\Qualit&atsfaktor", 10, 10, 315, 25, "eat_quality");
-	EasifyDialog->AddSpinButton("\\0\\100\\0.1", 200, 35, 105, 25, "quality_factor");
-	EasifyDialog->AddText("%", 310, 35, 15, 25, "percent");
-	EasifyDialog->AddDefButton("OK", 225, 160, 100, 25, "ok");
-	EasifyDialog->SetImage("ok", "hui:ok");
-	EasifyDialog->AddButton("Abbrechen", 120, 160, 100, 25, "cancel");
-	EasifyDialog->SetImage("cancel", "hui:cancel");
-	EasifyDialog->AddSlider("", 25, 35, 170, 25, "quality_slider");
-	EasifyDialog->AddText("!bold\\ungef&ahres Ergebnis", 10, 65, 315, 25, "eat_estimate");
-	EasifyDialog->Update();
-
-
+Dialog easify_dialog "Geometrie vereinfachen" 335 150
+	Grid ? "" 1 3
+		Group eat_quality "Qualitätsfaktor"
+			Grid ? "" 3 1
+				Slider quality_slider "" expandx
+				SpinButton quality_factor "\\0\\100\\0.1"
+				Text percent "%"
+		Group eat_estimate "ungefähres Ergebnis"
+			Grid ? "" 1 2
+				Text eat_vertices ""
+				Text eat_polygons ""
+		Grid easify_dialog_buttonbar "" 3 1 buttonbar
+			Text t_dummy "" expandx
+			Button cancel "Abbrechen" image=hui:cancel
+			DefButton ok "OK" image=hui:ok

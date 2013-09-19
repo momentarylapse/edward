@@ -1,25 +1,21 @@
-	// dialog
-	TerrainDialog = HuiCreateDialog("neues Terrain", 405, 245, MainWin, false);
-	TerrainDialog->SetID("new_terrain_dialog");
-	TerrainDialog->AddDefButton("OK", 295, 205, 100, 25, "ok");
-	TerrainDialog->SetImage("ok", "hui:ok");
-	TerrainDialog->AddButton("Abbrechen", 190, 205, 100, 25, "cancel");
-	TerrainDialog->SetImage("cancel", "hui:cancel");
-	TerrainDialog->AddText("!bold\\Raster-Gr&o&se", 5, 70, 385, 25, "nterrain_dialog_t_raster");
-	TerrainDialog->AddEdit("", 45, 100, 150, 25, "pattern_x");
-	TerrainDialog->Enable("pattern_x", false);
-	TerrainDialog->AddEdit("", 215, 100, 150, 25, "pattern_z");
-	TerrainDialog->Enable("pattern_z", false);
-	TerrainDialog->AddText("le", 370, 100, 20, 25, "lu");
-	TerrainDialog->AddText("!bold\\Streifen-Zahl", 5, 5, 385, 25, "nterrain_dialog_t_stripes");
-	TerrainDialog->AddText("X", 20, 35, 20, 25, "x");
-	TerrainDialog->AddSpinButton("\\1", 40, 35, 150, 25, "num_x");
-	TerrainDialog->AddText("Z", 195, 35, 20, 25, "z");
-	TerrainDialog->AddSpinButton("\\1", 215, 35, 150, 25, "num_z");
-	TerrainDialog->AddText("!bold\\Terrain-Gr&o&se", 5, 130, 385, 25, "nterrain_dialog_t_terrainsize");
-	TerrainDialog->AddEdit("", 45, 160, 150, 25, "terrain_x");
-	TerrainDialog->AddEdit("", 215, 160, 150, 25, "terrain_z");
-	TerrainDialog->AddText("le", 370, 160, 20, 25, "lu");
-	TerrainDialog->Update();
+Dialog new_terrain_dialog "neues Terrain" 300 120
+	Grid ? "" 1 2
+		Grid ? "" 1 3
+			Group nterrain_dialog_t_stripes "Streifen-Zahl (X, Z)"
+				Grid ? "" 2 1
+					SpinButton num_x "\\1"
+					SpinButton num_z "\\1"
+			Group nterrain_dialog_t_raster "Raster-Größe"
+				Grid ? "" 2 1
+					SpinButton pattern_x "\\0\\\\0.01" disabled
+					SpinButton pattern_z "\\0\\\\0.01" disabled
+			Group nterrain_dialog_t_terrainsize "Terrain-Größe"
+				Grid ? "" 2 1
+					SpinButton terrain_x "\\0\\\\0.01"
+					SpinButton terrain_z "\\0\\\\0.01"
+		Grid new_terrain_buttonbar "" 3 1 buttonbar
+			Text t_dummy "" expandx
+			Button cancel "Abbrechen" image=hui:cancel
+			DefButton ok "OK" image=hui:ok
 
 

@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-601
+609
 // Data (ID,Text)
 ad_dialog
 
@@ -154,6 +154,8 @@ diffuse
 dummy_text
 
 easify_dialog
+
+easify_dialog_buttonbar
 
 easify_skin
 
@@ -705,6 +707,8 @@ nearify
 
 new
 新規
+new_animation_buttonbar
+
 new_animation_dialog
 新しい　アニメーション
 new_animation_index
@@ -766,6 +770,8 @@ new_teapot
 new_teapot_dialog
 
 new_teapot_dialog_t_samples
+
+new_terrain_buttonbar
 
 new_terrain_dialog
 
@@ -829,6 +835,10 @@ parameter
 
 paste
 貼り付け
+pattern_x
+
+pattern_z
+
 percent
 %
 ph_active
@@ -849,7 +859,9 @@ property_list
 type\\index\\name
 quality_factor
 
-rand_id_683675
+quality_slider
+
+rand_id_815628
 
 rc_dialog
 
@@ -1048,6 +1060,10 @@ terrain_show_texture_level5
 terrain_show_texture_level6
 
 terrain_show_texture_level7
+
+terrain_x
+
+terrain_z
 
 text_from_bg
 
