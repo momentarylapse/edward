@@ -29,17 +29,19 @@
 #include "Creation/ModeModelMeshExtrudePolygons.h"
 #include "../../../Action/Model/Mesh/Skin/ActionModelSkinVerticesFromProjection.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
+#include "../Dialog/ModelMaterialDialog.h"
 #include "../Dialog/ModelEasifyDialog.h"
 #include "../Dialog/ModelFXDialog.h"
 
 ModeModelMesh *mode_model_mesh = NULL;
 
 ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
-	Mode<DataModel>("ModelMesh", _parent, NULL, "")
+	Mode<DataModel>("ModelMesh", _parent, NULL, ""),
+	Observable("ModelMesh")
 {
-	Subscribe(data);
+	Observer::Subscribe(data);
 
-	MaterialSelectionDialog = NULL;
+	MaterialDialog = NULL;
 	CurrentMaterial = 0;
 
 	right_mouse_function = RMFRotate;
@@ -53,6 +55,7 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 
 ModeModelMesh::~ModeModelMesh()
 {
+	Observer::Unsubscribe(data);
 }
 
 void ModeModelMesh::OnStart()
@@ -88,6 +91,8 @@ void ModeModelMesh::OnEnd()
 	HuiToolbar *t = ed->toolbar[HuiToolbarLeft];
 	t->Reset();
 	t->Enable(false);
+
+	CloseMaterialDialog();
 }
 
 
@@ -178,6 +183,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		CreateNewMaterialForSelection();
 	if (id == "choose_material")
 		ChooseMaterialForSelection();
+	if (id == "mode_model_materials")
+		ToggleMaterialDialog();
 	if (id == "text_from_bg"){
 		MultiView *mv = mode_model_mesh_polygon->multi_view;
 		data->Execute(new ActionModelSkinVerticesFromProjection(data, mv));
@@ -208,6 +215,31 @@ void ModeModelMesh::OnCommand(const string & id)
 		EditEffects();
 }
 
+void ModeModelMesh::ShowMaterialDialog()
+{
+	if (!MaterialDialog){
+		MaterialDialog = new ModelMaterialDialog(ed, data);
+		ed->Check("mode_model_materials", true);
+	}
+}
+
+void ModeModelMesh::CloseMaterialDialog()
+{
+	if (MaterialDialog){
+		delete(MaterialDialog);
+		MaterialDialog = NULL;
+		ed->Check("mode_model_materials", false);
+	}
+}
+
+void ModeModelMesh::ToggleMaterialDialog()
+{
+	if (MaterialDialog)
+		CloseMaterialDialog();
+	else
+		ShowMaterialDialog();
+}
+
 
 
 void ModeModelMesh::OnDraw()
@@ -225,7 +257,7 @@ void ModeModelMesh::OnUpdate(Observable *o)
 {
 	// consistency checks
 	if (CurrentMaterial >= data->Material.num)
-		CurrentMaterial = data->Material.num - 1;
+		SetCurrentMaterial(data->Material.num - 1);
 	//data->DebugShow();
 }
 
@@ -251,6 +283,8 @@ void ModeModelMesh::OnUpdateMenu()
 	ed->Check("scale", right_mouse_function == RMFScale);
 	ed->Check("scale_2d", right_mouse_function == RMFScale2d);
 	ed->Check("mirror", right_mouse_function == RMFMirror);
+
+	ed->Check("mode_model_materials", MaterialDialog);
 }
 
 bool ModeModelMesh::OptimizeView()
@@ -333,10 +367,9 @@ void ModeModelMesh::ChooseMaterialForSelection()
 
 
 	// dialog
-	MaterialSelectionDialog = new ModelMaterialSelectionDialog(ed, false, data);
-	MaterialSelectionDialog->PutAnswer(&SelectionDialogReturnIndex);
-	//FillMaterialList(MaterialSelectionDialog);
-	MaterialSelectionDialog->Run();
+	ModelMaterialSelectionDialog *dlg = new ModelMaterialSelectionDialog(ed, false, data);
+	dlg->PutAnswer(&SelectionDialogReturnIndex);
+	dlg->Run();
 
 	if (SelectionDialogReturnIndex >= 0)
 		data->SetMaterialSelection(SelectionDialogReturnIndex);
@@ -445,5 +478,11 @@ void ModeModelMesh::Easify()
 	dlg->Run();
 }
 
-
-
+void ModeModelMesh::SetCurrentMaterial(int index)
+{
+	if (CurrentMaterial == index)
+		return;
+	CurrentMaterial = index;
+	Notify("Change");
+	mode_model_mesh_texture->CurrentTextureLevel = 0;
+}

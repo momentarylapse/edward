@@ -21,17 +21,11 @@ public:
 	void LoadData();
 	void ApplyData();
 
-	void FillMaterialList();
 	void RefillInventaryList();
 	void RefillScriptVarList();
 	void FillDetailList();
 	void FillTensorList();
 	void OnGenerateDistsAuto();
-	void OnMaterialList();
-	void OnMaterialListSelect();
-	void OnAddNewMaterial();
-	void OnAddMaterial();
-	void OnDeleteMaterial();
 	void OnPhysicsPassive();
 	void OnGenerateTensorAuto();
 	void OnTensorEdit();

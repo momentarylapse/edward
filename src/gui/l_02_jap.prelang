@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-602
+598
 // Data (ID,Text)
 ad_dialog
 
@@ -61,6 +61,8 @@ animation_new
 新規
 apply
 適用
+apply_material
+
 automapping
 
 autoweld_surfaces
@@ -135,8 +137,6 @@ delete_frame
 
 delete_item
 
-delete_material
-
 delete_point
 
 delete_texture_level
@@ -151,8 +151,6 @@ detail_3
 
 diffuse
 拡散光
-dummy_t
-
 dummy_text
 
 easify_dialog
@@ -162,8 +160,6 @@ easify_skin
 eat_estimate
 
 eat_quality
-
-edit_current_material
 
 edit_material
 編集
@@ -597,8 +593,6 @@ menu_world_view
 表示
 mirror
 鏡
-mmat_buttonbar
-
 mmat_transp_alpha_grid
 
 mmat_transp_function_grid
@@ -614,8 +608,6 @@ mode_model_mesh
 mode_model_skeleton
 骨格
 mode_model_surface
-
-mode_model_texture
 
 mode_model_texture_coord
 
@@ -634,8 +626,6 @@ model_dialog_grp_material_file
 model_dialog_grp_physics
 
 model_dialog_grp_tensor
-
-model_dialog_t_comment
 
 model_dialog_t_description
 
@@ -656,6 +646,8 @@ level of detail\\material\\transparency\\physics
 model_inventary
 
 model_material_dialog
+
+model_material_dialog_grp_list
 
 model_material_dialog_tab_control
 
@@ -851,7 +843,7 @@ property_list
 type\\index\\name
 quality_factor
 
-rand_id_473915
+rand_id_131607
 
 rc_dialog
 
@@ -1208,10 +1200,8 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-234
+232
 // Data (ID,Text)
-
-
                   Close dialog box to exit program.
 
    - ohne Datei -
@@ -1244,9 +1234,9 @@ zzz_setbgimage
 
 (anonym)
 
-- Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- Häkchen bei \"Aktiv\" zur Auswahl für folgende neue Polygone
+- Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- die Auswahl wird für folgende neue Polygone verwendet
 
-- Doppelklick um ein Material zu editieren\n- selektieren und den Knopf \"löschen.\" zum Löschen\n- Häkchen bei \"Aktiv\" zur Auswahl für folgende neue Polygone
+- Doppelklick um ein Material zu editieren\n- Auswahl wird für folgende neue Polygone verwendet
 
 ...done
 
@@ -1555,8 +1545,6 @@ Textur-Datei
 Textur-Datei nicht ladbar: %s
 
 Textur-Koordinaten
-
-Texturen
 
 Texturen (bmp,jpg,tga,avi)
 

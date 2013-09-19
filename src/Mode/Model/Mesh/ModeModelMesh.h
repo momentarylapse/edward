@@ -11,11 +11,11 @@
 #include "../../Mode.h"
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Data/Model/Geometry/ModelGeometry.h"
-#include "../Dialog/ModelMaterialSelectionDialog.h"
 
 class DataModel;
+class ModelMaterialDialog;
 
-class ModeModelMesh: public Mode<DataModel>
+class ModeModelMesh: public Mode<DataModel>, public Observable
 {
 public:
 	ModeModelMesh(ModeBase *parent);
@@ -45,7 +45,10 @@ public:
 	void EditEffects();
 	void ClearEffects();
 
-	ModelMaterialSelectionDialog *MaterialSelectionDialog;
+	ModelMaterialDialog *MaterialDialog;
+	void ShowMaterialDialog();
+	void CloseMaterialDialog();
+	void ToggleMaterialDialog();
 
 	enum{
 		RMFRotate,
@@ -63,6 +66,7 @@ public:
 
 
 	int CurrentMaterial;
+	void SetCurrentMaterial(int index);
 };
 
 extern ModeModelMesh *mode_model_mesh;

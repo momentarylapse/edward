@@ -22,7 +22,6 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(HuiWindow *_parent, DataMater
 	data = _data;
 
 	// dialog
-	win->EventM("set", this, &MaterialPropertiesDialog::ApplyData);
 	win->EventM("mat_add_texture_level", this, &MaterialPropertiesDialog::OnAddTextureLevel);
 	win->EventM("mat_textures", this, &MaterialPropertiesDialog::OnTextures);
 	win->EventMX("mat_textures", "hui:select", this, &MaterialPropertiesDialog::OnTexturesSelect);

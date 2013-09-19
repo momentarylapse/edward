@@ -224,9 +224,7 @@ enum{
 		sub_menu_895->AddSeparator();
 		sub_menu_895->AddEntry("Materialien",HMM_MENU_MODEL_MATERIAL);
 		sub_menu_895->EnableItem(HMM_MENU_MODEL_MATERIAL,false);
-		sub_menu_895->AddEntry("Materialliste...",HMM_MODE_MODEL_MATERIALS);
-		sub_menu_895->AddEntry("Aktuelles Material...",HMM_EDIT_CURRENT_MATERIAL);
-		sub_menu_895->AddEntry("Texturen...",HMM_MODE_MODEL_TEXTURE);
+		sub_menu_895->AddEntryCheckable("Materialliste",HMM_MODE_MODEL_MATERIALS);
 		sub_menu_895->AddEntryImage("Polygone belegen...",HuiImageOpen,HMM_CHOOSE_MATERIAL);
 		sub_menu_895->AddSeparator();
 		sub_menu_895->AddEntry("Texture Mapping",HMM_MENU_MAPPING);

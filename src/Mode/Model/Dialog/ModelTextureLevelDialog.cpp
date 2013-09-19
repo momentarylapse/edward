@@ -82,14 +82,13 @@ void ModelTextureLevelDialog::OnTextureList()
 	if (n < 0)
 		return;
 	if (n < data->Material.num){
-		mode_model_mesh->CurrentMaterial = n;
-		mode_model_mesh_texture->CurrentTextureLevel = 0;
+		mode_model_mesh->SetCurrentMaterial(n);
 		data->Notify("Change");
 	}else{
 		n -= data->Material.num;
 		foreachi(ModelMaterial &m, data->Material, i)
 			if (n < m.NumTextures){
-				mode_model_mesh->CurrentMaterial = i;
+				mode_model_mesh->SetCurrentMaterial(i);
 				mode_model_mesh_texture->CurrentTextureLevel = n;
 				data->Notify("Change");
 				return;

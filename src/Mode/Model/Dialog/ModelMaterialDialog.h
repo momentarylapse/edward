@@ -1,7 +1,7 @@
 /*
  * ModelMaterialDialog.h
  *
- *  Created on: 13.03.2012
+ *  Created on: 19.09.2013
  *      Author: michi
  */
 
@@ -9,30 +9,40 @@
 #define MODELMATERIALDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
-#include "../../../Data/Model/DataModel.h"
+#include "../../../Stuff/EmbeddedDialog.h"
 #include "../../../Stuff/Observer.h"
+#include "../../../Data/Model/ModelMaterial.h"
+class DataModel;
 
-class ModelMaterialDialog: public HuiWindow, public Observer
+class ModelMaterialDialog: public EmbeddedDialog, public Observer
 {
 public:
-	ModelMaterialDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data);
+	ModelMaterialDialog(HuiWindow *_parent, DataModel *_data);
 	virtual ~ModelMaterialDialog();
 
 	void LoadData();
 	void ApplyData();
+	void ApplyDataDelayed();
+	void FillMaterialList();
 
-	void OnOk();
-	void OnClose();
-	void OnTransparencyMode();
-	void OnMatAddTextureLevel();
-	void OnMatTextures();
-	void OnMatTexturesSelect();
-	void OnMatDeleteTextureLevel();
-	void OnMatEmptyTextureLevel();
-	void OnDefaultMaterial();
+	void OnMaterialList();
+	void OnMaterialListSelect();
+	void OnAddNewMaterial();
+	void OnAddMaterial();
+	void OnDeleteMaterial();
+	void OnApplyMaterial();
+
 	void OnFindMaterial();
+	void OnDefaultMaterial();
 	void OnEditMaterial();
 	void OnDefaultColors();
+
+	void OnTextures();
+	void OnTexturesSelect();
+	void OnAddTextureLevel();
+	void OnDeleteTextureLevel();
+	void OnEmptyTextureLevel();
+	void OnTransparencyMode();
 
 	void FillTextureList();
 
@@ -40,8 +50,8 @@ public:
 
 private:
 	DataModel *data;
-	int index;
-	ModelMaterial TempMaterial;
+	ModelMaterial temp;
+	int apply_queue_depth;
 };
 
 #endif /* MODELMATERIALDIALOG_H_ */

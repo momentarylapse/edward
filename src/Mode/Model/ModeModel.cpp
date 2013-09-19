@@ -24,7 +24,6 @@ ModeModel::ModeModel() :
 	Mode<DataModel>("Model", NULL, new DataModel, NULL, "")
 {
 	PropertiesDialog = NULL;
-	MaterialDialog = NULL;
 
 	mode_model_mesh = new ModeModelMesh(this);
 	mode_model_skeleton = new ModeModelSkeleton(this);
@@ -63,9 +62,7 @@ void ModeModel::OnStart()
 	t->AddItemCheckable(_("Mesh"), dir + "model_mesh.svg", "mode_model_mesh");
 	t->AddItemCheckable(_("Skelett"), dir + "mode_skeletton.png", "mode_model_skeleton");
 	t->AddItemCheckable(_("Animation"), dir + "mode_move.png", "mode_model_animation");
-	//t->AddItem(_("Texturen"), dir + "mode_textures.png", "mode_model_texture");
-	t->AddItem(_("Material"), dir + "mode_textures.png", "edit_current_material");
-	//t->AddItem(_("Materialien"), dir + "mode_textures.png", "mode_model_materials");
+	t->AddItemCheckable(_("Materialien"), dir + "mode_textures.png", "mode_model_materials");
 	t->AddItem(_("Eigenschaften"), dir + "configure.png", "mode_properties");
 	t->Enable(true);
 	t->Configure(false,true);
@@ -87,9 +84,6 @@ void ModeModel::OnEnd()
 	if (PropertiesDialog)
 		delete(PropertiesDialog);
 	PropertiesDialog = NULL;
-	if (MaterialDialog)
-		delete(MaterialDialog);
-	MaterialDialog = NULL;
 
 	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
 	t->Reset();
@@ -132,15 +126,9 @@ void ModeModel::OnCommand(const string & id)
 		ed->SetMode(mode_model_animation);
 	if (id == "mode_model_skeleton")
 		ed->SetMode(mode_model_skeleton);
-	if (id == "mode_model_texture")
-		ExecuteMaterialDialog(1);
 		//SetSubMode(SubModeTextures);
 	if (id == "mode_properties")
-		ExecutePropertiesDialog(0);
-	if (id == "edit_current_material")
-		ExecuteMaterialDialog(0);
-	if (id == "mode_model_materials")
-		ExecutePropertiesDialog(1);
+		ExecutePropertiesDialog();
 
 	// mainly skin debugging...
 	if (id == "detail_1")
@@ -242,29 +230,14 @@ bool ModeModel::ImportLoad3ds(const string &filename)
 	return true;
 }
 
-void ModeModel::ExecutePropertiesDialog(int initial_tab_page)
+void ModeModel::ExecutePropertiesDialog()
 {
 	if (PropertiesDialog)
 		return;
 
 	PropertiesDialog = new ModelPropertiesDialog(ed, true, data);
-	PropertiesDialog->SetInt("model_dialog_tab_control", initial_tab_page);
 
 	PropertiesDialog->Show();
 	//PropertiesDialog->Run();
-}
-
-void ModeModel::ExecuteMaterialDialog(int initial_tab_page, bool allow_parent)
-{
-	if (MaterialDialog)
-		return;
-
-	MaterialDialog = new ModelMaterialDialog(allow_parent ? ed : HuiCurWindow, allow_parent, data);
-	MaterialDialog->SetInt("model_material_dialog_tab_control", initial_tab_page);
-
-	MaterialDialog->Show();
-
-	if (!allow_parent)
-		MaterialDialog->Run();
 }
 

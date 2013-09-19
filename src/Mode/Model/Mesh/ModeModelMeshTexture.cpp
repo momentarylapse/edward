@@ -80,6 +80,8 @@ void ModeModelMeshTexture::OnStart()
 	ed->DeleteControl("side_table");
 	ed->EmbedDialog()*/
 
+	mode_model_mesh->CloseMaterialDialog();
+
 	dialog = new ModelTextureLevelDialog(ed, data);
 }
 

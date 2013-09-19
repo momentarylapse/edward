@@ -39,7 +39,6 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(HuiWindow *_parent, b
 ModelMaterialSelectionDialog::~ModelMaterialSelectionDialog()
 {
 	Unsubscribe(data);
-	mode_model_mesh->MaterialSelectionDialog = NULL;
 }
 
 void ModelMaterialSelectionDialog::FillMaterialList()
@@ -79,8 +78,7 @@ void ModelMaterialSelectionDialog::OnMaterialList()
 
 void ModelMaterialSelectionDialog::OnMaterialListSelect()
 {
-	mode_model_mesh->CurrentMaterial = GetInt("");
-	mode_model_mesh_texture->CurrentTextureLevel = 0;
+	mode_model_mesh->SetCurrentMaterial(GetInt(""));
 }
 
 void ModelMaterialSelectionDialog::OnMaterialAddNew()
@@ -96,14 +94,6 @@ void ModelMaterialSelectionDialog::OnMaterialAdd()
 
 void ModelMaterialSelectionDialog::OnMaterialEdit()
 {
-	int s = GetInt("material_list");
-	if (s < 0)
-		return;
-
-	mode_model_mesh->CurrentMaterial = s;
-	mode_model_mesh_texture->CurrentTextureLevel = 0;
-	mode_model->ExecuteMaterialDialog(0, false);
-	FillMaterialList();
 }
 
 void ModelMaterialSelectionDialog::OnUpdate(Observable *o)

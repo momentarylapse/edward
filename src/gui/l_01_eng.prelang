@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-602
+598
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -61,6 +61,8 @@ animation_new
 New
 apply
 Apply
+apply_material
+
 automapping
 
 autoweld_surfaces
@@ -135,8 +137,6 @@ delete_frame
 
 delete_item
 Delete item
-delete_material
-delete
 delete_point
 
 delete_texture_level
@@ -151,8 +151,6 @@ detail_3
 Low-precicion skin
 diffuse
 diffuse
-dummy_t
-
 dummy_text
 
 easify_dialog
@@ -163,8 +161,6 @@ eat_estimate
 
 eat_quality
 quality factor
-edit_current_material
-
 edit_material
 edit
 edit_terrain_selectable
@@ -597,8 +593,6 @@ menu_world_view
 View
 mirror
 mirror
-mmat_buttonbar
-
 mmat_transp_alpha_grid
 
 mmat_transp_function_grid
@@ -615,8 +609,6 @@ mode_model_skeleton
 Skeleton
 mode_model_surface
 Surfaces
-mode_model_texture
-Textures
 mode_model_texture_coord
 Texture coordinates
 mode_model_triangle
@@ -635,8 +627,6 @@ model_dialog_grp_physics
 !bold\\General
 model_dialog_grp_tensor
 !bold\\Moment of inertia tensor
-model_dialog_t_comment
-The properties of this material file can be overwritten in the following tab pages
 model_dialog_t_description
 Description
 model_dialog_t_mass
@@ -656,7 +646,9 @@ level of detail\\material\\physics\\inventary\\script
 model_inventary
 #\\File
 model_material_dialog
-Material
+
+model_material_dialog_grp_list
+
 model_material_dialog_tab_control
 General\\Textures\\Colors\\Transparency
 model_material_selection_dialog
@@ -851,7 +843,7 @@ property_list
 type\\index\\name
 quality_factor
 \\0\\100\\0.1
-rand_id_473915
+rand_id_131607
 
 rc_dialog
 Rudimentary configuration
@@ -1208,10 +1200,8 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-234
+232
 // Data (ID,Text)
-
-
                   Close dialog box to exit program.
                   Close dialog box to exit program.
    - ohne Datei -
@@ -1244,9 +1234,9 @@ Set background image
 
 (anonym)
 (anonymous)
-- Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- Häkchen bei \"Aktiv\" zur Auswahl für folgende neue Polygone
+- Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- die Auswahl wird für folgende neue Polygone verwendet
 
-- Doppelklick um ein Material zu editieren\n- selektieren und den Knopf \"löschen.\" zum Löschen\n- Häkchen bei \"Aktiv\" zur Auswahl für folgende neue Polygone
+- Doppelklick um ein Material zu editieren\n- Auswahl wird für folgende neue Polygone verwendet
 
 ...done
 ...done
@@ -1556,8 +1546,6 @@ Textur-Datei nicht ladbar: %s
 Texture file not loadable: %s
 Textur-Koordinaten
 Texture coordinates
-Texturen
-Textures
 Texturen (bmp,jpg,tga,avi)
 Textures (bmp,jpg,tga,avi)
 Texturen der einzelnen Materialien\n- Klick zum Bearbeiten der Texturkoordinaten
