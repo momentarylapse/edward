@@ -28,7 +28,6 @@ public:
 	void FillTensorList();
 	void OnGenerateDistsAuto();
 	void OnMaterialList();
-	void OnMaterialListCheck();
 	void OnMaterialListSelect();
 	void OnAddNewMaterial();
 	void OnAddMaterial();

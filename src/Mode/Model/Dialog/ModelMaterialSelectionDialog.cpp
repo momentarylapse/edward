@@ -22,11 +22,10 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(HuiWindow *_parent, b
 	data = _data;
 	FillMaterialList();
 
-	SetTooltip("material_list", _("- Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- H&akchen bei \"Aktiv\" zur Auswahl f&ur folgende neue Polygone"));
+	SetTooltip("material_list", _("- Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- die Auswahl wird f&ur folgende neue Polygone verwendet"));
 
 	EventM("hui:close", this, &ModelMaterialSelectionDialog::OnClose);
 	EventMX("material_list", "hui:activate", this, &ModelMaterialSelectionDialog::OnMaterialList);
-	EventMX("material_list", "hui:change", this, &ModelMaterialSelectionDialog::OnMaterialListCheck);
 	EventMX("material_list", "hui:select", this, &ModelMaterialSelectionDialog::OnMaterialListSelect);
 	EventM("add_new_material", this, &ModelMaterialSelectionDialog::OnMaterialAddNew);
 	EventM("add_material", this, &ModelMaterialSelectionDialog::OnMaterialAdd);
@@ -53,9 +52,9 @@ void ModelMaterialSelectionDialog::FillMaterialList()
 			if (t.Material == i)
 				nt ++;
 		string im = render_material(&data->Material[i]);
-		AddString("material_list", format("%d\\%d\\%s\\%s\\%s", i, nt, (i == mode_model_mesh->CurrentMaterial) ? "true" : "false", im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
+		AddString("material_list", format("%d\\%d\\%s\\%s", i, nt, im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
 	}
-	Enable("edit_material", false);
+	SetInt("material_list", mode_model_mesh->CurrentMaterial);
 }
 
 void ModelMaterialSelectionDialog::PutAnswer(int *_answer)
@@ -78,16 +77,10 @@ void ModelMaterialSelectionDialog::OnMaterialList()
 	delete(this);
 }
 
-void ModelMaterialSelectionDialog::OnMaterialListCheck()
-{
-	mode_model_mesh->CurrentMaterial = HuiGetEvent()->row;
-	mode_model_mesh_texture->CurrentTextureLevel = 0;
-	FillMaterialList();
-}
-
 void ModelMaterialSelectionDialog::OnMaterialListSelect()
 {
-	Enable("edit_material", GetInt("") >= 0);
+	mode_model_mesh->CurrentMaterial = GetInt("");
+	mode_model_mesh_texture->CurrentTextureLevel = 0;
 }
 
 void ModelMaterialSelectionDialog::OnMaterialAddNew()

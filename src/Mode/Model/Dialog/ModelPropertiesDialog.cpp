@@ -26,7 +26,7 @@ ModelPropertiesDialog::ModelPropertiesDialog(HuiWindow *_parent, bool _allow_par
 {
 	data = _data;
 
-	SetTooltip("material_list", _("- Doppelklick um ein Material zu editieren\n- selektieren und den Knopf \"l&oschen.\" zum L&oschen\n- H&akchen bei \"Aktiv\" zur Auswahl f&ur folgende neue Polygone"));
+	SetTooltip("material_list", _("- Doppelklick um ein Material zu editieren\n- Auswahl wird f&ur folgende neue Polygone verwendet"));
 
 	EventM("cancel", this, &ModelPropertiesDialog::OnClose);
 	EventM("hui:close", this, &ModelPropertiesDialog::OnClose);
@@ -34,7 +34,6 @@ ModelPropertiesDialog::ModelPropertiesDialog(HuiWindow *_parent, bool _allow_par
 	EventM("ok", this, &ModelPropertiesDialog::OnOk);
 	EventM("generate_dists_auto", this, &ModelPropertiesDialog::OnGenerateDistsAuto);
 	EventM("material_list", this, &ModelPropertiesDialog::OnMaterialList);
-	EventMX("material_list", "hui:change", this, &ModelPropertiesDialog::OnMaterialListCheck);
 	EventMX("material_list", "hui:select", this, &ModelPropertiesDialog::OnMaterialListSelect);
 	EventM("add_new_material", this, &ModelPropertiesDialog::OnAddNewMaterial);
 	EventM("add_material", this, &ModelPropertiesDialog::OnAddMaterial);
@@ -192,9 +191,10 @@ void ModelPropertiesDialog::FillMaterialList()
 				if (t.Material == i)
 					nt ++;
 		string im = render_material(&data->Material[i]);
-		AddString("material_list", format("%d\\%d\\%s\\%s\\%s", i, nt, (i == mode_model_mesh->CurrentMaterial) ? "true" : "false", im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
+		AddString("material_list", format("%d\\%d\\%s\\%s", i, nt, im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
 	}
-	Enable("delete_material", false);
+	SetInt("material_list", mode_model_mesh->CurrentMaterial);
+	//Enable("delete_material", false);
 }
 
 void ModelPropertiesDialog::RefillInventaryList()
@@ -241,17 +241,10 @@ void ModelPropertiesDialog::OnMaterialList()
 	FillMaterialList();
 }
 
-void ModelPropertiesDialog::OnMaterialListCheck()
-{
-	mode_model_mesh->CurrentMaterial = HuiGetEvent()->row;
-	mode_model_mesh_texture->CurrentTextureLevel = 0;
-	FillMaterialList();
-}
-
 void ModelPropertiesDialog::OnMaterialListSelect()
 {
-	int s = GetInt("");
-	Enable("delete_material", s >= 0);
+	mode_model_mesh->CurrentMaterial = GetInt("");
+	mode_model_mesh_texture->CurrentTextureLevel = 0;
 }
 
 void ModelPropertiesDialog::OnAddNewMaterial()

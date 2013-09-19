@@ -254,7 +254,6 @@ void MaterialPropertiesDialog::ApplyData()
 		apply_queue_depth --;
 	if (apply_queue_depth > 0)
 		return;
-	msg_write("apply");
 	temp.ColorAmbient = win->GetColor("mat_am");
 	temp.ColorDiffuse = win->GetColor("mat_di");
 	temp.ColorSpecular = win->GetColor("mat_sp");
@@ -285,7 +284,6 @@ void MaterialPropertiesDialog::ApplyPhysData()
 		apply_phys_queue_depth --;
 	if (apply_phys_queue_depth > 0)
 		return;
-	msg_write("apply_phys");
 	temp_phys.RCJump = GetFloat("rcjump");
 	temp_phys.RCStatic = GetFloat("rcstatic");
 	temp_phys.RCSliding = GetFloat("rcsliding");
