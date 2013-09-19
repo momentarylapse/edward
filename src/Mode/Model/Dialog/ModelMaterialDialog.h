@@ -32,9 +32,6 @@ public:
 	void OnDeleteMaterial();
 	void OnApplyMaterial();
 
-	void OnFindMaterial();
-	void OnDefaultMaterial();
-	void OnEditMaterial();
 	void OnDefaultColors();
 
 	void OnTextures();

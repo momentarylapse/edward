@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-598
+596
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -459,8 +459,6 @@ material_dialog_t_trans_dest
 dest
 material_dialog_t_trans_source
 source
-material_file
-
 material_list
 Material\\Triangles\\File
 material_new
@@ -621,8 +619,6 @@ model_dialog
 Model properties
 model_dialog_button_bar
 
-model_dialog_grp_material_file
-!bold\\Material file
 model_dialog_grp_physics
 !bold\\General
 model_dialog_grp_tensor
@@ -843,7 +839,7 @@ property_list
 type\\index\\name
 quality_factor
 \\0\\100\\0.1
-rand_id_131607
+rand_id_572251
 
 rc_dialog
 Rudimentary configuration

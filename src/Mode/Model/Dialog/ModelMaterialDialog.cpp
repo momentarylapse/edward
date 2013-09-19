@@ -58,10 +58,6 @@ ModelMaterialDialog::ModelMaterialDialog(HuiWindow *_parent, DataModel *_data) :
 	win->EventM("transparency_mode:color_key", this, &ModelMaterialDialog::OnTransparencyMode);
 	win->EventM("transparency_mode:factor", this, &ModelMaterialDialog::OnTransparencyMode);
 
-	win->EventM("default_material", this, &ModelMaterialDialog::OnDefaultMaterial);
-	win->EventM("find_material", this, &ModelMaterialDialog::OnFindMaterial);
-	win->EventM("edit_material", this, &ModelMaterialDialog::OnEditMaterial);
-
 	win->EventM("default_colors", this, &ModelMaterialDialog::OnDefaultColors);
 	win->EventM("mat_am", this, &ModelMaterialDialog::ApplyData);
 	win->EventM("mat_di", this, &ModelMaterialDialog::ApplyData);
@@ -89,9 +85,6 @@ void ModelMaterialDialog::LoadData()
 	temp = data->Material[mode_model_mesh->CurrentMaterial];
 	FillMaterialList();
 
-	SetString("material_file", temp.MaterialFile);
-	Check("default_material", temp.MaterialFile.num == 0);
-	Enable("material_file", temp.MaterialFile.num > 0);
 	FillTextureList();
 	Check("default_colors", !temp.UserColor);
 	Enable("mat_am", temp.UserColor);
@@ -133,11 +126,6 @@ void ModelMaterialDialog::ApplyData()
 		apply_queue_depth --;
 	if (apply_queue_depth > 0)
 		return;
-	if (IsChecked("default_material"))
-		temp.MaterialFile = "";
-	else
-		temp.MaterialFile = GetString("material_file");
-	temp.material = LoadMaterial(temp.MaterialFile);
 	if (temp.UserColor){
 		temp.Ambient = win->GetColor("mat_am");
 		temp.Diffuse = win->GetColor("mat_di");
@@ -215,32 +203,6 @@ void ModelMaterialDialog::OnApplyMaterial()
 }
 
 
-void ModelMaterialDialog::OnDefaultMaterial()
-{
-	if (IsChecked(""))
-		temp.MaterialFile = "";
-	temp.MakeConsistent();
-	ApplyData();
-}
-
-void ModelMaterialDialog::OnFindMaterial()
-{
-	if (ed->FileDialog(FDMaterial, false, true)){
-		temp.MaterialFile = ed->DialogFileNoEnding;
-		temp.MakeConsistent();
-		ApplyData();
-	}
-}
-
-void ModelMaterialDialog::OnEditMaterial()
-{
-	/*if (GetString("material_file").num > 0)
-		if (mode_material->LoadFromFile(MaterialDir + GetString("material_file") + ".material")){
-			ed->SetMode(mode_material);
-			OnClose();
-		}*/
-}
-
 void ModelMaterialDialog::OnDefaultColors()
 {
 	temp.UserColor = !IsChecked("");
@@ -255,7 +217,7 @@ void ModelMaterialDialog::FillTextureList()
 	for (int i=0;i<temp.NumTextures;i++){
 		int tex = NixLoadTexture(temp.TextureFile[i]);
 		string img = ed->get_tex_image(tex);
-		AddString("mat_textures", format("%d\\%s\\%s", i, img.c_str(), file_secure(temp.TextureFile[i]).c_str()));
+		AddString("mat_textures", format("Tex[%d]\\%s\\%s", i, img.c_str(), file_secure(temp.TextureFile[i]).c_str()));
 	}
 	Enable("mat_delete_texture_level", false);
 	Enable("mat_empty_texture_level", false);

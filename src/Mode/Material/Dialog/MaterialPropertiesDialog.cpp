@@ -128,11 +128,10 @@ void MaterialPropertiesDialog::OnAddTextureLevel()
 {
 	if (temp.NumTextureLevels >= MATERIAL_MAX_TEXTURES){
 		ed->ErrorBox(format(_("H&ochstens %d Textur-Ebenen erlaubt!"), MATERIAL_MAX_TEXTURES));
-	}else{
-		temp.TextureFile[temp.NumTextureLevels ++] = "";
-		ApplyData();
+		return;
 	}
-	FillTextureList();
+	temp.TextureFile[temp.NumTextureLevels ++] = "";
+	ApplyData();
 }
 
 void MaterialPropertiesDialog::OnTextures()
@@ -314,7 +313,7 @@ void MaterialPropertiesDialog::FillTextureList()
 	for (int i=0;i<temp.NumTextureLevels;i++){
 		int tex = NixLoadTexture(temp.TextureFile[i]);
 		string img = ed->get_tex_image(tex);
-		AddString("mat_textures", format("%d\\%s\\%s", i, img.c_str(), file_secure(temp.TextureFile[i]).c_str()));
+		AddString("mat_textures", format("Tex[%d]\\%s\\%s", i, img.c_str(), file_secure(temp.TextureFile[i]).c_str()));
 	}
 	if (temp.NumTextureLevels == 0)
 		AddString("mat_textures", _("\\\\   - keine Texturen -"));

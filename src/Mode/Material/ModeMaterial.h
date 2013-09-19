@@ -39,7 +39,7 @@ public:
 
 	virtual bool OptimizeView();
 
-	int MaterialVB[MATERIAL_MAX_TEXTURES];
+	int MaterialVB[MATERIAL_MAX_TEXTURES + 1];
 	MaterialPropertiesDialog *AppearanceDialog;
 
 	string shape_type;

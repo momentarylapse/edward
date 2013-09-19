@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-598
+596
 // Data (ID,Text)
 ad_dialog
 
@@ -459,8 +459,6 @@ material_dialog_t_trans_dest
 
 material_dialog_t_trans_source
 
-material_file
-
 material_list
 
 material_new
@@ -620,8 +618,6 @@ mode_properties
 model_dialog
 
 model_dialog_button_bar
-
-model_dialog_grp_material_file
 
 model_dialog_grp_physics
 
@@ -843,7 +839,7 @@ property_list
 type\\index\\name
 quality_factor
 
-rand_id_131607
+rand_id_572251
 
 rc_dialog
 

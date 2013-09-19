@@ -33,7 +33,7 @@ ModeMaterial::ModeMaterial() :
 	AppearanceDialog = NULL;
 
 	MaterialVB[1] = VBTemp;
-	for (int i=2;i<MATERIAL_MAX_TEXTURES;i++)
+	for (int i=2;i<=MATERIAL_MAX_TEXTURES;i++)
 		MaterialVB[i] = NixCreateVB(MATERIAL_NUMX * MATERIAL_NUMY * 2, i);
 
 	shape_type = HuiConfigReadStr("MaterialShapeType", "teapot");
@@ -223,7 +223,7 @@ void ModeMaterial::UpdateShape()
 	if (shape_smooth)
 		geo->Smoothen();
 
-	for (int i=1;i<MATERIAL_MAX_TEXTURES;i++){
+	for (int i=1;i<=MATERIAL_MAX_TEXTURES;i++){
 		int vb = MaterialVB[i];
 		NixVBClear(vb);
 		geo->Preview(vb, i);
