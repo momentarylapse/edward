@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-597
+601
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -775,6 +775,12 @@ new_torus
 
 new_torus_dialog
 
+new_torus_dialog_slides
+
+new_torus_dialog_t_edges
+
+new_torus_dialog_t_rings
+
 new_tria
 New triangle
 normal_this_angular
@@ -787,7 +793,9 @@ np_num_x
 \\1
 np_num_y
 \\1
-ntdt_slides
+nt_edges
+
+nt_rings
 
 nterrain_dialog_t_raster
 
@@ -841,7 +849,7 @@ property_list
 type\\index\\name
 quality_factor
 \\0\\100\\0.1
-rand_id_396093
+rand_id_683675
 
 rc_dialog
 Rudimentary configuration

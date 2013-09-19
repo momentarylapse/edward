@@ -1,20 +1,6 @@
-// IDs
-enum{
-	HMM_NEW_PLANE_DIALOG,
-	HMM_NEW_PLANE_DIALOG_T_X,
-	HMM_NP_NUM_X,
-	HMM_NEW_PLANE_DIALOG_T_Y,
-	HMM_NP_NUM_Y
-};
-
-
-	// dialog
-	NewPlaneDialog=HuiCreateDialog("neue Ebene",165,70,MainWin,true,NULL);
-	NewPlaneDialog->SetID(HMM_NEW_PLANE_DIALOG);
-	NewPlaneDialog->AddText("Streifen X:",10,10,85,25,HMM_NEW_PLANE_DIALOG_T_X);
-	NewPlaneDialog->AddSpinButton("\\1",95,10,60,25,HMM_NP_NUM_X);
-	NewPlaneDialog->AddText("Streifen Y:",10,35,85,25,HMM_NEW_PLANE_DIALOG_T_Y);
-	NewPlaneDialog->AddSpinButton("\\1",95,35,60,25,HMM_NP_NUM_Y);
-	NewPlaneDialog->Update();
-
-
+Dialog new_plane_dialog "neue Ebene" 100 50 allow-root
+	Grid ? "" 2 2
+		Text new_plane_dialog_t_x "Streifen X:"
+		SpinButton np_num_x "\\1"
+		Text new_plane_dialog_t_y "Streifen Y:"
+		SpinButton np_num_y "\\1"

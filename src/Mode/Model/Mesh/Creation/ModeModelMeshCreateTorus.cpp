@@ -37,8 +37,8 @@ void ModeModelMeshCreateTorus::OnStart()
 	// Dialog
 	dialog = HuiCreateResourceDialog("new_torus_dialog", ed);
 
-	dialog->SetInt("nc_x", HuiConfigReadInt("NewTorusNumX", 32));
-	dialog->SetInt("nc_y", HuiConfigReadInt("NewTorusNumY", 16));
+	dialog->SetInt("nt_rings", HuiConfigReadInt("NewTorusNumX", 32));
+	dialog->SetInt("nt_edges", HuiConfigReadInt("NewTorusNumY", 16));
 	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
 	dialog->Show();
 	dialog->Event("hui:close", &HuiFuncIgnore);
@@ -58,8 +58,8 @@ void ModeModelMeshCreateTorus::UpdateGeometry()
 	if (geo)
 		delete(geo);
 	if (pos_chosen){
-		int nx = dialog->GetInt("nc_x");
-		int ny = dialog->GetInt("nc_y");
+		int nx = dialog->GetInt("nt_rings");
+		int ny = dialog->GetInt("nt_edges");
 		HuiConfigWriteInt("NewTorusNumX", nx);
 		HuiConfigWriteInt("NewTorusNumY", ny);
 		geo = new ModelGeometryTorus(pos, axis, radius1, radius2, nx, ny);

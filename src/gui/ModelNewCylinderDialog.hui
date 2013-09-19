@@ -1,10 +1,6 @@
-	// dialog
-	NewCylinderDialog = HuiCreateDialog("neuer Zylinder", 195, 75, MainWin, true);
-	NewCylinderDialog->SetID("new_cylinder_dialog");
-	NewCylinderDialog->AddText("Ringe", 10, 10, 55, 25, "new_cylinder_dialog_t_rings");
-	NewCylinderDialog->AddSpinButton("\\1", 65, 10, 120, 25, "ncy_rings");
-	NewCylinderDialog->AddText("Kanten", 10, 40, 55, 25, "new_cylinder_dialog_t_edges");
-	NewCylinderDialog->AddSpinButton("\\2", 65, 40, 120, 25, "ncy_edges");
-	NewCylinderDialog->Update();
-
-
+Dialog new_cylinder_dialog "neuer Zylinder" 100 50 allow-root
+	Grid ? "" 2 2
+		Text new_cylinder_dialog_t_rings "Ringe"
+		SpinButton ncy_rings "\\1"
+		Text new_cylinder_dialog_t_edges "Kanten"
+		SpinButton ncy_edges "\\2"
