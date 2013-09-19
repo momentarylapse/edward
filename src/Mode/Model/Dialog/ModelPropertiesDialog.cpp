@@ -30,7 +30,6 @@ ModelPropertiesDialog::ModelPropertiesDialog(HuiWindow *_parent, bool _allow_par
 
 	EventM("cancel", this, &ModelPropertiesDialog::OnClose);
 	EventM("hui:close", this, &ModelPropertiesDialog::OnClose);
-	EventM("apply", this, &ModelPropertiesDialog::ApplyData);
 	EventM("ok", this, &ModelPropertiesDialog::OnOk);
 	EventM("generate_dists_auto", this, &ModelPropertiesDialog::OnGenerateDistsAuto);
 	EventM("ph_passive", this, &ModelPropertiesDialog::OnPhysicsPassive);

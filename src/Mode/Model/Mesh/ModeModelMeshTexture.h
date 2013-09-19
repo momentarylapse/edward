@@ -13,9 +13,8 @@
 #include "../../../lib/file/file.h"
 
 class DataModel;
-class ModelTextureLevelDialog;
 
-class ModeModelMeshTexture: public Mode<DataModel>
+class ModeModelMeshTexture: public Mode<DataModel>, public Observable
 {
 public:
 	ModeModelMeshTexture(ModeBase *parent);
@@ -39,8 +38,7 @@ public:
 	Array<ModelSkinVertexDummy> skin_vertex;
 
 	int CurrentTextureLevel;
-
-	ModelTextureLevelDialog *dialog;
+	void SetCurrentTextureLevel(int level);
 };
 
 extern ModeModelMeshTexture *mode_model_mesh_texture;

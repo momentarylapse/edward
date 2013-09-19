@@ -24,6 +24,7 @@ ModelMaterialDialog::ModelMaterialDialog(HuiWindow *_parent, DataModel *_data) :
 	temp = data->Material[mode_model_mesh->CurrentMaterial];
 	Subscribe(data);
 	Subscribe(mode_model_mesh);
+	Subscribe(mode_model_mesh_texture);
 
 
 	win->SetTooltip("mat_textures", _("&Ubereinanderliegende Textur-Schichten (multitexturing)\n- Doppelklick um eine Texturdatei zu w&ahlen"));
@@ -70,12 +71,15 @@ ModelMaterialDialog::ModelMaterialDialog(HuiWindow *_parent, DataModel *_data) :
 	win->EventM("alpha_dest", this, &ModelMaterialDialog::ApplyDataDelayed);
 	win->EventM("alpha_z_buffer", this, &ModelMaterialDialog::ApplyData);
 
+	win->ExpandAll("model_material_dialog_grp_textures", true);
+
 	LoadData();
 	apply_queue_depth = 0;
 }
 
 ModelMaterialDialog::~ModelMaterialDialog()
 {
+	Unsubscribe(mode_model_mesh_texture);
 	Unsubscribe(mode_model_mesh);
 	Unsubscribe(data);
 }
@@ -219,6 +223,7 @@ void ModelMaterialDialog::FillTextureList()
 		string img = ed->get_tex_image(tex);
 		AddString("mat_textures", format("Tex[%d]\\%s\\%s", i, img.c_str(), file_secure(temp.TextureFile[i]).c_str()));
 	}
+	SetInt("mat_textures", mode_model_mesh_texture->CurrentTextureLevel);
 	Enable("mat_delete_texture_level", false);
 	Enable("mat_empty_texture_level", false);
 }
@@ -250,6 +255,7 @@ void ModelMaterialDialog::OnTexturesSelect()
 	int sel = GetInt("");
 	Enable("mat_delete_texture_level", (sel >= 0) && (sel < temp.NumTextures));
 	Enable("mat_empty_texture_level", (sel >= 0) && (sel < temp.NumTextures));
+	mode_model_mesh_texture->SetCurrentTextureLevel(sel);
 }
 
 void ModelMaterialDialog::OnDeleteTextureLevel()

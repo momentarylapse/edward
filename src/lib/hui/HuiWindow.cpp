@@ -445,6 +445,8 @@ void HuiWindowAddControl(HuiWindow *win, const string &type, const string &title
 		win->AddScroller(title, x, y, width, height, id);
 	else if (type == "Paned")
 		win->AddPaned(title, x, y, width, height, id);
+	else if (type == "Separator")
+		win->AddSeparator(title, x, y, width, height, id);
 }
 
 void HuiWindow::FromResource(const string &id)

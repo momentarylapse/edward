@@ -484,5 +484,5 @@ void ModeModelMesh::SetCurrentMaterial(int index)
 		return;
 	CurrentMaterial = index;
 	Notify("Change");
-	mode_model_mesh_texture->CurrentTextureLevel = 0;
+	mode_model_mesh_texture->SetCurrentTextureLevel(0);
 }

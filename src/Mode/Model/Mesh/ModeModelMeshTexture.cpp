@@ -9,12 +9,12 @@
 #include "../../../MultiView.h"
 #include "ModeModelMesh.h"
 #include "ModeModelMeshTexture.h"
-#include "../Dialog/ModelTextureLevelDialog.h"
 
 ModeModelMeshTexture *mode_model_mesh_texture = NULL;
 
 ModeModelMeshTexture::ModeModelMeshTexture(ModeBase *_parent) :
-	Mode<DataModel>("ModelMeshTexture", _parent, ed->multi_view_2d, "menu_model")
+	Mode<DataModel>("ModelMeshTexture", _parent, ed->multi_view_2d, "menu_model"),
+	Observable("ModelMeshTexture")
 {
 	CurrentTextureLevel = 0;
 }
@@ -72,28 +72,25 @@ void ModeModelMeshTexture::OnStart()
 
 	FetchData();
 
-	Subscribe(data);
-	Subscribe(multi_view, "SelectionChange");
+	Observer::Subscribe(data);
+	Observer::Subscribe(multi_view, "SelectionChange");
 
 	/*ed->SetTarget("root_table", 0);
 	ed->AddControlTable("", 1, 0, 1, 5, "side_table");
 	ed->DeleteControl("side_table");
 	ed->EmbedDialog()*/
 
-	mode_model_mesh->CloseMaterialDialog();
-
-	dialog = new ModelTextureLevelDialog(ed, data);
+	mode_model_mesh->ShowMaterialDialog();
 }
 
 
 
 void ModeModelMeshTexture::OnEnd()
 {
-	Unsubscribe(data);
-	Unsubscribe(multi_view);
+	Observer::Unsubscribe(data);
+	Observer::Unsubscribe(multi_view);
 	multi_view->ResetData(NULL);
 	skin_vertex.clear();
-	delete(dialog);
 }
 
 #define cur_tex			data->Material[mode_model_mesh->CurrentMaterial].Texture[CurrentTextureLevel]
@@ -172,14 +169,22 @@ void ModeModelMeshTexture::OnDraw()
 	}
 }
 
-
+void ModeModelMeshTexture::SetCurrentTextureLevel(int level)
+{
+	//if (CurrentTextureLevel == level)
+	//	return;
+	CurrentTextureLevel = level;
+	FetchData();
+	Notify("Change");
+}
 
 void ModeModelMeshTexture::OnUpdate(Observable *o)
 {
+	// consistency checks
+	if (CurrentTextureLevel >= data->Material[mode_model_mesh->CurrentMaterial].NumTextures)
+		SetCurrentTextureLevel(data->Material[mode_model_mesh->CurrentMaterial].NumTextures - 1);
+
 	if (o->GetName() == "Data"){
-		// consistency checks
-		if (CurrentTextureLevel >= data->Material[mode_model_mesh->CurrentMaterial].NumTextures)
-			CurrentTextureLevel = data->Material[mode_model_mesh->CurrentMaterial].NumTextures - 1;
 
 		if (o->GetMessage() == "SkinChange"){
 			int svi = 0;
@@ -197,6 +202,7 @@ void ModeModelMeshTexture::OnUpdate(Observable *o)
 	}else if (o->GetName() == "MultiView"){
 		//data->SelectionTrianglesFromVertices();
 		//data->SelectionSurfacesFromTriangles();
+	}else if (o->GetName() == "ModelMesg"){
 	}
 	//mode_model_mesh_triangle->FillSelectionBuffers();
 }

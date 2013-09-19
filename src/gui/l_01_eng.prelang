@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-596
+597
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -643,18 +643,20 @@ model_inventary
 #\\File
 model_material_dialog
 
+model_material_dialog_grp_color
+
 model_material_dialog_grp_list
 
-model_material_dialog_tab_control
-General\\Textures\\Colors\\Transparency
+model_material_dialog_grp_textures
+
+model_material_dialog_grp_transparency
+
 model_material_selection_dialog
 Select a material
 model_new
 New
 model_open
 Open...
-model_texture_level_dialog
-Texture levels
 move_allframes
 Effect all frames
 move_frame_dec
@@ -839,7 +841,7 @@ property_list
 type\\index\\name
 quality_factor
 \\0\\100\\0.1
-rand_id_572251
+rand_id_396093
 
 rc_dialog
 Rudimentary configuration
@@ -911,6 +913,8 @@ selection_properties
 Properties...
 send_bug_report
 Report a bug
+sep_vertical
+
 settings
 Settings...
 shader_file
@@ -1047,8 +1051,6 @@ texture_delete
 Delete
 texture_empty
 Leeren
-texture_list
-!format=tCit\\#\\Active\\\\File
 texture_map_complete
 1:1 mapping
 texture_menu_sign
@@ -1196,7 +1198,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-232
+231
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1544,8 +1546,6 @@ Textur-Koordinaten
 Texture coordinates
 Texturen (bmp,jpg,tga,avi)
 Textures (bmp,jpg,tga,avi)
-Texturen der einzelnen Materialien\n- Klick zum Bearbeiten der Texturkoordinaten
-
 Tiefe
 
 Torus außen skalieren

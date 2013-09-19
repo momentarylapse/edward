@@ -1,4 +1,0 @@
-Dialog model_texture_level_dialog "Textur-Ebenen" 268 360
-	TreeView texture_list "#\\\\Datei" format=tit
-
-

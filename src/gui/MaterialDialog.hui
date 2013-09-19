@@ -1,5 +1,5 @@
 Dialog material_dialog "Material-Eigenschaften" 365 715 allow-root
-	Grid ? "" 1 6
+	Grid ? "" 1 7
 		Expander material_dialog_grp_color "Farben"
 			Grid ? "" 2 5
 				Text ambient "Ambient"
@@ -14,7 +14,7 @@ Dialog material_dialog "Material-Eigenschaften" 365 715 allow-root
 				ColorButton mat_em ""
 		Expander material_dialog_grp_textures "Texturen"
 			Grid ? "" 1 2
-				ListView mat_textures "Ebene\\\\Textur" format=tit
+				ListView mat_textures "Ebene\\\\Textur" format=tit select-single
 				Grid ? "" 3 1
 					Button mat_add_texture_level "neue Ebene" image=hui:add
 					Button mat_delete_texture_level "Löschen" image=hui:delete
@@ -51,6 +51,7 @@ Dialog material_dialog "Material-Eigenschaften" 365 715 allow-root
 			Grid ? "" 2 1
 				Edit shader_file "" expandx
 				Button find_shader "" image=hui:open
+		Separator sep_vertical "" vertical
 		Expander material_dialog_grp_friction "Reibungs-Konstanten"
 			Grid ? "" 2 4
 				Text material_physics_dialog_t_rcstatic "Haftreibung"

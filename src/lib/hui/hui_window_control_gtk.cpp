@@ -16,6 +16,7 @@
 #include "Controls/HuiControlProgressBar.h"
 #include "Controls/HuiControlRadioButton.h"
 #include "Controls/HuiControlScroller.h"
+#include "Controls/HuiControlSeparator.h"
 #include "Controls/HuiControlSlider.h"
 #include "Controls/HuiControlSpinButton.h"
 #include "Controls/HuiControlTabControl.h"
@@ -394,6 +395,11 @@ void HuiWindow::AddPaned(const string &title,int x,int y,int width,int height,co
 void HuiWindow::AddScroller(const string &title,int x,int y,int width,int height,const string &id)
 {
 	_InsertControl_(new HuiControlScroller(title, id), x, y, width, height);
+}
+
+void HuiWindow::AddSeparator(const string &title,int x,int y,int width,int height,const string &id)
+{
+	_InsertControl_(new HuiControlSeparator(title, id), x, y, width, height);
 }
 
 void HuiWindow::EmbedDialog(const string &id, int x, int y)

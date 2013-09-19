@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-596
+597
 // Data (ID,Text)
 ad_dialog
 
@@ -643,9 +643,13 @@ model_inventary
 
 model_material_dialog
 
+model_material_dialog_grp_color
+
 model_material_dialog_grp_list
 
-model_material_dialog_tab_control
+model_material_dialog_grp_textures
+
+model_material_dialog_grp_transparency
 
 model_material_selection_dialog
 
@@ -653,8 +657,6 @@ model_new
 新規
 model_open
 開く...
-model_texture_level_dialog
-
 move_allframes
 
 move_frame_dec
@@ -839,7 +841,7 @@ property_list
 type\\index\\name
 quality_factor
 
-rand_id_572251
+rand_id_396093
 
 rc_dialog
 
@@ -910,6 +912,8 @@ select_none
 selection_properties
 設定...
 send_bug_report
+
+sep_vertical
 
 settings
 
@@ -1046,8 +1050,6 @@ texture_choose
 texture_delete
 削除
 texture_empty
-
-texture_list
 
 texture_map_complete
 
@@ -1196,7 +1198,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-232
+231
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1543,8 +1545,6 @@ Textur-Datei nicht ladbar: %s
 Textur-Koordinaten
 
 Texturen (bmp,jpg,tga,avi)
-
-Texturen der einzelnen Materialien\n- Klick zum Bearbeiten der Texturkoordinaten
 
 Tiefe
 
