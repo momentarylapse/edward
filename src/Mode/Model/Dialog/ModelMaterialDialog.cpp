@@ -236,6 +236,7 @@ void ModelMaterialDialog::OnAddTextureLevel()
 		return;
 	}
 	temp.TextureFile[temp.NumTextures ++] = "";
+	temp.CheckTextures();
 	ApplyData();
 }
 
