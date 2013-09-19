@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-598
+594
 // Data (ID,Text)
 ad_dialog
 
@@ -59,8 +59,6 @@ animation_list
 #\\type\\num frames\\name
 animation_new
 新規
-appearance
-外観
 apply
 適用
 automapping
@@ -423,13 +421,7 @@ mat_delete_texture_level
 
 mat_di
 !alpha
-mat_dialog_buttonbar
-
 mat_empty_texture_level
-
-mat_phys_buttonbar
-
-mat_phys_grp_friction
 
 mat_shininess
 
@@ -441,14 +433,24 @@ mat_transp_function_grid
 
 material_dialog
 
+material_dialog_grp_color
+
+material_dialog_grp_friction
+
+material_dialog_grp_reflection
+
+material_dialog_grp_shader
+
+material_dialog_grp_textures
+
+material_dialog_grp_transparency
+
 material_dialog_t_refl_density
 
 material_dialog_t_trans_dest
 
 material_dialog_t_trans_source
 
-material_dialog_tab_control
-colors\\transparency\\reflection\\additional
 material_file
 
 material_list
@@ -457,8 +459,6 @@ material_new
 新規
 material_open
 開く...
-material_physics_dialog
-
 material_physics_dialog_t_rcjump
 
 material_physics_dialog_t_rcroll
@@ -505,8 +505,6 @@ menu_mapping
 
 menu_material
 マテリアル
-menu_material_properties
-プロパティ
 menu_material_shape
 
 menu_model
@@ -829,8 +827,6 @@ ph_passive
 
 photons
 
-physics
-物理学...
 physics_enabled
 
 preview
@@ -843,7 +839,7 @@ property_list
 type\\index\\name
 quality_factor
 
-rand_id_72651
+rand_id_142533
 
 rc_dialog
 
@@ -915,8 +911,6 @@ selection_properties
 設定...
 send_bug_report
 
-set
-適用
 settings
 
 shader_file
@@ -955,8 +949,6 @@ skybox
 #\\モデル　('SkyBox')
 sound_list
 
-sounds
-音...
 specular
 反射光
 speed

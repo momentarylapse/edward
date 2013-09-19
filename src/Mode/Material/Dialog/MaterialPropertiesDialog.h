@@ -10,16 +10,20 @@
 
 #include "../../../lib/hui/hui.h"
 #include "../../../Data/Material/DataMaterial.h"
+#include "../../../Stuff/EmbeddedDialog.h"
 #include "../../../Stuff/Observer.h"
 
-class MaterialPropertiesDialog: public HuiWindow, public Observer
+class MaterialPropertiesDialog: public EmbeddedDialog, public Observer
 {
 public:
-	MaterialPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataMaterial *_data);
+	MaterialPropertiesDialog(HuiWindow *_parent, DataMaterial *_data);
 	virtual ~MaterialPropertiesDialog();
 
 	void LoadData();
 	void ApplyData();
+	void ApplyDataDelayed();
+	void ApplyPhysData();
+	void ApplyPhysDataDelayed();
 
 	void OnTextures();
 	void OnTexturesSelect();
@@ -27,11 +31,9 @@ public:
 	void OnDeleteTextureLevel();
 	void OnEmptyTextureLevel();
 	void OnTransparencyMode();
-	void OnReflection();
+	void OnReflectionMode();
 	void OnReflectionTextures();
 	void OnFindShader();
-	void OnOk();
-	void OnClose();
 
 	void RefillReflTexView();
 	void FillTextureList();
@@ -41,8 +43,10 @@ public:
 
 private:
 	DataMaterial *data;
-	DataMaterial::AppearanceData *app;
 	DataMaterial::AppearanceData temp;
+	DataMaterial::PhysicsData temp_phys;
+	int apply_queue_depth;
+	int apply_phys_queue_depth;
 };
 
 #endif /* MATERIALPROPERTIESDIALOG_H_ */

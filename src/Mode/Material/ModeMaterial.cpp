@@ -9,7 +9,6 @@
 #include "ModeMaterial.h"
 #include "../../Data/Material/DataMaterial.h"
 #include "Dialog/MaterialPropertiesDialog.h"
-#include "Dialog/MaterialPhysicsDialog.h"
 #include "../../Data/Model/DataModel.h"
 #include "../../Data/Model/Geometry/ModelGeometryCube.h"
 #include "../../Data/Model/Geometry/ModelGeometryBall.h"
@@ -93,11 +92,6 @@ void ModeMaterial::OnCommand(const string & id)
 	if (id == "save_as")
 		SaveAs();
 
-	if (id == "appearance")
-		ExecuteAppearanceDialog();
-	if (id == "physics")
-		ExecutePhysicsDialog();
-
 	if (id == "undo")
 		data->Undo();
 	if (id == "redo")
@@ -117,23 +111,6 @@ void ModeMaterial::OnCommand(const string & id)
 		SetShapeType("icosahedron");
 	if (id == "material_shape_teapot")
 		SetShapeType("teapot");
-}
-
-void ModeMaterial::ExecuteAppearanceDialog()
-{
-	if (AppearanceDialog)
-		return;
-
-	AppearanceDialog = new MaterialPropertiesDialog(ed, true, data);
-
-	AppearanceDialog->Show();
-	//AppearanceDialog->Run();
-}
-
-void ModeMaterial::ExecutePhysicsDialog()
-{
-	MaterialPhysicsDialog *dlg = new MaterialPhysicsDialog(ed, true, data);
-	dlg->Run();
 }
 
 
@@ -170,9 +147,7 @@ bool ModeMaterial::Open()
 
 void ModeMaterial::OnEnd()
 {
-	if (AppearanceDialog)
-		delete(AppearanceDialog);
-	AppearanceDialog = NULL;
+	delete(AppearanceDialog);
 
 	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
 	t->Reset();
@@ -201,14 +176,14 @@ void ModeMaterial::OnStart()
 	t->AddSeparator();
 	t->AddItem(L("undo"),dir + "undo.png","undo");
 	t->AddItem(L("redo"),dir + "redo.png","redo");
-	t->AddSeparator();
-	t->AddItem(_("Eigenschaften"),dir + "configure.png", "appearance");
 	t->Enable(true);
 	t->Configure(false,true);
 	t = ed->toolbar[HuiToolbarLeft];
 	t->Reset();
 	t->Enable(false);
 	multi_view->MVRectable = false;
+
+	AppearanceDialog = new MaterialPropertiesDialog(ed, data);
 
 	UpdateShape();
 }

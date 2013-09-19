@@ -1,6 +1,6 @@
 t3
 // Number Of Resources
-52
+51
 // Resource
 Menu
 
@@ -123,7 +123,7 @@ ad_dialog
 
 20
 ControlTable
-rand_id_852357
+rand_id_450163
 
 1
 0
@@ -146,7 +146,7 @@ ad_tab_control
 -1
 0
 0
-rand_id_852357
+rand_id_450163
 
 ListView
 file_list_cur
@@ -175,7 +175,7 @@ file_list_all
 ad_tab_control
 
 ControlTable
-rand_id_234717
+rand_id_400780
 
 1
 0
@@ -198,7 +198,7 @@ adt_file
 -1
 0
 0
-rand_id_234717
+rand_id_400780
 
 Text
 file_details
@@ -224,7 +224,7 @@ adt_source
 -1
 0
 0
-rand_id_234717
+rand_id_400780
 
 ListView
 file_list_detail_source
@@ -250,7 +250,7 @@ adt_dest
 -1
 0
 0
-rand_id_234717
+rand_id_400780
 
 ListView
 file_list_detail_dest
@@ -302,7 +302,7 @@ admin_button_bar
 -1
 0
 0
-rand_id_852357
+rand_id_450163
 
 Button
 delete
@@ -1379,7 +1379,7 @@ font_dialog
 
 29
 ControlTable
-rand_id_595201
+rand_id_143760
 
 1
 0
@@ -1402,10 +1402,10 @@ font_dt_font
 -1
 0
 0
-rand_id_595201
+rand_id_143760
 
 ControlTable
-rand_id_960067
+rand_id_516432
 
 1
 0
@@ -1428,7 +1428,7 @@ font_dt_numglyphs
 -1
 0
 0
-rand_id_960067
+rand_id_516432
 
 SpinButton
 num
@@ -1441,7 +1441,7 @@ num
 -1
 0
 0
-rand_id_960067
+rand_id_516432
 
 Text
 font_dt_height
@@ -1454,7 +1454,7 @@ font_dt_height
 -1
 0
 0
-rand_id_960067
+rand_id_516432
 
 SpinButton
 height
@@ -1467,7 +1467,7 @@ height
 -1
 0
 0
-rand_id_960067
+rand_id_516432
 
 Text
 font_dt_y1
@@ -1480,7 +1480,7 @@ font_dt_y1
 -1
 0
 0
-rand_id_960067
+rand_id_516432
 
 SpinButton
 y1
@@ -1493,7 +1493,7 @@ y1
 -1
 0
 0
-rand_id_960067
+rand_id_516432
 
 Text
 font_dt_y2
@@ -1506,7 +1506,7 @@ font_dt_y2
 -1
 0
 0
-rand_id_960067
+rand_id_516432
 
 SpinButton
 y2
@@ -1519,7 +1519,7 @@ y2
 -1
 0
 0
-rand_id_960067
+rand_id_516432
 
 Text
 font_dt_scalex
@@ -1532,7 +1532,7 @@ font_dt_scalex
 -1
 0
 0
-rand_id_960067
+rand_id_516432
 
 SpinButton
 factorx
@@ -1545,7 +1545,7 @@ factorx
 -1
 0
 0
-rand_id_960067
+rand_id_516432
 
 Text
 font_dt_scaley
@@ -1558,7 +1558,7 @@ font_dt_scaley
 -1
 0
 0
-rand_id_960067
+rand_id_516432
 
 SpinButton
 factory
@@ -1571,7 +1571,7 @@ factory
 -1
 0
 0
-rand_id_960067
+rand_id_516432
 
 Text
 font_dt_unknown
@@ -1584,7 +1584,7 @@ font_dt_unknown
 -1
 0
 0
-rand_id_960067
+rand_id_516432
 
 Edit
 unknown
@@ -1597,7 +1597,7 @@ unknown
 -1
 0
 0
-rand_id_960067
+rand_id_516432
 
 Group
 font_dt_character
@@ -1610,10 +1610,10 @@ font_dt_character
 -1
 0
 0
-rand_id_595201
+rand_id_143760
 
 ControlTable
-rand_id_834998
+rand_id_450567
 
 1
 0
@@ -1636,7 +1636,7 @@ font_dt_name
 -1
 0
 0
-rand_id_834998
+rand_id_450567
 
 Edit
 name
@@ -1649,7 +1649,7 @@ name
 -1
 0
 0
-rand_id_834998
+rand_id_450567
 
 Text
 font_dt_x1
@@ -1662,7 +1662,7 @@ font_dt_x1
 -1
 0
 0
-rand_id_834998
+rand_id_450567
 
 SpinButton
 x1
@@ -1675,7 +1675,7 @@ x1
 -1
 0
 0
-rand_id_834998
+rand_id_450567
 
 Text
 font_dt_x2
@@ -1688,7 +1688,7 @@ font_dt_x2
 -1
 0
 0
-rand_id_834998
+rand_id_450567
 
 SpinButton
 x2
@@ -1701,7 +1701,7 @@ x2
 -1
 0
 0
-rand_id_834998
+rand_id_450567
 
 Text
 font_dt_width
@@ -1714,7 +1714,7 @@ font_dt_width
 -1
 0
 0
-rand_id_834998
+rand_id_450567
 
 SpinButton
 width
@@ -1727,7 +1727,7 @@ width
 -1
 0
 0
-rand_id_834998
+rand_id_450567
 
 Group
 font_dt_example
@@ -1740,7 +1740,7 @@ font_dt_example
 -1
 0
 0
-rand_id_595201
+rand_id_143760
 
 Edit
 text
@@ -2913,7 +2913,7 @@ material_dialog
 
 1
 365
-320
+715
 0
 0
 0
@@ -2921,22 +2921,22 @@ material_dialog
 0
 
 
-51
+60
 ControlTable
-rand_id_150066
+rand_id_320729
 
 1
 0
 0
 1
-2
+6
 -1
 0
 0
 
 
-TabControl
-material_dialog_tab_control
+Expander
+material_dialog_grp_color
 
 1
 0
@@ -2946,20 +2946,20 @@ material_dialog_tab_control
 -1
 0
 0
-rand_id_150066
+rand_id_320729
 
 ControlTable
-rand_id_87721
+rand_id_22786
 
 1
 0
 0
 2
 5
+-1
 0
 0
-0
-material_dialog_tab_control
+material_dialog_grp_color
 
 Text
 ambient
@@ -2972,7 +2972,7 @@ ambient
 -1
 0
 0
-rand_id_87721
+rand_id_22786
 
 ColorButton
 mat_am
@@ -2985,7 +2985,7 @@ mat_am
 -1
 0
 0
-rand_id_87721
+rand_id_22786
 
 Text
 diffuse
@@ -2998,7 +2998,7 @@ diffuse
 -1
 0
 0
-rand_id_87721
+rand_id_22786
 
 ColorButton
 mat_di
@@ -3011,7 +3011,7 @@ mat_di
 -1
 0
 0
-rand_id_87721
+rand_id_22786
 
 Text
 specular
@@ -3024,7 +3024,7 @@ specular
 -1
 0
 0
-rand_id_87721
+rand_id_22786
 
 ColorButton
 mat_sp
@@ -3037,7 +3037,7 @@ mat_sp
 -1
 0
 0
-rand_id_87721
+rand_id_22786
 
 Text
 shininess
@@ -3050,7 +3050,7 @@ shininess
 -1
 0
 0
-rand_id_87721
+rand_id_22786
 
 SpinButton
 mat_shininess
@@ -3063,7 +3063,7 @@ mat_shininess
 -1
 0
 0
-rand_id_87721
+rand_id_22786
 
 Text
 emission
@@ -3076,7 +3076,7 @@ emission
 -1
 0
 0
-rand_id_87721
+rand_id_22786
 
 ColorButton
 mat_em
@@ -3089,20 +3089,33 @@ mat_em
 -1
 0
 0
-rand_id_87721
+rand_id_22786
+
+Expander
+material_dialog_grp_textures
+
+1
+0
+1
+1
+1
+-1
+0
+0
+rand_id_320729
 
 ControlTable
-rand_id_342225
+rand_id_117780
 
 1
 0
 0
 1
 2
-1
+-1
 0
 0
-material_dialog_tab_control
+material_dialog_grp_textures
 
 ListView
 mat_textures
@@ -3115,10 +3128,10 @@ mat_textures
 -1
 0
 0
-rand_id_342225
+rand_id_117780
 
 ControlTable
-rand_id_282372
+rand_id_810895
 
 1
 0
@@ -3128,7 +3141,7 @@ rand_id_282372
 -1
 0
 0
-rand_id_342225
+rand_id_117780
 
 Button
 mat_add_texture_level
@@ -3141,7 +3154,7 @@ hui:add
 -1
 0
 0
-rand_id_282372
+rand_id_810895
 
 Button
 mat_delete_texture_level
@@ -3154,7 +3167,7 @@ hui:delete
 -1
 0
 0
-rand_id_282372
+rand_id_810895
 
 Button
 mat_empty_texture_level
@@ -3167,20 +3180,33 @@ hui:clear
 -1
 0
 0
-rand_id_282372
+rand_id_810895
+
+Expander
+material_dialog_grp_transparency
+
+1
+0
+2
+1
+1
+-1
+0
+0
+rand_id_320729
 
 ControlTable
-rand_id_980209
+rand_id_281778
 
 1
 0
 0
 1
 9
-2
+-1
 0
 0
-material_dialog_tab_control
+material_dialog_grp_transparency
 
 RadioButton
 transparency_mode:none
@@ -3193,7 +3219,7 @@ transparency_mode:none
 -1
 0
 0
-rand_id_980209
+rand_id_281778
 
 RadioButton
 transparency_mode:color_key
@@ -3206,7 +3232,7 @@ transparency_mode:color_key
 -1
 0
 0
-rand_id_980209
+rand_id_281778
 
 RadioButton
 transparency_mode:function
@@ -3219,7 +3245,7 @@ transparency_mode:function
 -1
 0
 0
-rand_id_980209
+rand_id_281778
 
 ControlTable
 mat_transp_function_grid
@@ -3232,7 +3258,7 @@ mat_transp_function_grid
 -1
 0
 0
-rand_id_980209
+rand_id_281778
 
 Text
 material_dialog_t_trans_source
@@ -3297,7 +3323,7 @@ transparency_mode:factor
 -1
 0
 0
-rand_id_980209
+rand_id_281778
 
 ControlTable
 mat_transp_alpha_grid
@@ -3310,7 +3336,7 @@ mat_transp_alpha_grid
 -1
 0
 0
-rand_id_980209
+rand_id_281778
 
 SpinButton
 alpha_factor
@@ -3349,20 +3375,33 @@ alpha_z_buffer
 -1
 0
 0
-rand_id_980209
+rand_id_281778
+
+Expander
+material_dialog_grp_reflection
+
+1
+0
+3
+1
+1
+-1
+0
+0
+rand_id_320729
 
 ControlTable
-rand_id_18792
+rand_id_692725
 
 1
 0
 0
 1
-10
-3
+6
+-1
 0
 0
-material_dialog_tab_control
+material_dialog_grp_reflection
 
 RadioButton
 reflection_mode:none
@@ -3375,7 +3414,7 @@ reflection_mode:none
 -1
 0
 0
-rand_id_18792
+rand_id_692725
 
 RadioButton
 reflection_mode:cube_static
@@ -3388,7 +3427,7 @@ reflection_mode:cube_static
 -1
 0
 0
-rand_id_18792
+rand_id_692725
 
 ListView
 reflection_textures
@@ -3401,7 +3440,7 @@ reflection_textures
 -1
 0
 0
-rand_id_18792
+rand_id_692725
 
 RadioButton
 reflection_mode:cube_dynamic
@@ -3414,7 +3453,7 @@ reflection_mode:cube_dynamic
 -1
 0
 0
-rand_id_18792
+rand_id_692725
 
 ComboBox
 reflection_size
@@ -3427,10 +3466,10 @@ reflection_size
 -1
 0
 0
-rand_id_18792
+rand_id_692725
 
 ControlTable
-rand_id_37612
+rand_id_550898
 
 1
 0
@@ -3440,7 +3479,7 @@ rand_id_37612
 -1
 0
 0
-rand_id_18792
+rand_id_692725
 
 Text
 material_dialog_t_refl_density
@@ -3453,7 +3492,7 @@ material_dialog_t_refl_density
 -1
 0
 0
-rand_id_37612
+rand_id_550898
 
 SpinButton
 reflection_density
@@ -3466,7 +3505,7 @@ reflection_density
 -1
 0
 0
-rand_id_37612
+rand_id_550898
 
 Text
 percent
@@ -3479,20 +3518,33 @@ percent
 -1
 0
 0
-rand_id_37612
+rand_id_550898
+
+Expander
+material_dialog_grp_shader
+
+1
+0
+4
+1
+1
+-1
+0
+0
+rand_id_320729
 
 ControlTable
-rand_id_64021
+rand_id_6571
 
 1
 0
 0
 2
 1
-4
+-1
 0
 0
-material_dialog_tab_control
+material_dialog_grp_shader
 
 Edit
 shader_file
@@ -3505,7 +3557,7 @@ shader_file
 -1
 0
 0
-rand_id_64021
+rand_id_6571
 
 Button
 find_shader
@@ -3518,23 +3570,36 @@ hui:open
 -1
 0
 0
-rand_id_64021
+rand_id_6571
+
+Expander
+material_dialog_grp_friction
+
+1
+0
+5
+1
+1
+-1
+0
+0
+rand_id_320729
 
 ControlTable
-mat_dialog_buttonbar
+rand_id_408576
 
 1
 0
-1
+0
+2
 4
-1
 -1
 0
 0
-rand_id_150066
+material_dialog_grp_friction
 
 Text
-dummy_t
+material_physics_dialog_t_rcstatic
 
 1
 0
@@ -3544,11 +3609,11 @@ dummy_t
 -1
 0
 0
-mat_dialog_buttonbar
+rand_id_408576
 
-Button
-set
-hui:apply
+SpinButton
+rcstatic
+
 1
 1
 0
@@ -3557,40 +3622,92 @@ hui:apply
 -1
 0
 0
-mat_dialog_buttonbar
+rand_id_408576
 
-Button
-cancel
-hui:cancel
+Text
+material_physics_dialog_t_rcsliding
+
+1
+0
+1
+1
+1
+-1
+0
+0
+rand_id_408576
+
+SpinButton
+rcsliding
+
+1
+1
+1
+1
+1
+-1
+0
+0
+rand_id_408576
+
+Text
+material_physics_dialog_t_rcjump
+
+1
+0
+2
+1
+1
+-1
+0
+0
+rand_id_408576
+
+SpinButton
+rcjump
+
+1
 1
 2
-0
 1
 1
 -1
 0
 0
-mat_dialog_buttonbar
+rand_id_408576
 
-DefButton
-ok
-hui:ok
+Text
+material_physics_dialog_t_rcroll
+
+1
+0
+3
+1
+1
+-1
+0
+0
+rand_id_408576
+
+SpinButton
+rcroll
+
+1
 1
 3
-0
 1
 1
 -1
 0
 0
-mat_dialog_buttonbar
+rand_id_408576
 
 // Resource
 Menu
 menu_material
 
 1
-4
+3
 0
 0
 0
@@ -3599,7 +3716,7 @@ menu_material
 0
 
 
-49
+45
 ItemPopup
 menu_file
 
@@ -3913,58 +4030,6 @@ hui:quit
 
 
 ItemPopup
-menu_material_properties
-
-1
-3
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-appearance
-hui:preferences
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-physics
-hui:preferences
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemImage
-sounds
-hui:preferences
-1
-0
-0
-0
-0
-0
-0
-0
-
-
-ItemPopup
 menu_world_view
 
 1
@@ -4238,216 +4303,6 @@ hui:about
 
 
 // Resource
-SizableDialog
-material_physics_dialog
-
-1
-200
-150
-0
-0
-0
-0
-0
-
-
-15
-ControlTable
-rand_id_682019
-
-1
-0
-0
-1
-2
--1
-0
-0
-
-
-Group
-mat_phys_grp_friction
-
-1
-0
-0
-1
-1
--1
-0
-0
-rand_id_682019
-
-ControlTable
-rand_id_706598
-
-1
-0
-0
-2
-4
--1
-0
-0
-mat_phys_grp_friction
-
-Text
-material_physics_dialog_t_rcstatic
-
-1
-0
-0
-1
-1
--1
-0
-0
-rand_id_706598
-
-SpinButton
-rcstatic
-
-1
-1
-0
-1
-1
--1
-0
-0
-rand_id_706598
-
-Text
-material_physics_dialog_t_rcsliding
-
-1
-0
-1
-1
-1
--1
-0
-0
-rand_id_706598
-
-SpinButton
-rcsliding
-
-1
-1
-1
-1
-1
--1
-0
-0
-rand_id_706598
-
-Text
-material_physics_dialog_t_rcjump
-
-1
-0
-2
-1
-1
--1
-0
-0
-rand_id_706598
-
-SpinButton
-rcjump
-
-1
-1
-2
-1
-1
--1
-0
-0
-rand_id_706598
-
-Text
-material_physics_dialog_t_rcroll
-
-1
-0
-3
-1
-1
--1
-0
-0
-rand_id_706598
-
-SpinButton
-rcroll
-
-1
-1
-3
-1
-1
--1
-0
-0
-rand_id_706598
-
-ControlTable
-mat_phys_buttonbar
-
-1
-0
-1
-3
-1
--1
-0
-0
-rand_id_682019
-
-Text
-dummy_t
-
-1
-0
-0
-1
-1
--1
-0
-0
-mat_phys_buttonbar
-
-Button
-cancel
-hui:cancel
-1
-1
-0
-1
-1
--1
-0
-0
-mat_phys_buttonbar
-
-DefButton
-ok
-hui:ok
-1
-2
-0
-1
-1
--1
-0
-0
-mat_phys_buttonbar
-
-// Resource
 Dialog
 material_sound_dialog
 
@@ -4517,7 +4372,7 @@ animation_dialog
 
 32
 ControlTable
-rand_id_41956
+rand_id_535056
 
 1
 0
@@ -4540,10 +4395,10 @@ t_list
 -1
 0
 0
-rand_id_41956
+rand_id_535056
 
 ControlTable
-rand_id_907882
+rand_id_171349
 
 1
 0
@@ -4566,10 +4421,10 @@ animation_list
 -1
 0
 0
-rand_id_907882
+rand_id_171349
 
 ControlTable
-rand_id_940759
+rand_id_835729
 
 1
 0
@@ -4579,7 +4434,7 @@ rand_id_940759
 -1
 0
 0
-rand_id_907882
+rand_id_171349
 
 Button
 animation_new
@@ -4592,7 +4447,7 @@ hui:new
 -1
 0
 0
-rand_id_940759
+rand_id_835729
 
 Button
 animation_delete
@@ -4605,7 +4460,7 @@ hui:delete
 -1
 0
 0
-rand_id_940759
+rand_id_835729
 
 Group
 t_properties
@@ -4618,10 +4473,10 @@ t_properties
 -1
 0
 0
-rand_id_41956
+rand_id_535056
 
 ControlTable
-rand_id_441619
+rand_id_47457
 
 1
 0
@@ -4644,7 +4499,7 @@ t_name
 -1
 0
 0
-rand_id_441619
+rand_id_47457
 
 Edit
 name
@@ -4657,7 +4512,7 @@ name
 -1
 0
 0
-rand_id_441619
+rand_id_47457
 
 Text
 t_animationfpsconst
@@ -4670,7 +4525,7 @@ t_animationfpsconst
 -1
 0
 0
-rand_id_441619
+rand_id_47457
 
 SpinButton
 fps_const
@@ -4683,7 +4538,7 @@ fps_const
 -1
 0
 0
-rand_id_441619
+rand_id_47457
 
 Text
 t_animationfpsfactor
@@ -4696,7 +4551,7 @@ t_animationfpsfactor
 -1
 0
 0
-rand_id_441619
+rand_id_47457
 
 SpinButton
 fps_factor
@@ -4709,7 +4564,7 @@ fps_factor
 -1
 0
 0
-rand_id_441619
+rand_id_47457
 
 Group
 t_frame
@@ -4722,10 +4577,10 @@ t_frame
 -1
 0
 0
-rand_id_41956
+rand_id_535056
 
 ControlTable
-rand_id_215103
+rand_id_16760
 
 1
 0
@@ -4748,10 +4603,10 @@ frame
 -1
 0
 0
-rand_id_215103
+rand_id_16760
 
 ControlTable
-rand_id_289060
+rand_id_413323
 
 1
 0
@@ -4761,7 +4616,7 @@ rand_id_289060
 -1
 0
 0
-rand_id_215103
+rand_id_16760
 
 Button
 new_frame
@@ -4774,7 +4629,7 @@ hui:new
 -1
 0
 0
-rand_id_289060
+rand_id_413323
 
 Button
 delete_frame
@@ -4787,7 +4642,7 @@ hui:delete
 -1
 0
 0
-rand_id_289060
+rand_id_413323
 
 Group
 t_simulate
@@ -4800,10 +4655,10 @@ t_simulate
 -1
 0
 0
-rand_id_41956
+rand_id_535056
 
 ControlTable
-rand_id_517194
+rand_id_208383
 
 1
 0
@@ -4816,7 +4671,7 @@ rand_id_517194
 t_simulate
 
 ControlTable
-rand_id_933244
+rand_id_944985
 
 1
 0
@@ -4826,7 +4681,7 @@ rand_id_933244
 -1
 0
 0
-rand_id_517194
+rand_id_208383
 
 Text
 ani_dt_sim_speed
@@ -4839,7 +4694,7 @@ ani_dt_sim_speed
 -1
 0
 0
-rand_id_933244
+rand_id_944985
 
 SpinButton
 speed
@@ -4852,7 +4707,7 @@ speed
 -1
 0
 0
-rand_id_933244
+rand_id_944985
 
 Text
 percent
@@ -4865,7 +4720,7 @@ percent
 -1
 0
 0
-rand_id_933244
+rand_id_944985
 
 Text
 ani_dt_sim_param
@@ -4878,7 +4733,7 @@ ani_dt_sim_param
 -1
 0
 0
-rand_id_933244
+rand_id_944985
 
 SpinButton
 parameter
@@ -4891,10 +4746,10 @@ parameter
 -1
 0
 0
-rand_id_933244
+rand_id_944985
 
 ControlTable
-rand_id_967662
+rand_id_993594
 
 1
 0
@@ -4904,7 +4759,7 @@ rand_id_967662
 -1
 0
 0
-rand_id_517194
+rand_id_208383
 
 Button
 sim_start
@@ -4917,7 +4772,7 @@ hui:media-play
 -1
 0
 0
-rand_id_967662
+rand_id_993594
 
 Button
 sim_stop
@@ -4930,7 +4785,7 @@ hui:media-stop
 -1
 0
 0
-rand_id_967662
+rand_id_993594
 
 // Resource
 Dialog
@@ -5537,7 +5392,7 @@ model_material_dialog
 
 49
 ControlTable
-rand_id_852035
+rand_id_137118
 
 1
 0
@@ -5560,10 +5415,10 @@ model_material_dialog_tab_control
 -1
 0
 0
-rand_id_852035
+rand_id_137118
 
 ControlTable
-rand_id_808156
+rand_id_425945
 
 1
 0
@@ -5586,7 +5441,7 @@ default_material
 -1
 0
 0
-rand_id_808156
+rand_id_425945
 
 Text
 model_dialog_grp_material_file
@@ -5599,10 +5454,10 @@ model_dialog_grp_material_file
 -1
 0
 0
-rand_id_808156
+rand_id_425945
 
 ControlTable
-rand_id_682798
+rand_id_122996
 
 1
 0
@@ -5612,7 +5467,7 @@ rand_id_682798
 -1
 0
 0
-rand_id_808156
+rand_id_425945
 
 Edit
 material_file
@@ -5625,7 +5480,7 @@ material_file
 -1
 0
 0
-rand_id_682798
+rand_id_122996
 
 Button
 find_material
@@ -5638,7 +5493,7 @@ hui:open
 -1
 0
 0
-rand_id_682798
+rand_id_122996
 
 Button
 edit_material
@@ -5651,7 +5506,7 @@ hui:edit
 -1
 0
 0
-rand_id_682798
+rand_id_122996
 
 Text
 model_dialog_t_comment
@@ -5664,10 +5519,10 @@ model_dialog_t_comment
 -1
 0
 0
-rand_id_808156
+rand_id_425945
 
 ControlTable
-rand_id_501677
+rand_id_266206
 
 1
 0
@@ -5690,10 +5545,10 @@ mat_textures
 -1
 0
 0
-rand_id_501677
+rand_id_266206
 
 ControlTable
-rand_id_747724
+rand_id_653765
 
 1
 0
@@ -5703,7 +5558,7 @@ rand_id_747724
 -1
 0
 0
-rand_id_501677
+rand_id_266206
 
 Button
 mat_add_texture_level
@@ -5716,7 +5571,7 @@ hui:add
 -1
 0
 0
-rand_id_747724
+rand_id_653765
 
 Button
 mat_delete_texture_level
@@ -5729,7 +5584,7 @@ hui:delete
 -1
 0
 0
-rand_id_747724
+rand_id_653765
 
 Button
 mat_empty_texture_level
@@ -5742,10 +5597,10 @@ hui:clear
 -1
 0
 0
-rand_id_747724
+rand_id_653765
 
 ControlTable
-rand_id_389886
+rand_id_679424
 
 1
 0
@@ -5768,10 +5623,10 @@ default_colors
 -1
 0
 0
-rand_id_389886
+rand_id_679424
 
 ControlTable
-rand_id_681530
+rand_id_803088
 
 1
 0
@@ -5781,7 +5636,7 @@ rand_id_681530
 -1
 0
 0
-rand_id_389886
+rand_id_679424
 
 Text
 ambient
@@ -5794,7 +5649,7 @@ ambient
 -1
 0
 0
-rand_id_681530
+rand_id_803088
 
 ColorButton
 mat_am
@@ -5807,7 +5662,7 @@ mat_am
 -1
 0
 0
-rand_id_681530
+rand_id_803088
 
 Text
 diffuse
@@ -5820,7 +5675,7 @@ diffuse
 -1
 0
 0
-rand_id_681530
+rand_id_803088
 
 ColorButton
 mat_di
@@ -5833,7 +5688,7 @@ mat_di
 -1
 0
 0
-rand_id_681530
+rand_id_803088
 
 Text
 specular
@@ -5846,7 +5701,7 @@ specular
 -1
 0
 0
-rand_id_681530
+rand_id_803088
 
 ColorButton
 mat_sp
@@ -5859,7 +5714,7 @@ mat_sp
 -1
 0
 0
-rand_id_681530
+rand_id_803088
 
 Text
 shininess
@@ -5872,7 +5727,7 @@ shininess
 -1
 0
 0
-rand_id_681530
+rand_id_803088
 
 SpinButton
 mat_shininess
@@ -5885,7 +5740,7 @@ mat_shininess
 -1
 0
 0
-rand_id_681530
+rand_id_803088
 
 Text
 emission
@@ -5898,7 +5753,7 @@ emission
 -1
 0
 0
-rand_id_681530
+rand_id_803088
 
 ColorButton
 mat_em
@@ -5911,10 +5766,10 @@ mat_em
 -1
 0
 0
-rand_id_681530
+rand_id_803088
 
 ControlTable
-rand_id_600081
+rand_id_763090
 
 1
 0
@@ -5937,7 +5792,7 @@ transparency_mode:material
 -1
 0
 0
-rand_id_600081
+rand_id_763090
 
 RadioButton
 transparency_mode:none
@@ -5950,7 +5805,7 @@ transparency_mode:none
 -1
 0
 0
-rand_id_600081
+rand_id_763090
 
 RadioButton
 transparency_mode:color_key
@@ -5963,7 +5818,7 @@ transparency_mode:color_key
 -1
 0
 0
-rand_id_600081
+rand_id_763090
 
 RadioButton
 transparency_mode:function
@@ -5976,7 +5831,7 @@ transparency_mode:function
 -1
 0
 0
-rand_id_600081
+rand_id_763090
 
 ControlTable
 mmat_transp_function_grid
@@ -5989,7 +5844,7 @@ mmat_transp_function_grid
 -1
 0
 0
-rand_id_600081
+rand_id_763090
 
 Text
 material_dialog_t_trans_source
@@ -6054,7 +5909,7 @@ transparency_mode:factor
 -1
 0
 0
-rand_id_600081
+rand_id_763090
 
 ControlTable
 mmat_transp_alpha_grid
@@ -6067,7 +5922,7 @@ mmat_transp_alpha_grid
 -1
 0
 0
-rand_id_600081
+rand_id_763090
 
 SpinButton
 alpha_factor
@@ -6106,7 +5961,7 @@ alpha_z_buffer
 -1
 0
 0
-rand_id_600081
+rand_id_763090
 
 ControlTable
 mmat_buttonbar
@@ -6119,7 +5974,7 @@ mmat_buttonbar
 -1
 0
 0
-rand_id_852035
+rand_id_137118
 
 Text
 dummy_t
@@ -9354,7 +9209,7 @@ new_ball_dialog
 
 11
 ControlTable
-rand_id_624604
+rand_id_129587
 
 1
 0
@@ -9377,7 +9232,7 @@ ball_type:ball
 -1
 0
 0
-rand_id_624604
+rand_id_129587
 
 ControlTable
 nbd_grid_ball
@@ -9390,7 +9245,7 @@ nbd_grid_ball
 -1
 0
 0
-rand_id_624604
+rand_id_129587
 
 Text
 new_ball_dialog_t_x
@@ -9455,7 +9310,7 @@ ball_type:sphere
 -1
 0
 0
-rand_id_624604
+rand_id_129587
 
 ControlTable
 nbd_grid_sphere
@@ -9468,7 +9323,7 @@ nbd_grid_sphere
 -1
 0
 0
-rand_id_624604
+rand_id_129587
 
 Text
 new_ball_dialog_t_comp
@@ -9873,7 +9728,7 @@ model_dialog
 
 56
 ControlTable
-rand_id_276732
+rand_id_203868
 
 1
 0
@@ -9896,10 +9751,10 @@ model_dialog_tab_control
 -1
 0
 0
-rand_id_276732
+rand_id_203868
 
 ControlTable
-rand_id_560149
+rand_id_906851
 
 1
 0
@@ -9912,7 +9767,7 @@ rand_id_560149
 model_dialog_tab_control
 
 ControlTable
-rand_id_459603
+rand_id_646020
 
 1
 0
@@ -9922,7 +9777,7 @@ rand_id_459603
 -1
 0
 0
-rand_id_560149
+rand_id_906851
 
 Text
 model_dialog_t_num_lod
@@ -9935,7 +9790,7 @@ model_dialog_t_num_lod
 -1
 0
 0
-rand_id_459603
+rand_id_646020
 
 SpinButton
 num_lod
@@ -9948,7 +9803,7 @@ num_lod
 -1
 0
 0
-rand_id_459603
+rand_id_646020
 
 ListView
 lod
@@ -9961,7 +9816,7 @@ lod
 -1
 0
 0
-rand_id_560149
+rand_id_906851
 
 CheckBox
 generate_dists_auto
@@ -9974,7 +9829,7 @@ generate_dists_auto
 -1
 0
 0
-rand_id_560149
+rand_id_906851
 
 CheckBox
 generate_skin_auto
@@ -9987,10 +9842,10 @@ generate_skin_auto
 -1
 0
 0
-rand_id_560149
+rand_id_906851
 
 ControlTable
-rand_id_426798
+rand_id_654436
 
 1
 0
@@ -10013,10 +9868,10 @@ material_list
 -1
 0
 0
-rand_id_426798
+rand_id_654436
 
 ControlTable
-rand_id_647871
+rand_id_227581
 
 1
 0
@@ -10026,7 +9881,7 @@ rand_id_647871
 -1
 0
 0
-rand_id_426798
+rand_id_654436
 
 Button
 add_new_material
@@ -10039,7 +9894,7 @@ hui:add
 -1
 0
 0
-rand_id_647871
+rand_id_227581
 
 Button
 add_material
@@ -10052,7 +9907,7 @@ hui:open
 -1
 0
 0
-rand_id_647871
+rand_id_227581
 
 Button
 delete_material
@@ -10065,10 +9920,10 @@ hui:delete
 -1
 0
 0
-rand_id_647871
+rand_id_227581
 
 ControlTable
-rand_id_801828
+rand_id_668807
 
 1
 0
@@ -10091,10 +9946,10 @@ model_dialog_grp_physics
 -1
 0
 0
-rand_id_801828
+rand_id_668807
 
 ControlTable
-rand_id_709171
+rand_id_772216
 
 1
 0
@@ -10107,7 +9962,7 @@ rand_id_709171
 model_dialog_grp_physics
 
 ControlTable
-rand_id_628080
+rand_id_38476
 
 1
 0
@@ -10117,7 +9972,7 @@ rand_id_628080
 -1
 0
 0
-rand_id_709171
+rand_id_772216
 
 Text
 model_dialog_t_mass
@@ -10130,7 +9985,7 @@ model_dialog_t_mass
 -1
 0
 0
-rand_id_628080
+rand_id_38476
 
 SpinButton
 mass
@@ -10143,7 +9998,7 @@ mass
 -1
 0
 0
-rand_id_628080
+rand_id_38476
 
 Text
 mu
@@ -10156,7 +10011,7 @@ mu
 -1
 0
 0
-rand_id_628080
+rand_id_38476
 
 CheckBox
 ph_passive
@@ -10169,7 +10024,7 @@ ph_passive
 -1
 0
 0
-rand_id_709171
+rand_id_772216
 
 CheckBox
 ph_active
@@ -10182,7 +10037,7 @@ ph_active
 -1
 0
 0
-rand_id_709171
+rand_id_772216
 
 Group
 model_dialog_grp_tensor
@@ -10195,10 +10050,10 @@ model_dialog_grp_tensor
 -1
 0
 0
-rand_id_801828
+rand_id_668807
 
 ControlTable
-rand_id_820621
+rand_id_950585
 
 1
 0
@@ -10221,7 +10076,7 @@ tensor
 -1
 0
 0
-rand_id_820621
+rand_id_950585
 
 CheckBox
 generate_tensor_auto
@@ -10234,10 +10089,10 @@ generate_tensor_auto
 -1
 0
 0
-rand_id_820621
+rand_id_950585
 
 ControlTable
-rand_id_746783
+rand_id_464942
 
 1
 0
@@ -10250,7 +10105,7 @@ rand_id_746783
 model_dialog_tab_control
 
 ControlTable
-rand_id_692101
+rand_id_589374
 
 1
 0
@@ -10260,7 +10115,7 @@ rand_id_692101
 -1
 0
 0
-rand_id_746783
+rand_id_464942
 
 Text
 model_dialog_t_name
@@ -10273,7 +10128,7 @@ model_dialog_t_name
 -1
 0
 0
-rand_id_692101
+rand_id_589374
 
 Edit
 model_name
@@ -10286,7 +10141,7 @@ model_name
 -1
 0
 0
-rand_id_692101
+rand_id_589374
 
 Text
 model_dialog_t_description
@@ -10299,7 +10154,7 @@ model_dialog_t_description
 -1
 0
 0
-rand_id_692101
+rand_id_589374
 
 Edit
 model_description
@@ -10312,7 +10167,7 @@ model_description
 -1
 0
 0
-rand_id_692101
+rand_id_589374
 
 Text
 model_dialog_t_maxitems
@@ -10325,7 +10180,7 @@ model_dialog_t_maxitems
 -1
 0
 0
-rand_id_692101
+rand_id_589374
 
 SpinButton
 num_items
@@ -10338,10 +10193,10 @@ num_items
 -1
 0
 0
-rand_id_692101
+rand_id_589374
 
 ControlTable
-rand_id_502641
+rand_id_957156
 
 1
 0
@@ -10351,7 +10206,7 @@ rand_id_502641
 -1
 0
 0
-rand_id_746783
+rand_id_464942
 
 ListView
 model_inventary
@@ -10364,7 +10219,7 @@ model_inventary
 -1
 0
 0
-rand_id_502641
+rand_id_957156
 
 Button
 delete_item
@@ -10377,10 +10232,10 @@ hui:delete
 -1
 0
 0
-rand_id_502641
+rand_id_957156
 
 ControlTable
-rand_id_453382
+rand_id_873519
 
 1
 0
@@ -10403,7 +10258,7 @@ model_dialog_t_scriptfile
 -1
 0
 0
-rand_id_453382
+rand_id_873519
 
 ControlTable
 mpd_table_scriptfile
@@ -10455,10 +10310,10 @@ model_dialog_t_scriptvars
 -1
 0
 0
-rand_id_453382
+rand_id_873519
 
 ControlTable
-rand_id_734057
+rand_id_124430
 
 1
 0
@@ -10471,7 +10326,7 @@ rand_id_734057
 model_dialog_t_scriptvars
 
 ControlTable
-rand_id_410523
+rand_id_128506
 
 1
 0
@@ -10481,7 +10336,7 @@ rand_id_410523
 -1
 0
 0
-rand_id_734057
+rand_id_124430
 
 Text
 odt_max_scriptvars
@@ -10494,7 +10349,7 @@ odt_max_scriptvars
 -1
 0
 0
-rand_id_410523
+rand_id_128506
 
 SpinButton
 max_script_vars
@@ -10507,7 +10362,7 @@ max_script_vars
 -1
 0
 0
-rand_id_410523
+rand_id_128506
 
 ComboBox
 model_script_var_template
@@ -10520,7 +10375,7 @@ model_script_var_template
 -1
 0
 0
-rand_id_410523
+rand_id_128506
 
 ListView
 script_vars
@@ -10533,7 +10388,7 @@ script_vars
 -1
 0
 0
-rand_id_734057
+rand_id_124430
 
 ControlTable
 model_dialog_button_bar
@@ -10546,7 +10401,7 @@ model_dialog_button_bar
 -1
 0
 0
-rand_id_276732
+rand_id_203868
 
 Text
 t_dummy
@@ -16529,7 +16384,7 @@ property_list
 // Language
 Deutsch
 // NumIDs
-745
+740
 // Text
 ad_dialog
 Verwaltung
@@ -16595,8 +16450,6 @@ animation_list
 #\\Typ\\Frames\\Name
 animation_new
 Neu
-appearance
-Aussehen...
 apply
 Übernehmen
 automapping
@@ -17049,16 +16902,10 @@ mat_delete_texture_level
 Löschen
 mat_di
 !alpha\\
-mat_dialog_buttonbar
-!buttonbar\\
 mat_em
 
 mat_empty_texture_level
 Leeren
-mat_phys_buttonbar
-!buttonbar\\
-mat_phys_grp_friction
-Reibungs-Konstanten
 mat_shininess
 \\0\\10000\\0.1
 mat_sp
@@ -17072,15 +16919,25 @@ mat_transp_function_grid
 material
 
 material_dialog
-Material-Aussehen
+Material-Eigenschaften
+material_dialog_grp_color
+Farben
+material_dialog_grp_friction
+Reibungs-Konstanten
+material_dialog_grp_reflection
+Reflexionen
+material_dialog_grp_shader
+Shader
+material_dialog_grp_textures
+Texturen
+material_dialog_grp_transparency
+Transparenz
 material_dialog_t_refl_density
 Intensität
 material_dialog_t_trans_dest
 Ziel
 material_dialog_t_trans_source
 Quelle
-material_dialog_tab_control
-Farben\\Texturen\\Transparenz\\Reflexion\\Shader
 material_file
 !expandx\\
 material_find
@@ -17091,8 +16948,6 @@ material_new
 Neu
 material_open
 Öffnen...
-material_physics_dialog
-Physik-Eigenschaften
 material_physics_dialog_t_rcjump
 Sprungreibung
 material_physics_dialog_t_rcroll
@@ -17141,8 +16996,6 @@ menu_mapping
 Texture Mapping
 menu_material
 Material
-menu_material_properties
-Eigenschaften
 menu_material_shape
 Form
 menu_model
@@ -17491,8 +17344,6 @@ ph_passive
 Kollisionsfähig
 photons
 \\0
-physics
-Physik...
 physics_enabled
 Aktiviert
 pos_x
@@ -17515,101 +17366,99 @@ quality_factor
 \\0\\100\\0.1
 quality_slider
 
-rand_id_107710
+rand_id_109325
 
-rand_id_114140
+rand_id_129088
 
-rand_id_127653
+rand_id_129401
 
-rand_id_132305
+rand_id_150441
 
-rand_id_156771
+rand_id_160925
 
-rand_id_179852
+rand_id_164778
 
-rand_id_225862
+rand_id_176969
 
-rand_id_234160
+rand_id_200353
 
-rand_id_259265
+rand_id_227819
 
-rand_id_307220
+rand_id_258991
 
-rand_id_314800
+rand_id_2677
 
-rand_id_330300
+rand_id_34435
 
-rand_id_334841
+rand_id_407793
 
-rand_id_348301
+rand_id_427025
 
-rand_id_36534
+rand_id_427152
 
-rand_id_399663
+rand_id_439985
 
-rand_id_410920
+rand_id_480960
 
-rand_id_415349
+rand_id_490165
 
-rand_id_421728
+rand_id_49787
 
-rand_id_507226
+rand_id_506353
 
-rand_id_527629
+rand_id_512401
 
-rand_id_530210
+rand_id_528243
 
-rand_id_554865
+rand_id_536882
 
-rand_id_562636
+rand_id_549130
 
-rand_id_565174
+rand_id_552735
 
-rand_id_600281
+rand_id_556427
 
-rand_id_64656
+rand_id_574945
 
-rand_id_649642
+rand_id_577593
 
-rand_id_663226
+rand_id_580270
 
-rand_id_668986
+rand_id_648524
 
-rand_id_675912
+rand_id_66269
 
-rand_id_676567
+rand_id_667212
 
-rand_id_678601
+rand_id_680631
 
-rand_id_707088
+rand_id_711301
 
-rand_id_715136
+rand_id_715851
 
-rand_id_718140
+rand_id_724792
 
-rand_id_755239
+rand_id_740002
 
-rand_id_75575
+rand_id_746859
 
-rand_id_81357
+rand_id_767809
 
-rand_id_83812
+rand_id_82814
 
-rand_id_874912
+rand_id_845410
 
-rand_id_892487
+rand_id_863898
 
-rand_id_894122
+rand_id_881505
 
-rand_id_912789
+rand_id_893735
 
-rand_id_913746
+rand_id_928225
 
-rand_id_939568
+rand_id_928734
 
-rand_id_977934
-
-rand_id_991951
+rand_id_984158
 
 rc_dialog
 Grundeinstellungen des Spieles
@@ -17699,8 +17548,6 @@ selection_properties
 Eigenschaften...
 send_bug_report
 Fehler berichten
-set
-Übernehmen
 settings
 Einstellungen...
 shader_file
@@ -17741,8 +17588,6 @@ sound_list
 Sound-Datei\\Material\\v min\\v max
 sound_radius
 
-sounds
-Geräusche...
 specular
 Specular
 speed
@@ -18027,7 +17872,7 @@ Hintergrundbild setzen
 // Language
 English
 // NumIDs
-745
+740
 // Text
 ad_dialog
 Administration
@@ -18093,8 +17938,6 @@ animation_list
 #\\type\\num frames\\name
 animation_new
 New
-appearance
-Appearance...
 apply
 Apply
 automapping
@@ -18547,16 +18390,10 @@ mat_delete_texture_level
 delete level
 mat_di
 !alpha
-mat_dialog_buttonbar
-
 mat_em
 
 mat_empty_texture_level
 Empty
-mat_phys_buttonbar
-
-mat_phys_grp_friction
-
 mat_shininess
 \\0\\10000\\0.1
 mat_sp
@@ -18571,14 +18408,24 @@ material
 
 material_dialog
 Material appearance
+material_dialog_grp_color
+
+material_dialog_grp_friction
+
+material_dialog_grp_reflection
+
+material_dialog_grp_shader
+
+material_dialog_grp_textures
+
+material_dialog_grp_transparency
+
 material_dialog_t_refl_density
 density:
 material_dialog_t_trans_dest
 dest
 material_dialog_t_trans_source
 source
-material_dialog_tab_control
-colors\\transparency\\reflection\\additional
 material_file
 
 material_find
@@ -18589,8 +18436,6 @@ material_new
 New
 material_open
 Open...
-material_physics_dialog
-Physical properties
 material_physics_dialog_t_rcjump
 jumping:
 material_physics_dialog_t_rcroll
@@ -18639,8 +18484,6 @@ menu_mapping
 
 menu_material
 Material
-menu_material_properties
-Properties
 menu_material_shape
 
 menu_model
@@ -18989,8 +18832,6 @@ ph_passive
 physics passive
 photons
 \\0
-physics
-Physics...
 physics_enabled
 Enables
 pos_x
@@ -19013,101 +18854,99 @@ quality_factor
 \\0\\100\\0.1
 quality_slider
 
-rand_id_107710
+rand_id_109325
 
-rand_id_114140
+rand_id_129088
 
-rand_id_127653
+rand_id_129401
 
-rand_id_132305
+rand_id_150441
 
-rand_id_156771
+rand_id_160925
 
-rand_id_179852
+rand_id_164778
 
-rand_id_225862
+rand_id_176969
 
-rand_id_234160
+rand_id_200353
 
-rand_id_259265
+rand_id_227819
 
-rand_id_307220
+rand_id_258991
 
-rand_id_314800
+rand_id_2677
 
-rand_id_330300
+rand_id_34435
 
-rand_id_334841
+rand_id_407793
 
-rand_id_348301
+rand_id_427025
 
-rand_id_36534
+rand_id_427152
 
-rand_id_399663
+rand_id_439985
 
-rand_id_410920
+rand_id_480960
 
-rand_id_415349
+rand_id_490165
 
-rand_id_421728
+rand_id_49787
 
-rand_id_507226
+rand_id_506353
 
-rand_id_527629
+rand_id_512401
 
-rand_id_530210
+rand_id_528243
 
-rand_id_554865
+rand_id_536882
 
-rand_id_562636
+rand_id_549130
 
-rand_id_565174
+rand_id_552735
 
-rand_id_600281
+rand_id_556427
 
-rand_id_64656
+rand_id_574945
 
-rand_id_649642
+rand_id_577593
 
-rand_id_663226
+rand_id_580270
 
-rand_id_668986
+rand_id_648524
 
-rand_id_675912
+rand_id_66269
 
-rand_id_676567
+rand_id_667212
 
-rand_id_678601
+rand_id_680631
 
-rand_id_707088
+rand_id_711301
 
-rand_id_715136
+rand_id_715851
 
-rand_id_718140
+rand_id_724792
 
-rand_id_755239
+rand_id_740002
 
-rand_id_75575
+rand_id_746859
 
-rand_id_81357
+rand_id_767809
 
-rand_id_83812
+rand_id_82814
 
-rand_id_874912
+rand_id_845410
 
-rand_id_892487
+rand_id_863898
 
-rand_id_894122
+rand_id_881505
 
-rand_id_912789
+rand_id_893735
 
-rand_id_913746
+rand_id_928225
 
-rand_id_939568
+rand_id_928734
 
-rand_id_977934
-
-rand_id_991951
+rand_id_984158
 
 rc_dialog
 Rudimentary configuration
@@ -19197,8 +19036,6 @@ selection_properties
 Properties...
 send_bug_report
 Report a bug
-set
-apply
 settings
 Settings...
 shader_file
@@ -19239,8 +19076,6 @@ sound_list
 Sound file\\Material\\v min\\v max
 sound_radius
 
-sounds
-Sounds...
 specular
 specular
 speed
@@ -19817,7 +19652,7 @@ vert: %d
 // Language
 日本語
 // NumIDs
-745
+740
 // Text
 ad_dialog
 
@@ -19883,8 +19718,6 @@ animation_list
 #\\type\\num frames\\name
 animation_new
 新規
-appearance
-外観
 apply
 適用
 automapping
@@ -20337,15 +20170,9 @@ mat_delete_texture_level
 
 mat_di
 !alpha
-mat_dialog_buttonbar
-
 mat_em
 
 mat_empty_texture_level
-
-mat_phys_buttonbar
-
-mat_phys_grp_friction
 
 mat_shininess
 
@@ -20361,14 +20188,24 @@ material
 
 material_dialog
 
+material_dialog_grp_color
+
+material_dialog_grp_friction
+
+material_dialog_grp_reflection
+
+material_dialog_grp_shader
+
+material_dialog_grp_textures
+
+material_dialog_grp_transparency
+
 material_dialog_t_refl_density
 
 material_dialog_t_trans_dest
 
 material_dialog_t_trans_source
 
-material_dialog_tab_control
-colors\\transparency\\reflection\\additional
 material_file
 
 material_find
@@ -20379,8 +20216,6 @@ material_new
 新規
 material_open
 開く...
-material_physics_dialog
-
 material_physics_dialog_t_rcjump
 
 material_physics_dialog_t_rcroll
@@ -20429,8 +20264,6 @@ menu_mapping
 
 menu_material
 マテリアル
-menu_material_properties
-プロパティ
 menu_material_shape
 
 menu_model
@@ -20779,8 +20612,6 @@ ph_passive
 
 photons
 
-physics
-物理学...
 physics_enabled
 
 pos_x
@@ -20803,101 +20634,99 @@ quality_factor
 
 quality_slider
 
-rand_id_107710
+rand_id_109325
 
-rand_id_114140
+rand_id_129088
 
-rand_id_127653
+rand_id_129401
 
-rand_id_132305
+rand_id_150441
 
-rand_id_156771
+rand_id_160925
 
-rand_id_179852
+rand_id_164778
 
-rand_id_225862
+rand_id_176969
 
-rand_id_234160
+rand_id_200353
 
-rand_id_259265
+rand_id_227819
 
-rand_id_307220
+rand_id_258991
 
-rand_id_314800
+rand_id_2677
 
-rand_id_330300
+rand_id_34435
 
-rand_id_334841
+rand_id_407793
 
-rand_id_348301
+rand_id_427025
 
-rand_id_36534
+rand_id_427152
 
-rand_id_399663
+rand_id_439985
 
-rand_id_410920
+rand_id_480960
 
-rand_id_415349
+rand_id_490165
 
-rand_id_421728
+rand_id_49787
 
-rand_id_507226
+rand_id_506353
 
-rand_id_527629
+rand_id_512401
 
-rand_id_530210
+rand_id_528243
 
-rand_id_554865
+rand_id_536882
 
-rand_id_562636
+rand_id_549130
 
-rand_id_565174
+rand_id_552735
 
-rand_id_600281
+rand_id_556427
 
-rand_id_64656
+rand_id_574945
 
-rand_id_649642
+rand_id_577593
 
-rand_id_663226
+rand_id_580270
 
-rand_id_668986
+rand_id_648524
 
-rand_id_675912
+rand_id_66269
 
-rand_id_676567
+rand_id_667212
 
-rand_id_678601
+rand_id_680631
 
-rand_id_707088
+rand_id_711301
 
-rand_id_715136
+rand_id_715851
 
-rand_id_718140
+rand_id_724792
 
-rand_id_755239
+rand_id_740002
 
-rand_id_75575
+rand_id_746859
 
-rand_id_81357
+rand_id_767809
 
-rand_id_83812
+rand_id_82814
 
-rand_id_874912
+rand_id_845410
 
-rand_id_892487
+rand_id_863898
 
-rand_id_894122
+rand_id_881505
 
-rand_id_912789
+rand_id_893735
 
-rand_id_913746
+rand_id_928225
 
-rand_id_939568
+rand_id_928734
 
-rand_id_977934
-
-rand_id_991951
+rand_id_984158
 
 rc_dialog
 
@@ -20987,8 +20816,6 @@ selection_properties
 設定...
 send_bug_report
 
-set
-適用
 settings
 
 shader_file
@@ -21029,8 +20856,6 @@ sound_list
 
 sound_radius
 
-sounds
-音...
 specular
 反射光
 speed

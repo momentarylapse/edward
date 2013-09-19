@@ -1,6 +1,6 @@
-Dialog material_dialog "Material-Aussehen" 365 320 allow-root
-	Grid ? "" 1 2
-		TabControl material_dialog_tab_control "Farben\\Texturen\\Transparenz\\Reflexion\\Shader"
+Dialog material_dialog "Material-Eigenschaften" 365 715 allow-root
+	Grid ? "" 1 6
+		Expander material_dialog_grp_color "Farben"
 			Grid ? "" 2 5
 				Text ambient "Ambient"
 				ColorButton mat_am "" expandx
@@ -12,13 +12,14 @@ Dialog material_dialog "Material-Aussehen" 365 320 allow-root
 				SpinButton mat_shininess "\\0\\10000\\0.1"
 				Text emission "Emission"
 				ColorButton mat_em ""
+		Expander material_dialog_grp_textures "Texturen"
 			Grid ? "" 1 2
 				ListView mat_textures "Ebene\\\\Textur" format=tit
 				Grid ? "" 3 1
 					Button mat_add_texture_level "neue Ebene" image=hui:add
 					Button mat_delete_texture_level "Löschen" image=hui:delete
 					Button mat_empty_texture_level "Leeren" image=hui:clear
-			
+		Expander material_dialog_grp_transparency "Transparenz"
 			Grid ? "" 1 9
 				RadioButton transparency_mode:none "Keine Transparenz"
 				RadioButton transparency_mode:color_key "Color-Key"
@@ -35,7 +36,8 @@ Dialog material_dialog "Material-Aussehen" 365 320 allow-root
 				.
 				.
 				CheckBox alpha_z_buffer "Z-Buffer aktiviert"
-			Grid ? "" 1 10
+		Expander material_dialog_grp_reflection "Reflexionen"
+			Grid ? "" 1 6
 				RadioButton reflection_mode:none "Keine Reflexion"
 				RadioButton reflection_mode:cube_static "CubeMap statisch"
 				ListView reflection_textures "Seite\\Textur" indent
@@ -45,11 +47,17 @@ Dialog material_dialog "Material-Aussehen" 365 320 allow-root
 					Text material_dialog_t_refl_density "Intensität"
 					SpinButton reflection_density "\\0\\100\\1"
 					Text percent "%"
+		Expander material_dialog_grp_shader "Shader"
 			Grid ? "" 2 1
 				Edit shader_file "" expandx
 				Button find_shader "" image=hui:open
-		Grid mat_dialog_buttonbar "" 4 1 buttonbar
-			Text dummy_t "" expandx
-			Button set "Übernehmen" image=hui:apply
-			Button cancel "Abbrechen" image=hui:cancel
-			DefButton ok "OK" image=hui:ok
+		Expander material_dialog_grp_friction "Reibungs-Konstanten"
+			Grid ? "" 2 4
+				Text material_physics_dialog_t_rcstatic "Haftreibung"
+				SpinButton rcstatic "\\0\\100\\0.01"
+				Text material_physics_dialog_t_rcsliding "Gleitreibung"
+				SpinButton rcsliding "\\0\\100\\0.01"
+				Text material_physics_dialog_t_rcjump "Sprungreibung"
+				SpinButton rcjump "\\0\\100\\0.01"
+				Text material_physics_dialog_t_rcroll "Rollreibung"
+				SpinButton rcroll "\\0\\100\\0.01"

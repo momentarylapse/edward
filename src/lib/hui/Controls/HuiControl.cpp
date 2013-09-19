@@ -116,7 +116,7 @@ void HuiControl::SetOptions(const string &options)
 		else if (aa == "noexpandy")
 			gtk_widget_set_vexpand(widget, false);
 		else if (aa == "indent")
-			gtk_widget_set_margin_left(widget, 20);
+			gtk_widget_set_margin_left(get_frame(), 20);
 		else if (eq >= 0){
 			string a0 = aa.head(eq);
 			string a1 = aa.tail(aa.num-eq-1);
@@ -125,13 +125,13 @@ void HuiControl::SetOptions(const string &options)
 			else if (a0 == "height")
 				height = a1._int();
 			else if (a0 == "margin-left")
-				gtk_widget_set_margin_left(widget, a1._int());
+				gtk_widget_set_margin_left(get_frame(), a1._int());
 			else if (a0 == "margin-right")
-				gtk_widget_set_margin_right(widget, a1._int());
+				gtk_widget_set_margin_right(get_frame(), a1._int());
 			else if (a0 == "margin-top")
-				gtk_widget_set_margin_top(widget, a1._int());
+				gtk_widget_set_margin_top(get_frame(), a1._int());
 			else if (a0 == "margin-bottom")
-				gtk_widget_set_margin_bottom(widget, a1._int());
+				gtk_widget_set_margin_bottom(get_frame(), a1._int());
 		}
 	}
 	if ((width >= 0) || (height >= 0))

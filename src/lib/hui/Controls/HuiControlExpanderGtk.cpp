@@ -22,7 +22,8 @@ HuiControlExpander::HuiControlExpander(const string &title, const string &id) :
 	HuiControl(HuiKindExpander, id)
 {
 	GetPartStrings(id, title);
-	widget = gtk_expander_new(sys_str(PartString[0]));
+	widget = gtk_expander_new(sys_str("<b>" + PartString[0] + "</b>"));
+	gtk_expander_set_use_markup(GTK_EXPANDER(widget), true);
 	g_signal_connect(widget, "notify::expanded", G_CALLBACK(OnGtkExpanderExpand), NULL);
 	if (!gtk_expander_get_expanded(GTK_EXPANDER(widget)))
 		gtk_widget_set_vexpand(widget, false);
@@ -33,11 +34,27 @@ HuiControlExpander::~HuiControlExpander()
 {
 }
 
+void HuiControlExpander::Expand(int row, bool expand)
+{
+	gtk_expander_set_expanded(GTK_EXPANDER(widget), expand);
+}
+
+void HuiControlExpander::ExpandAll(bool expand)
+{
+	gtk_expander_set_expanded(GTK_EXPANDER(widget), expand);
+}
+
+bool HuiControlExpander::IsExpanded(int row)
+{
+	return gtk_expander_get_expanded(GTK_EXPANDER(widget));
+}
+
 void HuiControlExpander::add(HuiControl *child, int x, int y)
 {
 	GtkWidget *child_widget = child->get_frame();
 	//gtk_widget_set_vexpand(child_widget, true);
 	//gtk_widget_set_hexpand(child_widget, true);
+	gtk_widget_set_margin_left(child_widget, 20);
 	gtk_container_add(GTK_CONTAINER(widget), child_widget);
 	children.add(child);
 	child->parent = this;

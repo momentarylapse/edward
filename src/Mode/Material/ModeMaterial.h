@@ -37,9 +37,6 @@ public:
 	virtual bool Save();
 	virtual bool SaveAs();
 
-	void ExecuteAppearanceDialog();
-	void ExecutePhysicsDialog();
-
 	virtual bool OptimizeView();
 
 	int MaterialVB[MATERIAL_MAX_TEXTURES];

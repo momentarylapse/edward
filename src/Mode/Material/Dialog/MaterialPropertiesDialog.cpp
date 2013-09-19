@@ -9,38 +9,58 @@
 #include "../../../Edward.h"
 #include "../ModeMaterial.h"
 #include "../../../Action/Material/ActionMaterialEditAppearance.h"
+#include "../../../Action/Material/ActionMaterialEditPhysics.h"
 
 
 string file_secure(const string &filename); // -> ModelPropertiesDialog
 
 extern string NixShaderError; // -> nix
 
-MaterialPropertiesDialog::MaterialPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataMaterial *_data):
-	HuiWindow("material_dialog", _parent, _allow_parent)
+MaterialPropertiesDialog::MaterialPropertiesDialog(HuiWindow *_parent, DataMaterial *_data):
+	EmbeddedDialog(_parent, "material_dialog", "root-table", 1, 0, "noexpandx")
 {
 	data = _data;
 
 	// dialog
-	EventM("cancel", this, &MaterialPropertiesDialog::OnClose);
-	EventM("hui:close", this, &MaterialPropertiesDialog::OnClose);
-	EventM("set", this, &MaterialPropertiesDialog::ApplyData);
-	EventM("ok", this, &MaterialPropertiesDialog::OnOk);
-	EventM("mat_add_texture_level", this, &MaterialPropertiesDialog::OnAddTextureLevel);
-	EventM("mat_textures", this, &MaterialPropertiesDialog::OnTextures);
-	EventMX("mat_textures", "hui:select", this, &MaterialPropertiesDialog::OnTexturesSelect);
-	EventM("mat_delete_texture_level", this, &MaterialPropertiesDialog::OnDeleteTextureLevel);
-	EventM("mat_empty_texture_level", this, &MaterialPropertiesDialog::OnEmptyTextureLevel);
-	EventM("transparency_mode:none", this, &MaterialPropertiesDialog::OnTransparencyMode);
-	EventM("transparency_mode:function", this, &MaterialPropertiesDialog::OnTransparencyMode);
-	EventM("transparency_mode:color_key", this, &MaterialPropertiesDialog::OnTransparencyMode);
-	EventM("transparency_mode:factor", this, &MaterialPropertiesDialog::OnTransparencyMode);
-	EventM("reflection_mode:none", this, &MaterialPropertiesDialog::OnReflection);
-	EventM("reflection_mode:cube_static", this, &MaterialPropertiesDialog::OnReflection);
-	EventM("reflection_mode:cube_dynamic", this, &MaterialPropertiesDialog::OnReflection);
-	EventM("reflection_textures", this, &MaterialPropertiesDialog::OnReflectionTextures);
-	EventM("find_shader", this, &MaterialPropertiesDialog::OnFindShader);
+	win->EventM("set", this, &MaterialPropertiesDialog::ApplyData);
+	win->EventM("mat_add_texture_level", this, &MaterialPropertiesDialog::OnAddTextureLevel);
+	win->EventM("mat_textures", this, &MaterialPropertiesDialog::OnTextures);
+	win->EventMX("mat_textures", "hui:select", this, &MaterialPropertiesDialog::OnTexturesSelect);
+	win->EventM("mat_delete_texture_level", this, &MaterialPropertiesDialog::OnDeleteTextureLevel);
+	win->EventM("mat_empty_texture_level", this, &MaterialPropertiesDialog::OnEmptyTextureLevel);
+	win->EventM("transparency_mode:none", this, &MaterialPropertiesDialog::OnTransparencyMode);
+	win->EventM("transparency_mode:function", this, &MaterialPropertiesDialog::OnTransparencyMode);
+	win->EventM("transparency_mode:color_key", this, &MaterialPropertiesDialog::OnTransparencyMode);
+	win->EventM("transparency_mode:factor", this, &MaterialPropertiesDialog::OnTransparencyMode);
+	win->EventM("reflection_mode:none", this, &MaterialPropertiesDialog::OnReflectionMode);
+	win->EventM("reflection_mode:cube_static", this, &MaterialPropertiesDialog::OnReflectionMode);
+	win->EventM("reflection_mode:cube_dynamic", this, &MaterialPropertiesDialog::OnReflectionMode);
+	win->EventM("reflection_textures", this, &MaterialPropertiesDialog::OnReflectionTextures);
+	win->EventM("find_shader", this, &MaterialPropertiesDialog::OnFindShader);
+
+
+	win->EventM("mat_am", this, &MaterialPropertiesDialog::ApplyData);
+	win->EventM("mat_di", this, &MaterialPropertiesDialog::ApplyData);
+	win->EventM("mat_sp", this, &MaterialPropertiesDialog::ApplyData);
+	win->EventM("mat_em", this, &MaterialPropertiesDialog::ApplyData);
+	win->EventM("mat_shininess", this, &MaterialPropertiesDialog::ApplyDataDelayed);
+
+	win->EventM("alpha_factor", this, &MaterialPropertiesDialog::ApplyDataDelayed);
+	win->EventM("alpha_source", this, &MaterialPropertiesDialog::ApplyDataDelayed);
+	win->EventM("alpha_dest", this, &MaterialPropertiesDialog::ApplyDataDelayed);
+	win->EventM("alpha_z_buffer", this, &MaterialPropertiesDialog::ApplyData);
+
+	win->EventM("rcjump", this, &MaterialPropertiesDialog::ApplyPhysDataDelayed);
+	win->EventM("rcstatic", this, &MaterialPropertiesDialog::ApplyPhysDataDelayed);
+	win->EventM("rcsliding", this, &MaterialPropertiesDialog::ApplyPhysDataDelayed);
+	win->EventM("rcroll", this, &MaterialPropertiesDialog::ApplyPhysDataDelayed);
+
+	win->Expand("material_dialog_grp_color", 0, true);
 
 	temp = data->Appearance;
+	temp_phys = data->Physics;
+	apply_queue_depth = 0;
+	apply_phys_queue_depth = 0;
 	LoadData();
 	Subscribe(data);
 }
@@ -48,10 +68,10 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(HuiWindow *_parent, bool _all
 void MaterialPropertiesDialog::LoadData()
 {
 	FillTextureList();
-	SetColor("mat_am", temp.ColorAmbient);
-	SetColor("mat_di", temp.ColorDiffuse);
-	SetColor("mat_sp", temp.ColorSpecular);
-	SetColor("mat_em", temp.ColorEmissive);
+	win->SetColor("mat_am", temp.ColorAmbient);
+	win->SetColor("mat_di", temp.ColorDiffuse);
+	win->SetColor("mat_sp", temp.ColorSpecular);
+	win->SetColor("mat_em", temp.ColorEmissive);
 	SetFloat("mat_shininess", temp.ColorShininess);
 
 	if (temp.TransparencyMode == TransparencyModeColorKeySmooth)
@@ -85,6 +105,12 @@ void MaterialPropertiesDialog::LoadData()
 	Enable("reflection_textures", (temp.ReflectionMode == ReflectionCubeMapStatic));
 	Enable("reflection_density", (temp.ReflectionMode != ReflectionNone));
 	SetString("shader_file", temp.ShaderFile);
+
+
+    SetFloat("rcjump", temp_phys.RCJump);
+    SetFloat("rcstatic", temp_phys.RCStatic);
+    SetFloat("rcsliding", temp_phys.RCSliding);
+    SetFloat("rcroll", temp_phys.RCRolling);
 }
 
 MaterialPropertiesDialog::~MaterialPropertiesDialog()
@@ -95,15 +121,18 @@ MaterialPropertiesDialog::~MaterialPropertiesDialog()
 void MaterialPropertiesDialog::OnUpdate(Observable *o)
 {
 	temp = data->Appearance;
+	temp_phys = data->Physics;
 	LoadData();
 }
 
 void MaterialPropertiesDialog::OnAddTextureLevel()
 {
-	if (temp.NumTextureLevels >= MATERIAL_MAX_TEXTURES)
+	if (temp.NumTextureLevels >= MATERIAL_MAX_TEXTURES){
 		ed->ErrorBox(format(_("H&ochstens %d Textur-Ebenen erlaubt!"), MATERIAL_MAX_TEXTURES));
-	else
+	}else{
 		temp.TextureFile[temp.NumTextureLevels ++] = "";
+		ApplyData();
+	}
 	FillTextureList();
 }
 
@@ -113,6 +142,7 @@ void MaterialPropertiesDialog::OnTextures()
 	if ((sel >= 0) && (sel <temp.NumTextureLevels))
 		if (ed->FileDialog(FDTexture, false, true)){
 			temp.TextureFile[sel] = ed->DialogFile;
+			ApplyData();
 			//mmaterial->Texture[sel] = MetaLoadTexture(mmaterial->TextureFile[sel]);
 			FillTextureList();
 		}
@@ -132,6 +162,7 @@ void MaterialPropertiesDialog::OnDeleteTextureLevel()
 		for (int i=sel;i<temp.NumTextureLevels-1;i++)
 			temp.TextureFile[i] = temp.TextureFile[i + 1];
 		temp.NumTextureLevels --;
+		ApplyData();
 		FillTextureList();
 	}
 }
@@ -141,6 +172,7 @@ void MaterialPropertiesDialog::OnEmptyTextureLevel()
 	int sel = GetInt("mat_textures");
 	if (sel >= 0){
 		temp.TextureFile[sel] = "";
+		ApplyData();
 		FillTextureList();
 	}
 }
@@ -158,9 +190,10 @@ void MaterialPropertiesDialog::OnTransparencyMode()
 	Enable("alpha_factor", temp.TransparencyMode == TransparencyModeFactor);
 	Enable("alpha_source", temp.TransparencyMode == TransparencyModeFunctions);
 	Enable("alpha_dest", temp.TransparencyMode == TransparencyModeFunctions);
+	ApplyData();
 }
 
-void MaterialPropertiesDialog::OnReflection()
+void MaterialPropertiesDialog::OnReflectionMode()
 {
 	if (IsChecked("reflection_mode:cube_static"))
 		temp.ReflectionMode = ReflectionCubeMapStatic;
@@ -171,6 +204,7 @@ void MaterialPropertiesDialog::OnReflection()
 	Enable("reflection_size", ((temp.ReflectionMode == ReflectionCubeMapStatic) || (temp.ReflectionMode == ReflectionCubeMapDynamical)));
 	Enable("reflection_textures", (temp.ReflectionMode == ReflectionCubeMapStatic));
 	Enable("reflection_density", (temp.ReflectionMode != ReflectionNone));
+	ApplyData();
 }
 
 void MaterialPropertiesDialog::OnReflectionTextures()
@@ -190,6 +224,7 @@ void MaterialPropertiesDialog::OnReflectionTextures()
 			}
 
 		}
+		ApplyData();
 		RefillReflTexView();
 	}
 }
@@ -206,6 +241,7 @@ void MaterialPropertiesDialog::OnFindShader()
 	if (ed->FileDialog(FDShaderFile,false,true)){
 		if (TestShaderFile(ed->DialogFile)){
 			SetString("shader_file", ed->DialogFile);
+			ApplyData();
 		}else{
 			ed->ErrorBox(_("Fehler in der Shader-Datei:\n") + NixShaderError);
 		}
@@ -214,10 +250,15 @@ void MaterialPropertiesDialog::OnFindShader()
 
 void MaterialPropertiesDialog::ApplyData()
 {
-	temp.ColorAmbient = GetColor("mat_am");
-	temp.ColorDiffuse = GetColor("mat_di");
-	temp.ColorSpecular = GetColor("mat_sp");
-	temp.ColorEmissive = GetColor("mat_em");
+	if (apply_queue_depth > 0)
+		apply_queue_depth --;
+	if (apply_queue_depth > 0)
+		return;
+	msg_write("apply");
+	temp.ColorAmbient = win->GetColor("mat_am");
+	temp.ColorDiffuse = win->GetColor("mat_di");
+	temp.ColorSpecular = win->GetColor("mat_sp");
+	temp.ColorEmissive = win->GetColor("mat_em");
 	temp.ColorShininess = GetFloat("mat_shininess");
 	temp.AlphaZBuffer = IsChecked("alpha_z_buffer");
 	temp.AlphaFactor = GetFloat("alpha_factor") * 0.01f;
@@ -227,23 +268,36 @@ void MaterialPropertiesDialog::ApplyData()
 	temp.ReflectionDensity = GetInt("reflection_density");
 	temp.ReflectionSize = GetInt("reflection_size");
 
-
 	temp.ShaderFile = GetString("shader_file");
 
 	data->Execute(new ActionMaterialEditAppearance(temp));
 }
 
-void MaterialPropertiesDialog::OnOk()
+void MaterialPropertiesDialog::ApplyDataDelayed()
 {
-	ApplyData();
-	delete(this);
-	mode_material->AppearanceDialog = NULL;
+	apply_queue_depth ++;
+	HuiRunLaterM(0.5f, this, &MaterialPropertiesDialog::ApplyData);
 }
 
-void MaterialPropertiesDialog::OnClose()
+void MaterialPropertiesDialog::ApplyPhysData()
 {
-	delete(this);
-	mode_material->AppearanceDialog = NULL;
+	if (apply_phys_queue_depth> 0)
+		apply_phys_queue_depth --;
+	if (apply_phys_queue_depth > 0)
+		return;
+	msg_write("apply_phys");
+	temp_phys.RCJump = GetFloat("rcjump");
+	temp_phys.RCStatic = GetFloat("rcstatic");
+	temp_phys.RCSliding = GetFloat("rcsliding");
+	temp_phys.RCRolling = GetFloat("rcroll");
+
+	data->Execute(new ActionMaterialEditPhysics(temp_phys));
+}
+
+void MaterialPropertiesDialog::ApplyPhysDataDelayed()
+{
+	apply_phys_queue_depth ++;
+	HuiRunLaterM(0.5f, this, &MaterialPropertiesDialog::ApplyPhysData);
 }
 
 void MaterialPropertiesDialog::RefillReflTexView()

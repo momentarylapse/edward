@@ -72,11 +72,6 @@ enum{
 		sub_menu_file->AddSeparator();
 		sub_menu_file->AddEntryImage("Beenden",HuiImageQuit,HMM_EXIT);
 	Menu->AddSubMenu("Datei",HMM_MENU_FILE,sub_menu_file);
-		CHuiMenu *sub_menu_prop=new CHuiMenu();
-		sub_menu_prop->AddEntryImage("Aussehen...",HuiImagePreferences,HMM_APPEARANCE);
-		sub_menu_prop->AddEntryImage("Physik...",HuiImagePreferences,HMM_PHYSICS);
-		sub_menu_prop->AddEntryImage("Ger&ausche...",HuiImagePreferences,HMM_SOUNDS);
-	Menu->AddSubMenu("Eigenschaften",HMM_MENU_MATERIAL_PROPERTIES,sub_menu_prop);
 		CHuiMenu *sub_menu_513=new CHuiMenu();
 			CHuiMenu *sub_menu_2629=new CHuiMenu();
 			sub_menu_2629->AddEntryCheckable("W&urfel",HMM_MATERIAL_SHAPE_CUBE);
