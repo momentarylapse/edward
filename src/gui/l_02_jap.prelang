@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-609
+608
 // Data (ID,Text)
 ad_dialog
 
@@ -861,7 +861,7 @@ quality_factor
 
 quality_slider
 
-rand_id_10797
+rand_id_628388
 
 rc_dialog
 
@@ -1122,8 +1122,6 @@ view_top
 volume_and
 
 volume_subtract
-
-wcd_table_t
 
 welcome_dialog
 

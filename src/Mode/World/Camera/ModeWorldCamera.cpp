@@ -52,9 +52,6 @@ ModeWorldCamera::~ModeWorldCamera()
 void ModeWorldCamera::OnStart()
 {
 	dialog = new CameraDialog(ed, this);
-	dialog->SetPositionSpecial(ed, HuiBottom);
-	dialog->Show();
-
 
 
 	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
@@ -204,7 +201,6 @@ void ModeWorldCamera::LoadData()
 {
 	OnUpdateMenu();
 
-	dialog->Redraw("cam_area");
 	*inter_pos = data->BuildPosInterpolator();
 	*inter_ang = data->BuildAngInterpolator();
 

@@ -12,24 +12,24 @@
 #include "../../../Edward.h"
 
 CameraDialog::CameraDialog(HuiWindow *_parent, ModeWorldCamera *_mode) :
-	HuiWindow("world_camera_dialog", _parent, true)
+	EmbeddedDialog(_parent, "world_camera_dialog", "root-table", 0, 1, "height=150,noexpandy")
 {
 	mode = _mode;
 	data = mode->data;
 
-	EventMX("cam_area", "hui:redraw", this, &CameraDialog::OnAreaDraw);
-	EventMX("cam_area", "hui:left-button-down", this, &CameraDialog::OnAreaLeftButtonDown);
-	EventMX("cam_area", "hui:left-button-up", this, &CameraDialog::OnAreaLeftButtonUp);
-	EventMX("cam_area", "hui:mouse-move", this, &CameraDialog::OnAreaMouseMove);
-	EventMX("cam_area", "hui:mouse-wheel", this, &CameraDialog::OnAreaMouseWheel);
-	EventM("add_point", this, &CameraDialog::OnAddPoint);
-	EventM("delete_point", this, &CameraDialog::OnDeletePoint);
-	EventM("cam_edit_vel", this, &CameraDialog::OnCamEditVel);
-	EventM("cam_edit_ang", this, &CameraDialog::OnCamEditAng);
-	EventM("cam_preview", this, &CameraDialog::OnCamPreview);
-	EventM("cam_stop", this, &CameraDialog::OnCamStop);
+	win->EventMX("cam_area", "hui:redraw", this, &CameraDialog::OnAreaDraw);
+	win->EventMX("cam_area", "hui:left-button-down", this, &CameraDialog::OnAreaLeftButtonDown);
+	win->EventMX("cam_area", "hui:left-button-up", this, &CameraDialog::OnAreaLeftButtonUp);
+	win->EventMX("cam_area", "hui:mouse-move", this, &CameraDialog::OnAreaMouseMove);
+	win->EventMX("cam_area", "hui:mouse-wheel", this, &CameraDialog::OnAreaMouseWheel);
+	win->EventM("add_point", this, &CameraDialog::OnAddPoint);
+	win->EventM("delete_point", this, &CameraDialog::OnDeletePoint);
+	win->EventM("cam_edit_vel", this, &CameraDialog::OnCamEditVel);
+	win->EventM("cam_edit_ang", this, &CameraDialog::OnCamEditAng);
+	win->EventM("cam_preview", this, &CameraDialog::OnCamPreview);
+	win->EventM("cam_stop", this, &CameraDialog::OnCamStop);
 
-	EventM("hui:close", this, &CameraDialog::OnCloseDialog);
+	win->EventM("hui:close", this, &CameraDialog::OnCloseDialog);
 
 	Enable("cam_stop", false);
 
@@ -37,7 +37,7 @@ CameraDialog::CameraDialog(HuiWindow *_parent, ModeWorldCamera *_mode) :
 	mouse_distance = -1;
 
 	time_scale = 10;
-	time_offset = 0;
+	time_offset = -5;
 
 	mt_action = NULL;
 
@@ -119,6 +119,7 @@ void CameraDialog::LoadData()
 	Check("cam_edit_vel", mode->edit_vel);
 	Check("cam_edit_ang", mode->edit_ang);
 	Enable("cam_stop", mode->preview);
+	win->Redraw("cam_area");
 }
 
 void CameraDialog::OnAreaDraw()
@@ -127,7 +128,7 @@ void CameraDialog::OnAreaDraw()
 	color bg = White;
 	color ColorGrid = color(1, 0.75f, 0.75f, 0.75f);
 
-	HuiPainter *c = BeginDraw("cam_area");
+	HuiPainter *c = win->BeginDraw("cam_area");
 	c->SetLineWidth(0.8f);
 	c->SetColor(bg);
 	c->DrawRect(0, 0, c->width, c->height);
@@ -207,7 +208,7 @@ void CameraDialog::OnAreaLeftButtonDown()
 		foreachi(WorldCamPoint &p, data->Point, i)
 			p.is_selected = (i == hover);
 		ed->ForceRedraw();
-		Redraw("cam_area");
+		win->Redraw("cam_area");
 	}
 }
 
@@ -246,7 +247,7 @@ void CameraDialog::OnAreaMouseMove()
 				new_hover = i;
 		if (new_hover != hover){
 			hover = new_hover;
-			Redraw("cam_area");
+			win->Redraw("cam_area");
 		}
 	}
 }
@@ -257,7 +258,7 @@ void CameraDialog::OnAreaMouseWheel()
 	time_offset += HuiGetEvent()->mx * (1.0f / time_scale - 1.0f / time_scale_new);
 	time_scale = time_scale_new;
 	UpdateTimePos();
-	Redraw("cam_area");
+	win->Redraw("cam_area");
 }
 
 
@@ -286,6 +287,6 @@ void CameraDialog::OnUpdate(Observable *obs)
 {
 	/*if (obs->GetMessage() == "Change")*/{
 		LoadData();
-		Redraw("cam_area");
+		win->Redraw("cam_area");
 	}
 }

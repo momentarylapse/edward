@@ -9,13 +9,14 @@
 #define CAMERADIALOG_H_
 
 #include "../../../lib/hui/hui.h"
+#include "../../../Stuff/EmbeddedDialog.h"
 #include "../../../Stuff/Observer.h"
 
 class DataCamera;
 class ModeWorldCamera;
 class ActionCameraMoveTimeSelection;
 
-class CameraDialog: public HuiWindow, public Observer
+class CameraDialog: public EmbeddedDialog, public Observer
 {
 public:
 	CameraDialog(HuiWindow *parent, ModeWorldCamera *mode);
