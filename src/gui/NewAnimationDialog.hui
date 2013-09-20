@@ -5,7 +5,6 @@ Dialog new_animation_dialog "Neue Animation" 100 50
 			ComboBox new_animation_type "Vertex\\Skelett"
 			Text new_animation_t_index "Index"
 			SpinButton new_animation_index "\\0"
-		Grid new_animation_buttonbar "" 3 1 buttonbar
-			Text t_dummy "" expandx
+		Grid new_animation_buttonbar "" 2 1 buttonbar
 			Button cancel "Abbrechen" image=hui:cancel
 			DefButton ok "OK" image=hui:ok

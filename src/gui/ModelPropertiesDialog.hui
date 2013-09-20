@@ -46,8 +46,7 @@ Dialog model_dialog "Modell-Eigenschaften" 391 464
 						ListView script_vars "#\\Name\\Wert" format=ttT
 				.
 				.
-		Grid model_dialog_button_bar "" 3 1 buttonbar
-			Text t_dummy "" expandx
+		Grid model_dialog_button_bar "" 2 1 buttonbar
 			Button cancel "Abbrechen" image=hui:cancel
 			DefButton ok "OK" image=hui:ok
 

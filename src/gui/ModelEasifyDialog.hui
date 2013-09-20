@@ -9,7 +9,6 @@ Dialog easify_dialog "Geometrie vereinfachen" 335 150
 			Grid ? "" 1 2
 				Text eat_vertices ""
 				Text eat_polygons ""
-		Grid easify_dialog_buttonbar "" 3 1 buttonbar
-			Text t_dummy "" expandx
+		Grid easify_dialog_buttonbar "" 2 1 buttonbar
 			Button cancel "Abbrechen" image=hui:cancel
 			DefButton ok "OK" image=hui:ok

@@ -69,8 +69,7 @@ Dialog world_dialog "Welt-Eigenschaften" 410 420
 					Text world_dialog_t_max_script_vars "Anzahl:"
 					SpinButton max_script_vars "\\0"
 				ListView script_vars "#\\Name\\Wert" format=ttT
-		Grid world_dialog_buttonbar "" 4 1 buttonbar
-			Text t_dummy "" expandx
+		Grid world_dialog_buttonbar "" 3 1 buttonbar
 			Button apply "Übernehmen" image=hui:apply
 			Button cancel "Abbrechen" image=hui:cancel
 			DefButton ok "OK" image=hui:ok
