@@ -11,11 +11,12 @@
 #include "../../Mode.h"
 class HuiWindow;
 class DataCamera;
+class CameraDialog;
+
 template<class T>
 class Interpolator;
-class ActionCameraMoveTimeSelection;
 
-class ModeWorldCamera: public Mode<DataCamera>, public HuiEventHandler
+class ModeWorldCamera: public Mode<DataCamera>, public HuiEventHandler, public Observable
 {
 public:
 	ModeWorldCamera(ModeBase *_parent, Data *_data);
@@ -29,21 +30,8 @@ public:
 
 	virtual void OnDrawWin(MultiViewWindow *win);
 
-	void OnAddPoint();
-	void OnDeletePoint();
-	/*void OnPointList();
-	void OnPointListEdit();
-	void OnPointListSelect();*/
-	void OnAreaDraw();
-	void OnAreaLeftButtonDown();
-	void OnAreaLeftButtonUp();
-	void OnAreaMouseMove();
-	void OnAreaMouseWheel();
-	void OnCamEditVel();
-	void OnCamEditAng();
-	void OnCamPreview();
-	void OnCamStop();
-	void OnCloseDialog();
+	void AddPoint();
+	void DeletePoint();
 
 	void LoadData();
 
@@ -54,24 +42,19 @@ public:
 	virtual bool Save();
 	virtual bool SaveAs();
 
+	void PreviewStart();
+	void PreviewStop();
+	void SetEditAng(bool edit);
+	void SetEditVel(bool edit);
 	void PreviewUpdate();
-	void UpdateTimePos();
 
-	HuiWindow *dialog;
+	CameraDialog *dialog;
 
 	bool edit_vel, edit_ang;
-	float time_scale, time_offset;
+	Interpolator<vector> *inter_pos, *inter_ang;
 
-	int hover;
 	bool preview;
 	float preview_time;
-
-	Interpolator<vector> *inter_pos, *inter_ang;
-	Array<float> time_pos;
-
-	float mt_time0;
-	int mouse_distance;
-	ActionCameraMoveTimeSelection *mt_action;
 };
 
 extern ModeWorldCamera *mode_world_camera;
