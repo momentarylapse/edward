@@ -228,8 +228,6 @@ void MultiView::ToggleWire()
 
 void MultiView::OnCommand(const string & id)
 {
-	HuiEvent *e = HuiGetEvent();
-
 	//msg_write(id);
 
 	if (id == "select_all")
@@ -268,6 +266,11 @@ void MultiView::OnCommand(const string & id)
 		ViewStagePush();
 	if (id == "view_pop")
 		ViewStagePop();
+}
+
+void MultiView::OnMouseWheel()
+{
+	HuiEvent *e = HuiGetEvent();
 
 	// mouse wheel -> zoom
 	if (e->dz > 0)
@@ -864,7 +867,10 @@ void MultiViewWindow::Draw()
 	// type of view
 
 	name_dest = rect(dest.x1 + 3, dest.x1 + 3 + NixGetStrWidth(view_kind), dest.y1, dest.y1 + 20);
-	NixSetColor((this == multi_view->active_win) ? ColorText : ColorWindowType);
+
+	NixSetColor(ColorWindowType);
+	if (ed->IsActive("nix-area") && (this == multi_view->active_win))
+		NixSetColor(ColorText);
 	if (name_dest.inside(multi_view->m.x, multi_view->m.y))
 		NixSetColor(Red);
 	ed->DrawStr(dest.x1 + 3, dest.y1, view_kind);

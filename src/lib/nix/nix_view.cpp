@@ -10,10 +10,12 @@
 #ifdef _X_USE_IMAGE_
 #include "../image/image.h"
 #endif
+#include "../hui/Controls/HuiControl.h"
 
 void TestGLError(const string &);
 
 void NixUpdateLights();
+extern string NixControlID;
 
 
 matrix NixViewMatrix, NixProjectionMatrix;
@@ -379,9 +381,7 @@ bool NixStart(int texture)
 			NixTargetHeight = NixScreenHeight;
 		}else{
 			// window mode
-			irect r = NixWindow->GetInterior();
-			NixTargetWidth = r.x2 - r.x1;
-			NixTargetHeight = r.y2 - r.y1;
+			NixWindow->_GetControl_(NixControlID)->GetSize(NixTargetWidth, NixTargetHeight);
 		}
 	}else{
 		// texture
@@ -437,8 +437,10 @@ void NixEnd()
 					XF86VidModeSetViewPort(hui_x_display,screen,0,NixDesktopHeight-NixScreenHeight);
 			#endif
 			//glutSwapBuffers();
-			if (NixGLDoubleBuffered)
-				glXSwapBuffers(hui_x_display,GDK_WINDOW_XID(gtk_widget_get_window(NixWindow->gl_widget)));
+			if (NixGLDoubleBuffered){
+				HuiControl *c = NixWindow->_GetControl_(NixControlID);
+				glXSwapBuffers(hui_x_display,GDK_WINDOW_XID(gtk_widget_get_window(c->widget)));
+			}
 		#endif
 	}
 	if (OGLDynamicTextureSupport)

@@ -75,7 +75,7 @@ void ModeWorldEditTerrain::OnStart()
 	dialog->Show();
 	dialog->Event("hui:close", &HuiFuncIgnore);
 
-	ed->Activate();
+	ed->Activate("");
 }
 
 void ModeWorldEditTerrain::OnEnd()

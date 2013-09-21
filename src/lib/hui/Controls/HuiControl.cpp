@@ -8,6 +8,8 @@
 #include "HuiControl.h"
 #include "../hui.h"
 
+void WinTrySendByKeyCode(HuiWindow *win, int key_code);
+
 HuiControl::HuiControl(int _type, const string &_id)
 {
 	type = _type;
@@ -100,6 +102,11 @@ void HuiControl::Focus()
 	gtk_widget_grab_focus(widget);
 }
 
+bool HuiControl::HasFocus()
+{
+	return gtk_widget_has_focus(widget);
+}
+
 void HuiControl::SetOptions(const string &options)
 {
 	Array<string> a = options.explode(",");
@@ -136,6 +143,12 @@ void HuiControl::SetOptions(const string &options)
 	}
 	if ((width >= 0) || (height >= 0))
 		gtk_widget_set_size_request(get_frame(), width, height);
+}
+
+void HuiControl::GetSize(int &w, int &h)
+{
+	w = gdk_window_get_width(gtk_widget_get_window(widget));
+	h = gdk_window_get_height(gtk_widget_get_window(widget));
 }
 
 #endif
@@ -237,6 +250,29 @@ void HuiControl::Notify(const string &message, bool is_default)
 		_HuiSendGlobalCommand_(&e);
 		e.is_default = is_default;
 		win->_SendEvent_(&e);
+	}
+	if (this == win->main_input_control){
+		if (message == "hui:mouse-move")
+			win->OnMouseMove();
+		else if (message == "hui:mouse-wheel")
+			win->OnMouseWheel();
+		else if (message == "hui:left-button-down")
+			win->OnLeftButtonDown();
+		else if (message == "hui:left-button-up")
+			win->OnLeftButtonUp();
+		else if (message == "hui:middle-button-down")
+			win->OnMiddleButtonDown();
+		else if (message == "hui:middle-button-up")
+			win->OnMiddleButtonUp();
+		else if (message == "hui:right-button-down")
+			win->OnRightButtonDown();
+		else if (message == "hui:right-button-up")
+			win->OnRightButtonUp();
+		else if (message == "hui:key-down"){
+			win->OnKeyDown();
+			WinTrySendByKeyCode(win, HuiGetEvent()->key_code);
+		}else if (message == "hui:key-up")
+			win->OnKeyUp();
 	}
 }
 

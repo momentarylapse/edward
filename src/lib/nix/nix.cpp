@@ -315,6 +315,9 @@ XVisualInfo *choose_visual()
 		}
 	}
 
+	HuiControl *c = NixWindow->_GetControl_(NixControlID);
+	GtkWidget *gl_widget = c->widget;
+
 	// ok?
 	if (vi->visualid != gdk_visualid){
 
@@ -333,13 +336,13 @@ XVisualInfo *choose_visual()
 		gtk_widget_realize(NixWindow->gl_widget);*/
 
 		// no ...just apply color map
-		gtk_widget_set_visual(NixWindow->gl_widget, visual);
+		gtk_widget_set_visual(gl_widget, visual);
 	}
 
 	// realize the widget...
-	gtk_widget_show(NixWindow->gl_widget);
-	gtk_widget_realize(NixWindow->gl_widget);
-	gdk_window_invalidate_rect(gtk_widget_get_window(NixWindow->gl_widget), NULL, false);
+	gtk_widget_show(gl_widget);
+	gtk_widget_realize(gl_widget);
+	gdk_window_invalidate_rect(gtk_widget_get_window(gl_widget), NULL, false);
 	gdk_window_process_all_updates();
 
 	// look for the gdk-ish one...
@@ -356,7 +359,7 @@ XVisualInfo *choose_visual()
 			if (value == gdk_visualid){
 				msg_db_m("  -> match!", 1);
 				//msg_write("-----------hurraaaaaaaaaaaaaa");
-				vi->visual = GDK_VISUAL_XVISUAL(gdk_window_get_visual(NixWindow->gl_widget->window));
+				vi->visual = GDK_VISUAL_XVISUAL(gdk_window_get_visual(gl_widget->window));
 				vi->visualid = gdk_visualid;
 			}
 	}*/
@@ -465,9 +468,7 @@ void NixInit(const string &api, HuiWindow *win, const string &id)
 
 	// more default values of the engine
 	if (NixWindow){
-		irect r = NixWindow->GetInterior();
-		NixTargetWidth = r.x2 - r.x1;
-		NixTargetHeight = r.y2 - r.y1;
+		NixWindow->_GetControl_(NixControlID)->GetSize(NixTargetWidth, NixTargetHeight);
 	}else{
 		NixTargetWidth = 800;
 		NixTargetHeight = 600;
@@ -556,17 +557,16 @@ bool nixDevNeedsUpdate = true;
 void set_video_mode_gl(int xres, int yres)
 {
 	HuiControl *c = NixWindow->_GetControl_(NixControlID);
-	NixWindow->gl_widget = c->widget;
-	gtk_widget_set_double_buffered(NixWindow->gl_widget, false);
+	gtk_widget_set_double_buffered(c->widget, false);
 
 
 	#ifdef OS_WINDOWS
 
 #ifdef NIX_GL_IN_WIDGET
 	// realize the widget...
-	gtk_widget_show(NixWindow->gl_widget);
-	gtk_widget_realize(NixWindow->gl_widget);
-	gdk_window_invalidate_rect(gtk_widget_get_window(NixWindow->gl_widget), NULL, false);
+	gtk_widget_show(c->widget);
+	gtk_widget_realize(c->widget);
+	gdk_window_invalidate_rect(gtk_widget_get_window(c->widget), NULL, false);
 	gdk_window_process_all_updates();
 	
 	/*HuiSleep(1);
@@ -686,7 +686,7 @@ void set_video_mode_gl(int xres, int yres)
 	attr.border_pixel=0;*/
 	//Window win=GDK_WINDOW_XWINDOW(NixWindow->window->window);
 #endif
-		Window win = GDK_WINDOW_XID(gtk_widget_get_window(NixWindow->gl_widget));
+		Window win = GDK_WINDOW_XID(gtk_widget_get_window(c->widget));
 		context = glXCreateContext(hui_x_display, vi, 0, GL_TRUE);
 		glXMakeCurrent(hui_x_display, win, context);
 

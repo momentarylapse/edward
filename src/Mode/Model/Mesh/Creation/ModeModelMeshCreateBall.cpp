@@ -62,7 +62,7 @@ void ModeModelMeshCreateBall::OnStart()
 	dialog->EventM("ball_type:ball", this, &ModeModelMeshCreateBall::OnTypeBall);
 	dialog->EventM("ball_type:sphere", this, &ModeModelMeshCreateBall::OnTypeSphere);
 
-	ed->Activate();
+	ed->Activate("");
 }
 
 

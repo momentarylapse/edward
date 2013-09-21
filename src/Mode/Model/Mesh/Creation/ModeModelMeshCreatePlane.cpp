@@ -34,7 +34,7 @@ void ModeModelMeshCreatePlane::OnStart()
 	dialog->Show();
 	dialog->Event("hui:close", &HuiFuncIgnore);
 
-	ed->Activate();
+	ed->Activate("");
 }
 
 

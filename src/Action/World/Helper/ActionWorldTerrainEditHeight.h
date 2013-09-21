@@ -9,12 +9,12 @@
 #define ACTIONWORLDTERRAINEDITHEIGHT_H_
 
 #include "../../Action.h"
-#include "../../../lib/hui/hui.h"
+#include "../../../lib/math/rect.h"
 
 class ActionWorldTerrainEditHeight : public Action
 {
 public:
-	ActionWorldTerrainEditHeight(int _index, const Array<float> &_height, irect _dest);
+	ActionWorldTerrainEditHeight(int _index, const Array<float> &_height, rect _dest);
 	virtual ~ActionWorldTerrainEditHeight();
 	string name(){	return "WorldTerrainEditHeight";	}
 
@@ -24,7 +24,7 @@ public:
 private:
 	int index;
 	Array<float> height;
-	irect dest;
+	rect dest;
 };
 
 #endif /* ACTIONWORLDTERRAINEDITHEIGHT_H_ */

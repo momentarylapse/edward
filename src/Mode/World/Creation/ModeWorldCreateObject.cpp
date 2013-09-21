@@ -38,7 +38,7 @@ void ModeWorldCreateObject::OnStart()
 	if (filename.num > 0)
 		message = _("neues Objekt setzen");
 
-	ed->Activate();
+	ed->Activate("");
 }
 
 

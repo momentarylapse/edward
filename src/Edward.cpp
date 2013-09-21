@@ -128,6 +128,7 @@ void Edward::event() \
 IMPLEMENT_EVENT(OnKeyDown, OnKeyDownRecursive, , )
 IMPLEMENT_EVENT(OnKeyUp, OnKeyUpRecursive, , )
 IMPLEMENT_EVENT(OnMouseMove, OnMouseMoveRecursive, , )
+IMPLEMENT_EVENT(OnMouseWheel, OnMouseWheelRecursive, , )
 IMPLEMENT_EVENT(OnLeftButtonDown, OnLeftButtonDownRecursive, , )
 IMPLEMENT_EVENT(OnLeftButtonUp, OnLeftButtonUpRecursive, , )
 IMPLEMENT_EVENT(OnMiddleButtonDown, OnMiddleButtonDownRecursive, , )
@@ -284,11 +285,12 @@ Edward::Edward(Array<string> arg) :
 Edward::~Edward()
 {
 	// saving the configuration data...
-	irect r = GetOuteriorDesired();
+	int w, h;
+	GetSizeDesired(w, h);
 	HuiConfigWriteInt("Window.X", -1);//r.x1);
 	HuiConfigWriteInt("Window.Y", -1);//r.y1);
-	HuiConfigWriteInt("Window.Width", r.x2 - r.x1);
-	HuiConfigWriteInt("Window.Height", r.y2 - r.y1);
+	HuiConfigWriteInt("Window.Width", w);
+	HuiConfigWriteInt("Window.Height", h);
 	HuiConfigWriteBool("Window.Maximized", IsMaximized());
 	HuiConfigWriteStr("RootDir", RootDir);
 	HuiConfigWriteStr("Language", HuiGetCurLanguage());

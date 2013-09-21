@@ -12,7 +12,7 @@
 
 #define Index(x,z)		((x)*(t->num_z+1)+(z))
 
-ActionWorldTerrainEditHeight::ActionWorldTerrainEditHeight(int _index, const Array<float> &_height, irect _dest)
+ActionWorldTerrainEditHeight::ActionWorldTerrainEditHeight(int _index, const Array<float> &_height, rect _dest)
 {
 	index = _index;
 	height = _height;

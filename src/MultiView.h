@@ -117,6 +117,7 @@ public:
 	static const int FlagMove = 8;
 
 	void OnMouseMove();
+	void OnMouseWheel();
 	void OnLeftButtonDown();
 	void OnLeftButtonUp();
 	void OnMiddleButtonDown();

@@ -36,7 +36,7 @@ ActionWorldTerrainApplyHeightmap::ActionWorldTerrainApplyHeightmap(DataWorld *da
 	foreachi(WorldTerrain &t, data->Terrains, index)
 		if (t.is_selected){
 			Terrain *tt = t.terrain;
-			irect dest(0, tt->num_x + 1, 0, tt->num_z + 1);
+			rect dest(0, tt->num_x + 1, 0, tt->num_z + 1);
 			Array<float> height;
 
 			for (int x=dest.x1;x<dest.x2;x++)
