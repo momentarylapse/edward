@@ -40,6 +40,7 @@ void win_set_input(HuiWindow *win, T *event)
 
 gboolean OnGtkAreaMouseMove(GtkWidget *widget, GdkEventMotion *event, gpointer user_data)
 {
+	// ignore if SetCursorPosition() was used...
 	if (GtkAreaMouseSet >= 0){
 		if ((event->x != GtkAreaMouseSetX) || (event->y != GtkAreaMouseSetY)){
 			GtkAreaMouseSet --;
@@ -48,8 +49,21 @@ gboolean OnGtkAreaMouseMove(GtkWidget *widget, GdkEventMotion *event, gpointer u
 		}
 		GtkAreaMouseSet = -1;
 	}
+
 	HuiControl *c = (HuiControl*)user_data;
 	win_set_input(c->win, event);
+
+	// gtk hinting system doesn't work?
+	// always use the real (current) cursor
+	int x, y, mod = 0;
+	#if GTK_MAJOR_VERSION >= 3
+		gdk_window_get_device_position(gtk_widget_get_window(c->widget), event->device, &x, &y, (GdkModifierType*)&mod);
+	#else
+		gdk_window_get_pointer(c->widget->window, &x, &y, (GdkModifierType*)&mod);
+	#endif
+	c->win->input.x = x;
+	c->win->input.y = y;
+
 	c->Notify("hui:mouse-move", false);
 	gdk_event_request_motions(event); // to prevent too many signals for slow message processing
 	return false;
@@ -153,6 +167,7 @@ bool area_process_key(GdkEventKey *event, HuiControlDrawingArea *c, bool down)
 
 	c->Notify(down ? "hui:key-down" : "hui:key-up", false);
 
+	// stop further gtk key handling
 	return c->grab_focus;
 }
 
@@ -184,7 +199,10 @@ HuiControlDrawingArea::HuiControlDrawingArea(const string &title, const string &
 	//g_signal_connect(G_OBJECT(w), "focus-in-event", G_CALLBACK(&focus_in_event), this);
 	int mask;
 	g_object_get(G_OBJECT(da), "events", &mask, NULL);
-	mask |= GDK_EXPOSURE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_VISIBILITY_NOTIFY_MASK | GDK_SCROLL_MASK; // GDK_POINTER_MOTION_HINT_MASK = "fewer motions"
+	mask |= GDK_EXPOSURE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK;
+	mask |= GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK;
+	mask |= GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK; // GDK_POINTER_MOTION_HINT_MASK = "fewer motions"
+	mask |= GDK_VISIBILITY_NOTIFY_MASK | GDK_SCROLL_MASK;
 	//mask = GDK_ALL_EVENTS_MASK;
 	g_object_set(G_OBJECT(da), "events", mask, NULL);
 
