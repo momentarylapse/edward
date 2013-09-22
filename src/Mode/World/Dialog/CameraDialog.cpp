@@ -215,7 +215,6 @@ void CameraDialog::OnAreaLeftButtonDown()
 void CameraDialog::OnAreaLeftButtonUp()
 {
 	if (mt_action){
-		msg_write("mt end");
 		mt_action->undo(data);
 		data->Execute(mt_action);
 		mt_action = NULL;
@@ -231,7 +230,6 @@ void CameraDialog::OnAreaMouseMove()
 		if (mouse_distance >= 0)
 			mouse_distance += abs(HuiGetEvent()->dx);
 		if (mouse_distance > 5){
-			msg_write("mt update");
 			if (mt_action){
 				mt_action->undo(data);
 				delete(mt_action);
@@ -287,6 +285,5 @@ void CameraDialog::OnUpdate(Observable *obs)
 {
 	/*if (obs->GetMessage() == "Change")*/{
 		LoadData();
-		win->Redraw("cam_area");
 	}
 }

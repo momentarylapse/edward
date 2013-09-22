@@ -74,6 +74,9 @@ void ModeWorldCamera::OnStart()
 	t->Reset();
 	t->Enable(false);
 
+	preview = false;
+	preview_time = 0;
+
 	multi_view->ResetMouseAction();
 
 	Observer::Subscribe(data);
