@@ -44,9 +44,10 @@ gboolean OnGtkAreaMouseMove(GtkWidget *widget, GdkEventMotion *event, gpointer u
 	if (GtkAreaMouseSet >= 0){
 		if ((event->x != GtkAreaMouseSetX) || (event->y != GtkAreaMouseSetY)){
 			GtkAreaMouseSet --;
-			//msg_write(format("ignore %.0f\t%0.f", event->x, event->y));
+			//msg_write(format("ignore fail %.0f\t%0.f", event->x, event->y));
 			return false;
 		}
+		//msg_write(format("ignore %.0f\t%0.f", event->x, event->y));
 		GtkAreaMouseSet = -1;
 	}
 
@@ -159,7 +160,8 @@ bool area_process_key(GdkEventKey *event, HuiControlDrawingArea *c, bool down)
 	if (key < 0)
 		return false;
 
-	c->win->input.key_code = key;
+	//c->win->input.key_code = key;
+	c->win->input.key[key] = down;
 
 	if (down){
 		c->win->input.key_code = key_code;

@@ -590,7 +590,7 @@ extern int GtkAreaMouseSetX, GtkAreaMouseSetY;
 void HuiWindow::SetCursorPos(int x, int y)
 {
 	if (main_input_control){
-		GtkAreaMouseSet = 0;
+		GtkAreaMouseSet = 2;
 		GtkAreaMouseSetX = x;
 		GtkAreaMouseSetY = y;
 		input.x = x;
