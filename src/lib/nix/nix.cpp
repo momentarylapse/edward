@@ -623,7 +623,7 @@ void set_video_mode_gl(int xres, int yres)
 //	msg_write(p2s((HWND)GDK_WINDOW_HWND(gtk_widget_get_window(NixWindow->gl_widget))));
 	#ifdef NIX_GL_IN_WIDGET
 		//hDC = GetDC((HWND)gdk_win32_drawable_get_handle(NixWindow->gl_widget->window));
-		hDC = GetDC((HWND)GDK_WINDOW_HWND(gtk_widget_get_window(NixWindow->gl_widget)));
+		hDC = GetDC((HWND)GDK_WINDOW_HWND(gtk_widget_get_window(c->widget)));
 	#else
 		hDC = GetDC(NixWindow->hWnd);
 	#endif

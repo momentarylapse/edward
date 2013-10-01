@@ -216,13 +216,17 @@
     <ClCompile Include="src\lib\hui\controls\HuiControlComboBoxGtk.cpp" />
     <ClCompile Include="src\lib\hui\controls\HuiControlDrawingAreaGtk.cpp" />
     <ClCompile Include="src\lib\hui\controls\HuiControlEditGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\HuiControlExpanderGtk.cpp" />
     <ClCompile Include="src\lib\hui\controls\HuiControlGridGtk.cpp" />
     <ClCompile Include="src\lib\hui\controls\HuiControlGroupGtk.cpp" />
     <ClCompile Include="src\lib\hui\controls\HuiControlLabelGtk.cpp" />
     <ClCompile Include="src\lib\hui\controls\HuiControlListViewGtk.cpp" />
     <ClCompile Include="src\lib\hui\controls\HuiControlMultilineEditGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\HuiControlPanedGtk.cpp" />
     <ClCompile Include="src\lib\hui\controls\HuiControlProgressBarGtk.cpp" />
     <ClCompile Include="src\lib\hui\controls\HuiControlRadioButtonGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\HuiControlScrollerGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\HuiControlSeparatorGtk.cpp" />
     <ClCompile Include="src\lib\hui\controls\HuiControlSliderGtk.cpp" />
     <ClCompile Include="src\lib\hui\controls\HuiControlSpinButtonGtk.cpp" />
     <ClCompile Include="src\lib\hui\controls\HuiControlTabControlGtk.cpp" />
@@ -319,7 +323,6 @@
     <ClCompile Include="src\mode\administration\ModeAdministration.cpp" />
     <ClCompile Include="src\mode\font\dialog\FontDialog.cpp" />
     <ClCompile Include="src\mode\font\ModeFont.cpp" />
-    <ClCompile Include="src\mode\material\dialog\MaterialPhysicsDialog.cpp" />
     <ClCompile Include="src\mode\material\dialog\MaterialPropertiesDialog.cpp" />
     <ClCompile Include="src\mode\material\ModeMaterial.cpp" />
     <ClCompile Include="src\mode\Mode.cpp" />
@@ -335,7 +338,6 @@
     <ClCompile Include="src\mode\model\dialog\ModelMaterialSelectionDialog.cpp" />
     <ClCompile Include="src\mode\model\dialog\ModelNewAnimationDialog.cpp" />
     <ClCompile Include="src\mode\model\dialog\ModelPropertiesDialog.cpp" />
-    <ClCompile Include="src\mode\model\dialog\ModelTextureLevelDialog.cpp" />
     <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshBevelEdges.cpp" />
     <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshBrush.cpp" />
     <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshCreateBall.cpp" />
@@ -364,6 +366,7 @@
     <ClCompile Include="src\mode\world\camera\ModeWorldCamera.cpp" />
     <ClCompile Include="src\mode\world\creation\ModeWorldCreateObject.cpp" />
     <ClCompile Include="src\mode\world\creation\ModeWorldCreateTerrain.cpp" />
+    <ClCompile Include="src\Mode\World\Dialog\CameraDialog.cpp" />
     <ClCompile Include="src\mode\world\dialog\LightmapDialog.cpp" />
     <ClCompile Include="src\mode\world\dialog\ObjectPropertiesDialog.cpp" />
     <ClCompile Include="src\mode\world\dialog\SelectionPropertiesDialog.cpp" />
@@ -374,6 +377,7 @@
     <ClCompile Include="src\mode\world\ModeWorld.cpp" />
     <ClCompile Include="src\mode\world\terrain\ModeWorldEditTerrain.cpp" />
     <ClCompile Include="src\MultiView.cpp" />
+    <ClCompile Include="src\Stuff\EmbeddedDialog.cpp" />
     <ClCompile Include="src\stuff\Observable.cpp" />
     <ClCompile Include="src\stuff\Observer.cpp" />
     <ClCompile Include="src\stuff\PluginManager.cpp" />
@@ -536,13 +540,17 @@
     <ClInclude Include="src\lib\hui\controls\HuiControlComboBox.h" />
     <ClInclude Include="src\lib\hui\controls\HuiControlDrawingArea.h" />
     <ClInclude Include="src\lib\hui\controls\HuiControlEdit.h" />
+    <ClInclude Include="src\lib\hui\controls\huicontrolexpander.h" />
     <ClInclude Include="src\lib\hui\controls\HuiControlGrid.h" />
     <ClInclude Include="src\lib\hui\controls\HuiControlGroup.h" />
     <ClInclude Include="src\lib\hui\controls\HuiControlLabel.h" />
     <ClInclude Include="src\lib\hui\controls\HuiControlListView.h" />
     <ClInclude Include="src\lib\hui\controls\HuiControlMultilineEdit.h" />
+    <ClInclude Include="src\lib\hui\controls\huicontrolpaned.h" />
     <ClInclude Include="src\lib\hui\controls\HuiControlProgressBar.h" />
     <ClInclude Include="src\lib\hui\controls\HuiControlRadioButton.h" />
+    <ClInclude Include="src\lib\hui\controls\huicontrolscroller.h" />
+    <ClInclude Include="src\lib\hui\controls\huicontrolseparator.h" />
     <ClInclude Include="src\lib\hui\controls\HuiControlSlider.h" />
     <ClInclude Include="src\lib\hui\controls\HuiControlSpinButton.h" />
     <ClInclude Include="src\lib\hui\controls\HuiControlTabControl.h" />
@@ -617,7 +625,6 @@
     <ClInclude Include="src\mode\administration\ModeAdministration.h" />
     <ClInclude Include="src\mode\font\dialog\FontDialog.h" />
     <ClInclude Include="src\mode\font\ModeFont.h" />
-    <ClInclude Include="src\mode\material\dialog\MaterialPhysicsDialog.h" />
     <ClInclude Include="src\mode\material\dialog\MaterialPropertiesDialog.h" />
     <ClInclude Include="src\mode\material\ModeMaterial.h" />
     <ClInclude Include="src\mode\Mode.h" />
@@ -633,7 +640,6 @@
     <ClInclude Include="src\mode\model\dialog\ModelMaterialSelectionDialog.h" />
     <ClInclude Include="src\mode\model\dialog\ModelNewAnimationDialog.h" />
     <ClInclude Include="src\mode\model\dialog\ModelPropertiesDialog.h" />
-    <ClInclude Include="src\mode\model\dialog\ModelTextureLevelDialog.h" />
     <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshBevelEdges.h" />
     <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshBrush.h" />
     <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshCreateBall.h" />
@@ -662,6 +668,7 @@
     <ClInclude Include="src\mode\world\camera\ModeWorldCamera.h" />
     <ClInclude Include="src\mode\world\creation\ModeWorldCreateObject.h" />
     <ClInclude Include="src\mode\world\creation\ModeWorldCreateTerrain.h" />
+    <ClInclude Include="src\mode\world\dialog\cameradialog.h" />
     <ClInclude Include="src\mode\world\dialog\LightmapDialog.h" />
     <ClInclude Include="src\mode\world\dialog\ObjectPropertiesDialog.h" />
     <ClInclude Include="src\mode\world\dialog\SelectionPropertiesDialog.h" />
@@ -672,6 +679,7 @@
     <ClInclude Include="src\mode\world\ModeWorld.h" />
     <ClInclude Include="src\mode\world\terrain\ModeWorldEditTerrain.h" />
     <ClInclude Include="src\MultiView.h" />
+    <ClInclude Include="src\stuff\embeddeddialog.h" />
     <ClInclude Include="src\stuff\Observable.h" />
     <ClInclude Include="src\stuff\Observer.h" />
     <ClInclude Include="src\stuff\PluginManager.h" />

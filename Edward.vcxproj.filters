@@ -753,9 +753,6 @@
     <ClCompile Include="src\mode\material\ModeMaterial.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\mode\material\dialog\MaterialPhysicsDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\mode\material\dialog\MaterialPropertiesDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -793,9 +790,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\mode\model\dialog\ModelPropertiesDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\mode\model\dialog\ModelTextureLevelDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\mode\model\mesh\ModeModelMesh.cpp">
@@ -955,6 +949,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Action\World\Object\ActionWorldDeleteObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib\hui\Controls\HuiControlExpanderGtk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib\hui\Controls\HuiControlPanedGtk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib\hui\Controls\HuiControlSeparatorGtk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib\hui\Controls\HuiControlScrollerGtk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stuff\EmbeddedDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mode\World\Dialog\CameraDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1643,9 +1655,6 @@
     <ClInclude Include="src\mode\material\ModeMaterial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\mode\material\dialog\MaterialPhysicsDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\mode\material\dialog\MaterialPropertiesDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1683,9 +1692,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\mode\model\dialog\ModelPropertiesDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\mode\model\dialog\ModelTextureLevelDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\mode\model\mesh\ModeModelMesh.h">
@@ -1845,6 +1851,24 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Action\World\Object\ActionWorldDeleteObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lib\hui\controls\huicontrolexpander.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lib\hui\controls\huicontrolpaned.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lib\hui\controls\huicontrolscroller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lib\hui\controls\huicontrolseparator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stuff\embeddeddialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mode\world\dialog\cameradialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
