@@ -37,6 +37,7 @@
 								<option id="gnu.cpp.link.option.shared.1615178824" name="Shared (-shared)" superClass="gnu.cpp.link.option.shared"/>
 								<option id="gnu.cpp.link.option.libs.1904223039" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="GL"/>
+									<listOptionValue builtIn="false" value="z"/>
 									<listOptionValue builtIn="false" value="X11"/>
 									<listOptionValue builtIn="false" value="GLU"/>
 								</option>
@@ -92,6 +93,7 @@
 								<option id="gnu.cpp.link.option.shared.507306542" name="Shared (-shared)" superClass="gnu.cpp.link.option.shared"/>
 								<option id="gnu.cpp.link.option.libs.1226023394" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="GL"/>
+									<listOptionValue builtIn="false" value="z"/>
 									<listOptionValue builtIn="false" value="X11"/>
 									<listOptionValue builtIn="false" value="GLU"/>
 								</option>
@@ -115,8 +117,13 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="Edward.cdt.managedbuild.target.gnu.exe.1654886348" name="Executable" projectType="cdt.managedbuild.target.gnu.exe"/>
 	</storageModule>
-	<storageModule moduleId="refreshScope" versionNumber="1">
-		<resource resourceType="PROJECT" workspacePath="/Edward"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/Edward"/>
+		</configuration>
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/Edward"/>
+		</configuration>
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile"/>

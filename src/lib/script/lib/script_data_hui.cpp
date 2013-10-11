@@ -44,12 +44,12 @@ void SIAddPackageHui()
 	add_package("hui", false);
 	
 	Type*
-	TypeHuiMenu		= add_type  ("Menu",	0);
+	TypeHuiMenu		= add_type  ("Menu",  sizeof(HuiMenu));
 	Type*
-	TypeHuiMenuP	= add_type_p("menu",		TypeHuiMenu);
+	TypeHuiMenuP	= add_type_p("Menu*", TypeHuiMenu);
 	Type*
 	TypeHuiWindow	= add_type  ("Window", sizeof(HuiWindow));
-	TypeHuiWindowP	= add_type_p("window",	TypeHuiWindow);
+	TypeHuiWindowP	= add_type_p("Window*",	TypeHuiWindow);
 	Type*
 	TypeHuiNixWindow= add_type  ("NixWindow", sizeof(HuiWindow));
 	Type*
@@ -57,15 +57,15 @@ void SIAddPackageHui()
 	Type*
 	TypeHuiFixedDialog= add_type  ("FixedDialog", sizeof(HuiWindow));
 	Type*
-	TypeHuiEvent	= add_type  ("Event",		0);
+	TypeHuiEvent	= add_type  ("Event", 0);
 	Type*
-	TypeHuiEventP	= add_type_p("event",	TypeHuiEvent);
+	TypeHuiEventP	= add_type_p("Event*", TypeHuiEvent);
 	Type*
-	TypeHuiPainter	= add_type  ("Painter",	0);
+	TypeHuiPainter	= add_type  ("Painter", 0);
 	Type*
-	TypeHuiPainterP	= add_type_p("painter",	TypeHuiPainter);
+	TypeHuiPainterP	= add_type_p("Painter*", TypeHuiPainter);
 	Type*
-	TypeHuiTimer	= add_type  ("Timer",	0);
+	TypeHuiTimer	= add_type  ("Timer", 0);
 
 	
 	add_func("GetKeyName",									TypeString,	hui_p(&HuiGetKeyName));
@@ -334,6 +334,15 @@ void SIAddPackageHui()
 			func_add_param("id",			TypeString);
 			func_add_param("msg",			TypeString);
 			func_add_param("func",			TypePointer);
+		class_add_func("EventM",						TypeVoid,		mf(&HuiWindow::_EventKM));
+			func_add_param("id",			TypeString);
+			func_add_param("handler",		TypePointer);
+			func_add_param("func",			TypePointer);
+		class_add_func("EventMX",						TypeVoid,		mf(&HuiWindow::_EventKMX));
+			func_add_param("id",			TypeString);
+			func_add_param("msg",			TypeString);
+			func_add_param("handler",		TypePointer);
+			func_add_param("func",			TypePointer);
 		class_add_func_virtual("OnMouseMove", TypeVoid, mf(&HuiWindow::OnMouseMove));
 		class_add_func_virtual("OnMouseWheel", TypeVoid, mf(&HuiWindow::OnMouseWheel));
 		class_add_func_virtual("OnLeftButtonDown", TypeVoid, mf(&HuiWindow::OnLeftButtonDown));
@@ -346,9 +355,7 @@ void SIAddPackageHui()
 		class_add_func_virtual("OnCloseRequest", TypeVoid, mf(&HuiWindow::OnCloseRequest));
 		class_add_func_virtual("OnKeyDown", TypeVoid, mf(&HuiWindow::OnKeyDown));
 		class_add_func_virtual("OnKeyUp", TypeVoid, mf(&HuiWindow::OnKeyUp));
-		class_add_func_virtual("OnResize", TypeVoid, mf(&HuiWindow::OnResize));
-		class_add_func_virtual("OnMove", TypeVoid, mf(&HuiWindow::OnMove));
-		class_add_func_virtual("OnRedraw", TypeVoid, mf(&HuiWindow::OnRedraw));
+		class_add_func_virtual("OnDraw", TypeVoid, mf(&HuiWindow::OnDraw));
 		class_add_func("BeginDraw",								TypeHuiPainterP,		mf(&HuiWindow::BeginDraw));
 			func_add_param("id",		TypeString);
 		class_set_vtable(HuiWindow);

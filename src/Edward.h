@@ -80,8 +80,8 @@ public:
 	void OnUpdate(Observable *o);
 	void OnCommand(const string &id);
 	void OnClose();
-	void OnDraw();
 
+	virtual void _cdecl OnDraw();
 	virtual void _cdecl OnKeyDown();
 	virtual void _cdecl OnKeyUp();
 	virtual void _cdecl OnMouseMove();

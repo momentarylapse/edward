@@ -228,7 +228,6 @@ Edward::Edward(Array<string> arg) :
 
 	EventM("hui:close", this, &Edward::OnClose);
 	EventM("exit", this, &Edward::OnClose);
-	EventMX("nix-area", "hui:redraw", this, &Edward::OnDraw);
 	EventM("*", this, &Edward::OnEvent);
 	EventM("what_the_fuck", this, &Edward::OnAbout);
 	EventM("send_bug_report", this, &Edward::OnSendBugReport);
@@ -762,8 +761,8 @@ bool Edward::FileDialog(int kind,bool save,bool force_in_root_dir)
 
 	string title, show_filter, filter;
 	if (kind==FDModel){		title=_("Modell-Datei");	show_filter=_("Modelle (*.model)");			filter="*.model";	}
-	if (kind==FDTexture){	title=_("Textur-Datei");	show_filter=_("Texturen (bmp,jpg,tga,avi)");filter="*.jpg;*.bmp;*.tga;*.avi";	}
-	if (kind==FDSound){		title=_("Sound-Datei");		show_filter=_("Sounds (wav,mp3,midi)");		filter="*.wav;*.mp3;*.midi";	}
+	if (kind==FDTexture){	title=_("Textur-Datei");	show_filter=_("Texturen (bmp,jpg,tga,png,avi)");filter="*.jpg;*.bmp;*.tga;*.png;*.avi";	}
+	if (kind==FDSound){		title=_("Sound-Datei");		show_filter=_("Sounds (wav,ogg)");			filter="*.wav;*.ogg";	}
 	if (kind==FDMaterial){	title=_("Material-Datei");	show_filter=_("Materialien (*.material)");	filter="*.material";	}
 	if (kind==FDTerrain){	title=_("Karten-Datei");	show_filter=_("Karten (*.map)");			filter="*.map";	}
 	if (kind==FDWorld){		title=_("Welt-Datei");		show_filter=_("Welten (*.world)");			filter="*.world";	}

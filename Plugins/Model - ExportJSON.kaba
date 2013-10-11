@@ -3,7 +3,7 @@ use "api.kaba"
 void main()
 	if !HuiFileDialogSave(edward, "Save JSON", "", "*.js", "*.js")
 		return
-	file f = FileCreate(HuiFilename)
+	File *f = FileCreate(HuiFilename)
 	
 	/*int n_tria = 0
 	for int is, 0, data_model.Surface.num

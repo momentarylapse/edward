@@ -14,21 +14,19 @@
 #define _X_USE_IMAGE_
 #define _X_USE_SCRIPT_
 
-//#####################################################################
-// Hui-API
-//
-// graphical user interface in the hui/* files
-//#####################################################################
+//--------------------------------------------------------------
+// Hui
 
 #define HUI_USE_GTK_ON_WINDOWS		// use gtk instead of windows api on windows
 
+//--------------------------------------------------------------
+// Image
+
+#define IMAGE_ALLOW_PNG
 
 
-//#####################################################################
-// Nix-API
-//
-// graphics and sound support in the nix.h and nix.cpp
-//#####################################################################
+//--------------------------------------------------------------
+// Nix
 
 #define NIX_ALLOW_API_OPENGL
 //#define NIX_ALLOW_VIDEO_TEXTURE			// allow Avi-videos as texture?

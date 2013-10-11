@@ -128,7 +128,7 @@ void ShowHistogram(Lightmap::Histogram &h, HuiWindow *root)
 	dlg->AddDrawingArea("", 0, 0, 0, 0, "area");
 	dlg->AddButton(_("Schlie&sen"), 0, 1, 0, 0, "close");
 	dlg->SetImage("close", "hui:close");
-	dlg->EventX("area", "hui:redraw", &OnHistDraw);
+	dlg->EventX("area", "hui:draw", &OnHistDraw);
 	dlg->Event("hui:close", &OnHistClose);
 	dlg->Event("close", &OnHistClose);
 	dlg->Run();

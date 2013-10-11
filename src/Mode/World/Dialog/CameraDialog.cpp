@@ -17,7 +17,7 @@ CameraDialog::CameraDialog(HuiWindow *_parent, ModeWorldCamera *_mode) :
 	mode = _mode;
 	data = mode->data;
 
-	win->EventMX("cam_area", "hui:redraw", this, &CameraDialog::OnAreaDraw);
+	win->EventMX("cam_area", "hui:draw", this, &CameraDialog::OnAreaDraw);
 	win->EventMX("cam_area", "hui:left-button-down", this, &CameraDialog::OnAreaLeftButtonDown);
 	win->EventMX("cam_area", "hui:left-button-up", this, &CameraDialog::OnAreaLeftButtonUp);
 	win->EventMX("cam_area", "hui:mouse-move", this, &CameraDialog::OnAreaMouseMove);

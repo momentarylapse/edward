@@ -23,7 +23,7 @@ TerrainHeightmapDialog::TerrainHeightmapDialog(HuiWindow *_parent, bool _allow_p
 	EventM("stretch_x", this, &TerrainHeightmapDialog::OnSizeChange);
 	EventM("stretch_z", this, &TerrainHeightmapDialog::OnSizeChange);
 	EventM("filter_image_find", this, &TerrainHeightmapDialog::OnFindFilter);
-	EventMX("preview", "hui:redraw", this, &TerrainHeightmapDialog::OnPreviewDraw);
+	EventMX("preview", "hui:draw", this, &TerrainHeightmapDialog::OnPreviewDraw);
 
 	Enable("ok", false);
 

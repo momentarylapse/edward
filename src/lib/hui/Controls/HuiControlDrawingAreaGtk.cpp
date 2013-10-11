@@ -16,7 +16,7 @@ int GtkAreaMouseSetX, GtkAreaMouseSetY;
 
 gboolean OnGtkAreaDraw(GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
-	((HuiControl*)user_data)->Notify("hui:redraw");
+	((HuiControl*)user_data)->Notify("hui:draw");
 	return false;
 }
 
@@ -153,7 +153,7 @@ void _get_hui_key_id_(GdkEventKey *event, int &key, int &key_code)
 		key_code += KEY_ALT;
 }
 
-bool area_process_key(GdkEventKey *event, HuiControlDrawingArea *c, bool down)
+bool area_process_key(GdkEventKey *event, HuiControl *c, bool down)
 {
 	int key, key_code;
 	_get_hui_key_id_(event, key, key_code);
@@ -177,12 +177,12 @@ bool area_process_key(GdkEventKey *event, HuiControlDrawingArea *c, bool down)
 
 gboolean OnGtkAreaKeyDown(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 {
-	return area_process_key(event, (HuiControlDrawingArea*)user_data, true);
+	return area_process_key(event, (HuiControl*)user_data, true);
 }
 
 gboolean OnGtkAreaKeyUp(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 {
-	return area_process_key(event, (HuiControlDrawingArea*)user_data, false);
+	return area_process_key(event, (HuiControl*)user_data, false);
 }
 
 HuiControlDrawingArea::HuiControlDrawingArea(const string &title, const string &id) :

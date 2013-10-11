@@ -140,7 +140,7 @@ class ModelBone: MultiViewSingleData
 	int Parent
 	vector DeltaPos
 	string ModelFile
-	model model
+	Model *model
 	bool ConstPos
 
 	// for editing
@@ -344,7 +344,7 @@ class WorldTerrain: MultiViewSingleData
 
 class WorldObject: MultiViewSingleData
 	string FileName, Name
-	model object
+	Model *object
 	vector Ang
 
 
@@ -362,7 +362,7 @@ class DataWorld: Data
 
 extern DataModel *data_model
 extern DataWorld *data_world
-extern window edward
+extern Window *edward
 
 extern int ModelGeometrySubtract(ModelGeometry a, ModelGeometry b, ModelGeometry out)
 extern int ModelGeometryAnd(ModelGeometry a, ModelGeometry b, ModelGeometry out)
