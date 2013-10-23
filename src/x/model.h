@@ -371,7 +371,8 @@ public:
 
 
 	vector pos, vel, vel_surf, /*pos_old,*/ acc;
-	vector ang, /*ang_old,*/ rot;
+	quaternion ang /*,ang_old*/;
+	vector rot;
 	matrix _matrix, matrix_old;
 
 	vector force_int, torque_int;

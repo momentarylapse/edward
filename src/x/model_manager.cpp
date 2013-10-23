@@ -144,6 +144,6 @@ void UnregisterModel(Model *m)
 
 void ModelManagerIterate()
 {
-	foreach(Model *m, ModelCopy)
-		m->OnIterate();
+	for (int i=0;i<ModelCopy.num;i++)
+		ModelCopy[i]->OnIterate();
 }

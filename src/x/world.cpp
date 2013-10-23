@@ -355,7 +355,7 @@ bool GodLoadWorldFromLevelData()
 	World.sun->SetColors(LevelData.sun_color[0],
 	                     LevelData.sun_color[1],
 	                     LevelData.sun_color[2]);
-	World.sun->SetDirectional(-LevelData.sun_ang.ang2dir());
+	World.sun->SetDirectional(- LevelData.sun_ang.ang2dir());
 	World.sun->enabled = LevelData.sun_enabled;
 #endif
 
@@ -364,7 +364,7 @@ bool GodLoadWorldFromLevelData()
 	for (int i=0;i<World.skybox.num;i++){
 		World.skybox[i] = LoadModel(LevelData.skybox_filename[i]);
 		if (World.skybox[i])
-			World.skybox[i]->ang = LevelData.skybox_ang[i];
+			QuaternionRotationV(World.skybox[i]->ang, LevelData.skybox_ang[i]);
 		LevelData.skybox_filename[i].clear();
 	}
 	LevelData.skybox_filename.clear();
@@ -378,7 +378,9 @@ bool GodLoadWorldFromLevelData()
 	GodNumReservedObjects = LevelData.object.num;
 	foreachi(LevelDataObject &o, LevelData.object, i)
 		if (o.filename.num > 0){
-			Object *oo = GodCreateObject(o.filename, o.name, o.pos, o.ang, i);
+			quaternion q;
+			QuaternionRotationV(q, o.ang);
+			Object *oo = GodCreateObject(o.filename, o.name, o.pos, q, i);
 			ok &= (oo >= 0);
 			if (oo){
 				oo->vel = o.vel;
@@ -610,7 +612,7 @@ int GodFindObjects(vector &pos, float radius, int mode, Array<Object*> &a)
 
 typedef void object_callback_func(Object*);
 
-Object *GodCreateObject(const string &filename, const string &name, const vector &pos, const vector &ang, int w_index)
+Object *GodCreateObject(const string &filename, const string &name, const vector &pos, const quaternion &ang, int w_index)
 {
 	if (Engine.ResettingGame){
 		msg_error("CreateObject during game reset");
@@ -642,7 +644,7 @@ Object *GodCreateObject(const string &filename, const string &name, const vector
 
 Object *_cdecl _CreateObject(const string &filename, const vector &pos)
 {
-	return GodCreateObject(filename, filename, pos, v_0);
+	return GodCreateObject(filename, filename, pos, q_id);
 }
 
 void AddNewForceField(vector pos,vector dir,int kind,int shape,float r,float v,float a,bool visible,float t)
@@ -787,10 +789,8 @@ void PhysicsDataToODE()
 				dBodySetPosition(b, Objects[i]->pos.x, Objects[i]->pos.y, Objects[i]->pos.z);
 				dBodySetLinearVel(b, Objects[i]->vel.x, Objects[i]->vel.y, Objects[i]->vel.z);
 				dBodySetAngularVel(b, Objects[i]->rot.x, Objects[i]->rot.y, Objects[i]->rot.z);
-				quaternion q;
 				dQuaternion qq;
-				QuaternionRotationV(q, Objects[i]->ang);
-				qx2ode(&q, qq);
+				qx2ode(&Objects[i]->ang, qq);
 				dBodySetQuaternion(b, qq);
 			}
 		}
@@ -807,9 +807,7 @@ void PhysicsDataFromODE()
 				Objects[i]->pos = *(vector*)dBodyGetPosition(b);
 				Objects[i]->vel = *(vector*)dBodyGetLinearVel(b);
 				Objects[i]->rot = *(vector*)dBodyGetAngularVel(b);
-				quaternion q;
-				qode2x(dBodyGetQuaternion(b), &q);
-				Objects[i]->ang = q.get_angles();
+				qode2x(dBodyGetQuaternion(b), &Objects[i]->ang);
 				Objects[i]->UpdateMatrix();
 				Objects[i]->UpdateTheta();
 				Objects[i]->_ResetPhysAbsolute_();
@@ -1206,9 +1204,7 @@ void GodRegisterObject(Model *o, int index)
 		dBodySetMass((dBodyID)o->body_id, &m);
 		dBodySetData((dBodyID)o->body_id, o);
 		dQuaternion qq;
-		quaternion q;
-		QuaternionRotationV(q, o->ang);
-		qx2ode(&q, qq);
+		qx2ode(&o->ang, qq);
 		dBodySetQuaternion((dBodyID)o->body_id, qq);
 	}else
 		o->body_id = 0;
@@ -1395,16 +1391,16 @@ inline void draw_pmv(Array<PartialModelView> &vp)
 {
 	// camera frustrum data
 	vector pos = cur_cam->pos;
-	vector dir = cur_cam->ang.ang2dir();
-	vector a2;
-	a2 = VecAngAdd(vector(0, +0.9f, 0), cur_cam->ang);
-	vector dir_l = a2.ang2dir();
-	a2 = VecAngAdd(vector(0, -0.9f, 0), cur_cam->ang);
-	vector dir_r = a2.ang2dir();
-	a2 = VecAngAdd(vector(+1.0f, 0, 0), cur_cam->ang);
-	vector dir_t = a2.ang2dir();
-	a2 = VecAngAdd(vector(-1.0f, 0, 0), cur_cam->ang);
-	vector dir_b = a2.ang2dir();
+	vector dir = cur_cam->ang * e_z;
+	quaternion a2;
+	a2 = cur_cam->ang * quaternion(vector(0, +0.9f, 0));
+	vector dir_l = a2 * e_z;
+	a2 = cur_cam->ang * quaternion(vector(0, -0.9f, 0));
+	vector dir_r = a2 * e_z;
+	a2 = cur_cam->ang * quaternion(vector(+1.0f, 0, 0));
+	vector dir_t = a2 * e_z;
+	a2 = cur_cam->ang * quaternion(vector(-1.0f, 0, 0));
+	vector dir_b = a2 * e_z;
 	
 	for (int i=0;i<vp.num;i++){
 		PartialModel *p = (PartialModel*)vp[i].p;

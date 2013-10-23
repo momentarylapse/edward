@@ -145,6 +145,7 @@ SyntaxTree::SyntaxTree(Script *_script) :
 	cur_func = NULL;
 	script = _script;
 	AsmMetaInfo = new Asm::MetaInfo;
+	ForIndexCount = 0;
 
 	// "include" default stuff
 	foreach(Package &p, Packages)
@@ -669,10 +670,8 @@ void SyntaxTree::AddType(Type **type)
 
 	if (t->is_super_array){
 		Type *parent = t->parent;
-		int size = t->size;
-		t->DeriveFrom(TypeDynamicArray);
+		t->DeriveFrom(TypeDynamicArray, false);
 		t->parent = parent;
-		t->size = size;
 		AddFunctionHeadersForClass(t);
 	}else if (t->is_array){
 		AddFunctionHeadersForClass(t);

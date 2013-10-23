@@ -23,7 +23,7 @@
 
 
 
-Array<Camera*> camera;
+Array<Camera*> Cameras;
 Camera *Cam; // "camera"
 Camera *cur_cam; // currently rendering
 
@@ -40,14 +40,10 @@ void CameraInit()
 void CameraReset()
 {
 	msg_db_f("CameraReset",1);
-	AllowXContainer = false;
-	foreach(Camera *c, camera)
-		delete(c);
-	camera.clear();
-	AllowXContainer = true;
+	xcon_del(Cameras);
 
 	// create the main-view ("cam")
-	Cam = CreateCamera(v_0, v_0, r_id);
+	Cam = new Camera(v_0, q_id, r_id);
 	cur_cam = Cam;
 }
 
@@ -73,7 +69,8 @@ void Camera::reset()
 
 	show = false;
 	
-	pos = vel = ang = rot = v_0;
+	pos = vel = rot = v_0;
+	ang = q_id;
 	last_pos = view_pos = vel_rt = pos_0 = vel_0 = ang_0 = pos_1 = vel_1 = ang_1 = v_0;
 	a_pos = b_pos = a_ang = b_ang = v_0;
 	script_rot_0 = script_rot_1 = v_0;
@@ -100,10 +97,10 @@ Camera::Camera()
 	jump_to_pos = false;
 
 	// register
-	xcon_reg(XContainerCamera, this, camera);
+	xcon_reg(XContainerCamera, this, Cameras);
 }
 
-Camera::Camera(const vector &_pos, const vector &_ang, const rect &_dest)
+Camera::Camera(const vector &_pos, const quaternion &_ang, const rect &_dest)
 {
 	new(this) Camera;
 	pos = _pos;
@@ -114,7 +111,7 @@ Camera::Camera(const vector &_pos, const vector &_ang, const rect &_dest)
 Camera::~Camera()
 {
 	// unregister
-	xcon_unreg(this, camera);
+	xcon_unreg(this, Cameras);
 }
 
 
@@ -123,7 +120,7 @@ void Camera::__init__()
 	new(this) Camera;
 }
 
-void Camera::__init_ext__(const vector &_pos, const vector &_ang, const rect &_dest)
+void Camera::__init_ext__(const vector &_pos, const quaternion &_ang, const rect &_dest)
 {
 	new(this) Camera(_pos, _ang, _dest);
 }
@@ -132,20 +129,9 @@ void Camera::__delete__()
 {
 	//this->~Camera();
 	// unregister
-	for (int i=0;i<camera.num;i++)
-		if (camera[i] == this)
-			camera.erase(i);
-}
-
-Camera *CreateCamera(const vector &pos, const vector &ang, const rect &dest)
-{
-	msg_db_f("CreateCamera",1);
-	Camera *v = new Camera;
-	// initial data
-	v->pos = pos;
-	v->ang = ang;
-	v->dest = dest;
-	return v;
+	for (int i=0;i<Cameras.num;i++)
+		if (Cameras[i] == this)
+			Cameras.erase(i);
 }
 
 void SetAim(Camera *view,vector &pos,vector &vel,vector &ang,float time,bool real_time)
@@ -160,7 +146,7 @@ void SetAim(Camera *view,vector &pos,vector &vel,vector &ang,float time,bool rea
 		view->vel_0 = view->vel_rt;
 	else
 		view->vel_0 = view->vel;
-	view->ang_0 = view->ang;
+	view->ang_0 = view->ang.get_angles();
 	view->pos_1 = pos;
 	view->vel_1 = vel;
 	view->ang_1 = ang;
@@ -265,7 +251,7 @@ void Camera::StopScript()
 
 void ExecuteCamPoint(Camera *view)
 {
-	view->script_ang[0] = view->ang;
+	view->script_ang[0] = view->ang.get_angles();
 	if (view->cam_point_nr == 0)
 		view->script_rot_1 = v_0;
 	if (view->cam_point_nr >= view->cam_point.num){
@@ -311,8 +297,8 @@ void ExecuteCamPoint(Camera *view)
 			view->vel_1 = v_0;
 			view->a_ang = v_0; //view->ang;
 			view->b_ang = v_0; //view->ang;
-			view->ang_0 = view->ang;
-			view->ang_1 = view->ang;
+			view->ang_0 = view->ang.get_angles();
+			view->ang_1 = view->ang.get_angles();
 			view->rot = v_0;
 			view->script_rot_0 = v_0;
 			view->script_rot_1 = v_0;
@@ -420,7 +406,7 @@ void CameraCalcMove()
 {
 	msg_db_f("CamCalcMove",2);
 
-	foreach(Camera *v, camera){
+	foreach(Camera *v, Cameras){
 		if (!v->enabled)
 			continue;
 		v->OnIterate();
@@ -456,7 +442,7 @@ void Camera::SetView()
 	float center_y = (float)MaxY * (dest.y1 + dest.y2) / 2;
 	float height = (float)MaxY * (dest.y2 - dest.y1) / zoom;
 	NixSetProjectionPerspectiveExt(center_x, center_y, height * scale_x, height, min_depth, max_depth);
-	NixSetView(view_pos, ang);
+	NixSetView(view_pos, ang.get_angles());
 	
 	m_all = NixProjectionMatrix * NixViewMatrix;
 	MatrixInverse(im_all, m_all);
@@ -482,7 +468,7 @@ void Camera::SetViewLocal()
 	float center_y = (float)MaxY * (dest.y1 + dest.y2) / 2;
 	float height = (float)MaxY * (dest.y2 - dest.y1) / zoom;
 	NixSetProjectionPerspectiveExt(center_x, center_y, height * scale_x, height, 0.01f, 1000000.0f);
-	NixSetView(v_0, ang);
+	NixSetView(v_0, ang.get_angles());
 	
 	m_all = NixProjectionMatrix * NixViewMatrix;
 	MatrixInverse(im_all, m_all);
@@ -513,7 +499,7 @@ vector Camera::Unproject(const vector &v)
 
 void CameraShiftAll(const vector &dpos)
 {
-	foreach(Camera *c, camera)
+	foreach(Camera *c, Cameras)
 		c->pos += dpos;
 }
 

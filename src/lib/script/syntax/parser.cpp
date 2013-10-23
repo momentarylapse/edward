@@ -993,7 +993,7 @@ void SyntaxTree::ParseSpecialCommandForall(Block *block, Function *f)
 {
 	msg_db_f("ParseSpecialCommandForall", 4);
 	// for index
-	int var_no_index = f->AddVar("-for_index-", TypeInt);
+	int var_no_index = f->AddVar(format("-for_index_%d-", ForIndexCount ++), TypeInt);
 	exlink_make_var_local(this, TypeInt, var_no_index);
 		Command *for_index = cp_command(&GetExistenceLink);
 
@@ -1073,7 +1073,7 @@ void SyntaxTree::ParseSpecialCommandForall(Block *block, Function *f)
 
 	// force for_var out of scope...
 	f->var[for_var->link_no].name = "-out-of-scope-";
-	f->var[for_index->link_no].name = "-out-of-scope-";
+	//f->var[for_index->link_no].name = "-out-of-scope-";
 }
 
 void SyntaxTree::ParseSpecialCommandWhile(Block *block, Function *f)
@@ -1461,7 +1461,7 @@ void SyntaxTree::ParseClass()
 		so("vererbung der struktur");
 		Exp.next();
 		Type *parent = GetType(Exp.cur, true);
-		if (!_class->DeriveFrom(parent))
+		if (!_class->DeriveFrom(parent, true))
 			DoError(format("parental type in class definition after \":\" has to be a class, but (%s) is not", parent->name.c_str()));
 		_offset = parent->size;
 	}
@@ -1531,7 +1531,7 @@ void SyntaxTree::ParseClass()
 				if (e.name == el.name) //&& e.type->is_pointer && el.type->is_pointer)
 						orig = &e;
 			if (overwrite and ! orig)
-				DoError(format("can not overwrite element '%s', not previous definition", el.name.c_str()));
+				DoError(format("can not overwrite element '%s', no previous definition", el.name.c_str()));
 			if (!overwrite and orig)
 				DoError(format("element '%s' is already defined, use 'overwrite' to overwrite", el.name.c_str()));
 			if (overwrite){
@@ -1572,7 +1572,7 @@ void SyntaxTree::ParseClass()
 			// element "-vtable-" being derived
 		}else{
 			foreach(ClassElement &e, _class->element)
-				e.offset += config.PointerSize;
+				e.offset = ProcessClassOffset(_class->name, e.name, e.offset + config.PointerSize);
 
 			ClassElement el;
 			el.name = "-vtable-";

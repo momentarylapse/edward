@@ -312,7 +312,8 @@ void read_color(CFile *f, color &c)
 void Model::reset()
 {
 	error = false;
-	pos = ang = vel = rot = v_0;
+	pos = vel = rot = v_0;
+	ang = q_id;
 	object_id = -1;
 	registered = false;
 	on_ground = false;
@@ -770,7 +771,7 @@ Model *Model::GetCopy(bool allow_script_init)
 #endif
 	*m = *this;
 
-	//Fx.forget(); ...
+	m->fx.clear();
 	
 
 	// "copy" presettings (just using references)

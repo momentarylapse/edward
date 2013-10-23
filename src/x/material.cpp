@@ -49,7 +49,7 @@ Material::Material()
 	ambient = White;
 	diffuse = White;
 	specular = Black;
-	shininess = 20;
+	shininess = 0;
 	emission = Black;
 	transparency_mode = TransparencyModeNone;
 	alpha_source = 0;

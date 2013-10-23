@@ -7,14 +7,19 @@
 
 #include "ModelSurface.h"
 #include "DataModel.h"
+#include "BspTree.h"
 #include "../../Edward.h"
 
-struct SurfaceInsideTestData
+
+
+/*struct SurfaceInsideTestData
 {
 	int num_trias;
 	Array<Ray> ray;
 	Array<plane> pl;
-};
+};*/
+
+struct SurfaceInsideTestData : BspTree{};
 
 ModelSurface::ModelSurface()
 {
@@ -524,7 +529,7 @@ void ModelSurface::BeginInsideTests()
 	if (!IsClosed)
 		return;
 	inside_data = new SurfaceInsideTestData;
-	inside_data->num_trias = 0;
+	/*inside_data->num_trias = 0;
 	foreach(ModelPolygon &t, Polygon)
 		inside_data->num_trias += (t.Side.num - 2);
 	inside_data->ray.resize(inside_data->num_trias * 3);
@@ -534,13 +539,17 @@ void ModelSurface::BeginInsideTests()
 	foreach(ModelPolygon &t, Polygon){
 		if (t.TriangulationDirty)
 			t.UpdateTriangulation(model->Vertex);
-		*(pl ++) = plane(model->Vertex[t.Side[0].Vertex].pos, t.TempNormal);
 		for (int k=0;k<t.Side.num-2;k++){
+			*(pl ++) = plane(model->Vertex[t.Side[0].Vertex].pos, t.TempNormal);
 			*(r ++) = Ray(model->Vertex[t.Side[t.Side[k].Triangulation[0]].Vertex].pos, model->Vertex[t.Side[t.Side[k].Triangulation[1]].Vertex].pos);
 			*(r ++) = Ray(model->Vertex[t.Side[t.Side[k].Triangulation[1]].Vertex].pos, model->Vertex[t.Side[t.Side[k].Triangulation[2]].Vertex].pos);
 			*(r ++) = Ray(model->Vertex[t.Side[t.Side[k].Triangulation[2]].Vertex].pos, model->Vertex[t.Side[t.Side[k].Triangulation[0]].Vertex].pos);
 		}
-	}
+	}*/
+
+	float epsilon = model->GetRadius() * 0.001f;
+	foreach(ModelPolygon &p, Polygon)
+		inside_data->add(p, model, epsilon);
 }
 
 void ModelSurface::EndInsideTests()
@@ -566,7 +575,9 @@ bool ModelSurface::InsideTest(const vector &p)
 {
 	if (!inside_data)
 		return false;
+	return inside_data->inside(p);
 
+	/*
 	Ray r = Ray(p, p + e_x);
 
 	// how often does a ray from p intersect the surface?
@@ -586,8 +597,11 @@ bool ModelSurface::InsideTest(const vector &p)
 
 		if (cp.x > p.x)
 			n ++;
-	}
+	}*/
+
+
 	/*Array<vector> v;
+	int n = 0;
 	foreach(ModelPolygon &t, Polygon){
 
 		// plane test
@@ -621,7 +635,7 @@ bool ModelSurface::InsideTest(const vector &p)
 		// real intersection
 		vector col;
 		if (t.TriangulationDirty)
-			t.UpdateTriangulation(model);
+			t.UpdateTriangulation(model->Vertex);
 		for (int k=t.Side.num-2;k>=0;k--)
 			if (LineIntersectsTriangle(v[t.Side[k].Triangulation[0]], v[t.Side[k].Triangulation[1]], v[t.Side[k].Triangulation[2]], p, p + e_x, col, false))
 				if (col.x > p.x)
@@ -629,7 +643,7 @@ bool ModelSurface::InsideTest(const vector &p)
 	}*/
 
 	// even or odd?
-	return ((n % 2) == 1);
+	//return ((n % 2) == 1);
 }
 
 

@@ -43,7 +43,7 @@ class Camera : public XContainer
 {
 public:
 	Camera();
-	Camera(const vector &pos, const vector &ang, const rect &dest);
+	Camera(const vector &pos, const quaternion &ang, const rect &dest);
 	virtual ~Camera();
 	void reset();
 	
@@ -60,7 +60,8 @@ public:
 
 	float min_depth, max_depth;
 	
-	vector last_pos, pos, view_pos, vel, vel_rt, ang, rot, pos_0, vel_0, ang_0, pos_1, vel_1, ang_1, a_pos, b_pos, a_ang, b_ang, script_rot_0, script_rot_1;
+	vector last_pos, pos, view_pos, vel, vel_rt, rot, pos_0, vel_0, ang_0, pos_1, vel_1, ang_1, a_pos, b_pos, a_ang, b_ang, script_rot_0, script_rot_1;
+	quaternion ang;
 	vector script_ang[2];
 	float zoom, el, el_rt, flight_time, flight_time_el;
 	matrix *post_projection_matrix;
@@ -86,17 +87,16 @@ public:
 	virtual void _cdecl OnIterate();
 
 	void _cdecl __init__();
-	void _cdecl __init_ext__(const vector &pos, const vector &ang, const rect &dest);
+	void _cdecl __init_ext__(const vector &pos, const quaternion &ang, const rect &dest);
 	virtual void _cdecl __delete__();
 };
 
 void CameraInit();
 void CameraReset();
 void CameraCalcMove();
-Camera *_cdecl CreateCamera(const vector &pos, const vector &ang, const rect &dest);
 void CameraShiftAll(const vector &dpos);
 
-extern Array<Camera*> camera;
+extern Array<Camera*> Cameras;
 extern Camera *Cam; // "camera"
 extern Camera *cur_cam; // currently rendering
 

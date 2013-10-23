@@ -143,12 +143,11 @@ void Object::DoPhysics()
 		// rotation
 		if ((rot != v_0) || (torque_int != v_0)){
 
-			quaternion q, q_dot, q_w;
-			QuaternionRotationV( q, ang );
+			quaternion q_dot, q_w;
 			q_w = quaternion( 0, rot );
-			q_dot = 0.5f * q_w * q;
-			q += q_dot * Engine.Elapsed;
-			ang = q.get_angles();
+			q_dot = 0.5f * q_w * ang;
+			ang += q_dot * Engine.Elapsed;
+			ang.normalize();
 
 			#ifdef _realistic_calculation_
 				vector L = theta * rot + torque_int * Engine.Elapsed;
@@ -205,10 +204,10 @@ void Object::UpdateTheta()
 {
 	if (active_physics){
 		matrix3 r,r_inv;
-		Matrix3Rotation( r, ang );
-		Matrix3Transpose( r_inv, r );
-		theta = ( r * theta_0 * r_inv );
-		Matrix3Inverse( theta_inv, theta );
+		Matrix3RotationQ(r, ang);
+		Matrix3Transpose(r_inv, r);
+		theta = (r * theta_0 * r_inv);
+		Matrix3Inverse(theta_inv, theta);
 	}else{
 		// Theta and ThetaInv already = identity
 		memset(&theta_inv, 0, sizeof(matrix3));
@@ -218,7 +217,7 @@ void Object::UpdateTheta()
 void Object::UpdateMatrix()
 {
 	matrix trans,rot;
-	MatrixRotation(rot, ang);
+	MatrixRotationQ(rot, ang);
 	MatrixTranslation(trans, pos);
 	MatrixMultiply(_matrix, trans, rot);
 }

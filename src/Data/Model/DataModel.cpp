@@ -169,6 +169,7 @@ bool DataModel::TestSanity(const string &loc)
 	return true;
 }
 
+
 void DataModel::OnPostActionUpdate()
 {
 	UpdateNormals();

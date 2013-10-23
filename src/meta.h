@@ -131,6 +131,7 @@ enum
 	XContainerParticleRot,
 	XContainerParticleBeam,
 	XContainerGuiLayer,
+	XContainerController,
 	XContainerCamera,
 	XContainerModel
 };
@@ -139,14 +140,19 @@ extern bool AllowXContainer;
 
 #define xcon_reg(xtype, var, array) \
 	if (AllowXContainer) \
-		array.add(var); \
-	var->type = xtype;
+		(array).add(var); \
+	(var)->type = xtype;
 
 #define xcon_unreg(var, array) \
 	if (AllowXContainer) \
-		for (int i=0;i<array.num;i++) \
-			if (array[i] == var) \
-				array.erase(i);
+		for (int i=0;i<(array).num;i++) \
+			if ((array)[i] == var) \
+				(array).erase(i);
+
+#define xcon_del(array) \
+	for (int i=(array).num-1; i>=0; i--) \
+		delete((array)[i]); \
+	(array).clear();
 
 #endif
 

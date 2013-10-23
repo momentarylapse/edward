@@ -140,7 +140,7 @@ bool GodLoadWorldFromLevelData();
 bool GodLoadWorld(const string &filename);
 
 extern bool GodNetMsgEnabled;
-Object* _cdecl GodCreateObject(const string &filename, const string &name, const vector &pos, const vector &ang, int w_index=-1);
+Object* _cdecl GodCreateObject(const string &filename, const string &name, const vector &pos, const quaternion &ang, int w_index=-1);
 void GodRegisterObject(Model *m, int index = -1);
 void GodUnregisterObject(Model *m);
 void GodRegisterModel(Model *m);
