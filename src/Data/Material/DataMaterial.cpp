@@ -14,8 +14,8 @@
 DataMaterial::DataMaterial() :
 	Data(FDMaterial)
 {
-	Shader = -1;
-	Appearance.CubeMap = NixCreateCubeMap(128);
+	Shader = NULL;
+	Appearance.CubeMap = new NixCubeMap(128);
 
 	Reset();
 }
@@ -267,7 +267,7 @@ void DataMaterial::AppearanceData::Reset()
 	ShaderFile.clear();
 }
 
-int DataMaterial::AppearanceData::GetShader() const
+NixShader *DataMaterial::AppearanceData::GetShader() const
 {
 	return NixLoadShader(ShaderFile);
 }
@@ -296,9 +296,9 @@ void DataMaterial::Reset()
 {
 	filename = "";
 
-	if (Shader >= 0)
-		NixUnrefShader(Shader);
-	Shader = -1;
+	if (Shader)
+		Shader->unref();
+	Shader = NULL;
 
 	Appearance.Reset();
 	Physics.Reset();
@@ -350,11 +350,11 @@ void DataMaterial::UpdateTextures()
 {
 	msg_db_f("Mat.UpdateTextures", 1);
 	for (int i=0;i<MATERIAL_MAX_TEXTURES;i++)
-		Appearance.Texture[i] = -1;
+		Appearance.Texture[i] = NULL;
 	for (int i=0;i<Appearance.NumTextureLevels;i++)
 		Appearance.Texture[i] = NixLoadTexture(Appearance.TextureFile[i]);
 	for (int i=0;i<6;i++)
-		NixFillCubeMap(Appearance.CubeMap, i, NixLoadTexture(Appearance.ReflectionTextureFile[i]));
+		Appearance.CubeMap->fill_cube_map(i, NixLoadTexture(Appearance.ReflectionTextureFile[i]));
 	if ((Appearance.ReflectionMode == ReflectionCubeMapStatic) || (Appearance.ReflectionMode == ReflectionCubeMapDynamical))
 		Appearance.Texture[3] = Appearance.CubeMap;
 }

@@ -219,7 +219,7 @@ void ModelMaterialDialog::FillTextureList()
 {
 	Reset("mat_textures");
 	for (int i=0;i<temp.NumTextures;i++){
-		int tex = NixLoadTexture(temp.TextureFile[i]);
+		NixTexture *tex = NixLoadTexture(temp.TextureFile[i]);
 		string img = ed->get_tex_image(tex);
 		AddString("mat_textures", format("Tex[%d]\\%s\\%s", i, img.c_str(), file_secure(temp.TextureFile[i]).c_str()));
 	}

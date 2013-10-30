@@ -374,9 +374,9 @@ void DrawSelectionObject(Model *o, float alpha, const color &c)
 	if ((d<0)||(d>3))
 		return;
 	for (int i=0;i<o->material.num;i++){
-		int t[8];
+		NixTexture *t[8];
 		for (int j=0;j<o->material[i].num_textures;j++)
-			t[j] = -1;
+			t[j] = NULL;
 		NixSetTextures(t, o->material[i].num_textures);
 		NixSetAlpha(AlphaMaterial);
 		NixSetMaterial(Black, color(alpha, 0, 0, 0), Black, 0, c);
@@ -399,10 +399,10 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha)
 	m->diffuse = color(alpha, 0, 0, 0);
 	m->specular = Black;
 	m->emission = c;
-	m->shader = -1;
+	m->shader = NULL;
 	m->num_textures = t->material->num_textures;
 	for (int i=0;i<t->material->num_textures;i++)
-		m->texture[i] = -1;
+		m->texture[i] = NULL;
 
 	t->material = m;
 
@@ -456,7 +456,7 @@ void ModeWorld::OnDrawWin(MultiViewWindow *win)
 				continue;
 			if (o.object){
 				for (int i=0;i<o.object->material.num;i++)
-					o.object->material[i].shader = -1;
+					o.object->material[i].shader = NULL;
 				o.object->Draw(0, false, false);
 				o.object->_detail_ = 0;
 			}

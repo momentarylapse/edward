@@ -10,6 +10,8 @@
 
 #include "../../x/material.h"
 
+class NixTexture;
+
 class ModelMaterial
 {
 public:
@@ -27,7 +29,7 @@ public:
 	string MaterialFile;
 	Material *material;
 	int NumTextures;
-	int Texture[MATERIAL_MAX_TEXTURES];
+	NixTexture *Texture[MATERIAL_MAX_TEXTURES];
 	string TextureFile[MATERIAL_MAX_TEXTURES];
 
 	bool UserTransparency;

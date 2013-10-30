@@ -72,12 +72,8 @@ int _cdecl LoadFont(const string &filename)
 		XFont *font = new XFont;
 		font->filename = filename.sys_filename();
 		font->texture = NixLoadTexture(f->ReadStrC());
-		int tx = 1;
-		int ty = 1;
-		if (font->texture >= 0){
-			tx = NixTextures[font->texture].width;
-			ty = NixTextures[font->texture].height;
-		}
+		int tx = font->texture->width;
+		int ty = font->texture->height;
 		int num_glyphs = f->ReadWordC();
 		int height=f->ReadByteC();
 		int y1=f->ReadByteC();

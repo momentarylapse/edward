@@ -73,7 +73,7 @@ void CopySkinNew(Model *m, Skin *orig, Skin **copy)
 		sub.skin_vertex.make_own();
 		
 		// reset the vertex buffers
-		(*copy)->sub[mm].vertex_buffer = -1;
+		(*copy)->sub[mm].vertex_buffer = NULL;
 		(*copy)->sub[mm].force_update = true;
 	}
 	(*copy)->copy_as_ref = false;
@@ -91,7 +91,7 @@ void CopySkinAsReference(Model *m, Skin *orig, Skin **copy)
 	
 	// reset the vertex buffers
 	for (int i=0;i<orig->sub.num;i++){
-		(*copy)->sub[i].vertex_buffer = -1;
+		(*copy)->sub[i].vertex_buffer = NULL;
 		(*copy)->sub[i].force_update = true;
 	}
 	(*copy)->copy_as_ref = true;
@@ -190,8 +190,8 @@ void CreateVB(Model *m, Skin *s)
 	return;
 #else
 	for (int t=0;t<s->sub.num;t++){
-		if (s->sub[t].vertex_buffer < 0)
-			s->sub[t].vertex_buffer = NixCreateVB(s->sub[t].num_triangles, m->material[t].num_textures);
+		if (!s->sub[t].vertex_buffer)
+			s->sub[t].vertex_buffer = new NixVertexBuffer(m->material[t].num_textures);
 		s->sub[t].force_update = true;
 	}
 #endif
@@ -522,7 +522,7 @@ void Model::Load(const string &filename)
 
 			f->ReadInt();
 			sub->force_update = true;
-			sub->vertex_buffer = -1;
+			sub->vertex_buffer = NULL;
 		}
 		f->ReadInt();
 	}
@@ -896,8 +896,8 @@ void Model::DeleteBaseModel()
 
 			// vertex buffer
 			for (int t=0;t<s->sub.num;t++)
-				if (s->sub[t].vertex_buffer >= 0)
-					NixDeleteVB(s->sub[t].vertex_buffer);
+				if (s->sub[t].vertex_buffer)
+					delete(s->sub[t].vertex_buffer);
 
 			if (s->copy_as_ref){
 				// referenced data... don't really delete... but "unlink"
@@ -1492,13 +1492,8 @@ void Model::BeginEdit(int detail)
 // force an update for this model/skin
 void Model::EndEdit(int detail)
 {
-	for (int i=0;i<material.num;i++){
+	for (int i=0;i<material.num;i++)
 		skin[detail]->sub[i].force_update = true;
-		if (skin[detail]->sub[i].num_triangles > NixVBGetMaxTrias(skin[detail]->sub[i].vertex_buffer)){
-			NixDeleteVB(skin[detail]->sub[i].vertex_buffer);
-			skin[detail]->sub[i].vertex_buffer = -1;
-		}
-	}
 }
 
 
@@ -1543,18 +1538,18 @@ void Model::JustDraw(int mat_no, int detail)
 	if (sub.force_update){
 			
 		// vertex buffer existing?
-		if (sub.vertex_buffer < 0){
+		if (!sub.vertex_buffer){
 			msg_db_m("vb not existing -> new",3);
-			sub.vertex_buffer = NixCreateVB(sub.num_triangles, m->num_textures);
+			sub.vertex_buffer = new NixVertexBuffer(m->num_textures);
 		}
 		msg_db_m("empty",6);
-		NixVBClear(sub.vertex_buffer);
+		sub.vertex_buffer->clear();
 		msg_db_m("new...",6);
 		if (m->num_textures == 1){
 			for (int i=0;i<sub.num_triangles;i++){
 				//msg_write(i);
 				int va=tv[i*3  ]  ,vb=tv[i*3+1]  ,vc=tv[i*3+2];
-				NixVBAddTria(	sub.vertex_buffer,
+				sub.vertex_buffer->addTria(
 								p[va],n[i*3  ],sv[i*6  ],sv[i*6+1],
 								p[vb],n[i*3+1],sv[i*6+2],sv[i*6+3],
 								p[vc],n[i*3+2],sv[i*6+4],sv[i*6+5]);
@@ -1569,7 +1564,7 @@ void Model::JustDraw(int mat_no, int detail)
 					}
 				//msg_write(i);
 				int va=tv[i*3  ]  ,vb=tv[i*3+1]  ,vc=tv[i*3+2];
-				NixVBAddTriaM(	sub.vertex_buffer,
+				sub.vertex_buffer->addTriaM(
 								p[va],n[i*3  ],tc[0],
 								p[vb],n[i*3+1],tc[1],
 								p[vc],n[i*3+2],tc[2]);
@@ -1581,7 +1576,7 @@ void Model::JustDraw(int mat_no, int detail)
 
 
 	NixSetWorldMatrix(_matrix);
-	NixDraw3D(sub.vertex_buffer);
+	sub.vertex_buffer->draw();
 
 /*	if ((m->cube_map >= 0) && (m->reflection_density > 0)){
 		//_Pos_ = *_matrix_get_translation_(_matrix);

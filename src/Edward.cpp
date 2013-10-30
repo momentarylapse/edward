@@ -823,22 +823,19 @@ int Edward::Run()
 	return HuiRun();
 }
 
-string Edward::get_tex_image(int tex)
+string Edward::get_tex_image(NixTexture *tex)
 {
-	int index = max(tex + 1, 0);
-	if (index < icon_image.num)
-		if (icon_image[index] != "")
-			return icon_image[index];
+	if (icon_image.contains(tex))
+		return icon_image[tex];
 
 	string img;
-	if (tex < 0){
+	if (tex){
+		img = HuiSetImage(tex->icon);
+	}else{
 		Image empty;
 		empty.Create(32, 32, White);
 		img = HuiSetImage(empty);
-	}else
-		img = HuiSetImage(NixTextures[tex].icon);
-	for (int i=icon_image.num;i<=index;i++)
-		icon_image.add("");
-	icon_image[index] = img;
+	}
+	icon_image.add(tex, img);
 	return img;
 }

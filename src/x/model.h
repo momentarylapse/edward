@@ -35,6 +35,7 @@ class Effect;
 class Material;
 class TraceData;
 class Terrain;
+class NixVertexBuffer;
 
 
 #define MODEL_MAX_POLY_FACES			32
@@ -84,7 +85,7 @@ public:
 	// normals
 	CopyAsRefArray<vector> normal;
 
-	int vertex_buffer;
+	NixVertexBuffer *vertex_buffer;
 
 	// refill the vertex buffer etc...
 	bool force_update;

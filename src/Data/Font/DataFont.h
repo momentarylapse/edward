@@ -11,6 +11,7 @@
 #include "../Data.h"
 
 struct XFont;
+class NixTexture;
 
 
 class DataFont: public Data
@@ -46,7 +47,7 @@ public:
 	Array<Glyph> glyph;
 
 	// for editing
-	int Texture;
+	NixTexture *Texture;
 	int TextureWidth, TextureHeight;
 	int Marked;
 

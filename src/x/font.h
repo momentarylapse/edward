@@ -11,6 +11,8 @@
 #include "../lib/base/base.h"
 #include "../lib/math/math.h"
 
+class NixTexture;
+
 struct XGlyph
 {
 	float dx, dx2, x_offset, width;
@@ -20,7 +22,7 @@ struct XGlyph
 struct XFont
 {
 	string filename;
-	int texture;
+	NixTexture *texture;
 	int unknown_glyph_no;
 	XGlyph glyph[256];
 	float y_offset, height, x_factor, y_factor;

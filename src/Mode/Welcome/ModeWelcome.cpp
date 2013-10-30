@@ -124,7 +124,7 @@ void ModeWelcome::DrawIcon(int x, int y, int index, int pic_index, const string 
 	NixSetTexture(tex_icons);
 	NixSetColor(color((mouse_over==index)?0.3f:0.99f,1,1,1));
 	NixDraw2D(s, d, 0);
-	NixSetTexture(-1);
+	NixSetTexture(NULL);
 	NixSetAlpha(AlphaNone);
 
 	x-=15;
@@ -165,7 +165,7 @@ void ModeWelcome::OnDraw()
 	NixSetTexture(tex_logo);
 	NixSetColor(c);
 	NixDraw2D(r_id, d, 0.999f);
-	NixSetTexture(-1);
+	NixSetTexture(NULL);
 	NixDrawLineH(x, x + 720, y + 70, 0.99f);
 	NixDrawLineH(x, x + 670, y + 73, 0.99f);
 

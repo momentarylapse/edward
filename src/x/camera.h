@@ -15,6 +15,8 @@
 #include "../lib/math/math.h"
 #include "../meta.h"
 class Model;
+class NixTexture;
+class NixShader;
 
 struct CamPoint
 {
@@ -53,8 +55,8 @@ public:
 	Array<CamPoint> cam_point;
 
 	bool show;
-	int output_texture, input_texture;
-	int shader;
+	NixTexture *output, *input;
+	NixShader *shader;
 	bool shaded_displays;
 	float scale_x;
 

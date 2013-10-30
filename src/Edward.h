@@ -9,10 +9,13 @@
 #define EDWARD_H_
 
 #include "lib/hui/hui.h"
+#include "lib/base/map.h"
 #include "Mode/Mode.h"
 #include "Stuff/Observer.h"
 #include "Stuff/Progress.h"
 #include "Stuff/PluginManager.h"
+
+class NixTexture;
 
 
 
@@ -140,8 +143,8 @@ public:
 	PluginManager *plugins;
 
 
-	Array<string> icon_image;
-	string get_tex_image(int tex);
+	Map<NixTexture*, string> icon_image;
+	string get_tex_image(NixTexture *tex);
 
 	HuiTimer timer;
 };

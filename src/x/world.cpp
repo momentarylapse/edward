@@ -1159,7 +1159,7 @@ void GodDraw()
 		if (ForceField[i]->Visible){
 			color c=color(ForceField[i]->TimeToLife/4,1,1,1);
 			NixSetMaterial(c,c,Black,0,Black);
-			Fx::DrawBall(ForceField[i]->Pos,ForceField[i]->Radius,8,16);
+			//Fx::DrawBall(ForceField[i]->Pos,ForceField[i]->Radius,8,16);
 		}
 	NixSetZ(true,true);
 	NixSetCull(CullDefault);

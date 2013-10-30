@@ -72,8 +72,8 @@ void TerrainPropertiesDialog::FillTextureList()
 
 	Reset("textures");
 	for (int i=0;i<temp.NumTextures;i++){
-		int tex = NixLoadTexture(temp.TextureFile[i]);
-		if (tex < 0)
+		NixTexture *tex = NixLoadTexture(temp.TextureFile[i]);
+		if (tex)
 			if (i < m->num_textures)
 				tex = m->texture[i];
 		string img = ed->get_tex_image(tex);

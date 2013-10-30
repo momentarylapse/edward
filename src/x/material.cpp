@@ -42,9 +42,9 @@ Material::Material()
 	// default values
 	num_textures = 0;
 	for (int i=0;i<MATERIAL_MAX_TEXTURES;i++)
-		texture[i] = -1;
-	cube_map = -1;
-	shader = -1;
+		texture[i] = NULL;
+	cube_map = NULL;
+	shader = NULL;
 
 	ambient = White;
 	diffuse = White;
@@ -96,7 +96,7 @@ void Material::apply()
 		NixSetAlpha(AlphaNone);
 		_alpha_enabled_ = false;
 	}
-	if (cube_map >= 0){
+	if (cube_map){
 		// evil hack
 		texture[3] = cube_map;
 		NixSetTextures(texture, 4);
@@ -117,7 +117,7 @@ void Material::copy_from(Model *model, Material *m2, bool user_colors)
 	if (nt > m2->num_textures)
 		nt = m2->num_textures;
 	for (int i=0;i<nt;i++)
-		if (texture[i] < 0)
+		if (!texture[i])
 			texture[i] = m2->texture[i];
 	if (transparency_mode == TransparencyModeDefault){
 		transparency_mode = m2->transparency_mode;
@@ -187,22 +187,22 @@ Material *LoadMaterial(const string &filename, bool as_default)
 		f->ReadInt(); // ShiningLength
 		f->ReadBool(); // IsWater
 		// Reflection
-		m->cube_map = -1;
+		m->cube_map = NULL;
 		m->cube_map_size = 0;
 		m->reflection_density = 0;
 		m->reflection_mode = f->ReadIntC();
 		m->reflection_density = float(f->ReadInt()) * 0.01f;
 		m->cube_map_size = f->ReadInt();
-		int cmt[6];
+		NixTexture *cmt[6];
 		for (int i=0;i<6;i++)
 			cmt[i] = NixLoadTexture(f->ReadStr());
 		if (m->reflection_mode == ReflectionCubeMapDynamical){
 			//m->cube_map = FxCubeMapNew(m->cube_map_size);
 			//FxCubeMapCreate(m->cube_map,cmt[0],cmt[1],cmt[2],cmt[3],cmt[4],cmt[5]);
 		}else if (m->reflection_mode == ReflectionCubeMapStatic){
-			m->cube_map = NixCreateCubeMap(m->cube_map_size);
+			m->cube_map = new NixCubeMap(m->cube_map_size);
 			for (int i=0;i<6;i++)
-				NixFillCubeMap(m->cube_map, i, cmt[i]);
+				m->cube_map->fill_cube_map(i, cmt[i]);
 		}
 		// ShaderFile
 		string ShaderFile = f->ReadStrC();

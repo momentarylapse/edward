@@ -21,13 +21,13 @@ ModeModelMeshPolygon::ModeModelMeshPolygon(ModeBase *_parent) :
 	Mode<DataModel>("ModelMeshSkin", _parent, ed->multi_view_3d, "menu_model")
 {
 	// vertex buffers
-	VBMarked = NixCreateVB(65536, 1);
-	VBModel = NixCreateVB(65536, 1);
-	VBModel2 = -1;
-	VBModel3 = -1;
-	VBModel4 = -1;
-	VBMouseOver = NixCreateVB(8192, 1);
-	VBCreation = NixCreateVB(8192, 1);
+	VBMarked = new NixVertexBuffer(1);
+	VBModel = new NixVertexBuffer(1);
+	VBModel2 = NULL;
+	VBModel3 = NULL;
+	VBModel4 = NULL;
+	VBMouseOver = new NixVertexBuffer(1);
+	VBCreation = new NixVertexBuffer(1);
 
 	SelectCW = false;
 }
@@ -47,7 +47,7 @@ void ModeModelMeshPolygon::DrawPolygons(MultiViewWindow *win, Array<ModelVertex>
 
 	// draw all materials separately
 	foreachi(ModelMaterial &m, data->Material, mi){
-		int *vb = &VBModel;
+		NixVertexBuffer **vb = &VBModel;
 		int num_tex = min(m.NumTextures, 4);
 		if (num_tex == 2)
 			vb = &VBModel2;
@@ -55,10 +55,10 @@ void ModeModelMeshPolygon::DrawPolygons(MultiViewWindow *win, Array<ModelVertex>
 			vb = &VBModel3;
 		else if (num_tex == 4)
 			vb = &VBModel4;
-		if (*vb < 0)
-			*vb = NixCreateVB(65536, num_tex);
+		if (!*vb)
+			*vb = new NixVertexBuffer(num_tex);
 
-		NixVBClear(*vb);
+		(*vb)->clear();
 
 		foreach(ModelSurface &surf, data->Surface)
 			foreach(ModelPolygon &t, surf.Polygon)
@@ -72,8 +72,8 @@ void ModeModelMeshPolygon::DrawPolygons(MultiViewWindow *win, Array<ModelVertex>
 		NixDraw3D(*vb);
 		glDisable(GL_POLYGON_OFFSET_FILL);
 		glPolygonOffset(0, 0);
-		NixSetShader(-1);
-		NixSetTexture(-1);
+		NixSetShader(NULL);
+		NixSetTexture(NULL);
 	}
 
 	mode_model_mesh_edge->DrawEdges(win, vertex, true);
@@ -90,8 +90,8 @@ void ModeModelMeshPolygon::OnUpdateMenu()
 void ModeModelMeshPolygon::FillSelectionBuffers(Array<ModelVertex> &vertex)
 {
 	msg_db_f("SkinFillSelBuf", 4);
-	NixVBClear(VBMarked);
-	NixVBClear(VBMouseOver);
+	VBMarked->clear();
+	VBMouseOver->clear();
 
 	// create selection buffers
 	msg_db_m("a",4);

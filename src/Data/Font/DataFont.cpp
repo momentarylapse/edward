@@ -124,9 +124,9 @@ void DataFont::Reset()
 	filename = "";
 	global.Reset();
 
-	Texture=-1;
-	TextureWidth=512;
-	TextureHeight=256;
+	Texture = NULL;
+	TextureWidth = 512;
+	TextureHeight = 256;
 
 	glyph.clear();
 	for (int i=0;i<256;i++){
@@ -197,8 +197,8 @@ void DataFont::UpdateTexture()
 {
 	Texture = NixLoadTexture(global.TextureFile);
 	if (Texture >= 0){
-		TextureWidth = NixTextures[Texture].width;
-		TextureHeight = NixTextures[Texture].height;
+		TextureWidth = Texture->width;
+		TextureHeight = Texture->height;
 	}
 }
 

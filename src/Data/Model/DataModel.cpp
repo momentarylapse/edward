@@ -1583,8 +1583,6 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 	msg_db_f("GenerateInertiaTensor", 3);
 //	sModeModelSkin *p = &Skin[0];
 
-	HuiTimer it_timer;
-
 	// estimate size
 	vector min = v_0, max = v_0;
 	foreach(ModelVertex &v, Vertex){
@@ -1659,8 +1657,6 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 	}else
 		Matrix3Identity(t);
 
-	float dt = it_timer.get();
-	msg_write(format("Tensor: %f", dt));
 	return t;
 }
 

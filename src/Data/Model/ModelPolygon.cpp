@@ -165,7 +165,7 @@ void ModelPolygon::UpdateTriangulation(const Array<ModelVertex> &vertex)
 	TriangulationDirty = false;
 }
 
-void ModelPolygon::AddToVertexBuffer(const Array<ModelVertex> &vertex, int buffer, int num_textures)
+void ModelPolygon::AddToVertexBuffer(const Array<ModelVertex> &vertex, NixVertexBuffer *buffer, int num_textures)
 {
 	if (TriangulationDirty)
 		UpdateTriangulation(vertex);
@@ -183,12 +183,12 @@ void ModelPolygon::AddToVertexBuffer(const Array<ModelVertex> &vertex, int buffe
 				tc[l*2  ] = c.SkinVertex[l].x;
 				tc[l*2+1] = c.SkinVertex[l].y;
 			}
-			NixVBAddTriaM(buffer,
+			buffer->addTriaM(
 					vertex[a.Vertex].pos, a.Normal, ta,
 					vertex[b.Vertex].pos, b.Normal, tb,
 					vertex[c.Vertex].pos, c.Normal, tc);
 		}else{
-			NixVBAddTria(buffer,
+			buffer->addTria(
 					vertex[a.Vertex].pos, a.Normal, a.SkinVertex[0].x, a.SkinVertex[0].y,
 					vertex[b.Vertex].pos, b.Normal, b.SkinVertex[0].x, b.SkinVertex[0].y,
 					vertex[c.Vertex].pos, c.Normal, c.SkinVertex[0].x, c.SkinVertex[0].y);

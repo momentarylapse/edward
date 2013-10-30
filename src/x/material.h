@@ -7,6 +7,8 @@
 #define MATERIAL_MAX_TEXTURES		8
 
 class Model;
+class NixTexture;
+class NixShader;
 
 
 // visual and physical properties
@@ -18,7 +20,7 @@ public:
 
 	// textures
 	int num_textures;
-	int texture[MATERIAL_MAX_TEXTURES];
+	NixTexture *texture[MATERIAL_MAX_TEXTURES];
 
 	// light
 	color ambient, diffuse, specular, emission;
@@ -33,10 +35,11 @@ public:
 	// reflection
 	int reflection_mode;
 	float reflection_density;
-	int cube_map, cube_map_size;
+	NixTexture *cube_map;
+	int cube_map_size;
 
 	// shader
-	int shader;
+	NixShader *shader;
 
 	// friction
 	float rc_jump, rc_static, rc_sliding, rc_rolling;

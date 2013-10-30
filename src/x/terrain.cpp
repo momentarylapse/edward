@@ -28,7 +28,7 @@ void Terrain::reset()
 	error = false;
 	num_x = num_z = 0;
 	changed = false;
-	vertex_buffer = -1;
+	vertex_buffer = NULL;
 }
 
 Terrain::Terrain()
@@ -97,7 +97,7 @@ bool Terrain::Load(const string &_filename_, const vector &_pos_, bool deep)
 					for (int z=0;z<num_z/32+1;z++)
 						partition[x][z] = -1;
 
-				vertex_buffer = NixCreateVB(65536, num_textures);
+				vertex_buffer = new NixVertexBuffer(num_textures);
 			}
 		}else{
 			msg_error(format("wrong file format: %d (4 expected)",ffv));
@@ -126,7 +126,7 @@ bool Terrain::Load(const string &_filename_, const vector &_pos_, bool deep)
 Terrain::~Terrain()
 {
 	msg_db_f("~Terrain",1);
-	NixDeleteVB(vertex_buffer);
+	delete(vertex_buffer);
 	delete(material);
 }
 
@@ -474,7 +474,7 @@ void Terrain::Draw()
 
 	// recreate (in vertex buffer)
 	if (redraw){
-		NixVBClear(vertex_buffer);
+		vertex_buffer->clear();
 
 		// number of 32-blocks (including the partially filled ones)
 		int nx = ( num_x - 1 ) / 32 + 1;
@@ -576,19 +576,19 @@ void Terrain::Draw()
 
 						// add to buffer
 						if (material->num_textures==1){
-							NixVBAddTria(vertex_buffer,	va,na,ta[0],ta[1],
-														vc,nc,tc[0],tc[1],
-														vd,nd,td[0],td[1]);
-							NixVBAddTria(vertex_buffer,	va,na,ta[0],ta[1],
-														vd,nd,td[0],td[1],
-														vb,nb,tb[0],tb[1]);
+							vertex_buffer->addTria(va,na,ta[0],ta[1],
+													vc,nc,tc[0],tc[1],
+													vd,nd,td[0],td[1]);
+							vertex_buffer->addTria(va,na,ta[0],ta[1],
+													vd,nd,td[0],td[1],
+													vb,nb,tb[0],tb[1]);
 						}else{
-							NixVBAddTriaM(vertex_buffer,	va,na,ta,
-															vc,nc,tc,
-															vd,nd,td);
-							NixVBAddTriaM(vertex_buffer,	va,na,ta,
-															vd,nd,td,
-															vb,nb,tb);
+							vertex_buffer->addTriaM(va,na,ta,
+													vc,nc,tc,
+													vd,nd,td);
+							vertex_buffer->addTriaM(va,na,ta,
+													vd,nd,td,
+													vb,nb,tb);
 						}
 					}
 			}
@@ -602,13 +602,13 @@ void Terrain::Draw()
 
 	// the actual drawing
 	NixSetWorldMatrix(m_id);
-	NixDraw3D(vertex_buffer);
+	vertex_buffer->draw();
 
 	pos_old = cur_cam->pos;
 	force_redraw = false;
 	for (int x=0;x<num_x/32;x++)
 		for (int z=0;z<num_z/32;z++)
 			partition_old[x][z]=partition[x][z];
-	NixSetShader(-1);
+	NixSetShader(NULL);
 }
 

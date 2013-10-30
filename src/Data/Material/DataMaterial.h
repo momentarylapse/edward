@@ -11,6 +11,9 @@
 #include "../Data.h"
 #include "../../x/material.h"
 
+class NixTexture;
+class NixShader;
+
 class DataMaterial: public Data
 {
 public:
@@ -72,7 +75,7 @@ public:
 	{
 		// properties
 		int NumTextureLevels;
-		int Texture[MATERIAL_MAX_TEXTURES];
+		NixTexture *Texture[MATERIAL_MAX_TEXTURES];
 		string TextureFile[MATERIAL_MAX_TEXTURES];
 
 		// color
@@ -88,13 +91,13 @@ public:
 		int ReflectionMode, ReflectionSize;
 		float ReflectionDensity;
 		string ReflectionTextureFile[6];
-		int CubeMap;
+		NixTexture *CubeMap;
 
 		// shader
 		string ShaderFile;
 
 		void Reset();
-		int GetShader() const;
+		NixShader *GetShader() const;
 	};
 
 	AppearanceData Appearance;
@@ -147,7 +150,7 @@ public:
 	// sounds
 	int NumSoundRules;*/
 
-	int Shader;
+	NixShader *Shader;
 };
 
 #endif /* DATAMATERIAL_H_ */

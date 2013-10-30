@@ -57,9 +57,9 @@ void Camera::reset()
 	z = 0.999999f;
 	min_depth = 1.0f;
 	max_depth = 100000.0f;
-	output_texture = -1;
-	input_texture = -1;
-	shader = -1;
+	output = NULL;
+	input = NULL;
+	shader = NULL;
 	shaded_displays = true;
 
 	enabled = false;
@@ -416,8 +416,8 @@ void CameraCalcMove()
 void Camera::Start()
 {
 	cur_cam = this;
-	if (output_texture >= 0){
-		NixStart(output_texture);
+	if (output){
+		output->start_render();
 	}else{
 		NixScissor(rect((float)MaxX * dest.x1,
 					(float)MaxX * dest.x2,

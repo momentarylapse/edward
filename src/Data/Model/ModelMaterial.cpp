@@ -48,7 +48,7 @@ void ModelMaterial::reset()
 	// textures
 	NumTextures = 1;
 	TextureFile[0] = "";
-	Texture[0] = -1;
+	Texture[0] = NULL;
 }
 
 void ModelMaterial::MakeConsistent()
@@ -80,7 +80,7 @@ void ModelMaterial::CheckTextures()
 	if (material->num_textures > NumTextures){
 		for (int i=NumTextures;i<material->num_textures;i++){
 			TextureFile[i] = "";
-			Texture[i] = -1;
+			Texture[i] = NULL;
 		}
 		NumTextures = material->num_textures;
 		ed->SetMessage(_("Anzahl der Texturen wurde an das Material angepasst!"));
@@ -111,7 +111,7 @@ void ModelMaterial::CheckColors()
 void ModelMaterial::ApplyForRendering()
 {
 	NixSetAlpha(AlphaNone);
-	NixSetShader(-1);
+	NixSetShader(NULL);
 	color em = ColorInterpolate(Emission, White, 0.1f);
 	NixSetMaterial(Ambient, Diffuse, Specular, Shininess, em);
 	if (true){//MVFXEnabled){
@@ -132,7 +132,7 @@ void ModelMaterial::ApplyForRendering()
 	if (material->cube_map >= 0){
 		// evil hack
 		for (int i=material->num_textures+1;i<4;i++)
-			Texture[i] = -1;
+			Texture[i] = NULL;
 		Texture[3] = material->cube_map;
 		NixSetTextures(Texture, 4);
 	}else

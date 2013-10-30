@@ -34,7 +34,7 @@ ModeMaterial::ModeMaterial() :
 
 	MaterialVB[1] = VBTemp;
 	for (int i=2;i<=MATERIAL_MAX_TEXTURES;i++)
-		MaterialVB[i] = NixCreateVB(MATERIAL_NUMX * MATERIAL_NUMY * 2, i);
+		MaterialVB[i] = new NixVertexBuffer(i);
 
 	shape_type = HuiConfigReadStr("MaterialShapeType", "teapot");
 	shape_smooth = HuiConfigReadBool("MaterialShapeSmooth", true);
@@ -74,7 +74,7 @@ void ModeMaterial::OnUpdate(Observable *o)
 {
 	if (o->GetName() == "Data"){
 		data->UpdateTextures();
-		NixUnrefShader(data->Shader);
+		data->Shader->unref();
 		data->Shader = data->Appearance.GetShader();
 	}
 }
@@ -120,8 +120,8 @@ void ModeMaterial::OnDrawWin(MultiViewWindow *win)
 
 	NixDraw3D(MaterialVB[max(data->Appearance.NumTextureLevels, 1)]);
 
-	NixSetTexture(-1);
-	NixSetShader(-1);
+	NixSetTexture(NULL);
+	NixSetShader(NULL);
 
 	NixSetAlpha(AlphaNone);
 	NixSetZ(true,true);
@@ -224,8 +224,8 @@ void ModeMaterial::UpdateShape()
 		geo->Smoothen();
 
 	for (int i=1;i<=MATERIAL_MAX_TEXTURES;i++){
-		int vb = MaterialVB[i];
-		NixVBClear(vb);
+		NixVertexBuffer *vb = MaterialVB[i];
+		vb->clear();
 		geo->Preview(vb, i);
 	}
 	OnUpdateMenu();

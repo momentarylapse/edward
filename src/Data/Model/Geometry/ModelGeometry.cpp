@@ -260,9 +260,9 @@ void ModelGeometry::GetBoundingBox(vector &min, vector &max)
 	}
 }
 
-void ModelGeometry::Preview(int vb, int num_textures) const
+void ModelGeometry::Preview(NixVertexBuffer *vb, int num_textures) const
 {
-	NixVBClear(vb);
+	vb->clear();
 	foreach(ModelPolygon &p, const_cast<Array<ModelPolygon>&>(Polygon)){
 		p.TriangulationDirty = true;
 		p.AddToVertexBuffer(Vertex, vb, num_textures);

@@ -135,7 +135,7 @@ void ModeModelMeshCreateCube::OnDrawWin(MultiViewWindow *win)
 	if (pos_chosen){
 		geo->Preview(VBTemp);
 		NixSetCull(pos2_chosen ? CullCCW : CullNone);
-		NixDraw3D(VBTemp);
+		VBTemp->draw();
 		NixSetCull(CullCCW);
 	}
 }

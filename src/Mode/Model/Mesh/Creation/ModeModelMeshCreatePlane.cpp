@@ -84,11 +84,11 @@ void ModeModelMeshCreatePlane::OnDrawWin(MultiViewWindow *win)
 		vector b = pos + length[0];
 		vector c = pos + length[1];
 		vector d = pos + length[0] + length[1];
-		NixVBClear(VBTemp);
-		NixVBAddTria(VBTemp, a, -n, 0, 0, c, -n, 0, 0, d, -n, 0, 0);
-		NixVBAddTria(VBTemp, a, -n, 0, 0, d, -n, 0, 0, b, -n, 0, 0);
-		NixVBAddTria(VBTemp, b,  n, 0, 0, d,  n, 0, 0, c,  n, 0, 0);
-		NixVBAddTria(VBTemp, b,  n, 0, 0, c,  n, 0, 0, a,  n, 0, 0);
+		VBTemp->clear();
+		VBTemp->addTria(a, -n, 0, 0, c, -n, 0, 0, d, -n, 0, 0);
+		VBTemp->addTria(a, -n, 0, 0, d, -n, 0, 0, b, -n, 0, 0);
+		VBTemp->addTria(b,  n, 0, 0, d,  n, 0, 0, c,  n, 0, 0);
+		VBTemp->addTria(b,  n, 0, 0, c,  n, 0, 0, a,  n, 0, 0);
 		mode_model->SetMaterialCreation();
 		NixDraw3D(VBTemp);
 	}

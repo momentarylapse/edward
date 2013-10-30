@@ -229,13 +229,13 @@ void ModeFont::OnDrawWin(MultiViewWindow *win)
 	NixSetAlpha(AlphaMaterial);
 	NixSetZ(false, false);
 	rect d = rect(0, (float)data->TextureWidth, 0, (float)data->TextureHeight);
-	NixSetTexture(-1);
+	NixSetTexture(NULL);
 	NixSetColor(White);
 	Draw2D(r_id, &d);
 	NixSetTexture(data->Texture);
 	NixSetColor(Black);
 	Draw2D(r_id, &d);
-	NixSetTexture(-1);
+	NixSetTexture(NULL);
 
 	// grid (horizontal lines)
 	for (int i=0;i<NumY;i++){

@@ -726,7 +726,7 @@ void MultiViewWindow::Draw()
 	string view_kind;
 	MatrixIdentity(mat);
 	NixEnableLighting(false);
-	NixSetTexture(-1);
+	NixSetTexture(NULL);
 
 	color bg = ColorBackGround2D;
 	float height = NixScreenHeight;
@@ -813,9 +813,9 @@ void MultiViewWindow::Draw()
 	//msg_db_l(2);
 
 	// draw multiview data
-	NixSetShader(-1);
+	NixSetShader(NULL);
 	NixSetAlpha(AlphaNone);
-	NixSetTexture(-1);
+	NixSetTexture(NULL);
 	NixSetWire(false);
 	NixEnableLighting(false);
 	foreachi(MultiViewData &d, multi_view->data, di){

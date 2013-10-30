@@ -129,7 +129,7 @@ void ModeModelMeshTexture::OnDrawWin(MultiViewWindow *win)
 	NixSetColor(color(1,0.8f,0.8f,0.8f));
 	NixSetTexture(cur_tex);
 	NixDraw2D(s, NixTargetRect, 0.99f);
-	NixSetTexture(-1);
+	NixSetTexture(NULL);
 	NixSetAlphaM(AlphaNone);
 
 	// rectangle of unity

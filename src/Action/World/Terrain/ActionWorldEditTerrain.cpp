@@ -59,8 +59,8 @@ void *ActionWorldEditTerrain::execute(Data *d)
 
 	// update
 	if (old_data.NumTextures != data.NumTextures){
-		NixDeleteVB(t->vertex_buffer);
-		t->vertex_buffer = NixCreateVB(65536, data.NumTextures);
+		delete(t->vertex_buffer);
+		t->vertex_buffer = new NixVertexBuffer(data.NumTextures);
 	}
 	t->force_redraw = true;
 

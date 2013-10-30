@@ -229,9 +229,9 @@ void MaterialPropertiesDialog::OnReflectionTextures()
 
 bool TestShaderFile(const string &filename)
 {
-	int shader = NixLoadShader(filename);
-	NixUnrefShader(shader);
-	return shader >= 0;
+	NixShader *shader = NixLoadShader(filename);
+	shader->unref();
+	return shader;
 }
 
 void MaterialPropertiesDialog::OnFindShader()
@@ -311,7 +311,7 @@ void MaterialPropertiesDialog::FillTextureList()
 {
 	Reset("mat_textures");
 	for (int i=0;i<temp.NumTextureLevels;i++){
-		int tex = NixLoadTexture(temp.TextureFile[i]);
+		NixTexture *tex = NixLoadTexture(temp.TextureFile[i]);
 		string img = ed->get_tex_image(tex);
 		AddString("mat_textures", format("Tex[%d]\\%s\\%s", i, img.c_str(), file_secure(temp.TextureFile[i]).c_str()));
 	}

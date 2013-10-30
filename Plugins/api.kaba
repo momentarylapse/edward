@@ -223,7 +223,7 @@ class ModelMaterial
 	string MaterialFile
 	Material *material
 	int NumTextures
-	int Texture[MODEL_MAX_TEXTURES]
+	Texture *Texture[MODEL_MAX_TEXTURES]
 	string TextureFile[MODEL_MAX_TEXTURES]
 
 	bool UserTransparency

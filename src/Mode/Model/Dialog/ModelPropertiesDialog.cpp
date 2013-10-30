@@ -127,8 +127,8 @@ vector img_get_ball_n(int x, int y, int N)
 string render_material(ModelMaterial *m)
 {
 	// texture?
-	int tex = NixLoadTexture(m->TextureFile[0]);
-	if (tex < 0)
+	NixTexture *tex = NixLoadTexture(m->TextureFile[0]);
+	if (!tex)
 		if (m->material->num_textures > 0)
 			tex = m->material->texture[0];
 
@@ -150,8 +150,8 @@ string render_material(ModelMaterial *m)
 			color c = m->Ambient * 0.3f + m->Diffuse * f + m->Emission;
 
 			// texture "mapping"
-			if (tex >= 0)
-				c = c * NixTextures[tex].icon.GetPixel(x, y);
+			if (tex)
+				c = c * tex->icon.GetPixel(x, y);
 			else
 				c = c * 0.8f;
 

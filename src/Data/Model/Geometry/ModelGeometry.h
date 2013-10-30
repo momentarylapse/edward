@@ -15,6 +15,7 @@ class ModelVertex;
 class ModelPolygon;
 class vector;
 class matrix;
+class NixVertexBuffer;
 
 class ModelGeometry
 {
@@ -46,7 +47,7 @@ public:
 
 	void GetBoundingBox(vector &min, vector &max);
 
-	void Preview(int vb, int num_textures = 1) const;
+	void Preview(NixVertexBuffer *vb, int num_textures = 1) const;
 
 	Array<ModelVertex> Vertex;
 	Array<ModelPolygon> Polygon;

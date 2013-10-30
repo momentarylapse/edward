@@ -12,6 +12,7 @@
 #include "../../../Data/Model/DataModel.h"
 
 class DataModel;
+class NixVertexBuffer;
 
 class ModeModelMeshPolygon: public Mode<DataModel>
 {
@@ -41,8 +42,8 @@ public:
 	void ToggleSelectCW();
 	bool SelectCW;
 
-	int VBModel, VBModel2, VBModel3, VBModel4;
-	int VBMarked, VBMouseOver, VBCreation;
+	NixVertexBuffer *VBModel, *VBModel2, *VBModel3, *VBModel4;
+	NixVertexBuffer *VBMarked, *VBMouseOver, *VBCreation;
 };
 
 extern ModeModelMeshPolygon *mode_model_mesh_polygon;
