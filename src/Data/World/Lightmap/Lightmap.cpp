@@ -109,7 +109,7 @@ void fuzzy_image(Image &im)
 	Array<color> c;
 	for (int x=0;x<im.width;x++)
 		for (int y=0;y<im.height;y++)
-			c.add(im.GetPixel(x, y));
+			c.add(im.getPixel(x, y));
 	for (int x=0;x<im.width;x++)
 		for (int y=0;y<im.height;y++){
 			color c0 = c[y + x * im.height];
@@ -122,10 +122,10 @@ void fuzzy_image(Image &im)
 			// undefined pixel -> copy neighbor
 			c0 = c0 + c1 + c2 + c3 + c4;
 			if (c0.a > 0)
-				im.SetPixel(x, y, c0 * (1.0f / c0.a));
+				im.setPixel(x, y, c0 * (1.0f / c0.a));
 			else
 				// no neighbors -> blue
-				im.SetPixel(x, y, color(1, 0.3f, 0.3f, 1));
+				im.setPixel(x, y, color(1, 0.3f, 0.3f, 1));
 		}
 }
 
@@ -143,12 +143,12 @@ bool Lightmap::RenderTextures()
 		int w = m.tex_width;
 		int h = m.tex_height;
 		Image im;
-		im.Create(w, h, color(0,0,0,0));
+		im.create(w, h, color(0,0,0,0));
 
 		foreachi(LightmapData::Vertex &v, data->Vertices, vi){
 			if (v.mod_id != mid)
 				continue;
-			im.SetPixel(v.x, v.y, RenderVertex(v));
+			im.setPixel(v.x, v.y, RenderVertex(v));
 
 			if ((vi & 127) == 0){
 				ed->progress->Set(format(_("%d von %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
@@ -159,7 +159,7 @@ bool Lightmap::RenderTextures()
 
 		m.tex_name = data->texture_out_dir + i2s(mid) + ".tga";
 		fuzzy_image(im);
-		im.Save(NixTextureDir + m.tex_name);
+		im.save(NixTextureDir + m.tex_name);
 
 		// edit model
 		foreach(ModelMaterial &mat, m.orig->Material){
@@ -178,12 +178,12 @@ bool Lightmap::RenderTextures()
 		int w = t.tex_width;
 		int h = t.tex_height;
 		Image im;
-		im.Create(w, h, color(0,0,0,0));
+		im.create(w, h, color(0,0,0,0));
 
 		foreachi(LightmapData::Vertex &v, data->Vertices, vi){
 			if (v.ter_id != tid)
 				continue;
-			im.SetPixel(v.x, v.y, RenderVertex(v));
+			im.setPixel(v.x, v.y, RenderVertex(v));
 
 			if ((vi & 127) == 0){
 				ed->progress->Set(format(_("%d von %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
@@ -194,7 +194,7 @@ bool Lightmap::RenderTextures()
 
 		t.tex_name = data->texture_out_dir + "t" + i2s(tid) + ".tga";
 		fuzzy_image(im);
-		im.Save(NixTextureDir + t.tex_name);
+		im.save(NixTextureDir + t.tex_name);
 
 		// edit Terrain
 		t.orig->texture_file[t.orig->material->num_textures] = t.tex_name;

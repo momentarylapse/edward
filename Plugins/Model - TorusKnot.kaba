@@ -25,7 +25,7 @@ void OnOk()
 
 void main()
 	dlg = new Dialog("Torus Knot", 300, 300, edward, false)
-	dlg.AddControlTable("", 0, 0, 2, 5, "table")
+	dlg.AddGrid("", 0, 0, 2, 5, "table")
 	dlg.SetTarget("table", 0)
 	dlg.AddText("Loops", 0, 0, 0, 0, "")
 	dlg.AddSpinButton("3\\1", 1, 0, 0, 0, "nx")

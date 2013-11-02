@@ -833,7 +833,7 @@ string Edward::get_tex_image(NixTexture *tex)
 		img = HuiSetImage(tex->icon);
 	}else{
 		Image empty;
-		empty.Create(32, 32, White);
+		empty.create(32, 32, White);
 		img = HuiSetImage(empty);
 	}
 	icon_image.add(tex, img);

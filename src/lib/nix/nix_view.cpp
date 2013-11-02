@@ -526,13 +526,13 @@ void NixScreenShot(const string &filename, int width, int height)
 	for (int i=0;i<image.data.num;i++)
 		image.data[i] |= 0xff000000;
 	// save
-	image.Save(filename);
+	image.save(filename);
 	msg_write("screenshot saved: " + filename.sys_filename());
 }
 
 void NixScreenShotToImage(Image &image)
 {
-	image.Create(NixTargetWidth, NixTargetHeight, Black);
+	image.create(NixTargetWidth, NixTargetHeight, Black);
 	glReadBuffer(GL_FRONT);
 	glReadPixels(	0,
 					0,

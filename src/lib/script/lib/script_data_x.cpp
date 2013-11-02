@@ -649,7 +649,7 @@ void SIAddPackageX()
 		class_add_func_virtual("onInit",		TypeVoid,	x_p(mf(&Controller::OnInit)));
 		class_add_func_virtual("onDelete",		TypeVoid,	x_p(mf(&Controller::OnDelete)));
 		class_add_func_virtual("onIterate",		TypeVoid,	x_p(mf(&Controller::OnIterate)));
-		class_add_func_virtual("onMouseMove",		TypeVoid,	x_p(mf(&Controller::OnMouseMove)));
+		class_add_func_virtual("onPreDraw",		TypeVoid,	x_p(mf(&Controller::OnPreDraw)));
 		class_add_func_virtual("onMouseWheel",		TypeVoid,	x_p(mf(&Controller::OnMouseWheel)));
 		class_add_func_virtual("onLeftButtonDown",		TypeVoid,	x_p(mf(&Controller::OnLeftButtonDown)));
 		class_add_func_virtual("onLeftButtonUp",		TypeVoid,	x_p(mf(&Controller::OnLeftButtonUp)));
@@ -659,6 +659,15 @@ void SIAddPackageX()
 		class_add_func_virtual("onMiddleButtonUp",		TypeVoid,	x_p(mf(&Controller::OnMiddleButtonUp)));
 		class_add_func_virtual("onKeyDown",		TypeVoid,	x_p(mf(&Controller::OnKeyDown)));
 		class_add_func_virtual("onKeyUp",		TypeVoid,	x_p(mf(&Controller::OnKeyUp)));
+		class_add_func_virtual("onAddClient",		TypeVoid,	x_p(mf(&Controller::OnAddClient)));
+		class_add_func_virtual("onRemoveClient",		TypeVoid,	x_p(mf(&Controller::OnRemoveClient)));
+		class_add_func("addNetMsgHandler",		TypeVoid,			x_p(mf(&Controller::addNetMsgHandler)));
+			func_add_param("name",		TypeString);
+			func_add_param("func",		TypePointer);
+		class_add_func("startNetMsg",		TypeVoid,			x_p(mf(&Controller::startNetMsg)));
+			func_add_param("name",		TypeString);
+			func_add_param("target",		TypeInt);
+		class_add_func("endNetMsg",		TypeVoid,			x_p(mf(&Controller::endNetMsg)));
 		class_set_vtable_x(Controller);
 
 

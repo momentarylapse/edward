@@ -59,7 +59,7 @@ void TerrainHeightmapDialog::OnFindFilter()
 	if (ed->FileDialog(FDTexture, false, false)){
 		filter_file = ed->DialogFileComplete;
 		SetString("filter_image", ed->DialogFile);
-		filter.Load(filter_file);
+		filter.load(filter_file);
 		Redraw("preview");
 	}
 }
@@ -77,7 +77,7 @@ void TerrainHeightmapDialog::OnFindHeightmap()
 	if (ed->FileDialog(FDTexture, false, false)){
 		heightmap_file = ed->DialogFileComplete;
 		SetString("height_image", ed->DialogFile);
-		heightmap.Load(heightmap_file);
+		heightmap.load(heightmap_file);
 		Redraw("preview");
 		Enable("ok", true);
 	}
@@ -96,27 +96,27 @@ static float im_interpolate(const Image &im, float x, float y, float stretch_x, 
 	stretch_y *= im.height;
 	x = clampf(x * stretch_x, 0.5f, stretch_x - 0.5f);
 	y = clampf(y * stretch_y, 0.5f, stretch_y - 0.5f);
-	return c2f(im.GetPixelInterpolated(x, y));
+	return c2f(im.getPixelInterpolated(x, y));
 }
 
 void TerrainHeightmapDialog::OnPreviewDraw()
 {
 	HuiPainter *c = BeginDraw("preview");
-	if (heightmap.Empty()){
+	if (heightmap.isEmpty()){
 		c->SetColor(Black);
 		c->DrawRect(0, 0, c->width, c->height);
 	}else{
 		Image m;
 		int w = c->width, h = c->height;
-		m.Create(w, h, White);
+		m.create(w, h, White);
 		for (int x=0;x<w;x++)
 			for (int y=0;y<h;y++){
 				float hmx = (float)x / (float)w;
 				float hmy = (float)y / (float)h;
 				float f = im_interpolate(heightmap, hmx, hmy, stretch_x, stretch_z);
-				if (!filter.Empty())
+				if (!filter.isEmpty())
 					f *= im_interpolate(filter, hmx, hmy, 1, 1);
-				m.SetPixel(x, y, color(1, f, f, f));
+				m.setPixel(x, y, color(1, f, f, f));
 			}
 		c->DrawImage(0, 0, m);
 	}

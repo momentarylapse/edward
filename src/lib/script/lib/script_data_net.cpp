@@ -92,13 +92,6 @@ void SIAddPackageNet()
 		func_add_param("addr",		TypeString);
 		func_add_param("port",		TypeInt);
 	
-	add_func("XNetAddMsgHandler",		TypeVoid,			x_p(&XNetAddMsgHandler));
-		func_add_param("name",		TypeString);
-		func_add_param("func",		TypePointer);
-	add_func("XNetSendMsgStart",		TypeVoid,			x_p(&XNetSendMsgStart));
-		func_add_param("name",		TypeString);
-		func_add_param("target",		TypeInt);
-	add_func("XNetSendMsgEnd",		TypeVoid,			x_p(&XNetSendMsgEnd));
 	add_func("XNetWriteInt",		TypeVoid,			x_p(&XNetWriteInt));
 		func_add_param("i",		TypeInt);
 	add_func("XNetWriteFloat",		TypeVoid,			x_p(&XNetWriteFloat));

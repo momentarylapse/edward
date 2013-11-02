@@ -22,16 +22,16 @@ static float im_interpolate(const Image &im, float x, float y, float stretch_x, 
 	stretch_y *= im.height;
 	x = clampf(x * stretch_x, 0.5f, stretch_x - 0.5f);
 	y = clampf(y * stretch_y, 0.5f, stretch_y - 0.5f);
-	return c2f(im.GetPixelInterpolated(x, y));
+	return c2f(im.getPixelInterpolated(x, y));
 }
 
 ActionWorldTerrainApplyHeightmap::ActionWorldTerrainApplyHeightmap(DataWorld *data, const string &heightmap, float height_factor, float stretch_x, float stretch_z, const string &filter)
 {
 	Image im_height;
-	im_height.Load(heightmap);
+	im_height.load(heightmap);
 	Image im_filter;
 	if (filter != "")
-		im_filter.Load(filter);
+		im_filter.load(filter);
 
 	foreachi(WorldTerrain &t, data->Terrains, index)
 		if (t.is_selected){
@@ -44,7 +44,7 @@ ActionWorldTerrainApplyHeightmap::ActionWorldTerrainApplyHeightmap(DataWorld *da
 					float hmx = (float)x / (float)tt->num_x;
 					float hmy = (float)z / (float)tt->num_z;
 					float f = im_interpolate(im_height, hmx, hmy, stretch_x, stretch_z);
-					if (!im_filter.Empty())
+					if (!im_filter.isEmpty())
 						f *= im_interpolate(im_filter, hmx, hmy, 1, 1);
 					height.add(f * height_factor);
 				}

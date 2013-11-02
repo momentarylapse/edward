@@ -136,7 +136,7 @@ string render_material(ModelMaterial *m)
 
 	// simulate a lit sphere
 	Image img;
-	img.Create(N, N, Black);
+	img.create(N, N, Black);
 	vector light_dir = vector(-1, -1, -1);
 	light_dir.normalize();
 	vector cam_dir = - e_z;
@@ -151,7 +151,7 @@ string render_material(ModelMaterial *m)
 
 			// texture "mapping"
 			if (tex)
-				c = c * tex->icon.GetPixel(x, y);
+				c = c * tex->icon.getPixel(x, y);
 			else
 				c = c * 0.8f;
 
@@ -162,7 +162,7 @@ string render_material(ModelMaterial *m)
 			c = c * 0.9f;
 			c.clamp();
 			c.a = 1;
-			img.SetPixel(x, y, c);
+			img.setPixel(x, y, c);
 		}
 	return HuiSetImage(img);
 }

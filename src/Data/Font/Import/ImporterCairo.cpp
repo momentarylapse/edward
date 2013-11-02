@@ -42,7 +42,7 @@ bool ImporterCairo::Import(DataFont *f, const string &font_name)
 		bool ok = TryImport(f, font_name, ImportCairoTrySize[n][0], ImportCairoTrySize[n][1], im);
 		if (ok){
 			f->global.TextureFile = "Font/" + font_name + ".tga";
-			im.Save(NixTextureDir + f->global.TextureFile);
+			im.save(NixTextureDir + f->global.TextureFile);
 			f->Notify("Change");
 			return true;
 		}
@@ -109,11 +109,11 @@ bool ImporterCairo::TryImport(DataFont *f, const string &font_name, int w_tex, i
 	if (!failed){
 		cairo_surface_flush(surface);
 		unsigned char *c = cairo_image_surface_get_data(surface);
-		im.Create(w_tex, h_tex, White);
+		im.create(w_tex, h_tex, White);
 		for (int y=0;y<h_tex;y++)
 			for (int x=0;x<w_tex;x++){
 				float a = (float)c[1] / 255.0f;
-				im.SetPixel(x, y, color(a, 1, 1, 1));
+				im.setPixel(x, y, color(a, 1, 1, 1));
 				c += 4;
 			}
 		im.alpha_used = true;

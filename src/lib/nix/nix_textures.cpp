@@ -306,7 +306,7 @@ void NixTexture::reload()
 		#endif
 	}else{
 		Image image;
-		image.LoadFlipped(_filename);
+		image.loadFlipped(_filename);
 		overwrite(image);
 	}
 	life_time = 0;
@@ -323,7 +323,7 @@ void NixOverwriteTexture__(NixTexture *t, int target, int subtarget, const Image
 		avi_info[texture]=NULL;
 	#endif
 
-	image.SetMode(Image::ModeRGBA);
+	image.setMode(Image::ModeRGBA);
 
 	if (!image.error){
 		glEnable(target);
@@ -359,9 +359,8 @@ void NixOverwriteTexture__(NixTexture *t, int target, int subtarget, const Image
 		t->width = image.width;
 		t->height = image.height;
 		if (NixTextureIconSize > 0){
-			t->icon = image;
-			t->icon.Scale(NixTextureIconSize, NixTextureIconSize);
-			t->icon.FlipV();
+			t->icon = *image.scale(NixTextureIconSize, NixTextureIconSize);
+			t->icon.flipV();
 		}
 	}
 	TestGLError("OverwriteTexture");
@@ -526,7 +525,7 @@ NixDynamicTexture::NixDynamicTexture(int _width, int _height)
 
 	// create the actual (dynamic) texture
 	Image image;
-	image.Create(width, height, Black);
+	image.create(width, height, Black);
 	overwrite(image);
 
 	msg_db_l(1);
@@ -576,7 +575,7 @@ void NixTexture::fill_cube_map(int side, NixTexture *source)
 	if (source->is_cube_map)
 		return;
 	Image image;
-	image.Load(NixTextureDir + source->filename);
+	image.load(NixTextureDir + source->filename);
 	NixOverwriteTexture__(this, GL_TEXTURE_CUBE_MAP, NixCubeMapTarget[side], image);
 }
 
