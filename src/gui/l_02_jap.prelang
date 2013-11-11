@@ -861,7 +861,7 @@ quality_factor
 
 quality_slider
 
-rand_id_628388
+rand_id_628868
 
 rc_dialog
 
@@ -1546,7 +1546,7 @@ Sound
 
 Sound-Datei
 
-Sounds (wav,mp3,midi)
+Sounds (wav,ogg)
 
 Spiegeln
 
@@ -1566,7 +1566,7 @@ Textur-Datei nicht ladbar: %s
 
 Textur-Koordinaten
 
-Texturen (bmp,jpg,tga,avi)
+Texturen (bmp,jpg,tga,png,avi)
 
 Tiefe
 

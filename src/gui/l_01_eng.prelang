@@ -861,7 +861,7 @@ quality_factor
 \\0\\100\\0.1
 quality_slider
 
-rand_id_628388
+rand_id_628868
 
 rc_dialog
 Rudimentary configuration
@@ -1546,8 +1546,8 @@ Sound
 Sound
 Sound-Datei
 Sound file
-Sounds (wav,mp3,midi)
-Sounds (wav,mp3, midi)
+Sounds (wav,ogg)
+
 Spiegeln
 Mirror
 Sprung
@@ -1566,8 +1566,8 @@ Textur-Datei nicht ladbar: %s
 Texture file not loadable: %s
 Textur-Koordinaten
 Texture coordinates
-Texturen (bmp,jpg,tga,avi)
-Textures (bmp,jpg,tga,avi)
+Texturen (bmp,jpg,tga,png,avi)
+
 Tiefe
 
 Torus außen skalieren

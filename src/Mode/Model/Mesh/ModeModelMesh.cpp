@@ -24,6 +24,7 @@
 #include "Creation/ModeModelMeshCreateTorus.h"
 #include "Creation/ModeModelMeshCreatePlatonic.h"
 #include "Creation/ModeModelMeshSplitPolygon.h"
+#include "Creation/ModeModelMeshAutoweld.h"
 #include "Creation/ModeModelMeshBevelEdges.h"
 #include "Creation/ModeModelMeshBrush.h"
 #include "Creation/ModeModelMeshExtrudePolygons.h"
@@ -117,9 +118,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		data->InvertSelection();
 	if (id == "extrude_triangles")
 		ed->SetMode(new ModeModelMeshExtrudePolygons(ed->cur_mode));
-		//data->ExtrudeSelectedTriangles(40 / mode_model_mesh_vertex->multi_view->zoom);
 	if (id == "autoweld_surfaces")
-		data->AutoWeldSelectedSurfaces(0.1f / mode_model_mesh_vertex->multi_view->cam.zoom);
+		ed->SetMode(new ModeModelMeshAutoweld(ed->cur_mode));
 	if (id == "triangulate_selection")
 		data->TriangulateSelection();
 	if (id == "untriangulate_selection")
