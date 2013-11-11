@@ -891,6 +891,47 @@ void DataModel::ImportFromTriangleSkin(int index)
 			AddPolygonWithSkin(v, sv, i);
 		}
 	}
+
+
+	ModelSkin &ps = Skin[0];
+	foreachi(ModelVertex &v, ps.Vertex, i){
+		AddVertex(v.pos);
+		Vertex[i].BoneIndex = v.BoneIndex;
+	}
+	foreach(ModelPolyhedron &p, Poly){
+		msg_write("----");
+		int nv0 = Vertex.num;
+		Array<int> vv;
+		for (int i=0;i<p.NumFaces;i++){
+			Array<int> v;
+			for (int j=0;j<p.Face[i].NumVertices;j++){
+				int vj = p.Face[i].Index[j];
+				bool existing = false;
+				for (int k=0;k<vv.num;k++)
+					if (vv[k] == vj){
+						existing = true;
+						v.add(nv0 + k);
+						break;
+					}
+				if (!existing){
+					v.add(Vertex.num);
+					vv.add(vj);
+					AddVertex(ps.Vertex[vj].pos);
+					Vertex.back().BoneIndex = ps.Vertex[vj].BoneIndex;
+				}
+			}
+			msg_write(ia2s(v));
+			try{
+				AddPolygon(v, 0);
+			}catch(GeometryException &e){
+				msg_error(e.message);
+			}
+		}
+		Surface.back().IsPhysical = true;
+		Surface.back().IsVisible = false;
+	}
+	Poly.clear();
+
 	ClearSelection();
 	EndActionGroup();
 	action_manager->Reset();

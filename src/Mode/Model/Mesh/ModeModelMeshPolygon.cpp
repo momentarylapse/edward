@@ -60,10 +60,13 @@ void ModeModelMeshPolygon::DrawPolygons(MultiViewWindow *win, Array<ModelVertex>
 
 		(*vb)->clear();
 
-		foreach(ModelSurface &surf, data->Surface)
+		foreach(ModelSurface &surf, data->Surface){
+			if (!surf.IsVisible)
+				continue;
 			foreach(ModelPolygon &t, surf.Polygon)
 				if ((t.view_stage >= multi_view->view_stage) && (t.Material == mi))
 					t.AddToVertexBuffer(vertex, *vb, m.NumTextures);
+		}
 
 		// draw
 		m.ApplyForRendering();
