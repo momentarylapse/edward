@@ -723,9 +723,9 @@ void SIAddPackageMath()
 		class_add_func("str",		TypeString, algebra_p(mf(&Crypto::str)));
 		class_add_func("from_str",	TypeVoid, algebra_p(mf(&Crypto::from_str)));
 			func_add_param("str",		TypeString);
-		class_add_func("Encrypt",	TypeString, algebra_p(mf(&Crypto::Encrypt)));
+		class_add_func("encrypt",	TypeString, algebra_p(mf(&Crypto::Encrypt)));
 			func_add_param("str",		TypeString);
-		class_add_func("Decrypt",	TypeString, algebra_p(mf(&Crypto::Decrypt)));
+		class_add_func("decrypt",	TypeString, algebra_p(mf(&Crypto::Decrypt)));
 			func_add_param("str",		TypeString);
 			func_add_param("cut",		TypeBool);
 
