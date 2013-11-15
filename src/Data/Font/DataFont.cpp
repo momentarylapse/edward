@@ -128,6 +128,8 @@ void DataFont::Reset()
 	TextureWidth = 512;
 	TextureHeight = 256;
 
+	Marked = 0;
+
 	glyph.clear();
 	for (int i=0;i<256;i++){
 		DataFont::Glyph g;
@@ -196,7 +198,7 @@ bool DataFont::Save(const string & _filename)
 void DataFont::UpdateTexture()
 {
 	Texture = NixLoadTexture(global.TextureFile);
-	if (Texture >= 0){
+	if (Texture){
 		TextureWidth = Texture->width;
 		TextureHeight = Texture->height;
 	}

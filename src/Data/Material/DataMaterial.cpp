@@ -353,10 +353,11 @@ void DataMaterial::UpdateTextures()
 		Appearance.Texture[i] = NULL;
 	for (int i=0;i<Appearance.NumTextureLevels;i++)
 		Appearance.Texture[i] = NixLoadTexture(Appearance.TextureFile[i]);
-	for (int i=0;i<6;i++)
-		Appearance.CubeMap->fill_cube_map(i, NixLoadTexture(Appearance.ReflectionTextureFile[i]));
-	if ((Appearance.ReflectionMode == ReflectionCubeMapStatic) || (Appearance.ReflectionMode == ReflectionCubeMapDynamical))
+	if ((Appearance.ReflectionMode == ReflectionCubeMapStatic) || (Appearance.ReflectionMode == ReflectionCubeMapDynamical)){
+		for (int i=0;i<6;i++)
+			Appearance.CubeMap->fill_cube_map(i, NixLoadTexture(Appearance.ReflectionTextureFile[i]));
 		Appearance.Texture[3] = Appearance.CubeMap;
+	}
 }
 
 

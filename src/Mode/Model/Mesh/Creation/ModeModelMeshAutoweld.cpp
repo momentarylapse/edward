@@ -71,6 +71,7 @@ void ModeModelMeshAutoweld::OnOk()
 
 void ModeModelMeshAutoweld::OnDrawWin(MultiViewWindow* win)
 {
+	NixEnableLighting(false);
 	NixSetTexture(NULL);
 	NixSetColor(Green);
 	float r = 5;

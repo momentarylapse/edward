@@ -74,7 +74,8 @@ void ModeMaterial::OnUpdate(Observable *o)
 {
 	if (o->GetName() == "Data"){
 		data->UpdateTextures();
-		data->Shader->unref();
+		if (data->Shader)
+			data->Shader->unref();
 		data->Shader = data->Appearance.GetShader();
 	}
 }
