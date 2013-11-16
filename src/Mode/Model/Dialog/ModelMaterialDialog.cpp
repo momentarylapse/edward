@@ -224,8 +224,6 @@ void ModelMaterialDialog::FillTextureList()
 		AddString("mat_textures", format("Tex[%d]\\%s\\%s", i, img.c_str(), file_secure(temp.TextureFile[i]).c_str()));
 	}
 	SetInt("mat_textures", mode_model_mesh_texture->CurrentTextureLevel);
-	Enable("mat_delete_texture_level", false);
-	Enable("mat_empty_texture_level", false);
 }
 
 
@@ -254,8 +252,6 @@ void ModelMaterialDialog::OnTextures()
 void ModelMaterialDialog::OnTexturesSelect()
 {
 	int sel = GetInt("");
-	Enable("mat_delete_texture_level", (sel >= 0) && (sel < temp.NumTextures));
-	Enable("mat_empty_texture_level", (sel >= 0) && (sel < temp.NumTextures));
 	mode_model_mesh_texture->SetCurrentTextureLevel(sel);
 }
 
