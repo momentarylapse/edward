@@ -173,6 +173,20 @@ bool DataModel::TestSanity(const string &loc)
 void DataModel::OnPostActionUpdate()
 {
 	UpdateNormals();
+	foreach(ModelSurface &s, Surface){
+		s.pos = v_0;
+		for (int k=0;k<s.Vertex.num;k++)
+			s.pos += Vertex[s.Vertex[k]].pos;
+		s.pos /= s.Vertex.num;
+		foreach(ModelPolygon &p, s.Polygon){
+			p.pos = v_0;
+			for (int k=0;k<p.Side.num;k++)
+				p.pos += Vertex[p.Side[k].Vertex].pos;
+			p.pos /= p.Side.num;
+		}
+		foreach(ModelEdge &e, s.Edge)
+			e.pos = (Vertex[e.Vertex[0]].pos + Vertex[e.Vertex[1]].pos) / 2;
+	}
 }
 
 

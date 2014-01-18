@@ -25,7 +25,7 @@ ModeModelAnimationNone::~ModeModelAnimationNone()
 void ModeModelAnimationNone::OnStart()
 {
 	multi_view->ResetData(NULL);
-	multi_view->MVRectable = false;
+	multi_view->allow_rect = false;
 
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	OnUpdate(data);

@@ -28,7 +28,7 @@ void ModeModelMeshVertex::OnStart()
 	Subscribe(data);
 	Subscribe(multi_view, "SelectionChange");
 	mode_model_mesh->ApplyRightMouseFunction(multi_view);
-	multi_view->MVRectable = true;
+	multi_view->allow_rect = true;
 	OnUpdate(data);
 }
 

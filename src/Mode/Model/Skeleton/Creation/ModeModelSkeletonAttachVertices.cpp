@@ -31,7 +31,7 @@ void ModeModelSkeletonAttachVertices::OnStart()
 	Subscribe(multi_view, "SelectionChange");
 
 	multi_view->ResetData(data);
-	multi_view->MVRectable = true;
+	multi_view->allow_rect = true;
 	multi_view->SetData(	MVDModelVertex,
 			data->Vertex,
 			NULL,

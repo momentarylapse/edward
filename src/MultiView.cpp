@@ -80,6 +80,7 @@ MultiView::MultiView(bool _mode3d) :
 		win[i].multi_view = this;
 		win[i].cam = &cam;
 	}
+	action_con.multi_view = this;
 	m = v_0;
 	HoldingCursor = false;
 	HoldingX = HoldingY = 0;
@@ -94,7 +95,7 @@ MultiView::~MultiView()
 
 void MultiView::Reset()
 {
-	MVRectable = MVRect = false;
+	allow_rect = MVRect = false;
 	mouse_win = &win[0];
 	active_win = &win[0];
 
@@ -102,6 +103,7 @@ void MultiView::Reset()
 
 	Selected = -1;
 	SelectedSet = -1;
+	action_con.show = false;
 
 	ResetData(NULL);
 	ResetMouseAction();
@@ -329,6 +331,8 @@ void MultiView::OnLeftButtonDown()
 
 	MouseMovedSinceClick = 0;
 	Moved = false;
+	RectX = m.x;
+	RectY = m.y;
 	v = v_0;
 	if (action[0].mode == ActionSelect){
 		GetSelected(get_select_mode());
@@ -414,6 +418,10 @@ void MultiView::OnLeftButtonUp()
 	EndRect();
 	MultiViewEditing = false;
 	MouseActionEnd(true);
+
+	action_con.show = false;
+	if (action[0].mode > ActionSelect)
+		action_con.Enable();
 }
 
 
@@ -453,7 +461,7 @@ void MultiView::OnMouseMove()
 	if (((!lbut) && (!mbut) && (!rbut)) || (!allow_mouse_actions))
 		GetMouseOver();
 
-	if ((lbut) && (action[0].mode == ActionSelect) && MVRectable){
+	if ((lbut) && (action[0].mode == ActionSelect) && allow_rect){
 		int d = abs(v.x) + abs(v.y);
 		MouseMovedSinceClick += d;
 		if ((MouseMovedSinceClick - d < MinMouseMoveToInteract) && (MouseMovedSinceClick >= MinMouseMoveToInteract))
@@ -503,8 +511,6 @@ void MultiView::OnMouseMove()
 void MultiView::StartRect()
 {
 	MVRect = true;
-	RectX = m.x;
-	RectY = m.y;
 
 	// reset selection data
 	foreach(MultiViewData &d, data)
@@ -867,6 +873,9 @@ void MultiViewWindow::Draw()
 
 	// type of view
 
+	if (multi_view->action_con.show)
+		multi_view->action_con.Draw(this);
+
 	name_dest = rect(dest.x1 + 3, dest.x1 + 3 + NixGetStrWidth(view_kind), dest.y1, dest.y1 + 20);
 
 	NixSetColor(ColorWindowType);
@@ -927,7 +936,7 @@ void MultiView::OnDraw()
 	cur_projection_win = NULL;
 	NixEnableLighting(false);
 
-	if ((MVRectable)&&(MVRect)){
+	if ((allow_rect)&&(MVRect)){
 		NixSetZ(false, false);
 		NixSetAlphaM(AlphaMaterial);
 		NixSetColor(color(0.2f,0,0,1));
@@ -1177,6 +1186,9 @@ void MultiView::SetMouseAction(int button, const string & name, int mode)
 		mode = ActionRotate2d;
 	action[button].name = name;
 	action[button].mode = mode;
+	action_con.show = false;
+	if (action[0].mode > ActionSelect)
+		action_con.Enable();
 }
 
 void MultiView::SelectAll()
@@ -1220,6 +1232,26 @@ bool MultiView::HasSelection()
 				return true;
 		}
 	return false;
+}
+
+vector MultiView::GetSelectionCenter()
+{
+	vector min, max;
+	bool first = true;
+	foreach(MultiViewData &d, data)
+		for (int i=0;i<d.data->num;i++){
+			MultiViewSingleData* sd = MVGetSingleData(d, i);
+			if (sd->is_selected){
+				if (first){
+					min = max = sd->pos;
+					first = false;
+				}else{
+					min._min(sd->pos);
+					max._max(sd->pos);
+				}
+			}
+		}
+	return (min + max) / 2;
 }
 
 vector MultiView::GetCursor3d()
@@ -1519,4 +1551,23 @@ void MultiView::ViewStagePop()
 void MultiView::ResetMessage3d()
 {
 	message3d.clear();
+}
+
+void MultiViewActionController::Enable()
+{
+	show = false;
+	if (multi_view->HasSelection()){
+		pos = multi_view->GetSelectionCenter();
+		show = true;
+	}
+	ed->ForceRedraw();
+}
+
+void MultiViewActionController::Draw(MultiViewWindow *win)
+{
+	if (multi_view->HasSelection()){
+		NixSetColor(Red);
+		vector p = win->Project(pos);
+		NixDrawRect(p.x-15, p.x+15, p.y-15, p.y+15, 0);
+	}
 }

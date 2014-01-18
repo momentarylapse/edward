@@ -102,6 +102,17 @@ struct MultiViewMouseAction
 	}
 };
 
+struct MultiViewActionController
+{
+	bool show, captured;
+	vector pos;
+	int mode;
+	MultiView *multi_view;
+	void Draw(MultiViewWindow *win);
+	void Enable();
+	bool Click();
+};
+
 // TODO refactor me!!!
 class MultiView : public Observable
 {
@@ -152,6 +163,7 @@ public:
 	void SelectNone();
 	void InvertSelection();
 	bool HasSelection();
+	vector GetSelectionCenter();
 
 	void HoldCursor(bool holding);
 	void StartRect();
@@ -193,6 +205,7 @@ public:
 	MultiViewMouseAction action[3];
 	int active_mouse_action;
 	ActionMultiView *cur_action;
+	MultiViewActionController action_con;
 	Data *_data_;
 	vector mouse_action_param, mouse_action_pos0;
 	enum{
@@ -221,8 +234,8 @@ public:
 	vector m, v;
 	bool HoldingCursor;
 	float HoldingX, HoldingY;
-	bool MVRect,MVRectable;
-	float RectX,RectY;
+	bool MVRect, allow_rect;
+	float RectX, RectY;
 	bool ViewMoving;
 
 	bool MultiViewSelectionChanged;
