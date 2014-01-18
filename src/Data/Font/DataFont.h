@@ -10,7 +10,9 @@
 
 #include "../Data.h"
 
-struct XFont;
+namespace Gui{
+	class Font;
+}
 class NixTexture;
 
 
@@ -25,7 +27,7 @@ public:
 	bool Save(const string &_filename);
 
 	void UpdateTexture();
-	void ApplyFont(XFont *f);
+	void ApplyFont(Gui::Font *f);
 
 	// properties
 	struct GlobalData

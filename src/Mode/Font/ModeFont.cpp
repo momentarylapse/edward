@@ -19,8 +19,7 @@ ModeFont::ModeFont() :
 {
 	Subscribe(data);
 
-	XFont *f = new XFont;
-	XFonts.add(f);
+	font = new Gui::Font;
 
 	dialog = NULL;
 }
@@ -73,7 +72,7 @@ void ModeFont::OnDraw()
 	NixDrawRect(0, (float)MaxX, MaxY * 0.9f, (float)MaxY, 0);
 	NixSetColor(Black);
 	if (dialog)
-		XFDrawStr(0, (float)MaxY * 0.9f, 0, (float)MaxY * 0.1f, dialog->GetSampleText(), XFonts.num - 1);
+		font->drawStr(0, (float)MaxY * 0.9f, 0, (float)MaxY * 0.1f, dialog->GetSampleText());
 }
 
 
@@ -181,7 +180,7 @@ void ModeFont::OnMouseMove()
 void ModeFont::OnUpdate(Observable *o)
 {
 	data->UpdateTexture();
-	data->ApplyFont(XFonts.back());
+	data->ApplyFont(font);
 }
 
 

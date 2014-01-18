@@ -25,10 +25,15 @@
 #include "font.h"
 #include "../lib/nix/nix.h"
 
+namespace Gui
+{
+
 string FontDir;
 
+
+
 // fonts
-Array<XFont*> XFonts;
+Array<Font*> Fonts;
 
 
 
@@ -55,21 +60,21 @@ static string str_utf8_to_ubyte(const string &str)
 	return r;
 }
 
-int _cdecl LoadFont(const string &filename)
+Font *_cdecl LoadFont(const string &filename)
 {
 	// "" -> default font
 	if (filename.num == 0)
-		return 0;
+		return Fonts[0];
 
-	foreachi(XFont *ff, XFonts, i)
+	foreachi(Font *ff, Fonts, i)
 		if (ff->filename  == filename.sys_filename())
-			return i;
+			return ff;
 	CFile *f = FileOpen(FontDir + filename + ".xfont");
 	if (!f)
-		return -1;
+		return NULL;
 	int ffv=f->ReadFileFormatVersion();
 	if (ffv==2){
-		XFont *font = new XFont;
+		Font *font = new Font;
 		font->filename = filename.sys_filename();
 		font->texture = NixLoadTexture(f->ReadStrC());
 		int tx = font->texture->width;
@@ -95,7 +100,7 @@ int _cdecl LoadFont(const string &filename)
 				x=0;
 				y+=height;
 			}
-			XGlyph g;
+			Glyph g;
 			g.x_offset = (float)x1/dy;
 			g.width = (float)w/dy;
 			g.dx = (float)(x2-x1)/dy;
@@ -114,47 +119,41 @@ int _cdecl LoadFont(const string &filename)
 		for (int i=0;i<256;i++)
 			if (font->table[i] < 0)
 				font->table[i] = font->unknown_glyph_no;*/
-		XFonts.add(font);
+		Fonts.add(font);
 	}else{
 		msg_error(format("wrong file format: %d (expected: 2)",ffv));
 	}
 	FileClose(f);
 
-	return XFonts.num-1;
+	return Fonts.back();
 }
 
 // retrieve the width of a given text
-float _cdecl XFGetWidth(float height, const string &str, int font)
+float _cdecl Font::getWidth(float height, const string &str)
 {
-	XFont *f = XFonts[font];
-	if (!f)
-		return 0;
 	float w = 0;
-	float xf = height * f->x_factor;
+	float xf = height * x_factor;
 	string s = str_utf8_to_ubyte(str);
 	for (int i=0;i<s.num;i++){
 		int n = (unsigned char)s[i];
-		w += f->glyph[n].dx * xf;
+		w += glyph[n].dx * xf;
 	}
 	return w;
 }
 
 // display a string with our font (values relative to screen)
-float _cdecl XFDrawStr(float x, float y, float z, float height, const string &str, int font, bool centric)
+float _cdecl Font::drawStr(float x, float y, float z, float _height, const string &str, bool centric)
 {
-	XFont *f = XFonts[font];
-	if (!f)
-		return 0;
-	msg_db_r("XFDrawStr",10);
+	msg_db_f("XFDrawStr",10);
 	if (centric)
-		x -= XFGetWidth(height, str, font) / 2;
+		x -= getWidth(_height, str) / 2;
 	NixSetAlpha(AlphaSourceAlpha,AlphaSourceInvAlpha);
 		//NixSetAlpha(AlphaMaterial);
-	NixSetTexture(f->texture);
-	float xf=height*f->x_factor * 1.33f;
-	float yf=height*f->y_factor;
+	NixSetTexture(texture);
+	float xf=_height*x_factor * 1.33f;
+	float yf=_height*y_factor;
 	float w=0;
-	y-=f->y_offset*yf;
+	y-=y_offset*yf;
 	rect d;
 	string s = str_utf8_to_ubyte(str);
 	for (int i=0;i<s.num;i++){
@@ -162,34 +161,30 @@ float _cdecl XFDrawStr(float x, float y, float z, float height, const string &st
 			continue;
 		if (s[i]=='\n'){
 			w=0;
-			y+=f->height*yf;
+			y+=height*yf;
 			continue;
 		}
 		int n=(unsigned char)s[i];
-		d.x1=(x+w-f->glyph[n].x_offset*xf);
-		d.x2=(x+w+f->glyph[n].dx2     *xf);
+		d.x1=(x+w-glyph[n].x_offset*xf);
+		d.x2=(x+w+glyph[n].dx2     *xf);
 		d.y1=(y             );
-		d.y2=(y+f->height*yf);
-		NixDraw2D(f->glyph[n].src, d, z);
-		w += f->glyph[n].dx * xf;
+		d.y2=(y+height*yf);
+		NixDraw2D(glyph[n].src, d, z);
+		w += glyph[n].dx * xf;
 	}
 	NixSetAlpha(AlphaNone);
-	msg_db_l(10);
 	return w;
 }
 
 // vertically display a text 
-float _cdecl XFDrawVertStr(float x, float y, float z, float height, const string &str, int font)
+float _cdecl Font::drawStrVert(float x, float y, float z, float _height, const string &str)
 {
-	XFont *f = XFonts[font];
-	if (!f)
-		return 0;
-	msg_db_r("XFDrawVertStr",10);
+	msg_db_f("XFDrawVertStr",10);
 	NixSetAlpha(AlphaSourceAlpha,AlphaSourceInvAlpha);
-	NixSetTexture(f->texture);
-	float xf=height*f->x_factor;
-	float yf=height*f->y_factor;
-	y-=f->y_offset*yf;
+	NixSetTexture(texture);
+	float xf=_height*x_factor;
+	float yf=_height*y_factor;
+	y-=y_offset*yf;
 	rect d;
 	string s = str_utf8_to_ubyte(str);
 	for (int i=0;i<s.num;i++){
@@ -198,15 +193,16 @@ float _cdecl XFDrawVertStr(float x, float y, float z, float height, const string
 		if (s[i]=='\n')
 			continue;
 		int n=(unsigned char)s[i];
-		d.x1=(x-f->glyph[n].x_offset*xf);
-		d.x2=(x+f->glyph[n].dx2     *xf);
+		d.x1=(x-glyph[n].x_offset*xf);
+		d.x2=(x+glyph[n].dx2     *xf);
 		d.y1=(y             );
-		d.y2=(y+f->height*yf);
-		NixDraw2D(f->glyph[n].src, d, z);
+		d.y2=(y+height*yf);
+		NixDraw2D(glyph[n].src, d, z);
 		y+=yf*0.8f;
 	}
 	NixSetAlpha(AlphaNone);
-	msg_db_l(10);
 	return 0;
 }
+
+};
 

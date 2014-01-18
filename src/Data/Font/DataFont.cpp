@@ -215,7 +215,7 @@ int str_utf8_first_ubyte(const string &str)
 	return str[0];
 }
 
-void DataFont::ApplyFont(XFont *f)
+void DataFont::ApplyFont(Gui::Font *f)
 {
 	f->texture = Texture;
 	f->x_factor = (float)global.XFactor*0.01f;

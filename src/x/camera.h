@@ -54,6 +54,7 @@ public:
 	int cam_point_nr;
 	Array<CamPoint> cam_point;
 
+	bool enabled;
 	bool show;
 	NixTexture *output, *input;
 	NixShader *shader;

@@ -261,7 +261,7 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FDFont){
 		DataFont f;
-		if (f.Load(FontDir + Name,false)){
+		if (f.Load(Gui::FontDir + Name,false)){
 			Time = f.file_time;
 			add_possible_link(l, FDTexture, f.global.TextureFile);
 		}else

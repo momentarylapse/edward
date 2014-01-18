@@ -97,7 +97,7 @@ Camera::Camera()
 	jump_to_pos = false;
 
 	// register
-	xcon_reg(XContainerCamera, this, Cameras);
+	xcon_reg(this, Cameras);
 }
 
 Camera::Camera(const vector &_pos, const quaternion &_ang, const rect &_dest)

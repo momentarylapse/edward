@@ -1398,7 +1398,7 @@ vector transform_ang(MultiView *mv, const vector &ang)
 	QuaternionRotationV(qmv,  mv->active_win->ang);
 	QuaternionRotationV(qang, ang);
 	mqmv = qmv;
-	mqmv.inverse();
+	mqmv.invert();
 	q = qang * mqmv;
 	q = qmv * q;
 	return q.get_angles();

@@ -105,20 +105,22 @@ static Array<PartialModel> SortedNonTrans, SortedTrans;
 
 // network messages
 bool GodNetMsgEnabled;
-s_net_message_list NetMsg;
+Array<GodNetMessage> GodNetMessages;
 void AddNetMsg(int msg, int argi0, const string &args)
 {
 #ifdef _X_ALLOW_X_
 	if ((!GodNetMsgEnabled) || (!Net.Enabled))
 		return;
-	if (NetMsg.num_msgs>=GOD_MAX_NET_MSGS){
+	if (GodNetMessages.num >= GOD_MAX_NET_MSGS){
 		//for (int i=0;i<NetMsg.num_msgs;i++)
 		//	...
 		return;
 	}
-	NetMsg.arg_i[NetMsg.num_msgs][0] = argi0;
-	NetMsg.arg_s[NetMsg.num_msgs] = args;
-	NetMsg.msg[NetMsg.num_msgs++] = msg;
+	GodNetMessage m;
+	m.msg = msg;
+	m.arg_i[0] = argi0;
+	m.arg_s = args;
+	GodNetMessages.add(m);
 #endif
 }
 
@@ -216,7 +218,7 @@ void GodReset()
 {
 	msg_db_f("GodReset",1);
 	GodNetMsgEnabled = false;
-	NetMsg.num_msgs = 0;
+	GodNetMessages.clear();
 
 	// terrains
 	msg_db_m("-terrains",2);
@@ -1089,7 +1091,7 @@ void Test4Object(Object *o1,Object *o2)
 #endif
 }
 
-bool GodTrace(const vector &p1, const vector &p2, TraceData &data, bool simple_test, int o_ignore)
+bool GodTrace(const vector &p1, const vector &p2, TraceData &data, bool simple_test, Model *o_ignore)
 {
 	msg_db_f("GodTrace",4);
 	vector dir = p2 - p1;
@@ -1108,7 +1110,7 @@ bool GodTrace(const vector &p1, const vector &p2, TraceData &data, bool simple_t
 	}
 	for (int i=0;i<Objects.num;i++)
 		if (Objects[i]){
-			if (i == o_ignore)
+			if (Objects[i] == o_ignore)
 				continue;
 			vector p2t = p1 + dir * dmin;
 			if (Objects[i]->Trace(p1, p2t, dir, dmin, data, simple_test)){

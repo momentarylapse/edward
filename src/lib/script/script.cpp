@@ -24,7 +24,7 @@
 
 namespace Script{
 
-string Version = "0.13.3.0";
+string Version = "0.13.4.0";
 
 //#define ScriptDebug
 
@@ -46,44 +46,6 @@ Exception::Exception(const Asm::Exception &e, Script *s) :
 
 
 static int shift_right=0;
-
-void script_db_out(const string &str)
-{
-#ifdef ScriptDebug
-	/*if (str.num > 256)
-		((char*)str)[256]=0;*/
-	msg_write(str);
-#endif
-}
-
-void script_db_out(int i)
-{
-#ifdef ScriptDebug
-	msg_write(i);
-#endif
-}
-
-void script_db_right()
-{
-#ifdef ScriptDebug
-	msg_right();
-	shift_right+=2;
-#endif
-}
-
-void script_db_left()
-{
-#ifdef ScriptDebug
-	msg_left();
-	shift_right-=2;
-#endif
-}
-
-#define so		script_db_out
-#define right	script_db_right
-#define left	script_db_left
-
-
 
 Array<Script*> PublicScript;
 Array<Script*> DeadScript;
@@ -173,11 +135,8 @@ Type *GetDynamicType(void *p)
 	VirtualTable *pp = *(VirtualTable**)p;
 	foreach(Script *s, PublicScript){
 		foreach(Type *t, s->syntax->Types){
-			if (t->num_virtual > 0){
-				if (t->vtable == pp){
-					return t;
-				}
-			}
+			if (t->vtable.data == pp)
+				return t;
 		}
 	}
 	return NULL;
@@ -439,9 +398,6 @@ void Script::Execute()
 {
 	if (WaitingMode == WaitingModeNone)
 		return;
-	#ifdef ScriptDebug
-		//so("\n\n\n################### fuehre aus ######################\n\n\n");
-	#endif
 	shift_right=0;
 	//msg_db_f(string("Execute ",pre_script->Filename),1);
 	msg_db_f("Execute", 1);{

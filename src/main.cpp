@@ -8,7 +8,7 @@
 #include "lib/hui/hui.h"
 #include "Edward.h"
 
-string AppVersion = "0.3.20.1";
+string AppVersion = "0.3.20.2";
 string AppName = "Edward";
 
 int hui_main(Array<string> arg)
@@ -16,9 +16,9 @@ int hui_main(Array<string> arg)
 	HuiInit("edward", true, "Deutsch");
 	HuiSetProperty("name", AppName);
 	HuiSetProperty("version", AppVersion);
-	HuiSetProperty("copyright", "© 2006-2013 by MichiSoft TM"); // ??? min=2004 (objectmaker) max=2006
+	HuiSetProperty("copyright", "© 2006-2014 by MichiSoft TM"); // ??? min=2004 (objectmaker) max=2006
 	HuiSetProperty("comment", _("Editor f&ur Spiele-Daten der x9-Engine"));
-	HuiSetProperty("website", "http://michi.is-a-geek.org/michisoft");
+	HuiSetProperty("website", "http://michi.is-a-geek.org/software");
 	HuiSetProperty("author", "Michael Ankele <michi@lupina.de>");
 
 	msg_db_r("main",1);

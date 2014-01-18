@@ -12,6 +12,9 @@
 #include "../../Data/Font/DataFont.h"
 
 class FontDialog;
+namespace Gui{
+	class Font;
+}
 
 class ModeFont: public Mode<DataFont>
 {
@@ -41,6 +44,7 @@ public:
 	bool OptimizeView();
 
 	FontDialog *dialog;
+	Gui::Font *font;
 };
 
 extern ModeFont* mode_font;

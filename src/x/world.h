@@ -180,7 +180,7 @@ public:
 	Model *model;
 	Model *object;
 };
-bool _cdecl GodTrace(const vector &p1, const vector &p2, TraceData &d, bool simple_test, int o_ignore = -1);
+bool _cdecl GodTrace(const vector &p1, const vector &p2, TraceData &d, bool simple_test, Model *o_ignore = NULL);
 
 	// content of the world
 extern Array<Object*> Objects;
@@ -206,12 +206,12 @@ extern GodLevelData LevelData;
 extern Array<Terrain*> Terrains;
 
 // network messages
-struct s_net_message_list
+struct GodNetMessage
 {
-	int num_msgs,msg[GOD_MAX_NET_MSGS],arg_i[GOD_MAX_NET_MSGS][4];
-	string arg_s[GOD_MAX_NET_MSGS];
+	int msg, arg_i[4];
+	string arg_s;
 };
-extern s_net_message_list NetMsg;
+extern Array<GodNetMessage> GodNetMessages;
 
 Object *_cdecl _CreateObject(const string &filename, const vector &pos);
 

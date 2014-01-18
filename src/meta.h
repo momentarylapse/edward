@@ -10,12 +10,17 @@
 
 #include "lib/base/base.h"
 #include "lib/image/color.h"
+#include "lib/hui/hui.h"
 
 class Model;
 class Object;
 class Terrain;
 namespace Light{
 	class Light;
+}
+
+namespace Gui{
+	class Font;
 }
 
 class EngineData
@@ -34,7 +39,7 @@ public:
 	int Multisampling;
 	bool CullingEnabled, SortingEnabled, ZBufferEnabled;
 	bool ResettingGame;
-	int DefaultFont;
+	Gui::Font *DefaultFont;
 	string InitialWorldFile, SecondWorldFile;
 	bool PhysicsEnabled, CollisionsEnabled;
 	int MirrorLevelMax;
@@ -62,12 +67,6 @@ void MetaCalcMove();
 
 // data to Meta
 void MetaSetDirs(const string &texture_dir, const string &map_dir, const string &object_dir, const string &sound_dir, const string &script_dir, const string &material_dir, const string &font_dir);
-
-// all
-void _cdecl MetaDelete(void *p);
-void _cdecl MetaDeleteLater(void *);
-void _cdecl MetaDeleteSelection();
-
 
 
 // game data
@@ -112,36 +111,24 @@ enum{
 
 
 
-class XContainer : public VirtualBase
+class XContainer : public HuiEventHandler
 {
 public:
-	int type;
-	bool enabled;
-
 	virtual ~XContainer(){}
 	virtual void _cdecl OnIterate(){}
 	virtual void _cdecl OnInit(){}
 	virtual void _cdecl OnDelete(){}
 };
 
-enum
-{
-	XContainerEffect,
-	XContainerParticle,
-	XContainerParticleRot,
-	XContainerParticleBeam,
-	XContainerGuiLayer,
-	XContainerController,
-	XContainerCamera,
-	XContainerModel
-};
+
+void _cdecl MetaDeleteLater(XContainer *p);
+void _cdecl MetaDeleteSelection();
 
 extern bool AllowXContainer;
 
-#define xcon_reg(xtype, var, array) \
+#define xcon_reg(var, array) \
 	if (AllowXContainer) \
-		(array).add(var); \
-	(var)->type = xtype;
+		(array).add(var);
 
 #define xcon_unreg(var, array) \
 	if (AllowXContainer) \

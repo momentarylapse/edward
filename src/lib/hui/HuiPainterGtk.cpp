@@ -33,6 +33,16 @@ void HuiPainter::SetLineWidth(float w)
 	cairo_set_line_width(cr, w);
 }
 
+void HuiPainter::SetLineDash(Array<float> &dash, float offset)
+{
+	if (!cr)
+		return;
+	Array<double> d;
+	foreach(float f, dash)
+		d.add(f);
+	cairo_set_dash(cr, (double*)d.data, d.num, offset);
+}
+
 color HuiPainter::GetThemeColor(int i)
 {
 	GtkStyle *style = gtk_widget_get_style(win->window);
@@ -54,6 +64,13 @@ color HuiPainter::GetThemeColor(int i)
 	else if (x == 6)
 		c = style->text[y];
 	return color(1, (float)c.red / 65535.0f, (float)c.green / 65535.0f, (float)c.blue / 65535.0f);
+}
+
+void HuiPainter::Clip(const rect &r)
+{
+	cairo_reset_clip(cr);
+	cairo_rectangle(cr, r.x1, r.y1, r.width(), r.height());
+	cairo_clip(cr);
 }
 
 

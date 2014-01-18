@@ -567,7 +567,7 @@ void Edward::UpdateDialogDir(int kind)
 	if (kind==FDTerrain)		RootDirKind[kind] = MapDir;
 	if (kind==FDWorld)			RootDirKind[kind] = MapDir;
 	if (kind==FDShaderFile)		RootDirKind[kind] = MaterialDir;
-	if (kind==FDFont)			RootDirKind[kind] = FontDir;
+	if (kind==FDFont)			RootDirKind[kind] = Gui::FontDir;
 	if (kind==FDScript)			RootDirKind[kind] = ScriptDir;
 	if (kind==FDCameraFlight)	RootDirKind[kind] = ScriptDir;
 	if (kind==FDFile)			RootDirKind[kind] = RootDir;
@@ -652,7 +652,7 @@ string Edward::GetRootDir(int kind)
 	if (kind==FDTerrain)		return MapDir;
 	if (kind==FDWorld)			return MapDir;
 	if (kind==FDShaderFile)		return MaterialDir;
-	if (kind==FDFont)			return FontDir;
+	if (kind==FDFont)			return Gui::FontDir;
 	if (kind==FDScript)			return ScriptDir;
 	if (kind==FDCameraFlight)	return ScriptDir;
 	if (kind==FDFile)			return RootDir;

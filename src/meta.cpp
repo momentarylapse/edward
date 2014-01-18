@@ -50,8 +50,7 @@
 EngineData Engine;
 
 
-
-Array<void*> MetaDeleteStuffList;
+Array<XContainer*> MetaDeleteStuffList;
 
 bool AllowXContainer = true;
 
@@ -64,7 +63,7 @@ string MapDir, ScriptDir;
 void MetaInit()
 {
 	msg_db_f("Meta",1);
-	Engine.DefaultFont = 0;
+	Engine.DefaultFont = NULL;
 
 	Engine.ZBufferEnabled = true;
 	Engine.CullingEnabled = false;
@@ -103,7 +102,8 @@ void MetaReset()
 	MetaDeleteStuffList.clear();
 
 	ModelToIgnore = NULL;
-	Engine.DefaultFont = 0;
+	if (Gui::Fonts.num > 0)
+		Engine.DefaultFont = Gui::Fonts[0];
 	Engine.ShadowLight = 0;
 	Engine.ShadowLowerDetail = false;
 	Engine.ShadowColor = color(0.5f, 0, 0, 0);
@@ -121,7 +121,7 @@ void MetaSetDirs(const string &texture_dir, const string &map_dir, const string 
 	SoundDir = sound_dir;
 	ScriptDir = script_dir;
 	MaterialDir = material_dir;
-	FontDir = font_dir;
+	Gui::FontDir = font_dir;
 	Script::config.Directory = script_dir;
 }
 
@@ -134,31 +134,8 @@ void MetaCalcMove()
 	Engine.DetailFactorInv = 100.0f/(float)Engine.DetailLevel;
 }
 
-void _cdecl MetaDelete(void *p)
-{
-#ifdef _X_ALLOW_X_
-	if (!p)	return;
-	msg_db_f("MetaDelete", 2);
-	int type = ((XContainer*)p)->type;
-	if (type == XContainerGuiLayer)
-		delete((Gui::Layer*)p);
-	else if (type == XContainerParticle)
-		delete((Fx::Particle*)p);
-	else if (type == XContainerParticleRot)
-		delete((Fx::Particle*)p);
-	else if (type == XContainerParticleBeam)
-		delete((Fx::Beam*)p);
-	else if (type == XContainerEffect)
-		delete((Fx::Effect*)p);
-	else if (type == XContainerCamera)
-		delete((Camera*)p);
-	else if (IsModel(p))
-		delete((Model*)p);
-#endif
-}
 
-
-void MetaDeleteLater(void *p)
+void MetaDeleteLater(XContainer *p)
 {
 	MetaDeleteStuffList.add(p);
 }
@@ -167,6 +144,6 @@ void MetaDeleteSelection()
 {
 	msg_db_f("MetaDeleteSelection", 1);
 	for (int i=0;i<MetaDeleteStuffList.num;i++)
-		MetaDelete(MetaDeleteStuffList[i]);
+		delete(MetaDeleteStuffList[i]);
 	MetaDeleteStuffList.clear();
 }

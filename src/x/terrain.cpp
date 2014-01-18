@@ -247,10 +247,10 @@ void Terrain::CalcDetail()
 		}
 }
 
-static int TempVertexIndex[2048];
-static int TempTriangleIndex[2048];
-static int TempEdgeIndex[2048];
-static plane TempPlaneList[2048];
+static int TempVertexIndex[2048*4];
+static int TempTriangleIndex[2048*12];
+static int TempEdgeIndex[2048*4];
+static plane TempPlaneList[2048*4];
 
 inline void add_edge(int &num, int e0, int e1)
 {
@@ -295,7 +295,6 @@ void Terrain::GetTriangleHull(TriangleHull *h, vector &_pos_, float _radius_)
 		return;
 
 	//printf("%d %d %d %d\n", x0, x1, z0, z1);
-
 	// c d
 	// a b
 	// (acd),(adb)
@@ -303,6 +302,8 @@ void Terrain::GetTriangleHull(TriangleHull *h, vector &_pos_, float _radius_)
 	h->num_triangles = (x1-x0) * (z1-z0) * 2;
 	h->num_edges = 0;
 	int n = 0, n6 = 0;
+	if (h->num_vertices > 2048)
+		msg_error("Terrain.GetTriangleHull: too much data");
 	for (int x=x0;x<x1;x++)
 		for (int z=z0;z<z1;z++){
 			// vertex
