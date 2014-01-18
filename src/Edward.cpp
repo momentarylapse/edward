@@ -194,11 +194,9 @@ Edward::Edward(Array<string> arg) :
 	PossibleSubDir.add("Textures");
 
 	// configuration
-	int x = HuiConfigReadInt("X", -1);
-	int y = HuiConfigReadInt("Y", -1);
-	int w = HuiConfigReadInt("Width", 800);
-	int h = HuiConfigReadInt("Height", 600);
-	bool maximized = HuiConfigReadBool("Maximized", false);
+	int w = HuiConfigReadInt("Window.Width", 800);
+	int h = HuiConfigReadInt("Window.Height", 600);
+	bool maximized = HuiConfigReadBool("Window.Maximized", false);
 	SetSize(w, h);
 	RootDir = HuiConfigReadStr("RootDir", "");
 	//HuiConfigReadInt("Api", api, NIX_API_OPENGL);

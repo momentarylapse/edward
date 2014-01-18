@@ -100,6 +100,9 @@ void MultiView::Reset()
 
 	ViewMoving = false;
 
+	Selected = -1;
+	SelectedSet = -1;
+
 	ResetData(NULL);
 	ResetMouseAction();
 	ResetView();
@@ -327,12 +330,13 @@ void MultiView::OnLeftButtonDown()
 	MouseMovedSinceClick = 0;
 	Moved = false;
 	v = v_0;
-	GetSelected(get_select_mode());
+	if (action[0].mode == ActionSelect){
+		GetSelected(get_select_mode());
 
-	if (Selected<0){
-		if (MVRectable)
-			StartRect();
-	}else{
+	}else if (MouseOver >= 0){
+		MultiViewEditing = true;
+		if (HasSelection())
+			MouseActionStart(0);
 	}
 }
 
@@ -341,16 +345,16 @@ void MultiView::OnLeftButtonDown()
 void MultiView::OnMiddleButtonDown()
 {
 	active_win = mouse_win;
-	bool allow = true;
+	/*bool allow = true;
 	if ((MouseOverType >= 0) && (MouseOver >= 0))
 		if (MVGetSingleData(data[MouseOverSet], MouseOver)->is_selected)
 			allow = false;
-	if (allow){
+	if (allow){*/
 // move camera?
 		HoldCursor(true);
 		ViewMoving = true;
 		Selected = -1;
-	}
+	//}
 	Notify("Update");
 }
 
@@ -359,19 +363,19 @@ void MultiView::OnMiddleButtonDown()
 void MultiView::OnRightButtonDown()
 {
 	active_win = mouse_win;
-	bool allow = true;
+	/*bool allow = true;
 	if ((MouseOverType >= 0) && (MouseOver >= 0))
 		if (MVGetSingleData(data[MouseOverSet], MouseOver)->is_selected)
 			allow = false;
-	if (allow){
+	if (allow){*/
 // move camera?
 		HoldCursor(true);
 		ViewMoving = true;
 		Selected = -1;
-	}else{
+	/*}else{
 		MouseMovedSinceClick = 0;
 		GetSelected();
-	}
+	}*/
 	Notify("Update");
 }
 
@@ -449,23 +453,20 @@ void MultiView::OnMouseMove()
 	if (((!lbut) && (!mbut) && (!rbut)) || (!allow_mouse_actions))
 		GetMouseOver();
 
+	if ((lbut) && (action[0].mode == ActionSelect) && MVRectable){
+		int d = abs(v.x) + abs(v.y);
+		MouseMovedSinceClick += d;
+		if ((MouseMovedSinceClick - d < MinMouseMoveToInteract) && (MouseMovedSinceClick >= MinMouseMoveToInteract))
+			StartRect();
+	}
+
 	// rectangle
 	if (MVRect)
 		SelectAllInRectangle(get_select_mode());
 
 	// left button -> move data
-	//msg_write(lbut);
-	if (((lbut) or (mbut) or (rbut)) && allow_mouse_actions){
-		int d = abs(v.x) + abs(v.y);
-		MouseMovedSinceClick += d;
-		if ((MouseMovedSinceClick >= MinMouseMoveToInteract) and (MouseMovedSinceClick - d < MinMouseMoveToInteract)){
-			MultiViewEditing = true;
-			if (Selected >= 0){
-				MouseActionStart(rbut ? (NixGetKey(KEY_SHIFT) ? 1 : 2) : 0);
-			}
-		}
+	if (cur_action)
 		MouseActionUpdate();
-	}
 
 
 	if (ViewMoving){
@@ -1208,6 +1209,17 @@ void MultiView::InvertSelection()
 				sd->is_selected = !sd->is_selected;
 		}
 	Notify("SelectionChange");
+}
+
+bool MultiView::HasSelection()
+{
+	foreach(MultiViewData &d, data)
+		for (int i=0;i<d.data->num;i++){
+			MultiViewSingleData* sd = MVGetSingleData(d, i);
+			if (sd->is_selected)
+				return true;
+		}
+	return false;
 }
 
 vector MultiView::GetCursor3d()

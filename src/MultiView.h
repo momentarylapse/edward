@@ -151,6 +151,7 @@ public:
 	void SelectAll();
 	void SelectNone();
 	void InvertSelection();
+	bool HasSelection();
 
 	void HoldCursor(bool holding);
 	void StartRect();
@@ -195,6 +196,8 @@ public:
 	Data *_data_;
 	vector mouse_action_param, mouse_action_pos0;
 	enum{
+		ActionNone,
+		ActionSelect,
 		ActionMove,
 		ActionRotate,
 		ActionRotate2d,

@@ -45,7 +45,7 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	MaterialDialog = NULL;
 	CurrentMaterial = 0;
 
-	right_mouse_function = RMFRotate;
+	ChooseRightMouseFunction(RMFSelect);
 
 	mode_model_mesh_vertex = new ModeModelMeshVertex(this);
 	mode_model_mesh_edge = new ModeModelMeshEdge(this);
@@ -71,9 +71,10 @@ void ModeModelMesh::OnStart()
 	t->AddItemCheckable(_("Kugel"), dir + "new_ball.png", "new_ball");
 	t->AddItemCheckable(_("Zylinder"), dir + "new_cylinder.png", "new_cylinder");
 	t->AddSeparator();
+	t->AddItemCheckable(_("Selektieren"), dir + "rf_select.png", "select");
+	t->AddItemCheckable(_("Verschieben"), dir + "rf_translate.png", "translate");
 	t->AddItemCheckable(_("Rotieren"), dir + "rf_rotate.png", "rotate");
 	t->AddItemCheckable(_("Skalieren"), dir + "rf_scale.png", "scale");
-	t->AddItemCheckable(_("Skalieren (2D)"), dir + "rf_scale2d.png", "scale_2d");
 	t->AddItemCheckable(_("Spiegeln"),dir + "rf_mirror.png", "mirror");
 	t->Enable(true);
 	t->Configure(false,true);
@@ -170,12 +171,14 @@ void ModeModelMesh::OnCommand(const string & id)
 	if (id == "flatten_vertices")
 		data->FlattenSelectedVertices();
 
+	if (id == "select")
+		ChooseRightMouseFunction(RMFSelect);
+	if (id == "translate")
+		ChooseRightMouseFunction(RMFTranslate);
 	if (id == "rotate")
 		ChooseRightMouseFunction(RMFRotate);
 	if (id == "scale")
 		ChooseRightMouseFunction(RMFScale);
-	if (id == "scale_2d")
-		ChooseRightMouseFunction(RMFScale2d);
 	if (id == "mirror")
 		ChooseRightMouseFunction(RMFMirror);
 
@@ -279,10 +282,11 @@ void ModeModelMesh::OnUpdateMenu()
 
 	ed->Check("select_cw", mode_model_mesh_polygon->SelectCW);
 
-	ed->Check("rotate", right_mouse_function == RMFRotate);
-	ed->Check("scale", right_mouse_function == RMFScale);
-	ed->Check("scale_2d", right_mouse_function == RMFScale2d);
-	ed->Check("mirror", right_mouse_function == RMFMirror);
+	ed->Check("select", left_mouse_function == RMFSelect);
+	ed->Check("translate", left_mouse_function == RMFTranslate);
+	ed->Check("rotate", left_mouse_function == RMFRotate);
+	ed->Check("scale", left_mouse_function == RMFScale);
+	ed->Check("mirror", left_mouse_function == RMFMirror);
 
 	ed->Check("mode_model_materials", MaterialDialog);
 }
@@ -377,7 +381,7 @@ void ModeModelMesh::ChooseMaterialForSelection()
 
 void ModeModelMesh::ChooseRightMouseFunction(int f)
 {
-	right_mouse_function = f;
+	left_mouse_function = f;
 	ed->UpdateMenu();
 	ApplyRightMouseFunction(ed->multi_view_3d);
 	ApplyRightMouseFunction(ed->multi_view_2d);
@@ -392,19 +396,17 @@ void ModeModelMesh::ApplyRightMouseFunction(MultiView *mv)
 	if (!mv->mode3d)
 		suffix = "SkinVertices";
 
-	// left -> translate
-	mv->SetMouseAction(0, "ActionModelMove" + suffix, MultiView::ActionMove);
-
-	// right...
-	if (right_mouse_function == RMFRotate){
-		mv->SetMouseAction(1, "ActionModelRotate" + suffix, MultiView::ActionRotate);
-		mv->SetMouseAction(2, "ActionModelRotate" + suffix, MultiView::ActionRotate2d);
-	}else if (right_mouse_function == RMFScale){
-		mv->SetMouseAction(2, "ActionModelScale" + suffix, MultiView::ActionScale);
-	}else if (right_mouse_function == RMFScale2d){
-		mv->SetMouseAction(2, "ActionModelScale" + suffix, MultiView::ActionScale2d);
-	}else if (right_mouse_function == RMFMirror){
-		mv->SetMouseAction(2, "ActionModelMirror" + suffix, MultiView::ActionOnce);
+	// left mouse action
+	if (left_mouse_function == RMFTranslate){
+		mv->SetMouseAction(0, "ActionModelMove" + suffix, MultiView::ActionMove);
+	}else if (left_mouse_function == RMFRotate){
+		mv->SetMouseAction(0, "ActionModelRotate" + suffix, MultiView::ActionRotate);
+	}else if (left_mouse_function == RMFScale){
+		mv->SetMouseAction(0, "ActionModelScale" + suffix, MultiView::ActionScale);
+	}else if (left_mouse_function == RMFMirror){
+		mv->SetMouseAction(0, "ActionModelMirror" + suffix, MultiView::ActionOnce);
+	}else{
+		mv->SetMouseAction(0, "", MultiView::ActionSelect);
 	}
 }
 
