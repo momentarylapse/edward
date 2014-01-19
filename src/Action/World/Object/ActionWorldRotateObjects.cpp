@@ -9,7 +9,7 @@
 #include "../../../Data/World/DataWorld.h"
 
 ActionWorldRotateObjects::ActionWorldRotateObjects(DataWorld *d, const vector &_param, const vector &_pos0) :
-	ActionMultiView(_param, _pos0)
+	ActionMultiView()
 {
 	// list of selected objects and save old pos
 	foreachi(WorldObject &o, d->Objects, i)
@@ -26,26 +26,26 @@ ActionWorldRotateObjects::~ActionWorldRotateObjects()
 
 void ActionWorldRotateObjects::undo(Data *d)
 {
-	DataWorld *w = dynamic_cast<DataWorld*>(d);
+	/*DataWorld *w = dynamic_cast<DataWorld*>(d);
 	matrix rot;
 	MatrixRotation(rot, param);
 	foreachi(int i, index, ii){
 		w->Objects[i].pos = old_data[ii];
 		w->Objects[i].Ang = old_ang[ii];
-	}
+	}*/
 }
 
 
 
 void *ActionWorldRotateObjects::execute(Data *d)
 {
-	DataWorld *w = dynamic_cast<DataWorld*>(d);
+	/*DataWorld *w = dynamic_cast<DataWorld*>(d);
 	matrix rot;
 	MatrixRotation(rot, param);
 	foreachi(int i, index, ii){
 		w->Objects[i].pos = pos0 + rot * (old_data[ii] - pos0);
 		w->Objects[i].Ang = VecAngAdd(old_ang[ii], param);
-	}
+	}*/
 	return NULL;
 }
 

@@ -1,18 +1,17 @@
 /*
- * ActionModelScaleSkinVertices.cpp
+ * ActionModelTransformSkinVertices.cpp
  *
  *  Created on: 15.03.2012
  *      Author: michi
  */
 
-#include "ActionModelScaleSkinVertices.h"
+#include "ActionModelTransformSkinVertices.h"
 #include "../../../../Data/Model/DataModel.h"
-#include "../../../../lib/file/file.h"
 #include "../../../../lib/math/math.h"
 #include "../../../../Mode/Model/Mesh/ModeModelMeshTexture.h"
 
-ActionModelScaleSkinVertices::ActionModelScaleSkinVertices(DataModel *d, const vector &_param, const vector &_pos0, int _texture_level) :
-	ActionMultiView(_param, _pos0)
+ActionModelTransformSkinVertices::ActionModelTransformSkinVertices(DataModel *d, int _texture_level) :
+	ActionMultiView()
 {
 	texture_level = _texture_level;
 
@@ -24,27 +23,26 @@ ActionModelScaleSkinVertices::ActionModelScaleSkinVertices(DataModel *d, const v
 	}
 }
 
-ActionModelScaleSkinVertices::~ActionModelScaleSkinVertices()
+ActionModelTransformSkinVertices::~ActionModelTransformSkinVertices()
 {
 }
 
 
 
-void *ActionModelScaleSkinVertices::execute(Data *d)
+void *ActionModelTransformSkinVertices::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(int k, index, i){
-		ModelPolygon &t = m->Surface[surface[i]].Polygon[tria[i]];
+	foreachi(int k, index, ii){
+		ModelPolygon &t = m->Surface[surface[ii]].Polygon[tria[ii]];
 		vector &v = t.Side[k].SkinVertex[texture_level];
-		v = pos0 + (e_x * (old_data[i] - pos0)) * param.x * e_x +
-		           (e_y * (old_data[i] - pos0)) * param.y * e_y;
+		v = mat * v;
 	}
 	return NULL;
 }
 
 
 
-void ActionModelScaleSkinVertices::undo(Data *d)
+void ActionModelTransformSkinVertices::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(int k, index, i){

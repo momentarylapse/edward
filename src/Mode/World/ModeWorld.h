@@ -67,6 +67,8 @@ public:
 	void ToggleShowObjects();
 	void ToggleShowEffects();
 
+	void SetMouseAction(int mode);
+	int mouse_action;
 
 	Material temp_material;
 

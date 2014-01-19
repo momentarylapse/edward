@@ -105,19 +105,30 @@ struct MultiViewMouseAction
 
 struct MultiViewActionController
 {
-	bool show, captured;
-	vector pos;
+	bool show;
+	vector pos, pos0;
+	vector param;
+	matrix mat;
 	int mode;
 	Array<ModelGeometry*> geo;
 	int mouse_over_geo;
 	MultiView *multi_view;
+	MultiViewMouseAction action;
+	ActionMultiView *cur_action;
 	void reset();
 	void Draw(MultiViewWindow *win);
+	void DrawParams();
 	void Disable();
 	void Enable();
 	void Update();
-	bool Click();
+	bool LeftButtonDown();
+	void MouseMove();
+	void LeftButtonUp();
 	bool IsMouseOver(vector &tp);
+	bool InUse();
+	void StartAction();
+	void UpdateAction();
+	void EndAction(bool set);
 };
 
 // TODO refactor me!!!
@@ -188,6 +199,7 @@ public:
 	void SelectAllInRectangle(int mode = SelectSet);
 
 	float GetGridD();
+	string GetMVScaleByZoom(vector &v);
 
 	vector GetCursor3d();
 	vector GetCursor3d(const vector &depth_reference);
@@ -209,12 +221,8 @@ public:
 	int view_stage;
 
 	bool allow_mouse_actions;
-	MultiViewMouseAction action[3];
-	int active_mouse_action;
-	ActionMultiView *cur_action;
 	MultiViewActionController action_con;
 	Data *_data_;
-	vector mouse_action_param, mouse_action_pos0;
 	enum{
 		ActionNone,
 		ActionSelect,
@@ -223,13 +231,11 @@ public:
 		ActionRotate2d,
 		ActionScale,
 		ActionScale2d,
+		ActionMirror,
 		ActionOnce
 	};
 	void ResetMouseAction();
-	void SetMouseAction(int button, const string &name, int mode);
-	void MouseActionStart(int button);
-	void MouseActionEnd(bool set);
-	void MouseActionUpdate();
+	void SetMouseAction(const string &name, int mode);
 
 	Array<MultiViewData> data;
 	bool AllowViewStage, AllowViewStageHandling;

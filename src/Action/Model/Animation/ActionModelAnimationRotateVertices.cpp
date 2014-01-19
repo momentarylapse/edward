@@ -11,7 +11,7 @@
 #include <assert.h>
 
 ActionModelAnimationRotateVertices::ActionModelAnimationRotateVertices(DataModel *d, const vector &_param, const vector &_pos0) :
-	ActionMultiView(_param, _pos0)
+	ActionMultiView()
 {
 	move = mode_model_animation->CurrentMove;
 	frame = mode_model_animation->CurrentFrame;
@@ -30,11 +30,11 @@ ActionModelAnimationRotateVertices::~ActionModelAnimationRotateVertices()
 
 void* ActionModelAnimationRotateVertices::execute(Data* d)
 {
-	DataModel *m = dynamic_cast<DataModel*>(d);
+	/*DataModel *m = dynamic_cast<DataModel*>(d);
 	matrix rot;
 	MatrixRotation(rot, param);
 	foreachi(int i, index, ii)
-		m->Move[move].Frame[frame].VertexDPos[i] = pos0 + rot * (old_data[ii] + m->Vertex[i].pos - pos0) - m->Vertex[i].pos;
+		m->Move[move].Frame[frame].VertexDPos[i] = pos0 + rot * (old_data[ii] + m->Vertex[i].pos - pos0) - m->Vertex[i].pos;*/
 	return NULL;
 }
 

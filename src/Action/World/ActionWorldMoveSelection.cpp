@@ -10,7 +10,7 @@
 #include "../../x/terrain.h"
 
 ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const vector &_param, const vector &_pos0) :
-	ActionMultiView(_param, _pos0)
+	ActionMultiView()
 {
 	// list of selected objects and save old pos
 	foreachi(WorldObject &o, d->Objects, i)
@@ -31,14 +31,14 @@ ActionWorldMoveSelection::~ActionWorldMoveSelection()
 
 void *ActionWorldMoveSelection::execute(Data *d)
 {
-	DataWorld *w = dynamic_cast<DataWorld*>(d);
+	/*DataWorld *w = dynamic_cast<DataWorld*>(d);
 	foreachi(int i, index, ii)
 		w->Objects[i].pos = old_data[ii] + param;
 	foreachi(int i, terrain_index, ii){
 		w->Terrains[i].pos = terrain_old_data[ii] + param;
 		w->Terrains[i].terrain->pos = w->Terrains[i].pos;
 		w->Terrains[i].terrain->Update(-1, -1, -1, -1, TerrainUpdateVertices);
-	}
+	}*/
 	return NULL;
 }
 

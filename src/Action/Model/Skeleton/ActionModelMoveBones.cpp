@@ -10,7 +10,7 @@
 #include "../../../lib/math/math.h"
 
 ActionModelMoveBones::ActionModelMoveBones(DataModel *d, const vector &_param, const vector &_pos0) :
-	ActionMultiView(_param, _pos0)
+	ActionMultiView()
 {
 	// list of selected vertices and save old pos
 	foreachi(ModelBone &b, d->Bone, i)
@@ -26,14 +26,14 @@ ActionModelMoveBones::~ActionModelMoveBones()
 
 void *ActionModelMoveBones::execute(Data *d)
 {
-	DataModel *m = dynamic_cast<DataModel*>(d);
+	/*DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(int i, index, ii){
 		m->Bone[i].pos = old_data[ii] + param;
 		if (m->Bone[i].Parent >= 0)
 			m->Bone[i].DeltaPos = m->Bone[i].pos - m->Bone[m->Bone[i].Parent].pos;
 		else
 			m->Bone[i].DeltaPos = m->Bone[i].pos;
-	}
+	}*/
 	return NULL;
 }
 

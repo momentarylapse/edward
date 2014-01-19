@@ -50,14 +50,7 @@ public:
 	void CloseMaterialDialog();
 	void ToggleMaterialDialog();
 
-	enum{
-		RMFSelect,
-		RMFTranslate,
-		RMFRotate,
-		RMFScale,
-		RMFMirror
-	};
-	int left_mouse_function;
+	int mouse_action;
 
 	void Copy();
 	void Paste();

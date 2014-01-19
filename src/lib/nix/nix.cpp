@@ -15,7 +15,7 @@
 #include "../hui/Controls/HuiControl.h"
 
 
-string NixVersion = "0.12.0.0";
+string NixVersion = "0.12.0.1";
 
 
 // libraries (in case Visual C++ is used)

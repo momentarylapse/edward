@@ -9,7 +9,7 @@
 #include "../../../Data/World/DataCamera.h"
 
 ActionCameraMoveSelection::ActionCameraMoveSelection(DataCamera *d, const vector &_param, const vector &_pos0) :
-	ActionMultiView(_param, _pos0)
+	ActionMultiView()
 {
 	// list of selected objects and save old pos
 	foreachi(WorldCamPoint &c, d->Point, i)
@@ -24,12 +24,12 @@ ActionCameraMoveSelection::ActionCameraMoveSelection(DataCamera *d, const vector
 
 void *ActionCameraMoveSelection::execute(Data *d)
 {
-	DataCamera *w = dynamic_cast<DataCamera*>(d);
+	/*DataCamera *w = dynamic_cast<DataCamera*>(d);
 	foreachi(int i, index, ii)
 		w->Point[i].pos = old_data[ii] + param;
 	foreachi(int i, index_vel, ii)
 		w->Point[i].Vel = old_vel[ii] + param;
-	return NULL;
+	return NULL;*/
 }
 
 

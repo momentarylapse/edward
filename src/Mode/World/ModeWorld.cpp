@@ -131,6 +131,13 @@ void ModeWorld::OnCommand(const string & id)
 		ToggleShowTerrains();
 	if (id == "show_fx")
 		ToggleShowEffects();
+
+	if (id == "select")
+		SetMouseAction(MultiView::ActionSelect);
+	if (id == "translate")
+		SetMouseAction(MultiView::ActionMove);
+	if (id == "rotate")
+		SetMouseAction(MultiView::ActionRotate);
 }
 
 #define MODEL_MAX_VERTICES	65536
@@ -274,11 +281,6 @@ void ModeWorld::OnUpdate(Observable *o)
 
 		multi_view->ResetData(data);
 
-		// left -> translate
-		multi_view->SetMouseAction(0, "ActionWorldMoveSelection", MultiView::ActionMove);
-		// middle/right -> rotate
-		multi_view->SetMouseAction(1, "ActionWorldRotateObjects", MultiView::ActionRotate2d);
-		multi_view->SetMouseAction(2, "ActionWorldRotateObjects", MultiView::ActionRotate);
 		multi_view->allow_rect = true;
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		multi_view->SetData(	MVDWorldObject,
@@ -499,13 +501,31 @@ void ModeWorld::OnStart()
 	t->AddItem(_("Pop"),dir + "view_pop.png","view_pop");
 	t->AddSeparator();
 	t->AddItem(_("Eigenschaften"), dir + "configure.png", "selection_properties");
+	t->AddSeparator();
+	t->AddItemCheckable(_("Selektieren"), dir + "rf_select.png", "select");
+	t->AddItemCheckable(_("Verschieben"), dir + "rf_translate.png", "translate");
+	t->AddItemCheckable(_("Rotieren"), dir + "rf_rotate.png", "rotate");
 	t->Enable(true);
 	t->Configure(false,true);
 	t = ed->toolbar[HuiToolbarLeft];
 	t->Reset();
 	t->Enable(false);
 
+	SetMouseAction(MultiView::ActionSelect);
+
 	OnUpdate(data);
+}
+
+void ModeWorld::SetMouseAction(int mode)
+{
+	mouse_action = mode;
+	if (mode == MultiView::ActionMove)
+		multi_view->SetMouseAction("ActionWorldMoveSelection", mode);
+	else if (mode == MultiView::ActionRotate)
+		multi_view->SetMouseAction("ActionWorldRotateObjects", mode);
+	else
+		multi_view->SetMouseAction("", mode);
+	ed->UpdateMenu();
 }
 
 
@@ -527,6 +547,10 @@ void ModeWorld::OnUpdateMenu()
 	ed->Check("show_objects", ShowObjects);
 	ed->Check("show_terrains", ShowTerrains);
 	ed->Check("show_fx", ShowEffects);
+
+	ed->Check("select", mouse_action == MultiView::ActionSelect);
+	ed->Check("translate", mouse_action == MultiView::ActionMove);
+	ed->Check("rotate", mouse_action == MultiView::ActionRotate);
 }
 
 

@@ -10,7 +10,7 @@
 #include "../../../Mode/Model/Animation/ModeModelAnimation.h"
 
 ActionModelAnimationRotateBones::ActionModelAnimationRotateBones(DataModel *d, const vector &_param, const vector &_pos0) :
-	ActionMultiView(_param, _pos0)
+	ActionMultiView()
 {
 	move = mode_model_animation->CurrentMove;
 	frame = mode_model_animation->CurrentFrame;
@@ -29,9 +29,9 @@ ActionModelAnimationRotateBones::~ActionModelAnimationRotateBones()
 
 void *ActionModelAnimationRotateBones::execute(Data *d)
 {
-	DataModel *m = dynamic_cast<DataModel*>(d);
+	/*DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(int i, index, ii)
-		m->Move[move].Frame[frame].SkelAng[i] = VecAngAdd(old_data[ii], param);
+		m->Move[move].Frame[frame].SkelAng[i] = VecAngAdd(old_data[ii], param);*/
 	return NULL;
 }
 

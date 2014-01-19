@@ -18,20 +18,20 @@ class Data;
 class ActionMultiView: public Action
 {
 public:
-	ActionMultiView(const vector &_param, const vector &_pos0);
+	ActionMultiView();
 	virtual ~ActionMultiView();
 
 	// continuous editing
 	virtual void abort(Data *d);
 	void abort_and_notify(Data *d);
+	void update_and_notify(Data *d, const matrix &m);
 
 protected:
 	Array<int> index;
-	vector pos0;
-	vector param;
+	matrix mat;
 	Array<vector> old_data;
 };
 
-ActionMultiView *ActionMultiViewFactory(const string &name, Data *d, const vector &_param, const vector &_pos0, const vector &_ex, const vector &_ey, const vector &_ez);
+ActionMultiView *ActionMultiViewFactory(const string &name, Data *d);
 
 #endif /* ACTIONMULTIVIEW_H_ */
