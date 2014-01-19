@@ -63,12 +63,12 @@ ActionMultiView *ActionMultiViewFactory(const string &name, Data *d)
 	else if (name == "ActionModelAnimationMoveVertices")
 		return new ActionModelAnimationMoveVertices((DataModel*)d, _param, _pos0);
 	else if (name == "ActionModelAnimationRotateVertices")
-		return new ActionModelAnimationRotateVertices((DataModel*)d, _param, _pos0);
-	else if (name == "ActionWorldMoveSelection")
-		return new ActionWorldMoveSelection((DataWorld*)d, _param, _pos0);
+		return new ActionModelAnimationRotateVertices((DataModel*)d, _param, _pos0);*/
+	if (name == "ActionWorldMoveSelection")
+		return new ActionWorldMoveSelection((DataWorld*)d);
 	else if (name == "ActionWorldRotateObjects")
-		return new ActionWorldRotateObjects((DataWorld*)d, _param, _pos0);
-	else if (name == "ActionCameraMoveSelection")
+		return new ActionWorldRotateObjects((DataWorld*)d);
+	/*else if (name == "ActionCameraMoveSelection")
 		return new ActionCameraMoveSelection((DataCamera*)d, _param, _pos0);*/
 	msg_error("ActionMultiViewFactory: unknown action: " + name);
 	assert(0);

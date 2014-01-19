@@ -9,6 +9,7 @@
 #include "MultiView.h"
 
 #include "Data/Model/Geometry/ModelGeometry.h"
+#include "Data/Model/Geometry/ModelGeometryBall.h"
 #include "Data/Model/Geometry/ModelGeometryCylinder.h"
 #include "Data/Model/Geometry/ModelGeometryTorus.h"
 
@@ -39,13 +40,13 @@ const int PointRadiusMouseOver = 4;
 
 enum{
 	ActionModeNone,
-	ActionModeFree,
 	ActionModeX,
 	ActionModeY,
 	ActionModeZ,
 	ActionModeXY,
 	ActionModeXZ,
 	ActionModeYZ,
+	ActionModeFree,
 };
 
 extern matrix NixViewMatrix;
@@ -111,8 +112,13 @@ MultiView::~MultiView()
 void MultiView::Reset()
 {
 	allow_rect = MVRect = false;
-	mouse_win = &win[0];
-	active_win = &win[0];
+	if (mode3d){
+		mouse_win = &win[3];
+		active_win = &win[3];
+	}else{
+		mouse_win = &win[0];
+		active_win = &win[0];
+	}
 
 	ViewMoving = false;
 
@@ -1406,16 +1412,15 @@ void MultiViewActionController::StartAction()
 	if (!multi_view->allow_mouse_actions)
 		return;
 	if (action.name != ""){
-		msg_write("mouse action start " + action.name);
+		//msg_write("mouse action start " + action.name);
 		multi_view->MultiViewEditing = true;
 
-
 		mat = m_id;
-		param = v_0;
-		if ((action.mode == MultiView::ActionScale) or (action.mode == MultiView::ActionScale2d))
-			param = vector(1, 1, 1);
 
-		pos0 = multi_view->MouseOverTP;
+		m0 = multi_view->MouseOverTP;
+		pos0 = pos;
+		if (mode == ActionModeFree)
+			pos0 = multi_view->MouseOverTP;
 		cur_action = ActionMultiViewFactory(action.name, multi_view->_data_);
 		cur_action->execute_logged(multi_view->_data_);
 		multi_view->Notify("ActionStart");
@@ -1453,65 +1458,61 @@ vector mvac_project_trans(int mode, const vector &v)
 	return r;
 }
 
+vector mvac_mirror(int mode)
+{
+	if (mode == ActionModeX)
+		return e_x;
+	else if (mode == ActionModeY)
+		return e_y;
+	else if (mode == ActionModeZ)
+		return e_z;
+	else if (mode == ActionModeXY)
+		return e_z;
+	else if (mode == ActionModeXZ)
+		return e_y;
+	return e_x;
+}
+
 void MultiViewActionController::UpdateAction()
 {
 	if (!cur_action)
 		return;
-		//msg_write("mouse action update");
+	//msg_write("mouse action update");
 
 	vector v2p = multi_view->m;
-	vector v2  = multi_view->active_win->Unproject(v2p, pos0);
-	vector v1  = pos0;
+	vector v2  = multi_view->active_win->Unproject(v2p, m0);
+	vector v1  = m0;
 	vector v1p = multi_view->active_win->Project(v1);
+	matrix m_dt, m_dti;
+	MatrixTranslation(m_dt, pos0);
+	MatrixTranslation(m_dti, -pos0);
 	if (action.mode == MultiView::ActionMove){
 		param = mvac_project_trans(mode, v2 - v1);
 		MatrixTranslation(mat, param);
 	}else if (action.mode == MultiView::ActionRotate){
 		param = mvac_project_trans(mode, v2 - v1) * 0.003f *multi_view->cam.zoom;
+		if (mode == ActionModeFree)
+			param = transform_ang(multi_view, vector(v1p.y - v2p.y, v1p.x - v2p.x, 0) * 0.003f);
 		MatrixRotation(mat, param);
+		mat = m_dt * mat * m_dti;
 	}else if (action.mode == MultiView::ActionScale){
 		param = vector(1, 1, 1) + mvac_project_trans(mode, v2 - v1) * 0.01f *multi_view->cam.zoom;
+		if (mode == ActionModeFree)
+			param = vector(1, 1, 1) * (1 + (v2p - v1p).x * 0.01f);
 		MatrixScale(mat, param.x, param.y, param.z);
-/*			mouse_action_param = transform_ang(this, vector(v1p.y - v2p.y, v1p.x - v2p.x, 0) * 0.003f);
-			if ((action_con.mode == ActionModeX) || (action_con.mode == ActionModeYZ))
-				mouse_action_param = e_x * (v1p.x - v2p.x) * 0.003f;
-			else if ((action_con.mode == ActionModeY) || (action_con.mode == ActionModeXZ))
-				mouse_action_param = e_y * (v1p.x - v2p.x) * 0.003f;
-			else if ((action_con.mode == ActionModeZ) || (action_con.mode == ActionModeXY))
-				mouse_action_param = e_z * (v1p.x - v2p.x) * 0.003f;
-		}else if (mode == ActionRotate2d){
-			mouse_action_param = transform_ang(this, e_z * (v2p.x - v1p.x) * 0.003f);
-		}else if (mode == ActionScale){
-			mouse_action_param = vector(1, 1, 1) * ( 1 + (v2p.x - v1p.x) * 0.01f);
-			if (action_con.mode == ActionModeX)
-				mouse_action_param = vector(1 + (v2p.x - v1p.x) * 0.01f, 1, 1);
-			else if (action_con.mode == ActionModeY)
-				mouse_action_param = vector(1, 1 + (v2p.x - v1p.x) * 0.01f, 1);
-			else if (action_con.mode == ActionModeZ)
-				mouse_action_param = vector(1, 1, 1 + (v2p.x - v1p.x) * 0.01f);
-			else if (action_con.mode == ActionModeXY)
-				mouse_action_param = vector(1 + (v2p.x - v1p.x) * 0.01f, 1 + (v2p.y - v1p.y) * 0.01f, 1);
-			else if (action_con.mode == ActionModeXZ)
-				mouse_action_param = vector(1 + (v2p.x - v1p.x) * 0.01f, 1, 1 + (v2p.z - v1p.z) * 0.01f);
-			else if (action_con.mode == ActionModeYZ)
-				mouse_action_param = vector(1, 1 + (v2p.y - v1p.y) * 0.01f, 1 + (v2p.x - v1p.x) * 0.01f);
-		}else if (mode == ActionScale2d){
-			mouse_action_param = vector(1 + (v2p.x - v1p.x) * 0.01f, 1 - (v2p.y - v1p.y) * 0.01f, 1);
-		}else if (mode == ActionOnce){
-			mouse_action_param = active_win->GetDirectionRight();*/
+		mat = m_dt * mat * m_dti;
+	}else if (action.mode == MultiView::ActionMirror){
+		param = mvac_mirror(mode);
+		if (mode == ActionModeFree)
+			param = multi_view->active_win->GetDirectionRight();
+		plane pl;
+		PlaneFromPointNormal(pl, v_0, param);
+		MatrixReflect(mat, pl);
+		mat = m_dt * mat * m_dti;
 	}else{
 		param = v_0;
 		mat = m_id;
 	}
-	/*cur_action->undo(_data_);
-		delete(cur_action);
-		vector d, u, r;
-		active_win->GetMovingFrame(d, u, r);
-		if (action_con.mode >= ActionModeX){
-			r = e_x;
-			u = e_y;
-			d = e_z;
-		}*/
 	cur_action->update_and_notify(multi_view->_data_, mat);
 
 	Update();
@@ -1525,7 +1526,7 @@ void MultiViewActionController::EndAction(bool set)
 {
 	if (!cur_action)
 		return;
-	msg_write("mouse action end");
+	//msg_write("mouse action end");
 	if (set){
 		cur_action->undo(multi_view->_data_);
 		multi_view->_data_->Execute(cur_action);
@@ -1589,6 +1590,9 @@ void MultiViewActionController::reset()
 	foreach(ModelGeometry *g, geo)
 		delete(g);
 	geo.clear();
+	foreach(ModelGeometry *g, geo_show)
+		delete(g);
+	geo_show.clear();
 }
 
 void MultiViewActionController::Update()
@@ -1603,13 +1607,23 @@ void MultiViewActionController::Update()
 		matrix s, t;
 		MatrixScale(s, f, f, f);
 		MatrixTranslation(t, pos);
-		geo.add(new ModelGeometryCylinder(-e_x, e_x, 0.1f, 1, 16, false));
-		geo.add(new ModelGeometryCylinder(-e_y, e_y, 0.1f, 1, 16, false));
-		geo.add(new ModelGeometryCylinder(-e_z, e_z, 0.1f, 1, 16, false));
-		geo.add(new ModelGeometryTorus(v_0, e_z, 0.5f, 0.1f, 32, 16));
-		geo.add(new ModelGeometryTorus(v_0, e_y, 0.5f, 0.1f, 32, 16));
-		geo.add(new ModelGeometryTorus(v_0, e_x, 0.5f, 0.1f, 32, 16));
+		geo.add(new ModelGeometryCylinder(-e_x, e_x, 0.1f, 1, 8, false));
+		geo.add(new ModelGeometryCylinder(-e_y, e_y, 0.1f, 1, 8, false));
+		geo.add(new ModelGeometryCylinder(-e_z, e_z, 0.1f, 1, 8, false));
+		geo.add(new ModelGeometryTorus(v_0, e_z, 0.5f, 0.1f, 32, 8));
+		geo.add(new ModelGeometryTorus(v_0, e_y, 0.5f, 0.1f, 32, 8));
+		geo.add(new ModelGeometryTorus(v_0, e_x, 0.5f, 0.1f, 32, 8));
+		geo.add(new ModelGeometryBall(v_0, 0.3f, 16, 8));
+		geo_show.add(new ModelGeometryCylinder(-e_x, e_x, 0.05f, 1, 8, false));
+		geo_show.add(new ModelGeometryCylinder(-e_y, e_y, 0.05f, 1, 8, false));
+		geo_show.add(new ModelGeometryCylinder(-e_z, e_z, 0.05f, 1, 8, false));
+		geo_show.add(new ModelGeometryTorus(v_0, e_z, 0.5f, 0.05f, 32, 8));
+		geo_show.add(new ModelGeometryTorus(v_0, e_y, 0.5f, 0.05f, 32, 8));
+		geo_show.add(new ModelGeometryTorus(v_0, e_x, 0.5f, 0.05f, 32, 8));
+		geo_show.add(new ModelGeometryBall(v_0, 0.25f, 16, 8));
 		foreach(ModelGeometry *g, geo)
+			g->Transform(t * s);
+		foreach(ModelGeometry *g, geo_show)
 			g->Transform(t * s);
 	}
 	ed->ForceRedraw();
@@ -1626,29 +1640,43 @@ void MultiViewActionController::Disable()
 	ed->ForceRedraw();
 }
 
+const color MVACColor[] = {
+	color(1, 0.8f, 0.8f, 0.8f),
+	color(1, 0.8f, 0.8f, 0.8f),
+	color(1, 0.8f, 0.8f, 0.8f),
+	color(1, 0.4f, 0.4f, 0.8f),
+	color(1, 0.4f, 0.4f, 0.8f),
+	color(1, 0.4f, 0.4f, 0.8f),
+	color(1, 0.8f, 0.8f, 0.8f)
+};
+
 void MultiViewActionController::Draw(MultiViewWindow *win)
 {
 	if (!show)
 		return;
-	NixResetZ();
-	NixSetZ(true, true);//false, false);
+	NixSetZ(false, false);
 	NixEnableLighting(true);
 	NixSetWorldMatrix(m_id);
-	foreachi(ModelGeometry *g, geo, i){
-		g->Preview(VBTemp);
-		NixSetMaterial(White, White, Black, 0, Black);
-		NixDraw3D(VBTemp);
+	if (!InUse()){
+		foreachi(ModelGeometry *g, geo_show, i){
+			g->Preview(VBTemp);
+			NixSetMaterial(Black, Black, Black, 0, MVACColor[i]);
+			NixDraw3D(VBTemp);
+		}
 	}
 	if (mouse_over_geo >= 0){
-		NixSetMaterial(Black, Black, Black, 0, Red);
-		geo[mouse_over_geo]->Preview(VBTemp);
+		NixSetAlpha(AlphaMaterial);
+		NixSetMaterial(Black, color(0.8f, 0, 0, 0), Black, 0, White);
+		geo_show[mouse_over_geo]->Preview(VBTemp);
 		NixDraw3D(VBTemp);
 	}
+	NixSetZ(false, false);
+	NixEnableLighting(false);
+	NixSetAlpha(AlphaNone);
 	NixSetMaterial(White, White, Black, 0, Black);
 	/*NixSetColor(Red);
 	vector p = win->Project(pos);
 	NixDrawRect(p.x-15, p.x+15, p.y-15, p.y+15, 0);*/
-	NixEnableLighting(false);
 }
 
 void MultiViewActionController::DrawParams()
@@ -1678,13 +1706,20 @@ bool MultiViewActionController::IsMouseOver(vector &tp)
 	mouse_over_geo = -1;
 	if (!show)
 		return false;
+	float z_min = 1;
+	mouse_over_geo = -1;
 	foreachi(ModelGeometry *g, geo, i){
-		if (g->IsMouseOver(multi_view->mouse_win, tp)){
-			mouse_over_geo = i;
-			return true;
+		vector t;
+		if (g->IsMouseOver(multi_view->mouse_win, t)){
+			float z = multi_view->mouse_win->Project(t).z;
+			if ((z < z_min) || (i == 6)){
+				mouse_over_geo = i;
+				z_min = z;
+				tp = t;
+			}
 		}
 	}
-	return false;
+	return (mouse_over_geo >= 0);
 }
 
 bool MultiViewActionController::LeftButtonDown()
@@ -1693,14 +1728,17 @@ bool MultiViewActionController::LeftButtonDown()
 		return false;
 	vector tp;
 	mode = ActionModeNone;
-	foreachi(ModelGeometry *g, geo, i){
-		if (g->IsMouseOver(multi_view->mouse_win, tp)){
-			mode = ActionModeX + i;
-			StartAction();
-			return true;
-		}
+	if (IsMouseOver(multi_view->MouseOverTP)){
+		mode = ActionModeX + mouse_over_geo;
+		StartAction();
+		return true;
 	}
-	return (multi_view->MouseOver >= 0);
+	if (multi_view->MouseOver >= 0){
+		mode = ActionModeFree;
+		StartAction();
+		return true;
+	}
+	return false;
 }
 
 void MultiViewActionController::LeftButtonUp()

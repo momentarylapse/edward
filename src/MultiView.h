@@ -106,10 +106,11 @@ struct MultiViewMouseAction
 struct MultiViewActionController
 {
 	bool show;
-	vector pos, pos0;
+	vector pos, pos0, m0;
 	vector param;
 	matrix mat;
 	int mode;
+	Array<ModelGeometry*> geo_show;
 	Array<ModelGeometry*> geo;
 	int mouse_over_geo;
 	MultiView *multi_view;

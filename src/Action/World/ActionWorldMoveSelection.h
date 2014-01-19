@@ -15,7 +15,7 @@ class vector;
 class ActionWorldMoveSelection: public ActionMultiView
 {
 public:
-	ActionWorldMoveSelection(DataWorld *d, const vector &_param, const vector &_pos0);
+	ActionWorldMoveSelection(DataWorld *d);
 	virtual ~ActionWorldMoveSelection();
 	string name(){	return "WorldMoveSelection";	}
 

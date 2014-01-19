@@ -15,7 +15,7 @@ class vector;
 class ActionWorldRotateObjects: public ActionMultiView
 {
 public:
-	ActionWorldRotateObjects(DataWorld *d, const vector &_param, const vector &_pos0);
+	ActionWorldRotateObjects(DataWorld *d);
 	virtual ~ActionWorldRotateObjects();
 	string name(){	return "WorldRotateObjects";	}
 
