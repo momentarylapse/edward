@@ -8,6 +8,10 @@
 #include "Edward.h"
 #include "MultiView.h"
 
+#include "Data/Model/Geometry/ModelGeometry.h"
+#include "Data/Model/Geometry/ModelGeometryCylinder.h"
+#include "Data/Model/Geometry/ModelGeometryTorus.h"
+
 
 const color ColorBackGround3D = color(1,0,0,0.15f);
 const color ColorBackGround2D = color(1,0,0,0.10f);
@@ -103,7 +107,7 @@ void MultiView::Reset()
 
 	Selected = -1;
 	SelectedSet = -1;
-	action_con.show = false;
+	action_con.reset();
 
 	ResetData(NULL);
 	ResetMouseAction();
@@ -183,6 +187,8 @@ void MultiView::DoZoom(float factor)
 		update_zoom;
 		cam.pos += mup - mouse_win->Unproject(m);
 	}
+	if (action_con.show)
+		action_con.Update();
 	Notify("Update");
 }
 
@@ -419,7 +425,7 @@ void MultiView::OnLeftButtonUp()
 	MultiViewEditing = false;
 	MouseActionEnd(true);
 
-	action_con.show = false;
+	action_con.Disable();
 	if (action[0].mode > ActionSelect)
 		action_con.Enable();
 }
@@ -1186,7 +1192,7 @@ void MultiView::SetMouseAction(int button, const string & name, int mode)
 		mode = ActionRotate2d;
 	action[button].name = name;
 	action[button].mode = mode;
-	action_con.show = false;
+	action_con.Disable();
 	if (action[0].mode > ActionSelect)
 		action_con.Enable();
 }
@@ -1480,6 +1486,8 @@ void MultiView::MouseActionUpdate()
 				r, u, d);
 		cur_action->execute_logged(_data_);
 
+		action_con.Update();
+
 		Notify("ActionUpdate");
 	}
 }
@@ -1553,21 +1561,58 @@ void MultiView::ResetMessage3d()
 	message3d.clear();
 }
 
-void MultiViewActionController::Enable()
+void MultiViewActionController::reset()
 {
 	show = false;
+	foreach(ModelGeometry *g, geo)
+		delete(g);
+	geo.clear();
+}
+
+void MultiViewActionController::Update()
+{
+	reset();
 	if (multi_view->HasSelection()){
 		pos = multi_view->GetSelectionCenter();
 		show = true;
+		float f = multi_view->cam.radius * 0.1f;
+		matrix s, t;
+		MatrixScale(s, f, f, f);
+		MatrixTranslation(t, pos);
+		geo.add(new ModelGeometryCylinder(-e_x, e_x, 0.1f, 1, 16, false));
+		geo.add(new ModelGeometryCylinder(-e_y, e_y, 0.1f, 1, 16, false));
+		geo.add(new ModelGeometryCylinder(-e_z, e_z, 0.1f, 1, 16, false));
+		foreach(ModelGeometry *g, geo)
+			g->Transform(t * s);
 	}
+	ed->ForceRedraw();
+}
+
+void MultiViewActionController::Enable()
+{
+	Update();
+}
+
+void MultiViewActionController::Disable()
+{
+	reset();
 	ed->ForceRedraw();
 }
 
 void MultiViewActionController::Draw(MultiViewWindow *win)
 {
-	if (multi_view->HasSelection()){
-		NixSetColor(Red);
-		vector p = win->Project(pos);
-		NixDrawRect(p.x-15, p.x+15, p.y-15, p.y+15, 0);
+	if (!show)
+		return;
+	NixSetMaterial(White, White, Black, 0, Black);
+	NixSetZ(false, false);
+	NixEnableLighting(true);
+	NixSetWorldMatrix(m_id);
+	foreach(ModelGeometry *g, geo){
+		g->Preview(VBTemp);
+		NixDraw3D(VBTemp);
 	}
+	/*NixSetColor(Red);
+	vector p = win->Project(pos);
+	NixDrawRect(p.x-15, p.x+15, p.y-15, p.y+15, 0);*/
+	NixEnableLighting(false);
 }

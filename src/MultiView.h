@@ -19,6 +19,7 @@ class MultiView;
 class ActionMultiView;
 class Data;
 class Observable;
+class ModelGeometry;
 
 
 enum
@@ -107,9 +108,13 @@ struct MultiViewActionController
 	bool show, captured;
 	vector pos;
 	int mode;
+	Array<ModelGeometry*> geo;
 	MultiView *multi_view;
+	void reset();
 	void Draw(MultiViewWindow *win);
+	void Disable();
 	void Enable();
+	void Update();
 	bool Click();
 };
 

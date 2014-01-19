@@ -16,6 +16,7 @@ class ModelPolygon;
 class vector;
 class matrix;
 class NixVertexBuffer;
+class MultiViewWindow;
 
 class ModelGeometry
 {
@@ -46,6 +47,7 @@ public:
 	bool IsInside(const vector &v) const;
 
 	void GetBoundingBox(vector &min, vector &max);
+	bool IsMouseOver(MultiViewWindow *win, vector &tp);
 
 	void Preview(NixVertexBuffer *vb, int num_textures = 1) const;
 

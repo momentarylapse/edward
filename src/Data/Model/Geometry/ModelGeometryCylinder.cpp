@@ -39,7 +39,7 @@ ModelGeometryCylinder::ModelGeometryCylinder(Array<vector> &pos, float radius, i
 	BuildFromPath(inter, inter_r, rings, edges, closed);
 }
 
-ModelGeometryCylinder::ModelGeometryCylinder(vector &pos1, vector &pos2, float radius, int rings, int edges, bool closed)
+ModelGeometryCylinder::ModelGeometryCylinder(const vector &pos1, const vector &pos2, float radius, int rings, int edges, bool closed)
 {
 	Interpolator<float> inter_r(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
 	inter_r.add(radius);
@@ -58,7 +58,7 @@ void ModelGeometryCylinder::__init2__(Array<vector>& pos, Array<float>& radius, 
 	new (this) ModelGeometryCylinder(pos, radius, rings, edges, closed);
 }
 
-void ModelGeometryCylinder::__init__(vector& pos1, vector& pos2, float radius, int rings, int edges, bool closed)
+void ModelGeometryCylinder::__init__(const vector& pos1, const vector& pos2, float radius, int rings, int edges, bool closed)
 {
 	new (this) ModelGeometryCylinder(pos1, pos2, radius, rings, edges, closed);
 }
