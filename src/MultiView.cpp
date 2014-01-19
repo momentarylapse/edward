@@ -37,6 +37,17 @@ const int PointRadiusMouseOver = 4;
 #define MVGetSingleData(d, index)	((MultiViewSingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 //#define MVGetSingleData(d, index)	( dynamic_cast<MultiViewSingleData*> ((char*)(d).data + (d).DataSingleSize * index))
 
+enum{
+	ActionModeNone,
+	ActionModeFree,
+	ActionModeX,
+	ActionModeY,
+	ActionModeZ,
+	ActionModeXY,
+	ActionModeXZ,
+	ActionModeYZ,
+};
+
 extern matrix NixViewMatrix;
 extern matrix NixProjectionMatrix;
 
@@ -343,10 +354,8 @@ void MultiView::OnLeftButtonDown()
 	if (action[0].mode == ActionSelect){
 		GetSelected(get_select_mode());
 
-	}else if (MouseOver >= 0){
-		MultiViewEditing = true;
-		if (HasSelection())
-			MouseActionStart(0);
+	}else if (action_con.Click()){
+		MouseActionStart(0);
 	}
 }
 
@@ -464,7 +473,7 @@ void MultiView::OnMouseMove()
 
 
 	// hover
-	if (((!lbut) && (!mbut) && (!rbut)) || (!allow_mouse_actions))
+	if ((!lbut) && (!mbut) && (!rbut))
 		GetMouseOver();
 
 	if ((lbut) && (action[0].mode == ActionSelect) && allow_rect){
@@ -1277,6 +1286,8 @@ void MultiView::GetMouseOver()
 	MouseOver=MouseOverType=MouseOverSet=-1;
 	/*if (!MVSelectable)
 		return;*/
+	if (action_con.IsMouseOver(MouseOverTP))
+		return;
 	float _radius=(float)PointRadiusMouseOver;
 	float z_min=1;
 	foreachi(MultiViewData &d, data, di)
@@ -1423,6 +1434,7 @@ void MultiView::MouseActionStart(int button)
 		return;
 	if (action[button].name != ""){
 		msg_write("mouse action start " + action[button].name);
+		MultiViewEditing = true;
 
 
 		int mode = action[active_mouse_action].mode;
@@ -1464,9 +1476,15 @@ void MultiView::MouseActionUpdate()
 		vector v1  = mouse_action_pos0;
 		vector v1p = active_win->Project(v1);
 		int mode = action[active_mouse_action].mode;
-		if (mode == ActionMove)
+		if (mode == ActionMove){
 			mouse_action_param = v2 - v1;
-		else if (mode == ActionRotate)
+			if (action_con.mode == ActionModeX)
+				mouse_action_param = e_x * (v2 - v1).x;
+			else if (action_con.mode == ActionModeY)
+				mouse_action_param = e_y * (v2 - v1).y;
+			else if (action_con.mode == ActionModeZ)
+				mouse_action_param = e_z * (v2 - v1).z;
+		}else if (mode == ActionRotate)
 			mouse_action_param = transform_ang(this, vector(v1p.y - v2p.y, v1p.x - v2p.x, 0) * 0.003f);
 		else if (mode == ActionRotate2d)
 			mouse_action_param = transform_ang(this, e_z * (v2p.x - v1p.x) * 0.003f);
@@ -1564,6 +1582,7 @@ void MultiView::ResetMessage3d()
 void MultiViewActionController::reset()
 {
 	show = false;
+	mode = ActionModeNone;
 	foreach(ModelGeometry *g, geo)
 		delete(g);
 	geo.clear();
@@ -1571,7 +1590,9 @@ void MultiViewActionController::reset()
 
 void MultiViewActionController::Update()
 {
+	int m = mode;
 	reset();
+	mode = m;
 	if (multi_view->HasSelection()){
 		pos = multi_view->GetSelectionCenter();
 		show = true;
@@ -1603,16 +1624,51 @@ void MultiViewActionController::Draw(MultiViewWindow *win)
 {
 	if (!show)
 		return;
-	NixSetMaterial(White, White, Black, 0, Black);
 	NixSetZ(false, false);
 	NixEnableLighting(true);
 	NixSetWorldMatrix(m_id);
-	foreach(ModelGeometry *g, geo){
+	foreachi(ModelGeometry *g, geo, i){
 		g->Preview(VBTemp);
+		NixSetMaterial(White, White, Black, 0, Black);
 		NixDraw3D(VBTemp);
 	}
+	if (mouse_over_geo >= 0){
+		NixSetMaterial(Black, Black, Black, 0, Red);
+		geo[mouse_over_geo]->Preview(VBTemp);
+		NixDraw3D(VBTemp);
+	}
+	NixSetMaterial(White, White, Black, 0, Black);
 	/*NixSetColor(Red);
 	vector p = win->Project(pos);
 	NixDrawRect(p.x-15, p.x+15, p.y-15, p.y+15, 0);*/
 	NixEnableLighting(false);
+}
+
+bool MultiViewActionController::IsMouseOver(vector &tp)
+{
+	mouse_over_geo = -1;
+	if (!show)
+		return false;
+	foreachi(ModelGeometry *g, geo, i){
+		if (g->IsMouseOver(multi_view->mouse_win, tp)){
+			mouse_over_geo = i;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool MultiViewActionController::Click()
+{
+	if (!show)
+		return false;
+	vector tp;
+	mode = ActionModeNone;
+	foreachi(ModelGeometry *g, geo, i){
+		if (g->IsMouseOver(multi_view->mouse_win, tp)){
+			mode = ActionModeX + i;
+			return true;
+		}
+	}
+	return (multi_view->MouseOver >= 0);
 }

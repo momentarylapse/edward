@@ -401,3 +401,41 @@ void ModelGeometry::RemoveUnusedVertices()
 						p.Side[i].Vertex --;
 		}
 }
+
+bool ModelGeometry::IsMouseOver(MultiViewWindow *win, vector &tp)
+{
+	foreach(ModelPolygon &p, Polygon){
+		// care for the sense of rotation?
+		if (p.TempNormal * win->GetDirection() > 0)
+			return false;
+
+		// project all points
+		Array<vector> v;
+		for (int k=0;k<p.Side.num;k++){
+			vector pp = win->Project(Vertex[p.Side[k].Vertex].pos);
+			if ((pp.z <= 0) or (pp.z >= 1))
+				return false; // TODO
+			v.add(pp);
+		}
+
+		// test all sub-triangles
+		p.UpdateTriangulation(Vertex);
+		vector M = win->multi_view->m;
+		for (int k=p.Side.num-3; k>=0; k--){
+			int a = p.Side[k].Triangulation[0];
+			int b = p.Side[k].Triangulation[1];
+			int c = p.Side[k].Triangulation[2];
+			float f,g;
+			GetBaryCentric(M, v[a], v[b], v[c], f, g);
+			// cursor in triangle?
+			if ((f>0)&&(g>0)&&(f+g<1)){
+				vector va = Vertex[p.Side[a].Vertex].pos;
+				vector vb = Vertex[p.Side[b].Vertex].pos;
+				vector vc = Vertex[p.Side[c].Vertex].pos;
+				tp = va+f*(vb-va)+g*(vc-va);
+				return true;
+			}
+		}
+	}
+	return false;
+}

@@ -109,6 +109,7 @@ struct MultiViewActionController
 	vector pos;
 	int mode;
 	Array<ModelGeometry*> geo;
+	int mouse_over_geo;
 	MultiView *multi_view;
 	void reset();
 	void Draw(MultiViewWindow *win);
@@ -116,6 +117,7 @@ struct MultiViewActionController
 	void Enable();
 	void Update();
 	bool Click();
+	bool IsMouseOver(vector &tp);
 };
 
 // TODO refactor me!!!
