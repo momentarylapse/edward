@@ -1484,22 +1484,39 @@ void MultiView::MouseActionUpdate()
 				mouse_action_param = e_y * (v2 - v1).y;
 			else if (action_con.mode == ActionModeZ)
 				mouse_action_param = e_z * (v2 - v1).z;
-		}else if (mode == ActionRotate)
+		}else if (mode == ActionRotate){
 			mouse_action_param = transform_ang(this, vector(v1p.y - v2p.y, v1p.x - v2p.x, 0) * 0.003f);
-		else if (mode == ActionRotate2d)
+			if (action_con.mode == ActionModeX)
+				mouse_action_param = e_x * (v1p.x - v2p.x) * 0.003f;
+			else if (action_con.mode == ActionModeY)
+				mouse_action_param = e_y * (v1p.x - v2p.x) * 0.003f;
+			else if (action_con.mode == ActionModeZ)
+				mouse_action_param = e_z * (v1p.x - v2p.x) * 0.003f;
+		}else if (mode == ActionRotate2d){
 			mouse_action_param = transform_ang(this, e_z * (v2p.x - v1p.x) * 0.003f);
-		else if (mode == ActionScale)
+		}else if (mode == ActionScale){
 			mouse_action_param = vector(1, 1, 1) * ( 1 + (v2p.x - v1p.x) * 0.01f);
-		else if (mode == ActionScale2d)
+			if (action_con.mode == ActionModeX)
+				mouse_action_param = vector(1 + (v2p.x - v1p.x) * 0.01f, 1, 1);
+			else if (action_con.mode == ActionModeY)
+				mouse_action_param = vector(1, 1 + (v2p.x - v1p.x) * 0.01f, 1);
+			else if (action_con.mode == ActionModeZ)
+				mouse_action_param = vector(1, 1, 1 + (v2p.x - v1p.x) * 0.01f);
+		}else if (mode == ActionScale2d){
 			mouse_action_param = vector(1 + (v2p.x - v1p.x) * 0.01f, 1 - (v2p.y - v1p.y) * 0.01f, 1);
-		else if (mode == ActionOnce)
+		}else if (mode == ActionOnce){
 			mouse_action_param = active_win->GetDirectionRight();
-		else
+		}else
 			mouse_action_param = v_0;
 		cur_action->undo(_data_);
 		delete(cur_action);
 		vector d, u, r;
 		active_win->GetMovingFrame(d, u, r);
+		if (action_con.mode >= ActionModeX){
+			r = e_x;
+			u = e_y;
+			d = e_z;
+		}
 		cur_action = ActionMultiViewFactory(action[active_mouse_action].name, _data_, mouse_action_param, mouse_action_pos0,
 				r, u, d);
 		cur_action->execute_logged(_data_);
@@ -1519,6 +1536,11 @@ void MultiView::MouseActionEnd(bool set)
 		if (set){
 			vector d, u, r;
 			active_win->GetMovingFrame(d, u, r);
+			if (action_con.mode >= ActionModeX){
+				r = e_x;
+				u = e_y;
+				d = e_z;
+			}
 			cur_action->undo(_data_);
 					delete(cur_action);
 			cur_action = ActionMultiViewFactory(action[active_mouse_action].name, _data_, mouse_action_param, mouse_action_pos0,

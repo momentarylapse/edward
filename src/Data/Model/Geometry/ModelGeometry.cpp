@@ -407,16 +407,21 @@ bool ModelGeometry::IsMouseOver(MultiViewWindow *win, vector &tp)
 	foreach(ModelPolygon &p, Polygon){
 		// care for the sense of rotation?
 		if (p.TempNormal * win->GetDirection() > 0)
-			return false;
+			continue;
 
 		// project all points
 		Array<vector> v;
+		bool out = false;
 		for (int k=0;k<p.Side.num;k++){
 			vector pp = win->Project(Vertex[p.Side[k].Vertex].pos);
-			if ((pp.z <= 0) or (pp.z >= 1))
-				return false; // TODO
+			if ((pp.z <= 0) or (pp.z >= 1)){
+				out = true;
+				break;
+			}
 			v.add(pp);
 		}
+		if (out)
+			continue;
 
 		// test all sub-triangles
 		p.UpdateTriangulation(Vertex);
