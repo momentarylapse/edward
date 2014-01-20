@@ -10,18 +10,18 @@
 
 #include "../../ActionGroup.h"
 class DataModel;
-class ModelGeometry;
+class Geometry;
 
 class ActionModelPasteGeometry : public ActionGroup
 {
 public:
-	ActionModelPasteGeometry(ModelGeometry &geo, int material);
+	ActionModelPasteGeometry(Geometry &geo, int material);
 	virtual ~ActionModelPasteGeometry(){}
 	string name(){	return "ModelPasteGeometry";	}
 
 	void *compose(Data *d);
 private:
-	ModelGeometry &geo;
+	Geometry &geo;
 	int default_material;
 };
 

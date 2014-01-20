@@ -10,7 +10,7 @@
 
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
-class ModelGeometry;
+class Geometry;
 
 class ModeModelMeshCreatePlatonic: public ModeCreation<DataModel>
 {
@@ -29,7 +29,7 @@ public:
 	void UpdateGeometry();
 
 private:
-	ModelGeometry *geo;
+	Geometry *geo;
 	int type;
 	vector pos;
 	float radius;

@@ -8,8 +8,8 @@
 #include "ModeModelMeshCreateBall.h"
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
-#include "../../../../Data/Model/Geometry/ModelGeometryBall.h"
-#include "../../../../Data/Model/Geometry/ModelGeometrySphere.h"
+#include "../../../../Data/Model/Geometry/GeometryBall.h"
+#include "../../../../Data/Model/Geometry/GeometrySphere.h"
 #include "../../../../Edward.h"
 
 ModeModelMeshCreateBall::ModeModelMeshCreateBall(ModeBase *_parent) :
@@ -85,9 +85,9 @@ void ModeModelMeshCreateBall::UpdateGeometry()
 		HuiConfigWriteInt("NewBallComplexity", complexity);
 		HuiConfigWriteBool("NewBallSphere", sphere);
 		if (sphere)
-			geo = new ModelGeometrySphere(pos, radius, complexity);
+			geo = new GeometrySphere(pos, radius, complexity);
 		else
-			geo = new ModelGeometryBall(pos, radius, nx, ny);
+			geo = new GeometryBall(pos, radius, nx, ny);
 	}
 }
 

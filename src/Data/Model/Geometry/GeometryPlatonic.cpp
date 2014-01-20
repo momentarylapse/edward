@@ -1,14 +1,14 @@
 /*
- * ModelGeometryPlatonic.cpp
+ * GeometryPlatonic.cpp
  *
  *  Created on: 11.01.2013
  *      Author: michi
  */
 
-#include "ModelGeometryPlatonic.h"
+#include "GeometryPlatonic.h"
 #include "../DataModel.h"
 
-ModelGeometryPlatonic::ModelGeometryPlatonic(const vector &pos, float radius, int type)
+GeometryPlatonic::GeometryPlatonic(const vector &pos, float radius, int type)
 {
 	if (type == 4)
 		AddTetrahedron(pos, radius);
@@ -21,7 +21,7 @@ ModelGeometryPlatonic::ModelGeometryPlatonic(const vector &pos, float radius, in
 }
 
 
-void ModelGeometryPlatonic::AddTetrahedron(const vector &pos, float radius)
+void GeometryPlatonic::AddTetrahedron(const vector &pos, float radius)
 {
 	int nv = Vertex.num;
 
@@ -36,7 +36,7 @@ void ModelGeometryPlatonic::AddTetrahedron(const vector &pos, float radius)
 	Add3(nv, 1, 3, 2);
 }
 
-void ModelGeometryPlatonic::AddOctahedron(const vector &pos, float radius)
+void GeometryPlatonic::AddOctahedron(const vector &pos, float radius)
 {
 	int nv = Vertex.num;
 
@@ -57,7 +57,7 @@ void ModelGeometryPlatonic::AddOctahedron(const vector &pos, float radius)
 	Add3(nv, 1, 3, 4);
 }
 
-void ModelGeometryPlatonic::AddDodecahedron(const vector &pos, float radius)
+void GeometryPlatonic::AddDodecahedron(const vector &pos, float radius)
 {
 	int nv = Vertex.num;
 
@@ -97,12 +97,12 @@ void ModelGeometryPlatonic::AddDodecahedron(const vector &pos, float radius)
 	Add5(nv, 8, 10, 2, 16, 0);
 }
 
-void ModelGeometryPlatonic::__init__(const vector& pos, float radius, int type)
+void GeometryPlatonic::__init__(const vector& pos, float radius, int type)
 {
-	new (this) ModelGeometryPlatonic(pos, radius, type);
+	new (this) GeometryPlatonic(pos, radius, type);
 }
 
-void ModelGeometryPlatonic::AddIcosahedron(const vector &pos, float radius)
+void GeometryPlatonic::AddIcosahedron(const vector &pos, float radius)
 {
 	int nv = Vertex.num;
 

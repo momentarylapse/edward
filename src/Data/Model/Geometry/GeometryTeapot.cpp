@@ -1,11 +1,11 @@
 /*
- * ModelGeometryTeapot.cpp
+ * GeometryTeapot.cpp
  *
  *  Created on: 11.01.2013
  *      Author: michi
  */
 
-#include "ModelGeometryTeapot.h"
+#include "GeometryTeapot.h"
 #include "../DataModel.h"
 
 // Utah teapot by Martin Newell
@@ -331,7 +331,7 @@ const vector tp_vert[] = {
 	fill_array(i0,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15); \
 	AddBezier3(v, samples, samples, 0.01f / samples)
 
-ModelGeometryTeapot::ModelGeometryTeapot(const vector &pos, float radius, int samples)
+GeometryTeapot::GeometryTeapot(const vector &pos, float radius, int samples)
 {
 	Array<vector> v;
 	addBezier(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16);
@@ -376,7 +376,7 @@ ModelGeometryTeapot::ModelGeometryTeapot(const vector &pos, float radius, int sa
 	Transform(trans * rot * scale);
 }
 
-void ModelGeometryTeapot::__init__(const vector& pos, float radius, int samples)
+void GeometryTeapot::__init__(const vector& pos, float radius, int samples)
 {
-	new (this) ModelGeometryTeapot(pos, radius, samples);
+	new (this) GeometryTeapot(pos, radius, samples);
 }

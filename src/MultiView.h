@@ -19,7 +19,7 @@ class MultiView;
 class ActionMultiView;
 class Data;
 class Observable;
-class ModelGeometry;
+class Geometry;
 
 
 enum
@@ -110,8 +110,8 @@ struct MultiViewActionController
 	vector param;
 	matrix mat;
 	int mode;
-	Array<ModelGeometry*> geo_show;
-	Array<ModelGeometry*> geo;
+	Array<Geometry*> geo_show;
+	Array<Geometry*> geo;
 	int mouse_over_geo;
 	MultiView *multi_view;
 	MultiViewMouseAction action;

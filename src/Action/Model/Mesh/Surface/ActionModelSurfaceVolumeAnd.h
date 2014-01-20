@@ -13,7 +13,7 @@
 class DataModel;
 class ModelPolygon;
 class ModelSurface;
-class ModelGeometry;
+class Geometry;
 
 class ActionModelSurfaceVolumeAnd : public ActionGroup
 {
@@ -25,7 +25,7 @@ public:
 	void *compose(Data *d);
 
 private:
-	void SurfaceAnd(DataModel *m, ModelSurface *a, int ai, ModelSurface *b, Array<ModelGeometry> &geos);
+	void SurfaceAnd(DataModel *m, ModelSurface *a, int ai, ModelSurface *b, Array<Geometry> &geos);
 };
 
 #endif /* ACTIONMODELSURFACEVOLUMEAND_H_ */

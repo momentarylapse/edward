@@ -1,20 +1,20 @@
 /*
- * ModelGeometryPlatonic.h
+ * GeometryPlatonic.h
  *
  *  Created on: 11.01.2013
  *      Author: michi
  */
 
-#ifndef MODELGEOMETRYPLATONIC_H_
-#define MODELGEOMETRYPLATONIC_H_
+#ifndef GEOMETRYPLATONIC_H_
+#define GEOMETRYPLATONIC_H_
 
-#include "ModelGeometry.h"
+#include "Geometry.h"
 class vector;
 
-class ModelGeometryPlatonic : public ModelGeometry
+class GeometryPlatonic : public Geometry
 {
 public:
-	ModelGeometryPlatonic(const vector &pos, float radius, int type);
+	GeometryPlatonic(const vector &pos, float radius, int type);
 	void _cdecl __init__(const vector &pos, float radius, int type);
 	void AddTetrahedron(const vector &pos, float radius);
 	void AddOctahedron(const vector &pos, float radius);
@@ -22,4 +22,4 @@ public:
 	void AddIcosahedron(const vector &pos, float radius);
 };
 
-#endif /* MODELGEOMETRYPLATONIC_H_ */
+#endif /* GEOMETRYPLATONIC_H_ */

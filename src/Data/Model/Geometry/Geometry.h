@@ -1,12 +1,12 @@
 /*
- * ModelGeometry.h
+ * Geometry.h
  *
  *  Created on: 11.01.2013
  *      Author: michi
  */
 
-#ifndef MODELGEOMETRY_H_
-#define MODELGEOMETRY_H_
+#ifndef GEOMETRY_H_
+#define GEOMETRY_H_
 
 #include "../DataModel.h"
 #include "../ModelPolygon.h"
@@ -18,7 +18,7 @@ class matrix;
 class NixVertexBuffer;
 class MultiViewWindow;
 
-class ModelGeometry
+class Geometry
 {
 public:
 	void clear();
@@ -31,10 +31,10 @@ public:
 	void Add4(int nv, int v0, int v1, int v2, int v3);
 	void Add3(int nv, int v0, int v1, int v2);
 	void AddBezier3(Array<vector> &v, int num_x, int num_y, float epsilon);
-	void Add(ModelGeometry &geo);
+	void Add(Geometry &geo);
 
 	void Weld(float epsilon);
-	void Weld(ModelGeometry &geo, float epsilon);
+	void Weld(Geometry &geo, float epsilon);
 
 	void Invert();
 
@@ -58,7 +58,7 @@ public:
 	bool IsClosed;
 };
 
-int ModelGeometrySubtract(ModelGeometry &a, ModelGeometry &b, ModelGeometry &c);
-int ModelGeometryAnd(ModelGeometry &a, ModelGeometry &b, ModelGeometry &c);
+int GeometrySubtract(Geometry &a, Geometry &b, Geometry &c);
+int GeometryAnd(Geometry &a, Geometry &b, Geometry &c);
 
-#endif /* MODELGEOMETRY_H_ */
+#endif /* GEOMETRY_H_ */

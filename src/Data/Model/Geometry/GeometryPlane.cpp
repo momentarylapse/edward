@@ -1,15 +1,15 @@
 /*
- * ModelGeometryPlane.cpp
+ * GeometryPlane.cpp
  *
  *  Created on: 25.05.2013
  *      Author: michi
  */
 
-#include "ModelGeometryPlane.h"
+#include "GeometryPlane.h"
 #include "../DataModel.h"
 #include <assert.h>
 
-ModelGeometryPlane::ModelGeometryPlane(const vector &pos, const vector &dv1, const vector &dv2, int num_x, int num_y)
+GeometryPlane::GeometryPlane(const vector &pos, const vector &dv1, const vector &dv2, int num_x, int num_y)
 {
 	assert(num_x * num_y > 0);
 
@@ -37,7 +37,7 @@ ModelGeometryPlane::ModelGeometryPlane(const vector &pos, const vector &dv1, con
 		}
 }
 
-void ModelGeometryPlane::__init__(const vector& pos, const vector& dv1, const vector& dv2, int num_x, int num_y)
+void GeometryPlane::__init__(const vector& pos, const vector& dv1, const vector& dv2, int num_x, int num_y)
 {
-	new (this) ModelGeometryPlane(pos, dv1, dv2, num_x, num_y);
+	new (this) GeometryPlane(pos, dv1, dv2, num_x, num_y);
 }

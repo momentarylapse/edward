@@ -20,7 +20,7 @@
 class DataModel;
 class ModelSurface;
 class ModelMaterial;
-class ModelGeometry;
+class Geometry;
 
 
 class GeometryException : public ActionException
@@ -287,8 +287,8 @@ public:
 	void AutoWeldSelectedSurfaces(float d);
 	void SetNormalModeSelection(int mode);
 	void SetMaterialSelection(int material);
-	void CopyGeometry(ModelGeometry &geo); // not an action...
-	void PasteGeometry(ModelGeometry &geo, int default_material);
+	void CopyGeometry(Geometry &geo); // not an action...
+	void PasteGeometry(Geometry &geo, int default_material);
 	void Easify(float factor);
 	void SubdivideSelectedSurfaces();
 	void Automap(int material, int texture_level);

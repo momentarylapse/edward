@@ -12,7 +12,7 @@
 #include "../../Data/Material/DataMaterial.h"
 
 class MaterialPropertiesDialog;
-class ModelGeometry;
+class Geometry;
 class NixVertexBuffer;
 
 class ModeMaterial: public Mode<DataMaterial>
@@ -45,7 +45,7 @@ public:
 
 	string shape_type;
 	bool shape_smooth;
-	ModelGeometry *geo;
+	Geometry *geo;
 
 	void SetShapeType(const string &type);
 	void SetShapeSmooth(bool smooth);

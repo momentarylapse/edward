@@ -31,7 +31,7 @@ private:
 	vector pos, axis;
 	float radius1, radius2;
 	bool pos_chosen, rad_chosen;
-	ModelGeometry *geo;
+	Geometry *geo;
 };
 
 #endif /* MODEMODELMESHCREATETORUS_H_ */

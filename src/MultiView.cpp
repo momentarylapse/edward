@@ -8,10 +8,10 @@
 #include "Edward.h"
 #include "MultiView.h"
 
-#include "Data/Model/Geometry/ModelGeometry.h"
-#include "Data/Model/Geometry/ModelGeometryBall.h"
-#include "Data/Model/Geometry/ModelGeometryCylinder.h"
-#include "Data/Model/Geometry/ModelGeometryTorus.h"
+#include "Data/Model/Geometry/Geometry.h"
+#include "Data/Model/Geometry/GeometryBall.h"
+#include "Data/Model/Geometry/GeometryCylinder.h"
+#include "Data/Model/Geometry/GeometryTorus.h"
 
 
 const color ColorBackGround3D = color(1,0,0,0.15f);
@@ -1587,10 +1587,10 @@ void MultiViewActionController::reset()
 {
 	show = false;
 	mode = ActionModeNone;
-	foreach(ModelGeometry *g, geo)
+	foreach(Geometry *g, geo)
 		delete(g);
 	geo.clear();
-	foreach(ModelGeometry *g, geo_show)
+	foreach(Geometry *g, geo_show)
 		delete(g);
 	geo_show.clear();
 }
@@ -1607,23 +1607,23 @@ void MultiViewActionController::Update()
 		matrix s, t;
 		MatrixScale(s, f, f, f);
 		MatrixTranslation(t, pos);
-		geo.add(new ModelGeometryCylinder(-e_x, e_x, 0.1f, 1, 8, false));
-		geo.add(new ModelGeometryCylinder(-e_y, e_y, 0.1f, 1, 8, false));
-		geo.add(new ModelGeometryCylinder(-e_z, e_z, 0.1f, 1, 8, false));
-		geo.add(new ModelGeometryTorus(v_0, e_z, 0.5f, 0.1f, 32, 8));
-		geo.add(new ModelGeometryTorus(v_0, e_y, 0.5f, 0.1f, 32, 8));
-		geo.add(new ModelGeometryTorus(v_0, e_x, 0.5f, 0.1f, 32, 8));
-		geo.add(new ModelGeometryBall(v_0, 0.3f, 16, 8));
-		geo_show.add(new ModelGeometryCylinder(-e_x, e_x, 0.05f, 1, 8, false));
-		geo_show.add(new ModelGeometryCylinder(-e_y, e_y, 0.05f, 1, 8, false));
-		geo_show.add(new ModelGeometryCylinder(-e_z, e_z, 0.05f, 1, 8, false));
-		geo_show.add(new ModelGeometryTorus(v_0, e_z, 0.5f, 0.05f, 32, 8));
-		geo_show.add(new ModelGeometryTorus(v_0, e_y, 0.5f, 0.05f, 32, 8));
-		geo_show.add(new ModelGeometryTorus(v_0, e_x, 0.5f, 0.05f, 32, 8));
-		geo_show.add(new ModelGeometryBall(v_0, 0.25f, 16, 8));
-		foreach(ModelGeometry *g, geo)
+		geo.add(new GeometryCylinder(-e_x, e_x, 0.1f, 1, 8, false));
+		geo.add(new GeometryCylinder(-e_y, e_y, 0.1f, 1, 8, false));
+		geo.add(new GeometryCylinder(-e_z, e_z, 0.1f, 1, 8, false));
+		geo.add(new GeometryTorus(v_0, e_z, 0.5f, 0.1f, 32, 8));
+		geo.add(new GeometryTorus(v_0, e_y, 0.5f, 0.1f, 32, 8));
+		geo.add(new GeometryTorus(v_0, e_x, 0.5f, 0.1f, 32, 8));
+		geo.add(new GeometryBall(v_0, 0.3f, 16, 8));
+		geo_show.add(new GeometryCylinder(-e_x, e_x, 0.05f, 1, 8, false));
+		geo_show.add(new GeometryCylinder(-e_y, e_y, 0.05f, 1, 8, false));
+		geo_show.add(new GeometryCylinder(-e_z, e_z, 0.05f, 1, 8, false));
+		geo_show.add(new GeometryTorus(v_0, e_z, 0.5f, 0.05f, 32, 8));
+		geo_show.add(new GeometryTorus(v_0, e_y, 0.5f, 0.05f, 32, 8));
+		geo_show.add(new GeometryTorus(v_0, e_x, 0.5f, 0.05f, 32, 8));
+		geo_show.add(new GeometryBall(v_0, 0.25f, 16, 8));
+		foreach(Geometry *g, geo)
 			g->Transform(t * s);
-		foreach(ModelGeometry *g, geo_show)
+		foreach(Geometry *g, geo_show)
 			g->Transform(t * s);
 	}
 	ed->ForceRedraw();
@@ -1658,7 +1658,7 @@ void MultiViewActionController::Draw(MultiViewWindow *win)
 	NixEnableLighting(true);
 	NixSetWorldMatrix(m_id);
 	if (!InUse()){
-		foreachi(ModelGeometry *g, geo_show, i){
+		foreachi(Geometry *g, geo_show, i){
 			g->Preview(VBTemp);
 			NixSetMaterial(Black, Black, Black, 0, MVACColor[i]);
 			NixDraw3D(VBTemp);
@@ -1708,7 +1708,7 @@ bool MultiViewActionController::IsMouseOver(vector &tp)
 		return false;
 	float z_min = 1;
 	mouse_over_geo = -1;
-	foreachi(ModelGeometry *g, geo, i){
+	foreachi(Geometry *g, geo, i){
 		vector t;
 		if (g->IsMouseOver(multi_view->mouse_win, t)){
 			float z = multi_view->mouse_win->Project(t).z;

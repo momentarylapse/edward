@@ -8,7 +8,7 @@
 #include "../../ModeModel.h"
 #include "../ModeModelMesh.h"
 #include "ModeModelMeshCreatePlane.h"
-#include "../../../../Data/Model/Geometry/ModelGeometryPlane.h"
+#include "../../../../Data/Model/Geometry/GeometryPlane.h"
 #include "../../../../Edward.h"
 #include "../../../../lib/nix/nix.h"
 
@@ -57,7 +57,7 @@ void ModeModelMeshCreatePlane::OnLeftButtonDown()
 			length[0] = -length[0];
 		}
 
-		ModelGeometryPlane pl = ModelGeometryPlane(pos, length[0], length[1], nx, ny);
+		GeometryPlane pl = GeometryPlane(pos, length[0], length[1], nx, ny);
 		data->PasteGeometry(pl, mode_model_mesh->CurrentMaterial);
 		data->SelectOnlySurface(&data->Surface.back());
 

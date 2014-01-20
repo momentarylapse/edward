@@ -11,7 +11,7 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModelGeometry;
+class Geometry;
 
 class ModeModelMeshCreateCylinderSnake: public ModeCreation<DataModel>
 {
@@ -36,7 +36,7 @@ private:
 	vector length;
 	float radius;
 	bool closed;
-	ModelGeometry *geo;
+	Geometry *geo;
 };
 
 #endif /* MODEMODELMESHCREATECYLINDERSNAKE_H_ */

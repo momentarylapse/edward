@@ -11,15 +11,15 @@
 #include "../Edward.h"
 #include "../Mode/Model/ModeModel.h"
 #include "../Mode/World/ModeWorld.h"
-#include "../Data/Model/Geometry/ModelGeometryBall.h"
-#include "../Data/Model/Geometry/ModelGeometryCube.h"
-#include "../Data/Model/Geometry/ModelGeometryCylinder.h"
-#include "../Data/Model/Geometry/ModelGeometryPlane.h"
-#include "../Data/Model/Geometry/ModelGeometryPlatonic.h"
-#include "../Data/Model/Geometry/ModelGeometrySphere.h"
-#include "../Data/Model/Geometry/ModelGeometryTeapot.h"
-#include "../Data/Model/Geometry/ModelGeometryTorus.h"
-#include "../Data/Model/Geometry/ModelGeometryTorusKnot.h"
+#include "../Data/Model/Geometry/GeometryBall.h"
+#include "../Data/Model/Geometry/GeometryCube.h"
+#include "../Data/Model/Geometry/GeometryCylinder.h"
+#include "../Data/Model/Geometry/GeometryPlane.h"
+#include "../Data/Model/Geometry/GeometryPlatonic.h"
+#include "../Data/Model/Geometry/GeometrySphere.h"
+#include "../Data/Model/Geometry/GeometryTeapot.h"
+#include "../Data/Model/Geometry/GeometryTorus.h"
+#include "../Data/Model/Geometry/GeometryTorusKnot.h"
 
 PluginManager::PluginManager()
 {
@@ -160,19 +160,19 @@ void PluginManager::Init()
 
 
 
-	Script::DeclareClassSize("ModelGeometry", sizeof(ModelGeometry));
-	Script::LinkExternal("ModelGeometryBall.__init__", Script::mf(&ModelGeometryBall::__init__));
-	Script::LinkExternal("ModelGeometryCube.__init__", Script::mf(&ModelGeometryCube::__init__));
-	Script::LinkExternal("ModelGeometrySphere.__init__", Script::mf(&ModelGeometrySphere::__init__));
-	Script::LinkExternal("ModelGeometryCylinder.__init__", Script::mf(&ModelGeometryCylinder::__init__));
-	Script::LinkExternal("ModelGeometryCylinderComplex.__init__", Script::mf(&ModelGeometryCylinder::__init2__));
-	Script::LinkExternal("ModelGeometryTorus.__init__", Script::mf(&ModelGeometryTorus::__init__));
-	Script::LinkExternal("ModelGeometryTorusKnot.__init__", Script::mf(&ModelGeometryTorusKnot::__init__));
-	Script::LinkExternal("ModelGeometryPlane.__init__", Script::mf(&ModelGeometryPlane::__init__));
-	Script::LinkExternal("ModelGeometryPlatonic.__init__", Script::mf(&ModelGeometryPlatonic::__init__));
-	Script::LinkExternal("ModelGeometryTeapot.__init__", Script::mf(&ModelGeometryTeapot::__init__));
-	Script::LinkExternal("ModelGeometrySubtract", Script::mf(&ModelGeometrySubtract));
-	Script::LinkExternal("ModelGeometryAnd", Script::mf(&ModelGeometryAnd));
+	Script::DeclareClassSize("ModelGeometry", sizeof(Geometry));
+	Script::LinkExternal("ModelGeometryBall.__init__", Script::mf(&GeometryBall::__init__));
+	Script::LinkExternal("ModelGeometryCube.__init__", Script::mf(&GeometryCube::__init__));
+	Script::LinkExternal("ModelGeometrySphere.__init__", Script::mf(&GeometrySphere::__init__));
+	Script::LinkExternal("ModelGeometryCylinder.__init__", Script::mf(&GeometryCylinder::__init__));
+	Script::LinkExternal("ModelGeometryCylinderComplex.__init__", Script::mf(&GeometryCylinder::__init2__));
+	Script::LinkExternal("ModelGeometryTorus.__init__", Script::mf(&GeometryTorus::__init__));
+	Script::LinkExternal("ModelGeometryTorusKnot.__init__", Script::mf(&GeometryTorusKnot::__init__));
+	Script::LinkExternal("ModelGeometryPlane.__init__", Script::mf(&GeometryPlane::__init__));
+	Script::LinkExternal("ModelGeometryPlatonic.__init__", Script::mf(&GeometryPlatonic::__init__));
+	Script::LinkExternal("ModelGeometryTeapot.__init__", Script::mf(&GeometryTeapot::__init__));
+	Script::LinkExternal("ModelGeometrySubtract", Script::mf(&GeometrySubtract));
+	Script::LinkExternal("ModelGeometryAnd", Script::mf(&GeometryAnd));
 
 	// world
 

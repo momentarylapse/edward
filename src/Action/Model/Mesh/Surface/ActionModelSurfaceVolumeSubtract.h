@@ -13,7 +13,7 @@
 class DataModel;
 class ModelPolygon;
 class ModelSurface;
-class ModelGeometry;
+class Geometry;
 
 class ActionModelSurfaceVolumeSubtract : public ActionGroup
 {
@@ -25,7 +25,7 @@ public:
 	void *compose(Data *d);
 
 private:
-	void SurfaceSubtract(DataModel *m, ModelSurface *a, int ai, ModelSurface *b, Array<ModelGeometry> &geos);
+	void SurfaceSubtract(DataModel *m, ModelSurface *a, int ai, ModelSurface *b, Array<Geometry> &geos);
 };
 
 #endif /* ACTIONMODELSURFACEVOLUMESUBTRACT_H_ */

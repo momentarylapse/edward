@@ -1,16 +1,16 @@
 /*
- * ModelGeometryBall.cpp
+ * GeometryBall.cpp
  *
  *  Created on: 25.05.2013
  *      Author: michi
  */
 
-#include "ModelGeometryBall.h"
+#include "GeometryBall.h"
 #include "../DataModel.h"
 
 #define ball_ang(x, y)	vector((float)(y)/(float)num_y,(float)(x)/(float)num_x,0)
 
-ModelGeometryBall::ModelGeometryBall(const vector &pos, float radius, int num_x, int num_y)
+GeometryBall::GeometryBall(const vector &pos, float radius, int num_x, int num_y)
 {
 	// ball from disks
 
@@ -61,8 +61,8 @@ ModelGeometryBall::ModelGeometryBall(const vector &pos, float radius, int num_x,
 		}
 }
 
-void ModelGeometryBall::__init__(const vector &pos, float radius, int num_x, int num_y)
+void GeometryBall::__init__(const vector &pos, float radius, int num_x, int num_y)
 {
-	new(this) ModelGeometryBall(pos, radius, num_x, num_y);
+	new(this) GeometryBall(pos, radius, num_x, num_y);
 }
 

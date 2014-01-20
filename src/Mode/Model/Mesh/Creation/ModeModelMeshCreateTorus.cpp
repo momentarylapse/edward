@@ -8,7 +8,7 @@
 #include "ModeModelMeshCreateTorus.h"
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
-#include "../../../../Data/Model/Geometry/ModelGeometryTorus.h"
+#include "../../../../Data/Model/Geometry/GeometryTorus.h"
 #include "../../../../Edward.h"
 
 #define RADIUS_FACTOR	0.5f
@@ -62,7 +62,7 @@ void ModeModelMeshCreateTorus::UpdateGeometry()
 		int ny = dialog->GetInt("nt_edges");
 		HuiConfigWriteInt("NewTorusNumX", nx);
 		HuiConfigWriteInt("NewTorusNumY", ny);
-		geo = new ModelGeometryTorus(pos, axis, radius1, radius2, nx, ny);
+		geo = new GeometryTorus(pos, axis, radius1, radius2, nx, ny);
 	}
 }
 

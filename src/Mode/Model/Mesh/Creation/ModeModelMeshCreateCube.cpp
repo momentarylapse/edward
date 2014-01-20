@@ -8,8 +8,8 @@
 #include "../../ModeModel.h"
 #include "../ModeModelMesh.h"
 #include "ModeModelMeshCreateCube.h"
-#include "../../../../Data/Model/Geometry/ModelGeometryCube.h"
-#include "../../../../Data/Model/Geometry/ModelGeometryPlane.h"
+#include "../../../../Data/Model/Geometry/GeometryCube.h"
+#include "../../../../Data/Model/Geometry/GeometryPlane.h"
 #include "../../../../Edward.h"
 
 ModeModelMeshCreateCube::ModeModelMeshCreateCube(ModeBase *_parent) :
@@ -41,9 +41,9 @@ void ModeModelMeshCreateCube::UpdateGeometry()
 		HuiConfigWriteInt("NewCubeNumY", num_2);
 		HuiConfigWriteInt("NewCubeNumZ", num_3);
 
-		geo = new ModelGeometryCube(pos, length[0], length[1], length[2], num_1, num_2, num_3);
+		geo = new GeometryCube(pos, length[0], length[1], length[2], num_1, num_2, num_3);
 	}else{
-		geo = new ModelGeometryPlane(pos, length[0], length[1], 1, 1);
+		geo = new GeometryPlane(pos, length[0], length[1], 1, 1);
 	}
 }
 

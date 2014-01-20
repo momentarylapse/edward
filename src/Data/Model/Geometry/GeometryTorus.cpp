@@ -1,16 +1,16 @@
 /*
- * ModelGeometryTorus.cpp
+ * GeometryTorus.cpp
  *
  *  Created on: 11.01.2013
  *      Author: michi
  */
 
-#include "ModelGeometryTorus.h"
+#include "GeometryTorus.h"
 #include "../DataModel.h"
 
 #define _tor_vert(i, j)         ( num_y * ((i) % num_x) + ((j) % num_y))
 
-ModelGeometryTorus::ModelGeometryTorus(const vector &pos, const vector &axis, float radius1, float radius2, int num_x, int num_y)
+GeometryTorus::GeometryTorus(const vector &pos, const vector &axis, float radius1, float radius2, int num_x, int num_y)
 {
 	vector d1 = axis.ortho();
 	d1.normalize();
@@ -43,7 +43,7 @@ ModelGeometryTorus::ModelGeometryTorus(const vector &pos, const vector &axis, fl
 		}
 }
 
-void ModelGeometryTorus::__init__(const vector& pos, const vector& axis, float radius1, float radius2, int num_x, int num_y)
+void GeometryTorus::__init__(const vector& pos, const vector& axis, float radius1, float radius2, int num_x, int num_y)
 {
-	new (this) ModelGeometryTorus(pos, axis, radius1, radius2, num_x, num_y);
+	new (this) GeometryTorus(pos, axis, radius1, radius2, num_x, num_y);
 }

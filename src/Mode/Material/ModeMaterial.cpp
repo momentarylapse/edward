@@ -10,12 +10,12 @@
 #include "../../Data/Material/DataMaterial.h"
 #include "Dialog/MaterialPropertiesDialog.h"
 #include "../../Data/Model/DataModel.h"
-#include "../../Data/Model/Geometry/ModelGeometryCube.h"
-#include "../../Data/Model/Geometry/ModelGeometryBall.h"
-#include "../../Data/Model/Geometry/ModelGeometryPlatonic.h"
-#include "../../Data/Model/Geometry/ModelGeometryTorus.h"
-#include "../../Data/Model/Geometry/ModelGeometryTorusKnot.h"
-#include "../../Data/Model/Geometry/ModelGeometryTeapot.h"
+#include "../../Data/Model/Geometry/GeometryCube.h"
+#include "../../Data/Model/Geometry/GeometryBall.h"
+#include "../../Data/Model/Geometry/GeometryPlatonic.h"
+#include "../../Data/Model/Geometry/GeometryTorus.h"
+#include "../../Data/Model/Geometry/GeometryTorusKnot.h"
+#include "../../Data/Model/Geometry/GeometryTeapot.h"
 
 const int MATERIAL_NUMX = 48;
 const int MATERIAL_NUMY = 24;
@@ -209,18 +209,18 @@ void ModeMaterial::UpdateShape()
 	if (geo)
 		delete(geo);
 	if (shape_type == "torus")
-		geo = new ModelGeometryTorus(v_0, e_z, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_NUMX, MATERIAL_NUMY);
+		geo = new GeometryTorus(v_0, e_z, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_NUMX, MATERIAL_NUMY);
 	else if (shape_type == "torusknot")
-		geo = new ModelGeometryTorusKnot(v_0, e_z, MATERIAL_RADIUS1, 40, 22, 2, 5, 60, 16);
+		geo = new GeometryTorusKnot(v_0, e_z, MATERIAL_RADIUS1, 40, 22, 2, 5, 60, 16);
 	else if (shape_type == "teapot")
-		geo = new ModelGeometryTeapot(v_0, MATERIAL_RADIUS1, 6);
+		geo = new GeometryTeapot(v_0, MATERIAL_RADIUS1, 6);
 	else if (shape_type == "cube")
-		geo = new ModelGeometryCube(-vector(1,1,1) * MATERIAL_RADIUS1/2, e_x * MATERIAL_RADIUS1, e_y * MATERIAL_RADIUS1, e_z * MATERIAL_RADIUS1, 1, 1, 1);
+		geo = new GeometryCube(-vector(1,1,1) * MATERIAL_RADIUS1/2, e_x * MATERIAL_RADIUS1, e_y * MATERIAL_RADIUS1, e_z * MATERIAL_RADIUS1, 1, 1, 1);
 		//geo = new ModelGeometryPlatonic(v_0, MATERIAL_RADIUS1, 6);
 	else if (shape_type == "icosahedron")
-		geo = new ModelGeometryPlatonic(v_0, MATERIAL_RADIUS1, 20);
+		geo = new GeometryPlatonic(v_0, MATERIAL_RADIUS1, 20);
 	else //if (shape_type == "ball")
-		geo = new ModelGeometryBall(v_0, MATERIAL_RADIUS1, 32, 16);
+		geo = new GeometryBall(v_0, MATERIAL_RADIUS1, 32, 16);
 	if (shape_smooth)
 		geo->Smoothen();
 

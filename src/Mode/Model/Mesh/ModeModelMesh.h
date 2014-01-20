@@ -10,7 +10,7 @@
 
 #include "../../Mode.h"
 #include "../../../Data/Model/DataModel.h"
-#include "../../../Data/Model/Geometry/ModelGeometry.h"
+#include "../../../Data/Model/Geometry/Geometry.h"
 
 class DataModel;
 class ModelMaterialDialog;
@@ -56,7 +56,7 @@ public:
 	void Paste();
 	bool Copyable();
 	bool Pasteable();
-	ModelGeometry TempGeo;
+	Geometry TempGeo;
 
 
 	int CurrentMaterial;

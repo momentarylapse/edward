@@ -7,7 +7,7 @@
 
 #include "DataModel.h"
 #include "ModelSurface.h"
-#include "Geometry/ModelGeometry.h"
+#include "Geometry/Geometry.h"
 #include "../../Mode/Model/ModeModel.h"
 #include "../../Action/Action.h"
 #include "../../Action/ActionManager.h"
@@ -1800,7 +1800,7 @@ vector DataModel::GetBonePosAnimated(int index)
 void DataModel::AnimationDeleteFrame(int index, int frame)
 {	Execute(new ActionModelAnimationDeleteFrame(index, frame));	}
 
-void DataModel::CopyGeometry(ModelGeometry &geo)
+void DataModel::CopyGeometry(Geometry &geo)
 {
 	geo.clear();
 
@@ -1855,7 +1855,7 @@ void DataModel::SetNormalModeSelection(int mode)
 void DataModel::SetMaterialSelection(int material)
 {	Execute(new ActionModelSetMaterial(this, material));	}
 
-void DataModel::PasteGeometry(ModelGeometry& geo, int default_material)
+void DataModel::PasteGeometry(Geometry& geo, int default_material)
 {	Execute(new ActionModelPasteGeometry(geo, default_material));	}
 
 void DataModel::Easify(float factor)

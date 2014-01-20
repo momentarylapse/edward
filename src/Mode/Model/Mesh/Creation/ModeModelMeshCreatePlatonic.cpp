@@ -9,8 +9,8 @@
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"
-#include "../../../../Data/Model/Geometry/ModelGeometryPlatonic.h"
-#include "../../../../Data/Model/Geometry/ModelGeometryTeapot.h"
+#include "../../../../Data/Model/Geometry/GeometryPlatonic.h"
+#include "../../../../Data/Model/Geometry/GeometryTeapot.h"
 
 //extern int FxVB;
 
@@ -62,9 +62,9 @@ void ModeModelMeshCreatePlatonic::UpdateGeometry()
 		if (type == 306){
 			int samples = dialog->GetInt("ntp_samples");
 			HuiConfigWriteInt("NewTeapotSamples", samples);
-			geo = new ModelGeometryTeapot(pos, radius, samples);
+			geo = new GeometryTeapot(pos, radius, samples);
 		}else{
-			geo = new ModelGeometryPlatonic(pos, radius, type);
+			geo = new GeometryPlatonic(pos, radius, type);
 		}
 	}
 }

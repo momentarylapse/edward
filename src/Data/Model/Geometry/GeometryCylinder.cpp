@@ -1,17 +1,17 @@
 /*
- * ModelGeometryCylinder.cpp
+ * GeometryCylinder.cpp
  *
  *  Created on: 11.01.2013
  *      Author: michi
  */
 
-#include "ModelGeometryCylinder.h"
+#include "GeometryCylinder.h"
 #include "../DataModel.h"
 
 #define _cyl_vert(i, j)         ( edges      * (i) +(j) % edges)
 #define _cyl_svert(i, j)        sv[(edges + 1) * (i) +(j) % (edges + 1)]
 
-ModelGeometryCylinder::ModelGeometryCylinder(Array<vector> &pos, Array<float> &radius, int rings, int edges, bool closed)
+GeometryCylinder::GeometryCylinder(Array<vector> &pos, Array<float> &radius, int rings, int edges, bool closed)
 {
 	Interpolator<float> inter_r(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
 	foreach(float r, radius)
@@ -25,7 +25,7 @@ ModelGeometryCylinder::ModelGeometryCylinder(Array<vector> &pos, Array<float> &r
 	BuildFromPath(inter, inter_r, rings, edges, closed);
 }
 
-ModelGeometryCylinder::ModelGeometryCylinder(Array<vector> &pos, float radius, int rings, int edges, bool closed)
+GeometryCylinder::GeometryCylinder(Array<vector> &pos, float radius, int rings, int edges, bool closed)
 {
 	Interpolator<float> inter_r(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
 	inter_r.add(radius);
@@ -39,7 +39,7 @@ ModelGeometryCylinder::ModelGeometryCylinder(Array<vector> &pos, float radius, i
 	BuildFromPath(inter, inter_r, rings, edges, closed);
 }
 
-ModelGeometryCylinder::ModelGeometryCylinder(const vector &pos1, const vector &pos2, float radius, int rings, int edges, bool closed)
+GeometryCylinder::GeometryCylinder(const vector &pos1, const vector &pos2, float radius, int rings, int edges, bool closed)
 {
 	Interpolator<float> inter_r(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
 	inter_r.add(radius);
@@ -53,17 +53,17 @@ ModelGeometryCylinder::ModelGeometryCylinder(const vector &pos1, const vector &p
 	BuildFromPath(inter, inter_r, rings, edges, closed);
 }
 
-void ModelGeometryCylinder::__init2__(Array<vector>& pos, Array<float>& radius, int rings, int edges, bool closed)
+void GeometryCylinder::__init2__(Array<vector>& pos, Array<float>& radius, int rings, int edges, bool closed)
 {
-	new (this) ModelGeometryCylinder(pos, radius, rings, edges, closed);
+	new (this) GeometryCylinder(pos, radius, rings, edges, closed);
 }
 
-void ModelGeometryCylinder::__init__(const vector& pos1, const vector& pos2, float radius, int rings, int edges, bool closed)
+void GeometryCylinder::__init__(const vector& pos1, const vector& pos2, float radius, int rings, int edges, bool closed)
 {
-	new (this) ModelGeometryCylinder(pos1, pos2, radius, rings, edges, closed);
+	new (this) GeometryCylinder(pos1, pos2, radius, rings, edges, closed);
 }
 
-void ModelGeometryCylinder::BuildFromPath(Interpolator<vector> &inter, Interpolator<float> &inter_r, int rings, int edges, bool closed)
+void GeometryCylinder::BuildFromPath(Interpolator<vector> &inter, Interpolator<float> &inter_r, int rings, int edges, bool closed)
 {
 	if (closed){
 		inter.close();

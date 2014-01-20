@@ -1,14 +1,14 @@
 /*
- * ModelGeometrySphere.cpp
+ * GeometrySphere.cpp
  *
  *  Created on: 11.01.2013
  *      Author: michi
  */
 
-#include "ModelGeometrySphere.h"
+#include "GeometrySphere.h"
 #include "../DataModel.h"
 
-ModelGeometrySphere::ModelGeometrySphere(const vector &pos, float radius, int num)
+GeometrySphere::GeometrySphere(const vector &pos, float radius, int num)
 {
 	int nv = 0;
 
@@ -50,7 +50,7 @@ ModelGeometrySphere::ModelGeometrySphere(const vector &pos, float radius, int nu
 	Weld(radius / num * 0.01f);
 }
 
-void ModelGeometrySphere::__init__(const vector& pos, float radius, int num)
+void GeometrySphere::__init__(const vector& pos, float radius, int num)
 {
-	new (this) ModelGeometrySphere(pos, radius, num);
+	new (this) GeometrySphere(pos, radius, num);
 }

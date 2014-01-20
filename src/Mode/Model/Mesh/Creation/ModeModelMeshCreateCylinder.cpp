@@ -8,7 +8,7 @@
 #include "ModeModelMeshCreateCylinder.h"
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
-#include "../../../../Data/Model/Geometry/ModelGeometryCylinder.h"
+#include "../../../../Data/Model/Geometry/GeometryCylinder.h"
 #include "../../../../Edward.h"
 
 ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(ModeBase *_parent) :
@@ -57,7 +57,7 @@ void ModeModelMeshCreateCylinder::UpdateGeometry()
 
 		Array<float> r = radius;
 		r += radius;
-		geo = new ModelGeometryCylinder(pos, r, rings, edges, false);
+		geo = new GeometryCylinder(pos, r, rings, edges, false);
 	}
 }
 

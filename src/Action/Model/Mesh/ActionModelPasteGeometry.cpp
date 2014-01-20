@@ -9,9 +9,9 @@
 #include "Vertex/ActionModelAddVertex.h"
 #include "Polygon/ActionModelAddPolygon.h"
 #include "../../../Data/Model/DataModel.h"
-#include "../../../Data/Model/Geometry/ModelGeometry.h"
+#include "../../../Data/Model/Geometry/Geometry.h"
 
-ActionModelPasteGeometry::ActionModelPasteGeometry(ModelGeometry &_geo, int _default_material) :
+ActionModelPasteGeometry::ActionModelPasteGeometry(Geometry &_geo, int _default_material) :
 	geo(_geo)
 {
 	default_material = _default_material;

@@ -1,14 +1,14 @@
 /*
- * ModelGeometryCube.cpp
+ * GeometryCube.cpp
  *
  *  Created on: 25.05.2013
  *      Author: michi
  */
 
-#include "ModelGeometryCube.h"
+#include "GeometryCube.h"
 #include "../DataModel.h"
 
-ModelGeometryCube::ModelGeometryCube(const vector &_pos, const vector &dv1, const vector &dv2, const vector &dv3, int num_1, int num_2, int num_3)
+GeometryCube::GeometryCube(const vector &_pos, const vector &dv1, const vector &dv2, const vector &dv3, int num_1, int num_2, int num_3)
 {
 	vector pos = _pos;
 	vector dv[3];
@@ -66,7 +66,7 @@ ModelGeometryCube::ModelGeometryCube(const vector &_pos, const vector &dv1, cons
 
 }
 
-void ModelGeometryCube::__init__(const vector& pos, const vector& dv1, const vector& dv2, const vector& dv3, int num_1, int num_2, int num_3)
+void GeometryCube::__init__(const vector& pos, const vector& dv1, const vector& dv2, const vector& dv3, int num_1, int num_2, int num_3)
 {
-	new (this) ModelGeometryCube(pos, dv1, dv2, dv3, num_1, num_2, num_3);
+	new (this) GeometryCube(pos, dv1, dv2, dv3, num_1, num_2, num_3);
 }

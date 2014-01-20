@@ -1,11 +1,11 @@
 /*
- * ModelGeometry.cpp
+ * Geometry.cpp
  *
  *  Created on: 11.01.2013
  *      Author: michi
  */
 
-#include "ModelGeometry.h"
+#include "Geometry.h"
 #include "../DataModel.h"
 #include "../ModelPolygon.h"
 #include "../SkinGenerator.h"
@@ -25,20 +25,20 @@ static float Bernstein3(int i, float t)
 }
 
 
-void ModelGeometry::clear()
+void Geometry::clear()
 {
 	Polygon.clear();
 	Vertex.clear();
 }
 
-void ModelGeometry::AddVertex(const vector &pos)
+void Geometry::AddVertex(const vector &pos)
 {
 	ModelVertex v;
 	v.pos = pos;
 	Vertex.add(v);
 }
 
-void ModelGeometry::AddPolygon(Array<int> &v, Array<vector> &sv)
+void Geometry::AddPolygon(Array<int> &v, Array<vector> &sv)
 {
 	ModelPolygon p;
 	p.Side.resize(v.num);
@@ -56,7 +56,7 @@ void ModelGeometry::AddPolygon(Array<int> &v, Array<vector> &sv)
 	Polygon.add(p);
 }
 
-void ModelGeometry::AddPolygonAutoTexture(Array<int> &v)
+void Geometry::AddPolygonAutoTexture(Array<int> &v)
 {
 	SkinGenerator sg;
 	sg.init_point_cloud_boundary(Vertex, v);
@@ -69,7 +69,7 @@ void ModelGeometry::AddPolygonAutoTexture(Array<int> &v)
 	AddPolygon(v, sv);
 }
 
-void ModelGeometry::AddPolygonSingleTexture(Array<int> &v, Array<vector> &sv)
+void Geometry::AddPolygonSingleTexture(Array<int> &v, Array<vector> &sv)
 {
 	Array<vector> sv2;
 	for (int l=0; l<MATERIAL_MAX_TEXTURES; l++)
@@ -79,7 +79,7 @@ void ModelGeometry::AddPolygonSingleTexture(Array<int> &v, Array<vector> &sv)
 	AddPolygon(v, sv2);
 }
 
-void ModelGeometry::AddBezier3(Array<vector> &v, int num_x, int num_y, float epsilon)
+void Geometry::AddBezier3(Array<vector> &v, int num_x, int num_y, float epsilon)
 {
 	vector vv[4][4] = {{v[0], v[1], v[2], v[3]}, {v[4], v[5], v[6], v[7]}, {v[8], v[9], v[10], v[11]}, {v[12], v[13], v[14], v[15]}};
 	Array<vector> pp;
@@ -133,7 +133,7 @@ void ModelGeometry::AddBezier3(Array<vector> &v, int num_x, int num_y, float eps
 		}
 }
 
-void ModelGeometry::Add5(int nv, int v0, int v1, int v2, int v3, int v4)
+void Geometry::Add5(int nv, int v0, int v1, int v2, int v3, int v4)
 {
 	Array<int> v;
 	v.add(nv + v0);
@@ -144,7 +144,7 @@ void ModelGeometry::Add5(int nv, int v0, int v1, int v2, int v3, int v4)
 	AddPolygonAutoTexture(v);
 }
 
-void ModelGeometry::Add4(int nv, int v0, int v1, int v2, int v3)
+void Geometry::Add4(int nv, int v0, int v1, int v2, int v3)
 {
 	Array<int> v;
 	v.add(nv + v0);
@@ -154,7 +154,7 @@ void ModelGeometry::Add4(int nv, int v0, int v1, int v2, int v3)
 	AddPolygonAutoTexture(v);
 }
 
-void ModelGeometry::Add3(int nv, int v0, int v1, int v2)
+void Geometry::Add3(int nv, int v0, int v1, int v2)
 {
 	Array<int> v;
 	v.add(nv + v0);
@@ -163,7 +163,7 @@ void ModelGeometry::Add3(int nv, int v0, int v1, int v2)
 	AddPolygonAutoTexture(v);
 }
 
-void ModelGeometry::Add(ModelGeometry& geo)
+void Geometry::Add(Geometry& geo)
 {
 	int nv = Vertex.num;
 	int np = Polygon.num;
@@ -174,7 +174,7 @@ void ModelGeometry::Add(ModelGeometry& geo)
 			Polygon[i].Side[k].Vertex += nv;
 }
 
-void ModelGeometry::Weld(float epsilon)
+void Geometry::Weld(float epsilon)
 {
 	//return; // TODO
 	//msg_write("------------------------ weld");
@@ -209,11 +209,11 @@ void ModelGeometry::Weld(float epsilon)
 			}
 }
 
-void ModelGeometry::Weld(ModelGeometry &geo, float epsilon)
+void Geometry::Weld(Geometry &geo, float epsilon)
 {
 }
 
-void ModelGeometry::Smoothen()
+void Geometry::Smoothen()
 {
 	Array<vector> n;
 	n.resize(Vertex.num);
@@ -235,7 +235,7 @@ void ModelGeometry::Smoothen()
 	}
 }
 
-void ModelGeometry::Transform(const matrix &mat)
+void Geometry::Transform(const matrix &mat)
 {
 	foreach(ModelVertex &v, Vertex)
 		v.pos = mat * v.pos;
@@ -247,7 +247,7 @@ void ModelGeometry::Transform(const matrix &mat)
 	}
 }
 
-void ModelGeometry::GetBoundingBox(vector &min, vector &max)
+void Geometry::GetBoundingBox(vector &min, vector &max)
 {
 	if (Vertex.num > 0){
 		min = max = Vertex[0].pos;
@@ -260,7 +260,7 @@ void ModelGeometry::GetBoundingBox(vector &min, vector &max)
 	}
 }
 
-void ModelGeometry::Preview(NixVertexBuffer *vb, int num_textures) const
+void Geometry::Preview(NixVertexBuffer *vb, int num_textures) const
 {
 	vb->clear();
 	foreach(ModelPolygon &p, const_cast<Array<ModelPolygon>&>(Polygon)){
@@ -270,7 +270,7 @@ void ModelGeometry::Preview(NixVertexBuffer *vb, int num_textures) const
 }
 
 
-int ModelGeometry::AddEdge(int a, int b, int tria, int side)
+int Geometry::AddEdge(int a, int b, int tria, int side)
 {
 	foreachi(ModelEdge &e, Edge, i){
 		if ((e.Vertex[0] == a) && (e.Vertex[1] == b)){
@@ -306,7 +306,7 @@ int ModelGeometry::AddEdge(int a, int b, int tria, int side)
 	return Edge.num - 1;
 }
 
-void ModelGeometry::UpdateTopology()
+void Geometry::UpdateTopology()
 {
 	// clear
 	Edge.clear();
@@ -329,7 +329,7 @@ void ModelGeometry::UpdateTopology()
 		}
 }
 
-bool ModelGeometry::IsInside(const vector &p) const
+bool Geometry::IsInside(const vector &p) const
 {
 	// how often does a ray from p intersect the surface?
 	int n = 0;
@@ -378,13 +378,13 @@ bool ModelGeometry::IsInside(const vector &p) const
 	return ((n % 2) == 1);
 }
 
-void ModelGeometry::Invert()
+void Geometry::Invert()
 {
 	foreach(ModelPolygon &p, Polygon)
 		p.Invert();
 }
 
-void ModelGeometry::RemoveUnusedVertices()
+void Geometry::RemoveUnusedVertices()
 {
 	foreach(ModelVertex &v, Vertex)
 		v.RefCount = 0;
@@ -402,7 +402,7 @@ void ModelGeometry::RemoveUnusedVertices()
 		}
 }
 
-bool ModelGeometry::IsMouseOver(MultiViewWindow *win, vector &tp)
+bool Geometry::IsMouseOver(MultiViewWindow *win, vector &tp)
 {
 	foreach(ModelPolygon &p, Polygon){
 		// care for the sense of rotation?

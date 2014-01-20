@@ -8,7 +8,7 @@
 #include "ModeModelMeshCreateCylinderSnake.h"
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
-#include "../../../../Data/Model/Geometry/ModelGeometryCylinder.h"
+#include "../../../../Data/Model/Geometry/GeometryCylinder.h"
 #include "../../../../Edward.h"
 
 const float CYLINDER_CLOSING_DISTANCE = 20;
@@ -60,7 +60,7 @@ void ModeModelMeshCreateCylinderSnake::UpdateGeometry()
 		HuiConfigWriteInt("NewCylinderRings", rings);
 		HuiConfigWriteInt("NewCylinderEdges", edges);
 
-		geo = new ModelGeometryCylinder(pos, radius, rings * (pos.num - 1), edges, closed);
+		geo = new GeometryCylinder(pos, radius, rings * (pos.num - 1), edges, closed);
 	}
 }
 

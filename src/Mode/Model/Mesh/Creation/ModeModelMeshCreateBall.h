@@ -11,7 +11,7 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModelGeometry;
+class Geometry;
 
 class ModeModelMeshCreateBall: public ModeCreation<DataModel>, public HuiEventHandler
 {
@@ -35,7 +35,7 @@ private:
 	vector pos;
 	float radius;
 	bool pos_chosen;
-	ModelGeometry *geo;
+	Geometry *geo;
 };
 
 #endif /* MODEMODELMESHCREATEBALL_H_ */

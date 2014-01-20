@@ -11,7 +11,7 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModelGeometry;
+class Geometry;
 
 class ModeModelMeshCreateCube: public ModeCreation<DataModel>
 {
@@ -34,7 +34,7 @@ private:
 	vector length[3];
 	bool pos_chosen;
 	bool pos2_chosen;
-	ModelGeometry *geo;
+	Geometry *geo;
 };
 
 #endif /* MODEMODELMESHCREATECUBE_H_ */
