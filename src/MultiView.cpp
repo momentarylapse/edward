@@ -1690,14 +1690,14 @@ void MultiViewActionController::DrawParams()
 			ed->DrawStr(150, 140, f2s(t.z, 2) + " " + unit, Edward::AlignRight);
 	}else if ((action.mode == MultiView::ActionRotate) or (action.mode == MultiView::ActionRotate2d)){
 		vector r = param * 180.0f / pi;
-		ed->DrawStr(150, 100, f2s(r.x, 2) + "°", Edward::AlignRight);
-		ed->DrawStr(150, 120, f2s(r.y, 2) + "°", Edward::AlignRight);
-		ed->DrawStr(150, 140, f2s(r.z, 2) + "°", Edward::AlignRight);
+		ed->DrawStr(150, 100, f2s(r.x, 1) + "°", Edward::AlignRight);
+		ed->DrawStr(150, 120, f2s(r.y, 1) + "°", Edward::AlignRight);
+		ed->DrawStr(150, 140, f2s(r.z, 1) + "°", Edward::AlignRight);
 	}else if ((action.mode == MultiView::ActionScale) || (action.mode == MultiView::ActionScale2d)){
-		ed->DrawStr(150, 100, f2s(param.x * 100.0f, 2) + "%", Edward::AlignRight);
-		ed->DrawStr(150, 120, f2s(param.y * 100.0f, 2) + "%", Edward::AlignRight);
+		ed->DrawStr(150, 100, f2s(param.x * 100.0f, 1) + "%", Edward::AlignRight);
+		ed->DrawStr(150, 120, f2s(param.y * 100.0f, 1) + "%", Edward::AlignRight);
 		if (multi_view->mode3d)
-			ed->DrawStr(150, 140, f2s(param.z * 100.0f, 2) + "%", Edward::AlignRight);
+			ed->DrawStr(150, 140, f2s(param.z * 100.0f, 1) + "%", Edward::AlignRight);
 	}
 }
 
