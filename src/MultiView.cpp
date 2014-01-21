@@ -19,6 +19,12 @@ const color ColorBackGround2D = color(1,0,0,0.10f);
 const color ColorGrid = color(1,0.7f,0.7f,0.7f);
 const color ColorText = White;
 const color ColorWindowType = color(1, 0.5f, 0.5f, 0.5f);
+const color ColorPoint = color(1, 0.2f, 0.2f, 0.9f);
+const color ColorPointSelected = color(1, 0.9f, 0.2f, 0.2f);
+const color ColorPointSpecial = color(1, 0.2f, 0.8f, 0.2f);
+const color ColorWindowSeparator = color(1, 0.1f, 0.1f, 0.6f); // color(1,0.1f,0.1f,0.5f)
+const color ColorSelectionRect = color(0.2f,0,0,1);
+const color ColorSelectionRectBoundary = color(0.7f,0,0,1);
 
 const float SPEED_MOVE = 0.05f;
 const float SPEED_ZOOM_KEY = 1.15f;
@@ -342,12 +348,16 @@ int get_select_mode()
 
 void MultiView::OnLeftButtonDown()
 {
+	m.x = HuiGetEvent()->mx;
+	m.y = HuiGetEvent()->my;
 	active_win = mouse_win;
 	// menu for selection of view type
 	if ((menu) && (active_win->name_dest.inside(m.x, m.y))){
 		menu->OpenPopup(ed, m.x, m.y);
 		return;
 	}
+
+	GetMouseOver();
 
 	MouseMovedSinceClick = 0;
 	Moved = false;
@@ -854,18 +864,18 @@ void MultiViewWindow::Draw()
 				if (_di)
 					NixDrawStr(p.x+3, p.y, i2s(i));
 				if (d.Drawable){
-					color c=Blue;
+					color c = ColorPoint;
 					float radius = (float)PointRadius;
-					float z=0.1f;
+					float z = 0.1f;
 					if (sd->is_selected){
-						c=Red;
-						z=0.05f;
+						c = ColorPointSelected;
+						z = 0.05f;
 					}
 					if (sd->is_special)
-						c = Green;
-					if ((multi_view->MouseOverSet==di)&&(i==multi_view->MouseOver)){
-						c=color(c.a,c.r+0.4f,c.g+0.4f,c.b+0.4f);
-						z=0.0f;
+						c = ColorPointSpecial;
+					if ((multi_view->MouseOverSet == di) && (i == multi_view->MouseOver)){
+						c = color(c.a,c.r+0.4f,c.g+0.4f,c.b+0.4f);
+						z = 0.0f;
 						radius = (float)PointRadiusMouseOver;
 					}
 					NixSetColor(c);
@@ -941,7 +951,7 @@ void MultiView::OnDraw()
 
 		NixScissor(NixTargetRect);
 		NixEnableLighting(false);
-		NixSetColor(color(1,0.1f,0.1f,0.5f));
+		NixSetColor(ColorWindowSeparator);
 		NixDrawRect(0, MaxX, MaxY/2-1, MaxY/2+2, 0);
 		NixDrawRect(MaxX/2-1, MaxX/2+2, 0, MaxY, 0);
 	}
@@ -951,9 +961,9 @@ void MultiView::OnDraw()
 	if ((allow_rect)&&(MVRect)){
 		NixSetZ(false, false);
 		NixSetAlphaM(AlphaMaterial);
-		NixSetColor(color(0.2f,0,0,1));
+		NixSetColor(ColorSelectionRect);
 		NixDrawRect(m.x, RectX, m.y, RectY, 0);
-		NixSetColor(color(0.7f,0,0,1));
+		NixSetColor(ColorSelectionRectBoundary);
 		NixDrawLineV(RectX	,RectY	,m.y	,0);
 		NixDrawLineV(m.x	,RectY	,m.y	,0);
 		NixDrawLineH(RectX	,m.x	,RectY	,0);
