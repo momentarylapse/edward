@@ -172,7 +172,7 @@ Edward::Edward(Array<string> arg) :
 	SetBorderWidth(0);
 	AddControlTable("", 0, 0, 2, 1, "root-table");
 	SetTarget("root-table", 0);
-	AddDrawingArea("!grabfocus", 0, 0, 0, 0, "nix-area");
+	AddDrawingArea("!grabfocus,nix", 0, 0, 0, 0, "nix-area");
 	SetBorderWidth(5);
 	/*AddControlTable("", 1, 0, 1, 5, "side-table");
 	HideControl("side-table", true);*/
@@ -218,11 +218,11 @@ Edward::Edward(Array<string> arg) :
 
 	// create the main window
 	SetMaximized(maximized);
-	Show();
 
 	// initialize engine
 	NixInit("OpenGL", this, "nix-area");
 	NixTextureIconSize = 32;
+	Show();
 
 	EventM("hui:close", this, &Edward::OnClose);
 	EventM("exit", this, &Edward::OnClose);
