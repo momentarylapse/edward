@@ -378,7 +378,7 @@ void DrawSelectionObject(Model *o, float alpha, const color &c)
 	if ((d<0)||(d>3))
 		return;
 	for (int i=0;i<o->material.num;i++){
-		NixTexture *t[8];
+		NixTexture *t[MATERIAL_MAX_TEXTURES];
 		for (int j=0;j<o->material[i].num_textures;j++)
 			t[j] = NULL;
 		NixSetTextures(t, o->material[i].num_textures);

@@ -6,7 +6,7 @@
  */
 
 #include "Window.h"
-#include "MultiView.h"
+#include "MultiViewImpl.h"
 #include "ActionController.h"
 #include "SingleData.h"
 #include "../Edward.h"
@@ -29,6 +29,13 @@ float GetDensity(int i,float t)
 	if (t>0.6f)		t=0.6f;
 	if (i==0)		t=1;
 	return t;
+}
+
+Window::Window(MultiViewImpl *_impl)
+{
+	impl = _impl;
+	multi_view = impl;
+	cam = &impl->cam;
 }
 
 void Window::DrawGrid()
@@ -67,7 +74,7 @@ void Window::DrawGrid()
 			for (int i=0;i<64;i++){
 				vector pa = vector(float(j)/32*pi,float(i  )/32*pi,0).ang2dir() * r - PerspectiveViewPos;
 				vector pb = vector(float(j)/32*pi,float(i+1)/32*pi,0).ang2dir() * r - PerspectiveViewPos;
-				NixSetColor(ColorInterpolate(multi_view->ColorBackGround2D,multi_view->ColorGrid,j==0?0.6f:0.1f));
+				NixSetColor(ColorInterpolate(impl->ColorBackGround2D,impl->ColorGrid,j==0?0.6f:0.1f));
 				NixDrawLine3D(pa,pb);
 			}
 		// vertical
@@ -75,7 +82,7 @@ void Window::DrawGrid()
 			for (int i=0;i<64;i++){
 				vector pa = vector(float(i  )/32*pi,float(j)/32*pi,0).ang2dir() * r - PerspectiveViewPos;
 				vector pb = vector(float(i+1)/32*pi,float(j)/32*pi,0).ang2dir() * r - PerspectiveViewPos;
-				NixSetColor(ColorInterpolate(multi_view->ColorBackGround2D,multi_view->ColorGrid,(j%16)==0?0.6f:0.1f));
+				NixSetColor(ColorInterpolate(impl->ColorBackGround2D,impl->ColorGrid,(j%16)==0?0.6f:0.1f));
 				NixDrawLine3D(pa,pb);
 			}
 		//NixSetZ(true,true);
@@ -83,7 +90,7 @@ void Window::DrawGrid()
 	}
 
 	// rectangular
-	float D = multi_view->GetGridD();
+	float D = impl->GetGridD();
 	int a,b;
 	float fa,fb,t;
 
@@ -105,7 +112,7 @@ void Window::DrawGrid()
 	b=(int)fb+1;
 	for (int i=a;i<b;i++){
 		int x=(int)Project(vector((float)i*D,(float)i*D,(float)i*D)).x;
-		NixSetColor(ColorInterpolate(multi_view->ColorBackGround2D,multi_view->ColorGrid,GetDensity(i,(float)MaxX/(fb-fa))));
+		NixSetColor(ColorInterpolate(impl->ColorBackGround2D,impl->ColorGrid,GetDensity(i,(float)MaxX/(fb-fa))));
 		NixDrawLineV(x,dest.y1,dest.y2,0.99998f-GetDensity(i,(float)MaxX/(fb-fa))*0.00005f);
 	}
 
@@ -121,7 +128,7 @@ void Window::DrawGrid()
 	b=(int)fb+1;
 	for (int i=a;i<b;i++){
 		int y=(int)Project(vector((float)i*D,(float)i*D,(float)i*D)).y;
-		NixSetColor(ColorInterpolate(multi_view->ColorBackGround2D,multi_view->ColorGrid,GetDensity(i,(float)MaxX/(fb-fa))));
+		NixSetColor(ColorInterpolate(impl->ColorBackGround2D,impl->ColorGrid,GetDensity(i,(float)MaxX/(fb-fa))));
 		NixDrawLineH(dest.x1,dest.x2,y,0.99998f-GetDensity(i,(float)MaxX/(fb-fa))*0.00005f);
 	}
 }
@@ -137,15 +144,15 @@ void Window::Draw()
 	NixEnableLighting(false);
 	NixSetTexture(NULL);
 
-	color bg = multi_view->ColorBackGround2D;
+	color bg = impl->ColorBackGround2D;
 	float height = NixScreenHeight;
-	if (!multi_view->whole_window)
+	if (!impl->whole_window)
 		height /= 2;
 
 	// projection matrix
 	if (type == ViewPerspective){
 		NixSetProjectionPerspectiveExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, height, cam->zoom / 1000, cam->zoom * 1000);
-		bg = multi_view->ColorBackGround3D;
+		bg = impl->ColorBackGround3D;
 	}else if (type == View2D){
 		height = cam->zoom;
 		NixSetProjectionOrthoExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, -height, 0, 1);
@@ -156,7 +163,7 @@ void Window::Draw()
 	projection = NixProjectionMatrix;
 
 	// background color
-	NixSetColor(multi_view->ColorBackGround3D);
+	NixSetColor(impl->ColorBackGround3D);
 	NixDraw2D(r_id,NixTargetRect,0.9999999f);
 
 	// camera matrix
@@ -191,7 +198,7 @@ void Window::Draw()
 		view_kind = _("2D");
 		ang = - pi * e_y;
 	}
-	multi_view->cur_projection_win = this;
+	impl->cur_projection_win = this;
 	NixSetView(pos, ang);
 	mat = NixViewMatrix;
 	NixSetZ(true,true);
@@ -199,18 +206,18 @@ void Window::Draw()
 	NixEnableLighting(false);
 	NixEnableFog(false);
 	NixSetFog(FogExp, 0, 1000, 0, Black); // some shaders need correct fog values
-	if (multi_view->grid_enabled)
+	if (impl->grid_enabled)
 		DrawGrid();
 
-	NixSetWire(multi_view->wire_mode);
+	NixSetWire(impl->wire_mode);
 	// light
 	vector dir = -cam->ang.ang2dir();
 	color am = color(1,0.3f,0.3f,0.3f);
 	color di = color(1,0.6f,0.6f,0.6f);
 	color sp = color(1,0.4f,0.4f,0.4f);
-	NixSetLightDirectional(multi_view->light,dir,am,di,sp);
-	NixEnableLight(multi_view->light, true);
-	NixEnableLighting(multi_view->light_enabled);
+	NixSetLightDirectional(impl->light,dir,am,di,sp);
+	NixEnableLight(impl->light, true);
+	NixEnableLighting(impl->light_enabled);
 	NixSetAmbientLight(Black);
 	NixSetMaterial(Black,White,Black,0,White);//Black);
 	NixSetColor(White);
@@ -227,12 +234,12 @@ void Window::Draw()
 	NixSetTexture(NULL);
 	NixSetWire(false);
 	NixEnableLighting(false);
-	foreachi(DataSet &d, multi_view->data, di){
+	foreachi(DataSet &d, impl->data, di){
 		if ((d.Drawable)||(d.Indexable)){
 			for (int i=0;i<d.data->num;i++){
 
 				SingleData *sd = MVGetSingleData(d, i);
-				if (sd->view_stage < multi_view->view_stage)
+				if (sd->view_stage < impl->view_stage)
 					continue;
 
 				bool _di = ((d.Indexable) && (sd->is_selected) && (NixGetKey(KEY_I)));
@@ -244,19 +251,19 @@ void Window::Draw()
 				if (_di)
 					NixDrawStr(p.x+3, p.y, i2s(i));
 				if (d.Drawable){
-					color c = multi_view->ColorPoint;
-					float radius = (float)multi_view->PointRadius;
+					color c = impl->ColorPoint;
+					float radius = (float)impl->PointRadius;
 					float z = 0.1f;
 					if (sd->is_selected){
-						c = multi_view->ColorPointSelected;
+						c = impl->ColorPointSelected;
 						z = 0.05f;
 					}
 					if (sd->is_special)
-						c = multi_view->ColorPointSpecial;
-					if ((multi_view->hover.set == di) && (i == multi_view->hover.index)){
+						c = impl->ColorPointSpecial;
+					if ((impl->hover.set == di) && (i == impl->hover.index)){
 						c = color(c.a,c.r+0.4f,c.g+0.4f,c.b+0.4f);
 						z = 0.0f;
-						radius = (float)multi_view->PointRadiusMouseOver;
+						radius = (float)impl->PointRadiusMouseOver;
 					}
 					NixSetColor(c);
 					NixDrawRect(	p.x-radius,
@@ -275,20 +282,20 @@ void Window::Draw()
 
 	// type of view
 
-	if (multi_view->action_con->show)
-		multi_view->action_con->Draw(this);
+	if (impl->action_con->show)
+		impl->action_con->Draw(this);
 
 	name_dest = rect(dest.x1 + 3, dest.x1 + 3 + NixGetStrWidth(view_kind), dest.y1, dest.y1 + 20);
 
-	NixSetColor(multi_view->ColorWindowType);
-	if (ed->IsActive("nix-area") && (this == multi_view->active_win))
-		NixSetColor(multi_view->ColorText);
-	if (name_dest.inside(multi_view->m.x, multi_view->m.y))
+	NixSetColor(impl->ColorWindowType);
+	if (ed->IsActive("nix-area") && (this == impl->active_win))
+		NixSetColor(impl->ColorText);
+	if (name_dest.inside(impl->m.x, impl->m.y))
 		NixSetColor(Red);
 	ed->DrawStr(dest.x1 + 3, dest.y1, view_kind);
-	NixSetColor(multi_view->ColorText);
+	NixSetColor(impl->ColorText);
 
-	foreach(MultiView::Message3d &m, multi_view->message3d){
+	foreach(MultiViewImpl::Message3d &m, impl->message3d){
 		vector p = Project(m.pos);
 		if (p.z > 0)
 			ed->DrawStr(p.x, p.y, m.str);
@@ -300,8 +307,8 @@ vector Window::Unproject(const vector &p, const vector &o)
 	vector r;
 	vector pp = p;
 	if ((type == ViewPerspective) || (type == ViewIsometric)){ // 3D
-		if (multi_view->cur_projection_win != this){
-			multi_view->cur_projection_win = this;
+		if (impl->cur_projection_win != this){
+			impl->cur_projection_win = this;
 			NixSetProjectionMatrix(projection);
 			NixSetView(mat);
 		}
@@ -315,7 +322,7 @@ vector Window::Unproject(const vector &p, const vector &o)
 		r.z=0;
 	}else{ // 2D
 		r=o;
-		if (multi_view->whole_window){
+		if (impl->whole_window){
 			pp.x-=MaxX/4;
 			pp.y-=MaxY/4;
 		}else{
@@ -351,8 +358,8 @@ vector Window::Project(const vector &p)
 {
 	vector r;
 	if ((type == ViewPerspective) || (type == ViewIsometric)){ // 3D
-		if (multi_view->cur_projection_win != this){
-			multi_view->cur_projection_win = this;
+		if (impl->cur_projection_win != this){
+			impl->cur_projection_win = this;
 			NixSetProjectionMatrix(projection);
 			NixSetView(mat);
 		}
@@ -383,7 +390,7 @@ vector Window::Project(const vector &p)
 			r.x=MaxX/4+(p.x-pos.x)*zoom;
 			r.y=MaxY/4+(p.z-pos.z)*zoom;
 		}
-		if (multi_view->whole_window){
+		if (impl->whole_window){
 			r.x+=MaxX/4;
 			r.y+=MaxY/4;
 		}else{
@@ -400,8 +407,8 @@ vector Window::Unproject(const vector &p)
 	vector r;
 	vector pp = p;
 	if ((type == ViewPerspective) || (type == ViewIsometric)){ // 3D
-		if (multi_view->cur_projection_win != this){
-			multi_view->cur_projection_win = this;
+		if (impl->cur_projection_win != this){
+			impl->cur_projection_win = this;
 			NixSetProjectionMatrix(projection);
 			NixSetView(mat);
 		}
@@ -411,7 +418,7 @@ vector Window::Unproject(const vector &p)
 		r.y=(pp.y-MaxY/2)/cam->zoom+cam->pos.y;
 		r.z=0;
 	}else{ // 2D
-		if (multi_view->whole_window){
+		if (impl->whole_window){
 			pp.x-=MaxX/4;
 			pp.y-=MaxY/4;
 		}else{

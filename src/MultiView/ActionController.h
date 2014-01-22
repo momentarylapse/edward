@@ -17,6 +17,7 @@ class Geometry;
 namespace MultiView{
 
 class MultiView;
+class MultiViewImpl;
 class Window;
 
 
@@ -45,7 +46,7 @@ public:
 	Array<Geometry*> geo_show;
 	Array<Geometry*> geo;
 	int mouse_over_geo;
-	MultiView *multi_view;
+	MultiViewImpl *multi_view;
 	MouseAction action;
 	ActionMultiView *cur_action;
 	void reset();

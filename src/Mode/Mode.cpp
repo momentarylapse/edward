@@ -7,6 +7,7 @@
 
 #include "Mode.h"
 #include "../MultiView/MultiView.h"
+#include "../MultiView/MultiViewImpl.h"
 
 ModeBase::ModeBase(const string &_name, ModeBase *_parent, MultiView::MultiView *_multi_view, const string &_menu)
 {
@@ -25,7 +26,7 @@ ModeBase::~ModeBase()
 void ModeBase::OnCommandRecursive(const string & id, bool multi_view_handled)
 {
 	if ((multi_view) && (!multi_view_handled)){
-		multi_view->OnCommand(id);
+		((MultiView::MultiViewImpl*)multi_view)->OnCommand(id);
 		multi_view_handled = true;
 	}
 	if (parent)
@@ -37,7 +38,7 @@ void ModeBase::OnCommandRecursive(const string & id, bool multi_view_handled)
 void ModeBase::_name_rec_(bool multi_view_handled) \
 { \
 	if ((multi_view) && (!multi_view_handled)){ \
-		multi_view->_name_(); \
+		((MultiView::MultiViewImpl*)multi_view)->_name_(); \
 		multi_view_handled = true; \
 	} \
 	if (parent) \

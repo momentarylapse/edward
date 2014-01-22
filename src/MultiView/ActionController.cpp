@@ -7,7 +7,9 @@
 
 #include "ActionController.h"
 #include "MultiView.h"
+#include "MultiViewImpl.h"
 #include "Window.h"
+#include "../Action/ActionMultiView.h"
 #include "../Edward.h"
 #include "../lib/nix/nix.h"
 #include "../Data/Model/Geometry/Geometry.h"
@@ -37,7 +39,6 @@ void ActionController::StartAction()
 		return;
 	if (action.name != ""){
 		//msg_write("mouse action start " + action.name);
-		multi_view->MultiViewEditing = true;
 
 		mat = m_id;
 
@@ -52,7 +53,7 @@ void ActionController::StartAction()
 }
 
 
-vector transform_ang(MultiView*mv, const vector &ang)
+vector transform_ang(MultiViewImpl *mv, const vector &ang)
 {
 	quaternion qmv, mqmv, qang, q;
 	QuaternionRotationV(qmv,  mv->active_win->ang);

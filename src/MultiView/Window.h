@@ -13,11 +13,13 @@
 namespace MultiView{
 
 class MultiView;
+class MultiViewImpl;
 class Camera;
 
 class Window
 {
 public:
+	Window(MultiViewImpl *impl);
 
 	int type;
 	matrix mat;
@@ -26,6 +28,7 @@ public:
 	vector ang;
 	matrix projection;
 	MultiView *multi_view;
+	MultiViewImpl *impl;
 	Camera *cam;
 
 	void Draw();
