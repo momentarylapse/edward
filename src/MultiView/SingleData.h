@@ -14,6 +14,8 @@
 
 namespace MultiView{
 
+class Window;
+
 // "des Pudels Kern", don't change!!!!!!!
 class SingleData
 {
@@ -22,6 +24,8 @@ public:
 	int view_stage;
 	bool is_selected, m_delta, m_old, is_special;
 	vector pos;
+	virtual bool Hover(Window *win, vector &m, vector &tp, float &z, void *user_data);
+	virtual bool InRect(Window *win, rect &r, void *user_data);
 };
 
 };

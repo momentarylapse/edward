@@ -51,8 +51,7 @@ void ModeModelMeshTexture::FetchData()
 	multi_view->SetData(	MVDModelSkinVertex,
 			skin_vertex,
 			NULL,
-			MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
-			NULL, NULL);
+			MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
 }
 
 int ModeModelMeshTexture::GetNumSelected()

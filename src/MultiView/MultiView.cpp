@@ -39,6 +39,26 @@ SingleData::SingleData()
 	pos = v_0;
 }
 
+bool SingleData::Hover(Window *win, vector &m, vector &tp, float &z, void *user_data)
+{
+	vector p = win->Project(pos);
+	if ((p.z <= 0) || (p.z >= 1))
+		return false;
+	const float _radius = 4;
+	if ((m.x >= p.x - _radius) && (m.x <= p.x + _radius) && (m.y >= p.y - _radius) && (m.y <= p.y + _radius)){
+		z = p.z;
+		tp = pos;
+		return true;
+	}
+	return false;
+}
+
+bool SingleData::InRect(Window *win, rect &r, void *user_data)
+{
+	vector p = win->Project(pos);
+	return r.inside(p.x, p.y);
+}
+
 MultiView::MultiView(bool _mode3d)
 {
 	ColorBackGround3D = color(1,0,0,0.15f);
@@ -158,7 +178,7 @@ void MultiView::ResetData(Data *_data)
 		ResetMouseAction();
 }
 
-void MultiView::SetData(int type, const DynamicArray & a, void *user_data, int mode, t_is_mouse_over_func *is_mouse_over_func, t_is_in_rect_func *is_in_rect_func)
+void MultiView::SetData(int type, const DynamicArray & a, void *user_data, int mode)
 {
 	DataSet d;
 	d.Type = type;
@@ -168,8 +188,6 @@ void MultiView::SetData(int type, const DynamicArray & a, void *user_data, int m
 	d.Drawable = (mode & FlagDraw)>0;
 	d.Indexable = (mode & FlagIndex)>0;
 	d.Movable = (mode & FlagMove)>0;
-	d.IsMouseOver = is_mouse_over_func;
-	d.IsInRect = is_in_rect_func;
 	data.add(d);
 }
 
@@ -794,32 +812,18 @@ void MultiView::GetMouseOver()
 				SingleData* sd=MVGetSingleData(d,i);
 				if (sd->view_stage < view_stage)
 					continue;
-				bool mo=false;
-				vector mop;
-				if (d.Drawable){
-					vector p = mouse_win->Project(sd->pos);
-					if ((p.z<=0)||(p.z>=1))
-						continue;
-					mo=((m.x>=p.x-_radius)&&(m.x<=p.x+_radius)&&(m.y>=p.y-_radius)&&(m.y<=p.y+_radius));
-					if (mo){
-						mop=sd->pos;
-						z_min=0;
-					}
-				}
-				if ((!mo)&&(d.IsMouseOver)){
-					vector tp;
-					mo=d.IsMouseOver(i, d.user_data, mouse_win, tp);
-					if (mo){
-						float z = mouse_win->Project(tp).z;
-						if (z<z_min){
-							z_min=z;
-							mop=tp;
-						}else{
-							if (sd->is_selected){
-								mop=tp;
-							}else
-								continue;
-						}
+				float z;
+				vector tp, mop;
+				bool mo = sd->Hover(mouse_win, m, tp, z, d.user_data);
+				if (mo){
+					if (z<z_min){
+						z_min = z;
+						mop = tp;
+					}else{
+						if (sd->is_selected){
+							mop = tp;
+						}else
+							continue;
 					}
 				}
 				if (mo){
@@ -892,13 +896,7 @@ void MultiView::SelectAllInRectangle(int mode)
 					continue;
 
 				// selected?
-				sd->m_delta=false;
-				if (d.IsInRect){
-					sd->m_delta = d.IsInRect(i, d.user_data, active_win, &r);
-				}else{// if (!sd->m_delta){
-					vector p = active_win->Project(sd->pos);
-					sd->m_delta = r.inside(p.x, p.y);
-				}
+				sd->m_delta = sd->InRect(active_win, r, d.user_data);
 
 				// add the selection layers
 				if (mode == SelectInvert)

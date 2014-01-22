@@ -146,25 +146,24 @@ void ModeWorld::OnCommand(const string & id)
 vector tmv[MODEL_MAX_VERTICES*5],pmv[MODEL_MAX_VERTICES*5];
 bool tvm[MODEL_MAX_VERTICES*5];
 
-bool IsMouseOverObject(int index, void *user_data, MultiView::Window *win, vector &tp)
+bool WorldObject::Hover(MultiView::Window *win, vector &mv, vector &tp, float &z, void *user_data)
 {
-	Object *m = mode_world->data->Objects[index].object;
-	if (!m)
+	Object *o = object;
+	if (!o)
 		return false;
-	int d = m->_detail_;
-	vector mv = win->multi_view->m;
+	int d = o->_detail_;
 	if ((d<0)||(d>2))
 		return false;
-	for (int i=0;i<m->skin[d]->vertex.num;i++){
-		tmv[i] = m->_matrix * m->skin[d]->vertex[i];
+	for (int i=0;i<o->skin[d]->vertex.num;i++){
+		tmv[i] = o->_matrix * o->skin[d]->vertex[i];
 		pmv[i] = win->Project(tmv[i]);
 	}
 	float z_min=1;
-	for (int mm=0;mm<m->material.num;mm++)
-	for (int i=0;i<m->skin[d]->sub[mm].num_triangles;i++){
-		vector a=pmv[m->skin[d]->sub[mm].triangle_index[i*3  ]];
-		vector b=pmv[m->skin[d]->sub[mm].triangle_index[i*3+1]];
-		vector c=pmv[m->skin[d]->sub[mm].triangle_index[i*3+2]];
+	for (int mm=0;mm<o->material.num;mm++)
+	for (int i=0;i<o->skin[d]->sub[mm].num_triangles;i++){
+		vector a=pmv[o->skin[d]->sub[mm].triangle_index[i*3  ]];
+		vector b=pmv[o->skin[d]->sub[mm].triangle_index[i*3+1]];
+		vector c=pmv[o->skin[d]->sub[mm].triangle_index[i*3+2]];
 		if ((a.z<=0)||(b.z<=0)||(c.z<=0)||(a.z>=1)||(b.z>=1)||(c.z>=1))
 			continue;
 		float f,g;
@@ -175,18 +174,19 @@ bool IsMouseOverObject(int index, void *user_data, MultiView::Window *win, vecto
 			float z=az + f*(bz-az) + g*(cz-az);
 			if (z<z_min){
 				z_min=z;
-				tp=tmv[m->skin[d]->sub[mm].triangle_index[i*3  ]]
-					+ f*(tmv[m->skin[d]->sub[mm].triangle_index[i*3+1]]-tmv[m->skin[d]->sub[mm].triangle_index[i*3  ]])
-					+ g*(tmv[m->skin[d]->sub[mm].triangle_index[i*3+2]]-tmv[m->skin[d]->sub[mm].triangle_index[i*3  ]]);
+				tp=tmv[o->skin[d]->sub[mm].triangle_index[i*3  ]]
+					+ f*(tmv[o->skin[d]->sub[mm].triangle_index[i*3+1]]-tmv[o->skin[d]->sub[mm].triangle_index[i*3  ]])
+					+ g*(tmv[o->skin[d]->sub[mm].triangle_index[i*3+2]]-tmv[o->skin[d]->sub[mm].triangle_index[i*3  ]]);
 			}
 		}
 	}
+	z = z_min;
 	return (z_min<1);
 }
 
-bool IsInRectObject(int index, void *user_data, MultiView::Window *win, rect *r)
+bool WorldObject::InRect(MultiView::Window *win, rect &r, void *user_data)
 {
-	Object *m = mode_world->data->Objects[index].object;
+	Object *m = object;
 	if (!m)
 		return false;
 	int d = m->_detail_;
@@ -196,7 +196,7 @@ bool IsInRectObject(int index, void *user_data, MultiView::Window *win, rect *r)
 	for (int i=0;i<m->skin[d]->vertex.num;i++){
 		tmv[i] = m->_matrix * m->skin[d]->vertex[i];
 		pmv[i] = win->Project(tmv[i]);
-		if (r->inside(pmv[i].x, pmv[i].y))
+		if (r.inside(pmv[i].x, pmv[i].y))
 			return true;
 	}
 	return false;
@@ -216,28 +216,28 @@ bool IsInRectObject(int index, void *user_data, MultiView::Window *win, rect *r)
 		max._max(b);
 		max._max(c);
 	}
-	return ((min.x>=r->x1)&&(min.y>=r->y1)&&(max.x<=r->x2)&&(max.y<=r->y2));
+	return ((min.x>=r.x1)&&(min.y>=r.y1)&&(max.x<=r.x2)&&(max.y<=r.y2));
 }
 
-bool IsMouseOverTerrain(int index, void *user_data, MultiView::Window *win, vector &tp)
+bool WorldTerrain::Hover(MultiView::Window *win, vector &mv, vector &tp, float &z, void *user_data)
 {
 	//msg_db_f(format("IMOT index= %d",index).c_str(),3);
-	Terrain *t = mode_world->data->Terrains[index].terrain;
+	Terrain *t = terrain;
 	if (!t)
 		return false;
-	vector mv = win->multi_view->m;
 	float r = win->cam->radius * 100;
 	vector a = win->Unproject(mv);
 	vector b = win->Unproject(mv, win->cam->pos + win->GetDirection() * r);
 	TraceData td;
 	bool hit = t->Trace(a, b, v_0, r, td, false);
 	tp = td.point;
+	z = 1;
 	return hit;
 }
 
-bool IsInRectTerrain(int index, void *user_data, MultiView::Window *win, rect *r)
+bool WorldTerrain::InRect(MultiView::Window *win, rect &r, void *user_data)
 {
-	Terrain *t = mode_world->data->Terrains[index].terrain;
+	Terrain *t = terrain;
 	vector min,max;
 	for (int i=0;i<8;i++){
 		vector v=t->pos+vector((i%2)==0?t->min.x:t->max.x,((i/2)%2)==0?t->min.y:t->max.y,((i/4)%2)==0?t->min.z:t->max.z);
@@ -247,7 +247,7 @@ bool IsInRectTerrain(int index, void *user_data, MultiView::Window *win, rect *r
 		min._min(p);
 		max._max(p);
 	}
-	return ((min.x>=r->x1)&&(min.y>=r->y1)&&(max.x<=r->x2)&&(max.y<=r->y2));
+	return ((min.x>=r.x1)&&(min.y>=r.y1)&&(max.x<=r.x2)&&(max.y<=r.y2));
 }
 
 
@@ -291,13 +291,11 @@ void ModeWorld::OnUpdate(Observable *o)
 		multi_view->SetData(	MVDWorldObject,
 				data->Objects,
 				NULL,
-				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
-				&IsMouseOverObject, &IsInRectObject);
+				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
 		multi_view->SetData(	MVDWorldTerrain,
 				data->Terrains,
 				NULL,
-				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
-				&IsMouseOverTerrain, &IsInRectTerrain);
+				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
 	}else if (o->GetName() == "MultiView"){
 		// selection
 	}

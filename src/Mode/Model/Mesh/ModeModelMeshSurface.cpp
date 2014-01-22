@@ -39,25 +39,18 @@ void ModeModelMeshSurface::OnEnd()
 	Unsubscribe(multi_view);
 }
 
-bool PolygonIsMouseOver(int index, void *user_data, MultiView::Window *win, vector &tp);
-bool PolygonInRect(int index, void *user_data, MultiView::Window *win, rect *r);
-
-bool SurfaceIsMouseOver(int index, void *user_data, MultiView::Window *win, vector &tp)
+bool ModelSurface::Hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data)
 {
-	DataModel *data = (DataModel*)user_data;
-	ModelSurface &s = data->Surface[index];
-	for (int i=0;i<s.Polygon.num;i++)
-		if (PolygonIsMouseOver(i, &s, win, tp))
+	for (int i=0;i<Polygon.num;i++)
+		if (Polygon[i].Hover(win, m, tp, z, user_data))
 			return true;
 	return false;
 }
 
-bool SurfaceInRect(int index, void *user_data, MultiView::Window *win, rect *r)
+bool ModelSurface::InRect(MultiView::Window *win, rect &r, void *user_data)
 {
-	DataModel *data = (DataModel*)user_data;
-	ModelSurface &s = data->Surface[index];
-	for (int i=0;i<s.Polygon.num;i++)
-		if (PolygonInRect(i, &s, win, r))
+	for (int i=0;i<Polygon.num;i++)
+		if (Polygon[i].InRect(win, r, user_data))
 			return true;
 	return false;
 }
@@ -70,8 +63,7 @@ void ModeModelMeshSurface::OnUpdate(Observable *o)
 		multi_view->SetData(	MVDModelSurface,
 				data->Surface,
 				data,
-				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
-				&SurfaceIsMouseOver, &SurfaceInRect);
+				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
 	}else if (o->GetName() == "MultiView"){
 		data->SelectionFromSurfaces();
 	}

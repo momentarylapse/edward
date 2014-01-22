@@ -185,68 +185,62 @@ void ModeModelMeshPolygon::OnStart()
 
 
 
-bool PolygonIsMouseOver(int index, void *user_data, MultiView::Window *win, vector &tp)
+bool ModelPolygon::Hover(MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data)
 {
-	ModelSurface *surf = (ModelSurface*)user_data;
-	ModelPolygon *t = &surf->Polygon[index];
-
 	// care for the sense of rotation?
-	if (t->TempNormal * win->GetDirection() > 0)
+	if (TempNormal * win->GetDirection() > 0)
 		return false;
 
 	DataModel *m = mode_model_mesh_polygon->data; // surf->model;
 
 	// project all points
 	Array<vector> p;
-	for (int k=0;k<t->Side.num;k++){
-		vector pp = win->Project(m->Vertex[t->Side[k].Vertex].pos);
+	for (int k=0;k<Side.num;k++){
+		vector pp = win->Project(m->Vertex[Side[k].Vertex].pos);
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
 		p.add(pp);
 	}
 
 	// test all sub-triangles
-	if (t->TriangulationDirty)
-		t->UpdateTriangulation(m->Vertex);
-	vector M = win->multi_view->m;
-	for (int k=t->Side.num-3; k>=0; k--){
-		int a = t->Side[k].Triangulation[0];
-		int b = t->Side[k].Triangulation[1];
-		int c = t->Side[k].Triangulation[2];
+	if (TriangulationDirty)
+		UpdateTriangulation(m->Vertex);
+	for (int k=Side.num-3; k>=0; k--){
+		int a = Side[k].Triangulation[0];
+		int b = Side[k].Triangulation[1];
+		int c = Side[k].Triangulation[2];
 		float f,g;
 		GetBaryCentric(M, p[a], p[b], p[c], f, g);
 		// cursor in triangle?
 		if ((f>0)&&(g>0)&&(f+g<1)){
-			vector va = m->Vertex[t->Side[a].Vertex].pos;
-			vector vb = m->Vertex[t->Side[b].Vertex].pos;
-			vector vc = m->Vertex[t->Side[c].Vertex].pos;
+			vector va = m->Vertex[Side[a].Vertex].pos;
+			vector vb = m->Vertex[Side[b].Vertex].pos;
+			vector vc = m->Vertex[Side[c].Vertex].pos;
 			tp = va+f*(vb-va)+g*(vc-va);
+			z = win->Project(tp).z;
 			return true;
 		}
 	}
 	return false;
 }
 
-inline bool in_irect(const vector &p, rect *r)
+inline bool in_irect(const vector &p, rect &r)
 {
-	return ((p.x > r->x1) and (p.x < r->x2) and (p.y > r->y1) and (p.y < r->y2));
+	return ((p.x > r.x1) and (p.x < r.x2) and (p.y > r.y1) and (p.y < r.y2));
 }
 
-bool PolygonInRect(int index, void *user_data, MultiView::Window *win, rect *r)
+bool ModelPolygon::InRect(MultiView::Window *win, rect &r, void *user_data)
 {
-	ModelSurface *surf = (ModelSurface*)user_data;
-	ModelPolygon *t = &surf->Polygon[index];
-
 	// care for the sense of rotation?
 	if (mode_model_mesh_polygon->SelectCW)
-		if (t->TempNormal * win->GetDirection() > 0)
+		if (TempNormal * win->GetDirection() > 0)
 			return false;
 
 	DataModel *m = mode_model_mesh_polygon->data; // surf->model;
 
 	// all vertices within rectangle?
-	for (int k=0;k<t->Side.num;k++){
-		vector pp = win->Project(m->Vertex[t->Side[k].Vertex].pos); // mmodel->GetVertex(ia)
+	for (int k=0;k<Side.num;k++){
+		vector pp = win->Project(m->Vertex[Side[k].Vertex].pos); // mmodel->GetVertex(ia)
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
 		if (in_irect(pp, r))
@@ -265,8 +259,7 @@ void ModeModelMeshPolygon::OnUpdate(Observable *o)
 		multi_view->SetData(	MVDModelPolygon,
 				s.Polygon,
 				&s,
-				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
-				&PolygonIsMouseOver, &PolygonInRect);
+				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
 	}else if (o->GetName() == "MultiView"){
 		data->SelectionFromPolygons();
 	}

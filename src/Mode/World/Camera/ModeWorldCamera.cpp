@@ -221,14 +221,12 @@ void ModeWorldCamera::LoadData()
 	multi_view->SetData(	MVDWorldCamPoint,
 			data->Point,
 			NULL,
-			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove | MultiView::FlagDraw,
-			NULL, NULL);
+			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove | MultiView::FlagDraw);
 	if (edit_vel)
 	multi_view->SetData(	MVDWorldCamPointVel,
 			data->Vel,
 			NULL,
-			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove | MultiView::FlagDraw,
-			NULL, NULL);
+			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove | MultiView::FlagDraw);
 	ed->ForceRedraw();
 }
 

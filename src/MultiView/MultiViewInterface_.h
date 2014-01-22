@@ -19,9 +19,6 @@ namespace MultiView{
 class Window;
 class SingleData;
 
-typedef bool t_is_mouse_over_func(int index, void *user_data, Window *win, vector &tp);
-typedef bool t_is_in_rect_func(int index, void *user_data, Window *win, rect *r);
-
 
 
 enum
@@ -71,7 +68,7 @@ public:
 	virtual ~MultiViewInterface();
 
 	//virtual void SetViewStage(int *view_stage, bool allow_handle) = 0;
-	virtual void SetData(int type, const DynamicArray &a, void *user_data, int mode, t_is_mouse_over_func *is_mouse_over_func, t_is_in_rect_func *is_in_rect_func) = 0;
+	virtual void SetData(int type, const DynamicArray &a, void *user_data, int mode) = 0;
 	virtual void Reset() = 0;
 	virtual void ResetView() = 0;
 	virtual void SetViewBox(const vector &min, const vector &max) = 0;

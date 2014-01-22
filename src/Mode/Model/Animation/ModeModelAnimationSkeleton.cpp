@@ -60,8 +60,7 @@ void ModeModelAnimationSkeleton::OnUpdate(Observable* o)
 		multi_view->SetData(	MVDSkeletonPoint,
 				data->Bone,
 				NULL,
-				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect,
-				NULL, NULL);
+				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect);
 	}else if (o->GetName() == "MultiView"){
 	}
 }

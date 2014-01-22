@@ -157,8 +157,7 @@ void ModeModelMeshEdge::OnUpdate(Observable *o)
 		multi_view->SetData(	MVDModelEdge,
 				s.Edge,
 				&s,
-				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
-				&EdgeIsMouseOver, &EdgeInRect);
+				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
 	}else if (o->GetName() == "MultiView"){
 		data->SelectionFromEdges();
 	}

@@ -31,9 +31,6 @@ struct DataSet{
 	DynamicArray *data;
 	bool MVSelectable, Drawable, Movable, Indexable;
 	void *user_data;
-	//int DataSingleSize;
-	t_is_mouse_over_func *IsMouseOver;
-	t_is_in_rect_func *IsInRect;
 };
 
 
@@ -67,7 +64,7 @@ public:
 	void SetMode(int mode);
 //	void SetFunctions(mv_bc_func *start_edit_func, mv_bc_func *end_edit_func, mv_bc_func *edit_func);
 	virtual void SetViewStage(int *view_stage, bool allow_handle);
-	virtual void SetData(int type, const DynamicArray &a, void *user_data, int mode, t_is_mouse_over_func *is_mouse_over_func, t_is_in_rect_func *is_in_rect_func);
+	virtual void SetData(int type, const DynamicArray &a, void *user_data, int mode);
 	virtual void Reset();
 	virtual void ResetView();
 	virtual void SetViewBox(const vector &min, const vector &max);
