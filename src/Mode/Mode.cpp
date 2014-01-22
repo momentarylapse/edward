@@ -6,6 +6,7 @@
  */
 
 #include "Mode.h"
+#include "../MultiView/MultiView.h"
 
 ModeBase::ModeBase(const string &_name, ModeBase *_parent, MultiView *_multi_view, const string &_menu)
 {

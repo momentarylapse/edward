@@ -6,7 +6,7 @@
  */
 
 #include "../../../Edward.h"
-#include "../../../MultiView.h"
+#include "../../../MultiView/MultiViewWindow.h"
 #include "ModeModelMesh.h"
 #include "ModeModelMeshEdge.h"
 #include "ModeModelMeshPolygon.h"
@@ -209,12 +209,12 @@ void ModeModelMeshEdge::OnDrawWin(MultiViewWindow *win)
 	DrawEdges(win, data->Vertex, false);
 	mode_model_mesh_polygon->DrawSelection(win);
 
-	if (multi_view->MouseOver >= 0){
+	if (multi_view->hover.index >= 0){
 		NixSetWire(false);
 		NixSetZ(false, false);
 		NixEnableLighting(false);
 		NixSetColor(color(1, 0.7f, 0.7f, 1));
-		ModelEdge &e = data->Surface[multi_view->MouseOverSet].Edge[multi_view->MouseOver];
+		ModelEdge &e = data->Surface[multi_view->hover.set].Edge[multi_view->hover.index];
 		NixDrawLine3D(data->Vertex[e.Vertex[0]].pos, data->Vertex[e.Vertex[1]].pos);
 		NixSetColor(White);
 		NixSetZ(true, true);

@@ -10,6 +10,7 @@
 #include "../../ModeModel.h"
 #include "../../../../Data/Model/Geometry/GeometryCylinder.h"
 #include "../../../../Edward.h"
+#include "../../../../MultiView/MultiViewWindow.h"
 
 ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateCylinder", _parent)
@@ -85,8 +86,8 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 
 		Abort();
 	}else{
-		if (multi_view->Selected >= 0)
-			pos.add(data->Vertex[multi_view->Selected].pos);
+		if (multi_view->selection.index >= 0)
+			pos.add(data->Vertex[multi_view->selection.index].pos);
 		else
 			pos.add(multi_view->GetCursor3d());
 

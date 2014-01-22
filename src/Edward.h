@@ -16,6 +16,7 @@
 #include "Stuff/PluginManager.h"
 
 class NixTexture;
+class MultiView;
 
 
 

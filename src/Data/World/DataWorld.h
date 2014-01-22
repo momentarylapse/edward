@@ -9,7 +9,7 @@
 #define DATAWORLD_H_
 
 #include "../Data.h"
-#include "../../MultiView.h"
+#include "../../MultiView/MultiView.h"
 #include "../../x/material.h"
 
 class DataWorld;

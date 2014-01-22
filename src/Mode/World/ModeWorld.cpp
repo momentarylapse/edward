@@ -6,10 +6,12 @@
  */
 
 #include "../../Edward.h"
-#include "../../MultiView.h"
+#include "../../MultiView/MultiView.h"
+#include "../../MultiView/MultiViewWindow.h"
 #include "ModeWorld.h"
 #include "../../Data/World/DataWorld.h"
 #include "../../Data/World/DataCamera.h"
+#include "../../lib/nix/nix.h"
 #include "../../x/camera.h"
 #include "../../x/world.h"
 #include "../../x/material.h"
@@ -133,11 +135,11 @@ void ModeWorld::OnCommand(const string & id)
 		ToggleShowEffects();
 
 	if (id == "select")
-		SetMouseAction(MultiView::ActionSelect);
+		SetMouseAction(MultiViewInterface::ActionSelect);
 	if (id == "translate")
-		SetMouseAction(MultiView::ActionMove);
+		SetMouseAction(MultiViewInterface::ActionMove);
 	if (id == "rotate")
-		SetMouseAction(MultiView::ActionRotate);
+		SetMouseAction(MultiViewInterface::ActionRotate);
 }
 
 #define MODEL_MAX_VERTICES	65536
@@ -286,12 +288,12 @@ void ModeWorld::OnUpdate(Observable *o)
 		multi_view->SetData(	MVDWorldObject,
 				data->Objects,
 				NULL,
-				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
+				MultiViewInterface::FlagIndex | MultiViewInterface::FlagSelect | MultiViewInterface::FlagMove,
 				&IsMouseOverObject, &IsInRectObject);
 		multi_view->SetData(	MVDWorldTerrain,
 				data->Terrains,
 				NULL,
-				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
+				MultiViewInterface::FlagIndex | MultiViewInterface::FlagSelect | MultiViewInterface::FlagMove,
 				&IsMouseOverTerrain, &IsInRectTerrain);
 	}else if (o->GetName() == "MultiView"){
 		// selection
@@ -440,7 +442,7 @@ void ModeWorld::OnDrawWin(MultiViewWindow *win)
 
 			if (t.is_selected)
 				DrawTerrainColored(t.terrain, Red, TSelectionAlpha);
-			if ((multi_view->MouseOverType==MVDWorldTerrain)&&(multi_view->MouseOver==i))
+			if ((multi_view->hover.type == MVDWorldTerrain) && (multi_view->hover.index == i))
 				DrawTerrainColored(t.terrain, White, TMouseOverAlpha);
 		}
 	}
@@ -472,8 +474,8 @@ void ModeWorld::OnDrawWin(MultiViewWindow *win)
 				DrawSelectionObject(o.object, OSelectionAlpha, Red);
 			else if (o.is_special)
 				DrawSelectionObject(o.object, OSelectionAlpha, Green);
-		if ((multi_view->MouseOver>=0)&&(multi_view->MouseOverType==MVDWorldObject))
-			DrawSelectionObject(data->Objects[multi_view->MouseOver].object, OSelectionAlpha, White);
+		if ((multi_view->hover.index >= 0) && (multi_view->hover.type == MVDWorldObject))
+			DrawSelectionObject(data->Objects[multi_view->hover.index].object, OSelectionAlpha, White);
 		NixSetAlpha(AlphaNone);
 		NixEnableLighting(multi_view->light_enabled);
 	}
@@ -511,7 +513,7 @@ void ModeWorld::OnStart()
 	t->Reset();
 	t->Enable(false);
 
-	SetMouseAction(MultiView::ActionSelect);
+	SetMouseAction(MultiViewInterface::ActionSelect);
 
 	OnUpdate(data);
 }
@@ -519,9 +521,9 @@ void ModeWorld::OnStart()
 void ModeWorld::SetMouseAction(int mode)
 {
 	mouse_action = mode;
-	if (mode == MultiView::ActionMove)
+	if (mode == MultiViewInterface::ActionMove)
 		multi_view->SetMouseAction("ActionWorldMoveSelection", mode);
-	else if (mode == MultiView::ActionRotate)
+	else if (mode == MultiViewInterface::ActionRotate)
 		multi_view->SetMouseAction("ActionWorldRotateObjects", mode);
 	else
 		multi_view->SetMouseAction("", mode);
@@ -548,9 +550,9 @@ void ModeWorld::OnUpdateMenu()
 	ed->Check("show_terrains", ShowTerrains);
 	ed->Check("show_fx", ShowEffects);
 
-	ed->Check("select", mouse_action == MultiView::ActionSelect);
-	ed->Check("translate", mouse_action == MultiView::ActionMove);
-	ed->Check("rotate", mouse_action == MultiView::ActionRotate);
+	ed->Check("select", mouse_action == MultiViewInterface::ActionSelect);
+	ed->Check("translate", mouse_action == MultiViewInterface::ActionMove);
+	ed->Check("rotate", mouse_action == MultiViewInterface::ActionRotate);
 }
 
 

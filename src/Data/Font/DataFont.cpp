@@ -10,6 +10,7 @@
 #include "../../Action/Font/ActionFontEditGlobal.h"
 #include "../../Action/Font/ActionFontEditGlyph.h"
 #include "../../x/font.h"
+#include "../../lib/nix/nix.h"
 
 DataFont::DataFont() :
 	Data(FDFont)

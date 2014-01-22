@@ -7,7 +7,8 @@
 
 #include "../../lib/math/math.h"
 #include "SkinGenerator.h"
-#include "../../MultiView.h"
+#include "../../MultiView/MultiView.h"
+#include "../../MultiView/MultiViewWindow.h"
 #include "../../Data/Model/DataModel.h"
 
 SkinGenerator::SkinGenerator()

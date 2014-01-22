@@ -6,7 +6,8 @@
  */
 
 #include "../../../Edward.h"
-#include "../../../MultiView.h"
+#include "../../../MultiView/MultiView.h"
+#include "../../../MultiView/MultiViewWindow.h"
 #include "ModeModelMesh.h"
 #include "ModeModelMeshVertex.h"
 #include "ModeModelMeshPolygon.h"

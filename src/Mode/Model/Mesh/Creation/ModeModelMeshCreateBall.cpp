@@ -101,8 +101,8 @@ void ModeModelMeshCreateBall::OnLeftButtonDown()
 
 		Abort();
 	}else{
-		if (multi_view->Selected >= 0)
-			pos = data->Vertex[multi_view->Selected].pos;
+		if (multi_view->selection.index >= 0)
+			pos = data->Vertex[multi_view->selection.index].pos;
 		else
 			pos = multi_view->GetCursor3d();
 		message = _("Kugel skalieren");

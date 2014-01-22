@@ -10,6 +10,7 @@
 #include "../ModelPolygon.h"
 #include "../SkinGenerator.h"
 #include "../../../lib/nix/nix.h"
+#include "../../../MultiView/MultiViewWindow.h"
 
 
 static float Bernstein3(int i, float t)

@@ -16,7 +16,7 @@
 #include "Mode/Font/ModeFont.h"
 #include "Mode/Welcome/ModeWelcome.h"
 #include "Mode/ModeCreation.h"
-#include "MultiView.h"
+#include "MultiView/MultiView.h"
 #include "x/world.h"
 #include "x/camera.h"
 #include "meta.h"

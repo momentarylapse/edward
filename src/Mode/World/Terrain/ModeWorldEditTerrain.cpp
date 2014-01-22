@@ -8,6 +8,7 @@
 #include "ModeWorldEditTerrain.h"
 #include "../../../Action/World/Terrain/ActionWorldTerrainBrushExtrude.h"
 #include "../../../Edward.h"
+#include "../../../lib/nix/nix.h"
 
 const float BRUSH_PARTITION = 0.3f;
 
@@ -33,7 +34,7 @@ Action *ModeWorldEditTerrain::GetAction(const vector &pos)
 
 	Action *a = NULL;
 	if (type == 0)
-		a = new ActionWorldTerrainBrushExtrude(multi_view->MouseOver, pos, radius, depth);
+		a = new ActionWorldTerrainBrushExtrude(multi_view->hover.index, pos, radius, depth);
 	return a;
 }
 
@@ -102,9 +103,9 @@ void ModeWorldEditTerrain::OnMouseMove()
 {
 	if (!brushing)
 		return;
-	if ((multi_view->MouseOver < 0) || (multi_view->MouseOverType != MVDWorldTerrain))
+	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVDWorldTerrain))
 		return;
-	vector pos = multi_view->MouseOverTP;
+	vector pos = multi_view->hover.point;
 	float radius = dialog->GetFloat("diameter") / 2;
 	vector dir = pos - last_pos;
 	dir.normalize();
@@ -116,10 +117,10 @@ void ModeWorldEditTerrain::OnMouseMove()
 
 void ModeWorldEditTerrain::OnLeftButtonDown()
 {
-	if ((multi_view->MouseOver < 0) || (multi_view->MouseOverType != MVDWorldTerrain))
+	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVDWorldTerrain))
 		return;
 	data->BeginActionGroup("TerrainBrush");
-	vector pos = multi_view->MouseOverTP;
+	vector pos = multi_view->hover.point;
 	brushing = true;
 
 	Apply(pos);
@@ -138,9 +139,9 @@ void ModeWorldEditTerrain::OnCommand(const string& id)
 
 void ModeWorldEditTerrain::OnDrawWin(MultiViewWindow* win)
 {
-	if ((multi_view->MouseOver < 0) || (multi_view->MouseOverType != MVDWorldTerrain))
+	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVDWorldTerrain))
 		return;
-	vector pos = multi_view->MouseOverTP;
+	vector pos = multi_view->hover.point;
 	float radius = dialog->GetFloat("diameter") / 2;
 
 	NixSetColor(Green);

@@ -6,7 +6,8 @@
  */
 
 #include "../../../Edward.h"
-#include "../../../MultiView.h"
+#include "../../../MultiView/MultiView.h"
+#include "../../../MultiView/MultiViewWindow.h"
 #include "ModeModelMeshPolygon.h"
 #include "ModeModelMeshEdge.h"
 #include "ModeModelMesh.h"
@@ -99,12 +100,12 @@ void ModeModelMeshPolygon::FillSelectionBuffers(Array<ModelVertex> &vertex)
 	// create selection buffers
 	msg_db_m("a",4);
 	ModelPolygon *mmo = NULL;
-	if ((multi_view->MouseOver >= 0) && (multi_view->MouseOverSet < data->Surface.num) && (multi_view->MouseOverType == MVDModelPolygon))
-		mmo = &data->Surface[multi_view->MouseOverSet].Polygon[multi_view->MouseOver];
+	if ((multi_view->hover.index >= 0) && (multi_view->hover.set < data->Surface.num) && (multi_view->hover.type == MVDModelPolygon))
+		mmo = &data->Surface[multi_view->hover.set].Polygon[multi_view->hover.index];
 	foreachi(ModelSurface &s, data->Surface, si){
 		bool s_mo = false;
-		if ((multi_view->MouseOver >= 0) && (multi_view->MouseOverType == MVDModelSurface))
-			s_mo = (multi_view->MouseOver == si);
+		if ((multi_view->hover.index >= 0) && (multi_view->hover.type == MVDModelSurface))
+			s_mo = (multi_view->hover.index == si);
 		foreach(ModelPolygon &t, s.Polygon)
 			/*if (t.view_stage >= ViewStage)*/{
 			if (t.is_selected)

@@ -10,6 +10,7 @@
 #include "../../ModeModel.h"
 #include "../../../../Data/Model/Geometry/GeometryTorus.h"
 #include "../../../../Edward.h"
+#include "../../../../MultiView/MultiViewWindow.h"
 
 #define RADIUS_FACTOR	0.5f
 
@@ -81,8 +82,8 @@ void ModeModelMeshCreateTorus::OnLeftButtonDown()
 			rad_chosen = true;
 		}
 	}else{
-		if (multi_view->Selected >= 0)
-			pos = data->Vertex[multi_view->Selected].pos;
+		if (multi_view->selection.index >= 0)
+			pos = data->Vertex[multi_view->selection.index].pos;
 		else
 			pos = multi_view->GetCursor3d();
 		message = _("Torus au&sen skalieren");

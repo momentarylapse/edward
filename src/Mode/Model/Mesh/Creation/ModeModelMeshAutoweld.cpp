@@ -7,6 +7,7 @@
 
 #include "ModeModelMeshAutoweld.h"
 #include "../../../../Edward.h"
+#include "../../../../MultiView/MultiViewWindow.h"
 
 ModeModelMeshAutoweld::ModeModelMeshAutoweld(ModeBase* _parent) :
 	ModeCreation<DataModel>("ModelMeshAutoweld", _parent)

@@ -11,6 +11,7 @@
 #include "../../../../Data/Model/Geometry/GeometryCube.h"
 #include "../../../../Data/Model/Geometry/GeometryPlane.h"
 #include "../../../../Edward.h"
+#include "../../../../MultiView/MultiViewWindow.h"
 
 ModeModelMeshCreateCube::ModeModelMeshCreateCube(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateCube", _parent)
@@ -70,8 +71,8 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 
 			Abort();
 		}else{
-			if (multi_view->Selected >= 0)
-				pos2 = data->Vertex[multi_view->Selected].pos;
+			if (multi_view->selection.index >= 0)
+				pos2 = data->Vertex[multi_view->selection.index].pos;
 			else
 				pos2 = multi_view->GetCursor3d();
 			message = _("W&urfel: Punkt 3 / 3");
@@ -80,8 +81,8 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 			UpdateGeometry();
 		}
 	}else{
-		if (multi_view->Selected >= 0)
-			pos = data->Vertex[multi_view->Selected].pos;
+		if (multi_view->selection.index >= 0)
+			pos = data->Vertex[multi_view->selection.index].pos;
 		else
 			pos = multi_view->GetCursor3d();
 		message = _("W&urfel: Punkt 2 / 3");

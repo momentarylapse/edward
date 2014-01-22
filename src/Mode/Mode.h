@@ -9,9 +9,12 @@
 #define MODE_H_
 
 #include "../lib/hui/hui.h"
+#include "../lib/math/math.h"
 #include "../Data/Data.h"
-#include "../MultiView.h"
 #include "../Stuff/Observer.h"
+
+class MultiView;
+class MultiViewWindow;
 
 class ModeBase : public Observer
 {

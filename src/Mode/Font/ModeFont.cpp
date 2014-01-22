@@ -6,6 +6,7 @@
  */
 
 #include "../../Edward.h"
+#include "../../MultiView/MultiView.h"
 #include "ModeFont.h"
 #include "../../Data/Font/DataFont.h"
 #include "../../Data/Font/Import/ImporterCairo.h"

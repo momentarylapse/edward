@@ -7,6 +7,7 @@
 
 #include "ModeCreation.h"
 #include "../Edward.h"
+#include "../lib/nix/nix.h"
 #include <assert.h>
 
 ModeCreationBase::ModeCreationBase(const string &_name, ModeBase *_parent) :

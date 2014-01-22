@@ -10,6 +10,7 @@
 #include "../ModeWorld.h"
 #include "../../../Action/World/ActionWorldEditData.h"
 #include "../../../lib/script/script.h"
+#include "../../../lib/nix/nix.h"
 
 #define WorldPhysicsDec			3
 #define WorldLightDec			1

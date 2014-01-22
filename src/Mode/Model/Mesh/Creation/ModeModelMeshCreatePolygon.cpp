@@ -10,6 +10,7 @@
 #include "../../../../Edward.h"
 #include "../../../../Action/Model/Mesh/Polygon/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../lib/nix/nix.h"
+#include "../../../../MultiView/MultiViewWindow.h"
 
 ModeModelMeshCreatePolygon::ModeModelMeshCreatePolygon(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreatePolygon", _parent)
@@ -64,10 +65,10 @@ void ModeModelMeshCreatePolygon::OnKeyDown()
 
 void ModeModelMeshCreatePolygon::OnLeftButtonDown()
 {
-	if (multi_view->Selected >= 0){
+	if (multi_view->selection.index >= 0){
 		// closed loop -> done
 		if (selection.num > 0)
-			if (multi_view->Selected == selection[0]){
+			if (multi_view->selection.index == selection[0]){
 				data->Execute(new ActionModelAddPolygonAutoSkin(selection, mode_model_mesh->CurrentMaterial));
 				Abort();
 				return;
@@ -75,7 +76,7 @@ void ModeModelMeshCreatePolygon::OnLeftButtonDown()
 
 		// consistency?
 		foreachi(int s, selection, i)
-			if (s == multi_view->Selected)
+			if (s == multi_view->selection.index)
 				if (i > 0){
 					ed->SetMessage(_("keine doppelten Punkte erlaubt!"));
 					Abort();
@@ -83,7 +84,7 @@ void ModeModelMeshCreatePolygon::OnLeftButtonDown()
 				}
 
 		// all ok -> add
-		selection.add(multi_view->Selected);
+		selection.add(multi_view->selection.index);
 
 	}else{
 		data->AddVertex(multi_view->GetCursor3d());

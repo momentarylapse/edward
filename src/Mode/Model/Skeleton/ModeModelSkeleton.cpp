@@ -6,7 +6,8 @@
  */
 
 #include "../../../Edward.h"
-#include "../../../MultiView.h"
+#include "../../../MultiView/MultiView.h"
+#include "../../../MultiView/MultiViewWindow.h"
 #include "ModeModelSkeleton.h"
 #include "../Mesh/ModeModelMeshPolygon.h"
 #include "../Animation/ModeModelAnimation.h"
@@ -177,7 +178,7 @@ void ModeModelSkeleton::OnDrawWin(MultiViewWindow *win)
 		if (r < 0)
 			continue;
 		color c = data->Bone[r].is_selected ? Red : Blue;
-		if (multi_view->MouseOver == r)
+		if (multi_view->hover.index == r)
 			c = ColorInterpolate(c, White, 0.3f);
 		DrawBone(data->Bone[r].pos, b.pos, c, win);
 	}

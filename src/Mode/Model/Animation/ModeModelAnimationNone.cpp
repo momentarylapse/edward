@@ -8,7 +8,7 @@
 #include "ModeModelAnimationNone.h"
 #include "ModeModelAnimation.h"
 #include "../../../Edward.h"
-#include "../../../MultiView.h"
+#include "../../../MultiView/MultiView.h"
 #include "../Mesh/ModeModelMeshPolygon.h"
 
 ModeModelAnimationNone *mode_model_animation_none = NULL;

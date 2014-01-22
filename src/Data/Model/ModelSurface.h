@@ -8,7 +8,7 @@
 #ifndef MODELSURFACE_H_
 #define MODELSURFACE_H_
 
-#include "../../MultiView.h"
+#include "../../MultiView/MultiView.h"
 #include "DataModel.h"
 #include "../../lib/base/set.h"
 #include "../../lib/math/math.h"

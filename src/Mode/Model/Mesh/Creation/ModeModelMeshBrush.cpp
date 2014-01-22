@@ -27,8 +27,8 @@ ModeModelMeshBrush::~ModeModelMeshBrush()
 
 Action *ModeModelMeshBrush::GetAction()
 {
-	vector pos = multi_view->MouseOverTP;
-	vector n = data->Surface[multi_view->MouseOverSet].Polygon[multi_view->MouseOver].TempNormal;
+	vector pos = multi_view->hover.point;
+	vector n = data->Surface[multi_view->hover.set].Polygon[multi_view->hover.index].TempNormal;
 	float radius = dialog->GetFloat("diameter") / 2;
 	float depth = dialog->GetFloat("depth");
 	int type = dialog->GetInt("brush_type");
@@ -105,10 +105,10 @@ void ModeModelMeshBrush::OnEnd()
 
 void ModeModelMeshBrush::OnLeftButtonDown()
 {
-	if (multi_view->MouseOver < 0)
+	if (multi_view->hover.index < 0)
 		return;
 	data->BeginActionGroup("brush");
-	vector pos = multi_view->MouseOverTP;
+	vector pos = multi_view->hover.point;
 	distance = 0;
 	last_pos = pos;
 	brushing = true;
@@ -127,9 +127,9 @@ void ModeModelMeshBrush::OnMouseMove()
 {
 	if (!brushing)
 		return;
-	if (multi_view->MouseOver < 0)
+	if (multi_view->hover.index < 0)
 		return;
-	vector pos = multi_view->MouseOverTP;
+	vector pos = multi_view->hover.point;
 	float radius = dialog->GetFloat("diameter") / 2;
 	distance += (pos - last_pos).length();
 	last_pos = pos;
@@ -141,10 +141,10 @@ void ModeModelMeshBrush::OnMouseMove()
 
 void ModeModelMeshBrush::OnDrawWin(MultiViewWindow* win)
 {
-	if (multi_view->MouseOver < 0)
+	if (multi_view->hover.index < 0)
 		return;
-	vector pos = multi_view->MouseOverTP;
-	vector n = data->Surface[multi_view->MouseOverSet].Polygon[multi_view->MouseOver].TempNormal;
+	vector pos = multi_view->hover.point;
+	vector n = data->Surface[multi_view->hover.set].Polygon[multi_view->hover.index].TempNormal;
 	float radius = dialog->GetFloat("diameter") / 2;
 
 	NixSetColor(Green);

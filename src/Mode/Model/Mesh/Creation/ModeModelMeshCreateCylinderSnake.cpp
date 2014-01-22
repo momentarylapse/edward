@@ -10,6 +10,7 @@
 #include "../../ModeModel.h"
 #include "../../../../Data/Model/Geometry/GeometryCylinder.h"
 #include "../../../../Edward.h"
+#include "../../../../MultiView/MultiViewWindow.h"
 
 const float CYLINDER_CLOSING_DISTANCE = 20;
 
@@ -102,8 +103,8 @@ void ModeModelMeshCreateCylinderSnake::OnLeftButtonDown()
 			}
 
 		}
-		if (multi_view->Selected >= 0)
-			pos.add(data->Vertex[multi_view->Selected].pos);
+		if (multi_view->selection.index >= 0)
+			pos.add(data->Vertex[multi_view->selection.index].pos);
 		else
 			pos.add(multi_view->GetCursor3d());
 	}

@@ -9,7 +9,7 @@
 #define DATAMODEL_H_
 
 #include "../Data.h"
-#include "../../MultiView.h"
+#include "../../MultiView/MultiView.h"
 #include "../../lib/base/set.h"
 #include "../../x/model.h"
 #include "../../x/material.h"

@@ -7,7 +7,7 @@
 
 #include "ModeModelAnimationSkeleton.h"
 #include "../../../Edward.h"
-#include "../../../MultiView.h"
+#include "../../../MultiView/MultiView.h"
 #include "../Mesh/ModeModelMeshPolygon.h"
 #include "../Skeleton/ModeModelSkeleton.h"
 

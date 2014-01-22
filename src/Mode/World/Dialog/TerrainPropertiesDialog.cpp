@@ -10,6 +10,7 @@
 #include "../../../Edward.h"
 #include "../../../x/terrain.h"
 #include "../../../x/material.h"
+#include "../../../lib/nix/nix.h"
 #include <assert.h>
 
 string file_secure(const string &filename); // -> ModelPropertiesDialog

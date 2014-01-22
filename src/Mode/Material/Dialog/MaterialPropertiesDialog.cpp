@@ -10,6 +10,7 @@
 #include "../ModeMaterial.h"
 #include "../../../Action/Material/ActionMaterialEditAppearance.h"
 #include "../../../Action/Material/ActionMaterialEditPhysics.h"
+#include "../../../lib/nix/nix.h"
 
 
 string file_secure(const string &filename); // -> ModelPropertiesDialog

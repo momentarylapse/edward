@@ -9,6 +9,7 @@
 
 #include "../lib/script/script.h"
 #include "../Edward.h"
+#include "../MultiView/MultiView.h"
 #include "../Mode/Model/ModeModel.h"
 #include "../Mode/World/ModeWorld.h"
 #include "../Data/Model/Geometry/GeometryBall.h"

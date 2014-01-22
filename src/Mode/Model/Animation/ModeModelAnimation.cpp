@@ -6,7 +6,7 @@
  */
 
 #include "../../../Edward.h"
-#include "../../../MultiView.h"
+#include "../../../MultiView/MultiView.h"
 #include "ModeModelAnimation.h"
 #include "ModeModelAnimationNone.h"
 #include "ModeModelAnimationSkeleton.h"
