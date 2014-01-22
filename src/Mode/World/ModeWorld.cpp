@@ -231,7 +231,7 @@ bool WorldTerrain::Hover(MultiView::Window *win, vector &mv, vector &tp, float &
 	TraceData td;
 	bool hit = t->Trace(a, b, v_0, r, td, false);
 	tp = td.point;
-	z = 1;
+	z = win->Project(tp).z;
 	return hit;
 }
 
@@ -286,7 +286,6 @@ void ModeWorld::OnUpdate(Observable *o)
 
 		multi_view->ResetData(data);
 
-		multi_view->allow_rect = true;
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		multi_view->SetData(	MVDWorldObject,
 				data->Objects,

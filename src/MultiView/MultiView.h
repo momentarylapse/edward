@@ -81,6 +81,7 @@ public:
 	void HoldCursor(bool holding);
 	void StartRect();
 	void EndRect();
+	void UpdateMouse();
 
 	color ColorBackGround3D;
 	color ColorBackGround2D;

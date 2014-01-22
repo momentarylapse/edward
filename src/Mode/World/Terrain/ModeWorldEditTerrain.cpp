@@ -49,6 +49,7 @@ void ModeWorldEditTerrain::Apply(const vector &pos)
 void ModeWorldEditTerrain::OnStart()
 {
 	multi_view->allow_mouse_actions = false;
+	multi_view->allow_rect = false;
 
 	// Dialog
 	dialog = new HuiFixedDialog(_("Pinsel"), 300, 155, ed, true);//HuiCreateResourceDialog("new_ball_dialog", ed);
@@ -84,6 +85,7 @@ void ModeWorldEditTerrain::OnEnd()
 {
 	delete(dialog);
 	multi_view->allow_mouse_actions = true;
+	multi_view->allow_rect = true;
 	if (brushing)
 		data->EndActionGroup();
 }

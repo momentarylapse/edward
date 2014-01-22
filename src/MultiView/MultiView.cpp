@@ -353,9 +353,9 @@ int get_select_mode()
 
 void MultiView::OnLeftButtonDown()
 {
-	m.x = HuiGetEvent()->mx;
-	m.y = HuiGetEvent()->my;
+	UpdateMouse();
 	active_win = mouse_win;
+
 	// menu for selection of view type
 	if ((menu) && (active_win->name_dest.inside(m.x, m.y))){
 		menu->OpenPopup(ed, m.x, m.y);
@@ -369,10 +369,12 @@ void MultiView::OnLeftButtonDown()
 	RectX = m.x;
 	RectY = m.y;
 	v = v_0;
-	if (action_con->action.mode == ActionSelect){
-		GetSelected(get_select_mode());
+	if (allow_mouse_actions){
+		if (action_con->action.mode == ActionSelect){
+			GetSelected(get_select_mode());
 
-	}else if (action_con->LeftButtonDown()){
+		}else if (action_con->LeftButtonDown()){
+		}
 	}
 }
 
@@ -453,7 +455,7 @@ void MultiView::OnLeftButtonUp()
 
 
 
-void MultiView::OnMouseMove()
+void MultiView::UpdateMouse()
 {
 	m.x = HuiGetEvent()->mx;
 	m.y = HuiGetEvent()->my;
@@ -482,10 +484,19 @@ void MultiView::OnMouseMove()
 	}else{
 		mouse_win = win[0];
 	}
+}
 
+
+void MultiView::OnMouseMove()
+{
+	UpdateMouse();
+
+	bool lbut = HuiGetEvent()->lbut;
+	bool mbut = HuiGetEvent()->mbut;
+	bool rbut = HuiGetEvent()->rbut;
 
 	// hover
-	if ((!lbut) && (!mbut) && (!rbut))
+	if ((!action_con->InUse()) && (!MVRect))
 		GetMouseOver();
 
 	if ((lbut) && (action_con->action.mode == ActionSelect) && allow_rect){
