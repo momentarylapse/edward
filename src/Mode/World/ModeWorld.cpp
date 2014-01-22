@@ -481,6 +481,7 @@ void ModeWorld::OnDrawWin(MultiView::Window *win)
 	}
 
 
+	NixSetWorldMatrix(m_id);
 	NixSetZ(true,true);
 	NixEnableFog(false);
 }

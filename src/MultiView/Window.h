@@ -19,13 +19,13 @@ class Camera;
 class Window
 {
 public:
-	Window(MultiViewImpl *impl);
+	Window(MultiViewImpl *impl, int type);
 
 	int type;
 	matrix mat;
 	rect dest;
 	rect name_dest;
-	vector ang;
+	quaternion ang;
 	matrix projection;
 	MultiView *multi_view;
 	MultiViewImpl *impl;

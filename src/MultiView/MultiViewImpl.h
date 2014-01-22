@@ -25,6 +25,22 @@ struct DataSet
 
 
 
+extern color ColorBackGround3D;
+extern color ColorBackGround2D;
+extern color ColorGrid;
+extern color ColorText;
+extern color ColorWindowType;
+extern color ColorPoint;
+extern color ColorPointSelected;
+extern color ColorPointSpecial;
+extern color ColorWindowSeparator;
+extern color ColorSelectionRect;
+extern color ColorSelectionRectBoundary;
+
+extern int PointRadius;
+extern int PointRadiusMouseOver;
+
+
 class MultiViewImpl : public MultiView
 {
 public:
@@ -73,21 +89,6 @@ public:
 	void EndRect();
 	void UpdateMouse();
 
-	color ColorBackGround3D;
-	color ColorBackGround2D;
-	color ColorGrid;
-	color ColorText;
-	color ColorWindowType;
-	color ColorPoint;
-	color ColorPointSelected;
-	color ColorPointSpecial;
-	color ColorWindowSeparator;
-	color ColorSelectionRect;
-	color ColorSelectionRectBoundary;
-
-	int PointRadius;
-	int PointRadiusMouseOver;
-
 	void GetMouseOver();
 	void UnselectAll();
 	enum{
@@ -109,27 +110,32 @@ public:
 	Window *cur_projection_win;
 
 	ActionController *action_con;
-	Data *_data_;
 	virtual void ResetMouseAction();
 	virtual void SetMouseAction(const string &name, int mode);
 
 	Array<DataSet> data;
-	bool AllowViewStage, AllowViewStageHandling;
+	bool allow_view_stage, allow_view_stage_handling;
 	vector MovingDPos,RFPos,LFPos;
-//	bool EditingStart, EditingEnd, DataChanged, Changed;
 
 	bool HoldingCursor;
 	float HoldingX, HoldingY;
-	bool MVRect;
-	float RectX, RectY;
+
+	struct SelectionRect
+	{
+		bool active;
+		int dist;
+		vector pos0;
+		void start_later(const vector &m);
+		void end();
+		rect get(const vector &m);
+		void draw(const vector &m);
+	};
+	SelectionRect sel_rect;
 	bool ViewMoving;
 
 
-	int MouseMovedSinceClick;
-	bool Moved;
 	int MovingWin;
 	vector MovingStart, MovingDP;
-	bool MultiViewEditing;
 
 	HuiMenu *menu;
 

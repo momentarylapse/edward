@@ -49,7 +49,8 @@ enum{
 
 struct Camera
 {
-	vector pos, ang;
+	vector pos;
+	quaternion ang;
 	float zoom, radius;
 	bool ignore_radius;
 };
@@ -61,7 +62,6 @@ static const int FlagDraw = 2;
 static const int FlagIndex = 4;
 static const int FlagMove = 8;
 
-// TODO refactor me!!!
 class MultiView : public Observable
 {
 public:

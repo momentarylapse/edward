@@ -13,6 +13,7 @@
 
 class ActionMultiView;
 class Geometry;
+class Data;
 
 namespace MultiView{
 
@@ -38,6 +39,7 @@ struct MouseAction
 class ActionController
 {
 public:
+	ActionController(MultiViewImpl *impl);
 	bool show;
 	vector pos, pos0, m0;
 	vector param;
@@ -49,6 +51,7 @@ public:
 	MultiViewImpl *multi_view;
 	MouseAction action;
 	ActionMultiView *cur_action;
+	Data *data;
 	void reset();
 	void Draw(Window *win);
 	void DrawParams();

@@ -31,6 +31,11 @@ enum{
 
 namespace MultiView{
 
+ActionController::ActionController(MultiViewImpl *impl)
+{
+	multi_view = impl;
+}
+
 void ActionController::StartAction()
 {
 	if (cur_action)
@@ -46,8 +51,8 @@ void ActionController::StartAction()
 		pos0 = pos;
 		if (mode == ActionModeFree)
 			pos0 = multi_view->hover.point;
-		cur_action = ActionMultiViewFactory(action.name, multi_view->_data_);
-		cur_action->execute_logged(multi_view->_data_);
+		cur_action = ActionMultiViewFactory(action.name, data);
+		cur_action->execute_logged(data);
 		multi_view->Notify("ActionStart");
 	}
 }
@@ -56,7 +61,7 @@ void ActionController::StartAction()
 vector transform_ang(MultiViewImpl *mv, const vector &ang)
 {
 	quaternion qmv, mqmv, qang, q;
-	QuaternionRotationV(qmv,  mv->active_win->ang);
+	qmv =  mv->active_win->ang;
 	QuaternionRotationV(qang, ang);
 	mqmv = qmv;
 	mqmv.invert();
@@ -138,7 +143,7 @@ void ActionController::UpdateAction()
 		param = v_0;
 		mat = m_id;
 	}
-	cur_action->update_and_notify(multi_view->_data_, mat);
+	cur_action->update_and_notify(data, mat);
 
 	Update();
 
@@ -153,11 +158,11 @@ void ActionController::EndAction(bool set)
 		return;
 	//msg_write("mouse action end");
 	if (set){
-		cur_action->undo(multi_view->_data_);
-		multi_view->_data_->Execute(cur_action);
+		cur_action->undo(data);
+		data->Execute(cur_action);
 		multi_view->Notify("ActionExecute");
 	}else{
-		cur_action->abort_and_notify(multi_view->_data_);
+		cur_action->abort_and_notify(data);
 		delete(cur_action);
 		multi_view->Notify("ActionAbort");
 	}

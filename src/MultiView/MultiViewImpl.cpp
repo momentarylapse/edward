@@ -22,6 +22,22 @@ const float SPEED_ZOOM_WHEEL = 1.15f;
 const int MinMouseMoveToInteract = 5;
 const float MouseRotationSpeed = 0.0033f;
 
+
+color ColorBackGround3D;
+color ColorBackGround2D;
+color ColorGrid;
+color ColorText;
+color ColorWindowType;
+color ColorPoint;
+color ColorPointSelected;
+color ColorPointSpecial;
+color ColorWindowSeparator;
+color ColorSelectionRect;
+color ColorSelectionRectBoundary;
+
+int PointRadius;
+int PointRadiusMouseOver;
+
 #define update_zoom		\
 	if (mode3d) \
 		cam.zoom = ((float)NixScreenHeight / (whole_window ? 1.0f : 2.0f) / cam.radius); \
@@ -50,16 +66,13 @@ MultiViewImpl::MultiViewImpl(bool _mode3d) :
 	PointRadiusMouseOver = 4;
 
 	mode3d = _mode3d;
-	for (int i=0;i<4;i++)
-		win[i] = new Window(this);
+	win[0] = new Window(this, ViewBack);
+	win[1] = new Window(this, ViewLeft);
+	win[2] = new Window(this, ViewTop);
+	win[3] = new Window(this, ViewPerspective);
 
 	if (mode3d){
 		light = 0;
-
-		win[0]->type = ViewBack;
-		win[1]->type = ViewLeft;
-		win[2]->type = ViewTop;
-		win[3]->type = ViewPerspective;
 
 		// Menu
 		menu = new HuiMenu;
@@ -78,8 +91,7 @@ MultiViewImpl::MultiViewImpl(bool _mode3d) :
 		win[0]->type = View2D;
 		light = -1;
 	}
-	action_con = new ActionController;
-	action_con->multi_view = this;
+	action_con = new ActionController(this);
 	m = v_0;
 	HoldingCursor = false;
 	HoldingX = HoldingY = 0;
@@ -94,7 +106,8 @@ MultiViewImpl::~MultiViewImpl()
 
 void MultiViewImpl::Reset()
 {
-	allow_rect = MVRect = false;
+	allow_rect = false;
+	sel_rect.active = false;
 	if (mode3d){
 		mouse_win = win[3];
 		active_win = win[3];
@@ -143,8 +156,8 @@ void MultiViewImpl::ResetMouseAction()
 void MultiViewImpl::ResetData(Data *_data)
 {
 	data.clear();
-	_data_ = _data;
-	if (!_data_)
+	action_con->data = _data;
+	if (!_data)
 		ResetMouseAction();
 }
 
@@ -334,11 +347,8 @@ void MultiViewImpl::OnLeftButtonDown()
 
 	GetMouseOver();
 
-	MouseMovedSinceClick = 0;
-	Moved = false;
-	RectX = m.x;
-	RectY = m.y;
-	v = v_0;
+	sel_rect.start_later(m);
+	//v = v_0;
 	if (allow_mouse_actions){
 		if (action_con->action.mode == ActionSelect){
 			GetSelected(get_select_mode());
@@ -418,7 +428,6 @@ void MultiViewImpl::OnKeyUp()
 void MultiViewImpl::OnLeftButtonUp()
 {
 	EndRect();
-	MultiViewEditing = false;
 
 	action_con->LeftButtonUp();
 }
@@ -466,18 +475,17 @@ void MultiViewImpl::OnMouseMove()
 	bool rbut = HuiGetEvent()->rbut;
 
 	// hover
-	if ((!action_con->InUse()) && (!MVRect))
+	if ((!action_con->InUse()) && (!sel_rect.active))
 		GetMouseOver();
 
-	if ((lbut) && (action_con->action.mode == ActionSelect) && allow_rect){
-		int d = abs(v.x) + abs(v.y);
-		MouseMovedSinceClick += d;
-		if ((MouseMovedSinceClick - d < MinMouseMoveToInteract) && (MouseMovedSinceClick >= MinMouseMoveToInteract))
+	if ((lbut) && (action_con->action.mode == ActionSelect) && (allow_rect) && (!sel_rect.active)){
+		sel_rect.dist += abs(v.x) + abs(v.y);
+		if (sel_rect.dist >= MinMouseMoveToInteract)
 			StartRect();
 	}
 
 	// rectangle
-	if (MVRect)
+	if (sel_rect.active)
 		SelectAllInRectangle(get_select_mode());
 
 	// left button -> move data
@@ -491,11 +499,12 @@ void MultiViewImpl::OnMouseMove()
 // camera rotation
 			bool RotatingOwn = (mbut || (NixGetKey(KEY_CONTROL)));
 			if (RotatingOwn)
-				cam.pos -= cam.radius * cam.ang.ang2dir();
-			vector dang = vector(v.y, v.x, 0) * MouseRotationSpeed;
-			cam.ang = VecAngAdd(dang, cam.ang);
+				cam.pos -= cam.radius * (cam.ang * e_z);
+			quaternion dang;
+			QuaternionRotationV(dang, vector(v.y, v.x, 0) * MouseRotationSpeed);
+			cam.ang = cam.ang * dang;
 			if (RotatingOwn)
-				cam.pos += cam.radius * cam.ang.ang2dir();
+				cam.pos += cam.radius * (cam.ang * e_z);
 		}else{
 // camera translation
 			vector r = active_win->GetDirectionRight();
@@ -518,7 +527,7 @@ void MultiViewImpl::OnMouseMove()
 
 void MultiViewImpl::StartRect()
 {
-	MVRect = true;
+	sel_rect.active = true;
 
 	// reset selection data
 	foreach(DataSet &d, data)
@@ -533,10 +542,7 @@ void MultiViewImpl::StartRect()
 
 void MultiViewImpl::EndRect()
 {
-	/*if (PostEndRect)
-		PostEndRect();*/
-
-	MVRect = false;
+	sel_rect.active = false;
 
 	Notify("Update");
 }
@@ -671,25 +677,46 @@ void MultiViewImpl::OnDraw()
 	cur_projection_win = NULL;
 	NixEnableLighting(false);
 
-	if ((allow_rect)&&(MVRect)){
-		NixSetZ(false, false);
-		NixSetAlphaM(AlphaMaterial);
-		NixSetColor(ColorSelectionRect);
-		NixDrawRect(m.x, RectX, m.y, RectY, 0);
-		NixSetColor(ColorSelectionRectBoundary);
-		NixDrawLineV(RectX	,RectY	,m.y	,0);
-		NixDrawLineV(m.x	,RectY	,m.y	,0);
-		NixDrawLineH(RectX	,m.x	,RectY	,0);
-		NixDrawLineH(RectX	,m.x	,m.y	,0);
-		NixSetAlphaM(AlphaNone);
-		NixSetZ(true, true);
-	}
+	if (sel_rect.active)
+		sel_rect.draw(m);
+
 	NixSetColor(ColorText);
 
 	DrawMousePos();
 
 	if (action_con->InUse())
 		action_con->DrawParams();
+}
+
+void MultiViewImpl::SelectionRect::start_later(const vector &m)
+{
+	pos0 = m;
+	dist = 0;
+}
+
+void MultiViewImpl::SelectionRect::end()
+{
+	active = false;
+}
+
+void MultiViewImpl::SelectionRect::draw(const vector &m)
+{
+	NixSetZ(false, false);
+	NixSetAlphaM(AlphaMaterial);
+	NixSetColor(ColorSelectionRect);
+	NixDrawRect(m.x, pos0.x, m.y, pos0.y, 0);
+	NixSetColor(ColorSelectionRectBoundary);
+	NixDrawLineV(pos0.x	,pos0.y	,m.y	,0);
+	NixDrawLineV(m.x	,pos0.y	,m.y	,0);
+	NixDrawLineH(pos0.x	,m.x	,pos0.y	,0);
+	NixDrawLineH(pos0.x	,m.x	,m.y	,0);
+	NixSetAlphaM(AlphaNone);
+	NixSetZ(true, true);
+}
+
+rect MultiViewImpl::SelectionRect::get(const vector &m)
+{
+	return rect(min(m.x, pos0.x), max(m.x, pos0.x), min(m.y, pos0.y), max(m.y, pos0.y));
 }
 
 void MultiViewImpl::SetMouseAction(const string & name, int mode)
@@ -864,7 +891,7 @@ void MultiViewImpl::SelectAllInRectangle(int mode)
 	// reset data
 	UnselectAll();
 
-	rect r = rect(min(m.x, RectX), max(m.x, RectX), min(m.y, RectY), max(m.y, RectY));
+	rect r = sel_rect.get(m);
 
 	// select
 	foreach(DataSet &d, data)

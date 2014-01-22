@@ -6,6 +6,7 @@
  */
 
 #include "SingleData.h"
+#include "MultiViewImpl.h"
 #include "Window.h"
 
 namespace MultiView{
@@ -25,7 +26,7 @@ bool SingleData::Hover(Window *win, vector &m, vector &tp, float &z, void *user_
 	vector p = win->Project(pos);
 	if ((p.z <= 0) || (p.z >= 1))
 		return false;
-	const float _radius = 4;
+	float _radius = PointRadiusMouseOver;
 	if ((m.x >= p.x - _radius) && (m.x <= p.x + _radius) && (m.y >= p.y - _radius) && (m.y <= p.y + _radius)){
 		z = p.z;
 		tp = pos;
