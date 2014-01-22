@@ -72,8 +72,8 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 
 			Abort();
 		}else{
-			if (multi_view->selection.index >= 0)
-				pos2 = data->Vertex[multi_view->selection.index].pos;
+			if (multi_view->hover.index >= 0)
+				pos2 = data->Vertex[multi_view->hover.index].pos;
 			else
 				pos2 = multi_view->GetCursor3d();
 			message = _("W&urfel: Punkt 3 / 3");
@@ -82,8 +82,8 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 			UpdateGeometry();
 		}
 	}else{
-		if (multi_view->selection.index >= 0)
-			pos = data->Vertex[multi_view->selection.index].pos;
+		if (multi_view->hover.index >= 0)
+			pos = data->Vertex[multi_view->hover.index].pos;
 		else
 			pos = multi_view->GetCursor3d();
 		message = _("W&urfel: Punkt 2 / 3");

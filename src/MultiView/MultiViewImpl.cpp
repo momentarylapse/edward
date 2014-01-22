@@ -118,7 +118,7 @@ void MultiViewImpl::Reset()
 
 	ViewMoving = false;
 
-	selection.reset();
+	hover.reset();
 	action_con->reset();
 
 	ResetData(NULL);
@@ -371,7 +371,6 @@ void MultiViewImpl::OnMiddleButtonDown()
 // move camera?
 		HoldCursor(true);
 		ViewMoving = true;
-		selection.reset();
 	//}
 	Notify("Update");
 }
@@ -389,7 +388,6 @@ void MultiViewImpl::OnRightButtonDown()
 // move camera?
 		HoldCursor(true);
 		ViewMoving = true;
-		selection.reset();
 	/*}else{
 		MouseMovedSinceClick = 0;
 		GetSelected();
@@ -860,16 +858,14 @@ void MultiViewImpl::GetSelected(int mode)
 {
 	msg_db_f("GetSelected",4);
 	NotifyBegin();
-	selection = hover;
-	if ((selection.index < 0) || (selection.type < 0)){
+	if ((hover.index < 0) || (hover.type < 0)){
 		if (mode == SelectSet)
 			UnselectAll();
 	}else{
-		SingleData* sd=MVGetSingleData(data[selection.set], selection.index);
+		SingleData* sd=MVGetSingleData(data[hover.set], hover.index);
 		if (sd->is_selected){
 			if (mode == SelectInvert){
 				sd->is_selected=false;
-				selection.index = selection.type = -1;
 			}
 		}else{
 			if (mode == SelectSet){

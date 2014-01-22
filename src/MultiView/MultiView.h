@@ -112,7 +112,7 @@ public:
 		vector point;
 		void reset();
 	};
-	Selection hover, selection;
+	Selection hover;
 };
 
 };

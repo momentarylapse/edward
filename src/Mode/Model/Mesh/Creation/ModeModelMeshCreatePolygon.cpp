@@ -66,10 +66,10 @@ void ModeModelMeshCreatePolygon::OnKeyDown()
 
 void ModeModelMeshCreatePolygon::OnLeftButtonDown()
 {
-	if (multi_view->selection.index >= 0){
+	if (multi_view->hover.index >= 0){
 		// closed loop -> done
 		if (selection.num > 0)
-			if (multi_view->selection.index == selection[0]){
+			if (multi_view->hover.index == selection[0]){
 				data->Execute(new ActionModelAddPolygonAutoSkin(selection, mode_model_mesh->CurrentMaterial));
 				Abort();
 				return;
@@ -77,7 +77,7 @@ void ModeModelMeshCreatePolygon::OnLeftButtonDown()
 
 		// consistency?
 		foreachi(int s, selection, i)
-			if (s == multi_view->selection.index)
+			if (s == multi_view->hover.index)
 				if (i > 0){
 					ed->SetMessage(_("keine doppelten Punkte erlaubt!"));
 					Abort();
@@ -85,7 +85,7 @@ void ModeModelMeshCreatePolygon::OnLeftButtonDown()
 				}
 
 		// all ok -> add
-		selection.add(multi_view->selection.index);
+		selection.add(multi_view->hover.index);
 
 	}else{
 		data->AddVertex(multi_view->GetCursor3d());

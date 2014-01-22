@@ -87,8 +87,8 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 
 		Abort();
 	}else{
-		if (multi_view->selection.index >= 0)
-			pos.add(data->Vertex[multi_view->selection.index].pos);
+		if (multi_view->hover.index >= 0)
+			pos.add(data->Vertex[multi_view->hover.index].pos);
 		else
 			pos.add(multi_view->GetCursor3d());
 

@@ -65,8 +65,8 @@ void ModeModelMeshCreatePlane::OnLeftButtonDown()
 
 		Abort();
 	}else{
-		if (multi_view->selection.index >= 0)
-			pos = data->Vertex[multi_view->selection.index].pos;
+		if (multi_view->hover.index >= 0)
+			pos = data->Vertex[multi_view->hover.index].pos;
 		else
 			pos = multi_view->GetCursor3d();
 		message = _("Ebene: zweiter Punkt");
