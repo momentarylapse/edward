@@ -9,6 +9,7 @@
 #include "Edge/ActionModelCollapseEdge.h"
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
+#include "../../../MultiView/MultiView.h"
 
 
 #if 1

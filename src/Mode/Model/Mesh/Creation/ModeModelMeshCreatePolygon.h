@@ -23,7 +23,7 @@ public:
 	virtual void OnLeftButtonDown();
 	virtual void OnKeyDown();
 
-	virtual void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiView::Window *win);
 
 	Array<int> selection;
 };

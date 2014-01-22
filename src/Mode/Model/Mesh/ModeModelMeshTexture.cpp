@@ -7,7 +7,7 @@
 
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
-#include "../../../MultiView/MultiViewWindow.h"
+#include "../../../MultiView/Window.h"
 #include "ModeModelMesh.h"
 #include "ModeModelMeshTexture.h"
 
@@ -97,7 +97,7 @@ void ModeModelMeshTexture::OnEnd()
 #define cur_tex			data->Material[mode_model_mesh->CurrentMaterial].Texture[CurrentTextureLevel]
 
 
-void ModeModelMeshTexture::OnDrawWin(MultiViewWindow *win)
+void ModeModelMeshTexture::OnDrawWin(MultiView::Window *win)
 {
 	rect s,r;
 	color c;

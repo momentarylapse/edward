@@ -8,7 +8,7 @@
 #ifndef MODELSURFACE_H_
 #define MODELSURFACE_H_
 
-#include "../../MultiView/MultiView.h"
+#include "../../MultiView/SingleData.h"
 #include "DataModel.h"
 #include "../../lib/base/set.h"
 #include "../../lib/math/math.h"
@@ -20,7 +20,7 @@ class ModelPolygon;
 
 struct SurfaceInsideTestData;
 
-class ModelSurface: public MultiViewSingleData
+class ModelSurface: public MultiView::SingleData
 {
 public:
 	ModelSurface();

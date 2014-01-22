@@ -12,8 +12,6 @@
 #include "../../../../lib/math/math.h"
 class DataModel;
 
-class MultiView;
-
 class ActionModelAutomap : public Action
 {
 public:

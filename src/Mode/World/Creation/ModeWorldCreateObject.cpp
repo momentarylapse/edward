@@ -8,6 +8,7 @@
 #include "ModeWorldCreateObject.h"
 #include "../../../Data/World/DataWorld.h"
 #include "../../../Edward.h"
+#include "../../../MultiView/MultiView.h"
 
 static string LastObjectFilename;
 

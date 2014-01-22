@@ -8,7 +8,7 @@
 #include "Mode.h"
 #include "../MultiView/MultiView.h"
 
-ModeBase::ModeBase(const string &_name, ModeBase *_parent, MultiView *_multi_view, const string &_menu)
+ModeBase::ModeBase(const string &_name, ModeBase *_parent, MultiView::MultiView *_multi_view, const string &_menu)
 {
 	parent = _parent;
 	name = _name;
@@ -64,7 +64,7 @@ void ModeBase::OnUpdateMenuRecursive(bool multi_view_handled)
 	OnUpdateMenu();
 }
 
-void ModeBase::OnDrawWinRecursive(MultiViewWindow *win)
+void ModeBase::OnDrawWinRecursive(MultiView::Window *win)
 {
 	if (parent)
 		parent->OnDrawWinRecursive(win);

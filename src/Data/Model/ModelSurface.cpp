@@ -9,6 +9,7 @@
 #include "DataModel.h"
 #include "BspTree.h"
 #include "../../Edward.h"
+#include "../../MultiView/MultiView.h"
 
 
 

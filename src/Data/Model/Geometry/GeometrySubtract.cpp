@@ -8,6 +8,7 @@
 #include "Geometry.h"
 #include "../SkinGenerator.h"
 #include "../../../Edward.h"
+#include "../../../MultiView/MultiView.h"
 
 
 

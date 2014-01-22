@@ -11,7 +11,8 @@
 #include "../../../../Edward.h"
 #include "../../../../Data/Model/Geometry/GeometryPlatonic.h"
 #include "../../../../Data/Model/Geometry/GeometryTeapot.h"
-#include "../../../../MultiView/MultiViewWindow.h"
+#include "../../../../MultiView/MultiView.h"
+#include "../../../../MultiView/Window.h"
 
 //extern int FxVB;
 
@@ -89,7 +90,7 @@ void ModeModelMeshCreatePlatonic::OnLeftButtonDown()
 }
 
 
-void ModeModelMeshCreatePlatonic::OnDrawWin(MultiViewWindow *win)
+void ModeModelMeshCreatePlatonic::OnDrawWin(MultiView::Window *win)
 {
 	if (pos_chosen){
 		mode_model->SetMaterialCreation();

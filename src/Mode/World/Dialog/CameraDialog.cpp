@@ -10,6 +10,7 @@
 #include "../../../Data/World/DataCamera.h"
 #include "../../../Action/World/Camera/ActionCameraMoveTimeSelection.h"
 #include "../../../Edward.h"
+#include "../../../MultiView/MultiView.h"
 
 CameraDialog::CameraDialog(HuiWindow *_parent, ModeWorldCamera *_mode) :
 	EmbeddedDialog(_parent, "world_camera_dialog", "root-table", 0, 1, "height=150,noexpandy")

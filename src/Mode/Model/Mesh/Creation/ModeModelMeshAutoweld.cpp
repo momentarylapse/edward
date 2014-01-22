@@ -7,7 +7,8 @@
 
 #include "ModeModelMeshAutoweld.h"
 #include "../../../../Edward.h"
-#include "../../../../MultiView/MultiViewWindow.h"
+#include "../../../../MultiView/MultiView.h"
+#include "../../../../MultiView/Window.h"
 
 ModeModelMeshAutoweld::ModeModelMeshAutoweld(ModeBase* _parent) :
 	ModeCreation<DataModel>("ModelMeshAutoweld", _parent)
@@ -70,7 +71,7 @@ void ModeModelMeshAutoweld::OnOk()
 	Abort();
 }
 
-void ModeModelMeshAutoweld::OnDrawWin(MultiViewWindow* win)
+void ModeModelMeshAutoweld::OnDrawWin(MultiView::Window* win)
 {
 	NixEnableLighting(false);
 	NixSetTexture(NULL);

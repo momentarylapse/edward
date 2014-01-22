@@ -6,7 +6,8 @@
  */
 
 #include "../../../Edward.h"
-#include "../../../MultiView/MultiViewWindow.h"
+#include "../../../MultiView/MultiView.h"
+#include "../../../MultiView/Window.h"
 #include "ModeModelMesh.h"
 #include "ModeModelMeshEdge.h"
 #include "ModeModelMeshPolygon.h"
@@ -88,7 +89,7 @@ void ModeModelMeshEdge::OnStart()
 }
 
 
-bool EdgeIsMouseOver(int index, void *user_data, MultiViewWindow *win, vector &tp)
+bool EdgeIsMouseOver(int index, void *user_data, MultiView::Window *win, vector &tp)
 {
 	ModelSurface *surf = (ModelSurface*)user_data;
 	ModelEdge *e = &surf->Edge[index];
@@ -128,7 +129,7 @@ inline bool in_irect(const vector &p, rect *r)
 	return ((p.x > r->x1) and (p.x < r->x2) and (p.y > r->y1) and (p.y < r->y2));
 }
 
-bool EdgeInRect(int index, void *user_data, MultiViewWindow *win, rect *r)
+bool EdgeInRect(int index, void *user_data, MultiView::Window *win, rect *r)
 {
 	ModelSurface *surf = (ModelSurface*)user_data;
 	ModelEdge *e = &surf->Edge[index];
@@ -177,7 +178,7 @@ void ModeModelMeshEdge::OnLeftButtonDown()
 }
 
 
-void ModeModelMeshEdge::DrawEdges(MultiViewWindow *win, Array<ModelVertex> &vertex, bool only_selected)
+void ModeModelMeshEdge::DrawEdges(MultiView::Window *win, Array<ModelVertex> &vertex, bool only_selected)
 {
 	NixSetWire(false);
 	NixEnableLighting(false);
@@ -202,7 +203,7 @@ void ModeModelMeshEdge::DrawEdges(MultiViewWindow *win, Array<ModelVertex> &vert
 	NixEnableLighting(multi_view->light_enabled);
 }
 
-void ModeModelMeshEdge::OnDrawWin(MultiViewWindow *win)
+void ModeModelMeshEdge::OnDrawWin(MultiView::Window *win)
 {
 	if (!multi_view->wire_mode)
 		mode_model_mesh_polygon->DrawPolygons(win, data->Vertex);

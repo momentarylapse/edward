@@ -12,6 +12,7 @@
 #include "../Mesh/ModeModelMeshTexture.h"
 #include "../../../Action/Model/Data/ActionModelAddMaterial.h"
 #include "../../../Action/Model/Data/ActionModelEditData.h"
+#include "../../../lib/nix/nix.h"
 
 
 

@@ -9,7 +9,7 @@
 #define DATAWORLD_H_
 
 #include "../Data.h"
-#include "../../MultiView/MultiView.h"
+#include "../../MultiView/SingleData.h"
 #include "../../x/material.h"
 
 class DataWorld;
@@ -17,14 +17,14 @@ class Terrain;
 class Object;
 
 
-/*class WorldTerrainVertex: public MultiViewSingleData
+/*class WorldTerrainVertex: public MultiView::SingleData
 {
 public:
 	float Height;
 	vector Normal;
 };*/
 
-class WorldTerrain: public MultiViewSingleData
+class WorldTerrain: public MultiView::SingleData
 {
 public:
 	string FileName;
@@ -51,7 +51,7 @@ public:
 	vector TextureScale[MATERIAL_MAX_TEXTURES];
 };
 
-class WorldObject: public MultiViewSingleData
+class WorldObject: public MultiView::SingleData
 {
 public:
 	string FileName, Name;
@@ -61,7 +61,7 @@ public:
 	void UpdateData();
 };
 
-class WorldLink: public MultiViewSingleData
+class WorldLink: public MultiView::SingleData
 {
 public:
 	int type;

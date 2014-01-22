@@ -13,12 +13,14 @@
 #include "../../../../Data/Model/SkinGenerator.h"
 class DataModel;
 
-class MultiView;
+namespace MultiView{
+	class MultiView;
+};
 
 class ActionModelSkinVerticesFromProjection : public Action
 {
 public:
-	ActionModelSkinVerticesFromProjection(DataModel *m, MultiView *mv);
+	ActionModelSkinVerticesFromProjection(DataModel *m, MultiView::MultiView *mv);
 	virtual ~ActionModelSkinVerticesFromProjection();
 	virtual string name(){	return "ModelSkinVerticesFromProjection";	}
 	virtual string message(){	return "SkinChange";	}

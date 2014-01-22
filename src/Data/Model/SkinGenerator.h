@@ -10,7 +10,9 @@
 
 #include "../../lib/math/math.h"
 class vector;
-class MultiViewWindow;
+namespace MultiView{
+	class Window;
+};
 class ModelPolygon;
 class ModelVertex;
 
@@ -21,7 +23,7 @@ public:
 	virtual ~SkinGenerator();
 	void init_affine(const vector &dir_u, float f_u, const vector &dir_v, float f_v);
 	void init_projective(const matrix &_m);
-	void init_projective(MultiViewWindow *win);
+	void init_projective(MultiView::Window *win);
 	void init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, int level);
 	void init_point_cloud_boundary(const Array<ModelVertex> &p, const Array<int> &v);
 

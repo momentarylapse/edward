@@ -16,6 +16,8 @@
 #include "../../Data/Model/Geometry/GeometryTorus.h"
 #include "../../Data/Model/Geometry/GeometryTorusKnot.h"
 #include "../../Data/Model/Geometry/GeometryTeapot.h"
+#include "../../MultiView/MultiView.h"
+#include "../../lib/nix/nix.h"
 
 const int MATERIAL_NUMX = 48;
 const int MATERIAL_NUMY = 24;
@@ -115,7 +117,7 @@ void ModeMaterial::OnCommand(const string & id)
 }
 
 
-void ModeMaterial::OnDrawWin(MultiViewWindow *win)
+void ModeMaterial::OnDrawWin(MultiView::Window *win)
 {
 	data->ApplyForRendering();
 

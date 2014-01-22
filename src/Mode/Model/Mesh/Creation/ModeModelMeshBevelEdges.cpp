@@ -9,6 +9,7 @@
 #include "../../../../Action/Model/Mesh/Edge/ActionModelBevelEdges.h"
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"
+#include "../../../../MultiView/MultiView.h"
 
 #define INTERACTIVE
 
@@ -78,7 +79,7 @@ void ModeModelMeshBevelEdges::OnLeftButtonDown()
 	Abort();
 }
 
-void ModeModelMeshBevelEdges::OnDrawWin(MultiViewWindow *win)
+void ModeModelMeshBevelEdges::OnDrawWin(MultiView::Window *win)
 {
 #ifndef INTERACTIVE
 	mode_model->SetMaterialCreation();

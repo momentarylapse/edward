@@ -14,16 +14,19 @@
 #include "../Action/ActionMultiView.h"
 #include "../Data/Data.h"
 
-class MultiView;
-class MultiViewWindow;
-class ActionController;
-class ActionMultiView;
 class Data;
 class Observable;
 class Geometry;
+class ActionMultiView;
+
+namespace MultiView{
+
+class MultiView;
+class Window;
+class ActionController;
 
 
-struct MultiViewData{
+struct DataSet{
 	int Type;
 	DynamicArray *data;
 	bool MVSelectable, Drawable, Movable, Indexable;
@@ -118,9 +121,9 @@ public:
 
 	int light;
 
-	MultiViewWindow *win[4];
-	MultiViewWindow *cur_projection_win;
-	MultiViewWindow *active_win;
+	Window *win[4];
+	Window *cur_projection_win;
+	Window *active_win;
 	bool whole_window;
 
 	ActionController *action_con;
@@ -128,12 +131,12 @@ public:
 	virtual void ResetMouseAction();
 	virtual void SetMouseAction(const string &name, int mode);
 
-	Array<MultiViewData> data;
+	Array<DataSet> data;
 	bool AllowViewStage, AllowViewStageHandling;
 	vector MovingDPos,RFPos,LFPos;
 //	bool EditingStart, EditingEnd, DataChanged, Changed;
 
-	MultiViewWindow *mouse_win;
+	Window *mouse_win;
 	bool HoldingCursor;
 	float HoldingX, HoldingY;
 	bool MVRect;
@@ -159,6 +162,8 @@ public:
 	Array<Message3d> message3d;
 	void AddMessage3d(const string &str, const vector &pos);
 	void ResetMessage3d();
+};
+
 };
 
 #endif /* MULTIVIEW_H_ */

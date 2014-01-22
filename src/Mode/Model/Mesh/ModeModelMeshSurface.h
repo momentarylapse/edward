@@ -25,7 +25,7 @@ public:
 	virtual void OnUpdate(Observable *o);
 
 	virtual void OnDraw();
-	virtual void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiView::Window *win);
 };
 
 extern ModeModelMeshSurface *mode_model_mesh_surface;

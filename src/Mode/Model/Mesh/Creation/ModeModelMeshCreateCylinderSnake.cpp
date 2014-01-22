@@ -10,7 +10,8 @@
 #include "../../ModeModel.h"
 #include "../../../../Data/Model/Geometry/GeometryCylinder.h"
 #include "../../../../Edward.h"
-#include "../../../../MultiView/MultiViewWindow.h"
+#include "../../../../MultiView/MultiView.h"
+#include "../../../../MultiView/Window.h"
 
 const float CYLINDER_CLOSING_DISTANCE = 20;
 
@@ -129,7 +130,7 @@ void ModeModelMeshCreateCylinderSnake::OnKeyDown()
 
 
 
-void ModeModelMeshCreateCylinderSnake::OnDrawWin(MultiViewWindow *win)
+void ModeModelMeshCreateCylinderSnake::OnDrawWin(MultiView::Window *win)
 {
 	if (pos.num > 0){
 		NixEnableLighting(false);

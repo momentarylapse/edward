@@ -9,7 +9,7 @@
 #define DATACAMERA_H_
 
 #include "../Data.h"
-#include "../../MultiView/MultiView.h"
+#include "../../MultiView/SingleData.h"
 #include "../../lib/math/math.h"
 
 
@@ -20,7 +20,7 @@
 #define CPKCamFlight	10
 #define CPKCamFlightRel	11
 
-class WorldCamPoint: public MultiViewSingleData
+class WorldCamPoint: public MultiView::SingleData
 {
 public:
 	int Type;
@@ -28,7 +28,7 @@ public:
 	float Duration;
 };
 
-class WorldCamPointVel: public MultiViewSingleData
+class WorldCamPointVel: public MultiView::SingleData
 {
 };
 

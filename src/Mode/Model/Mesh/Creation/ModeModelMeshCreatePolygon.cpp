@@ -10,7 +10,8 @@
 #include "../../../../Edward.h"
 #include "../../../../Action/Model/Mesh/Polygon/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../lib/nix/nix.h"
-#include "../../../../MultiView/MultiViewWindow.h"
+#include "../../../../MultiView/MultiView.h"
+#include "../../../../MultiView/Window.h"
 
 ModeModelMeshCreatePolygon::ModeModelMeshCreatePolygon(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreatePolygon", _parent)
@@ -38,7 +39,7 @@ void ModeModelMeshCreatePolygon::OnEnd()
 }
 
 
-void ModeModelMeshCreatePolygon::OnDrawWin(MultiViewWindow *win)
+void ModeModelMeshCreatePolygon::OnDrawWin(MultiView::Window *win)
 {
 	for (int i=1;i<selection.num;i++){
 		NixEnableLighting(false);

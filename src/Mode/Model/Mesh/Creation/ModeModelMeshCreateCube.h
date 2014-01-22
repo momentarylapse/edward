@@ -25,7 +25,7 @@ public:
 	virtual void OnMouseMove();
 	virtual void OnLeftButtonDown();
 
-	virtual void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiView::Window *win);
 
 	void UpdateGeometry();
 

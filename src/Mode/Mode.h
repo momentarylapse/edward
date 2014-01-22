@@ -13,13 +13,15 @@
 #include "../Data/Data.h"
 #include "../Stuff/Observer.h"
 
-class MultiView;
-class MultiViewWindow;
+namespace MultiView{
+	class MultiView;
+	class Window;
+};
 
 class ModeBase : public Observer
 {
 public:
-	ModeBase(const string &name, ModeBase *parent, MultiView *multi_view, const string &menu_id);
+	ModeBase(const string &name, ModeBase *parent, MultiView::MultiView *multi_view, const string &menu_id);
 	virtual ~ModeBase();
 
 	// Start/End: (once) entering this mode or a sub mode
@@ -44,7 +46,7 @@ public:
 	virtual void OnUpdateMenu(){};
 
 	virtual void OnDraw(){};
-	virtual void OnDrawWin(MultiViewWindow *win){};
+	virtual void OnDrawWin(MultiView::Window *win){};
 
 	virtual bool OptimizeView(){ return false; };
 	virtual void OptimizeViewRecursice();
@@ -65,7 +67,7 @@ public:
 	virtual void OnUpdateMenuRecursive(bool multi_view_handled = false);
 
 	virtual void OnDrawRecursive(bool multi_view_handled = false);
-	virtual void OnDrawWinRecursive(MultiViewWindow *win);
+	virtual void OnDrawWinRecursive(MultiView::Window *win);
 
 	ModeBase *GetRoot();
 	bool IsAncestorOf(ModeBase *m);
@@ -82,7 +84,7 @@ public:
 	string name;
 
 	ModeBase *parent;
-	MultiView *multi_view;
+	MultiView::MultiView *multi_view;
 
 	string menu_id;
 };
@@ -91,12 +93,12 @@ template<class T>
 class Mode : public ModeBase
 {
 public:
-	Mode(const string &name, ModeBase *parent, Data *_data, MultiView *multi_view, const string &menu) :
+	Mode(const string &name, ModeBase *parent, Data *_data, MultiView::MultiView *multi_view, const string &menu) :
 		ModeBase(name, parent, multi_view, menu)
 	{
 		data = (T*)_data;
 	}
-	Mode(const string &name, ModeBase *parent, MultiView *multi_view, const string &menu) :
+	Mode(const string &name, ModeBase *parent, MultiView::MultiView *multi_view, const string &menu) :
 		ModeBase(name, parent, multi_view, menu)
 	{
 		data = (T*)parent->GetData();

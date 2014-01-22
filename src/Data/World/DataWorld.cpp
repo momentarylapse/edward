@@ -17,6 +17,8 @@
 #include "../../Action/World/Terrain/ActionWorldAddTerrain.h"
 #include "../../Action/World/ActionWorldPaste.h"
 #include "../../Action/World/ActionWorldDeleteSelection.h"
+#include "../../lib/nix/nix.h"
+#include "../../MultiView/MultiView.h"
 
 
 void WorldObject::UpdateData()

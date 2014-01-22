@@ -1,5 +1,5 @@
 /*
- * MultiViewWindow.h
+ * Window.h
  *
  *  Created on: 21.01.2014
  *      Author: michi
@@ -10,10 +10,12 @@
 
 #include "../lib/math/math.h"
 
-class MultiView;
-class MultiViewCamera;
+namespace MultiView{
 
-class MultiViewWindow
+class MultiView;
+class Camera;
+
+class Window
 {
 public:
 
@@ -24,7 +26,7 @@ public:
 	vector ang;
 	matrix projection;
 	MultiView *multi_view;
-	MultiViewCamera *cam;
+	Camera *cam;
 
 	void Draw();
 	void DrawGrid();
@@ -35,6 +37,8 @@ public:
 	vector GetDirectionUp();
 	vector GetDirectionRight();
 	void GetMovingFrame(vector &dir, vector &up, vector &right);
+};
+
 };
 
 #endif /* MULTIVIEWWINDOW_H_ */

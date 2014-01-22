@@ -10,7 +10,8 @@
 #include "../../ModeModel.h"
 #include "../../../../Data/Model/Geometry/GeometryCylinder.h"
 #include "../../../../Edward.h"
-#include "../../../../MultiView/MultiViewWindow.h"
+#include "../../../../MultiView/MultiView.h"
+#include "../../../../MultiView/Window.h"
 
 ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateCylinder", _parent)
@@ -102,7 +103,7 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 	}
 }
 
-void ModeModelMeshCreateCylinder::OnDrawWin(MultiViewWindow *win)
+void ModeModelMeshCreateCylinder::OnDrawWin(MultiView::Window *win)
 {
 	if (pos.num > 0){
 		NixEnableLighting(false);

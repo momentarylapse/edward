@@ -39,7 +39,7 @@ public:
 	void ChooseMaterialForSelection();
 
 	void ChooseRightMouseFunction(int f);
-	void ApplyRightMouseFunction(MultiView *mv);
+	void ApplyRightMouseFunction(MultiView::MultiView *mv);
 
 	void AddEffects(int type);
 	void EditEffects();

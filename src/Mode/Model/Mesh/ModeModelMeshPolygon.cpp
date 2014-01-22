@@ -7,7 +7,7 @@
 
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
-#include "../../../MultiView/MultiViewWindow.h"
+#include "../../../MultiView/Window.h"
 #include "ModeModelMeshPolygon.h"
 #include "ModeModelMeshEdge.h"
 #include "ModeModelMesh.h"
@@ -37,7 +37,7 @@ ModeModelMeshPolygon::~ModeModelMeshPolygon()
 {
 }
 
-void ModeModelMeshPolygon::DrawPolygons(MultiViewWindow *win, Array<ModelVertex> &vertex)
+void ModeModelMeshPolygon::DrawPolygons(MultiView::Window *win, Array<ModelVertex> &vertex)
 {
 	msg_db_f("ModelSkin.DrawPolys",2);
 
@@ -134,7 +134,7 @@ void ModeModelMeshPolygon::SetMaterialCreation()
 	NixSetMaterial(Black,color(0.3f,0.3f,1,0.3f),Black,0,color(1,0.1f,0.4f,0.1f));
 }
 
-void ModeModelMeshPolygon::DrawSelection(MultiViewWindow *win)
+void ModeModelMeshPolygon::DrawSelection(MultiView::Window *win)
 {
 	NixSetWire(false);
 	NixSetZ(true,true);
@@ -155,7 +155,7 @@ void ModeModelMeshPolygon::DrawSelection(MultiViewWindow *win)
 	glPolygonOffset(0, 0);
 }
 
-void ModeModelMeshPolygon::OnDrawWin(MultiViewWindow *win)
+void ModeModelMeshPolygon::OnDrawWin(MultiView::Window *win)
 {
 	msg_db_f("skin.DrawWin",4);
 
@@ -185,7 +185,7 @@ void ModeModelMeshPolygon::OnStart()
 
 
 
-bool PolygonIsMouseOver(int index, void *user_data, MultiViewWindow *win, vector &tp)
+bool PolygonIsMouseOver(int index, void *user_data, MultiView::Window *win, vector &tp)
 {
 	ModelSurface *surf = (ModelSurface*)user_data;
 	ModelPolygon *t = &surf->Polygon[index];
@@ -232,7 +232,7 @@ inline bool in_irect(const vector &p, rect *r)
 	return ((p.x > r->x1) and (p.x < r->x2) and (p.y > r->y1) and (p.y < r->y2));
 }
 
-bool PolygonInRect(int index, void *user_data, MultiViewWindow *win, rect *r)
+bool PolygonInRect(int index, void *user_data, MultiView::Window *win, rect *r)
 {
 	ModelSurface *surf = (ModelSurface*)user_data;
 	ModelPolygon *t = &surf->Polygon[index];

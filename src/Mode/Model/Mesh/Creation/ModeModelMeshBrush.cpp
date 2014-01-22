@@ -9,6 +9,7 @@
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"
+#include "../../../../MultiView/MultiView.h"
 #include "../../../../Action/Model/Mesh/Brush/ActionModelBrushExtrude.h"
 #include "../../../../Action/Model/Mesh/Brush/ActionModelBrushSmooth.h"
 
@@ -139,7 +140,7 @@ void ModeModelMeshBrush::OnMouseMove()
 	}
 }
 
-void ModeModelMeshBrush::OnDrawWin(MultiViewWindow* win)
+void ModeModelMeshBrush::OnDrawWin(MultiView::Window* win)
 {
 	if (multi_view->hover.index < 0)
 		return;

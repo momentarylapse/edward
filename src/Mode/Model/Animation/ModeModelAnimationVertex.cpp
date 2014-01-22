@@ -73,7 +73,7 @@ void ModeModelAnimationVertex::OnUpdateMenu()
 {
 }
 
-void ModeModelAnimationVertex::OnDrawWin(MultiViewWindow *win)
+void ModeModelAnimationVertex::OnDrawWin(MultiView::Window *win)
 {
 	msg_db_f("skin.DrawWin",4);
 

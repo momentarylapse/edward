@@ -27,7 +27,7 @@ public:
 	virtual void OnUpdate(Observable *o);
 	virtual void OnUpdateMenu();
 
-	virtual void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiView::Window *win);
 
 	ModelAnimationDialog *dialog;
 

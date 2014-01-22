@@ -25,9 +25,9 @@ public:
 	virtual void OnUpdate(Observable *o);
 
 	virtual void OnDraw();
-	virtual void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiView::Window *win);
 
-	void DrawEffects(MultiViewWindow *win);
+	void DrawEffects(MultiView::Window *win);
 };
 
 extern ModeModelMeshVertex *mode_model_mesh_vertex;

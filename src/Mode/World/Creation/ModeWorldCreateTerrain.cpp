@@ -8,6 +8,7 @@
 #include "ModeWorldCreateTerrain.h"
 #include "../../../Data/World/DataWorld.h"
 #include "../../../Edward.h"
+#include "../../../MultiView/MultiView.h"
 
 ModeWorldCreateTerrain::ModeWorldCreateTerrain(ModeBase *_parent) :
 	ModeCreation<DataWorld>("WorldCreateTerrain", _parent)
@@ -71,7 +72,7 @@ void ModeWorldCreateTerrain::OnSizeChange()
 	dialog->SetFloat("pattern_z", dialog->GetFloat("terrain_z") / (float)dialog->GetInt("num_z"));
 }
 
-void ModeWorldCreateTerrain::OnDrawWin(MultiViewWindow *win)
+void ModeWorldCreateTerrain::OnDrawWin(MultiView::Window *win)
 {
 }
 

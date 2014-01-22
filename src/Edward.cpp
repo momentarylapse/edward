@@ -246,8 +246,8 @@ Edward::Edward(Array<string> arg) :
 	}
 
 	msg_db_r("init modes", 1);*/
-	multi_view_3d = new MultiView(true);
-	multi_view_2d = new MultiView(false);
+	multi_view_3d = new MultiView::MultiView(true);
+	multi_view_2d = new MultiView::MultiView(false);
 	mode_welcome = new ModeWelcome;
 	mode_model = new ModeModel;
 	mode_material = new ModeMaterial;
@@ -731,7 +731,7 @@ void Edward::UpdateMenu()
 	}
 
 	// general multiview stuff
-	MultiView *mv = cur_mode->multi_view;
+	MultiView::MultiView *mv = cur_mode->multi_view;
 	if (mv){
 		Check("whole_window", mv->whole_window);
 		Check("grid", mv->grid_enabled);

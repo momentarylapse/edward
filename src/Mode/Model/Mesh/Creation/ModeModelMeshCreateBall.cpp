@@ -11,6 +11,7 @@
 #include "../../../../Data/Model/Geometry/GeometryBall.h"
 #include "../../../../Data/Model/Geometry/GeometrySphere.h"
 #include "../../../../Edward.h"
+#include "../../../../MultiView/MultiView.h"
 
 ModeModelMeshCreateBall::ModeModelMeshCreateBall(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateBall", _parent)
@@ -112,7 +113,7 @@ void ModeModelMeshCreateBall::OnLeftButtonDown()
 }
 
 
-void ModeModelMeshCreateBall::OnDrawWin(MultiViewWindow *win)
+void ModeModelMeshCreateBall::OnDrawWin(MultiView::Window *win)
 {
 	if (pos_chosen){
 		mode_model->SetMaterialCreation();

@@ -7,7 +7,7 @@
 
 #include "ActionController.h"
 #include "MultiView.h"
-#include "MultiViewWindow.h"
+#include "Window.h"
 #include "../Edward.h"
 #include "../lib/nix/nix.h"
 #include "../Data/Model/Geometry/Geometry.h"
@@ -27,6 +27,7 @@ enum{
 	ActionModeFree,
 };
 
+namespace MultiView{
 
 void ActionController::StartAction()
 {
@@ -109,22 +110,22 @@ void ActionController::UpdateAction()
 	matrix m_dt, m_dti;
 	MatrixTranslation(m_dt, pos0);
 	MatrixTranslation(m_dti, -pos0);
-	if (action.mode == MultiViewInterface::ActionMove){
+	if (action.mode == ActionMove){
 		param = mvac_project_trans(mode, v2 - v1);
 		MatrixTranslation(mat, param);
-	}else if (action.mode == MultiViewInterface::ActionRotate){
+	}else if (action.mode == ActionRotate){
 		param = mvac_project_trans(mode, v2 - v1) * 0.003f *multi_view->cam.zoom;
 		if (mode == ActionModeFree)
 			param = transform_ang(multi_view, vector(v1p.y - v2p.y, v1p.x - v2p.x, 0) * 0.003f);
 		MatrixRotation(mat, param);
 		mat = m_dt * mat * m_dti;
-	}else if (action.mode == MultiViewInterface::ActionScale){
+	}else if (action.mode == ActionScale){
 		param = vector(1, 1, 1) + mvac_project_trans(mode, v2 - v1) * 0.01f *multi_view->cam.zoom;
 		if (mode == ActionModeFree)
 			param = vector(1, 1, 1) * (1 + (v2p - v1p).x * 0.01f);
 		MatrixScale(mat, param.x, param.y, param.z);
 		mat = m_dt * mat * m_dti;
-	}else if (action.mode == MultiViewInterface::ActionMirror){
+	}else if (action.mode == ActionMirror){
 		param = mvac_mirror(mode);
 		if (mode == ActionModeFree)
 			param = multi_view->active_win->GetDirectionRight();
@@ -229,7 +230,7 @@ const color MVACColor[] = {
 	color(1, 0.8f, 0.8f, 0.8f)
 };
 
-void ActionController::Draw(MultiViewWindow *win)
+void ActionController::Draw(Window *win)
 {
 	if (!show)
 		return;
@@ -260,19 +261,19 @@ void ActionController::Draw(MultiViewWindow *win)
 
 void ActionController::DrawParams()
 {
-	if (action.mode == MultiViewInterface::ActionMove){
+	if (action.mode == ActionMove){
 		vector t = param;
 		string unit = multi_view->GetMVScaleByZoom(t);
 		ed->DrawStr(150, 100, f2s(t.x, 2) + " " + unit, Edward::AlignRight);
 		ed->DrawStr(150, 120, f2s(t.y, 2) + " " + unit, Edward::AlignRight);
 		if (multi_view->mode3d)
 			ed->DrawStr(150, 140, f2s(t.z, 2) + " " + unit, Edward::AlignRight);
-	}else if ((action.mode == MultiViewInterface::ActionRotate) or (action.mode == MultiViewInterface::ActionRotate2d)){
+	}else if ((action.mode == ActionRotate) or (action.mode == ActionRotate2d)){
 		vector r = param * 180.0f / pi;
 		ed->DrawStr(150, 100, f2s(r.x, 1) + "°", Edward::AlignRight);
 		ed->DrawStr(150, 120, f2s(r.y, 1) + "°", Edward::AlignRight);
 		ed->DrawStr(150, 140, f2s(r.z, 1) + "°", Edward::AlignRight);
-	}else if ((action.mode == MultiViewInterface::ActionScale) || (action.mode == MultiViewInterface::ActionScale2d)){
+	}else if ((action.mode == ActionScale) || (action.mode == ActionScale2d)){
 		ed->DrawStr(150, 100, f2s(param.x * 100.0f, 1) + "%", Edward::AlignRight);
 		ed->DrawStr(150, 120, f2s(param.y * 100.0f, 1) + "%", Edward::AlignRight);
 		if (multi_view->mode3d)
@@ -325,7 +326,7 @@ void ActionController::LeftButtonUp()
 	EndAction(true);
 
 	Disable();
-	if (action.mode > MultiViewInterface::ActionSelect)
+	if (action.mode > ActionSelect)
 		Enable();
 }
 
@@ -338,3 +339,5 @@ void ActionController::MouseMove()
 {
 	UpdateAction();
 }
+
+};

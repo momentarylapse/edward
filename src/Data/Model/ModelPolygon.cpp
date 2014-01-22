@@ -9,6 +9,7 @@
 
 #include "DataModel.h"
 #include "ModelPolygon.h"
+#include "../../lib/nix/nix.h"
 
 vector ModelPolygon::GetAreaVector(const Array<ModelVertex> &vertex) const
 {

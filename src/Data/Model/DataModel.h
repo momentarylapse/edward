@@ -9,7 +9,7 @@
 #define DATAMODEL_H_
 
 #include "../Data.h"
-#include "../../MultiView/MultiView.h"
+#include "../../MultiView/SingleData.h"
 #include "../../lib/base/set.h"
 #include "../../x/model.h"
 #include "../../x/material.h"
@@ -56,7 +56,7 @@ struct ModelEffect{
 	string get_type();
 };
 
-class ModelVertex: public MultiViewSingleData
+class ModelVertex: public MultiView::SingleData
 {
 public:
 	int NormalMode;
@@ -68,11 +68,11 @@ public:
 };
 
 // only for use in MultiView...
-class ModelSkinVertexDummy: public MultiViewSingleData
+class ModelSkinVertexDummy: public MultiView::SingleData
 {
 };
 
-class ModelBall: public MultiViewSingleData
+class ModelBall: public MultiView::SingleData
 {
 public:
 	int Index;
@@ -88,7 +88,7 @@ struct ModelPolyhedronFace
 
 
 // TODO: dynamical!
-class ModelPolyhedron: public MultiViewSingleData
+class ModelPolyhedron: public MultiView::SingleData
 {
 public:
 	int NumFaces;
@@ -105,7 +105,7 @@ public:
 	int FacesJoiningEdge[MODEL_MAX_POLY_FACES * MODEL_MAX_POLY_FACES]; // [face1 * NumFaces + face2]
 };
 
-class ModelTriangle: public MultiViewSingleData
+class ModelTriangle: public MultiView::SingleData
 {
 public:
 	int Vertex[3];
@@ -140,7 +140,7 @@ struct ModelSkin
 	Array<ModelSubSkin> Sub;
 };
 
-class ModelBone: public MultiViewSingleData
+class ModelBone: public MultiView::SingleData
 {
 public:
 	int Parent;
@@ -175,7 +175,7 @@ struct ModelMove
 	string Name;
 };
 
-class ModelEdge: public MultiViewSingleData
+class ModelEdge: public MultiView::SingleData
 {
 public:
 	//int NormalMode;

@@ -8,6 +8,7 @@
 #include "ModeWorldEditTerrain.h"
 #include "../../../Action/World/Terrain/ActionWorldTerrainBrushExtrude.h"
 #include "../../../Edward.h"
+#include "../../../MultiView/MultiView.h"
 #include "../../../lib/nix/nix.h"
 
 const float BRUSH_PARTITION = 0.3f;
@@ -137,7 +138,7 @@ void ModeWorldEditTerrain::OnCommand(const string& id)
 {
 }
 
-void ModeWorldEditTerrain::OnDrawWin(MultiViewWindow* win)
+void ModeWorldEditTerrain::OnDrawWin(MultiView::Window* win)
 {
 	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVDWorldTerrain))
 		return;

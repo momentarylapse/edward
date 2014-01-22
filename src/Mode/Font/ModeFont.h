@@ -32,7 +32,7 @@ public:
 	virtual void OnUpdateMenu();
 
 	virtual void OnDraw();
-	virtual void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiView::Window *win);
 
 
 	virtual void New();

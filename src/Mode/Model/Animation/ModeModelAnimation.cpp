@@ -243,7 +243,7 @@ void ModeModelAnimation::OnUpdate(Observable *o)
 
 
 
-void ModeModelAnimation::OnDrawWin(MultiViewWindow *win)
+void ModeModelAnimation::OnDrawWin(MultiView::Window *win)
 {
 }
 

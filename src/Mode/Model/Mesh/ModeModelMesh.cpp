@@ -6,6 +6,7 @@
  */
 
 #include "../../../Edward.h"
+#include "../../../MultiView/MultiView.h"
 #include "../ModeModel.h"
 #include "ModeModelMesh.h"
 #include "ModeModelMeshVertex.h"
@@ -189,7 +190,7 @@ void ModeModelMesh::OnCommand(const string & id)
 	if (id == "mode_model_materials")
 		ToggleMaterialDialog();
 	if (id == "text_from_bg"){
-		MultiView *mv = mode_model_mesh_polygon->multi_view;
+		MultiView::MultiView *mv = mode_model_mesh_polygon->multi_view;
 		data->Execute(new ActionModelSkinVerticesFromProjection(data, mv));
 	}
 	if (id == "automapping")
@@ -294,7 +295,7 @@ void ModeModelMesh::OnUpdateMenu()
 bool ModeModelMesh::OptimizeView()
 {
 	msg_db_f("OptimizeView", 1);
-	MultiView *mv = ed->multi_view_3d;
+	MultiView::MultiView *mv = ed->multi_view_3d;
 	bool ww = mv->whole_window;
 	mv->ResetView();
 	mv->whole_window = ww;
@@ -387,7 +388,7 @@ void ModeModelMesh::ChooseRightMouseFunction(int f)
 	ApplyRightMouseFunction(ed->multi_view_2d);
 }
 
-void ModeModelMesh::ApplyRightMouseFunction(MultiView *mv)
+void ModeModelMesh::ApplyRightMouseFunction(MultiView::MultiView *mv)
 {
 	if (!mv)
 		return;

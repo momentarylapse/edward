@@ -7,9 +7,10 @@
 
 #include "ActionModelSkinVerticesFromProjection.h"
 #include "../../../../Mode/Model/Mesh/ModeModelMeshTexture.h"
+#include "../../../../MultiView/MultiView.h"
 #include <assert.h>
 
-ActionModelSkinVerticesFromProjection::ActionModelSkinVerticesFromProjection(DataModel *m, MultiView *mv)
+ActionModelSkinVerticesFromProjection::ActionModelSkinVerticesFromProjection(DataModel *m, MultiView::MultiView *mv)
 {
 	sg.init_projective(mv->mouse_win);
 

@@ -8,6 +8,7 @@
 #include "ActionModelAddVertex.h"
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../Edward.h"
+#include "../../../../MultiView/MultiView.h"
 #include <assert.h>
 
 ActionModelAddVertex::ActionModelAddVertex(const vector &_pos, int _bone_index, int _normal_mode)

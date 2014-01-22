@@ -20,7 +20,7 @@ public:
 	virtual void OnStart();
 	virtual void OnEnd();
 
-	virtual void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiView::Window *win);
 
 	void OnSlider();
 	void OnCancel();

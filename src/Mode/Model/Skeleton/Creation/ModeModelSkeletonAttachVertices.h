@@ -22,7 +22,7 @@ public:
 
 	virtual void OnKeyDown();
 
-	virtual void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiView::Window *win);
 
 private:
 	int bone_index;

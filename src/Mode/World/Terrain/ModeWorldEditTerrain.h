@@ -27,7 +27,7 @@ public:
 	virtual void OnLeftButtonUp();
 	virtual void OnCommand(const string &id);
 
-	virtual void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiView::Window *win);
 
 	Action *GetAction(const vector &pos);
 	void Apply(const vector &pos);

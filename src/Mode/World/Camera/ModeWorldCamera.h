@@ -28,7 +28,7 @@ public:
 	virtual void OnCommand(const string &id);
 	virtual void OnUpdateMenu();
 
-	virtual void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiView::Window *win);
 
 	void AddPoint();
 	void DeletePoint();

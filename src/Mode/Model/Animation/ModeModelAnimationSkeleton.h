@@ -26,7 +26,7 @@ public:
 	virtual void OnUpdate(Observable *o);
 	virtual void OnUpdateMenu();
 
-	virtual void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiView::Window *win);
 };
 
 extern ModeModelAnimationSkeleton *mode_model_animation_skeleton;

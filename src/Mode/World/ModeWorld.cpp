@@ -7,7 +7,7 @@
 
 #include "../../Edward.h"
 #include "../../MultiView/MultiView.h"
-#include "../../MultiView/MultiViewWindow.h"
+#include "../../MultiView/Window.h"
 #include "ModeWorld.h"
 #include "../../Data/World/DataWorld.h"
 #include "../../Data/World/DataCamera.h"
@@ -135,18 +135,18 @@ void ModeWorld::OnCommand(const string & id)
 		ToggleShowEffects();
 
 	if (id == "select")
-		SetMouseAction(MultiViewInterface::ActionSelect);
+		SetMouseAction(MultiView::ActionSelect);
 	if (id == "translate")
-		SetMouseAction(MultiViewInterface::ActionMove);
+		SetMouseAction(MultiView::ActionMove);
 	if (id == "rotate")
-		SetMouseAction(MultiViewInterface::ActionRotate);
+		SetMouseAction(MultiView::ActionRotate);
 }
 
 #define MODEL_MAX_VERTICES	65536
 vector tmv[MODEL_MAX_VERTICES*5],pmv[MODEL_MAX_VERTICES*5];
 bool tvm[MODEL_MAX_VERTICES*5];
 
-bool IsMouseOverObject(int index, void *user_data, MultiViewWindow *win, vector &tp)
+bool IsMouseOverObject(int index, void *user_data, MultiView::Window *win, vector &tp)
 {
 	Object *m = mode_world->data->Objects[index].object;
 	if (!m)
@@ -184,7 +184,7 @@ bool IsMouseOverObject(int index, void *user_data, MultiViewWindow *win, vector 
 	return (z_min<1);
 }
 
-bool IsInRectObject(int index, void *user_data, MultiViewWindow *win, rect *r)
+bool IsInRectObject(int index, void *user_data, MultiView::Window *win, rect *r)
 {
 	Object *m = mode_world->data->Objects[index].object;
 	if (!m)
@@ -216,7 +216,7 @@ bool IsInRectObject(int index, void *user_data, MultiViewWindow *win, rect *r)
 	return ((min.x>=r->x1)&&(min.y>=r->y1)&&(max.x<=r->x2)&&(max.y<=r->y2));
 }
 
-bool IsMouseOverTerrain(int index, void *user_data, MultiViewWindow *win, vector &tp)
+bool IsMouseOverTerrain(int index, void *user_data, MultiView::Window *win, vector &tp)
 {
 	//msg_db_f(format("IMOT index= %d",index).c_str(),3);
 	Terrain *t = mode_world->data->Terrains[index].terrain;
@@ -232,7 +232,7 @@ bool IsMouseOverTerrain(int index, void *user_data, MultiViewWindow *win, vector
 	return hit;
 }
 
-bool IsInRectTerrain(int index, void *user_data, MultiViewWindow *win, rect *r)
+bool IsInRectTerrain(int index, void *user_data, MultiView::Window *win, rect *r)
 {
 	Terrain *t = mode_world->data->Terrains[index].terrain;
 	vector min,max;
@@ -288,12 +288,12 @@ void ModeWorld::OnUpdate(Observable *o)
 		multi_view->SetData(	MVDWorldObject,
 				data->Objects,
 				NULL,
-				MultiViewInterface::FlagIndex | MultiViewInterface::FlagSelect | MultiViewInterface::FlagMove,
+				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
 				&IsMouseOverObject, &IsInRectObject);
 		multi_view->SetData(	MVDWorldTerrain,
 				data->Terrains,
 				NULL,
-				MultiViewInterface::FlagIndex | MultiViewInterface::FlagSelect | MultiViewInterface::FlagMove,
+				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove,
 				&IsMouseOverTerrain, &IsInRectTerrain);
 	}else if (o->GetName() == "MultiView"){
 		// selection
@@ -420,12 +420,12 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha)
 	NixEnableLighting(mode_world->multi_view->light_enabled);
 }
 
-void ModeWorld::OnDrawWin(MultiViewWindow *win)
+void ModeWorld::OnDrawWin(MultiView::Window *win)
 {
 	msg_db_f("World::DrawWin",2);
 
 	if (ShowEffects){
-		if (win->type == ViewPerspective)
+		if (win->type == MultiView::ViewPerspective)
 			data->meta_data.DrawBackground();
 		data->meta_data.ApplyToDraw();
 	}
@@ -513,7 +513,7 @@ void ModeWorld::OnStart()
 	t->Reset();
 	t->Enable(false);
 
-	SetMouseAction(MultiViewInterface::ActionSelect);
+	SetMouseAction(MultiView::ActionSelect);
 
 	OnUpdate(data);
 }
@@ -521,9 +521,9 @@ void ModeWorld::OnStart()
 void ModeWorld::SetMouseAction(int mode)
 {
 	mouse_action = mode;
-	if (mode == MultiViewInterface::ActionMove)
+	if (mode == MultiView::ActionMove)
 		multi_view->SetMouseAction("ActionWorldMoveSelection", mode);
-	else if (mode == MultiViewInterface::ActionRotate)
+	else if (mode == MultiView::ActionRotate)
 		multi_view->SetMouseAction("ActionWorldRotateObjects", mode);
 	else
 		multi_view->SetMouseAction("", mode);
@@ -550,9 +550,9 @@ void ModeWorld::OnUpdateMenu()
 	ed->Check("show_terrains", ShowTerrains);
 	ed->Check("show_fx", ShowEffects);
 
-	ed->Check("select", mouse_action == MultiViewInterface::ActionSelect);
-	ed->Check("translate", mouse_action == MultiViewInterface::ActionMove);
-	ed->Check("rotate", mouse_action == MultiViewInterface::ActionRotate);
+	ed->Check("select", mouse_action == MultiView::ActionSelect);
+	ed->Check("translate", mouse_action == MultiView::ActionMove);
+	ed->Check("rotate", mouse_action == MultiView::ActionRotate);
 }
 
 

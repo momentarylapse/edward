@@ -9,7 +9,8 @@
 #include "../../../../Edward.h"
 #include "../../../../Action/Model/Mesh/Polygon/ActionModelSplitPolygon.h"
 #include "../../../../Action/Model/Mesh/Edge/ActionModelSplitEdge.h"
-#include "../../../../MultiView/MultiViewWindow.h"
+#include "../../../../MultiView/MultiView.h"
+#include "../../../../MultiView/Window.h"
 
 ModeModelMeshSplitPolygon::ModeModelMeshSplitPolygon(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshSplitPolygon", _parent)
@@ -43,7 +44,7 @@ void ModeModelMeshSplitPolygon::OnLeftButtonDown()
 	}
 }
 
-void ModeModelMeshSplitPolygon::OnDrawWin(MultiViewWindow *win)
+void ModeModelMeshSplitPolygon::OnDrawWin(MultiView::Window *win)
 {
 	triangle = multi_view->hover.index;
 	surface = multi_view->hover.set;

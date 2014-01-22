@@ -10,7 +10,8 @@
 #include "../../ModeModel.h"
 #include "../../../../Data/Model/Geometry/GeometryTorus.h"
 #include "../../../../Edward.h"
-#include "../../../../MultiView/MultiViewWindow.h"
+#include "../../../../MultiView/MultiView.h"
+#include "../../../../MultiView/Window.h"
 
 #define RADIUS_FACTOR	0.5f
 
@@ -93,7 +94,7 @@ void ModeModelMeshCreateTorus::OnLeftButtonDown()
 }
 
 
-void ModeModelMeshCreateTorus::OnDrawWin(MultiViewWindow *win)
+void ModeModelMeshCreateTorus::OnDrawWin(MultiView::Window *win)
 {
 	if (pos_chosen){
 		mode_model->SetMaterialCreation();

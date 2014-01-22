@@ -15,6 +15,7 @@
 #include "../../../x/model_manager.h"
 #include "../../../x/terrain.h"
 #include "../../../meta.h"
+#include "../../../lib/nix/nix.h"
 
 
 Lightmap::Histogram::Histogram(Array<float> &e)

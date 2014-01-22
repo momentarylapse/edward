@@ -8,7 +8,7 @@
 #include "../../lib/math/math.h"
 #include "SkinGenerator.h"
 #include "../../MultiView/MultiView.h"
-#include "../../MultiView/MultiViewWindow.h"
+#include "../../MultiView/Window.h"
 #include "../../Data/Model/DataModel.h"
 
 SkinGenerator::SkinGenerator()
@@ -38,7 +38,7 @@ void SkinGenerator::init_projective(const matrix &_m)
 	m = _m;
 }
 
-void SkinGenerator::init_projective(MultiViewWindow *win)
+void SkinGenerator::init_projective(MultiView::Window *win)
 {
 	rect d = win->dest;
 	matrix s, t1, t2;

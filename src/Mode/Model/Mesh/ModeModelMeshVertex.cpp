@@ -7,7 +7,7 @@
 
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
-#include "../../../MultiView/MultiViewWindow.h"
+#include "../../../MultiView/Window.h"
 #include "ModeModelMesh.h"
 #include "ModeModelMeshVertex.h"
 #include "ModeModelMeshPolygon.h"
@@ -42,7 +42,7 @@ void ModeModelMeshVertex::OnEnd()
 
 
 
-void ModeModelMeshVertex::OnDrawWin(MultiViewWindow *win)
+void ModeModelMeshVertex::OnDrawWin(MultiView::Window *win)
 {
 	mode_model_mesh_polygon->OnDrawWin(win);
 	DrawEffects(win);
@@ -70,7 +70,7 @@ void ModeModelMeshVertex::OnUpdate(Observable *o)
 	mode_model_mesh_polygon->FillSelectionBuffers(data->Vertex);
 }
 
-void ModeModelMeshVertex::DrawEffects(MultiViewWindow *win)
+void ModeModelMeshVertex::DrawEffects(MultiView::Window *win)
 {
 	NixEnableLighting(false);
 	foreach(ModelEffect &fx, data->Fx){

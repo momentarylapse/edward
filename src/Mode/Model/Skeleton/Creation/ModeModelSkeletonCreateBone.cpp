@@ -8,6 +8,7 @@
 #include "ModeModelSkeletonCreateBone.h"
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"
+#include "../../../../MultiView/MultiView.h"
 #include "../../../../Action/Model/Skeleton/ActionModelAddBone.h"
 
 ModeModelSkeletonCreateBone::ModeModelSkeletonCreateBone(ModeBase *_parent) :
@@ -22,7 +23,7 @@ ModeModelSkeletonCreateBone::~ModeModelSkeletonCreateBone()
 {
 }
 
-void ModeModelSkeletonCreateBone::OnDrawWin(MultiViewWindow *win)
+void ModeModelSkeletonCreateBone::OnDrawWin(MultiView::Window *win)
 {
 }
 

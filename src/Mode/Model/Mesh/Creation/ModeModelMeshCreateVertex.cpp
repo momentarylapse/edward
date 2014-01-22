@@ -7,6 +7,7 @@
 
 #include "ModeModelMeshCreateVertex.h"
 #include "../../../../Edward.h"
+#include "../../../../MultiView/MultiView.h"
 
 ModeModelMeshCreateVertex::ModeModelMeshCreateVertex(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateVertex", _parent)

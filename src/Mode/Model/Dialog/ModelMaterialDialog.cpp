@@ -13,6 +13,7 @@
 #include "../../../Action/Model/Data/ActionModelEditMaterial.h"
 #include "../../../Action/Model/Data/ActionModelEditData.h"
 #include "../../../Edward.h"
+#include "../../../lib/nix/nix.h"
 
 string file_secure(const string &filename);
 string render_material(ModelMaterial *m);

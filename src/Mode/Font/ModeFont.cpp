@@ -189,7 +189,7 @@ void ModeFont::OnUpdate(Observable *o)
 
 void Draw2D(const rect &source, const rect *dest)
 {
-	MultiView *mv = mode_font->multi_view;
+	MultiView::MultiView *mv = mode_font->multi_view;
 	rect d;
 	if (dest){
 		d=rect(	MaxX/2-(mv->cam.pos.x-dest->x1)*mv->cam.zoom,
@@ -203,7 +203,7 @@ void Draw2D(const rect &source, const rect *dest)
 
 void DrawLineH(int x1, int x2, int y)
 {
-	MultiView *mv = mode_font->multi_view;
+	MultiView::MultiView *mv = mode_font->multi_view;
 	x1 = int(MaxX/2-(mv->cam.pos.x - x1)*mv->cam.zoom);
 	x2 = int(MaxX/2-(mv->cam.pos.x - x2)*mv->cam.zoom);
 	y  = int(MaxY/2-(mv->cam.pos.y - y )*mv->cam.zoom);
@@ -212,7 +212,7 @@ void DrawLineH(int x1, int x2, int y)
 
 void DrawLineV(int x, int y1, int y2)
 {
-	MultiView *mv = mode_font->multi_view;
+	MultiView::MultiView *mv = mode_font->multi_view;
 	x  = int(MaxX/2-(mv->cam.pos.x - x )*mv->cam.zoom);
 	y1 = int(MaxY/2-(mv->cam.pos.y - y1)*mv->cam.zoom);
 	y2 = int(MaxY/2-(mv->cam.pos.y - y2)*mv->cam.zoom);
@@ -220,7 +220,7 @@ void DrawLineV(int x, int y1, int y2)
 }
 
 
-void ModeFont::OnDrawWin(MultiViewWindow *win)
+void ModeFont::OnDrawWin(MultiView::Window *win)
 {
 	int NumY = data->TextureHeight / data->global.GlyphHeight;
 

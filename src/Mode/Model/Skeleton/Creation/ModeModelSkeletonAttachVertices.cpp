@@ -8,6 +8,7 @@
 #include "ModeModelSkeletonAttachVertices.h"
 #include "../../../../Action/Model/Skeleton/ActionModelAttachVerticesToBone.h"
 #include "../../../../Edward.h"
+#include "../../../../MultiView/MultiView.h"
 
 ModeModelSkeletonAttachVertices::ModeModelSkeletonAttachVertices(ModeBase* _parent,
 		int _bone_index) :
@@ -59,7 +60,7 @@ void ModeModelSkeletonAttachVertices::OnKeyDown()
 	}
 }
 
-void ModeModelSkeletonAttachVertices::OnDrawWin(MultiViewWindow *win)
+void ModeModelSkeletonAttachVertices::OnDrawWin(MultiView::Window *win)
 {
 }
 

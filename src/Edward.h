@@ -16,7 +16,9 @@
 #include "Stuff/PluginManager.h"
 
 class NixTexture;
-class MultiView;
+namespace MultiView{
+	class MultiView;
+};
 
 
 
@@ -136,8 +138,8 @@ public:
 	string DialogFile, DialogFileComplete, DialogFileNoEnding;
 	Array<string> PossibleSubDir;
 
-	MultiView *multi_view_2d;
-	MultiView *multi_view_3d;
+	MultiView::MultiView *multi_view_2d;
+	MultiView::MultiView *multi_view_3d;
 
 	Progress *progress;
 

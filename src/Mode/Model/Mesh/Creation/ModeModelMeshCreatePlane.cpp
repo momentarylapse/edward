@@ -11,7 +11,8 @@
 #include "../../../../Data/Model/Geometry/GeometryPlane.h"
 #include "../../../../Edward.h"
 #include "../../../../lib/nix/nix.h"
-#include "../../../../MultiView/MultiViewWindow.h"
+#include "../../../../MultiView/MultiView.h"
+#include "../../../../MultiView/Window.h"
 
 ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreatePlane", _parent)
@@ -75,7 +76,7 @@ void ModeModelMeshCreatePlane::OnLeftButtonDown()
 
 
 
-void ModeModelMeshCreatePlane::OnDrawWin(MultiViewWindow *win)
+void ModeModelMeshCreatePlane::OnDrawWin(MultiView::Window *win)
 {
 	if (pos_chosen){
 		vector n = length[0] ^ length[1];

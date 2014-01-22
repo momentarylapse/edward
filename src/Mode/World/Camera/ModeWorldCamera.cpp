@@ -11,6 +11,7 @@
 #include "../../../Edward.h"
 #include "../../../lib/math/interpolation.h"
 #include "../../../lib/nix/nix.h"
+#include "../../../MultiView/MultiView.h"
 #include "Creation/ModeWorldCameraCreatePoint.h"
 
 ModeWorldCamera *mode_world_camera = NULL;
@@ -211,7 +212,7 @@ void ModeWorldCamera::LoadData()
 	multi_view->ResetData(data);
 
 	// left -> translate
-	multi_view->SetMouseAction("ActionCameraMoveSelection", MultiViewInterface::ActionMove);
+	multi_view->SetMouseAction("ActionCameraMoveSelection", MultiView::ActionMove);
 	// middle/right -> rotate
 	/*multi_view->SetMouseAction(1, "ActionWorldRotateObjects", MultiView::ActionRotate2d);
 	multi_view->SetMouseAction(2, "ActionWorldRotateObjects", MultiView::ActionRotate);*/
@@ -220,18 +221,18 @@ void ModeWorldCamera::LoadData()
 	multi_view->SetData(	MVDWorldCamPoint,
 			data->Point,
 			NULL,
-			MultiViewInterface::FlagIndex | MultiViewInterface::FlagSelect | MultiViewInterface::FlagMove | MultiViewInterface::FlagDraw,
+			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove | MultiView::FlagDraw,
 			NULL, NULL);
 	if (edit_vel)
 	multi_view->SetData(	MVDWorldCamPointVel,
 			data->Vel,
 			NULL,
-			MultiViewInterface::FlagIndex | MultiViewInterface::FlagSelect | MultiViewInterface::FlagMove | MultiViewInterface::FlagDraw,
+			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove | MultiView::FlagDraw,
 			NULL, NULL);
 	ed->ForceRedraw();
 }
 
-void ModeWorldCamera::OnDrawWin(MultiViewWindow *win)
+void ModeWorldCamera::OnDrawWin(MultiView::Window *win)
 {
 	NixEnableLighting(false);
 	NixSetWorldMatrix(m_id);

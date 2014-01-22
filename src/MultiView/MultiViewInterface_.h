@@ -12,21 +12,15 @@
 #include "../Stuff/Observable.h"
 #include "../lib/math/math.h"
 
-class MultiViewWindow;
 class Data;
 
-// "des Pudels Kern", don't change!!!!!!!
-class MultiViewSingleData
-{
-public:
-	MultiViewSingleData();
-	int view_stage;
-	bool is_selected, m_delta, m_old, is_special;
-	vector pos;
-};
+namespace MultiView{
 
-typedef bool t_is_mouse_over_func(int index, void *user_data, MultiViewWindow *win, vector &tp);
-typedef bool t_is_in_rect_func(int index, void *user_data, MultiViewWindow *win, rect *r);
+class Window;
+class SingleData;
+
+typedef bool t_is_mouse_over_func(int index, void *user_data, Window *win, vector &tp);
+typedef bool t_is_in_rect_func(int index, void *user_data, Window *win, rect *r);
 
 
 
@@ -44,12 +38,31 @@ enum
 };
 
 
-struct MultiViewCamera
+enum{
+	ActionNone,
+	ActionSelect,
+	ActionMove,
+	ActionRotate,
+	ActionRotate2d,
+	ActionScale,
+	ActionScale2d,
+	ActionMirror,
+	ActionOnce
+};
+
+struct Camera
 {
 	vector pos, ang;
 	float zoom, radius;
 	bool ignore_radius;
 };
+
+// multiview mask (data)
+static const int FlagNone = 0;
+static const int FlagSelect= 1;
+static const int FlagDraw = 2;
+static const int FlagIndex = 4;
+static const int FlagMove = 8;
 
 class MultiViewInterface : public Observable
 {
@@ -67,27 +80,8 @@ public:
 	vector virtual GetCursor3d() = 0;
 	vector virtual GetCursor3d(const vector &depth_reference) = 0;
 
-	enum{
-		ActionNone,
-		ActionSelect,
-		ActionMove,
-		ActionRotate,
-		ActionRotate2d,
-		ActionScale,
-		ActionScale2d,
-		ActionMirror,
-		ActionOnce
-	};
 	virtual void ResetMouseAction() = 0;
 	virtual void SetMouseAction(const string &name, int mode) = 0;
-
-
-	// multiview mask (data)
-	static const int FlagNone = 0;
-	static const int FlagSelect= 1;
-	static const int FlagDraw = 2;
-	static const int FlagIndex = 4;
-	static const int FlagMove = 8;
 
 
 	bool wire_mode;
@@ -98,7 +92,7 @@ public:
 
 	bool allow_rect;
 	bool allow_mouse_actions;
-	MultiViewCamera cam;
+	Camera cam;
 
 	vector m, v;
 
@@ -109,6 +103,8 @@ public:
 		void reset();
 	};
 	Selection hover, selection;
+};
+
 };
 
 #endif /* MULTIVIEWINTERFACE_H_ */

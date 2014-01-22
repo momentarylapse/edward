@@ -8,6 +8,7 @@
 #include "ModeWorldCameraCreatePoint.h"
 #include "../../../../Data/World/DataCamera.h"
 #include "../../../../Action/World/Camera/ActionCameraAddPoint.h"
+#include "../../../../MultiView/MultiView.h"
 
 ModeWorldCameraCreatePoint::ModeWorldCameraCreatePoint(ModeBase *_parent) :
 	ModeCreation<DataCamera>("WorldCameraCreatePoint", _parent)

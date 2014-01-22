@@ -7,6 +7,7 @@
 
 #include "ModeModelMeshExtrudePolygons.h"
 #include "../../../../Edward.h"
+#include "../../../../MultiView/MultiView.h"
 #include "../../../../Action/Model/Mesh/Polygon/ActionModelExtrudePolygons.h"
 
 ModeModelMeshExtrudePolygons::ModeModelMeshExtrudePolygons(ModeBase *_parent) :
@@ -46,7 +47,7 @@ void ModeModelMeshExtrudePolygons::OnMouseMove()
 	Preview();
 }
 
-void ModeModelMeshExtrudePolygons::OnDrawWin(MultiViewWindow *win)
+void ModeModelMeshExtrudePolygons::OnDrawWin(MultiView::Window *win)
 {
 	NixEnableLighting(false);
 	ed->DrawStr(100, 100, f2s(offset, 3));

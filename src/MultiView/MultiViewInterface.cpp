@@ -7,6 +7,8 @@
 
 #include "MultiViewInterface_.h"
 
+namespace MultiView{
+
 void MultiViewInterface::Selection::reset()
 {
 	index = set = type = -1;
@@ -21,3 +23,4 @@ MultiViewInterface::~MultiViewInterface()
 {
 }
 
+};

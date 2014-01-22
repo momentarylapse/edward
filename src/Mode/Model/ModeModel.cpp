@@ -17,6 +17,7 @@
 #include "Mesh/ModeModelMeshTexture.h"
 #include "Skeleton/ModeModelSkeleton.h"
 #include "Animation/ModeModelAnimation.h"
+#include "../../lib/nix/nix.h"
 
 ModeModel *mode_model = NULL;
 

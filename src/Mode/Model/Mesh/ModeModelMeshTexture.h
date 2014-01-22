@@ -26,7 +26,7 @@ public:
 	virtual void OnUpdate(Observable *o);
 
 	virtual void OnDraw();
-	virtual void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiView::Window *win);
 
 	// for MultiView actions
 	void GetSelectedSkinVertices(Array<int> &surf, Array<int> &tria, Array<int> &index);

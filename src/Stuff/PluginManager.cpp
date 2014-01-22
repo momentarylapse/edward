@@ -65,13 +65,13 @@ void PluginManager::Init()
 	Script::LinkExternal("Data.BeginActionGroup", Script::mf(&Data::BeginActionGroup));
 	Script::LinkExternal("Data.EndActionGroup", Script::mf(&Data::EndActionGroup));
 
-	Script::DeclareClassSize("MultiViewSingleData", sizeof(MultiViewSingleData));
-	Script::DeclareClassOffset("MultiViewSingleData", "pos", offsetof(MultiViewSingleData, pos));
-	Script::DeclareClassOffset("MultiViewSingleData", "view_stage", offsetof(MultiViewSingleData, view_stage));
-	Script::DeclareClassOffset("MultiViewSingleData", "is_selected", offsetof(MultiViewSingleData, is_selected));
-	Script::DeclareClassOffset("MultiViewSingleData", "m_delta", offsetof(MultiViewSingleData, m_delta));
-	Script::DeclareClassOffset("MultiViewSingleData", "m_old", offsetof(MultiViewSingleData, m_old));
-	Script::DeclareClassOffset("MultiViewSingleData", "is_special", offsetof(MultiViewSingleData, is_special));
+	Script::DeclareClassSize("MultiViewSingleData", sizeof(MultiView::SingleData));
+	Script::DeclareClassOffset("MultiViewSingleData", "pos", offsetof(MultiView::SingleData, pos));
+	Script::DeclareClassOffset("MultiViewSingleData", "view_stage", offsetof(MultiView::SingleData, view_stage));
+	Script::DeclareClassOffset("MultiViewSingleData", "is_selected", offsetof(MultiView::SingleData, is_selected));
+	Script::DeclareClassOffset("MultiViewSingleData", "m_delta", offsetof(MultiView::SingleData, m_delta));
+	Script::DeclareClassOffset("MultiViewSingleData", "m_old", offsetof(MultiView::SingleData, m_old));
+	Script::DeclareClassOffset("MultiViewSingleData", "is_special", offsetof(MultiView::SingleData, is_special));
 
 	// model
 

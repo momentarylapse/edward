@@ -13,7 +13,7 @@
 
 ModeModelAnimationSkeleton *mode_model_animation_skeleton = NULL;
 
-void DrawBone(const vector &r, const vector &d, const color &c, MultiViewWindow *win);
+void DrawBone(const vector &r, const vector &d, const color &c, MultiView::Window *win);
 
 ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(ModeBase* _parent) :
 	Mode<DataModel>("ModelAnimationSkeleton", _parent, ed->multi_view_3d, "menu_move")
@@ -70,7 +70,7 @@ void ModeModelAnimationSkeleton::OnUpdateMenu()
 {
 }
 
-void ModeModelAnimationSkeleton::OnDrawWin(MultiViewWindow *win)
+void ModeModelAnimationSkeleton::OnDrawWin(MultiView::Window *win)
 {
 	mode_model_skeleton->OnDrawWin(win);
 #if 0

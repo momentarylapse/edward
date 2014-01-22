@@ -9,6 +9,7 @@
 #include "../../../Edward.h"
 #include "../ModeWorld.h"
 #include "../../../Action/World/ActionWorldEditData.h"
+#include "../../../MultiView/MultiView.h"
 #include "../../../lib/script/script.h"
 #include "../../../lib/nix/nix.h"
 

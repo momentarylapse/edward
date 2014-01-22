@@ -12,6 +12,7 @@
 #include "../../Action/Action.h"
 #include "../../Action/ActionManager.h"
 #include "../../Edward.h"
+#include "../../MultiView/MultiView.h"
 #include "../../x/model_manager.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelAddVertex.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelNearifyVertices.h"

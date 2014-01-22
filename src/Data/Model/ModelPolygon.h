@@ -13,6 +13,7 @@ class ModelVertex;
 class NixVertexBuffer;
 
 #include "../../x/material.h"
+#include "../../MultiView/SingleData.h"
 
 class ModelPolygonSide
 {
@@ -26,7 +27,7 @@ public:
 	unsigned char Triangulation[3];
 };
 
-class ModelPolygon: public MultiViewSingleData
+class ModelPolygon: public MultiView::SingleData
 {
 public:
 	Array<ModelPolygonSide> Side;

@@ -11,13 +11,16 @@
 #include "../lib/base/base.h"
 #include "../lib/math/math.h"
 
-class MultiView;
-class MultiViewWindow;
 class ActionMultiView;
 class Geometry;
 
+namespace MultiView{
 
-struct MultiViewMouseAction
+class MultiView;
+class Window;
+
+
+struct MouseAction
 {
 	string name;
 	int mode;
@@ -43,10 +46,10 @@ public:
 	Array<Geometry*> geo;
 	int mouse_over_geo;
 	MultiView *multi_view;
-	MultiViewMouseAction action;
+	MouseAction action;
 	ActionMultiView *cur_action;
 	void reset();
-	void Draw(MultiViewWindow *win);
+	void Draw(Window *win);
 	void DrawParams();
 	void Disable();
 	void Enable();
@@ -59,6 +62,8 @@ public:
 	void StartAction();
 	void UpdateAction();
 	void EndAction(bool set);
+};
+
 };
 
 #endif /* ACTIONCONTROLLER_H_ */

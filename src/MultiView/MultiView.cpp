@@ -7,9 +7,11 @@
 
 #include "../Edward.h"
 #include "MultiView.h"
-#include "MultiViewWindow.h"
+#include "Window.h"
 #include "ActionController.h"
+#include "SingleData.h"
 
+namespace MultiView{
 
 const float SPEED_MOVE = 0.05f;
 const float SPEED_ZOOM_KEY = 1.15f;
@@ -23,11 +25,11 @@ const float MouseRotationSpeed = 0.0033f;
 		cam.zoom = ((float)NixScreenHeight / (whole_window ? 1.0f : 2.0f) / cam.radius); \
 	else \
 		cam.zoom = (float)NixScreenHeight * 0.8f / cam.radius;
-#define MVGetSingleData(d, index)	((MultiViewSingleData*) ((char*)(d).data->data + (d).data->element_size* index))
+#define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 //#define MVGetSingleData(d, index)	( dynamic_cast<MultiViewSingleData*> ((char*)(d).data + (d).DataSingleSize * index))
 
 
-MultiViewSingleData::MultiViewSingleData()
+SingleData::SingleData()
 {
 	view_stage = 0;
 	is_selected = false;
@@ -56,7 +58,7 @@ MultiView::MultiView(bool _mode3d)
 
 	mode3d = _mode3d;
 	for (int i=0;i<4;i++){
-		win[i] = new MultiViewWindow;
+		win[i] = new Window;
 		win[i]->multi_view = this;
 		win[i]->cam = &cam;
 	}
@@ -158,7 +160,7 @@ void MultiView::ResetData(Data *_data)
 
 void MultiView::SetData(int type, const DynamicArray & a, void *user_data, int mode, t_is_mouse_over_func *is_mouse_over_func, t_is_in_rect_func *is_in_rect_func)
 {
-	MultiViewData d;
+	DataSet d;
 	d.Type = type;
 	d.data = (DynamicArray*)&a;
 	d.user_data = user_data;
@@ -520,10 +522,10 @@ void MultiView::StartRect()
 	MVRect = true;
 
 	// reset selection data
-	foreach(MultiViewData &d, data)
+	foreach(DataSet &d, data)
 		if (d.MVSelectable)
 			for (int i=0;i<d.data->num;i++){
-				MultiViewSingleData* sd = MVGetSingleData(d,i);
+				SingleData* sd = MVGetSingleData(d,i);
 				sd->m_old = sd->is_selected;
 			}
 
@@ -704,9 +706,9 @@ void MultiView::SetMouseAction(const string & name, int mode)
 
 void MultiView::SelectAll()
 {
-	foreach(MultiViewData &d, data)
+	foreach(DataSet &d, data)
 		for (int i=0;i<d.data->num;i++){
-			MultiViewSingleData* sd = MVGetSingleData(d, i);
+			SingleData* sd = MVGetSingleData(d, i);
 			if (sd->view_stage >= view_stage)
 				sd->is_selected = true;
 		}
@@ -715,9 +717,9 @@ void MultiView::SelectAll()
 
 void MultiView::SelectNone()
 {
-	foreach(MultiViewData &d, data)
+	foreach(DataSet &d, data)
 		for (int i=0;i<d.data->num;i++){
-			MultiViewSingleData* sd = MVGetSingleData(d, i);
+			SingleData* sd = MVGetSingleData(d, i);
 			sd->is_selected = false;
 		}
 	Notify("SelectionChange");
@@ -725,9 +727,9 @@ void MultiView::SelectNone()
 
 void MultiView::InvertSelection()
 {
-	foreach(MultiViewData &d, data)
+	foreach(DataSet &d, data)
 		for (int i=0;i<d.data->num;i++){
-			MultiViewSingleData* sd = MVGetSingleData(d, i);
+			SingleData* sd = MVGetSingleData(d, i);
 			if (sd->view_stage >= view_stage)
 				sd->is_selected = !sd->is_selected;
 		}
@@ -736,9 +738,9 @@ void MultiView::InvertSelection()
 
 bool MultiView::HasSelection()
 {
-	foreach(MultiViewData &d, data)
+	foreach(DataSet &d, data)
 		for (int i=0;i<d.data->num;i++){
-			MultiViewSingleData* sd = MVGetSingleData(d, i);
+			SingleData* sd = MVGetSingleData(d, i);
 			if (sd->is_selected)
 				return true;
 		}
@@ -749,9 +751,9 @@ vector MultiView::GetSelectionCenter()
 {
 	vector min, max;
 	bool first = true;
-	foreach(MultiViewData &d, data)
+	foreach(DataSet &d, data)
 		for (int i=0;i<d.data->num;i++){
-			MultiViewSingleData* sd = MVGetSingleData(d, i);
+			SingleData* sd = MVGetSingleData(d, i);
 			if (sd->is_selected){
 				if (first){
 					min = max = sd->pos;
@@ -786,10 +788,10 @@ void MultiView::GetMouseOver()
 		return;
 	float _radius=(float)PointRadiusMouseOver;
 	float z_min=1;
-	foreachi(MultiViewData &d, data, di)
+	foreachi(DataSet &d, data, di)
 		if (d.MVSelectable)
 			for (int i=0;i<d.data->num;i++){
-				MultiViewSingleData* sd=MVGetSingleData(d,i);
+				SingleData* sd=MVGetSingleData(d,i);
 				if (sd->view_stage < view_stage)
 					continue;
 				bool mo=false;
@@ -833,10 +835,10 @@ void MultiView::GetMouseOver()
 
 void MultiView::UnselectAll()
 {
-	foreach(MultiViewData &d, data)
+	foreach(DataSet &d, data)
 		if (d.MVSelectable)
 			for (int i=0;i<d.data->num;i++){
-				MultiViewSingleData* sd = MVGetSingleData(d,i);
+				SingleData* sd = MVGetSingleData(d,i);
 				sd->is_selected = false;
 			}
 	MultiViewSelectionChanged = true;
@@ -852,7 +854,7 @@ void MultiView::GetSelected(int mode)
 		if (mode == SelectSet)
 			UnselectAll();
 	}else{
-		MultiViewSingleData* sd=MVGetSingleData(data[selection.set], selection.index);
+		SingleData* sd=MVGetSingleData(data[selection.set], selection.index);
 		if (sd->is_selected){
 			if (mode == SelectInvert){
 				sd->is_selected=false;
@@ -882,10 +884,10 @@ void MultiView::SelectAllInRectangle(int mode)
 	rect r = rect(min(m.x, RectX), max(m.x, RectX), min(m.y, RectY), max(m.y, RectY));
 
 	// select
-	foreach(MultiViewData &d, data)
+	foreach(DataSet &d, data)
 		if (d.MVSelectable)
 			for (int i=0;i<d.data->num;i++){
-				MultiViewSingleData* sd=MVGetSingleData(d,i);
+				SingleData* sd=MVGetSingleData(d,i);
 				if (sd->view_stage<view_stage)
 					continue;
 
@@ -933,10 +935,10 @@ void MultiView::ViewStagePush()
 {
 	view_stage ++;
 
-	foreach(MultiViewData &d, data)
+	foreach(DataSet &d, data)
 		if (d.MVSelectable)
 			for (int i=0;i<d.data->num;i++){
-				MultiViewSingleData* sd=MVGetSingleData(d,i);
+				SingleData* sd=MVGetSingleData(d,i);
 				if (sd->is_selected)
 					sd->view_stage = view_stage;
 			}
@@ -948,10 +950,10 @@ void MultiView::ViewStagePop()
 	if (view_stage <= 0)
 		return;
 	view_stage --;
-	foreach(MultiViewData &d, data)
+	foreach(DataSet &d, data)
 		if (d.MVSelectable)
 			for (int i=0;i<d.data->num;i++){
-				MultiViewSingleData* sd=MVGetSingleData(d,i);
+				SingleData* sd=MVGetSingleData(d,i);
 				if (sd->view_stage > view_stage)
 					sd->view_stage = view_stage;
 			}
@@ -962,3 +964,5 @@ void MultiView::ResetMessage3d()
 {
 	message3d.clear();
 }
+
+};

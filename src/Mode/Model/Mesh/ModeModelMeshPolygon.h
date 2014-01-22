@@ -28,9 +28,9 @@ public:
 	virtual void OnUpdate(Observable *o);
 
 	virtual void OnDraw();
-	virtual void OnDrawWin(MultiViewWindow *win);
-	void DrawPolygons(MultiViewWindow *win, Array<ModelVertex> &vertex);
-	void DrawSelection(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiView::Window *win);
+	void DrawPolygons(MultiView::Window *win, Array<ModelVertex> &vertex);
+	void DrawSelection(MultiView::Window *win);
 
 
 	void SetMaterialMarked();

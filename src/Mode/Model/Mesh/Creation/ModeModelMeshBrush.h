@@ -28,7 +28,7 @@ public:
 	void OnDiameterSlider();
 	void OnDepthSlider();
 
-	virtual void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiView::Window *win);
 
 	Action *GetAction();
 	void Apply();

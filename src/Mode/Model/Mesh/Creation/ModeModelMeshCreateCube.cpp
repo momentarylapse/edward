@@ -11,7 +11,8 @@
 #include "../../../../Data/Model/Geometry/GeometryCube.h"
 #include "../../../../Data/Model/Geometry/GeometryPlane.h"
 #include "../../../../Edward.h"
-#include "../../../../MultiView/MultiViewWindow.h"
+#include "../../../../MultiView/MultiView.h"
+#include "../../../../MultiView/Window.h"
 
 ModeModelMeshCreateCube::ModeModelMeshCreateCube(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateCube", _parent)
@@ -130,7 +131,7 @@ void ModeModelMeshCreateCube::OnEnd()
 	delete(dialog);
 }
 
-void ModeModelMeshCreateCube::OnDrawWin(MultiViewWindow *win)
+void ModeModelMeshCreateCube::OnDrawWin(MultiView::Window *win)
 {
 	mode_model->SetMaterialCreation();
 	if (pos_chosen){

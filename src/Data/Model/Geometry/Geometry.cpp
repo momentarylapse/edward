@@ -10,7 +10,8 @@
 #include "../ModelPolygon.h"
 #include "../SkinGenerator.h"
 #include "../../../lib/nix/nix.h"
-#include "../../../MultiView/MultiViewWindow.h"
+#include "../../../MultiView/MultiView.h"
+#include "../../../MultiView/Window.h"
 
 
 static float Bernstein3(int i, float t)
@@ -403,7 +404,7 @@ void Geometry::RemoveUnusedVertices()
 		}
 }
 
-bool Geometry::IsMouseOver(MultiViewWindow *win, vector &tp)
+bool Geometry::IsMouseOver(MultiView::Window *win, vector &tp)
 {
 	foreach(ModelPolygon &p, Polygon){
 		// care for the sense of rotation?

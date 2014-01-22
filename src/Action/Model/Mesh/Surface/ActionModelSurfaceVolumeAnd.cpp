@@ -11,6 +11,7 @@
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../Data/Model/Geometry/Geometry.h"
 #include "../../../../Edward.h"
+#include "../../../../MultiView/MultiView.h"
 
 
 ActionModelSurfaceVolumeAnd::ActionModelSurfaceVolumeAnd()

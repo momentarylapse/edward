@@ -1,21 +1,24 @@
 /*
- * MultiViewWindow.cpp
+ * Window.cpp
  *
  *  Created on: 21.01.2014
  *      Author: michi
  */
 
-#include "MultiViewWindow.h"
+#include "Window.h"
 #include "MultiView.h"
 #include "ActionController.h"
+#include "SingleData.h"
 #include "../Edward.h"
 
 
 extern matrix NixViewMatrix;
 extern matrix NixProjectionMatrix;
 
+namespace MultiView{
 
-#define MVGetSingleData(d, index)	((MultiViewSingleData*) ((char*)(d).data->data + (d).data->element_size* index))
+
+#define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 
 
 float GetDensity(int i,float t)
@@ -28,7 +31,7 @@ float GetDensity(int i,float t)
 	return t;
 }
 
-void MultiViewWindow::DrawGrid()
+void Window::DrawGrid()
 {
 	if (type == ViewIsometric)
 		return;
@@ -124,7 +127,7 @@ void MultiViewWindow::DrawGrid()
 }
 
 
-void MultiViewWindow::Draw()
+void Window::Draw()
 {
 	msg_db_f("MultiView.DrawWin",2);
 	matrix rot, trans;
@@ -224,11 +227,11 @@ void MultiViewWindow::Draw()
 	NixSetTexture(NULL);
 	NixSetWire(false);
 	NixEnableLighting(false);
-	foreachi(MultiViewData &d, multi_view->data, di){
+	foreachi(DataSet &d, multi_view->data, di){
 		if ((d.Drawable)||(d.Indexable)){
 			for (int i=0;i<d.data->num;i++){
 
-				MultiViewSingleData *sd = MVGetSingleData(d, i);
+				SingleData *sd = MVGetSingleData(d, i);
 				if (sd->view_stage < multi_view->view_stage)
 					continue;
 
@@ -292,7 +295,7 @@ void MultiViewWindow::Draw()
 	}
 }
 
-vector MultiViewWindow::Unproject(const vector &p, const vector &o)
+vector Window::Unproject(const vector &p, const vector &o)
 {
 	vector r;
 	vector pp = p;
@@ -344,7 +347,7 @@ vector MultiViewWindow::Unproject(const vector &p, const vector &o)
 	return r;
 }
 
-vector MultiViewWindow::Project(const vector &p)
+vector Window::Project(const vector &p)
 {
 	vector r;
 	if ((type == ViewPerspective) || (type == ViewIsometric)){ // 3D
@@ -392,7 +395,7 @@ vector MultiViewWindow::Project(const vector &p)
 	return r;
 }
 
-vector MultiViewWindow::Unproject(const vector &p)
+vector Window::Unproject(const vector &p)
 {
 	vector r;
 	vector pp = p;
@@ -441,7 +444,7 @@ vector MultiViewWindow::Unproject(const vector &p)
 	return r;
 }
 
-vector MultiViewWindow::GetDirection()
+vector Window::GetDirection()
 {
 	int t=type;
 	if ((t==ViewFront)||(t==View2D))
@@ -461,7 +464,7 @@ vector MultiViewWindow::GetDirection()
 	return v_0;
 }
 
-vector MultiViewWindow::GetDirectionUp()
+vector Window::GetDirectionUp()
 {
 	int t=type;
 	if (t==View2D)
@@ -483,17 +486,18 @@ vector MultiViewWindow::GetDirectionUp()
 	return v_0;
 }
 
-vector MultiViewWindow::GetDirectionRight()
+vector Window::GetDirectionRight()
 {
 	vector d=GetDirection();
 	vector u=GetDirectionUp();
 	return VecCrossProduct(d,u);
 }
 
-void MultiViewWindow::GetMovingFrame(vector &dir, vector &up, vector &right)
+void Window::GetMovingFrame(vector &dir, vector &up, vector &right)
 {
 	dir = GetDirection();
 	up = GetDirectionUp();
 	right = dir ^ up;
 }
 
+};

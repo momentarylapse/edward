@@ -7,7 +7,7 @@
 
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
-#include "../../../MultiView/MultiViewWindow.h"
+#include "../../../MultiView/Window.h"
 #include "ModeModelSkeleton.h"
 #include "../Mesh/ModeModelMeshPolygon.h"
 #include "../Animation/ModeModelAnimation.h"
@@ -114,7 +114,7 @@ void ModeModelSkeleton::OnUpdate(Observable *o)
 
 
 
-void DrawBone(const vector &r, const vector &d, const color &c, MultiViewWindow *win)
+void DrawBone(const vector &r, const vector &d, const color &c, MultiView::Window *win)
 {
 	vector pr = win->Project(r);
 	vector pd = win->Project(d);
@@ -149,7 +149,7 @@ void DrawCoordBasis(const ModelBone *b)
 	}
 }
 
-void ModeModelSkeleton::OnDrawWin(MultiViewWindow *win)
+void ModeModelSkeleton::OnDrawWin(MultiView::Window *win)
 {
 	mode_model_mesh_polygon->DrawPolygons(win, data->Vertex);
 

@@ -22,7 +22,7 @@ public:
 	virtual void OnLeftButtonDown();
 	virtual void OnMouseMove();
 
-	virtual void OnDrawWin(MultiViewWindow *win);
+	virtual void OnDrawWin(MultiView::Window *win);
 
 	void Preview();
 	void CleanUp();
