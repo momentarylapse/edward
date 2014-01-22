@@ -57,9 +57,9 @@ bool SurfaceInRect(int index, void *user_data, MultiView::Window *win, rect *r)
 	DataModel *data = (DataModel*)user_data;
 	ModelSurface &s = data->Surface[index];
 	for (int i=0;i<s.Polygon.num;i++)
-		if (!PolygonInRect(i, &s, win, r))
-			return false;
-	return true;
+		if (PolygonInRect(i, &s, win, r))
+			return true;
+	return false;
 }
 
 void ModeModelMeshSurface::OnUpdate(Observable *o)

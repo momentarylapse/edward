@@ -196,7 +196,10 @@ bool IsInRectObject(int index, void *user_data, MultiView::Window *win, rect *r)
 	for (int i=0;i<m->skin[d]->vertex.num;i++){
 		tmv[i] = m->_matrix * m->skin[d]->vertex[i];
 		pmv[i] = win->Project(tmv[i]);
+		if (r->inside(pmv[i].x, pmv[i].y))
+			return true;
 	}
+	return false;
 	for (int mm=0;mm<m->material.num;mm++)
 	for (int i=0;i<m->skin[d]->sub[mm].num_triangles;i++){
 		vector a=pmv[m->skin[d]->sub[mm].triangle_index[i*3  ]];

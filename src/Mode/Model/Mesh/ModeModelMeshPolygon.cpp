@@ -249,10 +249,10 @@ bool PolygonInRect(int index, void *user_data, MultiView::Window *win, rect *r)
 		vector pp = win->Project(m->Vertex[t->Side[k].Vertex].pos); // mmodel->GetVertex(ia)
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
-		if (!in_irect(pp, r))
-			return false;
+		if (in_irect(pp, r))
+			return true;
 	}
-	return true;
+	return false;
 }
 
 
