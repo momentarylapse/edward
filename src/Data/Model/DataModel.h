@@ -285,6 +285,7 @@ public:
 	void CollapseSelectedVertices();
 	void BevelSelectedEdges(float radius);
 	void FlattenSelectedVertices();
+	void TriangulateSelectedVertices();
 	void ExtrudeSelectedPolygons(float offset);
 	void AutoWeldSurfaces(const Set<int> &surfaces, float d);
 	void AutoWeldSelectedSurfaces(float d);

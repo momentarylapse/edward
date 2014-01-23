@@ -319,6 +319,7 @@ class DataModel : Data
 //	extern void CollapseSelectedVertices()
 	extern void BevelSelectedVertices(float radius)
 //	extern void FlattenSelectedVertices()
+	extern void TriangulateSelectedVertices()
 	extern void ExtrudeSelectedPolygons(float offset)
 //	extern void AutoWeldSelectedSurfaces(float d)
 //	extern void SetNormalModeSelection(int mode)
