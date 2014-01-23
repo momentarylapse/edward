@@ -65,6 +65,8 @@ MultiViewImpl::MultiViewImpl(bool _mode3d) :
 	PointRadius = 2;
 	PointRadiusMouseOver = 4;
 
+	allow_infinite_scrolling = HuiConfigReadBool("MultiView.InfiniteScrolling", true);
+
 	mode3d = _mode3d;
 	win[0] = new Window(this, ViewBack);
 	win[1] = new Window(this, ViewLeft);
@@ -102,6 +104,7 @@ MultiViewImpl::MultiViewImpl(bool _mode3d) :
 
 MultiViewImpl::~MultiViewImpl()
 {
+	HuiConfigWriteBool("MultiView.InfiniteScrolling", allow_infinite_scrolling);
 }
 
 void MultiViewImpl::Reset()
@@ -363,15 +366,12 @@ void MultiViewImpl::OnLeftButtonDown()
 void MultiViewImpl::OnMiddleButtonDown()
 {
 	active_win = mouse_win;
-	/*bool allow = true;
-	if ((MouseOverType >= 0) && (MouseOver >= 0))
-		if (MVGetSingleData(data[MouseOverSet], MouseOver)->is_selected)
-			allow = false;
-	if (allow){*/
+
 // move camera?
+	if (allow_infinite_scrolling)
 		HoldCursor(true);
-		ViewMoving = true;
-	//}
+	ViewMoving = true;
+
 	Notify("Update");
 }
 
@@ -380,18 +380,12 @@ void MultiViewImpl::OnMiddleButtonDown()
 void MultiViewImpl::OnRightButtonDown()
 {
 	active_win = mouse_win;
-	/*bool allow = true;
-	if ((MouseOverType >= 0) && (MouseOver >= 0))
-		if (MVGetSingleData(data[MouseOverSet], MouseOver)->is_selected)
-			allow = false;
-	if (allow){*/
+
 // move camera?
+	if (allow_infinite_scrolling)
 		HoldCursor(true);
-		ViewMoving = true;
-	/*}else{
-		MouseMovedSinceClick = 0;
-		GetSelected();
-	}*/
+	ViewMoving = true;
+
 	Notify("Update");
 }
 
@@ -507,7 +501,7 @@ void MultiViewImpl::OnMouseMove()
 // camera translation
 			vector r = active_win->GetDirectionRight();
 			vector u = active_win->GetDirectionUp();
-			cam.pos += float(v.x) / cam.zoom * r + float(v.y) / cam.zoom * u;
+			cam.pos += v.x / cam.zoom * r + v.y / cam.zoom * u;
 		}
 	}
 

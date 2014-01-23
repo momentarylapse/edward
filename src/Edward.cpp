@@ -282,6 +282,9 @@ Edward::Edward(Array<string> arg) :
 
 Edward::~Edward()
 {
+	delete(plugins);
+	delete(multi_view_2d);
+	delete(multi_view_3d);
 	// saving the configuration data...
 	int w, h;
 	GetSizeDesired(w, h);

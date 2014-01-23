@@ -28,7 +28,7 @@ void win_set_input(HuiWindow *win, T *event)
 {
 	win->input.dx = event->x - win->input.x;
 	win->input.dy = event->y - win->input.y;
-	//msg_write(format("%.0f\t%0.f\t->\t%0.f\t%0.f\t(%.0f\t%0.f)", win->input.x, win->input.y, event->x, event->y, win->input.dx, win->input.dy));
+	//msg_write(format("%.1f\t%.1f\t->\t%.1f\t%.1f\t(%.1f\t%.1f)", win->input.x, win->input.y, event->x, event->y, win->input.dx, win->input.dy));
 	win->input.dz = 0;
 	win->input.x = event->x;
 	win->input.y = event->y;
@@ -56,14 +56,14 @@ gboolean OnGtkAreaMouseMove(GtkWidget *widget, GdkEventMotion *event, gpointer u
 
 	// gtk hinting system doesn't work?
 	// always use the real (current) cursor
-	int x, y, mod = 0;
+/*	int x, y, mod = 0;
 	#if GTK_MAJOR_VERSION >= 3
 		gdk_window_get_device_position(gtk_widget_get_window(c->widget), event->device, &x, &y, (GdkModifierType*)&mod);
 	#else
 		gdk_window_get_pointer(c->widget->window, &x, &y, (GdkModifierType*)&mod);
 	#endif
 	c->win->input.x = x;
-	c->win->input.y = y;
+	c->win->input.y = y;*/
 
 	c->Notify("hui:mouse-move", false);
 	gdk_event_request_motions(event); // to prevent too many signals for slow message processing

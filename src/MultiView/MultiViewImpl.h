@@ -117,6 +117,7 @@ public:
 	bool allow_view_stage, allow_view_stage_handling;
 	vector MovingDPos,RFPos,LFPos;
 
+	bool allow_infinite_scrolling;
 	bool HoldingCursor;
 	float HoldingX, HoldingY;
 
