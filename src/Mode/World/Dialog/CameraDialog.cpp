@@ -253,7 +253,7 @@ void CameraDialog::OnAreaMouseMove()
 
 void CameraDialog::OnAreaMouseWheel()
 {
-	float time_scale_new = min(time_scale * pow(1.1, HuiGetEvent()->dz), 1000);
+	float time_scale_new = min(time_scale * pow(1.1f, HuiGetEvent()->dz), 1000);
 	time_offset += HuiGetEvent()->mx * (1.0f / time_scale - 1.0f / time_scale_new);
 	time_scale = time_scale_new;
 	UpdateTimePos();

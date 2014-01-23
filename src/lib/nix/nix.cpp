@@ -87,15 +87,17 @@ void TestGLError(const char *pos)
 #endif
 }
 
+#ifdef OS_LINUX
 int xerrorhandler(Display *dsp, XErrorEvent *error)
 {
-  char errorstring[128];
-  XGetErrorText(dsp, error->error_code, errorstring, 128);
+	char errorstring[128];
+	XGetErrorText(dsp, error->error_code, errorstring, 128);
 
-  msg_error(string("X error: ") + errorstring);
-  HuiRaiseError(string("X error: ") + errorstring);
-  exit(-1);
+	msg_error(string("X error: ") + errorstring);
+	HuiRaiseError(string("X error: ") + errorstring);
+	exit(-1);
 }
+#endif
 
 
 // environment
@@ -407,7 +409,7 @@ void NixInit(const string &api, HuiWindow *win, const string &id)
 	msg_right();
 	msg_write("[" + NixVersion + "]");
 	
-	XSetErrorHandler(xerrorhandler);
+
 
 	NixWindow = win;
 	NixControlID = id;
@@ -436,6 +438,7 @@ void NixInit(const string &api, HuiWindow *win, const string &id)
 	NixDesktopDepth=mode.dmBitsPerPel;
 #endif
 #ifdef OS_LINUX
+	XSetErrorHandler(xerrorhandler);
 	#ifdef NIX_ALLOW_FULLSCREEN
 		XF86VidModeModeInfo **modes;
 		int NumModes;

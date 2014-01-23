@@ -24,9 +24,6 @@
     <ClCompile Include="src\meta.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\MultiView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\action\Action.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -156,18 +153,6 @@
     <ClCompile Include="src\action\model\mesh\skin\ActionModelAutomap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\action\model\mesh\skin\ActionModelMirrorSkinVertices.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\action\model\mesh\skin\ActionModelMoveSkinVertices.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\action\model\mesh\skin\ActionModelRotateSkinVertices.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\action\model\mesh\skin\ActionModelScaleSkinVertices.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\action\model\mesh\skin\ActionModelSkinVerticesFromProjection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -225,19 +210,7 @@
     <ClCompile Include="src\action\model\mesh\vertex\ActionModelFlattenVertices.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\action\model\mesh\vertex\ActionModelMirrorVertices.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\action\model\mesh\vertex\ActionModelMoveVertices.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\action\model\mesh\vertex\ActionModelNearifyVertices.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\action\model\mesh\vertex\ActionModelRotateVertices.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\action\model\mesh\vertex\ActionModelScaleVertices.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\action\model\mesh\vertex\helper\ActionModelDeleteUnusedVertex.cpp">
@@ -343,39 +316,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\data\model\SkinGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\data\model\geometry\ModelGeometry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\data\model\geometry\ModelGeometryBall.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\data\model\geometry\ModelGeometryCube.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\data\model\geometry\ModelGeometryCylinder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\data\model\geometry\ModelGeometryPlane.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\data\model\geometry\ModelGeometryPlatonic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\data\model\geometry\ModelGeometrySphere.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\data\model\geometry\ModelGeometrySubtract.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\data\model\geometry\ModelGeometryTeapot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\data\model\geometry\ModelGeometryTorus.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\data\model\geometry\ModelGeometryTorusKnot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\data\model\import\Importer3ds.cpp">
@@ -969,15 +909,78 @@
     <ClCompile Include="src\Mode\World\Dialog\CameraDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\MultiView\ActionController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MultiView\MultiViewImpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MultiView\SingleData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MultiView\Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshAutoweld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Data\Model\Geometry\Geometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Data\Model\Geometry\GeometryBall.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Data\Model\Geometry\GeometryCube.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Data\Model\Geometry\GeometryCylinder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Data\Model\Geometry\GeometryPlane.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Data\Model\Geometry\GeometryPlatonic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Data\Model\Geometry\GeometrySphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Data\Model\Geometry\GeometrySubtract.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Data\Model\Geometry\GeometryTeapot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Data\Model\Geometry\GeometryTorus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Data\Model\Geometry\GeometryTorusKnot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Data\Model\BspTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Action\Model\Mesh\Skin\ActionModelTransformSkinVertices.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelTransformVertices.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelTriangulateVertices.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MultiView\MultiView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib\image\image_png.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Edward.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\meta.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MultiView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\action\Action.h">
@@ -1109,18 +1112,6 @@
     <ClInclude Include="src\action\model\mesh\skin\ActionModelAutomap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\action\model\mesh\skin\ActionModelMirrorSkinVertices.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\action\model\mesh\skin\ActionModelMoveSkinVertices.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\action\model\mesh\skin\ActionModelRotateSkinVertices.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\action\model\mesh\skin\ActionModelScaleSkinVertices.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\action\model\mesh\skin\ActionModelSkinVerticesFromProjection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1178,19 +1169,7 @@
     <ClInclude Include="src\action\model\mesh\vertex\ActionModelFlattenVertices.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\action\model\mesh\vertex\ActionModelMirrorVertices.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\action\model\mesh\vertex\ActionModelMoveVertices.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\action\model\mesh\vertex\ActionModelNearifyVertices.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\action\model\mesh\vertex\ActionModelRotateVertices.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\action\model\mesh\vertex\ActionModelScaleVertices.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\action\model\mesh\vertex\helper\ActionModelDeleteUnusedVertex.h">
@@ -1296,36 +1275,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\data\model\SkinGenerator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\data\model\geometry\ModelGeometry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\data\model\geometry\ModelGeometryBall.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\data\model\geometry\ModelGeometryCube.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\data\model\geometry\ModelGeometryCylinder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\data\model\geometry\ModelGeometryPlane.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\data\model\geometry\ModelGeometryPlatonic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\data\model\geometry\ModelGeometrySphere.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\data\model\geometry\ModelGeometryTeapot.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\data\model\geometry\ModelGeometryTorus.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\data\model\geometry\ModelGeometryTorusKnot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\data\model\import\Importer3ds.h">
@@ -1869,6 +1818,69 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\mode\world\dialog\cameradialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MultiView\Window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MultiView\ActionController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MultiView\MultiViewImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MultiView\SingleData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mode\model\mesh\creation\modemodelmeshautoweld.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\model\geometry\geometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\model\geometry\geometryball.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\model\geometry\geometrycube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\model\geometry\geometrycylinder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\model\geometry\geometryplane.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\model\geometry\geometryplatonic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\model\geometry\geometrysphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\model\geometry\geometryteapot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\model\geometry\geometrytorus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\model\geometry\geometrytorusknot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\data\model\bsptree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\action\model\mesh\skin\actionmodeltransformskinvertices.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\action\model\mesh\vertex\actionmodeltransformvertices.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\action\model\mesh\vertex\actionmodeltriangulatevertices.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\multiview\multiview.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lib\image\image_png.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

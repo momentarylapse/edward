@@ -28,8 +28,8 @@ void *ActionCameraMoveSelection::execute(Data *d)
 	foreachi(int i, index, ii)
 		w->Point[i].pos = old_data[ii] + param;
 	foreachi(int i, index_vel, ii)
-		w->Point[i].Vel = old_vel[ii] + param;
-	return NULL;*/
+		w->Point[i].Vel = old_vel[ii] + param;*/
+	return NULL;
 }
 
 
