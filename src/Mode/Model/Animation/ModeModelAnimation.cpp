@@ -17,7 +17,7 @@
 ModeModelAnimation *mode_model_animation = NULL;
 
 ModeModelAnimation::ModeModelAnimation(ModeBase *_parent) :
-	Mode<DataModel>("ModelAnimation", _parent, NULL, "menu_move"),
+	Mode<DataModel>("ModelAnimation", _parent, ed->multi_view_3d, "menu_move"),
 	Observable("ModelAnimation")
 {
 	mode_model_animation_none = new ModeModelAnimationNone(this);
@@ -243,6 +243,11 @@ void ModeModelAnimation::OnUpdate(Observable *o)
 
 
 
+void ModeModelAnimation::OnDraw()
+{
+	IterateAnimation(timer.get());
+}
+
 void ModeModelAnimation::OnDrawWin(MultiView::Window *win)
 {
 }
@@ -251,8 +256,7 @@ void ModeModelAnimation::IdleFunction()
 {
 	if (!IsAncestorOf(ed->cur_mode))
 		return;
-	float dt = timer.get();
-	IterateAnimation(dt);
+	ed->ForceRedraw();
 	if (Playing)
 		HuiRunLaterM(0.020f, this, &ModeModelAnimation::IdleFunction);
 	else
