@@ -89,25 +89,26 @@ void ModeModelMeshEdge::OnStart()
 }
 
 
-bool EdgeIsMouseOver(int index, void *user_data, MultiView::Window *win, vector &tp)
+bool ModelEdge::Hover(MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data)
 {
 	ModelSurface *surf = (ModelSurface*)user_data;
-	ModelEdge *e = &surf->Edge[index];
 
 	DataModel *m = mode_model_mesh_edge->data; // surf->model;
 
 	// project all points
-	vector pp0 = win->Project(m->Vertex[e->Vertex[0]].pos);
+	vector pp0 = win->Project(m->Vertex[Vertex[0]].pos);
 	if ((pp0.z <= 0) or (pp0.z >= 1))
 		return false;
-	vector pp1 = win->Project(m->Vertex[e->Vertex[1]].pos);
+	vector pp1 = win->Project(m->Vertex[Vertex[1]].pos);
 	if ((pp1.z <= 0) or (pp1.z >= 1))
 		return false;
 	const float rr = 5;
 	rect r = rect(min(pp0.x, pp1.x) - rr, max(pp0.x, pp1.x) + rr, min(pp0.y, pp1.y) - rr, max(pp0.y, pp1.y) + rr);
-	vector M = win->multi_view->m;
 	if (!r.inside(M.x, M.y))
 		return false;
+
+	float z0 = pp0.z;
+	float z1 = pp1.z;
 	pp0.z = pp1.z = 0;
 	vector d = pp1 - pp0;
 	float l = d.length();
@@ -120,28 +121,23 @@ bool EdgeIsMouseOver(int index, void *user_data, MultiView::Window *win, vector 
 		return false;
 
 	float f = (pp0 + d * ((M - pp0) * d)).factor_between(pp0, pp1);
-	tp = m->Vertex[e->Vertex[0]].pos * (1 - f) + m->Vertex[e->Vertex[1]].pos * f;
+	tp = m->Vertex[Vertex[0]].pos * (1 - f) + m->Vertex[Vertex[1]].pos * f;
+	z = z0 * (1 - f) + z1 * f;
 	return true;
 }
 
-inline bool in_irect(const vector &p, rect *r)
-{
-	return ((p.x > r->x1) and (p.x < r->x2) and (p.y > r->y1) and (p.y < r->y2));
-}
-
-bool EdgeInRect(int index, void *user_data, MultiView::Window *win, rect *r)
+bool ModelEdge::InRect(MultiView::Window *win, rect &r, void *user_data)
 {
 	ModelSurface *surf = (ModelSurface*)user_data;
-	ModelEdge *e = &surf->Edge[index];
 
 	DataModel *m = mode_model_mesh_edge->data; // surf->model;
 
 	// all vertices within rectangle?
 	for (int k=0;k<2;k++){
-		vector pp = win->Project(m->Vertex[e->Vertex[k]].pos); // mmodel->GetVertex(ia)
+		vector pp = win->Project(m->Vertex[Vertex[k]].pos); // mmodel->GetVertex(ia)
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
-		if (!in_irect(pp, r))
+		if (!r.inside(pp.x, pp.y))
 			return false;
 	}
 	return true;

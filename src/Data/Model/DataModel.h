@@ -188,6 +188,9 @@ public:
 	//  Vertex[0] = surf.Polygon[Triangle[0]].Vertex[Side[0]]
 	//  Vertex[1] = surf.Polygon[Triangle[0]].Vertex[(Side[0] + 1) % 3]
 	//  same for Polygon/Side[1] but Vertex[0 <-> 1]
+
+	virtual bool Hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data);
+	virtual bool InRect(MultiView::Window *win, rect &r, void *user_data);
 };
 
 
