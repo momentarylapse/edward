@@ -161,19 +161,19 @@ void PluginManager::Init()
 
 
 
-	Script::DeclareClassSize("ModelGeometry", sizeof(Geometry));
-	Script::LinkExternal("ModelGeometryBall.__init__", Script::mf(&GeometryBall::__init__));
-	Script::LinkExternal("ModelGeometryCube.__init__", Script::mf(&GeometryCube::__init__));
-	Script::LinkExternal("ModelGeometrySphere.__init__", Script::mf(&GeometrySphere::__init__));
-	Script::LinkExternal("ModelGeometryCylinder.__init__", Script::mf(&GeometryCylinder::__init__));
-	Script::LinkExternal("ModelGeometryCylinderComplex.__init__", Script::mf(&GeometryCylinder::__init2__));
-	Script::LinkExternal("ModelGeometryTorus.__init__", Script::mf(&GeometryTorus::__init__));
-	Script::LinkExternal("ModelGeometryTorusKnot.__init__", Script::mf(&GeometryTorusKnot::__init__));
-	Script::LinkExternal("ModelGeometryPlane.__init__", Script::mf(&GeometryPlane::__init__));
-	Script::LinkExternal("ModelGeometryPlatonic.__init__", Script::mf(&GeometryPlatonic::__init__));
-	Script::LinkExternal("ModelGeometryTeapot.__init__", Script::mf(&GeometryTeapot::__init__));
-	Script::LinkExternal("ModelGeometrySubtract", Script::mf(&GeometrySubtract));
-	Script::LinkExternal("ModelGeometryAnd", Script::mf(&GeometryAnd));
+	Script::DeclareClassSize("Geometry", sizeof(Geometry));
+	Script::LinkExternal("GeometryBall.__init__", Script::mf(&GeometryBall::__init__));
+	Script::LinkExternal("GeometryCube.__init__", Script::mf(&GeometryCube::__init__));
+	Script::LinkExternal("GeometrySphere.__init__", Script::mf(&GeometrySphere::__init__));
+	Script::LinkExternal("GeometryCylinder.__init__", Script::mf(&GeometryCylinder::__init__));
+	Script::LinkExternal("GeometryCylinderComplex.__init__", Script::mf(&GeometryCylinder::__init2__));
+	Script::LinkExternal("GeometryTorus.__init__", Script::mf(&GeometryTorus::__init__));
+	Script::LinkExternal("GeometryTorusKnot.__init__", Script::mf(&GeometryTorusKnot::__init__));
+	Script::LinkExternal("GeometryPlane.__init__", Script::mf(&GeometryPlane::__init__));
+	Script::LinkExternal("GeometryPlatonic.__init__", Script::mf(&GeometryPlatonic::__init__));
+	Script::LinkExternal("GeometryTeapot.__init__", Script::mf(&GeometryTeapot::__init__));
+	Script::LinkExternal("GeometrySubtract", Script::mf(&GeometrySubtract));
+	Script::LinkExternal("GeometryAnd", Script::mf(&GeometryAnd));
 
 	// world
 

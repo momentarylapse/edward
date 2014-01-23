@@ -21,7 +21,6 @@ class MultiViewSingleData
 
 
 
-
 const int MODEL_MAX_TEXTURES = 8
 const int MODEL_MAX_POLY_VERTICES_PER_FACE = 16
 const int MODEL_MAX_POLY_FACES = 32
@@ -185,37 +184,37 @@ class ModelSurface: MultiViewSingleData
 
 	void *model
 
-class ModelGeometry
+class Geometry
 	ModelVertex Vertex[]
 	ModelPolygon Polygon[]
 	ModelEdge Edge[]
 	bool IsClosed
 
-class ModelGeometryBall : ModelGeometry
+class GeometryBall : Geometry
 	extern void __init__(vector pos, float radius, int num_x, int num_y)
 
-class ModelGeometryCube : ModelGeometry
+class GeometryCube : Geometry
 	extern void __init__(vector pos, vector dv1, vector dv2, vector dv3, int num_1, int num_2, int num_3)
 
-class ModelGeometryCylinder : ModelGeometry
+class GeometryCylinder : Geometry
 	extern void __init__(vector pos1, vector pos2, float radius, int rings, int edges, bool closed)
 
-class ModelGeometryCylinderComplex : ModelGeometry
+class GeometryCylinderComplex : Geometry
 	extern void __init__(vector pos[], float radius[], int rings, int edges, bool closed)
 
-class ModelGeometrySphere : ModelGeometry
+class GeometrySphere : Geometry
 	extern void __init__(vector pos, float radius, int num)
 
-class ModelGeometryTorus : ModelGeometry
+class GeometryTorus : Geometry
 	extern void __init__(vector pos, vector axis, float radius1, float radius2, int num_x, int num_y)
 
-class ModelGeometryTorusKnot : ModelGeometry
+class GeometryTorusKnot : Geometry
 	extern void __init__(vector pos, vector axis, float radius1, float radius2, float radius3, int turns, int twists, int rings, int edges)
 
-class ModelGeometryPlane : ModelGeometry
+class GeometryPlane : Geometry
 	extern void __init__(vector pos, vector dv1, vector dv2, int num_x, int num_y)
 
-class ModelGeometryPlatonic : ModelGeometry
+class GeometryPlatonic : Geometry
 	extern void __init__(vector pos, float radius, int samples)
 
 
@@ -287,7 +286,8 @@ class DataModel : Data
 
 	// geometry (physical)
 	ModelBall Ball[]
-	ModelPolyhedron Poly[]
+	
+	//ModelPolyhedron Poly[]
 
 	// general properties
 	ModelMaterial Material[]
@@ -325,7 +325,7 @@ class DataModel : Data
 //	extern void SetNormalModeAll(int mode)
 //	extern void SetMaterialSelection(int material)
 //	extern void Easify(float factor)
-	extern void PasteGeometry(ModelGeometry g, int default_material)
+	extern void PasteGeometry(Geometry g, int default_material)
 	
 	void __assign__(DataModel other)
 
@@ -364,6 +364,6 @@ extern DataModel *data_model
 extern DataWorld *data_world
 extern Window *edward
 
-extern int ModelGeometrySubtract(ModelGeometry a, ModelGeometry b, ModelGeometry out)
-extern int ModelGeometryAnd(ModelGeometry a, ModelGeometry b, ModelGeometry out)
+extern int GeometrySubtract(Geometry a, Geometry b, Geometry out)
+extern int GeometryAnd(Geometry a, Geometry b, Geometry out)
 

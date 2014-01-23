@@ -3,7 +3,7 @@ use "api.kaba"
 Dialog *dlg
 
 void CreateTorusKnot(int nx, int ny, int rings, int edges, float r1, float r2, float r3)
-	ModelGeometry *g = new ModelGeometryTorusKnot(v_0, e_z, r1, r2, r3, nx, ny, rings, edges)
+	Geometry *g = new GeometryTorusKnot(v_0, e_z, r1, r2, r3, nx, ny, rings, edges)
 	data_model.PasteGeometry(*g, 0)
 	delete(g)
 

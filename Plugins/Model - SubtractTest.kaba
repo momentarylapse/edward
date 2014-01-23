@@ -2,10 +2,10 @@ use "api.kaba"
 
 void main()
 
-	ModelGeometry *a = new ModelGeometryCube(vector(-50, -50, -10), e_x * 100, e_y * 100, e_z * 20, 1, 1, 1)
-	ModelGeometry *b = new ModelGeometryCube(vector(-10.1, -10.2, -50), e_x * 20, e_y * 20, e_z * 100, 1, 1, 1)
-	ModelGeometry c
-	ModelGeometrySubtract(*a, *b, c)
+	Geometry *a = new GeometryCube(vector(-50, -50, -10), e_x * 100, e_y * 100, e_z * 20, 1, 1, 1)
+	Geometry *b = new GeometryCube(vector(-10.1, -10.2, -50), e_x * 20, e_y * 20, e_z * 100, 1, 1, 1)
+	Geometry c
+	GeometrySubtract(*a, *b, c)
 	delete(a)
 	delete(b)
 	
