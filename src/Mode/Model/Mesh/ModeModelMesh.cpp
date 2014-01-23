@@ -38,7 +38,7 @@
 ModeModelMesh *mode_model_mesh = NULL;
 
 ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
-	Mode<DataModel>("ModelMesh", _parent, NULL, ""),
+	Mode<DataModel>("ModelMesh", _parent, ed->multi_view_3d, ""),
 	Observable("ModelMesh")
 {
 	Observer::Subscribe(data);
@@ -133,7 +133,7 @@ void ModeModelMesh::OnCommand(const string & id)
 	if (id == "connect")
 		data->CollapseSelectedVertices();
 	if (id == "align_to_grid")
-		data->AlignToGridSelection(mode_model_mesh_vertex->multi_view->GetGridD());
+		data->AlignToGridSelection(multi_view->GetGridD());
 	if (id == "subdivide_surfaces")
 		data->SubdivideSelectedSurfaces();
 
@@ -189,10 +189,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		ChooseMaterialForSelection();
 	if (id == "mode_model_materials")
 		ToggleMaterialDialog();
-	if (id == "text_from_bg"){
-		MultiView::MultiView *mv = mode_model_mesh_polygon->multi_view;
-		data->Execute(new ActionModelSkinVerticesFromProjection(data, mv));
-	}
+	if (id == "text_from_bg")
+		data->Execute(new ActionModelSkinVerticesFromProjection(data, multi_view));
 	if (id == "automapping")
 		data->Automap(CurrentMaterial, mode_model_mesh_texture->CurrentTextureLevel);
 	if (id == "easify_skin")
@@ -283,6 +281,11 @@ void ModeModelMesh::OnUpdateMenu()
 
 	ed->Check("select_cw", mode_model_mesh_polygon->SelectCW);
 
+	ed->Enable("select", multi_view->allow_mouse_actions);
+	ed->Enable("translate", multi_view->allow_mouse_actions);
+	ed->Enable("rotate", multi_view->allow_mouse_actions);
+	ed->Enable("scale", multi_view->allow_mouse_actions);
+	ed->Enable("mirror", multi_view->allow_mouse_actions);
 	ed->Check("select", mouse_action == MultiView::ActionSelect);
 	ed->Check("translate", mouse_action == MultiView::ActionMove);
 	ed->Check("rotate", mouse_action == MultiView::ActionRotate);
@@ -295,7 +298,7 @@ void ModeModelMesh::OnUpdateMenu()
 bool ModeModelMesh::OptimizeView()
 {
 	msg_db_f("OptimizeView", 1);
-	MultiView::MultiView *mv = ed->multi_view_3d;
+	MultiView::MultiView *mv = multi_view;
 	bool ww = mv->whole_window;
 	mv->ResetView();
 	mv->whole_window = ww;

@@ -86,6 +86,9 @@ public:
 	virtual void AddMessage3d(const string &str, const vector &pos) = 0;
 	virtual void ResetMessage3d() = 0;
 
+	virtual void SetAllowRect(bool allow) = 0;
+	virtual void SetAllowAction(bool allow) = 0;
+
 	bool mode3d;
 	bool whole_window;
 

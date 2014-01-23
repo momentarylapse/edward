@@ -514,6 +514,7 @@ void ModeWorld::OnStart()
 	t->Reset();
 	t->Enable(false);
 
+	multi_view->SetAllowRect(true);
 	SetMouseAction(MultiView::ActionSelect);
 
 	OnUpdate(data);
@@ -551,6 +552,9 @@ void ModeWorld::OnUpdateMenu()
 	ed->Check("show_terrains", ShowTerrains);
 	ed->Check("show_fx", ShowEffects);
 
+	ed->Enable("select", multi_view->allow_mouse_actions);
+	ed->Enable("translate", multi_view->allow_mouse_actions);
+	ed->Enable("rotate", multi_view->allow_mouse_actions);
 	ed->Check("select", mouse_action == MultiView::ActionSelect);
 	ed->Check("translate", mouse_action == MultiView::ActionMove);
 	ed->Check("rotate", mouse_action == MultiView::ActionRotate);

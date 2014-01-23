@@ -77,6 +77,7 @@ void ModeModelSkeleton::OnStart()
 	Subscribe(multi_view, "SelectionChange");
 
 	multi_view->ResetData(data);
+	multi_view->SetAllowRect(true);
 
 	// left -> translate
 	multi_view->SetMouseAction("ActionModelMoveBones", MultiView::ActionMove);

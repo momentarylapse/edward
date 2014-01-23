@@ -75,6 +75,8 @@ public:
 	virtual void ResetView();
 	virtual void SetViewBox(const vector &min, const vector &max);
 	virtual void ResetData(Data *_data);
+	virtual void SetAllowRect(bool allow);
+	virtual void SetAllowAction(bool allow);
 	void ViewStagePush();
 	void ViewStagePop();
 

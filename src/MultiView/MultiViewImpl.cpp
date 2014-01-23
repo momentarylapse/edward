@@ -925,6 +925,18 @@ void MultiViewImpl::AddMessage3d(const string &str, const vector &pos)
 	message3d.add(m);
 }
 
+void MultiViewImpl::SetAllowRect(bool allow)
+{
+	allow_rect = allow;
+	Notify("SettingsChange");
+}
+
+void MultiViewImpl::SetAllowAction(bool allow)
+{
+	allow_mouse_actions = allow;
+	Notify("SettingsChange");
+}
+
 void MultiViewImpl::ViewStagePush()
 {
 	view_stage ++;
