@@ -278,7 +278,7 @@ public:
 	void SubtractSelection();
 	void AndSelection();
 	void CutOutSelection();
-	void TriangulateSelection();
+	void ConvertSelectionToTriangles();
 	void MergePolygonsSelection();
 	void AlignToGridSelection(float grid_d);
 	void NearifySelectedVertices();

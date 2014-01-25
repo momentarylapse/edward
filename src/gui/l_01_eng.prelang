@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-608
+609
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -111,6 +111,8 @@ clear_texture_level
 Clear
 connect
 Connect Points
+convert_to_triangles
+
 copy
 Copy
 create_lightmap
@@ -861,7 +863,7 @@ quality_factor
 \\0\\100\\0.1
 quality_slider
 
-rand_id_628868
+rand_id_542460
 
 rc_dialog
 Rudimentary configuration
@@ -1220,7 +1222,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-231
+232
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1528,6 +1530,8 @@ Script-Datei enthält keine Funktion \"void OnEffectIterate( effect )\"
 
 Script-Dateien (*.kaba)
 Script files (*.kaba)
+Selektieren
+
 Shader
 Shader
 Shader-Datei
@@ -1538,8 +1542,6 @@ Sie haben die Entropie erhöht. Wollen Sie Ihr Werk speichern?
 You increased entropy. Do you wish to save your work?
 Skalieren
 Scale
-Skalieren (2D)
-Scale (2D)
 Skelett
 Skeleton
 Sound
@@ -1584,6 +1586,8 @@ Unten
 Bottom
 Unten (y)
 Bottom (y)
+Verschieben
+
 Vertex
 Vertex
 Vertexpunkte: %d (von %d)

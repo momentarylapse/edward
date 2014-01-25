@@ -1896,7 +1896,7 @@ void DataModel::EditEffect(int index, const ModelEffect& effect)
 void DataModel::CutOutSelection()
 {	Execute(new ActionModelCutOutPolygons());	}
 
-void DataModel::TriangulateSelection()
+void DataModel::ConvertSelectionToTriangles()
 {	Execute(new ActionModelTriangulateSelection());	}
 
 void DataModel::MergePolygonsSelection()

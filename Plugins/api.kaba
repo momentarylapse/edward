@@ -313,7 +313,7 @@ class DataModel : Data
 	extern void InvertSelection()
 	extern void SubtractSelection()
 //	extern void CutOutSelection()
-	extern void TriangulateSelection()
+	extern void ConvertSelectionToTriangles()
 //	extern void AlignToGridSelection(float grid_d)
 //	extern void NearifySelectedVertices()
 //	extern void CollapseSelectedVertices()

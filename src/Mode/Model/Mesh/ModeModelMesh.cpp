@@ -122,8 +122,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		ed->SetMode(new ModeModelMeshExtrudePolygons(ed->cur_mode));
 	if (id == "autoweld_surfaces")
 		ed->SetMode(new ModeModelMeshAutoweld(ed->cur_mode));
-	if (id == "triangulate_selection")
-		data->TriangulateSelection();
+	if (id == "convert_to_triangles")
+		data->ConvertSelectionToTriangles();
 	if (id == "untriangulate_selection")
 		data->MergePolygonsSelection();
 	if (id == "cut_out")
@@ -134,6 +134,8 @@ void ModeModelMesh::OnCommand(const string & id)
 		data->CollapseSelectedVertices();
 	if (id == "align_to_grid")
 		data->AlignToGridSelection(multi_view->GetGridD());
+	if (id == "triangulate_selection")
+		data->TriangulateSelectedVertices();
 	if (id == "subdivide_surfaces")
 		data->SubdivideSelectedSurfaces();
 

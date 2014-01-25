@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-608
+609
 // Data (ID,Text)
 ad_dialog
 
@@ -110,6 +110,8 @@ choose_material
 clear_texture_level
 
 connect
+
+convert_to_triangles
 
 copy
 コーピ
@@ -861,7 +863,7 @@ quality_factor
 
 quality_slider
 
-rand_id_628868
+rand_id_542460
 
 rc_dialog
 
@@ -1220,7 +1222,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-231
+232
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1528,6 +1530,8 @@ Script-Datei enthält keine Funktion \"void OnEffectIterate( effect )\"
 
 Script-Dateien (*.kaba)
 
+Selektieren
+
 Shader
 
 Shader-Datei
@@ -1537,8 +1541,6 @@ Shader-Dateien (*.glsl)
 Sie haben die Entropie erhöht. Wollen Sie Ihr Werk speichern?
 
 Skalieren
-
-Skalieren (2D)
 
 Skelett
 
@@ -1583,6 +1585,8 @@ Unbenannt
 Unten
 
 Unten (y)
+
+Verschieben
 
 Vertex
 
