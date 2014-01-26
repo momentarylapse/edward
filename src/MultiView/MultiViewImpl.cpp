@@ -381,7 +381,7 @@ void MultiViewImpl::OnLeftButtonDown()
 	cam_con->OnLeftButtonDown();
 
 
-	if (cam_con->InUse()){
+	if (cam_con->IsMouseOver()){
 		NotifyEnd();
 		return;
 	}
@@ -719,8 +719,7 @@ void MultiViewImpl::OnDraw()
 	if (sel_rect.active)
 		sel_rect.draw(m);
 
-	if (cam_con->show)
-		cam_con->Draw();
+	cam_con->Draw();
 
 	NixSetColor(ColorText);
 

@@ -11,6 +11,8 @@
 
 #include "../lib/math/math.h"
 
+class NixTexture;
+
 namespace MultiView{
 
 class MultiViewImpl;
@@ -33,7 +35,10 @@ public:
 	bool show;
 	bool moving, rotating;
 	rect r, r_moving, r_rotating;
+	rect r2, r_show;
 	MultiViewImpl *impl;
+	NixTexture *tex_bg;
+	NixTexture *tex_moving, *tex_rotating;
 };
 
 };
