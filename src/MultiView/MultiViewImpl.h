@@ -13,6 +13,7 @@
 namespace MultiView{
 
 class ActionController;
+class CameraController;
 
 
 struct DataSet
@@ -65,8 +66,9 @@ public:
 	void ToggleGrid();
 	void ToggleLight();
 	void ToggleWire();
-	void DoZoom(float factor);
-	void DoMove(const vector &dir);
+	void CamZoom(float factor);
+	void CamMove(const vector &dir);
+	void CamRotate(const vector &dir, bool cam_center);
 	void SetMode(int mode);
 	virtual void ClearData(Data *_data);
 	virtual void AddData(int type, const DynamicArray &a, void *user_data, int flags);
@@ -113,6 +115,7 @@ public:
 	ActionController *action_con;
 	virtual void ResetMouseAction();
 	virtual void SetMouseAction(const string &name, int mode);
+	CameraController *cam_con;
 
 	Array<DataSet> data;
 	bool allow_view_stage, allow_view_stage_handling;
