@@ -16,11 +16,13 @@ GeometryCylinder::GeometryCylinder(Array<vector> &pos, Array<float> &radius, int
 	Interpolator<float> inter_r(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
 	foreach(float r, radius)
 		inter_r.add(r);
+	inter_r.normalize();
 
 	// vertices (interpolated on path)
 	Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
 	foreach(vector &p, pos)
 		inter.add(p);
+	inter.normalize();
 
 	BuildFromPath(inter, inter_r, rings, edges, closed);
 }
@@ -30,11 +32,13 @@ GeometryCylinder::GeometryCylinder(Array<vector> &pos, float radius, int rings, 
 	Interpolator<float> inter_r(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
 	inter_r.add(radius);
 	inter_r.add(radius);
+	inter_r.normalize();
 
 	// vertices (interpolated on path)
 	Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
 	foreach(vector &p, pos)
 		inter.add(p);
+	inter.normalize();
 
 	BuildFromPath(inter, inter_r, rings, edges, closed);
 }
@@ -44,11 +48,13 @@ GeometryCylinder::GeometryCylinder(const vector &pos1, const vector &pos2, float
 	Interpolator<float> inter_r(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
 	inter_r.add(radius);
 	inter_r.add(radius);
+	inter_r.normalize();
 
 	// vertices (interpolated on path)
 	Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
 	inter.add(pos1);
 	inter.add(pos2);
+	inter.normalize();
 
 	BuildFromPath(inter, inter_r, rings, edges, closed);
 }
@@ -76,7 +82,7 @@ void GeometryCylinder::BuildFromPath(Interpolator<vector> &inter, Interpolator<f
 		// interpolated point on path
 		float t = (float)i / (float)rings;
 		vector p0 = inter.get(t);
-		vector dir = inter.get_tang(t);
+		vector dir = inter.getTang(t);
 
 		// moving frame
 		vector u = r_last ^ dir;
@@ -116,7 +122,7 @@ void GeometryCylinder::BuildFromPath(Interpolator<vector> &inter, Interpolator<f
 
 	if (closed){
 		// how much did the 3-bein rotate?
-		vector dir0 = inter.get_tang(0);
+		vector dir0 = inter.getTang(0);
 		vector u0 = dir0.ortho();
 		u0.normalize();
 		vector r0 = dir0 ^ u0;

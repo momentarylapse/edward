@@ -157,6 +157,7 @@ Interpolator<vector> DataCamera::BuildPosInterpolator() const
 			inter.jump(Point[i].pos, Point[i].Vel);
 		}
 	}
+	inter.normalize();
 	return inter;
 }
 
@@ -173,6 +174,7 @@ Interpolator<vector> DataCamera::BuildAngInterpolator() const
 			inter.jump(Point[i].Ang, v_0);
 		}
 	}
+	inter.normalize();
 	return inter;
 }
 

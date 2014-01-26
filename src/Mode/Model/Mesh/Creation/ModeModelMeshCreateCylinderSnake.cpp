@@ -150,6 +150,7 @@ void ModeModelMeshCreateCylinderSnake::OnDrawWin(MultiView::Window *win)
 			inter.add(p);
 		if (!ready_for_scaling)
 			inter.add(multi_view->GetCursor3d());
+		inter.normalize();
 		NixSetColor(Green);
 		for (int i=0;i<100;i++)
 			NixDrawLine3D(inter.get((float)i * 0.01f), inter.get((float)i * 0.01f + 0.01f));
