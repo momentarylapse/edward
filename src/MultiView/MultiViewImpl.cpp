@@ -16,7 +16,7 @@
 
 namespace MultiView{
 
-const float SPEED_MOVE = 0.05f;
+const float SPEED_MOVE = 20;
 const float SPEED_ZOOM_KEY = 1.15f;
 const float SPEED_ZOOM_WHEEL = 1.15f;
 

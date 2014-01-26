@@ -93,7 +93,7 @@ void CameraController::OnMouseMove()
 	if (rotating)
 		impl->CamRotate(impl->v, false);
 	if (zooming)
-		impl->CamZoom(pow(1.01f, impl->v.y), false);
+		impl->CamZoom(pow(1.007f, impl->v.y), false);
 }
 
 void CameraController::draw_icon(const rect &rr, NixTexture *tex, bool active)
@@ -127,9 +127,9 @@ void CameraController::Draw()
 		// elongated background
 		NixSetColor(ColorBackground);
 		NixSetTexture(tex_bg);
-		NixDraw2D(rect(0, 0.5f, 0, 1), rect(r.x1, r.x1 + CC_RADIUS, r.y1, r.y2), 0);
-		NixDraw2D(rect(0.5f, 0.5f, 0, 1), rect(r.x1 + CC_RADIUS, r.x2 - CC_RADIUS, r.y1, r.y2), 0);
-		NixDraw2D(rect(0.5f, 1, 0, 1), rect(r.x2 - CC_RADIUS, r.x2, r.y1, r.y2), 0);
+		NixDraw2D(rect(0, 0.5f, 0, 1), rect(r.x1, r.x1 + CC_RADIUS/2 + CC_BORDER, r.y1, r.y2), 0);
+		NixDraw2D(rect(0.5f, 0.5f, 0, 1), rect(r.x1 + CC_RADIUS/2 + CC_BORDER, r.x2 - CC_RADIUS/2 - CC_BORDER, r.y1, r.y2), 0);
+		NixDraw2D(rect(0.5f, 1, 0, 1), rect(r.x2 - CC_RADIUS/2 - CC_BORDER, r.x2, r.y1, r.y2), 0);
 
 		// icons
 		draw_icon(r_move, tex_move, moving);

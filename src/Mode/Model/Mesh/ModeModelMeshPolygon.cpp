@@ -167,7 +167,6 @@ void ModeModelMeshPolygon::OnDrawWin(MultiView::Window *win)
 
 void ModeModelMeshPolygon::OnEnd()
 {
-	multi_view->ClearData(NULL);
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
 }

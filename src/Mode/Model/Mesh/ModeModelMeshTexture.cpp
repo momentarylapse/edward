@@ -89,7 +89,6 @@ void ModeModelMeshTexture::OnEnd()
 {
 	Observer::Unsubscribe(data);
 	Observer::Unsubscribe(multi_view);
-	multi_view->ClearData(NULL);
 	skin_vertex.clear();
 }
 

@@ -34,7 +34,6 @@ void ModeModelMeshSurface::OnDrawWin(MultiView::Window *win)
 
 void ModeModelMeshSurface::OnEnd()
 {
-	multi_view->ClearData(data);
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
 }

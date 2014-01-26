@@ -35,7 +35,6 @@ void ModeModelMeshVertex::OnStart()
 
 void ModeModelMeshVertex::OnEnd()
 {
-	multi_view->ClearData(NULL);
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
 }

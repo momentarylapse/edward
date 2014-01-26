@@ -223,7 +223,6 @@ void ModeModelMeshEdge::OnDrawWin(MultiView::Window *win)
 
 void ModeModelMeshEdge::OnEnd()
 {
-	multi_view->ClearData(NULL);
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
 }
