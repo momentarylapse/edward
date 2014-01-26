@@ -46,9 +46,9 @@ void ModeModelMeshTexture::FetchData()
 			}
 		}
 
-	multi_view->ResetData(data);
+	multi_view->ClearData(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	multi_view->SetData(	MVDModelSkinVertex,
+	multi_view->AddData(	MVDModelSkinVertex,
 			skin_vertex,
 			NULL,
 			MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
@@ -89,7 +89,7 @@ void ModeModelMeshTexture::OnEnd()
 {
 	Observer::Unsubscribe(data);
 	Observer::Unsubscribe(multi_view);
-	multi_view->ResetData(NULL);
+	multi_view->ClearData(NULL);
 	skin_vertex.clear();
 }
 

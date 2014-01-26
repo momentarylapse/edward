@@ -147,10 +147,10 @@ bool ModelEdge::InRect(MultiView::Window *win, rect &r, void *user_data)
 void ModeModelMeshEdge::OnUpdate(Observable *o)
 {
 	if (o->GetName() == "Data"){
-		multi_view->ResetData(data);
+		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		foreach(ModelSurface &s, data->Surface)
-		multi_view->SetData(	MVDModelEdge,
+		multi_view->AddData(	MVDModelEdge,
 				s.Edge,
 				&s,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
@@ -223,7 +223,7 @@ void ModeModelMeshEdge::OnDrawWin(MultiView::Window *win)
 
 void ModeModelMeshEdge::OnEnd()
 {
-	multi_view->ResetData(NULL);
+	multi_view->ClearData(NULL);
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
 }

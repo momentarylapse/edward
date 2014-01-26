@@ -124,7 +124,7 @@ void MultiViewImpl::Reset()
 	hover.reset();
 	action_con->reset();
 
-	ResetData(NULL);
+	ClearData(NULL);
 	ResetMouseAction();
 	ResetView();
 }
@@ -156,7 +156,7 @@ void MultiViewImpl::ResetMouseAction()
 	action_con->action.reset();
 }
 
-void MultiViewImpl::ResetData(Data *_data)
+void MultiViewImpl::ClearData(Data *_data)
 {
 	data.clear();
 	action_con->data = _data;
@@ -164,16 +164,16 @@ void MultiViewImpl::ResetData(Data *_data)
 		ResetMouseAction();
 }
 
-void MultiViewImpl::SetData(int type, const DynamicArray & a, void *user_data, int mode)
+void MultiViewImpl::AddData(int type, const DynamicArray & a, void *user_data, int flags)
 {
 	DataSet d;
-	d.Type = type;
+	d.type = type;
 	d.data = (DynamicArray*)&a;
 	d.user_data = user_data;
-	d.MVSelectable = (mode & FlagSelect)>0;
-	d.Drawable = (mode & FlagDraw)>0;
-	d.Indexable = (mode & FlagIndex)>0;
-	d.Movable = (mode & FlagMove)>0;
+	d.selectable = (flags & FlagSelect)>0;
+	d.drawable = (flags & FlagDraw)>0;
+	d.indexable = (flags & FlagIndex)>0;
+	d.movable = (flags & FlagMove)>0;
 	data.add(d);
 }
 
@@ -523,7 +523,7 @@ void MultiViewImpl::StartRect()
 
 	// reset selection data
 	foreach(DataSet &d, data)
-		if (d.MVSelectable)
+		if (d.selectable)
 			for (int i=0;i<d.data->num;i++){
 				SingleData* sd = MVGetSingleData(d,i);
 				sd->m_old = sd->is_selected;
@@ -807,7 +807,7 @@ void MultiViewImpl::GetMouseOver()
 	float _radius=(float)PointRadiusMouseOver;
 	float z_min=1;
 	foreachi(DataSet &d, data, di)
-		if (d.MVSelectable)
+		if (d.selectable)
 			for (int i=0;i<d.data->num;i++){
 				SingleData* sd=MVGetSingleData(d,i);
 				if (sd->view_stage < view_stage)
@@ -829,7 +829,7 @@ void MultiViewImpl::GetMouseOver()
 				if (mo){
 					hover.index = i;
 					hover.set = di;
-					hover.type = d.Type;
+					hover.type = d.type;
 					hover.point = mop;
 					if (sd->is_selected)
 						return;
@@ -840,7 +840,7 @@ void MultiViewImpl::GetMouseOver()
 void MultiViewImpl::UnselectAll()
 {
 	foreach(DataSet &d, data)
-		if (d.MVSelectable)
+		if (d.selectable)
 			for (int i=0;i<d.data->num;i++){
 				SingleData* sd = MVGetSingleData(d,i);
 				sd->is_selected = false;
@@ -885,7 +885,7 @@ void MultiViewImpl::SelectAllInRectangle(int mode)
 
 	// select
 	foreach(DataSet &d, data)
-		if (d.MVSelectable)
+		if (d.selectable)
 			for (int i=0;i<d.data->num;i++){
 				SingleData* sd=MVGetSingleData(d,i);
 				if (sd->view_stage<view_stage)
@@ -942,7 +942,7 @@ void MultiViewImpl::ViewStagePush()
 	view_stage ++;
 
 	foreach(DataSet &d, data)
-		if (d.MVSelectable)
+		if (d.selectable)
 			for (int i=0;i<d.data->num;i++){
 				SingleData* sd=MVGetSingleData(d,i);
 				if (sd->is_selected)
@@ -957,7 +957,7 @@ void MultiViewImpl::ViewStagePop()
 		return;
 	view_stage --;
 	foreach(DataSet &d, data)
-		if (d.MVSelectable)
+		if (d.selectable)
 			for (int i=0;i<d.data->num;i++){
 				SingleData* sd=MVGetSingleData(d,i);
 				if (sd->view_stage > view_stage)

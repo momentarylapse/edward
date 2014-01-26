@@ -24,7 +24,7 @@ ModeModelAnimationNone::~ModeModelAnimationNone()
 
 void ModeModelAnimationNone::OnStart()
 {
-	multi_view->ResetData(NULL);
+	multi_view->ClearData(NULL);
 	multi_view->allow_rect = false;
 
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
@@ -33,7 +33,7 @@ void ModeModelAnimationNone::OnStart()
 
 void ModeModelAnimationNone::OnEnd()
 {
-	multi_view->ResetData(NULL);
+	multi_view->ClearData(NULL);
 }
 
 void ModeModelAnimationNone::OnCommand(const string& id)

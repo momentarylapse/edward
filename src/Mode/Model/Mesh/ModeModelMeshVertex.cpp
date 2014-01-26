@@ -35,7 +35,7 @@ void ModeModelMeshVertex::OnStart()
 
 void ModeModelMeshVertex::OnEnd()
 {
-	multi_view->ResetData(NULL);
+	multi_view->ClearData(NULL);
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
 }
@@ -57,9 +57,9 @@ void ModeModelMeshVertex::OnDraw()
 void ModeModelMeshVertex::OnUpdate(Observable *o)
 {
 	if (o->GetName() == "Data"){
-		multi_view->ResetData(data);
+		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		multi_view->SetData(	MVDModelVertex,
+		multi_view->AddData(	MVDModelVertex,
 				data->Vertex,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);

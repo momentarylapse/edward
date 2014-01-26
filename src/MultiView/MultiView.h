@@ -68,12 +68,12 @@ public:
 	MultiView(bool _mode3d);
 	virtual ~MultiView();
 
+	virtual void ClearData(Data *data) = 0;
+	virtual void AddData(int type, const DynamicArray &a, void *user_data, int flags) = 0;
 	//virtual void SetViewStage(int *view_stage, bool allow_handle) = 0;
-	virtual void SetData(int type, const DynamicArray &a, void *user_data, int mode) = 0;
 	virtual void Reset() = 0;
 	virtual void ResetView() = 0;
 	virtual void SetViewBox(const vector &min, const vector &max) = 0;
-	virtual void ResetData(Data *_data) = 0;
 
 	vector virtual GetCursor3d() = 0;
 	vector virtual GetCursor3d(const vector &depth_reference) = 0;

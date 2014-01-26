@@ -24,7 +24,7 @@ ModeModelAnimationVertex::~ModeModelAnimationVertex()
 
 void ModeModelAnimationVertex::OnStart()
 {
-	multi_view->ResetData(NULL);
+	multi_view->ClearData(NULL);
 
 	// left -> translate
 	multi_view->SetMouseAction("ActionModelAnimationMoveVertices", MultiView::ActionMove);
@@ -41,7 +41,7 @@ void ModeModelAnimationVertex::OnEnd()
 {
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
-	multi_view->ResetData(NULL);
+	multi_view->ClearData(NULL);
 }
 
 void ModeModelAnimationVertex::OnCommand(const string& id)
@@ -53,10 +53,10 @@ void ModeModelAnimationVertex::OnUpdate(Observable* o)
 	if (o->GetName() == "Data"){
 		UpdateVertices();
 
-		multi_view->ResetData(data);
+		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 
-		multi_view->SetData(	MVDModelVertex,
+		multi_view->AddData(	MVDModelVertex,
 				mode_model_animation->vertex,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect);

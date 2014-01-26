@@ -284,14 +284,14 @@ void ModeWorld::OnUpdate(Observable *o)
 	if (o->GetName() == "Data"){
 		data->UpdateData();
 
-		multi_view->ResetData(data);
+		multi_view->ClearData(data);
 
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		multi_view->SetData(	MVDWorldObject,
+		multi_view->AddData(	MVDWorldObject,
 				data->Objects,
 				NULL,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
-		multi_view->SetData(	MVDWorldTerrain,
+		multi_view->AddData(	MVDWorldTerrain,
 				data->Terrains,
 				NULL,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);

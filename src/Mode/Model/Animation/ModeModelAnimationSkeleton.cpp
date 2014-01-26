@@ -26,7 +26,7 @@ ModeModelAnimationSkeleton::~ModeModelAnimationSkeleton()
 
 void ModeModelAnimationSkeleton::OnStart()
 {
-	multi_view->ResetData(NULL);
+	multi_view->ClearData(NULL);
 
 	// left -> translate
 	//multi_view->SetMouseAction(0, "ActionModelAnimationMoveBones", MultiView::ActionMove);
@@ -43,7 +43,7 @@ void ModeModelAnimationSkeleton::OnEnd()
 {
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
-	multi_view->ResetData(NULL);
+	multi_view->ClearData(NULL);
 }
 
 void ModeModelAnimationSkeleton::OnCommand(const string& id)
@@ -54,10 +54,10 @@ void ModeModelAnimationSkeleton::OnUpdate(Observable* o)
 {
 	if (o->GetName() == "Data"){
 
-		multi_view->ResetData(data);
+		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 
-		multi_view->SetData(	MVDSkeletonPoint,
+		multi_view->AddData(	MVDSkeletonPoint,
 				data->Bone,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect);

@@ -76,7 +76,7 @@ void ModeModelSkeleton::OnStart()
 	Subscribe(data);
 	Subscribe(multi_view, "SelectionChange");
 
-	multi_view->ResetData(data);
+	multi_view->ClearData(data);
 	multi_view->SetAllowRect(true);
 
 	// left -> translate
@@ -90,7 +90,7 @@ void ModeModelSkeleton::OnStart()
 
 void ModeModelSkeleton::OnEnd()
 {
-	multi_view->ResetData(NULL);
+	multi_view->ClearData(NULL);
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
 }
@@ -101,10 +101,10 @@ void ModeModelSkeleton::OnUpdate(Observable *o)
 {
 	if (o->GetName() == "Data"){
 
-		multi_view->ResetData(data);
+		multi_view->ClearData(data);
 
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		multi_view->SetData(	MVDSkeletonPoint,
+		multi_view->AddData(	MVDSkeletonPoint,
 				data->Bone,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);

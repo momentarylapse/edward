@@ -17,9 +17,9 @@ class ActionController;
 
 struct DataSet
 {
-	int Type;
+	int type;
 	DynamicArray *data;
-	bool MVSelectable, Drawable, Movable, Indexable;
+	bool selectable, drawable, movable, indexable;
 	void *user_data;
 };
 
@@ -68,13 +68,12 @@ public:
 	void DoZoom(float factor);
 	void DoMove(const vector &dir);
 	void SetMode(int mode);
-//	void SetFunctions(mv_bc_func *start_edit_func, mv_bc_func *end_edit_func, mv_bc_func *edit_func);
+	virtual void ClearData(Data *_data);
+	virtual void AddData(int type, const DynamicArray &a, void *user_data, int flags);
 	virtual void SetViewStage(int *view_stage, bool allow_handle);
-	virtual void SetData(int type, const DynamicArray &a, void *user_data, int mode);
 	virtual void Reset();
 	virtual void ResetView();
 	virtual void SetViewBox(const vector &min, const vector &max);
-	virtual void ResetData(Data *_data);
 	virtual void SetAllowRect(bool allow);
 	virtual void SetAllowAction(bool allow);
 	void ViewStagePush();

@@ -152,7 +152,7 @@ void Window::Draw()
 
 	// projection matrix
 	if (type == ViewPerspective){
-		NixSetProjectionPerspectiveExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, height, cam->zoom / 1000, cam->zoom * 1000);
+		NixSetProjectionPerspectiveExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, height, cam->radius / 1000, cam->radius * 1000);
 		bg = ColorBackGround3D;
 	}else if (type == View2D){
 		height = cam->zoom;
@@ -236,22 +236,22 @@ void Window::Draw()
 	NixSetWire(false);
 	NixEnableLighting(false);
 	foreachi(DataSet &d, impl->data, di){
-		if ((d.Drawable)||(d.Indexable)){
+		if ((d.drawable)||(d.indexable)){
 			for (int i=0;i<d.data->num;i++){
 
 				SingleData *sd = MVGetSingleData(d, i);
 				if (sd->view_stage < impl->view_stage)
 					continue;
 
-				bool _di = ((d.Indexable) && (sd->is_selected) && (NixGetKey(KEY_I)));
-				if ((!d.Drawable) && (!_di))
+				bool _di = ((d.indexable) && (sd->is_selected) && (NixGetKey(KEY_I)));
+				if ((!d.drawable) && (!_di))
 					continue;
 				vector p = Project(sd->pos);
 				if ((p.x<dest.x1)||(p.y<dest.y1)||(p.x>dest.x2)||(p.y>dest.y2)||(p.z<=0)||(p.z>=1))
 					continue;
 				if (_di)
 					NixDrawStr(p.x+3, p.y, i2s(i));
-				if (d.Drawable){
+				if (d.drawable){
 					color c = ColorPoint;
 					float radius = (float)PointRadius;
 					float z = 0.1f;

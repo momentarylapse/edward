@@ -167,7 +167,7 @@ void ModeModelMeshPolygon::OnDrawWin(MultiView::Window *win)
 
 void ModeModelMeshPolygon::OnEnd()
 {
-	multi_view->ResetData(NULL);
+	multi_view->ClearData(NULL);
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
 }
@@ -253,10 +253,10 @@ bool ModelPolygon::InRect(MultiView::Window *win, rect &r, void *user_data)
 void ModeModelMeshPolygon::OnUpdate(Observable *o)
 {
 	if (o->GetName() == "Data"){
-		multi_view->ResetData(data);
+		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		foreach(ModelSurface &s, data->Surface)
-		multi_view->SetData(	MVDModelPolygon,
+		multi_view->AddData(	MVDModelPolygon,
 				s.Polygon,
 				&s,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);

@@ -31,9 +31,9 @@ void ModeModelSkeletonAttachVertices::OnStart()
 	//Subscribe(data);
 	Subscribe(multi_view, "SelectionChange");
 
-	multi_view->ResetData(data);
+	multi_view->ClearData(data);
 	multi_view->allow_rect = true;
-	multi_view->SetData(	MVDModelVertex,
+	multi_view->AddData(	MVDModelVertex,
 			data->Vertex,
 			NULL,
 			MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect);

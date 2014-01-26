@@ -34,7 +34,7 @@ void ModeModelMeshSurface::OnDrawWin(MultiView::Window *win)
 
 void ModeModelMeshSurface::OnEnd()
 {
-	multi_view->ResetData(data);
+	multi_view->ClearData(data);
 	Unsubscribe(data);
 	Unsubscribe(multi_view);
 }
@@ -58,9 +58,9 @@ bool ModelSurface::InRect(MultiView::Window *win, rect &r, void *user_data)
 void ModeModelMeshSurface::OnUpdate(Observable *o)
 {
 	if (o->GetName() == "Data"){
-		multi_view->ResetData(data);
+		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		multi_view->SetData(	MVDModelSurface,
+		multi_view->AddData(	MVDModelSurface,
 				data->Surface,
 				data,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);

@@ -91,7 +91,7 @@ void ModeWorldCamera::OnEnd()
 	Observer::Unsubscribe(data);
 	Observer::Unsubscribe(multi_view);
 	delete(dialog);
-	multi_view->ResetData(data);
+	multi_view->ClearData(data);
 
 	parent->OnStart();
 }
@@ -209,7 +209,7 @@ void ModeWorldCamera::LoadData()
 	*inter_pos = data->BuildPosInterpolator();
 	*inter_ang = data->BuildAngInterpolator();
 
-	multi_view->ResetData(data);
+	multi_view->ClearData(data);
 
 	// left -> translate
 	multi_view->SetMouseAction("ActionCameraMoveSelection", MultiView::ActionMove);
@@ -218,12 +218,12 @@ void ModeWorldCamera::LoadData()
 	multi_view->SetMouseAction(2, "ActionWorldRotateObjects", MultiView::ActionRotate);*/
 	multi_view->allow_rect = true;
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	multi_view->SetData(	MVDWorldCamPoint,
+	multi_view->AddData(	MVDWorldCamPoint,
 			data->Point,
 			NULL,
 			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove | MultiView::FlagDraw);
 	if (edit_vel)
-	multi_view->SetData(	MVDWorldCamPointVel,
+	multi_view->AddData(	MVDWorldCamPointVel,
 			data->Vel,
 			NULL,
 			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove | MultiView::FlagDraw);
