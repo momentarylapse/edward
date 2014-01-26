@@ -29,16 +29,17 @@ public:
 	void OnMouseMove();
 	void UpdateRects();
 
+	void draw_icon(const rect &r, NixTexture *tex, bool active);
 	void Draw();
 	bool InUse();
 
 	bool show;
-	bool moving, rotating;
-	rect r, r_moving, r_rotating;
+	bool moving, rotating, zooming;
+	rect r, r_move, r_rotate, r_zoom;
 	rect r2, r_show;
 	MultiViewImpl *impl;
 	NixTexture *tex_bg;
-	NixTexture *tex_moving, *tex_rotating;
+	NixTexture *tex_move, *tex_rotate, *tex_zoom;
 };
 
 };

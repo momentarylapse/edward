@@ -66,7 +66,7 @@ public:
 	void ToggleGrid();
 	void ToggleLight();
 	void ToggleWire();
-	void CamZoom(float factor);
+	void CamZoom(float factor, bool mouse_rel);
 	void CamMove(const vector &dir);
 	void CamRotate(const vector &dir, bool cam_center);
 	void SetMode(int mode);

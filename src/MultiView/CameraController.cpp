@@ -24,10 +24,12 @@ CameraController::CameraController(MultiViewImpl *_impl)
 	impl = _impl;
 	moving = false;
 	rotating = false;
+	zooming = false;
 	show = false;
 	tex_bg = NixLoadTexture(HuiAppDirectoryStatic + "Data/icons/toolbar/multiview/bg.png");
-	tex_moving = NixLoadTexture(HuiAppDirectoryStatic + "Data/icons/toolbar/multiview/move.png");
-	tex_rotating = NixLoadTexture(HuiAppDirectoryStatic + "Data/icons/toolbar/multiview/rotate.png");
+	tex_move = NixLoadTexture(HuiAppDirectoryStatic + "Data/icons/toolbar/multiview/move.png");
+	tex_rotate= NixLoadTexture(HuiAppDirectoryStatic + "Data/icons/toolbar/multiview/rotate.png");
+	tex_zoom = NixLoadTexture(HuiAppDirectoryStatic + "Data/icons/toolbar/multiview/zoom.png");
 }
 
 CameraController::~CameraController()
@@ -36,18 +38,22 @@ CameraController::~CameraController()
 
 void CameraController::UpdateRects()
 {
-	r = rect(NixTargetWidth - CC_MARGIN - 2 * CC_RADIUS - 3 * CC_BORDER,
+	r = rect(NixTargetWidth - CC_MARGIN - 3 * CC_RADIUS - 4 * CC_BORDER,
 	         NixTargetWidth - CC_MARGIN,
 	         NixTargetHeight / 2 - CC_RADIUS / 2 - CC_BORDER,
 	         NixTargetHeight / 2 + CC_RADIUS / 2 + CC_BORDER);
-	r_moving = rect(NixTargetWidth - CC_MARGIN - 2 * CC_RADIUS - 2 * CC_BORDER,
+	r_move = rect(NixTargetWidth - CC_MARGIN - 3 * CC_RADIUS - 3 * CC_BORDER,
+	              NixTargetWidth - CC_MARGIN - 2 * CC_RADIUS - 3 * CC_BORDER,
+	              NixTargetHeight / 2 - CC_RADIUS / 2,
+	              NixTargetHeight / 2 + CC_RADIUS / 2);
+	r_rotate = rect(NixTargetWidth - CC_MARGIN - 2 * CC_RADIUS - 2 * CC_BORDER,
 	                NixTargetWidth - CC_MARGIN - CC_RADIUS - 2 * CC_BORDER,
 	                NixTargetHeight / 2 - CC_RADIUS / 2,
 	                NixTargetHeight / 2 + CC_RADIUS / 2);
-	r_rotating = rect(NixTargetWidth - CC_MARGIN - CC_RADIUS - CC_BORDER,
-	                  NixTargetWidth - CC_MARGIN - CC_BORDER,
-	                  NixTargetHeight / 2 - CC_RADIUS / 2,
-	                  NixTargetHeight / 2 + CC_RADIUS / 2);
+	r_zoom = rect(NixTargetWidth - CC_MARGIN - CC_RADIUS - CC_BORDER,
+	              NixTargetWidth - CC_MARGIN - CC_BORDER,
+	              NixTargetHeight / 2 - CC_RADIUS / 2,
+	              NixTargetHeight / 2 + CC_RADIUS / 2);
 
 	r2 = rect(NixTargetWidth - CC_RADIUS / 2 - CC_BORDER,
 	          NixTargetWidth + CC_RADIUS / 2 + CC_BORDER,
@@ -70,13 +76,14 @@ void CameraController::OnLeftButtonDown()
 	UpdateRects();
 	if (r_show.inside(impl->m.x, impl->m.y))
 		show = !show;
-	moving = r_moving.inside(impl->m.x, impl->m.y);
-	rotating = r_rotating.inside(impl->m.x, impl->m.y);
+	moving = r_move.inside(impl->m.x, impl->m.y);
+	rotating = r_rotate.inside(impl->m.x, impl->m.y);
+	zooming = r_zoom.inside(impl->m.x, impl->m.y);
 }
 
 void CameraController::OnLeftButtonUp()
 {
-	moving = rotating = false;
+	moving = rotating = zooming = false;
 }
 
 void CameraController::OnMouseMove()
@@ -85,6 +92,23 @@ void CameraController::OnMouseMove()
 		impl->CamMove(impl->v);
 	if (rotating)
 		impl->CamRotate(impl->v, false);
+	if (zooming)
+		impl->CamZoom(pow(1.01f, impl->v.y), false);
+}
+
+void CameraController::draw_icon(const rect &rr, NixTexture *tex, bool active)
+{
+	NixSetTexture(tex_bg);
+	if (active || rr.inside(impl->m.x, impl->m.y))
+		NixSetColor(ColorIconHover);
+	else
+		NixSetColor(ColorIcon);
+	NixDraw2D(r_id, rr, 0);
+	if (tex){
+		NixSetTexture(tex);
+		NixSetColor(White);
+		NixDraw2D(r_id, rr, 0);
+	}
 }
 
 void CameraController::Draw()
@@ -93,39 +117,24 @@ void CameraController::Draw()
 	//NixEnableLighting(true);
 	NixSetAlpha(AlphaMaterial);
 
+	// show/hide button
 	NixSetColor(ColorBackground);
 	NixSetTexture(tex_bg);
 	NixDraw2D(r_id, r2, 0);
-	if (r_show.inside(impl->m.x, impl->m.y))
-		NixSetColor(ColorIconHover);
-	else
-		NixSetColor(ColorIcon);
-	NixDraw2D(r_id, r_show, 0);
-	/*NixSetTexture(tex_moving);
-	NixSetColor(White);
-	NixDraw2D(r_id, r_moving, 0);*/
+	draw_icon(r_show, NULL, false);
 
 	if (show){
+		// elongated background
 		NixSetColor(ColorBackground);
 		NixSetTexture(tex_bg);
-		NixDraw2D(r_id, r, 0);
-		if (moving || r_moving.inside(impl->m.x, impl->m.y))
-			NixSetColor(ColorIconHover);
-		else
-			NixSetColor(ColorIcon);
-		NixDraw2D(r_id, r_moving, 0);
-		NixSetTexture(tex_moving);
-		NixSetColor(White);
-		NixDraw2D(r_id, r_moving, 0);
-		NixSetTexture(tex_bg);
-		if (rotating || r_rotating.inside(impl->m.x, impl->m.y))
-			NixSetColor(ColorIconHover);
-		else
-			NixSetColor(ColorIcon);
-		NixDraw2D(r_id, r_rotating, 0);
-		NixSetTexture(tex_rotating);
-		NixSetColor(White);
-		NixDraw2D(r_id, r_rotating, 0);
+		NixDraw2D(rect(0, 0.5f, 0, 1), rect(r.x1, r.x1 + CC_RADIUS, r.y1, r.y2), 0);
+		NixDraw2D(rect(0.5f, 0.5f, 0, 1), rect(r.x1 + CC_RADIUS, r.x2 - CC_RADIUS, r.y1, r.y2), 0);
+		NixDraw2D(rect(0.5f, 1, 0, 1), rect(r.x2 - CC_RADIUS, r.x2, r.y1, r.y2), 0);
+
+		// icons
+		draw_icon(r_move, tex_move, moving);
+		draw_icon(r_rotate, tex_rotate, rotating);
+		draw_icon(r_zoom, tex_zoom, zooming);
 	}
 	NixSetTexture(NULL);
 	NixSetAlpha(AlphaNone);
@@ -134,7 +143,7 @@ void CameraController::Draw()
 
 bool CameraController::InUse()
 {
-	return (moving || rotating);
+	return (moving || rotating || zooming);
 }
 
 };

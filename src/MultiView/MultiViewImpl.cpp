@@ -188,22 +188,15 @@ void MultiViewImpl::SetViewStage(int *view_stage, bool allow_handle)
 
 
 
-void MultiViewImpl::CamZoom(float factor)
+void MultiViewImpl::CamZoom(float factor, bool mouse_rel)
 {
 	vector mup;
-	if (mode3d){
-		if (mouse_win->type != ViewPerspective)
-			mup = mouse_win->Unproject(m);
-		cam.radius /= factor;
-		update_zoom;
-		if (mouse_win->type != ViewPerspective)
-			cam.pos += mup - mouse_win->Unproject(m);
-	}else{
+	if (mouse_rel)
 		mup = mouse_win->Unproject(m);
-		cam.radius /= factor;
-		update_zoom;
-		cam.pos += mup - mouse_win->Unproject(m);
-	}
+	cam.radius /= factor;
+	update_zoom;
+	if (mouse_rel)
+			cam.pos += mup - mouse_win->Unproject(m);
 	if (action_con->show)
 		action_con->Update();
 	Notify("Update");
@@ -319,9 +312,9 @@ void MultiViewImpl::OnMouseWheel()
 
 	// mouse wheel -> zoom
 	if (e->dz > 0)
-		CamZoom(SPEED_ZOOM_WHEEL);
+		CamZoom(SPEED_ZOOM_WHEEL, mouse_win->type != ViewPerspective);
 	if (e->dz < 0)
-		CamZoom(1.0f / SPEED_ZOOM_WHEEL);
+		CamZoom(1.0f / SPEED_ZOOM_WHEEL, mouse_win->type != ViewPerspective);
 	NotifyEnd();
 }
 
@@ -333,9 +326,9 @@ void MultiViewImpl::OnKeyDown()
 	int k = HuiGetEvent()->key_code;
 
 	if ((k == KEY_ADD) ||(k == KEY_NUM_ADD))
-		CamZoom(SPEED_ZOOM_KEY);
+		CamZoom(SPEED_ZOOM_KEY, mouse_win->type != ViewPerspective);
 	if ((k == KEY_SUBTRACT) || (k == KEY_NUM_SUBTRACT))
-		CamZoom(1.0f / SPEED_ZOOM_KEY);
+		CamZoom(1.0f / SPEED_ZOOM_KEY, mouse_win->type != ViewPerspective);
 	if (k == KEY_RIGHT)
 		CamMove(-e_x * SPEED_MOVE);
 	if (k == KEY_LEFT)
