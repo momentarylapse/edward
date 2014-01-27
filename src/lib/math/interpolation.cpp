@@ -147,8 +147,8 @@ void Interpolator<T>::normalize()
 	foreach(Part &p, part){
 		p.t0 /= t_sum;
 		p.dt /= t_sum;
-		p.vel0 /= t_sum;
-		p.vel1 /= t_sum;
+		p.vel0 *= t_sum;
+		p.vel1 *= t_sum;
 	}
 	t_sum = 1;
 }

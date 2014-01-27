@@ -242,6 +242,7 @@ void ModeWorldCamera::OnDrawWin(MultiView::Window *win)
 			Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE);
 			inter.add2(last_pos, last_vel, 0);
 			inter.add2(c.pos, c.Vel, c.Duration);
+			inter.normalize();
 			NixSetColor(White);
 			int N = 50;
 			for (int n=0;n<N;n++)
