@@ -476,6 +476,23 @@ void SyntaxTree::GetFunctionCall(const string &f_name, Command *Operand, Functio
 	}
 }
 
+Command *build_list(SyntaxTree *ps, Array<Command*> &el)
+{
+	if (el.num == 0)
+		ps->DoError("empty arrays not supported yet");
+	if (el.num > SCRIPT_MAX_PARAMS)
+		ps->DoError(format("only %d elements in auto arrays supported yet", SCRIPT_MAX_PARAMS));
+	Type *t = ps->CreateArrayType(el[0]->type, -1);
+	Command *c = ps->AddCommand(KindArrayBuilder, 0, t);
+	c->num_params = el.num;
+	for (int i=0; i<el.num; i++){
+		if (el[i]->type != el[0]->type)
+			ps->DoError(format("inhomogenous array types %s/%s", el[i]->type->name.c_str(), el[0]->type->name.c_str()));
+		c->param[i] = el[i];
+	}
+	return c;
+}
+
 Command *SyntaxTree::GetOperand(Function *f)
 {
 	msg_db_f("GetOperand", 4);
@@ -500,6 +517,19 @@ Command *SyntaxTree::GetOperand(Function *f)
 			DoError("only pointers can be dereferenced using \"*\"");
 		}
 		deref_command_old(this, Operand);
+	}else if (Exp.cur == "["){
+		Exp.next();
+		Array<Command*> el;
+		while(true){
+			el.add(GetCommand(f));
+			if ((Exp.cur != ",") && (Exp.cur != "]"))
+				DoError("\",\" or \"]\" expected");
+			if (Exp.cur == "]")
+				break;
+			Exp.next();
+		}
+		Operand = build_list(this, el);
+		Exp.next();
 	}else if (Exp.cur == "new"){ // new operator
 		Exp.next();
 		Type *t = GetType(Exp.cur, true);
@@ -1167,7 +1197,6 @@ void SyntaxTree::ParseCompleteCommand(Block *block, Function *f)
 		Exp.cur = Exp.cur_line->exp[Exp.cur_exp].name;
 		msg_db_f("Block", 4);
 		Block *new_block = AddBlock();
-		new_block->root = block->index;
 
 		Command *c = AddCommand(KindBlock, new_block->index, TypeVoid);
 		block->command.add(c);
@@ -1255,7 +1284,7 @@ void SyntaxTree::TestArrayDefinition(Type **type, bool is_pointer)
 
 			// find array index
 			Command *c = GetCommand(&RootOfAllEvil);
-			PreProcessCommand(NULL, c);
+			PreProcessCommand(c);
 
 			if ((c->kind != KindConstant) || (c->type != TypeInt))
 				DoError("only constants of type \"int\" allowed for size of arrays");
@@ -1269,13 +1298,7 @@ void SyntaxTree::TestArrayDefinition(Type **type, bool is_pointer)
 		TestArrayDefinition(type, false); // is_pointer=false, since pointers have been handled
 
 		// create array       (complicated name necessary to get correct ordering   int a[2][4] = (int[4])[2])
-		if (array_size < 0){
-			(*type) = CreateNewType(or_name + "[]" +  (*type)->name.substr(or_name_length, -1),
-			                        config.SuperArraySize, false, false, true, array_size, (*type));
-		}else{
-			(*type) = CreateNewType(or_name + format("[%d]", array_size) + (*type)->name.substr(or_name_length, -1),
-			                        (*type)->size * array_size, false, false, true, array_size, (*type));
-		}
+		(*type) = CreateArrayType(*type, array_size, or_name, (*type)->name.substr(or_name_length, -1));
 		if (Exp.cur == "*"){
 			Exp.next();
 			TestArrayDefinition(type, true);
@@ -1298,7 +1321,7 @@ void SyntaxTree::ParseImport()
 		msg_right();
 		Script *include;
 		try{
-			include = Load(filename, script->JustAnalyse);
+			include = Load(filename, script->JustAnalyse || FlagCompileOS);
 		}catch(Exception &e){
 			string msg = "in imported file:\n\"" + e.message + "\"";
 			DoError(msg);
@@ -1566,7 +1589,7 @@ void SyntaxTree::ParseGlobalConst(const string &name, Type *type)
 
 	// find const value
 	Command *cv = GetCommand(&RootOfAllEvil);
-	PreProcessCommand(NULL, cv);
+	PreProcessCommand(cv);
 
 	if ((cv->kind != KindConstant) || (cv->type != type))
 		DoError(format("only constants of type \"%s\" allowed as value for this constant", type->name.c_str()));

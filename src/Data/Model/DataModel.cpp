@@ -959,7 +959,9 @@ void DataModel::ExportToTriangleSkin(int index)
 	sk.Vertex = Vertex;
 	sk.Sub.clear();
 	sk.Sub.resize(Material.num);
-	foreach(ModelSurface &s, Surface)
+	foreach(ModelSurface &s, Surface){
+		if (!s.IsVisible)
+			continue;
 		foreach(ModelPolygon &t, s.Polygon){
 			if (t.TriangulationDirty)
 				t.UpdateTriangulation(Vertex);
@@ -974,6 +976,7 @@ void DataModel::ExportToTriangleSkin(int index)
 				sk.Sub[t.Material].Triangle.add(tt);
 			}
 		}
+	}
 	foreachi(ModelMaterial &m, Material, i)
 		sk.Sub[i].NumTextures = m.NumTextures;
 }

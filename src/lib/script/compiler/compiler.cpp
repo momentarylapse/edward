@@ -1,5 +1,6 @@
 #include "../script.h"
 #include "../../file/file.h"
+#include "../../base/set.h"
 
 #ifdef OS_LINUX
 	#include <sys/mman.h>
@@ -114,12 +115,15 @@ void Script::AllocateStack()
 
 void Script::AllocateOpcode()
 {
+	int max_opcode = SCRIPT_MAX_OPCODE;
+	if (syntax->FlagCompileOS)
+		max_opcode *= 10;
 	// allocate some memory for the opcode......    has to be executable!!!   (important on amd64)
 #ifdef OS_WINDOWS
-	Opcode=(char*)VirtualAlloc(NULL,SCRIPT_MAX_OPCODE,MEM_COMMIT | MEM_RESERVE,PAGE_EXECUTE_READWRITE);
+	Opcode=(char*)VirtualAlloc(NULL,max_opcode,MEM_COMMIT | MEM_RESERVE,PAGE_EXECUTE_READWRITE);
 	ThreadOpcode=(char*)VirtualAlloc(NULL,SCRIPT_MAX_THREAD_OPCODE,MEM_COMMIT | MEM_RESERVE,PAGE_EXECUTE_READWRITE);
 #else
-	Opcode = (char*)mmap(0, SCRIPT_MAX_OPCODE, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED | MAP_ANONYMOUS | MAP_EXECUTABLE | MAP_32BIT, 0, 0);
+	Opcode = (char*)mmap(0, max_opcode, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED | MAP_ANONYMOUS | MAP_EXECUTABLE | MAP_32BIT, 0, 0);
 	ThreadOpcode = (char*)mmap(0, SCRIPT_MAX_THREAD_OPCODE, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED | MAP_ANONYMOUS | MAP_EXECUTABLE | MAP_32BIT, 0, 0);
 #endif
 	if (((long)Opcode==-1)||((long)ThreadOpcode==-1))
@@ -319,11 +323,100 @@ bool find_and_replace(char *opcode, int opcode_size, char *pattern, int size, ch
 	return false;
 }
 
+void relink_calls(SyntaxTree *ps, SyntaxTree *a, SyntaxTree *b, int const_off, int var_off, int func_off)
+{
+	foreach(Command *c, ps->Commands){
+		// keep commands... just redirect var/const/func
+		//msg_write(p2s(c->script));
+		if (c->script != b->script)
+			continue;
+		if (c->kind == KindVarGlobal){
+			c->link_no += var_off;
+			c->script = a->script;
+		}else if (c->kind == KindConstant){
+			c->link_no += const_off;
+			c->script = a->script;
+		}else if ((c->kind == KindFunction) || (c->kind == KindVarFunction)){
+			c->link_no += func_off;
+			c->script = a->script;
+		}
+	}
+}
+
+struct IncludeTranslationData
+{
+	int const_off;
+	int func_off;
+	int var_off;
+	SyntaxTree *source;
+};
+
+IncludeTranslationData import_deep(SyntaxTree *a, SyntaxTree *b)
+{
+	IncludeTranslationData d;
+	d.const_off = a->Constants.num;
+	d.var_off = a->RootOfAllEvil.var.num;
+	d.func_off = a->Functions.num;
+	d.source = b;
+
+	foreach(Constant &c, b->Constants){
+		int n = a->AddConstant(c.type);
+		int size = (c.type == TypeString) ? 256 : c.type->size;
+		memcpy(a->Constants[n].data, c.data, size);
+	}
+	foreach(Variable &v, b->RootOfAllEvil.var){
+		Variable vv = v;
+		a->RootOfAllEvil.var.add(vv);
+	}
+
+	foreach(Function *f, b->Functions){
+		Function *ff = a->AddFunction(f->name, f->return_type);
+		*ff = *f;
+		// keep block pointing to include file...
+	}
+
+	//int asm_off = a->AsmBlocks.num;
+	foreach(AsmBlock &ab, b->AsmBlocks){
+		a->AsmBlocks.add(ab);
+	}
+
+	return d;
+}
+
+void add_includes(Script *s, Set<Script*> &includes)
+{
+	foreach(Script *i, s->syntax->Includes){
+		if (i->Filename.find(".kaba") < 0)
+			continue;
+		includes.add(i);
+		add_includes(i, includes);
+	}
+}
+
+void import_includes(Script *s)
+{
+	Set<Script*> includes;
+	add_includes(s, includes);
+	Array<IncludeTranslationData> da;
+	foreach(Script *i, includes)
+		da.add(import_deep(s->syntax, i->syntax));
+
+	foreach(Script *i, includes){
+		foreach(IncludeTranslationData &d, da){
+			relink_calls(s->syntax, s->syntax, d.source, d.const_off, d.var_off, d.func_off);
+			relink_calls(i->syntax, s->syntax, d.source, d.const_off, d.var_off, d.func_off);
+		}
+	}
+}
+
 // generate opcode
 void Script::Compiler()
 {
 	msg_db_f("Compiler",2);
 	Asm::CurrentMetaInfo = syntax->AsmMetaInfo;
+
+	if (syntax->FlagCompileOS)
+		import_includes(this);
 
 	syntax->MapLocalVariablesToStack();
 
@@ -333,7 +426,7 @@ void Script::Compiler()
 #endif
 
 	syntax->Simplify();
-	syntax->PreProcessor(this);
+	syntax->PreProcessor();
 
 	if (syntax->FlagShow)
 		syntax->Show();
@@ -356,7 +449,7 @@ void Script::Compiler()
 
 
 
-	syntax->PreProcessorAddresses(this);
+	syntax->PreProcessorAddresses();
 
 
 // compile functions into Opcode
@@ -379,7 +472,7 @@ void Script::Compiler()
 		bool found = false;
 		foreachi(Function *f, syntax->Functions, i)
 			if (f->name == name){
-				*(int*)&Opcode[l.Pos] = (char*)func[i] - (char*)&Opcode[l.Pos + 4];
+				*(int*)&Opcode[l.Pos] = (long)func[i] - (syntax->AsmMetaInfo->CodeOrigin + l.Pos + 4);
 				found = true;
 				break;
 			}

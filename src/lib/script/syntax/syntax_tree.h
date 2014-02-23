@@ -62,6 +62,7 @@ enum
 	KindLocalMemory,		// local (but LinkNr = address)
 	// special
 	KindType,
+	KindArrayBuilder,
 	// compilation
 	KindVarTemp,
 	KindDerefVarTemp,
@@ -69,7 +70,6 @@ enum
 	KindRegister,
 	KindDerefRegister,
 	KindMarker,
-	KindAsmBlock,
 };
 
 struct Command;
@@ -77,9 +77,8 @@ struct Command;
 // {...}-block
 struct Block
 {
-	int root;
 	int index;
-	Array<Command*> command; // ID of command in global command array
+	Array<Command*> command;
 };
 
 struct Variable
@@ -127,6 +126,7 @@ struct Command
 	// return value
 	Type *type;
 	Command(int kind, int link_no, Script *script, Type *type);
+	Block *block() const;
 };
 
 struct AsmBlock
@@ -197,6 +197,7 @@ public:
 	Type *GetType(const string &name, bool force);
 	void AddType(Type **type);
 	Type *CreateNewType(const string &name, int size, bool is_pointer, bool is_silent, bool is_array, int array_size, Type *sub);
+	Type *CreateArrayType(Type *element_type, int num_elements, const string &name_pre = "", const string &suffix = "");
 	void TestArrayDefinition(Type **type, bool is_pointer);
 	bool GetExistence(const string &name, Function *f);
 	bool GetExistenceShared(const string &name);
@@ -229,6 +230,7 @@ public:
 	// neccessary conversions
 	void ConvertCallByReference();
 	void BreakDownComplicatedCommands();
+	void BreakDownComplicatedCommand(Command *c);
 	void MapLocalVariablesToStack();
 
 	// data creation
@@ -251,10 +253,10 @@ public:
 	Command *shift_command(Command *sub, bool deref, int shift, Type *type);
 
 	// pre processor
-	void PreProcessCommand(Script *s, Command *c);
-	void PreProcessor(Script *s);
-	void PreProcessCommandAddresses(Script *s, Command *c);
-	void PreProcessorAddresses(Script *s);
+	void PreProcessCommand(Command *c);
+	void PreProcessor();
+	void PreProcessCommandAddresses(Command *c);
+	void PreProcessorAddresses();
 	void Simplify();
 
 	// debug displaying
