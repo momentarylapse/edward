@@ -130,10 +130,10 @@ void CameraDialog::OnAreaDraw()
 	color ColorGrid = color(1, 0.75f, 0.75f, 0.75f);
 
 	HuiPainter *c = win->BeginDraw("cam_area");
-	c->SetLineWidth(0.8f);
-	c->SetColor(bg);
-	c->DrawRect(0, 0, c->width, c->height);
-	c->SetFontSize(8);
+	c->setLineWidth(0.8f);
+	c->setColor(bg);
+	c->drawRect(0, 0, c->width, c->height);
+	c->setFontSize(8);
 
 	rect r = rect(0, c->width, 0, c->height);
 	double dt = MIN_GRID_DIST / time_scale; // >= 10 pixel
@@ -146,30 +146,30 @@ void CameraDialog::OnAreaDraw()
 	color c1 = ColorInterpolate(bg, ColorGrid, exp_s_mod);
 	color c2 = ColorGrid;
 	for (int n=nx0;n<nx1;n++){
-		c->SetColor(((n % 10) == 0) ? c2 : c1);
+		c->setColor(((n % 10) == 0) ? c2 : c1);
 		int xx = sample2screen(n * dt);
-		c->DrawLine(xx, 0, xx, c->height);
+		c->drawLine(xx, 0, xx, c->height);
 	}
-	c->SetColor(ColorGrid);
+	c->setColor(ColorGrid);
 	for (int n=nx0;n<nx1;n++){
 		if ((sample2screen(dt) - sample2screen(0)) > 30){
 			if ((((n % 10) % 3) == 0) && ((n % 10) != 9) && ((n % 10) != -9))
-				c->DrawStr(sample2screen(n * dt) + 2, r.y1, get_time_str_fuzzy(n * dt, dt * 3));
+				c->drawStr(sample2screen(n * dt) + 2, r.y1, get_time_str_fuzzy(n * dt, dt * 3));
 		}else{
 			if ((n % 10) == 0)
-				c->DrawStr(sample2screen(n * dt) + 2, r.y1, get_time_str_fuzzy(n * dt, dt * 10));
+				c->drawStr(sample2screen(n * dt) + 2, r.y1, get_time_str_fuzzy(n * dt, dt * 10));
 		}
 	}
 
 	float dur = data->GetDuration();
-	c->SetColor(color(0.15f, 0, 0, 1));
-	c->DrawRect(rect(sample2screen(0), sample2screen(dur), r.y1, r.y2));
+	c->setColor(color(0.15f, 0, 0, 1));
+	c->drawRect(rect(sample2screen(0), sample2screen(dur), r.y1, r.y2));
 
 	float t0 = 0;
 	foreachi(WorldCamPoint &p, data->Point, i){
-		c->SetColor(p.is_selected ? Red : Black);
-		c->SetLineWidth((i == hover) ? 5.0f : 2.2f);
-		c->DrawLine(time_pos[i], r.y1, time_pos[i], r.y2);
+		c->setColor(p.is_selected ? Red : Black);
+		c->setLineWidth((i == hover) ? 5.0f : 2.2f);
+		c->drawLine(time_pos[i], r.y1, time_pos[i], r.y2);
 		float t1 = t0 + p.Duration;
 		t0 = t1;
 	}
@@ -184,20 +184,20 @@ void CameraDialog::OnAreaDraw()
 			v_max = vv;
 		v[i] = vv;
 	}
-	c->SetLineWidth(1.0f);
-	c->SetColor(Green);
+	c->setLineWidth(1.0f);
+	c->setColor(Green);
 	for (int i=0; i<N; i++){
 		float t0 = (float)i / (float)N * dur;
 		float t1 = (float)(i+1) / (float)N * dur;
-		c->DrawLine(sample2screen(t0), r.y2 - v[i]/v_max * r.height(), sample2screen(t1), r.y2 - v[i+1]/v_max * r.height());
+		c->drawLine(sample2screen(t0), r.y2 - v[i]/v_max * r.height(), sample2screen(t1), r.y2 - v[i+1]/v_max * r.height());
 	}
 
 	if (mode->preview){
-		c->SetLineWidth(1.5f);
-		c->SetColor(Green);
-		c->DrawLine(sample2screen(mode->preview_time), r.y1, sample2screen(mode->preview_time), r.y2);
+		c->setLineWidth(1.5f);
+		c->setColor(Green);
+		c->drawLine(sample2screen(mode->preview_time), r.y1, sample2screen(mode->preview_time), r.y2);
 	}
-	c->End();
+	c->end();
 }
 
 void CameraDialog::OnAreaLeftButtonDown()

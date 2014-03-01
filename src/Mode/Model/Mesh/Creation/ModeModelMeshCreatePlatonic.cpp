@@ -40,7 +40,7 @@ void ModeModelMeshCreatePlatonic::OnStart()
 		return;
 	// Dialog
 	dialog = HuiCreateResourceDialog("new_teapot_dialog", ed);
-	dialog->SetInt("ntp_samples", HuiConfigReadInt("NewTeapotSamples", 4));
+	dialog->SetInt("ntp_samples", HuiConfig.getInt("NewTeapotSamples", 4));
 	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
 	dialog->Show();
 	dialog->Event("hui:close", &HuiFuncIgnore);
@@ -63,7 +63,7 @@ void ModeModelMeshCreatePlatonic::UpdateGeometry()
 	if (pos_chosen){
 		if (type == 306){
 			int samples = dialog->GetInt("ntp_samples");
-			HuiConfigWriteInt("NewTeapotSamples", samples);
+			HuiConfig.setInt("NewTeapotSamples", samples);
 			geo = new GeometryTeapot(pos, radius, samples);
 		}else{
 			geo = new GeometryPlatonic(pos, radius, type);

@@ -195,16 +195,16 @@ Edward::Edward(Array<string> arg) :
 	PossibleSubDir.add("Textures");
 
 	// configuration
-	int w = HuiConfigReadInt("Window.Width", 800);
-	int h = HuiConfigReadInt("Window.Height", 600);
-	bool maximized = HuiConfigReadBool("Window.Maximized", false);
+	int w = HuiConfig.getInt("Window.Width", 800);
+	int h = HuiConfig.getInt("Window.Height", 600);
+	bool maximized = HuiConfig.getBool("Window.Maximized", false);
 	SetSize(w, h);
-	RootDir = HuiConfigReadStr("RootDir", "");
+	RootDir = HuiConfig.getStr("RootDir", "");
 	//HuiConfigReadInt("Api", api, NIX_API_OPENGL);
-	/*bool LocalDocumentation = HuiConfigReadBool("LocalDocumentation", false);
-	WorldScriptVarFile = HuiConfigReadStr("WorldScriptVarFile", "");
-	ObjectScriptVarFile = HuiConfigReadStr("ObjectScriptVarFile", "");
-	ItemScriptVarFile = HuiConfigReadStr("ItemScriptVarFile", "");
+	/*bool LocalDocumentation = HuiConfig.getBool("LocalDocumentation", false);
+	WorldScriptVarFile = HuiConfig.getStr("WorldScriptVarFile", "");
+	ObjectScriptVarFile = HuiConfig.getStr("ObjectScriptVarFile", "");
+	ItemScriptVarFile = HuiConfig.getStr("ItemScriptVarFile", "");
 
 	LoadKeyCodes();
 	SaveKeyCodes();
@@ -288,18 +288,18 @@ Edward::~Edward()
 	// saving the configuration data...
 	int w, h;
 	GetSizeDesired(w, h);
-	HuiConfigWriteInt("Window.X", -1);//r.x1);
-	HuiConfigWriteInt("Window.Y", -1);//r.y1);
-	HuiConfigWriteInt("Window.Width", w);
-	HuiConfigWriteInt("Window.Height", h);
-	HuiConfigWriteBool("Window.Maximized", IsMaximized());
-	HuiConfigWriteStr("RootDir", RootDir);
-	HuiConfigWriteStr("Language", HuiGetCurLanguage());
-	/*HuiConfigWriteBool("LocalDocumentation", LocalDocumentation);
-	HuiConfigWriteStr("WorldScriptVarFile", WorldScriptVarFile);
-	HuiConfigWriteStr("ObjectScriptVarFile", ObjectScriptVarFile);
-	HuiConfigWriteStr("ItemScriptVarFile", ItemScriptVarFile);*/
-	//HuiConfigWriteInt("UpdateNormalMaxTime (ms)", int(UpdateNormalMaxTime * 1000.0f));
+	HuiConfig.setInt("Window.X", -1);//r.x1);
+	HuiConfig.setInt("Window.Y", -1);//r.y1);
+	HuiConfig.setInt("Window.Width", w);
+	HuiConfig.setInt("Window.Height", h);
+	HuiConfig.setBool("Window.Maximized", IsMaximized());
+	HuiConfig.setStr("RootDir", RootDir);
+	HuiConfig.setStr("Language", HuiGetCurLanguage());
+	/*HuiConfig.setBool("LocalDocumentation", LocalDocumentation);
+	HuiConfig.setStr("WorldScriptVarFile", WorldScriptVarFile);
+	HuiConfig.setStr("ObjectScriptVarFile", ObjectScriptVarFile);
+	HuiConfig.setStr("ItemScriptVarFile", ItemScriptVarFile);*/
+	//HuiConfig.setInt("UpdateNormalMaxTime (ms)", int(UpdateNormalMaxTime * 1000.0f));
 }
 
 bool Edward::HandleArguments(Array<string> arg)

@@ -48,10 +48,10 @@ void ModeModelMeshCreateBall::OnStart()
 	// Dialog
 	dialog = HuiCreateResourceDialog("new_ball_dialog", ed);
 
-	dialog->SetInt("nb_x", HuiConfigReadInt("NewBallNumX", 8));
-	dialog->SetInt("nb_y",HuiConfigReadInt("NewBallNumY", 16));
-	dialog->SetInt("nb_complexity", HuiConfigReadInt("NewBallComplexity", 8));
-	bool sphere = HuiConfigReadBool("NewBallSphere", false);
+	dialog->SetInt("nb_x", HuiConfig.getInt("NewBallNumX", 8));
+	dialog->SetInt("nb_y",HuiConfig.getInt("NewBallNumY", 16));
+	dialog->SetInt("nb_complexity", HuiConfig.getInt("NewBallComplexity", 8));
+	bool sphere = HuiConfig.getBool("NewBallSphere", false);
 	dialog->Check("ball_type:ball", !sphere);
 	dialog->Check("ball_type:sphere", sphere);
 	dialog->Enable("nb_x", !sphere);
@@ -81,10 +81,10 @@ void ModeModelMeshCreateBall::UpdateGeometry()
 		int nx = dialog->GetInt("nb_x");
 		int ny = dialog->GetInt("nb_y");
 		int complexity = dialog->GetInt("nb_complexity");
-		HuiConfigWriteInt("NewBallNumX", nx);
-		HuiConfigWriteInt("NewBallNumY", ny);
-		HuiConfigWriteInt("NewBallComplexity", complexity);
-		HuiConfigWriteBool("NewBallSphere", sphere);
+		HuiConfig.setInt("NewBallNumX", nx);
+		HuiConfig.setInt("NewBallNumY", ny);
+		HuiConfig.setInt("NewBallComplexity", complexity);
+		HuiConfig.setBool("NewBallSphere", sphere);
 		if (sphere)
 			geo = new GeometrySphere(pos, radius, complexity);
 		else

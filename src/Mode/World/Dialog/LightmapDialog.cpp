@@ -85,33 +85,33 @@ static Lightmap::Histogram *hist_p;
 void OnHistDraw()
 {
 	HuiPainter *c = HuiCurWindow->BeginDraw("area");
-	c->SetFontSize(10);
+	c->setFontSize(10);
 	float w = c->width;
 	float h = c->height;
 	float hh = h - 40;
 	float scale = w / hist_p->max;
-	c->SetColor(White);
-	c->DrawRect(0, 0, w, hh);
-	c->SetColor(Black);
-	c->SetLineWidth(0.8f);
-	c->DrawLine(0, hh, w, hh);
+	c->setColor(White);
+	c->drawRect(0, 0, w, hh);
+	c->setColor(Black);
+	c->setLineWidth(0.8f);
+	c->drawLine(0, hh, w, hh);
 	float grid_dist_min = 40 / scale; // 40 pixel
 	int dec = floor(log10(grid_dist_min)) + 1;
 	float d = pow(10.0f, (float)dec);
 	if (d > grid_dist_min * 2)
 		d /= 2;
-	c->SetColor(Grey);
+	c->setColor(Grey);
 	for (float x=0; x<hist_p->max; x+=d){
-		c->DrawStr(scale * x, hh + 3, f2s(x, max(0, 1-dec)));
-		c->DrawLine(scale * x, 0, scale * x, hh);
+		c->drawStr(scale * x, hh + 3, f2s(x, max(0, 1-dec)));
+		c->drawLine(scale * x, 0, scale * x, hh);
 	}
-	c->SetColor(Black);
-	c->SetFont("Sans", 12, true, false);
-	c->DrawStr(w / 2 - 40, hh + 20, _("Helligkeit"));
-	c->SetLineWidth(1.5f);
+	c->setColor(Black);
+	c->setFont("Sans", 12, true, false);
+	c->drawStr(w / 2 - 40, hh + 20, _("Helligkeit"));
+	c->setLineWidth(1.5f);
 	for (int i=0;i<hist_p->f.num-1;i++)
-		c->DrawLine((w * i) / hist_p->f.num, hh - hh * hist_p->f[i], (w * (i + 1)) / hist_p->f.num, hh - hh * hist_p->f[i + 1]);
-	c->End();
+		c->drawLine((w * i) / hist_p->f.num, hh - hh * hist_p->f[i], (w * (i + 1)) / hist_p->f.num, hh - hh * hist_p->f[i + 1]);
+	c->end();
 }
 
 void OnHistClose()

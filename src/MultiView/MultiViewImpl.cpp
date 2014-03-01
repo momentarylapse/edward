@@ -66,7 +66,7 @@ MultiViewImpl::MultiViewImpl(bool _mode3d) :
 	PointRadius = 2;
 	PointRadiusMouseOver = 4;
 
-	allow_infinite_scrolling = HuiConfigReadBool("MultiView.InfiniteScrolling", true);
+	allow_infinite_scrolling = HuiConfig.getBool("MultiView.InfiniteScrolling", true);
 
 	mode3d = _mode3d;
 	win[0] = new Window(this, ViewBack);
@@ -106,7 +106,7 @@ MultiViewImpl::MultiViewImpl(bool _mode3d) :
 
 MultiViewImpl::~MultiViewImpl()
 {
-	HuiConfigWriteBool("MultiView.InfiniteScrolling", allow_infinite_scrolling);
+	HuiConfig.getBool("MultiView.InfiniteScrolling", allow_infinite_scrolling);
 	for (int i=0;i<4;i++)
 		delete(win[i]);
 	delete(cam_con);

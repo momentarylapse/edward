@@ -38,8 +38,8 @@ ModeMaterial::ModeMaterial() :
 	for (int i=2;i<=MATERIAL_MAX_TEXTURES;i++)
 		MaterialVB[i] = new NixVertexBuffer(i);
 
-	shape_type = HuiConfigReadStr("MaterialShapeType", "teapot");
-	shape_smooth = HuiConfigReadBool("MaterialShapeSmooth", true);
+	shape_type = HuiConfig.getStr("MaterialShapeType", "teapot");
+	shape_smooth = HuiConfig.getBool("MaterialShapeSmooth", true);
 }
 
 ModeMaterial::~ModeMaterial()
@@ -194,14 +194,14 @@ void ModeMaterial::OnStart()
 void ModeMaterial::SetShapeType(const string &type)
 {
 	shape_type = type;
-	HuiConfigWriteStr("MaterialShapeType", shape_type);
+	HuiConfig.setStr("MaterialShapeType", shape_type);
 	UpdateShape();
 }
 
 void ModeMaterial::SetShapeSmooth(bool smooth)
 {
 	shape_smooth = smooth;
-	HuiConfigWriteBool("MaterialShapeSmooth", shape_smooth);
+	HuiConfig.setBool("MaterialShapeSmooth", shape_smooth);
 	UpdateShape();
 }
 

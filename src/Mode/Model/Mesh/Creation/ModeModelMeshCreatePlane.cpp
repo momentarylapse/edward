@@ -30,8 +30,8 @@ void ModeModelMeshCreatePlane::OnStart()
 {
 	// Dialog
 	dialog = HuiCreateResourceDialog("new_plane_dialog", ed);
-	dialog->SetInt("np_num_x", HuiConfigReadInt("NewPlaneNumX", 4));
-	dialog->SetInt("np_num_y",HuiConfigReadInt("NewPlaneNumY", 4));
+	dialog->SetInt("np_num_x", HuiConfig.getInt("NewPlaneNumX", 4));
+	dialog->SetInt("np_num_y",HuiConfig.getInt("NewPlaneNumY", 4));
 	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
 	dialog->Show();
 	dialog->Event("hui:close", &HuiFuncIgnore);
@@ -51,8 +51,8 @@ void ModeModelMeshCreatePlane::OnLeftButtonDown()
 	if (pos_chosen){
 		int nx = dialog->GetInt("np_num_x");
 		int ny = dialog->GetInt("np_num_y");
-		HuiConfigWriteInt("NewPlaneNumX", nx);
-		HuiConfigWriteInt("NewPlaneNumY", ny);
+		HuiConfig.setInt("NewPlaneNumX", nx);
+		HuiConfig.setInt("NewPlaneNumY", ny);
 
 		if (invert){
 			pos += length[0];

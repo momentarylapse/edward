@@ -103,8 +103,8 @@ void TerrainHeightmapDialog::OnPreviewDraw()
 {
 	HuiPainter *c = BeginDraw("preview");
 	if (heightmap.isEmpty()){
-		c->SetColor(Black);
-		c->DrawRect(0, 0, c->width, c->height);
+		c->setColor(Black);
+		c->drawRect(0, 0, c->width, c->height);
 	}else{
 		Image m;
 		int w = c->width, h = c->height;
@@ -118,9 +118,9 @@ void TerrainHeightmapDialog::OnPreviewDraw()
 					f *= im_interpolate(filter, hmx, hmy, 1, 1);
 				m.setPixel(x, y, color(1, f, f, f));
 			}
-		c->DrawImage(0, 0, m);
+		c->drawImage(0, 0, m);
 	}
-	c->End();
+	c->end();
 }
 
 
