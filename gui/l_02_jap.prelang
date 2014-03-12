@@ -1,66 +1,66 @@
 // Language
-English
+日本語
 // Num IDs
 609
 // Data (ID,Text)
 ad_dialog
-Administration
+
 ad_edit
-Edit
+
 ad_export_game
-Export game
+
 ad_rudimentary_configuration
-Basic settings
+
 ad_tab_control
-Current game\\All files\\Details\\Not needed\\Missing
+
 add_material
-New...
+
 add_new_material
 
 add_point
 
 add_script
-Add
+
 add_texture_level
-New
+
 admin_button_bar
 
 administrate
-Administrate
+
 adt_dest
-!bold\\Needs
+
 adt_file
-!bold\\File
+
 adt_source
-!bold\\Needed by
+
 align_to_grid
-Align to grid
+
 allow_sun
-Allow sun
+
 alpha_dest
 AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha
 alpha_factor
-\\0\\100\\1
+
 alpha_source
 AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha
 alpha_z_buffer
-Z-buffer enabled
+
 ambient
-ambient
+周辺光
 ani_dt_sim_param
 
 ani_dt_sim_speed
 
 animation_delete
-Delete
+削除
 animation_dialog
-Animation
+
 animation_list
 #\\type\\num frames\\name
 animation_new
-New
+新規
 apply
-Apply
+適用
 apply_material
 
 automapping
@@ -76,7 +76,7 @@ bevel_edges
 bgc
 !alpha
 brightness
-\\0\\100\\0.1
+
 cam_edit_ang
 
 cam_edit_vel
@@ -86,143 +86,143 @@ cam_preview
 cam_stop
 
 campoint__grp_ang
-angle
+
 campoint__grp_pos
-position
+
 campoint__grp_vel
-velocity
+
 campoint_dialog
-Camera point
+
 campoint_t_delay
-delay
+
 campoint_t_type
-type
+
 campoint_type
 PositionSet\\PositionAdd\\AngleSet\\Position & Angle Set\\Flight\\FlightRelative
 camscript_create
-CameraFlight (new)...
+
 camscript_load
-CameraFlight (load)...
+
 cancel
-Cancel
+キャンセル
 choose_material
-Choose material...
+
 clear_texture_level
-Clear
+
 connect
-Connect Points
+
 convert_to_triangles
 
 copy
-Copy
+コーピ
 create_lightmap
-Render lightmap...
+
 create_objects
-Objects...
+オブジェクト...
 current_mode_font
--Font-Mode-
+[フォント　の　モード]
 current_mode_model_skeleton
--Model-Mode (Skeleton)-
+[モデル　の　モード (骨格)]
 cut_out
-Cut off
+
 default_colors
-Use colors from material
+
 default_material
-use default material
+
 deformation_brush
 
 degree
 °
 delete
-Delete
+削除
 delete_frame
 
 delete_item
-Delete item
+
 delete_point
 
 delete_texture_level
-Delete texture level
+
 detail_0
-Physical skin
+
 detail_1
-High-precicion skin
+
 detail_2
-Med-precicion skin
+
 detail_3
-Low-precicion skin
+
 diffuse
-diffuse
+拡散光
 dummy_text
 
 easify_dialog
-Easify skin
+
 easify_dialog_buttonbar
 
 easify_skin
-Easify skin
+
 eat_estimate
 
 eat_quality
-quality factor
+
 edit_material
-edit
+編集
 edit_terrain_selectable
-Selectable
+
 edit_terrain_vertices
-Edit vertices
+
 editor_dialog
-Editor
+
 editor_dialog_t_adress
-Website:
+
 editor_dialog_t_creator
-Creator:
+
 editor_dialog_t_language
-language
+
 editor_dialog_t_version
-Version:
+
 editor_dialog_t_workingdirectory
-Working directory
+
 editor_dialog_tab_control
-Information\\Properties\\Keys
+properties\\keys\\information
 emission
-emission
+発光
 execute_plugin
-Execute plugin
+
 exit
-Exit
+終了
 exponent
-\\0\\10\\0.05
+
 export_game
-Export...
+
 export_group
-Groupe...
+
 export_to_gamestudio
-To GameStudio...
+
 export_type
 single files\\archive (compressed)\\archive (uncompressed)
 export_world
-Export world
+
 extrude_triangles
-Extrude
+
 factorx
 
 factory
 
 file_list_all
-!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
+
 file_list_cur
-!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
+
 file_list_detail_dest
-!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
+
 file_list_detail_source
-!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
+
 file_list_missing
-!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
+
 file_list_super
-!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
+
 flatten_vertices
-Flatten
+
 fog_distance
 
 fog_end
@@ -238,7 +238,7 @@ fog_mode:none
 fog_start
 
 font_dialog
-Font properties
+
 font_dt_character
 
 font_dt_example
@@ -268,9 +268,9 @@ font_dt_y1
 font_dt_y2
 
 font_new
-New
+新規
 font_open
-Open...
+開く...
 formula
 Linear\\1/r^2
 fps_const
@@ -280,11 +280,11 @@ fps_factor
 frame
 
 fx_dialog
-Add a new effect...
+
 fx_edit
 
 fx_headline
-Selected vertices
+
 fx_new_field
 
 fx_new_light
@@ -294,59 +294,59 @@ fx_new_script
 fx_new_sound
 
 fx_none
--none-
+
 fx_tab_control
-fire\\light\\sound\\force field
+炎\\光源\\音\\力場
 fxt_force_desc
-( attracting acceleration, Linear: max. value, 1/r^2: value for r=1m )
+
 fxt_force_formula
-formula
+
 fxt_force_intensity
-density
+
 fxt_force_range
-range
+
 fxt_lightradius
-radius
+
 fxt_scriptfile
-script file
+
 fxt_sound_mono_advice
-(has to be mono!)
+
 fxt_soundfile
-sound file
+
 fxt_soundrange
-max. range
+
 fxt_soundspeed
-speed
+
 ge_dialog
-Export the game
+
 ged_group
-!bold\\Startup game values
+
 ged_group_dest
-!bold\\Destination
+
 ged_system
 linux\\windows 32
 ged_t_export_type
-type of export:
+
 ged_t_font
-font:
+
 ged_t_material
-material:
+
 ged_t_rootdir
-!bold\\Directory
+
 ged_t_script
-main script:
+
 ged_t_second_world
-second world
+
 ged_t_system
-system aimed for:
+
 ged_t_world
-world:
+
 generate_dists_auto
-auto calculation
+
 generate_skin_auto
 
 generate_tensor_auto
-auto
+
 gravitation_x
 
 gravitation_y
@@ -354,71 +354,71 @@ gravitation_y
 gravitation_z
 
 grid
-Grid
+グリッド
 height
 
 height_op:add
-Add
+
 height_op:set
-Overwrite
+
 height_to_terrain
-Height = terrain
+
 help
-Help...
+ヘルプ...
 import
-Import...
+
 import_from_3ds
-3D Studio Max...
+
 import_from_gamestudio
-GameStudio...
+
 import_from_lineage2
-Lineage II...
+
 import_group
-Groupe...
+
 import_world_properties
-World properties...
+
 invert_selection
-Invert
+
 invert_trias
-Triangle inversion
+
 just_selection
-Selection
+
 key_dialog
-Key combination
+
 key_dialog_t_key
-combination:
+
 key_list
 !tree\\command\\keys
 level
-0
+
 light
-Light
+光
 lightmap_dialog
-Create lightmap
+
 lightmap_list
-!nobar\\a
+
 lightmap_type
-Raytracing\\Radiosity\\Radiosity schnell\\Photon Map
+
 lmt_brightness
-Surface brightness
+
 lmt_exponent
-Brightness exponent
+
 lmt_new_world
 
 lmt_photons
-Number of Photons
+
 lmt_spacial_resolution
-Spacial resolution
+
 local_documentation
-Use local documentation instead of online version
+
 location
 CalcMove 1\\CalcMove 2\\Render 1\\Render 2\\Render 3\\GetInput 1\\GetInput 2
 lod
 
 logo
-Data/model.png
+
 look_for_updates
-Look for updates at program start
+
 lu
 lu
 luss
@@ -426,25 +426,25 @@ lu/s^2
 mass
 
 mat_add_texture_level
-new level
+
 mat_am
 
 mat_delete_texture_level
-delete level
+
 mat_di
 !alpha
 mat_empty_texture_level
-Empty
+
 mat_shininess
-\\0\\10000\\0.1
+
 mat_textures
-Level\\Texture
+
 mat_transp_alpha_grid
 
 mat_transp_function_grid
 
 material_dialog
-Material appearance
+
 material_dialog_grp_color
 
 material_dialog_grp_friction
@@ -458,25 +458,25 @@ material_dialog_grp_textures
 material_dialog_grp_transparency
 
 material_dialog_t_refl_density
-density:
+
 material_dialog_t_trans_dest
-dest
+
 material_dialog_t_trans_source
-source
+
 material_list
-Material\\Triangles\\File
+
 material_new
-New
+新規
 material_open
-Open...
+開く...
 material_physics_dialog_t_rcjump
-jumping:
+
 material_physics_dialog_t_rcroll
 
 material_physics_dialog_t_rcsliding
-sliding:
+
 material_physics_dialog_t_rcstatic
-static:
+
 material_shape_ball
 
 material_shape_cube
@@ -492,159 +492,159 @@ material_shape_torus
 material_shape_torusknot
 
 material_sound_dialog
-Sounds
+
 max_script_vars
-\\0
+
 menu_administration_file
-File
+
 menu_administration_game
-Game
+
 menu_all_header
-All
+
 menu_edge_header
 
 menu_file
-File
+ファイル
 menu_font
-Font
+フォント
 menu_font_edit
-Edit
+編集
 menu_help
-?
+ヘルプ
 menu_mapping
 
 menu_material
-Material
+マテリアル
 menu_material_shape
 
 menu_model
-Model
+モデル
 menu_model_appearance
-Appearance
+
 menu_model_creation
-Create
+作成
 menu_model_edit
-Edit
+
 menu_model_export
-Export
+エクスポート
 menu_model_file
-File
+ファイル
 menu_model_fx
-Effects
+効果
 menu_model_geometry
 
 menu_model_import
-Import
+インポート
 menu_model_material
 
 menu_model_mode
-Mode
+編集モード
 menu_model_move
-Animation
+アニメーション
 menu_model_normals
-Normals
+法線
 menu_model_platonic
 
 menu_model_selection
-Selection
+選択
 menu_model_skeleton
-Skeleton
+骨格
 menu_model_skin
-Skin
+表面
 menu_model_view
-View
+表示
 menu_model_viewstage
-Viewstage
+表示　の　レベル
 menu_rightmouse
-Right mouse button
+
 menu_surface_header
-On surfaces
+
 menu_terrain_texture
-Terrain texture
+
 menu_tria_header
-On triangles
+
 menu_vertex2_header
 
 menu_vertex_header
-On vertices
+
 menu_world
-World
+世界
 menu_world_creation
-Create
+作成
 menu_world_edit
-Edit
+
 menu_world_export
-Export
+作成
 menu_world_file
-File
+ファイル
 menu_world_help
-?
+ヘルプ
 menu_world_import
-Import
+インポート
 menu_world_operation
-Operations
+
 menu_world_selection
-Selection
+選択
 menu_world_sign_add
-Add to world
+
 menu_world_sign_object
-Objects
+
 menu_world_sign_terrain
-Terrain
+
 menu_world_view
-View
+表示
 mirror
-mirror
+鏡
 mmat_transp_alpha_grid
 
 mmat_transp_function_grid
 
 mode_model_animation
-Animation
+
 mode_model_edge
-Edges
+
 mode_model_materials
-Materials...
+
 mode_model_mesh
-Mesh
+
 mode_model_skeleton
-Skeleton
+骨格
 mode_model_surface
-Surfaces
+
 mode_model_texture_coord
-Texture coordinates
+
 mode_model_triangle
-Triangles
+
 mode_model_vertex
-Vertices
+
 mode_properties
-Properties...
+設定...
 model_dialog
-Model properties
+
 model_dialog_button_bar
 
 model_dialog_grp_physics
-!bold\\General
+
 model_dialog_grp_tensor
-!bold\\Moment of inertia tensor
+
 model_dialog_t_description
-Description
+
 model_dialog_t_mass
-Mass
+
 model_dialog_t_maxitems
-Max items
+
 model_dialog_t_name
-Name
+
 model_dialog_t_num_lod
 
 model_dialog_t_scriptfile
-File
+
 model_dialog_t_scriptvars
-!bold\\Script variables:
+
 model_dialog_tab_control
-level of detail\\material\\physics\\inventary\\script
+level of detail\\material\\transparency\\physics
 model_inventary
-#\\File
+
 model_material_dialog
 
 model_material_dialog_grp_color
@@ -656,25 +656,25 @@ model_material_dialog_grp_textures
 model_material_dialog_grp_transparency
 
 model_material_selection_dialog
-Select a material
+
 model_new
-New
+新規
 model_open
-Open...
+開く...
 move_allframes
-Effect all frames
+
 move_frame_dec
-Next
+前へ
 move_frame_delete
-Selete
+削除
 move_frame_inc
-Last
+次へ
 move_frame_insert
-Insert
+貼り付け
 move_frame_sign
-Frame
+フレーム
 move_reset
-Reset
+リセット
 ms
 ms
 msd_table_2
@@ -684,71 +684,71 @@ mu
 name
 
 nb_complexity
-\\1
+
 nb_x
-\\1
+
 nb_y
-\\1
+
 nbd_grid_ball
 
 nbd_grid_sphere
 
 nc_x
-\\1
+
 nc_y
-\\1
+
 nc_z
-\\1
+
 ncdt_slides
-Stripes
+
 ncy_edges
-\\2
+
 ncy_rings
-\\1
+
 nearify
-Nearify
+
 new
-New
+新規
 new_animation_buttonbar
 
 new_animation_dialog
-New animation
+新しい　アニメーション
 new_animation_index
-\\0
+
 new_animation_t_index
-index
+索引
 new_animation_t_type
-type:
+種類
 new_animation_type
-vertex\\skeleton
+ベクトル\\骨格
 new_ball
-ball
+玉
 new_ball_dialog
-New ball
+新しい　玉
 new_ball_dialog_t_comp
-Complexity
+複雑さ
 new_ball_dialog_t_x
-# discs
+
 new_ball_dialog_t_y
-# vertices per disc
+
 new_cube
-Cube
+正六面体
 new_cube_dialog
-new cube
+
 new_cylinder
-Cylinder...
+円柱...
 new_cylinder_dialog
-New Cylinder
+
 new_cylinder_dialog_t_edges
-edges
+
 new_cylinder_dialog_t_rings
-rings
+
 new_cylindersnake
 
 new_dodecahedron
 
 new_extract
-Extract
+
 new_frame
 
 new_icosahedron
@@ -756,17 +756,17 @@ new_icosahedron
 new_octahedron
 
 new_outline
-Outline
+
 new_plane
-Plane
+平面
 new_plane_dialog
-New plane
+
 new_plane_dialog_t_x
-# srtipes X:
+
 new_plane_dialog_t_y
-# stripes Y:
+
 new_point
-Vertex
+
 new_teapot
 
 new_teapot_dialog
@@ -776,7 +776,7 @@ new_teapot_dialog_t_samples
 new_terrain_buttonbar
 
 new_terrain_dialog
-New terrain
+
 new_tetrahedron
 
 new_torus
@@ -790,17 +790,17 @@ new_torus_dialog_t_edges
 new_torus_dialog_t_rings
 
 new_tria
-New triangle
+新しい　三角形
 normal_this_angular
-Angular
+
 normal_this_hard
-Edgy
+
 normal_this_smooth
-Smooth
+
 np_num_x
-\\1
+
 np_num_y
-\\1
+
 nt_edges
 
 nt_rings
@@ -816,27 +816,27 @@ ntp_samples
 num
 
 num_items
-\\0
+
 num_lod
 
 num_x
-\\1
+
 num_z
-\\1
+
 odt_max_scriptvars
-max number:
+
 ok
 OK
 open
-Open...
+開く...
 opt_view
-Optimal
+
 own_figure
-Own character
+
 parameter
 
 paste
-Paste
+貼り付け
 pattern_x
 
 pattern_z
@@ -844,29 +844,29 @@ pattern_z
 percent
 %
 ph_active
-physics active
+
 ph_passive
-physics passive
+
 photons
-\\0
+
 physics_enabled
-Enables
+
 preview
 
 progress_cancelable_dialog
-working
+
 progress_dialog
-working
+
 property_list
 type\\index\\name
 quality_factor
-\\0\\100\\0.1
+
 quality_slider
 
-rand_id_542460
+rand_id_514824
 
 rc_dialog
-Rudimentary configuration
+
 rcjump
 
 rcroll
@@ -876,9 +876,9 @@ rcsliding
 rcstatic
 
 redo
-Redo
+やり直す
 reflection_density
-\\0\\100\\1
+
 reflection_mode:cube_dynamic
 
 reflection_mode:cube_static
@@ -886,109 +886,109 @@ reflection_mode:cube_static
 reflection_mode:none
 
 reflection_size
-\\1\\10000\\1
+
 reflection_textures
 face\\texture
 remove_script
-Remove
+
 remove_skybox
-Remove
+削除
 rename
-Rename
+
 resolution
-\\0\\1000\\0.1
+
 rotate
-Rotate
+回転
 rotation_dialog
-Rotation
+
 rudimentary_configuration
-Basic settings
+
 save
-Save
+保存
 save_as
-Save as...
+別名で保存...
 scale
-Scale X=Y=Z
+倍率
 scale_2d
-Scale 2D
+倍率 2D
 scaling_dialog
-Scaling
+
 script
 
 script_list
-!nobar\\File
+
 script_vars
-#\\name\\type\\value
+#\\名前\\種類\\値
 scriptvar_dialog
-Script variable
+
 scriptvar_t_index
-index:
+索引
 scriptvar_t_value
-value:
+値
 select_all
-Select all
+
 select_cw
-triangles only clockwise
+
 select_none
-Select none
+
 selection_properties
-Properties...
+設定...
 send_bug_report
-Report a bug
+
 sep_vertical
 
 settings
-Settings...
+
 shader_file
 
 shininess
-shininess
+
 show_fx
-Effects
+エフェクト
 show_objects
-Objects
+オブジェクト
 show_points
-Points
+ベクトル
 show_terrains
-Terrains
+陸
 sim_start
 
 sim_stop
 
 skeleton_add_model
-Add model
+
 skeleton_edit_bone
-Vertices of bone
+
 skeleton_import
-Import...
+インポート...
 skeleton_link
-Create link
+
 skeleton_new_point
-New vertex
+新しい　ベクトル
 skeleton_no_model
-No model
+なし　モデル
 skeleton_selection_sign
-Selection
+選択
 skeleton_unlink
-Unlink
+
 skybox
-#\\model ('SkyBox')
+#\\モデル　('SkyBox')
 sound_list
-Sound file\\Material\\v min\\v max
+
 specular
-specular
+反射光
 speed
 
 stretch_x
-1\\0\\1000\\0.01
+
 stretch_z
-1\\0\\1000\\0.01
+
 subdivide_surfaces
 
 sun_ang_from_camera
-Direction from camera
+
 sun_enabled
-enabled
+
 t_animationfpsconst
 
 t_animationfpsfactor
@@ -1008,135 +1008,135 @@ t_simulate
 tensor
 
 terrain_create
-Terrain (new)...
+新しい　陸...
 terrain_dialog
-Terrain properties
+
 terrain_dialog_grp_apply
-!bold\\Apply
+
 terrain_dialog_t_filename
-terrain file:
+
 terrain_dialog_t_filter
-Filter (optional)
+
 terrain_dialog_t_heightmap
-heightmap
+
 terrain_dialog_t_material
-material
+
 terrain_dialog_t_raster
-raster size
+
 terrain_dialog_t_stripes
-# stripes
+
 terrain_dialog_tab_control
 properties\\textures\\material\\import
 terrain_heightmap
-Heightmap
+
 terrain_heightmap_dialog
-Heightmap
+
 terrain_hm_dialog_grp_heightmap
-!bold\\Height from image's brightness
+
 terrain_hm_dialog_t_gray
-Maximum height
+
 terrain_hm_dialog_t_op
-Operation
+
 terrain_hm_dialog_t_stretch
-Zoom
+
 terrain_load
-Terrain (load)...
+
 terrain_rescale
 
 terrain_save_as
-Save...
+保存...
 terrain_show_texture_final
-Final
+
 terrain_show_texture_level0
-Level 0
+
 terrain_show_texture_level1
-Level 1
+
 terrain_show_texture_level2
-Level 2
+
 terrain_show_texture_level3
-Level 3
+
 terrain_show_texture_level4
-Level 4
+
 terrain_show_texture_level5
-Level 5
+
 terrain_show_texture_level6
-Level 6
+
 terrain_show_texture_level7
-Level 7
+
 terrain_x
 
 terrain_z
 
 text_from_bg
-Texture coordinates from background
+
 texture
-Textur...
+テクスチャ...
 texture_choose
-Find...
+検索...
 texture_delete
-Delete
+削除
 texture_empty
-Leeren
+
 texture_map_complete
-1:1 mapping
+
 texture_menu_sign
-Texture
+
 textures
-!format=tTTit\\Level\\Size X\\Size Z\\\\File
+
 transparency_mode:color_key
-Color key
+
 transparency_mode:factor
-Factor
+
 transparency_mode:function
-Function
+
 transparency_mode:material
-Transparency from material
+
 transparency_mode:none
-No transparency
+
 triangulate_selection
 
 undo
-Undo
+元に戻す
 untriangulate_selection
 
 view_back
-Back (-z)
+
 view_bottom
-Bottom (y)
+下 (y)
 view_front
-Front (z)
+
 view_isometric
-Isometric
+
 view_left
-Left (x)
+左 (x)
 view_menu_sign
-View
+表示
 view_perspective
-Perspective
+
 view_pop
-Pop out
+
 view_push
-Push in
+
 view_right
-Right (-x)
+右 (-x)
 view_top
-Top (-y)
+上 (-y)
 volume_and
 
 volume_subtract
 
 welcome_dialog
-Welcome to Edward.
+
 welcome_list
 !icons
 what_the_fuck
-\"about\"
+
 whole_window
-Use complete window
+
 width
 
 wire
-Wire frame
+
 word_dialog_fog_exp_grid
 
 word_dialog_fog_lin_grid
@@ -1144,63 +1144,63 @@ word_dialog_fog_lin_grid
 world_camera_dialog
 
 world_dialog
-World properties
+
 world_dialog_buttonbar
 
 world_dialog_grp_ambient
-ambient
+
 world_dialog_grp_bg_color
-background color
+
 world_dialog_grp_gravitation
-gravitation
+引力
 world_dialog_grp_skybox
-!bold\\Skybox models
+
 world_dialog_grp_sun
-!bold\\Sun
+
 world_dialog_t_fog_distance
-Distance
+
 world_dialog_t_fog_end
 
 world_dialog_t_fog_start
 
 world_dialog_t_max_script_vars
-number (max):
+
 world_dialog_t_sun_ang_x
-X: Altitude above horizon (X-Z-plane)
+
 world_dialog_t_sun_ang_y
-Y: Direction (Angle to Z-axis)
+
 world_dialog_tab_control
 common\\background\\script variables
 world_new
-New
+新規
 world_new_object_dialog
 
 world_object_dialog
-Object properties
+
 world_object_dialog_grp_ang
-angle
+角
 world_object_dialog_grp_pos
-position
+
 world_object_dialog_t_name
-name:
+名前:
 world_object_dialog_t_type
-type:
+
 world_open
-Open...
+開く...
 world_ps_dialog
-Choose properies for editing
+
 world_scriptfunc_choice_dialog
-Script function
+
 world_scriptfunc_dialog
-Script function
+
 world_scriptfunc_dialog_t_called_by
-executes by:
+
 world_scriptfunc_dialog_t_delay
-pseudo delay:
+
 world_scriptfunc_dialog_t_delaydesc
-(used for order of execution)
+
 world_scriptfunc_dialog_t_name
-name of function:
+
 x
 X
 x1
@@ -1216,26 +1216,26 @@ y2
 z
 Z
 zzz_enableselection
-Enable selection
+
 zzz_invertselection
-Invert selection
+
 zzz_setbgimage
-Set background image
+
 // Num Language Strings
 232
 // Data (ID,Text)
                   Close dialog box to exit program.
-                  Close dialog box to exit program.
+
    - ohne Datei -
-   - no file -
+
  (noch %.0d min)
 
  (noch %.0d s)
 
  -- Komplette Welt -- 
- -- Whole world -- 
+
  ist abgestürzt!\t\tDie letzten Zeilen der Datei message.txt:
- has crashed!\t\tLast lines from message.txt:
+
 !bold$Kommentar/Geschehnisse:
 
 !bold$Name:
@@ -1247,99 +1247,99 @@ Set background image
 %d Objekte, %d Terrains kopiert
 
 %d Vertizes, %d Dreiecke eingefügt
-%d vertices, %d triangles pasted
+
 %d Vertizes, %d Dreiecke kopiert
-%d vertices, %d triangles copied
+
 %d geschlossene Flächen subtrahiert
-%d closed surfaces subtracted
+
 %d von %d
 
 (anonym)
-(anonymous)
+
 - Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- die Auswahl wird für folgende neue Polygone verwendet
 
 - Doppelklick um ein Material zu editieren\n- Auswahl wird für folgende neue Polygone verwendet
 
 ...done
-...done
+
 2D
-2D
+
 Abbrechen
-Cancel
+
 Abstand, ab dem der Nebel beginnt (Intensität 0)
 
 Administration
-Administration
+
 Aktion fehlgeschlagen: %s\nGrund: %s
 
 Angegebene Welt konnte nicht korrekt geladen werden!
-World could not be loaded correctly!
+
 Animation
-Animation
+
 Ansicht
-View
+
 Anwendung ohne Netzwerk-Unterstützung compiliert...
 
 Anzahl der Texturen wurde an das Material angepasst!
-Number of textures changed to comply with the material!
+
 Arbeitsverzeichnis
-Working directory
+
 Arbeitsverzeichnis \"%s\" enthält keine \"game.ini\"-Datei. Soll diese erstellt werden?
-Woring directory \"%s\" does not contain a file named \"game.ini\". Do you want one to be created?
+
 Ausbeulen/Eindellen
 
 Beispiel Text 0123456789
 
 Beschreibung
-Description
+
 Datei
-File
+
 Datei ist nicht in der Stimmung, geöffnet zu werden
-The file is not in the mood of beeing opened
+
 Datei liegt nicht im vorgesehenen Verzeichnis: \"%s\"\noder in dessen Unterverzeichnis
-The file ist not int the appropriate directory: \"%s\"\nor in a subdirectory.
+
 Datei-Format nicht ladbar!!
-File format unreadable!
+
 Datei-Format unlesbar!
-File format unreadable!
+
 Dateien (*.*)
-Files (*.*)
+
 Demütige aber höfliche Frage
-Quite a polite question
+
 Dicke
 
 Ebene
-Plane
+
 Ebene: erster Punkt
-Plane: first point
+
 Ebene: zweiter Punkt
-Plane: second point
+
 Editor für Spiele-Daten der x9-Engine
-Editor for game data of the x9 engine
+
 Eigenschaften
-Properties
+
 Erstelle Datenbank
-Creating database
+
 Es existiert bereits eine Animation mit diesem Index. Bitte einen anderen wählen.
-This index is already taken by another animation.
+
 Es muss genau 1 Knochen markiert sein!
-Please select exactly one bone!
+
 Es muss genau ein Objekt markiert sein!
-Please select exactly one object!
+
 Es muss genau ein Punkt mit Effekt markiert sein!
 
 Es muss genau eine Datei markiert sein!
-Please select exactly one file!
+
 Es muss mindestens ein Terrain markiert sein!
-No terrain selected!
+
 Es sind nur maximal %d Texturen pro Terrain erlaubt!
-No more than %d textures per terrain allowed!
+
 Exportiere Spiel
 
 Extrudieren: Offset durch Maus, Linke Taste = fertig
 
 Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
-File %s has a wrong file format: %d (expected: %d - %d)!
+
 Falsches Dateiformat der Datei %s: %d (statt %d)!
 
 Farbe des Himmels
@@ -1353,7 +1353,7 @@ Farbe des Objektes im Schatten (Umgebungslicht)
 Farbe von Glanzflecken
 
 Fehler
-Error
+
 Fehler beim Exportieren: 
 
 Fehler in Script-Datei: 
@@ -1361,25 +1361,25 @@ Fehler in Script-Datei:
 Fehler in der Shader-Datei:\n
 
 Fehlerbericht
-Bug Report
+
 Fehlerbericht an Michi senden
-Send bug report to Michi
+
 Flug
 
 Font
-Font
+
 Font importieren
 
 Font-Datei
-Font file
+
 Font-Dateien (*.xfont)
-Font files (*.xfont)
+
 Frage
-Question
+
 Generelles Umgebungslicht zusätzlich zu allen Lichtquellen
 
 Gespeichert!
-Saved!
+
 Glanzlicht
 
 Glätten
@@ -1387,47 +1387,47 @@ Glätten
 Helligkeit
 
 Hinten
-Back
+
 Hinten (-z)
-Back (-z)
+
 Härte des Glanzes (10=weich, 100=hart)
 
 Höchstens %d Textur-Ebenen erlaubt!
-Only %d texture levels allowed!
+
 Höhe über dem Horizont
 
 Initialisierung
-Initializing
+
 Isometrisch
-Isometric
+
 Ist halt irgendwie passiert...
-Just happened somehow...
+
 Kamera
-Camera
+
 Kamera-Datei
-Camera file
+
 Kamera-Dateien (*.camera)
-Camera files (*.camera)
+
 Kamera-Script gespeichert!
 
 KameraPunkt
-Camera point
+
 Kann Material-Datei nicht öffnen
-Can't load material file
+
 Kann XFont-Datei nicht öffnen
-Can't load font file
+
 Kanten
-Edges
+
 Karten (*.map)
-Terrains (*.map)
+
 Karten-Datei
-Terrain files
+
 Kein Punkt markiert!
 
 Kein Punkt mit Effekt markiert!
 
 Knochen setzen
-Set bone
+
 Knochen setzen oder Wurzel-Knochen wählen
 
 Kompassrichtung entlang des Horizonts
@@ -1435,59 +1435,59 @@ Kompassrichtung entlang des Horizonts
 Kraftfeld
 
 Kugel
-Sphere
+
 Kugel skalieren
-Scale the sphere
+
 Kugelzentrum wählen
 
 Lade Welt
-Loading world
+
 Licht
 
 Links
-Left
+
 Links (x)
-Left (x)
+
 Material
-Material
+
 Material-Datei
-Material file
+
 Materialien
-Materials
+
 Materialien (*.material)
-Materials (*.material)
+
 Mesh
-Mesh
+
 Mindestens eine Textur-Ebene muss existieren!
-There has to be at least one texture level!
+
 Mindestens eine Textur-Ebene muss vorhanden sein!
-At least one texture level has to exist!
+
 Modell
-Model
+
 Modell-Datei
-Model file
+
 Modelle (*.model)
-Models (*.model)
+
 Modelle, die über die Hintergrundfarge gemalt werden\n- Doppelklick um ein Modell zu wählen
 
 Nachrichten
-Messages
+
 Nebelintensität = exp( - Entfernung / Sichtweite )
 
 OK
-OK
+
 Oben
-Top
+
 Oben (-y)
-Top (-y)
+
 Oberflächen
-Surfaces
+
 Objekt
-Object
+
 Objekt %d von %d
-Object %d / %d
+
 Perspektive
-Perspective
+
 Pfad schließen
 
 Pinsel
@@ -1501,73 +1501,73 @@ Polygone
 Polygone: %d (von %d)
 
 Pop
-Pop
+
 Punkt setzen
 
 Push
-Push
+
 Quader
-Cube
+
 Radius skalieren [Linke Maustaste = fertig]
 
 Rechts
-Right
+
 Rechts (-x)
-Right (-x)
+
 Reines Grün wird transparent
 
 Rotieren
-Rotate
+
 Schließen
 
 Script
-Script
+
 Script-Datei
-Script file
+
 Script-Datei enthält keine Funktion \"void OnEffectCreate( effect )\"
 
 Script-Datei enthält keine Funktion \"void OnEffectIterate( effect )\"
 
 Script-Dateien (*.kaba)
-Script files (*.kaba)
+
 Selektieren
 
 Shader
-Shader
+
 Shader-Datei
-Shader file
+
 Shader-Dateien (*.glsl)
 
 Sie haben die Entropie erhöht. Wollen Sie Ihr Werk speichern?
-You increased entropy. Do you wish to save your work?
+
 Skalieren
-Scale
+
 Skelett
-Skeleton
+
 Sound
-Sound
+
 Sound-Datei
-Sound file
+
 Sounds (wav,ogg)
 
 Spiegeln
-Mirror
+
 Sprung
 
 Terrain
-Terrain
+
 Terrains
-Terrains
+
 Teste Dateien
-Checking files
+
 Textur
-Texture
+
 Textur-Datei
-Texture file
+
 Textur-Datei nicht ladbar: %s
-Texture file not loadable: %s
+
 Textur-Koordinaten
-Texture coordinates
+
 Texturen (bmp,jpg,tga,png,avi)
 
 Tiefe
@@ -1579,67 +1579,67 @@ Torus innen skalieren
 Toruszentrum wählen
 
 Unbekannte Dateinamenerweiterung: 
-Unknown file extension: 
+
 Unbenannt
-Unknown
+
 Unten
-Bottom
+
 Unten (y)
-Bottom (y)
+
 Verschieben
 
 Vertex
-Vertex
+
 Vertexpunkte: %d (von %d)
 
 Vertices
-Vertices
+
 Vertices auswählen
-Select vertices
+
 ViewStage Pop
-ViewStage Pop
+
 ViewStage Push
-ViewStage Push
+
 Vorne
-Front
+
 Vorne (z)
-Front (z)
+
 Welt
-World
+
 Welt-Datei
-World file
+
 Welten (*.world)
-Worlds (*.world)
+
 Würfel: Punkt 1 / 3
-Cube: point 1 / 3
+
 Würfel: Punkt 2 / 3
-Cube: point 2 / 3
+
 Würfel: Punkt 3 / 3
-Cube: point 3 / 3
+
 Zentrum wählen
 
 Zylinder
 
 Zylinder: Endpunkt
-Cylinder: ...points
+
 Zylinder: Radius
-Cylinder: radius
+
 Zylinder: Startpunkt
 
 Zylinderschlange... Punkte + Shift Return
 
 [Engine]
-[Engine]
+
 \\\\   - keine Texturen -
-\\\\   - no textures -
+
 administrieren
-administrate
+
 auf das Terrain malen
 
 auf der Oberfläche malen
 
 beliebige Datei
-arbitrary file
+
 berechne Licht
 
 berechne Textur
@@ -1649,11 +1649,11 @@ frontales Licht
 fügt eine weitere Textur-Schicht hinzu (multitexturing)
 
 i'm now going to clean up...
-i'm now going to clean up...
+
 kein Dreieck ausgewählt
-no triangle selected
+
 keine doppelten Punkte erlaubt!
-No double points allowed!
+
 löscht die Textur der ausgewählten Textur-Schicht
 
 löscht die ausgewählte Textur-Schicht
@@ -1661,9 +1661,9 @@ löscht die ausgewählte Textur-Schicht
 maximale Sichtweite, dahinter hat der Nebel volle Intensität
 
 message.txt öffnen
-Open message.txt
+
 neue Punkte setzen
-place new vertex
+
 neuen Punkt in Polygon setzen
 
 neues Objekt auswählen
@@ -1675,17 +1675,17 @@ neues Terrain...
 poly: %d
 
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
-program has crashed, error handler has been called... maybe SegFault... m(-_-)m
+
 skalieren
 
 skin: %d
-skin: %d
+
 surf: %d
-surf: %d
+
 ungerichtetes Umgebungslicht
 
 vert: %d
-vert: %d
+
 Übereinanderliegende Textur-Schichten (multitexturing)\n- Doppelklick um eine Texturdatei zu wählen
 
 #

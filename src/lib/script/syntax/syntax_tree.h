@@ -15,6 +15,7 @@ class Script;
 class SyntaxTree;
 
 #define SCRIPT_MAX_PARAMS				16		// number of possible parameters per function/command
+#define SCRIPT_MAX_STRING_CONST_LENGTH	2048
 
 // macros
 struct Define
@@ -27,8 +28,10 @@ struct Define
 struct Constant
 {
 	string name;
-	char *data;
+	string value;
 	Type *type;
+	void setInt(int i);
+	int getInt();
 };
 
 enum
@@ -192,7 +195,7 @@ public:
 
 	// syntax analysis
 	Type *GetConstantType();
-	void *GetConstantValue();
+	string GetConstantValue();
 	Type *FindType(const string &name);
 	Type *GetType(const string &name, bool force);
 	void AddType(Type **type);
@@ -248,7 +251,7 @@ public:
 	Command *add_command_parray(Command *p, Command *index, Type *type);
 	Command *cp_command(Command *c);
 	Command *cp_command_deep(Command *c);
-	Command *ref_command(Command *sub);
+	Command *ref_command(Command *sub, Type *overwrite_type = NULL);
 	Command *deref_command(Command *sub);
 	Command *shift_command(Command *sub, bool deref, int shift, Type *type);
 

@@ -1,0 +1,12 @@
+Menu menu_view "" disabled
+	Item view_menu_sign "Ansicht" disabled
+	Separator "" ""
+	Item view_right "Rechts (-x)"
+	Item view_left "Links (x)"
+	Item view_front "Vorne (z)"
+	Item view_back "Hinten (-z)"
+	Item view_top "Oben (-y)"
+	Item view_bottom "Unten (y)"
+	Item view_isometric "Isometrisch"
+	Item view_perspective "Perspektive"
+

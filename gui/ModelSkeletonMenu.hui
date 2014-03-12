@@ -1,0 +1,76 @@
+Menu menu_skeleton "" disabled
+	Menu menu_file "Datei"
+		Item new "Neu" image=hui:new
+		Item open "Öffnen..." image=hui:open
+		Item save "Speichern" image=hui:save
+		Item save_as "Speichern unter..." image=hui:save-as
+		Separator "" ""
+		Menu menu_model_import "Importieren"
+			Item import_from_gamestudio "Aus GameStudio..." image=hui:open
+			Item import_from_3ds "3D Studio Max..." image=hui:open
+		Separator "" ""
+		Item execute_plugin "Plugin ausführen..."
+		Separator "" ""
+		Menu menu_model "Modell"
+			Item model_new "Neu" image=hui:new
+			Item model_open "Öffnen..." image=hui:open
+		Menu menu_font "Font"
+			Item font_new "Neu" image=hui:new
+			Item font_open "Öffnen..." image=hui:open
+		Menu menu_material "Material"
+			Item material_new "Neu" image=hui:new
+			Item material_open "Öffnen..." image=hui:open
+		Menu menu_world "Welt"
+			Item world_new "Neu" image=hui:new
+			Item world_open "Öffnen..." image=hui:open
+		Item administrate "Verwalten" image=hui:preferences
+		Item settings "Einstellungen..." image=hui:preferences
+		Separator "" ""
+		Item exit "Beenden" image=hui:quit
+	Item current_mode_model_skeleton "-Modell-Modus (Skelett)-" disabled
+	Menu menu_model_mode "Bearbeitungsmodus"
+		Item mode_model_mesh "Mesh" checkable
+		Item mode_model_skeleton "Skelett" checkable
+		Item mode_model_animation "Animation" checkable
+		Separator "" ""
+		Item mode_model_vertex "Vertex-Punkte" checkable
+		Item mode_model_edge "Kanten" checkable
+		Item mode_model_triangle "Dreiecke" checkable
+		Item mode_model_surface "Oberflächen" checkable
+		Item mode_model_texture_coord "Textur-Koordinaten" checkable
+		Separator "" ""
+		Item mode_properties "Eigenschaften..." image=hui:preferences
+	Menu menu_model_skeleton "Skelett"
+		Item skeleton_import "Importieren..." image=hui:open
+		Separator "" ""
+		Item skeleton_selection_sign "Markierung" disabled
+		Item skeleton_add_model "Modell anhängen" image=hui:open
+		Item skeleton_no_model "Kein Modell" image=hui:delete
+		Item skeleton_edit_bone "Vertex-Zuordnung" image=hui:edit
+		Item skeleton_unlink "Verbindungen lösen" image=hui:delete
+		Item delete "Löschen" image=hui:delete
+		Separator "" ""
+		Item skeleton_new_point "Neuer Punkt" image=hui:new
+		Item skeleton_link "Verbindungen erstellen" image=hui:copy
+	Menu menu_model_view "Ansicht"
+		Menu menu_model_viewstage "Schicht"
+			Item view_push "hinein-pushen"
+			Item view_pop "heraus-poppen"
+		Menu menu_model_skin "Oberfläche"
+			Item detail_0 "Physik. Oberfläche" checkable
+			Item detail_1 "hohe Detailstufe" checkable
+			Item detail_2 "mittlere Detailstufe" checkable
+			Item detail_3 "niedere Detailstufe" checkable
+		Separator "" ""
+		Item wire "Drahtgitter" checkable
+		Item grid "Raster" checkable
+		Item light "Beleuchtung" checkable
+		Separator "" ""
+		Item opt_view "Optimal" image=hui:zoom-fit
+		Item whole_window "Ganzes Fenster" checkable
+	Menu menu_help "?"
+		Item help "Hilfe..." image=hui:help
+		Separator "" ""
+		Item send_bug_report "Fehler berichten"
+		Item what_the_fuck "\"über\"" image=hui:about
+

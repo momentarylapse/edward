@@ -1,0 +1,7 @@
+Menu menu_model_texture "" disabled
+	Item texture_menu_sign "Textur" disabled
+	Separator "" ""
+	Item texture_choose "Suchen..." image=hui:find
+	Item texture_delete "Löschen" image=hui:delete
+	Item texture_empty "Leeren" image=hui:delete
+

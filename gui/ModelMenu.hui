@@ -1,0 +1,152 @@
+Menu menu_model "" disabled
+	Menu menu_model_file "Datei"
+		Item new "Neu" image=hui:new
+		Item open "Öffnen..." image=hui:open
+		Item save "Speichern" image=hui:save
+		Item save_as "Speichern unter..." image=hui:save-as
+		Separator "" ""
+		Menu menu_model_import "Importieren"
+			Item import_from_gamestudio "Aus GameStudio..." image=hui:open
+			Item import_from_3ds "3D Studio Max..." image=hui:open
+			Item import_from_lineage2 "Lineage II..." image=hui:open
+		Menu menu_model_export "Exportieren"
+			Item export_to_gamestudio "Nach GameStudio..."
+		Separator "" ""
+		Item execute_plugin "Plugin ausführen..."
+		Separator "" ""
+		Menu menu_model "Modell"
+			Item model_new "Neu" image=hui:new
+			Item model_open "Öffnen..." image=hui:open
+		Menu menu_font "Font"
+			Item font_new "Neu" image=hui:new
+			Item font_open "Öffnen..." image=hui:open
+		Menu menu_material "Material"
+			Item material_new "Neu" image=hui:new
+			Item material_open "Öffnen..." image=hui:open
+		Menu menu_world "Welt"
+			Item world_new "Neu" image=hui:new
+			Item world_open "Öffnen..." image=hui:open
+		Item administrate "Verwalten" image=hui:preferences
+		Item settings "Einstellungen..." image=hui:preferences
+		Separator "" ""
+		Item exit "Beenden" image=hui:quit
+	Menu menu_model_edit "Bearbeiten"
+		Item undo "Rückgängig" image=hui:undo
+		Item redo "Wiederherstellen" image=hui:redo
+		Separator "" ""
+		Item copy "Kopieren" image=hui:copy
+		Item paste "Einfügen" image=hui:paste
+		Item delete "Löschen" image=hui:delete
+		Separator "" ""
+		Item mode_properties "Eigenschaften..." image=hui:preferences
+	Menu menu_model_selection "Auswahl"
+		Item select_all "Alles auswählen" image=hui:select-all
+		Item select_none "Nichts auswählen"
+		Item invert_selection "Invertieren"
+		Separator "" ""
+		Item select_cw "Dreiecke nur im Uhrzeigersinn" checkable
+	Menu menu_model_creation "Erstellen"
+		Item new_point "Vertex-Punkte"
+		Item new_tria "Polygon"
+		Item new_plane "Ebene"
+		Item new_cube "Quader"
+		Item new_ball "Kugel"
+		Menu menu_model_platonic "Platonische Körper"
+			Item new_tetrahedron "Tetraeder"
+			Item new_octahedron "Oktaeder"
+			Item new_dodecahedron "Dodekaeder"
+			Item new_icosahedron "Ikosaeder"
+			Item new_teapot "Teekanne"
+		Item new_torus "Torus"
+		Item new_cylinder "Zylinder"
+		Item new_cylindersnake "Zylinderschlange"
+	Menu menu_model_appearance "Aussehen"
+		Item menu_vertex2_header "Punkte" disabled
+		Menu menu_model_normals "Normalenart"
+			Item just_selection "Auswahl" disabled
+			Item normal_this_smooth "Rund"
+			Item normal_this_hard "Eckig"
+			Item normal_this_angular "Winkelabhängig"
+		Menu menu_model_fx "Effekte"
+			Item fx_headline "Markierte Punkte" disabled
+			Item fx_new_light "Licht anhängen..." image=hui:new
+			Item fx_new_sound "Sound anhängen..." image=hui:new
+			Item fx_new_field "Kraftfeld anhängen..." image=hui:new
+			Item fx_new_script "Script-Effekt anhängen..." image=hui:new
+			Item fx_edit "Bearbeiten..." image=hui:edit
+			Item fx_none "Löschen" image=hui:delete
+		Separator "" ""
+		Item menu_model_material "Materialien" disabled
+		Item mode_model_materials "Materialliste" checkable
+		Item choose_material "Polygone belegen..." image=hui:open
+		Separator "" ""
+		Item menu_mapping "Texture Mapping" disabled
+		Item text_from_bg "Aus Hintergrund (Auswahl)"
+		Item automapping "Automatisch (Alles)"
+	Menu menu_model_geometry "Geometrie"
+		Menu menu_rightmouse "Rechte Maustaste"
+			Item rotate "Rotieren" checkable
+			Item scale "Skalieren X=Y=Z" checkable
+			Item scale_2d "Skalieren 2D" checkable
+			Item mirror "Spiegeln" checkable
+		Separator "" ""
+		Item menu_vertex_header "Auf Punkte" disabled
+		Item align_to_grid "Am Raster ausrichten"
+		Item connect "--Vereinen"
+		Item nearify "Annähern"
+		Item flatten_vertices "Einebnen"
+		Item deformation_brush "Z-Pinsel"
+		Item triangulate_selection "--Triangulieren"
+		Separator "" ""
+		Item menu_edge_header "Auf Kanten" disabled
+		Item bevel_edges "Abfräsen"
+		Separator "" ""
+		Item menu_tria_header "Auf Polygone" disabled
+		Item cut_out "Heraustrennen" image=hui:cut
+		Item new_extract "Zerteilen"
+		Item extrude_triangles "Extrudieren"
+		Item convert_to_triangles "In Dreiecke zerlegen"
+		Item untriangulate_selection "Un-Triangulieren"
+		Separator "" ""
+		Item menu_surface_header "Auf Flächen" disabled
+		Item invert_trias "Dreiecke umkehren"
+		Item autoweld_surfaces "Verschweißen..."
+		Item volume_subtract "Volumen ausschneiden" image=hui:cut
+		Item volume_and "Volumen einschränken"
+		Item new_outline "--Umriss"
+		Item subdivide_surfaces "Verfeinern"
+		Separator "" ""
+		Item menu_all_header "Komplett" disabled
+		Item easify_skin "Vereinfachen..."
+	Menu menu_model_view "Ansicht"
+		Menu menu_model_mode "Bearbeitungsmodus"
+			Item mode_model_mesh "Mesh" checkable
+			Item mode_model_skeleton "Skelett" checkable
+			Item mode_model_animation "Animation" checkable
+			Separator "" ""
+			Item mode_model_vertex "Vertex-Punkte" checkable
+			Item mode_model_edge "Kanten" checkable
+			Item mode_model_triangle "Dreiecke" checkable
+			Item mode_model_surface "Oberflächen" checkable
+			Item mode_model_texture_coord "Textur-Koordinaten" checkable
+		Menu menu_model_viewstage "Schicht"
+			Item view_push "hinein-pushen"
+			Item view_pop "heraus-poppen"
+		Menu menu_model_skin "Oberfläche"
+			Item detail_0 "Physik. Oberfläche" checkable
+			Item detail_1 "hohe Detailstufe" checkable
+			Item detail_2 "mittlere Detailstufe" checkable
+			Item detail_3 "niedere Detailstufe" checkable
+		Separator "" ""
+		Item wire "Drahtgitter" checkable
+		Item grid "Raster" checkable
+		Item light "Beleuchtung" checkable
+		Separator "" ""
+		Item opt_view "Optimal" image=hui:zoom-fit
+		Item whole_window "Ganzes Fenster" checkable
+	Menu menu_help "?"
+		Item help "Hilfe..." image=hui:help
+		Separator "" ""
+		Item send_bug_report "Fehler berichten"
+		Item what_the_fuck "\"über\"" image=hui:about
+

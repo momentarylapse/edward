@@ -19,6 +19,15 @@ bool next_const = false;
 
 void conv_cbr(SyntaxTree *ps, Command *&c, int var);
  
+void Constant::setInt(int i)
+{
+	(*(int*)(value.data)) = i;
+}
+
+int Constant::getInt()
+{
+	return (*(int*)(value.data));
+}
 
 Command *SyntaxTree::cp_command(Command *c)
 {
@@ -49,9 +58,10 @@ void ref_command_old(SyntaxTree *ps, Command *c)
 	command_make_ref(ps, c, t);
 }
 
-Command *SyntaxTree::ref_command(Command *sub)
+Command *SyntaxTree::ref_command(Command *sub, Type *overwrite_type)
 {
-	Command *c = AddCommand(KindReference, 0, sub->type->GetPointer());
+	Type *t = overwrite_type ? overwrite_type : sub->type->GetPointer();
+	Command *c = AddCommand(KindReference, 0, t);
 	c->num_params = 1;
 	c->param[0] = sub;
 	return c;
@@ -298,10 +308,7 @@ int SyntaxTree::AddConstant(Type *type)
 	Constant c;
 	c.name = "-none-";
 	c.type = type;
-	int s = max(type->size, config.PointerSize);
-	if (type == TypeString)
-		s = 256;
-	c.data = new char[s];
+	c.value.resize(max(type->size, config.PointerSize));
 	Constants.add(c);
 	return Constants.num - 1;
 }
@@ -515,6 +522,10 @@ bool SyntaxTree::GetExistence(const string &name, Function *func)
 			}
 		}
 		if (func->_class){
+			if ((name == "super") && (func->_class->parent)){
+				exlink_make_var_local(this, func->_class->parent->GetPointer(), func->get_var("self"));
+				return true;
+			}
 			// class elements (within a class function)
 			foreach(ClassElement &e, func->_class->element)
 				if (e.name == name){
@@ -916,7 +927,7 @@ void SyntaxTree::BreakDownComplicatedCommand(Command *c)
 		Command *c_ref_array = ref_command(c->param[0]);
 		// create command for size constant
 		int nc = AddConstant(TypeInt);
-		*(int*)Constants[nc].data = el_type->size;
+		Constants[nc].setInt(el_type->size);
 		Command *c_size = add_command_const(nc);
 		// offset = size * index
 		Command *c_offset = add_command_operator(c_index, c_size, OperatorIntMultiply);
@@ -942,7 +953,7 @@ void SyntaxTree::BreakDownComplicatedCommand(Command *c)
 		Command *c_ref_array = c->param[0];
 		// create command for size constant
 		int nc = AddConstant(TypeInt);
-		*(int*)Constants[nc].data = el_type->size;
+		Constants[nc].setInt(el_type->size);
 		Command *c_size = add_command_const(nc);
 		// offset = size * index
 		Command *c_offset = add_command_operator(c_index, c_size, OperatorIntMultiply);
@@ -967,7 +978,7 @@ void SyntaxTree::BreakDownComplicatedCommand(Command *c)
 		Command *c_ref_struct = ref_command(c->param[0]);
 		// create command for shift constant
 		int nc = AddConstant(TypeInt);
-		*(int*)Constants[nc].data = c->link_no;
+		Constants[nc].setInt(c->link_no);
 		Command *c_shift = add_command_const(nc);
 		// address = &struct + shift
 		Command *c_address = add_command_operator(c_ref_struct, c_shift, OperatorIntAdd);
@@ -988,7 +999,7 @@ void SyntaxTree::BreakDownComplicatedCommand(Command *c)
 		Command *c_ref_struct = c->param[0];
 		// create command for shift constant
 		int nc = AddConstant(TypeInt);
-		*(int*)Constants[nc].data = c->link_no;
+		Constants[nc].setInt(c->link_no);
 		Command *c_shift = add_command_const(nc);
 		// address = &struct + shift
 		Command *c_address = add_command_operator(c_ref_struct, c_shift, OperatorIntAdd);
@@ -1028,8 +1039,6 @@ void MapLVSX86Self(Function *f)
 			if (v.name == "self"){
 				v._offset = f->_param_size;
 				f->_param_size += 4;
-			}else if (v.name == "super"){
-				v._offset = f->var[f->get_var("self")]._offset;
 			}
 	}
 }
@@ -1057,7 +1066,7 @@ void SyntaxTree::MapLocalVariablesToStack()
 			}
 
 			foreachi(Variable &v, f->var, i){
-				if ((f->_class) && ((v.name == "self") || (v.name == "super")))
+				if ((f->_class) && (v.name == "self"))
 					continue;
 				if (v.name == "-return-")
 					continue;
@@ -1076,14 +1085,9 @@ void SyntaxTree::MapLocalVariablesToStack()
 			f->_var_size = 0;
 			
 			foreachi(Variable &v, f->var, i){
-				if ((f->_class) && (v.name == "super")){
-					// map "super" to "self"
-					v._offset = f->var[f->get_var("self")]._offset;
-				}else{
-					int s = mem_align(v.type->size, 4);
-					v._offset = - f->_var_size - s;
-					f->_var_size += s;
-				}
+				int s = mem_align(v.type->size, 4);
+				v._offset = - f->_var_size - s;
+				f->_var_size += s;
 			}
 		}
 	}
@@ -1103,9 +1107,6 @@ SyntaxTree::~SyntaxTree()
 
 	if (AsmMetaInfo)
 		delete(AsmMetaInfo);
-	
-	foreach(Constant &c, Constants)
-		delete[](c.data);
 
 	foreach(Command *c, Commands)
 		delete(c);
