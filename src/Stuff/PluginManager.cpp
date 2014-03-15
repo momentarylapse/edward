@@ -46,11 +46,15 @@ void PluginManager::Execute(const string & filename)
 
 #define _offsetof(t, x)	((int)(long)((char*)&(((t*)ppp)->x) - ppp))
 
+HuiWindow *GlobalMainWin = ed;
+
 void PluginManager::Init()
 {
 	Script::Init();
 
-	Script::LinkExternal("edward", &ed);
+	GlobalMainWin = ed;
+
+	Script::LinkExternal("edward", &GlobalMainWin);
 	Script::LinkExternal("data_model", &mode_model->data);
 	Script::LinkExternal("data_world", &mode_world->data);
 

@@ -8,6 +8,7 @@
 #include "HuiControlDrawingArea.h"
 #include "../hui.h"
 #include "../hui_internal.h"
+#include <math.h>
 
 #ifdef HUI_API_GTK
 
@@ -42,7 +43,7 @@ gboolean OnGtkAreaMouseMove(GtkWidget *widget, GdkEventMotion *event, gpointer u
 {
 	// ignore if SetCursorPosition() was used...
 	if (GtkAreaMouseSet >= 0){
-		if ((event->x != GtkAreaMouseSetX) || (event->y != GtkAreaMouseSetY)){
+		if ((fabs(event->x - GtkAreaMouseSetX) > 2.0f) || (fabs(event->y - GtkAreaMouseSetY) > 2.0f)){
 			GtkAreaMouseSet --;
 			//msg_write(format("ignore fail %.0f\t%0.f", event->x, event->y));
 			return false;
