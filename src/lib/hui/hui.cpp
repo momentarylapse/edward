@@ -15,7 +15,7 @@
 #include "../file/file.h"
 
 
-string HuiVersion = "0.5.5.1";
+string HuiVersion = "0.5.7.0";
 
 #include <stdio.h>
 #include <signal.h>
@@ -79,7 +79,7 @@ int HuiMainLevel = -1;
 Array<bool> HuiMainLevelRunning;
 
 Array<HuiWindow*> HuiWindows;
-Array<HuiClosedWindow> _HuiClosedWindow_;
+Array<HuiClosedPanel> HuiClosedPanels;
 
 
 bool _HuiScreenOpened_ = false;
