@@ -510,7 +510,7 @@ void Edward::DrawStr(int x, int y, const string &str, AlignType a)
 		x -= w / 2;
 	NixSetAlpha(AlphaMaterial);
 	color c = NixGetColor();
-	NixSetColor(color(0.5f,0,0,0));
+	NixSetColor(color(0.5f,0.8f,0.8f,0.8f));
 	NixDrawRect(float(x), float(x+w), float(y), float(y+20), 0);
 	NixSetColor(c);
 	NixSetAlpha(AlphaNone);

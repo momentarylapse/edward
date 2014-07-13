@@ -51,10 +51,21 @@ int PointRadiusMouseOver;
 MultiViewImpl::MultiViewImpl(bool _mode3d) :
 	MultiView(_mode3d)
 {
-	ColorBackGround3D = color(1,0,0,0.15f);
+	/*ColorBackGround3D = color(1,0,0,0.15f);
 	ColorBackGround2D = color(1,0,0,0.10f);
 	ColorGrid = color(1,0.7f,0.7f,0.7f);
 	ColorText = White;
+	ColorWindowType = color(1, 0.5f, 0.5f, 0.5f);
+	ColorPoint = color(1, 0.2f, 0.2f, 0.9f);
+	ColorPointSelected = color(1, 0.9f, 0.2f, 0.2f);
+	ColorPointSpecial = color(1, 0.2f, 0.8f, 0.2f);
+	ColorWindowSeparator = color(1, 0.1f, 0.1f, 0.6f); // color(1,0.1f,0.1f,0.5f)
+	ColorSelectionRect = color(0.2f,0,0,1);
+	ColorSelectionRectBoundary = color(0.7f,0,0,1);*/
+	ColorBackGround3D = color(1,0.8f,0.8f,0.8f);
+	ColorBackGround2D = color(1,0.8f,0.8f,0.8f);
+	ColorGrid = color(1,0.5f,0.5f,0.5f);
+	ColorText = Black;
 	ColorWindowType = color(1, 0.5f, 0.5f, 0.5f);
 	ColorPoint = color(1, 0.2f, 0.2f, 0.9f);
 	ColorPointSelected = color(1, 0.9f, 0.2f, 0.2f);
