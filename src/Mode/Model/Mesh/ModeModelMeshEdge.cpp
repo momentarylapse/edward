@@ -14,6 +14,11 @@
 
 ModeModelMeshEdge *mode_model_mesh_edge = NULL;
 
+namespace MultiView{
+	extern color ColorBackGround2D;
+	extern color ColorText;
+};
+
 ModeModelMeshEdge::ModeModelMeshEdge(ModeBase *_parent) :
 	Mode<DataModel>("ModelMeshEdge", _parent, ed->multi_view_3d, "menu_model")
 {
@@ -185,11 +190,11 @@ void ModeModelMeshEdge::DrawEdges(MultiView::Window *win, Array<ModelVertex> &ve
 			if (!e.is_selected && only_selected)
 				continue;
 			float w = max(s.Polygon[e.Polygon[0]].TempNormal * dir, s.Polygon[e.Polygon[1]].TempNormal * dir);
-			float f = 0.7f - 0.3f * w;
+			float f = 0.5f - 0.4f*w;//0.7f - 0.3f * w;
 			if (e.is_selected)
 				NixSetColor(color(1, f, 0, 0));
 			else
-				NixSetColor(color(1, f, f, f));
+				NixSetColor(f * MultiView::ColorText + (1 - f) * MultiView::ColorBackGround2D);
 			NixDrawLine3D(vertex[e.Vertex[0]].pos, vertex[e.Vertex[1]].pos);
 		}
 	}
