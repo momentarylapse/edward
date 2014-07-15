@@ -92,6 +92,8 @@ public:
 	virtual void _cdecl OnKeyUp();
 	virtual void _cdecl OnMouseMove();
 	virtual void _cdecl OnMouseWheel();
+	virtual void _cdecl OnMouseEnter();
+	virtual void _cdecl OnMouseLeave();
 	virtual void _cdecl OnLeftButtonDown();
 	virtual void _cdecl OnLeftButtonUp();
 	virtual void _cdecl OnMiddleButtonDown();

@@ -329,6 +329,16 @@ void MultiViewImpl::OnMouseWheel()
 	NotifyEnd();
 }
 
+void MultiViewImpl::OnMouseEnter()
+{
+	Notify("Update");
+}
+
+void MultiViewImpl::OnMouseLeave()
+{
+	Notify("Update");
+}
+
 
 
 void MultiViewImpl::OnKeyDown()
@@ -727,7 +737,8 @@ void MultiViewImpl::OnDraw()
 
 	NixSetColor(ColorText);
 
-	DrawMousePos();
+	if (ed->input.inside)
+		DrawMousePos();
 
 	if (action_con->InUse())
 		action_con->DrawParams();
@@ -853,6 +864,10 @@ void MultiViewImpl::GetMouseOver()
 {
 	msg_db_f("GetMouseOver",6);
 	hover.reset();
+
+	if (!ed->input.inside)
+		return;
+
 	/*if (!MVSelectable)
 		return;*/
 	if (cam_con->IsMouseOver())

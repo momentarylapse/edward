@@ -50,6 +50,8 @@ public:
 
 	void OnMouseMove();
 	void OnMouseWheel();
+	void OnMouseEnter();
+	void OnMouseLeave();
 	void OnLeftButtonDown();
 	void OnLeftButtonUp();
 	void OnMiddleButtonDown();

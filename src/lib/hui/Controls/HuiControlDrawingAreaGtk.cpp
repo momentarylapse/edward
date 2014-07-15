@@ -27,6 +27,11 @@ gboolean OnGtkAreaDraw(GtkWidget *widget, cairo_t *cr, gpointer user_data)
 template<class T>
 void win_set_input(HuiWindow *win, T *event)
 {
+	if ((event->type == GDK_ENTER_NOTIFY) || (event->type == GDK_MOTION_NOTIFY) || (event->type == GDK_BUTTON_PRESS) || (event->type == GDK_BUTTON_RELEASE)){
+		win->input.inside = true;
+	}else if (event->type == GDK_LEAVE_NOTIFY){
+		win->input.inside = false;
+	}
 	win->input.dx = event->x - win->input.x;
 	win->input.dy = event->y - win->input.y;
 	//msg_write(format("%.1f\t%.1f\t->\t%.1f\t%.1f\t(%.1f\t%.1f)", win->input.x, win->input.y, event->x, event->y, win->input.dx, win->input.dy));
@@ -68,6 +73,24 @@ gboolean OnGtkAreaMouseMove(GtkWidget *widget, GdkEventMotion *event, gpointer u
 
 	c->Notify("hui:mouse-move", false);
 	gdk_event_request_motions(event); // to prevent too many signals for slow message processing
+	return false;
+}
+
+gboolean OnGtkAreaMouseEnter(GtkWidget *widget, GdkEventCrossing *event, gpointer user_data)
+{
+	HuiControl *c = (HuiControl*)user_data;
+	win_set_input(c->panel->win, event);
+
+	c->Notify("hui:mouse-enter", false);
+	return false;
+}
+
+gboolean OnGtkAreaMouseLeave(GtkWidget *widget, GdkEventCrossing *event, gpointer user_data)
+{
+	HuiControl *c = (HuiControl*)user_data;
+	win_set_input(c->panel->win, event);
+
+	c->Notify("hui:mouse-leave", false);
 	return false;
 }
 
@@ -183,6 +206,8 @@ HuiControlDrawingArea::HuiControlDrawingArea(const string &title, const string &
 	g_signal_connect(G_OBJECT(da), "key-release-event", G_CALLBACK(&OnGtkAreaKeyUp), this);
 	//g_signal_connect(G_OBJECT(da), "size-request", G_CALLBACK(&OnGtkAreaResize), this);
 	g_signal_connect(G_OBJECT(da), "motion-notify-event", G_CALLBACK(&OnGtkAreaMouseMove), this);
+	g_signal_connect(G_OBJECT(da), "enter-notify-event", G_CALLBACK(&OnGtkAreaMouseEnter), this);
+	g_signal_connect(G_OBJECT(da), "leave-notify-event", G_CALLBACK(&OnGtkAreaMouseLeave), this);
 	g_signal_connect(G_OBJECT(da), "button-press-event", G_CALLBACK(&OnGtkAreaButton), this);
 	g_signal_connect(G_OBJECT(da), "button-release-event", G_CALLBACK(&OnGtkAreaButton), this);
 	g_signal_connect(G_OBJECT(da), "scroll-event", G_CALLBACK(&OnGtkAreaMouseWheel), this);
@@ -192,6 +217,7 @@ HuiControlDrawingArea::HuiControlDrawingArea(const string &title, const string &
 	mask |= GDK_EXPOSURE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK;
 	mask |= GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK;
 	mask |= GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK; // GDK_POINTER_MOTION_HINT_MASK = "fewer motions"
+	mask |= GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
 	mask |= GDK_VISIBILITY_NOTIFY_MASK | GDK_SCROLL_MASK;
 	//mask = GDK_ALL_EVENTS_MASK;
 	g_object_set(G_OBJECT(da), "events", mask, NULL);

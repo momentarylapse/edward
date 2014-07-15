@@ -34,6 +34,8 @@ public:
 	// events to be handled by derived modes
 	virtual void OnMouseMove(){};
 	virtual void OnMouseWheel(){};
+	virtual void OnMouseEnter(){};
+	virtual void OnMouseLeave(){};
 	virtual void OnLeftButtonDown(){};
 	virtual void OnLeftButtonUp(){};
 	virtual void OnMiddleButtonDown(){};
@@ -55,6 +57,8 @@ public:
 	//   (to be called by edward)
 	virtual void OnMouseMoveRecursive(bool multi_view_handled = false);
 	virtual void OnMouseWheelRecursive(bool multi_view_handled = false);
+	virtual void OnMouseEnterRecursive(bool multi_view_handled = false);
+	virtual void OnMouseLeaveRecursive(bool multi_view_handled = false);
 	virtual void OnLeftButtonDownRecursive(bool multi_view_handled = false);
 	virtual void OnLeftButtonUpRecursive(bool multi_view_handled = false);
 	virtual void OnMiddleButtonDownRecursive(bool multi_view_handled = false);
