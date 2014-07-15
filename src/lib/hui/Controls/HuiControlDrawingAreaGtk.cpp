@@ -27,7 +27,7 @@ gboolean OnGtkAreaDraw(GtkWidget *widget, cairo_t *cr, gpointer user_data)
 template<class T>
 void win_set_input(HuiWindow *win, T *event)
 {
-	if ((event->type == GDK_ENTER_NOTIFY) || (event->type == GDK_MOTION_NOTIFY) || (event->type == GDK_BUTTON_PRESS) || (event->type == GDK_BUTTON_RELEASE)){
+	if (event->type == GDK_ENTER_NOTIFY){
 		win->input.inside = true;
 	}else if (event->type == GDK_LEAVE_NOTIFY){
 		win->input.inside = false;
@@ -42,6 +42,11 @@ void win_set_input(HuiWindow *win, T *event)
 	win->input.lb = ((mod & GDK_BUTTON1_MASK) > 0);
 	win->input.mb = ((mod & GDK_BUTTON2_MASK) > 0);
 	win->input.rb = ((mod & GDK_BUTTON3_MASK) > 0);
+	if (win->input.lb || win->input.mb || win->input.rb){
+		win->input.inside_smart = true;
+	}else{
+		win->input.inside_smart = win->input.inside;
+	}
 }
 
 gboolean OnGtkAreaMouseMove(GtkWidget *widget, GdkEventMotion *event, gpointer user_data)

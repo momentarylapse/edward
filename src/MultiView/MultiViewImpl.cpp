@@ -336,7 +336,8 @@ void MultiViewImpl::OnMouseEnter()
 
 void MultiViewImpl::OnMouseLeave()
 {
-	Notify("Update");
+	//Notify("Update");
+	OnMouseMove();
 }
 
 
@@ -737,7 +738,7 @@ void MultiViewImpl::OnDraw()
 
 	NixSetColor(ColorText);
 
-	if (ed->input.inside)
+	if (ed->input.inside_smart)
 		DrawMousePos();
 
 	if (action_con->InUse())
@@ -865,7 +866,7 @@ void MultiViewImpl::GetMouseOver()
 	msg_db_f("GetMouseOver",6);
 	hover.reset();
 
-	if (!ed->input.inside)
+	if (!ed->input.inside_smart)
 		return;
 
 	/*if (!MVSelectable)

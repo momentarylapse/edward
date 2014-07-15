@@ -35,7 +35,7 @@ struct HuiInputData
 {
 	// mouse
 	float x, y, dx, dy, dz;	// position, change
-	bool inside;
+	bool inside, inside_smart;
 	bool lb,mb,rb;				// buttons
 	int row, column;
 	// keyboard
