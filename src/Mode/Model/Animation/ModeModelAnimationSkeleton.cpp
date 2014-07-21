@@ -29,6 +29,7 @@ void ModeModelAnimationSkeleton::OnStart()
 	multi_view->ClearData(NULL);
 
 	// left -> translate
+	multi_view->SetMouseAction("ActionModelAnimationMoveBones", MultiView::ActionSelectAndMove);
 	//multi_view->SetMouseAction(0, "ActionModelAnimationMoveBones", MultiView::ActionMove);
 //	multi_view->SetMouseAction(1, "ActionModelAnimationRotateBones", MultiView::ActionRotate);
 //	multi_view->SetMouseAction(2, "ActionModelAnimationRotateBones", MultiView::ActionRotate2d);

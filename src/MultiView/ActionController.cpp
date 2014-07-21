@@ -17,6 +17,7 @@
 #include "../Data/Model/Geometry/GeometryCylinder.h"
 #include "../Data/Model/Geometry/GeometryTorus.h"
 
+#define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 
 enum{
 	ActionModeNone,
@@ -116,7 +117,7 @@ void ActionController::UpdateAction()
 	matrix m_dt, m_dti;
 	MatrixTranslation(m_dt, pos0);
 	MatrixTranslation(m_dti, -pos0);
-	if (action.mode == ActionMove){
+	if ((action.mode == ActionMove) || (action.mode == ActionSelectAndMove)){
 		param = mvac_project_trans(mode, v2 - v1);
 		MatrixTranslation(mat, param);
 	}else if (action.mode == ActionRotate){
@@ -167,6 +168,20 @@ void ActionController::EndAction(bool set)
 		multi_view->Notify("ActionAbort");
 	}
 	cur_action = NULL;
+}
+
+bool ActionController::IsSelecting()
+{
+	if (action.mode == ActionSelect)
+		return true;
+	if (action.mode == ActionSelectAndMove){
+		if (multi_view->hover.index >= 0){
+			SingleData *d = MVGetSingleData(multi_view->data[multi_view->hover.set], multi_view->hover.index);
+			return !d->is_selected;
+		}
+		return true;
+	}
+	return false;
 }
 
 void ActionController::reset()
@@ -267,7 +282,7 @@ void ActionController::Draw(Window *win)
 
 void ActionController::DrawParams()
 {
-	if (action.mode == ActionMove){
+	if ((action.mode == ActionMove) || (action.mode == ActionSelectAndMove)){
 		vector t = param;
 		string unit = multi_view->GetMVScaleByZoom(t);
 		ed->DrawStr(150, 100, f2s(t.x, 2) + " " + unit, Edward::AlignRight);
@@ -310,7 +325,7 @@ bool ActionController::IsMouseOver(vector &tp)
 
 bool ActionController::LeftButtonDown()
 {
-	if (!show)
+	if ((!show) && (action.mode != ActionSelectAndMove))
 		return false;
 	vector tp;
 	mode = ActionModeNone;
@@ -330,9 +345,10 @@ bool ActionController::LeftButtonDown()
 void ActionController::LeftButtonUp()
 {
 	EndAction(true);
+	bool _show = show;
 
 	Disable();
-	if (action.mode > ActionSelect)
+	if (_show)
 		Enable();
 }
 

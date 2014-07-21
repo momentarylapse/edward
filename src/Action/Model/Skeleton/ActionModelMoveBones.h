@@ -15,7 +15,7 @@ class vector;
 class ActionModelMoveBones: public ActionMultiView
 {
 public:
-	ActionModelMoveBones(DataModel *d, const vector &_param, const vector &_pos0);
+	ActionModelMoveBones(DataModel *d);
 	virtual ~ActionModelMoveBones();
 	string name(){	return "ModelMoveBones";	}
 

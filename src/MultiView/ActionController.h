@@ -66,6 +66,7 @@ public:
 	void StartAction();
 	void UpdateAction();
 	void EndAction(bool set);
+	bool IsSelecting();
 };
 
 };

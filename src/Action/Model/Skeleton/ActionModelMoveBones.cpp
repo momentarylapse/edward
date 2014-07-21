@@ -9,7 +9,7 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../lib/math/math.h"
 
-ActionModelMoveBones::ActionModelMoveBones(DataModel *d, const vector &_param, const vector &_pos0) :
+ActionModelMoveBones::ActionModelMoveBones(DataModel *d) :
 	ActionMultiView()
 {
 	// list of selected vertices and save old pos
@@ -26,14 +26,19 @@ ActionModelMoveBones::~ActionModelMoveBones()
 
 void *ActionModelMoveBones::execute(Data *d)
 {
-	/*DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(int i, index, ii){
-		m->Bone[i].pos = old_data[ii] + param;
+	DataModel *m = dynamic_cast<DataModel*>(d);
+	foreach(int i, index){
+		vector p0 = v_0;
 		if (m->Bone[i].Parent >= 0)
-			m->Bone[i].DeltaPos = m->Bone[i].pos - m->Bone[m->Bone[i].Parent].pos;
+			p0 = m->Bone[m->Bone[i].Parent].pos;
+		m->Bone[i].pos = mat * m->Bone[i].pos;
+	}
+	foreach(ModelBone &b, m->Bone){
+		if (b.Parent >= 0)
+			b.DeltaPos = b.pos - m->Bone[b.Parent].pos;
 		else
-			m->Bone[i].DeltaPos = m->Bone[i].pos;
-	}*/
+			b.DeltaPos = b.pos;
+	}
 	return NULL;
 }
 
@@ -42,12 +47,14 @@ void *ActionModelMoveBones::execute(Data *d)
 void ActionModelMoveBones::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(int i, index, ii){
+	foreachi(int i, index, ii)
 		m->Bone[i].pos = old_data[ii];
-		if (m->Bone[i].Parent >= 0)
-			m->Bone[i].DeltaPos = m->Bone[i].pos - m->Bone[m->Bone[i].Parent].pos;
+
+	foreach(ModelBone &b, m->Bone){
+		if (b.Parent >= 0)
+			b.DeltaPos = b.pos - m->Bone[b.Parent].pos;
 		else
-			m->Bone[i].DeltaPos = m->Bone[i].pos;
+			b.DeltaPos = b.pos;
 	}
 }
 

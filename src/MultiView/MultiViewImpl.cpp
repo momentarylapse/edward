@@ -405,9 +405,8 @@ void MultiViewImpl::OnLeftButtonDown()
 
 	//v = v_0;
 	if (allow_mouse_actions){
-		if (action_con->action.mode == ActionSelect){
+		if (action_con->IsSelecting()){
 			GetSelected(get_select_mode());
-
 		}else if (action_con->LeftButtonDown()){
 		}
 	}
@@ -537,7 +536,7 @@ void MultiViewImpl::OnMouseMove()
 	if ((!action_con->InUse()) && (!cam_con->InUse()) && (!sel_rect.active))
 		GetMouseOver();
 
-	if ((lbut) && (action_con->action.mode == ActionSelect) && (!cam_con->InUse()) && (allow_rect) && (!sel_rect.active)){
+	if ((lbut) && (action_con->IsSelecting()) && (!cam_con->InUse()) && (allow_rect) && (!sel_rect.active)){
 		sel_rect.dist += abs(v.x) + abs(v.y);
 		if (sel_rect.dist >= MinMouseMoveToInteract)
 			StartRect();
@@ -783,7 +782,7 @@ void MultiViewImpl::SetMouseAction(const string & name, int mode)
 	action_con->action.name = name;
 	action_con->action.mode = mode;
 	action_con->Disable();
-	if (action_con->action.mode > ActionSelect)
+	if (!action_con->IsSelecting())
 		action_con->Enable();
 }
 

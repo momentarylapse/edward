@@ -56,9 +56,9 @@ ActionMultiView *ActionMultiViewFactory(const string &name, Data *d)
 		return new ActionModelTransformVertices((DataModel*)d);
 	if (name == "ActionModelTransformSkinVertices")
 		return new ActionModelTransformSkinVertices((DataModel*)d, mode_model_mesh_texture->CurrentTextureLevel);
-	/*else if (name == "ActionModelMoveBones")
-		return new ActionModelMoveBones((DataModel*)d, _param, _pos0);
-	else if (name == "ActionModelAnimationRotateBones")
+	else if (name == "ActionModelMoveBones")
+		return new ActionModelMoveBones((DataModel*)d);
+	/*else if (name == "ActionModelAnimationRotateBones")
 		return new ActionModelAnimationRotateBones((DataModel*)d, _param, _pos0);
 	else if (name == "ActionModelAnimationMoveVertices")
 		return new ActionModelAnimationMoveVertices((DataModel*)d, _param, _pos0);

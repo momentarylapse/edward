@@ -44,7 +44,8 @@ enum{
 	ActionScale,
 	ActionScale2d,
 	ActionMirror,
-	ActionOnce
+	ActionOnce,
+	ActionSelectAndMove,
 };
 
 struct Camera
