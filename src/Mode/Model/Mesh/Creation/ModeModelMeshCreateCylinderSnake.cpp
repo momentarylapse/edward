@@ -35,13 +35,13 @@ void ModeModelMeshCreateCylinderSnake::OnStart()
 {
 	dialog = HuiCreateResourceDialog("new_cylinder_dialog",ed);
 
-	dialog->SetInt("ncy_rings", HuiConfig.getInt("NewCylinderRings", 4));
-	dialog->SetInt("ncy_edges", HuiConfig.getInt("NewCylinderEdges", 8));
-	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
-	dialog->Show();
-	dialog->Event("hui:close", &HuiFuncIgnore);
+	dialog->setInt("ncy_rings", HuiConfig.getInt("NewCylinderRings", 4));
+	dialog->setInt("ncy_edges", HuiConfig.getInt("NewCylinderEdges", 8));
+	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
+	dialog->show();
+	dialog->eventS("hui:close", &HuiFuncIgnore);
 
-	ed->Activate("");
+	ed->activate("");
 }
 
 
@@ -57,8 +57,8 @@ void ModeModelMeshCreateCylinderSnake::UpdateGeometry()
 	if (geo)
 		delete(geo);
 	if (ready_for_scaling){
-		int rings = dialog->GetInt("ncy_rings");
-		int edges = dialog->GetInt("ncy_edges");
+		int rings = dialog->getInt("ncy_rings");
+		int edges = dialog->getInt("ncy_edges");
 		HuiConfig.setInt("NewCylinderRings", rings);
 		HuiConfig.setInt("NewCylinderEdges", edges);
 
@@ -99,7 +99,7 @@ void ModeModelMeshCreateCylinderSnake::OnLeftButtonDown()
 				OnMouseMove();
 				message = _("Zylinder: Radius");
 				UpdateGeometry();
-				ed->ForceRedraw();
+				ed->forceRedraw();
 				return;
 			}
 
@@ -121,7 +121,7 @@ void ModeModelMeshCreateCylinderSnake::OnKeyDown()
 			OnMouseMove();
 			message = _("Zylinder: Radius");
 			UpdateGeometry();
-			ed->ForceRedraw();
+			ed->forceRedraw();
 		}
 	}
 }
@@ -165,7 +165,7 @@ void ModeModelMeshCreateCylinderSnake::OnDrawWin(MultiView::Window *win)
 		vector pp = multi_view->mouse_win->Project(pos[0]);
 		pp.z = 0;
 		if ((pp - multi_view->m).length_fuzzy() < CYLINDER_CLOSING_DISTANCE){
-			ed->DrawStr(pp.x, pp.y, _("Pfad schlie&sen"));
+			ed->drawStr(pp.x, pp.y, _("Pfad schlie&sen"));
 		}
 	}
 }

@@ -14,18 +14,18 @@ TerrainHeightmapDialog::TerrainHeightmapDialog(HuiWindow *_parent, bool _allow_p
 {
 	data = _data;
 
-	EventM("cancel", this, &TerrainHeightmapDialog::OnClose);
-	EventM("hui:close", this, &TerrainHeightmapDialog::OnClose);
-	EventM("apply", this, &TerrainHeightmapDialog::ApplyData);
-	EventM("ok", this, &TerrainHeightmapDialog::OnOk);
+	event("cancel", this, &TerrainHeightmapDialog::OnClose);
+	event("hui:close", this, &TerrainHeightmapDialog::OnClose);
+	event("apply", this, &TerrainHeightmapDialog::ApplyData);
+	event("ok", this, &TerrainHeightmapDialog::OnOk);
 
-	EventM("height_image_find", this, &TerrainHeightmapDialog::OnFindHeightmap);
-	EventM("stretch_x", this, &TerrainHeightmapDialog::OnSizeChange);
-	EventM("stretch_z", this, &TerrainHeightmapDialog::OnSizeChange);
-	EventM("filter_image_find", this, &TerrainHeightmapDialog::OnFindFilter);
-	EventMX("preview", "hui:draw", this, &TerrainHeightmapDialog::OnPreviewDraw);
+	event("height_image_find", this, &TerrainHeightmapDialog::OnFindHeightmap);
+	event("stretch_x", this, &TerrainHeightmapDialog::OnSizeChange);
+	event("stretch_z", this, &TerrainHeightmapDialog::OnSizeChange);
+	event("filter_image_find", this, &TerrainHeightmapDialog::OnFindFilter);
+	eventX("preview", "hui:draw", this, &TerrainHeightmapDialog::OnPreviewDraw);
 
-	Enable("ok", false);
+	enable("ok", false);
 
 	Subscribe(data);
 
@@ -47,20 +47,20 @@ void TerrainHeightmapDialog::ApplyData()
 
 void TerrainHeightmapDialog::OnSizeChange()
 {
-	stretch_x = GetFloat("stretch_x");
-	stretch_z = GetFloat("stretch_z");
-	Redraw("preview");
+	stretch_x = getFloat("stretch_x");
+	stretch_z = getFloat("stretch_z");
+	redraw("preview");
 }
 
 
 
 void TerrainHeightmapDialog::OnFindFilter()
 {
-	if (ed->FileDialog(FDTexture, false, false)){
+	if (ed->fileDialog(FDTexture, false, false)){
 		filter_file = ed->DialogFileComplete;
-		SetString("filter_image", ed->DialogFile);
+		setString("filter_image", ed->DialogFile);
 		filter.load(filter_file);
-		Redraw("preview");
+		redraw("preview");
 	}
 }
 
@@ -74,12 +74,12 @@ void TerrainHeightmapDialog::OnUpdate(Observable *o)
 
 void TerrainHeightmapDialog::OnFindHeightmap()
 {
-	if (ed->FileDialog(FDTexture, false, false)){
+	if (ed->fileDialog(FDTexture, false, false)){
 		heightmap_file = ed->DialogFileComplete;
-		SetString("height_image", ed->DialogFile);
+		setString("height_image", ed->DialogFile);
 		heightmap.load(heightmap_file);
-		Redraw("preview");
-		Enable("ok", true);
+		redraw("preview");
+		enable("ok", true);
 	}
 }
 
@@ -101,7 +101,7 @@ static float im_interpolate(const Image &im, float x, float y, float stretch_x, 
 
 void TerrainHeightmapDialog::OnPreviewDraw()
 {
-	HuiPainter *c = BeginDraw("preview");
+	HuiPainter *c = beginDraw("preview");
 	if (heightmap.isEmpty()){
 		c->setColor(Black);
 		c->drawRect(0, 0, c->width, c->height);
@@ -127,8 +127,8 @@ void TerrainHeightmapDialog::OnPreviewDraw()
 
 void TerrainHeightmapDialog::OnOk()
 {
-	float height_factor = GetFloat("height_factor");
-	bool additive = IsChecked("height_op:add");
+	float height_factor = getFloat("height_factor");
+	bool additive = isChecked("height_op:add");
 	data->Execute(new ActionWorldTerrainApplyHeightmap(data, heightmap_file, height_factor, stretch_x, stretch_z, filter_file));//, additive));
 	delete(this);
 }
@@ -144,10 +144,10 @@ void TerrainHeightmapDialog::OnClose()
 
 void TerrainHeightmapDialog::LoadData()
 {
-	SetFloat("stretch_x", stretch_x);
-	SetFloat("stretch_z", stretch_z);
-	SetFloat("height_factor", 100);
-	Check("height_op:set", true);
+	setFloat("stretch_x", stretch_x);
+	setFloat("stretch_z", stretch_z);
+	setFloat("height_factor", 100);
+	check("height_op:set", true);
 }
 
 

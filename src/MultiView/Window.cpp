@@ -289,17 +289,17 @@ void Window::Draw()
 	name_dest = rect(dest.x1 + 3, dest.x1 + 3 + NixGetStrWidth(view_kind), dest.y1, dest.y1 + 20);
 
 	NixSetColor(ColorWindowType);
-	if (ed->IsActive("nix-area") && (this == impl->active_win))
+	if (ed->isActive("nix-area") && (this == impl->active_win))
 		NixSetColor(ColorText);
 	if (name_dest.inside(impl->m.x, impl->m.y))
 		NixSetColor(Red);
-	ed->DrawStr(dest.x1 + 3, dest.y1, view_kind);
+	ed->drawStr(dest.x1 + 3, dest.y1, view_kind);
 	NixSetColor(ColorText);
 
 	foreach(MultiViewImpl::Message3d &m, impl->message3d){
 		vector p = Project(m.pos);
 		if (p.z > 0)
-			ed->DrawStr(p.x, p.y, m.str);
+			ed->drawStr(p.x, p.y, m.str);
 	}
 }
 

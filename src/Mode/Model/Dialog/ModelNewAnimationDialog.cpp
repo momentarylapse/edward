@@ -14,11 +14,11 @@ ModelNewAnimationDialog::ModelNewAnimationDialog(HuiWindow *_parent, bool _allow
 {
 	data = _data;
 
-	SetInt("new_animation_index", index);
+	setInt("new_animation_index", index);
 
-	EventM("hui:close", this, &ModelNewAnimationDialog::OnClose);
-	EventM("cancel", this, &ModelNewAnimationDialog::OnClose);
-	EventM("ok", this, &ModelNewAnimationDialog::OnOk);
+	event("hui:close", this, &ModelNewAnimationDialog::OnClose);
+	event("cancel", this, &ModelNewAnimationDialog::OnClose);
+	event("ok", this, &ModelNewAnimationDialog::OnOk);
 }
 
 ModelNewAnimationDialog::~ModelNewAnimationDialog()
@@ -32,11 +32,11 @@ void ModelNewAnimationDialog::OnClose()
 
 void ModelNewAnimationDialog::OnOk()
 {
-	int index = GetInt("new_animation_index");
-	int type = GetInt("new_animation_type") + MoveTypeVertex;
+	int index = getInt("new_animation_index");
+	int type = getInt("new_animation_type") + MoveTypeVertex;
 	if (index < data->Move.num)
 		if (data->Move[index].Frame.num > 0){
-			ed->ErrorBox(_("Es existiert bereits eine Animation mit diesem Index. Bitte einen anderen w&ahlen."));
+			ed->errorBox(_("Es existiert bereits eine Animation mit diesem Index. Bitte einen anderen w&ahlen."));
 			return;
 		}
 	data->AddAnimation(index, type);

@@ -22,14 +22,14 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(HuiWindow *_parent, b
 	data = _data;
 	FillMaterialList();
 
-	SetTooltip("material_list", _("- Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- die Auswahl wird f&ur folgende neue Polygone verwendet"));
+	setTooltip("material_list", _("- Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- die Auswahl wird f&ur folgende neue Polygone verwendet"));
 
-	EventM("hui:close", this, &ModelMaterialSelectionDialog::OnClose);
-	EventMX("material_list", "hui:activate", this, &ModelMaterialSelectionDialog::OnMaterialList);
-	EventMX("material_list", "hui:select", this, &ModelMaterialSelectionDialog::OnMaterialListSelect);
-	EventM("add_new_material", this, &ModelMaterialSelectionDialog::OnMaterialAddNew);
-	EventM("add_material", this, &ModelMaterialSelectionDialog::OnMaterialAdd);
-	EventM("edit_material", this, &ModelMaterialSelectionDialog::OnMaterialEdit);
+	event("hui:close", this, &ModelMaterialSelectionDialog::OnClose);
+	eventX("material_list", "hui:activate", this, &ModelMaterialSelectionDialog::OnMaterialList);
+	eventX("material_list", "hui:select", this, &ModelMaterialSelectionDialog::OnMaterialListSelect);
+	event("add_new_material", this, &ModelMaterialSelectionDialog::OnMaterialAddNew);
+	event("add_material", this, &ModelMaterialSelectionDialog::OnMaterialAdd);
+	event("edit_material", this, &ModelMaterialSelectionDialog::OnMaterialEdit);
 
 	answer = NULL;
 
@@ -43,7 +43,7 @@ ModelMaterialSelectionDialog::~ModelMaterialSelectionDialog()
 
 void ModelMaterialSelectionDialog::FillMaterialList()
 {
-	Reset("material_list");
+	reset("material_list");
 	for (int i=0;i<data->Material.num;i++){
 		int nt = 0;
 		foreach(ModelSurface &s, data->Surface)
@@ -51,9 +51,9 @@ void ModelMaterialSelectionDialog::FillMaterialList()
 			if (t.Material == i)
 				nt ++;
 		string im = render_material(&data->Material[i]);
-		AddString("material_list", format("%d\\%d\\%s\\%s", i, nt, im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
+		addString("material_list", format("%d\\%d\\%s\\%s", i, nt, im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
 	}
-	SetInt("material_list", mode_model_mesh->CurrentMaterial);
+	setInt("material_list", mode_model_mesh->CurrentMaterial);
 }
 
 void ModelMaterialSelectionDialog::PutAnswer(int *_answer)
@@ -72,13 +72,13 @@ void ModelMaterialSelectionDialog::OnClose()
 void ModelMaterialSelectionDialog::OnMaterialList()
 {
 	if (answer)
-		*answer = GetInt("");
+		*answer = getInt("");
 	delete(this);
 }
 
 void ModelMaterialSelectionDialog::OnMaterialListSelect()
 {
-	mode_model_mesh->SetCurrentMaterial(GetInt(""));
+	mode_model_mesh->SetCurrentMaterial(getInt(""));
 }
 
 void ModelMaterialSelectionDialog::OnMaterialAddNew()
@@ -88,7 +88,7 @@ void ModelMaterialSelectionDialog::OnMaterialAddNew()
 
 void ModelMaterialSelectionDialog::OnMaterialAdd()
 {
-	if (ed->FileDialog(FDMaterial, false, true))
+	if (ed->fileDialog(FDMaterial, false, true))
 		data->Execute(new ActionModelAddMaterial(ed->DialogFileNoEnding));
 }
 

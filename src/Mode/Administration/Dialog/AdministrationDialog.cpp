@@ -28,19 +28,19 @@ AdministrationDialog::AdministrationDialog(HuiWindow* _parent, bool _allow_paren
 	file_list.resize(6);
 
 	// dialog
-	EventM("hui:close", this, &AdministrationDialog::OnClose);
-	EventM("exit", this, &AdministrationDialog::OnExit);
-	EventM("ad_edit", this, &AdministrationDialog::OnEdit);
-	EventM("rename", this, &AdministrationDialog::OnRename);
-	EventM("delete", this, &AdministrationDialog::OnDelete);
-	EventM("file_list_cur", this, &AdministrationDialog::OnFileList);
-	EventM("file_list_all", this, &AdministrationDialog::OnFileList);
-	EventM("file_list_detail_source", this, &AdministrationDialog::OnFileList);
-	EventM("file_list_detail_dest", this, &AdministrationDialog::OnFileList);
-	EventM("file_list_super", this, &AdministrationDialog::OnFileList);
-	EventM("file_list_missing", this, &AdministrationDialog::OnFileList);
-	EventM("ad_rudimentary_configuration", this, &AdministrationDialog::OnRudimentaryConfiguration);
-	EventM("ad_export_game", this, &AdministrationDialog::OnExportGame);
+	event("hui:close", this, &AdministrationDialog::OnClose);
+	event("exit", this, &AdministrationDialog::OnExit);
+	event("ad_edit", this, &AdministrationDialog::OnEdit);
+	event("rename", this, &AdministrationDialog::OnRename);
+	event("delete", this, &AdministrationDialog::OnDelete);
+	event("file_list_cur", this, &AdministrationDialog::OnFileList);
+	event("file_list_all", this, &AdministrationDialog::OnFileList);
+	event("file_list_detail_source", this, &AdministrationDialog::OnFileList);
+	event("file_list_detail_dest", this, &AdministrationDialog::OnFileList);
+	event("file_list_super", this, &AdministrationDialog::OnFileList);
+	event("file_list_missing", this, &AdministrationDialog::OnFileList);
+	event("ad_rudimentary_configuration", this, &AdministrationDialog::OnRudimentaryConfiguration);
+	event("ad_export_game", this, &AdministrationDialog::OnExportGame);
 
 	LoadData();
 	Subscribe(data);
@@ -87,7 +87,7 @@ void AdministrationDialog::FillAdminList(int view, const string &lid)
 {
 	msg_db_f("FillAdminList",1);
 
-	Reset(lid);
+	reset(lid);
 	string sep = HuiComboBoxSeparator;
 	HuiComboBoxSeparator = "::";
 
@@ -122,7 +122,7 @@ void AdministrationDialog::FillAdminList(int view, const string &lid)
 	// place them into the list
 	int k=-2;
 	foreach(AdminFile *a, *l){
-		AddString(lid, format("%s::%s::%d::%d::%s",
+		addString(lid, format("%s::%s::%d::%d::%s",
 			(k != a->Kind) ? FD2Str(a->Kind).c_str() : "",
 			a->Name.c_str(),
 			a->Parent.num, a->Child.num,
@@ -143,10 +143,10 @@ void AdministrationDialog::ShowDetail(int n, const string &lid)
 	assert(n >= 0);
 	assert(n < l->num);
 	SelectedAdminFile = (*l)[n];
-	SetString("file_details", SelectedAdminFile->Name);
+	setString("file_details", SelectedAdminFile->Name);
 	FillAdminList(2, "file_list_detail_source");
 	FillAdminList(3, "file_list_detail_dest");
-	SetInt("ad_tab_control", 2);
+	setInt("ad_tab_control", 2);
 }
 
 
@@ -190,7 +190,7 @@ string get_first_list_id_by_tab_page(int page)
 Array<AdminFile*> AdministrationDialog::GetSelectedFilesFromList(const string& lid)
 {
 	Array<AdminFile*> r;
-	Array<int> index = GetMultiSelection(lid);
+	Array<int> index = getMultiSelection(lid);
 	AdminFileList *l = get_list(lid);
 	assert(l);
 	foreach(int i, index)
@@ -200,7 +200,7 @@ Array<AdminFile*> AdministrationDialog::GetSelectedFilesFromList(const string& l
 
 Array<AdminFile*> AdministrationDialog::GetSelectedFiles()
 {
-	int page = GetInt("ad_tab_control");
+	int page = getInt("ad_tab_control");
 	Array<AdminFile*> r = GetSelectedFilesFromList(get_first_list_id_by_tab_page(page));
 	if (page == 2)
 		r.append(GetSelectedFilesFromList("file_list_detail_dest"));
@@ -212,17 +212,17 @@ AdminFile* AdministrationDialog::GetSingleSelectedFile()
 	Array<AdminFile*> l = GetSelectedFiles();
 	if (l.num == 1)
 		return l[0];
-	ed->ErrorBox(_("Es muss genau eine Datei markiert sein!"));
+	ed->errorBox(_("Es muss genau eine Datei markiert sein!"));
 	return NULL;
 }
 
 void AdministrationDialog::OnClose()
 {
-	ed->SetMode(mode_welcome);
+	ed->setMode(mode_welcome);
 }
 
 void AdministrationDialog::OnExit()
-{	ed->SetMode(mode_welcome);	}
+{	ed->setMode(mode_welcome);	}
 
 void AdministrationDialog::OnRename()
 {}//{	data->Rename();	}
@@ -238,30 +238,30 @@ void AdministrationDialog::OnEdit()
 	switch (a->Kind){
 		case -1:
 			if (a->Name == "config.txt")
-				HuiOpenDocument(ed->GetRootDir(a->Kind) + a->Name);
+				HuiOpenDocument(ed->getRootDir(a->Kind) + a->Name);
 			else if (a->Name == "game.ini")
 				mode_administration->BasicSettings();
 			break;
 		case FDModel:
 			if (mode_model->data->Load(ObjectDir + a->Name, true))
-				ed->SetMode(mode_model);
+				ed->setMode(mode_model);
 			break;
 		case FDMaterial:
 			if (mode_material->data->Load(MaterialDir + a->Name, true))
-				ed->SetMode(mode_material);
+				ed->setMode(mode_material);
 			break;
 		case FDFont:
 			if (mode_font->data->Load(Gui::FontDir + a->Name, true))
-				ed->SetMode(mode_font);
+				ed->setMode(mode_font);
 			break;
 		case FDWorld:
 			if (mode_world->data->Load(MapDir + a->Name, true))
-				ed->SetMode(mode_world);
+				ed->setMode(mode_world);
 			break;
 		case FDTerrain:
 			mode_world->data->Reset();
 			if (mode_world->data->AddTerrain(a->Name.substr(0, -5), v_0)){
-				ed->SetMode(mode_world);
+				ed->setMode(mode_world);
 			}
 			break;
 		case FDCameraFlight:
@@ -277,7 +277,7 @@ void AdministrationDialog::OnEdit()
 		case FDShaderFile:
 		case FDScript:
 		case FDFile:
-			HuiOpenDocument(ed->GetRootDir(a->Kind) + a->Name);
+			HuiOpenDocument(ed->getRootDir(a->Kind) + a->Name);
 			break;
 	}
 }
@@ -285,7 +285,7 @@ void AdministrationDialog::OnEdit()
 void AdministrationDialog::OnFileList()
 {
 	string id = HuiGetEvent()->id;
-	int n = GetInt(id);
+	int n = getInt(id);
 	ShowDetail(n, id);
 }
 

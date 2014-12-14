@@ -53,7 +53,7 @@ void DataAdministration::MetaFraesDir(int kind)
 	string extension ="x";
 	cft.clear();
 
-	string dir = ed->GetRootDir(kind);
+	string dir = ed->getRootDir(kind);
 	if (kind==FDWorld)		extension = ".world";
 	if (kind==FDTerrain)	extension = ".map";
 	if (kind==FDModel)		extension = ".model";
@@ -229,8 +229,8 @@ void AdminFileList::add_from_game_ini_export(AdminFileList *source, GameIniData 
 void DataAdministration::UpdateDatabase()
 {
 	msg_db_f("UpdateDatebase",0);
-	ed->progress->Start(_("Erstelle Datenbank"), 0);
-	ed->progress->Set(_("Initialisierung"), 0);
+	ed->progress->start(_("Erstelle Datenbank"), 0);
+	ed->progress->set(_("Initialisierung"), 0);
 
 	// make sure the "Engine"-files are the first 3 ones
 	AdminFile *f_game_ini = file_list->add_engine_files();
@@ -258,14 +258,14 @@ void DataAdministration::UpdateDatabase()
 	for (int i=0;i<file_list->num;i++){
 		(*file_list)[i]->check(*file_list);
 
-		ed->progress->Set(_("Teste Dateien"), (float)i / (float)file_list->num);
+		ed->progress->set(_("Teste Dateien"), (float)i / (float)file_list->num);
 	}
 
 
 	file_list->remove_obsolete();
 
 
-	ed->progress->End();
+	ed->progress->end();
 	SaveDatabase();
 	Notify("Change");
 }
@@ -279,13 +279,13 @@ void DataAdministration::ExportGame(const string &dir, GameIniData &game_ini)
 	list.add((*file_list)[1]);
 	list.add_from_game_ini_export(file_list, game_ini);
 
-	ed->progress->Start(_("Exportiere Spiel"), 0);
+	ed->progress->start(_("Exportiere Spiel"), 0);
 	int num_ok = 0;
 
 	game_ini.Save(dir);
 
 	foreachi(AdminFile *a, list, i){
-		ed->progress->Set((float)i / (float)list.num);
+		ed->progress->set((float)i / (float)list.num);
 		if (a->Missing)
 			continue;
 
@@ -317,5 +317,5 @@ void DataAdministration::ExportGame(const string &dir, GameIniData &game_ini)
 	}
 	HuiInfoBox(HuiCurWindow, "info", format("%d von %d Dateien exportiern", num_ok, list.num));
 
-	ed->progress->End();
+	ed->progress->end();
 }

@@ -33,16 +33,16 @@ ModeModelSkeleton::~ModeModelSkeleton()
 void ModeModelSkeleton::OnCommand(const string & id)
 {
 	if (id == "skeleton_new_point")
-		ed->SetMode(new ModeModelSkeletonCreateBone(ed->cur_mode));
+		ed->setMode(new ModeModelSkeletonCreateBone(ed->cur_mode));
 	if (id == "skeleton_edit_bone"){
 		if (data->GetNumSelectedBones() == 1){
 			foreachi(ModelBone &b, data->Bone, i)
 				if (b.is_selected){
-					ed->SetMode(new ModeModelSkeletonAttachVertices(ed->cur_mode, i));
+					ed->setMode(new ModeModelSkeletonAttachVertices(ed->cur_mode, i));
 					break;
 				}
 		}else{
-			ed->ErrorBox(_("Es muss genau 1 Knochen markiert sein!"));
+			ed->errorBox(_("Es muss genau 1 Knochen markiert sein!"));
 		}
 	}
 

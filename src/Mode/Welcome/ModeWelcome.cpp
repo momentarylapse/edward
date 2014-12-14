@@ -30,11 +30,11 @@ ModeWelcome::~ModeWelcome()
 void ModeWelcome::OnStart()
 {
 	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
-	t->Reset();
-	t->Enable(true);
+	t->reset();
+	t->enable(true);
 	t = ed->toolbar[HuiToolbarLeft];
-	t->Reset();
-	t->Enable(false);
+	t->reset();
+	t->enable(false);
 
 	mouse_over = mouse_over_cmd = -1;
 }
@@ -66,7 +66,7 @@ void ModeWelcome::OnLeftButtonUp()
 		else
 			mode_font->Open();
 	}else if (mouse_over == 4){
-		ed->SetMode(mode_administration);
+		ed->setMode(mode_administration);
 	}
 }
 
@@ -95,7 +95,7 @@ void ModeWelcome::OnMouseMove()
 			mouse_over_cmd = (my < (icon_rect[i].y1 + icon_rect[i].y2) / 2) ? 0 : 1;
 		}
 
-	ed->ForceRedraw();
+	ed->forceRedraw();
 }
 
 

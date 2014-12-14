@@ -39,13 +39,13 @@ void ModeModelMeshCreateTorus::OnStart()
 	// Dialog
 	dialog = HuiCreateResourceDialog("new_torus_dialog", ed);
 
-	dialog->SetInt("nt_rings", HuiConfig.getInt("NewTorusNumX", 32));
-	dialog->SetInt("nt_edges", HuiConfig.getInt("NewTorusNumY", 16));
-	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
-	dialog->Show();
-	dialog->Event("hui:close", &HuiFuncIgnore);
+	dialog->setInt("nt_rings", HuiConfig.getInt("NewTorusNumX", 32));
+	dialog->setInt("nt_edges", HuiConfig.getInt("NewTorusNumY", 16));
+	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
+	dialog->show();
+	dialog->eventS("hui:close", &HuiFuncIgnore);
 
-	ed->Activate("");
+	ed->activate("");
 }
 
 
@@ -60,8 +60,8 @@ void ModeModelMeshCreateTorus::UpdateGeometry()
 	if (geo)
 		delete(geo);
 	if (pos_chosen){
-		int nx = dialog->GetInt("nt_rings");
-		int ny = dialog->GetInt("nt_edges");
+		int nx = dialog->getInt("nt_rings");
+		int ny = dialog->getInt("nt_edges");
 		HuiConfig.setInt("NewTorusNumX", nx);
 		HuiConfig.setInt("NewTorusNumY", ny);
 		geo = new GeometryTorus(pos, axis, radius1, radius2, nx, ny);
@@ -101,7 +101,7 @@ void ModeModelMeshCreateTorus::OnDrawWin(MultiView::Window *win)
 		geo->Preview(VBTemp);
 		NixDraw3D(VBTemp);
 		NixEnableLighting(false);
-		ed->DrawStr(100, 100, format("%.3f / %.3f", radius1, radius2));
+		ed->drawStr(100, 100, format("%.3f / %.3f", radius1, radius2));
 	}
 }
 

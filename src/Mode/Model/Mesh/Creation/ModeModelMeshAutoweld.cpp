@@ -25,27 +25,27 @@ void ModeModelMeshAutoweld::OnStart()
 	radius = radius_default;
 
 	dialog = new HuiDialog("Autoweld", 240, 60, ed, true);
-	dialog->AddControlTable("", 0, 0, 1, 2, "table0");
-	dialog->SetTarget("table0", 0);
-	dialog->AddControlTable("", 0, 0, 3, 2, "table1");
-	dialog->AddControlTable("!buttonbar", 0, 1, 2, 1, "table2");
-	dialog->SetTarget("table1", 0);
-	dialog->AddText("Radius", 0, 0, 0, 0, "");
-	dialog->AddSlider("!expandx", 1, 0, 0, 0, "slider");
-	dialog->AddText("", 2, 0, 0, 0, "radius");
-	dialog->AddText("Verbindungen", 0, 1, 0, 0, "");
-	dialog->AddText("", 1, 1, 0, 0, "num_connections");
-	dialog->SetTarget("table2", 0);
-	dialog->AddButton("Abbrechen", 0, 0, 0, 0, "cancel");
-	dialog->AddButton("Ok", 1, 0, 0, 0, "ok");
-	dialog->Show();
+	dialog->addControlTable("", 0, 0, 1, 2, "table0");
+	dialog->setTarget("table0", 0);
+	dialog->addControlTable("", 0, 0, 3, 2, "table1");
+	dialog->addControlTable("!buttonbar", 0, 1, 2, 1, "table2");
+	dialog->setTarget("table1", 0);
+	dialog->addText("Radius", 0, 0, 0, 0, "");
+	dialog->addSlider("!expandx", 1, 0, 0, 0, "slider");
+	dialog->addText("", 2, 0, 0, 0, "radius");
+	dialog->addText("Verbindungen", 0, 1, 0, 0, "");
+	dialog->addText("", 1, 1, 0, 0, "num_connections");
+	dialog->setTarget("table2", 0);
+	dialog->addButton("Abbrechen", 0, 0, 0, 0, "cancel");
+	dialog->addButton("Ok", 1, 0, 0, 0, "ok");
+	dialog->show();
 
-	dialog->SetFloat("slider", 0.5f);
-	dialog->SetString("radius", f2s(radius, 2));
+	dialog->setFloat("slider", 0.5f);
+	dialog->setString("radius", f2s(radius, 2));
 
-	dialog->EventM("slider", this, &ModeModelMeshAutoweld::OnSlider);
-	dialog->EventM("ok", this, &ModeModelMeshAutoweld::OnOk);
-	dialog->EventM("cancel", this, &ModeModelMeshAutoweld::OnCancel);
+	dialog->event("slider", this, &ModeModelMeshAutoweld::OnSlider);
+	dialog->event("ok", this, &ModeModelMeshAutoweld::OnOk);
+	dialog->event("cancel", this, &ModeModelMeshAutoweld::OnCancel);
 }
 
 void ModeModelMeshAutoweld::OnEnd()
@@ -55,9 +55,9 @@ void ModeModelMeshAutoweld::OnEnd()
 
 void ModeModelMeshAutoweld::OnSlider()
 {
-	radius = radius_default * exp((dialog->GetFloat("slider") - 0.5f) * 5);
-	dialog->SetString("radius", f2s(radius, 2));
-	ed->ForceRedraw();
+	radius = radius_default * exp((dialog->getFloat("slider") - 0.5f) * 5);
+	dialog->setString("radius", f2s(radius, 2));
+	ed->forceRedraw();
 }
 
 void ModeModelMeshAutoweld::OnCancel()
@@ -102,5 +102,5 @@ void ModeModelMeshAutoweld::OnDrawWin(MultiView::Window* win)
 					}
 		}
 	}
-	dialog->SetString("num_connections", i2s(n));
+	dialog->setString("num_connections", i2s(n));
 }

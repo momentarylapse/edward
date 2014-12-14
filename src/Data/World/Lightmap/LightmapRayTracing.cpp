@@ -53,8 +53,8 @@ void LightmapRayTracing::Compute()
 				b.rad += a.em * f * a.area * data->emissive_brightness;
 			}
 		}
-		ed->progress->Set(format(_("%d von %d"), ii, vem.num), (float)ii / (float)vem.num);
-		if (ed->progress->IsCancelled())
+		ed->progress->set(format(_("%d von %d"), ii, vem.num), (float)ii / (float)vem.num);
+		if (ed->progress->isCancelled())
 			throw AbortException();
 	}
 
@@ -65,8 +65,8 @@ void LightmapRayTracing::Compute()
 		vector p = l.Pos;
 		foreachi(LightmapData::Vertex &v, data->Vertices, vi){
 			if ((vi & 255) == 0){
-				ed->progress->Set(format(_("%d von %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
-				if (ed->progress->IsCancelled())
+				ed->progress->set(format(_("%d von %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
+				if (ed->progress->isCancelled())
 					throw AbortException();
 			}
 			if (l.Directional){

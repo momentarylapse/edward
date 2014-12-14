@@ -13,16 +13,16 @@ TerrainCreationDialog::TerrainCreationDialog(HuiWindow *_parent, bool _allow_par
 {
 	data = _data;
 
-	EventM("cancel", this, &TerrainCreationDialog::OnClose);
-	EventM("hui:close", this, &TerrainCreationDialog::OnClose);
-	EventM("apply", this, &TerrainCreationDialog::ApplyData);
-	EventM("ok", this, &TerrainCreationDialog::OnOk);
+	event("cancel", this, &TerrainCreationDialog::OnClose);
+	event("hui:close", this, &TerrainCreationDialog::OnClose);
+	event("apply", this, &TerrainCreationDialog::ApplyData);
+	event("ok", this, &TerrainCreationDialog::OnOk);
 
-	EventM("height_image_find", this, &TerrainCreationDialog::OnFindHeightmap);
-	EventM("num_x", this, &TerrainCreationDialog::OnSizeChange);
-	EventM("num_y", this, &TerrainCreationDialog::OnSizeChange);
-	EventM("terrain_x", this, &TerrainCreationDialog::OnSizeChange);
-	EventM("terrain_y", this, &TerrainCreationDialog::OnSizeChange);
+	event("height_image_find", this, &TerrainCreationDialog::OnFindHeightmap);
+	event("num_x", this, &TerrainCreationDialog::OnSizeChange);
+	event("num_y", this, &TerrainCreationDialog::OnSizeChange);
+	event("terrain_x", this, &TerrainCreationDialog::OnSizeChange);
+	event("terrain_y", this, &TerrainCreationDialog::OnSizeChange);
 
 	Subscribe(data);
 
@@ -42,11 +42,11 @@ void TerrainCreationDialog::ApplyData()
 
 void TerrainCreationDialog::LoadData()
 {
-	SetFloat("height_factor", 100);
-	SetInt("num_x", 64);
-	SetInt("num_y", 64);
-	SetFloat("terrain_x", 1000);
-	SetFloat("terrain_y", 1000);
+	setFloat("height_factor", 100);
+	setInt("num_x", 64);
+	setInt("num_y", 64);
+	setFloat("terrain_x", 1000);
+	setFloat("terrain_y", 1000);
 	OnSizeChange();
 }
 
@@ -74,16 +74,16 @@ void TerrainCreationDialog::OnClose()
 
 void TerrainCreationDialog::OnFindHeightmap()
 {
-	if (ed->FileDialog(FDTexture, false, false))
-		SetString("height_image", ed->DialogFileComplete);
+	if (ed->fileDialog(FDTexture, false, false))
+		setString("height_image", ed->DialogFileComplete);
 }
 
 
 
 void TerrainCreationDialog::OnSizeChange()
 {
-	SetFloat("pattern_x", GetFloat("terrain_x") / (float)GetInt("num_x"));
-	SetFloat("pattern_y", GetFloat("terrain_y") / (float)GetInt("num_y"));
+	setFloat("pattern_x", getFloat("terrain_x") / (float)getInt("num_x"));
+	setFloat("pattern_y", getFloat("terrain_y") / (float)getInt("num_y"));
 }
 
 

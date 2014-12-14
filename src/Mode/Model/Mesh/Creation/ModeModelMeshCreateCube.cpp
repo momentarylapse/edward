@@ -36,9 +36,9 @@ void ModeModelMeshCreateCube::UpdateGeometry()
 	if (geo)
 		delete(geo);
 	if (pos2_chosen){
-		int num_1 = dialog->GetInt("nc_x");
-		int num_2 = dialog->GetInt("nc_y");
-		int num_3 = dialog->GetInt("nc_z");
+		int num_1 = dialog->getInt("nc_x");
+		int num_2 = dialog->getInt("nc_y");
+		int num_3 = dialog->getInt("nc_z");
 		HuiConfig.setInt("NewCubeNumX", num_1);
 		HuiConfig.setInt("NewCubeNumY", num_2);
 		HuiConfig.setInt("NewCubeNumZ", num_3);
@@ -116,14 +116,14 @@ void ModeModelMeshCreateCube::OnStart()
 	// Dialog
 	dialog = HuiCreateResourceDialog("new_cube_dialog", ed);
 
-	dialog->SetInt("nc_x", HuiConfig.getInt("NewCubeNumX", 1));
-	dialog->SetInt("nc_y", HuiConfig.getInt("NewCubeNumY", 1));
-	dialog->SetInt("nc_z", HuiConfig.getInt("NewCubeNumZ", 1));
-	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
-	dialog->Show();
-	dialog->Event("hui:close", &HuiFuncIgnore);
+	dialog->setInt("nc_x", HuiConfig.getInt("NewCubeNumX", 1));
+	dialog->setInt("nc_y", HuiConfig.getInt("NewCubeNumY", 1));
+	dialog->setInt("nc_z", HuiConfig.getInt("NewCubeNumZ", 1));
+	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
+	dialog->show();
+	dialog->eventS("hui:close", &HuiFuncIgnore);
 
-	ed->Activate("");
+	ed->activate("");
 }
 
 void ModeModelMeshCreateCube::OnEnd()

@@ -227,7 +227,7 @@ void ActionController::Update()
 		foreach(Geometry *g, geo_show)
 			g->Transform(t * s);
 	}
-	ed->ForceRedraw();
+	ed->forceRedraw();
 }
 
 void ActionController::Enable()
@@ -238,7 +238,7 @@ void ActionController::Enable()
 void ActionController::Disable()
 {
 	reset();
-	ed->ForceRedraw();
+	ed->forceRedraw();
 }
 
 const color MVACColor[] = {
@@ -285,20 +285,20 @@ void ActionController::DrawParams()
 	if ((action.mode == ActionMove) || (action.mode == ActionSelectAndMove)){
 		vector t = param;
 		string unit = multi_view->GetMVScaleByZoom(t);
-		ed->DrawStr(150, 100, f2s(t.x, 2) + " " + unit, Edward::AlignRight);
-		ed->DrawStr(150, 120, f2s(t.y, 2) + " " + unit, Edward::AlignRight);
+		ed->drawStr(150, 100, f2s(t.x, 2) + " " + unit, Edward::AlignRight);
+		ed->drawStr(150, 120, f2s(t.y, 2) + " " + unit, Edward::AlignRight);
 		if (multi_view->mode3d)
-			ed->DrawStr(150, 140, f2s(t.z, 2) + " " + unit, Edward::AlignRight);
+			ed->drawStr(150, 140, f2s(t.z, 2) + " " + unit, Edward::AlignRight);
 	}else if ((action.mode == ActionRotate) or (action.mode == ActionRotate2d)){
 		vector r = param * 180.0f / pi;
-		ed->DrawStr(150, 100, f2s(r.x, 1) + "°", Edward::AlignRight);
-		ed->DrawStr(150, 120, f2s(r.y, 1) + "°", Edward::AlignRight);
-		ed->DrawStr(150, 140, f2s(r.z, 1) + "°", Edward::AlignRight);
+		ed->drawStr(150, 100, f2s(r.x, 1) + "°", Edward::AlignRight);
+		ed->drawStr(150, 120, f2s(r.y, 1) + "°", Edward::AlignRight);
+		ed->drawStr(150, 140, f2s(r.z, 1) + "°", Edward::AlignRight);
 	}else if ((action.mode == ActionScale) || (action.mode == ActionScale2d)){
-		ed->DrawStr(150, 100, f2s(param.x * 100.0f, 1) + "%", Edward::AlignRight);
-		ed->DrawStr(150, 120, f2s(param.y * 100.0f, 1) + "%", Edward::AlignRight);
+		ed->drawStr(150, 100, f2s(param.x * 100.0f, 1) + "%", Edward::AlignRight);
+		ed->drawStr(150, 120, f2s(param.y * 100.0f, 1) + "%", Edward::AlignRight);
 		if (multi_view->mode3d)
-			ed->DrawStr(150, 140, f2s(param.z * 100.0f, 1) + "%", Edward::AlignRight);
+			ed->drawStr(150, 140, f2s(param.z * 100.0f, 1) + "%", Edward::AlignRight);
 	}
 }
 

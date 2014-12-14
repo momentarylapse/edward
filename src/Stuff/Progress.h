@@ -10,21 +10,24 @@
 
 #include "../lib/hui/hui.h"
 
-class Progress
+class Progress : public HuiEventHandler
 {
 public:
 	Progress();
 	virtual ~Progress();
-	void Set(float progress);
-	void Set(const string &str, float progress);
-	void Start(const string &str, float progress);
-	void StartCancelable(const string &str, float progress);
-	void End();
+	void set(float progress);
+	void set(const string &str, float progress);
+	void start(const string &str, float progress);
+	void startCancelable(const string &str, float progress);
+	void end();
 
-	void Cancel();
-	bool IsCancelled();
+	void cancel();
+	bool isCancelled();
 
 private:
+	void onClose();
+	void _ignoreEvent(){}
+
 	HuiWindow *dlg;
 	bool Cancelled;
 	string message;

@@ -50,8 +50,8 @@ void LightmapRadiosity::Compute()
 				a.coeff.add(f);
 			}
 		}
-		ed->progress->Set(format(_("%d von %d"), i_a, data->Vertices.num), sqrt((float)i_a / (float)data->Vertices.num));
-		if (ed->progress->IsCancelled())
+		ed->progress->set(format(_("%d von %d"), i_a, data->Vertices.num), sqrt((float)i_a / (float)data->Vertices.num));
+		if (ed->progress->isCancelled())
 			throw AbortException();
 	}
 

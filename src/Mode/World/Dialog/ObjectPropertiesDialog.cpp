@@ -17,12 +17,12 @@ ObjectPropertiesDialog::ObjectPropertiesDialog(HuiWindow *_parent, bool _allow_p
 	assert(index >= 0);
 	assert(index < data->Objects.num);
 
-	EventM("cancel", this, &ObjectPropertiesDialog::OnClose);
-	EventM("hui:close", this, &ObjectPropertiesDialog::OnClose);
-	EventM("apply", this, &ObjectPropertiesDialog::ApplyData);
-	EventM("ok", this, &ObjectPropertiesDialog::OnOk);
+	event("cancel", this, &ObjectPropertiesDialog::OnClose);
+	event("hui:close", this, &ObjectPropertiesDialog::OnClose);
+	event("apply", this, &ObjectPropertiesDialog::ApplyData);
+	event("ok", this, &ObjectPropertiesDialog::OnOk);
 
-	EventM("find_object", this, &ObjectPropertiesDialog::OnFindObject);
+	event("find_object", this, &ObjectPropertiesDialog::OnFindObject);
 
 	Subscribe(data);
 
@@ -45,15 +45,15 @@ void ObjectPropertiesDialog::OnOk()
 
 void ObjectPropertiesDialog::LoadData()
 {
-	SetDecimals(3);
-	SetString("name", temp.Name);
-	SetString("kind", temp.FileName);
-	SetFloat("pos_x", temp.pos.x);
-	SetFloat("pos_y", temp.pos.y);
-	SetFloat("pos_z", temp.pos.z);
-	SetFloat("ang_x", temp.Ang.x * 180.0f / pi);
-	SetFloat("ang_y", temp.Ang.y * 180.0f / pi);
-	SetFloat("ang_z", temp.Ang.z * 180.0f / pi);
+	setDecimals(3);
+	setString("name", temp.Name);
+	setString("kind", temp.FileName);
+	setFloat("pos_x", temp.pos.x);
+	setFloat("pos_y", temp.pos.y);
+	setFloat("pos_z", temp.pos.z);
+	setFloat("ang_x", temp.Ang.x * 180.0f / pi);
+	setFloat("ang_y", temp.Ang.y * 180.0f / pi);
+	setFloat("ang_z", temp.Ang.z * 180.0f / pi);
 }
 
 
@@ -80,13 +80,13 @@ void ObjectPropertiesDialog::OnUpdate(Observable *o)
 
 void ObjectPropertiesDialog::ApplyData()
 {
-	temp.pos.x = GetFloat("pos_x");
-	temp.pos.y = GetFloat("pos_y");
-	temp.pos.z = GetFloat("pos_z");
-	temp.Ang.x = GetFloat("ang_x") * pi / 180.0f;
-	temp.Ang.y = GetFloat("ang_y") * pi / 180.0f;
-	temp.Ang.z = GetFloat("ang_z") * pi / 180.0f;
-	temp.Name = GetString("name");
+	temp.pos.x = getFloat("pos_x");
+	temp.pos.y = getFloat("pos_y");
+	temp.pos.z = getFloat("pos_z");
+	temp.Ang.x = getFloat("ang_x") * pi / 180.0f;
+	temp.Ang.y = getFloat("ang_y") * pi / 180.0f;
+	temp.Ang.z = getFloat("ang_z") * pi / 180.0f;
+	temp.Name = getString("name");
 
 	data->Execute(new ActionWorldEditObject(index, temp));
 }

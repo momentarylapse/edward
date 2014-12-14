@@ -173,7 +173,7 @@ void AdminFile::check(AdminFileList &list)
 	// test file existence
 	CFile *f = DataAdministration::admin_file;
 	f->SilentFileAccess = true;
-	if (f->Open(ed->GetRootDir(Kind) + Name)){
+	if (f->Open(ed->getRootDir(Kind) + Name)){
 
 		// file ok
 		int _time = f->GetDateModification().time;
@@ -285,7 +285,7 @@ void AdminFile::check(AdminFileList &list)
 		}else
 			Missing=true;
 	}else{
-		if (f->Open(ed->GetRootDir(Kind) + Name)){
+		if (f->Open(ed->getRootDir(Kind) + Name)){
 			Time = f->GetDateModification().time;
 			f->Close();
 		}else

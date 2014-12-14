@@ -90,17 +90,17 @@ MultiViewImpl::MultiViewImpl(bool _mode3d) :
 
 		// Menu
 		menu = new HuiMenu;
-		menu->AddItem(_("Ansicht"), "view_menu_sign");
-		//menu->EnableItem("view_menu_sign", false);
-		menu->AddSeparator();
-		menu->AddItem(_("Rechts (-x)"), "view_right");
-		menu->AddItem(_("Links (x)"), "view_left");
-		menu->AddItem(_("Vorne (z)"), "view_front");
-		menu->AddItem(_("Hinten (-z)"), "view_back");
-		menu->AddItem(_("Oben (-y)"), "view_top");
-		menu->AddItem(_("Unten (y)"), "view_bottom");
-		menu->AddItem(_("Isometrisch"), "view_isometric");
-		menu->AddItem(_("Perspektive"), "view_perspective");
+		menu->addItem(_("Ansicht"), "view_menu_sign");
+		//menu->enableItem("view_menu_sign", false);
+		menu->addSeparator();
+		menu->addItem(_("Rechts (-x)"), "view_right");
+		menu->addItem(_("Links (x)"), "view_left");
+		menu->addItem(_("Vorne (z)"), "view_front");
+		menu->addItem(_("Hinten (-z)"), "view_back");
+		menu->addItem(_("Oben (-y)"), "view_top");
+		menu->addItem(_("Unten (y)"), "view_bottom");
+		menu->addItem(_("Isometrisch"), "view_isometric");
+		menu->addItem(_("Perspektive"), "view_perspective");
 	}else{
 		win[0]->type = View2D;
 		light = -1;
@@ -386,7 +386,7 @@ void MultiViewImpl::OnLeftButtonDown()
 	// menu for selection of view type
 	if ((menu) && (mouse_win->name_dest.inside(m.x, m.y))){
 		active_win = mouse_win;
-		menu->OpenPopup(ed, m.x, m.y);
+		menu->openPopup(ed, m.x, m.y);
 		NotifyEnd();
 		return;
 	}
@@ -568,7 +568,7 @@ void MultiViewImpl::OnMouseMove()
 	// ignore mouse, while "holding"
 	if (HoldingCursor){
 		if (fabs(m.x - HoldingX) + fabs(m.y - HoldingY) > 100)
-			ed->SetCursorPos(HoldingX, HoldingY);
+			ed->setCursorPos(HoldingX, HoldingY);
 	}
 
 	Notify("Update");
@@ -677,12 +677,12 @@ void MultiViewImpl::DrawMousePos()
 	string sz = f2s(m.z,2) + " " + unit;
 
 	if (mouse_win->type == View2D){
-		ed->DrawStr(MaxX, MaxY - 60, sx, Edward::AlignRight);
-		ed->DrawStr(MaxX, MaxY - 40, sy, Edward::AlignRight);
+		ed->drawStr(MaxX, MaxY - 60, sx, Edward::AlignRight);
+		ed->drawStr(MaxX, MaxY - 40, sy, Edward::AlignRight);
 	}else{
-		ed->DrawStr(MaxX, MaxY - 80, sx, Edward::AlignRight);
-		ed->DrawStr(MaxX, MaxY - 60, sy, Edward::AlignRight);
-		ed->DrawStr(MaxX, MaxY - 40, sz, Edward::AlignRight);
+		ed->drawStr(MaxX, MaxY - 80, sx, Edward::AlignRight);
+		ed->drawStr(MaxX, MaxY - 60, sy, Edward::AlignRight);
+		ed->drawStr(MaxX, MaxY - 40, sz, Edward::AlignRight);
 	}
 }
 
@@ -982,7 +982,7 @@ void MultiViewImpl::HoldCursor(bool holding)
 	HoldingX = m.x;
 	HoldingY = m.y;
 	HoldingCursor = holding;
-	ed->ShowCursor(!holding);
+	ed->showCursor(!holding);
 }
 
 

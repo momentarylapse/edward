@@ -64,36 +64,36 @@ void ModeModelMesh::OnStart()
 {
 	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
 	HuiToolbar *t = ed->toolbar[HuiToolbarLeft];
-	t->Reset();
-	t->AddSeparator();
-	t->AddItemCheckable(_("Polygon"),dir + "new_triangle.png", "new_tria");
-	t->AddItemCheckable(_("Ebene"),dir + "new_plane.png", "new_plane");
-	t->AddItemCheckable(_("Quader"),dir + "mode_skin.png", "new_cube");
-	t->AddItemCheckable(_("Kugel"), dir + "new_ball.png", "new_ball");
-	t->AddItemCheckable(_("Zylinder"), dir + "new_cylinder.png", "new_cylinder");
-	t->AddSeparator();
-	t->AddItemCheckable(_("Selektieren"), dir + "rf_select.png", "select");
-	t->AddItemCheckable(_("Verschieben"), dir + "rf_translate.png", "translate");
-	t->AddItemCheckable(_("Rotieren"), dir + "rf_rotate.png", "rotate");
-	t->AddItemCheckable(_("Skalieren"), dir + "rf_scale.png", "scale");
-	t->AddItemCheckable(_("Spiegeln"),dir + "rf_mirror.png", "mirror");
-	t->Enable(true);
-	t->Configure(false,true);
+	t->reset();
+	t->addSeparator();
+	t->addItemCheckable(_("Polygon"),dir + "new_triangle.png", "new_tria");
+	t->addItemCheckable(_("Ebene"),dir + "new_plane.png", "new_plane");
+	t->addItemCheckable(_("Quader"),dir + "mode_skin.png", "new_cube");
+	t->addItemCheckable(_("Kugel"), dir + "new_ball.png", "new_ball");
+	t->addItemCheckable(_("Zylinder"), dir + "new_cylinder.png", "new_cylinder");
+	t->addSeparator();
+	t->addItemCheckable(_("Selektieren"), dir + "rf_select.png", "select");
+	t->addItemCheckable(_("Verschieben"), dir + "rf_translate.png", "translate");
+	t->addItemCheckable(_("Rotieren"), dir + "rf_rotate.png", "rotate");
+	t->addItemCheckable(_("Skalieren"), dir + "rf_scale.png", "scale");
+	t->addItemCheckable(_("Spiegeln"),dir + "rf_mirror.png", "mirror");
+	t->enable(true);
+	t->configure(false,true);
 }
 
 void ModeModelMesh::OnEnter()
 {
 	CurrentMaterial = 0;
 
-	ed->SetMode(mode_model_mesh_vertex);
-	//ed->SetMode(mode_model_mesh_skin);
+	ed->setMode(mode_model_mesh_vertex);
+	//ed->setMode(mode_model_mesh_skin);
 }
 
 void ModeModelMesh::OnEnd()
 {
 	HuiToolbar *t = ed->toolbar[HuiToolbarLeft];
-	t->Reset();
-	t->Enable(false);
+	t->reset();
+	t->enable(false);
 
 	CloseMaterialDialog();
 }
@@ -119,9 +119,9 @@ void ModeModelMesh::OnCommand(const string & id)
 	if (id == "invert_trias")
 		data->InvertSelection();
 	if (id == "extrude_triangles")
-		ed->SetMode(new ModeModelMeshExtrudePolygons(ed->cur_mode));
+		ed->setMode(new ModeModelMeshExtrudePolygons(ed->cur_mode));
 	if (id == "autoweld_surfaces")
-		ed->SetMode(new ModeModelMeshAutoweld(ed->cur_mode));
+		ed->setMode(new ModeModelMeshAutoweld(ed->cur_mode));
 	if (id == "convert_to_triangles")
 		data->ConvertSelectionToTriangles();
 	if (id == "untriangulate_selection")
@@ -140,37 +140,37 @@ void ModeModelMesh::OnCommand(const string & id)
 		data->SubdivideSelectedSurfaces();
 
 	if (id == "new_point")
-		ed->SetMode(new ModeModelMeshCreateVertex(mode_model_mesh_vertex));
+		ed->setMode(new ModeModelMeshCreateVertex(mode_model_mesh_vertex));
 	if (id == "new_tria")
-		ed->SetMode(new ModeModelMeshCreatePolygon(mode_model_mesh_vertex));
+		ed->setMode(new ModeModelMeshCreatePolygon(mode_model_mesh_vertex));
 	if (id == "new_ball")
-		ed->SetMode(new ModeModelMeshCreateBall(ed->cur_mode));
+		ed->setMode(new ModeModelMeshCreateBall(ed->cur_mode));
 	if (id == "new_cube")
-		ed->SetMode(new ModeModelMeshCreateCube(ed->cur_mode));
+		ed->setMode(new ModeModelMeshCreateCube(ed->cur_mode));
 	if (id == "new_cylinder")
-		ed->SetMode(new ModeModelMeshCreateCylinder(ed->cur_mode));
+		ed->setMode(new ModeModelMeshCreateCylinder(ed->cur_mode));
 	if (id == "new_cylindersnake")
-		ed->SetMode(new ModeModelMeshCreateCylinderSnake(ed->cur_mode));
+		ed->setMode(new ModeModelMeshCreateCylinderSnake(ed->cur_mode));
 	if (id == "new_plane")
-		ed->SetMode(new ModeModelMeshCreatePlane(ed->cur_mode));
+		ed->setMode(new ModeModelMeshCreatePlane(ed->cur_mode));
 	if (id == "new_torus")
-		ed->SetMode(new ModeModelMeshCreateTorus(ed->cur_mode));
+		ed->setMode(new ModeModelMeshCreateTorus(ed->cur_mode));
 	if (id == "new_tetrahedron")
-		ed->SetMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 4));
+		ed->setMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 4));
 	if (id == "new_octahedron")
-		ed->SetMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 8));
+		ed->setMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 8));
 	if (id == "new_dodecahedron")
-		ed->SetMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 12));
+		ed->setMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 12));
 	if (id == "new_icosahedron")
-		ed->SetMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 20));
+		ed->setMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 20));
 	if (id == "new_teapot")
-		ed->SetMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 306));
+		ed->setMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 306));
 	if (id == "new_extract")
-		ed->SetMode(new ModeModelMeshSplitPolygon(mode_model_mesh_polygon));
+		ed->setMode(new ModeModelMeshSplitPolygon(mode_model_mesh_polygon));
 	if (id == "bevel_edges")
-		ed->SetMode(new ModeModelMeshBevelEdges(mode_model_mesh_vertex));
+		ed->setMode(new ModeModelMeshBevelEdges(mode_model_mesh_vertex));
 	if (id == "deformation_brush")
-		ed->SetMode(new ModeModelMeshBrush(mode_model_mesh_polygon));
+		ed->setMode(new ModeModelMeshBrush(mode_model_mesh_polygon));
 	if (id == "flatten_vertices")
 		data->FlattenSelectedVertices();
 
@@ -223,7 +223,7 @@ void ModeModelMesh::ShowMaterialDialog()
 {
 	if (!MaterialDialog){
 		MaterialDialog = new ModelMaterialDialog(ed, data);
-		ed->Check("mode_model_materials", true);
+		ed->check("mode_model_materials", true);
 	}
 }
 
@@ -232,7 +232,7 @@ void ModeModelMesh::CloseMaterialDialog()
 	if (MaterialDialog){
 		delete(MaterialDialog);
 		MaterialDialog = NULL;
-		ed->Check("mode_model_materials", false);
+		ed->check("mode_model_materials", false);
 	}
 }
 
@@ -249,9 +249,9 @@ void ModeModelMesh::ToggleMaterialDialog()
 void ModeModelMesh::OnDraw()
 {
 	if (data->GetNumSelectedVertices() > 0){
-		ed->DrawStr(20, 100, format(_("vert: %d"), data->GetNumSelectedVertices()));
-		ed->DrawStr(20, 120, format(_("poly: %d"), data->GetNumSelectedPolygons()));
-		ed->DrawStr(20, 140, format(_("surf: %d"), data->GetNumSelectedSurfaces()));
+		ed->drawStr(20, 100, format(_("vert: %d"), data->GetNumSelectedVertices()));
+		ed->drawStr(20, 120, format(_("poly: %d"), data->GetNumSelectedPolygons()));
+		ed->drawStr(20, 140, format(_("surf: %d"), data->GetNumSelectedSurfaces()));
 	}
 }
 
@@ -269,32 +269,32 @@ void ModeModelMesh::OnUpdate(Observable *o)
 
 void ModeModelMesh::OnUpdateMenu()
 {
-	ed->Enable("copy", Copyable());
-	ed->Enable("paste", Pasteable());
-	ed->Enable("delete", Copyable());
+	ed->enable("copy", Copyable());
+	ed->enable("paste", Pasteable());
+	ed->enable("delete", Copyable());
 	string cm_name = ed->cur_mode->name;
-	ed->Check("new_point", cm_name == "ModelMeshCreateVertex");
-	ed->Check("new_tria", cm_name == "ModelMeshCreateTriangles");
-	ed->Check("new_plane", cm_name == "ModelMeshCreatePlane");
-	ed->Check("new_cube", cm_name == "ModelMeshCreateCube");
-	ed->Check("new_ball", cm_name == "ModelMeshCreateBall");
-	ed->Check("new_cylinder", cm_name == "ModelMeshCreateCylinder");
-	ed->Check("new_torus", cm_name == "ModelMeshCreateTorus");
+	ed->check("new_point", cm_name == "ModelMeshCreateVertex");
+	ed->check("new_tria", cm_name == "ModelMeshCreateTriangles");
+	ed->check("new_plane", cm_name == "ModelMeshCreatePlane");
+	ed->check("new_cube", cm_name == "ModelMeshCreateCube");
+	ed->check("new_ball", cm_name == "ModelMeshCreateBall");
+	ed->check("new_cylinder", cm_name == "ModelMeshCreateCylinder");
+	ed->check("new_torus", cm_name == "ModelMeshCreateTorus");
 
-	ed->Check("select_cw", mode_model_mesh_polygon->SelectCW);
+	ed->check("select_cw", mode_model_mesh_polygon->SelectCW);
 
-	ed->Enable("select", multi_view->allow_mouse_actions);
-	ed->Enable("translate", multi_view->allow_mouse_actions);
-	ed->Enable("rotate", multi_view->allow_mouse_actions);
-	ed->Enable("scale", multi_view->allow_mouse_actions);
-	ed->Enable("mirror", multi_view->allow_mouse_actions);
-	ed->Check("select", mouse_action == MultiView::ActionSelect);
-	ed->Check("translate", mouse_action == MultiView::ActionMove);
-	ed->Check("rotate", mouse_action == MultiView::ActionRotate);
-	ed->Check("scale", mouse_action == MultiView::ActionScale);
-	ed->Check("mirror", mouse_action == MultiView::ActionMirror);
+	ed->enable("select", multi_view->allow_mouse_actions);
+	ed->enable("translate", multi_view->allow_mouse_actions);
+	ed->enable("rotate", multi_view->allow_mouse_actions);
+	ed->enable("scale", multi_view->allow_mouse_actions);
+	ed->enable("mirror", multi_view->allow_mouse_actions);
+	ed->check("select", mouse_action == MultiView::ActionSelect);
+	ed->check("translate", mouse_action == MultiView::ActionMove);
+	ed->check("rotate", mouse_action == MultiView::ActionRotate);
+	ed->check("scale", mouse_action == MultiView::ActionScale);
+	ed->check("mirror", mouse_action == MultiView::ActionMirror);
 
-	ed->Check("mode_model_materials", MaterialDialog);
+	ed->check("mode_model_materials", MaterialDialog);
 }
 
 bool ModeModelMesh::OptimizeView()
@@ -329,7 +329,7 @@ void ModeModelMesh::CreateNewMaterialForSelection()
 #if 0
 	msg_db_f("CreateNewMaterialForSelection", 2);
 	if (0 == data->GetNumSelectedPolygons()){
-		ed->SetMessage(_("kein Dreieck ausgew&ahlt"));
+		ed->setMessage(_("kein Dreieck ausgew&ahlt"));
 		return;
 	}
 
@@ -369,7 +369,7 @@ void ModeModelMesh::ChooseMaterialForSelection()
 {
 	msg_db_f("ChooseMaterialForSelection", 2);
 	if (0 == data->GetNumSelectedPolygons()){
-		ed->SetMessage(_("kein Dreieck ausgew&ahlt"));
+		ed->setMessage(_("kein Dreieck ausgew&ahlt"));
 		return;
 	}
 
@@ -379,7 +379,7 @@ void ModeModelMesh::ChooseMaterialForSelection()
 	// dialog
 	ModelMaterialSelectionDialog *dlg = new ModelMaterialSelectionDialog(ed, false, data);
 	dlg->PutAnswer(&SelectionDialogReturnIndex);
-	dlg->Run();
+	dlg->run();
 
 	if (SelectionDialogReturnIndex >= 0)
 		data->SetMaterialSelection(SelectionDialogReturnIndex);
@@ -388,7 +388,7 @@ void ModeModelMesh::ChooseMaterialForSelection()
 void ModeModelMesh::ChooseRightMouseFunction(int f)
 {
 	mouse_action = f;
-	ed->UpdateMenu();
+	ed->updateMenu();
 	ApplyRightMouseFunction(ed->multi_view_3d);
 	ApplyRightMouseFunction(ed->multi_view_2d);
 }
@@ -415,13 +415,13 @@ void ModeModelMesh::Copy()
 	data->CopyGeometry(TempGeo);
 
 	OnUpdateMenu();
-	ed->SetMessage(format(_("%d Vertizes, %d Dreiecke kopiert"), TempGeo.Vertex.num, TempGeo.Polygon.num));
+	ed->setMessage(format(_("%d Vertizes, %d Dreiecke kopiert"), TempGeo.Vertex.num, TempGeo.Polygon.num));
 }
 
 void ModeModelMesh::Paste()
 {
 	data->PasteGeometry(TempGeo, CurrentMaterial);
-	ed->SetMessage(format(_("%d Vertizes, %d Dreiecke eingef&ugt"), TempGeo.Vertex.num, TempGeo.Polygon.num));
+	ed->setMessage(format(_("%d Vertizes, %d Dreiecke eingef&ugt"), TempGeo.Vertex.num, TempGeo.Polygon.num));
 }
 
 bool ModeModelMesh::Copyable()
@@ -432,11 +432,11 @@ bool ModeModelMesh::Copyable()
 void ModeModelMesh::AddEffects(int type)
 {
 	if (data->GetNumSelectedVertices() == 0){
-		ed->SetMessage(_("Kein Punkt markiert!"));
+		ed->setMessage(_("Kein Punkt markiert!"));
 		return;
 	}
 	ModelFXDialog *dlg = new ModelFXDialog(ed, false, data, type, -1);
-	dlg->Run();
+	dlg->run();
 }
 
 void ModeModelMesh::EditEffects()
@@ -449,11 +449,11 @@ void ModeModelMesh::EditEffects()
 			n ++;
 		}
 	if (n != 1){
-		ed->SetMessage(_("Es muss genau ein Punkt mit Effekt markiert sein!"));
+		ed->setMessage(_("Es muss genau ein Punkt mit Effekt markiert sein!"));
 		return;
 	}
 	ModelFXDialog *dlg = new ModelFXDialog(ed, false, data, -1, index);
-	dlg->Run();
+	dlg->run();
 }
 
 void ModeModelMesh::ClearEffects()
@@ -463,7 +463,7 @@ void ModeModelMesh::ClearEffects()
 		if (data->Vertex[fx.Vertex].is_selected)
 			n ++;
 	if (n == 0){
-		ed->SetMessage(_("Kein Punkt mit Effekt markiert!"));
+		ed->setMessage(_("Kein Punkt mit Effekt markiert!"));
 		return;
 	}
 	data->SelectionClearEffects();
@@ -477,7 +477,7 @@ bool ModeModelMesh::Pasteable()
 void ModeModelMesh::Easify()
 {
 	ModelEasifyDialog *dlg = new ModelEasifyDialog(ed, false, data);
-	dlg->Run();
+	dlg->run();
 }
 
 void ModeModelMesh::SetCurrentMaterial(int index)

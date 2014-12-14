@@ -74,7 +74,7 @@ void ModeModelMeshVertex::DrawEffects(MultiView::Window *win)
 	foreach(ModelEffect &fx, data->Fx){
 		vector p = win->Project(data->Vertex[fx.Vertex].pos);
 		if ((p.z > 0) && (p.z < 1))
-			ed->DrawStr(p.x, p.y, fx.get_type());
+			ed->drawStr(p.x, p.y, fx.get_type());
 	}
 	NixEnableLighting(multi_view->light_enabled);
 }

@@ -41,42 +41,42 @@ void ModeModel::OnStart()
 {
 	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
 	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
-	t->Reset();
-	t->AddItem(L("new"),dir + "new.png","new");
-	t->AddItem(L("open"),dir + "open.png","open");
-	t->AddItem(L("save"),dir + "save.png","save");
-	t->AddSeparator();
-	t->AddItem(L("undo"),dir + "undo.png","undo");
-	t->AddItem(L("redo"),dir + "redo.png","redo");
-	t->AddSeparator();
-	t->AddItem(_("Push"),dir + "view_push.png","view_push");
-	ed->SetTooltip("view_push", _("ViewStage Push"));
-	t->AddItem(_("Pop"),dir + "view_pop.png","view_pop");
-	ed->SetTooltip("view_pop", _("ViewStage Pop"));
-	t->AddSeparator();
-	t->AddItemCheckable(_("Vertices"),dir + "model_vertex.svg","mode_model_vertex");
-	t->AddItemCheckable(_("Kanten"),dir + "model_edge.svg","mode_model_edge");
-	t->AddItemCheckable(_("Polygone"),dir + "model_polygon.svg","mode_model_triangle");
-	t->AddItemCheckable(_("Oberfl&achen"),dir + "model_surface.svg","mode_model_surface");
-	t->AddItemCheckable(_("Textur-Koordinaten"),dir + "model_skin.svg","mode_model_texture_coord");
-	t->AddSeparator();
-	t->AddItemCheckable(_("Mesh"), dir + "model_mesh.svg", "mode_model_mesh");
-	t->AddItemCheckable(_("Skelett"), dir + "mode_skeletton.png", "mode_model_skeleton");
-	t->AddItemCheckable(_("Animation"), dir + "mode_move.png", "mode_model_animation");
-	t->AddItemCheckable(_("Materialien"), dir + "mode_textures.png", "mode_model_materials");
-	t->AddItem(_("Eigenschaften"), dir + "configure.png", "mode_properties");
-	t->Enable(true);
-	t->Configure(false,true);
+	t->reset();
+	t->addItem(L("new"),dir + "new.png","new");
+	t->addItem(L("open"),dir + "open.png","open");
+	t->addItem(L("save"),dir + "save.png","save");
+	t->addSeparator();
+	t->addItem(L("undo"),dir + "undo.png","undo");
+	t->addItem(L("redo"),dir + "redo.png","redo");
+	t->addSeparator();
+	t->addItem(_("Push"),dir + "view_push.png","view_push");
+	ed->setTooltip("view_push", _("ViewStage Push"));
+	t->addItem(_("Pop"),dir + "view_pop.png","view_pop");
+	ed->setTooltip("view_pop", _("ViewStage Pop"));
+	t->addSeparator();
+	t->addItemCheckable(_("Vertices"),dir + "model_vertex.svg","mode_model_vertex");
+	t->addItemCheckable(_("Kanten"),dir + "model_edge.svg","mode_model_edge");
+	t->addItemCheckable(_("Polygone"),dir + "model_polygon.svg","mode_model_triangle");
+	t->addItemCheckable(_("Oberfl&achen"),dir + "model_surface.svg","mode_model_surface");
+	t->addItemCheckable(_("Textur-Koordinaten"),dir + "model_skin.svg","mode_model_texture_coord");
+	t->addSeparator();
+	t->addItemCheckable(_("Mesh"), dir + "model_mesh.svg", "mode_model_mesh");
+	t->addItemCheckable(_("Skelett"), dir + "mode_skeletton.png", "mode_model_skeleton");
+	t->addItemCheckable(_("Animation"), dir + "mode_move.png", "mode_model_animation");
+	t->addItemCheckable(_("Materialien"), dir + "mode_textures.png", "mode_model_materials");
+	t->addItem(_("Eigenschaften"), dir + "configure.png", "mode_properties");
+	t->enable(true);
+	t->configure(false,true);
 	t = ed->toolbar[HuiToolbarLeft];
-	t->Reset();
-	t->Enable(false);
+	t->reset();
+	t->enable(false);
 }
 
 
 
 void ModeModel::OnEnter()
 {
-	ed->SetMode(mode_model_mesh);
+	ed->setMode(mode_model_mesh);
 }
 
 
@@ -87,8 +87,8 @@ void ModeModel::OnEnd()
 	PropertiesDialog = NULL;
 
 	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
-	t->Reset();
-	t->Enable(false);
+	t->reset();
+	t->enable(false);
 }
 
 
@@ -114,19 +114,19 @@ void ModeModel::OnCommand(const string & id)
 		data->Redo();
 
 	if (id == "mode_model_vertex")
-		ed->SetMode(mode_model_mesh_vertex);
+		ed->setMode(mode_model_mesh_vertex);
 	if (id == "mode_model_edge")
-		ed->SetMode(mode_model_mesh_edge);
+		ed->setMode(mode_model_mesh_edge);
 	if (id == "mode_model_triangle")
-		ed->SetMode(mode_model_mesh_polygon);
+		ed->setMode(mode_model_mesh_polygon);
 	if (id == "mode_model_surface")
-		ed->SetMode(mode_model_mesh_surface);
+		ed->setMode(mode_model_mesh_surface);
 	if (id == "mode_model_texture_coord")
-		ed->SetMode(mode_model_mesh_texture);
+		ed->setMode(mode_model_mesh_texture);
 	if (id == "mode_model_animation")
-		ed->SetMode(mode_model_animation);
+		ed->setMode(mode_model_animation);
 	if (id == "mode_model_skeleton")
-		ed->SetMode(mode_model_skeleton);
+		ed->setMode(mode_model_skeleton);
 		//SetSubMode(SubModeTextures);
 	if (id == "mode_properties")
 		ExecutePropertiesDialog();
@@ -144,14 +144,14 @@ void ModeModel::OnCommand(const string & id)
 
 void ModeModel::OnUpdateMenu()
 {
-	ed->Check("mode_model_vertex", mode_model_mesh_vertex->IsAncestorOf(ed->cur_mode));
-	ed->Check("mode_model_edge", mode_model_mesh_edge->IsAncestorOf(ed->cur_mode));
-	ed->Check("mode_model_triangle", mode_model_mesh_polygon->IsAncestorOf(ed->cur_mode));
-	ed->Check("mode_model_surface", mode_model_mesh_surface->IsAncestorOf(ed->cur_mode));
-	ed->Check("mode_model_texture_coord", mode_model_mesh_texture->IsAncestorOf(ed->cur_mode));
-	ed->Check("mode_model_mesh", mode_model_mesh->IsAncestorOf(ed->cur_mode));
-	ed->Check("mode_model_skeleton", mode_model_skeleton->IsAncestorOf(ed->cur_mode));
-	ed->Check("mode_model_animation", mode_model_animation->IsAncestorOf(ed->cur_mode));
+	ed->check("mode_model_vertex", mode_model_mesh_vertex->IsAncestorOf(ed->cur_mode));
+	ed->check("mode_model_edge", mode_model_mesh_edge->IsAncestorOf(ed->cur_mode));
+	ed->check("mode_model_triangle", mode_model_mesh_polygon->IsAncestorOf(ed->cur_mode));
+	ed->check("mode_model_surface", mode_model_mesh_surface->IsAncestorOf(ed->cur_mode));
+	ed->check("mode_model_texture_coord", mode_model_mesh_texture->IsAncestorOf(ed->cur_mode));
+	ed->check("mode_model_mesh", mode_model_mesh->IsAncestorOf(ed->cur_mode));
+	ed->check("mode_model_skeleton", mode_model_skeleton->IsAncestorOf(ed->cur_mode));
+	ed->check("mode_model_animation", mode_model_animation->IsAncestorOf(ed->cur_mode));
 }
 
 
@@ -176,23 +176,23 @@ void ModeModel::SetMaterialCreation()
 
 void ModeModel::New()
 {
-	if (!ed->AllowTermination())
+	if (!ed->allowTermination())
 		return;
 	data->Reset();
-	ed->SetMode(this);
+	ed->setMode(this);
 	mode_model_mesh->OptimizeView();
 }
 
 bool ModeModel::Open()
 {
-	if (!ed->AllowTermination())
+	if (!ed->allowTermination())
 		return false;
-	if (!ed->FileDialog(FDModel, false, false))
+	if (!ed->fileDialog(FDModel, false, false))
 		return false;
 	if (!data->Load(ed->DialogFileComplete))
 		return false;
 
-	ed->SetMode(this);
+	ed->setMode(this);
 	mode_model_mesh->OptimizeView();
 	return true;
 }
@@ -206,16 +206,16 @@ bool ModeModel::Save()
 
 bool ModeModel::SaveAs()
 {
-	if (ed->FileDialog(FDModel, true, false))
+	if (ed->fileDialog(FDModel, true, false))
 		return data->Save(ed->DialogFileComplete);
 	return false;
 }
 
 bool ModeModel::ImportOpen3ds()
 {
-	if (!ed->AllowTermination())
+	if (!ed->allowTermination())
 		return false;
-	if (!ed->FileDialog(FDFile, false, false))
+	if (!ed->fileDialog(FDFile, false, false))
 		return false;
 	return ImportLoad3ds(ed->DialogFileComplete);
 }
@@ -226,7 +226,7 @@ bool ModeModel::ImportLoad3ds(const string &filename)
 	if (!im->Import(data, filename))
 		return false;
 
-	ed->SetMode(this);
+	ed->setMode(this);
 	mode_model_mesh->OptimizeView();
 	return true;
 }
@@ -238,7 +238,7 @@ void ModeModel::ExecutePropertiesDialog()
 
 	PropertiesDialog = new ModelPropertiesDialog(ed, true, data);
 
-	PropertiesDialog->Show();
-	//PropertiesDialog->Run();
+	PropertiesDialog->show();
+	//PropertiesDialog->run();
 }
 

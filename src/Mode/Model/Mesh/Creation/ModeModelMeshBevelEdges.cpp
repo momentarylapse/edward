@@ -88,7 +88,7 @@ void ModeModelMeshBevelEdges::OnDrawWin(MultiView::Window *win)
 			FxDrawBall(v.pos, radius, 16,32);
 #endif
 	NixEnableLighting(false);
-	ed->DrawStr(100, 100, f2s(radius, 3));
+	ed->drawStr(100, 100, f2s(radius, 3));
 }
 
 

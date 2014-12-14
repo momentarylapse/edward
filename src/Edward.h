@@ -72,51 +72,50 @@ public:
 	Edward(Array<string> arg);
 	virtual ~Edward();
 
-	bool HandleArguments(Array<string> arg);
-	void LoadKeyCodes();
-	int Run();
-	void Exit();
+	bool handleArguments(Array<string> arg);
+	void loadKeyCodes();
+	void exit();
 
-	void IdleFunction();
+	void idleFunction();
 
-	void OnAbout();
-	void OnSendBugReport();
-	void SetMode(ModeBase *m);
+	void onAbout();
+	void onSendBugReport();
+	void setMode(ModeBase *m);
 
 	void OnUpdate(Observable *o);
-	void OnCommand(const string &id);
-	void OnClose();
+	void onCommand(const string &id);
+	void onClose();
 
-	virtual void _cdecl OnDraw();
-	virtual void _cdecl OnKeyDown();
-	virtual void _cdecl OnKeyUp();
-	virtual void _cdecl OnMouseMove();
-	virtual void _cdecl OnMouseWheel();
-	virtual void _cdecl OnMouseEnter();
-	virtual void _cdecl OnMouseLeave();
-	virtual void _cdecl OnLeftButtonDown();
-	virtual void _cdecl OnLeftButtonUp();
-	virtual void _cdecl OnMiddleButtonDown();
-	virtual void _cdecl OnMiddleButtonUp();
-	virtual void _cdecl OnRightButtonDown();
-	virtual void _cdecl OnRightButtonUp();
-	void OnEvent();
-	void OnAbortCreationMode();
+	virtual void _cdecl onDraw();
+	virtual void _cdecl onKeyDown();
+	virtual void _cdecl onKeyUp();
+	virtual void _cdecl onMouseMove();
+	virtual void _cdecl onMouseWheel();
+	virtual void _cdecl onMouseEnter();
+	virtual void _cdecl onMouseLeave();
+	virtual void _cdecl onLeftButtonDown();
+	virtual void _cdecl onLeftButtonUp();
+	virtual void _cdecl onMiddleButtonDown();
+	virtual void _cdecl onMiddleButtonUp();
+	virtual void _cdecl onRightButtonDown();
+	virtual void _cdecl onRightButtonUp();
+	void onEvent();
+	void onAbortCreationMode();
 
-	void SetMessage(const string &message);
-	void RemoveMessage();
-	void ErrorBox(const string &message);
+	void setMessage(const string &message);
+	void removeMessage();
+	void errorBox(const string &message);
 	Array<string> message_str;
 
-	void OnExecutePlugin();
+	void onExecutePlugin();
 
-	void SetRootDirectory(const string &directory);
-	void UpdateDialogDir(int kind);
-	void MakeDirs(const string &original_dir, bool as_root_dir = false);
-	string GetRootDir(int kind);
+	void setRootDirectory(const string &directory);
+	void updateDialogDir(int kind);
+	void makeDirs(const string &original_dir, bool as_root_dir = false);
+	string getRootDir(int kind);
 
-	bool FileDialog(int kind, bool save, bool force_in_root_dir);
-	bool AllowTermination();
+	bool fileDialog(int kind, bool save, bool force_in_root_dir);
+	bool allowTermination();
 
 	enum AlignType
 	{
@@ -124,11 +123,11 @@ public:
 		AlignCenter,
 		AlignRight
 	};
-	void DrawStr(int x, int y, const string &str, AlignType a = AlignLeft);
-	void ForceRedraw();
+	void drawStr(int x, int y, const string &str, AlignType a = AlignLeft);
+	void forceRedraw();
 	bool force_redraw;
-	void UpdateMenu();
-	void OptimizeCurrentView();
+	void updateMenu();
+	void optimizeCurrentView();
 
 	ModeBase *cur_mode;
 	Array<ModeBase*> mode_queue;

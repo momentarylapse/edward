@@ -26,12 +26,12 @@ void ModeCreationBase::OnDrawRecursive(bool multi_view_handled)
 {
 	ModeBase::OnDrawRecursive(multi_view_handled);
 
-	ed->DrawStr(MaxX / 2, MaxY - 20, message);
+	ed->drawStr(MaxX / 2, MaxY - 20, message);
 }
 
 void ModeCreationBase::Abort()
 {
 	assert(parent);
-	ed->SetMode(parent);
+	ed->setMode(parent);
 }
 

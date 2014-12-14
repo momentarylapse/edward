@@ -30,10 +30,10 @@ Action *ModeModelMeshBrush::GetAction()
 {
 	vector pos = multi_view->hover.point;
 	vector n = data->Surface[multi_view->hover.set].Polygon[multi_view->hover.index].TempNormal;
-	float radius = dialog->GetFloat("diameter") / 2;
-	float depth = dialog->GetFloat("depth");
-	int type = dialog->GetInt("brush_type");
-	if (ed->GetKey(KEY_CONTROL))
+	float radius = dialog->getFloat("diameter") / 2;
+	float depth = dialog->getFloat("depth");
+	int type = dialog->getInt("brush_type");
+	if (ed->getKey(KEY_CONTROL))
 		depth = - depth;
 
 	Action *a = NULL;
@@ -57,44 +57,44 @@ void ModeModelMeshBrush::OnStart()
 
 	// Dialog
 	dialog = new HuiFixedDialog(_("Pinsel"), 300, 155, ed, true);//HuiCreateResourceDialog("new_ball_dialog", ed);
-	dialog->AddText(_("Dicke"), 5, 5, 80, 25, "");
-	dialog->AddText(_("Tiefe"), 5, 35, 80, 25, "");
-	dialog->AddSlider("", 90, 5, 115, 25, "diameter_slider");
-	dialog->AddSlider("", 90, 35, 115, 25, "depth_slider");
-	dialog->AddEdit("", 215, 5, 80, 25, "diameter");
-	dialog->AddEdit("", 215, 35, 80, 25, "depth");
-	dialog->AddListView("!nobar\\type", 5, 65, 290, 80, "brush_type");
+	dialog->addText(_("Dicke"), 5, 5, 80, 25, "");
+	dialog->addText(_("Tiefe"), 5, 35, 80, 25, "");
+	dialog->addSlider("", 90, 5, 115, 25, "diameter_slider");
+	dialog->addSlider("", 90, 35, 115, 25, "depth_slider");
+	dialog->addEdit("", 215, 5, 80, 25, "diameter");
+	dialog->addEdit("", 215, 35, 80, 25, "depth");
+	dialog->addListView("!nobar\\type", 5, 65, 290, 80, "brush_type");
 
-	dialog->EventM("diameter_slider", this, &ModeModelMeshBrush::OnDiameterSlider);
-	dialog->EventM("depth_slider", this, &ModeModelMeshBrush::OnDepthSlider);
+	dialog->event("diameter_slider", this, &ModeModelMeshBrush::OnDiameterSlider);
+	dialog->event("depth_slider", this, &ModeModelMeshBrush::OnDepthSlider);
 
 	base_diameter = multi_view->cam.radius * 0.2f;
 	base_depth = multi_view->cam.radius * 0.02f;
 
-	dialog->AddString("brush_type", _("Ausbeulen/Eindellen"));
-	dialog->AddString("brush_type", _("Gl&atten"));
-	dialog->SetFloat("diameter_slider", 0.5f);
-	dialog->SetFloat("depth_slider", 0.5f);
-	dialog->SetString("diameter", f2s(base_diameter, 2));
-	dialog->SetString("depth", f2s(base_depth, 2));
-	dialog->SetInt("brush_type", 0);
-	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
-	dialog->Show();
-	dialog->Event("hui:close", &HuiFuncIgnore);
+	dialog->addString("brush_type", _("Ausbeulen/Eindellen"));
+	dialog->addString("brush_type", _("Gl&atten"));
+	dialog->setFloat("diameter_slider", 0.5f);
+	dialog->setFloat("depth_slider", 0.5f);
+	dialog->setString("diameter", f2s(base_diameter, 2));
+	dialog->setString("depth", f2s(base_depth, 2));
+	dialog->setInt("brush_type", 0);
+	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
+	dialog->show();
+	dialog->eventS("hui:close", &HuiFuncIgnore);
 
-	ed->Activate("");
+	ed->activate("");
 }
 
 void ModeModelMeshBrush::OnDiameterSlider()
 {
-	float x = dialog->GetFloat("");
-	dialog->SetString("diameter", f2s(base_diameter * exp((x - 0.5f) * 4), 2));
+	float x = dialog->getFloat("");
+	dialog->setString("diameter", f2s(base_diameter * exp((x - 0.5f) * 4), 2));
 }
 
 void ModeModelMeshBrush::OnDepthSlider()
 {
-	float x = dialog->GetFloat("");
-	dialog->SetString("depth", f2s(base_depth * exp((x - 0.5f) * 2), 2));
+	float x = dialog->getFloat("");
+	dialog->setString("depth", f2s(base_depth * exp((x - 0.5f) * 2), 2));
 }
 
 void ModeModelMeshBrush::OnEnd()
@@ -133,7 +133,7 @@ void ModeModelMeshBrush::OnMouseMove()
 	if (multi_view->hover.index < 0)
 		return;
 	vector pos = multi_view->hover.point;
-	float radius = dialog->GetFloat("diameter") / 2;
+	float radius = dialog->getFloat("diameter") / 2;
 	distance += (pos - last_pos).length();
 	last_pos = pos;
 	if (distance > radius * 0.7f){
@@ -148,7 +148,7 @@ void ModeModelMeshBrush::OnDrawWin(MultiView::Window* win)
 		return;
 	vector pos = multi_view->hover.point;
 	vector n = data->Surface[multi_view->hover.set].Polygon[multi_view->hover.index].TempNormal;
-	float radius = dialog->GetFloat("diameter") / 2;
+	float radius = dialog->getFloat("diameter") / 2;
 
 	NixSetColor(Green);
 	NixEnableLighting(false);

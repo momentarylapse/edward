@@ -232,13 +232,13 @@ bool DataModel::Load(const string & _filename, bool deep)
 
 	filename = _filename;
 	if (this == mode_model->data)
-		ed->MakeDirs(filename);
+		ed->makeDirs(filename);
 	//msg_write(dir);
 	//msg_write(filename);
 	CFile *f=new CFile();
 	if (!f->Open(filename)){
 		delete(f);
-		ed->SetMessage(_("Datei ist nicht in der Stimmung, ge&offnet zu werden"));
+		ed->setMessage(_("Datei ist nicht in der Stimmung, ge&offnet zu werden"));
 		return false;
 	}
 	file_time = f->GetDateModification().time;
@@ -246,7 +246,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 	ffv=f->ReadFileFormatVersion();
 
 	if (ffv<0){
-		ed->ErrorBox(_("Datei-Format unlesbar!"));
+		ed->errorBox(_("Datei-Format unlesbar!"));
 		error=true;
 
 	}else if (ffv==10){ // old format
@@ -828,7 +828,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 
 
 	}else{
-		ed->ErrorBox(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 10, 10));
+		ed->errorBox(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 10, 10));
 		error=true;
 	}
 
@@ -860,7 +860,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 			// test textures
 			for (int t=0;t<Material[i].NumTextures;t++){
 				if ((Material[i].Texture[t] < 0) && (Material[i].TextureFile[t].num > 0))
-					ed->SetMessage(format(_("Textur-Datei nicht ladbar: %s"), Material[i].TextureFile[t].c_str()));
+					ed->setMessage(format(_("Textur-Datei nicht ladbar: %s"), Material[i].TextureFile[t].c_str()));
 			}
 		}
 
@@ -1048,7 +1048,7 @@ bool DataModel::Save(const string & _filename)
 //	RemoveUnusedData();
 
 	filename = _filename;
-	ed->MakeDirs(filename);
+	ed->makeDirs(filename);
 
 	CFile *f = FileCreate(filename);
 	f->WriteFileFormatVersion(false, 11);//FFVBinary, 11);
@@ -1364,7 +1364,7 @@ bool DataModel::Save(const string & _filename)
 	f->WriteComment("#");
 	FileClose(f);
 
-	ed->SetMessage(_("Gespeichert!"));
+	ed->setMessage(_("Gespeichert!"));
 	action_manager->MarkCurrentAsSave();
 	return true;
 }

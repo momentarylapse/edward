@@ -54,15 +54,15 @@ Lightmap::~Lightmap()
 
 bool Lightmap::Create()
 {
-	ed->progress->StartCancelable(_("berechne Licht"), 0);
+	ed->progress->startCancelable(_("berechne Licht"), 0);
 	data->AddTextureLevels();
 	data->CreateVertices();
 	try{
 		Compute();
-		ed->progress->End();
+		ed->progress->end();
 
 	}catch(AbortException &e){
-		ed->progress->End();
+		ed->progress->end();
 		return false;
 	}
 	return RenderTextures();
@@ -79,16 +79,16 @@ Lightmap::Histogram Lightmap::GetHistogram()
 
 bool Lightmap::Preview()
 {
-	ed->progress->StartCancelable(_("berechne Licht"), 0);
+	ed->progress->startCancelable(_("berechne Licht"), 0);
 	data->AddTextureLevels(false);
 	data->CreateVertices();
 	try{
 		Compute();
 	}catch(AbortException &e){
-		ed->progress->End();
+		ed->progress->end();
 		return false;
 	}
-	ed->progress->End();
+	ed->progress->end();
 	return true;
 }
 
@@ -132,7 +132,7 @@ void fuzzy_image(Image &im)
 
 bool Lightmap::RenderTextures()
 {
-	ed->progress->StartCancelable(_("berechne Textur"), 0);
+	ed->progress->startCancelable(_("berechne Textur"), 0);
 	dir_create(NixTextureDir + data->texture_out_dir);
 	dir_create(ObjectDir + data->model_out_dir);
 	dir_create(MapDir + data->model_out_dir);
@@ -152,8 +152,8 @@ bool Lightmap::RenderTextures()
 			im.setPixel(v.x, v.y, RenderVertex(v));
 
 			if ((vi & 127) == 0){
-				ed->progress->Set(format(_("%d von %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
-				if (ed->progress->IsCancelled())
+				ed->progress->set(format(_("%d von %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
+				if (ed->progress->isCancelled())
 					throw Lightmap::AbortException();
 			}
 		}
@@ -187,8 +187,8 @@ bool Lightmap::RenderTextures()
 			im.setPixel(v.x, v.y, RenderVertex(v));
 
 			if ((vi & 127) == 0){
-				ed->progress->Set(format(_("%d von %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
-				if (ed->progress->IsCancelled())
+				ed->progress->set(format(_("%d von %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
+				if (ed->progress->isCancelled())
 					throw Lightmap::AbortException();
 			}
 		}
@@ -207,10 +207,10 @@ bool Lightmap::RenderTextures()
 
 	CreateNewWorld();
 	}catch(AbortException &e){
-		ed->progress->End();
+		ed->progress->end();
 		return false;
 	}
-	ed->progress->End();
+	ed->progress->end();
 	return true;
 }
 

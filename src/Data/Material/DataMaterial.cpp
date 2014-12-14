@@ -28,7 +28,7 @@ DataMaterial::~DataMaterial()
 bool DataMaterial::Save(const string & _filename)
 {
 	filename = _filename;
-	ed->MakeDirs(filename);
+	ed->makeDirs(filename);
 
 	CFile *f = FileCreate(filename);
 	f->WriteFileFormatVersion(false, 4);
@@ -78,7 +78,7 @@ bool DataMaterial::Save(const string & _filename)
 	f->Close();
 	delete(f);
 
-	ed->SetMessage(_("Gespeichert!"));
+	ed->setMessage(_("Gespeichert!"));
 	action_manager->MarkCurrentAsSave();
 	return true;
 }
@@ -92,18 +92,18 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 	Reset();
 
 	filename = _filename;
-	ed->MakeDirs(filename);
+	ed->makeDirs(filename);
 	CFile *f=new CFile();
 	if (!f->Open(filename)){
 		delete(f);
-		ed->SetMessage(_("Kann Material-Datei nicht &offnen"));
+		ed->setMessage(_("Kann Material-Datei nicht &offnen"));
 		return false;
 	}
 	file_time = f->GetDateModification().time;
 
 	ffv=f->ReadFileFormatVersion();
 	if (ffv<0){
-		ed->ErrorBox(_("Datei-Format nicht ladbar!!"));
+		ed->errorBox(_("Datei-Format nicht ladbar!!"));
 		error=true;
 	}else if ((ffv == 3) || (ffv == 4)){
 		if (ffv >= 4){
@@ -223,7 +223,7 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 
 		Appearance.AlphaZBuffer = (Appearance.TransparencyMode != TransparencyModeFunctions) && (Appearance.TransparencyMode != TransparencyModeFactor);
 	}else{
-		ed->ErrorBox(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 1, 4));
+		ed->errorBox(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 1, 4));
 		error = true;
 	}
 

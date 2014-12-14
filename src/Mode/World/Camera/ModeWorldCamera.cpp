@@ -58,23 +58,23 @@ void ModeWorldCamera::OnStart()
 
 	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
 	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
-	t->Reset();
-	t->AddItem(L("new"),dir + "new.png","cam_new");
-	t->AddItem(L("open"),dir + "open.png","cam_open");
-	t->AddItem(L("save"),dir + "save.png","cam_save");
-	t->AddSeparator();
-	t->AddItem(L("undo"),dir + "undo.png","cam_undo");
-	t->AddItem(L("redo"),dir + "redo.png","cam_redo");
-	t->AddSeparator();
-	t->AddItem(_("Push"),dir + "view_push.png","view_push");
-	ed->SetTooltip("view_push", _("ViewStage Push"));
-	t->AddItem(_("Pop"),dir + "view_pop.png","view_pop");
-	ed->SetTooltip("view_pop", _("ViewStage Pop"));
-	t->Enable(true);
-	t->Configure(false,true);
+	t->reset();
+	t->addItem(L("new"),dir + "new.png","cam_new");
+	t->addItem(L("open"),dir + "open.png","cam_open");
+	t->addItem(L("save"),dir + "save.png","cam_save");
+	t->addSeparator();
+	t->addItem(L("undo"),dir + "undo.png","cam_undo");
+	t->addItem(L("redo"),dir + "redo.png","cam_redo");
+	t->addSeparator();
+	t->addItem(_("Push"),dir + "view_push.png","view_push");
+	ed->setTooltip("view_push", _("ViewStage Push"));
+	t->addItem(_("Pop"),dir + "view_pop.png","view_pop");
+	ed->setTooltip("view_pop", _("ViewStage Pop"));
+	t->enable(true);
+	t->configure(false,true);
 	t = ed->toolbar[HuiToolbarLeft];
-	t->Reset();
-	t->Enable(false);
+	t->reset();
+	t->enable(false);
 
 	preview = false;
 	preview_time = 0;
@@ -98,7 +98,7 @@ void ModeWorldCamera::OnEnd()
 
 void ModeWorldCamera::AddPoint()
 {
-	ed->SetMode(new ModeWorldCameraCreatePoint(ed->cur_mode));
+	ed->setMode(new ModeWorldCameraCreatePoint(ed->cur_mode));
 }
 
 void ModeWorldCamera::DeletePoint()
@@ -152,7 +152,7 @@ void ModeWorldCamera::PreviewStop()
 {
 	preview = false;
 	multi_view->cam.ignore_radius = false;
-	ed->ForceRedraw();
+	ed->forceRedraw();
 	Notify("Change");
 }
 
@@ -163,7 +163,7 @@ void ModeWorldCamera::PreviewUpdate()
 	multi_view->cam.pos = inter_pos->get(preview_time / duration);
 	multi_view->cam.ang = inter_ang->get(preview_time / duration);
 
-	ed->ForceRedraw();
+	ed->forceRedraw();
 	if (preview_time > duration)
 		PreviewStop();
 	if (preview)
@@ -190,8 +190,8 @@ void ModeWorldCamera::OnCommand(const string &id)
 
 void ModeWorldCamera::OnUpdateMenu()
 {
-	ed->Enable("cam_undo", data->action_manager->Undoable());
-	ed->Enable("cam_redo", data->action_manager->Redoable());
+	ed->enable("cam_undo", data->action_manager->Undoable());
+	ed->enable("cam_redo", data->action_manager->Redoable());
 }
 
 void ModeWorldCamera::OnUpdate(Observable *obs)
@@ -227,7 +227,7 @@ void ModeWorldCamera::LoadData()
 			data->Vel,
 			NULL,
 			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove | MultiView::FlagDraw);
-	ed->ForceRedraw();
+	ed->forceRedraw();
 }
 
 void ModeWorldCamera::OnDrawWin(MultiView::Window *win)
@@ -263,14 +263,14 @@ void ModeWorldCamera::OnDrawWin(MultiView::Window *win)
 
 void ModeWorldCamera::New()
 {
-	if (ed->AllowTermination())
+	if (ed->allowTermination())
 		data->Reset();
 }
 
 bool ModeWorldCamera::Open()
 {
-	if (ed->AllowTermination())
-		if (ed->FileDialog(FDCameraFlight, false, true))
+	if (ed->allowTermination())
+		if (ed->fileDialog(FDCameraFlight, false, true))
 			return data->Load(ed->DialogFileComplete);
 	return false;
 }
@@ -285,7 +285,7 @@ bool ModeWorldCamera::Save()
 
 bool ModeWorldCamera::SaveAs()
 {
-	if (ed->FileDialog(FDCameraFlight, true, true))
+	if (ed->fileDialog(FDCameraFlight, true, true))
 		return data->Save(ed->DialogFileComplete);
 	return false;
 }

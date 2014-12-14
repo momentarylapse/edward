@@ -40,7 +40,7 @@ void ModeModelMeshSplitPolygon::OnLeftButtonDown()
 		//Abort();
 		surface = -1;
 		triangle = -1;
-		ed->ForceRedraw();
+		ed->forceRedraw();
 	}
 }
 

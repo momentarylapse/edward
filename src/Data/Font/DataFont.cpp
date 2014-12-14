@@ -29,11 +29,11 @@ bool DataFont::Load(const string & _filename, bool deep)
 	Reset();
 
 	filename = _filename;
-	ed->MakeDirs(filename);
+	ed->makeDirs(filename);
 	CFile *f=new CFile();
 	if (!f->Open(filename)){
 		delete(f);
-		ed->SetMessage(_("Kann XFont-Datei nicht &offnen"));
+		ed->setMessage(_("Kann XFont-Datei nicht &offnen"));
 		return false;
 	}
 	file_time = f->GetDateModification().time;
@@ -88,7 +88,7 @@ bool DataFont::Load(const string & _filename, bool deep)
 			if (g.Name == str)
 				global.UnknownGlyphNo = i;
 	}else{
-		ed->SetMessage(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 1, 2));
+		ed->setMessage(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 1, 2));
 		error=true;
 	}
 
@@ -155,7 +155,7 @@ void DataFont::Reset()
 bool DataFont::Save(const string & _filename)
 {
 	filename = _filename;
-	ed->MakeDirs(filename);
+	ed->makeDirs(filename);
 
 	CFile *f=new CFile();
 	if (!f)
@@ -191,7 +191,7 @@ bool DataFont::Save(const string & _filename)
 	f->Close();
 	delete(f);
 
-	ed->SetMessage(_("Gespeichert!"));
+	ed->setMessage(_("Gespeichert!"));
 	action_manager->MarkCurrentAsSave();
 	return false;
 }

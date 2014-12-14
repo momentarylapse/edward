@@ -52,7 +52,7 @@ void ModeMaterial::New()
 {
 	data->Reset();
 	OptimizeView();
-	ed->SetMode(mode_material);
+	ed->setMode(mode_material);
 }
 
 
@@ -134,15 +134,15 @@ void ModeMaterial::OnDrawWin(MultiView::Window *win)
 
 bool ModeMaterial::Open()
 {
-	if (!ed->AllowTermination())
+	if (!ed->allowTermination())
 		return false;
-	if (!ed->FileDialog(FDMaterial, false, false))
+	if (!ed->fileDialog(FDMaterial, false, false))
 		return false;
 	if (!data->Load(ed->DialogFileComplete))
 		return false;
 
 	OptimizeView();
-	ed->SetMode(mode_material);
+	ed->setMode(mode_material);
 	return true;
 }
 
@@ -153,15 +153,15 @@ void ModeMaterial::OnEnd()
 	delete(AppearanceDialog);
 
 	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
-	t->Reset();
-	t->Enable(false);
+	t->reset();
+	t->enable(false);
 }
 
 
 
 bool ModeMaterial::SaveAs()
 {
-	if (ed->FileDialog(FDMaterial, true, false))
+	if (ed->fileDialog(FDMaterial, true, false))
 		return data->Save(ed->DialogFileComplete);
 	return false;
 }
@@ -172,18 +172,18 @@ void ModeMaterial::OnStart()
 {
 	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
 	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
-	t->Reset();
-	t->AddItem(L("new"),dir + "new.png","new");
-	t->AddItem(L("open"),dir + "open.png","open");
-	t->AddItem(L("save"),dir + "save.png","save");
-	t->AddSeparator();
-	t->AddItem(L("undo"),dir + "undo.png","undo");
-	t->AddItem(L("redo"),dir + "redo.png","redo");
-	t->Enable(true);
-	t->Configure(false,true);
+	t->reset();
+	t->addItem(L("new"),dir + "new.png","new");
+	t->addItem(L("open"),dir + "open.png","open");
+	t->addItem(L("save"),dir + "save.png","save");
+	t->addSeparator();
+	t->addItem(L("undo"),dir + "undo.png","undo");
+	t->addItem(L("redo"),dir + "redo.png","redo");
+	t->enable(true);
+	t->configure(false,true);
 	t = ed->toolbar[HuiToolbarLeft];
-	t->Reset();
-	t->Enable(false);
+	t->reset();
+	t->enable(false);
 	multi_view->allow_rect = false;
 
 	AppearanceDialog = new MaterialPropertiesDialog(ed, data);
@@ -249,13 +249,13 @@ bool ModeMaterial::OptimizeView()
 
 void ModeMaterial::OnUpdateMenu()
 {
-	ed->Check("material_shape_smooth", shape_smooth);
-	ed->Check("material_shape_cube", shape_type == "cube");
-	ed->Check("material_shape_ball", shape_type == "ball");
-	ed->Check("material_shape_torus", shape_type == "torus");
-	ed->Check("material_shape_torusknot", shape_type == "torusknot");
-	ed->Check("material_shape_teapot", shape_type == "teapot");
-	ed->Check("material_shape_icosahedron", shape_type == "icosahedron");
+	ed->check("material_shape_smooth", shape_smooth);
+	ed->check("material_shape_cube", shape_type == "cube");
+	ed->check("material_shape_ball", shape_type == "ball");
+	ed->check("material_shape_torus", shape_type == "torus");
+	ed->check("material_shape_torusknot", shape_type == "torusknot");
+	ed->check("material_shape_teapot", shape_type == "teapot");
+	ed->check("material_shape_icosahedron", shape_type == "icosahedron");
 }
 
 

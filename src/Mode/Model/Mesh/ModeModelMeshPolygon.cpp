@@ -275,7 +275,7 @@ void ModeModelMeshPolygon::OnDraw()
 void ModeModelMeshPolygon::ToggleSelectCW()
 {
 	SelectCW = !SelectCW;
-	ed->UpdateMenu();
+	ed->updateMenu();
 }
 
 

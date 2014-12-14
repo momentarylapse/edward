@@ -16,11 +16,11 @@ ModelEasifyDialog::ModelEasifyDialog(HuiWindow *_parent, bool _allow_parent, Dat
 	data = _data;
 	factor = 0.5f;
 
-	EventM("hui:close", this, &ModelEasifyDialog::OnClose);
-	EventM("cancel", this, &ModelEasifyDialog::OnClose);
-	EventM("ok", this, &ModelEasifyDialog::OnOk);
-	EventM("quality_factor", this, &ModelEasifyDialog::OnQualityFactor);
-	EventM("quality_slider", this, &ModelEasifyDialog::OnQualitySlider);
+	event("hui:close", this, &ModelEasifyDialog::OnClose);
+	event("cancel", this, &ModelEasifyDialog::OnClose);
+	event("ok", this, &ModelEasifyDialog::OnOk);
+	event("quality_factor", this, &ModelEasifyDialog::OnQualityFactor);
+	event("quality_slider", this, &ModelEasifyDialog::OnQualitySlider);
 
 	LoadData();
 }
@@ -31,21 +31,21 @@ ModelEasifyDialog::~ModelEasifyDialog()
 
 void ModelEasifyDialog::LoadData()
 {
-	SetFloat("quality_factor", factor * 100.0f);
-	SetFloat("quality_slider", factor);
-	SetString("eat_vertices", format(_("Vertexpunkte: %d (von %d)"), (int)(data->Vertex.num * factor), data->Vertex.num));
-	SetString("eat_polygons", format(_("Polygone: %d (von %d)"), (int)(data->GetNumPolygons() * factor), data->GetNumPolygons()));
+	setFloat("quality_factor", factor * 100.0f);
+	setFloat("quality_slider", factor);
+	setString("eat_vertices", format(_("Vertexpunkte: %d (von %d)"), (int)(data->Vertex.num * factor), data->Vertex.num));
+	setString("eat_polygons", format(_("Polygone: %d (von %d)"), (int)(data->GetNumPolygons() * factor), data->GetNumPolygons()));
 }
 
 void ModelEasifyDialog::OnQualityFactor()
 {
-	factor = GetFloat("quality_factor") / 100.0f;
+	factor = getFloat("quality_factor") / 100.0f;
 	LoadData();
 }
 
 void ModelEasifyDialog::OnQualitySlider()
 {
-	factor = GetFloat("");
+	factor = getFloat("");
 	LoadData();
 }
 

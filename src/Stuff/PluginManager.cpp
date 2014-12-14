@@ -38,7 +38,7 @@ void PluginManager::Execute(const string & filename)
 		Script::Script *s = Script::Load(filename);
 		s->Execute();
 	}catch(Script::Exception &e){
-		ed->ErrorBox(e.message);
+		ed->errorBox(e.message);
 	}
 
 	Script::DeleteAllScripts(true, true);

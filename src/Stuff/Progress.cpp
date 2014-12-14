@@ -20,76 +20,76 @@ Progress::~Progress()
 }
 
 
-void Progress::Set(const string &str, float progress)
+void Progress::set(const string &str, float progress)
 {
 	if (!dlg)
 		return;
 	time_running += timer.get();
 	if (time_running < 5){
-		dlg->SetString("progress_bar", str);
+		dlg->setString("progress_bar", str);
 	}else{
 		float eta = time_running / progress * (1 - progress);
 		if (eta < 60)
-			dlg->SetString("progress_bar", str + format(_(" (noch %.0d s)"), (int)(eta + 0.5f)));
+			dlg->setString("progress_bar", str + format(_(" (noch %.0d s)"), (int)(eta + 0.5f)));
 		else
-			dlg->SetString("progress_bar", str + format(_(" (noch %.0d min)"), (int)(eta / 60 + 0.5f)));
+			dlg->setString("progress_bar", str + format(_(" (noch %.0d min)"), (int)(eta / 60 + 0.5f)));
 	}
-	dlg->SetFloat("progress_bar", progress);
+	dlg->setFloat("progress_bar", progress);
 	message = str;
 	HuiDoSingleMainLoop();
 }
 
 
-void Progress::Set(float progress)
+void Progress::set(float progress)
 {
-	Set(message, progress);
+	set(message, progress);
 }
 
-void IgnoreEvent(){}
-
-void Progress::Start(const string &str, float progress)
+void Progress::start(const string &str, float progress)
 {
 	if (!dlg)
 		dlg = HuiCreateResourceDialog("progress_dialog", HuiCurWindow);
-	dlg->SetString("progress_bar", str);
-	dlg->SetFloat("progress_bar", progress);
-	dlg->Show();
-	dlg->Event("hui:close", &IgnoreEvent);
+	dlg->setString("progress_bar", str);
+	dlg->setFloat("progress_bar", progress);
+	dlg->show();
+	dlg->event("hui:close", this, &Progress::_ignoreEvent);
 	HuiDoSingleMainLoop();
 	Cancelled = false;
 	time_running = 0;
 	timer.reset();
 }
 
-void Progress::Cancel()
+void Progress::cancel()
 {
 	Cancelled = true;
 }
 
-bool Progress::IsCancelled()
+bool Progress::isCancelled()
 {
 	return Cancelled;
 }
 
-void OnProgressClose()
-{	_progress_->Cancel();	}
+void Progress::onClose()
+{
+	cancel();
+}
 
-void Progress::StartCancelable(const string &str, float progress)
+void Progress::startCancelable(const string &str, float progress)
 {
 	if (!dlg)
 		dlg = HuiCreateResourceDialog("progress_cancelable_dialog", HuiCurWindow);
-	dlg->SetString("progress_bar", str);
-	dlg->SetFloat("progress_bar", progress);
-	dlg->Show();
-	dlg->Event("hui:close", &OnProgressClose);
-	dlg->Event("cancel", &OnProgressClose);
+	dlg->setString("progress_bar", str);
+	dlg->setFloat("progress_bar", progress);
+	dlg->show();
+	dlg->event("hui:close", this, &Progress::onClose);
+	dlg->event("cancel", this, &Progress::onClose);
 	HuiDoSingleMainLoop();
 	Cancelled = false;
 	time_running = 0;
 	timer.get();
 }
 
-void Progress::End()
+void Progress::end()
 {
 	if (!dlg)
 		return;

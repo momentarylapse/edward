@@ -8,10 +8,10 @@
 #include "lib/hui/hui.h"
 #include "Edward.h"
 
-string AppVersion = "0.3.99.3";
+string AppVersion = "0.3.99.4";
 string AppName = "Edward";
 
-int hui_main(Array<string> arg)
+int hui_main(const Array<string> &arg)
 {
 	HuiInit("edward", true, "Deutsch");
 	HuiSetProperty("name", AppName);
@@ -26,5 +26,5 @@ int hui_main(Array<string> arg)
 	msg_write("");
 
 	ed = new Edward(arg);
-	return ed->Run();
+	return HuiRun();
 }

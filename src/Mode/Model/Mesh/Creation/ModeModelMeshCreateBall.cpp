@@ -31,16 +31,16 @@ ModeModelMeshCreateBall::~ModeModelMeshCreateBall()
 
 void ModeModelMeshCreateBall::OnTypeBall()
 {
-	dialog->Enable("nb_x", true);
-	dialog->Enable("nb_y", true);
-	dialog->Enable("nb_complexity", false);
+	dialog->enable("nb_x", true);
+	dialog->enable("nb_y", true);
+	dialog->enable("nb_complexity", false);
 }
 
 void ModeModelMeshCreateBall::OnTypeSphere()
 {
-	dialog->Enable("nb_x", false);
-	dialog->Enable("nb_y", false);
-	dialog->Enable("nb_complexity", true);
+	dialog->enable("nb_x", false);
+	dialog->enable("nb_y", false);
+	dialog->enable("nb_complexity", true);
 }
 
 void ModeModelMeshCreateBall::OnStart()
@@ -48,22 +48,22 @@ void ModeModelMeshCreateBall::OnStart()
 	// Dialog
 	dialog = HuiCreateResourceDialog("new_ball_dialog", ed);
 
-	dialog->SetInt("nb_x", HuiConfig.getInt("NewBallNumX", 8));
-	dialog->SetInt("nb_y",HuiConfig.getInt("NewBallNumY", 16));
-	dialog->SetInt("nb_complexity", HuiConfig.getInt("NewBallComplexity", 8));
+	dialog->setInt("nb_x", HuiConfig.getInt("NewBallNumX", 8));
+	dialog->setInt("nb_y",HuiConfig.getInt("NewBallNumY", 16));
+	dialog->setInt("nb_complexity", HuiConfig.getInt("NewBallComplexity", 8));
 	bool sphere = HuiConfig.getBool("NewBallSphere", false);
-	dialog->Check("ball_type:ball", !sphere);
-	dialog->Check("ball_type:sphere", sphere);
-	dialog->Enable("nb_x", !sphere);
-	dialog->Enable("nb_y", !sphere);
-	dialog->Enable("nb_complexity", sphere);
-	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
-	dialog->Show();
-	dialog->Event("hui:close", &HuiFuncIgnore);
-	dialog->EventM("ball_type:ball", this, &ModeModelMeshCreateBall::OnTypeBall);
-	dialog->EventM("ball_type:sphere", this, &ModeModelMeshCreateBall::OnTypeSphere);
+	dialog->check("ball_type:ball", !sphere);
+	dialog->check("ball_type:sphere", sphere);
+	dialog->enable("nb_x", !sphere);
+	dialog->enable("nb_y", !sphere);
+	dialog->enable("nb_complexity", sphere);
+	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
+	dialog->show();
+	dialog->eventS("hui:close", &HuiFuncIgnore);
+	dialog->event("ball_type:ball", this, &ModeModelMeshCreateBall::OnTypeBall);
+	dialog->event("ball_type:sphere", this, &ModeModelMeshCreateBall::OnTypeSphere);
 
-	ed->Activate("");
+	ed->activate("");
 }
 
 
@@ -77,10 +77,10 @@ void ModeModelMeshCreateBall::UpdateGeometry()
 	if (geo)
 		delete(geo);
 	if (pos_chosen){
-		bool sphere = dialog->IsChecked("ball_type:sphere");
-		int nx = dialog->GetInt("nb_x");
-		int ny = dialog->GetInt("nb_y");
-		int complexity = dialog->GetInt("nb_complexity");
+		bool sphere = dialog->isChecked("ball_type:sphere");
+		int nx = dialog->getInt("nb_x");
+		int ny = dialog->getInt("nb_y");
+		int complexity = dialog->getInt("nb_complexity");
 		HuiConfig.setInt("NewBallNumX", nx);
 		HuiConfig.setInt("NewBallNumY", ny);
 		HuiConfig.setInt("NewBallComplexity", complexity);

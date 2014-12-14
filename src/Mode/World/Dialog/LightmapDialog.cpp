@@ -20,30 +20,30 @@ LightmapDialog::LightmapDialog(HuiWindow *_parent, bool _allow_parent, DataWorld
 {
 	data = _data;
 
-	EventM("cancel", this, &LightmapDialog::OnClose);
-	EventM("hui:close", this, &LightmapDialog::OnClose);
-	EventM("ok", this, &LightmapDialog::OnOk);
-	EventM("preview", this, &LightmapDialog::OnPreview);
-	EventM("resolution", this, &LightmapDialog::OnResolution);
-	EventM("lightmap_type", this, &LightmapDialog::OnType);
-	EventM("find_new_world", this, &LightmapDialog::OnFindNewWorld);
+	event("cancel", this, &LightmapDialog::OnClose);
+	event("hui:close", this, &LightmapDialog::OnClose);
+	event("ok", this, &LightmapDialog::OnOk);
+	event("preview", this, &LightmapDialog::OnPreview);
+	event("resolution", this, &LightmapDialog::OnResolution);
+	event("lightmap_type", this, &LightmapDialog::OnType);
+	event("find_new_world", this, &LightmapDialog::OnFindNewWorld);
 
 	//LoadData();
-	SetFloat("brightness", 10.0f);
-	SetFloat("exponent", 0.8f);
-	SetInt("photons", 500000);
-	SetInt("lightmap_type", 4);
-	Enable("photons", true);
+	setFloat("brightness", 10.0f);
+	setFloat("exponent", 0.8f);
+	setInt("photons", 500000);
+	setInt("lightmap_type", 4);
+	enable("photons", true);
 	//SetString("new_world_name", data->filename.basename().replace(".world", "") + "Lightmap");
-	SetString("new_world_name", "temp");
+	setString("new_world_name", "temp");
 
 	lmd = new LightmapData(data);
 
-	SetFloat("resolution", lmd->resolution);
-	Check("allow_sun", lmd->allow_sun);
+	setFloat("resolution", lmd->resolution);
+	check("allow_sun", lmd->allow_sun);
 
 	FillList();
-	Enable("ok", lmd->Models.num > 0);
+	enable("ok", lmd->Models.num > 0);
 }
 
 LightmapDialog::~LightmapDialog()
@@ -53,11 +53,11 @@ LightmapDialog::~LightmapDialog()
 
 void LightmapDialog::FillList()
 {
-	Reset("lightmap_list");
+	reset("lightmap_list");
 	foreach(LightmapData::Model &m, lmd->Models)
-		AddString("lightmap_list", m.orig_name + format("\\%dx%d\\%f", m.tex_width, m.tex_height, sqrt(m.area) / m.tex_width));
+		addString("lightmap_list", m.orig_name + format("\\%dx%d\\%f", m.tex_width, m.tex_height, sqrt(m.area) / m.tex_width));
 	foreach(LightmapData::Terrain &t, lmd->Terrains)
-		AddString("lightmap_list", t.orig_name + format("\\%dx%d\\%f", t.tex_width, t.tex_height, sqrt(t.area) / t.tex_width));
+		addString("lightmap_list", t.orig_name + format("\\%dx%d\\%f", t.tex_width, t.tex_height, sqrt(t.area) / t.tex_width));
 }
 
 void LightmapDialog::OnClose()
@@ -67,15 +67,15 @@ void LightmapDialog::OnClose()
 
 void LightmapDialog::OnType()
 {
-	Enable("photons", (GetInt("lightmap_type") == 3));
+	enable("photons", (getInt("lightmap_type") == 3));
 }
 
 void LightmapDialog::SetData()
 {
-	lmd->new_world_name = GetString("new_world_name");
-	lmd->emissive_brightness = GetFloat("brightness");
-	lmd->color_exponent = GetFloat("exponent");
-	lmd->allow_sun = IsChecked("allow_sun");
+	lmd->new_world_name = getString("new_world_name");
+	lmd->emissive_brightness = getFloat("brightness");
+	lmd->color_exponent = getFloat("exponent");
+	lmd->allow_sun = isChecked("allow_sun");
 	lmd->texture_out_dir = "Lightmap/" + lmd->new_world_name + "/";
 	lmd->model_out_dir = "Lightmap/" + lmd->new_world_name + "/";
 }
@@ -84,7 +84,7 @@ static Lightmap::Histogram *hist_p;
 
 void OnHistDraw()
 {
-	HuiPainter *c = HuiCurWindow->BeginDraw("area");
+	HuiPainter *c = HuiCurWindow->beginDraw("area");
 	c->setFontSize(10);
 	float w = c->width;
 	float h = c->height;
@@ -123,26 +123,26 @@ void ShowHistogram(Lightmap::Histogram &h, HuiWindow *root)
 {
 	hist_p = &h;
 	HuiWindow *dlg = new HuiDialog("Histogram", 400, 300, root, false);
-	dlg->AddControlTable("", 0, 0, 1, 2, "table");
-	dlg->SetTarget("table", 0);
-	dlg->AddDrawingArea("", 0, 0, 0, 0, "area");
-	dlg->AddButton(_("Schlie&sen"), 0, 1, 0, 0, "close");
-	dlg->SetImage("close", "hui:close");
-	dlg->EventX("area", "hui:draw", &OnHistDraw);
-	dlg->Event("hui:close", &OnHistClose);
-	dlg->Event("close", &OnHistClose);
-	dlg->Run();
+	dlg->addControlTable("", 0, 0, 1, 2, "table");
+	dlg->setTarget("table", 0);
+	dlg->addDrawingArea("", 0, 0, 0, 0, "area");
+	dlg->addButton(_("Schlie&sen"), 0, 1, 0, 0, "close");
+	dlg->setImage("close", "hui:close");
+	dlg->eventSX("area", "hui:draw", &OnHistDraw);
+	dlg->eventS("hui:close", &OnHistClose);
+	dlg->eventS("close", &OnHistClose);
+	dlg->run();
 }
 
 void LightmapDialog::OnPreview()
 {
 	SetData();
 	Lightmap *lm;
-	int type = GetInt("lightmap_type");
+	int type = getInt("lightmap_type");
 	if (type == 4){
-		lm = new LightmapPhotonMapImageSpace(lmd, GetInt("photons"));
+		lm = new LightmapPhotonMapImageSpace(lmd, getInt("photons"));
 	}else if (type == 3){
-		lm = new LightmapPhotonMap(lmd, GetInt("photons"));
+		lm = new LightmapPhotonMap(lmd, getInt("photons"));
 	}else if ((type == 1) || (type == 2)){
 		lm = new LightmapRadiosity(lmd);
 	}else{
@@ -157,25 +157,25 @@ void LightmapDialog::OnPreview()
 
 void LightmapDialog::OnResolution()
 {
-	lmd->SetResolution(GetFloat(""));
+	lmd->SetResolution(getFloat(""));
 	FillList();
 }
 
 void LightmapDialog::OnFindNewWorld()
 {
-	if (ed->FileDialog(FDWorld, true, true))
-		SetString("new_world_name", ed->DialogFileNoEnding);
+	if (ed->fileDialog(FDWorld, true, true))
+		setString("new_world_name", ed->DialogFileNoEnding);
 }
 
 void LightmapDialog::OnOk()
 {
 	SetData();
 	Lightmap *lm;
-	int type = GetInt("lightmap_type");
+	int type = getInt("lightmap_type");
 	if (type == 4){
-		lm = new LightmapPhotonMapImageSpace(lmd, GetInt("photons"));
+		lm = new LightmapPhotonMapImageSpace(lmd, getInt("photons"));
 	}else if (type == 3){
-		lm = new LightmapPhotonMap(lmd, GetInt("photons"));
+		lm = new LightmapPhotonMap(lmd, getInt("photons"));
 	}else if ((type == 1) || (type == 2)){
 		lm = new LightmapRadiosity(lmd);
 	}else{

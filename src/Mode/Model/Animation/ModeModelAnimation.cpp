@@ -80,7 +80,7 @@ void ModeModelAnimation::OnStart()
 	timer.reset();
 	HuiRunLaterM(0.200f, this, &ModeModelAnimation::IdleFunction);
 
-	ed->SetMode(mode_model_animation_none);
+	ed->setMode(mode_model_animation_none);
 	Notify("Change");
 }
 
@@ -111,11 +111,11 @@ void ModeModelAnimation::SetCurrentMove(int move_no)
 	SetCurrentFrame(0);
 
 	if (move->Type == MoveTypeSkeletal)
-		ed->SetMode(mode_model_animation_skeleton);
+		ed->setMode(mode_model_animation_skeleton);
 	else if (move->Type == MoveTypeVertex)
-		ed->SetMode(mode_model_animation_vertex);
+		ed->setMode(mode_model_animation_vertex);
 	else
-		ed->SetMode(mode_model_animation_none);
+		ed->setMode(mode_model_animation_none);
 }
 
 void ModeModelAnimation::SetCurrentFrame(int frame_no)
@@ -169,7 +169,7 @@ void ModeModelAnimation::UpdateAnimation()
 		vertex = data->Vertex;
 	}
 	//data->Notify("Change");
-	ed->ForceRedraw();
+	ed->forceRedraw();
 }
 
 void ModeModelAnimation::UpdateSkeleton()
@@ -256,7 +256,7 @@ void ModeModelAnimation::IdleFunction()
 {
 	if (!IsAncestorOf(ed->cur_mode))
 		return;
-	ed->ForceRedraw();
+	ed->forceRedraw();
 	if (Playing)
 		HuiRunLaterM(0.020f, this, &ModeModelAnimation::IdleFunction);
 	else

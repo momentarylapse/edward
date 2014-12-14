@@ -29,17 +29,17 @@ void ModeWorldCreateObject::OnStart()
 		OnFindObject();
 
 	dialog = HuiCreateResourceDialog("world_new_object_dialog",ed);
-	dialog->SetString("kind", filename);
-	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
-	dialog->Enable("name", false);
-	dialog->Show();
-	dialog->Event("hui:close", &HuiFuncIgnore);
-	dialog->EventM("find_object", this, &ModeWorldCreateObject::OnFindObject);
+	dialog->setString("kind", filename);
+	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
+	dialog->enable("name", false);
+	dialog->show();
+	dialog->eventS("hui:close", &HuiFuncIgnore);
+	dialog->event("find_object", this, &ModeWorldCreateObject::OnFindObject);
 
 	if (filename.num > 0)
 		message = _("neues Objekt setzen");
 
-	ed->Activate("");
+	ed->activate("");
 }
 
 
@@ -50,7 +50,7 @@ void ModeWorldCreateObject::OnEnd()
 
 void ModeWorldCreateObject::OnFindObject()
 {
-	if (ed->FileDialog(FDModel, false, true)){
+	if (ed->fileDialog(FDModel, false, true)){
 		filename = ed->DialogFileNoEnding;
 		LastObjectFilename = filename;
 		message = _("neues Objekt setzen");

@@ -83,7 +83,7 @@ void ModelMaterial::CheckTextures()
 			Texture[i] = NULL;
 		}
 		NumTextures = material->num_textures;
-		ed->SetMessage(_("Anzahl der Texturen wurde an das Material angepasst!"));
+		ed->setMessage(_("Anzahl der Texturen wurde an das Material angepasst!"));
 	}
 
 	// load all textures

@@ -79,7 +79,7 @@ void ModeModelMeshCreatePolygon::OnLeftButtonDown()
 		foreachi(int s, selection, i)
 			if (s == multi_view->hover.index)
 				if (i > 0){
-					ed->SetMessage(_("keine doppelten Punkte erlaubt!"));
+					ed->setMessage(_("keine doppelten Punkte erlaubt!"));
 					Abort();
 					return;
 				}

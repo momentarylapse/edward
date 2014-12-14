@@ -46,7 +46,7 @@ void ModeFont::OnLeftButtonDown()
 		if ((m.x >= x) && (m.x <= x2) && (m.y >= y) && (m.y <= y + data->global.GlyphHeight)){
 			data->Marked = i;
 			dialog->LoadData();
-			ed->ForceRedraw();
+			ed->forceRedraw();
 		}
 		x = x2;
 	}
@@ -59,8 +59,8 @@ void ModeFont::OnEnd()
 	delete(dialog);
 
 	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
-	t->Reset();
-	t->Enable(false);
+	t->reset();
+	t->enable(false);
 }
 
 
@@ -80,7 +80,7 @@ void ModeFont::OnDraw()
 
 bool ModeFont::SaveAs()
 {
-	if (ed->FileDialog(FDFont, true, false))
+	if (ed->fileDialog(FDFont, true, false))
 		return data->Save(ed->DialogFileComplete);
 	return false;
 }
@@ -121,16 +121,16 @@ void ModeFont::OnCommand(const string & id)
 
 bool ModeFont::Open()
 {
-	if (!ed->AllowTermination())
+	if (!ed->allowTermination())
 		return false;
-	if (!ed->FileDialog(FDFont, false, false))
+	if (!ed->fileDialog(FDFont, false, false))
 		return false;
 	bool ok = data->Load(ed->DialogFileComplete);
 	if (!ok)
 		return false;
 
 	OptimizeView();
-	ed->SetMode(mode_font);
+	ed->setMode(mode_font);
 	return true;
 }
 
@@ -138,12 +138,12 @@ bool ModeFont::Open()
 
 void ModeFont::New()
 {
-	if (!ed->AllowTermination())
+	if (!ed->allowTermination())
 		return;
 
 	data->Reset();
 	OptimizeView();
-	ed->SetMode(mode_font);
+	ed->setMode(mode_font);
 }
 
 
@@ -152,18 +152,18 @@ void ModeFont::OnStart()
 {
 	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
 	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
-	t->Reset();
-	t->AddItem(L("new"),dir + "new.png","new");
-	t->AddItem(L("open"),dir + "open.png","open");
-	t->AddItem(L("save"),dir + "save.png","save");
-	t->AddSeparator();
-	t->AddItem(L("undo"),dir + "undo.png","undo");
-	t->AddItem(L("redo"),dir + "redo.png","redo");
-	t->Enable(true);
-	t->Configure(false,true);
+	t->reset();
+	t->addItem(L("new"),dir + "new.png","new");
+	t->addItem(L("open"),dir + "open.png","open");
+	t->addItem(L("save"),dir + "save.png","save");
+	t->addSeparator();
+	t->addItem(L("undo"),dir + "undo.png","undo");
+	t->addItem(L("redo"),dir + "redo.png","redo");
+	t->enable(true);
+	t->configure(false,true);
 	t = ed->toolbar[HuiToolbarLeft];
-	t->Reset();
-	t->Enable(false);
+	t->reset();
+	t->enable(false);
 
 	dialog = new FontDialog(ed, data);
 

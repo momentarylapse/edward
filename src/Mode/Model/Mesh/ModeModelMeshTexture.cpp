@@ -164,7 +164,7 @@ void ModeModelMeshTexture::OnDrawWin(MultiView::Window *win)
 void ModeModelMeshTexture::OnDraw()
 {
 	if (data->GetNumSelectedVertices() > 0){
-		ed->DrawStr(20, 160, format(_("skin: %d"), GetNumSelected()));
+		ed->drawStr(20, 160, format(_("skin: %d"), GetNumSelected()));
 	}
 }
 

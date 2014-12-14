@@ -32,13 +32,13 @@ void ModeModelMeshCreateCylinder::OnStart()
 {
 	dialog = HuiCreateResourceDialog("new_cylinder_dialog",ed);
 
-	dialog->SetInt("ncy_rings", HuiConfig.getInt("NewCylinderRings", 4));
-	dialog->SetInt("ncy_edges", HuiConfig.getInt("NewCylinderEdges", 8));
-	dialog->SetPositionSpecial(ed, HuiRight | HuiTop);
-	dialog->Show();
-	dialog->Event("hui:close", &HuiFuncIgnore);
+	dialog->setInt("ncy_rings", HuiConfig.getInt("NewCylinderRings", 4));
+	dialog->setInt("ncy_edges", HuiConfig.getInt("NewCylinderEdges", 8));
+	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
+	dialog->show();
+	dialog->eventS("hui:close", &HuiFuncIgnore);
 
-	ed->Activate("");
+	ed->activate("");
 }
 
 
@@ -52,8 +52,8 @@ void ModeModelMeshCreateCylinder::UpdateGeometry()
 	if (geo)
 		delete(geo);
 	if (pos.num == 2){
-		int rings = dialog->GetInt("ncy_rings");
-		int edges = dialog->GetInt("ncy_edges");
+		int rings = dialog->getInt("ncy_rings");
+		int edges = dialog->getInt("ncy_edges");
 		HuiConfig.setInt("NewCylinderRings", rings);
 		HuiConfig.setInt("NewCylinderEdges", edges);
 

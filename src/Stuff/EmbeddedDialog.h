@@ -18,19 +18,19 @@ public:
 	void Init(HuiWindow *win, const string &target_id, int x, int y, const string &options);
 	virtual ~EmbeddedDialog();
 
-	void Enable(const string &id, bool enabled);
-	void Check(const string &id, bool checked);
-	bool IsChecked(const string &id);
+	void enable(const string &id, bool enabled);
+	void check(const string &id, bool checked);
+	bool isChecked(const string &id);
 
-	void Reset(const string &id);
-	void SetString(const string &id, const string &str);
-	void AddString(const string &id, const string &str);
-	void SetFloat(const string &id, float f);
-	void SetInt(const string &id, int i);
-	string GetString(const string &id);
-	string GetCell(const string &id, int row, int col);
-	float GetFloat(const string &id);
-	int GetInt(const string &id);
+	void reset(const string &id);
+	void setString(const string &id, const string &str);
+	void addString(const string &id, const string &str);
+	void setFloat(const string &id, float f);
+	void setInt(const string &id, int i);
+	string getString(const string &id);
+	string getCell(const string &id, int row, int col);
+	float getFloat(const string &id);
+	int getInt(const string &id);
 
 	HuiWindow *win;
 	string uid;

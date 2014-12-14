@@ -34,7 +34,7 @@ bool DataCamera::Load(const string& _filename, bool deep)
 	filename = _filename;
 	CFile *f = FileOpen(filename);
 	if (!f){
-		ed->SetMessage("nicht lesbar");
+		ed->setMessage("nicht lesbar");
 		return false;
 	}
 	int ffv=f->ReadFileFormatVersion();
@@ -76,7 +76,7 @@ bool DataCamera::Load(const string& _filename, bool deep)
 
 		f->Close();
 	}else{
-		ed->ErrorBox(format(_("Falsches Dateiformat der Datei %s: %d (statt %d)!"), filename.c_str(), ffv, 2));
+		ed->errorBox(format(_("Falsches Dateiformat der Datei %s: %d (statt %d)!"), filename.c_str(), ffv, 2));
 		Error=true;
 	}
 	delete(f);
@@ -121,7 +121,7 @@ bool DataCamera::Save(const string& _filename)
 	f->WriteComment("#");
 
 	delete(f);
-	ed->SetMessage(_("Kamera-Script gespeichert!"));
+	ed->setMessage(_("Kamera-Script gespeichert!"));
 	action_manager->MarkCurrentAsSave();
 	return true;
 }

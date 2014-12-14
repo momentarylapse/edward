@@ -38,7 +38,7 @@ bool WorldTerrain::Load(const vector &_pos, const string &filename, bool deep)
 	is_special = false;
 
 	if (deep)
-		ed->MakeDirs(filename);
+		ed->makeDirs(filename);
 	FileName = filename.substr(MapDir.num, -1);
 	FileName.resize(FileName.num - 4);
 
@@ -57,7 +57,7 @@ bool WorldTerrain::Save(const string &filename)
 {
 	msg_db_f("Terrain.LoadFromFile", 1);
 
-	ed->MakeDirs(filename);
+	ed->makeDirs(filename);
 	FileName = filename.substr(MapDir.num, -1);
 	FileName.resize(FileName.num - 4);
 
@@ -117,7 +117,7 @@ bool DataWorld::Save(const string & _filename)
 /*	if (!SaveTerrains())
 		return;*/
 	filename = _filename;
-	ed->MakeDirs(filename);
+	ed->makeDirs(filename);
 	CFile *f = FileCreate(filename);
 	f->FloatDecimals = 6;
 
@@ -194,7 +194,7 @@ bool DataWorld::Save(const string & _filename)
 
 	delete(f);
 
-	ed->SetMessage(_("Gespeichert!"));
+	ed->setMessage(_("Gespeichert!"));
 	action_manager->MarkCurrentAsSave();
 	return true;
 }
@@ -211,7 +211,7 @@ bool DataWorld::Load(const string & _filename, bool deep)
 
 	filename = _filename;
 	if (this == mode_world->data)
-		ed->MakeDirs(filename);
+		ed->makeDirs(filename);
 
 	CFile *f = FileOpen(filename);
 	if (!f)
@@ -306,7 +306,7 @@ bool DataWorld::Load(const string & _filename, bool deep)
 		}
 
 	}else{
-		ed->ErrorBox(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 8, 10));
+		ed->errorBox(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 8, 10));
 		Error = true;
 	}
 	f->Close();
@@ -315,11 +315,11 @@ bool DataWorld::Load(const string & _filename, bool deep)
 
 	if ((!Error)&&(deep)){
 		for (int i=0;i<Terrains.num;i++){
-			ed->progress->Set(_("Terrains"), (float)i / (float)Terrains.num / 2.0f);
+			ed->progress->set(_("Terrains"), (float)i / (float)Terrains.num / 2.0f);
 			Terrains[i].Load(Terrains[i].pos, MapDir + Terrains[i].FileName + ".map", true);
 		}
 		for (int i=0;i<Objects.num;i++){
-			ed->progress->Set(format(_("Objekt %d von %d"), i, Objects.num), (float)i / (float)Objects.num / 2.0f + 0.5f);
+			ed->progress->set(format(_("Objekt %d von %d"), i, Objects.num), (float)i / (float)Objects.num / 2.0f + 0.5f);
 			Objects[i].object = (Object*)LoadModel(Objects[i].FileName);
 			Objects[i].object->pos = Objects[i].pos;
 			Objects[i].object->ang = Objects[i].Ang;
