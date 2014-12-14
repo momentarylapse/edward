@@ -69,7 +69,7 @@ void ModeModelSkeleton::chooseMouseFunction(int f)
 
 	// mouse action
 	if (mouse_action != MultiView::ActionSelect){
-		multi_view->SetMouseAction("ActionModelAnimationTransformBones", mouse_action);
+		multi_view->SetMouseAction("ActionModelTransformBones", mouse_action);
 	}else{
 		multi_view->SetMouseAction("", MultiView::ActionSelect);
 	}

@@ -122,6 +122,15 @@ void PluginManager::init()
 	Script::DeclareClassOffset("ModelSurface", "IsVisible", offsetof(ModelSurface, IsVisible));
 	Script::DeclareClassOffset("ModelSurface", "model", offsetof(ModelSurface, model));
 
+	Script::DeclareClassSize("ModelBone", sizeof(ModelBone));
+	Script::DeclareClassOffset("ModelBone", "Parent", offsetof(ModelBone, Parent));
+	Script::DeclareClassOffset("ModelBone", "DeltaPos", offsetof(ModelBone, DeltaPos));
+	Script::DeclareClassOffset("ModelBone", "ModelFile", offsetof(ModelBone, ModelFile));
+	Script::DeclareClassOffset("ModelBone", "model", offsetof(ModelBone, model));
+	Script::DeclareClassOffset("ModelBone", "ConstPos", offsetof(ModelBone, ConstPos));
+	Script::DeclareClassOffset("ModelBone", "Matrix", offsetof(ModelBone, Matrix));
+	Script::DeclareClassOffset("ModelBone", "RotMatrix", offsetof(ModelBone, RotMatrix));
+
 	Script::DeclareClassSize("DataModel", sizeof(DataModel));
 	Script::DeclareClassOffset("DataModel", "Bone", offsetof(DataModel, Bone));
 	Script::DeclareClassOffset("DataModel", "Move", offsetof(DataModel, Move));

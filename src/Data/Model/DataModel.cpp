@@ -640,6 +640,8 @@ bool DataModel::load(const string & _filename, bool deep)
 		for (int i=0;i<Bone.num;i++){
 			f->ReadVector(&Bone[i].DeltaPos);
 			Bone[i].Parent = f->ReadInt();
+			if ((Bone[i].Parent < 0) || (Bone[i].Parent >= Bone.num))
+				Bone[i].Parent = -1;
 			Bone[i].ModelFile = f->ReadStr();
 			if (deep)
 				Bone[i].model = LoadModel(Bone[i].ModelFile);
