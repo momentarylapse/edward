@@ -21,9 +21,9 @@ SingleData::SingleData()
 	pos = v_0;
 }
 
-bool SingleData::Hover(Window *win, vector &m, vector &tp, float &z, void *user_data)
+bool SingleData::hover(Window *win, vector &m, vector &tp, float &z, void *user_data)
 {
-	vector p = win->Project(pos);
+	vector p = win->project(pos);
 	if ((p.z <= 0) || (p.z >= 1))
 		return false;
 	float _radius = PointRadiusMouseOver;
@@ -35,9 +35,9 @@ bool SingleData::Hover(Window *win, vector &m, vector &tp, float &z, void *user_
 	return false;
 }
 
-bool SingleData::InRect(Window *win, rect &r, void *user_data)
+bool SingleData::inRect(Window *win, rect &r, void *user_data)
 {
-	vector p = win->Project(pos);
+	vector p = win->project(pos);
 	return r.inside(p.x, p.y);
 }
 

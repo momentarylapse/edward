@@ -25,65 +25,65 @@ public:
 	virtual ~ModeBase();
 
 	// Start/End: (once) entering this mode or a sub mode
-	virtual void OnStart(){};
-	virtual void OnEnd(){};
+	virtual void onStart(){};
+	virtual void onEnd(){};
 	// Enter/Leave: exactly this mode
-	virtual void OnEnter(){};
-	virtual void OnLeave(){};
+	virtual void onEnter(){};
+	virtual void onLeave(){};
 
 	// events to be handled by derived modes
-	virtual void OnMouseMove(){};
-	virtual void OnMouseWheel(){};
-	virtual void OnMouseEnter(){};
-	virtual void OnMouseLeave(){};
-	virtual void OnLeftButtonDown(){};
-	virtual void OnLeftButtonUp(){};
-	virtual void OnMiddleButtonDown(){};
-	virtual void OnMiddleButtonUp(){};
-	virtual void OnRightButtonDown(){};
-	virtual void OnRightButtonUp(){};
-	virtual void OnKeyDown(){};
-	virtual void OnKeyUp(){};
-	virtual void OnCommand(const string &id){};
-	virtual void OnUpdateMenu(){};
+	virtual void onMouseMove(){};
+	virtual void onMouseWheel(){};
+	virtual void onMouseEnter(){};
+	virtual void onMouseLeave(){};
+	virtual void onLeftButtonDown(){};
+	virtual void onLeftButtonUp(){};
+	virtual void onMiddleButtonDown(){};
+	virtual void onMiddleButtonUp(){};
+	virtual void onRightButtonDown(){};
+	virtual void onRightButtonUp(){};
+	virtual void onKeyDown(){};
+	virtual void onKeyUp(){};
+	virtual void onCommand(const string &id){};
+	virtual void onUpdateMenu(){};
 
-	virtual void OnDraw(){};
-	virtual void OnDrawWin(MultiView::Window *win){};
+	virtual void onDraw(){};
+	virtual void onDrawWin(MultiView::Window *win){};
 
-	virtual bool OptimizeView(){ return false; };
-	virtual void OptimizeViewRecursice();
+	virtual bool optimizeView(){ return false; };
+	virtual void optimizeViewRecursice();
 
 	// send events to multi_view first, then call derived event handlers
 	//   (to be called by edward)
-	virtual void OnMouseMoveRecursive(bool multi_view_handled = false);
-	virtual void OnMouseWheelRecursive(bool multi_view_handled = false);
-	virtual void OnMouseEnterRecursive(bool multi_view_handled = false);
-	virtual void OnMouseLeaveRecursive(bool multi_view_handled = false);
-	virtual void OnLeftButtonDownRecursive(bool multi_view_handled = false);
-	virtual void OnLeftButtonUpRecursive(bool multi_view_handled = false);
-	virtual void OnMiddleButtonDownRecursive(bool multi_view_handled = false);
-	virtual void OnMiddleButtonUpRecursive(bool multi_view_handled = false);
-	virtual void OnRightButtonDownRecursive(bool multi_view_handled = false);
-	virtual void OnRightButtonUpRecursive(bool multi_view_handled = false);
-	virtual void OnKeyDownRecursive(bool multi_view_handled = false);
-	virtual void OnKeyUpRecursive(bool multi_view_handled = false);
-	virtual void OnCommandRecursive(const string &id, bool multi_view_handled = false);
-	virtual void OnUpdateMenuRecursive(bool multi_view_handled = false);
+	virtual void onMouseMoveRecursive(bool multi_view_handled = false);
+	virtual void onMouseWheelRecursive(bool multi_view_handled = false);
+	virtual void onMouseEnterRecursive(bool multi_view_handled = false);
+	virtual void onMouseLeaveRecursive(bool multi_view_handled = false);
+	virtual void onLeftButtonDownRecursive(bool multi_view_handled = false);
+	virtual void onLeftButtonUpRecursive(bool multi_view_handled = false);
+	virtual void onMiddleButtonDownRecursive(bool multi_view_handled = false);
+	virtual void onMiddleButtonUpRecursive(bool multi_view_handled = false);
+	virtual void onRightButtonDownRecursive(bool multi_view_handled = false);
+	virtual void onRightButtonUpRecursive(bool multi_view_handled = false);
+	virtual void onKeyDownRecursive(bool multi_view_handled = false);
+	virtual void onKeyUpRecursive(bool multi_view_handled = false);
+	virtual void onCommandRecursive(const string &id, bool multi_view_handled = false);
+	virtual void onUpdateMenuRecursive(bool multi_view_handled = false);
 
-	virtual void OnDrawRecursive(bool multi_view_handled = false);
-	virtual void OnDrawWinRecursive(MultiView::Window *win);
+	virtual void onDrawRecursive(bool multi_view_handled = false);
+	virtual void onDrawWinRecursive(MultiView::Window *win);
 
-	ModeBase *GetRoot();
-	bool IsAncestorOf(ModeBase *m);
-	ModeBase *GetNextChildTo(ModeBase *target);
-	bool EqualRoots(ModeBase *m);
-	virtual Data *GetData() = 0;
+	ModeBase *getRoot();
+	bool isAncestorOf(ModeBase *m);
+	ModeBase *getNextChildTo(ModeBase *target);
+	bool equalRoots(ModeBase *m);
+	virtual Data *getData() = 0;
 
 
-	virtual void New();
-	virtual bool Open();
-	virtual bool Save();
-	virtual bool SaveAs();
+	virtual void _new();
+	virtual bool open();
+	virtual bool save();
+	virtual bool saveAs();
 
 	string name;
 
@@ -105,11 +105,11 @@ public:
 	Mode(const string &name, ModeBase *parent, MultiView::MultiView *multi_view, const string &menu) :
 		ModeBase(name, parent, multi_view, menu)
 	{
-		data = (T*)parent->GetData();
+		data = (T*)parent->getData();
 	}
 	virtual ~Mode(){}
 	T *data;
-	virtual Data *GetData()
+	virtual Data *getData()
 	{	return (Data*)data;	}
 };
 

@@ -62,7 +62,7 @@ void set_dpos3(vector *length, const vector &dpos)
 
 
 
-void ModeModelMeshCreateCube::OnLeftButtonDown()
+void ModeModelMeshCreateCube::onLeftButtonDown()
 {
 	if (pos_chosen){
 		if (pos2_chosen){
@@ -70,7 +70,7 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 			data->PasteGeometry(*geo, mode_model_mesh->CurrentMaterial);
 			data->SelectOnlySurface(&data->Surface.back());
 
-			Abort();
+			abort();
 		}else{
 			if (multi_view->hover.index >= 0)
 				pos2 = data->Vertex[multi_view->hover.index].pos;
@@ -92,13 +92,13 @@ void ModeModelMeshCreateCube::OnLeftButtonDown()
 	}
 }
 
-void ModeModelMeshCreateCube::OnMouseMove()
+void ModeModelMeshCreateCube::onMouseMove()
 {
 	if (pos_chosen){
 		if (!pos2_chosen){
 			vector pos2 = multi_view->GetCursor3d();
-			vector dir0 = multi_view->mouse_win->GetDirectionRight();
-			vector dir1 = multi_view->mouse_win->GetDirectionUp();
+			vector dir0 = multi_view->mouse_win->getDirectionRight();
+			vector dir1 = multi_view->mouse_win->getDirectionUp();
 			length[0] = dir0 * VecDotProduct(dir0, pos2 - pos);
 			length[1] = dir1 * VecDotProduct(dir1, pos2 - pos);
 			UpdateGeometry();
@@ -111,7 +111,7 @@ void ModeModelMeshCreateCube::OnMouseMove()
 
 
 
-void ModeModelMeshCreateCube::OnStart()
+void ModeModelMeshCreateCube::onStart()
 {
 	// Dialog
 	dialog = HuiCreateResourceDialog("new_cube_dialog", ed);
@@ -126,12 +126,12 @@ void ModeModelMeshCreateCube::OnStart()
 	ed->activate("");
 }
 
-void ModeModelMeshCreateCube::OnEnd()
+void ModeModelMeshCreateCube::onEnd()
 {
 	delete(dialog);
 }
 
-void ModeModelMeshCreateCube::OnDrawWin(MultiView::Window *win)
+void ModeModelMeshCreateCube::onDrawWin(MultiView::Window *win)
 {
 	mode_model->SetMaterialCreation();
 	if (pos_chosen){

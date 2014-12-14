@@ -16,8 +16,8 @@ public:
 	PluginManager();
 	virtual ~PluginManager();
 
-	void Init();
-	void Execute(const string &filename);
+	void init();
+	void execute(const string &filename);
 };
 
 #endif /* PLUGINMANAGER_H_ */

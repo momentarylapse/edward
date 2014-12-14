@@ -19,13 +19,13 @@ public:
 	ModeModelMeshCreateBall(ModeBase *_parent);
 	virtual ~ModeModelMeshCreateBall();
 
-	virtual void OnStart();
-	virtual void OnEnd();
+	virtual void onStart();
+	virtual void onEnd();
 
-	virtual void OnMouseMove();
-	virtual void OnLeftButtonDown();
+	virtual void onMouseMove();
+	virtual void onLeftButtonDown();
 
-	virtual void OnDrawWin(MultiView::Window *win);
+	virtual void onDrawWin(MultiView::Window *win);
 
 	void UpdateGeometry();
 	void OnTypeBall();

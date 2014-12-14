@@ -38,9 +38,9 @@ public:
 	DataCamera();
 	virtual ~DataCamera();
 
-	void Reset();
-	bool Load(const string &_filename, bool deep = true);
-	bool Save(const string &_filename);
+	void reset();
+	bool load(const string &_filename, bool deep = true);
+	bool save(const string &_filename);
 
 	void UpdateVel();
 

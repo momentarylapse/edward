@@ -22,14 +22,14 @@ ModeCreationBase::ModeCreationBase(const string &_name, ModeBase *_parent) :
 	dialog = NULL;
 }
 
-void ModeCreationBase::OnDrawRecursive(bool multi_view_handled)
+void ModeCreationBase::onDrawRecursive(bool multi_view_handled)
 {
-	ModeBase::OnDrawRecursive(multi_view_handled);
+	ModeBase::onDrawRecursive(multi_view_handled);
 
 	ed->drawStr(MaxX / 2, MaxY - 20, message);
 }
 
-void ModeCreationBase::Abort()
+void ModeCreationBase::abort()
 {
 	assert(parent);
 	ed->setMode(parent);

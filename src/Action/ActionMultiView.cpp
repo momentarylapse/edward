@@ -39,7 +39,7 @@ void ActionMultiView::abort(Data *d)
 void ActionMultiView::abort_and_notify(Data *d)
 {
 	abort(d);
-	d->Notify(message());
+	d->notify(message());
 }
 
 void ActionMultiView::update_and_notify(Data *d, const matrix &m)
@@ -47,7 +47,7 @@ void ActionMultiView::update_and_notify(Data *d, const matrix &m)
 	abort(d);
 	mat = m;
 	execute(d);
-	d->Notify(message());
+	d->notify(message());
 }
 
 ActionMultiView *ActionMultiViewFactory(const string &name, Data *d)

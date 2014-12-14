@@ -20,7 +20,7 @@ public:
 
 	void LoadData();
 
-	void OnUpdate(Observable *o);
+	void onUpdate(Observable *o);
 
 	void OnClose();
 	void OnFindRootdir();

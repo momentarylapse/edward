@@ -46,7 +46,7 @@ ModeWorld *mode_world = NULL;
 ModeWorld::ModeWorld() :
 	Mode<DataWorld>("World", NULL, new DataWorld, ed->multi_view_3d, "menu_world")
 {
-	Subscribe(data);
+	subscribe(data);
 
 	WorldDialog = NULL;
 
@@ -62,30 +62,30 @@ ModeWorld::~ModeWorld()
 {
 }
 
-bool ModeWorld::SaveAs()
+bool ModeWorld::saveAs()
 {
 	if (ed->fileDialog(FDWorld, true, false))
-		return data->Save(ed->DialogFileComplete);
+		return data->save(ed->DialogFileComplete);
 	return false;
 }
 
 
 
-void ModeWorld::OnCommand(const string & id)
+void ModeWorld::onCommand(const string & id)
 {
 	if (id == "new")
-		New();
+		_new();
 	if (id == "open")
-		Open();
+		open();
 	if (id == "save")
-		Save();
+		save();
 	if (id == "save_as")
-		SaveAs();
+		saveAs();
 
 	if (id == "undo")
-		data->Undo();
+		data->undo();
 	if (id == "redo")
-		data->Redo();
+		data->redo();
 
 
 	if (id == "copy")
@@ -109,10 +109,10 @@ void ModeWorld::OnCommand(const string & id)
 		ed->setMode(mode_world_camera);
 	if (id == "camscript_load")
 		if (ed->fileDialog(FDCameraFlight, false, true)){
-			if (mode_world_camera->data->Load(ed->DialogFileComplete))
+			if (mode_world_camera->data->load(ed->DialogFileComplete))
 				ed->setMode(mode_world_camera);
 			else
-				mode_world_camera->data->Reset();
+				mode_world_camera->data->reset();
 		}
 	if (id == "edit_terrain_vertices")
 		ed->setMode(new ModeWorldEditTerrain(ed->cur_mode));
@@ -146,7 +146,7 @@ void ModeWorld::OnCommand(const string & id)
 vector tmv[MODEL_MAX_VERTICES*5],pmv[MODEL_MAX_VERTICES*5];
 bool tvm[MODEL_MAX_VERTICES*5];
 
-bool WorldObject::Hover(MultiView::Window *win, vector &mv, vector &tp, float &z, void *user_data)
+bool WorldObject::hover(MultiView::Window *win, vector &mv, vector &tp, float &z, void *user_data)
 {
 	Object *o = object;
 	if (!o)
@@ -156,7 +156,7 @@ bool WorldObject::Hover(MultiView::Window *win, vector &mv, vector &tp, float &z
 		return false;
 	for (int i=0;i<o->skin[d]->vertex.num;i++){
 		tmv[i] = o->_matrix * o->skin[d]->vertex[i];
-		pmv[i] = win->Project(tmv[i]);
+		pmv[i] = win->project(tmv[i]);
 	}
 	float z_min=1;
 	for (int mm=0;mm<o->material.num;mm++)
@@ -184,7 +184,7 @@ bool WorldObject::Hover(MultiView::Window *win, vector &mv, vector &tp, float &z
 	return (z_min<1);
 }
 
-bool WorldObject::InRect(MultiView::Window *win, rect &r, void *user_data)
+bool WorldObject::inRect(MultiView::Window *win, rect &r, void *user_data)
 {
 	Object *m = object;
 	if (!m)
@@ -195,7 +195,7 @@ bool WorldObject::InRect(MultiView::Window *win, rect &r, void *user_data)
 	vector min, max;
 	for (int i=0;i<m->skin[d]->vertex.num;i++){
 		tmv[i] = m->_matrix * m->skin[d]->vertex[i];
-		pmv[i] = win->Project(tmv[i]);
+		pmv[i] = win->project(tmv[i]);
 		if (r.inside(pmv[i].x, pmv[i].y))
 			return true;
 	}
@@ -219,29 +219,29 @@ bool WorldObject::InRect(MultiView::Window *win, rect &r, void *user_data)
 	return ((min.x>=r.x1)&&(min.y>=r.y1)&&(max.x<=r.x2)&&(max.y<=r.y2));
 }
 
-bool WorldTerrain::Hover(MultiView::Window *win, vector &mv, vector &tp, float &z, void *user_data)
+bool WorldTerrain::hover(MultiView::Window *win, vector &mv, vector &tp, float &z, void *user_data)
 {
 	//msg_db_f(format("IMOT index= %d",index).c_str(),3);
 	Terrain *t = terrain;
 	if (!t)
 		return false;
 	float r = win->cam->radius * 100;
-	vector a = win->Unproject(mv);
-	vector b = win->Unproject(mv, win->cam->pos + win->GetDirection() * r);
+	vector a = win->unproject(mv);
+	vector b = win->unproject(mv, win->cam->pos + win->getDirection() * r);
 	TraceData td;
 	bool hit = t->Trace(a, b, v_0, r, td, false);
 	tp = td.point;
-	z = win->Project(tp).z;
+	z = win->project(tp).z;
 	return hit;
 }
 
-bool WorldTerrain::InRect(MultiView::Window *win, rect &r, void *user_data)
+bool WorldTerrain::inRect(MultiView::Window *win, rect &r, void *user_data)
 {
 	Terrain *t = terrain;
 	vector min,max;
 	for (int i=0;i<8;i++){
 		vector v=t->pos+vector((i%2)==0?t->min.x:t->max.x,((i/2)%2)==0?t->min.y:t->max.y,((i/4)%2)==0?t->min.z:t->max.z);
-		vector p = win->Project(v);
+		vector p = win->project(v);
 		if (i==0)
 			min=max=p;
 		min._min(p);
@@ -252,36 +252,36 @@ bool WorldTerrain::InRect(MultiView::Window *win, rect &r, void *user_data)
 
 
 
-void ModeWorld::OnLeftButtonDown()
+void ModeWorld::onLeftButtonDown()
 {
 }
 
 
 
-bool ModeWorld::Save()
+bool ModeWorld::save()
 {
 	if (data->filename == "")
-		return SaveAs();
-	return data->Save(data->filename);
+		return saveAs();
+	return data->save(data->filename);
 }
 
 
 
-void ModeWorld::OnMiddleButtonUp()
+void ModeWorld::onMiddleButtonUp()
 {
 }
 
 
 
-void ModeWorld::OnMouseMove()
+void ModeWorld::onMouseMove()
 {
 }
 
 
 
-void ModeWorld::OnUpdate(Observable *o)
+void ModeWorld::onUpdate(Observable *o)
 {
-	if (o->GetName() == "Data"){
+	if (o->getName() == "Data"){
 		data->UpdateData();
 
 		multi_view->ClearData(data);
@@ -295,50 +295,50 @@ void ModeWorld::OnUpdate(Observable *o)
 				data->Terrains,
 				NULL,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
-	}else if (o->GetName() == "MultiView"){
+	}else if (o->getName() == "MultiView"){
 		// selection
 	}
 }
 
 
 
-void ModeWorld::OnKeyDown()
+void ModeWorld::onKeyDown()
 {
 }
 
 
 
-void ModeWorld::OnMiddleButtonDown()
+void ModeWorld::onMiddleButtonDown()
 {
 }
 
 
 
-void ModeWorld::OnRightButtonUp()
+void ModeWorld::onRightButtonUp()
 {
 }
 
 
 
-void ModeWorld::New()
+void ModeWorld::_new()
 {
 	if (!ed->allowTermination())
 		return;
 
-	data->Reset();
-	OptimizeView();
+	data->reset();
+	optimizeView();
 	ed->setMode(mode_world);
 }
 
 
 
-void ModeWorld::OnLeftButtonUp()
+void ModeWorld::onLeftButtonUp()
 {
 }
 
 
 
-void ModeWorld::OnDraw()
+void ModeWorld::onDraw()
 {
 	cur_cam->pos = multi_view->cam.pos;
 
@@ -352,13 +352,13 @@ void ModeWorld::OnDraw()
 
 
 
-void ModeWorld::OnKeyUp()
+void ModeWorld::onKeyUp()
 {
 }
 
 
 
-void ModeWorld::OnEnd()
+void ModeWorld::onEnd()
 {
 	if (WorldDialog)
 		delete(WorldDialog);
@@ -420,7 +420,7 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha)
 	NixEnableLighting(mode_world->multi_view->light_enabled);
 }
 
-void ModeWorld::OnDrawWin(MultiView::Window *win)
+void ModeWorld::onDrawWin(MultiView::Window *win)
 {
 	msg_db_f("World::DrawWin",2);
 
@@ -488,7 +488,7 @@ void ModeWorld::OnDrawWin(MultiView::Window *win)
 
 
 
-void ModeWorld::OnStart()
+void ModeWorld::onStart()
 {
 	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
 	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
@@ -517,7 +517,7 @@ void ModeWorld::OnStart()
 	multi_view->SetAllowRect(true);
 	SetMouseAction(MultiView::ActionSelect);
 
-	OnUpdate(data);
+	onUpdate(data);
 }
 
 void ModeWorld::SetMouseAction(int mode)
@@ -534,16 +534,16 @@ void ModeWorld::SetMouseAction(int mode)
 
 
 
-void ModeWorld::OnRightButtonDown()
+void ModeWorld::onRightButtonDown()
 {
 }
 
 
 
-void ModeWorld::OnUpdateMenu()
+void ModeWorld::onUpdateMenu()
 {
-	ed->enable("undo", data->action_manager->Undoable());
-	ed->enable("redo", data->action_manager->Redoable());
+	ed->enable("undo", data->action_manager->undoable());
+	ed->enable("redo", data->action_manager->redoable());
 
 	ed->enable("copy", Copyable());
 	ed->enable("paste", Pasteable());
@@ -562,20 +562,20 @@ void ModeWorld::OnUpdateMenu()
 
 
 
-bool ModeWorld::Open()
+bool ModeWorld::open()
 {
 	if (!ed->allowTermination())
 		return false;
 	if (!ed->fileDialog(FDWorld, false, false))
 		return false;
 	ed->progress->start(_("Lade Welt"), 0);
-	bool ok = data->Load(ed->DialogFileComplete);
+	bool ok = data->load(ed->DialogFileComplete);
 	ed->progress->end();
 	if (!ok)
 		return false;
 
 	ed->setMode(mode_world);
-	OptimizeView();
+	optimizeView();
 	return true;
 }
 
@@ -662,7 +662,7 @@ void ModeWorld::ExecuteLightmapDialog()
 }
 
 
-bool ModeWorld::OptimizeView()
+bool ModeWorld::optimizeView()
 {
 	multi_view->ResetView();
 	vector min, max;
@@ -689,7 +689,7 @@ void ModeWorld::SetEgo()
 	}
 	foreachi(WorldObject &o, data->Objects, i)
 		if (o.is_selected)
-			data->Execute(new ActionWorldSetEgo(i));
+			data->execute(new ActionWorldSetEgo(i));
 }
 
 void ModeWorld::ToggleShowEffects()
@@ -722,8 +722,8 @@ void ModeWorld::ImportWorldProperties()
 {
 	if (ed->fileDialog(FDWorld, false, false)){
 		DataWorld w;
-		if (w.Load(ed->DialogFileComplete, false))
-			data->Execute(new ActionWorldEditData(w.meta_data));
+		if (w.load(ed->DialogFileComplete, false))
+			data->execute(new ActionWorldEditData(w.meta_data));
 		else
 			ed->errorBox(_("Angegebene Welt konnte nicht korrekt geladen werden!"));
 	}
@@ -749,7 +749,7 @@ void ModeWorld::Copy()
 {
 	data->Copy(temp_objects, temp_terrains);
 
-	OnUpdateMenu();
+	onUpdateMenu();
 	ed->setMessage(format(_("%d Objekte, %d Terrains kopiert"), temp_objects.num, temp_terrains.num));
 }
 

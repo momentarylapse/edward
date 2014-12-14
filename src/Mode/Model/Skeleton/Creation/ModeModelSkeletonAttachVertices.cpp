@@ -22,14 +22,14 @@ ModeModelSkeletonAttachVertices::~ModeModelSkeletonAttachVertices()
 {
 }
 
-void ModeModelSkeletonAttachVertices::OnStart()
+void ModeModelSkeletonAttachVertices::onStart()
 {
 	// relative to absolute pos
 	foreach(ModelVertex &v, data->Vertex)
 		v.is_selected = (v.BoneIndex == bone_index);
 
 	//Subscribe(data);
-	Subscribe(multi_view, "SelectionChange");
+	subscribe(multi_view, "SelectionChange");
 
 	multi_view->ClearData(data);
 	multi_view->allow_rect = true;
@@ -38,15 +38,15 @@ void ModeModelSkeletonAttachVertices::OnStart()
 			NULL,
 			MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect);
 	data->SelectionFromVertices();
-	OnUpdate(data);
+	onUpdate(data);
 }
 
-void ModeModelSkeletonAttachVertices::OnEnd()
+void ModeModelSkeletonAttachVertices::onEnd()
 {
-	parent->OnUpdate(data);
+	parent->onUpdate(data);
 }
 
-void ModeModelSkeletonAttachVertices::OnKeyDown()
+void ModeModelSkeletonAttachVertices::onKeyDown()
 {
 	int key = HuiGetEvent()->key_code;
 	if (key == KEY_RETURN){
@@ -54,12 +54,12 @@ void ModeModelSkeletonAttachVertices::OnKeyDown()
 		foreachi(ModelVertex &v, data->Vertex, i)
 			if (v.is_selected)
 				index.add(i);
-		data->Execute(new ActionModelAttachVerticesToBone(index, bone_index));
-		Abort();
+		data->execute(new ActionModelAttachVerticesToBone(index, bone_index));
+		abort();
 	}
 }
 
-void ModeModelSkeletonAttachVertices::OnDrawWin(MultiView::Window *win)
+void ModeModelSkeletonAttachVertices::onDrawWin(MultiView::Window *win)
 {
 }
 

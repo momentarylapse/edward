@@ -17,7 +17,7 @@ Importer3ds::~Importer3ds()
 
 bool Importer3ds::Import(DataModel *m, const string &filename)
 {
-	m->Reset();
+	m->reset();
 
 	CFile *f = FileOpen(filename);
 	f->SetBinaryMode(true);
@@ -66,7 +66,7 @@ bool Importer3ds::Import(DataModel *m, const string &filename)
 	FileClose(f);
 
 	m->ImportFromTriangleSkin(1);
-	m->ResetHistory();
+	m->resetHistory();
 	return true;
 }
 

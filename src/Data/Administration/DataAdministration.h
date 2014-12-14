@@ -29,9 +29,9 @@ public:
 	DataAdministration();
 	virtual ~DataAdministration();
 
-	void Reset();
-	bool Load(const string &_filename, bool deep = true);
-	bool Save(const string &_filename);
+	void reset();
+	bool load(const string &_filename, bool deep = true);
+	bool save(const string &_filename);
 
 	void FraesDir(const string &root_dir, const string &dir, const string &extension);
 	void MetaFraesDir(int kind);

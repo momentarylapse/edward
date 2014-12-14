@@ -22,7 +22,7 @@ ModeAdministration::~ModeAdministration()
 {
 }
 
-void ModeAdministration::OnStart()
+void ModeAdministration::onStart()
 {
 	data->LoadDatabase();
 	data->UpdateDatabase();
@@ -30,12 +30,12 @@ void ModeAdministration::OnStart()
 	dialog->show();
 }
 
-void ModeAdministration::OnEnd()
+void ModeAdministration::onEnd()
 {
 	delete(dialog);
 }
 
-void ModeAdministration::OnCommand(const string& id)
+void ModeAdministration::onCommand(const string& id)
 {
 	if (id == "export_game")
 		ExportGame();
@@ -43,7 +43,7 @@ void ModeAdministration::OnCommand(const string& id)
 		BasicSettings();
 }
 
-void ModeAdministration::OnUpdate(Observable* o)
+void ModeAdministration::onUpdate(Observable* o)
 {
 }
 

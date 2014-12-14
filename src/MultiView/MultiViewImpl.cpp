@@ -164,7 +164,7 @@ void MultiViewImpl::ResetView()
 	view_stage = 0;
 
 	hover.reset();
-	Notify("SettingsChange");
+	notify("SettingsChange");
 }
 
 void MultiViewImpl::ResetMouseAction()
@@ -203,20 +203,20 @@ void MultiViewImpl::CamZoom(float factor, bool mouse_rel)
 {
 	vector mup;
 	if (mouse_rel)
-		mup = mouse_win->Unproject(m);
+		mup = mouse_win->unproject(m);
 	cam.radius /= factor;
 	update_zoom;
 	if (mouse_rel)
-			cam.pos += mup - mouse_win->Unproject(m);
+			cam.pos += mup - mouse_win->unproject(m);
 	if (action_con->show)
-		action_con->Update();
-	Notify("Update");
+		action_con->update();
+	notify("Update");
 }
 
 void MultiViewImpl::CamMove(const vector &dir)
 {
-	vector r = active_win->GetDirectionRight();
-	vector u = active_win->GetDirectionUp();
+	vector r = active_win->getDirectionRight();
+	vector u = active_win->getDirectionUp();
 	cam.pos += dir.x / cam.zoom * r + dir.y / cam.zoom * u;
 	/*vector d, u, r;
 	mouse_win->GetMovingFrame(d, u, r);
@@ -224,7 +224,7 @@ void MultiViewImpl::CamMove(const vector &dir)
 		cam.pos += cam.radius*(r*dir.x+u*dir.y+d*dir.z) * SPEED_MOVE;
 	else
 		cam.pos += (float)NixScreenHeight / cam.zoom*(r*dir.x+u*dir.y) * SPEED_MOVE;*/
-	Notify("Update");
+	notify("Update");
 }
 
 void MultiViewImpl::CamRotate(const vector &dir, bool cam_center)
@@ -245,36 +245,36 @@ void MultiViewImpl::SetViewBox(const vector &min, const vector &max)
 	if (r > 0)
 		cam.radius = r;
 	update_zoom;
-	Notify("Update");
+	notify("Update");
 }
 
 void MultiViewImpl::ToggleWholeWindow()
 {
 	whole_window = !whole_window;
-	Notify("SettingsChange");
+	notify("SettingsChange");
 }
 
 void MultiViewImpl::ToggleGrid()
 {
 	grid_enabled = !grid_enabled;
-	Notify("SettingsChange");
+	notify("SettingsChange");
 }
 
 void MultiViewImpl::ToggleLight()
 {
 	light_enabled = !light_enabled;
-	Notify("SettingsChange");
+	notify("SettingsChange");
 }
 
 void MultiViewImpl::ToggleWire()
 {
 	wire_mode = !wire_mode;
-	Notify("SettingsChange");
+	notify("SettingsChange");
 }
 
-void MultiViewImpl::OnCommand(const string & id)
+void MultiViewImpl::onCommand(const string & id)
 {
-	NotifyBegin();
+	notifyBegin();
 	//msg_write(id);
 
 	if (id == "select_all")
@@ -313,12 +313,12 @@ void MultiViewImpl::OnCommand(const string & id)
 		ViewStagePush();
 	if (id == "view_pop")
 		ViewStagePop();
-	NotifyEnd();
+	notifyEnd();
 }
 
-void MultiViewImpl::OnMouseWheel()
+void MultiViewImpl::onMouseWheel()
 {
-	NotifyBegin();
+	notifyBegin();
 	HuiEvent *e = HuiGetEvent();
 
 	// mouse wheel -> zoom
@@ -326,25 +326,25 @@ void MultiViewImpl::OnMouseWheel()
 		CamZoom(SPEED_ZOOM_WHEEL, mouse_win->type != ViewPerspective);
 	if (e->dz < 0)
 		CamZoom(1.0f / SPEED_ZOOM_WHEEL, mouse_win->type != ViewPerspective);
-	NotifyEnd();
+	notifyEnd();
 }
 
-void MultiViewImpl::OnMouseEnter()
+void MultiViewImpl::onMouseEnter()
 {
-	Notify("Update");
+	notify("Update");
 }
 
-void MultiViewImpl::OnMouseLeave()
+void MultiViewImpl::onMouseLeave()
 {
 	//Notify("Update");
-	OnMouseMove();
+	onMouseMove();
 }
 
 
 
-void MultiViewImpl::OnKeyDown()
+void MultiViewImpl::onKeyDown()
 {
-	NotifyBegin();
+	notifyBegin();
 	int k = HuiGetEvent()->key_code;
 
 	if ((k == KEY_ADD) ||(k == KEY_NUM_ADD))
@@ -364,8 +364,8 @@ void MultiViewImpl::OnKeyDown()
 	if (k == KEY_SHIFT + KEY_DOWN)
 		CamMove(-e_z * SPEED_MOVE);
 	if (k == KEY_ESCAPE)
-		action_con->EndAction(false);
-	NotifyEnd();
+		action_con->endAction(false);
+	notifyEnd();
 }
 
 
@@ -378,26 +378,26 @@ int get_select_mode()
 	return MultiViewImpl::SelectSet;
 }
 
-void MultiViewImpl::OnLeftButtonDown()
+void MultiViewImpl::onLeftButtonDown()
 {
-	NotifyBegin();
+	notifyBegin();
 	UpdateMouse();
 
 	// menu for selection of view type
 	if ((menu) && (mouse_win->name_dest.inside(m.x, m.y))){
 		active_win = mouse_win;
 		menu->openPopup(ed, m.x, m.y);
-		NotifyEnd();
+		notifyEnd();
 		return;
 	}
 
 	GetMouseOver();
 
-	cam_con->OnLeftButtonDown();
+	cam_con->onLeftButtonDown();
 
 
-	if (cam_con->IsMouseOver()){
-		NotifyEnd();
+	if (cam_con->isMouseOver()){
+		notifyEnd();
 		return;
 	}
 	active_win = mouse_win;
@@ -405,19 +405,19 @@ void MultiViewImpl::OnLeftButtonDown()
 
 	//v = v_0;
 	if (allow_mouse_actions){
-		if (action_con->IsSelecting()){
+		if (action_con->isSelecting()){
 			GetSelected(get_select_mode());
-		}else if (action_con->LeftButtonDown()){
+		}else if (action_con->leftButtonDown()){
 		}
 	}
-	NotifyEnd();
+	notifyEnd();
 }
 
 
 
-void MultiViewImpl::OnMiddleButtonDown()
+void MultiViewImpl::onMiddleButtonDown()
 {
-	NotifyBegin();
+	notifyBegin();
 	active_win = mouse_win;
 
 // move camera?
@@ -425,15 +425,15 @@ void MultiViewImpl::OnMiddleButtonDown()
 		HoldCursor(true);
 	ViewMoving = true;
 
-	Notify("Update");
-	NotifyEnd();
+	notify("Update");
+	notifyEnd();
 }
 
 
 
-void MultiViewImpl::OnRightButtonDown()
+void MultiViewImpl::onRightButtonDown()
 {
-	NotifyBegin();
+	notifyBegin();
 	active_win = mouse_win;
 
 // move camera?
@@ -441,50 +441,50 @@ void MultiViewImpl::OnRightButtonDown()
 		HoldCursor(true);
 	ViewMoving = true;
 
-	Notify("Update");
-	NotifyEnd();
+	notify("Update");
+	notifyEnd();
 }
 
 
 
-void MultiViewImpl::OnMiddleButtonUp()
+void MultiViewImpl::onMiddleButtonUp()
 {
-	NotifyBegin();
+	notifyBegin();
 	if (ViewMoving){
 		ViewMoving = false;
 		HoldCursor(false);
 	}
-	NotifyEnd();
+	notifyEnd();
 }
 
 
 
-void MultiViewImpl::OnRightButtonUp()
+void MultiViewImpl::onRightButtonUp()
 {
-	NotifyBegin();
+	notifyBegin();
 	if (ViewMoving){
 		ViewMoving = false;
 		HoldCursor(false);
 	}
-	NotifyEnd();
+	notifyEnd();
 }
 
 
 
-void MultiViewImpl::OnKeyUp()
+void MultiViewImpl::onKeyUp()
 {
 }
 
 
 
-void MultiViewImpl::OnLeftButtonUp()
+void MultiViewImpl::onLeftButtonUp()
 {
-	NotifyBegin();
+	notifyBegin();
 	EndRect();
 
-	action_con->LeftButtonUp();
-	cam_con->OnLeftButtonUp();
-	NotifyEnd();
+	action_con->leftButtonUp();
+	cam_con->onLeftButtonUp();
+	notifyEnd();
 }
 
 
@@ -500,7 +500,7 @@ void MultiViewImpl::UpdateMouse()
 	bool mbut = HuiGetEvent()->mbut;
 	bool rbut = HuiGetEvent()->rbut;
 
-	if (cam_con->IsMouseOver())
+	if (cam_con->isMouseOver())
 		return;
 
 	// which window is the cursor in?
@@ -523,9 +523,9 @@ void MultiViewImpl::UpdateMouse()
 }
 
 
-void MultiViewImpl::OnMouseMove()
+void MultiViewImpl::onMouseMove()
 {
-	NotifyBegin();
+	notifyBegin();
 	UpdateMouse();
 
 	bool lbut = HuiGetEvent()->lbut;
@@ -533,10 +533,10 @@ void MultiViewImpl::OnMouseMove()
 	bool rbut = HuiGetEvent()->rbut;
 
 	// hover
-	if ((!action_con->InUse()) && (!cam_con->InUse()) && (!sel_rect.active))
+	if ((!action_con->inUse()) && (!cam_con->inUse()) && (!sel_rect.active))
 		GetMouseOver();
 
-	if ((lbut) && (action_con->IsSelecting()) && (!cam_con->InUse()) && (allow_rect) && (!sel_rect.active)){
+	if ((lbut) && (action_con->isSelecting()) && (!cam_con->inUse()) && (allow_rect) && (!sel_rect.active)){
 		sel_rect.dist += abs(v.x) + abs(v.y);
 		if (sel_rect.dist >= MinMouseMoveToInteract)
 			StartRect();
@@ -547,11 +547,11 @@ void MultiViewImpl::OnMouseMove()
 		SelectAllInRectangle(get_select_mode());
 
 	// left button -> move data
-	if (action_con->InUse())
-		action_con->MouseMove();
+	if (action_con->inUse())
+		action_con->mouseMove();
 
-	if (cam_con->InUse())
-		cam_con->OnMouseMove();
+	if (cam_con->inUse())
+		cam_con->onMouseMove();
 
 
 	if (ViewMoving){
@@ -571,8 +571,8 @@ void MultiViewImpl::OnMouseMove()
 			ed->setCursorPos(HoldingX, HoldingY);
 	}
 
-	Notify("Update");
-	NotifyEnd();
+	notify("Update");
+	notifyEnd();
 }
 
 
@@ -590,14 +590,14 @@ void MultiViewImpl::StartRect()
 				sd->m_old = sd->is_selected;
 			}
 
-	Notify("Update");
+	notify("Update");
 }
 
 void MultiViewImpl::EndRect()
 {
 	sel_rect.active = false;
 
-	Notify("Update");
+	notify("Update");
 }
 
 
@@ -687,7 +687,7 @@ void MultiViewImpl::DrawMousePos()
 }
 
 
-void MultiViewImpl::OnDraw()
+void MultiViewImpl::onDraw()
 {
 	msg_db_f("Multiview.OnDraw",2);
 
@@ -700,26 +700,26 @@ void MultiViewImpl::OnDraw()
 
 	if (!mode3d){
 		win[0]->dest = rect(0,MaxX,0,MaxY);
-		win[0]->Draw();
+		win[0]->draw();
 	}else if (whole_window){
 		active_win->dest = rect(0,MaxX,0,MaxY);
-		active_win->Draw();
+		active_win->draw();
 	}else{
 		// top left
 		win[0]->dest = rect(0,MaxX/2,0,MaxY/2);
-		win[0]->Draw();
+		win[0]->draw();
 
 		// top right
 		win[1]->dest = rect(MaxX/2,MaxX,0,MaxY/2);
-		win[1]->Draw();
+		win[1]->draw();
 
 		// bottom left
 		win[2]->dest = rect(0,MaxX/2,MaxY/2,MaxY);
-		win[2]->Draw();
+		win[2]->draw();
 
 		// bottom right
 		win[3]->dest = rect(MaxX/2,MaxX,MaxY/2,MaxY);
-		win[3]->Draw();
+		win[3]->draw();
 
 		NixScissor(NixTargetRect);
 		NixEnableLighting(false);
@@ -733,15 +733,15 @@ void MultiViewImpl::OnDraw()
 	if (sel_rect.active)
 		sel_rect.draw(m);
 
-	cam_con->Draw();
+	cam_con->draw();
 
 	NixSetColor(ColorText);
 
 	if (ed->input.inside_smart)
 		DrawMousePos();
 
-	if (action_con->InUse())
-		action_con->DrawParams();
+	if (action_con->inUse())
+		action_con->drawParams();
 }
 
 void MultiViewImpl::SelectionRect::start_later(const vector &m)
@@ -781,9 +781,9 @@ void MultiViewImpl::SetMouseAction(const string & name, int mode)
 		mode = ActionRotate2d;
 	action_con->action.name = name;
 	action_con->action.mode = mode;
-	action_con->Disable();
-	if (!action_con->IsSelecting())
-		action_con->Enable();
+	action_con->disable();
+	if (!action_con->isSelecting())
+		action_con->enable();
 }
 
 void MultiViewImpl::SelectAll()
@@ -794,7 +794,7 @@ void MultiViewImpl::SelectAll()
 			if (sd->view_stage >= view_stage)
 				sd->is_selected = true;
 		}
-	Notify("SelectionChange");
+	notify("SelectionChange");
 }
 
 void MultiViewImpl::SelectNone()
@@ -804,7 +804,7 @@ void MultiViewImpl::SelectNone()
 			SingleData* sd = MVGetSingleData(d, i);
 			sd->is_selected = false;
 		}
-	Notify("SelectionChange");
+	notify("SelectionChange");
 }
 
 void MultiViewImpl::InvertSelection()
@@ -815,7 +815,7 @@ void MultiViewImpl::InvertSelection()
 			if (sd->view_stage >= view_stage)
 				sd->is_selected = !sd->is_selected;
 		}
-	Notify("SelectionChange");
+	notify("SelectionChange");
 }
 
 bool MultiViewImpl::HasSelection()
@@ -851,12 +851,12 @@ vector MultiViewImpl::GetSelectionCenter()
 
 vector MultiViewImpl::GetCursor3d()
 {
-	return mouse_win->Unproject(m, cam.pos);
+	return mouse_win->unproject(m, cam.pos);
 }
 
 vector MultiViewImpl::GetCursor3d(const vector &depth_reference)
 {
-	return mouse_win->Unproject(m, depth_reference);
+	return mouse_win->unproject(m, depth_reference);
 }
 
 
@@ -870,9 +870,9 @@ void MultiViewImpl::GetMouseOver()
 
 	/*if (!MVSelectable)
 		return;*/
-	if (cam_con->IsMouseOver())
+	if (cam_con->isMouseOver())
 		return;
-	if (action_con->IsMouseOver(hover.point))
+	if (action_con->isMouseOver(hover.point))
 		return;
 	float _radius=(float)PointRadiusMouseOver;
 	float z_min=1;
@@ -884,7 +884,7 @@ void MultiViewImpl::GetMouseOver()
 					continue;
 				float z;
 				vector tp, mop;
-				bool mo = sd->Hover(mouse_win, m, tp, z, d.user_data);
+				bool mo = sd->hover(mouse_win, m, tp, z, d.user_data);
 				if (mo){
 					if (z<z_min){
 						z_min = z;
@@ -915,13 +915,13 @@ void MultiViewImpl::UnselectAll()
 				SingleData* sd = MVGetSingleData(d,i);
 				sd->is_selected = false;
 			}
-	Notify("SelectionChange");
+	notify("SelectionChange");
 }
 
 void MultiViewImpl::GetSelected(int mode)
 {
 	msg_db_f("GetSelected",4);
-	NotifyBegin();
+	notifyBegin();
 	if ((hover.index < 0) || (hover.type < 0)){
 		if (mode == SelectSet)
 			UnselectAll();
@@ -940,14 +940,14 @@ void MultiViewImpl::GetSelected(int mode)
 			}
 		}
 	}
-	Notify("SelectionChange");
-	NotifyEnd();
+	notify("SelectionChange");
+	notifyEnd();
 }
 
 void MultiViewImpl::SelectAllInRectangle(int mode)
 {
 	msg_db_f("SelAllInRect",4);
-	NotifyBegin();
+	notifyBegin();
 	// reset data
 	UnselectAll();
 
@@ -962,7 +962,7 @@ void MultiViewImpl::SelectAllInRectangle(int mode)
 					continue;
 
 				// selected?
-				sd->m_delta = sd->InRect(active_win, r, d.user_data);
+				sd->m_delta = sd->inRect(active_win, r, d.user_data);
 
 				// add the selection layers
 				if (mode == SelectInvert)
@@ -973,8 +973,8 @@ void MultiViewImpl::SelectAllInRectangle(int mode)
 					sd->is_selected = sd->m_delta;
 			}
 
-	Notify("SelectionChange");
-	NotifyEnd();
+	notify("SelectionChange");
+	notifyEnd();
 }
 
 void MultiViewImpl::HoldCursor(bool holding)
@@ -998,13 +998,13 @@ void MultiViewImpl::AddMessage3d(const string &str, const vector &pos)
 void MultiViewImpl::SetAllowRect(bool allow)
 {
 	allow_rect = allow;
-	Notify("SettingsChange");
+	notify("SettingsChange");
 }
 
 void MultiViewImpl::SetAllowAction(bool allow)
 {
 	allow_mouse_actions = allow;
-	Notify("SettingsChange");
+	notify("SettingsChange");
 }
 
 void MultiViewImpl::ViewStagePush()
@@ -1018,7 +1018,7 @@ void MultiViewImpl::ViewStagePush()
 				if (sd->is_selected)
 					sd->view_stage = view_stage;
 			}
-	Notify("SettingsChange");
+	notify("SettingsChange");
 }
 
 void MultiViewImpl::ViewStagePop()
@@ -1033,7 +1033,7 @@ void MultiViewImpl::ViewStagePop()
 				if (sd->view_stage > view_stage)
 					sd->view_stage = view_stage;
 			}
-	Notify("SettingsChange");
+	notify("SettingsChange");
 }
 
 void MultiViewImpl::ResetMessage3d()

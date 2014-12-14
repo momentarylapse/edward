@@ -42,11 +42,11 @@ Action *ModeWorldEditTerrain::GetAction(const vector &pos)
 void ModeWorldEditTerrain::Apply(const vector &pos)
 {
 	Action *a = GetAction(pos);
-	data->Execute(a);
+	data->execute(a);
 	last_pos = pos;
 }
 
-void ModeWorldEditTerrain::OnStart()
+void ModeWorldEditTerrain::onStart()
 {
 	multi_view->SetAllowAction(false);
 	multi_view->SetAllowRect(false);
@@ -81,13 +81,13 @@ void ModeWorldEditTerrain::OnStart()
 	ed->activate("");
 }
 
-void ModeWorldEditTerrain::OnEnd()
+void ModeWorldEditTerrain::onEnd()
 {
 	delete(dialog);
 	multi_view->SetAllowAction(true);
 	multi_view->SetAllowRect(true);
 	if (brushing)
-		data->EndActionGroup();
+		data->endActionGroup();
 }
 
 void ModeWorldEditTerrain::OnDiameterSlider()
@@ -102,7 +102,7 @@ void ModeWorldEditTerrain::OnDepthSlider()
 	dialog->setString("depth", f2s(base_depth * exp((x - 0.5f) * 2), 2));
 }
 
-void ModeWorldEditTerrain::OnMouseMove()
+void ModeWorldEditTerrain::onMouseMove()
 {
 	if (!brushing)
 		return;
@@ -118,29 +118,29 @@ void ModeWorldEditTerrain::OnMouseMove()
 	}
 }
 
-void ModeWorldEditTerrain::OnLeftButtonDown()
+void ModeWorldEditTerrain::onLeftButtonDown()
 {
 	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVDWorldTerrain))
 		return;
-	data->BeginActionGroup("TerrainBrush");
+	data->beginActionGroup("TerrainBrush");
 	vector pos = multi_view->hover.point;
 	brushing = true;
 
 	Apply(pos);
 }
 
-void ModeWorldEditTerrain::OnLeftButtonUp()
+void ModeWorldEditTerrain::onLeftButtonUp()
 {
 	if (brushing)
-		data->EndActionGroup();
+		data->endActionGroup();
 	brushing = false;
 }
 
-void ModeWorldEditTerrain::OnCommand(const string& id)
+void ModeWorldEditTerrain::onCommand(const string& id)
 {
 }
 
-void ModeWorldEditTerrain::OnDrawWin(MultiView::Window* win)
+void ModeWorldEditTerrain::onDrawWin(MultiView::Window* win)
 {
 	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVDWorldTerrain))
 		return;

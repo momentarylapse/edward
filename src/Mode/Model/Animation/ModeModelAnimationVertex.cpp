@@ -22,7 +22,7 @@ ModeModelAnimationVertex::~ModeModelAnimationVertex()
 {
 }
 
-void ModeModelAnimationVertex::OnStart()
+void ModeModelAnimationVertex::onStart()
 {
 	multi_view->ClearData(NULL);
 
@@ -32,25 +32,25 @@ void ModeModelAnimationVertex::OnStart()
 //	multi_view->SetMouseAction("ActionModelAnimationRotateVertices", MultiView::ActionRotate2d);
 	multi_view->allow_rect = true;
 
-	Subscribe(data);
-	Subscribe(multi_view, "SelectionChange");
-	OnUpdate(data);
+	subscribe(data);
+	subscribe(multi_view, "SelectionChange");
+	onUpdate(data);
 }
 
-void ModeModelAnimationVertex::OnEnd()
+void ModeModelAnimationVertex::onEnd()
 {
-	Unsubscribe(data);
-	Unsubscribe(multi_view);
+	unsubscribe(data);
+	unsubscribe(multi_view);
 	multi_view->ClearData(NULL);
 }
 
-void ModeModelAnimationVertex::OnCommand(const string& id)
+void ModeModelAnimationVertex::onCommand(const string& id)
 {
 }
 
-void ModeModelAnimationVertex::OnUpdate(Observable* o)
+void ModeModelAnimationVertex::onUpdate(Observable* o)
 {
-	if (o->GetName() == "Data"){
+	if (o->getName() == "Data"){
 		UpdateVertices();
 
 		multi_view->ClearData(data);
@@ -60,7 +60,7 @@ void ModeModelAnimationVertex::OnUpdate(Observable* o)
 				mode_model_animation->vertex,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect);
-	}else if (o->GetName() == "MultiView"){
+	}else if (o->getName() == "MultiView"){
 		foreachi(ModelVertex &v, data->Vertex, i)
 			v.is_selected = mode_model_animation->vertex[i].is_selected;
 		data->SelectionFromVertices();
@@ -68,11 +68,11 @@ void ModeModelAnimationVertex::OnUpdate(Observable* o)
 	mode_model_mesh_polygon->FillSelectionBuffers(mode_model_animation->vertex);
 }
 
-void ModeModelAnimationVertex::OnUpdateMenu()
+void ModeModelAnimationVertex::onUpdateMenu()
 {
 }
 
-void ModeModelAnimationVertex::OnDrawWin(MultiView::Window *win)
+void ModeModelAnimationVertex::onDrawWin(MultiView::Window *win)
 {
 	msg_db_f("skin.DrawWin",4);
 

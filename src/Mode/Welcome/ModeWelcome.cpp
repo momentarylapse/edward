@@ -27,7 +27,7 @@ ModeWelcome::~ModeWelcome()
 {
 }
 
-void ModeWelcome::OnStart()
+void ModeWelcome::onStart()
 {
 	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
 	t->reset();
@@ -39,43 +39,43 @@ void ModeWelcome::OnStart()
 	mouse_over = mouse_over_cmd = -1;
 }
 
-void ModeWelcome::OnEnd()
+void ModeWelcome::onEnd()
 {
 }
 
-void ModeWelcome::OnLeftButtonUp()
+void ModeWelcome::onLeftButtonUp()
 {
 	if (mouse_over == 0){
 		if (mouse_over_cmd == 0)
-			mode_model->New();
+			mode_model->_new();
 		else
-			mode_model->Open();
+			mode_model->open();
 	}else if (mouse_over == 1){
 		if (mouse_over_cmd == 0)
-			mode_material->New();
+			mode_material->_new();
 		else
-			mode_material->Open();
+			mode_material->open();
 	}else if (mouse_over == 2){
 		if (mouse_over_cmd == 0)
-			mode_world->New();
+			mode_world->_new();
 		else
-			mode_world->Open();
+			mode_world->open();
 	}else if (mouse_over == 3){
 		if (mouse_over_cmd == 0)
-			mode_font->New();
+			mode_font->_new();
 		else
-			mode_font->Open();
+			mode_font->open();
 	}else if (mouse_over == 4){
 		ed->setMode(mode_administration);
 	}
 }
 
-void ModeWelcome::OnCommand(const string & id)
+void ModeWelcome::onCommand(const string & id)
 {
 	if (id == "new")
-		mode_model->New();
+		mode_model->_new();
 	if (id == "open")
-		mode_model->Open();
+		mode_model->open();
 }
 
 bool mouse_in_rect(rect r, int mx, int my)
@@ -83,7 +83,7 @@ bool mouse_in_rect(rect r, int mx, int my)
 	return ((mx > r.x1) && (mx < r.x2) && (my > r.y1) && (my < r.y2));
 }
 
-void ModeWelcome::OnMouseMove()
+void ModeWelcome::onMouseMove()
 {
 	int mx = HuiGetEvent()->mx;
 	int my = HuiGetEvent()->my;
@@ -99,7 +99,7 @@ void ModeWelcome::OnMouseMove()
 }
 
 
-void ModeWelcome::OnUpdate(Observable *o)
+void ModeWelcome::onUpdate(Observable *o)
 {
 }
 
@@ -149,7 +149,7 @@ void ModeWelcome::DrawIcon(int x, int y, int index, int pic_index, const string 
 	NixDrawStr(x-25,y-52,name);
 }
 
-void ModeWelcome::OnDraw()
+void ModeWelcome::onDraw()
 {
 	msg_db_f("Welcome.Draw", 1);
 	NixSetColor(Black);

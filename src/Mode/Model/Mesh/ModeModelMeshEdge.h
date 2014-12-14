@@ -19,24 +19,24 @@ public:
 	ModeModelMeshEdge(ModeBase *parent);
 	virtual ~ModeModelMeshEdge();
 
-	virtual void OnStart();
-	virtual void OnEnd();
+	virtual void onStart();
+	virtual void onEnd();
 
-	virtual void OnMouseMove();
-	virtual void OnLeftButtonDown();
-	virtual void OnLeftButtonUp();
-	virtual void OnMiddleButtonDown();
-	virtual void OnMiddleButtonUp();
-	virtual void OnRightButtonDown();
-	virtual void OnRightButtonUp();
-	virtual void OnKeyDown();
-	virtual void OnKeyUp();
-	virtual void OnCommand(const string &id);
-	virtual void OnUpdate(Observable *o);
-	virtual void OnUpdateMenu();
+	virtual void onMouseMove();
+	virtual void onLeftButtonDown();
+	virtual void onLeftButtonUp();
+	virtual void onMiddleButtonDown();
+	virtual void onMiddleButtonUp();
+	virtual void onRightButtonDown();
+	virtual void onRightButtonUp();
+	virtual void onKeyDown();
+	virtual void onKeyUp();
+	virtual void onCommand(const string &id);
+	virtual void onUpdate(Observable *o);
+	virtual void onUpdateMenu();
 
-	virtual void OnDraw();
-	virtual void OnDrawWin(MultiView::Window *win);
+	virtual void onDraw();
+	virtual void onDrawWin(MultiView::Window *win);
 
 	void DrawEdges(MultiView::Window *win, Array<ModelVertex> &vertex, bool only_selected);
 };

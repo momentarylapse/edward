@@ -18,12 +18,12 @@ public:
 	ModeWorldCreateObject(ModeBase *_parent);
 	virtual ~ModeWorldCreateObject();
 
-	virtual void OnStart();
-	virtual void OnEnd();
+	virtual void onStart();
+	virtual void onEnd();
 
 	void OnFindObject();
 
-	void OnLeftButtonDown();
+	void onLeftButtonDown();
 
 	string filename;
 };

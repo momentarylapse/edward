@@ -47,10 +47,10 @@ Action *ModeModelMeshBrush::GetAction()
 void ModeModelMeshBrush::Apply()
 {
 	Action *a = GetAction();
-	data->Execute(a);
+	data->execute(a);
 }
 
-void ModeModelMeshBrush::OnStart()
+void ModeModelMeshBrush::onStart()
 {
 	multi_view->SetAllowAction(false);
 	multi_view->SetAllowRect(false);
@@ -97,20 +97,20 @@ void ModeModelMeshBrush::OnDepthSlider()
 	dialog->setString("depth", f2s(base_depth * exp((x - 0.5f) * 2), 2));
 }
 
-void ModeModelMeshBrush::OnEnd()
+void ModeModelMeshBrush::onEnd()
 {
 	delete(dialog);
 	multi_view->SetAllowAction(true);
 	multi_view->SetAllowRect(true);
 	if (brushing)
-		data->EndActionGroup();
+		data->endActionGroup();
 }
 
-void ModeModelMeshBrush::OnLeftButtonDown()
+void ModeModelMeshBrush::onLeftButtonDown()
 {
 	if (multi_view->hover.index < 0)
 		return;
-	data->BeginActionGroup("brush");
+	data->beginActionGroup("brush");
 	vector pos = multi_view->hover.point;
 	distance = 0;
 	last_pos = pos;
@@ -119,14 +119,14 @@ void ModeModelMeshBrush::OnLeftButtonDown()
 	Apply();
 }
 
-void ModeModelMeshBrush::OnLeftButtonUp()
+void ModeModelMeshBrush::onLeftButtonUp()
 {
 	if (brushing)
-		data->EndActionGroup();
+		data->endActionGroup();
 	brushing = false;
 }
 
-void ModeModelMeshBrush::OnMouseMove()
+void ModeModelMeshBrush::onMouseMove()
 {
 	if (!brushing)
 		return;
@@ -142,7 +142,7 @@ void ModeModelMeshBrush::OnMouseMove()
 	}
 }
 
-void ModeModelMeshBrush::OnDrawWin(MultiView::Window* win)
+void ModeModelMeshBrush::onDrawWin(MultiView::Window* win)
 {
 	if (multi_view->hover.index < 0)
 		return;

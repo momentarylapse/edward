@@ -19,13 +19,13 @@ public:
 	ModeModelMeshVertex(ModeBase *parent);
 	virtual ~ModeModelMeshVertex();
 
-	virtual void OnStart();
-	virtual void OnEnd();
+	virtual void onStart();
+	virtual void onEnd();
 
-	virtual void OnUpdate(Observable *o);
+	virtual void onUpdate(Observable *o);
 
-	virtual void OnDraw();
-	virtual void OnDrawWin(MultiView::Window *win);
+	virtual void onDraw();
+	virtual void onDrawWin(MultiView::Window *win);
 
 	void DrawEffects(MultiView::Window *win);
 };

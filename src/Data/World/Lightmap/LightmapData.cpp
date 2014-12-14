@@ -162,7 +162,7 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 
 	DataModel *m = new DataModel();
 	mod.orig = m;
-	m->Load(ObjectDir + filename + ".model");
+	m->load(ObjectDir + filename + ".model");
 
 
 	mod.new_name = format("Lightmap/%s/%s_%d", world_name_small.c_str(), mod.orig_name.c_str(), mod.id);

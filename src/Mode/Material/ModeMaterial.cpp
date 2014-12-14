@@ -30,7 +30,7 @@ ModeMaterial::ModeMaterial() :
 	Mode("Material", NULL, new DataMaterial, ed->multi_view_3d, "menu_material")
 {
 	geo = NULL;
-	Subscribe(data);
+	subscribe(data);
 
 	AppearanceDialog = NULL;
 
@@ -48,33 +48,33 @@ ModeMaterial::~ModeMaterial()
 		delete(geo);
 }
 
-void ModeMaterial::New()
+void ModeMaterial::_new()
 {
-	data->Reset();
-	OptimizeView();
+	data->reset();
+	optimizeView();
 	ed->setMode(mode_material);
 }
 
 
 
-bool ModeMaterial::Save()
+bool ModeMaterial::save()
 {
 	if (data->filename == "")
-		return SaveAs();
-	return data->Save(data->filename);
+		return saveAs();
+	return data->save(data->filename);
 }
 
 
 
-void ModeMaterial::OnDraw()
+void ModeMaterial::onDraw()
 {
 }
 
 
 
-void ModeMaterial::OnUpdate(Observable *o)
+void ModeMaterial::onUpdate(Observable *o)
 {
-	if (o->GetName() == "Data"){
+	if (o->getName() == "Data"){
 		data->UpdateTextures();
 		if (data->Shader)
 			data->Shader->unref();
@@ -84,21 +84,21 @@ void ModeMaterial::OnUpdate(Observable *o)
 
 
 
-void ModeMaterial::OnCommand(const string & id)
+void ModeMaterial::onCommand(const string & id)
 {
 	if (id == "new")
-		New();
+		_new();
 	if (id == "open")
-		Open();
+		open();
 	if (id == "save")
-		Save();
+		save();
 	if (id == "save_as")
-		SaveAs();
+		saveAs();
 
 	if (id == "undo")
-		data->Undo();
+		data->undo();
 	if (id == "redo")
-		data->Redo();
+		data->redo();
 
 	if (id == "material_shape_smooth")
 		SetShapeSmooth(!shape_smooth);
@@ -117,7 +117,7 @@ void ModeMaterial::OnCommand(const string & id)
 }
 
 
-void ModeMaterial::OnDrawWin(MultiView::Window *win)
+void ModeMaterial::onDrawWin(MultiView::Window *win)
 {
 	data->ApplyForRendering();
 
@@ -132,23 +132,23 @@ void ModeMaterial::OnDrawWin(MultiView::Window *win)
 
 
 
-bool ModeMaterial::Open()
+bool ModeMaterial::open()
 {
 	if (!ed->allowTermination())
 		return false;
 	if (!ed->fileDialog(FDMaterial, false, false))
 		return false;
-	if (!data->Load(ed->DialogFileComplete))
+	if (!data->load(ed->DialogFileComplete))
 		return false;
 
-	OptimizeView();
+	optimizeView();
 	ed->setMode(mode_material);
 	return true;
 }
 
 
 
-void ModeMaterial::OnEnd()
+void ModeMaterial::onEnd()
 {
 	delete(AppearanceDialog);
 
@@ -159,16 +159,16 @@ void ModeMaterial::OnEnd()
 
 
 
-bool ModeMaterial::SaveAs()
+bool ModeMaterial::saveAs()
 {
 	if (ed->fileDialog(FDMaterial, true, false))
-		return data->Save(ed->DialogFileComplete);
+		return data->save(ed->DialogFileComplete);
 	return false;
 }
 
 
 
-void ModeMaterial::OnStart()
+void ModeMaterial::onStart()
 {
 	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
 	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
@@ -231,12 +231,12 @@ void ModeMaterial::UpdateShape()
 		vb->clear();
 		geo->Preview(vb, i);
 	}
-	OnUpdateMenu();
+	onUpdateMenu();
 	if (needs_opt_view)
-		OptimizeView();
+		optimizeView();
 }
 
-bool ModeMaterial::OptimizeView()
+bool ModeMaterial::optimizeView()
 {
 	multi_view->ResetView();
 	if (geo){
@@ -247,7 +247,7 @@ bool ModeMaterial::OptimizeView()
 	return true;
 }
 
-void ModeMaterial::OnUpdateMenu()
+void ModeMaterial::onUpdateMenu()
 {
 	ed->check("material_shape_smooth", shape_smooth);
 	ed->check("material_shape_cube", shape_type == "cube");

@@ -22,7 +22,7 @@ ModeWorldCreateObject::~ModeWorldCreateObject()
 {
 }
 
-void ModeWorldCreateObject::OnStart()
+void ModeWorldCreateObject::onStart()
 {
 	filename = LastObjectFilename;
 	if (filename.num == 0)
@@ -43,7 +43,7 @@ void ModeWorldCreateObject::OnStart()
 }
 
 
-void ModeWorldCreateObject::OnEnd()
+void ModeWorldCreateObject::onEnd()
 {
 	delete(dialog);
 }
@@ -58,7 +58,7 @@ void ModeWorldCreateObject::OnFindObject()
 }
 
 
-void ModeWorldCreateObject::OnLeftButtonDown()
+void ModeWorldCreateObject::onLeftButtonDown()
 {
 	if (filename.num > 0){
 		data->AddObject(filename, multi_view->GetCursor3d());

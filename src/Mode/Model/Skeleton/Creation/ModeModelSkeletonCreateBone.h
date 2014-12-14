@@ -17,10 +17,10 @@ public:
 	ModeModelSkeletonCreateBone(ModeBase *_parent);
 	virtual ~ModeModelSkeletonCreateBone();
 
-	virtual void OnMouseMove();
-	virtual void OnLeftButtonDown();
+	virtual void onMouseMove();
+	virtual void onLeftButtonDown();
 
-	virtual void OnDrawWin(MultiView::Window *win);
+	virtual void onDrawWin(MultiView::Window *win);
 
 private:
 	vector pos;

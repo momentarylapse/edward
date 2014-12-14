@@ -45,7 +45,7 @@ ModelPropertiesDialog::ModelPropertiesDialog(HuiWindow *_parent, bool _allow_par
 	event("script_find", this, &ModelPropertiesDialog::OnScriptFind);
 	event("model_script_var_template", this, &ModelPropertiesDialog::OnModelScriptVarTemplate);
 
-	Subscribe(data);
+	subscribe(data);
 
 	temp = data->meta_data;
 	LoadData();
@@ -54,7 +54,7 @@ ModelPropertiesDialog::ModelPropertiesDialog(HuiWindow *_parent, bool _allow_par
 ModelPropertiesDialog::~ModelPropertiesDialog()
 {
 	mode_model->PropertiesDialog = NULL;
-	Unsubscribe(data);
+	unsubscribe(data);
 }
 
 void ModelPropertiesDialog::LoadData()
@@ -109,7 +109,7 @@ void ModelPropertiesDialog::FillTensorList()
 	addString("tensor", format("Z\\%.2f\\%.2f\\%.2f", temp.InertiaTensor._20, temp.InertiaTensor._21, temp.InertiaTensor._22));
 }
 
-void ModelPropertiesDialog::OnUpdate(Observable *o)
+void ModelPropertiesDialog::onUpdate(Observable *o)
 {
 	//FillMaterialList();
 	temp = data->meta_data;
@@ -318,7 +318,7 @@ void ModelPropertiesDialog::ApplyData()
 // script
 	temp.ScriptFile = getString("script");
 
-	data->Execute(new ActionModelEditData(temp));
+	data->execute(new ActionModelEditData(temp));
 
 			//Change(true,true);
 			//Change();

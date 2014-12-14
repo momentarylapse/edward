@@ -20,7 +20,7 @@ ModeWorldCreateTerrain::~ModeWorldCreateTerrain()
 {
 }
 
-void ModeWorldCreateTerrain::OnStart()
+void ModeWorldCreateTerrain::onStart()
 {
 	// Dialog
 	dialog = HuiCreateResourceDialog("new_terrain_dialog", ed);
@@ -45,7 +45,7 @@ void ModeWorldCreateTerrain::OnStart()
 
 }
 
-void ModeWorldCreateTerrain::OnEnd()
+void ModeWorldCreateTerrain::onEnd()
 {
 	delete(dialog);
 	dialog = NULL;
@@ -58,12 +58,12 @@ void ModeWorldCreateTerrain::OnOk()
 	int num_x = dialog->getInt("num_x");
 	int num_z = dialog->getInt("num_z");
 	data->AddNewTerrain(pos, size, num_x, num_z);
-	Abort();
+	abort();
 }
 
 void ModeWorldCreateTerrain::OnClose()
 {
-	Abort();
+	abort();
 }
 
 void ModeWorldCreateTerrain::OnSizeChange()
@@ -72,7 +72,7 @@ void ModeWorldCreateTerrain::OnSizeChange()
 	dialog->setFloat("pattern_z", dialog->getFloat("terrain_z") / (float)dialog->getInt("num_z"));
 }
 
-void ModeWorldCreateTerrain::OnDrawWin(MultiView::Window *win)
+void ModeWorldCreateTerrain::onDrawWin(MultiView::Window *win)
 {
 }
 

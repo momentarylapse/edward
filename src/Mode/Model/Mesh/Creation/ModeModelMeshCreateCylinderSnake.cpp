@@ -31,7 +31,7 @@ ModeModelMeshCreateCylinderSnake::~ModeModelMeshCreateCylinderSnake()
 {
 }
 
-void ModeModelMeshCreateCylinderSnake::OnStart()
+void ModeModelMeshCreateCylinderSnake::onStart()
 {
 	dialog = HuiCreateResourceDialog("new_cylinder_dialog",ed);
 
@@ -45,7 +45,7 @@ void ModeModelMeshCreateCylinderSnake::OnStart()
 }
 
 
-void ModeModelMeshCreateCylinderSnake::OnEnd()
+void ModeModelMeshCreateCylinderSnake::onEnd()
 {
 	delete(dialog);
 	if (geo)
@@ -67,7 +67,7 @@ void ModeModelMeshCreateCylinderSnake::UpdateGeometry()
 }
 
 
-void ModeModelMeshCreateCylinderSnake::OnMouseMove()
+void ModeModelMeshCreateCylinderSnake::onMouseMove()
 {
 	if (ready_for_scaling){
 		vector p = multi_view->GetCursor3d(pos.back());
@@ -81,22 +81,22 @@ void ModeModelMeshCreateCylinderSnake::OnMouseMove()
 
 
 
-void ModeModelMeshCreateCylinderSnake::OnLeftButtonDown()
+void ModeModelMeshCreateCylinderSnake::onLeftButtonDown()
 {
 	if (ready_for_scaling){
 
 		data->PasteGeometry(*geo, mode_model_mesh->CurrentMaterial);
 		data->SelectOnlySurface(&data->Surface.back());
 
-		Abort();
+		abort();
 	}else{
 		if (pos.num > 2){
-			vector pp = multi_view->mouse_win->Project(pos[0]);
+			vector pp = multi_view->mouse_win->project(pos[0]);
 			pp.z = 0;
 			if ((pp - multi_view->m).length_fuzzy() < CYLINDER_CLOSING_DISTANCE){
 				closed = true;
 				ready_for_scaling = true;
-				OnMouseMove();
+				onMouseMove();
 				message = _("Zylinder: Radius");
 				UpdateGeometry();
 				ed->forceRedraw();
@@ -113,12 +113,12 @@ void ModeModelMeshCreateCylinderSnake::OnLeftButtonDown()
 
 
 
-void ModeModelMeshCreateCylinderSnake::OnKeyDown()
+void ModeModelMeshCreateCylinderSnake::onKeyDown()
 {
 	if (HuiGetEvent()->key_code == KEY_SHIFT + KEY_RETURN){
 		if (pos.num > 1){
 			ready_for_scaling = true;
-			OnMouseMove();
+			onMouseMove();
 			message = _("Zylinder: Radius");
 			UpdateGeometry();
 			ed->forceRedraw();
@@ -130,13 +130,13 @@ void ModeModelMeshCreateCylinderSnake::OnKeyDown()
 
 
 
-void ModeModelMeshCreateCylinderSnake::OnDrawWin(MultiView::Window *win)
+void ModeModelMeshCreateCylinderSnake::onDrawWin(MultiView::Window *win)
 {
 	if (pos.num > 0){
 		NixEnableLighting(false);
 		// control polygon
 		for (int i=0;i<pos.num;i++){
-			vector pp = win->Project(pos[i]);
+			vector pp = win->project(pos[i]);
 			NixSetColor(Green);
 			NixDrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
 			NixSetColor(White);
@@ -162,7 +162,7 @@ void ModeModelMeshCreateCylinderSnake::OnDrawWin(MultiView::Window *win)
 		mode_model->SetMaterialCreation();
 		NixDraw3D(VBTemp);
 	}else if (pos.num > 2){
-		vector pp = multi_view->mouse_win->Project(pos[0]);
+		vector pp = multi_view->mouse_win->project(pos[0]);
 		pp.z = 0;
 		if ((pp - multi_view->m).length_fuzzy() < CYLINDER_CLOSING_DISTANCE){
 			ed->drawStr(pp.x, pp.y, _("Pfad schlie&sen"));

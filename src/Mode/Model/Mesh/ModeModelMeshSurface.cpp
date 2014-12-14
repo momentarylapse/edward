@@ -25,45 +25,45 @@ ModeModelMeshSurface::~ModeModelMeshSurface()
 
 
 
-void ModeModelMeshSurface::OnDrawWin(MultiView::Window *win)
+void ModeModelMeshSurface::onDrawWin(MultiView::Window *win)
 {
-	mode_model_mesh_polygon->OnDrawWin(win);
+	mode_model_mesh_polygon->onDrawWin(win);
 }
 
 
 
-void ModeModelMeshSurface::OnEnd()
+void ModeModelMeshSurface::onEnd()
 {
-	Unsubscribe(data);
-	Unsubscribe(multi_view);
+	unsubscribe(data);
+	unsubscribe(multi_view);
 }
 
-bool ModelSurface::Hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data)
+bool ModelSurface::hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data)
 {
 	for (int i=0;i<Polygon.num;i++)
-		if (Polygon[i].Hover(win, m, tp, z, user_data))
+		if (Polygon[i].hover(win, m, tp, z, user_data))
 			return true;
 	return false;
 }
 
-bool ModelSurface::InRect(MultiView::Window *win, rect &r, void *user_data)
+bool ModelSurface::inRect(MultiView::Window *win, rect &r, void *user_data)
 {
 	for (int i=0;i<Polygon.num;i++)
-		if (Polygon[i].InRect(win, r, user_data))
+		if (Polygon[i].inRect(win, r, user_data))
 			return true;
 	return false;
 }
 
-void ModeModelMeshSurface::OnUpdate(Observable *o)
+void ModeModelMeshSurface::onUpdate(Observable *o)
 {
-	if (o->GetName() == "Data"){
+	if (o->getName() == "Data"){
 		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		multi_view->AddData(	MVDModelSurface,
 				data->Surface,
 				data,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
-	}else if (o->GetName() == "MultiView"){
+	}else if (o->getName() == "MultiView"){
 		data->SelectionFromSurfaces();
 	}
 	mode_model_mesh_polygon->FillSelectionBuffers(data->Vertex);
@@ -71,18 +71,18 @@ void ModeModelMeshSurface::OnUpdate(Observable *o)
 
 
 
-void ModeModelMeshSurface::OnStart()
+void ModeModelMeshSurface::onStart()
 {
-	Subscribe(data);
-	Subscribe(multi_view, "SelectionChange");
+	subscribe(data);
+	subscribe(multi_view, "SelectionChange");
 	mode_model_mesh->ApplyRightMouseFunction(multi_view);
 	multi_view->allow_rect = true;
-	OnUpdate(data);
+	onUpdate(data);
 }
 
 
 
-void ModeModelMeshSurface::OnDraw()
+void ModeModelMeshSurface::onDraw()
 {
 	mode_model_mesh_polygon->FillSelectionBuffers(data->Vertex);
 }

@@ -83,7 +83,7 @@ void DataAdministration::TestRootDirectory()
 	SetRootDirectory(RootDir);*/
 }
 
-bool DataAdministration::Save(const string &_filename)
+bool DataAdministration::save(const string &_filename)
 {
 	msg_db_f("Admin.Save",5);
 	filename = _filename;
@@ -117,19 +117,19 @@ bool DataAdministration::Save(const string &_filename)
 
 void DataAdministration::SaveDatabase()
 {
-	Save(HuiAppDirectory + "Data/admin_database.txt");
+	save(HuiAppDirectory + "Data/admin_database.txt");
 }
 
-void DataAdministration::Reset()
+void DataAdministration::reset()
 {
 	msg_db_f("Admin.Reset",5);
 	file_list->clear_deep();
 }
 
-bool DataAdministration::Load(const string &_filename, bool deep)
+bool DataAdministration::load(const string &_filename, bool deep)
 {
 	msg_db_f("Admin.Load",5);
-	Reset();
+	reset();
 	filename = _filename;
 
 	if (!admin_file->Open(filename))
@@ -158,13 +158,13 @@ bool DataAdministration::Load(const string &_filename, bool deep)
 		}
 	}
 	admin_file->Close();
-	Notify("Change");
+	notify("Change");
 	return true;
 }
 
 void DataAdministration::LoadDatabase()
 {
-	Load(HuiAppDirectory + "Data/admin_database.txt");
+	load(HuiAppDirectory + "Data/admin_database.txt");
 }
 
 AdminFile *AdminFileList::add_engine_files()
@@ -267,7 +267,7 @@ void DataAdministration::UpdateDatabase()
 
 	ed->progress->end();
 	SaveDatabase();
-	Notify("Change");
+	notify("Change");
 }
 
 void DataAdministration::ExportGame(const string &dir, GameIniData &game_ini)

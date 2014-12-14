@@ -24,7 +24,7 @@ ModeModelMeshCreatePolygon::~ModeModelMeshCreatePolygon()
 }
 
 
-void ModeModelMeshCreatePolygon::OnStart()
+void ModeModelMeshCreatePolygon::onStart()
 {
 	foreach(ModelVertex &v, data->Vertex)
 		v.is_special = false;
@@ -32,19 +32,19 @@ void ModeModelMeshCreatePolygon::OnStart()
 
 
 
-void ModeModelMeshCreatePolygon::OnEnd()
+void ModeModelMeshCreatePolygon::onEnd()
 {
 	foreach(ModelVertex &v, data->Vertex)
 		v.is_special = false;
 }
 
 
-void ModeModelMeshCreatePolygon::OnDrawWin(MultiView::Window *win)
+void ModeModelMeshCreatePolygon::onDrawWin(MultiView::Window *win)
 {
 	for (int i=1;i<selection.num;i++){
 		NixEnableLighting(false);
-		vector pa = win->Project(data->Vertex[selection[i - 1]].pos);
-		vector pb = win->Project(data->Vertex[selection[i    ]].pos);
+		vector pa = win->project(data->Vertex[selection[i - 1]].pos);
+		vector pb = win->project(data->Vertex[selection[i    ]].pos);
 		NixSetColor(Green);
 		if ((pa.z >= 0) and (pa.z < 1) and (pb.z >= 0) and (pb.z <= 1))
 			NixDrawLine(pa.x, pa.y, pb.x, pb.y, 0);
@@ -55,23 +55,23 @@ void ModeModelMeshCreatePolygon::OnDrawWin(MultiView::Window *win)
 
 
 
-void ModeModelMeshCreatePolygon::OnKeyDown()
+void ModeModelMeshCreatePolygon::onKeyDown()
 {
 	if (HuiGetEvent()->key_code == KEY_SHIFT + KEY_RETURN){
-		data->Execute(new ActionModelAddPolygonAutoSkin(selection, mode_model_mesh->CurrentMaterial));
-		Abort();
+		data->execute(new ActionModelAddPolygonAutoSkin(selection, mode_model_mesh->CurrentMaterial));
+		abort();
 	}
 }
 
 
-void ModeModelMeshCreatePolygon::OnLeftButtonDown()
+void ModeModelMeshCreatePolygon::onLeftButtonDown()
 {
 	if (multi_view->hover.index >= 0){
 		// closed loop -> done
 		if (selection.num > 0)
 			if (multi_view->hover.index == selection[0]){
-				data->Execute(new ActionModelAddPolygonAutoSkin(selection, mode_model_mesh->CurrentMaterial));
-				Abort();
+				data->execute(new ActionModelAddPolygonAutoSkin(selection, mode_model_mesh->CurrentMaterial));
+				abort();
 				return;
 			}
 
@@ -80,7 +80,7 @@ void ModeModelMeshCreatePolygon::OnLeftButtonDown()
 			if (s == multi_view->hover.index)
 				if (i > 0){
 					ed->setMessage(_("keine doppelten Punkte erlaubt!"));
-					Abort();
+					abort();
 					return;
 				}
 

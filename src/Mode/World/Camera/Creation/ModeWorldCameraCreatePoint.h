@@ -17,7 +17,7 @@ public:
 	ModeWorldCameraCreatePoint(ModeBase *_parent);
 	virtual ~ModeWorldCameraCreatePoint();
 
-	virtual void OnLeftButtonDown();
+	virtual void onLeftButtonDown();
 
 	string filename;
 };

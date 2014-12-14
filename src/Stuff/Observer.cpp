@@ -18,19 +18,19 @@ Observer::~Observer()
 
 
 
-void Observer::Subscribe(Observable *o, const string &message)
+void Observer::subscribe(Observable *o, const string &message)
 {
-	o->Subscribe(this, message);
+	o->subscribe(this, message);
 }
 
-void Observer::Subscribe(Observable *o)
+void Observer::subscribe(Observable *o)
 {
-	o->Subscribe(this);
+	o->subscribe(this);
 }
 
-void Observer::Unsubscribe(Observable *o)
+void Observer::unsubscribe(Observable *o)
 {
-	o->Unsubscribe(this);
+	o->unsubscribe(this);
 }
 
 

@@ -39,20 +39,20 @@ TerrainPropertiesDialog::TerrainPropertiesDialog(HuiWindow *_parent, bool _allow
 	event("default_material", this, &TerrainPropertiesDialog::OnDefaultMaterial);
 	event("terrain_save_as", this, &TerrainPropertiesDialog::OnSaveAs);
 
-	Subscribe(data);
+	subscribe(data);
 
-	OnUpdate(data);
+	onUpdate(data);
 }
 
 TerrainPropertiesDialog::~TerrainPropertiesDialog()
 {
-	Unsubscribe(data);
+	unsubscribe(data);
 }
 
 void TerrainPropertiesDialog::ApplyData()
 {
 	temp.MaterialFile = getString("material");
-	data->Execute(new ActionWorldEditTerrain(index, temp));
+	data->execute(new ActionWorldEditTerrain(index, temp));
 }
 
 
@@ -207,7 +207,7 @@ void TerrainPropertiesDialog::OnClearTextureLevel()
 	FillTextureList();
 }
 
-void TerrainPropertiesDialog::OnUpdate(Observable *o)
+void TerrainPropertiesDialog::onUpdate(Observable *o)
 {
 	if (index >= data->Terrains.num){
 		delete(this);

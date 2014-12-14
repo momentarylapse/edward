@@ -25,7 +25,7 @@ public:
 	void OnClose();
 	void OnOk();
 
-	void OnUpdate(Observable *o);
+	void onUpdate(Observable *o);
 
 private:
 	DataModel *data;

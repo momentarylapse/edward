@@ -25,7 +25,7 @@ public:
 	void OnMaterialAdd();
 	void OnMaterialEdit();
 
-	void OnUpdate(Observable *o);
+	void onUpdate(Observable *o);
 
 	void FillMaterialList();
 

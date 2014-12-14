@@ -112,7 +112,7 @@ DataWorld::~DataWorld()
 {
 }
 
-bool DataWorld::Save(const string & _filename)
+bool DataWorld::save(const string & _filename)
 {
 /*	if (!SaveTerrains())
 		return;*/
@@ -195,19 +195,19 @@ bool DataWorld::Save(const string & _filename)
 	delete(f);
 
 	ed->setMessage(_("Gespeichert!"));
-	action_manager->MarkCurrentAsSave();
+	action_manager->markCurrentAsSave();
 	return true;
 }
 
 
 
-bool DataWorld::Load(const string & _filename, bool deep)
+bool DataWorld::load(const string & _filename, bool deep)
 {
 	msg_db_f("World.Load", 1);
 	bool Error=false;
 	int ffv;
 
-	Reset();
+	reset();
 
 	filename = _filename;
 	if (this == mode_world->data)
@@ -336,8 +336,8 @@ bool DataWorld::Load(const string & _filename, bool deep)
 			Object[i].is_selected = true;
 		CreateLightMap(true);
 	}*/
-	ResetHistory();
-	Notify("Change");
+	resetHistory();
+	notify("Change");
 
 	return !Error;
 }
@@ -396,7 +396,7 @@ void DataWorld::MetaData::DrawBackground()
 }
 
 
-void DataWorld::Reset()
+void DataWorld::reset()
 {
 	filename = "";
 
@@ -412,8 +412,8 @@ void DataWorld::Reset()
 
 	meta_data.Reset();
 
-	ResetHistory();
-	Notify("Change");
+	resetHistory();
+	notify("Change");
 }
 
 
@@ -483,13 +483,13 @@ void DataWorld::UpdateData()
 }
 
 WorldObject* DataWorld::AddObject(const string& filename, const vector& pos)
-{	return (WorldObject*)Execute(new ActionWorldAddObject(filename, pos));	}
+{	return (WorldObject*)execute(new ActionWorldAddObject(filename, pos));	}
 
 WorldTerrain* DataWorld::AddTerrain(const string& filename, const vector& pos)
-{	return (WorldTerrain*)Execute(new ActionWorldAddTerrain(pos, filename));	}
+{	return (WorldTerrain*)execute(new ActionWorldAddTerrain(pos, filename));	}
 
 WorldTerrain* DataWorld::AddNewTerrain(const vector& pos, const vector& size, int num_x, int num_z)
-{	return (WorldTerrain*)Execute(new ActionWorldAddTerrain(pos, size, num_x, num_z));	}
+{	return (WorldTerrain*)execute(new ActionWorldAddTerrain(pos, size, num_x, num_z));	}
 
 
 void DataWorld::ClearSelection()
@@ -515,7 +515,7 @@ void DataWorld::Copy(Array<WorldObject> &objects, Array<WorldTerrain> &terrains)
 }
 
 void DataWorld::Paste(Array<WorldObject> &objects, Array<WorldTerrain> &terrains)
-{	Execute(new ActionWorldPaste(objects, terrains));	}
+{	execute(new ActionWorldPaste(objects, terrains));	}
 
 void DataWorld::DeleteSelection()
-{	Execute(new ActionWorldDeleteSelection());	}
+{	execute(new ActionWorldDeleteSelection());	}

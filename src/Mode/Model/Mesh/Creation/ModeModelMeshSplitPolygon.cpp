@@ -26,7 +26,7 @@ ModeModelMeshSplitPolygon::~ModeModelMeshSplitPolygon()
 {
 }
 
-void ModeModelMeshSplitPolygon::OnLeftButtonDown()
+void ModeModelMeshSplitPolygon::onLeftButtonDown()
 {
 	/*triangle = multi_view->MouseOver;
 	surface = multi_view->MouseOverSet;
@@ -34,9 +34,9 @@ void ModeModelMeshSplitPolygon::OnLeftButtonDown()
 
 	if ((triangle >= 0) && (surface >= 0)){
 		if (edge >= 0)
-			data->Execute(new ActionModelSplitEdge(surface, edge, factor));
+			data->execute(new ActionModelSplitEdge(surface, edge, factor));
 		else
-			data->Execute(new ActionModelSplitPolygon(surface, triangle, pos));
+			data->execute(new ActionModelSplitPolygon(surface, triangle, pos));
 		//Abort();
 		surface = -1;
 		triangle = -1;
@@ -44,7 +44,7 @@ void ModeModelMeshSplitPolygon::OnLeftButtonDown()
 	}
 }
 
-void ModeModelMeshSplitPolygon::OnDrawWin(MultiView::Window *win)
+void ModeModelMeshSplitPolygon::onDrawWin(MultiView::Window *win)
 {
 	triangle = multi_view->hover.index;
 	surface = multi_view->hover.set;
@@ -52,13 +52,13 @@ void ModeModelMeshSplitPolygon::OnDrawWin(MultiView::Window *win)
 	edge = -1;
 
 	if ((triangle >= 0) && (surface >= 0)){
-		vector pp = win->Project(pos);
+		vector pp = win->project(pos);
 		pp.z = 0;
 		ModelPolygon &poly = data->Surface[surface].Polygon[triangle];
 		Array<vector> v, p;
 		for (int k=0;k<poly.Side.num;k++){
 			v.add(data->Vertex[poly.Side[k].Vertex].pos);
-			p.add(win->Project(v[k]));
+			p.add(win->project(v[k]));
 			p.back().z = 0;
 		}
 
@@ -67,7 +67,7 @@ void ModeModelMeshSplitPolygon::OnDrawWin(MultiView::Window *win)
 			if (VecLineDistance(pp, p[k], p[(k + 1) % v.num]) < 10){
 				float f = (pp - p[k]).length() / (p[k] - p[(k + 1) % v.num]).length();
 				pos = v[k] * (1 - f) + v[(k + 1) % v.num] * f;
-				pp = win->Project(pos);
+				pp = win->project(pos);
 				edge = poly.Side[k].Edge;
 				factor = f;
 			}

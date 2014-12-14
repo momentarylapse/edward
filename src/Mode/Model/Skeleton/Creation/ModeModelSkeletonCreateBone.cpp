@@ -23,19 +23,19 @@ ModeModelSkeletonCreateBone::~ModeModelSkeletonCreateBone()
 {
 }
 
-void ModeModelSkeletonCreateBone::OnDrawWin(MultiView::Window *win)
+void ModeModelSkeletonCreateBone::onDrawWin(MultiView::Window *win)
 {
 }
 
 
 
-void ModeModelSkeletonCreateBone::OnLeftButtonDown()
+void ModeModelSkeletonCreateBone::onLeftButtonDown()
 {
 	if (pos_chosen){
 		pos = multi_view->GetCursor3d();
-		data->Execute(new ActionModelAddBone(pos, bone_parent));
+		data->execute(new ActionModelAddBone(pos, bone_parent));
 		data->Bone[bone_parent].is_special = false;
-		Abort();
+		abort();
 	}else{
 		if (multi_view->hover.index >= 0){
 			bone_parent = multi_view->hover.index;
@@ -44,15 +44,15 @@ void ModeModelSkeletonCreateBone::OnLeftButtonDown()
 			message = _("Knochen setzen");
 		}else{
 			pos = multi_view->GetCursor3d();
-			data->Execute(new ActionModelAddBone(pos, -1));
-			Abort();
+			data->execute(new ActionModelAddBone(pos, -1));
+			abort();
 		}
 	}
 }
 
 
 
-void ModeModelSkeletonCreateBone::OnMouseMove()
+void ModeModelSkeletonCreateBone::onMouseMove()
 {
 }
 

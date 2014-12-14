@@ -172,7 +172,7 @@ bool Lightmap::RenderTextures()
 			mat.UserColor = true;
 		}
 		m.new_name = data->model_out_dir + i2s(mid);
-		m.orig->Save(ObjectDir + m.new_name + ".model");
+		m.orig->save(ObjectDir + m.new_name + ".model");
 	}
 
 	foreachi(LightmapData::Terrain &t, data->Terrains, tid){
@@ -224,6 +224,6 @@ void Lightmap::CreateNewWorld()
 	foreach(LightmapData::Model &m, data->Models)
 		w.Objects[m.object_index].FileName = m.new_name;
 
-	w.Save(MapDir + data->new_world_name + ".world");
+	w.save(MapDir + data->new_world_name + ".world");
 }
 

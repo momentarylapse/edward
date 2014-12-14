@@ -83,11 +83,11 @@ void ModeModelMeshPolygon::DrawPolygons(MultiView::Window *win, Array<ModelVerte
 	mode_model_mesh_edge->DrawEdges(win, vertex, true);
 }
 
-void ModeModelMeshPolygon::OnCommand(const string & id)
+void ModeModelMeshPolygon::onCommand(const string & id)
 {
 }
 
-void ModeModelMeshPolygon::OnUpdateMenu()
+void ModeModelMeshPolygon::onUpdateMenu()
 {
 }
 
@@ -155,7 +155,7 @@ void ModeModelMeshPolygon::DrawSelection(MultiView::Window *win)
 	glPolygonOffset(0, 0);
 }
 
-void ModeModelMeshPolygon::OnDrawWin(MultiView::Window *win)
+void ModeModelMeshPolygon::onDrawWin(MultiView::Window *win)
 {
 	msg_db_f("skin.DrawWin",4);
 
@@ -165,29 +165,29 @@ void ModeModelMeshPolygon::OnDrawWin(MultiView::Window *win)
 
 
 
-void ModeModelMeshPolygon::OnEnd()
+void ModeModelMeshPolygon::onEnd()
 {
-	Unsubscribe(data);
-	Unsubscribe(multi_view);
+	unsubscribe(data);
+	unsubscribe(multi_view);
 }
 
 
 
-void ModeModelMeshPolygon::OnStart()
+void ModeModelMeshPolygon::onStart()
 {
-	Subscribe(data);
-	Subscribe(multi_view, "SelectionChange");
+	subscribe(data);
+	subscribe(multi_view, "SelectionChange");
 	mode_model_mesh->ApplyRightMouseFunction(multi_view);
 	multi_view->SetAllowRect(true);
-	OnUpdate(data);
+	onUpdate(data);
 }
 
 
 
-bool ModelPolygon::Hover(MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data)
+bool ModelPolygon::hover(MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data)
 {
 	// care for the sense of rotation?
-	if (TempNormal * win->GetDirection() > 0)
+	if (TempNormal * win->getDirection() > 0)
 		return false;
 
 	DataModel *m = mode_model_mesh_polygon->data; // surf->model;
@@ -195,7 +195,7 @@ bool ModelPolygon::Hover(MultiView::Window *win, vector &M, vector &tp, float &z
 	// project all points
 	Array<vector> p;
 	for (int k=0;k<Side.num;k++){
-		vector pp = win->Project(m->Vertex[Side[k].Vertex].pos);
+		vector pp = win->project(m->Vertex[Side[k].Vertex].pos);
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
 		p.add(pp);
@@ -216,7 +216,7 @@ bool ModelPolygon::Hover(MultiView::Window *win, vector &M, vector &tp, float &z
 			vector vb = m->Vertex[Side[b].Vertex].pos;
 			vector vc = m->Vertex[Side[c].Vertex].pos;
 			tp = va+f*(vb-va)+g*(vc-va);
-			z = win->Project(tp).z;
+			z = win->project(tp).z;
 			return true;
 		}
 	}
@@ -228,18 +228,18 @@ inline bool in_irect(const vector &p, rect &r)
 	return ((p.x > r.x1) and (p.x < r.x2) and (p.y > r.y1) and (p.y < r.y2));
 }
 
-bool ModelPolygon::InRect(MultiView::Window *win, rect &r, void *user_data)
+bool ModelPolygon::inRect(MultiView::Window *win, rect &r, void *user_data)
 {
 	// care for the sense of rotation?
 	if (mode_model_mesh_polygon->SelectCW)
-		if (TempNormal * win->GetDirection() > 0)
+		if (TempNormal * win->getDirection() > 0)
 			return false;
 
 	DataModel *m = mode_model_mesh_polygon->data; // surf->model;
 
 	// all vertices within rectangle?
 	for (int k=0;k<Side.num;k++){
-		vector pp = win->Project(m->Vertex[Side[k].Vertex].pos); // mmodel->GetVertex(ia)
+		vector pp = win->project(m->Vertex[Side[k].Vertex].pos); // mmodel->GetVertex(ia)
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
 		if (in_irect(pp, r))
@@ -249,9 +249,9 @@ bool ModelPolygon::InRect(MultiView::Window *win, rect &r, void *user_data)
 }
 
 
-void ModeModelMeshPolygon::OnUpdate(Observable *o)
+void ModeModelMeshPolygon::onUpdate(Observable *o)
 {
-	if (o->GetName() == "Data"){
+	if (o->getName() == "Data"){
 		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		foreach(ModelSurface &s, data->Surface)
@@ -259,7 +259,7 @@ void ModeModelMeshPolygon::OnUpdate(Observable *o)
 				s.Polygon,
 				&s,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
-	}else if (o->GetName() == "MultiView"){
+	}else if (o->getName() == "MultiView"){
 		data->SelectionFromPolygons();
 	}
 	FillSelectionBuffers(data->Vertex);
@@ -267,7 +267,7 @@ void ModeModelMeshPolygon::OnUpdate(Observable *o)
 
 
 
-void ModeModelMeshPolygon::OnDraw()
+void ModeModelMeshPolygon::onDraw()
 {
 	FillSelectionBuffers(data->Vertex);
 }

@@ -24,7 +24,7 @@ ObjectPropertiesDialog::ObjectPropertiesDialog(HuiWindow *_parent, bool _allow_p
 
 	event("find_object", this, &ObjectPropertiesDialog::OnFindObject);
 
-	Subscribe(data);
+	subscribe(data);
 
 	temp = data->Objects[index];
 	LoadData();
@@ -32,7 +32,7 @@ ObjectPropertiesDialog::ObjectPropertiesDialog(HuiWindow *_parent, bool _allow_p
 
 ObjectPropertiesDialog::~ObjectPropertiesDialog()
 {
-	Unsubscribe(data);
+	unsubscribe(data);
 }
 
 void ObjectPropertiesDialog::OnOk()
@@ -71,7 +71,7 @@ void ObjectPropertiesDialog::OnFindObject()
 
 
 
-void ObjectPropertiesDialog::OnUpdate(Observable *o)
+void ObjectPropertiesDialog::onUpdate(Observable *o)
 {
 	LoadData();
 }
@@ -88,7 +88,7 @@ void ObjectPropertiesDialog::ApplyData()
 	temp.Ang.z = getFloat("ang_z") * pi / 180.0f;
 	temp.Name = getString("name");
 
-	data->Execute(new ActionWorldEditObject(index, temp));
+	data->execute(new ActionWorldEditObject(index, temp));
 }
 
 

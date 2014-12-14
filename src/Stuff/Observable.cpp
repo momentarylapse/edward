@@ -19,18 +19,18 @@ Observable::~Observable()
 	observer.clear();
 }
 
-void Observable::Subscribe(Observer *o, const string &message)
+void Observable::subscribe(Observer *o, const string &message)
 {
 	observer.add(o);
 	observer_message.add(message);
 }
 
-void Observable::Subscribe(Observer *o)
-{	Subscribe(o, "");	}
+void Observable::subscribe(Observer *o)
+{	subscribe(o, "");	}
 
 
 
-void Observable::Unsubscribe(Observer *o)
+void Observable::unsubscribe(Observer *o)
 {
 	foreachi(Observer *obs, observer, i)
 		if (obs == o){
@@ -42,16 +42,16 @@ void Observable::Unsubscribe(Observer *o)
 
 
 
-string Observable::GetName()
+string Observable::getName()
 {	return observable_name;	}
 
 
 
-string Observable::GetMessage()
+string Observable::getMessage()
 {	return cur_message;	}
 
 
-void Observable::NotifySend()
+void Observable::notifySend()
 {
 	// send
 	foreach(string &m, message_queue){
@@ -63,7 +63,7 @@ void Observable::NotifySend()
 
 		for (int i=0;i<observer.num;i++)
 			if ((observer_message[i] == m) or (observer_message[i].num == 0))
-				observer[i]->OnUpdate(this);
+				observer[i]->onUpdate(this);
 	}
 
 	// clear queue
@@ -71,7 +71,7 @@ void Observable::NotifySend()
 }
 
 
-void Observable::NotifyEnqueue(const string &message)
+void Observable::notifyEnqueue(const string &message)
 {
 	// already enqueued?
 	foreach(string &m, message_queue)
@@ -82,23 +82,23 @@ void Observable::NotifyEnqueue(const string &message)
 	message_queue.add(message);
 }
 
-void Observable::NotifyBegin()
+void Observable::notifyBegin()
 {
 	notify_level ++;
 }
 
-void Observable::NotifyEnd()
+void Observable::notifyEnd()
 {
 	notify_level --;
 	if (notify_level == 0)
-		NotifySend();
+		notifySend();
 }
 
 
-void Observable::Notify(const string &message)
+void Observable::notify(const string &message)
 {
-	NotifyEnqueue(message);
+	notifyEnqueue(message);
 	if (notify_level == 0)
-		NotifySend();
+		notifySend();
 }
 

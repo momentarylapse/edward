@@ -42,24 +42,24 @@ CameraDialog::CameraDialog(HuiWindow *_parent, ModeWorldCamera *_mode) :
 
 	mt_action = NULL;
 
-	Subscribe(data);
-	Subscribe(mode->multi_view);
-	Subscribe(mode);
+	subscribe(data);
+	subscribe(mode->multi_view);
+	subscribe(mode);
 	LoadData();
 }
 
 CameraDialog::~CameraDialog()
 {
-	Unsubscribe(mode);
-	Unsubscribe(mode->multi_view);
-	Unsubscribe(data);
+	unsubscribe(mode);
+	unsubscribe(mode->multi_view);
+	unsubscribe(data);
 }
 
 
 void CameraDialog::OnCloseDialog()
 {
 	if (ed->allowTermination()){
-		mode->New();
+		mode->_new();
 		ed->setMode(mode->parent);
 	}
 }
@@ -217,7 +217,7 @@ void CameraDialog::OnAreaLeftButtonUp()
 {
 	if (mt_action){
 		mt_action->undo(data);
-		data->Execute(mt_action);
+		data->execute(mt_action);
 		mt_action = NULL;
 		mouse_distance = -1;
 	}
@@ -237,7 +237,7 @@ void CameraDialog::OnAreaMouseMove()
 			}
 			mt_action = new ActionCameraMoveTimeSelection(data, screen2sample(mx), mt_time0);
 			mt_action->execute(data);
-			data->Notify("Change");
+			data->notify("Change");
 		}
 	}else{
 		int new_hover = -1;
@@ -282,7 +282,7 @@ void CameraDialog::OnCamStop()
 }
 
 
-void CameraDialog::OnUpdate(Observable *obs)
+void CameraDialog::onUpdate(Observable *obs)
 {
 	/*if (obs->GetMessage() == "Change")*/{
 		LoadData();

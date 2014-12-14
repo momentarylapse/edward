@@ -35,8 +35,8 @@ ModeModelMeshBevelEdges::ModeModelMeshBevelEdges(ModeBase *_parent) :
 
 	radius = rad_max / 4;
 #ifdef INTERACTIVE
-	if (!data->action_manager->Preview(new ActionModelBevelEdges(radius)))
-		Abort();
+	if (!data->action_manager->preview(new ActionModelBevelEdges(radius)))
+		abort();
 #endif
 }
 
@@ -44,17 +44,17 @@ ModeModelMeshBevelEdges::~ModeModelMeshBevelEdges()
 {
 }
 
-void ModeModelMeshBevelEdges::OnEnd()
+void ModeModelMeshBevelEdges::onEnd()
 {
 #ifdef INTERACTIVE
-	data->action_manager->ClearPreview();
+	data->action_manager->clearPreview();
 #endif
 }
 
-void ModeModelMeshBevelEdges::OnMouseMove()
+void ModeModelMeshBevelEdges::onMouseMove()
 {
 #ifdef INTERACTIVE
-	data->action_manager->ClearPreview();
+	data->action_manager->clearPreview();
 #endif
 
 	radius += (HuiGetEvent()->dx) / multi_view->cam.zoom;
@@ -63,23 +63,23 @@ void ModeModelMeshBevelEdges::OnMouseMove()
 #ifdef INTERACTIVE
 
 	data->SetSelectionState(selection);
-	if (!data->action_manager->Preview(new ActionModelBevelEdges(radius)))
-		Abort();
+	if (!data->action_manager->preview(new ActionModelBevelEdges(radius)))
+		abort();
 #endif
 }
 
-void ModeModelMeshBevelEdges::OnLeftButtonDown()
+void ModeModelMeshBevelEdges::onLeftButtonDown()
 {
 #ifdef INTERACTIVE
-	data->action_manager->ClearPreview();
+	data->action_manager->clearPreview();
 #endif
 
 	data->SetSelectionState(selection);
 	data->BevelSelectedEdges(radius);
-	Abort();
+	abort();
 }
 
-void ModeModelMeshBevelEdges::OnDrawWin(MultiView::Window *win)
+void ModeModelMeshBevelEdges::onDrawWin(MultiView::Window *win)
 {
 #ifndef INTERACTIVE
 	mode_model->SetMaterialCreation();

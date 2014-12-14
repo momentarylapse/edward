@@ -30,81 +30,81 @@ ModeModelMeshEdge::~ModeModelMeshEdge()
 {
 }
 
-void ModeModelMeshEdge::OnRightButtonUp()
+void ModeModelMeshEdge::onRightButtonUp()
 {
 }
 
 
 
-void ModeModelMeshEdge::OnKeyDown()
+void ModeModelMeshEdge::onKeyDown()
 {
 }
 
 
 
-void ModeModelMeshEdge::OnRightButtonDown()
+void ModeModelMeshEdge::onRightButtonDown()
 {
 }
 
 
 
-void ModeModelMeshEdge::OnMiddleButtonDown()
+void ModeModelMeshEdge::onMiddleButtonDown()
 {
 }
 
 
 
-void ModeModelMeshEdge::OnMiddleButtonUp()
+void ModeModelMeshEdge::onMiddleButtonUp()
 {
 }
 
 
 
-void ModeModelMeshEdge::OnKeyUp()
+void ModeModelMeshEdge::onKeyUp()
 {
 }
 
 
 
-void ModeModelMeshEdge::OnUpdateMenu()
+void ModeModelMeshEdge::onUpdateMenu()
 {
 }
 
 
 
-void ModeModelMeshEdge::OnDraw()
+void ModeModelMeshEdge::onDraw()
 {
 }
 
 
 
-void ModeModelMeshEdge::OnMouseMove()
+void ModeModelMeshEdge::onMouseMove()
 {
 }
 
 
 
-void ModeModelMeshEdge::OnStart()
+void ModeModelMeshEdge::onStart()
 {
-	Subscribe(data);
-	Subscribe(multi_view, "SelectionChange");
+	subscribe(data);
+	subscribe(multi_view, "SelectionChange");
 	mode_model_mesh->ApplyRightMouseFunction(multi_view);
 	multi_view->allow_rect = true;
-	OnUpdate(data);
+	onUpdate(data);
 }
 
 
-bool ModelEdge::Hover(MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data)
+bool ModelEdge::hover(MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data)
 {
 	ModelSurface *surf = (ModelSurface*)user_data;
 
 	DataModel *m = mode_model_mesh_edge->data; // surf->model;
 
 	// project all points
-	vector pp0 = win->Project(m->Vertex[Vertex[0]].pos);
+	vector pp0 = win->project(m->Vertex[Vertex[0]].pos);
 	if ((pp0.z <= 0) or (pp0.z >= 1))
 		return false;
-	vector pp1 = win->Project(m->Vertex[Vertex[1]].pos);
+	vector pp1 = win->project(m->Vertex[Vertex[1]].pos);
 	if ((pp1.z <= 0) or (pp1.z >= 1))
 		return false;
 	const float rr = 5;
@@ -131,7 +131,7 @@ bool ModelEdge::Hover(MultiView::Window *win, vector &M, vector &tp, float &z, v
 	return true;
 }
 
-bool ModelEdge::InRect(MultiView::Window *win, rect &r, void *user_data)
+bool ModelEdge::inRect(MultiView::Window *win, rect &r, void *user_data)
 {
 	ModelSurface *surf = (ModelSurface*)user_data;
 
@@ -139,7 +139,7 @@ bool ModelEdge::InRect(MultiView::Window *win, rect &r, void *user_data)
 
 	// all vertices within rectangle?
 	for (int k=0;k<2;k++){
-		vector pp = win->Project(m->Vertex[Vertex[k]].pos); // mmodel->GetVertex(ia)
+		vector pp = win->project(m->Vertex[Vertex[k]].pos); // mmodel->GetVertex(ia)
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
 		if (!r.inside(pp.x, pp.y))
@@ -149,9 +149,9 @@ bool ModelEdge::InRect(MultiView::Window *win, rect &r, void *user_data)
 }
 
 
-void ModeModelMeshEdge::OnUpdate(Observable *o)
+void ModeModelMeshEdge::onUpdate(Observable *o)
 {
-	if (o->GetName() == "Data"){
+	if (o->getName() == "Data"){
 		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		foreach(ModelSurface &s, data->Surface)
@@ -159,7 +159,7 @@ void ModeModelMeshEdge::OnUpdate(Observable *o)
 				s.Edge,
 				&s,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
-	}else if (o->GetName() == "MultiView"){
+	}else if (o->getName() == "MultiView"){
 		data->SelectionFromEdges();
 	}
 	mode_model_mesh_polygon->FillSelectionBuffers(data->Vertex);
@@ -167,13 +167,13 @@ void ModeModelMeshEdge::OnUpdate(Observable *o)
 
 
 
-void ModeModelMeshEdge::OnCommand(const string & id)
+void ModeModelMeshEdge::onCommand(const string & id)
 {
 }
 
 
 
-void ModeModelMeshEdge::OnLeftButtonDown()
+void ModeModelMeshEdge::onLeftButtonDown()
 {
 }
 
@@ -182,7 +182,7 @@ void ModeModelMeshEdge::DrawEdges(MultiView::Window *win, Array<ModelVertex> &ve
 {
 	NixSetWire(false);
 	NixEnableLighting(false);
-	vector dir = win->GetDirection();
+	vector dir = win->getDirection();
 	foreach(ModelSurface &s, data->Surface){
 		foreach(ModelEdge &e, s.Edge){
 			if (min(vertex[e.Vertex[0]].view_stage, vertex[e.Vertex[1]].view_stage) < multi_view->view_stage)
@@ -203,7 +203,7 @@ void ModeModelMeshEdge::DrawEdges(MultiView::Window *win, Array<ModelVertex> &ve
 	NixEnableLighting(multi_view->light_enabled);
 }
 
-void ModeModelMeshEdge::OnDrawWin(MultiView::Window *win)
+void ModeModelMeshEdge::onDrawWin(MultiView::Window *win)
 {
 	if (!multi_view->wire_mode)
 		mode_model_mesh_polygon->DrawPolygons(win, data->Vertex);
@@ -226,15 +226,15 @@ void ModeModelMeshEdge::OnDrawWin(MultiView::Window *win)
 
 
 
-void ModeModelMeshEdge::OnEnd()
+void ModeModelMeshEdge::onEnd()
 {
-	Unsubscribe(data);
-	Unsubscribe(multi_view);
+	unsubscribe(data);
+	unsubscribe(multi_view);
 }
 
 
 
-void ModeModelMeshEdge::OnLeftButtonUp()
+void ModeModelMeshEdge::onLeftButtonUp()
 {
 }
 

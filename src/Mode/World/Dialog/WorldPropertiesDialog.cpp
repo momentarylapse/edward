@@ -58,7 +58,7 @@ WorldPropertiesDialog::WorldPropertiesDialog(HuiWindow *_parent, bool _allow_par
 	eventX("script_vars", "hui:change", this, &WorldPropertiesDialog::OnScriptVarEdit);
 	//eventM("model_script_var_template", this, &ModelPropertiesDialog::OnModelScriptVarTemplate);
 
-	Subscribe(data);
+	subscribe(data);
 
 	temp = data->meta_data;
 	LoadData();
@@ -67,7 +67,7 @@ WorldPropertiesDialog::WorldPropertiesDialog(HuiWindow *_parent, bool _allow_par
 WorldPropertiesDialog::~WorldPropertiesDialog()
 {
 	mode_world->WorldDialog = NULL;
-	Unsubscribe(data);
+	unsubscribe(data);
 }
 
 void WorldPropertiesDialog::OnSkybox()
@@ -203,7 +203,7 @@ void WorldPropertiesDialog::FillSkyboxList()
 
 
 
-void WorldPropertiesDialog::OnUpdate(Observable *o)
+void WorldPropertiesDialog::onUpdate(Observable *o)
 {
 	temp = data->meta_data;
 	LoadData();
@@ -270,7 +270,7 @@ void WorldPropertiesDialog::ApplyData()
 	temp.SunAng.y = getFloat("sun_ang_y") / 180.0f * pi;
 	temp.Ambient = getColor("ambient");
 
-	data->Execute(new ActionWorldEditData(temp));
+	data->execute(new ActionWorldEditData(temp));
 }
 
 

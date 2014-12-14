@@ -43,12 +43,12 @@ AdministrationDialog::AdministrationDialog(HuiWindow* _parent, bool _allow_paren
 	event("ad_export_game", this, &AdministrationDialog::OnExportGame);
 
 	LoadData();
-	Subscribe(data);
+	subscribe(data);
 }
 
 AdministrationDialog::~AdministrationDialog()
 {
-	Unsubscribe(data);
+	unsubscribe(data);
 }
 
 void AdministrationDialog::LoadData()
@@ -59,7 +59,7 @@ void AdministrationDialog::LoadData()
 	FillAdminList(5, "file_list_missing");
 }
 
-void AdministrationDialog::OnUpdate(Observable* o)
+void AdministrationDialog::onUpdate(Observable* o)
 {
 	LoadData();
 }
@@ -243,23 +243,23 @@ void AdministrationDialog::OnEdit()
 				mode_administration->BasicSettings();
 			break;
 		case FDModel:
-			if (mode_model->data->Load(ObjectDir + a->Name, true))
+			if (mode_model->data->load(ObjectDir + a->Name, true))
 				ed->setMode(mode_model);
 			break;
 		case FDMaterial:
-			if (mode_material->data->Load(MaterialDir + a->Name, true))
+			if (mode_material->data->load(MaterialDir + a->Name, true))
 				ed->setMode(mode_material);
 			break;
 		case FDFont:
-			if (mode_font->data->Load(Gui::FontDir + a->Name, true))
+			if (mode_font->data->load(Gui::FontDir + a->Name, true))
 				ed->setMode(mode_font);
 			break;
 		case FDWorld:
-			if (mode_world->data->Load(MapDir + a->Name, true))
+			if (mode_world->data->load(MapDir + a->Name, true))
 				ed->setMode(mode_world);
 			break;
 		case FDTerrain:
-			mode_world->data->Reset();
+			mode_world->data->reset();
 			if (mode_world->data->AddTerrain(a->Name.substr(0, -5), v_0)){
 				ed->setMode(mode_world);
 			}

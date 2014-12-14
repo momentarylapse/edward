@@ -21,40 +21,40 @@ Data::~Data()
 
 
 
-void Data::BeginActionGroup(const string &name)
+void Data::beginActionGroup(const string &name)
 {
-	action_manager->BeginActionGroup(name);
+	action_manager->beginActionGroup(name);
 }
 
-void Data::EndActionGroup()
+void Data::endActionGroup()
 {
-	action_manager->EndActionGroup();
+	action_manager->endActionGroup();
 }
 
-void Data::Redo()
+void Data::redo()
 {
-	action_manager->Redo();
-}
-
-
-
-void Data::Undo()
-{
-	action_manager->Undo();
+	action_manager->redo();
 }
 
 
 
-void *Data::Execute(Action *a)
+void Data::undo()
 {
-	return action_manager->Execute(a);
+	action_manager->undo();
 }
 
 
 
-void Data::ResetHistory()
+void *Data::execute(Action *a)
 {
-	action_manager->Reset();
+	return action_manager->execute(a);
+}
+
+
+
+void Data::resetHistory()
+{
+	action_manager->reset();
 }
 
 

@@ -17,10 +17,10 @@ public:
 	ModeWorldCreateTerrain(ModeBase *_parent);
 	virtual ~ModeWorldCreateTerrain();
 
-	virtual void OnStart();
-	virtual void OnEnd();
+	virtual void onStart();
+	virtual void onEnd();
 
-	virtual void OnDrawWin(MultiView::Window *win);
+	virtual void onDrawWin(MultiView::Window *win);
 
 	void OnOk();
 	void OnClose();

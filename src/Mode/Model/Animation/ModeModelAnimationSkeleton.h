@@ -19,14 +19,14 @@ public:
 	ModeModelAnimationSkeleton(ModeBase *parent);
 	virtual ~ModeModelAnimationSkeleton();
 
-	virtual void OnStart();
-	virtual void OnEnd();
+	virtual void onStart();
+	virtual void onEnd();
 
-	virtual void OnCommand(const string &id);
-	virtual void OnUpdate(Observable *o);
-	virtual void OnUpdateMenu();
+	virtual void onCommand(const string &id);
+	virtual void onUpdate(Observable *o);
+	virtual void onUpdateMenu();
 
-	virtual void OnDrawWin(MultiView::Window *win);
+	virtual void onDrawWin(MultiView::Window *win);
 };
 
 extern ModeModelAnimationSkeleton *mode_model_animation_skeleton;

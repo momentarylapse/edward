@@ -17,19 +17,19 @@ DataCamera::~DataCamera()
 {
 }
 
-void DataCamera::Reset()
+void DataCamera::reset()
 {
 	filename = "";
 	Point.clear();
 	Vel.clear();
-	ResetHistory();
-	Notify("Change");
+	resetHistory();
+	notify("Change");
 }
 
-bool DataCamera::Load(const string& _filename, bool deep)
+bool DataCamera::load(const string& _filename, bool deep)
 {
 	bool Error = false;
-	Reset();
+	reset();
 
 	filename = _filename;
 	CFile *f = FileOpen(filename);
@@ -81,12 +81,12 @@ bool DataCamera::Load(const string& _filename, bool deep)
 	}
 	delete(f);
 	UpdateVel();
-	ResetHistory();
-	Notify("Change");
+	resetHistory();
+	notify("Change");
 	return !Error;
 }
 
-bool DataCamera::Save(const string& _filename)
+bool DataCamera::save(const string& _filename)
 {
 	filename = _filename;
 	CFile *f = FileCreate(filename);
@@ -122,7 +122,7 @@ bool DataCamera::Save(const string& _filename)
 
 	delete(f);
 	ed->setMessage(_("Kamera-Script gespeichert!"));
-	action_manager->MarkCurrentAsSave();
+	action_manager->markCurrentAsSave();
 	return true;
 }
 

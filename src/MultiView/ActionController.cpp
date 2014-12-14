@@ -37,10 +37,10 @@ ActionController::ActionController(MultiViewImpl *impl)
 	multi_view = impl;
 }
 
-void ActionController::StartAction()
+void ActionController::startAction()
 {
 	if (cur_action)
-		EndAction(false);
+		endAction(false);
 	if (!multi_view->allow_mouse_actions)
 		return;
 	if (action.name != ""){
@@ -54,7 +54,7 @@ void ActionController::StartAction()
 			pos0 = multi_view->hover.point;
 		cur_action = ActionMultiViewFactory(action.name, data);
 		cur_action->execute_logged(data);
-		multi_view->Notify("ActionStart");
+		multi_view->notify("ActionStart");
 	}
 }
 
@@ -104,16 +104,16 @@ vector mvac_mirror(int mode)
 	return e_x;
 }
 
-void ActionController::UpdateAction()
+void ActionController::updateAction()
 {
 	if (!cur_action)
 		return;
 	//msg_write("mouse action update");
 
 	vector v2p = multi_view->m;
-	vector v2  = multi_view->active_win->Unproject(v2p, m0);
+	vector v2  = multi_view->active_win->unproject(v2p, m0);
 	vector v1  = m0;
-	vector v1p = multi_view->active_win->Project(v1);
+	vector v1p = multi_view->active_win->project(v1);
 	matrix m_dt, m_dti;
 	MatrixTranslation(m_dt, pos0);
 	MatrixTranslation(m_dti, -pos0);
@@ -135,7 +135,7 @@ void ActionController::UpdateAction()
 	}else if (action.mode == ActionMirror){
 		param = mvac_mirror(mode);
 		if (mode == ActionModeFree)
-			param = multi_view->active_win->GetDirectionRight();
+			param = multi_view->active_win->getDirectionRight();
 		plane pl;
 		PlaneFromPointNormal(pl, v_0, param);
 		MatrixReflect(mat, pl);
@@ -146,31 +146,31 @@ void ActionController::UpdateAction()
 	}
 	cur_action->update_and_notify(data, mat);
 
-	Update();
+	update();
 
-	multi_view->Notify("ActionUpdate");
+	multi_view->notify("ActionUpdate");
 }
 
 
 
-void ActionController::EndAction(bool set)
+void ActionController::endAction(bool set)
 {
 	if (!cur_action)
 		return;
 	//msg_write("mouse action end");
 	if (set){
 		cur_action->undo(data);
-		data->Execute(cur_action);
-		multi_view->Notify("ActionExecute");
+		data->execute(cur_action);
+		multi_view->notify("ActionExecute");
 	}else{
 		cur_action->abort_and_notify(data);
 		delete(cur_action);
-		multi_view->Notify("ActionAbort");
+		multi_view->notify("ActionAbort");
 	}
 	cur_action = NULL;
 }
 
-bool ActionController::IsSelecting()
+bool ActionController::isSelecting()
 {
 	if (action.mode == ActionSelect)
 		return true;
@@ -196,7 +196,7 @@ void ActionController::reset()
 	geo_show.clear();
 }
 
-void ActionController::Update()
+void ActionController::update()
 {
 	int m = mode;
 	reset();
@@ -230,12 +230,12 @@ void ActionController::Update()
 	ed->forceRedraw();
 }
 
-void ActionController::Enable()
+void ActionController::enable()
 {
-	Update();
+	update();
 }
 
-void ActionController::Disable()
+void ActionController::disable()
 {
 	reset();
 	ed->forceRedraw();
@@ -251,14 +251,14 @@ const color MVACColor[] = {
 	color(1, 0.8f, 0.8f, 0.8f)
 };
 
-void ActionController::Draw(Window *win)
+void ActionController::draw(Window *win)
 {
 	if (!show)
 		return;
 	NixSetZ(false, false);
 	NixEnableLighting(true);
 	NixSetWorldMatrix(m_id);
-	if (!InUse()){
+	if (!inUse()){
 		foreachi(Geometry *g, geo_show, i){
 			g->Preview(VBTemp);
 			NixSetMaterial(Black, Black, Black, 0, MVACColor[i]);
@@ -280,7 +280,7 @@ void ActionController::Draw(Window *win)
 	NixDrawRect(p.x-15, p.x+15, p.y-15, p.y+15, 0);*/
 }
 
-void ActionController::DrawParams()
+void ActionController::drawParams()
 {
 	if ((action.mode == ActionMove) || (action.mode == ActionSelectAndMove)){
 		vector t = param;
@@ -302,7 +302,7 @@ void ActionController::DrawParams()
 	}
 }
 
-bool ActionController::IsMouseOver(vector &tp)
+bool ActionController::isMouseOver(vector &tp)
 {
 	mouse_over_geo = -1;
 	if (!show)
@@ -312,7 +312,7 @@ bool ActionController::IsMouseOver(vector &tp)
 	foreachi(Geometry *g, geo, i){
 		vector t;
 		if (g->IsMouseOver(multi_view->mouse_win, t)){
-			float z = multi_view->mouse_win->Project(t).z;
+			float z = multi_view->mouse_win->project(t).z;
 			if ((z < z_min) || (i == 6)){
 				mouse_over_geo = i;
 				z_min = z;
@@ -323,43 +323,43 @@ bool ActionController::IsMouseOver(vector &tp)
 	return (mouse_over_geo >= 0);
 }
 
-bool ActionController::LeftButtonDown()
+bool ActionController::leftButtonDown()
 {
 	if ((!show) && (action.mode != ActionSelectAndMove))
 		return false;
 	vector tp;
 	mode = ActionModeNone;
-	if (IsMouseOver(multi_view->hover.point)){
+	if (isMouseOver(multi_view->hover.point)){
 		mode = ActionModeX + mouse_over_geo;
-		StartAction();
+		startAction();
 		return true;
 	}
 	if (multi_view->hover.index >= 0){
 		mode = ActionModeFree;
-		StartAction();
+		startAction();
 		return true;
 	}
 	return false;
 }
 
-void ActionController::LeftButtonUp()
+void ActionController::leftButtonUp()
 {
-	EndAction(true);
+	endAction(true);
 	bool _show = show;
 
-	Disable();
+	disable();
 	if (_show)
-		Enable();
+		enable();
 }
 
-bool ActionController::InUse()
+bool ActionController::inUse()
 {
 	return cur_action;
 }
 
-void ActionController::MouseMove()
+void ActionController::mouseMove()
 {
-	UpdateAction();
+	updateAction();
 }
 
 };

@@ -114,7 +114,7 @@ void DataModel::MetaData::Reset()
 
 
 
-void DataModel::Reset()
+void DataModel::reset()
 {
 
 	filename = "";
@@ -147,8 +147,8 @@ void DataModel::Reset()
 
 	meta_data.Reset();
 
-	ResetHistory();
-	Notify("Change");
+	resetHistory();
+	notify("Change");
 }
 
 void DataModel::DebugShow()
@@ -162,7 +162,7 @@ void DataModel::DebugShow()
 	}
 }
 
-bool DataModel::TestSanity(const string &loc)
+bool DataModel::testSanity(const string &loc)
 {
 	foreach(ModelSurface &s, Surface){
 		if (!s.TestSanity(loc))
@@ -172,7 +172,7 @@ bool DataModel::TestSanity(const string &loc)
 }
 
 
-void DataModel::OnPostActionUpdate()
+void DataModel::onPostActionUpdate()
 {
 	UpdateNormals();
 	foreach(ModelSurface &s, Surface){
@@ -220,11 +220,11 @@ vector get_normal_by_index(int index)
 
 
 
-bool DataModel::Load(const string & _filename, bool deep)
+bool DataModel::load(const string & _filename, bool deep)
 {
 	msg_db_f("Model::LoadFromFile",1);
 	//if (allow_load)
-	Reset();
+	reset();
 	bool error=false;
 	int ffv;
 
@@ -785,7 +785,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 
 		// Polygons
 		if (f->ReadStr() == "// Polygons"){
-			BeginActionGroup("LoadPolygonData");
+			beginActionGroup("LoadPolygonData");
 			foreachi(ModelVertex &v, Skin[1].Vertex, i)
 				AddVertex(v.pos, v.BoneIndex, v.NormalMode);
 			int ns = f->ReadInt();
@@ -818,7 +818,7 @@ bool DataModel::Load(const string & _filename, bool deep)
 			}
 			foreach(ModelSurface &s, Surface)
 				s.BuildFromPolygons();
-			EndActionGroup();
+			endActionGroup();
 		}
 
 
@@ -875,10 +875,10 @@ bool DataModel::Load(const string & _filename, bool deep)
 
 
 	//OptimizeView();
-	ResetHistory();
+	resetHistory();
 
 	if (deep)
-		OnPostActionUpdate();
+		onPostActionUpdate();
 	return !error;
 }
 
@@ -888,7 +888,7 @@ void DataModel::ImportFromTriangleSkin(int index)
 	Surface.clear();
 
 	ModelSkin &s = Skin[index];
-	BeginActionGroup("ImportFromTriangleSkin");
+	beginActionGroup("ImportFromTriangleSkin");
 	foreachi(ModelVertex &v, s.Vertex, i){
 		AddVertex(v.pos);
 		Vertex[i].BoneIndex = v.BoneIndex;
@@ -949,8 +949,8 @@ void DataModel::ImportFromTriangleSkin(int index)
 	Poly.clear();
 
 	ClearSelection();
-	EndActionGroup();
-	action_manager->Reset();
+	endActionGroup();
+	action_manager->reset();
 }
 
 void DataModel::ExportToTriangleSkin(int index)
@@ -1002,7 +1002,7 @@ void DataModel::GetBoundingBox(vector &min, vector &max)
 }
 
 
-bool DataModel::Save(const string & _filename)
+bool DataModel::save(const string & _filename)
 {
 	msg_db_f("DataModel.Save",1);
 
@@ -1365,7 +1365,7 @@ bool DataModel::Save(const string & _filename)
 	FileClose(f);
 
 	ed->setMessage(_("Gespeichert!"));
-	action_manager->MarkCurrentAsSave();
+	action_manager->markCurrentAsSave();
 	return true;
 }
 
@@ -1415,7 +1415,7 @@ ModelSurface *DataModel::AddSurface(int surf_no)
 
 
 void DataModel::AddVertex(const vector &pos, int bone_index, int normal_mode)
-{	Execute(new ActionModelAddVertex(pos, bone_index, normal_mode));	}
+{	execute(new ActionModelAddVertex(pos, bone_index, normal_mode));	}
 
 void DataModel::ClearSelection()
 {
@@ -1428,7 +1428,7 @@ void DataModel::ClearSelection()
 		foreach(ModelEdge &e, s.Edge)
 			e.is_selected = false;
 	}
-	Notify("Selection");
+	notify("Selection");
 }
 
 void DataModel::SelectionFromSurfaces()
@@ -1443,7 +1443,7 @@ void DataModel::SelectionFromSurfaces()
 		foreach(ModelEdge &e, s.Edge)
 			e.is_selected = s.is_selected;
 	}
-	Notify("Selection");
+	notify("Selection");
 }
 
 void DataModel::SelectionFromPolygons()
@@ -1465,7 +1465,7 @@ void DataModel::SelectionFromPolygons()
 		foreach(ModelPolygon &t, s.Polygon)
 			s.is_selected &= t.is_selected;
 	}
-	Notify("Selection");
+	notify("Selection");
 }
 
 void DataModel::SelectionFromEdges()
@@ -1486,7 +1486,7 @@ void DataModel::SelectionFromEdges()
 		foreach(ModelEdge &e, s.Edge)
 			s.is_selected &= e.is_selected;
 	}
-	Notify("Selection");
+	notify("Selection");
 }
 
 void DataModel::SelectionFromVertices()
@@ -1507,7 +1507,7 @@ void DataModel::SelectionFromVertices()
 			s.is_selected &= t.is_selected;
 		}
 	}
-	Notify("Selection");
+	notify("Selection");
 }
 
 void DataModel::SelectOnlySurface(ModelSurface *s)
@@ -1527,7 +1527,7 @@ ModelPolygon *DataModel::AddTriangle(int a, int b, int c, int material)
 	sv.add(e_y);
 	sv.add(v_0);
 	sv.add(e_x);
-	return (ModelPolygon*) Execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
+	return (ModelPolygon*) execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
 }
 
 ModelPolygon *DataModel::AddPolygon(Array<int> &v, int material)
@@ -1537,12 +1537,12 @@ ModelPolygon *DataModel::AddPolygon(Array<int> &v, int material)
 		float w = (float)i / (float)v.num * 2 * pi;
 		sv.add(vector(0.5f + cos(w) * 0.5f, 0.5f + sin(w), 0));
 	}
-	return (ModelPolygon*)Execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
+	return (ModelPolygon*)execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
 }
 
 ModelPolygon *DataModel::AddPolygonWithSkin(Array<int> &v, Array<vector> &sv, int material)
 {
-	return (ModelPolygon*)Execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
+	return (ModelPolygon*)execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
 }
 
 
@@ -1782,13 +1782,13 @@ int DataModel::GetNumPolygons()
 }
 
 void DataModel::AddAnimation(int index, int type)
-{	Execute(new ActionModelAddAnimation(index, type));	}
+{	execute(new ActionModelAddAnimation(index, type));	}
 
 void DataModel::DeleteAnimation(int index)
-{	Execute(new ActionModelDeleteAnimation(index));	}
+{	execute(new ActionModelDeleteAnimation(index));	}
 
 void DataModel::AnimationAddFrame(int index, int frame)
-{	Execute(new ActionModelAnimationAddFrame(index, frame));	}
+{	execute(new ActionModelAnimationAddFrame(index, frame));	}
 
 vector DataModel::GetBonePos(int index)
 {
@@ -1803,7 +1803,7 @@ vector DataModel::GetBonePosAnimated(int index)
 }
 
 void DataModel::AnimationDeleteFrame(int index, int frame)
-{	Execute(new ActionModelAnimationDeleteFrame(index, frame));	}
+{	execute(new ActionModelAnimationDeleteFrame(index, frame));	}
 
 void DataModel::CopyGeometry(Geometry &geo)
 {
@@ -1831,82 +1831,82 @@ void DataModel::CopyGeometry(Geometry &geo)
 }
 
 void DataModel::DeleteSelection(bool greedy)
-{	Execute(new ActionModelDeleteSelection(greedy));	}
+{	execute(new ActionModelDeleteSelection(greedy));	}
 
 void DataModel::InvertSurfaces(const Set<int> &surfaces)
-{	Execute(new ActionModelSurfaceInvert(surfaces));	}
+{	execute(new ActionModelSurfaceInvert(surfaces));	}
 
 void DataModel::InvertSelection()
 {	InvertSurfaces(GetSelectedSurfaces());	}
 
 void DataModel::SubtractSelection()
-{	Execute(new ActionModelSurfaceVolumeSubtract());	}
+{	execute(new ActionModelSurfaceVolumeSubtract());	}
 
 void DataModel::AndSelection()
-{	Execute(new ActionModelSurfaceVolumeAnd());	}
+{	execute(new ActionModelSurfaceVolumeAnd());	}
 
 void DataModel::AlignToGridSelection(float grid_d)
-{	Execute(new ActionModelAlignToGrid(this, grid_d));	}
+{	execute(new ActionModelAlignToGrid(this, grid_d));	}
 
 void DataModel::NearifySelectedVertices()
-{	Execute(new ActionModelNearifyVertices(this));	}
+{	execute(new ActionModelNearifyVertices(this));	}
 
 void DataModel::CollapseSelectedVertices()
-{	Execute(new ActionModelCollapseVertices());	}
+{	execute(new ActionModelCollapseVertices());	}
 
 void DataModel::SetNormalModeSelection(int mode)
-{	Execute(new ActionModelSetNormalModeSelection(this, mode));	}
+{	execute(new ActionModelSetNormalModeSelection(this, mode));	}
 
 void DataModel::SetMaterialSelection(int material)
-{	Execute(new ActionModelSetMaterial(this, material));	}
+{	execute(new ActionModelSetMaterial(this, material));	}
 
 void DataModel::PasteGeometry(Geometry& geo, int default_material)
-{	Execute(new ActionModelPasteGeometry(geo, default_material));	}
+{	execute(new ActionModelPasteGeometry(geo, default_material));	}
 
 void DataModel::Easify(float factor)
-{	Execute(new ActionModelEasify(factor));	}
+{	execute(new ActionModelEasify(factor));	}
 
 void DataModel::SubdivideSelectedSurfaces()
-{	Execute(new ActionModelSurfacesSubdivide(GetSelectedSurfaces()));	}
+{	execute(new ActionModelSurfacesSubdivide(GetSelectedSurfaces()));	}
 
 void DataModel::BevelSelectedEdges(float radius)
-{	Execute(new ActionModelBevelEdges(radius));	}
+{	execute(new ActionModelBevelEdges(radius));	}
 
 void DataModel::FlattenSelectedVertices()
-{	Execute(new ActionModelFlattenVertices(this));	}
+{	execute(new ActionModelFlattenVertices(this));	}
 
 void DataModel::TriangulateSelectedVertices()
-{	Execute(new ActionModelTriangulateVertices());	}
+{	execute(new ActionModelTriangulateVertices());	}
 
 void DataModel::ExtrudeSelectedPolygons(float offset)
-{	Execute(new ActionModelExtrudePolygons(offset));	}
+{	execute(new ActionModelExtrudePolygons(offset));	}
 
 void DataModel::AutoWeldSurfaces(const Set<int> &surfaces, float epsilon)
-{	Execute(new ActionModelAutoWeldSelection(epsilon));	}
+{	execute(new ActionModelAutoWeldSelection(epsilon));	}
 
 void DataModel::AutoWeldSelectedSurfaces(float epsilon)
-{	Execute(new ActionModelAutoWeldSelection(epsilon));	}
+{	execute(new ActionModelAutoWeldSelection(epsilon));	}
 
 void DataModel::Automap(int material, int texture_level)
-{	Execute(new ActionModelAutomap(material, texture_level));	}
+{	execute(new ActionModelAutomap(material, texture_level));	}
 
 void DataModel::SelectionAddEffects(const ModelEffect& effect)
-{	Execute(new ActionModelAddEffects(this, effect));	}
+{	execute(new ActionModelAddEffects(this, effect));	}
 
 void DataModel::EditEffect(int index, const ModelEffect& effect)
-{	Execute(new ActionModelEditEffect(index, effect));	}
+{	execute(new ActionModelEditEffect(index, effect));	}
 
 void DataModel::CutOutSelection()
-{	Execute(new ActionModelCutOutPolygons());	}
+{	execute(new ActionModelCutOutPolygons());	}
 
 void DataModel::ConvertSelectionToTriangles()
-{	Execute(new ActionModelTriangulateSelection());	}
+{	execute(new ActionModelTriangulateSelection());	}
 
 void DataModel::MergePolygonsSelection()
-{	Execute(new ActionModelMergePolygonsSelection());	}
+{	execute(new ActionModelMergePolygonsSelection());	}
 
 void DataModel::SelectionClearEffects()
-{	Execute(new ActionModelClearEffects(this));	}
+{	execute(new ActionModelClearEffects(this));	}
 
 
 void ModelSelectionState::clear()
@@ -1972,7 +1972,7 @@ void DataModel::SetSelectionState(ModelSelectionState& s)
 			if (ne >= 0)
 				Surface[i].Edge[ne].is_selected = true;
 		}
-	Notify("Selection");
+	notify("Selection");
 }
 
 

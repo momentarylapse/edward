@@ -34,8 +34,8 @@ public:
 	DataModel *model;
 	SurfaceInsideTestData *inside_data;
 
-	virtual bool Hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data);
-	virtual bool InRect(MultiView::Window *win, rect &r, void *user_data);
+	virtual bool hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data);
+	virtual bool inRect(MultiView::Window *win, rect &r, void *user_data);
 
 	void AddVertex(int v);
 	void AddPolygon(Array<int> &v, int material, Array<vector> &sv, int index = -1);

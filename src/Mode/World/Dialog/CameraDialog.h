@@ -43,7 +43,7 @@ public:
 
 	void UpdateTimePos();
 
-	virtual void OnUpdate(Observable *obs);
+	virtual void onUpdate(Observable *obs);
 
 	DataCamera *data;
 	ModeWorldCamera *mode;

@@ -39,7 +39,7 @@ Window::Window(MultiViewImpl *_impl, int _type)
 	type = _type;
 }
 
-void Window::DrawGrid()
+void Window::drawGrid()
 {
 	if (type == ViewIsometric)
 		return;
@@ -95,10 +95,10 @@ void Window::DrawGrid()
 	int a,b;
 	float fa,fb,t;
 
-	vector vux1 = Unproject(vector(dest.x1,0,0));
-	vector vux2 = Unproject(vector(dest.x2,0,0));
-	vector vuy1 = Unproject(vector(0,dest.y1,0));
-	vector vuy2 = Unproject(vector(0,dest.y2,0));
+	vector vux1 = unproject(vector(dest.x1,0,0));
+	vector vux2 = unproject(vector(dest.x2,0,0));
+	vector vuy1 = unproject(vector(0,dest.y1,0));
+	vector vuy2 = unproject(vector(0,dest.y2,0));
 	vector n,va,vb;
 
 	// vertical
@@ -112,7 +112,7 @@ void Window::DrawGrid()
 	a=(int)fa;
 	b=(int)fb+1;
 	for (int i=a;i<b;i++){
-		int x=(int)Project(vector((float)i*D,(float)i*D,(float)i*D)).x;
+		int x=(int)project(vector((float)i*D,(float)i*D,(float)i*D)).x;
 		NixSetColor(ColorInterpolate(ColorBackGround2D,ColorGrid,GetDensity(i,(float)MaxX/(fb-fa))));
 		NixDrawLineV(x,dest.y1,dest.y2,0.99998f-GetDensity(i,(float)MaxX/(fb-fa))*0.00005f);
 	}
@@ -128,14 +128,14 @@ void Window::DrawGrid()
 	a=(int)fa;
 	b=(int)fb+1;
 	for (int i=a;i<b;i++){
-		int y=(int)Project(vector((float)i*D,(float)i*D,(float)i*D)).y;
+		int y=(int)project(vector((float)i*D,(float)i*D,(float)i*D)).y;
 		NixSetColor(ColorInterpolate(ColorBackGround2D,ColorGrid,GetDensity(i,(float)MaxX/(fb-fa))));
 		NixDrawLineH(dest.x1,dest.x2,y,0.99998f-GetDensity(i,(float)MaxX/(fb-fa))*0.00005f);
 	}
 }
 
 
-void Window::Draw()
+void Window::draw()
 {
 	msg_db_f("MultiView.DrawWin",2);
 	matrix rot, trans;
@@ -208,7 +208,7 @@ void Window::Draw()
 	NixEnableFog(false);
 	NixSetFog(FogExp, 0, 1000, 0, Black); // some shaders need correct fog values
 	if (impl->grid_enabled)
-		DrawGrid();
+		drawGrid();
 
 	NixSetWire(impl->wire_mode);
 	// light
@@ -226,7 +226,7 @@ void Window::Draw()
 	// draw the actual data
 	//msg_db_r("sub",2);
 	if (ed->cur_mode)
-		ed->cur_mode->OnDrawWinRecursive(this);
+		ed->cur_mode->onDrawWinRecursive(this);
 	//msg_db_l(2);
 
 	// draw multiview data
@@ -246,7 +246,7 @@ void Window::Draw()
 				bool _di = ((d.indexable) && (sd->is_selected) && (NixGetKey(KEY_I)));
 				if ((!d.drawable) && (!_di))
 					continue;
-				vector p = Project(sd->pos);
+				vector p = project(sd->pos);
 				if ((p.x<dest.x1)||(p.y<dest.y1)||(p.x>dest.x2)||(p.y>dest.y2)||(p.z<=0)||(p.z>=1))
 					continue;
 				if (_di)
@@ -284,7 +284,7 @@ void Window::Draw()
 	// type of view
 
 	if (impl->action_con->show)
-		impl->action_con->Draw(this);
+		impl->action_con->draw(this);
 
 	name_dest = rect(dest.x1 + 3, dest.x1 + 3 + NixGetStrWidth(view_kind), dest.y1, dest.y1 + 20);
 
@@ -297,13 +297,13 @@ void Window::Draw()
 	NixSetColor(ColorText);
 
 	foreach(MultiViewImpl::Message3d &m, impl->message3d){
-		vector p = Project(m.pos);
+		vector p = project(m.pos);
 		if (p.z > 0)
 			ed->drawStr(p.x, p.y, m.str);
 	}
 }
 
-vector Window::Unproject(const vector &p, const vector &o)
+vector Window::unproject(const vector &p, const vector &o)
 {
 	vector r;
 	vector pp = p;
@@ -355,7 +355,7 @@ vector Window::Unproject(const vector &p, const vector &o)
 	return r;
 }
 
-vector Window::Project(const vector &p)
+vector Window::project(const vector &p)
 {
 	vector r;
 	if ((type == ViewPerspective) || (type == ViewIsometric)){ // 3D
@@ -398,12 +398,12 @@ vector Window::Project(const vector &p)
 			r.x+=dest.x1;
 			r.y+=dest.y1;
 		}
-		r.z=0.5f+VecDotProduct(p-pos,GetDirection())/cam->radius/32;
+		r.z=0.5f+VecDotProduct(p-pos,getDirection())/cam->radius/32;
 	}
 	return r;
 }
 
-vector Window::Unproject(const vector &p)
+vector Window::unproject(const vector &p)
 {
 	vector r;
 	vector pp = p;
@@ -452,7 +452,7 @@ vector Window::Unproject(const vector &p)
 	return r;
 }
 
-vector Window::GetDirection()
+vector Window::getDirection()
 {
 	int t=type;
 	if ((t==ViewFront)||(t==View2D))
@@ -472,7 +472,7 @@ vector Window::GetDirection()
 	return v_0;
 }
 
-vector Window::GetDirectionUp()
+vector Window::getDirectionUp()
 {
 	int t=type;
 	if (t==View2D)
@@ -494,17 +494,17 @@ vector Window::GetDirectionUp()
 	return v_0;
 }
 
-vector Window::GetDirectionRight()
+vector Window::getDirectionRight()
 {
-	vector d=GetDirection();
-	vector u=GetDirectionUp();
+	vector d=getDirection();
+	vector u=getDirectionUp();
 	return VecCrossProduct(d,u);
 }
 
-void Window::GetMovingFrame(vector &dir, vector &up, vector &right)
+void Window::getMovingFrame(vector &dir, vector &up, vector &right)
 {
-	dir = GetDirection();
-	up = GetDirectionUp();
+	dir = getDirection();
+	up = getDirectionUp();
 	right = dir ^ up;
 }
 

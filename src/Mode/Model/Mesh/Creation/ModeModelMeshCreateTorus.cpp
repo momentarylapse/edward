@@ -34,7 +34,7 @@ ModeModelMeshCreateTorus::~ModeModelMeshCreateTorus()
 		delete(geo);
 }
 
-void ModeModelMeshCreateTorus::OnStart()
+void ModeModelMeshCreateTorus::onStart()
 {
 	// Dialog
 	dialog = HuiCreateResourceDialog("new_torus_dialog", ed);
@@ -49,7 +49,7 @@ void ModeModelMeshCreateTorus::OnStart()
 }
 
 
-void ModeModelMeshCreateTorus::OnEnd()
+void ModeModelMeshCreateTorus::onEnd()
 {
 	delete(dialog);
 }
@@ -69,7 +69,7 @@ void ModeModelMeshCreateTorus::UpdateGeometry()
 }
 
 
-void ModeModelMeshCreateTorus::OnLeftButtonDown()
+void ModeModelMeshCreateTorus::onLeftButtonDown()
 {
 	if (pos_chosen){
 		if (rad_chosen){
@@ -77,7 +77,7 @@ void ModeModelMeshCreateTorus::OnLeftButtonDown()
 			data->PasteGeometry(*geo, mode_model_mesh->CurrentMaterial);
 			data->SelectOnlySurface(&data->Surface.back());
 
-			Abort();
+			abort();
 		}else{
 			message = _("Torus innen skalieren");
 			rad_chosen = true;
@@ -94,7 +94,7 @@ void ModeModelMeshCreateTorus::OnLeftButtonDown()
 }
 
 
-void ModeModelMeshCreateTorus::OnDrawWin(MultiView::Window *win)
+void ModeModelMeshCreateTorus::onDrawWin(MultiView::Window *win)
 {
 	if (pos_chosen){
 		mode_model->SetMaterialCreation();
@@ -107,9 +107,9 @@ void ModeModelMeshCreateTorus::OnDrawWin(MultiView::Window *win)
 
 
 
-void ModeModelMeshCreateTorus::OnMouseMove()
+void ModeModelMeshCreateTorus::onMouseMove()
 {
-	axis = multi_view->mouse_win->GetDirection();
+	axis = multi_view->mouse_win->getDirection();
 	if (pos_chosen){
 		vector pos2 = multi_view->GetCursor3d(pos);
 		if (rad_chosen){

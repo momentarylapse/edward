@@ -24,14 +24,14 @@
 
 PluginManager::PluginManager()
 {
-	Init();
+	init();
 }
 
 PluginManager::~PluginManager()
 {
 }
 
-void PluginManager::Execute(const string & filename)
+void PluginManager::execute(const string & filename)
 {
 	Script::config.Directory = "";
 	try{
@@ -48,7 +48,7 @@ void PluginManager::Execute(const string & filename)
 
 HuiWindow *GlobalMainWin = ed;
 
-void PluginManager::Init()
+void PluginManager::init()
 {
 	Script::Init();
 
@@ -66,8 +66,8 @@ void PluginManager::Init()
 	Script::DeclareClassOffset("Data", "file_time", offsetof(Data, file_time));
 	Script::DeclareClassOffset("Data", "binary_file_format", offsetof(Data, binary_file_format));
 	Script::DeclareClassOffset("Data", "type", offsetof(Data, type));
-	Script::LinkExternal("Data.BeginActionGroup", Script::mf(&Data::BeginActionGroup));
-	Script::LinkExternal("Data.EndActionGroup", Script::mf(&Data::EndActionGroup));
+	Script::LinkExternal("Data.BeginActionGroup", Script::mf(&Data::beginActionGroup));
+	Script::LinkExternal("Data.EndActionGroup", Script::mf(&Data::endActionGroup));
 
 	Script::DeclareClassSize("MultiViewSingleData", sizeof(MultiView::SingleData));
 	Script::DeclareClassOffset("MultiViewSingleData", "pos", offsetof(MultiView::SingleData, pos));

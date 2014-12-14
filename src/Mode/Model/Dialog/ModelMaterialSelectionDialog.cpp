@@ -33,12 +33,12 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(HuiWindow *_parent, b
 
 	answer = NULL;
 
-	Subscribe(data);
+	subscribe(data);
 }
 
 ModelMaterialSelectionDialog::~ModelMaterialSelectionDialog()
 {
-	Unsubscribe(data);
+	unsubscribe(data);
 }
 
 void ModelMaterialSelectionDialog::FillMaterialList()
@@ -83,20 +83,20 @@ void ModelMaterialSelectionDialog::OnMaterialListSelect()
 
 void ModelMaterialSelectionDialog::OnMaterialAddNew()
 {
-	data->Execute(new ActionModelAddMaterial(""));
+	data->execute(new ActionModelAddMaterial(""));
 }
 
 void ModelMaterialSelectionDialog::OnMaterialAdd()
 {
 	if (ed->fileDialog(FDMaterial, false, true))
-		data->Execute(new ActionModelAddMaterial(ed->DialogFileNoEnding));
+		data->execute(new ActionModelAddMaterial(ed->DialogFileNoEnding));
 }
 
 void ModelMaterialSelectionDialog::OnMaterialEdit()
 {
 }
 
-void ModelMaterialSelectionDialog::OnUpdate(Observable *o)
+void ModelMaterialSelectionDialog::onUpdate(Observable *o)
 {
 	FillMaterialList();
 }

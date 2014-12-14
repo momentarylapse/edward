@@ -19,7 +19,7 @@ ModeModelMeshAutoweld::~ModeModelMeshAutoweld()
 {
 }
 
-void ModeModelMeshAutoweld::OnStart()
+void ModeModelMeshAutoweld::onStart()
 {
 	radius_default = multi_view->cam.radius * 0.01f;
 	radius = radius_default;
@@ -48,7 +48,7 @@ void ModeModelMeshAutoweld::OnStart()
 	dialog->event("cancel", this, &ModeModelMeshAutoweld::OnCancel);
 }
 
-void ModeModelMeshAutoweld::OnEnd()
+void ModeModelMeshAutoweld::onEnd()
 {
 	delete(dialog);
 }
@@ -62,16 +62,16 @@ void ModeModelMeshAutoweld::OnSlider()
 
 void ModeModelMeshAutoweld::OnCancel()
 {
-	Abort();
+	abort();
 }
 
 void ModeModelMeshAutoweld::OnOk()
 {
 	data->AutoWeldSelectedSurfaces(radius);
-	Abort();
+	abort();
 }
 
-void ModeModelMeshAutoweld::OnDrawWin(MultiView::Window* win)
+void ModeModelMeshAutoweld::onDrawWin(MultiView::Window* win)
 {
 	NixEnableLighting(false);
 	NixSetTexture(NULL);
@@ -90,7 +90,7 @@ void ModeModelMeshAutoweld::OnDrawWin(MultiView::Window* win)
 				foreach(int vb, b->Vertex)
 					if ((data->Vertex[va].pos - data->Vertex[vb].pos).length() <= radius){
 						n ++;
-						vector p = win->Project(data->Vertex[va].pos);
+						vector p = win->project(data->Vertex[va].pos);
 
 						if ((p.z < 0) || (p.z >= 1))
 							continue;

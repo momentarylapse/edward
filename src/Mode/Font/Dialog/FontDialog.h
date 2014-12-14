@@ -38,7 +38,7 @@ public:
 
 	string GetSampleText();
 
-	void OnUpdate(Observable *o);
+	void onUpdate(Observable *o);
 
 private:
 	DataFont *data;

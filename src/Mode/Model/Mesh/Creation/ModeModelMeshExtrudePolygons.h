@@ -17,12 +17,12 @@ public:
 	ModeModelMeshExtrudePolygons(ModeBase *parent);
 	virtual ~ModeModelMeshExtrudePolygons();
 
-	virtual void OnEnd();
+	virtual void onEnd();
 
-	virtual void OnLeftButtonDown();
-	virtual void OnMouseMove();
+	virtual void onLeftButtonDown();
+	virtual void onMouseMove();
 
-	virtual void OnDrawWin(MultiView::Window *win);
+	virtual void onDrawWin(MultiView::Window *win);
 
 	void Preview();
 	void CleanUp();

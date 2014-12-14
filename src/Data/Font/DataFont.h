@@ -22,9 +22,9 @@ public:
 	DataFont();
 	virtual ~DataFont();
 
-	void Reset();
-	bool Load(const string &_filename, bool deep = true);
-	bool Save(const string &_filename);
+	void reset();
+	bool load(const string &_filename, bool deep = true);
+	bool save(const string &_filename);
 
 	void UpdateTexture();
 	void ApplyFont(Gui::Font *f);

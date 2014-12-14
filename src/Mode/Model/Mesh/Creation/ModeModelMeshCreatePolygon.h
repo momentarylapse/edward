@@ -17,13 +17,13 @@ public:
 	ModeModelMeshCreatePolygon(ModeBase *parent);
 	virtual ~ModeModelMeshCreatePolygon();
 
-	virtual void OnStart();
-	virtual void OnEnd();
+	virtual void onStart();
+	virtual void onEnd();
 
-	virtual void OnLeftButtonDown();
-	virtual void OnKeyDown();
+	virtual void onLeftButtonDown();
+	virtual void onKeyDown();
 
-	virtual void OnDrawWin(MultiView::Window *win);
+	virtual void onDrawWin(MultiView::Window *win);
 
 	Array<int> selection;
 };

@@ -17,15 +17,15 @@ DataMaterial::DataMaterial() :
 	Shader = NULL;
 	Appearance.CubeMap = new NixCubeMap(128);
 
-	Reset();
+	reset();
 }
 
 DataMaterial::~DataMaterial()
 {
-	Reset();
+	reset();
 }
 
-bool DataMaterial::Save(const string & _filename)
+bool DataMaterial::save(const string & _filename)
 {
 	filename = _filename;
 	ed->makeDirs(filename);
@@ -79,17 +79,17 @@ bool DataMaterial::Save(const string & _filename)
 	delete(f);
 
 	ed->setMessage(_("Gespeichert!"));
-	action_manager->MarkCurrentAsSave();
+	action_manager->markCurrentAsSave();
 	return true;
 }
 
 
 
-bool DataMaterial::Load(const string & _filename, bool deep)
+bool DataMaterial::load(const string & _filename, bool deep)
 {
 	bool error=false;
 	int ffv;
-	Reset();
+	reset();
 
 	filename = _filename;
 	ed->makeDirs(filename);
@@ -234,8 +234,8 @@ bool DataMaterial::Load(const string & _filename, bool deep)
 	if (deep)
 		UpdateTextures();
 
-	ResetHistory();
-	Notify("Change");
+	resetHistory();
+	notify("Change");
 	return !error;
 }
 
@@ -292,7 +292,7 @@ void DataMaterial::SoundData::Reset()
 	NumRules = 0;
 }
 
-void DataMaterial::Reset()
+void DataMaterial::reset()
 {
 	filename = "";
 
@@ -305,8 +305,8 @@ void DataMaterial::Reset()
 	Sound.Reset();
 
 
-	ResetHistory();
-	Notify("Change");
+	resetHistory();
+	notify("Change");
 }
 
 

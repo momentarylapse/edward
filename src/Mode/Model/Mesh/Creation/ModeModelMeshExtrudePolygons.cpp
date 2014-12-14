@@ -24,22 +24,22 @@ ModeModelMeshExtrudePolygons::~ModeModelMeshExtrudePolygons()
 {
 }
 
-void ModeModelMeshExtrudePolygons::OnEnd()
+void ModeModelMeshExtrudePolygons::onEnd()
 {
 	CleanUp();
 }
 
-void ModeModelMeshExtrudePolygons::OnLeftButtonDown()
+void ModeModelMeshExtrudePolygons::onLeftButtonDown()
 {
 	CleanUp();
 
 	data->SetSelectionState(selection);
-	data->Execute(new ActionModelExtrudePolygons(offset));
+	data->execute(new ActionModelExtrudePolygons(offset));
 
-	Abort();
+	abort();
 }
 
-void ModeModelMeshExtrudePolygons::OnMouseMove()
+void ModeModelMeshExtrudePolygons::onMouseMove()
 {
 	CleanUp();
 
@@ -47,7 +47,7 @@ void ModeModelMeshExtrudePolygons::OnMouseMove()
 	Preview();
 }
 
-void ModeModelMeshExtrudePolygons::OnDrawWin(MultiView::Window *win)
+void ModeModelMeshExtrudePolygons::onDrawWin(MultiView::Window *win)
 {
 	NixEnableLighting(false);
 	ed->drawStr(100, 100, f2s(offset, 3));
@@ -56,12 +56,12 @@ void ModeModelMeshExtrudePolygons::OnDrawWin(MultiView::Window *win)
 void ModeModelMeshExtrudePolygons::Preview()
 {
 	data->SetSelectionState(selection);
-	if (!data->action_manager->Preview(new ActionModelExtrudePolygons(offset)))
-		Abort();
+	if (!data->action_manager->preview(new ActionModelExtrudePolygons(offset)))
+		abort();
 }
 
 void ModeModelMeshExtrudePolygons::CleanUp()
 {
-	data->action_manager->ClearPreview();
+	data->action_manager->clearPreview();
 }
 

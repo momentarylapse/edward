@@ -62,7 +62,7 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(HuiWindow *_parent, DataMater
 	apply_queue_depth = 0;
 	apply_phys_queue_depth = 0;
 	LoadData();
-	Subscribe(data);
+	subscribe(data);
 }
 
 void MaterialPropertiesDialog::LoadData()
@@ -115,10 +115,10 @@ void MaterialPropertiesDialog::LoadData()
 
 MaterialPropertiesDialog::~MaterialPropertiesDialog()
 {
-	Unsubscribe(data);
+	unsubscribe(data);
 }
 
-void MaterialPropertiesDialog::OnUpdate(Observable *o)
+void MaterialPropertiesDialog::onUpdate(Observable *o)
 {
 	temp = data->Appearance;
 	temp_phys = data->Physics;
@@ -268,7 +268,7 @@ void MaterialPropertiesDialog::ApplyData()
 
 	temp.ShaderFile = getString("shader_file");
 
-	data->Execute(new ActionMaterialEditAppearance(temp));
+	data->execute(new ActionMaterialEditAppearance(temp));
 }
 
 void MaterialPropertiesDialog::ApplyDataDelayed()
@@ -288,7 +288,7 @@ void MaterialPropertiesDialog::ApplyPhysData()
 	temp_phys.RCSliding = getFloat("rcsliding");
 	temp_phys.RCRolling = getFloat("rcroll");
 
-	data->Execute(new ActionMaterialEditPhysics(temp_phys));
+	data->execute(new ActionMaterialEditPhysics(temp_phys));
 }
 
 void MaterialPropertiesDialog::ApplyPhysDataDelayed()

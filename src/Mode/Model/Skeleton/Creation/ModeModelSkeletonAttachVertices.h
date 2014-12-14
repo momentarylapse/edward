@@ -17,12 +17,12 @@ public:
 	ModeModelSkeletonAttachVertices(ModeBase *_parent, int _bone_index);
 	virtual ~ModeModelSkeletonAttachVertices();
 
-	virtual void OnStart();
-	virtual void OnEnd();
+	virtual void onStart();
+	virtual void onEnd();
 
-	virtual void OnKeyDown();
+	virtual void onKeyDown();
 
-	virtual void OnDrawWin(MultiView::Window *win);
+	virtual void onDrawWin(MultiView::Window *win);
 
 private:
 	int bone_index;

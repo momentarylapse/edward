@@ -60,7 +60,7 @@ void ModelEasifyDialog::OnOk()
 	delete(this);
 }
 
-void ModelEasifyDialog::OnUpdate(Observable* o)
+void ModelEasifyDialog::onUpdate(Observable* o)
 {
 	LoadData();
 }

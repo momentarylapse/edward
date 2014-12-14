@@ -18,17 +18,17 @@ public:
 	ModeModelMeshBrush(ModeBase *parent);
 	virtual ~ModeModelMeshBrush();
 
-	virtual void OnStart();
-	virtual void OnEnd();
+	virtual void onStart();
+	virtual void onEnd();
 
-	virtual void OnLeftButtonDown();
-	virtual void OnLeftButtonUp();
-	virtual void OnMouseMove();
+	virtual void onLeftButtonDown();
+	virtual void onLeftButtonUp();
+	virtual void onMouseMove();
 
 	void OnDiameterSlider();
 	void OnDepthSlider();
 
-	virtual void OnDrawWin(MultiView::Window *win);
+	virtual void onDrawWin(MultiView::Window *win);
 
 	Action *GetAction();
 	void Apply();

@@ -20,7 +20,7 @@ ModeModelMeshCreateVertex::~ModeModelMeshCreateVertex()
 }
 
 
-void ModeModelMeshCreateVertex::OnLeftButtonDown()
+void ModeModelMeshCreateVertex::onLeftButtonDown()
 {
 	data->AddVertex(multi_view->GetCursor3d());
 	//Abort();

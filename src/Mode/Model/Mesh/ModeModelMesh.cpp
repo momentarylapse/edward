@@ -41,7 +41,7 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	Mode<DataModel>("ModelMesh", _parent, ed->multi_view_3d, ""),
 	Observable("ModelMesh")
 {
-	Observer::Subscribe(data);
+	Observer::subscribe(data);
 
 	MaterialDialog = NULL;
 	CurrentMaterial = 0;
@@ -57,10 +57,10 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 
 ModeModelMesh::~ModeModelMesh()
 {
-	Observer::Unsubscribe(data);
+	Observer::unsubscribe(data);
 }
 
-void ModeModelMesh::OnStart()
+void ModeModelMesh::onStart()
 {
 	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
 	HuiToolbar *t = ed->toolbar[HuiToolbarLeft];
@@ -81,7 +81,7 @@ void ModeModelMesh::OnStart()
 	t->configure(false,true);
 }
 
-void ModeModelMesh::OnEnter()
+void ModeModelMesh::onEnter()
 {
 	CurrentMaterial = 0;
 
@@ -89,7 +89,7 @@ void ModeModelMesh::OnEnter()
 	//ed->setMode(mode_model_mesh_skin);
 }
 
-void ModeModelMesh::OnEnd()
+void ModeModelMesh::onEnd()
 {
 	HuiToolbar *t = ed->toolbar[HuiToolbarLeft];
 	t->reset();
@@ -100,7 +100,7 @@ void ModeModelMesh::OnEnd()
 
 
 
-void ModeModelMesh::OnCommand(const string & id)
+void ModeModelMesh::onCommand(const string & id)
 {
 	if (id == "delete")
 		data->DeleteSelection(ed->cur_mode == mode_model_mesh_vertex);
@@ -192,7 +192,7 @@ void ModeModelMesh::OnCommand(const string & id)
 	if (id == "mode_model_materials")
 		ToggleMaterialDialog();
 	if (id == "text_from_bg")
-		data->Execute(new ActionModelSkinVerticesFromProjection(data, multi_view));
+		data->execute(new ActionModelSkinVerticesFromProjection(data, multi_view));
 	if (id == "automapping")
 		data->Automap(CurrentMaterial, mode_model_mesh_texture->CurrentTextureLevel);
 	if (id == "easify_skin")
@@ -246,7 +246,7 @@ void ModeModelMesh::ToggleMaterialDialog()
 
 
 
-void ModeModelMesh::OnDraw()
+void ModeModelMesh::onDraw()
 {
 	if (data->GetNumSelectedVertices() > 0){
 		ed->drawStr(20, 100, format(_("vert: %d"), data->GetNumSelectedVertices()));
@@ -257,7 +257,7 @@ void ModeModelMesh::OnDraw()
 
 
 
-void ModeModelMesh::OnUpdate(Observable *o)
+void ModeModelMesh::onUpdate(Observable *o)
 {
 	// consistency checks
 	if (CurrentMaterial >= data->Material.num)
@@ -267,7 +267,7 @@ void ModeModelMesh::OnUpdate(Observable *o)
 
 
 
-void ModeModelMesh::OnUpdateMenu()
+void ModeModelMesh::onUpdateMenu()
 {
 	ed->enable("copy", Copyable());
 	ed->enable("paste", Pasteable());
@@ -297,7 +297,7 @@ void ModeModelMesh::OnUpdateMenu()
 	ed->check("mode_model_materials", MaterialDialog);
 }
 
-bool ModeModelMesh::OptimizeView()
+bool ModeModelMesh::optimizeView()
 {
 	msg_db_f("OptimizeView", 1);
 	MultiView::MultiView *mv = multi_view;
@@ -414,7 +414,7 @@ void ModeModelMesh::Copy()
 {
 	data->CopyGeometry(TempGeo);
 
-	OnUpdateMenu();
+	onUpdateMenu();
 	ed->setMessage(format(_("%d Vertizes, %d Dreiecke kopiert"), TempGeo.Vertex.num, TempGeo.Polygon.num));
 }
 
@@ -485,6 +485,6 @@ void ModeModelMesh::SetCurrentMaterial(int index)
 	if (CurrentMaterial == index)
 		return;
 	CurrentMaterial = index;
-	Notify("Change");
+	notify("Change");
 	mode_model_mesh_texture->SetCurrentTextureLevel(0);
 }

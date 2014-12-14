@@ -39,7 +39,7 @@ public:
 	void OnSimulationStop();
 	void OnClose();
 
-	void OnUpdate(Observable *o);
+	void onUpdate(Observable *o);
 
 	int GetSelectedAnimation();
 

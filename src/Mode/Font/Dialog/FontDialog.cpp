@@ -33,14 +33,14 @@ FontDialog::FontDialog(HuiWindow *_parent, DataFont *_data) :
 	win->event("width", this, &FontDialog::OnWidth);
 	win->event("text", this, &FontDialog::OnText);
 
-	Subscribe(data);
+	subscribe(data);
 
 	LoadData();
 }
 
 FontDialog::~FontDialog()
 {
-	Unsubscribe(data);
+	unsubscribe(data);
 }
 
 void FontDialog::LoadData()
@@ -124,7 +124,7 @@ void FontDialog::OnWidth()
 	ApplyGlyphData();
 }
 
-void FontDialog::OnUpdate(Observable *o)
+void FontDialog::onUpdate(Observable *o)
 {
 	LoadData();
 }

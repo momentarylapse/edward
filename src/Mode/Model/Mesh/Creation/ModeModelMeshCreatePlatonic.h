@@ -18,13 +18,13 @@ public:
 	ModeModelMeshCreatePlatonic(ModeBase *parent, int type);
 	virtual ~ModeModelMeshCreatePlatonic();
 
-	virtual void OnStart();
-	virtual void OnEnd();
+	virtual void onStart();
+	virtual void onEnd();
 
-	virtual void OnMouseMove();
-	virtual void OnLeftButtonDown();
+	virtual void onMouseMove();
+	virtual void onLeftButtonDown();
 
-	virtual void OnDrawWin(MultiView::Window *win);
+	virtual void onDrawWin(MultiView::Window *win);
 
 	void UpdateGeometry();
 

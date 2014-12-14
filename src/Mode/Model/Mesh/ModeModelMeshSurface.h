@@ -19,13 +19,13 @@ public:
 	ModeModelMeshSurface(ModeBase *parent);
 	virtual ~ModeModelMeshSurface();
 
-	virtual void OnStart();
-	virtual void OnEnd();
+	virtual void onStart();
+	virtual void onEnd();
 
-	virtual void OnUpdate(Observable *o);
+	virtual void onUpdate(Observable *o);
 
-	virtual void OnDraw();
-	virtual void OnDrawWin(MultiView::Window *win);
+	virtual void onDraw();
+	virtual void onDrawWin(MultiView::Window *win);
 };
 
 extern ModeModelMeshSurface *mode_model_mesh_surface;

@@ -43,7 +43,7 @@ void ModeModelMeshCreateBall::OnTypeSphere()
 	dialog->enable("nb_complexity", true);
 }
 
-void ModeModelMeshCreateBall::OnStart()
+void ModeModelMeshCreateBall::onStart()
 {
 	// Dialog
 	dialog = HuiCreateResourceDialog("new_ball_dialog", ed);
@@ -67,7 +67,7 @@ void ModeModelMeshCreateBall::OnStart()
 }
 
 
-void ModeModelMeshCreateBall::OnEnd()
+void ModeModelMeshCreateBall::onEnd()
 {
 	delete(dialog);
 }
@@ -94,13 +94,13 @@ void ModeModelMeshCreateBall::UpdateGeometry()
 
 
 
-void ModeModelMeshCreateBall::OnLeftButtonDown()
+void ModeModelMeshCreateBall::onLeftButtonDown()
 {
 	if (pos_chosen){
 		data->PasteGeometry(*geo, mode_model_mesh->CurrentMaterial);
 		data->SelectOnlySurface(&data->Surface.back());
 
-		Abort();
+		abort();
 	}else{
 		if (multi_view->hover.index >= 0)
 			pos = data->Vertex[multi_view->hover.index].pos;
@@ -113,7 +113,7 @@ void ModeModelMeshCreateBall::OnLeftButtonDown()
 }
 
 
-void ModeModelMeshCreateBall::OnDrawWin(MultiView::Window *win)
+void ModeModelMeshCreateBall::onDrawWin(MultiView::Window *win)
 {
 	if (pos_chosen){
 		mode_model->SetMaterialCreation();
@@ -124,7 +124,7 @@ void ModeModelMeshCreateBall::OnDrawWin(MultiView::Window *win)
 
 
 
-void ModeModelMeshCreateBall::OnMouseMove()
+void ModeModelMeshCreateBall::onMouseMove()
 {
 	if (pos_chosen){
 		vector pos2 = multi_view->GetCursor3d(pos);

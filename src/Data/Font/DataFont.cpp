@@ -15,18 +15,18 @@
 DataFont::DataFont() :
 	Data(FDFont)
 {
-	Reset();
+	reset();
 }
 
 DataFont::~DataFont()
 {
 }
 
-bool DataFont::Load(const string & _filename, bool deep)
+bool DataFont::load(const string & _filename, bool deep)
 {
 	bool error=false;
 	int ffv;
-	Reset();
+	reset();
 
 	filename = _filename;
 	ed->makeDirs(filename);
@@ -98,8 +98,8 @@ bool DataFont::Load(const string & _filename, bool deep)
 	if (deep)
 		UpdateTexture();
 
-	ResetHistory();
-	Notify("Change");
+	resetHistory();
+	notify("Change");
 	return !error;
 }
 
@@ -120,7 +120,7 @@ string PreGlyphName[256]={
 };
 
 
-void DataFont::Reset()
+void DataFont::reset()
 {
 	filename = "";
 	global.Reset();
@@ -145,14 +145,14 @@ void DataFont::Reset()
 			break;
 	};
 
-	ResetHistory();
-	Notify("Change");
+	resetHistory();
+	notify("Change");
 //	SetFont();
 }
 
 
 
-bool DataFont::Save(const string & _filename)
+bool DataFont::save(const string & _filename)
 {
 	filename = _filename;
 	ed->makeDirs(filename);
@@ -192,7 +192,7 @@ bool DataFont::Save(const string & _filename)
 	delete(f);
 
 	ed->setMessage(_("Gespeichert!"));
-	action_manager->MarkCurrentAsSave();
+	action_manager->markCurrentAsSave();
 	return false;
 }
 
@@ -244,10 +244,10 @@ void DataFont::ApplyFont(Gui::Font *f)
 }
 
 void DataFont::EditGlobal(const GlobalData &new_data)
-{	Execute(new ActionFontEditGlobal(new_data));	}
+{	execute(new ActionFontEditGlobal(new_data));	}
 
 void DataFont::EditGlyph(int index, const Glyph &new_glyph)
-{	Execute(new ActionFontEditGlyph(index, new_glyph));	}
+{	execute(new ActionFontEditGlyph(index, new_glyph));	}
 
 
 void DataFont::GlobalData::Reset()

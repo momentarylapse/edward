@@ -34,7 +34,7 @@ ModeModelMeshCreatePlatonic::~ModeModelMeshCreatePlatonic()
 		delete(geo);
 }
 
-void ModeModelMeshCreatePlatonic::OnStart()
+void ModeModelMeshCreatePlatonic::onStart()
 {
 	if (type != 306)
 		return;
@@ -49,7 +49,7 @@ void ModeModelMeshCreatePlatonic::OnStart()
 }
 
 
-void ModeModelMeshCreatePlatonic::OnEnd()
+void ModeModelMeshCreatePlatonic::onEnd()
 {
 	if (dialog)
 		delete(dialog);
@@ -72,12 +72,12 @@ void ModeModelMeshCreatePlatonic::UpdateGeometry()
 }
 
 
-void ModeModelMeshCreatePlatonic::OnLeftButtonDown()
+void ModeModelMeshCreatePlatonic::onLeftButtonDown()
 {
 	if (pos_chosen){
 		data->PasteGeometry(*geo, mode_model_mesh->CurrentMaterial);
 
-		Abort();
+		abort();
 	}else{
 		if (multi_view->hover.index >= 0)
 			pos = data->Vertex[multi_view->hover.index].pos;
@@ -90,7 +90,7 @@ void ModeModelMeshCreatePlatonic::OnLeftButtonDown()
 }
 
 
-void ModeModelMeshCreatePlatonic::OnDrawWin(MultiView::Window *win)
+void ModeModelMeshCreatePlatonic::onDrawWin(MultiView::Window *win)
 {
 	if (pos_chosen){
 		mode_model->SetMaterialCreation();
@@ -102,7 +102,7 @@ void ModeModelMeshCreatePlatonic::OnDrawWin(MultiView::Window *win)
 
 
 
-void ModeModelMeshCreatePlatonic::OnMouseMove()
+void ModeModelMeshCreatePlatonic::onMouseMove()
 {
 	if (pos_chosen){
 		vector pos2 = multi_view->GetCursor3d(pos);

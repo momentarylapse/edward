@@ -17,17 +17,17 @@ public:
 	ModeWelcome();
 	virtual ~ModeWelcome();
 
-	virtual void OnStart();
-	virtual void OnEnd();
+	virtual void onStart();
+	virtual void onEnd();
 
-	virtual void OnMouseMove();
-	virtual void OnLeftButtonUp();
-	virtual void OnCommand(const string &id);
-	virtual void OnUpdate(Observable *o);
+	virtual void onMouseMove();
+	virtual void onLeftButtonUp();
+	virtual void onCommand(const string &id);
+	virtual void onUpdate(Observable *o);
 
-	virtual void OnDraw();
+	virtual void onDraw();
 
-	virtual Data *GetData(){	return NULL;	};
+	virtual Data *getData(){	return NULL;	};
 
 	void DrawIcon(int x, int y, int index, int pic_index, const string &name);
 

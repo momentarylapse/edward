@@ -23,18 +23,18 @@ public:
 	Observable(const string &name);
 	virtual ~Observable();
 
-	void Subscribe(Observer *o);
-	void Subscribe(Observer *o, const string &message);
-	void Unsubscribe(Observer *o);
-	string GetName();
-	string GetMessage();
+	void subscribe(Observer *o);
+	void subscribe(Observer *o, const string &message);
+	void unsubscribe(Observer *o);
+	string getName();
+	string getMessage();
 
-	void NotifyBegin();
-	void Notify(const string &message);
-	void NotifyEnd();
+	void notifyBegin();
+	void notify(const string &message);
+	void notifyEnd();
 private:
-	void NotifyEnqueue(const string &message);
-	void NotifySend();
+	void notifyEnqueue(const string &message);
+	void notifySend();
 
 private:
 	string observable_name;

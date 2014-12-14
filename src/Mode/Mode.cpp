@@ -23,85 +23,85 @@ ModeBase::~ModeBase()
 {
 }
 
-void ModeBase::OnCommandRecursive(const string & id, bool multi_view_handled)
+void ModeBase::onCommandRecursive(const string & id, bool multi_view_handled)
 {
 	if ((multi_view) && (!multi_view_handled)){
-		((MultiView::MultiViewImpl*)multi_view)->OnCommand(id);
+		((MultiView::MultiViewImpl*)multi_view)->onCommand(id);
 		multi_view_handled = true;
 	}
 	if (parent)
-		parent->OnCommandRecursive(id, multi_view_handled);
-	OnCommand(id);
+		parent->onCommandRecursive(id, multi_view_handled);
+	onCommand(id);
 }
 
-#define CREATE_EVENT_HANDLER(_name_rec_, _name_)	\
-void ModeBase::_name_rec_(bool multi_view_handled) \
+#define CREATE_EVENT_HANDLER(NAME_REC, NAME)	\
+void ModeBase::NAME_REC(bool multi_view_handled) \
 { \
 	if ((multi_view) && (!multi_view_handled)){ \
-		((MultiView::MultiViewImpl*)multi_view)->_name_(); \
+		((MultiView::MultiViewImpl*)multi_view)->NAME(); \
 		multi_view_handled = true; \
 	} \
 	if (parent) \
-		parent->_name_rec_(multi_view_handled); \
-	_name_(); \
+		parent->NAME_REC(multi_view_handled); \
+	NAME(); \
 }
 
-CREATE_EVENT_HANDLER(OnLeftButtonDownRecursive, OnLeftButtonDown)
-CREATE_EVENT_HANDLER(OnLeftButtonUpRecursive, OnLeftButtonUp)
-CREATE_EVENT_HANDLER(OnMiddleButtonDownRecursive, OnMiddleButtonDown)
-CREATE_EVENT_HANDLER(OnMiddleButtonUpRecursive, OnMiddleButtonUp)
-CREATE_EVENT_HANDLER(OnRightButtonDownRecursive, OnRightButtonDown)
-CREATE_EVENT_HANDLER(OnRightButtonUpRecursive, OnRightButtonUp)
-CREATE_EVENT_HANDLER(OnMouseMoveRecursive, OnMouseMove)
-CREATE_EVENT_HANDLER(OnMouseWheelRecursive, OnMouseWheel)
-CREATE_EVENT_HANDLER(OnMouseEnterRecursive, OnMouseEnter)
-CREATE_EVENT_HANDLER(OnMouseLeaveRecursive, OnMouseLeave)
-CREATE_EVENT_HANDLER(OnKeyDownRecursive, OnKeyDown)
-CREATE_EVENT_HANDLER(OnKeyUpRecursive, OnKeyUp)
-CREATE_EVENT_HANDLER(OnDrawRecursive, OnDraw)
+CREATE_EVENT_HANDLER(onLeftButtonDownRecursive, onLeftButtonDown)
+CREATE_EVENT_HANDLER(onLeftButtonUpRecursive, onLeftButtonUp)
+CREATE_EVENT_HANDLER(onMiddleButtonDownRecursive, onMiddleButtonDown)
+CREATE_EVENT_HANDLER(onMiddleButtonUpRecursive, onMiddleButtonUp)
+CREATE_EVENT_HANDLER(onRightButtonDownRecursive, onRightButtonDown)
+CREATE_EVENT_HANDLER(onRightButtonUpRecursive, onRightButtonUp)
+CREATE_EVENT_HANDLER(onMouseMoveRecursive, onMouseMove)
+CREATE_EVENT_HANDLER(onMouseWheelRecursive, onMouseWheel)
+CREATE_EVENT_HANDLER(onMouseEnterRecursive, onMouseEnter)
+CREATE_EVENT_HANDLER(onMouseLeaveRecursive, onMouseLeave)
+CREATE_EVENT_HANDLER(onKeyDownRecursive, onKeyDown)
+CREATE_EVENT_HANDLER(onKeyUpRecursive, onKeyUp)
+CREATE_EVENT_HANDLER(onDrawRecursive, onDraw)
 
-void ModeBase::OnUpdateMenuRecursive(bool multi_view_handled)
+void ModeBase::onUpdateMenuRecursive(bool multi_view_handled)
 {
 	if (parent)
-		parent->OnUpdateMenuRecursive();
-	OnUpdateMenu();
+		parent->onUpdateMenuRecursive();
+	onUpdateMenu();
 }
 
-void ModeBase::OnDrawWinRecursive(MultiView::Window *win)
+void ModeBase::onDrawWinRecursive(MultiView::Window *win)
 {
 	if (parent)
-		parent->OnDrawWinRecursive(win);
-	OnDrawWin(win);
+		parent->onDrawWinRecursive(win);
+	onDrawWin(win);
 }
 
-void ModeBase::OptimizeViewRecursice()
+void ModeBase::optimizeViewRecursice()
 {
-	if (OptimizeView())
+	if (optimizeView())
 		return;
 	if (parent)
-		parent->OptimizeViewRecursice();
+		parent->optimizeViewRecursice();
 }
 
 
 
-ModeBase *ModeBase::GetRoot()
+ModeBase *ModeBase::getRoot()
 {
 	if (parent)
-		return parent->GetRoot();
+		return parent->getRoot();
 	return this;
 }
 
-bool ModeBase::IsAncestorOf(ModeBase *m)
+bool ModeBase::isAncestorOf(ModeBase *m)
 {
 	if (m == this)
 		return true;
 	if (m->parent)
-		return IsAncestorOf(m->parent);
+		return isAncestorOf(m->parent);
 	return false;
 }
 
 
-ModeBase *ModeBase::GetNextChildTo(ModeBase *target)
+ModeBase *ModeBase::getNextChildTo(ModeBase *target)
 {
 	while(target){
 		if (this == target->parent)
@@ -112,41 +112,41 @@ ModeBase *ModeBase::GetNextChildTo(ModeBase *target)
 }
 
 
-bool ModeBase::EqualRoots(ModeBase *m)
+bool ModeBase::equalRoots(ModeBase *m)
 {
 	if (!m)
 		return false;
-	return GetRoot() == m->GetRoot();
+	return getRoot() == m->getRoot();
 }
 
-void ModeBase::New()
+void ModeBase::_new()
 {
 	if (parent)
-		parent->New();
+		parent->_new();
 }
 
-bool ModeBase::Save()
+bool ModeBase::save()
 {
 	if (parent)
-		return parent->Save();
+		return parent->save();
 	return true;
 }
 
 
 
-bool ModeBase::SaveAs()
+bool ModeBase::saveAs()
 {
 	if (parent)
-		return parent->SaveAs();
+		return parent->saveAs();
 	return true;
 }
 
 
 
-bool ModeBase::Open()
+bool ModeBase::open()
 {
 	if (parent)
-		return parent->Open();
+		return parent->open();
 	return true;
 }
 

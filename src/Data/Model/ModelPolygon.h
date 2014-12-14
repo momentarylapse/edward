@@ -35,8 +35,8 @@ public:
 	bool NormalDirty, TriangulationDirty;
 	int Material;
 
-	virtual bool Hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data);
-	virtual bool InRect(MultiView::Window *win, rect &r, void *user_data);
+	virtual bool hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data);
+	virtual bool inRect(MultiView::Window *win, rect &r, void *user_data);
 
 	Array<int> Triangulate(const Array<ModelVertex> &vertex) const;
 	void UpdateTriangulation(const Array<ModelVertex> &vertex);

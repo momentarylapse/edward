@@ -30,7 +30,7 @@ ModeModelSkeleton::~ModeModelSkeleton()
 
 
 
-void ModeModelSkeleton::OnCommand(const string & id)
+void ModeModelSkeleton::onCommand(const string & id)
 {
 	if (id == "skeleton_new_point")
 		ed->setMode(new ModeModelSkeletonCreateBone(ed->cur_mode));
@@ -47,24 +47,24 @@ void ModeModelSkeleton::OnCommand(const string & id)
 	}
 
 	if (id == "delete")
-		data->Execute(new ActionModelDeleteBoneSelection(data));
+		data->execute(new ActionModelDeleteBoneSelection(data));
 }
 
 
 
-void ModeModelSkeleton::OnDraw()
+void ModeModelSkeleton::onDraw()
 {
 }
 
 
 
-void ModeModelSkeleton::OnUpdateMenu()
+void ModeModelSkeleton::onUpdateMenu()
 {
 }
 
 
 
-void ModeModelSkeleton::OnStart()
+void ModeModelSkeleton::onStart()
 {
 	// relative to absolute pos
 	foreach(ModelBone &b, data->Bone)
@@ -73,8 +73,8 @@ void ModeModelSkeleton::OnStart()
 		else
 			b.pos = b.DeltaPos;
 
-	Subscribe(data);
-	Subscribe(multi_view, "SelectionChange");
+	subscribe(data);
+	subscribe(multi_view, "SelectionChange");
 
 	multi_view->ClearData(data);
 	multi_view->SetAllowRect(true);
@@ -83,23 +83,23 @@ void ModeModelSkeleton::OnStart()
 	// left -> translate
 	multi_view->SetMouseAction("ActionModelMoveBones", MultiView::ActionSelectAndMove);
 	multi_view->allow_rect = true;
-	OnUpdate(data);
+	onUpdate(data);
 }
 
 
 
-void ModeModelSkeleton::OnEnd()
+void ModeModelSkeleton::onEnd()
 {
 	multi_view->ClearData(NULL);
-	Unsubscribe(data);
-	Unsubscribe(multi_view);
+	unsubscribe(data);
+	unsubscribe(multi_view);
 }
 
 
 
-void ModeModelSkeleton::OnUpdate(Observable *o)
+void ModeModelSkeleton::onUpdate(Observable *o)
 {
-	if (o->GetName() == "Data"){
+	if (o->getName() == "Data"){
 
 		multi_view->ClearData(data);
 
@@ -108,7 +108,7 @@ void ModeModelSkeleton::OnUpdate(Observable *o)
 				data->Bone,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
-	}else if (o->GetName() == "MultiView"){
+	}else if (o->getName() == "MultiView"){
 	}
 }
 
@@ -116,8 +116,8 @@ void ModeModelSkeleton::OnUpdate(Observable *o)
 
 void DrawBone(const vector &r, const vector &d, const color &c, MultiView::Window *win)
 {
-	vector pr = win->Project(r);
-	vector pd = win->Project(d);
+	vector pr = win->project(r);
+	vector pd = win->project(d);
 	if ((pr.z>0)&&(pd.z>0)&&(pr.z<1)&&(pd.z<1)){
 		float z=(pr.z+pd.z)/2;
 		pr.z=pd.z=0;
@@ -149,7 +149,7 @@ void DrawCoordBasis(const ModelBone *b)
 	}
 }
 
-void ModeModelSkeleton::OnDrawWin(MultiView::Window *win)
+void ModeModelSkeleton::onDrawWin(MultiView::Window *win)
 {
 	mode_model_mesh_polygon->DrawPolygons(win, data->Vertex);
 
@@ -161,7 +161,7 @@ void ModeModelSkeleton::OnDrawWin(MultiView::Window *win)
 				b.model->Matrix = PointMatrix[i];
 			else
 				MatrixTranslation(b.model->Matrix, SkeletonGetPointPos(i));
-			b.model->OnDraw(0, false, false);
+			b.model->onDraw(0, false, false);
 		}
 #endif
 

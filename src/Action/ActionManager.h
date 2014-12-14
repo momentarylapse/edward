@@ -21,23 +21,23 @@ class ActionManager : public Observable
 public:
 	ActionManager(Data *_data);
 	virtual ~ActionManager();
-	void Reset();
-	void Enable(bool _enabled);
+	void reset();
+	void enable(bool _enabled);
 
-	void *Execute(Action *a);
-	void Undo();
-	void Redo();
+	void *execute(Action *a);
+	void undo();
+	void redo();
 
-	void BeginActionGroup(const string &name);
-	void EndActionGroup();
+	void beginActionGroup(const string &name);
+	void endActionGroup();
 
-	bool Preview(Action *a);
-	void ClearPreview();
+	bool preview(Action *a);
+	void clearPreview();
 
-	bool Undoable();
-	bool Redoable();
-	bool IsSave();
-	void MarkCurrentAsSave();
+	bool undoable();
+	bool redoable();
+	bool isSave();
+	void markCurrentAsSave();
 
 	string error_message;
 	string error_location;
@@ -57,7 +57,7 @@ private:
 	ActionGroup *cur_group;
 
 	// preview
-	Action *preview;
+	Action *_preview;
 };
 
 #endif /* ACTIONMANAGER_H_ */

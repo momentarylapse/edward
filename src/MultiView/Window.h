@@ -31,15 +31,15 @@ public:
 	MultiViewImpl *impl;
 	Camera *cam;
 
-	void Draw();
-	void DrawGrid();
-	vector Project(const vector &p);
-	vector Unproject(const vector &p);
-	vector Unproject(const vector &p, const vector &o);
-	vector GetDirection();
-	vector GetDirectionUp();
-	vector GetDirectionRight();
-	void GetMovingFrame(vector &dir, vector &up, vector &right);
+	void draw();
+	void drawGrid();
+	vector project(const vector &p);
+	vector unproject(const vector &p);
+	vector unproject(const vector &p, const vector &o);
+	vector getDirection();
+	vector getDirectionUp();
+	vector getDirectionRight();
+	void getMovingFrame(vector &dir, vector &up, vector &right);
 };
 
 };

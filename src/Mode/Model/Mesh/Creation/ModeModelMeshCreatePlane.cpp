@@ -26,7 +26,7 @@ ModeModelMeshCreatePlane::~ModeModelMeshCreatePlane()
 {
 }
 
-void ModeModelMeshCreatePlane::OnStart()
+void ModeModelMeshCreatePlane::onStart()
 {
 	// Dialog
 	dialog = HuiCreateResourceDialog("new_plane_dialog", ed);
@@ -40,13 +40,13 @@ void ModeModelMeshCreatePlane::OnStart()
 }
 
 
-void ModeModelMeshCreatePlane::OnEnd()
+void ModeModelMeshCreatePlane::onEnd()
 {
 	delete(dialog);
 }
 
 
-void ModeModelMeshCreatePlane::OnLeftButtonDown()
+void ModeModelMeshCreatePlane::onLeftButtonDown()
 {
 	if (pos_chosen){
 		int nx = dialog->getInt("np_num_x");
@@ -63,7 +63,7 @@ void ModeModelMeshCreatePlane::OnLeftButtonDown()
 		data->PasteGeometry(pl, mode_model_mesh->CurrentMaterial);
 		data->SelectOnlySurface(&data->Surface.back());
 
-		Abort();
+		abort();
 	}else{
 		if (multi_view->hover.index >= 0)
 			pos = data->Vertex[multi_view->hover.index].pos;
@@ -76,7 +76,7 @@ void ModeModelMeshCreatePlane::OnLeftButtonDown()
 
 
 
-void ModeModelMeshCreatePlane::OnDrawWin(MultiView::Window *win)
+void ModeModelMeshCreatePlane::onDrawWin(MultiView::Window *win)
 {
 	if (pos_chosen){
 		vector n = length[0] ^ length[1];
@@ -98,12 +98,12 @@ void ModeModelMeshCreatePlane::OnDrawWin(MultiView::Window *win)
 
 
 
-void ModeModelMeshCreatePlane::OnMouseMove()
+void ModeModelMeshCreatePlane::onMouseMove()
 {
 	if (pos_chosen){
 		vector pos2 = multi_view->GetCursor3d();
 		vector dir0, dir1, dir2;
-		multi_view->mouse_win->GetMovingFrame(dir0, dir1, dir2);
+		multi_view->mouse_win->getMovingFrame(dir0, dir1, dir2);
 		length[0] = dir1 * VecDotProduct(dir1, pos2 - pos);
 		length[1] = dir2 * VecDotProduct(dir2, pos2 - pos);
 		invert = (((length[0] ^ length[1]) * dir0) > 0);

@@ -34,16 +34,16 @@ ModelAnimationDialog::ModelAnimationDialog(HuiWindow *_parent, DataModel *_data)
 	win->event("sim_start", this, &ModelAnimationDialog::OnSimulationPlay);
 	win->event("sim_stop", this, &ModelAnimationDialog::OnSimulationStop);
 
-	Subscribe(data);
-	Subscribe(mode_model_animation);
+	subscribe(data);
+	subscribe(mode_model_animation);
 
 	LoadData();
 }
 
 ModelAnimationDialog::~ModelAnimationDialog()
 {
-	Unsubscribe(mode_model_animation);
-	Unsubscribe(data);
+	unsubscribe(mode_model_animation);
+	unsubscribe(data);
 }
 
 void ModelAnimationDialog::LoadData()
@@ -198,9 +198,9 @@ void ModelAnimationDialog::OnSimulationStop()
 	mode_model_animation->UpdateAnimation();
 }
 
-void ModelAnimationDialog::OnUpdate(Observable *o)
+void ModelAnimationDialog::onUpdate(Observable *o)
 {
-	if (o->GetName() == "Data"){
+	if (o->getName() == "Data"){
 		LoadData();
 	}else{
 		FillAnimation();

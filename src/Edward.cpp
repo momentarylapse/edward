@@ -126,18 +126,18 @@ void Edward::event() \
 		onDraw(); \
 }
 
-IMPLEMENT_EVENT(onKeyDown, OnKeyDownRecursive, , )
-IMPLEMENT_EVENT(onKeyUp, OnKeyUpRecursive, , )
-IMPLEMENT_EVENT(onMouseMove, OnMouseMoveRecursive, , )
-IMPLEMENT_EVENT(onMouseWheel, OnMouseWheelRecursive, , )
-IMPLEMENT_EVENT(onMouseEnter, OnMouseEnterRecursive, , )
-IMPLEMENT_EVENT(onMouseLeave, OnMouseLeaveRecursive, , )
-IMPLEMENT_EVENT(onLeftButtonDown, OnLeftButtonDownRecursive, , )
-IMPLEMENT_EVENT(onLeftButtonUp, OnLeftButtonUpRecursive, , )
-IMPLEMENT_EVENT(onMiddleButtonDown, OnMiddleButtonDownRecursive, , )
-IMPLEMENT_EVENT(onMiddleButtonUp, OnMiddleButtonUpRecursive, , )
-IMPLEMENT_EVENT(onRightButtonDown, OnRightButtonDownRecursive, , )
-IMPLEMENT_EVENT(onRightButtonUp, OnRightButtonUpRecursive, , )
+IMPLEMENT_EVENT(onKeyDown, onKeyDownRecursive, , )
+IMPLEMENT_EVENT(onKeyUp, onKeyUpRecursive, , )
+IMPLEMENT_EVENT(onMouseMove, onMouseMoveRecursive, , )
+IMPLEMENT_EVENT(onMouseWheel, onMouseWheelRecursive, , )
+IMPLEMENT_EVENT(onMouseEnter, onMouseEnterRecursive, , )
+IMPLEMENT_EVENT(onMouseLeave, onMouseLeaveRecursive, , )
+IMPLEMENT_EVENT(onLeftButtonDown, onLeftButtonDownRecursive, , )
+IMPLEMENT_EVENT(onLeftButtonUp, onLeftButtonUpRecursive, , )
+IMPLEMENT_EVENT(onMiddleButtonDown, onMiddleButtonDownRecursive, , )
+IMPLEMENT_EVENT(onMiddleButtonUp, onMiddleButtonUpRecursive, , )
+IMPLEMENT_EVENT(onRightButtonDown, onRightButtonDownRecursive, , )
+IMPLEMENT_EVENT(onRightButtonUp, onRightButtonUpRecursive, , )
 
 void Edward::onEvent()
 {
@@ -145,7 +145,7 @@ void Edward::onEvent()
 	if (id.num == 0)
 		id = HuiGetEvent()->message;
 	if (cur_mode)
-		cur_mode->OnCommandRecursive(id);
+		cur_mode->onCommandRecursive(id);
 	onCommand(id);
 }
 
@@ -153,7 +153,7 @@ void Edward::onAbortCreationMode()
 {
 	ModeCreationBase *m = dynamic_cast<ModeCreationBase*>(cur_mode);
 	if (m)
-		m->Abort();
+		m->abort();
 }
 
 void Edward::idleFunction()
@@ -265,12 +265,12 @@ Edward::Edward(Array<string> arg) :
 	makeDirs(RootDir,true);
 
 	// subscribe to all data to automatically redraw...
-	Subscribe(mode_model->data);
-	Subscribe(mode_material->data);
-	Subscribe(mode_world->data);
-	Subscribe(mode_font->data);
-	Subscribe(multi_view_2d);
-	Subscribe(multi_view_3d);
+	subscribe(mode_model->data);
+	subscribe(mode_material->data);
+	subscribe(mode_world->data);
+	subscribe(mode_font->data);
+	subscribe(multi_view_2d);
+	subscribe(multi_view_3d);
 
 	plugins = new PluginManager();
 
@@ -331,7 +331,7 @@ bool Edward::handleArguments(Array<string> arg)
 		if (param == "--execute"){
 			i ++;
 			if (i < arg.num){
-				plugins->Execute(arg[i]);
+				plugins->execute(arg[i]);
 			}
 			continue;
 		}
@@ -346,13 +346,13 @@ bool Edward::handleArguments(Array<string> arg)
 
 	if (ext == "model"){
 		makeDirs(param);
-		mode_model->data->Load(param, true);
+		mode_model->data->load(param, true);
 		setMode(mode_model);
 		/*if (mmodel->Skin[1].Sub[0].Triangle.num==0)
 			mmodel->SetEditMode(EditModeVertex);*/
 	}else if (ext == "material"){
 		makeDirs(param);
-		mode_material->data->Load(param, true);
+		mode_material->data->load(param, true);
 		setMode(mode_material);
 	/*}else if ((ext == "map") || (ext == "terrain")){
 		MakeDirs(param);
@@ -362,12 +362,12 @@ bool Edward::handleArguments(Array<string> arg)
 		SetMode(ModeWorld);*/
 	}else if (ext == "world"){
 		makeDirs(param);
-		mode_world->data->Load(param);
+		mode_world->data->load(param);
 		setMode(mode_world);
 		multi_view_3d->whole_window = true;
 	}else if (ext == "xfont"){
 		makeDirs(param);
-		mode_font->data->Load(param);
+		mode_font->data->load(param);
 		setMode(mode_font);
 	/*}else if (ext == "mdl"){
 		mmodel->LoadImportFromGameStudioMdl(param);
@@ -393,7 +393,7 @@ bool Edward::handleArguments(Array<string> arg)
 void Edward::optimizeCurrentView()
 {
 	if (cur_mode)
-		cur_mode->OptimizeViewRecursice();
+		cur_mode->optimizeViewRecursice();
 }
 
 
@@ -401,7 +401,7 @@ void Edward::optimizeCurrentView()
 //  -> data loss?
 bool mode_switch_allowed(ModeBase *m)
 {
-	if (m->EqualRoots(ed->cur_mode))
+	if (m->equalRoots(ed->cur_mode))
 		return true;
 	return ed->allowTermination();
 }
@@ -420,9 +420,9 @@ void Edward::setMode(ModeBase *m)
 
 	msg_db_f("SetMode", 1);
 	if (cur_mode){
-		cur_mode->OnLeave();
-		if (cur_mode->GetData())
-			Unsubscribe(cur_mode->GetData()->action_manager);
+		cur_mode->onLeave();
+		if (cur_mode->getData())
+			unsubscribe(cur_mode->getData()->action_manager);
 	}
 
 	m = mode_queue[0];
@@ -430,10 +430,10 @@ void Edward::setMode(ModeBase *m)
 
 		// close current modes
 		while(cur_mode){
-			if (cur_mode->IsAncestorOf(m))
+			if (cur_mode->isAncestorOf(m))
 				break;
 			msg_write("end " + cur_mode->name);
-			cur_mode->OnEnd();
+			cur_mode->onEnd();
 			cur_mode = cur_mode->parent;
 		}
 
@@ -442,11 +442,11 @@ void Edward::setMode(ModeBase *m)
 
 		// start new modes
 		while(cur_mode != m){
-			cur_mode = cur_mode->GetNextChildTo(m);
+			cur_mode = cur_mode->getNextChildTo(m);
 			msg_write("start " + cur_mode->name);
-			cur_mode->OnStart();
+			cur_mode->onStart();
 		}
-		cur_mode->OnEnter();
+		cur_mode->onEnter();
 
 		// nested set calls?
 		mode_queue.erase(0);
@@ -457,9 +457,9 @@ void Edward::setMode(ModeBase *m)
 
 	setMenu(HuiCreateResourceMenu(cur_mode->menu_id));
 	updateMenu();
-	cur_mode->OnEnter();
-	if (cur_mode->GetData())
-		Subscribe(cur_mode->GetData()->action_manager);
+	cur_mode->onEnter();
+	if (cur_mode->getData())
+		subscribe(cur_mode->getData()->action_manager);
 
 	forceRedraw();
 }
@@ -470,17 +470,17 @@ void Edward::onAbout()
 void Edward::onSendBugReport()
 {	HuiSendBugReport();	}
 
-void Edward::OnUpdate(Observable *o)
+void Edward::onUpdate(Observable *o)
 {
 	msg_db_f("Edward.OnUpdate", 2);
 	//msg_write("ed: " + o->GetName() + " - " + o->GetMessage());
-	if (o->GetName() == "MultiView"){
-		if (o->GetMessage() == "SettingsChange")
+	if (o->getName() == "MultiView"){
+		if (o->getMessage() == "SettingsChange")
 			updateMenu();
 		forceRedraw();
-	}else if (o->GetName() == "ActionManager"){
+	}else if (o->getName() == "ActionManager"){
 		ActionManager *am = dynamic_cast<ActionManager*>(o);
-		if (o->GetMessage() == "Failed")
+		if (o->getMessage() == "Failed")
 			errorBox(format(_("Aktion fehlgeschlagen: %s\nGrund: %s"), am->error_location.c_str(), am->error_message.c_str()));
 	}else{
 		// data...
@@ -494,7 +494,7 @@ void Edward::onExecutePlugin()
 	string temp = DialogDir[FDScript];
 	DialogDir[FDScript] = HuiAppDirectoryStatic + "Plugins/";
 	if (fileDialog(FDScript, false, false))
-		plugins->Execute(DialogFileComplete);
+		plugins->execute(DialogFileComplete);
 	DialogDir[FDScript] = temp;
 }
 
@@ -523,7 +523,7 @@ void Edward::onDraw()
 {
 	NixStart();
 	if (cur_mode){
-		cur_mode->OnDrawRecursive();
+		cur_mode->onDrawRecursive();
 	}else{
 		NixResetToColor(Black);
 		NixDrawStr(100, 100, "no mode...");
@@ -686,21 +686,21 @@ void Edward::errorBox(const string &message)
 void Edward::onCommand(const string &id)
 {
 	if (id == "model_new")
-		mode_model->New();
+		mode_model->_new();
 	if (id == "model_open")
-		mode_model->Open();
+		mode_model->open();
 	if (id == "material_new")
-		mode_material->New();
+		mode_material->_new();
 	if (id == "material_open")
-		mode_material->Open();
+		mode_material->open();
 	if (id == "world_new")
-		mode_world->New();
+		mode_world->_new();
 	if (id == "world_open")
-		mode_world->Open();
+		mode_world->open();
 	if (id == "font_new")
-		mode_font->New();
+		mode_font->_new();
 	if (id == "font_open")
-		mode_font->Open();
+		mode_font->open();
 	if (id == "administrate")
 		setMode(mode_administration);
 	if (id == "opt_view")
@@ -720,14 +720,14 @@ void Edward::updateMenu()
 {
 	if (!cur_mode)
 		return;
-	cur_mode->OnUpdateMenuRecursive();
+	cur_mode->onUpdateMenuRecursive();
 
-	Data *d = cur_mode->GetData();
+	Data *d = cur_mode->getData();
 	if (d){
-		enable("undo", d->action_manager->Undoable());
-		enable("redo", d->action_manager->Redoable());
+		enable("undo", d->action_manager->undoable());
+		enable("redo", d->action_manager->redoable());
 		string title = title_filename(d->filename) + " - " + AppName;
-		if (!d->action_manager->IsSave())
+		if (!d->action_manager->isSave())
 			title = "*" + title;
 		setTitle(title);
 		if (cur_mode->multi_view)
@@ -808,17 +808,17 @@ bool Edward::allowTermination()
 {
 	if (!cur_mode)
 		return true;
-	Data *d = cur_mode->GetData();
+	Data *d = cur_mode->getData();
 	if (!d)
 		return true;
-	if (d->action_manager->IsSave())
+	if (d->action_manager->isSave())
 		return true;
 	string answer = HuiQuestionBox(this,_("Dem&utige aber h&ofliche Frage"),_("Sie haben die Entropie erh&oht. Wollen Sie Ihr Werk speichern?"),true);
 	if (answer == "hui:cancel")
 		return false;
 	if (answer == "hui:no")
 		return true;
-	bool saved = cur_mode->Save();
+	bool saved = cur_mode->save();
 	return saved;
 }
 

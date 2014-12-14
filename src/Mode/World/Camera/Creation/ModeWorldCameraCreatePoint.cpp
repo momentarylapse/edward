@@ -20,10 +20,10 @@ ModeWorldCameraCreatePoint::~ModeWorldCameraCreatePoint()
 {
 }
 
-void ModeWorldCameraCreatePoint::OnLeftButtonDown()
+void ModeWorldCameraCreatePoint::onLeftButtonDown()
 {
 	vector pos = multi_view->GetCursor3d();
-	data->Execute(new ActionCameraAddPoint(data, pos, v_0, v_0, 1));
-	Abort();
+	data->execute(new ActionCameraAddPoint(data, pos, v_0, v_0, 1));
+	abort();
 }
 

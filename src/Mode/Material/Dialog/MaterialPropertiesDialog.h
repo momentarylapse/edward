@@ -38,7 +38,7 @@ public:
 	void RefillReflTexView();
 	void FillTextureList();
 
-	void OnUpdate(Observable *o);
+	void onUpdate(Observable *o);
 
 
 private:

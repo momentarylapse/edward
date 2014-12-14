@@ -17,9 +17,9 @@ public:
 	ModeModelMeshSplitPolygon(ModeBase *parent);
 	virtual ~ModeModelMeshSplitPolygon();
 
-	virtual void OnLeftButtonDown();
+	virtual void onLeftButtonDown();
 
-	virtual void OnDrawWin(MultiView::Window *win);
+	virtual void onDrawWin(MultiView::Window *win);
 
 private:
 	int surface, triangle;

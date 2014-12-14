@@ -23,9 +23,9 @@ ModelMaterialDialog::ModelMaterialDialog(HuiWindow *_parent, DataModel *_data) :
 {
 	data = _data;
 	temp = data->Material[mode_model_mesh->CurrentMaterial];
-	Subscribe(data);
-	Subscribe(mode_model_mesh);
-	Subscribe(mode_model_mesh_texture);
+	subscribe(data);
+	subscribe(mode_model_mesh);
+	subscribe(mode_model_mesh_texture);
 
 
 	win->setTooltip("mat_textures", _("&Ubereinanderliegende Textur-Schichten (multitexturing)\n- Doppelklick um eine Texturdatei zu w&ahlen"));
@@ -80,9 +80,9 @@ ModelMaterialDialog::ModelMaterialDialog(HuiWindow *_parent, DataModel *_data) :
 
 ModelMaterialDialog::~ModelMaterialDialog()
 {
-	Unsubscribe(mode_model_mesh_texture);
-	Unsubscribe(mode_model_mesh);
-	Unsubscribe(data);
+	unsubscribe(mode_model_mesh_texture);
+	unsubscribe(mode_model_mesh);
+	unsubscribe(data);
 }
 
 void ModelMaterialDialog::LoadData()
@@ -143,7 +143,7 @@ void ModelMaterialDialog::ApplyData()
 	temp.AlphaSource = getInt("alpha_source");
 	temp.AlphaDestination = getInt("alpha_dest");
 
-	data->Execute(new ActionModelEditMaterial(mode_model_mesh->CurrentMaterial, temp));
+	data->execute(new ActionModelEditMaterial(mode_model_mesh->CurrentMaterial, temp));
 }
 
 void ModelMaterialDialog::ApplyDataDelayed()
@@ -188,13 +188,13 @@ void ModelMaterialDialog::OnMaterialListSelect()
 
 void ModelMaterialDialog::OnAddNewMaterial()
 {
-	data->Execute(new ActionModelAddMaterial(""));
+	data->execute(new ActionModelAddMaterial(""));
 }
 
 void ModelMaterialDialog::OnAddMaterial()
 {
 	if (ed->fileDialog(FDMaterial, false, true))
-		data->Execute(new ActionModelAddMaterial(ed->DialogFileNoEnding));
+		data->execute(new ActionModelAddMaterial(ed->DialogFileNoEnding));
 }
 
 void ModelMaterialDialog::OnDeleteMaterial()
@@ -300,7 +300,7 @@ void ModelMaterialDialog::OnTransparencyMode()
 	ApplyData();
 }
 
-void ModelMaterialDialog::OnUpdate(Observable *o)
+void ModelMaterialDialog::onUpdate(Observable *o)
 {
 	LoadData();
 }

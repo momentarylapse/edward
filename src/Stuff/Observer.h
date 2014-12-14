@@ -18,11 +18,11 @@ public:
 	Observer();
 	virtual ~Observer();
 
-	void Subscribe(Observable *o);
-	void Subscribe(Observable *o, const string &message);
-	void Unsubscribe(Observable *o);
+	void subscribe(Observable *o);
+	void subscribe(Observable *o, const string &message);
+	void unsubscribe(Observable *o);
 
-	virtual void OnUpdate(Observable *o){};
+	virtual void onUpdate(Observable *o){};
 };
 
 #endif /* OBSERVER_H_ */

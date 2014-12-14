@@ -17,7 +17,7 @@ public:
 	ModeModelMeshCreateVertex(ModeBase *parent);
 	virtual ~ModeModelMeshCreateVertex();
 
-	virtual void OnLeftButtonDown();
+	virtual void onLeftButtonDown();
 };
 
 #endif /* MODEMODELMESHCREATEVERTEX_H_ */

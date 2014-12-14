@@ -37,7 +37,7 @@ ModeModel::~ModeModel()
 
 
 
-void ModeModel::OnStart()
+void ModeModel::onStart()
 {
 	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
 	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
@@ -74,13 +74,13 @@ void ModeModel::OnStart()
 
 
 
-void ModeModel::OnEnter()
+void ModeModel::onEnter()
 {
 	ed->setMode(mode_model_mesh);
 }
 
 
-void ModeModel::OnEnd()
+void ModeModel::onEnd()
 {
 	if (PropertiesDialog)
 		delete(PropertiesDialog);
@@ -93,25 +93,25 @@ void ModeModel::OnEnd()
 
 
 
-void ModeModel::OnCommand(const string & id)
+void ModeModel::onCommand(const string & id)
 {
 	if (id == "new")
-		New();
+		_new();
 	if (id == "open")
-		Open();
+		open();
 	if (id == "save")
-		Save();
+		save();
 	if (id == "save_as")
-		SaveAs();
+		saveAs();
 
 	if (id == "import_from_3ds")
 		ImportOpen3ds();
 
 	// TODO -> edward?
 	if (id == "undo")
-		data->Undo();
+		data->undo();
 	if (id == "redo")
-		data->Redo();
+		data->redo();
 
 	if (id == "mode_model_vertex")
 		ed->setMode(mode_model_mesh_vertex);
@@ -142,16 +142,16 @@ void ModeModel::OnCommand(const string & id)
 
 
 
-void ModeModel::OnUpdateMenu()
+void ModeModel::onUpdateMenu()
 {
-	ed->check("mode_model_vertex", mode_model_mesh_vertex->IsAncestorOf(ed->cur_mode));
-	ed->check("mode_model_edge", mode_model_mesh_edge->IsAncestorOf(ed->cur_mode));
-	ed->check("mode_model_triangle", mode_model_mesh_polygon->IsAncestorOf(ed->cur_mode));
-	ed->check("mode_model_surface", mode_model_mesh_surface->IsAncestorOf(ed->cur_mode));
-	ed->check("mode_model_texture_coord", mode_model_mesh_texture->IsAncestorOf(ed->cur_mode));
-	ed->check("mode_model_mesh", mode_model_mesh->IsAncestorOf(ed->cur_mode));
-	ed->check("mode_model_skeleton", mode_model_skeleton->IsAncestorOf(ed->cur_mode));
-	ed->check("mode_model_animation", mode_model_animation->IsAncestorOf(ed->cur_mode));
+	ed->check("mode_model_vertex", mode_model_mesh_vertex->isAncestorOf(ed->cur_mode));
+	ed->check("mode_model_edge", mode_model_mesh_edge->isAncestorOf(ed->cur_mode));
+	ed->check("mode_model_triangle", mode_model_mesh_polygon->isAncestorOf(ed->cur_mode));
+	ed->check("mode_model_surface", mode_model_mesh_surface->isAncestorOf(ed->cur_mode));
+	ed->check("mode_model_texture_coord", mode_model_mesh_texture->isAncestorOf(ed->cur_mode));
+	ed->check("mode_model_mesh", mode_model_mesh->isAncestorOf(ed->cur_mode));
+	ed->check("mode_model_skeleton", mode_model_skeleton->isAncestorOf(ed->cur_mode));
+	ed->check("mode_model_animation", mode_model_animation->isAncestorOf(ed->cur_mode));
 }
 
 
@@ -174,40 +174,40 @@ void ModeModel::SetMaterialCreation()
 	NixSetMaterial(Black, color(0.3f,0.3f,1,0.3f), Black, 0, color(1,0.1f,0.4f,0.1f));
 }
 
-void ModeModel::New()
+void ModeModel::_new()
 {
 	if (!ed->allowTermination())
 		return;
-	data->Reset();
+	data->reset();
 	ed->setMode(this);
-	mode_model_mesh->OptimizeView();
+	mode_model_mesh->optimizeView();
 }
 
-bool ModeModel::Open()
+bool ModeModel::open()
 {
 	if (!ed->allowTermination())
 		return false;
 	if (!ed->fileDialog(FDModel, false, false))
 		return false;
-	if (!data->Load(ed->DialogFileComplete))
+	if (!data->load(ed->DialogFileComplete))
 		return false;
 
 	ed->setMode(this);
-	mode_model_mesh->OptimizeView();
+	mode_model_mesh->optimizeView();
 	return true;
 }
 
-bool ModeModel::Save()
+bool ModeModel::save()
 {
 	if (data->filename == "")
-		return SaveAs();
-	return data->Save(data->filename);
+		return saveAs();
+	return data->save(data->filename);
 }
 
-bool ModeModel::SaveAs()
+bool ModeModel::saveAs()
 {
 	if (ed->fileDialog(FDModel, true, false))
-		return data->Save(ed->DialogFileComplete);
+		return data->save(ed->DialogFileComplete);
 	return false;
 }
 
@@ -227,7 +227,7 @@ bool ModeModel::ImportLoad3ds(const string &filename)
 		return false;
 
 	ed->setMode(this);
-	mode_model_mesh->OptimizeView();
+	mode_model_mesh->optimizeView();
 	return true;
 }
 

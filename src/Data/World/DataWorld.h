@@ -36,8 +36,8 @@ public:
 
 	bool Load(const vector &pos, const string &filename, bool deep = true);
 	bool Save(const string &filename);
-	virtual bool Hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data);
-	virtual bool InRect(MultiView::Window *win, rect &r, void *user_data);
+	virtual bool hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data);
+	virtual bool inRect(MultiView::Window *win, rect &r, void *user_data);
 	void UpdateData();
 };
 
@@ -60,8 +60,8 @@ public:
 	Object *object;
 	vector Ang;
 
-	virtual bool Hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data);
-	virtual bool InRect(MultiView::Window *win, rect &r, void *user_data);
+	virtual bool hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data);
+	virtual bool inRect(MultiView::Window *win, rect &r, void *user_data);
 	void UpdateData();
 };
 
@@ -81,9 +81,9 @@ public:
 	DataWorld();
 	virtual ~DataWorld();
 
-	void Reset();
-	bool Load(const string &_filename, bool deep = true);
-	bool Save(const string &_filename);
+	void reset();
+	bool load(const string &_filename, bool deep = true);
+	bool save(const string &_filename);
 
 
 	void GetBoundaryBox(vector &min, vector &max);

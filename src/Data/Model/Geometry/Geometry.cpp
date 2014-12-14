@@ -408,14 +408,14 @@ bool Geometry::IsMouseOver(MultiView::Window *win, vector &tp)
 {
 	foreach(ModelPolygon &p, Polygon){
 		// care for the sense of rotation?
-		if (p.TempNormal * win->GetDirection() > 0)
+		if (p.TempNormal * win->getDirection() > 0)
 			continue;
 
 		// project all points
 		Array<vector> v;
 		bool out = false;
 		for (int k=0;k<p.Side.num;k++){
-			vector pp = win->Project(Vertex[p.Side[k].Vertex].pos);
+			vector pp = win->project(Vertex[p.Side[k].Vertex].pos);
 			if ((pp.z <= 0) or (pp.z >= 1)){
 				out = true;
 				break;

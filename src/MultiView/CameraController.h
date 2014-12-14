@@ -23,15 +23,15 @@ public:
 	CameraController(MultiViewImpl *impl);
 	virtual ~CameraController();
 
-	bool IsMouseOver();
-	void OnLeftButtonDown();
-	void OnLeftButtonUp();
-	void OnMouseMove();
-	void UpdateRects();
+	bool isMouseOver();
+	void onLeftButtonDown();
+	void onLeftButtonUp();
+	void onMouseMove();
+	void updateRects();
 
 	void draw_icon(const rect &r, NixTexture *tex, bool active);
-	void Draw();
-	bool InUse();
+	void draw();
+	bool inUse();
 
 	bool show;
 	bool moving, rotating, zooming;

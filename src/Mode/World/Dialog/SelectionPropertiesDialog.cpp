@@ -20,7 +20,7 @@ SelectionPropertiesDialog::SelectionPropertiesDialog(HuiWindow *_parent, bool _a
 	event("hui:close", this, &SelectionPropertiesDialog::OnClose);
 	event("property_list", this, &SelectionPropertiesDialog::OnPropertyList);
 
-	Subscribe(data);
+	subscribe(data);
 
 	LoadData();
 }
@@ -28,7 +28,7 @@ SelectionPropertiesDialog::SelectionPropertiesDialog(HuiWindow *_parent, bool _a
 SelectionPropertiesDialog::~SelectionPropertiesDialog()
 {
 	//mode_world->SelectionDialog = NULL;
-	Unsubscribe(data);
+	unsubscribe(data);
 }
 
 void SelectionPropertiesDialog::LoadData()
@@ -84,7 +84,7 @@ void SelectionPropertiesDialog::OnClose()
 	delete(this);
 }
 
-void SelectionPropertiesDialog::OnUpdate(Observable *o)
+void SelectionPropertiesDialog::onUpdate(Observable *o)
 {
 	LoadData();
 }

@@ -19,15 +19,15 @@ ActionManager::ActionManager(Data *_data) :
 	save_pos = 0;
 	cur_group_level = 0;
 	cur_group = NULL;
-	preview = NULL;
+	_preview = NULL;
 }
 
 ActionManager::~ActionManager()
 {
-	Reset();
+	reset();
 }
 
-void ActionManager::Reset()
+void ActionManager::reset()
 {
 	foreach(Action *a, action)
 		delete(a);
@@ -38,7 +38,7 @@ void ActionManager::Reset()
 	if (cur_group)
 		delete(cur_group);
 	cur_group = NULL;
-	preview = NULL;
+	_preview = NULL;
 }
 
 
@@ -56,87 +56,87 @@ void ActionManager::add(Action *a)
 
 
 
-void *ActionManager::Execute(Action *a)
+void *ActionManager::execute(Action *a)
 {
-	ClearPreview();
+	clearPreview();
 	error_message = "";
 
 	if (cur_group)
 		return cur_group->AddSubAction(a, data);
 
 	try{
-		data->NotifyBegin();
+		data->notifyBegin();
 		void *p = a->execute_logged(data);
 		if (!a->was_trivial())
 			add(a);
 		if (!cur_group){
-			data->OnPostActionUpdate();
+			data->onPostActionUpdate();
 		}
-		data->NotifyEnd();
+		data->notifyEnd();
 		return p;
 	}catch(ActionException &e){
-		data->NotifyEnd();
+		data->notifyEnd();
 		e.add_parent(a->name());
 		error_message = e.message;
 		error_location = e.where();
 		msg_error(error_message);
 		msg_write("at " + error_location);
 		a->abort(data);
-		Notify("Failed");
+		notify("Failed");
 		return NULL;
 	}
 }
 
 
 
-void ActionManager::Undo()
+void ActionManager::undo()
 {
-	ClearPreview();
-	if (Undoable()){
-		data->NotifyBegin();
+	clearPreview();
+	if (undoable()){
+		data->notifyBegin();
 		action[-- cur_pos]->undo_logged(data);
-		data->OnPostActionUpdate();
-		data->NotifyEnd();
+		data->onPostActionUpdate();
+		data->notifyEnd();
 	}
 }
 
 
 
-void ActionManager::Redo()
+void ActionManager::redo()
 {
-	ClearPreview();
-	if (Redoable()){
-		data->NotifyBegin();
+	clearPreview();
+	if (redoable()){
+		data->notifyBegin();
 		action[cur_pos ++]->redo_logged(data);
-		data->OnPostActionUpdate();
-		data->NotifyEnd();
+		data->onPostActionUpdate();
+		data->notifyEnd();
 	}
 }
 
-bool ActionManager::Undoable()
+bool ActionManager::undoable()
 {
 	return (cur_pos > 0);
 }
 
 
 
-bool ActionManager::Redoable()
+bool ActionManager::redoable()
 {
 	return (cur_pos < action.num);
 }
 
 
 
-void ActionManager::BeginActionGroup(const string &name)
+void ActionManager::beginActionGroup(const string &name)
 {
-	ClearPreview();
+	clearPreview();
 	if (!cur_group){
 		cur_group = new ActionGroupManual(name);
 	}
 	cur_group_level ++;
 }
 
-void ActionManager::EndActionGroup()
+void ActionManager::endActionGroup()
 {
 	cur_group_level --;
 	assert(cur_group_level >= 0);
@@ -144,49 +144,49 @@ void ActionManager::EndActionGroup()
 	if (cur_group_level == 0){
 		ActionGroup *g = cur_group;
 		cur_group = NULL;
-		Execute(g);
-		data->OnPostActionUpdate();
+		execute(g);
+		data->onPostActionUpdate();
 	}
 }
 
-void ActionManager::MarkCurrentAsSave()
+void ActionManager::markCurrentAsSave()
 {
 	save_pos = cur_pos;
-	Notify("Change");
+	notify("Change");
 }
 
 
 
-bool ActionManager::IsSave()
+bool ActionManager::isSave()
 {
 	return (cur_pos == save_pos);
 }
 
 
-bool ActionManager::Preview(Action *a)
+bool ActionManager::preview(Action *a)
 {
-	ClearPreview();
+	clearPreview();
 	try{
 		a->execute_logged(data);
-		preview = a;
+		_preview = a;
 	}catch(ActionException &e){
 		e.add_parent(a->name());
 		error_message = e.message;
 		error_location = e.where();
 		a->abort(data);
 		delete(a);
-		Notify("Failed");
+		notify("Failed");
 		return false;
 	}
 	return true;
 }
 
 
-void ActionManager::ClearPreview()
+void ActionManager::clearPreview()
 {
-	if (preview){
-		preview->undo_logged(data);
-		delete(preview);
-		preview = NULL;
+	if (_preview){
+		_preview->undo_logged(data);
+		delete(_preview);
+		_preview = NULL;
 	}
 }

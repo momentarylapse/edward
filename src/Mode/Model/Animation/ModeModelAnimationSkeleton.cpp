@@ -24,7 +24,7 @@ ModeModelAnimationSkeleton::~ModeModelAnimationSkeleton()
 {
 }
 
-void ModeModelAnimationSkeleton::OnStart()
+void ModeModelAnimationSkeleton::onStart()
 {
 	multi_view->ClearData(NULL);
 
@@ -35,25 +35,25 @@ void ModeModelAnimationSkeleton::OnStart()
 //	multi_view->SetMouseAction(2, "ActionModelAnimationRotateBones", MultiView::ActionRotate2d);
 	multi_view->allow_rect = true;
 
-	Subscribe(data);
-	Subscribe(multi_view, "SelectionChange");
-	OnUpdate(data);
+	subscribe(data);
+	subscribe(multi_view, "SelectionChange");
+	onUpdate(data);
 }
 
-void ModeModelAnimationSkeleton::OnEnd()
+void ModeModelAnimationSkeleton::onEnd()
 {
-	Unsubscribe(data);
-	Unsubscribe(multi_view);
+	unsubscribe(data);
+	unsubscribe(multi_view);
 	multi_view->ClearData(NULL);
 }
 
-void ModeModelAnimationSkeleton::OnCommand(const string& id)
+void ModeModelAnimationSkeleton::onCommand(const string& id)
 {
 }
 
-void ModeModelAnimationSkeleton::OnUpdate(Observable* o)
+void ModeModelAnimationSkeleton::onUpdate(Observable* o)
 {
-	if (o->GetName() == "Data"){
+	if (o->getName() == "Data"){
 
 		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
@@ -62,17 +62,17 @@ void ModeModelAnimationSkeleton::OnUpdate(Observable* o)
 				data->Bone,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect);
-	}else if (o->GetName() == "MultiView"){
+	}else if (o->getName() == "MultiView"){
 	}
 }
 
-void ModeModelAnimationSkeleton::OnUpdateMenu()
+void ModeModelAnimationSkeleton::onUpdateMenu()
 {
 }
 
-void ModeModelAnimationSkeleton::OnDrawWin(MultiView::Window *win)
+void ModeModelAnimationSkeleton::onDrawWin(MultiView::Window *win)
 {
-	mode_model_skeleton->OnDrawWin(win);
+	mode_model_skeleton->onDrawWin(win);
 #if 0
 	NixSetZ(false, false);
 	NixEnableLighting(false);

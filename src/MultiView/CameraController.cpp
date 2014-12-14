@@ -36,7 +36,7 @@ CameraController::~CameraController()
 {
 }
 
-void CameraController::UpdateRects()
+void CameraController::updateRects()
 {
 	r = rect(NixTargetWidth - CC_MARGIN - 3 * CC_RADIUS - 4 * CC_BORDER,
 	         NixTargetWidth - CC_MARGIN,
@@ -65,15 +65,15 @@ void CameraController::UpdateRects()
 	              NixTargetHeight / 2 + CC_RADIUS / 2);
 }
 
-bool CameraController::IsMouseOver()
+bool CameraController::isMouseOver()
 {
-	UpdateRects();
+	updateRects();
 	return (show && (r.inside(impl->m.x, impl->m.y))) || r2.inside(impl->m.x, impl->m.y);
 }
 
-void CameraController::OnLeftButtonDown()
+void CameraController::onLeftButtonDown()
 {
-	UpdateRects();
+	updateRects();
 	if (r_show.inside(impl->m.x, impl->m.y))
 		show = !show;
 	moving = r_move.inside(impl->m.x, impl->m.y);
@@ -81,12 +81,12 @@ void CameraController::OnLeftButtonDown()
 	zooming = r_zoom.inside(impl->m.x, impl->m.y);
 }
 
-void CameraController::OnLeftButtonUp()
+void CameraController::onLeftButtonUp()
 {
 	moving = rotating = zooming = false;
 }
 
-void CameraController::OnMouseMove()
+void CameraController::onMouseMove()
 {
 	if (moving)
 		impl->CamMove(impl->v);
@@ -111,9 +111,9 @@ void CameraController::draw_icon(const rect &rr, NixTexture *tex, bool active)
 	}
 }
 
-void CameraController::Draw()
+void CameraController::draw()
 {
-	UpdateRects();
+	updateRects();
 	//NixEnableLighting(true);
 	NixSetAlpha(AlphaMaterial);
 
@@ -141,7 +141,7 @@ void CameraController::Draw()
 	NixEnableLighting(false);
 }
 
-bool CameraController::InUse()
+bool CameraController::inUse()
 {
 	return (moving || rotating || zooming);
 }

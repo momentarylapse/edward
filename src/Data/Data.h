@@ -23,19 +23,19 @@ public:
 	Data(int _type);
 	virtual ~Data();
 
-	virtual void Reset() = 0;
-	virtual bool Load(const string &_filename, bool deep = true) = 0;
-	virtual bool Save(const string &_filename) = 0;
+	virtual void reset() = 0;
+	virtual bool load(const string &_filename, bool deep = true) = 0;
+	virtual bool save(const string &_filename) = 0;
 
-	void ResetHistory();
-	void *Execute(Action *a);
-	void BeginActionGroup(const string &name);
-	void EndActionGroup();
-	void Undo();
-	void Redo();
+	void resetHistory();
+	void *execute(Action *a);
+	void beginActionGroup(const string &name);
+	void endActionGroup();
+	void undo();
+	void redo();
 
-	virtual void OnPostActionUpdate(){}
-	virtual bool TestSanity(const string &loc){	return true;	}
+	virtual void onPostActionUpdate(){}
+	virtual bool testSanity(const string &loc){	return true;	}
 
 	string filename;
 	int file_time;

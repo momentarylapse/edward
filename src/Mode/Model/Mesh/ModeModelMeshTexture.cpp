@@ -64,7 +64,7 @@ int ModeModelMeshTexture::GetNumSelected()
 }
 
 
-void ModeModelMeshTexture::OnStart()
+void ModeModelMeshTexture::onStart()
 {
 	multi_view->view_stage = ed->multi_view_3d->view_stage;
 	mode_model_mesh->ApplyRightMouseFunction(multi_view);
@@ -72,8 +72,8 @@ void ModeModelMeshTexture::OnStart()
 
 	FetchData();
 
-	Observer::Subscribe(data);
-	Observer::Subscribe(multi_view, "SelectionChange");
+	Observer::subscribe(data);
+	Observer::subscribe(multi_view, "SelectionChange");
 
 	/*ed->SetTarget("root_table", 0);
 	ed->AddControlTable("", 1, 0, 1, 5, "side_table");
@@ -85,23 +85,23 @@ void ModeModelMeshTexture::OnStart()
 
 
 
-void ModeModelMeshTexture::OnEnd()
+void ModeModelMeshTexture::onEnd()
 {
-	Observer::Unsubscribe(data);
-	Observer::Unsubscribe(multi_view);
+	Observer::unsubscribe(data);
+	Observer::unsubscribe(multi_view);
 	skin_vertex.clear();
 }
 
 #define cur_tex			data->Material[mode_model_mesh->CurrentMaterial].Texture[CurrentTextureLevel]
 
 
-void ModeModelMeshTexture::OnDrawWin(MultiView::Window *win)
+void ModeModelMeshTexture::onDrawWin(MultiView::Window *win)
 {
 	rect s,r;
 	color c;
 
-	vector a = win->Unproject(v_0);
-	vector b = win->Unproject(vector((float)MaxX,(float)MaxY,0));
+	vector a = win->unproject(v_0);
+	vector b = win->unproject(vector((float)MaxX,(float)MaxY,0));
 
 	s.x1=a.x;
 	s.x2=b.x;
@@ -132,8 +132,8 @@ void ModeModelMeshTexture::OnDrawWin(MultiView::Window *win)
 	NixSetAlphaM(AlphaNone);
 
 	// rectangle of unity
-	a = win->Project(v_0);
-	b = win->Project(vector(1, 1, 0));
+	a = win->project(v_0);
+	b = win->project(vector(1, 1, 0));
 	NixSetColor(Red);
 	NixDrawLine(a.x, a.y, b.x, a.y, 0.98f);
 	NixDrawLine(b.x, a.y, b.x, b.y, 0.98f);
@@ -150,7 +150,7 @@ void ModeModelMeshTexture::OnDrawWin(MultiView::Window *win)
 				continue;
 			Array<vector> v;
 			for (int k=0;k<t.Side.num;k++)
-				v.add(win->Project(t.Side[k].SkinVertex[CurrentTextureLevel]));
+				v.add(win->project(t.Side[k].SkinVertex[CurrentTextureLevel]));
 			v.add(v[0]);
 			for (int k=0;k<t.Side.num;k++)
 				NixDrawLine(	v[k].x,v[k].y,
@@ -161,7 +161,7 @@ void ModeModelMeshTexture::OnDrawWin(MultiView::Window *win)
 
 
 
-void ModeModelMeshTexture::OnDraw()
+void ModeModelMeshTexture::onDraw()
 {
 	if (data->GetNumSelectedVertices() > 0){
 		ed->drawStr(20, 160, format(_("skin: %d"), GetNumSelected()));
@@ -174,18 +174,18 @@ void ModeModelMeshTexture::SetCurrentTextureLevel(int level)
 	//	return;
 	CurrentTextureLevel = level;
 	FetchData();
-	Notify("Change");
+	notify("Change");
 }
 
-void ModeModelMeshTexture::OnUpdate(Observable *o)
+void ModeModelMeshTexture::onUpdate(Observable *o)
 {
 	// consistency checks
 	if (CurrentTextureLevel >= data->Material[mode_model_mesh->CurrentMaterial].NumTextures)
 		SetCurrentTextureLevel(data->Material[mode_model_mesh->CurrentMaterial].NumTextures - 1);
 
-	if (o->GetName() == "Data"){
+	if (o->getName() == "Data"){
 
-		if (o->GetMessage() == "SkinChange"){
+		if (o->getMessage() == "SkinChange"){
 			int svi = 0;
 			foreach(ModelSurface &surf, data->Surface)
 				foreach(ModelPolygon &t, surf.Polygon){
@@ -194,14 +194,14 @@ void ModeModelMeshTexture::OnUpdate(Observable *o)
 					for (int k=0;k<t.Side.num;k++)
 						skin_vertex[svi ++].pos = t.Side[k].SkinVertex[CurrentTextureLevel];
 				}
-		}else if (o->GetMessage() == "Change"){
+		}else if (o->getMessage() == "Change"){
 
 			FetchData();
 		}
-	}else if (o->GetName() == "MultiView"){
+	}else if (o->getName() == "MultiView"){
 		//data->SelectionTrianglesFromVertices();
 		//data->SelectionSurfacesFromTriangles();
-	}else if (o->GetName() == "ModelMesg"){
+	}else if (o->getName() == "ModelMesg"){
 	}
 	//mode_model_mesh_triangle->FillSelectionBuffers();
 }

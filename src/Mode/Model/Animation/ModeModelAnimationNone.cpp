@@ -22,36 +22,36 @@ ModeModelAnimationNone::~ModeModelAnimationNone()
 {
 }
 
-void ModeModelAnimationNone::OnStart()
+void ModeModelAnimationNone::onStart()
 {
 	multi_view->ClearData(NULL);
 	multi_view->allow_rect = false;
 
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	OnUpdate(data);
+	onUpdate(data);
 }
 
-void ModeModelAnimationNone::OnEnd()
+void ModeModelAnimationNone::onEnd()
 {
 	multi_view->ClearData(NULL);
 }
 
-void ModeModelAnimationNone::OnCommand(const string& id)
+void ModeModelAnimationNone::onCommand(const string& id)
 {
 }
 
-void ModeModelAnimationNone::OnUpdate(Observable* o)
+void ModeModelAnimationNone::onUpdate(Observable* o)
 {
 	mode_model_mesh_polygon->FillSelectionBuffers(mode_model_animation->vertex);
 }
 
-void ModeModelAnimationNone::OnUpdateMenu()
+void ModeModelAnimationNone::onUpdateMenu()
 {
 }
 
-void ModeModelAnimationNone::OnDrawWin(MultiView::Window *win)
+void ModeModelAnimationNone::onDrawWin(MultiView::Window *win)
 {
-	mode_model_mesh_polygon->OnDrawWin(win);
+	mode_model_mesh_polygon->onDrawWin(win);
 }
 
 

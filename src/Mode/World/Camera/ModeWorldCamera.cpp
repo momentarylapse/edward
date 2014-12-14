@@ -51,7 +51,7 @@ ModeWorldCamera::~ModeWorldCamera()
 	delete(inter_ang);
 }
 
-void ModeWorldCamera::OnStart()
+void ModeWorldCamera::onStart()
 {
 	dialog = new CameraDialog(ed, this);
 
@@ -81,19 +81,19 @@ void ModeWorldCamera::OnStart()
 
 	multi_view->ResetMouseAction();
 
-	Observer::Subscribe(data);
-	Observer::Subscribe(multi_view);
+	Observer::subscribe(data);
+	Observer::subscribe(multi_view);
 	LoadData();
 }
 
-void ModeWorldCamera::OnEnd()
+void ModeWorldCamera::onEnd()
 {
-	Observer::Unsubscribe(data);
-	Observer::Unsubscribe(multi_view);
+	Observer::unsubscribe(data);
+	Observer::unsubscribe(multi_view);
 	delete(dialog);
 	multi_view->ClearData(data);
 
-	parent->OnStart();
+	parent->onStart();
 }
 
 void ModeWorldCamera::AddPoint()
@@ -129,14 +129,14 @@ void ModeWorldCamera::SetEditVel(bool edit)
 {
 	edit_vel = edit;
 	LoadData();
-	Notify("Change");
+	notify("Change");
 }
 
 void ModeWorldCamera::SetEditAng(bool edit)
 {
 	edit_ang = edit;
 	LoadData();
-	Notify("Change");
+	notify("Change");
 }
 
 void ModeWorldCamera::PreviewStart()
@@ -145,7 +145,7 @@ void ModeWorldCamera::PreviewStart()
 	preview = true;
 	multi_view->cam.ignore_radius = true;
 	HuiRunLaterM(0.020f, this, &ModeWorldCamera::PreviewUpdate);
-	Notify("Change");
+	notify("Change");
 }
 
 void ModeWorldCamera::PreviewStop()
@@ -153,7 +153,7 @@ void ModeWorldCamera::PreviewStop()
 	preview = false;
 	multi_view->cam.ignore_radius = false;
 	ed->forceRedraw();
-	Notify("Change");
+	notify("Change");
 }
 
 void ModeWorldCamera::PreviewUpdate()
@@ -168,35 +168,35 @@ void ModeWorldCamera::PreviewUpdate()
 		PreviewStop();
 	if (preview)
 		HuiRunLaterM(0.050f, this, &ModeWorldCamera::PreviewUpdate);
-	Notify("Change");
+	notify("Change");
 }
 
-void ModeWorldCamera::OnCommand(const string &id)
+void ModeWorldCamera::onCommand(const string &id)
 {
 	if (id == "cam_undo")
-		data->action_manager->Undo();
+		data->action_manager->undo();
 	if (id == "cam_redo")
-		data->action_manager->Redo();
+		data->action_manager->redo();
 
 	if (id == "cam_new")
-		New();
+		_new();
 	if (id == "cam_open")
-		Open();
+		open();
 	if (id == "cam_save")
-		Save();
+		save();
 	if (id == "cam_save_as")
-		SaveAs();
+		saveAs();
 }
 
-void ModeWorldCamera::OnUpdateMenu()
+void ModeWorldCamera::onUpdateMenu()
 {
-	ed->enable("cam_undo", data->action_manager->Undoable());
-	ed->enable("cam_redo", data->action_manager->Redoable());
+	ed->enable("cam_undo", data->action_manager->undoable());
+	ed->enable("cam_redo", data->action_manager->redoable());
 }
 
-void ModeWorldCamera::OnUpdate(Observable *obs)
+void ModeWorldCamera::onUpdate(Observable *obs)
 {
-	if (obs->GetMessage() == "Change"){
+	if (obs->getMessage() == "Change"){
 		data->UpdateVel();
 		LoadData();
 	}
@@ -204,7 +204,7 @@ void ModeWorldCamera::OnUpdate(Observable *obs)
 
 void ModeWorldCamera::LoadData()
 {
-	OnUpdateMenu();
+	onUpdateMenu();
 
 	*inter_pos = data->BuildPosInterpolator();
 	*inter_ang = data->BuildAngInterpolator();
@@ -230,7 +230,7 @@ void ModeWorldCamera::LoadData()
 	ed->forceRedraw();
 }
 
-void ModeWorldCamera::OnDrawWin(MultiView::Window *win)
+void ModeWorldCamera::onDrawWin(MultiView::Window *win)
 {
 	NixEnableLighting(false);
 	NixSetWorldMatrix(m_id);
@@ -261,32 +261,32 @@ void ModeWorldCamera::OnDrawWin(MultiView::Window *win)
 
 }
 
-void ModeWorldCamera::New()
+void ModeWorldCamera::_new()
 {
 	if (ed->allowTermination())
-		data->Reset();
+		data->reset();
 }
 
-bool ModeWorldCamera::Open()
+bool ModeWorldCamera::open()
 {
 	if (ed->allowTermination())
 		if (ed->fileDialog(FDCameraFlight, false, true))
-			return data->Load(ed->DialogFileComplete);
+			return data->load(ed->DialogFileComplete);
 	return false;
 }
 
-bool ModeWorldCamera::Save()
+bool ModeWorldCamera::save()
 {
 	if (data->filename.num > 0)
-		return data->Save(data->filename);
+		return data->save(data->filename);
 	else
-		return SaveAs();
+		return saveAs();
 }
 
-bool ModeWorldCamera::SaveAs()
+bool ModeWorldCamera::saveAs()
 {
 	if (ed->fileDialog(FDCameraFlight, true, true))
-		return data->Save(ed->DialogFileComplete);
+		return data->save(ed->DialogFileComplete);
 	return false;
 }
 

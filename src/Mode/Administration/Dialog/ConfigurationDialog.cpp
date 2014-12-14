@@ -28,12 +28,12 @@ ConfigurationDialog::ConfigurationDialog(HuiWindow* _parent, bool _allow_parent,
 	event("find_default_font", this, &ConfigurationDialog::OnFindDefaultFont);
 
 	LoadData();
-	Subscribe(data);
+	subscribe(data);
 }
 
 ConfigurationDialog::~ConfigurationDialog()
 {
-	Unsubscribe(data);
+	unsubscribe(data);
 }
 
 void ConfigurationDialog::LoadData()
@@ -57,7 +57,7 @@ void ConfigurationDialog::LoadData()
 	setString("rootdir",ed->RootDir);
 }
 
-void ConfigurationDialog::OnUpdate(Observable *o)
+void ConfigurationDialog::onUpdate(Observable *o)
 {
 }
 

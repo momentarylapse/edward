@@ -24,45 +24,45 @@ ModeModelMeshVertex::~ModeModelMeshVertex()
 {
 }
 
-void ModeModelMeshVertex::OnStart()
+void ModeModelMeshVertex::onStart()
 {
-	Subscribe(data);
-	Subscribe(multi_view, "SelectionChange");
+	subscribe(data);
+	subscribe(multi_view, "SelectionChange");
 	mode_model_mesh->ApplyRightMouseFunction(multi_view);
 	multi_view->allow_rect = true;
-	OnUpdate(data);
+	onUpdate(data);
 }
 
-void ModeModelMeshVertex::OnEnd()
+void ModeModelMeshVertex::onEnd()
 {
-	Unsubscribe(data);
-	Unsubscribe(multi_view);
+	unsubscribe(data);
+	unsubscribe(multi_view);
 }
 
 
 
-void ModeModelMeshVertex::OnDrawWin(MultiView::Window *win)
+void ModeModelMeshVertex::onDrawWin(MultiView::Window *win)
 {
-	mode_model_mesh_polygon->OnDrawWin(win);
+	mode_model_mesh_polygon->onDrawWin(win);
 	DrawEffects(win);
 }
 
 
 
-void ModeModelMeshVertex::OnDraw()
+void ModeModelMeshVertex::onDraw()
 {
 }
 
-void ModeModelMeshVertex::OnUpdate(Observable *o)
+void ModeModelMeshVertex::onUpdate(Observable *o)
 {
-	if (o->GetName() == "Data"){
+	if (o->getName() == "Data"){
 		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		multi_view->AddData(	MVDModelVertex,
 				data->Vertex,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
-	}else if (o->GetName() == "MultiView"){
+	}else if (o->getName() == "MultiView"){
 		data->SelectionFromVertices();
 	}
 	mode_model_mesh_polygon->FillSelectionBuffers(data->Vertex);
@@ -72,7 +72,7 @@ void ModeModelMeshVertex::DrawEffects(MultiView::Window *win)
 {
 	NixEnableLighting(false);
 	foreach(ModelEffect &fx, data->Fx){
-		vector p = win->Project(data->Vertex[fx.Vertex].pos);
+		vector p = win->project(data->Vertex[fx.Vertex].pos);
 		if ((p.z > 0) && (p.z < 1))
 			ed->drawStr(p.x, p.y, fx.get_type());
 	}

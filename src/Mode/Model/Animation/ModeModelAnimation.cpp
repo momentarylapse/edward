@@ -48,7 +48,7 @@ ModeModelAnimation::~ModeModelAnimation()
 
 
 
-void ModeModelAnimation::OnCommand(const string & id)
+void ModeModelAnimation::onCommand(const string & id)
 {
 	if (id == "move_frame_inc")
 		SetCurrentFrameNext();
@@ -62,7 +62,7 @@ void ModeModelAnimation::OnCommand(const string & id)
 
 
 
-void ModeModelAnimation::OnStart()
+void ModeModelAnimation::onStart()
 {
 	TimeScale = 1;
 	TimeParam = 0;
@@ -74,26 +74,26 @@ void ModeModelAnimation::OnStart()
 	dialog = new ModelAnimationDialog(ed, data);
 
 	UpdateAnimation();
-	Observer::Subscribe(data);
-	OnUpdate(data);
+	Observer::subscribe(data);
+	onUpdate(data);
 
 	timer.reset();
 	HuiRunLaterM(0.200f, this, &ModeModelAnimation::IdleFunction);
 
 	ed->setMode(mode_model_animation_none);
-	Notify("Change");
+	notify("Change");
 }
 
 
-void ModeModelAnimation::OnUpdateMenu()
+void ModeModelAnimation::onUpdateMenu()
 {
 }
 
 
 
-void ModeModelAnimation::OnEnd()
+void ModeModelAnimation::onEnd()
 {
-	Observer::Unsubscribe(data);
+	Observer::unsubscribe(data);
 	delete(dialog);
 }
 
@@ -123,7 +123,7 @@ void ModeModelAnimation::SetCurrentFrame(int frame_no)
 	if ((frame_no >= 0) && (frame_no < move->Frame.num)){
 		CurrentFrame = frame_no;
 		UpdateAnimation();
-		Notify("Change");
+		notify("Change");
 	}
 }
 
@@ -232,7 +232,7 @@ void ModeModelAnimation::IterateAnimation(float dt)
 	}
 }
 
-void ModeModelAnimation::OnUpdate(Observable *o)
+void ModeModelAnimation::onUpdate(Observable *o)
 {
 	msg_write("..up");
 	UpdateAnimation();
@@ -243,18 +243,18 @@ void ModeModelAnimation::OnUpdate(Observable *o)
 
 
 
-void ModeModelAnimation::OnDraw()
+void ModeModelAnimation::onDraw()
 {
 	IterateAnimation(timer.get());
 }
 
-void ModeModelAnimation::OnDrawWin(MultiView::Window *win)
+void ModeModelAnimation::onDrawWin(MultiView::Window *win)
 {
 }
 
 void ModeModelAnimation::IdleFunction()
 {
-	if (!IsAncestorOf(ed->cur_mode))
+	if (!isAncestorOf(ed->cur_mode))
 		return;
 	ed->forceRedraw();
 	if (Playing)

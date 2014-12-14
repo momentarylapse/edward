@@ -28,7 +28,7 @@ ModeModelMeshCreateCylinder::~ModeModelMeshCreateCylinder()
 		delete(geo);
 }
 
-void ModeModelMeshCreateCylinder::OnStart()
+void ModeModelMeshCreateCylinder::onStart()
 {
 	dialog = HuiCreateResourceDialog("new_cylinder_dialog",ed);
 
@@ -42,7 +42,7 @@ void ModeModelMeshCreateCylinder::OnStart()
 }
 
 
-void ModeModelMeshCreateCylinder::OnEnd()
+void ModeModelMeshCreateCylinder::onEnd()
 {
 	delete(dialog);
 }
@@ -63,7 +63,7 @@ void ModeModelMeshCreateCylinder::UpdateGeometry()
 	}
 }
 
-void ModeModelMeshCreateCylinder::OnMouseMove()
+void ModeModelMeshCreateCylinder::onMouseMove()
 {
 	if (pos.num == 2){
 		vector p = multi_view->GetCursor3d(pos.back());
@@ -77,7 +77,7 @@ void ModeModelMeshCreateCylinder::OnMouseMove()
 
 
 
-void ModeModelMeshCreateCylinder::OnLeftButtonDown()
+void ModeModelMeshCreateCylinder::onLeftButtonDown()
 {
 	if (pos.num == 2){
 
@@ -85,7 +85,7 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 		data->PasteGeometry(*geo, mode_model_mesh->CurrentMaterial);
 		data->SelectOnlySurface(&data->Surface.back());
 
-		Abort();
+		abort();
 	}else{
 		if (multi_view->hover.index >= 0)
 			pos.add(data->Vertex[multi_view->hover.index].pos);
@@ -103,14 +103,14 @@ void ModeModelMeshCreateCylinder::OnLeftButtonDown()
 	}
 }
 
-void ModeModelMeshCreateCylinder::OnDrawWin(MultiView::Window *win)
+void ModeModelMeshCreateCylinder::onDrawWin(MultiView::Window *win)
 {
 	if (pos.num > 0){
 		NixEnableLighting(false);
 		NixSetColor(Green);
 		// control polygon
 		for (int i=0;i<pos.num;i++){
-			vector pp = win->Project(pos[i]);
+			vector pp = win->project(pos[i]);
 			NixDrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
 		}
 		if (pos.num == 2)

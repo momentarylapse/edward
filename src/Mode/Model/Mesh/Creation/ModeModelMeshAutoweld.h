@@ -17,10 +17,10 @@ public:
 	ModeModelMeshAutoweld(ModeBase *_parent);
 	virtual ~ModeModelMeshAutoweld();
 
-	virtual void OnStart();
-	virtual void OnEnd();
+	virtual void onStart();
+	virtual void onEnd();
 
-	virtual void OnDrawWin(MultiView::Window *win);
+	virtual void onDrawWin(MultiView::Window *win);
 
 	void OnSlider();
 	void OnCancel();

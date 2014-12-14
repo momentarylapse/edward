@@ -27,7 +27,7 @@ TerrainHeightmapDialog::TerrainHeightmapDialog(HuiWindow *_parent, bool _allow_p
 
 	enable("ok", false);
 
-	Subscribe(data);
+	subscribe(data);
 
 	stretch_x = 1;
 	stretch_z = 1;
@@ -36,7 +36,7 @@ TerrainHeightmapDialog::TerrainHeightmapDialog(HuiWindow *_parent, bool _allow_p
 
 TerrainHeightmapDialog::~TerrainHeightmapDialog()
 {
-	Unsubscribe(data);
+	unsubscribe(data);
 }
 
 void TerrainHeightmapDialog::ApplyData()
@@ -66,7 +66,7 @@ void TerrainHeightmapDialog::OnFindFilter()
 
 
 
-void TerrainHeightmapDialog::OnUpdate(Observable *o)
+void TerrainHeightmapDialog::onUpdate(Observable *o)
 {
 }
 
@@ -129,7 +129,7 @@ void TerrainHeightmapDialog::OnOk()
 {
 	float height_factor = getFloat("height_factor");
 	bool additive = isChecked("height_op:add");
-	data->Execute(new ActionWorldTerrainApplyHeightmap(data, heightmap_file, height_factor, stretch_x, stretch_z, filter_file));//, additive));
+	data->execute(new ActionWorldTerrainApplyHeightmap(data, heightmap_file, height_factor, stretch_x, stretch_z, filter_file));//, additive));
 	delete(this);
 }
 

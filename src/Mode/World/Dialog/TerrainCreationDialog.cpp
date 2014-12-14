@@ -24,14 +24,14 @@ TerrainCreationDialog::TerrainCreationDialog(HuiWindow *_parent, bool _allow_par
 	event("terrain_x", this, &TerrainCreationDialog::OnSizeChange);
 	event("terrain_y", this, &TerrainCreationDialog::OnSizeChange);
 
-	Subscribe(data);
+	subscribe(data);
 
 	LoadData();
 }
 
 TerrainCreationDialog::~TerrainCreationDialog()
 {
-	Unsubscribe(data);
+	unsubscribe(data);
 }
 
 void TerrainCreationDialog::ApplyData()
@@ -52,7 +52,7 @@ void TerrainCreationDialog::LoadData()
 
 
 
-void TerrainCreationDialog::OnUpdate(Observable *o)
+void TerrainCreationDialog::onUpdate(Observable *o)
 {
 }
 

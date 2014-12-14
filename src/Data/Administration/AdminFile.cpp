@@ -204,7 +204,7 @@ void AdminFile::check(AdminFileList &list)
 	Array<s_admin_link> l;
 	if (Kind==FDWorld){
 		DataWorld w;
-		if (w.Load(MapDir + Name, false)){
+		if (w.load(MapDir + Name, false)){
 			Time = w.file_time;
 			for (int i=0;i<w.Terrains.num;i++)
 				add_possible_link(l, FDTerrain, w.Terrains[i].FileName);
@@ -227,7 +227,7 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FDModel){
 		DataModel m;
-		if (m.Load(ObjectDir + Name,false)){
+		if (m.load(ObjectDir + Name,false)){
 			Time = m.file_time;
 			for (int i=0;i<m.Bone.num;i++)
 				add_possible_link(l, FDModel, m.Bone[i].ModelFile);
@@ -249,7 +249,7 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FDMaterial){
 		DataMaterial m;
-		if (m.Load(MaterialDir + Name,false)){
+		if (m.load(MaterialDir + Name,false)){
 			Time = m.file_time;
 			add_possible_link(l, FDShaderFile, m.Appearance.ShaderFile);
 			if (m.Appearance.ReflectionMode==ReflectionCubeMapStatic)
@@ -261,7 +261,7 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FDFont){
 		DataFont f;
-		if (f.Load(Gui::FontDir + Name,false)){
+		if (f.load(Gui::FontDir + Name,false)){
 			Time = f.file_time;
 			add_possible_link(l, FDTexture, f.global.TextureFile);
 		}else

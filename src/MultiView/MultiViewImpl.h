@@ -48,21 +48,21 @@ public:
 	MultiViewImpl(bool _mode3d);
 	virtual ~MultiViewImpl();
 
-	void OnMouseMove();
-	void OnMouseWheel();
-	void OnMouseEnter();
-	void OnMouseLeave();
-	void OnLeftButtonDown();
-	void OnLeftButtonUp();
-	void OnMiddleButtonDown();
-	void OnMiddleButtonUp();
-	void OnRightButtonDown();
-	void OnRightButtonUp();
-	void OnKeyDown();
-	void OnKeyUp();
-	void OnCommand(const string &id);
+	void onMouseMove();
+	void onMouseWheel();
+	void onMouseEnter();
+	void onMouseLeave();
+	void onLeftButtonDown();
+	void onLeftButtonUp();
+	void onMiddleButtonDown();
+	void onMiddleButtonUp();
+	void onRightButtonDown();
+	void onRightButtonUp();
+	void onKeyDown();
+	void onKeyUp();
+	void onCommand(const string &id);
 
-	void OnDraw();
+	void onDraw();
 	void DrawMousePos();
 	void ToggleWholeWindow();
 	void ToggleGrid();

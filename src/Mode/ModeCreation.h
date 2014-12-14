@@ -15,8 +15,8 @@ class ModeCreationBase : public ModeBase
 public:
 	ModeCreationBase(const string &_name, ModeBase *_parent);
 	virtual ~ModeCreationBase(){}
-	virtual void OnDrawRecursive(bool multi_view_handled = false);
-	virtual void Abort();
+	virtual void onDrawRecursive(bool multi_view_handled = false);
+	virtual void abort();
 	string message;
 	HuiWindow *dialog;
 };
@@ -28,11 +28,11 @@ public:
 	ModeCreation(const string &_name, ModeBase *_parent) :
 		ModeCreationBase(_name, _parent)
 	{
-		data = (T*)_parent->GetData();
+		data = (T*)_parent->getData();
 	}
 	virtual ~ModeCreation(){}
 	T *data;
-	virtual Data *GetData(){	return data;	}
+	virtual Data *getData(){	return data;	}
 };
 
 #endif /* MODECREATION_H_ */

@@ -21,17 +21,17 @@ public:
 	ModeModelMesh(ModeBase *parent);
 	virtual ~ModeModelMesh();
 
-	virtual void OnStart();
-	virtual void OnEnter();
-	virtual void OnEnd();
+	virtual void onStart();
+	virtual void onEnter();
+	virtual void onEnd();
 
-	virtual void OnCommand(const string &id);
-	virtual void OnUpdate(Observable *o);
-	virtual void OnUpdateMenu();
+	virtual void onCommand(const string &id);
+	virtual void onUpdate(Observable *o);
+	virtual void onUpdateMenu();
 
-	virtual void OnDraw();
+	virtual void onDraw();
 
-	virtual bool OptimizeView();
+	virtual bool optimizeView();
 
 	void Easify();
 

@@ -17,11 +17,11 @@ public:
 	ModeAdministration();
 	virtual ~ModeAdministration();
 
-	virtual void OnStart();
-	virtual void OnEnd();
+	virtual void onStart();
+	virtual void onEnd();
 
-	virtual void OnCommand(const string &id);
-	virtual void OnUpdate(Observable *o);
+	virtual void onCommand(const string &id);
+	virtual void onUpdate(Observable *o);
 
 	void BasicSettings();
 	void ExportGame();
