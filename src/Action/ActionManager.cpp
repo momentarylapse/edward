@@ -152,7 +152,8 @@ void ActionManager::endActionGroup()
 void ActionManager::markCurrentAsSave()
 {
 	save_pos = cur_pos;
-	notify("Change");
+	msg_write("...send saved");
+	notify("Saved");
 }
 
 

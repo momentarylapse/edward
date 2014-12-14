@@ -266,6 +266,7 @@ Edward::Edward(Array<string> arg) :
 
 	// subscribe to all data to automatically redraw...
 	subscribe(mode_model->data);
+	subscribe(mode_model->data->action_manager);
 	subscribe(mode_material->data);
 	subscribe(mode_world->data);
 	subscribe(mode_font->data);
@@ -479,9 +480,12 @@ void Edward::onUpdate(Observable *o)
 			updateMenu();
 		forceRedraw();
 	}else if (o->getName() == "ActionManager"){
+		msg_write("am: " + o->getMessage());
 		ActionManager *am = dynamic_cast<ActionManager*>(o);
 		if (o->getMessage() == "Failed")
 			errorBox(format(_("Aktion fehlgeschlagen: %s\nGrund: %s"), am->error_location.c_str(), am->error_message.c_str()));
+		else if (o->getMessage() == "Saved")
+			setMessage(_("Gespeichert!"));
 	}else{
 		// data...
 		forceRedraw();

@@ -194,7 +194,6 @@ bool DataWorld::save(const string & _filename)
 
 	delete(f);
 
-	ed->setMessage(_("Gespeichert!"));
 	action_manager->markCurrentAsSave();
 	return true;
 }

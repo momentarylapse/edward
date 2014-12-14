@@ -1364,7 +1364,7 @@ bool DataModel::save(const string & _filename)
 	f->WriteComment("#");
 	FileClose(f);
 
-	ed->setMessage(_("Gespeichert!"));
+	msg_write("...mark as saved");
 	action_manager->markCurrentAsSave();
 	return true;
 }

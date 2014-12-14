@@ -78,7 +78,6 @@ bool DataMaterial::save(const string & _filename)
 	f->Close();
 	delete(f);
 
-	ed->setMessage(_("Gespeichert!"));
 	action_manager->markCurrentAsSave();
 	return true;
 }
