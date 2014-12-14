@@ -30,7 +30,7 @@ void ModeModelMeshVertex::onStart()
 	subscribe(multi_view, "SelectionChange");
 	mode_model_mesh->ApplyRightMouseFunction(multi_view);
 	multi_view->allow_rect = true;
-	onUpdate(data);
+	onUpdate(data, "");
 }
 
 void ModeModelMeshVertex::onEnd()
@@ -53,7 +53,7 @@ void ModeModelMeshVertex::onDraw()
 {
 }
 
-void ModeModelMeshVertex::onUpdate(Observable *o)
+void ModeModelMeshVertex::onUpdate(Observable *o, const string &message)
 {
 	if (o->getName() == "Data"){
 		multi_view->ClearData(data);

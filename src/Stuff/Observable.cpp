@@ -8,6 +8,27 @@
 #include "Observable.h"
 #include "Observer.h"
 
+const string Observable::MESSAGE_ALL = "";
+const string Observable::MESSAGE_CHANGE = "Change";
+const string Observable::MESSAGE_DELETE = "Delete";
+const bool Observable::DEBUG_MESSAGES = false;
+
+
+struct ObserverRequest
+{
+	ObserverRequest(){}
+	ObserverRequest(Observer *o, const string &_message)
+	{
+		observer = o;
+		message = &_message;
+	}
+	Observer* observer;
+	const string *message;
+};
+
+typedef ObserverRequest Notification;
+
+
 Observable::Observable(const string &name)
 {
 	notify_level = 0;
@@ -16,27 +37,37 @@ Observable::Observable(const string &name)
 
 Observable::~Observable()
 {
-	observer.clear();
+	notify(MESSAGE_DELETE);
 }
 
-void Observable::subscribe(Observer *o, const string &message)
+void Observable::addObserver(Observer *o, const string &message)
 {
-	observer.add(o);
-	observer_message.add(message);
+	requests.add(ObserverRequest(o, message));
 }
 
-void Observable::subscribe(Observer *o)
-{	subscribe(o, "");	}
-
-
-
-void Observable::unsubscribe(Observer *o)
+void Observable::removeObserver(Observer *o)
 {
-	foreachi(Observer *obs, observer, i)
-		if (obs == o){
-			observer.erase(i);
-			observer_message.erase(i);
-			break;
+	for (int i=requests.num-1; i>=0; i--)
+		if (requests[i].observer == o){
+			requests.erase(i);
+		}
+}
+
+void Observable::addWrappedObserver(void* handler, void* func)
+{
+	Observer *o = new ObserverWrapper(handler, func);
+	addObserver(o, MESSAGE_ALL);
+}
+
+void Observable::removeWrappedObserver(void* handler)
+{
+	foreachi(ObserverRequest &r, requests, i)
+		if (dynamic_cast<ObserverWrapper*>(r.observer)){
+			if (dynamic_cast<ObserverWrapper*>(r.observer)->handler == handler){
+				delete(r.observer);
+				requests.erase(i);
+				break;
+			}
 		}
 }
 
@@ -45,51 +76,51 @@ void Observable::unsubscribe(Observer *o)
 string Observable::getName()
 {	return observable_name;	}
 
-
-
-string Observable::getMessage()
-{	return cur_message;	}
-
-
 void Observable::notifySend()
 {
-	// send
-	foreach(string &m, message_queue){
-		cur_message = m;
-		//msg_write("send " + observable_name + ": " + m);
+	Array<Notification> notifications;
 
-		// foreachi(Observer *o, observer, i) might break when OnUpdate causes
-		// new subscription!
-
-		for (int i=0;i<observer.num;i++)
-			if ((observer_message[i] == m) or (observer_message[i].num == 0))
-				observer[i]->onUpdate(this);
+	// decide whom to send what
+	foreach(const string *m, message_queue){
+		//msg_write("send " + observable_name + ": " + *m);
+		foreach(ObserverRequest &r, requests){
+			if ((r.message == m) or (r.message == &MESSAGE_ALL))
+				notifications.add(Notification(r.observer, *m));
+		}
 	}
 
-	// clear queue
 	message_queue.clear();
+
+	// send
+	foreach(Notification &n, notifications){
+		if (DEBUG_MESSAGES)
+			msg_write("send " + getName() + "/" + *n.message + "  >>  " + n.observer->getName());
+		n.observer->onUpdate(this, *n.message);
+	}
 }
 
 
 void Observable::notifyEnqueue(const string &message)
 {
 	// already enqueued?
-	foreach(string &m, message_queue)
-		if (message == m)
+	foreach(const string *m, message_queue)
+		if (&message == m)
 			return;
 
 	// add
-	message_queue.add(message);
+	message_queue.add(&message);
 }
 
 void Observable::notifyBegin()
 {
 	notify_level ++;
+	//msg_write("notify ++");
 }
 
 void Observable::notifyEnd()
 {
 	notify_level --;
+	//msg_write("notify --");
 	if (notify_level == 0)
 		notifySend();
 }
@@ -101,4 +132,5 @@ void Observable::notify(const string &message)
 	if (notify_level == 0)
 		notifySend();
 }
+
 

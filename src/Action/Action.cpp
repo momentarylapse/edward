@@ -29,6 +29,11 @@ Action::~Action()
 {
 }
 
+const string &Action::message()
+{
+	return Observable::MESSAGE_CHANGE;
+}
+
 void* Action::execute_logged(Data* d)
 {
 #ifdef ACTION_DEBUG

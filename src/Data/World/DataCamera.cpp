@@ -23,7 +23,7 @@ void DataCamera::reset()
 	Point.clear();
 	Vel.clear();
 	resetHistory();
-	notify("Change");
+	notify();
 }
 
 bool DataCamera::load(const string& _filename, bool deep)
@@ -82,7 +82,7 @@ bool DataCamera::load(const string& _filename, bool deep)
 	delete(f);
 	UpdateVel();
 	resetHistory();
-	notify("Change");
+	notify();
 	return !Error;
 }
 

@@ -167,7 +167,7 @@ void ModeFont::onStart()
 
 	dialog = new FontDialog(ed, data);
 
-	onUpdate(data);
+	onUpdate(data, "");
 }
 
 
@@ -178,7 +178,7 @@ void ModeFont::onMouseMove()
 
 
 
-void ModeFont::onUpdate(Observable *o)
+void ModeFont::onUpdate(Observable *o, const string &message)
 {
 	data->UpdateTexture();
 	data->ApplyFont(font);

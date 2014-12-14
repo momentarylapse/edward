@@ -44,7 +44,7 @@ void ModeModelAnimationSkeleton::onStart()
 
 	subscribe(data);
 	subscribe(multi_view, "SelectionChange");
-	onUpdate(data);
+	onUpdate(data, "");
 }
 
 void ModeModelAnimationSkeleton::onEnd()
@@ -77,7 +77,7 @@ void ModeModelAnimationSkeleton::ChooseMouseFunction(int f)
 	}
 }
 
-void ModeModelAnimationSkeleton::onUpdate(Observable* o)
+void ModeModelAnimationSkeleton::onUpdate(Observable* o, const string &message)
 {
 	if (o->getName() == "Data"){
 

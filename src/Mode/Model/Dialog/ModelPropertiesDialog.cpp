@@ -23,7 +23,8 @@ extern matrix3 InertiaTensorTemp;
 extern float DetailDistTemp1, DetailDistTemp2, DetailDistTemp3;
 
 ModelPropertiesDialog::ModelPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data):
-	HuiWindow("model_dialog", _parent, _allow_parent)
+	HuiWindow("model_dialog", _parent, _allow_parent),
+	Observer("ModelPropertiesDialog")
 {
 	data = _data;
 
@@ -109,7 +110,7 @@ void ModelPropertiesDialog::FillTensorList()
 	addString("tensor", format("Z\\%.2f\\%.2f\\%.2f", temp.InertiaTensor._20, temp.InertiaTensor._21, temp.InertiaTensor._22));
 }
 
-void ModelPropertiesDialog::onUpdate(Observable *o)
+void ModelPropertiesDialog::onUpdate(Observable *o, const string &message)
 {
 	//FillMaterialList();
 	temp = data->meta_data;

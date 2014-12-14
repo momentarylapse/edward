@@ -99,7 +99,7 @@ void ModeWelcome::onMouseMove()
 }
 
 
-void ModeWelcome::onUpdate(Observable *o)
+void ModeWelcome::onUpdate(Observable *o, const string &message)
 {
 }
 

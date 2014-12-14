@@ -12,7 +12,8 @@
 
 
 ModelAnimationDialog::ModelAnimationDialog(HuiWindow *_parent, DataModel *_data) :
-	EmbeddedDialog(_parent, "animation_dialog", "root-table", 1, 0, "noexpandx")
+	EmbeddedDialog(_parent, "animation_dialog", "root-table", 1, 0, "noexpandx"),
+	Observer("ModelAnimationDialog")
 {
 	data = _data;
 
@@ -198,7 +199,7 @@ void ModelAnimationDialog::OnSimulationStop()
 	mode_model_animation->UpdateAnimation();
 }
 
-void ModelAnimationDialog::onUpdate(Observable *o)
+void ModelAnimationDialog::onUpdate(Observable *o, const string &message)
 {
 	if (o->getName() == "Data"){
 		LoadData();

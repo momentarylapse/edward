@@ -262,6 +262,11 @@ void *ActionModelAutomap::execute(Data *d)
 	return NULL;
 }
 
+const string &ActionModelAutomap::message()
+{
+	return DataModel::MESSAGE_SKIN_CHANGE;
+}
+
 void ActionModelAutomap::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);

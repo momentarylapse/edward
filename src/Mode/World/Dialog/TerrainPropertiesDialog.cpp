@@ -16,7 +16,8 @@
 string file_secure(const string &filename); // -> ModelPropertiesDialog
 
 TerrainPropertiesDialog::TerrainPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data, int _index) :
-	HuiWindow("terrain_dialog", _parent, _allow_parent)
+	HuiWindow("terrain_dialog", _parent, _allow_parent),
+	Observer("TerrainPropertiesDialog")
 {
 	data = _data;
 	index = _index;
@@ -41,7 +42,7 @@ TerrainPropertiesDialog::TerrainPropertiesDialog(HuiWindow *_parent, bool _allow
 
 	subscribe(data);
 
-	onUpdate(data);
+	onUpdate(data, "");
 }
 
 TerrainPropertiesDialog::~TerrainPropertiesDialog()
@@ -207,7 +208,7 @@ void TerrainPropertiesDialog::OnClearTextureLevel()
 	FillTextureList();
 }
 
-void TerrainPropertiesDialog::onUpdate(Observable *o)
+void TerrainPropertiesDialog::onUpdate(Observable *o, const string &message)
 {
 	if (index >= data->Terrains.num){
 		delete(this);

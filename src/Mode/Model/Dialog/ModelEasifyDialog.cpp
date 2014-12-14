@@ -10,7 +10,8 @@
 #include "../../../Edward.h"
 
 ModelEasifyDialog::ModelEasifyDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data):
-	HuiWindow("easify_dialog", _parent, _allow_parent)
+	HuiWindow("easify_dialog", _parent, _allow_parent),
+	Observer("ModelEasifyDialog")
 {
 
 	data = _data;
@@ -60,7 +61,7 @@ void ModelEasifyDialog::OnOk()
 	delete(this);
 }
 
-void ModelEasifyDialog::onUpdate(Observable* o)
+void ModelEasifyDialog::onUpdate(Observable* o, const string &message)
 {
 	LoadData();
 }

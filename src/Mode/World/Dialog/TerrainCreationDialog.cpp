@@ -9,7 +9,8 @@
 #include "../../../Edward.h"
 
 TerrainCreationDialog::TerrainCreationDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
-	HuiWindow("new_terrain_dialog", _parent, _allow_parent)
+	HuiWindow("new_terrain_dialog", _parent, _allow_parent),
+	Observer("TerrainCreationDialog")
 {
 	data = _data;
 
@@ -52,7 +53,7 @@ void TerrainCreationDialog::LoadData()
 
 
 
-void TerrainCreationDialog::onUpdate(Observable *o)
+void TerrainCreationDialog::onUpdate(Observable *o, const string &message)
 {
 }
 

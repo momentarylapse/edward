@@ -34,7 +34,7 @@ void ModeModelAnimationVertex::onStart()
 
 	subscribe(data);
 	subscribe(multi_view, "SelectionChange");
-	onUpdate(data);
+	onUpdate(data, "");
 }
 
 void ModeModelAnimationVertex::onEnd()
@@ -48,7 +48,7 @@ void ModeModelAnimationVertex::onCommand(const string& id)
 {
 }
 
-void ModeModelAnimationVertex::onUpdate(Observable* o)
+void ModeModelAnimationVertex::onUpdate(Observable* o, const string &message)
 {
 	if (o->getName() == "Data"){
 		UpdateVertices();

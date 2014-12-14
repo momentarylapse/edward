@@ -24,7 +24,7 @@ public:
 
 	virtual void onDrawWin(MultiView::Window *win);
 
-	void onUpdate(Observable *o);
+	void onUpdate(Observable *o, const string &message);
 
 private:
 	int bone_index;

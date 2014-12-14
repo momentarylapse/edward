@@ -11,6 +11,9 @@
 #include "../Data/Data.h"
 #include <assert.h>
 
+const string ActionManager::MESSAGE_FAILED = "Failed";
+const string ActionManager::MESSAGE_SAVED = "Saved";
+
 ActionManager::ActionManager(Data *_data) :
 	Observable("ActionManager")
 {
@@ -82,7 +85,7 @@ void *ActionManager::execute(Action *a)
 		msg_error(error_message);
 		msg_write("at " + error_location);
 		a->abort(data);
-		notify("Failed");
+		notify(MESSAGE_FAILED);
 		return NULL;
 	}
 }
@@ -152,8 +155,7 @@ void ActionManager::endActionGroup()
 void ActionManager::markCurrentAsSave()
 {
 	save_pos = cur_pos;
-	msg_write("...send saved");
-	notify("Saved");
+	notify(MESSAGE_SAVED);
 }
 
 
@@ -176,7 +178,7 @@ bool ActionManager::preview(Action *a)
 		error_location = e.where();
 		a->abort(data);
 		delete(a);
-		notify("Failed");
+		notify(MESSAGE_FAILED);
 		return false;
 	}
 	return true;

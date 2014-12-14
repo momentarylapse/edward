@@ -45,6 +45,8 @@
 #include "../../Action/Model/Animation/ActionModelAnimationAddFrame.h"
 #include "../../Action/Model/Animation/ActionModelAnimationDeleteFrame.h"
 
+const string DataModel::MESSAGE_SELECTION = "Selection";
+const string DataModel::MESSAGE_SKIN_CHANGE = "SkinChange";
 
 
 string ModelEffect::get_type()
@@ -148,7 +150,7 @@ void DataModel::reset()
 	meta_data.Reset();
 
 	resetHistory();
-	notify("Change");
+	notify();
 }
 
 void DataModel::DebugShow()
@@ -1364,7 +1366,6 @@ bool DataModel::save(const string & _filename)
 	f->WriteComment("#");
 	FileClose(f);
 
-	msg_write("...mark as saved");
 	action_manager->markCurrentAsSave();
 	return true;
 }
@@ -1428,7 +1429,7 @@ void DataModel::ClearSelection()
 		foreach(ModelEdge &e, s.Edge)
 			e.is_selected = false;
 	}
-	notify("Selection");
+	notify(MESSAGE_SELECTION);
 }
 
 void DataModel::SelectionFromSurfaces()
@@ -1443,7 +1444,7 @@ void DataModel::SelectionFromSurfaces()
 		foreach(ModelEdge &e, s.Edge)
 			e.is_selected = s.is_selected;
 	}
-	notify("Selection");
+	notify(MESSAGE_SELECTION);
 }
 
 void DataModel::SelectionFromPolygons()
@@ -1465,7 +1466,7 @@ void DataModel::SelectionFromPolygons()
 		foreach(ModelPolygon &t, s.Polygon)
 			s.is_selected &= t.is_selected;
 	}
-	notify("Selection");
+	notify(MESSAGE_SELECTION);
 }
 
 void DataModel::SelectionFromEdges()
@@ -1486,7 +1487,7 @@ void DataModel::SelectionFromEdges()
 		foreach(ModelEdge &e, s.Edge)
 			s.is_selected &= e.is_selected;
 	}
-	notify("Selection");
+	notify(MESSAGE_SELECTION);
 }
 
 void DataModel::SelectionFromVertices()
@@ -1507,7 +1508,7 @@ void DataModel::SelectionFromVertices()
 			s.is_selected &= t.is_selected;
 		}
 	}
-	notify("Selection");
+	notify(MESSAGE_SELECTION);
 }
 
 void DataModel::SelectOnlySurface(ModelSurface *s)
@@ -1972,7 +1973,7 @@ void DataModel::SetSelectionState(ModelSelectionState& s)
 			if (ne >= 0)
 				Surface[i].Edge[ne].is_selected = true;
 		}
-	notify("Selection");
+	notify(MESSAGE_SELECTION);
 }
 
 

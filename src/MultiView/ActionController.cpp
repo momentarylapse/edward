@@ -54,7 +54,7 @@ void ActionController::startAction()
 			pos0 = multi_view->hover.point;
 		cur_action = ActionMultiViewFactory(action.name, data);
 		cur_action->execute_logged(data);
-		multi_view->notify("ActionStart");
+		multi_view->notify(multi_view->MESSAGE_ACTION_START);
 	}
 }
 
@@ -148,7 +148,7 @@ void ActionController::updateAction()
 
 	update();
 
-	multi_view->notify("ActionUpdate");
+	multi_view->notify(multi_view->MESSAGE_ACTION_UPDATE);
 }
 
 
@@ -161,11 +161,11 @@ void ActionController::endAction(bool set)
 	if (set){
 		cur_action->undo(data);
 		data->execute(cur_action);
-		multi_view->notify("ActionExecute");
+		multi_view->notify(multi_view->MESSAGE_ACTION_EXECUTE);
 	}else{
 		cur_action->abort_and_notify(data);
 		delete(cur_action);
-		multi_view->notify("ActionAbort");
+		multi_view->notify(multi_view->MESSAGE_ACTION_ABORT);
 	}
 	cur_action = NULL;
 }

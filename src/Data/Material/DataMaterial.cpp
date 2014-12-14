@@ -234,7 +234,7 @@ bool DataMaterial::load(const string & _filename, bool deep)
 		UpdateTextures();
 
 	resetHistory();
-	notify("Change");
+	notify();
 	return !error;
 }
 
@@ -305,7 +305,7 @@ void DataMaterial::reset()
 
 
 	resetHistory();
-	notify("Change");
+	notify();
 }
 
 

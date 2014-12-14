@@ -9,7 +9,8 @@
 #include "../../../Edward.h"
 
 SelectionPropertiesDialog::SelectionPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data, int *_selected_type, int *_selected_index):
-	HuiWindow("world_ps_dialog", _parent, _allow_parent)
+	HuiWindow("world_ps_dialog", _parent, _allow_parent),
+	Observer("SelectionPropertiesDialog")
 {
 	data = _data;
 	selected_index = _selected_index;
@@ -84,7 +85,7 @@ void SelectionPropertiesDialog::OnClose()
 	delete(this);
 }
 
-void SelectionPropertiesDialog::onUpdate(Observable *o)
+void SelectionPropertiesDialog::onUpdate(Observable *o, const string &message)
 {
 	LoadData();
 }

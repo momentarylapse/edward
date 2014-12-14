@@ -22,7 +22,8 @@
 #include <assert.h>
 
 AdministrationDialog::AdministrationDialog(HuiWindow* _parent, bool _allow_parent, DataAdministration *_data):
-	HuiWindow("ad_dialog", _parent, _allow_parent)
+	HuiWindow("ad_dialog", _parent, _allow_parent),
+	Observer("AdministrationDialog")
 {
 	data = _data;
 	file_list.resize(6);
@@ -59,7 +60,7 @@ void AdministrationDialog::LoadData()
 	FillAdminList(5, "file_list_missing");
 }
 
-void AdministrationDialog::onUpdate(Observable* o)
+void AdministrationDialog::onUpdate(Observable* o, const string &message)
 {
 	LoadData();
 }

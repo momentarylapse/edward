@@ -47,7 +47,10 @@ void *ActionModelSkinVerticesFromProjection::execute(Data *d)
 	return NULL;
 }
 
-
+const string& ActionModelSkinVerticesFromProjection::message()
+{
+	return DataModel::MESSAGE_SKIN_CHANGE;
+}
 
 void ActionModelSkinVerticesFromProjection::undo(Data *d)
 {

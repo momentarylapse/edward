@@ -18,7 +18,8 @@
 #define WorldFogDec				6
 
 WorldPropertiesDialog::WorldPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
-	HuiWindow("world_dialog", _parent, _allow_parent)
+	HuiWindow("world_dialog", _parent, _allow_parent),
+	Observer("WorldPropertiesDialog")
 {
 	data = _data;
 
@@ -203,7 +204,7 @@ void WorldPropertiesDialog::FillSkyboxList()
 
 
 
-void WorldPropertiesDialog::onUpdate(Observable *o)
+void WorldPropertiesDialog::onUpdate(Observable *o, const string &message)
 {
 	temp = data->meta_data;
 	LoadData();

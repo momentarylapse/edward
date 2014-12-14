@@ -28,7 +28,7 @@ public:
 	virtual void onMouseMove();
 	virtual void onLeftButtonDown();
 	virtual void onCommand(const string &id);
-	virtual void onUpdate(Observable *o);
+	virtual void onUpdate(Observable *o, const string &message);
 	virtual void onUpdateMenu();
 
 	virtual void onDraw();

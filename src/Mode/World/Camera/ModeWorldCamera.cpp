@@ -129,14 +129,14 @@ void ModeWorldCamera::SetEditVel(bool edit)
 {
 	edit_vel = edit;
 	LoadData();
-	notify("Change");
+	notify();
 }
 
 void ModeWorldCamera::SetEditAng(bool edit)
 {
 	edit_ang = edit;
 	LoadData();
-	notify("Change");
+	notify();
 }
 
 void ModeWorldCamera::PreviewStart()
@@ -145,7 +145,7 @@ void ModeWorldCamera::PreviewStart()
 	preview = true;
 	multi_view->cam.ignore_radius = true;
 	HuiRunLaterM(0.020f, this, &ModeWorldCamera::PreviewUpdate);
-	notify("Change");
+	notify();
 }
 
 void ModeWorldCamera::PreviewStop()
@@ -153,7 +153,7 @@ void ModeWorldCamera::PreviewStop()
 	preview = false;
 	multi_view->cam.ignore_radius = false;
 	ed->forceRedraw();
-	notify("Change");
+	notify();
 }
 
 void ModeWorldCamera::PreviewUpdate()
@@ -168,7 +168,7 @@ void ModeWorldCamera::PreviewUpdate()
 		PreviewStop();
 	if (preview)
 		HuiRunLaterM(0.050f, this, &ModeWorldCamera::PreviewUpdate);
-	notify("Change");
+	notify();
 }
 
 void ModeWorldCamera::onCommand(const string &id)
@@ -194,9 +194,9 @@ void ModeWorldCamera::onUpdateMenu()
 	ed->enable("cam_redo", data->action_manager->redoable());
 }
 
-void ModeWorldCamera::onUpdate(Observable *obs)
+void ModeWorldCamera::onUpdate(Observable *o, const string &message)
 {
-	if (obs->getMessage() == "Change"){
+	if (message == data->MESSAGE_CHANGE){
 		data->UpdateVel();
 		LoadData();
 	}

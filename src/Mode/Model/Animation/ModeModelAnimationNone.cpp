@@ -28,7 +28,7 @@ void ModeModelAnimationNone::onStart()
 	multi_view->allow_rect = false;
 
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	onUpdate(data);
+	onUpdate(data, "");
 }
 
 void ModeModelAnimationNone::onEnd()
@@ -40,7 +40,7 @@ void ModeModelAnimationNone::onCommand(const string& id)
 {
 }
 
-void ModeModelAnimationNone::onUpdate(Observable* o)
+void ModeModelAnimationNone::onUpdate(Observable* o, const string &message)
 {
 	mode_model_mesh_polygon->FillSelectionBuffers(mode_model_animation->vertex);
 }

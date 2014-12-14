@@ -20,7 +20,7 @@ public:
 
 	void LoadData();
 
-	void onUpdate(Observable *o);
+	void onUpdate(Observable *o, const string &message);
 
 	void OnClose();
 	void OnFindRootdir();

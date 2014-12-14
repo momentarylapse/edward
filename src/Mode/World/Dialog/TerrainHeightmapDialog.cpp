@@ -10,7 +10,8 @@
 #include "../../../Edward.h"
 
 TerrainHeightmapDialog::TerrainHeightmapDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
-	HuiWindow("terrain_heightmap_dialog", _parent, _allow_parent)
+	HuiWindow("terrain_heightmap_dialog", _parent, _allow_parent),
+	Observer("TerrainHeightmapDialog")
 {
 	data = _data;
 
@@ -66,7 +67,7 @@ void TerrainHeightmapDialog::OnFindFilter()
 
 
 
-void TerrainHeightmapDialog::onUpdate(Observable *o)
+void TerrainHeightmapDialog::onUpdate(Observable *o, const string &message)
 {
 }
 

@@ -336,7 +336,7 @@ bool DataWorld::load(const string & _filename, bool deep)
 		CreateLightMap(true);
 	}*/
 	resetHistory();
-	notify("Change");
+	notify();
 
 	return !Error;
 }
@@ -412,7 +412,7 @@ void DataWorld::reset()
 	meta_data.Reset();
 
 	resetHistory();
-	notify("Change");
+	notify();
 }
 
 

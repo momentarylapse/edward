@@ -18,7 +18,8 @@ string file_secure(const string &filename); // -> ModelPropertiesDialog
 extern string NixShaderError; // -> nix
 
 MaterialPropertiesDialog::MaterialPropertiesDialog(HuiWindow *_parent, DataMaterial *_data):
-	EmbeddedDialog(_parent, "material_dialog", "root-table", 1, 0, "noexpandx")
+	EmbeddedDialog(_parent, "material_dialog", "root-table", 1, 0, "noexpandx"),
+	Observer("MaterialPropertiesDialog")
 {
 	data = _data;
 
@@ -118,7 +119,7 @@ MaterialPropertiesDialog::~MaterialPropertiesDialog()
 	unsubscribe(data);
 }
 
-void MaterialPropertiesDialog::onUpdate(Observable *o)
+void MaterialPropertiesDialog::onUpdate(Observable *o, const string &message)
 {
 	temp = data->Appearance;
 	temp_phys = data->Physics;

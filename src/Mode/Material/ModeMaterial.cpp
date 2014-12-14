@@ -72,7 +72,7 @@ void ModeMaterial::onDraw()
 
 
 
-void ModeMaterial::onUpdate(Observable *o)
+void ModeMaterial::onUpdate(Observable *o, const string &message)
 {
 	if (o->getName() == "Data"){
 		data->UpdateTextures();

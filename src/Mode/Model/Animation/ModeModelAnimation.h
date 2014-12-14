@@ -14,7 +14,7 @@
 class DataModel;
 class ModelAnimationDialog;
 
-class ModeModelAnimation: public Mode<DataModel>, public Observable, public HuiEventHandler
+class ModeModelAnimation: public Mode<DataModel>, public Observable
 {
 public:
 	ModeModelAnimation(ModeBase *parent);
@@ -24,7 +24,7 @@ public:
 	virtual void onEnd();
 
 	virtual void onCommand(const string &id);
-	virtual void onUpdate(Observable *o);
+	virtual void onUpdate(Observable *o, const string &message);
 	virtual void onUpdateMenu();
 
 	virtual void onDraw();

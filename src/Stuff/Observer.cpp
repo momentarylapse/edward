@@ -6,10 +6,10 @@
  */
 
 #include "Observer.h"
-#include "Observable.h"
 
-Observer::Observer()
+Observer::Observer(const string &name)
 {
+	observer_name = name;
 }
 
 Observer::~Observer()
@@ -20,17 +20,42 @@ Observer::~Observer()
 
 void Observer::subscribe(Observable *o, const string &message)
 {
-	o->subscribe(this, message);
-}
-
-void Observer::subscribe(Observable *o)
-{
-	o->subscribe(this);
+	o->addObserver(this, message);
 }
 
 void Observer::unsubscribe(Observable *o)
 {
-	o->unsubscribe(this);
+	o->removeObserver(this);
 }
 
+string Observer::getName()
+{
+	return observer_name;
+}
+
+
+
+
+ObserverWrapper::ObserverWrapper(void *_handler, void *_func) :
+	Observer("Wrapper")
+{
+	handler = _handler;
+	func = _func;
+}
+
+ObserverWrapper::~ObserverWrapper()
+{}
+
+void ObserverWrapper::onUpdate(Observable *o, const string &message)
+{
+	if (handler){
+		typedef void mfunct(void *);
+		mfunct *f = (mfunct*)func;
+		f(handler);
+	}else{
+		typedef void funct();
+		funct *f = (funct*)func;
+		f();
+	}
+}
 

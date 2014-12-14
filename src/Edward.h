@@ -82,7 +82,7 @@ public:
 	void onSendBugReport();
 	void setMode(ModeBase *m);
 
-	void onUpdate(Observable *o);
+	void onUpdate(Observable *o, const string &message);
 	void onCommand(const string &id);
 	void onClose();
 

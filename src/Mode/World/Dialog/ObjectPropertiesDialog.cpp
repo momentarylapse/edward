@@ -10,7 +10,8 @@
 #include <assert.h>
 
 ObjectPropertiesDialog::ObjectPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data, int _index) :
-	HuiWindow("world_object_dialog", _parent, _allow_parent)
+	HuiWindow("world_object_dialog", _parent, _allow_parent),
+	Observer("ObjectPropertiesDialog")
 {
 	data = _data;
 	index = _index;
@@ -71,7 +72,7 @@ void ObjectPropertiesDialog::OnFindObject()
 
 
 
-void ObjectPropertiesDialog::onUpdate(Observable *o)
+void ObjectPropertiesDialog::onUpdate(Observable *o, const string &message)
 {
 	LoadData();
 }

@@ -13,7 +13,8 @@
 bool SettingDialogData=true;
 
 FontDialog::FontDialog(HuiWindow *_parent, DataFont *_data) :
-	EmbeddedDialog(_parent, "font_dialog", "root-table", 1, 0, "noexpandx")
+	EmbeddedDialog(_parent, "font_dialog", "root-table", 1, 0, "noexpandx"),
+	Observer("FontDialog")
 {
 	data = _data;
 	SettingData = false;
@@ -124,7 +125,7 @@ void FontDialog::OnWidth()
 	ApplyGlyphData();
 }
 
-void FontDialog::onUpdate(Observable *o)
+void FontDialog::onUpdate(Observable *o, const string &message)
 {
 	LoadData();
 }

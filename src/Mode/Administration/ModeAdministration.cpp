@@ -43,7 +43,7 @@ void ModeAdministration::onCommand(const string& id)
 		BasicSettings();
 }
 
-void ModeAdministration::onUpdate(Observable* o)
+void ModeAdministration::onUpdate(Observable* o, const string &message)
 {
 }
 

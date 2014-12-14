@@ -279,7 +279,7 @@ void ModeWorld::onMouseMove()
 
 
 
-void ModeWorld::onUpdate(Observable *o)
+void ModeWorld::onUpdate(Observable *o, const string &message)
 {
 	if (o->getName() == "Data"){
 		data->UpdateData();
@@ -517,7 +517,7 @@ void ModeWorld::onStart()
 	multi_view->SetAllowRect(true);
 	SetMouseAction(MultiView::ActionSelect);
 
-	onUpdate(data);
+	onUpdate(data, "");
 }
 
 void ModeWorld::SetMouseAction(int mode)

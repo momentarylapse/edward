@@ -257,7 +257,7 @@ void ModeModelMesh::onDraw()
 
 
 
-void ModeModelMesh::onUpdate(Observable *o)
+void ModeModelMesh::onUpdate(Observable *o, const string &message)
 {
 	// consistency checks
 	if (CurrentMaterial >= data->Material.num)
@@ -485,6 +485,6 @@ void ModeModelMesh::SetCurrentMaterial(int index)
 	if (CurrentMaterial == index)
 		return;
 	CurrentMaterial = index;
-	notify("Change");
+	notify();
 	mode_model_mesh_texture->SetCurrentTextureLevel(0);
 }

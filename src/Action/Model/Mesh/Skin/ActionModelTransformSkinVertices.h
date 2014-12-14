@@ -18,7 +18,7 @@ public:
 	ActionModelTransformSkinVertices(DataModel *d, int texture_level);
 	virtual ~ActionModelTransformSkinVertices();
 	virtual string name(){	return "ModelTransformSkinVertices";	}
-	virtual string message(){	return "SkinChange";	}
+	virtual const string &message();
 
 	virtual void *execute(Data *d);
 	virtual void undo(Data *d);

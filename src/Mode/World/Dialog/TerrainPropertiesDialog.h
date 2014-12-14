@@ -36,7 +36,7 @@ public:
 	void OnOk();
 	void OnClose();
 
-	void onUpdate(Observable *o);
+	void onUpdate(Observable *o, const string &message);
 
 private:
 	DataWorld *data;

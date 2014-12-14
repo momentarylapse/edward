@@ -26,7 +26,7 @@ public:
 	virtual void onEnd();
 
 	virtual void onCommand(const string &id);
-	virtual void onUpdate(Observable *o);
+	virtual void onUpdate(Observable *o, const string &message);
 	virtual void onUpdateMenu();
 
 	virtual void onDraw();

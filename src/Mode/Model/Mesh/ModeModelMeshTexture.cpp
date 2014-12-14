@@ -174,10 +174,10 @@ void ModeModelMeshTexture::SetCurrentTextureLevel(int level)
 	//	return;
 	CurrentTextureLevel = level;
 	FetchData();
-	notify("Change");
+	notify();
 }
 
-void ModeModelMeshTexture::onUpdate(Observable *o)
+void ModeModelMeshTexture::onUpdate(Observable *o, const string &message)
 {
 	// consistency checks
 	if (CurrentTextureLevel >= data->Material[mode_model_mesh->CurrentMaterial].NumTextures)
@@ -185,7 +185,7 @@ void ModeModelMeshTexture::onUpdate(Observable *o)
 
 	if (o->getName() == "Data"){
 
-		if (o->getMessage() == "SkinChange"){
+		if (message == DataModel::MESSAGE_SKIN_CHANGE){
 			int svi = 0;
 			foreach(ModelSurface &surf, data->Surface)
 				foreach(ModelPolygon &t, surf.Polygon){
@@ -194,7 +194,7 @@ void ModeModelMeshTexture::onUpdate(Observable *o)
 					for (int k=0;k<t.Side.num;k++)
 						skin_vertex[svi ++].pos = t.Side[k].SkinVertex[CurrentTextureLevel];
 				}
-		}else if (o->getMessage() == "Change"){
+		}else if (message == data->MESSAGE_CHANGE){
 
 			FetchData();
 		}

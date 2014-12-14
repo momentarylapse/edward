@@ -168,6 +168,7 @@ void Edward::idleFunction()
 
 
 Edward::Edward(Array<string> arg) :
+	Observer("Edward"),
 	HuiWindow(AppName, -1, -1, 800, 600)
 {
 	msg_db_f("Init", 1);
@@ -266,7 +267,6 @@ Edward::Edward(Array<string> arg) :
 
 	// subscribe to all data to automatically redraw...
 	subscribe(mode_model->data);
-	subscribe(mode_model->data->action_manager);
 	subscribe(mode_material->data);
 	subscribe(mode_world->data);
 	subscribe(mode_font->data);
@@ -471,20 +471,18 @@ void Edward::onAbout()
 void Edward::onSendBugReport()
 {	HuiSendBugReport();	}
 
-void Edward::onUpdate(Observable *o)
+void Edward::onUpdate(Observable *o, const string &message)
 {
 	msg_db_f("Edward.OnUpdate", 2);
-	//msg_write("ed: " + o->GetName() + " - " + o->GetMessage());
 	if (o->getName() == "MultiView"){
-		if (o->getMessage() == "SettingsChange")
+		if (message == multi_view_3d->MESSAGE_SETTINGS_CHANGE)
 			updateMenu();
 		forceRedraw();
 	}else if (o->getName() == "ActionManager"){
-		msg_write("am: " + o->getMessage());
 		ActionManager *am = dynamic_cast<ActionManager*>(o);
-		if (o->getMessage() == "Failed")
+		if (message == am->MESSAGE_FAILED)
 			errorBox(format(_("Aktion fehlgeschlagen: %s\nGrund: %s"), am->error_location.c_str(), am->error_message.c_str()));
-		else if (o->getMessage() == "Saved")
+		else if (message == am->MESSAGE_SAVED)
 			setMessage(_("Gespeichert!"));
 	}else{
 		// data...

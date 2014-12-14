@@ -25,7 +25,7 @@ public:
 	virtual void onEnd();
 
 	virtual void onCommand(const string &id);
-	virtual void onUpdate(Observable *o);
+	virtual void onUpdate(Observable *o, const string &message);
 
 	virtual void onDraw();
 	virtual void onDrawWin(MultiView::Window *win);

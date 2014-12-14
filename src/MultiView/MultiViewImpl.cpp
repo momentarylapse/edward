@@ -164,7 +164,7 @@ void MultiViewImpl::ResetView()
 	view_stage = 0;
 
 	hover.reset();
-	notify("SettingsChange");
+	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
 void MultiViewImpl::ResetMouseAction()
@@ -210,7 +210,7 @@ void MultiViewImpl::CamZoom(float factor, bool mouse_rel)
 			cam.pos += mup - mouse_win->unproject(m);
 	if (action_con->show)
 		action_con->update();
-	notify("Update");
+	notify(MESSAGE_UPDATE);
 }
 
 void MultiViewImpl::CamMove(const vector &dir)
@@ -224,7 +224,7 @@ void MultiViewImpl::CamMove(const vector &dir)
 		cam.pos += cam.radius*(r*dir.x+u*dir.y+d*dir.z) * SPEED_MOVE;
 	else
 		cam.pos += (float)NixScreenHeight / cam.zoom*(r*dir.x+u*dir.y) * SPEED_MOVE;*/
-	notify("Update");
+	notify(MESSAGE_UPDATE);
 }
 
 void MultiViewImpl::CamRotate(const vector &dir, bool cam_center)
@@ -245,31 +245,31 @@ void MultiViewImpl::SetViewBox(const vector &min, const vector &max)
 	if (r > 0)
 		cam.radius = r;
 	update_zoom;
-	notify("Update");
+	notify(MESSAGE_UPDATE);
 }
 
 void MultiViewImpl::ToggleWholeWindow()
 {
 	whole_window = !whole_window;
-	notify("SettingsChange");
+	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
 void MultiViewImpl::ToggleGrid()
 {
 	grid_enabled = !grid_enabled;
-	notify("SettingsChange");
+	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
 void MultiViewImpl::ToggleLight()
 {
 	light_enabled = !light_enabled;
-	notify("SettingsChange");
+	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
 void MultiViewImpl::ToggleWire()
 {
 	wire_mode = !wire_mode;
-	notify("SettingsChange");
+	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
 void MultiViewImpl::onCommand(const string & id)
@@ -331,12 +331,12 @@ void MultiViewImpl::onMouseWheel()
 
 void MultiViewImpl::onMouseEnter()
 {
-	notify("Update");
+	notify(MESSAGE_UPDATE);
 }
 
 void MultiViewImpl::onMouseLeave()
 {
-	//Notify("Update");
+	//notify(MESSAGE_UPDATE);
 	onMouseMove();
 }
 
@@ -425,7 +425,7 @@ void MultiViewImpl::onMiddleButtonDown()
 		HoldCursor(true);
 	ViewMoving = true;
 
-	notify("Update");
+	notify(MESSAGE_UPDATE);
 	notifyEnd();
 }
 
@@ -441,7 +441,7 @@ void MultiViewImpl::onRightButtonDown()
 		HoldCursor(true);
 	ViewMoving = true;
 
-	notify("Update");
+	notify(MESSAGE_UPDATE);
 	notifyEnd();
 }
 
@@ -571,7 +571,7 @@ void MultiViewImpl::onMouseMove()
 			ed->setCursorPos(HoldingX, HoldingY);
 	}
 
-	notify("Update");
+	notify(MESSAGE_UPDATE);
 	notifyEnd();
 }
 
@@ -590,14 +590,14 @@ void MultiViewImpl::StartRect()
 				sd->m_old = sd->is_selected;
 			}
 
-	notify("Update");
+	notify(MESSAGE_UPDATE);
 }
 
 void MultiViewImpl::EndRect()
 {
 	sel_rect.active = false;
 
-	notify("Update");
+	notify(MESSAGE_UPDATE);
 }
 
 
@@ -794,7 +794,7 @@ void MultiViewImpl::SelectAll()
 			if (sd->view_stage >= view_stage)
 				sd->is_selected = true;
 		}
-	notify("SelectionChange");
+	notify(MESSAGE_SELECTION_CHANGE);
 }
 
 void MultiViewImpl::SelectNone()
@@ -804,7 +804,7 @@ void MultiViewImpl::SelectNone()
 			SingleData* sd = MVGetSingleData(d, i);
 			sd->is_selected = false;
 		}
-	notify("SelectionChange");
+	notify(MESSAGE_SELECTION_CHANGE);
 }
 
 void MultiViewImpl::InvertSelection()
@@ -815,7 +815,7 @@ void MultiViewImpl::InvertSelection()
 			if (sd->view_stage >= view_stage)
 				sd->is_selected = !sd->is_selected;
 		}
-	notify("SelectionChange");
+	notify(MESSAGE_SELECTION_CHANGE);
 }
 
 bool MultiViewImpl::HasSelection()
@@ -915,7 +915,7 @@ void MultiViewImpl::UnselectAll()
 				SingleData* sd = MVGetSingleData(d,i);
 				sd->is_selected = false;
 			}
-	notify("SelectionChange");
+	notify(MESSAGE_SELECTION_CHANGE);
 }
 
 void MultiViewImpl::GetSelected(int mode)
@@ -940,7 +940,7 @@ void MultiViewImpl::GetSelected(int mode)
 			}
 		}
 	}
-	notify("SelectionChange");
+	notify(MESSAGE_SELECTION_CHANGE);
 	notifyEnd();
 }
 
@@ -973,7 +973,7 @@ void MultiViewImpl::SelectAllInRectangle(int mode)
 					sd->is_selected = sd->m_delta;
 			}
 
-	notify("SelectionChange");
+	notify(MESSAGE_SELECTION_CHANGE);
 	notifyEnd();
 }
 
@@ -998,13 +998,13 @@ void MultiViewImpl::AddMessage3d(const string &str, const vector &pos)
 void MultiViewImpl::SetAllowRect(bool allow)
 {
 	allow_rect = allow;
-	notify("SettingsChange");
+	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
 void MultiViewImpl::SetAllowAction(bool allow)
 {
 	allow_mouse_actions = allow;
-	notify("SettingsChange");
+	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
 void MultiViewImpl::ViewStagePush()
@@ -1018,7 +1018,7 @@ void MultiViewImpl::ViewStagePush()
 				if (sd->is_selected)
 					sd->view_stage = view_stage;
 			}
-	notify("SettingsChange");
+	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
 void MultiViewImpl::ViewStagePop()
@@ -1033,7 +1033,7 @@ void MultiViewImpl::ViewStagePop()
 				if (sd->view_stage > view_stage)
 					sd->view_stage = view_stage;
 			}
-	notify("SettingsChange");
+	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
 void MultiViewImpl::ResetMessage3d()

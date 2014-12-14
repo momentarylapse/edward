@@ -158,7 +158,7 @@ bool DataAdministration::load(const string &_filename, bool deep)
 		}
 	}
 	admin_file->Close();
-	notify("Change");
+	notify();
 	return true;
 }
 
@@ -267,7 +267,7 @@ void DataAdministration::UpdateDatabase()
 
 	ed->progress->end();
 	SaveDatabase();
-	notify("Change");
+	notify();
 }
 
 void DataAdministration::ExportGame(const string &dir, GameIniData &game_ini)

@@ -23,7 +23,7 @@ public:
 	virtual void onMouseMove();
 	virtual void onLeftButtonUp();
 	virtual void onCommand(const string &id);
-	virtual void onUpdate(Observable *o);
+	virtual void onUpdate(Observable *o, const string &message);
 
 	virtual void onDraw();
 

@@ -69,6 +69,14 @@ public:
 	MultiView(bool _mode3d);
 	virtual ~MultiView();
 
+	static const string MESSAGE_UPDATE;
+	static const string MESSAGE_SELECTION_CHANGE;
+	static const string MESSAGE_SETTINGS_CHANGE;
+	static const string MESSAGE_ACTION_START;
+	static const string MESSAGE_ACTION_UPDATE;
+	static const string MESSAGE_ACTION_ABORT;
+	static const string MESSAGE_ACTION_EXECUTE;
+
 	virtual void ClearData(Data *data) = 0;
 	virtual void AddData(int type, const DynamicArray &a, void *user_data, int flags) = 0;
 	//virtual void SetViewStage(int *view_stage, bool allow_handle) = 0;

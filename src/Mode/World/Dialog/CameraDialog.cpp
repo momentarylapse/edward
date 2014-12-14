@@ -13,7 +13,8 @@
 #include "../../../MultiView/MultiView.h"
 
 CameraDialog::CameraDialog(HuiWindow *_parent, ModeWorldCamera *_mode) :
-	EmbeddedDialog(_parent, "world_camera_dialog", "root-table", 0, 1, "height=150,noexpandy")
+	EmbeddedDialog(_parent, "world_camera_dialog", "root-table", 0, 1, "height=150,noexpandy"),
+	Observer("CameraDialog")
 {
 	mode = _mode;
 	data = mode->data;
@@ -237,7 +238,7 @@ void CameraDialog::OnAreaMouseMove()
 			}
 			mt_action = new ActionCameraMoveTimeSelection(data, screen2sample(mx), mt_time0);
 			mt_action->execute(data);
-			data->notify("Change");
+			data->notify();
 		}
 	}else{
 		int new_hover = -1;
@@ -282,9 +283,9 @@ void CameraDialog::OnCamStop()
 }
 
 
-void CameraDialog::onUpdate(Observable *obs)
+void CameraDialog::onUpdate(Observable *o, const string &message)
 {
-	/*if (obs->GetMessage() == "Change")*/{
+	/*if (message == data->MESSAGE_CHANGE)*/{
 		LoadData();
 	}
 }

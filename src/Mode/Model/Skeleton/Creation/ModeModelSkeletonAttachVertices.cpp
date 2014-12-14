@@ -31,8 +31,8 @@ void ModeModelSkeletonAttachVertices::onStart()
 
 	subscribe(data);
 	subscribe(multi_view, "SelectionChange");
-	onUpdate(data);
-	onUpdate(multi_view);
+	onUpdate(data, "");
+	onUpdate(multi_view, "");
 }
 
 void ModeModelSkeletonAttachVertices::onEnd()
@@ -40,10 +40,10 @@ void ModeModelSkeletonAttachVertices::onEnd()
 	unsubscribe(data);
 	unsubscribe(multi_view);
 
-	parent->onUpdate(data);
+	parent->onUpdate(data, "");
 }
 
-void ModeModelSkeletonAttachVertices::onUpdate(Observable *o)
+void ModeModelSkeletonAttachVertices::onUpdate(Observable *o, const string &message)
 {
 	if (o->getName() == "Data"){
 		multi_view->ClearData(data);

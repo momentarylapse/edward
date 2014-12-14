@@ -90,7 +90,7 @@ void ModeModelMeshEdge::onStart()
 	subscribe(multi_view, "SelectionChange");
 	mode_model_mesh->ApplyRightMouseFunction(multi_view);
 	multi_view->allow_rect = true;
-	onUpdate(data);
+	onUpdate(data, "");
 }
 
 
@@ -149,7 +149,7 @@ bool ModelEdge::inRect(MultiView::Window *win, rect &r, void *user_data)
 }
 
 
-void ModeModelMeshEdge::onUpdate(Observable *o)
+void ModeModelMeshEdge::onUpdate(Observable *o, const string &message)
 {
 	if (o->getName() == "Data"){
 		multi_view->ClearData(data);

@@ -18,7 +18,7 @@ public:
 	ActionModelAutomap(int material, int texture_level);
 	virtual ~ActionModelAutomap();
 	virtual string name(){	return "ModelAutoMap";	}
-	virtual string message(){	return "SkinChange";	}
+	virtual const string &message();
 
 	virtual void *execute(Data *d);
 	virtual void undo(Data *d);

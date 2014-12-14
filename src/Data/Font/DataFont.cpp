@@ -99,7 +99,7 @@ bool DataFont::load(const string & _filename, bool deep)
 		UpdateTexture();
 
 	resetHistory();
-	notify("Change");
+	notify();
 	return !error;
 }
 
@@ -146,7 +146,7 @@ void DataFont::reset()
 	};
 
 	resetHistory();
-	notify("Change");
+	notify();
 //	SetFont();
 }
 

@@ -21,6 +21,10 @@ class ActionManager : public Observable
 public:
 	ActionManager(Data *_data);
 	virtual ~ActionManager();
+
+	static const string MESSAGE_FAILED;
+	static const string MESSAGE_SAVED;
+
 	void reset();
 	void enable(bool _enabled);
 

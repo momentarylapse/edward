@@ -16,7 +16,7 @@ class CameraDialog;
 template<class T>
 class Interpolator;
 
-class ModeWorldCamera: public Mode<DataCamera>, public HuiEventHandler, public Observable
+class ModeWorldCamera: public Mode<DataCamera>, public Observable
 {
 public:
 	ModeWorldCamera(ModeBase *_parent, Data *_data);
@@ -35,7 +35,7 @@ public:
 
 	void LoadData();
 
-	virtual void onUpdate(Observable *obs);
+	virtual void onUpdate(Observable *obs, const string &message);
 
 	virtual void _new();
 	virtual bool open();

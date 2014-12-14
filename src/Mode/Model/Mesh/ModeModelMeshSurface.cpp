@@ -54,7 +54,7 @@ bool ModelSurface::inRect(MultiView::Window *win, rect &r, void *user_data)
 	return false;
 }
 
-void ModeModelMeshSurface::onUpdate(Observable *o)
+void ModeModelMeshSurface::onUpdate(Observable *o, const string &message)
 {
 	if (o->getName() == "Data"){
 		multi_view->ClearData(data);
@@ -77,7 +77,7 @@ void ModeModelMeshSurface::onStart()
 	subscribe(multi_view, "SelectionChange");
 	mode_model_mesh->ApplyRightMouseFunction(multi_view);
 	multi_view->allow_rect = true;
-	onUpdate(data);
+	onUpdate(data, "");
 }
 
 

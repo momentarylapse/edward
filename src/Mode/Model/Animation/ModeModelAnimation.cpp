@@ -75,13 +75,13 @@ void ModeModelAnimation::onStart()
 
 	UpdateAnimation();
 	Observer::subscribe(data);
-	onUpdate(data);
+	onUpdate(data, "");
 
 	timer.reset();
 	HuiRunLaterM(0.200f, this, &ModeModelAnimation::IdleFunction);
 
 	ed->setMode(mode_model_animation_none);
-	notify("Change");
+	notify();
 }
 
 
@@ -123,7 +123,7 @@ void ModeModelAnimation::SetCurrentFrame(int frame_no)
 	if ((frame_no >= 0) && (frame_no < move->Frame.num)){
 		CurrentFrame = frame_no;
 		UpdateAnimation();
-		notify("Change");
+		notify();
 	}
 }
 
@@ -168,7 +168,7 @@ void ModeModelAnimation::UpdateAnimation()
 	}else{
 		vertex = data->Vertex;
 	}
-	//data->Notify("Change");
+	//data->notify();
 	ed->forceRedraw();
 }
 
@@ -232,7 +232,7 @@ void ModeModelAnimation::IterateAnimation(float dt)
 	}
 }
 
-void ModeModelAnimation::onUpdate(Observable *o)
+void ModeModelAnimation::onUpdate(Observable *o, const string &message)
 {
 	//msg_write("..up");
 	UpdateAnimation();

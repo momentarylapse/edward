@@ -11,7 +11,8 @@
 #include "../../../Edward.h"
 
 ConfigurationDialog::ConfigurationDialog(HuiWindow* _parent, bool _allow_parent, DataAdministration *_data, bool _exporting):
-	HuiWindow(_exporting ? "ge_dialog" : "rc_dialog", _parent, _allow_parent)
+	HuiWindow(_exporting ? "ge_dialog" : "rc_dialog", _parent, _allow_parent),
+	Observer("ConfigurationDialog")
 {
 	exporting = _exporting;
 	data = _data;
@@ -57,7 +58,7 @@ void ConfigurationDialog::LoadData()
 	setString("rootdir",ed->RootDir);
 }
 
-void ConfigurationDialog::onUpdate(Observable *o)
+void ConfigurationDialog::onUpdate(Observable *o, const string &message)
 {
 }
 

@@ -19,7 +19,8 @@ string file_secure(const string &filename);
 string render_material(ModelMaterial *m);
 
 ModelMaterialDialog::ModelMaterialDialog(HuiWindow *_parent, DataModel *_data) :
-	EmbeddedDialog(_parent, "model_material_dialog", "root-table", 1, 0, "noexpandx")
+	EmbeddedDialog(_parent, "model_material_dialog", "root-table", 1, 0, "noexpandx"),
+	Observer("ModelMaterialDialog")
 {
 	data = _data;
 	temp = data->Material[mode_model_mesh->CurrentMaterial];
@@ -300,7 +301,7 @@ void ModelMaterialDialog::OnTransparencyMode()
 	ApplyData();
 }
 
-void ModelMaterialDialog::onUpdate(Observable *o)
+void ModelMaterialDialog::onUpdate(Observable *o, const string &message)
 {
 	LoadData();
 }

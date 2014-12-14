@@ -52,4 +52,7 @@ void ActionModelTransformSkinVertices::undo(Data *d)
 	}
 }
 
-
+const string& ActionModelTransformSkinVertices::message()
+{
+	return DataModel::MESSAGE_SKIN_CHANGE;
+}

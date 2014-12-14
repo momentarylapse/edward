@@ -83,7 +83,7 @@ void ModeModelSkeleton::onStart()
 	// left -> translate
 	multi_view->SetMouseAction("ActionModelMoveBones", MultiView::ActionSelectAndMove);
 	multi_view->allow_rect = true;
-	onUpdate(data);
+	onUpdate(data, "");
 }
 
 
@@ -97,7 +97,7 @@ void ModeModelSkeleton::onEnd()
 
 
 
-void ModeModelSkeleton::onUpdate(Observable *o)
+void ModeModelSkeleton::onUpdate(Observable *o, const string &message)
 {
 	if (o->getName() == "Data"){
 
