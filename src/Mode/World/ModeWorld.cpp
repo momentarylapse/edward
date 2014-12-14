@@ -281,7 +281,7 @@ void ModeWorld::onMouseMove()
 
 void ModeWorld::onUpdate(Observable *o, const string &message)
 {
-	if (o->getName() == "Data"){
+	if (o == data){
 		data->UpdateData();
 
 		multi_view->ClearData(data);
@@ -295,7 +295,7 @@ void ModeWorld::onUpdate(Observable *o, const string &message)
 				data->Terrains,
 				NULL,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
-	}else if (o->getName() == "MultiView"){
+	}else if (o == multi_view){
 		// selection
 	}
 }

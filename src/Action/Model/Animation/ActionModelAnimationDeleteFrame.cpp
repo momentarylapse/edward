@@ -14,10 +14,6 @@ ActionModelAnimationDeleteFrame::ActionModelAnimationDeleteFrame(int _index, int
 	frame = _frame;
 }
 
-ActionModelAnimationDeleteFrame::~ActionModelAnimationDeleteFrame()
-{
-}
-
 void *ActionModelAnimationDeleteFrame::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);

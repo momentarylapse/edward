@@ -176,8 +176,8 @@ void ModeModelMeshPolygon::onEnd()
 void ModeModelMeshPolygon::onStart()
 {
 	subscribe(data);
-	subscribe(multi_view, "SelectionChange");
-	mode_model_mesh->ApplyRightMouseFunction(multi_view);
+	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
+	mode_model_mesh->applyMouseFunction(multi_view);
 	multi_view->SetAllowRect(true);
 	onUpdate(data, "");
 }
@@ -251,7 +251,7 @@ bool ModelPolygon::inRect(MultiView::Window *win, rect &r, void *user_data)
 
 void ModeModelMeshPolygon::onUpdate(Observable *o, const string &message)
 {
-	if (o->getName() == "Data"){
+	if (o == data){
 		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		foreach(ModelSurface &s, data->Surface)
@@ -259,7 +259,7 @@ void ModeModelMeshPolygon::onUpdate(Observable *o, const string &message)
 				s.Polygon,
 				&s,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
-	}else if (o->getName() == "MultiView"){
+	}else if (o == multi_view){
 		data->SelectionFromPolygons();
 	}
 	FillSelectionBuffers(data->Vertex);

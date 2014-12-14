@@ -14,7 +14,3 @@ ActionModelDeleteBoneSelection::ActionModelDeleteBoneSelection(DataModel *m)
 		if (b.is_selected)
 			AddSubAction(new ActionModelDeleteBone(bi), m);
 }
-
-ActionModelDeleteBoneSelection::~ActionModelDeleteBoneSelection()
-{
-}

@@ -48,8 +48,32 @@ void ModeModelSkeleton::onCommand(const string & id)
 
 	if (id == "delete")
 		data->execute(new ActionModelDeleteBoneSelection(data));
+
+	if (id == "select")
+		chooseMouseFunction(MultiView::ActionSelect);
+	if (id == "translate")
+		chooseMouseFunction(MultiView::ActionMove);
+	if (id == "rotate")
+		chooseMouseFunction(MultiView::ActionRotate);
+	if (id == "scale")
+		chooseMouseFunction(MultiView::ActionScale);
+	if (id == "mirror")
+		chooseMouseFunction(MultiView::ActionMirror);
 }
 
+
+void ModeModelSkeleton::chooseMouseFunction(int f)
+{
+	mouse_action = f;
+	ed->updateMenu();
+
+	// mouse action
+	if (mouse_action != MultiView::ActionSelect){
+		multi_view->SetMouseAction("ActionModelAnimationTransformBones", mouse_action);
+	}else{
+		multi_view->SetMouseAction("", MultiView::ActionSelect);
+	}
+}
 
 
 void ModeModelSkeleton::onDraw()
@@ -60,12 +84,29 @@ void ModeModelSkeleton::onDraw()
 
 void ModeModelSkeleton::onUpdateMenu()
 {
+	ed->check("select", mouse_action == MultiView::ActionSelect);
+	ed->check("translate", mouse_action == MultiView::ActionMove);
+	ed->check("rotate", mouse_action == MultiView::ActionRotate);
+	ed->check("scale", mouse_action == MultiView::ActionScale);
+	ed->check("mirror", mouse_action == MultiView::ActionMirror);
 }
 
 
 
 void ModeModelSkeleton::onStart()
 {
+	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
+	HuiToolbar *t = ed->toolbar[HuiToolbarLeft];
+	t->reset();
+	t->addSeparator();
+	t->addItemCheckable(_("Selektieren"), dir + "rf_select.png", "select");
+	t->addItemCheckable(_("Verschieben"), dir + "rf_translate.png", "translate");
+	t->addItemCheckable(_("Rotieren"), dir + "rf_rotate.png", "rotate");
+	t->addItemCheckable(_("Skalieren"), dir + "rf_scale.png", "scale");
+	t->addItemCheckable(_("Spiegeln"),dir + "rf_mirror.png", "mirror");
+	t->enable(true);
+	t->configure(false,true);
+
 	// relative to absolute pos
 	foreach(ModelBone &b, data->Bone)
 		if (b.Parent >= 0)
@@ -74,14 +115,16 @@ void ModeModelSkeleton::onStart()
 			b.pos = b.DeltaPos;
 
 	subscribe(data);
-	subscribe(multi_view, "SelectionChange");
+	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
 
 	multi_view->ClearData(data);
 	multi_view->SetAllowRect(true);
 
+	chooseMouseFunction(MultiView::ActionSelectAndMove);
+
 
 	// left -> translate
-	multi_view->SetMouseAction("ActionModelMoveBones", MultiView::ActionSelectAndMove);
+	multi_view->SetMouseAction("ActionModelTransformBones", MultiView::ActionSelectAndMove);
 	multi_view->allow_rect = true;
 	onUpdate(data, "");
 }
@@ -99,7 +142,7 @@ void ModeModelSkeleton::onEnd()
 
 void ModeModelSkeleton::onUpdate(Observable *o, const string &message)
 {
-	if (o->getName() == "Data"){
+	if (o == data){
 
 		multi_view->ClearData(data);
 
@@ -108,7 +151,7 @@ void ModeModelSkeleton::onUpdate(Observable *o, const string &message)
 				data->Bone,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
-	}else if (o->getName() == "MultiView"){
+	}else if (o == multi_view){
 	}
 }
 

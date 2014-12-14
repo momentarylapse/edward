@@ -56,14 +56,14 @@ bool ModelSurface::inRect(MultiView::Window *win, rect &r, void *user_data)
 
 void ModeModelMeshSurface::onUpdate(Observable *o, const string &message)
 {
-	if (o->getName() == "Data"){
+	if (o == data){
 		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		multi_view->AddData(	MVDModelSurface,
 				data->Surface,
 				data,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
-	}else if (o->getName() == "MultiView"){
+	}else if (o == multi_view){
 		data->SelectionFromSurfaces();
 	}
 	mode_model_mesh_polygon->FillSelectionBuffers(data->Vertex);
@@ -74,8 +74,8 @@ void ModeModelMeshSurface::onUpdate(Observable *o, const string &message)
 void ModeModelMeshSurface::onStart()
 {
 	subscribe(data);
-	subscribe(multi_view, "SelectionChange");
-	mode_model_mesh->ApplyRightMouseFunction(multi_view);
+	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
+	mode_model_mesh->applyMouseFunction(multi_view);
 	multi_view->allow_rect = true;
 	onUpdate(data, "");
 }

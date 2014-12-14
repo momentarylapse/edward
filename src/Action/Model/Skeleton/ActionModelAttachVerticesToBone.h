@@ -15,7 +15,6 @@ class ActionModelAttachVerticesToBone: public Action
 {
 public:
 	ActionModelAttachVerticesToBone(Array<int> &_index, int _bone_index);
-	virtual ~ActionModelAttachVerticesToBone();
 	string name(){	return "ModelAttachVerticesToBone";	}
 
 	void *execute(Data *d);

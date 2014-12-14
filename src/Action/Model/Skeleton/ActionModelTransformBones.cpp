@@ -1,15 +1,15 @@
 /*
- * ActionModelMoveBones.cpp
+ * ActionModelTransformBones.cpp
  *
  *  Created on: 18.03.2012
  *      Author: michi
  */
 
-#include "ActionModelMoveBones.h"
 #include "../../../Data/Model/DataModel.h"
 #include "../../../lib/math/math.h"
+#include "ActionModelTransformBones.h"
 
-ActionModelMoveBones::ActionModelMoveBones(DataModel *d) :
+ActionModelTransformBones::ActionModelTransformBones(DataModel *d) :
 	ActionMultiView()
 {
 	// list of selected vertices and save old pos
@@ -20,17 +20,10 @@ ActionModelMoveBones::ActionModelMoveBones(DataModel *d) :
 		}
 }
 
-ActionModelMoveBones::~ActionModelMoveBones()
-{
-}
-
-void *ActionModelMoveBones::execute(Data *d)
+void *ActionModelTransformBones::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreach(int i, index){
-		vector p0 = v_0;
-		if (m->Bone[i].Parent >= 0)
-			p0 = m->Bone[m->Bone[i].Parent].pos;
 		m->Bone[i].pos = mat * m->Bone[i].pos;
 	}
 	foreach(ModelBone &b, m->Bone){
@@ -44,7 +37,7 @@ void *ActionModelMoveBones::execute(Data *d)
 
 
 
-void ActionModelMoveBones::undo(Data *d)
+void ActionModelTransformBones::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(int i, index, ii)

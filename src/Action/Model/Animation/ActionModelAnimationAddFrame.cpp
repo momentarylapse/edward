@@ -15,10 +15,6 @@ ActionModelAnimationAddFrame::ActionModelAnimationAddFrame(int _index, int _fram
 	frame = _frame;
 }
 
-ActionModelAnimationAddFrame::~ActionModelAnimationAddFrame()
-{
-}
-
 void *ActionModelAnimationAddFrame::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);

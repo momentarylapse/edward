@@ -13,10 +13,6 @@ ActionModelDeleteBone::ActionModelDeleteBone(int _index)
 	index = _index;
 }
 
-ActionModelDeleteBone::~ActionModelDeleteBone()
-{
-}
-
 
 
 void *ActionModelDeleteBone::execute(Data *d)

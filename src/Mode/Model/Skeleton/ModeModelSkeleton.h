@@ -28,6 +28,10 @@ public:
 
 	virtual void onDraw();
 	virtual void onDrawWin(MultiView::Window *win);
+
+
+	void chooseMouseFunction(int f);
+	int mouse_action;
 };
 
 extern ModeModelSkeleton *mode_model_skeleton;

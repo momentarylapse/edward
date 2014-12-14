@@ -28,7 +28,7 @@ public:
 
 	virtual void onDrawWin(MultiView::Window *win);
 
-	void ChooseMouseFunction(int f);
+	void chooseMouseFunction(int f);
 	int mouse_action;
 };
 

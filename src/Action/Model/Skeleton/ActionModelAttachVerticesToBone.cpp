@@ -15,10 +15,6 @@ ActionModelAttachVerticesToBone::ActionModelAttachVerticesToBone(
 	bone_index = _bone_index;
 }
 
-ActionModelAttachVerticesToBone::~ActionModelAttachVerticesToBone()
-{
-}
-
 void* ActionModelAttachVerticesToBone::execute(Data* d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);

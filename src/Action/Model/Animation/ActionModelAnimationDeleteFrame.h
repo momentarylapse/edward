@@ -15,7 +15,6 @@ class ActionModelAnimationDeleteFrame: public Action
 {
 public:
 	ActionModelAnimationDeleteFrame(int _index, int _frame);
-	virtual ~ActionModelAnimationDeleteFrame();
 	string name(){	return "ModelAnimationDeleteFrame";	}
 
 	void *execute(Data *d);

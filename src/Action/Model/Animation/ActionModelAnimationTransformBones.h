@@ -16,7 +16,6 @@ class ActionModelAnimationTransformBones: public ActionMultiView
 {
 public:
 	ActionModelAnimationTransformBones(DataModel *d, int move, int frame);
-	virtual ~ActionModelAnimationTransformBones();
 	string name(){	return "ModelAnimationTransformBones";	}
 
 	void *execute(Data *d);

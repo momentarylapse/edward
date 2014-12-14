@@ -28,7 +28,10 @@ public:
 
 	virtual void onDrawWin(MultiView::Window *win);
 
-	void UpdateVertices();
+	void updateVertices();
+	void chooseMouseFunction(int f);
+
+	int mouse_action;
 };
 
 extern ModeModelAnimationVertex *mode_model_animation_vertex;

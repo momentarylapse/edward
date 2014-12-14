@@ -46,7 +46,7 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	MaterialDialog = NULL;
 	CurrentMaterial = 0;
 
-	ChooseRightMouseFunction(MultiView::ActionSelect);
+	chooseMouseFunction(MultiView::ActionSelect);
 
 	mode_model_mesh_vertex = new ModeModelMeshVertex(this);
 	mode_model_mesh_edge = new ModeModelMeshEdge(this);
@@ -175,15 +175,15 @@ void ModeModelMesh::onCommand(const string & id)
 		data->FlattenSelectedVertices();
 
 	if (id == "select")
-		ChooseRightMouseFunction(MultiView::ActionSelect);
+		chooseMouseFunction(MultiView::ActionSelect);
 	if (id == "translate")
-		ChooseRightMouseFunction(MultiView::ActionMove);
+		chooseMouseFunction(MultiView::ActionMove);
 	if (id == "rotate")
-		ChooseRightMouseFunction(MultiView::ActionRotate);
+		chooseMouseFunction(MultiView::ActionRotate);
 	if (id == "scale")
-		ChooseRightMouseFunction(MultiView::ActionScale);
+		chooseMouseFunction(MultiView::ActionScale);
 	if (id == "mirror")
-		ChooseRightMouseFunction(MultiView::ActionMirror);
+		chooseMouseFunction(MultiView::ActionMirror);
 
 	if (id == "create_new_material")
 		CreateNewMaterialForSelection();
@@ -385,15 +385,15 @@ void ModeModelMesh::ChooseMaterialForSelection()
 		data->SetMaterialSelection(SelectionDialogReturnIndex);
 }
 
-void ModeModelMesh::ChooseRightMouseFunction(int f)
+void ModeModelMesh::chooseMouseFunction(int f)
 {
 	mouse_action = f;
 	ed->updateMenu();
-	ApplyRightMouseFunction(ed->multi_view_3d);
-	ApplyRightMouseFunction(ed->multi_view_2d);
+	applyMouseFunction(ed->multi_view_3d);
+	applyMouseFunction(ed->multi_view_2d);
 }
 
-void ModeModelMesh::ApplyRightMouseFunction(MultiView::MultiView *mv)
+void ModeModelMesh::applyMouseFunction(MultiView::MultiView *mv)
 {
 	if (!mv)
 		return;

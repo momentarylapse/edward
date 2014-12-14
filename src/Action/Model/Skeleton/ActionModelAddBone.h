@@ -15,7 +15,6 @@ class ActionModelAddBone: public Action
 {
 public:
 	ActionModelAddBone(const vector &_pos, int _parent);
-	virtual ~ActionModelAddBone();
 	string name(){	return "ModelAddBone";	}
 
 	void *execute(Data *d);

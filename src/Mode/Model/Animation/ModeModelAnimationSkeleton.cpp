@@ -37,13 +37,12 @@ void ModeModelAnimationSkeleton::onStart()
 	t->configure(false,true);
 
 	multi_view->ClearData(NULL);
-
-	ChooseMouseFunction(MultiView::ActionSelect);
-
 	multi_view->allow_rect = true;
 
+	chooseMouseFunction(MultiView::ActionSelect);
+
 	subscribe(data);
-	subscribe(multi_view, "SelectionChange");
+	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
 	onUpdate(data, "");
 }
 
@@ -57,14 +56,14 @@ void ModeModelAnimationSkeleton::onEnd()
 void ModeModelAnimationSkeleton::onCommand(const string& id)
 {
 	if (id == "select")
-		ChooseMouseFunction(MultiView::ActionSelect);
+		chooseMouseFunction(MultiView::ActionSelect);
 	if (id == "translate")
-		ChooseMouseFunction(MultiView::ActionMove);
+		chooseMouseFunction(MultiView::ActionMove);
 	if (id == "rotate")
-		ChooseMouseFunction(MultiView::ActionRotate);
+		chooseMouseFunction(MultiView::ActionRotate);
 }
 
-void ModeModelAnimationSkeleton::ChooseMouseFunction(int f)
+void ModeModelAnimationSkeleton::chooseMouseFunction(int f)
 {
 	mouse_action = f;
 	ed->updateMenu();
@@ -79,7 +78,7 @@ void ModeModelAnimationSkeleton::ChooseMouseFunction(int f)
 
 void ModeModelAnimationSkeleton::onUpdate(Observable* o, const string &message)
 {
-	if (o->getName() == "Data"){
+	if (o == data){
 
 		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
@@ -88,7 +87,7 @@ void ModeModelAnimationSkeleton::onUpdate(Observable* o, const string &message)
 				data->Bone,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect);
-	}else if (o->getName() == "MultiView"){
+	}else if (o == multi_view){
 	}
 }
 

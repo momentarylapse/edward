@@ -8,9 +8,7 @@
 #include "ActionMultiView.h"
 #include "Model/Mesh/Vertex/ActionModelTransformVertices.h"
 #include "Model/Mesh/Skin/ActionModelTransformSkinVertices.h"
-#include "Model/Skeleton/ActionModelMoveBones.h"
-#include "Model/Animation/ActionModelAnimationMoveVertices.h"
-#include "Model/Animation/ActionModelAnimationRotateVertices.h"
+#include "Model/Animation/ActionModelAnimationTransformVertices.h"
 #include "Model/Animation/ActionModelAnimationTransformBones.h"
 #include "World/ActionWorldMoveSelection.h"
 #include "World/Object/ActionWorldRotateObjects.h"
@@ -18,7 +16,7 @@
 #include "../Mode/Model/Mesh/ModeModelMeshTexture.h"
 #include "../Mode/Model/Animation/ModeModelAnimation.h"
 #include <assert.h>
-#include "Model/Animation/ActionModelAnimationTransformBones.h"
+#include "Model/Skeleton/ActionModelTransformBones.h"
 
 ActionMultiView::ActionMultiView()
 {
@@ -58,19 +56,17 @@ ActionMultiView *ActionMultiViewFactory(const string &name, Data *d)
 		return new ActionModelTransformVertices((DataModel*)d);
 	if (name == "ActionModelTransformSkinVertices")
 		return new ActionModelTransformSkinVertices((DataModel*)d, mode_model_mesh_texture->CurrentTextureLevel);
-	else if (name == "ActionModelMoveBones")
-		return new ActionModelMoveBones((DataModel*)d);
-	else if (name == "ActionModelAnimationTransformBones")
+	if (name == "ActionModelTransformBones")
+		return new ActionModelTransformBones((DataModel*)d);
+	if (name == "ActionModelAnimationTransformBones")
 		return new ActionModelAnimationTransformBones((DataModel*)d, mode_model_animation->CurrentMove, mode_model_animation->CurrentFrame);
-	/*else if (name == "ActionModelAnimationMoveVertices")
-		return new ActionModelAnimationMoveVertices((DataModel*)d, _param, _pos0);
-	else if (name == "ActionModelAnimationRotateVertices")
-		return new ActionModelAnimationRotateVertices((DataModel*)d, _param, _pos0);*/
+	if (name == "ActionModelAnimationTransformVertices")
+		return new ActionModelAnimationTransformVertices((DataModel*)d, mode_model_animation->CurrentMove, mode_model_animation->CurrentFrame);
 	if (name == "ActionWorldMoveSelection")
 		return new ActionWorldMoveSelection((DataWorld*)d);
-	else if (name == "ActionWorldRotateObjects")
+	if (name == "ActionWorldRotateObjects")
 		return new ActionWorldRotateObjects((DataWorld*)d);
-	/*else if (name == "ActionCameraMoveSelection")
+	/*if (name == "ActionCameraMoveSelection")
 		return new ActionCameraMoveSelection((DataCamera*)d, _param, _pos0);*/
 	msg_error("ActionMultiViewFactory: unknown action: " + name);
 	assert(0);

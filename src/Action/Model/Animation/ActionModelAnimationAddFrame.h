@@ -14,7 +14,6 @@ class ActionModelAnimationAddFrame: public Action
 {
 public:
 	ActionModelAnimationAddFrame(int _index, int _frame);
-	virtual ~ActionModelAnimationAddFrame();
 	string name(){	return "ModelAnimationAddFrame";	}
 
 	void *execute(Data *d);

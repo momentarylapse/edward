@@ -38,8 +38,8 @@ public:
 	void CreateNewMaterialForSelection();
 	void ChooseMaterialForSelection();
 
-	void ChooseRightMouseFunction(int f);
-	void ApplyRightMouseFunction(MultiView::MultiView *mv);
+	void chooseMouseFunction(int f);
+	void applyMouseFunction(MultiView::MultiView *mv);
 
 	void AddEffects(int type);
 	void EditEffects();

@@ -15,10 +15,6 @@ ActionModelAddBone::ActionModelAddBone(const vector &_pos, int _parent)
 	parent = _parent;
 }
 
-ActionModelAddBone::~ActionModelAddBone()
-{
-}
-
 void *ActionModelAddBone::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);

@@ -14,7 +14,6 @@ class ActionModelAddAnimation: public Action
 {
 public:
 	ActionModelAddAnimation(int _index, int _type);
-	virtual ~ActionModelAddAnimation();
 	string name(){	return "ModelAddAnimation";	}
 
 	void *execute(Data *d);

@@ -74,7 +74,7 @@ void ModeMaterial::onDraw()
 
 void ModeMaterial::onUpdate(Observable *o, const string &message)
 {
-	if (o->getName() == "Data"){
+	if (o == data){
 		data->UpdateTextures();
 		if (data->Shader)
 			data->Shader->unref();

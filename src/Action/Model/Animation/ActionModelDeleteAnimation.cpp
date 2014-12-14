@@ -13,10 +13,6 @@ ActionModelDeleteAnimation::ActionModelDeleteAnimation(int _index)
 	index = _index;
 }
 
-ActionModelDeleteAnimation::~ActionModelDeleteAnimation()
-{
-}
-
 void *ActionModelDeleteAnimation::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);

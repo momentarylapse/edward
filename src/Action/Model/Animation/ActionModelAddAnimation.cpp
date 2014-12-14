@@ -15,10 +15,6 @@ ActionModelAddAnimation::ActionModelAddAnimation(int _index, int _type)
 	type = _type;
 }
 
-ActionModelAddAnimation::~ActionModelAddAnimation()
-{
-}
-
 void *ActionModelAddAnimation::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);

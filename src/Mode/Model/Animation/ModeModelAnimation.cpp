@@ -168,6 +168,9 @@ void ModeModelAnimation::UpdateAnimation()
 	}else{
 		vertex = data->Vertex;
 	}
+
+	mode_model_mesh_polygon->FillSelectionBuffers(vertex);
+
 	//data->notify();
 	ed->forceRedraw();
 }

@@ -21,10 +21,6 @@ ActionModelAnimationTransformBones::ActionModelAnimationTransformBones(DataModel
 		}
 }
 
-ActionModelAnimationTransformBones::~ActionModelAnimationTransformBones()
-{
-}
-
 void *ActionModelAnimationTransformBones::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);

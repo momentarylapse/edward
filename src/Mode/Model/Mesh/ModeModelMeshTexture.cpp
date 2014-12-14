@@ -67,13 +67,13 @@ int ModeModelMeshTexture::GetNumSelected()
 void ModeModelMeshTexture::onStart()
 {
 	multi_view->view_stage = ed->multi_view_3d->view_stage;
-	mode_model_mesh->ApplyRightMouseFunction(multi_view);
+	mode_model_mesh->applyMouseFunction(multi_view);
 	multi_view->allow_rect = true;
 
 	FetchData();
 
 	Observer::subscribe(data);
-	Observer::subscribe(multi_view, "SelectionChange");
+	Observer::subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
 
 	/*ed->SetTarget("root_table", 0);
 	ed->AddControlTable("", 1, 0, 1, 5, "side_table");
@@ -183,7 +183,7 @@ void ModeModelMeshTexture::onUpdate(Observable *o, const string &message)
 	if (CurrentTextureLevel >= data->Material[mode_model_mesh->CurrentMaterial].NumTextures)
 		SetCurrentTextureLevel(data->Material[mode_model_mesh->CurrentMaterial].NumTextures - 1);
 
-	if (o->getName() == "Data"){
+	if (o == data){
 
 		if (message == DataModel::MESSAGE_SKIN_CHANGE){
 			int svi = 0;
@@ -198,10 +198,9 @@ void ModeModelMeshTexture::onUpdate(Observable *o, const string &message)
 
 			FetchData();
 		}
-	}else if (o->getName() == "MultiView"){
+	}else if (o == multi_view){
 		//data->SelectionTrianglesFromVertices();
 		//data->SelectionSurfacesFromTriangles();
-	}else if (o->getName() == "ModelMesg"){
 	}
 	//mode_model_mesh_triangle->FillSelectionBuffers();
 }

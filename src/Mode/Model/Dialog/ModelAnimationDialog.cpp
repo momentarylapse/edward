@@ -130,7 +130,15 @@ void ModelAnimationDialog::ApplyData()
 
 void ModelAnimationDialog::OnAddAnimation()
 {
-	ModelNewAnimationDialog *dlg = new ModelNewAnimationDialog(win, false, data, 0);
+	// first free index
+	int index = data->Move.num;
+	foreachi(ModelMove &m, data->Move, i)
+		if (m.Frame.num == 0){
+			index = i;
+			break;
+		}
+
+	ModelNewAnimationDialog *dlg = new ModelNewAnimationDialog(win, false, data, index);
 	dlg->run();
 }
 
@@ -201,7 +209,7 @@ void ModelAnimationDialog::OnSimulationStop()
 
 void ModelAnimationDialog::onUpdate(Observable *o, const string &message)
 {
-	if (o->getName() == "Data"){
+	if (o == data){
 		LoadData();
 	}else{
 		FillAnimation();
