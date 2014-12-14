@@ -234,7 +234,7 @@ void ModeModelAnimation::IterateAnimation(float dt)
 
 void ModeModelAnimation::onUpdate(Observable *o)
 {
-	msg_write("..up");
+	//msg_write("..up");
 	UpdateAnimation();
 	// valid move
 	/*if (...data->Move[CurrentMove] == index)

@@ -26,13 +26,20 @@ ModeModelAnimationSkeleton::~ModeModelAnimationSkeleton()
 
 void ModeModelAnimationSkeleton::onStart()
 {
+	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
+	HuiToolbar *t = ed->toolbar[HuiToolbarLeft];
+	t->reset();
+	t->addSeparator();
+	t->addItemCheckable(_("Selektieren"), dir + "rf_select.png", "select");
+	t->addItemCheckable(_("Verschieben"), dir + "rf_translate.png", "translate");
+	t->addItemCheckable(_("Rotieren"), dir + "rf_rotate.png", "rotate");
+	t->enable(true);
+	t->configure(false,true);
+
 	multi_view->ClearData(NULL);
 
-	// left -> translate
-	multi_view->SetMouseAction("ActionModelAnimationMoveBones", MultiView::ActionSelectAndMove);
-	//multi_view->SetMouseAction(0, "ActionModelAnimationMoveBones", MultiView::ActionMove);
-//	multi_view->SetMouseAction(1, "ActionModelAnimationRotateBones", MultiView::ActionRotate);
-//	multi_view->SetMouseAction(2, "ActionModelAnimationRotateBones", MultiView::ActionRotate2d);
+	ChooseMouseFunction(MultiView::ActionSelect);
+
 	multi_view->allow_rect = true;
 
 	subscribe(data);
@@ -49,6 +56,25 @@ void ModeModelAnimationSkeleton::onEnd()
 
 void ModeModelAnimationSkeleton::onCommand(const string& id)
 {
+	if (id == "select")
+		ChooseMouseFunction(MultiView::ActionSelect);
+	if (id == "translate")
+		ChooseMouseFunction(MultiView::ActionMove);
+	if (id == "rotate")
+		ChooseMouseFunction(MultiView::ActionRotate);
+}
+
+void ModeModelAnimationSkeleton::ChooseMouseFunction(int f)
+{
+	mouse_action = f;
+	ed->updateMenu();
+
+	// mouse action
+	if (mouse_action != MultiView::ActionSelect){
+		multi_view->SetMouseAction("ActionModelAnimationTransformBones", mouse_action);
+	}else{
+		multi_view->SetMouseAction("", MultiView::ActionSelect);
+	}
 }
 
 void ModeModelAnimationSkeleton::onUpdate(Observable* o)
@@ -64,10 +90,6 @@ void ModeModelAnimationSkeleton::onUpdate(Observable* o)
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect);
 	}else if (o->getName() == "MultiView"){
 	}
-}
-
-void ModeModelAnimationSkeleton::onUpdateMenu()
-{
 }
 
 void ModeModelAnimationSkeleton::onDrawWin(MultiView::Window *win)
@@ -96,3 +118,10 @@ void ModeModelAnimationSkeleton::onDrawWin(MultiView::Window *win)
 }
 
 
+
+void ModeModelAnimationSkeleton::onUpdateMenu()
+{
+	ed->check("select", mouse_action == MultiView::ActionSelect);
+	ed->check("translate", mouse_action == MultiView::ActionMove);
+	ed->check("rotate", mouse_action == MultiView::ActionRotate);
+}

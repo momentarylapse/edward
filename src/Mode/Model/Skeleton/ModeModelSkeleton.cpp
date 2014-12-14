@@ -151,7 +151,10 @@ void DrawCoordBasis(const ModelBone *b)
 
 void ModeModelSkeleton::onDrawWin(MultiView::Window *win)
 {
-	mode_model_mesh_polygon->DrawPolygons(win, data->Vertex);
+	if (mode_model_animation->isAncestorOf(ed->cur_mode))
+		mode_model_mesh_polygon->DrawPolygons(win, mode_model_animation->vertex);
+	else
+		mode_model_mesh_polygon->DrawPolygons(win, data->Vertex);
 
 #ifdef USE_MODELS
 	// sub models

@@ -398,13 +398,13 @@ void ModeModelMesh::ApplyRightMouseFunction(MultiView::MultiView *mv)
 	if (!mv)
 		return;
 
-	string suffix = "Vertices";
+	string name = "ActionModelTransformVertices";
 	if (!mv->mode3d)
-		suffix = "SkinVertices";
+		name = "ActionModelTransformSkinVertices";
 
 	// left mouse action
 	if (mouse_action != MultiView::ActionSelect){
-		mv->SetMouseAction("ActionModelTransform" + suffix, mouse_action);
+		mv->SetMouseAction(name, mouse_action);
 	}else{
 		mv->SetMouseAction("", MultiView::ActionSelect);
 	}

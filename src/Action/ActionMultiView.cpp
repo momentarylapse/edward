@@ -9,14 +9,16 @@
 #include "Model/Mesh/Vertex/ActionModelTransformVertices.h"
 #include "Model/Mesh/Skin/ActionModelTransformSkinVertices.h"
 #include "Model/Skeleton/ActionModelMoveBones.h"
-#include "Model/Animation/ActionModelAnimationRotateBones.h"
 #include "Model/Animation/ActionModelAnimationMoveVertices.h"
 #include "Model/Animation/ActionModelAnimationRotateVertices.h"
+#include "Model/Animation/ActionModelAnimationTransformBones.h"
 #include "World/ActionWorldMoveSelection.h"
 #include "World/Object/ActionWorldRotateObjects.h"
 #include "World/Camera/ActionCameraMoveSelection.h"
 #include "../Mode/Model/Mesh/ModeModelMeshTexture.h"
+#include "../Mode/Model/Animation/ModeModelAnimation.h"
 #include <assert.h>
+#include "Model/Animation/ActionModelAnimationTransformBones.h"
 
 ActionMultiView::ActionMultiView()
 {
@@ -58,9 +60,9 @@ ActionMultiView *ActionMultiViewFactory(const string &name, Data *d)
 		return new ActionModelTransformSkinVertices((DataModel*)d, mode_model_mesh_texture->CurrentTextureLevel);
 	else if (name == "ActionModelMoveBones")
 		return new ActionModelMoveBones((DataModel*)d);
-	/*else if (name == "ActionModelAnimationRotateBones")
-		return new ActionModelAnimationRotateBones((DataModel*)d, _param, _pos0);
-	else if (name == "ActionModelAnimationMoveVertices")
+	else if (name == "ActionModelAnimationTransformBones")
+		return new ActionModelAnimationTransformBones((DataModel*)d, mode_model_animation->CurrentMove, mode_model_animation->CurrentFrame);
+	/*else if (name == "ActionModelAnimationMoveVertices")
 		return new ActionModelAnimationMoveVertices((DataModel*)d, _param, _pos0);
 	else if (name == "ActionModelAnimationRotateVertices")
 		return new ActionModelAnimationRotateVertices((DataModel*)d, _param, _pos0);*/

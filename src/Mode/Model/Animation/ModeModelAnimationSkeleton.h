@@ -27,6 +27,9 @@ public:
 	virtual void onUpdateMenu();
 
 	virtual void onDrawWin(MultiView::Window *win);
+
+	void ChooseMouseFunction(int f);
+	int mouse_action;
 };
 
 extern ModeModelAnimationSkeleton *mode_model_animation_skeleton;
