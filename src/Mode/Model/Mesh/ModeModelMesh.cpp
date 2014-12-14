@@ -65,7 +65,6 @@ void ModeModelMesh::onStart()
 	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
 	HuiToolbar *t = ed->toolbar[HuiToolbarLeft];
 	t->reset();
-	t->addSeparator();
 	t->addItemCheckable(_("Polygon"),dir + "new_triangle.png", "new_tria");
 	t->addItemCheckable(_("Ebene"),dir + "new_plane.png", "new_plane");
 	t->addItemCheckable(_("Quader"),dir + "mode_skin.png", "new_cube");

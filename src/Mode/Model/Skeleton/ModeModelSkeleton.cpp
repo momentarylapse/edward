@@ -45,6 +45,8 @@ void ModeModelSkeleton::onCommand(const string & id)
 			ed->errorBox(_("Es muss genau 1 Knochen markiert sein!"));
 		}
 	}
+	//if (id == "skeleton_link")
+	//	ed->setMode(new ModeModelSkeletonCreateBone(ed->cur_mode));
 
 	if (id == "delete")
 		data->execute(new ActionModelDeleteBoneSelection(data));
@@ -98,6 +100,7 @@ void ModeModelSkeleton::onStart()
 	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
 	HuiToolbar *t = ed->toolbar[HuiToolbarLeft];
 	t->reset();
+	t->addItemCheckable(_("neuer Knochen"),dir + "new_vertex.png", "skeleton_new_point");
 	t->addSeparator();
 	t->addItemCheckable(_("Selektieren"), dir + "rf_select.png", "select");
 	t->addItemCheckable(_("Verschieben"), dir + "rf_translate.png", "translate");

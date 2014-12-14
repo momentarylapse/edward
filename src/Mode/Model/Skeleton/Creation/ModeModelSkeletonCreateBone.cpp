@@ -10,6 +10,7 @@
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../Action/Model/Skeleton/ActionModelAddBone.h"
+#include "../../../../Action/Model/Skeleton/ActionModelReconnectBone.h"
 
 ModeModelSkeletonCreateBone::ModeModelSkeletonCreateBone(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelSkeletonCreateBone", _parent)
@@ -19,21 +20,16 @@ ModeModelSkeletonCreateBone::ModeModelSkeletonCreateBone(ModeBase *_parent) :
 	bone_parent = -1;
 }
 
-ModeModelSkeletonCreateBone::~ModeModelSkeletonCreateBone()
-{
-}
-
-void ModeModelSkeletonCreateBone::onDrawWin(MultiView::Window *win)
-{
-}
-
-
 
 void ModeModelSkeletonCreateBone::onLeftButtonDown()
 {
 	if (pos_chosen){
-		pos = multi_view->GetCursor3d();
-		data->execute(new ActionModelAddBone(pos, bone_parent));
+		if (multi_view->hover.index >= 0){
+			data->execute(new ActionModelReconnectBone(multi_view->hover.index, bone_parent));
+		}else{
+			pos = multi_view->GetCursor3d();
+			data->execute(new ActionModelAddBone(pos, bone_parent));
+		}
 		data->Bone[bone_parent].is_special = false;
 		abort();
 	}else{
@@ -49,11 +45,4 @@ void ModeModelSkeletonCreateBone::onLeftButtonDown()
 		}
 	}
 }
-
-
-
-void ModeModelSkeletonCreateBone::onMouseMove()
-{
-}
-
 

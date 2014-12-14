@@ -15,12 +15,8 @@ class ModeModelSkeletonCreateBone: public ModeCreation<DataModel>
 {
 public:
 	ModeModelSkeletonCreateBone(ModeBase *_parent);
-	virtual ~ModeModelSkeletonCreateBone();
 
-	virtual void onMouseMove();
 	virtual void onLeftButtonDown();
-
-	virtual void onDrawWin(MultiView::Window *win);
 
 private:
 	vector pos;
