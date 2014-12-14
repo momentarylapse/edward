@@ -6,6 +6,7 @@
  */
 
 #include "ModeModelSkeletonAttachVertices.h"
+#include "../../Mesh/ModeModelMeshPolygon.h"
 #include "../../../../Action/Model/Skeleton/ActionModelAttachVerticesToBone.h"
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
@@ -14,7 +15,7 @@ ModeModelSkeletonAttachVertices::ModeModelSkeletonAttachVertices(ModeBase* _pare
 		int _bone_index) :
 		ModeCreation<DataModel>("ModelSkeletonAttachVertices", _parent)
 {
-	message = _("Vertices ausw&ahlen");
+	message = _("Vertices ausw&ahlen, [Return] = fertig");
 	bone_index = _bone_index;
 }
 
@@ -28,22 +29,33 @@ void ModeModelSkeletonAttachVertices::onStart()
 	foreach(ModelVertex &v, data->Vertex)
 		v.is_selected = (v.BoneIndex == bone_index);
 
-	//Subscribe(data);
+	subscribe(data);
 	subscribe(multi_view, "SelectionChange");
-
-	multi_view->ClearData(data);
-	multi_view->allow_rect = true;
-	multi_view->AddData(	MVDModelVertex,
-			data->Vertex,
-			NULL,
-			MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect);
-	data->SelectionFromVertices();
 	onUpdate(data);
+	onUpdate(multi_view);
 }
 
 void ModeModelSkeletonAttachVertices::onEnd()
 {
+	unsubscribe(data);
+	unsubscribe(multi_view);
+
 	parent->onUpdate(data);
+}
+
+void ModeModelSkeletonAttachVertices::onUpdate(Observable *o)
+{
+	if (o->getName() == "Data"){
+		multi_view->ClearData(data);
+		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
+		multi_view->AddData(	MVDModelVertex,
+				data->Vertex,
+				NULL,
+				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
+	}else if (o->getName() == "MultiView"){
+		data->SelectionFromVertices();
+		mode_model_mesh_polygon->FillSelectionBuffers(data->Vertex);
+	}
 }
 
 void ModeModelSkeletonAttachVertices::onKeyDown()
@@ -61,6 +73,7 @@ void ModeModelSkeletonAttachVertices::onKeyDown()
 
 void ModeModelSkeletonAttachVertices::onDrawWin(MultiView::Window *win)
 {
+	mode_model_mesh_polygon->DrawSelection(win);
 }
 
 
