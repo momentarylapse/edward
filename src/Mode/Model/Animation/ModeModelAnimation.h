@@ -37,6 +37,7 @@ public:
 	ModelMove *move;
 	int CurrentMove, CurrentFrame;
 	Array<ModelVertex> vertex;
+	Array<ModelBone> bone;
 
 	float TimeScale;
 	float TimeParam;

@@ -22,8 +22,9 @@ void *ActionModelReconnectBone::execute(Data *d)
 	assert(index < m->Bone.num);
 	ModelBone &b = m->Bone[index];
 
-	int t = b.Parent;
-	b.Parent = parent;
+	// swap parents
+	int t = b.parent;
+	b.parent = parent;
 	parent = t;
 
 	return &b;

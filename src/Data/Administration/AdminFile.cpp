@@ -230,7 +230,7 @@ void AdminFile::check(AdminFileList &list)
 		if (m.load(ObjectDir + Name,false)){
 			Time = m.file_time;
 			for (int i=0;i<m.Bone.num;i++)
-				add_possible_link(l, FDModel, m.Bone[i].ModelFile);
+				add_possible_link(l, FDModel, m.Bone[i].model_file);
 			for (int i=0;i<m.Fx.num;i++){
 				if (m.Fx[i].Kind==FXKindScript)
 					add_possible_link(l, FDScript, m.Fx[i].File);

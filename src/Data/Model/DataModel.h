@@ -143,14 +143,13 @@ struct ModelSkin
 class ModelBone: public MultiView::SingleData
 {
 public:
-	int Parent;
-	vector DeltaPos;
-	string ModelFile;
+	int parent;
+	string model_file;
 	Model *model;
-	bool ConstPos;
+	bool const_pos;
 
 	// for editing
-	matrix Matrix, RotMatrix;
+	matrix _matrix;
 };
 
 struct ModelFrame
@@ -307,8 +306,6 @@ public:
 
 	// properties
 	Array<ModelMove> Move;
-	vector GetBonePos(int index);
-	vector GetBonePosAnimated(int index);
 
 	// actions
 	void AddAnimation(int index, int type);

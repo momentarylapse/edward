@@ -366,14 +366,16 @@ bool DataModel::load(const string & _filename, bool deep)
 	// Skeleton
 		Bone.resize(f->ReadIntC());
 		for (int i=0;i<Bone.num;i++){
-			f->ReadVector(&Bone[i].DeltaPos);
-			Bone[i].Parent = f->ReadInt();
-			if (Bone[i].Parent > 32000)
-				Bone[i].Parent = -1;
-			Bone[i].ModelFile = f->ReadStr();
+			f->ReadVector(&Bone[i].pos);
+			Bone[i].parent = f->ReadInt();
+			if (Bone[i].parent > 32000)
+				Bone[i].parent = -1;
+			if (Bone[i].parent >= 0)
+				Bone[i].pos += Bone[Bone[i].parent].pos;
+			Bone[i].model_file = f->ReadStr();
 			if (deep)
-				Bone[i].model = LoadModel(Bone[i].ModelFile);
-			Bone[i].ConstPos = false;
+				Bone[i].model = LoadModel(Bone[i].model_file);
+			Bone[i].const_pos = false;
 			Bone[i].is_selected = Bone[i].m_old = false;
 		}
 
@@ -637,16 +639,18 @@ bool DataModel::load(const string & _filename, bool deep)
 
 	// Skeleton
 		Bone.resize(f->ReadIntC());
-		for (int i=0;i<Bone.num;i++){
-			f->ReadVector(&Bone[i].DeltaPos);
-			Bone[i].Parent = f->ReadInt();
-			if ((Bone[i].Parent < 0) || (Bone[i].Parent >= Bone.num))
-				Bone[i].Parent = -1;
-			Bone[i].ModelFile = f->ReadStr();
+		foreach(ModelBone &b, Bone){
+			f->ReadVector(&b.pos);
+			b.parent = f->ReadInt();
+			if ((b.parent < 0) || (b.parent >= Bone.num))
+				b.parent = -1;
+			if (b.parent >= 0)
+				b.pos += Bone[b.parent].pos;
+			b.model_file = f->ReadStr();
 			if (deep)
-				Bone[i].model = LoadModel(Bone[i].ModelFile);
-			Bone[i].ConstPos = false;
-			Bone[i].is_selected = Bone[i].m_old = false;
+				b.model = LoadModel(b.model_file);
+			b.const_pos = false;
+			b.is_selected = b.m_old = false;
 		}
 
 	// Animations
@@ -1200,10 +1204,14 @@ bool DataModel::save(const string & _filename)
 // skeleton
 	f->WriteComment("// Skeleton");
 	f->WriteInt(Bone.num);
-	for (int i=0;i<Bone.num;i++){
-		f->WriteVector(&Bone[i].DeltaPos);
-		f->WriteInt(Bone[i].Parent);
-		f->WriteStr(Bone[i].ModelFile);
+	foreach(ModelBone &b, Bone){
+		if (b.parent >= 0){
+			vector dpos = b.pos - Bone[b.parent].pos;
+			f->WriteVector(&dpos);
+		}else
+			f->WriteVector(&b.pos);
+		f->WriteInt(b.parent);
+		f->WriteStr(b.model_file);
 	}
 
 // animations
@@ -1254,13 +1262,13 @@ bool DataModel::save(const string & _filename)
 			// skeletal animation
 			}else if (m->Type == MoveTypeSkeletal){
 				for (int j=0;j<Bone.num;j++)
-					f->WriteBool((Bone[j].Parent < 0));
+					f->WriteBool((Bone[j].parent < 0));
 				f->WriteBool(m->InterpolatedQuadratic);
 				f->WriteBool(m->InterpolatedLoop);
 				for (int fr=0;fr<m->Frame.num;fr++)
 					for (int j=0;j<Bone.num;j++){
 						f->WriteVector(&m->Frame[fr].SkelAng[j]);
-						if (Bone[j].Parent < 0)
+						if (Bone[j].parent < 0)
 							f->WriteVector(&m->Frame[fr].SkelDPos[j]);
 					}
 			}
@@ -1792,18 +1800,6 @@ void DataModel::DeleteAnimation(int index)
 
 void DataModel::AnimationAddFrame(int index, int frame)
 {	execute(new ActionModelAnimationAddFrame(index, frame));	}
-
-vector DataModel::GetBonePos(int index)
-{
-	if (index < 0)
-		return v_0;
-	return Bone[index].DeltaPos + GetBonePos(Bone[index].Parent);
-}
-
-vector DataModel::GetBonePosAnimated(int index)
-{
-	return Bone[index].pos;
-}
 
 void DataModel::AnimationDeleteFrame(int index, int frame)
 {	execute(new ActionModelAnimationDeleteFrame(index, frame));	}

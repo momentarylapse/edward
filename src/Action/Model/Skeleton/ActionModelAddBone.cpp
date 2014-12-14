@@ -19,14 +19,10 @@ void *ActionModelAddBone::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	ModelBone b;
-	b.Parent = parent;
-	b.ConstPos = false;
+	b.parent = parent;
+	b.const_pos = false;
 	b.pos = pos;
-	if (parent >= 0)
-		b.DeltaPos = pos - m->Bone[parent].pos;
-	else
-		b.DeltaPos = pos;
-	b.Matrix = m_id;
+	b._matrix = m_id;
 	b.model = NULL;
 	b.view_stage = 0;
 	b.is_special = b.is_selected = false;

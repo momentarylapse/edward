@@ -19,9 +19,9 @@ void *ActionModelDeleteBone::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	ModelBone &b = m->Bone[index];
-	pos = b.DeltaPos;
-	parent = b.Parent;
-	filename = b.ModelFile;
+	pos = b.pos;
+	parent = b.parent;
+	filename = b.model_file;
 	model = b.model;
 	child.clear();
 
@@ -29,15 +29,14 @@ void *ActionModelDeleteBone::execute(Data *d)
 	foreachi(ModelBone &bb, m->Bone, i)
 		if (i != index){
 			// child -> save and make root
-			if (bb.Parent == index){
+			if (bb.parent == index){
 				child.add(i);
-				bb.Parent = -1;
-				bb.DeltaPos = bb.pos;
+				bb.parent = -1;
 			}
 
 			// reference > index -> shift
-			if (bb.Parent > index)
-				bb.Parent --;
+			if (bb.parent > index)
+				bb.parent --;
 		}
 
 	// save + correct animations
@@ -70,15 +69,11 @@ void ActionModelDeleteBone::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	ModelBone b;
-	b.Parent = parent;
-	b.ConstPos = false;
-	b.DeltaPos = pos;
-	if (parent >= 0)
-		b.pos = pos + m->Bone[parent].pos;
-	else
-		b.pos = pos;
-	b.Matrix = m_id;
-	b.ModelFile = filename;
+	b.parent = parent;
+	b.const_pos = false;
+	b.pos = pos;
+	b._matrix = m_id;
+	b.model_file = filename;
 	b.model = (Model*)model;
 	b.view_stage = 0;
 	m->Bone.insert(b, index);
@@ -86,12 +81,11 @@ void ActionModelDeleteBone::undo(Data *d)
 	// correct skeleton
 	foreachi(ModelBone &bb, m->Bone, i)
 		if (i != index){
-			if (bb.Parent >= index)
-				bb.Parent ++;
+			if (bb.parent >= index)
+				bb.parent ++;
 		}
 	foreach(int c, child){
-		m->Bone[c].Parent = index;
-		m->Bone[c].DeltaPos = m->Bone[c].pos - pos;
+		m->Bone[c].parent = index;
 	}
 
 	// correct animations

@@ -10,6 +10,7 @@
 #include "../../../MultiView/MultiView.h"
 #include "../Mesh/ModeModelMeshPolygon.h"
 #include "../Skeleton/ModeModelSkeleton.h"
+#include "../Animation/ModeModelAnimation.h"
 
 ModeModelAnimationSkeleton *mode_model_animation_skeleton = NULL;
 
@@ -84,7 +85,7 @@ void ModeModelAnimationSkeleton::onUpdate(Observable* o, const string &message)
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 
 		multi_view->AddData(	MVDSkeletonPoint,
-				data->Bone,
+				mode_model_animation->bone,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect);
 	}else if (o == multi_view){

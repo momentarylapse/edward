@@ -110,13 +110,6 @@ void ModeModelSkeleton::onStart()
 	t->enable(true);
 	t->configure(false,true);
 
-	// relative to absolute pos
-	foreach(ModelBone &b, data->Bone)
-		if (b.Parent >= 0)
-			b.pos = data->Bone[b.Parent].pos + b.DeltaPos;
-		else
-			b.pos = b.DeltaPos;
-
 	subscribe(data);
 	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
 
@@ -160,7 +153,7 @@ void ModeModelSkeleton::onUpdate(Observable *o, const string &message)
 
 
 
-void DrawBone(const vector &r, const vector &d, const color &c, MultiView::Window *win)
+void drawBone(const vector &r, const vector &d, const color &c, MultiView::Window *win)
 {
 	vector pr = win->project(r);
 	vector pd = win->project(d);
@@ -179,16 +172,13 @@ void DrawBone(const vector &r, const vector &d, const color &c, MultiView::Windo
 	}
 }
 
-void DrawCoordBasis(const ModelBone *b)
+void drawCoordBasis(const ModelBone &b)
 {
-	vector o = b->pos;
-	vector e[3];
-	e[0] = e_x;
-	e[1] = e_y;
-	e[2] = e_z;
+	vector o = b.pos;
+	vector e[3] = {e_x, e_y, e_z};
 	if (ed->cur_mode == mode_model_animation)
 		for (int i=0;i<3;i++)
-			e[i] = b->Matrix.transform_normal(e[i]);
+			e[i] = b._matrix.transform_normal(e[i]);
 	for (int i=0;i<3;i++){
 		NixSetColor(color(1,0,(i==0)?1:0.5f,0));
 		NixDrawLine3D(o, o + e[i] * 30 / ed->multi_view_3d->cam.zoom);
@@ -197,19 +187,26 @@ void DrawCoordBasis(const ModelBone *b)
 
 void ModeModelSkeleton::onDrawWin(MultiView::Window *win)
 {
-	if (mode_model_animation->isAncestorOf(ed->cur_mode))
+	if (mode_model_animation->isAncestorOf(ed->cur_mode)){
 		mode_model_mesh_polygon->DrawPolygons(win, mode_model_animation->vertex);
-	else
+		drawSkeleton(win, mode_model_animation->bone);
+	}else{
 		mode_model_mesh_polygon->DrawPolygons(win, data->Vertex);
+		drawSkeleton(win, data->Bone);
+	}
+}
+
+void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &bone)
+{
 
 #ifdef USE_MODELS
 	// sub models
 	foreachi(data->Bone, b, i)
 		if (b.model){
 			if (SubMode == ModeModelAnimation)
-				b.model->Matrix = PointMatrix[i];
+				b.model->_matrix = PointMatrix[i];
 			else
-				MatrixTranslation(b.model->Matrix, SkeletonGetPointPos(i));
+				MatrixTranslation(b.model->_matrix, SkeletonGetPointPos(i));
 			b.model->onDraw(0, false, false);
 		}
 #endif
@@ -218,18 +215,18 @@ void ModeModelSkeleton::onDrawWin(MultiView::Window *win)
 	NixEnableLighting(false);
 	NixSetWire(false);
 
-	foreach(ModelBone &b, data->Bone){
+	foreach(ModelBone &b, bone){
 		/*if (b.view_stage<=ViewStage)
 			continue;*/
 		if (b.is_selected)
-			DrawCoordBasis(&b);
-		int r = b.Parent;
+			drawCoordBasis(b);
+		int r = b.parent;
 		if (r < 0)
 			continue;
-		color c = data->Bone[r].is_selected ? Red : Blue;
+		color c = bone[r].is_selected ? Red : Blue;
 		if (multi_view->hover.index == r)
 			c = ColorInterpolate(c, White, 0.3f);
-		DrawBone(data->Bone[r].pos, b.pos, c, win);
+		drawBone(bone[r].pos, b.pos, c, win);
 	}
 	NixSetZ(true, true);
 }

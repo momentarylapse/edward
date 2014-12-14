@@ -30,6 +30,9 @@ public:
 	virtual void onDrawWin(MultiView::Window *win);
 
 
+	void drawSkeleton(MultiView::Window *win, Array<ModelBone> &bone);
+
+
 	void chooseMouseFunction(int f);
 	int mouse_action;
 };

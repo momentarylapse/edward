@@ -148,10 +148,12 @@ void ModeModelAnimation::UpdateAnimation()
 	if (move->Type == MoveTypeSkeletal){
 		UpdateSkeleton();
 		foreachi(ModelVertex &v, data->Vertex, i){
-			if (v.BoneIndex >= data->Bone.num)
+			if (v.BoneIndex >= data->Bone.num){
 				vertex[i].pos = v.pos;
-			else
-				vertex[i].pos = data->Bone[v.BoneIndex].Matrix * (v.pos - data->GetBonePos(v.BoneIndex));
+			}else{
+				ModelBone &b = data->Bone[v.BoneIndex];
+				vertex[i].pos = b._matrix * (v.pos - b.pos);
+			}
 		}
 	}else if (move->Type == MoveTypeVertex){
 		int frame0 = CurrentFrame;
@@ -177,13 +179,9 @@ void ModeModelAnimation::UpdateAnimation()
 
 void ModeModelAnimation::UpdateSkeleton()
 {
+	bone = data->Bone;
+
 	if (move->Type != MoveTypeSkeletal){
-		foreachi(ModelBone &b, data->Bone, i){
-			if (b.Parent < 0)
-				b.pos = b.DeltaPos;
-			else
-				b.pos = data->Bone[b.Parent].pos + b.DeltaPos;
-		}
 		return;
 	}
 	int frame0 = CurrentFrame;
@@ -196,20 +194,21 @@ void ModeModelAnimation::UpdateSkeleton()
 	}
 
 	foreachi(ModelBone &b, data->Bone, i){
-		if (b.Parent < 0){
-			b.pos = b.DeltaPos + (1 - t) * move->Frame[frame0].SkelDPos[i] + t * move->Frame[frame1].SkelDPos[i];
+		if (b.parent < 0){
+			bone[i].pos = b.pos + (1 - t) * move->Frame[frame0].SkelDPos[i] + t * move->Frame[frame1].SkelDPos[i];
 		}else{
-			vector dp = data->Bone[b.Parent].Matrix.transform_normal(b.DeltaPos);
-			b.pos = data->Bone[b.Parent].pos + dp;
+			ModelBone &pb = data->Bone[b.parent];
+			bone[i].pos = pb._matrix * (b.pos - pb.pos); // cur_mat * dpos_at_rest
 		}
-		matrix trans;
-		MatrixTranslation(trans, b.pos);
+		matrix trans, rot;
+		MatrixTranslation(trans, bone[i].pos);
 		quaternion q0, q1, q;
 		QuaternionRotationV(q0, move->Frame[frame0].SkelAng[i]);
 		QuaternionRotationV(q1, move->Frame[frame1].SkelAng[i]);
 		QuaternionInterpolate(q, q0, q1, t);
-		MatrixRotationQ(b.RotMatrix, q);
-		b.Matrix = trans * b.RotMatrix;
+		MatrixRotationQ(rot, q);
+		b._matrix = trans * rot;
+		bone[i]._matrix = b._matrix;
 	}
 }
 

@@ -137,13 +137,12 @@ class ModelSkin
 
 class ModelBone: MultiViewSingleData
 	int Parent
-	vector DeltaPos
 	string ModelFile
 	Model *model
 	bool ConstPos
 
 	// for editing
-	matrix Matrix, RotMatrix
+	matrix Matrix
 
 class ModelFrame
 	// skeleton animation

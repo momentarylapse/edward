@@ -23,15 +23,8 @@ ActionModelTransformBones::ActionModelTransformBones(DataModel *d) :
 void *ActionModelTransformBones::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreach(int i, index){
-		m->Bone[i].pos = mat * m->Bone[i].pos;
-	}
-	foreach(ModelBone &b, m->Bone){
-		if (b.Parent >= 0)
-			b.DeltaPos = b.pos - m->Bone[b.Parent].pos;
-		else
-			b.DeltaPos = b.pos;
-	}
+	foreachi(int i, index, ii)
+		m->Bone[i].pos = mat * old_data[ii];
 	return NULL;
 }
 
@@ -42,13 +35,6 @@ void ActionModelTransformBones::undo(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(int i, index, ii)
 		m->Bone[i].pos = old_data[ii];
-
-	foreach(ModelBone &b, m->Bone){
-		if (b.Parent >= 0)
-			b.DeltaPos = b.pos - m->Bone[b.Parent].pos;
-		else
-			b.DeltaPos = b.pos;
-	}
 }
 
 
