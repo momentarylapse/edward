@@ -37,6 +37,9 @@ void ModeModelAnimationSkeleton::onStart()
 	t->enable(true);
 	t->configure(false,true);
 
+	foreachi(ModelBone &b, data->bone, i)
+		mode_model_animation->bone[i].is_selected = b.is_selected;
+
 	multi_view->ClearData(NULL);
 	multi_view->allow_rect = true;
 
@@ -89,6 +92,8 @@ void ModeModelAnimationSkeleton::onUpdate(Observable* o, const string &message)
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect);
 	}else if (o == multi_view){
+		foreachi(ModelBone &b, data->bone, i)
+			b.is_selected = mode_model_animation->bone[i].is_selected;
 	}
 }
 
