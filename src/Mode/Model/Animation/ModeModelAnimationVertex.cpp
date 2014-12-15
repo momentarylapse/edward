@@ -112,7 +112,7 @@ void ModeModelAnimationVertex::onDrawWin(MultiView::Window *win)
 {
 	msg_db_f("skin.DrawWin",4);
 
-	mode_model_mesh_polygon->DrawPolygons(win, mode_model_animation->vertex);
+	mode_model_mesh_polygon->drawPolygons(win, mode_model_animation->vertex);
 	NixSetShader(NULL);
 	NixSetWire(false);
 	NixSetZ(true,true);
@@ -120,8 +120,8 @@ void ModeModelAnimationVertex::onDrawWin(MultiView::Window *win)
 	NixEnableLighting(true);
 	msg_db_m("----a",4);
 
-	mode_model_mesh_polygon->SetMaterialMarked();
-	NixDraw3D(mode_model_mesh_polygon->VBMarked);
+	mode_model_mesh_polygon->setMaterialMarked();
+	NixDraw3D(mode_model_mesh_polygon->vb_marked);
 	NixSetMaterial(White,White,Black,0,Black);
 	NixSetAlpha(AlphaNone);
 }

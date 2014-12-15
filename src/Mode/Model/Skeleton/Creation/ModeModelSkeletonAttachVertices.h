@@ -15,7 +15,6 @@ class ModeModelSkeletonAttachVertices: public ModeCreation<DataModel>
 {
 public:
 	ModeModelSkeletonAttachVertices(ModeBase *_parent, int _bone_index);
-	virtual ~ModeModelSkeletonAttachVertices();
 
 	virtual void onStart();
 	virtual void onEnd();

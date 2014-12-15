@@ -12,6 +12,7 @@
 #include "ModeModelMeshEdge.h"
 #include "ModeModelMesh.h"
 #include "../Animation/ModeModelAnimation.h"
+#include "../Skeleton/ModeModelSkeleton.h"
 
 #include <GL/gl.h>
 
@@ -22,40 +23,36 @@ ModeModelMeshPolygon::ModeModelMeshPolygon(ModeBase *_parent) :
 	Mode<DataModel>("ModelMeshSkin", _parent, ed->multi_view_3d, "menu_model")
 {
 	// vertex buffers
-	VBMarked = new NixVertexBuffer(1);
-	VBModel = new NixVertexBuffer(1);
-	VBModel2 = NULL;
-	VBModel3 = NULL;
-	VBModel4 = NULL;
-	VBMouseOver = new NixVertexBuffer(1);
-	VBCreation = new NixVertexBuffer(1);
+	vb_marked = new NixVertexBuffer(1);
+	vb_model = new NixVertexBuffer(1);
+	vb_model2 = NULL;
+	vb_model3 = NULL;
+	vb_model4 = NULL;
+	vb_hover = new NixVertexBuffer(1);
+	vb_creation = new NixVertexBuffer(1);
 
-	SelectCW = false;
+	select_cw = false;
 }
 
-ModeModelMeshPolygon::~ModeModelMeshPolygon()
-{
-}
-
-void ModeModelMeshPolygon::DrawPolygons(MultiView::Window *win, Array<ModelVertex> &vertex)
+void ModeModelMeshPolygon::drawPolygons(MultiView::Window *win, Array<ModelVertex> &vertex)
 {
 	msg_db_f("ModelSkin.DrawPolys",2);
 
 	if (multi_view->wire_mode){
-		mode_model_mesh_edge->DrawEdges(win, vertex, false);
+		mode_model_mesh_edge->drawEdges(win, vertex, false);
 		return;
 	}
 
 	// draw all materials separately
 	foreachi(ModelMaterial &m, data->material, mi){
-		NixVertexBuffer **vb = &VBModel;
+		NixVertexBuffer **vb = &vb_model;
 		int num_tex = min(m.num_textures, 4);
 		if (num_tex == 2)
-			vb = &VBModel2;
+			vb = &vb_model2;
 		else if (num_tex == 3)
-			vb = &VBModel3;
+			vb = &vb_model3;
 		else if (num_tex == 4)
-			vb = &VBModel4;
+			vb = &vb_model4;
 		if (!*vb)
 			*vb = new NixVertexBuffer(num_tex);
 
@@ -80,7 +77,7 @@ void ModeModelMeshPolygon::DrawPolygons(MultiView::Window *win, Array<ModelVerte
 		NixSetTexture(NULL);
 	}
 
-	mode_model_mesh_edge->DrawEdges(win, vertex, true);
+	mode_model_mesh_edge->drawEdges(win, vertex, true);
 }
 
 void ModeModelMeshPolygon::onCommand(const string & id)
@@ -91,11 +88,11 @@ void ModeModelMeshPolygon::onUpdateMenu()
 {
 }
 
-void ModeModelMeshPolygon::FillSelectionBuffers(Array<ModelVertex> &vertex)
+void ModeModelMeshPolygon::fillSelectionBuffers(Array<ModelVertex> &vertex)
 {
 	msg_db_f("SkinFillSelBuf", 4);
-	VBMarked->clear();
-	VBMouseOver->clear();
+	vb_marked->clear();
+	vb_hover->clear();
 
 	// create selection buffers
 	msg_db_m("a",4);
@@ -109,32 +106,32 @@ void ModeModelMeshPolygon::FillSelectionBuffers(Array<ModelVertex> &vertex)
 		foreach(ModelPolygon &t, s.polygon)
 			/*if (t.view_stage >= ViewStage)*/{
 			if (t.is_selected)
-				t.AddToVertexBuffer(vertex, VBMarked, 1);
+				t.AddToVertexBuffer(vertex, vb_marked, 1);
 			if ((&t == mmo) || (s_mo))
-				t.AddToVertexBuffer(vertex, VBMouseOver, 1);
+				t.AddToVertexBuffer(vertex, vb_hover, 1);
 		}
 	}
 }
 
-void ModeModelMeshPolygon::SetMaterialMarked()
+void ModeModelMeshPolygon::setMaterialMarked()
 {
 	NixSetAlpha(AlphaMaterial);
 	NixSetMaterial(Black,color(0.3f,0,0,0),Black,0,Red);
 }
 
-void ModeModelMeshPolygon::SetMaterialMouseOver()
+void ModeModelMeshPolygon::setMaterialMouseOver()
 {
 	NixSetAlpha(AlphaMaterial);
 	NixSetMaterial(Black,color(0.3f,0,0,0),Black,0,White);
 }
 
-void ModeModelMeshPolygon::SetMaterialCreation()
+void ModeModelMeshPolygon::setMaterialCreation()
 {
 	NixSetAlpha(AlphaMaterial);
 	NixSetMaterial(Black,color(0.3f,0.3f,1,0.3f),Black,0,color(1,0.1f,0.4f,0.1f));
 }
 
-void ModeModelMeshPolygon::DrawSelection(MultiView::Window *win)
+void ModeModelMeshPolygon::drawSelection(MultiView::Window *win)
 {
 	NixSetWire(false);
 	NixSetZ(true,true);
@@ -143,12 +140,12 @@ void ModeModelMeshPolygon::DrawSelection(MultiView::Window *win)
 
 	glEnable(GL_POLYGON_OFFSET_FILL);
 	glPolygonOffset(1.0f, 1.0f);
-	SetMaterialMarked();
-	NixDraw3D(VBMarked);
-	SetMaterialMouseOver();
-	NixDraw3D(VBMouseOver);
-	SetMaterialCreation();
-	NixDraw3D(VBCreation);
+	setMaterialMarked();
+	NixDraw3D(vb_marked);
+	setMaterialMouseOver();
+	NixDraw3D(vb_hover);
+	setMaterialCreation();
+	NixDraw3D(vb_creation);
 	NixSetMaterial(White,White,Black,0,Black);
 	NixSetAlpha(AlphaNone);
 	glDisable(GL_POLYGON_OFFSET_FILL);
@@ -159,8 +156,9 @@ void ModeModelMeshPolygon::onDrawWin(MultiView::Window *win)
 {
 	msg_db_f("skin.DrawWin",4);
 
-	DrawPolygons(win, data->vertex);
-	DrawSelection(win);
+	drawPolygons(win, data->vertex);
+	mode_model_skeleton->drawSkeleton(win, data->bone, true);
+	drawSelection(win);
 }
 
 
@@ -231,7 +229,7 @@ inline bool in_irect(const vector &p, rect &r)
 bool ModelPolygon::inRect(MultiView::Window *win, rect &r, void *user_data)
 {
 	// care for the sense of rotation?
-	if (mode_model_mesh_polygon->SelectCW)
+	if (mode_model_mesh_polygon->select_cw)
 		if (temp_normal * win->getDirection() > 0)
 			return false;
 
@@ -262,19 +260,19 @@ void ModeModelMeshPolygon::onUpdate(Observable *o, const string &message)
 	}else if (o == multi_view){
 		data->SelectionFromPolygons();
 	}
-	FillSelectionBuffers(data->vertex);
+	fillSelectionBuffers(data->vertex);
 }
 
 
 
 void ModeModelMeshPolygon::onDraw()
 {
-	FillSelectionBuffers(data->vertex);
+	fillSelectionBuffers(data->vertex);
 }
 
-void ModeModelMeshPolygon::ToggleSelectCW()
+void ModeModelMeshPolygon::toggleSelectCW()
 {
-	SelectCW = !SelectCW;
+	select_cw = !select_cw;
 	ed->updateMenu();
 }
 

@@ -184,7 +184,7 @@ void ModelMaterialDialog::OnMaterialList()
 
 void ModelMaterialDialog::OnMaterialListSelect()
 {
-	mode_model_mesh->SetCurrentMaterial(getInt(""));
+	mode_model_mesh->setCurrentMaterial(getInt(""));
 }
 
 void ModelMaterialDialog::OnAddNewMaterial()
@@ -254,7 +254,7 @@ void ModelMaterialDialog::OnTextures()
 void ModelMaterialDialog::OnTexturesSelect()
 {
 	int sel = getInt("");
-	mode_model_mesh_texture->SetCurrentTextureLevel(sel);
+	mode_model_mesh_texture->setCurrentTextureLevel(sel);
 }
 
 void ModelMaterialDialog::OnDeleteTextureLevel()

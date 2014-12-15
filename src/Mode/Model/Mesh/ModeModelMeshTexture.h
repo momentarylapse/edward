@@ -18,7 +18,6 @@ class ModeModelMeshTexture: public Mode<DataModel>, public Observable
 {
 public:
 	ModeModelMeshTexture(ModeBase *parent);
-	virtual ~ModeModelMeshTexture();
 
 	virtual void onStart();
 	virtual void onEnd();
@@ -29,16 +28,16 @@ public:
 	virtual void onDrawWin(MultiView::Window *win);
 
 	// for MultiView actions
-	void GetSelectedSkinVertices(Array<int> &surf, Array<int> &tria, Array<int> &index);
+	void getSelectedSkinVertices(Array<int> &surf, Array<int> &tria, Array<int> &index);
 
 
-	void FetchData();
-	int GetNumSelected();
+	void fetchData();
+	int getNumSelected();
 
 	Array<ModelSkinVertexDummy> skin_vertex;
 
 	int current_texture_level;
-	void SetCurrentTextureLevel(int level);
+	void setCurrentTextureLevel(int level);
 };
 
 extern ModeModelMeshTexture *mode_model_mesh_texture;

@@ -11,16 +11,13 @@
 #include "ModeModelMesh.h"
 #include "ModeModelMeshVertex.h"
 #include "ModeModelMeshPolygon.h"
+#include "../Skeleton/ModeModelSkeleton.h"
 #include "../../../lib/nix/nix.h"
 
 ModeModelMeshVertex *mode_model_mesh_vertex = NULL;
 
 ModeModelMeshVertex::ModeModelMeshVertex(ModeBase *_parent) :
 	Mode<DataModel>("ModelMeshVertex", _parent, ed->multi_view_3d, "menu_model")
-{
-}
-
-ModeModelMeshVertex::~ModeModelMeshVertex()
 {
 }
 
@@ -44,7 +41,8 @@ void ModeModelMeshVertex::onEnd()
 void ModeModelMeshVertex::onDrawWin(MultiView::Window *win)
 {
 	mode_model_mesh_polygon->onDrawWin(win);
-	DrawEffects(win);
+	mode_model_skeleton->drawSkeleton(win, data->bone, true);
+	drawEffects(win);
 }
 
 
@@ -65,10 +63,10 @@ void ModeModelMeshVertex::onUpdate(Observable *o, const string &message)
 	}else if (o == multi_view){
 		data->SelectionFromVertices();
 	}
-	mode_model_mesh_polygon->FillSelectionBuffers(data->vertex);
+	mode_model_mesh_polygon->fillSelectionBuffers(data->vertex);
 }
 
-void ModeModelMeshVertex::DrawEffects(MultiView::Window *win)
+void ModeModelMeshVertex::drawEffects(MultiView::Window *win)
 {
 	NixEnableLighting(false);
 	foreach(ModelEffect &fx, data->fx){

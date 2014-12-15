@@ -19,10 +19,6 @@ ModeModelSkeletonAttachVertices::ModeModelSkeletonAttachVertices(ModeBase* _pare
 	bone_index = _bone_index;
 }
 
-ModeModelSkeletonAttachVertices::~ModeModelSkeletonAttachVertices()
-{
-}
-
 void ModeModelSkeletonAttachVertices::onStart()
 {
 	// relative to absolute pos
@@ -54,7 +50,7 @@ void ModeModelSkeletonAttachVertices::onUpdate(Observable *o, const string &mess
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
 	}else if (o == multi_view){
 		data->SelectionFromVertices();
-		mode_model_mesh_polygon->FillSelectionBuffers(data->vertex);
+		mode_model_mesh_polygon->fillSelectionBuffers(data->vertex);
 	}
 }
 
@@ -73,7 +69,7 @@ void ModeModelSkeletonAttachVertices::onKeyDown()
 
 void ModeModelSkeletonAttachVertices::onDrawWin(MultiView::Window *win)
 {
-	mode_model_mesh_polygon->DrawSelection(win);
+	mode_model_mesh_polygon->drawSelection(win);
 }
 
 

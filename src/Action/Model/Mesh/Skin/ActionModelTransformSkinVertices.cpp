@@ -16,7 +16,7 @@ ActionModelTransformSkinVertices::ActionModelTransformSkinVertices(DataModel *d,
 	texture_level = _texture_level;
 
 	// list of selected skin vertices and save old pos
-	mode_model_mesh_texture->GetSelectedSkinVertices(surface, tria, index);
+	mode_model_mesh_texture->getSelectedSkinVertices(surface, tria, index);
 	foreachi(int k, index, i){
 		ModelPolygon &t = d->surface[surface[i]].polygon[tria[i]];
 		old_data.add(t.side[k].skin_vertex[texture_level]);

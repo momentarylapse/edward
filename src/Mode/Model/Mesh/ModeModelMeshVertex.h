@@ -17,7 +17,6 @@ class ModeModelMeshVertex: public Mode<DataModel>
 {
 public:
 	ModeModelMeshVertex(ModeBase *parent);
-	virtual ~ModeModelMeshVertex();
 
 	virtual void onStart();
 	virtual void onEnd();
@@ -27,7 +26,7 @@ public:
 	virtual void onDraw();
 	virtual void onDrawWin(MultiView::Window *win);
 
-	void DrawEffects(MultiView::Window *win);
+	void drawEffects(MultiView::Window *win);
 };
 
 extern ModeModelMeshVertex *mode_model_mesh_vertex;

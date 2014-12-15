@@ -33,34 +33,34 @@ public:
 
 	virtual bool optimizeView();
 
-	void Easify();
+	void easify();
 
-	void CreateNewMaterialForSelection();
-	void ChooseMaterialForSelection();
+	void createNewMaterialForSelection();
+	void chooseMaterialForSelection();
 
 	void chooseMouseFunction(int f);
 	void applyMouseFunction(MultiView::MultiView *mv);
 
-	void AddEffects(int type);
-	void EditEffects();
-	void ClearEffects();
+	void addEffects(int type);
+	void editEffects();
+	void clearEffects();
 
 	ModelMaterialDialog *material_dialog;
-	void ShowMaterialDialog();
-	void CloseMaterialDialog();
-	void ToggleMaterialDialog();
+	void showMaterialDialog();
+	void closeMaterialDialog();
+	void toggleMaterialDialog();
 
 	int mouse_action;
 
-	void Copy();
-	void Paste();
-	bool Copyable();
-	bool Pasteable();
+	void copy();
+	void paste();
+	bool copyable();
+	bool pasteable();
 	Geometry temp_geo;
 
 
 	int current_material;
-	void SetCurrentMaterial(int index);
+	void setCurrentMaterial(int index);
 };
 
 extern ModeModelMesh *mode_model_mesh;

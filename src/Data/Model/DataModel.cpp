@@ -1048,7 +1048,6 @@ bool DataModel::save(const string & _filename)
 //	PrecreatePhysicalData();
 
 	GetBoundingBox(_min, _max);
-	GetRadius();
 	radius = GetRadius() * 1.1f;
 
 

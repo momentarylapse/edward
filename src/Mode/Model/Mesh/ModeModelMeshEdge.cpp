@@ -11,6 +11,7 @@
 #include "ModeModelMesh.h"
 #include "ModeModelMeshEdge.h"
 #include "ModeModelMeshPolygon.h"
+#include "../Skeleton/ModeModelSkeleton.h"
 
 ModeModelMeshEdge *mode_model_mesh_edge = NULL;
 
@@ -23,65 +24,6 @@ ModeModelMeshEdge::ModeModelMeshEdge(ModeBase *_parent) :
 	Mode<DataModel>("ModelMeshEdge", _parent, ed->multi_view_3d, "menu_model")
 {
 }
-
-
-
-ModeModelMeshEdge::~ModeModelMeshEdge()
-{
-}
-
-void ModeModelMeshEdge::onRightButtonUp()
-{
-}
-
-
-
-void ModeModelMeshEdge::onKeyDown()
-{
-}
-
-
-
-void ModeModelMeshEdge::onRightButtonDown()
-{
-}
-
-
-
-void ModeModelMeshEdge::onMiddleButtonDown()
-{
-}
-
-
-
-void ModeModelMeshEdge::onMiddleButtonUp()
-{
-}
-
-
-
-void ModeModelMeshEdge::onKeyUp()
-{
-}
-
-
-
-void ModeModelMeshEdge::onUpdateMenu()
-{
-}
-
-
-
-void ModeModelMeshEdge::onDraw()
-{
-}
-
-
-
-void ModeModelMeshEdge::onMouseMove()
-{
-}
-
 
 
 void ModeModelMeshEdge::onStart()
@@ -162,23 +104,12 @@ void ModeModelMeshEdge::onUpdate(Observable *o, const string &message)
 	}else if (o == multi_view){
 		data->SelectionFromEdges();
 	}
-	mode_model_mesh_polygon->FillSelectionBuffers(data->vertex);
+	mode_model_mesh_polygon->fillSelectionBuffers(data->vertex);
 }
 
 
 
-void ModeModelMeshEdge::onCommand(const string & id)
-{
-}
-
-
-
-void ModeModelMeshEdge::onLeftButtonDown()
-{
-}
-
-
-void ModeModelMeshEdge::DrawEdges(MultiView::Window *win, Array<ModelVertex> &vertex, bool only_selected)
+void ModeModelMeshEdge::drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex, bool only_selected)
 {
 	NixSetWire(false);
 	NixEnableLighting(false);
@@ -206,9 +137,10 @@ void ModeModelMeshEdge::DrawEdges(MultiView::Window *win, Array<ModelVertex> &ve
 void ModeModelMeshEdge::onDrawWin(MultiView::Window *win)
 {
 	if (!multi_view->wire_mode)
-		mode_model_mesh_polygon->DrawPolygons(win, data->vertex);
-	DrawEdges(win, data->vertex, false);
-	mode_model_mesh_polygon->DrawSelection(win);
+		mode_model_mesh_polygon->drawPolygons(win, data->vertex);
+	drawEdges(win, data->vertex, false);
+	mode_model_mesh_polygon->drawSelection(win);
+	mode_model_skeleton->drawSkeleton(win, data->bone, true);
 
 	if (multi_view->hover.index >= 0){
 		NixSetWire(false);
@@ -231,11 +163,4 @@ void ModeModelMeshEdge::onEnd()
 	unsubscribe(data);
 	unsubscribe(multi_view);
 }
-
-
-
-void ModeModelMeshEdge::onLeftButtonUp()
-{
-}
-
 

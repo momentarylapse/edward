@@ -17,7 +17,6 @@ class ModeModelSkeleton: public Mode<DataModel>
 {
 public:
 	ModeModelSkeleton(ModeBase *_parent);
-	virtual ~ModeModelSkeleton();
 
 	virtual void onStart();
 	virtual void onEnd();
@@ -30,7 +29,7 @@ public:
 	virtual void onDrawWin(MultiView::Window *win);
 
 
-	void drawSkeleton(MultiView::Window *win, Array<ModelBone> &bone);
+	void drawSkeleton(MultiView::Window *win, Array<ModelBone> &bone, bool thin = false);
 
 
 	void chooseMouseFunction(int f);

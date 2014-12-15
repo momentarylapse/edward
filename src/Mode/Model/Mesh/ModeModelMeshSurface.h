@@ -17,7 +17,6 @@ class ModeModelMeshSurface: public Mode<DataModel>
 {
 public:
 	ModeModelMeshSurface(ModeBase *parent);
-	virtual ~ModeModelMeshSurface();
 
 	virtual void onStart();
 	virtual void onEnd();

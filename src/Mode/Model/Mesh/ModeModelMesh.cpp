@@ -94,7 +94,7 @@ void ModeModelMesh::onEnd()
 	t->reset();
 	t->enable(false);
 
-	CloseMaterialDialog();
+	closeMaterialDialog();
 }
 
 
@@ -104,12 +104,12 @@ void ModeModelMesh::onCommand(const string & id)
 	if (id == "delete")
 		data->DeleteSelection(ed->cur_mode == mode_model_mesh_vertex);
 	if (id == "copy")
-		Copy();
+		copy();
 	if (id == "paste")
-		Paste();
+		paste();
 
 	if (id == "select_cw")
-		mode_model_mesh_polygon->ToggleSelectCW();
+		mode_model_mesh_polygon->toggleSelectCW();
 
 	if (id == "volume_subtract")
 		data->SubtractSelection();
@@ -185,17 +185,17 @@ void ModeModelMesh::onCommand(const string & id)
 		chooseMouseFunction(MultiView::ActionMirror);
 
 	if (id == "create_new_material")
-		CreateNewMaterialForSelection();
+		createNewMaterialForSelection();
 	if (id == "choose_material")
-		ChooseMaterialForSelection();
+		chooseMaterialForSelection();
 	if (id == "mode_model_materials")
-		ToggleMaterialDialog();
+		toggleMaterialDialog();
 	if (id == "text_from_bg")
 		data->execute(new ActionModelSkinVerticesFromProjection(data, multi_view));
 	if (id == "automapping")
 		data->Automap(current_material, mode_model_mesh_texture->current_texture_level);
 	if (id == "easify_skin")
-		Easify();
+		easify();
 
 	if (id == "normal_this_smooth")
 		data->SetNormalModeSelection(NormalModeSmooth);
@@ -205,20 +205,20 @@ void ModeModelMesh::onCommand(const string & id)
 		data->SetNormalModeSelection(NormalModeAngular);
 
 	if (id == "fx_new_light")
-		AddEffects(FX_KIND_LIGHT);
+		addEffects(FX_KIND_LIGHT);
 	if (id == "fx_new_sound")
-		AddEffects(FX_KIND_SOUND);
+		addEffects(FX_KIND_SOUND);
 	if (id == "fx_new_script")
-		AddEffects(FX_KIND_SCRIPT);
+		addEffects(FX_KIND_SCRIPT);
 	if (id == "fx_new_field")
-		AddEffects(FX_KIND_FORCEFIELD);
+		addEffects(FX_KIND_FORCEFIELD);
 	if (id == "fx_none")
-		ClearEffects();
+		clearEffects();
 	if (id == "fx_edit")
-		EditEffects();
+		editEffects();
 }
 
-void ModeModelMesh::ShowMaterialDialog()
+void ModeModelMesh::showMaterialDialog()
 {
 	if (!material_dialog){
 		material_dialog = new ModelMaterialDialog(ed, data);
@@ -226,7 +226,7 @@ void ModeModelMesh::ShowMaterialDialog()
 	}
 }
 
-void ModeModelMesh::CloseMaterialDialog()
+void ModeModelMesh::closeMaterialDialog()
 {
 	if (material_dialog){
 		delete(material_dialog);
@@ -235,12 +235,12 @@ void ModeModelMesh::CloseMaterialDialog()
 	}
 }
 
-void ModeModelMesh::ToggleMaterialDialog()
+void ModeModelMesh::toggleMaterialDialog()
 {
 	if (material_dialog)
-		CloseMaterialDialog();
+		closeMaterialDialog();
 	else
-		ShowMaterialDialog();
+		showMaterialDialog();
 }
 
 
@@ -260,7 +260,7 @@ void ModeModelMesh::onUpdate(Observable *o, const string &message)
 {
 	// consistency checks
 	if (current_material >= data->material.num)
-		SetCurrentMaterial(data->material.num - 1);
+		setCurrentMaterial(data->material.num - 1);
 	//data->DebugShow();
 }
 
@@ -268,9 +268,9 @@ void ModeModelMesh::onUpdate(Observable *o, const string &message)
 
 void ModeModelMesh::onUpdateMenu()
 {
-	ed->enable("copy", Copyable());
-	ed->enable("paste", Pasteable());
-	ed->enable("delete", Copyable());
+	ed->enable("copy", copyable());
+	ed->enable("paste", pasteable());
+	ed->enable("delete", copyable());
 	string cm_name = ed->cur_mode->name;
 	ed->check("new_point", cm_name == "ModelMeshCreateVertex");
 	ed->check("new_tria", cm_name == "ModelMeshCreateTriangles");
@@ -280,7 +280,7 @@ void ModeModelMesh::onUpdateMenu()
 	ed->check("new_cylinder", cm_name == "ModelMeshCreateCylinder");
 	ed->check("new_torus", cm_name == "ModelMeshCreateTorus");
 
-	ed->check("select_cw", mode_model_mesh_polygon->SelectCW);
+	ed->check("select_cw", mode_model_mesh_polygon->select_cw);
 
 	ed->enable("select", multi_view->allow_mouse_actions);
 	ed->enable("translate", multi_view->allow_mouse_actions);
@@ -323,7 +323,7 @@ bool ModeModelMesh::optimizeView()
 
 
 
-void ModeModelMesh::CreateNewMaterialForSelection()
+void ModeModelMesh::createNewMaterialForSelection()
 {
 #if 0
 	msg_db_f("CreateNewMaterialForSelection", 2);
@@ -364,7 +364,7 @@ void ModeModelMesh::CreateNewMaterialForSelection()
 #endif
 }
 
-void ModeModelMesh::ChooseMaterialForSelection()
+void ModeModelMesh::chooseMaterialForSelection()
 {
 	msg_db_f("ChooseMaterialForSelection", 2);
 	if (0 == data->GetNumSelectedPolygons()){
@@ -409,7 +409,7 @@ void ModeModelMesh::applyMouseFunction(MultiView::MultiView *mv)
 	}
 }
 
-void ModeModelMesh::Copy()
+void ModeModelMesh::copy()
 {
 	data->CopyGeometry(temp_geo);
 
@@ -417,18 +417,18 @@ void ModeModelMesh::Copy()
 	ed->setMessage(format(_("%d Vertizes, %d Dreiecke kopiert"), temp_geo.vertex.num, temp_geo.polygon.num));
 }
 
-void ModeModelMesh::Paste()
+void ModeModelMesh::paste()
 {
 	data->PasteGeometry(temp_geo, current_material);
 	ed->setMessage(format(_("%d Vertizes, %d Dreiecke eingef&ugt"), temp_geo.vertex.num, temp_geo.polygon.num));
 }
 
-bool ModeModelMesh::Copyable()
+bool ModeModelMesh::copyable()
 {
 	return data->GetNumSelectedVertices() > 0;
 }
 
-void ModeModelMesh::AddEffects(int type)
+void ModeModelMesh::addEffects(int type)
 {
 	if (data->GetNumSelectedVertices() == 0){
 		ed->setMessage(_("Kein Punkt markiert!"));
@@ -438,7 +438,7 @@ void ModeModelMesh::AddEffects(int type)
 	dlg->run();
 }
 
-void ModeModelMesh::EditEffects()
+void ModeModelMesh::editEffects()
 {
 	int index;
 	int n = 0;
@@ -455,7 +455,7 @@ void ModeModelMesh::EditEffects()
 	dlg->run();
 }
 
-void ModeModelMesh::ClearEffects()
+void ModeModelMesh::clearEffects()
 {
 	int n = 0;
 	foreach(ModelEffect &fx, data->fx)
@@ -468,22 +468,22 @@ void ModeModelMesh::ClearEffects()
 	data->SelectionClearEffects();
 }
 
-bool ModeModelMesh::Pasteable()
+bool ModeModelMesh::pasteable()
 {
 	return temp_geo.vertex.num > 0;
 }
 
-void ModeModelMesh::Easify()
+void ModeModelMesh::easify()
 {
 	ModelEasifyDialog *dlg = new ModelEasifyDialog(ed, false, data);
 	dlg->run();
 }
 
-void ModeModelMesh::SetCurrentMaterial(int index)
+void ModeModelMesh::setCurrentMaterial(int index)
 {
 	if (current_material == index)
 		return;
 	current_material = index;
 	notify();
-	mode_model_mesh_texture->SetCurrentTextureLevel(0);
+	mode_model_mesh_texture->setCurrentTextureLevel(0);
 }

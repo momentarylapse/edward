@@ -480,10 +480,12 @@ void Edward::onUpdate(Observable *o, const string &message)
 		forceRedraw();
 	}else if (o->getName() == "ActionManager"){
 		ActionManager *am = dynamic_cast<ActionManager*>(o);
-		if (message == am->MESSAGE_FAILED)
+		if (message == am->MESSAGE_FAILED){
 			errorBox(format(_("Aktion fehlgeschlagen: %s\nGrund: %s"), am->error_location.c_str(), am->error_message.c_str()));
-		else if (message == am->MESSAGE_SAVED)
+		}else if (message == am->MESSAGE_SAVED){
 			setMessage(_("Gespeichert!"));
+			updateMenu();
+		}
 	}else{
 		// data...
 		forceRedraw();

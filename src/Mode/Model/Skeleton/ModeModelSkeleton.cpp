@@ -24,10 +24,6 @@ ModeModelSkeleton::ModeModelSkeleton(ModeBase *_parent) :
 {
 }
 
-ModeModelSkeleton::~ModeModelSkeleton()
-{
-}
-
 
 
 void ModeModelSkeleton::onCommand(const string & id)
@@ -188,15 +184,15 @@ void drawCoordBasis(const ModelBone &b)
 void ModeModelSkeleton::onDrawWin(MultiView::Window *win)
 {
 	if (mode_model_animation->isAncestorOf(ed->cur_mode)){
-		mode_model_mesh_polygon->DrawPolygons(win, mode_model_animation->vertex);
+		mode_model_mesh_polygon->drawPolygons(win, mode_model_animation->vertex);
 		drawSkeleton(win, mode_model_animation->bone);
 	}else{
-		mode_model_mesh_polygon->DrawPolygons(win, data->vertex);
+		mode_model_mesh_polygon->drawPolygons(win, data->vertex);
 		drawSkeleton(win, data->bone);
 	}
 }
 
-void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &bone)
+void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &bone, bool thin)
 {
 
 #ifdef USE_MODELS
@@ -214,7 +210,7 @@ void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &b
 	NixSetZ(false, false);
 	NixEnableLighting(false);
 	NixSetWire(false);
-	NixLineWidth = 2;
+	NixLineWidth = thin ? 0.5f : 2;
 	NixSmoothLines = true;
 
 	foreach(ModelBone &b, bone){

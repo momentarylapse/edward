@@ -18,7 +18,6 @@ class ModeModelMeshPolygon: public Mode<DataModel>
 {
 public:
 	ModeModelMeshPolygon(ModeBase *parent);
-	virtual ~ModeModelMeshPolygon();
 
 	virtual void onStart();
 	virtual void onEnd();
@@ -29,21 +28,21 @@ public:
 
 	virtual void onDraw();
 	virtual void onDrawWin(MultiView::Window *win);
-	void DrawPolygons(MultiView::Window *win, Array<ModelVertex> &vertex);
-	void DrawSelection(MultiView::Window *win);
+	void drawPolygons(MultiView::Window *win, Array<ModelVertex> &vertex);
+	void drawSelection(MultiView::Window *win);
 
 
-	void SetMaterialMarked();
-	void SetMaterialMouseOver();
-	void SetMaterialCreation();
+	void setMaterialMarked();
+	void setMaterialMouseOver();
+	void setMaterialCreation();
 
-	void FillSelectionBuffers(Array<ModelVertex> &vertex);
+	void fillSelectionBuffers(Array<ModelVertex> &vertex);
 
-	void ToggleSelectCW();
-	bool SelectCW;
+	void toggleSelectCW();
+	bool select_cw;
 
-	NixVertexBuffer *VBModel, *VBModel2, *VBModel3, *VBModel4;
-	NixVertexBuffer *VBMarked, *VBMouseOver, *VBCreation;
+	NixVertexBuffer *vb_model, *vb_model2, *vb_model3, *vb_model4;
+	NixVertexBuffer *vb_marked, *vb_hover, *vb_creation;
 };
 
 extern ModeModelMeshPolygon *mode_model_mesh_polygon;

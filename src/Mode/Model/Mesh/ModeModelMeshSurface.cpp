@@ -19,10 +19,6 @@ ModeModelMeshSurface::ModeModelMeshSurface(ModeBase *_parent) :
 {
 }
 
-ModeModelMeshSurface::~ModeModelMeshSurface()
-{
-}
-
 
 
 void ModeModelMeshSurface::onDrawWin(MultiView::Window *win)
@@ -66,7 +62,7 @@ void ModeModelMeshSurface::onUpdate(Observable *o, const string &message)
 	}else if (o == multi_view){
 		data->SelectionFromSurfaces();
 	}
-	mode_model_mesh_polygon->FillSelectionBuffers(data->vertex);
+	mode_model_mesh_polygon->fillSelectionBuffers(data->vertex);
 }
 
 
@@ -84,7 +80,7 @@ void ModeModelMeshSurface::onStart()
 
 void ModeModelMeshSurface::onDraw()
 {
-	mode_model_mesh_polygon->FillSelectionBuffers(data->vertex);
+	mode_model_mesh_polygon->fillSelectionBuffers(data->vertex);
 }
 
 
