@@ -23,11 +23,11 @@ void *ActionWorldDeleteSelection::compose(Data *d)
 
 	for (int i=w->Objects.num-1; i>=0; i--)
 		if (w->Objects[i].is_selected)
-			AddSubAction(new ActionWorldDeleteObject(i), d);
+			addSubAction(new ActionWorldDeleteObject(i), d);
 
 	for (int i=w->Terrains.num-1; i>=0; i--)
 		if (w->Terrains[i].is_selected)
-			AddSubAction(new ActionWorldDeleteTerrain(i), d);
+			addSubAction(new ActionWorldDeleteTerrain(i), d);
 
 	return NULL;
 }

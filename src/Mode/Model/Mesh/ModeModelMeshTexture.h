@@ -37,7 +37,7 @@ public:
 
 	Array<ModelSkinVertexDummy> skin_vertex;
 
-	int CurrentTextureLevel;
+	int current_texture_level;
 	void SetCurrentTextureLevel(int level);
 };
 

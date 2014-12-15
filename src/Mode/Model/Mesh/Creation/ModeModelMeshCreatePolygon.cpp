@@ -26,7 +26,7 @@ ModeModelMeshCreatePolygon::~ModeModelMeshCreatePolygon()
 
 void ModeModelMeshCreatePolygon::onStart()
 {
-	foreach(ModelVertex &v, data->Vertex)
+	foreach(ModelVertex &v, data->vertex)
 		v.is_special = false;
 }
 
@@ -34,7 +34,7 @@ void ModeModelMeshCreatePolygon::onStart()
 
 void ModeModelMeshCreatePolygon::onEnd()
 {
-	foreach(ModelVertex &v, data->Vertex)
+	foreach(ModelVertex &v, data->vertex)
 		v.is_special = false;
 }
 
@@ -43,8 +43,8 @@ void ModeModelMeshCreatePolygon::onDrawWin(MultiView::Window *win)
 {
 	for (int i=1;i<selection.num;i++){
 		NixEnableLighting(false);
-		vector pa = win->project(data->Vertex[selection[i - 1]].pos);
-		vector pb = win->project(data->Vertex[selection[i    ]].pos);
+		vector pa = win->project(data->vertex[selection[i - 1]].pos);
+		vector pb = win->project(data->vertex[selection[i    ]].pos);
 		NixSetColor(Green);
 		if ((pa.z >= 0) and (pa.z < 1) and (pb.z >= 0) and (pb.z <= 1))
 			NixDrawLine(pa.x, pa.y, pb.x, pb.y, 0);
@@ -58,7 +58,7 @@ void ModeModelMeshCreatePolygon::onDrawWin(MultiView::Window *win)
 void ModeModelMeshCreatePolygon::onKeyDown()
 {
 	if (HuiGetEvent()->key_code == KEY_SHIFT + KEY_RETURN){
-		data->execute(new ActionModelAddPolygonAutoSkin(selection, mode_model_mesh->CurrentMaterial));
+		data->execute(new ActionModelAddPolygonAutoSkin(selection, mode_model_mesh->current_material));
 		abort();
 	}
 }
@@ -70,7 +70,7 @@ void ModeModelMeshCreatePolygon::onLeftButtonDown()
 		// closed loop -> done
 		if (selection.num > 0)
 			if (multi_view->hover.index == selection[0]){
-				data->execute(new ActionModelAddPolygonAutoSkin(selection, mode_model_mesh->CurrentMaterial));
+				data->execute(new ActionModelAddPolygonAutoSkin(selection, mode_model_mesh->current_material));
 				abort();
 				return;
 			}
@@ -89,9 +89,9 @@ void ModeModelMeshCreatePolygon::onLeftButtonDown()
 
 	}else{
 		data->AddVertex(multi_view->GetCursor3d());
-		selection.add(data->Vertex.num - 1);
+		selection.add(data->vertex.num - 1);
 	}
-	data->Vertex[selection.back()].is_special = true;
+	data->vertex[selection.back()].is_special = true;
 	message = format(_("Polygon w&ahlen: %d -> Shift + Return"), selection.num);
 }
 

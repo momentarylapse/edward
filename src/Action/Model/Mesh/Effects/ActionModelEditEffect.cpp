@@ -17,12 +17,12 @@ void* ActionModelEditEffect::execute(Data* d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModelEffect temp = m->Fx[index];
-	effect.Vertex = temp.Vertex;
-	m->Fx[index] = effect;
+	ModelEffect temp = m->fx[index];
+	effect.vertex = temp.vertex;
+	m->fx[index] = effect;
 	effect = temp;
 
-	return &m->Fx[index];
+	return &m->fx[index];
 }
 
 void ActionModelEditEffect::undo(Data* d)

@@ -23,10 +23,10 @@ void *ActionWorldPaste::compose(Data *d)
 	w->ClearSelection();
 
 	foreach(WorldObject &o, objects)
-		AddSubAction(new ActionWorldAddObject(o.FileName, o.pos, o.Ang), w);
+		addSubAction(new ActionWorldAddObject(o.FileName, o.pos, o.Ang), w);
 
 	foreach(WorldTerrain &t, terrains)
-		AddSubAction(new ActionWorldAddTerrain(t.pos, t.FileName), w);
+		addSubAction(new ActionWorldAddTerrain(t.pos, t.FileName), w);
 
 	return NULL;
 }

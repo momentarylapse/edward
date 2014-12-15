@@ -10,7 +10,7 @@
 ActionModelAddEffects::ActionModelAddEffects(DataModel *m, const ModelEffect& _effect)
 {
 	effect = _effect;
-	foreachi(ModelVertex &v, m->Vertex, i)
+	foreachi(ModelVertex &v, m->vertex, i)
 		if (v.is_selected)
 			vertex.add(i);
 }
@@ -20,8 +20,8 @@ void* ActionModelAddEffects::execute(Data* d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreach(int v, vertex){
 		ModelEffect fx = effect;
-		fx.Vertex = v;
-		m->Fx.add(fx);
+		fx.vertex = v;
+		m->fx.add(fx);
 	}
 	return NULL;
 }
@@ -29,7 +29,7 @@ void* ActionModelAddEffects::execute(Data* d)
 void ActionModelAddEffects::undo(Data* d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	m->Fx.resize(m->Fx.num - vertex.num);
+	m->fx.resize(m->fx.num - vertex.num);
 }
 
 

@@ -34,7 +34,7 @@ void ModelEasifyDialog::LoadData()
 {
 	setFloat("quality_factor", factor * 100.0f);
 	setFloat("quality_slider", factor);
-	setString("eat_vertices", format(_("Vertexpunkte: %d (von %d)"), (int)(data->Vertex.num * factor), data->Vertex.num));
+	setString("eat_vertices", format(_("Vertexpunkte: %d (von %d)"), (int)(data->vertex.num * factor), data->vertex.num));
 	setString("eat_polygons", format(_("Polygone: %d (von %d)"), (int)(data->GetNumPolygons() * factor), data->GetNumPolygons()));
 }
 

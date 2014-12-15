@@ -47,9 +47,9 @@ void ModeModelMeshPolygon::DrawPolygons(MultiView::Window *win, Array<ModelVerte
 	}
 
 	// draw all materials separately
-	foreachi(ModelMaterial &m, data->Material, mi){
+	foreachi(ModelMaterial &m, data->material, mi){
 		NixVertexBuffer **vb = &VBModel;
-		int num_tex = min(m.NumTextures, 4);
+		int num_tex = min(m.num_textures, 4);
 		if (num_tex == 2)
 			vb = &VBModel2;
 		else if (num_tex == 3)
@@ -61,12 +61,12 @@ void ModeModelMeshPolygon::DrawPolygons(MultiView::Window *win, Array<ModelVerte
 
 		(*vb)->clear();
 
-		foreach(ModelSurface &surf, data->Surface){
-			if (!surf.IsVisible)
+		foreach(ModelSurface &surf, data->surface){
+			if (!surf.is_visible)
 				continue;
-			foreach(ModelPolygon &t, surf.Polygon)
-				if ((t.view_stage >= multi_view->view_stage) && (t.Material == mi))
-					t.AddToVertexBuffer(vertex, *vb, m.NumTextures);
+			foreach(ModelPolygon &t, surf.polygon)
+				if ((t.view_stage >= multi_view->view_stage) && (t.material == mi))
+					t.AddToVertexBuffer(vertex, *vb, m.num_textures);
 		}
 
 		// draw
@@ -100,13 +100,13 @@ void ModeModelMeshPolygon::FillSelectionBuffers(Array<ModelVertex> &vertex)
 	// create selection buffers
 	msg_db_m("a",4);
 	ModelPolygon *mmo = NULL;
-	if ((multi_view->hover.index >= 0) && (multi_view->hover.set < data->Surface.num) && (multi_view->hover.type == MVDModelPolygon))
-		mmo = &data->Surface[multi_view->hover.set].Polygon[multi_view->hover.index];
-	foreachi(ModelSurface &s, data->Surface, si){
+	if ((multi_view->hover.index >= 0) && (multi_view->hover.set < data->surface.num) && (multi_view->hover.type == MVDModelPolygon))
+		mmo = &data->surface[multi_view->hover.set].polygon[multi_view->hover.index];
+	foreachi(ModelSurface &s, data->surface, si){
 		bool s_mo = false;
 		if ((multi_view->hover.index >= 0) && (multi_view->hover.type == MVDModelSurface))
 			s_mo = (multi_view->hover.index == si);
-		foreach(ModelPolygon &t, s.Polygon)
+		foreach(ModelPolygon &t, s.polygon)
 			/*if (t.view_stage >= ViewStage)*/{
 			if (t.is_selected)
 				t.AddToVertexBuffer(vertex, VBMarked, 1);
@@ -159,7 +159,7 @@ void ModeModelMeshPolygon::onDrawWin(MultiView::Window *win)
 {
 	msg_db_f("skin.DrawWin",4);
 
-	DrawPolygons(win, data->Vertex);
+	DrawPolygons(win, data->vertex);
 	DrawSelection(win);
 }
 
@@ -187,34 +187,34 @@ void ModeModelMeshPolygon::onStart()
 bool ModelPolygon::hover(MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data)
 {
 	// care for the sense of rotation?
-	if (TempNormal * win->getDirection() > 0)
+	if (temp_normal * win->getDirection() > 0)
 		return false;
 
 	DataModel *m = mode_model_mesh_polygon->data; // surf->model;
 
 	// project all points
 	Array<vector> p;
-	for (int k=0;k<Side.num;k++){
-		vector pp = win->project(m->Vertex[Side[k].Vertex].pos);
+	for (int k=0;k<side.num;k++){
+		vector pp = win->project(m->vertex[side[k].vertex].pos);
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
 		p.add(pp);
 	}
 
 	// test all sub-triangles
-	if (TriangulationDirty)
-		UpdateTriangulation(m->Vertex);
-	for (int k=Side.num-3; k>=0; k--){
-		int a = Side[k].Triangulation[0];
-		int b = Side[k].Triangulation[1];
-		int c = Side[k].Triangulation[2];
+	if (triangulation_dirty)
+		UpdateTriangulation(m->vertex);
+	for (int k=side.num-3; k>=0; k--){
+		int a = side[k].triangulation[0];
+		int b = side[k].triangulation[1];
+		int c = side[k].triangulation[2];
 		float f,g;
 		GetBaryCentric(M, p[a], p[b], p[c], f, g);
 		// cursor in triangle?
 		if ((f>0)&&(g>0)&&(f+g<1)){
-			vector va = m->Vertex[Side[a].Vertex].pos;
-			vector vb = m->Vertex[Side[b].Vertex].pos;
-			vector vc = m->Vertex[Side[c].Vertex].pos;
+			vector va = m->vertex[side[a].vertex].pos;
+			vector vb = m->vertex[side[b].vertex].pos;
+			vector vc = m->vertex[side[c].vertex].pos;
 			tp = va+f*(vb-va)+g*(vc-va);
 			z = win->project(tp).z;
 			return true;
@@ -232,14 +232,14 @@ bool ModelPolygon::inRect(MultiView::Window *win, rect &r, void *user_data)
 {
 	// care for the sense of rotation?
 	if (mode_model_mesh_polygon->SelectCW)
-		if (TempNormal * win->getDirection() > 0)
+		if (temp_normal * win->getDirection() > 0)
 			return false;
 
 	DataModel *m = mode_model_mesh_polygon->data; // surf->model;
 
 	// all vertices within rectangle?
-	for (int k=0;k<Side.num;k++){
-		vector pp = win->project(m->Vertex[Side[k].Vertex].pos); // mmodel->GetVertex(ia)
+	for (int k=0;k<side.num;k++){
+		vector pp = win->project(m->vertex[side[k].vertex].pos); // mmodel->GetVertex(ia)
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
 		if (in_irect(pp, r))
@@ -254,22 +254,22 @@ void ModeModelMeshPolygon::onUpdate(Observable *o, const string &message)
 	if (o == data){
 		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		foreach(ModelSurface &s, data->Surface)
+		foreach(ModelSurface &s, data->surface)
 		multi_view->AddData(	MVDModelPolygon,
-				s.Polygon,
+				s.polygon,
 				&s,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
 	}else if (o == multi_view){
 		data->SelectionFromPolygons();
 	}
-	FillSelectionBuffers(data->Vertex);
+	FillSelectionBuffers(data->vertex);
 }
 
 
 
 void ModeModelMeshPolygon::onDraw()
 {
-	FillSelectionBuffers(data->Vertex);
+	FillSelectionBuffers(data->vertex);
 }
 
 void ModeModelMeshPolygon::ToggleSelectCW()

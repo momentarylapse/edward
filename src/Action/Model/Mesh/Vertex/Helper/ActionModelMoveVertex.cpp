@@ -18,8 +18,8 @@ ActionModelMoveVertex::ActionModelMoveVertex(int _vertex, const vector &_pos)
 void *ActionModelMoveVertex::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	vector temp = m->Vertex[vertex].pos;
-	m->Vertex[vertex].pos = pos;
+	vector temp = m->vertex[vertex].pos;
+	m->vertex[vertex].pos = pos;
 	pos = temp;
 	return NULL;
 }

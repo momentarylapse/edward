@@ -32,7 +32,7 @@ public:
 	virtual bool was_trivial();
 
 protected:
-	void *AddSubAction(Action *a, Data *d);
+	void *addSubAction(Action *a, Data *d);
 
 private:
 	Array<Action*> action;
@@ -43,7 +43,6 @@ class ActionGroupManual : public ActionGroup
 	friend class ActionManager;
 public:
 	ActionGroupManual(const string &name){	_name_ = name;	}
-	virtual ~ActionGroupManual(){}
 
 	virtual string name(){	return _name_;	}
 private:

@@ -13,12 +13,12 @@ ActionModelSetMaterial::ActionModelSetMaterial(DataModel *m, int _material)
 	material = _material;
 
 	// save old data
-	foreachi(ModelSurface &s, m->Surface, si)
-		foreachi(ModelPolygon &t, s.Polygon, ti)
+	foreachi(ModelSurface &s, m->surface, si)
+		foreachi(ModelPolygon &t, s.polygon, ti)
 			if (t.is_selected){
 				surface.add(si);
 				triangle.add(ti);
-				old_material.add(t.Material);
+				old_material.add(t.material);
 			}
 }
 
@@ -34,8 +34,8 @@ void *ActionModelSetMaterial::execute(Data *d)
 
 
 	foreachi(int s, surface, i){
-		ModelPolygon &t = m->Surface[s].Polygon[triangle[i]];
-		t.Material = material;
+		ModelPolygon &t = m->surface[s].polygon[triangle[i]];
+		t.material = material;
 	}
 	return NULL;
 }
@@ -47,8 +47,8 @@ void ActionModelSetMaterial::undo(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	foreachi(int s, surface, i){
-		ModelPolygon &t = m->Surface[s].Polygon[triangle[i]];
-		t.Material = old_material[i];
+		ModelPolygon &t = m->surface[s].polygon[triangle[i]];
+		t.material = old_material[i];
 	}
 }
 

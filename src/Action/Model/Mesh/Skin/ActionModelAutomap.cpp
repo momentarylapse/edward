@@ -45,10 +45,10 @@ int max_index(Array<float> &d)
 Array<int> group_by_dirs(ModelSurface *s, const vector *dir, int num_dirs)
 {
 	Array<int> r;
-	foreachi(ModelPolygon &p, s->Polygon, i){
+	foreachi(ModelPolygon &p, s->polygon, i){
 		Array<float> d;
 		for (int k=0;k<num_dirs;k++)
-			d.add(p.TempNormal * dir[k]);
+			d.add(p.temp_normal * dir[k]);
 		r.add(max_index(d));
 	}
 	return r;
@@ -64,9 +64,9 @@ Set<int> extract_connected(Set<int> &set, ModelSurface *s)
 	while(found){
 		found = false;
 		foreach(int i, r){
-			ModelPolygon &p = s->Polygon[i];
-			for (int k=0;k<p.Side.num;k++){
-				int neigh = s->Edge[p.Side[k].Edge].Polygon[1 - p.Side[k].EdgeDirection];
+			ModelPolygon &p = s->polygon[i];
+			for (int k=0;k<p.side.num;k++){
+				int neigh = s->edge[p.side[k].edge].polygon[1 - p.side[k].edge_direction];
 				if (neigh < 0)
 					continue;
 				if (set.find(neigh) >= 0){
@@ -103,7 +103,7 @@ Array<Island> get_islands(DataModel *m)
 	const int num_dirs = 6;
 	vector dir[num_dirs] = {e_x, e_y, e_z, -e_x, -e_y, -e_z};
 	Array<Island> islands;
-	foreachi(ModelSurface &s, m->Surface, surf){
+	foreachi(ModelSurface &s, m->surface, surf){
 		Array<int> g = group_by_dirs(&s, dir, num_dirs);
 		for (int k=0;k<num_dirs;k++){
 			Set<int> set;
@@ -123,14 +123,14 @@ void Island::map_primitive(DataModel *m)
 {
 	vector e1 = dir.ortho();
 	vector e2 = dir ^ e1;
-	ModelSurface *s = &m->Surface[surf];
+	ModelSurface *s = &m->surface[surf];
 	skin.clear();
 
 	// map (project on plane)
 	foreach(int i, p){
-		ModelPolygon &pp = s->Polygon[i];
-		for (int k=0;k<pp.Side.num;k++){
-			vector v = m->Vertex[pp.Side[k].Vertex].pos;
+		ModelPolygon &pp = s->polygon[i];
+		for (int k=0;k<pp.side.num;k++){
+			vector v = m->vertex[pp.side[k].vertex].pos;
 			vector t = vector(v * e1, v * e2, 0);
 			skin.add(t);
 		}
@@ -181,13 +181,13 @@ void Island::map_primitive(DataModel *m)
 
 void Island::apply(DataModel *m, int texture_level)
 {
-	ModelSurface *s = &m->Surface[surf];
+	ModelSurface *s = &m->surface[surf];
 
 	int n = 0;
 	foreach(int i, p){
-		ModelPolygon &pp = s->Polygon[i];
-		for (int k=0;k<pp.Side.num;k++)
-			pp.Side[k].SkinVertex[texture_level] = skin[n ++];
+		ModelPolygon &pp = s->polygon[i];
+		for (int k=0;k<pp.side.num;k++)
+			pp.side[k].skin_vertex[texture_level] = skin[n ++];
 	}
 }
 
@@ -245,10 +245,10 @@ void *ActionModelAutomap::execute(Data *d)
 
 	// save old
 	old_pos.clear();
-	foreach(ModelSurface &s, m->Surface)
-		foreach(ModelPolygon &p, s.Polygon)
-			for (int k=0;k<p.Side.num;k++)
-				old_pos.add(p.Side[k].SkinVertex[texture_level]);
+	foreach(ModelSurface &s, m->surface)
+		foreach(ModelPolygon &p, s.polygon)
+			for (int k=0;k<p.side.num;k++)
+				old_pos.add(p.side[k].skin_vertex[texture_level]);
 
 	Array<Island> islands = get_islands(m);
 	foreach(Island &i, islands)
@@ -272,9 +272,9 @@ void ActionModelAutomap::undo(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	int n = 0;
-	foreach(ModelSurface &s, m->Surface)
-		foreach(ModelPolygon &p, s.Polygon)
-			for (int k=0;k<p.Side.num;k++)
-				p.Side[k].SkinVertex[texture_level] = old_pos[n ++];
+	foreach(ModelSurface &s, m->surface)
+		foreach(ModelPolygon &p, s.polygon)
+			for (int k=0;k<p.side.num;k++)
+				p.side[k].skin_vertex[texture_level] = old_pos[n ++];
 }
 

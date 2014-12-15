@@ -57,7 +57,7 @@ float sCol::get_f(Geometry &m, ModelPolygon *t)
 	if (type == TYPE_OLD_VERTEX)
 		return 0;
 	if ((type == TYPE_OWN_EDGE_OUT) || (type == TYPE_OWN_EDGE_IN))
-		return p.factor_between(m.Vertex[t->Side[side].Vertex].pos, m.Vertex[t->Side[(side + 1) % t->Side.num].Vertex].pos);
+		return p.factor_between(m.vertex[t->side[side].vertex].pos, m.vertex[t->side[(side + 1) % t->side.num].vertex].pos);
 	throw ActionException("unhandled col type");
 }
 
@@ -94,19 +94,19 @@ bool ActionModelSurfaceSubtract::CollidePolygons(DataModel *m, ModelPolygon *t1,
 {
 	msg_db_r("CollidePolygons", 1);
 	Array<vector> v1, v2;
-	for (int k=0;k<t1->Side.num;k++)
-		v1.add(m->Vertex[t1->Side[k].Vertex].pos);
-	for (int k=0;k<t2->Side.num;k++)
-		v2.add(m->Vertex[t2->Side[k].Vertex].pos);
+	for (int k=0;k<t1->side.num;k++)
+		v1.add(m->vertex[t1->side[k].vertex].pos);
+	for (int k=0;k<t2->side.num;k++)
+		v2.add(m->vertex[t2->side[k].vertex].pos);
 	plane pl1, pl2;
-	PlaneFromPointNormal(pl1, m->Vertex[t1->Side[0].Vertex].pos, t1->TempNormal);
-	PlaneFromPointNormal(pl2, m->Vertex[t2->Side[0].Vertex].pos, t2->TempNormal);
+	PlaneFromPointNormal(pl1, m->vertex[t1->side[0].vertex].pos, t1->temp_normal);
+	PlaneFromPointNormal(pl2, m->vertex[t2->side[0].vertex].pos, t2->temp_normal);
 	bool bcol = false;
 
 
 	// all vertices of t2 on the same side of pl1?
 	bool all_same_side = true;
-	for (int k=1;k<t2->Side.num;k++)
+	for (int k=1;k<t2->side.num;k++)
 		if (pl1.distance(v2[0]) * pl1.distance(v2[k]) < 0)
 			all_same_side = false;
 	if (all_same_side){
@@ -116,8 +116,8 @@ bool ActionModelSurfaceSubtract::CollidePolygons(DataModel *m, ModelPolygon *t1,
 
 	// collide edges of t2 with pl1
 	Array<int> vv1 = t1->Triangulate(m);
-	for (int k=0;k<t2->Side.num;k++){
-		int k2 = (k + 1) % t2->Side.num;
+	for (int k=0;k<t2->side.num;k++){
+		int k2 = (k + 1) % t2->side.num;
 		vector col;
 		for (int i=0;i<vv1.num;i+=3){
 			if (!LineIntersectsTriangle2(pl1, v1[vv1[i+0]], v1[vv1[i+1]], v1[vv1[i+2]], v2[k], v2[k2], col, false))
@@ -132,8 +132,8 @@ bool ActionModelSurfaceSubtract::CollidePolygons(DataModel *m, ModelPolygon *t1,
 
 	// collide edges of t1 with pl2
 	Array<int> vv2 = t2->Triangulate(m);
-	for (int k=0;k<t1->Side.num;k++){
-		int k2 = (k + 1) % t1->Side.num;
+	for (int k=0;k<t1->side.num;k++){
+		int k2 = (k + 1) % t1->side.num;
 		vector col;
 		for (int i=0;i<vv2.num;i+=3){
 			if (!LineIntersectsTriangle2(pl2, v2[vv2[i+0]], v2[vv2[i+1]], v2[vv2[i+2]], v1[k], v1[k2], col, false))
@@ -161,18 +161,18 @@ bool CollidePolygonSurface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_ind
 
 	// polygon's data
 	Array<vector> v;
-	for (int k=0;k<pa->Side.num;k++)
-		v.add(a.Vertex[pa->Side[k].Vertex].pos);
+	for (int k=0;k<pa->side.num;k++)
+		v.add(a.vertex[pa->side[k].vertex].pos);
 	plane pl;
-	PlaneFromPointNormal(pl, a.Vertex[pa->Side[0].Vertex].pos, pa->TempNormal);
+	PlaneFromPointNormal(pl, a.vertex[pa->side[0].vertex].pos, pa->temp_normal);
 
-	Array<int> vv = pa->Triangulate(a.Vertex);
+	Array<int> vv = pa->Triangulate(a.vertex);
 
 	// collide polygon <-> surface's edges
-	foreachi(ModelEdge &e, b.Edge, ei){
+	foreachi(ModelEdge &e, b.edge, ei){
 		vector ve[2];
 		for (int k=0;k<2;k++)
-			ve[k] = b.Vertex[e.Vertex[k]].pos;
+			ve[k] = b.vertex[e.vertex[k]].pos;
 
 		// crossing plane?
 		if (pl.distance(ve[0]) * pl.distance(ve[1]) > 0)
@@ -187,19 +187,19 @@ bool CollidePolygonSurface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_ind
 	}
 
 	// collide polygon's edges <-> surface's polygons
-	foreachi(ModelPolygon &pb, b.Polygon, ti){
+	foreachi(ModelPolygon &pb, b.polygon, ti){
 		// polygon's data
 		Array<vector> v2;
-		for (int k=0;k<pb.Side.num;k++)
-			v2.add(b.Vertex[pb.Side[k].Vertex].pos);
+		for (int k=0;k<pb.side.num;k++)
+			v2.add(b.vertex[pb.side[k].vertex].pos);
 		plane pl2;
-		PlaneFromPointNormal(pl2, b.Vertex[pb.Side[0].Vertex].pos, pb.TempNormal);
+		PlaneFromPointNormal(pl2, b.vertex[pb.side[0].vertex].pos, pb.temp_normal);
 
-		Array<int> vv2 = pb.Triangulate(b.Vertex);
-		for (int kk=0;kk<pa->Side.num;kk++){
+		Array<int> vv2 = pb.Triangulate(b.vertex);
+		for (int kk=0;kk<pa->side.num;kk++){
 			vector ve[2];
 			for (int k=0;k<2;k++)
-				ve[k] = a.Vertex[pa->Side[(kk + k) % pa->Side.num].Vertex].pos;
+				ve[k] = a.vertex[pa->side[(kk + k) % pa->side.num].vertex].pos;
 
 			// crossing plane?
 			if (pl2.distance(ve[0]) * pl2.distance(ve[1]) > 0)
@@ -210,7 +210,7 @@ bool CollidePolygonSurface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_ind
 				if (!LineIntersectsTriangle2(pl2, v2[vv2[i+0]], v2[vv2[i+1]], v2[vv2[i+2]], ve[0], ve[1], pos, false))
 					continue;
 				int type = (pl2.distance(ve[0]) > 0) ? sCol::TYPE_OWN_EDGE_IN : sCol::TYPE_OWN_EDGE_OUT;
-				col.add(sCol(pos, type, ti, pa->Side[kk].Edge, kk));
+				col.add(sCol(pos, type, ti, pa->side[kk].edge, kk));
 			}
 		}
 	}
@@ -224,8 +224,8 @@ bool CollidePolygonSurface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_ind
 // we assume t does not collide with s...!
 bool PolygonInsideSurface(Geometry &m, ModelPolygon *t, Geometry &s)
 {
-	foreach(ModelPolygonSide &side, t->Side)
-		if (!s.IsInside(m.Vertex[side.Vertex].pos))
+	foreach(ModelPolygonSide &side, t->side)
+		if (!s.isInside(m.vertex[side.vertex].pos))
 			return false;
 	return true;
 }
@@ -253,10 +253,10 @@ bool find_contour_boundary(Geometry &s, Array<sCol> &c_in, Array<sCol> &c_out, b
 		foreachi(sCol &c, c_in, i)
 			if (c.type == c.TYPE_OTHER_EDGE){
 				for (int k=0;k<2;k++)
-					if (s.Edge[c.edge].Polygon[k] == last_poly){
+					if (s.edge[c.edge].polygon[k] == last_poly){
 						//msg_write(format("%d  %d  - %d", c.type, c.polygon, c.edge));
 						c_out.add(c);
-						last_poly = s.Edge[c.edge].Polygon[1 - k];
+						last_poly = s.edge[c.edge].polygon[1 - k];
 						c_in.erase(i);
 						found = true;
 						break;
@@ -297,10 +297,10 @@ bool find_contour_inside(Geometry &m, ModelPolygon *t, Geometry &s, Array<sCol> 
 		throw ActionException("internal contour without internal point..." + i2s(c_in[0].type));
 	c_out.add(c_in[0]);
 	c_in.erase(0);
-	vector edge_dir = s.Vertex[s.Edge[c_out[0].edge].Vertex[1]].pos - s.Vertex[s.Edge[c_out[0].edge].Vertex[0]].pos;
-	int last_poly = s.Edge[c_out[0].edge].Polygon[0];
-	if (t->TempNormal * edge_dir < 0)
-		last_poly = s.Edge[c_out[0].edge].Polygon[1];
+	vector edge_dir = s.vertex[s.edge[c_out[0].edge].vertex[1]].pos - s.vertex[s.edge[c_out[0].edge].vertex[0]].pos;
+	int last_poly = s.edge[c_out[0].edge].polygon[0];
+	if (t->temp_normal * edge_dir < 0)
+		last_poly = s.edge[c_out[0].edge].polygon[1];
 
 
 	//throw ActionException("internal contour not implemented");
@@ -311,10 +311,10 @@ bool find_contour_inside(Geometry &m, ModelPolygon *t, Geometry &s, Array<sCol> 
 		foreachi(sCol &c, c_in, i)
 			if (c.type == c.TYPE_OTHER_EDGE){
 				for (int k=0;k<2;k++)
-					if (s.Edge[c.edge].Polygon[k] == last_poly){
+					if (s.edge[c.edge].polygon[k] == last_poly){
 						//msg_write(format("%d  %d  - %d", c.type, c.polygon, c.edge));
 						c_out.add(c);
-						last_poly = s.Edge[c.edge].Polygon[1 - k];
+						last_poly = s.edge[c.edge].polygon[1 - k];
 						c_in.erase(i);
 						found = true;
 						break;
@@ -369,8 +369,8 @@ void find_contours(Geometry &m, ModelPolygon *t, Geometry &s, Array<Array<sCol> 
 		foreachi(sCol &c, cc, i)
 			msg_write(i2s(i) + " " + c.str());
 		if (cc.num < 3){
-			for (int i=0;i<t->Side.num;i++)
-				ed->multi_view_3d->AddMessage3d("p"+i2s(i), m.Vertex[t->Side[i].Vertex].pos);
+			for (int i=0;i<t->side.num;i++)
+				ed->multi_view_3d->AddMessage3d("p"+i2s(i), m.vertex[t->side[i].vertex].pos);
 			foreachi(sCol &c, cc, i)
 				ed->multi_view_3d->AddMessage3d("x"+i2s(i), c.p);
 			throw ActionException("contour with num<3");
@@ -384,9 +384,9 @@ void sort_and_join_contours(Geometry &m, ModelPolygon *t, Geometry &b, Array<Arr
 
 	// find old vertices
 	Array<sCol> v;
-	for (int k=0;k<t->Side.num;k++){
-		vector pos = m.Vertex[t->Side[k].Vertex].pos;
-		if (b.IsInside(pos) == inverse)
+	for (int k=0;k<t->side.num;k++){
+		vector pos = m.vertex[t->side[k].vertex].pos;
+		if (b.isInside(pos) == inverse)
 			v.add(sCol(pos, k));
 	}
 
@@ -449,7 +449,7 @@ void sort_and_join_contours(Geometry &m, ModelPolygon *t, Geometry &b, Array<Arr
 			// search old vertices
 			bool found = false;
 			foreachi(sCol &ccc, v, i){
-				if (ccc.side == ((side + 1) % t->Side.num)){
+				if (ccc.side == ((side + 1) % t->side.num)){
 					cc.add(ccc);
 					v.erase(i);
 					found = true;
@@ -536,12 +536,12 @@ void triangulate_contours(Geometry &m, ModelPolygon *t, Array<Array<sCol> > &con
 		for (int i=0;i<c.num;i++){
 			int i_p1 = (i+1) % c.num;
 			int i_p2 = (i+2) % c.num;
-			float f = get_ang(c, i_p1, t->TempNormal);
+			float f = get_ang(c, i_p1, t->temp_normal);
 			if (f < 0)
 				continue;
 			// cheat: ...
-			float f_n = get_ang(c, i_p2, t->TempNormal);
-			float f_l = get_ang(c, i, t->TempNormal);
+			float f_n = get_ang(c, i_p2, t->temp_normal);
+			float f_l = get_ang(c, i, t->temp_normal);
 			if (f_n >= 0)
 				f += 0.001f / (f_n + 0.001f);
 			if (f_l >= 0)
@@ -724,7 +724,7 @@ void PolygonSubtract(Geometry &a, ModelPolygon *t, int t_index, Geometry &b, Geo
 	simplify_filling(contours);
 
 	SkinGeneratorMulti sg;
-	sg.init_polygon(a.Vertex, *t);
+	sg.init_polygon(a.vertex, *t);
 
 	// create new surfaces
 	foreach(Array<sCol> &c, contours){
@@ -735,21 +735,21 @@ void PolygonSubtract(Geometry &a, ModelPolygon *t, int t_index, Geometry &b, Geo
 		Array<int> vv;
 		Array<vector> sv;
 		for (int i=0;i<c.num;i++){
-			vv.add(out.Vertex.num);
-			out.AddVertex(c[i].p);
+			vv.add(out.vertex.num);
+			out.addVertex(c[i].p);
 		}
 
 		// skin vertices
 		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 			for (int i=0;i<c.num;i++)
 				if (c[i].type == sCol::TYPE_OLD_VERTEX)
-					sv.add(t->Side[c[i].side].SkinVertex[l]);
+					sv.add(t->side[c[i].side].skin_vertex[l]);
 				else
 					sv.add(sg.get(c[i].p, l));
 
 		// fill contour with polygons
-		out.AddPolygon(vv, sv);
-		out.Polygon.back().Material = t->Material;
+		out.addPolygon(vv, sv);
+		out.polygon.back().material = t->material;
 	}
 }
 
@@ -759,21 +759,21 @@ bool SurfaceSubtractUnary(Geometry &a, Geometry &b, Geometry &out, bool keep_ins
 	msg_db_f("SurfSubtractUnary", 0);
 	bool has_changes = false;
 
-	out.Vertex = a.Vertex;
+	out.vertex = a.vertex;
 
 	// collide both surfaces and create additional polygons
-	foreachi(ModelPolygon &p, a.Polygon, i)
+	foreachi(ModelPolygon &p, a.polygon, i)
 		if (CollidePolygonSurface(a, &p, b, i)){
 			PolygonSubtract(a, &p, i, b, out, keep_inside);
 			has_changes = true;
 		}else if (PolygonInsideSurface(a, &p, b) == keep_inside){
 			ModelPolygon pp = p;
-			out.Polygon.add(pp);
+			out.polygon.add(pp);
 		}else{
 			has_changes = true;
 		}
 
-	out.RemoveUnusedVertices();
+	out.removeUnusedVertices();
 	return has_changes;
 }
 
@@ -783,13 +783,13 @@ int GeometrySubtract(Geometry &a, Geometry &b, Geometry &out)
 {
 	msg_db_f("ModelGeometrySubtract", 0);
 
-	a.UpdateTopology();
-	b.UpdateTopology();
-	foreach(ModelPolygon &p, a.Polygon)
-		p.TempNormal = p.GetNormal(a.Vertex);
-	foreach(ModelPolygon &p, b.Polygon)
-		p.TempNormal = p.GetNormal(b.Vertex);
-	if (!b.IsClosed)
+	a.updateTopology();
+	b.updateTopology();
+	foreach(ModelPolygon &p, a.polygon)
+		p.temp_normal = p.GetNormal(a.vertex);
+	foreach(ModelPolygon &p, b.polygon)
+		p.temp_normal = p.GetNormal(b.vertex);
+	if (!b.is_closed)
 		return -1;
 
 	bool diff = false;
@@ -798,11 +798,11 @@ int GeometrySubtract(Geometry &a, Geometry &b, Geometry &out)
 
 	diff |= SurfaceSubtractUnary(a, b, out, false);
 
-	if (a.IsClosed){
+	if (a.is_closed){
 		Geometry t;
 		diff |= SurfaceSubtractUnary(b, a, t, true);
-		t.Invert();
-		out.Add(t);
+		t.invert();
+		out.add(t);
 	}
 
 	/*}catch(ActionException &e){
@@ -812,8 +812,8 @@ int GeometrySubtract(Geometry &a, Geometry &b, Geometry &out)
 
 
 	vector min, max;
-	out.GetBoundingBox(min, max);
-	out.Weld((max - min).length() / 4000);
+	out.getBoundingBox(min, max);
+	out.weld((max - min).length() / 4000);
 
 	return diff ? 1 : 0;
 }
@@ -823,13 +823,13 @@ int GeometryAnd(Geometry &a, Geometry &b, Geometry &out)
 {
 	msg_db_f("ModelGeometryAnd", 0);
 
-	a.UpdateTopology();
-	b.UpdateTopology();
-	foreach(ModelPolygon &p, a.Polygon)
-		p.TempNormal = p.GetNormal(a.Vertex);
-	foreach(ModelPolygon &p, b.Polygon)
-		p.TempNormal = p.GetNormal(b.Vertex);
-	if (!b.IsClosed)
+	a.updateTopology();
+	b.updateTopology();
+	foreach(ModelPolygon &p, a.polygon)
+		p.temp_normal = p.GetNormal(a.vertex);
+	foreach(ModelPolygon &p, b.polygon)
+		p.temp_normal = p.GetNormal(b.vertex);
+	if (!b.is_closed)
 		return -1;
 
 	bool diff = false;
@@ -838,10 +838,10 @@ int GeometryAnd(Geometry &a, Geometry &b, Geometry &out)
 
 	diff |= SurfaceSubtractUnary(a, b, out, true);
 
-	if (a.IsClosed){
+	if (a.is_closed){
 		Geometry t;
 		diff |= SurfaceSubtractUnary(b, a, t, true);
-		out.Add(t);
+		out.add(t);
 	}
 
 	/*}catch(ActionException &e){
@@ -851,8 +851,8 @@ int GeometryAnd(Geometry &a, Geometry &b, Geometry &out)
 
 
 	vector min, max;
-	out.GetBoundingBox(min, max);
-	out.Weld((max - min).length() / 4000);
+	out.getBoundingBox(min, max);
+	out.weld((max - min).length() / 4000);
 
 	return diff ? 1 : 0;
 }

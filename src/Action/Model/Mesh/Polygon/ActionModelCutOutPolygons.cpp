@@ -19,7 +19,7 @@ ActionModelCutOutPolygons::ActionModelCutOutPolygons()
 void *ActionModelCutOutPolygons::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachib(ModelSurface &s, m->Surface, si){
+	foreachib(ModelSurface &s, m->surface, si){
 		CutOutSurface(s, si, m);
 		_foreach_it_.update(); // TODO
 	}
@@ -31,46 +31,46 @@ void *ActionModelCutOutPolygons::compose(Data *d)
 void ActionModelCutOutPolygons::CutOutSurface(ModelSurface &s, int surface, DataModel *m)
 {
 	Set<int> sel_poly;
-	foreachi(ModelPolygon &t, s.Polygon, ti)
+	foreachi(ModelPolygon &t, s.polygon, ti)
 		if (t.is_selected)
 			sel_poly.add(ti);
-	if ((sel_poly.num == 0) or (sel_poly.num == s.Polygon.num))
+	if ((sel_poly.num == 0) or (sel_poly.num == s.polygon.num))
 		return;
 
 	// find boundary
 	Set<int> boundary;
-	foreach(ModelEdge &e, s.Edge)
-		if (e.RefCount == 2)
-			if ((s.Polygon[e.Polygon[0]].is_selected != s.Polygon[e.Polygon[1]].is_selected)){
-				boundary.add(e.Vertex[0]);
-				boundary.add(e.Vertex[1]);
+	foreach(ModelEdge &e, s.edge)
+		if (e.ref_count == 2)
+			if ((s.polygon[e.polygon[0]].is_selected != s.polygon[e.polygon[1]].is_selected)){
+				boundary.add(e.vertex[0]);
+				boundary.add(e.vertex[1]);
 			}
 
 	// copy boundary vertices
 	Array<int> new_vert;
 	foreach(int v, boundary){
-		AddSubAction(new ActionModelAddVertex(m->Vertex[v].pos), m);
-		new_vert.add(m->Vertex.num - 1);
+		addSubAction(new ActionModelAddVertex(m->vertex[v].pos), m);
+		new_vert.add(m->vertex.num - 1);
 		_foreach_it_.update(); // TODO
 	}
 
 	// create new surface
-	AddSubAction(new ActionModelAddEmptySurface(), m);
-	int new_surf = m->Surface.num - 1;
-	ModelSurface &s2 = m->Surface[surface];
+	addSubAction(new ActionModelAddEmptySurface(), m);
+	int new_surf = m->surface.num - 1;
+	ModelSurface &s2 = m->surface[surface];
 
 	// move selected polygons
-	foreachib(ModelPolygon &t, s2.Polygon, ti)
+	foreachib(ModelPolygon &t, s2.polygon, ti)
 		if (t.is_selected){
 			Array<int> v;
-			for (int k=0;k<t.Side.num;k++){
-				v.add(t.Side[k].Vertex);
+			for (int k=0;k<t.side.num;k++){
+				v.add(t.side[k].vertex);
 				// re-link if on boundary
 				int n = boundary.find(v[k]);
 				if (n >= 0)
 					v[k] = new_vert[n];
 			}
-			AddSubAction(new ActionModelSurfaceRelinkPolygon(surface, ti, v, new_surf), m);
+			addSubAction(new ActionModelSurfaceRelinkPolygon(surface, ti, v, new_surf), m);
 			_foreach_it_.update(); // TODO
 		}
 }

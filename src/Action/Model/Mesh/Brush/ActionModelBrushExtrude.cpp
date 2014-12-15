@@ -26,12 +26,12 @@ void* ActionModelBrushExtrude::execute(Data* d)
 
 	float r2 = radius * radius;
 
-	for (int i=0;i<m->Vertex.num;i++){
-		float d2 = (pos - m->Vertex[i].pos).length_sqr();
+	for (int i=0;i<m->vertex.num;i++){
+		float d2 = (pos - m->vertex[i].pos).length_sqr();
 		if (d2 < r2 * 2){
 			index.add(i);
-			pos_old.add(m->Vertex[i].pos);
-			m->Vertex[i].pos += n * depth * exp(- d2 / r2 * 2);
+			pos_old.add(m->vertex[i].pos);
+			m->vertex[i].pos += n * depth * exp(- d2 / r2 * 2);
 		}
 	}
 	m->SetNormalsDirtyByVertices(index);
@@ -46,7 +46,7 @@ void ActionModelBrushExtrude::undo(Data* d)
 
 	m->SetNormalsDirtyByVertices(index);
 	foreachi(int i, index, ii)
-		m->Vertex[i].pos = pos_old[ii];
+		m->vertex[i].pos = pos_old[ii];
 
 	index.clear();
 	pos_old.clear();

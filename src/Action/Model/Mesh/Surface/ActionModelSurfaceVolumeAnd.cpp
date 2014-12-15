@@ -21,25 +21,25 @@ void *ActionModelSurfaceVolumeAnd::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	int n = 0;
-	foreach(ModelSurface &s, m->Surface)
-		if ((s.is_selected) && (s.IsClosed))
+	foreach(ModelSurface &s, m->surface)
+		if ((s.is_selected) && (s.is_closed))
 			n ++;
 	if (n == 0)
 		throw ActionException("no closed surfaces selected");
 
 	msg_db_f("Subtract", 1);
 	Array<Geometry> geos;
-	for (int bi=m->Surface.num-1; bi>=0; bi--){
-		if (m->Surface[bi].is_selected){
-			for (int ai=m->Surface.num-1; ai>=0; ai--){
-				ModelSurface *a = &m->Surface[ai];
+	for (int bi=m->surface.num-1; bi>=0; bi--){
+		if (m->surface[bi].is_selected){
+			for (int ai=m->surface.num-1; ai>=0; ai--){
+				ModelSurface *a = &m->surface[ai];
 				if ((a->view_stage >= ed->multi_view_3d->view_stage) && (!a->is_selected))
-					SurfaceAnd(m, a, ai, &m->Surface[bi], geos);
+					SurfaceAnd(m, a, ai, &m->surface[bi], geos);
 			}
 		}
 	}
 	foreach(Geometry &g, geos)
-		AddSubAction(new ActionModelPasteGeometry(g, 0), m);
+		addSubAction(new ActionModelPasteGeometry(g, 0), m);
 
 	ed->setMessage(format(_("%d geschlossene Fl&achen subtrahiert"), n));
 	return NULL;
@@ -57,6 +57,6 @@ void ActionModelSurfaceVolumeAnd::SurfaceAnd(DataModel *m, ModelSurface *a, int 
 
 	if (status == 1){
 		geos.add(gc);
-		AddSubAction(new ActionModelDeleteSurface(ai), m);
+		addSubAction(new ActionModelDeleteSurface(ai), m);
 	}
 }

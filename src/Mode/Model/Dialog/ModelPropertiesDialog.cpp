@@ -129,7 +129,7 @@ vector img_get_ball_n(int x, int y, int N)
 string render_material(ModelMaterial *m)
 {
 	// texture?
-	NixTexture *tex = NixLoadTexture(m->TextureFile[0]);
+	NixTexture *tex = NixLoadTexture(m->texture_file[0]);
 	if (!tex)
 		if (m->material->num_textures > 0)
 			tex = m->material->texture[0];
@@ -149,7 +149,7 @@ string render_material(ModelMaterial *m)
 			// ambient + diffuse + emission
 			vector n = img_get_ball_n(x, y, N);
 			float f = clampf(n * light_dir, 0, 1);
-			color c = m->Ambient * 0.3f + m->Diffuse * f + m->Emission;
+			color c = m->ambient * 0.3f + m->diffuse * f + m->emission;
 
 			// texture "mapping"
 			if (tex)
@@ -158,8 +158,8 @@ string render_material(ModelMaterial *m)
 				c = c * 0.8f;
 
 			// specular
-			f = pow(n * light_sp_dir, m->Shininess) * 0.4f;
-			c += m->Specular * f;
+			f = pow(n * light_sp_dir, m->shininess) * 0.4f;
+			c += m->specular * f;
 
 			c = c * 0.9f;
 			c.clamp();

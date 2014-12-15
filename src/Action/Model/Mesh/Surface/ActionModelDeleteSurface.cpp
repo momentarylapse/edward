@@ -23,14 +23,14 @@ ActionModelDeleteSurface::~ActionModelDeleteSurface()
 void *ActionModelDeleteSurface::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	ModelSurface *s = &m->Surface[index];
-	Array<int> v = s->Vertex;
-	for (int i=s->Polygon.num-1; i>=0; i--)
-		AddSubAction(new ActionModelSurfaceDeletePolygon(index, i), m);
+	ModelSurface *s = &m->surface[index];
+	Array<int> v = s->vertex;
+	for (int i=s->polygon.num-1; i>=0; i--)
+		addSubAction(new ActionModelSurfaceDeletePolygon(index, i), m);
 	for (int i=v.num-1; i>=0; i--)
-		AddSubAction(new ActionModelDeleteUnusedVertex(v[i]), m);
+		addSubAction(new ActionModelDeleteUnusedVertex(v[i]), m);
 
-	AddSubAction(new ActionModelDeleteEmptySurface(index), m);
+	addSubAction(new ActionModelDeleteEmptySurface(index), m);
 
 	return NULL;
 }

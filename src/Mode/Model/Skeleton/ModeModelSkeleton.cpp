@@ -36,7 +36,7 @@ void ModeModelSkeleton::onCommand(const string & id)
 		ed->setMode(new ModeModelSkeletonCreateBone(ed->cur_mode));
 	if (id == "skeleton_edit_bone"){
 		if (data->GetNumSelectedBones() == 1){
-			foreachi(ModelBone &b, data->Bone, i)
+			foreachi(ModelBone &b, data->bone, i)
 				if (b.is_selected){
 					ed->setMode(new ModeModelSkeletonAttachVertices(ed->cur_mode, i));
 					break;
@@ -144,7 +144,7 @@ void ModeModelSkeleton::onUpdate(Observable *o, const string &message)
 
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		multi_view->AddData(	MVDSkeletonPoint,
-				data->Bone,
+				data->bone,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
 	}else if (o == multi_view){
@@ -191,8 +191,8 @@ void ModeModelSkeleton::onDrawWin(MultiView::Window *win)
 		mode_model_mesh_polygon->DrawPolygons(win, mode_model_animation->vertex);
 		drawSkeleton(win, mode_model_animation->bone);
 	}else{
-		mode_model_mesh_polygon->DrawPolygons(win, data->Vertex);
-		drawSkeleton(win, data->Bone);
+		mode_model_mesh_polygon->DrawPolygons(win, data->vertex);
+		drawSkeleton(win, data->bone);
 	}
 }
 
@@ -201,7 +201,7 @@ void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &b
 
 #ifdef USE_MODELS
 	// sub models
-	foreachi(data->Bone, b, i)
+	foreachi(data->bone, b, i)
 		if (b.model){
 			if (SubMode == ModeModelAnimation)
 				b.model->_matrix = PointMatrix[i];

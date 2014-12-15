@@ -78,19 +78,19 @@ void ModeModelMeshAutoweld::onDrawWin(MultiView::Window* win)
 	NixSetColor(Green);
 	float r = 5;
 	int n = 0;
-	for (int i=0;i<data->Surface.num;i++){
-		ModelSurface *a = &data->Surface[i];
+	for (int i=0;i<data->surface.num;i++){
+		ModelSurface *a = &data->surface[i];
 		if (!a->is_selected)
 			continue;
-		for (int j=i+1;j<data->Surface.num;j++){
-			ModelSurface *b = &data->Surface[j];
+		for (int j=i+1;j<data->surface.num;j++){
+			ModelSurface *b = &data->surface[j];
 			if (!b->is_selected)
 				continue;
-			foreach(int va, a->Vertex)
-				foreach(int vb, b->Vertex)
-					if ((data->Vertex[va].pos - data->Vertex[vb].pos).length() <= radius){
+			foreach(int va, a->vertex)
+				foreach(int vb, b->vertex)
+					if ((data->vertex[va].pos - data->vertex[vb].pos).length() <= radius){
 						n ++;
-						vector p = win->project(data->Vertex[va].pos);
+						vector p = win->project(data->vertex[va].pos);
 
 						if ((p.z < 0) || (p.z >= 1))
 							continue;

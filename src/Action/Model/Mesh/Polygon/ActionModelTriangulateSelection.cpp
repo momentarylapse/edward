@@ -17,29 +17,29 @@ ActionModelTriangulateSelection::ActionModelTriangulateSelection()
 void *ActionModelTriangulateSelection::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(ModelSurface &s, m->Surface, si){
-		foreachib(ModelPolygon &t, s.Polygon, ti)
+	foreachi(ModelSurface &s, m->surface, si){
+		foreachib(ModelPolygon &t, s.polygon, ti)
 			if (t.is_selected){
-				if (t.Side.num == 3)
+				if (t.side.num == 3)
 					continue;
 
 				// save old polygon
 				ModelPolygon temp = t;
 
 				// delete old polygon
-				AddSubAction(new ActionModelSurfaceDeletePolygon(si, ti), m);
+				addSubAction(new ActionModelSurfaceDeletePolygon(si, ti), m);
 
 				// triangulate
-				Array<int> vv = temp.Triangulate(m->Vertex);
+				Array<int> vv = temp.Triangulate(m->vertex);
 				for (int i=0;i<vv.num/3;i++){
 					Array<int> v;
 					for (int k=0;k<3;k++)
-						v.add(temp.Side[vv[i*3+k]].Vertex);
+						v.add(temp.side[vv[i*3+k]].vertex);
 					Array<vector> sv;
 					for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 						for (int k=0;k<3;k++)
-							sv.add(temp.Side[vv[i*3+k]].SkinVertex[l]);
-					AddSubAction(new ActionModelSurfaceAddPolygon(si, v, temp.Material, sv), m);
+							sv.add(temp.side[vv[i*3+k]].skin_vertex[l]);
+					addSubAction(new ActionModelSurfaceAddPolygon(si, v, temp.material, sv), m);
 				}
 
 

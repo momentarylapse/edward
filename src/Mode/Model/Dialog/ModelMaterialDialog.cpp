@@ -23,7 +23,7 @@ ModelMaterialDialog::ModelMaterialDialog(HuiWindow *_parent, DataModel *_data) :
 	Observer("ModelMaterialDialog")
 {
 	data = _data;
-	temp = data->Material[mode_model_mesh->CurrentMaterial];
+	temp = data->material[mode_model_mesh->current_material];
 	subscribe(data);
 	subscribe(mode_model_mesh);
 	subscribe(mode_model_mesh_texture);
@@ -88,41 +88,41 @@ ModelMaterialDialog::~ModelMaterialDialog()
 
 void ModelMaterialDialog::LoadData()
 {
-	temp = data->Material[mode_model_mesh->CurrentMaterial];
+	temp = data->material[mode_model_mesh->current_material];
 	FillMaterialList();
 
 	FillTextureList();
-	check("default_colors", !temp.UserColor);
-	enable("mat_am", temp.UserColor);
-	enable("mat_di", temp.UserColor);
-	enable("mat_sp", temp.UserColor);
-	enable("mat_em", temp.UserColor);
-	enable("mat_shininess", temp.UserColor);
-	win->setColor("mat_am", temp.Ambient);
-	win->setColor("mat_di", temp.Diffuse);
-	win->setColor("mat_sp", temp.Specular);
-	win->setColor("mat_em", temp.Emission);
-	setFloat("mat_shininess", temp.Shininess);
+	check("default_colors", !temp.user_color);
+	enable("mat_am", temp.user_color);
+	enable("mat_di", temp.user_color);
+	enable("mat_sp", temp.user_color);
+	enable("mat_em", temp.user_color);
+	enable("mat_shininess", temp.user_color);
+	win->setColor("mat_am", temp.ambient);
+	win->setColor("mat_di", temp.diffuse);
+	win->setColor("mat_sp", temp.specular);
+	win->setColor("mat_em", temp.emission);
+	setFloat("mat_shininess", temp.shininess);
 
-	if (temp.TransparencyMode == TransparencyModeColorKeySmooth)
+	if (temp.transparency_mode == TransparencyModeColorKeySmooth)
 		check("transparency_mode:color_key", true);
-	else if (temp.TransparencyMode == TransparencyModeColorKeyHard)
+	else if (temp.transparency_mode == TransparencyModeColorKeyHard)
 		check("transparency_mode:color_key", true);
-	else if (temp.TransparencyMode == TransparencyModeFactor)
+	else if (temp.transparency_mode == TransparencyModeFactor)
 		check("transparency_mode:factor", true);
-	else if (temp.TransparencyMode == TransparencyModeFunctions)
+	else if (temp.transparency_mode == TransparencyModeFunctions)
 		check("transparency_mode:function", true);
-	else if (temp.TransparencyMode == TransparencyModeNone)
+	else if (temp.transparency_mode == TransparencyModeNone)
 		check("transparency_mode:none", true);
 	else
 		check("transparency_mode:material", true);
-	enable("alpha_factor", temp.TransparencyMode == TransparencyModeFactor);
-	enable("alpha_source", temp.TransparencyMode == TransparencyModeFunctions);
-	enable("alpha_dest", temp.TransparencyMode == TransparencyModeFunctions);
-	setFloat("alpha_factor", temp.AlphaFactor * 100.0f);
-	check("alpha_z_buffer", temp.AlphaZBuffer);
-	setInt("alpha_source", temp.AlphaSource);
-	setInt("alpha_dest", temp.AlphaDestination);
+	enable("alpha_factor", temp.transparency_mode == TransparencyModeFactor);
+	enable("alpha_source", temp.transparency_mode == TransparencyModeFunctions);
+	enable("alpha_dest", temp.transparency_mode == TransparencyModeFunctions);
+	setFloat("alpha_factor", temp.alpha_factor * 100.0f);
+	check("alpha_z_buffer", temp.alpha_zbuffer);
+	setInt("alpha_source", temp.alpha_source);
+	setInt("alpha_dest", temp.alpha_destination);
 }
 
 
@@ -132,19 +132,19 @@ void ModelMaterialDialog::ApplyData()
 		apply_queue_depth --;
 	if (apply_queue_depth > 0)
 		return;
-	if (temp.UserColor){
-		temp.Ambient = win->getColor("mat_am");
-		temp.Diffuse = win->getColor("mat_di");
-		temp.Specular = win->getColor("mat_sp");
-		temp.Emission = win->getColor("mat_em");
-		temp.Shininess = getFloat("mat_shininess");
+	if (temp.user_color){
+		temp.ambient = win->getColor("mat_am");
+		temp.diffuse = win->getColor("mat_di");
+		temp.specular = win->getColor("mat_sp");
+		temp.emission = win->getColor("mat_em");
+		temp.shininess = getFloat("mat_shininess");
 	}
-	temp.AlphaZBuffer = isChecked("alpha_z_buffer");
-	temp.AlphaFactor = getFloat("alpha_factor") * 0.01f;
-	temp.AlphaSource = getInt("alpha_source");
-	temp.AlphaDestination = getInt("alpha_dest");
+	temp.alpha_zbuffer = isChecked("alpha_z_buffer");
+	temp.alpha_factor = getFloat("alpha_factor") * 0.01f;
+	temp.alpha_source = getInt("alpha_source");
+	temp.alpha_destination = getInt("alpha_dest");
 
-	data->execute(new ActionModelEditMaterial(mode_model_mesh->CurrentMaterial, temp));
+	data->execute(new ActionModelEditMaterial(mode_model_mesh->current_material, temp));
 }
 
 void ModelMaterialDialog::ApplyDataDelayed()
@@ -156,16 +156,16 @@ void ModelMaterialDialog::ApplyDataDelayed()
 void ModelMaterialDialog::FillMaterialList()
 {
 	reset("material_list");
-	for (int i=0;i<data->Material.num;i++){
+	for (int i=0;i<data->material.num;i++){
 		int nt = 0;
-		foreach(ModelSurface &s, data->Surface)
-			foreach(ModelPolygon &t, s.Polygon)
-				if (t.Material == i)
+		foreach(ModelSurface &s, data->surface)
+			foreach(ModelPolygon &t, s.polygon)
+				if (t.material == i)
 					nt ++;
-		string im = render_material(&data->Material[i]);
-		addString("material_list", format("Mat[%d]\\%d\\%s\\%s", i, nt, im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
+		string im = render_material(&data->material[i]);
+		addString("material_list", format("Mat[%d]\\%d\\%s\\%s", i, nt, im.c_str(), file_secure(data->material[i].material_file).c_str()));
 	}
-	setInt("material_list", mode_model_mesh->CurrentMaterial);
+	setInt("material_list", mode_model_mesh->current_material);
 	//Enable("delete_material", false);
 }
 
@@ -205,14 +205,14 @@ void ModelMaterialDialog::OnDeleteMaterial()
 
 void ModelMaterialDialog::OnApplyMaterial()
 {
-	data->SetMaterialSelection(mode_model_mesh->CurrentMaterial);
+	data->SetMaterialSelection(mode_model_mesh->current_material);
 }
 
 
 void ModelMaterialDialog::OnDefaultColors()
 {
-	temp.UserColor = !isChecked("");
-	if (!temp.UserColor)
+	temp.user_color = !isChecked("");
+	if (!temp.user_color)
 		temp.CheckColors();
 	ApplyData();
 }
@@ -220,22 +220,22 @@ void ModelMaterialDialog::OnDefaultColors()
 void ModelMaterialDialog::FillTextureList()
 {
 	reset("mat_textures");
-	for (int i=0;i<temp.NumTextures;i++){
-		NixTexture *tex = NixLoadTexture(temp.TextureFile[i]);
+	for (int i=0;i<temp.num_textures;i++){
+		NixTexture *tex = NixLoadTexture(temp.texture_file[i]);
 		string img = ed->get_tex_image(tex);
-		addString("mat_textures", format("Tex[%d]\\%s\\%s", i, img.c_str(), file_secure(temp.TextureFile[i]).c_str()));
+		addString("mat_textures", format("Tex[%d]\\%s\\%s", i, img.c_str(), file_secure(temp.texture_file[i]).c_str()));
 	}
-	setInt("mat_textures", mode_model_mesh_texture->CurrentTextureLevel);
+	setInt("mat_textures", mode_model_mesh_texture->current_texture_level);
 }
 
 
 void ModelMaterialDialog::OnAddTextureLevel()
 {
-	if (temp.NumTextures >= MATERIAL_MAX_TEXTURES){
+	if (temp.num_textures >= MATERIAL_MAX_TEXTURES){
 		ed->errorBox(format(_("H&ochstens %d Textur-Ebenen erlaubt!"), MATERIAL_MAX_TEXTURES));
 		return;
 	}
-	temp.TextureFile[temp.NumTextures ++] = "";
+	temp.texture_file[temp.num_textures ++] = "";
 	temp.CheckTextures();
 	ApplyData();
 }
@@ -243,9 +243,9 @@ void ModelMaterialDialog::OnAddTextureLevel()
 void ModelMaterialDialog::OnTextures()
 {
 	int sel = getInt("");
-	if ((sel >= 0) && (sel <temp.NumTextures))
+	if ((sel >= 0) && (sel <temp.num_textures))
 		if (ed->fileDialog(FDTexture, false, true)){
-			temp.TextureFile[sel] = ed->DialogFile;
+			temp.texture_file[sel] = ed->DialogFile;
 			temp.CheckTextures();
 			ApplyData();
 		}
@@ -261,13 +261,13 @@ void ModelMaterialDialog::OnDeleteTextureLevel()
 {
 	int sel = getInt("mat_textures");
 	if (sel >= 0){
-		if (temp.NumTextures <= 1){
+		if (temp.num_textures <= 1){
 			ed->errorBox(_("Mindestens eine Textur-Ebene muss vorhanden sein!"));
 			return;
 		}
-		for (int i=sel;i<temp.NumTextures-1;i++)
-			temp.TextureFile[i] = temp.TextureFile[i + 1];
-		temp.NumTextures --;
+		for (int i=sel;i<temp.num_textures-1;i++)
+			temp.texture_file[i] = temp.texture_file[i + 1];
+		temp.num_textures --;
 		ApplyData();
 		FillTextureList();
 	}
@@ -277,7 +277,7 @@ void ModelMaterialDialog::OnEmptyTextureLevel()
 {
 	int sel = getInt("mat_textures");
 	if (sel >= 0){
-		temp.TextureFile[sel] = "";
+		temp.texture_file[sel] = "";
 		ApplyData();
 		FillTextureList();
 	}
@@ -286,18 +286,18 @@ void ModelMaterialDialog::OnEmptyTextureLevel()
 void ModelMaterialDialog::OnTransparencyMode()
 {
 	if (isChecked("transparency_mode:function"))
-		temp.TransparencyMode = TransparencyModeFunctions;
+		temp.transparency_mode = TransparencyModeFunctions;
 	else if (isChecked("transparency_mode:color_key"))
-		temp.TransparencyMode = TransparencyModeColorKeyHard;
+		temp.transparency_mode = TransparencyModeColorKeyHard;
 	else if (isChecked("transparency_mode:factor"))
-		temp.TransparencyMode = TransparencyModeFactor;
+		temp.transparency_mode = TransparencyModeFactor;
 	else if (isChecked("transparency_mode:none"))
-		temp.TransparencyMode = TransparencyModeNone;
+		temp.transparency_mode = TransparencyModeNone;
 	else
-		temp.TransparencyMode = TransparencyModeDefault;
-	enable("alpha_factor", temp.TransparencyMode == TransparencyModeFactor);
-	enable("alpha_source", temp.TransparencyMode == TransparencyModeFunctions);
-	enable("alpha_dest", temp.TransparencyMode == TransparencyModeFunctions);
+		temp.transparency_mode = TransparencyModeDefault;
+	enable("alpha_factor", temp.transparency_mode == TransparencyModeFactor);
+	enable("alpha_source", temp.transparency_mode == TransparencyModeFunctions);
+	enable("alpha_dest", temp.transparency_mode == TransparencyModeFunctions);
 	ApplyData();
 }
 

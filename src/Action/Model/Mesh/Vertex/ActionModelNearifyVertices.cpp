@@ -11,7 +11,7 @@
 
 ActionModelNearifyVertices::ActionModelNearifyVertices(DataModel *m)
 {
-	foreachi(ModelVertex &v, m->Vertex, i)
+	foreachi(ModelVertex &v, m->vertex, i)
 		if (v.is_selected)
 			index.add(i);
 }
@@ -27,7 +27,7 @@ void ActionModelNearifyVertices::undo(Data *d)
 
 	// apply old data
 	foreachi(int vi, index, i)
-		m->Vertex[vi].pos = old_pos[i];
+		m->vertex[vi].pos = old_pos[i];
 
 	m->SetNormalsDirtyByVertices(index);
 }
@@ -43,10 +43,10 @@ void *ActionModelNearifyVertices::execute(Data *d)
 
 	foreach(int i, index){
 		// save old data
-		old_pos.add(m->Vertex[i].pos);
+		old_pos.add(m->vertex[i].pos);
 
 		// average
-		v += m->Vertex[i].pos;
+		v += m->vertex[i].pos;
 	}
 
 	if (index.num > 0)
@@ -54,7 +54,7 @@ void *ActionModelNearifyVertices::execute(Data *d)
 
 	// apply
 	foreach(int i, index)
-		m->Vertex[i].pos = v;
+		m->vertex[i].pos = v;
 
 	m->SetNormalsDirtyByVertices(index);
 	return NULL;

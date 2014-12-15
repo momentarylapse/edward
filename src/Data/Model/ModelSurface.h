@@ -25,11 +25,11 @@ class ModelSurface: public MultiView::SingleData
 public:
 	ModelSurface();
 
-	Array<ModelPolygon> Polygon;
-	Array<ModelEdge> Edge;
-	Set<int> Vertex;
-	bool IsPhysical, IsVisible;
-	bool IsClosed;
+	Array<ModelPolygon> polygon;
+	Array<ModelEdge> edge;
+	Set<int> vertex;
+	bool is_physical, is_visible;
+	bool is_closed;
 
 	DataModel *model;
 	SurfaceInsideTestData *inside_data;

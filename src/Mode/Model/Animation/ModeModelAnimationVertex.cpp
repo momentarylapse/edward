@@ -93,7 +93,7 @@ void ModeModelAnimationVertex::onUpdate(Observable* o, const string &message)
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect);
 	}else if (o == multi_view){
-		foreachi(ModelVertex &v, data->Vertex, i)
+		foreachi(ModelVertex &v, data->vertex, i)
 			v.is_selected = mode_model_animation->vertex[i].is_selected;
 		data->SelectionFromVertices();
 	}

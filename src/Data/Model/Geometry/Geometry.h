@@ -25,39 +25,39 @@ class Geometry
 public:
 	void clear();
 
-	void AddVertex(const vector &pos);
-	void AddPolygon(Array<int> &v, Array<vector> &sv);
-	void AddPolygonSingleTexture(Array<int> &v, Array<vector> &sv);
-	void AddPolygonAutoTexture(Array<int> &v);
-	void Add5(int nv, int v0, int v1, int v2, int v3, int v4);
-	void Add4(int nv, int v0, int v1, int v2, int v3);
-	void Add3(int nv, int v0, int v1, int v2);
-	void AddBezier3(Array<vector> &v, int num_x, int num_y, float epsilon);
-	void Add(Geometry &geo);
+	void addVertex(const vector &pos);
+	void addPolygon(Array<int> &v, Array<vector> &sv);
+	void addPolygonSingleTexture(Array<int> &v, Array<vector> &sv);
+	void addPolygonAutoTexture(Array<int> &v);
+	void add5(int nv, int v0, int v1, int v2, int v3, int v4);
+	void add4(int nv, int v0, int v1, int v2, int v3);
+	void add3(int nv, int v0, int v1, int v2);
+	void addBezier3(Array<vector> &v, int num_x, int num_y, float epsilon);
+	void add(Geometry &geo);
 
-	void Weld(float epsilon);
-	void Weld(Geometry &geo, float epsilon);
+	void weld(float epsilon);
+	void weld(Geometry &geo, float epsilon);
 
-	void Invert();
+	void invert();
 
-	void Transform(const matrix &mat);
-	void Smoothen();
+	void transform(const matrix &mat);
+	void smoothen();
 
-	int AddEdge(int a, int b, int tria, int side);
-	void UpdateTopology();
-	void RemoveUnusedVertices();
-	bool IsInside(const vector &v) const;
+	int addEdge(int a, int b, int tria, int side);
+	void updateTopology();
+	void removeUnusedVertices();
+	bool isInside(const vector &v) const;
 
-	void GetBoundingBox(vector &min, vector &max);
-	bool IsMouseOver(MultiView::Window *win, vector &tp);
+	void getBoundingBox(vector &min, vector &max);
+	bool isMouseOver(MultiView::Window *win, vector &tp);
 
-	void Preview(NixVertexBuffer *vb, int num_textures = 1) const;
+	void preview(NixVertexBuffer *vb, int num_textures = 1) const;
 
-	Array<ModelVertex> Vertex;
-	Array<ModelPolygon> Polygon;
-	Array<ModelEdge> Edge;
+	Array<ModelVertex> vertex;
+	Array<ModelPolygon> polygon;
+	Array<ModelEdge> edge;
 
-	bool IsClosed;
+	bool is_closed;
 };
 
 int GeometrySubtract(Geometry &a, Geometry &b, Geometry &c);

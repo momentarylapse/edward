@@ -32,23 +32,23 @@ void *ActionModelAddVertex::execute(Data *d)
 	ModelVertex vv;
 	vv.pos = pos;
 	if (normal_mode < 0)
-		vv.NormalMode = NormalModeAngular;
+		vv.normal_mode = NormalModeAngular;
 	else
-		vv.NormalMode = normal_mode;
-	vv.BoneIndex = bone_index;
+		vv.normal_mode = normal_mode;
+	vv.bone_index = bone_index;
 	vv.is_selected = false;
 	vv.is_special = false;
 	vv.view_stage = ed->multi_view_3d->view_stage;
-	vv.RefCount = 0;
-	vv.Surface = -1;
-	m->Vertex.add(vv);
+	vv.ref_count = 0;
+	vv.surface = -1;
+	m->vertex.add(vv);
 
 	// correct animations
-	foreach(ModelMove &move, m->Move)
-		if (move.Type == MoveTypeVertex)
-			foreach(ModelFrame &f, move.Frame)
-				f.VertexDPos.resize(m->Vertex.num);
-	return &m->Vertex.back();
+	foreach(ModelMove &move, m->move)
+		if (move.type == MoveTypeVertex)
+			foreach(ModelFrame &f, move.frame)
+				f.vertex_dpos.resize(m->vertex.num);
+	return &m->vertex.back();
 }
 
 
@@ -56,17 +56,17 @@ void *ActionModelAddVertex::execute(Data *d)
 void ActionModelAddVertex::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	assert(m->Vertex.back().RefCount == 0);
-	assert(m->Vertex.back().Surface < 0);
+	assert(m->vertex.back().ref_count == 0);
+	assert(m->vertex.back().surface < 0);
 
 	// delete
-	m->Vertex.pop();
+	m->vertex.pop();
 
 	// correct animations
-	foreach(ModelMove &move, m->Move)
-		if (move.Type == MoveTypeVertex){
-			foreach(ModelFrame &f, move.Frame)
-				f.VertexDPos.resize(m->Vertex.num);
+	foreach(ModelMove &move, m->move)
+		if (move.type == MoveTypeVertex){
+			foreach(ModelFrame &f, move.frame)
+				f.vertex_dpos.resize(m->vertex.num);
 		}
 }
 

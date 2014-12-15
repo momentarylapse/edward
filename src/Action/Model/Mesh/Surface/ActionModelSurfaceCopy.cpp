@@ -16,23 +16,23 @@ ActionModelSurfaceCopy::ActionModelSurfaceCopy(int _surface)
 	surface = _surface;
 #if 0
 	int si = m->get_surf_no(s);
-	int dv = m->Vertex.num;
+	int dv = m->vertex.num;
 
 	// copy vertices
-	foreach(int v, s->Vertex){
-		AddSubAction(new ActionModelAddVertex(m->Vertex[v].pos), m);
+	foreach(int v, s->vertex){
+		addSubAction(new ActionModelAddVertex(m->vertex[v].pos), m);
 		//m->Vertex.back().Surface = m->Surface.num;
 	}
 
-	foreach(ModelPolygon &t, s->Polygon){
+	foreach(ModelPolygon &t, s->polygon){
 		int v[3];
-		for (int k=0;k<t.Side.num;k++)
-			foreachi(int vv, s->Vertex, vi)
-				if (vv == t.Side[k].Vertex)
+		for (int k=0;k<t.side.num;k++)
+			foreachi(int vv, s->vertex, vi)
+				if (vv == t.side[k].vertex)
 					v[k] = dv + vi;
-		AddSubAction(new ActionModelAddTriangle(m, v[0], v[1], v[2], t.Material, t.SkinVertex[0], t.SkinVertex[1], t.SkinVertex[2]), m);
+		addSubAction(new ActionModelAddTriangle(m, v[0], v[1], v[2], t.material, t.SkinVertex[0], t.SkinVertex[1], t.SkinVertex[2]), m);
 	}
-	s = &m->Surface[si];
+	s = &m->surface[si];
 #endif
 
 	// dumb copy
@@ -66,29 +66,29 @@ ActionModelSurfaceCopy::~ActionModelSurfaceCopy()
 void *ActionModelSurfaceCopy::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	ModelSurface s = m->Surface[surface];
+	ModelSurface s = m->surface[surface];
 
-	int dv = m->Vertex.num;
+	int dv = m->vertex.num;
 
 	// copy vertices
-	foreach(int v, s.Vertex)
-		AddSubAction(new ActionModelAddVertex(m->Vertex[v].pos), m);
+	foreach(int v, s.vertex)
+		addSubAction(new ActionModelAddVertex(m->vertex[v].pos), m);
 
-	int s_no = m->Surface.num;
-	ModelSurface *copy = (ModelSurface*)AddSubAction(new ActionModelAddEmptySurface(), m);
+	int s_no = m->surface.num;
+	ModelSurface *copy = (ModelSurface*)addSubAction(new ActionModelAddEmptySurface(), m);
 
-	foreach(ModelPolygon &t, s.Polygon){
+	foreach(ModelPolygon &t, s.polygon){
 		Array<int> v = t.GetVertices();
 		Array<vector> sv = t.GetSkinVertices();
-		for (int k=0;k<t.Side.num;k++)
-			foreachi(int vv, s.Vertex, vi)
-				if (vv == t.Side[k].Vertex)
+		for (int k=0;k<t.side.num;k++)
+			foreachi(int vv, s.vertex, vi)
+				if (vv == t.side[k].vertex)
 					v[k] = dv + vi;
-		AddSubAction(new ActionModelSurfaceAddPolygon(s_no, v, t.Material, sv), m);
+		addSubAction(new ActionModelSurfaceAddPolygon(s_no, v, t.material, sv), m);
 	}
 
-	foreach(ModelPolygon &cp, copy->Polygon)
-		cp.TempNormal = cp.GetNormal(m->Vertex);
+	foreach(ModelPolygon &cp, copy->polygon)
+		cp.temp_normal = cp.GetNormal(m->vertex);
 
 	return copy;
 }

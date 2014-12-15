@@ -21,25 +21,25 @@ void *ActionModelSurfaceVolumeSubtract::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	int n = 0;
-	foreach(ModelSurface &s, m->Surface)
-		if ((s.is_selected) && (s.IsClosed))
+	foreach(ModelSurface &s, m->surface)
+		if ((s.is_selected) && (s.is_closed))
 			n ++;
 	if (n == 0)
 		throw ActionException("no closed surfaces selected");
 
 	msg_db_f("Subtract", 1);
 	Array<Geometry> geos;
-	for (int bi=m->Surface.num-1; bi>=0; bi--){
-		if (m->Surface[bi].is_selected){
-			for (int ai=m->Surface.num-1; ai>=0; ai--){
-				ModelSurface *a = &m->Surface[ai];
+	for (int bi=m->surface.num-1; bi>=0; bi--){
+		if (m->surface[bi].is_selected){
+			for (int ai=m->surface.num-1; ai>=0; ai--){
+				ModelSurface *a = &m->surface[ai];
 				if ((a->view_stage >= ed->multi_view_3d->view_stage) && (!a->is_selected))
-					SurfaceSubtract(m, a, ai, &m->Surface[bi], geos);
+					SurfaceSubtract(m, a, ai, &m->surface[bi], geos);
 			}
 		}
 	}
 	foreach(Geometry &g, geos)
-		AddSubAction(new ActionModelPasteGeometry(g, 0), m);
+		addSubAction(new ActionModelPasteGeometry(g, 0), m);
 
 	ed->setMessage(format(_("%d geschlossene Fl&achen subtrahiert"), n));
 	return NULL;
@@ -48,13 +48,13 @@ void *ActionModelSurfaceVolumeSubtract::compose(Data *d)
 void surf2geo(ModelSurface *s, Geometry &g)
 {
 	g.clear();
-	foreach(int v, s->Vertex)
-		g.Vertex.add(s->model->Vertex[v]);
-	foreach(ModelPolygon &p, s->Polygon){
+	foreach(int v, s->vertex)
+		g.vertex.add(s->model->vertex[v]);
+	foreach(ModelPolygon &p, s->polygon){
 		ModelPolygon pp = p;
-		for (int i=0;i<p.Side.num;i++)
-			pp.Side[i].Vertex = s->Vertex.find(p.Side[i].Vertex);
-		g.Polygon.add(pp);
+		for (int i=0;i<p.side.num;i++)
+			pp.side[i].vertex = s->vertex.find(p.side[i].vertex);
+		g.polygon.add(pp);
 	}
 }
 
@@ -68,6 +68,6 @@ void ActionModelSurfaceVolumeSubtract::SurfaceSubtract(DataModel *m, ModelSurfac
 
 	if (status == 1){
 		geos.add(gc);
-		AddSubAction(new ActionModelDeleteSurface(ai), m);
+		addSubAction(new ActionModelDeleteSurface(ai), m);
 	}
 }

@@ -23,11 +23,11 @@ ModeModelMeshBevelEdges::ModeModelMeshBevelEdges(ModeBase *_parent) :
 
 	// find maximal radius
 	rad_max = -1;
-	foreach(ModelSurface &s, data->Surface)
-		foreach(ModelEdge &e, s.Edge)
-			if ((data->Vertex[e.Vertex[0]].is_selected) or (data->Vertex[e.Vertex[1]].is_selected)){
-			float l = (data->Vertex[e.Vertex[0]].pos - data->Vertex[e.Vertex[1]].pos).length();
-			if ((data->Vertex[e.Vertex[0]].is_selected) and (data->Vertex[e.Vertex[1]].is_selected))
+	foreach(ModelSurface &s, data->surface)
+		foreach(ModelEdge &e, s.edge)
+			if ((data->vertex[e.vertex[0]].is_selected) or (data->vertex[e.vertex[1]].is_selected)){
+			float l = (data->vertex[e.vertex[0]].pos - data->vertex[e.vertex[1]].pos).length();
+			if ((data->vertex[e.vertex[0]].is_selected) and (data->vertex[e.vertex[1]].is_selected))
 				l /= 2;
 			if ((l < rad_max) or (rad_max < 0))
 				rad_max = l;
@@ -83,7 +83,7 @@ void ModeModelMeshBevelEdges::onDrawWin(MultiView::Window *win)
 {
 #ifndef INTERACTIVE
 	mode_model->SetMaterialCreation();
-	foreach(ModelVertex &v, data->Vertex)
+	foreach(ModelVertex &v, data->vertex)
 		if (v.is_selected)
 			FxDrawBall(v.pos, radius, 16,32);
 #endif

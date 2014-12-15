@@ -26,24 +26,24 @@ public:
 	void CheckTransparency();
 	void ApplyForRendering();
 
-	string MaterialFile;
+	string material_file;
 	Material *material;
-	int NumTextures;
-	NixTexture *Texture[MATERIAL_MAX_TEXTURES];
-	string TextureFile[MATERIAL_MAX_TEXTURES];
+	int num_textures;
+	NixTexture *texture[MATERIAL_MAX_TEXTURES];
+	string texture_file[MATERIAL_MAX_TEXTURES];
 
-	bool UserTransparency;
-	int TransparencyMode;
-	int AlphaSource, AlphaDestination;
-	float AlphaFactor;
-	bool AlphaZBuffer;
+	bool user_transparency;
+	int transparency_mode;
+	int alpha_source, alpha_destination;
+	float alpha_factor;
+	bool alpha_zbuffer;
 
-	bool UserColor;
-	color Ambient;
-	color Diffuse;
-	color Specular;
-	color Emission;
-	float Shininess;
+	bool user_color;
+	color ambient;
+	color diffuse;
+	color specular;
+	color emission;
+	float shininess;
 };
 
 #endif /* MODELMATERIAL_H_ */

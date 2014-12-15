@@ -59,20 +59,20 @@ void ModeModelMeshVertex::onUpdate(Observable *o, const string &message)
 		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		multi_view->AddData(	MVDModelVertex,
-				data->Vertex,
+				data->vertex,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
 	}else if (o == multi_view){
 		data->SelectionFromVertices();
 	}
-	mode_model_mesh_polygon->FillSelectionBuffers(data->Vertex);
+	mode_model_mesh_polygon->FillSelectionBuffers(data->vertex);
 }
 
 void ModeModelMeshVertex::DrawEffects(MultiView::Window *win)
 {
 	NixEnableLighting(false);
-	foreach(ModelEffect &fx, data->Fx){
-		vector p = win->project(data->Vertex[fx.Vertex].pos);
+	foreach(ModelEffect &fx, data->fx){
+		vector p = win->project(data->vertex[fx.vertex].pos);
 		if ((p.z > 0) && (p.z < 1))
 			ed->drawStr(p.x, p.y, fx.get_type());
 	}

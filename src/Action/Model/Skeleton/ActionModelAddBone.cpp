@@ -26,16 +26,16 @@ void *ActionModelAddBone::execute(Data *d)
 	b.model = NULL;
 	b.view_stage = 0;
 	b.is_special = b.is_selected = false;
-	m->Bone.add(b);
+	m->bone.add(b);
 
 	// correct animations
-	foreach(ModelMove &move, m->Move)
-		foreach(ModelFrame &f, move.Frame){
-			f.SkelDPos.add(v_0);
-			f.SkelAng.add(v_0);
+	foreach(ModelMove &move, m->move)
+		foreach(ModelFrame &f, move.frame){
+			f.skel_dpos.add(v_0);
+			f.skel_ang.add(v_0);
 		}
 
-	return &m->Bone.back();
+	return &m->bone.back();
 }
 
 
@@ -43,13 +43,13 @@ void *ActionModelAddBone::execute(Data *d)
 void ActionModelAddBone::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	m->Bone.pop();
+	m->bone.pop();
 
 	// correct animations
-	foreach(ModelMove &move, m->Move)
-		foreach(ModelFrame &f, move.Frame){
-			f.SkelDPos.pop();
-			f.SkelAng.pop();
+	foreach(ModelMove &move, m->move)
+		foreach(ModelFrame &f, move.frame){
+			f.skel_dpos.pop();
+			f.skel_ang.pop();
 		}
 }
 

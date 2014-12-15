@@ -29,59 +29,59 @@ static float Bernstein3(int i, float t)
 
 void Geometry::clear()
 {
-	Polygon.clear();
-	Vertex.clear();
+	polygon.clear();
+	vertex.clear();
 }
 
-void Geometry::AddVertex(const vector &pos)
+void Geometry::addVertex(const vector &pos)
 {
 	ModelVertex v;
 	v.pos = pos;
-	Vertex.add(v);
+	vertex.add(v);
 }
 
-void Geometry::AddPolygon(Array<int> &v, Array<vector> &sv)
+void Geometry::addPolygon(Array<int> &v, Array<vector> &sv)
 {
 	ModelPolygon p;
-	p.Side.resize(v.num);
+	p.side.resize(v.num);
 	for (int k=0; k<v.num; k++){
-		p.Side[k].Vertex = v[k];
+		p.side[k].vertex = v[k];
 		for (int l=0; l<MATERIAL_MAX_TEXTURES; l++)
-			p.Side[k].SkinVertex[l] = sv[l*v.num + k];
+			p.side[k].skin_vertex[l] = sv[l*v.num + k];
 	}
-	p.Material = -1;
-	p.NormalDirty = true;
-	p.TriangulationDirty = true;
-	p.TempNormal = p.GetNormal(Vertex);
-	for (int k=0;k<p.Side.num;k++)
-		p.Side[k].Normal = p.TempNormal;
-	Polygon.add(p);
+	p.material = -1;
+	p.normal_dirty = true;
+	p.triangulation_dirty = true;
+	p.temp_normal = p.GetNormal(vertex);
+	for (int k=0;k<p.side.num;k++)
+		p.side[k].normal = p.temp_normal;
+	polygon.add(p);
 }
 
-void Geometry::AddPolygonAutoTexture(Array<int> &v)
+void Geometry::addPolygonAutoTexture(Array<int> &v)
 {
 	SkinGenerator sg;
-	sg.init_point_cloud_boundary(Vertex, v);
+	sg.init_point_cloud_boundary(vertex, v);
 
 	Array<vector> sv;
 	for (int l=0; l<MATERIAL_MAX_TEXTURES; l++)
 		for (int k=0; k<v.num; k++)
-			sv.add(sg.get(Vertex[v[k]].pos));
+			sv.add(sg.get(vertex[v[k]].pos));
 
-	AddPolygon(v, sv);
+	addPolygon(v, sv);
 }
 
-void Geometry::AddPolygonSingleTexture(Array<int> &v, Array<vector> &sv)
+void Geometry::addPolygonSingleTexture(Array<int> &v, Array<vector> &sv)
 {
 	Array<vector> sv2;
 	for (int l=0; l<MATERIAL_MAX_TEXTURES; l++)
 		for (int k=0; k<v.num; k++)
 			sv2.add(sv[k]);
 
-	AddPolygon(v, sv2);
+	addPolygon(v, sv2);
 }
 
-void Geometry::AddBezier3(Array<vector> &v, int num_x, int num_y, float epsilon)
+void Geometry::addBezier3(Array<vector> &v, int num_x, int num_y, float epsilon)
 {
 	vector vv[4][4] = {{v[0], v[1], v[2], v[3]}, {v[4], v[5], v[6], v[7]}, {v[8], v[9], v[10], v[11]}, {v[12], v[13], v[14], v[15]}};
 	Array<vector> pp;
@@ -106,9 +106,9 @@ void Geometry::AddBezier3(Array<vector> &v, int num_x, int num_y, float epsilon)
 				merged_vertices = true;
 				vn[i*(num_y+1)+j] = old;
 			}else{
-				vn[i*(num_y+1)+j] = Vertex.num;
+				vn[i*(num_y+1)+j] = vertex.num;
 				pp.add(p);
-				AddVertex(p);
+				addVertex(p);
 			}
 		}
 	for (int i=0; i<num_x; i++)
@@ -131,11 +131,11 @@ void Geometry::AddBezier3(Array<vector> &v, int num_x, int num_y, float epsilon)
 							sv.erase(kk);
 							kk --;
 						}
-			AddPolygonSingleTexture(vv, sv);
+			addPolygonSingleTexture(vv, sv);
 		}
 }
 
-void Geometry::Add5(int nv, int v0, int v1, int v2, int v3, int v4)
+void Geometry::add5(int nv, int v0, int v1, int v2, int v3, int v4)
 {
 	Array<int> v;
 	v.add(nv + v0);
@@ -143,47 +143,47 @@ void Geometry::Add5(int nv, int v0, int v1, int v2, int v3, int v4)
 	v.add(nv + v2);
 	v.add(nv + v3);
 	v.add(nv + v4);
-	AddPolygonAutoTexture(v);
+	addPolygonAutoTexture(v);
 }
 
-void Geometry::Add4(int nv, int v0, int v1, int v2, int v3)
+void Geometry::add4(int nv, int v0, int v1, int v2, int v3)
 {
 	Array<int> v;
 	v.add(nv + v0);
 	v.add(nv + v1);
 	v.add(nv + v2);
 	v.add(nv + v3);
-	AddPolygonAutoTexture(v);
+	addPolygonAutoTexture(v);
 }
 
-void Geometry::Add3(int nv, int v0, int v1, int v2)
+void Geometry::add3(int nv, int v0, int v1, int v2)
 {
 	Array<int> v;
 	v.add(nv + v0);
 	v.add(nv + v1);
 	v.add(nv + v2);
-	AddPolygonAutoTexture(v);
+	addPolygonAutoTexture(v);
 }
 
-void Geometry::Add(Geometry& geo)
+void Geometry::add(Geometry& geo)
 {
-	int nv = Vertex.num;
-	int np = Polygon.num;
-	Vertex.append(geo.Vertex);
-	Polygon.append(geo.Polygon);
-	for (int i=np; i<Polygon.num; i++)
-		for (int k=0; k<Polygon[i].Side.num; k++)
-			Polygon[i].Side[k].Vertex += nv;
+	int nv = vertex.num;
+	int np = polygon.num;
+	vertex.append(geo.vertex);
+	polygon.append(geo.polygon);
+	for (int i=np; i<polygon.num; i++)
+		for (int k=0; k<polygon[i].side.num; k++)
+			polygon[i].side[k].vertex += nv;
 }
 
-void Geometry::Weld(float epsilon)
+void Geometry::weld(float epsilon)
 {
 	//return; // TODO
 	//msg_write("------------------------ weld");
 	float ep2 = epsilon * epsilon;
-	for (int i=Vertex.num-2; i>=0; i--)
-		for (int j=Vertex.num-1; j>i; j--)
-			if ((Vertex[i].pos - Vertex[j].pos).length_sqr() < ep2){
+	for (int i=vertex.num-2; i>=0; i--)
+		for (int j=vertex.num-1; j>i; j--)
+			if ((vertex[i].pos - vertex[j].pos).length_sqr() < ep2){
 				//msg_write(format("del %d %d", i, j));
 				/*bool allowed = true;
 				foreach(ModelPolygon &p, Polygon){
@@ -198,32 +198,32 @@ void Geometry::Weld(float epsilon)
 				if (!allowed)
 					continue;*/
 
-				Vertex.erase(j);
+				vertex.erase(j);
 
 				// relink polygons
-				foreach(ModelPolygon &p, Polygon)
-					for (int k=0; k<p.Side.num; k++){
-						if (p.Side[k].Vertex == j)
-							p.Side[k].Vertex = i;
-						else if (p.Side[k].Vertex > j)
-							p.Side[k].Vertex --;
+				foreach(ModelPolygon &p, polygon)
+					for (int k=0; k<p.side.num; k++){
+						if (p.side[k].vertex == j)
+							p.side[k].vertex = i;
+						else if (p.side[k].vertex > j)
+							p.side[k].vertex --;
 					}
 			}
 }
 
-void Geometry::Weld(Geometry &geo, float epsilon)
+void Geometry::weld(Geometry &geo, float epsilon)
 {
 }
 
-void Geometry::Smoothen()
+void Geometry::smoothen()
 {
 	Array<vector> n;
-	n.resize(Vertex.num);
+	n.resize(vertex.num);
 
 	// sum all normals (per vertex)
-	foreach(ModelPolygon &p, Polygon){
-		for (int k=0;k<p.Side.num;k++)
-			n[p.Side[k].Vertex] += p.TempNormal;
+	foreach(ModelPolygon &p, polygon){
+		for (int k=0;k<p.side.num;k++)
+			n[p.side[k].vertex] += p.temp_normal;
 	}
 
 	// normalize
@@ -231,29 +231,29 @@ void Geometry::Smoothen()
 		n[i].normalize();
 
 	// apply
-	foreach(ModelPolygon &p, Polygon){
-		for (int k=0;k<p.Side.num;k++)
-			p.Side[k].Normal = n[p.Side[k].Vertex];
+	foreach(ModelPolygon &p, polygon){
+		for (int k=0;k<p.side.num;k++)
+			p.side[k].normal = n[p.side[k].vertex];
 	}
 }
 
-void Geometry::Transform(const matrix &mat)
+void Geometry::transform(const matrix &mat)
 {
-	foreach(ModelVertex &v, Vertex)
+	foreach(ModelVertex &v, vertex)
 		v.pos = mat * v.pos;
 	matrix mat2 = mat * (float)pow(mat.determinant(), - 1.0f / 3.0f);
-	foreach(ModelPolygon &p, Polygon){
-		p.TempNormal = mat2.transform_normal(p.TempNormal);
-		for (int k=0;k<p.Side.num;k++)
-			p.Side[k].Normal = mat2.transform_normal(p.Side[k].Normal);
+	foreach(ModelPolygon &p, polygon){
+		p.temp_normal = mat2.transform_normal(p.temp_normal);
+		for (int k=0;k<p.side.num;k++)
+			p.side[k].normal = mat2.transform_normal(p.side[k].normal);
 	}
 }
 
-void Geometry::GetBoundingBox(vector &min, vector &max)
+void Geometry::getBoundingBox(vector &min, vector &max)
 {
-	if (Vertex.num > 0){
-		min = max = Vertex[0].pos;
-		foreach(ModelVertex &v, Vertex){
+	if (vertex.num > 0){
+		min = max = vertex[0].pos;
+		foreach(ModelVertex &v, vertex){
 			min._min(v.pos);
 			max._max(v.pos);
 		}
@@ -262,20 +262,20 @@ void Geometry::GetBoundingBox(vector &min, vector &max)
 	}
 }
 
-void Geometry::Preview(NixVertexBuffer *vb, int num_textures) const
+void Geometry::preview(NixVertexBuffer *vb, int num_textures) const
 {
 	vb->clear();
-	foreach(ModelPolygon &p, const_cast<Array<ModelPolygon>&>(Polygon)){
-		p.TriangulationDirty = true;
-		p.AddToVertexBuffer(Vertex, vb, num_textures);
+	foreach(ModelPolygon &p, const_cast<Array<ModelPolygon>&>(polygon)){
+		p.triangulation_dirty = true;
+		p.AddToVertexBuffer(vertex, vb, num_textures);
 	}
 }
 
 
-int Geometry::AddEdge(int a, int b, int tria, int side)
+int Geometry::addEdge(int a, int b, int tria, int side)
 {
-	foreachi(ModelEdge &e, Edge, i){
-		if ((e.Vertex[0] == a) && (e.Vertex[1] == b)){
+	foreachi(ModelEdge &e, edge, i){
+		if ((e.vertex[0] == a) && (e.vertex[1] == b)){
 			throw GeometryException("the new polygon would have neighbors of opposite orientation");
 			/*e.RefCount ++;
 			msg_error("surface error? inverse edge");
@@ -283,81 +283,81 @@ int Geometry::AddEdge(int a, int b, int tria, int side)
 			e.Side[1] = side;
 			return i;*/
 		}
-		if ((e.Vertex[0] == b) && (e.Vertex[1] == a)){
-			if (e.Polygon[0] == tria)
+		if ((e.vertex[0] == b) && (e.vertex[1] == a)){
+			if (e.polygon[0] == tria)
 				throw GeometryException("the new polygon would contain the same edge twice");
-			if (e.RefCount > 1)
+			if (e.ref_count > 1)
 				throw GeometryException("there would be more than 2 polygons sharing an egde");
-			e.RefCount ++;
-			e.Polygon[1] = tria;
-			e.Side[1] = side;
+			e.ref_count ++;
+			e.polygon[1] = tria;
+			e.side[1] = side;
 			return i;
 		}
 	}
 	ModelEdge ee;
-	ee.Vertex[0] = a;
-	ee.Vertex[1] = b;
+	ee.vertex[0] = a;
+	ee.vertex[1] = b;
 	ee.is_selected = false;
 	ee.is_special = false;
-	ee.IsRound = false;
-	ee.RefCount = 1;
-	ee.Polygon[0] = tria;
-	ee.Side[0] = side;
-	ee.Polygon[1] = -1;
-	Edge.add(ee);
-	return Edge.num - 1;
+	ee.is_round = false;
+	ee.ref_count = 1;
+	ee.polygon[0] = tria;
+	ee.side[0] = side;
+	ee.polygon[1] = -1;
+	edge.add(ee);
+	return edge.num - 1;
 }
 
-void Geometry::UpdateTopology()
+void Geometry::updateTopology()
 {
 	// clear
-	Edge.clear();
+	edge.clear();
 
 	// add all triangles
-	foreachi(ModelPolygon &t, Polygon, ti){
+	foreachi(ModelPolygon &t, polygon, ti){
 
 		// edges
-		for (int k=0;k<t.Side.num;k++){
-			t.Side[k].Edge = AddEdge(t.Side[k].Vertex, t.Side[(k + 1) % t.Side.num].Vertex, ti, k);
-			t.Side[k].EdgeDirection = Edge[t.Side[k].Edge].RefCount - 1;
+		for (int k=0;k<t.side.num;k++){
+			t.side[k].edge = addEdge(t.side[k].vertex, t.side[(k + 1) % t.side.num].vertex, ti, k);
+			t.side[k].edge_direction = edge[t.side[k].edge].ref_count - 1;
 		}
 	}
 	// closed?
-	IsClosed = true;
-	foreach(ModelEdge &e, Edge)
-		if (e.RefCount != 2){
-			IsClosed = false;
+	is_closed = true;
+	foreach(ModelEdge &e, edge)
+		if (e.ref_count != 2){
+			is_closed = false;
 			break;
 		}
 }
 
-bool Geometry::IsInside(const vector &p) const
+bool Geometry::isInside(const vector &p) const
 {
 	// how often does a ray from p intersect the surface?
 	int n = 0;
 	Array<vector> v;
-	foreach(ModelPolygon &t, *(Array<ModelPolygon>*)(&Polygon)){
+	foreach(ModelPolygon &t, *(Array<ModelPolygon>*)(&polygon)){
 
 		// plane test
-		if (((p - Vertex[t.Side[0].Vertex].pos) * t.TempNormal > 0) == (t.TempNormal.x > 0))
+		if (((p - vertex[t.side[0].vertex].pos) * t.temp_normal > 0) == (t.temp_normal.x > 0))
 			continue;
 
 		// polygon data
-		if (v.num < t.Side.num)
-			v.resize(t.Side.num);
-		for (int k=0;k<t.Side.num;k++)
-			v[k] = Vertex[t.Side[k].Vertex].pos;
+		if (v.num < t.side.num)
+			v.resize(t.side.num);
+		for (int k=0;k<t.side.num;k++)
+			v[k] = vertex[t.side[k].vertex].pos;
 
 		// bounding box tests
 		bool smaller = true;
-		for (int k=0;k<t.Side.num;k++)
+		for (int k=0;k<t.side.num;k++)
 			if (v[k].x >= p.x)
 				smaller = false;
 		if (smaller)
 			continue;
 
 		smaller = true;
-		for (int k=1;k<t.Side.num;k++){
+		for (int k=1;k<t.side.num;k++){
 			if ((v[0].y < p.y) !=  (v[k].y < p.y))
 				smaller = false;
 			if ((v[0].z < p.z) !=  (v[k].z < p.z))
@@ -368,10 +368,10 @@ bool Geometry::IsInside(const vector &p) const
 
 		// real intersection
 		vector col;
-		if (t.TriangulationDirty)
-			t.UpdateTriangulation(Vertex);
-		for (int k=t.Side.num-2;k>=0;k--)
-			if (LineIntersectsTriangle(v[t.Side[k].Triangulation[0]], v[t.Side[k].Triangulation[1]], v[t.Side[k].Triangulation[2]], p, p + e_x, col, false))
+		if (t.triangulation_dirty)
+			t.UpdateTriangulation(vertex);
+		for (int k=t.side.num-2;k>=0;k--)
+			if (LineIntersectsTriangle(v[t.side[k].triangulation[0]], v[t.side[k].triangulation[1]], v[t.side[k].triangulation[2]], p, p + e_x, col, false))
 				if (col.x > p.x)
 					n ++;
 	}
@@ -380,42 +380,42 @@ bool Geometry::IsInside(const vector &p) const
 	return ((n % 2) == 1);
 }
 
-void Geometry::Invert()
+void Geometry::invert()
 {
-	foreach(ModelPolygon &p, Polygon)
+	foreach(ModelPolygon &p, polygon)
 		p.Invert();
 }
 
-void Geometry::RemoveUnusedVertices()
+void Geometry::removeUnusedVertices()
 {
-	foreach(ModelVertex &v, Vertex)
-		v.RefCount = 0;
-	foreach(ModelPolygon &p, Polygon)
-		for (int i=0;i<p.Side.num;i++)
-			Vertex[p.Side[i].Vertex].RefCount ++;
-	foreachib(ModelVertex &v, Vertex, vi)
-		if (v.RefCount == 0){
-			Vertex.erase(vi);
+	foreach(ModelVertex &v, vertex)
+		v.ref_count = 0;
+	foreach(ModelPolygon &p, polygon)
+		for (int i=0;i<p.side.num;i++)
+			vertex[p.side[i].vertex].ref_count ++;
+	foreachib(ModelVertex &v, vertex, vi)
+		if (v.ref_count == 0){
+			vertex.erase(vi);
 			// correct vertex indices
-			foreach(ModelPolygon &p, Polygon)
-				for (int i=0;i<p.Side.num;i++)
-					if (p.Side[i].Vertex > vi)
-						p.Side[i].Vertex --;
+			foreach(ModelPolygon &p, polygon)
+				for (int i=0;i<p.side.num;i++)
+					if (p.side[i].vertex > vi)
+						p.side[i].vertex --;
 		}
 }
 
-bool Geometry::IsMouseOver(MultiView::Window *win, vector &tp)
+bool Geometry::isMouseOver(MultiView::Window *win, vector &tp)
 {
-	foreach(ModelPolygon &p, Polygon){
+	foreach(ModelPolygon &p, polygon){
 		// care for the sense of rotation?
-		if (p.TempNormal * win->getDirection() > 0)
+		if (p.temp_normal * win->getDirection() > 0)
 			continue;
 
 		// project all points
 		Array<vector> v;
 		bool out = false;
-		for (int k=0;k<p.Side.num;k++){
-			vector pp = win->project(Vertex[p.Side[k].Vertex].pos);
+		for (int k=0;k<p.side.num;k++){
+			vector pp = win->project(vertex[p.side[k].vertex].pos);
 			if ((pp.z <= 0) or (pp.z >= 1)){
 				out = true;
 				break;
@@ -426,19 +426,19 @@ bool Geometry::IsMouseOver(MultiView::Window *win, vector &tp)
 			continue;
 
 		// test all sub-triangles
-		p.UpdateTriangulation(Vertex);
+		p.UpdateTriangulation(vertex);
 		vector M = win->multi_view->m;
-		for (int k=p.Side.num-3; k>=0; k--){
-			int a = p.Side[k].Triangulation[0];
-			int b = p.Side[k].Triangulation[1];
-			int c = p.Side[k].Triangulation[2];
+		for (int k=p.side.num-3; k>=0; k--){
+			int a = p.side[k].triangulation[0];
+			int b = p.side[k].triangulation[1];
+			int c = p.side[k].triangulation[2];
 			float f,g;
 			GetBaryCentric(M, v[a], v[b], v[c], f, g);
 			// cursor in triangle?
 			if ((f>0)&&(g>0)&&(f+g<1)){
-				vector va = Vertex[p.Side[a].Vertex].pos;
-				vector vb = Vertex[p.Side[b].Vertex].pos;
-				vector vc = Vertex[p.Side[c].Vertex].pos;
+				vector va = vertex[p.side[a].vertex].pos;
+				vector vb = vertex[p.side[b].vertex].pos;
+				vector vc = vertex[p.side[c].vertex].pos;
 				tp = va+f*(vb-va)+g*(vc-va);
 				return true;
 			}

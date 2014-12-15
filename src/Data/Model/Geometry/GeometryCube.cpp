@@ -39,7 +39,7 @@ GeometryCube::GeometryCube(const vector &_pos, const vector &dv1, const vector &
 			for (int y=0;y<=num[ny];y++){
 				int xx = ((nz == 2) ^ (z == 0)) ? x : num[nx] - x;
 				vector dp = dv[nx] * (float)xx / (float)num[nx] + dv[ny] * (float)y / (float)num[ny] + dv[nz] * z;
-				AddVertex(pos + dp);
+				addVertex(pos + dp);
 			}
 		// create new triangles
 		for (int x=0;x<num[nx];x++)
@@ -54,7 +54,7 @@ GeometryCube::GeometryCube(const vector &_pos, const vector &dv1, const vector &
 				sv.add(vector((float) x   /(float)num[nx],(float) y   /(float)num[ny],0));
 				sv.add(vector((float)(x+1)/(float)num[nx],(float) y   /(float)num[ny],0));
 				sv.add(vector((float)(x+1)/(float)num[nx],(float)(y+1)/(float)num[ny],0));
-				AddPolygonSingleTexture(v, sv);
+				addPolygonSingleTexture(v, sv);
 			}
 		nv += (num[nx] + 1) * (num[ny] + 1);
 	}
@@ -62,7 +62,7 @@ GeometryCube::GeometryCube(const vector &_pos, const vector &dv1, const vector &
 	float epsilon = min(min(dv[0].length() / (float)num[0], dv[1].length() / (float)num[1]), dv[2].length() / (float)num[2]) * 0.01f;
 
 	// weld together
-	Weld(epsilon);
+	weld(epsilon);
 
 }
 

@@ -27,5 +27,5 @@ void *ActionModelAddPolygonSingleTexture::compose(Data *d)
 		for (int k=0;k<v.num;k++)
 			sv2.add(sv[k]);
 
-	return AddSubAction(new ActionModelAddPolygon(v, material, sv2), m);
+	return addSubAction(new ActionModelAddPolygon(v, material, sv2), m);
 }

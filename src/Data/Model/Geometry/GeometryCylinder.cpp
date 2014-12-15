@@ -99,7 +99,7 @@ void GeometryCylinder::BuildFromPath(Interpolator<vector> &inter, Interpolator<f
 			float w = pi*2*(float)j/(float)edges;
 			vector p = p0+((float)sin(w)*u+(float)cos(w)*r)*radius;
 			if ((j < edges) && (i < rings_vertex))
-				AddVertex(p);
+				addVertex(p);
 			sv.add(vector((float)j/(float)edges,t,0));
 		}
 	}
@@ -117,7 +117,7 @@ void GeometryCylinder::BuildFromPath(Interpolator<vector> &inter, Interpolator<f
 			_sv.add(_cyl_svert(i, j+1));
 			_sv.add(_cyl_svert(i, j));
 			_sv.add(_cyl_svert(i+1, j));
-			AddPolygonSingleTexture(v, _sv);
+			addPolygonSingleTexture(v, _sv);
 		}
 
 	if (closed){
@@ -145,17 +145,17 @@ void GeometryCylinder::BuildFromPath(Interpolator<vector> &inter, Interpolator<f
 			_sv.add(_cyl_svert(i, j+1));
 			_sv.add(_cyl_svert(i, j));
 			_sv.add(_cyl_svert(rings, j));
-			AddPolygonSingleTexture(v, _sv);
+			addPolygonSingleTexture(v, _sv);
 		}
 		return;
 	}
 
 // the endings
-	int nv2 = Vertex.num;
+	int nv2 = vertex.num;
 
 	// center points
-	AddVertex(inter.get(0));
-	AddVertex(inter.get(1));
+	addVertex(inter.get(0));
+	addVertex(inter.get(1));
 
 	// skin vertices
 	sv.clear();
@@ -177,7 +177,7 @@ void GeometryCylinder::BuildFromPath(Interpolator<vector> &inter, Interpolator<f
 		_sv.add(sv[0]);
 		_sv.add(sv[1+j]);
 		_sv.add(sv[1+(j+1)%edges]);
-		AddPolygonSingleTexture(v, _sv);
+		addPolygonSingleTexture(v, _sv);
 	}
 	for (int j=0;j<edges;j++){
 		Array<int> v;
@@ -188,7 +188,7 @@ void GeometryCylinder::BuildFromPath(Interpolator<vector> &inter, Interpolator<f
 		_sv.add(sv[edges+1]);
 		_sv.add(sv[edges+2+(j+1)%edges]);
 		_sv.add(sv[edges+2+j]);
-		AddPolygonSingleTexture(v, _sv);
+		addPolygonSingleTexture(v, _sv);
 	}
 }
 

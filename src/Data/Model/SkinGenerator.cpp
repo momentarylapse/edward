@@ -50,16 +50,16 @@ void SkinGenerator::init_projective(MultiView::Window *win)
 
 void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, int level)
 {
-	vector n = p.TempNormal;
+	vector n = p.temp_normal;
 	vector d1 = n.ortho();
 	vector d2 = n ^ d1;
 	matrix R = matrix(d1, d2, n);
 	float sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0, su = 0, sv = 0, sux = 0, suy = 0, svx = 0, svy = 0;
-	foreach(ModelPolygonSide &s, p.Side){
-		float x = d1 * v[s.Vertex].pos;
-		float y = d2 * v[s.Vertex].pos;
-		float u = s.SkinVertex[level].x;
-		float v = s.SkinVertex[level].y;
+	foreach(ModelPolygonSide &s, p.side){
+		float x = d1 * v[s.vertex].pos;
+		float y = d2 * v[s.vertex].pos;
+		float u = s.skin_vertex[level].x;
+		float v = s.skin_vertex[level].y;
 		sx += x;
 		sy += y;
 		sxx += x*x;
@@ -81,7 +81,7 @@ void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, i
 	mm._12 = sy;
 	mm._20 = sx;
 	mm._21 = sy;
-	mm._22 = p.Side.num;
+	mm._22 = p.side.num;
 	matrix imm;
 	MatrixInverse(imm, mm);
 	vector uu = imm * vector(sux, suy, su);

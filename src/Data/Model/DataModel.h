@@ -38,19 +38,20 @@ public:
 
 // effects
 enum{
-	FXKindScript,
-	FXKindLight,
-	FXKindFog,
-	FXKindSound,
-	FXKindForceField
+	FX_KIND_SCRIPT,
+	FX_KIND_LIGHT,
+	FX_KIND_FOG,
+	FX_KIND_SOUND,
+	FX_KIND_FORCEFIELD
 };
 
-struct ModelEffect{
-	int Kind, Surface, Vertex;
-	float Size, Speed, Intensity;
-	color Colors[3];
-	bool InvQuad;
-	string File;
+struct ModelEffect
+{
+	int kind, surface, vertex;
+	float size, speed, intensity;
+	color colors[3];
+	bool inv_quad;
+	string file;
 
 	void clear();
 	string get_type();
@@ -59,12 +60,12 @@ struct ModelEffect{
 class ModelVertex: public MultiView::SingleData
 {
 public:
-	int NormalMode;
-	int BoneIndex;
+	int normal_mode;
+	int bone_index;
 
-	bool NormalDirty;
-	int RefCount; // polygons
-	int Surface;
+	bool normal_dirty;
+	int ref_count; // polygons
+	int surface;
 };
 
 // only for use in MultiView...
@@ -75,8 +76,8 @@ class ModelSkinVertexDummy: public MultiView::SingleData
 class ModelBall: public MultiView::SingleData
 {
 public:
-	int Index;
-	float Radius;
+	int index;
+	float radius;
 };
 
 struct ModelPolyhedronFace
@@ -108,14 +109,14 @@ public:
 class ModelTriangle: public MultiView::SingleData
 {
 public:
-	int Vertex[3];
+	int vertex[3];
 	//int Edge[3];
 	//int EdgeDirection[3]; // which no of triangle in edge's list are we?
-	vector SkinVertex[MATERIAL_MAX_TEXTURES][3];
-	int NormalIndex[3];
-	vector Normal[3];
-	vector TempNormal;
-	bool NormalDirty;
+	vector skin_vertex[MATERIAL_MAX_TEXTURES][3];
+	int normal_index[3];
+	vector normal[3];
+	vector temp_normal;
+	bool normal_dirty;
 	int Material;
 };
 
@@ -123,10 +124,10 @@ public:
 // triangles belonging to one material
 struct ModelSubSkin
 {
-	int NumTextures; // "read only" (updated automatically...)
+	int num_textures; // "read only" (updated automatically...)
 
 	// triangles
-	Array<ModelTriangle> Triangle;
+	Array<ModelTriangle> triangle;
 };
 
 
@@ -134,10 +135,10 @@ struct ModelSubSkin
 struct ModelSkin
 {
 	// vertices
-	Array<ModelVertex> Vertex;
+	Array<ModelVertex> vertex;
 
 	// sub skins
-	Array<ModelSubSkin> Sub;
+	Array<ModelSubSkin> sub;
 };
 
 class ModelBone: public MultiView::SingleData
@@ -155,33 +156,33 @@ public:
 struct ModelFrame
 {
 	// skeleton animation
-	Array<vector> SkelDPos;
-	Array<vector> SkelAng;
+	Array<vector> skel_dpos;
+	Array<vector> skel_ang;
 
 	// vertex animation
 	struct{
-		Array<vector> DPos;
-	}Skin[4];
-	Array<vector> VertexDPos;
+		Array<vector> dpos;
+	}skin[4];
+	Array<vector> vertex_dpos;
 };
 
 struct ModelMove
 {
-	int Type;
-	Array<ModelFrame> Frame;
-	float FramesPerSecConst, FramesPerSecFactor;
-	bool InterpolatedQuadratic, InterpolatedLoop;
-	string Name;
+	int type;
+	Array<ModelFrame> frame;
+	float frames_per_sec_const, frames_per_sec_factor;
+	bool interpolated_quadratic, interpolated_loop;
+	string name;
 };
 
 class ModelEdge: public MultiView::SingleData
 {
 public:
 	//int NormalMode;
-	int Vertex[2];
-	int RefCount, Polygon[2], Side[2];
-	bool IsRound; // for editing
-	float Weight; // for easify'ing
+	int vertex[2];
+	int ref_count, polygon[2], side[2];
+	bool is_round; // for editing
+	float weight; // for easify'ing
 
 	// constraints:
 	//  Vertex[0] = surf.Polygon[Triangle[0]].Vertex[Side[0]]
@@ -202,10 +203,10 @@ public:
 		EdgeSelection(int v[2]);
 		int v[2];
 	};
-	Set<int> Vertex;
-	Set<int> Surface;
-	Array<Set<int> > Polygon;
-	Array<Array<EdgeSelection> > Edge;
+	Set<int> vertex;
+	Set<int> surface;
+	Array<Set<int> > polygon;
+	Array<Array<EdgeSelection> > edge;
 	void clear();
 };
 
@@ -301,11 +302,11 @@ public:
 
 
 	// properties
-	Array<ModelBone> Bone;
+	Array<ModelBone> bone;
 
 
 	// properties
-	Array<ModelMove> Move;
+	Array<ModelMove> move;
 
 	// actions
 	void AddAnimation(int index, int type);
@@ -314,23 +315,23 @@ public:
 	void AnimationDeleteFrame(int index, int frame);
 
 	// geometry
-	Array<ModelVertex> Vertex;
-	Array<ModelSurface> Surface;
-	Array<ModelSkinVertexDummy> SkinVertex; // only temporary...
+	Array<ModelVertex> vertex;
+	Array<ModelSurface> surface;
+	Array<ModelSkinVertexDummy> skin_vertex; // only temporary...
 
 	// old geometry
-	ModelSkin Skin[4];
+	ModelSkin skin[4];
 
 	// geometry (physical)
-	Array<ModelBall> Ball;
-	Array<ModelPolyhedron> Poly;
+	Array<ModelBall> ball;
+	Array<ModelPolyhedron> poly;
 
 	// general properties
-	Array<ModelMaterial> Material;
-	vector Min, Max;
+	Array<ModelMaterial> material;
+	vector _min, _max;
 
 	// effects
-	Array<ModelEffect> Fx;
+	Array<ModelEffect> fx;
 
 	// actions
 	void SelectionAddEffects(const ModelEffect &effect);
@@ -364,7 +365,7 @@ public:
 
 
 
-	float Radius;
+	float radius;
 
 
 

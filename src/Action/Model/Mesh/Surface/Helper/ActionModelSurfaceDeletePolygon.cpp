@@ -24,7 +24,7 @@ void ActionModelSurfaceDeletePolygon::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModelSurface &s = m->Surface[surface];
+	ModelSurface &s = m->surface[surface];
 
 	s.AddPolygon(vertex, material, skin, index);
 }
@@ -35,11 +35,11 @@ void *ActionModelSurfaceDeletePolygon::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModelSurface &s = m->Surface[surface];
-	ModelPolygon &t = s.Polygon[index];
+	ModelSurface &s = m->surface[surface];
+	ModelPolygon &t = s.polygon[index];
 
 	// save old data
-	material = t.Material;
+	material = t.material;
 	vertex = t.GetVertices();
 	skin = t.GetSkinVertices();
 

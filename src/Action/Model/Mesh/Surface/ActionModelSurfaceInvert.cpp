@@ -28,44 +28,44 @@ void ActionModelSurfaceInvert::InvertSurface(ModelSurface &s)
 	s.TestSanity("inv prae");
 
 	// flip polygons
-	foreachi(ModelPolygon &t, s.Polygon, ti){
-		for (int k=0;k<t.Side.num/2;k++){
-			int kk = t.Side.num - k - 1;
+	foreachi(ModelPolygon &t, s.polygon, ti){
+		for (int k=0;k<t.side.num/2;k++){
+			int kk = t.side.num - k - 1;
 
 			// swap vertices
-			int v = t.Side[k].Vertex;
-			t.Side[k].Vertex = t.Side[kk].Vertex;
-			t.Side[kk].Vertex = v;
+			int v = t.side[k].vertex;
+			t.side[k].vertex = t.side[kk].vertex;
+			t.side[kk].vertex = v;
 
 			// swap skin vertices
 			for (int tl=0;tl<MATERIAL_MAX_TEXTURES;tl++){
-				vector tv = t.Side[k].SkinVertex[tl];
-				t.Side[k].SkinVertex[tl] = t.Side[kk].SkinVertex[tl];
-				t.Side[kk].SkinVertex[tl] = tv;
+				vector tv = t.side[k].skin_vertex[tl];
+				t.side[k].skin_vertex[tl] = t.side[kk].skin_vertex[tl];
+				t.side[kk].skin_vertex[tl] = tv;
 			}
 
 			// swap edges
-			int e = t.Side[k].Edge;
-			t.Side[k].Edge = t.Side[kk-1].Edge;
-			t.Side[kk-1].Edge = e;
+			int e = t.side[k].edge;
+			t.side[k].edge = t.side[kk-1].edge;
+			t.side[kk-1].edge = e;
 		}
 
 		// mark for update
-		t.NormalDirty = true;
+		t.normal_dirty = true;
 	}
 
 	// flip edges
-	foreach(ModelEdge &e, s.Edge){
+	foreach(ModelEdge &e, s.edge){
 		// swap vertices
-		int v = e.Vertex[0];
-		e.Vertex[0] = e.Vertex[1];
-		e.Vertex[1] = v;
+		int v = e.vertex[0];
+		e.vertex[0] = e.vertex[1];
+		e.vertex[1] = v;
 
 		// relink sides
-		for (int k=0;k<e.RefCount;k++){
-			if (e.Side[k] < s.Polygon[e.Polygon[k]].Side.num - 1)
-				e.Side[k] = s.Polygon[e.Polygon[k]].Side.num - 2 - e.Side[k];
-			s.Polygon[e.Polygon[k]].Side[e.Side[k]].EdgeDirection = k;
+		for (int k=0;k<e.ref_count;k++){
+			if (e.side[k] < s.polygon[e.polygon[k]].side.num - 1)
+				e.side[k] = s.polygon[e.polygon[k]].side.num - 2 - e.side[k];
+			s.polygon[e.polygon[k]].side[e.side[k]].edge_direction = k;
 		}
 	}
 
@@ -78,9 +78,9 @@ void *ActionModelSurfaceInvert::execute(Data *d)
 
 	foreach(int surface, surfaces){
 
-		assert((surface >= 0) && (surface < m->Surface.num));
+		assert((surface >= 0) && (surface < m->surface.num));
 
-		InvertSurface(m->Surface[surface]);
+		InvertSurface(m->surface[surface]);
 	}
 
 	return NULL;

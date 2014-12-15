@@ -223,9 +223,9 @@ void ActionController::update()
 		geo_show.add(new GeometryTorus(v_0, e_x, 0.5f, 0.05f, 32, 8));
 		geo_show.add(new GeometryBall(v_0, 0.25f, 16, 8));
 		foreach(Geometry *g, geo)
-			g->Transform(t * s);
+			g->transform(t * s);
 		foreach(Geometry *g, geo_show)
-			g->Transform(t * s);
+			g->transform(t * s);
 	}
 	ed->forceRedraw();
 }
@@ -260,7 +260,7 @@ void ActionController::draw(Window *win)
 	NixSetWorldMatrix(m_id);
 	if (!inUse()){
 		foreachi(Geometry *g, geo_show, i){
-			g->Preview(VBTemp);
+			g->preview(VBTemp);
 			NixSetMaterial(Black, Black, Black, 0, MVACColor[i]);
 			NixDraw3D(VBTemp);
 		}
@@ -268,7 +268,7 @@ void ActionController::draw(Window *win)
 	if (mouse_over_geo >= 0){
 		NixSetAlpha(AlphaMaterial);
 		NixSetMaterial(Black, color(0.8f, 0, 0, 0), Black, 0, White);
-		geo_show[mouse_over_geo]->Preview(VBTemp);
+		geo_show[mouse_over_geo]->preview(VBTemp);
 		NixDraw3D(VBTemp);
 	}
 	NixSetZ(false, false);
@@ -311,7 +311,7 @@ bool ActionController::isMouseOver(vector &tp)
 	mouse_over_geo = -1;
 	foreachi(Geometry *g, geo, i){
 		vector t;
-		if (g->IsMouseOver(multi_view->mouse_win, t)){
+		if (g->isMouseOver(multi_view->mouse_win, t)){
 			float z = multi_view->mouse_win->project(t).z;
 			if ((z < z_min) || (i == 6)){
 				mouse_over_geo = i;

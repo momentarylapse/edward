@@ -28,12 +28,12 @@ void ActionModelSurfaceAddPolygon::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModelSurface &s = m->Surface[surface];
+	ModelSurface &s = m->surface[surface];
 
 	if (index >= 0)
 		s.RemovePolygon(index);
 	else
-		s.RemovePolygon(s.Polygon.num -1);
+		s.RemovePolygon(s.polygon.num -1);
 }
 
 
@@ -42,13 +42,13 @@ void *ActionModelSurfaceAddPolygon::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModelSurface &s = m->Surface[surface];
+	ModelSurface &s = m->surface[surface];
 
 	s.AddPolygon(v, material, sv, index);
 
 	if (index >= 0)
-		return &s.Polygon[index];
-	return &s.Polygon.back();
+		return &s.polygon[index];
+	return &s.polygon.back();
 }
 
 

@@ -101,10 +101,10 @@ bool ModelEdge::hover(MultiView::Window *win, vector &M, vector &tp, float &z, v
 	DataModel *m = mode_model_mesh_edge->data; // surf->model;
 
 	// project all points
-	vector pp0 = win->project(m->Vertex[Vertex[0]].pos);
+	vector pp0 = win->project(m->vertex[vertex[0]].pos);
 	if ((pp0.z <= 0) or (pp0.z >= 1))
 		return false;
-	vector pp1 = win->project(m->Vertex[Vertex[1]].pos);
+	vector pp1 = win->project(m->vertex[vertex[1]].pos);
 	if ((pp1.z <= 0) or (pp1.z >= 1))
 		return false;
 	const float rr = 5;
@@ -126,7 +126,7 @@ bool ModelEdge::hover(MultiView::Window *win, vector &M, vector &tp, float &z, v
 		return false;
 
 	float f = (pp0 + d * ((M - pp0) * d)).factor_between(pp0, pp1);
-	tp = m->Vertex[Vertex[0]].pos * (1 - f) + m->Vertex[Vertex[1]].pos * f;
+	tp = m->vertex[vertex[0]].pos * (1 - f) + m->vertex[vertex[1]].pos * f;
 	z = z0 * (1 - f) + z1 * f;
 	return true;
 }
@@ -139,7 +139,7 @@ bool ModelEdge::inRect(MultiView::Window *win, rect &r, void *user_data)
 
 	// all vertices within rectangle?
 	for (int k=0;k<2;k++){
-		vector pp = win->project(m->Vertex[Vertex[k]].pos); // mmodel->GetVertex(ia)
+		vector pp = win->project(m->vertex[vertex[k]].pos); // mmodel->GetVertex(ia)
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
 		if (!r.inside(pp.x, pp.y))
@@ -154,15 +154,15 @@ void ModeModelMeshEdge::onUpdate(Observable *o, const string &message)
 	if (o == data){
 		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		foreach(ModelSurface &s, data->Surface)
+		foreach(ModelSurface &s, data->surface)
 		multi_view->AddData(	MVDModelEdge,
-				s.Edge,
+				s.edge,
 				&s,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
 	}else if (o == multi_view){
 		data->SelectionFromEdges();
 	}
-	mode_model_mesh_polygon->FillSelectionBuffers(data->Vertex);
+	mode_model_mesh_polygon->FillSelectionBuffers(data->vertex);
 }
 
 
@@ -183,19 +183,19 @@ void ModeModelMeshEdge::DrawEdges(MultiView::Window *win, Array<ModelVertex> &ve
 	NixSetWire(false);
 	NixEnableLighting(false);
 	vector dir = win->getDirection();
-	foreach(ModelSurface &s, data->Surface){
-		foreach(ModelEdge &e, s.Edge){
-			if (min(vertex[e.Vertex[0]].view_stage, vertex[e.Vertex[1]].view_stage) < multi_view->view_stage)
+	foreach(ModelSurface &s, data->surface){
+		foreach(ModelEdge &e, s.edge){
+			if (min(vertex[e.vertex[0]].view_stage, vertex[e.vertex[1]].view_stage) < multi_view->view_stage)
 				continue;
 			if (!e.is_selected && only_selected)
 				continue;
-			float w = max(s.Polygon[e.Polygon[0]].TempNormal * dir, s.Polygon[e.Polygon[1]].TempNormal * dir);
+			float w = max(s.polygon[e.polygon[0]].temp_normal * dir, s.polygon[e.polygon[1]].temp_normal * dir);
 			float f = 0.5f - 0.4f*w;//0.7f - 0.3f * w;
 			if (e.is_selected)
 				NixSetColor(color(1, f, 0, 0));
 			else
 				NixSetColor(f * MultiView::ColorText + (1 - f) * MultiView::ColorBackGround2D);
-			NixDrawLine3D(vertex[e.Vertex[0]].pos, vertex[e.Vertex[1]].pos);
+			NixDrawLine3D(vertex[e.vertex[0]].pos, vertex[e.vertex[1]].pos);
 		}
 	}
 	NixSetColor(White);
@@ -206,8 +206,8 @@ void ModeModelMeshEdge::DrawEdges(MultiView::Window *win, Array<ModelVertex> &ve
 void ModeModelMeshEdge::onDrawWin(MultiView::Window *win)
 {
 	if (!multi_view->wire_mode)
-		mode_model_mesh_polygon->DrawPolygons(win, data->Vertex);
-	DrawEdges(win, data->Vertex, false);
+		mode_model_mesh_polygon->DrawPolygons(win, data->vertex);
+	DrawEdges(win, data->vertex, false);
 	mode_model_mesh_polygon->DrawSelection(win);
 
 	if (multi_view->hover.index >= 0){
@@ -215,8 +215,8 @@ void ModeModelMeshEdge::onDrawWin(MultiView::Window *win)
 		NixSetZ(false, false);
 		NixEnableLighting(false);
 		NixSetColor(color(1, 0.7f, 0.7f, 1));
-		ModelEdge &e = data->Surface[multi_view->hover.set].Edge[multi_view->hover.index];
-		NixDrawLine3D(data->Vertex[e.Vertex[0]].pos, data->Vertex[e.Vertex[1]].pos);
+		ModelEdge &e = data->surface[multi_view->hover.set].edge[multi_view->hover.index];
+		NixDrawLine3D(data->vertex[e.vertex[0]].pos, data->vertex[e.vertex[1]].pos);
 		NixSetColor(White);
 		NixSetZ(true, true);
 		NixSetWire(win->multi_view->wire_mode);

@@ -19,8 +19,8 @@ void *ActionModelReconnectBone::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	assert(index >= 0);
-	assert(index < m->Bone.num);
-	ModelBone &b = m->Bone[index];
+	assert(index < m->bone.num);
+	ModelBone &b = m->bone[index];
 
 	// swap parents
 	int t = b.parent;

@@ -21,8 +21,8 @@ void *ActionModelAddPolygonAutoSkin::compose(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	SkinGenerator sg;
-	sg.init_point_cloud_boundary(m->Vertex, vertex);
+	sg.init_point_cloud_boundary(m->vertex, vertex);
 
-	return AddSubAction(new ActionModelAddPolygonWithSkinGenerator(vertex, material, sg), m);
+	return addSubAction(new ActionModelAddPolygonWithSkinGenerator(vertex, material, sg), m);
 }
 

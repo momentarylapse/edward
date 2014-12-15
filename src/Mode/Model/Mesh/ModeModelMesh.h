@@ -45,7 +45,7 @@ public:
 	void EditEffects();
 	void ClearEffects();
 
-	ModelMaterialDialog *MaterialDialog;
+	ModelMaterialDialog *material_dialog;
 	void ShowMaterialDialog();
 	void CloseMaterialDialog();
 	void ToggleMaterialDialog();
@@ -56,10 +56,10 @@ public:
 	void Paste();
 	bool Copyable();
 	bool Pasteable();
-	Geometry TempGeo;
+	Geometry temp_geo;
 
 
-	int CurrentMaterial;
+	int current_material;
 	void SetCurrentMaterial(int index);
 };
 

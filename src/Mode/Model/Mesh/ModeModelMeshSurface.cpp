@@ -40,16 +40,16 @@ void ModeModelMeshSurface::onEnd()
 
 bool ModelSurface::hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data)
 {
-	for (int i=0;i<Polygon.num;i++)
-		if (Polygon[i].hover(win, m, tp, z, user_data))
+	for (int i=0;i<polygon.num;i++)
+		if (polygon[i].hover(win, m, tp, z, user_data))
 			return true;
 	return false;
 }
 
 bool ModelSurface::inRect(MultiView::Window *win, rect &r, void *user_data)
 {
-	for (int i=0;i<Polygon.num;i++)
-		if (Polygon[i].inRect(win, r, user_data))
+	for (int i=0;i<polygon.num;i++)
+		if (polygon[i].inRect(win, r, user_data))
 			return true;
 	return false;
 }
@@ -60,13 +60,13 @@ void ModeModelMeshSurface::onUpdate(Observable *o, const string &message)
 		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		multi_view->AddData(	MVDModelSurface,
-				data->Surface,
+				data->surface,
 				data,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
 	}else if (o == multi_view){
 		data->SelectionFromSurfaces();
 	}
-	mode_model_mesh_polygon->FillSelectionBuffers(data->Vertex);
+	mode_model_mesh_polygon->FillSelectionBuffers(data->vertex);
 }
 
 
@@ -84,7 +84,7 @@ void ModeModelMeshSurface::onStart()
 
 void ModeModelMeshSurface::onDraw()
 {
-	mode_model_mesh_polygon->FillSelectionBuffers(data->Vertex);
+	mode_model_mesh_polygon->FillSelectionBuffers(data->vertex);
 }
 
 

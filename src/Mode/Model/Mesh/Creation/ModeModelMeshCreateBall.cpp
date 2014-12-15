@@ -97,13 +97,13 @@ void ModeModelMeshCreateBall::UpdateGeometry()
 void ModeModelMeshCreateBall::onLeftButtonDown()
 {
 	if (pos_chosen){
-		data->PasteGeometry(*geo, mode_model_mesh->CurrentMaterial);
-		data->SelectOnlySurface(&data->Surface.back());
+		data->PasteGeometry(*geo, mode_model_mesh->current_material);
+		data->SelectOnlySurface(&data->surface.back());
 
 		abort();
 	}else{
 		if (multi_view->hover.index >= 0)
-			pos = data->Vertex[multi_view->hover.index].pos;
+			pos = data->vertex[multi_view->hover.index].pos;
 		else
 			pos = multi_view->GetCursor3d();
 		message = _("Kugel skalieren");
@@ -117,7 +117,7 @@ void ModeModelMeshCreateBall::onDrawWin(MultiView::Window *win)
 {
 	if (pos_chosen){
 		mode_model->SetMaterialCreation();
-		geo->Preview(VBTemp);
+		geo->preview(VBTemp);
 		NixDraw3D(VBTemp);
 	}
 }

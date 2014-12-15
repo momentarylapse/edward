@@ -22,20 +22,20 @@ void *ActionModelEditMaterial::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	assert((index >= 0) && (index < m->Material.num));
+	assert((index >= 0) && (index < m->material.num));
 
-	ModelMaterial old_mat = m->Material[index];
-	m->Material[index] = mat;
+	ModelMaterial old_mat = m->material[index];
+	m->material[index] = mat;
 	mat = old_mat;
 
 	// correct skin vertices
 	// (copy highest texture level when adding more levels)
-	foreach(ModelSurface &s, m->Surface)
-		foreach(ModelPolygon &p, s.Polygon){
-			if (p.Material == index){
-				foreach(ModelPolygonSide &side, p.Side)
-					for (int l=mat.NumTextures;l<m->Material[index].NumTextures;l++)
-						side.SkinVertex[l] = side.SkinVertex[mat.NumTextures - 1];
+	foreach(ModelSurface &s, m->surface)
+		foreach(ModelPolygon &p, s.polygon){
+			if (p.material == index){
+				foreach(ModelPolygonSide &side, p.side)
+					for (int l=mat.num_textures;l<m->material[index].num_textures;l++)
+						side.skin_vertex[l] = side.skin_vertex[mat.num_textures - 1];
 			}
 		}
 

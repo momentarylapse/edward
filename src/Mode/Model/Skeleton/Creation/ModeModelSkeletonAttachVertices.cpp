@@ -26,8 +26,8 @@ ModeModelSkeletonAttachVertices::~ModeModelSkeletonAttachVertices()
 void ModeModelSkeletonAttachVertices::onStart()
 {
 	// relative to absolute pos
-	foreach(ModelVertex &v, data->Vertex)
-		v.is_selected = (v.BoneIndex == bone_index);
+	foreach(ModelVertex &v, data->vertex)
+		v.is_selected = (v.bone_index == bone_index);
 
 	subscribe(data);
 	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
@@ -49,12 +49,12 @@ void ModeModelSkeletonAttachVertices::onUpdate(Observable *o, const string &mess
 		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		multi_view->AddData(	MVDModelVertex,
-				data->Vertex,
+				data->vertex,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
 	}else if (o == multi_view){
 		data->SelectionFromVertices();
-		mode_model_mesh_polygon->FillSelectionBuffers(data->Vertex);
+		mode_model_mesh_polygon->FillSelectionBuffers(data->vertex);
 	}
 }
 
@@ -63,7 +63,7 @@ void ModeModelSkeletonAttachVertices::onKeyDown()
 	int key = HuiGetEvent()->key_code;
 	if (key == KEY_RETURN){
 		Array<int> index;
-		foreachi(ModelVertex &v, data->Vertex, i)
+		foreachi(ModelVertex &v, data->vertex, i)
 			if (v.is_selected)
 				index.add(i);
 		data->execute(new ActionModelAttachVerticesToBone(index, bone_index));

@@ -30,12 +30,12 @@ void ModeModelSkeletonCreateBone::onLeftButtonDown()
 			pos = multi_view->GetCursor3d();
 			data->execute(new ActionModelAddBone(pos, bone_parent));
 		}
-		data->Bone[bone_parent].is_special = false;
+		data->bone[bone_parent].is_special = false;
 		abort();
 	}else{
 		if (multi_view->hover.index >= 0){
 			bone_parent = multi_view->hover.index;
-			data->Bone[bone_parent].is_special = true;
+			data->bone[bone_parent].is_special = true;
 			pos_chosen = true;
 			message = _("Knochen setzen");
 		}else{

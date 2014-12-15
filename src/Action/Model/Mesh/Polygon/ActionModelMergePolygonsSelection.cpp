@@ -17,7 +17,7 @@ ActionModelMergePolygonsSelection::ActionModelMergePolygonsSelection()
 void *ActionModelMergePolygonsSelection::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(ModelSurface &s, m->Surface, si)
+	foreachi(ModelSurface &s, m->surface, si)
 		MergePolygonsInSurface(m, &s, si);
 	return NULL;
 }
@@ -25,39 +25,39 @@ void *ActionModelMergePolygonsSelection::compose(Data *d)
 int polygons_count_shared_vertices(ModelPolygon &a, ModelPolygon &b)
 {
 	int n = 0;
-	for (int i=0; i<a.Side.num; i++)
-		for (int j=0; j<b.Side.num; j++)
-			if (a.Side[i].Vertex == b.Side[j].Vertex)
+	for (int i=0; i<a.side.num; i++)
+		for (int j=0; j<b.side.num; j++)
+			if (a.side[i].vertex == b.side[j].vertex)
 				n ++;
 	return n;
 }
 
 void ActionModelMergePolygonsSelection::MergePolygonsInSurface(DataModel *m, ModelSurface *s, int surface)
 {
-	int num_old_poly = s->Polygon.num;
+	int num_old_poly = s->polygon.num;
 	bool found;
 	do{
 		found = false;
 
-		foreachi(ModelEdge &e, s->Edge, ei){
-			if (e.RefCount < 2)
+		foreachi(ModelEdge &e, s->edge, ei){
+			if (e.ref_count < 2)
 				continue;
-			ModelPolygon &p0 = s->Polygon[e.Polygon[0]];
-			ModelPolygon &p1 = s->Polygon[e.Polygon[1]];
-			if ((!p0.is_selected) && (e.Polygon[0] < num_old_poly))
+			ModelPolygon &p0 = s->polygon[e.polygon[0]];
+			ModelPolygon &p1 = s->polygon[e.polygon[1]];
+			if ((!p0.is_selected) && (e.polygon[0] < num_old_poly))
 				continue;
-			if ((!p1.is_selected) && (e.Polygon[1] < num_old_poly))
-				continue;
-
-			if (p0.Material != p1.Material)
+			if ((!p1.is_selected) && (e.polygon[1] < num_old_poly))
 				continue;
 
-			if (p0.NormalDirty)
-				p0.TempNormal = p0.GetNormal(m->Vertex);
-			if (p1.NormalDirty)
-				p1.TempNormal = p1.GetNormal(m->Vertex);
+			if (p0.material != p1.material)
+				continue;
 
-			if (p0.TempNormal * p1.TempNormal < 0.98f)
+			if (p0.normal_dirty)
+				p0.temp_normal = p0.GetNormal(m->vertex);
+			if (p1.normal_dirty)
+				p1.temp_normal = p1.GetNormal(m->vertex);
+
+			if (p0.temp_normal * p1.temp_normal < 0.98f)
 				continue;
 
 			if (polygons_count_shared_vertices(p0, p1) != 2)
@@ -74,17 +74,17 @@ void ActionModelMergePolygonsSelection::MergePolygonsInSurface(DataModel *m, Mod
 void loop_sides(ModelPolygon &p, int steps)
 {
 	ModelPolygon temp = p;
-	temp.Side.resize(p.Side.num);
-	for (int i=0;i<p.Side.num;i++)
-		p.Side[i] = temp.Side[(i+p.Side.num*5+steps) % p.Side.num];
+	temp.side.resize(p.side.num);
+	for (int i=0;i<p.side.num;i++)
+		p.side[i] = temp.side[(i+p.side.num*5+steps) % p.side.num];
 }
 
 void ActionModelMergePolygonsSelection::MergePolygons(DataModel *m, ModelSurface *s, int surface, int edge)
 {
-	ModelEdge e = s->Edge[edge];
+	ModelEdge e = s->edge[edge];
 	//msg_write(format("merge %d %d", e.Vertex[0], e.Vertex[1]));
-	ModelPolygon p0 = s->Polygon[e.Polygon[0]];
-	ModelPolygon p1 = s->Polygon[e.Polygon[1]];
+	ModelPolygon p0 = s->polygon[e.polygon[0]];
+	ModelPolygon p1 = s->polygon[e.polygon[1]];
 
 	/*msg_write(ia2s(p0.GetVertices()));
 	msg_write(e.Side[0]);
@@ -92,20 +92,20 @@ void ActionModelMergePolygonsSelection::MergePolygons(DataModel *m, ModelSurface
 	msg_write(e.Side[1]);*/
 
 	// merge polygon data
-	loop_sides(p0, e.Side[0] + 2);
-	loop_sides(p1, e.Side[1] + 2);
-	p0.Side.pop();
-	p1.Side.pop();
-	p0.Side += p1.Side;
+	loop_sides(p0, e.side[0] + 2);
+	loop_sides(p1, e.side[1] + 2);
+	p0.side.pop();
+	p1.side.pop();
+	p0.side += p1.side;
 	Array<int> v = p0.GetVertices();
 	Array<vector> sv = p0.GetSkinVertices();
 
 	//msg_write(ia2s(v));
 
 	// delete old polygons
-	AddSubAction(new ActionModelSurfaceDeletePolygon(surface, max(e.Polygon[0], e.Polygon[1])), m);
-	AddSubAction(new ActionModelSurfaceDeletePolygon(surface, min(e.Polygon[0], e.Polygon[1])), m);
+	addSubAction(new ActionModelSurfaceDeletePolygon(surface, max(e.polygon[0], e.polygon[1])), m);
+	addSubAction(new ActionModelSurfaceDeletePolygon(surface, min(e.polygon[0], e.polygon[1])), m);
 
 	// add merged
-	AddSubAction(new ActionModelSurfaceAddPolygon(surface, v, p0.Material, sv), m);
+	addSubAction(new ActionModelSurfaceAddPolygon(surface, v, p0.material, sv), m);
 }

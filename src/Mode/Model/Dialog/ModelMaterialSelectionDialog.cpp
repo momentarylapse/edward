@@ -45,16 +45,16 @@ ModelMaterialSelectionDialog::~ModelMaterialSelectionDialog()
 void ModelMaterialSelectionDialog::FillMaterialList()
 {
 	reset("material_list");
-	for (int i=0;i<data->Material.num;i++){
+	for (int i=0;i<data->material.num;i++){
 		int nt = 0;
-		foreach(ModelSurface &s, data->Surface)
-			foreach(ModelPolygon &t, s.Polygon)
-			if (t.Material == i)
+		foreach(ModelSurface &s, data->surface)
+			foreach(ModelPolygon &t, s.polygon)
+			if (t.material == i)
 				nt ++;
-		string im = render_material(&data->Material[i]);
-		addString("material_list", format("%d\\%d\\%s\\%s", i, nt, im.c_str(), file_secure(data->Material[i].MaterialFile).c_str()));
+		string im = render_material(&data->material[i]);
+		addString("material_list", format("%d\\%d\\%s\\%s", i, nt, im.c_str(), file_secure(data->material[i].material_file).c_str()));
 	}
-	setInt("material_list", mode_model_mesh->CurrentMaterial);
+	setInt("material_list", mode_model_mesh->current_material);
 }
 
 void ModelMaterialSelectionDialog::PutAnswer(int *_answer)

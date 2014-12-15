@@ -74,8 +74,8 @@ void ModeModelMeshCreateTorus::onLeftButtonDown()
 	if (pos_chosen){
 		if (rad_chosen){
 
-			data->PasteGeometry(*geo, mode_model_mesh->CurrentMaterial);
-			data->SelectOnlySurface(&data->Surface.back());
+			data->PasteGeometry(*geo, mode_model_mesh->current_material);
+			data->SelectOnlySurface(&data->surface.back());
 
 			abort();
 		}else{
@@ -84,7 +84,7 @@ void ModeModelMeshCreateTorus::onLeftButtonDown()
 		}
 	}else{
 		if (multi_view->hover.index >= 0)
-			pos = data->Vertex[multi_view->hover.index].pos;
+			pos = data->vertex[multi_view->hover.index].pos;
 		else
 			pos = multi_view->GetCursor3d();
 		message = _("Torus au&sen skalieren");
@@ -98,7 +98,7 @@ void ModeModelMeshCreateTorus::onDrawWin(MultiView::Window *win)
 {
 	if (pos_chosen){
 		mode_model->SetMaterialCreation();
-		geo->Preview(VBTemp);
+		geo->preview(VBTemp);
 		NixDraw3D(VBTemp);
 		NixEnableLighting(false);
 		ed->drawStr(100, 100, format("%.3f / %.3f", radius1, radius2));

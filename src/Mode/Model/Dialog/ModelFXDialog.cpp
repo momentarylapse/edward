@@ -16,10 +16,10 @@ ModelFXDialog::ModelFXDialog(HuiWindow* _parent, bool _allow_parent, DataModel* 
 	data = _data;
 	index = _index;
 	if (index >= 0)
-		temp = data->Fx[index];
+		temp = data->fx[index];
 	else{
 		temp.clear();
-		temp.Kind = _type;
+		temp.kind = _type;
 	}
 
 	event("hui:close", this, &ModelFXDialog::OnClose);
@@ -37,45 +37,45 @@ ModelFXDialog::~ModelFXDialog()
 
 void ModelFXDialog::LoadData()
 {
-	if (temp.Kind == FXKindScript){
+	if (temp.kind == FX_KIND_SCRIPT){
 		setInt("fx_tab_control", 0);
-		setString("script_file", temp.File);
-	}else if (temp.Kind == FXKindLight){
+		setString("script_file", temp.file);
+	}else if (temp.kind == FX_KIND_LIGHT){
 		setInt("fx_tab_control", 1);
-		setColor("mat_am", temp.Colors[0]);
-		setColor("mat_di", temp.Colors[1]);
-		setColor("mat_sp", temp.Colors[2]);
-		setFloat("light_radius", temp.Size);
-	}else if (temp.Kind == FXKindSound){
+		setColor("mat_am", temp.colors[0]);
+		setColor("mat_di", temp.colors[1]);
+		setColor("mat_sp", temp.colors[2]);
+		setFloat("light_radius", temp.size);
+	}else if (temp.kind == FX_KIND_SOUND){
 		setInt("fx_tab_control", 2);
-		setString("filename", temp.File);
-		setFloat("sound_radius", temp.Size);
-		setFloat("speed", temp.Speed * 100.0f);
-	}else if (temp.Kind == FXKindForceField){
+		setString("filename", temp.file);
+		setFloat("sound_radius", temp.size);
+		setFloat("speed", temp.speed * 100.0f);
+	}else if (temp.kind == FX_KIND_FORCEFIELD){
 		setInt("fx_tab_control", 3);
-		setFloat("forcefield_radius", temp.Size);
-		setFloat("intensity", temp.Intensity);
-		setInt("formula", temp.InvQuad ? 1 : 0);
+		setFloat("forcefield_radius", temp.size);
+		setFloat("intensity", temp.intensity);
+		setInt("formula", temp.inv_quad ? 1 : 0);
 	}
 }
 
 void ModelFXDialog::ApplyData()
 {
-	if (temp.Kind == FXKindScript){
-		temp.File = getString("script_file");
-	}else if (temp.Kind == FXKindLight){
-		temp.Colors[0] = getColor("mat_am");
-		temp.Colors[1] = getColor("mat_di");
-		temp.Colors[2] = getColor("mat_sp");
-		temp.Size = getFloat("light_radius");
-	}else if (temp.Kind == FXKindSound){
-		temp.File = getString("filename");
-		temp.Size = getFloat("sound_radius");
-		temp.Speed = getFloat("speed") * 0.01f;
-	}else if (temp.Kind == FXKindForceField){
-		temp.Size = getFloat("forcefield_radius");
-		temp.Intensity = getFloat("intensity");
-		temp.InvQuad = (getInt("formula")  == 1);
+	if (temp.kind == FX_KIND_SCRIPT){
+		temp.file = getString("script_file");
+	}else if (temp.kind == FX_KIND_LIGHT){
+		temp.colors[0] = getColor("mat_am");
+		temp.colors[1] = getColor("mat_di");
+		temp.colors[2] = getColor("mat_sp");
+		temp.size = getFloat("light_radius");
+	}else if (temp.kind == FX_KIND_SOUND){
+		temp.file = getString("filename");
+		temp.size = getFloat("sound_radius");
+		temp.speed = getFloat("speed") * 0.01f;
+	}else if (temp.kind == FX_KIND_FORCEFIELD){
+		temp.size = getFloat("forcefield_radius");
+		temp.intensity = getFloat("intensity");
+		temp.inv_quad = (getInt("formula")  == 1);
 	}
 
 	if (index >= 0)

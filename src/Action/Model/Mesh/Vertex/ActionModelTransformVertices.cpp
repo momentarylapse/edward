@@ -12,10 +12,10 @@ ActionModelTransformVertices::ActionModelTransformVertices(DataModel *d) :
 	ActionMultiView()
 {
 	// list of selected vertices and save old pos
-	foreachi(ModelVertex &v, d->Vertex, i)
+	foreachi(ModelVertex &v, d->vertex, i)
 		if (v.is_selected){
 			index.add(i);
-			old_data.add(d->Vertex[i].pos);
+			old_data.add(d->vertex[i].pos);
 		}
 }
 
@@ -29,7 +29,7 @@ void ActionModelTransformVertices::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(int i, index, ii)
-		m->Vertex[i].pos = old_data[ii];
+		m->vertex[i].pos = old_data[ii];
 	m->SetNormalsDirtyByVertices(index);
 }
 
@@ -39,7 +39,7 @@ void *ActionModelTransformVertices::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreach(int i, index)
-		m->Vertex[i].pos =  mat * m->Vertex[i].pos;
+		m->vertex[i].pos =  mat * m->vertex[i].pos;
 	m->SetNormalsDirtyByVertices(index);
 	return NULL;
 }

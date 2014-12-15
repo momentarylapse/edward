@@ -22,8 +22,8 @@ void *ActionModelAddMaterial::execute(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	ModelMaterial mat = ModelMaterial(filename);
-	m->Material.add(mat);
-	return &m->Material.back();
+	m->material.add(mat);
+	return &m->material.back();
 }
 
 
@@ -32,7 +32,7 @@ void ActionModelAddMaterial::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	m->Material.pop();
+	m->material.pop();
 }
 
 

@@ -26,45 +26,45 @@ void ActionModelDeleteUnusedVertex::undo(Data *d)
 	// new vertex
 	ModelVertex vv;
 	vv.pos = pos;
-	vv.NormalMode = normal_mode;
-	vv.BoneIndex = bone;
+	vv.normal_mode = normal_mode;
+	vv.bone_index = bone;
 	vv.is_selected = false;
 	vv.is_special = false;
 	vv.view_stage = ed->multi_view_3d->view_stage;
-	vv.RefCount = 0;
-	vv.Surface = -1;
-	m->Vertex.insert(vv, vertex);
+	vv.ref_count = 0;
+	vv.surface = -1;
+	m->vertex.insert(vv, vertex);
 
 	// correct animations
 	int i = 0;
-	foreach(ModelMove &mv, m->Move)
-		if (mv.Type == MoveTypeVertex){
-			foreach(ModelFrame &f, mv.Frame)
-				f.VertexDPos.insert(move[i ++], vertex);
+	foreach(ModelMove &mv, m->move)
+		if (mv.type == MoveTypeVertex){
+			foreach(ModelFrame &f, mv.frame)
+				f.vertex_dpos.insert(move[i ++], vertex);
 		}
 
 
 	// correct references
-	foreach(ModelSurface &s, m->Surface){
-		foreach(ModelPolygon &t, s.Polygon)
-			for (int k=0;k<t.Side.num;k++)
-				if (t.Side[k].Vertex >= vertex)
-					t.Side[k].Vertex ++;
-		foreach(ModelEdge &e, s.Edge)
+	foreach(ModelSurface &s, m->surface){
+		foreach(ModelPolygon &t, s.polygon)
+			for (int k=0;k<t.side.num;k++)
+				if (t.side[k].vertex >= vertex)
+					t.side[k].vertex ++;
+		foreach(ModelEdge &e, s.edge)
 			for (int k=0;k<2;k++)
-				if (e.Vertex[k] >= vertex)
-					e.Vertex[k] ++;
-		foreach(int &v, s.Vertex)
+				if (e.vertex[k] >= vertex)
+					e.vertex[k] ++;
+		foreach(int &v, s.vertex)
 			if (v >= vertex)
 				v ++;
 	}
 
 	// fx
-	foreach(ModelEffect &f, m->Fx)
-		if (f.Vertex >= vertex)
-			f.Vertex ++;
+	foreach(ModelEffect &f, m->fx)
+		if (f.vertex >= vertex)
+			f.vertex ++;
 	foreachib(ModelEffect &f, fx, i)
-		m->Fx.insert(f, fx_index[i]);
+		m->fx.insert(f, fx_index[i]);
 }
 
 
@@ -72,35 +72,35 @@ void ActionModelDeleteUnusedVertex::undo(Data *d)
 void *ActionModelDeleteUnusedVertex::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	assert(m->Vertex[vertex].RefCount == 0);
-	assert(m->Vertex[vertex].Surface < 0);
+	assert(m->vertex[vertex].ref_count == 0);
+	assert(m->vertex[vertex].surface < 0);
 
 	// save old data
-	pos = m->Vertex[vertex].pos;
-	normal_mode = m->Vertex[vertex].NormalMode;
-	bone = m->Vertex[vertex].BoneIndex;
+	pos = m->vertex[vertex].pos;
+	normal_mode = m->vertex[vertex].normal_mode;
+	bone = m->vertex[vertex].bone_index;
 
 	// move data
 	move.clear();
-	foreach(ModelMove &mv, m->Move)
-		if (mv.Type == MoveTypeVertex){
-			foreach(ModelFrame &f, mv.Frame){
-				move.add(f.VertexDPos[vertex]);
-				f.VertexDPos.erase(vertex);
+	foreach(ModelMove &mv, m->move)
+		if (mv.type == MoveTypeVertex){
+			foreach(ModelFrame &f, mv.frame){
+				move.add(f.vertex_dpos[vertex]);
+				f.vertex_dpos.erase(vertex);
 			}
 		}
 
 	// correct references
-	foreach(ModelSurface &s, m->Surface){
-		foreach(ModelPolygon &t, s.Polygon)
-			for (int k=0;k<t.Side.num;k++)
-				if (t.Side[k].Vertex > vertex)
-					t.Side[k].Vertex --;
-		foreach(ModelEdge &e, s.Edge)
+	foreach(ModelSurface &s, m->surface){
+		foreach(ModelPolygon &t, s.polygon)
+			for (int k=0;k<t.side.num;k++)
+				if (t.side[k].vertex > vertex)
+					t.side[k].vertex --;
+		foreach(ModelEdge &e, s.edge)
 			for (int k=0;k<2;k++)
-				if (e.Vertex[k] > vertex)
-					e.Vertex[k] --;
-		foreach(int &v, s.Vertex)
+				if (e.vertex[k] > vertex)
+					e.vertex[k] --;
+		foreach(int &v, s.vertex)
 			if (v > vertex)
 				v --;
 	}
@@ -108,17 +108,17 @@ void *ActionModelDeleteUnusedVertex::execute(Data *d)
 	// fx
 	fx.clear();
 	fx_index.clear();
-	foreachib(ModelEffect &f, m->Fx, i)
-		if (f.Vertex == vertex){
+	foreachib(ModelEffect &f, m->fx, i)
+		if (f.vertex == vertex){
 			fx.add(f);
 			fx_index.add(i);
-			m->Fx.erase(i);
+			m->fx.erase(i);
 			_foreach_it_.update(); // TODO
-		}else if (f.Vertex > vertex)
-			f.Vertex --;
+		}else if (f.vertex > vertex)
+			f.vertex --;
 
 	// erase
-	m->Vertex.erase(vertex);
+	m->vertex.erase(vertex);
 	return NULL;
 }
 

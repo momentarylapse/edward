@@ -26,24 +26,24 @@ void *ActionModelAddPolygon::compose(Data *d)
 	//assert(_a != _b && _b != _c && _c != _a);
 	Set<int> surf;
 	foreach(int vi, v){
-		if (m->Vertex[vi].Surface >= 0)
-			surf.add(m->Vertex[vi].Surface);
+		if (m->vertex[vi].surface >= 0)
+			surf.add(m->vertex[vi].surface);
 	}
 
 	int surf_no;
 	if (surf.num == 0){
 		// new surface
-		AddSubAction(new ActionModelAddEmptySurface(), m);
-		surf_no = m->Surface.num - 1;
+		addSubAction(new ActionModelAddEmptySurface(), m);
+		surf_no = m->surface.num - 1;
 	}else{
 		// main surface?
 		surf_no = surf[0];
 
 		// join other surfaces into surf_no
 		for (int i=surf.num-1;i>0;i--)
-			AddSubAction(new ActionModelJoinSurfaces(surf_no, surf[i]), m);
+			addSubAction(new ActionModelJoinSurfaces(surf_no, surf[i]), m);
 	}
 
 	// add triangle
-	return AddSubAction(new ActionModelSurfaceAddPolygon(surf_no, v, material, sv), m);
+	return addSubAction(new ActionModelSurfaceAddPolygon(surf_no, v, material, sv), m);
 }

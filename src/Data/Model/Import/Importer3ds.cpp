@@ -73,7 +73,7 @@ bool Importer3ds::Import(DataModel *m, const string &filename)
 void Importer3ds::LoadMesh(DataModel *m, CFile *f, int _length)
 {
 	msg_right();
-	int NumVerticesOld = m->Skin[1].Vertex.num;
+	int NumVerticesOld = m->skin[1].vertex.num;
 	int end_pos = f->GetPos() + _length - 6;
 	Array<vector> skin_vert;
 	while(f->GetPos() < end_pos){
@@ -89,8 +89,8 @@ void Importer3ds::LoadMesh(DataModel *m, CFile *f, int _length)
 					v.pos.x = f->ReadFloat();
 					v.pos.y = f->ReadFloat();
 					v.pos.z = f->ReadFloat();
-					v.NormalMode = NormalModeAngular;
-					m->Skin[1].Vertex.add(v);
+					v.normal_mode = NormalModeAngular;
+					m->skin[1].vertex.add(v);
 				}
 				}break;
 			case 0x4120:
@@ -99,11 +99,11 @@ void Importer3ds::LoadMesh(DataModel *m, CFile *f, int _length)
 				msg_write(format("\t\t\t\tNumTriangles: %d",nt));
 				for (int i=0;i<nt;i++){
 					ModelTriangle t;
-					t.Vertex[0] = f->ReadWord() + NumVerticesOld;
-					t.Vertex[1] = f->ReadWord() + NumVerticesOld;
-					t.Vertex[2] = f->ReadWord() + NumVerticesOld;
+					t.vertex[0] = f->ReadWord() + NumVerticesOld;
+					t.vertex[1] = f->ReadWord() + NumVerticesOld;
+					t.vertex[2] = f->ReadWord() + NumVerticesOld;
 					f->ReadWord();
-					m->Skin[1].Sub[0].Triangle.add(t);
+					m->skin[1].sub[0].triangle.add(t);
 				}
 				}break;
 			case 0x4140:
@@ -122,10 +122,10 @@ void Importer3ds::LoadMesh(DataModel *m, CFile *f, int _length)
 				break;
 		}
 	}
-	foreach(ModelTriangle &t, m->Skin[1].Sub[0].Triangle)
+	foreach(ModelTriangle &t, m->skin[1].sub[0].triangle)
 		for (int k=0;k<3;k++)
-			if ((t.Vertex[k] >= NumVerticesOld) && (t.Vertex[k] < NumVerticesOld + skin_vert.num))
-					t.SkinVertex[0][k] = skin_vert[t.Vertex[k] - NumVerticesOld];
+			if ((t.vertex[k] >= NumVerticesOld) && (t.vertex[k] < NumVerticesOld + skin_vert.num))
+					t.skin_vertex[0][k] = skin_vert[t.vertex[k] - NumVerticesOld];
 	msg_left();
 }
 

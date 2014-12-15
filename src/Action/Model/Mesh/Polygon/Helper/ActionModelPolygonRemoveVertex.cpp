@@ -20,26 +20,26 @@ ActionModelPolygonRemoveVertex::ActionModelPolygonRemoveVertex(int _surface, int
 void *ActionModelPolygonRemoveVertex::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	ModelSurface &s = m->Surface[surface];
-	ModelPolygon &t = s.Polygon[poly];
+	ModelSurface &s = m->surface[surface];
+	ModelPolygon &t = s.polygon[poly];
 
 
 	// save old polygon data
 	Array<int> v = t.GetVertices();
 	Array<vector> _sv = t.GetSkinVertices();
-	int material = t.Material;
+	int material = t.material;
 
 	// remove vertex
 	v.erase(side);
 	for (int l=MATERIAL_MAX_TEXTURES-1;l>=0;l--)
-		_sv.erase(side + l * t.Side.num);
+		_sv.erase(side + l * t.side.num);
 
 	// delete
-	AddSubAction(new ActionModelSurfaceDeletePolygon(surface, poly), m);
+	addSubAction(new ActionModelSurfaceDeletePolygon(surface, poly), m);
 
 	// recreate
 	if (v.num > 2)
-		AddSubAction(new ActionModelSurfaceAddPolygon(surface, v, material, _sv, poly), m);
+		addSubAction(new ActionModelSurfaceAddPolygon(surface, v, material, _sv, poly), m);
 
 	return NULL;
 }

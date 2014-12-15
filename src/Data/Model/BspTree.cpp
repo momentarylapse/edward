@@ -30,8 +30,8 @@ struct BspBranch
 	{
 		bool some_in = false;
 		bool some_out = false;
-		for (int j=0;j<p.Side.num;j++){
-			float d = pl.distance(m->Vertex[p.Side[j].Vertex].pos);
+		for (int j=0;j<p.side.num;j++){
+			float d = pl.distance(m->vertex[p.side[j].vertex].pos);
 			if (d > epsilon)
 				some_out = true;
 			else if (d < - epsilon)
@@ -67,7 +67,7 @@ BspTree::~BspTree()
 void BspTree::add(ModelPolygon &p, DataModel *m, float epsilon)
 {
 	plane pl;
-	PlaneFromPointNormal(pl, m->Vertex[p.Side[0].Vertex].pos, p.TempNormal);
+	PlaneFromPointNormal(pl, m->vertex[p.side[0].vertex].pos, p.temp_normal);
 	if (b)
 		b->add(p, m, pl, epsilon);
 	else

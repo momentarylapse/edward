@@ -18,8 +18,8 @@ ActionModelTransformSkinVertices::ActionModelTransformSkinVertices(DataModel *d,
 	// list of selected skin vertices and save old pos
 	mode_model_mesh_texture->GetSelectedSkinVertices(surface, tria, index);
 	foreachi(int k, index, i){
-		ModelPolygon &t = d->Surface[surface[i]].Polygon[tria[i]];
-		old_data.add(t.Side[k].SkinVertex[texture_level]);
+		ModelPolygon &t = d->surface[surface[i]].polygon[tria[i]];
+		old_data.add(t.side[k].skin_vertex[texture_level]);
 	}
 }
 
@@ -33,8 +33,8 @@ void *ActionModelTransformSkinVertices::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(int k, index, ii){
-		ModelPolygon &t = m->Surface[surface[ii]].Polygon[tria[ii]];
-		vector &v = t.Side[k].SkinVertex[texture_level];
+		ModelPolygon &t = m->surface[surface[ii]].polygon[tria[ii]];
+		vector &v = t.side[k].skin_vertex[texture_level];
 		v = mat * v;
 	}
 	return NULL;
@@ -46,8 +46,8 @@ void ActionModelTransformSkinVertices::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(int k, index, i){
-		ModelPolygon &t = m->Surface[surface[i]].Polygon[tria[i]];
-		vector &v = t.Side[k].SkinVertex[texture_level];
+		ModelPolygon &t = m->surface[surface[i]].polygon[tria[i]];
+		vector &v = t.side[k].skin_vertex[texture_level];
 		v = old_data[i];
 	}
 }

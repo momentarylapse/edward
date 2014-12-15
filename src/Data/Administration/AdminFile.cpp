@@ -229,20 +229,20 @@ void AdminFile::check(AdminFileList &list)
 		DataModel m;
 		if (m.load(ObjectDir + Name,false)){
 			Time = m.file_time;
-			for (int i=0;i<m.Bone.num;i++)
-				add_possible_link(l, FDModel, m.Bone[i].model_file);
-			for (int i=0;i<m.Fx.num;i++){
-				if (m.Fx[i].Kind==FXKindScript)
-					add_possible_link(l, FDScript, m.Fx[i].File);
-				if (m.Fx[i].Kind==FXKindSound)
-					add_possible_link(l, FDSound, m.Fx[i].File);
+			for (int i=0;i<m.bone.num;i++)
+				add_possible_link(l, FDModel, m.bone[i].model_file);
+			for (int i=0;i<m.fx.num;i++){
+				if (m.fx[i].kind==FX_KIND_SCRIPT)
+					add_possible_link(l, FDScript, m.fx[i].file);
+				if (m.fx[i].kind==FX_KIND_SOUND)
+					add_possible_link(l, FDSound, m.fx[i].file);
 			}
 			foreach(string &s, m.meta_data.Inventary)
 				add_possible_link(l, FDModel, s);
-			for (int i=0;i<m.Material.num;i++){
-				add_possible_link(l, FDMaterial, m.Material[i].MaterialFile);
-				for (int j=0;j<m.Material[i].NumTextures;j++)
-					add_possible_link(l, FDTexture, m.Material[i].TextureFile[j]);
+			for (int i=0;i<m.material.num;i++){
+				add_possible_link(l, FDMaterial, m.material[i].material_file);
+				for (int j=0;j<m.material[i].num_textures;j++)
+					add_possible_link(l, FDTexture, m.material[i].texture_file[j]);
 			}
 			add_possible_link(l, FDScript, m.meta_data.ScriptFile);
 		}else

@@ -49,7 +49,7 @@ ActionWorldTerrainApplyHeightmap::ActionWorldTerrainApplyHeightmap(DataWorld *da
 					height.add(f * height_factor);
 				}
 
-			AddSubAction(new ActionWorldTerrainEditHeight(index, height, dest), data);
+			addSubAction(new ActionWorldTerrainEditHeight(index, height, dest), data);
 		}
 }
 

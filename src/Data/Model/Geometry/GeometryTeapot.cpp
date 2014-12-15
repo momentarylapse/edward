@@ -329,7 +329,7 @@ const vector tp_vert[] = {
 
 #define addBezier(i0,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15) \
 	fill_array(i0,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15); \
-	AddBezier3(v, samples, samples, 0.01f / samples)
+	addBezier3(v, samples, samples, 0.01f / samples)
 
 GeometryTeapot::GeometryTeapot(const vector &pos, float radius, int samples)
 {
@@ -367,13 +367,13 @@ GeometryTeapot::GeometryTeapot(const vector &pos, float radius, int samples)
 	addBezier(222,227,228,229,248,255,256,257,251,258,259,260,254,261,262,263);
 	addBezier(229,232,233,212,257,264,265,234,260,266,267,238,263,268,269,242);
 
-	Weld(0.01f / samples);
+	weld(0.01f / samples);
 
 	matrix rot, trans, scale;
 	MatrixRotationX(rot, - pi / 2);
 	MatrixTranslation(trans, pos - e_y * radius / 2);
 	MatrixScale(scale, radius / 3, radius / 3, radius / 3);
-	Transform(trans * rot * scale);
+	transform(trans * rot * scale);
 }
 
 void GeometryTeapot::__init__(const vector& pos, float radius, int samples)

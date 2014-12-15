@@ -22,23 +22,23 @@ void *ActionModelPasteGeometry::compose(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	m->ClearSelection();
 
-	int nv = m->Vertex.num;
-	foreach(ModelVertex &v, m->Vertex)
+	int nv = m->vertex.num;
+	foreach(ModelVertex &v, m->vertex)
 		v.is_selected = false;
 
-	foreach(ModelVertex &v, geo.Vertex)
-		AddSubAction(new ActionModelAddVertex(v.pos), m);
+	foreach(ModelVertex &v, geo.vertex)
+		addSubAction(new ActionModelAddVertex(v.pos), m);
 
-	foreach(ModelPolygon &t, geo.Polygon){
+	foreach(ModelPolygon &t, geo.polygon){
 		Array<int> v;
-		for (int k=0;k<t.Side.num;k++)
-			v.add(nv + t.Side[k].Vertex);
+		for (int k=0;k<t.side.num;k++)
+			v.add(nv + t.side[k].vertex);
 		Array<vector> sv;
 		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
-			for (int k=0;k<t.Side.num;k++)
-				sv.add(t.Side[k].SkinVertex[l]);
-		int mat = (t.Material >= 0) ? t.Material : default_material;
-		AddSubAction(new ActionModelAddPolygon(v, mat, sv), m);
+			for (int k=0;k<t.side.num;k++)
+				sv.add(t.side[k].skin_vertex[l]);
+		int mat = (t.material >= 0) ? t.material : default_material;
+		addSubAction(new ActionModelAddPolygon(v, mat, sv), m);
 	}
 	return NULL;
 }

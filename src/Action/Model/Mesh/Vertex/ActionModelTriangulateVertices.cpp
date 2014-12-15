@@ -17,7 +17,7 @@ ActionModelTriangulateVertices::ActionModelTriangulateVertices()
 
 static int find_rand_sel(DataModel *m)
 {
-	foreachi(ModelVertex &v, m->Vertex, i)
+	foreachi(ModelVertex &v, m->vertex, i)
 		if (v.is_selected)
 			return i;
 	return -1;
@@ -27,9 +27,9 @@ static int find_closest_sel(DataModel *m, int i0)
 {
 	float dmin = 0;
 	int imin = -1;
-	foreachi(ModelVertex &v, m->Vertex, i)
+	foreachi(ModelVertex &v, m->vertex, i)
 		if ((v.is_selected) && (i != i0)){
-			float d = (m->Vertex[i].pos - m->Vertex[i0].pos).length_sqr();
+			float d = (m->vertex[i].pos - m->vertex[i0].pos).length_sqr();
 			if ((d < dmin) || (imin < 0)){
 				imin = i;
 				dmin = d;
@@ -57,14 +57,14 @@ static float circum_radius(const vector &p1, const vector &p2, const vector &p3,
 static bool tria_ok(DataModel *m, int i0, int i1, int i2, float &r)
 {
 	vector cm;
-	r = circum_radius(m->Vertex[i0].pos, m->Vertex[i1].pos, m->Vertex[i2].pos, cm);
+	r = circum_radius(m->vertex[i0].pos, m->vertex[i1].pos, m->vertex[i2].pos, cm);
 	if (r < 0)
 		return false;
 
 	// other vertices in ball?
-	for (int ii=0; ii<m->Vertex.num; ii++)
-		if ((m->Vertex[ii].is_selected) && (ii != i0) && (ii != i1) && (ii != i2)){
-			if ((cm - m->Vertex[ii].pos).length() < r){
+	for (int ii=0; ii<m->vertex.num; ii++)
+		if ((m->vertex[ii].is_selected) && (ii != i0) && (ii != i1) && (ii != i2)){
+			if ((cm - m->vertex[ii].pos).length() < r){
 				return false;
 			}
 		}
@@ -75,7 +75,7 @@ static int find_for_edge(DataModel *m, int i0, int i1, Set<int> used)
 {
 	float rmin = 0;
 	int imin = -1;
-	foreachi(ModelVertex &v, m->Vertex, i)
+	foreachi(ModelVertex &v, m->vertex, i)
 		if ((v.is_selected) && (!used.contains(i))){
 			float r;
 			if (!tria_ok(m, i0, i1, i, r))
@@ -97,7 +97,7 @@ void ActionModelTriangulateVertices::add_tria(Data*d, int i0, int i1, int i2, Se
 	v.add(i2);
 	v.add(i1);
 	//msg_write(ia2s(v));
-	AddSubAction(new ActionModelAddPolygonAutoSkin(v, 0), d);
+	addSubAction(new ActionModelAddPolygonAutoSkin(v, 0), d);
 
 	used.add(i2);
 
@@ -115,7 +115,7 @@ void ActionModelTriangulateVertices::add_tria2(Data*d, int i0, int i1, int i2, A
 	v.add(i1);
 	v.add(i2);
 	//msg_write(ia2s(v));
-	AddSubAction(new ActionModelAddPolygonAutoSkin(v, 0), d);
+	addSubAction(new ActionModelAddPolygonAutoSkin(v, 0), d);
 
 	for (int i=0;i<boundary.num;i++)
 		if (boundary[i] == i1){

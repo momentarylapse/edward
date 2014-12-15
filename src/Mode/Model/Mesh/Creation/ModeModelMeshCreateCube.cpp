@@ -67,13 +67,13 @@ void ModeModelMeshCreateCube::onLeftButtonDown()
 	if (pos_chosen){
 		if (pos2_chosen){
 
-			data->PasteGeometry(*geo, mode_model_mesh->CurrentMaterial);
-			data->SelectOnlySurface(&data->Surface.back());
+			data->PasteGeometry(*geo, mode_model_mesh->current_material);
+			data->SelectOnlySurface(&data->surface.back());
 
 			abort();
 		}else{
 			if (multi_view->hover.index >= 0)
-				pos2 = data->Vertex[multi_view->hover.index].pos;
+				pos2 = data->vertex[multi_view->hover.index].pos;
 			else
 				pos2 = multi_view->GetCursor3d();
 			message = _("W&urfel: Punkt 3 / 3");
@@ -83,7 +83,7 @@ void ModeModelMeshCreateCube::onLeftButtonDown()
 		}
 	}else{
 		if (multi_view->hover.index >= 0)
-			pos = data->Vertex[multi_view->hover.index].pos;
+			pos = data->vertex[multi_view->hover.index].pos;
 		else
 			pos = multi_view->GetCursor3d();
 		message = _("W&urfel: Punkt 2 / 3");
@@ -135,7 +135,7 @@ void ModeModelMeshCreateCube::onDrawWin(MultiView::Window *win)
 {
 	mode_model->SetMaterialCreation();
 	if (pos_chosen){
-		geo->Preview(VBTemp);
+		geo->preview(VBTemp);
 		NixSetCull(pos2_chosen ? CullCCW : CullNone);
 		VBTemp->draw();
 		NixSetCull(CullCCW);

@@ -18,7 +18,7 @@ ActionModelDeleteBone::ActionModelDeleteBone(int _index)
 void *ActionModelDeleteBone::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	ModelBone &b = m->Bone[index];
+	ModelBone &b = m->bone[index];
 	pos = b.pos;
 	parent = b.parent;
 	filename = b.model_file;
@@ -26,7 +26,7 @@ void *ActionModelDeleteBone::execute(Data *d)
 	child.clear();
 
 	// correct the rest of the skeleton
-	foreachi(ModelBone &bb, m->Bone, i)
+	foreachi(ModelBone &bb, m->bone, i)
 		if (i != index){
 			// child -> save and make root
 			if (bb.parent == index){
@@ -42,24 +42,24 @@ void *ActionModelDeleteBone::execute(Data *d)
 	// save + correct animations
 	move_dpos.clear();
 	move_ang.clear();
-	foreach(ModelMove &move, m->Move)
-		foreach(ModelFrame &f, move.Frame){
-			move_dpos.add(f.SkelDPos[index]);
-			f.SkelDPos.erase(index);
-			move_ang.add(f.SkelAng[index]);
-			f.SkelAng.erase(index);
+	foreach(ModelMove &move, m->move)
+		foreach(ModelFrame &f, move.frame){
+			move_dpos.add(f.skel_dpos[index]);
+			f.skel_dpos.erase(index);
+			move_ang.add(f.skel_ang[index]);
+			f.skel_ang.erase(index);
 		}
 
 	// save + correct vertices
 	vertex.clear();
-	foreachi(ModelVertex &v, m->Vertex, vi)
-		if (v.BoneIndex == index){
-			v.BoneIndex = -1;
+	foreachi(ModelVertex &v, m->vertex, vi)
+		if (v.bone_index == index){
+			v.bone_index = -1;
 			vertex.add(vi);
-		}else if (v.BoneIndex > index)
-			v.BoneIndex --;
+		}else if (v.bone_index > index)
+			v.bone_index --;
 
-	m->Bone.erase(index);
+	m->bone.erase(index);
 	return NULL;
 }
 
@@ -76,33 +76,33 @@ void ActionModelDeleteBone::undo(Data *d)
 	b.model_file = filename;
 	b.model = (Model*)model;
 	b.view_stage = 0;
-	m->Bone.insert(b, index);
+	m->bone.insert(b, index);
 
 	// correct skeleton
-	foreachi(ModelBone &bb, m->Bone, i)
+	foreachi(ModelBone &bb, m->bone, i)
 		if (i != index){
 			if (bb.parent >= index)
 				bb.parent ++;
 		}
 	foreach(int c, child){
-		m->Bone[c].parent = index;
+		m->bone[c].parent = index;
 	}
 
 	// correct animations
 	int fi = 0;
-	foreach(ModelMove &move, m->Move)
-		foreach(ModelFrame &f, move.Frame){
-			f.SkelDPos.insert(move_dpos[fi], index);
-			f.SkelAng.insert(move_ang[fi], index);
+	foreach(ModelMove &move, m->move)
+		foreach(ModelFrame &f, move.frame){
+			f.skel_dpos.insert(move_dpos[fi], index);
+			f.skel_ang.insert(move_ang[fi], index);
 			fi ++;
 		}
 
 	// correct vertices
-	foreach(ModelVertex &v, m->Vertex)
-		if (v.BoneIndex >= index)
-			v.BoneIndex ++;
+	foreach(ModelVertex &v, m->vertex)
+		if (v.bone_index >= index)
+			v.bone_index ++;
 	foreach(int vi, vertex)
-		m->Vertex[vi].BoneIndex = index;
+		m->vertex[vi].bone_index = index;
 }
 
 

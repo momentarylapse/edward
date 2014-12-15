@@ -51,27 +51,27 @@ const string DataModel::MESSAGE_SKIN_CHANGE = "SkinChange";
 
 string ModelEffect::get_type()
 {
-	if (Kind==FXKindScript)
+	if (kind==FX_KIND_SCRIPT)
 		return _("Script");
-	if (Kind==FXKindLight)
+	if (kind==FX_KIND_LIGHT)
 		return _("Licht");
-	if (Kind==FXKindSound)
+	if (kind==FX_KIND_SOUND)
 		return _("Sound");
-	if (Kind==FXKindForceField)
+	if (kind==FX_KIND_FORCEFIELD)
 		return _("Kraftfeld");
 	return "???";
 }
 
 void ModelEffect::clear()
 {
-	File = "";
-	Colors[0] = White;
-	Colors[1] = White;
-	Colors[2] = White;
-	Size = 1000.0f;
-	Speed = 1.0f;
-	Intensity = 100.0f;
-	InvQuad = false;
+	file = "";
+	colors[0] = White;
+	colors[1] = White;
+	colors[2] = White;
+	size = 1000.0f;
+	speed = 1.0f;
+	intensity = 100.0f;
+	inv_quad = false;
 }
 
 
@@ -121,31 +121,31 @@ void DataModel::reset()
 
 	filename = "";
 	for (int i=0;i<4;i++){
-		Skin[i].Vertex.clear();
-		for (int j=0;j<Material.num;j++)
-			Skin[i].Sub[j].Triangle.clear();
-		Skin[i].Sub.resize(1);
+		skin[i].vertex.clear();
+		for (int j=0;j<material.num;j++)
+			skin[i].sub[j].triangle.clear();
+		skin[i].sub.resize(1);
 	}
-	Surface.clear();
-	Vertex.clear();
-	Ball.clear();
-	Poly.clear();
-	Fx.clear();
-	Material.resize(1);
-	Material[0].reset();
+	surface.clear();
+	vertex.clear();
+	ball.clear();
+	poly.clear();
+	fx.clear();
+	material.resize(1);
+	material[0].reset();
 
 	// skeleton
-	Bone.clear();
+	bone.clear();
 
-	Move.clear();
+	move.clear();
 
 
 	for (int i=0;i<4;i++){
-		Skin[i].Sub.resize(1);
-		Skin[i].Sub[0].NumTextures = 1;
+		skin[i].sub.resize(1);
+		skin[i].sub[0].num_textures = 1;
 	}
 
-	Radius = 42;
+	radius = 42;
 
 	meta_data.Reset();
 
@@ -156,17 +156,17 @@ void DataModel::reset()
 void DataModel::DebugShow()
 {
 	msg_write("------------");
-	msg_write(Vertex.num);
-	msg_write(Surface.num);
-	foreach(ModelSurface &s, Surface){
-		msg_write(s.Polygon.num);
+	msg_write(vertex.num);
+	msg_write(surface.num);
+	foreach(ModelSurface &s, surface){
+		msg_write(s.polygon.num);
 		s.TestSanity("Model.DebugShow");
 	}
 }
 
 bool DataModel::testSanity(const string &loc)
 {
-	foreach(ModelSurface &s, Surface){
+	foreach(ModelSurface &s, surface){
 		if (!s.TestSanity(loc))
 			return false;
 	}
@@ -177,19 +177,19 @@ bool DataModel::testSanity(const string &loc)
 void DataModel::onPostActionUpdate()
 {
 	UpdateNormals();
-	foreach(ModelSurface &s, Surface){
+	foreach(ModelSurface &s, surface){
 		s.pos = v_0;
-		for (int k=0;k<s.Vertex.num;k++)
-			s.pos += Vertex[s.Vertex[k]].pos;
-		s.pos /= s.Vertex.num;
-		foreach(ModelPolygon &p, s.Polygon){
+		for (int k=0;k<s.vertex.num;k++)
+			s.pos += vertex[s.vertex[k]].pos;
+		s.pos /= s.vertex.num;
+		foreach(ModelPolygon &p, s.polygon){
 			p.pos = v_0;
-			for (int k=0;k<p.Side.num;k++)
-				p.pos += Vertex[p.Side[k].Vertex].pos;
-			p.pos /= p.Side.num;
+			for (int k=0;k<p.side.num;k++)
+				p.pos += vertex[p.side[k].vertex].pos;
+			p.pos /= p.side.num;
 		}
-		foreach(ModelEdge &e, s.Edge)
-			e.pos = (Vertex[e.Vertex[0]].pos + Vertex[e.Vertex[1]].pos) / 2;
+		foreach(ModelEdge &e, s.edge)
+			e.pos = (vertex[e.vertex[0]].pos + vertex[e.vertex[1]].pos) / 2;
 	}
 }
 
@@ -254,68 +254,68 @@ bool DataModel::load(const string & _filename, bool deep)
 	}else if (ffv==10){ // old format
 
 		// Materials
-		Material.resize(f->ReadIntC());
-		for (int i=0;i<Material.num;i++){
-			Material[i].MaterialFile = f->ReadStr();
-			Material[i].UserColor = f->ReadBool();
-			if (Material[i].UserColor){
-				read_color_argb(f, Material[i].Ambient);
-				read_color_argb(f, Material[i].Diffuse);
-				read_color_argb(f, Material[i].Specular);
-				read_color_argb(f, Material[i].Emission);
-				Material[i].Shininess = (float)f->ReadInt();
+		material.resize(f->ReadIntC());
+		for (int i=0;i<material.num;i++){
+			material[i].material_file = f->ReadStr();
+			material[i].user_color = f->ReadBool();
+			if (material[i].user_color){
+				read_color_argb(f, material[i].ambient);
+				read_color_argb(f, material[i].diffuse);
+				read_color_argb(f, material[i].specular);
+				read_color_argb(f, material[i].emission);
+				material[i].shininess = (float)f->ReadInt();
 			}
-			Material[i].TransparencyMode = f->ReadInt();
-			Material[i].UserTransparency = (Material[i].TransparencyMode != TransparencyModeDefault);
-			Material[i].AlphaSource = f->ReadInt();
-			Material[i].AlphaDestination = f->ReadInt();
-			Material[i].AlphaFactor = (float)f->ReadInt() * 0.01f;
-			Material[i].AlphaZBuffer = f->ReadBool();
-			Material[i].NumTextures = f->ReadInt();
-			for (int t=0;t<Material[i].NumTextures;t++)
-				Material[i].TextureFile[t] = f->ReadStr();
+			material[i].transparency_mode = f->ReadInt();
+			material[i].user_transparency = (material[i].transparency_mode != TransparencyModeDefault);
+			material[i].alpha_source = f->ReadInt();
+			material[i].alpha_destination = f->ReadInt();
+			material[i].alpha_factor = (float)f->ReadInt() * 0.01f;
+			material[i].alpha_zbuffer = f->ReadBool();
+			material[i].num_textures = f->ReadInt();
+			for (int t=0;t<material[i].num_textures;t++)
+				material[i].texture_file[t] = f->ReadStr();
 		}
 		// create subs...
 		for (int k=0;k<4;k++){
-			Skin[k].Sub.resize(Material.num);
-			for (int j=0;j<Material.num;j++)
-				Skin[k].Sub[j].NumTextures = 1;
+			skin[k].sub.resize(material.num);
+			for (int j=0;j<material.num;j++)
+				skin[k].sub[j].num_textures = 1;
 		}
 
 	// Physical Skin
 
 		// vertices
-		Skin[0].Vertex.resize(f->ReadIntC());
-		for (int j=0;j<Skin[0].Vertex.num;j++){
-			Skin[0].Vertex[j].BoneIndex = f->ReadInt();
-			if (Skin[0].Vertex[j].BoneIndex < 0)
-				Skin[0].Vertex[j].BoneIndex = 0;
-			f->ReadVector(&Skin[0].Vertex[j].pos);
+		skin[0].vertex.resize(f->ReadIntC());
+		for (int j=0;j<skin[0].vertex.num;j++){
+			skin[0].vertex[j].bone_index = f->ReadInt();
+			if (skin[0].vertex[j].bone_index < 0)
+				skin[0].vertex[j].bone_index = 0;
+			f->ReadVector(&skin[0].vertex[j].pos);
 		}
 
 		// triangles
-		Skin[0].Sub[0].Triangle.resize(f->ReadInt());
-		for (int j=0;j<Skin[0].Sub[0].Triangle.num;j++){
-			Skin[0].Sub[0].Triangle[j].NormalDirty = true;
+		skin[0].sub[0].triangle.resize(f->ReadInt());
+		for (int j=0;j<skin[0].sub[0].triangle.num;j++){
+			skin[0].sub[0].triangle[j].normal_dirty = true;
 			for (int k=0;k<3;k++)
-				Skin[0].Sub[0].Triangle[j].Vertex[k] = f->ReadInt();
+				skin[0].sub[0].triangle[j].vertex[k] = f->ReadInt();
 		}
 
 		// balls
-		Ball.resize(f->ReadInt());
-		for (int j=0;j<Ball.num;j++){
-			Ball[j].Index = f->ReadInt();
-			Ball[j].Radius = f->ReadFloat();
+		ball.resize(f->ReadInt());
+		for (int j=0;j<ball.num;j++){
+			ball[j].index = f->ReadInt();
+			ball[j].radius = f->ReadFloat();
 		}
 
 		// polys
-		Poly.resize(f->ReadInt());
-		for (int j=0;j<Poly.num;j++){
-			Poly[j].NumFaces = f->ReadInt();
-			for (int k=0;k<Poly[j].NumFaces;k++){
-				Poly[j].Face[k].NumVertices = f->ReadInt();
-				for (int l=0;l<Poly[j].Face[k].NumVertices;l++)
-					Poly[j].Face[k].Index[l] = f->ReadInt();
+		poly.resize(f->ReadInt());
+		for (int j=0;j<poly.num;j++){
+			poly[j].NumFaces = f->ReadInt();
+			for (int k=0;k<poly[j].NumFaces;k++){
+				poly[j].Face[k].NumVertices = f->ReadInt();
+				for (int l=0;l<poly[j].Face[k].NumVertices;l++)
+					poly[j].Face[k].Index[l] = f->ReadInt();
 			}
 		}
 
@@ -326,17 +326,17 @@ bool DataModel::load(const string & _filename, bool deep)
 			normal_mode_all -= (normal_mode_all & NormalModePre);
 
 			// vertices
-			Skin[i].Vertex.resize(f->ReadInt());
-			for (int j=0;j<Skin[i].Vertex.num;j++){
-				Skin[i].Vertex[j].BoneIndex = f->ReadInt();
-				if (Skin[i].Vertex[j].BoneIndex < 0)
-					Skin[i].Vertex[j].BoneIndex = 0;
-				f->ReadVector(&Skin[i].Vertex[j].pos);
+			skin[i].vertex.resize(f->ReadInt());
+			for (int j=0;j<skin[i].vertex.num;j++){
+				skin[i].vertex[j].bone_index = f->ReadInt();
+				if (skin[i].vertex[j].bone_index < 0)
+					skin[i].vertex[j].bone_index = 0;
+				f->ReadVector(&skin[i].vertex[j].pos);
 				if (normal_mode_all == NormalModePerVertex)
-					Skin[i].Vertex[j].NormalMode = f->ReadByte();
+					skin[i].vertex[j].normal_mode = f->ReadByte();
 				else
-					Skin[i].Vertex[j].NormalMode = normal_mode_all;
-				Skin[i].Vertex[j].NormalDirty = true;
+					skin[i].vertex[j].normal_mode = normal_mode_all;
+				skin[i].vertex[j].normal_dirty = true;
 			}
 
 			// skin vertices
@@ -350,112 +350,112 @@ bool DataModel::load(const string & _filename, bool deep)
 
 			// triangles (subs)
 			int num_trias = f->ReadInt();
-			for (int t=0;t<Material.num;t++)
-				Skin[i].Sub[t].Triangle.resize(f->ReadInt());
-			for (int t=0;t<Material.num;t++)
-				for (int j=0;j<Skin[i].Sub[t].Triangle.num;j++)
+			for (int t=0;t<material.num;t++)
+				skin[i].sub[t].triangle.resize(f->ReadInt());
+			for (int t=0;t<material.num;t++)
+				for (int j=0;j<skin[i].sub[t].triangle.num;j++)
 					for (int k=0;k<3;k++){
-						Skin[i].Sub[t].Triangle[j].Vertex[k] = f->ReadInt();
+						skin[i].sub[t].triangle[j].vertex[k] = f->ReadInt();
 						int svi = f->ReadInt();
-						Skin[i].Sub[t].Triangle[j].SkinVertex[0][k] = skin_vert[svi];
-						Skin[i].Sub[t].Triangle[j].NormalIndex[k] = (int)f->ReadByte();
-						Skin[i].Sub[t].Triangle[j].NormalDirty = true;
+						skin[i].sub[t].triangle[j].skin_vertex[0][k] = skin_vert[svi];
+						skin[i].sub[t].triangle[j].normal_index[k] = (int)f->ReadByte();
+						skin[i].sub[t].triangle[j].normal_dirty = true;
 					}
 		}
 
 	// Skeleton
-		Bone.resize(f->ReadIntC());
-		for (int i=0;i<Bone.num;i++){
-			f->ReadVector(&Bone[i].pos);
-			Bone[i].parent = f->ReadInt();
-			if (Bone[i].parent > 32000)
-				Bone[i].parent = -1;
-			if (Bone[i].parent >= 0)
-				Bone[i].pos += Bone[Bone[i].parent].pos;
-			Bone[i].model_file = f->ReadStr();
+		bone.resize(f->ReadIntC());
+		for (int i=0;i<bone.num;i++){
+			f->ReadVector(&bone[i].pos);
+			bone[i].parent = f->ReadInt();
+			if (bone[i].parent > 32000)
+				bone[i].parent = -1;
+			if (bone[i].parent >= 0)
+				bone[i].pos += bone[bone[i].parent].pos;
+			bone[i].model_file = f->ReadStr();
 			if (deep)
-				Bone[i].model = LoadModel(Bone[i].model_file);
-			Bone[i].const_pos = false;
-			Bone[i].is_selected = Bone[i].m_old = false;
+				bone[i].model = LoadModel(bone[i].model_file);
+			bone[i].const_pos = false;
+			bone[i].is_selected = bone[i].m_old = false;
 		}
 
 	// Animations
 		int num_anims = f->ReadIntC();
 		for (int i=0;i<num_anims;i++){
 			int anim_index = f->ReadInt();
-			Move.resize(anim_index + 1);
-			ModelMove *m = &Move[anim_index];
-			m->Name = f->ReadStr();
-			m->Type = f->ReadInt();
-			m->Frame.resize(f->ReadInt());
-			m->FramesPerSecConst = f->ReadFloat();
-			m->FramesPerSecFactor = f->ReadFloat();
+			move.resize(anim_index + 1);
+			ModelMove *m = &move[anim_index];
+			m->name = f->ReadStr();
+			m->type = f->ReadInt();
+			m->frame.resize(f->ReadInt());
+			m->frames_per_sec_const = f->ReadFloat();
+			m->frames_per_sec_factor = f->ReadFloat();
 
 			// vertex animation
-			if (m->Type == MoveTypeVertex){
-				for (int fr=0;fr<m->Frame.num;fr++){
+			if (m->type == MoveTypeVertex){
+				for (int fr=0;fr<m->frame.num;fr++){
 					for (int s=0;s<4;s++){
-						m->Frame[fr].Skin[s].DPos.resize(Skin[s].Vertex.num);
+						m->frame[fr].skin[s].dpos.resize(skin[s].vertex.num);
 						int num_vertices = f->ReadInt();
 						for (int j=0;j<num_vertices;j++){
 							int vertex_index = f->ReadInt();
-							f->ReadVector(&m->Frame[fr].Skin[s].DPos[vertex_index]);
+							f->ReadVector(&m->frame[fr].skin[s].dpos[vertex_index]);
 						}
 					}
 				}
-			}else if (m->Type == MoveTypeSkeletal){
+			}else if (m->type == MoveTypeSkeletal){
 				Array<bool> VarDeltaPos;
-				VarDeltaPos.resize(Bone.num);
-				for (int j=0;j<Bone.num;j++)
+				VarDeltaPos.resize(bone.num);
+				for (int j=0;j<bone.num;j++)
 					VarDeltaPos[j] = f->ReadBool();
-				m->InterpolatedQuadratic = f->ReadBool();
-				m->InterpolatedLoop = f->ReadBool();
-				for (int fr=0;fr<m->Frame.num;fr++){
-					m->Frame[fr].SkelDPos.resize(Bone.num);
-					m->Frame[fr].SkelAng.resize(Bone.num);
-					for (int j=0;j<Bone.num;j++){
-						f->ReadVector(&m->Frame[fr].SkelAng[j]);
+				m->interpolated_quadratic = f->ReadBool();
+				m->interpolated_loop = f->ReadBool();
+				for (int fr=0;fr<m->frame.num;fr++){
+					m->frame[fr].skel_dpos.resize(bone.num);
+					m->frame[fr].skel_ang.resize(bone.num);
+					for (int j=0;j<bone.num;j++){
+						f->ReadVector(&m->frame[fr].skel_ang[j]);
 						if (VarDeltaPos[j])
-							f->ReadVector(&m->Frame[fr].SkelDPos[j]);
+							f->ReadVector(&m->frame[fr].skel_dpos[j]);
 					}
 				}
 			}
 		}
 		// Effects
-		Fx.resize(f->ReadIntC());
-		if (Fx.num>10000)
-			Fx.clear();
-		for (int i=0;i<Fx.num;i++){
+		fx.resize(f->ReadIntC());
+		if (fx.num>10000)
+			fx.clear();
+		for (int i=0;i<fx.num;i++){
 			string fxkind = f->ReadStr();
-			Fx[i].Kind = -1;
+			fx[i].kind = -1;
 			if (fxkind == "Script"){
-				Fx[i].Kind = FXKindScript;
-				Fx[i].Vertex = f->ReadInt();
-				Fx[i].File = f->ReadStr();
+				fx[i].kind = FX_KIND_SCRIPT;
+				fx[i].vertex = f->ReadInt();
+				fx[i].file = f->ReadStr();
 				f->ReadStr();
 			}
 			if (fxkind == "Light"){
-				Fx[i].Kind = FXKindLight;
-				Fx[i].Vertex = f->ReadInt();
-				Fx[i].Size = (float)f->ReadInt();
+				fx[i].kind = FX_KIND_LIGHT;
+				fx[i].vertex = f->ReadInt();
+				fx[i].size = (float)f->ReadInt();
 				for (int j=0;j<3;j++)
-					read_color_argb(f,Fx[i].Colors[j]);
+					read_color_argb(f,fx[i].colors[j]);
 			}
 			if (fxkind == "Sound"){
-				Fx[i].Kind = FXKindSound;
-				Fx[i].Vertex = f->ReadInt();
-				Fx[i].Size = (float)f->ReadInt();
-				Fx[i].Speed = (float)f->ReadInt() * 0.01f;
-				Fx[i].File = f->ReadStr();
+				fx[i].kind = FX_KIND_SOUND;
+				fx[i].vertex = f->ReadInt();
+				fx[i].size = (float)f->ReadInt();
+				fx[i].speed = (float)f->ReadInt() * 0.01f;
+				fx[i].file = f->ReadStr();
 			}
 			if (fxkind == "ForceField"){
-				Fx[i].Kind = FXKindForceField;
-				Fx[i].Vertex = f->ReadInt();
-				Fx[i].Size = (float)f->ReadInt();
-				Fx[i].Intensity = (float)f->ReadInt();
-				Fx[i].InvQuad = f->ReadBool();
+				fx[i].kind = FX_KIND_FORCEFIELD;
+				fx[i].vertex = f->ReadInt();
+				fx[i].size = (float)f->ReadInt();
+				fx[i].intensity = (float)f->ReadInt();
+				fx[i].inv_quad = f->ReadBool();
 			}
-			if (Fx[i].Kind<0)
+			if (fx[i].kind<0)
 				msg_error("unknown effekt: " + fxkind);
 		}
 		// LOD-Distances
@@ -518,74 +518,74 @@ bool DataModel::load(const string & _filename, bool deep)
 		//
 
 		// Materials
-		Material.resize(f->ReadIntC());
-		for (int i=0;i<Material.num;i++){
-			Material[i].MaterialFile = f->ReadStr();
-			Material[i].UserColor = f->ReadBool();
-			read_color_argb(f, Material[i].Ambient);
-			read_color_argb(f, Material[i].Diffuse);
-			read_color_argb(f, Material[i].Specular);
-			read_color_argb(f, Material[i].Emission);
-			Material[i].Shininess = (float)f->ReadInt();
-			Material[i].TransparencyMode = f->ReadInt();
-			Material[i].UserTransparency = (Material[i].TransparencyMode != TransparencyModeDefault);
-			Material[i].AlphaSource = f->ReadInt();
-			Material[i].AlphaDestination = f->ReadInt();
-			Material[i].AlphaFactor = (float)f->ReadInt() * 0.01f;
-			Material[i].AlphaZBuffer = f->ReadBool();
-			Material[i].NumTextures = f->ReadInt();
-			for (int t=0;t<Material[i].NumTextures;t++)
-				Material[i].TextureFile[t] = f->ReadStr();
+		material.resize(f->ReadIntC());
+		for (int i=0;i<material.num;i++){
+			material[i].material_file = f->ReadStr();
+			material[i].user_color = f->ReadBool();
+			read_color_argb(f, material[i].ambient);
+			read_color_argb(f, material[i].diffuse);
+			read_color_argb(f, material[i].specular);
+			read_color_argb(f, material[i].emission);
+			material[i].shininess = (float)f->ReadInt();
+			material[i].transparency_mode = f->ReadInt();
+			material[i].user_transparency = (material[i].transparency_mode != TransparencyModeDefault);
+			material[i].alpha_source = f->ReadInt();
+			material[i].alpha_destination = f->ReadInt();
+			material[i].alpha_factor = (float)f->ReadInt() * 0.01f;
+			material[i].alpha_zbuffer = f->ReadBool();
+			material[i].num_textures = f->ReadInt();
+			for (int t=0;t<material[i].num_textures;t++)
+				material[i].texture_file[t] = f->ReadStr();
 		}
 		// create subs...
 		for (int k=0;k<4;k++){
-			Skin[k].Sub.resize(Material.num);
-			for (int j=0;j<Material.num;j++)
-				Skin[k].Sub[j].NumTextures = Material[j].NumTextures;
+			skin[k].sub.resize(material.num);
+			for (int j=0;j<material.num;j++)
+				skin[k].sub[j].num_textures = material[j].num_textures;
 		}
 
 	// Physical Skin
 
 		// vertices
-		Skin[0].Vertex.resize(f->ReadIntC());
-		for (int j=0;j<Skin[0].Vertex.num;j++)
-			Skin[0].Vertex[j].BoneIndex = f->ReadInt();
-		for (int j=0;j<Skin[0].Vertex.num;j++)
-			f->ReadVector(&Skin[0].Vertex[j].pos);
+		skin[0].vertex.resize(f->ReadIntC());
+		for (int j=0;j<skin[0].vertex.num;j++)
+			skin[0].vertex[j].bone_index = f->ReadInt();
+		for (int j=0;j<skin[0].vertex.num;j++)
+			f->ReadVector(&skin[0].vertex[j].pos);
 
 		// triangles
 		f->ReadInt();
 
 		// balls
-		Ball.resize(f->ReadInt());
-		for (int j=0;j<Ball.num;j++){
-			Ball[j].Index = f->ReadInt();
-			Ball[j].Radius = f->ReadFloat();
+		ball.resize(f->ReadInt());
+		for (int j=0;j<ball.num;j++){
+			ball[j].index = f->ReadInt();
+			ball[j].radius = f->ReadFloat();
 		}
 
 		// polys
-		Poly.resize(f->ReadInt());
-		for (int j=0;j<Poly.num;j++){
-			Poly[j].NumFaces = f->ReadInt();
-			for (int k=0;k<Poly[j].NumFaces;k++){
-				Poly[j].Face[k].NumVertices = f->ReadInt();
-				for (int l=0;l<Poly[j].Face[k].NumVertices;l++)
-					Poly[j].Face[k].Index[l] = f->ReadInt();
+		poly.resize(f->ReadInt());
+		for (int j=0;j<poly.num;j++){
+			poly[j].NumFaces = f->ReadInt();
+			for (int k=0;k<poly[j].NumFaces;k++){
+				poly[j].Face[k].NumVertices = f->ReadInt();
+				for (int l=0;l<poly[j].Face[k].NumVertices;l++)
+					poly[j].Face[k].Index[l] = f->ReadInt();
 				f->ReadFloat();
 				f->ReadFloat();
 				f->ReadFloat();
 				f->ReadFloat();
 			}
-			Poly[j].NumSVertices = f->ReadInt();
-			for (int k=0;k<Poly[j].NumSVertices;k++)
+			poly[j].NumSVertices = f->ReadInt();
+			for (int k=0;k<poly[j].NumSVertices;k++)
 				f->ReadInt();
-			Poly[j].NumEdges = f->ReadInt();
-			for (int k=0;k<Poly[j].NumEdges*2;k++)
+			poly[j].NumEdges = f->ReadInt();
+			for (int k=0;k<poly[j].NumEdges*2;k++)
 				f->ReadInt();
 			// topology
-			for (int k=0;k<Poly[j].NumFaces*Poly[j].NumFaces;k++)
+			for (int k=0;k<poly[j].NumFaces*poly[j].NumFaces;k++)
 				f->ReadInt();
-			for (int k=0;k<Poly[j].NumEdges*Poly[j].NumFaces;k++)
+			for (int k=0;k<poly[j].NumEdges*poly[j].NumFaces;k++)
 				f->ReadBool();
 		}
 
@@ -593,13 +593,13 @@ bool DataModel::load(const string & _filename, bool deep)
 		for (int i=1;i<4;i++){
 
 			// vertices
-			Skin[i].Vertex.resize(f->ReadIntC());
-			for (int j=0;j<Skin[i].Vertex.num;j++)
-				f->ReadVector(&Skin[i].Vertex[j].pos);
-			for (int j=0;j<Skin[i].Vertex.num;j++)
-				Skin[i].Vertex[j].BoneIndex = f->ReadInt();
-			for (int j=0;j<Skin[i].Vertex.num;j++)
-				Skin[i].Vertex[j].NormalDirty = false;//true;
+			skin[i].vertex.resize(f->ReadIntC());
+			for (int j=0;j<skin[i].vertex.num;j++)
+				f->ReadVector(&skin[i].vertex[j].pos);
+			for (int j=0;j<skin[i].vertex.num;j++)
+				skin[i].vertex[j].bone_index = f->ReadInt();
+			for (int j=0;j<skin[i].vertex.num;j++)
+				skin[i].vertex[j].normal_dirty = false;//true;
 
 			// skin vertices
 			skin_vert.resize(f->ReadInt());
@@ -611,26 +611,26 @@ bool DataModel::load(const string & _filename, bool deep)
 
 
 			// triangles (subs)
-			for (int m=0;m<Material.num;m++){
-				Skin[i].Sub[m].Triangle.resize(f->ReadInt());
+			for (int m=0;m<material.num;m++){
+				skin[i].sub[m].triangle.resize(f->ReadInt());
 				// vertex
-				for (int j=0;j<Skin[i].Sub[m].Triangle.num;j++)
+				for (int j=0;j<skin[i].sub[m].triangle.num;j++)
 					for (int k=0;k<3;k++)
-						Skin[i].Sub[m].Triangle[j].Vertex[k] = f->ReadInt();
+						skin[i].sub[m].triangle[j].vertex[k] = f->ReadInt();
 				// skin vertex
-				for (int tl=0;tl<Material[m].NumTextures;tl++)
-					for (int j=0;j<Skin[i].Sub[m].Triangle.num;j++)
+				for (int tl=0;tl<material[m].num_textures;tl++)
+					for (int j=0;j<skin[i].sub[m].triangle.num;j++)
 						for (int k=0;k<3;k++){
 							int svi = f->ReadInt();
-							Skin[i].Sub[m].Triangle[j].SkinVertex[tl][k] = skin_vert[svi];
+							skin[i].sub[m].triangle[j].skin_vertex[tl][k] = skin_vert[svi];
 						}
 				// normals
-				for (int j=0;j<Skin[i].Sub[m].Triangle.num;j++){
+				for (int j=0;j<skin[i].sub[m].triangle.num;j++){
 					for (int k=0;k<3;k++){
-						Skin[i].Sub[m].Triangle[j].NormalIndex[k] = (int)(unsigned short)f->ReadWord();
-						Skin[i].Sub[m].Triangle[j].Normal[k] = get_normal_by_index(Skin[i].Sub[m].Triangle[j].NormalIndex[k]);
+						skin[i].sub[m].triangle[j].normal_index[k] = (int)(unsigned short)f->ReadWord();
+						skin[i].sub[m].triangle[j].normal[k] = get_normal_by_index(skin[i].sub[m].triangle[j].normal_index[k]);
 					}
-					Skin[i].Sub[m].Triangle[j].NormalDirty = false;
+					skin[i].sub[m].triangle[j].normal_dirty = false;
 				}
 				f->ReadInt();
 			}
@@ -638,14 +638,14 @@ bool DataModel::load(const string & _filename, bool deep)
 		}
 
 	// Skeleton
-		Bone.resize(f->ReadIntC());
-		foreach(ModelBone &b, Bone){
+		bone.resize(f->ReadIntC());
+		foreach(ModelBone &b, bone){
 			f->ReadVector(&b.pos);
 			b.parent = f->ReadInt();
-			if ((b.parent < 0) || (b.parent >= Bone.num))
+			if ((b.parent < 0) || (b.parent >= bone.num))
 				b.parent = -1;
 			if (b.parent >= 0)
-				b.pos += Bone[b.parent].pos;
+				b.pos += bone[b.parent].pos;
 			b.model_file = f->ReadStr();
 			if (deep)
 				b.model = LoadModel(b.model_file);
@@ -654,85 +654,85 @@ bool DataModel::load(const string & _filename, bool deep)
 		}
 
 	// Animations
-		Move.resize(f->ReadIntC());
+		move.resize(f->ReadIntC());
 		int num_anims = f->ReadInt();
 		f->ReadInt();
 		f->ReadInt();
 		for (int i=0;i<num_anims;i++){
 			int anim_index = f->ReadInt();
-			Move.resize(anim_index + 1);
-			ModelMove *m = &Move[anim_index];
-			m->Name = f->ReadStr();
-			m->Type = f->ReadInt();
-			m->Frame.resize(f->ReadInt());
-			m->FramesPerSecConst = f->ReadFloat();
-			m->FramesPerSecFactor = f->ReadFloat();
+			move.resize(anim_index + 1);
+			ModelMove *m = &move[anim_index];
+			m->name = f->ReadStr();
+			m->type = f->ReadInt();
+			m->frame.resize(f->ReadInt());
+			m->frames_per_sec_const = f->ReadFloat();
+			m->frames_per_sec_factor = f->ReadFloat();
 
 			// vertex animation
-			if (m->Type == MoveTypeVertex){
-				for (int fr=0;fr<m->Frame.num;fr++){
+			if (m->type == MoveTypeVertex){
+				for (int fr=0;fr<m->frame.num;fr++){
 					for (int s=0;s<4;s++){
-						m->Frame[fr].Skin[s].DPos.resize(Skin[s].Vertex.num);
+						m->frame[fr].skin[s].dpos.resize(skin[s].vertex.num);
 						int num_vertices = f->ReadInt();
 						for (int j=0;j<num_vertices;j++){
 							int vertex_index = f->ReadInt();
-							f->ReadVector(&m->Frame[fr].Skin[s].DPos[vertex_index]);
+							f->ReadVector(&m->frame[fr].skin[s].dpos[vertex_index]);
 						}
 					}
 				}
-			}else if (m->Type == MoveTypeSkeletal){
+			}else if (m->type == MoveTypeSkeletal){
 				Array<bool> VarDeltaPos;
-				VarDeltaPos.resize(Bone.num);
-				for (int j=0;j<Bone.num;j++)
+				VarDeltaPos.resize(bone.num);
+				for (int j=0;j<bone.num;j++)
 					VarDeltaPos[j] = f->ReadBool();
-				m->InterpolatedQuadratic = f->ReadBool();
-				m->InterpolatedLoop = f->ReadBool();
-				for (int fr=0;fr<m->Frame.num;fr++){
-					m->Frame[fr].SkelDPos.resize(Bone.num);
-					m->Frame[fr].SkelAng.resize(Bone.num);
-					for (int j=0;j<Bone.num;j++){
-						f->ReadVector(&m->Frame[fr].SkelAng[j]);
+				m->interpolated_quadratic = f->ReadBool();
+				m->interpolated_loop = f->ReadBool();
+				for (int fr=0;fr<m->frame.num;fr++){
+					m->frame[fr].skel_dpos.resize(bone.num);
+					m->frame[fr].skel_ang.resize(bone.num);
+					for (int j=0;j<bone.num;j++){
+						f->ReadVector(&m->frame[fr].skel_ang[j]);
 						if (VarDeltaPos[j])
-							f->ReadVector(&m->Frame[fr].SkelDPos[j]);
+							f->ReadVector(&m->frame[fr].skel_dpos[j]);
 					}
 				}
 			}
 		}
 		// Effects
-		Fx.resize(f->ReadIntC());
-		if (Fx.num>10000)
-			Fx.clear();
-		for (int i=0;i<Fx.num;i++){
+		fx.resize(f->ReadIntC());
+		if (fx.num>10000)
+			fx.clear();
+		for (int i=0;i<fx.num;i++){
 			string fxkind = f->ReadStr();
-			Fx[i].Kind=-1;
+			fx[i].kind=-1;
 			if (fxkind == "Script"){
-				Fx[i].Kind = FXKindScript;
-				Fx[i].Vertex = f->ReadInt();
-				Fx[i].File = f->ReadStr();
+				fx[i].kind = FX_KIND_SCRIPT;
+				fx[i].vertex = f->ReadInt();
+				fx[i].file = f->ReadStr();
 				f->ReadStr();
 			}
 			if (fxkind == "Light"){
-				Fx[i].Kind = FXKindLight;
-				Fx[i].Vertex = f->ReadInt();
-				Fx[i].Size = (float)f->ReadInt();
+				fx[i].kind = FX_KIND_LIGHT;
+				fx[i].vertex = f->ReadInt();
+				fx[i].size = (float)f->ReadInt();
 				for (int j=0;j<3;j++)
-					read_color_argb(f,Fx[i].Colors[j]);
+					read_color_argb(f,fx[i].colors[j]);
 			}
 			if (fxkind == "Sound"){
-				Fx[i].Kind = FXKindSound;
-				Fx[i].Vertex = f->ReadInt();
-				Fx[i].Size = (float)f->ReadInt();
-				Fx[i].Speed = (float)f->ReadInt() * 0.01f;
-				Fx[i].File = f->ReadStr();
+				fx[i].kind = FX_KIND_SOUND;
+				fx[i].vertex = f->ReadInt();
+				fx[i].size = (float)f->ReadInt();
+				fx[i].speed = (float)f->ReadInt() * 0.01f;
+				fx[i].file = f->ReadStr();
 			}
 			if (fxkind == "ForceField"){
-				Fx[i].Kind = FXKindForceField;
-				Fx[i].Vertex = f->ReadInt();
-				Fx[i].Size = (float)f->ReadInt();
-				Fx[i].Intensity = (float)f->ReadInt();
-				Fx[i].InvQuad = f->ReadBool();
+				fx[i].kind = FX_KIND_FORCEFIELD;
+				fx[i].vertex = f->ReadInt();
+				fx[i].size = (float)f->ReadInt();
+				fx[i].intensity = (float)f->ReadInt();
+				fx[i].inv_quad = f->ReadBool();
 			}
-			if (Fx[i].Kind<0)
+			if (fx[i].kind<0)
 				msg_error("unknown effekt: " + fxkind);
 		}
 
@@ -743,7 +743,7 @@ bool DataModel::load(const string & _filename, bool deep)
 			meta_data.InertiaTensor.e[i] = f->ReadFloat();
 		meta_data.ActivePhysics = f->ReadBool();
 		meta_data.PassivePhysics = f->ReadBool();
-		Radius = f->ReadFloat();
+		radius = f->ReadFloat();
 
 		// LOD-Distances
 		meta_data.DetailDist[0] = f->ReadFloatC();
@@ -780,22 +780,22 @@ bool DataModel::load(const string & _filename, bool deep)
 		// Normals
 		f->ReadComment();
 		for (int i=1;i<4;i++){
-			ModelSkin *s = &Skin[i];
+			ModelSkin *s = &skin[i];
 			int normal_mode_all = f->ReadInt();
 			if (normal_mode_all == NormalModePerVertex){
-				foreach(ModelVertex &v, s->Vertex)
-					v.NormalMode = f->ReadInt();
+				foreach(ModelVertex &v, s->vertex)
+					v.normal_mode = f->ReadInt();
 			}else{
-				foreach(ModelVertex &v, s->Vertex)
-					v.NormalMode = normal_mode_all;
+				foreach(ModelVertex &v, s->vertex)
+					v.normal_mode = normal_mode_all;
 			}
 		}
 
 		// Polygons
 		if (f->ReadStr() == "// Polygons"){
 			beginActionGroup("LoadPolygonData");
-			foreachi(ModelVertex &v, Skin[1].Vertex, i)
-				AddVertex(v.pos, v.BoneIndex, v.NormalMode);
+			foreachi(ModelVertex &v, skin[1].vertex, i)
+				AddVertex(v.pos, v.bone_index, v.normal_mode);
 			int ns = f->ReadInt();
 			for (int i=0;i<ns;i++){
 				ModelSurface s;
@@ -803,28 +803,28 @@ bool DataModel::load(const string & _filename, bool deep)
 				for (int j=0;j<nv;j++){
 					ModelPolygon t;
 					t.is_selected = false;
-					t.TriangulationDirty = true;
+					t.triangulation_dirty = true;
 					int n = f->ReadInt();
-					t.Material = f->ReadInt();
-					t.Side.resize(n);
+					t.material = f->ReadInt();
+					t.side.resize(n);
 					for (int k=0;k<n;k++){
-						t.Side[k].Vertex = f->ReadInt();
-						for (int l=0;l<Material[t.Material].NumTextures;l++){
-							t.Side[k].SkinVertex[l].x = f->ReadFloat();
-							t.Side[k].SkinVertex[l].y = f->ReadFloat();
+						t.side[k].vertex = f->ReadInt();
+						for (int l=0;l<material[t.material].num_textures;l++){
+							t.side[k].skin_vertex[l].x = f->ReadFloat();
+							t.side[k].skin_vertex[l].y = f->ReadFloat();
 						}
 					}
-					t.NormalDirty = true;
-					s.Polygon.add(t);
+					t.normal_dirty = true;
+					s.polygon.add(t);
 				}
-				s.IsPhysical = f->ReadBool();
-				s.IsVisible = f->ReadBool();
+				s.is_physical = f->ReadBool();
+				s.is_visible = f->ReadBool();
 				s.is_selected = false;
 				f->ReadInt();
 				s.model = this;
-				Surface.add(s);
+				surface.add(s);
 			}
-			foreach(ModelSurface &s, Surface)
+			foreach(ModelSurface &s, surface)
 				s.BuildFromPolygons();
 			endActionGroup();
 		}
@@ -853,22 +853,22 @@ bool DataModel::load(const string & _filename, bool deep)
 	if (deep){
 
 		// import...
-		if (Surface.num == 0)
+		if (surface.num == 0)
 			ImportFromTriangleSkin(1);
 
-		foreach(ModelMove &m, Move)
-			if (m.Type == MoveTypeVertex){
-				foreach(ModelFrame &f, m.Frame)
-					f.VertexDPos = f.Skin[1].DPos;
+		foreach(ModelMove &m, move)
+			if (m.type == MoveTypeVertex){
+				foreach(ModelFrame &f, m.frame)
+					f.vertex_dpos = f.skin[1].dpos;
 			}
 
-		for (int i=0;i<Material.num;i++){
-			Material[i].MakeConsistent();
+		for (int i=0;i<material.num;i++){
+			material[i].MakeConsistent();
 
 			// test textures
-			for (int t=0;t<Material[i].NumTextures;t++){
-				if ((Material[i].Texture[t] < 0) && (Material[i].TextureFile[t].num > 0))
-					ed->setMessage(format(_("Textur-Datei nicht ladbar: %s"), Material[i].TextureFile[t].c_str()));
+			for (int t=0;t<material[i].num_textures;t++){
+				if ((material[i].texture[t] < 0) && (material[i].texture_file[t].num > 0))
+					ed->setMessage(format(_("Textur-Datei nicht ladbar: %s"), material[i].texture_file[t].c_str()));
 			}
 		}
 
@@ -892,39 +892,39 @@ bool DataModel::load(const string & _filename, bool deep)
 
 void DataModel::ImportFromTriangleSkin(int index)
 {
-	Vertex.clear();
-	Surface.clear();
+	vertex.clear();
+	surface.clear();
 
-	ModelSkin &s = Skin[index];
+	ModelSkin &s = skin[index];
 	beginActionGroup("ImportFromTriangleSkin");
-	foreachi(ModelVertex &v, s.Vertex, i){
+	foreachi(ModelVertex &v, s.vertex, i){
 		AddVertex(v.pos);
-		Vertex[i].BoneIndex = v.BoneIndex;
+		vertex[i].bone_index = v.bone_index;
 	}
-	for (int i=0;i<Material.num;i++){
-		foreach(ModelTriangle &t, s.Sub[i].Triangle){
-			if ((t.Vertex[0] == t.Vertex[1]) || (t.Vertex[1] == t.Vertex[2]) || (t.Vertex[2] == t.Vertex[0]))
+	for (int i=0;i<material.num;i++){
+		foreach(ModelTriangle &t, s.sub[i].triangle){
+			if ((t.vertex[0] == t.vertex[1]) || (t.vertex[1] == t.vertex[2]) || (t.vertex[2] == t.vertex[0]))
 				continue;
 			Array<int> v;
 			for (int k=0;k<3;k++)
-				v.add(t.Vertex[k]);
+				v.add(t.vertex[k]);
 			Array<vector> sv;
-			for (int tl=0;tl<Material[i].NumTextures;tl++)
+			for (int tl=0;tl<material[i].num_textures;tl++)
 				for (int k=0;k<3;k++)
-					sv.add(t.SkinVertex[tl][k]);
+					sv.add(t.skin_vertex[tl][k]);
 			AddPolygonWithSkin(v, sv, i);
 		}
 	}
 
 
-	ModelSkin &ps = Skin[0];
-	foreachi(ModelVertex &v, ps.Vertex, i){
+	ModelSkin &ps = skin[0];
+	foreachi(ModelVertex &v, ps.vertex, i){
 		AddVertex(v.pos);
-		Vertex[i].BoneIndex = v.BoneIndex;
+		vertex[i].bone_index = v.bone_index;
 	}
-	foreach(ModelPolyhedron &p, Poly){
+	foreach(ModelPolyhedron &p, poly){
 		msg_write("----");
-		int nv0 = Vertex.num;
+		int nv0 = vertex.num;
 		Array<int> vv;
 		for (int i=0;i<p.NumFaces;i++){
 			Array<int> v;
@@ -938,10 +938,10 @@ void DataModel::ImportFromTriangleSkin(int index)
 						break;
 					}
 				if (!existing){
-					v.add(Vertex.num);
+					v.add(vertex.num);
 					vv.add(vj);
-					AddVertex(ps.Vertex[vj].pos);
-					Vertex.back().BoneIndex = ps.Vertex[vj].BoneIndex;
+					AddVertex(ps.vertex[vj].pos);
+					vertex.back().bone_index = ps.vertex[vj].bone_index;
 				}
 			}
 			msg_write(ia2s(v));
@@ -951,10 +951,10 @@ void DataModel::ImportFromTriangleSkin(int index)
 				msg_error(e.message);
 			}
 		}
-		Surface.back().IsPhysical = true;
-		Surface.back().IsVisible = false;
+		surface.back().is_physical = true;
+		surface.back().is_visible = false;
 	}
-	Poly.clear();
+	poly.clear();
 
 	ClearSelection();
 	endActionGroup();
@@ -963,30 +963,30 @@ void DataModel::ImportFromTriangleSkin(int index)
 
 void DataModel::ExportToTriangleSkin(int index)
 {
-	ModelSkin &sk = Skin[index];
-	sk.Vertex = Vertex;
-	sk.Sub.clear();
-	sk.Sub.resize(Material.num);
-	foreach(ModelSurface &s, Surface){
-		if (!s.IsVisible)
+	ModelSkin &sk = skin[index];
+	sk.vertex = vertex;
+	sk.sub.clear();
+	sk.sub.resize(material.num);
+	foreach(ModelSurface &s, surface){
+		if (!s.is_visible)
 			continue;
-		foreach(ModelPolygon &t, s.Polygon){
-			if (t.TriangulationDirty)
-				t.UpdateTriangulation(Vertex);
-			for (int i=0;i<t.Side.num-2;i++){
+		foreach(ModelPolygon &t, s.polygon){
+			if (t.triangulation_dirty)
+				t.UpdateTriangulation(vertex);
+			for (int i=0;i<t.side.num-2;i++){
 				ModelTriangle tt;
 				for (int k=0;k<3;k++){
-					tt.Vertex[k] = t.Side[t.Side[i].Triangulation[k]].Vertex;
-					tt.Normal[k] = t.Side[t.Side[i].Triangulation[k]].Normal;
+					tt.vertex[k] = t.side[t.side[i].triangulation[k]].vertex;
+					tt.normal[k] = t.side[t.side[i].triangulation[k]].normal;
 					for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
-						tt.SkinVertex[l][k] = t.Side[t.Side[i].Triangulation[k]].SkinVertex[l];
+						tt.skin_vertex[l][k] = t.side[t.side[i].triangulation[k]].skin_vertex[l];
 				}
-				sk.Sub[t.Material].Triangle.add(tt);
+				sk.sub[t.material].triangle.add(tt);
 			}
 		}
 	}
-	foreachi(ModelMaterial &m, Material, i)
-		sk.Sub[i].NumTextures = m.NumTextures;
+	foreachi(ModelMaterial &m, material, i)
+		sk.sub[i].num_textures = m.num_textures;
 }
 
 
@@ -994,18 +994,18 @@ void DataModel::GetBoundingBox(vector &min, vector &max)
 {
 	// bounding box (visual skin[1])
 	min = max = v_0;
-	for (int i=0;i<Skin[1].Vertex.num;i++){
-		min._min(Skin[1].Vertex[i].pos);
-		max._max(Skin[1].Vertex[i].pos);
+	for (int i=0;i<skin[1].vertex.num;i++){
+		min._min(skin[1].vertex[i].pos);
+		max._max(skin[1].vertex[i].pos);
 	}
 	// (physical skin)
-	for (int i=0;i<Skin[0].Vertex.num;i++){
-		min._min(Skin[0].Vertex[i].pos);
-		max._max(Skin[0].Vertex[i].pos);
+	for (int i=0;i<skin[0].vertex.num;i++){
+		min._min(skin[0].vertex[i].pos);
+		max._max(skin[0].vertex[i].pos);
 	}
-	for (int i=0;i<Ball.num;i++){
-		min._min(Skin[0].Vertex[Ball[i].Index].pos - vector(1,1,1) * Ball[i].Radius);
-		max._max(Skin[0].Vertex[Ball[i].Index].pos + vector(1,1,1) * Ball[i].Radius);
+	for (int i=0;i<ball.num;i++){
+		min._min(skin[0].vertex[ball[i].index].pos - vector(1,1,1) * ball[i].radius);
+		max._max(skin[0].vertex[ball[i].index].pos + vector(1,1,1) * ball[i].radius);
 	}
 }
 
@@ -1030,16 +1030,16 @@ bool DataModel::save(const string & _filename)
 
 #ifdef FORCE_UPDATE_NORMALS
 	for (int d=1;d<4;d++)
-		for (int j=0;j<Skin[d].NumVertices;j++)
-			Skin[d].Vertex[j].NormalDirty = true;
+		for (int j=0;j<skin[d].NumVertices;j++)
+			skin[d].vertex[j].normal_dirty = true;
 #endif
 	UpdateNormals();
 
 	// export...
 	ExportToTriangleSkin(1);
 	for (int d=1;d<4;d++){
-		if (Skin[d].Sub.num != Material.num){
-			Skin[d].Sub.resize(Material.num);
+		if (skin[d].sub.num != material.num){
+			skin[d].sub.resize(material.num);
 		}
 	}
 
@@ -1047,9 +1047,9 @@ bool DataModel::save(const string & _filename)
 
 //	PrecreatePhysicalData();
 
-	GetBoundingBox(Min, Max);
+	GetBoundingBox(_min, _max);
 	GetRadius();
-	Radius = GetRadius() * 1.1f;
+	radius = GetRadius() * 1.1f;
 
 
 	// so the materials don't get mixed up
@@ -1064,8 +1064,8 @@ bool DataModel::save(const string & _filename)
 
 // general
 	f->WriteComment("// General");
-	f->WriteVector(&Min);
-	f->WriteVector(&Max);
+	f->WriteVector(&_min);
+	f->WriteVector(&_max);
 	f->WriteInt(3); // skins...
 	f->WriteInt(0); // reserved
 	f->WriteInt(0);
@@ -1073,34 +1073,34 @@ bool DataModel::save(const string & _filename)
 
 // materials
 	f->WriteComment("// Materials");
-	f->WriteInt(Material.num);
-	foreach(ModelMaterial &m, Material){
-		f->WriteStr(m.MaterialFile);
-		f->WriteBool(m.UserColor);
-		write_color_argb(f, m.Ambient);
-		write_color_argb(f, m.Diffuse);
-		write_color_argb(f, m.Specular);
-		write_color_argb(f, m.Emission);
-		f->WriteInt(m.Shininess);
-		f->WriteInt(m.UserTransparency ? m.TransparencyMode : TransparencyModeDefault);
-		f->WriteInt(m.AlphaSource);
-		f->WriteInt(m.AlphaDestination);
-		f->WriteInt(m.AlphaFactor * 100.0f);
-		f->WriteBool(m.AlphaZBuffer);
-		f->WriteInt(m.NumTextures);
-		for (int t=0;t<m.NumTextures;t++)
-			f->WriteStr(m.TextureFile[t]);
+	f->WriteInt(material.num);
+	foreach(ModelMaterial &m, material){
+		f->WriteStr(m.material_file);
+		f->WriteBool(m.user_color);
+		write_color_argb(f, m.ambient);
+		write_color_argb(f, m.diffuse);
+		write_color_argb(f, m.specular);
+		write_color_argb(f, m.emission);
+		f->WriteInt(m.shininess);
+		f->WriteInt(m.user_transparency ? m.transparency_mode : TransparencyModeDefault);
+		f->WriteInt(m.alpha_source);
+		f->WriteInt(m.alpha_destination);
+		f->WriteInt(m.alpha_factor * 100.0f);
+		f->WriteBool(m.alpha_zbuffer);
+		f->WriteInt(m.num_textures);
+		for (int t=0;t<m.num_textures;t++)
+			f->WriteStr(m.texture_file[t]);
 	}
 
 // physical skin
 	f->WriteComment("// Physical Skin");
 
 	// vertices
-	f->WriteInt(Skin[0].Vertex.num);
-	for (int j=0;j<Skin[0].Vertex.num;j++)
-		f->WriteInt(Skin[0].Vertex[j].BoneIndex);
-	for (int j=0;j<Skin[0].Vertex.num;j++)
-		f->WriteVector(&Skin[0].Vertex[j].pos);
+	f->WriteInt(skin[0].vertex.num);
+	for (int j=0;j<skin[0].vertex.num;j++)
+		f->WriteInt(skin[0].vertex[j].bone_index);
+	for (int j=0;j<skin[0].vertex.num;j++)
+		f->WriteVector(&skin[0].vertex[j].pos);
 
 	// triangles
 	f->WriteInt(0);
@@ -1109,91 +1109,91 @@ bool DataModel::save(const string & _filename)
 			f->WriteInt(Skin[0].Triangle[j].Index[k]);*/
 
 	// balls
-	f->WriteInt(Ball.num);
-	for (int j=0;j<Ball.num;j++){
-		f->WriteInt(Ball[j].Index);
-		f->WriteFloat(Ball[j].Radius);
+	f->WriteInt(ball.num);
+	for (int j=0;j<ball.num;j++){
+		f->WriteInt(ball[j].index);
+		f->WriteFloat(ball[j].radius);
 	}
 
-	f->WriteInt(Poly.num);
-	for (int j=0;j<Poly.num;j++){
-		f->WriteInt(Poly[j].NumFaces);
-		for (int k=0;k<Poly[j].NumFaces;k++){
-			f->WriteInt(Poly[j].Face[k].NumVertices);
-			for (int l=0;l<Poly[j].Face[k].NumVertices;l++)
-				f->WriteInt(Poly[j].Face[k].Index[l]);
-			f->WriteFloat(Poly[j].Face[k].Plane.n.x);
-			f->WriteFloat(Poly[j].Face[k].Plane.n.y);
-			f->WriteFloat(Poly[j].Face[k].Plane.n.z);
-			f->WriteFloat(Poly[j].Face[k].Plane.d);
+	f->WriteInt(poly.num);
+	for (int j=0;j<poly.num;j++){
+		f->WriteInt(poly[j].NumFaces);
+		for (int k=0;k<poly[j].NumFaces;k++){
+			f->WriteInt(poly[j].Face[k].NumVertices);
+			for (int l=0;l<poly[j].Face[k].NumVertices;l++)
+				f->WriteInt(poly[j].Face[k].Index[l]);
+			f->WriteFloat(poly[j].Face[k].Plane.n.x);
+			f->WriteFloat(poly[j].Face[k].Plane.n.y);
+			f->WriteFloat(poly[j].Face[k].Plane.n.z);
+			f->WriteFloat(poly[j].Face[k].Plane.d);
 		}
-		f->WriteInt(Poly[j].NumSVertices);
-		for (int k=0;k<Poly[j].NumSVertices;k++)
-			f->WriteInt(Poly[j].SIndex[k]);
-		f->WriteInt(Poly[j].NumEdges);
-		for (int k=0;k<Poly[j].NumEdges;k++){
-			f->WriteInt(Poly[j].EdgeIndex[k*2 + 0]);
-			f->WriteInt(Poly[j].EdgeIndex[k*2 + 1]);
+		f->WriteInt(poly[j].NumSVertices);
+		for (int k=0;k<poly[j].NumSVertices;k++)
+			f->WriteInt(poly[j].SIndex[k]);
+		f->WriteInt(poly[j].NumEdges);
+		for (int k=0;k<poly[j].NumEdges;k++){
+			f->WriteInt(poly[j].EdgeIndex[k*2 + 0]);
+			f->WriteInt(poly[j].EdgeIndex[k*2 + 1]);
 		}
 		// topology
-		for (int k=0;k<Poly[j].NumFaces;k++)
-			for (int l=0;l<Poly[j].NumFaces;l++)
-				f->WriteInt(Poly[j].FacesJoiningEdge[k * Poly[j].NumFaces + l]);
-		for (int k=0;k<Poly[j].NumEdges;k++)
-			for (int l=0;l<Poly[j].NumFaces;l++)
-			    f->WriteBool(Poly[j].EdgeOnFace[k * Poly[j].NumFaces + l]);
+		for (int k=0;k<poly[j].NumFaces;k++)
+			for (int l=0;l<poly[j].NumFaces;l++)
+				f->WriteInt(poly[j].FacesJoiningEdge[k * poly[j].NumFaces + l]);
+		for (int k=0;k<poly[j].NumEdges;k++)
+			for (int l=0;l<poly[j].NumFaces;l++)
+			    f->WriteBool(poly[j].EdgeOnFace[k * poly[j].NumFaces + l]);
 	}
 
 // skin
 	for (int i=1;i<4;i++){
-		ModelSkin *s = &Skin[i];
+		ModelSkin *s = &skin[i];
 		f->WriteComment(format("// Skin[%d]",i));
 
 		// verices
-		f->WriteInt(s->Vertex.num);
-		foreach(ModelVertex &v, s->Vertex)
+		f->WriteInt(s->vertex.num);
+		foreach(ModelVertex &v, s->vertex)
 			f->WriteVector(&v.pos);
-		foreach(ModelVertex &v, s->Vertex)
-			f->WriteInt(v.BoneIndex);
+		foreach(ModelVertex &v, s->vertex)
+			f->WriteInt(v.bone_index);
 
 	    // skin vertices
 		int num_skin_v = 0;
-		for (int m=0;m<Material.num;m++)
-			num_skin_v += s->Sub[m].Triangle.num * Material[m].NumTextures * 3;
+		for (int m=0;m<material.num;m++)
+			num_skin_v += s->sub[m].triangle.num * material[m].num_textures * 3;
 		f->WriteInt(num_skin_v);
-		for (int m=0;m<Material.num;m++)
-			for (int tl=0;tl<Material[m].NumTextures;tl++)
-		    	for (int j=0;j<s->Sub[m].Triangle.num;j++)
+		for (int m=0;m<material.num;m++)
+			for (int tl=0;tl<material[m].num_textures;tl++)
+		    	for (int j=0;j<s->sub[m].triangle.num;j++)
 					for (int k=0;k<3;k++){
-						f->WriteFloat(s->Sub[m].Triangle[j].SkinVertex[tl][k].x);
-						f->WriteFloat(s->Sub[m].Triangle[j].SkinVertex[tl][k].y);
+						f->WriteFloat(s->sub[m].triangle[j].skin_vertex[tl][k].x);
+						f->WriteFloat(s->sub[m].triangle[j].skin_vertex[tl][k].y);
 					}
 
 
 		// sub skins
 		int svi = 0;
-		for (int m=0;m<Material.num;m++){
-			ModelSubSkin *sub = &s->Sub[m];
+		for (int m=0;m<material.num;m++){
+			ModelSubSkin *sub = &s->sub[m];
 
 			// triangles
-			f->WriteInt(sub->Triangle.num);
+			f->WriteInt(sub->triangle.num);
 
 			// vertex index
-	    	for (int j=0;j<sub->Triangle.num;j++)
+	    	for (int j=0;j<sub->triangle.num;j++)
 				for (int k=0;k<3;k++)
-					f->WriteInt(sub->Triangle[j].Vertex[k]);
+					f->WriteInt(sub->triangle[j].vertex[k]);
 
 			// skin index
-			for (int tl=0;tl<Material[m].NumTextures;tl++)
-		    	for (int j=0;j<sub->Triangle.num;j++)
+			for (int tl=0;tl<material[m].num_textures;tl++)
+		    	for (int j=0;j<sub->triangle.num;j++)
 					for (int k=0;k<3;k++)
 						f->WriteInt(svi ++);
 
 			// normal
-	    	for (int j=0;j<sub->Triangle.num;j++)
+	    	for (int j=0;j<sub->triangle.num;j++)
 				for (int k=0;k<3;k++){
-					sub->Triangle[j].NormalIndex[k] = get_normal_index(sub->Triangle[j].Normal[k]);
-					f->WriteWord(sub->Triangle[j].NormalIndex[k]);
+					sub->triangle[j].normal_index[k] = get_normal_index(sub->triangle[j].normal[k]);
+					f->WriteWord(sub->triangle[j].normal_index[k]);
 				}
 			f->WriteInt(0);
 		}
@@ -1203,10 +1203,10 @@ bool DataModel::save(const string & _filename)
 
 // skeleton
 	f->WriteComment("// Skeleton");
-	f->WriteInt(Bone.num);
-	foreach(ModelBone &b, Bone){
+	f->WriteInt(bone.num);
+	foreach(ModelBone &b, bone){
 		if (b.parent >= 0){
-			vector dpos = b.pos - Bone[b.parent].pos;
+			vector dpos = b.pos - bone[b.parent].pos;
 			f->WriteVector(&dpos);
 		}else
 			f->WriteVector(&b.pos);
@@ -1216,91 +1216,91 @@ bool DataModel::save(const string & _filename)
 
 // animations
 	f->WriteComment("// Animations");
-	if ((Move.num == 1) && (Move[0].Frame.num == 0)){
+	if ((move.num == 1) && (move[0].frame.num == 0)){
 		f->WriteInt(0);
 	}else
-		f->WriteInt(Move.num);
+		f->WriteInt(move.num);
 	int n_moves = 0;
 	int n_frames_vert = 0;
 	int n_frames_skel = 0;
-	for (int i=0;i<Move.num;i++)
-		if (Move[i].Frame.num > 0){
+	for (int i=0;i<move.num;i++)
+		if (move[i].frame.num > 0){
 			n_moves ++;
-			if (Move[i].Type == MoveTypeVertex)	n_frames_vert += Move[i].Frame.num;
-			if (Move[i].Type == MoveTypeSkeletal)	n_frames_skel += Move[i].Frame.num;
+			if (move[i].type == MoveTypeVertex)	n_frames_vert += move[i].frame.num;
+			if (move[i].type == MoveTypeSkeletal)	n_frames_skel += move[i].frame.num;
 		}
 	f->WriteInt(n_moves);
 	f->WriteInt(n_frames_vert);
 	f->WriteInt(n_frames_skel);
-	for (int i=0;i<Move.num;i++)
-		if (Move[i].Frame.num > 0){
-			ModelMove *m = &Move[i];
+	for (int i=0;i<move.num;i++)
+		if (move[i].frame.num > 0){
+			ModelMove *m = &move[i];
 			f->WriteInt(i);
-			f->WriteStr(m->Name);
-			f->WriteInt(m->Type);
-			f->WriteInt(m->Frame.num);
-			f->WriteFloat(m->FramesPerSecConst);
-			f->WriteFloat(m->FramesPerSecFactor);
+			f->WriteStr(m->name);
+			f->WriteInt(m->type);
+			f->WriteInt(m->frame.num);
+			f->WriteFloat(m->frames_per_sec_const);
+			f->WriteFloat(m->frames_per_sec_factor);
 
 			// vertex animation
-			if (m->Type == MoveTypeVertex){
-				for (int fr=0;fr<m->Frame.num;fr++){
+			if (m->type == MoveTypeVertex){
+				for (int fr=0;fr<m->frame.num;fr++){
 					for (int s=0;s<4;s++){
 						// compress (only write != 0)
 						int num_vertices = 0;
-						for (int j=0;j<Skin[s].Vertex.num;j++)
-							if (m->Frame[fr].Skin[i].DPos[j] != v_0)
+						for (int j=0;j<skin[s].vertex.num;j++)
+							if (m->frame[fr].skin[i].dpos[j] != v_0)
 								num_vertices ++;
 						f->WriteInt(num_vertices);
-						for (int j=0;j<Skin[s].Vertex.num;j++)
-							if (m->Frame[fr].Skin[i].DPos[j] != v_0){
+						for (int j=0;j<skin[s].vertex.num;j++)
+							if (m->frame[fr].skin[i].dpos[j] != v_0){
 								f->WriteInt(j);
-								f->WriteVector(&m->Frame[fr].Skin[i].DPos[j]);
+								f->WriteVector(&m->frame[fr].skin[i].dpos[j]);
 							}
 					}
 				}
 			// skeletal animation
-			}else if (m->Type == MoveTypeSkeletal){
-				for (int j=0;j<Bone.num;j++)
-					f->WriteBool((Bone[j].parent < 0));
-				f->WriteBool(m->InterpolatedQuadratic);
-				f->WriteBool(m->InterpolatedLoop);
-				for (int fr=0;fr<m->Frame.num;fr++)
-					for (int j=0;j<Bone.num;j++){
-						f->WriteVector(&m->Frame[fr].SkelAng[j]);
-						if (Bone[j].parent < 0)
-							f->WriteVector(&m->Frame[fr].SkelDPos[j]);
+			}else if (m->type == MoveTypeSkeletal){
+				for (int j=0;j<bone.num;j++)
+					f->WriteBool((bone[j].parent < 0));
+				f->WriteBool(m->interpolated_quadratic);
+				f->WriteBool(m->interpolated_loop);
+				for (int fr=0;fr<m->frame.num;fr++)
+					for (int j=0;j<bone.num;j++){
+						f->WriteVector(&m->frame[fr].skel_ang[j]);
+						if (bone[j].parent < 0)
+							f->WriteVector(&m->frame[fr].skel_dpos[j]);
 					}
 			}
 		}
 
 // effects
 	f->WriteComment("// Effects");
-	f->WriteInt(Fx.num);
-	for (int i=0;i<Fx.num;i++){
-		if (Fx[i].Kind==FXKindScript){
+	f->WriteInt(fx.num);
+	for (int i=0;i<fx.num;i++){
+		if (fx[i].kind==FX_KIND_SCRIPT){
 			f->WriteStr("Script");
-			f->WriteInt(Fx[i].Vertex);
-			f->WriteStr(Fx[i].File);
+			f->WriteInt(fx[i].vertex);
+			f->WriteStr(fx[i].file);
 			f->WriteStr("");
-		}else if (Fx[i].Kind==FXKindLight){
+		}else if (fx[i].kind==FX_KIND_LIGHT){
 			f->WriteStr("Light");
-			f->WriteInt(Fx[i].Vertex);
-			f->WriteInt((int)Fx[i].Size);
+			f->WriteInt(fx[i].vertex);
+			f->WriteInt((int)fx[i].size);
 			for (int nc=0;nc<3;nc++)
-				write_color_argb(f, Fx[i].Colors[nc]);
-		}else if (Fx[i].Kind==FXKindSound){
+				write_color_argb(f, fx[i].colors[nc]);
+		}else if (fx[i].kind==FX_KIND_SOUND){
 			f->WriteStr("Sound");
-			f->WriteInt(Fx[i].Vertex);
-			f->WriteInt((int)Fx[i].Size);
-			f->WriteInt((int)(Fx[i].Speed * 100.0f));
-			f->WriteStr(Fx[i].File);
-		}else if (Fx[i].Kind==FXKindForceField){
+			f->WriteInt(fx[i].vertex);
+			f->WriteInt((int)fx[i].size);
+			f->WriteInt((int)(fx[i].speed * 100.0f));
+			f->WriteStr(fx[i].file);
+		}else if (fx[i].kind==FX_KIND_FORCEFIELD){
 			f->WriteStr("ForceField");
-			f->WriteInt(Fx[i].Vertex);
-			f->WriteInt((int)Fx[i].Size);
-			f->WriteInt((int)Fx[i].Intensity);
-			f->WriteBool(Fx[i].InvQuad);
+			f->WriteInt(fx[i].vertex);
+			f->WriteInt((int)fx[i].size);
+			f->WriteInt((int)fx[i].intensity);
+			f->WriteBool(fx[i].inv_quad);
 		}
 	}
 
@@ -1311,7 +1311,7 @@ bool DataModel::save(const string & _filename)
 		f->WriteFloat(meta_data.InertiaTensor.e[i]);
 	f->WriteBool(meta_data.ActivePhysics);
 	f->WriteBool(meta_data.PassivePhysics);
-	f->WriteFloat(Radius);
+	f->WriteFloat(radius);
 
 	f->WriteComment("// LOD-Distances");
 	f->WriteFloat(meta_data.DetailDist[0]);
@@ -1348,28 +1348,28 @@ bool DataModel::save(const string & _filename)
 	f->WriteInt(meta_data.DetailFactor[2]);
 	f->WriteComment("// Normals");
 	for (int i=1;i<4;i++){
-		ModelSkin *s = &Skin[i];
+		ModelSkin *s = &skin[i];
 		f->WriteInt(NormalModePerVertex);
-		foreach(ModelVertex &v, s->Vertex)
-			f->WriteInt(v.NormalMode);
+		foreach(ModelVertex &v, s->vertex)
+			f->WriteInt(v.normal_mode);
 	}
 	f->WriteComment("// Polygons");
-	f->WriteInt(Surface.num);
-	foreach(ModelSurface &s, Surface){
-		f->WriteInt(s.Polygon.num);
-		foreach(ModelPolygon &t, s.Polygon){
-			f->WriteInt(t.Side.num);
-			f->WriteInt(t.Material);
-			foreach(ModelPolygonSide &ss, t.Side){
-				f->WriteInt(ss.Vertex);
-				for (int l=0;l<Material[t.Material].NumTextures;l++){
-					f->WriteFloat(ss.SkinVertex[l].x);
-					f->WriteFloat(ss.SkinVertex[l].y);
+	f->WriteInt(surface.num);
+	foreach(ModelSurface &s, surface){
+		f->WriteInt(s.polygon.num);
+		foreach(ModelPolygon &t, s.polygon){
+			f->WriteInt(t.side.num);
+			f->WriteInt(t.material);
+			foreach(ModelPolygonSide &ss, t.side){
+				f->WriteInt(ss.vertex);
+				for (int l=0;l<material[t.material].num_textures;l++){
+					f->WriteFloat(ss.skin_vertex[l].x);
+					f->WriteFloat(ss.skin_vertex[l].y);
 				}
 			}
 		}
-		f->WriteBool(s.IsPhysical);
-		f->WriteBool(s.IsVisible);
+		f->WriteBool(s.is_physical);
+		f->WriteBool(s.is_visible);
 		f->WriteInt(0);
 	}
 
@@ -1382,27 +1382,27 @@ bool DataModel::save(const string & _filename)
 
 void DataModel::SetNormalsDirtyByVertices(const Array<int> &index)
 {
-	foreach(ModelSurface &s, Surface)
-		foreach(ModelPolygon &t, s.Polygon)
-			for (int k=0;k<t.Side.num;k++)
-				if (!t.NormalDirty)
+	foreach(ModelSurface &s, surface)
+		foreach(ModelPolygon &t, s.polygon)
+			for (int k=0;k<t.side.num;k++)
+				if (!t.normal_dirty)
 					for (int i=0;i<index.num;i++)
-						if (t.Side[k].Vertex == index[i]){
-							t.NormalDirty = true;
+						if (t.side[k].vertex == index[i]){
+							t.normal_dirty = true;
 							break;
 						}
 }
 
 void DataModel::SetAllNormalsDirty()
 {
-	foreach(ModelSurface &s, Surface)
-		foreach(ModelPolygon &t, s.Polygon)
-			t.NormalDirty = true;
+	foreach(ModelSurface &s, surface)
+		foreach(ModelPolygon &t, s.polygon)
+			t.normal_dirty = true;
 }
 
 void DataModel::UpdateNormals()
 {
-	foreach(ModelSurface &s, Surface)
+	foreach(ModelSurface &s, surface)
 		s.UpdateNormals();
 }
 
@@ -1412,15 +1412,15 @@ ModelSurface *DataModel::AddSurface(int surf_no)
 	s.model = this;
 	s.view_stage = ed->multi_view_3d->view_stage;
 	s.is_selected = true;
-	s.IsClosed = false;
-	s.IsVisible = true;
-	s.IsPhysical = true;
+	s.is_closed = false;
+	s.is_visible = true;
+	s.is_physical = true;
 	if (surf_no >= 0){
-		Surface.insert(s, surf_no);
-		return &Surface[surf_no];
+		surface.insert(s, surf_no);
+		return &surface[surf_no];
 	}else{
-		Surface.add(s);
-		return &Surface.back();
+		surface.add(s);
+		return &surface.back();
 	}
 }
 
@@ -1430,13 +1430,13 @@ void DataModel::AddVertex(const vector &pos, int bone_index, int normal_mode)
 
 void DataModel::ClearSelection()
 {
-	foreach(ModelVertex &v, Vertex)
+	foreach(ModelVertex &v, vertex)
 		v.is_selected = false;
-	foreach(ModelSurface &s, Surface){
+	foreach(ModelSurface &s, surface){
 		s.is_selected = false;
-		foreach(ModelPolygon &t, s.Polygon)
+		foreach(ModelPolygon &t, s.polygon)
 			t.is_selected = false;
-		foreach(ModelEdge &e, s.Edge)
+		foreach(ModelEdge &e, s.edge)
 			e.is_selected = false;
 	}
 	notify(MESSAGE_SELECTION);
@@ -1444,14 +1444,14 @@ void DataModel::ClearSelection()
 
 void DataModel::SelectionFromSurfaces()
 {
-	foreach(ModelVertex &v, Vertex)
+	foreach(ModelVertex &v, vertex)
 		v.is_selected = false;
-	foreach(ModelSurface &s, Surface){
-		foreach(int v, s.Vertex)
-			Vertex[v].is_selected = s.is_selected;
-		foreach(ModelPolygon &t, s.Polygon)
+	foreach(ModelSurface &s, surface){
+		foreach(int v, s.vertex)
+			vertex[v].is_selected = s.is_selected;
+		foreach(ModelPolygon &t, s.polygon)
 			t.is_selected = s.is_selected;
-		foreach(ModelEdge &e, s.Edge)
+		foreach(ModelEdge &e, s.edge)
 			e.is_selected = s.is_selected;
 	}
 	notify(MESSAGE_SELECTION);
@@ -1459,21 +1459,21 @@ void DataModel::SelectionFromSurfaces()
 
 void DataModel::SelectionFromPolygons()
 {
-	foreach(ModelVertex &v, Vertex)
+	foreach(ModelVertex &v, vertex)
 		v.is_selected = false;
-	foreach(ModelSurface &s, Surface){
-		foreach(ModelEdge &e, s.Edge)
+	foreach(ModelSurface &s, surface){
+		foreach(ModelEdge &e, s.edge)
 			e.is_selected = false;
-		foreach(ModelPolygon &t, s.Polygon)
+		foreach(ModelPolygon &t, s.polygon)
 			if (t.is_selected)
-				for (int k=0;k<t.Side.num;k++){
-					Vertex[t.Side[k].Vertex].is_selected = true;
-					s.Edge[t.Side[k].Edge].is_selected = true;
+				for (int k=0;k<t.side.num;k++){
+					vertex[t.side[k].vertex].is_selected = true;
+					s.edge[t.side[k].edge].is_selected = true;
 				}
 	}
-	foreach(ModelSurface &s, Surface){
+	foreach(ModelSurface &s, surface){
 		s.is_selected = true;
-		foreach(ModelPolygon &t, s.Polygon)
+		foreach(ModelPolygon &t, s.polygon)
 			s.is_selected &= t.is_selected;
 	}
 	notify(MESSAGE_SELECTION);
@@ -1481,20 +1481,20 @@ void DataModel::SelectionFromPolygons()
 
 void DataModel::SelectionFromEdges()
 {
-	foreach(ModelVertex &v, Vertex)
+	foreach(ModelVertex &v, vertex)
 		v.is_selected = false;
-	foreach(ModelSurface &s, Surface){
-		foreach(ModelEdge &e, s.Edge)
+	foreach(ModelSurface &s, surface){
+		foreach(ModelEdge &e, s.edge)
 			if (e.is_selected)
 				for (int k=0;k<2;k++)
-					Vertex[e.Vertex[k]].is_selected = true;
-		foreach(ModelPolygon &p, s.Polygon){
+					vertex[e.vertex[k]].is_selected = true;
+		foreach(ModelPolygon &p, s.polygon){
 			p.is_selected = true;
-			for (int k=0;k<p.Side.num;k++)
-				p.is_selected &= s.Edge[p.Side[k].Edge].is_selected;
+			for (int k=0;k<p.side.num;k++)
+				p.is_selected &= s.edge[p.side[k].edge].is_selected;
 		}
 		s.is_selected = true;
-		foreach(ModelEdge &e, s.Edge)
+		foreach(ModelEdge &e, s.edge)
 			s.is_selected &= e.is_selected;
 	}
 	notify(MESSAGE_SELECTION);
@@ -1502,18 +1502,18 @@ void DataModel::SelectionFromEdges()
 
 void DataModel::SelectionFromVertices()
 {
-	foreach(ModelSurface &s, Surface){
+	foreach(ModelSurface &s, surface){
 		s.is_selected = true;
-		foreach(ModelEdge &e, s.Edge){
-			e.is_selected = (Vertex[e.Vertex[0]].is_selected && Vertex[e.Vertex[1]].is_selected);
-			e.view_stage = min(Vertex[e.Vertex[0]].view_stage, Vertex[e.Vertex[1]].view_stage);
+		foreach(ModelEdge &e, s.edge){
+			e.is_selected = (vertex[e.vertex[0]].is_selected && vertex[e.vertex[1]].is_selected);
+			e.view_stage = min(vertex[e.vertex[0]].view_stage, vertex[e.vertex[1]].view_stage);
 		}
-		foreach(ModelPolygon &t, s.Polygon){
+		foreach(ModelPolygon &t, s.polygon){
 			t.is_selected = true;
-			t.view_stage = Vertex[t.Side[0].Vertex].view_stage;
-			for (int k=0;k<t.Side.num;k++){
-				t.is_selected &= Vertex[t.Side[k].Vertex].is_selected;
-				t.view_stage = min(t.view_stage, Vertex[t.Side[k].Vertex].view_stage);
+			t.view_stage = vertex[t.side[0].vertex].view_stage;
+			for (int k=0;k<t.side.num;k++){
+				t.is_selected &= vertex[t.side[k].vertex].is_selected;
+				t.view_stage = min(t.view_stage, vertex[t.side[k].vertex].view_stage);
 			}
 			s.is_selected &= t.is_selected;
 		}
@@ -1523,7 +1523,7 @@ void DataModel::SelectionFromVertices()
 
 void DataModel::SelectOnlySurface(ModelSurface *s)
 {
-	foreach(ModelSurface &ss, Surface)
+	foreach(ModelSurface &ss, surface)
 		ss.is_selected = (&ss == s);
 	SelectionFromSurfaces();
 }
@@ -1560,7 +1560,7 @@ ModelPolygon *DataModel::AddPolygonWithSkin(Array<int> &v, Array<vector> &sv, in
 
 int DataModel::get_surf_no(ModelSurface *s)
 {
-	foreachi(ModelSurface &ss, Surface, i)
+	foreachi(ModelSurface &ss, surface, i)
 		if (&ss == s)
 			return i;
 	return -1;
@@ -1577,31 +1577,31 @@ ModelSurface *DataModel::SurfaceJoin(ModelSurface *a, ModelSurface *b)
 	int bi = get_surf_no(b);
 
 	// correct edge data of b
-	foreach(ModelEdge &e, b->Edge){
-		if (e.Polygon[0] >= 0)
-			e.Polygon[0] += a->Polygon.num;
-		if (e.Polygon[1] >= 0)
-			e.Polygon[1] += a->Polygon.num;
+	foreach(ModelEdge &e, b->edge){
+		if (e.polygon[0] >= 0)
+			e.polygon[0] += a->polygon.num;
+		if (e.polygon[1] >= 0)
+			e.polygon[1] += a->polygon.num;
 	}
 
 	// correct triangle data of b
-	foreach(ModelPolygon &t, b->Polygon)
-		for (int k=0;k<t.Side.num;k++)
-			t.Side[k].Edge += a->Edge.num;
+	foreach(ModelPolygon &t, b->polygon)
+		for (int k=0;k<t.side.num;k++)
+			t.side[k].edge += a->edge.num;
 
 	// correct vertex data of b
-	foreach(int v, b->Vertex)
-		Vertex[v].Surface = ai;
+	foreach(int v, b->vertex)
+		vertex[v].surface = ai;
 
 	// insert data
-	a->Vertex.join(b->Vertex);
-	a->Edge.append(b->Edge);
-	a->Polygon.append(b->Polygon);
+	a->vertex.join(b->vertex);
+	a->edge.append(b->edge);
+	a->polygon.append(b->polygon);
 
 	// remove surface
 	if (bi >= 0)
-		Surface.erase(bi);
-	a = &Surface[ai];
+		surface.erase(bi);
+	a = &surface[ai];
 	a->TestSanity("Join post a");
 
 	return a;
@@ -1618,7 +1618,7 @@ void DataModel::CreateSkin(ModelSkin *src, ModelSkin *dst, float quality_factor)
 float DataModel::GetRadius()
 {
 	float radius = 0;
-	foreach(ModelVertex &v, Vertex)
+	foreach(ModelVertex &v, vertex)
 		radius = max(v.pos.length(), radius);
 	return radius;
 }
@@ -1628,8 +1628,8 @@ float DetailDistTemp1,DetailDistTemp2,DetailDistTemp3;
 int get_num_trias(DataModel *m, ModelSkin *s)
 {
 	int n = 0;
-	for (int i=0;i<m->Material.num;i++)
-		n += s->Sub[i].Triangle.num;
+	for (int i=0;i<m->material.num;i++)
+		n += s->sub[i].triangle.num;
 	return n;
 }
 
@@ -1640,9 +1640,9 @@ void DataModel::GenerateDetailDists(float *dist)
 	dist[0] = radius * 10;
 	dist[1] = radius * 40;
 	dist[2] = radius * 80;
-	if (get_num_trias(this, &Skin[3]) == 0)
+	if (get_num_trias(this, &skin[3]) == 0)
 		dist[1] = dist[2];
-	if (get_num_trias(this, &Skin[2]) == 0)
+	if (get_num_trias(this, &skin[2]) == 0)
 		dist[0] = dist[1];
 }
 
@@ -1656,7 +1656,7 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 
 	// estimate size
 	vector min = v_0, max = v_0;
-	foreach(ModelVertex &v, Vertex){
+	foreach(ModelVertex &v, vertex){
 		min._min(v.pos);
 		max._max(v.pos);
 	}
@@ -1678,7 +1678,7 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 	for (int i=0;i<9;i++)
 		t.e[i] = 0;
 
-	foreach(ModelSurface &s, Surface)
+	foreach(ModelSurface &s, surface)
 		s.BeginInsideTests();
 
 	for (int i=0;i<n_theta;i++){
@@ -1696,7 +1696,7 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 					if (VecLength(r-p->Vertex[b->Index].Pos)<b->Radius)
 						inside=true;
 				}*/
-				foreach(ModelSurface &s, Surface)
+				foreach(ModelSurface &s, surface)
 					if (s.InsideTest(r)){
 						inside = true;
 						break;
@@ -1716,7 +1716,7 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 	}
 
 
-	foreach(ModelSurface &s, Surface)
+	foreach(ModelSurface &s, surface)
 		s.EndInsideTests();
 
 	if (num_ds>0){
@@ -1741,7 +1741,7 @@ int DataModel::GetNumSelectedVertices()
 				r++;
 		return r;
 	}*/
-	foreach(ModelVertex &v, Vertex)
+	foreach(ModelVertex &v, vertex)
 		if (v.is_selected)
 			r ++;
 	return r;
@@ -1750,7 +1750,7 @@ int DataModel::GetNumSelectedVertices()
 int DataModel::GetNumSelectedSkinVertices()
 {
 	int r = 0;
-	foreach(ModelSkinVertexDummy &v, SkinVertex)
+	foreach(ModelSkinVertexDummy &v, skin_vertex)
 		if (v.is_selected)
 			r ++;
 	return r;
@@ -1759,8 +1759,8 @@ int DataModel::GetNumSelectedSkinVertices()
 int DataModel::GetNumSelectedPolygons()
 {
 	int r = 0;
-	foreach(ModelSurface &s, Surface)
-		foreach(ModelPolygon &t, s.Polygon)
+	foreach(ModelSurface &s, surface)
+		foreach(ModelPolygon &t, s.polygon)
 			if (t.is_selected)
 				r ++;
 	return r;
@@ -1769,7 +1769,7 @@ int DataModel::GetNumSelectedPolygons()
 int DataModel::GetNumSelectedSurfaces()
 {
 	int r = 0;
-	foreach(ModelSurface &s, Surface)
+	foreach(ModelSurface &s, surface)
 		if (s.is_selected)
 			r ++;
 	return r;
@@ -1778,7 +1778,7 @@ int DataModel::GetNumSelectedSurfaces()
 int DataModel::GetNumSelectedBones()
 {
 	int r = 0;
-	foreach(ModelBone &b, Bone)
+	foreach(ModelBone &b, bone)
 		if (b.is_selected)
 			r ++;
 	return r;
@@ -1787,8 +1787,8 @@ int DataModel::GetNumSelectedBones()
 int DataModel::GetNumPolygons()
 {
 	int r = 0;
-	foreach(ModelSurface &s, Surface)
-		r += s.Polygon.num;
+	foreach(ModelSurface &s, surface)
+		r += s.polygon.num;
 	return r;
 }
 
@@ -1810,22 +1810,22 @@ void DataModel::CopyGeometry(Geometry &geo)
 
 	// copy vertices
 	Array<int> vert;
-	foreachi(ModelVertex &v, Vertex, vi)
+	foreachi(ModelVertex &v, vertex, vi)
 		if (v.is_selected){
-			geo.Vertex.add(v);
+			geo.vertex.add(v);
 			vert.add(vi);
 		}
 
 	// copy triangles
-	foreach(ModelSurface &s, Surface)
-		foreach(ModelPolygon &t, s.Polygon)
+	foreach(ModelSurface &s, surface)
+		foreach(ModelPolygon &t, s.polygon)
 			if (t.is_selected){
 				ModelPolygon tt = t;
-				for (int k=0;k<t.Side.num;k++)
+				for (int k=0;k<t.side.num;k++)
 					foreachi(int v, vert, vi)
-						if (v == t.Side[k].Vertex)
-							tt.Side[k].Vertex = vi;
-				geo.Polygon.add(tt);
+						if (v == t.side[k].vertex)
+							tt.side[k].vertex = vi;
+				geo.polygon.add(tt);
 			}
 }
 
@@ -1910,66 +1910,66 @@ void DataModel::SelectionClearEffects()
 
 void ModelSelectionState::clear()
 {
-	Vertex.clear();
-	Surface.clear();
-	Polygon.clear();
+	vertex.clear();
+	surface.clear();
+	polygon.clear();
 }
 
 Set<int> DataModel::GetSelectedVertices()
 {
-	Set<int> vertex;
-	foreachi(ModelVertex &v, Vertex, i)
+	Set<int> vv;
+	foreachi(ModelVertex &v, vertex, i)
 		if (v.is_selected)
-			vertex.add(i);
-	return vertex;
+			vv.add(i);
+	return vv;
 }
 
 Set<int> DataModel::GetSelectedSurfaces()
 {
-	Set<int> surface;
-	foreachi(ModelSurface &surf, Surface, i)
+	Set<int> ss;
+	foreachi(ModelSurface &surf, surface, i)
 		if (surf.is_selected)
-			surface.add(i);
-	return surface;
+			ss.add(i);
+	return ss;
 }
 
 void DataModel::GetSelectionState(ModelSelectionState& s)
 {
 	s.clear();
-	foreachi(ModelVertex &v, Vertex, i)
+	foreachi(ModelVertex &v, vertex, i)
 		if (v.is_selected)
-			s.Vertex.add(i);
-	foreachi(ModelSurface &surf, Surface, i){
+			s.vertex.add(i);
+	foreachi(ModelSurface &surf, surface, i){
 		if (surf.is_selected)
-			s.Surface.add(i);
+			s.surface.add(i);
 		Set<int> sel;
-		foreachi(ModelPolygon &t, surf.Polygon, j)
+		foreachi(ModelPolygon &t, surf.polygon, j)
 			if (t.is_selected)
 				sel.add(j);
-		s.Polygon.add(sel);
+		s.polygon.add(sel);
 		Array<ModelSelectionState::EdgeSelection> esel;
-		foreachi(ModelEdge &e, surf.Edge, j)
+		foreachi(ModelEdge &e, surf.edge, j)
 			if (e.is_selected)
-				esel.add(e.Vertex);
-		s.Edge.add(esel);
+				esel.add(e.vertex);
+		s.edge.add(esel);
 	}
 }
 
 void DataModel::SetSelectionState(ModelSelectionState& s)
 {
 	ClearSelection();
-	foreach(int v, s.Vertex)
-		Vertex[v].is_selected = true;
-	foreach(int si, s.Surface)
-		Surface[si].is_selected = true;
-	for (int i=0;i<s.Polygon.num;i++)
-		foreach(int j, s.Polygon[i])
-			Surface[i].Polygon[j].is_selected = true;
-	for (int i=0;i<s.Edge.num;i++)
-		foreach(ModelSelectionState::EdgeSelection &es, s.Edge[i]){
-			int ne = Surface[i].FindEdge(es.v[0], es.v[1]);
+	foreach(int v, s.vertex)
+		vertex[v].is_selected = true;
+	foreach(int si, s.surface)
+		surface[si].is_selected = true;
+	for (int i=0;i<s.polygon.num;i++)
+		foreach(int j, s.polygon[i])
+			surface[i].polygon[j].is_selected = true;
+	for (int i=0;i<s.edge.num;i++)
+		foreach(ModelSelectionState::EdgeSelection &es, s.edge[i]){
+			int ne = surface[i].FindEdge(es.v[0], es.v[1]);
 			if (ne >= 0)
-				Surface[i].Edge[ne].is_selected = true;
+				surface[i].edge[ne].is_selected = true;
 		}
 	notify(MESSAGE_SELECTION);
 }

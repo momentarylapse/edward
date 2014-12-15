@@ -141,9 +141,9 @@ static void tria_set_mat(LightmapData::Triangle &t, Material *m)
 
 static void tria_set_mat(LightmapData::Triangle &t, ModelMaterial *m)
 {
-	t.am = m->Ambient;
-	t.di = m->Diffuse;
-	t.em = m->Emission;
+	t.am = m->ambient;
+	t.di = m->diffuse;
+	t.em = m->emission;
 }
 
 void LightmapData::AddModel(const string &filename, matrix &mat, int object_index)
@@ -167,12 +167,12 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 
 	mod.new_name = format("Lightmap/%s/%s_%d", world_name_small.c_str(), mod.orig_name.c_str(), mod.id);
 
-	foreachi(ModelSurface &s, m->Surface, surf){
+	foreachi(ModelSurface &s, m->surface, surf){
 		s.UpdateNormals();
-		foreachi(ModelPolygon &p, s.Polygon, i){
-			if (p.TriangulationDirty)
-				p.UpdateTriangulation(m->Vertex);
-			for (int k=0;k<p.Side.num-2;k++){
+		foreachi(ModelPolygon &p, s.polygon, i){
+			if (p.triangulation_dirty)
+				p.UpdateTriangulation(m->vertex);
+			for (int k=0;k<p.side.num-2;k++){
 				Triangle t;
 				t.mod_id = mod.id;
 				t.ter_id = -1;
@@ -180,12 +180,12 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 				t.poly = i;
 				t.side = k;
 				for (int l=0;l<3;l++){
-					int n = p.Side[k].Triangulation[l];
-					t.v[l] = mat * m->Vertex[p.Side[n].Vertex].pos;
-					t.n[l] = mat.transform_normal(p.Side[n].Normal);
+					int n = p.side[k].triangulation[l];
+					t.v[l] = mat * m->vertex[p.side[n].vertex].pos;
+					t.n[l] = mat.transform_normal(p.side[n].normal);
 				}
 				update_tria(t);
-				tria_set_mat(t, &m->Material[p.Material]);
+				tria_set_mat(t, &m->material[p.material]);
 				mod.area += t.area;
 				Trias.add(t);
 			}
@@ -195,16 +195,16 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 
 
 	// lights
-	foreach(ModelEffect &fx, m->Fx){
-		if (fx.Kind == FXTypeLight){
+	foreach(ModelEffect &fx, m->fx){
+		if (fx.kind == FXTypeLight){
 			msg_write("......fx light");
 			Light l;
 			l.Directional = false;
-			l.Pos = mat * m->Vertex[fx.Vertex].pos;
-			l.Radius = fx.Size;
-			l.Ambient = fx.Colors[0];
-			l.Diffuse = fx.Colors[1];
-			l.Specular = fx.Colors[2];
+			l.Pos = mat * m->vertex[fx.vertex].pos;
+			l.Radius = fx.size;
+			l.Ambient = fx.colors[0];
+			l.Diffuse = fx.colors[1];
+			l.Specular = fx.colors[2];
 			Lights.add(l);
 		}
 	}
@@ -276,8 +276,8 @@ void LightmapData::AddTextureLevels(bool modify)
 {
 	foreach(Model &m, Models){
 		if (modify){
-			foreach(ModelMaterial &mat, m.orig->Material)
-				mat.NumTextures ++;
+			foreach(ModelMaterial &mat, m.orig->material)
+				mat.num_textures ++;
 		}
 		m.orig->Automap(-1, 1); // TODO...
 	}
@@ -335,10 +335,10 @@ void LightmapData::CreateVertices()
 
 		for (int i=m.offset;i<m.offset + m.num_trias;i++){
 			LightmapData::Triangle &t = Trias[i];
-			ModelPolygon &p = m.orig->Surface[t.surf].Polygon[t.poly];
+			ModelPolygon &p = m.orig->surface[t.surf].polygon[t.poly];
 			for (int k=0;k<3;k++){
-				int si = p.Side[t.side].Triangulation[k];
-				t.sv[k] = p.Side[si].SkinVertex[1];
+				int si = p.side[t.side].triangulation[k];
+				t.sv[k] = p.side[si].skin_vertex[1];
 				t.sv[k].x *= w;
 				t.sv[k].y *= h;
 			}

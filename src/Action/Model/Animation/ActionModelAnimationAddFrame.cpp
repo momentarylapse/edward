@@ -19,22 +19,22 @@ void *ActionModelAnimationAddFrame::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	assert(index >= 0);
-	assert(index < m->Move.num);
+	assert(index < m->move.num);
 	assert(frame >= 0);
-	assert(frame <= m->Move[index].Frame.num);
+	assert(frame <= m->move[index].frame.num);
 
 	ModelFrame new_frame;
 	if (frame > 0)
-		new_frame = m->Move[index].Frame[frame - 1];
+		new_frame = m->move[index].frame[frame - 1];
 	else
-		new_frame = m->Move[index].Frame[0];
-	m->Move[index].Frame.insert(new_frame, frame);
+		new_frame = m->move[index].frame[0];
+	m->move[index].frame.insert(new_frame, frame);
 	return NULL;
 }
 
 void ActionModelAnimationAddFrame::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	m->Move[index].Frame.erase(frame);
+	m->move[index].frame.erase(frame);
 }
 

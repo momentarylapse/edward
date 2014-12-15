@@ -65,7 +65,7 @@ void *ActionManager::execute(Action *a)
 	error_message = "";
 
 	if (cur_group)
-		return cur_group->AddSubAction(a, data);
+		return cur_group->addSubAction(a, data);
 
 	try{
 		data->notifyBegin();

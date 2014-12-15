@@ -60,13 +60,13 @@ void ModeModelMeshCreatePlane::onLeftButtonDown()
 		}
 
 		GeometryPlane pl = GeometryPlane(pos, length[0], length[1], nx, ny);
-		data->PasteGeometry(pl, mode_model_mesh->CurrentMaterial);
-		data->SelectOnlySurface(&data->Surface.back());
+		data->PasteGeometry(pl, mode_model_mesh->current_material);
+		data->SelectOnlySurface(&data->surface.back());
 
 		abort();
 	}else{
 		if (multi_view->hover.index >= 0)
-			pos = data->Vertex[multi_view->hover.index].pos;
+			pos = data->vertex[multi_view->hover.index].pos;
 		else
 			pos = multi_view->GetCursor3d();
 		message = _("Ebene: zweiter Punkt");

@@ -29,7 +29,7 @@ ModeModelMeshBrush::~ModeModelMeshBrush()
 Action *ModeModelMeshBrush::GetAction()
 {
 	vector pos = multi_view->hover.point;
-	vector n = data->Surface[multi_view->hover.set].Polygon[multi_view->hover.index].TempNormal;
+	vector n = data->surface[multi_view->hover.set].polygon[multi_view->hover.index].temp_normal;
 	float radius = dialog->getFloat("diameter") / 2;
 	float depth = dialog->getFloat("depth");
 	int type = dialog->getInt("brush_type");
@@ -147,7 +147,7 @@ void ModeModelMeshBrush::onDrawWin(MultiView::Window* win)
 	if (multi_view->hover.index < 0)
 		return;
 	vector pos = multi_view->hover.point;
-	vector n = data->Surface[multi_view->hover.set].Polygon[multi_view->hover.index].TempNormal;
+	vector n = data->surface[multi_view->hover.set].polygon[multi_view->hover.index].temp_normal;
 	float radius = dialog->getFloat("diameter") / 2;
 
 	NixSetColor(Green);

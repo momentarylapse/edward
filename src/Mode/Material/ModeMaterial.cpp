@@ -224,12 +224,12 @@ void ModeMaterial::UpdateShape()
 	else //if (shape_type == "ball")
 		geo = new GeometryBall(v_0, MATERIAL_RADIUS1, 32, 16);
 	if (shape_smooth)
-		geo->Smoothen();
+		geo->smoothen();
 
 	for (int i=1;i<=MATERIAL_MAX_TEXTURES;i++){
 		NixVertexBuffer *vb = MaterialVB[i];
 		vb->clear();
-		geo->Preview(vb, i);
+		geo->preview(vb, i);
 	}
 	onUpdateMenu();
 	if (needs_opt_view)
@@ -241,7 +241,7 @@ bool ModeMaterial::optimizeView()
 	multi_view->ResetView();
 	if (geo){
 		vector min, max;
-		geo->GetBoundingBox(min, max);
+		geo->getBoundingBox(min, max);
 		multi_view->SetViewBox(min, max);
 	}
 	return true;

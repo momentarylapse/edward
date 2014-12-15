@@ -51,16 +51,16 @@ void ModelAnimationDialog::LoadData()
 {
 	reset("animation_list");
 	int n = 0;
-	foreachi(ModelMove &m, data->Move, i)
-		if (m.Frame.num > 0){
+	foreachi(ModelMove &m, data->move, i)
+		if (m.frame.num > 0){
 			string str = i2s(i) + "\\";
-			if (m.Type == MoveTypeVertex)
+			if (m.type == MoveTypeVertex)
 				str += _("Vertex");
-			else if (m.Type == MoveTypeSkeletal)
+			else if (m.type == MoveTypeSkeletal)
 				str += _("Skelett");
 			else
 				str += "???";
-			str += format("\\%d\\", m.Frame.num) + m.Name;
+			str += format("\\%d\\", m.frame.num) + m.name;
 			addString("animation_list", str);
 			if (i == mode_model_animation->CurrentMove)
 				setInt("animation_list", n);
@@ -73,7 +73,7 @@ void ModelAnimationDialog::LoadData()
 
 void ModelAnimationDialog::FillAnimation()
 {
-	bool b = mode_model_animation->move->Frame.num > 0;
+	bool b = mode_model_animation->move->frame.num > 0;
 	enable("name", b);
 	enable("frame", b);
 	enable("frame_inc", b);
@@ -84,10 +84,10 @@ void ModelAnimationDialog::FillAnimation()
 	enable("fps_factor", b);
 	if (b){
 		ModelMove *move = mode_model_animation->move;
-		setString("name", move->Name);
+		setString("name", move->name);
 		setInt("frame", mode_model_animation->CurrentFrame);
-		setFloat("fps_const", move->FramesPerSecConst);
-		setFloat("fps_factor", move->FramesPerSecFactor);
+		setFloat("fps_const", move->frames_per_sec_const);
+		setFloat("fps_factor", move->frames_per_sec_factor);
 	}
 }
 
@@ -96,8 +96,8 @@ int ModelAnimationDialog::GetSelectedAnimation()
 	int s = getInt("animation_list");
 	if (s >= 0){
 		int n = 0;
-		foreachi(ModelMove &m, data->Move, i)
-			if (m.Frame.num > 0){
+		foreachi(ModelMove &m, data->move, i)
+			if (m.frame.num > 0){
 				if (n == s)
 					return i;
 				n ++;
@@ -131,9 +131,9 @@ void ModelAnimationDialog::ApplyData()
 void ModelAnimationDialog::OnAddAnimation()
 {
 	// first free index
-	int index = data->Move.num;
-	foreachi(ModelMove &m, data->Move, i)
-		if (m.Frame.num == 0){
+	int index = data->move.num;
+	foreachi(ModelMove &m, data->move, i)
+		if (m.frame.num == 0){
 			index = i;
 			break;
 		}
@@ -152,7 +152,7 @@ void ModelAnimationDialog::OnDeleteAnimation()
 void ModelAnimationDialog::OnFrame()
 {
 	int frame_lit = getInt("");
-	int frame = loopi(frame_lit, 0, mode_model_animation->move->Frame.num - 1);
+	int frame = loopi(frame_lit, 0, mode_model_animation->move->frame.num - 1);
 	if (frame != frame_lit)
 		setInt("", frame);
 	mode_model_animation->SetCurrentFrame(frame);
@@ -170,17 +170,17 @@ void ModelAnimationDialog::OnDeleteFrame()
 
 void ModelAnimationDialog::OnName()
 {
-	mode_model_animation->move->Name = getString("");
+	mode_model_animation->move->name = getString("");
 }
 
 void ModelAnimationDialog::OnFpsConst()
 {
-	mode_model_animation->move->FramesPerSecConst = getFloat("");
+	mode_model_animation->move->frames_per_sec_const = getFloat("");
 }
 
 void ModelAnimationDialog::OnFpsFactor()
 {
-	mode_model_animation->move->FramesPerSecFactor = getFloat("");
+	mode_model_animation->move->frames_per_sec_factor = getFloat("");
 }
 
 void ModelAnimationDialog::OnSpeed()
@@ -195,7 +195,7 @@ void ModelAnimationDialog::OnParameter()
 
 void ModelAnimationDialog::OnSimulationPlay()
 {
-	mode_model_animation->Playing = (mode_model_animation->move->Frame.num > 0);
+	mode_model_animation->Playing = (mode_model_animation->move->frame.num > 0);
 	mode_model_animation->SimFrame = 0;
 	mode_model_animation->UpdateAnimation();
 }

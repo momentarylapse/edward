@@ -32,17 +32,17 @@ void ModelSurface::AddVertex(int v)
 	int surf = model->get_surf_no(this);
 	if (surf < 0)
 		throw GeometryException("Surface.AddVertex: surface not part of the model??");
-	if ((model->Vertex[v].Surface != surf) && (model->Vertex[v].Surface >= 0))
+	if ((model->vertex[v].surface != surf) && (model->vertex[v].surface >= 0))
 		throw GeometryException("Surface.AddVertex: vertex already part of an other surface");
 
 	// set -> unique
-	Vertex.add(v);
+	vertex.add(v);
 
 	// ref count
-	model->Vertex[v].RefCount ++;
+	model->vertex[v].ref_count ++;
 
 	// back reference
-	model->Vertex[v].Surface = surf;
+	model->vertex[v].surface = surf;
 }
 
 bool int_array_has_duplicates(Array<int> &a)
@@ -62,24 +62,24 @@ void ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, in
 	msg_db_f("Surf.AddTria", 1);
 
 	ModelPolygon t;
-	t.Side.resize(v.num);
+	t.side.resize(v.num);
 	for (int k=0;k<v.num;k++){
-		t.Side[k].Vertex = v[k];
-		for (int i=0;i<model->Material[material].NumTextures;i++)
-			t.Side[k].SkinVertex[i] = sv[i * v.num + k];
+		t.side[k].vertex = v[k];
+		for (int i=0;i<model->material[material].num_textures;i++)
+			t.side[k].skin_vertex[i] = sv[i * v.num + k];
 	}
 	for (int k=0;k<v.num;k++){
 		try{
-			t.Side[k].Edge = AddEdgeForNewPolygon(t.Side[k].Vertex, t.Side[(k + 1) % v.num].Vertex, Polygon.num, k);
-			t.Side[k].EdgeDirection = Edge[t.Side[k].Edge].RefCount - 1;
+			t.side[k].edge = AddEdgeForNewPolygon(t.side[k].vertex, t.side[(k + 1) % v.num].vertex, polygon.num, k);
+			t.side[k].edge_direction = edge[t.side[k].edge].ref_count - 1;
 		}catch(GeometryException &e){
 			// failed -> clean up
-			for (int i=Edge.num-1;i>=0;i--)
-				for (int j=0;j<Edge[i].RefCount;j++)
-					if (Edge[i].Polygon[j] == Polygon.num){
-						Edge[i].RefCount --;
-						if (Edge[i].RefCount == 0)
-							Edge.resize(i);
+			for (int i=edge.num-1;i>=0;i--)
+				for (int j=0;j<edge[i].ref_count;j++)
+					if (edge[i].polygon[j] == polygon.num){
+						edge[i].ref_count --;
+						if (edge[i].ref_count == 0)
+							edge.resize(i);
 					}
 			throw(e);
 		}
@@ -91,30 +91,30 @@ void ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, in
 	UpdateClosed();
 
 	t.is_selected = false;
-	t.Material = material;
+	t.material = material;
 	t.view_stage = ed->multi_view_3d->view_stage;
-	t.NormalDirty = true;
-	t.TriangulationDirty = true;
+	t.normal_dirty = true;
+	t.triangulation_dirty = true;
 	if (index >= 0){
-		Polygon.insert(t, index);
+		polygon.insert(t, index);
 
 		// correct edges
-		foreach(ModelEdge &e, Edge)
-			for (int k=0;k<e.RefCount;k++)
-				if (e.Polygon[k] >= index)
-					e.Polygon[k] ++;
+		foreach(ModelEdge &e, edge)
+			for (int k=0;k<e.ref_count;k++)
+				if (e.polygon[k] >= index)
+					e.polygon[k] ++;
 
 		// correct own edges
-		for (int k=0;k<t.Side.num;k++)
-			Edge[Polygon[index].Side[k].Edge].Polygon[Polygon[index].Side[k].EdgeDirection] = index;
+		for (int k=0;k<t.side.num;k++)
+			edge[polygon[index].side[k].edge].polygon[polygon[index].side[k].edge_direction] = index;
 	}else
-		Polygon.add(t);
+		polygon.add(t);
 }
 
 int ModelSurface::AddEdgeForNewPolygon(int a, int b, int tria, int side)
 {
-	foreachi(ModelEdge &e, Edge, i){
-		if ((e.Vertex[0] == a) && (e.Vertex[1] == b)){
+	foreachi(ModelEdge &e, edge, i){
+		if ((e.vertex[0] == a) && (e.vertex[1] == b)){
 			throw GeometryException("the new polygon would have neighbors of opposite orientation");
 			/*e.RefCount ++;
 			msg_error("surface error? inverse edge");
@@ -122,44 +122,44 @@ int ModelSurface::AddEdgeForNewPolygon(int a, int b, int tria, int side)
 			e.Side[1] = side;
 			return i;*/
 		}
-		if ((e.Vertex[0] == b) && (e.Vertex[1] == a)){
-			if (e.Polygon[0] == tria)
+		if ((e.vertex[0] == b) && (e.vertex[1] == a)){
+			if (e.polygon[0] == tria)
 				throw GeometryException("the new polygon would contain the same edge twice");
-			if (e.RefCount > 1)
+			if (e.ref_count > 1)
 				throw GeometryException("there would be more than 2 polygons sharing an egde");
-			e.RefCount ++;
-			e.Polygon[1] = tria;
-			e.Side[1] = side;
+			e.ref_count ++;
+			e.polygon[1] = tria;
+			e.side[1] = side;
 			return i;
 		}
 	}
 	ModelEdge ee;
-	ee.Vertex[0] = a;
-	ee.Vertex[1] = b;
+	ee.vertex[0] = a;
+	ee.vertex[1] = b;
 	ee.is_selected = false;
 	ee.is_special = false;
-	ee.IsRound = false;
-	ee.RefCount = 1;
-	ee.Polygon[0] = tria;
-	ee.Side[0] = side;
-	ee.Polygon[1] = -1;
-	Edge.add(ee);
-	return Edge.num - 1;
+	ee.is_round = false;
+	ee.ref_count = 1;
+	ee.polygon[0] = tria;
+	ee.side[0] = side;
+	ee.polygon[1] = -1;
+	edge.add(ee);
+	return edge.num - 1;
 }
 
 
 inline bool edge_equal(ModelEdge &e, int a, int b)
 {
-	int v0 = e.Vertex[0];
-	int v1 = e.Vertex[1];
+	int v0 = e.vertex[0];
+	int v1 = e.vertex[1];
 	return (((v0 == a) && (v1 == b)) || ((v0 == b) && (v1 == a)));
 }
 
 inline int find_other_tria_from_edge(ModelSurface *s, int e, int t)
 {
-	if (s->Edge[e].Polygon[0] == t)
-		return s->Edge[e].Polygon[1];
-	return s->Edge[e].Polygon[0];
+	if (s->edge[e].polygon[0] == t)
+		return s->edge[e].polygon[1];
+	return s->edge[e].polygon[0];
 }
 
 
@@ -176,11 +176,11 @@ inline bool find_tria_top(ModelSurface *s, const Array<PolySideData> &pd, Set<in
 	while(true){
 		int side = pd[t0].side;
 		if (!to_the_right){
-			int ns = s->Polygon[pd[t0].poly].Side.num;
+			int ns = s->polygon[pd[t0].poly].side.num;
 			side = (side + ns - 1) % ns;
 		}
-		int e = s->Polygon[pd[t0].poly].Side[side].Edge;
-		if (!s->Edge[e].IsRound)
+		int e = s->polygon[pd[t0].poly].side[side].edge;
+		if (!s->edge[e].is_round)
 			return false;
 		int tt = find_other_tria_from_edge(s, e, pd[t0].poly);
 		if (tt < 0)
@@ -199,10 +199,10 @@ inline bool find_tria_top(ModelSurface *s, const Array<PolySideData> &pd, Set<in
 void ModelSurface::UpdateClosed()
 {
 	// closed?
-	IsClosed = true;
-	foreach(ModelEdge &e, Edge)
-		if (e.RefCount != 2){
-			IsClosed = false;
+	is_closed = true;
+	foreach(ModelEdge &e, edge)
+		if (e.ref_count != 2){
+			is_closed = false;
 			break;
 		}
 }
@@ -211,15 +211,15 @@ void ModelSurface::RemoveObsoleteEdge(int index)
 {
 	msg_db_f("Surf.RemoveObsoleteEdge", 2);
 	// correct triangle references
-	foreach(ModelPolygon &t, Polygon)
-		for (int k=0;k<t.Side.num;k++)
-			if (t.Side[k].Edge > index)
-				t.Side[k].Edge --;
-			else if (t.Side[k].Edge == index)
-				msg_error(format("surf rm edge: edge not really obsolete  rc=%d (%d,%d) (%d,%d)", Edge[index].RefCount, t.Side[k].Vertex, t.Side[(k+1)%t.Side.num].Vertex, Edge[index].Vertex[0], Edge[index].Vertex[1]));
+	foreach(ModelPolygon &t, polygon)
+		for (int k=0;k<t.side.num;k++)
+			if (t.side[k].edge > index)
+				t.side[k].edge --;
+			else if (t.side[k].edge == index)
+				msg_error(format("surf rm edge: edge not really obsolete  rc=%d (%d,%d) (%d,%d)", edge[index].ref_count, t.side[k].vertex, t.side[(k+1)%t.side.num].vertex, edge[index].vertex[0], edge[index].vertex[1]));
 
 	// delete
-	Edge.erase(index);
+	edge.erase(index);
 }
 
 void ModelSurface::MergeEdges()
@@ -228,24 +228,24 @@ void ModelSurface::MergeEdges()
 
 	TestSanity("MergeEdges prae");
 
-	foreachi(ModelEdge &e, Edge, i){
-		for (int j=i+1;j<Edge.num;j++){
-			ModelEdge &f = Edge[j];
-			if (edge_equal(e, f.Vertex[0], f.Vertex[1])){
-				if (e.RefCount + f.RefCount > 2)
-					msg_error(format("SurfMergeEdges: edge(%d,%d).RefCount...  %d + %d    tria=(%d,%d,%d,%d)", f.Vertex[0], f.Vertex[1], e.RefCount, f.RefCount, e.Polygon[0], e.Polygon[1], f.Polygon[0], f.Polygon[1]));
+	foreachi(ModelEdge &e, edge, i){
+		for (int j=i+1;j<edge.num;j++){
+			ModelEdge &f = edge[j];
+			if (edge_equal(e, f.vertex[0], f.vertex[1])){
+				if (e.ref_count + f.ref_count > 2)
+					msg_error(format("SurfMergeEdges: edge(%d,%d).RefCount...  %d + %d    tria=(%d,%d,%d,%d)", f.vertex[0], f.vertex[1], e.ref_count, f.ref_count, e.polygon[0], e.polygon[1], f.polygon[0], f.polygon[1]));
 
 				// add a link to the triangle
-				e.RefCount ++;
-				e.Polygon[1] = f.Polygon[0];
-				e.Side[1] = f.Side[0];
+				e.ref_count ++;
+				e.polygon[1] = f.polygon[0];
+				e.side[1] = f.side[0];
 
 				// relink triangles
-				ModelPolygon &poly = Polygon[e.Polygon[1]];
-				for (int k=0;k<poly.Side.num;k++)
-					if (poly.Side[k].Edge == j){
-						poly.Side[k].Edge = i;
-						poly.Side[k].EdgeDirection = 1;
+				ModelPolygon &poly = polygon[e.polygon[1]];
+				for (int k=0;k<poly.side.num;k++)
+					if (poly.side[k].edge == j){
+						poly.side[k].edge = i;
+						poly.side[k].edge_direction = 1;
 					}
 				RemoveObsoleteEdge(j);
 				break;
@@ -258,43 +258,43 @@ void ModelSurface::MergeEdges()
 void ModelSurface::UpdateNormals()
 {
 	msg_db_f("Surf.UpdateNormals", 2);
-	Set<int> edge, vert;
+	Set<int> ee, vert;
 
 	// "flat" triangle normals
-	foreach(ModelPolygon &t, Polygon)
-		if (t.NormalDirty){
-			t.NormalDirty = false;
+	foreach(ModelPolygon &t, polygon)
+		if (t.normal_dirty){
+			t.normal_dirty = false;
 
-			t.TempNormal = t.GetNormal(model->Vertex);
+			t.temp_normal = t.GetNormal(model->vertex);
 
-			for (int k=0;k<t.Side.num;k++){
-				t.Side[k].Normal = t.TempNormal;
-				int e = t.Side[k].Edge;
-				if (Edge[e].RefCount == 2)
-					edge.add(e);
+			for (int k=0;k<t.side.num;k++){
+				t.side[k].normal = t.temp_normal;
+				int e = t.side[k].edge;
+				if (edge[e].ref_count == 2)
+					ee.add(e);
 			}
 		}
 
 	// round edges?
-	foreach(int ip, edge){
-		ModelEdge &e = Edge[ip];
+	foreach(int ip, ee){
+		ModelEdge &e = edge[ip];
 
 		// adjoined triangles
-		ModelPolygon &t1 = Polygon[e.Polygon[0]];
-		ModelPolygon &t2 = Polygon[e.Polygon[1]];
+		ModelPolygon &t1 = polygon[e.polygon[0]];
+		ModelPolygon &t2 = polygon[e.polygon[1]];
 
-		ModelVertex &v1 = model->Vertex[e.Vertex[0]];
-		ModelVertex &v2 = model->Vertex[e.Vertex[1]];
+		ModelVertex &v1 = model->vertex[e.vertex[0]];
+		ModelVertex &v2 = model->vertex[e.vertex[1]];
 
 		// round?
-		e.IsRound = false;
-		if ((v1.NormalMode == NormalModeAngular) || (v2.NormalMode == NormalModeAngular))
-			e.IsRound = (t1.TempNormal * t2.TempNormal > 0.6f);
+		e.is_round = false;
+		if ((v1.normal_mode == NormalModeAngular) || (v2.normal_mode == NormalModeAngular))
+			e.is_round = (t1.temp_normal * t2.temp_normal > 0.6f);
 
-		if (((v1.NormalMode == NormalModeAngular) && (e.IsRound)) || (v1.NormalMode == NormalModeSmooth))
-			vert.add(e.Vertex[0]);
-		if (((v2.NormalMode == NormalModeAngular) && (e.IsRound)) || (v2.NormalMode == NormalModeSmooth))
-			vert.add(e.Vertex[1]);
+		if (((v1.normal_mode == NormalModeAngular) && (e.is_round)) || (v1.normal_mode == NormalModeSmooth))
+			vert.add(e.vertex[0]);
+		if (((v2.normal_mode == NormalModeAngular) && (e.is_round)) || (v2.normal_mode == NormalModeSmooth))
+			vert.add(e.vertex[1]);
 
 		/*if (e.IsRound){
 			vector n = t1.TempNormal + t2.TempNormal;
@@ -311,11 +311,11 @@ void ModelSurface::UpdateNormals()
 	// find all triangles shared by each found vertex
 	Array<Array<PolySideData> > poly_side;
 	poly_side.resize(vert.num);
-	foreachi(ModelPolygon &t, Polygon, i){
-		for (int k=0;k<t.Side.num;k++){
-			int n = vert.find(t.Side[k].Vertex);
+	foreachi(ModelPolygon &t, polygon, i){
+		for (int k=0;k<t.side.num;k++){
+			int n = vert.find(t.side[k].vertex);
 			if (n >= 0){
-				t.Side[k].Normal = t.TempNormal;
+				t.side[k].normal = t.temp_normal;
 				PolySideData d;
 				d.poly = i;
 				d.side = k;
@@ -328,22 +328,22 @@ void ModelSurface::UpdateNormals()
 	foreachi(int ip, vert, nn){
 
 		// hard vertex -> nothing to do
-		if (model->Vertex[ip].NormalMode == NormalModeHard)
+		if (model->vertex[ip].normal_mode == NormalModeHard)
 			continue;
 
 		Array<PolySideData> &pd = poly_side[nn];
 
 		// smooth vertex
-		if (model->Vertex[ip].NormalMode == NormalModeSmooth){
+		if (model->vertex[ip].normal_mode == NormalModeSmooth){
 
 			// average normal
 			vector n = v_0;
 			for (int i=0;i<pd.num;i++)
-				n += Polygon[pd[i].poly].Side[pd[i].side].Normal;
+				n += polygon[pd[i].poly].side[pd[i].side].normal;
 			n.normalize();
 			// apply normal...
 			for (int i=0;i<pd.num;i++)
-				Polygon[pd[i].poly].Side[pd[i].side].Normal = n;
+				polygon[pd[i].poly].side[pd[i].side].normal = n;
 			continue;
 		}
 
@@ -372,11 +372,11 @@ void ModelSurface::UpdateNormals()
 			// average normal
 			vector n = v_0;
 			for (int i=0;i<used.num;i++)
-				n += Polygon[pd[used[i]].poly].Side[pd[used[i]].side].Normal;
+				n += polygon[pd[used[i]].poly].side[pd[used[i]].side].normal;
 			n.normalize();
 			// apply normal... and remove from list
 			for (int i=used.num-1;i>=0;i--){
-				Polygon[pd[used[i]].poly].Side[pd[used[i]].side].Normal = n;
+				polygon[pd[used[i]].poly].side[pd[used[i]].side].normal = n;
 				pd.erase(used[i]);
 			}
 		}
@@ -387,25 +387,25 @@ void ModelSurface::UpdateNormals()
 void ModelSurface::BuildFromPolygons()
 {
 	// clear
-	Edge.clear();
-	Vertex.clear();
+	edge.clear();
+	vertex.clear();
 	int n = model->get_surf_no(this);
-	foreach(ModelVertex &v, model->Vertex)
-		if (v.Surface == n){
-			v.Surface = -1;
-			v.RefCount = 0;
+	foreach(ModelVertex &v, model->vertex)
+		if (v.surface == n){
+			v.surface = -1;
+			v.ref_count = 0;
 		}
 
 	// add all triangles
-	foreachi(ModelPolygon &t, Polygon, ti){
+	foreachi(ModelPolygon &t, polygon, ti){
 		// vertices
-		for (int k=0;k<t.Side.num;k++)
-			AddVertex(t.Side[k].Vertex);
+		for (int k=0;k<t.side.num;k++)
+			AddVertex(t.side[k].vertex);
 
 		// edges
-		for (int k=0;k<t.Side.num;k++){
-			t.Side[k].Edge = AddEdgeForNewPolygon(t.Side[k].Vertex, t.Side[(k + 1) % t.Side.num].Vertex, ti, k);
-			t.Side[k].EdgeDirection = Edge[t.Side[k].Edge].RefCount - 1;
+		for (int k=0;k<t.side.num;k++){
+			t.side[k].edge = AddEdgeForNewPolygon(t.side[k].vertex, t.side[(k + 1) % t.side.num].vertex, ti, k);
+			t.side[k].edge_direction = edge[t.side[k].edge].ref_count - 1;
 		}
 	}
 
@@ -415,57 +415,57 @@ void ModelSurface::BuildFromPolygons()
 
 void ModelSurface::RemovePolygon(int index)
 {
-	ModelPolygon &t = Polygon[index];
+	ModelPolygon &t = polygon[index];
 
 	// unref the vertices
-	for (int k=0;k<t.Side.num;k++){
-		model->Vertex[t.Side[k].Vertex].RefCount --;
-		if (model->Vertex[t.Side[k].Vertex].RefCount == 0){
-			model->Vertex[t.Side[k].Vertex].Surface = -1;
-			Vertex.erase(t.Side[k].Vertex);
+	for (int k=0;k<t.side.num;k++){
+		model->vertex[t.side[k].vertex].ref_count --;
+		if (model->vertex[t.side[k].vertex].ref_count == 0){
+			model->vertex[t.side[k].vertex].surface = -1;
+			vertex.erase(t.side[k].vertex);
 		}
 	}
 
 	Set<int> obsolete;
 
 	// remove from its edges
-	for (int k=0;k<t.Side.num;k++){
-		ModelEdge &e = Edge[t.Side[k].Edge];
-		e.RefCount --;
-		if (e.RefCount > 0){
+	for (int k=0;k<t.side.num;k++){
+		ModelEdge &e = edge[t.side[k].edge];
+		e.ref_count --;
+		if (e.ref_count > 0){
 			// edge has other triangle...
-			if (t.Side[k].EdgeDirection > 0){
-				e.Polygon[1] = -1;
+			if (t.side[k].edge_direction > 0){
+				e.polygon[1] = -1;
 			}else{
 				// flip ownership
-				e.Polygon[0] = e.Polygon[1];
-				e.Side[0] = e.Side[1];
-				e.Polygon[1] = -1;
+				e.polygon[0] = e.polygon[1];
+				e.side[0] = e.side[1];
+				e.polygon[1] = -1;
 
 				// swap vertices
-				int v = e.Vertex[0];
-				e.Vertex[0] = e.Vertex[1];
-				e.Vertex[1] = v;
+				int v = e.vertex[0];
+				e.vertex[0] = e.vertex[1];
+				e.vertex[1] = v;
 
 				// relink other triangle
-				Polygon[e.Polygon[0]].Side[e.Side[0]].EdgeDirection = 0;
+				polygon[e.polygon[0]].side[e.side[0]].edge_direction = 0;
 			}
 		}else{
-			e.Polygon[0] = -1;
-			obsolete.add(t.Side[k].Edge);
+			e.polygon[0] = -1;
+			obsolete.add(t.side[k].edge);
 		}
 	}
 
 	// correct edge links
-	foreachi(ModelEdge &e, Edge, i)
-		for (int k=0;k<e.RefCount;k++)
-			if (e.Polygon[k] > index)
-				e.Polygon[k] --;
-			else if (e.Polygon[k] == index){
+	foreachi(ModelEdge &e, edge, i)
+		for (int k=0;k<e.ref_count;k++)
+			if (e.polygon[k] > index)
+				e.polygon[k] --;
+			else if (e.polygon[k] == index){
 				throw GeometryException("RemoveTriangle: tria == index");
 			}
 
-	Polygon.erase(index);
+	polygon.erase(index);
 
 	//TestSanity("rem poly 0");
 
@@ -479,34 +479,34 @@ void ModelSurface::RemovePolygon(int index)
 
 bool ModelSurface::TestSanity(const string &loc)
 {
-	foreach(ModelPolygon &t, Polygon)
-		for (int k=0;k<t.Side.num;k++)
-			for (int kk=k+1;kk<t.Side.num;kk++)
-				if (t.Side[k].Vertex == t.Side[kk].Vertex){
+	foreach(ModelPolygon &t, polygon)
+		for (int k=0;k<t.side.num;k++)
+			for (int kk=k+1;kk<t.side.num;kk++)
+				if (t.side[k].vertex == t.side[kk].vertex){
 					msg_error(loc + ": surf broken!   identical vertices in poly");
 					return false;
 				}
-	foreachi(ModelEdge &e, Edge, i){
-		if (e.Vertex[0] == e.Vertex[1]){
+	foreachi(ModelEdge &e, edge, i){
+		if (e.vertex[0] == e.vertex[1]){
 			msg_error(loc + ": surf broken!   trivial edge");
 			return false;
 		}
-		for (int k=0;k<e.RefCount;k++){
-			ModelPolygon &t = Polygon[e.Polygon[k]];
-			if (t.Side[e.Side[k]].Edge != i){
+		for (int k=0;k<e.ref_count;k++){
+			ModelPolygon &t = polygon[e.polygon[k]];
+			if (t.side[e.side[k]].edge != i){
 				msg_error(loc + ": surf broken!   edge linkage");
-				msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.Side[k], t.Side[e.Side[k]].Edge, t.Side[e.Side[k]].EdgeDirection));
+				msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.side[k], t.side[e.side[k]].edge, t.side[e.side[k]].edge_direction));
 				return false;
 			}
-			if (t.Side[e.Side[k]].EdgeDirection != k){
+			if (t.side[e.side[k]].edge_direction != k){
 				msg_error(loc + ": surf broken!   edge linkage (dir)");
-				msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.Side[k], t.Side[e.Side[k]].Edge, t.Side[e.Side[k]].EdgeDirection));
+				msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.side[k], t.side[e.side[k]].edge, t.side[e.side[k]].edge_direction));
 				return false;
 			}
 			for (int j=0;j<2;j++)
-				if (e.Vertex[(j + k) % 2] != t.Side[(e.Side[k] + j) % t.Side.num].Vertex){
+				if (e.vertex[(j + k) % 2] != t.side[(e.side[k] + j) % t.side.num].vertex){
 					msg_error(loc + ": surf broken!   edge linkage (vert)");
-					msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.Side[k], t.Side[e.Side[k]].Edge, t.Side[e.Side[k]].EdgeDirection));
+					msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.side[k], t.side[e.side[k]].edge, t.side[e.side[k]].edge_direction));
 					return false;
 				}
 		}
@@ -517,7 +517,7 @@ bool ModelSurface::TestSanity(const string &loc)
 
 bool ModelSurface::IsInside(const vector &p)
 {
-	if (!IsClosed)
+	if (!is_closed)
 		return false;
 	BeginInsideTests();
 	bool r = InsideTest(p);
@@ -527,7 +527,7 @@ bool ModelSurface::IsInside(const vector &p)
 
 void ModelSurface::BeginInsideTests()
 {
-	if (!IsClosed)
+	if (!is_closed)
 		return;
 	inside_data = new SurfaceInsideTestData;
 	/*inside_data->num_trias = 0;
@@ -549,7 +549,7 @@ void ModelSurface::BeginInsideTests()
 	}*/
 
 	float epsilon = model->GetRadius() * 0.001f;
-	foreach(ModelPolygon &p, Polygon)
+	foreach(ModelPolygon &p, polygon)
 		inside_data->add(p, model, epsilon);
 }
 
@@ -656,10 +656,10 @@ Array<int> ModelSurface::GetBoundaryLoop(int v0)
 	bool found = true;
 	while(found){
 		found = false;
-		foreach(ModelEdge &e, Edge)
-			if (e.RefCount == 1)
-				if (e.Vertex[0] == last){
-					last = e.Vertex[1];
+		foreach(ModelEdge &e, edge)
+			if (e.ref_count == 1)
+				if (e.vertex[0] == last){
+					last = e.vertex[1];
 					loop.add(last);
 					if (last == v0)
 						return loop;
@@ -672,8 +672,8 @@ Array<int> ModelSurface::GetBoundaryLoop(int v0)
 
 int ModelSurface::FindEdge(int vertex0, int vertex1)
 {
-	foreachi(ModelEdge &e, Edge, i)
-		if (((e.Vertex[0] == vertex0) && (e.Vertex[1] == vertex1)) || ((e.Vertex[1] == vertex0) && (e.Vertex[0] == vertex1)))
+	foreachi(ModelEdge &e, edge, i)
+		if (((e.vertex[0] == vertex0) && (e.vertex[1] == vertex1)) || ((e.vertex[1] == vertex0) && (e.vertex[0] == vertex1)))
 			return i;
 	return -1;
 }

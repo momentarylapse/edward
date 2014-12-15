@@ -37,51 +37,51 @@ void *ActionModelJoinSurfaces::execute(Data *d)
 	msg_db_f("SurfJoin", 1);
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	assert(surface1 < m->Surface.num);
-	assert(surface2 < m->Surface.num);
+	assert(surface1 < m->surface.num);
+	assert(surface2 < m->surface.num);
 
-	ModelSurface *a = &m->Surface[surface1];
-	ModelSurface *b = &m->Surface[surface2];
+	ModelSurface *a = &m->surface[surface1];
+	ModelSurface *b = &m->surface[surface2];
 
 	// save old data
-	old_edges1 = a->Edge.num;
-	old_vertices1 = a->Vertex.num;
-	old_trias1 = a->Polygon.num;
+	old_edges1 = a->edge.num;
+	old_vertices1 = a->vertex.num;
+	old_trias1 = a->polygon.num;
 
 	a->TestSanity("Join prae a");
 	b->TestSanity("Join prae b");
 
 	// correct edge data of b
-	foreach(ModelEdge &e, b->Edge){
-		if (e.Polygon[0] >= 0)
-			e.Polygon[0] += a->Polygon.num;
-		if (e.Polygon[1] >= 0)
-			e.Polygon[1] += a->Polygon.num;
+	foreach(ModelEdge &e, b->edge){
+		if (e.polygon[0] >= 0)
+			e.polygon[0] += a->polygon.num;
+		if (e.polygon[1] >= 0)
+			e.polygon[1] += a->polygon.num;
 	}
 
 	// correct triangle data of b
-	foreach(ModelPolygon &t, b->Polygon)
-		for (int k=0;k<t.Side.num;k++)
-			t.Side[k].Edge += a->Edge.num;
+	foreach(ModelPolygon &t, b->polygon)
+		for (int k=0;k<t.side.num;k++)
+			t.side[k].edge += a->edge.num;
 
 	// correct vertex data of b
-	foreach(int v, b->Vertex)
-		m->Vertex[v].Surface = surface1;
+	foreach(int v, b->vertex)
+		m->vertex[v].surface = surface1;
 
 	// insert data
-	a->Vertex.join(b->Vertex);
-	a->Edge.append(b->Edge);
-	a->Polygon.append(b->Polygon);
+	a->vertex.join(b->vertex);
+	a->edge.append(b->edge);
+	a->polygon.append(b->polygon);
 
 	// remove surface
-	m->Surface.erase(surface2);
-	a = &m->Surface[surface1];
+	m->surface.erase(surface2);
+	a = &m->surface[surface1];
 	a->TestSanity("Join post a");
 
 	// correct vertices of surfaces above b
-	foreach(ModelVertex &v, m->Vertex)
-		if (v.Surface >= surface2)
-			v.Surface --;
+	foreach(ModelVertex &v, m->vertex)
+		if (v.surface >= surface2)
+			v.surface --;
 	return a;
 }
 
@@ -92,11 +92,11 @@ void ActionModelJoinSurfaces::undo(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	ModelSurface *b = m->AddSurface(surface2);
-	ModelSurface *a = &m->Surface[surface1];
+	ModelSurface *a = &m->surface[surface1];
 
 	// move triangles
-	b->Polygon.append(a->Polygon.sub(old_trias1, -1));
-	a->Polygon.resize(old_trias1);
+	b->polygon.append(a->polygon.sub(old_trias1, -1));
+	a->polygon.resize(old_trias1);
 
 	// rebuild
 	a->BuildFromPolygons();

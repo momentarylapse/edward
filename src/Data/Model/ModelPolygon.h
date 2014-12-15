@@ -18,22 +18,22 @@ class NixVertexBuffer;
 class ModelPolygonSide
 {
 public:
-	int Vertex;
-	int Edge;
-	int EdgeDirection; // which no of triangle in edge's list are we?
-	vector SkinVertex[MATERIAL_MAX_TEXTURES];
-	int NormalIndex;
-	vector Normal;
-	unsigned char Triangulation[3];
+	int vertex;
+	int edge;
+	int edge_direction; // which no of triangle in edge's list are we?
+	vector skin_vertex[MATERIAL_MAX_TEXTURES];
+	int normal_index;
+	vector normal;
+	unsigned char triangulation[3];
 };
 
 class ModelPolygon: public MultiView::SingleData
 {
 public:
-	Array<ModelPolygonSide> Side;
-	vector TempNormal;
-	bool NormalDirty, TriangulationDirty;
-	int Material;
+	Array<ModelPolygonSide> side;
+	vector temp_normal;
+	bool normal_dirty, triangulation_dirty;
+	int material;
 
 	virtual bool hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data);
 	virtual bool inRect(MultiView::Window *win, rect &r, void *user_data);

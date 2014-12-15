@@ -20,12 +20,12 @@ void *ActionModelAutoWeldSelection::compose(Data *d)
 	bool found = true;
 	while (found){
 		found = false;
-		for (int i=m->Surface.num-1;i>=0;i--)
-			if (m->Surface[i].is_selected){
-				m->Surface[i].TestSanity("auto weld pre");
+		for (int i=m->surface.num-1;i>=0;i--)
+			if (m->surface[i].is_selected){
+				m->surface[i].TestSanity("auto weld pre");
 				for (int j=i-1;j>=0;j--)
-					if (m->Surface[j].is_selected){
-						if (AddSubAction(new ActionModelSurfaceAutoWeld(j, i, epsilon), m)){
+					if (m->surface[j].is_selected){
+						if (addSubAction(new ActionModelSurfaceAutoWeld(j, i, epsilon), m)){
 							//msg_write("ok");
 							found = true;
 							break;

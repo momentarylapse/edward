@@ -17,7 +17,7 @@ ModeModelMeshTexture::ModeModelMeshTexture(ModeBase *_parent) :
 	Mode<DataModel>("ModelMeshTexture", _parent, ed->multi_view_2d, "menu_model"),
 	Observable("ModelMeshTexture")
 {
-	CurrentTextureLevel = 0;
+	current_texture_level = 0;
 }
 
 
@@ -30,18 +30,18 @@ ModeModelMeshTexture::~ModeModelMeshTexture()
 void ModeModelMeshTexture::FetchData()
 {
 	skin_vertex.clear();
-	foreach(ModelSurface &surf, data->Surface)
-		foreach(ModelPolygon &t, surf.Polygon){
-			if (t.Material != mode_model_mesh->CurrentMaterial)
+	foreach(ModelSurface &surf, data->surface)
+		foreach(ModelPolygon &t, surf.polygon){
+			if (t.material != mode_model_mesh->current_material)
 				continue;
 			ModelSkinVertexDummy v;
 			v.m_delta = v.m_old = false;
 			v.is_special = false;
 			v.view_stage = t.view_stage;
-			for (int k=0;k<t.Side.num;k++){
-				v.is_selected = data->Vertex[t.Side[k].Vertex].is_selected;
+			for (int k=0;k<t.side.num;k++){
+				v.is_selected = data->vertex[t.side[k].vertex].is_selected;
 				v.view_stage = t.view_stage;
-				v.pos = t.Side[k].SkinVertex[CurrentTextureLevel];
+				v.pos = t.side[k].skin_vertex[current_texture_level];
 				skin_vertex.add(v);
 			}
 		}
@@ -92,7 +92,7 @@ void ModeModelMeshTexture::onEnd()
 	skin_vertex.clear();
 }
 
-#define cur_tex			data->Material[mode_model_mesh->CurrentMaterial].Texture[CurrentTextureLevel]
+#define cur_tex			data->material[mode_model_mesh->current_material].texture[current_texture_level]
 
 
 void ModeModelMeshTexture::onDrawWin(MultiView::Window *win)
@@ -142,17 +142,17 @@ void ModeModelMeshTexture::onDrawWin(MultiView::Window *win)
 	NixSetColor(White);
 
 	// draw triangles (outlines) of current material
-	foreach(ModelSurface &surf, data->Surface)
-		foreach(ModelPolygon &t, surf.Polygon){
-			if (t.Material != mode_model_mesh->CurrentMaterial)
+	foreach(ModelSurface &surf, data->surface)
+		foreach(ModelPolygon &t, surf.polygon){
+			if (t.material != mode_model_mesh->current_material)
 				continue;
 			if (t.view_stage < multi_view->view_stage)
 				continue;
 			Array<vector> v;
-			for (int k=0;k<t.Side.num;k++)
-				v.add(win->project(t.Side[k].SkinVertex[CurrentTextureLevel]));
+			for (int k=0;k<t.side.num;k++)
+				v.add(win->project(t.side[k].skin_vertex[current_texture_level]));
 			v.add(v[0]);
-			for (int k=0;k<t.Side.num;k++)
+			for (int k=0;k<t.side.num;k++)
 				NixDrawLine(	v[k].x,v[k].y,
 								v[k+1].x,v[k+1].y,
 								0.9f);
@@ -172,7 +172,7 @@ void ModeModelMeshTexture::SetCurrentTextureLevel(int level)
 {
 	//if (CurrentTextureLevel == level)
 	//	return;
-	CurrentTextureLevel = level;
+	current_texture_level = level;
 	FetchData();
 	notify();
 }
@@ -180,19 +180,19 @@ void ModeModelMeshTexture::SetCurrentTextureLevel(int level)
 void ModeModelMeshTexture::onUpdate(Observable *o, const string &message)
 {
 	// consistency checks
-	if (CurrentTextureLevel >= data->Material[mode_model_mesh->CurrentMaterial].NumTextures)
-		SetCurrentTextureLevel(data->Material[mode_model_mesh->CurrentMaterial].NumTextures - 1);
+	if (current_texture_level >= data->material[mode_model_mesh->current_material].num_textures)
+		SetCurrentTextureLevel(data->material[mode_model_mesh->current_material].num_textures - 1);
 
 	if (o == data){
 
 		if (message == DataModel::MESSAGE_SKIN_CHANGE){
 			int svi = 0;
-			foreach(ModelSurface &surf, data->Surface)
-				foreach(ModelPolygon &t, surf.Polygon){
-					if (t.Material != mode_model_mesh->CurrentMaterial)
+			foreach(ModelSurface &surf, data->surface)
+				foreach(ModelPolygon &t, surf.polygon){
+					if (t.material != mode_model_mesh->current_material)
 						continue;
-					for (int k=0;k<t.Side.num;k++)
-						skin_vertex[svi ++].pos = t.Side[k].SkinVertex[CurrentTextureLevel];
+					for (int k=0;k<t.side.num;k++)
+						skin_vertex[svi ++].pos = t.side[k].skin_vertex[current_texture_level];
 				}
 		}else if (message == data->MESSAGE_CHANGE){
 
@@ -210,10 +210,10 @@ void ModeModelMeshTexture::onUpdate(Observable *o, const string &message)
 void ModeModelMeshTexture::GetSelectedSkinVertices(Array<int> & surf, Array<int> &tria, Array<int> & index)
 {
 	int i = 0;
-	foreachi(ModelSurface &s, data->Surface, si)
-		foreachi(ModelPolygon &t, s.Polygon, ti)
-			if (t.Material == mode_model_mesh->CurrentMaterial){
-				for (int k=0;k<t.Side.num;k++){
+	foreachi(ModelSurface &s, data->surface, si)
+		foreachi(ModelPolygon &t, s.polygon, ti)
+			if (t.material == mode_model_mesh->current_material){
+				for (int k=0;k<t.side.num;k++){
 					if (skin_vertex[i].is_selected){
 						index.add(k);
 						surf.add(si);

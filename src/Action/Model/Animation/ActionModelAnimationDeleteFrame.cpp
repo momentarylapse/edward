@@ -18,12 +18,12 @@ void *ActionModelAnimationDeleteFrame::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	assert(index >= 0);
-	assert(index < m->Move.num);
+	assert(index < m->move.num);
 	assert(frame >= 0);
-	assert(frame < m->Move[index].Frame.num);
+	assert(frame < m->move[index].frame.num);
 
-	old_frame = m->Move[index].Frame[frame];
-	m->Move[index].Frame.erase(frame);
+	old_frame = m->move[index].frame[frame];
+	m->move[index].frame.erase(frame);
 
 	return NULL;
 }
@@ -31,6 +31,6 @@ void *ActionModelAnimationDeleteFrame::execute(Data *d)
 void ActionModelAnimationDeleteFrame::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	m->Move[index].Frame.insert(old_frame, frame);
+	m->move[index].frame.insert(old_frame, frame);
 }
 

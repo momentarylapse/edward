@@ -26,8 +26,8 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 	if (surface1 >= surface2)
 		throw ActionException("s1 >= s2");
 
-	ModelSurface *a = &m->Surface[surface1];
-	ModelSurface *b = &m->Surface[surface2];
+	ModelSurface *a = &m->surface[surface1];
+	ModelSurface *b = &m->surface[surface2];
 
 	if (a >= b)
 		throw ActionException("a >= b... array reference broken");
@@ -41,9 +41,9 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 	// find pairs of vertices close to each other
 	// use edges instead???
 	Array<int> wa, wb;
-	foreach(int va, a->Vertex){
-		foreach(int vb, b->Vertex){
-			if ((m->Vertex[va].pos - m->Vertex[vb].pos).length() <= epsilon){
+	foreach(int va, a->vertex){
+		foreach(int vb, b->vertex){
+			if ((m->vertex[va].pos - m->vertex[vb].pos).length() <= epsilon){
 				wa.add(va);
 				wb.add(vb);
 				break;
@@ -56,24 +56,24 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 		return NULL;
 
 	// join
-	a = (ModelSurface*)AddSubAction(new ActionModelJoinSurfaces(surface1, surface2), m);
+	a = (ModelSurface*)addSubAction(new ActionModelJoinSurfaces(surface1, surface2), m);
 
 	// relink triangles
-	foreachib(ModelPolygon &t, a->Polygon, ti){
+	foreachib(ModelPolygon &t, a->polygon, ti){
 		Array<int> v;
-		v.resize(t.Side.num);
+		v.resize(t.side.num);
 		bool relink = false;
-		for (int k=0;k<t.Side.num;k++){
-			v[k] = t.Side[k].Vertex;
+		for (int k=0;k<t.side.num;k++){
+			v[k] = t.side[k].vertex;
 			foreachi(int w, wb, i){
-				if (t.Side[k].Vertex == w){
+				if (t.side[k].vertex == w){
 					relink = true;
 					v[k] = wa[i];
 				}
 			}
 		}
 		if (relink){
-			AddSubAction(new ActionModelSurfaceRelinkPolygon(surface1, ti, v), m);
+			addSubAction(new ActionModelSurfaceRelinkPolygon(surface1, ti, v), m);
 			_foreach_it_.update(); // TODO
 		}
 	}
@@ -89,7 +89,7 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 			foreach*/
 		//a->Vertex.erase(ww);
 		//m->Vertex[ww].Surface = -1;
-		AddSubAction(new ActionModelDeleteUnusedVertex(ww), m);
+		addSubAction(new ActionModelDeleteUnusedVertex(ww), m);
 	}
 
 	return a;

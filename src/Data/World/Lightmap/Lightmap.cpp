@@ -163,13 +163,13 @@ bool Lightmap::RenderTextures()
 		im.save(NixTextureDir + m.tex_name);
 
 		// edit model
-		foreach(ModelMaterial &mat, m.orig->Material){
-			mat.NumTextures = 2;
-			mat.TextureFile[1] = m.tex_name;
-			mat.Ambient = White;
-			mat.Diffuse = Black;
-			mat.Emission = Black;
-			mat.UserColor = true;
+		foreach(ModelMaterial &mat, m.orig->material){
+			mat.num_textures = 2;
+			mat.texture_file[1] = m.tex_name;
+			mat.ambient = White;
+			mat.diffuse = Black;
+			mat.emission = Black;
+			mat.user_color = true;
 		}
 		m.new_name = data->model_out_dir + i2s(mid);
 		m.orig->save(ObjectDir + m.new_name + ".model");

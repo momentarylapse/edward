@@ -85,8 +85,8 @@ void ModeModelMeshCreateCylinderSnake::onLeftButtonDown()
 {
 	if (ready_for_scaling){
 
-		data->PasteGeometry(*geo, mode_model_mesh->CurrentMaterial);
-		data->SelectOnlySurface(&data->Surface.back());
+		data->PasteGeometry(*geo, mode_model_mesh->current_material);
+		data->SelectOnlySurface(&data->surface.back());
 
 		abort();
 	}else{
@@ -105,7 +105,7 @@ void ModeModelMeshCreateCylinderSnake::onLeftButtonDown()
 
 		}
 		if (multi_view->hover.index >= 0)
-			pos.add(data->Vertex[multi_view->hover.index].pos);
+			pos.add(data->vertex[multi_view->hover.index].pos);
 		else
 			pos.add(multi_view->GetCursor3d());
 	}
@@ -157,7 +157,7 @@ void ModeModelMeshCreateCylinderSnake::onDrawWin(MultiView::Window *win)
 		NixSetColor(White);
 	}
 	if (ready_for_scaling){
-		geo->Preview(VBTemp);
+		geo->preview(VBTemp);
 		NixEnableLighting(true);
 		mode_model->SetMaterialCreation();
 		NixDraw3D(VBTemp);
