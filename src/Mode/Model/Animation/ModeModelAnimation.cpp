@@ -228,8 +228,7 @@ void ModeModelAnimation::IterateAnimation(float dt)
 {
 	if (Playing){
 		SimFrame += dt * (move->frames_per_sec_const + move->frames_per_sec_factor * TimeParam) * TimeScale;
-		if (SimFrame > move->frame.num)
-			SimFrame = 0;
+		SimFrame = loopf(SimFrame, 0, move->frame.num);
 		UpdateAnimation();
 	}
 }

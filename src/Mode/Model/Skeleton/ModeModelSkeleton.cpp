@@ -52,7 +52,7 @@ void ModeModelSkeleton::onCommand(const string & id)
 		data->execute(new ActionModelDeleteBoneSelection(data));
 
 	if (id == "select")
-		chooseMouseFunction(MultiView::ActionSelect);
+		chooseMouseFunction(MultiView::ActionSelectAndMove);
 	if (id == "translate")
 		chooseMouseFunction(MultiView::ActionMove);
 	if (id == "rotate")
@@ -86,7 +86,7 @@ void ModeModelSkeleton::onDraw()
 
 void ModeModelSkeleton::onUpdateMenu()
 {
-	ed->check("select", mouse_action == MultiView::ActionSelect);
+	ed->check("select", mouse_action == MultiView::ActionSelectAndMove);
 	ed->check("translate", mouse_action == MultiView::ActionMove);
 	ed->check("rotate", mouse_action == MultiView::ActionRotate);
 	ed->check("scale", mouse_action == MultiView::ActionScale);
@@ -214,6 +214,8 @@ void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &b
 	NixSetZ(false, false);
 	NixEnableLighting(false);
 	NixSetWire(false);
+	NixLineWidth = 2;
+	NixSmoothLines = true;
 
 	foreach(ModelBone &b, bone){
 		/*if (b.view_stage<=ViewStage)
@@ -229,6 +231,7 @@ void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &b
 		drawBone(bone[r].pos, b.pos, c, win);
 	}
 	NixSetZ(true, true);
+	NixLineWidth = 1;
 }
 
 
