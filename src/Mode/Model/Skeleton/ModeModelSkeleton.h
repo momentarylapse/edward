@@ -28,6 +28,8 @@ public:
 	virtual void onDraw();
 	virtual void onDrawWin(MultiView::Window *win);
 
+	void addSubModel();
+	void removeSubModel();
 
 	void drawSkeleton(MultiView::Window *win, Array<ModelBone> &bone, bool thin = false);
 

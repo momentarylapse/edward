@@ -14,6 +14,8 @@
 #include "Creation/ModeModelSkeletonCreateBone.h"
 #include "Creation/ModeModelSkeletonAttachVertices.h"
 #include "../../../Action/Model/Skeleton/ActionModelDeleteBoneSelection.h"
+#include "../../../Action/Model/Skeleton/ActionModelSetSubModel.h"
+
 
 
 ModeModelSkeleton *mode_model_skeleton = NULL;
@@ -47,6 +49,11 @@ void ModeModelSkeleton::onCommand(const string & id)
 	if (id == "delete")
 		data->execute(new ActionModelDeleteBoneSelection(data));
 
+	if (id == "skeleton_add_model")
+		addSubModel();
+	if (id == "skeleton_no_model")
+		removeSubModel();
+
 	if (id == "select")
 		chooseMouseFunction(MultiView::ActionSelectAndMove);
 	if (id == "translate")
@@ -59,6 +66,25 @@ void ModeModelSkeleton::onCommand(const string & id)
 		chooseMouseFunction(MultiView::ActionMirror);
 }
 
+void ModeModelSkeleton::addSubModel()
+{
+	if (!ed->fileDialog(FDModel, false, true))
+		return;
+	data->beginActionGroup("remove-sub-model");
+	foreachi(ModelBone &b, data->bone, i)
+		if (b.is_selected)
+			data->execute(new ActionModelSetSubModel(i, ed->DialogFileNoEnding));
+	data->endActionGroup();
+}
+
+void ModeModelSkeleton::removeSubModel()
+{
+	data->beginActionGroup("remove-sub-model");
+	foreachi(ModelBone &b, data->bone, i)
+		if (b.is_selected)
+			data->execute(new ActionModelSetSubModel(i, ""));
+	data->endActionGroup();
+}
 
 void ModeModelSkeleton::chooseMouseFunction(int f)
 {
@@ -194,18 +220,15 @@ void ModeModelSkeleton::onDrawWin(MultiView::Window *win)
 
 void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &bone, bool thin)
 {
-
-#ifdef USE_MODELS
 	// sub models
-	foreachi(data->bone, b, i)
-		if (b.model){
-			if (SubMode == ModeModelAnimation)
-				b.model->_matrix = PointMatrix[i];
-			else
-				MatrixTranslation(b.model->_matrix, SkeletonGetPointPos(i));
-			b.model->onDraw(0, false, false);
-		}
-#endif
+	foreachi(ModelBone &b, data->bone, i){
+		if (b.view_stage < multi_view->view_stage)
+			continue;
+		if (!b.model)
+			continue;
+		b.model->_matrix = b._matrix;
+		b.model->Draw(0, false, false);
+	}
 
 	NixSetZ(false, false);
 	NixEnableLighting(false);
@@ -214,8 +237,9 @@ void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &b
 	NixSmoothLines = true;
 
 	foreach(ModelBone &b, bone){
-		/*if (b.view_stage<=ViewStage)
-			continue;*/
+		if (b.view_stage < multi_view->view_stage)
+			continue;
+
 		if (b.is_selected)
 			drawCoordBasis(b);
 		int r = b.parent;
