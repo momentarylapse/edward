@@ -15,6 +15,7 @@ class Geometry;
 namespace Script{
 	class Script;
 }
+class NixTexture;
 
 class ModeModelMeshDeform: public ModeCreation<DataModel>, public HuiEventHandler
 {
@@ -36,6 +37,7 @@ public:
 private:
 	vector min, max;
 	Geometry *geo;
+	NixTexture *tex;
 	Script::Script *s;
 	typedef _cdecl void vec_func(vector&, const vector &);
 	vec_func *f;

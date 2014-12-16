@@ -28,10 +28,24 @@ const int CUBE_SIZE = 20;
 	 f = NULL;
 	 s = NULL;
 	 has_preview = false;
+
+	 Image im;
+	 im.create(512, 512, White);
+	 for (int i=0; i<=8; i++){
+		 int x = min(i * 64, 511);
+		 for (int y=0; y<512; y++){
+			 im.setPixel(x, y, Gray);
+			 im.setPixel(y, x, Gray);
+		 }
+	 }
+
+	 tex = new NixTexture;
+	 tex->overwrite(im);
 }
 
 ModeModelMeshDeform::~ModeModelMeshDeform()
 {
+	delete(tex);
 }
 
 void ModeModelMeshDeform::onStart()
@@ -50,12 +64,19 @@ void ModeModelMeshDeform::onStart()
 	//ed->activate("");
 
 	data->GetBoundingBox(max, min);
+	bool first = true;
 	foreachi(ModelVertex &v, data->vertex, i)
 		if (v.is_selected){
 			index.add(i);
 			old_pos.add(v.pos);
-			min._min(v.pos);
-			max._max(v.pos);
+			if (first){
+				min = v.pos;
+				max = v.pos;
+			}else{
+				min._min(v.pos);
+				max._max(v.pos);
+			}
+			first = false;
 		}
 
 	vector d = max - min;
@@ -85,9 +106,9 @@ void ModeModelMeshDeform::onDrawWin(MultiView::Window* win)
 	mode_model_mesh_polygon->setMaterialCreation();
 	geo->preview(VBTemp, 1);
 
-	NixSetWire(true);
+	NixSetTexture(tex);
 	VBTemp->draw();
-	NixSetWire(false);
+	NixSetTexture(NULL);
 }
 
 vector ModeModelMeshDeform::transform(const vector &v)
