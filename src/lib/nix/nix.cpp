@@ -311,7 +311,7 @@ XVisualInfo *choose_visual()
 	GtkWidget *gl_widget = c->widget;
 	if (gtk_widget_get_realized(gl_widget)){
 		msg_error("realized -> reset");
-		da->HardReset();
+		da->hardReset();
 		gl_widget = c->widget;
 	}
 
@@ -500,7 +500,7 @@ void NixInit(const string &api, HuiWindow *win, const string &id)
 
 	// more default values of the engine
 	if (NixWindow){
-		NixWindow->_get_control_(NixControlID)->GetSize(NixTargetWidth, NixTargetHeight);
+		NixWindow->_get_control_(NixControlID)->getSize(NixTargetWidth, NixTargetHeight);
 	}else{
 		NixTargetWidth = 800;
 		NixTargetHeight = 600;

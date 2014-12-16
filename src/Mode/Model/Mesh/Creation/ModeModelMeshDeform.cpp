@@ -38,6 +38,8 @@ void ModeModelMeshDeform::onStart()
 {
 	// Dialog
 	dialog = HuiCreateResourceDialog("deformation_dialog", ed);
+	dialog->setFont("source", "Monospace 10");
+	dialog->setTabSize("source", 4);
 	dialog->setString("source", "void f(vector o, vector i)\n\to = vector(i.x, i.y+(i.x*i.x-i.x), i.z)\n");
 	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
 	dialog->event("hui:close", this, &ModeModelMeshDeform::abort);
@@ -62,12 +64,12 @@ void ModeModelMeshDeform::onStart()
 
 void ModeModelMeshDeform::onEnd()
 {
+	if (has_preview)
+		restore();
 	delete(dialog);
 	delete(geo);
 	if (s)
 		delete s;
-	if (has_preview)
-		restore();
 }
 
 void ModeModelMeshDeform::onMouseMove()

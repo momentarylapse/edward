@@ -191,7 +191,7 @@ string get_first_list_id_by_tab_page(int page)
 Array<AdminFile*> AdministrationDialog::GetSelectedFilesFromList(const string& lid)
 {
 	Array<AdminFile*> r;
-	Array<int> index = getMultiSelection(lid);
+	Array<int> index = getSelection(lid);
 	AdminFileList *l = get_list(lid);
 	assert(l);
 	foreach(int i, index)

@@ -388,7 +388,7 @@ bool NixStartIntoTexture(NixTexture *texture)
 			NixTargetHeight = NixScreenHeight;
 		}else{
 			// window mode
-			NixWindow->_get_control_(NixControlID)->GetSize(NixTargetWidth, NixTargetHeight);
+			NixWindow->_get_control_(NixControlID)->getSize(NixTargetWidth, NixTargetHeight);
 		}
 	}else{
 		// texture

@@ -44,10 +44,12 @@ void *ActionModelAddVertex::execute(Data *d)
 	m->vertex.add(vv);
 
 	// correct animations
-	foreach(ModelMove &move, m->move)
-		if (move.type == MoveTypeVertex)
+	foreach(ModelMove &move, m->move){
+		if (move.type == MoveTypeVertex){
 			foreach(ModelFrame &f, move.frame)
 				f.vertex_dpos.resize(m->vertex.num);
+		}
+	}
 	return &m->vertex.back();
 }
 
