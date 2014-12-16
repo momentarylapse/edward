@@ -72,6 +72,8 @@ void ModeModelMesh::onStart()
 	t->addItemCheckable(_("Kugel"), dir + "new_ball.png", "new_ball");
 	t->addItemCheckable(_("Zylinder"), dir + "new_cylinder.png", "new_cylinder");
 	t->addSeparator();
+	t->addItemCheckable(_("Materialien"), dir + "mode_textures.png", "mode_model_materials");
+	t->addSeparator();
 	t->addItemCheckable(_("Selektieren"), dir + "rf_select.png", "select");
 	t->addItemCheckable(_("Verschieben"), dir + "rf_translate.png", "translate");
 	t->addItemCheckable(_("Rotieren"), dir + "rf_rotate.png", "rotate");
@@ -276,7 +278,7 @@ void ModeModelMesh::onUpdateMenu()
 	ed->enable("delete", copyable());
 	string cm_name = ed->cur_mode->name;
 	ed->check("new_point", cm_name == "ModelMeshCreateVertex");
-	ed->check("new_tria", cm_name == "ModelMeshCreateTriangles");
+	ed->check("new_tria", cm_name == "ModelMeshCreatePolygon");
 	ed->check("new_plane", cm_name == "ModelMeshCreatePlane");
 	ed->check("new_cube", cm_name == "ModelMeshCreateCube");
 	ed->check("new_ball", cm_name == "ModelMeshCreateBall");

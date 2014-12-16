@@ -63,7 +63,6 @@ void ModeModel::onStart()
 	t->addItemCheckable(_("Mesh"), dir + "model_mesh.svg", "mode_model_mesh");
 	t->addItemCheckable(_("Skelett"), dir + "mode_skeletton.png", "mode_model_skeleton");
 	t->addItemCheckable(_("Animation"), dir + "mode_move.png", "mode_model_animation");
-	t->addItemCheckable(_("Materialien"), dir + "mode_textures.png", "mode_model_materials");
 	t->addItem(_("Eigenschaften"), dir + "configure.png", "mode_properties");
 	t->enable(true);
 	t->configure(false,true);

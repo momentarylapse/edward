@@ -252,6 +252,7 @@ void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &b
 	}
 	NixSetZ(true, true);
 	NixLineWidth = 1;
+	NixSmoothLines = false;
 }
 
 
