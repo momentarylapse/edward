@@ -11,4 +11,4 @@ Dialog easify_dialog "Geometrie vereinfachen" 335 150
 				Text eat_polygons ""
 		Grid easify_dialog_buttonbar "" 2 1 buttonbar
 			Button cancel "Abbrechen" image=hui:cancel
-			DefButton ok "OK" image=hui:ok
+			DefButton ok "Ok" image=hui:ok

@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-609
+612
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -130,6 +130,12 @@ Use colors from material
 default_material
 use default material
 deformation_brush
+
+deformation_dialog
+
+deformation_dialog_buttonbar
+
+deformation_function
 
 degree
 °
@@ -863,7 +869,7 @@ quality_factor
 \\0\\100\\0.1
 quality_slider
 
-rand_id_514824
+rand_id_46618
 
 rc_dialog
 Rudimentary configuration
@@ -1222,7 +1228,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-232
+233
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1594,8 +1600,8 @@ Vertexpunkte: %d (von %d)
 
 Vertices
 Vertices
-Vertices auswählen
-Select vertices
+Vertices auswählen, [Return] = fertig
+
 ViewStage Pop
 ViewStage Pop
 ViewStage Push
@@ -1665,6 +1671,8 @@ Open message.txt
 neue Punkte setzen
 place new vertex
 neuen Punkt in Polygon setzen
+
+neuer Knochen
 
 neues Objekt auswählen
 

@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-609
+612
 // Data (ID,Text)
 ad_dialog
 
@@ -130,6 +130,12 @@ default_colors
 default_material
 
 deformation_brush
+
+deformation_dialog
+
+deformation_dialog_buttonbar
+
+deformation_function
 
 degree
 °
@@ -863,7 +869,7 @@ quality_factor
 
 quality_slider
 
-rand_id_514824
+rand_id_46618
 
 rc_dialog
 
@@ -1222,7 +1228,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-232
+233
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1594,7 +1600,7 @@ Vertexpunkte: %d (von %d)
 
 Vertices
 
-Vertices auswählen
+Vertices auswählen, [Return] = fertig
 
 ViewStage Pop
 
@@ -1665,6 +1671,8 @@ message.txt öffnen
 neue Punkte setzen
 
 neuen Punkt in Polygon setzen
+
+neuer Knochen
 
 neues Objekt auswählen
 

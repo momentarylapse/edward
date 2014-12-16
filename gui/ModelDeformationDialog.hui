@@ -1,0 +1,6 @@
+Dialog deformation_dialog "Deformation" 400 250 allow-root
+	Grid ? "" 1 2
+		MultilineEdit source ""
+		Grid deformation_dialog_buttonbar "" 2 1 buttonbar
+			Button preview "Vorschau" image=hui:apply
+			DefButton ok "Ok" image=hui:ok

@@ -28,6 +28,7 @@
 #include "Creation/ModeModelMeshAutoweld.h"
 #include "Creation/ModeModelMeshBevelEdges.h"
 #include "Creation/ModeModelMeshBrush.h"
+#include "Creation/ModeModelMeshDeform.h"
 #include "Creation/ModeModelMeshExtrudePolygons.h"
 #include "../../../Action/Model/Mesh/Skin/ActionModelSkinVerticesFromProjection.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
@@ -170,6 +171,8 @@ void ModeModelMesh::onCommand(const string & id)
 		ed->setMode(new ModeModelMeshBevelEdges(mode_model_mesh_vertex));
 	if (id == "deformation_brush")
 		ed->setMode(new ModeModelMeshBrush(mode_model_mesh_polygon));
+	if (id == "deformation_function")
+		ed->setMode(new ModeModelMeshDeform(mode_model_mesh_vertex));
 	if (id == "flatten_vertices")
 		data->FlattenSelectedVertices();
 
