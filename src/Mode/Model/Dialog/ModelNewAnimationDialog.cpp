@@ -33,13 +33,13 @@ void ModelNewAnimationDialog::OnClose()
 void ModelNewAnimationDialog::OnOk()
 {
 	int index = getInt("new_animation_index");
-	int type = getInt("new_animation_type") + MoveTypeVertex;
+	int type = getInt("new_animation_type") + MOVE_TYPE_VERTEX;
 	if (index < data->move.num)
 		if (data->move[index].frame.num > 0){
 			ed->errorBox(_("Es existiert bereits eine Animation mit diesem Index. Bitte einen anderen w&ahlen."));
 			return;
 		}
-	data->AddAnimation(index, type);
+	data->addAnimation(index, type);
 	delete(this);
 }
 

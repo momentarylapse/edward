@@ -79,9 +79,9 @@ void ModelFXDialog::ApplyData()
 	}
 
 	if (index >= 0)
-		data->EditEffect(index, temp);
+		data->editEffect(index, temp);
 	else
-		data->SelectionAddEffects(temp);
+		data->selectionAddEffects(temp);
 }
 
 void ModelFXDialog::OnFindScriptFile()

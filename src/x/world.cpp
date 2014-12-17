@@ -1352,7 +1352,7 @@ inline void fill_pmv(vector &pos, Array<PartialModel> &p, Array<PartialModelView
 		Model *m = p[i].model;
 		vector dpos = pos - m->pos;
 		
-		int detail = SkinHigh;
+		int detail = SKIN_HIGH;
 		float dist = _vec_length_(dpos); // real distance to the camera
 		float dist_2 = dist * Engine.DetailFactorInv; // more adequate distance value
 
@@ -1362,8 +1362,8 @@ inline void fill_pmv(vector &pos, Array<PartialModel> &p, Array<PartialModelView
 
 		// which level of detail?
 		if (dist_2 > m->detail_dist[2]){		detail = -1;	continue;	}
-		else if (dist_2 > m->detail_dist[1])	detail = SkinLow;
-		else if (dist_2 > m->detail_dist[0])	detail = SkinMedium;
+		else if (dist_2 > m->detail_dist[1])	detail = SKIN_LOW;
+		else if (dist_2 > m->detail_dist[0])	detail = SKIN_MEDIUM;
 
 		PartialModelView pmv;
 		pmv.p = &p[i];

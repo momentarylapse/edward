@@ -259,7 +259,7 @@ void Model::ResetData()
 	num_move_operations = -1;
 	move_operation[0].move = 0;
 	move_operation[0].time = 0;
-	move_operation[0].operation = MoveOpSet;
+	move_operation[0].operation = MOVE_OP_SET;
 	move_operation[0].param1 = 0;
 	move_operation[0].param2 = 0;
 	if (meta_move){
@@ -283,17 +283,17 @@ void Model::ResetData()
 	fx.resize(_template->fx.num);
 #ifdef _X_ALLOW_X_
 	foreachi(ModelEffectData &tf, _template->fx, i){
-		if (tf.type == FXTypeLight)
+		if (tf.type == FX_TYPE_LIGHT)
 			fx[i] = Fx::CreateLight(this, tf.vertex, tf.radius, tf.am, tf.di, tf.sp);
-		else if (tf.type == FXTypeSound)
+		else if (tf.type == FX_TYPE_SOUND)
 			fx[i] = Fx::CreateSound(this, tf.vertex, tf.filename, tf.radius, tf.speed);
-		else if (tf.type == FXTypeScript)
+		else if (tf.type == FX_TYPE_SCRIPT)
 			fx[i] = Fx::CreateScript(this, tf.vertex, tf.filename);
 	}
 #endif
 
 	if (material.num > 0)
-		SetMaterial(&material[0], SetMaterialFriction);
+		SetMaterial(&material[0], SET_MATERIAL_FRICTION);
 
 	geom_id = 0;
 	body_id = 0;
@@ -581,7 +581,7 @@ void Model::Load(const string &filename)
 			m->frames_per_sec_const = f->ReadFloat();
 			m->frames_per_sec_factor = f->ReadFloat();
 			
-			if (m->type == MoveTypeVertex){
+			if (m->type == MOVE_TYPE_VERTEX){
 				m->frame0 = frame_v;
 				for (int fr=0;fr<m->num_frames;fr++){
 					for (int s=0;s<4;s++){
@@ -597,7 +597,7 @@ void Model::Load(const string &filename)
 					}
 					frame_v ++;
 				}
-			}else if (m->type == MoveTypeSkeletal){
+			}else if (m->type == MOVE_TYPE_SKELETAL){
 				m->frame0 = frame_s;
 				bool *free_pos = new bool[bone.num];
 				for (int j=0;j<bone.num;j++)
@@ -630,25 +630,25 @@ void Model::Load(const string &filename)
 		string fxtype = f->ReadStr();
 		msg_db_m(fxtype.c_str(),2);
 		if (fxtype == "Script"){
-			d->type = FXTypeScript;
+			d->type = FX_TYPE_SCRIPT;
 			d->vertex = f->ReadInt();
 			d->filename = f->ReadStr();
 			f->ReadStr();
 		}else if (fxtype == "Light"){
-			d->type = FXTypeLight;
+			d->type = FX_TYPE_LIGHT;
 			d->vertex = f->ReadInt();
 			d->radius = f->ReadFloat();
 			read_color(f, d->am);
 			read_color(f, d->di);
 			read_color(f, d->sp);
 		}else if (fxtype == "Sound"){
-			d->type=FXTypeSound;
+			d->type=FX_TYPE_SOUND;
 			d->vertex=f->ReadInt();
 			d->radius = (float)f->ReadInt();
 			d->speed = (float)f->ReadInt()*0.01f;
 			d->filename = f->ReadStr();
 		}else if (fxtype == "ForceField"){
-			d->type =FXTypeForceField;
+			d->type =FX_TYPE_FORCEFIELD;
 			f->ReadInt();
 			(float)f->ReadInt();
 			(float)f->ReadInt();
@@ -666,9 +666,9 @@ void Model::Load(const string &filename)
 	radius = f->ReadFloat();
 
 	// LOD-Distances"
-	detail_dist[SkinHigh] = f->ReadFloatC();
-	detail_dist[SkinMedium] = f->ReadFloat();
-	detail_dist[SkinLow] = f->ReadFloat();
+	detail_dist[SKIN_HIGH] = f->ReadFloatC();
+	detail_dist[SKIN_MEDIUM] = f->ReadFloat();
+	detail_dist[SKIN_LOW] = f->ReadFloat();
 	
 
 // object data
@@ -738,7 +738,7 @@ void Model::__init__()
 
 void Model::SetMaterial(Material *m, int mode)
 {
-	if ((mode & SetMaterialFriction)>0){
+	if ((mode & SET_MATERIAL_FRICTION)>0){
 		rc_jump = m->rc_jump;
 		rc_sliding = m->rc_sliding;
 		rc_rolling = m->rc_rolling;
@@ -1027,7 +1027,7 @@ void Model::CalcMove(float elapsed)
 		if (num_move_operations == -1){
 			// default: just run a single animation
 			MoveTimeAdd(this, 0, elapsed, 0, true);
-			move_operation[0].operation = MoveOpSet;
+			move_operation[0].operation = MOVE_OP_SET;
 			move_operation[0].move = 0;
 			num_ops = 1;
 		}
@@ -1068,7 +1068,7 @@ void Model::CalcMove(float elapsed)
 				continue;
 
 
-			if (m->type == MoveTypeVertex){
+			if (m->type == MOVE_TYPE_VERTEX){
 				vertex_animated=true;
 
 				// frame data
@@ -1113,7 +1113,7 @@ void Model::CalcMove(float elapsed)
 				Move *m = &meta_move->move[op->move];
 				if (m->num_frames == 0)
 					continue;
-				if (m->type != MoveTypeSkeletal)
+				if (m->type != MOVE_TYPE_SKELETAL)
 					continue;
 				quaternion w,w0,w1,w2,w3;
 				vector p,p1,p2;
@@ -1144,37 +1144,37 @@ void Model::CalcMove(float elapsed)
 			// execute the operations
 
 				// overwrite
-				if (op->operation == MoveOpSet){
+				if (op->operation == MOVE_OP_SET){
 					b->cur_ang = w;
 					b->cur_pos = p;
 
 				// overwrite, if current doesn't equal 0
-				}else if (op->operation == MoveOpSetNewKeyed){
+				}else if (op->operation == MOVE_OP_SET_NEW_KEYED){
 					if (w.w!=1)
 						b->cur_ang=w;
 					if (p!=v_0)
 						b->cur_pos=p;
 
 				// overwrite, if last equals 0
-				}else if (op->operation == MoveOpSetOldKeyed){
+				}else if (op->operation == MOVE_OP_SET_OLD_KEYED){
 					if (b->cur_ang.w==1)
 						b->cur_ang=w;
 					if (b->cur_pos==v_0)
 						b->cur_pos=p;
 
 				// w = w_old         + w_new * f
-				}else if (op->operation == MoveOpAdd1Factor){
+				}else if (op->operation == MOVE_OP_ADD_1_FACTOR){
 					QuaternionScale(w, op->param1);
 					b->cur_ang = w * b->cur_ang;
 					b->cur_pos += op->param1 * p;
 
 				// w = w_old * (1-f) + w_new * f
-				}else if (op->operation == MoveOpMix1Factor){
+				}else if (op->operation == MOVE_OP_MIX_2_FACTOR){
 					QuaternionInterpolate(b->cur_ang, b->cur_ang, w, op->param1);
 					b->cur_pos = (1 - op->param1) * b->cur_pos + op->param1 * p;
 
 				// w = w_old * a     + w_new * b
-				}else if (op->operation == MoveOpMix2Factor){
+				}else if (op->operation == MOVE_OP_MIX_2_FACTOR){
 					QuaternionScale(b->cur_ang, op->param1);
 					QuaternionScale(w         , op->param2);
 					QuaternionInterpolate(b->cur_ang, b->cur_ang, w, 0.5f);
@@ -1595,14 +1595,14 @@ void Model::SortingTest(vector &pos,const vector &dpos,matrix *mat,bool allow_sh
 			VecTransform(sub_pos,boneMatrix[i],v_0);
 			boneModel[i]->SortingTest(sub_pos,dpos,&BoneMatrix[i],allow_shadow);
 		}
-	int _Detail_=SkinHigh;
+	int _Detail_=SKIN_HIGH;
 	bool trans=false;
 	float ld=_vec_length_(dpos); // real distance to the camera
 	float ld_2=ld*DetailFactorInv; // more adequate distance value
 
 	// which level of detail?
-	if (ld_2>DetailDist[0])		_Detail_=SkinMedium;
-	if (ld_2>DetailDist[1])		_Detail_=SkinLow;
+	if (ld_2>DetailDist[0])		_Detail_=SKIN_MEDIUM;
+	if (ld_2>DetailDist[1])		_Detail_=SKIN_LOW;
 	if (ld_2>DetailDist[2]){	_Detail_=-1;	return;	}
 
 	// transparent?
@@ -1615,8 +1615,8 @@ void Model::SortingTest(vector &pos,const vector &dpos,matrix *mat,bool allow_sh
 
 	if (meta_move){
 		_Detail_Needed_[_Detail_]=true;
-		if ( ( ShadowLevel > 0) && ShadowLowerDetail && allow_shadow && ( _Detail_ == SkinHigh ) )
-			_Detail_Needed_[SkinMedium]=true; // shadows...
+		if ( ( ShadowLevel > 0) && ShadowLowerDetail && allow_shadow && ( _Detail_ == SKIN_HIGH ) )
+			_Detail_Needed_[SKIN_MEDIUM]=true; // shadows...
 	}
 
 	// send for sorting
@@ -1626,7 +1626,7 @@ void Model::SortingTest(vector &pos,const vector &dpos,matrix *mat,bool allow_sh
 
 void Model::Draw(int detail, bool set_fx, bool allow_shadow)
 {
-	if	(detail < SkinHigh)
+	if	(detail < SKIN_HIGH)
 		return;
 //	msg_write("d");
 	// shadows?

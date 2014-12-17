@@ -19,26 +19,26 @@ ModelAnimationDialog::ModelAnimationDialog(HuiWindow *_parent, DataModel *_data)
 
 	// dialog
 
-	win->event("hui:close", this, &ModelAnimationDialog::OnClose);
-	win->event("animation_list", this, &ModelAnimationDialog::OnAnimationList);
-	win->eventX("animation_list", "hui:select", this, &ModelAnimationDialog::OnAnimationListSelect);
-	win->event("animation_new", this, &ModelAnimationDialog::OnAddAnimation);
-	win->event("animation_delete", this, &ModelAnimationDialog::OnDeleteAnimation);
-	win->event("frame", this, &ModelAnimationDialog::OnFrame);
-	win->event("new_frame", this, &ModelAnimationDialog::OnAddFrame);
-	win->event("delete_frame", this, &ModelAnimationDialog::OnDeleteFrame);
-	win->event("name", this, &ModelAnimationDialog::OnName);
-	win->event("fps_const", this, &ModelAnimationDialog::OnFpsConst);
-	win->event("fps_factor", this, &ModelAnimationDialog::OnFpsFactor);
-	win->event("speed", this, &ModelAnimationDialog::OnSpeed);
-	win->event("parameter", this, &ModelAnimationDialog::OnParameter);
-	win->event("sim_start", this, &ModelAnimationDialog::OnSimulationPlay);
-	win->event("sim_stop", this, &ModelAnimationDialog::OnSimulationStop);
+	//win->event("hui:close", this, &ModelAnimationDialog::onClose);
+	win->event("animation_list", this, &ModelAnimationDialog::onAnimationList);
+	win->eventX("animation_list", "hui:select", this, &ModelAnimationDialog::onAnimationListSelect);
+	win->event("animation_new", this, &ModelAnimationDialog::onAddAnimation);
+	win->event("animation_delete", this, &ModelAnimationDialog::onDeleteAnimation);
+	win->event("frame", this, &ModelAnimationDialog::onFrame);
+	win->event("new_frame", this, &ModelAnimationDialog::onAddFrame);
+	win->event("delete_frame", this, &ModelAnimationDialog::onDeleteFrame);
+	win->event("name", this, &ModelAnimationDialog::onName);
+	win->event("fps_const", this, &ModelAnimationDialog::onFpsConst);
+	win->event("fps_factor", this, &ModelAnimationDialog::onFpsFactor);
+	win->event("speed", this, &ModelAnimationDialog::onSpeed);
+	win->event("parameter", this, &ModelAnimationDialog::onParameter);
+	win->event("sim_start", this, &ModelAnimationDialog::onSimulationPlay);
+	win->event("sim_stop", this, &ModelAnimationDialog::onSimulationStop);
 
 	subscribe(data);
 	subscribe(mode_model_animation);
 
-	LoadData();
+	loadData();
 }
 
 ModelAnimationDialog::~ModelAnimationDialog()
@@ -47,51 +47,51 @@ ModelAnimationDialog::~ModelAnimationDialog()
 	unsubscribe(data);
 }
 
-void ModelAnimationDialog::LoadData()
+void ModelAnimationDialog::loadData()
 {
 	reset("animation_list");
 	int n = 0;
 	foreachi(ModelMove &m, data->move, i)
 		if (m.frame.num > 0){
 			string str = i2s(i) + "\\";
-			if (m.type == MoveTypeVertex)
+			if (m.type == MOVE_TYPE_VERTEX)
 				str += _("Vertex");
-			else if (m.type == MoveTypeSkeletal)
+			else if (m.type == MOVE_TYPE_SKELETAL)
 				str += _("Skelett");
 			else
 				str += "???";
 			str += format("\\%d\\", m.frame.num) + m.name;
 			addString("animation_list", str);
-			if (i == mode_model_animation->CurrentMove)
+			if (i == mode_model_animation->current_move)
 				setInt("animation_list", n);
 			n ++;
 		}
-	FillAnimation();
-	setFloat("speed", mode_model_animation->TimeScale * 100.0f);
-	setFloat("parameter", mode_model_animation->TimeParam);
+	fillAnimation();
+	setFloat("speed", mode_model_animation->time_scale * 100.0f);
+	setFloat("parameter", mode_model_animation->time_param);
 }
 
-void ModelAnimationDialog::FillAnimation()
+void ModelAnimationDialog::fillAnimation()
 {
-	bool b = mode_model_animation->move->frame.num > 0;
+	bool b = (mode_model_animation->move->type != MOVE_TYPE_NONE);
 	enable("name", b);
 	enable("frame", b);
-	enable("frame_inc", b);
-	enable("frame_dec", b);
 	enable("new_frame", b);
 	enable("delete_frame", b);
 	enable("fps_const", b);
 	enable("fps_factor", b);
+	enable("sim_start", b);
+	enable("sim_stop", b);
 	if (b){
 		ModelMove *move = mode_model_animation->move;
 		setString("name", move->name);
-		setInt("frame", mode_model_animation->CurrentFrame);
+		setInt("frame", mode_model_animation->current_frame);
 		setFloat("fps_const", move->frames_per_sec_const);
 		setFloat("fps_factor", move->frames_per_sec_factor);
 	}
 }
 
-int ModelAnimationDialog::GetSelectedAnimation()
+int ModelAnimationDialog::getSelectedAnimation()
 {
 	int s = getInt("animation_list");
 	if (s >= 0){
@@ -106,29 +106,27 @@ int ModelAnimationDialog::GetSelectedAnimation()
 	return -1;
 }
 
-void ModelAnimationDialog::OnAnimationList()
+void ModelAnimationDialog::onAnimationList()
 {
-	int s = GetSelectedAnimation();
-	mode_model_animation->SetCurrentMove(s);
-	if (s >= 0)
-		setInt("animation_dialog_tab_control", 1);
+	int s = getSelectedAnimation();
+	mode_model_animation->setCurrentMove(s);
 }
 
-void ModelAnimationDialog::OnAnimationListSelect()
+void ModelAnimationDialog::onAnimationListSelect()
 {
-	int s = GetSelectedAnimation();
-	mode_model_animation->SetCurrentMove(s);
+	int s = getSelectedAnimation();
+	mode_model_animation->setCurrentMove(s);
 }
 
-void ModelAnimationDialog::OnClose()
+void ModelAnimationDialog::onClose()
 {
 }
 
-void ModelAnimationDialog::ApplyData()
+void ModelAnimationDialog::applyData()
 {
 }
 
-void ModelAnimationDialog::OnAddAnimation()
+void ModelAnimationDialog::onAddAnimation()
 {
 	// first free index
 	int index = data->move.num;
@@ -142,77 +140,77 @@ void ModelAnimationDialog::OnAddAnimation()
 	dlg->run();
 }
 
-void ModelAnimationDialog::OnDeleteAnimation()
+void ModelAnimationDialog::onDeleteAnimation()
 {
-	int s = GetSelectedAnimation();
+	int s = getSelectedAnimation();
 	if (s >= 0)
-		data->DeleteAnimation(s);
+		data->deleteAnimation(s);
 }
 
-void ModelAnimationDialog::OnFrame()
+void ModelAnimationDialog::onFrame()
 {
 	int frame_lit = getInt("");
 	int frame = loopi(frame_lit, 0, mode_model_animation->move->frame.num - 1);
 	if (frame != frame_lit)
 		setInt("", frame);
-	mode_model_animation->SetCurrentFrame(frame);
+	mode_model_animation->setCurrentFrame(frame);
 }
 
-void ModelAnimationDialog::OnAddFrame()
+void ModelAnimationDialog::onAddFrame()
 {
-	mode_model_animation->AnimationDuplicateCurrentFrame();
+	mode_model_animation->animationDuplicateCurrentFrame();
 }
 
-void ModelAnimationDialog::OnDeleteFrame()
+void ModelAnimationDialog::onDeleteFrame()
 {
-	mode_model_animation->AnimationDeleteCurrentFrame();
+	mode_model_animation->animationDeleteCurrentFrame();
 }
 
-void ModelAnimationDialog::OnName()
+void ModelAnimationDialog::onName()
 {
-	mode_model_animation->move->name = getString("");
+	data->setAnimationData(mode_model_animation->current_move, getString(""), mode_model_animation->move->frames_per_sec_const, mode_model_animation->move->frames_per_sec_factor);
 }
 
-void ModelAnimationDialog::OnFpsConst()
+void ModelAnimationDialog::onFpsConst()
 {
-	mode_model_animation->move->frames_per_sec_const = getFloat("");
+	data->setAnimationData(mode_model_animation->current_move, mode_model_animation->move->name, getFloat(""), mode_model_animation->move->frames_per_sec_factor);
 }
 
-void ModelAnimationDialog::OnFpsFactor()
+void ModelAnimationDialog::onFpsFactor()
 {
-	mode_model_animation->move->frames_per_sec_factor = getFloat("");
+	data->setAnimationData(mode_model_animation->current_move, mode_model_animation->move->name, mode_model_animation->move->frames_per_sec_const, getFloat(""));
 }
 
-void ModelAnimationDialog::OnSpeed()
+void ModelAnimationDialog::onSpeed()
 {
-	mode_model_animation->TimeScale = getFloat("") / 100.0f;
+	mode_model_animation->time_scale = getFloat("") / 100.0f;
 }
 
-void ModelAnimationDialog::OnParameter()
+void ModelAnimationDialog::onParameter()
 {
-	mode_model_animation->TimeParam = getFloat("");
+	mode_model_animation->time_param = getFloat("");
 }
 
-void ModelAnimationDialog::OnSimulationPlay()
+void ModelAnimationDialog::onSimulationPlay()
 {
-	mode_model_animation->Playing = (mode_model_animation->move->frame.num > 0);
-	mode_model_animation->SimFrame = 0;
-	mode_model_animation->UpdateAnimation();
+	mode_model_animation->playing = (mode_model_animation->move->frame.num > 0);
+	mode_model_animation->sim_frame = 0;
+	mode_model_animation->updateAnimation();
 }
 
-void ModelAnimationDialog::OnSimulationStop()
+void ModelAnimationDialog::onSimulationStop()
 {
-	mode_model_animation->Playing = false;
-	mode_model_animation->SimFrame = 0;
-	mode_model_animation->UpdateAnimation();
+	mode_model_animation->playing = false;
+	mode_model_animation->sim_frame = 0;
+	mode_model_animation->updateAnimation();
 }
 
 void ModelAnimationDialog::onUpdate(Observable *o, const string &message)
 {
 	if (o == data){
-		LoadData();
+		loadData();
 	}else{
-		FillAnimation();
+		fillAnimation();
 	}
 }
 

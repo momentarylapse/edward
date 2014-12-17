@@ -15,8 +15,7 @@ class ActionModelEditData : public Action
 {
 public:
 	ActionModelEditData(const DataModel::MetaData &_data);
-	virtual ~ActionModelEditData();
-	string name(){	return "ModelEditData";	}
+	string name(){ return "ModelEditData"; }
 
 	void *execute(Data *d);
 	void undo(Data *d);

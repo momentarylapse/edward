@@ -19,29 +19,29 @@ public:
 	ModelAnimationDialog(HuiWindow *_parent, DataModel *_data);
 	virtual ~ModelAnimationDialog();
 
-	void LoadData();
-	void ApplyData();
+	void loadData();
+	void applyData();
 
-	void FillAnimation();
-	void OnAnimationList();
-	void OnAnimationListSelect();
-	void OnAddAnimation();
-	void OnDeleteAnimation();
-	void OnFrame();
-	void OnAddFrame();
-	void OnDeleteFrame();
-	void OnName();
-	void OnFpsConst();
-	void OnFpsFactor();
-	void OnSpeed();
-	void OnParameter();
-	void OnSimulationPlay();
-	void OnSimulationStop();
-	void OnClose();
+	void fillAnimation();
+	void onAnimationList();
+	void onAnimationListSelect();
+	void onAddAnimation();
+	void onDeleteAnimation();
+	void onFrame();
+	void onAddFrame();
+	void onDeleteFrame();
+	void onName();
+	void onFpsConst();
+	void onFpsFactor();
+	void onSpeed();
+	void onParameter();
+	void onSimulationPlay();
+	void onSimulationStop();
+	void onClose();
 
 	void onUpdate(Observable *o, const string &message);
 
-	int GetSelectedAnimation();
+	int getSelectedAnimation();
 
 private:
 	DataModel *data;

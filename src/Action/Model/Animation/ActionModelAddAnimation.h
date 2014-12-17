@@ -13,7 +13,7 @@
 class ActionModelAddAnimation: public Action
 {
 public:
-	ActionModelAddAnimation(int _index, int _type);
+	ActionModelAddAnimation(int index, int type);
 	string name(){	return "ModelAddAnimation";	}
 
 	void *execute(Data *d);

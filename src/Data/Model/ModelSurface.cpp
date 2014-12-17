@@ -288,12 +288,12 @@ void ModelSurface::UpdateNormals()
 
 		// round?
 		e.is_round = false;
-		if ((v1.normal_mode == NormalModeAngular) || (v2.normal_mode == NormalModeAngular))
+		if ((v1.normal_mode == NORMAL_MODE_ANGULAR) || (v2.normal_mode == NORMAL_MODE_ANGULAR))
 			e.is_round = (t1.temp_normal * t2.temp_normal > 0.6f);
 
-		if (((v1.normal_mode == NormalModeAngular) && (e.is_round)) || (v1.normal_mode == NormalModeSmooth))
+		if (((v1.normal_mode == NORMAL_MODE_ANGULAR) && (e.is_round)) || (v1.normal_mode == NORMAL_MODE_SMOOTH))
 			vert.add(e.vertex[0]);
-		if (((v2.normal_mode == NormalModeAngular) && (e.is_round)) || (v2.normal_mode == NormalModeSmooth))
+		if (((v2.normal_mode == NORMAL_MODE_ANGULAR) && (e.is_round)) || (v2.normal_mode == NORMAL_MODE_SMOOTH))
 			vert.add(e.vertex[1]);
 
 		/*if (e.IsRound){
@@ -328,13 +328,13 @@ void ModelSurface::UpdateNormals()
 	foreachi(int ip, vert, nn){
 
 		// hard vertex -> nothing to do
-		if (model->vertex[ip].normal_mode == NormalModeHard)
+		if (model->vertex[ip].normal_mode == NORMAL_MODE_HARD)
 			continue;
 
 		Array<PolySideData> &pd = poly_side[nn];
 
 		// smooth vertex
-		if (model->vertex[ip].normal_mode == NormalModeSmooth){
+		if (model->vertex[ip].normal_mode == NORMAL_MODE_SMOOTH){
 
 			// average normal
 			vector n = v_0;

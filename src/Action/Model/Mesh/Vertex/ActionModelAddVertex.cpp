@@ -32,7 +32,7 @@ void *ActionModelAddVertex::execute(Data *d)
 	ModelVertex vv;
 	vv.pos = pos;
 	if (normal_mode < 0)
-		vv.normal_mode = NormalModeAngular;
+		vv.normal_mode = NORMAL_MODE_ANGULAR;
 	else
 		vv.normal_mode = normal_mode;
 	vv.bone_index = bone_index;
@@ -45,7 +45,7 @@ void *ActionModelAddVertex::execute(Data *d)
 
 	// correct animations
 	foreach(ModelMove &move, m->move){
-		if (move.type == MoveTypeVertex){
+		if (move.type == MOVE_TYPE_VERTEX){
 			foreach(ModelFrame &f, move.frame)
 				f.vertex_dpos.resize(m->vertex.num);
 		}
@@ -66,7 +66,7 @@ void ActionModelAddVertex::undo(Data *d)
 
 	// correct animations
 	foreach(ModelMove &move, m->move)
-		if (move.type == MoveTypeVertex){
+		if (move.type == MOVE_TYPE_VERTEX){
 			foreach(ModelFrame &f, move.frame)
 				f.vertex_dpos.resize(m->vertex.num);
 		}

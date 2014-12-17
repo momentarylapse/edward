@@ -59,9 +59,9 @@ ActionMultiView *ActionMultiViewFactory(const string &name, Data *d)
 	if (name == "ActionModelTransformBones")
 		return new ActionModelTransformBones((DataModel*)d);
 	if (name == "ActionModelAnimationTransformBones")
-		return new ActionModelAnimationTransformBones((DataModel*)d, mode_model_animation->CurrentMove, mode_model_animation->CurrentFrame);
+		return new ActionModelAnimationTransformBones((DataModel*)d, mode_model_animation->current_move, mode_model_animation->current_frame);
 	if (name == "ActionModelAnimationTransformVertices")
-		return new ActionModelAnimationTransformVertices((DataModel*)d, mode_model_animation->CurrentMove, mode_model_animation->CurrentFrame);
+		return new ActionModelAnimationTransformVertices((DataModel*)d, mode_model_animation->current_move, mode_model_animation->current_frame);
 	if (name == "ActionWorldMoveSelection")
 		return new ActionWorldMoveSelection((DataWorld*)d);
 	if (name == "ActionWorldRotateObjects")

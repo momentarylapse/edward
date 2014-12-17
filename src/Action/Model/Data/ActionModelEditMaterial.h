@@ -15,8 +15,7 @@ class ActionModelEditMaterial : public Action
 {
 public:
 	ActionModelEditMaterial(int _index, const ModelMaterial &_mat);
-	virtual ~ActionModelEditMaterial();
-	string name(){	return "ModelEditMaterial";	}
+	string name(){ return "ModelEditMaterial"; }
 
 	void *execute(Data *d);
 	void undo(Data *d);

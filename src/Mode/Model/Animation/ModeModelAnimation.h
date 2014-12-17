@@ -32,33 +32,33 @@ public:
 
 	ModelAnimationDialog *dialog;
 
-	ModelMove *EmptyMove;
+	ModelMove *empty_move;
 
 	ModelMove *move;
-	int CurrentMove, CurrentFrame;
+	int current_move, current_frame;
 	Array<ModelVertex> vertex;
 	Array<ModelBone> bone;
 
-	float TimeScale;
-	float TimeParam;
-	bool Playing;
-	float PlayLoop;
-	float SimFrame;
+	float time_scale;
+	float time_param;
+	bool playing;
+	float play_loop;
+	float sim_frame;
 
 	HuiTimer timer;
 
-	void IdleFunction();
+	void idleFunction();
 
-	void SetCurrentMove(int move);
-	void SetCurrentFrame(int frame);
-	void SetCurrentFrameNext();
-	void SetCurrentFramePrevious();
-	void AnimationDeleteCurrentFrame();
-	void AnimationDuplicateCurrentFrame();
+	void setCurrentMove(int move);
+	void setCurrentFrame(int frame);
+	void setCurrentFrameNext();
+	void setCurrentFramePrevious();
+	void animationDeleteCurrentFrame();
+	void animationDuplicateCurrentFrame();
 
-	void UpdateAnimation();
-	void UpdateSkeleton();
-	void IterateAnimation(float dt);
+	void updateAnimation();
+	void updateSkeleton();
+	void iterateAnimation(float dt);
 };
 
 extern ModeModelAnimation *mode_model_animation;

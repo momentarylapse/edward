@@ -5,6 +5,7 @@
  *      Author: michi
  */
 
+#include <algorithm>
 #include "ActionModelEditMaterial.h"
 #include <assert.h>
 
@@ -14,19 +15,13 @@ ActionModelEditMaterial::ActionModelEditMaterial(int _index, const ModelMaterial
 	mat = _mat;
 }
 
-ActionModelEditMaterial::~ActionModelEditMaterial()
-{
-}
-
 void *ActionModelEditMaterial::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	assert((index >= 0) && (index < m->material.num));
 
-	ModelMaterial old_mat = m->material[index];
-	m->material[index] = mat;
-	mat = old_mat;
+	std::swap(mat, m->material[index]);
 
 	// correct skin vertices
 	// (copy highest texture level when adding more levels)

@@ -203,11 +203,11 @@ void ModeModelMesh::onCommand(const string & id)
 		easify();
 
 	if (id == "normal_this_smooth")
-		data->SetNormalModeSelection(NormalModeSmooth);
+		data->SetNormalModeSelection(NORMAL_MODE_SMOOTH);
 	if (id == "normal_this_hard")
-		data->SetNormalModeSelection(NormalModeHard);
+		data->SetNormalModeSelection(NORMAL_MODE_HARD);
 	if (id == "normal_this_angular")
-		data->SetNormalModeSelection(NormalModeAngular);
+		data->SetNormalModeSelection(NORMAL_MODE_ANGULAR);
 
 	if (id == "fx_new_light")
 		addEffects(FX_KIND_LIGHT);
@@ -470,7 +470,7 @@ void ModeModelMesh::clearEffects()
 		ed->setMessage(_("Kein Punkt mit Effekt markiert!"));
 		return;
 	}
-	data->SelectionClearEffects();
+	data->selectionClearEffects();
 }
 
 bool ModeModelMesh::pasteable()

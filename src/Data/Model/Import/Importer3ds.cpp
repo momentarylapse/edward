@@ -89,7 +89,7 @@ void Importer3ds::LoadMesh(DataModel *m, CFile *f, int _length)
 					v.pos.x = f->ReadFloat();
 					v.pos.y = f->ReadFloat();
 					v.pos.z = f->ReadFloat();
-					v.normal_mode = NormalModeAngular;
+					v.normal_mode = NORMAL_MODE_ANGULAR;
 					m->skin[1].vertex.add(v);
 				}
 				}break;

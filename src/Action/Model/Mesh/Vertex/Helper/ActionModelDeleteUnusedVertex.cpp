@@ -38,7 +38,7 @@ void ActionModelDeleteUnusedVertex::undo(Data *d)
 	// correct animations
 	int i = 0;
 	foreach(ModelMove &mv, m->move)
-		if (mv.type == MoveTypeVertex){
+		if (mv.type == MOVE_TYPE_VERTEX){
 			foreach(ModelFrame &f, mv.frame)
 				f.vertex_dpos.insert(move[i ++], vertex);
 		}
@@ -83,7 +83,7 @@ void *ActionModelDeleteUnusedVertex::execute(Data *d)
 	// move data
 	move.clear();
 	foreach(ModelMove &mv, m->move)
-		if (mv.type == MoveTypeVertex){
+		if (mv.type == MOVE_TYPE_VERTEX){
 			foreach(ModelFrame &f, mv.frame){
 				move.add(f.vertex_dpos[vertex]);
 				f.vertex_dpos.erase(vertex);

@@ -25,16 +25,15 @@ ModeModelAnimation::ModeModelAnimation(ModeBase *_parent) :
 	mode_model_animation_vertex = new ModeModelAnimationVertex(this);
 
 	// create one dummy animation
-	EmptyMove = new ModelMove;
-	EmptyMove->name = "-empty move-";
-	EmptyMove->type = MoveTypeNone;
-	EmptyMove->frame.resize(1);
-	EmptyMove->frames_per_sec_const = 1;
-	EmptyMove->frames_per_sec_factor = 0;
-	EmptyMove->interpolated_quadratic = 0;
-	EmptyMove->interpolated_loop = false;
+	empty_move = new ModelMove;
+	empty_move->name = "-empty move-";
+	empty_move->type = MOVE_TYPE_NONE;
+	empty_move->frames_per_sec_const = 1;
+	empty_move->frames_per_sec_factor = 0;
+	empty_move->interpolated_quadratic = 0;
+	empty_move->interpolated_loop = false;
 
-	move = EmptyMove;
+	move = empty_move;
 }
 
 
@@ -43,7 +42,7 @@ ModeModelAnimation::~ModeModelAnimation()
 	delete(mode_model_animation_none);
 	delete(mode_model_animation_skeleton);
 	delete(mode_model_animation_vertex);
-	delete(EmptyMove);
+	delete(empty_move);
 }
 
 
@@ -51,34 +50,34 @@ ModeModelAnimation::~ModeModelAnimation()
 void ModeModelAnimation::onCommand(const string & id)
 {
 	if (id == "move_frame_inc")
-		SetCurrentFrameNext();
+		setCurrentFrameNext();
 	if (id == "move_frame_dec")
-		SetCurrentFramePrevious();
+		setCurrentFramePrevious();
 	if (id == "move_frame_delete")
-		AnimationDeleteCurrentFrame();
+		animationDeleteCurrentFrame();
 	if (id == "move_frame_insert")
-		AnimationDuplicateCurrentFrame();
+		animationDuplicateCurrentFrame();
 }
 
 
 
 void ModeModelAnimation::onStart()
 {
-	TimeScale = 1;
-	TimeParam = 0;
-	Playing = false;
-	PlayLoop = true;
-	CurrentMove = -1;
-	CurrentFrame = 0;
+	time_scale = 1;
+	time_param = 0;
+	playing = false;
+	play_loop = true;
+	current_move = -1;
+	current_frame = 0;
 
 	dialog = new ModelAnimationDialog(ed, data);
 
-	UpdateAnimation();
+	updateAnimation();
 	Observer::subscribe(data);
 	onUpdate(data, "");
 
 	timer.reset();
-	HuiRunLaterM(0.200f, this, &ModeModelAnimation::IdleFunction);
+	HuiRunLaterM(0.200f, this, &ModeModelAnimation::idleFunction);
 
 	ed->setMode(mode_model_animation_none);
 	notify();
@@ -99,45 +98,45 @@ void ModeModelAnimation::onEnd()
 
 
 
-void ModeModelAnimation::SetCurrentMove(int move_no)
+void ModeModelAnimation::setCurrentMove(int move_no)
 {
-	move = EmptyMove;
-	CurrentMove = -1;
+	move = empty_move;
+	current_move = -1;
 	if ((move_no >= 0) && (move_no < data->move.num))
 		if (data->move[move_no].frame.num > 0){
 			move = &data->move[move_no];
-			CurrentMove = move_no;
+			current_move = move_no;
 		}
-	SetCurrentFrame(0);
+	setCurrentFrame(0);
 
-	if (move->type == MoveTypeSkeletal)
+	if (move->type == MOVE_TYPE_SKELETAL)
 		ed->setMode(mode_model_animation_skeleton);
-	else if (move->type == MoveTypeVertex)
+	else if (move->type == MOVE_TYPE_VERTEX)
 		ed->setMode(mode_model_animation_vertex);
 	else
 		ed->setMode(mode_model_animation_none);
 }
 
-void ModeModelAnimation::SetCurrentFrame(int frame_no)
+void ModeModelAnimation::setCurrentFrame(int frame_no)
 {
 	if ((frame_no >= 0) && (frame_no < move->frame.num)){
-		CurrentFrame = frame_no;
-		UpdateAnimation();
+		current_frame = frame_no;
+		updateAnimation();
 		notify();
 	}
 }
 
-void ModeModelAnimation::SetCurrentFrameNext()
+void ModeModelAnimation::setCurrentFrameNext()
 {
-	SetCurrentFrame((CurrentFrame + 1) % move->frame.num);
+	setCurrentFrame((current_frame + 1) % move->frame.num);
 }
 
-void ModeModelAnimation::SetCurrentFramePrevious()
+void ModeModelAnimation::setCurrentFramePrevious()
 {
-	SetCurrentFrame((CurrentFrame - 1 + move->frame.num) % move->frame.num);
+	setCurrentFrame((current_frame - 1 + move->frame.num) % move->frame.num);
 }
 
-void ModeModelAnimation::UpdateAnimation()
+void ModeModelAnimation::updateAnimation()
 {
 	vertex.resize(data->vertex.num);
 	foreachi(ModelVertex &v, data->vertex, i){
@@ -145,8 +144,8 @@ void ModeModelAnimation::UpdateAnimation()
 		vertex[i].is_selected = v.is_selected;
 	}
 
-	if (move->type == MoveTypeSkeletal){
-		UpdateSkeleton();
+	if (move->type == MOVE_TYPE_SKELETAL){
+		updateSkeleton();
 		foreachi(ModelVertex &v, data->vertex, i){
 			if (v.bone_index >= data->bone.num){
 				vertex[i].pos = v.pos;
@@ -155,14 +154,14 @@ void ModeModelAnimation::UpdateAnimation()
 				vertex[i].pos = b._matrix * (v.pos - b.pos);
 			}
 		}
-	}else if (move->type == MoveTypeVertex){
-		int frame0 = CurrentFrame;
-		int frame1 = CurrentFrame;
+	}else if (move->type == MOVE_TYPE_VERTEX){
+		int frame0 = current_frame;
+		int frame1 = current_frame;
 		float t = 0;
-		if (Playing){
-			frame0 = SimFrame;
+		if (playing){
+			frame0 = sim_frame;
 			frame1 = (frame0 + 1) % move->frame.num;
-			t = SimFrame - frame0;
+			t = sim_frame - frame0;
 		}
 		foreachi(ModelVertex &v, data->vertex, i){
 			vertex[i].pos = v.pos + (1 - t) * move->frame[frame0].vertex_dpos[i] + t * move->frame[frame1].vertex_dpos[i];
@@ -177,20 +176,20 @@ void ModeModelAnimation::UpdateAnimation()
 	ed->forceRedraw();
 }
 
-void ModeModelAnimation::UpdateSkeleton()
+void ModeModelAnimation::updateSkeleton()
 {
 	bone = data->bone;
 
-	if (move->type != MoveTypeSkeletal){
+	if (move->type != MOVE_TYPE_SKELETAL){
 		return;
 	}
-	int frame0 = CurrentFrame;
-	int frame1 = CurrentFrame;
+	int frame0 = current_frame;
+	int frame1 = current_frame;
 	float t = 0;
-	if (Playing){
-		frame0 = SimFrame;
+	if (playing){
+		frame0 = sim_frame;
 		frame1 = (frame0 + 1) % move->frame.num;
-		t = SimFrame - frame0;
+		t = sim_frame - frame0;
 	}
 
 	foreachi(ModelBone &b, data->bone, i){
@@ -212,31 +211,31 @@ void ModeModelAnimation::UpdateSkeleton()
 	}
 }
 
-void ModeModelAnimation::AnimationDeleteCurrentFrame()
+void ModeModelAnimation::animationDeleteCurrentFrame()
 {
-	data->AnimationDeleteFrame(CurrentMove, CurrentFrame);
-	SetCurrentMove(-1);
+	data->animationDeleteFrame(current_move, current_frame);
+	setCurrentMove(-1);
 }
 
-void ModeModelAnimation::AnimationDuplicateCurrentFrame()
+void ModeModelAnimation::animationDuplicateCurrentFrame()
 {
-	data->AnimationAddFrame(CurrentMove, CurrentFrame + 1);
-	SetCurrentFrame(CurrentFrame + 1);
+	data->animationAddFrame(current_move, current_frame + 1);
+	setCurrentFrame(current_frame + 1);
 }
 
-void ModeModelAnimation::IterateAnimation(float dt)
+void ModeModelAnimation::iterateAnimation(float dt)
 {
-	if (Playing){
-		SimFrame += dt * (move->frames_per_sec_const + move->frames_per_sec_factor * TimeParam) * TimeScale;
-		SimFrame = loopf(SimFrame, 0, move->frame.num);
-		UpdateAnimation();
+	if (playing){
+		sim_frame += dt * (move->frames_per_sec_const + move->frames_per_sec_factor * time_param) * time_scale;
+		sim_frame = loopf(sim_frame, 0, move->frame.num);
+		updateAnimation();
 	}
 }
 
 void ModeModelAnimation::onUpdate(Observable *o, const string &message)
 {
 	//msg_write("..up");
-	UpdateAnimation();
+	updateAnimation();
 	// valid move
 	/*if (...data->Move[CurrentMove] == index)
 		SetCurrentMove(-1);*/
@@ -246,22 +245,22 @@ void ModeModelAnimation::onUpdate(Observable *o, const string &message)
 
 void ModeModelAnimation::onDraw()
 {
-	IterateAnimation(timer.get());
+	iterateAnimation(timer.get());
 }
 
 void ModeModelAnimation::onDrawWin(MultiView::Window *win)
 {
 }
 
-void ModeModelAnimation::IdleFunction()
+void ModeModelAnimation::idleFunction()
 {
 	if (!isAncestorOf(ed->cur_mode))
 		return;
 	ed->forceRedraw();
-	if (Playing)
-		HuiRunLaterM(0.020f, this, &ModeModelAnimation::IdleFunction);
+	if (playing)
+		HuiRunLaterM(0.020f, this, &ModeModelAnimation::idleFunction);
 	else
-		HuiRunLaterM(0.200f, this, &ModeModelAnimation::IdleFunction);
+		HuiRunLaterM(0.200f, this, &ModeModelAnimation::idleFunction);
 }
 
 

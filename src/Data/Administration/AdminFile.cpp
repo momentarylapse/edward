@@ -237,14 +237,14 @@ void AdminFile::check(AdminFileList &list)
 				if (m.fx[i].kind==FX_KIND_SOUND)
 					add_possible_link(l, FDSound, m.fx[i].file);
 			}
-			foreach(string &s, m.meta_data.Inventary)
+			foreach(string &s, m.meta_data.inventary)
 				add_possible_link(l, FDModel, s);
 			for (int i=0;i<m.material.num;i++){
 				add_possible_link(l, FDMaterial, m.material[i].material_file);
 				for (int j=0;j<m.material[i].num_textures;j++)
 					add_possible_link(l, FDTexture, m.material[i].texture_file[j]);
 			}
-			add_possible_link(l, FDScript, m.meta_data.ScriptFile);
+			add_possible_link(l, FDScript, m.meta_data.script_file);
 		}else
 			Missing=true;
 	}else if (Kind==FDMaterial){

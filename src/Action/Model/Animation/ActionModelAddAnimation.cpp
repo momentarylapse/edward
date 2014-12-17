@@ -26,17 +26,17 @@ void *ActionModelAddAnimation::execute(Data *d)
 	if (m->move.num < index + 1)
 		m->move.resize(index + 1);
 	m->move[index].frame.clear();
-	m->move[index].name = "";
+	m->move[index].name = "animation-"+i2s(index);
 	m->move[index].type = type;
 	m->move[index].frames_per_sec_const = 2;
 	m->move[index].frames_per_sec_factor = 0;
 
 	// add animation data
 	ModelFrame f;
-	if (type ==MoveTypeSkeletal){
+	if (type ==MOVE_TYPE_SKELETAL){
 		f.skel_ang.resize(m->bone.num);
 		f.skel_dpos.resize(m->bone.num);
-	}else if (type ==MoveTypeVertex){
+	}else if (type ==MOVE_TYPE_VERTEX){
 		f.vertex_dpos.resize(m->vertex.num);
 	}
 	m->move[index].frame.add(f);

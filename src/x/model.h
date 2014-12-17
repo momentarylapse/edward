@@ -212,9 +212,9 @@ public:
 // types of animation
 enum
 {
-	MoveTypeNone,
-	MoveTypeVertex,
-	MoveTypeSkeletal
+	MOVE_TYPE_NONE,
+	MOVE_TYPE_VERTEX,
+	MOVE_TYPE_SKELETAL
 };
 
 // commands for animation (move operations)
@@ -249,17 +249,17 @@ public:
 };
 
 enum{
-	SkinHigh,
-	SkinMedium,
-	SkinLow,
+	SKIN_HIGH,
+	SKIN_MEDIUM,
+	SKIN_LOW,
 	MODEL_NUM_SKINS
 };
-#define SkinDynamic					8
-#define SkinDynamicViewHigh			(SkinDynamic | SkinHigh)
-#define SkinDynamicViewMedium		(SkinDynamic | SkinMedium)
-#define SkinDynamicViewLow			(SkinDynamic | SkinLow)
-#define SkinPhysical				42
-#define SkinDynamicPhysical			43
+#define SKIN_DYNAMIC					8
+#define SKIN_DYNAMIC_VIEW_HIGH			(SKIN_DYNAMIC | SKIN_HIGH)
+#define SKIN_DYNAMIC_VIEW_MEDIUM		(SKIN_DYNAMIC | SKIN_MEDIUM)
+#define SKIN_DYNAMIC_VIEW_LOW			(SKIN_DYNAMIC | SKIN_LOW)
+#define SKIN_PHYSICAL					42
+#define SKIN_DYNAMIC_PHYSICAL			43
 
 class ModelTemplate
 {
@@ -416,42 +416,42 @@ public:
 // types of shading/normal vectors
 enum
 {
-	NormalModeSmooth,
-	NormalModeHard,
-	NormalModeSmoothEdges,
-	NormalModeAngular,
-	NormalModePerVertex,
-	NormalModePre=16,
+	NORMAL_MODE_SMOOTH,
+	NORMAL_MODE_HARD,
+	NORMAL_MODE_SMOOTH_EDGES,
+	NORMAL_MODE_ANGULAR,
+	NORMAL_MODE_PER_VERTEX,
+	NORMAL_MODE_PRE = 16,
 };
 
 
 // move operations
 enum
 {
-	MoveOpSet,			// overwrite
-	MoveOpSetNewKeyed,	// overwrite, if current doesn't equal 0
-	MoveOpSetOldKeyed,	// overwrite, if last equals 0
-	MoveOpAdd1Factor,	// w = w_old         + w_new * f
-	MoveOpMix1Factor,	// w = w_old * (1-f) + w_new * f
-	MoveOpMix2Factor	// w = w_old * a     + w_new * b
+	MOVE_OP_SET,			// overwrite
+	MOVE_OP_SET_NEW_KEYED,	// overwrite, if current doesn't equal 0
+	MOVE_OP_SET_OLD_KEYED,	// overwrite, if last equals 0
+	MOVE_OP_ADD_1_FACTOR,	// w = w_old         + w_new * f
+	MOVE_OP_MIX_1_FACTOR,	// w = w_old * (1-f) + w_new * f
+	MOVE_OP_MIX_2_FACTOR	// w = w_old * a     + w_new * b
 };
 
 enum{
-	FXTypeScript,
-	FXTypeSound,
-	FXTypeLight,
-	FXTypeForceField,
+	FX_TYPE_SCRIPT,
+	FX_TYPE_SOUND,
+	FX_TYPE_LIGHT,
+	FX_TYPE_FORCEFIELD,
 };
 
 // observers for collision detection
 void DoCollisionObservers();
 extern int NumObservers;
 
-#define SetMaterialAll				0xffff
-#define SetMaterialFriction			1
-#define SetMaterialColors			2
-#define SetMaterialTransparency		4
-#define SetMaterialAppearance		6
+#define SET_MATERIAL_ALL				0xffff
+#define SET_MATERIAL_FRICTION			1
+#define SET_MATERIAL_COLORS				2
+#define SET_MATERIAL_TRANSPARENCY		4
+#define SET_MATERIAL_APPEARANCE			6
 
 
 #endif
