@@ -87,8 +87,8 @@ void ModeModelMesh::onEnter()
 {
 	current_material = 0;
 
-	ed->setMode(mode_model_mesh_vertex);
-	//ed->setMode(mode_model_mesh_skin);
+	//ed->setMode(mode_model_mesh_vertex);
+	ed->setMode(mode_model_mesh_polygon);
 }
 
 void ModeModelMesh::onEnd()
@@ -210,13 +210,13 @@ void ModeModelMesh::onCommand(const string & id)
 		data->SetNormalModeSelection(NORMAL_MODE_ANGULAR);
 
 	if (id == "fx_new_light")
-		addEffects(FX_KIND_LIGHT);
+		addEffects(FX_TYPE_LIGHT);
 	if (id == "fx_new_sound")
-		addEffects(FX_KIND_SOUND);
+		addEffects(FX_TYPE_SOUND);
 	if (id == "fx_new_script")
-		addEffects(FX_KIND_SCRIPT);
+		addEffects(FX_TYPE_SCRIPT);
 	if (id == "fx_new_field")
-		addEffects(FX_KIND_FORCEFIELD);
+		addEffects(FX_TYPE_FORCEFIELD);
 	if (id == "fx_none")
 		clearEffects();
 	if (id == "fx_edit")

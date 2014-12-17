@@ -196,7 +196,7 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 
 	// lights
 	foreach(ModelEffect &fx, m->fx){
-		if (fx.kind == FX_TYPE_LIGHT){
+		if (fx.type == FX_TYPE_LIGHT){
 			msg_write("......fx light");
 			Light l;
 			l.Directional = false;

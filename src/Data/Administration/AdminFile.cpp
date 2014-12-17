@@ -232,9 +232,9 @@ void AdminFile::check(AdminFileList &list)
 			for (int i=0;i<m.bone.num;i++)
 				add_possible_link(l, FDModel, m.bone[i].model_file);
 			for (int i=0;i<m.fx.num;i++){
-				if (m.fx[i].kind==FX_KIND_SCRIPT)
+				if (m.fx[i].type == FX_TYPE_SCRIPT)
 					add_possible_link(l, FDScript, m.fx[i].file);
-				if (m.fx[i].kind==FX_KIND_SOUND)
+				if (m.fx[i].type == FX_TYPE_SOUND)
 					add_possible_link(l, FDSound, m.fx[i].file);
 			}
 			foreach(string &s, m.meta_data.inventary)

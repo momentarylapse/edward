@@ -441,6 +441,7 @@ enum{
 	FX_TYPE_SOUND,
 	FX_TYPE_LIGHT,
 	FX_TYPE_FORCEFIELD,
+	FX_TYPE_FOG
 };
 
 // observers for collision detection

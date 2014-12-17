@@ -19,7 +19,7 @@ ModelFXDialog::ModelFXDialog(HuiWindow* _parent, bool _allow_parent, DataModel* 
 		temp = data->fx[index];
 	else{
 		temp.clear();
-		temp.kind = _type;
+		temp.type = _type;
 	}
 
 	event("hui:close", this, &ModelFXDialog::OnClose);
@@ -37,21 +37,21 @@ ModelFXDialog::~ModelFXDialog()
 
 void ModelFXDialog::LoadData()
 {
-	if (temp.kind == FX_KIND_SCRIPT){
+	if (temp.type == FX_TYPE_SCRIPT){
 		setInt("fx_tab_control", 0);
 		setString("script_file", temp.file);
-	}else if (temp.kind == FX_KIND_LIGHT){
+	}else if (temp.type == FX_TYPE_LIGHT){
 		setInt("fx_tab_control", 1);
 		setColor("mat_am", temp.colors[0]);
 		setColor("mat_di", temp.colors[1]);
 		setColor("mat_sp", temp.colors[2]);
 		setFloat("light_radius", temp.size);
-	}else if (temp.kind == FX_KIND_SOUND){
+	}else if (temp.type == FX_TYPE_SOUND){
 		setInt("fx_tab_control", 2);
 		setString("filename", temp.file);
 		setFloat("sound_radius", temp.size);
 		setFloat("speed", temp.speed * 100.0f);
-	}else if (temp.kind == FX_KIND_FORCEFIELD){
+	}else if (temp.type == FX_TYPE_FORCEFIELD){
 		setInt("fx_tab_control", 3);
 		setFloat("forcefield_radius", temp.size);
 		setFloat("intensity", temp.intensity);
@@ -61,18 +61,18 @@ void ModelFXDialog::LoadData()
 
 void ModelFXDialog::ApplyData()
 {
-	if (temp.kind == FX_KIND_SCRIPT){
+	if (temp.type == FX_TYPE_SCRIPT){
 		temp.file = getString("script_file");
-	}else if (temp.kind == FX_KIND_LIGHT){
+	}else if (temp.type == FX_TYPE_LIGHT){
 		temp.colors[0] = getColor("mat_am");
 		temp.colors[1] = getColor("mat_di");
 		temp.colors[2] = getColor("mat_sp");
 		temp.size = getFloat("light_radius");
-	}else if (temp.kind == FX_KIND_SOUND){
+	}else if (temp.type == FX_TYPE_SOUND){
 		temp.file = getString("filename");
 		temp.size = getFloat("sound_radius");
 		temp.speed = getFloat("speed") * 0.01f;
-	}else if (temp.kind == FX_KIND_FORCEFIELD){
+	}else if (temp.type == FX_TYPE_FORCEFIELD){
 		temp.size = getFloat("forcefield_radius");
 		temp.intensity = getFloat("intensity");
 		temp.inv_quad = (getInt("formula")  == 1);

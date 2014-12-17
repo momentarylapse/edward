@@ -80,7 +80,7 @@ void PluginManager::init()
 	// model
 
 	Script::DeclareClassSize("ModelEffect", sizeof(ModelEffect));
-	Script::DeclareClassOffset("ModelEffect", "Kind", offsetof(ModelEffect, kind));
+	Script::DeclareClassOffset("ModelEffect", "Kind", offsetof(ModelEffect, type));
 	Script::DeclareClassOffset("ModelEffect", "Surface", offsetof(ModelEffect, surface));
 	Script::DeclareClassOffset("ModelEffect", "Vertex", offsetof(ModelEffect, vertex));
 	Script::DeclareClassOffset("ModelEffect", "Size", offsetof(ModelEffect, size));

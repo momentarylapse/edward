@@ -36,18 +36,10 @@ public:
 #define TransparencyModeColorKeySmooth	3
 #define TransparencyModeFactor			4
 
-// effects
-enum{
-	FX_KIND_SCRIPT,
-	FX_KIND_LIGHT,
-	FX_KIND_FOG,
-	FX_KIND_SOUND,
-	FX_KIND_FORCEFIELD
-};
 
 struct ModelEffect
 {
-	int kind, surface, vertex;
+	int type, surface, vertex;
 	float size, speed, intensity;
 	color colors[3];
 	bool inv_quad;

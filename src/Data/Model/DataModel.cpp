@@ -52,13 +52,13 @@ const string DataModel::MESSAGE_SKIN_CHANGE = "SkinChange";
 
 string ModelEffect::get_type()
 {
-	if (kind==FX_KIND_SCRIPT)
+	if (type == FX_TYPE_SCRIPT)
 		return _("Script");
-	if (kind==FX_KIND_LIGHT)
+	if (type == FX_TYPE_LIGHT)
 		return _("Licht");
-	if (kind==FX_KIND_SOUND)
+	if (type == FX_TYPE_SOUND)
 		return _("Sound");
-	if (kind==FX_KIND_FORCEFIELD)
+	if (type == FX_TYPE_FORCEFIELD)
 		return _("Kraftfeld");
 	return "???";
 }
@@ -428,35 +428,35 @@ bool DataModel::load(const string & _filename, bool deep)
 			fx.clear();
 		for (int i=0;i<fx.num;i++){
 			string fxkind = f->ReadStr();
-			fx[i].kind = -1;
+			fx[i].type = -1;
 			if (fxkind == "Script"){
-				fx[i].kind = FX_KIND_SCRIPT;
+				fx[i].type = FX_TYPE_SCRIPT;
 				fx[i].vertex = f->ReadInt();
 				fx[i].file = f->ReadStr();
 				f->ReadStr();
 			}
 			if (fxkind == "Light"){
-				fx[i].kind = FX_KIND_LIGHT;
+				fx[i].type = FX_TYPE_LIGHT;
 				fx[i].vertex = f->ReadInt();
 				fx[i].size = (float)f->ReadInt();
 				for (int j=0;j<3;j++)
 					read_color_argb(f,fx[i].colors[j]);
 			}
 			if (fxkind == "Sound"){
-				fx[i].kind = FX_KIND_SOUND;
+				fx[i].type = FX_TYPE_SOUND;
 				fx[i].vertex = f->ReadInt();
 				fx[i].size = (float)f->ReadInt();
 				fx[i].speed = (float)f->ReadInt() * 0.01f;
 				fx[i].file = f->ReadStr();
 			}
 			if (fxkind == "ForceField"){
-				fx[i].kind = FX_KIND_FORCEFIELD;
+				fx[i].type = FX_TYPE_FORCEFIELD;
 				fx[i].vertex = f->ReadInt();
 				fx[i].size = (float)f->ReadInt();
 				fx[i].intensity = (float)f->ReadInt();
 				fx[i].inv_quad = f->ReadBool();
 			}
-			if (fx[i].kind<0)
+			if (fx[i].type<0)
 				msg_error("unknown effekt: " + fxkind);
 		}
 		// LOD-Distances
@@ -705,35 +705,35 @@ bool DataModel::load(const string & _filename, bool deep)
 			fx.clear();
 		for (int i=0;i<fx.num;i++){
 			string fxkind = f->ReadStr();
-			fx[i].kind=-1;
+			fx[i].type=-1;
 			if (fxkind == "Script"){
-				fx[i].kind = FX_KIND_SCRIPT;
+				fx[i].type = FX_TYPE_SCRIPT;
 				fx[i].vertex = f->ReadInt();
 				fx[i].file = f->ReadStr();
 				f->ReadStr();
 			}
 			if (fxkind == "Light"){
-				fx[i].kind = FX_KIND_LIGHT;
+				fx[i].type = FX_TYPE_LIGHT;
 				fx[i].vertex = f->ReadInt();
 				fx[i].size = (float)f->ReadInt();
 				for (int j=0;j<3;j++)
 					read_color_argb(f,fx[i].colors[j]);
 			}
 			if (fxkind == "Sound"){
-				fx[i].kind = FX_KIND_SOUND;
+				fx[i].type = FX_TYPE_SOUND;
 				fx[i].vertex = f->ReadInt();
 				fx[i].size = (float)f->ReadInt();
 				fx[i].speed = (float)f->ReadInt() * 0.01f;
 				fx[i].file = f->ReadStr();
 			}
 			if (fxkind == "ForceField"){
-				fx[i].kind = FX_KIND_FORCEFIELD;
+				fx[i].type = FX_TYPE_FORCEFIELD;
 				fx[i].vertex = f->ReadInt();
 				fx[i].size = (float)f->ReadInt();
 				fx[i].intensity = (float)f->ReadInt();
 				fx[i].inv_quad = f->ReadBool();
 			}
-			if (fx[i].kind<0)
+			if (fx[i].type<0)
 				msg_error("unknown effekt: " + fxkind);
 		}
 
@@ -1278,24 +1278,24 @@ bool DataModel::save(const string & _filename)
 	f->WriteComment("// Effects");
 	f->WriteInt(fx.num);
 	for (int i=0;i<fx.num;i++){
-		if (fx[i].kind==FX_KIND_SCRIPT){
+		if (fx[i].type == FX_TYPE_SCRIPT){
 			f->WriteStr("Script");
 			f->WriteInt(fx[i].vertex);
 			f->WriteStr(fx[i].file);
 			f->WriteStr("");
-		}else if (fx[i].kind==FX_KIND_LIGHT){
+		}else if (fx[i].type == FX_TYPE_LIGHT){
 			f->WriteStr("Light");
 			f->WriteInt(fx[i].vertex);
 			f->WriteInt((int)fx[i].size);
 			for (int nc=0;nc<3;nc++)
 				write_color_argb(f, fx[i].colors[nc]);
-		}else if (fx[i].kind==FX_KIND_SOUND){
+		}else if (fx[i].type == FX_TYPE_SOUND){
 			f->WriteStr("Sound");
 			f->WriteInt(fx[i].vertex);
 			f->WriteInt((int)fx[i].size);
 			f->WriteInt((int)(fx[i].speed * 100.0f));
 			f->WriteStr(fx[i].file);
-		}else if (fx[i].kind==FX_KIND_FORCEFIELD){
+		}else if (fx[i].type == FX_TYPE_FORCEFIELD){
 			f->WriteStr("ForceField");
 			f->WriteInt(fx[i].vertex);
 			f->WriteInt((int)fx[i].size);
