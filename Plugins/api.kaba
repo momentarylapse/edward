@@ -158,7 +158,6 @@ class ModelMove
 	int Type
 	ModelFrame Frame[]
 	float FramesPerSecConst, FramesPerSecFactor
-	bool InterpolatedQuadratic, InterpolatedLoop
 	string Name
 
 class ModelEdge: MultiViewSingleData

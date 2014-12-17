@@ -6,6 +6,9 @@ string vecToJson(vector v)
 string col3ToJson(color c)
 	return "" + c.r + ", " + c.g + ", " + c.b
 
+string qToJson(quaternion q)
+	return "" + q.x + ", " + q.y + ", " + q.z + ", " + q.w
+
 string materialToJson(ModelMaterial m)
 	string str
 	str += "	{\n"
@@ -30,8 +33,35 @@ string moveToJson(ModelMove m)
 	string str
 	str += "	{\n"
 	str += "		'name': '" + m.Name + "',\n"
-	str += "		'vertices': [" // TODO............
-	str += "]\n"
+	str += "		'fps': " + m.FramesPerSecConst + ",\n"
+	str += "		'length': " + (m.Frame.num / m.FramesPerSecConst) + ",\n"
+	str += "		'hierarchy': [\n"
+	for int i, 0, data_model.Bone.num
+		str += "			{\n"
+		str += "				'parent': " + data_model.Bone[i].Parent + ",\n"
+		str += "				'keys': [\n"
+		for int j, 0, m.Frame.num
+			quaternion q
+			QuaternionRotationV(q, m.Frame[j].SkelAng[i])
+			str += "					{\n"
+			str += "						'time': " + (j / m.FramesPerSecConst) + ",\n"
+			str += "						'pos': [0,0,0],\n"
+			str += "						'rot': [" + qToJson(q) + "],\n"
+			str += "						'scl': [1,1,1]\n"
+			str += "					},\n"
+		QuaternionRotationV(q, m.Frame[0].SkelAng[i])
+		str += "					{\n"
+		str += "						'time': " + (m.Frame.num / m.FramesPerSecConst) + ",\n"
+		str += "						'pos': [0,0,0],\n"
+		str += "						'rot': [" + qToJson(q) + "],\n"
+		str += "						'scl': [1,1,1]\n"
+		str += "					}\n"
+		str += "				]\n"
+		if i < data_model.Bone.num - 1
+			str += "			},\n"
+		else
+			str += "			}\n"
+	str += "		]\n"
 	str += "	}"
 	return str
 
@@ -163,59 +193,13 @@ void main()
 		if i < data_model.Vertex.num - 1
 			str += ", "
 	str += "],\n"
-	str += "'animation': {\n"
-	str += "	'name': 'aaa',\n"
-	str += "	'fps': 2,\n"
-	str += "	'length': 1,\n"
-	str += "	'hierarchy': [\n"
-	str += "		{\n"
-	str += "			'parent': -1,\n"
-	str += "			'keys': [\n"
-	str += "				{\n"
-	str += "					'time': 0,\n"
-	str += "					'pos': [0,0,0],\n"
-	str += "					'rot': [0,0,0],\n"
-	str += "					'scl': [1,1,1]\n"
-	str += "				},\n"
-	str += "				{\n"
-	str += "					'time': 0.5,\n"
-	str += "					'pos': [0,0,0],\n"
-	str += "					'rot': [60,0,0],\n"
-	str += "					'scl': [1,1,1]\n"
-	str += "				},\n"
-	str += "				{\n"
-	str += "					'time': 1,\n"
-	str += "					'pos': [0,0,0],\n"
-	str += "					'rot': [0,0,0],\n"
-	str += "					'scl': [1,1,1]\n"
-	str += "				}\n"
-	str += "			]\n"
-	str += "		},\n"
-	str += "		{\n"
-	str += "			'parent': 0,\n"
-	str += "			'keys': [\n"
-	str += "				{\n"
-	str += "					'time': 0,\n"
-	str += "					'pos': [0,0,0],\n"
-	str += "					'rot': [0,0,0],\n"
-	str += "					'scl': [1,1,1]\n"
-	str += "				},\n"
-	str += "				{\n"
-	str += "					'time': 0.5,\n"
-	str += "					'pos': [0,0,0],\n"
-	str += "					'rot': [0,60,0],\n"
-	str += "					'scl': [1,1,1]\n"
-	str += "				},\n"
-	str += "				{\n"
-	str += "					'time': 1,\n"
-	str += "					'pos': [0,0,0],\n"
-	str += "					'rot': [0,0,0],\n"
-	str += "					'scl': [1,1,1]\n"
-	str += "				}\n"
-	str += "			]\n"
-	str += "		}\n"
-	str += "	]\n"
-	str += "}\n"
+	str += "'animations': [\n"
+	for int i, 0, data_model.Move.num
+		print i
+		str += moveToJson(data_model.Move[i])
+		if i < data_model.Move.num - 1
+			str += ",\n"
+	str += "]\n"
 	str += "}"
 	str = str.replace("'", "\"")
 	f << str

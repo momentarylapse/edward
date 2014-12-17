@@ -129,6 +129,19 @@ void PluginManager::init()
 	Script::DeclareClassOffset("ModelBone", "ConstPos", offsetof(ModelBone, const_pos));
 	Script::DeclareClassOffset("ModelBone", "Matrix", offsetof(ModelBone, _matrix));
 
+	Script::DeclareClassSize("ModelMove", sizeof(ModelMove));
+	Script::DeclareClassOffset("ModelMove", "Name", offsetof(ModelMove, name));
+	Script::DeclareClassOffset("ModelMove", "Type", offsetof(ModelMove, type));
+	Script::DeclareClassOffset("ModelMove", "FramesPerSecConst", offsetof(ModelMove, frames_per_sec_const));
+	Script::DeclareClassOffset("ModelMove", "FramesPerSecFactor", offsetof(ModelMove, frames_per_sec_factor));
+	Script::DeclareClassOffset("ModelMove", "Frame", offsetof(ModelMove, frame));
+
+	Script::DeclareClassSize("ModelFrame", sizeof(ModelFrame));
+	Script::DeclareClassOffset("ModelFrame", "SkelAng", offsetof(ModelFrame, skel_ang));
+	Script::DeclareClassOffset("ModelFrame", "SkelDPos", offsetof(ModelFrame, skel_dpos));
+	Script::DeclareClassOffset("ModelFrame", "DPos", offsetof(ModelFrame, skin));
+	Script::DeclareClassOffset("ModelFrame", "VertexDPos", offsetof(ModelFrame, vertex_dpos));
+
 	Script::DeclareClassSize("DataModel", sizeof(DataModel));
 	Script::DeclareClassOffset("DataModel", "Bone", offsetof(DataModel, bone));
 	Script::DeclareClassOffset("DataModel", "Move", offsetof(DataModel, move));
