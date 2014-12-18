@@ -15,7 +15,6 @@ class ModeModelMeshSplitPolygon: public ModeCreation<DataModel>
 {
 public:
 	ModeModelMeshSplitPolygon(ModeBase *parent);
-	virtual ~ModeModelMeshSplitPolygon();
 
 	virtual void onLeftButtonDown();
 

@@ -6,9 +6,10 @@
  */
 
 #include "ActionModelSkinVerticesFromProjection.h"
-#include "../../../../Mode/Model/Mesh/ModeModelMeshTexture.h"
 #include "../../../../MultiView/MultiView.h"
 #include <assert.h>
+
+#include "../../../../Mode/Model/Mesh/ModeModelMeshTexture.h"
 
 ActionModelSkinVerticesFromProjection::ActionModelSkinVerticesFromProjection(DataModel *m, MultiView::MultiView *mv)
 {

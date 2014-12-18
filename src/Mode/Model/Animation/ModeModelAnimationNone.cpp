@@ -9,7 +9,7 @@
 #include "ModeModelAnimation.h"
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
-#include "../Mesh/ModeModelMeshPolygon.h"
+#include "../Mesh/ModeModelMesh.h"
 
 ModeModelAnimationNone *mode_model_animation_none = NULL;
 
@@ -42,7 +42,7 @@ void ModeModelAnimationNone::onCommand(const string& id)
 
 void ModeModelAnimationNone::onUpdate(Observable* o, const string &message)
 {
-	mode_model_mesh_polygon->fillSelectionBuffers(mode_model_animation->vertex);
+	mode_model_mesh->fillSelectionBuffers(mode_model_animation->vertex);
 }
 
 void ModeModelAnimationNone::onUpdateMenu()
@@ -51,7 +51,7 @@ void ModeModelAnimationNone::onUpdateMenu()
 
 void ModeModelAnimationNone::onDrawWin(MultiView::Window *win)
 {
-	mode_model_mesh_polygon->onDrawWin(win);
+	mode_model_mesh->onDrawWin(win);
 }
 
 

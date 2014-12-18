@@ -18,6 +18,8 @@ ModeModelMeshBrush::ModeModelMeshBrush(ModeBase* _parent) :
 	ModeCreation<DataModel>("ModelMeshBrush", _parent)
 {
 	message = _("auf der Oberfl&ache malen");
+
+	mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_polygon);
 	brushing = false;
 }
 

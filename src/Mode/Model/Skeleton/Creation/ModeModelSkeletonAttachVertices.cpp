@@ -6,10 +6,10 @@
  */
 
 #include "ModeModelSkeletonAttachVertices.h"
-#include "../../Mesh/ModeModelMeshPolygon.h"
 #include "../../../../Action/Model/Skeleton/ActionModelAttachVerticesToBone.h"
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
+#include "../../Mesh/MeshSelectionModePolygon.h"
 
 ModeModelSkeletonAttachVertices::ModeModelSkeletonAttachVertices(ModeBase* _parent,
 		int _bone_index) :
@@ -50,7 +50,7 @@ void ModeModelSkeletonAttachVertices::onUpdate(Observable *o, const string &mess
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
 	}else if (o == multi_view){
 		data->SelectionFromVertices();
-		mode_model_mesh_polygon->fillSelectionBuffers(data->vertex);
+		mode_model_mesh->fillSelectionBuffers(data->vertex);
 	}
 }
 
@@ -69,7 +69,7 @@ void ModeModelSkeletonAttachVertices::onKeyDown()
 
 void ModeModelSkeletonAttachVertices::onDrawWin(MultiView::Window *win)
 {
-	mode_model_mesh_polygon->drawSelection(win);
+	mode_model_mesh->drawSelection(win);
 }
 
 

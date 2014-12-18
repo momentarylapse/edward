@@ -8,12 +8,12 @@
 #include "ModelMaterialDialog.h"
 #include "../../../Data/Model/DataModel.h"
 #include "../Mesh/ModeModelMesh.h"
-#include "../Mesh/ModeModelMeshTexture.h"
 #include "../../../Action/Model/Data/ActionModelAddMaterial.h"
 #include "../../../Action/Model/Data/ActionModelEditMaterial.h"
 #include "../../../Action/Model/Data/ActionModelEditData.h"
 #include "../../../Edward.h"
 #include "../../../lib/nix/nix.h"
+#include "../Mesh/ModeModelMeshTexture.h"
 
 string file_secure(const string &filename);
 string render_material(ModelMaterial *m);

@@ -6,6 +6,7 @@
  */
 
 #include "ModeModelMeshSplitPolygon.h"
+#include "../ModeModelMesh.h"
 #include "../../../../Edward.h"
 #include "../../../../Action/Model/Mesh/Polygon/ActionModelSplitPolygon.h"
 #include "../../../../Action/Model/Mesh/Edge/ActionModelSplitEdge.h"
@@ -20,10 +21,8 @@ ModeModelMeshSplitPolygon::ModeModelMeshSplitPolygon(ModeBase *_parent) :
 	factor = 0;
 
 	message = _("neuen Punkt in Polygon setzen");
-}
 
-ModeModelMeshSplitPolygon::~ModeModelMeshSplitPolygon()
-{
+	mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_polygon);
 }
 
 void ModeModelMeshSplitPolygon::onLeftButtonDown()

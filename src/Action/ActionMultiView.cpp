@@ -13,9 +13,10 @@
 #include "World/ActionWorldMoveSelection.h"
 #include "World/Object/ActionWorldRotateObjects.h"
 #include "World/Camera/ActionCameraMoveSelection.h"
-#include "../Mode/Model/Mesh/ModeModelMeshTexture.h"
 #include "../Mode/Model/Animation/ModeModelAnimation.h"
 #include <assert.h>
+
+#include "../Mode/Model/Mesh/ModeModelMeshTexture.h"
 #include "Model/Skeleton/ActionModelTransformBones.h"
 
 ActionMultiView::ActionMultiView()

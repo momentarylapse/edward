@@ -8,7 +8,6 @@
 
 #include "../../ModeModel.h"
 #include "../ModeModelMesh.h"
-#include "../ModeModelMeshPolygon.h"
 #include "ModeModelMeshDeform.h"
 #include "../../../../Data/Model/Geometry/GeometryCube.h"
 #include "../../../../Edward.h"
@@ -18,6 +17,7 @@
 #include "../../../../MultiView/Window.h"
 #include "../../../../Action/ActionGroup.h"
 #include "../../../../Action/Model/Mesh/Vertex/Helper/ActionModelMoveVertex.h"
+#include "../MeshSelectionModePolygon.h"
 
 const int CUBE_SIZE = 20;
 
@@ -41,6 +41,8 @@ const int CUBE_SIZE = 20;
 
 	 tex = new NixTexture;
 	 tex->overwrite(im);
+
+	mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_vertex);
 }
 
 ModeModelMeshDeform::~ModeModelMeshDeform()
@@ -103,7 +105,7 @@ void ModeModelMeshDeform::onLeftButtonDown()
 
 void ModeModelMeshDeform::onDrawWin(MultiView::Window* win)
 {
-	mode_model_mesh_polygon->setMaterialCreation();
+	mode_model_mesh->setMaterialCreation();
 	geo->preview(VBTemp, 1);
 
 	NixSetTexture(tex);

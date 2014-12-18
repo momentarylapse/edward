@@ -14,6 +14,16 @@
 
 class DataModel;
 class ModelMaterialDialog;
+class NixVertexBuffer;
+class MeshSelectionMode;
+
+enum
+{
+	SELECTION_MODE_VERTEX,
+	SELECTION_MODE_EDGE,
+	SELECTION_MODE_POLYGON,
+	SELECTION_MODE_SURFACE
+};
 
 class ModeModelMesh: public Mode<DataModel>, public Observable
 {
@@ -29,7 +39,13 @@ public:
 	virtual void onUpdate(Observable *o, const string &message);
 	virtual void onUpdateMenu();
 
+	virtual void onDrawWin(MultiView::Window *win);
 	virtual void onDraw();
+
+	void drawEffects(MultiView::Window *win);
+	void drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex, bool only_selected);
+	void drawPolygons(MultiView::Window *win, Array<ModelVertex> &vertex);
+	void drawSelection(MultiView::Window *win);
 
 	virtual bool optimizeView();
 
@@ -58,9 +74,29 @@ public:
 	bool pasteable();
 	Geometry temp_geo;
 
+	MeshSelectionMode *selection_mode;
+	void setSelectionMode(MeshSelectionMode *mode);
+	MeshSelectionMode *selection_mode_vertex;
+	MeshSelectionMode *selection_mode_edge;
+	MeshSelectionMode *selection_mode_polygon;
+	MeshSelectionMode *selection_mode_surface;
+
 
 	int current_material;
 	void setCurrentMaterial(int index);
+
+
+	void setMaterialMarked();
+	void setMaterialMouseOver();
+	void setMaterialCreation();
+
+	void fillSelectionBuffers(Array<ModelVertex> &vertex);
+
+	void toggleSelectCW();
+	bool select_cw;
+
+	NixVertexBuffer *vb_model, *vb_model2, *vb_model3, *vb_model4;
+	NixVertexBuffer *vb_marked, *vb_hover, *vb_creation;
 };
 
 extern ModeModelMesh *mode_model_mesh;

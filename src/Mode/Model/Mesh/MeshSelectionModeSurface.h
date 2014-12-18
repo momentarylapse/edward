@@ -8,25 +8,21 @@
 #ifndef MODEMODELMESHSURFACE_H_
 #define MODEMODELMESHSURFACE_H_
 
-#include "../../Mode.h"
-#include "../../../Data/Model/DataModel.h"
+#include "MeshSelectionMode.h"
 
-class DataModel;
-
-class ModeModelMeshSurface: public Mode<DataModel>
+class MeshSelectionModeSurface: public MeshSelectionMode
 {
 public:
-	ModeModelMeshSurface(ModeBase *parent);
+	MeshSelectionModeSurface(ModeModelMesh *parent);
 
 	virtual void onStart();
 	virtual void onEnd();
 
-	virtual void onUpdate(Observable *o, const string &message);
+	virtual void updateSelection();
+	virtual void updateMultiView();
 
 	virtual void onDraw();
 	virtual void onDrawWin(MultiView::Window *win);
 };
-
-extern ModeModelMeshSurface *mode_model_mesh_surface;
 
 #endif /* MODEMODELMESHSURFACE_H_ */

@@ -10,14 +10,14 @@
 #include "../../Data/Model/DataModel.h"
 #include "../../Data/Model/Import/Importer3ds.h"
 #include "Mesh/ModeModelMesh.h"
-#include "Mesh/ModeModelMeshVertex.h"
-#include "Mesh/ModeModelMeshEdge.h"
-#include "Mesh/ModeModelMeshPolygon.h"
-#include "Mesh/ModeModelMeshSurface.h"
-#include "Mesh/ModeModelMeshTexture.h"
 #include "Skeleton/ModeModelSkeleton.h"
 #include "Animation/ModeModelAnimation.h"
 #include "../../lib/nix/nix.h"
+#include "Mesh/MeshSelectionModeEdge.h"
+#include "Mesh/MeshSelectionModePolygon.h"
+#include "Mesh/MeshSelectionModeSurface.h"
+#include "Mesh/MeshSelectionModeVertex.h"
+#include "Mesh/ModeModelMeshTexture.h"
 
 ModeModel *mode_model = NULL;
 
@@ -112,14 +112,16 @@ void ModeModel::onCommand(const string & id)
 	if (id == "redo")
 		data->redo();
 
+	if (id == "mode_model_mesh")
+		ed->setMode(mode_model_mesh);
 	if (id == "mode_model_vertex")
-		ed->setMode(mode_model_mesh_vertex);
+		mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_vertex);
 	if (id == "mode_model_edge")
-		ed->setMode(mode_model_mesh_edge);
+		mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_edge);
 	if (id == "mode_model_triangle")
-		ed->setMode(mode_model_mesh_polygon);
+		mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_polygon);
 	if (id == "mode_model_surface")
-		ed->setMode(mode_model_mesh_surface);
+		mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_surface);
 	if (id == "mode_model_texture_coord")
 		ed->setMode(mode_model_mesh_texture);
 	if (id == "mode_model_animation")
@@ -143,10 +145,10 @@ void ModeModel::onCommand(const string & id)
 
 void ModeModel::onUpdateMenu()
 {
-	ed->check("mode_model_vertex", mode_model_mesh_vertex->isAncestorOf(ed->cur_mode));
-	ed->check("mode_model_edge", mode_model_mesh_edge->isAncestorOf(ed->cur_mode));
-	ed->check("mode_model_triangle", mode_model_mesh_polygon->isAncestorOf(ed->cur_mode));
-	ed->check("mode_model_surface", mode_model_mesh_surface->isAncestorOf(ed->cur_mode));
+	ed->check("mode_model_vertex", mode_model_mesh->selection_mode_vertex->isActive());
+	ed->check("mode_model_edge", mode_model_mesh->selection_mode_edge->isActive());
+	ed->check("mode_model_triangle", mode_model_mesh->selection_mode_polygon->isActive());
+	ed->check("mode_model_surface", mode_model_mesh->selection_mode_surface->isActive());
 	ed->check("mode_model_texture_coord", mode_model_mesh_texture->isAncestorOf(ed->cur_mode));
 	ed->check("mode_model_mesh", mode_model_mesh->isAncestorOf(ed->cur_mode));
 	ed->check("mode_model_skeleton", mode_model_skeleton->isAncestorOf(ed->cur_mode));

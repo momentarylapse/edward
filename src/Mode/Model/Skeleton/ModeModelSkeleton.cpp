@@ -9,12 +9,12 @@
 #include "../../../MultiView/MultiView.h"
 #include "../../../MultiView/Window.h"
 #include "ModeModelSkeleton.h"
-#include "../Mesh/ModeModelMeshPolygon.h"
 #include "../Animation/ModeModelAnimation.h"
 #include "Creation/ModeModelSkeletonCreateBone.h"
 #include "Creation/ModeModelSkeletonAttachVertices.h"
 #include "../../../Action/Model/Skeleton/ActionModelDeleteBoneSelection.h"
 #include "../../../Action/Model/Skeleton/ActionModelSetSubModel.h"
+#include "../Mesh/MeshSelectionModePolygon.h"
 
 
 
@@ -210,10 +210,10 @@ void drawCoordBasis(const ModelBone &b)
 void ModeModelSkeleton::onDrawWin(MultiView::Window *win)
 {
 	if (mode_model_animation->isAncestorOf(ed->cur_mode)){
-		mode_model_mesh_polygon->drawPolygons(win, mode_model_animation->vertex);
+		mode_model_mesh->drawPolygons(win, mode_model_animation->vertex);
 		drawSkeleton(win, mode_model_animation->bone);
 	}else{
-		mode_model_mesh_polygon->drawPolygons(win, data->vertex);
+		mode_model_mesh->drawPolygons(win, data->vertex);
 		drawSkeleton(win, data->bone);
 	}
 }

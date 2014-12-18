@@ -9,10 +9,10 @@
 #include "../../../Edward.h"
 #include "../ModeModel.h"
 #include "../Mesh/ModeModelMesh.h"
-#include "../Mesh/ModeModelMeshTexture.h"
 #include "../../../Action/Model/Data/ActionModelAddMaterial.h"
 #include "../../../Action/Model/Data/ActionModelEditData.h"
 #include "../../../lib/nix/nix.h"
+#include "../Mesh/ModeModelMeshTexture.h"
 
 
 

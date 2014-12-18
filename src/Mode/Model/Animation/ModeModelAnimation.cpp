@@ -11,8 +11,8 @@
 #include "ModeModelAnimationNone.h"
 #include "ModeModelAnimationSkeleton.h"
 #include "ModeModelAnimationVertex.h"
-#include "../Mesh/ModeModelMeshPolygon.h"
 #include "../Dialog/ModelAnimationDialog.h"
+#include "../Mesh/MeshSelectionModePolygon.h"
 
 ModeModelAnimation *mode_model_animation = NULL;
 
@@ -170,7 +170,7 @@ void ModeModelAnimation::updateAnimation()
 		vertex = data->vertex;
 	}
 
-	mode_model_mesh_polygon->fillSelectionBuffers(vertex);
+	mode_model_mesh->fillSelectionBuffers(vertex);
 
 	//data->notify();
 	ed->forceRedraw();

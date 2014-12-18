@@ -6,6 +6,7 @@
  */
 
 #include "ModeModelMeshCreateVertex.h"
+#include "../ModeModelMesh.h"
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 
@@ -13,6 +14,8 @@ ModeModelMeshCreateVertex::ModeModelMeshCreateVertex(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateVertex", _parent)
 {
 	message = _("neue Punkte setzen");
+
+	mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_vertex);
 }
 
 ModeModelMeshCreateVertex::~ModeModelMeshCreateVertex()

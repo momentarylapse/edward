@@ -9,7 +9,7 @@
 #include "ModeModelAnimation.h"
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
-#include "../Mesh/ModeModelMeshPolygon.h"
+#include "../Mesh/MeshSelectionModePolygon.h"
 
 ModeModelAnimationVertex *mode_model_animation_vertex = NULL;
 
@@ -112,7 +112,7 @@ void ModeModelAnimationVertex::onDrawWin(MultiView::Window *win)
 {
 	msg_db_f("skin.DrawWin",4);
 
-	mode_model_mesh_polygon->drawPolygons(win, mode_model_animation->vertex);
+	mode_model_mesh->drawPolygons(win, mode_model_animation->vertex);
 	NixSetShader(NULL);
 	NixSetWire(false);
 	NixSetZ(true,true);
@@ -120,8 +120,8 @@ void ModeModelAnimationVertex::onDrawWin(MultiView::Window *win)
 	NixEnableLighting(true);
 	msg_db_m("----a",4);
 
-	mode_model_mesh_polygon->setMaterialMarked();
-	NixDraw3D(mode_model_mesh_polygon->vb_marked);
+	mode_model_mesh->setMaterialMarked();
+	NixDraw3D(mode_model_mesh->vb_marked);
 	NixSetMaterial(White,White,Black,0,Black);
 	NixSetAlpha(AlphaNone);
 }

@@ -7,13 +7,10 @@
 
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
+#include "../../../MultiView/Window.h"
 #include "../ModeModel.h"
 #include "ModeModelMesh.h"
-#include "ModeModelMeshVertex.h"
-#include "ModeModelMeshEdge.h"
-#include "ModeModelMeshPolygon.h"
-#include "ModeModelMeshSurface.h"
-#include "ModeModelMeshTexture.h"
+#include "../Skeleton/ModeModelSkeleton.h"
 #include "../../ModeCreation.h"
 #include "Creation/ModeModelMeshCreateVertex.h"
 #include "Creation/ModeModelMeshCreatePolygon.h"
@@ -35,25 +32,52 @@
 #include "../Dialog/ModelMaterialDialog.h"
 #include "../Dialog/ModelEasifyDialog.h"
 #include "../Dialog/ModelFXDialog.h"
+#include "MeshSelectionModeEdge.h"
+#include "MeshSelectionModePolygon.h"
+#include "MeshSelectionModeSurface.h"
+#include "MeshSelectionModeVertex.h"
+#include "ModeModelMeshTexture.h"
+
+#include <GL/gl.h>
+
+namespace MultiView
+{
+	extern color ColorText;
+	extern color ColorBackGround2D;
+};
 
 ModeModelMesh *mode_model_mesh = NULL;
 
 ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
-	Mode<DataModel>("ModelMesh", _parent, ed->multi_view_3d, ""),
+	Mode<DataModel>("ModelMesh", _parent, ed->multi_view_3d, "menu_model"),
 	Observable("ModelMesh")
 {
 	Observer::subscribe(data);
 
+	selection_mode = NULL;
 	material_dialog = NULL;
 	current_material = 0;
 
+	// vertex buffers
+	vb_marked = new NixVertexBuffer(1);
+	vb_model = new NixVertexBuffer(1);
+	vb_model2 = NULL;
+	vb_model3 = NULL;
+	vb_model4 = NULL;
+	vb_hover = new NixVertexBuffer(1);
+	vb_creation = new NixVertexBuffer(1);
+
+	select_cw = false;
+
 	chooseMouseFunction(MultiView::ActionSelect);
 
-	mode_model_mesh_vertex = new ModeModelMeshVertex(this);
-	mode_model_mesh_edge = new ModeModelMeshEdge(this);
-	mode_model_mesh_polygon = new ModeModelMeshPolygon(this);
-	mode_model_mesh_surface = new ModeModelMeshSurface(this);
+	selection_mode_vertex = new MeshSelectionModeVertex(this);
+	selection_mode_edge = new MeshSelectionModeEdge(this);
+	selection_mode_polygon = new MeshSelectionModePolygon(this);
+	selection_mode_surface = new MeshSelectionModeSurface(this);
 	mode_model_mesh_texture = new ModeModelMeshTexture(this);
+
+	selection_mode = selection_mode_vertex;
 }
 
 ModeModelMesh::~ModeModelMesh()
@@ -81,18 +105,24 @@ void ModeModelMesh::onStart()
 	t->addItemCheckable(_("Spiegeln"),dir + "rf_mirror.png", "mirror");
 	t->enable(true);
 	t->configure(false,true);
+
+
+	subscribe(data);
+	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
+
+	setSelectionMode(selection_mode_polygon);
 }
 
 void ModeModelMesh::onEnter()
 {
 	current_material = 0;
-
-	//ed->setMode(mode_model_mesh_vertex);
-	ed->setMode(mode_model_mesh_polygon);
 }
 
 void ModeModelMesh::onEnd()
 {
+	unsubscribe(data);
+	unsubscribe(multi_view);
+
 	HuiToolbar *t = ed->toolbar[HuiToolbarLeft];
 	t->reset();
 	t->enable(false);
@@ -105,14 +135,14 @@ void ModeModelMesh::onEnd()
 void ModeModelMesh::onCommand(const string & id)
 {
 	if (id == "delete")
-		data->DeleteSelection(ed->cur_mode == mode_model_mesh_vertex);
+		data->DeleteSelection(selection_mode == selection_mode_vertex);
 	if (id == "copy")
 		copy();
 	if (id == "paste")
 		paste();
 
 	if (id == "select_cw")
-		mode_model_mesh_polygon->toggleSelectCW();
+		toggleSelectCW();
 
 	if (id == "volume_subtract")
 		data->SubtractSelection();
@@ -142,39 +172,39 @@ void ModeModelMesh::onCommand(const string & id)
 		data->SubdivideSelectedSurfaces();
 
 	if (id == "new_point")
-		ed->setMode(new ModeModelMeshCreateVertex(mode_model_mesh_vertex));
+		ed->setMode(new ModeModelMeshCreateVertex(this));
 	if (id == "new_tria")
-		ed->setMode(new ModeModelMeshCreatePolygon(mode_model_mesh_vertex));
+		ed->setMode(new ModeModelMeshCreatePolygon(this));
 	if (id == "new_ball")
-		ed->setMode(new ModeModelMeshCreateBall(ed->cur_mode));
+		ed->setMode(new ModeModelMeshCreateBall(this));
 	if (id == "new_cube")
-		ed->setMode(new ModeModelMeshCreateCube(ed->cur_mode));
+		ed->setMode(new ModeModelMeshCreateCube(this));
 	if (id == "new_cylinder")
-		ed->setMode(new ModeModelMeshCreateCylinder(ed->cur_mode));
+		ed->setMode(new ModeModelMeshCreateCylinder(this));
 	if (id == "new_cylindersnake")
-		ed->setMode(new ModeModelMeshCreateCylinderSnake(ed->cur_mode));
+		ed->setMode(new ModeModelMeshCreateCylinderSnake(this));
 	if (id == "new_plane")
-		ed->setMode(new ModeModelMeshCreatePlane(ed->cur_mode));
+		ed->setMode(new ModeModelMeshCreatePlane(this));
 	if (id == "new_torus")
-		ed->setMode(new ModeModelMeshCreateTorus(ed->cur_mode));
+		ed->setMode(new ModeModelMeshCreateTorus(this));
 	if (id == "new_tetrahedron")
-		ed->setMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 4));
+		ed->setMode(new ModeModelMeshCreatePlatonic(this, 4));
 	if (id == "new_octahedron")
-		ed->setMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 8));
+		ed->setMode(new ModeModelMeshCreatePlatonic(this, 8));
 	if (id == "new_dodecahedron")
-		ed->setMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 12));
+		ed->setMode(new ModeModelMeshCreatePlatonic(this, 12));
 	if (id == "new_icosahedron")
-		ed->setMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 20));
+		ed->setMode(new ModeModelMeshCreatePlatonic(this, 20));
 	if (id == "new_teapot")
-		ed->setMode(new ModeModelMeshCreatePlatonic(ed->cur_mode, 306));
+		ed->setMode(new ModeModelMeshCreatePlatonic(this, 306));
 	if (id == "new_extract")
-		ed->setMode(new ModeModelMeshSplitPolygon(mode_model_mesh_polygon));
+		ed->setMode(new ModeModelMeshSplitPolygon(this));
 	if (id == "bevel_edges")
-		ed->setMode(new ModeModelMeshBevelEdges(mode_model_mesh_vertex));
+		ed->setMode(new ModeModelMeshBevelEdges(this));
 	if (id == "deformation_brush")
-		ed->setMode(new ModeModelMeshBrush(mode_model_mesh_polygon));
+		ed->setMode(new ModeModelMeshBrush(this));
 	if (id == "deformation_function")
-		ed->setMode(new ModeModelMeshDeform(mode_model_mesh_vertex));
+		ed->setMode(new ModeModelMeshDeform(this));
 	if (id == "flatten_vertices")
 		data->FlattenSelectedVertices();
 
@@ -252,11 +282,26 @@ void ModeModelMesh::toggleMaterialDialog()
 
 void ModeModelMesh::onDraw()
 {
+	fillSelectionBuffers(data->vertex);
+
 	if (data->GetNumSelectedVertices() > 0){
 		ed->drawStr(20, 100, format(_("vert: %d"), data->GetNumSelectedVertices()));
 		ed->drawStr(20, 120, format(_("poly: %d"), data->GetNumSelectedPolygons()));
 		ed->drawStr(20, 140, format(_("surf: %d"), data->GetNumSelectedSurfaces()));
 	}
+}
+
+
+void ModeModelMesh::onDrawWin(MultiView::Window *win)
+{
+	if (multi_view->wire_mode)
+		drawEdges(win, data->vertex, false);
+	else
+		drawPolygons(win, data->vertex);
+	mode_model_skeleton->drawSkeleton(win, data->bone, true);
+	drawSelection(win);
+
+	selection_mode->onDrawWin(win);
 }
 
 
@@ -267,6 +312,14 @@ void ModeModelMesh::onUpdate(Observable *o, const string &message)
 	if (current_material >= data->material.num)
 		setCurrentMaterial(data->material.num - 1);
 	//data->DebugShow();
+
+	if (o == data){
+		selection_mode->updateMultiView();
+	}else if (o == multi_view){
+		selection_mode->updateSelection();
+	}
+
+	fillSelectionBuffers(data->vertex);
 }
 
 
@@ -285,7 +338,7 @@ void ModeModelMesh::onUpdateMenu()
 	ed->check("new_cylinder", cm_name == "ModelMeshCreateCylinder");
 	ed->check("new_torus", cm_name == "ModelMeshCreateTorus");
 
-	ed->check("select_cw", mode_model_mesh_polygon->select_cw);
+	ed->check("select_cw", select_cw);
 
 	ed->enable("select", multi_view->allow_mouse_actions);
 	ed->enable("translate", multi_view->allow_mouse_actions);
@@ -491,4 +544,173 @@ void ModeModelMesh::setCurrentMaterial(int index)
 	current_material = index;
 	notify();
 	mode_model_mesh_texture->setCurrentTextureLevel(0);
+}
+
+void ModeModelMesh::drawEffects(MultiView::Window *win)
+{
+	NixEnableLighting(false);
+	foreach(ModelEffect &fx, data->fx){
+		vector p = win->project(data->vertex[fx.vertex].pos);
+		if ((p.z > 0) && (p.z < 1))
+			ed->drawStr(p.x, p.y, fx.get_type());
+	}
+	NixEnableLighting(multi_view->light_enabled);
+}
+
+
+void ModeModelMesh::drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex, bool only_selected)
+{
+	NixSetWire(false);
+	NixEnableLighting(false);
+	vector dir = win->getDirection();
+	foreach(ModelSurface &s, data->surface){
+		foreach(ModelEdge &e, s.edge){
+			if (min(vertex[e.vertex[0]].view_stage, vertex[e.vertex[1]].view_stage) < multi_view->view_stage)
+				continue;
+			if (!e.is_selected && only_selected)
+				continue;
+			float w = max(s.polygon[e.polygon[0]].temp_normal * dir, s.polygon[e.polygon[1]].temp_normal * dir);
+			float f = 0.5f - 0.4f*w;//0.7f - 0.3f * w;
+			if (e.is_selected)
+				NixSetColor(color(1, f, 0, 0));
+			else
+				NixSetColor(f * MultiView::ColorText + (1 - f) * MultiView::ColorBackGround2D);
+			NixDrawLine3D(vertex[e.vertex[0]].pos, vertex[e.vertex[1]].pos);
+		}
+	}
+	NixSetColor(White);
+	NixSetWire(win->multi_view->wire_mode);
+	NixEnableLighting(multi_view->light_enabled);
+}
+
+
+void ModeModelMesh::drawPolygons(MultiView::Window *win, Array<ModelVertex> &vertex)
+{
+	msg_db_f("ModelSkin.DrawPolys",2);
+
+	if (multi_view->wire_mode){
+		drawEdges(win, vertex, false);
+		return;
+	}
+
+	// draw all materials separately
+	foreachi(ModelMaterial &m, data->material, mi){
+		NixVertexBuffer **vb = &vb_model;
+		int num_tex = min(m.num_textures, 4);
+		if (num_tex == 2)
+			vb = &vb_model2;
+		else if (num_tex == 3)
+			vb = &vb_model3;
+		else if (num_tex == 4)
+			vb = &vb_model4;
+		if (!*vb)
+			*vb = new NixVertexBuffer(num_tex);
+
+		(*vb)->clear();
+
+		foreach(ModelSurface &surf, data->surface){
+			if (!surf.is_visible)
+				continue;
+			foreach(ModelPolygon &t, surf.polygon)
+				if ((t.view_stage >= multi_view->view_stage) && (t.material == mi))
+					t.AddToVertexBuffer(vertex, *vb, m.num_textures);
+		}
+
+		// draw
+		m.ApplyForRendering();
+		glEnable(GL_POLYGON_OFFSET_FILL);
+		glPolygonOffset(1.0f, 1.0f);
+		NixDraw3D(*vb);
+		glDisable(GL_POLYGON_OFFSET_FILL);
+		glPolygonOffset(0, 0);
+		NixSetShader(NULL);
+		NixSetTexture(NULL);
+	}
+
+	drawEdges(win, vertex, true);
+}
+
+
+
+void ModeModelMesh::fillSelectionBuffers(Array<ModelVertex> &vertex)
+{
+	msg_db_f("SkinFillSelBuf", 4);
+	vb_marked->clear();
+	vb_hover->clear();
+
+	// create selection buffers
+	msg_db_m("a",4);
+	ModelPolygon *mmo = NULL;
+	if ((multi_view->hover.index >= 0) && (multi_view->hover.set < data->surface.num) && (multi_view->hover.type == MVDModelPolygon))
+		mmo = &data->surface[multi_view->hover.set].polygon[multi_view->hover.index];
+	foreachi(ModelSurface &s, data->surface, si){
+		bool s_mo = false;
+		if ((multi_view->hover.index >= 0) && (multi_view->hover.type == MVDModelSurface))
+			s_mo = (multi_view->hover.index == si);
+		foreach(ModelPolygon &t, s.polygon)
+			/*if (t.view_stage >= ViewStage)*/{
+			if (t.is_selected)
+				t.AddToVertexBuffer(vertex, vb_marked, 1);
+			if ((&t == mmo) || (s_mo))
+				t.AddToVertexBuffer(vertex, vb_hover, 1);
+		}
+	}
+}
+
+void ModeModelMesh::setMaterialMarked()
+{
+	NixSetAlpha(AlphaMaterial);
+	NixSetMaterial(Black,color(0.3f,0,0,0),Black,0,Red);
+}
+
+void ModeModelMesh::setMaterialMouseOver()
+{
+	NixSetAlpha(AlphaMaterial);
+	NixSetMaterial(Black,color(0.3f,0,0,0),Black,0,White);
+}
+
+void ModeModelMesh::setMaterialCreation()
+{
+	NixSetAlpha(AlphaMaterial);
+	NixSetMaterial(Black,color(0.3f,0.3f,1,0.3f),Black,0,color(1,0.1f,0.4f,0.1f));
+}
+
+void ModeModelMesh::drawSelection(MultiView::Window *win)
+{
+	NixSetWire(false);
+	NixSetZ(true,true);
+	NixSetAlpha(AlphaNone);
+	NixEnableLighting(true);
+
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(1.0f, 1.0f);
+	setMaterialMarked();
+	NixDraw3D(vb_marked);
+	setMaterialMouseOver();
+	NixDraw3D(vb_hover);
+	setMaterialCreation();
+	NixDraw3D(vb_creation);
+	NixSetMaterial(White,White,Black,0,Black);
+	NixSetAlpha(AlphaNone);
+	glDisable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(0, 0);
+}
+
+void ModeModelMesh::setSelectionMode(MeshSelectionMode *mode)
+{
+	if ((!this->isAncestorOf(ed->cur_mode)) || (mode_model_mesh_texture->isAncestorOf(ed->cur_mode)))
+		ed->setMode(this);
+	if (selection_mode)
+		selection_mode->onEnd();
+	selection_mode = mode;
+	mode->onStart();
+	mode->updateMultiView();
+	fillSelectionBuffers(data->vertex);
+	ed->updateMenu();
+}
+
+void ModeModelMesh::toggleSelectCW()
+{
+	select_cw = !select_cw;
+	ed->updateMenu();
 }
