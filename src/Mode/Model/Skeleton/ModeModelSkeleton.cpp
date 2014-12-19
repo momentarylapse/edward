@@ -93,9 +93,9 @@ void ModeModelSkeleton::chooseMouseFunction(int f)
 
 	// mouse action
 	if (mouse_action != MultiView::ACTION_SELECT){
-		multi_view->SetMouseAction("ActionModelTransformBones", mouse_action);
+		multi_view->setMouseAction("ActionModelTransformBones", mouse_action);
 	}else{
-		multi_view->SetMouseAction("", MultiView::ACTION_SELECT);
+		multi_view->setMouseAction("", MultiView::ACTION_SELECT);
 	}
 }
 
@@ -135,14 +135,14 @@ void ModeModelSkeleton::onStart()
 	subscribe(data);
 	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
 
-	multi_view->ClearData(data);
-	multi_view->SetAllowRect(true);
+	multi_view->clearData(data);
+	multi_view->setAllowRect(true);
 
 	chooseMouseFunction(MultiView::ACTION_SELECT_AND_MOVE);
 
 
 	// left -> translate
-	multi_view->SetMouseAction("ActionModelTransformBones", MultiView::ACTION_SELECT_AND_MOVE);
+	multi_view->setMouseAction("ActionModelTransformBones", MultiView::ACTION_SELECT_AND_MOVE);
 	multi_view->allow_rect = true;
 	onUpdate(data, "");
 }
@@ -151,7 +151,7 @@ void ModeModelSkeleton::onStart()
 
 void ModeModelSkeleton::onEnd()
 {
-	multi_view->ClearData(NULL);
+	multi_view->clearData(NULL);
 	unsubscribe(data);
 	unsubscribe(multi_view);
 }
@@ -162,13 +162,13 @@ void ModeModelSkeleton::onUpdate(Observable *o, const string &message)
 {
 	if (o == data){
 
-		multi_view->ClearData(data);
+		multi_view->clearData(data);
 
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		multi_view->AddData(	MVD_SKELETON_BONE,
+		multi_view->addData(	MVD_SKELETON_BONE,
 				data->bone,
 				NULL,
-				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
+				MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 	}else if (o == multi_view){
 	}
 }
@@ -209,13 +209,8 @@ void drawCoordBasis(const ModelBone &b)
 
 void ModeModelSkeleton::onDrawWin(MultiView::Window *win)
 {
-	if (mode_model_animation->isAncestorOf(ed->cur_mode)){
-		mode_model_mesh->drawPolygons(win, mode_model_animation->vertex);
-		drawSkeleton(win, mode_model_animation->bone);
-	}else{
-		mode_model_mesh->drawPolygons(win, data->vertex);
-		drawSkeleton(win, data->bone);
-	}
+	mode_model_mesh->drawPolygons(win, data->vertex);
+	drawSkeleton(win, data->bone);
 }
 
 void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &bone, bool thin)

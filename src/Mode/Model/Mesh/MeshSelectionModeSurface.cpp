@@ -25,12 +25,12 @@ void MeshSelectionModeSurface::updateSelection()
 
 void MeshSelectionModeSurface::updateMultiView()
 {
-	multi_view->ClearData(data);
+	multi_view->clearData(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	multi_view->AddData(	MVD_MODEL_SURFACE,
+	multi_view->addData(	MVD_MODEL_SURFACE,
 			data->surface,
 			data,
-			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
+			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 }
 
 void MeshSelectionModeSurface::onDrawWin(MultiView::Window *win)

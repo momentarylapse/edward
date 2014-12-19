@@ -75,7 +75,7 @@ void ModeModelMeshCreateCube::onLeftButtonDown()
 			if (multi_view->hover.index >= 0)
 				pos2 = data->vertex[multi_view->hover.index].pos;
 			else
-				pos2 = multi_view->GetCursor3d();
+				pos2 = multi_view->getCursor3d();
 			message = _("W&urfel: Punkt 3 / 3");
 			pos2_chosen = true;
 			set_dpos3(length, v_0);
@@ -85,7 +85,7 @@ void ModeModelMeshCreateCube::onLeftButtonDown()
 		if (multi_view->hover.index >= 0)
 			pos = data->vertex[multi_view->hover.index].pos;
 		else
-			pos = multi_view->GetCursor3d();
+			pos = multi_view->getCursor3d();
 		message = _("W&urfel: Punkt 2 / 3");
 		pos_chosen = true;
 		UpdateGeometry();
@@ -96,14 +96,14 @@ void ModeModelMeshCreateCube::onMouseMove()
 {
 	if (pos_chosen){
 		if (!pos2_chosen){
-			vector pos2 = multi_view->GetCursor3d();
+			vector pos2 = multi_view->getCursor3d();
 			vector dir0 = multi_view->mouse_win->getDirectionRight();
 			vector dir1 = multi_view->mouse_win->getDirectionUp();
 			length[0] = dir0 * VecDotProduct(dir0, pos2 - pos);
 			length[1] = dir1 * VecDotProduct(dir1, pos2 - pos);
 			UpdateGeometry();
 		}else{
-			set_dpos3(length, multi_view->GetCursor3d() - pos);
+			set_dpos3(length, multi_view->getCursor3d() - pos);
 			UpdateGeometry();
 		}
 	}

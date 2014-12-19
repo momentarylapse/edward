@@ -40,12 +40,6 @@
 
 #include <GL/gl.h>
 
-namespace MultiView
-{
-	extern color ColorText;
-	extern color ColorBackGround2D;
-};
-
 ModeModelMesh *mode_model_mesh = NULL;
 
 ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
@@ -165,7 +159,7 @@ void ModeModelMesh::onCommand(const string & id)
 	if (id == "connect")
 		data->CollapseSelectedVertices();
 	if (id == "align_to_grid")
-		data->AlignToGridSelection(multi_view->GetGridD());
+		data->AlignToGridSelection(multi_view->getGridD());
 	if (id == "triangulate_selection")
 		data->TriangulateSelectedVertices();
 	if (id == "subdivide_surfaces")
@@ -294,12 +288,11 @@ void ModeModelMesh::onDraw()
 
 void ModeModelMesh::onDrawWin(MultiView::Window *win)
 {
-	if (multi_view->wire_mode)
-		drawEdges(win, data->vertex, false);
-	else
-		drawPolygons(win, data->vertex);
+	drawPolygons(win, data->vertex);
 	mode_model_skeleton->drawSkeleton(win, data->bone, true);
 	drawSelection(win);
+
+	drawEdges(win, data->vertex, !selection_mode_edge->isActive());
 
 	selection_mode->onDrawWin(win);
 }
@@ -359,7 +352,7 @@ bool ModeModelMesh::optimizeView()
 	msg_db_f("OptimizeView", 1);
 	MultiView::MultiView *mv = multi_view;
 	bool ww = mv->whole_window;
-	mv->ResetView();
+	mv->resetView();
 	mv->whole_window = ww;
 	if (data->vertex.num > 0){
 		vector min = data->vertex[0].pos, max = data->vertex[0].pos;
@@ -367,10 +360,10 @@ bool ModeModelMesh::optimizeView()
 			min._min(v.pos);
 			max._max(v.pos);
 		}
-		mv->SetViewBox(min, max);
+		mv->setViewBox(min, max);
 	}
 
-	ed->multi_view_2d->ResetView();
+	ed->multi_view_2d->resetView();
 	ed->multi_view_2d->cam.pos = vector(0.5f, 0.5f, 0);
 	/*if ((Bone.num > 0) && (Vertex.num <= 0))
 		SetSubMode(SubModeSkeleton);
@@ -461,9 +454,9 @@ void ModeModelMesh::applyMouseFunction(MultiView::MultiView *mv)
 
 	// left mouse action
 	if (mouse_action != MultiView::ACTION_SELECT){
-		mv->SetMouseAction(name, mouse_action);
+		mv->setMouseAction(name, mouse_action);
 	}else{
-		mv->SetMouseAction("", MultiView::ACTION_SELECT);
+		mv->setMouseAction("", MultiView::ACTION_SELECT);
 	}
 }
 
@@ -560,6 +553,8 @@ void ModeModelMesh::drawEffects(MultiView::Window *win)
 
 void ModeModelMesh::drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex, bool only_selected)
 {
+	color bg = win->getBackgroundColor();
+
 	NixSetWire(false);
 	NixEnableLighting(false);
 	vector dir = win->getDirection();
@@ -574,7 +569,7 @@ void ModeModelMesh::drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex
 			if (e.is_selected)
 				NixSetColor(color(1, f, 0, 0));
 			else
-				NixSetColor(f * MultiView::ColorText + (1 - f) * MultiView::ColorBackGround2D);
+				NixSetColor(f * multi_view->ColorText + (1 - f) * bg);
 			NixDrawLine3D(vertex[e.vertex[0]].pos, vertex[e.vertex[1]].pos);
 		}
 	}
@@ -626,8 +621,6 @@ void ModeModelMesh::drawPolygons(MultiView::Window *win, Array<ModelVertex> &ver
 		NixSetShader(NULL);
 		NixSetTexture(NULL);
 	}
-
-	drawEdges(win, vertex, true);
 }
 
 

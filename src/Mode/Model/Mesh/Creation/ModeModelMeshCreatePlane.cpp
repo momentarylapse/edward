@@ -68,7 +68,7 @@ void ModeModelMeshCreatePlane::onLeftButtonDown()
 		if (multi_view->hover.index >= 0)
 			pos = data->vertex[multi_view->hover.index].pos;
 		else
-			pos = multi_view->GetCursor3d();
+			pos = multi_view->getCursor3d();
 		message = _("Ebene: zweiter Punkt");
 		pos_chosen = true;
 	}
@@ -101,7 +101,7 @@ void ModeModelMeshCreatePlane::onDrawWin(MultiView::Window *win)
 void ModeModelMeshCreatePlane::onMouseMove()
 {
 	if (pos_chosen){
-		vector pos2 = multi_view->GetCursor3d();
+		vector pos2 = multi_view->getCursor3d();
 		vector dir0, dir1, dir2;
 		multi_view->mouse_win->getMovingFrame(dir0, dir1, dir2);
 		length[0] = dir1 * VecDotProduct(dir1, pos2 - pos);

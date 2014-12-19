@@ -370,9 +370,9 @@ void find_contours(Geometry &m, ModelPolygon *t, Geometry &s, Array<Array<sCol> 
 			msg_write(i2s(i) + " " + c.str());
 		if (cc.num < 3){
 			for (int i=0;i<t->side.num;i++)
-				ed->multi_view_3d->AddMessage3d("p"+i2s(i), m.vertex[t->side[i].vertex].pos);
+				ed->multi_view_3d->addMessage3d("p"+i2s(i), m.vertex[t->side[i].vertex].pos);
 			foreachi(sCol &c, cc, i)
-				ed->multi_view_3d->AddMessage3d("x"+i2s(i), c.p);
+				ed->multi_view_3d->addMessage3d("x"+i2s(i), c.p);
 			throw ActionException("contour with num<3");
 		}
 	}

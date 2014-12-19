@@ -37,7 +37,7 @@ void MeshSelectionModePolygon::onEnd()
 
 void MeshSelectionModePolygon::onStart()
 {
-	multi_view->SetAllowRect(true);
+	multi_view->setAllowRect(true);
 }
 
 
@@ -114,11 +114,11 @@ void MeshSelectionModePolygon::updateSelection()
 
 void MeshSelectionModePolygon::updateMultiView()
 {
-	multi_view->ClearData(data);
+	multi_view->clearData(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	foreach(ModelSurface &s, data->surface)
-	multi_view->AddData(	MVD_MODEL_POLYGON,
+	multi_view->addData(	MVD_MODEL_POLYGON,
 			s.polygon,
 			&s,
-			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
+			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 }

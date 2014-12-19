@@ -54,8 +54,8 @@ void ModeModelMeshBrush::Apply()
 
 void ModeModelMeshBrush::onStart()
 {
-	multi_view->SetAllowAction(false);
-	multi_view->SetAllowRect(false);
+	multi_view->setAllowAction(false);
+	multi_view->setAllowRect(false);
 
 	// Dialog
 	dialog = new HuiFixedDialog(_("Pinsel"), 300, 155, ed, true);//HuiCreateResourceDialog("new_ball_dialog", ed);
@@ -102,8 +102,8 @@ void ModeModelMeshBrush::OnDepthSlider()
 void ModeModelMeshBrush::onEnd()
 {
 	delete(dialog);
-	multi_view->SetAllowAction(true);
-	multi_view->SetAllowRect(true);
+	multi_view->setAllowAction(true);
+	multi_view->setAllowRect(true);
 	if (brushing)
 		data->endActionGroup();
 }

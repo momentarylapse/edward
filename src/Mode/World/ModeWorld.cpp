@@ -284,17 +284,17 @@ void ModeWorld::onUpdate(Observable *o, const string &message)
 	if (o == data){
 		data->UpdateData();
 
-		multi_view->ClearData(data);
+		multi_view->clearData(data);
 
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		multi_view->AddData(	MVD_WORLD_OBJECT,
+		multi_view->addData(	MVD_WORLD_OBJECT,
 				data->Objects,
 				NULL,
-				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
-		multi_view->AddData(	MVD_WORLD_TERRAIN,
+				MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
+		multi_view->addData(	MVD_WORLD_TERRAIN,
 				data->Terrains,
 				NULL,
-				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
+				MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 	}else if (o == multi_view){
 		// selection
 	}
@@ -514,7 +514,7 @@ void ModeWorld::onStart()
 	t->reset();
 	t->enable(false);
 
-	multi_view->SetAllowRect(true);
+	multi_view->setAllowRect(true);
 	SetMouseAction(MultiView::ACTION_SELECT);
 
 	onUpdate(data, "");
@@ -524,11 +524,11 @@ void ModeWorld::SetMouseAction(int mode)
 {
 	mouse_action = mode;
 	if (mode == MultiView::ACTION_MOVE)
-		multi_view->SetMouseAction("ActionWorldMoveSelection", mode);
+		multi_view->setMouseAction("ActionWorldMoveSelection", mode);
 	else if (mode == MultiView::ACTION_ROTATE)
-		multi_view->SetMouseAction("ActionWorldRotateObjects", mode);
+		multi_view->setMouseAction("ActionWorldRotateObjects", mode);
 	else
-		multi_view->SetMouseAction("", mode);
+		multi_view->setMouseAction("", mode);
 	ed->updateMenu();
 }
 
@@ -664,10 +664,10 @@ void ModeWorld::ExecuteLightmapDialog()
 
 bool ModeWorld::optimizeView()
 {
-	multi_view->ResetView();
+	multi_view->resetView();
 	vector min, max;
 	data->GetBoundaryBox(min, max);
-	multi_view->SetViewBox(min, max);
+	multi_view->setViewBox(min, max);
 
 	//ShowEffects = false;
 	TerrainShowTextureLevel = -1;

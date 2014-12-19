@@ -26,7 +26,7 @@ bool SingleData::hover(Window *win, vector &m, vector &tp, float &z, void *user_
 	vector p = win->project(pos);
 	if ((p.z <= 0) || (p.z >= 1))
 		return false;
-	float _radius = PointRadiusMouseOver;
+	float _radius = win->impl->POINT_RADIUS_HOVER;
 	if ((m.x >= p.x - _radius) && (m.x <= p.x + _radius) && (m.y >= p.y - _radius) && (m.y <= p.y + _radius)){
 		z = p.z;
 		tp = pos;

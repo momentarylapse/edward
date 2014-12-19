@@ -70,7 +70,7 @@ void ModeModelMeshCreateCylinderSnake::UpdateGeometry()
 void ModeModelMeshCreateCylinderSnake::onMouseMove()
 {
 	if (ready_for_scaling){
-		vector p = multi_view->GetCursor3d(pos.back());
+		vector p = multi_view->getCursor3d(pos.back());
 		radius = (p - pos.back()).length();
 		float min_rad = 10 / multi_view->cam.zoom; // 10 px
 		if (radius < min_rad)
@@ -107,7 +107,7 @@ void ModeModelMeshCreateCylinderSnake::onLeftButtonDown()
 		if (multi_view->hover.index >= 0)
 			pos.add(data->vertex[multi_view->hover.index].pos);
 		else
-			pos.add(multi_view->GetCursor3d());
+			pos.add(multi_view->getCursor3d());
 	}
 }
 
@@ -149,7 +149,7 @@ void ModeModelMeshCreateCylinderSnake::onDrawWin(MultiView::Window *win)
 		foreach(vector &p, pos)
 			inter.add(p);
 		if (!ready_for_scaling)
-			inter.add(multi_view->GetCursor3d());
+			inter.add(multi_view->getCursor3d());
 		inter.normalize();
 		NixSetColor(Green);
 		for (int i=0;i<100;i++)

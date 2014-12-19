@@ -49,10 +49,10 @@ void MeshSelectionModeVertex::updateSelection()
 
 void MeshSelectionModeVertex::updateMultiView()
 {
-	multi_view->ClearData(data);
+	multi_view->clearData(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	multi_view->AddData(	MVD_MODEL_VERTEX,
+	multi_view->addData(	MVD_MODEL_VERTEX,
 			data->vertex,
 			NULL,
-			MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
+			MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 }

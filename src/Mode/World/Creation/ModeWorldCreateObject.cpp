@@ -61,7 +61,7 @@ void ModeWorldCreateObject::OnFindObject()
 void ModeWorldCreateObject::onLeftButtonDown()
 {
 	if (filename.num > 0){
-		data->AddObject(filename, multi_view->GetCursor3d());
+		data->AddObject(filename, multi_view->getCursor3d());
 		//Abort();
 	}
 }

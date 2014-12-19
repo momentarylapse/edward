@@ -57,11 +57,11 @@ struct Camera
 };
 
 // multiview mask (data)
-static const int FlagNone = 0;
-static const int FlagSelect= 1;
-static const int FlagDraw = 2;
-static const int FlagIndex = 4;
-static const int FlagMove = 8;
+static const int FLAG_NONE = 0;
+static const int FLAG_SELECT= 1;
+static const int FLAG_DRAW = 2;
+static const int FLAG_INDEX = 4;
+static const int FLAG_MOVE = 8;
 
 class MultiView : public Observable
 {
@@ -77,26 +77,26 @@ public:
 	static const string MESSAGE_ACTION_ABORT;
 	static const string MESSAGE_ACTION_EXECUTE;
 
-	virtual void ClearData(Data *data) = 0;
-	virtual void AddData(int type, const DynamicArray &a, void *user_data, int flags) = 0;
+	virtual void clearData(Data *data) = 0;
+	virtual void addData(int type, const DynamicArray &a, void *user_data, int flags) = 0;
 	//virtual void SetViewStage(int *view_stage, bool allow_handle) = 0;
-	virtual void Reset() = 0;
-	virtual void ResetView() = 0;
-	virtual void SetViewBox(const vector &min, const vector &max) = 0;
+	virtual void reset() = 0;
+	virtual void resetView() = 0;
+	virtual void setViewBox(const vector &min, const vector &max) = 0;
 
-	vector virtual GetCursor3d() = 0;
-	vector virtual GetCursor3d(const vector &depth_reference) = 0;
-	virtual float GetGridD() = 0;
+	vector virtual getCursor3d() = 0;
+	vector virtual getCursor3d(const vector &depth_reference) = 0;
+	virtual float getGridD() = 0;
 
-	virtual void ResetMouseAction() = 0;
-	virtual void SetMouseAction(const string &name, int mode) = 0;
+	virtual void resetMouseAction() = 0;
+	virtual void setMouseAction(const string &name, int mode) = 0;
 
 
-	virtual void AddMessage3d(const string &str, const vector &pos) = 0;
-	virtual void ResetMessage3d() = 0;
+	virtual void addMessage3d(const string &str, const vector &pos) = 0;
+	virtual void resetMessage3d() = 0;
 
-	virtual void SetAllowRect(bool allow) = 0;
-	virtual void SetAllowAction(bool allow) = 0;
+	virtual void setAllowRect(bool allow) = 0;
+	virtual void setAllowAction(bool allow) = 0;
 
 	bool mode3d;
 	bool whole_window;
@@ -125,6 +125,19 @@ public:
 		void reset();
 	};
 	Selection hover;
+
+
+	static color ColorBackGround;
+	static color ColorBackGroundSelected;
+	static color ColorGrid;
+	static color ColorText;
+	static color ColorWindowType;
+	static color ColorPoint;
+	static color ColorPointSelected;
+	static color ColorPointSpecial;
+	static color ColorWindowSeparator;
+	static color ColorSelectionRect;
+	static color ColorSelectionRectBoundary;
 };
 
 };

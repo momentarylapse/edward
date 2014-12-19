@@ -26,8 +26,8 @@ struct DataSet
 
 
 
-extern color ColorBackGround3D;
-extern color ColorBackGround2D;
+extern color ColorBackGround;
+extern color ColorBackGroundSelected;
 extern color ColorGrid;
 extern color ColorText;
 extern color ColorWindowType;
@@ -37,9 +37,6 @@ extern color ColorPointSpecial;
 extern color ColorWindowSeparator;
 extern color ColorSelectionRect;
 extern color ColorSelectionRectBoundary;
-
-extern int PointRadius;
-extern int PointRadiusMouseOver;
 
 
 class MultiViewImpl : public MultiView
@@ -63,39 +60,39 @@ public:
 	void onCommand(const string &id);
 
 	void onDraw();
-	void DrawMousePos();
-	void ToggleWholeWindow();
-	void ToggleGrid();
-	void ToggleLight();
-	void ToggleWire();
-	void CamZoom(float factor, bool mouse_rel);
-	void CamMove(const vector &dir);
-	void CamRotate(const vector &dir, bool cam_center);
-	void SetMode(int mode);
-	virtual void ClearData(Data *_data);
-	virtual void AddData(int type, const DynamicArray &a, void *user_data, int flags);
+	void drawMousePos();
+	void toggleWholeWindow();
+	void toggleGrid();
+	void toggleLight();
+	void toggleWire();
+	void camZoom(float factor, bool mouse_rel);
+	void camMove(const vector &dir);
+	void camRotate(const vector &dir, bool cam_center);
+	void setMode(int mode);
+	virtual void clearData(Data *_data);
+	virtual void addData(int type, const DynamicArray &a, void *user_data, int flags);
 	virtual void SetViewStage(int *view_stage, bool allow_handle);
-	virtual void Reset();
-	virtual void ResetView();
-	virtual void SetViewBox(const vector &min, const vector &max);
-	virtual void SetAllowRect(bool allow);
-	virtual void SetAllowAction(bool allow);
-	void ViewStagePush();
-	void ViewStagePop();
+	virtual void reset();
+	virtual void resetView();
+	virtual void setViewBox(const vector &min, const vector &max);
+	virtual void setAllowRect(bool allow);
+	virtual void setAllowAction(bool allow);
+	void viewStagePush();
+	void viewStagePop();
 
-	void SelectAll();
-	void SelectNone();
-	void InvertSelection();
-	bool HasSelection();
-	vector GetSelectionCenter();
+	void selectAll();
+	void selectNone();
+	void invertSelection();
+	bool hasSelection();
+	vector getSelectionCenter();
 
-	void HoldCursor(bool holding);
-	void StartRect();
-	void EndRect();
-	void UpdateMouse();
+	void holdCursor(bool holding);
+	void startRect();
+	void endRect();
+	void updateMouse();
 
-	void GetMouseOver();
-	void UnselectAll();
+	void getHover();
+	void unselectAll();
 	enum{
 		SelectSet,
 		SelectAdd,
@@ -104,28 +101,27 @@ public:
 	void GetSelected(int mode = SelectSet);
 	void SelectAllInRectangle(int mode = SelectSet);
 
-	virtual float GetGridD();
-	string GetMVScaleByZoom(vector &v);
+	virtual float getGridD();
+	string getMVScaleByZoom(vector &v);
 
-	vector virtual GetCursor3d();
-	vector virtual GetCursor3d(const vector &depth_reference);
+	vector virtual getCursor3d();
+	vector virtual getCursor3d(const vector &depth_reference);
 
 
 	Window *win[4];
 	Window *cur_projection_win;
 
 	ActionController *action_con;
-	virtual void ResetMouseAction();
-	virtual void SetMouseAction(const string &name, int mode);
+	virtual void resetMouseAction();
+	virtual void setMouseAction(const string &name, int mode);
 	CameraController *cam_con;
 
 	Array<DataSet> data;
 	bool allow_view_stage, allow_view_stage_handling;
-	vector MovingDPos,RFPos,LFPos;
 
 	bool allow_infinite_scrolling;
-	bool HoldingCursor;
-	float HoldingX, HoldingY;
+	bool holding_cursor;
+	float holding_x, holding_y;
 
 	struct SelectionRect
 	{
@@ -138,11 +134,11 @@ public:
 		void draw(const vector &m);
 	};
 	SelectionRect sel_rect;
-	bool ViewMoving;
+	bool view_moving;
 
 
-	int MovingWin;
-	vector MovingStart, MovingDP;
+	int moving_win;
+	vector moving_start, moving_dp;
 
 	HuiMenu *menu;
 
@@ -152,8 +148,21 @@ public:
 		vector pos;
 	};
 	Array<Message3d> message3d;
-	virtual void AddMessage3d(const string &str, const vector &pos);
-	virtual void ResetMessage3d();
+	virtual void addMessage3d(const string &str, const vector &pos);
+	virtual void resetMessage3d();
+
+
+	float SPEED_MOVE;
+	float SPEED_ZOOM_KEY;
+	float SPEED_ZOOM_WHEEL;
+
+	int MIN_MOUSE_MOVE_TO_INTERACT;
+	float MOUSE_ROTATION_SPEED;
+
+
+
+	int POINT_RADIUS;
+	int POINT_RADIUS_HOVER;
 };
 
 };

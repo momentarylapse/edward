@@ -40,7 +40,7 @@ void ModeModelAnimationSkeleton::onStart()
 	foreachi(ModelBone &b, data->bone, i)
 		mode_model_animation->bone[i].is_selected = b.is_selected;
 
-	multi_view->ClearData(NULL);
+	multi_view->clearData(NULL);
 	multi_view->allow_rect = true;
 
 	chooseMouseFunction(MultiView::ACTION_SELECT);
@@ -54,7 +54,7 @@ void ModeModelAnimationSkeleton::onEnd()
 {
 	unsubscribe(data);
 	unsubscribe(multi_view);
-	multi_view->ClearData(NULL);
+	multi_view->clearData(NULL);
 }
 
 void ModeModelAnimationSkeleton::onCommand(const string& id)
@@ -74,9 +74,9 @@ void ModeModelAnimationSkeleton::chooseMouseFunction(int f)
 
 	// mouse action
 	if (mouse_action != MultiView::ACTION_SELECT){
-		multi_view->SetMouseAction("ActionModelAnimationTransformBones", mouse_action);
+		multi_view->setMouseAction("ActionModelAnimationTransformBones", mouse_action);
 	}else{
-		multi_view->SetMouseAction("", MultiView::ACTION_SELECT);
+		multi_view->setMouseAction("", MultiView::ACTION_SELECT);
 	}
 }
 
@@ -84,13 +84,13 @@ void ModeModelAnimationSkeleton::onUpdate(Observable* o, const string &message)
 {
 	if (o == data){
 
-		multi_view->ClearData(data);
+		multi_view->clearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 
-		multi_view->AddData(	MVD_SKELETON_BONE,
+		multi_view->addData(	MVD_SKELETON_BONE,
 				mode_model_animation->bone,
 				NULL,
-				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect);
+				MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT);
 	}else if (o == multi_view){
 		foreachi(ModelBone &b, data->bone, i)
 			b.is_selected = mode_model_animation->bone[i].is_selected;
@@ -99,27 +99,8 @@ void ModeModelAnimationSkeleton::onUpdate(Observable* o, const string &message)
 
 void ModeModelAnimationSkeleton::onDrawWin(MultiView::Window *win)
 {
-	mode_model_skeleton->onDrawWin(win);
-#if 0
-	NixSetZ(false, false);
-	NixEnableLighting(false);
-	NixSetWire(false);
-
-	foreach(ModelBone &b, data->Bone){
-		/*if (b.view_stage<=ViewStage)
-			continue;*/
-//		if (b.is_selected)
-//			DrawCoordBasis(&b);
-		int r = b.Parent;
-		if (r < 0)
-			continue;
-		color c = data->Bone[r].is_selected ? Red : Blue;
-		if (multi_view->MouseOver == r)
-			c = ColorInterpolate(c, White, 0.3f);
-		DrawBone(data->Bone[r].pos, b.pos, c, win);
-	}
-	NixSetZ(true, true);
-#endif
+	mode_model_mesh->drawPolygons(win, mode_model_animation->vertex);
+	mode_model_skeleton->drawSkeleton(win, mode_model_animation->bone);
 }
 
 

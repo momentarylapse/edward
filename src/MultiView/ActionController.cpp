@@ -201,8 +201,8 @@ void ActionController::update()
 	int m = mode;
 	reset();
 	mode = m;
-	if (multi_view->HasSelection()){
-		pos = multi_view->GetSelectionCenter();
+	if (multi_view->hasSelection()){
+		pos = multi_view->getSelectionCenter();
 		show = true;
 		float f = multi_view->cam.radius * 0.1f;
 		matrix s, t;
@@ -284,7 +284,7 @@ void ActionController::drawParams()
 {
 	if ((action.mode == ACTION_MOVE) || (action.mode == ACTION_SELECT_AND_MOVE)){
 		vector t = param;
-		string unit = multi_view->GetMVScaleByZoom(t);
+		string unit = multi_view->getMVScaleByZoom(t);
 		ed->drawStr(150, 100, f2s(t.x, 2) + " " + unit, Edward::ALIGN_RIGHT);
 		ed->drawStr(150, 120, f2s(t.y, 2) + " " + unit, Edward::ALIGN_RIGHT);
 		if (multi_view->mode3d)

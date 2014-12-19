@@ -36,7 +36,7 @@ void ModeModelAnimationVertex::onStart()
 	t->enable(true);
 	t->configure(false,true);
 
-	multi_view->ClearData(NULL);
+	multi_view->clearData(NULL);
 	multi_view->allow_rect = true;
 
 	chooseMouseFunction(MultiView::ACTION_SELECT);
@@ -50,7 +50,7 @@ void ModeModelAnimationVertex::onEnd()
 {
 	unsubscribe(data);
 	unsubscribe(multi_view);
-	multi_view->ClearData(NULL);
+	multi_view->clearData(NULL);
 }
 
 void ModeModelAnimationVertex::onCommand(const string& id)
@@ -74,9 +74,9 @@ void ModeModelAnimationVertex::chooseMouseFunction(int f)
 
 	// mouse action
 	if (mouse_action != MultiView::ACTION_SELECT){
-		multi_view->SetMouseAction("ActionModelAnimationTransformVertices", mouse_action);
+		multi_view->setMouseAction("ActionModelAnimationTransformVertices", mouse_action);
 	}else{
-		multi_view->SetMouseAction("", MultiView::ACTION_SELECT);
+		multi_view->setMouseAction("", MultiView::ACTION_SELECT);
 	}
 }
 
@@ -85,13 +85,13 @@ void ModeModelAnimationVertex::onUpdate(Observable* o, const string &message)
 	if (o == data){
 		updateVertices();
 
-		multi_view->ClearData(data);
+		multi_view->clearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 
-		multi_view->AddData(	MVD_MODEL_VERTEX,
+		multi_view->addData(	MVD_MODEL_VERTEX,
 				mode_model_animation->vertex,
 				NULL,
-				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect);
+				MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT);
 	}else if (o == multi_view){
 		foreachi(ModelVertex &v, data->vertex, i)
 			v.is_selected = mode_model_animation->vertex[i].is_selected;

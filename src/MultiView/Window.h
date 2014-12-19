@@ -40,6 +40,8 @@ public:
 	vector getDirectionUp();
 	vector getDirectionRight();
 	void getMovingFrame(vector &dir, vector &up, vector &right);
+
+	color getBackgroundColor();
 };
 
 };

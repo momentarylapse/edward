@@ -33,7 +33,7 @@ ModeFont::~ModeFont()
 
 void ModeFont::onLeftButtonDown()
 {
-	vector m = multi_view->GetCursor3d();
+	vector m = multi_view->getCursor3d();
 	int x=0,y=0;
 	foreachi(DataFont::Glyph &g, data->glyph, i){
 		int x2 = x + g.Width;
@@ -280,8 +280,8 @@ void ModeFont::onUpdateMenu()
 
 bool ModeFont::optimizeView()
 {
-	multi_view->Reset();
-	multi_view->SetViewBox(v_0, vector(data->TextureWidth, data->TextureHeight, 0));
+	multi_view->reset();
+	multi_view->setViewBox(v_0, vector(data->TextureWidth, data->TextureHeight, 0));
 	return true;
 }
 

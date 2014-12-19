@@ -82,7 +82,7 @@ void ModeModelMeshCreatePlatonic::onLeftButtonDown()
 		if (multi_view->hover.index >= 0)
 			pos = data->vertex[multi_view->hover.index].pos;
 		else
-			pos = multi_view->GetCursor3d();
+			pos = multi_view->getCursor3d();
 		message = _("skalieren");
 		pos_chosen = true;
 		UpdateGeometry();
@@ -105,7 +105,7 @@ void ModeModelMeshCreatePlatonic::onDrawWin(MultiView::Window *win)
 void ModeModelMeshCreatePlatonic::onMouseMove()
 {
 	if (pos_chosen){
-		vector pos2 = multi_view->GetCursor3d(pos);
+		vector pos2 = multi_view->getCursor3d(pos);
 		radius = (pos2 - pos).length();
 		UpdateGeometry();
 	}

@@ -238,11 +238,11 @@ void ModeMaterial::UpdateShape()
 
 bool ModeMaterial::optimizeView()
 {
-	multi_view->ResetView();
+	multi_view->resetView();
 	if (geo){
 		vector min, max;
 		geo->getBoundingBox(min, max);
-		multi_view->SetViewBox(min, max);
+		multi_view->setViewBox(min, max);
 	}
 	return true;
 }

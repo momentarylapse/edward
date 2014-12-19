@@ -86,7 +86,7 @@ void ModeModelMeshCreateTorus::onLeftButtonDown()
 		if (multi_view->hover.index >= 0)
 			pos = data->vertex[multi_view->hover.index].pos;
 		else
-			pos = multi_view->GetCursor3d();
+			pos = multi_view->getCursor3d();
 		message = _("Torus au&sen skalieren");
 		pos_chosen = true;
 		UpdateGeometry();
@@ -111,7 +111,7 @@ void ModeModelMeshCreateTorus::onMouseMove()
 {
 	axis = multi_view->mouse_win->getDirection();
 	if (pos_chosen){
-		vector pos2 = multi_view->GetCursor3d(pos);
+		vector pos2 = multi_view->getCursor3d(pos);
 		if (rad_chosen){
 			radius2 = (pos2 - pos).length() * RADIUS_FACTOR;
 		}else{
