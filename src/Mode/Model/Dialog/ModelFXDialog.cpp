@@ -86,9 +86,9 @@ void ModelFXDialog::ApplyData()
 
 void ModelFXDialog::OnFindScriptFile()
 {
-	if (ed->fileDialog(FDScript,false,true)){
-		string filename = ed->DialogFile;
-		setString("script_file", ed->DialogFile);
+	if (ed->fileDialog(FD_SCRIPT,false,true)){
+		string filename = ed->dialog_file;
+		setString("script_file", ed->dialog_file);
 
 		try{
 			Script::Script *s = Script::Load(filename, true); // just analyse
@@ -104,8 +104,8 @@ void ModelFXDialog::OnFindScriptFile()
 
 void ModelFXDialog::OnFindSoundFile()
 {
-	if (ed->fileDialog(FDSound,false,true))
-		setString("filename", ed->DialogFile);
+	if (ed->fileDialog(FD_SOUND,false,true))
+		setString("filename", ed->dialog_file);
 }
 
 void ModelFXDialog::OnClose()

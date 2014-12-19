@@ -12,7 +12,7 @@
 
 
 DataMaterial::DataMaterial() :
-	Data(FDMaterial)
+	Data(FD_MATERIAL)
 {
 	Shader = NULL;
 	Appearance.CubeMap = new NixCubeMap(128);

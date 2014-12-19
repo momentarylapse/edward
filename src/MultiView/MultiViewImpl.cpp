@@ -80,10 +80,10 @@ MultiViewImpl::MultiViewImpl(bool _mode3d) :
 	allow_infinite_scrolling = HuiConfig.getBool("MultiView.InfiniteScrolling", true);
 
 	mode3d = _mode3d;
-	win[0] = new Window(this, ViewBack);
-	win[1] = new Window(this, ViewLeft);
-	win[2] = new Window(this, ViewTop);
-	win[3] = new Window(this, ViewPerspective);
+	win[0] = new Window(this, VIEW_BACK);
+	win[1] = new Window(this, VIEW_LEFT);
+	win[2] = new Window(this, VIEW_TOP);
+	win[3] = new Window(this, VIEW_PERSPECTIVE);
 
 	if (mode3d){
 		light = 0;
@@ -102,7 +102,7 @@ MultiViewImpl::MultiViewImpl(bool _mode3d) :
 		menu->addItem(_("Isometrisch"), "view_isometric");
 		menu->addItem(_("Perspektive"), "view_perspective");
 	}else{
-		win[0]->type = View2D;
+		win[0]->type = VIEW_2D;
 		light = -1;
 	}
 	action_con = new ActionController(this);
@@ -275,7 +275,6 @@ void MultiViewImpl::ToggleWire()
 void MultiViewImpl::onCommand(const string & id)
 {
 	notifyBegin();
-	//msg_write(id);
 
 	if (id == "select_all")
 		SelectAll();
@@ -285,21 +284,21 @@ void MultiViewImpl::onCommand(const string & id)
 		InvertSelection();
 
 	if (id == "view_right")
-		active_win->type = ViewRight;
+		active_win->type = VIEW_RIGHT;
 	if (id == "view_left")
-		active_win->type = ViewLeft;
+		active_win->type = VIEW_LEFT;
 	if (id == "view_front")
-		active_win->type = ViewFront;
+		active_win->type = VIEW_FRONT;
 	if (id == "view_back")
-		active_win->type = ViewBack;
+		active_win->type = VIEW_BACK;
 	if (id == "view_top")
-		active_win->type = ViewTop;
+		active_win->type = VIEW_TOP;
 	if (id == "view_bottom")
-		active_win->type = ViewBottom;
+		active_win->type = VIEW_BOTTOM;
 	if (id == "view_perspective")
-		active_win->type = ViewPerspective;
+		active_win->type = VIEW_PERSPECTIVE;
 	if (id == "view_isometric")
-		active_win->type = ViewIsometric;
+		active_win->type = VIEW_ISOMETRIC;
 	if (id == "whole_window")
 		ToggleWholeWindow();
 	if (id == "grid")
@@ -323,9 +322,9 @@ void MultiViewImpl::onMouseWheel()
 
 	// mouse wheel -> zoom
 	if (e->dz > 0)
-		CamZoom(SPEED_ZOOM_WHEEL, mouse_win->type != ViewPerspective);
+		CamZoom(SPEED_ZOOM_WHEEL, mouse_win->type != VIEW_PERSPECTIVE);
 	if (e->dz < 0)
-		CamZoom(1.0f / SPEED_ZOOM_WHEEL, mouse_win->type != ViewPerspective);
+		CamZoom(1.0f / SPEED_ZOOM_WHEEL, mouse_win->type != VIEW_PERSPECTIVE);
 	notifyEnd();
 }
 
@@ -348,9 +347,9 @@ void MultiViewImpl::onKeyDown()
 	int k = HuiGetEvent()->key_code;
 
 	if ((k == KEY_ADD) ||(k == KEY_NUM_ADD))
-		CamZoom(SPEED_ZOOM_KEY, mouse_win->type != ViewPerspective);
+		CamZoom(SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
 	if ((k == KEY_SUBTRACT) || (k == KEY_NUM_SUBTRACT))
-		CamZoom(1.0f / SPEED_ZOOM_KEY, mouse_win->type != ViewPerspective);
+		CamZoom(1.0f / SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
 	if (k == KEY_RIGHT)
 		CamMove(-e_x * SPEED_MOVE);
 	if (k == KEY_LEFT)
@@ -556,7 +555,7 @@ void MultiViewImpl::onMouseMove()
 
 	if (ViewMoving){
 		int t = active_win->type;
-		if ((t == ViewPerspective) || (t == ViewIsometric)){
+		if ((t == VIEW_PERSPECTIVE) || (t == VIEW_ISOMETRIC)){
 // camera rotation
 			CamRotate(v, mbut || (NixGetKey(KEY_CONTROL)));
 		}else{
@@ -676,13 +675,13 @@ void MultiViewImpl::DrawMousePos()
 	string sy = f2s(m.y,2) + " " + unit;
 	string sz = f2s(m.z,2) + " " + unit;
 
-	if (mouse_win->type == View2D){
-		ed->drawStr(MaxX, MaxY - 60, sx, Edward::AlignRight);
-		ed->drawStr(MaxX, MaxY - 40, sy, Edward::AlignRight);
+	if (mouse_win->type == VIEW_2D){
+		ed->drawStr(MaxX, MaxY - 60, sx, Edward::ALIGN_RIGHT);
+		ed->drawStr(MaxX, MaxY - 40, sy, Edward::ALIGN_RIGHT);
 	}else{
-		ed->drawStr(MaxX, MaxY - 80, sx, Edward::AlignRight);
-		ed->drawStr(MaxX, MaxY - 60, sy, Edward::AlignRight);
-		ed->drawStr(MaxX, MaxY - 40, sz, Edward::AlignRight);
+		ed->drawStr(MaxX, MaxY - 80, sx, Edward::ALIGN_RIGHT);
+		ed->drawStr(MaxX, MaxY - 60, sy, Edward::ALIGN_RIGHT);
+		ed->drawStr(MaxX, MaxY - 40, sz, Edward::ALIGN_RIGHT);
 	}
 }
 
@@ -695,7 +694,6 @@ void MultiViewImpl::onDraw()
 
 	NixSetZ(true,true);
 	NixSetColor(ColorText);
-
 
 
 	if (!mode3d){
@@ -777,8 +775,8 @@ rect MultiViewImpl::SelectionRect::get(const vector &m)
 
 void MultiViewImpl::SetMouseAction(const string & name, int mode)
 {
-	if ((!mode3d) && (mode == ActionRotate))
-		mode = ActionRotate2d;
+	if ((!mode3d) && (mode == ACTION_ROTATE))
+		mode = ACTION_ROTATE_2D;
 	action_con->action.name = name;
 	action_con->action.mode = mode;
 	action_con->disable();

@@ -74,8 +74,8 @@ WorldPropertiesDialog::~WorldPropertiesDialog()
 void WorldPropertiesDialog::OnSkybox()
 {
 	int n = getInt("");
-	if (ed->fileDialog(FDModel,false,true)){
-		temp.SkyBoxFile[n] = ed->DialogFileNoEnding;
+	if (ed->fileDialog(FD_MODEL,false,true)){
+		temp.SkyBoxFile[n] = ed->dialog_file_no_ending;
 		FillSkyboxList();
 	}
 }
@@ -147,8 +147,8 @@ void WorldPropertiesDialog::OnRemoveSkybox()
 
 void WorldPropertiesDialog::OnAddScript()
 {
-	if (ed->fileDialog(FDScript, false, true)){
-		temp.ScriptFile.add(ed->DialogFileComplete.substr(Script::config.Directory.num, -1));
+	if (ed->fileDialog(FD_SCRIPT, false, true)){
+		temp.ScriptFile.add(ed->dialog_file_complete.substr(Script::config.Directory.num, -1));
 		FillScriptList();
 	}
 }

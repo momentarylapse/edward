@@ -194,8 +194,8 @@ void ModelMaterialDialog::OnAddNewMaterial()
 
 void ModelMaterialDialog::OnAddMaterial()
 {
-	if (ed->fileDialog(FDMaterial, false, true))
-		data->execute(new ActionModelAddMaterial(ed->DialogFileNoEnding));
+	if (ed->fileDialog(FD_MATERIAL, false, true))
+		data->execute(new ActionModelAddMaterial(ed->dialog_file_no_ending));
 }
 
 void ModelMaterialDialog::OnDeleteMaterial()
@@ -244,8 +244,8 @@ void ModelMaterialDialog::OnTextures()
 {
 	int sel = getInt("");
 	if ((sel >= 0) && (sel <temp.num_textures))
-		if (ed->fileDialog(FDTexture, false, true)){
-			temp.texture_file[sel] = ed->DialogFile;
+		if (ed->fileDialog(FD_TEXTURE, false, true)){
+			temp.texture_file[sel] = ed->dialog_file;
 			temp.CheckTextures();
 			ApplyData();
 		}

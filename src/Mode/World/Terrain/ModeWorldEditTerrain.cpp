@@ -106,7 +106,7 @@ void ModeWorldEditTerrain::onMouseMove()
 {
 	if (!brushing)
 		return;
-	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVDWorldTerrain))
+	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVD_WORLD_TERRAIN))
 		return;
 	vector pos = multi_view->hover.point;
 	float radius = dialog->getFloat("diameter") / 2;
@@ -120,7 +120,7 @@ void ModeWorldEditTerrain::onMouseMove()
 
 void ModeWorldEditTerrain::onLeftButtonDown()
 {
-	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVDWorldTerrain))
+	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVD_WORLD_TERRAIN))
 		return;
 	data->beginActionGroup("TerrainBrush");
 	vector pos = multi_view->hover.point;
@@ -142,7 +142,7 @@ void ModeWorldEditTerrain::onCommand(const string& id)
 
 void ModeWorldEditTerrain::onDrawWin(MultiView::Window* win)
 {
-	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVDWorldTerrain))
+	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVD_WORLD_TERRAIN))
 		return;
 	vector pos = multi_view->hover.point;
 	float radius = dialog->getFloat("diameter") / 2;

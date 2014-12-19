@@ -54,16 +54,16 @@ void DataAdministration::MetaFraesDir(int kind)
 	cft.clear();
 
 	string dir = ed->getRootDir(kind);
-	if (kind==FDWorld)		extension = ".world";
-	if (kind==FDTerrain)	extension = ".map";
-	if (kind==FDModel)		extension = ".model";
-	if (kind==FDMaterial)	extension = ".material";
-	if (kind==FDFont)		extension = ".xfont";
-	if (kind==FDShaderFile)	extension = ".glsl";
-	if (kind==FDScript)		extension = ".kaba";
-	if (kind==FDCameraFlight)extension = ".camera";
-	if (kind==FDTexture)	extension = "";
-	if (kind==FDSound)		extension = "";
+	if (kind==FD_WORLD)		extension = ".world";
+	if (kind==FD_TERRAIN)	extension = ".map";
+	if (kind==FD_MODEL)		extension = ".model";
+	if (kind==FD_MATERIAL)	extension = ".material";
+	if (kind==FD_FONT)		extension = ".xfont";
+	if (kind==FD_SHADERFILE)	extension = ".glsl";
+	if (kind==FD_SCRIPT)		extension = ".kaba";
+	if (kind==FD_CAMERAFLIGHT)extension = ".camera";
+	if (kind==FD_TEXTURE)	extension = "";
+	if (kind==FD_SOUND)		extension = "";
 	if (extension == "x")
 		return;
 	msg_db_m(("suche... (" + extension + ")\n").c_str(),5);
@@ -179,46 +179,46 @@ AdminFile *AdminFileList::add_engine_files()
 
 void AdminFileList::add_from_game_ini(GameIniData &game_ini, AdminFile *f)
 {
-	add_unchecked_ae(FDScript,  game_ini.DefScript, f);
-	add_unchecked_ae(FDWorld,   game_ini.DefWorld, f);
-	add_unchecked_ae(FDWorld,   game_ini.SecondWorld, f);
-	add_unchecked_ae(FDMaterial,game_ini.DefMaterial, f);
-	add_unchecked_ae(FDFont,    game_ini.DefFont, f);
+	add_unchecked_ae(FD_SCRIPT,  game_ini.DefScript, f);
+	add_unchecked_ae(FD_WORLD,   game_ini.DefWorld, f);
+	add_unchecked_ae(FD_WORLD,   game_ini.SecondWorld, f);
+	add_unchecked_ae(FD_MATERIAL,game_ini.DefMaterial, f);
+	add_unchecked_ae(FD_FONT,    game_ini.DefFont, f);
 }
 
 void AdminFileList::add_from_game_ini_export(AdminFileList *source, GameIniData &game_ini)
 {
 	AdminFile *a;
 	if (game_ini.DefScript.num > 0){
-		a = source->get(FDScript,  game_ini.DefScript);
+		a = source->get(FD_SCRIPT,  game_ini.DefScript);
 		if (!a)
 			throw AdminGameExportException("game.ini: script file");
 		add_recursive(a);
 	}
 
 	if (game_ini.DefWorld.num > 0){
-		a = source->get(FDWorld,   game_ini.DefWorld + ".world");
+		a = source->get(FD_WORLD,   game_ini.DefWorld + ".world");
 		if (!a)
 			throw AdminGameExportException("game.ini: initial world");
 		add_recursive(a);
 	}
 
 	if (game_ini.SecondWorld.num > 0){
-		a = source->get(FDWorld,   game_ini.SecondWorld + ".world");
+		a = source->get(FD_WORLD,   game_ini.SecondWorld + ".world");
 		if (!a)
 			throw AdminGameExportException("game.ini: second world");
 		add_recursive(a);
 	}
 
 	if (game_ini.DefMaterial.num > 0){
-		a = source->get(FDMaterial,game_ini.DefMaterial + ".material");
+		a = source->get(FD_MATERIAL,game_ini.DefMaterial + ".material");
 		if (!a)
 			throw AdminGameExportException("game.ini: default material");
 		add_recursive(a);
 	}
 
 	if (game_ini.DefFont.num > 0){
-		a = source->get(FDFont,    game_ini.DefFont + ".xfont");
+		a = source->get(FD_FONT,    game_ini.DefFont + ".xfont");
 		if (!a)
 			throw AdminGameExportException("game.ini: default font");
 		add_recursive(a);
@@ -235,11 +235,11 @@ void DataAdministration::UpdateDatabase()
 	// make sure the "Engine"-files are the first 3 ones
 	AdminFile *f_game_ini = file_list->add_engine_files();
 
-	GameIni->Load(ed->RootDir);
+	GameIni->Load(ed->root_dir);
 
 	// find all files
 	// iterate file types
-	for (int update_kind=0;update_kind<NumFDs;update_kind++){
+	for (int update_kind=0;update_kind<NUM_FDS;update_kind++){
 		MetaFraesDir(update_kind);
 
 		// iterate files of one type
@@ -272,7 +272,7 @@ void DataAdministration::UpdateDatabase()
 
 void DataAdministration::ExportGame(const string &dir, GameIniData &game_ini)
 {
-	if (dir == ed->RootDir)
+	if (dir == ed->root_dir)
 		throw AdminGameExportException("export dir = root dir");
 	AdminFileList list;
 	list.add((*file_list)[0]);
@@ -289,24 +289,24 @@ void DataAdministration::ExportGame(const string &dir, GameIniData &game_ini)
 		if (a->Missing)
 			continue;
 
-		string source = ed->RootDir;
+		string source = ed->root_dir;
 		string target = dir;
-		if ((a->Kind == FDWorld) || (a->Kind == FDTerrain)){
+		if ((a->Kind == FD_WORLD) || (a->Kind == FD_TERRAIN)){
 			source += "Maps/";
 			target += "Maps/";
-		}else if (a->Kind == FDModel){
+		}else if (a->Kind == FD_MODEL){
 			source += "Objects/";
 			target += "Objects/";
-		}else if ((a->Kind == FDMaterial) || (a->Kind == FDShaderFile)){
+		}else if ((a->Kind == FD_MATERIAL) || (a->Kind == FD_SHADERFILE)){
 			source += "Materials/";
 			target += "Materials/";
-		}else if (a->Kind == FDFont){
+		}else if (a->Kind == FD_FONT){
 			source += "Fonts/";
 			target += "Fonts/";
-		}else if ((a->Kind == FDScript) || (a->Kind == FDCameraFlight)){
+		}else if ((a->Kind == FD_SCRIPT) || (a->Kind == FD_CAMERAFLIGHT)){
 			source += "Scripts/";
 			target += "Scripts/";
-		}else if (a->Kind == FDTexture){
+		}else if (a->Kind == FD_TEXTURE){
 			source += "Textures/";
 			target += "Textures/";
 		}

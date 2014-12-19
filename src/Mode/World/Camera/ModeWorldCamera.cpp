@@ -212,18 +212,18 @@ void ModeWorldCamera::LoadData()
 	multi_view->ClearData(data);
 
 	// left -> translate
-	multi_view->SetMouseAction("ActionCameraMoveSelection", MultiView::ActionMove);
+	multi_view->SetMouseAction("ActionCameraMoveSelection", MultiView::ACTION_MOVE);
 	// middle/right -> rotate
 	/*multi_view->SetMouseAction(1, "ActionWorldRotateObjects", MultiView::ActionRotate2d);
 	multi_view->SetMouseAction(2, "ActionWorldRotateObjects", MultiView::ActionRotate);*/
 	multi_view->allow_rect = true;
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	multi_view->AddData(	MVDWorldCamPoint,
+	multi_view->AddData(	MVD_WORLD_CAM_POINT,
 			data->Point,
 			NULL,
 			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove | MultiView::FlagDraw);
 	if (edit_vel)
-	multi_view->AddData(	MVDWorldCamPointVel,
+	multi_view->AddData(	MVD_WORLD_CAM_POINT_VEL,
 			data->Vel,
 			NULL,
 			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove | MultiView::FlagDraw);
@@ -270,8 +270,8 @@ void ModeWorldCamera::_new()
 bool ModeWorldCamera::open()
 {
 	if (ed->allowTermination())
-		if (ed->fileDialog(FDCameraFlight, false, true))
-			return data->load(ed->DialogFileComplete);
+		if (ed->fileDialog(FD_CAMERAFLIGHT, false, true))
+			return data->load(ed->dialog_file_complete);
 	return false;
 }
 
@@ -285,8 +285,8 @@ bool ModeWorldCamera::save()
 
 bool ModeWorldCamera::saveAs()
 {
-	if (ed->fileDialog(FDCameraFlight, true, true))
-		return data->save(ed->DialogFileComplete);
+	if (ed->fileDialog(FD_CAMERAFLIGHT, true, true))
+		return data->save(ed->dialog_file_complete);
 	return false;
 }
 

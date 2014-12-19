@@ -95,7 +95,7 @@ void MeshSelectionModeEdge::updateMultiView()
 	multi_view->ClearData(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	foreach(ModelSurface &s, data->surface)
-	multi_view->AddData(	MVDModelEdge,
+	multi_view->AddData(	MVD_MODEL_EDGE,
 			s.edge,
 			&s,
 			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
@@ -103,7 +103,7 @@ void MeshSelectionModeEdge::updateMultiView()
 
 void MeshSelectionModeEdge::onDrawWin(MultiView::Window *win)
 {
-	if (multi_view->hover.type != MVDModelEdge)
+	if (multi_view->hover.type != MVD_MODEL_EDGE)
 		return;
 	if (multi_view->hover.index < 0)
 		return;

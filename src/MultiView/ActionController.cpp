@@ -20,14 +20,14 @@
 #define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 
 enum{
-	ActionModeNone,
-	ActionModeX,
-	ActionModeY,
-	ActionModeZ,
-	ActionModeXY,
-	ActionModeXZ,
-	ActionModeYZ,
-	ActionModeFree,
+	ACTION_MODE_NONE,
+	ACTION_MODE_X,
+	ACTION_MODE_Y,
+	ACTION_MODE_Z,
+	ACTION_MODE_XY,
+	ACTION_MODE_XZ,
+	ACTION_MODE_YZ,
+	ACTION_MODE_FREE,
 };
 
 namespace MultiView{
@@ -50,7 +50,7 @@ void ActionController::startAction()
 
 		m0 = multi_view->hover.point;
 		pos0 = pos;
-		if (mode == ActionModeFree)
+		if (mode == ACTION_MODE_FREE)
 			pos0 = multi_view->hover.point;
 		cur_action = ActionMultiViewFactory(action.name, data);
 		cur_action->execute_logged(data);
@@ -74,32 +74,32 @@ vector transform_ang(MultiViewImpl *mv, const vector &ang)
 vector mvac_project_trans(int mode, const vector &v)
 {
 	vector r = v;
-	if (mode == ActionModeX)
+	if (mode == ACTION_MODE_X)
 		r.y = r.z = 0;
-	else if (mode == ActionModeY)
+	else if (mode == ACTION_MODE_Y)
 		r.x = r.z = 0;
-	else if (mode == ActionModeZ)
+	else if (mode == ACTION_MODE_Z)
 		r.x = r.y = 0;
-	else if (mode == ActionModeXY)
+	else if (mode == ACTION_MODE_XY)
 		r.z = 0;
-	else if (mode == ActionModeXZ)
+	else if (mode == ACTION_MODE_XZ)
 		r.y = 0;
-	else if (mode == ActionModeYZ)
+	else if (mode == ACTION_MODE_YZ)
 		r.x = 0;
 	return r;
 }
 
 vector mvac_mirror(int mode)
 {
-	if (mode == ActionModeX)
+	if (mode == ACTION_MODE_X)
 		return e_x;
-	else if (mode == ActionModeY)
+	else if (mode == ACTION_MODE_Y)
 		return e_y;
-	else if (mode == ActionModeZ)
+	else if (mode == ACTION_MODE_Z)
 		return e_z;
-	else if (mode == ActionModeXY)
+	else if (mode == ACTION_MODE_XY)
 		return e_z;
-	else if (mode == ActionModeXZ)
+	else if (mode == ACTION_MODE_XZ)
 		return e_y;
 	return e_x;
 }
@@ -117,24 +117,24 @@ void ActionController::updateAction()
 	matrix m_dt, m_dti;
 	MatrixTranslation(m_dt, pos0);
 	MatrixTranslation(m_dti, -pos0);
-	if ((action.mode == ActionMove) || (action.mode == ActionSelectAndMove)){
+	if ((action.mode == ACTION_MOVE) || (action.mode == ACTION_SELECT_AND_MOVE)){
 		param = mvac_project_trans(mode, v2 - v1);
 		MatrixTranslation(mat, param);
-	}else if (action.mode == ActionRotate){
+	}else if (action.mode == ACTION_ROTATE){
 		param = mvac_project_trans(mode, v2 - v1) * 0.003f *multi_view->cam.zoom;
-		if (mode == ActionModeFree)
+		if (mode == ACTION_MODE_FREE)
 			param = transform_ang(multi_view, vector(v1p.y - v2p.y, v1p.x - v2p.x, 0) * 0.003f);
 		MatrixRotation(mat, param);
 		mat = m_dt * mat * m_dti;
-	}else if (action.mode == ActionScale){
+	}else if (action.mode == ACTION_SCALE){
 		param = vector(1, 1, 1) + mvac_project_trans(mode, v2 - v1) * 0.01f *multi_view->cam.zoom;
-		if (mode == ActionModeFree)
+		if (mode == ACTION_MODE_FREE)
 			param = vector(1, 1, 1) * (1 + (v2p - v1p).x * 0.01f);
 		MatrixScale(mat, param.x, param.y, param.z);
 		mat = m_dt * mat * m_dti;
-	}else if (action.mode == ActionMirror){
+	}else if (action.mode == ACTION_MIRROR){
 		param = mvac_mirror(mode);
-		if (mode == ActionModeFree)
+		if (mode == ACTION_MODE_FREE)
 			param = multi_view->active_win->getDirectionRight();
 		plane pl;
 		PlaneFromPointNormal(pl, v_0, param);
@@ -172,9 +172,9 @@ void ActionController::endAction(bool set)
 
 bool ActionController::isSelecting()
 {
-	if (action.mode == ActionSelect)
+	if (action.mode == ACTION_SELECT)
 		return true;
-	if (action.mode == ActionSelectAndMove){
+	if (action.mode == ACTION_SELECT_AND_MOVE){
 		if (multi_view->hover.index >= 0){
 			SingleData *d = MVGetSingleData(multi_view->data[multi_view->hover.set], multi_view->hover.index);
 			return !d->is_selected;
@@ -187,7 +187,7 @@ bool ActionController::isSelecting()
 void ActionController::reset()
 {
 	show = false;
-	mode = ActionModeNone;
+	mode = ACTION_MODE_NONE;
 	foreach(Geometry *g, geo)
 		delete(g);
 	geo.clear();
@@ -282,23 +282,23 @@ void ActionController::draw(Window *win)
 
 void ActionController::drawParams()
 {
-	if ((action.mode == ActionMove) || (action.mode == ActionSelectAndMove)){
+	if ((action.mode == ACTION_MOVE) || (action.mode == ACTION_SELECT_AND_MOVE)){
 		vector t = param;
 		string unit = multi_view->GetMVScaleByZoom(t);
-		ed->drawStr(150, 100, f2s(t.x, 2) + " " + unit, Edward::AlignRight);
-		ed->drawStr(150, 120, f2s(t.y, 2) + " " + unit, Edward::AlignRight);
+		ed->drawStr(150, 100, f2s(t.x, 2) + " " + unit, Edward::ALIGN_RIGHT);
+		ed->drawStr(150, 120, f2s(t.y, 2) + " " + unit, Edward::ALIGN_RIGHT);
 		if (multi_view->mode3d)
-			ed->drawStr(150, 140, f2s(t.z, 2) + " " + unit, Edward::AlignRight);
-	}else if ((action.mode == ActionRotate) or (action.mode == ActionRotate2d)){
+			ed->drawStr(150, 140, f2s(t.z, 2) + " " + unit, Edward::ALIGN_RIGHT);
+	}else if ((action.mode == ACTION_ROTATE) or (action.mode == ACTION_ROTATE_2D)){
 		vector r = param * 180.0f / pi;
-		ed->drawStr(150, 100, f2s(r.x, 1) + "°", Edward::AlignRight);
-		ed->drawStr(150, 120, f2s(r.y, 1) + "°", Edward::AlignRight);
-		ed->drawStr(150, 140, f2s(r.z, 1) + "°", Edward::AlignRight);
-	}else if ((action.mode == ActionScale) || (action.mode == ActionScale2d)){
-		ed->drawStr(150, 100, f2s(param.x * 100.0f, 1) + "%", Edward::AlignRight);
-		ed->drawStr(150, 120, f2s(param.y * 100.0f, 1) + "%", Edward::AlignRight);
+		ed->drawStr(150, 100, f2s(r.x, 1) + "°", Edward::ALIGN_RIGHT);
+		ed->drawStr(150, 120, f2s(r.y, 1) + "°", Edward::ALIGN_RIGHT);
+		ed->drawStr(150, 140, f2s(r.z, 1) + "°", Edward::ALIGN_RIGHT);
+	}else if ((action.mode == ACTION_SCALE) || (action.mode == ACTION_SCALE_2D)){
+		ed->drawStr(150, 100, f2s(param.x * 100.0f, 1) + "%", Edward::ALIGN_RIGHT);
+		ed->drawStr(150, 120, f2s(param.y * 100.0f, 1) + "%", Edward::ALIGN_RIGHT);
 		if (multi_view->mode3d)
-			ed->drawStr(150, 140, f2s(param.z * 100.0f, 1) + "%", Edward::AlignRight);
+			ed->drawStr(150, 140, f2s(param.z * 100.0f, 1) + "%", Edward::ALIGN_RIGHT);
 	}
 }
 
@@ -325,17 +325,17 @@ bool ActionController::isMouseOver(vector &tp)
 
 bool ActionController::leftButtonDown()
 {
-	if ((!show) && (action.mode != ActionSelectAndMove))
+	if ((!show) && (action.mode != ACTION_SELECT_AND_MOVE))
 		return false;
 	vector tp;
-	mode = ActionModeNone;
+	mode = ACTION_MODE_NONE;
 	if (isMouseOver(multi_view->hover.point)){
-		mode = ActionModeX + mouse_over_geo;
+		mode = ACTION_MODE_X + mouse_over_geo;
 		startAction();
 		return true;
 	}
 	if (multi_view->hover.index >= 0){
-		mode = ActionModeFree;
+		mode = ACTION_MODE_FREE;
 		startAction();
 		return true;
 	}

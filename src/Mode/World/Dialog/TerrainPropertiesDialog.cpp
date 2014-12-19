@@ -61,8 +61,8 @@ void TerrainPropertiesDialog::ApplyData()
 void TerrainPropertiesDialog::OnTextures()
 {
 	int n = getInt("textures");
-	if (ed->fileDialog(FDTexture, false, true)){
-		temp.TextureFile[n] = ed->DialogFile;
+	if (ed->fileDialog(FD_TEXTURE, false, true)){
+		temp.TextureFile[n] = ed->dialog_file;
 		FillTextureList();
 	}
 }
@@ -118,10 +118,10 @@ void TerrainPropertiesDialog::OnTexturesEdit()
 
 void TerrainPropertiesDialog::OnSaveAs()
 {
-	if (!ed->fileDialog(FDTerrain, true, true))
+	if (!ed->fileDialog(FD_TERRAIN, true, true))
 		return;
-	data->Terrains[index].Save(ed->DialogFileComplete);
-	setString("filename", ed->DialogFileNoEnding);
+	data->Terrains[index].Save(ed->dialog_file_complete);
+	setString("filename", ed->dialog_file_no_ending);
 }
 
 
@@ -153,8 +153,8 @@ void TerrainPropertiesDialog::OnDefaultMaterial()
 
 void TerrainPropertiesDialog::OnMaterialFind()
 {
-	if (ed->fileDialog(FDMaterial, false, true))
-		setString("material", ed->DialogFileNoEnding);
+	if (ed->fileDialog(FD_MATERIAL, false, true))
+		setString("material", ed->dialog_file_no_ending);
 }
 
 

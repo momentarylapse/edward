@@ -39,7 +39,7 @@ void ModeModelAnimationVertex::onStart()
 	multi_view->ClearData(NULL);
 	multi_view->allow_rect = true;
 
-	chooseMouseFunction(MultiView::ActionSelect);
+	chooseMouseFunction(MultiView::ACTION_SELECT);
 
 	subscribe(data);
 	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
@@ -56,15 +56,15 @@ void ModeModelAnimationVertex::onEnd()
 void ModeModelAnimationVertex::onCommand(const string& id)
 {
 	if (id == "select")
-		chooseMouseFunction(MultiView::ActionSelect);
+		chooseMouseFunction(MultiView::ACTION_SELECT);
 	if (id == "translate")
-		chooseMouseFunction(MultiView::ActionMove);
+		chooseMouseFunction(MultiView::ACTION_MOVE);
 	if (id == "rotate")
-		chooseMouseFunction(MultiView::ActionRotate);
+		chooseMouseFunction(MultiView::ACTION_ROTATE);
 	if (id == "scale")
-		chooseMouseFunction(MultiView::ActionScale);
+		chooseMouseFunction(MultiView::ACTION_SCALE);
 	if (id == "mirror")
-		chooseMouseFunction(MultiView::ActionMirror);
+		chooseMouseFunction(MultiView::ACTION_MIRROR);
 }
 
 void ModeModelAnimationVertex::chooseMouseFunction(int f)
@@ -73,10 +73,10 @@ void ModeModelAnimationVertex::chooseMouseFunction(int f)
 	ed->updateMenu();
 
 	// mouse action
-	if (mouse_action != MultiView::ActionSelect){
+	if (mouse_action != MultiView::ACTION_SELECT){
 		multi_view->SetMouseAction("ActionModelAnimationTransformVertices", mouse_action);
 	}else{
-		multi_view->SetMouseAction("", MultiView::ActionSelect);
+		multi_view->SetMouseAction("", MultiView::ACTION_SELECT);
 	}
 }
 
@@ -88,7 +88,7 @@ void ModeModelAnimationVertex::onUpdate(Observable* o, const string &message)
 		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 
-		multi_view->AddData(	MVDModelVertex,
+		multi_view->AddData(	MVD_MODEL_VERTEX,
 				mode_model_animation->vertex,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect);
@@ -101,11 +101,11 @@ void ModeModelAnimationVertex::onUpdate(Observable* o, const string &message)
 
 void ModeModelAnimationVertex::onUpdateMenu()
 {
-	ed->check("select", mouse_action == MultiView::ActionSelect);
-	ed->check("translate", mouse_action == MultiView::ActionMove);
-	ed->check("rotate", mouse_action == MultiView::ActionRotate);
-	ed->check("scale", mouse_action == MultiView::ActionScale);
-	ed->check("mirror", mouse_action == MultiView::ActionMirror);
+	ed->check("select", mouse_action == MultiView::ACTION_SELECT);
+	ed->check("translate", mouse_action == MultiView::ACTION_MOVE);
+	ed->check("rotate", mouse_action == MultiView::ACTION_ROTATE);
+	ed->check("scale", mouse_action == MultiView::ACTION_SCALE);
+	ed->check("mirror", mouse_action == MultiView::ACTION_MIRROR);
 }
 
 void ModeModelAnimationVertex::onDrawWin(MultiView::Window *win)

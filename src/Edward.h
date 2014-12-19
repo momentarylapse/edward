@@ -24,35 +24,35 @@ namespace MultiView{
 
 // file types
 enum{
-	FDModel,
-	FDTexture,
-	FDSound,
-	FDMaterial,
-	FDTerrain,
-	FDWorld,
-	FDShaderFile,
-	FDFont,
-	FDScript,
-	FDCameraFlight,
-	FDFile, // any file
-	NumFDs
+	FD_MODEL,
+	FD_TEXTURE,
+	FD_SOUND,
+	FD_MATERIAL,
+	FD_TERRAIN,
+	FD_WORLD,
+	FD_SHADERFILE,
+	FD_FONT,
+	FD_SCRIPT,
+	FD_CAMERAFLIGHT,
+	FD_FILE, // any file
+	NUM_FDS
 };
 
 // multiview data
 enum{
-	MVDModelSurface,
-	MVDModelVertex,
-	MVDModelSkinVertex,
-	MVDModelPolygon,
-	MVDModelEdge,
-	MVDModelBall,
-	MVDModelPolyhedron,
-	MVDSkeletonPoint,
-	MVDWorldObject,
-	MVDWorldTerrain,
-	MVDWorldTerrainVertex,
-	MVDWorldCamPoint,
-	MVDWorldCamPointVel,
+	MVD_MODEL_SURFACE,
+	MVD_MODEL_VERTEX,
+	MVD_MODEL_SKIN_VERTEX,
+	MVD_MODEL_POLYGON,
+	MVD_MODEL_EDGE,
+	MVD_MODEL_BALL,
+	MVD_MODEL_POLYHEDRON,
+	MVD_SKELETON_BONE,
+	MVD_WORLD_OBJECT,
+	MVD_WORLD_TERRAIN,
+	MVD_WORLD_TERRAIN_VERTEX,
+	MVD_WORLD_CAM_POINT,
+	MVD_WORLD_CAM_POINT_VEL,
 };
 
 
@@ -119,11 +119,11 @@ public:
 
 	enum AlignType
 	{
-		AlignLeft,
-		AlignCenter,
-		AlignRight
+		ALIGN_LEFT,
+		ALIGN_CENTER,
+		ALIGN_RIGHT
 	};
-	void drawStr(int x, int y, const string &str, AlignType a = AlignLeft);
+	void drawStr(int x, int y, const string &str, AlignType a = ALIGN_LEFT);
 	void forceRedraw();
 	bool force_redraw;
 	void updateMenu();
@@ -132,12 +132,12 @@ public:
 	ModeBase *cur_mode;
 	Array<ModeBase*> mode_queue;
 
-	string RootDir;
-	bool RootDirCorrect;
+	string root_dir;
+	bool root_dir_correct;
 
-	string DialogDir[NumFDs], RootDirKind[NumFDs];
-	string DialogFile, DialogFileComplete, DialogFileNoEnding;
-	Array<string> PossibleSubDir;
+	string dialog_dir[NUM_FDS], root_dir_kind[NUM_FDS];
+	string dialog_file, dialog_file_complete, dialog_file_no_ending;
+	Array<string> possible_sub_dir;
 
 	MultiView::MultiView *multi_view_2d;
 	MultiView::MultiView *multi_view_3d;

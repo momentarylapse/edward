@@ -55,25 +55,25 @@ void ModeModelSkeleton::onCommand(const string & id)
 		removeSubModel();
 
 	if (id == "select")
-		chooseMouseFunction(MultiView::ActionSelectAndMove);
+		chooseMouseFunction(MultiView::ACTION_SELECT_AND_MOVE);
 	if (id == "translate")
-		chooseMouseFunction(MultiView::ActionMove);
+		chooseMouseFunction(MultiView::ACTION_MOVE);
 	if (id == "rotate")
-		chooseMouseFunction(MultiView::ActionRotate);
+		chooseMouseFunction(MultiView::ACTION_ROTATE);
 	if (id == "scale")
-		chooseMouseFunction(MultiView::ActionScale);
+		chooseMouseFunction(MultiView::ACTION_SCALE);
 	if (id == "mirror")
-		chooseMouseFunction(MultiView::ActionMirror);
+		chooseMouseFunction(MultiView::ACTION_MIRROR);
 }
 
 void ModeModelSkeleton::addSubModel()
 {
-	if (!ed->fileDialog(FDModel, false, true))
+	if (!ed->fileDialog(FD_MODEL, false, true))
 		return;
 	data->beginActionGroup("remove-sub-model");
 	foreachi(ModelBone &b, data->bone, i)
 		if (b.is_selected)
-			data->execute(new ActionModelSetSubModel(i, ed->DialogFileNoEnding));
+			data->execute(new ActionModelSetSubModel(i, ed->dialog_file_no_ending));
 	data->endActionGroup();
 }
 
@@ -92,10 +92,10 @@ void ModeModelSkeleton::chooseMouseFunction(int f)
 	ed->updateMenu();
 
 	// mouse action
-	if (mouse_action != MultiView::ActionSelect){
+	if (mouse_action != MultiView::ACTION_SELECT){
 		multi_view->SetMouseAction("ActionModelTransformBones", mouse_action);
 	}else{
-		multi_view->SetMouseAction("", MultiView::ActionSelect);
+		multi_view->SetMouseAction("", MultiView::ACTION_SELECT);
 	}
 }
 
@@ -108,11 +108,11 @@ void ModeModelSkeleton::onDraw()
 
 void ModeModelSkeleton::onUpdateMenu()
 {
-	ed->check("select", mouse_action == MultiView::ActionSelectAndMove);
-	ed->check("translate", mouse_action == MultiView::ActionMove);
-	ed->check("rotate", mouse_action == MultiView::ActionRotate);
-	ed->check("scale", mouse_action == MultiView::ActionScale);
-	ed->check("mirror", mouse_action == MultiView::ActionMirror);
+	ed->check("select", mouse_action == MultiView::ACTION_SELECT_AND_MOVE);
+	ed->check("translate", mouse_action == MultiView::ACTION_MOVE);
+	ed->check("rotate", mouse_action == MultiView::ACTION_ROTATE);
+	ed->check("scale", mouse_action == MultiView::ACTION_SCALE);
+	ed->check("mirror", mouse_action == MultiView::ACTION_MIRROR);
 }
 
 
@@ -138,11 +138,11 @@ void ModeModelSkeleton::onStart()
 	multi_view->ClearData(data);
 	multi_view->SetAllowRect(true);
 
-	chooseMouseFunction(MultiView::ActionSelectAndMove);
+	chooseMouseFunction(MultiView::ACTION_SELECT_AND_MOVE);
 
 
 	// left -> translate
-	multi_view->SetMouseAction("ActionModelTransformBones", MultiView::ActionSelectAndMove);
+	multi_view->SetMouseAction("ActionModelTransformBones", MultiView::ACTION_SELECT_AND_MOVE);
 	multi_view->allow_rect = true;
 	onUpdate(data, "");
 }
@@ -165,7 +165,7 @@ void ModeModelSkeleton::onUpdate(Observable *o, const string &message)
 		multi_view->ClearData(data);
 
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		multi_view->AddData(	MVDSkeletonPoint,
+		multi_view->AddData(	MVD_SKELETON_BONE,
 				data->bone,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);

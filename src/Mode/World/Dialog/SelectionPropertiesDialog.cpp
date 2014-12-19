@@ -54,18 +54,18 @@ void SelectionPropertiesDialog::FillList()
 	reset("property_list");
 	addString("property_list", _("Welt") + ":-:" + _(" -- Komplette Welt -- "));
 	index.add(0);
-	type.add(FDWorld);
+	type.add(FD_WORLD);
 
 	foreachi(WorldObject &o, data->Objects, i)
 		if (o.is_selected){
 			addString("property_list", _("Objekt") + format(":%d:", i) + o.Name);
-			type.add(FDModel);
+			type.add(FD_MODEL);
 			index.add(i);
 		}
 	foreachi(WorldTerrain &t, data->Terrains, i)
 		if (t.is_selected){
 			addString("property_list", _("Terrain") + format(":%d:", i) + t.FileName);
-			type.add(FDTerrain);
+			type.add(FD_TERRAIN);
 			index.add(i);
 		}
 	/*for (int i=0;i<CamPoint.num;i++)

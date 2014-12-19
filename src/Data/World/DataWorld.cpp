@@ -104,7 +104,7 @@ void WorldTerrain::UpdateData()
 }
 
 DataWorld::DataWorld() :
-	Data(FDWorld)
+	Data(FD_WORLD)
 {
 }
 

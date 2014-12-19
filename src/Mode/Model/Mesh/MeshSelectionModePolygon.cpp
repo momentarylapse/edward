@@ -117,7 +117,7 @@ void MeshSelectionModePolygon::updateMultiView()
 	multi_view->ClearData(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	foreach(ModelSurface &s, data->surface)
-	multi_view->AddData(	MVDModelPolygon,
+	multi_view->AddData(	MVD_MODEL_POLYGON,
 			s.polygon,
 			&s,
 			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);

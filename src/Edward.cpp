@@ -189,20 +189,20 @@ Edward::Edward(Array<string> arg) :
 
 	loadKeyCodes();
 
-	PossibleSubDir.add("Fonts");
-	PossibleSubDir.add("Maps");
-	PossibleSubDir.add("Materials");
-	PossibleSubDir.add("Objects");
-	PossibleSubDir.add("Scripts");
-	PossibleSubDir.add("Sounds");
-	PossibleSubDir.add("Textures");
+	possible_sub_dir.add("Fonts");
+	possible_sub_dir.add("Maps");
+	possible_sub_dir.add("Materials");
+	possible_sub_dir.add("Objects");
+	possible_sub_dir.add("Scripts");
+	possible_sub_dir.add("Sounds");
+	possible_sub_dir.add("Textures");
 
 	// configuration
 	int w = HuiConfig.getInt("Window.Width", 800);
 	int h = HuiConfig.getInt("Window.Height", 600);
 	bool maximized = HuiConfig.getBool("Window.Maximized", false);
 	setSize(w, h);
-	RootDir = HuiConfig.getStr("RootDir", "");
+	root_dir = HuiConfig.getStr("RootDir", "");
 	//HuiConfigReadInt("Api", api, NIX_API_OPENGL);
 	/*bool LocalDocumentation = HuiConfig.getBool("LocalDocumentation", false);
 	WorldScriptVarFile = HuiConfig.getStr("WorldScriptVarFile", "");
@@ -263,7 +263,7 @@ Edward::Edward(Array<string> arg) :
 	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;
 	mworld->FFVBinaryMap = true;*/
 
-	makeDirs(RootDir,true);
+	makeDirs(root_dir,true);
 
 	// subscribe to all data to automatically redraw...
 	subscribe(mode_model->data);
@@ -296,7 +296,7 @@ Edward::~Edward()
 	HuiConfig.setInt("Window.Width", w);
 	HuiConfig.setInt("Window.Height", h);
 	HuiConfig.setBool("Window.Maximized", isMaximized());
-	HuiConfig.setStr("RootDir", RootDir);
+	HuiConfig.setStr("RootDir", root_dir);
 	HuiConfig.setStr("Language", HuiGetCurLanguage());
 	/*HuiConfig.setBool("LocalDocumentation", LocalDocumentation);
 	HuiConfig.setStr("WorldScriptVarFile", WorldScriptVarFile);
@@ -495,11 +495,11 @@ void Edward::onUpdate(Observable *o, const string &message)
 
 void Edward::onExecutePlugin()
 {
-	string temp = DialogDir[FDScript];
-	DialogDir[FDScript] = HuiAppDirectoryStatic + "Plugins/";
-	if (fileDialog(FDScript, false, false))
-		plugins->execute(DialogFileComplete);
-	DialogDir[FDScript] = temp;
+	string temp = dialog_dir[FD_SCRIPT];
+	dialog_dir[FD_SCRIPT] = HuiAppDirectoryStatic + "Plugins/";
+	if (fileDialog(FD_SCRIPT, false, false))
+		plugins->execute(dialog_file_complete);
+	dialog_dir[FD_SCRIPT] = temp;
 }
 
 void Edward::forceRedraw()
@@ -510,9 +510,9 @@ void Edward::forceRedraw()
 void Edward::drawStr(int x, int y, const string &str, AlignType a)
 {
 	int w = NixGetStrWidth(str);
-	if (a == AlignRight)
+	if (a == ALIGN_RIGHT)
 		x -= w;
-	else if (a == AlignCenter)
+	else if (a == ALIGN_CENTER)
 		x -= w / 2;
 	NixSetAlpha(AlphaMaterial);
 	color c = NixGetColor();
@@ -535,7 +535,7 @@ void Edward::onDraw()
 
 	// messages
 	foreachi(string &m, message_str, i)
-		drawStr(MaxX / 2, MaxY / 2 - 10 - i * 20, m, AlignCenter);
+		drawStr(MaxX / 2, MaxY / 2 - 10 - i * 20, m, ALIGN_CENTER);
 
 	NixEnd();
 	force_redraw = false;
@@ -567,58 +567,58 @@ void Edward::loadKeyCodes()
 
 void Edward::updateDialogDir(int kind)
 {
-	if (kind==FDModel)			RootDirKind[kind] = ObjectDir;
-	if (kind==FDModel)			RootDirKind[kind] = ObjectDir;
-	if (kind==FDTexture)		RootDirKind[kind] = NixTextureDir;
-	if (kind==FDSound)			RootDirKind[kind] = SoundDir;
-	if (kind==FDMaterial)		RootDirKind[kind] = MaterialDir;
-	if (kind==FDTerrain)		RootDirKind[kind] = MapDir;
-	if (kind==FDWorld)			RootDirKind[kind] = MapDir;
-	if (kind==FDShaderFile)		RootDirKind[kind] = MaterialDir;
-	if (kind==FDFont)			RootDirKind[kind] = Gui::FontDir;
-	if (kind==FDScript)			RootDirKind[kind] = ScriptDir;
-	if (kind==FDCameraFlight)	RootDirKind[kind] = ScriptDir;
-	if (kind==FDFile)			RootDirKind[kind] = RootDir;
+	if (kind==FD_MODEL)			root_dir_kind[kind] = ObjectDir;
+	if (kind==FD_MODEL)			root_dir_kind[kind] = ObjectDir;
+	if (kind==FD_TEXTURE)		root_dir_kind[kind] = NixTextureDir;
+	if (kind==FD_SOUND)			root_dir_kind[kind] = SoundDir;
+	if (kind==FD_MATERIAL)		root_dir_kind[kind] = MaterialDir;
+	if (kind==FD_TERRAIN)		root_dir_kind[kind] = MapDir;
+	if (kind==FD_WORLD)			root_dir_kind[kind] = MapDir;
+	if (kind==FD_SHADERFILE)		root_dir_kind[kind] = MaterialDir;
+	if (kind==FD_FONT)			root_dir_kind[kind] = Gui::FontDir;
+	if (kind==FD_SCRIPT)			root_dir_kind[kind] = ScriptDir;
+	if (kind==FD_CAMERAFLIGHT)	root_dir_kind[kind] = ScriptDir;
+	if (kind==FD_FILE)			root_dir_kind[kind] = root_dir;
 }
 
 
 void Edward::setRootDirectory(const string &directory)
 {
 	string object_dir, map_dir, texture_dir, sound_dir, script_dir, material_dir, font_dir;
-	bool ufd = (RootDir.find(directory) < 0) && (directory.find(RootDir) < 0);
-	RootDir = directory;
-	RootDir.dir_ensure_ending();
-	if (RootDirCorrect){
-		map_dir = RootDir + "Maps/";
+	bool ufd = (root_dir.find(directory) < 0) && (directory.find(root_dir) < 0);
+	root_dir = directory;
+	root_dir.dir_ensure_ending();
+	if (root_dir_correct){
+		map_dir = root_dir + "Maps/";
 		dir_create(map_dir);
-		object_dir = RootDir + "Objects/";
+		object_dir = root_dir + "Objects/";
 		dir_create(object_dir);
-		texture_dir = RootDir + "Textures/";
+		texture_dir = root_dir + "Textures/";
 		dir_create(texture_dir);
-		sound_dir = RootDir + "Sounds/";
+		sound_dir = root_dir + "Sounds/";
 		dir_create(sound_dir);
-		script_dir = RootDir + "Scripts/";
+		script_dir = root_dir + "Scripts/";
 		dir_create(script_dir);
-		material_dir = RootDir + "Materials/";
+		material_dir = root_dir + "Materials/";
 		dir_create(material_dir);
-		font_dir = RootDir + "Fonts/";
+		font_dir = root_dir + "Fonts/";
 		dir_create(font_dir);
 	}else{
-		map_dir = RootDir;
-		object_dir = RootDir;
-		texture_dir = RootDir;
-		sound_dir = RootDir;
-		script_dir = RootDir;
-		material_dir = RootDir;
-		font_dir = RootDir;
+		map_dir = root_dir;
+		object_dir = root_dir;
+		texture_dir = root_dir;
+		sound_dir = root_dir;
+		script_dir = root_dir;
+		material_dir = root_dir;
+		font_dir = root_dir;
 	}
 	MetaSetDirs(texture_dir, map_dir, object_dir, sound_dir, script_dir, material_dir, font_dir);
 #ifndef _X_USE_SOUND_
 	SoundDir = sound_dir;
 #endif
 	if (ufd)
-		for (int i=0;i<NumFDs;i++){
-			DialogDir[i] = "";
+		for (int i=0;i<NUM_FDS;i++){
+			dialog_dir[i] = "";
 			updateDialogDir(i);
 		}
 }
@@ -634,17 +634,17 @@ void Edward::makeDirs(const string &original_dir, bool as_root_dir)
 	if (!as_root_dir){
 		// we are in a sub dir?
 		sub_dir=false;
-		foreach(string &p, PossibleSubDir){
+		foreach(string &p, possible_sub_dir){
 			if (dir.find(p) >= 0){
 				dir = dir.substr(0, dir.find(p));
 				sub_dir=true;
 				break;
 			}
 		}
-		RootDirCorrect = sub_dir;
-		RootDirCorrect &= file_test_existence(dir + "game.ini");
+		root_dir_correct = sub_dir;
+		root_dir_correct &= file_test_existence(dir + "game.ini");
 	}else{
-		RootDirCorrect = file_test_existence(dir + "game.ini");
+		root_dir_correct = file_test_existence(dir + "game.ini");
 	}
 	setRootDirectory(dir);
 }
@@ -652,19 +652,19 @@ void Edward::makeDirs(const string &original_dir, bool as_root_dir)
 
 string Edward::getRootDir(int kind)
 {
-	if (kind==-1)				return RootDir;
-	if (kind==FDModel)			return ObjectDir;
-	if (kind==FDTexture)		return NixTextureDir;
-	if (kind==FDSound)			return SoundDir;
-	if (kind==FDMaterial)		return MaterialDir;
-	if (kind==FDTerrain)		return MapDir;
-	if (kind==FDWorld)			return MapDir;
-	if (kind==FDShaderFile)		return MaterialDir;
-	if (kind==FDFont)			return Gui::FontDir;
-	if (kind==FDScript)			return ScriptDir;
-	if (kind==FDCameraFlight)	return ScriptDir;
-	if (kind==FDFile)			return RootDir;
-	return RootDir;
+	if (kind==-1)				return root_dir;
+	if (kind==FD_MODEL)			return ObjectDir;
+	if (kind==FD_TEXTURE)		return NixTextureDir;
+	if (kind==FD_SOUND)			return SoundDir;
+	if (kind==FD_MATERIAL)		return MaterialDir;
+	if (kind==FD_TERRAIN)		return MapDir;
+	if (kind==FD_WORLD)			return MapDir;
+	if (kind==FD_SHADERFILE)		return MaterialDir;
+	if (kind==FD_FONT)			return Gui::FontDir;
+	if (kind==FD_SCRIPT)			return ScriptDir;
+	if (kind==FD_CAMERAFLIGHT)	return ScriptDir;
+	if (kind==FD_FILE)			return root_dir;
+	return root_dir;
 }
 
 void Edward::removeMessage()
@@ -763,33 +763,33 @@ bool Edward::fileDialog(int kind,bool save,bool force_in_root_dir)
 	int done;
 
 	updateDialogDir(kind);
-	if (DialogDir[kind].num < 1)
-		DialogDir[kind] = RootDirKind[kind];
+	if (dialog_dir[kind].num < 1)
+		dialog_dir[kind] = root_dir_kind[kind];
 
 
 	string title, show_filter, filter;
-	if (kind==FDModel){		title=_("Modell-Datei");	show_filter=_("Modelle (*.model)");			filter="*.model";	}
-	if (kind==FDTexture){	title=_("Textur-Datei");	show_filter=_("Texturen (bmp,jpg,tga,png,avi)");filter="*.jpg;*.bmp;*.tga;*.png;*.avi";	}
-	if (kind==FDSound){		title=_("Sound-Datei");		show_filter=_("Sounds (wav,ogg)");			filter="*.wav;*.ogg";	}
-	if (kind==FDMaterial){	title=_("Material-Datei");	show_filter=_("Materialien (*.material)");	filter="*.material";	}
-	if (kind==FDTerrain){	title=_("Karten-Datei");	show_filter=_("Karten (*.map)");			filter="*.map";	}
-	if (kind==FDWorld){		title=_("Welt-Datei");		show_filter=_("Welten (*.world)");			filter="*.world";	}
-	if (kind==FDShaderFile){title=_("Shader-Datei");	show_filter=_("Shader-Dateien (*.glsl)");	filter="*.glsl";	}
-	if (kind==FDFont){		title=_("Font-Datei");		show_filter=_("Font-Dateien (*.xfont)");	filter="*.xfont";	}
-	if (kind==FDScript){	title=_("Script-Datei");	show_filter=_("Script-Dateien (*.kaba)");	filter="*.kaba";	}
-	if (kind==FDCameraFlight){title=_("Kamera-Datei");	show_filter=_("Kamera-Dateien (*.camera)");	filter="*.camera";	}
-	if (kind==FDFile){		title=_("beliebige Datei");	show_filter=_("Dateien (*.*)");				filter="*";	}
+	if (kind==FD_MODEL){		title=_("Modell-Datei");	show_filter=_("Modelle (*.model)");			filter="*.model";	}
+	if (kind==FD_TEXTURE){	title=_("Textur-Datei");	show_filter=_("Texturen (bmp,jpg,tga,png,avi)");filter="*.jpg;*.bmp;*.tga;*.png;*.avi";	}
+	if (kind==FD_SOUND){		title=_("Sound-Datei");		show_filter=_("Sounds (wav,ogg)");			filter="*.wav;*.ogg";	}
+	if (kind==FD_MATERIAL){	title=_("Material-Datei");	show_filter=_("Materialien (*.material)");	filter="*.material";	}
+	if (kind==FD_TERRAIN){	title=_("Karten-Datei");	show_filter=_("Karten (*.map)");			filter="*.map";	}
+	if (kind==FD_WORLD){		title=_("Welt-Datei");		show_filter=_("Welten (*.world)");			filter="*.world";	}
+	if (kind==FD_SHADERFILE){title=_("Shader-Datei");	show_filter=_("Shader-Dateien (*.glsl)");	filter="*.glsl";	}
+	if (kind==FD_FONT){		title=_("Font-Datei");		show_filter=_("Font-Dateien (*.xfont)");	filter="*.xfont";	}
+	if (kind==FD_SCRIPT){	title=_("Script-Datei");	show_filter=_("Script-Dateien (*.kaba)");	filter="*.kaba";	}
+	if (kind==FD_CAMERAFLIGHT){title=_("Kamera-Datei");	show_filter=_("Kamera-Dateien (*.camera)");	filter="*.camera";	}
+	if (kind==FD_FILE){		title=_("beliebige Datei");	show_filter=_("Dateien (*.*)");				filter="*";	}
 
-	if (save)	done=HuiFileDialogSave(this,title,DialogDir[kind],show_filter,filter);
-	else		done=HuiFileDialogOpen(this,title,DialogDir[kind],show_filter,filter);
+	if (save)	done=HuiFileDialogSave(this,title,dialog_dir[kind],show_filter,filter);
+	else		done=HuiFileDialogOpen(this,title,dialog_dir[kind],show_filter,filter);
 	if (done){
 
-		bool in_root_dir = (HuiFilename.sys_filename().find(RootDirKind[kind].sys_filename()) >= 0);
+		bool in_root_dir = (HuiFilename.sys_filename().find(root_dir_kind[kind].sys_filename()) >= 0);
 
 		if (force_in_root_dir){
 			if (!in_root_dir){
 				errorBox(HuiFilename.sys_filename());
-				errorBox(format(_("Datei liegt nicht im vorgesehenen Verzeichnis: \"%s\"\noder in dessen Unterverzeichnis"), RootDirKind[kind].sys_filename().c_str()));
+				errorBox(format(_("Datei liegt nicht im vorgesehenen Verzeichnis: \"%s\"\noder in dessen Unterverzeichnis"), root_dir_kind[kind].sys_filename().c_str()));
 				return false;
 			}
 		}//else
@@ -797,11 +797,11 @@ bool Edward::fileDialog(int kind,bool save,bool force_in_root_dir)
 
 		if (in_root_dir){
 			updateDialogDir(kind);
-			DialogDir[kind] = HuiFilename.dirname();
+			dialog_dir[kind] = HuiFilename.dirname();
 		}
-		DialogFileComplete = HuiFilename;
-		DialogFile = DialogFileComplete.substr(RootDirKind[kind].num, -1);
-		DialogFileNoEnding = NoEnding(DialogFile);
+		dialog_file_complete = HuiFilename;
+		dialog_file = dialog_file_complete.substr(root_dir_kind[kind].num, -1);
+		dialog_file_no_ending = NoEnding(dialog_file);
 
 		return true;
 	}

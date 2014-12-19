@@ -69,7 +69,7 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 
 	select_cw = false;
 
-	chooseMouseFunction(MultiView::ActionSelect);
+	chooseMouseFunction(MultiView::ACTION_SELECT);
 
 	selection_mode_vertex = new MeshSelectionModeVertex(this);
 	selection_mode_edge = new MeshSelectionModeEdge(this);
@@ -77,7 +77,7 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	selection_mode_surface = new MeshSelectionModeSurface(this);
 	mode_model_mesh_texture = new ModeModelMeshTexture(this);
 
-	selection_mode = selection_mode_vertex;
+	selection_mode = selection_mode_polygon;
 }
 
 ModeModelMesh::~ModeModelMesh()
@@ -110,7 +110,7 @@ void ModeModelMesh::onStart()
 	subscribe(data);
 	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
 
-	setSelectionMode(selection_mode_polygon);
+	setSelectionMode(selection_mode);
 }
 
 void ModeModelMesh::onEnter()
@@ -209,15 +209,15 @@ void ModeModelMesh::onCommand(const string & id)
 		data->FlattenSelectedVertices();
 
 	if (id == "select")
-		chooseMouseFunction(MultiView::ActionSelect);
+		chooseMouseFunction(MultiView::ACTION_SELECT);
 	if (id == "translate")
-		chooseMouseFunction(MultiView::ActionMove);
+		chooseMouseFunction(MultiView::ACTION_MOVE);
 	if (id == "rotate")
-		chooseMouseFunction(MultiView::ActionRotate);
+		chooseMouseFunction(MultiView::ACTION_ROTATE);
 	if (id == "scale")
-		chooseMouseFunction(MultiView::ActionScale);
+		chooseMouseFunction(MultiView::ACTION_SCALE);
 	if (id == "mirror")
-		chooseMouseFunction(MultiView::ActionMirror);
+		chooseMouseFunction(MultiView::ACTION_MIRROR);
 
 	if (id == "create_new_material")
 		createNewMaterialForSelection();
@@ -345,11 +345,11 @@ void ModeModelMesh::onUpdateMenu()
 	ed->enable("rotate", multi_view->allow_mouse_actions);
 	ed->enable("scale", multi_view->allow_mouse_actions);
 	ed->enable("mirror", multi_view->allow_mouse_actions);
-	ed->check("select", mouse_action == MultiView::ActionSelect);
-	ed->check("translate", mouse_action == MultiView::ActionMove);
-	ed->check("rotate", mouse_action == MultiView::ActionRotate);
-	ed->check("scale", mouse_action == MultiView::ActionScale);
-	ed->check("mirror", mouse_action == MultiView::ActionMirror);
+	ed->check("select", mouse_action == MultiView::ACTION_SELECT);
+	ed->check("translate", mouse_action == MultiView::ACTION_MOVE);
+	ed->check("rotate", mouse_action == MultiView::ACTION_ROTATE);
+	ed->check("scale", mouse_action == MultiView::ACTION_SCALE);
+	ed->check("mirror", mouse_action == MultiView::ACTION_MIRROR);
 
 	ed->check("mode_model_materials", material_dialog);
 }
@@ -460,10 +460,10 @@ void ModeModelMesh::applyMouseFunction(MultiView::MultiView *mv)
 		name = "ActionModelTransformSkinVertices";
 
 	// left mouse action
-	if (mouse_action != MultiView::ActionSelect){
+	if (mouse_action != MultiView::ACTION_SELECT){
 		mv->SetMouseAction(name, mouse_action);
 	}else{
-		mv->SetMouseAction("", MultiView::ActionSelect);
+		mv->SetMouseAction("", MultiView::ACTION_SELECT);
 	}
 }
 
@@ -641,11 +641,11 @@ void ModeModelMesh::fillSelectionBuffers(Array<ModelVertex> &vertex)
 	// create selection buffers
 	msg_db_m("a",4);
 	ModelPolygon *mmo = NULL;
-	if ((multi_view->hover.index >= 0) && (multi_view->hover.set < data->surface.num) && (multi_view->hover.type == MVDModelPolygon))
+	if ((multi_view->hover.index >= 0) && (multi_view->hover.set < data->surface.num) && (multi_view->hover.type == MVD_MODEL_POLYGON))
 		mmo = &data->surface[multi_view->hover.set].polygon[multi_view->hover.index];
 	foreachi(ModelSurface &s, data->surface, si){
 		bool s_mo = false;
-		if ((multi_view->hover.index >= 0) && (multi_view->hover.type == MVDModelSurface))
+		if ((multi_view->hover.index >= 0) && (multi_view->hover.type == MVD_MODEL_SURFACE))
 			s_mo = (multi_view->hover.index == si);
 		foreach(ModelPolygon &t, s.polygon)
 			/*if (t.view_stage >= ViewStage)*/{
@@ -705,8 +705,9 @@ void ModeModelMesh::setSelectionMode(MeshSelectionMode *mode)
 	selection_mode = mode;
 	mode->onStart();
 	mode->updateMultiView();
+	chooseMouseFunction(mouse_action);
 	fillSelectionBuffers(data->vertex);
-	ed->updateMenu();
+	//ed->updateMenu();
 }
 
 void ModeModelMesh::toggleSelectCW()

@@ -188,9 +188,9 @@ bool ModeModel::open()
 {
 	if (!ed->allowTermination())
 		return false;
-	if (!ed->fileDialog(FDModel, false, false))
+	if (!ed->fileDialog(FD_MODEL, false, false))
 		return false;
-	if (!data->load(ed->DialogFileComplete))
+	if (!data->load(ed->dialog_file_complete))
 		return false;
 
 	ed->setMode(this);
@@ -207,8 +207,8 @@ bool ModeModel::save()
 
 bool ModeModel::saveAs()
 {
-	if (ed->fileDialog(FDModel, true, false))
-		return data->save(ed->DialogFileComplete);
+	if (ed->fileDialog(FD_MODEL, true, false))
+		return data->save(ed->dialog_file_complete);
 	return false;
 }
 
@@ -216,9 +216,9 @@ bool ModeModel::ImportOpen3ds()
 {
 	if (!ed->allowTermination())
 		return false;
-	if (!ed->fileDialog(FDFile, false, false))
+	if (!ed->fileDialog(FD_FILE, false, false))
 		return false;
-	return ImportLoad3ds(ed->DialogFileComplete);
+	return ImportLoad3ds(ed->dialog_file_complete);
 }
 
 bool ModeModel::ImportLoad3ds(const string &filename)

@@ -122,19 +122,19 @@ struct sScriptLink{
 
 #define NumScriptLinks		13
 sScriptLink ScriptLink[NumScriptLinks]={
-	{"#include"			,FDScript},
-	{"FileOpen"			,FDFile},
-	{"LoadTexture"		,FDTexture},
-	{"LoadModel"		,FDModel},
-	{"CreateObject"		,FDModel},
-	{"LoadWorld"		,FDWorld},
-	{"LoadMaterial"		,FDMaterial},
-	{"NixLoadShader"	,FDShaderFile},
-	{"SoundCreate"		,FDSound},
-	{"SoundEmit"		,FDSound},
-	{"MusicLoad"		,FDSound},
-	{"LoadFont"			,FDFont},
-	{"StartScript"		,FDCameraFlight}
+	{"#include"			,FD_SCRIPT},
+	{"FileOpen"			,FD_FILE},
+	{"LoadTexture"		,FD_TEXTURE},
+	{"LoadModel"		,FD_MODEL},
+	{"CreateObject"		,FD_MODEL},
+	{"LoadWorld"		,FD_WORLD},
+	{"LoadMaterial"		,FD_MATERIAL},
+	{"NixLoadShader"	,FD_SHADERFILE},
+	{"SoundCreate"		,FD_SOUND},
+	{"SoundEmit"		,FD_SOUND},
+	{"MusicLoad"		,FD_SOUND},
+	{"LoadFont"			,FD_FONT},
+	{"StartScript"		,FD_CAMERAFLIGHT}
 };
 
 
@@ -202,71 +202,71 @@ void AdminFile::check(AdminFileList &list)
 
 	// find links
 	Array<s_admin_link> l;
-	if (Kind==FDWorld){
+	if (Kind==FD_WORLD){
 		DataWorld w;
 		if (w.load(MapDir + Name, false)){
 			Time = w.file_time;
 			for (int i=0;i<w.Terrains.num;i++)
-				add_possible_link(l, FDTerrain, w.Terrains[i].FileName);
+				add_possible_link(l, FD_TERRAIN, w.Terrains[i].FileName);
 			for (int i=0;i<w.meta_data.SkyBoxFile.num;i++)
-				add_possible_link(l, FDModel, w.meta_data.SkyBoxFile[i]);
+				add_possible_link(l, FD_MODEL, w.meta_data.SkyBoxFile[i]);
 			for (int i=0;i<w.meta_data.ScriptFile.num;i++)
-				add_possible_link(l, FDScript, w.meta_data.ScriptFile[i]);
+				add_possible_link(l, FD_SCRIPT, w.meta_data.ScriptFile[i]);
 			for (int i=0;i<w.Objects.num;i++)
-				add_possible_link(l, FDModel, w.Objects[i].FileName);
+				add_possible_link(l, FD_MODEL, w.Objects[i].FileName);
 		}else
 			Missing=true;
-	}else if (Kind==FDTerrain){
+	}else if (Kind==FD_TERRAIN){
 		WorldTerrain t;
 		if (t.Load(v_0, MapDir + Name, false)){
 			Time = 0; // TODO
 			for (int i=0;i<t.terrain->material->num_textures;i++)
-				add_possible_link(l, FDTexture, t.terrain->texture_file[i]);
-			add_possible_link(l, FDMaterial, t.terrain->material_file);
+				add_possible_link(l, FD_TEXTURE, t.terrain->texture_file[i]);
+			add_possible_link(l, FD_MATERIAL, t.terrain->material_file);
 		}else
 			Missing=true;
-	}else if (Kind==FDModel){
+	}else if (Kind==FD_MODEL){
 		DataModel m;
 		if (m.load(ObjectDir + Name,false)){
 			Time = m.file_time;
 			for (int i=0;i<m.bone.num;i++)
-				add_possible_link(l, FDModel, m.bone[i].model_file);
+				add_possible_link(l, FD_MODEL, m.bone[i].model_file);
 			for (int i=0;i<m.fx.num;i++){
 				if (m.fx[i].type == FX_TYPE_SCRIPT)
-					add_possible_link(l, FDScript, m.fx[i].file);
+					add_possible_link(l, FD_SCRIPT, m.fx[i].file);
 				if (m.fx[i].type == FX_TYPE_SOUND)
-					add_possible_link(l, FDSound, m.fx[i].file);
+					add_possible_link(l, FD_SOUND, m.fx[i].file);
 			}
 			foreach(string &s, m.meta_data.inventary)
-				add_possible_link(l, FDModel, s);
+				add_possible_link(l, FD_MODEL, s);
 			for (int i=0;i<m.material.num;i++){
-				add_possible_link(l, FDMaterial, m.material[i].material_file);
+				add_possible_link(l, FD_MATERIAL, m.material[i].material_file);
 				for (int j=0;j<m.material[i].num_textures;j++)
-					add_possible_link(l, FDTexture, m.material[i].texture_file[j]);
+					add_possible_link(l, FD_TEXTURE, m.material[i].texture_file[j]);
 			}
-			add_possible_link(l, FDScript, m.meta_data.script_file);
+			add_possible_link(l, FD_SCRIPT, m.meta_data.script_file);
 		}else
 			Missing=true;
-	}else if (Kind==FDMaterial){
+	}else if (Kind==FD_MATERIAL){
 		DataMaterial m;
 		if (m.load(MaterialDir + Name,false)){
 			Time = m.file_time;
-			add_possible_link(l, FDShaderFile, m.Appearance.ShaderFile);
+			add_possible_link(l, FD_SHADERFILE, m.Appearance.ShaderFile);
 			if (m.Appearance.ReflectionMode==ReflectionCubeMapStatic)
 				for (int i=0;i<6;i++)
-					add_possible_link(l, FDTexture, m.Appearance.ReflectionTextureFile[i]);
+					add_possible_link(l, FD_TEXTURE, m.Appearance.ReflectionTextureFile[i]);
 			for (int i=0;i<m.Appearance.NumTextureLevels;i++)
-				add_possible_link(l, FDTexture, m.Appearance.TextureFile[i]);
+				add_possible_link(l, FD_TEXTURE, m.Appearance.TextureFile[i]);
 		}else
 			Missing=true;
-	}else if (Kind==FDFont){
+	}else if (Kind==FD_FONT){
 		DataFont f;
 		if (f.load(Gui::FontDir + Name,false)){
 			Time = f.file_time;
-			add_possible_link(l, FDTexture, f.global.TextureFile);
+			add_possible_link(l, FD_TEXTURE, f.global.TextureFile);
 		}else
 			Missing=true;
-	}else if (Kind==FDScript){
+	}else if (Kind==FD_SCRIPT){
 		if (f->Open(Script::config.Directory + Name)){
 			Time = f->GetDateModification().time;
 			f->SetBinaryMode(true);

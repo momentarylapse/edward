@@ -13,7 +13,7 @@
 #include "../../lib/nix/nix.h"
 
 DataFont::DataFont() :
-	Data(FDFont)
+	Data(FD_FONT)
 {
 	reset();
 }

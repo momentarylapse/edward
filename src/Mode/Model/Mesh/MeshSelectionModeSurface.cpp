@@ -27,7 +27,7 @@ void MeshSelectionModeSurface::updateMultiView()
 {
 	multi_view->ClearData(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	multi_view->AddData(	MVDModelSurface,
+	multi_view->AddData(	MVD_MODEL_SURFACE,
 			data->surface,
 			data,
 			MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);

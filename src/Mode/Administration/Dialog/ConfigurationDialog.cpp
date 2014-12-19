@@ -55,7 +55,7 @@ void ConfigurationDialog::LoadData()
 	setString("default_material",GameIniDialog.DefMaterial);
 	setString("default_font",GameIniDialog.DefFont);
 
-	setString("rootdir",ed->RootDir);
+	setString("rootdir",ed->root_dir);
 }
 
 void ConfigurationDialog::onUpdate(Observable *o, const string &message)
@@ -65,38 +65,38 @@ void ConfigurationDialog::onUpdate(Observable *o, const string &message)
 
 void ConfigurationDialog::OnFindRootdir()
 {
-	if (HuiFileDialogDir(this,_("Arbeitsverzeichnis"),ed->RootDir))
+	if (HuiFileDialogDir(this,_("Arbeitsverzeichnis"),ed->root_dir))
 		setString("rootdir", HuiFilename);
 }
 
 void ConfigurationDialog::OnFindDefaultWorld()
 {
-	if (ed->fileDialog(FDWorld, false, true))
-		setString("default_world", ed->DialogFileNoEnding);
+	if (ed->fileDialog(FD_WORLD, false, true))
+		setString("default_world", ed->dialog_file_no_ending);
 }
 
 void ConfigurationDialog::OnFindDefaultSecondWorld()
 {
-	if (ed->fileDialog(FDWorld, false, true))
-		setString("default_second_world", ed->DialogFileNoEnding);
+	if (ed->fileDialog(FD_WORLD, false, true))
+		setString("default_second_world", ed->dialog_file_no_ending);
 }
 
 void ConfigurationDialog::OnFindDefaultScript()
 {
-	if (ed->fileDialog(FDScript, false, true))
-		setString("default_script", ed->DialogFile);
+	if (ed->fileDialog(FD_SCRIPT, false, true))
+		setString("default_script", ed->dialog_file);
 }
 
 void ConfigurationDialog::OnFindDefaultMaterial()
 {
-	if (ed->fileDialog(FDMaterial, false, true))
-		setString("default_material", ed->DialogFileNoEnding);
+	if (ed->fileDialog(FD_MATERIAL, false, true))
+		setString("default_material", ed->dialog_file_no_ending);
 }
 
 void ConfigurationDialog::OnFindDefaultFont()
 {
-	if (ed->fileDialog(FDFont, false, true))
-		setString("default_font", ed->DialogFileNoEnding);
+	if (ed->fileDialog(FD_FONT, false, true))
+		setString("default_font", ed->dialog_file_no_ending);
 }
 
 void ConfigurationDialog::OnOk()
@@ -120,7 +120,7 @@ void ConfigurationDialog::OnOk()
 		}
 	}else{
 		// new RootDir?
-		bool rdc = (ed->RootDir != getString("rootdir"));
+		bool rdc = (ed->root_dir != getString("rootdir"));
 		if (rdc)
 			ed->makeDirs(getString("rootdir"),true);
 //		data->UnlinkGameIni();
@@ -130,7 +130,7 @@ void ConfigurationDialog::OnOk()
 		data->GameIni->DefMaterial = getString("default_material");
 		data->GameIni->DefFont = getString("default_font");
 //		data->LinkGameIni(data->GameIni);
-		data->GameIni->Save(ed->RootDir);
+		data->GameIni->Save(ed->root_dir);
 		if (rdc)
 			data->UpdateDatabase();
 	}

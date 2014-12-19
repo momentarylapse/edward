@@ -136,9 +136,9 @@ bool ModeMaterial::open()
 {
 	if (!ed->allowTermination())
 		return false;
-	if (!ed->fileDialog(FDMaterial, false, false))
+	if (!ed->fileDialog(FD_MATERIAL, false, false))
 		return false;
-	if (!data->load(ed->DialogFileComplete))
+	if (!data->load(ed->dialog_file_complete))
 		return false;
 
 	optimizeView();
@@ -161,8 +161,8 @@ void ModeMaterial::onEnd()
 
 bool ModeMaterial::saveAs()
 {
-	if (ed->fileDialog(FDMaterial, true, false))
-		return data->save(ed->DialogFileComplete);
+	if (ed->fileDialog(FD_MATERIAL, true, false))
+		return data->save(ed->dialog_file_complete);
 	return false;
 }
 

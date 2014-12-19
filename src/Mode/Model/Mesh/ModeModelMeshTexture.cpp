@@ -42,7 +42,7 @@ void ModeModelMeshTexture::fetchData()
 
 	multi_view->ClearData(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	multi_view->AddData(	MVDModelSkinVertex,
+	multi_view->AddData(	MVD_MODEL_SKIN_VERTEX,
 			skin_vertex,
 			NULL,
 			MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);

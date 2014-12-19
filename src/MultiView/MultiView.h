@@ -23,29 +23,29 @@ class Window;
 
 enum
 {
-	ViewRight,
-	ViewLeft,
-	ViewFront,
-	ViewBack,
-	ViewTop,
-	ViewBottom,
-	ViewPerspective,
-	View2D,
-	ViewIsometric
+	VIEW_RIGHT,
+	VIEW_LEFT,
+	VIEW_FRONT,
+	VIEW_BACK,
+	VIEW_TOP,
+	VIEW_BOTTOM,
+	VIEW_PERSPECTIVE,
+	VIEW_2D,
+	VIEW_ISOMETRIC
 };
 
 
 enum{
-	ActionNone,
-	ActionSelect,
-	ActionMove,
-	ActionRotate,
-	ActionRotate2d,
-	ActionScale,
-	ActionScale2d,
-	ActionMirror,
-	ActionOnce,
-	ActionSelectAndMove,
+	ACTION_NONE,
+	ACTION_SELECT,
+	ACTION_MOVE,
+	ACTION_ROTATE,
+	ACTION_ROTATE_2D,
+	ACTION_SCALE,
+	ACTION_SCALE_2D,
+	ACTION_MIRROR,
+	ACTION_ONCE,
+	ACTION_SELECT_AND_MOVE,
 };
 
 struct Camera

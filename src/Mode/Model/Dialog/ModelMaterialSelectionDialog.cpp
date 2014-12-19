@@ -89,8 +89,8 @@ void ModelMaterialSelectionDialog::OnMaterialAddNew()
 
 void ModelMaterialSelectionDialog::OnMaterialAdd()
 {
-	if (ed->fileDialog(FDMaterial, false, true))
-		data->execute(new ActionModelAddMaterial(ed->DialogFileNoEnding));
+	if (ed->fileDialog(FD_MATERIAL, false, true))
+		data->execute(new ActionModelAddMaterial(ed->dialog_file_no_ending));
 }
 
 void ModelMaterialSelectionDialog::OnMaterialEdit()

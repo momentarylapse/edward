@@ -57,9 +57,9 @@ void TerrainHeightmapDialog::OnSizeChange()
 
 void TerrainHeightmapDialog::OnFindFilter()
 {
-	if (ed->fileDialog(FDTexture, false, false)){
-		filter_file = ed->DialogFileComplete;
-		setString("filter_image", ed->DialogFile);
+	if (ed->fileDialog(FD_TEXTURE, false, false)){
+		filter_file = ed->dialog_file_complete;
+		setString("filter_image", ed->dialog_file);
 		filter.load(filter_file);
 		redraw("preview");
 	}
@@ -75,9 +75,9 @@ void TerrainHeightmapDialog::onUpdate(Observable *o, const string &message)
 
 void TerrainHeightmapDialog::OnFindHeightmap()
 {
-	if (ed->fileDialog(FDTexture, false, false)){
-		heightmap_file = ed->DialogFileComplete;
-		setString("height_image", ed->DialogFile);
+	if (ed->fileDialog(FD_TEXTURE, false, false)){
+		heightmap_file = ed->dialog_file_complete;
+		setString("height_image", ed->dialog_file);
 		heightmap.load(heightmap_file);
 		redraw("preview");
 		enable("ok", true);

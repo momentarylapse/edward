@@ -43,7 +43,7 @@ void ModeModelAnimationSkeleton::onStart()
 	multi_view->ClearData(NULL);
 	multi_view->allow_rect = true;
 
-	chooseMouseFunction(MultiView::ActionSelect);
+	chooseMouseFunction(MultiView::ACTION_SELECT);
 
 	subscribe(data);
 	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
@@ -60,11 +60,11 @@ void ModeModelAnimationSkeleton::onEnd()
 void ModeModelAnimationSkeleton::onCommand(const string& id)
 {
 	if (id == "select")
-		chooseMouseFunction(MultiView::ActionSelect);
+		chooseMouseFunction(MultiView::ACTION_SELECT);
 	if (id == "translate")
-		chooseMouseFunction(MultiView::ActionMove);
+		chooseMouseFunction(MultiView::ACTION_MOVE);
 	if (id == "rotate")
-		chooseMouseFunction(MultiView::ActionRotate);
+		chooseMouseFunction(MultiView::ACTION_ROTATE);
 }
 
 void ModeModelAnimationSkeleton::chooseMouseFunction(int f)
@@ -73,10 +73,10 @@ void ModeModelAnimationSkeleton::chooseMouseFunction(int f)
 	ed->updateMenu();
 
 	// mouse action
-	if (mouse_action != MultiView::ActionSelect){
+	if (mouse_action != MultiView::ACTION_SELECT){
 		multi_view->SetMouseAction("ActionModelAnimationTransformBones", mouse_action);
 	}else{
-		multi_view->SetMouseAction("", MultiView::ActionSelect);
+		multi_view->SetMouseAction("", MultiView::ACTION_SELECT);
 	}
 }
 
@@ -87,7 +87,7 @@ void ModeModelAnimationSkeleton::onUpdate(Observable* o, const string &message)
 		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 
-		multi_view->AddData(	MVDSkeletonPoint,
+		multi_view->AddData(	MVD_SKELETON_BONE,
 				mode_model_animation->bone,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect);
@@ -126,7 +126,7 @@ void ModeModelAnimationSkeleton::onDrawWin(MultiView::Window *win)
 
 void ModeModelAnimationSkeleton::onUpdateMenu()
 {
-	ed->check("select", mouse_action == MultiView::ActionSelect);
-	ed->check("translate", mouse_action == MultiView::ActionMove);
-	ed->check("rotate", mouse_action == MultiView::ActionRotate);
+	ed->check("select", mouse_action == MultiView::ACTION_SELECT);
+	ed->check("translate", mouse_action == MultiView::ACTION_MOVE);
+	ed->check("rotate", mouse_action == MultiView::ACTION_ROTATE);
 }

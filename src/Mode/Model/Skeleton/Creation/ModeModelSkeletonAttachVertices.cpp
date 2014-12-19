@@ -44,7 +44,7 @@ void ModeModelSkeletonAttachVertices::onUpdate(Observable *o, const string &mess
 	if (o == data){
 		multi_view->ClearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		multi_view->AddData(	MVDModelVertex,
+		multi_view->AddData(	MVD_MODEL_VERTEX,
 				data->vertex,
 				NULL,
 				MultiView::FlagDraw | MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);

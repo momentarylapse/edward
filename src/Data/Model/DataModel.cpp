@@ -77,7 +77,7 @@ void ModelEffect::clear()
 
 
 DataModel::DataModel() :
-	Data(FDModel)
+	Data(FD_MODEL)
 {
 }
 

@@ -244,10 +244,10 @@ void ModelPropertiesDialog::OnNumItems()
 
 void ModelPropertiesDialog::OnModelInventary()
 {
-	if (ed->fileDialog(FDModel, false, true)){
+	if (ed->fileDialog(FD_MODEL, false, true)){
 		int n = getInt("");
-		temp.inventary[n] = ed->DialogFileNoEnding;
-		changeString("model_inventary", n, format("%d\\", n) + ed->DialogFileNoEnding);
+		temp.inventary[n] = ed->dialog_file_no_ending;
+		changeString("model_inventary", n, format("%d\\", n) + ed->dialog_file_no_ending);
 	}
 }
 
@@ -276,8 +276,8 @@ void ModelPropertiesDialog::OnScriptVarEdit()
 
 void ModelPropertiesDialog::OnScriptFind()
 {
-	if (ed->fileDialog(FDScript, false, true))
-		setString("script", ed->DialogFile);
+	if (ed->fileDialog(FD_SCRIPT, false, true))
+		setString("script", ed->dialog_file);
 }
 
 void ModelPropertiesDialog::OnModelScriptVarTemplate()

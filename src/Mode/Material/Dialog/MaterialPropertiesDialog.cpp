@@ -140,8 +140,8 @@ void MaterialPropertiesDialog::OnTextures()
 {
 	int sel = getInt("");
 	if ((sel >= 0) && (sel <temp.NumTextureLevels))
-		if (ed->fileDialog(FDTexture, false, true)){
-			temp.TextureFile[sel] = ed->DialogFile;
+		if (ed->fileDialog(FD_TEXTURE, false, true)){
+			temp.TextureFile[sel] = ed->dialog_file;
 			ApplyData();
 			//mmaterial->Texture[sel] = MetaLoadTexture(mmaterial->TextureFile[sel]);
 			FillTextureList();
@@ -210,8 +210,8 @@ void MaterialPropertiesDialog::OnReflectionMode()
 void MaterialPropertiesDialog::OnReflectionTextures()
 {
 	int sel=getInt("");
-	if (ed->fileDialog(FDTexture,false,true)){
-		temp.ReflectionTextureFile[sel] = ed->DialogFile;
+	if (ed->fileDialog(FD_TEXTURE,false,true)){
+		temp.ReflectionTextureFile[sel] = ed->dialog_file;
 		if ((sel==0)&&(temp.ReflectionTextureFile[0].find(".") >= 0)){
 			int p=temp.ReflectionTextureFile[0].find(".");
 			for (int i=1;i<6;i++){
@@ -238,9 +238,9 @@ bool TestShaderFile(const string &filename)
 
 void MaterialPropertiesDialog::OnFindShader()
 {
-	if (ed->fileDialog(FDShaderFile,false,true)){
-		if (TestShaderFile(ed->DialogFile)){
-			setString("shader_file", ed->DialogFile);
+	if (ed->fileDialog(FD_SHADERFILE,false,true)){
+		if (TestShaderFile(ed->dialog_file)){
+			setString("shader_file", ed->dialog_file);
 			ApplyData();
 		}else{
 			ed->errorBox(_("Fehler in der Shader-Datei:\n") + NixShaderError);

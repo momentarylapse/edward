@@ -41,7 +41,7 @@ Window::Window(MultiViewImpl *_impl, int _type)
 
 void Window::drawGrid()
 {
-	if (type == ViewIsometric)
+	if (type == VIEW_ISOMETRIC)
 		return;
 	rect d;
 	vector bg_a,bg_b;
@@ -62,11 +62,11 @@ void Window::drawGrid()
 
 // grid of coordinates
 
-	if (type == View2D)
+	if (type == VIEW_2D)
 		return;
 
 	// spherical for perspective view
-	if (type == ViewPerspective){
+	if (type == VIEW_PERSPECTIVE){
 		vector PerspectiveViewPos = cam->radius * (cam->ang * e_z) - cam->pos;
 		//NixSetZ(false,false);
 		// horizontal
@@ -151,10 +151,10 @@ void Window::draw()
 		height /= 2;
 
 	// projection matrix
-	if (type == ViewPerspective){
+	if (type == VIEW_PERSPECTIVE){
 		NixSetProjectionPerspectiveExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, height, cam->radius / 1000, cam->radius * 1000);
 		bg = ColorBackGround3D;
-	}else if (type == View2D){
+	}else if (type == VIEW_2D){
 		height = cam->zoom;
 		NixSetProjectionOrthoExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, -height, 0, 1);
 	}else{
@@ -169,33 +169,33 @@ void Window::draw()
 
 	// camera matrix
 	vector pos = cam->pos;
-	if (type == ViewFront){
+	if (type == VIEW_FRONT){
 		view_kind = _("Vorne");
 		QuaternionRotationA(ang, e_y, -pi);
-	}else if (type == ViewBack){
+	}else if (type == VIEW_BACK){
 		view_kind = _("Hinten");
 		ang = q_id;
-	}else if (type == ViewRight){
+	}else if (type == VIEW_RIGHT){
 		view_kind = _("Rechts");
 		QuaternionRotationA(ang, e_y, -pi/2);
-	}else if (type == ViewLeft){
+	}else if (type == VIEW_LEFT){
 		view_kind = _("Links");
 		QuaternionRotationA(ang, e_y, pi/2);
-	}else if (type == ViewTop){
+	}else if (type == VIEW_TOP){
 		view_kind = _("Oben");
 		QuaternionRotationA(ang, e_x, pi/2);
-	}else if (type == ViewBottom){
+	}else if (type == VIEW_BOTTOM){
 		view_kind = _("Unten");
 		QuaternionRotationA(ang, e_x, -pi/2);
-	}else if (type == ViewPerspective){
+	}else if (type == VIEW_PERSPECTIVE){
 		view_kind = _("Perspektive");
 		if (!cam->ignore_radius)
 			pos -= cam->radius * (cam->ang * e_z);
 		ang = cam->ang;
-	}else if (type == ViewIsometric){
+	}else if (type == VIEW_ISOMETRIC){
 		view_kind = _("Isometrisch");
 		ang = cam->ang;
-	}else if (type == View2D){
+	}else if (type == VIEW_2D){
 		view_kind = _("2D");
 		QuaternionRotationA(ang, e_y, -pi);
 	}
@@ -307,7 +307,7 @@ vector Window::unproject(const vector &p, const vector &o)
 {
 	vector r;
 	vector pp = p;
-	if ((type == ViewPerspective) || (type == ViewIsometric)){ // 3D
+	if ((type == VIEW_PERSPECTIVE) || (type == VIEW_ISOMETRIC)){ // 3D
 		if (impl->cur_projection_win != this){
 			impl->cur_projection_win = this;
 			NixSetProjectionMatrix(projection);
@@ -317,7 +317,7 @@ vector Window::unproject(const vector &p, const vector &o)
 		NixGetVecProject(p_o, o);
 		pp.z = p_o.z;
 		NixGetVecUnproject(r, pp);
-	}else if (type == View2D){
+	}else if (type == VIEW_2D){
 		r.x=(p.x-MaxX/2)/cam->zoom+cam->pos.x;
 		r.y=(p.y-MaxY/2)/cam->zoom+cam->pos.y;
 		r.z=0;
@@ -332,22 +332,22 @@ vector Window::unproject(const vector &p, const vector &o)
 		}
 		float zoom = cam->zoom;
 		vector &pos = cam->pos;
-		if (type == ViewFront){
+		if (type == VIEW_FRONT){
 			r.x=-(pp.x-MaxX/4)/zoom+pos.x;
 			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
-		}else if (type == ViewBack){
+		}else if (type == VIEW_BACK){
 			r.x= (pp.x-MaxX/4)/zoom+pos.x;
 			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
-		}else if (type == ViewRight){
+		}else if (type == VIEW_RIGHT){
 			r.z= (pp.x-MaxX/4)/zoom+pos.z;
 			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
-		}else if (type == ViewLeft){
+		}else if (type == VIEW_LEFT){
 			r.z=-(pp.x-MaxX/4)/zoom+pos.z;
 			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
-		}else if (type == ViewTop){
+		}else if (type == VIEW_TOP){
 			r.x= (pp.x-MaxX/4)/zoom+pos.x;
 			r.z=-(pp.y-MaxY/4)/zoom+pos.z;
-		}else if (type == ViewBottom){
+		}else if (type == VIEW_BOTTOM){
 			r.x= (pp.x-MaxX/4)/zoom+pos.x;
 			r.z= (pp.y-MaxY/4)/zoom+pos.z;
 		}
@@ -358,36 +358,36 @@ vector Window::unproject(const vector &p, const vector &o)
 vector Window::project(const vector &p)
 {
 	vector r;
-	if ((type == ViewPerspective) || (type == ViewIsometric)){ // 3D
+	if ((type == VIEW_PERSPECTIVE) || (type == VIEW_ISOMETRIC)){ // 3D
 		if (impl->cur_projection_win != this){
 			impl->cur_projection_win = this;
 			NixSetProjectionMatrix(projection);
 			NixSetView(mat);
 		}
 		NixGetVecProject(r,p);
-	}else if (type == View2D){
+	}else if (type == VIEW_2D){
 		r.x=MaxX/2+(p.x-cam->pos.x)*cam->zoom;
 		r.y=MaxY/2+(p.y-cam->pos.y)*cam->zoom;
 		r.z=0.5f;
 	}else{ // 2D
 		float zoom = cam->zoom;
 		vector &pos = cam->pos;
-		if (type == ViewFront){
+		if (type == VIEW_FRONT){
 			r.x=MaxX/4-(p.x-pos.x)*zoom;
 			r.y=MaxY/4-(p.y-pos.y)*zoom;
-		}else if (type == ViewBack){
+		}else if (type == VIEW_BACK){
 			r.x=MaxX/4+(p.x-pos.x)*zoom;
 			r.y=MaxY/4-(p.y-pos.y)*zoom;
-		}else if (type == ViewRight){
+		}else if (type == VIEW_RIGHT){
 			r.x=MaxX/4+(p.z-pos.z)*zoom;
 			r.y=MaxY/4-(p.y-pos.y)*zoom;
-		}else if (type == ViewLeft){
+		}else if (type == VIEW_LEFT){
 			r.x=MaxX/4-(p.z-pos.z)*zoom;
 			r.y=MaxY/4-(p.y-pos.y)*zoom;
-		}else if (type == ViewTop){
+		}else if (type == VIEW_TOP){
 			r.x=MaxX/4+(p.x-pos.x)*zoom;
 			r.y=MaxY/4-(p.z-pos.z)*zoom;
-		}else if (type == ViewBottom){
+		}else if (type == VIEW_BOTTOM){
 			r.x=MaxX/4+(p.x-pos.x)*zoom;
 			r.y=MaxY/4+(p.z-pos.z)*zoom;
 		}
@@ -407,14 +407,14 @@ vector Window::unproject(const vector &p)
 {
 	vector r;
 	vector pp = p;
-	if ((type == ViewPerspective) || (type == ViewIsometric)){ // 3D
+	if ((type == VIEW_PERSPECTIVE) || (type == VIEW_ISOMETRIC)){ // 3D
 		if (impl->cur_projection_win != this){
 			impl->cur_projection_win = this;
 			NixSetProjectionMatrix(projection);
 			NixSetView(mat);
 		}
 		NixGetVecUnproject(r,pp);
-	}else if (type == View2D){
+	}else if (type == VIEW_2D){
 		r.x=(pp.x-MaxX/2)/cam->zoom+cam->pos.x;
 		r.y=(pp.y-MaxY/2)/cam->zoom+cam->pos.y;
 		r.z=0;
@@ -429,22 +429,22 @@ vector Window::unproject(const vector &p)
 		r=cam->pos;
 		float zoom = cam->zoom;
 		vector &pos = cam->pos;
-		if (type == ViewFront){
+		if (type == VIEW_FRONT){
 			r.x=-(pp.x-MaxX/4)/zoom+pos.x;
 			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
-		}else if (type == ViewBack){
+		}else if (type == VIEW_BACK){
 			r.x= (pp.x-MaxX/4)/zoom+pos.x;
 			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
-		}else if (type == ViewRight){
+		}else if (type == VIEW_RIGHT){
 			r.z= (pp.x-MaxX/4)/zoom+pos.z;
 			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
-		}else if (type == ViewLeft){
+		}else if (type == VIEW_LEFT){
 			r.z=-(pp.x-MaxX/4)/zoom+pos.z;
 			r.y=-(pp.y-MaxY/4)/zoom+pos.y;
-		}else if (type == ViewTop){
+		}else if (type == VIEW_TOP){
 			r.x= (pp.x-MaxX/4)/zoom+pos.x;
 			r.z=-(pp.y-MaxY/4)/zoom+pos.z;
-		}else if (type == ViewBottom){
+		}else if (type == VIEW_BOTTOM){
 			r.x= (pp.x-MaxX/4)/zoom+pos.x;
 			r.z= (pp.y-MaxY/4)/zoom+pos.z;
 		}
@@ -455,19 +455,19 @@ vector Window::unproject(const vector &p)
 vector Window::getDirection()
 {
 	int t=type;
-	if ((t==ViewFront)||(t==View2D))
+	if ((t==VIEW_FRONT)||(t==VIEW_2D))
 		return vector(0,0,-1);
-	else if (t==ViewBack)
+	else if (t==VIEW_BACK)
 		return vector(0,0,1);
-	else if (t==ViewRight)
+	else if (t==VIEW_RIGHT)
 		return vector(-1,0,0);
-	else if (t==ViewLeft)
+	else if (t==VIEW_LEFT)
 		return vector(1,0,0);
-	else if (t==ViewTop)
+	else if (t==VIEW_TOP)
 		return vector(0,-1,0);
-	else if (t==ViewBottom)
+	else if (t==VIEW_BOTTOM)
 		return vector(0,1,0);
-	else if ((t==ViewPerspective) || (t==ViewIsometric))
+	else if ((t==VIEW_PERSPECTIVE) || (t==VIEW_ISOMETRIC))
 		return cam->ang * e_z;
 	return v_0;
 }
@@ -475,21 +475,21 @@ vector Window::getDirection()
 vector Window::getDirectionUp()
 {
 	int t=type;
-	if (t==View2D)
+	if (t==VIEW_2D)
 		return vector(0,-1,0);
-	else if (t==ViewFront)
+	else if (t==VIEW_FRONT)
 		return vector(0,1,0);
-	else if (t==ViewBack)
+	else if (t==VIEW_BACK)
 		return vector(0,1,0);
-	else if (t==ViewRight)
+	else if (t==VIEW_RIGHT)
 		return vector(0,1,0);
-	else if (t==ViewLeft)
+	else if (t==VIEW_LEFT)
 		return vector(0,1,0);
-	else if (t==ViewTop)
+	else if (t==VIEW_TOP)
 		return vector(0,0,1);
-	else if (t==ViewBottom)
+	else if (t==VIEW_BOTTOM)
 		return vector(0,0,1);
-	else if ((t==ViewPerspective) || (t==ViewIsometric))
+	else if ((t==VIEW_PERSPECTIVE) || (t==VIEW_ISOMETRIC))
 		return cam->ang * e_y;
 	return v_0;
 }

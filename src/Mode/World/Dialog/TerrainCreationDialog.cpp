@@ -75,8 +75,8 @@ void TerrainCreationDialog::OnClose()
 
 void TerrainCreationDialog::OnFindHeightmap()
 {
-	if (ed->fileDialog(FDTexture, false, false))
-		setString("height_image", ed->DialogFileComplete);
+	if (ed->fileDialog(FD_TEXTURE, false, false))
+		setString("height_image", ed->dialog_file_complete);
 }
 
 

@@ -70,17 +70,17 @@ void AdministrationDialog::onUpdate(Observable* o, const string &message)
 static string FD2Str(int k)
 {
 	if (k==-1)				return _("[Engine]");
-	if (k==FDModel)			return _("Modell");
-	if (k==FDTexture)		return _("Textur");
-	if (k==FDSound)			return _("Sound");
-	if (k==FDMaterial)		return _("Material");
-	if (k==FDTerrain)		return _("Terrain");
-	if (k==FDWorld)			return _("Welt");
-	if (k==FDShaderFile)	return _("Shader");
-	if (k==FDFont)			return _("Font");
-	if (k==FDScript)		return _("Script");
-	if (k==FDCameraFlight)	return _("Kamera");
-	if (k==FDFile)			return _("Datei");
+	if (k==FD_MODEL)			return _("Modell");
+	if (k==FD_TEXTURE)		return _("Textur");
+	if (k==FD_SOUND)			return _("Sound");
+	if (k==FD_MATERIAL)		return _("Material");
+	if (k==FD_TERRAIN)		return _("Terrain");
+	if (k==FD_WORLD)			return _("Welt");
+	if (k==FD_SHADERFILE)	return _("Shader");
+	if (k==FD_FONT)			return _("Font");
+	if (k==FD_SCRIPT)		return _("Script");
+	if (k==FD_CAMERAFLIGHT)	return _("Kamera");
+	if (k==FD_FILE)			return _("Datei");
 	return "???";
 }
 
@@ -243,29 +243,29 @@ void AdministrationDialog::OnEdit()
 			else if (a->Name == "game.ini")
 				mode_administration->BasicSettings();
 			break;
-		case FDModel:
+		case FD_MODEL:
 			if (mode_model->data->load(ObjectDir + a->Name, true))
 				ed->setMode(mode_model);
 			break;
-		case FDMaterial:
+		case FD_MATERIAL:
 			if (mode_material->data->load(MaterialDir + a->Name, true))
 				ed->setMode(mode_material);
 			break;
-		case FDFont:
+		case FD_FONT:
 			if (mode_font->data->load(Gui::FontDir + a->Name, true))
 				ed->setMode(mode_font);
 			break;
-		case FDWorld:
+		case FD_WORLD:
 			if (mode_world->data->load(MapDir + a->Name, true))
 				ed->setMode(mode_world);
 			break;
-		case FDTerrain:
+		case FD_TERRAIN:
 			mode_world->data->reset();
 			if (mode_world->data->AddTerrain(a->Name.substr(0, -5), v_0)){
 				ed->setMode(mode_world);
 			}
 			break;
-		case FDCameraFlight:
+		case FD_CAMERAFLIGHT:
 			/*mode_world->data->Reset();
 			strcpy(mworld->CamScriptFile,a->Name);
 			if (mworld->LoadCameraScript()){
@@ -273,11 +273,11 @@ void AdministrationDialog::OnEdit()
 				mworld->OptimizeView();
 			}*/
 			break;
-		case FDTexture:
-		case FDSound:
-		case FDShaderFile:
-		case FDScript:
-		case FDFile:
+		case FD_TEXTURE:
+		case FD_SOUND:
+		case FD_SHADERFILE:
+		case FD_SCRIPT:
+		case FD_FILE:
 			HuiOpenDocument(ed->getRootDir(a->Kind) + a->Name);
 			break;
 	}

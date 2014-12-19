@@ -9,7 +9,7 @@
 #include "../../Edward.h"
 
 DataCamera::DataCamera() :
-	Data(FDCameraFlight)
+	Data(FD_CAMERAFLIGHT)
 {
 }
 

@@ -51,12 +51,12 @@ AdminFile *AdminFileList::add_unchecked_ae(int kind, const string &filename, Adm
 	if (filename.num<=0)
 		return NULL;
 	string filename2 = filename;
-	if (kind==FDWorld)		filename2 += ".world";
-	if (kind==FDTerrain)	filename2 += ".map";
-	if (kind==FDModel)		filename2 += ".model";
-	if (kind==FDMaterial)	filename2 += ".material";
-	if (kind==FDFont)		filename2 += ".xfont";
-	if (kind==FDCameraFlight)filename2 += ".camera";
+	if (kind==FD_WORLD)		filename2 += ".world";
+	if (kind==FD_TERRAIN)	filename2 += ".map";
+	if (kind==FD_MODEL)		filename2 += ".model";
+	if (kind==FD_MATERIAL)	filename2 += ".material";
+	if (kind==FD_FONT)		filename2 += ".xfont";
+	if (kind==FD_CAMERAFLIGHT)filename2 += ".camera";
 	return add_unchecked(kind, filename2, source);
 }
 

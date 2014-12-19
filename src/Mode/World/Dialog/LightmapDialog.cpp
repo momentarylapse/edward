@@ -163,8 +163,8 @@ void LightmapDialog::OnResolution()
 
 void LightmapDialog::OnFindNewWorld()
 {
-	if (ed->fileDialog(FDWorld, true, true))
-		setString("new_world_name", ed->DialogFileNoEnding);
+	if (ed->fileDialog(FD_WORLD, true, true))
+		setString("new_world_name", ed->dialog_file_no_ending);
 }
 
 void LightmapDialog::OnOk()

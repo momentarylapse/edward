@@ -50,8 +50,8 @@ void ModeWorldCreateObject::onEnd()
 
 void ModeWorldCreateObject::OnFindObject()
 {
-	if (ed->fileDialog(FDModel, false, true)){
-		filename = ed->DialogFileNoEnding;
+	if (ed->fileDialog(FD_MODEL, false, true)){
+		filename = ed->dialog_file_no_ending;
 		LastObjectFilename = filename;
 		message = _("neues Objekt setzen");
 	}

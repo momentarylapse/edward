@@ -64,8 +64,8 @@ ModeWorld::~ModeWorld()
 
 bool ModeWorld::saveAs()
 {
-	if (ed->fileDialog(FDWorld, true, false))
-		return data->save(ed->DialogFileComplete);
+	if (ed->fileDialog(FD_WORLD, true, false))
+		return data->save(ed->dialog_file_complete);
 	return false;
 }
 
@@ -108,8 +108,8 @@ void ModeWorld::onCommand(const string & id)
 	if (id == "camscript_create")
 		ed->setMode(mode_world_camera);
 	if (id == "camscript_load")
-		if (ed->fileDialog(FDCameraFlight, false, true)){
-			if (mode_world_camera->data->load(ed->DialogFileComplete))
+		if (ed->fileDialog(FD_CAMERAFLIGHT, false, true)){
+			if (mode_world_camera->data->load(ed->dialog_file_complete))
 				ed->setMode(mode_world_camera);
 			else
 				mode_world_camera->data->reset();
@@ -135,11 +135,11 @@ void ModeWorld::onCommand(const string & id)
 		ToggleShowEffects();
 
 	if (id == "select")
-		SetMouseAction(MultiView::ActionSelect);
+		SetMouseAction(MultiView::ACTION_SELECT);
 	if (id == "translate")
-		SetMouseAction(MultiView::ActionMove);
+		SetMouseAction(MultiView::ACTION_MOVE);
 	if (id == "rotate")
-		SetMouseAction(MultiView::ActionRotate);
+		SetMouseAction(MultiView::ACTION_ROTATE);
 }
 
 #define MODEL_MAX_VERTICES	65536
@@ -287,11 +287,11 @@ void ModeWorld::onUpdate(Observable *o, const string &message)
 		multi_view->ClearData(data);
 
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		multi_view->AddData(	MVDWorldObject,
+		multi_view->AddData(	MVD_WORLD_OBJECT,
 				data->Objects,
 				NULL,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
-		multi_view->AddData(	MVDWorldTerrain,
+		multi_view->AddData(	MVD_WORLD_TERRAIN,
 				data->Terrains,
 				NULL,
 				MultiView::FlagIndex | MultiView::FlagSelect | MultiView::FlagMove);
@@ -425,7 +425,7 @@ void ModeWorld::onDrawWin(MultiView::Window *win)
 	msg_db_f("World::DrawWin",2);
 
 	if (ShowEffects){
-		if (win->type == MultiView::ViewPerspective)
+		if (win->type == MultiView::VIEW_PERSPECTIVE)
 			data->meta_data.DrawBackground();
 		data->meta_data.ApplyToDraw();
 	}
@@ -442,7 +442,7 @@ void ModeWorld::onDrawWin(MultiView::Window *win)
 
 			if (t.is_selected)
 				DrawTerrainColored(t.terrain, Red, TSelectionAlpha);
-			if ((multi_view->hover.type == MVDWorldTerrain) && (multi_view->hover.index == i))
+			if ((multi_view->hover.type == MVD_WORLD_TERRAIN) && (multi_view->hover.index == i))
 				DrawTerrainColored(t.terrain, White, TMouseOverAlpha);
 		}
 	}
@@ -474,7 +474,7 @@ void ModeWorld::onDrawWin(MultiView::Window *win)
 				DrawSelectionObject(o.object, OSelectionAlpha, Red);
 			else if (o.is_special)
 				DrawSelectionObject(o.object, OSelectionAlpha, Green);
-		if ((multi_view->hover.index >= 0) && (multi_view->hover.type == MVDWorldObject))
+		if ((multi_view->hover.index >= 0) && (multi_view->hover.type == MVD_WORLD_OBJECT))
 			DrawSelectionObject(data->Objects[multi_view->hover.index].object, OSelectionAlpha, White);
 		NixSetAlpha(AlphaNone);
 		NixEnableLighting(multi_view->light_enabled);
@@ -515,7 +515,7 @@ void ModeWorld::onStart()
 	t->enable(false);
 
 	multi_view->SetAllowRect(true);
-	SetMouseAction(MultiView::ActionSelect);
+	SetMouseAction(MultiView::ACTION_SELECT);
 
 	onUpdate(data, "");
 }
@@ -523,9 +523,9 @@ void ModeWorld::onStart()
 void ModeWorld::SetMouseAction(int mode)
 {
 	mouse_action = mode;
-	if (mode == MultiView::ActionMove)
+	if (mode == MultiView::ACTION_MOVE)
 		multi_view->SetMouseAction("ActionWorldMoveSelection", mode);
-	else if (mode == MultiView::ActionRotate)
+	else if (mode == MultiView::ACTION_ROTATE)
 		multi_view->SetMouseAction("ActionWorldRotateObjects", mode);
 	else
 		multi_view->SetMouseAction("", mode);
@@ -555,9 +555,9 @@ void ModeWorld::onUpdateMenu()
 	ed->enable("select", multi_view->allow_mouse_actions);
 	ed->enable("translate", multi_view->allow_mouse_actions);
 	ed->enable("rotate", multi_view->allow_mouse_actions);
-	ed->check("select", mouse_action == MultiView::ActionSelect);
-	ed->check("translate", mouse_action == MultiView::ActionMove);
-	ed->check("rotate", mouse_action == MultiView::ActionRotate);
+	ed->check("select", mouse_action == MultiView::ACTION_SELECT);
+	ed->check("translate", mouse_action == MultiView::ACTION_MOVE);
+	ed->check("rotate", mouse_action == MultiView::ACTION_ROTATE);
 }
 
 
@@ -566,10 +566,10 @@ bool ModeWorld::open()
 {
 	if (!ed->allowTermination())
 		return false;
-	if (!ed->fileDialog(FDWorld, false, false))
+	if (!ed->fileDialog(FD_WORLD, false, false))
 		return false;
 	ed->progress->start(_("Lade Welt"), 0);
-	bool ok = data->load(ed->DialogFileComplete);
+	bool ok = data->load(ed->dialog_file_complete);
 	ed->progress->end();
 	if (!ok)
 		return false;
@@ -626,11 +626,11 @@ void ModeWorld::ExecuteSelectionPropertiesDialog()
 	dlg->run();
 
 	if (sel_type >= 0){
-		if (sel_type == FDWorld){
+		if (sel_type == FD_WORLD){
 			ExecuteWorldPropertiesDialog();
-		}else if (sel_type == FDModel){
+		}else if (sel_type == FD_MODEL){
 			ExecuteObjectPropertiesDialog(sel_index);
-		}else if (sel_type==FDTerrain){
+		}else if (sel_type==FD_TERRAIN){
 			ExecuteTerrainPropertiesDialog(sel_index);
 		}/*if (sel_type == FDCameraFlight){
 			CamPointDialogIndex=PropertySelectionIndex[PropertySelectionChosen];
@@ -677,8 +677,8 @@ bool ModeWorld::optimizeView()
 
 void ModeWorld::LoadTerrain()
 {
-	if (ed->fileDialog(FDTerrain, false, true))
-		data->AddTerrain(ed->DialogFileNoEnding, multi_view->cam.pos);
+	if (ed->fileDialog(FD_TERRAIN, false, true))
+		data->AddTerrain(ed->dialog_file_no_ending, multi_view->cam.pos);
 }
 
 void ModeWorld::SetEgo()
@@ -720,9 +720,9 @@ void ModeWorld::ToggleShowTerrains()
 
 void ModeWorld::ImportWorldProperties()
 {
-	if (ed->fileDialog(FDWorld, false, false)){
+	if (ed->fileDialog(FD_WORLD, false, false)){
 		DataWorld w;
-		if (w.load(ed->DialogFileComplete, false))
+		if (w.load(ed->dialog_file_complete, false))
 			data->execute(new ActionWorldEditData(w.meta_data));
 		else
 			ed->errorBox(_("Angegebene Welt konnte nicht korrekt geladen werden!"));

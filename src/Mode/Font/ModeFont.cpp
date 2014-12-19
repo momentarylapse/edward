@@ -80,8 +80,8 @@ void ModeFont::onDraw()
 
 bool ModeFont::saveAs()
 {
-	if (ed->fileDialog(FDFont, true, false))
-		return data->save(ed->DialogFileComplete);
+	if (ed->fileDialog(FD_FONT, true, false))
+		return data->save(ed->dialog_file_complete);
 	return false;
 }
 
@@ -123,9 +123,9 @@ bool ModeFont::open()
 {
 	if (!ed->allowTermination())
 		return false;
-	if (!ed->fileDialog(FDFont, false, false))
+	if (!ed->fileDialog(FD_FONT, false, false))
 		return false;
-	bool ok = data->load(ed->DialogFileComplete);
+	bool ok = data->load(ed->dialog_file_complete);
 	if (!ok)
 		return false;
 
