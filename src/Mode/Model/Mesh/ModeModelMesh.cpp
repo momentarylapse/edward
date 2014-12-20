@@ -38,8 +38,6 @@
 #include "MeshSelectionModeVertex.h"
 #include "ModeModelMeshTexture.h"
 
-#include <GL/gl.h>
-
 ModeModelMesh *mode_model_mesh = NULL;
 
 ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
@@ -608,11 +606,9 @@ void ModeModelMesh::drawPolygons(MultiView::Window *win, Array<ModelVertex> &ver
 
 		// draw
 		m.applyForRendering();
-		glEnable(GL_POLYGON_OFFSET_FILL);
-		glPolygonOffset(1.0f, 1.0f);
+		NixSetOffset(1.0f);
 		NixDraw3D(m.vb);
-		glDisable(GL_POLYGON_OFFSET_FILL);
-		glPolygonOffset(0, 0);
+		NixSetOffset(0);
 		NixSetShader(NULL);
 		NixSetTexture(NULL);
 	}
@@ -685,16 +681,14 @@ void ModeModelMesh::drawSelection(MultiView::Window *win)
 	NixSetAlpha(AlphaNone);
 	NixEnableLighting(true);
 
-	glEnable(GL_POLYGON_OFFSET_FILL);
-	glPolygonOffset(1.0f, 1.0f);
+	NixSetOffset(1.0f);
 	setMaterialMarked();
 	NixDraw3D(vb_marked);
 	setMaterialCreation();
 	NixDraw3D(vb_creation);
 	NixSetMaterial(White,White,Black,0,Black);
 	NixSetAlpha(AlphaNone);
-	glDisable(GL_POLYGON_OFFSET_FILL);
-	glPolygonOffset(0, 0);
+	NixSetOffset(0);
 }
 
 void ModeModelMesh::setSelectionMode(MeshSelectionMode *mode)

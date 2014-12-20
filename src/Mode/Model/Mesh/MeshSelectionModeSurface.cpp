@@ -12,7 +12,6 @@
 #include "ModeModelMesh.h"
 #include "MeshSelectionModePolygon.h"
 #include "../ModeModel.h"
-#include <GL/gl.h>
 
 
 MeshSelectionModeSurface::MeshSelectionModeSurface(ModeModelMesh *_parent) :
@@ -49,14 +48,12 @@ void MeshSelectionModeSurface::onDrawWin(MultiView::Window *win)
 
 
 	NixSetWire(false);
-	glEnable(GL_POLYGON_OFFSET_FILL);
-	glPolygonOffset(1.0f, 1.0f);
+	NixSetOffset(1.0f);
 	mode_model->setMaterialHover();
 	parent->vb_hover->draw();
 	NixSetMaterial(White,White,Black,0,Black);
 	NixSetAlpha(AlphaNone);
-	glDisable(GL_POLYGON_OFFSET_FILL);
-	glPolygonOffset(0, 0);
+	NixSetOffset(0);
 	NixSetWire(multi_view->wire_mode);
 }
 

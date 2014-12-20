@@ -16,7 +16,7 @@
 #include "../hui/Controls/HuiControlDrawingArea.h"
 
 
-string NixVersion = "0.12.0.2";
+string NixVersion = "0.12.0.3";
 
 
 // libraries (in case Visual C++ is used)
@@ -1127,6 +1127,17 @@ void NixSetZ(bool Write, bool Test)
 		}
 	}
 	TestGLError("Setz");
+}
+
+void NixSetOffset(float offset)
+{
+	if (offset > 0){
+		glEnable(GL_POLYGON_OFFSET_FILL);
+		glPolygonOffset(1.0f, 1.0f);
+	}else{
+		glDisable(GL_POLYGON_OFFSET_FILL);
+		glPolygonOffset(0, 0);
+	}
 }
 
 void NixSetAlpha(int mode)
