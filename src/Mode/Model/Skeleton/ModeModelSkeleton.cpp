@@ -163,6 +163,7 @@ void ModeModelSkeleton::onEnd()
 void ModeModelSkeleton::onUpdate(Observable *o, const string &message)
 {
 	if (o == data){
+		mode_model_mesh->updateVertexBuffers(data->vertex);
 
 		multi_view->clearData(data);
 

@@ -864,7 +864,7 @@ bool DataModel::load(const string & _filename, bool deep)
 			}
 
 		for (int i=0;i<material.num;i++){
-			material[i].MakeConsistent();
+			material[i].makeConsistent();
 
 			// test textures
 			for (int t=0;t<material[i].num_textures;t++){

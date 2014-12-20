@@ -11,6 +11,7 @@
 #include "../../x/material.h"
 
 class NixTexture;
+class NixVertexBuffer;
 
 class ModelMaterial
 {
@@ -20,11 +21,11 @@ public:
 	virtual ~ModelMaterial();
 
 	void reset();
-	void MakeConsistent();
-	void CheckTextures();
-	void CheckColors();
-	void CheckTransparency();
-	void ApplyForRendering();
+	void makeConsistent();
+	void checkTextures();
+	void checkColors();
+	void checkTransparency();
+	void applyForRendering();
 
 	string material_file;
 	Material *material;
@@ -44,6 +45,8 @@ public:
 	color specular;
 	color emission;
 	float shininess;
+
+	NixVertexBuffer *vb;
 };
 
 #endif /* MODELMATERIAL_H_ */

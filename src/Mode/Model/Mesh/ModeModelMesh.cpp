@@ -54,9 +54,6 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 
 	// vertex buffers
 	vb_marked = new NixVertexBuffer(1);
-	vb_model[0] = NULL;
-	for (int n=1; n<=4; n++)
-		vb_model[n] = new NixVertexBuffer(n);
 	vb_hover = new NixVertexBuffer(1);
 	vb_creation = new NixVertexBuffer(1);
 
@@ -102,6 +99,8 @@ void ModeModelMesh::onStart()
 
 	subscribe(data);
 	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
+
+	updateVertexBuffers(data->vertex);
 
 	setSelectionMode(selection_mode);
 	mode_model->allowSelectionModes(true);
@@ -306,6 +305,7 @@ void ModeModelMesh::onUpdate(Observable *o, const string &message)
 
 	if (o == data){
 		selection_mode->updateMultiView();
+		updateVertexBuffers(data->vertex);
 	}else if (o == multi_view){
 		selection_mode->updateSelection();
 	}
@@ -588,28 +588,44 @@ void ModeModelMesh::drawPolygons(MultiView::Window *win, Array<ModelVertex> &ver
 
 	// draw all materials separately
 	foreachi(ModelMaterial &m, data->material, mi){
-		int num_tex = min(m.num_textures, 4);
-		NixVertexBuffer *vb = vb_model[num_tex];
+		if (!m.vb)
+			continue;
 
-		vb->clear();
+		// draw
+		m.applyForRendering();
+		glEnable(GL_POLYGON_OFFSET_FILL);
+		glPolygonOffset(1.0f, 1.0f);
+		NixDraw3D(m.vb);
+		glDisable(GL_POLYGON_OFFSET_FILL);
+		glPolygonOffset(0, 0);
+		NixSetShader(NULL);
+		NixSetTexture(NULL);
+	}
+}
+
+
+
+void ModeModelMesh::updateVertexBuffers(Array<ModelVertex> &vertex)
+{
+	// draw all materials separately
+	foreachi(ModelMaterial &m, data->material, mi){
+		int num_tex = min(m.num_textures, 4);
+		if (!m.vb)
+			m.vb = new NixVertexBuffer(num_tex);
+		if (m.vb->numTextures != num_tex){
+			delete(m.vb);
+			m.vb = new NixVertexBuffer(num_tex);
+		}
+
+		m.vb->clear();
 
 		foreach(ModelSurface &surf, data->surface){
 			if (!surf.is_visible)
 				continue;
 			foreach(ModelPolygon &t, surf.polygon)
 				if ((t.view_stage >= multi_view->view_stage) && (t.material == mi))
-					t.AddToVertexBuffer(vertex, vb, m.num_textures);
+					t.AddToVertexBuffer(vertex, m.vb, m.num_textures);
 		}
-
-		// draw
-		m.ApplyForRendering();
-		glEnable(GL_POLYGON_OFFSET_FILL);
-		glPolygonOffset(1.0f, 1.0f);
-		NixDraw3D(vb);
-		glDisable(GL_POLYGON_OFFSET_FILL);
-		glPolygonOffset(0, 0);
-		NixSetShader(NULL);
-		NixSetTexture(NULL);
 	}
 }
 

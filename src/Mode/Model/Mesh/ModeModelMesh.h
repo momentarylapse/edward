@@ -90,12 +90,12 @@ public:
 	void setMaterialMouseOver();
 	void setMaterialCreation();
 
+	void updateVertexBuffers(Array<ModelVertex> &vertex);
 	void fillSelectionBuffer(Array<ModelVertex> &vertex);
 
 	void toggleSelectCW();
 	bool select_cw;
 
-	NixVertexBuffer *vb_model[5];
 	NixVertexBuffer *vb_marked, *vb_hover, *vb_creation;
 };
 

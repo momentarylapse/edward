@@ -213,7 +213,7 @@ void ModelMaterialDialog::OnDefaultColors()
 {
 	temp.user_color = !isChecked("");
 	if (!temp.user_color)
-		temp.CheckColors();
+		temp.checkColors();
 	ApplyData();
 }
 
@@ -236,7 +236,7 @@ void ModelMaterialDialog::OnAddTextureLevel()
 		return;
 	}
 	temp.texture_file[temp.num_textures ++] = "";
-	temp.CheckTextures();
+	temp.checkTextures();
 	ApplyData();
 }
 
@@ -246,7 +246,7 @@ void ModelMaterialDialog::OnTextures()
 	if ((sel >= 0) && (sel <temp.num_textures))
 		if (ed->fileDialog(FD_TEXTURE, false, true)){
 			temp.texture_file[sel] = ed->dialog_file;
-			temp.CheckTextures();
+			temp.checkTextures();
 			ApplyData();
 		}
 }

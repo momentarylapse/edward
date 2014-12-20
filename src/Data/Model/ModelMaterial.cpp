@@ -11,17 +11,24 @@
 
 
 ModelMaterial::ModelMaterial()
-{	reset();	}
+{
+	vb = NULL;
+	reset();
+}
 
 ModelMaterial::ModelMaterial(const string &filename)
 {
+	vb = NULL;
 	reset();
 	material_file = filename;
-	MakeConsistent();
+	makeConsistent();
 }
 
 ModelMaterial::~ModelMaterial()
-{}
+{
+	if (vb)
+		delete(vb);
+}
 
 void ModelMaterial::reset()
 {
@@ -49,17 +56,20 @@ void ModelMaterial::reset()
 	num_textures = 1;
 	texture_file[0] = "";
 	texture[0] = NULL;
+
+	if (vb)
+		delete(vb);
 }
 
-void ModelMaterial::MakeConsistent()
+void ModelMaterial::makeConsistent()
 {
 	material = LoadMaterial(material_file);
-	CheckTextures();
-	CheckTransparency();
-	CheckColors();
+	checkTextures();
+	checkTransparency();
+	checkColors();
 }
 
-void ModelMaterial::CheckTransparency()
+void ModelMaterial::checkTransparency()
 {
 	if (transparency_mode == TransparencyModeDefault)
 		user_transparency = false;
@@ -74,7 +84,7 @@ void ModelMaterial::CheckTransparency()
 
 
 
-void ModelMaterial::CheckTextures()
+void ModelMaterial::checkTextures()
 {
 	// parent has more texture levels?
 	if (material->num_textures > num_textures){
@@ -97,7 +107,7 @@ void ModelMaterial::CheckTextures()
 				texture[i] = material->texture[i];
 }
 
-void ModelMaterial::CheckColors()
+void ModelMaterial::checkColors()
 {
 	if (!user_color){
 		ambient = material->ambient;
@@ -108,7 +118,7 @@ void ModelMaterial::CheckColors()
 	}
 }
 
-void ModelMaterial::ApplyForRendering()
+void ModelMaterial::applyForRendering()
 {
 	NixSetAlpha(AlphaNone);
 	NixSetShader(NULL);
