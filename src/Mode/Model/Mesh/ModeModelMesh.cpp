@@ -704,12 +704,13 @@ void ModeModelMesh::setSelectionMode(MeshSelectionMode *mode)
 	selection_mode = mode;
 	mode->onStart();
 	mode->updateMultiView();
-	//chooseMouseFunction(mouse_action);
-	//ed->updateMenu();
+	notify();
+	ed->updateMenu(); // TODO
 }
 
 void ModeModelMesh::toggleSelectCW()
 {
 	select_cw = !select_cw;
 	notify();
+	ed->updateMenu();
 }

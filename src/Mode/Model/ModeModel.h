@@ -36,7 +36,7 @@ public:
 	bool importLoad3ds(const string &filename);
 
 	void setMaterialSelected();
-	void setMaterialMouseOver();
+	void setMaterialHover();
 	void setMaterialCreation();
 
 	void executePropertiesDialog();
