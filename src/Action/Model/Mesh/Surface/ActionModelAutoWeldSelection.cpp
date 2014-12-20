@@ -22,7 +22,7 @@ void *ActionModelAutoWeldSelection::compose(Data *d)
 		found = false;
 		for (int i=m->surface.num-1;i>=0;i--)
 			if (m->surface[i].is_selected){
-				m->surface[i].TestSanity("auto weld pre");
+				m->surface[i].testSanity("auto weld pre");
 				for (int j=i-1;j>=0;j--)
 					if (m->surface[j].is_selected){
 						if (addSubAction(new ActionModelSurfaceAutoWeld(j, i, epsilon), m)){

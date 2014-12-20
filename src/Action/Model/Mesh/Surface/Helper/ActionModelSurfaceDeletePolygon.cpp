@@ -26,7 +26,7 @@ void ActionModelSurfaceDeletePolygon::undo(Data *d)
 
 	ModelSurface &s = m->surface[surface];
 
-	s.AddPolygon(vertex, material, skin, index);
+	s.addPolygon(vertex, material, skin, index);
 }
 
 
@@ -40,11 +40,11 @@ void *ActionModelSurfaceDeletePolygon::execute(Data *d)
 
 	// save old data
 	material = t.material;
-	vertex = t.GetVertices();
-	skin = t.GetSkinVertices();
+	vertex = t.getVertices();
+	skin = t.getSkinVertices();
 
 	// erase
-	s.RemovePolygon(index);
+	s.removePolygon(index);
 
 	return NULL;
 }

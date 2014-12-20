@@ -30,7 +30,7 @@ void ActionModelTransformVertices::undo(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(int i, index, ii)
 		m->vertex[i].pos = old_data[ii];
-	m->SetNormalsDirtyByVertices(index);
+	m->setNormalsDirtyByVertices(index);
 }
 
 
@@ -40,7 +40,7 @@ void *ActionModelTransformVertices::execute(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreach(int i, index)
 		m->vertex[i].pos =  mat * m->vertex[i].pos;
-	m->SetNormalsDirtyByVertices(index);
+	m->setNormalsDirtyByVertices(index);
 	return NULL;
 }
 

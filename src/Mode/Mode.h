@@ -31,6 +31,9 @@ public:
 	virtual void onEnter(){};
 	virtual void onLeave(){};
 
+	virtual void onSelectionChange(){};
+	virtual void onSetMultiView(){};
+
 	// events to be handled by derived modes
 	virtual void onMouseMove(){};
 	virtual void onMouseWheel(){};

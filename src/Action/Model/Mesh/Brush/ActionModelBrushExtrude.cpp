@@ -34,7 +34,7 @@ void* ActionModelBrushExtrude::execute(Data* d)
 			m->vertex[i].pos += n * depth * exp(- d2 / r2 * 2);
 		}
 	}
-	m->SetNormalsDirtyByVertices(index);
+	m->setNormalsDirtyByVertices(index);
 
 
 	return NULL;
@@ -44,7 +44,7 @@ void ActionModelBrushExtrude::undo(Data* d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	m->SetNormalsDirtyByVertices(index);
+	m->setNormalsDirtyByVertices(index);
 	foreachi(int i, index, ii)
 		m->vertex[i].pos = pos_old[ii];
 

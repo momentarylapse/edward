@@ -12,7 +12,8 @@
 
 class NixTexture;
 
-class ModeWelcome: public ModeBase {
+class ModeWelcome: public ModeBase
+{
 public:
 	ModeWelcome();
 	virtual ~ModeWelcome();

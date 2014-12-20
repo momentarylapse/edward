@@ -94,12 +94,12 @@ public:
 	void getHover();
 	void unselectAll();
 	enum{
-		SelectSet,
-		SelectAdd,
-		SelectInvert
+		SELECT_SET,
+		SELECT_ADD,
+		SELECT_INVERT
 	};
-	void GetSelected(int mode = SelectSet);
-	void SelectAllInRectangle(int mode = SelectSet);
+	void getSelected(int mode = SELECT_SET);
+	void selectAllInRectangle(int mode = SELECT_SET);
 
 	virtual float getGridD();
 	string getMVScaleByZoom(vector &v);

@@ -11,7 +11,7 @@
 #include "ModelPolygon.h"
 #include "../../lib/nix/nix.h"
 
-vector ModelPolygon::GetAreaVector(const Array<ModelVertex> &vertex) const
+vector ModelPolygon::getAreaVector(const Array<ModelVertex> &vertex) const
 {
 	// Newell's method
 	vector n = v_0;
@@ -26,7 +26,7 @@ vector ModelPolygon::GetAreaVector(const Array<ModelVertex> &vertex) const
 	return n * 0.5f;
 }
 
-vector ModelPolygon::GetNormal(const Array<ModelVertex> &vertex) const
+vector ModelPolygon::getNormal(const Array<ModelVertex> &vertex) const
 {
 	// Newell's method
 	vector n = v_0;
@@ -42,7 +42,7 @@ vector ModelPolygon::GetNormal(const Array<ModelVertex> &vertex) const
 	return n;
 }
 
-Array<int> ModelPolygon::GetVertices() const
+Array<int> ModelPolygon::getVertices() const
 {
 	Array<int> v;
 	v.resize(side.num);
@@ -51,7 +51,7 @@ Array<int> ModelPolygon::GetVertices() const
 	return v;
 }
 
-Array<vector> ModelPolygon::GetSkinVertices() const
+Array<vector> ModelPolygon::getSkinVertices() const
 {
 	Array<vector> sv;
 	sv.resize(side.num * MATERIAL_MAX_TEXTURES);
@@ -98,7 +98,7 @@ static bool vertex_in_tria(const Array<ModelVertex> &vertex, int a, int b, int c
 	return v_0;
 }*/
 
-Array<int> ModelPolygon::Triangulate(const Array<ModelVertex> &vertex) const
+Array<int> ModelPolygon::triangulate(const Array<ModelVertex> &vertex) const
 {
 	Array<int> output;
 
@@ -157,19 +157,19 @@ Array<int> ModelPolygon::Triangulate(const Array<ModelVertex> &vertex) const
 	return output;
 }
 
-void ModelPolygon::UpdateTriangulation(const Array<ModelVertex> &vertex)
+void ModelPolygon::updateTriangulation(const Array<ModelVertex> &vertex)
 {
-	Array<int> v = Triangulate(vertex);
+	Array<int> v = triangulate(vertex);
 	for (int i=0; i<v.num; i+=3)
 		for (int k=0; k<3; k++)
 			side[i/3].triangulation[k] = v[i + k];
 	triangulation_dirty = false;
 }
 
-void ModelPolygon::AddToVertexBuffer(const Array<ModelVertex> &vertex, NixVertexBuffer *buffer, int num_textures)
+void ModelPolygon::addToVertexBuffer(const Array<ModelVertex> &vertex, NixVertexBuffer *buffer, int num_textures)
 {
 	if (triangulation_dirty)
-		UpdateTriangulation(vertex);
+		updateTriangulation(vertex);
 	for (int i=0; i<side.num-2; i++){
 		const ModelPolygonSide &a = side[side[i].triangulation[0]];
 		const ModelPolygonSide &b = side[side[i].triangulation[1]];
@@ -197,7 +197,7 @@ void ModelPolygon::AddToVertexBuffer(const Array<ModelVertex> &vertex, NixVertex
 	}
 }
 
-void ModelPolygon::Invert()
+void ModelPolygon::invert()
 {
 	ModelPolygon pp = *this;
 	for (int i=0;i<side.num;i++)

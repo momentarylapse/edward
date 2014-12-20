@@ -216,81 +216,81 @@ public:
 	virtual bool load(const string &_filename, bool deep = true);
 	virtual bool save(const string &_filename);
 
-	void ImportFromTriangleSkin(int index);
-	void ExportToTriangleSkin(int index);
+	void importFromTriangleSkin(int index);
+	void exportToTriangleSkin(int index);
 
-	void DebugShow();
+	void debugShow();
 	virtual bool testSanity(const string &loc);
 	virtual void onPostActionUpdate();
 
-	void SetNormalsDirtyByVertices(const Array<int> &index);
-	void SetAllNormalsDirty();
-	void UpdateNormals();
+	void setNormalsDirtyByVertices(const Array<int> &index);
+	void setAllNormalsDirty();
+	void updateNormals();
 
 
 
-	int GetNumSelectedVertices();
-	int GetNumSelectedSkinVertices();
-	int GetNumSelectedPolygons();
-	int GetNumSelectedSurfaces();
+	int getNumSelectedVertices();
+	int getNumSelectedSkinVertices();
+	int getNumSelectedPolygons();
+	int getNumSelectedSurfaces();
 	//int GetNumSelectedBalls();
-	int GetNumSelectedBones();
-	int GetNumPolygons();
+	int getNumSelectedBones();
+	int getNumPolygons();
 
-	void ClearSelection();
-	void SelectionFromVertices();
-	void SelectionFromPolygons();
-	void SelectionFromEdges();
-	void SelectionFromSurfaces();
-	void GetSelectionState(ModelSelectionState &s);
-	void SetSelectionState(ModelSelectionState &s);
-	Set<int> GetSelectedSurfaces();
-	Set<int> GetSelectedVertices();
-	void SelectOnlySurface(ModelSurface *s);
+	void clearSelection();
+	void selectionFromVertices();
+	void selectionFromPolygons();
+	void selectionFromEdges();
+	void selectionFromSurfaces();
+	void getSelectionState(ModelSelectionState &s);
+	void setSelectionState(ModelSelectionState &s);
+	Set<int> getSelectedSurfaces();
+	Set<int> getSelectedVertices();
+	void selectOnlySurface(ModelSurface *s);
 
 
-	float GetRadius();
-	void GetBoundingBox(vector &min, vector &max);
-	void GenerateDetailDists(float *dist);
-	matrix3 GenerateInertiaTensor(float mass);
-	void CreateSkin(ModelSkin *src, ModelSkin *dst, float quality_factor);
+	float getRadius();
+	void getBoundingBox(vector &min, vector &max);
+	void generateDetailDists(float *dist);
+	matrix3 generateInertiaTensor(float mass);
+	void createSkin(ModelSkin *src, ModelSkin *dst, float quality_factor);
 
 	// low level (un-action'ed)
 	//void LowLevelAddVertex(const vector &vd);
-	ModelSurface *AddSurface(int surf_no = -1);
-	ModelSurface *SurfaceJoin(ModelSurface *a, ModelSurface *b);
+	ModelSurface *addSurface(int surf_no = -1);
+	ModelSurface *surfaceJoin(ModelSurface *a, ModelSurface *b);
 	int get_surf_no(ModelSurface *s);
 
 	// high level (actions)
-	void AddVertex(const vector &pos, int bone_index = 0, int normal_mode = -1);
-	ModelPolygon *AddTriangle(int a, int b, int c, int material);
-	ModelPolygon *AddPolygon(Array<int> &v, int material);
-	ModelPolygon *AddPolygonWithSkin(Array<int> &v, Array<vector> &sv, int material);
+	void addVertex(const vector &pos, int bone_index = 0, int normal_mode = -1);
+	ModelPolygon *addTriangle(int a, int b, int c, int material);
+	ModelPolygon *addPolygon(Array<int> &v, int material);
+	ModelPolygon *addPolygonWithSkin(Array<int> &v, Array<vector> &sv, int material);
 
-	void DeleteSelection(bool greedy = false);
-	void InvertSelection();
-	void InvertSurfaces(const Set<int> &surfaces);
-	void SubtractSelection();
-	void AndSelection();
-	void CutOutSelection();
-	void ConvertSelectionToTriangles();
-	void MergePolygonsSelection();
-	void AlignToGridSelection(float grid_d);
-	void NearifySelectedVertices();
-	void CollapseSelectedVertices();
-	void BevelSelectedEdges(float radius);
-	void FlattenSelectedVertices();
-	void TriangulateSelectedVertices();
-	void ExtrudeSelectedPolygons(float offset);
-	void AutoWeldSurfaces(const Set<int> &surfaces, float d);
-	void AutoWeldSelectedSurfaces(float d);
-	void SetNormalModeSelection(int mode);
-	void SetMaterialSelection(int material);
-	void CopyGeometry(Geometry &geo); // not an action...
-	void PasteGeometry(Geometry &geo, int default_material);
-	void Easify(float factor);
-	void SubdivideSelectedSurfaces();
-	void Automap(int material, int texture_level);
+	void deleteSelection(bool greedy = false);
+	void invertSelection();
+	void invertSurfaces(const Set<int> &surfaces);
+	void subtractSelection();
+	void andSelection();
+	void cutOutSelection();
+	void convertSelectionToTriangles();
+	void mergePolygonsSelection();
+	void alignToGridSelection(float grid_d);
+	void nearifySelectedVertices();
+	void collapseSelectedVertices();
+	void bevelSelectedEdges(float radius);
+	void flattenSelectedVertices();
+	void triangulateSelectedVertices();
+	void extrudeSelectedPolygons(float offset);
+	void autoWeldSurfaces(const Set<int> &surfaces, float d);
+	void autoWeldSelectedSurfaces(float d);
+	void setNormalModeSelection(int mode);
+	void setMaterialSelection(int material);
+	void copyGeometry(Geometry &geo); // not an action...
+	void pasteGeometry(Geometry &geo, int default_material);
+	void easify(float factor);
+	void subdivideSelectedSurfaces();
+	void automap(int material, int texture_level);
 
 
 	// properties
@@ -367,6 +367,10 @@ public:
 
 	bool force_new_normals[4];
 	bool normal_indices_ok[4];
+
+
+	void showVertices(Array<ModelVertex> &vert);
+	Array<ModelVertex> show_vertices;
 };
 
 #endif /* DATAMODEL_H_ */

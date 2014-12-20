@@ -75,7 +75,7 @@ void ModeModelMeshCreatePlatonic::UpdateGeometry()
 void ModeModelMeshCreatePlatonic::onLeftButtonDown()
 {
 	if (pos_chosen){
-		data->PasteGeometry(*geo, mode_model_mesh->current_material);
+		data->pasteGeometry(*geo, mode_model_mesh->current_material);
 
 		abort();
 	}else{

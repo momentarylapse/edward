@@ -20,7 +20,7 @@ ActionModelPasteGeometry::ActionModelPasteGeometry(Geometry &_geo, int _default_
 void *ActionModelPasteGeometry::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	m->ClearSelection();
+	m->clearSelection();
 
 	int nv = m->vertex.num;
 	foreach(ModelVertex &v, m->vertex)

@@ -92,7 +92,7 @@ void ModeModelMeshCreatePolygon::onLeftButtonDown()
 		selection.add(multi_view->hover.index);
 
 	}else{
-		data->AddVertex(multi_view->getCursor3d());
+		data->addVertex(multi_view->getCursor3d());
 		selection.add(data->vertex.num - 1);
 	}
 	data->vertex[selection.back()].is_special = true;

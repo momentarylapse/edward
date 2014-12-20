@@ -38,6 +38,8 @@ public:
 	virtual void onCommand(const string &id);
 	virtual void onUpdate(Observable *o, const string &message);
 	virtual void onUpdateMenu();
+	virtual void onSelectionChange();
+	virtual void onSetMultiView();
 
 	virtual void onDrawWin(MultiView::Window *win);
 	virtual void onDraw();
@@ -46,6 +48,7 @@ public:
 	void drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex, bool only_selected);
 	void drawPolygons(MultiView::Window *win, Array<ModelVertex> &vertex);
 	void drawSelection(MultiView::Window *win);
+	void drawAll(MultiView::Window *win, Array<ModelVertex> &vertex);
 
 	virtual bool optimizeView();
 

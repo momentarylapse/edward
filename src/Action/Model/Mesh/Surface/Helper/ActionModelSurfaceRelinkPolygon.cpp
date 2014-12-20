@@ -27,7 +27,7 @@ void *ActionModelSurfaceRelinkPolygon::compose(Data *d)
 	ModelPolygon &t = m->surface[surface].polygon[polygon];
 	assert(v.num == t.side.num);
 	int material = t.material;
-	Array<vector> sv = t.GetSkinVertices();
+	Array<vector> sv = t.getSkinVertices();
 
 	// delete old triangle
 	addSubAction(new ActionModelSurfaceDeletePolygon(surface, polygon), m);

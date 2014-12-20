@@ -25,7 +25,7 @@ bool ActionModelSurfaceInvert::was_trivial()
 
 void ActionModelSurfaceInvert::InvertSurface(ModelSurface &s)
 {
-	s.TestSanity("inv prae");
+	s.testSanity("inv prae");
 
 	// flip polygons
 	foreachi(ModelPolygon &t, s.polygon, ti){
@@ -69,7 +69,7 @@ void ActionModelSurfaceInvert::InvertSurface(ModelSurface &s)
 		}
 	}
 
-	s.TestSanity("inv post");
+	s.testSanity("inv post");
 }
 
 void *ActionModelSurfaceInvert::execute(Data *d)

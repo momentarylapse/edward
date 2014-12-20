@@ -168,10 +168,10 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 	mod.new_name = format("Lightmap/%s/%s_%d", world_name_small.c_str(), mod.orig_name.c_str(), mod.id);
 
 	foreachi(ModelSurface &s, m->surface, surf){
-		s.UpdateNormals();
+		s.updateNormals();
 		foreachi(ModelPolygon &p, s.polygon, i){
 			if (p.triangulation_dirty)
-				p.UpdateTriangulation(m->vertex);
+				p.updateTriangulation(m->vertex);
 			for (int k=0;k<p.side.num-2;k++){
 				Triangle t;
 				t.mod_id = mod.id;
@@ -279,7 +279,7 @@ void LightmapData::AddTextureLevels(bool modify)
 			foreach(ModelMaterial &mat, m.orig->material)
 				mat.num_textures ++;
 		}
-		m.orig->Automap(-1, 1); // TODO...
+		m.orig->automap(-1, 1); // TODO...
 	}
 }
 

@@ -204,7 +204,7 @@ void ModelMaterialDialog::onDeleteMaterial()
 
 void ModelMaterialDialog::onApplyMaterial()
 {
-	data->SetMaterialSelection(mode_model_mesh->current_material);
+	data->setMaterialSelection(mode_model_mesh->current_material);
 }
 
 

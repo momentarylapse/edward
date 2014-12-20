@@ -82,7 +82,7 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 
 	// close hole
 	if (closed){
-		Array<int> loop = s.GetBoundaryLoop(m->vertex.num - 1);
+		Array<int> loop = s.getBoundaryLoop(m->vertex.num - 1);
 		loop.reverse();
 		addSubAction(new ActionModelAddPolygonAutoSkin(loop, mode_model_mesh->current_material), m);
 	}

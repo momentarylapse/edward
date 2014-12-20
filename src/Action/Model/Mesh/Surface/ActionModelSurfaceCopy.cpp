@@ -78,8 +78,8 @@ void *ActionModelSurfaceCopy::compose(Data *d)
 	ModelSurface *copy = (ModelSurface*)addSubAction(new ActionModelAddEmptySurface(), m);
 
 	foreach(ModelPolygon &t, s.polygon){
-		Array<int> v = t.GetVertices();
-		Array<vector> sv = t.GetSkinVertices();
+		Array<int> v = t.getVertices();
+		Array<vector> sv = t.getSkinVertices();
 		for (int k=0;k<t.side.num;k++)
 			foreachi(int vv, s.vertex, vi)
 				if (vv == t.side[k].vertex)
@@ -88,7 +88,7 @@ void *ActionModelSurfaceCopy::compose(Data *d)
 	}
 
 	foreach(ModelPolygon &cp, copy->polygon)
-		cp.temp_normal = cp.GetNormal(m->vertex);
+		cp.temp_normal = cp.getNormal(m->vertex);
 
 	return copy;
 }

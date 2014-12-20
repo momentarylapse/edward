@@ -48,8 +48,8 @@ void *ActionModelJoinSurfaces::execute(Data *d)
 	old_vertices1 = a->vertex.num;
 	old_trias1 = a->polygon.num;
 
-	a->TestSanity("Join prae a");
-	b->TestSanity("Join prae b");
+	a->testSanity("Join prae a");
+	b->testSanity("Join prae b");
 
 	// correct edge data of b
 	foreach(ModelEdge &e, b->edge){
@@ -76,7 +76,7 @@ void *ActionModelJoinSurfaces::execute(Data *d)
 	// remove surface
 	m->surface.erase(surface2);
 	a = &m->surface[surface1];
-	a->TestSanity("Join post a");
+	a->testSanity("Join post a");
 
 	// correct vertices of surfaces above b
 	foreach(ModelVertex &v, m->vertex)
@@ -91,7 +91,7 @@ void ActionModelJoinSurfaces::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModelSurface *b = m->AddSurface(surface2);
+	ModelSurface *b = m->addSurface(surface2);
 	ModelSurface *a = &m->surface[surface1];
 
 	// move triangles
@@ -99,6 +99,6 @@ void ActionModelJoinSurfaces::undo(Data *d)
 	a->polygon.resize(old_trias1);
 
 	// rebuild
-	a->BuildFromPolygons();
-	b->BuildFromPolygons();
+	a->buildFromPolygons();
+	b->buildFromPolygons();
 }

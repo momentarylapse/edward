@@ -45,7 +45,7 @@ void *ActionModelAlignToGrid::execute(Data *d)
 		align_float(m->vertex[i].pos.z, grid_dist);
 	}
 
-	m->SetNormalsDirtyByVertices(index);
+	m->setNormalsDirtyByVertices(index);
 	return NULL;
 }
 
@@ -60,7 +60,7 @@ void ActionModelAlignToGrid::undo(Data *d)
 	foreachi(int vi, index, i)
 		m->vertex[vi].pos = old_pos[i];
 
-	m->SetNormalsDirtyByVertices(index);
+	m->setNormalsDirtyByVertices(index);
 }
 
 bool ActionModelAlignToGrid::was_trivial()

@@ -74,8 +74,8 @@ void ModeModelMeshCreateTorus::onLeftButtonDown()
 	if (pos_chosen){
 		if (rad_chosen){
 
-			data->PasteGeometry(*geo, mode_model_mesh->current_material);
-			data->SelectOnlySurface(&data->surface.back());
+			data->pasteGeometry(*geo, mode_model_mesh->current_material);
+			data->selectOnlySurface(&data->surface.back());
 
 			abort();
 		}else{

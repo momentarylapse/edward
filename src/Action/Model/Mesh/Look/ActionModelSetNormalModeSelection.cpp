@@ -30,7 +30,7 @@ void *ActionModelSetNormalModeSelection::execute(Data *d)
 		old_mode.add(m->vertex[i].normal_mode);
 		m->vertex[i].normal_mode = mode;
 	}
-	m->SetNormalsDirtyByVertices(index);
+	m->setNormalsDirtyByVertices(index);
 
 	return NULL;
 }
@@ -45,7 +45,7 @@ void ActionModelSetNormalModeSelection::undo(Data *d)
 	foreachi(int i, index, ii)
 		m->vertex[i].normal_mode = old_mode[ii];
 
-	m->SetNormalsDirtyByVertices(index);
+	m->setNormalsDirtyByVertices(index);
 }
 
 

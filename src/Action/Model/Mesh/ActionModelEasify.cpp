@@ -62,7 +62,7 @@ static float get_weight(DataModel *m, ModelSurface &s, ModelEdge &e, Array<Array
 		ModelPolygon &p = s.polygon[rr[i].poly];
 
 		// how much does the plane change
-		vector area = p.GetAreaVector(m->vertex);
+		vector area = p.getAreaVector(m->vertex);
 		vector area2 = get_deformed_area(m, p, rr[i].side, new_pos);
 		w += (area ^ area2).length() / (area.length() + area2.length()) * 4;
 	}
@@ -173,8 +173,8 @@ void *ActionModelEasify::compose(Data *d)
 	HuiTimer t;
 #if 1
 	//CalculateWeights(m);
-	int n = (int)((float)m->GetNumPolygons() * factor);
-	while(m->GetNumPolygons() > n)
+	int n = (int)((float)m->getNumPolygons() * factor);
+	while(m->getNumPolygons() > n)
 		if (!EasifyStep(m))
 			break;
 #endif

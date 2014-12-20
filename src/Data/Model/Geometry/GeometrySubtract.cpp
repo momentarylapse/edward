@@ -115,7 +115,7 @@ bool ActionModelSurfaceSubtract::CollidePolygons(DataModel *m, ModelPolygon *t1,
 	}
 
 	// collide edges of t2 with pl1
-	Array<int> vv1 = t1->Triangulate(m);
+	Array<int> vv1 = t1->triangulate(m);
 	for (int k=0;k<t2->side.num;k++){
 		int k2 = (k + 1) % t2->side.num;
 		vector col;
@@ -131,7 +131,7 @@ bool ActionModelSurfaceSubtract::CollidePolygons(DataModel *m, ModelPolygon *t1,
 	}
 
 	// collide edges of t1 with pl2
-	Array<int> vv2 = t2->Triangulate(m);
+	Array<int> vv2 = t2->triangulate(m);
 	for (int k=0;k<t1->side.num;k++){
 		int k2 = (k + 1) % t1->side.num;
 		vector col;
@@ -166,7 +166,7 @@ bool CollidePolygonSurface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_ind
 	plane pl;
 	PlaneFromPointNormal(pl, a.vertex[pa->side[0].vertex].pos, pa->temp_normal);
 
-	Array<int> vv = pa->Triangulate(a.vertex);
+	Array<int> vv = pa->triangulate(a.vertex);
 
 	// collide polygon <-> surface's edges
 	foreachi(ModelEdge &e, b.edge, ei){
@@ -195,7 +195,7 @@ bool CollidePolygonSurface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_ind
 		plane pl2;
 		PlaneFromPointNormal(pl2, b.vertex[pb.side[0].vertex].pos, pb.temp_normal);
 
-		Array<int> vv2 = pb.Triangulate(b.vertex);
+		Array<int> vv2 = pb.triangulate(b.vertex);
 		for (int kk=0;kk<pa->side.num;kk++){
 			vector ve[2];
 			for (int k=0;k<2;k++)
@@ -786,9 +786,9 @@ int GeometrySubtract(Geometry &a, Geometry &b, Geometry &out)
 	a.updateTopology();
 	b.updateTopology();
 	foreach(ModelPolygon &p, a.polygon)
-		p.temp_normal = p.GetNormal(a.vertex);
+		p.temp_normal = p.getNormal(a.vertex);
 	foreach(ModelPolygon &p, b.polygon)
-		p.temp_normal = p.GetNormal(b.vertex);
+		p.temp_normal = p.getNormal(b.vertex);
 	if (!b.is_closed)
 		return -1;
 
@@ -826,9 +826,9 @@ int GeometryAnd(Geometry &a, Geometry &b, Geometry &out)
 	a.updateTopology();
 	b.updateTopology();
 	foreach(ModelPolygon &p, a.polygon)
-		p.temp_normal = p.GetNormal(a.vertex);
+		p.temp_normal = p.getNormal(a.vertex);
 	foreach(ModelPolygon &p, b.polygon)
-		p.temp_normal = p.GetNormal(b.vertex);
+		p.temp_normal = p.getNormal(b.vertex);
 	if (!b.is_closed)
 		return -1;
 

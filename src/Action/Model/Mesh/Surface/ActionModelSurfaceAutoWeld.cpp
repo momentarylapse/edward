@@ -32,9 +32,9 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 	if (a >= b)
 		throw ActionException("a >= b... array reference broken");
 
-	if (!a->TestSanity("AutoWeld prae a"))
+	if (!a->testSanity("AutoWeld prae a"))
 		throw ActionException("s1 evil pre");
-	if (!b->TestSanity("AutoWeld prae b"))
+	if (!b->testSanity("AutoWeld prae b"))
 		throw ActionException("s2 evil pre");
 
 
@@ -77,7 +77,7 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 			_foreach_it_.update(); // TODO
 		}
 	}
-	if (!a->TestSanity("AutoWeld relink tria"))
+	if (!a->testSanity("AutoWeld relink tria"))
 		throw ActionException("s1 evil post");
 
 	// remove obsolete vertices

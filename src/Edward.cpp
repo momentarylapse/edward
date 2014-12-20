@@ -16,6 +16,7 @@
 #include "Mode/Font/ModeFont.h"
 #include "Mode/Welcome/ModeWelcome.h"
 #include "Mode/ModeCreation.h"
+#include "Mode/ModeNone.h"
 #include "MultiView/MultiView.h"
 #include "MultiView/MultiViewImpl.h"
 #include "x/world.h"
@@ -120,8 +121,7 @@ void Edward::exit()
 #define IMPLEMENT_EVENT(EVENT) \
 void Edward::EVENT() \
 { \
-	if (cur_mode) \
-		cur_mode->EVENT##Meta(); \
+	cur_mode->EVENT##Meta(); \
 	if (force_redraw) \
 		onDraw(); \
 }
@@ -144,8 +144,7 @@ void Edward::onEvent()
 	string id = HuiGetEvent()->id;
 	if (id.num == 0)
 		id = HuiGetEvent()->message;
-	if (cur_mode)
-		cur_mode->onCommandMeta(id);
+	cur_mode->onCommandMeta(id);
 	onCommand(id);
 }
 
@@ -182,7 +181,8 @@ Edward::Edward(Array<string> arg) :
 	HideControl("side-table", true);*/
 
 	ed = this;
-	cur_mode = NULL;
+	no_mode = new ModeNone;
+	cur_mode = no_mode;
 	force_redraw = false;
 
 	progress = new Progress;
@@ -393,8 +393,7 @@ bool Edward::handleArguments(Array<string> arg)
 
 void Edward::optimizeCurrentView()
 {
-	if (cur_mode)
-		cur_mode->optimizeViewRecursice();
+	cur_mode->optimizeViewRecursice();
 }
 
 
@@ -420,11 +419,9 @@ void Edward::setMode(ModeBase *m)
 		return;
 
 	msg_db_f("SetMode", 1);
-	if (cur_mode){
-		cur_mode->onLeave();
-		if (cur_mode->getData())
-			unsubscribe(cur_mode->getData()->action_manager);
-	}
+	cur_mode->onLeave();
+	if (cur_mode->getData())
+		unsubscribe(cur_mode->getData()->action_manager);
 
 	m = mode_queue[0];
 	while(m){
@@ -448,6 +445,7 @@ void Edward::setMode(ModeBase *m)
 			cur_mode->onStart();
 		}
 		cur_mode->onEnter();
+		cur_mode->onSetMultiView();
 
 		// nested set calls?
 		mode_queue.erase(0);
@@ -477,6 +475,8 @@ void Edward::onUpdate(Observable *o, const string &message)
 	if (o->getName() == "MultiView"){
 		if (message == multi_view_3d->MESSAGE_SETTINGS_CHANGE)
 			updateMenu();
+		if (message == multi_view_3d->MESSAGE_SELECTION_CHANGE)
+			cur_mode->onSelectionChange();
 		forceRedraw();
 	}else if (o->getName() == "ActionManager"){
 		ActionManager *am = dynamic_cast<ActionManager*>(o);
@@ -487,6 +487,7 @@ void Edward::onUpdate(Observable *o, const string &message)
 			updateMenu();
 		}
 	}else{
+		cur_mode->onSetMultiView();
 		// data...
 		forceRedraw();
 		updateMenu();

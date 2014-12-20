@@ -65,7 +65,7 @@ bool Importer3ds::Import(DataModel *m, const string &filename)
 
 	FileClose(f);
 
-	m->ImportFromTriangleSkin(1);
+	m->importFromTriangleSkin(1);
 	m->resetHistory();
 	return true;
 }

@@ -83,7 +83,7 @@ void* ActionModelFlattenVertices::execute(Data* d)
 	foreach(int i, index)
 		m->vertex[i].pos -= pl.distance(m->vertex[i].pos) * pl.n;
 
-	m->SetNormalsDirtyByVertices(index);
+	m->setNormalsDirtyByVertices(index);
 	return NULL;
 }
 
@@ -94,7 +94,7 @@ void ActionModelFlattenVertices::undo(Data* d)
 	foreachi(int i, index, ii)
 		m->vertex[i].pos = old_pos[ii];
 
-	m->SetNormalsDirtyByVertices(index);
+	m->setNormalsDirtyByVertices(index);
 }
 
 bool ActionModelFlattenVertices::was_trivial()

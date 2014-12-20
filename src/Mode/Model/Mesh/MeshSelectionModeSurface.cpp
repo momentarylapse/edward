@@ -22,7 +22,7 @@ MeshSelectionModeSurface::MeshSelectionModeSurface(ModeModelMesh *_parent) :
 
 void MeshSelectionModeSurface::updateSelection()
 {
-	data->SelectionFromSurfaces();
+	data->selectionFromSurfaces();
 }
 
 void MeshSelectionModeSurface::updateMultiView()
@@ -45,7 +45,7 @@ void MeshSelectionModeSurface::onDrawWin(MultiView::Window *win)
 
 	ModelSurface &s = data->surface[multi_view->hover.index];
 	foreach(ModelPolygon &p, s.polygon)
-		p.AddToVertexBuffer(data->vertex, parent->vb_hover, 1);
+		p.addToVertexBuffer(data->vertex, parent->vb_hover, 1);
 
 
 	glEnable(GL_POLYGON_OFFSET_FILL);

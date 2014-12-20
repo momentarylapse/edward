@@ -38,14 +38,14 @@ public:
 	virtual bool hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data);
 	virtual bool inRect(MultiView::Window *win, rect &r, void *user_data);
 
-	Array<int> Triangulate(const Array<ModelVertex> &vertex) const;
-	void UpdateTriangulation(const Array<ModelVertex> &vertex);
-	vector GetNormal(const Array<ModelVertex> &vertex) const;
-	vector GetAreaVector(const Array<ModelVertex> &vertex) const;
-	Array<int> GetVertices() const;
-	Array<vector> GetSkinVertices() const;
-	void Invert();
-	void AddToVertexBuffer(const Array<ModelVertex> &vertex, NixVertexBuffer *vb, int num_textures);
+	Array<int> triangulate(const Array<ModelVertex> &vertex) const;
+	void updateTriangulation(const Array<ModelVertex> &vertex);
+	vector getNormal(const Array<ModelVertex> &vertex) const;
+	vector getAreaVector(const Array<ModelVertex> &vertex) const;
+	Array<int> getVertices() const;
+	Array<vector> getSkinVertices() const;
+	void invert();
+	void addToVertexBuffer(const Array<ModelVertex> &vertex, NixVertexBuffer *vb, int num_textures);
 };
 
 

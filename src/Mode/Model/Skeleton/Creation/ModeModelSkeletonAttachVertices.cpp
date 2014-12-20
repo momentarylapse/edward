@@ -25,7 +25,7 @@ void ModeModelSkeletonAttachVertices::onStart()
 	// relative to absolute pos
 	foreach(ModelVertex &v, data->vertex)
 		v.is_selected = (v.bone_index == bone_index);
-	data->SelectionFromVertices();
+	data->selectionFromVertices();
 
 	mode_model->allowSelectionModes(true);
 	mode_model_mesh->selection_mode->updateMultiView();

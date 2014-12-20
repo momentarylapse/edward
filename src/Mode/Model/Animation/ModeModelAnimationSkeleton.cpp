@@ -40,7 +40,7 @@ void ModeModelAnimationSkeleton::onStart()
 	foreachi(ModelBone &b, data->bone, i)
 		mode_model_animation->bone[i].is_selected = b.is_selected;
 
-	multi_view->clearData(NULL);
+	multi_view->clearData(data);
 	multi_view->allow_rect = true;
 
 	chooseMouseFunction(MultiView::ACTION_SELECT);
@@ -54,7 +54,6 @@ void ModeModelAnimationSkeleton::onEnd()
 {
 	unsubscribe(data);
 	unsubscribe(multi_view);
-	multi_view->clearData(NULL);
 }
 
 void ModeModelAnimationSkeleton::onCommand(const string& id)

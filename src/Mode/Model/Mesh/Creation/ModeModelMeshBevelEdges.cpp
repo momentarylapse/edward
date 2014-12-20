@@ -19,7 +19,7 @@ ModeModelMeshBevelEdges::ModeModelMeshBevelEdges(ModeBase *_parent) :
 	message = _("Radius skalieren [Linke Maustaste = fertig]");
 
 
-	data->GetSelectionState(selection);
+	data->getSelectionState(selection);
 
 	// find maximal radius
 	rad_max = -1;
@@ -62,7 +62,7 @@ void ModeModelMeshBevelEdges::onMouseMove()
 
 #ifdef INTERACTIVE
 
-	data->SetSelectionState(selection);
+	data->setSelectionState(selection);
 	if (!data->action_manager->preview(new ActionModelBevelEdges(radius)))
 		abort();
 #endif
@@ -74,8 +74,8 @@ void ModeModelMeshBevelEdges::onLeftButtonDown()
 	data->action_manager->clearPreview();
 #endif
 
-	data->SetSelectionState(selection);
-	data->BevelSelectedEdges(radius);
+	data->setSelectionState(selection);
+	data->bevelSelectedEdges(radius);
 	abort();
 }
 

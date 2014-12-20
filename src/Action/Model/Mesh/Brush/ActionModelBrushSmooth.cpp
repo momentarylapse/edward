@@ -35,7 +35,7 @@ void* ActionModelBrushSmooth::execute(Data* d)
 			m->vertex[i].pos = pos + d;
 		}
 	}
-	m->SetNormalsDirtyByVertices(index);
+	m->setNormalsDirtyByVertices(index);
 
 
 	return NULL;
@@ -45,7 +45,7 @@ void ActionModelBrushSmooth::undo(Data* d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	m->SetNormalsDirtyByVertices(index);
+	m->setNormalsDirtyByVertices(index);
 	foreachi(int i, index, ii)
 		m->vertex[i].pos = pos_old[ii];
 

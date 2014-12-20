@@ -129,6 +129,7 @@ public:
 	void updateMenu();
 	void optimizeCurrentView();
 
+	ModeBase *no_mode;
 	ModeBase *cur_mode;
 	Array<ModeBase*> mode_queue;
 

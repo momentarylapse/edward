@@ -62,7 +62,7 @@ void ModelPropertiesDialog::LoadData()
 {
 // viewing properties (LOD)
 	if (temp.auto_generate_dists)
-		data->GenerateDetailDists(temp.detail_dist);
+		data->generateDetailDists(temp.detail_dist);
 	setInt("num_lod", 3);
 	enable("num_lod", false);
 	FillDetailList();
@@ -70,7 +70,7 @@ void ModelPropertiesDialog::LoadData()
 	check("generate_skin_auto", temp.auto_generate_skin[1]);
 	// physics
 	if (temp.auto_generate_tensor)
-		temp.inertia_tensor = data->GenerateInertiaTensor(temp.mass);
+		temp.inertia_tensor = data->generateInertiaTensor(temp.mass);
 	setFloat("mass", temp.mass);
 	check("ph_active", temp.active_physics);
 	check("ph_passive", temp.passive_physics);
@@ -202,7 +202,7 @@ void ModelPropertiesDialog::OnGenerateDistsAuto()
 	Enable("detail_dist_2", !b);
 	Enable("detail_dist_3", !b);*/
 	if (b){
-		data->GenerateDetailDists(temp.detail_dist);
+		data->generateDetailDists(temp.detail_dist);
 		FillDetailList();
 	}
 }
@@ -220,7 +220,7 @@ void ModelPropertiesDialog::OnGenerateTensorAuto()
 	bool b = isChecked("generate_tensor_auto");
 	enable("tensor", !b);
 	if (b){
-		temp.inertia_tensor = data->GenerateInertiaTensor(getFloat("mass"));
+		temp.inertia_tensor = data->generateInertiaTensor(getFloat("mass"));
 		FillTensorList();
 	}
 }

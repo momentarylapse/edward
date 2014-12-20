@@ -85,8 +85,8 @@ void ModeModelMeshCreateCylinderSnake::onLeftButtonDown()
 {
 	if (ready_for_scaling){
 
-		data->PasteGeometry(*geo, mode_model_mesh->current_material);
-		data->SelectOnlySurface(&data->surface.back());
+		data->pasteGeometry(*geo, mode_model_mesh->current_material);
+		data->selectOnlySurface(&data->surface.back());
 
 		abort();
 	}else{

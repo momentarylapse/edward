@@ -134,6 +134,7 @@ void DataModel::reset()
 	fx.clear();
 	material.resize(1);
 	material[0].reset();
+	showVertices(vertex);
 
 	// skeleton
 	bone.clear();
@@ -154,21 +155,21 @@ void DataModel::reset()
 	notify();
 }
 
-void DataModel::DebugShow()
+void DataModel::debugShow()
 {
 	msg_write("------------");
 	msg_write(vertex.num);
 	msg_write(surface.num);
 	foreach(ModelSurface &s, surface){
 		msg_write(s.polygon.num);
-		s.TestSanity("Model.DebugShow");
+		s.testSanity("Model.DebugShow");
 	}
 }
 
 bool DataModel::testSanity(const string &loc)
 {
 	foreach(ModelSurface &s, surface){
-		if (!s.TestSanity(loc))
+		if (!s.testSanity(loc))
 			return false;
 	}
 	return true;
@@ -177,7 +178,9 @@ bool DataModel::testSanity(const string &loc)
 
 void DataModel::onPostActionUpdate()
 {
-	UpdateNormals();
+	showVertices(vertex);
+
+	updateNormals();
 	foreach(ModelSurface &s, surface){
 		s.pos = v_0;
 		for (int k=0;k<s.vertex.num;k++)
@@ -194,6 +197,10 @@ void DataModel::onPostActionUpdate()
 	}
 }
 
+void DataModel::showVertices(Array<ModelVertex> &vert)
+{
+	show_vertices.set_ref(vert);
+}
 
 
 int get_normal_index(vector &n)
@@ -796,7 +803,7 @@ bool DataModel::load(const string & _filename, bool deep)
 		if (f->ReadStr() == "// Polygons"){
 			beginActionGroup("LoadPolygonData");
 			foreachi(ModelVertex &v, skin[1].vertex, i)
-				AddVertex(v.pos, v.bone_index, v.normal_mode);
+				addVertex(v.pos, v.bone_index, v.normal_mode);
 			int ns = f->ReadInt();
 			for (int i=0;i<ns;i++){
 				ModelSurface s;
@@ -826,7 +833,7 @@ bool DataModel::load(const string & _filename, bool deep)
 				surface.add(s);
 			}
 			foreach(ModelSurface &s, surface)
-				s.BuildFromPolygons();
+				s.buildFromPolygons();
 			endActionGroup();
 		}
 
@@ -855,7 +862,7 @@ bool DataModel::load(const string & _filename, bool deep)
 
 		// import...
 		if (surface.num == 0)
-			ImportFromTriangleSkin(1);
+			importFromTriangleSkin(1);
 
 		foreach(ModelMove &m, move)
 			if (m.type == MOVE_TYPE_VERTEX){
@@ -891,7 +898,7 @@ bool DataModel::load(const string & _filename, bool deep)
 	return !error;
 }
 
-void DataModel::ImportFromTriangleSkin(int index)
+void DataModel::importFromTriangleSkin(int index)
 {
 	vertex.clear();
 	surface.clear();
@@ -899,7 +906,7 @@ void DataModel::ImportFromTriangleSkin(int index)
 	ModelSkin &s = skin[index];
 	beginActionGroup("ImportFromTriangleSkin");
 	foreachi(ModelVertex &v, s.vertex, i){
-		AddVertex(v.pos);
+		addVertex(v.pos);
 		vertex[i].bone_index = v.bone_index;
 	}
 	for (int i=0;i<material.num;i++){
@@ -913,14 +920,14 @@ void DataModel::ImportFromTriangleSkin(int index)
 			for (int tl=0;tl<material[i].num_textures;tl++)
 				for (int k=0;k<3;k++)
 					sv.add(t.skin_vertex[tl][k]);
-			AddPolygonWithSkin(v, sv, i);
+			addPolygonWithSkin(v, sv, i);
 		}
 	}
 
 
 	ModelSkin &ps = skin[0];
 	foreachi(ModelVertex &v, ps.vertex, i){
-		AddVertex(v.pos);
+		addVertex(v.pos);
 		vertex[i].bone_index = v.bone_index;
 	}
 	foreach(ModelPolyhedron &p, poly){
@@ -941,13 +948,13 @@ void DataModel::ImportFromTriangleSkin(int index)
 				if (!existing){
 					v.add(vertex.num);
 					vv.add(vj);
-					AddVertex(ps.vertex[vj].pos);
+					addVertex(ps.vertex[vj].pos);
 					vertex.back().bone_index = ps.vertex[vj].bone_index;
 				}
 			}
 			msg_write(ia2s(v));
 			try{
-				AddPolygon(v, 0);
+				addPolygon(v, 0);
 			}catch(GeometryException &e){
 				msg_error(e.message);
 			}
@@ -957,12 +964,12 @@ void DataModel::ImportFromTriangleSkin(int index)
 	}
 	poly.clear();
 
-	ClearSelection();
+	clearSelection();
 	endActionGroup();
 	action_manager->reset();
 }
 
-void DataModel::ExportToTriangleSkin(int index)
+void DataModel::exportToTriangleSkin(int index)
 {
 	ModelSkin &sk = skin[index];
 	sk.vertex = vertex;
@@ -973,7 +980,7 @@ void DataModel::ExportToTriangleSkin(int index)
 			continue;
 		foreach(ModelPolygon &t, s.polygon){
 			if (t.triangulation_dirty)
-				t.UpdateTriangulation(vertex);
+				t.updateTriangulation(vertex);
 			for (int i=0;i<t.side.num-2;i++){
 				ModelTriangle tt;
 				for (int k=0;k<3;k++){
@@ -991,7 +998,7 @@ void DataModel::ExportToTriangleSkin(int index)
 }
 
 
-void DataModel::GetBoundingBox(vector &min, vector &max)
+void DataModel::getBoundingBox(vector &min, vector &max)
 {
 	// bounding box (visual skin[1])
 	min = max = v_0;
@@ -1022,10 +1029,10 @@ bool DataModel::save(const string & _filename)
 		CreateSkin(&Skin[2],&Skin[3],(float)DetailFactor[2]/(float)DetailFactor[1]);*/
 
 	if (meta_data.auto_generate_dists)
-		GenerateDetailDists(meta_data.detail_dist);
+		generateDetailDists(meta_data.detail_dist);
 
 	if (meta_data.auto_generate_tensor)
-		meta_data.inertia_tensor = GenerateInertiaTensor(meta_data.mass);
+		meta_data.inertia_tensor = generateInertiaTensor(meta_data.mass);
 
 
 
@@ -1034,10 +1041,10 @@ bool DataModel::save(const string & _filename)
 		for (int j=0;j<skin[d].NumVertices;j++)
 			skin[d].vertex[j].normal_dirty = true;
 #endif
-	UpdateNormals();
+	updateNormals();
 
 	// export...
-	ExportToTriangleSkin(1);
+	exportToTriangleSkin(1);
 	for (int d=1;d<4;d++){
 		if (skin[d].sub.num != material.num){
 			skin[d].sub.resize(material.num);
@@ -1048,8 +1055,8 @@ bool DataModel::save(const string & _filename)
 
 //	PrecreatePhysicalData();
 
-	GetBoundingBox(_min, _max);
-	radius = GetRadius() * 1.1f;
+	getBoundingBox(_min, _max);
+	radius = getRadius() * 1.1f;
 
 
 	// so the materials don't get mixed up
@@ -1380,7 +1387,7 @@ bool DataModel::save(const string & _filename)
 	return true;
 }
 
-void DataModel::SetNormalsDirtyByVertices(const Array<int> &index)
+void DataModel::setNormalsDirtyByVertices(const Array<int> &index)
 {
 	foreach(ModelSurface &s, surface)
 		foreach(ModelPolygon &t, s.polygon)
@@ -1393,20 +1400,20 @@ void DataModel::SetNormalsDirtyByVertices(const Array<int> &index)
 						}
 }
 
-void DataModel::SetAllNormalsDirty()
+void DataModel::setAllNormalsDirty()
 {
 	foreach(ModelSurface &s, surface)
 		foreach(ModelPolygon &t, s.polygon)
 			t.normal_dirty = true;
 }
 
-void DataModel::UpdateNormals()
+void DataModel::updateNormals()
 {
 	foreach(ModelSurface &s, surface)
-		s.UpdateNormals();
+		s.updateNormals();
 }
 
-ModelSurface *DataModel::AddSurface(int surf_no)
+ModelSurface *DataModel::addSurface(int surf_no)
 {
 	ModelSurface s;
 	s.model = this;
@@ -1425,10 +1432,10 @@ ModelSurface *DataModel::AddSurface(int surf_no)
 }
 
 
-void DataModel::AddVertex(const vector &pos, int bone_index, int normal_mode)
+void DataModel::addVertex(const vector &pos, int bone_index, int normal_mode)
 {	execute(new ActionModelAddVertex(pos, bone_index, normal_mode));	}
 
-void DataModel::ClearSelection()
+void DataModel::clearSelection()
 {
 	foreach(ModelVertex &v, vertex)
 		v.is_selected = false;
@@ -1442,7 +1449,7 @@ void DataModel::ClearSelection()
 	notify(MESSAGE_SELECTION);
 }
 
-void DataModel::SelectionFromSurfaces()
+void DataModel::selectionFromSurfaces()
 {
 	foreach(ModelVertex &v, vertex)
 		v.is_selected = false;
@@ -1457,7 +1464,7 @@ void DataModel::SelectionFromSurfaces()
 	notify(MESSAGE_SELECTION);
 }
 
-void DataModel::SelectionFromPolygons()
+void DataModel::selectionFromPolygons()
 {
 	foreach(ModelVertex &v, vertex)
 		v.is_selected = false;
@@ -1479,7 +1486,7 @@ void DataModel::SelectionFromPolygons()
 	notify(MESSAGE_SELECTION);
 }
 
-void DataModel::SelectionFromEdges()
+void DataModel::selectionFromEdges()
 {
 	foreach(ModelVertex &v, vertex)
 		v.is_selected = false;
@@ -1500,7 +1507,7 @@ void DataModel::SelectionFromEdges()
 	notify(MESSAGE_SELECTION);
 }
 
-void DataModel::SelectionFromVertices()
+void DataModel::selectionFromVertices()
 {
 	foreach(ModelSurface &s, surface){
 		s.is_selected = true;
@@ -1521,14 +1528,14 @@ void DataModel::SelectionFromVertices()
 	notify(MESSAGE_SELECTION);
 }
 
-void DataModel::SelectOnlySurface(ModelSurface *s)
+void DataModel::selectOnlySurface(ModelSurface *s)
 {
 	foreach(ModelSurface &ss, surface)
 		ss.is_selected = (&ss == s);
-	SelectionFromSurfaces();
+	selectionFromSurfaces();
 }
 
-ModelPolygon *DataModel::AddTriangle(int a, int b, int c, int material)
+ModelPolygon *DataModel::addTriangle(int a, int b, int c, int material)
 {
 	Array<int> v;
 	v.add(a);
@@ -1541,7 +1548,7 @@ ModelPolygon *DataModel::AddTriangle(int a, int b, int c, int material)
 	return (ModelPolygon*) execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
 }
 
-ModelPolygon *DataModel::AddPolygon(Array<int> &v, int material)
+ModelPolygon *DataModel::addPolygon(Array<int> &v, int material)
 {
 	Array<vector> sv;
 	for (int i=0;i<v.num;i++){
@@ -1551,7 +1558,7 @@ ModelPolygon *DataModel::AddPolygon(Array<int> &v, int material)
 	return (ModelPolygon*)execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
 }
 
-ModelPolygon *DataModel::AddPolygonWithSkin(Array<int> &v, Array<vector> &sv, int material)
+ModelPolygon *DataModel::addPolygonWithSkin(Array<int> &v, Array<vector> &sv, int material)
 {
 	return (ModelPolygon*)execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
 }
@@ -1566,12 +1573,12 @@ int DataModel::get_surf_no(ModelSurface *s)
 	return -1;
 }
 
-ModelSurface *DataModel::SurfaceJoin(ModelSurface *a, ModelSurface *b)
+ModelSurface *DataModel::surfaceJoin(ModelSurface *a, ModelSurface *b)
 {
 	msg_db_f("SurfJoin", 1);
 
-	a->TestSanity("Join prae a");
-	b->TestSanity("Join prae b");
+	a->testSanity("Join prae a");
+	b->testSanity("Join prae b");
 
 	int ai = get_surf_no(a);
 	int bi = get_surf_no(b);
@@ -1602,12 +1609,12 @@ ModelSurface *DataModel::SurfaceJoin(ModelSurface *a, ModelSurface *b)
 	if (bi >= 0)
 		surface.erase(bi);
 	a = &surface[ai];
-	a->TestSanity("Join post a");
+	a->testSanity("Join post a");
 
 	return a;
 }
 
-void DataModel::CreateSkin(ModelSkin *src, ModelSkin *dst, float quality_factor)
+void DataModel::createSkin(ModelSkin *src, ModelSkin *dst, float quality_factor)
 {
 	msg_todo("DataModel::CreateSkin");
 }
@@ -1615,7 +1622,7 @@ void DataModel::CreateSkin(ModelSkin *src, ModelSkin *dst, float quality_factor)
 
 
 
-float DataModel::GetRadius()
+float DataModel::getRadius()
 {
 	float radius = 0;
 	foreach(ModelVertex &v, vertex)
@@ -1633,10 +1640,10 @@ int get_num_trias(DataModel *m, ModelSkin *s)
 	return n;
 }
 
-void DataModel::GenerateDetailDists(float *dist)
+void DataModel::generateDetailDists(float *dist)
 {
 	msg_db_f("GenerateDetailDists", 3);
-	float radius = GetRadius();
+	float radius = getRadius();
 	dist[0] = radius * 10;
 	dist[1] = radius * 40;
 	dist[2] = radius * 80;
@@ -1649,7 +1656,7 @@ void DataModel::GenerateDetailDists(float *dist)
 
 #define n_theta		16
 
-matrix3 DataModel::GenerateInertiaTensor(float mass)
+matrix3 DataModel::generateInertiaTensor(float mass)
 {
 	msg_db_f("GenerateInertiaTensor", 3);
 //	sModeModelSkin *p = &Skin[0];
@@ -1679,7 +1686,7 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 		t.e[i] = 0;
 
 	foreach(ModelSurface &s, surface)
-		s.BeginInsideTests();
+		s.beginInsideTests();
 
 	for (int i=0;i<n_theta;i++){
 		float x=min.x+(float(i)+0.5f)*(max.x-min.x)/n_theta;
@@ -1697,7 +1704,7 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 						inside=true;
 				}*/
 				foreach(ModelSurface &s, surface)
-					if (s.InsideTest(r)){
+					if (s.insideTest(r)){
 						inside = true;
 						break;
 					}
@@ -1717,7 +1724,7 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 
 
 	foreach(ModelSurface &s, surface)
-		s.EndInsideTests();
+		s.endInsideTests();
 
 	if (num_ds>0){
 		float f = mass / num_ds;
@@ -1732,7 +1739,7 @@ matrix3 DataModel::GenerateInertiaTensor(float mass)
 }
 
 
-int DataModel::GetNumSelectedVertices()
+int DataModel::getNumSelectedVertices()
 {
 	int r = 0;
 	/*if ((CreationMode < 0) && ((SubMode == SubModeSkeleton) || ((SubMode == SubModeAnimation) && (move->Type == MoveTypeSkeletal)))){
@@ -1747,7 +1754,7 @@ int DataModel::GetNumSelectedVertices()
 	return r;
 }
 
-int DataModel::GetNumSelectedSkinVertices()
+int DataModel::getNumSelectedSkinVertices()
 {
 	int r = 0;
 	foreach(ModelSkinVertexDummy &v, skin_vertex)
@@ -1756,7 +1763,7 @@ int DataModel::GetNumSelectedSkinVertices()
 	return r;
 }
 
-int DataModel::GetNumSelectedPolygons()
+int DataModel::getNumSelectedPolygons()
 {
 	int r = 0;
 	foreach(ModelSurface &s, surface)
@@ -1766,7 +1773,7 @@ int DataModel::GetNumSelectedPolygons()
 	return r;
 }
 
-int DataModel::GetNumSelectedSurfaces()
+int DataModel::getNumSelectedSurfaces()
 {
 	int r = 0;
 	foreach(ModelSurface &s, surface)
@@ -1775,7 +1782,7 @@ int DataModel::GetNumSelectedSurfaces()
 	return r;
 }
 
-int DataModel::GetNumSelectedBones()
+int DataModel::getNumSelectedBones()
 {
 	int r = 0;
 	foreach(ModelBone &b, bone)
@@ -1784,7 +1791,7 @@ int DataModel::GetNumSelectedBones()
 	return r;
 }
 
-int DataModel::GetNumPolygons()
+int DataModel::getNumPolygons()
 {
 	int r = 0;
 	foreach(ModelSurface &s, surface)
@@ -1807,7 +1814,7 @@ void DataModel::setAnimationData(int index, const string &name, float fps_const,
 void DataModel::animationDeleteFrame(int index, int frame)
 {	execute(new ActionModelAnimationDeleteFrame(index, frame));	}
 
-void DataModel::CopyGeometry(Geometry &geo)
+void DataModel::copyGeometry(Geometry &geo)
 {
 	geo.clear();
 
@@ -1832,64 +1839,64 @@ void DataModel::CopyGeometry(Geometry &geo)
 			}
 }
 
-void DataModel::DeleteSelection(bool greedy)
+void DataModel::deleteSelection(bool greedy)
 {	execute(new ActionModelDeleteSelection(greedy));	}
 
-void DataModel::InvertSurfaces(const Set<int> &surfaces)
+void DataModel::invertSurfaces(const Set<int> &surfaces)
 {	execute(new ActionModelSurfaceInvert(surfaces));	}
 
-void DataModel::InvertSelection()
-{	InvertSurfaces(GetSelectedSurfaces());	}
+void DataModel::invertSelection()
+{	invertSurfaces(getSelectedSurfaces());	}
 
-void DataModel::SubtractSelection()
+void DataModel::subtractSelection()
 {	execute(new ActionModelSurfaceVolumeSubtract());	}
 
-void DataModel::AndSelection()
+void DataModel::andSelection()
 {	execute(new ActionModelSurfaceVolumeAnd());	}
 
-void DataModel::AlignToGridSelection(float grid_d)
+void DataModel::alignToGridSelection(float grid_d)
 {	execute(new ActionModelAlignToGrid(this, grid_d));	}
 
-void DataModel::NearifySelectedVertices()
+void DataModel::nearifySelectedVertices()
 {	execute(new ActionModelNearifyVertices(this));	}
 
-void DataModel::CollapseSelectedVertices()
+void DataModel::collapseSelectedVertices()
 {	execute(new ActionModelCollapseVertices());	}
 
-void DataModel::SetNormalModeSelection(int mode)
+void DataModel::setNormalModeSelection(int mode)
 {	execute(new ActionModelSetNormalModeSelection(this, mode));	}
 
-void DataModel::SetMaterialSelection(int material)
+void DataModel::setMaterialSelection(int material)
 {	execute(new ActionModelSetMaterial(this, material));	}
 
-void DataModel::PasteGeometry(Geometry& geo, int default_material)
+void DataModel::pasteGeometry(Geometry& geo, int default_material)
 {	execute(new ActionModelPasteGeometry(geo, default_material));	}
 
-void DataModel::Easify(float factor)
+void DataModel::easify(float factor)
 {	execute(new ActionModelEasify(factor));	}
 
-void DataModel::SubdivideSelectedSurfaces()
-{	execute(new ActionModelSurfacesSubdivide(GetSelectedSurfaces()));	}
+void DataModel::subdivideSelectedSurfaces()
+{	execute(new ActionModelSurfacesSubdivide(getSelectedSurfaces()));	}
 
-void DataModel::BevelSelectedEdges(float radius)
+void DataModel::bevelSelectedEdges(float radius)
 {	execute(new ActionModelBevelEdges(radius));	}
 
-void DataModel::FlattenSelectedVertices()
+void DataModel::flattenSelectedVertices()
 {	execute(new ActionModelFlattenVertices(this));	}
 
-void DataModel::TriangulateSelectedVertices()
+void DataModel::triangulateSelectedVertices()
 {	execute(new ActionModelTriangulateVertices());	}
 
-void DataModel::ExtrudeSelectedPolygons(float offset)
+void DataModel::extrudeSelectedPolygons(float offset)
 {	execute(new ActionModelExtrudePolygons(offset));	}
 
-void DataModel::AutoWeldSurfaces(const Set<int> &surfaces, float epsilon)
+void DataModel::autoWeldSurfaces(const Set<int> &surfaces, float epsilon)
 {	execute(new ActionModelAutoWeldSelection(epsilon));	}
 
-void DataModel::AutoWeldSelectedSurfaces(float epsilon)
+void DataModel::autoWeldSelectedSurfaces(float epsilon)
 {	execute(new ActionModelAutoWeldSelection(epsilon));	}
 
-void DataModel::Automap(int material, int texture_level)
+void DataModel::automap(int material, int texture_level)
 {	execute(new ActionModelAutomap(material, texture_level));	}
 
 void DataModel::selectionAddEffects(const ModelEffect& effect)
@@ -1898,13 +1905,13 @@ void DataModel::selectionAddEffects(const ModelEffect& effect)
 void DataModel::editEffect(int index, const ModelEffect& effect)
 {	execute(new ActionModelEditEffect(index, effect));	}
 
-void DataModel::CutOutSelection()
+void DataModel::cutOutSelection()
 {	execute(new ActionModelCutOutPolygons());	}
 
-void DataModel::ConvertSelectionToTriangles()
+void DataModel::convertSelectionToTriangles()
 {	execute(new ActionModelTriangulateSelection());	}
 
-void DataModel::MergePolygonsSelection()
+void DataModel::mergePolygonsSelection()
 {	execute(new ActionModelMergePolygonsSelection());	}
 
 void DataModel::selectionClearEffects()
@@ -1918,7 +1925,7 @@ void ModelSelectionState::clear()
 	polygon.clear();
 }
 
-Set<int> DataModel::GetSelectedVertices()
+Set<int> DataModel::getSelectedVertices()
 {
 	Set<int> vv;
 	foreachi(ModelVertex &v, vertex, i)
@@ -1927,7 +1934,7 @@ Set<int> DataModel::GetSelectedVertices()
 	return vv;
 }
 
-Set<int> DataModel::GetSelectedSurfaces()
+Set<int> DataModel::getSelectedSurfaces()
 {
 	Set<int> ss;
 	foreachi(ModelSurface &surf, surface, i)
@@ -1936,7 +1943,7 @@ Set<int> DataModel::GetSelectedSurfaces()
 	return ss;
 }
 
-void DataModel::GetSelectionState(ModelSelectionState& s)
+void DataModel::getSelectionState(ModelSelectionState& s)
 {
 	s.clear();
 	foreachi(ModelVertex &v, vertex, i)
@@ -1958,9 +1965,9 @@ void DataModel::GetSelectionState(ModelSelectionState& s)
 	}
 }
 
-void DataModel::SetSelectionState(ModelSelectionState& s)
+void DataModel::setSelectionState(ModelSelectionState& s)
 {
-	ClearSelection();
+	clearSelection();
 	foreach(int v, s.vertex)
 		vertex[v].is_selected = true;
 	foreach(int si, s.surface)
@@ -1970,7 +1977,7 @@ void DataModel::SetSelectionState(ModelSelectionState& s)
 			surface[i].polygon[j].is_selected = true;
 	for (int i=0;i<s.edge.num;i++)
 		foreach(ModelSelectionState::EdgeSelection &es, s.edge[i]){
-			int ne = surface[i].FindEdge(es.v[0], es.v[1]);
+			int ne = surface[i].findEdge(es.v[0], es.v[1]);
 			if (ne >= 0)
 				surface[i].edge[ne].is_selected = true;
 		}

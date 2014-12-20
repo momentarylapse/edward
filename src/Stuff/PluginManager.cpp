@@ -167,22 +167,22 @@ void PluginManager::init()
 	Script::DeclareClassOffset("DataModel", "TimeScale", offsetof(DataModel, TimeScale));
 	Script::DeclareClassOffset("DataModel", "TimeParam", offsetof(DataModel, TimeParam));
 	Script::DeclareClassOffset("DataModel", "SimFrame", offsetof(DataModel, SimFrame));*/
-	Script::LinkExternal("DataModel.ClearSelection", Script::mf(&DataModel::ClearSelection));
-	Script::LinkExternal("DataModel.InvertSelection", Script::mf(&DataModel::InvertSelection));
-	Script::LinkExternal("DataModel.SelectionFromVertices", Script::mf(&DataModel::SelectionFromVertices));
-	Script::LinkExternal("DataModel.SelectionFromPolygons", Script::mf(&DataModel::SelectionFromPolygons));
-	Script::LinkExternal("DataModel.SelectionFromSurfaces", Script::mf(&DataModel::SelectionFromSurfaces));
-	Script::LinkExternal("DataModel.SelectOnlySurface", Script::mf(&DataModel::SelectOnlySurface));
-	Script::LinkExternal("DataModel.AddVertex", Script::mf(&DataModel::AddVertex));
-	Script::LinkExternal("DataModel.AddTriangle", Script::mf(&DataModel::AddTriangle));
-	Script::LinkExternal("DataModel.AddPolygon", Script::mf(&DataModel::AddPolygon));
-	Script::LinkExternal("DataModel.DeleteSelection", Script::mf(&DataModel::DeleteSelection));
-	Script::LinkExternal("DataModel.SubtractSelection", Script::mf(&DataModel::SubtractSelection));
-	Script::LinkExternal("DataModel.ConvertSelectionToTriangles", Script::mf(&DataModel::ConvertSelectionToTriangles));
-	Script::LinkExternal("DataModel.TriangulateSelectedVertices", Script::mf(&DataModel::TriangulateSelectedVertices));
-	Script::LinkExternal("DataModel.BevelSelectedVertices", Script::mf(&DataModel::BevelSelectedEdges));
-	Script::LinkExternal("DataModel.ExtrudeSelectedPolygons", Script::mf(&DataModel::ExtrudeSelectedPolygons));
-	Script::LinkExternal("DataModel.PasteGeometry", Script::mf(&DataModel::PasteGeometry));
+	Script::LinkExternal("DataModel.ClearSelection", Script::mf(&DataModel::clearSelection));
+	Script::LinkExternal("DataModel.InvertSelection", Script::mf(&DataModel::invertSelection));
+	Script::LinkExternal("DataModel.SelectionFromVertices", Script::mf(&DataModel::selectionFromVertices));
+	Script::LinkExternal("DataModel.SelectionFromPolygons", Script::mf(&DataModel::selectionFromPolygons));
+	Script::LinkExternal("DataModel.SelectionFromSurfaces", Script::mf(&DataModel::selectionFromSurfaces));
+	Script::LinkExternal("DataModel.SelectOnlySurface", Script::mf(&DataModel::selectOnlySurface));
+	Script::LinkExternal("DataModel.AddVertex", Script::mf(&DataModel::addVertex));
+	Script::LinkExternal("DataModel.AddTriangle", Script::mf(&DataModel::addTriangle));
+	Script::LinkExternal("DataModel.AddPolygon", Script::mf(&DataModel::addPolygon));
+	Script::LinkExternal("DataModel.DeleteSelection", Script::mf(&DataModel::deleteSelection));
+	Script::LinkExternal("DataModel.SubtractSelection", Script::mf(&DataModel::subtractSelection));
+	Script::LinkExternal("DataModel.ConvertSelectionToTriangles", Script::mf(&DataModel::convertSelectionToTriangles));
+	Script::LinkExternal("DataModel.TriangulateSelectedVertices", Script::mf(&DataModel::triangulateSelectedVertices));
+	Script::LinkExternal("DataModel.BevelSelectedVertices", Script::mf(&DataModel::bevelSelectedEdges));
+	Script::LinkExternal("DataModel.ExtrudeSelectedPolygons", Script::mf(&DataModel::extrudeSelectedPolygons));
+	Script::LinkExternal("DataModel.PasteGeometry", Script::mf(&DataModel::pasteGeometry));
 
 
 

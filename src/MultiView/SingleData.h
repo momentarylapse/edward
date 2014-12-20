@@ -21,6 +21,7 @@ class SingleData
 {
 public:
 	SingleData();
+	virtual ~SingleData(){}
 	int view_stage;
 	bool is_selected, m_delta, m_old, is_special;
 	vector pos;

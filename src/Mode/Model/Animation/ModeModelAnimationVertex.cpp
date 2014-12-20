@@ -8,6 +8,7 @@
 #include "ModeModelAnimationVertex.h"
 #include "ModeModelAnimation.h"
 #include "../ModeModel.h"
+#include "../Skeleton/ModeModelSkeleton.h"
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
 #include "../Mesh/MeshSelectionModePolygon.h"
@@ -52,7 +53,9 @@ void ModeModelAnimationVertex::onEnd()
 {
 	unsubscribe(data);
 	unsubscribe(multi_view);
+	data->showVertices(data->vertex);
 	multi_view->clearData(NULL);
+	mode_model_mesh->fillSelectionBuffer(data->vertex);
 }
 
 void ModeModelAnimationVertex::onCommand(const string& id)
@@ -86,18 +89,22 @@ void ModeModelAnimationVertex::onUpdate(Observable* o, const string &message)
 {
 	if (o == data){
 		updateVertices();
+		data->showVertices(mode_model_animation->vertex);
 
-		multi_view->clearData(data);
+		/*multi_view->clearData(data);
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 
 		multi_view->addData(	MVD_MODEL_VERTEX,
 				mode_model_animation->vertex,
 				NULL,
-				MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT);
+				MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT);*/
+
+		mode_model_mesh->selection_mode->updateMultiView();
 	}else if (o == multi_view){
-		foreachi(ModelVertex &v, data->vertex, i)
+		mode_model_mesh->selection_mode->updateSelection();
+		/*foreachi(ModelVertex &v, data->vertex, i)
 			v.is_selected = mode_model_animation->vertex[i].is_selected;
-		data->SelectionFromVertices();
+		data->SelectionFromVertices();*/
 	}
 }
 
@@ -112,20 +119,7 @@ void ModeModelAnimationVertex::onUpdateMenu()
 
 void ModeModelAnimationVertex::onDrawWin(MultiView::Window *win)
 {
-	msg_db_f("skin.DrawWin",4);
-
-	mode_model_mesh->drawPolygons(win, mode_model_animation->vertex);
-	NixSetShader(NULL);
-	NixSetWire(false);
-	NixSetZ(true,true);
-	NixSetAlpha(AlphaNone);
-	NixEnableLighting(true);
-	msg_db_m("----a",4);
-
-	mode_model_mesh->setMaterialMarked();
-	NixDraw3D(mode_model_mesh->vb_marked);
-	NixSetMaterial(White,White,Black,0,Black);
-	NixSetAlpha(AlphaNone);
+	mode_model_mesh->drawAll(win, mode_model_animation->vertex);
 }
 
 void ModeModelAnimationVertex::updateVertices()

@@ -67,7 +67,7 @@ void ModeModelMeshAutoweld::onCancel()
 
 void ModeModelMeshAutoweld::onOk()
 {
-	data->AutoWeldSelectedSurfaces(radius);
+	data->autoWeldSelectedSurfaces(radius);
 	abort();
 }
 

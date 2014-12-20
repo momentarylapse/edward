@@ -25,8 +25,8 @@ void *ActionModelPolygonRemoveVertex::compose(Data *d)
 
 
 	// save old polygon data
-	Array<int> v = t.GetVertices();
-	Array<vector> _sv = t.GetSkinVertices();
+	Array<int> v = t.getVertices();
+	Array<vector> _sv = t.getSkinVertices();
 	int material = t.material;
 
 	// remove vertex

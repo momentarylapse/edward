@@ -65,7 +65,7 @@ void ModeModelMeshDeform::onStart()
 
 	//ed->activate("");
 
-	data->GetBoundingBox(max, min);
+	data->getBoundingBox(max, min);
 	bool first = true;
 	foreachi(ModelVertex &v, data->vertex, i)
 		if (v.is_selected){

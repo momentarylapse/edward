@@ -135,11 +135,11 @@ void ModeModel::onCommand(const string & id)
 
 	// mainly skin debugging...
 	if (id == "detail_1")
-		data->ImportFromTriangleSkin(1);
+		data->importFromTriangleSkin(1);
 	if (id == "detail_2")
-		data->ImportFromTriangleSkin(2);
+		data->importFromTriangleSkin(2);
 	if (id == "detail_3")
-		data->ImportFromTriangleSkin(3);
+		data->importFromTriangleSkin(3);
 }
 
 
@@ -151,7 +151,7 @@ void ModeModel::onUpdateMenu()
 	ed->check("mode_model_polygon", mode_model_mesh->selection_mode_polygon->isActive());
 	ed->check("mode_model_surface", mode_model_mesh->selection_mode_surface->isActive());
 	ed->check("mode_model_texture_coord", mode_model_mesh_texture->isAncestorOf(ed->cur_mode));
-	ed->check("mode_model_mesh", mode_model_mesh->isAncestorOf(ed->cur_mode));
+	ed->check("mode_model_mesh", mode_model_mesh->isAncestorOf(ed->cur_mode) && !mode_model_mesh_texture->isAncestorOf(ed->cur_mode));
 	ed->check("mode_model_skeleton", mode_model_skeleton->isAncestorOf(ed->cur_mode));
 	ed->check("mode_model_animation", mode_model_animation->isAncestorOf(ed->cur_mode));
 }

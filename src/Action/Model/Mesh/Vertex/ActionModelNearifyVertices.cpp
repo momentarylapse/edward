@@ -29,7 +29,7 @@ void ActionModelNearifyVertices::undo(Data *d)
 	foreachi(int vi, index, i)
 		m->vertex[vi].pos = old_pos[i];
 
-	m->SetNormalsDirtyByVertices(index);
+	m->setNormalsDirtyByVertices(index);
 }
 
 
@@ -56,7 +56,7 @@ void *ActionModelNearifyVertices::execute(Data *d)
 	foreach(int i, index)
 		m->vertex[i].pos = v;
 
-	m->SetNormalsDirtyByVertices(index);
+	m->setNormalsDirtyByVertices(index);
 	return NULL;
 }
 

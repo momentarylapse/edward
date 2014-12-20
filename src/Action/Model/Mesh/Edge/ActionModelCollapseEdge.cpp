@@ -53,7 +53,7 @@ void *ActionModelCollapseEdge::compose(Data *d)
 	foreachib(ModelPolygon &t, s.polygon, i){
 		for (int k=0;k<t.side.num;k++)
 			if (t.side[k].vertex == v[1]){
-				Array<int> vv = t.GetVertices();
+				Array<int> vv = t.getVertices();
 				vv[k] = v[0];
 				addSubAction(new ActionModelSurfaceRelinkPolygon(surface, i, vv), m);
 				break;

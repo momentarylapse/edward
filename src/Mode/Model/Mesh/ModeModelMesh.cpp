@@ -97,8 +97,7 @@ void ModeModelMesh::onStart()
 	t->configure(false,true);
 
 
-	subscribe(data);
-	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
+	//subscribe(data);
 
 	updateVertexBuffers(data->vertex);
 
@@ -113,8 +112,7 @@ void ModeModelMesh::onEnter()
 
 void ModeModelMesh::onEnd()
 {
-	unsubscribe(data);
-	unsubscribe(multi_view);
+	//unsubscribe(data);
 
 	HuiToolbar *t = ed->toolbar[HuiToolbarLeft];
 	t->reset();
@@ -128,7 +126,7 @@ void ModeModelMesh::onEnd()
 void ModeModelMesh::onCommand(const string & id)
 {
 	if (id == "delete")
-		data->DeleteSelection(selection_mode == selection_mode_vertex);
+		data->deleteSelection(selection_mode == selection_mode_vertex);
 	if (id == "copy")
 		copy();
 	if (id == "paste")
@@ -138,31 +136,31 @@ void ModeModelMesh::onCommand(const string & id)
 		toggleSelectCW();
 
 	if (id == "volume_subtract")
-		data->SubtractSelection();
+		data->subtractSelection();
 	if (id == "volume_and")
-		data->AndSelection();
+		data->andSelection();
 	if (id == "invert_trias")
-		data->InvertSelection();
+		data->invertSelection();
 	if (id == "extrude_triangles")
 		ed->setMode(new ModeModelMeshExtrudePolygons(ed->cur_mode));
 	if (id == "autoweld_surfaces")
 		ed->setMode(new ModeModelMeshAutoweld(ed->cur_mode));
 	if (id == "convert_to_triangles")
-		data->ConvertSelectionToTriangles();
+		data->convertSelectionToTriangles();
 	if (id == "untriangulate_selection")
-		data->MergePolygonsSelection();
+		data->mergePolygonsSelection();
 	if (id == "cut_out")
-		data->CutOutSelection();
+		data->cutOutSelection();
 	if (id == "nearify")
-		data->NearifySelectedVertices();
+		data->nearifySelectedVertices();
 	if (id == "connect")
-		data->CollapseSelectedVertices();
+		data->collapseSelectedVertices();
 	if (id == "align_to_grid")
-		data->AlignToGridSelection(multi_view->getGridD());
+		data->alignToGridSelection(multi_view->getGridD());
 	if (id == "triangulate_selection")
-		data->TriangulateSelectedVertices();
+		data->triangulateSelectedVertices();
 	if (id == "subdivide_surfaces")
-		data->SubdivideSelectedSurfaces();
+		data->subdivideSelectedSurfaces();
 
 	if (id == "new_point")
 		ed->setMode(new ModeModelMeshCreateVertex(this));
@@ -199,7 +197,7 @@ void ModeModelMesh::onCommand(const string & id)
 	if (id == "deformation_function")
 		ed->setMode(new ModeModelMeshDeform(this));
 	if (id == "flatten_vertices")
-		data->FlattenSelectedVertices();
+		data->flattenSelectedVertices();
 
 	if (id == "select")
 		chooseMouseFunction(MultiView::ACTION_SELECT);
@@ -221,16 +219,16 @@ void ModeModelMesh::onCommand(const string & id)
 	if (id == "text_from_bg")
 		data->execute(new ActionModelSkinVerticesFromProjection(data, multi_view));
 	if (id == "automapping")
-		data->Automap(current_material, mode_model_mesh_texture->current_texture_level);
+		data->automap(current_material, mode_model_mesh_texture->current_texture_level);
 	if (id == "easify_skin")
 		easify();
 
 	if (id == "normal_this_smooth")
-		data->SetNormalModeSelection(NORMAL_MODE_SMOOTH);
+		data->setNormalModeSelection(NORMAL_MODE_SMOOTH);
 	if (id == "normal_this_hard")
-		data->SetNormalModeSelection(NORMAL_MODE_HARD);
+		data->setNormalModeSelection(NORMAL_MODE_HARD);
 	if (id == "normal_this_angular")
-		data->SetNormalModeSelection(NORMAL_MODE_ANGULAR);
+		data->setNormalModeSelection(NORMAL_MODE_ANGULAR);
 
 	if (id == "fx_new_light")
 		addEffects(FX_TYPE_LIGHT);
@@ -275,21 +273,26 @@ void ModeModelMesh::toggleMaterialDialog()
 
 void ModeModelMesh::onDraw()
 {
-	if (data->GetNumSelectedVertices() > 0){
-		ed->drawStr(20, 100, format(_("vert: %d"), data->GetNumSelectedVertices()));
-		ed->drawStr(20, 120, format(_("poly: %d"), data->GetNumSelectedPolygons()));
-		ed->drawStr(20, 140, format(_("surf: %d"), data->GetNumSelectedSurfaces()));
+	if (data->getNumSelectedVertices() > 0){
+		ed->drawStr(20, 100, format(_("vert: %d"), data->getNumSelectedVertices()));
+		ed->drawStr(20, 120, format(_("poly: %d"), data->getNumSelectedPolygons()));
+		ed->drawStr(20, 140, format(_("surf: %d"), data->getNumSelectedSurfaces()));
 	}
 }
 
 
 void ModeModelMesh::onDrawWin(MultiView::Window *win)
 {
-	drawPolygons(win, data->vertex);
+	drawAll(win, data->vertex);
+}
+
+void ModeModelMesh::drawAll(MultiView::Window *win, Array<ModelVertex> &vertex)
+{
+	drawPolygons(win, vertex);
 	mode_model_skeleton->drawSkeleton(win, data->bone, true);
 	drawSelection(win);
 
-	drawEdges(win, data->vertex, !selection_mode_edge->isActive());
+	drawEdges(win, vertex, !selection_mode_edge->isActive());
 
 	selection_mode->onDrawWin(win);
 }
@@ -311,6 +314,18 @@ void ModeModelMesh::onUpdate(Observable *o, const string &message)
 	}
 
 	fillSelectionBuffer(data->vertex);
+}
+
+void ModeModelMesh::onSelectionChange()
+{
+	selection_mode->updateSelection();
+	fillSelectionBuffer(data->vertex);
+}
+
+void ModeModelMesh::onSetMultiView()
+{
+	selection_mode->updateMultiView();
+	updateVertexBuffers(data->vertex);
 }
 
 
@@ -376,7 +391,7 @@ void ModeModelMesh::createNewMaterialForSelection()
 {
 #if 0
 	msg_db_f("CreateNewMaterialForSelection", 2);
-	if (0 == data->GetNumSelectedPolygons()){
+	if (0 == data->getNumSelectedPolygons()){
 		ed->setMessage(_("kein Dreieck ausgew&ahlt"));
 		return;
 	}
@@ -416,7 +431,7 @@ void ModeModelMesh::createNewMaterialForSelection()
 void ModeModelMesh::chooseMaterialForSelection()
 {
 	msg_db_f("ChooseMaterialForSelection", 2);
-	if (0 == data->GetNumSelectedPolygons()){
+	if (0 == data->getNumSelectedPolygons()){
 		ed->setMessage(_("kein Dreieck ausgew&ahlt"));
 		return;
 	}
@@ -430,7 +445,7 @@ void ModeModelMesh::chooseMaterialForSelection()
 	dlg->run();
 
 	if (SelectionDialogReturnIndex >= 0)
-		data->SetMaterialSelection(SelectionDialogReturnIndex);
+		data->setMaterialSelection(SelectionDialogReturnIndex);
 }
 
 void ModeModelMesh::chooseMouseFunction(int f)
@@ -460,7 +475,7 @@ void ModeModelMesh::applyMouseFunction(MultiView::MultiView *mv)
 
 void ModeModelMesh::copy()
 {
-	data->CopyGeometry(temp_geo);
+	data->copyGeometry(temp_geo);
 
 	onUpdateMenu();
 	ed->setMessage(format(_("%d Vertizes, %d Dreiecke kopiert"), temp_geo.vertex.num, temp_geo.polygon.num));
@@ -468,18 +483,18 @@ void ModeModelMesh::copy()
 
 void ModeModelMesh::paste()
 {
-	data->PasteGeometry(temp_geo, current_material);
+	data->pasteGeometry(temp_geo, current_material);
 	ed->setMessage(format(_("%d Vertizes, %d Dreiecke eingef&ugt"), temp_geo.vertex.num, temp_geo.polygon.num));
 }
 
 bool ModeModelMesh::copyable()
 {
-	return data->GetNumSelectedVertices() > 0;
+	return data->getNumSelectedVertices() > 0;
 }
 
 void ModeModelMesh::addEffects(int type)
 {
-	if (data->GetNumSelectedVertices() == 0){
+	if (data->getNumSelectedVertices() == 0){
 		ed->setMessage(_("Kein Punkt markiert!"));
 		return;
 	}
@@ -624,7 +639,7 @@ void ModeModelMesh::updateVertexBuffers(Array<ModelVertex> &vertex)
 				continue;
 			foreach(ModelPolygon &t, surf.polygon)
 				if ((t.view_stage >= multi_view->view_stage) && (t.material == mi))
-					t.AddToVertexBuffer(vertex, m.vb, m.num_textures);
+					t.addToVertexBuffer(vertex, m.vb, m.num_textures);
 		}
 	}
 }
@@ -640,7 +655,7 @@ void ModeModelMesh::fillSelectionBuffer(Array<ModelVertex> &vertex)
 		foreach(ModelPolygon &t, s.polygon)
 			/*if (t.view_stage >= ViewStage)*/{
 			if (t.is_selected)
-				t.AddToVertexBuffer(vertex, vb_marked, 1);
+				t.addToVertexBuffer(vertex, vb_marked, 1);
 		}
 	}
 }
@@ -689,8 +704,7 @@ void ModeModelMesh::setSelectionMode(MeshSelectionMode *mode)
 	selection_mode = mode;
 	mode->onStart();
 	mode->updateMultiView();
-	chooseMouseFunction(mouse_action);
-	fillSelectionBuffer(data->vertex);
+	//chooseMouseFunction(mouse_action);
 	//ed->updateMenu();
 }
 

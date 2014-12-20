@@ -37,27 +37,27 @@ public:
 	virtual bool hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data);
 	virtual bool inRect(MultiView::Window *win, rect &r, void *user_data);
 
-	void AddVertex(int v);
-	void AddPolygon(Array<int> &v, int material, Array<vector> &sv, int index = -1);
-	void RemovePolygon(int index);
-	int AddEdgeForNewPolygon(int a, int b, int tria, int side);
-	void RemoveObsoleteEdge(int index);
-	void MergeEdges();
-	void UpdateClosed();
-	void UpdateNormals();
+	void addVertex(int v);
+	void addPolygon(Array<int> &v, int material, Array<vector> &sv, int index = -1);
+	void removePolygon(int index);
+	int addEdgeForNewPolygon(int a, int b, int tria, int side);
+	void removeObsoleteEdge(int index);
+	void mergeEdges();
+	void updateClosed();
+	void updateNormals();
 
-	void BuildFromPolygons();
+	void buildFromPolygons();
 
-	int FindEdge(int vertex0, int vertex1);
+	int findEdge(int vertex0, int vertex1);
 
-	bool IsInside(const vector &p);
-	void BeginInsideTests();
-	bool InsideTest(const vector &p);
-	void EndInsideTests();
-	Array<int> GetBoundaryLoop(int v0);
-	Array<Array<int> > GetConnectedComponents();
+	bool isInside(const vector &p);
+	void beginInsideTests();
+	bool insideTest(const vector &p);
+	void endInsideTests();
+	Array<int> getBoundaryLoop(int v0);
+	Array<Array<int> > getConnectedComponents();
 
-	bool TestSanity(const string &loc);
+	bool testSanity(const string &loc);
 };
 
 #endif /* MODELSURFACE_H_ */

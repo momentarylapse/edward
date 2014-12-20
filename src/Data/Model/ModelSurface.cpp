@@ -27,7 +27,7 @@ ModelSurface::ModelSurface()
 	inside_data = NULL;
 }
 
-void ModelSurface::AddVertex(int v)
+void ModelSurface::addVertex(int v)
 {
 	int surf = model->get_surf_no(this);
 	if (surf < 0)
@@ -54,7 +54,7 @@ bool int_array_has_duplicates(Array<int> &a)
 	return false;
 }
 
-void ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, int index)
+void ModelSurface::addPolygon(Array<int> &v, int material, Array<vector> &sv, int index)
 {
 	if (int_array_has_duplicates(v))
 		throw GeometryException("AddPolygon: duplicate vertices");
@@ -70,7 +70,7 @@ void ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, in
 	}
 	for (int k=0;k<v.num;k++){
 		try{
-			t.side[k].edge = AddEdgeForNewPolygon(t.side[k].vertex, t.side[(k + 1) % v.num].vertex, polygon.num, k);
+			t.side[k].edge = addEdgeForNewPolygon(t.side[k].vertex, t.side[(k + 1) % v.num].vertex, polygon.num, k);
 			t.side[k].edge_direction = edge[t.side[k].edge].ref_count - 1;
 		}catch(GeometryException &e){
 			// failed -> clean up
@@ -85,10 +85,10 @@ void ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, in
 		}
 	}
 	for (int k=0;k<v.num;k++)
-		AddVertex(v[k]);
+		addVertex(v[k]);
 
 	// closed?
-	UpdateClosed();
+	updateClosed();
 
 	t.is_selected = false;
 	t.material = material;
@@ -111,7 +111,7 @@ void ModelSurface::AddPolygon(Array<int> &v, int material, Array<vector> &sv, in
 		polygon.add(t);
 }
 
-int ModelSurface::AddEdgeForNewPolygon(int a, int b, int tria, int side)
+int ModelSurface::addEdgeForNewPolygon(int a, int b, int tria, int side)
 {
 	foreachi(ModelEdge &e, edge, i){
 		if ((e.vertex[0] == a) && (e.vertex[1] == b)){
@@ -196,7 +196,7 @@ inline bool find_tria_top(ModelSurface *s, const Array<PolySideData> &pd, Set<in
 }
 
 
-void ModelSurface::UpdateClosed()
+void ModelSurface::updateClosed()
 {
 	// closed?
 	is_closed = true;
@@ -207,7 +207,7 @@ void ModelSurface::UpdateClosed()
 		}
 }
 
-void ModelSurface::RemoveObsoleteEdge(int index)
+void ModelSurface::removeObsoleteEdge(int index)
 {
 	msg_db_f("Surf.RemoveObsoleteEdge", 2);
 	// correct triangle references
@@ -222,11 +222,11 @@ void ModelSurface::RemoveObsoleteEdge(int index)
 	edge.erase(index);
 }
 
-void ModelSurface::MergeEdges()
+void ModelSurface::mergeEdges()
 {
 	msg_db_f("Surf.MergeEdges", 1);
 
-	TestSanity("MergeEdges prae");
+	testSanity("MergeEdges prae");
 
 	foreachi(ModelEdge &e, edge, i){
 		for (int j=i+1;j<edge.num;j++){
@@ -247,15 +247,15 @@ void ModelSurface::MergeEdges()
 						poly.side[k].edge = i;
 						poly.side[k].edge_direction = 1;
 					}
-				RemoveObsoleteEdge(j);
+				removeObsoleteEdge(j);
 				break;
 			}
 		}
 	}
-	TestSanity("MergeEdges post");
+	testSanity("MergeEdges post");
 }
 
-void ModelSurface::UpdateNormals()
+void ModelSurface::updateNormals()
 {
 	msg_db_f("Surf.UpdateNormals", 2);
 	Set<int> ee, vert;
@@ -265,7 +265,7 @@ void ModelSurface::UpdateNormals()
 		if (t.normal_dirty){
 			t.normal_dirty = false;
 
-			t.temp_normal = t.GetNormal(model->vertex);
+			t.temp_normal = t.getNormal(model->vertex);
 
 			for (int k=0;k<t.side.num;k++){
 				t.side[k].normal = t.temp_normal;
@@ -384,7 +384,7 @@ void ModelSurface::UpdateNormals()
 }
 
 
-void ModelSurface::BuildFromPolygons()
+void ModelSurface::buildFromPolygons()
 {
 	// clear
 	edge.clear();
@@ -400,20 +400,20 @@ void ModelSurface::BuildFromPolygons()
 	foreachi(ModelPolygon &t, polygon, ti){
 		// vertices
 		for (int k=0;k<t.side.num;k++)
-			AddVertex(t.side[k].vertex);
+			addVertex(t.side[k].vertex);
 
 		// edges
 		for (int k=0;k<t.side.num;k++){
-			t.side[k].edge = AddEdgeForNewPolygon(t.side[k].vertex, t.side[(k + 1) % t.side.num].vertex, ti, k);
+			t.side[k].edge = addEdgeForNewPolygon(t.side[k].vertex, t.side[(k + 1) % t.side.num].vertex, ti, k);
 			t.side[k].edge_direction = edge[t.side[k].edge].ref_count - 1;
 		}
 	}
 
-	UpdateClosed();
+	updateClosed();
 }
 
 
-void ModelSurface::RemovePolygon(int index)
+void ModelSurface::removePolygon(int index)
 {
 	ModelPolygon &t = polygon[index];
 
@@ -471,13 +471,13 @@ void ModelSurface::RemovePolygon(int index)
 
 	// remove obsolete edges
 	foreachb(int o, obsolete)
-		RemoveObsoleteEdge(o);
+		removeObsoleteEdge(o);
 
 /*	if (!TestSanity("rem poly"))
 		throw GeometryException("RemoveTriangle: TestSanity failed");*/
 }
 
-bool ModelSurface::TestSanity(const string &loc)
+bool ModelSurface::testSanity(const string &loc)
 {
 	foreach(ModelPolygon &t, polygon)
 		for (int k=0;k<t.side.num;k++)
@@ -515,17 +515,17 @@ bool ModelSurface::TestSanity(const string &loc)
 	return true;
 }
 
-bool ModelSurface::IsInside(const vector &p)
+bool ModelSurface::isInside(const vector &p)
 {
 	if (!is_closed)
 		return false;
-	BeginInsideTests();
-	bool r = InsideTest(p);
-	EndInsideTests();
+	beginInsideTests();
+	bool r = insideTest(p);
+	endInsideTests();
 	return r;
 }
 
-void ModelSurface::BeginInsideTests()
+void ModelSurface::beginInsideTests()
 {
 	if (!is_closed)
 		return;
@@ -548,12 +548,12 @@ void ModelSurface::BeginInsideTests()
 		}
 	}*/
 
-	float epsilon = model->GetRadius() * 0.001f;
+	float epsilon = model->getRadius() * 0.001f;
 	foreach(ModelPolygon &p, polygon)
 		inside_data->add(p, model, epsilon);
 }
 
-void ModelSurface::EndInsideTests()
+void ModelSurface::endInsideTests()
 {
 	if (inside_data)
 		delete(inside_data);
@@ -572,7 +572,7 @@ inline bool ray_intersect_tria(Ray &r, Ray *pr, plane *pl, vector &cp)
 	return r.intersect_plane(*pl, cp);
 }
 
-bool ModelSurface::InsideTest(const vector &p)
+bool ModelSurface::insideTest(const vector &p)
 {
 	if (!inside_data)
 		return false;
@@ -649,7 +649,7 @@ bool ModelSurface::InsideTest(const vector &p)
 
 
 
-Array<int> ModelSurface::GetBoundaryLoop(int v0)
+Array<int> ModelSurface::getBoundaryLoop(int v0)
 {
 	Array<int> loop;
 	int last = v0;
@@ -670,7 +670,7 @@ Array<int> ModelSurface::GetBoundaryLoop(int v0)
 	return loop;
 }
 
-int ModelSurface::FindEdge(int vertex0, int vertex1)
+int ModelSurface::findEdge(int vertex0, int vertex1)
 {
 	foreachi(ModelEdge &e, edge, i)
 		if (((e.vertex[0] == vertex0) && (e.vertex[1] == vertex1)) || ((e.vertex[1] == vertex0) && (e.vertex[0] == vertex1)))
@@ -678,7 +678,7 @@ int ModelSurface::FindEdge(int vertex0, int vertex1)
 	return -1;
 }
 
-Array<Array<int> > ModelSurface::GetConnectedComponents()
+Array<Array<int> > ModelSurface::getConnectedComponents()
 {
 	Array<Array<int> > cc;
 	return cc;

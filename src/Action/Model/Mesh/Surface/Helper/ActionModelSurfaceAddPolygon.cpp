@@ -31,9 +31,9 @@ void ActionModelSurfaceAddPolygon::undo(Data *d)
 	ModelSurface &s = m->surface[surface];
 
 	if (index >= 0)
-		s.RemovePolygon(index);
+		s.removePolygon(index);
 	else
-		s.RemovePolygon(s.polygon.num -1);
+		s.removePolygon(s.polygon.num -1);
 }
 
 
@@ -44,7 +44,7 @@ void *ActionModelSurfaceAddPolygon::execute(Data *d)
 
 	ModelSurface &s = m->surface[surface];
 
-	s.AddPolygon(v, material, sv, index);
+	s.addPolygon(v, material, sv, index);
 
 	if (index >= 0)
 		return &s.polygon[index];

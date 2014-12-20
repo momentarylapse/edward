@@ -334,10 +334,10 @@ void MultiViewImpl::onKeyDown()
 int get_select_mode()
 {
 	if (NixGetKey(KEY_CONTROL))
-		return MultiViewImpl::SelectAdd;
+		return MultiViewImpl::SELECT_ADD;
 	if (NixGetKey(KEY_SHIFT))
-		return MultiViewImpl::SelectInvert;
-	return MultiViewImpl::SelectSet;
+		return MultiViewImpl::SELECT_INVERT;
+	return MultiViewImpl::SELECT_SET;
 }
 
 void MultiViewImpl::onLeftButtonDown()
@@ -368,7 +368,7 @@ void MultiViewImpl::onLeftButtonDown()
 	//v = v_0;
 	if (allow_mouse_actions){
 		if (action_con->isSelecting()){
-			GetSelected(get_select_mode());
+			getSelected(get_select_mode());
 		}else if (action_con->leftButtonDown()){
 		}
 	}
@@ -506,7 +506,7 @@ void MultiViewImpl::onMouseMove()
 
 	// rectangle
 	if (sel_rect.active)
-		SelectAllInRectangle(get_select_mode());
+		selectAllInRectangle(get_select_mode());
 
 	// left button -> move data
 	if (action_con->inUse())
@@ -879,21 +879,21 @@ void MultiViewImpl::unselectAll()
 	notify(MESSAGE_SELECTION_CHANGE);
 }
 
-void MultiViewImpl::GetSelected(int mode)
+void MultiViewImpl::getSelected(int mode)
 {
 	msg_db_f("GetSelected",4);
 	notifyBegin();
 	if ((hover.index < 0) || (hover.type < 0)){
-		if (mode == SelectSet)
+		if (mode == SELECT_SET)
 			unselectAll();
 	}else{
 		SingleData* sd=MVGetSingleData(data[hover.set], hover.index);
 		if (sd->is_selected){
-			if (mode == SelectInvert){
+			if (mode == SELECT_INVERT){
 				sd->is_selected=false;
 			}
 		}else{
-			if (mode == SelectSet){
+			if (mode == SELECT_SET){
 				unselectAll();
 				sd->is_selected=true;
 			}else{
@@ -905,7 +905,7 @@ void MultiViewImpl::GetSelected(int mode)
 	notifyEnd();
 }
 
-void MultiViewImpl::SelectAllInRectangle(int mode)
+void MultiViewImpl::selectAllInRectangle(int mode)
 {
 	msg_db_f("SelAllInRect",4);
 	notifyBegin();
@@ -926,9 +926,9 @@ void MultiViewImpl::SelectAllInRectangle(int mode)
 				sd->m_delta = sd->inRect(active_win, r, d.user_data);
 
 				// add the selection layers
-				if (mode == SelectInvert)
+				if (mode == SELECT_INVERT)
 					sd->is_selected = (sd->m_old && !sd->m_delta) || (!sd->m_old && sd->m_delta);
-				else if (mode == SelectAdd)
+				else if (mode == SELECT_ADD)
 					sd->is_selected = (sd->m_old || sd->m_delta);
 				else
 					sd->is_selected = sd->m_delta;

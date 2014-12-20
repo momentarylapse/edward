@@ -33,7 +33,7 @@ void MeshSelectionModePolygon::onDrawWin(MultiView::Window *win)
 
 
 	ModelPolygon &p = data->surface[multi_view->hover.set].polygon[multi_view->hover.index];
-	p.AddToVertexBuffer(data->vertex, parent->vb_hover, 1);
+	p.addToVertexBuffer(data->vertex, parent->vb_hover, 1);
 
 	glEnable(GL_POLYGON_OFFSET_FILL);
 	glPolygonOffset(1.0f, 1.0f);
@@ -71,7 +71,7 @@ bool ModelPolygon::hover(MultiView::Window *win, vector &M, vector &tp, float &z
 	// project all points
 	Array<vector> p;
 	for (int k=0;k<side.num;k++){
-		vector pp = win->project(m->vertex[side[k].vertex].pos);
+		vector pp = win->project(m->show_vertices[side[k].vertex].pos);
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
 		p.add(pp);
@@ -79,7 +79,7 @@ bool ModelPolygon::hover(MultiView::Window *win, vector &M, vector &tp, float &z
 
 	// test all sub-triangles
 	if (triangulation_dirty)
-		UpdateTriangulation(m->vertex);
+		updateTriangulation(m->vertex);
 	for (int k=side.num-3; k>=0; k--){
 		int a = side[k].triangulation[0];
 		int b = side[k].triangulation[1];
@@ -88,9 +88,9 @@ bool ModelPolygon::hover(MultiView::Window *win, vector &M, vector &tp, float &z
 		GetBaryCentric(M, p[a], p[b], p[c], f, g);
 		// cursor in triangle?
 		if ((f>0)&&(g>0)&&(f+g<1)){
-			vector va = m->vertex[side[a].vertex].pos;
-			vector vb = m->vertex[side[b].vertex].pos;
-			vector vc = m->vertex[side[c].vertex].pos;
+			vector va = m->show_vertices[side[a].vertex].pos;
+			vector vb = m->show_vertices[side[b].vertex].pos;
+			vector vc = m->show_vertices[side[c].vertex].pos;
 			tp = va+f*(vb-va)+g*(vc-va);
 			z = win->project(tp).z;
 			return true;
@@ -115,7 +115,7 @@ bool ModelPolygon::inRect(MultiView::Window *win, rect &r, void *user_data)
 
 	// all vertices within rectangle?
 	for (int k=0;k<side.num;k++){
-		vector pp = win->project(m->vertex[side[k].vertex].pos); // mmodel->GetVertex(ia)
+		vector pp = win->project(m->show_vertices[side[k].vertex].pos); // mmodel->GetVertex(ia)
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
 		if (in_irect(pp, r))
@@ -127,7 +127,7 @@ bool ModelPolygon::inRect(MultiView::Window *win, rect &r, void *user_data)
 
 void MeshSelectionModePolygon::updateSelection()
 {
-	data->SelectionFromPolygons();
+	data->selectionFromPolygons();
 }
 
 void MeshSelectionModePolygon::updateMultiView()

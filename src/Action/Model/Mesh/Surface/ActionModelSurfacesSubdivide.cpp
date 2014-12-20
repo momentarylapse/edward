@@ -73,8 +73,8 @@ void ActionModelSurfacesSubdivide::SubdivideSurface(DataModel *m, ModelSurface *
 	Array<Array<vector> > nsv;
 	Array<int> nmat;
 	foreachib(ModelPolygon &p, s->polygon, i){
-		Array<int> v = p.GetVertices();
-		Array<vector> sv = p.GetSkinVertices();
+		Array<int> v = p.getVertices();
+		Array<vector> sv = p.getSkinVertices();
 		int mat = p.material;
 
 		// average skin vertex

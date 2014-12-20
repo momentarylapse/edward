@@ -52,7 +52,7 @@ void Geometry::addPolygon(Array<int> &v, Array<vector> &sv)
 	p.material = -1;
 	p.normal_dirty = true;
 	p.triangulation_dirty = true;
-	p.temp_normal = p.GetNormal(vertex);
+	p.temp_normal = p.getNormal(vertex);
 	for (int k=0;k<p.side.num;k++)
 		p.side[k].normal = p.temp_normal;
 	polygon.add(p);
@@ -267,7 +267,7 @@ void Geometry::preview(NixVertexBuffer *vb, int num_textures) const
 	vb->clear();
 	foreach(ModelPolygon &p, const_cast<Array<ModelPolygon>&>(polygon)){
 		p.triangulation_dirty = true;
-		p.AddToVertexBuffer(vertex, vb, num_textures);
+		p.addToVertexBuffer(vertex, vb, num_textures);
 	}
 }
 
@@ -369,7 +369,7 @@ bool Geometry::isInside(const vector &p) const
 		// real intersection
 		vector col;
 		if (t.triangulation_dirty)
-			t.UpdateTriangulation(vertex);
+			t.updateTriangulation(vertex);
 		for (int k=t.side.num-2;k>=0;k--)
 			if (LineIntersectsTriangle(v[t.side[k].triangulation[0]], v[t.side[k].triangulation[1]], v[t.side[k].triangulation[2]], p, p + e_x, col, false))
 				if (col.x > p.x)
@@ -383,7 +383,7 @@ bool Geometry::isInside(const vector &p) const
 void Geometry::invert()
 {
 	foreach(ModelPolygon &p, polygon)
-		p.Invert();
+		p.invert();
 }
 
 void Geometry::removeUnusedVertices()
@@ -426,7 +426,7 @@ bool Geometry::isMouseOver(MultiView::Window *win, vector &tp)
 			continue;
 
 		// test all sub-triangles
-		p.UpdateTriangulation(vertex);
+		p.updateTriangulation(vertex);
 		vector M = win->multi_view->m;
 		for (int k=p.side.num-3; k>=0; k--){
 			int a = p.side[k].triangulation[0];
