@@ -28,6 +28,7 @@ ModelMaterial::~ModelMaterial()
 {
 	if (vb)
 		delete(vb);
+	vb = NULL;
 }
 
 void ModelMaterial::reset()
@@ -59,6 +60,33 @@ void ModelMaterial::reset()
 
 	if (vb)
 		delete(vb);
+	vb = NULL;
+}
+
+void ModelMaterial::operator =(const ModelMaterial &m)
+{
+	user_transparency = m.user_transparency;
+	transparency_mode = m.transparency_mode;
+	alpha_destination = m.alpha_destination;
+	alpha_source = m.alpha_source;
+	alpha_factor = m.alpha_factor;
+	alpha_zbuffer = m.alpha_zbuffer;
+
+	user_color = m.user_color;
+	ambient = m.ambient;
+	diffuse = m.diffuse;
+	specular = m.specular;
+	emission = m.emission;
+	shininess = m.shininess;
+
+	material_file = m.material_file;
+	material = m.material;
+
+	num_textures = m.num_textures;
+	for (int i=0; i<MATERIAL_MAX_TEXTURES; i++){
+		texture_file[i] = m.texture_file[i];
+		texture[i] = m.texture[i];
+	}
 }
 
 void ModelMaterial::makeConsistent()

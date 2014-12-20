@@ -20,28 +20,28 @@ public:
 	ModelMaterialDialog(HuiWindow *_parent, DataModel *_data);
 	virtual ~ModelMaterialDialog();
 
-	void LoadData();
-	void ApplyData();
-	void ApplyDataDelayed();
-	void FillMaterialList();
+	void loadData();
+	void applyData();
+	void applyDataDelayed();
+	void fillMaterialList();
 
-	void OnMaterialList();
-	void OnMaterialListSelect();
-	void OnAddNewMaterial();
-	void OnAddMaterial();
-	void OnDeleteMaterial();
-	void OnApplyMaterial();
+	void onMaterialList();
+	void onMaterialListSelect();
+	void onAddNewMaterial();
+	void onAddMaterial();
+	void onDeleteMaterial();
+	void onApplyMaterial();
 
-	void OnDefaultColors();
+	void onDefaultColors();
 
-	void OnTextures();
-	void OnTexturesSelect();
-	void OnAddTextureLevel();
-	void OnDeleteTextureLevel();
-	void OnEmptyTextureLevel();
-	void OnTransparencyMode();
+	void onTextures();
+	void onTexturesSelect();
+	void onAddTextureLevel();
+	void onDeleteTextureLevel();
+	void onEmptyTextureLevel();
+	void onTransparencyMode();
 
-	void FillTextureList();
+	void fillTextureList();
 
 	void onUpdate(Observable *o, const string &message);
 

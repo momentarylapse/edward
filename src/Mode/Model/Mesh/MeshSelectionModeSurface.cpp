@@ -11,6 +11,8 @@
 #include "../../../MultiView/MultiView.h"
 #include "ModeModelMesh.h"
 #include "MeshSelectionModePolygon.h"
+#include "../ModeModel.h"
+#include <GL/gl.h>
 
 
 MeshSelectionModeSurface::MeshSelectionModeSurface(ModeModelMesh *_parent) :
@@ -35,6 +37,25 @@ void MeshSelectionModeSurface::updateMultiView()
 
 void MeshSelectionModeSurface::onDrawWin(MultiView::Window *win)
 {
+	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVD_MODEL_SURFACE))
+		return;
+
+	parent->vb_hover->clear();
+
+
+	ModelSurface &s = data->surface[multi_view->hover.index];
+	foreach(ModelPolygon &p, s.polygon)
+		p.AddToVertexBuffer(data->vertex, parent->vb_hover, 1);
+
+
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(1.0f, 1.0f);
+	mode_model->setMaterialMouseOver();
+	parent->vb_hover->draw();
+	NixSetMaterial(White,White,Black,0,Black);
+	NixSetAlpha(AlphaNone);
+	glDisable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(0, 0);
 }
 
 

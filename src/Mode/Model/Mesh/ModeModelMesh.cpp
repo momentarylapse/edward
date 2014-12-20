@@ -674,8 +674,6 @@ void ModeModelMesh::drawSelection(MultiView::Window *win)
 	glPolygonOffset(1.0f, 1.0f);
 	setMaterialMarked();
 	NixDraw3D(vb_marked);
-	setMaterialMouseOver();
-	NixDraw3D(vb_hover);
 	setMaterialCreation();
 	NixDraw3D(vb_creation);
 	NixSetMaterial(White,White,Black,0,Black);

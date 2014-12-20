@@ -20,6 +20,8 @@ public:
 	ModelMaterial(const string &filename);
 	virtual ~ModelMaterial();
 
+	void operator=(const ModelMaterial &m);
+
 	void reset();
 	void makeConsistent();
 	void checkTextures();

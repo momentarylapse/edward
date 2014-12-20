@@ -35,8 +35,14 @@ void MeshSelectionModePolygon::onDrawWin(MultiView::Window *win)
 	ModelPolygon &p = data->surface[multi_view->hover.set].polygon[multi_view->hover.index];
 	p.AddToVertexBuffer(data->vertex, parent->vb_hover, 1);
 
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(1.0f, 1.0f);
 	mode_model->setMaterialMouseOver();
 	parent->vb_hover->draw();
+	NixSetMaterial(White,White,Black,0,Black);
+	NixSetAlpha(AlphaNone);
+	glDisable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(0, 0);
 }
 
 
