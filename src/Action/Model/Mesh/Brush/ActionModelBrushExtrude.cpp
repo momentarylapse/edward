@@ -16,10 +16,6 @@ ActionModelBrushExtrude::ActionModelBrushExtrude(const vector &_pos, const vecto
 	depth = _depth;
 }
 
-ActionModelBrushExtrude::~ActionModelBrushExtrude()
-{
-}
-
 void* ActionModelBrushExtrude::execute(Data* d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);

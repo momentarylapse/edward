@@ -15,10 +15,6 @@ ActionModelBrushSmooth::ActionModelBrushSmooth(const vector &_pos, const vector 
 	radius = _radius;
 }
 
-ActionModelBrushSmooth::~ActionModelBrushSmooth()
-{
-}
-
 void* ActionModelBrushSmooth::execute(Data* d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);

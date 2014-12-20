@@ -16,7 +16,6 @@ class ActionModelBrushExtrude: public Action
 {
 public:
 	ActionModelBrushExtrude(const vector &pos, const vector &n, float radius, float depth);
-	virtual ~ActionModelBrushExtrude();
 	string name(){	return "ModelBrushExtrude";	}
 
 	void *execute(Data *d);

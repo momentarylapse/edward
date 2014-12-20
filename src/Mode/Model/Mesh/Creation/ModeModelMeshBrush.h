@@ -25,13 +25,13 @@ public:
 	virtual void onLeftButtonUp();
 	virtual void onMouseMove();
 
-	void OnDiameterSlider();
-	void OnDepthSlider();
+	void onDiameterSlider();
+	void onDepthSlider();
 
 	virtual void onDrawWin(MultiView::Window *win);
 
-	Action *GetAction();
-	void Apply();
+	Action *getAction();
+	void apply();
 
 private:
 	float base_diameter, base_depth;

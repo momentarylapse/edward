@@ -39,7 +39,6 @@ void ModeModelAnimationVertex::onStart()
 	t->configure(false,true);
 	mode_model->allowSelectionModes(true);
 
-	multi_view->clearData(NULL);
 	multi_view->allow_rect = true;
 
 	chooseMouseFunction(MultiView::ACTION_SELECT);
@@ -54,7 +53,6 @@ void ModeModelAnimationVertex::onEnd()
 	unsubscribe(data);
 	unsubscribe(multi_view);
 	data->showVertices(data->vertex);
-	multi_view->clearData(NULL);
 	mode_model_mesh->fillSelectionBuffer(data->vertex);
 }
 

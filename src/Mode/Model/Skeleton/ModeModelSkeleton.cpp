@@ -152,7 +152,6 @@ void ModeModelSkeleton::onStart()
 
 void ModeModelSkeleton::onEnd()
 {
-	multi_view->clearData(NULL);
 	unsubscribe(data);
 	unsubscribe(multi_view);
 }

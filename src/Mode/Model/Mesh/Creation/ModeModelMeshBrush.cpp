@@ -12,6 +12,7 @@
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../Action/Model/Mesh/Brush/ActionModelBrushExtrude.h"
 #include "../../../../Action/Model/Mesh/Brush/ActionModelBrushSmooth.h"
+#include "../../../../Action/Model/Mesh/Brush/ActionModelBrushComplexify.h"
 
 
 ModeModelMeshBrush::ModeModelMeshBrush(ModeBase* _parent) :
@@ -29,7 +30,7 @@ ModeModelMeshBrush::~ModeModelMeshBrush()
 }
 
 
-Action *ModeModelMeshBrush::GetAction()
+Action *ModeModelMeshBrush::getAction()
 {
 	vector pos = multi_view->hover.point;
 	vector n = data->surface[multi_view->hover.set].polygon[multi_view->hover.index].temp_normal;
@@ -44,12 +45,14 @@ Action *ModeModelMeshBrush::GetAction()
 		a = new ActionModelBrushExtrude(pos, n, radius, depth);
 	else if (type == 1)
 		a = new ActionModelBrushSmooth(pos, n, radius);
+	else if (type == 2)
+		a = new ActionModelBrushComplexify(pos, n, radius, depth);
 	return a;
 }
 
-void ModeModelMeshBrush::Apply()
+void ModeModelMeshBrush::apply()
 {
-	Action *a = GetAction();
+	Action *a = getAction();
 	data->execute(a);
 }
 
@@ -68,14 +71,15 @@ void ModeModelMeshBrush::onStart()
 	dialog->addEdit("", 215, 35, 80, 25, "depth");
 	dialog->addListView("!nobar\\type", 5, 65, 290, 80, "brush_type");
 
-	dialog->event("diameter_slider", this, &ModeModelMeshBrush::OnDiameterSlider);
-	dialog->event("depth_slider", this, &ModeModelMeshBrush::OnDepthSlider);
+	dialog->event("diameter_slider", this, &ModeModelMeshBrush::onDiameterSlider);
+	dialog->event("depth_slider", this, &ModeModelMeshBrush::onDepthSlider);
 
 	base_diameter = multi_view->cam.radius * 0.2f;
 	base_depth = multi_view->cam.radius * 0.02f;
 
 	dialog->addString("brush_type", _("Ausbeulen/Eindellen"));
 	dialog->addString("brush_type", _("Gl&atten"));
+	dialog->addString("brush_type", _("Komplexifizieren"));
 	dialog->setFloat("diameter_slider", 0.5f);
 	dialog->setFloat("depth_slider", 0.5f);
 	dialog->setString("diameter", f2s(base_diameter, 2));
@@ -88,13 +92,13 @@ void ModeModelMeshBrush::onStart()
 	ed->activate("");
 }
 
-void ModeModelMeshBrush::OnDiameterSlider()
+void ModeModelMeshBrush::onDiameterSlider()
 {
 	float x = dialog->getFloat("");
 	dialog->setString("diameter", f2s(base_diameter * exp((x - 0.5f) * 4), 2));
 }
 
-void ModeModelMeshBrush::OnDepthSlider()
+void ModeModelMeshBrush::onDepthSlider()
 {
 	float x = dialog->getFloat("");
 	dialog->setString("depth", f2s(base_depth * exp((x - 0.5f) * 2), 2));
@@ -119,7 +123,7 @@ void ModeModelMeshBrush::onLeftButtonDown()
 	last_pos = pos;
 	brushing = true;
 
-	Apply();
+	apply();
 }
 
 void ModeModelMeshBrush::onLeftButtonUp()
@@ -141,7 +145,7 @@ void ModeModelMeshBrush::onMouseMove()
 	last_pos = pos;
 	if (distance > radius * 0.7f){
 		distance = 0;
-		Apply();
+		apply();
 	}
 }
 

@@ -16,7 +16,6 @@ class ActionModelBrushSmooth: public Action
 {
 public:
 	ActionModelBrushSmooth(const vector &pos, const vector &n, float radius);
-	virtual ~ActionModelBrushSmooth();
 	string name(){	return "ModelBrushSmooth";	}
 
 	void *execute(Data *d);
