@@ -472,11 +472,14 @@ void Edward::onSendBugReport()
 void Edward::onUpdate(Observable *o, const string &message)
 {
 	msg_db_f("Edward.OnUpdate", 2);
+	//msg_write(o->getName() + " - " + message);
 	if (o->getName() == "MultiView"){
-		if (message == multi_view_3d->MESSAGE_SETTINGS_CHANGE)
+		if (message == multi_view_3d->MESSAGE_SETTINGS_CHANGE){
 			updateMenu();
-		if (message == multi_view_3d->MESSAGE_SELECTION_CHANGE)
+		}else if (message == multi_view_3d->MESSAGE_SELECTION_CHANGE){
 			cur_mode->onSelectionChange();
+			updateMenu();
+		}
 		forceRedraw();
 	}else if (o->getName() == "ActionManager"){
 		ActionManager *am = dynamic_cast<ActionManager*>(o);
@@ -486,10 +489,13 @@ void Edward::onUpdate(Observable *o, const string &message)
 			setMessage(_("Gespeichert!"));
 			updateMenu();
 		}
-	}else{
+	}else if (dynamic_cast<Data*>(o)){
 		cur_mode->onSetMultiView();
 		// data...
 		forceRedraw();
+		//if (message != o->MESSAGE_CHANGE)
+		updateMenu();
+	}else{
 		updateMenu();
 	}
 }
@@ -723,8 +729,6 @@ string title_filename(const string &filename)
 
 void Edward::updateMenu()
 {
-	if (!cur_mode)
-		return;
 	cur_mode->onUpdateMenuRecursive();
 
 	Data *d = cur_mode->getData();

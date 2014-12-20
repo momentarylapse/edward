@@ -19,12 +19,11 @@ class ActionModelBevelEdges: public ActionGroup
 {
 public:
 	ActionModelBevelEdges(float _length);
-	virtual ~ActionModelBevelEdges(){}
 	string name(){	return "ModelBevelEdges";	}
 
 	void *compose(Data *d);
 
-	void BevelSurface(DataModel *m, ModelSurface *s, int surface);
+	void bevelSurface(DataModel *m, ModelSurface *s, int surface);
 	void build_vertices(Array<VertexToCome> &vv, DataModel *m);
 	void do_poly_relink(ModelPolygon &p, PolygonRelink &r, int i, int surface, DataModel *m);
 private:

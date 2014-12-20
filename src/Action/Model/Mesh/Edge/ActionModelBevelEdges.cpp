@@ -27,9 +27,11 @@ void *ActionModelBevelEdges::compose(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	foreachi(ModelSurface &s, m->surface, i){
-		BevelSurface(m, &s, i);
+		bevelSurface(m, &s, i);
 		_foreach_it_.update();
 	}
+	//m->setNormalsDirtyByVertices(m->getSelectedVertices());
+	m->setAllNormalsDirty();
 	return NULL;
 }
 
@@ -175,7 +177,7 @@ void add_edge_neighbour(ModelSurface *s, ModelEdge &e, int k, int dir, PolygonTo
 	}
 }
 
-void ActionModelBevelEdges::BevelSurface(DataModel *m, ModelSurface *s, int surface)
+void ActionModelBevelEdges::bevelSurface(DataModel *m, ModelSurface *s, int surface)
 {
 	ev[0].resize(s->edge.num);
 	ev[1].resize(s->edge.num);

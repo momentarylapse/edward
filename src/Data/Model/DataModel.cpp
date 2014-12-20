@@ -1389,15 +1389,18 @@ bool DataModel::save(const string & _filename)
 
 void DataModel::setNormalsDirtyByVertices(const Array<int> &index)
 {
+	Set<int> sindex;
+	for (int i=0; i<index.num; i++)
+		sindex.add(index[i]);
+
 	foreach(ModelSurface &s, surface)
 		foreach(ModelPolygon &t, s.polygon)
 			for (int k=0;k<t.side.num;k++)
 				if (!t.normal_dirty)
-					for (int i=0;i<index.num;i++)
-						if (t.side[k].vertex == index[i]){
-							t.normal_dirty = true;
-							break;
-						}
+					if (sindex.contains(t.side[k].vertex)){
+						t.normal_dirty = true;
+						break;
+					}
 }
 
 void DataModel::setAllNormalsDirty()

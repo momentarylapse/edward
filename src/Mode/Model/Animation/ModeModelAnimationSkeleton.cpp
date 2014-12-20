@@ -69,7 +69,6 @@ void ModeModelAnimationSkeleton::onCommand(const string& id)
 void ModeModelAnimationSkeleton::chooseMouseFunction(int f)
 {
 	mouse_action = f;
-	ed->updateMenu();
 
 	// mouse action
 	if (mouse_action != MultiView::ACTION_SELECT){

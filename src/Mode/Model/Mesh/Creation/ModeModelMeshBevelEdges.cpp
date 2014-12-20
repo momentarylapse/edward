@@ -6,6 +6,7 @@
  */
 
 #include "ModeModelMeshBevelEdges.h"
+#include "../ModeModelMesh.h"
 #include "../../../../Action/Model/Mesh/Edge/ActionModelBevelEdges.h"
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"

@@ -170,9 +170,12 @@ bool ActionManager::preview(Action *a)
 {
 	clearPreview();
 	try{
+		data->notifyBegin();
 		a->execute_logged(data);
+		data->notifyEnd();
 		_preview = a;
 	}catch(ActionException &e){
+		data->notifyEnd();
 		e.add_parent(a->name());
 		error_message = e.message;
 		error_location = e.where();
@@ -188,7 +191,9 @@ bool ActionManager::preview(Action *a)
 void ActionManager::clearPreview()
 {
 	if (_preview){
+		data->notifyBegin();
 		_preview->undo_logged(data);
+		data->notifyEnd();
 		delete(_preview);
 		_preview = NULL;
 	}

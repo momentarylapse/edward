@@ -90,7 +90,6 @@ void ModeModelSkeleton::removeSubModel()
 void ModeModelSkeleton::chooseMouseFunction(int f)
 {
 	mouse_action = f;
-	ed->updateMenu();
 
 	// mouse action
 	if (mouse_action != MultiView::ACTION_SELECT){

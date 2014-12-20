@@ -305,6 +305,7 @@ void ModeModelMesh::onUpdate(Observable *o, const string &message)
 	if (current_material >= data->material.num)
 		setCurrentMaterial(data->material.num - 1);
 	//data->DebugShow();
+	//msg_write(o->getName() + " - " + message);
 
 	if (o == data){
 		selection_mode->updateMultiView();
@@ -451,7 +452,6 @@ void ModeModelMesh::chooseMaterialForSelection()
 void ModeModelMesh::chooseMouseFunction(int f)
 {
 	mouse_action = f;
-	ed->updateMenu();
 	applyMouseFunction(ed->multi_view_3d);
 	applyMouseFunction(ed->multi_view_2d);
 }
@@ -711,5 +711,5 @@ void ModeModelMesh::setSelectionMode(MeshSelectionMode *mode)
 void ModeModelMesh::toggleSelectCW()
 {
 	select_cw = !select_cw;
-	ed->updateMenu();
+	notify();
 }

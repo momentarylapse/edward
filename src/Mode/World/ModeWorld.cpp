@@ -529,7 +529,6 @@ void ModeWorld::SetMouseAction(int mode)
 		multi_view->setMouseAction("ActionWorldRotateObjects", mode);
 	else
 		multi_view->setMouseAction("", mode);
-	ed->updateMenu();
 }
 
 

@@ -134,6 +134,7 @@ void MultiViewImpl::resetMouseAction()
 {
 	action_con->cur_action = NULL;
 	action_con->action.reset();
+	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
 void MultiViewImpl::clearData(Data *_data)
@@ -745,6 +746,7 @@ void MultiViewImpl::setMouseAction(const string & name, int mode)
 	action_con->disable();
 	if (!action_con->isSelecting())
 		action_con->enable();
+	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
 void MultiViewImpl::selectAll()
