@@ -55,23 +55,24 @@ public:
 
 	// send events to multi_view first, then call derived event handlers
 	//   (to be called by edward)
-	virtual void onMouseMoveRecursive(bool multi_view_handled = false);
-	virtual void onMouseWheelRecursive(bool multi_view_handled = false);
-	virtual void onMouseEnterRecursive(bool multi_view_handled = false);
-	virtual void onMouseLeaveRecursive(bool multi_view_handled = false);
-	virtual void onLeftButtonDownRecursive(bool multi_view_handled = false);
-	virtual void onLeftButtonUpRecursive(bool multi_view_handled = false);
-	virtual void onMiddleButtonDownRecursive(bool multi_view_handled = false);
-	virtual void onMiddleButtonUpRecursive(bool multi_view_handled = false);
-	virtual void onRightButtonDownRecursive(bool multi_view_handled = false);
-	virtual void onRightButtonUpRecursive(bool multi_view_handled = false);
-	virtual void onKeyDownRecursive(bool multi_view_handled = false);
-	virtual void onKeyUpRecursive(bool multi_view_handled = false);
-	virtual void onCommandRecursive(const string &id, bool multi_view_handled = false);
-	virtual void onUpdateMenuRecursive(bool multi_view_handled = false);
+	virtual void onMouseMoveMeta();
+	virtual void onMouseWheelMeta();
+	virtual void onMouseEnterMeta();
+	virtual void onMouseLeaveMeta();
+	virtual void onLeftButtonDownMeta();
+	virtual void onLeftButtonUpMeta();
+	virtual void onMiddleButtonDownMeta();
+	virtual void onMiddleButtonUpMeta();
+	virtual void onRightButtonDownMeta();
+	virtual void onRightButtonUpMeta();
+	virtual void onKeyDownMeta();
+	virtual void onKeyUpMeta();
+	virtual void onCommandMeta(const string &id);
+	virtual void onCommandRecursive(const string &id);
+	virtual void onUpdateMenuMeta();
+	virtual void onUpdateMenuRecursive();
 
-	virtual void onDrawRecursive(bool multi_view_handled = false);
-	virtual void onDrawWinRecursive(MultiView::Window *win);
+	virtual void onDrawMeta();
 
 	ModeBase *getRoot();
 	bool isAncestorOf(ModeBase *m);

@@ -105,6 +105,7 @@ void ModeModelMesh::onStart()
 	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
 
 	setSelectionMode(selection_mode);
+	mode_model->allowSelectionModes(true);
 }
 
 void ModeModelMesh::onEnter()
@@ -691,8 +692,6 @@ void ModeModelMesh::drawSelection(MultiView::Window *win)
 
 void ModeModelMesh::setSelectionMode(MeshSelectionMode *mode)
 {
-	if ((!this->isAncestorOf(ed->cur_mode)) || (mode_model_mesh_texture->isAncestorOf(ed->cur_mode)))
-		ed->setMode(this);
 	if (selection_mode)
 		selection_mode->onEnd();
 	selection_mode = mode;

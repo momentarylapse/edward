@@ -26,22 +26,22 @@ void ModeWorldCreateTerrain::onStart()
 	dialog = HuiCreateResourceDialog("new_terrain_dialog", ed);
 	dialog->show();
 
-	dialog->event("cancel", this, &ModeWorldCreateTerrain::OnClose);
-	dialog->event("hui:close", this, &ModeWorldCreateTerrain::OnClose);
-	dialog->event("ok", this, &ModeWorldCreateTerrain::OnOk);
+	dialog->event("cancel", this, &ModeWorldCreateTerrain::onClose);
+	dialog->event("hui:close", this, &ModeWorldCreateTerrain::onClose);
+	dialog->event("ok", this, &ModeWorldCreateTerrain::onOk);
 
 	//dialog->event("height_image_find", this, &ModeWorldCreateTerrain::OnFindHeightmap);
-	dialog->event("num_x", this, &ModeWorldCreateTerrain::OnSizeChange);
-	dialog->event("num_z", this, &ModeWorldCreateTerrain::OnSizeChange);
-	dialog->event("terrain_x", this, &ModeWorldCreateTerrain::OnSizeChange);
-	dialog->event("terrain_z", this, &ModeWorldCreateTerrain::OnSizeChange);
+	dialog->event("num_x", this, &ModeWorldCreateTerrain::onSizeChange);
+	dialog->event("num_z", this, &ModeWorldCreateTerrain::onSizeChange);
+	dialog->event("terrain_x", this, &ModeWorldCreateTerrain::onSizeChange);
+	dialog->event("terrain_z", this, &ModeWorldCreateTerrain::onSizeChange);
 
 	dialog->setFloat("height_factor", 100);
 	dialog->setInt("num_x", 64);
 	dialog->setInt("num_z", 64);
 	dialog->setFloat("terrain_x", multi_view->cam.radius);//1000);
 	dialog->setFloat("terrain_z", multi_view->cam.radius);//1000);
-	OnSizeChange();
+	onSizeChange();
 
 }
 
@@ -51,7 +51,7 @@ void ModeWorldCreateTerrain::onEnd()
 	dialog = NULL;
 }
 
-void ModeWorldCreateTerrain::OnOk()
+void ModeWorldCreateTerrain::onOk()
 {
 	vector size = vector(dialog->getFloat("terrain_x"), 0, dialog->getFloat("terrain_z"));
 	vector pos = multi_view->cam.pos - size / 2;
@@ -61,12 +61,12 @@ void ModeWorldCreateTerrain::OnOk()
 	abort();
 }
 
-void ModeWorldCreateTerrain::OnClose()
+void ModeWorldCreateTerrain::onClose()
 {
 	abort();
 }
 
-void ModeWorldCreateTerrain::OnSizeChange()
+void ModeWorldCreateTerrain::onSizeChange()
 {
 	dialog->setFloat("pattern_x", dialog->getFloat("terrain_x") / (float)dialog->getInt("num_x"));
 	dialog->setFloat("pattern_z", dialog->getFloat("terrain_z") / (float)dialog->getInt("num_z"));
@@ -74,6 +74,7 @@ void ModeWorldCreateTerrain::OnSizeChange()
 
 void ModeWorldCreateTerrain::onDrawWin(MultiView::Window *win)
 {
+	parent->onDrawWin(win);
 }
 
 

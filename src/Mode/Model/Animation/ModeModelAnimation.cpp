@@ -11,6 +11,7 @@
 #include "ModeModelAnimationNone.h"
 #include "ModeModelAnimationSkeleton.h"
 #include "ModeModelAnimationVertex.h"
+#include "../ModeModel.h"
 #include "../Dialog/ModelAnimationDialog.h"
 #include "../Mesh/MeshSelectionModePolygon.h"
 
@@ -75,6 +76,7 @@ void ModeModelAnimation::onStart()
 	updateAnimation();
 	Observer::subscribe(data);
 	onUpdate(data, "");
+	mode_model->allowSelectionModes(false);
 
 	timer.reset();
 	HuiRunLaterM(0.200f, this, &ModeModelAnimation::idleFunction);

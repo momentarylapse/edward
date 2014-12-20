@@ -132,6 +132,8 @@ void ModeModelMeshCreateCylinderSnake::onKeyDown()
 
 void ModeModelMeshCreateCylinderSnake::onDrawWin(MultiView::Window *win)
 {
+	parent->onDrawWin(win);
+
 	if (pos.num > 0){
 		NixEnableLighting(false);
 		// control polygon
@@ -159,7 +161,7 @@ void ModeModelMeshCreateCylinderSnake::onDrawWin(MultiView::Window *win)
 	if (ready_for_scaling){
 		geo->preview(VBTemp);
 		NixEnableLighting(true);
-		mode_model->SetMaterialCreation();
+		mode_model->setMaterialCreation();
 		NixDraw3D(VBTemp);
 	}else if (pos.num > 2){
 		vector pp = multi_view->mouse_win->project(pos[0]);

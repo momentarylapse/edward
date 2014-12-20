@@ -6,6 +6,7 @@
  */
 
 #include "ModeModelSkeletonAttachVertices.h"
+#include "../../ModeModel.h"
 #include "../../../../Action/Model/Skeleton/ActionModelAttachVerticesToBone.h"
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
@@ -24,6 +25,10 @@ void ModeModelSkeletonAttachVertices::onStart()
 	// relative to absolute pos
 	foreach(ModelVertex &v, data->vertex)
 		v.is_selected = (v.bone_index == bone_index);
+	data->SelectionFromVertices();
+
+	mode_model->allowSelectionModes(true);
+	mode_model_mesh->selection_mode->updateMultiView();
 
 	subscribe(data);
 	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
@@ -42,14 +47,9 @@ void ModeModelSkeletonAttachVertices::onEnd()
 void ModeModelSkeletonAttachVertices::onUpdate(Observable *o, const string &message)
 {
 	if (o == data){
-		multi_view->clearData(data);
-		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		multi_view->addData(	MVD_MODEL_VERTEX,
-				data->vertex,
-				NULL,
-				MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
+		mode_model_mesh->selection_mode->updateMultiView();
 	}else if (o == multi_view){
-		data->SelectionFromVertices();
+		mode_model_mesh->selection_mode->updateSelection();
 		mode_model_mesh->fillSelectionBuffers(data->vertex);
 	}
 }
@@ -69,7 +69,7 @@ void ModeModelSkeletonAttachVertices::onKeyDown()
 
 void ModeModelSkeletonAttachVertices::onDrawWin(MultiView::Window *win)
 {
-	mode_model_mesh->drawSelection(win);
+	mode_model_mesh->onDrawWin(win);
 }
 
 

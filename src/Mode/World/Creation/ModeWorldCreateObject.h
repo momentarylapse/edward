@@ -21,7 +21,7 @@ public:
 	virtual void onStart();
 	virtual void onEnd();
 
-	void OnFindObject();
+	void onFindObject();
 
 	void onLeftButtonDown();
 

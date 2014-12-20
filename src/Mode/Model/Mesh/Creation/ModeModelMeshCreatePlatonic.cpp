@@ -92,8 +92,10 @@ void ModeModelMeshCreatePlatonic::onLeftButtonDown()
 
 void ModeModelMeshCreatePlatonic::onDrawWin(MultiView::Window *win)
 {
+	parent->onDrawWin(win);
+
 	if (pos_chosen){
-		mode_model->SetMaterialCreation();
+		mode_model->setMaterialCreation();
 
 		geo->preview(VBTemp);
 		NixDraw3D(VBTemp);

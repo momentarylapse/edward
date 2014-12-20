@@ -15,7 +15,8 @@ class ModeCreationBase : public ModeBase
 public:
 	ModeCreationBase(const string &_name, ModeBase *_parent);
 	virtual ~ModeCreationBase(){}
-	virtual void onDrawRecursive(bool multi_view_handled = false);
+	virtual void onDrawMeta();
+	virtual void onDrawWin(MultiView::Window *win);
 	virtual void abort();
 	string message;
 	HuiWindow *dialog;

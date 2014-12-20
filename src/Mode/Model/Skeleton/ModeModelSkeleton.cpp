@@ -9,6 +9,7 @@
 #include "../../../MultiView/MultiView.h"
 #include "../../../MultiView/Window.h"
 #include "ModeModelSkeleton.h"
+#include "../ModeModel.h"
 #include "../Animation/ModeModelAnimation.h"
 #include "Creation/ModeModelSkeletonCreateBone.h"
 #include "Creation/ModeModelSkeletonAttachVertices.h"
@@ -139,6 +140,7 @@ void ModeModelSkeleton::onStart()
 	multi_view->setAllowRect(true);
 
 	chooseMouseFunction(MultiView::ACTION_SELECT_AND_MOVE);
+	mode_model->allowSelectionModes(false);
 
 
 	// left -> translate

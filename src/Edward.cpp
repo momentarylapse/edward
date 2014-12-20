@@ -117,27 +117,27 @@ void Edward::exit()
 	HuiEnd();
 }
 
-#define IMPLEMENT_EVENT(event, pre_event, param_list, param)	\
-void Edward::event() \
+#define IMPLEMENT_EVENT(EVENT) \
+void Edward::EVENT() \
 { \
 	if (cur_mode) \
-		cur_mode->pre_event(); \
+		cur_mode->EVENT##Meta(); \
 	if (force_redraw) \
 		onDraw(); \
 }
 
-IMPLEMENT_EVENT(onKeyDown, onKeyDownRecursive, , )
-IMPLEMENT_EVENT(onKeyUp, onKeyUpRecursive, , )
-IMPLEMENT_EVENT(onMouseMove, onMouseMoveRecursive, , )
-IMPLEMENT_EVENT(onMouseWheel, onMouseWheelRecursive, , )
-IMPLEMENT_EVENT(onMouseEnter, onMouseEnterRecursive, , )
-IMPLEMENT_EVENT(onMouseLeave, onMouseLeaveRecursive, , )
-IMPLEMENT_EVENT(onLeftButtonDown, onLeftButtonDownRecursive, , )
-IMPLEMENT_EVENT(onLeftButtonUp, onLeftButtonUpRecursive, , )
-IMPLEMENT_EVENT(onMiddleButtonDown, onMiddleButtonDownRecursive, , )
-IMPLEMENT_EVENT(onMiddleButtonUp, onMiddleButtonUpRecursive, , )
-IMPLEMENT_EVENT(onRightButtonDown, onRightButtonDownRecursive, , )
-IMPLEMENT_EVENT(onRightButtonUp, onRightButtonUpRecursive, , )
+IMPLEMENT_EVENT(onKeyDown)
+IMPLEMENT_EVENT(onKeyUp)
+IMPLEMENT_EVENT(onMouseMove)
+IMPLEMENT_EVENT(onMouseWheel)
+IMPLEMENT_EVENT(onMouseEnter)
+IMPLEMENT_EVENT(onMouseLeave)
+IMPLEMENT_EVENT(onLeftButtonDown)
+IMPLEMENT_EVENT(onLeftButtonUp)
+IMPLEMENT_EVENT(onMiddleButtonDown)
+IMPLEMENT_EVENT(onMiddleButtonUp)
+IMPLEMENT_EVENT(onRightButtonDown)
+IMPLEMENT_EVENT(onRightButtonUp)
 
 void Edward::onEvent()
 {
@@ -145,7 +145,7 @@ void Edward::onEvent()
 	if (id.num == 0)
 		id = HuiGetEvent()->message;
 	if (cur_mode)
-		cur_mode->onCommandRecursive(id);
+		cur_mode->onCommandMeta(id);
 	onCommand(id);
 }
 
@@ -382,7 +382,7 @@ bool Edward::handleArguments(Array<string> arg)
 		WholeWindow=true;
 		mmodel->OptimizeView();*/
 	}else if (ext == "3ds"){
-		mode_model->ImportLoad3ds(param);
+		mode_model->importLoad3ds(param);
 	}else{
 		errorBox(_("Unbekannte Dateinamenerweiterung: ") + param);
 		HuiEnd();
@@ -527,7 +527,7 @@ void Edward::onDraw()
 {
 	NixStart();
 	if (cur_mode){
-		cur_mode->onDrawRecursive();
+		cur_mode->onDrawMeta();
 	}else{
 		NixResetToColor(Black);
 		NixDrawStr(100, 100, "no mode...");

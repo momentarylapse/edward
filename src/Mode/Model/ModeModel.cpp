@@ -24,7 +24,7 @@ ModeModel *mode_model = NULL;
 ModeModel::ModeModel() :
 	Mode<DataModel>("Model", NULL, new DataModel, NULL, "")
 {
-	PropertiesDialog = NULL;
+	properties_dialog = NULL;
 
 	mode_model_mesh = new ModeModelMesh(this);
 	mode_model_skeleton = new ModeModelSkeleton(this);
@@ -56,8 +56,9 @@ void ModeModel::onStart()
 	t->addSeparator();
 	t->addItemCheckable(_("Vertices"),dir + "model_vertex.svg","mode_model_vertex");
 	t->addItemCheckable(_("Kanten"),dir + "model_edge.svg","mode_model_edge");
-	t->addItemCheckable(_("Polygone"),dir + "model_polygon.svg","mode_model_triangle");
+	t->addItemCheckable(_("Polygone"),dir + "model_polygon.svg","mode_model_polygon");
 	t->addItemCheckable(_("Oberfl&achen"),dir + "model_surface.svg","mode_model_surface");
+	t->addSeparator();
 	t->addItemCheckable(_("Textur-Koordinaten"),dir + "model_skin.svg","mode_model_texture_coord");
 	t->addSeparator();
 	t->addItemCheckable(_("Mesh"), dir + "model_mesh.svg", "mode_model_mesh");
@@ -81,9 +82,9 @@ void ModeModel::onEnter()
 
 void ModeModel::onEnd()
 {
-	if (PropertiesDialog)
-		delete(PropertiesDialog);
-	PropertiesDialog = NULL;
+	if (properties_dialog)
+		delete(properties_dialog);
+	properties_dialog = NULL;
 
 	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
 	t->reset();
@@ -104,7 +105,7 @@ void ModeModel::onCommand(const string & id)
 		saveAs();
 
 	if (id == "import_from_3ds")
-		ImportOpen3ds();
+		importOpen3ds();
 
 	// TODO -> edward?
 	if (id == "undo")
@@ -118,7 +119,7 @@ void ModeModel::onCommand(const string & id)
 		mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_vertex);
 	if (id == "mode_model_edge")
 		mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_edge);
-	if (id == "mode_model_triangle")
+	if (id == "mode_model_polygon")
 		mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_polygon);
 	if (id == "mode_model_surface")
 		mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_surface);
@@ -130,7 +131,7 @@ void ModeModel::onCommand(const string & id)
 		ed->setMode(mode_model_skeleton);
 		//SetSubMode(SubModeTextures);
 	if (id == "mode_properties")
-		ExecutePropertiesDialog();
+		executePropertiesDialog();
 
 	// mainly skin debugging...
 	if (id == "detail_1")
@@ -147,7 +148,7 @@ void ModeModel::onUpdateMenu()
 {
 	ed->check("mode_model_vertex", mode_model_mesh->selection_mode_vertex->isActive());
 	ed->check("mode_model_edge", mode_model_mesh->selection_mode_edge->isActive());
-	ed->check("mode_model_triangle", mode_model_mesh->selection_mode_polygon->isActive());
+	ed->check("mode_model_polygon", mode_model_mesh->selection_mode_polygon->isActive());
 	ed->check("mode_model_surface", mode_model_mesh->selection_mode_surface->isActive());
 	ed->check("mode_model_texture_coord", mode_model_mesh_texture->isAncestorOf(ed->cur_mode));
 	ed->check("mode_model_mesh", mode_model_mesh->isAncestorOf(ed->cur_mode));
@@ -157,19 +158,19 @@ void ModeModel::onUpdateMenu()
 
 
 
-void ModeModel::SetMaterialSelected()
+void ModeModel::setMaterialSelected()
 {
 	NixSetAlpha(AlphaMaterial);
 	NixSetMaterial(Black,color(0.3f,0,0,0),Black,0,Red);
 }
 
-void ModeModel::SetMaterialMouseOver()
+void ModeModel::setMaterialMouseOver()
 {
 	NixSetAlpha(AlphaMaterial);
 	NixSetMaterial(Black,color(0.3f,0,0,0),Black,0,White);
 }
 
-void ModeModel::SetMaterialCreation()
+void ModeModel::setMaterialCreation()
 {
 	NixSetAlpha(AlphaMaterial);
 	NixSetMaterial(Black, color(0.3f,0.3f,1,0.3f), Black, 0, color(1,0.1f,0.4f,0.1f));
@@ -212,16 +213,16 @@ bool ModeModel::saveAs()
 	return false;
 }
 
-bool ModeModel::ImportOpen3ds()
+bool ModeModel::importOpen3ds()
 {
 	if (!ed->allowTermination())
 		return false;
 	if (!ed->fileDialog(FD_FILE, false, false))
 		return false;
-	return ImportLoad3ds(ed->dialog_file_complete);
+	return importLoad3ds(ed->dialog_file_complete);
 }
 
-bool ModeModel::ImportLoad3ds(const string &filename)
+bool ModeModel::importLoad3ds(const string &filename)
 {
 	Importer3ds *im = new Importer3ds;
 	if (!im->Import(data, filename))
@@ -232,14 +233,21 @@ bool ModeModel::ImportLoad3ds(const string &filename)
 	return true;
 }
 
-void ModeModel::ExecutePropertiesDialog()
+void ModeModel::executePropertiesDialog()
 {
-	if (PropertiesDialog)
+	if (properties_dialog)
 		return;
 
-	PropertiesDialog = new ModelPropertiesDialog(ed, true, data);
+	properties_dialog = new ModelPropertiesDialog(ed, true, data);
 
-	PropertiesDialog->show();
+	properties_dialog->show();
 	//PropertiesDialog->run();
 }
 
+void ModeModel::allowSelectionModes(bool allow)
+{
+	ed->enable("mode_model_vertex", allow);
+	ed->enable("mode_model_edge", allow);
+	ed->enable("mode_model_polygon", allow);
+	ed->enable("mode_model_surface", allow);
+}

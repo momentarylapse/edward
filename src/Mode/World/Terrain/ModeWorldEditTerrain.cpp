@@ -25,7 +25,7 @@ ModeWorldEditTerrain::~ModeWorldEditTerrain()
 }
 
 
-Action *ModeWorldEditTerrain::GetAction(const vector &pos)
+Action *ModeWorldEditTerrain::getAction(const vector &pos)
 {
 	float radius = dialog->getFloat("diameter") / 2;
 	float depth = dialog->getFloat("depth") * BRUSH_PARTITION;
@@ -39,9 +39,9 @@ Action *ModeWorldEditTerrain::GetAction(const vector &pos)
 	return a;
 }
 
-void ModeWorldEditTerrain::Apply(const vector &pos)
+void ModeWorldEditTerrain::apply(const vector &pos)
 {
-	Action *a = GetAction(pos);
+	Action *a = getAction(pos);
 	data->execute(a);
 	last_pos = pos;
 }
@@ -61,8 +61,8 @@ void ModeWorldEditTerrain::onStart()
 	dialog->addEdit("", 215, 35, 80, 25, "depth");
 	dialog->addListView("!nobar\\type", 5, 65, 290, 80, "brush_type");
 
-	dialog->event("diameter_slider", this, &ModeWorldEditTerrain::OnDiameterSlider);
-	dialog->event("depth_slider", this, &ModeWorldEditTerrain::OnDepthSlider);
+	dialog->event("diameter_slider", this, &ModeWorldEditTerrain::onDiameterSlider);
+	dialog->event("depth_slider", this, &ModeWorldEditTerrain::onDepthSlider);
 
 	base_diameter = multi_view->cam.radius * 0.2f;
 	base_depth = multi_view->cam.radius * 0.02f;
@@ -90,13 +90,13 @@ void ModeWorldEditTerrain::onEnd()
 		data->endActionGroup();
 }
 
-void ModeWorldEditTerrain::OnDiameterSlider()
+void ModeWorldEditTerrain::onDiameterSlider()
 {
 	float x = dialog->getFloat("");
 	dialog->setString("diameter", f2s(base_diameter * exp((x - 0.5f) * 4), 2));
 }
 
-void ModeWorldEditTerrain::OnDepthSlider()
+void ModeWorldEditTerrain::onDepthSlider()
 {
 	float x = dialog->getFloat("");
 	dialog->setString("depth", f2s(base_depth * exp((x - 0.5f) * 2), 2));
@@ -114,7 +114,7 @@ void ModeWorldEditTerrain::onMouseMove()
 	dir.normalize();
 	float dl = radius * BRUSH_PARTITION;
 	while ((pos - last_pos).length() > dl){
-		Apply(last_pos + dl * dir);
+		apply(last_pos + dl * dir);
 	}
 }
 
@@ -126,7 +126,7 @@ void ModeWorldEditTerrain::onLeftButtonDown()
 	vector pos = multi_view->hover.point;
 	brushing = true;
 
-	Apply(pos);
+	apply(pos);
 }
 
 void ModeWorldEditTerrain::onLeftButtonUp()
@@ -142,6 +142,7 @@ void ModeWorldEditTerrain::onCommand(const string& id)
 
 void ModeWorldEditTerrain::onDrawWin(MultiView::Window* win)
 {
+	parent->onDrawWin(win);
 	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVD_WORLD_TERRAIN))
 		return;
 	vector pos = multi_view->hover.point;

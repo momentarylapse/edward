@@ -24,55 +24,52 @@ ModeBase::~ModeBase()
 {
 }
 
-void ModeBase::onCommandRecursive(const string & id, bool multi_view_handled)
+void ModeBase::onCommandRecursive(const string & id)
 {
-	if ((multi_view) && (!multi_view_handled)){
-		((MultiView::MultiViewImpl*)multi_view)->onCommand(id);
-		multi_view_handled = true;
-	}
 	if (parent)
-		parent->onCommandRecursive(id, multi_view_handled);
+		parent->onCommandRecursive(id);
 	onCommand(id);
 }
 
-#define CREATE_EVENT_HANDLER(NAME_REC, NAME)	\
-void ModeBase::NAME_REC(bool multi_view_handled) \
+void ModeBase::onCommandMeta(const string & id)
+{
+	if (multi_view)
+		((MultiView::MultiViewImpl*)multi_view)->onCommand(id);
+	onCommandRecursive(id);
+}
+
+#define CREATE_EVENT_HANDLER(NAME_META, NAME)	\
+void ModeBase::NAME_META() \
 { \
-	if ((multi_view) && (!multi_view_handled)){ \
+	if (multi_view) \
 		((MultiView::MultiViewImpl*)multi_view)->NAME(); \
-		multi_view_handled = true; \
-	} \
-	if (parent) \
-		parent->NAME_REC(multi_view_handled); \
 	NAME(); \
 }
 
-CREATE_EVENT_HANDLER(onLeftButtonDownRecursive, onLeftButtonDown)
-CREATE_EVENT_HANDLER(onLeftButtonUpRecursive, onLeftButtonUp)
-CREATE_EVENT_HANDLER(onMiddleButtonDownRecursive, onMiddleButtonDown)
-CREATE_EVENT_HANDLER(onMiddleButtonUpRecursive, onMiddleButtonUp)
-CREATE_EVENT_HANDLER(onRightButtonDownRecursive, onRightButtonDown)
-CREATE_EVENT_HANDLER(onRightButtonUpRecursive, onRightButtonUp)
-CREATE_EVENT_HANDLER(onMouseMoveRecursive, onMouseMove)
-CREATE_EVENT_HANDLER(onMouseWheelRecursive, onMouseWheel)
-CREATE_EVENT_HANDLER(onMouseEnterRecursive, onMouseEnter)
-CREATE_EVENT_HANDLER(onMouseLeaveRecursive, onMouseLeave)
-CREATE_EVENT_HANDLER(onKeyDownRecursive, onKeyDown)
-CREATE_EVENT_HANDLER(onKeyUpRecursive, onKeyUp)
-CREATE_EVENT_HANDLER(onDrawRecursive, onDraw)
+CREATE_EVENT_HANDLER(onLeftButtonDownMeta, onLeftButtonDown)
+CREATE_EVENT_HANDLER(onLeftButtonUpMeta, onLeftButtonUp)
+CREATE_EVENT_HANDLER(onMiddleButtonDownMeta, onMiddleButtonDown)
+CREATE_EVENT_HANDLER(onMiddleButtonUpMeta, onMiddleButtonUp)
+CREATE_EVENT_HANDLER(onRightButtonDownMeta, onRightButtonDown)
+CREATE_EVENT_HANDLER(onRightButtonUpMeta, onRightButtonUp)
+CREATE_EVENT_HANDLER(onMouseMoveMeta, onMouseMove)
+CREATE_EVENT_HANDLER(onMouseWheelMeta, onMouseWheel)
+CREATE_EVENT_HANDLER(onMouseEnterMeta, onMouseEnter)
+CREATE_EVENT_HANDLER(onMouseLeaveMeta, onMouseLeave)
+CREATE_EVENT_HANDLER(onKeyDownMeta, onKeyDown)
+CREATE_EVENT_HANDLER(onKeyUpMeta, onKeyUp)
+CREATE_EVENT_HANDLER(onDrawMeta, onDraw)
 
-void ModeBase::onUpdateMenuRecursive(bool multi_view_handled)
+void ModeBase::onUpdateMenuMeta()
+{
+	onUpdateMenuRecursive();
+}
+
+void ModeBase::onUpdateMenuRecursive()
 {
 	if (parent)
 		parent->onUpdateMenuRecursive();
 	onUpdateMenu();
-}
-
-void ModeBase::onDrawWinRecursive(MultiView::Window *win)
-{
-	if (parent)
-		parent->onDrawWinRecursive(win);
-	onDrawWin(win);
 }
 
 void ModeBase::optimizeViewRecursice()

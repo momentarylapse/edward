@@ -26,9 +26,6 @@ public:
 	virtual void onStart();
 	virtual void onEnd();
 
-	virtual void onMouseMove();
-	virtual void onLeftButtonDown();
-
 	virtual void onDrawWin(MultiView::Window *win);
 
 	void onPreview();

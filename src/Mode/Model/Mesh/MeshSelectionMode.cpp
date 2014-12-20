@@ -18,7 +18,5 @@ MeshSelectionMode::MeshSelectionMode(ModeModelMesh *_parent)
 
 bool MeshSelectionMode::isActive()
 {
-	if ((!mode_model_mesh->isAncestorOf(ed->cur_mode)) || (mode_model_mesh_texture->isAncestorOf(ed->cur_mode)))
-		return false;
 	return mode_model_mesh->selection_mode == this;
 }

@@ -230,10 +230,8 @@ void Window::draw()
 	NixSetColor(White);
 
 	// draw the actual data
-	//msg_db_r("sub",2);
 	if (ed->cur_mode)
-		ed->cur_mode->onDrawWinRecursive(this);
-	//msg_db_l(2);
+		ed->cur_mode->onDrawWin(this);
 
 	// draw multiview data
 	NixSetShader(NULL);

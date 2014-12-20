@@ -43,9 +43,9 @@ void ModeModelMeshAutoweld::onStart()
 	dialog->setFloat("slider", 0.5f);
 	dialog->setString("radius", f2s(radius, 2));
 
-	dialog->event("slider", this, &ModeModelMeshAutoweld::OnSlider);
-	dialog->event("ok", this, &ModeModelMeshAutoweld::OnOk);
-	dialog->event("cancel", this, &ModeModelMeshAutoweld::OnCancel);
+	dialog->event("slider", this, &ModeModelMeshAutoweld::onSlider);
+	dialog->event("ok", this, &ModeModelMeshAutoweld::onOk);
+	dialog->event("cancel", this, &ModeModelMeshAutoweld::onCancel);
 }
 
 void ModeModelMeshAutoweld::onEnd()
@@ -53,19 +53,19 @@ void ModeModelMeshAutoweld::onEnd()
 	delete(dialog);
 }
 
-void ModeModelMeshAutoweld::OnSlider()
+void ModeModelMeshAutoweld::onSlider()
 {
 	radius = radius_default * exp((dialog->getFloat("slider") - 0.5f) * 5);
 	dialog->setString("radius", f2s(radius, 2));
 	ed->forceRedraw();
 }
 
-void ModeModelMeshAutoweld::OnCancel()
+void ModeModelMeshAutoweld::onCancel()
 {
 	abort();
 }
 
-void ModeModelMeshAutoweld::OnOk()
+void ModeModelMeshAutoweld::onOk()
 {
 	data->AutoWeldSelectedSurfaces(radius);
 	abort();
@@ -73,6 +73,8 @@ void ModeModelMeshAutoweld::OnOk()
 
 void ModeModelMeshAutoweld::onDrawWin(MultiView::Window* win)
 {
+	parent->onDrawWin(win);
+
 	NixEnableLighting(false);
 	NixSetTexture(NULL);
 	NixSetColor(Green);

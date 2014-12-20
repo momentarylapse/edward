@@ -22,9 +22,9 @@ public:
 
 	virtual void onDrawWin(MultiView::Window *win);
 
-	void OnSlider();
-	void OnCancel();
-	void OnOk();
+	void onSlider();
+	void onCancel();
+	void onOk();
 
 private:
 	float radius;

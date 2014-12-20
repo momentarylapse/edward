@@ -29,11 +29,11 @@ public:
 
 	virtual void onDrawWin(MultiView::Window *win);
 
-	Action *GetAction(const vector &pos);
-	void Apply(const vector &pos);
+	Action *getAction(const vector &pos);
+	void apply(const vector &pos);
 
-	void OnDepthSlider();
-	void OnDiameterSlider();
+	void onDepthSlider();
+	void onDiameterSlider();
 
 private:
 	float base_diameter, base_depth;

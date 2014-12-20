@@ -78,6 +78,8 @@ void ModeModelMeshCreatePlane::onLeftButtonDown()
 
 void ModeModelMeshCreatePlane::onDrawWin(MultiView::Window *win)
 {
+	parent->onDrawWin(win);
+
 	if (pos_chosen){
 		vector n = length[0] ^ length[1];
 		n.normalize();
@@ -91,7 +93,7 @@ void ModeModelMeshCreatePlane::onDrawWin(MultiView::Window *win)
 		VBTemp->addTria(a, -n, 0, 0, d, -n, 0, 0, b, -n, 0, 0);
 		VBTemp->addTria(b,  n, 0, 0, d,  n, 0, 0, c,  n, 0, 0);
 		VBTemp->addTria(b,  n, 0, 0, c,  n, 0, 0, a,  n, 0, 0);
-		mode_model->SetMaterialCreation();
+		mode_model->setMaterialCreation();
 		NixDraw3D(VBTemp);
 	}
 }

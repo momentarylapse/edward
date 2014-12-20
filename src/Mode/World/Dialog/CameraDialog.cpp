@@ -67,12 +67,12 @@ void CameraDialog::OnCloseDialog()
 
 void CameraDialog::OnAddPoint()
 {
-	mode->AddPoint();
+	mode->addPoint();
 }
 
 void CameraDialog::OnDeletePoint()
 {
-	mode->DeletePoint();
+	mode->deletePoint();
 }
 
 #define screen2sample(x)	((x) / time_scale + time_offset)
@@ -264,22 +264,22 @@ void CameraDialog::OnAreaMouseWheel()
 
 void CameraDialog::OnCamEditVel()
 {
-	mode->SetEditVel(isChecked(""));
+	mode->setEditVel(isChecked(""));
 }
 
 void CameraDialog::OnCamEditAng()
 {
-	mode->SetEditAng(isChecked(""));
+	mode->setEditAng(isChecked(""));
 }
 
 void CameraDialog::OnCamPreview()
 {
-	mode->PreviewStart();
+	mode->previewStart();
 }
 
 void CameraDialog::OnCamStop()
 {
-	mode->PreviewStop();
+	mode->previewStop();
 }
 
 

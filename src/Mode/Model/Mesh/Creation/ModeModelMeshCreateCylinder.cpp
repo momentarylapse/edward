@@ -105,6 +105,8 @@ void ModeModelMeshCreateCylinder::onLeftButtonDown()
 
 void ModeModelMeshCreateCylinder::onDrawWin(MultiView::Window *win)
 {
+	parent->onDrawWin(win);
+
 	if (pos.num > 0){
 		NixEnableLighting(false);
 		NixSetColor(Green);
@@ -121,7 +123,7 @@ void ModeModelMeshCreateCylinder::onDrawWin(MultiView::Window *win)
 	}
 	if (pos.num == 2){
 		NixEnableLighting(true);
-		mode_model->SetMaterialCreation();
+		mode_model->setMaterialCreation();
 		geo->preview(VBTemp);
 		NixDraw3D(VBTemp);
 	}

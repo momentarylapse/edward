@@ -49,6 +49,8 @@ void ModeModelMeshExtrudePolygons::onMouseMove()
 
 void ModeModelMeshExtrudePolygons::onDrawWin(MultiView::Window *win)
 {
+	parent->onDrawWin(win);
+
 	NixEnableLighting(false);
 	ed->drawStr(100, 100, f2s(offset, 3));
 }

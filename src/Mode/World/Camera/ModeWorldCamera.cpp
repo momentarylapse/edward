@@ -83,7 +83,7 @@ void ModeWorldCamera::onStart()
 
 	Observer::subscribe(data);
 	Observer::subscribe(multi_view);
-	LoadData();
+	loadData();
 }
 
 void ModeWorldCamera::onEnd()
@@ -96,12 +96,12 @@ void ModeWorldCamera::onEnd()
 	parent->onStart();
 }
 
-void ModeWorldCamera::AddPoint()
+void ModeWorldCamera::addPoint()
 {
 	ed->setMode(new ModeWorldCameraCreatePoint(ed->cur_mode));
 }
 
-void ModeWorldCamera::DeletePoint()
+void ModeWorldCamera::deletePoint()
 {
 }
 
@@ -125,30 +125,30 @@ void ModeWorldCamera::OnPointListSelect()
 	ed->ForceRedraw();
 }*/
 
-void ModeWorldCamera::SetEditVel(bool edit)
+void ModeWorldCamera::setEditVel(bool edit)
 {
 	edit_vel = edit;
-	LoadData();
+	loadData();
 	notify();
 }
 
-void ModeWorldCamera::SetEditAng(bool edit)
+void ModeWorldCamera::setEditAng(bool edit)
 {
 	edit_ang = edit;
-	LoadData();
+	loadData();
 	notify();
 }
 
-void ModeWorldCamera::PreviewStart()
+void ModeWorldCamera::previewStart()
 {
 	preview_time = 0;
 	preview = true;
 	multi_view->cam.ignore_radius = true;
-	HuiRunLaterM(0.020f, this, &ModeWorldCamera::PreviewUpdate);
+	HuiRunLaterM(0.020f, this, &ModeWorldCamera::previewUpdate);
 	notify();
 }
 
-void ModeWorldCamera::PreviewStop()
+void ModeWorldCamera::previewStop()
 {
 	preview = false;
 	multi_view->cam.ignore_radius = false;
@@ -156,7 +156,7 @@ void ModeWorldCamera::PreviewStop()
 	notify();
 }
 
-void ModeWorldCamera::PreviewUpdate()
+void ModeWorldCamera::previewUpdate()
 {
 	preview_time += 0.050f;
 	float duration = data->GetDuration();
@@ -165,9 +165,9 @@ void ModeWorldCamera::PreviewUpdate()
 
 	ed->forceRedraw();
 	if (preview_time > duration)
-		PreviewStop();
+		previewStop();
 	if (preview)
-		HuiRunLaterM(0.050f, this, &ModeWorldCamera::PreviewUpdate);
+		HuiRunLaterM(0.050f, this, &ModeWorldCamera::previewUpdate);
 	notify();
 }
 
@@ -198,11 +198,11 @@ void ModeWorldCamera::onUpdate(Observable *o, const string &message)
 {
 	if (message == data->MESSAGE_CHANGE){
 		data->UpdateVel();
-		LoadData();
+		loadData();
 	}
 }
 
-void ModeWorldCamera::LoadData()
+void ModeWorldCamera::loadData()
 {
 	onUpdateMenu();
 
@@ -232,6 +232,8 @@ void ModeWorldCamera::LoadData()
 
 void ModeWorldCamera::onDrawWin(MultiView::Window *win)
 {
+	parent->onDrawWin(win);
+
 	NixEnableLighting(false);
 	NixSetWorldMatrix(m_id);
 

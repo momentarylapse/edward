@@ -20,6 +20,7 @@ ModeModelMeshBrush::ModeModelMeshBrush(ModeBase* _parent) :
 	message = _("auf der Oberfl&ache malen");
 
 	mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_polygon);
+	mode_model->allowSelectionModes(false);
 	brushing = false;
 }
 
@@ -146,6 +147,8 @@ void ModeModelMeshBrush::onMouseMove()
 
 void ModeModelMeshBrush::onDrawWin(MultiView::Window* win)
 {
+	parent->onDrawWin(win);
+
 	if (multi_view->hover.index < 0)
 		return;
 	vector pos = multi_view->hover.point;

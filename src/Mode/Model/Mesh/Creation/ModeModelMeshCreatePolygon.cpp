@@ -43,6 +43,8 @@ void ModeModelMeshCreatePolygon::onEnd()
 
 void ModeModelMeshCreatePolygon::onDrawWin(MultiView::Window *win)
 {
+	parent->onDrawWin(win);
+
 	for (int i=1;i<selection.num;i++){
 		NixEnableLighting(false);
 		vector pa = win->project(data->vertex[selection[i - 1]].pos);

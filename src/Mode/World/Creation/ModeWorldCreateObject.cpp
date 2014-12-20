@@ -26,7 +26,7 @@ void ModeWorldCreateObject::onStart()
 {
 	filename = LastObjectFilename;
 	if (filename.num == 0)
-		OnFindObject();
+		onFindObject();
 
 	dialog = HuiCreateResourceDialog("world_new_object_dialog",ed);
 	dialog->setString("kind", filename);
@@ -34,7 +34,7 @@ void ModeWorldCreateObject::onStart()
 	dialog->enable("name", false);
 	dialog->show();
 	dialog->eventS("hui:close", &HuiFuncIgnore);
-	dialog->event("find_object", this, &ModeWorldCreateObject::OnFindObject);
+	dialog->event("find_object", this, &ModeWorldCreateObject::onFindObject);
 
 	if (filename.num > 0)
 		message = _("neues Objekt setzen");
@@ -48,7 +48,7 @@ void ModeWorldCreateObject::onEnd()
 	delete(dialog);
 }
 
-void ModeWorldCreateObject::OnFindObject()
+void ModeWorldCreateObject::onFindObject()
 {
 	if (ed->fileDialog(FD_MODEL, false, true)){
 		filename = ed->dialog_file_no_ending;

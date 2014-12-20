@@ -32,16 +32,18 @@ public:
 	virtual bool save();
 	virtual bool saveAs();
 
-	bool ImportOpen3ds();
-	bool ImportLoad3ds(const string &filename);
+	bool importOpen3ds();
+	bool importLoad3ds(const string &filename);
 
-	void SetMaterialSelected();
-	void SetMaterialMouseOver();
-	void SetMaterialCreation();
+	void setMaterialSelected();
+	void setMaterialMouseOver();
+	void setMaterialCreation();
 
-	void ExecutePropertiesDialog();
+	void executePropertiesDialog();
 
-	ModelPropertiesDialog *PropertiesDialog;
+	ModelPropertiesDialog *properties_dialog;
+
+	void allowSelectionModes(bool allow);
 };
 
 extern ModeModel* mode_model;

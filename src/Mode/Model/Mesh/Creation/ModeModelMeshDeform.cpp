@@ -24,25 +24,25 @@ const int CUBE_SIZE = 20;
  ModeModelMeshDeform::ModeModelMeshDeform(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshDeform", _parent)
 {
-	 geo = NULL;
-	 f = NULL;
-	 s = NULL;
-	 has_preview = false;
+	geo = NULL;
+	f = NULL;
+	s = NULL;
+	has_preview = false;
 
-	 Image im;
-	 im.create(512, 512, White);
-	 for (int i=0; i<=8; i++){
-		 int x = min(i * 64, 511);
-		 for (int y=0; y<512; y++){
-			 im.setPixel(x, y, Gray);
-			 im.setPixel(y, x, Gray);
-		 }
-	 }
+	Image im;
+	im.create(512, 512, White);
+	for (int i=0; i<=8; i++){
+		int x = min(i * 64, 511);
+		for (int y=0; y<512; y++){
+			im.setPixel(x, y, Gray);
+			im.setPixel(y, x, Gray);
+		}
+	}
 
-	 tex = new NixTexture;
-	 tex->overwrite(im);
+	tex = new NixTexture;
+	tex->overwrite(im);
 
-	mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_vertex);
+	//mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_vertex);
 }
 
 ModeModelMeshDeform::~ModeModelMeshDeform()
@@ -95,16 +95,10 @@ void ModeModelMeshDeform::onEnd()
 		delete s;
 }
 
-void ModeModelMeshDeform::onMouseMove()
-{
-}
-
-void ModeModelMeshDeform::onLeftButtonDown()
-{
-}
-
 void ModeModelMeshDeform::onDrawWin(MultiView::Window* win)
 {
+	parent->onDrawWin(win);
+
 	mode_model_mesh->setMaterialCreation();
 	geo->preview(VBTemp, 1);
 

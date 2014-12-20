@@ -54,7 +54,7 @@ ModelPropertiesDialog::ModelPropertiesDialog(HuiWindow *_parent, bool _allow_par
 
 ModelPropertiesDialog::~ModelPropertiesDialog()
 {
-	mode_model->PropertiesDialog = NULL;
+	mode_model->properties_dialog = NULL;
 	unsubscribe(data);
 }
 

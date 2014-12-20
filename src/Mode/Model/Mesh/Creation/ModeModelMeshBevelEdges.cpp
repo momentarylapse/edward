@@ -81,6 +81,8 @@ void ModeModelMeshBevelEdges::onLeftButtonDown()
 
 void ModeModelMeshBevelEdges::onDrawWin(MultiView::Window *win)
 {
+	parent->onDrawWin(win);
+
 #ifndef INTERACTIVE
 	mode_model->SetMaterialCreation();
 	foreach(ModelVertex &v, data->vertex)

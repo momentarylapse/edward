@@ -22,9 +22,9 @@ public:
 
 	virtual void onDrawWin(MultiView::Window *win);
 
-	void OnOk();
-	void OnClose();
-	void OnSizeChange();
+	void onOk();
+	void onClose();
+	void onSizeChange();
 };
 
 #endif /* MODEWORLDCREATETERRAIN_H_ */

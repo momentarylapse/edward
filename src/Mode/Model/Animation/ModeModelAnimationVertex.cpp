@@ -7,6 +7,7 @@
 
 #include "ModeModelAnimationVertex.h"
 #include "ModeModelAnimation.h"
+#include "../ModeModel.h"
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
 #include "../Mesh/MeshSelectionModePolygon.h"
@@ -35,6 +36,7 @@ void ModeModelAnimationVertex::onStart()
 	t->addItemCheckable(_("Spiegeln"),dir + "rf_mirror.png", "mirror");
 	t->enable(true);
 	t->configure(false,true);
+	mode_model->allowSelectionModes(true);
 
 	multi_view->clearData(NULL);
 	multi_view->allow_rect = true;

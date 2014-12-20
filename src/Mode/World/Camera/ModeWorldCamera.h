@@ -30,10 +30,10 @@ public:
 
 	virtual void onDrawWin(MultiView::Window *win);
 
-	void AddPoint();
-	void DeletePoint();
+	void addPoint();
+	void deletePoint();
 
-	void LoadData();
+	void loadData();
 
 	virtual void onUpdate(Observable *obs, const string &message);
 
@@ -42,11 +42,11 @@ public:
 	virtual bool save();
 	virtual bool saveAs();
 
-	void PreviewStart();
-	void PreviewStop();
-	void SetEditAng(bool edit);
-	void SetEditVel(bool edit);
-	void PreviewUpdate();
+	void previewStart();
+	void previewStop();
+	void setEditAng(bool edit);
+	void setEditVel(bool edit);
+	void previewUpdate();
 
 	CameraDialog *dialog;
 
