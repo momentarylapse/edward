@@ -246,21 +246,13 @@ void ModeModelAnimation::onUpdate(Observable *o, const string &message)
 }
 
 
-
-void ModeModelAnimation::onDraw()
-{
-	iterateAnimation(timer.get());
-}
-
-void ModeModelAnimation::onDrawWin(MultiView::Window *win)
-{
-}
-
 void ModeModelAnimation::idleFunction()
 {
 	if (!isAncestorOf(ed->cur_mode))
 		return;
-	ed->forceRedraw();
+
+	iterateAnimation(timer.get());
+
 	if (playing)
 		HuiRunLaterM(0.020f, this, &ModeModelAnimation::idleFunction);
 	else
