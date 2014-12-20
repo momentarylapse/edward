@@ -54,10 +54,9 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 
 	// vertex buffers
 	vb_marked = new NixVertexBuffer(1);
-	vb_model = new NixVertexBuffer(1);
-	vb_model2 = NULL;
-	vb_model3 = NULL;
-	vb_model4 = NULL;
+	vb_model[0] = NULL;
+	for (int n=1; n<=4; n++)
+		vb_model[n] = new NixVertexBuffer(n);
 	vb_hover = new NixVertexBuffer(1);
 	vb_creation = new NixVertexBuffer(1);
 
@@ -277,8 +276,6 @@ void ModeModelMesh::toggleMaterialDialog()
 
 void ModeModelMesh::onDraw()
 {
-	fillSelectionBuffers(data->vertex);
-
 	if (data->GetNumSelectedVertices() > 0){
 		ed->drawStr(20, 100, format(_("vert: %d"), data->GetNumSelectedVertices()));
 		ed->drawStr(20, 120, format(_("poly: %d"), data->GetNumSelectedPolygons()));
@@ -313,7 +310,7 @@ void ModeModelMesh::onUpdate(Observable *o, const string &message)
 		selection_mode->updateSelection();
 	}
 
-	fillSelectionBuffers(data->vertex);
+	fillSelectionBuffer(data->vertex);
 }
 
 
@@ -591,32 +588,24 @@ void ModeModelMesh::drawPolygons(MultiView::Window *win, Array<ModelVertex> &ver
 
 	// draw all materials separately
 	foreachi(ModelMaterial &m, data->material, mi){
-		NixVertexBuffer **vb = &vb_model;
 		int num_tex = min(m.num_textures, 4);
-		if (num_tex == 2)
-			vb = &vb_model2;
-		else if (num_tex == 3)
-			vb = &vb_model3;
-		else if (num_tex == 4)
-			vb = &vb_model4;
-		if (!*vb)
-			*vb = new NixVertexBuffer(num_tex);
+		NixVertexBuffer *vb = vb_model[num_tex];
 
-		(*vb)->clear();
+		vb->clear();
 
 		foreach(ModelSurface &surf, data->surface){
 			if (!surf.is_visible)
 				continue;
 			foreach(ModelPolygon &t, surf.polygon)
 				if ((t.view_stage >= multi_view->view_stage) && (t.material == mi))
-					t.AddToVertexBuffer(vertex, *vb, m.num_textures);
+					t.AddToVertexBuffer(vertex, vb, m.num_textures);
 		}
 
 		// draw
 		m.ApplyForRendering();
 		glEnable(GL_POLYGON_OFFSET_FILL);
 		glPolygonOffset(1.0f, 1.0f);
-		NixDraw3D(*vb);
+		NixDraw3D(vb);
 		glDisable(GL_POLYGON_OFFSET_FILL);
 		glPolygonOffset(0, 0);
 		NixSetShader(NULL);
@@ -626,27 +615,16 @@ void ModeModelMesh::drawPolygons(MultiView::Window *win, Array<ModelVertex> &ver
 
 
 
-void ModeModelMesh::fillSelectionBuffers(Array<ModelVertex> &vertex)
+void ModeModelMesh::fillSelectionBuffer(Array<ModelVertex> &vertex)
 {
-	msg_db_f("SkinFillSelBuf", 4);
 	vb_marked->clear();
-	vb_hover->clear();
 
 	// create selection buffers
-	msg_db_m("a",4);
-	ModelPolygon *mmo = NULL;
-	if ((multi_view->hover.index >= 0) && (multi_view->hover.set < data->surface.num) && (multi_view->hover.type == MVD_MODEL_POLYGON))
-		mmo = &data->surface[multi_view->hover.set].polygon[multi_view->hover.index];
 	foreachi(ModelSurface &s, data->surface, si){
-		bool s_mo = false;
-		if ((multi_view->hover.index >= 0) && (multi_view->hover.type == MVD_MODEL_SURFACE))
-			s_mo = (multi_view->hover.index == si);
 		foreach(ModelPolygon &t, s.polygon)
 			/*if (t.view_stage >= ViewStage)*/{
 			if (t.is_selected)
 				t.AddToVertexBuffer(vertex, vb_marked, 1);
-			if ((&t == mmo) || (s_mo))
-				t.AddToVertexBuffer(vertex, vb_hover, 1);
 		}
 	}
 }
@@ -698,7 +676,7 @@ void ModeModelMesh::setSelectionMode(MeshSelectionMode *mode)
 	mode->onStart();
 	mode->updateMultiView();
 	chooseMouseFunction(mouse_action);
-	fillSelectionBuffers(data->vertex);
+	fillSelectionBuffer(data->vertex);
 	//ed->updateMenu();
 }
 

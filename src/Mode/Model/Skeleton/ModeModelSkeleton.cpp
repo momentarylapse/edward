@@ -226,6 +226,7 @@ void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &b
 		b.model->_matrix = b._matrix;
 		b.model->Draw(0, false, false);
 	}
+	NixSetWorldMatrix(m_id);
 
 	NixSetZ(false, false);
 	NixEnableLighting(false);

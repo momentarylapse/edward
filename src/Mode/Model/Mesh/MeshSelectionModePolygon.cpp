@@ -11,6 +11,7 @@
 #include "../../../MultiView/MultiView.h"
 #include "../../../MultiView/Window.h"
 #include "ModeModelMesh.h"
+#include "../ModeModel.h"
 #include "../Animation/ModeModelAnimation.h"
 #include "../Skeleton/ModeModelSkeleton.h"
 
@@ -25,6 +26,17 @@ MeshSelectionModePolygon::MeshSelectionModePolygon(ModeModelMesh *_parent) :
 
 void MeshSelectionModePolygon::onDrawWin(MultiView::Window *win)
 {
+	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVD_MODEL_POLYGON))
+		return;
+
+	parent->vb_hover->clear();
+
+
+	ModelPolygon &p = data->surface[multi_view->hover.set].polygon[multi_view->hover.index];
+	p.AddToVertexBuffer(data->vertex, parent->vb_hover, 1);
+
+	mode_model->setMaterialMouseOver();
+	parent->vb_hover->draw();
 }
 
 

@@ -42,7 +42,7 @@ void ModeModelAnimationNone::onCommand(const string& id)
 
 void ModeModelAnimationNone::onUpdate(Observable* o, const string &message)
 {
-	mode_model_mesh->fillSelectionBuffers(mode_model_animation->vertex);
+	mode_model_mesh->fillSelectionBuffer(mode_model_animation->vertex);
 }
 
 void ModeModelAnimationNone::onUpdateMenu()

@@ -50,7 +50,7 @@ void ModeModelSkeletonAttachVertices::onUpdate(Observable *o, const string &mess
 		mode_model_mesh->selection_mode->updateMultiView();
 	}else if (o == multi_view){
 		mode_model_mesh->selection_mode->updateSelection();
-		mode_model_mesh->fillSelectionBuffers(data->vertex);
+		mode_model_mesh->fillSelectionBuffer(data->vertex);
 	}
 }
 
