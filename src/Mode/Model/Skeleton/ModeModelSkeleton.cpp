@@ -56,7 +56,7 @@ void ModeModelSkeleton::onCommand(const string & id)
 		removeSubModel();
 
 	if (id == "select")
-		chooseMouseFunction(MultiView::ACTION_SELECT_AND_MOVE);
+		chooseMouseFunction(MultiView::ACTION_SELECT);
 	if (id == "translate")
 		chooseMouseFunction(MultiView::ACTION_MOVE);
 	if (id == "rotate")
@@ -91,12 +91,7 @@ void ModeModelSkeleton::chooseMouseFunction(int f)
 {
 	mouse_action = f;
 
-	// mouse action
-	if (mouse_action != MultiView::ACTION_SELECT){
-		multi_view->setMouseAction("ActionModelTransformBones", mouse_action);
-	}else{
-		multi_view->setMouseAction("", MultiView::ACTION_SELECT);
-	}
+	multi_view->setMouseAction("ActionModelTransformBones", mouse_action, false);
 }
 
 
@@ -108,7 +103,7 @@ void ModeModelSkeleton::onDraw()
 
 void ModeModelSkeleton::onUpdateMenu()
 {
-	ed->check("select", mouse_action == MultiView::ACTION_SELECT_AND_MOVE);
+	ed->check("select", mouse_action == MultiView::ACTION_SELECT);
 	ed->check("translate", mouse_action == MultiView::ACTION_MOVE);
 	ed->check("rotate", mouse_action == MultiView::ACTION_ROTATE);
 	ed->check("scale", mouse_action == MultiView::ACTION_SCALE);
@@ -138,12 +133,8 @@ void ModeModelSkeleton::onStart()
 	multi_view->clearData(data);
 	multi_view->setAllowRect(true);
 
-	chooseMouseFunction(MultiView::ACTION_SELECT_AND_MOVE);
+	chooseMouseFunction(MultiView::ACTION_MOVE);
 	mode_model->allowSelectionModes(false);
-
-
-	// left -> translate
-	multi_view->setMouseAction("ActionModelTransformBones", MultiView::ACTION_SELECT_AND_MOVE);
 	multi_view->allow_rect = true;
 	onUpdate(data, "");
 }

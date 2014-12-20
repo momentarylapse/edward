@@ -57,9 +57,6 @@ public:
 	void createNewMaterialForSelection();
 	void chooseMaterialForSelection();
 
-	void chooseMouseFunction(int f);
-	void applyMouseFunction(MultiView::MultiView *mv);
-
 	void addEffects(int type);
 	void editEffects();
 	void clearEffects();
@@ -69,7 +66,10 @@ public:
 	void closeMaterialDialog();
 	void toggleMaterialDialog();
 
+	void chooseMouseFunction(int f, bool lock);
+	void applyMouseFunction(MultiView::MultiView *mv);
 	int mouse_action;
+	bool lock_action;
 
 	void copy();
 	void paste();

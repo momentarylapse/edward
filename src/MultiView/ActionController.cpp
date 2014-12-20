@@ -117,7 +117,7 @@ void ActionController::updateAction()
 	matrix m_dt, m_dti;
 	MatrixTranslation(m_dt, pos0);
 	MatrixTranslation(m_dti, -pos0);
-	if ((action.mode == ACTION_MOVE) || (action.mode == ACTION_SELECT_AND_MOVE)){
+	if (action.mode == ACTION_MOVE){
 		param = mvac_project_trans(mode, v2 - v1);
 		MatrixTranslation(mat, param);
 	}else if (action.mode == ACTION_ROTATE){
@@ -174,7 +174,7 @@ bool ActionController::isSelecting()
 {
 	if (action.mode == ACTION_SELECT)
 		return true;
-	if (action.mode == ACTION_SELECT_AND_MOVE){
+	if (!action.locked){
 		if (multi_view->hover.index >= 0){
 			SingleData *d = MVGetSingleData(multi_view->data[multi_view->hover.set], multi_view->hover.index);
 			return !d->is_selected;
@@ -282,7 +282,7 @@ void ActionController::draw(Window *win)
 
 void ActionController::drawParams()
 {
-	if ((action.mode == ACTION_MOVE) || (action.mode == ACTION_SELECT_AND_MOVE)){
+	if (action.mode == ACTION_MOVE){
 		vector t = param;
 		string unit = multi_view->getMVScaleByZoom(t);
 		ed->drawStr(150, 100, f2s(t.x, 2) + " " + unit, Edward::ALIGN_RIGHT);
@@ -325,7 +325,7 @@ bool ActionController::isMouseOver(vector &tp)
 
 bool ActionController::leftButtonDown()
 {
-	if ((!show) && (action.mode != ACTION_SELECT_AND_MOVE))
+	if ((!show) && (action.locked))
 		return false;
 	vector tp;
 	mode = ACTION_MODE_NONE;

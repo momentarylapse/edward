@@ -737,12 +737,13 @@ rect MultiViewImpl::SelectionRect::get(const vector &m)
 	return rect(min(m.x, pos0.x), max(m.x, pos0.x), min(m.y, pos0.y), max(m.y, pos0.y));
 }
 
-void MultiViewImpl::setMouseAction(const string & name, int mode)
+void MultiViewImpl::setMouseAction(const string & name, int mode, bool locked)
 {
 	if ((!mode3d) && (mode == ACTION_ROTATE))
 		mode = ACTION_ROTATE_2D;
 	action_con->action.name = name;
 	action_con->action.mode = mode;
+	action_con->action.locked = locked;
 	action_con->disable();
 	if (!action_con->isSelecting())
 		action_con->enable();

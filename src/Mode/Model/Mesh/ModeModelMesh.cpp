@@ -57,7 +57,7 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 
 	select_cw = false;
 
-	chooseMouseFunction(MultiView::ACTION_SELECT);
+	chooseMouseFunction(MultiView::ACTION_MOVE, false);
 
 	selection_mode_vertex = new MeshSelectionModeVertex(this);
 	selection_mode_edge = new MeshSelectionModeEdge(this);
@@ -91,6 +91,7 @@ void ModeModelMesh::onStart()
 	t->addItemCheckable(_("Rotieren"), dir + "rf_rotate.png", "rotate");
 	t->addItemCheckable(_("Skalieren"), dir + "rf_scale.png", "scale");
 	t->addItemCheckable(_("Spiegeln"),dir + "rf_mirror.png", "mirror");
+	t->addItemCheckable(_("paranoider Modus"), "hui:no", "lock_action");
 	t->enable(true);
 	t->configure(false,true);
 
@@ -198,15 +199,17 @@ void ModeModelMesh::onCommand(const string & id)
 		data->flattenSelectedVertices();
 
 	if (id == "select")
-		chooseMouseFunction(MultiView::ACTION_SELECT);
+		chooseMouseFunction(MultiView::ACTION_SELECT, lock_action);
 	if (id == "translate")
-		chooseMouseFunction(MultiView::ACTION_MOVE);
+		chooseMouseFunction(MultiView::ACTION_MOVE, lock_action);
 	if (id == "rotate")
-		chooseMouseFunction(MultiView::ACTION_ROTATE);
+		chooseMouseFunction(MultiView::ACTION_ROTATE, lock_action);
 	if (id == "scale")
-		chooseMouseFunction(MultiView::ACTION_SCALE);
+		chooseMouseFunction(MultiView::ACTION_SCALE, lock_action);
 	if (id == "mirror")
-		chooseMouseFunction(MultiView::ACTION_MIRROR);
+		chooseMouseFunction(MultiView::ACTION_MIRROR, lock_action);
+	if (id == "lock_action")
+		chooseMouseFunction(mouse_action, !lock_action);
 
 	if (id == "create_new_material")
 		createNewMaterialForSelection();
@@ -350,11 +353,13 @@ void ModeModelMesh::onUpdateMenu()
 	ed->enable("rotate", multi_view->allow_mouse_actions);
 	ed->enable("scale", multi_view->allow_mouse_actions);
 	ed->enable("mirror", multi_view->allow_mouse_actions);
+	ed->enable("lock_action", multi_view->allow_mouse_actions);
 	ed->check("select", mouse_action == MultiView::ACTION_SELECT);
 	ed->check("translate", mouse_action == MultiView::ACTION_MOVE);
 	ed->check("rotate", mouse_action == MultiView::ACTION_ROTATE);
 	ed->check("scale", mouse_action == MultiView::ACTION_SCALE);
 	ed->check("mirror", mouse_action == MultiView::ACTION_MIRROR);
+	ed->check("lock_action", lock_action);
 
 	ed->check("mode_model_materials", material_dialog);
 }
@@ -447,9 +452,10 @@ void ModeModelMesh::chooseMaterialForSelection()
 		data->setMaterialSelection(SelectionDialogReturnIndex);
 }
 
-void ModeModelMesh::chooseMouseFunction(int f)
+void ModeModelMesh::chooseMouseFunction(int f, bool _lock_action)
 {
 	mouse_action = f;
+	lock_action = _lock_action;
 	applyMouseFunction(ed->multi_view_3d);
 	applyMouseFunction(ed->multi_view_2d);
 }
@@ -463,12 +469,7 @@ void ModeModelMesh::applyMouseFunction(MultiView::MultiView *mv)
 	if (!mv->mode3d)
 		name = "ActionModelTransformSkinVertices";
 
-	// left mouse action
-	if (mouse_action != MultiView::ACTION_SELECT){
-		mv->setMouseAction(name, mouse_action);
-	}else{
-		mv->setMouseAction("", MultiView::ACTION_SELECT);
-	}
+	mv->setMouseAction(name, mouse_action, lock_action);
 }
 
 void ModeModelMesh::copy()

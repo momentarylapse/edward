@@ -212,7 +212,7 @@ void ModeWorldCamera::loadData()
 	multi_view->clearData(data);
 
 	// left -> translate
-	multi_view->setMouseAction("ActionCameraMoveSelection", MultiView::ACTION_MOVE);
+	multi_view->setMouseAction("ActionCameraMoveSelection", MultiView::ACTION_MOVE, true);
 	// middle/right -> rotate
 	/*multi_view->SetMouseAction(1, "ActionWorldRotateObjects", MultiView::ActionRotate2d);
 	multi_view->SetMouseAction(2, "ActionWorldRotateObjects", MultiView::ActionRotate);*/

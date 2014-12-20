@@ -45,7 +45,6 @@ enum{
 	ACTION_SCALE_2D,
 	ACTION_MIRROR,
 	ACTION_ONCE,
-	ACTION_SELECT_AND_MOVE,
 };
 
 struct Camera
@@ -89,7 +88,8 @@ public:
 	virtual float getGridD() = 0;
 
 	virtual void resetMouseAction() = 0;
-	virtual void setMouseAction(const string &name, int mode) = 0;
+	virtual void setMouseAction(const string &name, int mode, bool locked) = 0;
+	//virtual int getMouseActionMode() = 0;
 
 
 	virtual void addMessage3d(const string &str, const vector &pos) = 0;

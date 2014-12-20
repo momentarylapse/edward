@@ -27,12 +27,14 @@ struct MouseAction
 	string name;
 	int mode;
 	bool active;
+	bool locked;
 
 	void reset()
 	{
 		name = "";
 		mode = 0;
 		active = false;
+		locked = false;
 	}
 };
 

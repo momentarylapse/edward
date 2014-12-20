@@ -43,7 +43,7 @@ void ModeModelAnimationSkeleton::onStart()
 	multi_view->clearData(data);
 	multi_view->allow_rect = true;
 
-	chooseMouseFunction(MultiView::ACTION_SELECT);
+	chooseMouseFunction(MultiView::ACTION_ROTATE);
 
 	subscribe(data);
 	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
@@ -71,11 +71,7 @@ void ModeModelAnimationSkeleton::chooseMouseFunction(int f)
 	mouse_action = f;
 
 	// mouse action
-	if (mouse_action != MultiView::ACTION_SELECT){
-		multi_view->setMouseAction("ActionModelAnimationTransformBones", mouse_action);
-	}else{
-		multi_view->setMouseAction("", MultiView::ACTION_SELECT);
-	}
+	multi_view->setMouseAction("ActionModelAnimationTransformBones", mouse_action, false);
 }
 
 void ModeModelAnimationSkeleton::onUpdate(Observable* o, const string &message)

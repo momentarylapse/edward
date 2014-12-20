@@ -113,7 +113,7 @@ public:
 
 	ActionController *action_con;
 	virtual void resetMouseAction();
-	virtual void setMouseAction(const string &name, int mode);
+	virtual void setMouseAction(const string &name, int mode, bool locked);
 	CameraController *cam_con;
 
 	Array<DataSet> data;

@@ -515,7 +515,7 @@ void ModeWorld::onStart()
 	t->enable(false);
 
 	multi_view->setAllowRect(true);
-	SetMouseAction(MultiView::ACTION_SELECT);
+	SetMouseAction(MultiView::ACTION_MOVE);
 
 	onUpdate(data, "");
 }
@@ -524,11 +524,11 @@ void ModeWorld::SetMouseAction(int mode)
 {
 	mouse_action = mode;
 	if (mode == MultiView::ACTION_MOVE)
-		multi_view->setMouseAction("ActionWorldMoveSelection", mode);
+		multi_view->setMouseAction("ActionWorldMoveSelection", mode, false);
 	else if (mode == MultiView::ACTION_ROTATE)
-		multi_view->setMouseAction("ActionWorldRotateObjects", mode);
+		multi_view->setMouseAction("ActionWorldRotateObjects", mode, false);
 	else
-		multi_view->setMouseAction("", mode);
+		multi_view->setMouseAction("", mode, false);
 }
 
 

@@ -75,11 +75,7 @@ void ModeModelAnimationVertex::chooseMouseFunction(int f)
 	mouse_action = f;
 
 	// mouse action
-	if (mouse_action != MultiView::ACTION_SELECT){
-		multi_view->setMouseAction("ActionModelAnimationTransformVertices", mouse_action);
-	}else{
-		multi_view->setMouseAction("", MultiView::ACTION_SELECT);
-	}
+	multi_view->setMouseAction("ActionModelAnimationTransformVertices", mouse_action, false);
 }
 
 void ModeModelAnimationVertex::onUpdate(Observable* o, const string &message)
@@ -87,21 +83,9 @@ void ModeModelAnimationVertex::onUpdate(Observable* o, const string &message)
 	if (o == data){
 		updateVertices();
 		data->showVertices(mode_model_animation->vertex);
-
-		/*multi_view->clearData(data);
-		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-
-		multi_view->addData(	MVD_MODEL_VERTEX,
-				mode_model_animation->vertex,
-				NULL,
-				MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT);*/
-
 		mode_model_mesh->selection_mode->updateMultiView();
 	}else if (o == multi_view){
 		mode_model_mesh->selection_mode->updateSelection();
-		/*foreachi(ModelVertex &v, data->vertex, i)
-			v.is_selected = mode_model_animation->vertex[i].is_selected;
-		data->SelectionFromVertices();*/
 	}
 }
 
