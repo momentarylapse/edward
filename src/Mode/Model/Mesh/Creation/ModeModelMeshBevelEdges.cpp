@@ -12,8 +12,6 @@
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 
-#define INTERACTIVE
-
 ModeModelMeshBevelEdges::ModeModelMeshBevelEdges(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshBevelEdges", _parent)
 {
@@ -35,10 +33,9 @@ ModeModelMeshBevelEdges::ModeModelMeshBevelEdges(ModeBase *_parent) :
 		}
 
 	radius = rad_max / 4;
-#ifdef INTERACTIVE
+
 	if (!data->action_manager->preview(new ActionModelBevelEdges(radius)))
 		abort();
-#endif
 }
 
 ModeModelMeshBevelEdges::~ModeModelMeshBevelEdges()
@@ -47,33 +44,24 @@ ModeModelMeshBevelEdges::~ModeModelMeshBevelEdges()
 
 void ModeModelMeshBevelEdges::onEnd()
 {
-#ifdef INTERACTIVE
 	data->action_manager->clearPreview();
-#endif
 }
 
 void ModeModelMeshBevelEdges::onMouseMove()
 {
-#ifdef INTERACTIVE
 	data->action_manager->clearPreview();
-#endif
 
 	radius += (HuiGetEvent()->dx) / multi_view->cam.zoom;
 	radius = clampf(radius, rad_max * 0.001f, rad_max);
 
-#ifdef INTERACTIVE
-
 	data->setSelectionState(selection);
 	if (!data->action_manager->preview(new ActionModelBevelEdges(radius)))
 		abort();
-#endif
 }
 
 void ModeModelMeshBevelEdges::onLeftButtonDown()
 {
-#ifdef INTERACTIVE
 	data->action_manager->clearPreview();
-#endif
 
 	data->setSelectionState(selection);
 	data->bevelSelectedEdges(radius);
@@ -84,12 +72,6 @@ void ModeModelMeshBevelEdges::onDrawWin(MultiView::Window *win)
 {
 	parent->onDrawWin(win);
 
-#ifndef INTERACTIVE
-	mode_model->SetMaterialCreation();
-	foreach(ModelVertex &v, data->vertex)
-		if (v.is_selected)
-			FxDrawBall(v.pos, radius, 16,32);
-#endif
 	NixEnableLighting(false);
 	ed->drawStr(100, 100, f2s(radius, 3));
 }

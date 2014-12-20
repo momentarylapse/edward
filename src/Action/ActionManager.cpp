@@ -172,6 +172,7 @@ bool ActionManager::preview(Action *a)
 	try{
 		data->notifyBegin();
 		a->execute_logged(data);
+		data->onPostActionUpdate();
 		data->notifyEnd();
 		_preview = a;
 	}catch(ActionException &e){
@@ -193,6 +194,7 @@ void ActionManager::clearPreview()
 	if (_preview){
 		data->notifyBegin();
 		_preview->undo_logged(data);
+		data->onPostActionUpdate();
 		data->notifyEnd();
 		delete(_preview);
 		_preview = NULL;

@@ -30,8 +30,6 @@ void *ActionModelBevelEdges::compose(Data *d)
 		bevelSurface(m, &s, i);
 		_foreach_it_.update();
 	}
-	//m->setNormalsDirtyByVertices(m->getSelectedVertices());
-	m->setAllNormalsDirty();
 	return NULL;
 }
 
