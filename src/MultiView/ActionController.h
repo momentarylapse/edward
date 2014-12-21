@@ -38,6 +38,17 @@ struct MouseAction
 	}
 };
 
+
+enum{
+	ACTION_CONSTRAINTS_NONE,
+	ACTION_CONSTRAINTS_X,
+	ACTION_CONSTRAINTS_Y,
+	ACTION_CONSTRAINTS_Z,
+	ACTION_CONSTRAINTS_XY,
+	ACTION_CONSTRAINTS_XZ,
+	ACTION_CONSTRAINTS_YZ,
+};
+
 class ActionController
 {
 public:
@@ -65,7 +76,7 @@ public:
 	void leftButtonUp();
 	bool isMouseOver(vector &tp);
 	bool inUse();
-	void startAction();
+	void startAction(int constraints);
 	void updateAction();
 	void endAction(bool set);
 	bool isSelecting();

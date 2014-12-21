@@ -16,46 +16,38 @@
 #include "../Data/Model/Geometry/GeometryBall.h"
 #include "../Data/Model/Geometry/GeometryCylinder.h"
 #include "../Data/Model/Geometry/GeometryTorus.h"
+#include "../Data/Model/Geometry/GeometryCube.h"
 
 #define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 
-enum{
-	ACTION_MODE_NONE,
-	ACTION_MODE_X,
-	ACTION_MODE_Y,
-	ACTION_MODE_Z,
-	ACTION_MODE_XY,
-	ACTION_MODE_XZ,
-	ACTION_MODE_YZ,
-	ACTION_MODE_FREE,
-};
 
 namespace MultiView{
 
 ActionController::ActionController(MultiViewImpl *impl)
 {
 	multi_view = impl;
+	reset();
 }
 
-void ActionController::startAction()
+void ActionController::startAction(int _constraints)
 {
 	if (cur_action)
 		endAction(false);
 	if (!multi_view->allow_mouse_actions)
 		return;
-	if (action.name != ""){
-		//msg_write("mouse action start " + action.name);
+	if (action.name == "")
+		return;
 
-		mat = m_id;
+	mat = m_id;
 
-		m0 = multi_view->hover.point;
-		pos0 = pos;
-		if (constraints == ACTION_MODE_FREE)
-			pos0 = multi_view->hover.point;
-		cur_action = ActionMultiViewFactory(action.name, data);
-		cur_action->execute_logged(data);
-		multi_view->notify(multi_view->MESSAGE_ACTION_START);
-	}
+	m0 = multi_view->hover.point;
+	pos0 = pos;
+	constraints = _constraints;
+	if (constraints == ACTION_CONSTRAINTS_NONE)
+		pos0 = multi_view->hover.point;
+	cur_action = ActionMultiViewFactory(action.name, data);
+	cur_action->execute_logged(data);
+	multi_view->notify(multi_view->MESSAGE_ACTION_START);
 }
 
 
@@ -74,32 +66,32 @@ vector transform_ang(MultiViewImpl *mv, const vector &ang)
 vector mvac_project_trans(int mode, const vector &v)
 {
 	vector r = v;
-	if (mode == ACTION_MODE_X)
+	if (mode == ACTION_CONSTRAINTS_X)
 		r.y = r.z = 0;
-	else if (mode == ACTION_MODE_Y)
+	else if (mode == ACTION_CONSTRAINTS_Y)
 		r.x = r.z = 0;
-	else if (mode == ACTION_MODE_Z)
+	else if (mode == ACTION_CONSTRAINTS_Z)
 		r.x = r.y = 0;
-	else if (mode == ACTION_MODE_XY)
+	else if (mode == ACTION_CONSTRAINTS_XY)
 		r.z = 0;
-	else if (mode == ACTION_MODE_XZ)
+	else if (mode == ACTION_CONSTRAINTS_XZ)
 		r.y = 0;
-	else if (mode == ACTION_MODE_YZ)
+	else if (mode == ACTION_CONSTRAINTS_YZ)
 		r.x = 0;
 	return r;
 }
 
 vector mvac_mirror(int mode)
 {
-	if (mode == ACTION_MODE_X)
+	if (mode == ACTION_CONSTRAINTS_X)
 		return e_x;
-	else if (mode == ACTION_MODE_Y)
+	else if (mode == ACTION_CONSTRAINTS_Y)
 		return e_y;
-	else if (mode == ACTION_MODE_Z)
+	else if (mode == ACTION_CONSTRAINTS_Z)
 		return e_z;
-	else if (mode == ACTION_MODE_XY)
+	else if (mode == ACTION_CONSTRAINTS_XY)
 		return e_z;
-	else if (mode == ACTION_MODE_XZ)
+	else if (mode == ACTION_CONSTRAINTS_XZ)
 		return e_y;
 	return e_x;
 }
@@ -108,7 +100,6 @@ void ActionController::updateAction()
 {
 	if (!cur_action)
 		return;
-	//msg_write("mouse action update");
 
 	vector v2p = multi_view->m;
 	vector v2  = multi_view->active_win->unproject(v2p, m0);
@@ -122,19 +113,19 @@ void ActionController::updateAction()
 		MatrixTranslation(mat, param);
 	}else if (action.mode == ACTION_ROTATE){
 		param = mvac_project_trans(constraints, v2 - v1) * 0.003f *multi_view->cam.zoom;
-		if (constraints == ACTION_MODE_FREE)
+		if (constraints == ACTION_CONSTRAINTS_NONE)
 			param = transform_ang(multi_view, vector(v1p.y - v2p.y, v1p.x - v2p.x, 0) * 0.003f);
 		MatrixRotation(mat, param);
 		mat = m_dt * mat * m_dti;
 	}else if (action.mode == ACTION_SCALE){
 		param = vector(1, 1, 1) + mvac_project_trans(constraints, v2 - v1) * 0.01f *multi_view->cam.zoom;
-		if (constraints == ACTION_MODE_FREE)
+		if (constraints == ACTION_CONSTRAINTS_NONE)
 			param = vector(1, 1, 1) * (1 + (v2p - v1p).x * 0.01f);
 		MatrixScale(mat, param.x, param.y, param.z);
 		mat = m_dt * mat * m_dti;
 	}else if (action.mode == ACTION_MIRROR){
 		param = mvac_mirror(constraints);
-		if (constraints == ACTION_MODE_FREE)
+		if (constraints == ACTION_CONSTRAINTS_NONE)
 			param = multi_view->active_win->getDirectionRight();
 		plane pl;
 		PlaneFromPointNormal(pl, v_0, param);
@@ -157,7 +148,6 @@ void ActionController::endAction(bool set)
 {
 	if (!cur_action)
 		return;
-	//msg_write("mouse action end");
 	if (set){
 		cur_action->undo(data);
 		data->execute(cur_action);
@@ -182,7 +172,8 @@ bool ActionController::isSelecting()
 void ActionController::reset()
 {
 	visible = false;
-	constraints = ACTION_MODE_NONE;
+	constraints = ACTION_CONSTRAINTS_NONE;
+	mouse_over_geo = -1;
 	resetGeo();
 }
 
@@ -194,6 +185,13 @@ void ActionController::resetGeo()
 	foreach(Geometry *g, geo_show)
 		delete(g);
 	geo_show.clear();
+}
+
+static float fsign(float f)
+{
+	if (f < 0)
+		return -1;
+	return 1;
 }
 
 void ActionController::update()
@@ -208,12 +206,17 @@ void ActionController::update()
 		matrix s, t;
 		MatrixScale(s, f, f, f);
 		MatrixTranslation(t, pos);
+		//vector dir = multi_view->cam.ang * e_z;
+		//vector ddir = vector(fsign(dir.x), fsign(dir.y), fsign(dir.z));
 		geo.add(new GeometryCylinder(-e_x, e_x, 0.1f, 1, 8, false));
 		geo.add(new GeometryCylinder(-e_y, e_y, 0.1f, 1, 8, false));
 		geo.add(new GeometryCylinder(-e_z, e_z, 0.1f, 1, 8, false));
 		geo.add(new GeometryTorus(v_0, e_z, 0.5f, 0.1f, 32, 8));
 		geo.add(new GeometryTorus(v_0, e_y, 0.5f, 0.1f, 32, 8));
 		geo.add(new GeometryTorus(v_0, e_x, 0.5f, 0.1f, 32, 8));
+		/*geo.add(new GeometryCube(v_0, -ddir.x * e_x, -ddir.y * e_y, v_0, 1, 1, 1));
+		geo.add(new GeometryCube(v_0, -ddir.x * e_x, v_0, -ddir.z * e_z, 1, 1, 1));
+		geo.add(new GeometryCube(v_0, v_0, -ddir.y * e_y, -ddir.z * e_z, 1, 1, 1));*/
 		geo.add(new GeometryBall(v_0, 0.3f, 16, 8));
 		geo_show.add(new GeometryCylinder(-e_x, e_x, 0.03f, 1, 8, false));
 		geo_show.add(new GeometryCylinder(-e_y, e_y, 0.03f, 1, 8, false));
@@ -221,6 +224,9 @@ void ActionController::update()
 		geo_show.add(new GeometryTorus(v_0, e_z, 0.5f, 0.03f, 32, 8));
 		geo_show.add(new GeometryTorus(v_0, e_y, 0.5f, 0.03f, 32, 8));
 		geo_show.add(new GeometryTorus(v_0, e_x, 0.5f, 0.03f, 32, 8));
+		/*geo_show.add(new GeometryCube(v_0, -ddir.x * e_x, -ddir.y * e_y, v_0, 1, 1, 1));
+		geo_show.add(new GeometryCube(v_0, -ddir.x * e_x, v_0, -ddir.z * e_z, 1, 1, 1));
+		geo_show.add(new GeometryCube(v_0, v_0, -ddir.y * e_y, -ddir.z * e_z, 1, 1, 1));*/
 		geo_show.add(new GeometryBall(v_0, 0.25f, 16, 8));
 		foreach(Geometry *g, geo)
 			g->transform(t * s);
@@ -303,7 +309,6 @@ bool ActionController::isMouseOver(vector &tp)
 	if (!visible)
 		return false;
 	float z_min = 1;
-	mouse_over_geo = -1;
 	foreachi(Geometry *g, geo, i){
 		vector t;
 		if (g->isMouseOver(multi_view->mouse_win, t)){
@@ -323,15 +328,12 @@ bool ActionController::leftButtonDown()
 	if ((!visible) && (action.locked))
 		return false;
 	vector tp;
-	constraints = ACTION_MODE_NONE;
 	if (isMouseOver(multi_view->hover.point)){
-		constraints = ACTION_MODE_X + mouse_over_geo;
-		startAction();
+		startAction(ACTION_CONSTRAINTS_X + mouse_over_geo);
 		return true;
 	}
 	if (multi_view->hover.index >= 0){
-		constraints = ACTION_MODE_FREE;
-		startAction();
+		startAction(ACTION_CONSTRAINTS_NONE);
 		return true;
 	}
 	return false;
@@ -340,7 +342,6 @@ bool ActionController::leftButtonDown()
 void ActionController::leftButtonUp()
 {
 	endAction(true);
-	bool _show = visible;
 
 	update();
 }

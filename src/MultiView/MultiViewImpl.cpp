@@ -200,6 +200,8 @@ void MultiViewImpl::camRotate(const vector &dir, bool cam_center)
 	cam.ang = cam.ang * dang;
 	if (cam_center)
 		cam.pos += cam.radius * (cam.ang * e_z);
+	action_con->update();
+	notify(MESSAGE_UPDATE);
 }
 
 void MultiViewImpl::setViewBox(const vector &min, const vector &max)
@@ -372,13 +374,13 @@ void MultiViewImpl::onLeftButtonDown()
 					}
 				}
 			}else if ((allow_mouse_actions) && (hoverSelected())){
-				action_con->startAction();
+				action_con->startAction(ACTION_CONSTRAINTS_NONE);
 			}
 		}else{
 			if (hasSelectableData()){
 				if (hover.data){
 					if (hoverSelected()){
-						action_con->startAction();
+						action_con->startAction(ACTION_CONSTRAINTS_NONE);
 					}else{
 						getSelected(get_select_mode());
 						sel_rect.start_later(m);
