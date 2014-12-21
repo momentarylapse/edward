@@ -27,7 +27,6 @@ MeshSelectionModeEdge::MeshSelectionModeEdge(ModeModelMesh *_parent) :
 
 void MeshSelectionModeEdge::onStart()
 {
-	multi_view->allow_rect = true;
 }
 
 

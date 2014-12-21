@@ -53,7 +53,6 @@ void MeshSelectionModePolygon::onEnd()
 
 void MeshSelectionModePolygon::onStart()
 {
-	multi_view->setAllowRect(true);
 }
 
 

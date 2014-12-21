@@ -514,7 +514,6 @@ void ModeWorld::onStart()
 	t->reset();
 	t->enable(false);
 
-	multi_view->setAllowRect(true);
 	SetMouseAction(MultiView::ACTION_MOVE);
 
 	onUpdate(data, "");

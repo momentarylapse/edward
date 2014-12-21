@@ -131,11 +131,9 @@ void ModeModelSkeleton::onStart()
 	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
 
 	multi_view->clearData(data);
-	multi_view->setAllowRect(true);
 
 	chooseMouseFunction(MultiView::ACTION_MOVE);
 	mode_model->allowSelectionModes(false);
-	multi_view->allow_rect = true;
 	onUpdate(data, "");
 }
 

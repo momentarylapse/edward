@@ -36,7 +36,9 @@ color MultiView::ColorSelectionRectBoundary;
 
 void MultiView::Selection::reset()
 {
+	meta = HOVER_NONE;
 	index = set = type = -1;
+	data = NULL;
 }
 
 MultiView::MultiView(bool mode3d) :

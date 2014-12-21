@@ -25,7 +25,6 @@ ModeModelAnimationNone::~ModeModelAnimationNone()
 void ModeModelAnimationNone::onStart()
 {
 	multi_view->clearData(data);
-	multi_view->allow_rect = false;
 
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	onUpdate(data, "");

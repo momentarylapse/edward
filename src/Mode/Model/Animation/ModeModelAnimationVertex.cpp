@@ -39,8 +39,6 @@ void ModeModelAnimationVertex::onStart()
 	t->configure(false,true);
 	mode_model->allowSelectionModes(true);
 
-	multi_view->allow_rect = true;
-
 	chooseMouseFunction(MultiView::ACTION_SELECT);
 
 	subscribe(data);

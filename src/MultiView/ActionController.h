@@ -42,11 +42,11 @@ class ActionController
 {
 public:
 	ActionController(MultiViewImpl *impl);
-	bool show;
+	bool visible;
 	vector pos, pos0, m0;
 	vector param;
 	matrix mat;
-	int mode;
+	int constraints;
 	Array<Geometry*> geo_show;
 	Array<Geometry*> geo;
 	int mouse_over_geo;
@@ -55,10 +55,10 @@ public:
 	ActionMultiView *cur_action;
 	Data *data;
 	void reset();
+	void resetGeo();
 	void draw(Window *win);
 	void drawParams();
-	void disable();
-	void enable();
+	void show(bool show);
 	void update();
 	bool leftButtonDown();
 	void mouseMove();

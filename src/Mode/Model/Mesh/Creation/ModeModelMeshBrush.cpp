@@ -59,7 +59,7 @@ void ModeModelMeshBrush::apply()
 void ModeModelMeshBrush::onStart()
 {
 	multi_view->setAllowAction(false);
-	multi_view->setAllowRect(false);
+	multi_view->setAllowSelect(false);
 
 	// Dialog
 	dialog = new HuiFixedDialog(_("Pinsel"), 300, 155, ed, true);//HuiCreateResourceDialog("new_ball_dialog", ed);
@@ -108,7 +108,7 @@ void ModeModelMeshBrush::onEnd()
 {
 	delete(dialog);
 	multi_view->setAllowAction(true);
-	multi_view->setAllowRect(true);
+	multi_view->setAllowSelect(true);
 	if (brushing)
 		data->endActionGroup();
 }

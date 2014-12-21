@@ -62,7 +62,6 @@ void ModeModelMeshTexture::onStart()
 {
 	multi_view->view_stage = ed->multi_view_3d->view_stage;
 	mode_model_mesh->applyMouseFunction(multi_view);
-	multi_view->allow_rect = true;
 
 	fetchData();
 

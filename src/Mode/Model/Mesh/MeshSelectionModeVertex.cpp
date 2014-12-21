@@ -22,7 +22,6 @@ MeshSelectionModeVertex::MeshSelectionModeVertex(ModeModelMesh *_parent) :
 
 void MeshSelectionModeVertex::onStart()
 {
-	multi_view->allow_rect = true;
 }
 
 void MeshSelectionModeVertex::onEnd()

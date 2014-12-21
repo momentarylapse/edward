@@ -216,7 +216,6 @@ void ModeWorldCamera::loadData()
 	// middle/right -> rotate
 	/*multi_view->SetMouseAction(1, "ActionWorldRotateObjects", MultiView::ActionRotate2d);
 	multi_view->SetMouseAction(2, "ActionWorldRotateObjects", MultiView::ActionRotate);*/
-	multi_view->allow_rect = true;
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	multi_view->addData(	MVD_WORLD_CAM_POINT,
 			data->Point,

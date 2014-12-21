@@ -287,7 +287,7 @@ void Window::draw()
 
 	// type of view
 
-	if (impl->action_con->show)
+	if (impl->action_con->visible)
 		impl->action_con->draw(this);
 
 	name_dest = rect(dest.x1 + 3, dest.x1 + 3 + NixGetStrWidth(view_kind), dest.y1, dest.y1 + 20);
@@ -295,7 +295,7 @@ void Window::draw()
 	NixSetColor(multi_view->ColorWindowType);
 	if (ed->isActive("nix-area") && (this == impl->active_win))
 		NixSetColor(multi_view->ColorText);
-	if (name_dest.inside(impl->m.x, impl->m.y))
+	if ((this == impl->mouse_win) && (impl->hover.meta == impl->hover.HOVER_WINDOW_LABEL))
 		NixSetColor(Red);
 	ed->drawStr(dest.x1 + 3, dest.y1, view_kind);
 	NixSetColor(multi_view->ColorText);

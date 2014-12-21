@@ -74,6 +74,7 @@ MultiViewImpl::MultiViewImpl(bool _mode3d) :
 	holding_cursor = false;
 	holding_x = holding_y = 0;
 	allow_mouse_actions = true;
+	allow_select = true;
 
 	reset();
 }
@@ -89,8 +90,7 @@ MultiViewImpl::~MultiViewImpl()
 
 void MultiViewImpl::reset()
 {
-	allow_rect = false;
-	sel_rect.active = false;
+	sel_rect.end();
 	if (mode3d){
 		mouse_win = win[3];
 		active_win = win[3];
@@ -134,6 +134,7 @@ void MultiViewImpl::resetMouseAction()
 {
 	action_con->cur_action = NULL;
 	action_con->action.reset();
+	msg_write("reset");
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
@@ -171,9 +172,8 @@ void MultiViewImpl::camZoom(float factor, bool mouse_rel)
 	cam.radius /= factor;
 	update_zoom;
 	if (mouse_rel)
-			cam.pos += mup - mouse_win->unproject(m);
-	if (action_con->show)
-		action_con->update();
+		cam.pos += mup - mouse_win->unproject(m);
+	action_con->update();
 	notify(MESSAGE_UPDATE);
 }
 
@@ -215,6 +215,7 @@ void MultiViewImpl::setViewBox(const vector &min, const vector &max)
 void MultiViewImpl::toggleWholeWindow()
 {
 	whole_window = !whole_window;
+	action_con->update();
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
@@ -346,25 +347,49 @@ void MultiViewImpl::onLeftButtonDown()
 	notifyBegin();
 	updateMouse();
 
-	// menu for selection of view type
-	if ((menu) && (mouse_win->name_dest.inside(m.x, m.y))){
-		active_win = mouse_win;
-		menu->openPopup(ed, m.x, m.y);
-		notifyEnd();
-		return;
-	}
-
 	getHover();
 
-	cam_con->onLeftButtonDown();
-
-
-	if (cam_con->isMouseOver()){
-		notifyEnd();
-		return;
-	}
-	active_win = mouse_win;
-	sel_rect.start_later(m);
+	// menu for selection of view type
+	if (hover.meta == hover.HOVER_WINDOW_LABEL){
+		active_win = mouse_win;
+		menu->openPopup(ed, m.x, m.y);
+	}else if (hover.meta == hover.HOVER_CAMERA_CONTROLLER){
+		cam_con->onLeftButtonDown();
+	}else if (hover.meta == hover.HOVER_ACTION_CONTROLLER){
+		active_win = mouse_win;
+		action_con->leftButtonDown();
+	}else{
+		active_win = mouse_win;
+		if (action_con->action.locked){
+			if (action_con->action.mode == ACTION_SELECT){
+				if (allow_select){
+					if (hoverSelected()){
+						getSelected(get_select_mode());
+						sel_rect.start_later(m);
+					}else{
+						getSelected(get_select_mode());
+						sel_rect.start_later(m);
+					}
+				}
+			}else if ((allow_mouse_actions) && (hoverSelected())){
+				action_con->startAction();
+			}
+		}else{
+			if (hasSelectableData()){
+				if (hover.data){
+					if (hoverSelected()){
+						action_con->startAction();
+					}else{
+						getSelected(get_select_mode());
+						sel_rect.start_later(m);
+					}
+				}else{
+					getSelected(get_select_mode());
+					sel_rect.start_later(m);
+				}
+			}
+		}
+	/*sel_rect.start_later(m);
 
 	//v = v_0;
 	if (allow_mouse_actions){
@@ -372,6 +397,7 @@ void MultiViewImpl::onLeftButtonDown()
 			getSelected(get_select_mode());
 		}else if (action_con->leftButtonDown()){
 		}
+	}*/
 	}
 	notifyEnd();
 }
@@ -459,9 +485,9 @@ void MultiViewImpl::updateMouse()
 	v.x = HuiGetEvent()->dx;
 	v.y = HuiGetEvent()->dy;
 
-	bool lbut = HuiGetEvent()->lbut;
-	bool mbut = HuiGetEvent()->mbut;
-	bool rbut = HuiGetEvent()->rbut;
+	lbut = HuiGetEvent()->lbut;
+	mbut = HuiGetEvent()->mbut;
+	rbut = HuiGetEvent()->rbut;
 
 	if (cam_con->isMouseOver())
 		return;
@@ -491,42 +517,33 @@ void MultiViewImpl::onMouseMove()
 	notifyBegin();
 	updateMouse();
 
-	bool lbut = HuiGetEvent()->lbut;
-	bool mbut = HuiGetEvent()->mbut;
-	bool rbut = HuiGetEvent()->rbut;
 
-	// hover
-	if ((!action_con->inUse()) && (!cam_con->inUse()) && (!sel_rect.active))
-		getHover();
-
-	if ((lbut) && (action_con->isSelecting()) && (!cam_con->inUse()) && (allow_rect) && (!sel_rect.active)){
+	if (action_con->inUse()){
+		action_con->mouseMove();
+	}else if (cam_con->inUse()){
+		cam_con->onMouseMove();
+	}else if (sel_rect.active){
+		selectAllInRectangle(get_select_mode());
+	}else if (view_moving){
+		int t = active_win->type;
+		if ((t == VIEW_PERSPECTIVE) || (t == VIEW_ISOMETRIC)){
+	// camera rotation
+			camRotate(v, mbut || (NixGetKey(KEY_CONTROL)));
+		}else{
+	// camera translation
+			camMove(v);
+		}
+	}else if (sel_rect.dist >= 0){
 		sel_rect.dist += abs(v.x) + abs(v.y);
 		if (sel_rect.dist >= MIN_MOUSE_MOVE_TO_INTERACT)
 			startRect();
+	}else{
+
+		getHover();
+
 	}
 
-	// rectangle
-	if (sel_rect.active)
-		selectAllInRectangle(get_select_mode());
 
-	// left button -> move data
-	if (action_con->inUse())
-		action_con->mouseMove();
-
-	if (cam_con->inUse())
-		cam_con->onMouseMove();
-
-
-	if (view_moving){
-		int t = active_win->type;
-		if ((t == VIEW_PERSPECTIVE) || (t == VIEW_ISOMETRIC)){
-// camera rotation
-			camRotate(v, mbut || (NixGetKey(KEY_CONTROL)));
-		}else{
-// camera translation
-			camMove(v);
-		}
-	}
 
 	// ignore mouse, while "holding"
 	if (holding_cursor){
@@ -544,6 +561,7 @@ void MultiViewImpl::onMouseMove()
 void MultiViewImpl::startRect()
 {
 	sel_rect.active = true;
+	sel_rect.dist = -1;
 
 	// reset selection data
 	foreach(DataSet &d, data)
@@ -558,7 +576,7 @@ void MultiViewImpl::startRect()
 
 void MultiViewImpl::endRect()
 {
-	sel_rect.active = false;
+	sel_rect.end();
 
 	notify(MESSAGE_UPDATE);
 }
@@ -715,6 +733,7 @@ void MultiViewImpl::SelectionRect::start_later(const vector &m)
 void MultiViewImpl::SelectionRect::end()
 {
 	active = false;
+	dist = -1;
 }
 
 void MultiViewImpl::SelectionRect::draw(const vector &m)
@@ -744,41 +763,69 @@ void MultiViewImpl::setMouseAction(const string & name, int mode, bool locked)
 	action_con->action.name = name;
 	action_con->action.mode = mode;
 	action_con->action.locked = locked;
-	action_con->disable();
-	if (!action_con->isSelecting())
-		action_con->enable();
+	action_con->show(needActionController());
 	notify(MESSAGE_SETTINGS_CHANGE);
+}
+
+bool MultiViewImpl::needActionController()
+{
+	if (!hasSelection())
+		return false;
+	if (action_con->action.mode == ACTION_SELECT)
+		return false;
+	return true;
 }
 
 void MultiViewImpl::selectAll()
 {
+	if (!allow_select)
+		return;
+	if (action_con->action.locked)
+		if (action_con->action.mode != ACTION_SELECT)
+			return;
+
 	foreach(DataSet &d, data)
 		for (int i=0;i<d.data->num;i++){
 			SingleData* sd = MVGetSingleData(d, i);
 			if (sd->view_stage >= view_stage)
 				sd->is_selected = true;
 		}
+	action_con->show(needActionController());
 	notify(MESSAGE_SELECTION_CHANGE);
 }
 
 void MultiViewImpl::selectNone()
 {
+	if (!allow_select)
+		return;
+	if (action_con->action.locked)
+		if (action_con->action.mode != ACTION_SELECT)
+			return;
+
 	foreach(DataSet &d, data)
 		for (int i=0;i<d.data->num;i++){
 			SingleData* sd = MVGetSingleData(d, i);
 			sd->is_selected = false;
 		}
+	action_con->show(needActionController());
 	notify(MESSAGE_SELECTION_CHANGE);
 }
 
 void MultiViewImpl::invertSelection()
 {
+	if (!allow_select)
+		return;
+	if (action_con->action.locked)
+		if (action_con->action.mode != ACTION_SELECT)
+			return;
+
 	foreach(DataSet &d, data)
 		for (int i=0;i<d.data->num;i++){
 			SingleData* sd = MVGetSingleData(d, i);
 			if (sd->view_stage >= view_stage)
 				sd->is_selected = !sd->is_selected;
 		}
+	action_con->show(needActionController());
 	notify(MESSAGE_SELECTION_CHANGE);
 }
 
@@ -795,7 +842,7 @@ bool MultiViewImpl::hasSelection()
 
 vector MultiViewImpl::getSelectionCenter()
 {
-	vector min, max;
+	vector min = v_0, max = v_0;
 	bool first = true;
 	foreach(DataSet &d, data)
 		for (int i=0;i<d.data->num;i++){
@@ -834,16 +881,23 @@ void MultiViewImpl::getHover()
 
 	/*if (!MVSelectable)
 		return;*/
-	if (cam_con->isMouseOver())
+	if ((menu) && (mouse_win->name_dest.inside(m.x, m.y))){
+		hover.meta = hover.HOVER_WINDOW_LABEL;
 		return;
-	if (action_con->isMouseOver(hover.point))
+	}
+	if (cam_con->isMouseOver()){
+		hover.meta = hover.HOVER_CAMERA_CONTROLLER;
 		return;
-	float _radius=(float)POINT_RADIUS_HOVER;
+	}
+	if (action_con->isMouseOver(hover.point)){
+		hover.meta = hover.HOVER_ACTION_CONTROLLER;
+		return;
+	}
 	float z_min=1;
 	foreachi(DataSet &d, data, di)
 		if (d.selectable)
 			for (int i=0;i<d.data->num;i++){
-				SingleData* sd=MVGetSingleData(d,i);
+				SingleData* sd = MVGetSingleData(d, i);
 				if (sd->view_stage < view_stage)
 					continue;
 				float z;
@@ -865,10 +919,27 @@ void MultiViewImpl::getHover()
 					hover.set = di;
 					hover.type = d.type;
 					hover.point = mop;
+					hover.meta = hover.HOVER_DATA;
+					hover.data = sd;
 					if (sd->is_selected)
 						return;
 				}
 			}
+}
+
+bool MultiViewImpl::hoverSelected()
+{
+	if (hover.index < 0)
+		return false;
+	return hover.data->is_selected;
+}
+
+bool MultiViewImpl::hasSelectableData()
+{
+	foreach(DataSet &d, data)
+		if (d.selectable)
+			return true;
+	return false;
 }
 
 void MultiViewImpl::unselectAll()
@@ -879,6 +950,7 @@ void MultiViewImpl::unselectAll()
 				SingleData* sd = MVGetSingleData(d,i);
 				sd->is_selected = false;
 			}
+	action_con->show(needActionController());
 	notify(MESSAGE_SELECTION_CHANGE);
 }
 
@@ -904,6 +976,7 @@ void MultiViewImpl::getSelected(int mode)
 			}
 		}
 	}
+	action_con->show(needActionController());
 	notify(MESSAGE_SELECTION_CHANGE);
 	notifyEnd();
 }
@@ -937,6 +1010,7 @@ void MultiViewImpl::selectAllInRectangle(int mode)
 					sd->is_selected = sd->m_delta;
 			}
 
+	action_con->show(needActionController());
 	notify(MESSAGE_SELECTION_CHANGE);
 	notifyEnd();
 }
@@ -959,15 +1033,15 @@ void MultiViewImpl::addMessage3d(const string &str, const vector &pos)
 	message3d.add(m);
 }
 
-void MultiViewImpl::setAllowRect(bool allow)
-{
-	allow_rect = allow;
-	notify(MESSAGE_SETTINGS_CHANGE);
-}
-
 void MultiViewImpl::setAllowAction(bool allow)
 {
 	allow_mouse_actions = allow;
+	notify(MESSAGE_SETTINGS_CHANGE);
+}
+
+void MultiViewImpl::setAllowSelect(bool allow)
+{
+	allow_select = allow;
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 

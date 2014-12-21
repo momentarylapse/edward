@@ -50,7 +50,7 @@ void ActionController::startAction()
 
 		m0 = multi_view->hover.point;
 		pos0 = pos;
-		if (mode == ACTION_MODE_FREE)
+		if (constraints == ACTION_MODE_FREE)
 			pos0 = multi_view->hover.point;
 		cur_action = ActionMultiViewFactory(action.name, data);
 		cur_action->execute_logged(data);
@@ -118,23 +118,23 @@ void ActionController::updateAction()
 	MatrixTranslation(m_dt, pos0);
 	MatrixTranslation(m_dti, -pos0);
 	if (action.mode == ACTION_MOVE){
-		param = mvac_project_trans(mode, v2 - v1);
+		param = mvac_project_trans(constraints, v2 - v1);
 		MatrixTranslation(mat, param);
 	}else if (action.mode == ACTION_ROTATE){
-		param = mvac_project_trans(mode, v2 - v1) * 0.003f *multi_view->cam.zoom;
-		if (mode == ACTION_MODE_FREE)
+		param = mvac_project_trans(constraints, v2 - v1) * 0.003f *multi_view->cam.zoom;
+		if (constraints == ACTION_MODE_FREE)
 			param = transform_ang(multi_view, vector(v1p.y - v2p.y, v1p.x - v2p.x, 0) * 0.003f);
 		MatrixRotation(mat, param);
 		mat = m_dt * mat * m_dti;
 	}else if (action.mode == ACTION_SCALE){
-		param = vector(1, 1, 1) + mvac_project_trans(mode, v2 - v1) * 0.01f *multi_view->cam.zoom;
-		if (mode == ACTION_MODE_FREE)
+		param = vector(1, 1, 1) + mvac_project_trans(constraints, v2 - v1) * 0.01f *multi_view->cam.zoom;
+		if (constraints == ACTION_MODE_FREE)
 			param = vector(1, 1, 1) * (1 + (v2p - v1p).x * 0.01f);
 		MatrixScale(mat, param.x, param.y, param.z);
 		mat = m_dt * mat * m_dti;
 	}else if (action.mode == ACTION_MIRROR){
-		param = mvac_mirror(mode);
-		if (mode == ACTION_MODE_FREE)
+		param = mvac_mirror(constraints);
+		if (constraints == ACTION_MODE_FREE)
 			param = multi_view->active_win->getDirectionRight();
 		plane pl;
 		PlaneFromPointNormal(pl, v_0, param);
@@ -174,20 +174,20 @@ bool ActionController::isSelecting()
 {
 	if (action.mode == ACTION_SELECT)
 		return true;
-	if (!action.locked){
-		if (multi_view->hover.index >= 0){
-			SingleData *d = MVGetSingleData(multi_view->data[multi_view->hover.set], multi_view->hover.index);
-			return !d->is_selected;
-		}
-		return true;
-	}
+	if (!action.locked)
+		return !multi_view->hoverSelected();
 	return false;
 }
 
 void ActionController::reset()
 {
-	show = false;
-	mode = ACTION_MODE_NONE;
+	visible = false;
+	constraints = ACTION_MODE_NONE;
+	resetGeo();
+}
+
+void ActionController::resetGeo()
+{
 	foreach(Geometry *g, geo)
 		delete(g);
 	geo.clear();
@@ -198,13 +198,13 @@ void ActionController::reset()
 
 void ActionController::update()
 {
-	int m = mode;
-	reset();
-	mode = m;
-	if (multi_view->hasSelection()){
+	resetGeo();
+
+	if (visible){
 		pos = multi_view->getSelectionCenter();
-		show = true;
 		float f = multi_view->cam.radius * 0.1f;
+		if (multi_view->whole_window)
+			f /= 2;
 		matrix s, t;
 		MatrixScale(s, f, f, f);
 		MatrixTranslation(t, pos);
@@ -215,12 +215,12 @@ void ActionController::update()
 		geo.add(new GeometryTorus(v_0, e_y, 0.5f, 0.1f, 32, 8));
 		geo.add(new GeometryTorus(v_0, e_x, 0.5f, 0.1f, 32, 8));
 		geo.add(new GeometryBall(v_0, 0.3f, 16, 8));
-		geo_show.add(new GeometryCylinder(-e_x, e_x, 0.05f, 1, 8, false));
-		geo_show.add(new GeometryCylinder(-e_y, e_y, 0.05f, 1, 8, false));
-		geo_show.add(new GeometryCylinder(-e_z, e_z, 0.05f, 1, 8, false));
-		geo_show.add(new GeometryTorus(v_0, e_z, 0.5f, 0.05f, 32, 8));
-		geo_show.add(new GeometryTorus(v_0, e_y, 0.5f, 0.05f, 32, 8));
-		geo_show.add(new GeometryTorus(v_0, e_x, 0.5f, 0.05f, 32, 8));
+		geo_show.add(new GeometryCylinder(-e_x, e_x, 0.03f, 1, 8, false));
+		geo_show.add(new GeometryCylinder(-e_y, e_y, 0.03f, 1, 8, false));
+		geo_show.add(new GeometryCylinder(-e_z, e_z, 0.03f, 1, 8, false));
+		geo_show.add(new GeometryTorus(v_0, e_z, 0.5f, 0.03f, 32, 8));
+		geo_show.add(new GeometryTorus(v_0, e_y, 0.5f, 0.03f, 32, 8));
+		geo_show.add(new GeometryTorus(v_0, e_x, 0.5f, 0.03f, 32, 8));
 		geo_show.add(new GeometryBall(v_0, 0.25f, 16, 8));
 		foreach(Geometry *g, geo)
 			g->transform(t * s);
@@ -230,15 +230,10 @@ void ActionController::update()
 	ed->forceRedraw();
 }
 
-void ActionController::enable()
+void ActionController::show(bool show)
 {
+	visible = show;
 	update();
-}
-
-void ActionController::disable()
-{
-	reset();
-	ed->forceRedraw();
 }
 
 const color MVACColor[] = {
@@ -253,7 +248,7 @@ const color MVACColor[] = {
 
 void ActionController::draw(Window *win)
 {
-	if (!show)
+	if (!visible)
 		return;
 	NixSetZ(false, false);
 	NixEnableLighting(true);
@@ -305,7 +300,7 @@ void ActionController::drawParams()
 bool ActionController::isMouseOver(vector &tp)
 {
 	mouse_over_geo = -1;
-	if (!show)
+	if (!visible)
 		return false;
 	float z_min = 1;
 	mouse_over_geo = -1;
@@ -325,17 +320,17 @@ bool ActionController::isMouseOver(vector &tp)
 
 bool ActionController::leftButtonDown()
 {
-	if ((!show) && (action.locked))
+	if ((!visible) && (action.locked))
 		return false;
 	vector tp;
-	mode = ACTION_MODE_NONE;
+	constraints = ACTION_MODE_NONE;
 	if (isMouseOver(multi_view->hover.point)){
-		mode = ACTION_MODE_X + mouse_over_geo;
+		constraints = ACTION_MODE_X + mouse_over_geo;
 		startAction();
 		return true;
 	}
 	if (multi_view->hover.index >= 0){
-		mode = ACTION_MODE_FREE;
+		constraints = ACTION_MODE_FREE;
 		startAction();
 		return true;
 	}
@@ -345,11 +340,9 @@ bool ActionController::leftButtonDown()
 void ActionController::leftButtonUp()
 {
 	endAction(true);
-	bool _show = show;
+	bool _show = visible;
 
-	disable();
-	if (_show)
-		enable();
+	update();
 }
 
 bool ActionController::inUse()

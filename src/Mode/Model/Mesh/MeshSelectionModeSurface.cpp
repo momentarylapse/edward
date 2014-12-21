@@ -83,7 +83,6 @@ bool ModelSurface::inRect(MultiView::Window *win, rect &r, void *user_data)
 
 void MeshSelectionModeSurface::onStart()
 {
-	multi_view->allow_rect = true;
 }
 
 

@@ -75,7 +75,7 @@ public:
 	virtual void reset();
 	virtual void resetView();
 	virtual void setViewBox(const vector &min, const vector &max);
-	virtual void setAllowRect(bool allow);
+	virtual void setAllowSelect(bool allow);
 	virtual void setAllowAction(bool allow);
 	void viewStagePush();
 	void viewStagePop();
@@ -100,6 +100,8 @@ public:
 	};
 	void getSelected(int mode = SELECT_SET);
 	void selectAllInRectangle(int mode = SELECT_SET);
+	bool hoverSelected();
+	bool hasSelectableData();
 
 	virtual float getGridD();
 	string getMVScaleByZoom(vector &v);
@@ -111,9 +113,12 @@ public:
 	Window *win[4];
 	Window *cur_projection_win;
 
+	bool lbut, mbut, rbut;
+
 	ActionController *action_con;
 	virtual void resetMouseAction();
 	virtual void setMouseAction(const string &name, int mode, bool locked);
+	bool needActionController();
 	CameraController *cam_con;
 
 	Array<DataSet> data;
@@ -134,6 +139,7 @@ public:
 		void draw(const vector &m);
 	};
 	SelectionRect sel_rect;
+	bool allow_select;
 	bool view_moving;
 
 

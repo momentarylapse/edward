@@ -184,7 +184,6 @@ void ModeMaterial::onStart()
 	t = ed->toolbar[HuiToolbarLeft];
 	t->reset();
 	t->enable(false);
-	multi_view->allow_rect = false;
 
 	AppearanceDialog = new MaterialPropertiesDialog(ed, data);
 

@@ -19,6 +19,7 @@ namespace MultiView{
 
 class MultiView;
 class Window;
+class SingleData;
 
 
 enum
@@ -36,7 +37,6 @@ enum
 
 
 enum{
-	ACTION_NONE,
 	ACTION_SELECT,
 	ACTION_MOVE,
 	ACTION_ROTATE,
@@ -95,8 +95,8 @@ public:
 	virtual void addMessage3d(const string &str, const vector &pos) = 0;
 	virtual void resetMessage3d() = 0;
 
-	virtual void setAllowRect(bool allow) = 0;
 	virtual void setAllowAction(bool allow) = 0;
+	virtual void setAllowSelect(bool allow) = 0;
 
 	bool mode3d;
 	bool whole_window;
@@ -109,7 +109,6 @@ public:
 
 	int view_stage;
 
-	bool allow_rect;
 	bool allow_mouse_actions;
 	Camera cam;
 
@@ -120,7 +119,16 @@ public:
 
 	struct Selection
 	{
+		enum{
+			HOVER_NONE,
+			HOVER_WINDOW_LABEL,
+			HOVER_ACTION_CONTROLLER,
+			HOVER_CAMERA_CONTROLLER,
+			HOVER_DATA
+		};
+		int meta;
 		int set, index, type;
+		SingleData *data;
 		vector point;
 		void reset();
 	};
