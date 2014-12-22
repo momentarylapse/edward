@@ -27,6 +27,7 @@
 #include "Creation/ModeModelMeshBrush.h"
 #include "Creation/ModeModelMeshDeform.h"
 #include "Creation/ModeModelMeshExtrudePolygons.h"
+#include "Creation/ModeModelMeshPaste.h"
 #include "../../../Action/Model/Mesh/Skin/ActionModelSkinVerticesFromProjection.h"
 #include "../Dialog/ModelMaterialSelectionDialog.h"
 #include "../Dialog/ModelMaterialDialog.h"
@@ -129,7 +130,8 @@ void ModeModelMesh::onCommand(const string & id)
 	if (id == "copy")
 		copy();
 	if (id == "paste")
-		paste();
+		ed->setMode(new ModeModelMeshPaste(this));
+		//paste();
 
 	if (id == "select_cw")
 		toggleSelectCW();
@@ -141,9 +143,9 @@ void ModeModelMesh::onCommand(const string & id)
 	if (id == "invert_trias")
 		data->invertSelection();
 	if (id == "extrude_triangles")
-		ed->setMode(new ModeModelMeshExtrudePolygons(ed->cur_mode));
+		ed->setMode(new ModeModelMeshExtrudePolygons(this));
 	if (id == "autoweld_surfaces")
-		ed->setMode(new ModeModelMeshAutoweld(ed->cur_mode));
+		ed->setMode(new ModeModelMeshAutoweld(this));
 	if (id == "convert_to_triangles")
 		data->convertSelectionToTriangles();
 	if (id == "untriangulate_selection")
