@@ -104,7 +104,7 @@ public:
 	bool hasSelectableData();
 
 	virtual float getGridD();
-	string getMVScaleByZoom(vector &v);
+	string getScaleByZoom(vector &v);
 
 	vector virtual getCursor3d();
 	vector virtual getCursor3d(const vector &depth_reference);

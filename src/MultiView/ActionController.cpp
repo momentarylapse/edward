@@ -285,7 +285,7 @@ void ActionController::drawParams()
 {
 	if (action.mode == ACTION_MOVE){
 		vector t = param;
-		string unit = multi_view->getMVScaleByZoom(t);
+		string unit = multi_view->getScaleByZoom(t);
 		ed->drawStr(150, 100, f2s(t.x, 2) + " " + unit, Edward::ALIGN_RIGHT);
 		ed->drawStr(150, 120, f2s(t.y, 2) + " " + unit, Edward::ALIGN_RIGHT);
 		if (multi_view->mode3d)

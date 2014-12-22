@@ -365,41 +365,22 @@ void MultiViewImpl::onLeftButtonDown()
 		if (action_con->action.locked){
 			if (action_con->action.mode == ACTION_SELECT){
 				if (allow_select){
-					if (hoverSelected()){
-						getSelected(get_select_mode());
-						sel_rect.start_later(m);
-					}else{
-						getSelected(get_select_mode());
-						sel_rect.start_later(m);
-					}
+					getSelected(get_select_mode());
+					sel_rect.start_later(m);
 				}
 			}else if ((allow_mouse_actions) && (hoverSelected())){
 				action_con->startAction(ACTION_CONSTRAINTS_NONE);
 			}
 		}else{
 			if (hasSelectableData()){
-				if (hover.data){
-					if (hoverSelected()){
-						action_con->startAction(ACTION_CONSTRAINTS_NONE);
-					}else{
-						getSelected(get_select_mode());
-						sel_rect.start_later(m);
-					}
-				}else{
+				if ((hoverSelected()) && (get_select_mode() == MultiViewImpl::SELECT_SET)){
+					action_con->startAction(ACTION_CONSTRAINTS_NONE);
+				}else if (allow_select){
 					getSelected(get_select_mode());
 					sel_rect.start_later(m);
 				}
 			}
 		}
-	/*sel_rect.start_later(m);
-
-	//v = v_0;
-	if (allow_mouse_actions){
-		if (action_con->isSelecting()){
-			getSelected(get_select_mode());
-		}else if (action_con->leftButtonDown()){
-		}
-	}*/
 	}
 	notifyEnd();
 }
@@ -584,77 +565,30 @@ void MultiViewImpl::endRect()
 }
 
 
-#define GridConst	5.0f
+#define GRID_CONST	5.0f
 
 float MultiViewImpl::getGridD()
 {
-	float z = cam.zoom,d=1.0f;
-	if (z<GridConst){
-		for (int i=0;i<40;i++){
-			d*=10.0f;
-			if (d*z>GridConst)
-				break;
-		}
-	}else if (z>=GridConst*10.0f){
-		for (int i=0;i<40;i++){
-			d/=10.0f;
-			if (d*z<=GridConst*10.0f)
-				break;
-		}
-	}
-	return d;
+	return exp10(ceil(log10(GRID_CONST / cam.zoom)));
 }
 
 
-string MultiViewImpl::getMVScaleByZoom(vector &v)
+string MultiViewImpl::getScaleByZoom(vector &v)
 {
-
+	const char *units[] = {"y", "z", "a", "f", "p", "n", "\u00b5", "m", "", "k", "M", "G", "T", "P", "E", "Z", "Y"};
 	float l = getGridD() * 10.1f;
-	string unit;
-	float f = 1.0f;
 
-
-	/*float z=Zoom3D,d=1.0f;
-	if (z<GridConst){
-		for (int i=0;i<40;i++){
-			d*=10.0f;
-			if (d*z>GridConst)
-				break;
-		}
-	}else if (z>=GridConst*10.0f){
-		for (int i=0;i<40;i++){
-			d/=10.0f;
-			if (d*z<=GridConst*10.0f)
-				break;
-		}
-	}
-	return d;*/
-
-	//if (l<=0.0000000000000001f){
-	//}
-	unit = "???";
-	if (l>0.000000000000000001f){	unit = "a";	f=1000000000000000000.0f;	}
-	if (l>0.000000000000001f){		unit = "f";	f=1000000000000000.0f;	}
-	if (l>0.000000000001f){			unit = "p";	f=1000000000000.0f;	}
-	if (l>0.000000001f){			unit = "n";	f=1000000000.0f;	}
-	if (l>0.000001f){				unit = "\u00b5";	f=1000000.0f;	}
-	if (l>0.001f){					unit = "m";	f=1000.0f;	}
-	if (l>1.0f){					unit = "";	f=1.0f;	}
-	if (l>1000.0f){					unit = "k";	f=0.001f;	}
-	if (l>1000000.0f){				unit = "M";	f=0.000001f;	}
-	if (l>1000000000.0f){			unit = "G";	f=0.000000001f;	}
-	if (l>1000000000000.0f){		unit = "T";	f=0.000000000001f;	}
-	if (l>1000000000000000.0f){		unit = "P";	f=0.000000000000001f;	}
-	//if (l>1000000000000000000.0f){
-	//}
-	v *= f;
-	return unit;
+	int n = floor(log10(l) / 3.0f);
+	v /= exp10(n * 3);
+	if ((n >= -8) && (n <= 8))
+		return units[n + 8];
+	return format("*10^%d", n*3);
 }
 
 void MultiViewImpl::drawMousePos()
 {
 	vector m = getCursor3d();
-	string unit = getMVScaleByZoom(m);
+	string unit = getScaleByZoom(m);
 	string sx = f2s(m.x,2) + " " + unit;
 	string sy = f2s(m.y,2) + " " + unit;
 	string sz = f2s(m.z,2) + " " + unit;
