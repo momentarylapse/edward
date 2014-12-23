@@ -77,7 +77,7 @@ void CameraDialog::OnDeletePoint()
 
 #define screen2sample(x)	((x) / time_scale + time_offset)
 #define sample2screen(x)	(((x) - time_offset) * time_scale)
-string get_time_str_fuzzy(double t, double dt)
+static string get_time_str_fuzzy(double t, double dt)
 {
 	bool sign = (t < 0);
 	if (sign)

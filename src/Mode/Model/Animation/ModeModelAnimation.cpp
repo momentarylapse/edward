@@ -13,6 +13,7 @@
 #include "ModeModelAnimationVertex.h"
 #include "../ModeModel.h"
 #include "../Dialog/ModelAnimationDialog.h"
+#include "../Dialog/ModelAnimationTimelinePanel.h"
 #include "../Mesh/MeshSelectionModePolygon.h"
 
 ModeModelAnimation *mode_model_animation = NULL;
@@ -72,6 +73,9 @@ void ModeModelAnimation::onStart()
 	current_frame = 0;
 
 	dialog = new ModelAnimationDialog(ed, data);
+	timeline = new ModelAnimationTimelinePanel;
+
+	ed->embed(timeline, "vgrid", 0, 1);
 
 	updateAnimation();
 	Observer::subscribe(data);
@@ -96,6 +100,7 @@ void ModeModelAnimation::onEnd()
 {
 	Observer::unsubscribe(data);
 	delete(dialog);
+	delete(timeline);
 }
 
 
@@ -176,7 +181,7 @@ void ModeModelAnimation::updateAnimation()
 	mode_model_mesh->updateVertexBuffers(vertex);
 	mode_model_mesh->fillSelectionBuffer(vertex);
 
-	//data->notify();
+	notify();
 	ed->forceRedraw();
 }
 

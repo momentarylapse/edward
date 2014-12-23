@@ -173,6 +173,8 @@ Edward::Edward(Array<string> arg) :
 	msg_db_f("Init", 1);
 	
 	setBorderWidth(0);
+	addControlTable("", 0, 0, 1, 2, "vgrid");
+	setTarget("vgrid", 0);
 	addControlTable("", 0, 0, 2, 1, "root-table");
 	setTarget("root-table", 0);
 	addDrawingArea("!grabfocus,nix", 0, 0, 0, 0, "nix-area");

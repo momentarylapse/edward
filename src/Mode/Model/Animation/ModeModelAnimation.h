@@ -13,6 +13,7 @@
 
 class DataModel;
 class ModelAnimationDialog;
+class ModelAnimationTimelinePanel;
 
 class ModeModelAnimation: public Mode<DataModel>, public Observable
 {
@@ -28,6 +29,7 @@ public:
 	virtual void onUpdateMenu();
 
 	ModelAnimationDialog *dialog;
+	ModelAnimationTimelinePanel *timeline;
 
 	ModelMove *empty_move;
 
