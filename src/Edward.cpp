@@ -179,8 +179,6 @@ Edward::Edward(Array<string> arg) :
 	setTarget("root-table", 0);
 	addDrawingArea("!grabfocus,nix", 0, 0, 0, 0, "nix-area");
 	setBorderWidth(5);
-	/*AddControlTable("", 1, 0, 1, 5, "side-table");
-	HideControl("side-table", true);*/
 
 	ed = this;
 	no_mode = new ModeNone;

@@ -21,6 +21,7 @@ public:
 	void undo(Data *d);
 
 private:
+	bool aborted;
 	int index, frame;
 	ModelFrame old_frame;
 };

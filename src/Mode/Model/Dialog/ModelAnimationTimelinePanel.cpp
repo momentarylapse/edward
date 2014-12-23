@@ -47,19 +47,12 @@ string ModelAnimationTimelinePanel::get_time_str_fuzzy(double t, double dt)
 	bool sign = (t < 0);
 	if (sign)
 		t = -t;
-	int _min=((int)t/60);
-	int _sec=((int)t %60);
-	int _usec=( ((int)(t * 1000)) %1000);
+	int _sec = (int)t;
+	int _usec = ( ((int)(t * 1000)) %1000);
 	if (dt < 1.0){
-		if (_min > 0)
-			return format("%s%d:%.2d,%.3d",sign?"-":"",_min,_sec,_usec);
-		else
-			return format("%s%.2d,%.3d",sign?"-":"",_sec,_usec);
+		return format("%s%.2d,%.3d",sign?"-":"",_sec,_usec);
 	}else{
-		if (_min > 0)
-			return format("%s%d:%.2d",sign?"-":"",_min,_sec);
-		else
-			return format("%s%.2d",sign?"-":"",_sec);
+		return format("%s%.2d",sign?"-":"",_sec);
 	}
 }
 

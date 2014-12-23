@@ -36,6 +36,8 @@ ModeModelAnimation::ModeModelAnimation(ModeBase *_parent) :
 	empty_move->interpolated_loop = false;
 
 	move = empty_move;
+	dialog = NULL;
+	timeline = NULL;
 }
 
 
@@ -126,21 +128,19 @@ void ModeModelAnimation::setCurrentMove(int move_no)
 
 void ModeModelAnimation::setCurrentFrame(int frame_no)
 {
-	if ((frame_no >= 0) && (frame_no < move->frame.num)){
-		current_frame = frame_no;
-		updateAnimation();
-		notify();
-	}
+	current_frame = loopi(frame_no, 0, move->frame.num - 1);
+	updateAnimation();
+	notify();
 }
 
 void ModeModelAnimation::setCurrentFrameNext()
 {
-	setCurrentFrame((current_frame + 1) % move->frame.num);
+	setCurrentFrame(current_frame + 1);
 }
 
 void ModeModelAnimation::setCurrentFramePrevious()
 {
-	setCurrentFrame((current_frame - 1 + move->frame.num) % move->frame.num);
+	setCurrentFrame(current_frame - 1);
 }
 
 void ModeModelAnimation::updateAnimation()
@@ -222,8 +222,10 @@ void ModeModelAnimation::updateSkeleton()
 
 void ModeModelAnimation::animationDeleteCurrentFrame()
 {
-	data->animationDeleteFrame(current_move, current_frame);
-	setCurrentMove(-1);
+	if (move->frame.num > 1)
+		data->animationDeleteFrame(current_move, current_frame);
+	else
+		ed->setMessage(_("der letzte Frame kann nicht gel&oscht werden"));
 }
 
 void ModeModelAnimation::animationDuplicateCurrentFrame()
@@ -243,6 +245,11 @@ void ModeModelAnimation::iterateAnimation(float dt)
 
 void ModeModelAnimation::onUpdate(Observable *o, const string &message)
 {
+	if (current_frame >= move->frame.num)
+		setCurrentFrame(move->frame.num - 1);
+	else if (current_frame < 0)
+		setCurrentFrame(0);
+
 	//msg_write("..up");
 	updateAnimation();
 	// valid move
