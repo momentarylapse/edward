@@ -33,7 +33,7 @@ public:
 
 	ModelMove *empty_move;
 
-	ModelMove *move;
+	ModelMove *cur_move();
 	int current_move, current_frame;
 	Array<ModelVertex> vertex;
 	Array<ModelBone> bone;
@@ -49,11 +49,12 @@ public:
 	void idleFunction();
 
 	void setCurrentMove(int move);
+	void setCurrentMoveFirst();
 	void setCurrentFrame(int frame);
 	void setCurrentFrameNext();
 	void setCurrentFramePrevious();
-	void animationDeleteCurrentFrame();
-	void animationDuplicateCurrentFrame();
+	void deleteCurrentFrame();
+	void duplicateCurrentFrame();
 
 	void updateAnimation();
 	void updateSkeleton();

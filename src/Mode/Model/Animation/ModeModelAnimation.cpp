@@ -35,7 +35,6 @@ ModeModelAnimation::ModeModelAnimation(ModeBase *_parent) :
 	empty_move->interpolated_quadratic = 0;
 	empty_move->interpolated_loop = false;
 
-	move = empty_move;
 	dialog = NULL;
 	timeline = NULL;
 }
@@ -58,9 +57,9 @@ void ModeModelAnimation::onCommand(const string & id)
 	if (id == "move_frame_dec")
 		setCurrentFramePrevious();
 	if (id == "move_frame_delete")
-		animationDeleteCurrentFrame();
+		deleteCurrentFrame();
 	if (id == "move_frame_insert")
-		animationDuplicateCurrentFrame();
+		duplicateCurrentFrame();
 }
 
 
@@ -71,8 +70,7 @@ void ModeModelAnimation::onStart()
 	time_param = 0;
 	playing = false;
 	play_loop = true;
-	current_move = -1;
-	current_frame = 0;
+	setCurrentMoveFirst();
 
 	dialog = new ModelAnimationDialog(ed, data);
 	timeline = new ModelAnimationTimelinePanel;
@@ -89,6 +87,16 @@ void ModeModelAnimation::onStart()
 
 	ed->setMode(mode_model_animation_none);
 	notify();
+}
+
+void ModeModelAnimation::setCurrentMoveFirst()
+{
+	foreachi(ModelMove &m, data->move, i)
+		if (m.frame.num > 0){
+			setCurrentMove(i);
+			return;
+		}
+	setCurrentMove(-1);
 }
 
 
@@ -109,18 +117,16 @@ void ModeModelAnimation::onEnd()
 
 void ModeModelAnimation::setCurrentMove(int move_no)
 {
-	move = empty_move;
 	current_move = -1;
 	if ((move_no >= 0) && (move_no < data->move.num))
 		if (data->move[move_no].frame.num > 0){
-			move = &data->move[move_no];
 			current_move = move_no;
 		}
 	setCurrentFrame(0);
 
-	if (move->type == MOVE_TYPE_SKELETAL)
+	if (cur_move()->type == MOVE_TYPE_SKELETAL)
 		ed->setMode(mode_model_animation_skeleton);
-	else if (move->type == MOVE_TYPE_VERTEX)
+	else if (cur_move()->type == MOVE_TYPE_VERTEX)
 		ed->setMode(mode_model_animation_vertex);
 	else
 		ed->setMode(mode_model_animation_none);
@@ -128,7 +134,7 @@ void ModeModelAnimation::setCurrentMove(int move_no)
 
 void ModeModelAnimation::setCurrentFrame(int frame_no)
 {
-	current_frame = loopi(frame_no, 0, move->frame.num - 1);
+	current_frame = loopi(frame_no, 0, cur_move()->frame.num - 1);
 	updateAnimation();
 	notify();
 }
@@ -151,7 +157,7 @@ void ModeModelAnimation::updateAnimation()
 		vertex[i].is_selected = v.is_selected;
 	}
 
-	if (move->type == MOVE_TYPE_SKELETAL){
+	if (cur_move()->type == MOVE_TYPE_SKELETAL){
 		updateSkeleton();
 		foreachi(ModelVertex &v, data->vertex, i){
 			if (v.bone_index >= data->bone.num){
@@ -161,17 +167,17 @@ void ModeModelAnimation::updateAnimation()
 				vertex[i].pos = b._matrix * (v.pos - b.pos);
 			}
 		}
-	}else if (move->type == MOVE_TYPE_VERTEX){
+	}else if (cur_move()->type == MOVE_TYPE_VERTEX){
 		int frame0 = current_frame;
 		int frame1 = current_frame;
 		float t = 0;
 		if (playing){
 			frame0 = sim_frame;
-			frame1 = (frame0 + 1) % move->frame.num;
+			frame1 = (frame0 + 1) % cur_move()->frame.num;
 			t = sim_frame - frame0;
 		}
 		foreachi(ModelVertex &v, data->vertex, i){
-			vertex[i].pos = v.pos + (1 - t) * move->frame[frame0].vertex_dpos[i] + t * move->frame[frame1].vertex_dpos[i];
+			vertex[i].pos = v.pos + (1 - t) * cur_move()->frame[frame0].vertex_dpos[i] + t * cur_move()->frame[frame1].vertex_dpos[i];
 		}
 	}else{
 		vertex = data->vertex;
@@ -189,7 +195,7 @@ void ModeModelAnimation::updateSkeleton()
 {
 	bone = data->bone;
 
-	if (move->type != MOVE_TYPE_SKELETAL){
+	if (cur_move()->type != MOVE_TYPE_SKELETAL){
 		return;
 	}
 	int frame0 = current_frame;
@@ -197,13 +203,13 @@ void ModeModelAnimation::updateSkeleton()
 	float t = 0;
 	if (playing){
 		frame0 = sim_frame;
-		frame1 = (frame0 + 1) % move->frame.num;
+		frame1 = (frame0 + 1) % cur_move()->frame.num;
 		t = sim_frame - frame0;
 	}
 
 	foreachi(ModelBone &b, data->bone, i){
 		if (b.parent < 0){
-			bone[i].pos = b.pos + (1 - t) * move->frame[frame0].skel_dpos[i] + t * move->frame[frame1].skel_dpos[i];
+			bone[i].pos = b.pos + (1 - t) * cur_move()->frame[frame0].skel_dpos[i] + t * cur_move()->frame[frame1].skel_dpos[i];
 		}else{
 			ModelBone &pb = data->bone[b.parent];
 			bone[i].pos = pb._matrix * (b.pos - pb.pos); // cur_mat * dpos_at_rest
@@ -211,8 +217,8 @@ void ModeModelAnimation::updateSkeleton()
 		matrix trans, rot;
 		MatrixTranslation(trans, bone[i].pos);
 		quaternion q0, q1, q;
-		QuaternionRotationV(q0, move->frame[frame0].skel_ang[i]);
-		QuaternionRotationV(q1, move->frame[frame1].skel_ang[i]);
+		QuaternionRotationV(q0, cur_move()->frame[frame0].skel_ang[i]);
+		QuaternionRotationV(q1, cur_move()->frame[frame1].skel_ang[i]);
 		QuaternionInterpolate(q, q0, q1, t);
 		MatrixRotationQ(rot, q);
 		b._matrix = trans * rot;
@@ -220,15 +226,15 @@ void ModeModelAnimation::updateSkeleton()
 	}
 }
 
-void ModeModelAnimation::animationDeleteCurrentFrame()
+void ModeModelAnimation::deleteCurrentFrame()
 {
-	if (move->frame.num > 1)
+	if (cur_move()->frame.num > 1)
 		data->animationDeleteFrame(current_move, current_frame);
 	else
 		ed->setMessage(_("der letzte Frame kann nicht gel&oscht werden"));
 }
 
-void ModeModelAnimation::animationDuplicateCurrentFrame()
+void ModeModelAnimation::duplicateCurrentFrame()
 {
 	data->animationAddFrame(current_move, current_frame + 1);
 	setCurrentFrame(current_frame + 1);
@@ -237,24 +243,42 @@ void ModeModelAnimation::animationDuplicateCurrentFrame()
 void ModeModelAnimation::iterateAnimation(float dt)
 {
 	if (playing){
-		sim_frame += dt * (move->frames_per_sec_const + move->frames_per_sec_factor * time_param) * time_scale;
-		sim_frame = loopf(sim_frame, 0, move->frame.num);
+		sim_frame += dt * (cur_move()->frames_per_sec_const + cur_move()->frames_per_sec_factor * time_param) * time_scale;
+		sim_frame = loopf(sim_frame, 0, cur_move()->frame.num);
 		updateAnimation();
 	}
 }
 
+/*int habDichLiebFunktion()
+{
+	if(habdichlieb) return 1;
+	if(nervstgrad) return 2;
+	if(bin unsterblich in dich verliebt) return 3;
+	if(häääää?) return 4;
+	else return 0;
+}*/
+
+ModelMove* ModeModelAnimation::cur_move()
+{
+	if ((current_move >= 0) && (current_move < data->move.num))
+		return &data->move[current_move];
+	return empty_move;
+}
+
 void ModeModelAnimation::onUpdate(Observable *o, const string &message)
 {
-	if (current_frame >= move->frame.num)
-		setCurrentFrame(move->frame.num - 1);
+	// consistency check
+	if (((current_move >= 0) && (cur_move()->frame.num == 0)) || (current_move >= data->move.num))
+		setCurrentMoveFirst();
+
+
+	if (current_frame >= cur_move()->frame.num)
+		setCurrentFrame(cur_move()->frame.num - 1);
 	else if (current_frame < 0)
 		setCurrentFrame(0);
 
 	//msg_write("..up");
 	updateAnimation();
-	// valid move
-	/*if (...data->Move[CurrentMove] == index)
-		SetCurrentMove(-1);*/
 }
 
 

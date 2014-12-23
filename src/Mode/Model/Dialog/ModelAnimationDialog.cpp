@@ -73,7 +73,7 @@ void ModelAnimationDialog::loadData()
 
 void ModelAnimationDialog::fillAnimation()
 {
-	bool b = (mode_model_animation->move->type != MOVE_TYPE_NONE);
+	bool b = (mode_model_animation->cur_move()->type != MOVE_TYPE_NONE);
 	enable("name", b);
 	enable("frame", b);
 	enable("new_frame", b);
@@ -83,7 +83,7 @@ void ModelAnimationDialog::fillAnimation()
 	enable("sim_start", b);
 	enable("sim_stop", b);
 	if (b){
-		ModelMove *move = mode_model_animation->move;
+		ModelMove *move = mode_model_animation->cur_move();
 		setString("name", move->name);
 		setInt("frame", mode_model_animation->current_frame);
 		setFloat("fps_const", move->frames_per_sec_const);
@@ -150,7 +150,7 @@ void ModelAnimationDialog::onDeleteAnimation()
 void ModelAnimationDialog::onFrame()
 {
 	int frame_lit = getInt("");
-	int frame = loopi(frame_lit, 0, mode_model_animation->move->frame.num - 1);
+	int frame = loopi(frame_lit, 0, mode_model_animation->cur_move()->frame.num - 1);
 	if (frame != frame_lit)
 		setInt("", frame);
 	mode_model_animation->setCurrentFrame(frame);
@@ -158,27 +158,27 @@ void ModelAnimationDialog::onFrame()
 
 void ModelAnimationDialog::onAddFrame()
 {
-	mode_model_animation->animationDuplicateCurrentFrame();
+	mode_model_animation->duplicateCurrentFrame();
 }
 
 void ModelAnimationDialog::onDeleteFrame()
 {
-	mode_model_animation->animationDeleteCurrentFrame();
+	mode_model_animation->deleteCurrentFrame();
 }
 
 void ModelAnimationDialog::onName()
 {
-	data->setAnimationData(mode_model_animation->current_move, getString(""), mode_model_animation->move->frames_per_sec_const, mode_model_animation->move->frames_per_sec_factor);
+	data->setAnimationData(mode_model_animation->current_move, getString(""), mode_model_animation->cur_move()->frames_per_sec_const, mode_model_animation->cur_move()->frames_per_sec_factor);
 }
 
 void ModelAnimationDialog::onFpsConst()
 {
-	data->setAnimationData(mode_model_animation->current_move, mode_model_animation->move->name, getFloat(""), mode_model_animation->move->frames_per_sec_factor);
+	data->setAnimationData(mode_model_animation->current_move, mode_model_animation->cur_move()->name, getFloat(""), mode_model_animation->cur_move()->frames_per_sec_factor);
 }
 
 void ModelAnimationDialog::onFpsFactor()
 {
-	data->setAnimationData(mode_model_animation->current_move, mode_model_animation->move->name, mode_model_animation->move->frames_per_sec_const, getFloat(""));
+	data->setAnimationData(mode_model_animation->current_move, mode_model_animation->cur_move()->name, mode_model_animation->cur_move()->frames_per_sec_const, getFloat(""));
 }
 
 void ModelAnimationDialog::onSpeed()
@@ -193,7 +193,7 @@ void ModelAnimationDialog::onParameter()
 
 void ModelAnimationDialog::onSimulationPlay()
 {
-	mode_model_animation->playing = (mode_model_animation->move->frame.num > 0);
+	mode_model_animation->playing = (mode_model_animation->cur_move()->frame.num > 0);
 	mode_model_animation->sim_frame = 0;
 	mode_model_animation->updateAnimation();
 }

@@ -94,7 +94,7 @@ void ModelAnimationTimelinePanel::onDraw()
 		}
 	}
 
-	ModelMove *move = mode_model_animation->move;
+	ModelMove *move = mode_model_animation->cur_move();
 	float dur = move->frame.num;
 	c->setColor(color(0.15f, 0, 0, 1));
 	c->drawRect(rect(sample2screen(0), sample2screen(dur), r.y1, r.y2));
@@ -165,7 +165,7 @@ void ModelAnimationTimelinePanel::onUpdate(Observable* o, const string& message)
 void ModelAnimationTimelinePanel::updateHover(float mx)
 {
 	hover = -1;
-	foreachi(ModelFrame &f, mode_model_animation->move->frame, i){
+	foreachi(ModelFrame &f, mode_model_animation->cur_move()->frame, i){
 		float x = sample2screen(i);
 		if (fabs(mx - x) < 5)
 			hover = i;
