@@ -626,7 +626,7 @@ void ModeModelMesh::updateVertexBuffers(Array<ModelVertex> &vertex)
 		int num_tex = min(m.num_textures, 4);
 		if (!m.vb)
 			m.vb = new NixVertexBuffer(num_tex);
-		if (m.vb->numTextures != num_tex){
+		if (m.vb->num_textures != num_tex){
 			delete(m.vb);
 			m.vb = new NixVertexBuffer(num_tex);
 		}
@@ -640,6 +640,8 @@ void ModeModelMesh::updateVertexBuffers(Array<ModelVertex> &vertex)
 				if ((t.view_stage >= multi_view->view_stage) && (t.material == mi))
 					t.addToVertexBuffer(vertex, m.vb, m.num_textures);
 		}
+
+		//m.vb->optimize();
 	}
 }
 
