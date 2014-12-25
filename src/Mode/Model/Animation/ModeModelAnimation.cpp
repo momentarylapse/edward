@@ -18,6 +18,8 @@
 
 ModeModelAnimation *mode_model_animation = NULL;
 
+const string ModeModelAnimation::MESSAGE_SET_FRAME = "SetFrame";
+
 ModeModelAnimation::ModeModelAnimation(ModeBase *_parent) :
 	Mode<DataModel>("ModelAnimation", _parent, ed->multi_view_3d, "menu_move"),
 	Observable("ModelAnimation")
@@ -70,33 +72,31 @@ void ModeModelAnimation::onStart()
 	time_param = 0;
 	playing = false;
 	play_loop = true;
-	setCurrentMoveFirst();
+	current_move = -1;
+	current_frame = 0;
 
 	dialog = new ModelAnimationDialog(ed, data);
 	timeline = new ModelAnimationTimelinePanel;
 
 	ed->embed(timeline, "vgrid", 0, 1);
 
-	updateAnimation();
+	Observer::subscribe(this, MESSAGE_SET_FRAME);
 	Observer::subscribe(data);
-	onUpdate(data, "");
 	mode_model->allowSelectionModes(false);
 
 	timer.reset();
 	HuiRunLaterM(0.200f, this, &ModeModelAnimation::idleFunction);
+	setCurrentMove(getFirstMove());
 
-	ed->setMode(mode_model_animation_none);
-	notify();
+	//ed->setMode(mode_model_animation_none);
 }
 
-void ModeModelAnimation::setCurrentMoveFirst()
+int ModeModelAnimation::getFirstMove()
 {
 	foreachi(ModelMove &m, data->move, i)
-		if (m.frame.num > 0){
-			setCurrentMove(i);
-			return;
-		}
-	setCurrentMove(-1);
+		if (m.frame.num > 0)
+			return i;
+	return -1;
 }
 
 
@@ -109,6 +109,7 @@ void ModeModelAnimation::onUpdateMenu()
 void ModeModelAnimation::onEnd()
 {
 	Observer::unsubscribe(data);
+	Observer::unsubscribe(this);
 	delete(dialog);
 	delete(timeline);
 }
@@ -135,8 +136,8 @@ void ModeModelAnimation::setCurrentMove(int move_no)
 void ModeModelAnimation::setCurrentFrame(int frame_no)
 {
 	current_frame = loopi(frame_no, 0, cur_move()->frame.num - 1);
-	updateAnimation();
-	notify();
+	//updateAnimation();
+	notify(MESSAGE_SET_FRAME);
 }
 
 void ModeModelAnimation::setCurrentFrameNext()
@@ -249,18 +250,9 @@ void ModeModelAnimation::iterateAnimation(float dt)
 	}
 }
 
-/*int habDichLiebFunktion()
-{
-	if(habdichlieb) return 1;
-	if(nervstgrad) return 2;
-	if(bin unsterblich in dich verliebt) return 3;
-	if(häääää?) return 4;
-	else return 0;
-}*/
-
 ModelMove* ModeModelAnimation::cur_move()
 {
-	if ((current_move >= 0) && (current_move < data->move.num))
+	if ((current_move >= 0) and (current_move < data->move.num))
 		return &data->move[current_move];
 	return empty_move;
 }
@@ -268,16 +260,16 @@ ModelMove* ModeModelAnimation::cur_move()
 void ModeModelAnimation::onUpdate(Observable *o, const string &message)
 {
 	// consistency check
-	if (((current_move >= 0) && (cur_move()->frame.num == 0)) || (current_move >= data->move.num))
-		setCurrentMoveFirst();
+	if (((current_move >= 0) and (cur_move()->frame.num == 0)) or (current_move >= data->move.num))
+		setCurrentMove(getFirstMove());
+	else if ((current_move < 0) and (getFirstMove() >= 0))
+		setCurrentMove(getFirstMove());
 
-
-	if (current_frame >= cur_move()->frame.num)
+	if ((current_frame >= cur_move()->frame.num) and (cur_move()->frame.num > 0))
 		setCurrentFrame(cur_move()->frame.num - 1);
 	else if (current_frame < 0)
 		setCurrentFrame(0);
 
-	//msg_write("..up");
 	updateAnimation();
 }
 

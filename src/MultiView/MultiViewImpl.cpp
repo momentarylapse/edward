@@ -134,7 +134,6 @@ void MultiViewImpl::resetMouseAction()
 {
 	action_con->cur_action = NULL;
 	action_con->action.reset();
-	msg_write("reset");
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 

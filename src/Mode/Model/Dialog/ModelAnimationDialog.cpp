@@ -210,7 +210,8 @@ void ModelAnimationDialog::onUpdate(Observable *o, const string &message)
 	if (o == data){
 		loadData();
 	}else{
-		fillAnimation();
+		loadData();
+		//fillAnimation();
 	}
 }
 

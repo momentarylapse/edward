@@ -21,6 +21,8 @@ public:
 	ModeModelAnimation(ModeBase *parent);
 	virtual ~ModeModelAnimation();
 
+	static const string MESSAGE_SET_FRAME;
+
 	virtual void onStart();
 	virtual void onEnd();
 
@@ -49,7 +51,7 @@ public:
 	void idleFunction();
 
 	void setCurrentMove(int move);
-	void setCurrentMoveFirst();
+	int getFirstMove();
 	void setCurrentFrame(int frame);
 	void setCurrentFrameNext();
 	void setCurrentFramePrevious();
