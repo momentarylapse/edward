@@ -14,11 +14,11 @@ class DataModel;
 class ModelNewAnimationDialog: public HuiWindow
 {
 public:
-	ModelNewAnimationDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data, int index);
+	ModelNewAnimationDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data, int index, int type);
 	virtual ~ModelNewAnimationDialog();
 
-	void OnClose();
-	void OnOk();
+	void onClose();
+	void onOk();
 
 private:
 	DataModel *data;

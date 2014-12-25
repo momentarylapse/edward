@@ -169,14 +169,9 @@ void ModeModelAnimation::updateAnimation()
 			}
 		}
 	}else if (cur_move()->type == MOVE_TYPE_VERTEX){
-		int frame0 = current_frame;
-		int frame1 = current_frame;
-		float t = 0;
-		if (playing){
-			frame0 = sim_frame;
-			frame1 = (frame0 + 1) % cur_move()->frame.num;
-			t = sim_frame - frame0;
-		}
+		int frame0, frame1;
+		float t;
+		getTimeInterpolation(frame0, frame1, t);
 		foreachi(ModelVertex &v, data->vertex, i){
 			vertex[i].pos = v.pos + (1 - t) * cur_move()->frame[frame0].vertex_dpos[i] + t * cur_move()->frame[frame1].vertex_dpos[i];
 		}
@@ -199,14 +194,9 @@ void ModeModelAnimation::updateSkeleton()
 	if (cur_move()->type != MOVE_TYPE_SKELETAL){
 		return;
 	}
-	int frame0 = current_frame;
-	int frame1 = current_frame;
-	float t = 0;
-	if (playing){
-		frame0 = sim_frame;
-		frame1 = (frame0 + 1) % cur_move()->frame.num;
-		t = sim_frame - frame0;
-	}
+	int frame0, frame1;
+	float t;
+	getTimeInterpolation(frame0, frame1, t);
 
 	foreachi(ModelBone &b, data->bone, i){
 		if (b.parent < 0){
@@ -227,6 +217,26 @@ void ModeModelAnimation::updateSkeleton()
 	}
 }
 
+void ModeModelAnimation::getTimeInterpolation(int &frame0, int &frame1, float &t)
+{
+	frame0 = current_frame;
+	frame1 = current_frame;
+	t = 0;
+
+	if (playing){
+		float t0 = 0;
+		foreachi(ModelFrame &f, cur_move()->frame, i){
+			if (sim_frame_time < t0 + f.duration){
+				frame0 = i;
+				frame1 = (i + 1) % cur_move()->frame.num;
+				t = (sim_frame_time - t0) / f.duration;
+				break;
+			}
+			t0 += f.duration;
+		}
+	}
+}
+
 void ModeModelAnimation::deleteCurrentFrame()
 {
 	if (cur_move()->frame.num > 1)
@@ -244,8 +254,8 @@ void ModeModelAnimation::duplicateCurrentFrame()
 void ModeModelAnimation::iterateAnimation(float dt)
 {
 	if (playing){
-		sim_frame += dt * (cur_move()->frames_per_sec_const + cur_move()->frames_per_sec_factor * time_param) * time_scale;
-		sim_frame = loopf(sim_frame, 0, cur_move()->frame.num);
+		sim_frame_time += dt * (cur_move()->frames_per_sec_const + cur_move()->frames_per_sec_factor * time_param) * time_scale;
+		sim_frame_time = loopf(sim_frame_time, 0, cur_move()->duration());
 		updateAnimation();
 	}
 }

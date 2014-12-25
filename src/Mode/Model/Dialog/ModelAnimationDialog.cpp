@@ -136,7 +136,9 @@ void ModelAnimationDialog::onAddAnimation()
 			break;
 		}
 
-	ModelNewAnimationDialog *dlg = new ModelNewAnimationDialog(win, false, data, index);
+	int type = (data->bone.num > 0) ? MOVE_TYPE_SKELETAL : MOVE_TYPE_VERTEX;
+
+	ModelNewAnimationDialog *dlg = new ModelNewAnimationDialog(win, false, data, index, type);
 	dlg->run();
 }
 
@@ -194,14 +196,14 @@ void ModelAnimationDialog::onParameter()
 void ModelAnimationDialog::onSimulationPlay()
 {
 	mode_model_animation->playing = (mode_model_animation->cur_move()->frame.num > 0);
-	mode_model_animation->sim_frame = 0;
+	mode_model_animation->sim_frame_time = 0;
 	mode_model_animation->updateAnimation();
 }
 
 void ModelAnimationDialog::onSimulationStop()
 {
 	mode_model_animation->playing = false;
-	mode_model_animation->sim_frame = 0;
+	mode_model_animation->sim_frame_time = 0;
 	mode_model_animation->updateAnimation();
 }
 

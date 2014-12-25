@@ -45,6 +45,7 @@
 #include "../../Action/Model/Animation/ActionModelAnimationAddFrame.h"
 #include "../../Action/Model/Animation/ActionModelAnimationDeleteFrame.h"
 #include "../../Action/Model/Animation/ActionModelAnimationSetData.h"
+#include "../../Action/Model/Animation/ActionModelAnimationSetFrameDuration.h"
 
 const string DataModel::MESSAGE_SELECTION = "Selection";
 const string DataModel::MESSAGE_SKIN_CHANGE = "SkinChange";
@@ -251,6 +252,7 @@ bool DataModel::load(const string & _filename, bool deep)
 		ed->setMessage(_("Datei ist nicht in der Stimmung, ge&offnet zu werden"));
 		return false;
 	}
+	action_manager->enable(false);
 	file_time = f->GetDateModification().time;
 
 	ffv=f->ReadFileFormatVersion();
@@ -402,6 +404,7 @@ bool DataModel::load(const string & _filename, bool deep)
 			// vertex animation
 			if (m->type == MOVE_TYPE_VERTEX){
 				for (int fr=0;fr<m->frame.num;fr++){
+					m->frame[fr].duration = 1;
 					for (int s=0;s<4;s++){
 						m->frame[fr].skin[s].dpos.resize(skin[s].vertex.num);
 						int num_vertices = f->ReadInt();
@@ -419,6 +422,7 @@ bool DataModel::load(const string & _filename, bool deep)
 				m->interpolated_quadratic = f->ReadBool();
 				m->interpolated_loop = f->ReadBool();
 				for (int fr=0;fr<m->frame.num;fr++){
+					m->frame[fr].duration = 1;
 					m->frame[fr].skel_dpos.resize(bone.num);
 					m->frame[fr].skel_ang.resize(bone.num);
 					for (int j=0;j<bone.num;j++){
@@ -672,19 +676,24 @@ bool DataModel::load(const string & _filename, bool deep)
 			ModelMove *m = &move[anim_index];
 			m->name = f->ReadStr();
 			m->type = f->ReadInt();
+			bool rubber_timing = (m->type & 128);
+			m->type = m->type & 0x7f;
 			m->frame.resize(f->ReadInt());
 			m->frames_per_sec_const = f->ReadFloat();
 			m->frames_per_sec_factor = f->ReadFloat();
 
 			// vertex animation
 			if (m->type == MOVE_TYPE_VERTEX){
-				for (int fr=0;fr<m->frame.num;fr++){
+				foreach(ModelFrame &fr, m->frame){
+					fr.duration = 1;
+					if (rubber_timing)
+						fr.duration = f->ReadFloat();
 					for (int s=0;s<4;s++){
-						m->frame[fr].skin[s].dpos.resize(skin[s].vertex.num);
+						fr.skin[s].dpos.resize(skin[s].vertex.num);
 						int num_vertices = f->ReadInt();
 						for (int j=0;j<num_vertices;j++){
 							int vertex_index = f->ReadInt();
-							f->ReadVector(&m->frame[fr].skin[s].dpos[vertex_index]);
+							f->ReadVector(&fr.skin[s].dpos[vertex_index]);
 						}
 					}
 				}
@@ -695,15 +704,20 @@ bool DataModel::load(const string & _filename, bool deep)
 					VarDeltaPos[j] = f->ReadBool();
 				m->interpolated_quadratic = f->ReadBool();
 				m->interpolated_loop = f->ReadBool();
-				for (int fr=0;fr<m->frame.num;fr++){
-					m->frame[fr].skel_dpos.resize(bone.num);
-					m->frame[fr].skel_ang.resize(bone.num);
+				foreach(ModelFrame &fr, m->frame){
+					fr.duration = 1;
+					if (rubber_timing)
+						fr.duration = f->ReadFloat();
+					fr.skel_dpos.resize(bone.num);
+					fr.skel_ang.resize(bone.num);
 					for (int j=0;j<bone.num;j++){
-						f->ReadVector(&m->frame[fr].skel_ang[j]);
+						f->ReadVector(&fr.skel_ang[j]);
 						if (VarDeltaPos[j])
-							f->ReadVector(&m->frame[fr].skel_dpos[j]);
+							f->ReadVector(&fr.skel_dpos[j]);
 					}
 				}
+			}else{
+				msg_error("unknown animation type: " + i2s(m->type));
 			}
 		}
 		// Effects
@@ -718,30 +732,27 @@ bool DataModel::load(const string & _filename, bool deep)
 				fx[i].vertex = f->ReadInt();
 				fx[i].file = f->ReadStr();
 				f->ReadStr();
-			}
-			if (fxkind == "Light"){
+			}else if (fxkind == "Light"){
 				fx[i].type = FX_TYPE_LIGHT;
 				fx[i].vertex = f->ReadInt();
 				fx[i].size = (float)f->ReadInt();
 				for (int j=0;j<3;j++)
 					read_color_argb(f,fx[i].colors[j]);
-			}
-			if (fxkind == "Sound"){
+			}else if (fxkind == "Sound"){
 				fx[i].type = FX_TYPE_SOUND;
 				fx[i].vertex = f->ReadInt();
 				fx[i].size = (float)f->ReadInt();
 				fx[i].speed = (float)f->ReadInt() * 0.01f;
 				fx[i].file = f->ReadStr();
-			}
-			if (fxkind == "ForceField"){
+			}else if (fxkind == "ForceField"){
 				fx[i].type = FX_TYPE_FORCEFIELD;
 				fx[i].vertex = f->ReadInt();
 				fx[i].size = (float)f->ReadInt();
 				fx[i].intensity = (float)f->ReadInt();
 				fx[i].inv_quad = f->ReadBool();
-			}
-			if (fx[i].type<0)
+			}else{
 				msg_error("unknown effekt: " + fxkind);
+			}
 		}
 
 // properties
@@ -890,6 +901,7 @@ bool DataModel::load(const string & _filename, bool deep)
 	}
 
 
+	action_manager->enable(true);
 	//OptimizeView();
 	resetHistory();
 
@@ -1242,27 +1254,30 @@ bool DataModel::save(const string & _filename)
 	for (int i=0;i<move.num;i++)
 		if (move[i].frame.num > 0){
 			ModelMove *m = &move[i];
+			bool rubber_timing = m->needsRubberTiming();
 			f->WriteInt(i);
 			f->WriteStr(m->name);
-			f->WriteInt(m->type);
+			f->WriteInt(m->type + (rubber_timing ? 128 : 0));
 			f->WriteInt(m->frame.num);
 			f->WriteFloat(m->frames_per_sec_const);
 			f->WriteFloat(m->frames_per_sec_factor);
 
 			// vertex animation
 			if (m->type == MOVE_TYPE_VERTEX){
-				for (int fr=0;fr<m->frame.num;fr++){
+				foreach(ModelFrame &fr, m->frame){
+					if (rubber_timing)
+						f->WriteFloat(fr.duration);
 					for (int s=0;s<4;s++){
 						// compress (only write != 0)
 						int num_vertices = 0;
 						for (int j=0;j<skin[s].vertex.num;j++)
-							if (m->frame[fr].skin[i].dpos[j] != v_0)
+							if (fr.skin[i].dpos[j] != v_0)
 								num_vertices ++;
 						f->WriteInt(num_vertices);
 						for (int j=0;j<skin[s].vertex.num;j++)
-							if (m->frame[fr].skin[i].dpos[j] != v_0){
+							if (fr.skin[i].dpos[j] != v_0){
 								f->WriteInt(j);
-								f->WriteVector(&m->frame[fr].skin[i].dpos[j]);
+								f->WriteVector(&fr.skin[i].dpos[j]);
 							}
 					}
 				}
@@ -1272,12 +1287,15 @@ bool DataModel::save(const string & _filename)
 					f->WriteBool((bone[j].parent < 0));
 				f->WriteBool(m->interpolated_quadratic);
 				f->WriteBool(m->interpolated_loop);
-				for (int fr=0;fr<m->frame.num;fr++)
+				foreach(ModelFrame &fr, m->frame){
+					if (rubber_timing)
+						f->WriteFloat(fr.duration);
 					for (int j=0;j<bone.num;j++){
-						f->WriteVector(&m->frame[fr].skel_ang[j]);
+						f->WriteVector(&fr.skel_ang[j]);
 						if (bone[j].parent < 0)
-							f->WriteVector(&m->frame[fr].skel_dpos[j]);
+							f->WriteVector(&fr.skel_dpos[j]);
 					}
+				}
 			}
 		}
 
@@ -1817,6 +1835,9 @@ void DataModel::setAnimationData(int index, const string &name, float fps_const,
 void DataModel::animationDeleteFrame(int index, int frame)
 {	execute(new ActionModelAnimationDeleteFrame(index, frame));	}
 
+void DataModel::animationSetFrameDuration(int index, int frame, float duration)
+{	execute(new ActionModelAnimationSetFrameDuration(index, frame, duration));	}
+
 void DataModel::copyGeometry(Geometry &geo)
 {
 	geo.clear();
@@ -2014,4 +2035,20 @@ ModelSelectionState::EdgeSelection::EdgeSelection(int _v[2])
 {
 	v[0] = _v[0];
 	v[1] = _v[1];
+}
+
+float ModelMove::duration()
+{
+	float t = 0;
+	foreach(ModelFrame &f, frame)
+		t += f.duration;
+	return t;
+}
+
+bool ModelMove::needsRubberTiming()
+{
+	foreach(ModelFrame &f, frame)
+		if (fabs(f.duration - 1.0f) > 0.01f)
+			return true;
+	return false;
 }

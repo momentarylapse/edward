@@ -147,6 +147,8 @@ public:
 
 struct ModelFrame
 {
+	float duration;
+
 	// skeleton animation
 	Array<vector> skel_dpos;
 	Array<vector> skel_ang;
@@ -165,6 +167,9 @@ struct ModelMove
 	float frames_per_sec_const, frames_per_sec_factor;
 	bool interpolated_quadratic, interpolated_loop;
 	string name;
+
+	bool needsRubberTiming();
+	float duration();
 };
 
 class ModelEdge: public MultiView::SingleData
@@ -306,6 +311,7 @@ public:
 	void setAnimationData(int index, const string &name, float fps_const, float fps_factor);
 	void animationAddFrame(int index, int frame);
 	void animationDeleteFrame(int index, int frame);
+	void animationSetFrameDuration(int index, int frame, float duration);
 
 	// geometry
 	Array<ModelVertex> vertex;

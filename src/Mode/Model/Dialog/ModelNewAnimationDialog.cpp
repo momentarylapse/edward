@@ -9,28 +9,29 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
 
-ModelNewAnimationDialog::ModelNewAnimationDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data, int index):
+ModelNewAnimationDialog::ModelNewAnimationDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data, int index, int type):
 	HuiWindow("new_animation_dialog", _parent, _allow_parent)
 {
 	data = _data;
 
 	setInt("new_animation_index", index);
+	setInt("new_animation_type", type - MOVE_TYPE_VERTEX);
 
-	event("hui:close", this, &ModelNewAnimationDialog::OnClose);
-	event("cancel", this, &ModelNewAnimationDialog::OnClose);
-	event("ok", this, &ModelNewAnimationDialog::OnOk);
+	event("hui:close", this, &ModelNewAnimationDialog::onClose);
+	event("cancel", this, &ModelNewAnimationDialog::onClose);
+	event("ok", this, &ModelNewAnimationDialog::onOk);
 }
 
 ModelNewAnimationDialog::~ModelNewAnimationDialog()
 {
 }
 
-void ModelNewAnimationDialog::OnClose()
+void ModelNewAnimationDialog::onClose()
 {
 	delete(this);
 }
 
-void ModelNewAnimationDialog::OnOk()
+void ModelNewAnimationDialog::onOk()
 {
 	int index = getInt("new_animation_index");
 	int type = getInt("new_animation_type") + MOVE_TYPE_VERTEX;

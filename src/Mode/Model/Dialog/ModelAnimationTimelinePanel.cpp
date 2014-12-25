@@ -95,15 +95,17 @@ void ModelAnimationTimelinePanel::onDraw()
 	}
 
 	ModelMove *move = mode_model_animation->cur_move();
-	float dur = move->frame.num;
+	float dur = move->duration();
 	c->setColor(color(0.15f, 0, 0, 1));
 	c->drawRect(rect(sample2screen(0), sample2screen(dur), r.y1, r.y2));
 
+	float t = 0;
 	foreachi(ModelFrame &f, move->frame, i){
 		c->setColor((i == mode_model_animation->current_frame) ? Red : Black);
 		c->setLineWidth((i == hover) ? 5.0f : 2.2f);
-		float pos = sample2screen(i);
-		c->drawLine(pos, r.y1, pos, r.y2);
+		float x = sample2screen(t);
+		c->drawLine(x, r.y1, x, r.y2);
+		t += f.duration;
 	}
 
 	/*Array<float> v;
@@ -127,7 +129,7 @@ void ModelAnimationTimelinePanel::onDraw()
 	if (mode_model_animation->playing){
 		c->setLineWidth(1.5f);
 		c->setColor(Green);
-		float x = sample2screen(mode_model_animation->sim_frame);
+		float x = sample2screen(mode_model_animation->sim_frame_time);
 		c->drawLine(x, r.y1, x, r.y2);
 	}
 	c->end();
@@ -135,7 +137,21 @@ void ModelAnimationTimelinePanel::onDraw()
 
 void ModelAnimationTimelinePanel::onMouseMove()
 {
-	updateHover(HuiGetEvent()->mx);
+	if (HuiGetEvent()->lbut){
+		if (hover > 0){
+
+			float t = 0;
+			foreachi(ModelFrame &f, mode_model_animation->cur_move()->frame, i){
+				if (i == hover - 1)
+					break;
+				t += f.duration;
+			}
+			float dur = max(screen2sample(HuiGetEvent()->mx) - t, 0);
+
+			mode_model_animation->data->animationSetFrameDuration(mode_model_animation->current_move, hover - 1, dur);
+		}
+	}else
+		updateHover(HuiGetEvent()->mx);
 }
 
 void ModelAnimationTimelinePanel::onLeftButtonDown()
@@ -165,10 +181,12 @@ void ModelAnimationTimelinePanel::onUpdate(Observable* o, const string& message)
 void ModelAnimationTimelinePanel::updateHover(float mx)
 {
 	hover = -1;
+	float t = 0;
 	foreachi(ModelFrame &f, mode_model_animation->cur_move()->frame, i){
-		float x = sample2screen(i);
+		float x = sample2screen(t);
 		if (fabs(mx - x) < 5)
 			hover = i;
+		t += f.duration;
 	}
 	redraw("area");
 }

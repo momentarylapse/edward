@@ -44,10 +44,15 @@ void ActionManager::reset()
 	_preview = NULL;
 }
 
-
+void ActionManager::enable(bool _enabled)
+{
+	enabled = _enabled;
+}
 
 void ActionManager::add(Action *a)
 {
+	if (!enabled)
+		return;
 	// truncate history
 	for (int i=cur_pos;i<action.num;i++)
 		delete(action[i]);

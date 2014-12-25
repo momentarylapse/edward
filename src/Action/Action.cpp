@@ -40,7 +40,8 @@ void* Action::execute_logged(Data* d)
 	msg_write("do " + name());
 #endif
 	void *r = execute(d);
-	d->notify(message());
+	if (d->action_manager->enabled)
+		d->notify(message());
 #ifdef ACTION_DEBUG
 	d->TestSanity("do " + name());
 #endif

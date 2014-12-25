@@ -33,6 +33,7 @@ void *ActionModelAddAnimation::execute(Data *d)
 
 	// add animation data
 	ModelFrame f;
+	f.duration = 1;
 	if (type ==MOVE_TYPE_SKELETAL){
 		f.skel_ang.resize(m->bone.num);
 		f.skel_dpos.resize(m->bone.num);

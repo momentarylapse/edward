@@ -44,7 +44,7 @@ public:
 	float time_param;
 	bool playing;
 	float play_loop;
-	float sim_frame;
+	float sim_frame_time;
 
 	HuiTimer timer;
 
@@ -61,6 +61,8 @@ public:
 	void updateAnimation();
 	void updateSkeleton();
 	void iterateAnimation(float dt);
+
+	void getTimeInterpolation(int &frame0, int &frame1, float &t);
 };
 
 extern ModeModelAnimation *mode_model_animation;
