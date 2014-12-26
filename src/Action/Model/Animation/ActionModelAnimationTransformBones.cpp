@@ -18,6 +18,7 @@ ActionModelAnimationTransformBones::ActionModelAnimationTransformBones(DataModel
 		if (b.is_selected){
 			index.add(i);
 			old_data.add(d->move[move].frame[frame].skel_ang[i]);
+			old_dpos.add(d->move[move].frame[frame].skel_dpos[i]);
 		}
 }
 
@@ -27,8 +28,11 @@ void *ActionModelAnimationTransformBones::execute(Data *d)
 	quaternion q;
 	QuaternionRotationM(q, mat);
 	vector dang = q.get_angles();
-	foreachi(int i, index, ii)
+	foreachi(int i, index, ii){
 		m->move[move].frame[frame].skel_ang[i] = VecAngAdd(old_data[ii], dang);
+		if (m->bone[i].parent < 0)
+			m->move[move].frame[frame].skel_dpos[i] = mat * (old_dpos[ii] + m->bone[i].pos) - m->bone[i].pos; //+ dpos;
+	}
 	return NULL;
 }
 
@@ -37,7 +41,9 @@ void *ActionModelAnimationTransformBones::execute(Data *d)
 void ActionModelAnimationTransformBones::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(int i, index, ii)
+	foreachi(int i, index, ii){
 		m->move[move].frame[frame].skel_ang[i] = old_data[ii];
+		m->move[move].frame[frame].skel_dpos[i] = old_dpos[ii];
+	}
 }
 

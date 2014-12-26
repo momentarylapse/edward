@@ -23,6 +23,7 @@ public:
 
 private:
 	int move, frame;
+	Array<vector> old_dpos;
 };
 
 #endif /* ACTIONMODELANIMATIONTRANSFORMBONES_H_ */
