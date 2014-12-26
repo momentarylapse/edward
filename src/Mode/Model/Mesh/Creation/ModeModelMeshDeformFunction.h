@@ -1,12 +1,12 @@
 /*
- * ModeModelMeshDeform.h
+ * ModeModelMeshDeformFunction.h
  *
  *  Created on: 15.12.2014
  *      Author: michi
  */
 
-#ifndef SRC_MODE_MODEL_MESH_CREATION_MODEMODELMESHDEFORM_H_
-#define SRC_MODE_MODEL_MESH_CREATION_MODEMODELMESHDEFORM_H_
+#ifndef SRC_MODE_MODEL_MESH_CREATION_MODEMODELMESHDEFORMFUNCTION_H_
+#define SRC_MODE_MODEL_MESH_CREATION_MODEMODELMESHDEFORMFUNCTION_H_
 
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
@@ -17,11 +17,11 @@ namespace Script{
 }
 class NixTexture;
 
-class ModeModelMeshDeform: public ModeCreation<DataModel>, public HuiEventHandler
+class ModeModelMeshDeformFunction: public ModeCreation<DataModel>, public HuiEventHandler
 {
 public:
-	ModeModelMeshDeform(ModeBase *parent);
-	virtual ~ModeModelMeshDeform();
+	ModeModelMeshDeformFunction(ModeBase *parent);
+	virtual ~ModeModelMeshDeformFunction();
 
 	virtual void onStart();
 	virtual void onEnd();
@@ -51,4 +51,4 @@ private:
 	Array<vector> old_pos;
 };
 
-#endif /* SRC_MODE_MODEL_MESH_CREATION_MODEMODELMESHDEFORM_H_ */
+#endif /* SRC_MODE_MODEL_MESH_CREATION_MODEMODELMESHDEFORMFUNCTION_H_ */

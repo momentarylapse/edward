@@ -25,7 +25,6 @@
 #include "Creation/ModeModelMeshAutoweld.h"
 #include "Creation/ModeModelMeshBevelEdges.h"
 #include "Creation/ModeModelMeshBrush.h"
-#include "Creation/ModeModelMeshDeform.h"
 #include "Creation/ModeModelMeshExtrudePolygons.h"
 #include "Creation/ModeModelMeshPaste.h"
 #include "../../../Action/Model/Mesh/Skin/ActionModelSkinVerticesFromProjection.h"
@@ -33,6 +32,8 @@
 #include "../Dialog/ModelMaterialDialog.h"
 #include "../Dialog/ModelEasifyDialog.h"
 #include "../Dialog/ModelFXDialog.h"
+#include "Creation/ModeModelMeshDeformFunction.h"
+#include "Creation/ModeModelMeshDeformCylinder.h"
 #include "Selection/MeshSelectionModeEdge.h"
 #include "Selection/MeshSelectionModePolygon.h"
 #include "Selection/MeshSelectionModeSurface.h"
@@ -196,7 +197,9 @@ void ModeModelMesh::onCommand(const string & id)
 	if (id == "deformation_brush")
 		ed->setMode(new ModeModelMeshBrush(this));
 	if (id == "deformation_function")
-		ed->setMode(new ModeModelMeshDeform(this));
+		ed->setMode(new ModeModelMeshDeformFunction(this));
+	if (id == "deformation_cylinder")
+		ed->setMode(new ModeModelMeshDeformCylinder(this));
 	if (id == "flatten_vertices")
 		data->flattenSelectedVertices();
 

@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-612
+618
 // Data (ID,Text)
 ad_dialog
 
@@ -67,6 +67,8 @@ automapping
 
 autoweld_surfaces
 
+axis
+
 ball_type:ball
 
 ball_type:sphere
@@ -125,17 +127,25 @@ current_mode_model_skeleton
 [モデル　の　モード (骨格)]
 cut_out
 
+def_cyl_t_axis
+
 default_colors
 
 default_material
 
 deformation_brush
 
-deformation_dialog
+deformation_cyl_dialog_buttonbar
+
+deformation_cylinder
+
+deformation_cylinder_dialog
 
 deformation_dialog_buttonbar
 
 deformation_function
+
+deformation_function_dialog
 
 degree
 °
@@ -529,6 +539,8 @@ menu_model_appearance
 
 menu_model_creation
 作成
+menu_model_deformation
+
 menu_model_edit
 
 menu_model_export
@@ -869,7 +881,7 @@ quality_factor
 
 quality_slider
 
-rand_id_46618
+rand_id_396824
 
 rc_dialog
 
@@ -1228,7 +1240,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-233
+239
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1437,6 +1449,8 @@ Knochen setzen
 Knochen setzen oder Wurzel-Knochen wählen
 
 Kompassrichtung entlang des Horizonts
+
+Komplexifizieren
 
 Kraftfeld
 
@@ -1650,6 +1664,8 @@ berechne Licht
 
 berechne Textur
 
+der letzte Frame kann nicht gelöscht werden
+
 frontales Licht
 
 fügt eine weitere Textur-Schicht hinzu (multitexturing)
@@ -1657,6 +1673,8 @@ fügt eine weitere Textur-Schicht hinzu (multitexturing)
 i'm now going to clean up...
 
 kein Dreieck ausgewählt
+
+keine Funktion vom Typ 'void f(vector, vector)' gefunden
 
 keine doppelten Punkte erlaubt!
 
@@ -1680,6 +1698,10 @@ neues Objekt setzen
 
 neues Terrain...
 
+nichts zum Einfügen
+
+paranoider Modus
+
 poly: %d
 
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
@@ -1691,6 +1713,8 @@ skin: %d
 surf: %d
 
 ungerichtetes Umgebungslicht
+
+verschieben, [linke Maustaste] zum Einfügen
 
 vert: %d
 

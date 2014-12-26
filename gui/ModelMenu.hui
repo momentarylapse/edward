@@ -95,8 +95,10 @@ Menu menu_model "" disabled
 		Item connect "--Vereinen"
 		Item nearify "Annähern"
 		Item flatten_vertices "Einebnen"
-		Item deformation_brush "Z-Pinsel"
-		Item deformation_function "Deformation"
+		Menu menu_model_deformation "Deformation"
+			Item deformation_brush "Z-Pinsel"
+			Item deformation_cylinder "Zylinderradius"
+			Item deformation_function "Funktion"
 		Item triangulate_selection "--Triangulieren"
 		Separator "" ""
 		Item menu_edge_header "Auf Kanten" disabled

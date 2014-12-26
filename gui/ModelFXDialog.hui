@@ -1,7 +1,7 @@
 	// dialog
 	FXDialog = HuiCreateDialog("Einen neuen Effekt erstellen...", 470, 205, MainWin, false);
 	FXDialog->SetID("fx_dialog");
-	FXDialog->AddDefButton("OK", 360, 165, 100, 25, "ok");
+	FXDialog->AddDefButton("Ok", 360, 165, 100, 25, "ok");
 	FXDialog->SetImage("ok", "hui:ok");
 	FXDialog->AddButton("Abbrechen", 255, 165, 100, 25, "cancel");
 	FXDialog->SetImage("cancel", "hui:cancel");

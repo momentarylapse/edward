@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-612
+618
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -67,6 +67,8 @@ automapping
 
 autoweld_surfaces
 
+axis
+
 ball_type:ball
 
 ball_type:sphere
@@ -125,17 +127,25 @@ current_mode_model_skeleton
 -Model-Mode (Skeleton)-
 cut_out
 Cut off
+def_cyl_t_axis
+
 default_colors
 Use colors from material
 default_material
 use default material
 deformation_brush
 
-deformation_dialog
+deformation_cyl_dialog_buttonbar
+
+deformation_cylinder
+
+deformation_cylinder_dialog
 
 deformation_dialog_buttonbar
 
 deformation_function
+
+deformation_function_dialog
 
 degree
 °
@@ -529,6 +539,8 @@ menu_model_appearance
 Appearance
 menu_model_creation
 Create
+menu_model_deformation
+
 menu_model_edit
 Edit
 menu_model_export
@@ -869,7 +881,7 @@ quality_factor
 \\0\\100\\0.1
 quality_slider
 
-rand_id_46618
+rand_id_396824
 
 rc_dialog
 Rudimentary configuration
@@ -1228,7 +1240,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-233
+239
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1437,6 +1449,8 @@ Set bone
 Knochen setzen oder Wurzel-Knochen wählen
 
 Kompassrichtung entlang des Horizonts
+
+Komplexifizieren
 
 Kraftfeld
 
@@ -1650,6 +1664,8 @@ berechne Licht
 
 berechne Textur
 
+der letzte Frame kann nicht gelöscht werden
+
 frontales Licht
 
 fügt eine weitere Textur-Schicht hinzu (multitexturing)
@@ -1658,6 +1674,8 @@ i'm now going to clean up...
 i'm now going to clean up...
 kein Dreieck ausgewählt
 no triangle selected
+keine Funktion vom Typ 'void f(vector, vector)' gefunden
+
 keine doppelten Punkte erlaubt!
 No double points allowed!
 löscht die Textur der ausgewählten Textur-Schicht
@@ -1680,6 +1698,10 @@ neues Objekt setzen
 
 neues Terrain...
 
+nichts zum Einfügen
+
+paranoider Modus
+
 poly: %d
 
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
@@ -1691,6 +1713,8 @@ skin: %d
 surf: %d
 surf: %d
 ungerichtetes Umgebungslicht
+
+verschieben, [linke Maustaste] zum Einfügen
 
 vert: %d
 vert: %d

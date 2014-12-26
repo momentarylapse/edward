@@ -52,14 +52,18 @@ void ModeWorldEditTerrain::onStart()
 	multi_view->setAllowSelect(false);
 
 	// Dialog
-	dialog = new HuiFixedDialog(_("Pinsel"), 300, 155, ed, true);//HuiCreateResourceDialog("new_ball_dialog", ed);
-	dialog->addText(_("Dicke"), 5, 5, 80, 25, "");
-	dialog->addText(_("Tiefe"), 5, 35, 80, 25, "");
-	dialog->addSlider("", 90, 5, 115, 25, "diameter_slider");
-	dialog->addSlider("", 90, 35, 115, 25, "depth_slider");
-	dialog->addEdit("", 215, 5, 80, 25, "diameter");
-	dialog->addEdit("", 215, 35, 80, 25, "depth");
-	dialog->addListView("!nobar\\type", 5, 65, 290, 80, "brush_type");
+	dialog = new HuiDialog(_("Pinsel"), 300, 155, ed, true);//HuiCreateResourceDialog("new_ball_dialog", ed);
+	dialog->addControlTable("", 0, 0, 1, 2, "grid1");
+	dialog->setTarget("grid1", 0);
+	dialog->addControlTable("", 0, 0, 3, 2, "grid2");
+	dialog->addListView("!nobar\\type", 0, 1, 0, 0, "brush_type");
+	dialog->setTarget("grid2", 0);
+	dialog->addText(_("Dicke"), 0, 0, 0, 0, "");
+	dialog->addText(_("Tiefe"), 0, 1, 0, 0, "");
+	dialog->addSlider("", 1, 0, 0, 0, "diameter_slider");
+	dialog->addSlider("", 1, 1, 0, 0, "depth_slider");
+	dialog->addEdit("", 2, 0, 0, 0, "diameter");
+	dialog->addEdit("", 2, 1, 0, 0, "depth");
 
 	dialog->event("diameter_slider", this, &ModeWorldEditTerrain::onDiameterSlider);
 	dialog->event("depth_slider", this, &ModeWorldEditTerrain::onDepthSlider);

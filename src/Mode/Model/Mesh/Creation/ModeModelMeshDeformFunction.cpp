@@ -8,7 +8,6 @@
 
 #include "../../ModeModel.h"
 #include "../ModeModelMesh.h"
-#include "ModeModelMeshDeform.h"
 #include "../../../../Data/Model/Geometry/GeometryCube.h"
 #include "../../../../Edward.h"
 #include "../../../../lib/nix/nix.h"
@@ -18,11 +17,12 @@
 #include "../../../../Action/ActionGroup.h"
 #include "../../../../Action/Model/Mesh/Vertex/Helper/ActionModelMoveVertex.h"
 #include "../Selection/MeshSelectionModePolygon.h"
+#include "ModeModelMeshDeformFunction.h"
 
 const int CUBE_SIZE = 20;
 
- ModeModelMeshDeform::ModeModelMeshDeform(ModeBase *_parent) :
-	ModeCreation<DataModel>("ModelMeshDeform", _parent)
+ ModeModelMeshDeformFunction::ModeModelMeshDeformFunction(ModeBase *_parent) :
+	ModeCreation<DataModel>("ModelMeshDeformFunction", _parent)
 {
 	geo = NULL;
 	f = NULL;
@@ -45,22 +45,22 @@ const int CUBE_SIZE = 20;
 	//mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_vertex);
 }
 
-ModeModelMeshDeform::~ModeModelMeshDeform()
+ModeModelMeshDeformFunction::~ModeModelMeshDeformFunction()
 {
 	delete(tex);
 }
 
-void ModeModelMeshDeform::onStart()
+void ModeModelMeshDeformFunction::onStart()
 {
 	// Dialog
-	dialog = HuiCreateResourceDialog("deformation_dialog", ed);
+	dialog = HuiCreateResourceDialog("deformation_function_dialog", ed);
 	dialog->setFont("source", "Monospace 10");
 	dialog->setTabSize("source", 4);
 	dialog->setString("source", "void f(vector o, vector i)\n\to = vector(i.x, i.y+(i.x*i.x-i.x), i.z)\n");
 	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
-	dialog->event("hui:close", this, &ModeModelMeshDeform::onClose);
-	dialog->event("preview", this, &ModeModelMeshDeform::onPreview);
-	dialog->event("ok", this, &ModeModelMeshDeform::onOk);
+	dialog->event("hui:close", this, &ModeModelMeshDeformFunction::onClose);
+	dialog->event("preview", this, &ModeModelMeshDeformFunction::onPreview);
+	dialog->event("ok", this, &ModeModelMeshDeformFunction::onOk);
 	dialog->show();
 
 	//ed->activate("");
@@ -85,7 +85,7 @@ void ModeModelMeshDeform::onStart()
 	geo = new GeometryCube(min, e_x * d.x, e_y * d.y, e_z * d.z, CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
 }
 
-void ModeModelMeshDeform::onEnd()
+void ModeModelMeshDeformFunction::onEnd()
 {
 	if (has_preview)
 		restore();
@@ -95,7 +95,7 @@ void ModeModelMeshDeform::onEnd()
 		delete s;
 }
 
-void ModeModelMeshDeform::onDrawWin(MultiView::Window* win)
+void ModeModelMeshDeformFunction::onDrawWin(MultiView::Window* win)
 {
 	parent->onDrawWin(win);
 
@@ -107,7 +107,7 @@ void ModeModelMeshDeform::onDrawWin(MultiView::Window* win)
 	NixSetTexture(NULL);
 }
 
-vector ModeModelMeshDeform::transform(const vector &v)
+vector ModeModelMeshDeformFunction::transform(const vector &v)
 {
 	vector d = max - min;
 	vector vv = v - min;
@@ -117,7 +117,7 @@ vector ModeModelMeshDeform::transform(const vector &v)
 	return min + vector(w.x * d.x, w.y * d.y, w.z * d.z);
 }
 
-void ModeModelMeshDeform::onPreview()
+void ModeModelMeshDeformFunction::onPreview()
 {
 	if (has_preview)
 		restore();
@@ -137,7 +137,7 @@ void ModeModelMeshDeform::onPreview()
 	ed->forceRedraw();
 }
 
-void ModeModelMeshDeform::updateFunction()
+void ModeModelMeshDeformFunction::updateFunction()
 {
 	if (s)
 		delete s;
@@ -156,7 +156,7 @@ void ModeModelMeshDeform::updateFunction()
 	}
 }
 
-void ModeModelMeshDeform::restore()
+void ModeModelMeshDeformFunction::restore()
 {
 	delete(geo);
 	vector d = max - min;
@@ -170,7 +170,7 @@ void ModeModelMeshDeform::restore()
 	has_preview = false;
 }
 
-void ModeModelMeshDeform::onOk()
+void ModeModelMeshDeformFunction::onOk()
 {
 	if (has_preview)
 		restore();
@@ -188,7 +188,7 @@ void ModeModelMeshDeform::onOk()
 	abort();
 }
 
-void ModeModelMeshDeform::onClose()
+void ModeModelMeshDeformFunction::onClose()
 {
 	abort();
 }
