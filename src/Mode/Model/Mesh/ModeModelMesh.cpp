@@ -33,10 +33,10 @@
 #include "../Dialog/ModelMaterialDialog.h"
 #include "../Dialog/ModelEasifyDialog.h"
 #include "../Dialog/ModelFXDialog.h"
-#include "MeshSelectionModeEdge.h"
-#include "MeshSelectionModePolygon.h"
-#include "MeshSelectionModeSurface.h"
-#include "MeshSelectionModeVertex.h"
+#include "Selection/MeshSelectionModeEdge.h"
+#include "Selection/MeshSelectionModePolygon.h"
+#include "Selection/MeshSelectionModeSurface.h"
+#include "Selection/MeshSelectionModeVertex.h"
 #include "ModeModelMeshTexture.h"
 
 ModeModelMesh *mode_model_mesh = NULL;

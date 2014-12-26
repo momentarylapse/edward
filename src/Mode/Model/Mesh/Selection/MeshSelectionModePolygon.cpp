@@ -7,13 +7,13 @@
 
 #include "MeshSelectionModePolygon.h"
 
-#include "../../../Edward.h"
-#include "../../../MultiView/MultiView.h"
-#include "../../../MultiView/Window.h"
-#include "ModeModelMesh.h"
-#include "../ModeModel.h"
-#include "../Animation/ModeModelAnimation.h"
-#include "../Skeleton/ModeModelSkeleton.h"
+#include "../../../../Edward.h"
+#include "../../../../MultiView/MultiView.h"
+#include "../../../../MultiView/Window.h"
+#include "../ModeModelMesh.h"
+#include "../../ModeModel.h"
+#include "../../Animation/ModeModelAnimation.h"
+#include "../../Skeleton/ModeModelSkeleton.h"
 #include "MeshSelectionModeEdge.h"
 
 

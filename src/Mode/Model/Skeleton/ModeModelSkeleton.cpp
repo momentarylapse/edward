@@ -15,7 +15,7 @@
 #include "Creation/ModeModelSkeletonAttachVertices.h"
 #include "../../../Action/Model/Skeleton/ActionModelDeleteBoneSelection.h"
 #include "../../../Action/Model/Skeleton/ActionModelSetSubModel.h"
-#include "../Mesh/MeshSelectionModePolygon.h"
+#include "../Mesh/Selection/MeshSelectionModePolygon.h"
 
 
 

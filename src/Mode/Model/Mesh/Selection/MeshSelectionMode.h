@@ -8,7 +8,7 @@
 #ifndef SRC_MODE_MODEL_MESH_MESHSELECTIONMODE_H_
 #define SRC_MODE_MODEL_MESH_MESHSELECTIONMODE_H_
 
-#include "ModeModelMesh.h"
+#include "../ModeModelMesh.h"
 
 class MeshSelectionMode
 {

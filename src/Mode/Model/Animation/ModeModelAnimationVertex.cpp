@@ -11,7 +11,7 @@
 #include "../Skeleton/ModeModelSkeleton.h"
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
-#include "../Mesh/MeshSelectionModePolygon.h"
+#include "../Mesh/Selection/MeshSelectionModePolygon.h"
 
 ModeModelAnimationVertex *mode_model_animation_vertex = NULL;
 

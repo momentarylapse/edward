@@ -17,7 +17,7 @@
 #include "../../../../MultiView/Window.h"
 #include "../../../../Action/ActionGroup.h"
 #include "../../../../Action/Model/Mesh/Vertex/Helper/ActionModelMoveVertex.h"
-#include "../MeshSelectionModePolygon.h"
+#include "../Selection/MeshSelectionModePolygon.h"
 
 const int CUBE_SIZE = 20;
 

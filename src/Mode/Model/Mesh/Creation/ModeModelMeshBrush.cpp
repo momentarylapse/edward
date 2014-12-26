@@ -20,8 +20,6 @@ ModeModelMeshBrush::ModeModelMeshBrush(ModeBase* _parent) :
 {
 	message = _("auf der Oberfl&ache malen");
 
-	mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_polygon);
-	mode_model->allowSelectionModes(false);
 	brushing = false;
 }
 
@@ -58,6 +56,9 @@ void ModeModelMeshBrush::apply()
 
 void ModeModelMeshBrush::onStart()
 {
+	mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_polygon);
+	mode_model->allowSelectionModes(false);
+
 	multi_view->setAllowAction(false);
 	multi_view->setAllowSelect(false);
 
@@ -111,6 +112,7 @@ void ModeModelMeshBrush::onEnd()
 	multi_view->setAllowSelect(true);
 	if (brushing)
 		data->endActionGroup();
+	mode_model->allowSelectionModes(true);
 }
 
 void ModeModelMeshBrush::onLeftButtonDown()

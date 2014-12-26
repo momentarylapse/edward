@@ -7,12 +7,12 @@
 
 #include "MeshSelectionModeVertex.h"
 
-#include "../../../Edward.h"
-#include "../../../MultiView/MultiView.h"
-#include "../../../MultiView/Window.h"
-#include "ModeModelMesh.h"
-#include "../Skeleton/ModeModelSkeleton.h"
-#include "../../../lib/nix/nix.h"
+#include "../../../../Edward.h"
+#include "../../../../MultiView/MultiView.h"
+#include "../../../../MultiView/Window.h"
+#include "../ModeModelMesh.h"
+#include "../../Skeleton/ModeModelSkeleton.h"
+#include "../../../../lib/nix/nix.h"
 #include "MeshSelectionModePolygon.h"
 
 MeshSelectionModeVertex::MeshSelectionModeVertex(ModeModelMesh *_parent) :

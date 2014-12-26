@@ -13,10 +13,10 @@
 #include "Skeleton/ModeModelSkeleton.h"
 #include "Animation/ModeModelAnimation.h"
 #include "../../lib/nix/nix.h"
-#include "Mesh/MeshSelectionModeEdge.h"
-#include "Mesh/MeshSelectionModePolygon.h"
-#include "Mesh/MeshSelectionModeSurface.h"
-#include "Mesh/MeshSelectionModeVertex.h"
+#include "Mesh/Selection/MeshSelectionModeEdge.h"
+#include "Mesh/Selection/MeshSelectionModePolygon.h"
+#include "Mesh/Selection/MeshSelectionModeSurface.h"
+#include "Mesh/Selection/MeshSelectionModeVertex.h"
 #include "Mesh/ModeModelMeshTexture.h"
 
 ModeModel *mode_model = NULL;

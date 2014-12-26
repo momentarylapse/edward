@@ -10,7 +10,7 @@
 #include "../../../../Action/Model/Skeleton/ActionModelAttachVerticesToBone.h"
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
-#include "../../Mesh/MeshSelectionModePolygon.h"
+#include "../../Mesh/Selection/MeshSelectionModePolygon.h"
 
 ModeModelSkeletonAttachVertices::ModeModelSkeletonAttachVertices(ModeBase* _parent,
 		int _bone_index) :

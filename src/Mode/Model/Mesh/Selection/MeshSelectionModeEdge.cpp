@@ -7,17 +7,12 @@
 
 #include "MeshSelectionModeEdge.h"
 
-#include "../../../Edward.h"
-#include "../../../MultiView/MultiView.h"
-#include "../../../MultiView/Window.h"
-#include "ModeModelMesh.h"
-#include "../Skeleton/ModeModelSkeleton.h"
+#include "../../../../Edward.h"
+#include "../../../../MultiView/MultiView.h"
+#include "../../../../MultiView/Window.h"
+#include "../ModeModelMesh.h"
+#include "../../Skeleton/ModeModelSkeleton.h"
 #include "MeshSelectionModePolygon.h"
-
-namespace MultiView{
-	extern color ColorBackGround2D;
-	extern color ColorText;
-};
 
 MeshSelectionModeEdge::MeshSelectionModeEdge(ModeModelMesh *_parent) :
 	MeshSelectionMode(_parent)

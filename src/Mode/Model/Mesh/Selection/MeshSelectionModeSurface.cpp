@@ -7,11 +7,11 @@
 
 #include "MeshSelectionModeSurface.h"
 
-#include "../../../Edward.h"
-#include "../../../MultiView/MultiView.h"
-#include "ModeModelMesh.h"
+#include "../../../../Edward.h"
+#include "../../../../MultiView/MultiView.h"
+#include "../ModeModelMesh.h"
 #include "MeshSelectionModePolygon.h"
-#include "../ModeModel.h"
+#include "../../ModeModel.h"
 
 
 MeshSelectionModeSurface::MeshSelectionModeSurface(ModeModelMesh *_parent) :

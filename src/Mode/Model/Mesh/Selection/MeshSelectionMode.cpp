@@ -6,8 +6,7 @@
  */
 
 #include "MeshSelectionMode.h"
-#include "../../../Edward.h"
-#include "ModeModelMeshTexture.h"
+#include "../../../../Edward.h"
 
 MeshSelectionMode::MeshSelectionMode(ModeModelMesh *_parent)
 {
