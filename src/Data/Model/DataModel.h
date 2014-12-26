@@ -301,12 +301,21 @@ public:
 	// properties
 	Array<ModelBone> bone;
 
+	// actions
+	void reconnectBone(int index, int parent);
+	void setBoneModel(int index, const string &filename);
+	void addBone(const vector &pos, int parent);
+	void deleteBone(int index);
+	void deleteSelectedBones();
+	void boneAttachVertices(int index, const Array<int> &vertices);
+
 
 	// properties
 	Array<ModelMove> move;
 
 	// actions
 	void addAnimation(int index, int type);
+	void duplicateAnimation(int source, int target);
 	void deleteAnimation(int index);
 	void setAnimationData(int index, const string &name, float fps_const, float fps_factor);
 	void animationAddFrame(int index, int frame);

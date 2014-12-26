@@ -41,11 +41,18 @@
 #include "../../Action/Model/Mesh/ActionModelPasteGeometry.h"
 #include "../../Action/Model/Mesh/ActionModelEasify.h"
 #include "../../Action/Model/Animation/ActionModelAddAnimation.h"
+#include "../../Action/Model/Animation/ActionModelDuplicateAnimation.h"
 #include "../../Action/Model/Animation/ActionModelDeleteAnimation.h"
 #include "../../Action/Model/Animation/ActionModelAnimationAddFrame.h"
 #include "../../Action/Model/Animation/ActionModelAnimationDeleteFrame.h"
 #include "../../Action/Model/Animation/ActionModelAnimationSetData.h"
 #include "../../Action/Model/Animation/ActionModelAnimationSetFrameDuration.h"
+#include "../../Action/Model/Skeleton/ActionModelAddBone.h"
+#include "../../Action/Model/Skeleton/ActionModelAttachVerticesToBone.h"
+#include "../../Action/Model/Skeleton/ActionModelDeleteBone.h"
+#include "../../Action/Model/Skeleton/ActionModelDeleteBoneSelection.h"
+#include "../../Action/Model/Skeleton/ActionModelReconnectBone.h"
+#include "../../Action/Model/Skeleton/ActionModelSetSubModel.h"
 
 const string DataModel::MESSAGE_SELECTION = "Selection";
 const string DataModel::MESSAGE_SKIN_CHANGE = "SkinChange";
@@ -1820,8 +1827,29 @@ int DataModel::getNumPolygons()
 	return r;
 }
 
+void DataModel::reconnectBone(int index, int parent)
+{	execute(new ActionModelReconnectBone(index, parent));	}
+
+void DataModel::setBoneModel(int index, const string &filename)
+{	execute(new ActionModelSetSubModel(index, filename));	}
+
+void DataModel::addBone(const vector &pos, int parent)
+{	execute(new ActionModelAddBone(pos, parent));	}
+
+void DataModel::deleteBone(int index)
+{	execute(new ActionModelDeleteBone(index));	}
+
+void DataModel::deleteSelectedBones()
+{	execute(new ActionModelDeleteBoneSelection(this));	}
+
+void DataModel::boneAttachVertices(int index, const Array<int> &vertices)
+{	execute(new ActionModelAttachVerticesToBone(vertices, index));	}
+
 void DataModel::addAnimation(int index, int type)
 {	execute(new ActionModelAddAnimation(index, type));	}
+
+void DataModel::duplicateAnimation(int source, int target)
+{	execute(new ActionModelDuplicateAnimation(source, target));	}
 
 void DataModel::deleteAnimation(int index)
 {	execute(new ActionModelDeleteAnimation(index));	}

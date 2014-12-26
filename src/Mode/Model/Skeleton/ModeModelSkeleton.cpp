@@ -13,9 +13,6 @@
 #include "../Animation/ModeModelAnimation.h"
 #include "Creation/ModeModelSkeletonCreateBone.h"
 #include "Creation/ModeModelSkeletonAttachVertices.h"
-#include "../../../Action/Model/Skeleton/ActionModelDeleteBoneSelection.h"
-#include "../../../Action/Model/Skeleton/ActionModelSetSubModel.h"
-#include "../../../Action/Model/Skeleton/ActionModelReconnectBone.h"
 #include "../Mesh/Selection/MeshSelectionModePolygon.h"
 
 
@@ -51,7 +48,7 @@ void ModeModelSkeleton::onCommand(const string & id)
 		unlinkSelection();
 
 	if (id == "delete")
-		data->execute(new ActionModelDeleteBoneSelection(data));
+		data->deleteSelectedBones();
 
 	if (id == "skeleton_add_model")
 		addSubModel();
@@ -77,7 +74,7 @@ void ModeModelSkeleton::addSubModel()
 	data->beginActionGroup("remove-sub-model");
 	foreachi(ModelBone &b, data->bone, i)
 		if (b.is_selected)
-			data->execute(new ActionModelSetSubModel(i, ed->dialog_file_no_ending));
+			data->setBoneModel(i, ed->dialog_file_no_ending);
 	data->endActionGroup();
 }
 
@@ -86,7 +83,7 @@ void ModeModelSkeleton::removeSubModel()
 	data->beginActionGroup("remove-sub-model");
 	foreachi(ModelBone &b, data->bone, i)
 		if (b.is_selected)
-			data->execute(new ActionModelSetSubModel(i, ""));
+			data->setBoneModel(i, "");
 	data->endActionGroup();
 }
 
@@ -97,7 +94,7 @@ void ModeModelSkeleton::unlinkSelection()
 	foreachi(ModelBone &b, data->bone, i)
 		if ((b.is_selected) and (b.parent >= 0))
 			if (data->bone[b.parent].is_selected){
-				data->execute(new ActionModelReconnectBone(i, -1));
+				data->reconnectBone(i, -1);
 				n ++;
 			}
 	data->endActionGroup();

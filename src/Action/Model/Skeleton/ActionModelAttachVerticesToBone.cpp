@@ -8,8 +8,7 @@
 #include "ActionModelAttachVerticesToBone.h"
 #include "../../../Data/Model/DataModel.h"
 
-ActionModelAttachVerticesToBone::ActionModelAttachVerticesToBone(
-		Array<int>& _index, int _bone_index)
+ActionModelAttachVerticesToBone::ActionModelAttachVerticesToBone(const Array<int> &_index, int _bone_index)
 {
 	index = _index;
 	bone_index = _bone_index;

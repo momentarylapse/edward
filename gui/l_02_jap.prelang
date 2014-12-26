@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-618
+619
 // Data (ID,Text)
 ad_dialog
 
@@ -50,6 +50,8 @@ ambient
 ani_dt_sim_param
 
 ani_dt_sim_speed
+
+animation_copy
 
 animation_delete
 削除
@@ -881,7 +883,7 @@ quality_factor
 
 quality_slider
 
-rand_id_396824
+rand_id_274771
 
 rc_dialog
 
@@ -1240,7 +1242,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-239
+240
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1263,6 +1265,8 @@ zzz_setbgimage
 %d Objekte, %d Terrains eingefügt
 
 %d Objekte, %d Terrains kopiert
+
+%d Verbindungen gelöst
 
 %d Vertizes, %d Dreiecke eingefügt
 

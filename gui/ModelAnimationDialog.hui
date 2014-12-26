@@ -3,8 +3,9 @@ Dialog animation_dialog "Animations-Kontrolle" 260 400
 		Group t_list "Übersicht"
 			Grid ? "" 1 2
 				ListView animation_list "#\\Typ\\Frames\\Name"
-				Grid ? "" 2 1
+				Grid ? "" 3 1
 					Button animation_new "Neu" image=hui:new
+					Button animation_copy "Kopieren" image=hui:copy
 					Button animation_delete "Löschen" image=hui:delete
 		Separator sep_vertical "" vertical
 		Group t_properties "Eigenschaften"

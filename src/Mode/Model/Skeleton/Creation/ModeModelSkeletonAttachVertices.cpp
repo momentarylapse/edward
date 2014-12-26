@@ -7,7 +7,6 @@
 
 #include "ModeModelSkeletonAttachVertices.h"
 #include "../../ModeModel.h"
-#include "../../../../Action/Model/Skeleton/ActionModelAttachVerticesToBone.h"
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../Mesh/Selection/MeshSelectionModePolygon.h"
@@ -62,7 +61,7 @@ void ModeModelSkeletonAttachVertices::onKeyDown()
 		foreachi(ModelVertex &v, data->vertex, i)
 			if (v.is_selected)
 				index.add(i);
-		data->execute(new ActionModelAttachVerticesToBone(index, bone_index));
+		data->boneAttachVertices(bone_index, index);
 		abort();
 	}
 }

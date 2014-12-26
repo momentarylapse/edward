@@ -26,6 +26,7 @@ public:
 	void onAnimationList();
 	void onAnimationListSelect();
 	void onAddAnimation();
+	void onCopyAnimation();
 	void onDeleteAnimation();
 	void onFrame();
 	void onAddFrame();
@@ -42,6 +43,8 @@ public:
 	void onUpdate(Observable *o, const string &message);
 
 	int getSelectedAnimation();
+
+	int getFirstFreeIndex();
 
 private:
 	DataModel *data;

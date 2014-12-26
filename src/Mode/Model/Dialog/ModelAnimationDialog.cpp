@@ -8,6 +8,7 @@
 #include "ModelAnimationDialog.h"
 #include "../../../Data/Model/DataModel.h"
 #include "ModelNewAnimationDialog.h"
+#include "ModelDuplicateAnimationDialog.h"
 #include "../Animation/ModeModelAnimation.h"
 
 
@@ -24,6 +25,7 @@ ModelAnimationDialog::ModelAnimationDialog(HuiWindow *_parent, DataModel *_data)
 	win->eventX("animation_list", "hui:select", this, &ModelAnimationDialog::onAnimationListSelect);
 	win->event("animation_new", this, &ModelAnimationDialog::onAddAnimation);
 	win->event("animation_delete", this, &ModelAnimationDialog::onDeleteAnimation);
+	win->event("animation_copy", this, &ModelAnimationDialog::onCopyAnimation);
 	win->event("frame", this, &ModelAnimationDialog::onFrame);
 	win->event("new_frame", this, &ModelAnimationDialog::onAddFrame);
 	win->event("delete_frame", this, &ModelAnimationDialog::onDeleteFrame);
@@ -91,6 +93,14 @@ void ModelAnimationDialog::fillAnimation()
 	}
 }
 
+void ModelAnimationDialog::onCopyAnimation()
+{
+	int index = getFirstFreeIndex();
+
+	ModelDuplicateAnimationDialog *dlg = new ModelDuplicateAnimationDialog(win, false, data, index, mode_model_animation->current_move);
+	dlg->run();
+}
+
 int ModelAnimationDialog::getSelectedAnimation()
 {
 	int s = getInt("animation_list");
@@ -128,14 +138,7 @@ void ModelAnimationDialog::applyData()
 
 void ModelAnimationDialog::onAddAnimation()
 {
-	// first free index
-	int index = data->move.num;
-	foreachi(ModelMove &m, data->move, i)
-		if (m.frame.num == 0){
-			index = i;
-			break;
-		}
-
+	int index = getFirstFreeIndex();
 	int type = (data->bone.num > 0) ? MOVE_TYPE_SKELETAL : MOVE_TYPE_VERTEX;
 
 	ModelNewAnimationDialog *dlg = new ModelNewAnimationDialog(win, false, data, index, type);
@@ -217,3 +220,11 @@ void ModelAnimationDialog::onUpdate(Observable *o, const string &message)
 	}
 }
 
+int ModelAnimationDialog::getFirstFreeIndex()
+{
+	foreachi(ModelMove &m, data->move, i)
+		if (m.frame.num == 0){
+			return i;
+		}
+	return data->move.num;
+}
