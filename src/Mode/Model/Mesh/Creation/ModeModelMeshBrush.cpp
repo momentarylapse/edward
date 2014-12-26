@@ -88,7 +88,7 @@ void ModeModelMeshBrush::onStart()
 	dialog->setInt("brush_type", 0);
 	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
 	dialog->show();
-	dialog->eventS("hui:close", &HuiFuncIgnore);
+	dialog->event("hui:close", this, &ModeModelMeshBrush::onClose);
 
 	ed->activate("");
 }
@@ -173,3 +173,6 @@ void ModeModelMeshBrush::onDrawWin(MultiView::Window* win)
 		NixDrawLine3D(pos + sin(w1) * e1 + cos(w1) * e2, pos + sin(w2) * e1 + cos(w2) * e2);
 	}
 }
+
+void ModeModelMeshBrush::onClose()
+{	abort();	}

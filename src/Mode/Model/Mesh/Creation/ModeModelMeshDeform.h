@@ -30,6 +30,7 @@ public:
 
 	void onPreview();
 	void onOk();
+	void onClose();
 
 private:
 	vector min, max;

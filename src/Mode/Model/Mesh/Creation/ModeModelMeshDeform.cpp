@@ -58,7 +58,7 @@ void ModeModelMeshDeform::onStart()
 	dialog->setTabSize("source", 4);
 	dialog->setString("source", "void f(vector o, vector i)\n\to = vector(i.x, i.y+(i.x*i.x-i.x), i.z)\n");
 	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
-	dialog->event("hui:close", this, &ModeModelMeshDeform::abort);
+	dialog->event("hui:close", this, &ModeModelMeshDeform::onClose);
 	dialog->event("preview", this, &ModeModelMeshDeform::onPreview);
 	dialog->event("ok", this, &ModeModelMeshDeform::onOk);
 	dialog->show();
@@ -185,5 +185,10 @@ void ModeModelMeshDeform::onOk()
 
 	data->endActionGroup();
 
+	abort();
+}
+
+void ModeModelMeshDeform::onClose()
+{
 	abort();
 }

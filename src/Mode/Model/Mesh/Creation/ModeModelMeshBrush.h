@@ -30,6 +30,8 @@ public:
 
 	virtual void onDrawWin(MultiView::Window *win);
 
+	void onClose();
+
 	Action *getAction();
 	void apply();
 
