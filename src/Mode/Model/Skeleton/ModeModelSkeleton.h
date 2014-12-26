@@ -30,6 +30,7 @@ public:
 
 	void addSubModel();
 	void removeSubModel();
+	void unlinkSelection();
 
 	void drawSkeleton(MultiView::Window *win, Array<ModelBone> &bone, bool thin = false);
 

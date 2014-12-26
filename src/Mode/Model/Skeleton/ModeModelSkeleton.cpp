@@ -15,6 +15,7 @@
 #include "Creation/ModeModelSkeletonAttachVertices.h"
 #include "../../../Action/Model/Skeleton/ActionModelDeleteBoneSelection.h"
 #include "../../../Action/Model/Skeleton/ActionModelSetSubModel.h"
+#include "../../../Action/Model/Skeleton/ActionModelReconnectBone.h"
 #include "../Mesh/Selection/MeshSelectionModePolygon.h"
 
 
@@ -46,6 +47,8 @@ void ModeModelSkeleton::onCommand(const string & id)
 	}
 	//if (id == "skeleton_link")
 	//	ed->setMode(new ModeModelSkeletonCreateBone(ed->cur_mode));
+	if (id == "skeleton_unlink")
+		unlinkSelection();
 
 	if (id == "delete")
 		data->execute(new ActionModelDeleteBoneSelection(data));
@@ -85,6 +88,21 @@ void ModeModelSkeleton::removeSubModel()
 		if (b.is_selected)
 			data->execute(new ActionModelSetSubModel(i, ""));
 	data->endActionGroup();
+}
+
+void ModeModelSkeleton::unlinkSelection()
+{
+	data->beginActionGroup("unlink-bones");
+	int n = 0;
+	foreachi(ModelBone &b, data->bone, i)
+		if ((b.is_selected) and (b.parent >= 0))
+			if (data->bone[b.parent].is_selected){
+				data->execute(new ActionModelReconnectBone(i, -1));
+				n ++;
+			}
+	data->endActionGroup();
+
+	ed->setMessage(format(_("%d Verbindungen gel&ost"), n));
 }
 
 void ModeModelSkeleton::chooseMouseFunction(int f)
