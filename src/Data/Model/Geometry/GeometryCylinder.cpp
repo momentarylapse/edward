@@ -24,7 +24,7 @@ GeometryCylinder::GeometryCylinder(Array<vector> &pos, Array<float> &radius, int
 		inter.add(p);
 	inter.normalize();
 
-	BuildFromPath(inter, inter_r, rings, edges, closed);
+	buildFromPath(inter, inter_r, rings, edges, closed);
 }
 
 GeometryCylinder::GeometryCylinder(Array<vector> &pos, float radius, int rings, int edges, bool closed)
@@ -40,10 +40,10 @@ GeometryCylinder::GeometryCylinder(Array<vector> &pos, float radius, int rings, 
 		inter.add(p);
 	inter.normalize();
 
-	BuildFromPath(inter, inter_r, rings, edges, closed);
+	buildFromPath(inter, inter_r, rings, edges, closed);
 }
 
-GeometryCylinder::GeometryCylinder(const vector &pos1, const vector &pos2, float radius, int rings, int edges, bool closed)
+GeometryCylinder::GeometryCylinder(const vector &pos1, const vector &pos2, float radius, int rings, int edges)
 {
 	Interpolator<float> inter_r(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
 	inter_r.add(radius);
@@ -56,7 +56,7 @@ GeometryCylinder::GeometryCylinder(const vector &pos1, const vector &pos2, float
 	inter.add(pos2);
 	inter.normalize();
 
-	BuildFromPath(inter, inter_r, rings, edges, closed);
+	buildFromPath(inter, inter_r, rings, edges, false);
 }
 
 void GeometryCylinder::__init2__(Array<vector>& pos, Array<float>& radius, int rings, int edges, bool closed)
@@ -64,12 +64,12 @@ void GeometryCylinder::__init2__(Array<vector>& pos, Array<float>& radius, int r
 	new (this) GeometryCylinder(pos, radius, rings, edges, closed);
 }
 
-void GeometryCylinder::__init__(const vector& pos1, const vector& pos2, float radius, int rings, int edges, bool closed)
+void GeometryCylinder::__init__(const vector& pos1, const vector& pos2, float radius, int rings, int edges)
 {
-	new (this) GeometryCylinder(pos1, pos2, radius, rings, edges, closed);
+	new (this) GeometryCylinder(pos1, pos2, radius, rings, edges);
 }
 
-void GeometryCylinder::BuildFromPath(Interpolator<vector> &inter, Interpolator<float> &inter_r, int rings, int edges, bool closed)
+void GeometryCylinder::buildFromPath(Interpolator<vector> &inter, Interpolator<float> &inter_r, int rings, int edges, bool closed)
 {
 	if (closed){
 		inter.close();
@@ -151,44 +151,22 @@ void GeometryCylinder::BuildFromPath(Interpolator<vector> &inter, Interpolator<f
 	}
 
 // the endings
-	int nv2 = vertex.num;
-
-	// center points
-	addVertex(inter.get(0));
-	addVertex(inter.get(1));
 
 	// skin vertices
 	sv.clear();
-	for (int i=0;i<2;i++){
-		sv.add(vector(0.5f,0.5f,0));
-		for (int j=0;j<edges;j++){
-			float w=pi*2*(float)j/(float)edges;
-			sv.add(vector(0.5f+(float)sin(w)/2,0.5f+(float)cos(w)/2,0));
-		}
+	for (int j=0;j<edges;j++){
+		float w=pi*2*(float)j/(float)edges;
+		sv.add(vector(0.5f+(float)sin(w)/2,0.5f+(float)cos(w)/2,0));
 	}
 
 	// triangles
-	for (int j=0;j<edges;j++){
-		Array<int> v;
-		v.add(nv2);
+	Array<int> v;
+	for (int j=0;j<edges;j++)
 		v.add(j);
-		v.add((j+1)%edges);
-		Array<vector> _sv;
-		_sv.add(sv[0]);
-		_sv.add(sv[1+j]);
-		_sv.add(sv[1+(j+1)%edges]);
-		addPolygonSingleTexture(v, _sv);
-	}
-	for (int j=0;j<edges;j++){
-		Array<int> v;
-		v.add(nv2+1);
-		v.add(nv2-edges+(j+1)%edges);
-		v.add(nv2-edges+j);
-		Array<vector> _sv;
-		_sv.add(sv[edges+1]);
-		_sv.add(sv[edges+2+(j+1)%edges]);
-		_sv.add(sv[edges+2+j]);
-		addPolygonSingleTexture(v, _sv);
-	}
+	addPolygonSingleTexture(v, sv);
+	v.clear();
+	for (int j=0;j<edges;j++)
+		v.add(vertex.num - j - 1);
+	addPolygonSingleTexture(v, sv);
 }
 

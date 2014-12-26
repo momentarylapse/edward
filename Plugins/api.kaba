@@ -195,7 +195,7 @@ class GeometryCube : Geometry
 	extern void __init__(vector pos, vector dv1, vector dv2, vector dv3, int num_1, int num_2, int num_3)
 
 class GeometryCylinder : Geometry
-	extern void __init__(vector pos1, vector pos2, float radius, int rings, int edges, bool closed)
+	extern void __init__(vector pos1, vector pos2, float radius, int rings, int edges)
 
 class GeometryCylinderComplex : Geometry
 	extern void __init__(vector pos[], float radius[], int rings, int edges, bool closed)

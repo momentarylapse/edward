@@ -208,9 +208,9 @@ void ActionController::update()
 		MatrixTranslation(t, pos);
 		//vector dir = multi_view->cam.ang * e_z;
 		//vector ddir = vector(fsign(dir.x), fsign(dir.y), fsign(dir.z));
-		geo.add(new GeometryCylinder(-e_x, e_x, 0.1f, 1, 8, false));
-		geo.add(new GeometryCylinder(-e_y, e_y, 0.1f, 1, 8, false));
-		geo.add(new GeometryCylinder(-e_z, e_z, 0.1f, 1, 8, false));
+		geo.add(new GeometryCylinder(-e_x, e_x, 0.1f, 1, 8));
+		geo.add(new GeometryCylinder(-e_y, e_y, 0.1f, 1, 8));
+		geo.add(new GeometryCylinder(-e_z, e_z, 0.1f, 1, 8));
 		geo.add(new GeometryTorus(v_0, e_z, 0.5f, 0.1f, 32, 8));
 		geo.add(new GeometryTorus(v_0, e_y, 0.5f, 0.1f, 32, 8));
 		geo.add(new GeometryTorus(v_0, e_x, 0.5f, 0.1f, 32, 8));
@@ -218,9 +218,9 @@ void ActionController::update()
 		geo.add(new GeometryCube(v_0, -ddir.x * e_x, v_0, -ddir.z * e_z, 1, 1, 1));
 		geo.add(new GeometryCube(v_0, v_0, -ddir.y * e_y, -ddir.z * e_z, 1, 1, 1));*/
 		geo.add(new GeometryBall(v_0, 0.3f, 16, 8));
-		geo_show.add(new GeometryCylinder(-e_x, e_x, 0.03f, 1, 8, false));
-		geo_show.add(new GeometryCylinder(-e_y, e_y, 0.03f, 1, 8, false));
-		geo_show.add(new GeometryCylinder(-e_z, e_z, 0.03f, 1, 8, false));
+		geo_show.add(new GeometryCylinder(-e_x, e_x, 0.03f, 1, 8));
+		geo_show.add(new GeometryCylinder(-e_y, e_y, 0.03f, 1, 8));
+		geo_show.add(new GeometryCylinder(-e_z, e_z, 0.03f, 1, 8));
 		geo_show.add(new GeometryTorus(v_0, e_z, 0.5f, 0.03f, 32, 8));
 		geo_show.add(new GeometryTorus(v_0, e_y, 0.5f, 0.03f, 32, 8));
 		geo_show.add(new GeometryTorus(v_0, e_x, 0.5f, 0.03f, 32, 8));

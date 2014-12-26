@@ -109,7 +109,7 @@ void ModeModelMeshDeformCylinder::onStart()
 	axis[0] = m + (dir * (min - m)) * dir;
 	axis[1] = m + (dir * (max - m)) * dir;
 
-	geo = new GeometryCylinder(axis[0], axis[1], radius, CYLINDER_RINGS, CYLINDER_EDGES, false);
+	geo = new GeometryCylinder(axis[0], axis[1], radius, CYLINDER_RINGS, CYLINDER_EDGES);
 	hover = -1;
 }
 
