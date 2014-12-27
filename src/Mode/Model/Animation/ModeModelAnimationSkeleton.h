@@ -30,6 +30,9 @@ public:
 
 	void chooseMouseFunction(int f);
 	int mouse_action;
+
+	void updateSelection();
+	bool select_recursive;
 };
 
 extern ModeModelAnimationSkeleton *mode_model_animation_skeleton;

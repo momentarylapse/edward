@@ -19,6 +19,7 @@ void DrawBone(const vector &r, const vector &d, const color &c, MultiView::Windo
 ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(ModeBase* _parent) :
 	Mode<DataModel>("ModelAnimationSkeleton", _parent, ed->multi_view_3d, "menu_move")
 {
+	select_recursive = true;
 }
 
 ModeModelAnimationSkeleton::~ModeModelAnimationSkeleton()
@@ -34,6 +35,7 @@ void ModeModelAnimationSkeleton::onStart()
 	t->addItemCheckable(_("Selektieren"), dir + "rf_select.png", "select");
 	t->addItemCheckable(_("Verschieben"), dir + "rf_translate.png", "translate");
 	t->addItemCheckable(_("Rotieren"), dir + "rf_rotate.png", "rotate");
+	t->addItemCheckable(_("Rekursiv bearbeiten"), "hui:apply", "select-recursive");
 	t->enable(true);
 	t->configure(false,true);
 
@@ -63,6 +65,11 @@ void ModeModelAnimationSkeleton::onCommand(const string& id)
 		chooseMouseFunction(MultiView::ACTION_MOVE);
 	if (id == "rotate")
 		chooseMouseFunction(MultiView::ACTION_ROTATE);
+	if (id == "select-recursive"){
+		select_recursive = !select_recursive;
+		updateSelection();
+		ed->updateMenu();
+	}
 }
 
 void ModeModelAnimationSkeleton::chooseMouseFunction(int f)
@@ -85,8 +92,7 @@ void ModeModelAnimationSkeleton::onUpdate(Observable* o, const string &message)
 				NULL,
 				MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT);
 	}else if (o == multi_view){
-		foreachi(ModelBone &b, data->bone, i)
-			b.is_selected = mode_model_animation->bone[i].is_selected;
+		updateSelection();
 	}
 }
 
@@ -103,4 +109,23 @@ void ModeModelAnimationSkeleton::onUpdateMenu()
 	ed->check("select", mouse_action == MultiView::ACTION_SELECT);
 	ed->check("translate", mouse_action == MultiView::ACTION_MOVE);
 	ed->check("rotate", mouse_action == MultiView::ACTION_ROTATE);
+
+	ed->check("select-recursive", select_recursive);
+}
+
+void ModeModelAnimationSkeleton::updateSelection()
+{
+	foreachi(ModelBone &b, data->bone, i)
+		b.is_selected = mode_model_animation->bone[i].is_selected;
+
+	// also select children?
+	if (select_recursive){
+		// this works thanks to lucky circumstances... might break in the future
+		foreachi(ModelBone &b, data->bone, i)
+			if (b.is_selected){
+				foreach(ModelBone &bc, data->bone)
+					if (bc.parent == i)
+						bc.is_selected = true;
+			}
+	}
 }
