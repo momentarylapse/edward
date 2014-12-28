@@ -104,6 +104,13 @@ struct PartialModel{
 	bool shadow, transparent;
 };
 
+// network messages
+struct GodNetMessage
+{
+	int msg, arg_i[4];
+	string arg_s;
+};
+
 
 
 // game data
@@ -120,17 +127,42 @@ public:
 
 	vector gravity;
 	Array<float> var;
+
+
+	int physics_num_steps, physics_num_link_steps;
+
+	#ifdef _X_ALLOW_PHYSICS_DEBUG_
+		int PhysicsTimer;
+		float PhysicsTimeCol, PhysicsTimePhysics, PhysicsTimeLinks;
+		sCollisionData PhysicsDebugColData;
+		bool PhysicsStopOnCollision;
+	#endif
+
+	bool net_msg_enabled;
+	Array<GodNetMessage> net_messages;
+
+	// content of the world
+	Array<Object*> objects;
+	Object *ego;
+	Object *terrain_object;
+
+	Array<Terrain*> terrains;
+
+
+	// esotherical (not in the world)
+	bool add_all_objects_to_lists;
+
+	// music fields
+	int NumMusicFields;
+	MusicField MusicFieldGlobal,MusicFields[GOD_MAX_MUSICFIELDS];
+	int MusicCurrent;
+
+	// force fields
+	int NumForceFields;
+	GodForceField *ForceField[GOD_MAX_FORCEFIELDS];
+	MusicField *MusicFieldCurrent;
 };
 extern WorldData World;
-
-extern int PhysicsNumSteps, PhysicsNumLinkSteps;
-
-#ifdef _X_ALLOW_PHYSICS_DEBUG_
-	extern int PhysicsTimer;
-	extern float PhysicsTimeCol, PhysicsTimePhysics, PhysicsTimeLinks;
-	extern sCollisionData PhysicsDebugColData;
-	extern bool PhysicsStopOnCollision;
-#endif
 
 
 void GodInit();
@@ -139,7 +171,6 @@ void GodResetLevelData();
 bool GodLoadWorldFromLevelData();
 bool GodLoadWorld(const string &filename);
 
-extern bool GodNetMsgEnabled;
 Object* _cdecl GodCreateObject(const string &filename, const string &name, const vector &pos, const quaternion &ang, int w_index=-1);
 void GodRegisterObject(Model *m, int index = -1);
 void GodUnregisterObject(Model *m);
@@ -166,9 +197,9 @@ void Test4Object(Object *o1,Object *o2);
 // what is hit (TraceData.type)
 enum
 {
-	TraceTypeNone = -1,
-	TraceTypeTerrain,
-	TraceTypeModel
+	TRACE_TYPE_NONE = -1,
+	TRACE_TYPE_TERRAIN,
+	TRACE_TYPE_MODEL
 };
 
 class TraceData
@@ -182,54 +213,25 @@ public:
 };
 bool _cdecl GodTrace(const vector &p1, const vector &p2, TraceData &d, bool simple_test, Model *o_ignore = NULL);
 
-	// content of the world
-extern Array<Object*> Objects;
-extern Object *Ego;
-extern Object *terrain_object;
-
-// esotherical (not in the world)
-extern bool AddAllObjectsToLists;
-
-// music fields
-extern int NumMusicFields;
-extern MusicField MusicFieldGlobal,MusicFields[GOD_MAX_MUSICFIELDS];
-extern int MusicCurrent;
-
-// force fields
-extern int NumForceFields;
-extern GodForceField *ForceField[GOD_MAX_FORCEFIELDS];
-extern MusicField *MusicFieldCurrent;
 
 extern GodLevelData LevelData;
 
 
-extern Array<Terrain*> Terrains;
-
-// network messages
-struct GodNetMessage
-{
-	int msg, arg_i[4];
-	string arg_s;
-};
-extern Array<GodNetMessage> GodNetMessages;
-
 Object *_cdecl _CreateObject(const string &filename, const vector &pos);
 
 
-#define FFKindRadialConst		0
+/*#define FFKindRadialConst		0
 #define FFKindRadialLinear		1
 #define FFKindRadialQuad		2
 #define FFKindDirectionalConst	10
 #define FFKindDirectionalLinear	11
-#define FFKindDirectionalQuad	12
+#define FFKindDirectionalQuad	12*/
 
-#define NetMsgCreateObject		1000
-#define NetMsgDeleteObject		1002
-#define NetMsgSCText			2000
-
-#define FieldKindLight		0
-#define FieldKindMusic		1
-#define FieldKindWeather	2
-#define FieldKindURW		3
+enum
+{
+	NET_MSG_CREATE_OBJECT = 1000,
+	NET_MSG_DELETE_OBJECT = 1002,
+	NET_MSG_SCTEXT = 2000
+};
 
 #endif

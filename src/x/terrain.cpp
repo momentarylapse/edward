@@ -365,7 +365,7 @@ inline bool TracePattern(Terrain *t, const vector &p1,const vector &p2, TraceDat
 
 	data.point = tp;
 	data.terrain = t;
-	data.type = TraceTypeTerrain;
+	data.type = TRACE_TYPE_TERRAIN;
 	return true;
 }
 

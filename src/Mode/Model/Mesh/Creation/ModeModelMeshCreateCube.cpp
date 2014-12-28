@@ -140,9 +140,7 @@ void ModeModelMeshCreateCube::onDrawWin(MultiView::Window *win)
 	mode_model->setMaterialCreation();
 	if (pos_chosen){
 		geo->preview(VBTemp);
-		NixSetCull(pos2_chosen ? CullCCW : CullNone);
 		VBTemp->draw();
-		NixSetCull(CullCCW);
 	}
 }
 

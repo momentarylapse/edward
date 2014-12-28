@@ -1169,7 +1169,7 @@ void Model::CalcMove(float elapsed)
 					b->cur_pos += op->param1 * p;
 
 				// w = w_old * (1-f) + w_new * f
-				}else if (op->operation == MOVE_OP_MIX_2_FACTOR){
+				}else if (op->operation == MOVE_OP_MIX_1_FACTOR){
 					QuaternionInterpolate(b->cur_ang, b->cur_ang, w, op->param1);
 					b->cur_pos = (1 - op->param1) * b->cur_pos + op->param1 * p;
 
@@ -1337,7 +1337,7 @@ bool Model::Trace(const vector &p1, const vector &p2, const vector &dir, float r
 				dmin=d;
 				data.point = c;
 				data.model = this;
-				data.type = TraceTypeModel;
+				data.type = TRACE_TYPE_MODEL;
 			}
 		}
 	}
@@ -1361,7 +1361,7 @@ bool Model::Trace(const vector &p1, const vector &p2, const vector &dir, float r
 				dmin=d;
 				data.point = c;
 				data.model = this;
-				data.type = TraceTypeModel;
+				data.type = TRACE_TYPE_MODEL;
 			}
 		}
 	}
