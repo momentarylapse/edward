@@ -321,6 +321,7 @@ public:
 	void animationAddFrame(int index, int frame);
 	void animationDeleteFrame(int index, int frame);
 	void animationSetFrameDuration(int index, int frame, float duration);
+	void animationSetBone(int move, int frame, int bone, const vector &dpos, const vector &ang);
 
 	// geometry
 	Array<ModelVertex> vertex;

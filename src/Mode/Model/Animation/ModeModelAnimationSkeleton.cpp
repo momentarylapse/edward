@@ -17,7 +17,9 @@ ModeModelAnimationSkeleton *mode_model_animation_skeleton = NULL;
 void DrawBone(const vector &r, const vector &d, const color &c, MultiView::Window *win);
 
 ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(ModeBase* _parent) :
-	Mode<DataModel>("ModelAnimationSkeleton", _parent, ed->multi_view_3d, "menu_move")
+	Mode<DataModel>("ModelAnimationSkeleton", _parent, ed->multi_view_3d, "menu_move"),
+	current_move(((ModeModelAnimation*)parent)->current_move),
+	current_frame(((ModeModelAnimation*)parent)->current_frame)
 {
 	select_recursive = true;
 }
@@ -70,6 +72,10 @@ void ModeModelAnimationSkeleton::onCommand(const string& id)
 		updateSelection();
 		ed->updateMenu();
 	}
+	if (id == "copy")
+		copy();
+	if (id == "paste")
+		paste();
 }
 
 void ModeModelAnimationSkeleton::chooseMouseFunction(int f)
@@ -128,4 +134,53 @@ void ModeModelAnimationSkeleton::updateSelection()
 						bc.is_selected = true;
 			}
 	}
+}
+
+void ModeModelAnimationSkeleton::copy()
+{
+	int n = data->getNumSelectedBones();
+	if (n == 0){
+		ed->setMessage(_("nichts markiert"));
+		return;
+	}else if (n == 1){
+		temp.clear();
+		ModelFrame f;
+		foreachi(ModelBone &b, data->bone, i)
+			if (b.is_selected){
+				f.skel_ang.add(mode_model_animation->cur_move()->frame[current_frame].skel_ang[i]);
+				f.skel_dpos.add(mode_model_animation->cur_move()->frame[current_frame].skel_dpos[i]);
+			}
+		temp.add(f);
+		ed->setMessage(format(_("Animation von einzelnem Knochen kopiert"), n));
+	}else{
+		temp.clear();
+		temp.add(mode_model_animation->cur_move()->frame[current_frame]);
+		ed->setMessage(format(_("Animation von allen &d Knochen kopiert"), data->bone.num));
+	}
+}
+
+void ModeModelAnimationSkeleton::paste()
+{
+	if (temp.num == 0){
+		ed->setMessage(_("Zwischenablage leer"));
+		return;
+	}
+	data->beginActionGroup("paste-animation");
+	int n = data->getNumSelectedBones();
+	int nt = temp[0].skel_ang.num;
+	if (nt == 1){
+		foreachi(ModelBone &b, data->bone, i)
+			if (b.is_selected)
+				data->animationSetBone(current_move, current_frame, i, temp[0].skel_dpos[0], temp[0].skel_ang[0]);
+		if (n == 1)
+			ed->setMessage(_("Animation eingef&ugt - einzelner Knochen"));
+		else
+			ed->setMessage(_("Animation eingef&ugt - einzelner Knochen auf mehrere"));
+	}else{
+		foreachi(ModelBone &b, data->bone, i)
+			if (b.is_selected)
+				data->animationSetBone(current_move, current_frame, i, temp[0].skel_dpos[i], temp[0].skel_ang[i]);
+		ed->setMessage(format(_("Animation eingef&ugt -  auf &d Knochen"), n));
+	}
+	data->endActionGroup();
 }

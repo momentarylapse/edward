@@ -47,6 +47,7 @@
 #include "../../Action/Model/Animation/ActionModelAnimationDeleteFrame.h"
 #include "../../Action/Model/Animation/ActionModelAnimationSetData.h"
 #include "../../Action/Model/Animation/ActionModelAnimationSetFrameDuration.h"
+#include "../../Action/Model/Animation/ActionModelAnimationSetBone.h"
 #include "../../Action/Model/Skeleton/ActionModelAddBone.h"
 #include "../../Action/Model/Skeleton/ActionModelAttachVerticesToBone.h"
 #include "../../Action/Model/Skeleton/ActionModelDeleteBone.h"
@@ -1865,6 +1866,9 @@ void DataModel::animationDeleteFrame(int index, int frame)
 
 void DataModel::animationSetFrameDuration(int index, int frame, float duration)
 {	execute(new ActionModelAnimationSetFrameDuration(index, frame, duration));	}
+
+void DataModel::animationSetBone(int move, int frame, int bone, const vector &dpos, const vector &ang)
+{	execute(new ActionModelAnimationSetBone(move, frame, bone, dpos, ang));	}
 
 void DataModel::copyGeometry(Geometry &geo)
 {

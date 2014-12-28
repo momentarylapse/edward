@@ -33,6 +33,14 @@ public:
 
 	void updateSelection();
 	bool select_recursive;
+
+	int &current_move;
+	int &current_frame;
+
+	void copy();
+	void paste();
+
+	Array<ModelFrame> temp;
 };
 
 extern ModeModelAnimationSkeleton *mode_model_animation_skeleton;
