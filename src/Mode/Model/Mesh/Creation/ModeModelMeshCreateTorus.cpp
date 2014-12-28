@@ -43,7 +43,10 @@ void ModeModelMeshCreateTorus::onStart()
 	dialog->setInt("nt_edges", HuiConfig.getInt("NewTorusNumY", 16));
 	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
 	dialog->show();
-	dialog->eventS("hui:close", &HuiFuncIgnore);
+	dialog->event("hui:close", this, &ModeModelMeshCreateTorus::onClose);
+
+	multi_view->setAllowSelect(false);
+	multi_view->setAllowAction(false);
 
 	ed->activate("");
 }
@@ -54,8 +57,12 @@ void ModeModelMeshCreateTorus::onEnd()
 	delete(dialog);
 }
 
+void ModeModelMeshCreateTorus::onClose()
+{
+	abort();
+}
 
-void ModeModelMeshCreateTorus::UpdateGeometry()
+void ModeModelMeshCreateTorus::updateGeometry()
 {
 	if (geo)
 		delete(geo);
@@ -69,7 +76,7 @@ void ModeModelMeshCreateTorus::UpdateGeometry()
 }
 
 
-void ModeModelMeshCreateTorus::onLeftButtonDown()
+void ModeModelMeshCreateTorus::onLeftButtonUp()
 {
 	if (pos_chosen){
 		if (rad_chosen){
@@ -83,13 +90,10 @@ void ModeModelMeshCreateTorus::onLeftButtonDown()
 			rad_chosen = true;
 		}
 	}else{
-		if (multi_view->hover.index >= 0)
-			pos = data->vertex[multi_view->hover.index].pos;
-		else
-			pos = multi_view->getCursor3d();
+		pos = multi_view->getCursor3d();
 		message = _("Torus au&sen skalieren");
 		pos_chosen = true;
-		UpdateGeometry();
+		updateGeometry();
 	}
 }
 
@@ -120,7 +124,7 @@ void ModeModelMeshCreateTorus::onMouseMove()
 			radius1 = (pos2 - pos).length();
 			radius2 = radius1 * RADIUS_FACTOR;
 		}
-		UpdateGeometry();
+		updateGeometry();
 	}
 }
 

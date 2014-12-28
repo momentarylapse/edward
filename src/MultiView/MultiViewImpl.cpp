@@ -797,6 +797,8 @@ vector MultiViewImpl::getSelectionCenter()
 
 vector MultiViewImpl::getCursor3d()
 {
+	if (hover.data)
+		return hover.point;
 	return mouse_win->unproject(m, cam.pos);
 }
 
@@ -977,6 +979,28 @@ void MultiViewImpl::setAllowAction(bool allow)
 void MultiViewImpl::setAllowSelect(bool allow)
 {
 	allow_select = allow;
+	notify(MESSAGE_SETTINGS_CHANGE);
+}
+
+void MultiViewImpl::pushSettings()
+{
+	Settings s;
+	s.allow_select = allow_select;
+	s.allow_action = allow_mouse_actions;
+	s.action_name = action_con->action.name;
+	s.action_mode = action_con->action.mode;
+	s.action_locked = action_con->action.locked;
+	settings_stack.add(s);
+}
+
+void MultiViewImpl::popSettings()
+{
+	Settings s = settings_stack.pop();
+	allow_select = s.allow_select;
+	allow_mouse_actions = s.allow_action;
+	action_con->action.name = s.action_name;
+	action_con->action.mode = s.action_mode;
+	action_con->action.locked = s.action_locked;
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 

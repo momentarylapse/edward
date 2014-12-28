@@ -23,13 +23,13 @@ public:
 	virtual void onEnd();
 
 	virtual void onMouseMove();
-	virtual void onLeftButtonDown();
+	virtual void onLeftButtonUp();
 
 	virtual void onDrawWin(MultiView::Window *win);
 
-	void UpdateGeometry();
-	void OnTypeBall();
-	void OnTypeSphere();
+	void updateGeometry();
+	void onTypeBall();
+	void onTypeSphere();
 
 private:
 	vector pos;

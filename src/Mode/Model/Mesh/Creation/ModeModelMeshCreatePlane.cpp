@@ -22,10 +22,6 @@ ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(ModeBase *_parent) :
 	length[0] = length[1] = v_0;
 }
 
-ModeModelMeshCreatePlane::~ModeModelMeshCreatePlane()
-{
-}
-
 void ModeModelMeshCreatePlane::onStart()
 {
 	// Dialog
@@ -34,7 +30,10 @@ void ModeModelMeshCreatePlane::onStart()
 	dialog->setInt("np_num_y",HuiConfig.getInt("NewPlaneNumY", 4));
 	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
 	dialog->show();
-	dialog->eventS("hui:close", &HuiFuncIgnore);
+	dialog->event("hui:close", this, &ModeModelMeshCreatePlane::onClose);
+
+	multi_view->setAllowSelect(false);
+	multi_view->setAllowAction(false);
 
 	ed->activate("");
 }
@@ -46,7 +45,7 @@ void ModeModelMeshCreatePlane::onEnd()
 }
 
 
-void ModeModelMeshCreatePlane::onLeftButtonDown()
+void ModeModelMeshCreatePlane::onLeftButtonUp()
 {
 	if (pos_chosen){
 		int nx = dialog->getInt("np_num_x");
@@ -65,10 +64,7 @@ void ModeModelMeshCreatePlane::onLeftButtonDown()
 
 		abort();
 	}else{
-		if (multi_view->hover.index >= 0)
-			pos = data->vertex[multi_view->hover.index].pos;
-		else
-			pos = multi_view->getCursor3d();
+		pos = multi_view->getCursor3d();
 		message = _("Ebene: zweiter Punkt");
 		pos_chosen = true;
 	}
@@ -112,4 +108,7 @@ void ModeModelMeshCreatePlane::onMouseMove()
 	}
 }
 
-
+void ModeModelMeshCreatePlane::onClose()
+{
+	abort();
+}

@@ -12,7 +12,7 @@
 #include "../../../../Data/Model/DataModel.h"
 class Geometry;
 
-class ModeModelMeshCreatePlatonic: public ModeCreation<DataModel>
+class ModeModelMeshCreatePlatonic: public ModeCreation<DataModel>, HuiEventHandler
 {
 public:
 	ModeModelMeshCreatePlatonic(ModeBase *parent, int type);
@@ -22,11 +22,13 @@ public:
 	virtual void onEnd();
 
 	virtual void onMouseMove();
-	virtual void onLeftButtonDown();
+	virtual void onLeftButtonUp();
 
 	virtual void onDrawWin(MultiView::Window *win);
 
-	void UpdateGeometry();
+	void onClose();
+
+	void updateGeometry();
 
 private:
 	Geometry *geo;

@@ -29,14 +29,14 @@ ModeModelMeshCreateBall::~ModeModelMeshCreateBall()
 		delete(geo);
 }
 
-void ModeModelMeshCreateBall::OnTypeBall()
+void ModeModelMeshCreateBall::onTypeBall()
 {
 	dialog->enable("nb_x", true);
 	dialog->enable("nb_y", true);
 	dialog->enable("nb_complexity", false);
 }
 
-void ModeModelMeshCreateBall::OnTypeSphere()
+void ModeModelMeshCreateBall::onTypeSphere()
 {
 	dialog->enable("nb_x", false);
 	dialog->enable("nb_y", false);
@@ -60,8 +60,11 @@ void ModeModelMeshCreateBall::onStart()
 	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
 	dialog->show();
 	dialog->eventS("hui:close", &HuiFuncIgnore);
-	dialog->event("ball_type:ball", this, &ModeModelMeshCreateBall::OnTypeBall);
-	dialog->event("ball_type:sphere", this, &ModeModelMeshCreateBall::OnTypeSphere);
+	dialog->event("ball_type:ball", this, &ModeModelMeshCreateBall::onTypeBall);
+	dialog->event("ball_type:sphere", this, &ModeModelMeshCreateBall::onTypeSphere);
+
+	multi_view->setAllowSelect(false);
+	multi_view->setAllowAction(false);
 
 	ed->activate("");
 }
@@ -72,7 +75,7 @@ void ModeModelMeshCreateBall::onEnd()
 	delete(dialog);
 }
 
-void ModeModelMeshCreateBall::UpdateGeometry()
+void ModeModelMeshCreateBall::updateGeometry()
 {
 	if (geo)
 		delete(geo);
@@ -94,7 +97,7 @@ void ModeModelMeshCreateBall::UpdateGeometry()
 
 
 
-void ModeModelMeshCreateBall::onLeftButtonDown()
+void ModeModelMeshCreateBall::onLeftButtonUp()
 {
 	if (pos_chosen){
 		data->pasteGeometry(*geo, mode_model_mesh->current_material);
@@ -102,13 +105,10 @@ void ModeModelMeshCreateBall::onLeftButtonDown()
 
 		abort();
 	}else{
-		if (multi_view->hover.index >= 0)
-			pos = data->vertex[multi_view->hover.index].pos;
-		else
-			pos = multi_view->getCursor3d();
+		pos = multi_view->getCursor3d();
 		message = _("Kugel skalieren");
 		pos_chosen = true;
-		UpdateGeometry();
+		updateGeometry();
 	}
 }
 
@@ -131,7 +131,7 @@ void ModeModelMeshCreateBall::onMouseMove()
 	if (pos_chosen){
 		vector pos2 = multi_view->getCursor3d(pos);
 		radius = (pos2 - pos).length();
-		UpdateGeometry();
+		updateGeometry();
 	}
 }
 

@@ -36,6 +36,9 @@ ModeModelMeshCreatePlatonic::~ModeModelMeshCreatePlatonic()
 
 void ModeModelMeshCreatePlatonic::onStart()
 {
+	multi_view->setAllowSelect(false);
+	multi_view->setAllowAction(false);
+
 	if (type != 306)
 		return;
 	// Dialog
@@ -43,7 +46,7 @@ void ModeModelMeshCreatePlatonic::onStart()
 	dialog->setInt("ntp_samples", HuiConfig.getInt("NewTeapotSamples", 4));
 	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
 	dialog->show();
-	dialog->eventS("hui:close", &HuiFuncIgnore);
+	dialog->event("hui:close", this, &ModeModelMeshCreatePlatonic::onClose);
 
 	ed->activate("");
 }
@@ -55,8 +58,12 @@ void ModeModelMeshCreatePlatonic::onEnd()
 		delete(dialog);
 }
 
+void ModeModelMeshCreatePlatonic::onClose()
+{
+	abort();
+}
 
-void ModeModelMeshCreatePlatonic::UpdateGeometry()
+void ModeModelMeshCreatePlatonic::updateGeometry()
 {
 	if (geo)
 		delete(geo);
@@ -72,20 +79,17 @@ void ModeModelMeshCreatePlatonic::UpdateGeometry()
 }
 
 
-void ModeModelMeshCreatePlatonic::onLeftButtonDown()
+void ModeModelMeshCreatePlatonic::onLeftButtonUp()
 {
 	if (pos_chosen){
 		data->pasteGeometry(*geo, mode_model_mesh->current_material);
 
 		abort();
 	}else{
-		if (multi_view->hover.index >= 0)
-			pos = data->vertex[multi_view->hover.index].pos;
-		else
-			pos = multi_view->getCursor3d();
+		pos = multi_view->getCursor3d();
 		message = _("skalieren");
 		pos_chosen = true;
-		UpdateGeometry();
+		updateGeometry();
 	}
 }
 
@@ -109,7 +113,7 @@ void ModeModelMeshCreatePlatonic::onMouseMove()
 	if (pos_chosen){
 		vector pos2 = multi_view->getCursor3d(pos);
 		radius = (pos2 - pos).length();
-		UpdateGeometry();
+		updateGeometry();
 	}
 }
 

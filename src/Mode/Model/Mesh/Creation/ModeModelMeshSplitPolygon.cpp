@@ -27,7 +27,7 @@ ModeModelMeshSplitPolygon::ModeModelMeshSplitPolygon(ModeBase *_parent) :
 	mode_model->allowSelectionModes(false);
 }
 
-void ModeModelMeshSplitPolygon::onLeftButtonDown()
+void ModeModelMeshSplitPolygon::onLeftButtonUp()
 {
 	/*triangle = multi_view->MouseOver;
 	surface = multi_view->MouseOverSet;

@@ -20,18 +20,14 @@ ModeModelMeshExtrudePolygons::ModeModelMeshExtrudePolygons(ModeBase *_parent) :
 	message = _("Extrudieren: Offset durch Maus, Linke Taste = fertig");
 }
 
-ModeModelMeshExtrudePolygons::~ModeModelMeshExtrudePolygons()
-{
-}
-
 void ModeModelMeshExtrudePolygons::onEnd()
 {
-	CleanUp();
+	cleanUp();
 }
 
 void ModeModelMeshExtrudePolygons::onLeftButtonDown()
 {
-	CleanUp();
+	cleanUp();
 
 	data->setSelectionState(selection);
 	data->execute(new ActionModelExtrudePolygons(offset));
@@ -41,10 +37,10 @@ void ModeModelMeshExtrudePolygons::onLeftButtonDown()
 
 void ModeModelMeshExtrudePolygons::onMouseMove()
 {
-	CleanUp();
+	cleanUp();
 
 	offset += (HuiGetEvent()->dx) / multi_view->cam.zoom;
-	Preview();
+	preview();
 }
 
 void ModeModelMeshExtrudePolygons::onDrawWin(MultiView::Window *win)
@@ -55,14 +51,20 @@ void ModeModelMeshExtrudePolygons::onDrawWin(MultiView::Window *win)
 	ed->drawStr(100, 100, f2s(offset, 3));
 }
 
-void ModeModelMeshExtrudePolygons::Preview()
+void ModeModelMeshExtrudePolygons::preview()
 {
 	data->setSelectionState(selection);
 	if (!data->action_manager->preview(new ActionModelExtrudePolygons(offset)))
 		abort();
 }
 
-void ModeModelMeshExtrudePolygons::CleanUp()
+void ModeModelMeshExtrudePolygons::onStart()
+{
+	multi_view->setAllowSelect(false);
+	multi_view->setAllowAction(false);
+}
+
+void ModeModelMeshExtrudePolygons::cleanUp()
 {
 	data->action_manager->clearPreview();
 }

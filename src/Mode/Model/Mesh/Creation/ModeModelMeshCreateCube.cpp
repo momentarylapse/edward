@@ -31,7 +31,12 @@ ModeModelMeshCreateCube::~ModeModelMeshCreateCube()
 		delete(geo);
 }
 
-void ModeModelMeshCreateCube::UpdateGeometry()
+void ModeModelMeshCreateCube::onClose()
+{
+	abort();
+}
+
+void ModeModelMeshCreateCube::updateGeometry()
 {
 	if (geo)
 		delete(geo);
@@ -62,7 +67,7 @@ void set_dpos3(vector *length, const vector &dpos)
 
 
 
-void ModeModelMeshCreateCube::onLeftButtonDown()
+void ModeModelMeshCreateCube::onLeftButtonUp()
 {
 	if (pos_chosen){
 		if (pos2_chosen){
@@ -72,23 +77,17 @@ void ModeModelMeshCreateCube::onLeftButtonDown()
 
 			abort();
 		}else{
-			if (multi_view->hover.index >= 0)
-				pos2 = data->vertex[multi_view->hover.index].pos;
-			else
-				pos2 = multi_view->getCursor3d();
+			pos2 = multi_view->getCursor3d();
 			message = _("W&urfel: Punkt 3 / 3");
 			pos2_chosen = true;
 			set_dpos3(length, v_0);
-			UpdateGeometry();
+			updateGeometry();
 		}
 	}else{
-		if (multi_view->hover.index >= 0)
-			pos = data->vertex[multi_view->hover.index].pos;
-		else
-			pos = multi_view->getCursor3d();
+		pos = multi_view->getCursor3d();
 		message = _("W&urfel: Punkt 2 / 3");
 		pos_chosen = true;
-		UpdateGeometry();
+		updateGeometry();
 	}
 }
 
@@ -101,10 +100,10 @@ void ModeModelMeshCreateCube::onMouseMove()
 			vector dir1 = multi_view->mouse_win->getDirectionUp();
 			length[0] = dir0 * VecDotProduct(dir0, pos2 - pos);
 			length[1] = dir1 * VecDotProduct(dir1, pos2 - pos);
-			UpdateGeometry();
+			updateGeometry();
 		}else{
 			set_dpos3(length, multi_view->getCursor3d() - pos);
-			UpdateGeometry();
+			updateGeometry();
 		}
 	}
 }
@@ -121,7 +120,10 @@ void ModeModelMeshCreateCube::onStart()
 	dialog->setInt("nc_z", HuiConfig.getInt("NewCubeNumZ", 1));
 	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
 	dialog->show();
-	dialog->eventS("hui:close", &HuiFuncIgnore);
+	dialog->event("hui:close", this, &ModeModelMeshCreateCube::onClose);
+
+	multi_view->setAllowSelect(false);
+	multi_view->setAllowAction(false);
 
 	ed->activate("");
 }

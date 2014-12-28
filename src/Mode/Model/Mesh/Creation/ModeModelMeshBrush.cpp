@@ -108,8 +108,6 @@ void ModeModelMeshBrush::onDepthSlider()
 void ModeModelMeshBrush::onEnd()
 {
 	delete(dialog);
-	multi_view->setAllowAction(true);
-	multi_view->setAllowSelect(true);
 	if (brushing)
 		data->endActionGroup();
 	mode_model->allowSelectionModes(true);

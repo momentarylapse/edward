@@ -11,19 +11,20 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshCreatePlane: public ModeCreation<DataModel>
+class ModeModelMeshCreatePlane: public ModeCreation<DataModel>, public HuiEventHandler
 {
 public:
 	ModeModelMeshCreatePlane(ModeBase *parent);
-	virtual ~ModeModelMeshCreatePlane();
 
 	virtual void onStart();
 	virtual void onEnd();
 
 	virtual void onMouseMove();
-	virtual void onLeftButtonDown();
+	virtual void onLeftButtonUp();
 
 	virtual void onDrawWin(MultiView::Window *win);
+
+	void onClose();
 
 private:
 	vector pos, pos2;

@@ -13,22 +13,23 @@
 
 class Geometry;
 
-class ModeModelMeshCreateCylinderSnake: public ModeCreation<DataModel>
+class ModeModelMeshCreateCylinderSnake: public ModeCreation<DataModel>, public HuiEventHandler
 {
 public:
 	ModeModelMeshCreateCylinderSnake(ModeBase *parent);
-	virtual ~ModeModelMeshCreateCylinderSnake();
 
 	virtual void onStart();
 	virtual void onEnd();
 
 	virtual void onMouseMove();
-	virtual void onLeftButtonDown();
+	virtual void onLeftButtonUp();
 	virtual void onKeyDown();
 
 	virtual void onDrawWin(MultiView::Window *win);
 
-	void UpdateGeometry();
+	void updateGeometry();
+
+	void onClose();
 
 private:
 	Array<vector> pos;

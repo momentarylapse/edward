@@ -13,7 +13,7 @@
 
 class Geometry;
 
-class ModeModelMeshCreateCylinder: public ModeCreation<DataModel>
+class ModeModelMeshCreateCylinder: public ModeCreation<DataModel>, public HuiEventHandler
 {
 public:
 	ModeModelMeshCreateCylinder(ModeBase *parent);
@@ -23,11 +23,13 @@ public:
 	virtual void onEnd();
 
 	virtual void onMouseMove();
-	virtual void onLeftButtonDown();
+	virtual void onLeftButtonUp();
 
 	virtual void onDrawWin(MultiView::Window *win);
 
-	void UpdateGeometry();
+	void updateGeometry();
+
+	void onClose();
 
 private:
 	Array<vector> pos;

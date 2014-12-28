@@ -26,6 +26,8 @@ void ModeModelMeshPaste::onStart()
 {
 	if (mode_model_mesh->temp_geo.vertex.num > 0){
 		updateGeometry();
+		multi_view->setAllowSelect(false);
+		multi_view->setAllowAction(false);
 	}else{
 		ed->setMessage(_("nichts zum Einf&ugen"));
 		abort();
@@ -43,7 +45,7 @@ void ModeModelMeshPaste::onMouseMove()
 	updateGeometry();
 }
 
-void ModeModelMeshPaste::onLeftButtonDown()
+void ModeModelMeshPaste::onLeftButtonUp()
 {
 	data->pasteGeometry(*geo, mode_model_mesh->current_material);
 	ed->setMessage(format(_("%d Vertizes, %d Dreiecke eingef&ugt"), geo->vertex.num, geo->polygon.num));

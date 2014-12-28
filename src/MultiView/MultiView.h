@@ -95,6 +95,9 @@ public:
 	virtual void addMessage3d(const string &str, const vector &pos) = 0;
 	virtual void resetMessage3d() = 0;
 
+	virtual void pushSettings() = 0;
+	virtual void popSettings() = 0;
+
 	virtual void setAllowAction(bool allow) = 0;
 	virtual void setAllowSelect(bool allow) = 0;
 

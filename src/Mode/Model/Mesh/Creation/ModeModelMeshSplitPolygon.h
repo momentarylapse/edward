@@ -16,7 +16,7 @@ class ModeModelMeshSplitPolygon: public ModeCreation<DataModel>
 public:
 	ModeModelMeshSplitPolygon(ModeBase *parent);
 
-	virtual void onLeftButtonDown();
+	virtual void onLeftButtonUp();
 
 	virtual void onDrawWin(MultiView::Window *win);
 

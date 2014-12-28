@@ -36,7 +36,10 @@ void ModeModelMeshCreateCylinder::onStart()
 	dialog->setInt("ncy_edges", HuiConfig.getInt("NewCylinderEdges", 8));
 	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
 	dialog->show();
-	dialog->eventS("hui:close", &HuiFuncIgnore);
+	dialog->event("hui:close", this, &ModeModelMeshCreateCylinder::onClose);
+
+	multi_view->setAllowSelect(false);
+	multi_view->setAllowAction(false);
 
 	ed->activate("");
 }
@@ -47,7 +50,7 @@ void ModeModelMeshCreateCylinder::onEnd()
 	delete(dialog);
 }
 
-void ModeModelMeshCreateCylinder::UpdateGeometry()
+void ModeModelMeshCreateCylinder::updateGeometry()
 {
 	if (geo)
 		delete(geo);
@@ -71,13 +74,13 @@ void ModeModelMeshCreateCylinder::onMouseMove()
 		float min_rad = 10 / multi_view->cam.zoom; // 10 px
 		if (radius < min_rad)
 			radius = min_rad;
-		UpdateGeometry();
+		updateGeometry();
 	}
 }
 
 
 
-void ModeModelMeshCreateCylinder::onLeftButtonDown()
+void ModeModelMeshCreateCylinder::onLeftButtonUp()
 {
 	if (pos.num == 2){
 
@@ -87,15 +90,12 @@ void ModeModelMeshCreateCylinder::onLeftButtonDown()
 
 		abort();
 	}else{
-		if (multi_view->hover.index >= 0)
-			pos.add(data->vertex[multi_view->hover.index].pos);
-		else
-			pos.add(multi_view->getCursor3d());
+		pos.add(multi_view->getCursor3d());
 
 		if (pos.num > 1){
 			//OnMouseMove();
 			message = _("Zylinder: Radius");
-			UpdateGeometry();
+			updateGeometry();
 			//ed->ForceRedraw();
 		}else{
 			message = _("Zylinder: Endpunkt");
@@ -129,4 +129,7 @@ void ModeModelMeshCreateCylinder::onDrawWin(MultiView::Window *win)
 	}
 }
 
-
+void ModeModelMeshCreateCylinder::onClose()
+{
+	abort();
+}

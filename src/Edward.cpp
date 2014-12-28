@@ -432,6 +432,8 @@ void Edward::setMode(ModeBase *m)
 				break;
 			msg_write("end " + cur_mode->name);
 			cur_mode->onEnd();
+			if (cur_mode->multi_view)
+				cur_mode->multi_view->popSettings();
 			cur_mode = cur_mode->parent;
 		}
 
@@ -442,6 +444,8 @@ void Edward::setMode(ModeBase *m)
 		while(cur_mode != m){
 			cur_mode = cur_mode->getNextChildTo(m);
 			msg_write("start " + cur_mode->name);
+			if (cur_mode->multi_view)
+				cur_mode->multi_view->pushSettings();
 			cur_mode->onStart();
 		}
 		cur_mode->onEnter();

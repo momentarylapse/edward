@@ -13,7 +13,7 @@
 
 class Geometry;
 
-class ModeModelMeshCreateCube: public ModeCreation<DataModel>
+class ModeModelMeshCreateCube: public ModeCreation<DataModel>, public HuiEventHandler
 {
 public:
 	ModeModelMeshCreateCube(ModeBase *_parent);
@@ -23,11 +23,13 @@ public:
 	virtual void onEnd();
 
 	virtual void onMouseMove();
-	virtual void onLeftButtonDown();
+	virtual void onLeftButtonUp();
 
 	virtual void onDrawWin(MultiView::Window *win);
 
-	void UpdateGeometry();
+	void onClose();
+
+	void updateGeometry();
 
 private:
 	vector pos, pos2;

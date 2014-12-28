@@ -15,8 +15,8 @@ class ModeModelMeshExtrudePolygons: public ModeCreation<DataModel>
 {
 public:
 	ModeModelMeshExtrudePolygons(ModeBase *parent);
-	virtual ~ModeModelMeshExtrudePolygons();
 
+	virtual void onStart();
 	virtual void onEnd();
 
 	virtual void onLeftButtonDown();
@@ -24,8 +24,8 @@ public:
 
 	virtual void onDrawWin(MultiView::Window *win);
 
-	void Preview();
-	void CleanUp();
+	void preview();
+	void cleanUp();
 
 private:
 	float offset;

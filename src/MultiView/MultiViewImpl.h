@@ -77,6 +77,18 @@ public:
 	virtual void setViewBox(const vector &min, const vector &max);
 	virtual void setAllowSelect(bool allow);
 	virtual void setAllowAction(bool allow);
+	virtual void pushSettings();
+	virtual void popSettings();
+	struct Settings
+	{
+		bool allow_select;
+		bool allow_action;
+		string action_name;
+		int action_mode;
+		bool action_locked;
+	};
+	Array<Settings> settings_stack;
+
 	void viewStagePush();
 	void viewStagePop();
 
