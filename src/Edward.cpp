@@ -537,16 +537,11 @@ void Edward::drawStr(int x, int y, const string &str, AlignType a)
 void Edward::onDraw()
 {
 	NixStart();
-	if (cur_mode){
-		cur_mode->onDrawMeta();
-	}else{
-		NixResetToColor(Black);
-		NixDrawStr(100, 100, "no mode...");
-	}
+	cur_mode->onDrawMeta();
 
 	// messages
 	foreachi(string &m, message_str, i)
-		drawStr(MaxX / 2, MaxY / 2 - 10 - i * 20, m, ALIGN_CENTER);
+		drawStr(MaxX / 2, MaxY / 2 - 20 - i * 20, m, ALIGN_CENTER);
 
 	NixEnd();
 	force_redraw = false;

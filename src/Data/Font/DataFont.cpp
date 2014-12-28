@@ -206,7 +206,7 @@ void DataFont::UpdateTexture()
 
 
 
-int str_utf8_first_ubyte(const string &str)
+int str_utf8_first_char(const string &str)
 {
 	if (str.num == 0)
 		return 0;
@@ -229,7 +229,7 @@ void DataFont::ApplyFont(Gui::Font *f)
 			x = 0;
 			y += global.GlyphHeight;
 		}
-		int c = str_utf8_first_ubyte(g.Name);
+		int c = str_utf8_first_char(g.Name) & 0xff;
 		f->glyph[c].x_offset = (float)g.X1 / dy;
 		f->glyph[c].width = (float)g.Width / dy;
 		f->glyph[c].dx = (float)(g.X2 - g.X1) / dy;
