@@ -11,6 +11,7 @@
 #include "ModeModelAnimationNone.h"
 #include "ModeModelAnimationSkeleton.h"
 #include "ModeModelAnimationVertex.h"
+#include "Creation/ModeModelAnimationInterpolateFrames.h"
 #include "../ModeModel.h"
 #include "../Dialog/ModelAnimationDialog.h"
 #include "../Dialog/ModelAnimationTimelinePanel.h"
@@ -62,6 +63,8 @@ void ModeModelAnimation::onCommand(const string & id)
 		deleteCurrentFrame();
 	if (id == "move_frame_insert")
 		duplicateCurrentFrame();
+	if (id == "move_frame_interpolate")
+		ed->setMode(new ModeModelAnimationInterpolateFrames(ed->cur_mode));
 }
 
 
@@ -169,12 +172,9 @@ void ModeModelAnimation::updateAnimation()
 			}
 		}
 	}else if (cur_move()->type == MOVE_TYPE_VERTEX){
-		int frame0, frame1;
-		float t;
-		getTimeInterpolation(frame0, frame1, t);
-		foreachi(ModelVertex &v, data->vertex, i){
-			vertex[i].pos = v.pos + (1 - t) * cur_move()->frame[frame0].vertex_dpos[i] + t * cur_move()->frame[frame1].vertex_dpos[i];
-		}
+		ModelFrame f = getInterpolation();
+		foreachi(ModelVertex &v, data->vertex, i)
+			vertex[i].pos = v.pos + f.vertex_dpos[i];
 	}else{
 		vertex = data->vertex;
 	}
@@ -194,47 +194,28 @@ void ModeModelAnimation::updateSkeleton()
 	if (cur_move()->type != MOVE_TYPE_SKELETAL){
 		return;
 	}
-	int frame0, frame1;
-	float t;
-	getTimeInterpolation(frame0, frame1, t);
+	ModelFrame f = getInterpolation();
 
 	foreachi(ModelBone &b, data->bone, i){
 		if (b.parent < 0){
-			bone[i].pos = b.pos + (1 - t) * cur_move()->frame[frame0].skel_dpos[i] + t * cur_move()->frame[frame1].skel_dpos[i];
+			bone[i].pos = b.pos + f.skel_dpos[i];
 		}else{
 			ModelBone &pb = data->bone[b.parent];
 			bone[i].pos = pb._matrix * (b.pos - pb.pos); // cur_mat * dpos_at_rest
 		}
 		matrix trans, rot;
 		MatrixTranslation(trans, bone[i].pos);
-		quaternion q0, q1, q;
-		QuaternionRotationV(q0, cur_move()->frame[frame0].skel_ang[i]);
-		QuaternionRotationV(q1, cur_move()->frame[frame1].skel_ang[i]);
-		QuaternionInterpolate(q, q0, q1, t);
-		MatrixRotationQ(rot, q);
+		MatrixRotation(rot, f.skel_ang[i]);
 		b._matrix = trans * rot;
 		bone[i]._matrix = b._matrix;
 	}
 }
 
-void ModeModelAnimation::getTimeInterpolation(int &frame0, int &frame1, float &t)
+ModelFrame ModeModelAnimation::getInterpolation()
 {
-	frame0 = current_frame;
-	frame1 = current_frame;
-	t = 0;
-
-	if (playing){
-		float t0 = 0;
-		foreachi(ModelFrame &f, cur_move()->frame, i){
-			if (sim_frame_time < t0 + f.duration){
-				frame0 = i;
-				frame1 = (i + 1) % cur_move()->frame.num;
-				t = (sim_frame_time - t0) / f.duration;
-				break;
-			}
-			t0 += f.duration;
-		}
-	}
+	if (playing)
+		return cur_move()->interpolate(sim_frame_time);
+	return cur_move()->frame[current_frame];
 }
 
 void ModeModelAnimation::deleteCurrentFrame()
@@ -247,7 +228,10 @@ void ModeModelAnimation::deleteCurrentFrame()
 
 void ModeModelAnimation::duplicateCurrentFrame()
 {
-	data->animationAddFrame(current_move, current_frame + 1);
+	if (current_frame > 0)
+		data->animationAddFrame(current_move, current_frame + 1, cur_move()->frame[current_frame]);
+	else
+		data->animationAddFrame(current_move, current_frame + 1, cur_move()->frame[0]);
 	setCurrentFrame(current_frame + 1);
 }
 

@@ -28,12 +28,16 @@ ModelAnimationTimelinePanel::ModelAnimationTimelinePanel() :
 
 	subscribe(mode_model_animation->data);
 	subscribe(mode_model_animation);
+
+	default_parasite = new TimeLineParasite;
+	setParasite(NULL);
 }
 
 ModelAnimationTimelinePanel::~ModelAnimationTimelinePanel()
 {
 	unsubscribe(mode_model_animation->data);
 	unsubscribe(mode_model_animation);
+	delete(default_parasite);
 }
 
 float ModelAnimationTimelinePanel::screen2sample(float x)
@@ -132,11 +136,15 @@ void ModelAnimationTimelinePanel::onDraw()
 		float x = sample2screen(mode_model_animation->sim_frame_time);
 		c->drawLine(x, r.y1, x, r.y2);
 	}
+
+	parasite->onTimelineDraw(c);
+
 	c->end();
 }
 
 void ModelAnimationTimelinePanel::onMouseMove()
 {
+	mx = HuiGetEvent()->mx;
 	if (HuiGetEvent()->lbut){
 		if (hover > 0){
 
@@ -146,28 +154,35 @@ void ModelAnimationTimelinePanel::onMouseMove()
 					break;
 				t += f.duration;
 			}
-			float dur = max(screen2sample(HuiGetEvent()->mx) - t, 0);
+			float dur = max(screen2sample(mx) - t, 0);
 
 			mode_model_animation->data->animationSetFrameDuration(mode_model_animation->current_move, hover - 1, dur);
 		}
 	}else
-		updateHover(HuiGetEvent()->mx);
+		updateHover();
+
+	parasite->onTimelineMouseMove();
 }
 
 void ModelAnimationTimelinePanel::onLeftButtonDown()
 {
 	if (hover >= 0)
 		mode_model_animation->setCurrentFrame(hover);
+
+
+	parasite->onTimelineLeftButtonDown();
 }
 
 void ModelAnimationTimelinePanel::onLeftButtonUp()
 {
+	parasite->onTimelineLeftButtonUp();
 }
 
 void ModelAnimationTimelinePanel::onMouseWheel()
 {
+	mx = HuiGetEvent()->mx;
 	float time_scale_new = min(time_scale * pow(1.1f, HuiGetEvent()->dz), 1000);
-	time_offset += HuiGetEvent()->mx * (1.0f / time_scale - 1.0f / time_scale_new);
+	time_offset += mx * (1.0f / time_scale - 1.0f / time_scale_new);
 	time_scale = time_scale_new;
 	//UpdateTimePos();
 	redraw("area");
@@ -178,7 +193,7 @@ void ModelAnimationTimelinePanel::onUpdate(Observable* o, const string& message)
 	redraw("area");
 }
 
-void ModelAnimationTimelinePanel::updateHover(float mx)
+void ModelAnimationTimelinePanel::updateHover()
 {
 	hover = -1;
 	float t = 0;
@@ -189,4 +204,9 @@ void ModelAnimationTimelinePanel::updateHover(float mx)
 		t += f.duration;
 	}
 	redraw("area");
+}
+
+void ModelAnimationTimelinePanel::setParasite(TimeLineParasite* p)
+{
+	parasite = (p ? p : default_parasite);
 }

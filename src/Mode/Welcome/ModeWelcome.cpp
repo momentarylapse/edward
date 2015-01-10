@@ -191,6 +191,6 @@ void ModeWelcome::onDraw()
 	f=0.2f;
 	NixSetColor(color(1,f,f,f));
 	//NixSetFontColor(color(1,0.6f,0,0));
-	NixDrawStr(0,MaxY-20,"(c) by MichiSoft TM 2014");
+	NixDrawStr(0,MaxY-20,"(c) by MichiSoft TM 2015");
 	NixSetColor(White);
 }

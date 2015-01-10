@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-619
+620
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -691,6 +691,8 @@ move_frame_inc
 Last
 move_frame_insert
 Insert
+move_frame_interpolate
+
 move_frame_sign
 Frame
 move_reset
@@ -883,7 +885,7 @@ quality_factor
 \\0\\100\\0.1
 quality_slider
 
-rand_id_274771
+rand_id_615896
 
 rc_dialog
 Rudimentary configuration
@@ -1242,7 +1244,7 @@ Invert selection
 zzz_setbgimage
 Set background image
 // Num Language Strings
-240
+249
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1298,6 +1300,16 @@ Angegebene Welt konnte nicht korrekt geladen werden!
 World could not be loaded correctly!
 Animation
 Animation
+Animation eingefügt -  auf &d Knochen
+
+Animation eingefügt - einzelner Knochen
+
+Animation eingefügt - einzelner Knochen auf mehrere
+
+Animation von allen &d Knochen kopiert
+
+Animation von einzelnem Knochen kopiert
+
 Ansicht
 View
 Anwendung ohne Netzwerk-Unterstützung compiliert...
@@ -1540,6 +1552,8 @@ Rechts (-x)
 Right (-x)
 Reines Grün wird transparent
 
+Rekursiv bearbeiten
+
 Rotieren
 Rotate
 Schließen
@@ -1642,6 +1656,8 @@ Würfel: Punkt 3 / 3
 Cube: point 3 / 3
 Zentrum wählen
 
+Zwischenablage leer
+
 Zylinder
 
 Zylinder: Endpunkt
@@ -1658,6 +1674,8 @@ Zylinderschlange... Punkte + Shift Return
 \\\\   - no textures -
 administrieren
 administrate
+auf Zeitleiste klicken
+
 auf das Terrain malen
 
 auf der Oberfläche malen
@@ -1701,6 +1719,8 @@ neues Objekt auswählen
 neues Objekt setzen
 
 neues Terrain...
+
+nichts markiert
 
 nichts zum Einfügen
 

@@ -50,6 +50,7 @@ Menu menu_move "" disabled
 		Item move_frame_inc "Nächster" image=hui:forward
 		Item move_frame_dec "Vorheriger" image=hui:back
 		Item move_frame_delete "Löschen" image=hui:delete
+		Item move_frame_interpolate "Neu interpolieren" image=hui:new
 		Item move_frame_insert "Neu einfügen" image=hui:new
 	Menu menu_model_view "Ansicht"
 		Menu menu_model_mode "Bearbeitungsmodus"

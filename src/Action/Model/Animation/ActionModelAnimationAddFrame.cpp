@@ -9,10 +9,11 @@
 #include "../../../Data/Model/DataModel.h"
 #include <assert.h>
 
-ActionModelAnimationAddFrame::ActionModelAnimationAddFrame(int _index, int _frame)
+ActionModelAnimationAddFrame::ActionModelAnimationAddFrame(int _index, int _frame, const ModelFrame &_f)
 {
 	index = _index;
 	frame = _frame;
+	f = _f;
 }
 
 void *ActionModelAnimationAddFrame::execute(Data *d)
@@ -23,12 +24,7 @@ void *ActionModelAnimationAddFrame::execute(Data *d)
 	assert(frame >= 0);
 	assert(frame <= m->move[index].frame.num);
 
-	ModelFrame new_frame;
-	if (frame > 0)
-		new_frame = m->move[index].frame[frame - 1];
-	else
-		new_frame = m->move[index].frame[0];
-	m->move[index].frame.insert(new_frame, frame);
+	m->move[index].frame.insert(f, frame);
 	return NULL;
 }
 

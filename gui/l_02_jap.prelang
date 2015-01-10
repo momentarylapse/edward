@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-619
+620
 // Data (ID,Text)
 ad_dialog
 
@@ -691,6 +691,8 @@ move_frame_inc
 次へ
 move_frame_insert
 貼り付け
+move_frame_interpolate
+
 move_frame_sign
 フレーム
 move_reset
@@ -883,7 +885,7 @@ quality_factor
 
 quality_slider
 
-rand_id_274771
+rand_id_615896
 
 rc_dialog
 
@@ -1242,7 +1244,7 @@ zzz_invertselection
 zzz_setbgimage
 
 // Num Language Strings
-240
+249
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1297,6 +1299,16 @@ Aktion fehlgeschlagen: %s\nGrund: %s
 Angegebene Welt konnte nicht korrekt geladen werden!
 
 Animation
+
+Animation eingefügt -  auf &d Knochen
+
+Animation eingefügt - einzelner Knochen
+
+Animation eingefügt - einzelner Knochen auf mehrere
+
+Animation von allen &d Knochen kopiert
+
+Animation von einzelnem Knochen kopiert
 
 Ansicht
 
@@ -1540,6 +1552,8 @@ Rechts (-x)
 
 Reines Grün wird transparent
 
+Rekursiv bearbeiten
+
 Rotieren
 
 Schließen
@@ -1642,6 +1656,8 @@ Würfel: Punkt 3 / 3
 
 Zentrum wählen
 
+Zwischenablage leer
+
 Zylinder
 
 Zylinder: Endpunkt
@@ -1657,6 +1673,8 @@ Zylinderschlange... Punkte + Shift Return
 \\\\   - keine Texturen -
 
 administrieren
+
+auf Zeitleiste klicken
 
 auf das Terrain malen
 
@@ -1701,6 +1719,8 @@ neues Objekt auswählen
 neues Objekt setzen
 
 neues Terrain...
+
+nichts markiert
 
 nichts zum Einfügen
 

@@ -62,7 +62,7 @@ public:
 	void updateSkeleton();
 	void iterateAnimation(float dt);
 
-	void getTimeInterpolation(int &frame0, int &frame1, float &t);
+	ModelFrame getInterpolation();
 };
 
 extern ModeModelAnimation *mode_model_animation;

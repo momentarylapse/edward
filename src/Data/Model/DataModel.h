@@ -170,6 +170,8 @@ struct ModelMove
 
 	bool needsRubberTiming();
 	float duration();
+	void getTimeInterpolation(float time, int &frame0, int &frame1, float &t);
+	ModelFrame interpolate(float time);
 };
 
 class ModelEdge: public MultiView::SingleData
@@ -318,7 +320,7 @@ public:
 	void duplicateAnimation(int source, int target);
 	void deleteAnimation(int index);
 	void setAnimationData(int index, const string &name, float fps_const, float fps_factor);
-	void animationAddFrame(int index, int frame);
+	void animationAddFrame(int index, int frame, const ModelFrame &f);
 	void animationDeleteFrame(int index, int frame);
 	void animationSetFrameDuration(int index, int frame, float duration);
 	void animationSetBone(int move, int frame, int bone, const vector &dpos, const vector &ang);

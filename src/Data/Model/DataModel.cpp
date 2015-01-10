@@ -1855,8 +1855,8 @@ void DataModel::duplicateAnimation(int source, int target)
 void DataModel::deleteAnimation(int index)
 {	execute(new ActionModelDeleteAnimation(index));	}
 
-void DataModel::animationAddFrame(int index, int frame)
-{	execute(new ActionModelAnimationAddFrame(index, frame));	}
+void DataModel::animationAddFrame(int index, int frame, const ModelFrame &f)
+{	execute(new ActionModelAnimationAddFrame(index, frame, f));	}
 
 void DataModel::setAnimationData(int index, const string &name, float fps_const, float fps_factor)
 {	execute(new ActionModelAnimationSetData(index, name, fps_const, fps_factor));	}
@@ -2083,4 +2083,51 @@ bool ModelMove::needsRubberTiming()
 		if (fabs(f.duration - 1.0f) > 0.01f)
 			return true;
 	return false;
+}
+
+void ModelMove::getTimeInterpolation(float time, int &frame0, int &frame1, float &t)
+{
+	float t0 = 0;
+	foreachi(ModelFrame &f, frame, i){
+		if (time < t0 + f.duration){
+			frame0 = i;
+			frame1 = (i + 1) % frame.num;
+			t = (time - t0) / f.duration;
+			return;
+		}
+		t0 += f.duration;
+	}
+	frame0 = 0;
+	frame1 = 0;
+	t = 0;
+}
+
+ModelFrame ModelMove::interpolate(float time)
+{
+	ModelFrame f;
+	float t;
+	int frame0, frame1;
+	getTimeInterpolation(time, frame0, frame1, t);
+	ModelFrame &f0 = frame[frame0];
+	ModelFrame &f1 = frame[frame1];
+
+	if (type == MOVE_TYPE_VERTEX){
+		int n = f0.vertex_dpos.num;
+		f.vertex_dpos.resize(n);
+		for (int i=0; i<n; i++)
+			f.vertex_dpos[i] = (1 - t) * f0.vertex_dpos[i] + t * f1.vertex_dpos[i];
+	}else if (type == MOVE_TYPE_SKELETAL){
+		int n = f0.skel_ang.num;
+		f.skel_ang.resize(n);
+		f.skel_dpos.resize(n);
+		for (int i=0; i<n; i++){
+			f.skel_dpos[i] = (1 - t) * f0.skel_dpos[i] + t * f1.skel_dpos[i];
+			quaternion q0, q1, q;
+			QuaternionRotationV(q0, f0.skel_ang[i]);
+			QuaternionRotationV(q1, f1.skel_ang[i]);
+			QuaternionInterpolate(q, q0, q1, t);
+			f.skel_ang[i] = q.get_angles();
+		}
+	}
+	return f;
 }

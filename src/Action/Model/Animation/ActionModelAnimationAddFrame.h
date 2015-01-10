@@ -9,11 +9,12 @@
 #define ACTIONMODELANIMATIONADDFRAME_H_
 
 #include "../../Action.h"
+#include "../../../Data/Model/DataModel.h"
 
 class ActionModelAnimationAddFrame: public Action
 {
 public:
-	ActionModelAnimationAddFrame(int _index, int _frame);
+	ActionModelAnimationAddFrame(int index, int frame, const ModelFrame &f);
 	string name(){	return "ModelAnimationAddFrame";	}
 
 	void *execute(Data *d);
@@ -21,6 +22,7 @@ public:
 
 private:
 	int index, frame;
+	ModelFrame f;
 };
 
 #endif /* ACTIONMODELANIMATIONADDFRAME_H_ */
