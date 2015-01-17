@@ -370,6 +370,9 @@ bool Edward::handleArguments(Array<string> arg)
 		makeDirs(param);
 		mode_font->data->load(param);
 		setMode(mode_font);
+	}else if (ext == "js"){
+		mode_model->importLoadJson(param);
+		setMode(mode_model);
 	/*}else if (ext == "mdl"){
 		mmodel->LoadImportFromGameStudioMdl(param);
 		SetMode(ModeModel);
