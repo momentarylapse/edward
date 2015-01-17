@@ -383,6 +383,7 @@ void ImporterJson::importMoves(DataModel *m, Value *v)
 
 void ImporterJson::importBoneIndices(DataModel *m, Value *v, int num_influences)
 {
+	msg_write("boneIndices");
 	foreachi(ModelVertex &vert, m->vertex, i)
 		vert.bone_index = v->get(i * num_influences)->i();
 }

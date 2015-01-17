@@ -6,11 +6,13 @@ Menu menu_move "" disabled
 		Item save_as "Speichern unter..." image=hui:save-as
 		Separator "" ""
 		Menu menu_model_import "Importieren"
-			Item import_from_gamestudio "Aus GameStudio..." image=hui:open
+			Item import_from_gamestudio "GameStudio..." image=hui:open
 			Item import_from_3ds "3D Studio Max..." image=hui:open
+			Item import_from_json "Three.js (json)..." image=hui:open
 			Item import_from_lineage2 "Lineage II..." image=hui:open
 		Menu menu_model_export "Exportieren"
-			Item export_to_gamestudio "Nach GameStudio..."
+			Item export_to_gamestudio "GameStudio..."
+			Item export_to_json "Three.js (json)..."
 		Separator "" ""
 		Item execute_plugin "Plugin ausführen..."
 		Separator "" ""
