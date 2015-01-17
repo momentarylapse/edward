@@ -9,6 +9,7 @@
 #include "ModeModel.h"
 #include "../../Data/Model/DataModel.h"
 #include "../../Data/Model/Import/Importer3ds.h"
+#include "../../Data/Model/Export/ExporterJson.h"
 #include "Mesh/ModeModelMesh.h"
 #include "Skeleton/ModeModelSkeleton.h"
 #include "Animation/ModeModelAnimation.h"
@@ -106,6 +107,9 @@ void ModeModel::onCommand(const string & id)
 
 	if (id == "import_from_3ds")
 		importOpen3ds();
+
+	if (id == "export_to_json")
+		exportSaveJson();
 
 	// TODO -> edward?
 	if (id == "undo")
@@ -224,8 +228,28 @@ bool ModeModel::importOpen3ds()
 
 bool ModeModel::importLoad3ds(const string &filename)
 {
-	Importer3ds *im = new Importer3ds;
-	if (!im->Import(data, filename))
+	Importer3ds im;
+	if (!im.Import(data, filename))
+		return false;
+
+	ed->setMode(this);
+	mode_model_mesh->optimizeView();
+	return true;
+}
+
+bool ModeModel::exportSaveJson()
+{
+	if (!ed->allowTermination())
+		return false;
+	if (!ed->fileDialog(FD_FILE, true, false))
+		return false;
+	return exportWriteJson(ed->dialog_file_complete);
+}
+
+bool ModeModel::exportWriteJson(const string &filename)
+{
+	ExporterJson ex;
+	if (!ex.Export(data, filename))
 		return false;
 
 	ed->setMode(this);

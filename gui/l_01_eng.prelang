@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-620
+622
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -217,6 +217,8 @@ export_group
 Groupe...
 export_to_gamestudio
 To GameStudio...
+export_to_json
+
 export_type
 single files\\archive (compressed)\\archive (uncompressed)
 export_world
@@ -389,6 +391,8 @@ import_from_3ds
 3D Studio Max...
 import_from_gamestudio
 GameStudio...
+import_from_json
+
 import_from_lineage2
 Lineage II...
 import_group
@@ -885,7 +889,7 @@ quality_factor
 \\0\\100\\0.1
 quality_slider
 
-rand_id_615896
+rand_id_786362
 
 rc_dialog
 Rudimentary configuration

@@ -35,6 +35,9 @@ public:
 	bool importOpen3ds();
 	bool importLoad3ds(const string &filename);
 
+	bool exportSaveJson();
+	bool exportWriteJson(const string &filename);
+
 	void setMaterialSelected();
 	void setMaterialHover();
 	void setMaterialCreation();
