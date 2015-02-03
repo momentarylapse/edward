@@ -3,7 +3,7 @@ use "api.kaba"
 const float R = 20.0
 
 void add5(int nv, int v0, int v1, int v2, int v3, int v4)
-	int v[]
+	int[] v
 	v.add(nv + v0)
 	v.add(nv + v1)
 	v.add(nv + v2)
@@ -12,7 +12,7 @@ void add5(int nv, int v0, int v1, int v2, int v3, int v4)
 	data_model.AddPolygon(v, 0)
 
 void main()
-	int nv = data_model.Vertex.num
+	int nv = data_model.vertex.num
 	
 	data_model.BeginActionGroup("CreateDodecahedron")
 	
@@ -52,5 +52,5 @@ void main()
 		
 	data_model.EndActionGroup()
 	
-	data_model.SelectOnlySurface(data_model.Surface[data_model.Surface.num - 1])
+	data_model.SelectOnlySurface(data_model.surface[data_model.surface.num - 1])
 	

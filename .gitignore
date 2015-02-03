@@ -4,6 +4,7 @@ Release
 .settings
 Data/config.txt
 Data/admin_database.txt
+Plugins/_*.kaba
 *~
 *.o
 *.a

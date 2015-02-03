@@ -16,13 +16,13 @@ string materialToJson(ModelMaterial m)
 	str += "		'DbgIndex' : 0,\n"
 	str += "		'DbgName' : 'Test',\n"
 	str += "		'blending' : 'NormalBlending',\n"
-	str += "		'colorAmbient' : [" + col3ToJson(m.Ambient) + "],\n"
-	str += "		'colorDiffuse' : [" + col3ToJson(m.Diffuse) + "],\n"
-	str += "		'colorSpecular' : [" + col3ToJson(m.Specular) + "],\n"
+	str += "		'colorAmbient' : [" + col3ToJson(m.ambient) + "],\n"
+	str += "		'colorDiffuse' : [" + col3ToJson(m.diffuse) + "],\n"
+	str += "		'colorSpecular' : [" + col3ToJson(m.specular) + "],\n"
 	str += "		'depthTest' : true,\n"
 	str += "		'depthWrite' : true,\n"
 	str += "		'shading' : 'Phong',\n"
-	str += "		'specularCoef' : " + m.Shininess + ",\n"
+	str += "		'specularCoef' : " + m.shininess + ",\n"
 	str += "		'transparency' : 1.0,\n"
 	str += "		'transparent' : false,\n"
 	str += "		'vertexColors' : false\n"
@@ -32,32 +32,32 @@ string materialToJson(ModelMaterial m)
 string moveToJson(ModelMove m)
 	string str
 	str += "	{\n"
-	str += "		'name': '" + m.Name + "',\n"
-	str += "		'fps': " + m.FramesPerSecConst + ",\n"
-	str += "		'length': " + (m.Frame.num / m.FramesPerSecConst) + ",\n"
+	str += "		'name': '" + m.name + "',\n"
+	str += "		'fps': " + m.frames_per_sec_const + ",\n"
+	str += "		'length': " + (m.frame.num / m.frames_per_sec_const) + ",\n"
 	str += "		'hierarchy': [\n"
-	for int i, 0, data_model.Bone.num
+	for b,i in data_model.bone
 		str += "			{\n"
-		str += "				'parent': " + data_model.Bone[i].Parent + ",\n"
+		str += "				'parent': " + b.parent + ",\n"
 		str += "				'keys': [\n"
-		for int j, 0, m.Frame.num
+		for f,j in m.frame
 			quaternion q
-			QuaternionRotationV(q, m.Frame[j].SkelAng[i])
+			QuaternionRotationV(q, f.skel_ang[i])
 			str += "					{\n"
-			str += "						'time': " + (j / m.FramesPerSecConst) + ",\n"
+			str += "						'time': " + (j / m.frames_per_sec_const) + ",\n"
 			str += "						'pos': [0,0,0],\n"
 			str += "						'rot': [" + qToJson(q) + "],\n"
 			str += "						'scl': [1,1,1]\n"
 			str += "					},\n"
-		QuaternionRotationV(q, m.Frame[0].SkelAng[i])
+		QuaternionRotationV(q, m.frame[0].skel_ang[i])
 		str += "					{\n"
-		str += "						'time': " + (m.Frame.num / m.FramesPerSecConst) + ",\n"
+		str += "						'time': " + (m.frame.num / m.frames_per_sec_const) + ",\n"
 		str += "						'pos': [0,0,0],\n"
 		str += "						'rot': [" + qToJson(q) + "],\n"
 		str += "						'scl': [1,1,1]\n"
 		str += "					}\n"
 		str += "				]\n"
-		if i < data_model.Bone.num - 1
+		if i < data_model.bone.num - 1
 			str += "			},\n"
 		else
 			str += "			}\n"
@@ -68,7 +68,7 @@ string moveToJson(ModelMove m)
 string boneToJson(ModelBone b)
 	string str
 	str += "	{\n"
-	str += "		'parent': " + b.Parent + ",\n"
+	str += "		'parent': " + b.parent + ",\n"
 	str += "		'name': 'xxx',\n"
 	str += "		'pos': [" + b.pos.x + ", " + b.pos.y + ", " + b.pos.z + "],\n"
 	str += "		'scl': [1,1,1],\n"
@@ -83,22 +83,20 @@ void main()
 	File *f = FileCreate(HuiFilename)
 	
 	int n_tria = 0
-	for int is, 0, data_model.Surface.num
-		ModelSurface *s = &data_model.Surface[is]
-		for int ip, 0, s.Polygon.num
-			ModelPolygon *p = &s.Polygon[ip]
-			n_tria += p.Side.num - 2
+	for s in data_model.surface
+		for p in s.polygon
+			n_tria += p.side.num - 2
 	
 	string str = "{'metadata':{\n"
 	str += "	'formatVersion': 3,\n"
 	str += "	'generatedBy': 'Edward',\n"
-	str += "	'vertices': " + data_model.Vertex.num + ",\n"
+	str += "	'vertices': " + data_model.vertex.num + ",\n"
 	str += "	'faces': " + n_tria + ",\n"
 	str += "	'normals': " + (n_tria*3) + ",\n"
 	str += "	'colors': 0,\n"
 	str += "	'uvs': 1,\n"
 	str += "	'morphTargets': 0,\n"
-	str += "	'bones': " + data_model.Bone.num + "\n"
+	str += "	'bones': " + data_model.bone.num + "\n"
 	str += "},\n"
 	str += "'influencesPerVertex': 1,\n"
 	str += "'scale': 1.000,\n"
@@ -120,54 +118,48 @@ void main()
 	str += "		'vertexColors' : false\n"
 	str += "	}],\n"*/
 	str += "'materials': [\n"
-	for int i, 0, data_model.Material.num
-		str += materialToJson(data_model.Material[i])
-		if i < data_model.Material.num - 1
+	for m,i in data_model.material
+		str += materialToJson(m)
+		if i < data_model.material.num - 1
 			str += ",\n"
 	str += "],\n"
 	str += "'colors': [],\n"
 	str += "'vertices': [\n"
-	for int i, 0, data_model.Vertex.num
-		vector v = data_model.Vertex[i].pos
-		str += "	" + vecToJson(v)
-		if i < data_model.Vertex.num - 1
+	for v,i in data_model.vertex
+		str += "	" + vecToJson(v.pos)
+		if i < data_model.vertex.num - 1
 			str += ",\n"
 	str += "],\n"
 	str += "'uvs': [[0,0]],\n"
 	str += "'normals': [\n"
-	for int is, 0, data_model.Surface.num
-		ModelSurface *s = &data_model.Surface[is]
-		for int ip, 0, s.Polygon.num
-			ModelPolygon *p = &s.Polygon[ip]
-			for int k, 0, p.Side.num
-				vector n = p.Side[k].Normal
-				str += "	" + vecToJson(n)
-				if (is < data_model.Surface.num - 1) or (ip < s.Polygon.num - 1) or (k < p.Side.num - 1)
+	for s,is in data_model.surface
+		for p,ip in s.polygon
+			for side,k in p.side
+				str += "	" + vecToJson(side.normal)
+				if (is < data_model.surface.num - 1) or (ip < s.polygon.num - 1) or (k < p.side.num - 1)
 					str += ",\n"
 	str += "],\n"
 	str += "'faces': [\n"
 	int n_normals = 0
-	for int is, 0, data_model.Surface.num
-		ModelSurface *s = &data_model.Surface[is]
-		for int ip, 0, s.Polygon.num
-			ModelPolygon *p = &s.Polygon[ip]
-			for int k, 0, p.Side.num - 2
-				int a = p.Side[k].Triangulation[0]
-				int b = p.Side[k].Triangulation[1]
-				int c = p.Side[k].Triangulation[2]
-				int va = p.Side[a].Vertex
-				int vb = p.Side[b].Vertex
-				int vc = p.Side[c].Vertex
-				int na = n_normals + a
-				int nb = n_normals + b
-				int nc = n_normals + c
-				vector n = p.TempNormal
-				str += "	42, " + va + ", " + vb + ", " + vc + ", " + p.Material + ", "
+	for s,is in data_model.surface
+		for p,ip in s.polygon
+			for side,k in p.side
+				int _a = side.triangulation[0]
+				int _b = side.triangulation[1]
+				int _c = side.triangulation[2]
+				int va = p.side[_a].vertex
+				int vb = p.side[_b].vertex
+				int vc = p.side[_c].vertex
+				int na = n_normals + _a
+				int nb = n_normals + _b
+				int nc = n_normals + _c
+				vector n = p.temp_normal
+				str += "	42, " + va + ", " + vb + ", " + vc + ", " + p.material + ", "
 				str += "0, 0, 0, "
 				str += "" + na + ", " + nb + ", " + nc
-				if (is < data_model.Surface.num - 1) or (ip < s.Polygon.num - 1) or (k < p.Side.num - 3)
+				if (is < data_model.surface.num - 1) or (ip < s.polygon.num - 1) or (k < p.side.num - 3)
 					str += ",\n"
-			n_normals += p.Side.num
+			n_normals += p.side.num
 	str += "],\n"
 	/*str += "'morphTargets': [\n"
 	for int i, 0, data_model.Move.num
@@ -176,28 +168,27 @@ void main()
 			str += ",\n"
 	str += "],\n"*/
 	str += "'bones': [\n"
-	for int i, 0, data_model.Bone.num
-		str += boneToJson(data_model.Bone[i])
-		if i < data_model.Bone.num - 1
+	for b,i in data_model.bone
+		str += boneToJson(b)
+		if i < data_model.bone.num - 1
 			str += ",\n"
 	str += "],\n"
 	str += "'skinIndices': ["
-	for int i, 0, data_model.Vertex.num
-		str += data_model.Vertex[i].BoneIndex
-		if i < data_model.Vertex.num - 1
+	for v,i in data_model.vertex
+		str += v.bone_index
+		if i < data_model.vertex.num - 1
 			str += ", "
 	str += "],\n"
 	str += "'skinWeights': ["
-	for int i, 0, data_model.Vertex.num
+	for v,i in data_model.vertex
 		str += "1"
-		if i < data_model.Vertex.num - 1
+		if i < data_model.vertex.num - 1
 			str += ", "
 	str += "],\n"
 	str += "'animations': [\n"
-	for int i, 0, data_model.Move.num
-		print i
-		str += moveToJson(data_model.Move[i])
-		if i < data_model.Move.num - 1
+	for m,i in data_model.move
+		str += moveToJson(m)
+		if i < data_model.move.num - 1
 			str += ",\n"
 	str += "]\n"
 	str += "}"

@@ -1,17 +1,19 @@
 use "api.kaba"
 
 void main()
+	ModelMove *m = &data_model.move[0]
+
 	//HuiInfoBox(MainWin,i2s(Skin[1].NumVertices),i2s(move->NumFrames))
-	for int f, 0, data_model.move.Frame.num
+	for f,fi in m.frame
 		
 		// Phase = Position im Frame (auf 2 pi)
-		float t = (2.0 * pi * f) / data_model.move.Frame.num
+		float t = (2.0 * pi * fi) / m.frame.num
 		
-		for int v, 0, data_model.Vertex.num
+		for v,vi in data_model.vertex
 		
 			// ortsabhaengige Phase
-			float tt = t + ( data_model.Vertex[v].pos.x + data_model.Vertex[v].pos.y + data_model.Vertex[v].pos.z ) * 0.02
+			float tt = t + ( v.pos.x + v.pos.y + v.pos.z ) * 0.02
 			
 			// Animation
-			data_model.move.Frame[f].VertexDPos[v] = vector( sin( tt ), sin( tt + 1.2 ), sin( tt + 2.7 ) ) * 4.0
+			f.vertex_dpos[vi] = vector( sin( tt ), sin( tt + 1.2 ), sin( tt + 2.7 ) ) * 4.0
 			// TODO: as action

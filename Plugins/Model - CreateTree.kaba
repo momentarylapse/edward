@@ -18,9 +18,9 @@ vector get_rotated(vector dir)
 void branch(vector pos0, vector dir0, int num, float radius, float length)
 	vector dir = dir0
 	vector p = pos0
-	vector pos[]
+	vector[] pos
 	pos.add(pos0)
-	for int i, 1, num
+	for i in 1:num
 		dir.x += rand(DIR_RAND * 2) - DIR_RAND
 		dir.y += 0.5
 		dir.z += rand(DIR_RAND * 2) - DIR_RAND
@@ -33,7 +33,7 @@ void branch(vector pos0, vector dir0, int num, float radius, float length)
 			int bnum = (num - i + 0.5) * BRANCH_FACTOR
 			if bnum > 1
 				branch(p, bdir, bnum, radius / num * bnum, length)
-	float r[]
+	float[] r
 	r.add(radius)
 	r.add(0)
 	Geometry *g = new GeometryCylinderComplex(pos, r, 5, 16, false)

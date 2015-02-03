@@ -43,129 +43,130 @@ enum
 	FXKindForceField
 
 class ModelEffect
-	int Kind, Surface, Vertex
-	int Size, Speed, Intensity
-	color Colors[3]
-	bool InvQuad
-	string File
+	int kind, surface, vertex
+	int size, speed, intensity
+	color[3] colors
+	bool inv_quad
+	string file
 	void __assign__(ModelEffect other)
 		nil
 
 class ModelVertex: MultiViewSingleData
-	int NormalMode
-	int BoneIndex
+	int normal_mode
+	int bone_index
 
-	bool NormalDirty
-	int RefCount // triangles
-	int Surface
+	bool normal_dirty
+	int ref_count // triangles
+	int surface
 
 class ModelPolygonSide
-	int Vertex
-	int Edge
-	int EdgeDirection // which no of triangle in edge's list are we?
-	vector SkinVertex[MODEL_MAX_TEXTURES]
-	int NormalIndex
-	vector Normal
-	char Triangulation[3]
+	int vertex
+	int edge
+	int edge_direction // which no of triangle in edge's list are we?
+	vector[MODEL_MAX_TEXTURES] skin_vertex
+	int normal_index
+	vector normal
+	char[3] triangulation
 
 class ModelPolygon: MultiViewSingleData
-	ModelPolygonSide Side[]
-	vector TempNormal
-	bool NormalDirty, TriangulationDirty
-	int Material
+	ModelPolygonSide[] side
+	vector temp_normal
+	bool normal_dirty, triangulation_dirty
+	int material
 
 // only for use in MultiView...
 class ModelSkinVertexDummy: MultiViewSingleData
 
 class ModelBall: MultiViewSingleData
-	int Index
-	float Radius
+	int index
+	float radius
 
 class ModelPolyhedronFace
-	int NumVertices
-	int Index[MODEL_MAX_POLY_VERTICES_PER_FACE]
-	plane Plane
+	int num_vertices
+	int[MODEL_MAX_POLY_VERTICES_PER_FACE] index
+	plane plane
 
 
 // TODO: dynamical!
 class ModelPolyhedron: MultiViewSingleData
-	int NumFaces
-	ModelPolyhedronFace Face[MODEL_MAX_POLY_FACES]
-	int NumSVertices
-	int SIndex[MODEL_MAX_POLY_FACES * MODEL_MAX_POLY_VERTICES_PER_FACE]
+	int num_faces
+	ModelPolyhedronFace[MODEL_MAX_POLY_FACES] face
+	int num_svertices
+	int[MODEL_MAX_POLY_FACES * MODEL_MAX_POLY_VERTICES_PER_FACE] sindex
 
 	// non redundant edge list!
-	int NumEdges
-	int EdgeIndex[MODEL_MAX_POLY_EDGES * 2]
+	int num_edges
+	int[MODEL_MAX_POLY_EDGES * 2] edge_index
 
 	// "topology"
-	bool EdgeOnFace[MODEL_MAX_POLY_EDGES * MODEL_MAX_POLY_FACES] // [edge * NumFaces + face]
-	int FacesJoiningEdge[MODEL_MAX_POLY_FACES * MODEL_MAX_POLY_FACES] // [face1 * NumFaces + face2]
+	bool[MODEL_MAX_POLY_EDGES * MODEL_MAX_POLY_FACES] edge_on_face // [edge * NumFaces + face]
+	int[MODEL_MAX_POLY_FACES * MODEL_MAX_POLY_FACES] faces_joining_edge // [face1 * NumFaces + face2]
 
 
 
 class ModelTriangle: MultiViewSingleData
-	int Vertex[3]
-	//int Edge[3]
-	//int EdgeDirection[3] // which no of triangle in edge's list are we?
-	vector SkinVertex[MODEL_MAX_TEXTURES][3]
-	int NormalIndex[3]
-	vector Normal[3]
-	vector TempNormal
-	bool NormalDirty
-	int Material
+	int[3] vertex
+	//int[3] edge
+	//int[3] edge_direction // which no of triangle in edge's list are we?
+	vector[MODEL_MAX_TEXTURES][3] skin_vertex
+	int[3] normal_index
+	vector[3] normal
+	vector temp_normal
+	bool normal_dirty
+	int material
 
 
 // triangles belonging to one material
 class ModelSubSkin
-	int NumTextures // "read only" (updated automatically...)
+	int num_textures // "read only" (updated automatically...)
 
 	// triangles
-	ModelTriangle Triangle[]
+	ModelTriangle[] triangle
 
 
 // geometry
 class ModelSkin
 	// general properties
-	int NormalModeAll
+	int normal_mode_all
 
 	// vertices
-	ModelVertex Vertex[]
+	ModelVertex[] vertex
 
 	// sub skins
-	ModelSubSkin Sub[]
+	ModelSubSkin[] sub
 
 class ModelBone: MultiViewSingleData
-	int Parent
-	string ModelFile
+	int parent
+	string model_file
 	Model *model
-	bool ConstPos
+	bool const_pos
 
 	// for editing
-	matrix Matrix
+	matrix matrix
 
 class ModelFrame
 	// skeleton animation
-	vector SkelDPos[]
-	vector SkelAng[]
+	vector[] skel_dpos
+	vector[] skel_ang
 
 	// vertex animation
-	vector DPos[4][]
-	vector VertexDPos[]
+	vector[4][] dpos
+	vector[] vertex_dpos
 	void __assign__(ModelFrame other)
 
 class ModelMove
-	int Type
-	ModelFrame Frame[]
-	float FramesPerSecConst, FramesPerSecFactor
-	string Name
+	int type
+	ModelFrame[] frame
+	float frames_per_sec_const, frames_per_sec_factor
+	string name
 
 class ModelEdge: MultiViewSingleData
 	//int NormalMode;
-	int Vertex[2]
-	int RefCount, Triangle[2], Side[2]
-	bool IsRound // for editing
-	float Weight // for easify'ing
+	int[2] vertex
+	int ref_count
+	int[2] triangle, side
+	bool is_round // for editing
+	float weight // for easify'ing
 
 	// constraints:
 	//  Vertex[0] = surf.Triangle[Triangle[0]].Vertex[Side[0]]
@@ -174,19 +175,19 @@ class ModelEdge: MultiViewSingleData
 
 
 class ModelSurface: MultiViewSingleData
-	ModelPolygon Polygon[]
-	ModelEdge Edge[]
-	int Vertex[]
-	bool IsPhysical, IsVisible
-	bool IsClosed
+	ModelPolygon[] polygon
+	ModelEdge[] edge
+	int[] vertex
+	bool is_physical, is_visible
+	bool is_closed
 
 	void *model
 
 class Geometry
-	ModelVertex Vertex[]
-	ModelPolygon Polygon[]
-	ModelEdge Edge[]
-	bool IsClosed
+	ModelVertex[] vertex
+	ModelPolygon[] polygon
+	ModelEdge[] edge
+	bool is_closed
 
 class GeometryBall : Geometry
 	extern void __init__(vector pos, float radius, int num_x, int num_y)
@@ -198,7 +199,7 @@ class GeometryCylinder : Geometry
 	extern void __init__(vector pos1, vector pos2, float radius, int rings, int edges)
 
 class GeometryCylinderComplex : Geometry
-	extern void __init__(vector pos[], float radius[], int rings, int edges, bool closed)
+	extern void __init__(vector[] pos, float[] radius, int rings, int edges, bool closed)
 
 class GeometrySphere : Geometry
 	extern void __init__(vector pos, float radius, int num)
@@ -217,56 +218,56 @@ class GeometryPlatonic : Geometry
 
 
 class ModelMaterial
-	string MaterialFile
+	string filename
 	Material *material
-	int NumTextures
-	Texture *Texture[MODEL_MAX_TEXTURES]
-	string TextureFile[MODEL_MAX_TEXTURES]
+	int num_textures
+	Texture*[MODEL_MAX_TEXTURES] texture
+	string[MODEL_MAX_TEXTURES] texture_file
 
-	bool UserTransparency
-	int TransparencyMode
-	int AlphaSource, AlphaDestination
-	float AlphaFactor
-	bool AlphaZBuffer
+	bool user_transparency
+	int transparency_mode
+	int alpha_source, alpha_destination
+	float alpha_factor
+	bool alpha_z_buffer
 
-	bool UserColor
-	color Ambient
-	color Diffuse
-	color Specular
-	color Emission
-	float Shininess
+	bool user_color
+	color ambient
+	color diffuse
+	color specular
+	color emission
+	float shininess
 	void __assign__(ModelMaterial other)
 
 class ModelMetaData
 	// level of detail
-	float DetailDist[3]
-	int DetailFactor[3]
-	bool AutoGenerateDists,AutoGenerateSkin[3]
+	float[3] detail_dist
+	int[3] detail_factor
+	bool auto_generate_dists
+	bool[3] auto_generate_skin
 
 	// physics
-	float Mass
-	bool ActivePhysics, PassivePhysics
-	bool AutoGenerateTensor
-	matrix3 InertiaTensor
+	float mass
+	bool active_physics, passive_physics
+	bool auto_generate_tensor
+	matrix3 inertia_tensor
 
 	// object-properties
-	string Name, Description
-	string Inventary[]
+	string name, description
+	string[] inventary
 
 	// script
-	string ScriptFile
-	float ScriptVar[]
+	string script_file
+	float[] script_var
 	void __assign__(ModelMetaData other)
 
 class DataModel : Data
 	
 	// properties
-	ModelBone Bone[]
+	ModelBone[] bone
 
 
 	// properties
-	ModelMove Move[]
-//	ModelMove *move
+	ModelMove[] move
 
 //	int CurrentMove,CurrentFrame
 
@@ -274,26 +275,25 @@ class DataModel : Data
 //	float TimeScale,TimeParam,SimFrame
 
 	// geometry
-	ModelVertex Vertex[]
-	ModelSurface Surface[]
+	ModelVertex[] vertex
+	ModelSurface[] surface
 //	MultiViewSingleData SkinVertex[] // only temporary...
 //	int SkinVertMat, SkinVertTL
 
 	// old geometry
-	ModelSkin Skin[4]
+	ModelSkin[4] skin
 
 	// geometry (physical)
-	ModelBall Ball[]
+	ModelBall[] ball
 	
 	//ModelPolyhedron Poly[]
 
 	// general properties
-	ModelMaterial Material[]
-//	int CurrentMaterial, CurrentTextureLevel
-	vector Min, Max
+	ModelMaterial[] material
+	vector min, max
 
 	// effects
-	ModelEffect Fx[]
+	ModelEffect[] fx
 
 	ModelMetaData meta_data
 	
@@ -305,7 +305,7 @@ class DataModel : Data
 	
 	extern void AddVertex(vector pos, int bone_index, int normal_mode)
 	extern ModelPolygon *AddTriangle(int a, int b, int c, int material)
-	extern ModelPolygon *AddPolygon(int v[], int material)
+	extern ModelPolygon *AddPolygon(int[] v, int material)
 	
 	extern void DeleteSelection(bool greedy)
 	extern void InvertSelection()
@@ -333,25 +333,25 @@ class DataModel : Data
 
 
 class WorldTerrain: MultiViewSingleData
-	string FileName
+	string filename
 	//WorldTerrainVertex Vertex[]
-	int VertexBufferSingle
-	int ShowTexture
-	bool Changed
+	int vertex_buffer_single
+	int show_texture
+	bool changed
 	Terrain *terrain
 
 
 class WorldObject: MultiViewSingleData
-	string FileName, Name
+	string filename, name
 	Model *object
-	vector Ang
+	vector ang
 
 
 
 class DataWorld: Data
-	WorldObject Objects[]
-	WorldTerrain Terrains[]
-	int EgoIndex
+	WorldObject[] objects
+	WorldTerrain[] terrains
+	int ego_index
 
 	// actions
 	extern WorldObject *AddObject(string filename, vector pos)

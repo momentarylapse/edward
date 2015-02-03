@@ -2,7 +2,7 @@ use "api.kaba"
 
 void main()
 	data_model.BeginActionGroup("test")
-	int n = data_model.Vertex.num
+	int n = data_model.vertex.num
 	data_model.AddVertex(vector(10,10,0), 0, -1)
 	data_model.AddVertex(vector(10,0,0), 0, -1)
 	data_model.AddVertex(vector(0,0,0), 0, -1)

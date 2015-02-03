@@ -1,28 +1,28 @@
 use "api.kaba"
 
 void main()
-	if data_model.Surface.num != 1
+	if data_model.surface.num != 1
 		HuiErrorBox(edward, "Error", "Requires exactly 1 surface")
 		return
 	if !HuiFileDialogSave(edward, "Save STL", "", "*.stl", "*.stl")
 		return
 	File *f = FileCreate(HuiFilename)
-	f.WriteStr("solid test")
-	forall p in data_model.Surface[0].Polygon
-		for int k, 0, p.Side.num - 2
-			int a = p.Side[k].Triangulation[0]
-			int b = p.Side[k].Triangulation[1]
-			int c = p.Side[k].Triangulation[2]
-			vector va = data_model.Vertex[p.Side[a].Vertex].pos
-			vector vb = data_model.Vertex[p.Side[b].Vertex].pos
-			vector vc = data_model.Vertex[p.Side[c].Vertex].pos
-			vector n = p.TempNormal
-			f.WriteStr("facet normal " + n.x.str() + " " + n.y.str() + " " + n.z.str())
-			f.WriteStr("    outer loop")
-			f.WriteStr("        vertex " + va.x.str() + " " + va.y.str() + " " + va.z.str())
-			f.WriteStr("        vertex " + vb.x.str() + " " + vb.y.str() + " " + vb.z.str())
-			f.WriteStr("        vertex " + vc.x.str() + " " + vc.y.str() + " " + vc.z.str())
-			f.WriteStr("    endloop")
-			f.WriteStr("endfacet")
-	f.WriteStr("end solid")
-	FileClose(f)
+	f << "solid test"
+	for p in data_model.surface[0].polygon
+		for k in 0:p.side.num - 2
+			int a = p.side[k].triangulation[0]
+			int b = p.side[k].triangulation[1]
+			int c = p.side[k].triangulation[2]
+			vector va = data_model.vertex[p.side[a].vertex].pos
+			vector vb = data_model.vertex[p.side[b].vertex].pos
+			vector vc = data_model.vertex[p.side[c].vertex].pos
+			vector n = p.temp_normal
+			f << "facet normal " + n.x.str() + " " + n.y.str() + " " + n.z.str()
+			f << "    outer loop"
+			f << "        vertex " + va.x.str() + " " + va.y.str() + " " + va.z.str()
+			f << "        vertex " + vb.x.str() + " " + vb.y.str() + " " + vb.z.str()
+			f << "        vertex " + vc.x.str() + " " + vc.y.str() + " " + vc.z.str()
+			f << "    endloop"
+			f << "endfacet"
+	f << "end solid"
+	delete f
