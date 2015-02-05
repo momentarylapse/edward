@@ -3,7 +3,6 @@
   <mime-type type="application/x-michisoft-x-model">
          <comment xml:lang="de">x9 Modell</comment>
          <comment xml:lang="en">x9 Model</comment>
-         <desktop:can-edit-with>michisoft-edward.desktop</desktop:can-edit-with>
          <glob pattern="*.model"/>
   </mime-type>
 </mime-info>

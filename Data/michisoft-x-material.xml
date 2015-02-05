@@ -3,7 +3,6 @@
   <mime-type type="application/x-michisoft-x-material">
          <comment xml:lang="de">x9 Material</comment>
          <comment xml:lang="en">x9 Material</comment>
-         <desktop:can-edit-with>michisoft-edward.desktop</desktop:can-edit-with>
          <glob pattern="*.material"/>
   </mime-type>
 </mime-info>
