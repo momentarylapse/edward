@@ -62,7 +62,7 @@ bool WorldTerrain::Save(const string &filename)
 	FileName.resize(FileName.num - 4);
 
 
-	CFile *f = FileCreate(filename);
+	File *f = FileCreate(filename);
 	if (!f)
 		return false;
 
@@ -118,7 +118,7 @@ bool DataWorld::save(const string & _filename)
 		return;*/
 	filename = _filename;
 	ed->makeDirs(filename);
-	CFile *f = FileCreate(filename);
+	File *f = FileCreate(filename);
 	f->FloatDecimals = 6;
 
 	f->WriteFileFormatVersion(false, 10);
@@ -212,7 +212,7 @@ bool DataWorld::load(const string & _filename, bool deep)
 	if (this == mode_world->data)
 		ed->makeDirs(filename);
 
-	CFile *f = FileOpen(filename);
+	File *f = FileOpen(filename);
 	if (!f)
 		return false;
 	file_time = f->GetDateModification().time;
@@ -221,7 +221,8 @@ bool DataWorld::load(const string & _filename, bool deep)
 
 	if ((ffv==10)||(ffv==9)){ // new format
 		// Terrains
-		int n = f->ReadIntC();
+		f->ReadComment();
+		int n = f->ReadInt();
 		for (int i=0;i<n;i++){
 			WorldTerrain t;
 			t.FileName = f->ReadStr();
@@ -229,16 +230,17 @@ bool DataWorld::load(const string & _filename, bool deep)
 			Terrains.add(t);
 		}
 		// Gravitation
-		meta_data.Gravity.x = f->ReadFloatC();
+		f->ReadComment();
+		meta_data.Gravity.x = f->ReadFloat();
 		meta_data.Gravity.y = f->ReadFloat();
 		meta_data.Gravity.z = f->ReadFloat();
 		// EgoIndex
-		EgoIndex = f->ReadIntC();
+		f->ReadComment();
+		EgoIndex = f->ReadInt();
 		// Background
+		f->ReadComment();
 		if (ffv == 9)
-			f->ReadBoolC(); // BackGroundColorEnabled
-		else
-			f->ReadComment();
+			f->ReadBool(); // BackGroundColorEnabled
 		read_color_argb(f,meta_data.BackGroundColor);
 		if (ffv==9){
 			meta_data.SkyBoxFile[0] = f->ReadStr();
@@ -250,18 +252,21 @@ bool DataWorld::load(const string & _filename, bool deep)
 				meta_data.SkyBoxFile[i] = f->ReadStr();
 		}
 		// Fog
-		meta_data.FogEnabled = f->ReadBoolC();
+		f->ReadComment();
+		meta_data.FogEnabled = f->ReadBool();
 		meta_data.FogMode = f->ReadWord();
 		meta_data.FogStart = f->ReadFloat();
 		meta_data.FogEnd = f->ReadFloat();
 		meta_data.FogDensity = f->ReadFloat();
 		read_color_argb(f, meta_data.FogColor);
 		// Music
-		n = f->ReadIntC();
+		f->ReadComment();
+		n = f->ReadInt();
 		for (int i=0;i<n;i++)
 			meta_data.MusicFile.add(f->ReadStr());
 		// Objects
-		n = f->ReadIntC();
+		f->ReadComment();
+		n = f->ReadInt();
 		for (int i=0;i<n;i++){
 			WorldObject o;
 			o.FileName = f->ReadStr();
@@ -279,14 +284,16 @@ bool DataWorld::load(const string & _filename, bool deep)
 			Objects.add(o);
 		}
 		// Scripts
-		n = f->ReadIntC();
+		f->ReadComment();
+		n = f->ReadInt();
 		for (int i=0;i<n;i++){
 			string s = f->ReadStr();
 			f->ReadInt();
 			meta_data.ScriptFile.add(s);
 		}
 		// ScriptVars
-		n = f->ReadIntC();
+		f->ReadComment();
+		n = f->ReadInt();
 		meta_data.ScriptVar.clear();
 		for (int i=0;i<n;i++)
 			meta_data.ScriptVar.add(f->ReadFloat());

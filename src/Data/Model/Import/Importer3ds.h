@@ -18,7 +18,7 @@ public:
 
 	bool Import(DataModel *m, const string &filename);
 
-	void LoadMesh(DataModel *m, CFile *f, int length);
+	void LoadMesh(DataModel *m, File *f, int length);
 };
 
 #endif /* IMPORTER3DS_H_ */

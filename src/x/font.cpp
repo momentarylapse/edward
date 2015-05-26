@@ -69,25 +69,32 @@ Font *_cdecl LoadFont(const string &filename)
 	foreachi(Font *ff, Fonts, i)
 		if (ff->filename  == filename.sys_filename())
 			return ff;
-	CFile *f = FileOpen(FontDir + filename + ".xfont");
+	File *f = FileOpen(FontDir + filename + ".xfont");
 	if (!f)
 		return NULL;
 	int ffv=f->ReadFileFormatVersion();
 	if (ffv==2){
 		Font *font = new Font;
 		font->filename = filename.sys_filename();
-		font->texture = NixLoadTexture(f->ReadStrC());
+		f->ReadComment();
+		font->texture = NixLoadTexture(f->ReadStr());
 		int tx = font->texture->width;
 		int ty = font->texture->height;
-		int num_glyphs = f->ReadWordC();
-		int height=f->ReadByteC();
-		int y1=f->ReadByteC();
-		int y2=f->ReadByteC();
+		f->ReadComment();
+		int num_glyphs = f->ReadWord();
+		f->ReadComment();
+		int height=f->ReadByte();
+		f->ReadComment();
+		int y1=f->ReadByte();
+		f->ReadComment();
+		int y2=f->ReadByte();
 		float dy=float(y2-y1);
 		font->height=(float)height/dy;
 		font->y_offset=(float)y1/dy;
-		font->x_factor=(float)f->ReadByteC()*0.01f;
-		font->y_factor=(float)f->ReadByteC()*0.01f;
+		f->ReadComment();
+		font->x_factor=(float)f->ReadByte()*0.01f;
+		f->ReadComment();
+		font->y_factor=(float)f->ReadByte()*0.01f;
 		f->ReadComment();
 		int x=0,y=0;
 		for (int i=0;i<num_glyphs;i++){

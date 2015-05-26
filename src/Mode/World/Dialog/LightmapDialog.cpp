@@ -123,7 +123,7 @@ void ShowHistogram(Lightmap::Histogram &h, HuiWindow *root)
 {
 	hist_p = &h;
 	HuiWindow *dlg = new HuiDialog("Histogram", 400, 300, root, false);
-	dlg->addControlTable("", 0, 0, 1, 2, "table");
+	dlg->addGrid("", 0, 0, 1, 2, "table");
 	dlg->setTarget("table", 0);
 	dlg->addDrawingArea("", 0, 0, 0, 0, "area");
 	dlg->addButton(_("Schlie&sen"), 0, 1, 0, 0, "close");

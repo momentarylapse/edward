@@ -52,14 +52,15 @@ bool Terrain::Load(const string &_filename_, const vector &_pos_, bool deep)
 	reset();
 
 	filename = _filename_;
-	CFile *f = FileOpen(MapDir + filename + ".map");
+	File *f = FileOpen(MapDir + filename + ".map");
 	if (f){
 
 		int ffv = f->ReadFileFormatVersion();
 		if (ffv == 4){
 			f->ReadByte();
 			// Metrics
-			num_x = f->ReadIntC();
+			f->ReadComment();
+			num_x = f->ReadInt();
 			num_z = f->ReadInt();
 			int num = (num_x + 1) * (num_z + 1);
 			height.resize(num);
@@ -69,7 +70,8 @@ bool Terrain::Load(const string &_filename_, const vector &_pos_, bool deep)
 			pattern.y = 0;
 			pattern.z = f->ReadFloat();
 			// Textures
-			int num_textures = f->ReadIntC();
+			f->ReadComment();
+			int num_textures = f->ReadInt();
 			for (int i=0;i<num_textures;i++){
 				texture_file[i] = f->ReadStr();
 				texture_scale[i].x = f->ReadFloat();

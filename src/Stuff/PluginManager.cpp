@@ -33,10 +33,13 @@ PluginManager::~PluginManager()
 
 void PluginManager::execute(const string & filename)
 {
-	Script::config.Directory = "";
+	Script::config.directory = "";
 	try{
 		Script::Script *s = Script::Load(filename);
-		s->Execute();
+		typedef void func_t();
+		func_t *f = (func_t*)s->MatchFunction("main", "void", 0);
+		if (f)
+			f();
 	}catch(Script::Exception &e){
 		ed->errorBox(e.message);
 	}

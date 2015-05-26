@@ -32,7 +32,7 @@ bool DataCamera::load(const string& _filename, bool deep)
 	reset();
 
 	filename = _filename;
-	CFile *f = FileOpen(filename);
+	File *f = FileOpen(filename);
 	if (!f){
 		ed->setMessage("nicht lesbar");
 		return false;
@@ -40,12 +40,14 @@ bool DataCamera::load(const string& _filename, bool deep)
 	int ffv=f->ReadFileFormatVersion();
 	if (ffv == 2){
 
-		int n = f->ReadIntC();
+		f->ReadComment();
+		int n = f->ReadInt();
 		//msg_write(NumCamPoints);
 		for (int i=0;i<n;i++){
 			WorldCamPoint c;
 			memset(&c, 0, sizeof(WorldCamPoint));
-			c.Type=f->ReadIntC();
+			f->ReadComment();
+			c.Type=f->ReadInt();
 			if (c.Type == CPKSetCamPos){
 				f->ReadVector(&c.pos);
 				c.Duration = f->ReadFloat();
@@ -89,7 +91,7 @@ bool DataCamera::load(const string& _filename, bool deep)
 bool DataCamera::save(const string& _filename)
 {
 	filename = _filename;
-	CFile *f = FileCreate(filename);
+	File *f = FileCreate(filename);
 	f->FloatDecimals = 4;
 	f->WriteFileFormatVersion(false, 2);
 

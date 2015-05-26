@@ -221,7 +221,7 @@ void PostProcessPhys(Model *m, PhysicalSkin *s)
 	m->_ResetPhysAbsolute_();
 }
 
-color file_read_color4i(CFile *f)
+color file_read_color4i(File *f)
 {
 	int a=f->ReadInt();
 	int r=f->ReadInt();
@@ -301,7 +301,7 @@ void Model::ResetData()
 	vel = rot = v_0;
 }
 
-void read_color(CFile *f, color &c)
+void read_color(File *f, color &c)
 {
 	c.a = (float)f->ReadInt() / 255.0f;
 	c.r = (float)f->ReadInt() / 255.0f;
@@ -362,7 +362,7 @@ void Model::Load(const string &filename)
 	msg_right();
 
 	// load model from file
-	CFile *f = FileOpen(ObjectDir + filename + ".model");
+	File *f = FileOpen(ObjectDir + filename + ".model");
 	if (!f){
 		error = true;
 		msg_error("-failed");
@@ -396,7 +396,8 @@ void Model::Load(const string &filename)
 	f->ReadInt();
 
 	// Materials
-	int num_materials = f->ReadIntC();
+	f->ReadComment();
+	int num_materials = f->ReadInt();
 	material.resize(num_materials);
 	material_is_reference = false;
 	for (int i=0;i<material.num;i++){
@@ -424,7 +425,8 @@ void Model::Load(const string &filename)
 	phys = new PhysicalSkin;
 	phys_is_reference = false;
 	//   vertices
-	phys->num_vertices = f->ReadIntC();
+	f->ReadComment();
+	phys->num_vertices = f->ReadInt();
 	phys->bone_nr = new int[phys->num_vertices];
 	phys->vertex = new vector[phys->num_vertices];
 	for (int i=0;i<phys->num_vertices;i++)
@@ -485,7 +487,8 @@ void Model::Load(const string &filename)
 		s->copy_as_ref = false;
 
 		// vertices
-		int n_vert = f->ReadIntC();
+		f->ReadComment();
+		int n_vert = f->ReadInt();
 		s->vertex.resize(n_vert);
 		s->bone_index.resize(n_vert);
 		for (int i=0;i<s->vertex.num;i++)
@@ -529,7 +532,8 @@ void Model::Load(const string &filename)
 
 	// Skeleton
 	msg_db_m("Skel",1);
-	bone.resize(f->ReadIntC());
+	f->ReadComment();
+	bone.resize(f->ReadInt());
 	for (int i=0;i<bone.num;i++){
 		f->ReadVector(&bone[i].pos);
 		bone[i].parent = f->ReadInt();
@@ -537,7 +541,8 @@ void Model::Load(const string &filename)
 	}
 
 	// Animations
-	int num_anims_all = f->ReadIntC();
+	f->ReadComment();
+	int num_anims_all = f->ReadInt();
 	int num_anims = f->ReadInt();
 	int num_frames_vert = f->ReadInt();
 	int num_frames_skel = f->ReadInt();
@@ -622,7 +627,8 @@ void Model::Load(const string &filename)
 
 	// Effects
 	msg_db_m("FX",1);
-	int num_fx = f->ReadIntC();
+	f->ReadComment();
+	int num_fx = f->ReadInt();
 	msg_db_m(i2s(num_fx).c_str(),2);
 	_template->fx.resize(num_fx);
 	for (int i=0;i<num_fx;i++){
@@ -658,7 +664,8 @@ void Model::Load(const string &filename)
 	}
 
 	// Physics
-	mass = f->ReadFloatC();
+	f->ReadComment();
+	mass = f->ReadFloat();
 	for (int i=0;i<9;i++)
 		theta_0.e[i] = f->ReadFloat();
 	active_physics = f->ReadBool();
@@ -666,25 +673,29 @@ void Model::Load(const string &filename)
 	radius = f->ReadFloat();
 
 	// LOD-Distances"
-	detail_dist[SKIN_HIGH] = f->ReadFloatC();
+	f->ReadComment();
+	detail_dist[SKIN_HIGH] = f->ReadFloat();
 	detail_dist[SKIN_MEDIUM] = f->ReadFloat();
 	detail_dist[SKIN_LOW] = f->ReadFloat();
 	
 
 // object data
 	// Object Data
-	name = f->ReadStrC();
+	f->ReadComment();
+	name = f->ReadStr();
 	description = f->ReadStr();
 
 	// Inventary
-	inventary.resize(f->ReadIntC());
+	f->ReadComment();
+	inventary.resize(f->ReadInt());
 	for (int i=0;i<inventary.num;i++){
 		inventary[i] = LoadModel(f->ReadStr());
 		f->ReadInt();
 	}
 
 	// Script
-	_template->script_filename = f->ReadStrC();
+	f->ReadComment();
+	_template->script_filename = f->ReadStr();
 	script_var.resize(f->ReadInt());
 	for (int i=0;i<script_var.num;i++)
 		script_var[i] = f->ReadFloat();

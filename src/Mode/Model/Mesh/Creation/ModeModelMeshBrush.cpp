@@ -64,8 +64,8 @@ void ModeModelMeshBrush::onStart()
 
 	// Dialog
 	dialog = new HuiFixedDialog(_("Pinsel"), 300, 155, ed, true);//HuiCreateResourceDialog("new_ball_dialog", ed);
-	dialog->addText(_("Dicke"), 5, 5, 80, 25, "");
-	dialog->addText(_("Tiefe"), 5, 35, 80, 25, "");
+	dialog->addLabel(_("Dicke"), 5, 5, 80, 25, "");
+	dialog->addLabel(_("Tiefe"), 5, 35, 80, 25, "");
 	dialog->addSlider("", 90, 5, 115, 25, "diameter_slider");
 	dialog->addSlider("", 90, 35, 115, 25, "depth_slider");
 	dialog->addEdit("", 215, 5, 80, 25, "diameter");

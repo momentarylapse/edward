@@ -122,7 +122,7 @@ void MetaSetDirs(const string &texture_dir, const string &map_dir, const string 
 	ScriptDir = script_dir;
 	MaterialDir = material_dir;
 	Gui::FontDir = font_dir;
-	Script::config.Directory = script_dir;
+	Script::config.directory = script_dir;
 }
 
 void MetaCalcMove()

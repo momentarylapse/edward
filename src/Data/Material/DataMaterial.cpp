@@ -30,7 +30,7 @@ bool DataMaterial::save(const string & _filename)
 	filename = _filename;
 	ed->makeDirs(filename);
 
-	CFile *f = FileCreate(filename);
+	File *f = FileCreate(filename);
 	f->WriteFileFormatVersion(false, 4);
 
 	f->WriteComment("// Textures");
@@ -92,9 +92,8 @@ bool DataMaterial::load(const string & _filename, bool deep)
 
 	filename = _filename;
 	ed->makeDirs(filename);
-	CFile *f=new CFile();
-	if (!f->Open(filename)){
-		delete(f);
+	File *f = FileOpen(filename);
+	if (!f){
 		ed->setMessage(_("Kann Material-Datei nicht &offnen"));
 		return false;
 	}
@@ -106,7 +105,8 @@ bool DataMaterial::load(const string & _filename, bool deep)
 		error=true;
 	}else if ((ffv == 3) || (ffv == 4)){
 		if (ffv >= 4){
-			Appearance.NumTextureLevels = f->ReadIntC();
+			f->ReadComment();
+			Appearance.NumTextureLevels = f->ReadInt();
 			for (int i=0;i<Appearance.NumTextureLevels;i++)
 				Appearance.TextureFile[i] = f->ReadStr();
 			if ((Appearance.NumTextureLevels == 1) && (Appearance.TextureFile[0].num == 0)){
@@ -121,25 +121,30 @@ bool DataMaterial::load(const string & _filename, bool deep)
 		Appearance.ColorShininess = f->ReadInt();
 		read_color_argb(f, Appearance.ColorEmissive);
 		// Transparency
-		Appearance.TransparencyMode = f->ReadIntC();
+		f->ReadComment();
+		Appearance.TransparencyMode = f->ReadInt();
 		Appearance.AlphaFactor = (float)f->ReadInt() * 0.01f;
 		Appearance.AlphaSource = f->ReadInt();
 		Appearance.AlphaDestination = f->ReadInt();
 		Appearance.AlphaZBuffer = f->ReadBool();
 		// Appearance
-		f->ReadIntC();
+		f->ReadComment();
+		f->ReadInt();
 		f->ReadInt();
 		f->ReadBool();
 		// Reflection
-		Appearance.ReflectionMode = f->ReadIntC();
+		f->ReadComment();
+		Appearance.ReflectionMode = f->ReadInt();
 		Appearance.ReflectionDensity = (float)f->ReadInt();
 		Appearance.ReflectionSize = f->ReadInt();
 		for (int i=0;i<6;i++)
 			Appearance.ReflectionTextureFile[i] = f->ReadStr();
 		// ShaderFile
-		Appearance.ShaderFile = f->ReadStrC();
+		f->ReadComment();
+		Appearance.ShaderFile = f->ReadStr();
 		// Physics
-		Physics.RCJump = (float)f->ReadIntC() * 0.001f;
+		f->ReadComment();
+		Physics.RCJump = (float)f->ReadInt() * 0.001f;
 		Physics.RCStatic = (float)f->ReadInt() * 0.001f;
 		Physics.RCSliding = (float)f->ReadInt() * 0.001f;
 		Physics.RCRolling = (float)f->ReadInt() * 0.001f;
@@ -161,12 +166,14 @@ bool DataMaterial::load(const string & _filename, bool deep)
 		Appearance.ColorShininess = (float)f->ReadInt();
 		read_color_argb(f, Appearance.ColorEmissive);
 		// Transparency
-		Appearance.TransparencyMode = f->ReadIntC();
+		f->ReadComment();
+		Appearance.TransparencyMode = f->ReadInt();
 		Appearance.AlphaFactor = (float)f->ReadInt() * 0.01f;
 		Appearance.AlphaSource = f->ReadInt();
 		Appearance.AlphaDestination = f->ReadInt();
 		// Appearance
-		int MetalDensity = f->ReadIntC();
+		f->ReadComment();
+		int MetalDensity = f->ReadInt();
 		if (MetalDensity > 0){
 			Appearance.ReflectionMode = ReflectionMetal;
 			Appearance.ReflectionDensity = (float)MetalDensity;
@@ -178,11 +185,13 @@ bool DataMaterial::load(const string & _filename, bool deep)
 			Appearance.ReflectionMode = ReflectionMirror;
 		f->ReadBool();
 		// ShaderFile
-		string sf = f->ReadStrC();
+		f->ReadComment();
+		string sf = f->ReadStr();
 		if (sf.num > 0)
 			Appearance.ShaderFile = sf + ".fx.glsl";
 		// Physics
-		Physics.RCJump = (float)f->ReadIntC() * 0.001f;
+		f->ReadComment();
+		Physics.RCJump = (float)f->ReadInt() * 0.001f;
 		Physics.RCStatic = (float)f->ReadInt() * 0.001f;
 		Physics.RCSliding = (float)f->ReadInt() * 0.001f;
 		Physics.RCRolling = (float)f->ReadInt() * 0.001f;
@@ -199,12 +208,14 @@ bool DataMaterial::load(const string & _filename, bool deep)
 		Appearance.ColorShininess = (float)f->ReadInt();
 		read_color_argb(f, Appearance.ColorEmissive);
 		// Transparency
-		Appearance.TransparencyMode = f->ReadIntC();
+		f->ReadComment();
+		Appearance.TransparencyMode = f->ReadInt();
 		Appearance.AlphaFactor = (float)f->ReadInt() * 0.01f;
 		Appearance.AlphaSource = f->ReadInt();
 		Appearance.AlphaDestination = f->ReadInt();
 		// Appearance
-		int MetalDensity = f->ReadIntC();
+		f->ReadComment();
+		int MetalDensity = f->ReadInt();
 		if (MetalDensity > 0){
 			Appearance.ReflectionMode = ReflectionMetal;
 			Appearance.ReflectionDensity = (float)MetalDensity;
@@ -216,7 +227,8 @@ bool DataMaterial::load(const string & _filename, bool deep)
 		if (Mirror)
 			Appearance.ReflectionMode = ReflectionMirror;
 		// ShaderFile
-		string sf = f->ReadStrC();
+		f->ReadComment();
+		string sf = f->ReadStr();
 		if (sf.num > 0)
 			Appearance.ShaderFile = sf + ".fx.glsl";
 

@@ -174,7 +174,7 @@ void Camera::StartScript(const string &filename,const vector &dpos)
 	cam_point_nr = -1;
 
 
-	CFile *f = FileOpen(ScriptDir + filename + ".camera");
+	File *f = FileOpen(ScriptDir + filename + ".camera");
 	float x,y,z;
 	if (f){
 		int ffv=f->ReadFileFormatVersion();
@@ -184,10 +184,12 @@ void Camera::StartScript(const string &filename,const vector &dpos)
 			msg_error(format("wrong file format: %d (2 expected)", ffv));
 		}
 		cam_point.clear();
-		int n = f->ReadIntC();
+		f->ReadComment();
+		int n = f->ReadInt();
 		for (int ip=0;ip<n;ip++){
 			CamPoint p;
-			p.type = f->ReadIntC();
+			f->ReadComment();
+			p.type = f->ReadInt();
 			if (p.type == CPKSetCamPos){
 				x  =f->ReadFloat();
 				y  =f->ReadFloat();

@@ -19,7 +19,7 @@ bool Importer3ds::Import(DataModel *m, const string &filename)
 {
 	m->reset();
 
-	CFile *f = FileOpen(filename);
+	File *f = FileOpen(filename);
 	f->SetBinaryMode(true);
 
 	while(true){
@@ -70,7 +70,7 @@ bool Importer3ds::Import(DataModel *m, const string &filename)
 	return true;
 }
 
-void Importer3ds::LoadMesh(DataModel *m, CFile *f, int _length)
+void Importer3ds::LoadMesh(DataModel *m, File *f, int _length)
 {
 	msg_right();
 	int NumVerticesOld = m->skin[1].vertex.num;

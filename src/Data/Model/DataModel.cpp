@@ -254,9 +254,8 @@ bool DataModel::load(const string & _filename, bool deep)
 		ed->makeDirs(filename);
 	//msg_write(dir);
 	//msg_write(filename);
-	CFile *f=new CFile();
-	if (!f->Open(filename)){
-		delete(f);
+	File *f = FileOpen(filename);
+	if (!f){
 		ed->setMessage(_("Datei ist nicht in der Stimmung, ge&offnet zu werden"));
 		return false;
 	}
@@ -272,7 +271,8 @@ bool DataModel::load(const string & _filename, bool deep)
 	}else if (ffv==10){ // old format
 
 		// Materials
-		material.resize(f->ReadIntC());
+		f->ReadComment();
+		material.resize(f->ReadInt());
 		for (int i=0;i<material.num;i++){
 			material[i].material_file = f->ReadStr();
 			material[i].user_color = f->ReadBool();
@@ -303,7 +303,8 @@ bool DataModel::load(const string & _filename, bool deep)
 	// Physical Skin
 
 		// vertices
-		skin[0].vertex.resize(f->ReadIntC());
+		f->ReadComment();
+		skin[0].vertex.resize(f->ReadInt());
 		for (int j=0;j<skin[0].vertex.num;j++){
 			skin[0].vertex[j].bone_index = f->ReadInt();
 			if (skin[0].vertex[j].bone_index < 0)
@@ -339,7 +340,8 @@ bool DataModel::load(const string & _filename, bool deep)
 
 	// Skin[i]
 		for (int i=1;i<4;i++){
-			int normal_mode_all = f->ReadIntC();
+			f->ReadComment();
+			int normal_mode_all = f->ReadInt();
 			bool pre_normals = (normal_mode_all & NORMAL_MODE_PRE) > 0;
 			normal_mode_all -= (normal_mode_all & NORMAL_MODE_PRE);
 
@@ -382,7 +384,8 @@ bool DataModel::load(const string & _filename, bool deep)
 		}
 
 	// Skeleton
-		bone.resize(f->ReadIntC());
+		f->ReadComment();
+		bone.resize(f->ReadInt());
 		for (int i=0;i<bone.num;i++){
 			f->ReadVector(&bone[i].pos);
 			bone[i].parent = f->ReadInt();
@@ -398,7 +401,8 @@ bool DataModel::load(const string & _filename, bool deep)
 		}
 
 	// Animations
-		int num_anims = f->ReadIntC();
+		f->ReadComment();
+		int num_anims = f->ReadInt();
 		for (int i=0;i<num_anims;i++){
 			int anim_index = f->ReadInt();
 			move.resize(anim_index + 1);
@@ -442,7 +446,8 @@ bool DataModel::load(const string & _filename, bool deep)
 			}
 		}
 		// Effects
-		fx.resize(f->ReadIntC());
+		f->ReadComment();
+		fx.resize(f->ReadInt());
 		if (fx.num>10000)
 			fx.clear();
 		for (int i=0;i<fx.num;i++){
@@ -479,7 +484,8 @@ bool DataModel::load(const string & _filename, bool deep)
 				msg_error("unknown effekt: " + fxkind);
 		}
 		// LOD-Distances
-		meta_data.detail_dist[0]=f->ReadFloatC();
+		f->ReadComment();
+		meta_data.detail_dist[0]=f->ReadFloat();
 		meta_data.detail_dist[1]=f->ReadFloat();
 		meta_data.detail_dist[2]=f->ReadFloat();
 		meta_data.auto_generate_dists=f->ReadBool();
@@ -488,7 +494,8 @@ bool DataModel::load(const string & _filename, bool deep)
 		meta_data.auto_generate_skin[1]=f->ReadBool();
 		meta_data.auto_generate_skin[2]=f->ReadBool();
 		// Physics
-		meta_data.auto_generate_tensor = f->ReadBoolC();
+		f->ReadComment();
+		meta_data.auto_generate_tensor = f->ReadBool();
 		for (int i=0;i<9;i++)
 			meta_data.inertia_tensor.e[i] = f->ReadFloat();
 		// BG Textures
@@ -538,7 +545,8 @@ bool DataModel::load(const string & _filename, bool deep)
 		//
 
 		// Materials
-		material.resize(f->ReadIntC());
+		f->ReadComment();
+		material.resize(f->ReadInt());
 		for (int i=0;i<material.num;i++){
 			material[i].material_file = f->ReadStr();
 			material[i].user_color = f->ReadBool();
@@ -567,7 +575,8 @@ bool DataModel::load(const string & _filename, bool deep)
 	// Physical Skin
 
 		// vertices
-		skin[0].vertex.resize(f->ReadIntC());
+		f->ReadComment();
+		skin[0].vertex.resize(f->ReadInt());
 		for (int j=0;j<skin[0].vertex.num;j++)
 			skin[0].vertex[j].bone_index = f->ReadInt();
 		for (int j=0;j<skin[0].vertex.num;j++)
@@ -613,7 +622,8 @@ bool DataModel::load(const string & _filename, bool deep)
 		for (int i=1;i<4;i++){
 
 			// vertices
-			skin[i].vertex.resize(f->ReadIntC());
+			f->ReadComment();
+			skin[i].vertex.resize(f->ReadInt());
 			for (int j=0;j<skin[i].vertex.num;j++)
 				f->ReadVector(&skin[i].vertex[j].pos);
 			for (int j=0;j<skin[i].vertex.num;j++)
@@ -658,7 +668,8 @@ bool DataModel::load(const string & _filename, bool deep)
 		}
 
 	// Skeleton
-		bone.resize(f->ReadIntC());
+		f->ReadComment();
+		bone.resize(f->ReadInt());
 		foreach(ModelBone &b, bone){
 			f->ReadVector(&b.pos);
 			b.parent = f->ReadInt();
@@ -674,7 +685,8 @@ bool DataModel::load(const string & _filename, bool deep)
 		}
 
 	// Animations
-		move.resize(f->ReadIntC());
+		f->ReadComment();
+		move.resize(f->ReadInt());
 		int num_anims = f->ReadInt();
 		f->ReadInt();
 		f->ReadInt();
@@ -729,7 +741,8 @@ bool DataModel::load(const string & _filename, bool deep)
 			}
 		}
 		// Effects
-		fx.resize(f->ReadIntC());
+		f->ReadComment();
+		fx.resize(f->ReadInt());
 		if (fx.num>10000)
 			fx.clear();
 		for (int i=0;i<fx.num;i++){
@@ -765,7 +778,8 @@ bool DataModel::load(const string & _filename, bool deep)
 
 // properties
 		// Physics
-		meta_data.mass = f->ReadFloatC();
+		f->ReadComment();
+		meta_data.mass = f->ReadFloat();
 		for (int i=0;i<9;i++)
 			meta_data.inertia_tensor.e[i] = f->ReadFloat();
 		meta_data.active_physics = f->ReadBool();
@@ -773,24 +787,28 @@ bool DataModel::load(const string & _filename, bool deep)
 		radius = f->ReadFloat();
 
 		// LOD-Distances
-		meta_data.detail_dist[0] = f->ReadFloatC();
+		f->ReadComment();
+		meta_data.detail_dist[0] = f->ReadFloat();
 		meta_data.detail_dist[1] = f->ReadFloat();
 		meta_data.detail_dist[2] = f->ReadFloat();
 
 // object data
 		// Object Data
-		meta_data.name = f->ReadStrC();
+		f->ReadComment();
+		meta_data.name = f->ReadStr();
 		meta_data.description = f->ReadStr();
 
 		// Inventary
-		meta_data.inventary.resize(f->ReadIntC());
+		f->ReadComment();
+		meta_data.inventary.resize(f->ReadInt());
 		for (int i=0;i<meta_data.inventary.num;i++){
 			meta_data.inventary[i] = f->ReadStr();
 			f->ReadInt();
 		}
 
 		// Script
-		meta_data.script_file = f->ReadStrC();
+		f->ReadComment();
+		meta_data.script_file = f->ReadStr();
 		meta_data.script_var.resize(f->ReadInt());
 		for (int i=0;i<meta_data.script_var.num;i++)
 			meta_data.script_var[i] = f->ReadFloat();
@@ -798,7 +816,8 @@ bool DataModel::load(const string & _filename, bool deep)
 
 // additional data for editing
 		// Editor
-		meta_data.auto_generate_tensor = f->ReadBoolC();
+		f->ReadComment();
+		meta_data.auto_generate_tensor = f->ReadBool();
 		meta_data.auto_generate_dists = f->ReadBool();
 		meta_data.auto_generate_skin[1] = f->ReadBool();
 		meta_data.auto_generate_skin[2] = f->ReadBool();
@@ -1085,7 +1104,7 @@ bool DataModel::save(const string & _filename)
 	filename = _filename;
 	ed->makeDirs(filename);
 
-	CFile *f = FileCreate(filename);
+	File *f = FileCreate(filename);
 	f->WriteFileFormatVersion(false, 11);//FFVBinary, 11);
 	f->FloatDecimals = 5;
 

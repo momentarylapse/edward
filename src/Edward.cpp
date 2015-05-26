@@ -36,16 +36,16 @@ string SoundDir;
 extern string AppName;
 
 
-void read_color_4i(CFile *f,int *c)
+void read_color_4i(File *f,int *c)
 {
 	// argb (file) -> rgba (editor)
-	c[3]=f->ReadInt();
-	c[0]=f->ReadInt();
-	c[1]=f->ReadInt();
-	c[2]=f->ReadInt();
+	c[3] = f->ReadInt();
+	c[0] = f->ReadInt();
+	c[1] = f->ReadInt();
+	c[2] = f->ReadInt();
 }
 
-void write_color_4i(CFile *f,int *c)
+void write_color_4i(File *f,int *c)
 {
 	// rgba (editor) -> argb (file)
 	f->WriteInt(c[3]);
@@ -54,7 +54,7 @@ void write_color_4i(CFile *f,int *c)
 	f->WriteInt(c[2]);
 }
 
-void write_color_rgba(CFile *f, const color &c)
+void write_color_rgba(File *f, const color &c)
 {
 	f->WriteInt((int)(c.r * 255.0f));
 	f->WriteInt((int)(c.g * 255.0f));
@@ -62,7 +62,7 @@ void write_color_rgba(CFile *f, const color &c)
 	f->WriteInt((int)(c.a * 255.0f));
 }
 
-void read_color_rgba(CFile *f, color &c)
+void read_color_rgba(File *f, color &c)
 {
 	c.r = (float)f->ReadInt() / 255.0f;
 	c.g = (float)f->ReadInt() / 255.0f;
@@ -70,7 +70,7 @@ void read_color_rgba(CFile *f, color &c)
 	c.a = (float)f->ReadInt() / 255.0f;
 }
 
-void write_color_argb(CFile *f, const color &c)
+void write_color_argb(File *f, const color &c)
 {
 	f->WriteInt((int)(c.a * 255.0f));
 	f->WriteInt((int)(c.r * 255.0f));
@@ -78,7 +78,7 @@ void write_color_argb(CFile *f, const color &c)
 	f->WriteInt((int)(c.b * 255.0f));
 }
 
-void read_color_argb(CFile *f, color &c)
+void read_color_argb(File *f, color &c)
 {
 	c.a = (float)f->ReadInt() / 255.0f;
 	c.r = (float)f->ReadInt() / 255.0f;
@@ -86,14 +86,14 @@ void read_color_argb(CFile *f, color &c)
 	c.b = (float)f->ReadInt() / 255.0f;
 }
 
-void write_color_3i(CFile *f, const color &c)
+void write_color_3i(File *f, const color &c)
 {
 	f->WriteInt((int)(c.r * 255.0f));
 	f->WriteInt((int)(c.g * 255.0f));
 	f->WriteInt((int)(c.b * 255.0f));
 }
 
-void read_color_3i(CFile *f, color &c)
+void read_color_3i(File *f, color &c)
 {
 	c.r = (float)f->ReadInt() / 255.0f;
 	c.g = (float)f->ReadInt() / 255.0f;
@@ -173,9 +173,9 @@ Edward::Edward(Array<string> arg) :
 	msg_db_f("Init", 1);
 	
 	setBorderWidth(0);
-	addControlTable("", 0, 0, 1, 2, "vgrid");
+	addGrid("", 0, 0, 1, 2, "vgrid");
 	setTarget("vgrid", 0);
-	addControlTable("", 0, 0, 2, 1, "root-table");
+	addGrid("", 0, 0, 2, 1, "root-table");
 	setTarget("root-table", 0);
 	addDrawingArea("!grabfocus,nix", 0, 0, 0, 0, "nix-area");
 	setBorderWidth(5);
@@ -555,10 +555,11 @@ void Edward::onDraw()
 void Edward::loadKeyCodes()
 {
 	msg_db_f("LoadKeyCodes", 1);
-	CFile *f = FileOpen(HuiAppDirectory + "Data/keys.txt");
+	File *f = FileOpen(HuiAppDirectory + "Data/keys.txt");
 	if (!f)
 		f = FileOpen(HuiAppDirectoryStatic + "Data/keys.txt");
-	int nk = f->ReadIntC();
+	f->ReadComment();
+	int nk = f->ReadInt();
 	f->ReadComment();
 	for (int i=0;i<nk;i++){
 		string id = f->ReadStr();

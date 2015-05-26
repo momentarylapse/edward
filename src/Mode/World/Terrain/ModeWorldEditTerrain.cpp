@@ -53,13 +53,13 @@ void ModeWorldEditTerrain::onStart()
 
 	// Dialog
 	dialog = new HuiDialog(_("Pinsel"), 300, 155, ed, true);//HuiCreateResourceDialog("new_ball_dialog", ed);
-	dialog->addControlTable("", 0, 0, 1, 2, "grid1");
+	dialog->addGrid("", 0, 0, 1, 2, "grid1");
 	dialog->setTarget("grid1", 0);
-	dialog->addControlTable("", 0, 0, 3, 2, "grid2");
+	dialog->addGrid("", 0, 0, 3, 2, "grid2");
 	dialog->addListView("!nobar\\type", 0, 1, 0, 0, "brush_type");
 	dialog->setTarget("grid2", 0);
-	dialog->addText(_("Dicke"), 0, 0, 0, 0, "");
-	dialog->addText(_("Tiefe"), 0, 1, 0, 0, "");
+	dialog->addLabel(_("Dicke"), 0, 0, 0, 0, "");
+	dialog->addLabel(_("Tiefe"), 0, 1, 0, 0, "");
 	dialog->addSlider("", 1, 0, 0, 0, "diameter_slider");
 	dialog->addSlider("", 1, 1, 0, 0, "depth_slider");
 	dialog->addEdit("", 2, 0, 0, 0, "diameter");

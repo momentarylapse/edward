@@ -296,7 +296,7 @@ void GodResetLevelData()
 	LevelData.fog.enabled = false;
 }
 
-color ReadColor3(CFile *f)
+color ReadColor3(File *f)
 {
 	int c[3];
 	for (int i=0;i<3;i++)
@@ -304,7 +304,7 @@ color ReadColor3(CFile *f)
 	return ColorFromIntRGB(c);
 }
 
-color ReadColor4(CFile *f)
+color ReadColor4(File *f)
 {
 	int c[4];
 	for (int i=0;i<4;i++)
@@ -394,7 +394,7 @@ bool GodLoadWorld(const string &filename)
 
 // read world file
 //   and put the data into LevelData
-	CFile *f = FileOpen(MapDir + filename + ".world");
+	File *f = FileOpen(MapDir + filename + ".world");
 	if (!f)
 		return false;
 
@@ -408,7 +408,8 @@ bool GodLoadWorld(const string &filename)
 	GodResetLevelData();
 
 	// Terrains
-	int n = f->ReadIntC();
+	f->ReadComment();
+	int n = f->ReadInt();
 	for (int i=0;i<n;i++){
 		LevelDataTerrain t;
 		t.filename = f->ReadStr();
@@ -421,7 +422,8 @@ bool GodLoadWorld(const string &filename)
 	f->ReadVector(&LevelData.gravity);
 
 	// EgoIndex
-	LevelData.ego_index = f->ReadIntC();
+	f->ReadComment();
+	LevelData.ego_index = f->ReadInt();
 
 	// Background
 	f->ReadComment();
@@ -433,7 +435,8 @@ bool GodLoadWorld(const string &filename)
 	}
 
 	// Fog
-	LevelData.fog.enabled = f->ReadBoolC();
+	f->ReadComment();
+	LevelData.fog.enabled = f->ReadBool();
 	LevelData.fog.mode = f->ReadWord();
 	LevelData.fog.start = f->ReadFloat();
 	LevelData.fog.end = f->ReadFloat();
@@ -441,14 +444,16 @@ bool GodLoadWorld(const string &filename)
 	LevelData.fog._color = ReadColor4(f);
 
 	// Music
-	World.MusicFieldGlobal.NumMusicFiles = f->ReadIntC();
+	f->ReadComment();
+	World.MusicFieldGlobal.NumMusicFiles = f->ReadInt();
 	for (int i=0;i<World.MusicFieldGlobal.NumMusicFiles;i++)
 		World.MusicFieldGlobal.MusicFile[i] = f->ReadStr();
 	World.MusicFieldCurrent = &World.MusicFieldGlobal;
 	World.MusicCurrent = -1;
 
 	// Objects
-	n = f->ReadIntC();
+	f->ReadComment();
+	n = f->ReadInt();
 	for (int i=0;i<n;i++){
 		LevelDataObject o;
 		o.filename = f->ReadStr();
@@ -461,7 +466,8 @@ bool GodLoadWorld(const string &filename)
 	}
 
 	// Scripts
-	n = f->ReadIntC();
+	f->ReadComment();
+	n = f->ReadInt();
 	for (int i=0;i<n;i++){
 		LevelData.script_filename.add(f->ReadStr());
 		int nr = f->ReadInt();
@@ -472,7 +478,8 @@ bool GodLoadWorld(const string &filename)
 	}
 
 	// ScriptVars
-	n = f->ReadIntC();
+	f->ReadComment();
+	n = f->ReadInt();
 	LevelData.script_var.resize(n);
 	for (int i=0;i<n;i++)
 		LevelData.script_var[i] = f->ReadFloat();

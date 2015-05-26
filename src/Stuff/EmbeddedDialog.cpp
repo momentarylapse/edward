@@ -27,9 +27,9 @@ void EmbeddedDialog::Init(HuiWindow *_win, const string &target_id, int x, int y
 	win->setBorderWidth(5);
 	win->setTarget(target_id, 0);
 	if (options.num > 0)
-		win->addControlTable("!" + options, x, y, 1, 1, uid);
+		win->addGrid("!" + options, x, y, 1, 1, uid);
 	else
-		win->addControlTable("", x, y, 1, 1, uid);
+		win->addGrid("", x, y, 1, 1, uid);
 	win->setTarget(uid, 0);
 }
 

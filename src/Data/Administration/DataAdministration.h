@@ -48,7 +48,7 @@ public:
 
 	GameIniData *GameIni;
 
-	static CFile *admin_file;
+	static File *admin_file;
 };
 
 #endif /* DATAADMINISTRATION_H_ */

@@ -148,7 +148,7 @@ void WorldPropertiesDialog::OnRemoveSkybox()
 void WorldPropertiesDialog::OnAddScript()
 {
 	if (ed->fileDialog(FD_SCRIPT, false, true)){
-		temp.ScriptFile.add(ed->dialog_file_complete.substr(Script::config.Directory.num, -1));
+		temp.ScriptFile.add(ed->dialog_file_complete.substr(Script::config.directory.num, -1));
 		FillScriptList();
 	}
 }

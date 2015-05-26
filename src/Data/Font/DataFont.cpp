@@ -30,27 +30,36 @@ bool DataFont::load(const string & _filename, bool deep)
 
 	filename = _filename;
 	ed->makeDirs(filename);
-	CFile *f=new CFile();
-	if (!f->Open(filename)){
-		delete(f);
+	File *f = FileOpen(filename);
+	if (!f){
 		ed->setMessage(_("Kann XFont-Datei nicht &offnen"));
 		return false;
 	}
 	file_time = f->GetDateModification().time;
 
-	ffv=f->ReadFileFormatVersion();
-	if (ffv==1){
+	ffv = f->ReadFileFormatVersion();
+	if (ffv == 1){
 
-		global.TextureFile = f->ReadStrC();
-		int NumX=f->ReadByteC();
-		int NumY=f->ReadByteC();
-		int MaxGlyphWidth=f->ReadByteC();
-		global.GlyphHeight=f->ReadByteC();
-		global.GlyphY1=f->ReadByteC();
-		global.GlyphY2=f->ReadByteC();
-		f->ReadByteC(); // XOffset
-		global.XFactor=f->ReadByteC();
-		global.YFactor=f->ReadByteC();
+		f->ReadComment();
+		global.TextureFile = f->ReadStr();
+		f->ReadComment();
+		int NumX = f->ReadByte();
+		f->ReadComment();
+		int NumY = f->ReadByte();
+		f->ReadComment();
+		int MaxGlyphWidth = f->ReadByte();
+		f->ReadComment();
+		global.GlyphHeight = f->ReadByte();
+		f->ReadComment();
+		global.GlyphY1 = f->ReadByte();
+		f->ReadComment();
+		global.GlyphY2 = f->ReadByte();
+		f->ReadComment();
+		f->ReadByte(); // XOffset
+		f->ReadComment();
+		global.XFactor = f->ReadByte();
+		f->ReadComment();
+		global.YFactor = f->ReadByte();
 		f->ReadComment();
 		glyph.resize(NumX*NumY);
 		for (int i=0;i<NumX*NumY;i++){
@@ -59,37 +68,46 @@ bool DataFont::load(const string & _filename, bool deep)
 			glyph[i].X2 = f->ReadByte();
 			glyph[i].X1 = f->ReadByte();
 		}
-		string str = f->ReadStrC();
-		global.UnknownGlyphNo=0;
+		f->ReadComment();
+		string str = f->ReadStr();
+		global.UnknownGlyphNo = 0;
 		foreachi(Glyph &g, glyph, i)
 			if (g.Name == str)
 				global.UnknownGlyphNo = i;
 
-	}else if (ffv==2){
+	}else if (ffv == 2){
 
-		global.TextureFile = f->ReadStrC();
-		int NumGlyphs=f->ReadWordC();
-		global.GlyphHeight=f->ReadByteC();
-		global.GlyphY1=f->ReadByteC();
-		global.GlyphY2=f->ReadByteC();
-		global.XFactor=f->ReadByteC();
-		global.YFactor=f->ReadByteC();
+		f->ReadComment();
+		global.TextureFile = f->ReadStr();
+		f->ReadComment();
+		int NumGlyphs = f->ReadWord();
+		f->ReadComment();
+		global.GlyphHeight = f->ReadByte();
+		f->ReadComment();
+		global.GlyphY1 = f->ReadByte();
+		f->ReadComment();
+		global.GlyphY2 = f->ReadByte();
+		f->ReadComment();
+		global.XFactor = f->ReadByte();
+		f->ReadComment();
+		global.YFactor = f->ReadByte();
 		f->ReadComment();
 		glyph.resize(NumGlyphs);
 		for (int i=0;i<NumGlyphs;i++){
 			glyph[i].Name = str_m_to_utf8(f->ReadStr());
-			glyph[i].Width=f->ReadByte();
-			glyph[i].X1=f->ReadByte();
-			glyph[i].X2=f->ReadByte();
+			glyph[i].Width = f->ReadByte();
+			glyph[i].X1 = f->ReadByte();
+			glyph[i].X2 = f->ReadByte();
 		}
-		string str = f->ReadStrC();
+		f->ReadComment();
+		string str = f->ReadStr();
 		global.UnknownGlyphNo=0;
 		foreachi(Glyph &g, glyph, i)
 			if (g.Name == str)
 				global.UnknownGlyphNo = i;
 	}else{
 		ed->setMessage(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 1, 2));
-		error=true;
+		error = true;
 	}
 
 	f->Close();
@@ -157,7 +175,7 @@ bool DataFont::save(const string & _filename)
 	filename = _filename;
 	ed->makeDirs(filename);
 
-	CFile *f=new CFile();
+	File *f = new File();
 	if (!f)
 		return false;
 	f->Create(filename);

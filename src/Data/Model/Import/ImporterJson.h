@@ -53,7 +53,7 @@ public:
 	void importBoneIndices(DataModel *m, Value *v, int num_influences);
 	void importMoves(DataModel *m, Value *v);
 
-	CFile *f;
+	File *f;
 };
 
 #endif /* IMPORTERJSON_H_ */

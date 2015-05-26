@@ -6,7 +6,7 @@
 #include "../meta.h"
 #endif
 
-color file_read_color4i(CFile *f); // -> model.cpp
+color file_read_color4i(File *f); // -> model.cpp
 
 
 string MaterialDir;
@@ -152,7 +152,7 @@ Material *LoadMaterial(const string &filename, bool as_default)
 			if (Materials[i]->name == filename)
 				return Materials[i];
 	}
-	CFile *f = FileOpen(MaterialDir + filename + ".material");
+	File *f = FileOpen(MaterialDir + filename + ".material");
 	if (!f){
 #ifdef _X_ALLOW_X_
 	if (Engine.FileErrorsAreCritical)
@@ -166,7 +166,8 @@ Material *LoadMaterial(const string &filename, bool as_default)
 	if (ffv == 4){
 		m->name = filename;
 		// Textures
-		m->num_textures = f->ReadIntC();
+		f->ReadComment();
+		m->num_textures = f->ReadInt();
 		for (int i=0;i<m->num_textures;i++)
 			m->texture[i] = NixLoadTexture(f->ReadStr());
 		// Colors
@@ -177,20 +178,23 @@ Material *LoadMaterial(const string &filename, bool as_default)
 		m->shininess = (float)f->ReadInt();
 		m->emission = file_read_color4i(f);
 		// Transparency
-		m->transparency_mode = f->ReadIntC();
+		f->ReadComment();
+		m->transparency_mode = f->ReadInt();
 		m->alpha_factor = float(f->ReadInt()) * 0.01f;
 		m->alpha_source = f->ReadInt();
 		m->alpha_destination = f->ReadInt();
 		m->alpha_z_buffer = f->ReadBool();
 		// Appearance
-		f->ReadIntC(); //ShiningDensity
+		f->ReadComment();
+		f->ReadInt(); //ShiningDensity
 		f->ReadInt(); // ShiningLength
 		f->ReadBool(); // IsWater
 		// Reflection
 		m->cube_map = NULL;
 		m->cube_map_size = 0;
 		m->reflection_density = 0;
-		m->reflection_mode = f->ReadIntC();
+		f->ReadComment();
+		m->reflection_mode = f->ReadInt();
 		m->reflection_density = float(f->ReadInt()) * 0.01f;
 		m->cube_map_size = f->ReadInt();
 		NixTexture *cmt[6];
@@ -205,10 +209,12 @@ Material *LoadMaterial(const string &filename, bool as_default)
 				m->cube_map->fill_cube_map(i, cmt[i]);
 		}
 		// ShaderFile
-		string ShaderFile = f->ReadStrC();
+		f->ReadComment();
+		string ShaderFile = f->ReadStr();
 		m->shader = NixLoadShader(ShaderFile);
 		// Physics
-		m->rc_jump = (float)f->ReadIntC() * 0.001f;
+		f->ReadComment();
+		m->rc_jump = (float)f->ReadInt() * 0.001f;
 		m->rc_static = (float)f->ReadInt() * 0.001f;
 		m->rc_sliding = (float)f->ReadInt() * 0.001f;
 		m->rc_rolling = (float)f->ReadInt() * 0.001f;

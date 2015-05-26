@@ -15,13 +15,13 @@
 #include "../Font/DataFont.h"
 #include "../../Edward.h"
 
-CFile *DataAdministration::admin_file = NULL;
+File *DataAdministration::admin_file = NULL;
 
 DataAdministration::DataAdministration() :
 	Data(-1)
 {
 	if (!admin_file)
-		admin_file = new CFile();
+		admin_file = new File();
 	GameIni = new GameIniData;
 	file_list = new AdminFileList;
 }
@@ -134,7 +134,8 @@ bool DataAdministration::load(const string &_filename, bool deep)
 
 	if (!admin_file->Open(filename))
 		return false;
-	int num = admin_file->ReadIntC();
+	admin_file->ReadComment();
+	int num = admin_file->ReadInt();
 	for (int i=0;i<num;i++){
 		AdminFile *a = new AdminFile;
 		file_list->add(a);

@@ -171,7 +171,7 @@ void AdminFile::check(AdminFileList &list)
 	bool really_scan = true;
 
 	// test file existence
-	CFile *f = DataAdministration::admin_file;
+	File *f = DataAdministration::admin_file;
 	f->SilentFileAccess = true;
 	if (f->Open(ed->getRootDir(Kind) + Name)){
 
@@ -267,7 +267,7 @@ void AdminFile::check(AdminFileList &list)
 		}else
 			Missing=true;
 	}else if (Kind==FD_SCRIPT){
-		if (f->Open(Script::config.Directory + Name)){
+		if (f->Open(Script::config.directory + Name)){
 			Time = f->GetDateModification().time;
 			f->SetBinaryMode(true);
 			string buf = f->ReadComplete();

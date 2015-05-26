@@ -129,7 +129,7 @@ string ExporterJson::boneToJson(ModelBone &b)
 
 bool ExporterJson::Export(DataModel *m, const string &filename)
 {
-	CFile *f = FileCreate(filename);
+	File *f = FileCreate(filename);
 
 	int n_tria = 0;
 	for (int is=0; is<m->surface.num; is++){
