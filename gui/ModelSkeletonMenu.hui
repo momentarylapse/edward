@@ -9,6 +9,7 @@ Menu menu_skeleton "" disabled
 			Item import_from_gamestudio "GameStudio..." image=hui:open
 			Item import_from_3ds "3D Studio Max..." image=hui:open
 			Item import_from_json "Three.js (json)..." image=hui:open
+			Item import_from_ply "Polygons (ply)..." image=hui:open
 			Item import_from_lineage2 "Lineage II..." image=hui:open
 		Menu menu_model_export "Exportieren"
 			Item export_to_gamestudio "GameStudio..."

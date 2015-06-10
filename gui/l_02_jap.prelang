@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-622
+623
 // Data (ID,Text)
 ad_dialog
 
@@ -394,6 +394,8 @@ import_from_gamestudio
 import_from_json
 
 import_from_lineage2
+
+import_from_ply
 
 import_group
 
@@ -889,7 +891,7 @@ quality_factor
 
 quality_slider
 
-rand_id_634608
+rand_id_804117
 
 rc_dialog
 

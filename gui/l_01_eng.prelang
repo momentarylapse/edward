@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-622
+623
 // Data (ID,Text)
 ad_dialog
 Administration
@@ -395,6 +395,8 @@ import_from_json
 
 import_from_lineage2
 Lineage II...
+import_from_ply
+
 import_group
 Groupe...
 import_world_properties
@@ -889,7 +891,7 @@ quality_factor
 \\0\\100\\0.1
 quality_slider
 
-rand_id_634608
+rand_id_804117
 
 rc_dialog
 Rudimentary configuration

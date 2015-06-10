@@ -38,6 +38,9 @@ public:
 	bool importOpenJson();
 	bool importLoadJson(const string &filename);
 
+	bool importOpenPly();
+	bool importLoadPly(const string &filename);
+
 	bool exportSaveJson();
 	bool exportWriteJson(const string &filename);
 

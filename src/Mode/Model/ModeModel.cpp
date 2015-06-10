@@ -10,6 +10,7 @@
 #include "../../Data/Model/DataModel.h"
 #include "../../Data/Model/Import/Importer3ds.h"
 #include "../../Data/Model/Import/ImporterJson.h"
+#include "../../Data/Model/Import/ImporterPly.h"
 #include "../../Data/Model/Export/ExporterJson.h"
 #include "Mesh/ModeModelMesh.h"
 #include "Skeleton/ModeModelSkeleton.h"
@@ -110,6 +111,8 @@ void ModeModel::onCommand(const string & id)
 		importOpen3ds();
 	if (id == "import_from_json")
 		importOpenJson();
+	if (id == "import_from_ply")
+		importOpenPly();
 
 	if (id == "export_to_json")
 		exportSaveJson();
@@ -247,6 +250,26 @@ bool ModeModel::importOpenJson()
 	if (!ed->fileDialog(FD_FILE, false, false))
 		return false;
 	return importLoadJson(ed->dialog_file_complete);
+}
+
+bool ModeModel::importLoadPly(const string &filename)
+{
+	ImporterPly im;
+	if (!im.Import(data, filename))
+		return false;
+
+	ed->setMode(this);
+	mode_model_mesh->optimizeView();
+	return true;
+}
+
+bool ModeModel::importOpenPly()
+{
+	if (!ed->allowTermination())
+		return false;
+	if (!ed->fileDialog(FD_FILE, false, false))
+		return false;
+	return importLoadPly(ed->dialog_file_complete);
 }
 
 bool ModeModel::importLoadJson(const string &filename)

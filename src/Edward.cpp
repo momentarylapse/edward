@@ -373,6 +373,9 @@ bool Edward::handleArguments(Array<string> arg)
 	}else if (ext == "js"){
 		mode_model->importLoadJson(param);
 		setMode(mode_model);
+	}else if (ext == "ply"){
+		mode_model->importLoadPly(param);
+		setMode(mode_model);
 	/*}else if (ext == "mdl"){
 		mmodel->LoadImportFromGameStudioMdl(param);
 		SetMode(ModeModel);
