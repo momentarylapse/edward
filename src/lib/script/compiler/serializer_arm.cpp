@@ -170,7 +170,7 @@ void SerializerARM::SerializeCompilerFunction(Command *com, Array<SerialCommandP
 				// NextCommand is a block!
 				if (next_command->kind != KIND_BLOCK)
 					DoError("command block in \"for\" loop missing");
-				marker_continue = add_marker_after_command(level + 1, next_command->block()->command.num - 2);
+				marker_continue = add_marker_after_command(level + 1, next_command->as_block()->commands.num - 2);
 			}
 			LoopData l = {marker_continue, marker_after_while, level, index};
 			loop.add(l);
@@ -182,7 +182,7 @@ void SerializerARM::SerializeCompilerFunction(Command *com, Array<SerialCommandP
 			add_cmd(Asm::INST_B, param_marker(loop.back().marker_continue));
 			break;
 		case COMMAND_RETURN:
-			if (com->num_params > 0){
+			if (com->param.num > 0){
 				if (cur_func->return_type->UsesReturnByMemory()){ // we already got a return address in [ebp+0x08] (> 4 byte)
 					FillInDestructors(false);
 					// internally handled...
@@ -209,10 +209,10 @@ void SerializerARM::SerializeCompilerFunction(Command *com, Array<SerialCommandP
 		case COMMAND_NEW:
 			AddFuncParam(param_const(TypeInt, ret.type->parent->size));
 			AddFuncReturn(ret);
-			if (!syntax_tree->GetExistence("@malloc", cur_func))
+			if (!syntax_tree->GetExistence("@malloc", NULL))
 				DoError("@malloc not found????");
 			AddFunctionCall(syntax_tree->GetExistenceLink.script, syntax_tree->GetExistenceLink.link_no);
-			if (com->param[0]){
+			if (com->param.num > 0){
 				// copy + edit command
 				Command sub = *com->param[0];
 				Command c_ret(KIND_VAR_TEMP, (long)ret.p, script, ret.type);
@@ -224,7 +224,7 @@ void SerializerARM::SerializeCompilerFunction(Command *com, Array<SerialCommandP
 		case COMMAND_DELETE:
 			add_cmd_destructor(param[0], false);
 			AddFuncParam(param[0]);
-			if (!syntax_tree->GetExistence("@free", cur_func))
+			if (!syntax_tree->GetExistence("@free", NULL))
 				DoError("@free not found????");
 			AddFunctionCall(syntax_tree->GetExistenceLink.script, syntax_tree->GetExistenceLink.link_no);
 			break;

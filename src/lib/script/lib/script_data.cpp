@@ -294,7 +294,7 @@ void class_add_func(const string &name, Type *return_type, void *func, ScriptFla
 	string tname = cur_class->name;
 	if (tname[0] == '-'){
 		foreach(Type *t, cur_package_script->syntax->types)
-			if ((t->is_pointer) && (t->parent == cur_class))
+			if ((t->is_pointer) and (t->parent == cur_class))
 				tname = t->name;
 	}
 	int cmd = add_func(tname + "." + name, return_type, func, ScriptFlag(flag | FLAG_CLASS));
@@ -308,7 +308,7 @@ void class_add_func_virtual(const string &name, Type *return_type, void *func, S
 	string tname = cur_class->name;
 	if (tname[0] == '-'){
 		foreach(Type *t, cur_package_script->syntax->types)
-			if ((t->is_pointer) && (t->parent == cur_class))
+			if ((t->is_pointer) and (t->parent == cur_class))
 				tname = t->name;
 	}
 	if (config.abi == ABI_WINDOWS_32){
@@ -318,8 +318,8 @@ void class_add_func_virtual(const string &name, Type *return_type, void *func, S
 		}
 		unsigned char *pp = (unsigned char*)func;
 		try{
-			//if ((cur_class->vtable) && (pp[0] == 0x8b) && (pp[1] == 0x01) && (pp[2] == 0xff) && (pp[3] == 0x60)){
-			if ((pp[0] == 0x8b) && (pp[1] == 0x44) && (pp[2] == 0x24) && (pp[4] == 0x8b) && (pp[5] == 0x00) && (pp[6] == 0xff) && (pp[7] == 0x60)){
+			//if ((cur_class->vtable) and (pp[0] == 0x8b) and (pp[1] == 0x01) and (pp[2] == 0xff) and (pp[3] == 0x60)){
+			if ((pp[0] == 0x8b) and (pp[1] == 0x44) and (pp[2] == 0x24) and (pp[4] == 0x8b) and (pp[5] == 0x00) and (pp[6] == 0xff) and (pp[7] == 0x60)){
 				// 8b.44.24.**    8b.00     ff.60.10
 				// virtual function
 				int index = (int)pp[8] / 4;
@@ -329,7 +329,7 @@ void class_add_func_virtual(const string &name, Type *return_type, void *func, S
 				//msg_write(Asm::Disassemble(func, 16));
 				pp = &pp[5] + *(int*)&pp[1];
 				//msg_write(Asm::Disassemble(pp, 16));
-				if ((pp[0] == 0x8b) && (pp[1] == 0x44) && (pp[2] == 0x24) && (pp[4] == 0x8b) && (pp[5] == 0x00) && (pp[6] == 0xff) && (pp[7] == 0x60)){
+				if ((pp[0] == 0x8b) and (pp[1] == 0x44) and (pp[2] == 0x24) and (pp[4] == 0x8b) and (pp[5] == 0x00) and (pp[6] == 0xff) and (pp[7] == 0x60)){
 					// 8b.44.24.**    8b.00     ff.60.10
 					// virtual function
 					int index = (int)pp[8] / 4;
@@ -377,7 +377,7 @@ void add_const(const string &name, Type *type, void *value)
 	c.type = type;
 	c.value.resize(max(type->size, 8));//config.PointerSize));
 	// config.PointerSize might be smaller than needed for the following assignment
-	if ((type == TypeInt) || (type == TypeFloat32) || (type == TypeChar)  || (type == TypeBool) || (type->is_pointer))
+	if ((type == TypeInt) or (type == TypeFloat32) or (type == TypeChar)  or (type == TypeBool) or (type->is_pointer))
 		*(void**)c.value.data = value;
 	else
 		memcpy(c.value.data, value, type->size);
@@ -391,7 +391,7 @@ void add_const(const string &name, Type *type, void *value)
 
 void add_ext_var(const string &name, Type *type, void *var)
 {
-	cur_package_script->syntax->root_of_all_evil.AddVar(name, type);
+	cur_package_script->syntax->root_of_all_evil.block->add_var(name, type);
 	cur_package_script->g_var.add(config.allow_std_lib ? (char*)var : NULL);
 };
 
@@ -471,7 +471,7 @@ void func_add_param(const string &name, Type *type)
 		v.type = type;
 		if (cur_func){
 			cur_func->var.add(v);
-			cur_func->literal_param_type[cur_func->num_params] = type;
+			cur_func->literal_param_type.add(type);
 			cur_func->num_params ++;
 		}
 		if (cur_class_func)
@@ -768,21 +768,6 @@ public:
 	string _cdecl str(){	return p2s(p);	}
 };
 
-class VirtualTest : public VirtualBase
-{
-public:
-	int i;
-	static bool enable_logging;
-	VirtualTest(){ if (enable_logging) msg_write("VirtualTest.init()"); i = 13; }
-	virtual ~VirtualTest(){ if (enable_logging) msg_write("VirtualTest.~"); }
-	void _cdecl __init__(){ new(this) VirtualTest; }
-	virtual void _cdecl __delete__(){ if (enable_logging) msg_write("VirtualTest.delete()"); }
-	virtual void _cdecl f_virtual(){ msg_write(i); msg_write("VirtualTest.f_virtual()"); }
-	void _cdecl f_normal(){ msg_write(i); msg_write("VirtualTest.f_normal()"); }
-	void _cdecl test(){ msg_write("VirtualTest.test()"); f_virtual(); }
-};
-bool VirtualTest::enable_logging;
-
 void SIAddPackageBase()
 {
 	msg_db_f("SIAddPackageBase", 3);
@@ -887,9 +872,6 @@ void SIAddPackageBase()
 		func_set_inline(COMMAND_INLINE_POINTER_TO_BOOL);
 		func_add_param("p",		TypePointer);
 
-	
-	Type *TypeVirtualTest=add_type  ("VirtualTest",	sizeof(VirtualTest));
-
 	add_class(TypeInt);
 		class_add_func("str", TypeString, mf(&IntClass::str), FLAG_PURE);
 	add_class(TypeInt64);
@@ -977,17 +959,6 @@ void SIAddPackageBase()
 			func_add_param("other",		TypeStringList);
 		class_add_func("join", TypeString, mf(&StringList::join), FLAG_PURE);
 			func_add_param("glue",		TypeString);
-
-	VirtualTest::enable_logging = false;
-	add_class(TypeVirtualTest);
-		class_add_element("i", TypeInt, offsetof(VirtualTest, i));
-		class_add_func("__init__", TypeVoid, mf(&VirtualTest::__init__));
-		class_add_func_virtual("__delete__", TypeVoid, mf(&VirtualTest::__delete__));
-		class_add_func_virtual("f_virtual", TypeVoid, mf(&VirtualTest::f_virtual));
-		class_add_func("f_normal", TypeVoid, mf(&VirtualTest::f_normal));
-		class_add_func("test", TypeVoid, mf(&VirtualTest::test));
-		class_set_vtable(VirtualTest);
-	VirtualTest::enable_logging = true;
 
 
 	add_const("nil", TypePointer, NULL);
@@ -1479,7 +1450,7 @@ void DeclareClassVirtualIndex(const string &class_name, const string &func, void
 int ProcessClassOffset(const string &class_name, const string &element, int offset)
 {
 	foreach(ClassOffsetData &d, ClassOffsets)
-		if ((d.class_name == class_name) && (d.element == element))
+		if ((d.class_name == class_name) and (d.element == element))
 			return d.offset;
 	return offset;
 }
@@ -1494,7 +1465,7 @@ int ProcessClassSize(const string &class_name, int size)
 int ProcessClassNumVirtuals(const string &class_name, int num_virtual)
 {
 	foreach(ClassOffsetData &d, ClassOffsets)
-		if ((d.class_name == class_name) && (d.is_virtual))
+		if ((d.class_name == class_name) and (d.is_virtual))
 			num_virtual = max(num_virtual, d.offset + 1);
 	return num_virtual;
 }
