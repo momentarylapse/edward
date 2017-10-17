@@ -15,6 +15,8 @@
 
 extern string ImageVersion;
 
+class ImagePainter;
+
 class Image
 {
 	public:
@@ -36,6 +38,8 @@ class Image
 	void _cdecl __init_ext__(int width, int height, const color &c);
 	void _cdecl __delete__();
 
+	void _cdecl __assign__(const Image &other){ *this = other; }
+
 	bool _cdecl isEmpty(){	return (data.num == 0);	}
 
 	void _cdecl load(const string &filename);
@@ -48,9 +52,15 @@ class Image
 	void _cdecl flipV();
 	void _cdecl setMode(int mode) const;
 	void _cdecl setPixel(int x, int y, const color &c);
+	void _cdecl drawPixel(int x, int y, const color &c);
 	color _cdecl getPixel(int x, int y) const;
 	color _cdecl getPixelInterpolated(float x, float y) const;
 };
+
+// windows.h hack...
+#ifdef LoadImage
+#undef LoadImage
+#endif
 
 Image* _cdecl LoadImage(const string &filename);
 

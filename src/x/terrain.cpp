@@ -396,8 +396,8 @@ bool Terrain::Trace(const vector &p1, const vector &p2, const vector &dir, float
 
 	// positive x (to the right)
 	if ((w>=-pi/4)&&(w<pi/4)){
-		int x0 = max( int(pr1.x/pattern.x), 0 );
-		int x1 = min( int(pr2.x/pattern.x), num_x );
+		int x0 = ::max( int(pr1.x/pattern.x), 0 );
+		int x1 = ::min( int(pr2.x/pattern.x), num_x );
 		for (x=x0;x<x1;x++){
 			z = int( ( ( pattern.x*((float)x+0.5f) - pr1.x ) * (pr2.z-pr1.z) / (pr2.x-pr1.x) + pr1.z ) / pattern.z - 0.5f );
 			if ( ( z > num_z - 2) || ( z < 0 ) )
@@ -411,8 +411,8 @@ bool Terrain::Trace(const vector &p1, const vector &p2, const vector &dir, float
 
 	// positive z (forward)
 	if ((w>=pi/4)&&(w<pi*3/4)){
-		int z0 = max( int(pr1.z/pattern.z), 0 );
-		int z1 = min( int(pr2.z/pattern.z), num_z );
+		int z0 = ::max( int(pr1.z/pattern.z), 0 );
+		int z1 = ::min( int(pr2.z/pattern.z), num_z );
 		for (z=z0;z<z1;z++){
 			x = int( ( ( pattern.z*((float)z+0.5f) - pr1.z ) * (pr2.x-pr1.x) / (pr2.z-pr1.z) + pr1.x ) / pattern.x - 0.5f );
 			if ( ( x > num_x - 2) || ( x < 0 ) )
@@ -426,8 +426,8 @@ bool Terrain::Trace(const vector &p1, const vector &p2, const vector &dir, float
 
 	// negative x (to the left)
 	if ((w>=pi*3/4)||(w<-pi*3/4)){
-		int x0 = min( int(pr1.x/pattern.x), num_x );
-		int x1 = max( int(pr2.x/pattern.x), 0 );
+		int x0 = ::min( int(pr1.x/pattern.x), num_x );
+		int x1 = ::max( int(pr2.x/pattern.x), 0 );
 		for (x=x0;x>x1;x--){
 			z = int( ( ( pattern.x*((float)x+0.5f) - pr1.x ) * (pr2.z-pr1.z) / (pr2.x-pr1.x) + pr1.z ) / pattern.z - 0.5f );
 			if ( ( z > num_z - 2) || ( z < 0 ) )
@@ -441,8 +441,8 @@ bool Terrain::Trace(const vector &p1, const vector &p2, const vector &dir, float
 
 	// negative z (backward)
 	if ((w>=-pi*3/4)&&(w<-pi/4)){
-		int z0 = min( int(pr1.z/pattern.z), num_z );
-		int z1 = max( int(pr2.z/pattern.z), 0 );
+		int z0 = ::min( int(pr1.z/pattern.z), num_z );
+		int z1 = ::max( int(pr2.z/pattern.z), 0 );
 		for (z=z0;z>z1;z--){
 			x = int( ( ( pattern.z*((float)z+0.5f) - pr1.z ) * (pr2.x-pr1.x) / (pr2.z-pr1.z) + pr1.x ) / pattern.x - 0.5f );
 			if ( ( x > num_x - 2) || ( x < 0 ) )

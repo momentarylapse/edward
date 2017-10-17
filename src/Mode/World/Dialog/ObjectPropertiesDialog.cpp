@@ -9,21 +9,22 @@
 #include "../../../Action/World/Object/ActionWorldEditObject.h"
 #include <assert.h>
 
-ObjectPropertiesDialog::ObjectPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data, int _index) :
-	HuiWindow("world_object_dialog", _parent, _allow_parent),
+ObjectPropertiesDialog::ObjectPropertiesDialog(hui::Window*_parent, bool _allow_parent, DataWorld *_data, int _index) :
+	hui::Dialog("world_object_dialog", 400, 400, _parent, _allow_parent),
 	Observer("ObjectPropertiesDialog")
 {
+	fromResource("world_object_dialog");
 	data = _data;
 	index = _index;
 	assert(index >= 0);
 	assert(index < data->Objects.num);
 
-	event("cancel", this, &ObjectPropertiesDialog::OnClose);
-	event("hui:close", this, &ObjectPropertiesDialog::OnClose);
-	event("apply", this, &ObjectPropertiesDialog::ApplyData);
-	event("ok", this, &ObjectPropertiesDialog::OnOk);
+	event("cancel", std::bind(&ObjectPropertiesDialog::OnClose, this));
+	event("hui:close", std::bind(&ObjectPropertiesDialog::OnClose, this));
+	event("apply", std::bind(&ObjectPropertiesDialog::ApplyData, this));
+	event("ok", std::bind(&ObjectPropertiesDialog::OnOk, this));
 
-	event("find_object", this, &ObjectPropertiesDialog::OnFindObject);
+	event("find_object", std::bind(&ObjectPropertiesDialog::OnFindObject, this));
 
 	subscribe(data);
 

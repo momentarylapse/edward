@@ -15,18 +15,19 @@
 #include "../../../x/model_manager.h"
 #include "../../../Edward.h"
 
-LightmapDialog::LightmapDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
-	HuiWindow("lightmap_dialog", _parent, _allow_parent)
+LightmapDialog::LightmapDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data) :
+	hui::Dialog("", 400, 400, _parent, _allow_parent)
 {
+	fromResource("lightmap_dialog");
 	data = _data;
 
-	event("cancel", this, &LightmapDialog::OnClose);
-	event("hui:close", this, &LightmapDialog::OnClose);
-	event("ok", this, &LightmapDialog::OnOk);
-	event("preview", this, &LightmapDialog::OnPreview);
-	event("resolution", this, &LightmapDialog::OnResolution);
-	event("lightmap_type", this, &LightmapDialog::OnType);
-	event("find_new_world", this, &LightmapDialog::OnFindNewWorld);
+	event("cancel", std::bind(&LightmapDialog::OnClose, this));
+	event("hui:close", std::bind(&LightmapDialog::OnClose, this));
+	event("ok", std::bind(&LightmapDialog::OnOk, this));
+	event("preview", std::bind(&LightmapDialog::OnPreview, this));
+	event("resolution", std::bind(&LightmapDialog::OnResolution, this));
+	event("lightmap_type", std::bind(&LightmapDialog::OnType, this));
+	event("find_new_world", std::bind(&LightmapDialog::OnFindNewWorld, this));
 
 	//LoadData();
 	setFloat("brightness", 10.0f);
@@ -54,9 +55,9 @@ LightmapDialog::~LightmapDialog()
 void LightmapDialog::FillList()
 {
 	reset("lightmap_list");
-	foreach(LightmapData::Model &m, lmd->Models)
+	for (LightmapData::Model &m: lmd->Models)
 		addString("lightmap_list", m.orig_name + format("\\%dx%d\\%f", m.tex_width, m.tex_height, sqrt(m.area) / m.tex_width));
-	foreach(LightmapData::Terrain &t, lmd->Terrains)
+	for (LightmapData::Terrain &t: lmd->Terrains)
 		addString("lightmap_list", t.orig_name + format("\\%dx%d\\%f", t.tex_width, t.tex_height, sqrt(t.area) / t.tex_width));
 }
 
@@ -82,9 +83,9 @@ void LightmapDialog::SetData()
 
 static Lightmap::Histogram *hist_p;
 
-void OnHistDraw()
+void OnHistDraw(Painter *c)
 {
-	HuiPainter *c = HuiCurWindow->beginDraw("area");
+	//HuiPainter *c = HuiCurWindow->beginDraw("area");
 	c->setFontSize(10);
 	float w = c->width;
 	float h = c->height;
@@ -111,26 +112,26 @@ void OnHistDraw()
 	c->setLineWidth(1.5f);
 	for (int i=0;i<hist_p->f.num-1;i++)
 		c->drawLine((w * i) / hist_p->f.num, hh - hh * hist_p->f[i], (w * (i + 1)) / hist_p->f.num, hh - hh * hist_p->f[i + 1]);
-	c->end();
+	//c->end();
 }
 
 void OnHistClose()
 {
-	delete(HuiCurWindow);
+	delete(hui::CurWindow);
 }
 
-void ShowHistogram(Lightmap::Histogram &h, HuiWindow *root)
+void ShowHistogram(Lightmap::Histogram &h, hui::Window *root)
 {
 	hist_p = &h;
-	HuiWindow *dlg = new HuiDialog("Histogram", 400, 300, root, false);
+	hui::Window *dlg = new hui::Dialog("Histogram", 400, 300, root, false);
 	dlg->addGrid("", 0, 0, 1, 2, "table");
 	dlg->setTarget("table", 0);
 	dlg->addDrawingArea("", 0, 0, 0, 0, "area");
 	dlg->addButton(_("Schlie&sen"), 0, 1, 0, 0, "close");
 	dlg->setImage("close", "hui:close");
-	dlg->eventSX("area", "hui:draw", &OnHistDraw);
-	dlg->eventS("hui:close", &OnHistClose);
-	dlg->eventS("close", &OnHistClose);
+	dlg->eventXP("area", "hui:draw", std::bind(&OnHistDraw, std::placeholders::_1));
+	dlg->event("hui:close", &OnHistClose);
+	dlg->event("close", &OnHistClose);
 	dlg->run();
 }
 

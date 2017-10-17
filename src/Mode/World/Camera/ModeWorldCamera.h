@@ -9,7 +9,9 @@
 #define MODEWORLDCAMERA_H_
 
 #include "../../Mode.h"
-class HuiWindow;
+namespace hui{
+	class Window;
+}
 class DataCamera;
 class CameraDialog;
 

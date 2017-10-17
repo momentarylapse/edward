@@ -146,7 +146,7 @@ int string::compare(const string &s) const
 
 inline int ichar(unsigned char a)
 {
-	if ((a >= 'A') && (a <= 'Z'))
+	if ((a >= 'A') and (a <= 'Z'))
 		return (int)a - (int)'A' + (int)'a';
 	return (int)a;
 }
@@ -189,7 +189,7 @@ Array<string> string::explode(const string &s) const
 
 		pos = s.num + pos2;
 	}
-	if ((r.num > 0) || (pos < num))
+	if ((r.num > 0) or (pos < num))
 		r.add(substr(pos, num - pos));
 	return r;
 }
@@ -230,7 +230,7 @@ string string::lower() const
 {
 	string r = *this;
 	for (int i=0;i<r.num;i++)
-		if ((r[i] >= 'A') && (r[i] <= 'Z'))
+		if ((r[i] >= 'A') and (r[i] <= 'Z'))
 			r[i] += 'a' - 'A';
 	return r;
 }
@@ -239,7 +239,7 @@ string string::upper() const
 {
 	string r = *this;
 	for (int i=0;i<r.num;i++)
-		if ((r[i] >= 'a') && (r[i] <= 'z'))
+		if ((r[i] >= 'a') and (r[i] <= 'z'))
 			r[i] += 'A' - 'a';
 	return r;
 }
@@ -313,7 +313,7 @@ void string::dir_ensure_ending()
 {
 	if (num > 0){
 		char lc = (*this)[num - 1];
-		if ((lc != '/') && (lc != '\\'))
+		if ((lc != '/') and (lc != '\\'))
 			add('/');
 	}
 }
@@ -380,15 +380,15 @@ string format(const string str,...)
 
 	int l=0,s=strlen(str);
 	for (int i=0;i<s;i++){
-		if ((str[i]=='%')&&(str[i+1]=='s')){
+		if ((str[i]=='%')and(str[i+1]=='s')){
 			strcat(tmp,va_arg(marker,char*));
 			i++;
 			l=strlen(tmp);
-		}else if ((str[i]=='%')&&(str[i+1]=='d')){
+		}else if ((str[i]=='%')and(str[i+1]=='d')){
 			strcat(tmp,i2s(va_arg(marker,int)));
 			i++;
 			l=strlen(tmp);
-		}else if ((str[i]=='%')&&(str[i+1]=='f')){
+		}else if ((str[i]=='%')and(str[i+1]=='f')){
 			int fl=3;
 			if (str[i+2]==':'){
 				fl=str[i+3]-'0';
@@ -397,7 +397,7 @@ string format(const string str,...)
 				i++;
 			strcat(tmp,f2s((float)va_arg(marker,double),fl));
 			l=strlen(tmp);
-		}else if ((str[i]=='%')&&(str[i+1]=='v')){
+		}else if ((str[i]=='%')and(str[i+1]=='v')){
 			int fl=3;
 			if (str[i+2]==':'){
 				fl=str[i+3]-'0';
@@ -625,7 +625,7 @@ string string::hex(bool inverted) const
 			str.add('0' + c1);
 		else
 			str.add('a' + c1 - 10);
-		if ((!inverted)&&(i < num - 1))
+		if ((!inverted)and(i < num - 1))
 			str.add('.');
 	}
 	return str;
@@ -633,11 +633,11 @@ string string::hex(bool inverted) const
 
 inline int hex_nibble_to_value(char c)
 {
-	if ((c >= '0') && (c <= '9'))
+	if ((c >= '0') and (c <= '9'))
 		return c - '0';
-	if ((c >= 'a') && (c <= 'f'))
+	if ((c >= 'a') and (c <= 'f'))
 		return c - 'a' + 10;
-	if ((c >= 'A') && (c <= 'F'))
+	if ((c >= 'A') and (c <= 'F'))
 		return c - 'A' + 10;
 	return 0;
 }
@@ -791,7 +791,7 @@ double s2f64(const string &s)
 
 bool string::_bool() const
 {
-	return (*this == "true") || (*this == "yes");
+	return (*this == "true") or (*this == "yes");
 }
 
 bool s2b(const string &s)
@@ -818,14 +818,98 @@ int string::hash() const
 	return id;
 }
 
+static const unsigned int md5_s[64] = {
+	7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
+	5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
+	4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
+	6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21
+};
+static const unsigned int md5_K[64] = {
+	0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
+	0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
+	0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
+	0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
+	0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
+	0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
+	0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
+	0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
+	0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
+	0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
+	0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
+	0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
+	0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
+	0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
+	0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
+	0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
+};
+
+string string::md5() const
+{
+	unsigned int a0 = 0x67452301;
+	unsigned int b0 = 0xEFCDAB89;
+	unsigned int c0 = 0x98BADCFE;
+	unsigned int d0 = 0x10325476;
+	unsigned long long message_length = num * 8;
+	string message = *this;
+	message.add(0x80);
+	while((message.num % 64) != 56)
+		message.add(0x00);
+	message += string(&message_length, 8);
+
+	// blocks of 512 bit = 64 byte = 16 uints
+	int n = message.num / 64;
+	unsigned int *M = (unsigned int*)&message[0];
+
+	for (int j=0; j<n; j++){
+
+		unsigned int A = a0;
+		unsigned int B = b0;
+		unsigned int C = c0;
+		unsigned int D = d0;
+
+		unsigned int F, g;
+		for (int i=0; i<64; i++){
+			if (i < 16){
+	            F = (B & C) | ((~B) & D);
+	            g = i;
+			}else if (i < 32){
+	            F = (B & D) | (C & (~ D));
+	            g = (5*i + 1) % 16;
+			}else if (i < 48){
+	            F = B ^ C ^ D;
+	            g = (3*i + 5) % 16;
+			}else{
+	            F = C ^ (B | (~ D));
+	            g = (7*i) % 16;
+			}
+	        unsigned int temp = D;
+	        D = C;
+	        C = B;
+	        unsigned int t = A + F + md5_K[i] + M[g];
+	        unsigned int shift = md5_s[i];
+	        B = B + ((t << shift) | (t >> (32 - shift)));
+	        A = temp;
+		}
+	    a0 = a0 + A;
+	    b0 = b0 + B;
+	    c0 = c0 + C;
+	    d0 = d0 + D;
+		M += 16;
+	}
+	string out;
+	out += string(&a0, 4) + string(&b0, 4) + string(&c0, 4) + string(&d0, 4);
+
+	return out.hex().replace(".", "");
+}
+
 string string::trim() const
 {
 	int i0 = 0, i1 = num-1;
 	for (i0=0;i0<num;i0++)
-		if (((*this)[i0] != ' ') && ((*this)[i0] != '\t') && ((*this)[i0] != '\n') && ((*this)[i0] != '\r'))
+		if (((*this)[i0] != ' ') and ((*this)[i0] != '\t') and ((*this)[i0] != '\n') and ((*this)[i0] != '\r'))
 			break;
 	for (i1=num-1;i1>=0;i1--)
-		if (((*this)[i1] != ' ') && ((*this)[i1] != '\t') && ((*this)[i1] != '\n') && ((*this)[i1] != '\r'))
+		if (((*this)[i1] != ' ') and ((*this)[i1] != '\t') and ((*this)[i1] != '\n') and ((*this)[i1] != '\r'))
 			break;
 	return substr(i0, i1 - i0 + 1);
 }
@@ -919,10 +1003,10 @@ Array<int> string::utf16_to_utf32() const
 	bool big_endian = false;
 	unsigned int last = 0;
 	for (int i=0; i<num-1; i+=2){
-		if (((*this)[i] == 0xff) && ((*this)[i+1] == 0xfe)){
+		if (((*this)[i] == 0xff) and ((*this)[i+1] == 0xfe)){
 			big_endian = false;
 			continue;
-		}else if (((*this)[i] == 0xfe) && ((*this)[i+1] == 0xff)){
+		}else if (((*this)[i] == 0xfe) and ((*this)[i+1] == 0xff)){
 			big_endian = true;
 			continue;
 		}
@@ -931,9 +1015,9 @@ Array<int> string::utf16_to_utf32() const
 			code = (*this)[i+1] | ((*this)[i] << 8);
 		//msg_write(string((char*)&code, 2).hex());
 
-		if ((code < 0xd800) || (code > 0xdbff))
+		if ((code < 0xd800) or (code > 0xdbff))
 			r.add(code);
-		else if ((last >= 0xdc00) && (last <= 0xdfff))
+		else if ((last >= 0xdc00) and (last <= 0xdfff))
 			r.add(0x010000 | ((code - 0xd800) << 12) | (last - 0xdc00));
 		last = code;
 	}
@@ -961,6 +1045,135 @@ string utf32_to_utf8(const Array<int> &s)
 	return r;
 }
 
+
+
+string str_unescape(const string &str)
+{
+	string r;
+	for (int i=0;i<str.num;i++){
+		if ((str[i]=='\\')and(str[i+1]=='n')){
+			r += "\n";
+			i ++;
+		}else if ((str[i]=='\\')and(str[i+1]=='\\')){
+			r += "\\";
+			i++;
+		}else if ((str[i]=='\\')and(str[i+1]=='?')){
+			r += "?";
+			i++;
+		}else if ((str[i]=='\\')and(str[i+1]=='t')){
+			r += "\t";
+			i++;
+		}else if ((str[i]=='\\')and(str[i+1]=='"')){
+			r += "\"";
+			i++;
+		}else
+			r.add(str[i]);
+	}
+	return r;
+}
+
+
+string str_escape(const string &str)
+{
+	string r;
+	for (int i=0;i<str.num;i++){
+		if (str[i] == '\t')
+			r += "\\t";
+		else if (str[i] == '\n')
+			r += "\\n";
+		else if (str[i] == '\\')
+			r += "\\\\";
+		else if (str[i] == '\"')
+			r += "\\\"";
+		else
+			r.add(str[i]);
+	}
+	return r;
+}
+
+string str_m_to_utf8(const string &str)
+{
+	string r;
+	for (int i=0;i<str.num;i++){
+		if ((str[i] == '&') and (i < str.num - 1)){
+			if (str[i+1]=='a'){
+				r.add(0xc3);
+				r.add(0xa4);
+			}else if (str[i+1]=='o'){
+				r.add(0xc3);
+				r.add(0xb6);
+			}else if (str[i+1]=='u'){
+				r.add(0xc3);
+				r.add(0xbc);
+			}else if (str[i+1]=='s'){
+				r.add(0xc3);
+				r.add(0x9f);
+			}else if (str[i+1]=='A'){
+				r.add(0xc3);
+				r.add(0x84);
+			}else if (str[i+1]=='O'){
+				r.add(0xc3);
+				r.add(0x96);
+			}else if (str[i+1]=='U'){
+				r.add(0xc3);
+				r.add(0x9c);
+			}else if (str[i+1]=='&'){
+				r.add('&');
+			}else{
+				r.add(str[i]);
+				i --;
+			}
+			i ++;
+		}else
+			r.add(str[i]);
+	}
+	return r;
+}
+
+// Umlaute zu Vokalen mit & davor zerlegen
+string str_utf8_to_m(const string &str)
+{
+	string r;
+	const unsigned char *us = (const unsigned char*)str.c_str();
+
+	for (int i=0;i<str.num;i++){
+		if ((us[i]==0xc3) and (us[i+1]==0xa4)){
+			r += "&a";
+			i ++;
+		}else if ((us[i]==0xc3) and (us[i+1]==0xb6)){
+			r += "&o";
+			i ++;
+		}else if ((us[i]==0xc3) and (us[i+1]==0xbc)){
+			r += "&u";
+			i ++;
+		}else if ((us[i]==0xc3) and (us[i+1]==0x9f)){
+			r += "&s";
+			i ++;
+		}else if ((us[i]==0xc3) and (us[i+1]==0x84)){
+			r += "&A";
+			i ++;
+		}else if ((us[i]==0xc3) and (us[i+1]==0x96)){
+			r += "&O";
+			i ++;
+		}else if ((us[i]==0xc3) and (us[i+1]==0x9c)){
+			r += "&U";
+			i ++;
+		}else if (us[i]=='&'){
+			r += "&&";
+		}else
+			r.add(str[i]);
+	}
+	return r;
+}
+
+bool sa_contains(Array<string> &a, const string &s)
+{
+	for (string &aa: a)
+		if (aa == s)
+			return true;
+	return false;
+}
+
 /*
 char *regex_out_match[REGEX_MAX_MATCHES];
 int regex_out_pos[REGEX_MAX_MATCHES],regex_out_length[REGEX_MAX_MATCHES];
@@ -970,7 +1183,7 @@ int regex_match(char *rex,char *str,int max_matches)
 	int ss=strlen(str);
 	int rs=strlen(rex);
 
-	if ((max_matches<=0)||(max_matches>REGEX_MAX_MATCHES))
+	if ((max_matches<=0)or(max_matches>REGEX_MAX_MATCHES))
 		max_matches=REGEX_MAX_MATCHES;
 
 	int n_matches=0;

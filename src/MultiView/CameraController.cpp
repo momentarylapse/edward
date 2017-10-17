@@ -8,6 +8,7 @@
 #include "CameraController.h"
 #include "MultiViewImpl.h"
 #include "../lib/nix/nix.h"
+#include "../Edward.h"
 
 namespace MultiView{
 
@@ -26,10 +27,10 @@ CameraController::CameraController(MultiViewImpl *_impl)
 	rotating = false;
 	zooming = false;
 	show = false;
-	tex_bg = NixLoadTexture(HuiAppDirectoryStatic + "Data/icons/toolbar/multiview/bg.png");
-	tex_move = NixLoadTexture(HuiAppDirectoryStatic + "Data/icons/toolbar/multiview/move.png");
-	tex_rotate= NixLoadTexture(HuiAppDirectoryStatic + "Data/icons/toolbar/multiview/rotate.png");
-	tex_zoom = NixLoadTexture(HuiAppDirectoryStatic + "Data/icons/toolbar/multiview/zoom.png");
+	tex_bg = NixLoadTexture(app->directory_static + "Data/icons/toolbar/multiview/bg.png");
+	tex_move = NixLoadTexture(app->directory_static + "Data/icons/toolbar/multiview/move.png");
+	tex_rotate= NixLoadTexture(app->directory_static + "Data/icons/toolbar/multiview/rotate.png");
+	tex_zoom = NixLoadTexture(app->directory_static + "Data/icons/toolbar/multiview/zoom.png");
 }
 
 CameraController::~CameraController()

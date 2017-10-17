@@ -9,18 +9,18 @@
 #include "../lib/math/math.h"
 
 
-EmbeddedDialog::EmbeddedDialog(HuiWindow *_win, const string &target_id, int x, int y, const string &options)
+EmbeddedDialog::EmbeddedDialog(hui::Window *_win, const string &target_id, int x, int y, const string &options)
 {
 	Init(_win, target_id, x, y, options);
 }
 
-EmbeddedDialog::EmbeddedDialog(HuiWindow *_win, const string &dialog_id, const string &target_id, int x, int y, const string &options)
+EmbeddedDialog::EmbeddedDialog(hui::Window *_win, const string &dialog_id, const string &target_id, int x, int y, const string &options)
 {
 	Init(_win, target_id, x, y, options);
 	win->embedDialog(dialog_id, 0, 0);
 }
 
-void EmbeddedDialog::Init(HuiWindow *_win, const string &target_id, int x, int y, const string &options)
+void EmbeddedDialog::Init(hui::Window *_win, const string &target_id, int x, int y, const string &options)
 {
 	win = _win;
 	uid = "embedded-" + i2s(randi(1000000));
@@ -35,7 +35,7 @@ void EmbeddedDialog::Init(HuiWindow *_win, const string &target_id, int x, int y
 
 EmbeddedDialog::~EmbeddedDialog()
 {
-	win->removeEventHandlers(this);
+	//win->removeEventHandlers(this);
 	win->deleteControl(uid);
 }
 

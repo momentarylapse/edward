@@ -10,12 +10,12 @@
 
 #include "../lib/hui/hui.h"
 
-class EmbeddedDialog : public HuiEventHandler
+class EmbeddedDialog : public hui::EventHandler
 {
 public:
-	EmbeddedDialog(HuiWindow *win, const string &target_id, int x, int y, const string &options = "");
-	EmbeddedDialog(HuiWindow *win, const string &dialog_id, const string &target_id, int x, int y, const string &options = "");
-	void Init(HuiWindow *win, const string &target_id, int x, int y, const string &options);
+	EmbeddedDialog(hui::Window *win, const string &target_id, int x, int y, const string &options = "");
+	EmbeddedDialog(hui::Window *win, const string &dialog_id, const string &target_id, int x, int y, const string &options = "");
+	void Init(hui::Window *win, const string &target_id, int x, int y, const string &options);
 	virtual ~EmbeddedDialog();
 
 	void enable(const string &id, bool enabled);
@@ -32,7 +32,7 @@ public:
 	float getFloat(const string &id);
 	int getInt(const string &id);
 
-	HuiWindow *win;
+	hui::Window *win;
 	string uid;
 };
 

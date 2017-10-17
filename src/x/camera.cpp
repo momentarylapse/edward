@@ -408,7 +408,7 @@ void CameraCalcMove()
 {
 	msg_db_f("CamCalcMove",2);
 
-	foreach(Camera *v, Cameras){
+	for(Camera *v: Cameras){
 		if (!v->enabled)
 			continue;
 		v->OnIterate();
@@ -501,7 +501,7 @@ vector Camera::Unproject(const vector &v)
 
 void CameraShiftAll(const vector &dpos)
 {
-	foreach(Camera *c, Cameras)
+	for (Camera *c: Cameras)
 		c->pos += dpos;
 }
 

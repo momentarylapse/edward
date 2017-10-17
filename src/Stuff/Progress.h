@@ -10,7 +10,7 @@
 
 #include "../lib/hui/hui.h"
 
-class Progress : public HuiEventHandler
+class Progress : public hui::EventHandler
 {
 public:
 	Progress();
@@ -28,10 +28,10 @@ private:
 	void onClose();
 	void _ignoreEvent(){}
 
-	HuiWindow *dlg;
+	hui::Window *dlg;
 	bool Cancelled;
 	string message;
-	HuiTimer timer;
+	hui::Timer timer;
 	float time_running;
 };
 

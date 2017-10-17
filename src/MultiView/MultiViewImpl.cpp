@@ -40,7 +40,7 @@ MultiViewImpl::MultiViewImpl(bool _mode3d) :
 	POINT_RADIUS = 2;
 	POINT_RADIUS_HOVER = 4;
 
-	allow_infinite_scrolling = HuiConfig.getBool("MultiView.InfiniteScrolling", true);
+	allow_infinite_scrolling = hui::Config.getBool("MultiView.InfiniteScrolling", true);
 
 	mode3d = _mode3d;
 	win[0] = new Window(this, VIEW_BACK);
@@ -52,7 +52,7 @@ MultiViewImpl::MultiViewImpl(bool _mode3d) :
 		light = 0;
 
 		// Menu
-		menu = new HuiMenu;
+		menu = new hui::Menu;
 		menu->addItem(_("Ansicht"), "view_menu_sign");
 		//menu->enableItem("view_menu_sign", false);
 		menu->addSeparator();
@@ -81,7 +81,7 @@ MultiViewImpl::MultiViewImpl(bool _mode3d) :
 
 MultiViewImpl::~MultiViewImpl()
 {
-	HuiConfig.getBool("MultiView.InfiniteScrolling", allow_infinite_scrolling);
+	hui::Config.getBool("MultiView.InfiniteScrolling", allow_infinite_scrolling);
 	for (int i=0;i<4;i++)
 		delete(win[i]);
 	delete(cam_con);
@@ -284,12 +284,12 @@ void MultiViewImpl::onCommand(const string & id)
 void MultiViewImpl::onMouseWheel()
 {
 	notifyBegin();
-	HuiEvent *e = HuiGetEvent();
+	hui::Event *e = hui::GetEvent();
 
 	// mouse wheel -> zoom
-	if (e->dz > 0)
+	if (e->scroll_y > 0)
 		camZoom(SPEED_ZOOM_WHEEL, mouse_win->type != VIEW_PERSPECTIVE);
-	if (e->dz < 0)
+	if (e->scroll_y < 0)
 		camZoom(1.0f / SPEED_ZOOM_WHEEL, mouse_win->type != VIEW_PERSPECTIVE);
 	notifyEnd();
 }
@@ -310,25 +310,25 @@ void MultiViewImpl::onMouseLeave()
 void MultiViewImpl::onKeyDown()
 {
 	notifyBegin();
-	int k = HuiGetEvent()->key_code;
+	int k = hui::GetEvent()->key_code;
 
-	if ((k == KEY_ADD) ||(k == KEY_NUM_ADD))
+	if ((k == hui::KEY_ADD) or (k == hui::KEY_NUM_ADD))
 		camZoom(SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
-	if ((k == KEY_SUBTRACT) || (k == KEY_NUM_SUBTRACT))
+	if ((k == hui::KEY_SUBTRACT) || (k == hui::KEY_NUM_SUBTRACT))
 		camZoom(1.0f / SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
-	if (k == KEY_RIGHT)
+	if (k == hui::KEY_RIGHT)
 		camMove(-e_x * SPEED_MOVE);
-	if (k == KEY_LEFT)
+	if (k == hui::KEY_LEFT)
 		camMove( e_x * SPEED_MOVE);
-	if (k == KEY_UP)
+	if (k == hui::KEY_UP)
 		camMove( e_y * SPEED_MOVE);
-	if (k == KEY_DOWN)
+	if (k == hui::KEY_DOWN)
 		camMove(-e_y * SPEED_MOVE);
-	if (k == KEY_SHIFT + KEY_UP)
+	if (k == hui::KEY_SHIFT + hui::KEY_UP)
 		camMove( e_z * SPEED_MOVE);
-	if (k == KEY_SHIFT + KEY_DOWN)
+	if (k == hui::KEY_SHIFT + hui::KEY_DOWN)
 		camMove(-e_z * SPEED_MOVE);
-	if (k == KEY_ESCAPE)
+	if (k == hui::KEY_ESCAPE)
 		action_con->endAction(false);
 	notifyEnd();
 }
@@ -336,9 +336,9 @@ void MultiViewImpl::onKeyDown()
 
 int get_select_mode()
 {
-	if (NixGetKey(KEY_CONTROL))
+	if (NixGetKey(hui::KEY_CONTROL))
 		return MultiViewImpl::SELECT_ADD;
-	if (NixGetKey(KEY_SHIFT))
+	if (NixGetKey(hui::KEY_SHIFT))
 		return MultiViewImpl::SELECT_INVERT;
 	return MultiViewImpl::SELECT_SET;
 }
@@ -462,14 +462,14 @@ void MultiViewImpl::onLeftButtonUp()
 
 void MultiViewImpl::updateMouse()
 {
-	m.x = HuiGetEvent()->mx;
-	m.y = HuiGetEvent()->my;
-	v.x = HuiGetEvent()->dx;
-	v.y = HuiGetEvent()->dy;
+	m.x = hui::GetEvent()->mx;
+	m.y = hui::GetEvent()->my;
+	v.x = hui::GetEvent()->dx;
+	v.y = hui::GetEvent()->dy;
 
-	lbut = HuiGetEvent()->lbut;
-	mbut = HuiGetEvent()->mbut;
-	rbut = HuiGetEvent()->rbut;
+	lbut = hui::GetEvent()->lbut;
+	mbut = hui::GetEvent()->mbut;
+	rbut = hui::GetEvent()->rbut;
 
 	if (cam_con->isMouseOver())
 		return;
@@ -508,9 +508,9 @@ void MultiViewImpl::onMouseMove()
 		selectAllInRectangle(get_select_mode());
 	}else if (view_moving){
 		int t = active_win->type;
-		if ((t == VIEW_PERSPECTIVE) || (t == VIEW_ISOMETRIC)){
+		if ((t == VIEW_PERSPECTIVE) or (t == VIEW_ISOMETRIC)){
 	// camera rotation
-			camRotate(v, mbut || (NixGetKey(KEY_CONTROL)));
+			camRotate(v, mbut or (NixGetKey(hui::KEY_CONTROL)));
 		}else{
 	// camera translation
 			camMove(v);
@@ -546,7 +546,7 @@ void MultiViewImpl::startRect()
 	sel_rect.dist = -1;
 
 	// reset selection data
-	foreach(DataSet &d, data)
+	for (DataSet &d: data)
 		if (d.selectable)
 			for (int i=0;i<d.data->num;i++){
 				SingleData* sd = MVGetSingleData(d,i);
@@ -719,7 +719,7 @@ void MultiViewImpl::selectAll()
 		if (action_con->action.mode != ACTION_SELECT)
 			return;
 
-	foreach(DataSet &d, data)
+	for (DataSet &d: data)
 		for (int i=0;i<d.data->num;i++){
 			SingleData* sd = MVGetSingleData(d, i);
 			if (sd->view_stage >= view_stage)
@@ -737,7 +737,7 @@ void MultiViewImpl::selectNone()
 		if (action_con->action.mode != ACTION_SELECT)
 			return;
 
-	foreach(DataSet &d, data)
+	for (DataSet &d: data)
 		for (int i=0;i<d.data->num;i++){
 			SingleData* sd = MVGetSingleData(d, i);
 			sd->is_selected = false;
@@ -754,7 +754,7 @@ void MultiViewImpl::invertSelection()
 		if (action_con->action.mode != ACTION_SELECT)
 			return;
 
-	foreach(DataSet &d, data)
+	for (DataSet &d: data)
 		for (int i=0;i<d.data->num;i++){
 			SingleData* sd = MVGetSingleData(d, i);
 			if (sd->view_stage >= view_stage)
@@ -766,7 +766,7 @@ void MultiViewImpl::invertSelection()
 
 bool MultiViewImpl::hasSelection()
 {
-	foreach(DataSet &d, data)
+	for (DataSet &d: data)
 		for (int i=0;i<d.data->num;i++){
 			SingleData* sd = MVGetSingleData(d, i);
 			if (sd->is_selected)
@@ -779,7 +779,7 @@ vector MultiViewImpl::getSelectionCenter()
 {
 	vector min = v_0, max = v_0;
 	bool first = true;
-	foreach(DataSet &d, data)
+	for (DataSet &d: data)
 		for (int i=0;i<d.data->num;i++){
 			SingleData* sd = MVGetSingleData(d, i);
 			if (sd->is_selected){
@@ -873,7 +873,7 @@ bool MultiViewImpl::hoverSelected()
 
 bool MultiViewImpl::hasSelectableData()
 {
-	foreach(DataSet &d, data)
+	for (DataSet &d: data)
 		if (d.selectable)
 			return true;
 	return false;
@@ -881,7 +881,7 @@ bool MultiViewImpl::hasSelectableData()
 
 void MultiViewImpl::unselectAll()
 {
-	foreach(DataSet &d, data)
+	for (DataSet &d: data)
 		if (d.selectable)
 			for (int i=0;i<d.data->num;i++){
 				SingleData* sd = MVGetSingleData(d,i);
@@ -928,7 +928,7 @@ void MultiViewImpl::selectAllInRectangle(int mode)
 	rect r = sel_rect.get(m);
 
 	// select
-	foreach(DataSet &d, data)
+	for (DataSet &d: data)
 		if (d.selectable)
 			for (int i=0;i<d.data->num;i++){
 				SingleData* sd=MVGetSingleData(d,i);
@@ -1008,7 +1008,7 @@ void MultiViewImpl::viewStagePush()
 {
 	view_stage ++;
 
-	foreach(DataSet &d, data)
+	for (DataSet &d: data)
 		if (d.selectable)
 			for (int i=0;i<d.data->num;i++){
 				SingleData* sd=MVGetSingleData(d,i);
@@ -1023,7 +1023,7 @@ void MultiViewImpl::viewStagePop()
 	if (view_stage <= 0)
 		return;
 	view_stage --;
-	foreach(DataSet &d, data)
+	for (DataSet &d: data)
 		if (d.selectable)
 			for (int i=0;i<d.data->num;i++){
 				SingleData* sd=MVGetSingleData(d,i);

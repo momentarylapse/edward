@@ -81,9 +81,9 @@ void Observable::notifySend()
 	Array<Notification> notifications;
 
 	// decide whom to send what
-	foreach(const string *m, message_queue){
+	for (const string *m: message_queue){
 		//msg_write("send " + observable_name + ": " + *m);
-		foreach(ObserverRequest &r, requests){
+		for (ObserverRequest &r: requests){
 			if ((r.message == m) or (r.message == &MESSAGE_ALL))
 				notifications.add(Notification(r.observer, *m));
 		}
@@ -92,7 +92,7 @@ void Observable::notifySend()
 	message_queue.clear();
 
 	// send
-	foreach(Notification &n, notifications){
+	for (Notification &n: notifications){
 		if (DEBUG_MESSAGES)
 			msg_write("send " + getName() + "/" + *n.message + "  >>  " + n.observer->getName());
 		n.observer->onUpdate(this, *n.message);
@@ -103,7 +103,7 @@ void Observable::notifySend()
 void Observable::notifyEnqueue(const string &message)
 {
 	// already enqueued?
-	foreach(const string *m, message_queue)
+	for (const string *m: message_queue)
 		if (&message == m)
 			return;
 

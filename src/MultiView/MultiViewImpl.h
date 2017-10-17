@@ -158,7 +158,7 @@ public:
 	int moving_win;
 	vector moving_start, moving_dp;
 
-	HuiMenu *menu;
+	hui::Menu *menu;
 
 	struct Message3d
 	{

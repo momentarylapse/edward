@@ -423,11 +423,38 @@ string FileRead(const string &filename)
 	return r;
 }
 
+class FileError //: public Exception
+{
+public:
+	FileError(){}
+};
+
+string FileReadBinary(const string &filename)
+{
+	File *f = FileOpen(filename);
+	if (!f)
+		throw FileError();
+	f->SetBinaryMode(true);
+	string r = f->ReadComplete();
+	FileClose(f);
+	return r;
+}
+
 void FileWrite(const string &filename, const string &str)
 {
 	File *f = FileCreate(filename);
 	if (!f)
 		return;
+	f->WriteBuffer(str.data, str.num);
+	FileClose(f);
+}
+
+void FileWriteBinary(const string &filename, const string &str)
+{
+	File *f = FileCreate(filename);
+	if (!f)
+		return;
+	f->SetBinaryMode(true);
 	f->WriteBuffer(str.data, str.num);
 	FileClose(f);
 }
@@ -581,6 +608,19 @@ int File::GetSize()
 {
 #ifdef OS_WINDOWS
 	return (int)_filelength(handle);
+#endif
+#ifdef OS_LINUX
+	struct stat _stat;
+	fstat(handle, &_stat);
+	return _stat.st_size;
+#endif
+}
+
+// retrieve the size of the opened(!) file
+long long File::GetSize64()
+{
+#ifdef OS_WINDOWS
+	return (long long)_filelength(handle);
 #endif
 #ifdef OS_LINUX
 	struct stat _stat;
@@ -1004,12 +1044,16 @@ void _cdecl File::WriteBool(bool b)
 //   binary mode: length word, then string
 void File::WriteStr(const string &str)
 {
-	if (Binary)
-		WriteWord(str.num);
-	if (str.num > 0)
-		int r = _write(handle, str.data, str.num);
-	if (!Binary)
+	if (Binary){
+		int num = min(str.num, 65535);
+		WriteWord(num);
+		if (num > 0)
+			int r = _write(handle, str.data, num);
+	}else{
+		if (str.num > 0)
+			int r = _write(handle, str.data, str.num);
 		int r = _write(handle, "\n", 1);
+	}
 }
 
 // write a comment line

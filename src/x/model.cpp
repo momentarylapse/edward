@@ -27,7 +27,7 @@
 #include "../lib/nix/nix.h"
 #ifdef _X_ALLOW_X_
 #include "../fx/fx.h"
-#include "../lib/script/script.h"
+#include "../lib/kaba/kaba.h"
 #endif
 
 
@@ -43,7 +43,7 @@
 void MoveTimeAdd(Model *m,int operation_no,float elapsed,float v,bool loop);
 
 #ifdef _X_ALLOW_X_
-void *ScriptCreateInstance(Script::Script *s, const string &base_class);
+void *ScriptCreateInstance(Kaba::Script *s, const string &base_class);
 #endif
 
 bool Model::AllowDeleteRecursive = true;
@@ -223,11 +223,11 @@ void PostProcessPhys(Model *m, PhysicalSkin *s)
 
 color file_read_color4i(File *f)
 {
-	int a=f->ReadInt();
-	int r=f->ReadInt();
-	int g=f->ReadInt();
-	int b=f->ReadInt();
-	return color((float)a/255.0f,(float)r/255.0f,(float)g/255.0f,(float)b/255.0f);
+	int a = f->ReadInt();
+	int r = f->ReadInt();
+	int g = f->ReadInt();
+	int b = f->ReadInt();
+	return color((float)a/255.0f, (float)r/255.0f, (float)g/255.0f, (float)b/255.0f);
 }
 
 
@@ -672,7 +672,7 @@ void Model::Load(const string &filename)
 	passive_physics = f->ReadBool();
 	radius = f->ReadFloat();
 
-	// LOD-Distances"
+	// LOD-Distances
 	f->ReadComment();
 	detail_dist[SKIN_HIGH] = f->ReadFloat();
 	detail_dist[SKIN_MEDIUM] = f->ReadFloat();
@@ -774,7 +774,7 @@ Model *Model::GetCopy(bool allow_script_init)
 	//msg_write("copy  " + GetFilename());
 #ifdef _X_ALLOW_X_
 	if (_template->script)
-		m = (Model*)ScriptCreateInstance((Script::Script*)_template->script, "Model");
+		m = (Model*)ScriptCreateInstance((Kaba::Script*)_template->script, "Model");
 	else
 		m = new Model();
 #else
@@ -848,12 +848,12 @@ void Model::DeleteBaseModel()
 
 	if (AllowDeleteRecursive){
 		// delete sub models
-		foreach(Bone &b, bone)
-				if (b.model)
-					delete(b.model);
+		for (Bone &b: bone)
+			if (b.model)
+				delete(b.model);
 
 		// delete inventary
-		foreach(Model *i, inventary)
+		for (Model *i: inventary)
 			if (i)
 				delete(i);
 	}

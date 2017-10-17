@@ -111,7 +111,7 @@ enum{
 
 
 
-class XContainer : public HuiEventHandler
+class XContainer : public hui::EventHandler
 {
 public:
 	virtual ~XContainer(){}

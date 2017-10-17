@@ -22,29 +22,29 @@
 extern matrix3 InertiaTensorTemp;
 extern float DetailDistTemp1, DetailDistTemp2, DetailDistTemp3;
 
-ModelPropertiesDialog::ModelPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data):
-	HuiWindow("model_dialog", _parent, _allow_parent),
+ModelPropertiesDialog::ModelPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data):
+	hui::Window("model_dialog", _parent, _allow_parent),
 	Observer("ModelPropertiesDialog")
 {
 	data = _data;
 
 	setTooltip("material_list", _("- Doppelklick um ein Material zu editieren\n- Auswahl wird f&ur folgende neue Polygone verwendet"));
 
-	event("cancel", this, &ModelPropertiesDialog::OnClose);
-	event("hui:close", this, &ModelPropertiesDialog::OnClose);
-	event("ok", this, &ModelPropertiesDialog::OnOk);
-	event("generate_dists_auto", this, &ModelPropertiesDialog::OnGenerateDistsAuto);
-	event("ph_passive", this, &ModelPropertiesDialog::OnPhysicsPassive);
-	event("generate_tensor_auto", this, &ModelPropertiesDialog::OnGenerateTensorAuto);
-	eventX("tensor", "hui:change", this, &ModelPropertiesDialog::OnTensorEdit);
-	event("mass", this, &ModelPropertiesDialog::OnGenerateTensorAuto);
-	event("num_items", this, &ModelPropertiesDialog::OnNumItems);
-	event("model_inventary", this, &ModelPropertiesDialog::OnModelInventary);
-	event("delete_item", this, &ModelPropertiesDialog::OnDeleteItem);
-	event("max_script_vars", this, &ModelPropertiesDialog::OnMaxScriptVars);
-	eventX("script_vars", "hui:change", this, &ModelPropertiesDialog::OnScriptVarEdit);
-	event("script_find", this, &ModelPropertiesDialog::OnScriptFind);
-	event("model_script_var_template", this, &ModelPropertiesDialog::OnModelScriptVarTemplate);
+	event("cancel", std::bind(&ModelPropertiesDialog::OnClose, this));
+	event("hui:close", std::bind(&ModelPropertiesDialog::OnClose, this));
+	event("ok", std::bind(&ModelPropertiesDialog::OnOk, this));
+	event("generate_dists_auto", std::bind(&ModelPropertiesDialog::OnGenerateDistsAuto, this));
+	event("ph_passive", std::bind(&ModelPropertiesDialog::OnPhysicsPassive, this));
+	event("generate_tensor_auto", std::bind(&ModelPropertiesDialog::OnGenerateTensorAuto, this));
+	eventX("tensor", "hui:change", std::bind(&ModelPropertiesDialog::OnTensorEdit, this));
+	event("mass", std::bind(&ModelPropertiesDialog::OnGenerateTensorAuto, this));
+	event("num_items", std::bind(&ModelPropertiesDialog::OnNumItems, this));
+	event("model_inventary", std::bind(&ModelPropertiesDialog::OnModelInventary, this));
+	event("delete_item", std::bind(&ModelPropertiesDialog::OnDeleteItem, this));
+	event("max_script_vars", std::bind(&ModelPropertiesDialog::OnMaxScriptVars, this));
+	eventX("script_vars", "hui:change", std::bind(&ModelPropertiesDialog::OnScriptVarEdit, this));
+	event("script_find", std::bind(&ModelPropertiesDialog::OnScriptFind, this));
+	event("model_script_var_template", std::bind(&ModelPropertiesDialog::OnModelScriptVarTemplate, this));
 
 	subscribe(data);
 
@@ -166,7 +166,7 @@ string render_material(ModelMaterial *m)
 			c.a = 1;
 			img.setPixel(x, y, c);
 		}
-	return HuiSetImage(img);
+	return hui::SetImage(img);
 }
 
 string file_secure(const string &filename)
@@ -228,8 +228,8 @@ void ModelPropertiesDialog::OnGenerateTensorAuto()
 void ModelPropertiesDialog::OnTensorEdit()
 {
 	// constraint: symmetric tensor!
-	int row = HuiGetEvent()->row;
-	int col = HuiGetEvent()->column;
+	int row = hui::GetEvent()->row;
+	int col = hui::GetEvent()->column;
 	if (row != col - 1){
 		setCell("", col-1, row+1, getCell("", row, col));
 	}
@@ -269,8 +269,8 @@ void ModelPropertiesDialog::OnMaxScriptVars()
 
 void ModelPropertiesDialog::OnScriptVarEdit()
 {
-	int row = HuiGetEvent()->row;
-	msg_write(HuiGetEvent()->row);
+	int row = hui::GetEvent()->row;
+	msg_write(hui::GetEvent()->row);
 	temp.script_var[row] = s2f(getCell("script_vars", row, 2));
 }
 

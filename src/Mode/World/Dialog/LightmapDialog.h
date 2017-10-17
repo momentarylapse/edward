@@ -12,10 +12,10 @@
 class DataWorld;
 class LightmapData;
 
-class LightmapDialog: public HuiWindow
+class LightmapDialog: public hui::Dialog
 {
 public:
-	LightmapDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data);
+	LightmapDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data);
 	virtual ~LightmapDialog();
 
 	void SetData();

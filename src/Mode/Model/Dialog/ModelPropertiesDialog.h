@@ -12,10 +12,10 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Stuff/Observer.h"
 
-class ModelPropertiesDialog: public HuiWindow, public Observer
+class ModelPropertiesDialog: public hui::Window, public Observer
 {
 public:
-	ModelPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data);
+	ModelPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data);
 	virtual ~ModelPropertiesDialog();
 
 	void LoadData();

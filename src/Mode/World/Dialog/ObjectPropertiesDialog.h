@@ -12,10 +12,10 @@
 #include "../../../Data/World/DataWorld.h"
 #include "../../../Stuff/Observer.h"
 
-class ObjectPropertiesDialog: public HuiWindow, public Observer
+class ObjectPropertiesDialog: public hui::Dialog, public Observer
 {
 public:
-	ObjectPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data, int _index);
+	ObjectPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data, int _index);
 	virtual ~ObjectPropertiesDialog();
 
 	void LoadData();

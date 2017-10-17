@@ -30,7 +30,7 @@ Action *ModeWorldEditTerrain::getAction(const vector &pos)
 	float radius = dialog->getFloat("diameter") / 2;
 	float depth = dialog->getFloat("depth") * BRUSH_PARTITION;
 	int type = dialog->getInt("brush_type");
-	if (ed->getKey(KEY_CONTROL))
+	if (ed->getKey(hui::KEY_CONTROL))
 		depth = - depth;
 
 	Action *a = NULL;
@@ -52,7 +52,7 @@ void ModeWorldEditTerrain::onStart()
 	multi_view->setAllowSelect(false);
 
 	// Dialog
-	dialog = new HuiDialog(_("Pinsel"), 300, 155, ed, true);//HuiCreateResourceDialog("new_ball_dialog", ed);
+	dialog = new hui::Dialog(_("Pinsel"), 300, 155, ed, true);//HuiCreateResourceDialog("new_ball_dialog", ed);
 	dialog->addGrid("", 0, 0, 1, 2, "grid1");
 	dialog->setTarget("grid1", 0);
 	dialog->addGrid("", 0, 0, 3, 2, "grid2");
@@ -65,8 +65,8 @@ void ModeWorldEditTerrain::onStart()
 	dialog->addEdit("", 2, 0, 0, 0, "diameter");
 	dialog->addEdit("", 2, 1, 0, 0, "depth");
 
-	dialog->event("diameter_slider", this, &ModeWorldEditTerrain::onDiameterSlider);
-	dialog->event("depth_slider", this, &ModeWorldEditTerrain::onDepthSlider);
+	dialog->event("diameter_slider", std::bind(&ModeWorldEditTerrain::onDiameterSlider, this));
+	dialog->event("depth_slider", std::bind(&ModeWorldEditTerrain::onDepthSlider, this));
 
 	base_diameter = multi_view->cam.radius * 0.2f;
 	base_depth = multi_view->cam.radius * 0.02f;
@@ -78,9 +78,9 @@ void ModeWorldEditTerrain::onStart()
 	dialog->setString("diameter", f2s(base_diameter, 2));
 	dialog->setString("depth", f2s(base_depth, 2));
 	dialog->setInt("brush_type", 0);
-	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
+	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
-	dialog->eventS("hui:close", &HuiFuncIgnore);
+	dialog->event("hui:close", hui::FuncIgnore);
 
 	ed->activate("");
 }

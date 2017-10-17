@@ -179,10 +179,10 @@ void ActionController::reset()
 
 void ActionController::resetGeo()
 {
-	foreach(Geometry *g, geo)
+	for (Geometry *g: geo)
 		delete(g);
 	geo.clear();
-	foreach(Geometry *g, geo_show)
+	for (Geometry *g: geo_show)
 		delete(g);
 	geo_show.clear();
 }
@@ -228,9 +228,9 @@ void ActionController::update()
 		geo_show.add(new GeometryCube(v_0, -ddir.x * e_x, v_0, -ddir.z * e_z, 1, 1, 1));
 		geo_show.add(new GeometryCube(v_0, v_0, -ddir.y * e_y, -ddir.z * e_z, 1, 1, 1));*/
 		geo_show.add(new GeometryBall(v_0, 0.25f, 16, 8));
-		foreach(Geometry *g, geo)
+		for (Geometry *g: geo)
 			g->transform(t * s);
-		foreach(Geometry *g, geo_show)
+		for (Geometry *g: geo_show)
 			g->transform(t * s);
 	}
 	ed->forceRedraw();

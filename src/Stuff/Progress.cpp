@@ -36,7 +36,8 @@ void Progress::set(const string &str, float progress)
 	}
 	dlg->setFloat("progress_bar", progress);
 	message = str;
-	HuiDoSingleMainLoop();
+	//HuiDoSingleMainLoop();
+	hui::Sleep(0.001f);
 }
 
 
@@ -48,12 +49,12 @@ void Progress::set(float progress)
 void Progress::start(const string &str, float progress)
 {
 	if (!dlg)
-		dlg = HuiCreateResourceDialog("progress_dialog", HuiCurWindow);
+		dlg = hui::CreateResourceDialog("progress_dialog", hui::CurWindow);
 	dlg->setString("progress_bar", str);
 	dlg->setFloat("progress_bar", progress);
 	dlg->show();
-	dlg->event("hui:close", this, &Progress::_ignoreEvent);
-	HuiDoSingleMainLoop();
+	dlg->event("hui:close", std::bind(&Progress::_ignoreEvent, this));
+	hui::Sleep(0.001f);
 	Cancelled = false;
 	time_running = 0;
 	timer.reset();
@@ -77,13 +78,13 @@ void Progress::onClose()
 void Progress::startCancelable(const string &str, float progress)
 {
 	if (!dlg)
-		dlg = HuiCreateResourceDialog("progress_cancelable_dialog", HuiCurWindow);
+		dlg = hui::CreateResourceDialog("progress_cancelable_dialog", hui::CurWindow);
 	dlg->setString("progress_bar", str);
 	dlg->setFloat("progress_bar", progress);
 	dlg->show();
-	dlg->event("hui:close", this, &Progress::onClose);
-	dlg->event("cancel", this, &Progress::onClose);
-	HuiDoSingleMainLoop();
+	dlg->event("hui:close", std::bind(&Progress::onClose, this));
+	dlg->event("cancel", std::bind(&Progress::onClose, this));
+	hui::Sleep(0.001f);
 	Cancelled = false;
 	time_running = 0;
 	timer.get();
@@ -95,5 +96,5 @@ void Progress::end()
 		return;
 	delete(dlg);
 	dlg = NULL;
-	HuiDoSingleMainLoop();
+	hui::Sleep(0.001f);
 }

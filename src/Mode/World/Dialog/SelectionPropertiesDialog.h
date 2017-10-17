@@ -12,10 +12,10 @@
 #include "../../../Data/World/DataWorld.h"
 #include "../../../Stuff/Observer.h"
 
-class SelectionPropertiesDialog: public HuiWindow, public Observer
+class SelectionPropertiesDialog: public hui::Dialog, public Observer
 {
 public:
-	SelectionPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data, int *_selected_type, int *_selected_index);
+	SelectionPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data, int *_selected_type, int *_selected_index);
 	virtual ~SelectionPropertiesDialog();
 
 	void LoadData();

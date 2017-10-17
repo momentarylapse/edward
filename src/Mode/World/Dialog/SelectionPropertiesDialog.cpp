@@ -8,18 +8,19 @@
 #include "SelectionPropertiesDialog.h"
 #include "../../../Edward.h"
 
-SelectionPropertiesDialog::SelectionPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data, int *_selected_type, int *_selected_index):
-	HuiWindow("world_ps_dialog", _parent, _allow_parent),
+SelectionPropertiesDialog::SelectionPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data, int *_selected_type, int *_selected_index):
+	hui::Dialog("world_ps_dialog", 400, 400, _parent, _allow_parent),
 	Observer("SelectionPropertiesDialog")
 {
+	fromResource("world_ps_dialog");
 	data = _data;
 	selected_index = _selected_index;
 	selected_type = _selected_type;
 	*selected_index = -1;
 	*selected_type = -1;
 
-	event("hui:close", this, &SelectionPropertiesDialog::OnClose);
-	event("property_list", this, &SelectionPropertiesDialog::OnPropertyList);
+	event("hui:close", std::bind(&SelectionPropertiesDialog::OnClose, this));
+	event("property_list", std::bind(&SelectionPropertiesDialog::OnPropertyList, this));
 
 	subscribe(data);
 
@@ -50,7 +51,7 @@ void SelectionPropertiesDialog::OnPropertyList()
 
 void SelectionPropertiesDialog::FillList()
 {
-	HuiComboBoxSeparator = ":";
+	hui::ComboBoxSeparator = ":";
 	reset("property_list");
 	addString("property_list", _("Welt") + ":-:" + _(" -- Komplette Welt -- "));
 	index.add(0);
@@ -75,7 +76,7 @@ void SelectionPropertiesDialog::FillList()
 			PropertySelectionIndex.add(i);
 		}*/
 
-	HuiComboBoxSeparator = "\\";
+	hui::ComboBoxSeparator = "\\";
 }
 
 

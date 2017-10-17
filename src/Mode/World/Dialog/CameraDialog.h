@@ -19,7 +19,7 @@ class ActionCameraMoveTimeSelection;
 class CameraDialog: public EmbeddedDialog, public Observer
 {
 public:
-	CameraDialog(HuiWindow *parent, ModeWorldCamera *mode);
+	CameraDialog(hui::Window *parent, ModeWorldCamera *mode);
 	virtual ~CameraDialog();
 
 
@@ -28,7 +28,7 @@ public:
 	/*void OnPointList();
 	void OnPointListEdit();
 	void OnPointListSelect();*/
-	void OnAreaDraw();
+	void OnAreaDraw(Painter *c);
 	void OnAreaLeftButtonDown();
 	void OnAreaLeftButtonUp();
 	void OnAreaMouseMove();

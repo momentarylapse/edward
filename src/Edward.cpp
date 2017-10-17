@@ -24,10 +24,11 @@
 #include "meta.h"
 #include "x/model_manager.h"
 #include "x/font.h"
-#include "lib/script/script.h"
+#include "lib/kaba/kaba.h"
 #include "lib/nix/nix.h"
 
 Edward *ed = NULL;
+EdwardApp *app = NULL;
 
 #ifndef _X_USE_SOUND_
 string SoundDir;
@@ -464,7 +465,7 @@ void Edward::setMode(ModeBase *m)
 			m = mode_queue[0];
 	}
 
-	setMenu(HuiCreateResourceMenu(cur_mode->menu_id));
+	setMenu(hui::CreateResourceMenu(cur_mode->menu_id));
 	updateMenu();
 	cur_mode->onEnter();
 	if (cur_mode->getData())
@@ -474,10 +475,10 @@ void Edward::setMode(ModeBase *m)
 }
 
 void Edward::onAbout()
-{	HuiAboutBox(this);	}
+{	hui::AboutBox(this);	}
 
 void Edward::onSendBugReport()
-{	HuiSendBugReport();	}
+{	hui::SendBugReport();	}
 
 void Edward::onUpdate(Observable *o, const string &message)
 {
@@ -647,7 +648,7 @@ void Edward::makeDirs(const string &original_dir, bool as_root_dir)
 	if (!as_root_dir){
 		// we are in a sub dir?
 		sub_dir=false;
-		foreach(string &p, possible_sub_dir){
+		for (string &p: possible_sub_dir){
 			if (dir.find(p) >= 0){
 				dir = dir.substr(0, dir.find(p));
 				sub_dir=true;
@@ -691,13 +692,13 @@ void Edward::setMessage(const string &message)
 	msg_write(message);
 	message_str.add(message);
 	forceRedraw();
-	HuiRunLaterM(2.0f, this, &Edward::removeMessage);
+	hui::RunLater(2.0f, std::bind(&Edward::removeMessage, this));
 }
 
 
 void Edward::errorBox(const string &message)
 {
-	HuiErrorBox(this, _("Fehler"), message);
+	hui::ErrorBox(this, _("Fehler"), message);
 }
 
 void Edward::onCommand(const string &id)
@@ -791,8 +792,8 @@ bool Edward::fileDialog(int kind,bool save,bool force_in_root_dir)
 	if (kind==FD_CAMERAFLIGHT){title=_("Kamera-Datei");	show_filter=_("Kamera-Dateien (*.camera)");	filter="*.camera";	}
 	if (kind==FD_FILE){		title=_("beliebige Datei");	show_filter=_("Dateien (*.*)");				filter="*";	}
 
-	if (save)	done=HuiFileDialogSave(this,title,dialog_dir[kind],show_filter,filter);
-	else		done=HuiFileDialogOpen(this,title,dialog_dir[kind],show_filter,filter);
+	if (save)	done=hui::FileDialogSave(this,title,dialog_dir[kind],show_filter,filter);
+	else		done=hui::FileDialogOpen(this,title,dialog_dir[kind],show_filter,filter);
 	if (done){
 
 		bool in_root_dir = (HuiFilename.sys_filename().find(root_dir_kind[kind].sys_filename()) >= 0);
@@ -808,9 +809,9 @@ bool Edward::fileDialog(int kind,bool save,bool force_in_root_dir)
 
 		if (in_root_dir){
 			updateDialogDir(kind);
-			dialog_dir[kind] = HuiFilename.dirname();
+			dialog_dir[kind] = hui::Filename.dirname();
 		}
-		dialog_file_complete = HuiFilename;
+		dialog_file_complete = hui::Filename;
 		dialog_file = dialog_file_complete.substr(root_dir_kind[kind].num, -1);
 		dialog_file_no_ending = NoEnding(dialog_file);
 
@@ -828,7 +829,7 @@ bool Edward::allowTermination()
 		return true;
 	if (d->action_manager->isSave())
 		return true;
-	string answer = HuiQuestionBox(this,_("Dem&utige aber h&ofliche Frage"),_("Sie haben die Entropie erh&oht. Wollen Sie Ihr Werk speichern?"),true);
+	string answer = hui::QuestionBox(this,_("Dem&utige aber h&ofliche Frage"),_("Sie haben die Entropie erh&oht. Wollen Sie Ihr Werk speichern?"),true);
 	if (answer == "hui:cancel")
 		return false;
 	if (answer == "hui:no")
@@ -844,12 +845,23 @@ string Edward::get_tex_image(NixTexture *tex)
 
 	string img;
 	if (tex){
-		img = HuiSetImage(tex->icon);
+		img = hui::SetImage(tex->icon);
 	}else{
 		Image empty;
 		empty.create(32, 32, White);
-		img = HuiSetImage(empty);
+		img = hui::SetImage(empty);
 	}
 	icon_image.add(tex, img);
 	return img;
+}
+
+EdwardApp::EdwardApp() :
+	hui::Application(AppName, "Deutsch", 0)
+{
+	app = this;
+}
+
+bool EdwardApp::onStartup(const Array<string> &arg)
+{
+	return true;
 }

@@ -401,7 +401,7 @@ bool GodLoadWorld(const string &filename)
 	int ffv = f->ReadFileFormatVersion();
 	if (ffv != 10){
 		msg_error(format("wrong file format: %d (10 expected)", ffv));
-		FileClose(f);
+		delete(f);
 		return false;
 	}
 	bool ok = true;
@@ -767,7 +767,7 @@ void PhysicsDataToODE()
 {
 	msg_db_f("PhysicsDataToODE", 3);
 	// data.. x -> ode
-	foreach(Model *o, World.objects){
+	for (Model *o: World.objects){
 		if (o){
 			dBodyID b = (dBodyID)o->body_id;
 			if (b != 0){
@@ -788,7 +788,7 @@ void PhysicsDataFromODE()
 {
 	msg_db_f("PhysicsDataFromODE", 3);
 	// data.. ode -> x
-	foreach(Object *o, World.objects){
+	for (Object *o: World.objects){
 		if (o){
 			dBodyID b = (dBodyID)o->body_id;
 			if (b != 0){
@@ -1312,10 +1312,10 @@ void GodUnregisterModel(Model *m)
 
 void WorldShiftAll(const vector &dpos)
 {
-	foreach(Object *o, World.objects)
+	for (Object *o: World.objects)
 		if (o)
 			o->pos += dpos;
-	foreach(Terrain *t, World.terrains)
+	for (Terrain *t: World.terrains)
 		t->pos += dpos;
 #ifdef _X_ALLOW_X_
 	Fx::ShiftAll(dpos);

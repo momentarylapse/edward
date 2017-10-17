@@ -25,7 +25,7 @@
 #include "lib/file/file.h"
 #include "meta.h"
 #include "lib/nix/nix.h"
-#include "lib/script/script.h"
+#include "lib/kaba/kaba.h"
 #ifdef _X_ALLOW_X_
 #include "world/model.h"
 #include "world/model_manager.h"
@@ -122,7 +122,7 @@ void MetaSetDirs(const string &texture_dir, const string &map_dir, const string 
 	ScriptDir = script_dir;
 	MaterialDir = material_dir;
 	Gui::FontDir = font_dir;
-	Script::config.directory = script_dir;
+	Kaba::config.directory = script_dir;
 }
 
 void MetaCalcMove()

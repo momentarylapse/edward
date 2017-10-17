@@ -83,29 +83,29 @@ Font *_cdecl LoadFont(const string &filename)
 		f->ReadComment();
 		int num_glyphs = f->ReadWord();
 		f->ReadComment();
-		int height=f->ReadByte();
+		int height = f->ReadByte();
 		f->ReadComment();
-		int y1=f->ReadByte();
+		int y1 = f->ReadByte();
 		f->ReadComment();
-		int y2=f->ReadByte();
-		float dy=float(y2-y1);
-		font->height=(float)height/dy;
-		font->y_offset=(float)y1/dy;
+		int y2 = f->ReadByte();
+		float dy = float(y2-y1);
+		font->height = (float)height/dy;
+		font->y_offset = (float)y1/dy;
 		f->ReadComment();
-		font->x_factor=(float)f->ReadByte()*0.01f;
+		font->x_factor = (float)f->ReadByte()*0.01f;
 		f->ReadComment();
-		font->y_factor=(float)f->ReadByte()*0.01f;
+		font->y_factor = (float)f->ReadByte()*0.01f;
 		f->ReadComment();
-		int x=0,y=0;
+		int x = 0, y = 0;
 		for (int i=0;i<num_glyphs;i++){
 			string name = f->ReadStr();
 			int c = (unsigned char)str_utf8_to_ubyte(name)[0];
-			int w=f->ReadByte();
-			int x1=f->ReadByte();
-			int x2=f->ReadByte();
+			int w = f->ReadByte();
+			int x1 = f->ReadByte();
+			int x2 = f->ReadByte();
 			if (x+w>tx){
-				x=0;
-				y+=height;
+				x = 0;
+				y += height;
 			}
 			Glyph g;
 			g.x_offset = (float)x1/dy;
@@ -117,7 +117,7 @@ Font *_cdecl LoadFont(const string &filename)
 											(float)y/(float)ty,
 											(float)(y+height)/(float)ty);
 			font->glyph[c] = g;
-			x+=w;
+			x += w;
 		}
 		/*int u=(unsigned char)f->ReadStrC()[0];
 		font->unknown_glyph_no = font->table[u];

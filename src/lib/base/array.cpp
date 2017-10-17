@@ -26,22 +26,25 @@ void DynamicArray::reserve(int size)
 //	printf("        reserve  %d\n", size);
 	if (allocated == 0){
 		if (size > 0){
-			allocated = size * element_size;
+			allocated = size;
 #if ALIGNMENT > 0
 	#ifdef OS_WINDOWS
-			data = _aligned_malloc(ALIGNMENT, allocated);
+			data = _aligned_malloc(ALIGNMENT, (size_t)allocated * (size_t)element_size);
 	#else
-			posix_memalign(&data, ALIGNMENT, allocated);
+			posix_memalign(&data, ALIGNMENT, (size_t)allocated * (size_t)element_size);
 	#endif
 #else
-			data = malloc(allocated);
+			data = malloc((size_t)allocated * (size_t)element_size);
 #endif
 //			printf("          new  %p  ", data);
 		}
-	}else if (size * element_size > allocated){
-		allocated = size * element_size * 2;
-		void *data0 = data;
-		data = realloc(data, allocated);
+	}else if (size > allocated){
+		if (size > 10000)
+			allocated = size + size / 2;
+		else
+			allocated = size * 2;
+//		void *data0 = data;
+		data = realloc(data, (size_t)allocated * (size_t)element_size);
 //		printf("          %p  ->  %p ", data0, data);
 	}else if (size == 0)
 		clear();
@@ -55,8 +58,6 @@ void DynamicArray::resize(int size)
 	if (size > num){
 		reserve(size);
 		memset((char*)data + num * element_size, 0, (size - num) * element_size);
-		/*for (int i=num;i<size;i++)
-			init_sub_super_array(NULL, NULL, */
 	}
 	num = size;
 //	printf("        /resize\n");
@@ -167,9 +168,9 @@ void DynamicArray::insert_single(const void *d, int index)
 
 void DynamicArray::swap(int i1, int i2)
 {
-	if ((i1 < 0) || (i1 >= num))
+	if ((i1 < 0) or (i1 >= num))
 		return;
-	if ((i2 < 0) || (i2 >= num))
+	if ((i2 < 0) or (i2 >= num))
 		return;
 	if (i1 == i2)
 		return;
@@ -194,6 +195,17 @@ void DynamicArray::swap(int i1, int i2)
 		memcpy(p1, p2, element_size);
 		memcpy(p2, t, element_size);
 		delete[](t);
+	}
+}
+
+void DynamicArray::move(int source, int target)
+{
+	if (source > target){
+		for (int i=source; i>target; i--)
+			swap(i, i-1);
+	}else{
+		for (int i=source; i<target; i++)
+			swap(i, i+1);
 	}
 }
 
@@ -252,48 +264,8 @@ void DynamicArray::delete_single(int index)
 	num --;
 }
 
-void DynamicArray::delete_single_by_pointer(const void *p)
-{	delete_single(index(p));	}
-
 int DynamicArray::index(const void *p)
 {	return ((long)p - (long)data) / element_size;	}
-
-string dummy_summy;
-
-bool DynamicArray::iterate(void *&p)
-{
-	if (p == NULL)
-		p = data;
-	else
-		*(long*)&p += element_size;
-
-	// still within list?
-	//msg_write(format("%p  %p  %d  %d", p, data, element_size, num));
-	dummy_summy = format("%p  %p  %d  %d", p, data, element_size, num);
-	if ((long)p < (long)data + element_size * num)
-		return true;
-	//msg_write("f");
-
-	// too far -> start at the beginning...
-	p = data;
-	return false;
-}
-
-bool DynamicArray::iterate_back(void *&p)
-{
-	if (p == NULL)
-		p = (char*)data + (num - 1) * element_size;
-	else
-		*(long*)&p -= element_size;
-
-	// still within list?
-	if ((long)p >= (long)data)
-		return true;
-
-	// too far -> start at the ending...
-	p = (char*)data + (num - 1) * element_size;
-	return false;
-}
 
 
 DynamicArray DynamicArray::ref_subarray(int start, int num_elements)
@@ -312,7 +284,7 @@ DynamicArray DynamicArray::ref_subarray(int start, int num_elements)
 
 
 // Array<char>
-template <> void Array<char>::add(char item)
+template <> void Array<char>::add(const char item)
 {	((DynamicArray*)this)->append_1_single(item);	}
 template <> void Array<char>::erase(int index)
 {	((DynamicArray*)this)->delete_single(index);	}
@@ -322,7 +294,7 @@ template <> void Array<char>::operator += (const Array<char> &a)
 {	((DynamicArray*)this)->append(&a);	}
 
 // Array<bool>
-template <> void Array<bool>::add(bool item)
+template <> void Array<bool>::add(const bool item)
 {	((DynamicArray*)this)->append_1_single(item);	}
 template <> void Array<bool>::erase(int index)
 {	((DynamicArray*)this)->delete_single(index);	}
@@ -332,7 +304,7 @@ template <> void Array<bool>::operator += (const Array<bool> &a)
 {	((DynamicArray*)this)->append(&a);	}
 
 // Array<int>
-template <> void Array<int>::add(int item)
+template <> void Array<int>::add(const int item)
 {	((DynamicArray*)this)->append_4_single(item);	}
 template <> void Array<int>::erase(int index)
 {	((DynamicArray*)this)->delete_single(index);	}
@@ -342,7 +314,7 @@ template <> void Array<int>::operator += (const Array<int> &a)
 {	((DynamicArray*)this)->append(&a);	}
 
 // Array<float>
-template <> void Array<float>::add(float item)
+template <> void Array<float>::add(const float item)
 {	((DynamicArray*)this)->append_4_single(*(int*)&item);	}
 template <> void Array<float>::erase(int index)
 {	((DynamicArray*)this)->delete_single(index);	}

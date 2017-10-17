@@ -66,7 +66,7 @@ void read_color_3i(File *f, color &c);
 void write_color_3i(File *f, const color &c);
 color i42c(int *c);
 
-class Edward : public Observer, public HuiWindow
+class Edward : public Observer, public hui::Window
 {
 public:
 	Edward(Array<string> arg);
@@ -151,9 +151,19 @@ public:
 	Map<NixTexture*, string> icon_image;
 	string get_tex_image(NixTexture *tex);
 
-	HuiTimer timer;
+	hui::Timer timer;
 };
 
 extern Edward *ed;
+
+class EdwardApp : public hui::Application
+{
+public:
+	EdwardApp();
+	virtual bool onStartup(const Array<string> &arg);
+
+};
+
+extern EdwardApp *app;
 
 #endif /* EDWARD_H_ */

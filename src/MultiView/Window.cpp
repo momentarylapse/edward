@@ -247,7 +247,7 @@ void Window::draw()
 				if (sd->view_stage < impl->view_stage)
 					continue;
 
-				bool _di = ((d.indexable) && (sd->is_selected) && (NixGetKey(KEY_I)));
+				bool _di = ((d.indexable) && (sd->is_selected) && (NixGetKey(hui::KEY_I)));
 				if ((!d.drawable) && (!_di))
 					continue;
 				vector p = project(sd->pos);
@@ -300,7 +300,7 @@ void Window::draw()
 	ed->drawStr(dest.x1 + 3, dest.y1, view_kind);
 	NixSetColor(multi_view->ColorText);
 
-	foreach(MultiViewImpl::Message3d &m, impl->message3d){
+	for (MultiViewImpl::Message3d &m: impl->message3d){
 		vector p = project(m.pos);
 		if (p.z > 0)
 			ed->drawStr(p.x, p.y, m.str);

@@ -19,7 +19,7 @@ public:
 	virtual void onDrawWin(MultiView::Window *win);
 	void abort();
 	string message;
-	HuiWindow *dialog;
+	hui::Window *dialog;
 };
 
 template<class T>

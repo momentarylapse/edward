@@ -9,7 +9,7 @@
 //--------------------------------------------------------------
 // cool string class
 
-class string : public DynamicArray
+class string : public Array<char>
 {
 	public:
 
@@ -51,6 +51,7 @@ class string : public DynamicArray
 	Array<int> utf8_to_utf32() const;
 	Array<int> utf16_to_utf32() const;
 	int _cdecl hash() const;
+	string _cdecl md5() const;
 	int _cdecl _int() const;
 	long long _cdecl i64() const;
 	float _cdecl _float() const;
@@ -71,7 +72,7 @@ class string : public DynamicArray
 	//{	printf("= assign %p = %p", data, s.data);	assign(&s);	printf(" /=  '%s\n", c_str());}
 	{	assign(&s);	}
 	void _cdecl operator += (const string &s)
-	{	append(&s);	}
+	{	DynamicArray::append(&s);	}
 	string _cdecl operator + (const string &s) const
 	{	string r = *this;	r += s;	return r;	}
 	friend string _cdecl operator + (const char *s1, const string &s2)
@@ -139,6 +140,16 @@ string _cdecl h2d(const string &hex_str, int bytes);
 
 string _cdecl implode(const Array<string> &a, const string &glue);
 string _cdecl utf32_to_utf8(const Array<int> &s);
+
+
+
+string _cdecl str_unescape(const string &str);
+string _cdecl str_escape(const string &str);
+
+string _cdecl str_m_to_utf8(const string &str);
+string _cdecl str_utf8_to_m(const string &str);
+
+bool _cdecl sa_contains(Array<string> &a, const string &s);
 
 //--------------------------------------------------------------
 // regular expressions

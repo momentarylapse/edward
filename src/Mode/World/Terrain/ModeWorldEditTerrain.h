@@ -13,7 +13,7 @@
 #include "../../../Data/World/DataWorld.h"
 #include "../../../lib/hui/hui.h"
 
-class ModeWorldEditTerrain: public ModeCreation<DataWorld>, public HuiEventHandler
+class ModeWorldEditTerrain: public ModeCreation<DataWorld>, public hui::EventHandler
 {
 public:
 	ModeWorldEditTerrain(ModeBase *_parent);

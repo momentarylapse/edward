@@ -9,8 +9,8 @@
 #define LIGHTMAPPHOTONMAP_H_
 
 #include "Lightmap.h"
-#include "../../../lib/threads/threads.h"
-#include "../../../lib/threads/work.h"
+#include "../../../lib/threads/Thread.h"
+#include "../../../lib/threads/ThreadedWork.h"
 
 #define MAX_PM_HITS			8
 
