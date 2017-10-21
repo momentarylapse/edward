@@ -15,8 +15,10 @@
 #include "../lib/math/math.h"
 #include "../meta.h"
 class Model;
-class NixTexture;
-class NixShader;
+namespace nix{
+	class Texture;
+	class Shader;
+};
 
 struct CamPoint
 {
@@ -56,8 +58,8 @@ public:
 
 	bool enabled;
 	bool show;
-	NixTexture *output, *input;
-	NixShader *shader;
+	nix::Texture *output, *input;
+	nix::Shader *shader;
 	bool shaded_displays;
 	float scale_x;
 
@@ -99,8 +101,8 @@ void CameraReset();
 void CameraCalcMove();
 void CameraShiftAll(const vector &dpos);
 
-extern Array<Camera*> Cameras;
-extern Camera *Cam; // "camera"
+extern Array<Camera*> cameras;
+extern Camera *cam; // "camera"
 extern Camera *cur_cam; // currently rendering
 
 #endif

@@ -166,7 +166,7 @@ void ModelPolygon::updateTriangulation(const Array<ModelVertex> &vertex)
 	triangulation_dirty = false;
 }
 
-void ModelPolygon::addToVertexBuffer(const Array<ModelVertex> &vertex, NixVertexBuffer *buffer, int num_textures)
+void ModelPolygon::addToVertexBuffer(const Array<ModelVertex> &vertex, nix::VertexBuffer *buffer, int num_textures)
 {
 	if (triangulation_dirty)
 		updateTriangulation(vertex);

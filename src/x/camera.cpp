@@ -23,13 +23,15 @@
 
 
 
-Array<Camera*> Cameras;
-Camera *Cam; // "camera"
+Array<Camera*> cameras;
+Camera *cam; // "camera"
 Camera *cur_cam; // currently rendering
 
 void ExecuteCamPoint(Camera *cam);
 
-extern matrix NixViewMatrix, NixProjectionMatrix;
+namespace nix{
+extern matrix view_matrix, projection_matrix;
+}
 
 
 void CameraInit()
@@ -40,11 +42,11 @@ void CameraInit()
 void CameraReset()
 {
 	msg_db_f("CameraReset",1);
-	xcon_del(Cameras);
+	xcon_del(cameras);
 
 	// create the main-view ("cam")
-	Cam = new Camera(v_0, q_id, r_id);
-	cur_cam = Cam;
+	cam = new Camera(v_0, q_id, r_id);
+	cur_cam = cam;
 }
 
 void Camera::reset()
@@ -89,7 +91,7 @@ void Camera::reset()
 
 Camera::Camera()
 {
-	this->reset();
+	reset();
 	enabled = true;
 	show = true;
 	auto_over = -1;
@@ -97,7 +99,7 @@ Camera::Camera()
 	jump_to_pos = false;
 
 	// register
-	xcon_reg(this, Cameras);
+	xcon_reg(this, cameras);
 }
 
 Camera::Camera(const vector &_pos, const quaternion &_ang, const rect &_dest)
@@ -111,7 +113,7 @@ Camera::Camera(const vector &_pos, const quaternion &_ang, const rect &_dest)
 Camera::~Camera()
 {
 	// unregister
-	xcon_unreg(this, Cameras);
+	xcon_unreg(this, cameras);
 }
 
 
@@ -129,9 +131,9 @@ void Camera::__delete__()
 {
 	//this->~Camera();
 	// unregister
-	for (int i=0;i<Cameras.num;i++)
-		if (Cameras[i] == this)
-			Cameras.erase(i);
+	for (int i=0;i<cameras.num;i++)
+		if (cameras[i] == this)
+			cameras.erase(i);
 }
 
 void SetAim(Camera *view,vector &pos,vector &vel,vector &ang,float time,bool real_time)
@@ -408,7 +410,7 @@ void CameraCalcMove()
 {
 	msg_db_f("CamCalcMove",2);
 
-	for(Camera *v: Cameras){
+	for(Camera *v: cameras){
 		if (!v->enabled)
 			continue;
 		v->OnIterate();
@@ -421,10 +423,10 @@ void Camera::Start()
 	if (output){
 		output->start_render();
 	}else{
-		NixScissor(rect((float)MaxX * dest.x1,
-					(float)MaxX * dest.x2,
-					(float)MaxY * dest.y1,
-					(float)MaxY * dest.y2));
+		nix::Scissor(rect((float)nix::target_width * dest.x1,
+					(float)nix::target_width * dest.x2,
+					(float)nix::target_height * dest.y1,
+					(float)nix::target_height * dest.y2));
 	}
 }
 
@@ -437,22 +439,22 @@ void Camera::SetView()
 	view_pos = pos;
 	
 	for (int i=0;i<num_used_clipping_planes;i++)
-		NixEnableClipPlane(i, false);
+		nix::EnableClipPlane(i, false);
 
 	// View-Transformation setzen (Kamera)
-	float center_x = (float)MaxX * (dest.x1 + dest.x2) / 2;
-	float center_y = (float)MaxY * (dest.y1 + dest.y2) / 2;
-	float height = (float)MaxY * (dest.y2 - dest.y1) / zoom;
-	NixSetProjectionPerspectiveExt(center_x, center_y, height * scale_x, height, min_depth, max_depth);
-	NixSetView(view_pos, ang.get_angles());
+	float center_x = (float)nix::target_width * (dest.x1 + dest.x2) / 2;
+	float center_y = (float)nix::target_height * (dest.y1 + dest.y2) / 2;
+	float height = (float)nix::target_height * (dest.y2 - dest.y1) / zoom;
+	nix::SetProjectionPerspectiveExt(center_x, center_y, height * scale_x, height, min_depth, max_depth);
+	nix::SetViewPosAng(view_pos, ang);
 	
-	m_all = NixProjectionMatrix * NixViewMatrix;
+	m_all = nix::projection_matrix * nix::view_matrix;
 	MatrixInverse(im_all, m_all);
 
 	// clipping planes
 	for (int i=0;i<clipping_plane.num;i++){
-		NixSetClipPlane(i, clipping_plane[i]);
-		NixEnableClipPlane(i, true);
+		nix::SetClipPlane(i, clipping_plane[i]);
+		nix::EnableClipPlane(i, true);
 	}
 	/*for (int i=ClippingPlane.num;i<num_used_clipping_planes;i++)
 		NixEnableClipPlane(i, false);*/
@@ -466,13 +468,13 @@ void Camera::SetViewLocal()
 	view_pos = pos;
 
 	// View-Transformation setzen (Kamera)
-	float center_x = (float)MaxX * (dest.x1 + dest.x2) / 2;
-	float center_y = (float)MaxY * (dest.y1 + dest.y2) / 2;
-	float height = (float)MaxY * (dest.y2 - dest.y1) / zoom;
-	NixSetProjectionPerspectiveExt(center_x, center_y, height * scale_x, height, 0.01f, 1000000.0f);
-	NixSetView(v_0, ang.get_angles());
+	float center_x = (float)nix::target_width * (dest.x1 + dest.x2) / 2;
+	float center_y = (float)nix::target_height * (dest.y1 + dest.y2) / 2;
+	float height = (float)nix::target_height * (dest.y2 - dest.y1) / zoom;
+	nix::SetProjectionPerspectiveExt(center_x, center_y, height * scale_x, height, 0.01f, 1000000.0f);
+	nix::SetViewPosAng(v_0, ang);
 	
-	m_all = NixProjectionMatrix * NixViewMatrix;
+	m_all = nix::projection_matrix * nix::view_matrix;
 	MatrixInverse(im_all, m_all);
 }
 
@@ -501,7 +503,7 @@ vector Camera::Unproject(const vector &v)
 
 void CameraShiftAll(const vector &dpos)
 {
-	for (Camera *c: Cameras)
+	for (Camera *c: cameras)
 		c->pos += dpos;
 }
 

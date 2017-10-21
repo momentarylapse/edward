@@ -40,9 +40,6 @@ void MaterialReset()
 Material::Material()
 {
 	// default values
-	num_textures = 0;
-	for (int i=0;i<MATERIAL_MAX_TEXTURES;i++)
-		texture[i] = NULL;
 	cube_map = NULL;
 	shader = NULL;
 
@@ -76,32 +73,32 @@ static bool _shader_prog_used_ = false;
 
 void Material::apply()
 {
-	NixSetMaterial(ambient, diffuse, specular, shininess, emission);
+	nix::SetMaterial(ambient, diffuse, specular, shininess, emission);
 	if ((shader >= 0) || (_shader_prog_used_)){
-		NixSetShader(shader);
+		nix::SetShader(shader);
 		_shader_prog_used_ = (shader >= 0);
 	}
 
 	if (transparency_mode > 0){
 		if (transparency_mode == TransparencyModeFunctions)
-			NixSetAlpha(alpha_source, alpha_destination);
+			nix::SetAlpha(alpha_source, alpha_destination);
 		else if (transparency_mode == TransparencyModeFactor)
-			NixSetAlpha(alpha_factor);
+			nix::SetAlpha(alpha_factor);
 		else if (transparency_mode == TransparencyModeColorKeyHard)
-			NixSetAlpha(AlphaColorKeyHard);
+			nix::SetAlpha(AlphaColorKeyHard);
 		else if (transparency_mode == TransparencyModeColorKeySmooth)
-			NixSetAlpha(AlphaColorKeySmooth);
+			nix::SetAlpha(AlphaColorKeySmooth);
 		_alpha_enabled_ = true;
 	}else if (_alpha_enabled_){
-		NixSetAlpha(AlphaNone);
+		nix::SetAlpha(AlphaNone);
 		_alpha_enabled_ = false;
 	}
 	if (cube_map){
-		// evil hack
-		texture[3] = cube_map;
-		NixSetTextures(texture, 4);
+		Array<nix::Texture*> tex = textures;
+		tex.add(cube_map);
+		nix::SetTextures(tex);
 	}else
-		NixSetTextures(texture, num_textures);
+		nix::SetTextures(textures);
 }
 
 void Material::copy_from(Model *model, Material *m2, bool user_colors)
@@ -113,12 +110,12 @@ void Material::copy_from(Model *model, Material *m2, bool user_colors)
 		emission = m2->emission;
 		shininess = m2->shininess;
 	}
-	int nt = num_textures;
-	if (nt > m2->num_textures)
-		nt = m2->num_textures;
+	int nt = textures.num;
+	if (nt > m2->textures.num)
+		nt = m2->textures.num;
 	for (int i=0;i<nt;i++)
-		if (!texture[i])
-			texture[i] = m2->texture[i];
+		if (!textures[i])
+			textures[i] = m2->textures[i];
 	if (transparency_mode == TransparencyModeDefault){
 		transparency_mode = m2->transparency_mode;
 		alpha_source = m2->alpha_source;
@@ -167,9 +164,10 @@ Material *LoadMaterial(const string &filename, bool as_default)
 		m->name = filename;
 		// Textures
 		f->ReadComment();
-		m->num_textures = f->ReadInt();
-		for (int i=0;i<m->num_textures;i++)
-			m->texture[i] = NixLoadTexture(f->ReadStr());
+		int nt = f->ReadInt();
+		m->textures.resize(nt);
+		for (int i=0;i<nt;i++)
+			m->textures[i] = nix::LoadTexture(f->ReadStr());
 		// Colors
 		f->ReadComment();
 		m->ambient = file_read_color4i(f);
@@ -197,21 +195,21 @@ Material *LoadMaterial(const string &filename, bool as_default)
 		m->reflection_mode = f->ReadInt();
 		m->reflection_density = float(f->ReadInt()) * 0.01f;
 		m->cube_map_size = f->ReadInt();
-		NixTexture *cmt[6];
+		nix::Texture *cmt[6];
 		for (int i=0;i<6;i++)
-			cmt[i] = NixLoadTexture(f->ReadStr());
+			cmt[i] = nix::LoadTexture(f->ReadStr());
 		if (m->reflection_mode == ReflectionCubeMapDynamical){
 			//m->cube_map = FxCubeMapNew(m->cube_map_size);
 			//FxCubeMapCreate(m->cube_map,cmt[0],cmt[1],cmt[2],cmt[3],cmt[4],cmt[5]);
 		}else if (m->reflection_mode == ReflectionCubeMapStatic){
-			m->cube_map = new NixCubeMap(m->cube_map_size);
+			m->cube_map = new nix::CubeMap(m->cube_map_size);
 			for (int i=0;i<6;i++)
 				m->cube_map->fill_cube_map(i, cmt[i]);
 		}
 		// ShaderFile
 		f->ReadComment();
 		string ShaderFile = f->ReadStr();
-		m->shader = NixLoadShader(ShaderFile);
+		m->shader = nix::LoadShader(ShaderFile);
 		// Physics
 		f->ReadComment();
 		m->rc_jump = (float)f->ReadInt() * 0.001f;

@@ -11,7 +11,9 @@
 
 #include "../lib/math/math.h"
 
-class NixTexture;
+namespace nix{
+	class Texture;
+};
 
 namespace MultiView{
 
@@ -29,7 +31,7 @@ public:
 	void onMouseMove();
 	void updateRects();
 
-	void draw_icon(const rect &r, NixTexture *tex, bool active);
+	void draw_icon(const rect &r, nix::Texture *tex, bool active);
 	void draw();
 	bool inUse();
 
@@ -38,8 +40,8 @@ public:
 	rect r, r_move, r_rotate, r_zoom;
 	rect r2, r_show;
 	MultiViewImpl *impl;
-	NixTexture *tex_bg;
-	NixTexture *tex_move, *tex_rotate, *tex_zoom;
+	nix::Texture *tex_bg;
+	nix::Texture *tex_move, *tex_rotate, *tex_zoom;
 };
 
 };

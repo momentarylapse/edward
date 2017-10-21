@@ -15,7 +15,9 @@ class ModelVertex;
 class ModelPolygon;
 class vector;
 class matrix;
-class NixVertexBuffer;
+namespace nix{
+	class VertexBuffer;
+};
 namespace MultiView{
 	class Window;
 };
@@ -51,7 +53,7 @@ public:
 	void getBoundingBox(vector &min, vector &max);
 	bool isMouseOver(MultiView::Window *win, vector &tp);
 
-	void preview(NixVertexBuffer *vb, int num_textures = 1) const;
+	void preview(nix::VertexBuffer *vb, int num_textures = 1) const;
 
 	Array<ModelVertex> vertex;
 	Array<ModelPolygon> polygon;

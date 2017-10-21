@@ -201,7 +201,7 @@ void Geometry::weld(float epsilon)
 				vertex.erase(j);
 
 				// relink polygons
-				foreach(ModelPolygon &p, polygon)
+				for (ModelPolygon &p: polygon)
 					for (int k=0; k<p.side.num; k++){
 						if (p.side[k].vertex == j)
 							p.side[k].vertex = i;
@@ -221,7 +221,7 @@ void Geometry::smoothen()
 	n.resize(vertex.num);
 
 	// sum all normals (per vertex)
-	foreach(ModelPolygon &p, polygon){
+	for (ModelPolygon &p: polygon){
 		for (int k=0;k<p.side.num;k++)
 			n[p.side[k].vertex] += p.temp_normal;
 	}
@@ -231,7 +231,7 @@ void Geometry::smoothen()
 		n[i].normalize();
 
 	// apply
-	foreach(ModelPolygon &p, polygon){
+	for (ModelPolygon &p: polygon){
 		for (int k=0;k<p.side.num;k++)
 			p.side[k].normal = n[p.side[k].vertex];
 	}
@@ -239,10 +239,10 @@ void Geometry::smoothen()
 
 void Geometry::transform(const matrix &mat)
 {
-	foreach(ModelVertex &v, vertex)
+	for (ModelVertex &v: vertex)
 		v.pos = mat * v.pos;
 	matrix mat2 = mat * (float)pow(mat.determinant(), - 1.0f / 3.0f);
-	foreach(ModelPolygon &p, polygon){
+	for (ModelPolygon &p: polygon){
 		p.temp_normal = mat2.transform_normal(p.temp_normal);
 		for (int k=0;k<p.side.num;k++)
 			p.side[k].normal = mat2.transform_normal(p.side[k].normal);
@@ -253,7 +253,7 @@ void Geometry::getBoundingBox(vector &min, vector &max)
 {
 	if (vertex.num > 0){
 		min = max = vertex[0].pos;
-		foreach(ModelVertex &v, vertex){
+		for (ModelVertex &v: vertex){
 			min._min(v.pos);
 			max._max(v.pos);
 		}
@@ -262,10 +262,10 @@ void Geometry::getBoundingBox(vector &min, vector &max)
 	}
 }
 
-void Geometry::preview(NixVertexBuffer *vb, int num_textures) const
+void Geometry::preview(nix::VertexBuffer *vb, int num_textures) const
 {
 	vb->clear();
-	foreach(ModelPolygon &p, const_cast<Array<ModelPolygon>&>(polygon)){
+	for (ModelPolygon &p: const_cast<Array<ModelPolygon>&>(polygon)){
 		p.triangulation_dirty = true;
 		p.addToVertexBuffer(vertex, vb, num_textures);
 	}
@@ -324,7 +324,7 @@ void Geometry::updateTopology()
 	}
 	// closed?
 	is_closed = true;
-	foreach(ModelEdge &e, edge)
+	for (ModelEdge &e: edge)
 		if (e.ref_count != 2){
 			is_closed = false;
 			break;
@@ -336,7 +336,7 @@ bool Geometry::isInside(const vector &p) const
 	// how often does a ray from p intersect the surface?
 	int n = 0;
 	Array<vector> v;
-	foreach(ModelPolygon &t, *(Array<ModelPolygon>*)(&polygon)){
+	for (ModelPolygon &t: *(Array<ModelPolygon>*)(&polygon)){
 
 		// plane test
 		if (((p - vertex[t.side[0].vertex].pos) * t.temp_normal > 0) == (t.temp_normal.x > 0))
@@ -382,22 +382,22 @@ bool Geometry::isInside(const vector &p) const
 
 void Geometry::invert()
 {
-	foreach(ModelPolygon &p, polygon)
+	for (ModelPolygon &p: polygon)
 		p.invert();
 }
 
 void Geometry::removeUnusedVertices()
 {
-	foreach(ModelVertex &v, vertex)
+	for (ModelVertex &v: vertex)
 		v.ref_count = 0;
-	foreach(ModelPolygon &p, polygon)
+	for (ModelPolygon &p: polygon)
 		for (int i=0;i<p.side.num;i++)
 			vertex[p.side[i].vertex].ref_count ++;
 	foreachib(ModelVertex &v, vertex, vi)
 		if (v.ref_count == 0){
 			vertex.erase(vi);
 			// correct vertex indices
-			foreach(ModelPolygon &p, polygon)
+			for (ModelPolygon &p: polygon)
 				for (int i=0;i<p.side.num;i++)
 					if (p.side[i].vertex > vi)
 						p.side[i].vertex --;
@@ -406,7 +406,7 @@ void Geometry::removeUnusedVertices()
 
 bool Geometry::isMouseOver(MultiView::Window *win, vector &tp)
 {
-	foreach(ModelPolygon &p, polygon){
+	for (ModelPolygon &p: polygon){
 		// care for the sense of rotation?
 		if (p.temp_normal * win->getDirection() > 0)
 			continue;

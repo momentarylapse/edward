@@ -89,7 +89,7 @@ void WinTrySendByKeyCode(Window *win, int key_code)
 		}
 }
 
-gboolean OnGtkWindowClose(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+static gboolean on_gtk_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
 	Window *win = (Window *)user_data;
 	Event e = Event("", "hui:close");
@@ -99,7 +99,7 @@ gboolean OnGtkWindowClose(GtkWidget *widget, GdkEvent *event, gpointer user_data
 	return true;
 }
 
-gboolean OnGtkWindowFocus(GtkWidget *widget, GdkEventFocus *event, gpointer user_data)
+static gboolean on_gtk_window_focus(GtkWidget *widget, GdkEventFocus *event, gpointer user_data)
 {
 	Window *win = (Window *)user_data;
 	// make sure the contro/alt/shift keys are unset
@@ -110,6 +110,13 @@ gboolean OnGtkWindowFocus(GtkWidget *widget, GdkEventFocus *event, gpointer user
 	win->input.key[KEY_RCONTROL] = win->input.key[KEY_LCONTROL] = false;
 	win->input.key[KEY_RALT] = win->input.key[KEY_LALT] = false;*/
 	return false;
+}
+
+static void on_gtk_window_resize(GtkWidget *widget, gpointer user_data)
+{
+	Window *win = (Window *)user_data;
+	Event e = Event("", "hui:resize");
+	win->_send_event_(&e);
 }
 
 
@@ -187,8 +194,9 @@ void Window::_init_(const string &title, int x, int y, int width, int height, Wi
 		gtk_window_set_icon_from_file(GTK_WINDOW(window), sys_str_f(logo), NULL);
 
 	// catch signals
-	g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(&OnGtkWindowClose), this);
-	g_signal_connect(G_OBJECT(window), "focus-in-event", G_CALLBACK(&OnGtkWindowFocus), this);
+	g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(&on_gtk_window_close), this);
+	g_signal_connect(G_OBJECT(window), "focus-in-event", G_CALLBACK(&on_gtk_window_focus), this);
+	//g_signal_connect(G_OBJECT(window), "state-flags-changed", G_CALLBACK(&on_gtk_window_resize), this);
 
 	// fill in some stuff
 	gtk_container_set_border_width(GTK_CONTAINER(window), 0);
@@ -285,12 +293,11 @@ bool Window::gotDestroyed()
 // should be called after creating (and filling) the window to actually show it
 void Window::show()
 {
+	allow_input = true;
 	gtk_widget_show(window);
 #ifdef OS_WINDOWS
 	hWnd = (HWND)GDK_WINDOW_HWND(gtk_widget_get_window(window));
 #endif
-
-	allow_input = true;
 }
 
 void Window::run()

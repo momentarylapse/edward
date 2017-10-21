@@ -10,7 +10,9 @@
 
 class DataModel;
 class ModelVertex;
-class NixVertexBuffer;
+namespace nix{
+	class VertexBuffer;
+};
 
 #include "../../x/material.h"
 #include "../../MultiView/SingleData.h"
@@ -45,7 +47,7 @@ public:
 	Array<int> getVertices() const;
 	Array<vector> getSkinVertices() const;
 	void invert();
-	void addToVertexBuffer(const Array<ModelVertex> &vertex, NixVertexBuffer *vb, int num_textures);
+	void addToVertexBuffer(const Array<ModelVertex> &vertex, nix::VertexBuffer *vb, int num_textures);
 };
 
 

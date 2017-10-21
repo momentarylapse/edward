@@ -256,26 +256,26 @@ void ActionController::draw(Window *win)
 {
 	if (!visible)
 		return;
-	NixSetZ(false, false);
-	NixEnableLighting(true);
-	NixSetWorldMatrix(m_id);
+	nix::SetZ(false, false);
+	nix::EnableLighting(true);
+	nix::SetWorldMatrix(m_id);
 	if (!inUse()){
 		foreachi(Geometry *g, geo_show, i){
-			g->preview(VBTemp);
-			NixSetMaterial(Black, Black, Black, 0, MVACColor[i]);
-			NixDraw3D(VBTemp);
+			g->preview(nix::vb_temp);
+			nix::SetMaterial(Black, Black, Black, 0, MVACColor[i]);
+			nix::Draw3D(nix::vb_temp);
 		}
 	}
 	if (mouse_over_geo >= 0){
-		NixSetAlpha(AlphaMaterial);
-		NixSetMaterial(Black, color(0.8f, 0, 0, 0), Black, 0, White);
-		geo_show[mouse_over_geo]->preview(VBTemp);
-		NixDraw3D(VBTemp);
+		nix::SetAlpha(AlphaMaterial);
+		nix::SetMaterial(Black, color(0.8f, 0, 0, 0), Black, 0, White);
+		geo_show[mouse_over_geo]->preview(nix::vb_temp);
+		nix::Draw3D(nix::vb_temp);
 	}
-	NixSetZ(false, false);
-	NixEnableLighting(false);
-	NixSetAlpha(AlphaNone);
-	NixSetMaterial(White, White, Black, 0, Black);
+	nix::SetZ(false, false);
+	nix::EnableLighting(false);
+	nix::SetAlpha(AlphaNone);
+	nix::SetMaterial(White, White, Black, 0, Black);
 	/*NixSetColor(Red);
 	vector p = win->Project(pos);
 	NixDrawRect(p.x-15, p.x+15, p.y-15, p.y+15, 0);*/

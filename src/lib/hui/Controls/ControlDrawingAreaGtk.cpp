@@ -20,6 +20,9 @@ namespace hui
 int GtkAreaMouseSet = -1;
 int GtkAreaMouseSetX, GtkAreaMouseSetY;
 
+static ControlDrawingArea *NixGlArea = NULL;
+GdkGLContext *gtk_gl_context = NULL;
+
 gboolean OnGtkAreaDraw(GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
 	reinterpret_cast<ControlDrawingArea*>(user_data)->cur_cairo = cr;
@@ -27,13 +30,29 @@ gboolean OnGtkAreaDraw(GtkWidget *widget, cairo_t *cr, gpointer user_data)
 	return false;
 }
 
-gboolean OnGtkGLAreaDraw(GtkGLArea *widget, GdkGLContext *context)
+gboolean OnGtkGLAreaRender(GtkGLArea *area, GdkGLContext *context)
 {
-	glClearColor(0, 0, 0, 0);
-	glClear(GL_COLOR_BUFFER_BIT);
-	//reinterpret_cast<ControlDrawingArea*>(user_data)->cur_cairo = cr;
-	//reinterpret_cast<Control*>(user_data)->notify("hui:draw-gl");
+	//glClearColor(0, 0, 1, 0);
+	//glClear(GL_COLOR_BUFFER_BIT);
+	//printf("render...\n");
+
+	gtk_gl_context = context;
+	NixGlArea->notify("hui:draw-gl");
 	return false;
+}
+
+void OnGtkGLAreaRealize(GtkGLArea *area)
+{
+	//printf("realize...\n");
+	gtk_gl_area_make_current(area);
+	if (gtk_gl_area_get_error(area) != NULL){
+		printf("realize: gl area make current error...\n");
+		return;
+	}
+	//glClearColor(0, 0, 1, 0);
+	//glClear(GL_COLOR_BUFFER_BIT);
+
+	NixGlArea->notify("hui:realize-gl");
 }
 
 /*void OnGtkAreaResize(GtkWidget *widget, GtkRequisition *requisition, gpointer user_data)
@@ -232,8 +251,13 @@ ControlDrawingArea::ControlDrawingArea(const string &title, const string &id) :
 	is_opengl = (OptionString.find("opengl") >= 0);
 	GtkWidget *da;
 	if (is_opengl){
+		NixGlArea = this;
 		da = gtk_gl_area_new();
-		g_signal_connect(G_OBJECT(da), "render", G_CALLBACK(OnGtkGLAreaDraw), this);
+		gtk_gl_area_set_has_stencil_buffer(GTK_GL_AREA(da), true);
+		gtk_gl_area_set_has_depth_buffer(GTK_GL_AREA(da), true);
+		gtk_gl_area_attach_buffers(GTK_GL_AREA(da));
+		g_signal_connect(G_OBJECT(da), "realize", G_CALLBACK(OnGtkGLAreaRealize), this);
+		g_signal_connect(G_OBJECT(da), "render", G_CALLBACK(OnGtkGLAreaRender), this);
 	}else{
 		da = gtk_drawing_area_new();
 		g_signal_connect(G_OBJECT(da), "draw", G_CALLBACK(OnGtkAreaDraw), this);
@@ -270,6 +294,12 @@ ControlDrawingArea::ControlDrawingArea(const string &title, const string &id) :
 	setOptions(OptionString);
 
 	cur_cairo = NULL;
+}
+
+void ControlDrawingArea::make_current()
+{
+	if (is_opengl)
+		gtk_gl_area_make_current(GTK_GL_AREA(widget));
 }
 
 };

@@ -14,7 +14,9 @@
 #include "material.h"
 class Material;
 class TraceData;
-class NixVertexBuffer;
+namespace nix{
+	class VertexBuffer;
+};
 
 enum{
 	TerrainTypeContingous,
@@ -73,7 +75,7 @@ public:
 	Array<float> height;
 	Array<vector> vertex, normal;
 	Array<plane> pl; // for collision detection
-	NixVertexBuffer *vertex_buffer;
+	nix::VertexBuffer *vertex_buffer;
 	int partition[128][128], partition_old[128][128];
 	vector pattern, min, max;
 	Material *material;

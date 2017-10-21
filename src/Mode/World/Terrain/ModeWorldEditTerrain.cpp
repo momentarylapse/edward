@@ -18,6 +18,8 @@ ModeWorldEditTerrain::ModeWorldEditTerrain(ModeBase* _parent) :
 {
 	brushing = false;
 	message = _("auf das Terrain malen");
+	base_depth = 1;
+	base_diameter = 1;
 }
 
 ModeWorldEditTerrain::~ModeWorldEditTerrain()
@@ -152,8 +154,8 @@ void ModeWorldEditTerrain::onDrawWin(MultiView::Window* win)
 	vector pos = multi_view->hover.point;
 	float radius = dialog->getFloat("diameter") / 2;
 
-	NixSetColor(Green);
-	NixEnableLighting(false);
+	nix::SetColor(Green);
+	nix::EnableLighting(false);
 	vector e1 = e_x;
 	vector e2 = e_z;
 	e1 *= radius;
@@ -161,6 +163,6 @@ void ModeWorldEditTerrain::onDrawWin(MultiView::Window* win)
 	for (int i=0;i<32;i++){
 		float w1 = i * 2 * pi / 32;
 		float w2 = (i + 1) * 2 * pi / 32;
-		NixDrawLine3D(pos + sin(w1) * e1 + cos(w1) * e2, pos + sin(w2) * e1 + cos(w2) * e2);
+		nix::DrawLine3D(pos + sin(w1) * e1 + cos(w1) * e2, pos + sin(w2) * e1 + cos(w2) * e2);
 	}
 }

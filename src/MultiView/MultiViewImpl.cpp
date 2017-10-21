@@ -18,10 +18,11 @@ namespace MultiView{
 
 
 #define update_zoom		\
-	if (mode3d) \
+	cam.zoom = 1000.0f / cam.radius;
+	/*if (mode3d) \
 		cam.zoom = ((float)NixScreenHeight / (whole_window ? 1.0f : 2.0f) / cam.radius); \
 	else \
-		cam.zoom = (float)NixScreenHeight * 0.8f / cam.radius;
+		cam.zoom = (float)NixScreenHeight * 0.8f / cam.radius;*/
 #define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 //#define MVGetSingleData(d, index)	( dynamic_cast<MultiViewSingleData*> ((char*)(d).data + (d).DataSingleSize * index))
 
@@ -206,7 +207,7 @@ void MultiViewImpl::camRotate(const vector &dir, bool cam_center)
 void MultiViewImpl::setViewBox(const vector &min, const vector &max)
 {
 	cam.pos = (min + max) / 2;
-	float r = (max - min).length_fuzzy() * 1.3f * ((float)NixScreenWidth / (float)NixTargetWidth);
+	float r = (max - min).length_fuzzy() * 1.3f;// * ((float)NixScreenWidth / (float)nix::target_width);
 	if (r > 0)
 		cam.radius = r;
 	update_zoom;
@@ -336,10 +337,10 @@ void MultiViewImpl::onKeyDown()
 
 int get_select_mode()
 {
-	if (NixGetKey(hui::KEY_CONTROL))
+	/*if (ed->GetKey(hui::KEY_CONTROL))
 		return MultiViewImpl::SELECT_ADD;
-	if (NixGetKey(hui::KEY_SHIFT))
-		return MultiViewImpl::SELECT_INVERT;
+	if (ed->GetKey(hui::KEY_SHIFT))
+		return MultiViewImpl::SELECT_INVERT;*/
 	return MultiViewImpl::SELECT_SET;
 }
 
@@ -479,13 +480,13 @@ void MultiViewImpl::updateMouse()
 		if (whole_window){
 			mouse_win = active_win;
 		}else{
-			if ((m.x<MaxX/2)&&(m.y<MaxY/2))
+			if ((m.x<nix::target_width/2)&&(m.y<nix::target_height/2))
 				mouse_win = win[0];
-			if ((m.x>MaxX/2)&&(m.y<MaxY/2))
+			if ((m.x>nix::target_width/2)&&(m.y<nix::target_height/2))
 				mouse_win = win[1];
-			if ((m.x<MaxX/2)&&(m.y>MaxY/2))
+			if ((m.x<nix::target_width/2)&&(m.y>nix::target_height/2))
 				mouse_win = win[2];
-			if ((m.x>MaxX/2)&&(m.y>MaxY/2))
+			if ((m.x>nix::target_width/2)&&(m.y>nix::target_height/2))
 				mouse_win = win[3];
 		}
 	}else{
@@ -510,7 +511,7 @@ void MultiViewImpl::onMouseMove()
 		int t = active_win->type;
 		if ((t == VIEW_PERSPECTIVE) or (t == VIEW_ISOMETRIC)){
 	// camera rotation
-			camRotate(v, mbut or (NixGetKey(hui::KEY_CONTROL)));
+			camRotate(v, mbut);// or (ed->GetKey(hui::KEY_CONTROL)));
 		}else{
 	// camera translation
 			camMove(v);
@@ -593,12 +594,12 @@ void MultiViewImpl::drawMousePos()
 	string sz = f2s(m.z,2) + " " + unit;
 
 	if (mouse_win->type == VIEW_2D){
-		ed->drawStr(MaxX, MaxY - 60, sx, Edward::ALIGN_RIGHT);
-		ed->drawStr(MaxX, MaxY - 40, sy, Edward::ALIGN_RIGHT);
+		ed->drawStr(nix::target_width, nix::target_height - 60, sx, Edward::ALIGN_RIGHT);
+		ed->drawStr(nix::target_width, nix::target_height - 40, sy, Edward::ALIGN_RIGHT);
 	}else{
-		ed->drawStr(MaxX, MaxY - 80, sx, Edward::ALIGN_RIGHT);
-		ed->drawStr(MaxX, MaxY - 60, sy, Edward::ALIGN_RIGHT);
-		ed->drawStr(MaxX, MaxY - 40, sz, Edward::ALIGN_RIGHT);
+		ed->drawStr(nix::target_width, nix::target_height - 80, sx, Edward::ALIGN_RIGHT);
+		ed->drawStr(nix::target_width, nix::target_height - 60, sy, Edward::ALIGN_RIGHT);
+		ed->drawStr(nix::target_width, nix::target_height - 40, sz, Edward::ALIGN_RIGHT);
 	}
 }
 
@@ -609,48 +610,48 @@ void MultiViewImpl::onDraw()
 
 	update_zoom;
 
-	NixSetZ(true,true);
-	NixSetColor(ColorText);
+	nix::SetZ(true,true);
+	nix::SetColor(ColorText);
 
 
 	if (!mode3d){
-		win[0]->dest = rect(0,MaxX,0,MaxY);
+		win[0]->dest = rect(0,nix::target_width,0,nix::target_height);
 		win[0]->draw();
 	}else if (whole_window){
-		active_win->dest = rect(0,MaxX,0,MaxY);
+		active_win->dest = rect(0,nix::target_width,0,nix::target_height);
 		active_win->draw();
 	}else{
 		// top left
-		win[0]->dest = rect(0,MaxX/2,0,MaxY/2);
+		win[0]->dest = rect(0,nix::target_width/2,0,nix::target_height/2);
 		win[0]->draw();
 
 		// top right
-		win[1]->dest = rect(MaxX/2,MaxX,0,MaxY/2);
+		win[1]->dest = rect(nix::target_width/2,nix::target_width,0,nix::target_height/2);
 		win[1]->draw();
 
 		// bottom left
-		win[2]->dest = rect(0,MaxX/2,MaxY/2,MaxY);
+		win[2]->dest = rect(0,nix::target_width/2,nix::target_height/2,nix::target_height);
 		win[2]->draw();
 
 		// bottom right
-		win[3]->dest = rect(MaxX/2,MaxX,MaxY/2,MaxY);
+		win[3]->dest = rect(nix::target_width/2,nix::target_width,nix::target_height/2,nix::target_height);
 		win[3]->draw();
 
-		NixScissor(NixTargetRect);
-		NixEnableLighting(false);
-		NixSetColor(ColorWindowSeparator);
-		NixDrawRect(0, MaxX, MaxY/2-1, MaxY/2+2, 0);
-		NixDrawRect(MaxX/2-1, MaxX/2+2, 0, MaxY, 0);
+		nix::Scissor(nix::target_rect);
+		nix::EnableLighting(false);
+		nix::SetColor(ColorWindowSeparator);
+		nix::DrawRect(0, nix::target_width, nix::target_height/2-1, nix::target_height/2+2, 0);
+		nix::DrawRect(nix::target_width/2-1, nix::target_width/2+2, 0, nix::target_height, 0);
 	}
 	cur_projection_win = NULL;
-	NixEnableLighting(false);
+	nix::EnableLighting(false);
 
 	if (sel_rect.active)
 		sel_rect.draw(m);
 
 	cam_con->draw();
 
-	NixSetColor(ColorText);
+	nix::SetColor(ColorText);
 
 	if (ed->input.inside_smart)
 		drawMousePos();
@@ -673,17 +674,17 @@ void MultiViewImpl::SelectionRect::end()
 
 void MultiViewImpl::SelectionRect::draw(const vector &m)
 {
-	NixSetZ(false, false);
-	NixSetAlphaM(AlphaMaterial);
-	NixSetColor(ColorSelectionRect);
-	NixDrawRect(m.x, pos0.x, m.y, pos0.y, 0);
-	NixSetColor(ColorSelectionRectBoundary);
-	NixDrawLineV(pos0.x	,pos0.y	,m.y	,0);
-	NixDrawLineV(m.x	,pos0.y	,m.y	,0);
-	NixDrawLineH(pos0.x	,m.x	,pos0.y	,0);
-	NixDrawLineH(pos0.x	,m.x	,m.y	,0);
-	NixSetAlphaM(AlphaNone);
-	NixSetZ(true, true);
+	nix::SetZ(false, false);
+	nix::SetAlphaM(AlphaMaterial);
+	nix::SetColor(ColorSelectionRect);
+	nix::DrawRect(m.x, pos0.x, m.y, pos0.y, 0);
+	nix::SetColor(ColorSelectionRectBoundary);
+	nix::DrawLineV(pos0.x	,pos0.y	,m.y	,0);
+	nix::DrawLineV(m.x	,pos0.y	,m.y	,0);
+	nix::DrawLineH(pos0.x	,m.x	,pos0.y	,0);
+	nix::DrawLineH(pos0.x	,m.x	,m.y	,0);
+	nix::SetAlphaM(AlphaNone);
+	nix::SetZ(true, true);
 }
 
 rect MultiViewImpl::SelectionRect::get(const vector &m)

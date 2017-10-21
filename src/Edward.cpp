@@ -279,9 +279,9 @@ Edward::Edward(Array<string> arg) :
 	if (!handleArguments(arg))
 		setMode(mode_welcome);
 
-	HuiSetIdleFunctionM(this, &Edward::idleFunction);
-	HuiRunLaterM(0.010f, this, &Edward::forceRedraw);
-	HuiRunLaterM(0.100f, this, &Edward::optimizeCurrentView);
+	hui::SetIdleFunction(std::bind(&Edward::idleFunction, this));
+	hui::RunLater(0.010f, std::bind(&Edward::forceRedraw, this));
+	hui::RunLater(0.100f, std::bind(&Edward::optimizeCurrentView, this));
 }
 
 Edward::~Edward()
@@ -292,13 +292,13 @@ Edward::~Edward()
 	// saving the configuration data...
 	int w, h;
 	getSizeDesired(w, h);
-	HuiConfig.setInt("Window.X", -1);//r.x1);
-	HuiConfig.setInt("Window.Y", -1);//r.y1);
-	HuiConfig.setInt("Window.Width", w);
-	HuiConfig.setInt("Window.Height", h);
-	HuiConfig.setBool("Window.Maximized", isMaximized());
-	HuiConfig.setStr("RootDir", root_dir);
-	HuiConfig.setStr("Language", HuiGetCurLanguage());
+	hui::Config.setInt("Window.X", -1);//r.x1);
+	hui::Config.setInt("Window.Y", -1);//r.y1);
+	hui::Config.setInt("Window.Width", w);
+	hui::Config.setInt("Window.Height", h);
+	hui::Config.setBool("Window.Maximized", isMaximized());
+	hui::Config.setStr("RootDir", root_dir);
+	hui::Config.setStr("Language", hui::GetCurLanguage());
 	/*HuiConfig.setBool("LocalDocumentation", LocalDocumentation);
 	HuiConfig.setStr("WorldScriptVarFile", WorldScriptVarFile);
 	HuiConfig.setStr("ObjectScriptVarFile", ObjectScriptVarFile);
@@ -392,7 +392,7 @@ bool Edward::handleArguments(Array<string> arg)
 		mode_model->importLoad3ds(param);
 	}else{
 		errorBox(_("Unbekannte Dateinamenerweiterung: ") + param);
-		HuiEnd();
+		app->end();
 	}
 	}
 	return true;
@@ -478,7 +478,7 @@ void Edward::onAbout()
 {	hui::AboutBox(this);	}
 
 void Edward::onSendBugReport()
-{	hui::SendBugReport();	}
+{}//	hui::SendBugReport();	}
 
 void Edward::onUpdate(Observable *o, const string &message)
 {
@@ -527,30 +527,30 @@ void Edward::forceRedraw()
 
 void Edward::drawStr(int x, int y, const string &str, AlignType a)
 {
-	int w = NixGetStrWidth(str);
+	int w = nix::GetStrWidth(str);
 	if (a == ALIGN_RIGHT)
 		x -= w;
 	else if (a == ALIGN_CENTER)
 		x -= w / 2;
-	NixSetAlpha(AlphaMaterial);
-	color c = NixGetColor();
-	NixSetColor(color(0.5f,0.8f,0.8f,0.8f));
-	NixDrawRect(float(x), float(x+w), float(y), float(y+20), 0);
-	NixSetColor(c);
-	NixSetAlpha(AlphaNone);
-	NixDrawStr(x, y, str);//SysStr(str));
+	nix::SetAlpha(AlphaMaterial);
+	color c = nix::GetColor();
+	nix::SetColor(color(0.5f,0.8f,0.8f,0.8f));
+	nix::DrawRect(float(x), float(x+w), float(y), float(y+20), 0);
+	nix::SetColor(c);
+	nix::SetAlpha(AlphaNone);
+	nix::DrawStr(x, y, str);//SysStr(str));
 }
 
 void Edward::onDraw()
 {
-	NixStart();
+	//NixStart();
 	cur_mode->onDrawMeta();
 
 	// messages
 	foreachi(string &m, message_str, i)
-		drawStr(MaxX / 2, MaxY / 2 - 20 - i * 20, m, ALIGN_CENTER);
+		drawStr(nix::target_width / 2, nix::target_height / 2 - 20 - i * 20, m, ALIGN_CENTER);
 
-	NixEnd();
+	//NixEnd();
 	force_redraw = false;
 }
 
@@ -559,16 +559,16 @@ void Edward::onDraw()
 void Edward::loadKeyCodes()
 {
 	msg_db_f("LoadKeyCodes", 1);
-	File *f = FileOpen(HuiAppDirectory + "Data/keys.txt");
+	File *f = FileOpen(app->directory + "Data/keys.txt");
 	if (!f)
-		f = FileOpen(HuiAppDirectoryStatic + "Data/keys.txt");
+		f = FileOpen(app->directory_static + "Data/keys.txt");
 	f->ReadComment();
 	int nk = f->ReadInt();
 	f->ReadComment();
 	for (int i=0;i<nk;i++){
 		string id = f->ReadStr();
 		int key_code = f->ReadInt();
-		HuiAddKeyCode(id, key_code);
+		hui::AddKeyCode(id, key_code);
 	}
 	HuiAddKeyCode("volume_subtract", KEY_CONTROL + KEY_J); // TODO ...
 	HuiAddKeyCode("invert_selection", KEY_CONTROL + KEY_TAB); // TODO ...
@@ -838,7 +838,7 @@ bool Edward::allowTermination()
 	return saved;
 }
 
-string Edward::get_tex_image(NixTexture *tex)
+string Edward::get_tex_image(nix::Texture *tex)
 {
 	if (icon_image.contains(tex))
 		return icon_image[tex];

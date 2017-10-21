@@ -8,6 +8,8 @@
 #include "nix.h"
 #include "nix_common.h"
 
+namespace nix{
+
 
 // light-sources
 /*enum{
@@ -26,25 +28,28 @@ struct sLight{
 
 Array<sLight> NixLight;*/
 
-bool NixLightingEnabled;
+Material material;
+Light lights[8];
+
+bool LightingEnabled;
 
 void TestGLError(const char*);
 
 
 // general ability of using lights
-void NixEnableLighting(bool Enabled)
+void EnableLighting(bool Enabled)
 {
 	TestGLError("EnableLighting prae");
-	NixLightingEnabled = Enabled;
-	if (Enabled)
+	LightingEnabled = Enabled;
+	/*if (Enabled)
 		glEnable(GL_LIGHTING);
 	else
 		glDisable(GL_LIGHTING);
-	TestGLError("EnableLighting");
+	TestGLError("EnableLighting");*/
 }
 
 // Punkt-Quelle
-void NixSetLightRadial(int index,const vector &pos,float radius,const color &ambient,const color &diffuse,const color &specular)
+void SetLightRadial(int index,const vector &pos,float radius,const color &ambient,const color &diffuse,const color &specular)
 {
 	if ((index < 0))// || (index > NixLight.num))
 		return;
@@ -53,7 +58,7 @@ void NixSetLightRadial(int index,const vector &pos,float radius,const color &amb
 	//if (OGLLightNo[index]<0)	return;
 	glPushMatrix();
 	//glLoadIdentity();
-	glLoadMatrixf((float*)&NixViewMatrix);
+	glLoadMatrixf((float*)&view_matrix);
 	float f[4];
 	f[0]=pos.x;	f[1]=pos.y;	f[2]=pos.z;	f[3]=1;
 	glLightfv(GL_LIGHT0+index,GL_POSITION,f); // GL_POSITION,(x,y,z,0)=directional,(x,y,z,1)=positional !!!
@@ -69,7 +74,7 @@ void NixSetLightRadial(int index,const vector &pos,float radius,const color &amb
 
 // parallele Quelle
 // dir =Richtung, in die das Licht scheinen soll
-void NixSetLightDirectional(int index,const vector &dir,const color &ambient,const color &diffuse,const color &specular)
+void SetLightDirectional(int index,const vector &dir,const color &ambient,const color &diffuse,const color &specular)
 {
 	if ((index < 0))// || (index > NixLight.num))
 		return;
@@ -79,7 +84,7 @@ void NixSetLightDirectional(int index,const vector &dir,const color &ambient,con
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	//glLoadIdentity();
-	glLoadMatrixf((float*)&NixViewMatrix);
+	glLoadMatrixf((float*)&view_matrix);
 	float f[4];
 	f[0]=dir.x;	f[1]=dir.y;	f[2]=dir.z;	f[3]=0;
 	glLightfv(GL_LIGHT0+index,GL_POSITION,f); // GL_POSITION,(x,y,z,0)=directional,(x,y,z,1)=positional !!!
@@ -90,26 +95,26 @@ void NixSetLightDirectional(int index,const vector &dir,const color &ambient,con
 	TestGLError("SetLightDir");
 }
 
-void NixEnableLight(int index,bool enabled)
+void EnableLight(int index,bool enabled)
 {
 	if ((index < 0))// || (index > NixLight.num))
 		return;
 	//NixLight[index].Enabled = enabled;
-	if (enabled)
+	/*if (enabled)
 		glEnable(GL_LIGHT0 + index);
 	else
-		glDisable(GL_LIGHT0 + index);
+		glDisable(GL_LIGHT0 + index);*/
 	TestGLError("EnableLight");
 }
 
-void NixSetAmbientLight(const color &c)
+void SetAmbientLight(const color &c)
 {
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT,(float*)&c);
+	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT,(float*)&c);
 	TestGLError("SetAmbient");
 }
 
 
-void NixSetShading(int mode)
+void SetShading(int mode)
 {
 	if (mode==ShadingPlane)
 		glShadeModel(GL_FLAT);
@@ -118,23 +123,22 @@ void NixSetShading(int mode)
 	TestGLError("SetShading");
 }
 
-void NixSetMaterial(const color &ambient,const color &diffuse,const color &specular,float shininess,const color &emission)
+void SetMaterial(const color &ambient,const color &diffuse,const color &specular,float shininess,const color &emission)
 {
-	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,(float*)&ambient);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,(float*)&diffuse);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,(float*)&specular);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,(float*)&shininess);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,(float*)&emission);
-	TestGLError("SetMat");
+	material.ambient = ambient;
+	material.diffusive = diffuse;
+	material.specular = specular;
+	material.shininess = shininess;
+	material.emission = emission;
 }
 
-void NixSpecularEnable(bool enabled)
+void SpecularEnable(bool enabled)
 {
 }
 
 
 
-void NixUpdateLights()
+void UpdateLights()
 {
 #if 0
 	// OpenGL muss Lichter neu ausrichten, weil sie in Kamera-Koordinaten gespeichert werden!
@@ -174,3 +178,5 @@ void NixUpdateLights()
 	TestGLError("UpdateLights");
 #endif
 }
+
+};

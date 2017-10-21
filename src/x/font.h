@@ -11,7 +11,9 @@
 #include "../lib/base/base.h"
 #include "../lib/math/math.h"
 
-class NixTexture;
+namespace nix{
+	class Texture;
+};
 
 namespace Gui
 {
@@ -26,7 +28,7 @@ class Font
 {
 public:
 	string filename;
-	NixTexture *texture;
+	nix::Texture *texture;
 	int unknown_glyph_no;
 	Glyph glyph[256];
 	float y_offset, height, x_factor, y_factor;

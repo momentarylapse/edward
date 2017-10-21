@@ -83,9 +83,9 @@ bool Terrain::Load(const string &_filename_, const vector &_pos_, bool deep)
 			if (deep){
 
 				// load textures
-				material->num_textures = num_textures;
+				material->textures.resize(num_textures);
 				for (int i=0;i<num_textures;i++)
-					material->texture[i] = NixLoadTexture(texture_file[i]);
+					material->textures[i] = nix::LoadTexture(texture_file[i]);
 
 				// material file
 				Material *material_from_file = LoadMaterial(material_file);
@@ -99,7 +99,7 @@ bool Terrain::Load(const string &_filename_, const vector &_pos_, bool deep)
 					for (int z=0;z<num_z/32+1;z++)
 						partition[x][z] = -1;
 
-				vertex_buffer = new NixVertexBuffer(num_textures);
+				vertex_buffer = new nix::VertexBuffer(num_textures);
 			}
 		}else{
 			msg_error(format("wrong file format: %d (4 expected)",ffv));
@@ -570,7 +570,7 @@ void Terrain::Draw()
 
 						// multitexturing
 						float ta[8],tb[8],tc[8],td[8];
-						for (int i=0;i<material->num_textures;i++){
+						for (int i=0;i<material->textures.num;i++){
 							ta[i*2]=(float) x   *texture_scale[i].x,	ta[i*2+1]=(float) z   *texture_scale[i].z;
 							tb[i*2]=(float)(x+e)*texture_scale[i].x,	tb[i*2+1]=(float) z   *texture_scale[i].z;
 							tc[i*2]=(float) x   *texture_scale[i].x,	tc[i*2+1]=(float)(z+e)*texture_scale[i].z;
@@ -578,7 +578,7 @@ void Terrain::Draw()
 						}
 
 						// add to buffer
-						if (material->num_textures==1){
+						if (material->textures.num==1){
 							vertex_buffer->addTria(va,na,ta[0],ta[1],
 													vc,nc,tc[0],tc[1],
 													vd,nd,td[0],td[1]);
@@ -604,14 +604,13 @@ void Terrain::Draw()
 	material->apply();
 
 	// the actual drawing
-	NixSetWorldMatrix(m_id);
-	vertex_buffer->draw();
+	nix::SetWorldMatrix(m_id);
+	nix::Draw3D(vertex_buffer);
 
 	pos_old = cur_cam->pos;
 	force_redraw = false;
 	for (int x=0;x<num_x/32;x++)
 		for (int z=0;z<num_z/32;z++)
 			partition_old[x][z]=partition[x][z];
-	NixSetShader(NULL);
 }
 

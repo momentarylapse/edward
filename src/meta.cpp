@@ -114,8 +114,8 @@ void MetaReset()
 
 void MetaSetDirs(const string &texture_dir, const string &map_dir, const string &object_dir, const string &sound_dir, const string &script_dir, const string &material_dir, const string &font_dir)
 {
-	NixTextureDir = texture_dir;
-	NixShaderDir = material_dir;
+	nix::texture_dir = texture_dir;
+	nix::shader_dir = material_dir;
 	MapDir = map_dir;
 	ObjectDir = object_dir;
 	SoundDir = sound_dir;

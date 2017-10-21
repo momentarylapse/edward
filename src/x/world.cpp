@@ -328,7 +328,7 @@ bool GodLoadWorldFromLevelData()
 
 	// set up light (sun and ambient)
 	World.ambient = LevelData.ambient;
-	NixSetAmbientLight(World.ambient);
+	nix::SetAmbientLight(World.ambient);
 
 #ifdef _X_ALLOW_X_
 	World.sun = new Light::Light;
@@ -1141,18 +1141,18 @@ void GodDraw()
 
 	// force fields ....(obsolete?!)
 #ifdef _X_ALLOW_X_
-	NixSetAlpha(AlphaSourceAlpha,AlphaOne);
-	NixSetCull(CullNone);
-	NixSetZ(false,true);
+	nix::SetAlpha(AlphaSourceAlpha,AlphaOne);
+	nix::SetCull(CULL_NONE);
+	nix::SetZ(false,true);
 	for (int i=0;i<World.NumForceFields;i++)
 		if (World.ForceField[i]->Visible){
 			color c=color(World.ForceField[i]->TimeToLife/4,1,1,1);
-			NixSetMaterial(c,c,Black,0,Black);
+			nix::SetMaterial(c,c,Black,0,Black);
 			//Fx::DrawBall(ForceField[i]->Pos,ForceField[i]->Radius,8,16);
 		}
-	NixSetZ(true,true);
-	NixSetCull(CullDefault);
-	NixSetAlpha(AlphaNone);
+	nix::SetZ(true,true);
+	nix::SetCull(CULL_DEFAULT);
+	nix::SetAlpha(AlphaNone);
 #endif
 }
 
@@ -1417,7 +1417,6 @@ inline void draw_pmv(Array<PartialModelView> &vp)
 		//m->Draw(0, m->_matrix, true, false);//p->shadow);
 		m->JustDraw(p->mat_index, vp[i].detail);
 	}
-	NixSetShader(NULL);
 }
 
 static int fill_frame = 100;
@@ -1450,9 +1449,9 @@ void GodDrawSorted()
 // non-transparent models
 	// overlapping each other
 	if (Engine.ZBufferEnabled)
-		NixSetZ(true,true);
+		nix::SetZ(true,true);
 	else
-		NixSetZ(false,false);
+		nix::SetZ(false,false);
 
 	// drawing
 	draw_pmv(cur_cam->pmvd.opaque);
@@ -1460,12 +1459,12 @@ void GodDrawSorted()
 //transparent models
 	// test but don't write
 	if (Engine.ZBufferEnabled)
-		NixSetZ(false,true);
+		nix::SetZ(false,true);
 
 	// drawing
 	draw_pmv(cur_cam->pmvd.trans);
 
 	
 	// reset the z buffer
-	NixSetZ(true,true);
+	nix::SetZ(true,true);
 }

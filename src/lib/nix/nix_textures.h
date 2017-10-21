@@ -10,14 +10,16 @@
 #ifndef _NIX_TEXTURES_EXISTS_
 #define _NIX_TEXTURES_EXISTS_
 
+namespace nix{
+
 // textures
-void NixTexturesInit();
-void NixReleaseTextures();
-void NixReincarnateTextures();
-void NixProgressTextureLifes();
+void TexturesInit();
+void ReleaseTextures();
+void ReincarnateTextures();
+void ProgressTextureLifes();
 
 
-class NixTexture
+class Texture
 {
 public:
 	string filename;
@@ -31,8 +33,8 @@ public:
 
 	Image icon;
 
-	NixTexture();
-	~NixTexture();
+	Texture();
+	~Texture();
 	void _cdecl __init__();
 	void _cdecl __delete__();
 
@@ -43,30 +45,32 @@ public:
 	void _cdecl video_move(float elapsed);
 	bool _cdecl start_render();
 	void _cdecl render_to_cube_map(vector &pos, callback_function *render_scene, int mask);
-	void _cdecl fill_cube_map(int side, NixTexture *source);
+	void _cdecl fill_cube_map(int side, Texture *source);
 };
 
-class NixDynamicTexture : public NixTexture
+class DynamicTexture : public Texture
 {
 public:
-	NixDynamicTexture(int width, int height);
+	DynamicTexture(int width, int height);
 	void _cdecl __init__(int width, int height);
 };
 
-class NixCubeMap : public NixTexture
+class CubeMap : public Texture
 {
 public:
-	NixCubeMap(int size);
+	CubeMap(int size);
 	void _cdecl __init__(int size);
 };
 
 
-NixTexture* _cdecl NixLoadTexture(const string &filename);
-void _cdecl NixSetTexture(NixTexture *texture);
-void _cdecl NixSetTextures(NixTexture **texture, int num_textures);
+Texture* _cdecl LoadTexture(const string &filename);
+void _cdecl SetTexture(Texture *texture);
+void _cdecl SetTextures(Array<Texture*> &textures);
 
-extern Array<NixTexture*> NixTextures;
+extern Array<Texture*> textures;
 
-extern int NixTextureIconSize;
+extern int texture_icon_size;
+
+};
 
 #endif

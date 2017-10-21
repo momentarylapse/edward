@@ -8,22 +8,23 @@
 #include "TerrainCreationDialog.h"
 #include "../../../Edward.h"
 
-TerrainCreationDialog::TerrainCreationDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
-	HuiWindow("new_terrain_dialog", _parent, _allow_parent),
+TerrainCreationDialog::TerrainCreationDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data) :
+	hui::Dialog("new_terrain_dialog", 400, 300, _parent, _allow_parent),
 	Observer("TerrainCreationDialog")
 {
+	fromResource("new_terrain_dialog");
 	data = _data;
 
-	event("cancel", this, &TerrainCreationDialog::OnClose);
-	event("hui:close", this, &TerrainCreationDialog::OnClose);
-	event("apply", this, &TerrainCreationDialog::ApplyData);
-	event("ok", this, &TerrainCreationDialog::OnOk);
+	event("cancel", std::bind(&TerrainCreationDialog::OnClose, this));
+	event("hui:close", std::bind(&TerrainCreationDialog::OnClose, this));
+	event("apply", std::bind(&TerrainCreationDialog::ApplyData, this));
+	event("ok", std::bind(&TerrainCreationDialog::OnOk, this));
 
-	event("height_image_find", this, &TerrainCreationDialog::OnFindHeightmap);
-	event("num_x", this, &TerrainCreationDialog::OnSizeChange);
-	event("num_y", this, &TerrainCreationDialog::OnSizeChange);
-	event("terrain_x", this, &TerrainCreationDialog::OnSizeChange);
-	event("terrain_y", this, &TerrainCreationDialog::OnSizeChange);
+	event("height_image_find", std::bind(&TerrainCreationDialog::OnFindHeightmap, this));
+	event("num_x", std::bind(&TerrainCreationDialog::OnSizeChange, this));
+	event("num_y", std::bind(&TerrainCreationDialog::OnSizeChange, this));
+	event("terrain_x", std::bind(&TerrainCreationDialog::OnSizeChange, this));
+	event("terrain_y", std::bind(&TerrainCreationDialog::OnSizeChange, this));
 
 	subscribe(data);
 

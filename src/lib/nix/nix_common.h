@@ -53,77 +53,36 @@
 #endif
 
 
+namespace nix{
 
-
-
-#ifdef OS_WINDOWS
-	// multitexturing
-	extern PFNGLACTIVETEXTUREPROC glActiveTexture;
-	extern PFNGLCLIENTACTIVETEXTUREPROC glClientActiveTexture;
-	// shader
-	extern PFNGLCREATESHADERPROC glCreateShader;
-	extern PFNGLSHADERSOURCEPROC glShaderSource;
-	extern PFNGLCOMPILESHADERPROC glCompileShader;
-	extern PFNGLATTACHSHADERPROC glAttachShader;
-	extern PFNGLGETSHADERIVPROC glGetShaderiv;
-	extern PFNGLGETSHADERINFOLOGPROC glGetShaderInfoLog;
-	extern PFNGLCREATEPROGRAMPROC glCreateProgram;
-	extern PFNGLLINKPROGRAMPROC glLinkProgram;
-	extern PFNGLUSEPROGRAMPROC glUseProgram;
-	extern PFNGLGETPROGRAMIVPROC glGetProgramiv;
-	extern PFNGLGETPROGRAMINFOLOGPROC glGetProgramInfoLog;
-	extern PFNGLDELETEPROGRAMPROC glDeleteProgram;
-	extern PFNGLDELETESHADERPROC glDeleteShader;
-	extern PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
-	extern PFNGLUNIFORM1FPROC glUniform1f;
-	extern PFNGLUNIFORM3FPROC glUniform3f;
-	extern PFNGLUNIFORM1IPROC glUniform1i;
-	// buffer
-	extern PFNGLGENBUFFERSPROC glGenBuffers;
-	extern PFNGLBINDBUFFERPROC glBindBuffer;
-	extern PFNGLBUFFERDATAPROC glBufferData;
-#endif
 extern bool OGLMultiTexturingSupport;
 extern bool OGLShaderSupport;
 extern bool OGLVertexBufferSupport;
 
-#ifdef OS_WINDOWS
-	extern PFNGLISRENDERBUFFEREXTPROC glIsRenderbufferEXT;
-	extern PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT;
-	extern PFNGLDELETERENDERBUFFERSEXTPROC glDeleteRenderbuffersEXT;
-	extern PFNGLGENRENDERBUFFERSEXTPROC glGenRenderbuffersEXT;
-	extern PFNGLRENDERBUFFERSTORAGEEXTPROC glRenderbufferStorageEXT;
-	extern PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC glGetRenderbufferParameterivEXT;
-	extern PFNGLISFRAMEBUFFEREXTPROC glIsFramebufferEXT;
-	extern PFNGLBINDFRAMEBUFFEREXTPROC glBindFramebufferEXT;
-	extern PFNGLDELETEFRAMEBUFFERSEXTPROC glDeleteFramebuffersEXT;
-	extern PFNGLGENFRAMEBUFFERSEXTPROC glGenFramebuffersEXT;
-	extern PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC glCheckFramebufferStatusEXT;
-	extern PFNGLFRAMEBUFFERTEXTURE1DEXTPROC glFramebufferTexture1DEXT;
-	extern PFNGLFRAMEBUFFERTEXTURE2DEXTPROC glFramebufferTexture2DEXT;
-	extern PFNGLFRAMEBUFFERTEXTURE3DEXTPROC glFramebufferTexture3DEXT;
-	extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
-	extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT;
-	extern PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
-#endif
-
 extern bool OGLDynamicTextureSupport;
-extern bool NixGLDoubleBuffered;
-extern int NixOGLFontDPList;
-extern int NixGLCurrentProgram;
+extern bool GLDoubleBuffered;
+extern int OGLFontDPList;
+extern int current_progrram;
 
 
-extern matrix NixViewMatrix, NixProjectionMatrix;
-extern matrix NixWorldMatrix, NixWorldViewProjectionMatrix;
+extern matrix view_matrix, projection_matrix;
+extern matrix world_matrix, world_view_projection_matrix;
 
-extern bool NixUsable, NixDoingEvilThingsToTheDevice;
-extern bool NixEnabled3D;
+extern bool Usable, DoingEvilThingsToTheDevice;
+extern bool Enabled3D;
 
-extern int NixFontGlyphWidth[256];
+extern int FontGlyphWidth[256];
 
 void TestGLError(const char *);
 
+struct Fog
+{
+	color _color;
+	float density;
+};
+extern Fog fog;
 
 
+};
 
 

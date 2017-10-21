@@ -191,7 +191,7 @@ void CreateVB(Model *m, Skin *s)
 #else
 	for (int t=0;t<s->sub.num;t++){
 		if (!s->sub[t].vertex_buffer)
-			s->sub[t].vertex_buffer = new NixVertexBuffer(m->material[t].num_textures);
+			s->sub[t].vertex_buffer = new nix::VertexBuffer(m->material[t].textures.num);
 		s->sub[t].force_update = true;
 	}
 #endif
@@ -414,9 +414,10 @@ void Model::Load(const string &filename)
 		m->alpha_destination = f->ReadInt();
 		m->alpha_factor = (float)f->ReadInt() * 0.01f;
 		m->alpha_z_buffer = f->ReadBool();
-		m->num_textures = f->ReadInt();
-		for (int t=0;t<m->num_textures;t++)
-			m->texture[t] = NixLoadTexture(f->ReadStr());
+		int nt = f->ReadInt();
+		m->textures.resize(nt);
+		for (int t=0;t<m->textures.num;t++)
+			m->textures[t] = nix::LoadTexture(f->ReadStr());
 		m->copy_from(this, mat_from_file, user_colors);
 	}
 	
@@ -508,13 +509,13 @@ void Model::Load(const string &filename)
 			// triangles
 			sub->num_triangles = f->ReadInt();
 			sub->triangle_index.resize(sub->num_triangles * 3);
-			sub->skin_vertex.resize(material[m].num_textures * sub->num_triangles * 6);
+			sub->skin_vertex.resize(material[m].textures.num * sub->num_triangles * 6);
 			sub->normal.resize(sub->num_triangles * 3);
 			// vertices
 			for (int i=0;i<sub->num_triangles * 3;i++)
 				sub->triangle_index[i] = f->ReadInt();
 			// skin vertices
-			for (int i=0;i<material[m].num_textures * sub->num_triangles * 3;i++){
+			for (int i=0;i<material[m].textures.num * sub->num_triangles * 3;i++){
 				int sv = f->ReadInt();
 				sub->skin_vertex[i * 2    ] = temp_sv[sv * 2    ];
 				sub->skin_vertex[i * 2 + 1] = temp_sv[sv * 2 + 1];
@@ -1551,12 +1552,12 @@ void Model::JustDraw(int mat_no, int detail)
 		// vertex buffer existing?
 		if (!sub.vertex_buffer){
 			msg_db_m("vb not existing -> new",3);
-			sub.vertex_buffer = new NixVertexBuffer(m->num_textures);
+			sub.vertex_buffer = new nix::VertexBuffer(m->textures.num);
 		}
 		msg_db_m("empty",6);
 		sub.vertex_buffer->clear();
 		msg_db_m("new...",6);
-		if (m->num_textures == 1){
+		if (m->textures.num == 1){
 			for (int i=0;i<sub.num_triangles;i++){
 				//msg_write(i);
 				int va=tv[i*3  ]  ,vb=tv[i*3+1]  ,vc=tv[i*3+2];
@@ -1569,7 +1570,7 @@ void Model::JustDraw(int mat_no, int detail)
 			for (int i=0;i<sub.num_triangles;i++){
 				float tc[3][MATERIAL_MAX_TEXTURES * 2];
 				for (int k=0;k<3;k++)
-					for (int j=0;j<m->num_textures;j++){
+					for (int j=0;j<m->textures.num;j++){
 						tc[k][j * 2    ] = sub.skin_vertex[j * sub.num_triangles * 6 + i * 6 + k * 2];
 						tc[k][j * 2 + 1] = sub.skin_vertex[j * sub.num_triangles * 6 + i * 6 + k * 2 + 1];
 					}
@@ -1586,8 +1587,8 @@ void Model::JustDraw(int mat_no, int detail)
 	}
 
 
-	NixSetWorldMatrix(_matrix);
-	sub.vertex_buffer->draw();
+	nix::SetWorldMatrix(_matrix);
+	nix::Draw3D(sub.vertex_buffer);
 
 /*	if ((m->cube_map >= 0) && (m->reflection_density > 0)){
 		//_Pos_ = *_matrix_get_translation_(_matrix);
@@ -1659,7 +1660,7 @@ void Model::Draw(int detail, bool set_fx, bool allow_shadow)
 		// finally... really draw!!!
 		JustDraw(i, detail);
 		//NixSetShader(-1);
-		NixSetAlpha(AlphaNone);
+		nix::SetAlpha(AlphaNone);
 	}
 }
 

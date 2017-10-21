@@ -15,7 +15,9 @@
 #include "Stuff/Progress.h"
 #include "Stuff/PluginManager.h"
 
-class NixTexture;
+namespace nix{
+	class Texture;
+};
 namespace MultiView{
 	class MultiView;
 };
@@ -148,8 +150,8 @@ public:
 	PluginManager *plugins;
 
 
-	Map<NixTexture*, string> icon_image;
-	string get_tex_image(NixTexture *tex);
+	Map<nix::Texture*, string> icon_image;
+	string get_tex_image(nix::Texture *tex);
 
 	hui::Timer timer;
 };

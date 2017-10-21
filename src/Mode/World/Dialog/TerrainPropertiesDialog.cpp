@@ -15,30 +15,31 @@
 
 string file_secure(const string &filename); // -> ModelPropertiesDialog
 
-TerrainPropertiesDialog::TerrainPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data, int _index) :
-	HuiWindow("terrain_dialog", _parent, _allow_parent),
+TerrainPropertiesDialog::TerrainPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data, int _index) :
+	hui::Dialog("terrain_dialog", 400, 300, _parent, _allow_parent),
 	Observer("TerrainPropertiesDialog")
 {
+	fromResource("terrain_dialog");
 	data = _data;
 	index = _index;
 	assert(index >= 0);
 	assert(index < data->Terrains.num);
 
-	event("cancel", this, &TerrainPropertiesDialog::OnClose);
-	event("hui:close", this, &TerrainPropertiesDialog::OnClose);
-	event("apply", this, &TerrainPropertiesDialog::ApplyData);
-	event("ok", this, &TerrainPropertiesDialog::OnOk);
+	event("cancel", std::bind(&TerrainPropertiesDialog::OnClose, this));
+	event("hui:close", std::bind(&TerrainPropertiesDialog::OnClose, this));
+	event("apply", std::bind(&TerrainPropertiesDialog::ApplyData, this));
+	event("ok", std::bind(&TerrainPropertiesDialog::OnOk, this));
 
-	event("add_texture_level", this, &TerrainPropertiesDialog::OnAddTextureLevel);
-	event("delete_texture_level", this, &TerrainPropertiesDialog::OnDeleteTextureLevel);
-	event("clear_texture_level", this, &TerrainPropertiesDialog::OnClearTextureLevel);
-	event("texture_map_complete", this, &TerrainPropertiesDialog::OnTextureMapComplete);
-	event("textures", this, &TerrainPropertiesDialog::OnTextures);
-	eventX("textures", "hui:change", this, &TerrainPropertiesDialog::OnTexturesEdit);
-	eventX("textures", "hui:select", this, &TerrainPropertiesDialog::OnTexturesSelect);
-	event("material_find", this, &TerrainPropertiesDialog::OnMaterialFind);
-	event("default_material", this, &TerrainPropertiesDialog::OnDefaultMaterial);
-	event("terrain_save_as", this, &TerrainPropertiesDialog::OnSaveAs);
+	event("add_texture_level", std::bind(&TerrainPropertiesDialog::OnAddTextureLevel, this));
+	event("delete_texture_level", std::bind(&TerrainPropertiesDialog::OnDeleteTextureLevel, this));
+	event("clear_texture_level", std::bind(&TerrainPropertiesDialog::OnClearTextureLevel, this));
+	event("texture_map_complete", std::bind(&TerrainPropertiesDialog::OnTextureMapComplete, this));
+	event("textures", std::bind(&TerrainPropertiesDialog::OnTextures, this));
+	eventX("textures", "hui:change", std::bind(&TerrainPropertiesDialog::OnTexturesEdit, this));
+	eventX("textures", "hui:select", std::bind(&TerrainPropertiesDialog::OnTexturesSelect, this));
+	event("material_find", std::bind(&TerrainPropertiesDialog::OnMaterialFind, this));
+	event("default_material", std::bind(&TerrainPropertiesDialog::OnDefaultMaterial, this));
+	event("terrain_save_as", std::bind(&TerrainPropertiesDialog::OnSaveAs, this));
 
 	subscribe(data);
 
@@ -74,10 +75,10 @@ void TerrainPropertiesDialog::FillTextureList()
 
 	reset("textures");
 	for (int i=0;i<temp.NumTextures;i++){
-		NixTexture *tex = NixLoadTexture(temp.TextureFile[i]);
+		nix::Texture *tex = nix::LoadTexture(temp.TextureFile[i]);
 		if (tex)
-			if (i < m->num_textures)
-				tex = m->texture[i];
+			if (i < m->textures.num)
+				tex = m->textures[i];
 		string img = ed->get_tex_image(tex);
 		addString("textures", format("%d\\%.5f\\%.5f\\%s\\%s", i, temp.TextureScale[i].x * (float)temp.NumX, temp.TextureScale[i].z * (float)temp.NumZ, img.c_str(), file_secure(temp.TextureFile[i]).c_str()));
 	}
@@ -106,8 +107,8 @@ void TerrainPropertiesDialog::LoadData()
 
 void TerrainPropertiesDialog::OnTexturesEdit()
 {
-	int col = HuiGetEvent()->column;
-	int row = HuiGetEvent()->row;
+	int col = hui::GetEvent()->column;
+	int row = hui::GetEvent()->row;
 	if (col == 1)
 		temp.TextureScale[row].x = s2f(getCell("textures", row, col)) / (float)temp.NumX;
 	else if (col == 2)
@@ -172,7 +173,7 @@ void TerrainPropertiesDialog::OnTextureMapComplete()
 
 void TerrainPropertiesDialog::OnClose()
 {
-	delete(this);
+	destroy();
 }
 
 
@@ -211,7 +212,7 @@ void TerrainPropertiesDialog::OnClearTextureLevel()
 void TerrainPropertiesDialog::onUpdate(Observable *o, const string &message)
 {
 	if (index >= data->Terrains.num){
-		delete(this);
+		destroy();
 		return;
 	}
 
@@ -221,7 +222,7 @@ void TerrainPropertiesDialog::onUpdate(Observable *o, const string &message)
 	temp.NumX = t->num_x;
 	temp.NumZ = t->num_z;
 	temp.Pattern = t->pattern;
-	temp.NumTextures = t->material->num_textures;
+	temp.NumTextures = t->material->textures.num;
 	for (int i=0;i<temp.NumTextures;i++){
 		temp.TextureFile[i] = t->texture_file[i];
 		temp.TextureScale[i] = t->texture_scale[i];
@@ -235,7 +236,7 @@ void TerrainPropertiesDialog::onUpdate(Observable *o, const string &message)
 void TerrainPropertiesDialog::OnOk()
 {
 	ApplyData();
-	delete(this);
+	destroy();
 }
 
 

@@ -7,8 +7,10 @@
 #define MATERIAL_MAX_TEXTURES		8
 
 class Model;
-class NixTexture;
-class NixShader;
+namespace nix{
+	class Texture;
+	class Shader;
+};
 
 
 // visual and physical properties
@@ -19,8 +21,7 @@ public:
 	string name;
 
 	// textures
-	int num_textures;
-	NixTexture *texture[MATERIAL_MAX_TEXTURES];
+	Array<nix::Texture*> textures;
 
 	// light
 	color ambient, diffuse, specular, emission;
@@ -35,11 +36,11 @@ public:
 	// reflection
 	int reflection_mode;
 	float reflection_density;
-	NixTexture *cube_map;
+	nix::Texture *cube_map;
 	int cube_map_size;
 
 	// shader
-	NixShader *shader;
+	nix::Shader *shader;
 
 	// friction
 	float rc_jump, rc_static, rc_sliding, rc_rolling;

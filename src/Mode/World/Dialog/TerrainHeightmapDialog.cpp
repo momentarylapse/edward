@@ -9,22 +9,23 @@
 #include "../../../Action/World/Terrain/ActionWorldTerrainApplyHeightmap.h"
 #include "../../../Edward.h"
 
-TerrainHeightmapDialog::TerrainHeightmapDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
-	HuiWindow("terrain_heightmap_dialog", _parent, _allow_parent),
+TerrainHeightmapDialog::TerrainHeightmapDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data) :
+	hui::Dialog("terrain_heightmap_dialog", 400, 300, _parent, _allow_parent),
 	Observer("TerrainHeightmapDialog")
 {
+	fromResource("terrain_heightmap_dialog");
 	data = _data;
 
-	event("cancel", this, &TerrainHeightmapDialog::OnClose);
-	event("hui:close", this, &TerrainHeightmapDialog::OnClose);
-	event("apply", this, &TerrainHeightmapDialog::ApplyData);
-	event("ok", this, &TerrainHeightmapDialog::OnOk);
+	event("cancel", std::bind(&TerrainHeightmapDialog::OnClose, this));
+	event("hui:close", std::bind(&TerrainHeightmapDialog::OnClose, this));
+	event("apply", std::bind(&TerrainHeightmapDialog::ApplyData, this));
+	event("ok", std::bind(&TerrainHeightmapDialog::OnOk, this));
 
-	event("height_image_find", this, &TerrainHeightmapDialog::OnFindHeightmap);
-	event("stretch_x", this, &TerrainHeightmapDialog::OnSizeChange);
-	event("stretch_z", this, &TerrainHeightmapDialog::OnSizeChange);
-	event("filter_image_find", this, &TerrainHeightmapDialog::OnFindFilter);
-	eventX("preview", "hui:draw", this, &TerrainHeightmapDialog::OnPreviewDraw);
+	event("height_image_find", std::bind(&TerrainHeightmapDialog::OnFindHeightmap, this));
+	event("stretch_x", std::bind(&TerrainHeightmapDialog::OnSizeChange, this));
+	event("stretch_z", std::bind(&TerrainHeightmapDialog::OnSizeChange, this));
+	event("filter_image_find", std::bind(&TerrainHeightmapDialog::OnFindFilter, this));
+	eventXP("preview", "hui:draw", std::bind(&TerrainHeightmapDialog::OnPreviewDraw, this, std::placeholders::_1));
 
 	enable("ok", false);
 
@@ -100,9 +101,8 @@ static float im_interpolate(const Image &im, float x, float y, float stretch_x, 
 	return c2f(im.getPixelInterpolated(x, y));
 }
 
-void TerrainHeightmapDialog::OnPreviewDraw()
+void TerrainHeightmapDialog::OnPreviewDraw(Painter *c)
 {
-	HuiPainter *c = beginDraw("preview");
 	if (heightmap.isEmpty()){
 		c->setColor(Black);
 		c->drawRect(0, 0, c->width, c->height);
@@ -121,7 +121,6 @@ void TerrainHeightmapDialog::OnPreviewDraw()
 			}
 		c->drawImage(0, 0, m);
 	}
-	c->end();
 }
 
 

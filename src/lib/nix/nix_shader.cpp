@@ -8,18 +8,22 @@
 #include "nix.h"
 #include "nix_common.h"
 
-string NixShaderDir;
+namespace nix{
 
-static Array<NixShader*> NixShaders;
+string shader_dir;
 
-int NixGLCurrentProgram = 0;
+static Array<Shader*> shaders;
 
-string NixShaderError;
+Shader *default_shader = NULL;
+
+int current_program = 0;
+
+string shader_error;
+
+
 
 int create_empty_shader_program()
 {
-	if (!OGLShaderSupport)
-		return -1;
 	int gl_p = glCreateProgram();
 	TestGLError("CreateProgram");
 	if (gl_p <= 0){
@@ -27,6 +31,56 @@ int create_empty_shader_program()
 		return -1;
 	}
 	return gl_p;
+}
+
+struct ShaderSourcePart
+{
+	int type;
+	string source;
+};
+
+Array<ShaderSourcePart> get_shader_parts(const string &source)
+{
+	Array<ShaderSourcePart> parts;
+	int pos = 0;
+	while (pos < source.num - 5){
+		int pos0 = source.find("<", pos);
+		if (pos0 < 0)
+			break;
+		pos = pos0 + 1;
+		int pos1 = source.find(">", pos0);
+		if (pos1 < 0)
+			break;
+
+		string tag = source.substr(pos0 + 1, pos1 - pos0 - 1);
+		if ((tag.num > 64) or (tag.find("<") >= 0))
+			continue;
+
+		int pos2 = source.find("</" + tag + ">", pos1 + 1);
+		if (pos2 < 0)
+			continue;
+		ShaderSourcePart p;
+		p.source = source.substr(pos1 + 1, pos2 - pos1 - 1);
+		pos = pos2 + tag.num + 3;
+		if (tag == "VertexShader")
+			p.type = GL_VERTEX_SHADER;
+		else if (tag == "FragmentShader")
+			p.type = GL_FRAGMENT_SHADER;
+		else if (tag == "ComputeShader")
+			p.type = GL_COMPUTE_SHADER;
+		else if (tag == "TessComputeShader")
+			p.type = GL_TESS_CONTROL_SHADER;
+		else if (tag == "TessEvaluationShader")
+			p.type = GL_TESS_EVALUATION_SHADER;
+		else if (tag == "GeometryShader")
+			p.type = GL_GEOMETRY_SHADER;
+		else{
+			msg_error("unknown shader tag: '" + tag + "'");
+			continue;
+		}
+		parts.add(p);
+	}
+	return parts;
 }
 
 string get_inside_of_tag(const string &source, const string &tag)
@@ -49,8 +103,8 @@ int create_gl_shader(const string &source, int type)
 	int gl_shader = glCreateShader(type);
 	TestGLError("CreateShader create");
 	if (gl_shader <= 0){
-		NixShaderError = "could not create gl shader object";
-		msg_error(NixShaderError);
+		shader_error = "could not create gl shader object";
+		msg_error(shader_error);
 		return -1;
 	}
 	
@@ -68,83 +122,121 @@ int create_gl_shader(const string &source, int type)
 	TestGLError("CreateShader status");
 	//msg_write(status);
 	if (status != GL_TRUE){
-		NixShaderError.resize(16384);
+		shader_error.resize(16384);
 		int size;
-		glGetShaderInfoLog(gl_shader, NixShaderError.num, &size, (char*)NixShaderError.data);
-		NixShaderError.resize(size);
-		msg_error("while compiling shader: " + NixShaderError);
+		glGetShaderInfoLog(gl_shader, shader_error.num, &size, (char*)shader_error.data);
+		shader_error.resize(size);
+		msg_error("while compiling shader: " + shader_error);
 		return -1;
 	}
 	return gl_shader;
 }
 
-NixShader *NixCreateShader(const string &source)
+Shader *CreateShader(const string &source)
 {
-	string source_vertex = get_inside_of_tag(source, "VertexShader");
+	auto parts = get_shader_parts(source);
+	/*string source_vertex = get_inside_of_tag(source, "VertexShader");
 	if (source_vertex.num == 0)
 		source_vertex = get_inside_of_tag(source, "Vertex");
 	string source_fragment = get_inside_of_tag(source, "FragmentShader");
 	if (source_fragment.num == 0)
-		source_fragment = get_inside_of_tag(source, "Fragment");
+		source_fragment = get_inside_of_tag(source, "Fragment");*/
 
-	if (source_vertex.num + source_fragment.num == 0){
-		NixShaderError = "no shader tags found (<VertexShader>...</VertexShader> or <FragmentShader>...</FragmentShader>)";
-		msg_error(NixShaderError);
+	if (parts.num == 0){
+		shader_error = "no shader tags found (<VertexShader>...</VertexShader> or <FragmentShader>...</FragmentShader>)";
+		msg_error(shader_error);
 		return NULL;
 	}
 
-	int gl_shader_v = create_gl_shader(source_vertex, GL_VERTEX_SHADER);
-	if ((gl_shader_v < 0) && (source_vertex.num > 0))
+	int prog = create_empty_shader_program();
+	if (prog < 0)
+		return NULL;
+
+	Array<int> shaders;
+	for (auto p: parts){
+		int shader = create_gl_shader(p.source, p.type);
+		if ((shader < 0) and (p.source.num > 0))
+			return NULL;
+		shaders.add(shader);
+		if (shader >= 0)
+			glAttachShader(prog, shader);
+		TestGLError("AddShader attach");
+	}
+
+	/*int gl_shader_v = create_gl_shader(source_vertex, GL_VERTEX_SHADER);
+	if ((gl_shader_v < 0) and (source_vertex.num > 0))
 		return NULL;
 	int gl_shader_f = create_gl_shader(source_fragment, GL_FRAGMENT_SHADER);
-	if ((gl_shader_f < 0) && (source_fragment.num > 0))
-		return NULL;
-
-	int gl_prog = create_empty_shader_program();
-	if (gl_prog < 0)
+	if ((gl_shader_f < 0) and (source_fragment.num > 0))
 		return NULL;
 
 
-	if (gl_shader_v >= 0){
+	if (gl_shader_v >= 0)
 		glAttachShader(gl_prog, gl_shader_v);
-		glDeleteShader(gl_shader_v);
-	}
-	if (gl_shader_f >= 0){
+	if (gl_shader_f >= 0)
 		glAttachShader(gl_prog, gl_shader_f);
-		glDeleteShader(gl_shader_f);
-	}
-	TestGLError("AddShader attach");
+	TestGLError("AddShader attach");*/
 
 	int status;
-	glLinkProgram(gl_prog);
+	glLinkProgram(prog);
 	TestGLError("AddShader link");
-	glGetProgramiv(gl_prog, GL_LINK_STATUS, &status);
+	glGetProgramiv(prog, GL_LINK_STATUS, &status);
 	TestGLError("AddShader status");
 	if (status != GL_TRUE){
-		NixShaderError.resize(16384);
+		shader_error.resize(16384);
 		int size;
-		glGetProgramInfoLog(gl_prog, NixShaderError.num, &size, (char*)NixShaderError.data);
-		NixShaderError.resize(size);
-		msg_error("while linking the shader program: " + NixShaderError);
+		glGetProgramInfoLog(prog, shader_error.num, &size, (char*)shader_error.data);
+		shader_error.resize(size);
+		msg_error("while linking the shader program: " + shader_error);
 		msg_left();
 		return NULL;
 	}
 
-	NixShader *s = new NixShader;
-	s->glProgram = gl_prog;
-	NixShaderError = "";
+	/*if (gl_shader_v >= 0)
+		glDeleteShader(gl_shader_v);
+	if (gl_shader_f >= 0)
+		glDeleteShader(gl_shader_f);*/
+	for (int shader: shaders)
+		glDeleteShader(shader);
+	TestGLError("DeleteShader");
+
+	Shader *s = new Shader;
+	s->program = prog;
+	shader_error = "";
+
+	s->find_locations();
 
 	TestGLError("CreateShader");
 	return s;
 }
 
-NixShader *NixLoadShader(const string &filename)
+void Shader::find_locations()
+{
+	location[LOCATION_MATRIX_MVP] = get_location("mat_mvp");
+	location[LOCATION_MATRIX_M] = get_location("mat_m");
+	location[LOCATION_MATRIX_V] = get_location("mat_v");
+	location[LOCATION_MATRIX_P] = get_location("mat_p");
+	for (int i=0; i<NIX_MAX_TEXTURELEVELS; i++)
+		location[LOCATION_TEX + i] = get_location("tex" + i2s(i));
+	location[LOCATION_CAM_POS] = get_location("CameraPosition");
+	location[LOCATION_CAM_DIR] = get_location("CameraDirection");
+
+	location[LOCATION_MATERIAL_AMBIENT] = get_location("material.ambient");
+	location[LOCATION_MATERIAL_DIFFUSIVE] = get_location("material.diffusive");
+	location[LOCATION_MATERIAL_SPECULAR] = get_location("material.specular");
+	location[LOCATION_MATERIAL_SHININESS] = get_location("material.shininess");
+	location[LOCATION_MATERIAL_EMISSION] = get_location("material.emission");
+	location[LOCATION_FOG_COLOR] = get_location("fog.color");
+	location[LOCATION_FOG_DENSITY] = get_location("fog.density");
+}
+
+Shader *LoadShader(const string &filename)
 {
 	if (filename.num == 0)
 		return NULL;
-	string fn = NixShaderDir + filename;
-	foreachi(NixShader *s, NixShaders, i)
-		if ((s->filename == fn) && (s->glProgram >= 0)){
+	string fn = shader_dir + filename;
+	for (Shader *s: shaders)
+		if ((s->filename == fn) and (s->program >= 0)){
 			s->reference_count ++;
 			return s;
 		}
@@ -153,7 +245,7 @@ NixShader *NixLoadShader(const string &filename)
 	msg_right();
 
 	string source = FileRead(fn);
-	NixShader *shader = NixCreateShader(source);
+	Shader *shader = CreateShader(source);
 	if (shader)
 		shader->filename = fn;
 
@@ -161,63 +253,73 @@ NixShader *NixLoadShader(const string &filename)
 	return shader;
 }
 
-NixShader::NixShader()
+Shader::Shader()
 {
-	NixShaders.add(this);
+	shaders.add(this);
 	reference_count = 1;
 	filename = "-no file-";
-	glProgram = -1;
+	program = -1;
+	for (int i=0; i<NUM_LOCATIONS; i++)
+		location[i] = -1;
 }
 
-NixShader::~NixShader()
+Shader::~Shader()
 {
 	msg_write("delete shader: " + filename);
-	glDeleteProgram(glProgram);
+	glDeleteProgram(program);
 	TestGLError("NixUnrefShader");
-	glProgram = -1;
+	program = -1;
 	filename = "";
 }
 
-void NixShader::unref()
+void Shader::unref()
 {
 	reference_count --;
-	if ((reference_count <= 0) && (glProgram >= 0)){
+	if ((reference_count <= 0) and (program >= 0)){
 		msg_write("delete shader: " + filename);
-		glDeleteProgram(glProgram);
+		glDeleteProgram(program);
 		TestGLError("NixUnrefShader");
-		glProgram = -1;
+		program = -1;
 		filename = "";
 	}
 }
 
-void NixDeleteAllShaders()
+void DeleteAllShaders()
 {
-	foreachib(NixShader *s, NixShaders, i)
+	for (Shader *s: shaders)
 		delete(s);
-	NixShaders.clear();
+	shaders.clear();
 }
 
-void NixSetShader(NixShader *s)
+void SetShader(Shader *s)
 {
-	if (!OGLShaderSupport)
-		return;
-	NixGLCurrentProgram = 0;
-	if (s)
-		NixGLCurrentProgram = s->glProgram;
-	glUseProgram(NixGLCurrentProgram);
+	current_program = s->program;
+	glUseProgram(current_program);
 	TestGLError("SetProgram");
+
+	s->set_default_data();
 }
 
-void NixShader::set_data(const string &var_name, const void *data, int size)
+int Shader::get_location(const string &var_name)
 {
-	if (!OGLShaderSupport)
+	int loc = glGetUniformLocation(program, var_name.c_str());
+	return loc;
+}
+
+void Shader::set_data(int location, const float *data, int size)
+{
+	if (location < 0)
 		return;
-	NixSetShader(this);
+	//NixSetShader(this);
+	if (size == sizeof(float)){
+		glUniform1f(location, *data);
+	}else if (size == sizeof(float)*3){
+		glUniform3fv(location, 1, data);
+	}else if (size == sizeof(float)*4){
+		glUniform4fv(location, 1, data);
+	}
 
-	int loc = glGetUniformLocation(glProgram, var_name.c_str());
-	glUniform1f(loc, *(float*)data);
-
-	NixSetShader(NULL);
+	//NixSetShader(NULL);
 		
 	/*int loc = glGetUniformLocationARB(my_program, “my_color_texture”);
 
@@ -228,15 +330,54 @@ glUniform1iARB(my_sampler_uniform_location, i);*/
 	TestGLError("SetShaderData");
 }
 
-void NixShader::get_data(const string &var_name, void *data, int size)
+void Shader::set_int(int location, int i)
 {
-	if (!OGLShaderSupport)
+	if (location < 0)
 		return;
+	glUniform1i(location, i);
+	TestGLError("SetShaderInt");
+}
+
+void Shader::set_color(int location, const color &c)
+{
+	if (location < 0)
+		return;
+	glUniform4fv(location, 1, (float*)&c);
+	TestGLError("SetShaderData");
+}
+
+void Shader::set_matrix(int location, const matrix &m)
+{
+	if (location < 0)
+		return;
+	glUniformMatrix4fv(location, 1, GL_TRUE, (float*)&m);
+	TestGLError("SetShaderData");
+}
+
+void Shader::get_data(const string &var_name, void *data, int size)
+{
 	msg_todo("NixGetShaderData for OpenGL");
 }
 
+void Shader::set_default_data()
+{
+	set_matrix(location[LOCATION_MATRIX_MVP], world_view_projection_matrix);
+	set_matrix(location[LOCATION_MATRIX_M], world_matrix);
+	set_matrix(location[LOCATION_MATRIX_V], view_matrix);
+	set_matrix(location[LOCATION_MATRIX_P], projection_matrix);
+	for (int i=0; i<NIX_MAX_TEXTURELEVELS; i++)
+		set_int(location[LOCATION_TEX + i], i);
+	set_color(location[LOCATION_MATERIAL_AMBIENT], material.ambient);
+	set_color(location[LOCATION_MATERIAL_DIFFUSIVE], material.diffusive);
+	set_color(location[LOCATION_MATERIAL_SPECULAR], material.specular);
+	set_data(location[LOCATION_MATERIAL_SHININESS], &material.shininess, 4);
+	set_color(location[LOCATION_MATERIAL_EMISSION], material.emission);
 
-void NixSetDefaultShaderData(int num_textures, const vector &cam_pos)
+	set_color(location[LOCATION_FOG_COLOR], fog._color);
+	set_data(location[LOCATION_FOG_DENSITY], &fog.density, 4);
+}
+
+/*void NixSetDefaultShaderData(int num_textures, const vector &cam_pos)
 {
 	if (NixGLCurrentProgram == 0)
 		return;
@@ -262,4 +403,7 @@ void NixSetDefaultShaderData(int num_textures, const vector &cam_pos)
 		glUniform3f(loc, cp.x, cp.y, cp.z);
 	}
 	TestGLError("SetDefaultShaderData");
-}
+}*/
+
+};
+
