@@ -8,23 +8,31 @@
 #include "lib/hui/hui.h"
 #include "Edward.h"
 
-string AppVersion = "0.3.99.6";
+string AppVersion = "0.4.-1.0";
 string AppName = "Edward";
 
-int hui_main(const Array<string> &arg)
-{
-	HuiInit("edward", true, "Deutsch");
-	HuiSetProperty("name", AppName);
-	HuiSetProperty("version", AppVersion);
-	HuiSetProperty("copyright", "© 2006-2015 by MichiSoft TM"); // ??? min=2004 (objectmaker) max=2006
-	HuiSetProperty("comment", _("Editor f&ur Spiele-Daten der x9-Engine"));
-	HuiSetProperty("website", "http://michi.is-a-geek.org/software");
-	HuiSetProperty("author", "Michael Ankele <michi@lupina.de>");
 
+
+EdwardApp::EdwardApp() :
+	hui::Application(AppName, "Deutsch", 0)
+{
+	app = this;
+	setProperty("name", AppName);
+	setProperty("version", AppVersion);
+	setProperty("copyright", "© 2006-2016 by MichiSoft TM"); // ??? min=2004 (objectmaker) max=2006
+	setProperty("comment", _("Editor f&ur Spiele-Daten der x9-Engine"));
+	setProperty("website", "http://michi.is-a-geek.org/software");
+	setProperty("author", "Michael Ankele <michi@lupina.de>");
+}
+
+bool EdwardApp::onStartup(const Array<string> &arg)
+{
 	msg_db_r("main",1);
 	msg_write(AppName + " " + AppVersion);
 	msg_write("");
 
 	ed = new Edward(arg);
-	return HuiRun();
+	return true;
 }
+
+HUI_EXECUTE(EdwardApp)

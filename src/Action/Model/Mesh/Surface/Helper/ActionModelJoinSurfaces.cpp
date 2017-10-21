@@ -52,7 +52,7 @@ void *ActionModelJoinSurfaces::execute(Data *d)
 	b->testSanity("Join prae b");
 
 	// correct edge data of b
-	foreach(ModelEdge &e, b->edge){
+	for (ModelEdge &e: b->edge){
 		if (e.polygon[0] >= 0)
 			e.polygon[0] += a->polygon.num;
 		if (e.polygon[1] >= 0)
@@ -60,12 +60,12 @@ void *ActionModelJoinSurfaces::execute(Data *d)
 	}
 
 	// correct triangle data of b
-	foreach(ModelPolygon &t, b->polygon)
+	for (ModelPolygon &t: b->polygon)
 		for (int k=0;k<t.side.num;k++)
 			t.side[k].edge += a->edge.num;
 
 	// correct vertex data of b
-	foreach(int v, b->vertex)
+	for (int v: b->vertex)
 		m->vertex[v].surface = surface1;
 
 	// insert data
@@ -79,7 +79,7 @@ void *ActionModelJoinSurfaces::execute(Data *d)
 	a->testSanity("Join post a");
 
 	// correct vertices of surfaces above b
-	foreach(ModelVertex &v, m->vertex)
+	for (ModelVertex &v: m->vertex)
 		if (v.surface >= surface2)
 			v.surface --;
 	return a;

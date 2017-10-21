@@ -29,7 +29,7 @@ public:
 	{
 	public:
 		virtual ~Value();
-		virtual Array<string> getKeys(){}
+		virtual Array<string> getKeys(){ return Array<string>(); }
 		virtual string s(){ return ""; }
 		virtual int i(){ return 0; }
 		virtual float f(){ return 0.0f; }

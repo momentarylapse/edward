@@ -25,7 +25,7 @@ void *ActionModelAddPolygon::compose(Data *d)
 	//assert(_a >= 0 && _b >= 0 && _c >= 0);
 	//assert(_a != _b && _b != _c && _c != _a);
 	Set<int> surf;
-	foreach(int vi, v){
+	for (int vi: v){
 		if (m->vertex[vi].surface >= 0)
 			surf.add(m->vertex[vi].surface);
 	}

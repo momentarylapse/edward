@@ -20,11 +20,11 @@ void* ActionModelAttachVerticesToBone::execute(Data* d)
 
 	// save old bone indices
 	old_bone.clear();
-	foreach(int i, index)
+	for (int i: index)
 		old_bone.add(m->vertex[i].bone_index);
 
 	// apply
-	foreach(int i, index)
+	for (int i: index)
 		m->vertex[i].bone_index = bone_index;
 	return NULL;
 }

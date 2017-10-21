@@ -13,8 +13,8 @@
 
 
 namespace nix{
-	extern matrix ViewMatrix;
-	extern matrix ProjectionMatrix;
+	extern matrix view_matrix;
+	extern matrix projection_matrix;
 }
 
 namespace MultiView{
@@ -169,7 +169,7 @@ void Window::draw()
 		height = cam->zoom;
 		nix::SetProjectionOrthoExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, -height, - cam->radius * 100, cam->radius * 100);
 	}
-	projection = nix::ProjectionMatrix;
+	projection = nix::projection_matrix;
 
 	// background color
 	nix::SetColor(bg);
@@ -209,7 +209,7 @@ void Window::draw()
 	}
 	impl->cur_projection_win = this;
 	nix::SetViewPosAng(pos, ang);
-	mat = nix::ViewMatrix;
+	mat = nix::view_matrix;
 	nix::SetZ(true,true);
 	nix::SetWire(false);
 	nix::EnableLighting(false);

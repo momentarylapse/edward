@@ -15,7 +15,7 @@ DataMaterial::DataMaterial() :
 	Data(FD_MATERIAL)
 {
 	Shader = NULL;
-	Appearance.CubeMap = new NixCubeMap(128);
+	Appearance.CubeMap = new nix::CubeMap(128);
 
 	reset();
 }
@@ -278,9 +278,9 @@ void DataMaterial::AppearanceData::Reset()
 	ShaderFile.clear();
 }
 
-NixShader *DataMaterial::AppearanceData::GetShader() const
+nix::Shader *DataMaterial::AppearanceData::GetShader() const
 {
-	return NixLoadShader(ShaderFile);
+	return nix::LoadShader(ShaderFile);
 }
 
 
@@ -332,29 +332,32 @@ int DataMaterial::EffectiveTextureLevels()
 
 void DataMaterial::ApplyForRendering()
 {
-	NixSetMaterial(Appearance.ColorAmbient, Appearance.ColorDiffuse, Appearance.ColorSpecular, Appearance.ColorShininess, Appearance.ColorEmissive);
+	nix::SetMaterial(Appearance.ColorAmbient, Appearance.ColorDiffuse, Appearance.ColorSpecular, Appearance.ColorShininess, Appearance.ColorEmissive);
 
-	NixSetAlpha(AlphaNone);
-	NixSetZ(true, true);
+	nix::SetAlpha(AlphaNone);
+	nix::SetZ(true, true);
 	if (Appearance.TransparencyMode == TransparencyModeColorKeyHard){
-		NixSetAlpha(AlphaColorKeyHard);
+		nix::SetAlpha(AlphaColorKeyHard);
 	}else if (Appearance.TransparencyMode == TransparencyModeColorKeySmooth){
-		NixSetAlpha(AlphaColorKeySmooth);
+		nix::SetAlpha(AlphaColorKeySmooth);
 	}else if (Appearance.TransparencyMode == TransparencyModeFunctions){
-		NixSetAlpha(Appearance.AlphaSource, Appearance.AlphaDestination);
-		NixSetZ(false, false);
+		nix::SetAlpha(Appearance.AlphaSource, Appearance.AlphaDestination);
+		nix::SetZ(false, false);
 	}else if (Appearance.TransparencyMode == TransparencyModeFactor){
-		NixSetAlpha(Appearance.AlphaFactor);
-		NixSetZ(false, false);
+		nix::SetAlpha(Appearance.AlphaFactor);
+		nix::SetZ(false, false);
 	}
 
-	NixSetShader(Shader);
+	nix::SetShader(Shader);
 
 	int num_tex = EffectiveTextureLevels();
-	if (num_tex > 1)
-		NixSetTextures(Appearance.Texture, num_tex);
-	else
-		NixSetTexture(Appearance.Texture[0]);
+	if (num_tex > 1){
+		Array<nix::Texture*> tex;
+		for (int i=0; i<num_tex; i++)
+			tex.add(Appearance.Texture[i]);
+		nix::SetTextures(tex);
+	}else
+		nix::SetTexture(Appearance.Texture[0]);
 }
 
 void DataMaterial::UpdateTextures()
@@ -363,10 +366,10 @@ void DataMaterial::UpdateTextures()
 	for (int i=0;i<MATERIAL_MAX_TEXTURES;i++)
 		Appearance.Texture[i] = NULL;
 	for (int i=0;i<Appearance.NumTextureLevels;i++)
-		Appearance.Texture[i] = NixLoadTexture(Appearance.TextureFile[i]);
+		Appearance.Texture[i] = nix::LoadTexture(Appearance.TextureFile[i]);
 	if ((Appearance.ReflectionMode == ReflectionCubeMapStatic) || (Appearance.ReflectionMode == ReflectionCubeMapDynamical)){
 		for (int i=0;i<6;i++)
-			Appearance.CubeMap->fill_cube_map(i, NixLoadTexture(Appearance.ReflectionTextureFile[i]));
+			Appearance.CubeMap->fill_cube_map(i, nix::LoadTexture(Appearance.ReflectionTextureFile[i]));
 		Appearance.Texture[3] = Appearance.CubeMap;
 	}
 }

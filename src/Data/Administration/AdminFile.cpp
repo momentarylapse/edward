@@ -17,7 +17,7 @@
 #include "../../x/terrain.h"
 #include "../../x/model_manager.h"
 #include "../../x/font.h"
-#include "../../lib/script/script.h"
+#include "../../lib/kaba/kaba.h"
 
 AdminFile::AdminFile()
 {
@@ -220,7 +220,7 @@ void AdminFile::check(AdminFileList &list)
 		WorldTerrain t;
 		if (t.Load(v_0, MapDir + Name, false)){
 			Time = 0; // TODO
-			for (int i=0;i<t.terrain->material->num_textures;i++)
+			for (int i=0;i<t.terrain->material->textures.num;i++)
 				add_possible_link(l, FD_TEXTURE, t.terrain->texture_file[i]);
 			add_possible_link(l, FD_MATERIAL, t.terrain->material_file);
 		}else
@@ -237,7 +237,7 @@ void AdminFile::check(AdminFileList &list)
 				if (m.fx[i].type == FX_TYPE_SOUND)
 					add_possible_link(l, FD_SOUND, m.fx[i].file);
 			}
-			foreach(string &s, m.meta_data.inventary)
+			for (string &s: m.meta_data.inventary)
 				add_possible_link(l, FD_MODEL, s);
 			for (int i=0;i<m.material.num;i++){
 				add_possible_link(l, FD_MATERIAL, m.material[i].material_file);
@@ -267,7 +267,7 @@ void AdminFile::check(AdminFileList &list)
 		}else
 			Missing=true;
 	}else if (Kind==FD_SCRIPT){
-		if (f->Open(Script::config.directory + Name)){
+		if (f->Open(Kaba::config.directory + Name)){
 			Time = f->GetDateModification().time;
 			f->SetBinaryMode(true);
 			string buf = f->ReadComplete();

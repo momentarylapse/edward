@@ -13,7 +13,7 @@
 AdminFile *AdminFileList::get(int kind, const string &name)
 {
 	string _name = name.sys_filename();
-	foreach(AdminFile *a, *this)
+	for (AdminFile *a: *this)
 		if ((a->Kind == kind) && (a->Name == _name))
 			return a;
 	return NULL;
@@ -81,7 +81,7 @@ void AdminFileList::add_recursive(AdminFile *to_add)
 	add(to_add);
 
 	// recursion...
-	foreach(AdminFile *a, to_add->Child)
+	for (AdminFile *a: to_add->Child)
 		add_recursive(a);
 }
 
@@ -110,7 +110,7 @@ void AdminFileList::clear()
 
 void AdminFileList::clear_deep()
 {
-	foreach(AdminFile *a, *this)
+	for (AdminFile *a: *this)
 		delete(a);
 	Array<AdminFile*>::clear();
 }

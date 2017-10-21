@@ -78,8 +78,8 @@ bool WorldTerrain::Save(const string &filename)
 
 	// Textures
 	f->WriteComment("// Textures");
-	f->WriteInt(terrain->material->num_textures);
-	for (int i=0;i<terrain->material->num_textures;i++){
+	f->WriteInt(terrain->material->textures.num);
+	for (int i=0;i<terrain->material->textures.num;i++){
 		f->WriteStr(terrain->texture_file[i]);
 		f->WriteFloat(terrain->texture_scale[i].x);
 		f->WriteFloat(terrain->texture_scale[i].z);
@@ -124,7 +124,7 @@ bool DataWorld::save(const string & _filename)
 	f->WriteFileFormatVersion(false, 10);
 	f->WriteComment("// Terrains");
 	f->WriteInt(Terrains.num);
-	foreach(WorldTerrain &t, Terrains){
+	for (WorldTerrain &t: Terrains){
 		f->WriteStr(t.FileName);
 		f->WriteFloat(t.pos.x);
 		f->WriteFloat(t.pos.y);
@@ -154,11 +154,11 @@ bool DataWorld::save(const string & _filename)
 	write_color_argb(f, meta_data.FogColor);
 	f->WriteComment("// Music");
 	f->WriteInt(meta_data.MusicFile.num);
-	foreach(string &m, meta_data.MusicFile)
+	for (string &m: meta_data.MusicFile)
 		f->WriteStr(m);
 	f->WriteComment("// Objects");
 	f->WriteInt(Objects.num);
-	foreach(WorldObject &o, Objects){
+	for (WorldObject &o: Objects){
 		f->WriteStr(o.FileName);
 		f->WriteStr(o.Name);
 		f->WriteFloat(o.pos.x);
@@ -170,13 +170,13 @@ bool DataWorld::save(const string & _filename)
 	}
 	f->WriteComment("// Scripts");
 	f->WriteInt(meta_data.ScriptFile.num);
-	foreach(string &s, meta_data.ScriptFile){
+	for (string &s: meta_data.ScriptFile){
 		f->WriteStr(s);
 		f->WriteInt(0);
 	}
 	f->WriteComment("// ScriptVars");
 	f->WriteInt(meta_data.ScriptVar.num);
-	foreach(float v, meta_data.ScriptVar)
+	for (float v: meta_data.ScriptVar)
 		f->WriteFloat(v);
 	f->WriteComment("// Sun");
 	f->WriteBool(meta_data.SunEnabled);
@@ -383,16 +383,16 @@ void DataWorld::MetaData::Reset()
 
 void DataWorld::MetaData::ApplyToDraw()
 {
-	NixSetFog(FogMode, FogStart, FogEnd, FogDensity, FogColor);
-	NixEnableFog(FogEnabled);
-	NixSetLightDirectional(ed->multi_view_3d->light, -SunAng.ang2dir(), SunAmbient, SunDiffuse, SunSpecular);
-	NixEnableLight(ed->multi_view_3d->light, SunEnabled);
-	NixSetAmbientLight(Ambient);
+	nix::SetFog(FogMode, FogStart, FogEnd, FogDensity, FogColor);
+	nix::EnableFog(FogEnabled);
+	nix::SetLightDirectional(ed->multi_view_3d->light, -SunAng.ang2dir(), SunAmbient, SunDiffuse, SunSpecular);
+	nix::EnableLight(ed->multi_view_3d->light, SunEnabled);
+	nix::SetAmbientLight(Ambient);
 }
 
 void DataWorld::MetaData::DrawBackground()
 {
-	NixResetToColor(BackGroundColor);
+	nix::ResetToColor(BackGroundColor);
 	/*NixSetZ(false,false);
 	NixSetWire(false);
 	NixSetColor(BackGroundColor);
@@ -427,7 +427,7 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 {
 	bool found_any=false;
 	msg_db_m("GetBoundaryBox",2);
-	foreach(WorldObject &o, Objects)
+	for (WorldObject &o: Objects)
 		if (o.object){
 			vector min2 = o.pos - vector(1,1,1) * o.object->radius;
 			vector max2 = o.pos + vector(1,1,1) * o.object->radius;
@@ -439,7 +439,7 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 			max._max(max2);
 			found_any = true; //|=(min2!=max2);
 		}
-	foreach(WorldTerrain &t, Terrains)
+	for (WorldTerrain &t: Terrains)
 		if (t.terrain){
 			vector min2 = t.terrain->min;
 			vector max2 = t.terrain->max;
@@ -460,7 +460,7 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 int DataWorld::GetSelectedObjects()
 {
 	int n = 0;
-	foreach(WorldObject &o, Objects)
+	for (WorldObject &o: Objects)
 		if (o.is_selected)
 			n ++;
 	return n;
@@ -471,7 +471,7 @@ int DataWorld::GetSelectedObjects()
 int DataWorld::GetSelectedTerrains()
 {
 	int n = 0;
-	foreach(WorldTerrain &t, Terrains)
+	for (WorldTerrain &t: Terrains)
 		if (t.is_selected)
 			n ++;
 	return n;
@@ -484,7 +484,7 @@ void DataWorld::UpdateData()
 		o.UpdateData();
 		o.is_special = (i == EgoIndex);
 	}
-	foreach(WorldTerrain &t, Terrains)
+	for (WorldTerrain &t: Terrains)
 		t.UpdateData();
 }
 
@@ -500,9 +500,9 @@ WorldTerrain* DataWorld::AddNewTerrain(const vector& pos, const vector& size, in
 
 void DataWorld::ClearSelection()
 {
-	foreach(WorldObject &o, Objects)
+	for (WorldObject &o: Objects)
 		o.is_selected = false;
-	foreach(WorldTerrain &t, Terrains)
+	for (WorldTerrain &t: Terrains)
 		t.is_selected = false;
 }
 
@@ -512,10 +512,10 @@ void DataWorld::Copy(Array<WorldObject> &objects, Array<WorldTerrain> &terrains)
 	objects.clear();
 	terrains.clear();
 
-	foreach(WorldObject &o, Objects)
+	for (WorldObject &o: Objects)
 		if (o.is_selected)
 			objects.add(o);
-	foreach(WorldTerrain &t, Terrains)
+	for (WorldTerrain &t: Terrains)
 		if (t.is_selected)
 			terrains.add(t);
 }

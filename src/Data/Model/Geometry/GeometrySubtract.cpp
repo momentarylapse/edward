@@ -224,7 +224,7 @@ bool CollidePolygonSurface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_ind
 // we assume t does not collide with s...!
 bool PolygonInsideSurface(Geometry &m, ModelPolygon *t, Geometry &s)
 {
-	foreach(ModelPolygonSide &side, t->side)
+	for (ModelPolygonSide &side: t->side)
 		if (!s.isInside(m.vertex[side.vertex].pos))
 			return false;
 	return true;
@@ -336,7 +336,7 @@ bool find_contour_inside(Geometry &m, ModelPolygon *t, Geometry &s, Array<sCol> 
 void find_contours(Geometry &m, ModelPolygon *t, Geometry &s, Array<Array<sCol> > &c_out, bool inverse)
 {
 	int ni = 0, no = 0;
-	foreach(sCol &cc, col){
+	for (sCol &cc: col){
 		if (cc.type == cc.TYPE_OWN_EDGE_IN)
 			ni ++;
 		if (cc.type == cc.TYPE_OWN_EDGE_OUT)
@@ -358,13 +358,13 @@ void find_contours(Geometry &m, ModelPolygon *t, Geometry &s, Array<Array<sCol> 
 	}
 
 	if (inverse){
-		foreach(Array<sCol> &cc, c_out)
+		for (Array<sCol> &cc: c_out)
 			cc.reverse();
 	}
 
 	sort_and_join_contours(m, t, s, c_out, inverse);
 
-	foreach(Array<sCol> &cc, c_out){
+	for (Array<sCol> &cc: c_out){
 		msg_write("contour");
 		foreachi(sCol &c, cc, i)
 			msg_write(i2s(i) + " " + c.str());
@@ -727,7 +727,7 @@ void PolygonSubtract(Geometry &a, ModelPolygon *t, int t_index, Geometry &b, Geo
 	sg.init_polygon(a.vertex, *t);
 
 	// create new surfaces
-	foreach(Array<sCol> &c, contours){
+	for (Array<sCol> &c: contours){
 		//if (inverse)
 		//	c.reverse();
 
@@ -785,9 +785,9 @@ int GeometrySubtract(Geometry &a, Geometry &b, Geometry &out)
 
 	a.updateTopology();
 	b.updateTopology();
-	foreach(ModelPolygon &p, a.polygon)
+	for (ModelPolygon &p: a.polygon)
 		p.temp_normal = p.getNormal(a.vertex);
-	foreach(ModelPolygon &p, b.polygon)
+	for (ModelPolygon &p: b.polygon)
 		p.temp_normal = p.getNormal(b.vertex);
 	if (!b.is_closed)
 		return -1;
@@ -825,9 +825,9 @@ int GeometryAnd(Geometry &a, Geometry &b, Geometry &out)
 
 	a.updateTopology();
 	b.updateTopology();
-	foreach(ModelPolygon &p, a.polygon)
+	for (ModelPolygon &p: a.polygon)
 		p.temp_normal = p.getNormal(a.vertex);
-	foreach(ModelPolygon &p, b.polygon)
+	for (ModelPolygon &p: b.polygon)
 		p.temp_normal = p.getNormal(b.vertex);
 	if (!b.is_closed)
 		return -1;

@@ -39,7 +39,7 @@ void ActionModelCutOutPolygons::CutOutSurface(ModelSurface &s, int surface, Data
 
 	// find boundary
 	Set<int> boundary;
-	foreach(ModelEdge &e, s.edge)
+	for (ModelEdge &e: s.edge)
 		if (e.ref_count == 2)
 			if ((s.polygon[e.polygon[0]].is_selected != s.polygon[e.polygon[1]].is_selected)){
 				boundary.add(e.vertex[0]);
@@ -48,10 +48,10 @@ void ActionModelCutOutPolygons::CutOutSurface(ModelSurface &s, int surface, Data
 
 	// copy boundary vertices
 	Array<int> new_vert;
-	foreach(int v, boundary){
+	for (int v: boundary){
 		addSubAction(new ActionModelAddVertex(m->vertex[v].pos), m);
 		new_vert.add(m->vertex.num - 1);
-		_foreach_it_.update(); // TODO
+		//_foreach_it_.update(); // TODO
 	}
 
 	// create new surface

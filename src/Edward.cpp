@@ -116,15 +116,13 @@ void Edward::onClose()
 void Edward::exit()
 {
 	delete(this);
-	HuiEnd();
+	app->end();
 }
 
 #define IMPLEMENT_EVENT(EVENT) \
 void Edward::EVENT() \
 { \
 	cur_mode->EVENT##Meta(); \
-	if (force_redraw) \
-		onDraw(); \
 }
 
 IMPLEMENT_EVENT(onKeyDown)
@@ -142,9 +140,9 @@ IMPLEMENT_EVENT(onRightButtonUp)
 
 void Edward::onEvent()
 {
-	string id = HuiGetEvent()->id;
+	string id = hui::GetEvent()->id;
 	if (id.num == 0)
-		id = HuiGetEvent()->message;
+		id = hui::GetEvent()->message;
 	cur_mode->onCommandMeta(id);
 	onCommand(id);
 }
@@ -158,18 +156,18 @@ void Edward::onAbortCreationMode()
 
 void Edward::idleFunction()
 {
-	msg_db_f("Idle", 3);
+	/*msg_db_f("Idle", 3);
 
 	if (force_redraw)
 		onDraw();
 	else
-		HuiSleep(0.010f);
+		hui::Sleep(0.010f);*/
 }
 
 
 Edward::Edward(Array<string> arg) :
 	Observer("Edward"),
-	HuiWindow(AppName, -1, -1, 800, 600)
+	hui::Window(AppName, -1, -1, 800, 600)
 {
 	msg_db_f("Init", 1);
 	
@@ -178,13 +176,12 @@ Edward::Edward(Array<string> arg) :
 	setTarget("vgrid", 0);
 	addGrid("", 0, 0, 2, 1, "root-table");
 	setTarget("root-table", 0);
-	addDrawingArea("!grabfocus,nix", 0, 0, 0, 0, "nix-area");
+	addDrawingArea("!grabfocus,opengl", 0, 0, 0, 0, "nix-area");
 	setBorderWidth(5);
 
 	ed = this;
 	no_mode = new ModeNone;
 	cur_mode = no_mode;
-	force_redraw = false;
 
 	progress = new Progress;
 
@@ -199,11 +196,11 @@ Edward::Edward(Array<string> arg) :
 	possible_sub_dir.add("Textures");
 
 	// configuration
-	int w = HuiConfig.getInt("Window.Width", 800);
-	int h = HuiConfig.getInt("Window.Height", 600);
-	bool maximized = HuiConfig.getBool("Window.Maximized", false);
+	int w = hui::Config.getInt("Window.Width", 800);
+	int h = hui::Config.getInt("Window.Height", 600);
+	bool maximized = hui::Config.getBool("Window.Maximized", false);
 	setSize(w, h);
-	root_dir = HuiConfig.getStr("RootDir", "");
+	root_dir = hui::Config.getStr("RootDir", "");
 	//HuiConfigReadInt("Api", api, NIX_API_OPENGL);
 	/*bool LocalDocumentation = HuiConfig.getBool("LocalDocumentation", false);
 	WorldScriptVarFile = HuiConfig.getStr("WorldScriptVarFile", "");
@@ -225,17 +222,19 @@ Edward::Edward(Array<string> arg) :
 	setMaximized(maximized);
 
 	// initialize engine
-	NixInit("OpenGL", this, "nix-area");
-	NixTextureIconSize = 32;
+	nix::Init("OpenGL", w, h);
+	nix::texture_icon_size = 32;
 	show();
 
-	event("hui:close", this, &Edward::onClose);
-	event("exit", this, &Edward::onClose);
-	event("*", this, &Edward::onEvent);
-	event("what_the_fuck", this, &Edward::onAbout);
-	event("send_bug_report", this, &Edward::onSendBugReport);
-	event("execute_plugin", this, &Edward::onExecutePlugin);
-	HuiAddCommandM("abort_creation_mode", "hui:cancel", KEY_ESCAPE, this, &Edward::onAbortCreationMode);
+	event("hui:close", std::bind(&Edward::onClose, this));
+	event("exit", std::bind(&Edward::onClose, this));
+	event("*", std::bind(&Edward::onEvent, this));
+	event("what_the_fuck", std::bind(&Edward::onAbout, this));
+	event("send_bug_report", std::bind(&Edward::onSendBugReport, this));
+	event("execute_plugin", std::bind(&Edward::onExecutePlugin, this));
+	event("abort_creation_mode", std::bind(&Edward::onAbortCreationMode, this));
+	eventX("nix-area", "hui:draw-gl", std::bind(&Edward::onDraw, this));
+	setKeyCode("abort_creation_mode", hui::KEY_ESCAPE, "hui:cancel");
 
 	MetaInit();
 	CameraInit();
@@ -279,7 +278,7 @@ Edward::Edward(Array<string> arg) :
 	if (!handleArguments(arg))
 		setMode(mode_welcome);
 
-	hui::SetIdleFunction(std::bind(&Edward::idleFunction, this));
+	//hui::SetIdleFunction(std::bind(&Edward::idleFunction, this));
 	hui::RunLater(0.010f, std::bind(&Edward::forceRedraw, this));
 	hui::RunLater(0.100f, std::bind(&Edward::optimizeCurrentView, this));
 }
@@ -514,7 +513,7 @@ void Edward::onUpdate(Observable *o, const string &message)
 void Edward::onExecutePlugin()
 {
 	string temp = dialog_dir[FD_SCRIPT];
-	dialog_dir[FD_SCRIPT] = HuiAppDirectoryStatic + "Plugins/";
+	dialog_dir[FD_SCRIPT] = app->directory_static + "Plugins/";
 	if (fileDialog(FD_SCRIPT, false, false))
 		plugins->execute(dialog_file_complete);
 	dialog_dir[FD_SCRIPT] = temp;
@@ -522,7 +521,7 @@ void Edward::onExecutePlugin()
 
 void Edward::forceRedraw()
 {
-	force_redraw = true;
+	redraw("nix-area");
 }
 
 void Edward::drawStr(int x, int y, const string &str, AlignType a)
@@ -543,15 +542,13 @@ void Edward::drawStr(int x, int y, const string &str, AlignType a)
 
 void Edward::onDraw()
 {
-	//NixStart();
+	msg_write("on draw");
+
 	cur_mode->onDrawMeta();
 
 	// messages
 	foreachi(string &m, message_str, i)
 		drawStr(nix::target_width / 2, nix::target_height / 2 - 20 - i * 20, m, ALIGN_CENTER);
-
-	//NixEnd();
-	force_redraw = false;
 }
 
 
@@ -568,13 +565,17 @@ void Edward::loadKeyCodes()
 	for (int i=0;i<nk;i++){
 		string id = f->ReadStr();
 		int key_code = f->ReadInt();
-		hui::AddKeyCode(id, key_code);
+		setKeyCode(id, key_code);
 	}
-	HuiAddKeyCode("volume_subtract", KEY_CONTROL + KEY_J); // TODO ...
-	HuiAddKeyCode("invert_selection", KEY_CONTROL + KEY_TAB); // TODO ...
-	HuiAddKeyCode("select_all", KEY_CONTROL + KEY_A); // TODO ...
+	event("volume_subtract", NULL);
+	setKeyCode("volume_subtract", hui::KEY_CONTROL + hui::KEY_J); // TODO ...
+	event("invert_selection", NULL);
+	setKeyCode("invert_selection", hui::KEY_CONTROL + hui::KEY_TAB); // TODO ...
+	event("select_all", NULL);
+	setKeyCode("select_all", hui::KEY_CONTROL + hui::KEY_A); // TODO ...
 
-	HuiAddKeyCode("easify_skin", KEY_CONTROL + KEY_7); // TODO ...
+	event("easify_skin", NULL);
+	setKeyCode("easify_skin", hui::KEY_CONTROL + hui::KEY_7); // TODO ...
 	FileClose(f);
 }
 
@@ -583,7 +584,7 @@ void Edward::updateDialogDir(int kind)
 {
 	if (kind==FD_MODEL)			root_dir_kind[kind] = ObjectDir;
 	if (kind==FD_MODEL)			root_dir_kind[kind] = ObjectDir;
-	if (kind==FD_TEXTURE)		root_dir_kind[kind] = NixTextureDir;
+	if (kind==FD_TEXTURE)		root_dir_kind[kind] = nix::texture_dir;
 	if (kind==FD_SOUND)			root_dir_kind[kind] = SoundDir;
 	if (kind==FD_MATERIAL)		root_dir_kind[kind] = MaterialDir;
 	if (kind==FD_TERRAIN)		root_dir_kind[kind] = MapDir;
@@ -668,7 +669,7 @@ string Edward::getRootDir(int kind)
 {
 	if (kind==-1)				return root_dir;
 	if (kind==FD_MODEL)			return ObjectDir;
-	if (kind==FD_TEXTURE)		return NixTextureDir;
+	if (kind==FD_TEXTURE)		return nix::texture_dir;
 	if (kind==FD_SOUND)			return SoundDir;
 	if (kind==FD_MATERIAL)		return MaterialDir;
 	if (kind==FD_TERRAIN)		return MapDir;
@@ -796,11 +797,11 @@ bool Edward::fileDialog(int kind,bool save,bool force_in_root_dir)
 	else		done=hui::FileDialogOpen(this,title,dialog_dir[kind],show_filter,filter);
 	if (done){
 
-		bool in_root_dir = (HuiFilename.sys_filename().find(root_dir_kind[kind].sys_filename()) >= 0);
+		bool in_root_dir = (hui::Filename.sys_filename().find(root_dir_kind[kind].sys_filename()) >= 0);
 
 		if (force_in_root_dir){
 			if (!in_root_dir){
-				errorBox(HuiFilename.sys_filename());
+				errorBox(hui::Filename.sys_filename());
 				errorBox(format(_("Datei liegt nicht im vorgesehenen Verzeichnis: \"%s\"\noder in dessen Unterverzeichnis"), root_dir_kind[kind].sys_filename().c_str()));
 				return false;
 			}
@@ -853,15 +854,4 @@ string Edward::get_tex_image(nix::Texture *tex)
 	}
 	icon_image.add(tex, img);
 	return img;
-}
-
-EdwardApp::EdwardApp() :
-	hui::Application(AppName, "Deutsch", 0)
-{
-	app = this;
-}
-
-bool EdwardApp::onStartup(const Array<string> &arg)
-{
-	return true;
 }

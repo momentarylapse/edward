@@ -38,7 +38,7 @@ LightmapData::LightmapData(DataWorld *w)
 
 LightmapData::~LightmapData()
 {
-	foreach(Model &m, Models)
+	for (Model &m: Models)
 		delete(m.orig);
 }
 
@@ -100,7 +100,7 @@ void LightmapData::Init(DataWorld *w)
 float LightmapData::GuessResolution()
 {
 	float area_max = 0;
-	foreach(Model &m, Models)
+	for (Model &m: Models)
 		if (m.area > area_max)
 			area_max = m.area;
 	/*foreach(Terrain &t, Terrains)
@@ -112,12 +112,12 @@ float LightmapData::GuessResolution()
 void LightmapData::SetResolution(float res)
 {
 	resolution = res;
-	foreach(Model &m, Models){
-		m.tex_width = min(1 << (int)(log(sqrt(m.area) / resolution)/log(2.0f) - 0.5f), 1024);
+	for (Model &m: Models){
+		m.tex_width = ::min(1 << (int)(log(sqrt(m.area) / resolution)/log(2.0f) - 0.5f), 1024);
 		m.tex_height = m.tex_width;
 	}
-	foreach(Terrain &t, Terrains){
-		t.tex_width = min(1 << (int)(log(sqrt(t.area) / resolution)/log(2.0f) - 0.5f), 1024);
+	for (Terrain &t: Terrains){
+		t.tex_width = ::min(1 << (int)(log(sqrt(t.area) / resolution)/log(2.0f) - 0.5f), 1024);
 		t.tex_height = t.tex_width;
 	}
 }
@@ -195,7 +195,7 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 
 
 	// lights
-	foreach(ModelEffect &fx, m->fx){
+	for (ModelEffect &fx: m->fx){
 		if (fx.type == FX_TYPE_LIGHT){
 			msg_write("......fx light");
 			Light l;
@@ -274,9 +274,9 @@ void LightmapData::AddTerrain(WorldTerrain &wt, int terrain_index)
 
 void LightmapData::AddTextureLevels(bool modify)
 {
-	foreach(Model &m, Models){
+	for (Model &m: Models){
 		if (modify){
-			foreach(ModelMaterial &mat, m.orig->material)
+			for (ModelMaterial &mat: m.orig->material)
 				mat.num_textures ++;
 		}
 		m.orig->automap(-1, 1); // TODO...
@@ -329,7 +329,7 @@ void LightmapData::Triangle::Rasterize(LightmapData *l, int i)
 void LightmapData::CreateVertices()
 {
 	Vertices.clear();
-	foreach(Model &m, Models){
+	for (Model &m: Models){
 		int w = m.tex_width;
 		int h = m.tex_height;
 
@@ -346,7 +346,7 @@ void LightmapData::CreateVertices()
 			t.Rasterize(this, i);
 		}
 	}
-	foreach(Terrain &ter, Terrains){
+	for (Terrain &ter: Terrains){
 		int w = ter.tex_width;
 		int h = ter.tex_height;
 

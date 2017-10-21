@@ -31,7 +31,7 @@ void ActionModelSurfacesSubdivide::SubdivideSurface(DataModel *m, ModelSurface *
 	// new polygon vertices
 	int nv_p0 = m->vertex.num;
 	Array<vector> new_poly_vert;
-	foreach(ModelPolygon &p, s->polygon){
+	for (ModelPolygon &p: s->polygon){
 		vector pos = v_0;
 		for (int k=0; k<p.side.num; k++)
 			pos += m->vertex[p.side[k].vertex].pos;
@@ -43,7 +43,7 @@ void ActionModelSurfacesSubdivide::SubdivideSurface(DataModel *m, ModelSurface *
 	// new edge vertices
 	Array<vector> old_edge_vert;
 	int nv_e0 = m->vertex.num;
-	foreach(ModelEdge &e, s->edge){
+	for (ModelEdge &e: s->edge){
 		vector pos = m->vertex[e.vertex[0]].pos + m->vertex[e.vertex[1]].pos;
 		old_edge_vert.add(pos / 2);
 		for (int k=0; k<e.ref_count; k++)
@@ -53,7 +53,7 @@ void ActionModelSurfacesSubdivide::SubdivideSurface(DataModel *m, ModelSurface *
 	}
 
 	// move old vertices
-	foreach(int v, s->vertex){
+	for (int v: s->vertex){
 		vector F = v_0, R = v_0, P = m->vertex[v].pos;
 		int n = 0;
 		foreachi(ModelPolygon &p, s->polygon, i)

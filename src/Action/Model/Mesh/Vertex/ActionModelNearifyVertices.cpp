@@ -41,7 +41,7 @@ void *ActionModelNearifyVertices::execute(Data *d)
 	old_pos.clear();
 	vector v = v_0;
 
-	foreach(int i, index){
+	for (int i: index){
 		// save old data
 		old_pos.add(m->vertex[i].pos);
 
@@ -53,7 +53,7 @@ void *ActionModelNearifyVertices::execute(Data *d)
 		v /= index.num;
 
 	// apply
-	foreach(int i, index)
+	for (int i: index)
 		m->vertex[i].pos = v;
 
 	m->setNormalsDirtyByVertices(index);

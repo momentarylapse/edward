@@ -30,7 +30,7 @@ void *ActionModelDeleteEmptySurface::execute(Data *d)
 	m->surface.erase(surface);
 
 	// correct vertex/surface references
-	foreach(ModelVertex &v, m->vertex){
+	for (ModelVertex &v: m->vertex){
 		assert(v.surface != surface);
 		if (v.surface > surface)
 			v.surface --;
@@ -49,7 +49,7 @@ void ActionModelDeleteEmptySurface::undo(Data *d)
 	s->is_visible = is_visible;
 
 	// correct vertex/surface references
-	foreach(ModelVertex &v, m->vertex)
+	for (ModelVertex &v: m->vertex)
 		if (v.surface >= surface)
 			v.surface ++;
 }

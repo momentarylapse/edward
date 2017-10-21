@@ -26,7 +26,7 @@ void *ActionModelSetNormalModeSelection::execute(Data *d)
 
 	// per vertex
 	old_mode.clear();
-	foreach(int i, index){
+	for (int i: index){
 		old_mode.add(m->vertex[i].normal_mode);
 		m->vertex[i].normal_mode = mode;
 	}

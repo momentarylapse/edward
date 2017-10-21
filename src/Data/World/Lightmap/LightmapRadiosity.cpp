@@ -63,11 +63,11 @@ void LightmapRadiosity::Iterate()
 {
 
 	// reset
-	foreach(LightmapData::Vertex &v, data->Vertices)
+	for (LightmapData::Vertex &v: data->Vertices)
 		v._rad2 = v.em * data->emissive_brightness;
 
 	// iterate
-	foreach(LightmapData::Vertex &a, data->Vertices){
+	for (LightmapData::Vertex &a: data->Vertices){
 		foreachi(int i, a.visible, ii){
 			LightmapData::Vertex &b = data->Vertices[i];
 			/*msg_write(f2s(a.coeff[ii]  * b.area, 6));
@@ -84,7 +84,7 @@ void LightmapRadiosity::Iterate()
 		AddLight();*/
 
 	// set and check...
-	foreach(LightmapData::Vertex &v, data->Vertices){
+	for (LightmapData::Vertex &v: data->Vertices){
 		v.rad = v._rad2;
 		/*if (v.rad.r > 5)
 			v.rad.r = 5;

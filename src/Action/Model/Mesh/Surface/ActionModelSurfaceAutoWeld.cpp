@@ -41,8 +41,8 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 	// find pairs of vertices close to each other
 	// use edges instead???
 	Array<int> wa, wb;
-	foreach(int va, a->vertex){
-		foreach(int vb, b->vertex){
+	for (int va: a->vertex){
+		for (int vb: b->vertex){
 			if ((m->vertex[va].pos - m->vertex[vb].pos).length() <= epsilon){
 				wa.add(va);
 				wb.add(vb);
@@ -82,7 +82,7 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 
 	// remove obsolete vertices
 	Set<int> vv;
-	foreach(int w, wb)
+	for (int w: wb)
 		vv.add(w);
 	foreachb(int ww, vv){
 		/*if (m->Vertex[ww].RefCount > 0)

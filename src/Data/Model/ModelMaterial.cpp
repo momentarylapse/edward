@@ -115,24 +115,24 @@ void ModelMaterial::checkTransparency()
 void ModelMaterial::checkTextures()
 {
 	// parent has more texture levels?
-	if (material->num_textures > num_textures){
-		for (int i=num_textures;i<material->num_textures;i++){
+	if (material->textures.num > num_textures){
+		for (int i=num_textures;i<material->textures.num;i++){
 			texture_file[i] = "";
 			texture[i] = NULL;
 		}
-		num_textures = material->num_textures;
+		num_textures = material->textures.num;
 		ed->setMessage(_("Anzahl der Texturen wurde an das Material angepasst!"));
 	}
 
 	// load all textures
 	for (int i=0;i<num_textures;i++)
-		texture[i] = NixLoadTexture(texture_file[i]);
+		texture[i] = nix::LoadTexture(texture_file[i]);
 
 	// parent overwrites unused textures
-	for (int i=0;i<material->num_textures;i++)
+	for (int i=0;i<material->textures.num;i++)
 		if (texture[i] < 0)
 			if (texture_file[i].num == 0)
-				texture[i] = material->texture[i];
+				texture[i] = material->textures[i];
 }
 
 void ModelMaterial::checkColors()
@@ -148,32 +148,35 @@ void ModelMaterial::checkColors()
 
 void ModelMaterial::applyForRendering()
 {
-	NixSetAlpha(AlphaNone);
-	NixSetShader(NULL);
+	nix::SetAlpha(AlphaNone);
+	nix::SetShader(NULL);
 	color em = ColorInterpolate(emission, White, 0.1f);
-	NixSetMaterial(ambient, diffuse, specular, shininess, em);
+	nix::SetMaterial(ambient, diffuse, specular, shininess, em);
 	if (true){//MVFXEnabled){
-		NixSetZ(alpha_zbuffer, alpha_zbuffer);
+		nix::SetZ(alpha_zbuffer, alpha_zbuffer);
 		if (transparency_mode == TransparencyModeColorKeyHard)
-			NixSetAlpha(AlphaColorKeyHard);
+			nix::SetAlpha(AlphaColorKeyHard);
 		else if (transparency_mode == TransparencyModeColorKeySmooth)
-			NixSetAlpha(AlphaColorKeySmooth);
+			nix::SetAlpha(AlphaColorKeySmooth);
 		else if (transparency_mode == TransparencyModeFunctions){
-			NixSetAlpha(alpha_source, alpha_destination);
+			nix::SetAlpha(alpha_source, alpha_destination);
 			//NixSetZ(false,false);
 		}else if (transparency_mode == TransparencyModeFactor){
-			NixSetAlpha(alpha_factor);
+			nix::SetAlpha(alpha_factor);
 			//NixSetZ(false,false);
 		}
-		NixSetShader(material->shader);
+		nix::SetShader(material->shader);
 	}
+	Array<nix::Texture*> tex;
 	if (material->cube_map >= 0){
 		// evil hack
-		for (int i=material->num_textures+1;i<4;i++)
-			texture[i] = NULL;
-		texture[3] = material->cube_map;
-		NixSetTextures(texture, 4);
-	}else
-		NixSetTextures(texture, num_textures);
+		tex.add(texture[0]);
+		tex.add(texture[1]);
+		tex.add(texture[2]);
+		tex.add(material->cube_map);
+		nix::SetTextures(tex);
+	}else{
+		nix::SetTextures(material->textures);
+	}
 }
 

@@ -42,7 +42,7 @@ bool ImporterCairo::Import(DataFont *f, const string &font_name)
 		bool ok = TryImport(f, font_name, ImportCairoTrySize[n][0], ImportCairoTrySize[n][1], im);
 		if (ok){
 			f->global.TextureFile = "Font/" + font_name + ".tga";
-			im.save(NixTextureDir + f->global.TextureFile);
+			im.save(nix::texture_dir + f->global.TextureFile);
 			f->notify();
 			return true;
 		}
@@ -83,7 +83,7 @@ bool ImporterCairo::TryImport(DataFont *f, const string &font_name, int w_tex, i
 	f->global.GlyphY2 = baseline;
 	f->global.GlyphY1 = baseline / 5;
 
-	foreach(DataFont::Glyph &g, f->glyph){
+	for (DataFont::Glyph &g: f->glyph){
 		pango_layout_set_text(layout, g.Name.c_str(), -1);
 		PangoRectangle r, r_log;
 		pango_layout_get_pixel_extents(layout, &r, &r_log);

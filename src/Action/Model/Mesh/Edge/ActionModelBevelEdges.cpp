@@ -28,7 +28,7 @@ void *ActionModelBevelEdges::compose(Data *d)
 
 	foreachi(ModelSurface &s, m->surface, i){
 		bevelSurface(m, &s, i);
-		_foreach_it_.update();
+		//_foreach_it_.update();
 	}
 	return NULL;
 }
@@ -72,7 +72,7 @@ struct PolygonRelink
 	{
 		if (v.num == 0){
 			v.resize(p->side.num * 2);
-			foreach(VertexToCome *&vv, v)
+			for (VertexToCome *&vv: v)
 				vv = NULL;
 			sv.resize(p->side.num * 2 * MATERIAL_MAX_TEXTURES);
 		}
@@ -107,7 +107,7 @@ int get_next_edge(ModelSurface *s, int edge, int ek, int dir, int &next_dir)
 
 void ActionModelBevelEdges::build_vertices(Array<VertexToCome> &vv, DataModel *m)
 {
-	foreach(VertexToCome &v, vv)
+	for (VertexToCome &v: vv)
 		if (v.ref_count > 0){
 			v.v = m->vertex.num;
 			addSubAction(new ActionModelAddVertex(v.pos, v.bone), m);
@@ -217,7 +217,7 @@ void ActionModelBevelEdges::bevelSurface(DataModel *m, ModelSurface *s, int surf
 			vd.v = v;
 			vd.closed = true;
 
-			foreach(ModelEdge &e, s->edge)
+			for (ModelEdge &e: s->edge)
 				if ((e.vertex[0] == v) || (e.vertex[1] == v))
 					vd.closed &= (e.ref_count == 2);
 			vdata[vi] = vd;
@@ -318,7 +318,7 @@ void ActionModelBevelEdges::bevelSurface(DataModel *m, ModelSurface *s, int surf
 	// really build stuff
 	build_vertices(ev[0], m);
 	build_vertices(ev[1], m);
-	foreach(Array<VertexToCome> &vv, pv)
+	for (Array<VertexToCome> &vv: pv)
 		build_vertices(vv, m);
 
 	// relink
@@ -327,7 +327,7 @@ void ActionModelBevelEdges::bevelSurface(DataModel *m, ModelSurface *s, int surf
 			do_poly_relink(s->polygon[i], r, i, surface, m);
 
 	// new polygons
-	foreach(PolygonToCome &p, new_poly){
+	for (PolygonToCome &p: new_poly){
 		Array<int> v;
 		for (int k=0;k<p.v.num;k++)
 			v.add(p.v[k]->v);

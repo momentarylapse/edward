@@ -19,12 +19,12 @@ ActionModelSurfaceCopy::ActionModelSurfaceCopy(int _surface)
 	int dv = m->vertex.num;
 
 	// copy vertices
-	foreach(int v, s->vertex){
+	for (int v, s->vertex){
 		addSubAction(new ActionModelAddVertex(m->vertex[v].pos), m);
 		//m->Vertex.back().Surface = m->Surface.num;
 	}
 
-	foreach(ModelPolygon &t, s->polygon){
+	for (ModelPolygon &t, s->polygon){
 		int v[3];
 		for (int k=0;k<t.side.num;k++)
 			foreachi(int vv, s->vertex, vi)
@@ -44,7 +44,7 @@ ActionModelSurfaceCopy::ActionModelSurfaceCopy(int _surface)
 		r->Vertex.add(i + dv);
 
 	// correct triangles
-	foreach(r->Triangle, t){
+	for (r->Triangle, t){
 		for (int k=0;k<3;k++){
 			t->Vertex[k] = s->Vertex.find(t->Vertex[k]) + dv;
 			m->Vertex[t->Vertex[k]].RefCount ++;
@@ -52,7 +52,7 @@ ActionModelSurfaceCopy::ActionModelSurfaceCopy(int _surface)
 	}
 
 	// correct edges
-	foreach(r->Edge, e)
+	for (r->Edge, e)
 		for (int k=0;k<2;k++)
 			e->Vertex[k] = s->Vertex.find(e->Vertex[k]) + dv;*/
 
@@ -71,13 +71,13 @@ void *ActionModelSurfaceCopy::compose(Data *d)
 	int dv = m->vertex.num;
 
 	// copy vertices
-	foreach(int v, s.vertex)
+	for (int v: s.vertex)
 		addSubAction(new ActionModelAddVertex(m->vertex[v].pos), m);
 
 	int s_no = m->surface.num;
 	ModelSurface *copy = (ModelSurface*)addSubAction(new ActionModelAddEmptySurface(), m);
 
-	foreach(ModelPolygon &t, s.polygon){
+	for (ModelPolygon &t: s.polygon){
 		Array<int> v = t.getVertices();
 		Array<vector> sv = t.getSkinVertices();
 		for (int k=0;k<t.side.num;k++)
@@ -87,7 +87,7 @@ void *ActionModelSurfaceCopy::compose(Data *d)
 		addSubAction(new ActionModelSurfaceAddPolygon(s_no, v, t.material, sv), m);
 	}
 
-	foreach(ModelPolygon &cp, copy->polygon)
+	for (ModelPolygon &cp: copy->polygon)
 		cp.temp_normal = cp.getNormal(m->vertex);
 
 	return copy;

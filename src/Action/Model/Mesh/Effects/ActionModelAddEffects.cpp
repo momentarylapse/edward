@@ -18,7 +18,7 @@ ActionModelAddEffects::ActionModelAddEffects(DataModel *m, const ModelEffect& _e
 void* ActionModelAddEffects::execute(Data* d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreach(int v, vertex){
+	for (int v: vertex){
 		ModelEffect fx = effect;
 		fx.vertex = v;
 		m->fx.add(fx);

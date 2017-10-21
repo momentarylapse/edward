@@ -75,8 +75,8 @@ void LightmapPhotonMap::DoStep(int index, int worker_id)
 
 bool LightmapPhotonMap::OnStatus()
 {
-	HuiSleep(0.050f);
-	int cur = done + GetDone();
+	hui::Sleep(0.050f);
+	int cur = done + getDone();
 	ed->progress->set(format(_("%d von %d"), cur, num_photons), (float)cur / (float)num_photons);
 	return !ed->progress->isCancelled();
 }
@@ -84,10 +84,10 @@ bool LightmapPhotonMap::OnStatus()
 void LightmapPhotonMap::Compute()
 {
 	done = 0;
-	foreach(Emitter &em, Emitters){
+	for (Emitter &em: Emitters){
 		int n_photons = (int)((float) num_photons * em.energy / total_energy);
 		cur_em_tria = em.tria;
-		if (!Run(n_photons, 256))
+		if (!run(n_photons, 256))
 			throw Lightmap::AbortException();
 		done += n_photons;
 	}
@@ -167,7 +167,7 @@ Lightmap::Histogram LightmapPhotonMap::GetHistogram()
 {
 	Array<float> e;
 	e.resize(data->Trias.num);
-	foreach(PhotonEvent &ev, photon)
+	for (PhotonEvent &ev: photon)
 		e[ev.tria] += (ev.c.r + ev.c.g + ev.c.b) / 3.0f / data->Trias[ev.tria].area;
 
 	return Lightmap::Histogram(e);

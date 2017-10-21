@@ -169,7 +169,7 @@ void DataModel::debugShow()
 	msg_write("------------");
 	msg_write(vertex.num);
 	msg_write(surface.num);
-	foreach(ModelSurface &s, surface){
+	for (ModelSurface &s: surface){
 		msg_write(s.polygon.num);
 		s.testSanity("Model.DebugShow");
 	}
@@ -177,7 +177,7 @@ void DataModel::debugShow()
 
 bool DataModel::testSanity(const string &loc)
 {
-	foreach(ModelSurface &s, surface){
+	for (ModelSurface &s: surface){
 		if (!s.testSanity(loc))
 			return false;
 	}
@@ -190,18 +190,18 @@ void DataModel::onPostActionUpdate()
 	showVertices(vertex);
 
 	updateNormals();
-	foreach(ModelSurface &s, surface){
+	for (ModelSurface &s: surface){
 		s.pos = v_0;
 		for (int k=0;k<s.vertex.num;k++)
 			s.pos += vertex[s.vertex[k]].pos;
 		s.pos /= s.vertex.num;
-		foreach(ModelPolygon &p, s.polygon){
+		for (ModelPolygon &p: s.polygon){
 			p.pos = v_0;
 			for (int k=0;k<p.side.num;k++)
 				p.pos += vertex[p.side[k].vertex].pos;
 			p.pos /= p.side.num;
 		}
-		foreach(ModelEdge &e, s.edge)
+		for (ModelEdge &e: s.edge)
 			e.pos = (vertex[e.vertex[0]].pos + vertex[e.vertex[1]].pos) / 2;
 	}
 }
@@ -670,7 +670,7 @@ bool DataModel::load(const string & _filename, bool deep)
 	// Skeleton
 		f->ReadComment();
 		bone.resize(f->ReadInt());
-		foreach(ModelBone &b, bone){
+		for (ModelBone &b: bone){
 			f->ReadVector(&b.pos);
 			b.parent = f->ReadInt();
 			if ((b.parent < 0) || (b.parent >= bone.num))
@@ -704,7 +704,7 @@ bool DataModel::load(const string & _filename, bool deep)
 
 			// vertex animation
 			if (m->type == MOVE_TYPE_VERTEX){
-				foreach(ModelFrame &fr, m->frame){
+				for (ModelFrame &fr: m->frame){
 					fr.duration = 1;
 					if (rubber_timing)
 						fr.duration = f->ReadFloat();
@@ -724,7 +724,7 @@ bool DataModel::load(const string & _filename, bool deep)
 					VarDeltaPos[j] = f->ReadBool();
 				m->interpolated_quadratic = f->ReadBool();
 				m->interpolated_loop = f->ReadBool();
-				foreach(ModelFrame &fr, m->frame){
+				for (ModelFrame &fr: m->frame){
 					fr.duration = 1;
 					if (rubber_timing)
 						fr.duration = f->ReadFloat();
@@ -829,10 +829,10 @@ bool DataModel::load(const string & _filename, bool deep)
 			ModelSkin *s = &skin[i];
 			int normal_mode_all = f->ReadInt();
 			if (normal_mode_all == NORMAL_MODE_PER_VERTEX){
-				foreach(ModelVertex &v, s->vertex)
+				for (ModelVertex &v: s->vertex)
 					v.normal_mode = f->ReadInt();
 			}else{
-				foreach(ModelVertex &v, s->vertex)
+				for (ModelVertex &v: s->vertex)
 					v.normal_mode = normal_mode_all;
 			}
 		}
@@ -870,7 +870,7 @@ bool DataModel::load(const string & _filename, bool deep)
 				s.model = this;
 				surface.add(s);
 			}
-			foreach(ModelSurface &s, surface)
+			for (ModelSurface &s: surface)
 				s.buildFromPolygons();
 			endActionGroup();
 		}
@@ -902,9 +902,9 @@ bool DataModel::load(const string & _filename, bool deep)
 		if (surface.num == 0)
 			importFromTriangleSkin(1);
 
-		foreach(ModelMove &m, move)
+		for (ModelMove &m: move)
 			if (m.type == MOVE_TYPE_VERTEX){
-				foreach(ModelFrame &f, m.frame)
+				for (ModelFrame &f: m.frame)
 					f.vertex_dpos = f.skin[1].dpos;
 			}
 
@@ -949,7 +949,7 @@ void DataModel::importFromTriangleSkin(int index)
 		vertex[i].bone_index = v.bone_index;
 	}
 	for (int i=0;i<material.num;i++){
-		foreach(ModelTriangle &t, s.sub[i].triangle){
+		for (ModelTriangle &t: s.sub[i].triangle){
 			if ((t.vertex[0] == t.vertex[1]) || (t.vertex[1] == t.vertex[2]) || (t.vertex[2] == t.vertex[0]))
 				continue;
 			Array<int> v;
@@ -969,7 +969,7 @@ void DataModel::importFromTriangleSkin(int index)
 		addVertex(v.pos);
 		vertex[i].bone_index = v.bone_index;
 	}
-	foreach(ModelPolyhedron &p, poly){
+	for (ModelPolyhedron &p: poly){
 		msg_write("----");
 		int nv0 = vertex.num;
 		Array<int> vv;
@@ -1014,10 +1014,10 @@ void DataModel::exportToTriangleSkin(int index)
 	sk.vertex = vertex;
 	sk.sub.clear();
 	sk.sub.resize(material.num);
-	foreach(ModelSurface &s, surface){
+	for (ModelSurface &s: surface){
 		if (!s.is_visible)
 			continue;
-		foreach(ModelPolygon &t, s.polygon){
+		for (ModelPolygon &t: s.polygon){
 			if (t.triangulation_dirty)
 				t.updateTriangulation(vertex);
 			for (int i=0;i<t.side.num-2;i++){
@@ -1120,7 +1120,7 @@ bool DataModel::save(const string & _filename)
 // materials
 	f->WriteComment("// Materials");
 	f->WriteInt(material.num);
-	foreach(ModelMaterial &m, material){
+	for (ModelMaterial &m: material){
 		f->WriteStr(m.material_file);
 		f->WriteBool(m.user_color);
 		write_color_argb(f, m.ambient);
@@ -1197,9 +1197,9 @@ bool DataModel::save(const string & _filename)
 
 		// verices
 		f->WriteInt(s->vertex.num);
-		foreach(ModelVertex &v, s->vertex)
+		for (ModelVertex &v: s->vertex)
 			f->WriteVector(&v.pos);
-		foreach(ModelVertex &v, s->vertex)
+		for (ModelVertex &v: s->vertex)
 			f->WriteInt(v.bone_index);
 
 	    // skin vertices
@@ -1250,7 +1250,7 @@ bool DataModel::save(const string & _filename)
 // skeleton
 	f->WriteComment("// Skeleton");
 	f->WriteInt(bone.num);
-	foreach(ModelBone &b, bone){
+	for (ModelBone &b: bone){
 		if (b.parent >= 0){
 			vector dpos = b.pos - bone[b.parent].pos;
 			f->WriteVector(&dpos);
@@ -1291,7 +1291,7 @@ bool DataModel::save(const string & _filename)
 
 			// vertex animation
 			if (m->type == MOVE_TYPE_VERTEX){
-				foreach(ModelFrame &fr, m->frame){
+				for (ModelFrame &fr: m->frame){
 					if (rubber_timing)
 						f->WriteFloat(fr.duration);
 					for (int s=0;s<4;s++){
@@ -1314,7 +1314,7 @@ bool DataModel::save(const string & _filename)
 					f->WriteBool((bone[j].parent < 0));
 				f->WriteBool(m->interpolated_quadratic);
 				f->WriteBool(m->interpolated_loop);
-				foreach(ModelFrame &fr, m->frame){
+				for (ModelFrame &fr: m->frame){
 					if (rubber_timing)
 						f->WriteFloat(fr.duration);
 					for (int j=0;j<bone.num;j++){
@@ -1402,17 +1402,17 @@ bool DataModel::save(const string & _filename)
 	for (int i=1;i<4;i++){
 		ModelSkin *s = &skin[i];
 		f->WriteInt(NORMAL_MODE_PER_VERTEX);
-		foreach(ModelVertex &v, s->vertex)
+		for (ModelVertex &v: s->vertex)
 			f->WriteInt(v.normal_mode);
 	}
 	f->WriteComment("// Polygons");
 	f->WriteInt(surface.num);
-	foreach(ModelSurface &s, surface){
+	for (ModelSurface &s: surface){
 		f->WriteInt(s.polygon.num);
-		foreach(ModelPolygon &t, s.polygon){
+		for (ModelPolygon &t: s.polygon){
 			f->WriteInt(t.side.num);
 			f->WriteInt(t.material);
-			foreach(ModelPolygonSide &ss, t.side){
+			for (ModelPolygonSide &ss: t.side){
 				f->WriteInt(ss.vertex);
 				for (int l=0;l<material[t.material].num_textures;l++){
 					f->WriteFloat(ss.skin_vertex[l].x);
@@ -1438,8 +1438,8 @@ void DataModel::setNormalsDirtyByVertices(const Array<int> &index)
 	for (int i=0; i<index.num; i++)
 		sindex.add(index[i]);
 
-	foreach(ModelSurface &s, surface)
-		foreach(ModelPolygon &t, s.polygon)
+	for (ModelSurface &s: surface)
+		for (ModelPolygon &t: s.polygon)
 			for (int k=0;k<t.side.num;k++)
 				if (!t.normal_dirty)
 					if (sindex.contains(t.side[k].vertex)){
@@ -1450,14 +1450,14 @@ void DataModel::setNormalsDirtyByVertices(const Array<int> &index)
 
 void DataModel::setAllNormalsDirty()
 {
-	foreach(ModelSurface &s, surface)
-		foreach(ModelPolygon &t, s.polygon)
+	for (ModelSurface &s: surface)
+		for (ModelPolygon &t: s.polygon)
 			t.normal_dirty = true;
 }
 
 void DataModel::updateNormals()
 {
-	foreach(ModelSurface &s, surface)
+	for (ModelSurface &s: surface)
 		s.updateNormals();
 }
 
@@ -1485,13 +1485,13 @@ void DataModel::addVertex(const vector &pos, int bone_index, int normal_mode)
 
 void DataModel::clearSelection()
 {
-	foreach(ModelVertex &v, vertex)
+	for (ModelVertex &v: vertex)
 		v.is_selected = false;
-	foreach(ModelSurface &s, surface){
+	for (ModelSurface &s: surface){
 		s.is_selected = false;
-		foreach(ModelPolygon &t, s.polygon)
+		for (ModelPolygon &t: s.polygon)
 			t.is_selected = false;
-		foreach(ModelEdge &e, s.edge)
+		for (ModelEdge &e: s.edge)
 			e.is_selected = false;
 	}
 	notify(MESSAGE_SELECTION);
@@ -1499,14 +1499,14 @@ void DataModel::clearSelection()
 
 void DataModel::selectionFromSurfaces()
 {
-	foreach(ModelVertex &v, vertex)
+	for (ModelVertex &v: vertex)
 		v.is_selected = false;
-	foreach(ModelSurface &s, surface){
-		foreach(int v, s.vertex)
+	for (ModelSurface &s: surface){
+		for (int v: s.vertex)
 			vertex[v].is_selected = s.is_selected;
-		foreach(ModelPolygon &t, s.polygon)
+		for (ModelPolygon &t: s.polygon)
 			t.is_selected = s.is_selected;
-		foreach(ModelEdge &e, s.edge)
+		for (ModelEdge &e: s.edge)
 			e.is_selected = s.is_selected;
 	}
 	notify(MESSAGE_SELECTION);
@@ -1514,21 +1514,21 @@ void DataModel::selectionFromSurfaces()
 
 void DataModel::selectionFromPolygons()
 {
-	foreach(ModelVertex &v, vertex)
+	for (ModelVertex &v: vertex)
 		v.is_selected = false;
-	foreach(ModelSurface &s, surface){
-		foreach(ModelEdge &e, s.edge)
+	for (ModelSurface &s: surface){
+		for (ModelEdge &e: s.edge)
 			e.is_selected = false;
-		foreach(ModelPolygon &t, s.polygon)
+		for (ModelPolygon &t: s.polygon)
 			if (t.is_selected)
 				for (int k=0;k<t.side.num;k++){
 					vertex[t.side[k].vertex].is_selected = true;
 					s.edge[t.side[k].edge].is_selected = true;
 				}
 	}
-	foreach(ModelSurface &s, surface){
+	for (ModelSurface &s: surface){
 		s.is_selected = true;
-		foreach(ModelPolygon &t, s.polygon)
+		for (ModelPolygon &t: s.polygon)
 			s.is_selected &= t.is_selected;
 	}
 	notify(MESSAGE_SELECTION);
@@ -1536,20 +1536,20 @@ void DataModel::selectionFromPolygons()
 
 void DataModel::selectionFromEdges()
 {
-	foreach(ModelVertex &v, vertex)
+	for (ModelVertex &v: vertex)
 		v.is_selected = false;
-	foreach(ModelSurface &s, surface){
-		foreach(ModelEdge &e, s.edge)
+	for (ModelSurface &s: surface){
+		for (ModelEdge &e: s.edge)
 			if (e.is_selected)
 				for (int k=0;k<2;k++)
 					vertex[e.vertex[k]].is_selected = true;
-		foreach(ModelPolygon &p, s.polygon){
+		for (ModelPolygon &p: s.polygon){
 			p.is_selected = true;
 			for (int k=0;k<p.side.num;k++)
 				p.is_selected &= s.edge[p.side[k].edge].is_selected;
 		}
 		s.is_selected = true;
-		foreach(ModelEdge &e, s.edge)
+		for (ModelEdge &e: s.edge)
 			s.is_selected &= e.is_selected;
 	}
 	notify(MESSAGE_SELECTION);
@@ -1557,13 +1557,13 @@ void DataModel::selectionFromEdges()
 
 void DataModel::selectionFromVertices()
 {
-	foreach(ModelSurface &s, surface){
+	for (ModelSurface &s: surface){
 		s.is_selected = true;
-		foreach(ModelEdge &e, s.edge){
+		for (ModelEdge &e: s.edge){
 			e.is_selected = (vertex[e.vertex[0]].is_selected && vertex[e.vertex[1]].is_selected);
 			e.view_stage = min(vertex[e.vertex[0]].view_stage, vertex[e.vertex[1]].view_stage);
 		}
-		foreach(ModelPolygon &t, s.polygon){
+		for (ModelPolygon &t: s.polygon){
 			t.is_selected = true;
 			t.view_stage = vertex[t.side[0].vertex].view_stage;
 			for (int k=0;k<t.side.num;k++){
@@ -1578,7 +1578,7 @@ void DataModel::selectionFromVertices()
 
 void DataModel::selectOnlySurface(ModelSurface *s)
 {
-	foreach(ModelSurface &ss, surface)
+	for (ModelSurface &ss: surface)
 		ss.is_selected = (&ss == s);
 	selectionFromSurfaces();
 }
@@ -1632,7 +1632,7 @@ ModelSurface *DataModel::surfaceJoin(ModelSurface *a, ModelSurface *b)
 	int bi = get_surf_no(b);
 
 	// correct edge data of b
-	foreach(ModelEdge &e, b->edge){
+	for (ModelEdge &e: b->edge){
 		if (e.polygon[0] >= 0)
 			e.polygon[0] += a->polygon.num;
 		if (e.polygon[1] >= 0)
@@ -1640,12 +1640,12 @@ ModelSurface *DataModel::surfaceJoin(ModelSurface *a, ModelSurface *b)
 	}
 
 	// correct triangle data of b
-	foreach(ModelPolygon &t, b->polygon)
+	for (ModelPolygon &t: b->polygon)
 		for (int k=0;k<t.side.num;k++)
 			t.side[k].edge += a->edge.num;
 
 	// correct vertex data of b
-	foreach(int v, b->vertex)
+	for (int v: b->vertex)
 		vertex[v].surface = ai;
 
 	// insert data
@@ -1673,7 +1673,7 @@ void DataModel::createSkin(ModelSkin *src, ModelSkin *dst, float quality_factor)
 float DataModel::getRadius()
 {
 	float radius = 0;
-	foreach(ModelVertex &v, vertex)
+	for (ModelVertex &v: vertex)
 		radius = max(v.pos.length(), radius);
 	return radius;
 }
@@ -1711,7 +1711,7 @@ matrix3 DataModel::generateInertiaTensor(float mass)
 
 	// estimate size
 	vector min = v_0, max = v_0;
-	foreach(ModelVertex &v, vertex){
+	for (ModelVertex &v: vertex){
 		min._min(v.pos);
 		max._max(v.pos);
 	}
@@ -1733,7 +1733,7 @@ matrix3 DataModel::generateInertiaTensor(float mass)
 	for (int i=0;i<9;i++)
 		t.e[i] = 0;
 
-	foreach(ModelSurface &s, surface)
+	for (ModelSurface &s: surface)
 		s.beginInsideTests();
 
 	for (int i=0;i<n_theta;i++){
@@ -1751,7 +1751,7 @@ matrix3 DataModel::generateInertiaTensor(float mass)
 					if (VecLength(r-p->Vertex[b->Index].Pos)<b->Radius)
 						inside=true;
 				}*/
-				foreach(ModelSurface &s, surface)
+				for (ModelSurface &s: surface)
 					if (s.insideTest(r)){
 						inside = true;
 						break;
@@ -1771,7 +1771,7 @@ matrix3 DataModel::generateInertiaTensor(float mass)
 	}
 
 
-	foreach(ModelSurface &s, surface)
+	for (ModelSurface &s: surface)
 		s.endInsideTests();
 
 	if (num_ds>0){
@@ -1796,7 +1796,7 @@ int DataModel::getNumSelectedVertices()
 				r++;
 		return r;
 	}*/
-	foreach(ModelVertex &v, vertex)
+	for (ModelVertex &v: vertex)
 		if (v.is_selected)
 			r ++;
 	return r;
@@ -1805,7 +1805,7 @@ int DataModel::getNumSelectedVertices()
 int DataModel::getNumSelectedSkinVertices()
 {
 	int r = 0;
-	foreach(ModelSkinVertexDummy &v, skin_vertex)
+	for (ModelSkinVertexDummy &v: skin_vertex)
 		if (v.is_selected)
 			r ++;
 	return r;
@@ -1814,8 +1814,8 @@ int DataModel::getNumSelectedSkinVertices()
 int DataModel::getNumSelectedPolygons()
 {
 	int r = 0;
-	foreach(ModelSurface &s, surface)
-		foreach(ModelPolygon &t, s.polygon)
+	for (ModelSurface &s: surface)
+		for (ModelPolygon &t: s.polygon)
 			if (t.is_selected)
 				r ++;
 	return r;
@@ -1824,7 +1824,7 @@ int DataModel::getNumSelectedPolygons()
 int DataModel::getNumSelectedSurfaces()
 {
 	int r = 0;
-	foreach(ModelSurface &s, surface)
+	for (ModelSurface &s: surface)
 		if (s.is_selected)
 			r ++;
 	return r;
@@ -1833,7 +1833,7 @@ int DataModel::getNumSelectedSurfaces()
 int DataModel::getNumSelectedBones()
 {
 	int r = 0;
-	foreach(ModelBone &b, bone)
+	for (ModelBone &b: bone)
 		if (b.is_selected)
 			r ++;
 	return r;
@@ -1842,7 +1842,7 @@ int DataModel::getNumSelectedBones()
 int DataModel::getNumPolygons()
 {
 	int r = 0;
-	foreach(ModelSurface &s, surface)
+	for (ModelSurface &s: surface)
 		r += s.polygon.num;
 	return r;
 }
@@ -1902,8 +1902,8 @@ void DataModel::copyGeometry(Geometry &geo)
 		}
 
 	// copy triangles
-	foreach(ModelSurface &s, surface)
-		foreach(ModelPolygon &t, s.polygon)
+	for (ModelSurface &s: surface)
+		for (ModelPolygon &t: s.polygon)
 			if (t.is_selected){
 				ModelPolygon tt = t;
 				for (int k=0;k<t.side.num;k++)
@@ -2043,15 +2043,15 @@ void DataModel::getSelectionState(ModelSelectionState& s)
 void DataModel::setSelectionState(ModelSelectionState& s)
 {
 	clearSelection();
-	foreach(int v, s.vertex)
+	for (int v: s.vertex)
 		vertex[v].is_selected = true;
-	foreach(int si, s.surface)
+	for (int si: s.surface)
 		surface[si].is_selected = true;
 	for (int i=0;i<s.polygon.num;i++)
-		foreach(int j, s.polygon[i])
+		for (int j: s.polygon[i])
 			surface[i].polygon[j].is_selected = true;
 	for (int i=0;i<s.edge.num;i++)
-		foreach(ModelSelectionState::EdgeSelection &es, s.edge[i]){
+		for (ModelSelectionState::EdgeSelection &es: s.edge[i]){
 			int ne = surface[i].findEdge(es.v[0], es.v[1]);
 			if (ne >= 0)
 				surface[i].edge[ne].is_selected = true;
@@ -2091,14 +2091,14 @@ ModelSelectionState::EdgeSelection::EdgeSelection(int _v[2])
 float ModelMove::duration()
 {
 	float t = 0;
-	foreach(ModelFrame &f, frame)
+	for (ModelFrame &f: frame)
 		t += f.duration;
 	return t;
 }
 
 bool ModelMove::needsRubberTiming()
 {
-	foreach(ModelFrame &f, frame)
+	for (ModelFrame &f: frame)
 		if (fabs(f.duration - 1.0f) > 0.01f)
 			return true;
 	return false;

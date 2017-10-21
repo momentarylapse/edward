@@ -99,7 +99,7 @@ void ModelSurface::addPolygon(Array<int> &v, int material, Array<vector> &sv, in
 		polygon.insert(t, index);
 
 		// correct edges
-		foreach(ModelEdge &e, edge)
+		for (ModelEdge &e: edge)
 			for (int k=0;k<e.ref_count;k++)
 				if (e.polygon[k] >= index)
 					e.polygon[k] ++;
@@ -200,7 +200,7 @@ void ModelSurface::updateClosed()
 {
 	// closed?
 	is_closed = true;
-	foreach(ModelEdge &e, edge)
+	for (ModelEdge &e: edge)
 		if (e.ref_count != 2){
 			is_closed = false;
 			break;
@@ -211,7 +211,7 @@ void ModelSurface::removeObsoleteEdge(int index)
 {
 	msg_db_f("Surf.RemoveObsoleteEdge", 2);
 	// correct triangle references
-	foreach(ModelPolygon &t, polygon)
+	for (ModelPolygon &t: polygon)
 		for (int k=0;k<t.side.num;k++)
 			if (t.side[k].edge > index)
 				t.side[k].edge --;
@@ -261,7 +261,7 @@ void ModelSurface::updateNormals()
 	Set<int> ee, vert;
 
 	// "flat" triangle normals
-	foreach(ModelPolygon &t, polygon)
+	for (ModelPolygon &t: polygon)
 		if (t.normal_dirty){
 			t.normal_dirty = false;
 
@@ -276,7 +276,7 @@ void ModelSurface::updateNormals()
 		}
 
 	// round edges?
-	foreach(int ip, ee){
+	for (int ip: ee){
 		ModelEdge &e = edge[ip];
 
 		// adjoined triangles
@@ -390,7 +390,7 @@ void ModelSurface::buildFromPolygons()
 	edge.clear();
 	vertex.clear();
 	int n = model->get_surf_no(this);
-	foreach(ModelVertex &v, model->vertex)
+	for (ModelVertex &v: model->vertex)
 		if (v.surface == n){
 			v.surface = -1;
 			v.ref_count = 0;
@@ -479,7 +479,7 @@ void ModelSurface::removePolygon(int index)
 
 bool ModelSurface::testSanity(const string &loc)
 {
-	foreach(ModelPolygon &t, polygon)
+	for (ModelPolygon &t: polygon)
 		for (int k=0;k<t.side.num;k++)
 			for (int kk=k+1;kk<t.side.num;kk++)
 				if (t.side[k].vertex == t.side[kk].vertex){
@@ -531,13 +531,13 @@ void ModelSurface::beginInsideTests()
 		return;
 	inside_data = new SurfaceInsideTestData;
 	/*inside_data->num_trias = 0;
-	foreach(ModelPolygon &t, Polygon)
+	for (ModelPolygon &t, Polygon)
 		inside_data->num_trias += (t.Side.num - 2);
 	inside_data->ray.resize(inside_data->num_trias * 3);
 	inside_data->pl.resize(inside_data->num_trias);
 	Ray *r = &inside_data->ray[0];
 	plane *pl = &inside_data->pl[0];
-	foreach(ModelPolygon &t, Polygon){
+	for (ModelPolygon &t, Polygon){
 		if (t.TriangulationDirty)
 			t.UpdateTriangulation(model->Vertex);
 		for (int k=0;k<t.Side.num-2;k++){
@@ -549,7 +549,7 @@ void ModelSurface::beginInsideTests()
 	}*/
 
 	float epsilon = model->getRadius() * 0.001f;
-	foreach(ModelPolygon &p, polygon)
+	for (ModelPolygon &p: polygon)
 		inside_data->add(p, model, epsilon);
 }
 
@@ -603,7 +603,7 @@ bool ModelSurface::insideTest(const vector &p)
 
 	/*Array<vector> v;
 	int n = 0;
-	foreach(ModelPolygon &t, Polygon){
+	for (ModelPolygon &t, Polygon){
 
 		// plane test
 		if (((p - model->Vertex[t.Side[0].Vertex].pos) * t.TempNormal > 0) == (t.TempNormal.x > 0))
@@ -656,7 +656,7 @@ Array<int> ModelSurface::getBoundaryLoop(int v0)
 	bool found = true;
 	while(found){
 		found = false;
-		foreach(ModelEdge &e, edge)
+		for (ModelEdge &e: edge)
 			if (e.ref_count == 1)
 				if (e.vertex[0] == last){
 					last = e.vertex[1];

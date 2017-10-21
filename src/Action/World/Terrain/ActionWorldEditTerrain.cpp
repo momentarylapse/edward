@@ -41,8 +41,8 @@ void *ActionWorldEditTerrain::execute(Data *d)
 	old_data.NumZ = t->num_z;
 	old_data.Pattern = t->pattern;
 	old_data.MaterialFile = t->material_file;
-	old_data.NumTextures = t->material->num_textures;
-	for (int i=0;i<t->material->num_textures;i++){
+	old_data.NumTextures = t->material->textures.num;
+	for (int i=0;i<t->material->textures.num;i++){
 		old_data.TextureFile[i] = t->texture_file[i];
 		old_data.TextureScale[i] = t->texture_scale[i];
 	}
@@ -51,17 +51,17 @@ void *ActionWorldEditTerrain::execute(Data *d)
 	t->pattern = data.Pattern;*/
 	t->material_file = data.MaterialFile;
 	t->material->copy_from(NULL, LoadMaterial(t->material_file), false);
-	t->material->num_textures = data.NumTextures;
-	for (int i=0;i<t->material->num_textures;i++){
+	t->material->textures.resize(data.NumTextures);
+	for (int i=0;i<t->material->textures.num;i++){
 		t->texture_file[i] = data.TextureFile[i];
-		t->material->texture[i] = NixLoadTexture(t->texture_file[i]);
+		t->material->textures[i] = nix::LoadTexture(t->texture_file[i]);
 		t->texture_scale[i] = data.TextureScale[i];
 	}
 
 	// update
 	if (old_data.NumTextures != data.NumTextures){
 		delete(t->vertex_buffer);
-		t->vertex_buffer = new NixVertexBuffer(data.NumTextures);
+		t->vertex_buffer = new nix::VertexBuffer(data.NumTextures);
 	}
 	t->force_redraw = true;
 

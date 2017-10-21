@@ -37,30 +37,30 @@ void ActionModelDeleteUnusedVertex::undo(Data *d)
 
 	// correct animations
 	int i = 0;
-	foreach(ModelMove &mv, m->move)
+	for (ModelMove &mv: m->move)
 		if (mv.type == MOVE_TYPE_VERTEX){
-			foreach(ModelFrame &f, mv.frame)
+			for (ModelFrame &f: mv.frame)
 				f.vertex_dpos.insert(move[i ++], vertex);
 		}
 
 
 	// correct references
-	foreach(ModelSurface &s, m->surface){
-		foreach(ModelPolygon &t, s.polygon)
+	for (ModelSurface &s: m->surface){
+		for (ModelPolygon &t: s.polygon)
 			for (int k=0;k<t.side.num;k++)
 				if (t.side[k].vertex >= vertex)
 					t.side[k].vertex ++;
-		foreach(ModelEdge &e, s.edge)
+		for (ModelEdge &e: s.edge)
 			for (int k=0;k<2;k++)
 				if (e.vertex[k] >= vertex)
 					e.vertex[k] ++;
-		foreach(int &v, s.vertex)
+		for (int &v: s.vertex)
 			if (v >= vertex)
 				v ++;
 	}
 
 	// fx
-	foreach(ModelEffect &f, m->fx)
+	for (ModelEffect &f: m->fx)
 		if (f.vertex >= vertex)
 			f.vertex ++;
 	foreachib(ModelEffect &f, fx, i)
@@ -82,25 +82,25 @@ void *ActionModelDeleteUnusedVertex::execute(Data *d)
 
 	// move data
 	move.clear();
-	foreach(ModelMove &mv, m->move)
+	for (ModelMove &mv: m->move)
 		if (mv.type == MOVE_TYPE_VERTEX){
-			foreach(ModelFrame &f, mv.frame){
+			for (ModelFrame &f: mv.frame){
 				move.add(f.vertex_dpos[vertex]);
 				f.vertex_dpos.erase(vertex);
 			}
 		}
 
 	// correct references
-	foreach(ModelSurface &s, m->surface){
-		foreach(ModelPolygon &t, s.polygon)
+	for (ModelSurface &s: m->surface){
+		for (ModelPolygon &t: s.polygon)
 			for (int k=0;k<t.side.num;k++)
 				if (t.side[k].vertex > vertex)
 					t.side[k].vertex --;
-		foreach(ModelEdge &e, s.edge)
+		for (ModelEdge &e: s.edge)
 			for (int k=0;k<2;k++)
 				if (e.vertex[k] > vertex)
 					e.vertex[k] --;
-		foreach(int &v, s.vertex)
+		for (int &v: s.vertex)
 			if (v > vertex)
 				v --;
 	}

@@ -21,7 +21,7 @@ void *ActionModelSurfaceVolumeSubtract::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	int n = 0;
-	foreach(ModelSurface &s, m->surface)
+	for (ModelSurface &s: m->surface)
 		if ((s.is_selected) && (s.is_closed))
 			n ++;
 	if (n == 0)
@@ -38,7 +38,7 @@ void *ActionModelSurfaceVolumeSubtract::compose(Data *d)
 			}
 		}
 	}
-	foreach(Geometry &g, geos)
+	for (Geometry &g: geos)
 		addSubAction(new ActionModelPasteGeometry(g, 0), m);
 
 	ed->setMessage(format(_("%d geschlossene Fl&achen subtrahiert"), n));
@@ -48,9 +48,9 @@ void *ActionModelSurfaceVolumeSubtract::compose(Data *d)
 void surf2geo(ModelSurface *s, Geometry &g)
 {
 	g.clear();
-	foreach(int v, s->vertex)
+	for (int v: s->vertex)
 		g.vertex.add(s->model->vertex[v]);
-	foreach(ModelPolygon &p, s->polygon){
+	for (ModelPolygon &p: s->polygon){
 		ModelPolygon pp = p;
 		for (int i=0;i<p.side.num;i++)
 			pp.side[i].vertex = s->vertex.find(p.side[i].vertex);

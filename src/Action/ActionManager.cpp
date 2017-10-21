@@ -23,6 +23,8 @@ ActionManager::ActionManager(Data *_data) :
 	cur_group_level = 0;
 	cur_group = NULL;
 	_preview = NULL;
+	enabled = true;
+	cur_level = 0;
 }
 
 ActionManager::~ActionManager()
@@ -32,7 +34,7 @@ ActionManager::~ActionManager()
 
 void ActionManager::reset()
 {
-	foreach(Action *a, action)
+	for (Action *a: action)
 		delete(a);
 	action.clear();
 	cur_pos = 0;

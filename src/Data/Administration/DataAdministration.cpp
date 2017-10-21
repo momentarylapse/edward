@@ -37,7 +37,7 @@ void DataAdministration::FraesDir(const string &root_dir, const string &dir, con
 	msg_db_f("FraesDir",1);
 	msg_db_m(dir.c_str(),1);
 	Array<DirEntry> list = dir_search(root_dir + dir, "*" + extension, true);
-	foreach(DirEntry &e, list){
+	for (DirEntry &e: list){
 		if (e.is_dir){
 			FraesDir(root_dir, dir + e.name + "/", extension);
 		}else{
@@ -91,16 +91,16 @@ bool DataAdministration::save(const string &_filename)
 	admin_file->WriteComment("// Number Of Files");
 	admin_file->WriteInt(file_list->num);
 	admin_file->WriteComment("// Files (type, filename, date, missing)");
-	foreach(AdminFile *a, *file_list){
+	for (AdminFile *a: *file_list){
 		admin_file->WriteInt(a->Kind);
 		admin_file->WriteStr(a->Name);
 		admin_file->WriteInt(a->Time);
 		admin_file->WriteBool(a->Missing);
 	}
 	admin_file->WriteComment("// Links (num dests, dests...)");
-	foreach(AdminFile *a, *file_list){
+	for (AdminFile *a: *file_list){
 		admin_file->WriteInt(a->Child.num);
-		foreach(AdminFile *d, a->Child){
+		for (AdminFile *d: a->Child){
 			int n=-1;
 			foreachi(AdminFile *aa, *file_list, k)
 				if (d == aa){
@@ -117,7 +117,7 @@ bool DataAdministration::save(const string &_filename)
 
 void DataAdministration::SaveDatabase()
 {
-	save(HuiAppDirectory + "Data/admin_database.txt");
+	save(app->directory + "Data/admin_database.txt");
 }
 
 void DataAdministration::reset()
@@ -142,7 +142,7 @@ bool DataAdministration::load(const string &_filename, bool deep)
 	}
 	// files
 	admin_file->ReadComment();
-	foreach(AdminFile *a, *file_list){
+	for (AdminFile *a: *file_list){
 		a->Kind = admin_file->ReadInt();
 		a->Name = admin_file->ReadStr().sys_filename();
 		a->Time = admin_file->ReadInt();
@@ -151,7 +151,7 @@ bool DataAdministration::load(const string &_filename, bool deep)
 	}
 	// links
 	admin_file->ReadComment();
-	foreach(AdminFile *a, *file_list){
+	for (AdminFile *a: *file_list){
 		int nd = admin_file->ReadInt();
 		for (int j=0;j<nd;j++){
 			int n = admin_file->ReadInt();
@@ -165,7 +165,7 @@ bool DataAdministration::load(const string &_filename, bool deep)
 
 void DataAdministration::LoadDatabase()
 {
-	load(HuiAppDirectory + "Data/admin_database.txt");
+	load(app->directory + "Data/admin_database.txt");
 }
 
 AdminFile *AdminFileList::add_engine_files()
@@ -316,7 +316,7 @@ void DataAdministration::ExportGame(const string &dir, GameIniData &game_ini)
 		if (file_copy(source, target))
 			num_ok ++;
 	}
-	HuiInfoBox(HuiCurWindow, "info", format("%d von %d Dateien exportiern", num_ok, list.num));
+	hui::InfoBox(hui::CurWindow, "info", format("%d von %d Dateien exportiern", num_ok, list.num));
 
 	ed->progress->end();
 }

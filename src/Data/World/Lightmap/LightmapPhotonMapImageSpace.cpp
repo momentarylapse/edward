@@ -27,7 +27,7 @@ void LightmapPhotonMapImageSpace::CreateTextures()
 	}
 
 	// fill with photon events
-	foreach(PhotonEvent &p, photon){
+	for (PhotonEvent &p: photon){
 		LightmapData::Triangle &t = data->Trias[p.tria];
 		vector sv = t.sv[0] + (t.sv[1] - t.sv[0]) * p.f + (t.sv[2] - t.sv[0]) * p.g;
 		int x = sv.x + 0.5f;
@@ -37,10 +37,10 @@ void LightmapPhotonMapImageSpace::CreateTextures()
 	}
 
 	// set alpha to 0 or 1
-	foreach(PseudoImage &p, psi)
-		foreach(color &c, p.c)
+	for (PseudoImage &p: psi)
+		for (color &c: p.c)
 			c.a = 0;
-	foreach(LightmapData::Vertex &v, data->Vertices)
+	for (LightmapData::Vertex &v: data->Vertices)
 		psi[v.mod_id].c[v.x + v.y * psi[v.mod_id].w].a = 1;
 }
 
@@ -54,10 +54,10 @@ color LightmapPhotonMapImageSpace::get_color(LightmapData::Vertex &v, float r)
 	color c = Black;
 	int n = 0;
 	PseudoImage &p = psi[v.mod_id];
-	int x0  = max(v.x - r, 0);
-	int x1  = min(v.x + r + 1, p.w - 1);
-	int y0  = max(v.y - r, 0);
-	int y1  = min(v.y + r + 1, p.h - 1);
+	int x0  = ::max(v.x - r, 0.0f);
+	int x1  = ::min(v.x + r + 1, p.w - 1.0f);
+	int y0  = ::max(v.y - r, 0.0f);
+	int y1  = ::min(v.y + r + 1, p.h - 1.0f);
 	for (int xx=x0; xx<x1; xx++)
 		for (int yy=y0; yy<y1; yy++)
 			if ((xx - v.x)*(xx - v.x) + (yy - v.y) * (yy - v.y) <= r*r){

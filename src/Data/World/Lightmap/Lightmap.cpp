@@ -21,11 +21,11 @@
 Lightmap::Histogram::Histogram(Array<float> &e)
 {
 	max = 0;
-	foreach(float ee, e)
-		max = max(max, ee);
+	for (float ee: e)
+		max = ::max(max, ee);
 	const int N = 64;
 	f.resize(N);
-	foreach(float ee, e)
+	for (float ee: e)
 		if (ee > 0)
 			f[ee * (N - 0.1f) / max] += 1;
 	normalize();
@@ -34,11 +34,11 @@ Lightmap::Histogram::Histogram(Array<float> &e)
 void Lightmap::Histogram::normalize()
 {
 	float m = 0;
-	foreach(float ff, f)
-		m = max(m, ff);
+	for (float ff: f)
+		m = ::max(m, ff);
 
 	if (m > 0){
-		foreach(float &ff, f)
+		for (float &ff: f)
 			ff /= m;
 	}
 }
@@ -71,7 +71,7 @@ bool Lightmap::Create()
 Lightmap::Histogram Lightmap::GetHistogram()
 {
 	Array<float> e;
-	foreach(LightmapData::Vertex &v, data->Vertices)
+	for (LightmapData::Vertex &v: data->Vertices)
 		e.add((v.rad.r + v.rad.g + v.rad.b) / 3.0f);
 
 	return Lightmap::Histogram(e);
@@ -133,7 +133,7 @@ void fuzzy_image(Image &im)
 bool Lightmap::RenderTextures()
 {
 	ed->progress->startCancelable(_("berechne Textur"), 0);
-	dir_create(NixTextureDir + data->texture_out_dir);
+	dir_create(nix::texture_dir + data->texture_out_dir);
 	dir_create(ObjectDir + data->model_out_dir);
 	dir_create(MapDir + data->model_out_dir);
 
@@ -160,10 +160,10 @@ bool Lightmap::RenderTextures()
 
 		m.tex_name = data->texture_out_dir + i2s(mid) + ".tga";
 		fuzzy_image(im);
-		im.save(NixTextureDir + m.tex_name);
+		im.save(nix::texture_dir + m.tex_name);
 
 		// edit model
-		foreach(ModelMaterial &mat, m.orig->material){
+		for (ModelMaterial &mat: m.orig->material){
 			mat.num_textures = 2;
 			mat.texture_file[1] = m.tex_name;
 			mat.ambient = White;
@@ -195,12 +195,12 @@ bool Lightmap::RenderTextures()
 
 		t.tex_name = data->texture_out_dir + "t" + i2s(tid) + ".tga";
 		fuzzy_image(im);
-		im.save(NixTextureDir + t.tex_name);
+		im.save(nix::texture_dir + t.tex_name);
 
 		// edit Terrain
-		t.orig->texture_file[t.orig->material->num_textures] = t.tex_name;
-		t.orig->texture_scale[t.orig->material->num_textures] = vector(1.0f / t.orig->num_x, 0, 1.0f / t.orig->num_z);
-		t.orig->material->num_textures ++;
+		t.orig->texture_file[t.orig->material->textures.num] = t.tex_name;
+		t.orig->texture_scale[t.orig->material->textures.num] = vector(1.0f / t.orig->num_x, 0, 1.0f / t.orig->num_z);
+		t.orig->material->textures.add(NULL);
 		t.new_name = data->model_out_dir + i2s(tid);
 		data->source_world->Terrains[tid].Save(MapDir + t.new_name + ".map");
 	}
@@ -221,7 +221,7 @@ void Lightmap::CreateNewWorld()
 	w.EgoIndex = data->source_world->EgoIndex;
 	w.Objects = data->source_world->Objects;
 	w.Terrains = data->source_world->Terrains;
-	foreach(LightmapData::Model &m, data->Models)
+	for (LightmapData::Model &m: data->Models)
 		w.Objects[m.object_index].FileName = m.new_name;
 
 	w.save(MapDir + data->new_world_name + ".world");

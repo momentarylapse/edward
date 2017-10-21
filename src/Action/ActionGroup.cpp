@@ -13,7 +13,7 @@ ActionGroup::ActionGroup()
 
 ActionGroup::~ActionGroup()
 {
-	foreach(Action *a, action)
+	for (Action *a: action)
 		delete(a);
 	action.clear();
 }
@@ -39,7 +39,7 @@ void *ActionGroup::execute(Data *d)
 	void *r = compose(d);
 
 	// no need to execute sub actions ... done during compose()
-	/*foreach(action, a)
+	/*for (action, a)
 		a->execute_logged(d);*/
 	return r;
 }
@@ -56,7 +56,7 @@ void ActionGroup::undo(Data *d)
 
 void ActionGroup::redo(Data *d)
 {
-	foreach(Action *a, action)
+	for (Action *a: action)
 		a->redo_logged(d);
 }
 

@@ -42,8 +42,8 @@ void *ActionModelDeleteBone::execute(Data *d)
 	// save + correct animations
 	move_dpos.clear();
 	move_ang.clear();
-	foreach(ModelMove &move, m->move)
-		foreach(ModelFrame &f, move.frame){
+	for (ModelMove &move: m->move)
+		for (ModelFrame &f: move.frame){
 			move_dpos.add(f.skel_dpos[index]);
 			f.skel_dpos.erase(index);
 			move_ang.add(f.skel_ang[index]);
@@ -84,24 +84,24 @@ void ActionModelDeleteBone::undo(Data *d)
 			if (bb.parent >= index)
 				bb.parent ++;
 		}
-	foreach(int c, child){
+	for (int c: child){
 		m->bone[c].parent = index;
 	}
 
 	// correct animations
 	int fi = 0;
-	foreach(ModelMove &move, m->move)
-		foreach(ModelFrame &f, move.frame){
+	for (ModelMove &move: m->move)
+		for (ModelFrame &f: move.frame){
 			f.skel_dpos.insert(move_dpos[fi], index);
 			f.skel_ang.insert(move_ang[fi], index);
 			fi ++;
 		}
 
 	// correct vertices
-	foreach(ModelVertex &v, m->vertex)
+	for (ModelVertex &v: m->vertex)
 		if (v.bone_index >= index)
 			v.bone_index ++;
-	foreach(int vi, vertex)
+	for (int vi: vertex)
 		m->vertex[vi].bone_index = index;
 }
 

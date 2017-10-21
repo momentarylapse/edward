@@ -34,7 +34,7 @@ void LightmapRayTracing::Compute()
 	// emitting vertices
 	foreachi(int vi, vem, ii){
 		LightmapData::Vertex &a = data->Vertices[vi];
-		foreach(LightmapData::Vertex &b, data->Vertices){
+		for (LightmapData::Vertex &b: data->Vertices){
 			if (data->IsVisible(a, b)){
 
 
@@ -59,7 +59,7 @@ void LightmapRayTracing::Compute()
 	}
 
 	// lights
-	foreach(LightmapData::Light &l, data->Lights){
+	for (LightmapData::Light &l: data->Lights){
 		if (l.Directional && (!data->allow_sun))
 			continue;
 		vector p = l.Pos;

@@ -55,7 +55,7 @@ void ActionModelSurfaceInvert::InvertSurface(ModelSurface &s)
 	}
 
 	// flip edges
-	foreach(ModelEdge &e, s.edge){
+	for (ModelEdge &e: s.edge){
 		// swap vertices
 		int v = e.vertex[0];
 		e.vertex[0] = e.vertex[1];
@@ -76,7 +76,7 @@ void *ActionModelSurfaceInvert::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	foreach(int surface, surfaces){
+	for (int surface: surfaces){
 
 		assert((surface >= 0) && (surface < m->surface.num));
 

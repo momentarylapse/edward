@@ -32,7 +32,7 @@ vector VecCloudGetNormal(Array<vector> &v)
 	matrix3 I;
 	memset(&I, 0, sizeof(I));
 
-	foreach(vector &p, v){
+	for (vector &p: v){
 		vector dp = p - m;
 		I._00 += dp.y*dp.y + dp.z*dp.z;
 		I._11 += dp.z*dp.z + dp.x*dp.x;
@@ -76,11 +76,11 @@ void* ActionModelFlattenVertices::execute(Data* d)
 	Array<vector> cloud;
 	plane pl;
 
-	foreach(int i, index)
+	for (int i: index)
 		cloud.add(m->vertex[i].pos);
 	PlaneFromPointCloud(pl, cloud);
 
-	foreach(int i, index)
+	for (int i: index)
 		m->vertex[i].pos -= pl.distance(m->vertex[i].pos) * pl.n;
 
 	m->setNormalsDirtyByVertices(index);

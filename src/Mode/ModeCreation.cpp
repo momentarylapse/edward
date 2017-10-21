@@ -26,7 +26,7 @@ void ModeCreationBase::onDrawMeta()
 {
 	ModeBase::onDrawMeta();
 
-	ed->drawStr(MaxX / 2, MaxY - 20, message);
+	ed->drawStr(nix::target_width / 2, nix::target_height - 20, message);
 }
 
 void ModeCreationBase::onDrawWin(MultiView::Window *win)

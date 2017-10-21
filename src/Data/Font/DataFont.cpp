@@ -215,7 +215,7 @@ bool DataFont::save(const string & _filename)
 
 void DataFont::UpdateTexture()
 {
-	Texture = NixLoadTexture(global.TextureFile);
+	Texture = nix::LoadTexture(global.TextureFile);
 	if (Texture){
 		TextureWidth = Texture->width;
 		TextureHeight = Texture->height;

@@ -127,7 +127,6 @@ public:
 	};
 	void drawStr(int x, int y, const string &str, AlignType a = ALIGN_LEFT);
 	void forceRedraw();
-	bool force_redraw;
 	void updateMenu();
 	void optimizeCurrentView();
 

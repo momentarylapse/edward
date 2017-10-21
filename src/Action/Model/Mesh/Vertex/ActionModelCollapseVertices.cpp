@@ -17,7 +17,7 @@ void ActionModelCollapseVertices::CollapseVerticesInSurface(DataModel *m, ModelS
 {
 	Set<int> vert;
 	vector pos = v_0;
-	foreach(int v, s.vertex)
+	for (int v: s.vertex)
 		if (m->vertex[v].is_selected){
 			pos += m->vertex[v].pos;
 			vert.add(v);

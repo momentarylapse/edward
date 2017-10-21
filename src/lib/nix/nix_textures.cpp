@@ -18,13 +18,12 @@ string texture_dir = "";
 Array<Texture*> textures;
 Texture *default_texture;
 
-int TextureIconSize = 0;
+int texture_icon_size = 0;
 bool OGLDynamicTextureSupport = true;
-bool OGLMultiTexturingSupport = true;
 bool GLDoubleBuffered = true;
 
 
-void SetDefaultShaderData(int num_textures, const vector &cam_pos);
+//void SetDefaultShaderData(int num_textures, const vector &cam_pos);
 extern vector _CamPos_;
 
 
@@ -375,8 +374,8 @@ void OverwriteTexture__(Texture *t, int target, int subtarget, const Image &imag
 		//glTexImage2D(subtarget,0,4,256,256,0,4,GL_UNSIGNED_BYTE,NixImage.data);
 		t->width = image.width;
 		t->height = image.height;
-		if (TextureIconSize > 0){
-			t->icon = *image.scale(TextureIconSize, TextureIconSize);
+		if (texture_icon_size > 0){
+			t->icon = *image.scale(texture_icon_size, texture_icon_size);
 			t->icon.flipV();
 		}
 	}

@@ -22,10 +22,10 @@ void *ActionWorldPaste::compose(Data *d)
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	w->ClearSelection();
 
-	foreach(WorldObject &o, objects)
+	for (WorldObject &o: objects)
 		addSubAction(new ActionWorldAddObject(o.FileName, o.pos, o.Ang), w);
 
-	foreach(WorldTerrain &t, terrains)
+	for (WorldTerrain &t: terrains)
 		addSubAction(new ActionWorldAddTerrain(t.pos, t.FileName), w);
 
 	return NULL;

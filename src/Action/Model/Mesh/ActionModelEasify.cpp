@@ -93,7 +93,7 @@ void ActionModelEasify::CalculateWeights(DataModel *m)
 
 
 		// calculate edge weights
-		foreach(ModelEdge &e, s.edge)
+		for (ModelEdge &e: s.edge)
 			e.weight = get_weight(m, s, e, ref);
 
 		// correction for boundary edges
@@ -112,7 +112,7 @@ void ActionModelEasify::CalculateWeights(DataModel *m)
 				}
 
 				// compute damage...
-				foreach(int eee, ee)
+				for (int eee: ee)
 					if (eee != ei){
 						vector nv = (m->vertex[s.edge[eee].vertex[0]].pos + m->vertex[s.edge[eee].vertex[1]].pos) / 2;
 
@@ -151,7 +151,7 @@ bool ActionModelEasify::EasifyStep(DataModel *m)
 			if ((e.Vertex[0] == _e.Vertex[0]) || (e.Vertex[1] == _e.Vertex[0]) || (e.Vertex[0] == _e.Vertex[1]) || (e.Vertex[1] == _e.Vertex[1]))
 				if (i != _edge)
 					ee.add(i);
-		foreach(int ie, ee)
+		for (int ie: ee)
 			m->Surface[_surface].Edge[ie].Weight += _e.Weight / ee.num;*/
 
 		// remove
@@ -170,7 +170,7 @@ ActionModelEasify::ActionModelEasify(float _factor)
 void *ActionModelEasify::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	HuiTimer t;
+	hui::Timer t;
 #if 1
 	//CalculateWeights(m);
 	int n = (int)((float)m->getNumPolygons() * factor);

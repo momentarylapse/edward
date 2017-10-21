@@ -35,7 +35,7 @@ void *ActionModelAlignToGrid::execute(Data *d)
 
 	old_pos.clear();
 
-	foreach(int i, index){
+	for (int i: index){
 		// save old data
 		old_pos.add(m->vertex[i].pos);
 

@@ -16,6 +16,7 @@ ModeAdministration *mode_administration;
 ModeAdministration::ModeAdministration():
 	Mode<DataAdministration>("Administration", NULL, new DataAdministration, NULL, "menu_administration")
 {
+	dialog = NULL;
 }
 
 ModeAdministration::~ModeAdministration()
@@ -49,14 +50,16 @@ void ModeAdministration::onUpdate(Observable* o, const string &message)
 
 void ModeAdministration::BasicSettings()
 {
-	ConfigurationDialog *dlg = new ConfigurationDialog(HuiCurWindow, false, data, false);
+	ConfigurationDialog *dlg = new ConfigurationDialog(hui::CurWindow, false, data, false);
 	dlg->run();
+	delete dlg;
 }
 
 void ModeAdministration::ExportGame()
 {
-	ConfigurationDialog *dlg = new ConfigurationDialog(HuiCurWindow, false, data, true);
+	ConfigurationDialog *dlg = new ConfigurationDialog(hui::CurWindow, false, data, true);
 	dlg->run();
+	delete dlg;
 
 	// data->ExportGame(...);
 }

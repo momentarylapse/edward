@@ -29,8 +29,8 @@ void *ActionModelAddBone::execute(Data *d)
 	m->bone.add(b);
 
 	// correct animations
-	foreach(ModelMove &move, m->move)
-		foreach(ModelFrame &f, move.frame){
+	for (ModelMove &move: m->move)
+		for (ModelFrame &f: move.frame){
 			f.skel_dpos.add(v_0);
 			f.skel_ang.add(v_0);
 		}
@@ -46,8 +46,8 @@ void ActionModelAddBone::undo(Data *d)
 	m->bone.pop();
 
 	// correct animations
-	foreach(ModelMove &move, m->move)
-		foreach(ModelFrame &f, move.frame){
+	for (ModelMove &move: m->move)
+		for (ModelFrame &f: move.frame){
 			f.skel_dpos.pop();
 			f.skel_ang.pop();
 		}

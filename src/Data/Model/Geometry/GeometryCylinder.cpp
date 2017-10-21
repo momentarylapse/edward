@@ -14,13 +14,13 @@
 GeometryCylinder::GeometryCylinder(Array<vector> &pos, Array<float> &radius, int rings, int edges, bool closed)
 {
 	Interpolator<float> inter_r(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
-	foreach(float r, radius)
+	for (float r: radius)
 		inter_r.add(r);
 	inter_r.normalize();
 
 	// vertices (interpolated on path)
 	Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
-	foreach(vector &p, pos)
+	for (vector &p: pos)
 		inter.add(p);
 	inter.normalize();
 
@@ -36,7 +36,7 @@ GeometryCylinder::GeometryCylinder(Array<vector> &pos, float radius, int rings, 
 
 	// vertices (interpolated on path)
 	Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
-	foreach(vector &p, pos)
+	for (vector &p: pos)
 		inter.add(p);
 	inter.normalize();
 

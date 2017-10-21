@@ -102,7 +102,7 @@ public:
 	Array<Value*> data;
 	virtual ~ValueArray()
 	{
-		foreach (Value *v, data)
+		for (Value *v: data)
 			delete(v);
 	}
 	virtual int getCount()
@@ -122,7 +122,7 @@ public:
 	Array<string> keys;
 	virtual ~ValueStruct()
 	{
-		foreach (Value *v, data)
+		for (Value *v: data)
 			delete(v);
 	}
 	virtual int getCount()

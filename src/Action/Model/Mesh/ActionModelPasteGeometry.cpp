@@ -23,13 +23,13 @@ void *ActionModelPasteGeometry::compose(Data *d)
 	m->clearSelection();
 
 	int nv = m->vertex.num;
-	foreach(ModelVertex &v, m->vertex)
+	for (ModelVertex &v: m->vertex)
 		v.is_selected = false;
 
-	foreach(ModelVertex &v, geo.vertex)
+	for (ModelVertex &v: geo.vertex)
 		addSubAction(new ActionModelAddVertex(v.pos), m);
 
-	foreach(ModelPolygon &t, geo.polygon){
+	for (ModelPolygon &t: geo.polygon){
 		Array<int> v;
 		for (int k=0;k<t.side.num;k++)
 			v.add(nv + t.side[k].vertex);

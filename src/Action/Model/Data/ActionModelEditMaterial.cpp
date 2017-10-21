@@ -25,10 +25,10 @@ void *ActionModelEditMaterial::execute(Data *d)
 
 	// correct skin vertices
 	// (copy highest texture level when adding more levels)
-	foreach(ModelSurface &s, m->surface)
-		foreach(ModelPolygon &p, s.polygon){
+	for (ModelSurface &s: m->surface)
+		for (ModelPolygon &p: s.polygon){
 			if (p.material == index){
-				foreach(ModelPolygonSide &side, p.side)
+				for (ModelPolygonSide &side: p.side)
 					for (int l=mat.num_textures;l<m->material[index].num_textures;l++)
 						side.skin_vertex[l] = side.skin_vertex[mat.num_textures - 1];
 			}

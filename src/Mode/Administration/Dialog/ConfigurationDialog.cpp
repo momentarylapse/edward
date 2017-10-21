@@ -136,10 +136,10 @@ void ConfigurationDialog::OnOk()
 			data->UpdateDatabase();
 	}
 	exporting = false;
-	delete(this);
+	destroy();
 }
 
 void ConfigurationDialog::OnClose()
 {
-	delete(this);
+	destroy();
 }

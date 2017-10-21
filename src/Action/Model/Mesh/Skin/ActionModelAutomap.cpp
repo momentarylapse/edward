@@ -63,7 +63,7 @@ Set<int> extract_connected(Set<int> &set, ModelSurface *s)
 	bool found = true;
 	while(found){
 		found = false;
-		foreach(int i, r){
+		for (int i: r){
 			ModelPolygon &p = s->polygon[i];
 			for (int k=0;k<p.side.num;k++){
 				int neigh = s->edge[p.side[k].edge].polygon[1 - p.side[k].edge_direction];
@@ -127,7 +127,7 @@ void Island::map_primitive(DataModel *m)
 	skin.clear();
 
 	// map (project on plane)
-	foreach(int i, p){
+	for (int i: p){
 		ModelPolygon &pp = s->polygon[i];
 		for (int k=0;k<pp.side.num;k++){
 			vector v = m->vertex[pp.side[k].vertex].pos;
@@ -158,13 +158,13 @@ void Island::map_primitive(DataModel *m)
 	// rotate
 	matrix rot;
 	MatrixRotationZ(rot, -phi_min);
-	foreach(vector &v, skin)
+	for (vector &v: skin)
 		v = rot * v;
 
 
 	// find boundary box
 	r = rect(skin[0].x, skin[0].x, skin[0].y, skin[0].y);
-	foreach(vector &v, skin){
+	for (vector &v: skin){
 		r.x1 = min(r.x1, v.x);
 		r.x2 = max(r.x2, v.x);
 		r.y1 = min(r.y1, v.y);
@@ -172,7 +172,7 @@ void Island::map_primitive(DataModel *m)
 	}
 
 	// shift boundary to origin
-	foreach(vector &v, skin)
+	for (vector &v: skin)
 		v -= vector(r.x1, r.y1, 0);
 	r.x2 -= r.x1;
 	r.y2 -= r.y1;
@@ -184,7 +184,7 @@ void Island::apply(DataModel *m, int texture_level)
 	ModelSurface *s = &m->surface[surf];
 
 	int n = 0;
-	foreach(int i, p){
+	for (int i: p){
 		ModelPolygon &pp = s->polygon[i];
 		for (int k=0;k<pp.side.num;k++)
 			pp.side[k].skin_vertex[texture_level] = skin[n ++];
@@ -196,7 +196,7 @@ void optimize_islands(Array<Island> &islands, float distance)
 	// guess texture size
 	float sum_area = 0;
 	float w_max = 0;
-	foreach(Island &i, islands){
+	for (Island &i: islands){
 		w_max = max(w_max, i.r.width());
 		sum_area += i.r.area();
 	}
@@ -213,7 +213,7 @@ void optimize_islands(Array<Island> &islands, float distance)
 	float x = 0, y = 0;
 	float h = 0;
 	w_max = 0;
-	foreach(Island &i, islands){
+	for (Island &i: islands){
 		if (x + i.r.width() > w){
 			x = 0;
 			y += h + distance;
@@ -230,8 +230,8 @@ void optimize_islands(Array<Island> &islands, float distance)
 	y += h + distance;
 
 	// normalize
-	foreach(Island &i, islands){
-		foreach(vector &v, i.skin){
+	for (Island &i: islands){
+		for (vector &v: i.skin){
 			v += vector(i.r.x1, i.r.y1, 0);
 			v.x /= w_max;
 			v.y /= y;
@@ -245,18 +245,18 @@ void *ActionModelAutomap::execute(Data *d)
 
 	// save old
 	old_pos.clear();
-	foreach(ModelSurface &s, m->surface)
-		foreach(ModelPolygon &p, s.polygon)
+	for (ModelSurface &s: m->surface)
+		for (ModelPolygon &p: s.polygon)
 			for (int k=0;k<p.side.num;k++)
 				old_pos.add(p.side[k].skin_vertex[texture_level]);
 
 	Array<Island> islands = get_islands(m);
-	foreach(Island &i, islands)
+	for (Island &i: islands)
 		i.map_primitive(m);
 
 	optimize_islands(islands, 0.01f);
 
-	foreach(Island &i, islands)
+	for (Island &i: islands)
 		i.apply(m, texture_level);
 
 	return NULL;
@@ -272,8 +272,8 @@ void ActionModelAutomap::undo(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	int n = 0;
-	foreach(ModelSurface &s, m->surface)
-		foreach(ModelPolygon &p, s.polygon)
+	for (ModelSurface &s: m->surface)
+		for (ModelPolygon &p: s.polygon)
 			for (int k=0;k<p.side.num;k++)
 				p.side[k].skin_vertex[texture_level] = old_pos[n ++];
 }

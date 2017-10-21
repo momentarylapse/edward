@@ -122,7 +122,7 @@ void Importer3ds::LoadMesh(DataModel *m, File *f, int _length)
 				break;
 		}
 	}
-	foreach(ModelTriangle &t, m->skin[1].sub[0].triangle)
+	for (ModelTriangle &t: m->skin[1].sub[0].triangle)
 		for (int k=0;k<3;k++)
 			if ((t.vertex[k] >= NumVerticesOld) && (t.vertex[k] < NumVerticesOld + skin_vert.num))
 					t.skin_vertex[0][k] = skin_vert[t.vertex[k] - NumVerticesOld];

@@ -43,7 +43,7 @@ void ActionModelExtrudePolygons::ExtrudeSurface(ModelSurface &s, int surface, Da
 
 	// find boundary
 	Set<int> boundary;
-	foreach(ModelEdge &e, s.edge){
+	for (ModelEdge &e: s.edge){
 		int n_sel = 0;
 		for (int k=0;k<e.ref_count;k++)
 			if (s.polygon[e.polygon[k]].is_selected)
@@ -56,16 +56,16 @@ void ActionModelExtrudePolygons::ExtrudeSurface(ModelSurface &s, int surface, Da
 
 	// copy boundary vertices
 	Array<int> new_vert;
-	foreach(int v, boundary){
+	for (int v: boundary){
 		addSubAction(new ActionModelAddVertex(m->vertex[v].pos), m);
 		new_vert.add(m->vertex.num - 1);
-		_foreach_it_.update(); // TODO
+		//_foreach_it_.update(); // TODO
 	}
 
 	// move selected polygons
-	foreach(int v, sel_vert){
+	for (int v: sel_vert){
 		vector dir = v_0;
-		foreach(ModelPolygon &t, s.polygon)
+		for (ModelPolygon &t: s.polygon)
 			if (t.is_selected)
 				for (int k=0;k<t.side.num;k++)
 					if (v == t.side[k].vertex)

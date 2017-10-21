@@ -21,7 +21,7 @@ void *ActionModelSurfaceVolumeAnd::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	int n = 0;
-	foreach(ModelSurface &s, m->surface)
+	for (ModelSurface &s: m->surface)
 		if ((s.is_selected) && (s.is_closed))
 			n ++;
 	if (n == 0)
@@ -38,7 +38,7 @@ void *ActionModelSurfaceVolumeAnd::compose(Data *d)
 			}
 		}
 	}
-	foreach(Geometry &g, geos)
+	for (Geometry &g: geos)
 		addSubAction(new ActionModelPasteGeometry(g, 0), m);
 
 	ed->setMessage(format(_("%d geschlossene Fl&achen subtrahiert"), n));

@@ -44,9 +44,9 @@ void *ActionModelAddVertex::execute(Data *d)
 	m->vertex.add(vv);
 
 	// correct animations
-	foreach(ModelMove &move, m->move){
+	for (ModelMove &move: m->move){
 		if (move.type == MOVE_TYPE_VERTEX){
-			foreach(ModelFrame &f, move.frame)
+			for (ModelFrame &f: move.frame)
 				f.vertex_dpos.resize(m->vertex.num);
 		}
 	}
@@ -65,9 +65,9 @@ void ActionModelAddVertex::undo(Data *d)
 	m->vertex.pop();
 
 	// correct animations
-	foreach(ModelMove &move, m->move)
+	for (ModelMove &move: m->move)
 		if (move.type == MOVE_TYPE_VERTEX){
-			foreach(ModelFrame &f, move.frame)
+			for (ModelFrame &f: move.frame)
 				f.vertex_dpos.resize(m->vertex.num);
 		}
 }

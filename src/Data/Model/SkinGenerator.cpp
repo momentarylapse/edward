@@ -42,8 +42,8 @@ void SkinGenerator::init_projective(MultiView::Window *win)
 {
 	rect d = win->dest;
 	matrix s, t1, t2;
-	MatrixScale(s, MaxX / (d.x2 - d.x1) / 2, - MaxY / (d.y2 - d.y1) / 2, 1);
-	MatrixTranslation(t2, vector(- d.x1 / MaxX * 2, - d.y1 / MaxY * 2, 0));
+	MatrixScale(s, nix::target_width / (d.x2 - d.x1) / 2, - nix::target_height / (d.y2 - d.y1) / 2, 1);
+	MatrixTranslation(t2, vector(- d.x1 / nix::target_width * 2, - d.y1 / nix::target_height * 2, 0));
 	MatrixTranslation(t1, vector(1, -1, 0));
 	init_projective(t2 * s * t1 * win->projection * win->mat);
 }
@@ -55,7 +55,7 @@ void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, i
 	vector d2 = n ^ d1;
 	matrix R = matrix(d1, d2, n);
 	float sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0, su = 0, sv = 0, sux = 0, suy = 0, svx = 0, svy = 0;
-	foreach(ModelPolygonSide &s, p.side){
+	for (ModelPolygonSide &s: p.side){
 		float x = d1 * v[s.vertex].pos;
 		float y = d2 * v[s.vertex].pos;
 		float u = s.skin_vertex[level].x;
@@ -126,7 +126,7 @@ void SkinGenerator::init_point_cloud_boundary(const Array<ModelVertex> &p, const
 	float boundary[2][2], l[2];
 	for (int k=0;k<2;k++){
 		boundary[k][0] = boundary[k][1] = d[k] * p[v[0]].pos;
-		foreach(int vi, const_cast<Array<int>&>(v)){
+		for (int vi: const_cast<Array<int>&>(v)){
 			float f = d[k] * p[vi].pos;
 			if (f < boundary[k][0])
 				boundary[k][0] = f;
