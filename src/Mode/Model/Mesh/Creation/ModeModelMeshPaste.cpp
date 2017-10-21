@@ -58,8 +58,8 @@ void ModeModelMeshPaste::onDrawWin(MultiView::Window* win)
 
 	mode_model->setMaterialCreation();
 
-	geo->preview(VBTemp);
-	VBTemp->draw();
+	geo->preview(nix::vb_temp);
+	nix::Draw3D(nix::vb_temp);
 }
 
 void ModeModelMeshPaste::updateGeometry()

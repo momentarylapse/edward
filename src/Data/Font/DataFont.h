@@ -13,7 +13,9 @@
 namespace Gui{
 	class Font;
 }
-class NixTexture;
+namespace nix{
+	class Texture;
+};
 
 
 class DataFont: public Data
@@ -49,7 +51,7 @@ public:
 	Array<Glyph> glyph;
 
 	// for editing
-	NixTexture *Texture;
+	nix::Texture *Texture;
 	int TextureWidth, TextureHeight;
 	int Marked;
 

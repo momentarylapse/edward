@@ -10,7 +10,9 @@
 
 #include "../Mode.h"
 
-class NixTexture;
+namespace nix{
+	class Texture;
+};
 
 class ModeWelcome: public ModeBase
 {
@@ -32,7 +34,7 @@ public:
 
 	void DrawIcon(int x, int y, int index, int pic_index, const string &name);
 
-	NixTexture *tex_icons, *tex_logo;
+	nix::Texture *tex_icons, *tex_logo;
 	rect icon_rect[7];
 	int mouse_over, mouse_over_cmd;
 };

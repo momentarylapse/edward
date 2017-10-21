@@ -42,15 +42,15 @@ ModeModel::~ModeModel()
 
 void ModeModel::onStart()
 {
-	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
-	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
+	string dir = (app->directory_static + "Data/icons/toolbar/").sys_filename();
+	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
 	t->reset();
-	t->addItem(L("new"),dir + "new.png","new");
-	t->addItem(L("open"),dir + "open.png","open");
-	t->addItem(L("save"),dir + "save.png","save");
+	t->addItem(L("", "new"),dir + "new.png","new");
+	t->addItem(L("", "open"),dir + "open.png","open");
+	t->addItem(L("", "save"),dir + "save.png","save");
 	t->addSeparator();
-	t->addItem(L("undo"),dir + "undo.png","undo");
-	t->addItem(L("redo"),dir + "redo.png","redo");
+	t->addItem(L("", "undo"),dir + "undo.png","undo");
+	t->addItem(L("", "redo"),dir + "redo.png","redo");
 	t->addSeparator();
 	t->addItem(_("Push"),dir + "view_push.png","view_push");
 	ed->setTooltip("view_push", _("ViewStage Push"));
@@ -70,7 +70,7 @@ void ModeModel::onStart()
 	t->addItem(_("Eigenschaften"), dir + "configure.png", "mode_properties");
 	t->enable(true);
 	t->configure(false,true);
-	t = ed->toolbar[HuiToolbarLeft];
+	t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
 }
@@ -89,7 +89,7 @@ void ModeModel::onEnd()
 		delete(properties_dialog);
 	properties_dialog = NULL;
 
-	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
+	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
 	t->reset();
 	t->enable(false);
 }
@@ -170,20 +170,20 @@ void ModeModel::onUpdateMenu()
 
 void ModeModel::setMaterialSelected()
 {
-	NixSetAlpha(AlphaMaterial);
-	NixSetMaterial(Black,color(0.3f,0,0,0),Black,0,Red);
+	nix::SetAlpha(AlphaMaterial);
+	nix::SetMaterial(Black,color(0.3f,0,0,0),Black,0,Red);
 }
 
 void ModeModel::setMaterialHover()
 {
-	NixSetAlpha(AlphaMaterial);
-	NixSetMaterial(Black,color(0.5f,0,0,0),Black,0,White);
+	nix::SetAlpha(AlphaMaterial);
+	nix::SetMaterial(Black,color(0.5f,0,0,0),Black,0,White);
 }
 
 void ModeModel::setMaterialCreation()
 {
-	NixSetAlpha(AlphaMaterial);
-	NixSetMaterial(Black, color(0.3f,0.3f,1,0.3f), Black, 0, color(1,0.1f,0.4f,0.1f));
+	nix::SetAlpha(AlphaMaterial);
+	nix::SetMaterial(Black, color(0.3f,0.3f,1,0.3f), Black, 0, color(1,0.1f,0.4f,0.1f));
 }
 
 void ModeModel::_new()

@@ -21,6 +21,9 @@ ModeModelMeshBrush::ModeModelMeshBrush(ModeBase* _parent) :
 	message = _("auf der Oberfl&ache malen");
 
 	brushing = false;
+	distance = 1;
+	base_diameter = 1;
+	base_depth = 1;
 }
 
 ModeModelMeshBrush::~ModeModelMeshBrush()
@@ -35,7 +38,7 @@ Action *ModeModelMeshBrush::getAction()
 	float radius = dialog->getFloat("diameter") / 2;
 	float depth = dialog->getFloat("depth");
 	int type = dialog->getInt("brush_type");
-	if (ed->getKey(KEY_CONTROL))
+	if (ed->getKey(hui::KEY_CONTROL))
 		depth = - depth;
 
 	Action *a = NULL;
@@ -63,7 +66,7 @@ void ModeModelMeshBrush::onStart()
 	multi_view->setAllowSelect(false);
 
 	// Dialog
-	dialog = new HuiFixedDialog(_("Pinsel"), 300, 155, ed, true);//HuiCreateResourceDialog("new_ball_dialog", ed);
+	dialog = new hui::FixedDialog(_("Pinsel"), 300, 155, ed, true);//HuiCreateResourceDialog("new_ball_dialog", ed);
 	dialog->addLabel(_("Dicke"), 5, 5, 80, 25, "");
 	dialog->addLabel(_("Tiefe"), 5, 35, 80, 25, "");
 	dialog->addSlider("", 90, 5, 115, 25, "diameter_slider");
@@ -72,8 +75,8 @@ void ModeModelMeshBrush::onStart()
 	dialog->addEdit("", 215, 35, 80, 25, "depth");
 	dialog->addListView("!nobar\\type", 5, 65, 290, 80, "brush_type");
 
-	dialog->event("diameter_slider", this, &ModeModelMeshBrush::onDiameterSlider);
-	dialog->event("depth_slider", this, &ModeModelMeshBrush::onDepthSlider);
+	dialog->event("diameter_slider", std::bind(&ModeModelMeshBrush::onDiameterSlider, this));
+	dialog->event("depth_slider", std::bind(&ModeModelMeshBrush::onDepthSlider, this));
 
 	base_diameter = multi_view->cam.radius * 0.2f;
 	base_depth = multi_view->cam.radius * 0.02f;
@@ -86,9 +89,9 @@ void ModeModelMeshBrush::onStart()
 	dialog->setString("diameter", f2s(base_diameter, 2));
 	dialog->setString("depth", f2s(base_depth, 2));
 	dialog->setInt("brush_type", 0);
-	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
+	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
-	dialog->event("hui:close", this, &ModeModelMeshBrush::onClose);
+	dialog->event("hui:close", std::bind(&ModeModelMeshBrush::onClose, this));
 
 	ed->activate("");
 }
@@ -159,8 +162,8 @@ void ModeModelMeshBrush::onDrawWin(MultiView::Window* win)
 	vector n = data->surface[multi_view->hover.set].polygon[multi_view->hover.index].temp_normal;
 	float radius = dialog->getFloat("diameter") / 2;
 
-	NixSetColor(Green);
-	NixEnableLighting(false);
+	nix::SetColor(Green);
+	nix::EnableLighting(false);
 	vector e1 = n.ortho();
 	vector e2 = n ^ e1;
 	e1 *= radius;
@@ -168,7 +171,7 @@ void ModeModelMeshBrush::onDrawWin(MultiView::Window* win)
 	for (int i=0;i<32;i++){
 		float w1 = i * 2 * pi / 32;
 		float w2 = (i + 1) * 2 * pi / 32;
-		NixDrawLine3D(pos + sin(w1) * e1 + cos(w1) * e2, pos + sin(w2) * e1 + cos(w2) * e2);
+		nix::DrawLine3D(pos + sin(w1) * e1 + cos(w1) * e2, pos + sin(w2) * e1 + cos(w2) * e2);
 	}
 }
 

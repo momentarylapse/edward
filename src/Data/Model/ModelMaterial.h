@@ -10,8 +10,10 @@
 
 #include "../../x/material.h"
 
-class NixTexture;
-class NixVertexBuffer;
+namespace nix{
+	class Texture;
+	class VertexBuffer;
+};
 
 class ModelMaterial
 {
@@ -32,7 +34,7 @@ public:
 	string material_file;
 	Material *material;
 	int num_textures;
-	NixTexture *texture[MATERIAL_MAX_TEXTURES];
+	nix::Texture *texture[MATERIAL_MAX_TEXTURES];
 	string texture_file[MATERIAL_MAX_TEXTURES];
 
 	bool user_transparency;
@@ -48,7 +50,7 @@ public:
 	color emission;
 	float shininess;
 
-	NixVertexBuffer *vb;
+	nix::VertexBuffer *vb;
 };
 
 #endif /* MODELMATERIAL_H_ */

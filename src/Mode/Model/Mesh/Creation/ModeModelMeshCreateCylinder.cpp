@@ -30,13 +30,13 @@ ModeModelMeshCreateCylinder::~ModeModelMeshCreateCylinder()
 
 void ModeModelMeshCreateCylinder::onStart()
 {
-	dialog = HuiCreateResourceDialog("new_cylinder_dialog",ed);
+	dialog = hui::CreateResourceDialog("new_cylinder_dialog",ed);
 
-	dialog->setInt("ncy_rings", HuiConfig.getInt("NewCylinderRings", 4));
-	dialog->setInt("ncy_edges", HuiConfig.getInt("NewCylinderEdges", 8));
-	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
+	dialog->setInt("ncy_rings", hui::Config.getInt("NewCylinderRings", 4));
+	dialog->setInt("ncy_edges", hui::Config.getInt("NewCylinderEdges", 8));
+	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
-	dialog->event("hui:close", this, &ModeModelMeshCreateCylinder::onClose);
+	dialog->event("hui:close", std::bind(&ModeModelMeshCreateCylinder::onClose, this));
 
 	multi_view->setAllowSelect(false);
 	multi_view->setAllowAction(false);
@@ -57,8 +57,8 @@ void ModeModelMeshCreateCylinder::updateGeometry()
 	if (pos.num == 2){
 		int rings = dialog->getInt("ncy_rings");
 		int edges = dialog->getInt("ncy_edges");
-		HuiConfig.setInt("NewCylinderRings", rings);
-		HuiConfig.setInt("NewCylinderEdges", edges);
+		hui::Config.setInt("NewCylinderRings", rings);
+		hui::Config.setInt("NewCylinderEdges", edges);
 
 		Array<float> r = radius;
 		r += radius;
@@ -108,24 +108,24 @@ void ModeModelMeshCreateCylinder::onDrawWin(MultiView::Window *win)
 	parent->onDrawWin(win);
 
 	if (pos.num > 0){
-		NixEnableLighting(false);
-		NixSetColor(Green);
+		nix::EnableLighting(false);
+		nix::SetColor(Green);
 		// control polygon
 		for (int i=0;i<pos.num;i++){
 			vector pp = win->project(pos[i]);
-			NixDrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
+			nix::DrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
 		}
 		if (pos.num == 2)
-			NixDrawLine3D(pos[0], pos[1]);
+			nix::DrawLine3D(pos[0], pos[1]);
 		else
-			NixDrawLine3D(pos[0], multi_view->getCursor3d());
-		NixSetColor(White);
+			nix::DrawLine3D(pos[0], multi_view->getCursor3d());
+		nix::SetColor(White);
 	}
 	if (pos.num == 2){
-		NixEnableLighting(true);
+		nix::EnableLighting(true);
 		mode_model->setMaterialCreation();
-		geo->preview(VBTemp);
-		NixDraw3D(VBTemp);
+		geo->preview(nix::vb_temp);
+		nix::Draw3D(nix::vb_temp);
 	}
 }
 

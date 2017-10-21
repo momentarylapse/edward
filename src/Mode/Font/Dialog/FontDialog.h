@@ -16,7 +16,7 @@
 class FontDialog: public EmbeddedDialog, public Observer
 {
 public:
-	FontDialog(HuiWindow *_parent, DataFont *_data);
+	FontDialog(hui::Window *_parent, DataFont *_data);
 	virtual ~FontDialog();
 
 	void LoadData();

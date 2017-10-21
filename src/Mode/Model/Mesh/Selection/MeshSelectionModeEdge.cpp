@@ -88,8 +88,8 @@ void MeshSelectionModeEdge::updateMultiView()
 {
 	multi_view->clearData(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	foreach(ModelSurface &s, data->surface)
-	multi_view->addData(	MVD_MODEL_EDGE,
+	for (ModelSurface &s: data->surface)
+		multi_view->addData(	MVD_MODEL_EDGE,
 			s.edge,
 			&s,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
@@ -102,16 +102,16 @@ void MeshSelectionModeEdge::onDrawWin(MultiView::Window *win)
 	if (multi_view->hover.index < 0)
 		return;
 
-	NixSetWire(false);
-	NixSetZ(false, false);
-	NixEnableLighting(false);
-	NixSetColor(color(1, 0.7f, 0.7f, 1));
+	nix::SetWire(false);
+	nix::SetZ(false, false);
+	nix::EnableLighting(false);
+	nix::SetColor(color(1, 0.7f, 0.7f, 1));
 	ModelEdge &e = data->surface[multi_view->hover.set].edge[multi_view->hover.index];
-	NixDrawLine3D(data->show_vertices[e.vertex[0]].pos, data->show_vertices[e.vertex[1]].pos);
-	NixSetColor(White);
-	NixSetZ(true, true);
-	NixSetWire(win->multi_view->wire_mode);
-	NixEnableLighting(multi_view->light_enabled);
+	nix::DrawLine3D(data->show_vertices[e.vertex[0]].pos, data->show_vertices[e.vertex[1]].pos);
+	nix::SetColor(White);
+	nix::SetZ(true, true);
+	nix::SetWire(win->multi_view->wire_mode);
+	nix::EnableLighting(multi_view->light_enabled);
 }
 
 

@@ -20,17 +20,18 @@ ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(ModeBase *_parent) :
 	message = _("Ebene: erster Punkt");
 	pos_chosen = false;
 	length[0] = length[1] = v_0;
+	invert = false;
 }
 
 void ModeModelMeshCreatePlane::onStart()
 {
 	// Dialog
-	dialog = HuiCreateResourceDialog("new_plane_dialog", ed);
-	dialog->setInt("np_num_x", HuiConfig.getInt("NewPlaneNumX", 4));
-	dialog->setInt("np_num_y",HuiConfig.getInt("NewPlaneNumY", 4));
-	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
+	dialog = hui::CreateResourceDialog("new_plane_dialog", ed);
+	dialog->setInt("np_num_x", hui::Config.getInt("NewPlaneNumX", 4));
+	dialog->setInt("np_num_y",hui::Config.getInt("NewPlaneNumY", 4));
+	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
-	dialog->event("hui:close", this, &ModeModelMeshCreatePlane::onClose);
+	dialog->event("hui:close", std::bind(&ModeModelMeshCreatePlane::onClose, this));
 
 	multi_view->setAllowSelect(false);
 	multi_view->setAllowAction(false);
@@ -50,8 +51,8 @@ void ModeModelMeshCreatePlane::onLeftButtonUp()
 	if (pos_chosen){
 		int nx = dialog->getInt("np_num_x");
 		int ny = dialog->getInt("np_num_y");
-		HuiConfig.setInt("NewPlaneNumX", nx);
-		HuiConfig.setInt("NewPlaneNumY", ny);
+		hui::Config.setInt("NewPlaneNumX", nx);
+		hui::Config.setInt("NewPlaneNumY", ny);
 
 		if (invert){
 			pos += length[0];
@@ -84,13 +85,13 @@ void ModeModelMeshCreatePlane::onDrawWin(MultiView::Window *win)
 		vector b = pos + length[0];
 		vector c = pos + length[1];
 		vector d = pos + length[0] + length[1];
-		VBTemp->clear();
-		VBTemp->addTria(a, -n, 0, 0, c, -n, 0, 0, d, -n, 0, 0);
-		VBTemp->addTria(a, -n, 0, 0, d, -n, 0, 0, b, -n, 0, 0);
-		VBTemp->addTria(b,  n, 0, 0, d,  n, 0, 0, c,  n, 0, 0);
-		VBTemp->addTria(b,  n, 0, 0, c,  n, 0, 0, a,  n, 0, 0);
+		nix::vb_temp->clear();
+		nix::vb_temp->addTria(a, -n, 0, 0, c, -n, 0, 0, d, -n, 0, 0);
+		nix::vb_temp->addTria(a, -n, 0, 0, d, -n, 0, 0, b, -n, 0, 0);
+		nix::vb_temp->addTria(b,  n, 0, 0, d,  n, 0, 0, c,  n, 0, 0);
+		nix::vb_temp->addTria(b,  n, 0, 0, c,  n, 0, 0, a,  n, 0, 0);
 		mode_model->setMaterialCreation();
-		NixDraw3D(VBTemp);
+		nix::Draw3D(nix::vb_temp);
 	}
 }
 

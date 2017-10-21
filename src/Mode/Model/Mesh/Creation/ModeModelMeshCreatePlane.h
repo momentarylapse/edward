@@ -11,7 +11,7 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshCreatePlane: public ModeCreation<DataModel>, public HuiEventHandler
+class ModeModelMeshCreatePlane: public ModeCreation<DataModel>
 {
 public:
 	ModeModelMeshCreatePlane(ModeBase *parent);

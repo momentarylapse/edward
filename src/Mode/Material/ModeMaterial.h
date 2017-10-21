@@ -13,7 +13,9 @@
 
 class MaterialPropertiesDialog;
 class Geometry;
-class NixVertexBuffer;
+namespace nix{
+	class VertexBuffer;
+};
 
 class ModeMaterial: public Mode<DataMaterial>
 {
@@ -40,7 +42,7 @@ public:
 
 	virtual bool optimizeView();
 
-	NixVertexBuffer *MaterialVB[MATERIAL_MAX_TEXTURES + 1];
+	nix::VertexBuffer *MaterialVB[MATERIAL_MAX_TEXTURES + 1];
 	MaterialPropertiesDialog *AppearanceDialog;
 
 	string shape_type;

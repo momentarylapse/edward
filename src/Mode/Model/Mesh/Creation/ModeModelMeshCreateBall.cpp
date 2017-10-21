@@ -46,22 +46,22 @@ void ModeModelMeshCreateBall::onTypeSphere()
 void ModeModelMeshCreateBall::onStart()
 {
 	// Dialog
-	dialog = HuiCreateResourceDialog("new_ball_dialog", ed);
+	dialog = hui::CreateResourceDialog("new_ball_dialog", ed);
 
-	dialog->setInt("nb_x", HuiConfig.getInt("NewBallNumX", 8));
-	dialog->setInt("nb_y",HuiConfig.getInt("NewBallNumY", 16));
-	dialog->setInt("nb_complexity", HuiConfig.getInt("NewBallComplexity", 8));
-	bool sphere = HuiConfig.getBool("NewBallSphere", false);
+	dialog->setInt("nb_x", hui::Config.getInt("NewBallNumX", 8));
+	dialog->setInt("nb_y",hui::Config.getInt("NewBallNumY", 16));
+	dialog->setInt("nb_complexity", hui::Config.getInt("NewBallComplexity", 8));
+	bool sphere = hui::Config.getBool("NewBallSphere", false);
 	dialog->check("ball_type:ball", !sphere);
 	dialog->check("ball_type:sphere", sphere);
 	dialog->enable("nb_x", !sphere);
 	dialog->enable("nb_y", !sphere);
 	dialog->enable("nb_complexity", sphere);
-	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
+	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
-	dialog->eventS("hui:close", &HuiFuncIgnore);
-	dialog->event("ball_type:ball", this, &ModeModelMeshCreateBall::onTypeBall);
-	dialog->event("ball_type:sphere", this, &ModeModelMeshCreateBall::onTypeSphere);
+	dialog->event("hui:close", &hui::FuncIgnore);
+	dialog->event("ball_type:ball", std::bind(&ModeModelMeshCreateBall::onTypeBall, this));
+	dialog->event("ball_type:sphere", std::bind(&ModeModelMeshCreateBall::onTypeSphere, this));
 
 	multi_view->setAllowSelect(false);
 	multi_view->setAllowAction(false);
@@ -84,10 +84,10 @@ void ModeModelMeshCreateBall::updateGeometry()
 		int nx = dialog->getInt("nb_x");
 		int ny = dialog->getInt("nb_y");
 		int complexity = dialog->getInt("nb_complexity");
-		HuiConfig.setInt("NewBallNumX", nx);
-		HuiConfig.setInt("NewBallNumY", ny);
-		HuiConfig.setInt("NewBallComplexity", complexity);
-		HuiConfig.setBool("NewBallSphere", sphere);
+		hui::Config.setInt("NewBallNumX", nx);
+		hui::Config.setInt("NewBallNumY", ny);
+		hui::Config.setInt("NewBallComplexity", complexity);
+		hui::Config.setBool("NewBallSphere", sphere);
 		if (sphere)
 			geo = new GeometrySphere(pos, radius, complexity);
 		else
@@ -119,8 +119,8 @@ void ModeModelMeshCreateBall::onDrawWin(MultiView::Window *win)
 
 	if (pos_chosen){
 		mode_model->setMaterialCreation();
-		geo->preview(VBTemp);
-		NixDraw3D(VBTemp);
+		geo->preview(nix::vb_temp);
+		nix::Draw3D(nix::vb_temp);
 	}
 }
 

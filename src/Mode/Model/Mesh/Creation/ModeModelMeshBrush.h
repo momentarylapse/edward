@@ -12,7 +12,7 @@
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../lib/hui/hui.h"
 
-class ModeModelMeshBrush: public ModeCreation<DataModel>, public HuiEventHandler
+class ModeModelMeshBrush: public ModeCreation<DataModel>
 {
 public:
 	ModeModelMeshBrush(ModeBase *parent);

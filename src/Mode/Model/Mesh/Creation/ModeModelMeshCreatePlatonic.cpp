@@ -42,11 +42,11 @@ void ModeModelMeshCreatePlatonic::onStart()
 	if (type != 306)
 		return;
 	// Dialog
-	dialog = HuiCreateResourceDialog("new_teapot_dialog", ed);
-	dialog->setInt("ntp_samples", HuiConfig.getInt("NewTeapotSamples", 4));
-	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
+	dialog = hui::CreateResourceDialog("new_teapot_dialog", ed);
+	dialog->setInt("ntp_samples", hui::Config.getInt("NewTeapotSamples", 4));
+	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
-	dialog->event("hui:close", this, &ModeModelMeshCreatePlatonic::onClose);
+	dialog->event("hui:close", std::bind(&ModeModelMeshCreatePlatonic::onClose, this));
 
 	ed->activate("");
 }
@@ -70,7 +70,7 @@ void ModeModelMeshCreatePlatonic::updateGeometry()
 	if (pos_chosen){
 		if (type == 306){
 			int samples = dialog->getInt("ntp_samples");
-			HuiConfig.setInt("NewTeapotSamples", samples);
+			hui::Config.setInt("NewTeapotSamples", samples);
 			geo = new GeometryTeapot(pos, radius, samples);
 		}else{
 			geo = new GeometryPlatonic(pos, radius, type);
@@ -101,8 +101,8 @@ void ModeModelMeshCreatePlatonic::onDrawWin(MultiView::Window *win)
 	if (pos_chosen){
 		mode_model->setMaterialCreation();
 
-		geo->preview(VBTemp);
-		NixDraw3D(VBTemp);
+		geo->preview(nix::vb_temp);
+		nix::Draw3D(nix::vb_temp);
 	}
 }
 

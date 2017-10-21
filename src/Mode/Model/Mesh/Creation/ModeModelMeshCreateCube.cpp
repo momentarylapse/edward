@@ -44,9 +44,9 @@ void ModeModelMeshCreateCube::updateGeometry()
 		int num_1 = dialog->getInt("nc_x");
 		int num_2 = dialog->getInt("nc_y");
 		int num_3 = dialog->getInt("nc_z");
-		HuiConfig.setInt("NewCubeNumX", num_1);
-		HuiConfig.setInt("NewCubeNumY", num_2);
-		HuiConfig.setInt("NewCubeNumZ", num_3);
+		hui::Config.setInt("NewCubeNumX", num_1);
+		hui::Config.setInt("NewCubeNumY", num_2);
+		hui::Config.setInt("NewCubeNumZ", num_3);
 
 		geo = new GeometryCube(pos, length[0], length[1], length[2], num_1, num_2, num_3);
 	}else{
@@ -113,14 +113,14 @@ void ModeModelMeshCreateCube::onMouseMove()
 void ModeModelMeshCreateCube::onStart()
 {
 	// Dialog
-	dialog = HuiCreateResourceDialog("new_cube_dialog", ed);
+	dialog = hui::CreateResourceDialog("new_cube_dialog", ed);
 
-	dialog->setInt("nc_x", HuiConfig.getInt("NewCubeNumX", 1));
-	dialog->setInt("nc_y", HuiConfig.getInt("NewCubeNumY", 1));
-	dialog->setInt("nc_z", HuiConfig.getInt("NewCubeNumZ", 1));
-	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
+	dialog->setInt("nc_x", hui::Config.getInt("NewCubeNumX", 1));
+	dialog->setInt("nc_y", hui::Config.getInt("NewCubeNumY", 1));
+	dialog->setInt("nc_z", hui::Config.getInt("NewCubeNumZ", 1));
+	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
-	dialog->event("hui:close", this, &ModeModelMeshCreateCube::onClose);
+	dialog->event("hui:close", std::bind(&ModeModelMeshCreateCube::onClose, this));
 
 	multi_view->setAllowSelect(false);
 	multi_view->setAllowAction(false);
@@ -139,8 +139,8 @@ void ModeModelMeshCreateCube::onDrawWin(MultiView::Window *win)
 
 	mode_model->setMaterialCreation();
 	if (pos_chosen){
-		geo->preview(VBTemp);
-		VBTemp->draw();
+		geo->preview(nix::vb_temp);
+		nix::Draw3D(nix::vb_temp);
 	}
 }
 

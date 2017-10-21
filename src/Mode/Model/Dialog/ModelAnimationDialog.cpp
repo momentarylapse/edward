@@ -12,7 +12,7 @@
 #include "../Animation/ModeModelAnimation.h"
 
 
-ModelAnimationDialog::ModelAnimationDialog(HuiWindow *_parent, DataModel *_data) :
+ModelAnimationDialog::ModelAnimationDialog(hui::Window *_parent, DataModel *_data) :
 	EmbeddedDialog(_parent, "animation_dialog", "root-table", 1, 0, "noexpandx"),
 	Observer("ModelAnimationDialog")
 {
@@ -20,22 +20,22 @@ ModelAnimationDialog::ModelAnimationDialog(HuiWindow *_parent, DataModel *_data)
 
 	// dialog
 
-	//win->event("hui:close", this, &ModelAnimationDialog::onClose);
-	win->event("animation_list", this, &ModelAnimationDialog::onAnimationList);
-	win->eventX("animation_list", "hui:select", this, &ModelAnimationDialog::onAnimationListSelect);
-	win->event("animation_new", this, &ModelAnimationDialog::onAddAnimation);
-	win->event("animation_delete", this, &ModelAnimationDialog::onDeleteAnimation);
-	win->event("animation_copy", this, &ModelAnimationDialog::onCopyAnimation);
-	win->event("frame", this, &ModelAnimationDialog::onFrame);
-	win->event("new_frame", this, &ModelAnimationDialog::onAddFrame);
-	win->event("delete_frame", this, &ModelAnimationDialog::onDeleteFrame);
-	win->event("name", this, &ModelAnimationDialog::onName);
-	win->event("fps_const", this, &ModelAnimationDialog::onFpsConst);
-	win->event("fps_factor", this, &ModelAnimationDialog::onFpsFactor);
-	win->event("speed", this, &ModelAnimationDialog::onSpeed);
-	win->event("parameter", this, &ModelAnimationDialog::onParameter);
-	win->event("sim_start", this, &ModelAnimationDialog::onSimulationPlay);
-	win->event("sim_stop", this, &ModelAnimationDialog::onSimulationStop);
+	//win->event("hui:close", std::bind(&ModelAnimationDialog::onClose);
+	win->event("animation_list", std::bind(&ModelAnimationDialog::onAnimationList, this));
+	win->eventX("animation_list", "hui:select", std::bind(&ModelAnimationDialog::onAnimationListSelect, this));
+	win->event("animation_new", std::bind(&ModelAnimationDialog::onAddAnimation, this));
+	win->event("animation_delete", std::bind(&ModelAnimationDialog::onDeleteAnimation, this));
+	win->event("animation_copy", std::bind(&ModelAnimationDialog::onCopyAnimation, this));
+	win->event("frame", std::bind(&ModelAnimationDialog::onFrame, this));
+	win->event("new_frame", std::bind(&ModelAnimationDialog::onAddFrame, this));
+	win->event("delete_frame", std::bind(&ModelAnimationDialog::onDeleteFrame, this));
+	win->event("name", std::bind(&ModelAnimationDialog::onName, this));
+	win->event("fps_const", std::bind(&ModelAnimationDialog::onFpsConst, this));
+	win->event("fps_factor", std::bind(&ModelAnimationDialog::onFpsFactor, this));
+	win->event("speed", std::bind(&ModelAnimationDialog::onSpeed, this));
+	win->event("parameter", std::bind(&ModelAnimationDialog::onParameter, this));
+	win->event("sim_start", std::bind(&ModelAnimationDialog::onSimulationPlay, this));
+	win->event("sim_stop", std::bind(&ModelAnimationDialog::onSimulationStop, this));
 
 	subscribe(data);
 	subscribe(mode_model_animation);
@@ -99,6 +99,7 @@ void ModelAnimationDialog::onCopyAnimation()
 
 	ModelDuplicateAnimationDialog *dlg = new ModelDuplicateAnimationDialog(win, false, data, index, mode_model_animation->current_move);
 	dlg->run();
+	delete dlg;
 }
 
 int ModelAnimationDialog::getSelectedAnimation()
@@ -143,6 +144,7 @@ void ModelAnimationDialog::onAddAnimation()
 
 	ModelNewAnimationDialog *dlg = new ModelNewAnimationDialog(win, false, data, index, type);
 	dlg->run();
+	delete dlg;
 }
 
 void ModelAnimationDialog::onDeleteAnimation()

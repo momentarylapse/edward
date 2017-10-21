@@ -11,7 +11,7 @@
 #include "../../ModeCreation.h"
 class DataWorld;
 
-class ModeWorldCreateTerrain: public ModeCreation<DataWorld>, public HuiEventHandler
+class ModeWorldCreateTerrain: public ModeCreation<DataWorld>
 {
 public:
 	ModeWorldCreateTerrain(ModeBase *_parent);

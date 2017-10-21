@@ -58,7 +58,7 @@ void ModeFont::onEnd()
 {
 	delete(dialog);
 
-	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
+	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
 	t->reset();
 	t->enable(false);
 }
@@ -67,13 +67,13 @@ void ModeFont::onEnd()
 
 void ModeFont::onDraw()
 {
-	NixSetZ(false, false);
-	NixEnableLighting(false);
-	NixSetColor(White);
-	NixDrawRect(0, (float)MaxX, MaxY * 0.9f, (float)MaxY, 0);
-	NixSetColor(Black);
+	nix::SetZ(false, false);
+	nix::EnableLighting(false);
+	nix::SetColor(White);
+	nix::DrawRect(0, (float)nix::target_width, nix::target_height * 0.9f, (float)nix::target_height, 0);
+	nix::SetColor(Black);
 	if (dialog)
-		font->drawStr(0, (float)MaxY * 0.9f, 0, (float)MaxY * 0.1f, dialog->GetSampleText());
+		font->drawStr(0, (float)nix::target_height * 0.9f, 0, (float)nix::target_height * 0.1f, dialog->GetSampleText());
 }
 
 
@@ -150,18 +150,18 @@ void ModeFont::_new()
 
 void ModeFont::onStart()
 {
-	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
-	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
+	string dir = (app->directory_static + "Data/icons/toolbar/").sys_filename();
+	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
 	t->reset();
-	t->addItem(L("new"),dir + "new.png","new");
-	t->addItem(L("open"),dir + "open.png","open");
-	t->addItem(L("save"),dir + "save.png","save");
+	t->addItem(L("", "new"),dir + "new.png","new");
+	t->addItem(L("", "open"),dir + "open.png","open");
+	t->addItem(L("", "save"),dir + "save.png","save");
 	t->addSeparator();
-	t->addItem(L("undo"),dir + "undo.png","undo");
-	t->addItem(L("redo"),dir + "redo.png","redo");
+	t->addItem(L("", "undo"),dir + "undo.png","undo");
+	t->addItem(L("", "redo"),dir + "redo.png","redo");
 	t->enable(true);
 	t->configure(false,true);
-	t = ed->toolbar[HuiToolbarLeft];
+	t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
 
@@ -192,31 +192,31 @@ void Draw2D(const rect &source, const rect *dest)
 	MultiView::MultiView *mv = mode_font->multi_view;
 	rect d;
 	if (dest){
-		d=rect(	MaxX/2-(mv->cam.pos.x-dest->x1)*mv->cam.zoom,
-				MaxX/2-(mv->cam.pos.x-dest->x2)*mv->cam.zoom,
-				MaxY/2-(mv->cam.pos.y-dest->y1)*mv->cam.zoom,
-				MaxY/2-(mv->cam.pos.y-dest->y2)*mv->cam.zoom);
-		NixDraw2D(source, d, 0);
+		d=rect(	nix::target_width/2-(mv->cam.pos.x-dest->x1)*mv->cam.zoom,
+				nix::target_width/2-(mv->cam.pos.x-dest->x2)*mv->cam.zoom,
+				nix::target_height/2-(mv->cam.pos.y-dest->y1)*mv->cam.zoom,
+				nix::target_height/2-(mv->cam.pos.y-dest->y2)*mv->cam.zoom);
+		nix::Draw2D(source, d, 0);
 	}else
-		NixDraw2D(source, NixTargetRect, 0);
+		nix::Draw2D(source, nix::target_rect, 0);
 }
 
 void DrawLineH(int x1, int x2, int y)
 {
 	MultiView::MultiView *mv = mode_font->multi_view;
-	x1 = int(MaxX/2-(mv->cam.pos.x - x1)*mv->cam.zoom);
-	x2 = int(MaxX/2-(mv->cam.pos.x - x2)*mv->cam.zoom);
-	y  = int(MaxY/2-(mv->cam.pos.y - y )*mv->cam.zoom);
-	NixDrawLineH(x1, x2,y, 0);
+	x1 = int(nix::target_width/2-(mv->cam.pos.x - x1)*mv->cam.zoom);
+	x2 = int(nix::target_width/2-(mv->cam.pos.x - x2)*mv->cam.zoom);
+	y  = int(nix::target_height/2-(mv->cam.pos.y - y )*mv->cam.zoom);
+	nix::DrawLineH(x1, x2,y, 0);
 }
 
 void DrawLineV(int x, int y1, int y2)
 {
 	MultiView::MultiView *mv = mode_font->multi_view;
-	x  = int(MaxX/2-(mv->cam.pos.x - x )*mv->cam.zoom);
-	y1 = int(MaxY/2-(mv->cam.pos.y - y1)*mv->cam.zoom);
-	y2 = int(MaxY/2-(mv->cam.pos.y - y2)*mv->cam.zoom);
-	NixDrawLineV(x, y1, y2, 0);
+	x  = int(nix::target_width/2-(mv->cam.pos.x - x )*mv->cam.zoom);
+	y1 = int(nix::target_height/2-(mv->cam.pos.y - y1)*mv->cam.zoom);
+	y2 = int(nix::target_height/2-(mv->cam.pos.y - y2)*mv->cam.zoom);
+	nix::DrawLineV(x, y1, y2, 0);
 }
 
 
@@ -225,25 +225,25 @@ void ModeFont::onDrawWin(MultiView::Window *win)
 	int NumY = data->TextureHeight / data->global.GlyphHeight;
 
 	// background
-	NixEnableLighting(false);
-	NixSetAlpha(AlphaMaterial);
-	NixSetZ(false, false);
+	nix::EnableLighting(false);
+	nix::SetAlpha(AlphaMaterial);
+	nix::SetZ(false, false);
 	rect d = rect(0, (float)data->TextureWidth, 0, (float)data->TextureHeight);
-	NixSetTexture(NULL);
-	NixSetColor(White);
+	nix::SetTexture(NULL);
+	nix::SetColor(White);
 	Draw2D(r_id, &d);
-	NixSetTexture(data->Texture);
-	NixSetColor(Black);
+	nix::SetTexture(data->Texture);
+	nix::SetColor(Black);
 	Draw2D(r_id, &d);
-	NixSetTexture(NULL);
+	nix::SetTexture(NULL);
 
 	// grid (horizontal lines)
 	for (int i=0;i<NumY;i++){
-		NixSetColor(color(0.3f,0.0f,0.8f,0.0f));
+		nix::SetColor(color(0.3f,0.0f,0.8f,0.0f));
 		DrawLineH(0, data->TextureWidth,i*data->global.GlyphHeight+data->global.GlyphY1);
-		NixSetColor(color(0.3f,0.0f,1.0f,0.0f));
+		nix::SetColor(color(0.3f,0.0f,1.0f,0.0f));
 		DrawLineH(0, data->TextureWidth,i*data->global.GlyphHeight+data->global.GlyphY2);
-		NixSetColor(color(0.5f,0.5f,0.5f,0.5f));
+		nix::SetColor(color(0.5f,0.5f,0.5f,0.5f));
 		DrawLineH(0, data->TextureWidth,(i+1)*data->global.GlyphHeight);
 	}
 
@@ -258,19 +258,19 @@ void ModeFont::onDrawWin(MultiView::Window *win)
 		}
 		if (i == data->Marked){
 			d = rect(float(x), float(x2), float(y), float(y + data->global.GlyphHeight));
-			NixSetColor(color(0.2f,1,0,0));
+			nix::SetColor(color(0.2f,1,0,0));
 			Draw2D(r_id, &d);
 		}
-		NixSetColor(color(0.3f,0.8f,0.0f,0.0f));
+		nix::SetColor(color(0.3f,0.8f,0.0f,0.0f));
 		DrawLineV(x + g.X1, y + data->global.GlyphY1, y + data->global.GlyphY2);
-		NixSetColor(color(0.3f,0.8f,0.0f,0.0f));
+		nix::SetColor(color(0.3f,0.8f,0.0f,0.0f));
 		DrawLineV(x + g.X2, y + data->global.GlyphY1, y + data->global.GlyphY2);
-		NixSetColor(color(0.3f,0.5f,0.5f,0.5f));
+		nix::SetColor(color(0.3f,0.5f,0.5f,0.5f));
 		DrawLineV(x2, y, y + data->global.GlyphHeight);
 		x = x2;
 	}
 
-	NixSetAlpha(AlphaNone);
+	nix::SetAlpha(AlphaNone);
 }
 
 
@@ -287,9 +287,9 @@ bool ModeFont::optimizeView()
 
 void ModeFont::Import()
 {
-	if (HuiSelectFont(ed, _("Font importieren"))){
+	if (hui::SelectFont(ed, _("Font importieren"))){
 		ImporterCairo imp;
-		imp.Import(data, HuiFontname);
+		imp.Import(data, hui::Fontname);
 	}
 }
 

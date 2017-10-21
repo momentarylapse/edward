@@ -12,7 +12,7 @@
 
 bool SettingDialogData=true;
 
-FontDialog::FontDialog(HuiWindow *_parent, DataFont *_data) :
+FontDialog::FontDialog(hui::Window *_parent, DataFont *_data) :
 	EmbeddedDialog(_parent, "font_dialog", "root-table", 1, 0, "noexpandx"),
 	Observer("FontDialog")
 {
@@ -22,17 +22,17 @@ FontDialog::FontDialog(HuiWindow *_parent, DataFont *_data) :
 
 	setString("text", _("Beispiel Text 0123456789"));
 
-	win->event("height", this, &FontDialog::OnHeight);
-	win->event("y1", this, &FontDialog::OnY1);
-	win->event("y2", this, &FontDialog::OnY2);
-	win->event("factorx", this, &FontDialog::OnFactorX);
-	win->event("factory", this, &FontDialog::OnFactorY);
-	win->event("unknown", this, &FontDialog::OnUnknown);
-	win->event("name", this, &FontDialog::OnName);
-	win->event("x1", this, &FontDialog::OnX1);
-	win->event("x2", this, &FontDialog::OnX2);
-	win->event("width", this, &FontDialog::OnWidth);
-	win->event("text", this, &FontDialog::OnText);
+	win->event("height", std::bind(&FontDialog::OnHeight, this));
+	win->event("y1", std::bind(&FontDialog::OnY1, this));
+	win->event("y2", std::bind(&FontDialog::OnY2, this));
+	win->event("factorx", std::bind(&FontDialog::OnFactorX, this));
+	win->event("factory", std::bind(&FontDialog::OnFactorY, this));
+	win->event("unknown", std::bind(&FontDialog::OnUnknown, this));
+	win->event("name", std::bind(&FontDialog::OnName, this));
+	win->event("x1", std::bind(&FontDialog::OnX1, this));
+	win->event("x2", std::bind(&FontDialog::OnX2, this));
+	win->event("width", std::bind(&FontDialog::OnWidth, this));
+	win->event("text", std::bind(&FontDialog::OnText, this));
 
 	subscribe(data);
 

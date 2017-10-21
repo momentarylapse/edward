@@ -18,6 +18,7 @@ ModeModelAnimationVertex *mode_model_animation_vertex = NULL;
 ModeModelAnimationVertex::ModeModelAnimationVertex(ModeBase* _parent) :
 	Mode<DataModel>("ModelAnimationVertex", _parent, ed->multi_view_3d, "menu_move")
 {
+	mouse_action = -1;
 }
 
 ModeModelAnimationVertex::~ModeModelAnimationVertex()
@@ -26,8 +27,8 @@ ModeModelAnimationVertex::~ModeModelAnimationVertex()
 
 void ModeModelAnimationVertex::onStart()
 {
-	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
-	HuiToolbar *t = ed->toolbar[HuiToolbarLeft];
+	string dir = (app->directory_static + "Data/icons/toolbar/").sys_filename();
+	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->addSeparator();
 	t->addItemCheckable(_("Selektieren"), dir + "rf_select.png", "select");

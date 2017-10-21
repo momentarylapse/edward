@@ -16,7 +16,7 @@ class DataModel;
 class ModelAnimationDialog: public EmbeddedDialog, public Observer
 {
 public:
-	ModelAnimationDialog(HuiWindow *_parent, DataModel *_data);
+	ModelAnimationDialog(hui::Window *_parent, DataModel *_data);
 	virtual ~ModelAnimationDialog();
 
 	void loadData();

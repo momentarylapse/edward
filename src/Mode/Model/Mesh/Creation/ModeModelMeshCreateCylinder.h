@@ -13,7 +13,7 @@
 
 class Geometry;
 
-class ModeModelMeshCreateCylinder: public ModeCreation<DataModel>, public HuiEventHandler
+class ModeModelMeshCreateCylinder: public ModeCreation<DataModel>
 {
 public:
 	ModeModelMeshCreateCylinder(ModeBase *parent);

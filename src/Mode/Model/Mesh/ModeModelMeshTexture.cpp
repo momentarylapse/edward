@@ -24,8 +24,8 @@ ModeModelMeshTexture::ModeModelMeshTexture(ModeBase *_parent) :
 void ModeModelMeshTexture::fetchData()
 {
 	skin_vertex.clear();
-	foreach(ModelSurface &surf, data->surface)
-		foreach(ModelPolygon &t, surf.polygon){
+	for (ModelSurface &surf: data->surface)
+		for (ModelPolygon &t: surf.polygon){
 			if (t.material != mode_model_mesh->current_material)
 				continue;
 			ModelSkinVertexDummy v;
@@ -51,7 +51,7 @@ void ModeModelMeshTexture::fetchData()
 int ModeModelMeshTexture::getNumSelected()
 {
 	int r = 0;
-	foreach(ModelSkinVertexDummy &v, skin_vertex)
+	for (ModelSkinVertexDummy &v: skin_vertex)
 		if (v.is_selected)
 			r ++;
 	return r;
@@ -94,14 +94,14 @@ void ModeModelMeshTexture::onDrawWin(MultiView::Window *win)
 	color c;
 
 	vector a = win->unproject(v_0);
-	vector b = win->unproject(vector((float)MaxX,(float)MaxY,0));
+	vector b = win->unproject(vector((float)nix::target_width,(float)nix::target_height,0));
 
 	s.x1=a.x;
 	s.x2=b.x;
 	s.y1=a.y;
 	s.y2=b.y;
 
-	NixEnableLighting(false);
+	nix::EnableLighting(false);
 
 	if (true){//mul->FXEnabled){
 		// background pattern to show transparency
@@ -109,34 +109,34 @@ void ModeModelMeshTexture::onDrawWin(MultiView::Window *win)
 		color c2 = color(1,0.5f,0.5f,0.5f);
 		for (int i=0;i<16;i++)
 			for (int j=0;j<16;j++){
-				r=rect(	(float)i/16.0f*NixTargetWidth,
-						(float)(i+1)/16.0f*NixTargetWidth,
-						(float)j/16.0f*NixTargetHeight,
-						(float)(j+1)/16.0f*NixTargetHeight);
-				NixSetColor(((i+j)%2==0) ? c1 : c2);
-				NixDraw2D(r_id, r, 0.999f );
+				r=rect(	(float)i/16.0f*nix::target_width,
+						(float)(i+1)/16.0f*nix::target_width,
+						(float)j/16.0f*nix::target_height,
+						(float)(j+1)/16.0f*nix::target_height);
+				nix::SetColor(((i+j)%2==0) ? c1 : c2);
+				nix::Draw2D(r_id, r, 0.999f );
 			}
-		NixSetAlphaSD(AlphaSourceAlpha,AlphaSourceInvAlpha);
+		nix::SetAlphaSD(AlphaSourceAlpha,AlphaSourceInvAlpha);
 	}
-	NixSetColor(color(1,0.8f,0.8f,0.8f));
-	NixSetTexture(cur_tex);
-	NixDraw2D(s, NixTargetRect, 0.99f);
-	NixSetTexture(NULL);
-	NixSetAlphaM(AlphaNone);
+	nix::SetColor(color(1,0.8f,0.8f,0.8f));
+	nix::SetTexture(cur_tex);
+	nix::Draw2D(s, nix::target_rect, 0.99f);
+	nix::SetTexture(NULL);
+	nix::SetAlphaM(AlphaNone);
 
 	// rectangle of unity
 	a = win->project(v_0);
 	b = win->project(vector(1, 1, 0));
-	NixSetColor(Red);
-	NixDrawLine(a.x, a.y, b.x, a.y, 0.98f);
-	NixDrawLine(b.x, a.y, b.x, b.y, 0.98f);
-	NixDrawLine(a.x, a.y, a.x, b.y, 0.98f);
-	NixDrawLine(a.x, b.y, b.x, b.y, 0.98f);
-	NixSetColor(White);
+	nix::SetColor(Red);
+	nix::DrawLine(a.x, a.y, b.x, a.y, 0.98f);
+	nix::DrawLine(b.x, a.y, b.x, b.y, 0.98f);
+	nix::DrawLine(a.x, a.y, a.x, b.y, 0.98f);
+	nix::DrawLine(a.x, b.y, b.x, b.y, 0.98f);
+	nix::SetColor(White);
 
 	// draw triangles (outlines) of current material
-	foreach(ModelSurface &surf, data->surface)
-		foreach(ModelPolygon &t, surf.polygon){
+	for (ModelSurface &surf: data->surface)
+		for (ModelPolygon &t: surf.polygon){
 			if (t.material != mode_model_mesh->current_material)
 				continue;
 			if (t.view_stage < multi_view->view_stage)
@@ -146,7 +146,7 @@ void ModeModelMeshTexture::onDrawWin(MultiView::Window *win)
 				v.add(win->project(t.side[k].skin_vertex[current_texture_level]));
 			v.add(v[0]);
 			for (int k=0;k<t.side.num;k++)
-				NixDrawLine(	v[k].x,v[k].y,
+				nix::DrawLine(	v[k].x,v[k].y,
 								v[k+1].x,v[k+1].y,
 								0.9f);
 		}
@@ -180,8 +180,8 @@ void ModeModelMeshTexture::onUpdate(Observable *o, const string &message)
 
 		if (message == DataModel::MESSAGE_SKIN_CHANGE){
 			int svi = 0;
-			foreach(ModelSurface &surf, data->surface)
-				foreach(ModelPolygon &t, surf.polygon){
+			for (ModelSurface &surf: data->surface)
+				for (ModelPolygon &t: surf.polygon){
 					if (t.material != mode_model_mesh->current_material)
 						continue;
 					for (int k=0;k<t.side.num;k++)

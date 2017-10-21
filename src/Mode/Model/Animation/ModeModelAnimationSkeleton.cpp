@@ -22,6 +22,7 @@ ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(ModeBase* _parent) :
 	current_frame(((ModeModelAnimation*)parent)->current_frame)
 {
 	select_recursive = true;
+	mouse_action = -1;
 }
 
 ModeModelAnimationSkeleton::~ModeModelAnimationSkeleton()
@@ -30,8 +31,8 @@ ModeModelAnimationSkeleton::~ModeModelAnimationSkeleton()
 
 void ModeModelAnimationSkeleton::onStart()
 {
-	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
-	HuiToolbar *t = ed->toolbar[HuiToolbarLeft];
+	string dir = (app->directory_static + "Data/icons/toolbar/").sys_filename();
+	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->addSeparator();
 	t->addItemCheckable(_("Selektieren"), dir + "rf_select.png", "select");
@@ -129,7 +130,7 @@ void ModeModelAnimationSkeleton::updateSelection()
 		// this works thanks to lucky circumstances... might break in the future
 		foreachi(ModelBone &b, data->bone, i)
 			if (b.is_selected){
-				foreach(ModelBone &bc, data->bone)
+				for (ModelBone &bc: data->bone)
 					if (bc.parent == i)
 						bc.is_selected = true;
 			}

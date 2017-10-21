@@ -13,7 +13,7 @@
 #include "../../../../Data/Model/DataModel.h"
 #include "../../Dialog/ModelAnimationTimelinePanel.h"
 
-class ModeModelAnimationInterpolateFrames: public ModeCreation<DataModel>, public HuiEventHandler, public TimeLineParasite
+class ModeModelAnimationInterpolateFrames: public ModeCreation<DataModel>, public TimeLineParasite
 {
 public:
 	ModeModelAnimationInterpolateFrames(ModeBase *_parent);
@@ -26,7 +26,7 @@ public:
 
 	virtual void onTimelineMouseMove();
 	virtual void onTimelineLeftButtonUp();
-	virtual void onTimelineDraw(HuiPainter *p);
+	virtual void onTimelineDraw(Painter *p);
 
 private:
 };

@@ -14,10 +14,10 @@ class DataAdministration;
 class AdminFile;
 class AdminFileList;
 
-class AdministrationDialog: public HuiWindow, public Observer
+class AdministrationDialog: public hui::Dialog, public Observer
 {
 public:
-	AdministrationDialog(HuiWindow *_parent, bool _allow_parent, DataAdministration *_data);
+	AdministrationDialog(hui::Window *_parent, bool _allow_parent, DataAdministration *_data);
 	virtual ~AdministrationDialog();
 
 	void LoadData();

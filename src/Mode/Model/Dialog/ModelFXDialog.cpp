@@ -7,12 +7,13 @@
 
 #include "ModelFXDialog.h"
 #include "../../../Data/Model/DataModel.h"
-#include "../../../lib/script/script.h"
+#include "../../../lib/kaba/kaba.h"
 #include "../../../Edward.h"
 
-ModelFXDialog::ModelFXDialog(HuiWindow* _parent, bool _allow_parent, DataModel* _data, int _type, int _index) :
-	HuiWindow("fx_dialog", _parent, _allow_parent)
+ModelFXDialog::ModelFXDialog(hui::Window* _parent, bool _allow_parent, DataModel* _data, int _type, int _index) :
+	hui::Dialog("fx_dialog", 400, 300, _parent, _allow_parent)
 {
+	fromResource("fx_dialog");
 	data = _data;
 	index = _index;
 	if (index >= 0)
@@ -22,11 +23,11 @@ ModelFXDialog::ModelFXDialog(HuiWindow* _parent, bool _allow_parent, DataModel* 
 		temp.type = _type;
 	}
 
-	event("hui:close", this, &ModelFXDialog::OnClose);
-	event("cancel", this, &ModelFXDialog::OnClose);
-	event("ok", this, &ModelFXDialog::OnOk);
-	event("search", this, &ModelFXDialog::OnFindSoundFile);
-	event("find_scriptfile", this, &ModelFXDialog::OnFindScriptFile);
+	event("hui:close", std::bind(&ModelFXDialog::OnClose, this));
+	event("cancel", std::bind(&ModelFXDialog::OnClose, this));
+	event("ok", std::bind(&ModelFXDialog::OnOk, this));
+	event("search", std::bind(&ModelFXDialog::OnFindSoundFile, this));
+	event("find_scriptfile", std::bind(&ModelFXDialog::OnFindScriptFile, this));
 
 	LoadData();
 }
@@ -91,12 +92,12 @@ void ModelFXDialog::OnFindScriptFile()
 		setString("script_file", ed->dialog_file);
 
 		try{
-			Script::Script *s = Script::Load(filename, true); // just analyse
+			Kaba::Script *s = Kaba::Load(filename, true); // just analyse
 			if (!s->MatchFunction("OnEffectCreate", "void", 1, "effect"))
 				ed->errorBox(_("Script-Datei enth&alt keine Funktion \"void OnEffectCreate( effect )\""));
 			else if (!s->MatchFunction("OnEffectIterate", "void", 1, "effect"))
 				ed->errorBox(_("Script-Datei enth&alt keine Funktion \"void OnEffectIterate( effect )\""));
-		}catch(Script::Exception &e){
+		}catch(Kaba::Exception &e){
 			ed->errorBox(_("Fehler in Script-Datei: ") + e.message);
 		}
 	}

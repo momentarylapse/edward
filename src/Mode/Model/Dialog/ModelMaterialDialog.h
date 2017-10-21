@@ -17,7 +17,7 @@ class DataModel;
 class ModelMaterialDialog: public EmbeddedDialog, public Observer
 {
 public:
-	ModelMaterialDialog(HuiWindow *_parent, DataModel *_data);
+	ModelMaterialDialog(hui::Window *_parent, DataModel *_data);
 	virtual ~ModelMaterialDialog();
 
 	void loadData();

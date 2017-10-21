@@ -10,23 +10,24 @@
 #include "../../../Data/Administration/GameIniData.h"
 #include "../../../Edward.h"
 
-ConfigurationDialog::ConfigurationDialog(HuiWindow* _parent, bool _allow_parent, DataAdministration *_data, bool _exporting):
-	HuiWindow(_exporting ? "ge_dialog" : "rc_dialog", _parent, _allow_parent),
+ConfigurationDialog::ConfigurationDialog(hui::Window* _parent, bool _allow_parent, DataAdministration *_data, bool _exporting):
+	hui::Dialog(_exporting ? "ge_dialog" : "rc_dialog", 400, 300, _parent, _allow_parent),
 	Observer("ConfigurationDialog")
 {
+	fromResource(_exporting ? "ge_dialog" : "rc_dialog");
 	exporting = _exporting;
 	data = _data;
 
 	// dialog
-	event("hui:close", this, &ConfigurationDialog::OnClose);
-	event("cancel", this, &ConfigurationDialog::OnClose);
-	event("ok", this, &ConfigurationDialog::OnOk);
-	event("find_rootdir", this, &ConfigurationDialog::OnFindRootdir);
-	event("find_default_world", this, &ConfigurationDialog::OnFindDefaultWorld);
-	event("find_default_second_world", this, &ConfigurationDialog::OnFindDefaultSecondWorld);
-	event("find_default_script", this, &ConfigurationDialog::OnFindDefaultScript);
-	event("find_default_material", this, &ConfigurationDialog::OnFindDefaultMaterial);
-	event("find_default_font", this, &ConfigurationDialog::OnFindDefaultFont);
+	event("hui:close", std::bind(&ConfigurationDialog::OnClose, this));
+	event("cancel", std::bind(&ConfigurationDialog::OnClose, this));
+	event("ok", std::bind(&ConfigurationDialog::OnOk, this));
+	event("find_rootdir", std::bind(&ConfigurationDialog::OnFindRootdir, this));
+	event("find_default_world", std::bind(&ConfigurationDialog::OnFindDefaultWorld, this));
+	event("find_default_second_world", std::bind(&ConfigurationDialog::OnFindDefaultSecondWorld, this));
+	event("find_default_script", std::bind(&ConfigurationDialog::OnFindDefaultScript, this));
+	event("find_default_material", std::bind(&ConfigurationDialog::OnFindDefaultMaterial, this));
+	event("find_default_font", std::bind(&ConfigurationDialog::OnFindDefaultFont, this));
 
 	LoadData();
 	subscribe(data);
@@ -65,8 +66,8 @@ void ConfigurationDialog::onUpdate(Observable *o, const string &message)
 
 void ConfigurationDialog::OnFindRootdir()
 {
-	if (HuiFileDialogDir(this,_("Arbeitsverzeichnis"),ed->root_dir))
-		setString("rootdir", HuiFilename);
+	if (hui::FileDialogDir(this,_("Arbeitsverzeichnis"),ed->root_dir))
+		setString("rootdir", hui::Filename);
 }
 
 void ConfigurationDialog::OnFindDefaultWorld()

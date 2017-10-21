@@ -29,13 +29,13 @@ ModeModelMeshCreateCylinderSnake::ModeModelMeshCreateCylinderSnake(ModeBase *_pa
 
 void ModeModelMeshCreateCylinderSnake::onStart()
 {
-	dialog = HuiCreateResourceDialog("new_cylinder_dialog",ed);
+	dialog = hui::CreateResourceDialog("new_cylinder_dialog",ed);
 
-	dialog->setInt("ncy_rings", HuiConfig.getInt("NewCylinderRings", 4));
-	dialog->setInt("ncy_edges", HuiConfig.getInt("NewCylinderEdges", 8));
-	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
+	dialog->setInt("ncy_rings", hui::Config.getInt("NewCylinderRings", 4));
+	dialog->setInt("ncy_edges", hui::Config.getInt("NewCylinderEdges", 8));
+	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
-	dialog->event("hui:close", this, &ModeModelMeshCreateCylinderSnake::onClose);
+	dialog->event("hui:close", std::bind(&ModeModelMeshCreateCylinderSnake::onClose, this));
 
 	multi_view->setAllowSelect(false);
 	multi_view->setAllowAction(false);
@@ -58,8 +58,8 @@ void ModeModelMeshCreateCylinderSnake::updateGeometry()
 	if (ready_for_scaling){
 		int rings = dialog->getInt("ncy_rings");
 		int edges = dialog->getInt("ncy_edges");
-		HuiConfig.setInt("NewCylinderRings", rings);
-		HuiConfig.setInt("NewCylinderEdges", edges);
+		hui::Config.setInt("NewCylinderRings", rings);
+		hui::Config.setInt("NewCylinderEdges", edges);
 
 		geo = new GeometryCylinder(pos, radius, rings * (pos.num - 1), edges, closed);
 	}
@@ -111,7 +111,7 @@ void ModeModelMeshCreateCylinderSnake::onLeftButtonUp()
 
 void ModeModelMeshCreateCylinderSnake::onKeyDown()
 {
-	if (HuiGetEvent()->key_code == KEY_SHIFT + KEY_RETURN){
+	if (hui::GetEvent()->key_code == hui::KEY_SHIFT + hui::KEY_RETURN){
 		if (pos.num > 1){
 			ready_for_scaling = true;
 			onMouseMove();
@@ -131,34 +131,34 @@ void ModeModelMeshCreateCylinderSnake::onDrawWin(MultiView::Window *win)
 	parent->onDrawWin(win);
 
 	if (pos.num > 0){
-		NixEnableLighting(false);
+		nix::EnableLighting(false);
 		// control polygon
 		for (int i=0;i<pos.num;i++){
 			vector pp = win->project(pos[i]);
-			NixSetColor(Green);
-			NixDrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
-			NixSetColor(White);
+			nix::SetColor(Green);
+			nix::DrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
+			nix::SetColor(White);
 			if (i > 0)
-				NixDrawLine3D(pos[i - 1], pos[i]);
+				nix::DrawLine3D(pos[i - 1], pos[i]);
 		}
 
 		// spline curve
 		Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
-		foreach(vector &p, pos)
+		for (vector &p: pos)
 			inter.add(p);
 		if (!ready_for_scaling)
 			inter.add(multi_view->getCursor3d());
 		inter.normalize();
-		NixSetColor(Green);
+		nix::SetColor(Green);
 		for (int i=0;i<100;i++)
-			NixDrawLine3D(inter.get((float)i * 0.01f), inter.get((float)i * 0.01f + 0.01f));
-		NixSetColor(White);
+			nix::DrawLine3D(inter.get((float)i * 0.01f), inter.get((float)i * 0.01f + 0.01f));
+		nix::SetColor(White);
 	}
 	if (ready_for_scaling){
-		geo->preview(VBTemp);
-		NixEnableLighting(true);
+		geo->preview(nix::vb_temp);
+		nix::EnableLighting(true);
 		mode_model->setMaterialCreation();
-		NixDraw3D(VBTemp);
+		nix::Draw3D(nix::vb_temp);
 	}else if (pos.num > 2){
 		vector pp = multi_view->mouse_win->project(pos[0]);
 		pp.z = 0;

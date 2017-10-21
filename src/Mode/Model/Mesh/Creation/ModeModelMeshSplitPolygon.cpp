@@ -20,6 +20,7 @@ ModeModelMeshSplitPolygon::ModeModelMeshSplitPolygon(ModeBase *_parent) :
 	surface = -1;
 	triangle = -1;
 	factor = 0;
+	edge = -1;
 
 	message = _("neuen Punkt in Polygon setzen");
 
@@ -76,14 +77,14 @@ void ModeModelMeshSplitPolygon::onDrawWin(MultiView::Window *win)
 			}
 		}
 
-		NixEnableLighting(false);
+		nix::EnableLighting(false);
 		/*NixDrawLine3D(data->Vertex[data->Surface[surface].Triangle[triangle].Vertex[0]].pos, pos, Green);
 		NixDrawLine3D(data->Vertex[data->Surface[surface].Triangle[triangle].Vertex[1]].pos, pos, Green);
 		NixDrawLine3D(data->Vertex[data->Surface[surface].Triangle[triangle].Vertex[2]].pos, pos, Green);*/
-		NixSetColor(Green);
+		nix::SetColor(Green);
 		for (int k=0;k<v.num;k++)
-			NixDrawLine(p[k].x, p[k].y, pp.x, pp.y, 0);
-		NixSetColor(White);
-		NixEnableLighting(true);
+			nix::DrawLine(p[k].x, p[k].y, pp.x, pp.y, 0);
+		nix::SetColor(White);
+		nix::EnableLighting(true);
 	}
 }

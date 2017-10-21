@@ -11,7 +11,7 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshCreateTorus: public ModeCreation<DataModel>, public HuiEventHandler
+class ModeModelMeshCreateTorus: public ModeCreation<DataModel>
 {
 public:
 	ModeModelMeshCreateTorus(ModeBase *parent);

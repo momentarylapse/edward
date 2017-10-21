@@ -12,7 +12,7 @@
 #include "../../../Data/World/DataWorld.h"
 #include "../../../Stuff/Observer.h"
 
-class WorldPropertiesDialog: public hui::Window, public Observer
+class WorldPropertiesDialog: public hui::Dialog, public Observer
 {
 public:
 	WorldPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data);

@@ -15,46 +15,48 @@
 
 string file_secure(const string &filename); // -> ModelPropertiesDialog
 
-extern string NixShaderError; // -> nix
+namespace nix{
+	extern string shader_error; // -> nix
+};
 
-MaterialPropertiesDialog::MaterialPropertiesDialog(HuiWindow *_parent, DataMaterial *_data):
+MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMaterial *_data):
 	EmbeddedDialog(_parent, "material_dialog", "root-table", 1, 0, "noexpandx"),
 	Observer("MaterialPropertiesDialog")
 {
 	data = _data;
 
 	// dialog
-	win->event("mat_add_texture_level", this, &MaterialPropertiesDialog::OnAddTextureLevel);
-	win->event("mat_textures", this, &MaterialPropertiesDialog::OnTextures);
-	win->eventX("mat_textures", "hui:select", this, &MaterialPropertiesDialog::OnTexturesSelect);
-	win->event("mat_delete_texture_level", this, &MaterialPropertiesDialog::OnDeleteTextureLevel);
-	win->event("mat_empty_texture_level", this, &MaterialPropertiesDialog::OnEmptyTextureLevel);
-	win->event("transparency_mode:none", this, &MaterialPropertiesDialog::OnTransparencyMode);
-	win->event("transparency_mode:function", this, &MaterialPropertiesDialog::OnTransparencyMode);
-	win->event("transparency_mode:color_key", this, &MaterialPropertiesDialog::OnTransparencyMode);
-	win->event("transparency_mode:factor", this, &MaterialPropertiesDialog::OnTransparencyMode);
-	win->event("reflection_mode:none", this, &MaterialPropertiesDialog::OnReflectionMode);
-	win->event("reflection_mode:cube_static", this, &MaterialPropertiesDialog::OnReflectionMode);
-	win->event("reflection_mode:cube_dynamic", this, &MaterialPropertiesDialog::OnReflectionMode);
-	win->event("reflection_textures", this, &MaterialPropertiesDialog::OnReflectionTextures);
-	win->event("find_shader", this, &MaterialPropertiesDialog::OnFindShader);
+	win->event("mat_add_texture_level", std::bind(&MaterialPropertiesDialog::OnAddTextureLevel, this));
+	win->event("mat_textures", std::bind(&MaterialPropertiesDialog::OnTextures, this));
+	win->eventX("mat_textures", "hui:select", std::bind(&MaterialPropertiesDialog::OnTexturesSelect, this));
+	win->event("mat_delete_texture_level", std::bind(&MaterialPropertiesDialog::OnDeleteTextureLevel, this));
+	win->event("mat_empty_texture_level", std::bind(&MaterialPropertiesDialog::OnEmptyTextureLevel, this));
+	win->event("transparency_mode:none", std::bind(&MaterialPropertiesDialog::OnTransparencyMode, this));
+	win->event("transparency_mode:function", std::bind(&MaterialPropertiesDialog::OnTransparencyMode, this));
+	win->event("transparency_mode:color_key", std::bind(&MaterialPropertiesDialog::OnTransparencyMode, this));
+	win->event("transparency_mode:factor", std::bind(&MaterialPropertiesDialog::OnTransparencyMode, this));
+	win->event("reflection_mode:none", std::bind(&MaterialPropertiesDialog::OnReflectionMode, this));
+	win->event("reflection_mode:cube_static", std::bind(&MaterialPropertiesDialog::OnReflectionMode, this));
+	win->event("reflection_mode:cube_dynamic", std::bind(&MaterialPropertiesDialog::OnReflectionMode, this));
+	win->event("reflection_textures", std::bind(&MaterialPropertiesDialog::OnReflectionTextures, this));
+	win->event("find_shader", std::bind(&MaterialPropertiesDialog::OnFindShader, this));
 
 
-	win->event("mat_am", this, &MaterialPropertiesDialog::ApplyData);
-	win->event("mat_di", this, &MaterialPropertiesDialog::ApplyData);
-	win->event("mat_sp", this, &MaterialPropertiesDialog::ApplyData);
-	win->event("mat_em", this, &MaterialPropertiesDialog::ApplyData);
-	win->event("mat_shininess", this, &MaterialPropertiesDialog::ApplyDataDelayed);
+	win->event("mat_am", std::bind(&MaterialPropertiesDialog::ApplyData, this));
+	win->event("mat_di", std::bind(&MaterialPropertiesDialog::ApplyData, this));
+	win->event("mat_sp", std::bind(&MaterialPropertiesDialog::ApplyData, this));
+	win->event("mat_em", std::bind(&MaterialPropertiesDialog::ApplyData, this));
+	win->event("mat_shininess", std::bind(&MaterialPropertiesDialog::ApplyDataDelayed, this));
 
-	win->event("alpha_factor", this, &MaterialPropertiesDialog::ApplyDataDelayed);
-	win->event("alpha_source", this, &MaterialPropertiesDialog::ApplyDataDelayed);
-	win->event("alpha_dest", this, &MaterialPropertiesDialog::ApplyDataDelayed);
-	win->event("alpha_z_buffer", this, &MaterialPropertiesDialog::ApplyData);
+	win->event("alpha_factor", std::bind(&MaterialPropertiesDialog::ApplyDataDelayed, this));
+	win->event("alpha_source", std::bind(&MaterialPropertiesDialog::ApplyDataDelayed, this));
+	win->event("alpha_dest", std::bind(&MaterialPropertiesDialog::ApplyDataDelayed, this));
+	win->event("alpha_z_buffer", std::bind(&MaterialPropertiesDialog::ApplyData, this));
 
-	win->event("rcjump", this, &MaterialPropertiesDialog::ApplyPhysDataDelayed);
-	win->event("rcstatic", this, &MaterialPropertiesDialog::ApplyPhysDataDelayed);
-	win->event("rcsliding", this, &MaterialPropertiesDialog::ApplyPhysDataDelayed);
-	win->event("rcroll", this, &MaterialPropertiesDialog::ApplyPhysDataDelayed);
+	win->event("rcjump", std::bind(&MaterialPropertiesDialog::ApplyPhysDataDelayed, this));
+	win->event("rcstatic", std::bind(&MaterialPropertiesDialog::ApplyPhysDataDelayed, this));
+	win->event("rcsliding", std::bind(&MaterialPropertiesDialog::ApplyPhysDataDelayed, this));
+	win->event("rcroll", std::bind(&MaterialPropertiesDialog::ApplyPhysDataDelayed, this));
 
 	win->expand("material_dialog_grp_color", 0, true);
 
@@ -218,7 +220,7 @@ void MaterialPropertiesDialog::OnReflectionTextures()
 				string tf;
 				tf = temp.ReflectionTextureFile[0];
 				tf[p-1]=temp.ReflectionTextureFile[0][p-1]+i;
-				if (file_test_existence(NixTextureDir + tf)){
+				if (file_test_existence(nix::texture_dir + tf)){
 					temp.ReflectionTextureFile[i] = tf;
 				}
 			}
@@ -231,7 +233,7 @@ void MaterialPropertiesDialog::OnReflectionTextures()
 
 bool TestShaderFile(const string &filename)
 {
-	NixShader *shader = NixLoadShader(filename);
+	nix::Shader *shader = nix::LoadShader(filename);
 	shader->unref();
 	return shader;
 }
@@ -243,7 +245,7 @@ void MaterialPropertiesDialog::OnFindShader()
 			setString("shader_file", ed->dialog_file);
 			ApplyData();
 		}else{
-			ed->errorBox(_("Fehler in der Shader-Datei:\n") + NixShaderError);
+			ed->errorBox(_("Fehler in der Shader-Datei:\n") + nix::shader_error);
 		}
 	}
 }
@@ -275,7 +277,7 @@ void MaterialPropertiesDialog::ApplyData()
 void MaterialPropertiesDialog::ApplyDataDelayed()
 {
 	apply_queue_depth ++;
-	HuiRunLaterM(0.5f, this, &MaterialPropertiesDialog::ApplyData);
+	hui::RunLater(0.5f, std::bind(&MaterialPropertiesDialog::ApplyData, this));
 }
 
 void MaterialPropertiesDialog::ApplyPhysData()
@@ -295,7 +297,7 @@ void MaterialPropertiesDialog::ApplyPhysData()
 void MaterialPropertiesDialog::ApplyPhysDataDelayed()
 {
 	apply_phys_queue_depth ++;
-	HuiRunLaterM(0.5f, this, &MaterialPropertiesDialog::ApplyPhysData);
+	hui::RunLater(0.5f, std::bind(&MaterialPropertiesDialog::ApplyPhysData, this));
 }
 
 void MaterialPropertiesDialog::RefillReflTexView()
@@ -313,7 +315,7 @@ void MaterialPropertiesDialog::FillTextureList()
 {
 	reset("mat_textures");
 	for (int i=0;i<temp.NumTextureLevels;i++){
-		NixTexture *tex = NixLoadTexture(temp.TextureFile[i]);
+		nix::Texture *tex = nix::LoadTexture(temp.TextureFile[i]);
 		string img = ed->get_tex_image(tex);
 		addString("mat_textures", format("Tex[%d]\\%s\\%s", i, img.c_str(), file_secure(temp.TextureFile[i]).c_str()));
 	}

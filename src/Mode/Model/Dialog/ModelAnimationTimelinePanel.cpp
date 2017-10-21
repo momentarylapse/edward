@@ -20,11 +20,11 @@ ModelAnimationTimelinePanel::ModelAnimationTimelinePanel() :
 
 	hover = -1;
 
-	eventX("area", "hui:draw", this, &ModelAnimationTimelinePanel::onDraw);
-	eventX("area", "hui:left-button-down", this, &ModelAnimationTimelinePanel::onLeftButtonDown);
-	eventX("area", "hui:left-button-up", this, &ModelAnimationTimelinePanel::onLeftButtonUp);
-	eventX("area", "hui:mouse-move", this, &ModelAnimationTimelinePanel::onMouseMove);
-	eventX("area", "hui:mouse-wheel", this, &ModelAnimationTimelinePanel::onMouseWheel);
+	eventXP("area", "hui:draw", std::bind(&ModelAnimationTimelinePanel::onDraw, this, std::placeholders::_1));
+	eventX("area", "hui:left-button-down", std::bind(&ModelAnimationTimelinePanel::onLeftButtonDown, this));
+	eventX("area", "hui:left-button-up", std::bind(&ModelAnimationTimelinePanel::onLeftButtonUp, this));
+	eventX("area", "hui:mouse-move", std::bind(&ModelAnimationTimelinePanel::onMouseMove, this));
+	eventX("area", "hui:mouse-wheel", std::bind(&ModelAnimationTimelinePanel::onMouseWheel, this));
 
 	subscribe(mode_model_animation->data);
 	subscribe(mode_model_animation);
@@ -60,13 +60,12 @@ string ModelAnimationTimelinePanel::get_time_str_fuzzy(double t, double dt)
 	}
 }
 
-void ModelAnimationTimelinePanel::onDraw()
+void ModelAnimationTimelinePanel::onDraw(Painter *c)
 {
 	double MIN_GRID_DIST = 10.0;
 	color bg = White;
 	color ColorGrid = color(1, 0.75f, 0.75f, 0.75f);
 
-	HuiPainter *c = beginDraw("area");
 	c->setLineWidth(0.8f);
 	c->setColor(bg);
 	c->drawRect(0, 0, c->width, c->height);
@@ -138,14 +137,12 @@ void ModelAnimationTimelinePanel::onDraw()
 	}
 
 	parasite->onTimelineDraw(c);
-
-	c->end();
 }
 
 void ModelAnimationTimelinePanel::onMouseMove()
 {
-	mx = HuiGetEvent()->mx;
-	if (HuiGetEvent()->lbut){
+	mx = hui::GetEvent()->mx;
+	if (hui::GetEvent()->lbut){
 		if (hover > 0){
 
 			float t = 0;
@@ -154,7 +151,7 @@ void ModelAnimationTimelinePanel::onMouseMove()
 					break;
 				t += f.duration;
 			}
-			float dur = max(screen2sample(mx) - t, 0);
+			float dur = max(screen2sample(mx) - t, 0.0f);
 
 			mode_model_animation->data->animationSetFrameDuration(mode_model_animation->current_move, hover - 1, dur);
 		}
@@ -180,8 +177,8 @@ void ModelAnimationTimelinePanel::onLeftButtonUp()
 
 void ModelAnimationTimelinePanel::onMouseWheel()
 {
-	mx = HuiGetEvent()->mx;
-	float time_scale_new = min(time_scale * pow(1.1f, HuiGetEvent()->dz), 1000);
+	mx = hui::GetEvent()->mx;
+	float time_scale_new = min(time_scale * pow(1.1f, hui::GetEvent()->scroll_y), 1000.0f);
 	time_offset += mx * (1.0f / time_scale - 1.0f / time_scale_new);
 	time_scale = time_scale_new;
 	//UpdateTimePos();

@@ -10,17 +10,18 @@
 #include "../ModeWorld.h"
 #include "../../../Action/World/ActionWorldEditData.h"
 #include "../../../MultiView/MultiView.h"
-#include "../../../lib/script/script.h"
+#include "../../../lib/kaba/kaba.h"
 #include "../../../lib/nix/nix.h"
 
 #define WorldPhysicsDec			3
 #define WorldLightDec			1
 #define WorldFogDec				6
 
-WorldPropertiesDialog::WorldPropertiesDialog(HuiWindow *_parent, bool _allow_parent, DataWorld *_data) :
-	HuiWindow("world_dialog", _parent, _allow_parent),
+WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data) :
+	hui::Dialog("world_dialog", 400, 300, _parent, _allow_parent),
 	Observer("WorldPropertiesDialog")
 {
+	fromResource("world_dialog");
 	data = _data;
 
 	setTooltip("bgc", _("Farbe des Himmels"));
@@ -37,27 +38,27 @@ WorldPropertiesDialog::WorldPropertiesDialog(HuiWindow *_parent, bool _allow_par
 	setTooltip("sun_ang_x", _("H&ohe &uber dem Horizont"));
 	setTooltip("sun_ang_y", _("Kompassrichtung entlang des Horizonts"));
 
-	event("cancel", this, &WorldPropertiesDialog::OnClose);
-	event("hui:close", this, &WorldPropertiesDialog::OnClose);
-	event("apply", this, &WorldPropertiesDialog::ApplyData);
-	event("ok", this, &WorldPropertiesDialog::OnOk);
+	event("cancel", std::bind(&WorldPropertiesDialog::OnClose, this));
+	event("hui:close", std::bind(&WorldPropertiesDialog::OnClose, this));
+	event("apply", std::bind(&WorldPropertiesDialog::ApplyData, this));
+	event("ok", std::bind(&WorldPropertiesDialog::OnOk, this));
 
-	event("sun_enabled", this, &WorldPropertiesDialog::OnSunEnabled);
-	event("sun_ang_from_camera", this, &WorldPropertiesDialog::OnSunAngFromCamera);
-	event("fog_mode:none", this, &WorldPropertiesDialog::OnFogModeNone);
-	event("fog_mode:linear", this, &WorldPropertiesDialog::OnFogModeLinear);
-	event("fog_mode:exp", this, &WorldPropertiesDialog::OnFogModeExp);
-	event("fog_mode:exp2", this, &WorldPropertiesDialog::OnFogModeExp);
-	event("skybox", this, &WorldPropertiesDialog::OnSkybox);
-	eventX("skybox", "hui:select", this, &WorldPropertiesDialog::OnSkyboxSelect);
-	event("remove_skybox", this, &WorldPropertiesDialog::OnRemoveSkybox);
-	event("physics_enabled", this, &WorldPropertiesDialog::OnPhysicsEnabled);
-	eventX("script_list", "hui:select", this, &WorldPropertiesDialog::OnScriptSelect);
-	event("remove_script", this, &WorldPropertiesDialog::OnRemoveScript);
-	event("add_script", this, &WorldPropertiesDialog::OnAddScript);
-	event("max_script_vars", this, &WorldPropertiesDialog::OnMaxScriptVars);
-	eventX("script_vars", "hui:change", this, &WorldPropertiesDialog::OnScriptVarEdit);
-	//eventM("model_script_var_template", this, &ModelPropertiesDialog::OnModelScriptVarTemplate);
+	event("sun_enabled", std::bind(&WorldPropertiesDialog::OnSunEnabled, this));
+	event("sun_ang_from_camera", std::bind(&WorldPropertiesDialog::OnSunAngFromCamera, this));
+	event("fog_mode:none", std::bind(&WorldPropertiesDialog::OnFogModeNone, this));
+	event("fog_mode:linear", std::bind(&WorldPropertiesDialog::OnFogModeLinear, this));
+	event("fog_mode:exp", std::bind(&WorldPropertiesDialog::OnFogModeExp, this));
+	event("fog_mode:exp2", std::bind(&WorldPropertiesDialog::OnFogModeExp, this));
+	event("skybox", std::bind(&WorldPropertiesDialog::OnSkybox, this));
+	eventX("skybox", "hui:select", std::bind(&WorldPropertiesDialog::OnSkyboxSelect, this));
+	event("remove_skybox", std::bind(&WorldPropertiesDialog::OnRemoveSkybox, this));
+	event("physics_enabled", std::bind(&WorldPropertiesDialog::OnPhysicsEnabled, this));
+	eventX("script_list", "hui:select", std::bind(&WorldPropertiesDialog::OnScriptSelect, this));
+	event("remove_script", std::bind(&WorldPropertiesDialog::OnRemoveScript, this));
+	event("add_script", std::bind(&WorldPropertiesDialog::OnAddScript, this));
+	event("max_script_vars", std::bind(&WorldPropertiesDialog::OnMaxScriptVars, this));
+	eventX("script_vars", "hui:change", std::bind(&WorldPropertiesDialog::OnScriptVarEdit, this));
+	//eventM("model_script_var_template", std::bind(&ModelPropertiesDialog::OnModelScriptVarTemplate, this));
 
 	subscribe(data);
 
@@ -100,7 +101,7 @@ void WorldPropertiesDialog::OnScriptSelect()
 
 void WorldPropertiesDialog::OnClose()
 {
-	delete(this);
+	destroy();
 }
 
 
@@ -148,7 +149,7 @@ void WorldPropertiesDialog::OnRemoveSkybox()
 void WorldPropertiesDialog::OnAddScript()
 {
 	if (ed->fileDialog(FD_SCRIPT, false, true)){
-		temp.ScriptFile.add(ed->dialog_file_complete.substr(Script::config.directory.num, -1));
+		temp.ScriptFile.add(ed->dialog_file_complete.substr(Kaba::config.directory.num, -1));
 		FillScriptList();
 	}
 }
@@ -194,11 +195,11 @@ void WorldPropertiesDialog::OnFogModeExp()
 
 void WorldPropertiesDialog::FillSkyboxList()
 {
-	HuiComboBoxSeparator = ":";
+	hui::ComboBoxSeparator = ":";
 	reset("skybox");
 	foreachi(string &sb, temp.SkyBoxFile, i)
 		addString("skybox", format("%d:%s", i, sb.c_str()));
-	HuiComboBoxSeparator = "\\";
+	hui::ComboBoxSeparator = "\\";
 	enable("remove_skybox", false);
 }
 
@@ -214,7 +215,7 @@ void WorldPropertiesDialog::onUpdate(Observable *o, const string &message)
 
 void WorldPropertiesDialog::OnScriptVarEdit()
 {
-	int row = HuiGetEvent()->row;
+	int row = hui::GetEvent()->row;
 	temp.ScriptVar[row] = s2f(getCell("script_vars", row, 2));
 }
 
@@ -234,12 +235,12 @@ void WorldPropertiesDialog::FillScriptVarList()
 
 void WorldPropertiesDialog::FillScriptList()
 {
-	HuiComboBoxSeparator = ":";
+	hui::ComboBoxSeparator = ":";
 	reset("script_list");
-	foreach(string &s, temp.ScriptFile)
+	for (string &s: temp.ScriptFile)
 		addString("script_list", s);
 	enable("remove_script", false);
-	HuiComboBoxSeparator = "\\";
+	hui::ComboBoxSeparator = "\\";
 }
 
 

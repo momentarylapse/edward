@@ -16,7 +16,7 @@
 class MaterialPropertiesDialog: public EmbeddedDialog, public Observer
 {
 public:
-	MaterialPropertiesDialog(HuiWindow *_parent, DataMaterial *_data);
+	MaterialPropertiesDialog(hui::Window *_parent, DataMaterial *_data);
 	virtual ~MaterialPropertiesDialog();
 
 	void LoadData();

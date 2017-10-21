@@ -11,7 +11,7 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshAutoweld: public ModeCreation<DataModel>, public HuiEventHandler
+class ModeModelMeshAutoweld: public ModeCreation<DataModel>
 {
 public:
 	ModeModelMeshAutoweld(ModeBase *_parent);

@@ -9,19 +9,20 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
 
-ModelEasifyDialog::ModelEasifyDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data):
-	HuiWindow("easify_dialog", _parent, _allow_parent),
+ModelEasifyDialog::ModelEasifyDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data):
+	hui::Dialog("easify_dialog", 400, 300, _parent, _allow_parent),
 	Observer("ModelEasifyDialog")
 {
+	fromResource("easify_dialog");
 
 	data = _data;
 	factor = 0.5f;
 
-	event("hui:close", this, &ModelEasifyDialog::OnClose);
-	event("cancel", this, &ModelEasifyDialog::OnClose);
-	event("ok", this, &ModelEasifyDialog::OnOk);
-	event("quality_factor", this, &ModelEasifyDialog::OnQualityFactor);
-	event("quality_slider", this, &ModelEasifyDialog::OnQualitySlider);
+	event("hui:close", std::bind(&ModelEasifyDialog::OnClose, this));
+	event("cancel", std::bind(&ModelEasifyDialog::OnClose, this));
+	event("ok", std::bind(&ModelEasifyDialog::OnOk, this));
+	event("quality_factor", std::bind(&ModelEasifyDialog::OnQualityFactor, this));
+	event("quality_slider", std::bind(&ModelEasifyDialog::OnQualitySlider, this));
 
 	LoadData();
 }
@@ -52,13 +53,13 @@ void ModelEasifyDialog::OnQualitySlider()
 
 void ModelEasifyDialog::OnClose()
 {
-	delete(this);
+	destroy();
 }
 
 void ModelEasifyDialog::OnOk()
 {
 	data->easify(factor);
-	delete(this);
+	destroy();
 }
 
 void ModelEasifyDialog::onUpdate(Observable* o, const string &message)

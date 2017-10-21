@@ -9,9 +9,10 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
 
-ModelDuplicateAnimationDialog::ModelDuplicateAnimationDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data, int index, int _source):
-	HuiWindow("new_animation_dialog", _parent, _allow_parent)
+ModelDuplicateAnimationDialog::ModelDuplicateAnimationDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data, int index, int _source):
+	hui::Dialog("new_animation_dialog", 400, 300, _parent, _allow_parent)
 {
+	fromResource("new_animation_dialog");
 	data = _data;
 	source = _source;
 
@@ -19,9 +20,9 @@ ModelDuplicateAnimationDialog::ModelDuplicateAnimationDialog(HuiWindow *_parent,
 	hideControl("new_animation_type", true);
 	hideControl("new_animation_t_type", true);
 
-	event("hui:close", this, &ModelDuplicateAnimationDialog::onClose);
-	event("cancel", this, &ModelDuplicateAnimationDialog::onClose);
-	event("ok", this, &ModelDuplicateAnimationDialog::onOk);
+	event("hui:close", std::bind(&ModelDuplicateAnimationDialog::onClose, this));
+	event("cancel", std::bind(&ModelDuplicateAnimationDialog::onClose, this));
+	event("ok", std::bind(&ModelDuplicateAnimationDialog::onOk, this));
 }
 
 ModelDuplicateAnimationDialog::~ModelDuplicateAnimationDialog()
@@ -30,7 +31,7 @@ ModelDuplicateAnimationDialog::~ModelDuplicateAnimationDialog()
 
 void ModelDuplicateAnimationDialog::onClose()
 {
-	delete(this);
+	destroy();
 }
 
 void ModelDuplicateAnimationDialog::onOk()
@@ -42,7 +43,7 @@ void ModelDuplicateAnimationDialog::onOk()
 			return;
 		}
 	data->duplicateAnimation(source, index);
-	delete(this);
+	destroy();
 }
 
 

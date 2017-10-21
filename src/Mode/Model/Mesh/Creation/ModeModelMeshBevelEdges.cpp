@@ -22,8 +22,8 @@ ModeModelMeshBevelEdges::ModeModelMeshBevelEdges(ModeBase *_parent) :
 
 	// find maximal radius
 	rad_max = -1;
-	foreach(ModelSurface &s, data->surface)
-		foreach(ModelEdge &e, s.edge)
+	for (ModelSurface &s: data->surface)
+		for (ModelEdge &e: s.edge)
 			if ((data->vertex[e.vertex[0]].is_selected) or (data->vertex[e.vertex[1]].is_selected)){
 			float l = (data->vertex[e.vertex[0]].pos - data->vertex[e.vertex[1]].pos).length();
 			if ((data->vertex[e.vertex[0]].is_selected) and (data->vertex[e.vertex[1]].is_selected))
@@ -51,7 +51,7 @@ void ModeModelMeshBevelEdges::onMouseMove()
 {
 	data->action_manager->clearPreview();
 
-	radius += (HuiGetEvent()->dx) / multi_view->cam.zoom;
+	radius += (hui::GetEvent()->dx) / multi_view->cam.zoom;
 	radius = clampf(radius, rad_max * 0.001f, rad_max);
 
 	data->setSelectionState(selection);
@@ -72,7 +72,7 @@ void ModeModelMeshBevelEdges::onDrawWin(MultiView::Window *win)
 {
 	parent->onDrawWin(win);
 
-	NixEnableLighting(false);
+	nix::EnableLighting(false);
 	ed->drawStr(100, 100, f2s(radius, 3));
 }
 

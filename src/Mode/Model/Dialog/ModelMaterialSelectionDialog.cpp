@@ -16,21 +16,22 @@
 string file_secure(const string &filename);
 string render_material(ModelMaterial *m);
 
-ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data):
-	HuiWindow("model_material_selection_dialog", _parent, _allow_parent),
+ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data):
+	hui::Dialog("model_material_selection_dialog", 400, 300, _parent, _allow_parent),
 	Observer("ModelMaterialSelectionDialog")
 {
+	fromResource("model_material_selection_dialog");
 	data = _data;
 	FillMaterialList();
 
 	setTooltip("material_list", _("- Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- die Auswahl wird f&ur folgende neue Polygone verwendet"));
 
-	event("hui:close", this, &ModelMaterialSelectionDialog::OnClose);
-	eventX("material_list", "hui:activate", this, &ModelMaterialSelectionDialog::OnMaterialList);
-	eventX("material_list", "hui:select", this, &ModelMaterialSelectionDialog::OnMaterialListSelect);
-	event("add_new_material", this, &ModelMaterialSelectionDialog::OnMaterialAddNew);
-	event("add_material", this, &ModelMaterialSelectionDialog::OnMaterialAdd);
-	event("edit_material", this, &ModelMaterialSelectionDialog::OnMaterialEdit);
+	event("hui:close", std::bind(&ModelMaterialSelectionDialog::OnClose, this));
+	eventX("material_list", "hui:activate", std::bind(&ModelMaterialSelectionDialog::OnMaterialList, this));
+	eventX("material_list", "hui:select", std::bind(&ModelMaterialSelectionDialog::OnMaterialListSelect, this));
+	event("add_new_material", std::bind(&ModelMaterialSelectionDialog::OnMaterialAddNew, this));
+	event("add_material", std::bind(&ModelMaterialSelectionDialog::OnMaterialAdd, this));
+	event("edit_material", std::bind(&ModelMaterialSelectionDialog::OnMaterialEdit, this));
 
 	answer = NULL;
 
@@ -47,8 +48,8 @@ void ModelMaterialSelectionDialog::FillMaterialList()
 	reset("material_list");
 	for (int i=0;i<data->material.num;i++){
 		int nt = 0;
-		foreach(ModelSurface &s, data->surface)
-			foreach(ModelPolygon &t, s.polygon)
+		for (ModelSurface &s: data->surface)
+			for (ModelPolygon &t: s.polygon)
 			if (t.material == i)
 				nt ++;
 		string im = render_material(&data->material[i]);
@@ -67,14 +68,14 @@ void ModelMaterialSelectionDialog::PutAnswer(int *_answer)
 
 void ModelMaterialSelectionDialog::OnClose()
 {
-	delete(this);
+	destroy();
 }
 
 void ModelMaterialSelectionDialog::OnMaterialList()
 {
 	if (answer)
 		*answer = getInt("");
-	delete(this);
+	destroy();
 }
 
 void ModelMaterialSelectionDialog::OnMaterialListSelect()

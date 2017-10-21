@@ -13,7 +13,7 @@
 #include "../../../../Data/Model/Geometry/GeometryCylinder.h"
 #include "../../../../Edward.h"
 #include "../../../../lib/nix/nix.h"
-#include "../../../../lib/script/script.h"
+#include "../../../../lib/kaba/kaba.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
 #include "../../../../Action/ActionGroup.h"
@@ -24,20 +24,18 @@
 const int CYLINDER_EDGES = 24;
 const int CYLINDER_RINGS = 24;
 
-class DeformationCylinderDialog : public HuiDialog
+class DeformationCylinderDialog : public hui::Dialog
 {
 public:
 	DeformationCylinderDialog(ModeModelMeshDeformCylinder *_mode) :
-		HuiDialog("", 0, 0, ed, true)
+		hui::Dialog("", 0, 0, ed, true)
 	{
 		fromResource("deformation_cylinder_dialog");
 		mode = _mode;
 	}
 
-	virtual void onDraw()
+	virtual void onDraw(Painter *p)
 	{
-		HuiPainter *p = beginDraw("area");
-
 		float w = p->width;
 		float h = p->height;
 		p->setColor(White);
@@ -45,8 +43,6 @@ public:
 		p->setColor(Black);
 
 		p->drawStr(10, 10, "x");
-
-		p->end();
 	}
 
 
@@ -62,6 +58,9 @@ public:
 	param.add(vector(0, 1, 0));
 	param.add(vector(0.5f, 1, 0));
 	param.add(vector(1, 1, 0));
+
+	hover = -1;
+	radius = 1;
 }
 
 ModeModelMeshDeformCylinder::~ModeModelMeshDeformCylinder()
@@ -72,9 +71,9 @@ void ModeModelMeshDeformCylinder::onStart()
 {
 	// Dialog
 	dialog = new DeformationCylinderDialog(this);
-	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
-	dialog->event("hui:close", this, &ModeModelMeshDeformCylinder::onClose);
-	dialog->event("ok", this, &ModeModelMeshDeformCylinder::onOk);
+	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
+	dialog->event("hui:close", std::bind(&ModeModelMeshDeformCylinder::onClose, this));
+	dialog->event("ok", std::bind(&ModeModelMeshDeformCylinder::onOk, this));
 	dialog->show();
 
 	//ed->activate("");
@@ -97,13 +96,13 @@ void ModeModelMeshDeformCylinder::onStart()
 	vector d = max - min;
 	if ((d.x > d.y) and (d.x > d.z)){
 		dir = e_x;
-		radius = max(d.y, d.z) / 2;
+		radius = ::max(d.y, d.z) / 2;
 	}else if (d.y > d.z){
 		dir = e_y;
-		radius = max(d.x, d.z) / 2;
+		radius = ::max(d.x, d.z) / 2;
 	}else{
 		dir = e_z;
-		radius = max(d.x, d.y) / 2;
+		radius = ::max(d.x, d.y) / 2;
 	}
 	vector m = (max + min) / 2;
 	axis[0] = m + (dir * (min - m)) * dir;
@@ -126,34 +125,34 @@ void ModeModelMeshDeformCylinder::onDrawWin(MultiView::Window* win)
 	parent->onDrawWin(win);
 
 	mode_model_mesh->setMaterialCreation();
-	geo->preview(VBTemp, 1);
+	geo->preview(nix::vb_temp, 1);
 
-	VBTemp->draw();
+	nix::Draw3D(nix::vb_temp);
 
-	NixLineWidth = 3;
-	NixSetAlpha(AlphaNone);
-	NixSetZ(false, false);
-	NixEnableLighting(false);
-	NixSetColor(Green);
-	NixDrawLine3D(axis[0], axis[1]);
+	nix::line_width = 3;
+	nix::SetAlpha(AlphaNone);
+	nix::SetZ(false, false);
+	nix::EnableLighting(false);
+	nix::SetColor(Green);
+	nix::DrawLine3D(axis[0], axis[1]);
 
 	vector e1 = dir.ortho();
 	vector e2 = dir ^ e1;
 	foreachi(vector &p, param, ip){
-		NixSetColor((ip == hover) ? Red : Green);
+		nix::SetColor((ip == hover) ? Red : Green);
 		vector m = axis[0] + (axis[1] - axis[0]) * p.x;
 		vector v = m + e1 * radius * p.y;
 		for (int i=1; i<=CYLINDER_EDGES; i++){
 			float ang = (float)i / (float)CYLINDER_EDGES * 2 * pi;
 			vector w = m + (e1 * cos(ang) + e2 * sin(ang)) * radius * p.y;
-			NixDrawLine3D(w, v);
+			nix::DrawLine3D(w, v);
 			v = w;
 		}
 	}
 
-	NixSetZ(true, true);
-	NixEnableLighting(true);
-	NixLineWidth = 1;
+	nix::SetZ(true, true);
+	nix::EnableLighting(true);
+	nix::line_width = 1;
 }
 
 inline bool hover_line(vector &a, vector &b, vector &m)
@@ -207,10 +206,10 @@ void ModeModelMeshDeformCylinder::onPreview()
 	if (has_preview)
 		restore();
 
-	foreach(ModelVertex &v, geo->vertex)
+	for (ModelVertex &v: geo->vertex)
 		v.pos = transform(v.pos);
 
-	foreach(int vi, index)
+	for (int vi: index)
 			data->vertex[vi].pos = transform(data->vertex[vi].pos);
 	data->notify();
 	has_preview = true;
@@ -250,7 +249,7 @@ void ModeModelMeshDeformCylinder::onOk()
 		restore();
 
 	data->beginActionGroup("deformation");
-	foreach(int vi, index)
+	for (int vi: index)
 		data->execute(new ActionModelMoveVertex(vi, transform(data->vertex[vi].pos)));
 
 	data->endActionGroup();

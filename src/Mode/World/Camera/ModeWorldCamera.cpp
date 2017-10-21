@@ -56,15 +56,15 @@ void ModeWorldCamera::onStart()
 	dialog = new CameraDialog(ed, this);
 
 
-	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
-	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
+	string dir = (app->directory_static + "Data/icons/toolbar/").sys_filename();
+	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
 	t->reset();
-	t->addItem(L("new"),dir + "new.png","cam_new");
-	t->addItem(L("open"),dir + "open.png","cam_open");
-	t->addItem(L("save"),dir + "save.png","cam_save");
+	t->addItem(L("", "new"),dir + "new.png","cam_new");
+	t->addItem(L("", "open"),dir + "open.png","cam_open");
+	t->addItem(L("", "save"),dir + "save.png","cam_save");
 	t->addSeparator();
-	t->addItem(L("undo"),dir + "undo.png","cam_undo");
-	t->addItem(L("redo"),dir + "redo.png","cam_redo");
+	t->addItem(L("", "undo"),dir + "undo.png","cam_undo");
+	t->addItem(L("", "redo"),dir + "redo.png","cam_redo");
 	t->addSeparator();
 	t->addItem(_("Push"),dir + "view_push.png","view_push");
 	ed->setTooltip("view_push", _("ViewStage Push"));
@@ -72,7 +72,7 @@ void ModeWorldCamera::onStart()
 	ed->setTooltip("view_pop", _("ViewStage Pop"));
 	t->enable(true);
 	t->configure(false,true);
-	t = ed->toolbar[HuiToolbarLeft];
+	t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
 
@@ -144,7 +144,7 @@ void ModeWorldCamera::previewStart()
 	preview_time = 0;
 	preview = true;
 	multi_view->cam.ignore_radius = true;
-	HuiRunLaterM(0.020f, this, &ModeWorldCamera::previewUpdate);
+	hui::RunLater(0.020f, std::bind(&ModeWorldCamera::previewUpdate, this));
 	notify();
 }
 
@@ -167,7 +167,7 @@ void ModeWorldCamera::previewUpdate()
 	if (preview_time > duration)
 		previewStop();
 	if (preview)
-		HuiRunLaterM(0.050f, this, &ModeWorldCamera::previewUpdate);
+		hui::RunLater(0.050f, std::bind(&ModeWorldCamera::previewUpdate, this));
 	notify();
 }
 
@@ -233,28 +233,28 @@ void ModeWorldCamera::onDrawWin(MultiView::Window *win)
 {
 	parent->onDrawWin(win);
 
-	NixEnableLighting(false);
-	NixSetWorldMatrix(m_id);
+	nix::EnableLighting(false);
+	nix::SetWorldMatrix(m_id);
 
 	vector last_pos = v_0;
 	vector last_vel = v_0;
-	foreach(WorldCamPoint &c, data->Point){
+	for (WorldCamPoint &c: data->Point){
 		if (c.Type == CPKCamFlight){
 			Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE);
 			inter.add2(last_pos, last_vel, 0);
 			inter.add2(c.pos, c.Vel, c.Duration);
 			inter.normalize();
-			NixSetColor(White);
+			nix::SetColor(White);
 			int N = 50;
 			for (int n=0;n<N;n++)
-				NixDrawLine3D(inter.get((float)n / N), inter.get((float)(n+1) / N));
+				nix::DrawLine3D(inter.get((float)n / N), inter.get((float)(n+1) / N));
 			if (edit_vel){
-				NixSetColor(Green);
-				NixDrawLine3D(c.pos, c.pos + c.Vel);
+				nix::SetColor(Green);
+				nix::DrawLine3D(c.pos, c.pos + c.Vel);
 			}
 		}else{
-			NixSetColor(Grey);
-			NixDrawLine3D(last_pos, c.pos);
+			nix::SetColor(Grey);
+			nix::DrawLine3D(last_pos, c.pos);
 		}
 		last_pos = c.pos;
 		last_vel = c.Vel;

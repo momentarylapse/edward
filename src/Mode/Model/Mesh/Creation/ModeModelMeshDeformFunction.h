@@ -12,12 +12,14 @@
 #include "../../../../Data/Model/DataModel.h"
 
 class Geometry;
-namespace Script{
+namespace Kaba{
 	class Script;
 }
-class NixTexture;
+namespace nix{
+	class NixTexture;
+};
 
-class ModeModelMeshDeformFunction: public ModeCreation<DataModel>, public HuiEventHandler
+class ModeModelMeshDeformFunction: public ModeCreation<DataModel>
 {
 public:
 	ModeModelMeshDeformFunction(ModeBase *parent);
@@ -35,8 +37,8 @@ public:
 private:
 	vector min, max;
 	Geometry *geo;
-	NixTexture *tex;
-	Script::Script *s;
+	nix::Texture *tex;
+	Kaba::Script *s;
 	typedef _cdecl void vec_func(vector&, const vector &);
 	vec_func *f;
 

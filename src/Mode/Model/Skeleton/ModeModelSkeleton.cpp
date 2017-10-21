@@ -23,6 +23,7 @@ ModeModelSkeleton *mode_model_skeleton = NULL;
 ModeModelSkeleton::ModeModelSkeleton(ModeBase *_parent) :
 	Mode<DataModel>("ModelSkeleton", _parent, ed->multi_view_3d, "menu_skeleton")
 {
+	mouse_action = -1;
 }
 
 
@@ -129,8 +130,8 @@ void ModeModelSkeleton::onUpdateMenu()
 
 void ModeModelSkeleton::onStart()
 {
-	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
-	HuiToolbar *t = ed->toolbar[HuiToolbarLeft];
+	string dir = (app->directory_static + "Data/icons/toolbar/").sys_filename();
+	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->addItemCheckable(_("neuer Knochen"),dir + "new_vertex.png", "skeleton_new_point");
 	t->addSeparator();
@@ -191,11 +192,11 @@ void drawBone(const vector &r, const vector &d, const color &c, MultiView::Windo
 		//NixDrawLine(pr.x,pr.y,pd.x,pd.y,c,z);
 		float l=d.length();
 		float w=(float)atan2(d.x,d.y)+pi;
-		NixSetColor(c);
-		NixDrawLine(pr.x,pr.y,pr.x+l*(float)sin(w+0.5f)*0.2f,pr.y+l*(float)cos(w+0.5f)*0.2f,z);
-		NixDrawLine(pr.x,pr.y,pr.x+l*(float)sin(w-0.5f)*0.2f,pr.y+l*(float)cos(w-0.5f)*0.2f,z);
-		NixDrawLine(pd.x,pd.y,pr.x+l*(float)sin(w+0.5f)*0.2f,pr.y+l*(float)cos(w+0.5f)*0.2f,z);
-		NixDrawLine(pd.x,pd.y,pr.x+l*(float)sin(w-0.5f)*0.2f,pr.y+l*(float)cos(w-0.5f)*0.2f,z);
+		nix::SetColor(c);
+		nix::DrawLine(pr.x,pr.y,pr.x+l*(float)sin(w+0.5f)*0.2f,pr.y+l*(float)cos(w+0.5f)*0.2f,z);
+		nix::DrawLine(pr.x,pr.y,pr.x+l*(float)sin(w-0.5f)*0.2f,pr.y+l*(float)cos(w-0.5f)*0.2f,z);
+		nix::DrawLine(pd.x,pd.y,pr.x+l*(float)sin(w+0.5f)*0.2f,pr.y+l*(float)cos(w+0.5f)*0.2f,z);
+		nix::DrawLine(pd.x,pd.y,pr.x+l*(float)sin(w-0.5f)*0.2f,pr.y+l*(float)cos(w-0.5f)*0.2f,z);
 	}
 }
 
@@ -207,8 +208,8 @@ void drawCoordBasis(const ModelBone &b)
 		for (int i=0;i<3;i++)
 			e[i] = b._matrix.transform_normal(e[i]);
 	for (int i=0;i<3;i++){
-		NixSetColor(color(1,0,(i==0)?1:0.5f,0));
-		NixDrawLine3D(o, o + e[i] * 30 / ed->multi_view_3d->cam.zoom);
+		nix::SetColor(color(1,0,(i==0)?1:0.5f,0));
+		nix::DrawLine3D(o, o + e[i] * 30 / ed->multi_view_3d->cam.zoom);
 	}
 }
 
@@ -229,15 +230,15 @@ void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &b
 		b.model->_matrix = b._matrix;
 		b.model->Draw(0, false, false);
 	}
-	NixSetWorldMatrix(m_id);
+	nix::SetWorldMatrix(m_id);
 
-	NixSetZ(false, false);
-	NixEnableLighting(false);
-	NixSetWire(false);
-	NixLineWidth = thin ? 0.5f : 2;
-	NixSmoothLines = true;
+	nix::SetZ(false, false);
+	nix::EnableLighting(false);
+	nix::SetWire(false);
+	nix::line_width = thin ? 0.5f : 2;
+	nix::smooth_lines = true;
 
-	foreach(ModelBone &b, bone){
+	for (ModelBone &b: bone){
 		if (b.view_stage < multi_view->view_stage)
 			continue;
 
@@ -251,9 +252,9 @@ void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &b
 			c = ColorInterpolate(c, White, 0.3f);
 		drawBone(bone[r].pos, b.pos, c, win);
 	}
-	NixSetZ(true, true);
-	NixLineWidth = 1;
-	NixSmoothLines = false;
+	nix::SetZ(true, true);
+	nix::line_width = 1;
+	nix::smooth_lines = false;
 }
 
 

@@ -60,7 +60,7 @@ void ModeModelAnimationInterpolateFrames::onDrawWin(MultiView::Window* win)
 	parent->onDrawWin(win);
 }
 
-void ModeModelAnimationInterpolateFrames::onTimelineDraw(HuiPainter *p)
+void ModeModelAnimationInterpolateFrames::onTimelineDraw(Painter *p)
 {
 	float mx = mode_model_animation->timeline->mx;
 	float x = mode_model_animation->timeline->screen2sample(mx);

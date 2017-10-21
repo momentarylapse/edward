@@ -12,7 +12,7 @@
 #include "../../../lib/hui/hui.h"
 class DataWorld;
 
-class ModeWorldCreateObject: public ModeCreation<DataWorld>, public HuiEventHandler
+class ModeWorldCreateObject: public ModeCreation<DataWorld>
 {
 public:
 	ModeWorldCreateObject(ModeBase *_parent);

@@ -14,7 +14,9 @@
 
 class DataModel;
 class ModelMaterialDialog;
-class NixVertexBuffer;
+namespace nix{
+	class VertexBuffer;
+};
 class MeshSelectionMode;
 
 enum
@@ -99,7 +101,7 @@ public:
 	void toggleSelectCW();
 	bool select_cw;
 
-	NixVertexBuffer *vb_marked, *vb_hover, *vb_creation;
+	nix::VertexBuffer *vb_marked, *vb_hover, *vb_creation;
 };
 
 extern ModeModelMesh *mode_model_mesh;

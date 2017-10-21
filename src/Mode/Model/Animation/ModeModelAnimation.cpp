@@ -40,6 +40,12 @@ ModeModelAnimation::ModeModelAnimation(ModeBase *_parent) :
 
 	dialog = NULL;
 	timeline = NULL;
+	sim_frame_time = 0;
+	play_loop = false;
+	playing = false;
+	time_param = 0;
+	time_scale = 1;
+	current_move = current_frame = 0;
 }
 
 
@@ -88,7 +94,7 @@ void ModeModelAnimation::onStart()
 	mode_model->allowSelectionModes(false);
 
 	timer.reset();
-	HuiRunLaterM(0.200f, this, &ModeModelAnimation::idleFunction);
+	hui::RunLater(0.200f, std::bind(&ModeModelAnimation::idleFunction, this));
 	setCurrentMove(getFirstMove());
 
 	//ed->setMode(mode_model_animation_none);
@@ -276,9 +282,9 @@ void ModeModelAnimation::idleFunction()
 	iterateAnimation(timer.get());
 
 	if (playing)
-		HuiRunLaterM(0.020f, this, &ModeModelAnimation::idleFunction);
+		hui::RunLater(0.020f, std::bind(&ModeModelAnimation::idleFunction, this));
 	else
-		HuiRunLaterM(0.200f, this, &ModeModelAnimation::idleFunction);
+		hui::RunLater(0.200f, std::bind(&ModeModelAnimation::idleFunction, this));
 }
 
 

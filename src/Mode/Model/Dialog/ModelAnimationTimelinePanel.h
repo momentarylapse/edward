@@ -18,16 +18,16 @@ public:
 	virtual void onTimelineLeftButtonDown(){}
 	virtual void onTimelineLeftButtonUp(){}
 	virtual void onTimelineMouseMove(){}
-	virtual void onTimelineDraw(HuiPainter *p){}
+	virtual void onTimelineDraw(Painter *p){}
 };
 
-class ModelAnimationTimelinePanel : public HuiPanel, public Observer
+class ModelAnimationTimelinePanel : public hui::Panel, public Observer
 {
 public:
 	ModelAnimationTimelinePanel();
 	virtual ~ModelAnimationTimelinePanel();
 
-	void onDraw();
+	void onDraw(Painter *c);
 	void onMouseMove();
 	void onLeftButtonDown();
 	void onLeftButtonUp();

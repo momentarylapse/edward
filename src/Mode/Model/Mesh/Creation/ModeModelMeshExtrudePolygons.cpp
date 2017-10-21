@@ -39,7 +39,7 @@ void ModeModelMeshExtrudePolygons::onMouseMove()
 {
 	cleanUp();
 
-	offset += (HuiGetEvent()->dx) / multi_view->cam.zoom;
+	offset += (hui::GetEvent()->dx) / multi_view->cam.zoom;
 	preview();
 }
 
@@ -47,7 +47,7 @@ void ModeModelMeshExtrudePolygons::onDrawWin(MultiView::Window *win)
 {
 	parent->onDrawWin(win);
 
-	NixEnableLighting(false);
+	nix::EnableLighting(false);
 	ed->drawStr(100, 100, f2s(offset, 3));
 }
 

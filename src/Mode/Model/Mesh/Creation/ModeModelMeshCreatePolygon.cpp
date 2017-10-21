@@ -28,7 +28,7 @@ ModeModelMeshCreatePolygon::~ModeModelMeshCreatePolygon()
 
 void ModeModelMeshCreatePolygon::onStart()
 {
-	foreach(ModelVertex &v, data->vertex)
+	for (ModelVertex &v: data->vertex)
 		v.is_special = false;
 }
 
@@ -36,7 +36,7 @@ void ModeModelMeshCreatePolygon::onStart()
 
 void ModeModelMeshCreatePolygon::onEnd()
 {
-	foreach(ModelVertex &v, data->vertex)
+	for (ModelVertex &v: data->vertex)
 		v.is_special = false;
 }
 
@@ -46,14 +46,14 @@ void ModeModelMeshCreatePolygon::onDrawWin(MultiView::Window *win)
 	parent->onDrawWin(win);
 
 	for (int i=1;i<selection.num;i++){
-		NixEnableLighting(false);
+		nix::EnableLighting(false);
 		vector pa = win->project(data->vertex[selection[i - 1]].pos);
 		vector pb = win->project(data->vertex[selection[i    ]].pos);
-		NixSetColor(Green);
+		nix::SetColor(Green);
 		if ((pa.z >= 0) and (pa.z < 1) and (pb.z >= 0) and (pb.z <= 1))
-			NixDrawLine(pa.x, pa.y, pb.x, pb.y, 0);
-		NixSetColor(White);
-		NixEnableLighting(true);
+			nix::DrawLine(pa.x, pa.y, pb.x, pb.y, 0);
+		nix::SetColor(White);
+		nix::EnableLighting(true);
 	}
 }
 
@@ -61,7 +61,7 @@ void ModeModelMeshCreatePolygon::onDrawWin(MultiView::Window *win)
 
 void ModeModelMeshCreatePolygon::onKeyDown()
 {
-	if (HuiGetEvent()->key_code == KEY_SHIFT + KEY_RETURN){
+	if (hui::GetEvent()->key_code == hui::KEY_SHIFT + hui::KEY_RETURN){
 		data->execute(new ActionModelAddPolygonAutoSkin(selection, mode_model_mesh->current_material));
 		abort();
 	}

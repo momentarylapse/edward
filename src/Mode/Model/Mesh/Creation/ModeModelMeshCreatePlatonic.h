@@ -12,7 +12,7 @@
 #include "../../../../Data/Model/DataModel.h"
 class Geometry;
 
-class ModeModelMeshCreatePlatonic: public ModeCreation<DataModel>, HuiEventHandler
+class ModeModelMeshCreatePlatonic: public ModeCreation<DataModel>
 {
 public:
 	ModeModelMeshCreatePlatonic(ModeBase *parent, int type);

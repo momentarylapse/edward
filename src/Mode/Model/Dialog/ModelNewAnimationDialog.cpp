@@ -9,17 +9,18 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
 
-ModelNewAnimationDialog::ModelNewAnimationDialog(HuiWindow *_parent, bool _allow_parent, DataModel *_data, int index, int type):
-	HuiWindow("new_animation_dialog", _parent, _allow_parent)
+ModelNewAnimationDialog::ModelNewAnimationDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data, int index, int type):
+	hui::Dialog("new_animation_dialog", 400, 300, _parent, _allow_parent)
 {
+	fromResource("new_animation_dialog");
 	data = _data;
 
 	setInt("new_animation_index", index);
 	setInt("new_animation_type", type - MOVE_TYPE_VERTEX);
 
-	event("hui:close", this, &ModelNewAnimationDialog::onClose);
-	event("cancel", this, &ModelNewAnimationDialog::onClose);
-	event("ok", this, &ModelNewAnimationDialog::onOk);
+	event("hui:close", std::bind(&ModelNewAnimationDialog::onClose, this));
+	event("cancel", std::bind(&ModelNewAnimationDialog::onClose, this));
+	event("ok", std::bind(&ModelNewAnimationDialog::onOk, this));
 }
 
 ModelNewAnimationDialog::~ModelNewAnimationDialog()
@@ -28,7 +29,7 @@ ModelNewAnimationDialog::~ModelNewAnimationDialog()
 
 void ModelNewAnimationDialog::onClose()
 {
-	delete(this);
+	destroy();
 }
 
 void ModelNewAnimationDialog::onOk()

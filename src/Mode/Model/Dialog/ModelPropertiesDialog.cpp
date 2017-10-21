@@ -23,9 +23,10 @@ extern matrix3 InertiaTensorTemp;
 extern float DetailDistTemp1, DetailDistTemp2, DetailDistTemp3;
 
 ModelPropertiesDialog::ModelPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data):
-	hui::Window("model_dialog", _parent, _allow_parent),
+	hui::Dialog("model_dialog", 400, 300, _parent, _allow_parent),
 	Observer("ModelPropertiesDialog")
 {
+	fromResource("model_dialog");
 	data = _data;
 
 	setTooltip("material_list", _("- Doppelklick um ein Material zu editieren\n- Auswahl wird f&ur folgende neue Polygone verwendet"));
@@ -129,10 +130,10 @@ vector img_get_ball_n(int x, int y, int N)
 string render_material(ModelMaterial *m)
 {
 	// texture?
-	NixTexture *tex = NixLoadTexture(m->texture_file[0]);
+	nix::Texture *tex = nix::LoadTexture(m->texture_file[0]);
 	if (!tex)
-		if (m->material->num_textures > 0)
-			tex = m->material->texture[0];
+		if (m->material->textures.num > 0)
+			tex = m->material->textures[0];
 
 	const int N = 32;
 

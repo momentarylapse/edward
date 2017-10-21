@@ -46,7 +46,7 @@ public:
 	float play_loop;
 	float sim_frame_time;
 
-	HuiTimer timer;
+	hui::Timer timer;
 
 	void idleFunction();
 

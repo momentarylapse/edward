@@ -53,9 +53,9 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	current_material = 0;
 
 	// vertex buffers
-	vb_marked = new NixVertexBuffer(1);
-	vb_hover = new NixVertexBuffer(1);
-	vb_creation = new NixVertexBuffer(1);
+	vb_marked = new nix::VertexBuffer(1);
+	vb_hover = new nix::VertexBuffer(1);
+	vb_creation = new nix::VertexBuffer(1);
 
 	select_cw = false;
 
@@ -77,8 +77,8 @@ ModeModelMesh::~ModeModelMesh()
 
 void ModeModelMesh::onStart()
 {
-	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
-	HuiToolbar *t = ed->toolbar[HuiToolbarLeft];
+	string dir = (app->directory_static + "Data/icons/toolbar/").sys_filename();
+	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->addItemCheckable(_("Polygon"),dir + "new_triangle.png", "new_tria");
 	t->addItemCheckable(_("Ebene"),dir + "new_plane.png", "new_plane");
@@ -115,7 +115,7 @@ void ModeModelMesh::onEnd()
 {
 	//unsubscribe(data);
 
-	HuiToolbar *t = ed->toolbar[HuiToolbarLeft];
+	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
 
@@ -378,7 +378,7 @@ bool ModeModelMesh::optimizeView()
 	mv->whole_window = ww;
 	if (data->vertex.num > 0){
 		vector min = data->vertex[0].pos, max = data->vertex[0].pos;
-		foreach(ModelVertex &v, data->vertex){
+		for (ModelVertex &v: data->vertex){
 			min._min(v.pos);
 			max._max(v.pos);
 		}
@@ -452,6 +452,7 @@ void ModeModelMesh::chooseMaterialForSelection()
 	ModelMaterialSelectionDialog *dlg = new ModelMaterialSelectionDialog(ed, false, data);
 	dlg->PutAnswer(&SelectionDialogReturnIndex);
 	dlg->run();
+	delete dlg;
 
 	if (SelectionDialogReturnIndex >= 0)
 		data->setMaterialSelection(SelectionDialogReturnIndex);
@@ -504,6 +505,7 @@ void ModeModelMesh::addEffects(int type)
 	}
 	ModelFXDialog *dlg = new ModelFXDialog(ed, false, data, type, -1);
 	dlg->run();
+	delete dlg;
 }
 
 void ModeModelMesh::editEffects()
@@ -521,12 +523,13 @@ void ModeModelMesh::editEffects()
 	}
 	ModelFXDialog *dlg = new ModelFXDialog(ed, false, data, -1, index);
 	dlg->run();
+	delete dlg;
 }
 
 void ModeModelMesh::clearEffects()
 {
 	int n = 0;
-	foreach(ModelEffect &fx, data->fx)
+	for (ModelEffect &fx: data->fx)
 		if (data->vertex[fx.vertex].is_selected)
 			n ++;
 	if (n == 0){
@@ -545,6 +548,7 @@ void ModeModelMesh::easify()
 {
 	ModelEasifyDialog *dlg = new ModelEasifyDialog(ed, false, data);
 	dlg->run();
+	delete dlg;
 }
 
 void ModeModelMesh::setCurrentMaterial(int index)
@@ -558,13 +562,13 @@ void ModeModelMesh::setCurrentMaterial(int index)
 
 void ModeModelMesh::drawEffects(MultiView::Window *win)
 {
-	NixEnableLighting(false);
-	foreach(ModelEffect &fx, data->fx){
+	nix::EnableLighting(false);
+	for (ModelEffect &fx: data->fx){
 		vector p = win->project(data->vertex[fx.vertex].pos);
 		if ((p.z > 0) && (p.z < 1))
 			ed->drawStr(p.x, p.y, fx.get_type());
 	}
-	NixEnableLighting(multi_view->light_enabled);
+	nix::EnableLighting(multi_view->light_enabled);
 }
 
 
@@ -572,11 +576,11 @@ void ModeModelMesh::drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex
 {
 	color bg = win->getBackgroundColor();
 
-	NixSetWire(false);
-	NixEnableLighting(false);
+	nix::SetWire(false);
+	nix::EnableLighting(false);
 	vector dir = win->getDirection();
-	foreach(ModelSurface &s, data->surface){
-		foreach(ModelEdge &e, s.edge){
+	for (ModelSurface &s: data->surface){
+		for (ModelEdge &e: s.edge){
 			if (min(vertex[e.vertex[0]].view_stage, vertex[e.vertex[1]].view_stage) < multi_view->view_stage)
 				continue;
 			if (!e.is_selected && only_selected)
@@ -584,15 +588,15 @@ void ModeModelMesh::drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex
 			float w = max(s.polygon[e.polygon[0]].temp_normal * dir, s.polygon[e.polygon[1]].temp_normal * dir);
 			float f = 0.5f - 0.4f*w;//0.7f - 0.3f * w;
 			if (e.is_selected)
-				NixSetColor(color(1, f, 0, 0));
+				nix::SetColor(color(1, f, 0, 0));
 			else
-				NixSetColor(f * multi_view->ColorText + (1 - f) * bg);
-			NixDrawLine3D(vertex[e.vertex[0]].pos, vertex[e.vertex[1]].pos);
+				nix::SetColor(f * multi_view->ColorText + (1 - f) * bg);
+			nix::DrawLine3D(vertex[e.vertex[0]].pos, vertex[e.vertex[1]].pos);
 		}
 	}
-	NixSetColor(White);
-	NixSetWire(win->multi_view->wire_mode);
-	NixEnableLighting(multi_view->light_enabled);
+	nix::SetColor(White);
+	nix::SetWire(win->multi_view->wire_mode);
+	nix::EnableLighting(multi_view->light_enabled);
 }
 
 
@@ -612,11 +616,11 @@ void ModeModelMesh::drawPolygons(MultiView::Window *win, Array<ModelVertex> &ver
 
 		// draw
 		m.applyForRendering();
-		NixSetOffset(1.0f);
-		NixDraw3D(m.vb);
-		NixSetOffset(0);
-		NixSetShader(NULL);
-		NixSetTexture(NULL);
+		nix::SetOffset(1.0f);
+		nix::Draw3D(m.vb);
+		nix::SetOffset(0);
+		nix::SetShader(NULL);
+		nix::SetTexture(NULL);
 	}
 }
 
@@ -628,18 +632,18 @@ void ModeModelMesh::updateVertexBuffers(Array<ModelVertex> &vertex)
 	foreachi(ModelMaterial &m, data->material, mi){
 		int num_tex = min(m.num_textures, 4);
 		if (!m.vb)
-			m.vb = new NixVertexBuffer(num_tex);
+			m.vb = new nix::VertexBuffer(num_tex);
 		if (m.vb->num_textures != num_tex){
 			delete(m.vb);
-			m.vb = new NixVertexBuffer(num_tex);
+			m.vb = new nix::VertexBuffer(num_tex);
 		}
 
 		m.vb->clear();
 
-		foreach(ModelSurface &surf, data->surface){
+		for (ModelSurface &surf: data->surface){
 			if (!surf.is_visible)
 				continue;
-			foreach(ModelPolygon &t, surf.polygon)
+			for (ModelPolygon &t: surf.polygon)
 				if ((t.view_stage >= multi_view->view_stage) && (t.material == mi))
 					t.addToVertexBuffer(vertex, m.vb, m.num_textures);
 		}
@@ -655,8 +659,8 @@ void ModeModelMesh::fillSelectionBuffer(Array<ModelVertex> &vertex)
 	vb_marked->clear();
 
 	// create selection buffers
-	foreachi(ModelSurface &s, data->surface, si){
-		foreach(ModelPolygon &t, s.polygon)
+	for (ModelSurface &s: data->surface){
+		for (ModelPolygon &t: s.polygon)
 			/*if (t.view_stage >= ViewStage)*/{
 			if (t.is_selected)
 				t.addToVertexBuffer(vertex, vb_marked, 1);
@@ -666,37 +670,37 @@ void ModeModelMesh::fillSelectionBuffer(Array<ModelVertex> &vertex)
 
 void ModeModelMesh::setMaterialMarked()
 {
-	NixSetAlpha(AlphaMaterial);
-	NixSetMaterial(Black,color(0.3f,0,0,0),Black,0,Red);
+	nix::SetAlpha(AlphaMaterial);
+	nix::SetMaterial(Black,color(0.3f,0,0,0),Black,0,Red);
 }
 
 void ModeModelMesh::setMaterialMouseOver()
 {
-	NixSetAlpha(AlphaMaterial);
-	NixSetMaterial(Black,color(0.3f,0,0,0),Black,0,White);
+	nix::SetAlpha(AlphaMaterial);
+	nix::SetMaterial(Black,color(0.3f,0,0,0),Black,0,White);
 }
 
 void ModeModelMesh::setMaterialCreation()
 {
-	NixSetAlpha(AlphaMaterial);
-	NixSetMaterial(Black,color(0.3f,0.3f,1,0.3f),Black,0,color(1,0.1f,0.4f,0.1f));
+	nix::SetAlpha(AlphaMaterial);
+	nix::SetMaterial(Black,color(0.3f,0.3f,1,0.3f),Black,0,color(1,0.1f,0.4f,0.1f));
 }
 
 void ModeModelMesh::drawSelection(MultiView::Window *win)
 {
-	NixSetWire(false);
-	NixSetZ(true,true);
-	NixSetAlpha(AlphaNone);
-	NixEnableLighting(true);
+	nix::SetWire(false);
+	nix::SetZ(true,true);
+	nix::SetAlpha(AlphaNone);
+	nix::EnableLighting(true);
 
-	NixSetOffset(1.0f);
+	nix::SetOffset(1.0f);
 	setMaterialMarked();
-	NixDraw3D(vb_marked);
+	nix::Draw3D(vb_marked);
 	setMaterialCreation();
-	NixDraw3D(vb_creation);
-	NixSetMaterial(White,White,Black,0,Black);
-	NixSetAlpha(AlphaNone);
-	NixSetOffset(0);
+	nix::Draw3D(vb_creation);
+	nix::SetMaterial(White,White,Black,0,Black);
+	nix::SetAlpha(AlphaNone);
+	nix::SetOffset(0);
 }
 
 void ModeModelMesh::setSelectionMode(MeshSelectionMode *mode)

@@ -28,13 +28,13 @@ void ModeWorldCreateObject::onStart()
 	if (filename.num == 0)
 		onFindObject();
 
-	dialog = HuiCreateResourceDialog("world_new_object_dialog",ed);
+	dialog = hui::CreateResourceDialog("world_new_object_dialog",ed);
 	dialog->setString("kind", filename);
-	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
+	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->enable("name", false);
 	dialog->show();
-	dialog->eventS("hui:close", &HuiFuncIgnore);
-	dialog->event("find_object", this, &ModeWorldCreateObject::onFindObject);
+	dialog->event("hui:close", &hui::FuncIgnore);
+	dialog->event("find_object", std::bind(&ModeWorldCreateObject::onFindObject, this));
 
 	if (filename.num > 0)
 		message = _("neues Objekt setzen");

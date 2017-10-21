@@ -23,18 +23,18 @@ ModeWorldCreateTerrain::~ModeWorldCreateTerrain()
 void ModeWorldCreateTerrain::onStart()
 {
 	// Dialog
-	dialog = HuiCreateResourceDialog("new_terrain_dialog", ed);
+	dialog = hui::CreateResourceDialog("new_terrain_dialog", ed);
 	dialog->show();
 
-	dialog->event("cancel", this, &ModeWorldCreateTerrain::onClose);
-	dialog->event("hui:close", this, &ModeWorldCreateTerrain::onClose);
-	dialog->event("ok", this, &ModeWorldCreateTerrain::onOk);
+	dialog->event("cancel", std::bind(&ModeWorldCreateTerrain::onClose, this));
+	dialog->event("hui:close", std::bind(&ModeWorldCreateTerrain::onClose, this));
+	dialog->event("ok", std::bind(&ModeWorldCreateTerrain::onOk, this));
 
-	//dialog->event("height_image_find", this, &ModeWorldCreateTerrain::OnFindHeightmap);
-	dialog->event("num_x", this, &ModeWorldCreateTerrain::onSizeChange);
-	dialog->event("num_z", this, &ModeWorldCreateTerrain::onSizeChange);
-	dialog->event("terrain_x", this, &ModeWorldCreateTerrain::onSizeChange);
-	dialog->event("terrain_z", this, &ModeWorldCreateTerrain::onSizeChange);
+	//dialog->event("height_image_find", std::bind(&ModeWorldCreateTerrain::OnFindHeightmap, this));
+	dialog->event("num_x", std::bind(&ModeWorldCreateTerrain::onSizeChange, this));
+	dialog->event("num_z", std::bind(&ModeWorldCreateTerrain::onSizeChange, this));
+	dialog->event("terrain_x", std::bind(&ModeWorldCreateTerrain::onSizeChange, this));
+	dialog->event("terrain_z", std::bind(&ModeWorldCreateTerrain::onSizeChange, this));
 
 	dialog->setFloat("height_factor", 100);
 	dialog->setInt("num_x", 64);

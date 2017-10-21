@@ -13,6 +13,8 @@
 ModeModelMeshAutoweld::ModeModelMeshAutoweld(ModeBase* _parent) :
 	ModeCreation<DataModel>("ModelMeshAutoweld", _parent)
 {
+	radius_default = 1;
+	radius = 1;
 }
 
 ModeModelMeshAutoweld::~ModeModelMeshAutoweld()
@@ -24,7 +26,7 @@ void ModeModelMeshAutoweld::onStart()
 	radius_default = multi_view->cam.radius * 0.01f;
 	radius = radius_default;
 
-	dialog = new HuiDialog("Autoweld", 240, 60, ed, true);
+	dialog = new hui::Dialog("Autoweld", 240, 60, ed, true);
 	dialog->addGrid("", 0, 0, 1, 2, "table0");
 	dialog->setTarget("table0", 0);
 	dialog->addGrid("", 0, 0, 3, 2, "table1");
@@ -43,9 +45,9 @@ void ModeModelMeshAutoweld::onStart()
 	dialog->setFloat("slider", 0.5f);
 	dialog->setString("radius", f2s(radius, 2));
 
-	dialog->event("slider", this, &ModeModelMeshAutoweld::onSlider);
-	dialog->event("ok", this, &ModeModelMeshAutoweld::onOk);
-	dialog->event("cancel", this, &ModeModelMeshAutoweld::onCancel);
+	dialog->event("slider", std::bind(&ModeModelMeshAutoweld::onSlider, this));
+	dialog->event("ok", std::bind(&ModeModelMeshAutoweld::onOk, this));
+	dialog->event("cancel", std::bind(&ModeModelMeshAutoweld::onCancel, this));
 }
 
 void ModeModelMeshAutoweld::onEnd()
@@ -75,9 +77,9 @@ void ModeModelMeshAutoweld::onDrawWin(MultiView::Window* win)
 {
 	parent->onDrawWin(win);
 
-	NixEnableLighting(false);
-	NixSetTexture(NULL);
-	NixSetColor(Green);
+	nix::EnableLighting(false);
+	nix::SetTexture(NULL);
+	nix::SetColor(Green);
 	float r = 5;
 	int n = 0;
 	for (int i=0;i<data->surface.num;i++){
@@ -88,15 +90,15 @@ void ModeModelMeshAutoweld::onDrawWin(MultiView::Window* win)
 			ModelSurface *b = &data->surface[j];
 			if (!b->is_selected)
 				continue;
-			foreach(int va, a->vertex)
-				foreach(int vb, b->vertex)
+			for (int va: a->vertex)
+				for (int vb: b->vertex)
 					if ((data->vertex[va].pos - data->vertex[vb].pos).length() <= radius){
 						n ++;
 						vector p = win->project(data->vertex[va].pos);
 
 						if ((p.z < 0) || (p.z >= 1))
 							continue;
-						NixDrawRect(	p.x-r,
+						nix::DrawRect(	p.x-r,
 										p.x+r,
 										p.y-r,
 										p.y+r,

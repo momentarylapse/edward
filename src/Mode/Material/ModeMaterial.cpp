@@ -34,12 +34,12 @@ ModeMaterial::ModeMaterial() :
 
 	AppearanceDialog = NULL;
 
-	MaterialVB[1] = VBTemp;
+	MaterialVB[1] = nix::vb_temp;
 	for (int i=2;i<=MATERIAL_MAX_TEXTURES;i++)
-		MaterialVB[i] = new NixVertexBuffer(i);
+		MaterialVB[i] = new nix::VertexBuffer(i);
 
-	shape_type = HuiConfig.getStr("MaterialShapeType", "teapot");
-	shape_smooth = HuiConfig.getBool("MaterialShapeSmooth", true);
+	shape_type = hui::Config.getStr("MaterialShapeType", "teapot");
+	shape_smooth = hui::Config.getBool("MaterialShapeSmooth", true);
 }
 
 ModeMaterial::~ModeMaterial()
@@ -121,13 +121,13 @@ void ModeMaterial::onDrawWin(MultiView::Window *win)
 {
 	data->ApplyForRendering();
 
-	NixDraw3D(MaterialVB[max(data->Appearance.NumTextureLevels, 1)]);
+	nix::Draw3D(MaterialVB[max(data->Appearance.NumTextureLevels, 1)]);
 
-	NixSetTexture(NULL);
-	NixSetShader(NULL);
+	nix::SetTexture(NULL);
+	nix::SetShader(NULL);
 
-	NixSetAlpha(AlphaNone);
-	NixSetZ(true,true);
+	nix::SetAlpha(AlphaNone);
+	nix::SetZ(true,true);
 }
 
 
@@ -152,7 +152,7 @@ void ModeMaterial::onEnd()
 {
 	delete(AppearanceDialog);
 
-	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
+	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
 	t->reset();
 	t->enable(false);
 }
@@ -170,18 +170,18 @@ bool ModeMaterial::saveAs()
 
 void ModeMaterial::onStart()
 {
-	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
-	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
+	string dir = (app->directory_static + "Data/icons/toolbar/").sys_filename();
+	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
 	t->reset();
-	t->addItem(L("new"),dir + "new.png","new");
-	t->addItem(L("open"),dir + "open.png","open");
-	t->addItem(L("save"),dir + "save.png","save");
+	t->addItem(L("", "new"),dir + "new.png","new");
+	t->addItem(L("", "open"),dir + "open.png","open");
+	t->addItem(L("", "save"),dir + "save.png","save");
 	t->addSeparator();
-	t->addItem(L("undo"),dir + "undo.png","undo");
-	t->addItem(L("redo"),dir + "redo.png","redo");
+	t->addItem(L("", "undo"),dir + "undo.png","undo");
+	t->addItem(L("", "redo"),dir + "redo.png","redo");
 	t->enable(true);
 	t->configure(false,true);
-	t = ed->toolbar[HuiToolbarLeft];
+	t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
 
@@ -193,14 +193,14 @@ void ModeMaterial::onStart()
 void ModeMaterial::SetShapeType(const string &type)
 {
 	shape_type = type;
-	HuiConfig.setStr("MaterialShapeType", shape_type);
+	hui::Config.setStr("MaterialShapeType", shape_type);
 	UpdateShape();
 }
 
 void ModeMaterial::SetShapeSmooth(bool smooth)
 {
 	shape_smooth = smooth;
-	HuiConfig.setBool("MaterialShapeSmooth", shape_smooth);
+	hui::Config.setBool("MaterialShapeSmooth", shape_smooth);
 	UpdateShape();
 }
 
@@ -226,7 +226,7 @@ void ModeMaterial::UpdateShape()
 		geo->smoothen();
 
 	for (int i=1;i<=MATERIAL_MAX_TEXTURES;i++){
-		NixVertexBuffer *vb = MaterialVB[i];
+		nix::VertexBuffer *vb = MaterialVB[i];
 		vb->clear();
 		geo->preview(vb, i);
 	}

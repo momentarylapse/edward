@@ -364,8 +364,8 @@ void ModeWorld::onEnd()
 		delete(WorldDialog);
 	WorldDialog = NULL;
 
-	ed->toolbar[HuiToolbarTop]->reset();
-	ed->toolbar[HuiToolbarTop]->enable(false);
+	ed->toolbar[hui::TOOLBAR_TOP]->reset();
+	ed->toolbar[hui::TOOLBAR_TOP]->enable(false);
 }
 
 
@@ -378,21 +378,21 @@ void DrawSelectionObject(Model *o, float alpha, const color &c)
 	if ((d<0)||(d>3))
 		return;
 	for (int i=0;i<o->material.num;i++){
-		NixTexture *t[MATERIAL_MAX_TEXTURES];
-		for (int j=0;j<o->material[i].num_textures;j++)
-			t[j] = NULL;
-		NixSetTextures(t, o->material[i].num_textures);
-		NixSetAlpha(AlphaMaterial);
-		NixSetMaterial(Black, color(alpha, 0, 0, 0), Black, 0, c);
+		Array<nix::Texture*> tex;
+		for (int j=0; j<o->material[i].textures.num; j++)
+			tex.add(NULL);
+		nix::SetTextures(tex);
+		nix::SetAlpha(AlphaMaterial);
+		nix::SetMaterial(Black, color(alpha, 0, 0, 0), Black, 0, c);
 		o->JustDraw(i, d);
 	}
 }
 
 void DrawTerrainColored(Terrain *t, const color &c, float alpha)
 {
-	NixSetWire(false);
-	NixEnableLighting(true);
-	NixSetAlpha(AlphaMaterial);
+	nix::SetWire(false);
+	nix::EnableLighting(true);
+	nix::SetAlpha(AlphaMaterial);
 
 	// save terrain data
 	Material *temp = t->material;
@@ -404,9 +404,9 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha)
 	m->specular = Black;
 	m->emission = c;
 	m->shader = NULL;
-	m->num_textures = t->material->num_textures;
-	for (int i=0;i<t->material->num_textures;i++)
-		m->texture[i] = NULL;
+	m->textures.resize(t->material->textures.num);
+	for (int i=0;i<t->material->textures.num;i++)
+		m->textures[i] = NULL;
 
 	t->material = m;
 
@@ -415,9 +415,9 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha)
 	// restore data
 	t->material = temp;
 
-	NixSetAlpha(AlphaNone);
-	NixSetWire(mode_world->multi_view->wire_mode);
-	NixEnableLighting(mode_world->multi_view->light_enabled);
+	nix::SetAlpha(AlphaNone);
+	nix::SetWire(mode_world->multi_view->wire_mode);
+	nix::EnableLighting(mode_world->multi_view->light_enabled);
 }
 
 void ModeWorld::onDrawWin(MultiView::Window *win)
@@ -446,8 +446,8 @@ void ModeWorld::onDrawWin(MultiView::Window *win)
 				DrawTerrainColored(t.terrain, White, TMouseOverAlpha);
 		}
 	}
-	NixSetWire(multi_view->wire_mode);
-	NixEnableLighting(multi_view->light_enabled);
+	nix::SetWire(multi_view->wire_mode);
+	nix::EnableLighting(multi_view->light_enabled);
 
 // objects (models)
 	if (ShowObjects){
@@ -455,7 +455,7 @@ void ModeWorld::onDrawWin(MultiView::Window *win)
 		//MetaDrawSorted();
 		//NixSetWire(false);
 
-		foreach(WorldObject &o, data->Objects){
+		for (WorldObject &o: data->Objects){
 			if (o.view_stage < multi_view->view_stage)
 				continue;
 			if (o.object){
@@ -465,8 +465,8 @@ void ModeWorld::onDrawWin(MultiView::Window *win)
 				o.object->_detail_ = 0;
 			}
 		}
-		NixSetWire(false);
-		NixEnableLighting(true);
+		nix::SetWire(false);
+		nix::EnableLighting(true);
 
 		// object selection
 		foreachi(WorldObject &o, data->Objects, i)
@@ -476,29 +476,29 @@ void ModeWorld::onDrawWin(MultiView::Window *win)
 				DrawSelectionObject(o.object, OSelectionAlpha, Green);
 		if ((multi_view->hover.index >= 0) && (multi_view->hover.type == MVD_WORLD_OBJECT))
 			DrawSelectionObject(data->Objects[multi_view->hover.index].object, OSelectionAlpha, White);
-		NixSetAlpha(AlphaNone);
-		NixEnableLighting(multi_view->light_enabled);
+		nix::SetAlpha(AlphaNone);
+		nix::EnableLighting(multi_view->light_enabled);
 	}
 
 
-	NixSetWorldMatrix(m_id);
-	NixSetZ(true,true);
-	NixEnableFog(false);
+	nix::SetWorldMatrix(m_id);
+	nix::SetZ(true,true);
+	nix::EnableFog(false);
 }
 
 
 
 void ModeWorld::onStart()
 {
-	string dir = (HuiAppDirectoryStatic + "Data/icons/toolbar/").sys_filename();
-	HuiToolbar *t = ed->toolbar[HuiToolbarTop];
+	string dir = (app->directory_static + "Data/icons/toolbar/").sys_filename();
+	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
 	t->reset();
-	t->addItem(L("new"),dir + "new.png","new");
-	t->addItem(L("open"),dir + "open.png","open");
-	t->addItem(L("save"),dir + "save.png","save");
+	t->addItem(L("", "new"),dir + "new.png","new");
+	t->addItem(L("", "open"),dir + "open.png","open");
+	t->addItem(L("", "save"),dir + "save.png","save");
 	t->addSeparator();
-	t->addItem(L("undo"),dir + "undo.png","undo");
-	t->addItem(L("redo"),dir + "redo.png","redo");
+	t->addItem(L("", "undo"),dir + "undo.png","undo");
+	t->addItem(L("", "redo"),dir + "redo.png","redo");
 	t->addSeparator();
 	t->addItem(_("Push"),dir + "view_push.png","view_push");
 	t->addItem(_("Pop"),dir + "view_pop.png","view_pop");
@@ -510,7 +510,7 @@ void ModeWorld::onStart()
 	t->addItemCheckable(_("Rotieren"), dir + "rf_rotate.png", "rotate");
 	t->enable(true);
 	t->configure(false,true);
-	t = ed->toolbar[HuiToolbarLeft];
+	t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
 

@@ -18,7 +18,7 @@
 string file_secure(const string &filename);
 string render_material(ModelMaterial *m);
 
-ModelMaterialDialog::ModelMaterialDialog(HuiWindow *_parent, DataModel *_data) :
+ModelMaterialDialog::ModelMaterialDialog(hui::Window *_parent, DataModel *_data) :
 	EmbeddedDialog(_parent, "model_material_dialog", "root-table", 1, 0, "noexpandx"),
 	Observer("ModelMaterialDialog")
 {
@@ -41,36 +41,36 @@ ModelMaterialDialog::ModelMaterialDialog(HuiWindow *_parent, DataModel *_data) :
 
 	win->setTooltip("transparency_mode:color_key", _("Reines Gr&un wird transparent"));
 
-	win->event("material_list", this, &ModelMaterialDialog::onMaterialList);
-	win->eventX("material_list", "hui:select", this, &ModelMaterialDialog::onMaterialListSelect);
-	win->event("add_new_material", this, &ModelMaterialDialog::onAddNewMaterial);
-	win->event("add_material", this, &ModelMaterialDialog::onAddMaterial);
-	win->event("delete_material", this, &ModelMaterialDialog::onDeleteMaterial);
-	win->event("apply_material", this, &ModelMaterialDialog::onApplyMaterial);
+	win->event("material_list", std::bind(&ModelMaterialDialog::onMaterialList, this));
+	win->eventX("material_list", "hui:select", std::bind(&ModelMaterialDialog::onMaterialListSelect, this));
+	win->event("add_new_material", std::bind(&ModelMaterialDialog::onAddNewMaterial, this));
+	win->event("add_material", std::bind(&ModelMaterialDialog::onAddMaterial, this));
+	win->event("delete_material", std::bind(&ModelMaterialDialog::onDeleteMaterial, this));
+	win->event("apply_material", std::bind(&ModelMaterialDialog::onApplyMaterial, this));
 
 
-	win->event("mat_add_texture_level", this, &ModelMaterialDialog::onAddTextureLevel);
-	win->event("mat_textures", this, &ModelMaterialDialog::onTextures);
-	win->eventX("mat_textures", "hui:select", this, &ModelMaterialDialog::onTexturesSelect);
-	win->event("mat_delete_texture_level", this, &ModelMaterialDialog::onDeleteTextureLevel);
-	win->event("mat_empty_texture_level", this, &ModelMaterialDialog::onEmptyTextureLevel);
-	win->event("transparency_mode:material", this, &ModelMaterialDialog::onTransparencyMode);
-	win->event("transparency_mode:none", this, &ModelMaterialDialog::onTransparencyMode);
-	win->event("transparency_mode:function", this, &ModelMaterialDialog::onTransparencyMode);
-	win->event("transparency_mode:color_key", this, &ModelMaterialDialog::onTransparencyMode);
-	win->event("transparency_mode:factor", this, &ModelMaterialDialog::onTransparencyMode);
+	win->event("mat_add_texture_level", std::bind(&ModelMaterialDialog::onAddTextureLevel, this));
+	win->event("mat_textures", std::bind(&ModelMaterialDialog::onTextures, this));
+	win->eventX("mat_textures", "hui:select", std::bind(&ModelMaterialDialog::onTexturesSelect, this));
+	win->event("mat_delete_texture_level", std::bind(&ModelMaterialDialog::onDeleteTextureLevel, this));
+	win->event("mat_empty_texture_level", std::bind(&ModelMaterialDialog::onEmptyTextureLevel, this));
+	win->event("transparency_mode:material", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
+	win->event("transparency_mode:none", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
+	win->event("transparency_mode:function", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
+	win->event("transparency_mode:color_key", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
+	win->event("transparency_mode:factor", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
 
-	win->event("default_colors", this, &ModelMaterialDialog::onDefaultColors);
-	win->event("mat_am", this, &ModelMaterialDialog::applyData);
-	win->event("mat_di", this, &ModelMaterialDialog::applyData);
-	win->event("mat_sp", this, &ModelMaterialDialog::applyData);
-	win->event("mat_em", this, &ModelMaterialDialog::applyData);
-	win->event("mat_shininess", this, &ModelMaterialDialog::applyDataDelayed);
+	win->event("default_colors", std::bind(&ModelMaterialDialog::onDefaultColors, this));
+	win->event("mat_am", std::bind(&ModelMaterialDialog::applyData, this));
+	win->event("mat_di", std::bind(&ModelMaterialDialog::applyData, this));
+	win->event("mat_sp", std::bind(&ModelMaterialDialog::applyData, this));
+	win->event("mat_em", std::bind(&ModelMaterialDialog::applyData, this));
+	win->event("mat_shininess", std::bind(&ModelMaterialDialog::applyDataDelayed, this));
 
-	win->event("alpha_factor", this, &ModelMaterialDialog::applyDataDelayed);
-	win->event("alpha_source", this, &ModelMaterialDialog::applyDataDelayed);
-	win->event("alpha_dest", this, &ModelMaterialDialog::applyDataDelayed);
-	win->event("alpha_z_buffer", this, &ModelMaterialDialog::applyData);
+	win->event("alpha_factor", std::bind(&ModelMaterialDialog::applyDataDelayed, this));
+	win->event("alpha_source", std::bind(&ModelMaterialDialog::applyDataDelayed, this));
+	win->event("alpha_dest", std::bind(&ModelMaterialDialog::applyDataDelayed, this));
+	win->event("alpha_z_buffer", std::bind(&ModelMaterialDialog::applyData, this));
 
 	win->expandAll("model_material_dialog_grp_textures", true);
 
@@ -149,7 +149,7 @@ void ModelMaterialDialog::applyData()
 void ModelMaterialDialog::applyDataDelayed()
 {
 	apply_queue_depth ++;
-	HuiRunLaterM(0.5f, this, &ModelMaterialDialog::applyData);
+	hui::RunLater(0.5f, std::bind(&ModelMaterialDialog::applyData, this));
 }
 
 void ModelMaterialDialog::fillMaterialList()
@@ -157,8 +157,8 @@ void ModelMaterialDialog::fillMaterialList()
 	reset("material_list");
 	for (int i=0;i<data->material.num;i++){
 		int nt = 0;
-		foreach(ModelSurface &s, data->surface)
-			foreach(ModelPolygon &t, s.polygon)
+		for (ModelSurface &s: data->surface)
+			for (ModelPolygon &t: s.polygon)
 				if (t.material == i)
 					nt ++;
 		string im = render_material(&data->material[i]);
@@ -199,7 +199,7 @@ void ModelMaterialDialog::onAddMaterial()
 
 void ModelMaterialDialog::onDeleteMaterial()
 {
-	HuiErrorBox(win, "", "noch nicht implementiert");
+	hui::ErrorBox(win, "", "noch nicht implementiert");
 }
 
 void ModelMaterialDialog::onApplyMaterial()
@@ -220,7 +220,7 @@ void ModelMaterialDialog::fillTextureList()
 {
 	reset("mat_textures");
 	for (int i=0;i<temp.num_textures;i++){
-		NixTexture *tex = NixLoadTexture(temp.texture_file[i]);
+		nix::Texture *tex = nix::LoadTexture(temp.texture_file[i]);
 		string img = ed->get_tex_image(tex);
 		addString("mat_textures", format("Tex[%d]\\%s\\%s", i, img.c_str(), file_secure(temp.texture_file[i]).c_str()));
 	}

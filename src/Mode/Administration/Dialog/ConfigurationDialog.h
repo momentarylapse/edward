@@ -12,10 +12,10 @@
 #include "../../../Stuff/Observer.h"
 class DataAdministration;
 
-class ConfigurationDialog: public HuiWindow, public Observer
+class ConfigurationDialog: public hui::Dialog, public Observer
 {
 public:
-	ConfigurationDialog(HuiWindow *_parent, bool _allow_parent, DataAdministration *_data, bool _exporting);
+	ConfigurationDialog(hui::Window *_parent, bool _allow_parent, DataAdministration *_data, bool _exporting);
 	virtual ~ConfigurationDialog();
 
 	void LoadData();

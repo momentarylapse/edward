@@ -11,7 +11,7 @@
 #include "../../../../Data/Model/Geometry/GeometryCube.h"
 #include "../../../../Edward.h"
 #include "../../../../lib/nix/nix.h"
-#include "../../../../lib/script/script.h"
+#include "../../../../lib/kaba/kaba.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
 #include "../../../../Action/ActionGroup.h"
@@ -32,14 +32,14 @@ const int CUBE_SIZE = 20;
 	Image im;
 	im.create(512, 512, White);
 	for (int i=0; i<=8; i++){
-		int x = min(i * 64, 511);
+		int x = ::min(i * 64, 511);
 		for (int y=0; y<512; y++){
 			im.setPixel(x, y, Gray);
 			im.setPixel(y, x, Gray);
 		}
 	}
 
-	tex = new NixTexture;
+	tex = new nix::Texture;
 	tex->overwrite(im);
 
 	//mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_vertex);
@@ -53,14 +53,14 @@ ModeModelMeshDeformFunction::~ModeModelMeshDeformFunction()
 void ModeModelMeshDeformFunction::onStart()
 {
 	// Dialog
-	dialog = HuiCreateResourceDialog("deformation_function_dialog", ed);
-	dialog->setFont("source", "Monospace 10");
-	dialog->setTabSize("source", 4);
+	dialog = hui::CreateResourceDialog("deformation_function_dialog", ed);
+	//dialog->setFont("source", "Monospace 10");
+	//dialog->setTabSize("source", 4);
 	dialog->setString("source", "void f(vector o, vector i)\n\to = vector(i.x, i.y+(i.x*i.x-i.x), i.z)\n");
-	dialog->setPositionSpecial(ed, HuiRight | HuiTop);
-	dialog->event("hui:close", this, &ModeModelMeshDeformFunction::onClose);
-	dialog->event("preview", this, &ModeModelMeshDeformFunction::onPreview);
-	dialog->event("ok", this, &ModeModelMeshDeformFunction::onOk);
+	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
+	dialog->event("hui:close", std::bind(&ModeModelMeshDeformFunction::onClose, this));
+	dialog->event("preview", std::bind(&ModeModelMeshDeformFunction::onPreview, this));
+	dialog->event("ok", std::bind(&ModeModelMeshDeformFunction::onOk, this));
 	dialog->show();
 
 	//ed->activate("");
@@ -100,11 +100,11 @@ void ModeModelMeshDeformFunction::onDrawWin(MultiView::Window* win)
 	parent->onDrawWin(win);
 
 	mode_model_mesh->setMaterialCreation();
-	geo->preview(VBTemp, 1);
+	geo->preview(nix::vb_temp, 1);
 
-	NixSetTexture(tex);
-	VBTemp->draw();
-	NixSetTexture(NULL);
+	nix::SetTexture(tex);
+	nix::Draw3D(nix::vb_temp);
+	nix::SetTexture(NULL);
 }
 
 vector ModeModelMeshDeformFunction::transform(const vector &v)
@@ -127,10 +127,10 @@ void ModeModelMeshDeformFunction::onPreview()
 	if (!f)
 		return;
 
-	foreach(ModelVertex &v, geo->vertex)
+	for (ModelVertex &v: geo->vertex)
 		v.pos = transform(v.pos);
 
-	foreach(int vi, index)
+	for (int vi: index)
 			data->vertex[vi].pos = transform(data->vertex[vi].pos);
 	data->notify();
 	has_preview = true;
@@ -141,17 +141,17 @@ void ModeModelMeshDeformFunction::updateFunction()
 {
 	if (s)
 		delete s;
-	Script::Script *s = NULL;
+	Kaba::Script *s = NULL;
 	f = NULL;
 	try{
-		s = Script::CreateForSource(dialog->getString("source"));
+		s = Kaba::CreateForSource(dialog->getString("source"));
 		f = (vec_func*)s->MatchFunction("*", "void", 2, "vector", "vector");
 
 		if (!f)
-			HuiErrorBox(dialog, "error", _("keine Funktion vom Typ 'void f(vector, vector)' gefunden"));
+			hui::ErrorBox(dialog, "error", _("keine Funktion vom Typ 'void f(vector, vector)' gefunden"));
 
-	}catch(Script::Exception &e){
-		HuiErrorBox(dialog, "error", e.message);
+	}catch(Kaba::Exception &e){
+		hui::ErrorBox(dialog, "error", e.message);
 		f = NULL;
 	}
 }
@@ -180,7 +180,7 @@ void ModeModelMeshDeformFunction::onOk()
 		return;
 
 	data->beginActionGroup("deformation");
-	foreach(int vi, index)
+	for (int vi: index)
 		data->execute(new ActionModelMoveVertex(vi, transform(data->vertex[vi].pos)));
 
 	data->endActionGroup();

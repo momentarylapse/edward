@@ -21,27 +21,28 @@
 #include "../ModeAdministration.h"
 #include <assert.h>
 
-AdministrationDialog::AdministrationDialog(HuiWindow* _parent, bool _allow_parent, DataAdministration *_data):
-	HuiWindow("ad_dialog", _parent, _allow_parent),
+AdministrationDialog::AdministrationDialog(hui::Window* _parent, bool _allow_parent, DataAdministration *_data):
+	hui::Dialog("ad_dialog", 400, 300, _parent, _allow_parent),
 	Observer("AdministrationDialog")
 {
+	fromResource("ad_dialog");
 	data = _data;
 	file_list.resize(6);
 
 	// dialog
-	event("hui:close", this, &AdministrationDialog::OnClose);
-	event("exit", this, &AdministrationDialog::OnExit);
-	event("ad_edit", this, &AdministrationDialog::OnEdit);
-	event("rename", this, &AdministrationDialog::OnRename);
-	event("delete", this, &AdministrationDialog::OnDelete);
-	event("file_list_cur", this, &AdministrationDialog::OnFileList);
-	event("file_list_all", this, &AdministrationDialog::OnFileList);
-	event("file_list_detail_source", this, &AdministrationDialog::OnFileList);
-	event("file_list_detail_dest", this, &AdministrationDialog::OnFileList);
-	event("file_list_super", this, &AdministrationDialog::OnFileList);
-	event("file_list_missing", this, &AdministrationDialog::OnFileList);
-	event("ad_rudimentary_configuration", this, &AdministrationDialog::OnRudimentaryConfiguration);
-	event("ad_export_game", this, &AdministrationDialog::OnExportGame);
+	event("hui:close", std::bind(&AdministrationDialog::OnClose, this));
+	event("exit", std::bind(&AdministrationDialog::OnExit, this));
+	event("ad_edit", std::bind(&AdministrationDialog::OnEdit, this));
+	event("rename", std::bind(&AdministrationDialog::OnRename, this));
+	event("delete", std::bind(&AdministrationDialog::OnDelete, this));
+	event("file_list_cur", std::bind(&AdministrationDialog::OnFileList, this));
+	event("file_list_all", std::bind(&AdministrationDialog::OnFileList, this));
+	event("file_list_detail_source", std::bind(&AdministrationDialog::OnFileList, this));
+	event("file_list_detail_dest", std::bind(&AdministrationDialog::OnFileList, this));
+	event("file_list_super", std::bind(&AdministrationDialog::OnFileList, this));
+	event("file_list_missing", std::bind(&AdministrationDialog::OnFileList, this));
+	event("ad_rudimentary_configuration", std::bind(&AdministrationDialog::OnRudimentaryConfiguration, this));
+	event("ad_export_game", std::bind(&AdministrationDialog::OnExportGame, this));
 
 	LoadData();
 	subscribe(data);
@@ -89,8 +90,8 @@ void AdministrationDialog::FillAdminList(int view, const string &lid)
 	msg_db_f("FillAdminList",1);
 
 	reset(lid);
-	string sep = HuiComboBoxSeparator;
-	HuiComboBoxSeparator = "::";
+	string sep = hui::ComboBoxSeparator;
+	hui::ComboBoxSeparator = "::";
 
 	// currently viewed list
 	AdminFileList *l = get_list(lid);
@@ -102,17 +103,17 @@ void AdministrationDialog::FillAdminList(int view, const string &lid)
 	}else if (view == 1){ // all files
 		*l = *data->file_list;
 	}else if (view == 2){ // selected file
-		foreach(AdminFile *a, SelectedAdminFile->Parent)
+		for (AdminFile *a: SelectedAdminFile->Parent)
 			l->add(a);
 	}else if (view == 3){
-		foreach(AdminFile *a, SelectedAdminFile->Child)
+		for (AdminFile *a: SelectedAdminFile->Child)
 			l->add(a);
 	}else if (view == 4){ // unnessecary
-		foreach(AdminFile *a, *data->file_list)
+		for (AdminFile *a: *data->file_list)
 			if ((a->Kind >= 0) && (a->Parent.num == 0))
 				l->add(a);
 	}else if (view == 5){ // missing
-		foreach(AdminFile *a, *data->file_list)
+		for (AdminFile *a: *data->file_list)
 			if (a->Missing)
 				l->add(a);
 	}
@@ -122,7 +123,7 @@ void AdministrationDialog::FillAdminList(int view, const string &lid)
 
 	// place them into the list
 	int k=-2;
-	foreach(AdminFile *a, *l){
+	for (AdminFile *a: *l){
 		addString(lid, format("%s::%s::%d::%d::%s",
 			(k != a->Kind) ? FD2Str(a->Kind).c_str() : "",
 			a->Name.c_str(),
@@ -133,7 +134,7 @@ void AdministrationDialog::FillAdminList(int view, const string &lid)
 #ifdef NIX_OS_WINDOWS
 	AddString(lid, ""); // windows ... -> doesn't rescale the list's columns automatically  m(-_-)m
 #endif
-	HuiComboBoxSeparator = sep;
+	hui::ComboBoxSeparator = sep;
 }
 
 void AdministrationDialog::ShowDetail(int n, const string &lid)
@@ -194,7 +195,7 @@ Array<AdminFile*> AdministrationDialog::GetSelectedFilesFromList(const string& l
 	Array<int> index = getSelection(lid);
 	AdminFileList *l = get_list(lid);
 	assert(l);
-	foreach(int i, index)
+	for (int i: index)
 		r.add((*l)[i]);
 	return r;
 }
@@ -239,7 +240,7 @@ void AdministrationDialog::OnEdit()
 	switch (a->Kind){
 		case -1:
 			if (a->Name == "config.txt")
-				HuiOpenDocument(ed->getRootDir(a->Kind) + a->Name);
+				hui::OpenDocument(ed->getRootDir(a->Kind) + a->Name);
 			else if (a->Name == "game.ini")
 				mode_administration->BasicSettings();
 			break;
@@ -278,14 +279,14 @@ void AdministrationDialog::OnEdit()
 		case FD_SHADERFILE:
 		case FD_SCRIPT:
 		case FD_FILE:
-			HuiOpenDocument(ed->getRootDir(a->Kind) + a->Name);
+			hui::OpenDocument(ed->getRootDir(a->Kind) + a->Name);
 			break;
 	}
 }
 
 void AdministrationDialog::OnFileList()
 {
-	string id = HuiGetEvent()->id;
+	string id = hui::GetEvent()->id;
 	int n = getInt(id);
 	ShowDetail(n, id);
 }

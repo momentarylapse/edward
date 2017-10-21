@@ -33,14 +33,14 @@ void MeshSelectionModePolygon::onDrawWin(MultiView::Window *win)
 	ModelPolygon &p = data->surface[multi_view->hover.set].polygon[multi_view->hover.index];
 	p.addToVertexBuffer(data->vertex, parent->vb_hover, 1);
 
-	NixSetWire(false);
-	NixSetOffset(1.0f);
+	nix::SetWire(false);
+	nix::SetOffset(1.0f);
 	mode_model->setMaterialHover();
-	parent->vb_hover->draw();
-	NixSetMaterial(White,White,Black,0,Black);
-	NixSetAlpha(AlphaNone);
-	NixSetOffset(0);
-	NixSetWire(multi_view->wire_mode);
+	nix::Draw3D(parent->vb_hover);
+	nix::SetMaterial(White,White,Black,0,Black);
+	nix::SetAlpha(AlphaNone);
+	nix::SetOffset(0);
+	nix::SetWire(multi_view->wire_mode);
 }
 
 
@@ -131,8 +131,8 @@ void MeshSelectionModePolygon::updateMultiView()
 {
 	multi_view->clearData(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	foreach(ModelSurface &s, data->surface)
-	multi_view->addData(	MVD_MODEL_POLYGON,
+	for (ModelSurface &s: data->surface)
+		multi_view->addData(	MVD_MODEL_POLYGON,
 			s.polygon,
 			&s,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
