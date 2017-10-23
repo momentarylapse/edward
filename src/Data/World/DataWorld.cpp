@@ -385,7 +385,7 @@ void DataWorld::MetaData::ApplyToDraw()
 {
 	nix::SetFog(FogMode, FogStart, FogEnd, FogDensity, FogColor);
 	nix::EnableFog(FogEnabled);
-	nix::SetLightDirectional(ed->multi_view_3d->light, -SunAng.ang2dir(), SunAmbient, SunDiffuse, SunSpecular);
+	nix::SetLightDirectional(ed->multi_view_3d->light, -SunAng.ang2dir(), SunDiffuse, 0.5f, 0.8f);
 	nix::EnableLight(ed->multi_view_3d->light, SunEnabled);
 	nix::SetAmbientLight(Ambient);
 }

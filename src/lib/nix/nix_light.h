@@ -12,11 +12,11 @@
 namespace nix{
 
 void _cdecl EnableLighting(bool enabled);
-void _cdecl SetLightRadial(int num,const vector &pos,float radius,const color &ambient,const color &diffuse,const color &specular);
-void _cdecl SetLightDirectional(int num,const vector &dir,const color &ambient,const color &diffuse,const color &specular);
-void _cdecl EnableLight(int num,bool enabled);
+void _cdecl SetLightRadial(int index, const vector &pos, float radius, const color &diffuse, float ambient, float specular);
+void _cdecl SetLightDirectional(int index, const vector &dir, const color &diffuse, float ambient, float specular);
+void _cdecl EnableLight(int index, bool enabled);
 void _cdecl SetAmbientLight(const color &c);
-void _cdecl SetMaterial(const color &ambient,const color &diffuse,const color &specular,float shininess,const color &emission);
+void _cdecl SetMaterial(const color &ambient, const color &diffuse, const color &specular, float shininess, const color &emission);
 void _cdecl SpecularEnable(bool enabled);
 
 
@@ -33,9 +33,9 @@ extern Material material;
 
 struct Light
 {
-	color ambient;
+	bool enabled;
 	color diffusive;
-	color specular;
+	float ambient, specular;
 	vector pos;
 	float radius;
 };

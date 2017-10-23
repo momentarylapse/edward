@@ -503,13 +503,10 @@ void Edward::onDraw()
 	auto e = hui::GetEvent();
 	nix::Resize(e->column, e->row);
 
-	//multi_view_3d->
-	((MultiView::MultiViewImpl*)multi_view_3d)->onDraw();
-	return;
-
 	cur_mode->onDrawMeta();
 
 	// messages
+	nix::SetShader(nix::default_shader_2d);
 	foreachi(string &m, message_str, i)
 		drawStr(nix::target_width / 2, nix::target_height / 2 - 20 - i * 20, m, ALIGN_CENTER);
 }

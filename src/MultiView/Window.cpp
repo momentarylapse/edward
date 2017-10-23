@@ -253,11 +253,8 @@ void Window::draw()
 
 	nix::SetWire(impl->wire_mode);
 	// light
-	vector dir = -(cam->ang * e_z);
-	color am = color(1,0.3f,0.3f,0.3f);
-	color di = color(1,0.6f,0.6f,0.6f);
-	color sp = color(1,0.4f,0.4f,0.4f);
-	nix::SetLightDirectional(impl->light,dir,am,di,sp);
+	vector dir = cam->ang * e_z;
+	nix::SetLightDirectional(impl->light, dir, color(1,0.6f,0.6f,0.6f), 0.5f, 0.7f);
 	nix::EnableLight(impl->light, true);
 	nix::EnableLighting(impl->light_enabled);
 	nix::SetAmbientLight(Black);

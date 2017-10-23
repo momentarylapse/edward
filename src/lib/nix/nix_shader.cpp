@@ -386,20 +386,18 @@ void Shader::set_default_data()
 	set_matrix(location[LOCATION_MATRIX_P2D], projection_matrix2d);
 	for (int i=0; i<NIX_MAX_TEXTURELEVELS; i++)
 		set_int(location[LOCATION_TEX + i], i);
-	set_color(location[LOCATION_MATERIAL_AMBIENT], White);//material.ambient);
-	set_color(location[LOCATION_MATERIAL_DIFFUSIVE], White);//material.diffusive);
+	set_color(location[LOCATION_MATERIAL_AMBIENT], material.ambient);
+	set_color(location[LOCATION_MATERIAL_DIFFUSIVE], material.diffusive);
 	set_color(location[LOCATION_MATERIAL_SPECULAR], material.specular);
 	set_data(location[LOCATION_MATERIAL_SHININESS], &material.shininess, 4);
 	set_color(location[LOCATION_MATERIAL_EMISSION], material.emission);
 
-	float ff = 0.2f;
-	set_data(location[LOCATION_LIGHT_AMBIENT], &ff, 4);//.ambient);
-	set_color(location[LOCATION_LIGHT_COLOR], color(1, 0.7f, 0.7f, 0.7f));//material.diffusive);
-	ff = 0.7f;
-	set_data(location[LOCATION_LIGHT_SPECULAR], &ff, 4);//material.specular);
-	vector dir = view_matrix.transform_normal(e_z);
+	set_data(location[LOCATION_LIGHT_AMBIENT], &lights[0].ambient, 4);
+	set_color(location[LOCATION_LIGHT_COLOR], lights[0].diffusive);
+	set_data(location[LOCATION_LIGHT_SPECULAR], &lights[0].specular, 4);
+	vector dir = view_matrix.transform_normal(lights[0].pos);
 	set_data(location[LOCATION_LIGHT_POS], &dir.x, 3*4);
-	//set_data(location[LOCATION_LIGHT_RADIUS], &ff, 4);
+	set_data(location[LOCATION_LIGHT_RADIUS], &lights[0].radius, 4);
 
 	set_color(location[LOCATION_FOG_COLOR], fog._color);
 	set_data(location[LOCATION_FOG_DENSITY], &fog.density, 4);
