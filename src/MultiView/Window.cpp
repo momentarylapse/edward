@@ -69,6 +69,15 @@ Window::Window(MultiViewImpl *_impl, int _type)
 					"</FragmentShader>");
 }
 
+
+
+#define GRID_CONST	5.0f
+
+float Window::get_grid_d()
+{
+	return exp10(ceil(log10(GRID_CONST / zoom())));
+}
+
 void Window::drawGrid()
 {
 	if (type == VIEW_ISOMETRIC)
@@ -125,7 +134,7 @@ void Window::drawGrid()
 	}
 
 	// rectangular
-	float D = impl->getGridD();
+	float D = get_grid_d();
 	int a,b;
 	float fa,fb,t;
 
@@ -187,18 +196,16 @@ void Window::draw()
 	nix::SetTexture(NULL);
 
 	color bg = getBackgroundColor();
-	float height = nix::device_height;
-	if (!impl->whole_window)
-		height /= 2;
 
 	// projection matrix
 	if (type == VIEW_PERSPECTIVE){
+		float height = dest.height();
 		nix::SetProjectionPerspectiveExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, height, cam->radius / 1000, cam->radius * 1000);
 	}else if (type == VIEW_2D){
-		height = cam->zoom;
+		float height = zoom();
 		nix::SetProjectionOrthoExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, -height, 0, 1);
 	}else{
-		height = cam->zoom;
+		float height = zoom();
 		nix::SetProjectionOrthoExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, -height, - cam->radius * 100, cam->radius * 100);
 	}
 	projection = nix::projection_matrix;
@@ -272,19 +279,19 @@ void Window::draw()
 	nix::SetWire(false);
 	nix::EnableLighting(false);
 	foreachi(DataSet &d, impl->data, di){
-		if ((d.drawable)||(d.indexable)){
+		if ((d.drawable)or(d.indexable)){
 			for (int i=0;i<d.data->num;i++){
 
 				SingleData *sd = MVGetSingleData(d, i);
 				if (sd->view_stage < impl->view_stage)
 					continue;
 
-				//bool _di = ((d.indexable) && (sd->is_selected) && (ed->GetKey(hui::KEY_I)));
+				//bool _di = ((d.indexable) and (sd->is_selected) and (ed->GetKey(hui::KEY_I)));
 				bool _di = false;
-				if ((!d.drawable) && (!_di))
+				if ((!d.drawable) and (!_di))
 					continue;
 				vector p = project(sd->pos);
-				if ((p.x<dest.x1)||(p.y<dest.y1)||(p.x>dest.x2)||(p.y>dest.y2)||(p.z<=0)||(p.z>=1))
+				if ((p.x<dest.x1)or(p.y<dest.y1)or(p.x>dest.x2)or(p.y>dest.y2)or(p.z<=0)or(p.z>=1))
 					continue;
 				if (_di)
 					nix::DrawStr(p.x+3, p.y, i2s(i));
@@ -298,7 +305,7 @@ void Window::draw()
 					}
 					if (sd->is_special)
 						c = multi_view->ColorPointSpecial;
-					if ((impl->hover.set == di) && (i == impl->hover.index)){
+					if ((impl->hover.set == di) and (i == impl->hover.index)){
 						c = color(c.a,c.r+0.4f,c.g+0.4f,c.b+0.4f);
 						z = 0.0f;
 						radius = (float)impl->POINT_RADIUS_HOVER;
@@ -327,9 +334,9 @@ void Window::draw()
 
 	nix::SetShader(nix::default_shader_2d);
 	nix::SetColor(multi_view->ColorWindowType);
-	if (ed->isActive("nix-area") && (this == impl->active_win))
+	if (ed->isActive("nix-area") and (this == impl->active_win))
 		nix::SetColor(multi_view->ColorText);
-	if ((this == impl->mouse_win) && (impl->hover.meta == impl->hover.HOVER_WINDOW_LABEL))
+	if ((this == impl->mouse_win) and (impl->hover.meta == impl->hover.HOVER_WINDOW_LABEL))
 		nix::SetColor(Red);
 	ed->drawStr(dest.x1 + 3, dest.y1, view_kind);
 	nix::SetColor(multi_view->ColorText);
@@ -341,11 +348,13 @@ void Window::draw()
 	}
 }
 
+
+// FIXME argh!!!!!!!
 vector Window::unproject(const vector &p, const vector &o)
 {
 	vector r;
 	vector pp = p;
-	if ((type == VIEW_PERSPECTIVE) || (type == VIEW_ISOMETRIC)){ // 3D
+	if ((type == VIEW_PERSPECTIVE) or (type == VIEW_ISOMETRIC)){ // 3D
 		if (impl->cur_projection_win != this){
 			impl->cur_projection_win = this;
 			nix::SetProjectionMatrix(projection);
@@ -356,8 +365,8 @@ vector Window::unproject(const vector &p, const vector &o)
 		pp.z = p_o.z;
 		nix::GetVecUnproject(r, pp);
 	}else if (type == VIEW_2D){
-		r.x=(p.x-nix::target_width/2)/cam->zoom+cam->pos.x;
-		r.y=(p.y-nix::target_height/2)/cam->zoom+cam->pos.y;
+		r.x=(p.x-nix::target_width/2)/zoom()+cam->pos.x;
+		r.y=(p.y-nix::target_height/2)/zoom()+cam->pos.y;
 		r.z=0;
 	}else{ // 2D
 		r=o;
@@ -368,7 +377,7 @@ vector Window::unproject(const vector &p, const vector &o)
 			pp.x-=dest.x1;
 			pp.y-=dest.y1;
 		}
-		float zoom = cam->zoom;
+		float zoom = this->zoom();
 		vector &pos = cam->pos;
 		if (type == VIEW_FRONT){
 			r.x=-(pp.x-nix::target_width/4)/zoom+pos.x;
@@ -396,7 +405,7 @@ vector Window::unproject(const vector &p, const vector &o)
 vector Window::project(const vector &p)
 {
 	vector r;
-	if ((type == VIEW_PERSPECTIVE) || (type == VIEW_ISOMETRIC)){ // 3D
+	if ((type == VIEW_PERSPECTIVE) or (type == VIEW_ISOMETRIC)){ // 3D
 		if (impl->cur_projection_win != this){
 			impl->cur_projection_win = this;
 			nix::SetProjectionMatrix(projection);
@@ -404,11 +413,11 @@ vector Window::project(const vector &p)
 		}
 		nix::GetVecProject(r,p);
 	}else if (type == VIEW_2D){
-		r.x=nix::target_width/2+(p.x-cam->pos.x)*cam->zoom;
-		r.y=nix::target_height/2+(p.y-cam->pos.y)*cam->zoom;
+		r.x=nix::target_width/2+(p.x-cam->pos.x)*zoom();
+		r.y=nix::target_height/2+(p.y-cam->pos.y)*zoom();
 		r.z=0.5f;
 	}else{ // 2D
-		float zoom = cam->zoom;
+		float zoom = this->zoom();
 		vector &pos = cam->pos;
 		if (type == VIEW_FRONT){
 			r.x=nix::target_width/4-(p.x-pos.x)*zoom;
@@ -445,7 +454,7 @@ vector Window::unproject(const vector &p)
 {
 	vector r;
 	vector pp = p;
-	if ((type == VIEW_PERSPECTIVE) || (type == VIEW_ISOMETRIC)){ // 3D
+	if ((type == VIEW_PERSPECTIVE) or (type == VIEW_ISOMETRIC)){ // 3D
 		if (impl->cur_projection_win != this){
 			impl->cur_projection_win = this;
 			nix::SetProjectionMatrix(projection);
@@ -453,8 +462,8 @@ vector Window::unproject(const vector &p)
 		}
 		nix::GetVecUnproject(r,pp);
 	}else if (type == VIEW_2D){
-		r.x=(pp.x-nix::target_width/2)/cam->zoom+cam->pos.x;
-		r.y=(pp.y-nix::target_height/2)/cam->zoom+cam->pos.y;
+		r.x=(pp.x-nix::target_width/2)/zoom()+cam->pos.x;
+		r.y=(pp.y-nix::target_height/2)/zoom()+cam->pos.y;
 		r.z=0;
 	}else{ // 2D
 		if (impl->whole_window){
@@ -465,7 +474,7 @@ vector Window::unproject(const vector &p)
 			pp.y-=dest.y1;
 		}
 		r=cam->pos;
-		float zoom = cam->zoom;
+		float zoom = this->zoom();
 		vector &pos = cam->pos;
 		if (type == VIEW_FRONT){
 			r.x=-(pp.x-nix::target_width/4)/zoom+pos.x;
@@ -493,7 +502,7 @@ vector Window::unproject(const vector &p)
 vector Window::getDirection()
 {
 	int t=type;
-	if ((t==VIEW_FRONT)||(t==VIEW_2D))
+	if ((t==VIEW_FRONT)or(t==VIEW_2D))
 		return vector(0,0,-1);
 	else if (t==VIEW_BACK)
 		return vector(0,0,1);
@@ -505,7 +514,7 @@ vector Window::getDirection()
 		return vector(0,-1,0);
 	else if (t==VIEW_BOTTOM)
 		return vector(0,1,0);
-	else if ((t==VIEW_PERSPECTIVE) || (t==VIEW_ISOMETRIC))
+	else if ((t==VIEW_PERSPECTIVE) or (t==VIEW_ISOMETRIC))
 		return cam->ang * e_z;
 	return v_0;
 }
@@ -527,7 +536,7 @@ vector Window::getDirectionUp()
 		return vector(0,0,1);
 	else if (t==VIEW_BOTTOM)
 		return vector(0,0,1);
-	else if ((t==VIEW_PERSPECTIVE) || (t==VIEW_ISOMETRIC))
+	else if ((t==VIEW_PERSPECTIVE) or (t==VIEW_ISOMETRIC))
 		return cam->ang * e_y;
 	return v_0;
 }
@@ -545,5 +554,15 @@ void Window::getMovingFrame(vector &dir, vector &up, vector &right)
 	up = getDirectionUp();
 	right = dir ^ up;
 }
+
+float Window::zoom()
+{
+	//return 1000.0f / radius;
+	if (impl->mode3d)
+		return dest.height() / cam->radius;
+	else
+		return dest.height() * 0.8f / cam->radius;
+}
+
 
 };

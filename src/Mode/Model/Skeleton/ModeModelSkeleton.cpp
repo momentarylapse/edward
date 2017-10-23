@@ -200,7 +200,7 @@ void drawBone(const vector &r, const vector &d, const color &c, MultiView::Windo
 	}
 }
 
-void drawCoordBasis(const ModelBone &b)
+void drawCoordBasis(MultiView::Window *win, const ModelBone &b)
 {
 	vector o = b.pos;
 	vector e[3] = {e_x, e_y, e_z};
@@ -209,7 +209,7 @@ void drawCoordBasis(const ModelBone &b)
 			e[i] = b._matrix.transform_normal(e[i]);
 	for (int i=0;i<3;i++){
 		nix::SetColor(color(1,0,(i==0)?1:0.5f,0));
-		nix::DrawLine3D(o, o + e[i] * 30 / ed->multi_view_3d->cam.zoom);
+		nix::DrawLine3D(o, o + e[i] * 30 / win->zoom());
 	}
 }
 
@@ -243,7 +243,7 @@ void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &b
 			continue;
 
 		if (b.is_selected)
-			drawCoordBasis(b);
+			drawCoordBasis(win, b);
 		int r = b.parent;
 		if (r < 0)
 			continue;

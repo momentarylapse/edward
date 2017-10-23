@@ -8,6 +8,7 @@
 #include "ModeModelMeshExtrudePolygons.h"
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
+#include "../../../../MultiView/Window.h"
 #include "../../../../Action/Model/Mesh/Polygon/ActionModelExtrudePolygons.h"
 
 ModeModelMeshExtrudePolygons::ModeModelMeshExtrudePolygons(ModeBase *_parent) :
@@ -39,7 +40,7 @@ void ModeModelMeshExtrudePolygons::onMouseMove()
 {
 	cleanUp();
 
-	offset += (hui::GetEvent()->dx) / multi_view->cam.zoom;
+	offset += (hui::GetEvent()->dx) / multi_view->active_win->zoom();
 	preview();
 }
 

@@ -11,6 +11,7 @@
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
+#include "../../../../MultiView/Window.h"
 
 ModeModelMeshBevelEdges::ModeModelMeshBevelEdges(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshBevelEdges", _parent)
@@ -51,7 +52,7 @@ void ModeModelMeshBevelEdges::onMouseMove()
 {
 	data->action_manager->clearPreview();
 
-	radius += (hui::GetEvent()->dx) / multi_view->cam.zoom;
+	radius += (hui::GetEvent()->dx) / multi_view->active_win->zoom();
 	radius = clampf(radius, rad_max * 0.001f, rad_max);
 
 	data->setSelectionState(selection);

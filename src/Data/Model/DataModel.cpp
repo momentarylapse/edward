@@ -289,9 +289,9 @@ bool DataModel::load(const string & _filename, bool deep)
 			material[i].alpha_destination = f->ReadInt();
 			material[i].alpha_factor = (float)f->ReadInt() * 0.01f;
 			material[i].alpha_zbuffer = f->ReadBool();
-			material[i].num_textures = f->ReadInt();
-			for (int t=0;t<material[i].num_textures;t++)
-				material[i].texture_file[t] = f->ReadStr();
+			int n = f->ReadInt();
+			for (int t=0;t<n;t++)
+				material[i].texture_files.add(f->ReadStr());
 		}
 		// create subs...
 		for (int k=0;k<4;k++){
@@ -561,15 +561,15 @@ bool DataModel::load(const string & _filename, bool deep)
 			material[i].alpha_destination = f->ReadInt();
 			material[i].alpha_factor = (float)f->ReadInt() * 0.01f;
 			material[i].alpha_zbuffer = f->ReadBool();
-			material[i].num_textures = f->ReadInt();
-			for (int t=0;t<material[i].num_textures;t++)
-				material[i].texture_file[t] = f->ReadStr();
+			int n = f->ReadInt();
+			for (int t=0;t<n;t++)
+				material[i].texture_files.add(f->ReadStr());
 		}
 		// create subs...
 		for (int k=0;k<4;k++){
 			skin[k].sub.resize(material.num);
 			for (int j=0;j<material.num;j++)
-				skin[k].sub[j].num_textures = material[j].num_textures;
+				skin[k].sub[j].num_textures = material[j].texture_files.num;
 		}
 
 	// Physical Skin
@@ -648,7 +648,7 @@ bool DataModel::load(const string & _filename, bool deep)
 					for (int k=0;k<3;k++)
 						skin[i].sub[m].triangle[j].vertex[k] = f->ReadInt();
 				// skin vertex
-				for (int tl=0;tl<material[m].num_textures;tl++)
+				for (int tl=0;tl<material[m].texture_files.num;tl++)
 					for (int j=0;j<skin[i].sub[m].triangle.num;j++)
 						for (int k=0;k<3;k++){
 							int svi = f->ReadInt();
@@ -855,7 +855,7 @@ bool DataModel::load(const string & _filename, bool deep)
 					t.side.resize(n);
 					for (int k=0;k<n;k++){
 						t.side[k].vertex = f->ReadInt();
-						for (int l=0;l<material[t.material].num_textures;l++){
+						for (int l=0;l<material[t.material].texture_files.num;l++){
 							t.side[k].skin_vertex[l].x = f->ReadFloat();
 							t.side[k].skin_vertex[l].y = f->ReadFloat();
 						}
@@ -912,9 +912,9 @@ bool DataModel::load(const string & _filename, bool deep)
 			material[i].makeConsistent();
 
 			// test textures
-			for (int t=0;t<material[i].num_textures;t++){
-				if ((material[i].texture[t] < 0) && (material[i].texture_file[t].num > 0))
-					ed->setMessage(format(_("Textur-Datei nicht ladbar: %s"), material[i].texture_file[t].c_str()));
+			for (int t=0;t<material[i].texture_files.num;t++){
+				if ((!material[i].textures[t]) and (material[i].texture_files[t].num > 0))
+					ed->setMessage(format(_("Textur-Datei nicht ladbar: %s"), material[i].texture_files[t].c_str()));
 			}
 		}
 
@@ -956,7 +956,7 @@ void DataModel::importFromTriangleSkin(int index)
 			for (int k=0;k<3;k++)
 				v.add(t.vertex[k]);
 			Array<vector> sv;
-			for (int tl=0;tl<material[i].num_textures;tl++)
+			for (int tl=0;tl<material[i].texture_files.num;tl++)
 				for (int k=0;k<3;k++)
 					sv.add(t.skin_vertex[tl][k]);
 			addPolygonWithSkin(v, sv, i);
@@ -1033,7 +1033,7 @@ void DataModel::exportToTriangleSkin(int index)
 		}
 	}
 	foreachi(ModelMaterial &m, material, i)
-		sk.sub[i].num_textures = m.num_textures;
+		sk.sub[i].num_textures = m.texture_files.num;
 }
 
 
@@ -1133,9 +1133,9 @@ bool DataModel::save(const string & _filename)
 		f->WriteInt(m.alpha_destination);
 		f->WriteInt(m.alpha_factor * 100.0f);
 		f->WriteBool(m.alpha_zbuffer);
-		f->WriteInt(m.num_textures);
-		for (int t=0;t<m.num_textures;t++)
-			f->WriteStr(m.texture_file[t]);
+		f->WriteInt(m.texture_files.num);
+		for (int t=0;t<m.texture_files.num;t++)
+			f->WriteStr(m.texture_files[t]);
 	}
 
 // physical skin
@@ -1205,10 +1205,10 @@ bool DataModel::save(const string & _filename)
 	    // skin vertices
 		int num_skin_v = 0;
 		for (int m=0;m<material.num;m++)
-			num_skin_v += s->sub[m].triangle.num * material[m].num_textures * 3;
+			num_skin_v += s->sub[m].triangle.num * material[m].texture_files.num * 3;
 		f->WriteInt(num_skin_v);
 		for (int m=0;m<material.num;m++)
-			for (int tl=0;tl<material[m].num_textures;tl++)
+			for (int tl=0;tl<material[m].texture_files.num;tl++)
 		    	for (int j=0;j<s->sub[m].triangle.num;j++)
 					for (int k=0;k<3;k++){
 						f->WriteFloat(s->sub[m].triangle[j].skin_vertex[tl][k].x);
@@ -1230,7 +1230,7 @@ bool DataModel::save(const string & _filename)
 					f->WriteInt(sub->triangle[j].vertex[k]);
 
 			// skin index
-			for (int tl=0;tl<material[m].num_textures;tl++)
+			for (int tl=0;tl<material[m].texture_files.num;tl++)
 		    	for (int j=0;j<sub->triangle.num;j++)
 					for (int k=0;k<3;k++)
 						f->WriteInt(svi ++);
@@ -1414,7 +1414,7 @@ bool DataModel::save(const string & _filename)
 			f->WriteInt(t.material);
 			for (ModelPolygonSide &ss: t.side){
 				f->WriteInt(ss.vertex);
-				for (int l=0;l<material[t.material].num_textures;l++){
+				for (int l=0;l<material[t.material].texture_files.num;l++){
 					f->WriteFloat(ss.skin_vertex[l].x);
 					f->WriteFloat(ss.skin_vertex[l].y);
 				}

@@ -7,6 +7,7 @@
 
 #include "../../Edward.h"
 #include "../../MultiView/MultiView.h"
+#include "../../MultiView/Window.h"
 #include "ModeFont.h"
 #include "../../Data/Font/DataFont.h"
 #include "../../Data/Font/Import/ImporterCairo.h"
@@ -186,16 +187,17 @@ void ModeFont::onUpdate(Observable *o, const string &message)
 
 
 
+// FIXME argh.... should be unnecessary thanks to better projection system now!!!!
 
 void Draw2D(const rect &source, const rect *dest)
 {
 	MultiView::MultiView *mv = mode_font->multi_view;
 	rect d;
 	if (dest){
-		d=rect(	nix::target_width/2-(mv->cam.pos.x-dest->x1)*mv->cam.zoom,
-				nix::target_width/2-(mv->cam.pos.x-dest->x2)*mv->cam.zoom,
-				nix::target_height/2-(mv->cam.pos.y-dest->y1)*mv->cam.zoom,
-				nix::target_height/2-(mv->cam.pos.y-dest->y2)*mv->cam.zoom);
+		d=rect(	nix::target_width/2-(mv->cam.pos.x-dest->x1)*mv->active_win->zoom(),
+				nix::target_width/2-(mv->cam.pos.x-dest->x2)*mv->active_win->zoom(),
+				nix::target_height/2-(mv->cam.pos.y-dest->y1)*mv->active_win->zoom(),
+				nix::target_height/2-(mv->cam.pos.y-dest->y2)*mv->active_win->zoom());
 		nix::Draw2D(source, d, 0);
 	}else
 		nix::Draw2D(source, nix::target_rect, 0);
@@ -204,18 +206,18 @@ void Draw2D(const rect &source, const rect *dest)
 void DrawLineH(int x1, int x2, int y)
 {
 	MultiView::MultiView *mv = mode_font->multi_view;
-	x1 = int(nix::target_width/2-(mv->cam.pos.x - x1)*mv->cam.zoom);
-	x2 = int(nix::target_width/2-(mv->cam.pos.x - x2)*mv->cam.zoom);
-	y  = int(nix::target_height/2-(mv->cam.pos.y - y )*mv->cam.zoom);
+	x1 = int(nix::target_width/2-(mv->cam.pos.x - x1)*mv->active_win->zoom());
+	x2 = int(nix::target_width/2-(mv->cam.pos.x - x2)*mv->active_win->zoom());
+	y  = int(nix::target_height/2-(mv->cam.pos.y - y )*mv->active_win->zoom());
 	nix::DrawLineH(x1, x2,y, 0);
 }
 
 void DrawLineV(int x, int y1, int y2)
 {
 	MultiView::MultiView *mv = mode_font->multi_view;
-	x  = int(nix::target_width/2-(mv->cam.pos.x - x )*mv->cam.zoom);
-	y1 = int(nix::target_height/2-(mv->cam.pos.y - y1)*mv->cam.zoom);
-	y2 = int(nix::target_height/2-(mv->cam.pos.y - y2)*mv->cam.zoom);
+	x  = int(nix::target_width/2-(mv->cam.pos.x - x )*mv->active_win->zoom());
+	y1 = int(nix::target_height/2-(mv->cam.pos.y - y1)*mv->active_win->zoom());
+	y2 = int(nix::target_height/2-(mv->cam.pos.y - y2)*mv->active_win->zoom());
 	nix::DrawLineV(x, y1, y2, 0);
 }
 

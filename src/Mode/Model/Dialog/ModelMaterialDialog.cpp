@@ -219,10 +219,10 @@ void ModelMaterialDialog::onDefaultColors()
 void ModelMaterialDialog::fillTextureList()
 {
 	reset("mat_textures");
-	for (int i=0;i<temp.num_textures;i++){
-		nix::Texture *tex = nix::LoadTexture(temp.texture_file[i]);
+	for (int i=0;i<temp.texture_files.num;i++){
+		nix::Texture *tex = nix::LoadTexture(temp.texture_files[i]);
 		string img = ed->get_tex_image(tex);
-		addString("mat_textures", format("Tex[%d]\\%s\\%s", i, img.c_str(), file_secure(temp.texture_file[i]).c_str()));
+		addString("mat_textures", format("Tex[%d]\\%s\\%s", i, img.c_str(), file_secure(temp.texture_files[i]).c_str()));
 	}
 	setInt("mat_textures", mode_model_mesh_texture->current_texture_level);
 }
@@ -230,11 +230,11 @@ void ModelMaterialDialog::fillTextureList()
 
 void ModelMaterialDialog::onAddTextureLevel()
 {
-	if (temp.num_textures >= MATERIAL_MAX_TEXTURES){
+	if (temp.texture_files.num >= MATERIAL_MAX_TEXTURES){
 		ed->errorBox(format(_("H&ochstens %d Textur-Ebenen erlaubt!"), MATERIAL_MAX_TEXTURES));
 		return;
 	}
-	temp.texture_file[temp.num_textures ++] = "";
+	temp.texture_files.add("");
 	temp.checkTextures();
 	applyData();
 }
@@ -242,9 +242,9 @@ void ModelMaterialDialog::onAddTextureLevel()
 void ModelMaterialDialog::onTextures()
 {
 	int sel = getInt("");
-	if ((sel >= 0) && (sel <temp.num_textures))
+	if ((sel >= 0) && (sel <temp.texture_files.num))
 		if (ed->fileDialog(FD_TEXTURE, false, true)){
-			temp.texture_file[sel] = ed->dialog_file;
+			temp.texture_files[sel] = ed->dialog_file;
 			temp.checkTextures();
 			applyData();
 		}
@@ -260,13 +260,11 @@ void ModelMaterialDialog::onDeleteTextureLevel()
 {
 	int sel = getInt("mat_textures");
 	if (sel >= 0){
-		if (temp.num_textures <= 1){
+		if (temp.texture_files.num <= 1){
 			ed->errorBox(_("Mindestens eine Textur-Ebene muss vorhanden sein!"));
 			return;
 		}
-		for (int i=sel;i<temp.num_textures-1;i++)
-			temp.texture_file[i] = temp.texture_file[i + 1];
-		temp.num_textures --;
+		temp.texture_files.erase(sel);
 		applyData();
 		fillTextureList();
 	}
@@ -276,7 +274,7 @@ void ModelMaterialDialog::onEmptyTextureLevel()
 {
 	int sel = getInt("mat_textures");
 	if (sel >= 0){
-		temp.texture_file[sel] = "";
+		temp.texture_files[sel] = "";
 		applyData();
 		fillTextureList();
 	}

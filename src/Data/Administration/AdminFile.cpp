@@ -241,8 +241,8 @@ void AdminFile::check(AdminFileList &list)
 				add_possible_link(l, FD_MODEL, s);
 			for (int i=0;i<m.material.num;i++){
 				add_possible_link(l, FD_MATERIAL, m.material[i].material_file);
-				for (int j=0;j<m.material[i].num_textures;j++)
-					add_possible_link(l, FD_TEXTURE, m.material[i].texture_file[j]);
+				for (int j=0;j<m.material[i].texture_files.num;j++)
+					add_possible_link(l, FD_TEXTURE, m.material[i].texture_files[j]);
 			}
 			add_possible_link(l, FD_SCRIPT, m.meta_data.script_file);
 		}else

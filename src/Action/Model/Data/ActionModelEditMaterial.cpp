@@ -29,8 +29,8 @@ void *ActionModelEditMaterial::execute(Data *d)
 		for (ModelPolygon &p: s.polygon){
 			if (p.material == index){
 				for (ModelPolygonSide &side: p.side)
-					for (int l=mat.num_textures;l<m->material[index].num_textures;l++)
-						side.skin_vertex[l] = side.skin_vertex[mat.num_textures - 1];
+					for (int l=mat.texture_files.num;l<m->material[index].texture_files.num;l++)
+						side.skin_vertex[l] = side.skin_vertex[mat.texture_files.num - 1];
 			}
 		}
 

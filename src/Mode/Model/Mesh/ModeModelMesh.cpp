@@ -158,7 +158,7 @@ void ModeModelMesh::onCommand(const string & id)
 	if (id == "connect")
 		data->collapseSelectedVertices();
 	if (id == "align_to_grid")
-		data->alignToGridSelection(multi_view->getGridD());
+		data->alignToGridSelection(multi_view->active_win->get_grid_d());
 	if (id == "triangulate_selection")
 		data->triangulateSelectedVertices();
 	if (id == "subdivide_surfaces")
@@ -630,7 +630,7 @@ void ModeModelMesh::updateVertexBuffers(Array<ModelVertex> &vertex)
 {
 	// draw all materials separately
 	foreachi(ModelMaterial &m, data->material, mi){
-		int num_tex = min(m.num_textures, 4);
+		int num_tex = min(m.textures.num, 4);
 		if (!m.vb)
 			m.vb = new nix::VertexBuffer(num_tex);
 		if (m.vb->num_textures != num_tex){
@@ -645,7 +645,7 @@ void ModeModelMesh::updateVertexBuffers(Array<ModelVertex> &vertex)
 				continue;
 			for (ModelPolygon &t: surf.polygon)
 				if ((t.view_stage >= multi_view->view_stage) && (t.material == mi))
-					t.addToVertexBuffer(vertex, m.vb, m.num_textures);
+					t.addToVertexBuffer(vertex, m.vb, m.textures.num);
 		}
 
 		//m.vb->optimize();

@@ -54,9 +54,9 @@ void ModelMaterial::reset()
 	material = LoadMaterial("");
 
 	// textures
-	num_textures = 1;
-	texture_file[0] = "";
-	texture[0] = NULL;
+	textures = NULL;
+	texture_files.clear();
+	texture_files.add("");
 
 	if (vb)
 		delete(vb);
@@ -82,11 +82,8 @@ void ModelMaterial::operator =(const ModelMaterial &m)
 	material_file = m.material_file;
 	material = m.material;
 
-	num_textures = m.num_textures;
-	for (int i=0; i<MATERIAL_MAX_TEXTURES; i++){
-		texture_file[i] = m.texture_file[i];
-		texture[i] = m.texture[i];
-	}
+	texture_files = m.texture_files;
+	textures = m.textures;
 }
 
 void ModelMaterial::makeConsistent()
@@ -115,24 +112,21 @@ void ModelMaterial::checkTransparency()
 void ModelMaterial::checkTextures()
 {
 	// parent has more texture levels?
-	if (material->textures.num > num_textures){
-		for (int i=num_textures;i<material->textures.num;i++){
-			texture_file[i] = "";
-			texture[i] = NULL;
-		}
-		num_textures = material->textures.num;
+	if (material->textures.num > texture_files.num){
+		texture_files.resize(material->textures.num);
 		ed->setMessage(_("Anzahl der Texturen wurde an das Material angepasst!"));
 	}
 
 	// load all textures
-	for (int i=0;i<num_textures;i++)
-		texture[i] = nix::LoadTexture(texture_file[i]);
+	textures.clear();
+	for (string &tf: texture_files)
+		textures.add(nix::LoadTexture(tf));
 
 	// parent overwrites unused textures
 	for (int i=0;i<material->textures.num;i++)
-		if (texture[i] < 0)
-			if (texture_file[i].num == 0)
-				texture[i] = material->textures[i];
+		if (!textures[i])
+			if (texture_files[i] == "")
+				textures[i] = material->textures[i];
 }
 
 void ModelMaterial::checkColors()
@@ -167,16 +161,9 @@ void ModelMaterial::applyForRendering()
 		}
 		nix::SetShader(material->shader);
 	}
-	Array<nix::Texture*> tex;
-	if (material->cube_map >= 0){
-		// evil hack
-		tex.add(texture[0]);
-		tex.add(texture[1]);
-		tex.add(texture[2]);
+	Array<nix::Texture*> tex = material->textures;
+	if (material->cube_map)
 		tex.add(material->cube_map);
-		nix::SetTextures(tex);
-	}else{
-		nix::SetTextures(material->textures);
-	}
+	nix::SetTextures(tex);
 }
 

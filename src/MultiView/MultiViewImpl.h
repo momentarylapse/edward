@@ -115,7 +115,6 @@ public:
 	bool hoverSelected();
 	bool hasSelectableData();
 
-	virtual float getGridD();
 	string getScaleByZoom(vector &v);
 
 	vector virtual getCursor3d();

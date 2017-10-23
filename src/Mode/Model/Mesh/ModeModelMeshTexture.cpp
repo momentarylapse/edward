@@ -85,7 +85,7 @@ void ModeModelMeshTexture::onEnd()
 	skin_vertex.clear();
 }
 
-#define cur_tex			data->material[mode_model_mesh->current_material].texture[current_texture_level]
+#define cur_tex			data->material[mode_model_mesh->current_material].textures[current_texture_level]
 
 
 void ModeModelMeshTexture::onDrawWin(MultiView::Window *win)
@@ -173,8 +173,8 @@ void ModeModelMeshTexture::setCurrentTextureLevel(int level)
 void ModeModelMeshTexture::onUpdate(Observable *o, const string &message)
 {
 	// consistency checks
-	if (current_texture_level >= data->material[mode_model_mesh->current_material].num_textures)
-		setCurrentTextureLevel(data->material[mode_model_mesh->current_material].num_textures - 1);
+	if (current_texture_level >= data->material[mode_model_mesh->current_material].textures.num)
+		setCurrentTextureLevel(data->material[mode_model_mesh->current_material].textures.num - 1);
 
 	if (o == data){
 

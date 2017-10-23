@@ -30,6 +30,8 @@ public:
 	MultiView *multi_view;
 	MultiViewImpl *impl;
 	Camera *cam;
+	float zoom();
+	float get_grid_d();
 
 	void draw();
 	void drawGrid();

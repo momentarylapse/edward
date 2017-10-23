@@ -71,7 +71,7 @@ void ModeModelMeshCreateCylinder::onMouseMove()
 	if (pos.num == 2){
 		vector p = multi_view->getCursor3d(pos.back());
 		radius = (p - pos.back()).length();
-		float min_rad = 10 / multi_view->cam.zoom; // 10 px
+		float min_rad = 10 / multi_view->active_win->zoom(); // 10 px
 		if (radius < min_rad)
 			radius = min_rad;
 		updateGeometry();

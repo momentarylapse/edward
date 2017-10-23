@@ -8,7 +8,13 @@
 #include "lib/hui/hui.h"
 
 #include "Edward.h"
+#include "Mode/Administration/ModeAdministration.h"
+#include "Mode/Model/ModeModel.h"
+#include "Mode/Model/Mesh/ModeModelMesh.h"
 #include "Mode/Material/ModeMaterial.h"
+#include "Mode/World/ModeWorld.h"
+#include "Mode/Font/ModeFont.h"
+#include "Mode/Welcome/ModeWelcome.h"
 #include "Mode/ModeCreation.h"
 #include "Mode/ModeNone.h"
 #include "MultiView/MultiView.h"
@@ -293,7 +299,12 @@ Edward::Edward(Array<string> arg) :
 	msg_db_r("init modes", 1);*/
 	multi_view_3d = new MultiView::MultiViewImpl(true);
 	multi_view_2d = new MultiView::MultiViewImpl(false);
+	mode_welcome = new ModeWelcome;
+	mode_model = new ModeModel;
 	mode_material = new ModeMaterial;
+	mode_world = new ModeWorld;
+	mode_font = new ModeFont;
+	mode_administration = new ModeAdministration;
 	msg_db_m("              \\(^_^)/", 1);
 
 	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;
@@ -302,14 +313,17 @@ Edward::Edward(Array<string> arg) :
 	makeDirs(root_dir,true);
 
 	// subscribe to all data to automatically redraw...
+	subscribe(mode_model->data);
 	subscribe(mode_material->data);
+	subscribe(mode_world->data);
+	subscribe(mode_font->data);
 	subscribe(multi_view_2d);
 	subscribe(multi_view_3d);
 
 	plugins = new PluginManager();
 
-	setMode(mode_material);
-
+	if (!handleArguments(arg))
+		mode_model->_new();
 
 
 	event("hui:close", std::bind(&Edward::onClose, this));
@@ -351,6 +365,93 @@ Edward::~Edward()
 
 bool Edward::handleArguments(Array<string> arg)
 {
+	if (arg.num < 2)
+		return false;
+	msg_db_f("LoadParam", 1);
+
+	for (int i=1; i<arg.num; i++){
+		string param = arg[i];
+
+// convert file types...
+	/*if (param == "-cftmodel"){		ConvertFileFormat(FDModel, true);		End();	}
+	if (param == "-cftobject"){	ConvertFileFormat(FDObject, true);		End();	}
+	if (param == "-cftitem"){		ConvertFileFormat(FDItem, true);		End();	}
+	if (param == "-cftmaterial"){	ConvertFileFormat(FDMaterial, true);	End();	}
+	if (param == "-cftmap"){		ConvertFileFormat(FDTerrain, true);		End();	}
+	if (param == "-cftworld"){		ConvertFileFormat(FDWorld, true);		End();	}
+// test files
+	if (param == "-tftmodel"){		ConvertFileFormat(FDModel, false);		End();	}
+	if (param == "-tftobject"){	ConvertFileFormat(FDObject, false);		End();	}
+	if (param == "-tftitem"){		ConvertFileFormat(FDItem, false);		End();	}
+	if (param == "-tftmaterial"){	ConvertFileFormat(FDMaterial, false);	End();	}
+	if (param == "-tftmap"){		ConvertFileFormat(FDTerrain, false);	End();	}
+	if (param == "-tftworld"){		ConvertFileFormat(FDWorld, false);		End();	}*/
+
+		if (param == "--execute"){
+			i ++;
+			if (i < arg.num){
+				plugins->execute(arg[i]);
+			}
+			continue;
+		}
+
+// loading...
+	if (param[0]=='"')
+		param.delete_single(0);
+	if (param[param.num-1]=='"')
+		param.resize(param.num-1);
+
+	string ext = param.extension();
+
+	if (ext == "model"){
+		makeDirs(param);
+		mode_model->data->load(param, true);
+		setMode(mode_model);
+		/*if (mmodel->Skin[1].Sub[0].Triangle.num==0)
+			mmodel->SetEditMode(EditModeVertex);*/
+	}else if (ext == "material"){
+		makeDirs(param);
+		mode_material->data->load(param, true);
+		setMode(mode_material);
+	/*}else if ((ext == "map") || (ext == "terrain")){
+		MakeDirs(param);
+		mworld->Terrain.resize(1);
+		mworld->LoadFromFileTerrain(0, v0, param, true);
+		mworld->OptimizeView();
+		SetMode(ModeWorld);*/
+	}else if (ext == "world"){
+		makeDirs(param);
+		mode_world->data->load(param);
+		setMode(mode_world);
+		multi_view_3d->whole_window = true;
+	}else if (ext == "xfont"){
+		makeDirs(param);
+		mode_font->data->load(param);
+		setMode(mode_font);
+	}else if (ext == "js"){
+		mode_model->importLoadJson(param);
+		setMode(mode_model);
+	}else if (ext == "ply"){
+		mode_model->importLoadPly(param);
+		setMode(mode_model);
+	/*}else if (ext == "mdl"){
+		mmodel->LoadImportFromGameStudioMdl(param);
+		SetMode(ModeModel);
+		WholeWindow=true;
+		mmodel->OptimizeView();
+		//mmodel->Changed=false;
+	}else if (ext == "wmb"){
+		mmodel->LoadImportFromGameStudioWmb(param);
+		SetMode(ModeModel);
+		WholeWindow=true;
+		mmodel->OptimizeView();*/
+	}else if (ext == "3ds"){
+		mode_model->importLoad3ds(param);
+	}else{
+		errorBox(_("Unbekannte Dateinamenerweiterung: ") + param);
+		app->end();
+	}
+	}
 	return true;
 }
 
@@ -546,8 +647,10 @@ void Edward::updateDialogDir(int kind)
 	if (kind==FD_MODEL)			root_dir_kind[kind] = ObjectDir;
 	if (kind==FD_TEXTURE)		root_dir_kind[kind] = nix::texture_dir;
 	if (kind==FD_SOUND)			root_dir_kind[kind] = SoundDir;
+	if (kind==FD_MATERIAL)		root_dir_kind[kind] = MaterialDir;
 	if (kind==FD_TERRAIN)		root_dir_kind[kind] = MapDir;
 	if (kind==FD_WORLD)			root_dir_kind[kind] = MapDir;
+	if (kind==FD_SHADERFILE)		root_dir_kind[kind] = MaterialDir;
 	if (kind==FD_FONT)			root_dir_kind[kind] = Gui::FontDir;
 	if (kind==FD_SCRIPT)			root_dir_kind[kind] = ScriptDir;
 	if (kind==FD_CAMERAFLIGHT)	root_dir_kind[kind] = ScriptDir;
@@ -629,8 +732,10 @@ string Edward::getRootDir(int kind)
 	if (kind==FD_MODEL)			return ObjectDir;
 	if (kind==FD_TEXTURE)		return nix::texture_dir;
 	if (kind==FD_SOUND)			return SoundDir;
+	if (kind==FD_MATERIAL)		return MaterialDir;
 	if (kind==FD_TERRAIN)		return MapDir;
 	if (kind==FD_WORLD)			return MapDir;
+	if (kind==FD_SHADERFILE)		return MaterialDir;
 	if (kind==FD_FONT)			return Gui::FontDir;
 	if (kind==FD_SCRIPT)			return ScriptDir;
 	if (kind==FD_CAMERAFLIGHT)	return ScriptDir;
@@ -660,6 +765,26 @@ void Edward::errorBox(const string &message)
 
 void Edward::onCommand(const string &id)
 {
+	if (id == "model_new")
+		mode_model->_new();
+	if (id == "model_open")
+		mode_model->open();
+	if (id == "material_new")
+		mode_material->_new();
+	if (id == "material_open")
+		mode_material->open();
+	if (id == "world_new")
+		mode_world->_new();
+	if (id == "world_open")
+		mode_world->open();
+	if (id == "font_new")
+		mode_font->_new();
+	if (id == "font_open")
+		mode_font->open();
+	if (id == "administrate")
+		setMode(mode_administration);
+	if (id == "opt_view")
+		optimizeCurrentView();
 }
 
 

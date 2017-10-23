@@ -130,7 +130,7 @@ vector img_get_ball_n(int x, int y, int N)
 string render_material(ModelMaterial *m)
 {
 	// texture?
-	nix::Texture *tex = nix::LoadTexture(m->texture_file[0]);
+	nix::Texture *tex = nix::LoadTexture(m->texture_files[0]);
 	if (!tex)
 		if (m->material->textures.num > 0)
 			tex = m->material->textures[0];

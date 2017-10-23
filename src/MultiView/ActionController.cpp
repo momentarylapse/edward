@@ -112,13 +112,13 @@ void ActionController::updateAction()
 		param = mvac_project_trans(constraints, v2 - v1);
 		MatrixTranslation(mat, param);
 	}else if (action.mode == ACTION_ROTATE){
-		param = mvac_project_trans(constraints, v2 - v1) * 0.003f *multi_view->cam.zoom;
+		param = mvac_project_trans(constraints, v2 - v1) * 0.003f * multi_view->active_win->zoom();
 		if (constraints == ACTION_CONSTRAINTS_NONE)
 			param = transform_ang(multi_view, vector(v1p.y - v2p.y, v1p.x - v2p.x, 0) * 0.003f);
 		MatrixRotation(mat, param);
 		mat = m_dt * mat * m_dti;
 	}else if (action.mode == ACTION_SCALE){
-		param = vector(1, 1, 1) + mvac_project_trans(constraints, v2 - v1) * 0.01f *multi_view->cam.zoom;
+		param = vector(1, 1, 1) + mvac_project_trans(constraints, v2 - v1) * 0.01f * multi_view->active_win->zoom();
 		if (constraints == ACTION_CONSTRAINTS_NONE)
 			param = vector(1, 1, 1) * (1 + (v2p - v1p).x * 0.01f);
 		MatrixScale(mat, param.x, param.y, param.z);

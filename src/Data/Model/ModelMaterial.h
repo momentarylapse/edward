@@ -33,9 +33,8 @@ public:
 
 	string material_file;
 	Material *material;
-	int num_textures;
-	nix::Texture *texture[MATERIAL_MAX_TEXTURES];
-	string texture_file[MATERIAL_MAX_TEXTURES];
+	Array<nix::Texture*> textures;
+	Array<string> texture_files;
 
 	bool user_transparency;
 	int transparency_mode;

@@ -277,7 +277,7 @@ void LightmapData::AddTextureLevels(bool modify)
 	for (Model &m: Models){
 		if (modify){
 			for (ModelMaterial &mat: m.orig->material)
-				mat.num_textures ++;
+				mat.texture_files.add("");
 		}
 		m.orig->automap(-1, 1); // TODO...
 	}

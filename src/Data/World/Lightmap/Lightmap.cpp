@@ -164,8 +164,8 @@ bool Lightmap::RenderTextures()
 
 		// edit model
 		for (ModelMaterial &mat: m.orig->material){
-			mat.num_textures = 2;
-			mat.texture_file[1] = m.tex_name;
+			mat.texture_files.resize(2);
+			mat.texture_files[1] = m.tex_name;
 			mat.ambient = White;
 			mat.diffuse = Black;
 			mat.emission = Black;

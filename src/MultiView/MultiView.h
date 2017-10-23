@@ -51,7 +51,7 @@ struct Camera
 {
 	vector pos;
 	quaternion ang;
-	float zoom, radius;
+	float radius;
 	bool ignore_radius;
 };
 
@@ -85,7 +85,6 @@ public:
 
 	vector virtual getCursor3d() = 0;
 	vector virtual getCursor3d(const vector &depth_reference) = 0;
-	virtual float getGridD() = 0;
 
 	virtual void resetMouseAction() = 0;
 	virtual void setMouseAction(const string &name, int mode, bool locked) = 0;

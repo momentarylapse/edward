@@ -17,12 +17,6 @@
 namespace MultiView{
 
 
-#define update_zoom		\
-	cam.zoom = 1000.0f / cam.radius;
-	/*if (mode3d) \
-		cam.zoom = ((float)NixScreenHeight / (whole_window ? 1.0f : 2.0f) / cam.radius); \
-	else \
-		cam.zoom = (float)NixScreenHeight * 0.8f / cam.radius;*/
 #define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 //#define MVGetSingleData(d, index)	( dynamic_cast<MultiViewSingleData*> ((char*)(d).data + (d).DataSingleSize * index))
 
@@ -117,7 +111,6 @@ void MultiViewImpl::resetView()
 		cam.radius = 100;
 	else
 		cam.radius = 1;
-	cam.zoom = 1;
 	whole_window = false;
 	grid_enabled = true;
 	light_enabled = true;
@@ -169,7 +162,6 @@ void MultiViewImpl::camZoom(float factor, bool mouse_rel)
 	if (mouse_rel)
 		mup = mouse_win->unproject(m);
 	cam.radius /= factor;
-	update_zoom;
 	if (mouse_rel)
 		cam.pos += mup - mouse_win->unproject(m);
 	action_con->update();
@@ -180,7 +172,7 @@ void MultiViewImpl::camMove(const vector &dir)
 {
 	vector r = active_win->getDirectionRight();
 	vector u = active_win->getDirectionUp();
-	cam.pos += dir.x / cam.zoom * r + dir.y / cam.zoom * u;
+	cam.pos += (dir.x * r + dir.y * u) / active_win->zoom();
 	/*vector d, u, r;
 	mouse_win->GetMovingFrame(d, u, r);
 	if (mode3d)
@@ -209,7 +201,6 @@ void MultiViewImpl::setViewBox(const vector &min, const vector &max)
 	float r = (max - min).length_fuzzy() * 1.3f;// * ((float)NixScreenWidth / (float)nix::target_width);
 	if (r > 0)
 		cam.radius = r;
-	update_zoom;
 	notify(MESSAGE_UPDATE);
 }
 
@@ -564,18 +555,11 @@ void MultiViewImpl::endRect()
 }
 
 
-#define GRID_CONST	5.0f
-
-float MultiViewImpl::getGridD()
-{
-	return exp10(ceil(log10(GRID_CONST / cam.zoom)));
-}
-
 
 string MultiViewImpl::getScaleByZoom(vector &v)
 {
 	const char *units[] = {"y", "z", "a", "f", "p", "n", "\u00b5", "m", "", "k", "M", "G", "T", "P", "E", "Z", "Y"};
-	float l = getGridD() * 10.1f;
+	float l = active_win->get_grid_d() * 10.1f;
 
 	int n = floor(log10(l) / 3.0f);
 	v /= exp10(n * 3);
@@ -606,8 +590,6 @@ void MultiViewImpl::drawMousePos()
 void MultiViewImpl::onDraw()
 {
 	msg_db_f("Multiview.OnDraw",2);
-
-	update_zoom;
 
 	nix::ResetZ();
 	nix::SetProjectionOrtho(false);
