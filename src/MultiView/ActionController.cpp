@@ -200,7 +200,7 @@ void ActionController::update()
 
 	if (visible){
 		pos = multi_view->getSelectionCenter();
-		float f = multi_view->cam.radius * 0.1f;
+		float f = multi_view->cam.radius * 0.15f;
 		if (multi_view->whole_window)
 			f /= 2;
 		matrix s, t;
@@ -259,6 +259,8 @@ void ActionController::draw(Window *win)
 	nix::SetZ(false, false);
 	nix::EnableLighting(true);
 	nix::SetWorldMatrix(m_id);
+	nix::SetTexture(NULL);
+	nix::SetShader(nix::default_shader_3d);
 	if (!inUse()){
 		foreachi(Geometry *g, geo_show, i){
 			g->preview(nix::vb_temp);
@@ -269,8 +271,10 @@ void ActionController::draw(Window *win)
 	if (mouse_over_geo >= 0){
 		nix::SetAlpha(AlphaMaterial);
 		nix::SetMaterial(Black, color(0.8f, 0, 0, 0), Black, 0, White);
+		nix::SetOffset(-1);
 		geo_show[mouse_over_geo]->preview(nix::vb_temp);
 		nix::Draw3D(nix::vb_temp);
+		nix::SetOffset(0);
 	}
 	nix::SetZ(false, false);
 	nix::EnableLighting(false);
