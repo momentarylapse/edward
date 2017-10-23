@@ -90,11 +90,6 @@ public:
 	int current_material;
 	void setCurrentMaterial(int index);
 
-
-	void setMaterialMarked();
-	void setMaterialMouseOver();
-	void setMaterialCreation();
-
 	void updateVertexBuffers(Array<ModelVertex> &vertex);
 	void fillSelectionBuffer(Array<ModelVertex> &vertex);
 

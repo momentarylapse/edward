@@ -24,6 +24,11 @@
 
 ModeModel *mode_model = NULL;
 
+
+namespace MultiView{
+	extern nix::Shader *shader_selection;
+}
+
 ModeModel::ModeModel() :
 	Mode<DataModel>("Model", NULL, new DataModel, NULL, "")
 {
@@ -171,18 +176,22 @@ void ModeModel::onUpdateMenu()
 void ModeModel::setMaterialSelected()
 {
 	nix::SetAlpha(AlphaMaterial);
+	nix::SetShader(MultiView::shader_selection);
 	nix::SetMaterial(Black,color(0.3f,0,0,0),Black,0,Red);
+	//nix::SetMaterial(Black,color(0.3f,0,0,0),Black,0,color(1, 0.5f, 0, 1));
 }
 
 void ModeModel::setMaterialHover()
 {
 	nix::SetAlpha(AlphaMaterial);
+	nix::SetShader(MultiView::shader_selection);
 	nix::SetMaterial(Black,color(0.5f,0,0,0),Black,0,White);
 }
 
 void ModeModel::setMaterialCreation()
 {
 	nix::SetAlpha(AlphaMaterial);
+	nix::SetShader(MultiView::shader_selection);
 	nix::SetMaterial(Black, color(0.3f,0.3f,1,0.3f), Black, 0, color(1,0.1f,0.4f,0.1f));
 }
 

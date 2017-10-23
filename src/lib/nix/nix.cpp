@@ -294,9 +294,9 @@ void SetZ(bool write, bool test)
 
 void SetOffset(float offset)
 {
-	if (offset > 0){
+	if (fabs(offset) > 0.01f){
 		glEnable(GL_POLYGON_OFFSET_FILL);
-		glPolygonOffset(1.0f, 1.0f);
+		glPolygonOffset(offset, offset);
 	}else{
 		glDisable(GL_POLYGON_OFFSET_FILL);
 		glPolygonOffset(0, 0);

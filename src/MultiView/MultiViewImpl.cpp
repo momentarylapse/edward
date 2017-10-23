@@ -16,6 +16,8 @@
 
 namespace MultiView{
 
+nix::Shader *shader_selection = NULL;
+
 
 #define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 //#define MVGetSingleData(d, index)	( dynamic_cast<MultiViewSingleData*> ((char*)(d).data + (d).DataSingleSize * index))
@@ -69,6 +71,41 @@ MultiViewImpl::MultiViewImpl(bool _mode3d) :
 	holding_x = holding_y = 0;
 	allow_mouse_actions = true;
 	allow_select = true;
+
+	if (!shader_selection){
+		shader_selection = nix::CreateShader(
+				"<VertexShader>\n"
+				"#version 330 core\n"
+				"uniform mat4 mat_mvp;\n"
+				"uniform mat4 mat_m;\n"
+				"uniform mat4 mat_v;\n"
+				"layout(location = 0) in vec3 inPosition;\n"
+				"layout(location = 1) in vec3 inNormal;\n"
+				"out vec3 fragmentNormal;\n"
+				"void main(){\n"
+				"	gl_Position = mat_mvp * vec4(inPosition,1);\n"
+				"	fragmentNormal = (mat_v * mat_m * vec4(inNormal,0)).xyz;\n"
+				"}\n"
+				"</VertexShader>\n"
+				"<FragmentShader>\n"
+				"#version 330 core\n"
+				"struct Material{ vec4 ambient, diffusive, specular, emission; float shininess; };\n"
+				"struct Light{ vec4 color; vec3 pos; float radius, ambient, specular; };\n"
+				"uniform Material material;\n"
+				"uniform Light light;\n"
+				"in vec3 fragmentNormal;\n"
+				"out vec4 color;\n"
+				"void main(){\n"
+				"	vec3 n = normalize(fragmentNormal);\n"
+				"	vec3 l = light.pos;\n"
+				"	float d = max(-dot(n, l), 0);\n"
+				"	color = material.emission;\n"
+				"	color += material.ambient * light.color * light.ambient;\n"
+				"	color += material.diffusive* light.color * d;\n"
+				"	color.a = material.diffusive.a;\n"
+				"}\n"
+				"</FragmentShader>");
+	}
 
 	reset();
 }
@@ -622,6 +659,9 @@ void MultiViewImpl::onDraw()
 
 		nix::Scissor(nix::target_rect);
 		nix::EnableLighting(false);
+
+		nix::SetShader(nix::default_shader_2d);
+		nix::SetTexture(NULL);
 		nix::SetColor(ColorWindowSeparator);
 		nix::DrawRect(0, nix::target_width, nix::target_height/2-1, nix::target_height/2+2, 0);
 		nix::DrawRect(nix::target_width/2-1, nix::target_width/2+2, 0, nix::target_height, 0);
@@ -629,6 +669,7 @@ void MultiViewImpl::onDraw()
 	cur_projection_win = NULL;
 	nix::EnableLighting(false);
 
+	nix::SetShader(nix::default_shader_2d);
 	if (sel_rect.active)
 		sel_rect.draw(m);
 
@@ -659,8 +700,11 @@ void MultiViewImpl::SelectionRect::draw(const vector &m)
 {
 	nix::SetZ(false, false);
 	nix::SetAlphaM(AlphaMaterial);
+	nix::SetTexture(NULL);
 	nix::SetColor(ColorSelectionRect);
+	nix::SetCull(CULL_NONE);
 	nix::DrawRect(m.x, pos0.x, m.y, pos0.y, 0);
+	nix::SetCull(CULL_DEFAULT);
 	nix::SetColor(ColorSelectionRectBoundary);
 	nix::DrawLineV(pos0.x	,pos0.y	,m.y	,0);
 	nix::DrawLineV(m.x	,pos0.y	,m.y	,0);

@@ -562,6 +562,7 @@ bool DataModel::load(const string & _filename, bool deep)
 			material[i].alpha_factor = (float)f->ReadInt() * 0.01f;
 			material[i].alpha_zbuffer = f->ReadBool();
 			int n = f->ReadInt();
+			material[i].texture_files.clear();
 			for (int t=0;t<n;t++)
 				material[i].texture_files.add(f->ReadStr());
 		}

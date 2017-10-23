@@ -36,7 +36,7 @@ void MeshSelectionModeSurface::updateMultiView()
 
 void MeshSelectionModeSurface::onDrawWin(MultiView::Window *win)
 {
-	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVD_MODEL_SURFACE))
+	if ((multi_view->hover.index < 0) or (multi_view->hover.type != MVD_MODEL_SURFACE))
 		return;
 
 	parent->vb_hover->clear();

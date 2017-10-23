@@ -17,6 +17,7 @@
 #include "MeshSelectionModeEdge.h"
 
 
+
 MeshSelectionModePolygon::MeshSelectionModePolygon(ModeModelMesh *_parent) :
 	MeshSelectionMode(_parent)
 {
@@ -24,7 +25,7 @@ MeshSelectionModePolygon::MeshSelectionModePolygon(ModeModelMesh *_parent) :
 
 void MeshSelectionModePolygon::onDrawWin(MultiView::Window *win)
 {
-	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVD_MODEL_POLYGON))
+	if ((multi_view->hover.index < 0) or (multi_view->hover.type != MVD_MODEL_POLYGON))
 		return;
 
 	parent->vb_hover->clear();
@@ -34,7 +35,7 @@ void MeshSelectionModePolygon::onDrawWin(MultiView::Window *win)
 	p.addToVertexBuffer(data->vertex, parent->vb_hover, 1);
 
 	nix::SetWire(false);
-	nix::SetOffset(1.0f);
+	nix::SetOffset(-1.0f);
 	mode_model->setMaterialHover();
 	nix::Draw3D(parent->vb_hover);
 	nix::SetMaterial(White,White,Black,0,Black);

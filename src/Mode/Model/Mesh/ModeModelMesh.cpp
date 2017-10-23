@@ -668,24 +668,6 @@ void ModeModelMesh::fillSelectionBuffer(Array<ModelVertex> &vertex)
 	}
 }
 
-void ModeModelMesh::setMaterialMarked()
-{
-	nix::SetAlpha(AlphaMaterial);
-	nix::SetMaterial(Black,color(0.3f,0,0,0),Black,0,Red);
-}
-
-void ModeModelMesh::setMaterialMouseOver()
-{
-	nix::SetAlpha(AlphaMaterial);
-	nix::SetMaterial(Black,color(0.3f,0,0,0),Black,0,White);
-}
-
-void ModeModelMesh::setMaterialCreation()
-{
-	nix::SetAlpha(AlphaMaterial);
-	nix::SetMaterial(Black,color(0.3f,0.3f,1,0.3f),Black,0,color(1,0.1f,0.4f,0.1f));
-}
-
 void ModeModelMesh::drawSelection(MultiView::Window *win)
 {
 	nix::SetWire(false);
@@ -694,9 +676,9 @@ void ModeModelMesh::drawSelection(MultiView::Window *win)
 	nix::EnableLighting(true);
 
 	nix::SetOffset(1.0f);
-	setMaterialMarked();
+	ModeModel::setMaterialSelected();
 	nix::Draw3D(vb_marked);
-	setMaterialCreation();
+	ModeModel::setMaterialCreation();
 	nix::Draw3D(vb_creation);
 	nix::SetMaterial(White,White,Black,0,Black);
 	nix::SetAlpha(AlphaNone);

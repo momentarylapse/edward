@@ -44,9 +44,9 @@ public:
 	bool exportSaveJson();
 	bool exportWriteJson(const string &filename);
 
-	void setMaterialSelected();
-	void setMaterialHover();
-	void setMaterialCreation();
+	static void setMaterialSelected();
+	static void setMaterialHover();
+	static void setMaterialCreation();
 
 	void executePropertiesDialog();
 
