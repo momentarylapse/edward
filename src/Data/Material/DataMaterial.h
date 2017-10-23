@@ -27,94 +27,51 @@ public:
 	bool save(const string &_filename);
 
 	void ApplyForRendering();
-	int EffectiveTextureLevels();
 	void UpdateTextures();
 
-	/*struct TextureLevel
-	{
-		string Filename;
-		int Texture;
-	};
-
-	struct TextureData
-	{
-		Array<TextureLevel> level;
-	};
-	TextureData Texture;
-
-	struct ColorData
-	{
-		color Ambient, diffuse, specular, emission;
-		float shininess;
-	};
-	ColorData Color;
-
-	struct TransparencyData
-	{
-		int Mode, Source, Destination;
-		float Factor;
-		bool ZBuffer;
-	};
-	TransparencyData Transparency;
-
-	struct ReflectionData
-	{
-		int Mode, Density, Size;
-		string TextureFile[6];
-	};
-	ReflectionData Reflection;
-
-	struct EffectData
-	{
-		bool Water;
-		string Filename;
-		int Index;
-		int ShiningDensity, ShiningLength;
-	};
-	EffectData Effect;*/
 
 	struct AppearanceData
 	{
 		// properties
-		int NumTextureLevels;
-		nix::Texture *Texture[MATERIAL_MAX_TEXTURES];
-		string TextureFile[MATERIAL_MAX_TEXTURES];
+		Array<nix::Texture*> textures;
+		Array<string> texture_files;
 
 		// color
-		color ColorAmbient, ColorDiffuse, ColorSpecular, ColorEmissive;
-		float ColorShininess;
+		color ambient, diffuse, specular, emissive;
+		float shininess;
 
 		// transparency
-		int TransparencyMode, AlphaSource, AlphaDestination;
-		float AlphaFactor;
-		bool AlphaZBuffer;
+		int transparency_mode, alpha_source, alpha_destination;
+		float alpha_factor;
+		bool alpha_z_buffer;
 
 		// reflection
-		int ReflectionMode, ReflectionSize;
-		float ReflectionDensity;
-		string ReflectionTextureFile[6];
-		nix::Texture *CubeMap;
+		int reflection_mode, reflection_size;
+		float reflection_density;
+		string reflection_texture_file[6];
+		nix::Texture *cube_map;
 
 		// shader
-		string ShaderFile;
+		string shader_file;
+		nix::Shader *shader;
 
-		void Reset();
-		nix::Shader *GetShader() const;
+		void reset();
+		nix::Shader *get_shader() const;
 	};
 
-	AppearanceData Appearance;
+	AppearanceData appearance;
 
 	struct PhysicsData
 	{
-		float RCJump, RCStatic, RCSliding, RCRolling;
-		float RCVJumpMin, RCVSlidingMin;
+		float friction_jump, friction_static, friction_sliding, friction_rolling;
+		float vmin_jump, vmin_sliding;
 		// ...
 		bool Burnable;
 		float BurningTemperature, BurningIntensity;
 
 		void Reset();
 	};
-	PhysicsData Physics;
+	PhysicsData physics;
 
 	struct SoundData
 	{
@@ -123,36 +80,6 @@ public:
 		void Reset();
 	};
 	SoundData Sound;
-
-/*	// properties
-	int NumTextureLevels;
-	int Texture[MATERIAL_MAX_TEXTURES];
-	string TextureFile[MATERIAL_MAX_TEXTURES];
-
-	// appearance
-	color ColorAmbient, ColorDiffuse, ColorSpecular, ColorEmissive;
-	float ColorShininess;
-	int ShiningDensity,ShiningLength;
-	int TransparencyMode,AlphaSource,AlphaDestination;
-	float AlphaFactor;
-	bool AlphaZBuffer;
-	int ReflectionMode,ReflectionDensity,ReflectionSize;
-	string ReflectionTextureFile[6];
-	bool Water;
-	string EffectFile;
-	int EffectIndex;
-
-	// physics
-	int RCJump,RCStatic,RCSliding,RCRolling;
-	int RCVJumpMin,RCVSlidingMin;
-	// ...
-	bool Burnable;
-	int BurningTemperature,BurningIntensity;
-
-	// sounds
-	int NumSoundRules;*/
-
-	nix::Shader *Shader;
 };
 
 #endif /* DATAMATERIAL_H_ */

@@ -36,6 +36,12 @@ gboolean OnGtkGLAreaRender(GtkGLArea *area, GdkGLContext *context)
 	//glClear(GL_COLOR_BUFFER_BIT);
 	//printf("render...\n");
 
+	GtkAllocation a;
+	gtk_widget_get_allocation(GTK_WIDGET(area), &a);
+	NixGlArea->panel->win->input.row = a.height;
+	NixGlArea->panel->win->input.column = a.width;
+
+
 	gtk_gl_context = context;
 	NixGlArea->notify("hui:draw-gl");
 	return false;
@@ -272,16 +278,16 @@ ControlDrawingArea::ControlDrawingArea(const string &title, const string &id) :
 	g_signal_connect(G_OBJECT(da), "button-release-event", G_CALLBACK(&OnGtkAreaButton), this);
 	g_signal_connect(G_OBJECT(da), "scroll-event", G_CALLBACK(&OnGtkAreaMouseWheel), this);
 	//g_signal_connect(G_OBJECT(w), "focus-in-event", G_CALLBACK(&focus_in_event), this);
-	int mask;
-	g_object_get(G_OBJECT(da), "events", &mask, NULL);
-	mask |= GDK_EXPOSURE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK;
-	mask |= GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK;
-	mask |= GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK; // GDK_POINTER_MOTION_HINT_MASK = "fewer motions"
-	mask |= GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
-	mask |= GDK_VISIBILITY_NOTIFY_MASK | GDK_SCROLL_MASK;
-	mask |= GDK_SMOOTH_SCROLL_MASK;// | GDK_TOUCHPAD_GESTURE_MASK;
+	//int mask;
+	//g_object_get(G_OBJECT(da), "events", &mask, NULL);
+	gtk_widget_add_events(da, GDK_EXPOSURE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
+	gtk_widget_add_events(da, GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
+	gtk_widget_add_events(da, GDK_POINTER_MOTION_MASK);// | GDK_POINTER_MOTION_HINT_MASK); // GDK_POINTER_MOTION_HINT_MASK = "fewer motions"
+	gtk_widget_add_events(da, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK);
+	gtk_widget_add_events(da, GDK_VISIBILITY_NOTIFY_MASK | GDK_SCROLL_MASK);
+	gtk_widget_add_events(da, GDK_SMOOTH_SCROLL_MASK);// | GDK_TOUCHPAD_GESTURE_MASK;
 	//mask = GDK_ALL_EVENTS_MASK;
-	g_object_set(G_OBJECT(da), "events", mask, NULL);
+//	g_object_set(G_OBJECT(da), "events", mask, NULL);
 
 	grab_focus = (OptionString.find("grabfocus") >= 0);
 	if (grab_focus){

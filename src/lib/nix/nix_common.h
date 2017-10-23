@@ -55,13 +55,7 @@
 
 namespace nix{
 
-extern bool OGLMultiTexturingSupport;
-extern bool OGLShaderSupport;
-extern bool OGLVertexBufferSupport;
-
 extern bool OGLDynamicTextureSupport;
-extern bool GLDoubleBuffered;
-extern int OGLFontDPList;
 extern int current_progrram;
 
 

@@ -39,7 +39,7 @@ void TestGLError(const char*);
 // general ability of using lights
 void EnableLighting(bool Enabled)
 {
-	TestGLError("EnableLighting prae");
+	//TestGLError("EnableLighting prae");
 	LightingEnabled = Enabled;
 	/*if (Enabled)
 		glEnable(GL_LIGHTING);
@@ -51,6 +51,7 @@ void EnableLighting(bool Enabled)
 // Punkt-Quelle
 void SetLightRadial(int index,const vector &pos,float radius,const color &ambient,const color &diffuse,const color &specular)
 {
+	return;
 	if ((index < 0))// || (index > NixLight.num))
 		return;
 	/*NixLight[index].Pos = pos;
@@ -76,6 +77,7 @@ void SetLightRadial(int index,const vector &pos,float radius,const color &ambien
 // dir =Richtung, in die das Licht scheinen soll
 void SetLightDirectional(int index,const vector &dir,const color &ambient,const color &diffuse,const color &specular)
 {
+	return;
 	if ((index < 0))// || (index > NixLight.num))
 		return;
 	/*NixLight[index].Dir = dir;
@@ -116,6 +118,7 @@ void SetAmbientLight(const color &c)
 
 void SetShading(int mode)
 {
+	return;
 	if (mode==ShadingPlane)
 		glShadeModel(GL_FLAT);
 	if (mode==ShadingRound)

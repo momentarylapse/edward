@@ -16,7 +16,8 @@ namespace nix{
 string texture_dir = "";
 
 Array<Texture*> textures;
-Texture *default_texture;
+Texture *default_texture = NULL;
+Texture *tex_text = NULL;
 
 int texture_icon_size = 0;
 bool OGLDynamicTextureSupport = true;
@@ -177,7 +178,7 @@ void avi_close(int texture)
 // common stuff
 //--------------------------------------------------------------------------------------------------
 
-void TexturesInit()
+void init_textures()
 {
 	#ifdef NIX_ALLOW_VIDEO_TEXTURE
 		// allow AVI textures
@@ -189,6 +190,8 @@ void TexturesInit()
 	Image image;
 	image.create(16, 16, White);
 	default_texture->overwrite(image);
+
+	tex_text = new Texture;
 }
 
 void ReleaseTextures()

@@ -19,6 +19,8 @@ namespace nix{
 
 namespace MultiView{
 
+nix::Shader *shader_lines_3d = NULL;
+
 
 #define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 
@@ -39,6 +41,32 @@ Window::Window(MultiViewImpl *_impl, int _type)
 	multi_view = impl;
 	cam = &impl->cam;
 	type = _type;
+
+	if (!shader_lines_3d)
+		shader_lines_3d = nix::CreateShader(
+					"<VertexShader>\n"
+					"#version 330 core\n"
+					"uniform mat4 mat_mvp;\n"
+					"layout(location = 0) in vec3 inPosition;\n"
+					"layout(location = 2) in vec2 inTexCoord;\n"
+					"out vec2 fragmentTexCoord;\n"
+					"void main(){\n"
+					"	gl_Position = mat_mvp * vec4(inPosition,1);\n"
+					"	fragmentTexCoord = vec2(inTexCoord.x, 1-inTexCoord.y);\n"
+					"}\n"
+					"</VertexShader>\n"
+					"<FragmentShader>\n"
+					"#version 330 core\n"
+					"struct Material{ vec4 ambient, diffusive, specular, emission; float shininess; };\n"
+					"uniform Material material;\n"
+					"in vec2 fragmentTexCoord;\n"
+					"uniform sampler2D tex0;\n"
+					"out vec4 color;\n"
+					"void main(){\n"
+					"	color = texture(tex0, fragmentTexCoord);\n"
+					"	color *= material.emission;\n"
+					"}\n"
+					"</FragmentShader>");
 }
 
 void Window::drawGrid()
@@ -47,6 +75,8 @@ void Window::drawGrid()
 		return;
 	rect d;
 	vector bg_a,bg_b;
+
+	nix::SetTexture(NULL);
 
 	// Hintergrund-Bilder
 	/*if(win<4)
@@ -70,6 +100,7 @@ void Window::drawGrid()
 
 	// spherical for perspective view
 	if (type == VIEW_PERSPECTIVE){
+		nix::SetShader(shader_lines_3d);
 		vector PerspectiveViewPos = cam->radius * (cam->ang * e_z) - cam->pos;
 		//NixSetZ(false,false);
 		// horizontal
@@ -103,6 +134,7 @@ void Window::drawGrid()
 	vector vuy1 = unproject(vector(0,dest.y1,0));
 	vector vuy2 = unproject(vector(0,dest.y2,0));
 	vector n,va,vb;
+	nix::SetShader(nix::default_shader_2d);
 
 	// vertical
 	n=vux2-vux1;
@@ -155,7 +187,7 @@ void Window::draw()
 	nix::SetTexture(NULL);
 
 	color bg = getBackgroundColor();
-	float height = nix::ScreenHeight;
+	float height = nix::device_height;
 	if (!impl->whole_window)
 		height /= 2;
 
@@ -172,8 +204,8 @@ void Window::draw()
 	projection = nix::projection_matrix;
 
 	// background color
-	nix::SetColor(bg);
-	nix::Draw2D(r_id,nix::target_rect,0.9999999f);
+	nix::ResetToColor(bg);
+	nix::SetShader(nix::default_shader_2d);
 
 	// camera matrix
 	vector pos = cam->pos;
@@ -210,6 +242,7 @@ void Window::draw()
 	impl->cur_projection_win = this;
 	nix::SetViewPosAng(pos, ang);
 	mat = nix::view_matrix;
+	nix::SetWorldMatrix(m_id);
 	nix::SetZ(true,true);
 	nix::SetWire(false);
 	nix::EnableLighting(false);
@@ -236,7 +269,7 @@ void Window::draw()
 		ed->cur_mode->onDrawWin(this);
 
 	// draw multiview data
-	nix::SetShader(NULL);
+	nix::SetShader(nix::default_shader_2d);
 	nix::SetAlpha(AlphaNone);
 	nix::SetTexture(NULL);
 	nix::SetWire(false);
@@ -295,6 +328,7 @@ void Window::draw()
 
 	name_dest = rect(dest.x1 + 3, dest.x1 + 3 + nix::GetStrWidth(view_kind), dest.y1, dest.y1 + 20);
 
+	nix::SetShader(nix::default_shader_2d);
 	nix::SetColor(multi_view->ColorWindowType);
 	if (ed->isActive("nix-area") && (this == impl->active_win))
 		nix::SetColor(multi_view->ColorText);

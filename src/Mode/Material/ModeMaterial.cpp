@@ -76,9 +76,9 @@ void ModeMaterial::onUpdate(Observable *o, const string &message)
 {
 	if (o == data){
 		data->UpdateTextures();
-		if (data->Shader)
-			data->Shader->unref();
-		data->Shader = data->Appearance.GetShader();
+		if (data->appearance.shader)
+			data->appearance.shader->unref();
+		data->appearance.shader = data->appearance.get_shader();
 	}
 }
 
@@ -121,10 +121,8 @@ void ModeMaterial::onDrawWin(MultiView::Window *win)
 {
 	data->ApplyForRendering();
 
-	nix::Draw3D(MaterialVB[max(data->Appearance.NumTextureLevels, 1)]);
+	nix::Draw3D(MaterialVB[max(data->appearance.texture_files.num, 1)]);
 
-	nix::SetTexture(NULL);
-	nix::SetShader(NULL);
 
 	nix::SetAlpha(AlphaNone);
 	nix::SetZ(true,true);

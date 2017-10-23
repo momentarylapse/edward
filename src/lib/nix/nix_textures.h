@@ -13,7 +13,7 @@
 namespace nix{
 
 // textures
-void TexturesInit();
+void init_textures();
 void ReleaseTextures();
 void ReincarnateTextures();
 void ProgressTextureLifes();

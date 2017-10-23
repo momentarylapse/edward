@@ -1,1256 +1,4771 @@
 // Language
 日本語
 // Num IDs
-623
-// Data (ID,Text)
-ad_dialog
+1587
+// Data (ID,Text,Tooltip)
+/ad_dialog
 
-ad_edit
 
-ad_export_game
+/ad_edit
 
-ad_rudimentary_configuration
 
-ad_tab_control
+/ad_export_game
 
-add_material
 
-add_new_material
+/ad_rudimentary_configuration
 
-add_point
 
-add_script
+/ad_tab_control
 
-add_texture_level
 
-admin_button_bar
+/add_material
 
-administrate
 
-adt_dest
+/add_new_material
 
-adt_file
 
-adt_source
+/add_point
 
-align_to_grid
 
-allow_sun
+/add_script
 
-alpha_dest
+
+/add_texture_level
+
+
+/admin_button_bar
+
+
+/administrate
+
+
+/adt_dest
+
+
+/adt_file
+
+
+/adt_source
+
+
+/align_to_grid
+
+
+/allow_sun
+
+
+/alpha_dest
 AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha
-alpha_factor
 
-alpha_source
+/alpha_factor
+
+
+/alpha_source
 AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha
-alpha_z_buffer
 
-ambient
+/alpha_z_buffer
+
+
+/ambient
 周辺光
-ani_dt_sim_param
 
-ani_dt_sim_speed
+/ani_dt_sim_param
 
-animation_copy
 
-animation_delete
+/ani_dt_sim_speed
+
+
+/animation_copy
+
+
+/animation_delete
 削除
-animation_dialog
 
-animation_list
+/animation_dialog
+
+
+/animation_list
 #\\type\\num frames\\name
-animation_new
+
+/animation_new
 新規
-apply
+
+/apply
 適用
-apply_material
 
-automapping
+/apply_material
 
-autoweld_surfaces
 
-axis
+/automapping
 
-ball_type:ball
 
-ball_type:sphere
+/autoweld_surfaces
 
-bevel_edges
 
-bgc
+/axis
+
+
+/ball_type:ball
+
+
+/ball_type:sphere
+
+
+/bevel_edges
+
+
+/bgc
 !alpha
-brightness
 
-cam_edit_ang
+/brightness
 
-cam_edit_vel
 
-cam_preview
+/cam_edit_ang
 
-cam_stop
 
-campoint__grp_ang
+/cam_edit_vel
 
-campoint__grp_pos
 
-campoint__grp_vel
+/cam_preview
 
-campoint_dialog
 
-campoint_t_delay
+/cam_stop
 
-campoint_t_type
 
-campoint_type
+/campoint__grp_ang
+
+
+/campoint__grp_pos
+
+
+/campoint__grp_vel
+
+
+/campoint_dialog
+
+
+/campoint_t_delay
+
+
+/campoint_t_type
+
+
+/campoint_type
 PositionSet\\PositionAdd\\AngleSet\\Position & Angle Set\\Flight\\FlightRelative
-camscript_create
 
-camscript_load
+/camscript_create
 
-cancel
+
+/camscript_load
+
+
+/cancel
 キャンセル
-choose_material
 
-clear_texture_level
+/choose_material
 
-connect
 
-convert_to_triangles
+/clear_texture_level
 
-copy
+
+/connect
+
+
+/convert_to_triangles
+
+
+/copy
 コーピ
-create_lightmap
 
-create_objects
+/create_lightmap
+
+
+/create_objects
 オブジェクト...
-current_mode_font
+
+/current_mode_font
 [フォント　の　モード]
-current_mode_model_skeleton
+
+/current_mode_model_skeleton
 [モデル　の　モード (骨格)]
-cut_out
 
-def_cyl_t_axis
+/cut_out
 
-default_colors
 
-default_material
+/def_cyl_t_axis
 
-deformation_brush
 
-deformation_cyl_dialog_buttonbar
+/default_colors
 
-deformation_cylinder
 
-deformation_cylinder_dialog
+/default_material
 
-deformation_dialog_buttonbar
 
-deformation_function
+/deformation_brush
 
-deformation_function_dialog
 
-degree
+/deformation_cyl_dialog_buttonbar
+
+
+/deformation_cylinder
+
+
+/deformation_cylinder_dialog
+
+
+/deformation_dialog_buttonbar
+
+
+/deformation_function
+
+
+/deformation_function_dialog
+
+
+/degree
 °
-delete
+
+/delete
 削除
-delete_frame
 
-delete_item
+/delete_frame
 
-delete_point
 
-delete_texture_level
+/delete_item
 
-detail_0
 
-detail_1
+/delete_point
 
-detail_2
 
-detail_3
+/delete_texture_level
 
-diffuse
+
+/detail_0
+
+
+/detail_1
+
+
+/detail_2
+
+
+/detail_3
+
+
+/diffuse
 拡散光
-dummy_text
 
-easify_dialog
+/dummy_text
 
-easify_dialog_buttonbar
 
-easify_skin
+/easify_dialog
 
-eat_estimate
 
-eat_quality
+/easify_dialog_buttonbar
 
-edit_material
+
+/easify_skin
+
+
+/eat_estimate
+
+
+/eat_quality
+
+
+/edit_material
 編集
-edit_terrain_selectable
 
-edit_terrain_vertices
+/edit_terrain_selectable
 
-editor_dialog
 
-editor_dialog_t_adress
+/edit_terrain_vertices
 
-editor_dialog_t_creator
 
-editor_dialog_t_language
+/editor_dialog
 
-editor_dialog_t_version
 
-editor_dialog_t_workingdirectory
+/editor_dialog_t_adress
 
-editor_dialog_tab_control
+
+/editor_dialog_t_creator
+
+
+/editor_dialog_t_language
+
+
+/editor_dialog_t_version
+
+
+/editor_dialog_t_workingdirectory
+
+
+/editor_dialog_tab_control
 properties\\keys\\information
-emission
+
+/emission
 発光
-execute_plugin
 
-exit
+/execute_plugin
+
+
+/exit
 終了
-exponent
 
-export_game
+/exponent
 
-export_group
 
-export_to_gamestudio
+/export_game
 
-export_to_json
 
-export_type
+/export_group
+
+
+/export_to_gamestudio
+
+
+/export_to_json
+
+
+/export_type
 single files\\archive (compressed)\\archive (uncompressed)
-export_world
 
-extrude_triangles
+/export_world
 
-factorx
 
-factory
+/extrude_triangles
 
-file_list_all
 
-file_list_cur
+/factorx
 
-file_list_detail_dest
 
-file_list_detail_source
+/factory
 
-file_list_missing
 
-file_list_super
+/file_list_all
 
-flatten_vertices
 
-fog_distance
+/file_list_cur
 
-fog_end
 
-fog_mode:exp
+/file_list_detail_dest
 
-fog_mode:exp2
 
-fog_mode:linear
+/file_list_detail_source
 
-fog_mode:none
 
-fog_start
+/file_list_missing
 
-font_dialog
 
-font_dt_character
+/file_list_super
 
-font_dt_example
 
-font_dt_font
+/flatten_vertices
 
-font_dt_height
 
-font_dt_name
+/fog_distance
 
-font_dt_numglyphs
 
-font_dt_scalex
+/fog_end
 
-font_dt_scaley
 
-font_dt_unknown
+/fog_mode:exp
 
-font_dt_width
 
-font_dt_x1
+/fog_mode:exp2
 
-font_dt_x2
 
-font_dt_y1
+/fog_mode:linear
 
-font_dt_y2
 
-font_new
+/fog_mode:none
+
+
+/fog_start
+
+
+/font_dialog
+
+
+/font_dt_character
+
+
+/font_dt_example
+
+
+/font_dt_font
+
+
+/font_dt_height
+
+
+/font_dt_name
+
+
+/font_dt_numglyphs
+
+
+/font_dt_scalex
+
+
+/font_dt_scaley
+
+
+/font_dt_unknown
+
+
+/font_dt_width
+
+
+/font_dt_x1
+
+
+/font_dt_x2
+
+
+/font_dt_y1
+
+
+/font_dt_y2
+
+
+/font_new
 新規
-font_open
+
+/font_open
 開く...
-formula
+
+/formula
 Linear\\1/r^2
-fps_const
 
-fps_factor
+/fps_const
 
-frame
 
-fx_dialog
+/fps_factor
 
-fx_edit
 
-fx_headline
+/frame
 
-fx_new_field
 
-fx_new_light
+/fx_dialog
 
-fx_new_script
 
-fx_new_sound
+/fx_edit
 
-fx_none
 
-fx_tab_control
+/fx_headline
+
+
+/fx_new_field
+
+
+/fx_new_light
+
+
+/fx_new_script
+
+
+/fx_new_sound
+
+
+/fx_none
+
+
+/fx_tab_control
 炎\\光源\\音\\力場
-fxt_force_desc
 
-fxt_force_formula
+/fxt_force_desc
 
-fxt_force_intensity
 
-fxt_force_range
+/fxt_force_formula
 
-fxt_lightradius
 
-fxt_scriptfile
+/fxt_force_intensity
 
-fxt_sound_mono_advice
 
-fxt_soundfile
+/fxt_force_range
 
-fxt_soundrange
 
-fxt_soundspeed
+/fxt_lightradius
 
-ge_dialog
 
-ged_group
+/fxt_scriptfile
 
-ged_group_dest
 
-ged_system
+/fxt_sound_mono_advice
+
+
+/fxt_soundfile
+
+
+/fxt_soundrange
+
+
+/fxt_soundspeed
+
+
+/ge_dialog
+
+
+/ged_group
+
+
+/ged_group_dest
+
+
+/ged_system
 linux\\windows 32
-ged_t_export_type
 
-ged_t_font
+/ged_t_export_type
 
-ged_t_material
 
-ged_t_rootdir
+/ged_t_font
 
-ged_t_script
 
-ged_t_second_world
+/ged_t_material
 
-ged_t_system
 
-ged_t_world
+/ged_t_rootdir
 
-generate_dists_auto
 
-generate_skin_auto
+/ged_t_script
 
-generate_tensor_auto
 
-gravitation_x
+/ged_t_second_world
 
-gravitation_y
 
-gravitation_z
+/ged_t_system
 
-grid
+
+/ged_t_world
+
+
+/generate_dists_auto
+
+
+/generate_skin_auto
+
+
+/generate_tensor_auto
+
+
+/gravitation_x
+
+
+/gravitation_y
+
+
+/gravitation_z
+
+
+/grid
 グリッド
-height
 
-height_op:add
+/height
 
-height_op:set
 
-height_to_terrain
+/height_op:add
 
-help
+
+/height_op:set
+
+
+/height_to_terrain
+
+
+/help
 ヘルプ...
-import
 
-import_from_3ds
+/import
 
-import_from_gamestudio
 
-import_from_json
+/import_from_3ds
 
-import_from_lineage2
 
-import_from_ply
+/import_from_gamestudio
 
-import_group
 
-import_world_properties
+/import_from_json
 
-invert_selection
 
-invert_trias
+/import_from_lineage2
 
-just_selection
 
-key_dialog
+/import_from_ply
 
-key_dialog_t_key
 
-key_list
+/import_group
+
+
+/import_world_properties
+
+
+/invert_selection
+
+
+/invert_trias
+
+
+/just_selection
+
+
+/key_dialog
+
+
+/key_dialog_t_key
+
+
+/key_list
 !tree\\command\\keys
-level
 
-light
+/level
+
+
+/light
 光
-lightmap_dialog
 
-lightmap_list
+/lightmap_dialog
 
-lightmap_type
 
-lmt_brightness
+/lightmap_list
 
-lmt_exponent
 
-lmt_new_world
+/lightmap_type
 
-lmt_photons
 
-lmt_spacial_resolution
+/lmt_brightness
 
-local_documentation
 
-location
+/lmt_exponent
+
+
+/lmt_new_world
+
+
+/lmt_photons
+
+
+/lmt_spacial_resolution
+
+
+/local_documentation
+
+
+/location
 CalcMove 1\\CalcMove 2\\Render 1\\Render 2\\Render 3\\GetInput 1\\GetInput 2
-lod
 
-logo
+/lod
 
-look_for_updates
 
+/logo
+
+
+/look_for_updates
+
+
+/lu
 lu
-lu
-luss
+
+/luss
 lu/s^2
-mass
 
-mat_add_texture_level
+/mass
 
-mat_am
 
-mat_delete_texture_level
+/mat_add_texture_level
 
-mat_di
+
+/mat_am
+
+
+/mat_delete_texture_level
+
+
+/mat_di
 !alpha
-mat_empty_texture_level
 
-mat_shininess
+/mat_empty_texture_level
 
-mat_textures
 
-mat_transp_alpha_grid
+/mat_shininess
 
-mat_transp_function_grid
 
-material_dialog
+/mat_textures
 
-material_dialog_grp_color
 
-material_dialog_grp_friction
+/mat_transp_alpha_grid
 
-material_dialog_grp_reflection
 
-material_dialog_grp_shader
+/mat_transp_function_grid
 
-material_dialog_grp_textures
 
-material_dialog_grp_transparency
+/material_dialog
 
-material_dialog_t_refl_density
 
-material_dialog_t_trans_dest
+/material_dialog_grp_color
 
-material_dialog_t_trans_source
 
-material_list
+/material_dialog_grp_friction
 
-material_new
+
+/material_dialog_grp_reflection
+
+
+/material_dialog_grp_shader
+
+
+/material_dialog_grp_textures
+
+
+/material_dialog_grp_transparency
+
+
+/material_dialog_t_refl_density
+
+
+/material_dialog_t_trans_dest
+
+
+/material_dialog_t_trans_source
+
+
+/material_list
+
+
+/material_new
 新規
-material_open
+
+/material_open
 開く...
-material_physics_dialog_t_rcjump
 
-material_physics_dialog_t_rcroll
+/material_physics_dialog_t_rcjump
 
-material_physics_dialog_t_rcsliding
 
-material_physics_dialog_t_rcstatic
+/material_physics_dialog_t_rcroll
 
-material_shape_ball
 
-material_shape_cube
+/material_physics_dialog_t_rcsliding
 
-material_shape_icosahedron
 
-material_shape_smooth
+/material_physics_dialog_t_rcstatic
 
-material_shape_teapot
 
-material_shape_torus
+/material_shape_ball
 
-material_shape_torusknot
 
-material_sound_dialog
+/material_shape_cube
 
-max_script_vars
 
-menu_administration_file
+/material_shape_icosahedron
 
-menu_administration_game
 
-menu_all_header
+/material_shape_smooth
 
-menu_edge_header
 
-menu_file
+/material_shape_teapot
+
+
+/material_shape_torus
+
+
+/material_shape_torusknot
+
+
+/material_sound_dialog
+
+
+/max_script_vars
+
+
+/menu_administration_file
+
+
+/menu_administration_game
+
+
+/menu_all_header
+
+
+/menu_edge_header
+
+
+/menu_file
 ファイル
-menu_font
+
+/menu_font
 フォント
-menu_font_edit
+
+/menu_font_edit
 編集
-menu_help
-ヘルプ
-menu_mapping
 
-menu_material
+/menu_help
+ヘルプ
+
+/menu_mapping
+
+
+/menu_material
 マテリアル
-menu_material_shape
 
-menu_model
+/menu_material_shape
+
+
+/menu_model
 モデル
-menu_model_appearance
 
-menu_model_creation
+/menu_model_appearance
+
+
+/menu_model_creation
 作成
-menu_model_deformation
 
-menu_model_edit
+/menu_model_deformation
 
-menu_model_export
+
+/menu_model_edit
+
+
+/menu_model_export
 エクスポート
-menu_model_file
+
+/menu_model_file
 ファイル
-menu_model_fx
+
+/menu_model_fx
 効果
-menu_model_geometry
 
-menu_model_import
+/menu_model_geometry
+
+
+/menu_model_import
 インポート
-menu_model_material
 
-menu_model_mode
+/menu_model_material
+
+
+/menu_model_mode
 編集モード
-menu_model_move
+
+/menu_model_move
 アニメーション
-menu_model_normals
+
+/menu_model_normals
 法線
-menu_model_platonic
 
-menu_model_selection
+/menu_model_platonic
+
+
+/menu_model_selection
 選択
-menu_model_skeleton
+
+/menu_model_skeleton
 骨格
-menu_model_skin
+
+/menu_model_skin
 表面
-menu_model_view
+
+/menu_model_view
 表示
-menu_model_viewstage
+
+/menu_model_viewstage
 表示　の　レベル
-menu_rightmouse
 
-menu_surface_header
+/menu_rightmouse
 
-menu_terrain_texture
 
-menu_tria_header
+/menu_surface_header
 
-menu_vertex2_header
 
-menu_vertex_header
+/menu_terrain_texture
 
-menu_world
+
+/menu_tria_header
+
+
+/menu_vertex2_header
+
+
+/menu_vertex_header
+
+
+/menu_world
 世界
-menu_world_creation
-作成
-menu_world_edit
 
-menu_world_export
+/menu_world_creation
 作成
-menu_world_file
+
+/menu_world_edit
+
+
+/menu_world_export
+作成
+
+/menu_world_file
 ファイル
-menu_world_help
+
+/menu_world_help
 ヘルプ
-menu_world_import
+
+/menu_world_import
 インポート
-menu_world_operation
 
-menu_world_selection
+/menu_world_operation
+
+
+/menu_world_selection
 選択
-menu_world_sign_add
 
-menu_world_sign_object
+/menu_world_sign_add
 
-menu_world_sign_terrain
 
-menu_world_view
+/menu_world_sign_object
+
+
+/menu_world_sign_terrain
+
+
+/menu_world_view
 表示
-mirror
+
+/mirror
 鏡
-mmat_transp_alpha_grid
 
-mmat_transp_function_grid
+/mmat_transp_alpha_grid
 
-mode_model_animation
 
-mode_model_edge
+/mmat_transp_function_grid
 
-mode_model_materials
 
-mode_model_mesh
+/mode_model_animation
 
-mode_model_skeleton
+
+/mode_model_edge
+
+
+/mode_model_materials
+
+
+/mode_model_mesh
+
+
+/mode_model_skeleton
 骨格
-mode_model_surface
 
-mode_model_texture_coord
+/mode_model_surface
 
-mode_model_triangle
 
-mode_model_vertex
+/mode_model_texture_coord
 
-mode_properties
+
+/mode_model_triangle
+
+
+/mode_model_vertex
+
+
+/mode_properties
 設定...
-model_dialog
 
-model_dialog_button_bar
+/model_dialog
 
-model_dialog_grp_physics
 
-model_dialog_grp_tensor
+/model_dialog_button_bar
 
-model_dialog_t_description
 
-model_dialog_t_mass
+/model_dialog_grp_physics
 
-model_dialog_t_maxitems
 
-model_dialog_t_name
+/model_dialog_grp_tensor
 
-model_dialog_t_num_lod
 
-model_dialog_t_scriptfile
+/model_dialog_t_description
 
-model_dialog_t_scriptvars
 
-model_dialog_tab_control
+/model_dialog_t_mass
+
+
+/model_dialog_t_maxitems
+
+
+/model_dialog_t_name
+
+
+/model_dialog_t_num_lod
+
+
+/model_dialog_t_scriptfile
+
+
+/model_dialog_t_scriptvars
+
+
+/model_dialog_tab_control
 level of detail\\material\\transparency\\physics
-model_inventary
 
-model_material_dialog
+/model_inventary
 
-model_material_dialog_grp_color
 
-model_material_dialog_grp_list
+/model_material_dialog
 
-model_material_dialog_grp_textures
 
-model_material_dialog_grp_transparency
+/model_material_dialog_grp_color
 
-model_material_selection_dialog
 
-model_new
+/model_material_dialog_grp_list
+
+
+/model_material_dialog_grp_textures
+
+
+/model_material_dialog_grp_transparency
+
+
+/model_material_selection_dialog
+
+
+/model_new
 新規
-model_open
-開く...
-move_allframes
 
-move_frame_dec
+/model_open
+開く...
+
+/move_allframes
+
+
+/move_frame_dec
 前へ
-move_frame_delete
+
+/move_frame_delete
 削除
-move_frame_inc
+
+/move_frame_inc
 次へ
-move_frame_insert
-貼り付け
-move_frame_interpolate
 
-move_frame_sign
+/move_frame_insert
+貼り付け
+
+/move_frame_interpolate
+
+
+/move_frame_sign
 フレーム
-move_reset
+
+/move_reset
 リセット
+
+/ms
 ms
-ms
-msd_table_2
 
-mu
+/msd_table_2
 
-name
 
-nb_complexity
+/mu
 
-nb_x
 
-nb_y
+/name
 
-nbd_grid_ball
 
-nbd_grid_sphere
+/nb_complexity
 
-nc_x
 
-nc_y
+/nb_x
 
-nc_z
 
-ncdt_slides
+/nb_y
 
-ncy_edges
 
-ncy_rings
+/nbd_grid_ball
 
-nearify
 
-new
+/nbd_grid_sphere
+
+
+/nc_x
+
+
+/nc_y
+
+
+/nc_z
+
+
+/ncdt_slides
+
+
+/ncy_edges
+
+
+/ncy_rings
+
+
+/nearify
+
+
+/new
 新規
-new_animation_buttonbar
 
-new_animation_dialog
+/new_animation_buttonbar
+
+
+/new_animation_dialog
 新しい　アニメーション
-new_animation_index
 
-new_animation_t_index
+/new_animation_index
+
+
+/new_animation_t_index
 索引
-new_animation_t_type
+
+/new_animation_t_type
 種類
-new_animation_type
+
+/new_animation_type
 ベクトル\\骨格
-new_ball
+
+/new_ball
 玉
-new_ball_dialog
+
+/new_ball_dialog
 新しい　玉
-new_ball_dialog_t_comp
+
+/new_ball_dialog_t_comp
 複雑さ
-new_ball_dialog_t_x
 
-new_ball_dialog_t_y
+/new_ball_dialog_t_x
 
-new_cube
+
+/new_ball_dialog_t_y
+
+
+/new_cube
 正六面体
-new_cube_dialog
 
-new_cylinder
+/new_cube_dialog
+
+
+/new_cylinder
 円柱...
-new_cylinder_dialog
 
-new_cylinder_dialog_t_edges
+/new_cylinder_dialog
 
-new_cylinder_dialog_t_rings
 
-new_cylindersnake
+/new_cylinder_dialog_t_edges
 
-new_dodecahedron
 
-new_extract
+/new_cylinder_dialog_t_rings
 
-new_frame
 
-new_icosahedron
+/new_cylindersnake
 
-new_octahedron
 
-new_outline
+/new_dodecahedron
 
-new_plane
+
+/new_extract
+
+
+/new_frame
+
+
+/new_icosahedron
+
+
+/new_octahedron
+
+
+/new_outline
+
+
+/new_plane
 平面
-new_plane_dialog
 
-new_plane_dialog_t_x
+/new_plane_dialog
 
-new_plane_dialog_t_y
 
-new_point
+/new_plane_dialog_t_x
 
-new_teapot
 
-new_teapot_dialog
+/new_plane_dialog_t_y
 
-new_teapot_dialog_t_samples
 
-new_terrain_buttonbar
+/new_point
 
-new_terrain_dialog
 
-new_tetrahedron
+/new_teapot
 
-new_torus
 
-new_torus_dialog
+/new_teapot_dialog
 
-new_torus_dialog_slides
 
-new_torus_dialog_t_edges
+/new_teapot_dialog_t_samples
 
-new_torus_dialog_t_rings
 
-new_tria
+/new_terrain_buttonbar
+
+
+/new_terrain_dialog
+
+
+/new_tetrahedron
+
+
+/new_torus
+
+
+/new_torus_dialog
+
+
+/new_torus_dialog_slides
+
+
+/new_torus_dialog_t_edges
+
+
+/new_torus_dialog_t_rings
+
+
+/new_tria
 新しい　三角形
-normal_this_angular
 
-normal_this_hard
+/normal_this_angular
 
-normal_this_smooth
 
-np_num_x
+/normal_this_hard
 
-np_num_y
 
-nt_edges
+/normal_this_smooth
 
-nt_rings
 
-nterrain_dialog_t_raster
+/np_num_x
 
-nterrain_dialog_t_stripes
 
-nterrain_dialog_t_terrainsize
+/np_num_y
 
-ntp_samples
 
-num
+/nt_edges
 
-num_items
 
-num_lod
+/nt_rings
 
-num_x
 
-num_z
+/nterrain_dialog_t_raster
 
-odt_max_scriptvars
 
-ok
+/nterrain_dialog_t_stripes
+
+
+/nterrain_dialog_t_terrainsize
+
+
+/ntp_samples
+
+
+/num
+
+
+/num_items
+
+
+/num_lod
+
+
+/num_x
+
+
+/num_z
+
+
+/odt_max_scriptvars
+
+
+/ok
 OK
-open
+
+/open
 開く...
-opt_view
 
-own_figure
+/opt_view
 
-parameter
 
-paste
+/own_figure
+
+
+/parameter
+
+
+/paste
 貼り付け
-pattern_x
 
-pattern_z
+/pattern_x
 
-percent
+
+/pattern_z
+
+
+/percent
 %
-ph_active
 
-ph_passive
+/ph_active
 
-photons
 
-physics_enabled
+/ph_passive
 
-preview
 
-progress_cancelable_dialog
+/photons
 
-progress_dialog
 
-property_list
+/physics_enabled
+
+
+/preview
+
+
+/progress_cancelable_dialog
+
+
+/progress_dialog
+
+
+/property_list
 type\\index\\name
-quality_factor
 
-quality_slider
+/quality_factor
 
-rand_id_804117
 
-rc_dialog
+/quality_slider
 
-rcjump
 
-rcroll
+/rand_id_804117
 
-rcsliding
 
-rcstatic
+/rc_dialog
 
-redo
+
+/rcjump
+
+
+/rcroll
+
+
+/rcsliding
+
+
+/rcstatic
+
+
+/redo
 やり直す
-reflection_density
 
-reflection_mode:cube_dynamic
+/reflection_density
 
-reflection_mode:cube_static
 
-reflection_mode:none
+/reflection_mode:cube_dynamic
 
-reflection_size
 
-reflection_textures
+/reflection_mode:cube_static
+
+
+/reflection_mode:none
+
+
+/reflection_size
+
+
+/reflection_textures
 face\\texture
-remove_script
 
-remove_skybox
+/remove_script
+
+
+/remove_skybox
 削除
-rename
 
-resolution
+/rename
 
-rotate
+
+/resolution
+
+
+/rotate
 回転
-rotation_dialog
 
-rudimentary_configuration
+/rotation_dialog
 
-save
+
+/rudimentary_configuration
+
+
+/save
 保存
-save_as
+
+/save_as
 別名で保存...
-scale
+
+/scale
 倍率
-scale_2d
+
+/scale_2d
 倍率 2D
-scaling_dialog
 
-script
+/scaling_dialog
 
-script_list
 
-script_vars
+/script
+
+
+/script_list
+
+
+/script_vars
 #\\名前\\種類\\値
-scriptvar_dialog
 
-scriptvar_t_index
+/scriptvar_dialog
+
+
+/scriptvar_t_index
 索引
-scriptvar_t_value
+
+/scriptvar_t_value
 値
-select_all
 
-select_cw
+/select_all
 
-select_none
 
-selection_properties
+/select_cw
+
+
+/select_none
+
+
+/selection_properties
 設定...
-send_bug_report
 
-sep_vertical
+/send_bug_report
 
-settings
 
-shader_file
+/sep_vertical
 
-shininess
 
-show_fx
+/settings
+
+
+/shader_file
+
+
+/shininess
+
+
+/show_fx
 エフェクト
-show_objects
+
+/show_objects
 オブジェクト
-show_points
+
+/show_points
 ベクトル
-show_terrains
+
+/show_terrains
 陸
-sim_start
 
-sim_stop
+/sim_start
 
-skeleton_add_model
 
-skeleton_edit_bone
+/sim_stop
 
-skeleton_import
+
+/skeleton_add_model
+
+
+/skeleton_edit_bone
+
+
+/skeleton_import
 インポート...
-skeleton_link
 
-skeleton_new_point
+/skeleton_link
+
+
+/skeleton_new_point
 新しい　ベクトル
-skeleton_no_model
+
+/skeleton_no_model
 なし　モデル
-skeleton_selection_sign
+
+/skeleton_selection_sign
 選択
-skeleton_unlink
 
-skybox
+/skeleton_unlink
+
+
+/skybox
 #\\モデル　('SkyBox')
-sound_list
 
-specular
+/sound_list
+
+
+/specular
 反射光
-speed
 
-stretch_x
+/speed
 
-stretch_z
 
-subdivide_surfaces
+/stretch_x
 
-sun_ang_from_camera
 
-sun_enabled
+/stretch_z
 
-t_animationfpsconst
 
-t_animationfpsfactor
+/subdivide_surfaces
 
-t_dummy
 
-t_frame
+/sun_ang_from_camera
 
-t_list
 
-t_name
+/sun_enabled
 
-t_properties
 
-t_simulate
+/t_animationfpsconst
 
-tensor
 
-terrain_create
+/t_animationfpsfactor
+
+
+/t_dummy
+
+
+/t_frame
+
+
+/t_list
+
+
+/t_name
+
+
+/t_properties
+
+
+/t_simulate
+
+
+/tensor
+
+
+/terrain_create
 新しい　陸...
-terrain_dialog
 
-terrain_dialog_grp_apply
+/terrain_dialog
 
-terrain_dialog_t_filename
 
-terrain_dialog_t_filter
+/terrain_dialog_grp_apply
 
-terrain_dialog_t_heightmap
 
-terrain_dialog_t_material
+/terrain_dialog_t_filename
 
-terrain_dialog_t_raster
 
-terrain_dialog_t_stripes
+/terrain_dialog_t_filter
 
-terrain_dialog_tab_control
+
+/terrain_dialog_t_heightmap
+
+
+/terrain_dialog_t_material
+
+
+/terrain_dialog_t_raster
+
+
+/terrain_dialog_t_stripes
+
+
+/terrain_dialog_tab_control
 properties\\textures\\material\\import
-terrain_heightmap
 
-terrain_heightmap_dialog
+/terrain_heightmap
 
-terrain_hm_dialog_grp_heightmap
 
-terrain_hm_dialog_t_gray
+/terrain_heightmap_dialog
 
-terrain_hm_dialog_t_op
 
-terrain_hm_dialog_t_stretch
+/terrain_hm_dialog_grp_heightmap
 
-terrain_load
 
-terrain_rescale
+/terrain_hm_dialog_t_gray
 
-terrain_save_as
+
+/terrain_hm_dialog_t_op
+
+
+/terrain_hm_dialog_t_stretch
+
+
+/terrain_load
+
+
+/terrain_rescale
+
+
+/terrain_save_as
 保存...
-terrain_show_texture_final
 
-terrain_show_texture_level0
+/terrain_show_texture_final
 
-terrain_show_texture_level1
 
-terrain_show_texture_level2
+/terrain_show_texture_level0
 
-terrain_show_texture_level3
 
-terrain_show_texture_level4
+/terrain_show_texture_level1
 
-terrain_show_texture_level5
 
-terrain_show_texture_level6
+/terrain_show_texture_level2
 
-terrain_show_texture_level7
 
-terrain_x
+/terrain_show_texture_level3
 
-terrain_z
 
-text_from_bg
+/terrain_show_texture_level4
 
-texture
+
+/terrain_show_texture_level5
+
+
+/terrain_show_texture_level6
+
+
+/terrain_show_texture_level7
+
+
+/terrain_x
+
+
+/terrain_z
+
+
+/text_from_bg
+
+
+/texture
 テクスチャ...
-texture_choose
+
+/texture_choose
 検索...
-texture_delete
+
+/texture_delete
 削除
-texture_empty
 
-texture_map_complete
+/texture_empty
 
-texture_menu_sign
 
-textures
+/texture_map_complete
 
-transparency_mode:color_key
 
-transparency_mode:factor
+/texture_menu_sign
 
-transparency_mode:function
 
-transparency_mode:material
+/textures
 
-transparency_mode:none
 
-triangulate_selection
+/transparency_mode:color_key
 
-undo
+
+/transparency_mode:factor
+
+
+/transparency_mode:function
+
+
+/transparency_mode:material
+
+
+/transparency_mode:none
+
+
+/triangulate_selection
+
+
+/undo
 元に戻す
-untriangulate_selection
 
-view_back
+/untriangulate_selection
 
-view_bottom
+
+/view_back
+
+
+/view_bottom
 下 (y)
-view_front
 
-view_isometric
+/view_front
 
-view_left
+
+/view_isometric
+
+
+/view_left
 左 (x)
-view_menu_sign
+
+/view_menu_sign
 表示
-view_perspective
 
-view_pop
+/view_perspective
 
-view_push
 
-view_right
+/view_pop
+
+
+/view_push
+
+
+/view_right
 右 (-x)
-view_top
+
+/view_top
 上 (-y)
-volume_and
 
-volume_subtract
+/volume_and
 
-welcome_dialog
 
-welcome_list
+/volume_subtract
+
+
+/welcome_dialog
+
+
+/welcome_list
 !icons
-what_the_fuck
 
-whole_window
+/what_the_fuck
 
-width
 
-wire
+/whole_window
 
-word_dialog_fog_exp_grid
 
-word_dialog_fog_lin_grid
+/width
 
-world_camera_dialog
 
-world_dialog
+/wire
 
-world_dialog_buttonbar
 
-world_dialog_grp_ambient
+/word_dialog_fog_exp_grid
 
-world_dialog_grp_bg_color
 
-world_dialog_grp_gravitation
+/word_dialog_fog_lin_grid
+
+
+/world_camera_dialog
+
+
+/world_dialog
+
+
+/world_dialog_buttonbar
+
+
+/world_dialog_grp_ambient
+
+
+/world_dialog_grp_bg_color
+
+
+/world_dialog_grp_gravitation
 引力
-world_dialog_grp_skybox
 
-world_dialog_grp_sun
+/world_dialog_grp_skybox
 
-world_dialog_t_fog_distance
 
-world_dialog_t_fog_end
+/world_dialog_grp_sun
 
-world_dialog_t_fog_start
 
-world_dialog_t_max_script_vars
+/world_dialog_t_fog_distance
 
-world_dialog_t_sun_ang_x
 
-world_dialog_t_sun_ang_y
+/world_dialog_t_fog_end
 
-world_dialog_tab_control
+
+/world_dialog_t_fog_start
+
+
+/world_dialog_t_max_script_vars
+
+
+/world_dialog_t_sun_ang_x
+
+
+/world_dialog_t_sun_ang_y
+
+
+/world_dialog_tab_control
 common\\background\\script variables
-world_new
+
+/world_new
 新規
-world_new_object_dialog
 
-world_object_dialog
+/world_new_object_dialog
 
-world_object_dialog_grp_ang
+
+/world_object_dialog
+
+
+/world_object_dialog_grp_ang
 角
-world_object_dialog_grp_pos
 
-world_object_dialog_t_name
+/world_object_dialog_grp_pos
+
+
+/world_object_dialog_t_name
 名前:
-world_object_dialog_t_type
 
-world_open
+/world_object_dialog_t_type
+
+
+/world_open
 開く...
-world_ps_dialog
 
-world_scriptfunc_choice_dialog
+/world_ps_dialog
 
-world_scriptfunc_dialog
 
-world_scriptfunc_dialog_t_called_by
+/world_scriptfunc_choice_dialog
 
-world_scriptfunc_dialog_t_delay
 
-world_scriptfunc_dialog_t_delaydesc
+/world_scriptfunc_dialog
 
-world_scriptfunc_dialog_t_name
 
-x
+/world_scriptfunc_dialog_t_called_by
+
+
+/world_scriptfunc_dialog_t_delay
+
+
+/world_scriptfunc_dialog_t_delaydesc
+
+
+/world_scriptfunc_dialog_t_name
+
+
+/x
 X
-x1
 
-x2
+/x1
 
-y
+
+/x2
+
+
+/y
 Y
-y1
 
-y2
+/y1
 
-z
+
+/y2
+
+
+/z
 Z
-zzz_enableselection
 
-zzz_invertselection
+/zzz_enableselection
 
-zzz_setbgimage
+
+/zzz_invertselection
+
+
+/zzz_setbgimage
+
+
+ad_dialog/ad_dialog
+
+
+ad_dialog/ad_edit
+
+
+ad_dialog/ad_export_game
+
+
+ad_dialog/ad_rudimentary_configuration
+
+
+ad_dialog/ad_tab_control
+
+
+ad_dialog/adt_dest
+
+
+ad_dialog/adt_file
+
+
+ad_dialog/adt_source
+
+
+ad_dialog/delete
+削除
+
+ad_dialog/file_list_all
+
+
+ad_dialog/file_list_cur
+
+
+ad_dialog/file_list_detail_dest
+
+
+ad_dialog/file_list_detail_source
+
+
+ad_dialog/file_list_missing
+
+
+ad_dialog/file_list_super
+
+
+ad_dialog/rename
+
+
+animation_dialog/ani_dt_sim_param
+
+
+animation_dialog/ani_dt_sim_speed
+
+
+animation_dialog/animation_copy
+
+
+animation_dialog/animation_delete
+削除
+
+animation_dialog/animation_dialog
+
+
+animation_dialog/animation_list
+#\\type\\num frames\\name
+
+animation_dialog/animation_new
+新規
+
+animation_dialog/delete_frame
+
+
+animation_dialog/fps_const
+
+
+animation_dialog/fps_factor
+
+
+animation_dialog/new_frame
+
+
+animation_dialog/parameter
+
+
+animation_dialog/percent
+%
+
+animation_dialog/sim_start
+
+
+animation_dialog/sim_stop
+
+
+animation_dialog/speed
+
+
+animation_dialog/t_animationfpsconst
+
+
+animation_dialog/t_animationfpsfactor
+
+
+animation_dialog/t_frame
+
+
+animation_dialog/t_list
+
+
+animation_dialog/t_name
+
+
+animation_dialog/t_properties
+
+
+animation_dialog/t_simulate
+
+
+campoint_dialog/campoint__grp_ang
+
+
+campoint_dialog/campoint__grp_pos
+
+
+campoint_dialog/campoint__grp_vel
+
+
+campoint_dialog/campoint_dialog
+
+
+campoint_dialog/campoint_t_delay
+
+
+campoint_dialog/campoint_t_type
+
+
+campoint_dialog/campoint_type
+PositionSet\\PositionAdd\\AngleSet\\Position & Angle Set\\Flight\\FlightRelative
+
+campoint_dialog/cancel
+キャンセル
+
+campoint_dialog/degree
+°
+
+campoint_dialog/ms
+ms
+
+campoint_dialog/ok
+OK
+
+campoint_dialog/x
+X
+
+campoint_dialog/y
+Y
+
+campoint_dialog/z
+Z
+
+deformation_cylinder_dialog/axis
+
+
+deformation_cylinder_dialog/def_cyl_t_axis
+
+
+deformation_cylinder_dialog/deformation_cylinder_dialog
+
+
+deformation_cylinder_dialog/ok
+OK
+
+deformation_function_dialog/deformation_function_dialog
+
+
+deformation_function_dialog/ok
+OK
+
+deformation_function_dialog/preview
+
+
+easify_dialog/cancel
+キャンセル
+
+easify_dialog/easify_dialog
+
+
+easify_dialog/eat_estimate
+
+
+easify_dialog/eat_quality
+
+
+easify_dialog/ok
+OK
+
+easify_dialog/percent
+%
+
+easify_dialog/quality_factor
+
+
+editor_dialog/editor_dialog
+
+
+editor_dialog/editor_dialog_t_adress
+
+
+editor_dialog/editor_dialog_t_creator
+
+
+editor_dialog/editor_dialog_t_language
+
+
+editor_dialog/editor_dialog_t_version
+
+
+editor_dialog/editor_dialog_t_workingdirectory
+
+
+editor_dialog/editor_dialog_tab_control
+properties\\keys\\information
+
+editor_dialog/key_list
+!tree\\command\\keys
+
+editor_dialog/local_documentation
+
+
+editor_dialog/logo
+
+
+editor_dialog/look_for_updates
+
+
+font_dialog/factorx
+
+
+font_dialog/factory
+
+
+font_dialog/font_dialog
+
+
+font_dialog/font_dt_character
+
+
+font_dialog/font_dt_example
+
+
+font_dialog/font_dt_font
+
+
+font_dialog/font_dt_height
+
+
+font_dialog/font_dt_name
+
+
+font_dialog/font_dt_numglyphs
+
+
+font_dialog/font_dt_scalex
+
+
+font_dialog/font_dt_scaley
+
+
+font_dialog/font_dt_unknown
+
+
+font_dialog/font_dt_width
+
+
+font_dialog/font_dt_x1
+
+
+font_dialog/font_dt_x2
+
+
+font_dialog/font_dt_y1
+
+
+font_dialog/font_dt_y2
+
+
+font_dialog/height
+
+
+font_dialog/num
+
+
+font_dialog/width
+
+
+font_dialog/x1
+
+
+font_dialog/x2
+
+
+font_dialog/y1
+
+
+font_dialog/y2
+
+
+fx_dialog/ambient
+周辺光
+
+fx_dialog/cancel
+キャンセル
+
+fx_dialog/diffuse
+拡散光
+
+fx_dialog/formula
+Linear\\1/r^2
+
+fx_dialog/fx_dialog
+
+
+fx_dialog/fx_tab_control
+炎\\光源\\音\\力場
+
+fx_dialog/fxt_force_desc
+
+
+fx_dialog/fxt_force_formula
+
+
+fx_dialog/fxt_force_intensity
+
+
+fx_dialog/fxt_force_range
+
+
+fx_dialog/fxt_lightradius
+
+
+fx_dialog/fxt_scriptfile
+
+
+fx_dialog/fxt_sound_mono_advice
+
+
+fx_dialog/fxt_soundfile
+
+
+fx_dialog/fxt_soundrange
+
+
+fx_dialog/fxt_soundspeed
+
+
+fx_dialog/lu
+lu
+
+fx_dialog/luss
+lu/s^2
+
+fx_dialog/mat_di
+!alpha
+
+fx_dialog/ok
+OK
+
+fx_dialog/percent
+%
+
+fx_dialog/specular
+反射光
+
+ge_dialog/cancel
+キャンセル
+
+ge_dialog/export_type
+single files\\archive (compressed)\\archive (uncompressed)
+
+ge_dialog/ge_dialog
+
+
+ge_dialog/ged_group
+
+
+ge_dialog/ged_group_dest
+
+
+ge_dialog/ged_system
+linux\\windows 32
+
+ge_dialog/ged_t_export_type
+
+
+ge_dialog/ged_t_font
+
+
+ge_dialog/ged_t_material
+
+
+ge_dialog/ged_t_script
+
+
+ge_dialog/ged_t_second_world
+
+
+ge_dialog/ged_t_system
+
+
+ge_dialog/ged_t_world
+
+
+ge_dialog/ok
+OK
+
+key_dialog/cancel
+キャンセル
+
+key_dialog/key_dialog
+
+
+key_dialog/key_dialog_t_key
+
+
+key_dialog/ok
+OK
+
+lightmap_dialog/allow_sun
+
+
+lightmap_dialog/brightness
+
+
+lightmap_dialog/cancel
+キャンセル
+
+lightmap_dialog/exponent
+
+
+lightmap_dialog/lightmap_dialog
+
+
+lightmap_dialog/lightmap_list
+
+
+lightmap_dialog/lightmap_type
+
+
+lightmap_dialog/lmt_brightness
+
+
+lightmap_dialog/lmt_exponent
+
+
+lightmap_dialog/lmt_new_world
+
+
+lightmap_dialog/lmt_photons
+
+
+lightmap_dialog/lmt_spacial_resolution
+
+
+lightmap_dialog/lu
+lu
+
+lightmap_dialog/ok
+OK
+
+lightmap_dialog/photons
+
+
+lightmap_dialog/preview
+
+
+lightmap_dialog/resolution
+
+
+material_dialog/alpha_dest
+AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha
+
+material_dialog/alpha_factor
+
+
+material_dialog/alpha_source
+AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha
+
+material_dialog/alpha_z_buffer
+
+
+material_dialog/ambient
+周辺光
+
+material_dialog/diffuse
+拡散光
+
+material_dialog/emission
+発光
+
+material_dialog/mat_add_texture_level
+
+
+material_dialog/mat_delete_texture_level
+
+
+material_dialog/mat_empty_texture_level
+
+
+material_dialog/mat_shininess
+
+
+material_dialog/mat_textures
+
+
+material_dialog/material_dialog
+
+
+material_dialog/material_dialog_grp_color
+
+
+material_dialog/material_dialog_grp_friction
+
+
+material_dialog/material_dialog_grp_reflection
+
+
+material_dialog/material_dialog_grp_shader
+
+
+material_dialog/material_dialog_grp_textures
+
+
+material_dialog/material_dialog_grp_transparency
+
+
+material_dialog/material_dialog_t_refl_density
+
+
+material_dialog/material_dialog_t_trans_dest
+
+
+material_dialog/material_dialog_t_trans_source
+
+
+material_dialog/material_physics_dialog_t_rcjump
+
+
+material_dialog/material_physics_dialog_t_rcroll
+
+
+material_dialog/material_physics_dialog_t_rcsliding
+
+
+material_dialog/material_physics_dialog_t_rcstatic
+
+
+material_dialog/percent
+%
+
+material_dialog/rcjump
+
+
+material_dialog/rcroll
+
+
+material_dialog/rcsliding
+
+
+material_dialog/rcstatic
+
+
+material_dialog/reflection_density
+
+
+material_dialog/reflection_mode:cube_dynamic
+
+
+material_dialog/reflection_mode:cube_static
+
+
+material_dialog/reflection_mode:none
+
+
+material_dialog/reflection_size
+
+
+material_dialog/reflection_textures
+face\\texture
+
+material_dialog/shininess
+
+
+material_dialog/specular
+反射光
+
+material_dialog/transparency_mode:color_key
+
+
+material_dialog/transparency_mode:factor
+
+
+material_dialog/transparency_mode:function
+
+
+material_dialog/transparency_mode:none
+
+
+material_sound_dialog/cancel
+キャンセル
+
+material_sound_dialog/material_sound_dialog
+
+
+material_sound_dialog/ok
+OK
+
+material_sound_dialog/sound_list
+
+
+menu_administration/administrate
+
+
+menu_administration/exit
+終了
+
+menu_administration/export_game
+
+
+menu_administration/font_new
+新規
+
+menu_administration/font_open
+開く...
+
+menu_administration/help
+ヘルプ...
+
+menu_administration/material_new
+新規
+
+menu_administration/material_open
+開く...
+
+menu_administration/menu_administration_file
+
+
+menu_administration/menu_administration_game
+
+
+menu_administration/menu_font
+フォント
+
+menu_administration/menu_material
+マテリアル
+
+menu_administration/menu_model
+モデル
+
+menu_administration/menu_world
+世界
+
+menu_administration/menu_world_help
+ヘルプ
+
+menu_administration/model_new
+新規
+
+menu_administration/model_open
+開く...
+
+menu_administration/rudimentary_configuration
+
+
+menu_administration/send_bug_report
+
+
+menu_administration/settings
+
+
+menu_administration/what_the_fuck
+
+
+menu_administration/world_new
+新規
+
+menu_administration/world_open
+開く...
+
+menu_font/administrate
+
+
+menu_font/current_mode_font
+[フォント　の　モード]
+
+menu_font/execute_plugin
+
+
+menu_font/exit
+終了
+
+menu_font/font_new
+新規
+
+menu_font/font_open
+開く...
+
+menu_font/help
+ヘルプ...
+
+menu_font/import
+
+
+menu_font/material_new
+新規
+
+menu_font/material_open
+開く...
+
+menu_font/menu_file
+ファイル
+
+menu_font/menu_font
+フォント
+
+menu_font/menu_font_edit
+編集
+
+menu_font/menu_help
+ヘルプ
+
+menu_font/menu_material
+マテリアル
+
+menu_font/menu_model
+モデル
+
+menu_font/menu_world
+世界
+
+menu_font/model_new
+新規
+
+menu_font/model_open
+開く...
+
+menu_font/new
+新規
+
+menu_font/open
+開く...
+
+menu_font/save
+保存
+
+menu_font/save_as
+別名で保存...
+
+menu_font/send_bug_report
+
+
+menu_font/settings
+
+
+menu_font/texture
+テクスチャ...
+
+menu_font/what_the_fuck
+
+
+menu_font/world_new
+新規
+
+menu_font/world_open
+開く...
+
+menu_material/administrate
+
+
+menu_material/execute_plugin
+
+
+menu_material/exit
+終了
+
+menu_material/font_new
+新規
+
+menu_material/font_open
+開く...
+
+menu_material/grid
+グリッド
+
+menu_material/help
+ヘルプ...
+
+menu_material/light
+光
+
+menu_material/material_new
+新規
+
+menu_material/material_open
+開く...
+
+menu_material/material_shape_ball
+
+
+menu_material/material_shape_cube
+
+
+menu_material/material_shape_icosahedron
+
+
+menu_material/material_shape_smooth
+
+
+menu_material/material_shape_teapot
+
+
+menu_material/material_shape_torus
+
+
+menu_material/material_shape_torusknot
+
+
+menu_material/menu_file
+ファイル
+
+menu_material/menu_font
+フォント
+
+menu_material/menu_help
+ヘルプ
+
+menu_material/menu_material
+マテリアル
+
+menu_material/menu_material_shape
+
+
+menu_material/menu_model
+モデル
+
+menu_material/menu_world
+世界
+
+menu_material/menu_world_view
+表示
+
+menu_material/model_new
+新規
+
+menu_material/model_open
+開く...
+
+menu_material/new
+新規
+
+menu_material/open
+開く...
+
+menu_material/opt_view
+
+
+menu_material/save
+保存
+
+menu_material/save_as
+別名で保存...
+
+menu_material/send_bug_report
+
+
+menu_material/settings
+
+
+menu_material/what_the_fuck
+
+
+menu_material/whole_window
+
+
+menu_material/wire
+
+
+menu_material/world_new
+新規
+
+menu_material/world_open
+開く...
+
+menu_model/administrate
+
+
+menu_model/align_to_grid
+
+
+menu_model/automapping
+
+
+menu_model/autoweld_surfaces
+
+
+menu_model/bevel_edges
+
+
+menu_model/choose_material
+
+
+menu_model/connect
+
+
+menu_model/convert_to_triangles
+
+
+menu_model/copy
+コーピ
+
+menu_model/cut_out
+
+
+menu_model/deformation_brush
+
+
+menu_model/deformation_cylinder
+
+
+menu_model/deformation_function
+
+
+menu_model/delete
+削除
+
+menu_model/detail_0
+
+
+menu_model/detail_1
+
+
+menu_model/detail_2
+
+
+menu_model/detail_3
+
+
+menu_model/easify_skin
+
+
+menu_model/execute_plugin
+
+
+menu_model/exit
+終了
+
+menu_model/export_to_gamestudio
+
+
+menu_model/export_to_json
+
+
+menu_model/extrude_triangles
+
+
+menu_model/flatten_vertices
+
+
+menu_model/font_new
+新規
+
+menu_model/font_open
+開く...
+
+menu_model/fx_edit
+
+
+menu_model/fx_headline
+
+
+menu_model/fx_new_field
+
+
+menu_model/fx_new_light
+
+
+menu_model/fx_new_script
+
+
+menu_model/fx_new_sound
+
+
+menu_model/fx_none
+
+
+menu_model/grid
+グリッド
+
+menu_model/help
+ヘルプ...
+
+menu_model/import_from_3ds
+
+
+menu_model/import_from_gamestudio
+
+
+menu_model/import_from_json
+
+
+menu_model/import_from_lineage2
+
+
+menu_model/import_from_ply
+
+
+menu_model/invert_selection
+
+
+menu_model/invert_trias
+
+
+menu_model/just_selection
+
+
+menu_model/light
+光
+
+menu_model/material_new
+新規
+
+menu_model/material_open
+開く...
+
+menu_model/menu_all_header
+
+
+menu_model/menu_edge_header
+
+
+menu_model/menu_font
+フォント
+
+menu_model/menu_help
+ヘルプ
+
+menu_model/menu_mapping
+
+
+menu_model/menu_material
+マテリアル
+
+menu_model/menu_model
+モデル
+
+menu_model/menu_model_appearance
+
+
+menu_model/menu_model_creation
+作成
+
+menu_model/menu_model_deformation
+
+
+menu_model/menu_model_edit
+
+
+menu_model/menu_model_export
+エクスポート
+
+menu_model/menu_model_file
+ファイル
+
+menu_model/menu_model_fx
+効果
+
+menu_model/menu_model_geometry
+
+
+menu_model/menu_model_import
+インポート
+
+menu_model/menu_model_material
+
+
+menu_model/menu_model_mode
+編集モード
+
+menu_model/menu_model_normals
+法線
+
+menu_model/menu_model_platonic
+
+
+menu_model/menu_model_selection
+選択
+
+menu_model/menu_model_skin
+表面
+
+menu_model/menu_model_view
+表示
+
+menu_model/menu_model_viewstage
+表示　の　レベル
+
+menu_model/menu_rightmouse
+
+
+menu_model/menu_surface_header
+
+
+menu_model/menu_tria_header
+
+
+menu_model/menu_vertex2_header
+
+
+menu_model/menu_vertex_header
+
+
+menu_model/menu_world
+世界
+
+menu_model/mirror
+鏡
+
+menu_model/mode_model_animation
+
+
+menu_model/mode_model_edge
+
+
+menu_model/mode_model_materials
+
+
+menu_model/mode_model_mesh
+
+
+menu_model/mode_model_skeleton
+骨格
+
+menu_model/mode_model_surface
+
+
+menu_model/mode_model_texture_coord
+
+
+menu_model/mode_model_triangle
+
+
+menu_model/mode_model_vertex
+
+
+menu_model/mode_properties
+設定...
+
+menu_model/model_new
+新規
+
+menu_model/model_open
+開く...
+
+menu_model/nearify
+
+
+menu_model/new
+新規
+
+menu_model/new_ball
+玉
+
+menu_model/new_cube
+正六面体
+
+menu_model/new_cylinder
+円柱...
+
+menu_model/new_cylindersnake
+
+
+menu_model/new_dodecahedron
+
+
+menu_model/new_extract
+
+
+menu_model/new_icosahedron
+
+
+menu_model/new_octahedron
+
+
+menu_model/new_outline
+
+
+menu_model/new_plane
+平面
+
+menu_model/new_point
+
+
+menu_model/new_teapot
+
+
+menu_model/new_tetrahedron
+
+
+menu_model/new_torus
+
+
+menu_model/new_tria
+新しい　三角形
+
+menu_model/normal_this_angular
+
+
+menu_model/normal_this_hard
+
+
+menu_model/normal_this_smooth
+
+
+menu_model/open
+開く...
+
+menu_model/opt_view
+
+
+menu_model/paste
+貼り付け
+
+menu_model/redo
+やり直す
+
+menu_model/rotate
+回転
+
+menu_model/save
+保存
+
+menu_model/save_as
+別名で保存...
+
+menu_model/scale
+倍率
+
+menu_model/scale_2d
+倍率 2D
+
+menu_model/select_all
+
+
+menu_model/select_cw
+
+
+menu_model/select_none
+
+
+menu_model/send_bug_report
+
+
+menu_model/settings
+
+
+menu_model/subdivide_surfaces
+
+
+menu_model/text_from_bg
+
+
+menu_model/triangulate_selection
+
+
+menu_model/undo
+元に戻す
+
+menu_model/untriangulate_selection
+
+
+menu_model/view_pop
+
+
+menu_model/view_push
+
+
+menu_model/volume_and
+
+
+menu_model/volume_subtract
+
+
+menu_model/what_the_fuck
+
+
+menu_model/whole_window
+
+
+menu_model/wire
+
+
+menu_model/world_new
+新規
+
+menu_model/world_open
+開く...
+
+menu_model_texture/texture_choose
+検索...
+
+menu_model_texture/texture_delete
+削除
+
+menu_model_texture/texture_empty
+
+
+menu_model_texture/texture_menu_sign
+
+
+menu_move/administrate
+
+
+menu_move/copy
+コーピ
+
+menu_move/detail_0
+
+
+menu_move/detail_1
+
+
+menu_move/detail_2
+
+
+menu_move/detail_3
+
+
+menu_move/execute_plugin
+
+
+menu_move/exit
+終了
+
+menu_move/export_to_gamestudio
+
+
+menu_move/export_to_json
+
+
+menu_move/font_new
+新規
+
+menu_move/font_open
+開く...
+
+menu_move/grid
+グリッド
+
+menu_move/help
+ヘルプ...
+
+menu_move/import_from_3ds
+
+
+menu_move/import_from_gamestudio
+
+
+menu_move/import_from_json
+
+
+menu_move/import_from_lineage2
+
+
+menu_move/invert_selection
+
+
+menu_move/light
+光
+
+menu_move/material_new
+新規
+
+menu_move/material_open
+開く...
+
+menu_move/menu_file
+ファイル
+
+menu_move/menu_font
+フォント
+
+menu_move/menu_help
+ヘルプ
+
+menu_move/menu_material
+マテリアル
+
+menu_move/menu_model
+モデル
+
+menu_move/menu_model_edit
+
+
+menu_move/menu_model_export
+エクスポート
+
+menu_move/menu_model_import
+インポート
+
+menu_move/menu_model_mode
+編集モード
+
+menu_move/menu_model_move
+アニメーション
+
+menu_move/menu_model_selection
+選択
+
+menu_move/menu_model_skin
+表面
+
+menu_move/menu_model_view
+表示
+
+menu_move/menu_model_viewstage
+表示　の　レベル
+
+menu_move/menu_world
+世界
+
+menu_move/mode_model_animation
+
+
+menu_move/mode_model_edge
+
+
+menu_move/mode_model_mesh
+
+
+menu_move/mode_model_skeleton
+骨格
+
+menu_move/mode_model_surface
+
+
+menu_move/mode_model_texture_coord
+
+
+menu_move/mode_model_triangle
+
+
+menu_move/mode_model_vertex
+
+
+menu_move/mode_properties
+設定...
+
+menu_move/model_new
+新規
+
+menu_move/model_open
+開く...
+
+menu_move/move_allframes
+
+
+menu_move/move_frame_dec
+前へ
+
+menu_move/move_frame_delete
+削除
+
+menu_move/move_frame_inc
+次へ
+
+menu_move/move_frame_insert
+貼り付け
+
+menu_move/move_frame_interpolate
+
+
+menu_move/move_frame_sign
+フレーム
+
+menu_move/move_reset
+リセット
+
+menu_move/new
+新規
+
+menu_move/open
+開く...
+
+menu_move/opt_view
+
+
+menu_move/paste
+貼り付け
+
+menu_move/redo
+やり直す
+
+menu_move/save
+保存
+
+menu_move/save_as
+別名で保存...
+
+menu_move/select_all
+
+
+menu_move/select_none
+
+
+menu_move/send_bug_report
+
+
+menu_move/settings
+
+
+menu_move/undo
+元に戻す
+
+menu_move/view_pop
+
+
+menu_move/view_push
+
+
+menu_move/what_the_fuck
+
+
+menu_move/whole_window
+
+
+menu_move/wire
+
+
+menu_move/world_new
+新規
+
+menu_move/world_open
+開く...
+
+menu_nomode/administrate
+
+
+menu_nomode/exit
+終了
+
+menu_nomode/font_new
+新規
+
+menu_nomode/font_open
+開く...
+
+menu_nomode/help
+ヘルプ...
+
+menu_nomode/material_new
+新規
+
+menu_nomode/material_open
+開く...
+
+menu_nomode/menu_file
+ファイル
+
+menu_nomode/menu_font
+フォント
+
+menu_nomode/menu_help
+ヘルプ
+
+menu_nomode/menu_material
+マテリアル
+
+menu_nomode/menu_model
+モデル
+
+menu_nomode/menu_world
+世界
+
+menu_nomode/model_new
+新規
+
+menu_nomode/model_open
+開く...
+
+menu_nomode/send_bug_report
+
+
+menu_nomode/settings
+
+
+menu_nomode/what_the_fuck
+
+
+menu_nomode/world_new
+新規
+
+menu_nomode/world_open
+開く...
+
+menu_skeleton/administrate
+
+
+menu_skeleton/current_mode_model_skeleton
+[モデル　の　モード (骨格)]
+
+menu_skeleton/delete
+削除
+
+menu_skeleton/detail_0
+
+
+menu_skeleton/detail_1
+
+
+menu_skeleton/detail_2
+
+
+menu_skeleton/detail_3
+
+
+menu_skeleton/execute_plugin
+
+
+menu_skeleton/exit
+終了
+
+menu_skeleton/export_to_gamestudio
+
+
+menu_skeleton/export_to_json
+
+
+menu_skeleton/font_new
+新規
+
+menu_skeleton/font_open
+開く...
+
+menu_skeleton/grid
+グリッド
+
+menu_skeleton/help
+ヘルプ...
+
+menu_skeleton/import_from_3ds
+
+
+menu_skeleton/import_from_gamestudio
+
+
+menu_skeleton/import_from_json
+
+
+menu_skeleton/import_from_lineage2
+
+
+menu_skeleton/import_from_ply
+
+
+menu_skeleton/light
+光
+
+menu_skeleton/material_new
+新規
+
+menu_skeleton/material_open
+開く...
+
+menu_skeleton/menu_file
+ファイル
+
+menu_skeleton/menu_font
+フォント
+
+menu_skeleton/menu_help
+ヘルプ
+
+menu_skeleton/menu_material
+マテリアル
+
+menu_skeleton/menu_model
+モデル
+
+menu_skeleton/menu_model_export
+エクスポート
+
+menu_skeleton/menu_model_import
+インポート
+
+menu_skeleton/menu_model_mode
+編集モード
+
+menu_skeleton/menu_model_skeleton
+骨格
+
+menu_skeleton/menu_model_skin
+表面
+
+menu_skeleton/menu_model_view
+表示
+
+menu_skeleton/menu_model_viewstage
+表示　の　レベル
+
+menu_skeleton/menu_world
+世界
+
+menu_skeleton/mode_model_animation
+
+
+menu_skeleton/mode_model_edge
+
+
+menu_skeleton/mode_model_mesh
+
+
+menu_skeleton/mode_model_skeleton
+骨格
+
+menu_skeleton/mode_model_surface
+
+
+menu_skeleton/mode_model_texture_coord
+
+
+menu_skeleton/mode_model_triangle
+
+
+menu_skeleton/mode_model_vertex
+
+
+menu_skeleton/mode_properties
+設定...
+
+menu_skeleton/model_new
+新規
+
+menu_skeleton/model_open
+開く...
+
+menu_skeleton/new
+新規
+
+menu_skeleton/open
+開く...
+
+menu_skeleton/opt_view
+
+
+menu_skeleton/save
+保存
+
+menu_skeleton/save_as
+別名で保存...
+
+menu_skeleton/send_bug_report
+
+
+menu_skeleton/settings
+
+
+menu_skeleton/skeleton_add_model
+
+
+menu_skeleton/skeleton_edit_bone
+
+
+menu_skeleton/skeleton_import
+インポート...
+
+menu_skeleton/skeleton_link
+
+
+menu_skeleton/skeleton_new_point
+新しい　ベクトル
+
+menu_skeleton/skeleton_no_model
+なし　モデル
+
+menu_skeleton/skeleton_selection_sign
+選択
+
+menu_skeleton/skeleton_unlink
+
+
+menu_skeleton/view_pop
+
+
+menu_skeleton/view_push
+
+
+menu_skeleton/what_the_fuck
+
+
+menu_skeleton/whole_window
+
+
+menu_skeleton/wire
+
+
+menu_skeleton/world_new
+新規
+
+menu_skeleton/world_open
+開く...
+
+menu_view/view_back
+
+
+menu_view/view_bottom
+下 (y)
+
+menu_view/view_front
+
+
+menu_view/view_isometric
+
+
+menu_view/view_left
+左 (x)
+
+menu_view/view_menu_sign
+表示
+
+menu_view/view_perspective
+
+
+menu_view/view_right
+右 (-x)
+
+menu_view/view_top
+上 (-y)
+
+menu_world/administrate
+
+
+menu_world/camscript_create
+
+
+menu_world/camscript_load
+
+
+menu_world/copy
+コーピ
+
+menu_world/create_lightmap
+
+
+menu_world/create_objects
+オブジェクト...
+
+menu_world/delete
+削除
+
+menu_world/edit_terrain_selectable
+
+
+menu_world/edit_terrain_vertices
+
+
+menu_world/execute_plugin
+
+
+menu_world/exit
+終了
+
+menu_world/export_group
+
+
+menu_world/export_world
+
+
+menu_world/font_new
+新規
+
+menu_world/font_open
+開く...
+
+menu_world/grid
+グリッド
+
+menu_world/height_to_terrain
+
+
+menu_world/help
+ヘルプ...
+
+menu_world/import_group
+
+
+menu_world/import_world_properties
+
+
+menu_world/invert_selection
+
+
+menu_world/light
+光
+
+menu_world/material_new
+新規
+
+menu_world/material_open
+開く...
+
+menu_world/menu_font
+フォント
+
+menu_world/menu_material
+マテリアル
+
+menu_world/menu_model
+モデル
+
+menu_world/menu_model_viewstage
+表示　の　レベル
+
+menu_world/menu_terrain_texture
+
+
+menu_world/menu_world
+世界
+
+menu_world/menu_world_creation
+作成
+
+menu_world/menu_world_edit
+
+
+menu_world/menu_world_export
+作成
+
+menu_world/menu_world_file
+ファイル
+
+menu_world/menu_world_help
+ヘルプ
+
+menu_world/menu_world_import
+インポート
+
+menu_world/menu_world_operation
+
+
+menu_world/menu_world_selection
+選択
+
+menu_world/menu_world_sign_add
+
+
+menu_world/menu_world_sign_object
+
+
+menu_world/menu_world_sign_terrain
+
+
+menu_world/menu_world_view
+表示
+
+menu_world/model_new
+新規
+
+menu_world/model_open
+開く...
+
+menu_world/new
+新規
+
+menu_world/open
+開く...
+
+menu_world/opt_view
+
+
+menu_world/own_figure
+
+
+menu_world/paste
+貼り付け
+
+menu_world/redo
+やり直す
+
+menu_world/save
+保存
+
+menu_world/save_as
+別名で保存...
+
+menu_world/select_all
+
+
+menu_world/select_none
+
+
+menu_world/selection_properties
+設定...
+
+menu_world/send_bug_report
+
+
+menu_world/settings
+
+
+menu_world/show_fx
+エフェクト
+
+menu_world/show_objects
+オブジェクト
+
+menu_world/show_points
+ベクトル
+
+menu_world/show_terrains
+陸
+
+menu_world/terrain_create
+新しい　陸...
+
+menu_world/terrain_heightmap
+
+
+menu_world/terrain_load
+
+
+menu_world/terrain_rescale
+
+
+menu_world/terrain_show_texture_final
+
+
+menu_world/terrain_show_texture_level0
+
+
+menu_world/terrain_show_texture_level1
+
+
+menu_world/terrain_show_texture_level2
+
+
+menu_world/terrain_show_texture_level3
+
+
+menu_world/terrain_show_texture_level4
+
+
+menu_world/terrain_show_texture_level5
+
+
+menu_world/terrain_show_texture_level6
+
+
+menu_world/terrain_show_texture_level7
+
+
+menu_world/undo
+元に戻す
+
+menu_world/view_pop
+
+
+menu_world/view_push
+
+
+menu_world/what_the_fuck
+
+
+menu_world/whole_window
+
+
+menu_world/wire
+
+
+menu_world/world_new
+新規
+
+menu_world/world_open
+開く...
+
+model_dialog/cancel
+キャンセル
+
+model_dialog/delete_item
+
+
+model_dialog/generate_dists_auto
+
+
+model_dialog/generate_skin_auto
+
+
+model_dialog/generate_tensor_auto
+
+
+model_dialog/lod
+
+
+model_dialog/mass
+
+
+model_dialog/max_script_vars
+
+
+model_dialog/model_dialog
+
+
+model_dialog/model_dialog_grp_physics
+
+
+model_dialog/model_dialog_grp_tensor
+
+
+model_dialog/model_dialog_t_description
+
+
+model_dialog/model_dialog_t_mass
+
+
+model_dialog/model_dialog_t_maxitems
+
+
+model_dialog/model_dialog_t_name
+
+
+model_dialog/model_dialog_t_num_lod
+
+
+model_dialog/model_dialog_t_scriptfile
+
+
+model_dialog/model_dialog_t_scriptvars
+
+
+model_dialog/model_dialog_tab_control
+level of detail\\material\\transparency\\physics
+
+model_dialog/model_inventary
+
+
+model_dialog/mu
+
+
+model_dialog/num_items
+
+
+model_dialog/num_lod
+
+
+model_dialog/odt_max_scriptvars
+
+
+model_dialog/ok
+OK
+
+model_dialog/ph_active
+
+
+model_dialog/ph_passive
+
+
+model_dialog/rand_id_525995
+
+
+model_dialog/script_vars
+#\\名前\\種類\\値
+
+model_dialog/tensor
+
+
+model_material_dialog/add_material
+
+
+model_material_dialog/add_new_material
+
+
+model_material_dialog/alpha_dest
+AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha
+
+model_material_dialog/alpha_factor
+
+
+model_material_dialog/alpha_source
+AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha
+
+model_material_dialog/alpha_z_buffer
+
+
+model_material_dialog/ambient
+周辺光
+
+model_material_dialog/apply_material
+
+
+model_material_dialog/default_colors
+
+
+model_material_dialog/diffuse
+拡散光
+
+model_material_dialog/emission
+発光
+
+model_material_dialog/mat_add_texture_level
+
+
+model_material_dialog/mat_delete_texture_level
+
+
+model_material_dialog/mat_empty_texture_level
+
+
+model_material_dialog/mat_shininess
+
+
+model_material_dialog/mat_textures
+
+
+model_material_dialog/material_dialog_t_trans_dest
+
+
+model_material_dialog/material_dialog_t_trans_source
+
+
+model_material_dialog/material_list
+
+
+model_material_dialog/model_material_dialog
+
+
+model_material_dialog/model_material_dialog_grp_color
+
+
+model_material_dialog/model_material_dialog_grp_list
+
+
+model_material_dialog/model_material_dialog_grp_textures
+
+
+model_material_dialog/model_material_dialog_grp_transparency
+
+
+model_material_dialog/percent
+%
+
+model_material_dialog/shininess
+
+
+model_material_dialog/specular
+反射光
+
+model_material_dialog/transparency_mode:color_key
+
+
+model_material_dialog/transparency_mode:factor
+
+
+model_material_dialog/transparency_mode:function
+
+
+model_material_dialog/transparency_mode:material
+
+
+model_material_dialog/transparency_mode:none
+
+
+model_material_selection_dialog/add_material
+
+
+model_material_selection_dialog/add_new_material
+
+
+model_material_selection_dialog/edit_material
+編集
+
+model_material_selection_dialog/material_list
+
+
+model_material_selection_dialog/model_material_selection_dialog
+
+
+new_animation_dialog/cancel
+キャンセル
+
+new_animation_dialog/new_animation_dialog
+新しい　アニメーション
+
+new_animation_dialog/new_animation_index
+
+
+new_animation_dialog/new_animation_t_index
+索引
+
+new_animation_dialog/new_animation_t_type
+種類
+
+new_animation_dialog/new_animation_type
+ベクトル\\骨格
+
+new_animation_dialog/ok
+OK
+
+new_ball_dialog/ball_type:ball
+
+
+new_ball_dialog/ball_type:sphere
+
+
+new_ball_dialog/nb_complexity
+
+
+new_ball_dialog/nb_x
+
+
+new_ball_dialog/nb_y
+
+
+new_ball_dialog/new_ball_dialog
+新しい　玉
+
+new_ball_dialog/new_ball_dialog_t_comp
+複雑さ
+
+new_ball_dialog/new_ball_dialog_t_x
+
+
+new_ball_dialog/new_ball_dialog_t_y
+
+
+new_cube_dialog/nc_x
+
+
+new_cube_dialog/nc_y
+
+
+new_cube_dialog/nc_z
+
+
+new_cube_dialog/ncdt_slides
+
+
+new_cube_dialog/new_cube_dialog
+
+
+new_cube_dialog/x
+X
+
+new_cube_dialog/y
+Y
+
+new_cube_dialog/z
+Z
+
+new_cylinder_dialog/ncy_edges
+
+
+new_cylinder_dialog/ncy_rings
+
+
+new_cylinder_dialog/new_cylinder_dialog
+
+
+new_cylinder_dialog/new_cylinder_dialog_t_edges
+
+
+new_cylinder_dialog/new_cylinder_dialog_t_rings
+
+
+new_plane_dialog/new_plane_dialog
+
+
+new_plane_dialog/new_plane_dialog_t_x
+
+
+new_plane_dialog/new_plane_dialog_t_y
+
+
+new_plane_dialog/np_num_x
+
+
+new_plane_dialog/np_num_y
+
+
+new_teapot_dialog/new_teapot_dialog
+
+
+new_teapot_dialog/new_teapot_dialog_t_samples
+
+
+new_teapot_dialog/ntp_samples
+
+
+new_terrain_dialog/cancel
+キャンセル
+
+new_terrain_dialog/new_terrain_dialog
+
+
+new_terrain_dialog/nterrain_dialog_t_raster
+
+
+new_terrain_dialog/nterrain_dialog_t_stripes
+
+
+new_terrain_dialog/nterrain_dialog_t_terrainsize
+
+
+new_terrain_dialog/num_x
+
+
+new_terrain_dialog/num_z
+
+
+new_terrain_dialog/ok
+OK
+
+new_terrain_dialog/pattern_x
+
+
+new_terrain_dialog/pattern_z
+
+
+new_terrain_dialog/terrain_x
+
+
+new_terrain_dialog/terrain_z
+
+
+new_torus_dialog/new_torus_dialog
+
+
+new_torus_dialog/new_torus_dialog_slides
+
+
+new_torus_dialog/new_torus_dialog_t_edges
+
+
+new_torus_dialog/new_torus_dialog_t_rings
+
+
+new_torus_dialog/nt_edges
+
+
+new_torus_dialog/nt_rings
+
+
+progress_cancelable_dialog/cancel
+キャンセル
+
+progress_cancelable_dialog/progress_cancelable_dialog
+
+
+progress_dialog/progress_dialog
+
+
+rc_dialog/cancel
+キャンセル
+
+rc_dialog/ged_group
+
+
+rc_dialog/ged_t_font
+
+
+rc_dialog/ged_t_material
+
+
+rc_dialog/ged_t_rootdir
+
+
+rc_dialog/ged_t_script
+
+
+rc_dialog/ged_t_second_world
+
+
+rc_dialog/ged_t_world
+
+
+rc_dialog/ok
+OK
+
+rc_dialog/rc_dialog
+
+
+rotation_dialog/degree
+°
+
+rotation_dialog/rotation_dialog
+
+
+rotation_dialog/x
+X
+
+rotation_dialog/z
+Z
+
+scaling_dialog/percent
+%
+
+scaling_dialog/scaling_dialog
+
+
+scaling_dialog/x
+X
+
+scaling_dialog/z
+Z
+
+scriptvar_dialog/cancel
+キャンセル
+
+scriptvar_dialog/ok
+OK
+
+scriptvar_dialog/scriptvar_dialog
+
+
+scriptvar_dialog/scriptvar_t_index
+索引
+
+scriptvar_dialog/scriptvar_t_value
+値
+
+terrain_dialog/add_texture_level
+
+
+terrain_dialog/apply
+適用
+
+terrain_dialog/cancel
+キャンセル
+
+terrain_dialog/clear_texture_level
+
+
+terrain_dialog/default_material
+
+
+terrain_dialog/delete_texture_level
+
+
+terrain_dialog/lu
+lu
+
+terrain_dialog/num_x
+
+
+terrain_dialog/num_z
+
+
+terrain_dialog/ok
+OK
+
+terrain_dialog/terrain_dialog
+
+
+terrain_dialog/terrain_dialog_t_filename
+
+
+terrain_dialog/terrain_dialog_t_material
+
+
+terrain_dialog/terrain_dialog_t_raster
+
+
+terrain_dialog/terrain_dialog_t_stripes
+
+
+terrain_dialog/terrain_dialog_tab_control
+properties\\textures\\material\\import
+
+terrain_dialog/terrain_save_as
+保存...
+
+terrain_dialog/texture_map_complete
+
+
+terrain_dialog/textures
+
+
+terrain_dialog/x
+X
+
+terrain_dialog/z
+Z
+
+terrain_heightmap_dialog/cancel
+キャンセル
+
+terrain_heightmap_dialog/height_op:add
+
+
+terrain_heightmap_dialog/height_op:set
+
+
+terrain_heightmap_dialog/lu
+lu
+
+terrain_heightmap_dialog/ok
+OK
+
+terrain_heightmap_dialog/stretch_x
+
+
+terrain_heightmap_dialog/stretch_z
+
+
+terrain_heightmap_dialog/terrain_dialog_grp_apply
+
+
+terrain_heightmap_dialog/terrain_dialog_t_filter
+
+
+terrain_heightmap_dialog/terrain_dialog_t_heightmap
+
+
+terrain_heightmap_dialog/terrain_heightmap_dialog
+
+
+terrain_heightmap_dialog/terrain_hm_dialog_grp_heightmap
+
+
+terrain_heightmap_dialog/terrain_hm_dialog_t_gray
+
+
+terrain_heightmap_dialog/terrain_hm_dialog_t_op
+
+
+terrain_heightmap_dialog/terrain_hm_dialog_t_stretch
+
+
+terrain_heightmap_dialog/x
+X
+
+terrain_heightmap_dialog/z
+Z
+
+welcome_dialog/welcome_dialog
+
+
+welcome_dialog/welcome_list
+!icons
+
+world_camera_dialog/add_point
+
+
+world_camera_dialog/cam_edit_ang
+
+
+world_camera_dialog/cam_edit_vel
+
+
+world_camera_dialog/cam_preview
+
+
+world_camera_dialog/cam_stop
+
+
+world_camera_dialog/delete_point
+
+
+world_camera_dialog/world_camera_dialog
+
+
+world_dialog/add_script
+
+
+world_dialog/ambient
+周辺光
+
+world_dialog/apply
+適用
+
+world_dialog/cancel
+キャンセル
+
+world_dialog/degree
+°
+
+world_dialog/diffuse
+拡散光
+
+world_dialog/fog_distance
+
+
+world_dialog/fog_end
+
+
+world_dialog/fog_mode:exp
+
+
+world_dialog/fog_mode:exp2
+
+
+world_dialog/fog_mode:linear
+
+
+world_dialog/fog_mode:none
+
+
+world_dialog/fog_start
+
+
+world_dialog/gravitation_x
+
+
+world_dialog/gravitation_y
+
+
+world_dialog/gravitation_z
+
+
+world_dialog/luss
+lu/s^2
+
+world_dialog/max_script_vars
+
+
+world_dialog/ok
+OK
+
+world_dialog/physics_enabled
+
+
+world_dialog/remove_script
+
+
+world_dialog/remove_skybox
+削除
+
+world_dialog/script_list
+
+
+world_dialog/script_vars
+#\\名前\\種類\\値
+
+world_dialog/skybox
+#\\モデル　('SkyBox')
+
+world_dialog/specular
+反射光
+
+world_dialog/sun_ang_from_camera
+
+
+world_dialog/sun_enabled
+
+
+world_dialog/world_dialog
+
+
+world_dialog/world_dialog_grp_ambient
+
+
+world_dialog/world_dialog_grp_bg_color
+
+
+world_dialog/world_dialog_grp_gravitation
+引力
+
+world_dialog/world_dialog_grp_skybox
+
+
+world_dialog/world_dialog_grp_sun
+
+
+world_dialog/world_dialog_t_fog_distance
+
+
+world_dialog/world_dialog_t_fog_end
+
+
+world_dialog/world_dialog_t_fog_start
+
+
+world_dialog/world_dialog_t_max_script_vars
+
+
+world_dialog/world_dialog_t_sun_ang_x
+
+
+world_dialog/world_dialog_t_sun_ang_y
+
+
+world_dialog/world_dialog_tab_control
+common\\background\\script variables
+
+world_dialog/x
+X
+
+world_dialog/y
+Y
+
+world_dialog/z
+Z
+
+world_new_object_dialog/world_new_object_dialog
+
+
+world_new_object_dialog/world_object_dialog_t_name
+名前:
+
+world_new_object_dialog/world_object_dialog_t_type
+
+
+world_object_dialog/apply
+適用
+
+world_object_dialog/cancel
+キャンセル
+
+world_object_dialog/degree
+°
+
+world_object_dialog/lu
+lu
+
+world_object_dialog/ok
+OK
+
+world_object_dialog/world_object_dialog
+
+
+world_object_dialog/world_object_dialog_grp_ang
+角
+
+world_object_dialog/world_object_dialog_grp_pos
+
+
+world_object_dialog/world_object_dialog_t_name
+名前:
+
+world_object_dialog/world_object_dialog_t_type
+
+
+world_object_dialog/x
+X
+
+world_object_dialog/y
+Y
+
+world_object_dialog/z
+Z
+
+world_ps_dialog/property_list
+type\\index\\name
+
+world_ps_dialog/world_ps_dialog
+
+
+world_scriptfunc_choice_dialog/cancel
+キャンセル
+
+world_scriptfunc_choice_dialog/ok
+OK
+
+world_scriptfunc_choice_dialog/world_scriptfunc_choice_dialog
+
+
+world_scriptfunc_dialog/cancel
+キャンセル
+
+world_scriptfunc_dialog/delete
+削除
+
+world_scriptfunc_dialog/level
+
+
+world_scriptfunc_dialog/location
+CalcMove 1\\CalcMove 2\\Render 1\\Render 2\\Render 3\\GetInput 1\\GetInput 2
+
+world_scriptfunc_dialog/ok
+OK
+
+world_scriptfunc_dialog/world_scriptfunc_dialog
+
+
+world_scriptfunc_dialog/world_scriptfunc_dialog_t_called_by
+
+
+world_scriptfunc_dialog/world_scriptfunc_dialog_t_delay
+
+
+world_scriptfunc_dialog/world_scriptfunc_dialog_t_delaydesc
+
+
+world_scriptfunc_dialog/world_scriptfunc_dialog_t_name
+
 
 // Num Language Strings
-249
+264
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -1261,6 +4776,8 @@ zzz_setbgimage
  (noch %.0d s)
 
  -- Komplette Welt -- 
+
+ has crashed.\t\tThe last lines of the file message.txt::
 
  ist abgestürzt!\t\tDie letzten Zeilen der Datei message.txt:
 
@@ -1285,6 +4802,8 @@ zzz_setbgimage
 %d von %d
 
 (anonym)
+
+(anonymous)
 
 - Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- die Auswahl wird für folgende neue Polygone verwendet
 
@@ -1332,6 +4851,12 @@ Beispiel Text 0123456789
 
 Beschreibung
 
+Bug Report
+
+Cancel
+
+Comment/what happened:
+
 Datei
 
 Datei ist nicht in der Stimmung, geöffnet zu werden
@@ -1346,6 +4871,8 @@ Dateien (*.*)
 
 Demütige aber höfliche Frage
 
+Description
+
 Dicke
 
 Ebene
@@ -1357,6 +4884,8 @@ Ebene: zweiter Punkt
 Editor für Spiele-Daten der x9-Engine
 
 Eigenschaften
+
+Error
 
 Erstelle Datenbank
 
@@ -1442,6 +4971,8 @@ Isometrisch
 
 Ist halt irgendwie passiert...
 
+Just happened somehow...
+
 Kamera
 
 Kamera-Datei
@@ -1500,6 +5031,8 @@ Materialien (*.material)
 
 Mesh
 
+Messages
+
 Mindestens eine Textur-Ebene muss existieren!
 
 Mindestens eine Textur-Ebene muss vorhanden sein!
@@ -1514,6 +5047,8 @@ Modelle, die über die Hintergrundfarge gemalt werden\n- Doppelklick um ein Mode
 
 Nachrichten
 
+Name:
+
 Nebelintensität = exp( - Entfernung / Sichtweite )
 
 OK
@@ -1527,6 +5062,8 @@ Oberflächen
 Objekt
 
 Objekt %d von %d
+
+Ok
 
 Perspektive
 
@@ -1543,6 +5080,8 @@ Polygone
 Polygone: %d (von %d)
 
 Pop
+
+Program was compiled without network support...
 
 Punkt setzen
 
@@ -1575,6 +5114,8 @@ Script-Datei enthält keine Funktion \"void OnEffectIterate( effect )\"
 Script-Dateien (*.kaba)
 
 Selektieren
+
+Send bug report to Michi
 
 Shader
 
@@ -1660,6 +5201,8 @@ Würfel: Punkt 2 / 3
 
 Würfel: Punkt 3 / 3
 
+Your comments and the contents of the file message.txt will be sent.
+
 Zentrum wählen
 
 Zwischenablage leer
@@ -1729,6 +5272,8 @@ neues Terrain...
 nichts markiert
 
 nichts zum Einfügen
+
+open message.txt
 
 paranoider Modus
 

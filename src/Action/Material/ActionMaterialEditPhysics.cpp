@@ -17,9 +17,9 @@ void *ActionMaterialEditPhysics::execute(Data *d)
 {
 	DataMaterial *m = dynamic_cast<DataMaterial*>(d);
 
-	DataMaterial::PhysicsData old_phys = m->Physics;
+	DataMaterial::PhysicsData old_phys = m->physics;
 
-	m->Physics = phys;
+	m->physics = phys;
 
 	phys = old_phys;
 

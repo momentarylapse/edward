@@ -20,9 +20,9 @@ void *ActionMaterialEditAppearance::execute(Data *d)
 {
 	DataMaterial *m = dynamic_cast<DataMaterial*>(d);
 
-	DataMaterial::AppearanceData old_app = m->Appearance;
+	DataMaterial::AppearanceData old_app = m->appearance;
 
-	m->Appearance = app;
+	m->appearance = app;
 
 	app = old_app;
 

@@ -41,6 +41,8 @@ public:
 	void _cdecl update();
 };
 
+void init_vertex_buffers();
+
 };
 
 

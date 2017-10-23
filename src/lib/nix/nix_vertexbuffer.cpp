@@ -13,6 +13,9 @@ unsigned int VertexArrayID = 0;
 
 namespace nix{
 
+VertexBuffer *vb_temp = NULL;
+VertexBuffer *vb_2d = NULL;
+
 
 VertexBuffer::VertexBuffer(int _num_textures)
 {
@@ -155,6 +158,15 @@ void VBAddTriasIndexed(int buffer,int num_points,int num_trias,const vector *p,c
 {
 	#ifdef ENABLE_INDEX_BUFFERS
 	#endif
+}
+
+void init_vertex_buffers()
+{
+	glGenVertexArrays(1, &VertexArrayID);
+	glBindVertexArray(VertexArrayID);
+
+	vb_temp = new VertexBuffer(1);
+	vb_2d = new VertexBuffer(1);
 }
 
 };

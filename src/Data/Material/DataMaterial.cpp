@@ -14,8 +14,8 @@
 DataMaterial::DataMaterial() :
 	Data(FD_MATERIAL)
 {
-	Shader = NULL;
-	Appearance.CubeMap = new nix::CubeMap(128);
+	appearance.shader = NULL;
+	appearance.cube_map = new nix::CubeMap(128);
 
 	reset();
 }
@@ -34,40 +34,40 @@ bool DataMaterial::save(const string & _filename)
 	f->WriteFileFormatVersion(false, 4);
 
 	f->WriteComment("// Textures");
-	f->WriteInt(Appearance.NumTextureLevels);
-	for (int i=0;i<Appearance.NumTextureLevels;i++)
-		f->WriteStr(Appearance.TextureFile[i]);
+	f->WriteInt(appearance.texture_files.num);
+	for (string &tf: appearance.texture_files)
+		f->WriteStr(tf);
 	f->WriteComment("// Colors");
-	write_color_argb(f, Appearance.ColorAmbient);
-	write_color_argb(f, Appearance.ColorDiffuse);
-	write_color_argb(f, Appearance.ColorSpecular);
-	f->WriteInt(Appearance.ColorShininess);
-	write_color_argb(f, Appearance.ColorEmissive);
+	write_color_argb(f, appearance.ambient);
+	write_color_argb(f, appearance.diffuse);
+	write_color_argb(f, appearance.specular);
+	f->WriteInt(appearance.shininess);
+	write_color_argb(f, appearance.emissive);
 	f->WriteComment("// Transparency");
-	f->WriteInt(Appearance.TransparencyMode);
-	f->WriteInt(Appearance.AlphaFactor * 100.0f);
-	f->WriteInt(Appearance.AlphaSource);
-	f->WriteInt(Appearance.AlphaDestination);
-	f->WriteBool(Appearance.AlphaZBuffer);
+	f->WriteInt(appearance.transparency_mode);
+	f->WriteInt(appearance.alpha_factor * 100.0f);
+	f->WriteInt(appearance.alpha_source);
+	f->WriteInt(appearance.alpha_destination);
+	f->WriteBool(appearance.alpha_z_buffer);
 	f->WriteComment("// Appearance");
 	f->WriteInt(0);
 	f->WriteInt(0);
 	f->WriteBool(false);
 	f->WriteComment("// Reflection");
-	f->WriteInt(Appearance.ReflectionMode);
-	f->WriteInt(Appearance.ReflectionDensity);
-	f->WriteInt(Appearance.ReflectionSize);
+	f->WriteInt(appearance.reflection_mode);
+	f->WriteInt(appearance.reflection_density);
+	f->WriteInt(appearance.reflection_size);
 	for (int i=0;i<6;i++)
-		f->WriteStr(Appearance.ReflectionTextureFile[i]);
+		f->WriteStr(appearance.reflection_texture_file[i]);
 	f->WriteComment("// ShaderFile");
-	f->WriteStr(Appearance.ShaderFile);
+	f->WriteStr(appearance.shader_file);
 	f->WriteComment("// Physics");
-	f->WriteInt(Physics.RCJump * 1000.0f);
-	f->WriteInt(Physics.RCStatic * 1000.0f);
-	f->WriteInt(Physics.RCSliding * 1000.0f);
-	f->WriteInt(Physics.RCRolling * 1000.0f);
-	f->WriteInt(Physics.RCVJumpMin * 1000.0f);
-	f->WriteInt(Physics.RCVSlidingMin * 1000.0f);
+	f->WriteInt(physics.friction_jump * 1000.0f);
+	f->WriteInt(physics.friction_static * 1000.0f);
+	f->WriteInt(physics.friction_sliding * 1000.0f);
+	f->WriteInt(physics.friction_rolling * 1000.0f);
+	f->WriteInt(physics.vmin_jump * 1000.0f);
+	f->WriteInt(physics.vmin_sliding * 1000.0f);
 	f->WriteComment("// Sound");
 	f->WriteInt(Sound.NumRules);
 	for (int i=0;i<Sound.NumRules;i++){
@@ -103,30 +103,30 @@ bool DataMaterial::load(const string & _filename, bool deep)
 	if (ffv<0){
 		ed->errorBox(_("Datei-Format nicht ladbar!!"));
 		error=true;
-	}else if ((ffv == 3) || (ffv == 4)){
+	}else if ((ffv == 3) or (ffv == 4)){
 		if (ffv >= 4){
 			f->ReadComment();
-			Appearance.NumTextureLevels = f->ReadInt();
-			for (int i=0;i<Appearance.NumTextureLevels;i++)
-				Appearance.TextureFile[i] = f->ReadStr();
-			if ((Appearance.NumTextureLevels == 1) && (Appearance.TextureFile[0].num == 0)){
-				Appearance.NumTextureLevels = 0;
+			int n = f->ReadInt();
+			for (int i=0;i<n;i++)
+				appearance.texture_files.add(f->ReadStr());
+			if ((appearance.texture_files.num == 1) and (appearance.texture_files[0] == "")){
+				appearance.texture_files.clear();
 			}
 		}
 		// Colors
 		f->ReadComment();
-		read_color_argb(f, Appearance.ColorAmbient);
-		read_color_argb(f, Appearance.ColorDiffuse);
-		read_color_argb(f, Appearance.ColorSpecular);
-		Appearance.ColorShininess = f->ReadInt();
-		read_color_argb(f, Appearance.ColorEmissive);
+		read_color_argb(f, appearance.ambient);
+		read_color_argb(f, appearance.diffuse);
+		read_color_argb(f, appearance.specular);
+		appearance.shininess = f->ReadInt();
+		read_color_argb(f, appearance.emissive);
 		// Transparency
 		f->ReadComment();
-		Appearance.TransparencyMode = f->ReadInt();
-		Appearance.AlphaFactor = (float)f->ReadInt() * 0.01f;
-		Appearance.AlphaSource = f->ReadInt();
-		Appearance.AlphaDestination = f->ReadInt();
-		Appearance.AlphaZBuffer = f->ReadBool();
+		appearance.transparency_mode = f->ReadInt();
+		appearance.alpha_factor = (float)f->ReadInt() * 0.01f;
+		appearance.alpha_source = f->ReadInt();
+		appearance.alpha_destination = f->ReadInt();
+		appearance.alpha_z_buffer = f->ReadBool();
 		// Appearance
 		f->ReadComment();
 		f->ReadInt();
@@ -134,105 +134,105 @@ bool DataMaterial::load(const string & _filename, bool deep)
 		f->ReadBool();
 		// Reflection
 		f->ReadComment();
-		Appearance.ReflectionMode = f->ReadInt();
-		Appearance.ReflectionDensity = (float)f->ReadInt();
-		Appearance.ReflectionSize = f->ReadInt();
+		appearance.reflection_mode = f->ReadInt();
+		appearance.reflection_density = (float)f->ReadInt();
+		appearance.reflection_size = f->ReadInt();
 		for (int i=0;i<6;i++)
-			Appearance.ReflectionTextureFile[i] = f->ReadStr();
+			appearance.reflection_texture_file[i] = f->ReadStr();
 		// ShaderFile
 		f->ReadComment();
-		Appearance.ShaderFile = f->ReadStr();
+		appearance.shader_file = f->ReadStr();
 		// Physics
 		f->ReadComment();
-		Physics.RCJump = (float)f->ReadInt() * 0.001f;
-		Physics.RCStatic = (float)f->ReadInt() * 0.001f;
-		Physics.RCSliding = (float)f->ReadInt() * 0.001f;
-		Physics.RCRolling = (float)f->ReadInt() * 0.001f;
-		Physics.RCVJumpMin = (float)f->ReadInt() * 0.001f;
-		Physics.RCVSlidingMin = (float)f->ReadInt() * 0.001f;
+		physics.friction_jump = (float)f->ReadInt() * 0.001f;
+		physics.friction_static = (float)f->ReadInt() * 0.001f;
+		physics.friction_sliding = (float)f->ReadInt() * 0.001f;
+		physics.friction_rolling = (float)f->ReadInt() * 0.001f;
+		physics.vmin_jump = (float)f->ReadInt() * 0.001f;
+		physics.vmin_sliding = (float)f->ReadInt() * 0.001f;
 		if (ffv >= 4){
 			// Sound
 			//NumSoundRules=f->ReadIntC();
 			Sound.NumRules=0;
 		}
 
-		//AlphaZBuffer=(TransparencyMode!=TransparencyModeFunctions)&&(TransparencyMode!=TransparencyModeFactor);
+		//AlphaZBuffer=(TransparencyMode!=TransparencyModeFunctions)and(TransparencyMode!=TransparencyModeFactor);
 	}else if (ffv==2){
 		// Colors
 		f->ReadComment();
-		read_color_argb(f, Appearance.ColorAmbient);
-		read_color_argb(f, Appearance.ColorDiffuse);
-		read_color_argb(f, Appearance.ColorSpecular);
-		Appearance.ColorShininess = (float)f->ReadInt();
-		read_color_argb(f, Appearance.ColorEmissive);
+		read_color_argb(f, appearance.ambient);
+		read_color_argb(f, appearance.diffuse);
+		read_color_argb(f, appearance.specular);
+		appearance.shininess = (float)f->ReadInt();
+		read_color_argb(f, appearance.emissive);
 		// Transparency
 		f->ReadComment();
-		Appearance.TransparencyMode = f->ReadInt();
-		Appearance.AlphaFactor = (float)f->ReadInt() * 0.01f;
-		Appearance.AlphaSource = f->ReadInt();
-		Appearance.AlphaDestination = f->ReadInt();
+		appearance.transparency_mode = f->ReadInt();
+		appearance.alpha_factor = (float)f->ReadInt() * 0.01f;
+		appearance.alpha_source = f->ReadInt();
+		appearance.alpha_destination = f->ReadInt();
 		// Appearance
 		f->ReadComment();
 		int MetalDensity = f->ReadInt();
 		if (MetalDensity > 0){
-			Appearance.ReflectionMode = ReflectionMetal;
-			Appearance.ReflectionDensity = (float)MetalDensity;
+			appearance.reflection_mode = ReflectionMetal;
+			appearance.reflection_density = (float)MetalDensity;
 		}
 		f->ReadInt();
 		f->ReadInt();
 		bool Mirror = f->ReadBool();
 		if (Mirror)
-			Appearance.ReflectionMode = ReflectionMirror;
+			appearance.reflection_mode = ReflectionMirror;
 		f->ReadBool();
 		// ShaderFile
 		f->ReadComment();
 		string sf = f->ReadStr();
 		if (sf.num > 0)
-			Appearance.ShaderFile = sf + ".fx.glsl";
+			appearance.shader_file = sf + ".fx.glsl";
 		// Physics
 		f->ReadComment();
-		Physics.RCJump = (float)f->ReadInt() * 0.001f;
-		Physics.RCStatic = (float)f->ReadInt() * 0.001f;
-		Physics.RCSliding = (float)f->ReadInt() * 0.001f;
-		Physics.RCRolling = (float)f->ReadInt() * 0.001f;
-		Physics.RCVJumpMin = (float)f->ReadInt() * 0.001f;
-		Physics.RCVSlidingMin = (float)f->ReadInt() * 0.001f;
+		physics.friction_jump = (float)f->ReadInt() * 0.001f;
+		physics.friction_static = (float)f->ReadInt() * 0.001f;
+		physics.friction_sliding = (float)f->ReadInt() * 0.001f;
+		physics.friction_rolling = (float)f->ReadInt() * 0.001f;
+		physics.vmin_jump = (float)f->ReadInt() * 0.001f;
+		physics.vmin_sliding = (float)f->ReadInt() * 0.001f;
 
-		Appearance.AlphaZBuffer=(Appearance.TransparencyMode!=TransparencyModeFunctions)&&(Appearance.TransparencyMode!=TransparencyModeFactor);
+		appearance.alpha_z_buffer=(appearance.transparency_mode!=TransparencyModeFunctions)and(appearance.transparency_mode!=TransparencyModeFactor);
 	}else if (ffv==1){
 		// Colors
 		f->ReadComment();
-		read_color_argb(f, Appearance.ColorAmbient);
-		read_color_argb(f, Appearance.ColorDiffuse);
-		read_color_argb(f, Appearance.ColorSpecular);
-		Appearance.ColorShininess = (float)f->ReadInt();
-		read_color_argb(f, Appearance.ColorEmissive);
+		read_color_argb(f, appearance.ambient);
+		read_color_argb(f, appearance.diffuse);
+		read_color_argb(f, appearance.specular);
+		appearance.shininess = (float)f->ReadInt();
+		read_color_argb(f, appearance.emissive);
 		// Transparency
 		f->ReadComment();
-		Appearance.TransparencyMode = f->ReadInt();
-		Appearance.AlphaFactor = (float)f->ReadInt() * 0.01f;
-		Appearance.AlphaSource = f->ReadInt();
-		Appearance.AlphaDestination = f->ReadInt();
+		appearance.transparency_mode = f->ReadInt();
+		appearance.alpha_factor = (float)f->ReadInt() * 0.01f;
+		appearance.alpha_source = f->ReadInt();
+		appearance.alpha_destination = f->ReadInt();
 		// Appearance
 		f->ReadComment();
 		int MetalDensity = f->ReadInt();
 		if (MetalDensity > 0){
-			Appearance.ReflectionMode = ReflectionMetal;
-			Appearance.ReflectionDensity = (float)MetalDensity;
+			appearance.reflection_mode = ReflectionMetal;
+			appearance.reflection_density = (float)MetalDensity;
 		}
 		f->ReadInt();
 		f->ReadInt();
-		Appearance.ReflectionMode = (f->ReadBool() ? ReflectionMirror : ReflectionNone);
+		appearance.reflection_mode = (f->ReadBool() ? ReflectionMirror : ReflectionNone);
 		bool Mirror = f->ReadBool();
 		if (Mirror)
-			Appearance.ReflectionMode = ReflectionMirror;
+			appearance.reflection_mode = ReflectionMirror;
 		// ShaderFile
 		f->ReadComment();
 		string sf = f->ReadStr();
 		if (sf.num > 0)
-			Appearance.ShaderFile = sf + ".fx.glsl";
+			appearance.shader_file = sf + ".fx.glsl";
 
-		Appearance.AlphaZBuffer = (Appearance.TransparencyMode != TransparencyModeFunctions) && (Appearance.TransparencyMode != TransparencyModeFactor);
+		appearance.alpha_z_buffer = (appearance.transparency_mode != TransparencyModeFunctions) and (appearance.transparency_mode != TransparencyModeFactor);
 	}else{
 		ed->errorBox(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 1, 4));
 		error = true;
@@ -251,47 +251,46 @@ bool DataMaterial::load(const string & _filename, bool deep)
 }
 
 
-void DataMaterial::AppearanceData::Reset()
+void DataMaterial::AppearanceData::reset()
 {
-	NumTextureLevels = 0;
-	//Texture[0] = -1;
-	//strcpy(TextureFile[0], "");
+	texture_files.clear();
+	textures.clear();
 
-	ColorAmbient = White;
-	ColorDiffuse = White;
-	ColorSpecular = Black;
-	ColorShininess = 20;
-	ColorEmissive = Black;
+	ambient = White;
+	diffuse = White;
+	specular = Black;
+	shininess = 20;
+	emissive = Black;
 
-	TransparencyMode = TransparencyModeNone;
-	AlphaSource = AlphaDestination = 0;
-	AlphaFactor = 0.5f;
-	AlphaZBuffer = true;
+	transparency_mode = TransparencyModeNone;
+	alpha_source = alpha_destination = 0;
+	alpha_factor = 0.5f;
+	alpha_z_buffer = true;
 
-	ReflectionMode = ReflectionNone;
-	ReflectionDensity = 0;
-	ReflectionSize = 128;
+	reflection_mode = ReflectionNone;
+	reflection_density = 0;
+	reflection_size = 128;
 	for (int i=0;i<6;i++)
-		ReflectionTextureFile[i] = "";
+		reflection_texture_file[i] = "";
 
 
-	ShaderFile.clear();
+	shader_file.clear();
 }
 
-nix::Shader *DataMaterial::AppearanceData::GetShader() const
+nix::Shader *DataMaterial::AppearanceData::get_shader() const
 {
-	return nix::LoadShader(ShaderFile);
+	return nix::LoadShader(shader_file);
 }
 
 
 void DataMaterial::PhysicsData::Reset()
 {
-	RCJump = 0.7f;
-	RCStatic = 0.8f;
-	RCSliding = 0.5f;
-	RCRolling = 0.2f;
-	RCVJumpMin = 10;
-	RCVSlidingMin = 10;
+	friction_jump = 0.7f;
+	friction_static = 0.8f;
+	friction_sliding = 0.5f;
+	friction_rolling = 0.2f;
+	vmin_jump = 10;
+	vmin_sliding = 10;
 	Burnable = false;
 	BurningTemperature = 500;
 	BurningIntensity = 40;
@@ -307,12 +306,12 @@ void DataMaterial::reset()
 {
 	filename = "";
 
-	if (Shader)
-		Shader->unref();
-	Shader = NULL;
+	if (appearance.shader)
+		appearance.shader->unref();
+	appearance.shader = NULL;
 
-	Appearance.Reset();
-	Physics.Reset();
+	appearance.reset();
+	physics.Reset();
 	Sound.Reset();
 
 
@@ -320,57 +319,39 @@ void DataMaterial::reset()
 	notify();
 }
 
-
-int DataMaterial::EffectiveTextureLevels()
-{
-	if ((Appearance.ReflectionMode == ReflectionCubeMapStatic) || (Appearance.ReflectionMode == ReflectionCubeMapDynamical))
-		return 4;
-	if (Appearance.NumTextureLevels == 0)
-		return 1;
-	return Appearance.NumTextureLevels;
-}
-
 void DataMaterial::ApplyForRendering()
 {
-	nix::SetMaterial(Appearance.ColorAmbient, Appearance.ColorDiffuse, Appearance.ColorSpecular, Appearance.ColorShininess, Appearance.ColorEmissive);
+	nix::SetMaterial(appearance.ambient, appearance.diffuse, appearance.specular, appearance.shininess, appearance.emissive);
 
 	nix::SetAlpha(AlphaNone);
 	nix::SetZ(true, true);
-	if (Appearance.TransparencyMode == TransparencyModeColorKeyHard){
+	if (appearance.transparency_mode == TransparencyModeColorKeyHard){
 		nix::SetAlpha(AlphaColorKeyHard);
-	}else if (Appearance.TransparencyMode == TransparencyModeColorKeySmooth){
+	}else if (appearance.transparency_mode == TransparencyModeColorKeySmooth){
 		nix::SetAlpha(AlphaColorKeySmooth);
-	}else if (Appearance.TransparencyMode == TransparencyModeFunctions){
-		nix::SetAlpha(Appearance.AlphaSource, Appearance.AlphaDestination);
+	}else if (appearance.transparency_mode == TransparencyModeFunctions){
+		nix::SetAlpha(appearance.alpha_source, appearance.alpha_destination);
 		nix::SetZ(false, false);
-	}else if (Appearance.TransparencyMode == TransparencyModeFactor){
-		nix::SetAlpha(Appearance.AlphaFactor);
+	}else if (appearance.transparency_mode == TransparencyModeFactor){
+		nix::SetAlpha(appearance.alpha_factor);
 		nix::SetZ(false, false);
 	}
 
-	nix::SetShader(Shader);
+	nix::SetShader(appearance.shader);
 
-	int num_tex = EffectiveTextureLevels();
-	if (num_tex > 1){
-		Array<nix::Texture*> tex;
-		for (int i=0; i<num_tex; i++)
-			tex.add(Appearance.Texture[i]);
-		nix::SetTextures(tex);
-	}else
-		nix::SetTexture(Appearance.Texture[0]);
+	nix::SetTextures(appearance.textures);
 }
 
 void DataMaterial::UpdateTextures()
 {
 	msg_db_f("Mat.UpdateTextures", 1);
-	for (int i=0;i<MATERIAL_MAX_TEXTURES;i++)
-		Appearance.Texture[i] = NULL;
-	for (int i=0;i<Appearance.NumTextureLevels;i++)
-		Appearance.Texture[i] = nix::LoadTexture(Appearance.TextureFile[i]);
-	if ((Appearance.ReflectionMode == ReflectionCubeMapStatic) || (Appearance.ReflectionMode == ReflectionCubeMapDynamical)){
+	appearance.textures.clear();
+	for (string &tf: appearance.texture_files)
+		appearance.textures.add(nix::LoadTexture(tf));
+	if ((appearance.reflection_mode == ReflectionCubeMapStatic) or (appearance.reflection_mode == ReflectionCubeMapDynamical)){
 		for (int i=0;i<6;i++)
-			Appearance.CubeMap->fill_cube_map(i, nix::LoadTexture(Appearance.ReflectionTextureFile[i]));
-		Appearance.Texture[3] = Appearance.CubeMap;
+			appearance.cube_map->fill_cube_map(i, nix::LoadTexture(appearance.reflection_texture_file[i]));
+		appearance.textures.add(appearance.cube_map);
 	}
 }
 

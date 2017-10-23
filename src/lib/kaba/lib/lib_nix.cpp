@@ -261,9 +261,6 @@ void SIAddPackageNix()
 	add_ext_var("TargetWidth",		TypeInt,		nix_p(&nix::target_height));
 	add_ext_var("TargetHeight",		TypeInt,		nix_p(&nix::target_height));
 	add_ext_var("Target",			TypeRect,		nix_p(&nix::target_rect));
-	add_ext_var("ScreenWidth",		TypeInt,		nix_p(&nix::ScreenWidth));
-	add_ext_var("ScreenHeight",		TypeInt,		nix_p(&nix::ScreenHeight));
-	add_ext_var("ScreenDepth",		TypeInt,		nix_p(&nix::ScreenDepth));
 	add_ext_var("Fullscreen",		TypeBool,		nix_p(&nix::Fullscreen));
 	add_ext_var("Api",				TypeString,		nix_p(&nix::ApiName));
 	//add_ext_var("TextureLifeTime",	TypeInt,		nix_p(&nix::TextureMaxFramesToLive));

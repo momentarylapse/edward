@@ -19,12 +19,14 @@ void TestGLError(const string &);
 
 void UpdateLights();
 
+void create_pixel_projection_matrix(matrix &m);
+
 
 matrix view_matrix, projection_matrix;
 matrix projection_matrix2d;
 matrix world_matrix, world_view_projection_matrix;
 vector _CamPos_;
-bool mode3d = false;
+//bool mode3d = false;
 
 float view_jitter_x = 0, view_jitter_y = 0;
 
@@ -36,31 +38,6 @@ Texture *RenderingToTexture = NULL;
 	extern HDC hDC;
 	extern HGLRC hRC;
 #endif
-
-void _SetMode2d()
-{
-	if (!mode3d)
-		return;
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf((float*)&projection_matrix2d);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	mode3d = false;
-	TestGLError("Set2d");
-}
-
-void _SetMode3d()
-{
-	/*if (NixMode3d)
-		return;
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf((float*)&projection_matrix);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf((float*)&view_matrix);
-	glMultMatrixf((float*)&NixWorldMatrix);
-	NixMode3d = true;
-	TestGLError("Set3d");*/
-}
 
 void Resize(int width, int height)
 {
@@ -75,6 +52,9 @@ void Resize(int width, int height)
 	OGLViewPort[2] = target_width;
 	OGLViewPort[3] = target_height;
 	TestGLError("glViewport");
+
+	// projection 2d
+	create_pixel_projection_matrix(projection_matrix2d);
 
 	// camera
 	//NixSetProjectionMatrix(projection_matrix);
@@ -196,20 +176,12 @@ void SetProjectionOrtho(bool relative)
 
 void SetProjectionMatrix(const matrix &m)
 {
-	// projection 2d
-	create_pixel_projection_matrix(projection_matrix2d);
-
-	// projection 3d
 	projection_matrix = m;
 }
 
 void SetViewMatrix(const matrix &m)
 {
 	view_matrix = m;
-
-	//NixSetWorldMatrix(m_id);
-
-	//NixUpdateLights();
 }
 
 #define FrustrumAngleCos	0.83f
@@ -355,18 +327,11 @@ bool StartIntoTexture(Texture *texture)
 
 	// adjust target size
 	if (!texture){
-		if (Fullscreen){
-			// fullscreen mode
-			target_width = ScreenWidth;
-			target_height = ScreenHeight;
-		}else{
-		}
+		Resize(device_width, device_height);
 	}else{
 		// texture
-		target_width = texture->width;
-		target_height = texture->height;
+		Resize(texture->width, texture->height);
 	}
-	Resize(target_width, target_height);
 	Rendering = true;
 
 	/*if (texture < 0)
@@ -414,8 +379,8 @@ void End()
 					XF86VidModeSetViewPort(x_display,screen,0,NixDesktopHeight-NixScreenHeight);
 			#endif
 			//glutSwapBuffers();
-			if (GLDoubleBuffered){
-			}
+			/*if (GLDoubleBuffered){
+			}*/
 		#endif
 	}
 	if (OGLDynamicTextureSupport)

@@ -94,27 +94,20 @@ int FontGlyphWidth[256];
 
 int Api;
 string ApiName;
-int ScreenWidth,ScreenHeight,ScreenDepth;		// current screen resolution
-int DesktopWidth,DesktopHeight,DesktopDepth;	// pre-NIX-resolution
+int device_width, device_height;
 int target_width, target_height;						// render target size (window/texture)
 rect target_rect;
 bool Fullscreen;
-callback_function *RefillAllVertexBuffers;
+callback_function *RefillAllVertexBuffers = NULL;
 
-float MouseMappingWidth,MouseMappingHeight;		// fullscreen mouse territory
 int FatalError;
 int NumTrias;
 int TextureMaxFramesToLive,MaxVideoTextureSize=256;
-float MaxDepth,MinDepth;
 
 bool CullingInverted;
 
 Fog fog;
 
-int FontHeight=20;
-string FontName = "Times New Roman";
-
-VertexBuffer *vb_temp;
 
 
 
@@ -123,38 +116,6 @@ VertexBuffer *vb_temp;
 // shader files
 int glShaderCurrent = 0;
 
-// font
-int OGLFontDPList;
-
-#if 0
-void CreateFontGlyphWidth()
-{
-#ifdef OS_WINDOWS
-	hDC=GetDC(NixWindow->hWnd);
-	SetMapMode(hDC,MM_TEXT);
-	HFONT hFont=CreateFont(	NixFontHeight,0,0,0,FW_EXTRALIGHT,FALSE,
-							FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
-							CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,
-							VARIABLE_PITCH,hui::hui_tchar_str(NixFontName));
-	SelectObject(hDC,hFont);
-	unsigned char str[5];
-	SIZE size;
-	for(int c=0;c<255;c++){
-		str[0]=c;
-		str[1]=0;
-		GetTextExtentPoint32(hDC,hui::hui_tchar_str((char*)str),1,&size);
-		NixFontGlyphWidth[c]=size.cx;
-	}
-	DeleteObject(hFont);
-#endif
-#ifdef OS_LINUX
-	//XQueryTextExtents(hui::x_display, );
-	memset(NixFontGlyphWidth, 0, sizeof(NixFontGlyphWidth));
-	for(int c=0;c<255;c++)
-		NixFontGlyphWidth[c] = XTextWidth(x_font, (char*)&c, 1);
-#endif
-}
-#endif
 
 void MatrixOut(matrix &m)
 {
@@ -185,8 +146,8 @@ void Init(const string &api, int width, int height)
 	Fullscreen = false; // before nix is started, we're hopefully not in fullscreen mode
 
 
-	ScreenWidth = DesktopWidth;
-	ScreenHeight = DesktopHeight;
+	device_width = width;
+	device_height = height;
 
 	// reset data
 	Api = -1;
@@ -198,18 +159,15 @@ void Init(const string &api, int width, int height)
 	// default values of the engine
 	MatrixIdentity(view_matrix);
 	MatrixIdentity(projection_matrix);
-	MouseMappingWidth = 1024;
-	MouseMappingHeight = 768;
-	MaxDepth = 100000.0f;
-	MinDepth = 1.0f;
 	TextureMaxFramesToLive = 4096 * 8;
 	ClipPlaneMask = 0;
 	CullingInverted = false;
 
 
 
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
+	init_textures();
+	init_shaders();
+	init_vertex_buffers();
 
 	Resize(width, height);
 
@@ -223,10 +181,8 @@ void Init(const string &api, int width, int height)
 	CullingInverted = false;
 	SetProjectionPerspective();
 	SetZ(true, true);
+	SetShader(default_shader_3d);
 
-	TexturesInit();
-
-	vb_temp = new VertexBuffer(1);
 	Usable = true;
 
 
@@ -395,7 +351,7 @@ unsigned int OGLGetAlphaMode(int mode)
 void SetAlpha(int src,int dst)
 {
 	glEnable(GL_BLEND);
-	glDisable(GL_ALPHA_TEST);
+	//glDisable(GL_ALPHA_TEST);
 	glBlendFunc(OGLGetAlphaMode(src),OGLGetAlphaMode(dst));
 	TestGLError("SetAlphaII");
 }
@@ -405,14 +361,15 @@ void SetAlphaSD(int src,int dst)
 
 void SetAlpha(float factor)
 {
-	glDisable(GL_ALPHA_TEST);
+	msg_error("deprecated... SetAlpha(factor)");
+	/*glDisable(GL_ALPHA_TEST);
 	float di[4];
 	glGetMaterialfv(GL_FRONT,GL_DIFFUSE,di);
 	di[3]=factor;
 	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,di);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-	TestGLError("SetAlphaF");
+	TestGLError("SetAlphaF");*/
 }
 
 void SetStencil(int mode,unsigned long param)

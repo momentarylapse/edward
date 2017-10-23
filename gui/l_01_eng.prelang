@@ -1,1256 +1,4771 @@
 // Language
 English
 // Num IDs
-623
-// Data (ID,Text)
-ad_dialog
+1587
+// Data (ID,Text,Tooltip)
+/ad_dialog
 Administration
-ad_edit
+
+/ad_edit
 Edit
-ad_export_game
+
+/ad_export_game
 Export game
-ad_rudimentary_configuration
+
+/ad_rudimentary_configuration
 Basic settings
-ad_tab_control
+
+/ad_tab_control
 Current game\\All files\\Details\\Not needed\\Missing
-add_material
+
+/add_material
 New...
-add_new_material
 
-add_point
+/add_new_material
 
-add_script
+
+/add_point
+
+
+/add_script
 Add
-add_texture_level
-New
-admin_button_bar
 
-administrate
+/add_texture_level
+New
+
+/admin_button_bar
+
+
+/administrate
 Administrate
-adt_dest
+
+/adt_dest
 !bold\\Needs
-adt_file
+
+/adt_file
 !bold\\File
-adt_source
+
+/adt_source
 !bold\\Needed by
-align_to_grid
+
+/align_to_grid
 Align to grid
-allow_sun
+
+/allow_sun
 Allow sun
-alpha_dest
+
+/alpha_dest
 AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha
-alpha_factor
+
+/alpha_factor
 \\0\\100\\1
-alpha_source
+
+/alpha_source
 AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha
-alpha_z_buffer
+
+/alpha_z_buffer
 Z-buffer enabled
+
+/ambient
 ambient
-ambient
-ani_dt_sim_param
 
-ani_dt_sim_speed
+/ani_dt_sim_param
 
-animation_copy
 
-animation_delete
+/ani_dt_sim_speed
+
+
+/animation_copy
+
+
+/animation_delete
 Delete
-animation_dialog
+
+/animation_dialog
 Animation
-animation_list
+
+/animation_list
 #\\type\\num frames\\name
-animation_new
+
+/animation_new
 New
-apply
+
+/apply
 Apply
-apply_material
 
-automapping
+/apply_material
 
-autoweld_surfaces
 
-axis
+/automapping
 
-ball_type:ball
 
-ball_type:sphere
+/autoweld_surfaces
 
-bevel_edges
 
-bgc
+/axis
+
+
+/ball_type:ball
+
+
+/ball_type:sphere
+
+
+/bevel_edges
+
+
+/bgc
 !alpha
-brightness
+
+/brightness
 \\0\\100\\0.1
-cam_edit_ang
 
-cam_edit_vel
+/cam_edit_ang
 
-cam_preview
 
-cam_stop
+/cam_edit_vel
 
-campoint__grp_ang
+
+/cam_preview
+
+
+/cam_stop
+
+
+/campoint__grp_ang
 angle
-campoint__grp_pos
+
+/campoint__grp_pos
 position
-campoint__grp_vel
+
+/campoint__grp_vel
 velocity
-campoint_dialog
+
+/campoint_dialog
 Camera point
-campoint_t_delay
+
+/campoint_t_delay
 delay
-campoint_t_type
+
+/campoint_t_type
 type
-campoint_type
+
+/campoint_type
 PositionSet\\PositionAdd\\AngleSet\\Position & Angle Set\\Flight\\FlightRelative
-camscript_create
+
+/camscript_create
 CameraFlight (new)...
-camscript_load
+
+/camscript_load
 CameraFlight (load)...
-cancel
+
+/cancel
 Cancel
-choose_material
+
+/choose_material
 Choose material...
-clear_texture_level
+
+/clear_texture_level
 Clear
-connect
+
+/connect
 Connect Points
-convert_to_triangles
 
-copy
+/convert_to_triangles
+
+
+/copy
 Copy
-create_lightmap
+
+/create_lightmap
 Render lightmap...
-create_objects
+
+/create_objects
 Objects...
-current_mode_font
+
+/current_mode_font
 -Font-Mode-
-current_mode_model_skeleton
+
+/current_mode_model_skeleton
 -Model-Mode (Skeleton)-
-cut_out
+
+/cut_out
 Cut off
-def_cyl_t_axis
 
-default_colors
+/def_cyl_t_axis
+
+
+/default_colors
 Use colors from material
-default_material
+
+/default_material
 use default material
-deformation_brush
 
-deformation_cyl_dialog_buttonbar
+/deformation_brush
 
-deformation_cylinder
 
-deformation_cylinder_dialog
+/deformation_cyl_dialog_buttonbar
 
-deformation_dialog_buttonbar
 
-deformation_function
+/deformation_cylinder
 
-deformation_function_dialog
 
-degree
+/deformation_cylinder_dialog
+
+
+/deformation_dialog_buttonbar
+
+
+/deformation_function
+
+
+/deformation_function_dialog
+
+
+/degree
 °
-delete
-Delete
-delete_frame
 
-delete_item
+/delete
+Delete
+
+/delete_frame
+
+
+/delete_item
 Delete item
-delete_point
 
-delete_texture_level
+/delete_point
+
+
+/delete_texture_level
 Delete texture level
-detail_0
+
+/detail_0
 Physical skin
-detail_1
+
+/detail_1
 High-precicion skin
-detail_2
+
+/detail_2
 Med-precicion skin
-detail_3
+
+/detail_3
 Low-precicion skin
+
+/diffuse
 diffuse
-diffuse
-dummy_text
 
-easify_dialog
+/dummy_text
+
+
+/easify_dialog
 Easify skin
-easify_dialog_buttonbar
 
-easify_skin
+/easify_dialog_buttonbar
+
+
+/easify_skin
 Easify skin
-eat_estimate
 
-eat_quality
+/eat_estimate
+
+
+/eat_quality
 quality factor
-edit_material
+
+/edit_material
 edit
-edit_terrain_selectable
+
+/edit_terrain_selectable
 Selectable
-edit_terrain_vertices
+
+/edit_terrain_vertices
 Edit vertices
-editor_dialog
+
+/editor_dialog
 Editor
-editor_dialog_t_adress
+
+/editor_dialog_t_adress
 Website:
-editor_dialog_t_creator
+
+/editor_dialog_t_creator
 Creator:
-editor_dialog_t_language
+
+/editor_dialog_t_language
 language
-editor_dialog_t_version
+
+/editor_dialog_t_version
 Version:
-editor_dialog_t_workingdirectory
+
+/editor_dialog_t_workingdirectory
 Working directory
-editor_dialog_tab_control
+
+/editor_dialog_tab_control
 Information\\Properties\\Keys
+
+/emission
 emission
-emission
-execute_plugin
+
+/execute_plugin
 Execute plugin
-exit
+
+/exit
 Exit
-exponent
+
+/exponent
 \\0\\10\\0.05
-export_game
+
+/export_game
 Export...
-export_group
+
+/export_group
 Groupe...
-export_to_gamestudio
+
+/export_to_gamestudio
 To GameStudio...
-export_to_json
 
-export_type
+/export_to_json
+
+
+/export_type
 single files\\archive (compressed)\\archive (uncompressed)
-export_world
+
+/export_world
 Export world
-extrude_triangles
+
+/extrude_triangles
 Extrude
-factorx
 
-factory
+/factorx
 
-file_list_all
+
+/factory
+
+
+/file_list_all
 !format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
-file_list_cur
+
+/file_list_cur
 !format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
-file_list_detail_dest
+
+/file_list_detail_dest
 !format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
-file_list_detail_source
+
+/file_list_detail_source
 !format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
-file_list_missing
+
+/file_list_missing
 !format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
-file_list_super
+
+/file_list_super
 !format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
-flatten_vertices
+
+/flatten_vertices
 Flatten
-fog_distance
 
-fog_end
+/fog_distance
 
-fog_mode:exp
 
-fog_mode:exp2
+/fog_end
 
-fog_mode:linear
 
-fog_mode:none
+/fog_mode:exp
 
-fog_start
 
-font_dialog
+/fog_mode:exp2
+
+
+/fog_mode:linear
+
+
+/fog_mode:none
+
+
+/fog_start
+
+
+/font_dialog
 Font properties
-font_dt_character
 
-font_dt_example
+/font_dt_character
 
-font_dt_font
 
-font_dt_height
+/font_dt_example
 
-font_dt_name
 
-font_dt_numglyphs
+/font_dt_font
 
-font_dt_scalex
 
-font_dt_scaley
+/font_dt_height
 
-font_dt_unknown
 
-font_dt_width
+/font_dt_name
 
-font_dt_x1
 
-font_dt_x2
+/font_dt_numglyphs
 
-font_dt_y1
 
-font_dt_y2
+/font_dt_scalex
 
-font_new
+
+/font_dt_scaley
+
+
+/font_dt_unknown
+
+
+/font_dt_width
+
+
+/font_dt_x1
+
+
+/font_dt_x2
+
+
+/font_dt_y1
+
+
+/font_dt_y2
+
+
+/font_new
 New
-font_open
+
+/font_open
 Open...
-formula
+
+/formula
 Linear\\1/r^2
-fps_const
 
-fps_factor
+/fps_const
 
-frame
 
-fx_dialog
+/fps_factor
+
+
+/frame
+
+
+/fx_dialog
 Add a new effect...
-fx_edit
 
-fx_headline
+/fx_edit
+
+
+/fx_headline
 Selected vertices
-fx_new_field
 
-fx_new_light
+/fx_new_field
 
-fx_new_script
 
-fx_new_sound
+/fx_new_light
 
-fx_none
+
+/fx_new_script
+
+
+/fx_new_sound
+
+
+/fx_none
 -none-
-fx_tab_control
+
+/fx_tab_control
 fire\\light\\sound\\force field
-fxt_force_desc
+
+/fxt_force_desc
 ( attracting acceleration, Linear: max. value, 1/r^2: value for r=1m )
-fxt_force_formula
+
+/fxt_force_formula
 formula
-fxt_force_intensity
+
+/fxt_force_intensity
 density
-fxt_force_range
+
+/fxt_force_range
 range
-fxt_lightradius
+
+/fxt_lightradius
 radius
-fxt_scriptfile
+
+/fxt_scriptfile
 script file
-fxt_sound_mono_advice
+
+/fxt_sound_mono_advice
 (has to be mono!)
-fxt_soundfile
+
+/fxt_soundfile
 sound file
-fxt_soundrange
+
+/fxt_soundrange
 max. range
-fxt_soundspeed
+
+/fxt_soundspeed
 speed
-ge_dialog
+
+/ge_dialog
 Export the game
-ged_group
+
+/ged_group
 !bold\\Startup game values
-ged_group_dest
+
+/ged_group_dest
 !bold\\Destination
-ged_system
+
+/ged_system
 linux\\windows 32
-ged_t_export_type
+
+/ged_t_export_type
 type of export:
-ged_t_font
+
+/ged_t_font
 font:
-ged_t_material
+
+/ged_t_material
 material:
-ged_t_rootdir
+
+/ged_t_rootdir
 !bold\\Directory
-ged_t_script
+
+/ged_t_script
 main script:
-ged_t_second_world
+
+/ged_t_second_world
 second world
-ged_t_system
+
+/ged_t_system
 system aimed for:
-ged_t_world
+
+/ged_t_world
 world:
-generate_dists_auto
+
+/generate_dists_auto
 auto calculation
-generate_skin_auto
 
-generate_tensor_auto
+/generate_skin_auto
+
+
+/generate_tensor_auto
 auto
-gravitation_x
 
-gravitation_y
+/gravitation_x
 
-gravitation_z
 
-grid
+/gravitation_y
+
+
+/gravitation_z
+
+
+/grid
 Grid
-height
 
-height_op:add
+/height
+
+
+/height_op:add
 Add
-height_op:set
+
+/height_op:set
 Overwrite
-height_to_terrain
+
+/height_to_terrain
 Height = terrain
-help
+
+/help
 Help...
-import
+
+/import
 Import...
-import_from_3ds
+
+/import_from_3ds
 3D Studio Max...
-import_from_gamestudio
+
+/import_from_gamestudio
 GameStudio...
-import_from_json
 
-import_from_lineage2
+/import_from_json
+
+
+/import_from_lineage2
 Lineage II...
-import_from_ply
 
-import_group
+/import_from_ply
+
+
+/import_group
 Groupe...
-import_world_properties
+
+/import_world_properties
 World properties...
-invert_selection
+
+/invert_selection
 Invert
-invert_trias
+
+/invert_trias
 Triangle inversion
-just_selection
+
+/just_selection
 Selection
-key_dialog
+
+/key_dialog
 Key combination
-key_dialog_t_key
+
+/key_dialog_t_key
 combination:
-key_list
+
+/key_list
 !tree\\command\\keys
-level
+
+/level
 0
-light
+
+/light
 Light
-lightmap_dialog
+
+/lightmap_dialog
 Create lightmap
-lightmap_list
+
+/lightmap_list
 !nobar\\a
-lightmap_type
+
+/lightmap_type
 Raytracing\\Radiosity\\Radiosity schnell\\Photon Map
-lmt_brightness
+
+/lmt_brightness
 Surface brightness
-lmt_exponent
+
+/lmt_exponent
 Brightness exponent
-lmt_new_world
 
-lmt_photons
+/lmt_new_world
+
+
+/lmt_photons
 Number of Photons
-lmt_spacial_resolution
+
+/lmt_spacial_resolution
 Spacial resolution
-local_documentation
+
+/local_documentation
 Use local documentation instead of online version
-location
+
+/location
 CalcMove 1\\CalcMove 2\\Render 1\\Render 2\\Render 3\\GetInput 1\\GetInput 2
-lod
 
-logo
+/lod
+
+
+/logo
 Data/model.png
-look_for_updates
+
+/look_for_updates
 Look for updates at program start
+
+/lu
 lu
-lu
-luss
+
+/luss
 lu/s^2
-mass
 
-mat_add_texture_level
+/mass
+
+
+/mat_add_texture_level
 new level
-mat_am
 
-mat_delete_texture_level
+/mat_am
+
+
+/mat_delete_texture_level
 delete level
-mat_di
+
+/mat_di
 !alpha
-mat_empty_texture_level
+
+/mat_empty_texture_level
 Empty
-mat_shininess
+
+/mat_shininess
 \\0\\10000\\0.1
-mat_textures
+
+/mat_textures
 Level\\Texture
-mat_transp_alpha_grid
 
-mat_transp_function_grid
+/mat_transp_alpha_grid
 
-material_dialog
+
+/mat_transp_function_grid
+
+
+/material_dialog
 Material appearance
-material_dialog_grp_color
 
-material_dialog_grp_friction
+/material_dialog_grp_color
 
-material_dialog_grp_reflection
 
-material_dialog_grp_shader
+/material_dialog_grp_friction
 
-material_dialog_grp_textures
 
-material_dialog_grp_transparency
+/material_dialog_grp_reflection
 
-material_dialog_t_refl_density
+
+/material_dialog_grp_shader
+
+
+/material_dialog_grp_textures
+
+
+/material_dialog_grp_transparency
+
+
+/material_dialog_t_refl_density
 density:
-material_dialog_t_trans_dest
+
+/material_dialog_t_trans_dest
 dest
-material_dialog_t_trans_source
+
+/material_dialog_t_trans_source
 source
-material_list
+
+/material_list
 Material\\Triangles\\File
-material_new
+
+/material_new
 New
-material_open
+
+/material_open
 Open...
-material_physics_dialog_t_rcjump
+
+/material_physics_dialog_t_rcjump
 jumping:
-material_physics_dialog_t_rcroll
 
-material_physics_dialog_t_rcsliding
+/material_physics_dialog_t_rcroll
+
+
+/material_physics_dialog_t_rcsliding
 sliding:
-material_physics_dialog_t_rcstatic
+
+/material_physics_dialog_t_rcstatic
 static:
-material_shape_ball
 
-material_shape_cube
+/material_shape_ball
 
-material_shape_icosahedron
 
-material_shape_smooth
+/material_shape_cube
 
-material_shape_teapot
 
-material_shape_torus
+/material_shape_icosahedron
 
-material_shape_torusknot
 
-material_sound_dialog
+/material_shape_smooth
+
+
+/material_shape_teapot
+
+
+/material_shape_torus
+
+
+/material_shape_torusknot
+
+
+/material_sound_dialog
 Sounds
-max_script_vars
+
+/max_script_vars
 \\0
-menu_administration_file
+
+/menu_administration_file
 File
-menu_administration_game
+
+/menu_administration_game
 Game
-menu_all_header
+
+/menu_all_header
 All
-menu_edge_header
 
-menu_file
+/menu_edge_header
+
+
+/menu_file
 File
-menu_font
+
+/menu_font
 Font
-menu_font_edit
-Edit
-menu_help
-?
-menu_mapping
 
-menu_material
+/menu_font_edit
+Edit
+
+/menu_help
+?
+
+/menu_mapping
+
+
+/menu_material
 Material
-menu_material_shape
 
-menu_model
+/menu_material_shape
+
+
+/menu_model
 Model
-menu_model_appearance
+
+/menu_model_appearance
 Appearance
-menu_model_creation
+
+/menu_model_creation
 Create
-menu_model_deformation
 
-menu_model_edit
+/menu_model_deformation
+
+
+/menu_model_edit
 Edit
-menu_model_export
+
+/menu_model_export
 Export
-menu_model_file
+
+/menu_model_file
 File
-menu_model_fx
+
+/menu_model_fx
 Effects
-menu_model_geometry
 
-menu_model_import
+/menu_model_geometry
+
+
+/menu_model_import
 Import
-menu_model_material
 
-menu_model_mode
+/menu_model_material
+
+
+/menu_model_mode
 Mode
-menu_model_move
+
+/menu_model_move
 Animation
-menu_model_normals
+
+/menu_model_normals
 Normals
-menu_model_platonic
 
-menu_model_selection
+/menu_model_platonic
+
+
+/menu_model_selection
 Selection
-menu_model_skeleton
+
+/menu_model_skeleton
 Skeleton
-menu_model_skin
+
+/menu_model_skin
 Skin
-menu_model_view
+
+/menu_model_view
 View
-menu_model_viewstage
+
+/menu_model_viewstage
 Viewstage
-menu_rightmouse
+
+/menu_rightmouse
 Right mouse button
-menu_surface_header
+
+/menu_surface_header
 On surfaces
-menu_terrain_texture
+
+/menu_terrain_texture
 Terrain texture
-menu_tria_header
+
+/menu_tria_header
 On triangles
-menu_vertex2_header
 
-menu_vertex_header
+/menu_vertex2_header
+
+
+/menu_vertex_header
 On vertices
-menu_world
+
+/menu_world
 World
-menu_world_creation
+
+/menu_world_creation
 Create
-menu_world_edit
+
+/menu_world_edit
 Edit
-menu_world_export
+
+/menu_world_export
 Export
-menu_world_file
+
+/menu_world_file
 File
-menu_world_help
+
+/menu_world_help
 ?
-menu_world_import
+
+/menu_world_import
 Import
-menu_world_operation
+
+/menu_world_operation
 Operations
-menu_world_selection
+
+/menu_world_selection
 Selection
-menu_world_sign_add
+
+/menu_world_sign_add
 Add to world
-menu_world_sign_object
+
+/menu_world_sign_object
 Objects
-menu_world_sign_terrain
+
+/menu_world_sign_terrain
 Terrain
-menu_world_view
+
+/menu_world_view
 View
-mirror
-mirror
-mmat_transp_alpha_grid
 
-mmat_transp_function_grid
+/mirror
+mirror
 
-mode_model_animation
+/mmat_transp_alpha_grid
+
+
+/mmat_transp_function_grid
+
+
+/mode_model_animation
 Animation
-mode_model_edge
+
+/mode_model_edge
 Edges
-mode_model_materials
+
+/mode_model_materials
 Materials...
-mode_model_mesh
+
+/mode_model_mesh
 Mesh
-mode_model_skeleton
+
+/mode_model_skeleton
 Skeleton
-mode_model_surface
+
+/mode_model_surface
 Surfaces
-mode_model_texture_coord
+
+/mode_model_texture_coord
 Texture coordinates
-mode_model_triangle
+
+/mode_model_triangle
 Triangles
-mode_model_vertex
+
+/mode_model_vertex
 Vertices
-mode_properties
+
+/mode_properties
 Properties...
-model_dialog
+
+/model_dialog
 Model properties
-model_dialog_button_bar
 
-model_dialog_grp_physics
+/model_dialog_button_bar
+
+
+/model_dialog_grp_physics
 !bold\\General
-model_dialog_grp_tensor
+
+/model_dialog_grp_tensor
 !bold\\Moment of inertia tensor
-model_dialog_t_description
+
+/model_dialog_t_description
 Description
-model_dialog_t_mass
+
+/model_dialog_t_mass
 Mass
-model_dialog_t_maxitems
+
+/model_dialog_t_maxitems
 Max items
-model_dialog_t_name
+
+/model_dialog_t_name
 Name
-model_dialog_t_num_lod
 
-model_dialog_t_scriptfile
+/model_dialog_t_num_lod
+
+
+/model_dialog_t_scriptfile
 File
-model_dialog_t_scriptvars
+
+/model_dialog_t_scriptvars
 !bold\\Script variables:
-model_dialog_tab_control
+
+/model_dialog_tab_control
 level of detail\\material\\physics\\inventary\\script
-model_inventary
+
+/model_inventary
 #\\File
-model_material_dialog
 
-model_material_dialog_grp_color
+/model_material_dialog
 
-model_material_dialog_grp_list
 
-model_material_dialog_grp_textures
+/model_material_dialog_grp_color
 
-model_material_dialog_grp_transparency
 
-model_material_selection_dialog
+/model_material_dialog_grp_list
+
+
+/model_material_dialog_grp_textures
+
+
+/model_material_dialog_grp_transparency
+
+
+/model_material_selection_dialog
 Select a material
-model_new
+
+/model_new
 New
-model_open
+
+/model_open
 Open...
-move_allframes
+
+/move_allframes
 Effect all frames
-move_frame_dec
+
+/move_frame_dec
 Next
-move_frame_delete
+
+/move_frame_delete
 Selete
-move_frame_inc
+
+/move_frame_inc
 Last
-move_frame_insert
+
+/move_frame_insert
 Insert
-move_frame_interpolate
 
-move_frame_sign
+/move_frame_interpolate
+
+
+/move_frame_sign
 Frame
-move_reset
+
+/move_reset
 Reset
+
+/ms
 ms
-ms
-msd_table_2
 
-mu
+/msd_table_2
 
-name
 
-nb_complexity
-\\1
-nb_x
-\\1
-nb_y
-\\1
-nbd_grid_ball
+/mu
 
-nbd_grid_sphere
 
-nc_x
+/name
+
+
+/nb_complexity
 \\1
-nc_y
+
+/nb_x
 \\1
-nc_z
+
+/nb_y
 \\1
-ncdt_slides
+
+/nbd_grid_ball
+
+
+/nbd_grid_sphere
+
+
+/nc_x
+\\1
+
+/nc_y
+\\1
+
+/nc_z
+\\1
+
+/ncdt_slides
 Stripes
-ncy_edges
+
+/ncy_edges
 \\2
-ncy_rings
+
+/ncy_rings
 \\1
-nearify
+
+/nearify
 Nearify
-new
+
+/new
 New
-new_animation_buttonbar
 
-new_animation_dialog
+/new_animation_buttonbar
+
+
+/new_animation_dialog
 New animation
-new_animation_index
+
+/new_animation_index
 \\0
-new_animation_t_index
+
+/new_animation_t_index
 index
-new_animation_t_type
+
+/new_animation_t_type
 type:
-new_animation_type
+
+/new_animation_type
 vertex\\skeleton
-new_ball
+
+/new_ball
 ball
-new_ball_dialog
+
+/new_ball_dialog
 New ball
-new_ball_dialog_t_comp
+
+/new_ball_dialog_t_comp
 Complexity
-new_ball_dialog_t_x
+
+/new_ball_dialog_t_x
 # discs
-new_ball_dialog_t_y
+
+/new_ball_dialog_t_y
 # vertices per disc
-new_cube
+
+/new_cube
 Cube
-new_cube_dialog
+
+/new_cube_dialog
 new cube
-new_cylinder
+
+/new_cylinder
 Cylinder...
-new_cylinder_dialog
+
+/new_cylinder_dialog
 New Cylinder
-new_cylinder_dialog_t_edges
+
+/new_cylinder_dialog_t_edges
 edges
-new_cylinder_dialog_t_rings
+
+/new_cylinder_dialog_t_rings
 rings
-new_cylindersnake
 
-new_dodecahedron
+/new_cylindersnake
 
-new_extract
+
+/new_dodecahedron
+
+
+/new_extract
 Extract
-new_frame
 
-new_icosahedron
+/new_frame
 
-new_octahedron
 
-new_outline
+/new_icosahedron
+
+
+/new_octahedron
+
+
+/new_outline
 Outline
-new_plane
+
+/new_plane
 Plane
-new_plane_dialog
+
+/new_plane_dialog
 New plane
-new_plane_dialog_t_x
+
+/new_plane_dialog_t_x
 # srtipes X:
-new_plane_dialog_t_y
+
+/new_plane_dialog_t_y
 # stripes Y:
-new_point
+
+/new_point
 Vertex
-new_teapot
 
-new_teapot_dialog
+/new_teapot
 
-new_teapot_dialog_t_samples
 
-new_terrain_buttonbar
+/new_teapot_dialog
 
-new_terrain_dialog
+
+/new_teapot_dialog_t_samples
+
+
+/new_terrain_buttonbar
+
+
+/new_terrain_dialog
 New terrain
-new_tetrahedron
 
-new_torus
+/new_tetrahedron
 
-new_torus_dialog
 
-new_torus_dialog_slides
+/new_torus
 
-new_torus_dialog_t_edges
 
-new_torus_dialog_t_rings
+/new_torus_dialog
 
-new_tria
+
+/new_torus_dialog_slides
+
+
+/new_torus_dialog_t_edges
+
+
+/new_torus_dialog_t_rings
+
+
+/new_tria
 New triangle
-normal_this_angular
+
+/normal_this_angular
 Angular
-normal_this_hard
+
+/normal_this_hard
 Edgy
-normal_this_smooth
+
+/normal_this_smooth
 Smooth
-np_num_x
+
+/np_num_x
 \\1
-np_num_y
+
+/np_num_y
 \\1
-nt_edges
 
-nt_rings
+/nt_edges
 
-nterrain_dialog_t_raster
 
-nterrain_dialog_t_stripes
+/nt_rings
 
-nterrain_dialog_t_terrainsize
 
-ntp_samples
+/nterrain_dialog_t_raster
 
-num
 
-num_items
+/nterrain_dialog_t_stripes
+
+
+/nterrain_dialog_t_terrainsize
+
+
+/ntp_samples
+
+
+/num
+
+
+/num_items
 \\0
-num_lod
 
-num_x
+/num_lod
+
+
+/num_x
 \\1
-num_z
+
+/num_z
 \\1
-odt_max_scriptvars
+
+/odt_max_scriptvars
 max number:
-ok
+
+/ok
 OK
-open
+
+/open
 Open...
-opt_view
+
+/opt_view
 Optimal
-own_figure
+
+/own_figure
 Own character
-parameter
 
-paste
+/parameter
+
+
+/paste
 Paste
-pattern_x
 
-pattern_z
+/pattern_x
 
-percent
+
+/pattern_z
+
+
+/percent
 %
-ph_active
+
+/ph_active
 physics active
-ph_passive
+
+/ph_passive
 physics passive
-photons
+
+/photons
 \\0
-physics_enabled
+
+/physics_enabled
 Enables
-preview
 
-progress_cancelable_dialog
+/preview
+
+
+/progress_cancelable_dialog
 working
-progress_dialog
+
+/progress_dialog
 working
-property_list
+
+/property_list
 type\\index\\name
-quality_factor
+
+/quality_factor
 \\0\\100\\0.1
-quality_slider
 
-rand_id_804117
+/quality_slider
 
-rc_dialog
+
+/rand_id_804117
+
+
+/rc_dialog
 Rudimentary configuration
-rcjump
 
-rcroll
+/rcjump
 
-rcsliding
 
-rcstatic
+/rcroll
 
-redo
+
+/rcsliding
+
+
+/rcstatic
+
+
+/redo
 Redo
-reflection_density
+
+/reflection_density
 \\0\\100\\1
-reflection_mode:cube_dynamic
 
-reflection_mode:cube_static
+/reflection_mode:cube_dynamic
 
-reflection_mode:none
 
-reflection_size
+/reflection_mode:cube_static
+
+
+/reflection_mode:none
+
+
+/reflection_size
 \\1\\10000\\1
-reflection_textures
+
+/reflection_textures
 face\\texture
-remove_script
+
+/remove_script
 Remove
-remove_skybox
+
+/remove_skybox
 Remove
-rename
+
+/rename
 Rename
-resolution
+
+/resolution
 \\0\\1000\\0.1
-rotate
+
+/rotate
 Rotate
-rotation_dialog
+
+/rotation_dialog
 Rotation
-rudimentary_configuration
+
+/rudimentary_configuration
 Basic settings
-save
+
+/save
 Save
-save_as
+
+/save_as
 Save as...
-scale
+
+/scale
 Scale X=Y=Z
-scale_2d
+
+/scale_2d
 Scale 2D
-scaling_dialog
+
+/scaling_dialog
 Scaling
-script
 
-script_list
+/script
+
+
+/script_list
 !nobar\\File
-script_vars
+
+/script_vars
 #\\name\\type\\value
-scriptvar_dialog
+
+/scriptvar_dialog
 Script variable
-scriptvar_t_index
+
+/scriptvar_t_index
 index:
-scriptvar_t_value
+
+/scriptvar_t_value
 value:
-select_all
+
+/select_all
 Select all
-select_cw
+
+/select_cw
 triangles only clockwise
-select_none
+
+/select_none
 Select none
-selection_properties
+
+/selection_properties
 Properties...
-send_bug_report
+
+/send_bug_report
 Report a bug
-sep_vertical
 
-settings
+/sep_vertical
+
+
+/settings
 Settings...
-shader_file
 
+/shader_file
+
+
+/shininess
 shininess
-shininess
-show_fx
+
+/show_fx
 Effects
-show_objects
+
+/show_objects
 Objects
-show_points
+
+/show_points
 Points
-show_terrains
+
+/show_terrains
 Terrains
-sim_start
 
-sim_stop
+/sim_start
 
-skeleton_add_model
+
+/sim_stop
+
+
+/skeleton_add_model
 Add model
-skeleton_edit_bone
+
+/skeleton_edit_bone
 Vertices of bone
-skeleton_import
+
+/skeleton_import
 Import...
-skeleton_link
+
+/skeleton_link
 Create link
-skeleton_new_point
+
+/skeleton_new_point
 New vertex
-skeleton_no_model
+
+/skeleton_no_model
 No model
-skeleton_selection_sign
+
+/skeleton_selection_sign
 Selection
-skeleton_unlink
+
+/skeleton_unlink
 Unlink
-skybox
+
+/skybox
 #\\model ('SkyBox')
-sound_list
+
+/sound_list
 Sound file\\Material\\v min\\v max
+
+/specular
 specular
-specular
+
+/speed
+
+
+/stretch_x
+1\\0\\1000\\0.01
+
+/stretch_z
+1\\0\\1000\\0.01
+
+/subdivide_surfaces
+
+
+/sun_ang_from_camera
+Direction from camera
+
+/sun_enabled
+enabled
+
+/t_animationfpsconst
+
+
+/t_animationfpsfactor
+
+
+/t_dummy
+
+
+/t_frame
+
+
+/t_list
+
+
+/t_name
+
+
+/t_properties
+
+
+/t_simulate
+
+
+/tensor
+
+
+/terrain_create
+Terrain (new)...
+
+/terrain_dialog
+Terrain properties
+
+/terrain_dialog_grp_apply
+!bold\\Apply
+
+/terrain_dialog_t_filename
+terrain file:
+
+/terrain_dialog_t_filter
+Filter (optional)
+
+/terrain_dialog_t_heightmap
+heightmap
+
+/terrain_dialog_t_material
+material
+
+/terrain_dialog_t_raster
+raster size
+
+/terrain_dialog_t_stripes
+# stripes
+
+/terrain_dialog_tab_control
+properties\\textures\\material\\import
+
+/terrain_heightmap
+Heightmap
+
+/terrain_heightmap_dialog
+Heightmap
+
+/terrain_hm_dialog_grp_heightmap
+!bold\\Height from image's brightness
+
+/terrain_hm_dialog_t_gray
+Maximum height
+
+/terrain_hm_dialog_t_op
+Operation
+
+/terrain_hm_dialog_t_stretch
+Zoom
+
+/terrain_load
+Terrain (load)...
+
+/terrain_rescale
+
+
+/terrain_save_as
+Save...
+
+/terrain_show_texture_final
+Final
+
+/terrain_show_texture_level0
+Level 0
+
+/terrain_show_texture_level1
+Level 1
+
+/terrain_show_texture_level2
+Level 2
+
+/terrain_show_texture_level3
+Level 3
+
+/terrain_show_texture_level4
+Level 4
+
+/terrain_show_texture_level5
+Level 5
+
+/terrain_show_texture_level6
+Level 6
+
+/terrain_show_texture_level7
+Level 7
+
+/terrain_x
+
+
+/terrain_z
+
+
+/text_from_bg
+Texture coordinates from background
+
+/texture
+Textur...
+
+/texture_choose
+Find...
+
+/texture_delete
+Delete
+
+/texture_empty
+Leeren
+
+/texture_map_complete
+1:1 mapping
+
+/texture_menu_sign
+Texture
+
+/textures
+!format=tTTit\\Level\\Size X\\Size Z\\\\File
+
+/transparency_mode:color_key
+Color key
+
+/transparency_mode:factor
+Factor
+
+/transparency_mode:function
+Function
+
+/transparency_mode:material
+Transparency from material
+
+/transparency_mode:none
+No transparency
+
+/triangulate_selection
+
+
+/undo
+Undo
+
+/untriangulate_selection
+
+
+/view_back
+Back (-z)
+
+/view_bottom
+Bottom (y)
+
+/view_front
+Front (z)
+
+/view_isometric
+Isometric
+
+/view_left
+Left (x)
+
+/view_menu_sign
+View
+
+/view_perspective
+Perspective
+
+/view_pop
+Pop out
+
+/view_push
+Push in
+
+/view_right
+Right (-x)
+
+/view_top
+Top (-y)
+
+/volume_and
+
+
+/volume_subtract
+
+
+/welcome_dialog
+Welcome to Edward.
+
+/welcome_list
+!icons
+
+/what_the_fuck
+\"about\"
+
+/whole_window
+Use complete window
+
+/width
+
+
+/wire
+Wire frame
+
+/word_dialog_fog_exp_grid
+
+
+/word_dialog_fog_lin_grid
+
+
+/world_camera_dialog
+
+
+/world_dialog
+World properties
+
+/world_dialog_buttonbar
+
+
+/world_dialog_grp_ambient
+ambient
+
+/world_dialog_grp_bg_color
+background color
+
+/world_dialog_grp_gravitation
+gravitation
+
+/world_dialog_grp_skybox
+!bold\\Skybox models
+
+/world_dialog_grp_sun
+!bold\\Sun
+
+/world_dialog_t_fog_distance
+Distance
+
+/world_dialog_t_fog_end
+
+
+/world_dialog_t_fog_start
+
+
+/world_dialog_t_max_script_vars
+number (max):
+
+/world_dialog_t_sun_ang_x
+X: Altitude above horizon (X-Z-plane)
+
+/world_dialog_t_sun_ang_y
+Y: Direction (Angle to Z-axis)
+
+/world_dialog_tab_control
+common\\background\\script variables
+
+/world_new
+New
+
+/world_new_object_dialog
+
+
+/world_object_dialog
+Object properties
+
+/world_object_dialog_grp_ang
+angle
+
+/world_object_dialog_grp_pos
+position
+
+/world_object_dialog_t_name
+name:
+
+/world_object_dialog_t_type
+type:
+
+/world_open
+Open...
+
+/world_ps_dialog
+Choose properies for editing
+
+/world_scriptfunc_choice_dialog
+Script function
+
+/world_scriptfunc_dialog
+Script function
+
+/world_scriptfunc_dialog_t_called_by
+executes by:
+
+/world_scriptfunc_dialog_t_delay
+pseudo delay:
+
+/world_scriptfunc_dialog_t_delaydesc
+(used for order of execution)
+
+/world_scriptfunc_dialog_t_name
+name of function:
+
+/x
+X
+
+/x1
+
+
+/x2
+
+
+/y
+Y
+
+/y1
+
+
+/y2
+
+
+/z
+Z
+
+/zzz_enableselection
+Enable selection
+
+/zzz_invertselection
+Invert selection
+
+/zzz_setbgimage
+Set background image
+
+ad_dialog/ad_dialog
+Administration
+
+ad_dialog/ad_edit
+Edit
+
+ad_dialog/ad_export_game
+Export game
+
+ad_dialog/ad_rudimentary_configuration
+Basic settings
+
+ad_dialog/ad_tab_control
+Current game\\All files\\Details\\Not needed\\Missing
+
+ad_dialog/adt_dest
+!bold\\Needs
+
+ad_dialog/adt_file
+!bold\\File
+
+ad_dialog/adt_source
+!bold\\Needed by
+
+ad_dialog/delete
+Delete
+
+ad_dialog/file_list_all
+!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
+
+ad_dialog/file_list_cur
+!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
+
+ad_dialog/file_list_detail_dest
+!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
+
+ad_dialog/file_list_detail_source
+!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
+
+ad_dialog/file_list_missing
+!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
+
+ad_dialog/file_list_super
+!format=ttttc\\Type\\File\\Needed by\\Needs\\Missing
+
+ad_dialog/rename
+Rename
+
+animation_dialog/ani_dt_sim_param
+
+
+animation_dialog/ani_dt_sim_speed
+
+
+animation_dialog/animation_copy
+
+
+animation_dialog/animation_delete
+Delete
+
+animation_dialog/animation_dialog
+Animation
+
+animation_dialog/animation_list
+#\\type\\num frames\\name
+
+animation_dialog/animation_new
+New
+
+animation_dialog/delete_frame
+
+
+animation_dialog/fps_const
+
+
+animation_dialog/fps_factor
+
+
+animation_dialog/new_frame
+
+
+animation_dialog/parameter
+
+
+animation_dialog/percent
+%
+
+animation_dialog/sim_start
+
+
+animation_dialog/sim_stop
+
+
+animation_dialog/speed
+
+
+animation_dialog/t_animationfpsconst
+
+
+animation_dialog/t_animationfpsfactor
+
+
+animation_dialog/t_frame
+
+
+animation_dialog/t_list
+
+
+animation_dialog/t_name
+
+
+animation_dialog/t_properties
+
+
+animation_dialog/t_simulate
+
+
+campoint_dialog/campoint__grp_ang
+angle
+
+campoint_dialog/campoint__grp_pos
+position
+
+campoint_dialog/campoint__grp_vel
+velocity
+
+campoint_dialog/campoint_dialog
+Camera point
+
+campoint_dialog/campoint_t_delay
+delay
+
+campoint_dialog/campoint_t_type
+type
+
+campoint_dialog/campoint_type
+PositionSet\\PositionAdd\\AngleSet\\Position & Angle Set\\Flight\\FlightRelative
+
+campoint_dialog/cancel
+Cancel
+
+campoint_dialog/degree
+°
+
+campoint_dialog/ms
+ms
+
+campoint_dialog/ok
+OK
+
+campoint_dialog/x
+X
+
+campoint_dialog/y
+Y
+
+campoint_dialog/z
+Z
+
+deformation_cylinder_dialog/axis
+
+
+deformation_cylinder_dialog/def_cyl_t_axis
+
+
+deformation_cylinder_dialog/deformation_cylinder_dialog
+
+
+deformation_cylinder_dialog/ok
+OK
+
+deformation_function_dialog/deformation_function_dialog
+
+
+deformation_function_dialog/ok
+OK
+
+deformation_function_dialog/preview
+
+
+easify_dialog/cancel
+Cancel
+
+easify_dialog/easify_dialog
+Easify skin
+
+easify_dialog/eat_estimate
+
+
+easify_dialog/eat_quality
+quality factor
+
+easify_dialog/ok
+OK
+
+easify_dialog/percent
+%
+
+easify_dialog/quality_factor
+\\0\\100\\0.1
+
+editor_dialog/editor_dialog
+Editor
+
+editor_dialog/editor_dialog_t_adress
+Website:
+
+editor_dialog/editor_dialog_t_creator
+Creator:
+
+editor_dialog/editor_dialog_t_language
+language
+
+editor_dialog/editor_dialog_t_version
+Version:
+
+editor_dialog/editor_dialog_t_workingdirectory
+Working directory
+
+editor_dialog/editor_dialog_tab_control
+Information\\Properties\\Keys
+
+editor_dialog/key_list
+!tree\\command\\keys
+
+editor_dialog/local_documentation
+Use local documentation instead of online version
+
+editor_dialog/logo
+Data/model.png
+
+editor_dialog/look_for_updates
+Look for updates at program start
+
+font_dialog/factorx
+
+
+font_dialog/factory
+
+
+font_dialog/font_dialog
+Font properties
+
+font_dialog/font_dt_character
+
+
+font_dialog/font_dt_example
+
+
+font_dialog/font_dt_font
+
+
+font_dialog/font_dt_height
+
+
+font_dialog/font_dt_name
+
+
+font_dialog/font_dt_numglyphs
+
+
+font_dialog/font_dt_scalex
+
+
+font_dialog/font_dt_scaley
+
+
+font_dialog/font_dt_unknown
+
+
+font_dialog/font_dt_width
+
+
+font_dialog/font_dt_x1
+
+
+font_dialog/font_dt_x2
+
+
+font_dialog/font_dt_y1
+
+
+font_dialog/font_dt_y2
+
+
+font_dialog/height
+
+
+font_dialog/num
+
+
+font_dialog/width
+
+
+font_dialog/x1
+
+
+font_dialog/x2
+
+
+font_dialog/y1
+
+
+font_dialog/y2
+
+
+fx_dialog/ambient
+ambient
+
+fx_dialog/cancel
+Cancel
+
+fx_dialog/diffuse
+diffuse
+
+fx_dialog/formula
+Linear\\1/r^2
+
+fx_dialog/fx_dialog
+Add a new effect...
+
+fx_dialog/fx_tab_control
+fire\\light\\sound\\force field
+
+fx_dialog/fxt_force_desc
+( attracting acceleration, Linear: max. value, 1/r^2: value for r=1m )
+
+fx_dialog/fxt_force_formula
+formula
+
+fx_dialog/fxt_force_intensity
+density
+
+fx_dialog/fxt_force_range
+range
+
+fx_dialog/fxt_lightradius
+radius
+
+fx_dialog/fxt_scriptfile
+script file
+
+fx_dialog/fxt_sound_mono_advice
+(has to be mono!)
+
+fx_dialog/fxt_soundfile
+sound file
+
+fx_dialog/fxt_soundrange
+max. range
+
+fx_dialog/fxt_soundspeed
 speed
 
-stretch_x
-1\\0\\1000\\0.01
-stretch_z
-1\\0\\1000\\0.01
-subdivide_surfaces
+fx_dialog/lu
+lu
 
-sun_ang_from_camera
-Direction from camera
-sun_enabled
-enabled
-t_animationfpsconst
+fx_dialog/luss
+lu/s^2
 
-t_animationfpsfactor
+fx_dialog/mat_di
+!alpha
 
-t_dummy
+fx_dialog/ok
+OK
 
-t_frame
+fx_dialog/percent
+%
 
-t_list
+fx_dialog/specular
+specular
 
-t_name
+ge_dialog/cancel
+Cancel
 
-t_properties
+ge_dialog/export_type
+single files\\archive (compressed)\\archive (uncompressed)
 
-t_simulate
+ge_dialog/ge_dialog
+Export the game
 
-tensor
+ge_dialog/ged_group
+!bold\\Startup game values
 
-terrain_create
-Terrain (new)...
-terrain_dialog
-Terrain properties
-terrain_dialog_grp_apply
-!bold\\Apply
-terrain_dialog_t_filename
-terrain file:
-terrain_dialog_t_filter
-Filter (optional)
-terrain_dialog_t_heightmap
-heightmap
-terrain_dialog_t_material
-material
-terrain_dialog_t_raster
-raster size
-terrain_dialog_t_stripes
-# stripes
-terrain_dialog_tab_control
-properties\\textures\\material\\import
-terrain_heightmap
-Heightmap
-terrain_heightmap_dialog
-Heightmap
-terrain_hm_dialog_grp_heightmap
-!bold\\Height from image's brightness
-terrain_hm_dialog_t_gray
-Maximum height
-terrain_hm_dialog_t_op
-Operation
-terrain_hm_dialog_t_stretch
-Zoom
-terrain_load
-Terrain (load)...
-terrain_rescale
+ge_dialog/ged_group_dest
+!bold\\Destination
 
-terrain_save_as
-Save...
-terrain_show_texture_final
-Final
-terrain_show_texture_level0
-Level 0
-terrain_show_texture_level1
-Level 1
-terrain_show_texture_level2
-Level 2
-terrain_show_texture_level3
-Level 3
-terrain_show_texture_level4
-Level 4
-terrain_show_texture_level5
-Level 5
-terrain_show_texture_level6
-Level 6
-terrain_show_texture_level7
-Level 7
-terrain_x
+ge_dialog/ged_system
+linux\\windows 32
 
-terrain_z
+ge_dialog/ged_t_export_type
+type of export:
 
-text_from_bg
-Texture coordinates from background
-texture
-Textur...
-texture_choose
-Find...
-texture_delete
-Delete
-texture_empty
-Leeren
-texture_map_complete
-1:1 mapping
-texture_menu_sign
-Texture
-textures
-!format=tTTit\\Level\\Size X\\Size Z\\\\File
-transparency_mode:color_key
-Color key
-transparency_mode:factor
-Factor
-transparency_mode:function
-Function
-transparency_mode:material
-Transparency from material
-transparency_mode:none
-No transparency
-triangulate_selection
+ge_dialog/ged_t_font
+font:
 
-undo
-Undo
-untriangulate_selection
+ge_dialog/ged_t_material
+material:
 
-view_back
-Back (-z)
-view_bottom
-Bottom (y)
-view_front
-Front (z)
-view_isometric
-Isometric
-view_left
-Left (x)
-view_menu_sign
-View
-view_perspective
-Perspective
-view_pop
-Pop out
-view_push
-Push in
-view_right
-Right (-x)
-view_top
-Top (-y)
-volume_and
+ge_dialog/ged_t_script
+main script:
 
-volume_subtract
+ge_dialog/ged_t_second_world
+second world
 
-welcome_dialog
-Welcome to Edward.
-welcome_list
-!icons
-what_the_fuck
-\"about\"
-whole_window
-Use complete window
-width
+ge_dialog/ged_t_system
+system aimed for:
 
-wire
-Wire frame
-word_dialog_fog_exp_grid
+ge_dialog/ged_t_world
+world:
 
-word_dialog_fog_lin_grid
+ge_dialog/ok
+OK
 
-world_camera_dialog
+key_dialog/cancel
+Cancel
 
-world_dialog
-World properties
-world_dialog_buttonbar
+key_dialog/key_dialog
+Key combination
 
-world_dialog_grp_ambient
+key_dialog/key_dialog_t_key
+combination:
+
+key_dialog/ok
+OK
+
+lightmap_dialog/allow_sun
+Allow sun
+
+lightmap_dialog/brightness
+\\0\\100\\0.1
+
+lightmap_dialog/cancel
+Cancel
+
+lightmap_dialog/exponent
+\\0\\10\\0.05
+
+lightmap_dialog/lightmap_dialog
+Create lightmap
+
+lightmap_dialog/lightmap_list
+!nobar\\a
+
+lightmap_dialog/lightmap_type
+Raytracing\\Radiosity\\Radiosity schnell\\Photon Map
+
+lightmap_dialog/lmt_brightness
+Surface brightness
+
+lightmap_dialog/lmt_exponent
+Brightness exponent
+
+lightmap_dialog/lmt_new_world
+
+
+lightmap_dialog/lmt_photons
+Number of Photons
+
+lightmap_dialog/lmt_spacial_resolution
+Spacial resolution
+
+lightmap_dialog/lu
+lu
+
+lightmap_dialog/ok
+OK
+
+lightmap_dialog/photons
+\\0
+
+lightmap_dialog/preview
+
+
+lightmap_dialog/resolution
+\\0\\1000\\0.1
+
+material_dialog/alpha_dest
+AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha
+
+material_dialog/alpha_factor
+\\0\\100\\1
+
+material_dialog/alpha_source
+AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha
+
+material_dialog/alpha_z_buffer
+Z-buffer enabled
+
+material_dialog/ambient
 ambient
-world_dialog_grp_bg_color
-background color
-world_dialog_grp_gravitation
-gravitation
-world_dialog_grp_skybox
-!bold\\Skybox models
-world_dialog_grp_sun
-!bold\\Sun
-world_dialog_t_fog_distance
-Distance
-world_dialog_t_fog_end
 
-world_dialog_t_fog_start
+material_dialog/diffuse
+diffuse
 
-world_dialog_t_max_script_vars
-number (max):
-world_dialog_t_sun_ang_x
-X: Altitude above horizon (X-Z-plane)
-world_dialog_t_sun_ang_y
-Y: Direction (Angle to Z-axis)
-world_dialog_tab_control
-common\\background\\script variables
-world_new
+material_dialog/emission
+emission
+
+material_dialog/mat_add_texture_level
+new level
+
+material_dialog/mat_delete_texture_level
+delete level
+
+material_dialog/mat_empty_texture_level
+Empty
+
+material_dialog/mat_shininess
+\\0\\10000\\0.1
+
+material_dialog/mat_textures
+Level\\Texture
+
+material_dialog/material_dialog
+Material appearance
+
+material_dialog/material_dialog_grp_color
+
+
+material_dialog/material_dialog_grp_friction
+
+
+material_dialog/material_dialog_grp_reflection
+
+
+material_dialog/material_dialog_grp_shader
+
+
+material_dialog/material_dialog_grp_textures
+
+
+material_dialog/material_dialog_grp_transparency
+
+
+material_dialog/material_dialog_t_refl_density
+density:
+
+material_dialog/material_dialog_t_trans_dest
+dest
+
+material_dialog/material_dialog_t_trans_source
+source
+
+material_dialog/material_physics_dialog_t_rcjump
+jumping:
+
+material_dialog/material_physics_dialog_t_rcroll
+
+
+material_dialog/material_physics_dialog_t_rcsliding
+sliding:
+
+material_dialog/material_physics_dialog_t_rcstatic
+static:
+
+material_dialog/percent
+%
+
+material_dialog/rcjump
+
+
+material_dialog/rcroll
+
+
+material_dialog/rcsliding
+
+
+material_dialog/rcstatic
+
+
+material_dialog/reflection_density
+\\0\\100\\1
+
+material_dialog/reflection_mode:cube_dynamic
+
+
+material_dialog/reflection_mode:cube_static
+
+
+material_dialog/reflection_mode:none
+
+
+material_dialog/reflection_size
+\\1\\10000\\1
+
+material_dialog/reflection_textures
+face\\texture
+
+material_dialog/shininess
+shininess
+
+material_dialog/specular
+specular
+
+material_dialog/transparency_mode:color_key
+Color key
+
+material_dialog/transparency_mode:factor
+Factor
+
+material_dialog/transparency_mode:function
+Function
+
+material_dialog/transparency_mode:none
+No transparency
+
+material_sound_dialog/cancel
+Cancel
+
+material_sound_dialog/material_sound_dialog
+Sounds
+
+material_sound_dialog/ok
+OK
+
+material_sound_dialog/sound_list
+Sound file\\Material\\v min\\v max
+
+menu_administration/administrate
+Administrate
+
+menu_administration/exit
+Exit
+
+menu_administration/export_game
+Export...
+
+menu_administration/font_new
 New
-world_new_object_dialog
 
-world_object_dialog
-Object properties
-world_object_dialog_grp_ang
-angle
-world_object_dialog_grp_pos
-position
-world_object_dialog_t_name
-name:
-world_object_dialog_t_type
-type:
-world_open
+menu_administration/font_open
 Open...
-world_ps_dialog
-Choose properies for editing
-world_scriptfunc_choice_dialog
-Script function
-world_scriptfunc_dialog
-Script function
-world_scriptfunc_dialog_t_called_by
-executes by:
-world_scriptfunc_dialog_t_delay
-pseudo delay:
-world_scriptfunc_dialog_t_delaydesc
-(used for order of execution)
-world_scriptfunc_dialog_t_name
-name of function:
-x
+
+menu_administration/help
+Help...
+
+menu_administration/material_new
+New
+
+menu_administration/material_open
+Open...
+
+menu_administration/menu_administration_file
+File
+
+menu_administration/menu_administration_game
+Game
+
+menu_administration/menu_font
+Font
+
+menu_administration/menu_material
+Material
+
+menu_administration/menu_model
+Model
+
+menu_administration/menu_world
+World
+
+menu_administration/menu_world_help
+?
+
+menu_administration/model_new
+New
+
+menu_administration/model_open
+Open...
+
+menu_administration/rudimentary_configuration
+Basic settings
+
+menu_administration/send_bug_report
+Report a bug
+
+menu_administration/settings
+Settings...
+
+menu_administration/what_the_fuck
+\"about\"
+
+menu_administration/world_new
+New
+
+menu_administration/world_open
+Open...
+
+menu_font/administrate
+Administrate
+
+menu_font/current_mode_font
+-Font-Mode-
+
+menu_font/execute_plugin
+Execute plugin
+
+menu_font/exit
+Exit
+
+menu_font/font_new
+New
+
+menu_font/font_open
+Open...
+
+menu_font/help
+Help...
+
+menu_font/import
+Import...
+
+menu_font/material_new
+New
+
+menu_font/material_open
+Open...
+
+menu_font/menu_file
+File
+
+menu_font/menu_font
+Font
+
+menu_font/menu_font_edit
+Edit
+
+menu_font/menu_help
+?
+
+menu_font/menu_material
+Material
+
+menu_font/menu_model
+Model
+
+menu_font/menu_world
+World
+
+menu_font/model_new
+New
+
+menu_font/model_open
+Open...
+
+menu_font/new
+New
+
+menu_font/open
+Open...
+
+menu_font/save
+Save
+
+menu_font/save_as
+Save as...
+
+menu_font/send_bug_report
+Report a bug
+
+menu_font/settings
+Settings...
+
+menu_font/texture
+Textur...
+
+menu_font/what_the_fuck
+\"about\"
+
+menu_font/world_new
+New
+
+menu_font/world_open
+Open...
+
+menu_material/administrate
+Administrate
+
+menu_material/execute_plugin
+Execute plugin
+
+menu_material/exit
+Exit
+
+menu_material/font_new
+New
+
+menu_material/font_open
+Open...
+
+menu_material/grid
+Grid
+
+menu_material/help
+Help...
+
+menu_material/light
+Light
+
+menu_material/material_new
+New
+
+menu_material/material_open
+Open...
+
+menu_material/material_shape_ball
+
+
+menu_material/material_shape_cube
+
+
+menu_material/material_shape_icosahedron
+
+
+menu_material/material_shape_smooth
+
+
+menu_material/material_shape_teapot
+
+
+menu_material/material_shape_torus
+
+
+menu_material/material_shape_torusknot
+
+
+menu_material/menu_file
+File
+
+menu_material/menu_font
+Font
+
+menu_material/menu_help
+?
+
+menu_material/menu_material
+Material
+
+menu_material/menu_material_shape
+
+
+menu_material/menu_model
+Model
+
+menu_material/menu_world
+World
+
+menu_material/menu_world_view
+View
+
+menu_material/model_new
+New
+
+menu_material/model_open
+Open...
+
+menu_material/new
+New
+
+menu_material/open
+Open...
+
+menu_material/opt_view
+Optimal
+
+menu_material/save
+Save
+
+menu_material/save_as
+Save as...
+
+menu_material/send_bug_report
+Report a bug
+
+menu_material/settings
+Settings...
+
+menu_material/what_the_fuck
+\"about\"
+
+menu_material/whole_window
+Use complete window
+
+menu_material/wire
+Wire frame
+
+menu_material/world_new
+New
+
+menu_material/world_open
+Open...
+
+menu_model/administrate
+Administrate
+
+menu_model/align_to_grid
+Align to grid
+
+menu_model/automapping
+
+
+menu_model/autoweld_surfaces
+
+
+menu_model/bevel_edges
+
+
+menu_model/choose_material
+Choose material...
+
+menu_model/connect
+Connect Points
+
+menu_model/convert_to_triangles
+
+
+menu_model/copy
+Copy
+
+menu_model/cut_out
+Cut off
+
+menu_model/deformation_brush
+
+
+menu_model/deformation_cylinder
+
+
+menu_model/deformation_function
+
+
+menu_model/delete
+Delete
+
+menu_model/detail_0
+Physical skin
+
+menu_model/detail_1
+High-precicion skin
+
+menu_model/detail_2
+Med-precicion skin
+
+menu_model/detail_3
+Low-precicion skin
+
+menu_model/easify_skin
+Easify skin
+
+menu_model/execute_plugin
+Execute plugin
+
+menu_model/exit
+Exit
+
+menu_model/export_to_gamestudio
+To GameStudio...
+
+menu_model/export_to_json
+
+
+menu_model/extrude_triangles
+Extrude
+
+menu_model/flatten_vertices
+Flatten
+
+menu_model/font_new
+New
+
+menu_model/font_open
+Open...
+
+menu_model/fx_edit
+
+
+menu_model/fx_headline
+Selected vertices
+
+menu_model/fx_new_field
+
+
+menu_model/fx_new_light
+
+
+menu_model/fx_new_script
+
+
+menu_model/fx_new_sound
+
+
+menu_model/fx_none
+-none-
+
+menu_model/grid
+Grid
+
+menu_model/help
+Help...
+
+menu_model/import_from_3ds
+3D Studio Max...
+
+menu_model/import_from_gamestudio
+GameStudio...
+
+menu_model/import_from_json
+
+
+menu_model/import_from_lineage2
+Lineage II...
+
+menu_model/import_from_ply
+
+
+menu_model/invert_selection
+Invert
+
+menu_model/invert_trias
+Triangle inversion
+
+menu_model/just_selection
+Selection
+
+menu_model/light
+Light
+
+menu_model/material_new
+New
+
+menu_model/material_open
+Open...
+
+menu_model/menu_all_header
+All
+
+menu_model/menu_edge_header
+
+
+menu_model/menu_font
+Font
+
+menu_model/menu_help
+?
+
+menu_model/menu_mapping
+
+
+menu_model/menu_material
+Material
+
+menu_model/menu_model
+Model
+
+menu_model/menu_model_appearance
+Appearance
+
+menu_model/menu_model_creation
+Create
+
+menu_model/menu_model_deformation
+
+
+menu_model/menu_model_edit
+Edit
+
+menu_model/menu_model_export
+Export
+
+menu_model/menu_model_file
+File
+
+menu_model/menu_model_fx
+Effects
+
+menu_model/menu_model_geometry
+
+
+menu_model/menu_model_import
+Import
+
+menu_model/menu_model_material
+
+
+menu_model/menu_model_mode
+Mode
+
+menu_model/menu_model_normals
+Normals
+
+menu_model/menu_model_platonic
+
+
+menu_model/menu_model_selection
+Selection
+
+menu_model/menu_model_skin
+Skin
+
+menu_model/menu_model_view
+View
+
+menu_model/menu_model_viewstage
+Viewstage
+
+menu_model/menu_rightmouse
+Right mouse button
+
+menu_model/menu_surface_header
+On surfaces
+
+menu_model/menu_tria_header
+On triangles
+
+menu_model/menu_vertex2_header
+
+
+menu_model/menu_vertex_header
+On vertices
+
+menu_model/menu_world
+World
+
+menu_model/mirror
+mirror
+
+menu_model/mode_model_animation
+Animation
+
+menu_model/mode_model_edge
+Edges
+
+menu_model/mode_model_materials
+Materials...
+
+menu_model/mode_model_mesh
+Mesh
+
+menu_model/mode_model_skeleton
+Skeleton
+
+menu_model/mode_model_surface
+Surfaces
+
+menu_model/mode_model_texture_coord
+Texture coordinates
+
+menu_model/mode_model_triangle
+Triangles
+
+menu_model/mode_model_vertex
+Vertices
+
+menu_model/mode_properties
+Properties...
+
+menu_model/model_new
+New
+
+menu_model/model_open
+Open...
+
+menu_model/nearify
+Nearify
+
+menu_model/new
+New
+
+menu_model/new_ball
+ball
+
+menu_model/new_cube
+Cube
+
+menu_model/new_cylinder
+Cylinder...
+
+menu_model/new_cylindersnake
+
+
+menu_model/new_dodecahedron
+
+
+menu_model/new_extract
+Extract
+
+menu_model/new_icosahedron
+
+
+menu_model/new_octahedron
+
+
+menu_model/new_outline
+Outline
+
+menu_model/new_plane
+Plane
+
+menu_model/new_point
+Vertex
+
+menu_model/new_teapot
+
+
+menu_model/new_tetrahedron
+
+
+menu_model/new_torus
+
+
+menu_model/new_tria
+New triangle
+
+menu_model/normal_this_angular
+Angular
+
+menu_model/normal_this_hard
+Edgy
+
+menu_model/normal_this_smooth
+Smooth
+
+menu_model/open
+Open...
+
+menu_model/opt_view
+Optimal
+
+menu_model/paste
+Paste
+
+menu_model/redo
+Redo
+
+menu_model/rotate
+Rotate
+
+menu_model/save
+Save
+
+menu_model/save_as
+Save as...
+
+menu_model/scale
+Scale X=Y=Z
+
+menu_model/scale_2d
+Scale 2D
+
+menu_model/select_all
+Select all
+
+menu_model/select_cw
+triangles only clockwise
+
+menu_model/select_none
+Select none
+
+menu_model/send_bug_report
+Report a bug
+
+menu_model/settings
+Settings...
+
+menu_model/subdivide_surfaces
+
+
+menu_model/text_from_bg
+Texture coordinates from background
+
+menu_model/triangulate_selection
+
+
+menu_model/undo
+Undo
+
+menu_model/untriangulate_selection
+
+
+menu_model/view_pop
+Pop out
+
+menu_model/view_push
+Push in
+
+menu_model/volume_and
+
+
+menu_model/volume_subtract
+
+
+menu_model/what_the_fuck
+\"about\"
+
+menu_model/whole_window
+Use complete window
+
+menu_model/wire
+Wire frame
+
+menu_model/world_new
+New
+
+menu_model/world_open
+Open...
+
+menu_model_texture/texture_choose
+Find...
+
+menu_model_texture/texture_delete
+Delete
+
+menu_model_texture/texture_empty
+Leeren
+
+menu_model_texture/texture_menu_sign
+Texture
+
+menu_move/administrate
+Administrate
+
+menu_move/copy
+Copy
+
+menu_move/detail_0
+Physical skin
+
+menu_move/detail_1
+High-precicion skin
+
+menu_move/detail_2
+Med-precicion skin
+
+menu_move/detail_3
+Low-precicion skin
+
+menu_move/execute_plugin
+Execute plugin
+
+menu_move/exit
+Exit
+
+menu_move/export_to_gamestudio
+To GameStudio...
+
+menu_move/export_to_json
+
+
+menu_move/font_new
+New
+
+menu_move/font_open
+Open...
+
+menu_move/grid
+Grid
+
+menu_move/help
+Help...
+
+menu_move/import_from_3ds
+3D Studio Max...
+
+menu_move/import_from_gamestudio
+GameStudio...
+
+menu_move/import_from_json
+
+
+menu_move/import_from_lineage2
+Lineage II...
+
+menu_move/invert_selection
+Invert
+
+menu_move/light
+Light
+
+menu_move/material_new
+New
+
+menu_move/material_open
+Open...
+
+menu_move/menu_file
+File
+
+menu_move/menu_font
+Font
+
+menu_move/menu_help
+?
+
+menu_move/menu_material
+Material
+
+menu_move/menu_model
+Model
+
+menu_move/menu_model_edit
+Edit
+
+menu_move/menu_model_export
+Export
+
+menu_move/menu_model_import
+Import
+
+menu_move/menu_model_mode
+Mode
+
+menu_move/menu_model_move
+Animation
+
+menu_move/menu_model_selection
+Selection
+
+menu_move/menu_model_skin
+Skin
+
+menu_move/menu_model_view
+View
+
+menu_move/menu_model_viewstage
+Viewstage
+
+menu_move/menu_world
+World
+
+menu_move/mode_model_animation
+Animation
+
+menu_move/mode_model_edge
+Edges
+
+menu_move/mode_model_mesh
+Mesh
+
+menu_move/mode_model_skeleton
+Skeleton
+
+menu_move/mode_model_surface
+Surfaces
+
+menu_move/mode_model_texture_coord
+Texture coordinates
+
+menu_move/mode_model_triangle
+Triangles
+
+menu_move/mode_model_vertex
+Vertices
+
+menu_move/mode_properties
+Properties...
+
+menu_move/model_new
+New
+
+menu_move/model_open
+Open...
+
+menu_move/move_allframes
+Effect all frames
+
+menu_move/move_frame_dec
+Next
+
+menu_move/move_frame_delete
+Selete
+
+menu_move/move_frame_inc
+Last
+
+menu_move/move_frame_insert
+Insert
+
+menu_move/move_frame_interpolate
+
+
+menu_move/move_frame_sign
+Frame
+
+menu_move/move_reset
+Reset
+
+menu_move/new
+New
+
+menu_move/open
+Open...
+
+menu_move/opt_view
+Optimal
+
+menu_move/paste
+Paste
+
+menu_move/redo
+Redo
+
+menu_move/save
+Save
+
+menu_move/save_as
+Save as...
+
+menu_move/select_all
+Select all
+
+menu_move/select_none
+Select none
+
+menu_move/send_bug_report
+Report a bug
+
+menu_move/settings
+Settings...
+
+menu_move/undo
+Undo
+
+menu_move/view_pop
+Pop out
+
+menu_move/view_push
+Push in
+
+menu_move/what_the_fuck
+\"about\"
+
+menu_move/whole_window
+Use complete window
+
+menu_move/wire
+Wire frame
+
+menu_move/world_new
+New
+
+menu_move/world_open
+Open...
+
+menu_nomode/administrate
+Administrate
+
+menu_nomode/exit
+Exit
+
+menu_nomode/font_new
+New
+
+menu_nomode/font_open
+Open...
+
+menu_nomode/help
+Help...
+
+menu_nomode/material_new
+New
+
+menu_nomode/material_open
+Open...
+
+menu_nomode/menu_file
+File
+
+menu_nomode/menu_font
+Font
+
+menu_nomode/menu_help
+?
+
+menu_nomode/menu_material
+Material
+
+menu_nomode/menu_model
+Model
+
+menu_nomode/menu_world
+World
+
+menu_nomode/model_new
+New
+
+menu_nomode/model_open
+Open...
+
+menu_nomode/send_bug_report
+Report a bug
+
+menu_nomode/settings
+Settings...
+
+menu_nomode/what_the_fuck
+\"about\"
+
+menu_nomode/world_new
+New
+
+menu_nomode/world_open
+Open...
+
+menu_skeleton/administrate
+Administrate
+
+menu_skeleton/current_mode_model_skeleton
+-Model-Mode (Skeleton)-
+
+menu_skeleton/delete
+Delete
+
+menu_skeleton/detail_0
+Physical skin
+
+menu_skeleton/detail_1
+High-precicion skin
+
+menu_skeleton/detail_2
+Med-precicion skin
+
+menu_skeleton/detail_3
+Low-precicion skin
+
+menu_skeleton/execute_plugin
+Execute plugin
+
+menu_skeleton/exit
+Exit
+
+menu_skeleton/export_to_gamestudio
+To GameStudio...
+
+menu_skeleton/export_to_json
+
+
+menu_skeleton/font_new
+New
+
+menu_skeleton/font_open
+Open...
+
+menu_skeleton/grid
+Grid
+
+menu_skeleton/help
+Help...
+
+menu_skeleton/import_from_3ds
+3D Studio Max...
+
+menu_skeleton/import_from_gamestudio
+GameStudio...
+
+menu_skeleton/import_from_json
+
+
+menu_skeleton/import_from_lineage2
+Lineage II...
+
+menu_skeleton/import_from_ply
+
+
+menu_skeleton/light
+Light
+
+menu_skeleton/material_new
+New
+
+menu_skeleton/material_open
+Open...
+
+menu_skeleton/menu_file
+File
+
+menu_skeleton/menu_font
+Font
+
+menu_skeleton/menu_help
+?
+
+menu_skeleton/menu_material
+Material
+
+menu_skeleton/menu_model
+Model
+
+menu_skeleton/menu_model_export
+Export
+
+menu_skeleton/menu_model_import
+Import
+
+menu_skeleton/menu_model_mode
+Mode
+
+menu_skeleton/menu_model_skeleton
+Skeleton
+
+menu_skeleton/menu_model_skin
+Skin
+
+menu_skeleton/menu_model_view
+View
+
+menu_skeleton/menu_model_viewstage
+Viewstage
+
+menu_skeleton/menu_world
+World
+
+menu_skeleton/mode_model_animation
+Animation
+
+menu_skeleton/mode_model_edge
+Edges
+
+menu_skeleton/mode_model_mesh
+Mesh
+
+menu_skeleton/mode_model_skeleton
+Skeleton
+
+menu_skeleton/mode_model_surface
+Surfaces
+
+menu_skeleton/mode_model_texture_coord
+Texture coordinates
+
+menu_skeleton/mode_model_triangle
+Triangles
+
+menu_skeleton/mode_model_vertex
+Vertices
+
+menu_skeleton/mode_properties
+Properties...
+
+menu_skeleton/model_new
+New
+
+menu_skeleton/model_open
+Open...
+
+menu_skeleton/new
+New
+
+menu_skeleton/open
+Open...
+
+menu_skeleton/opt_view
+Optimal
+
+menu_skeleton/save
+Save
+
+menu_skeleton/save_as
+Save as...
+
+menu_skeleton/send_bug_report
+Report a bug
+
+menu_skeleton/settings
+Settings...
+
+menu_skeleton/skeleton_add_model
+Add model
+
+menu_skeleton/skeleton_edit_bone
+Vertices of bone
+
+menu_skeleton/skeleton_import
+Import...
+
+menu_skeleton/skeleton_link
+Create link
+
+menu_skeleton/skeleton_new_point
+New vertex
+
+menu_skeleton/skeleton_no_model
+No model
+
+menu_skeleton/skeleton_selection_sign
+Selection
+
+menu_skeleton/skeleton_unlink
+Unlink
+
+menu_skeleton/view_pop
+Pop out
+
+menu_skeleton/view_push
+Push in
+
+menu_skeleton/what_the_fuck
+\"about\"
+
+menu_skeleton/whole_window
+Use complete window
+
+menu_skeleton/wire
+Wire frame
+
+menu_skeleton/world_new
+New
+
+menu_skeleton/world_open
+Open...
+
+menu_view/view_back
+Back (-z)
+
+menu_view/view_bottom
+Bottom (y)
+
+menu_view/view_front
+Front (z)
+
+menu_view/view_isometric
+Isometric
+
+menu_view/view_left
+Left (x)
+
+menu_view/view_menu_sign
+View
+
+menu_view/view_perspective
+Perspective
+
+menu_view/view_right
+Right (-x)
+
+menu_view/view_top
+Top (-y)
+
+menu_world/administrate
+Administrate
+
+menu_world/camscript_create
+CameraFlight (new)...
+
+menu_world/camscript_load
+CameraFlight (load)...
+
+menu_world/copy
+Copy
+
+menu_world/create_lightmap
+Render lightmap...
+
+menu_world/create_objects
+Objects...
+
+menu_world/delete
+Delete
+
+menu_world/edit_terrain_selectable
+Selectable
+
+menu_world/edit_terrain_vertices
+Edit vertices
+
+menu_world/execute_plugin
+Execute plugin
+
+menu_world/exit
+Exit
+
+menu_world/export_group
+Groupe...
+
+menu_world/export_world
+Export world
+
+menu_world/font_new
+New
+
+menu_world/font_open
+Open...
+
+menu_world/grid
+Grid
+
+menu_world/height_to_terrain
+Height = terrain
+
+menu_world/help
+Help...
+
+menu_world/import_group
+Groupe...
+
+menu_world/import_world_properties
+World properties...
+
+menu_world/invert_selection
+Invert
+
+menu_world/light
+Light
+
+menu_world/material_new
+New
+
+menu_world/material_open
+Open...
+
+menu_world/menu_font
+Font
+
+menu_world/menu_material
+Material
+
+menu_world/menu_model
+Model
+
+menu_world/menu_model_viewstage
+Viewstage
+
+menu_world/menu_terrain_texture
+Terrain texture
+
+menu_world/menu_world
+World
+
+menu_world/menu_world_creation
+Create
+
+menu_world/menu_world_edit
+Edit
+
+menu_world/menu_world_export
+Export
+
+menu_world/menu_world_file
+File
+
+menu_world/menu_world_help
+?
+
+menu_world/menu_world_import
+Import
+
+menu_world/menu_world_operation
+Operations
+
+menu_world/menu_world_selection
+Selection
+
+menu_world/menu_world_sign_add
+Add to world
+
+menu_world/menu_world_sign_object
+Objects
+
+menu_world/menu_world_sign_terrain
+Terrain
+
+menu_world/menu_world_view
+View
+
+menu_world/model_new
+New
+
+menu_world/model_open
+Open...
+
+menu_world/new
+New
+
+menu_world/open
+Open...
+
+menu_world/opt_view
+Optimal
+
+menu_world/own_figure
+Own character
+
+menu_world/paste
+Paste
+
+menu_world/redo
+Redo
+
+menu_world/save
+Save
+
+menu_world/save_as
+Save as...
+
+menu_world/select_all
+Select all
+
+menu_world/select_none
+Select none
+
+menu_world/selection_properties
+Properties...
+
+menu_world/send_bug_report
+Report a bug
+
+menu_world/settings
+Settings...
+
+menu_world/show_fx
+Effects
+
+menu_world/show_objects
+Objects
+
+menu_world/show_points
+Points
+
+menu_world/show_terrains
+Terrains
+
+menu_world/terrain_create
+Terrain (new)...
+
+menu_world/terrain_heightmap
+Heightmap
+
+menu_world/terrain_load
+Terrain (load)...
+
+menu_world/terrain_rescale
+
+
+menu_world/terrain_show_texture_final
+Final
+
+menu_world/terrain_show_texture_level0
+Level 0
+
+menu_world/terrain_show_texture_level1
+Level 1
+
+menu_world/terrain_show_texture_level2
+Level 2
+
+menu_world/terrain_show_texture_level3
+Level 3
+
+menu_world/terrain_show_texture_level4
+Level 4
+
+menu_world/terrain_show_texture_level5
+Level 5
+
+menu_world/terrain_show_texture_level6
+Level 6
+
+menu_world/terrain_show_texture_level7
+Level 7
+
+menu_world/undo
+Undo
+
+menu_world/view_pop
+Pop out
+
+menu_world/view_push
+Push in
+
+menu_world/what_the_fuck
+\"about\"
+
+menu_world/whole_window
+Use complete window
+
+menu_world/wire
+Wire frame
+
+menu_world/world_new
+New
+
+menu_world/world_open
+Open...
+
+model_dialog/cancel
+Cancel
+
+model_dialog/delete_item
+Delete item
+
+model_dialog/generate_dists_auto
+auto calculation
+
+model_dialog/generate_skin_auto
+
+
+model_dialog/generate_tensor_auto
+auto
+
+model_dialog/lod
+
+
+model_dialog/mass
+
+
+model_dialog/max_script_vars
+\\0
+
+model_dialog/model_dialog
+Model properties
+
+model_dialog/model_dialog_grp_physics
+!bold\\General
+
+model_dialog/model_dialog_grp_tensor
+!bold\\Moment of inertia tensor
+
+model_dialog/model_dialog_t_description
+Description
+
+model_dialog/model_dialog_t_mass
+Mass
+
+model_dialog/model_dialog_t_maxitems
+Max items
+
+model_dialog/model_dialog_t_name
+Name
+
+model_dialog/model_dialog_t_num_lod
+
+
+model_dialog/model_dialog_t_scriptfile
+File
+
+model_dialog/model_dialog_t_scriptvars
+!bold\\Script variables:
+
+model_dialog/model_dialog_tab_control
+level of detail\\material\\physics\\inventary\\script
+
+model_dialog/model_inventary
+#\\File
+
+model_dialog/mu
+
+
+model_dialog/num_items
+\\0
+
+model_dialog/num_lod
+
+
+model_dialog/odt_max_scriptvars
+max number:
+
+model_dialog/ok
+OK
+
+model_dialog/ph_active
+physics active
+
+model_dialog/ph_passive
+physics passive
+
+model_dialog/rand_id_525995
+
+
+model_dialog/script_vars
+#\\name\\type\\value
+
+model_dialog/tensor
+
+
+model_material_dialog/add_material
+New...
+
+model_material_dialog/add_new_material
+
+
+model_material_dialog/alpha_dest
+AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha
+
+model_material_dialog/alpha_factor
+\\0\\100\\1
+
+model_material_dialog/alpha_source
+AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha
+
+model_material_dialog/alpha_z_buffer
+Z-buffer enabled
+
+model_material_dialog/ambient
+ambient
+
+model_material_dialog/apply_material
+
+
+model_material_dialog/default_colors
+Use colors from material
+
+model_material_dialog/diffuse
+diffuse
+
+model_material_dialog/emission
+emission
+
+model_material_dialog/mat_add_texture_level
+new level
+
+model_material_dialog/mat_delete_texture_level
+delete level
+
+model_material_dialog/mat_empty_texture_level
+Empty
+
+model_material_dialog/mat_shininess
+\\0\\10000\\0.1
+
+model_material_dialog/mat_textures
+Level\\Texture
+
+model_material_dialog/material_dialog_t_trans_dest
+dest
+
+model_material_dialog/material_dialog_t_trans_source
+source
+
+model_material_dialog/material_list
+Material\\Triangles\\File
+
+model_material_dialog/model_material_dialog
+
+
+model_material_dialog/model_material_dialog_grp_color
+
+
+model_material_dialog/model_material_dialog_grp_list
+
+
+model_material_dialog/model_material_dialog_grp_textures
+
+
+model_material_dialog/model_material_dialog_grp_transparency
+
+
+model_material_dialog/percent
+%
+
+model_material_dialog/shininess
+shininess
+
+model_material_dialog/specular
+specular
+
+model_material_dialog/transparency_mode:color_key
+Color key
+
+model_material_dialog/transparency_mode:factor
+Factor
+
+model_material_dialog/transparency_mode:function
+Function
+
+model_material_dialog/transparency_mode:material
+Transparency from material
+
+model_material_dialog/transparency_mode:none
+No transparency
+
+model_material_selection_dialog/add_material
+New...
+
+model_material_selection_dialog/add_new_material
+
+
+model_material_selection_dialog/edit_material
+edit
+
+model_material_selection_dialog/material_list
+Material\\Triangles\\File
+
+model_material_selection_dialog/model_material_selection_dialog
+Select a material
+
+new_animation_dialog/cancel
+Cancel
+
+new_animation_dialog/new_animation_dialog
+New animation
+
+new_animation_dialog/new_animation_index
+\\0
+
+new_animation_dialog/new_animation_t_index
+index
+
+new_animation_dialog/new_animation_t_type
+type:
+
+new_animation_dialog/new_animation_type
+vertex\\skeleton
+
+new_animation_dialog/ok
+OK
+
+new_ball_dialog/ball_type:ball
+
+
+new_ball_dialog/ball_type:sphere
+
+
+new_ball_dialog/nb_complexity
+\\1
+
+new_ball_dialog/nb_x
+\\1
+
+new_ball_dialog/nb_y
+\\1
+
+new_ball_dialog/new_ball_dialog
+New ball
+
+new_ball_dialog/new_ball_dialog_t_comp
+Complexity
+
+new_ball_dialog/new_ball_dialog_t_x
+# discs
+
+new_ball_dialog/new_ball_dialog_t_y
+# vertices per disc
+
+new_cube_dialog/nc_x
+\\1
+
+new_cube_dialog/nc_y
+\\1
+
+new_cube_dialog/nc_z
+\\1
+
+new_cube_dialog/ncdt_slides
+Stripes
+
+new_cube_dialog/new_cube_dialog
+new cube
+
+new_cube_dialog/x
 X
-x1
 
-x2
-
-y
+new_cube_dialog/y
 Y
-y1
 
-y2
-
-z
+new_cube_dialog/z
 Z
-zzz_enableselection
-Enable selection
-zzz_invertselection
-Invert selection
-zzz_setbgimage
-Set background image
+
+new_cylinder_dialog/ncy_edges
+\\2
+
+new_cylinder_dialog/ncy_rings
+\\1
+
+new_cylinder_dialog/new_cylinder_dialog
+New Cylinder
+
+new_cylinder_dialog/new_cylinder_dialog_t_edges
+edges
+
+new_cylinder_dialog/new_cylinder_dialog_t_rings
+rings
+
+new_plane_dialog/new_plane_dialog
+New plane
+
+new_plane_dialog/new_plane_dialog_t_x
+# srtipes X:
+
+new_plane_dialog/new_plane_dialog_t_y
+# stripes Y:
+
+new_plane_dialog/np_num_x
+\\1
+
+new_plane_dialog/np_num_y
+\\1
+
+new_teapot_dialog/new_teapot_dialog
+
+
+new_teapot_dialog/new_teapot_dialog_t_samples
+
+
+new_teapot_dialog/ntp_samples
+
+
+new_terrain_dialog/cancel
+Cancel
+
+new_terrain_dialog/new_terrain_dialog
+New terrain
+
+new_terrain_dialog/nterrain_dialog_t_raster
+
+
+new_terrain_dialog/nterrain_dialog_t_stripes
+
+
+new_terrain_dialog/nterrain_dialog_t_terrainsize
+
+
+new_terrain_dialog/num_x
+\\1
+
+new_terrain_dialog/num_z
+\\1
+
+new_terrain_dialog/ok
+OK
+
+new_terrain_dialog/pattern_x
+
+
+new_terrain_dialog/pattern_z
+
+
+new_terrain_dialog/terrain_x
+
+
+new_terrain_dialog/terrain_z
+
+
+new_torus_dialog/new_torus_dialog
+
+
+new_torus_dialog/new_torus_dialog_slides
+
+
+new_torus_dialog/new_torus_dialog_t_edges
+
+
+new_torus_dialog/new_torus_dialog_t_rings
+
+
+new_torus_dialog/nt_edges
+
+
+new_torus_dialog/nt_rings
+
+
+progress_cancelable_dialog/cancel
+Cancel
+
+progress_cancelable_dialog/progress_cancelable_dialog
+working
+
+progress_dialog/progress_dialog
+working
+
+rc_dialog/cancel
+Cancel
+
+rc_dialog/ged_group
+!bold\\Startup game values
+
+rc_dialog/ged_t_font
+font:
+
+rc_dialog/ged_t_material
+material:
+
+rc_dialog/ged_t_rootdir
+!bold\\Directory
+
+rc_dialog/ged_t_script
+main script:
+
+rc_dialog/ged_t_second_world
+second world
+
+rc_dialog/ged_t_world
+world:
+
+rc_dialog/ok
+OK
+
+rc_dialog/rc_dialog
+Rudimentary configuration
+
+rotation_dialog/degree
+°
+
+rotation_dialog/rotation_dialog
+Rotation
+
+rotation_dialog/x
+X
+
+rotation_dialog/z
+Z
+
+scaling_dialog/percent
+%
+
+scaling_dialog/scaling_dialog
+Scaling
+
+scaling_dialog/x
+X
+
+scaling_dialog/z
+Z
+
+scriptvar_dialog/cancel
+Cancel
+
+scriptvar_dialog/ok
+OK
+
+scriptvar_dialog/scriptvar_dialog
+Script variable
+
+scriptvar_dialog/scriptvar_t_index
+index:
+
+scriptvar_dialog/scriptvar_t_value
+value:
+
+terrain_dialog/add_texture_level
+New
+
+terrain_dialog/apply
+Apply
+
+terrain_dialog/cancel
+Cancel
+
+terrain_dialog/clear_texture_level
+Clear
+
+terrain_dialog/default_material
+use default material
+
+terrain_dialog/delete_texture_level
+Delete texture level
+
+terrain_dialog/lu
+lu
+
+terrain_dialog/num_x
+\\1
+
+terrain_dialog/num_z
+\\1
+
+terrain_dialog/ok
+OK
+
+terrain_dialog/terrain_dialog
+Terrain properties
+
+terrain_dialog/terrain_dialog_t_filename
+terrain file:
+
+terrain_dialog/terrain_dialog_t_material
+material
+
+terrain_dialog/terrain_dialog_t_raster
+raster size
+
+terrain_dialog/terrain_dialog_t_stripes
+# stripes
+
+terrain_dialog/terrain_dialog_tab_control
+properties\\textures\\material\\import
+
+terrain_dialog/terrain_save_as
+Save...
+
+terrain_dialog/texture_map_complete
+1:1 mapping
+
+terrain_dialog/textures
+!format=tTTit\\Level\\Size X\\Size Z\\\\File
+
+terrain_dialog/x
+X
+
+terrain_dialog/z
+Z
+
+terrain_heightmap_dialog/cancel
+Cancel
+
+terrain_heightmap_dialog/height_op:add
+Add
+
+terrain_heightmap_dialog/height_op:set
+Overwrite
+
+terrain_heightmap_dialog/lu
+lu
+
+terrain_heightmap_dialog/ok
+OK
+
+terrain_heightmap_dialog/stretch_x
+1\\0\\1000\\0.01
+
+terrain_heightmap_dialog/stretch_z
+1\\0\\1000\\0.01
+
+terrain_heightmap_dialog/terrain_dialog_grp_apply
+!bold\\Apply
+
+terrain_heightmap_dialog/terrain_dialog_t_filter
+Filter (optional)
+
+terrain_heightmap_dialog/terrain_dialog_t_heightmap
+heightmap
+
+terrain_heightmap_dialog/terrain_heightmap_dialog
+Heightmap
+
+terrain_heightmap_dialog/terrain_hm_dialog_grp_heightmap
+!bold\\Height from image's brightness
+
+terrain_heightmap_dialog/terrain_hm_dialog_t_gray
+Maximum height
+
+terrain_heightmap_dialog/terrain_hm_dialog_t_op
+Operation
+
+terrain_heightmap_dialog/terrain_hm_dialog_t_stretch
+Zoom
+
+terrain_heightmap_dialog/x
+X
+
+terrain_heightmap_dialog/z
+Z
+
+welcome_dialog/welcome_dialog
+Welcome to Edward.
+
+welcome_dialog/welcome_list
+!icons
+
+world_camera_dialog/add_point
+
+
+world_camera_dialog/cam_edit_ang
+
+
+world_camera_dialog/cam_edit_vel
+
+
+world_camera_dialog/cam_preview
+
+
+world_camera_dialog/cam_stop
+
+
+world_camera_dialog/delete_point
+
+
+world_camera_dialog/world_camera_dialog
+
+
+world_dialog/add_script
+Add
+
+world_dialog/ambient
+ambient
+
+world_dialog/apply
+Apply
+
+world_dialog/cancel
+Cancel
+
+world_dialog/degree
+°
+
+world_dialog/diffuse
+diffuse
+
+world_dialog/fog_distance
+
+
+world_dialog/fog_end
+
+
+world_dialog/fog_mode:exp
+
+
+world_dialog/fog_mode:exp2
+
+
+world_dialog/fog_mode:linear
+
+
+world_dialog/fog_mode:none
+
+
+world_dialog/fog_start
+
+
+world_dialog/gravitation_x
+
+
+world_dialog/gravitation_y
+
+
+world_dialog/gravitation_z
+
+
+world_dialog/luss
+lu/s^2
+
+world_dialog/max_script_vars
+\\0
+
+world_dialog/ok
+OK
+
+world_dialog/physics_enabled
+Enables
+
+world_dialog/remove_script
+Remove
+
+world_dialog/remove_skybox
+Remove
+
+world_dialog/script_list
+!nobar\\File
+
+world_dialog/script_vars
+#\\name\\type\\value
+
+world_dialog/skybox
+#\\model ('SkyBox')
+
+world_dialog/specular
+specular
+
+world_dialog/sun_ang_from_camera
+Direction from camera
+
+world_dialog/sun_enabled
+enabled
+
+world_dialog/world_dialog
+World properties
+
+world_dialog/world_dialog_grp_ambient
+ambient
+
+world_dialog/world_dialog_grp_bg_color
+background color
+
+world_dialog/world_dialog_grp_gravitation
+gravitation
+
+world_dialog/world_dialog_grp_skybox
+!bold\\Skybox models
+
+world_dialog/world_dialog_grp_sun
+!bold\\Sun
+
+world_dialog/world_dialog_t_fog_distance
+Distance
+
+world_dialog/world_dialog_t_fog_end
+
+
+world_dialog/world_dialog_t_fog_start
+
+
+world_dialog/world_dialog_t_max_script_vars
+number (max):
+
+world_dialog/world_dialog_t_sun_ang_x
+X: Altitude above horizon (X-Z-plane)
+
+world_dialog/world_dialog_t_sun_ang_y
+Y: Direction (Angle to Z-axis)
+
+world_dialog/world_dialog_tab_control
+common\\background\\script variables
+
+world_dialog/x
+X
+
+world_dialog/y
+Y
+
+world_dialog/z
+Z
+
+world_new_object_dialog/world_new_object_dialog
+
+
+world_new_object_dialog/world_object_dialog_t_name
+name:
+
+world_new_object_dialog/world_object_dialog_t_type
+type:
+
+world_object_dialog/apply
+Apply
+
+world_object_dialog/cancel
+Cancel
+
+world_object_dialog/degree
+°
+
+world_object_dialog/lu
+lu
+
+world_object_dialog/ok
+OK
+
+world_object_dialog/world_object_dialog
+Object properties
+
+world_object_dialog/world_object_dialog_grp_ang
+angle
+
+world_object_dialog/world_object_dialog_grp_pos
+position
+
+world_object_dialog/world_object_dialog_t_name
+name:
+
+world_object_dialog/world_object_dialog_t_type
+type:
+
+world_object_dialog/x
+X
+
+world_object_dialog/y
+Y
+
+world_object_dialog/z
+Z
+
+world_ps_dialog/property_list
+type\\index\\name
+
+world_ps_dialog/world_ps_dialog
+Choose properies for editing
+
+world_scriptfunc_choice_dialog/cancel
+Cancel
+
+world_scriptfunc_choice_dialog/ok
+OK
+
+world_scriptfunc_choice_dialog/world_scriptfunc_choice_dialog
+Script function
+
+world_scriptfunc_dialog/cancel
+Cancel
+
+world_scriptfunc_dialog/delete
+Delete
+
+world_scriptfunc_dialog/level
+0
+
+world_scriptfunc_dialog/location
+CalcMove 1\\CalcMove 2\\Render 1\\Render 2\\Render 3\\GetInput 1\\GetInput 2
+
+world_scriptfunc_dialog/ok
+OK
+
+world_scriptfunc_dialog/world_scriptfunc_dialog
+Script function
+
+world_scriptfunc_dialog/world_scriptfunc_dialog_t_called_by
+executes by:
+
+world_scriptfunc_dialog/world_scriptfunc_dialog_t_delay
+pseudo delay:
+
+world_scriptfunc_dialog/world_scriptfunc_dialog_t_delaydesc
+(used for order of execution)
+
+world_scriptfunc_dialog/world_scriptfunc_dialog_t_name
+name of function:
+
 // Num Language Strings
-249
+264
 // Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -1262,6 +4777,8 @@ Set background image
 
  -- Komplette Welt -- 
  -- Whole world -- 
+ has crashed.\t\tThe last lines of the file message.txt::
+
  ist abgestürzt!\t\tDie letzten Zeilen der Datei message.txt:
  has crashed!\t\tLast lines from message.txt:
 !bold$Kommentar/Geschehnisse:
@@ -1286,6 +4803,8 @@ Set background image
 
 (anonym)
 (anonymous)
+(anonymous)
+
 - Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- die Auswahl wird für folgende neue Polygone verwendet
 
 - Doppelklick um ein Material zu editieren\n- Auswahl wird für folgende neue Polygone verwendet
@@ -1332,6 +4851,12 @@ Beispiel Text 0123456789
 
 Beschreibung
 Description
+Bug Report
+
+Cancel
+
+Comment/what happened:
+
 Datei
 File
 Datei ist nicht in der Stimmung, geöffnet zu werden
@@ -1346,6 +4871,8 @@ Dateien (*.*)
 Files (*.*)
 Demütige aber höfliche Frage
 Quite a polite question
+Description
+
 Dicke
 
 Ebene
@@ -1358,6 +4885,8 @@ Editor für Spiele-Daten der x9-Engine
 Editor for game data of the x9 engine
 Eigenschaften
 Properties
+Error
+
 Erstelle Datenbank
 Creating database
 Es existiert bereits eine Animation mit diesem Index. Bitte einen anderen wählen.
@@ -1442,6 +4971,8 @@ Isometrisch
 Isometric
 Ist halt irgendwie passiert...
 Just happened somehow...
+Just happened somehow...
+
 Kamera
 Camera
 Kamera-Datei
@@ -1500,6 +5031,8 @@ Materialien (*.material)
 Materials (*.material)
 Mesh
 Mesh
+Messages
+
 Mindestens eine Textur-Ebene muss existieren!
 There has to be at least one texture level!
 Mindestens eine Textur-Ebene muss vorhanden sein!
@@ -1514,6 +5047,8 @@ Modelle, die über die Hintergrundfarge gemalt werden\n- Doppelklick um ein Mode
 
 Nachrichten
 Messages
+Name:
+
 Nebelintensität = exp( - Entfernung / Sichtweite )
 
 OK
@@ -1528,6 +5063,8 @@ Objekt
 Object
 Objekt %d von %d
 Object %d / %d
+Ok
+
 Perspektive
 Perspective
 Pfad schließen
@@ -1544,6 +5081,8 @@ Polygone: %d (von %d)
 
 Pop
 Pop
+Program was compiled without network support...
+
 Punkt setzen
 
 Push
@@ -1575,6 +5114,8 @@ Script-Datei enthält keine Funktion \"void OnEffectIterate( effect )\"
 Script-Dateien (*.kaba)
 Script files (*.kaba)
 Selektieren
+
+Send bug report to Michi
 
 Shader
 Shader
@@ -1660,6 +5201,8 @@ Würfel: Punkt 2 / 3
 Cube: point 2 / 3
 Würfel: Punkt 3 / 3
 Cube: point 3 / 3
+Your comments and the contents of the file message.txt will be sent.
+
 Zentrum wählen
 
 Zwischenablage leer
@@ -1729,6 +5272,8 @@ neues Terrain...
 nichts markiert
 
 nichts zum Einfügen
+
+open message.txt
 
 paranoider Modus
 

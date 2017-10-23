@@ -51,6 +51,7 @@
 
 
 typedef void callback_function();
+typedef void render_str_function(const string &text, Image &image);
 
 
 
@@ -125,20 +126,16 @@ enum{
 
 namespace nix{
 
-extern int FontHeight;
-extern string FontName;
-
 extern int Api;
 extern string ApiName;
-extern int ScreenWidth, ScreenHeight, ScreenDepth;		// current screen resolution
-extern int DesktopWidth, DesktopHeight, DesktopDepth;	// pre-NIX-resolution
-extern int target_width, target_height;						// render target size (window/texture)
+extern int device_width, device_height;						// render target size (window, won't change)
+extern int target_width, target_height;						// current render target size (window/texture)
 extern bool Fullscreen;
 extern callback_function *RefillAllVertexBuffers;			// animate the application to refill lost VertexBuffers
+extern render_str_function *render_str;
 extern bool LightingEnabled;
 extern bool CullingInverted;
 
-extern float MouseMappingWidth, MouseMappingHeight;		// fullscreen mouse territory
 extern int FatalError;
 extern int NumTrias;
 

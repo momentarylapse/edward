@@ -251,12 +251,12 @@ void AdminFile::check(AdminFileList &list)
 		DataMaterial m;
 		if (m.load(MaterialDir + Name,false)){
 			Time = m.file_time;
-			add_possible_link(l, FD_SHADERFILE, m.Appearance.ShaderFile);
-			if (m.Appearance.ReflectionMode==ReflectionCubeMapStatic)
+			add_possible_link(l, FD_SHADERFILE, m.appearance.shader_file);
+			if (m.appearance.reflection_mode==ReflectionCubeMapStatic)
 				for (int i=0;i<6;i++)
-					add_possible_link(l, FD_TEXTURE, m.Appearance.ReflectionTextureFile[i]);
-			for (int i=0;i<m.Appearance.NumTextureLevels;i++)
-				add_possible_link(l, FD_TEXTURE, m.Appearance.TextureFile[i]);
+					add_possible_link(l, FD_TEXTURE, m.appearance.reflection_texture_file[i]);
+			for (string &tf: m.appearance.texture_files)
+				add_possible_link(l, FD_TEXTURE, tf);
 		}else
 			Missing=true;
 	}else if (Kind==FD_FONT){

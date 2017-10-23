@@ -36,6 +36,7 @@ public:
 		LOCATION_MATRIX_M,
 		LOCATION_MATRIX_V,
 		LOCATION_MATRIX_P,
+		LOCATION_MATRIX_P2D,
 		LOCATION_TEX,
 		LOCATION_CAM_POS = LOCATION_TEX + NIX_MAX_TEXTURELEVELS,
 		LOCATION_CAM_DIR,
@@ -44,10 +45,9 @@ public:
 		LOCATION_MATERIAL_SPECULAR,
 		LOCATION_MATERIAL_SHININESS,
 		LOCATION_MATERIAL_EMISSION,
+		LOCATION_LIGHT_COLOR,
 		LOCATION_LIGHT_AMBIENT,
-		LOCATION_LIGHT_DIFFUSIVE,
 		LOCATION_LIGHT_SPECULAR,
-		LOCATION_LIGHT_EMISSION,
 		LOCATION_LIGHT_POS,
 		LOCATION_LIGHT_RADIUS,
 		LOCATION_FOG_COLOR,
@@ -59,11 +59,14 @@ public:
 };
 
 
-// shader files
+void init_shaders();
 void _cdecl DeleteAllShaders();
 Shader* _cdecl LoadShader(const string &filename);
 Shader* _cdecl CreateShader(const string &source);
 void _cdecl SetShader(Shader *s);
+
+extern Shader *default_shader_2d;
+extern Shader *default_shader_3d;
 
 extern string shader_dir;
 

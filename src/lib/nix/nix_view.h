@@ -12,10 +12,6 @@ namespace nix{
 
 class Texture;
 
-// configuring the view
-void _SetMode2d();
-void _SetMode3d();
-
 void _cdecl SetProjectionPerspective();
 void _cdecl SetProjectionPerspectiveExt(float center_x, float center_y, float width_1, float height_1, float z_min, float z_max);
 void _cdecl SetProjectionOrtho(bool relative);

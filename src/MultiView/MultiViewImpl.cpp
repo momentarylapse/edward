@@ -43,7 +43,6 @@ MultiViewImpl::MultiViewImpl(bool _mode3d) :
 
 	allow_infinite_scrolling = hui::Config.getBool("MultiView.InfiniteScrolling", true);
 
-	mode3d = _mode3d;
 	win[0] = new Window(this, VIEW_BACK);
 	win[1] = new Window(this, VIEW_LEFT);
 	win[2] = new Window(this, VIEW_TOP);
@@ -315,7 +314,7 @@ void MultiViewImpl::onKeyDown()
 
 	if ((k == hui::KEY_ADD) or (k == hui::KEY_NUM_ADD))
 		camZoom(SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
-	if ((k == hui::KEY_SUBTRACT) || (k == hui::KEY_NUM_SUBTRACT))
+	if ((k == hui::KEY_SUBTRACT) or (k == hui::KEY_NUM_SUBTRACT))
 		camZoom(1.0f / SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
 	if (k == hui::KEY_RIGHT)
 		camMove(-e_x * SPEED_MOVE);
@@ -610,15 +609,17 @@ void MultiViewImpl::onDraw()
 
 	update_zoom;
 
+	nix::ResetZ();
+	nix::SetProjectionOrtho(false);
 	nix::SetZ(true,true);
 	nix::SetColor(ColorText);
 
 
 	if (!mode3d){
-		win[0]->dest = rect(0,nix::target_width,0,nix::target_height);
+		win[0]->dest = nix::target_rect;
 		win[0]->draw();
 	}else if (whole_window){
-		active_win->dest = rect(0,nix::target_width,0,nix::target_height);
+		win[0]->dest = nix::target_rect;
 		active_win->draw();
 	}else{
 		// top left

@@ -12,11 +12,15 @@ namespace nix{
 
 string shader_dir;
 
+
+Shader *default_shader_2d = NULL;
+Shader *default_shader_3d = NULL;
+Shader *current_shader = NULL;
+
 static Array<Shader*> shaders;
 
-Shader *default_shader = NULL;
-
 int current_program = 0;
+extern matrix projection_matrix2d;
 
 string shader_error;
 
@@ -216,6 +220,7 @@ void Shader::find_locations()
 	location[LOCATION_MATRIX_M] = get_location("mat_m");
 	location[LOCATION_MATRIX_V] = get_location("mat_v");
 	location[LOCATION_MATRIX_P] = get_location("mat_p");
+	location[LOCATION_MATRIX_P2D] = get_location("mat_p2d");
 	for (int i=0; i<NIX_MAX_TEXTURELEVELS; i++)
 		location[LOCATION_TEX + i] = get_location("tex" + i2s(i));
 	location[LOCATION_CAM_POS] = get_location("CameraPosition");
@@ -226,14 +231,23 @@ void Shader::find_locations()
 	location[LOCATION_MATERIAL_SPECULAR] = get_location("material.specular");
 	location[LOCATION_MATERIAL_SHININESS] = get_location("material.shininess");
 	location[LOCATION_MATERIAL_EMISSION] = get_location("material.emission");
+
+	location[LOCATION_LIGHT_COLOR] = get_location("light.color");
+	location[LOCATION_LIGHT_AMBIENT] = get_location("light.ambient");
+	location[LOCATION_LIGHT_SPECULAR] = get_location("light.specular");
+	location[LOCATION_LIGHT_POS] = get_location("light.pos");
+	location[LOCATION_LIGHT_RADIUS] = get_location("light.radius");
+
 	location[LOCATION_FOG_COLOR] = get_location("fog.color");
 	location[LOCATION_FOG_DENSITY] = get_location("fog.density");
 }
 
 Shader *LoadShader(const string &filename)
 {
-	if (filename.num == 0)
-		return NULL;
+	if (filename.num == 0){
+		default_shader_3d->reference_count ++;
+		return default_shader_3d;
+	}
 	string fn = shader_dir + filename;
 	for (Shader *s: shaders)
 		if ((s->filename == fn) and (s->program >= 0)){
@@ -276,7 +290,8 @@ void Shader::unref()
 {
 	reference_count --;
 	if ((reference_count <= 0) and (program >= 0)){
-		msg_write("delete shader: " + filename);
+		if ((this == default_shader_3d) or (this == default_shader_2d))
+			return;
 		glDeleteProgram(program);
 		TestGLError("NixUnrefShader");
 		program = -1;
@@ -293,11 +308,14 @@ void DeleteAllShaders()
 
 void SetShader(Shader *s)
 {
+	if (s == NULL)
+		s = default_shader_3d;
+	current_shader = s;
 	current_program = s->program;
 	glUseProgram(current_program);
 	TestGLError("SetProgram");
 
-	s->set_default_data();
+	//s->set_default_data();
 }
 
 int Shader::get_location(const string &var_name)
@@ -365,13 +383,23 @@ void Shader::set_default_data()
 	set_matrix(location[LOCATION_MATRIX_M], world_matrix);
 	set_matrix(location[LOCATION_MATRIX_V], view_matrix);
 	set_matrix(location[LOCATION_MATRIX_P], projection_matrix);
+	set_matrix(location[LOCATION_MATRIX_P2D], projection_matrix2d);
 	for (int i=0; i<NIX_MAX_TEXTURELEVELS; i++)
 		set_int(location[LOCATION_TEX + i], i);
-	set_color(location[LOCATION_MATERIAL_AMBIENT], material.ambient);
-	set_color(location[LOCATION_MATERIAL_DIFFUSIVE], material.diffusive);
+	set_color(location[LOCATION_MATERIAL_AMBIENT], White);//material.ambient);
+	set_color(location[LOCATION_MATERIAL_DIFFUSIVE], White);//material.diffusive);
 	set_color(location[LOCATION_MATERIAL_SPECULAR], material.specular);
 	set_data(location[LOCATION_MATERIAL_SHININESS], &material.shininess, 4);
 	set_color(location[LOCATION_MATERIAL_EMISSION], material.emission);
+
+	float ff = 0.2f;
+	set_data(location[LOCATION_LIGHT_AMBIENT], &ff, 4);//.ambient);
+	set_color(location[LOCATION_LIGHT_COLOR], color(1, 0.7f, 0.7f, 0.7f));//material.diffusive);
+	ff = 0.7f;
+	set_data(location[LOCATION_LIGHT_SPECULAR], &ff, 4);//material.specular);
+	vector dir = view_matrix.transform_normal(e_z);
+	set_data(location[LOCATION_LIGHT_POS], &dir.x, 3*4);
+	//set_data(location[LOCATION_LIGHT_RADIUS], &ff, 4);
 
 	set_color(location[LOCATION_FOG_COLOR], fog._color);
 	set_data(location[LOCATION_FOG_DENSITY], &fog.density, 4);
@@ -404,6 +432,92 @@ void Shader::set_default_data()
 	}
 	TestGLError("SetDefaultShaderData");
 }*/
+
+
+void init_shaders()
+{
+
+	default_shader_3d = nix::CreateShader(
+		"<VertexShader>\n"
+		"#version 330 core\n"
+		"uniform mat4 mat_mvp;\n"
+		"uniform mat4 mat_m;\n"
+		"uniform mat4 mat_v;\n"
+		"layout(location = 0) in vec3 inPosition;\n"
+		"layout(location = 1) in vec3 inNormal;\n"
+		"layout(location = 2) in vec2 inTexCoord;\n"
+		"out vec3 fragmentNormal;\n"
+		"out vec2 fragmentTexCoord;\n"
+		"out vec3 fragmentPos; // camera space\n"
+		"void main(){\n"
+		"	gl_Position = mat_mvp * vec4(inPosition,1);\n"
+		"	fragmentNormal = (mat_v * mat_m * vec4(inNormal,0)).xyz;\n"
+		"	fragmentTexCoord = vec2(inTexCoord.x, 1-inTexCoord.y);\n"
+		"	fragmentPos = (mat_v * mat_m * vec4(inPosition,1)).xyz;\n"
+		"}\n"
+		"</VertexShader>\n"
+		"<FragmentShader>\n"
+		"#version 330 core\n"
+		"struct Fog{ vec4 color; float density; };\n"
+		"struct Material{ vec4 ambient, diffusive, specular, emission; float shininess; };\n"
+		"struct Light{ vec4 color; vec3 pos; float radius, ambient, specular; };\n"
+		"uniform Material material;\n"
+		"uniform Light light;\n"
+		"uniform Fog fog;\n"
+		"in vec3 fragmentNormal;\n"
+		"in vec2 fragmentTexCoord;\n"
+		"in vec3 fragmentPos;\n"
+		"uniform sampler2D tex0;\n"
+		"out vec3 color;\n"
+		"void main(){\n"
+		"	vec3 n = normalize(fragmentNormal);\n"
+		"	vec3 l = light.pos;\n"
+		"	float d = max(-dot(n, l), 0);\n"
+		"	color = material.emission.rgb;\n"
+		"	color += material.ambient.rgb * light.color.rgb * light.ambient;\n"
+		"	color += material.diffusive.rgb* light.color.rgb * d;\n"
+		"	color *= texture(tex0, fragmentTexCoord).rgb;\n"
+		"	vec3 e = normalize(fragmentPos); // eye dir\n"
+		"	if (d > 0){\n"
+		"		vec3 rl = reflect(l, n);\n"
+		"		float ee = max(-dot(e, rl), 0);\n"
+		"		color += material.specular.rgb * light.color.rgb * light.specular * pow(ee, material.shininess);\n"
+		"	}\n"
+		"	float t = exp(-fragmentPos.z * fog.density);\n"
+		"	color = (1 - t) * fog.color.rgb + t * color;\n"
+		"}\n"
+		"</FragmentShader>");
+
+
+
+	default_shader_2d = nix::CreateShader(
+		"<VertexShader>\n"
+		"#version 330 core\n"
+		"uniform mat4 mat_p2d;\n"
+		"layout(location = 0) in vec3 inPosition;\n"
+		"layout(location = 2) in vec2 inTexCoord;\n"
+		"out vec2 fragmentTexCoord;\n"
+		"void main(){\n"
+		"	gl_Position = mat_p2d * vec4(inPosition,1);\n"
+		"	fragmentTexCoord = vec2(inTexCoord.x, 1-inTexCoord.y);\n"
+		"}\n"
+		"</VertexShader>\n"
+		"<FragmentShader>\n"
+		"#version 330 core\n"
+		"struct Material{ vec4 ambient, diffusive, specular, emission; float shininess; };\n"
+		"uniform Material material;\n"
+		"in vec2 fragmentTexCoord;\n"
+		"uniform sampler2D tex0;\n"
+		"out vec4 color;\n"
+		"void main(){\n"
+		"	color = texture(tex0, fragmentTexCoord);\n"
+		"	color *= material.emission;\n"
+		"}\n"
+		"</FragmentShader>");
+
+	default_shader_3d->reference_count ++;
+	default_shader_2d->reference_count ++;
+}
 
 };
 

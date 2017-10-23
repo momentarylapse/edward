@@ -66,6 +66,17 @@ MultiView::MultiView(bool mode3d) :
 	ColorWindowSeparator = color(1, 0.1f, 0.1f, 0.6f); // color(1,0.1f,0.1f,0.5f)
 	ColorSelectionRect = color(0.2f,0,0,1);
 	ColorSelectionRectBoundary = color(0.7f,0,0,1);
+
+	view_stage = 0;
+	grid_enabled = true;
+	wire_mode = false;
+	light = -1;
+	light_enabled = false;
+	whole_window = false;
+	this->mode3d = mode3d;
+	mouse_win = NULL;
+	active_win = NULL;
+	allow_mouse_actions = true;
 }
 
 MultiView::~MultiView()

@@ -14,6 +14,14 @@ float line_width = 1;
 bool smooth_lines = false;
 //static color current_color = White;
 
+unsigned int line_buffer = 0;
+
+
+render_str_function *render_str = NULL;
+extern Texture *tex_text;
+extern Shader *current_shader;
+extern VertexBuffer *vb_2d;
+
 
 
 void SetColor(const color &c)
@@ -48,32 +56,49 @@ string str_utf8_to_ubyte(const string &str)
 
 void DrawStr(float x, float y, const string &str)
 {
-	string str2 = str_utf8_to_ubyte(str);
-	_SetMode2d();
+	if (render_str){
+		Image im;
+		(*render_str)(str, im);
+		tex_text->overwrite(im);
+		SetTexture(tex_text);
+		Draw2D(r_id, rect(x, x + im.width, y, y + im.height), 0);
+	}else{
+		/*string str2 = str_utf8_to_ubyte(str);
 
-	glRasterPos3f(x, (y+2+int(float(FontHeight)*0.75f)),-1.0f);
-	glListBase(OGLFontDPList);
-	glCallLists(str2.num,GL_UNSIGNED_BYTE,(char*)str2.data);
-	glRasterPos3f(0,0,0);
-	TestGLError("DrawStr");
+		glRasterPos3f(x, (y+2+int(float(FontHeight)*0.75f)),-1.0f);
+		glListBase(OGLFontDPList);
+		glCallLists(str2.num,GL_UNSIGNED_BYTE,(char*)str2.data);
+		glRasterPos3f(0,0,0);
+		TestGLError("DrawStr");*/
+	}
 }
 
 int GetStrWidth(const string &str)
 {
-	string str2 = str_utf8_to_ubyte(str);
-	int w = 0;
-	for (int i=0;i<str2.num;i++)
-		w += FontGlyphWidth[(unsigned char)str2[i]];
-	return w;
+
+	if (render_str){
+		Image im;
+		(*render_str)(str, im);
+		return im.width;
+	}else{
+		string str2 = str_utf8_to_ubyte(str);
+		int w = 0;
+		for (int i=0;i<str2.num;i++)
+			w += FontGlyphWidth[(unsigned char)str2[i]];
+		return w;
+	}
 }
 
 void DrawLine(float x1, float y1, float x2, float y2, float depth)
 {
+	DrawLine3D(vector(x1, y1, depth), vector(x2, y2, depth));
+	return;
+
 	float dx=x2-x1;
 	if (dx<0)	dx=-dx;
 	float dy=y2-y1;
 	if (dy<0)	dy=-dy;
-	_SetMode2d();
+	//_SetMode2d();
 
 #ifdef OS_LINUX
 	// internal line drawing function \(^_^)/
@@ -130,7 +155,6 @@ void DrawLine(float x1, float y1, float x2, float y2, float depth)
 
 void DrawLines(float *x, float *y, int num_lines, bool contiguous, float depth)
 {
-	_SetMode2d();
 	// internal line drawing function \(^_^)/
 	if (smooth_lines){
 		// antialiasing!
@@ -187,19 +211,32 @@ void DrawLineH(float x1, float x2, float y, float depth)
 
 void DrawLine3D(const vector &l1, const vector &l2)
 {
-	_SetMode3d();
-	glLineWidth(line_width);
-	glBegin(GL_LINES);
-		glVertex3fv((float*)&l1);
-		glVertex3fv((float*)&l2);
-	glEnd();
-	/*vector p1, p2;
-	NixGetVecProject(p1,l1);
-	NixGetVecProject(p2,l2);
-	if ((p1.z>0)&&(p2.z>0)&&(p1.z<1)&&(p2.z<1))
-		NixDrawLine(p1.x, p1.y, p2.x, p2.y, (p1.z + p2.z)/2);*/
-	//NixDrawLine(l1.x, l1.y, l2.x, l2.y, (l1.z+l2.z)/2);
-	TestGLError("DrawLine3d");
+	vector v[2] = {l1, l2};
+
+	current_shader->set_default_data();
+
+	if (line_buffer == 0)
+		glGenBuffers(1, &line_buffer);
+
+	TestGLError("opt0");
+	glBindBuffer(GL_ARRAY_BUFFER, line_buffer);
+	glBufferData(GL_ARRAY_BUFFER, 2 * sizeof(v[0]), &v[0], GL_STATIC_DRAW);
+	TestGLError("opt1");
+
+	TestGLError("a");
+	glEnableVertexAttribArray(0);
+	TestGLError("b1");
+	glBindBuffer(GL_ARRAY_BUFFER, line_buffer);
+	TestGLError("c1");
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	TestGLError("d1");
+
+	// Draw the triangle !
+	glDrawArrays(GL_LINES, 0, 2); // Starting from vertex 0; 3 vertices total -> 1 triangle
+	TestGLError("e");
+
+	glDisableVertexAttribArray(0);
+	TestGLError("f");
 }
 
 void DrawRect(float x1, float x2, float y1, float y2, float depth)
@@ -233,44 +270,24 @@ void DrawRect(float x1, float x2, float y1, float y2, float depth)
 
 void Draw2D(const rect &src, const rect &dest, float depth)
 {
-	//_SetMode2d();
-	//if (depth==0)	depth=0.5f;
-	
-	//msg_write("2D");
-//	SetShaderFileData(texture,-1,-1,-1);
-
-	vb_temp->clear();
+	vb_2d->clear();
 	vector a = vector(dest.x1, dest.y1, depth);
 	vector b = vector(dest.x2, dest.y1, depth);
 	vector c = vector(dest.x1, dest.y2, depth);
 	vector d = vector(dest.x2, dest.y2, depth);
-	vb_temp->addTria(a, v_0, 0, 0, b, v_0, 1, 0, c, v_0, 0, 1);
-	vb_temp->addTria(c, v_0, 0, 1, b, v_0, 1, 0, d, v_0, 1, 1);
-	Draw3D(vb_temp);
-
-	/*depth=depth*2-1;
-	glBegin(GL_QUADS);
-		glTexCoord2f(src.x1,1-src.y2);
-		glVertex3f(dest.x1,dest.y2,depth);
-		glTexCoord2f(src.x1,1-src.y1);
-		glVertex3f(dest.x1,dest.y1,depth);
-		glTexCoord2f(src.x2,1-src.y1);
-		glVertex3f(dest.x2,dest.y1,depth);
-		glTexCoord2f(src.x2,1-src.y2);
-		glVertex3f(dest.x2,dest.y2,depth);
-	glEnd();
-	TestGLError("Draw2D");*/
+	vb_2d->addTria(a, v_0, 0, 0, b, v_0, 1, 0, c, v_0, 0, 1);
+	vb_2d->addTria(c, v_0, 0, 1, b, v_0, 1, 0, d, v_0, 1, 1);
+	Draw3D(vb_2d);
 }
 
 
 
 void Draw3D(VertexBuffer *vb)
 {
-	//_NixSetMode3d();
-	//TestGLError("a");
-
 	if (vb->dirty)
 		vb->update();
+
+	current_shader->set_default_data();
 
 	TestGLError("a");
 	glEnableVertexAttribArray(0);
@@ -287,12 +304,14 @@ void Draw3D(VertexBuffer *vb)
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 0, (void*)0);
 	TestGLError("d2");
 
-	glEnableVertexAttribArray(2);
-	TestGLError("b3");
-	glBindBuffer(GL_ARRAY_BUFFER, vb->buf_t[0]);
-	TestGLError("c3");
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	TestGLError("d3");
+	for (int i=0; i<vb->num_textures; i++){
+		glEnableVertexAttribArray(2 + i);
+		TestGLError("b3");
+		glBindBuffer(GL_ARRAY_BUFFER, vb->buf_t[i]);
+		TestGLError("c3");
+		glVertexAttribPointer(2+i, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		TestGLError("d3");
+	}
 
 	// Draw the triangle !
 	glDrawArrays(GL_TRIANGLES, 0, 3*vb->num_triangles); // Starting from vertex 0; 3 vertices total -> 1 triangle
@@ -300,51 +319,10 @@ void Draw3D(VertexBuffer *vb)
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
+	for (int i=0; i<vb->num_textures; i++)
+		glDisableVertexAttribArray(2 + i);
 	TestGLError("f");
 
-#if 0
-	if (optimized){
-		glBindBuffer(GL_ARRAY_BUFFER, buf_v);
-		glVertexPointer(3, GL_FLOAT, 0, (char *)NULL);
-		glBindBuffer(GL_ARRAY_BUFFER, buf_n);
-		glNormalPointer(GL_FLOAT, 0, (char *)NULL);
-		TestGLError("o1");
-	}else{
-		glEnableClientState(GL_VERTEX_ARRAY);
-		TestGLError("no11");
-		glVertexPointer(3, GL_FLOAT, 0, vertices.data);
-		TestGLError("no12");
-		glEnableClientState(GL_NORMAL_ARRAY);
-		TestGLError("no13");
-		glNormalPointer(GL_FLOAT, 0, normals.data);
-		TestGLError("no14");
-	}
-
-	// set multitexturing
-	if (OGLMultiTexturingSupport){
-		for (int i=0;i<num_textures;i++){
-			glClientActiveTexture(GL_TEXTURE0 + i);
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			if (optimized){
-				glBindBuffer(GL_ARRAY_BUFFER_ARB, buf_t[i]);
-				glTexCoordPointer(2, GL_FLOAT, 0, (char *)NULL);
-			}else
-				glTexCoordPointer(2, GL_FLOAT, 0, tex_coords[i].data);
-		}
-	}else{
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glTexCoordPointer(2, GL_FLOAT, 0, tex_coords[0].data);
-	}
-	TestGLError("b");
-
-	// draw
-	glDrawArrays(GL_TRIANGLES, 0, num_triangles * 3);
-	TestGLError("c");
-
-	/*glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);*/
-#endif
 
 	NumTrias += vb->num_triangles;
 	TestGLError("Draw3D");
@@ -356,7 +334,7 @@ void Draw3DCubeMapped(Texture *cube_map, VertexBuffer *vb)
 		return;
 	if (!cube_map->is_cube_map)
 		return;
-	_SetMode3d();
+	//_SetMode3d();
 
 	SetTexture(cube_map);
 	TestGLError("Draw3dCube 0");
@@ -373,7 +351,6 @@ void Draw3DCubeMapped(Texture *cube_map, VertexBuffer *vb)
 	glDisable(GL_TEXTURE_GEN_S);
 	glDisable(GL_TEXTURE_GEN_T);
 	glDisable(GL_TEXTURE_GEN_R);
-	SetTexture(NULL);
 
 	//Draw3D(-1,buffer,mat);
 	TestGLError("Draw3dCube");
