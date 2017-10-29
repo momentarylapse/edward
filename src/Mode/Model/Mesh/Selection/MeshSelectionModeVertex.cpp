@@ -49,6 +49,7 @@ void MeshSelectionModeVertex::updateSelection()
 void MeshSelectionModeVertex::updateMultiView()
 {
 	multi_view->clearData(data);
+	multi_view->setAllowSelect(true);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	multi_view->addData(	MVD_MODEL_VERTEX,
 			data->show_vertices,

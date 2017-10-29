@@ -231,8 +231,7 @@ void DrawLine3D(const vector &l1, const vector &l2)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	TestGLError("d1");
 
-	// Draw the triangle !
-	glDrawArrays(GL_LINES, 0, 2); // Starting from vertex 0; 3 vertices total -> 1 triangle
+	glDrawArrays(GL_LINES, 0, 2);
 	TestGLError("e");
 
 	glDisableVertexAttribArray(0);

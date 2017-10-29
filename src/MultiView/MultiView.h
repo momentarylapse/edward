@@ -76,6 +76,22 @@ public:
 	static const string MESSAGE_ACTION_ABORT;
 	static const string MESSAGE_ACTION_EXECUTE;
 
+	virtual void onMouseMove(){};
+	virtual void onMouseWheel(){};
+	virtual void onMouseEnter(){};
+	virtual void onMouseLeave(){};
+	virtual void onLeftButtonDown(){};
+	virtual void onLeftButtonUp(){};
+	virtual void onMiddleButtonDown(){};
+	virtual void onMiddleButtonUp(){};
+	virtual void onRightButtonDown(){};
+	virtual void onRightButtonUp(){};
+	virtual void onKeyDown(){};
+	virtual void onKeyUp(){};
+	virtual void onCommand(const string &id){};
+	virtual void onUpdateMenu(){};
+	virtual void onDraw(){};
+
 	virtual void clearData(Data *data) = 0;
 	virtual void addData(int type, const DynamicArray &a, void *user_data, int flags) = 0;
 	//virtual void SetViewStage(int *view_stage, bool allow_handle) = 0;

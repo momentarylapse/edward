@@ -109,6 +109,7 @@ void Window::drawGrid()
 
 	// spherical for perspective view
 	if (type == VIEW_PERSPECTIVE){
+		return;
 		nix::SetShader(shader_lines_3d);
 		vector PerspectiveViewPos = cam->radius * (cam->ang * e_z) - cam->pos;
 		//NixSetZ(false,false);
@@ -185,30 +186,86 @@ color Window::getBackgroundColor()
 	return multi_view->ColorBackGround;
 }
 
+quaternion view_ang(int type, Camera *cam)
+{
+	quaternion ang;
+	if (type == VIEW_FRONT){
+		QuaternionRotationA(ang, e_y, -pi);
+	}else if (type == VIEW_BACK){
+		ang = q_id;
+	}else if (type == VIEW_RIGHT){
+		QuaternionRotationA(ang, e_y, -pi/2);
+	}else if (type == VIEW_LEFT){
+		QuaternionRotationA(ang, e_y, pi/2);
+	}else if (type == VIEW_TOP){
+		QuaternionRotationA(ang, e_x, pi/2);
+	}else if (type == VIEW_BOTTOM){
+		QuaternionRotationA(ang, e_x, -pi/2);
+	}else if (type == VIEW_PERSPECTIVE){
+		ang = cam->ang;
+	}else if (type == VIEW_ISOMETRIC){
+		ang = cam->ang;
+	}else if (type == VIEW_2D){
+		QuaternionRotationA(ang, e_y, -pi);
+	}
+	return ang;
+}
+
+string view_name(int type)
+{
+	if (type == VIEW_FRONT){
+		return _("Vorne");
+	}else if (type == VIEW_BACK){
+		return _("Hinten");
+	}else if (type == VIEW_RIGHT){
+		return _("Rechts");
+	}else if (type == VIEW_LEFT){
+		return _("Links");
+	}else if (type == VIEW_TOP){
+		return _("Oben");
+	}else if (type == VIEW_BOTTOM){
+		return _("Unten");
+	}else if (type == VIEW_PERSPECTIVE){
+		return _("Perspektive");
+	}else if (type == VIEW_ISOMETRIC){
+		return _("Isometrisch");
+	}else if (type == VIEW_2D){
+		return _("2D");
+	}
+	return "???";
+}
+
+void set_projection_matrix(Window *w)
+{
+	float r = w->cam->radius;
+	float cx = (w->dest.x1 + w->dest.x2) / 2;
+	float cy = (w->dest.y1 + w->dest.y2) / 2;
+	if (w->type == VIEW_PERSPECTIVE){
+		float height = w->dest.height();
+		nix::SetProjectionPerspectiveExt(cx, cy, height, height, r / 1000, r * 1000);
+	}else if (w->type == VIEW_2D){
+		float height = w->zoom();
+		nix::SetProjectionOrthoExt(cx, cy, height, -height, 0, 1);
+	}else{
+		float height = w->zoom();
+		nix::SetProjectionOrthoExt(cx, cy, height, -height, - r * 100, r * 100);
+	}
+	w->projection_matrix = nix::projection_matrix;
+
+}
+
 void Window::draw()
 {
 	msg_db_f("MultiView.DrawWin",2);
 	matrix rot, trans;
 	nix::Scissor(dest);
 	string view_kind;
-	MatrixIdentity(mat);
 	nix::EnableLighting(false);
 	nix::SetTexture(NULL);
 
 	color bg = getBackgroundColor();
 
-	// projection matrix
-	if (type == VIEW_PERSPECTIVE){
-		float height = dest.height();
-		nix::SetProjectionPerspectiveExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, height, cam->radius / 1000, cam->radius * 1000);
-	}else if (type == VIEW_2D){
-		float height = zoom();
-		nix::SetProjectionOrthoExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, -height, 0, 1);
-	}else{
-		float height = zoom();
-		nix::SetProjectionOrthoExt((dest.x1 + dest.x2) / 2, (dest.y1 + dest.y2) / 2, height, -height, - cam->radius * 100, cam->radius * 100);
-	}
-	projection = nix::projection_matrix;
+	set_projection_matrix(this);
 
 	// background color
 	nix::ResetToColor(bg);
@@ -216,39 +273,18 @@ void Window::draw()
 
 	// camera matrix
 	vector pos = cam->pos;
-	if (type == VIEW_FRONT){
-		view_kind = _("Vorne");
-		QuaternionRotationA(ang, e_y, -pi);
-	}else if (type == VIEW_BACK){
-		view_kind = _("Hinten");
-		ang = q_id;
-	}else if (type == VIEW_RIGHT){
-		view_kind = _("Rechts");
-		QuaternionRotationA(ang, e_y, -pi/2);
-	}else if (type == VIEW_LEFT){
-		view_kind = _("Links");
-		QuaternionRotationA(ang, e_y, pi/2);
-	}else if (type == VIEW_TOP){
-		view_kind = _("Oben");
-		QuaternionRotationA(ang, e_x, pi/2);
-	}else if (type == VIEW_BOTTOM){
-		view_kind = _("Unten");
-		QuaternionRotationA(ang, e_x, -pi/2);
-	}else if (type == VIEW_PERSPECTIVE){
-		view_kind = _("Perspektive");
+	view_kind = view_name(type);
+	local_ang = view_ang(type, cam);
+	if (type == VIEW_PERSPECTIVE){
 		if (!cam->ignore_radius)
 			pos -= cam->radius * (cam->ang * e_z);
-		ang = cam->ang;
-	}else if (type == VIEW_ISOMETRIC){
-		view_kind = _("Isometrisch");
-		ang = cam->ang;
-	}else if (type == VIEW_2D){
-		view_kind = _("2D");
-		QuaternionRotationA(ang, e_y, -pi);
 	}
-	impl->cur_projection_win = this;
-	nix::SetViewPosAng(pos, ang);
-	mat = nix::view_matrix;
+	nix::SetViewPosAng(pos, local_ang);
+	view_matrix = nix::view_matrix;
+	pv_matrix = projection_matrix * view_matrix;
+	MatrixInverse(ipv_matrix, pv_matrix);
+
+
 	nix::SetWorldMatrix(m_id);
 	nix::SetZ(true,true);
 	nix::SetWire(false);
@@ -279,7 +315,7 @@ void Window::draw()
 	nix::SetWire(false);
 	nix::EnableLighting(false);
 	foreachi(DataSet &d, impl->data, di){
-		if ((d.drawable)or(d.indexable)){
+		if (d.drawable or d.indexable){
 			for (int i=0;i<d.data->num;i++){
 
 				SingleData *sd = MVGetSingleData(d, i);
@@ -288,7 +324,7 @@ void Window::draw()
 
 				//bool _di = ((d.indexable) and (sd->is_selected) and (ed->GetKey(hui::KEY_I)));
 				bool _di = false;
-				if ((!d.drawable) and (!_di))
+				if (!d.drawable and !_di)
 					continue;
 				vector p = project(sd->pos);
 				if ((p.x<dest.x1)or(p.y<dest.y1)or(p.x>dest.x2)or(p.y>dest.y2)or(p.z<=0)or(p.z>=1))
@@ -349,203 +385,48 @@ void Window::draw()
 }
 
 
-// FIXME argh!!!!!!!
-vector Window::unproject(const vector &p, const vector &o)
-{
-	vector r;
-	vector pp = p;
-	if ((type == VIEW_PERSPECTIVE) or (type == VIEW_ISOMETRIC)){ // 3D
-		if (impl->cur_projection_win != this){
-			impl->cur_projection_win = this;
-			nix::SetProjectionMatrix(projection);
-			nix::SetViewMatrix(mat);
-		}
-		vector p_o;
-		nix::GetVecProject(p_o, o);
-		pp.z = p_o.z;
-		nix::GetVecUnproject(r, pp);
-	}else if (type == VIEW_2D){
-		r.x=(p.x-nix::target_width/2)/zoom()+cam->pos.x;
-		r.y=(p.y-nix::target_height/2)/zoom()+cam->pos.y;
-		r.z=0;
-	}else{ // 2D
-		r=o;
-		if (impl->whole_window){
-			pp.x-=nix::target_width/4;
-			pp.y-=nix::target_height/4;
-		}else{
-			pp.x-=dest.x1;
-			pp.y-=dest.y1;
-		}
-		float zoom = this->zoom();
-		vector &pos = cam->pos;
-		if (type == VIEW_FRONT){
-			r.x=-(pp.x-nix::target_width/4)/zoom+pos.x;
-			r.y=-(pp.y-nix::target_height/4)/zoom+pos.y;
-		}else if (type == VIEW_BACK){
-			r.x= (pp.x-nix::target_width/4)/zoom+pos.x;
-			r.y=-(pp.y-nix::target_height/4)/zoom+pos.y;
-		}else if (type == VIEW_RIGHT){
-			r.z= (pp.x-nix::target_width/4)/zoom+pos.z;
-			r.y=-(pp.y-nix::target_height/4)/zoom+pos.y;
-		}else if (type == VIEW_LEFT){
-			r.z=-(pp.x-nix::target_width/4)/zoom+pos.z;
-			r.y=-(pp.y-nix::target_height/4)/zoom+pos.y;
-		}else if (type == VIEW_TOP){
-			r.x= (pp.x-nix::target_width/4)/zoom+pos.x;
-			r.z=-(pp.y-nix::target_height/4)/zoom+pos.z;
-		}else if (type == VIEW_BOTTOM){
-			r.x= (pp.x-nix::target_width/4)/zoom+pos.x;
-			r.z= (pp.y-nix::target_height/4)/zoom+pos.z;
-		}
-	}
-	return r;
-}
-
 vector Window::project(const vector &p)
 {
-	vector r;
-	if ((type == VIEW_PERSPECTIVE) or (type == VIEW_ISOMETRIC)){ // 3D
-		if (impl->cur_projection_win != this){
-			impl->cur_projection_win = this;
-			nix::SetProjectionMatrix(projection);
-			nix::SetViewMatrix(mat);
-		}
-		nix::GetVecProject(r,p);
-	}else if (type == VIEW_2D){
-		r.x=nix::target_width/2+(p.x-cam->pos.x)*zoom();
-		r.y=nix::target_height/2+(p.y-cam->pos.y)*zoom();
-		r.z=0.5f;
-	}else{ // 2D
-		float zoom = this->zoom();
-		vector &pos = cam->pos;
-		if (type == VIEW_FRONT){
-			r.x=nix::target_width/4-(p.x-pos.x)*zoom;
-			r.y=nix::target_height/4-(p.y-pos.y)*zoom;
-		}else if (type == VIEW_BACK){
-			r.x=nix::target_width/4+(p.x-pos.x)*zoom;
-			r.y=nix::target_height/4-(p.y-pos.y)*zoom;
-		}else if (type == VIEW_RIGHT){
-			r.x=nix::target_width/4+(p.z-pos.z)*zoom;
-			r.y=nix::target_height/4-(p.y-pos.y)*zoom;
-		}else if (type == VIEW_LEFT){
-			r.x=nix::target_width/4-(p.z-pos.z)*zoom;
-			r.y=nix::target_height/4-(p.y-pos.y)*zoom;
-		}else if (type == VIEW_TOP){
-			r.x=nix::target_width/4+(p.x-pos.x)*zoom;
-			r.y=nix::target_height/4-(p.z-pos.z)*zoom;
-		}else if (type == VIEW_BOTTOM){
-			r.x=nix::target_width/4+(p.x-pos.x)*zoom;
-			r.y=nix::target_height/4+(p.z-pos.z)*zoom;
-		}
-		if (impl->whole_window){
-			r.x+=nix::target_width/4;
-			r.y+=nix::target_height/4;
-		}else{
-			r.x+=dest.x1;
-			r.y+=dest.y1;
-		}
-		r.z=0.5f+VecDotProduct(p-pos,getDirection())/cam->radius/32;
-	}
+	vector r = pv_matrix.project(p);
+	r.x = nix::target_width * (r.x + 1) / 2;
+	r.y = nix::target_height * (-r.y + 1) / 2;
+	r.z = (r.z + 1) / 2;
 	return r;
 }
 
 vector Window::unproject(const vector &p)
 {
 	vector r;
-	vector pp = p;
-	if ((type == VIEW_PERSPECTIVE) or (type == VIEW_ISOMETRIC)){ // 3D
-		if (impl->cur_projection_win != this){
-			impl->cur_projection_win = this;
-			nix::SetProjectionMatrix(projection);
-			nix::SetViewMatrix(mat);
-		}
-		nix::GetVecUnproject(r,pp);
-	}else if (type == VIEW_2D){
-		r.x=(pp.x-nix::target_width/2)/zoom()+cam->pos.x;
-		r.y=(pp.y-nix::target_height/2)/zoom()+cam->pos.y;
-		r.z=0;
-	}else{ // 2D
-		if (impl->whole_window){
-			pp.x-=nix::target_width/4;
-			pp.y-=nix::target_height/4;
-		}else{
-			pp.x-=dest.x1;
-			pp.y-=dest.y1;
-		}
-		r=cam->pos;
-		float zoom = this->zoom();
-		vector &pos = cam->pos;
-		if (type == VIEW_FRONT){
-			r.x=-(pp.x-nix::target_width/4)/zoom+pos.x;
-			r.y=-(pp.y-nix::target_height/4)/zoom+pos.y;
-		}else if (type == VIEW_BACK){
-			r.x= (pp.x-nix::target_width/4)/zoom+pos.x;
-			r.y=-(pp.y-nix::target_height/4)/zoom+pos.y;
-		}else if (type == VIEW_RIGHT){
-			r.z= (pp.x-nix::target_width/4)/zoom+pos.z;
-			r.y=-(pp.y-nix::target_height/4)/zoom+pos.y;
-		}else if (type == VIEW_LEFT){
-			r.z=-(pp.x-nix::target_width/4)/zoom+pos.z;
-			r.y=-(pp.y-nix::target_height/4)/zoom+pos.y;
-		}else if (type == VIEW_TOP){
-			r.x= (pp.x-nix::target_width/4)/zoom+pos.x;
-			r.z=-(pp.y-nix::target_height/4)/zoom+pos.z;
-		}else if (type == VIEW_BOTTOM){
-			r.x= (pp.x-nix::target_width/4)/zoom+pos.x;
-			r.z= (pp.y-nix::target_height/4)/zoom+pos.z;
-		}
-	}
-	return r;
+	r.x = p.x*2/nix::target_width - 1;
+	r.y = - p.y*2/nix::target_height + 1;
+	r.z = p.z*2 - 1;
+	return ipv_matrix.project(r);
+	//return pv_matrix.unproject(r);
+}
+
+vector Window::unproject(const vector &p, const vector &o)
+{
+	vector op = project(o);
+	vector r;
+	r.x = p.x*2/nix::target_width - 1;
+	r.y = - p.y*2/nix::target_height + 1;
+	r.z = op.z*2 - 1;
+	return ipv_matrix.project(r);
 }
 
 vector Window::getDirection()
 {
-	int t=type;
-	if ((t==VIEW_FRONT)or(t==VIEW_2D))
-		return vector(0,0,-1);
-	else if (t==VIEW_BACK)
-		return vector(0,0,1);
-	else if (t==VIEW_RIGHT)
-		return vector(-1,0,0);
-	else if (t==VIEW_LEFT)
-		return vector(1,0,0);
-	else if (t==VIEW_TOP)
-		return vector(0,-1,0);
-	else if (t==VIEW_BOTTOM)
-		return vector(0,1,0);
-	else if ((t==VIEW_PERSPECTIVE) or (t==VIEW_ISOMETRIC))
-		return cam->ang * e_z;
-	return v_0;
+	return local_ang * e_z;
 }
 
 vector Window::getDirectionUp()
 {
-	int t=type;
-	if (t==VIEW_2D)
-		return vector(0,-1,0);
-	else if (t==VIEW_FRONT)
-		return vector(0,1,0);
-	else if (t==VIEW_BACK)
-		return vector(0,1,0);
-	else if (t==VIEW_RIGHT)
-		return vector(0,1,0);
-	else if (t==VIEW_LEFT)
-		return vector(0,1,0);
-	else if (t==VIEW_TOP)
-		return vector(0,0,1);
-	else if (t==VIEW_BOTTOM)
-		return vector(0,0,1);
-	else if ((t==VIEW_PERSPECTIVE) or (t==VIEW_ISOMETRIC))
-		return cam->ang * e_y;
-	return v_0;
+	return local_ang * e_y;
 }
 
 vector Window::getDirectionRight()
 {
-	vector d=getDirection();
-	vector u=getDirectionUp();
-	return VecCrossProduct(d,u);
+	return local_ang * e_x;
 }
 
 void Window::getMovingFrame(vector &dir, vector &up, vector &right)

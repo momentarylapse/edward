@@ -53,13 +53,10 @@ void ActionController::startAction(int _constraints)
 
 vector transform_ang(MultiViewImpl *mv, const vector &ang)
 {
-	quaternion qmv, mqmv, qang, q;
-	qmv =  mv->active_win->ang;
+	quaternion qmv, qang, q;
+	qmv =  mv->active_win->local_ang;
 	QuaternionRotationV(qang, ang);
-	mqmv = qmv;
-	mqmv.invert();
-	q = qang * mqmv;
-	q = qmv * q;
+	q = qmv * qang * qmv.bar();
 	return q.get_angles();
 }
 

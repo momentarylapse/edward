@@ -147,6 +147,7 @@ void ModeModelSkeleton::onStart()
 	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
 
 	multi_view->clearData(data);
+	multi_view->setAllowSelect(true);
 
 	chooseMouseFunction(MultiView::ACTION_MOVE);
 	mode_model->allowSelectionModes(false);

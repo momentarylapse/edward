@@ -22,9 +22,9 @@ ModeCreationBase::ModeCreationBase(const string &_name, ModeBase *_parent) :
 	dialog = NULL;
 }
 
-void ModeCreationBase::onDrawMeta()
+void ModeCreationBase::onDraw()
 {
-	ModeBase::onDrawMeta();
+	//ModeBase::onDraw();
 
 	ed->drawStr(nix::target_width / 2, nix::target_height - 20, message);
 }

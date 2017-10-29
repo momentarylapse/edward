@@ -45,7 +45,7 @@ void SkinGenerator::init_projective(MultiView::Window *win)
 	MatrixScale(s, nix::target_width / (d.x2 - d.x1) / 2, - nix::target_height / (d.y2 - d.y1) / 2, 1);
 	MatrixTranslation(t2, vector(- d.x1 / nix::target_width * 2, - d.y1 / nix::target_height * 2, 0));
 	MatrixTranslation(t1, vector(1, -1, 0));
-	init_projective(t2 * s * t1 * win->projection * win->mat);
+	init_projective(t2 * s * t1 * win->pv_matrix);
 }
 
 void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, int level)

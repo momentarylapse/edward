@@ -15,7 +15,7 @@ class ModeCreationBase : public ModeBase
 public:
 	ModeCreationBase(const string &_name, ModeBase *_parent);
 	virtual ~ModeCreationBase(){}
-	virtual void onDrawMeta();
+	virtual void onDraw();
 	virtual void onDrawWin(MultiView::Window *win);
 	void abort();
 	string message;

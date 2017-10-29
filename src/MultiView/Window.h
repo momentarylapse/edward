@@ -22,13 +22,15 @@ public:
 	Window(MultiViewImpl *impl, int type);
 
 	int type;
-	matrix mat;
+	matrix projection_matrix;
+	matrix view_matrix;
+	matrix pv_matrix;
+	matrix ipv_matrix;
 	rect dest;
 	rect name_dest;
-	quaternion ang;
-	matrix projection;
 	MultiView *multi_view;
 	MultiViewImpl *impl;
+	quaternion local_ang;
 	Camera *cam;
 	float zoom();
 	float get_grid_d();

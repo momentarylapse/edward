@@ -24,52 +24,18 @@ ModeBase::~ModeBase()
 {
 }
 
-void ModeBase::onCommandRecursive(const string & id)
-{
-	if (parent)
-		parent->onCommandRecursive(id);
-	onCommand(id);
-}
-
-void ModeBase::onCommandMeta(const string & id)
-{
-	if (multi_view)
-		((MultiView::MultiViewImpl*)multi_view)->onCommand(id);
-	onCommandRecursive(id);
-}
-
-#define CREATE_EVENT_HANDLER(NAME_META, NAME)	\
-void ModeBase::NAME_META() \
-{ \
-	if (multi_view) \
-		((MultiView::MultiViewImpl*)multi_view)->NAME(); \
-	NAME(); \
-}
-
-CREATE_EVENT_HANDLER(onLeftButtonDownMeta, onLeftButtonDown)
-CREATE_EVENT_HANDLER(onLeftButtonUpMeta, onLeftButtonUp)
-CREATE_EVENT_HANDLER(onMiddleButtonDownMeta, onMiddleButtonDown)
-CREATE_EVENT_HANDLER(onMiddleButtonUpMeta, onMiddleButtonUp)
-CREATE_EVENT_HANDLER(onRightButtonDownMeta, onRightButtonDown)
-CREATE_EVENT_HANDLER(onRightButtonUpMeta, onRightButtonUp)
-CREATE_EVENT_HANDLER(onMouseMoveMeta, onMouseMove)
-CREATE_EVENT_HANDLER(onMouseWheelMeta, onMouseWheel)
-CREATE_EVENT_HANDLER(onMouseEnterMeta, onMouseEnter)
-CREATE_EVENT_HANDLER(onMouseLeaveMeta, onMouseLeave)
-CREATE_EVENT_HANDLER(onKeyDownMeta, onKeyDown)
-CREATE_EVENT_HANDLER(onKeyUpMeta, onKeyUp)
-CREATE_EVENT_HANDLER(onDrawMeta, onDraw)
-
-void ModeBase::onUpdateMenuMeta()
-{
-	onUpdateMenuRecursive();
-}
-
 void ModeBase::onUpdateMenuRecursive()
 {
 	if (parent)
 		parent->onUpdateMenuRecursive();
 	onUpdateMenu();
+}
+
+void ModeBase::onCommandRecursive(const string &id)
+{
+	if (parent)
+		parent->onCommandRecursive(id);
+	onCommand(id);
 }
 
 void ModeBase::optimizeViewRecursice()

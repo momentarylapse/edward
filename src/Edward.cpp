@@ -178,7 +178,8 @@ void Edward::exit()
 #define IMPLEMENT_EVENT(EVENT) \
 void Edward::EVENT() \
 { \
-	cur_mode->EVENT##Meta(); \
+	cur_mode->multi_view->EVENT(); \
+	cur_mode->EVENT(); \
 }
 
 IMPLEMENT_EVENT(onKeyDown)
@@ -199,7 +200,8 @@ void Edward::onEvent()
 	string id = hui::GetEvent()->id;
 	if (id.num == 0)
 		id = hui::GetEvent()->message;
-	cur_mode->onCommandMeta(id);
+	cur_mode->multi_view->onCommand(id);
+	cur_mode->onCommandRecursive(id);
 	onCommand(id);
 }
 
@@ -604,7 +606,8 @@ void Edward::onDraw()
 	auto e = hui::GetEvent();
 	nix::Resize(e->column, e->row);
 
-	cur_mode->onDrawMeta();
+	cur_mode->multi_view->onDraw();
+	cur_mode->onDraw();
 
 	// messages
 	nix::SetShader(nix::default_shader_2d);

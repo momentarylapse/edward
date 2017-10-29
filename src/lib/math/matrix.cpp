@@ -95,6 +95,11 @@ vector matrix::project(const vector &v) const
 	return (*this * v) / (v.x*_30 + v.y*_31 + v.z*_32 + _33);
 }
 
+vector matrix::unproject(const vector &v) const
+{
+	return (*this * v) / (v.x*_30 + v.y*_31 + v.z*_32 + _33);
+}
+
 string matrix::str() const
 {
 	//return format("(%f, %f, %f, %f; %f, %f, %f, %f; %f, %f, %f, %f; %f, %f, %f, %f)", _00, _01, _02, _03, _10, _11, _12, _13, _20, _21, _22, _23, _30, _31, _32, _33);

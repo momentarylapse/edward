@@ -183,6 +183,9 @@ void ModeMaterial::onStart()
 	t->reset();
 	t->enable(false);
 
+
+	multi_view->setAllowSelect(false);
+
 	AppearanceDialog = new MaterialPropertiesDialog(ed, data);
 
 	UpdateShape();

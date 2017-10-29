@@ -166,6 +166,8 @@ void ModeFont::onStart()
 	t->reset();
 	t->enable(false);
 
+	multi_view->setAllowSelect(false);
+
 	dialog = new FontDialog(ed, data);
 
 	onUpdate(data, "");

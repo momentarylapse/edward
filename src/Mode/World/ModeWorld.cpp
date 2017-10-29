@@ -285,6 +285,7 @@ void ModeWorld::onUpdate(Observable *o, const string &message)
 		data->UpdateData();
 
 		multi_view->clearData(data);
+		multi_view->setAllowSelect(true);
 
 		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 		multi_view->addData(	MVD_WORLD_OBJECT,

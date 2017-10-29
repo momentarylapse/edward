@@ -50,32 +50,14 @@ public:
 	virtual void onCommand(const string &id){};
 	virtual void onUpdateMenu(){};
 
+	void onUpdateMenuRecursive();
+	void onCommandRecursive(const string &id);
+
 	virtual void onDraw(){};
 	virtual void onDrawWin(MultiView::Window *win){};
 
 	virtual bool optimizeView(){ return false; };
 	virtual void optimizeViewRecursice();
-
-	// send events to multi_view first, then call derived event handlers
-	//   (to be called by edward)
-	virtual void onMouseMoveMeta();
-	virtual void onMouseWheelMeta();
-	virtual void onMouseEnterMeta();
-	virtual void onMouseLeaveMeta();
-	virtual void onLeftButtonDownMeta();
-	virtual void onLeftButtonUpMeta();
-	virtual void onMiddleButtonDownMeta();
-	virtual void onMiddleButtonUpMeta();
-	virtual void onRightButtonDownMeta();
-	virtual void onRightButtonUpMeta();
-	virtual void onKeyDownMeta();
-	virtual void onKeyUpMeta();
-	virtual void onCommandMeta(const string &id);
-	virtual void onCommandRecursive(const string &id);
-	virtual void onUpdateMenuMeta();
-	virtual void onUpdateMenuRecursive();
-
-	virtual void onDrawMeta();
 
 	ModeBase *getRoot();
 	bool isAncestorOf(ModeBase *m);

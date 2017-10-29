@@ -14,6 +14,8 @@
 #include "CameraController.h"
 #include "SingleData.h"
 
+hui::Timer timer;
+
 namespace MultiView{
 
 nix::Shader *shader_selection = NULL;
@@ -39,12 +41,11 @@ MultiViewImpl::MultiViewImpl(bool _mode3d) :
 
 	allow_infinite_scrolling = hui::Config.getBool("MultiView.InfiniteScrolling", true);
 
-	win[0] = new Window(this, VIEW_BACK);
-	win[1] = new Window(this, VIEW_LEFT);
-	win[2] = new Window(this, VIEW_TOP);
-	win[3] = new Window(this, VIEW_PERSPECTIVE);
-
 	if (mode3d){
+		win.add(new Window(this, VIEW_BACK));
+		win.add(new Window(this, VIEW_LEFT));
+		win.add(new Window(this, VIEW_TOP));
+		win.add(new Window(this, VIEW_PERSPECTIVE));
 		light = 0;
 
 		// Menu
@@ -61,7 +62,7 @@ MultiViewImpl::MultiViewImpl(bool _mode3d) :
 		menu->addItem(_("Isometrisch"), "view_isometric");
 		menu->addItem(_("Perspektive"), "view_perspective");
 	}else{
-		win[0]->type = VIEW_2D;
+		win.add(new Window(this, VIEW_2D));
 		light = -1;
 	}
 	action_con = new ActionController(this);
@@ -113,22 +114,17 @@ MultiViewImpl::MultiViewImpl(bool _mode3d) :
 MultiViewImpl::~MultiViewImpl()
 {
 	hui::Config.getBool("MultiView.InfiniteScrolling", allow_infinite_scrolling);
-	for (int i=0;i<4;i++)
-		delete(win[i]);
-	delete(cam_con);
-	delete(action_con);
+	for (auto w: win)
+		delete w;
+	delete cam_con;
+	delete action_con;
 }
 
 void MultiViewImpl::reset()
 {
 	sel_rect.end();
-	if (mode3d){
-		mouse_win = win[3];
-		active_win = win[3];
-	}else{
-		mouse_win = win[0];
-		active_win = win[0];
-	}
+	mouse_win = win.back();
+	active_win = mouse_win;
 
 	view_moving = false;
 
@@ -200,7 +196,7 @@ void MultiViewImpl::camZoom(float factor, bool mouse_rel)
 		mup = mouse_win->unproject(m);
 	cam.radius /= factor;
 	if (mouse_rel)
-		cam.pos += mup - mouse_win->unproject(m);
+		{}//cam.pos += (1 - factor) * (cam.pos - mup);
 	action_con->update();
 	notify(MESSAGE_UPDATE);
 }
@@ -395,14 +391,14 @@ void MultiViewImpl::onLeftButtonDown()
 					getSelected(get_select_mode());
 					sel_rect.start_later(m);
 				}
-			}else if ((allow_mouse_actions) && (hoverSelected())){
+			}else if (allow_mouse_actions and hoverSelected()){
 				action_con->startAction(ACTION_CONSTRAINTS_NONE);
 			}
 		}else{
-			if (hasSelectableData()){
-				if ((hoverSelected()) && (get_select_mode() == MultiViewImpl::SELECT_SET)){
+			if (allow_select){
+				if (hoverSelected() and (get_select_mode() == MultiViewImpl::SELECT_SET)){
 					action_con->startAction(ACTION_CONSTRAINTS_NONE);
-				}else if (allow_select){
+				}else{
 					getSelected(get_select_mode());
 					sel_rect.start_later(m);
 				}
@@ -503,20 +499,10 @@ void MultiViewImpl::updateMouse()
 		return;
 
 	// which window is the cursor in?
-	if (mode3d){
-		if (whole_window){
-			mouse_win = active_win;
-		}else{
-			if ((m.x<nix::target_width/2)&&(m.y<nix::target_height/2))
-				mouse_win = win[0];
-			if ((m.x>nix::target_width/2)&&(m.y<nix::target_height/2))
-				mouse_win = win[1];
-			if ((m.x<nix::target_width/2)&&(m.y>nix::target_height/2))
-				mouse_win = win[2];
-			if ((m.x>nix::target_width/2)&&(m.y>nix::target_height/2))
-				mouse_win = win[3];
-		}
-	}else{
+	for (auto w: win)
+		if (w->dest.inside(m.x, m.y))
+			mouse_win = w;
+	if (!mode3d){
 		mouse_win = win[0];
 	}
 }
@@ -600,7 +586,7 @@ string MultiViewImpl::getScaleByZoom(vector &v)
 
 	int n = floor(log10(l) / 3.0f);
 	v /= exp10(n * 3);
-	if ((n >= -8) && (n <= 8))
+	if ((n >= -8) and  (n <= 8))
 		return units[n + 8];
 	return format("*10^%d", n*3);
 }
@@ -627,6 +613,7 @@ void MultiViewImpl::drawMousePos()
 void MultiViewImpl::onDraw()
 {
 	msg_db_f("Multiview.OnDraw",2);
+	timer.reset();
 
 	nix::ResetZ();
 	nix::SetProjectionOrtho(false);
@@ -638,7 +625,7 @@ void MultiViewImpl::onDraw()
 		win[0]->dest = nix::target_rect;
 		win[0]->draw();
 	}else if (whole_window){
-		win[0]->dest = nix::target_rect;
+		active_win->dest = nix::target_rect;
 		active_win->draw();
 	}else{
 		// top left
@@ -666,7 +653,6 @@ void MultiViewImpl::onDraw()
 		nix::DrawRect(0, nix::target_width, nix::target_height/2-1, nix::target_height/2+2, 0);
 		nix::DrawRect(nix::target_width/2-1, nix::target_width/2+2, 0, nix::target_height, 0);
 	}
-	cur_projection_win = NULL;
 	nix::EnableLighting(false);
 
 	nix::SetShader(nix::default_shader_2d);
@@ -682,6 +668,8 @@ void MultiViewImpl::onDraw()
 
 	if (action_con->inUse())
 		action_con->drawParams();
+
+	printf("%f\n", timer.get()*1000.0f);
 }
 
 void MultiViewImpl::SelectionRect::start_later(const vector &m)
@@ -721,7 +709,7 @@ rect MultiViewImpl::SelectionRect::get(const vector &m)
 
 void MultiViewImpl::setMouseAction(const string & name, int mode, bool locked)
 {
-	if ((!mode3d) && (mode == ACTION_ROTATE))
+	if (!mode3d and (mode == ACTION_ROTATE))
 		mode = ACTION_ROTATE_2D;
 	action_con->action.name = name;
 	action_con->action.mode = mode;
@@ -846,7 +834,7 @@ void MultiViewImpl::getHover()
 
 	/*if (!MVSelectable)
 		return;*/
-	if ((menu) && (mouse_win->name_dest.inside(m.x, m.y))){
+	if (menu and (mouse_win->name_dest.inside(m.x, m.y))){
 		hover.meta = hover.HOVER_WINDOW_LABEL;
 		return;
 	}
@@ -923,7 +911,7 @@ void MultiViewImpl::getSelected(int mode)
 {
 	msg_db_f("GetSelected",4);
 	notifyBegin();
-	if ((hover.index < 0) || (hover.type < 0)){
+	if ((hover.index < 0) or (hover.type < 0)){
 		if (mode == SELECT_SET)
 			unselectAll();
 	}else{
@@ -968,9 +956,9 @@ void MultiViewImpl::selectAllInRectangle(int mode)
 
 				// add the selection layers
 				if (mode == SELECT_INVERT)
-					sd->is_selected = (sd->m_old && !sd->m_delta) || (!sd->m_old && sd->m_delta);
+					sd->is_selected = (sd->m_old and !sd->m_delta) or (!sd->m_old and sd->m_delta);
 				else if (mode == SELECT_ADD)
-					sd->is_selected = (sd->m_old || sd->m_delta);
+					sd->is_selected = (sd->m_old or sd->m_delta);
 				else
 					sd->is_selected = sd->m_delta;
 			}

@@ -121,8 +121,7 @@ public:
 	vector virtual getCursor3d(const vector &depth_reference);
 
 
-	Window *win[4];
-	Window *cur_projection_win;
+	Array<Window*> win;
 
 	bool lbut, mbut, rbut;
 
