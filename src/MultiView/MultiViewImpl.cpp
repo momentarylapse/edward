@@ -669,7 +669,7 @@ void MultiViewImpl::onDraw()
 	if (action_con->inUse())
 		action_con->drawParams();
 
-	printf("%f\n", timer.get()*1000.0f);
+	//printf("%f\n", timer.get()*1000.0f);
 }
 
 void MultiViewImpl::SelectionRect::start_later(const vector &m)

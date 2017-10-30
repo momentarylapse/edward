@@ -84,6 +84,7 @@ void Window::drawGrid()
 		return;
 	rect d;
 	vector bg_a,bg_b;
+	Array<vector> p;
 
 	nix::SetTexture(NULL);
 
@@ -109,7 +110,6 @@ void Window::drawGrid()
 
 	// spherical for perspective view
 	if (type == VIEW_PERSPECTIVE){
-		return;
 		nix::SetShader(shader_lines_3d);
 		vector PerspectiveViewPos = cam->radius * (cam->ang * e_z) - cam->pos;
 		//NixSetZ(false,false);
@@ -117,19 +117,43 @@ void Window::drawGrid()
 		float r = cam->radius * 1000 * 0.6f;
 		for (int j=-16;j<16;j++)
 			for (int i=0;i<64;i++){
+				if (j == 0)
+					continue;
 				vector pa = vector(float(j)/32*pi,float(i  )/32*pi,0).ang2dir() * r - PerspectiveViewPos;
 				vector pb = vector(float(j)/32*pi,float(i+1)/32*pi,0).ang2dir() * r - PerspectiveViewPos;
-				nix::SetColor(ColorInterpolate(bg, multi_view->ColorGrid, j==0?0.6f:0.1f));
-				nix::DrawLine3D(pa,pb);
+				p.add(pa);
+				p.add(pb);
 			}
 		// vertical
-		for (int j=0;j<32;j++)
+		for (int j=0;j<32;j++){
+			if (j == 0)
+				continue;
 			for (int i=0;i<64;i++){
 				vector pa = vector(float(i  )/32*pi,float(j)/32*pi,0).ang2dir() * r - PerspectiveViewPos;
 				vector pb = vector(float(i+1)/32*pi,float(j)/32*pi,0).ang2dir() * r - PerspectiveViewPos;
-				nix::SetColor(ColorInterpolate(bg, multi_view->ColorGrid, (j%16)==0?0.6f:0.1f));
-				nix::DrawLine3D(pa,pb);
+				p.add(pa);
+				p.add(pb);
 			}
+		}
+		nix::SetColor(ColorInterpolate(bg, multi_view->ColorGrid, 0.1f));
+		nix::DrawLines(p, false);
+
+		p.clear();
+		for (int i=0;i<64;i++){
+			vector pa = vector(0,float(i  )/32*pi,0).ang2dir() * r - PerspectiveViewPos;
+			vector pb = vector(0,float(i+1)/32*pi,0).ang2dir() * r - PerspectiveViewPos;
+			p.add(pa);
+			p.add(pb);
+		}
+		// vertical
+		for (int i=0;i<64;i++){
+			vector pa = vector(float(i  )/32*pi,0,0).ang2dir() * r - PerspectiveViewPos;
+			vector pb = vector(float(i+1)/32*pi,0,0).ang2dir() * r - PerspectiveViewPos;
+			p.add(pa);
+			p.add(pb);
+		}
+		nix::SetColor(ColorInterpolate(bg, multi_view->ColorGrid, 0.6f));
+		nix::DrawLines(p, false);
 		//NixSetZ(true,true);
 		return;
 	}
