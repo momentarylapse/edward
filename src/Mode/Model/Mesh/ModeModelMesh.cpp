@@ -42,6 +42,11 @@
 
 ModeModelMesh *mode_model_mesh = NULL;
 
+
+namespace MultiView{
+	extern nix::Shader *shader_lines_3d;
+}
+
 ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	Mode<DataModel>("ModelMesh", _parent, ed->multi_view_3d, "menu_model"),
 	Observable("ModelMesh")
@@ -577,7 +582,8 @@ void ModeModelMesh::drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex
 	color bg = win->getBackgroundColor();
 
 	nix::SetWire(false);
-	nix::EnableLighting(false);
+	nix::SetShader(MultiView::shader_lines_3d);
+
 	vector dir = win->getDirection();
 	for (ModelSurface &s: data->surface){
 		for (ModelEdge &e: s.edge){
@@ -596,7 +602,6 @@ void ModeModelMesh::drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex
 	}
 	nix::SetColor(White);
 	nix::SetWire(win->multi_view->wire_mode);
-	nix::EnableLighting(multi_view->light_enabled);
 }
 
 

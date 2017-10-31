@@ -14,7 +14,7 @@ string AppName = "Edward";
 
 
 EdwardApp::EdwardApp() :
-	hui::Application(AppName, "Deutsch", hui::FLAG_LOAD_RESOURCE)
+	hui::Application("edward", "Deutsch", hui::FLAG_LOAD_RESOURCE)
 {
 	app = this;
 	setProperty("name", AppName);

@@ -131,11 +131,7 @@ void Panel::removeEventHandler(int event_handler_id)
 
 void Panel::setKeyCode(const string &id, int key_code, const string &image)
 {
-	for (EventListener &e: event_listeners)
-		if (e.id == id){
-			e.key_code = key_code;
-			e.image = image;
-		}
+	event_key_codes.add(EventKeyCode(id, "", key_code));
 }
 
 int Panel::_kaba_event(const string &id, kaba_member_callback *function)

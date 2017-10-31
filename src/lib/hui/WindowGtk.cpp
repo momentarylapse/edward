@@ -80,11 +80,9 @@ void WinTrySendByKeyCode(Window *win, int key_code)
 {
 	if (key_code <= 0)
 		return;
-	for (auto &c: win->event_listeners)
-		if (key_code == c.key_code){
-			//msg_write("---------------------------------");
-			//msg_write(c.id);
-			Event e = Event(c.id, "");
+	for (auto &k: win->event_key_codes)
+		if (key_code == k.key_code){
+			Event e = Event(k.id, k.message);
 			win->_send_event_(&e);
 		}
 }

@@ -358,10 +358,10 @@ void Window::draw()
 				if (d.drawable){
 					color c = multi_view->ColorPoint;
 					float radius = (float)impl->POINT_RADIUS;
-					float z = 0.1f;
+					float z = p.z-0.0001f;//0.1f;
 					if (sd->is_selected){
 						c = multi_view->ColorPointSelected;
-						z = 0.05f;
+						//z = 0.05f;
 					}
 					if (sd->is_special)
 						c = multi_view->ColorPointSpecial;

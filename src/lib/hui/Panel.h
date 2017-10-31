@@ -22,6 +22,7 @@ class Resource;
 class Painter;
 class Event;
 class EventListener;
+class EventKeyCode;
 class Control;
 class ControlRadioButton;
 
@@ -179,6 +180,7 @@ protected:
 	Control *root_control;
 public:
 	Array<EventListener> event_listeners;
+	Array<EventKeyCode> event_key_codes;
 	int current_event_listener_uid;
 protected:
 
