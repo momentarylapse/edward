@@ -113,8 +113,8 @@ void SetViewPosAng(const vector &view_pos,const quaternion &view_ang)
 void create_pixel_projection_matrix(matrix &m)
 {
 	matrix s, t;
-	MatrixTranslation(t, vector(-float(target_width)/2.0f,-float(target_height)/2.0f,0));
-	MatrixScale(s, 2.0f / float(target_width), -2.0f / float(target_height), 1);
+	MatrixTranslation(t, vector(-float(target_width)/2.0f,-float(target_height)/2.0f,-0.5f));
+	MatrixScale(s, 2.0f / float(target_width), -2.0f / float(target_height), 2);
 	m = s * t;
 }
 

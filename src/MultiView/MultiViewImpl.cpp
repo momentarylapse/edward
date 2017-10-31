@@ -193,19 +193,19 @@ void MultiViewImpl::camZoom(float factor, bool mouse_rel)
 {
 	vector mup;
 	if (mouse_rel)
-		mup = mouse_win->unproject(m);
+		mup = mouse_win->unproject(m, cam.pos);
 	cam.radius /= factor;
 	if (mouse_rel)
-		{}//cam.pos += (1 - factor) * (cam.pos - mup);
+		cam.pos += (1 - factor) * (cam.pos - mup);
 	action_con->update();
 	notify(MESSAGE_UPDATE);
 }
 
 void MultiViewImpl::camMove(const vector &dir)
 {
-	vector r = active_win->getDirectionRight();
-	vector u = active_win->getDirectionUp();
-	cam.pos += (dir.x * r + dir.y * u) / active_win->zoom();
+	//vector r = active_win->getDirectionRight();
+	//vector u = active_win->getDirectionUp();
+	cam.pos += (active_win->local_ang * dir) / active_win->zoom();
 	/*vector d, u, r;
 	mouse_win->GetMovingFrame(d, u, r);
 	if (mode3d)
@@ -341,9 +341,9 @@ void MultiViewImpl::onKeyDown()
 	if ((k == hui::KEY_SUBTRACT) or (k == hui::KEY_NUM_SUBTRACT))
 		camZoom(1.0f / SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
 	if (k == hui::KEY_RIGHT)
-		camMove(-e_x * SPEED_MOVE);
-	if (k == hui::KEY_LEFT)
 		camMove( e_x * SPEED_MOVE);
+	if (k == hui::KEY_LEFT)
+		camMove(-e_x * SPEED_MOVE);
 	if (k == hui::KEY_UP)
 		camMove( e_y * SPEED_MOVE);
 	if (k == hui::KEY_DOWN)
@@ -625,6 +625,8 @@ void MultiViewImpl::onDraw()
 		win[0]->dest = nix::target_rect;
 		win[0]->draw();
 	}else if (whole_window){
+		for (auto w: win)
+			w->dest = rect(0,0,0,0);
 		active_win->dest = nix::target_rect;
 		active_win->draw();
 	}else{
