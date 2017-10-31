@@ -196,7 +196,7 @@ void MultiViewImpl::camZoom(float factor, bool mouse_rel)
 		mup = mouse_win->unproject(m, cam.pos);
 	cam.radius /= factor;
 	if (mouse_rel)
-		cam.pos += (1 - factor) * (cam.pos - mup);
+		cam.pos += (1 - 1/factor) * (mup - cam.pos);
 	action_con->update();
 	notify(MESSAGE_UPDATE);
 }
