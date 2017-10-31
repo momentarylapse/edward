@@ -14,7 +14,7 @@
 #include "../../../Data/Model/ModelMaterial.h"
 class DataModel;
 
-class ModelMaterialDialog: public EmbeddedDialog, public Observer
+class ModelMaterialDialog: public hui::Panel, public Observer
 {
 public:
 	ModelMaterialDialog(hui::Window *_parent, DataModel *_data);

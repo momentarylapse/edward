@@ -19,60 +19,62 @@ string file_secure(const string &filename);
 string render_material(ModelMaterial *m);
 
 ModelMaterialDialog::ModelMaterialDialog(hui::Window *_parent, DataModel *_data) :
-	EmbeddedDialog(_parent, "model_material_dialog", "root-table", 1, 0, "noexpandx"),
+	//EmbeddedDialog(_parent, "model_material_dialog", "root-table", 1, 0, "noexpandx"),
 	Observer("ModelMaterialDialog")
 {
+	fromResource("model_material_dialog");
+
 	data = _data;
 	subscribe(data);
 	subscribe(mode_model_mesh);
 	subscribe(mode_model_mesh_texture);
 
 
-	win->setTooltip("mat_textures", _("&Ubereinanderliegende Textur-Schichten (multitexturing)\n- Doppelklick um eine Texturdatei zu w&ahlen"));
-	win->setTooltip("mat_add_texture_level", _("f&ugt eine weitere Textur-Schicht hinzu (multitexturing)"));
-	win->setTooltip("mat_delete_texture_level", _("l&oscht die ausgew&ahlte Textur-Schicht"));
-	win->setTooltip("mat_empty_texture_level", _("l&oscht die Textur der ausgew&ahlten Textur-Schicht"));
+	setTooltip("mat_textures", _("&Ubereinanderliegende Textur-Schichten (multitexturing)\n- Doppelklick um eine Texturdatei zu w&ahlen"));
+	setTooltip("mat_add_texture_level", _("f&ugt eine weitere Textur-Schicht hinzu (multitexturing)"));
+	setTooltip("mat_delete_texture_level", _("l&oscht die ausgew&ahlte Textur-Schicht"));
+	setTooltip("mat_empty_texture_level", _("l&oscht die Textur der ausgew&ahlten Textur-Schicht"));
 
-	win->setTooltip("mat_am", _("Farbe des Objektes im Schatten (Umgebungslicht)"));
-	win->setTooltip("mat_di", _("Farbe des Objektes bei direktem Licht"));
-	win->setTooltip("mat_sp", _("Farbe von Glanzflecken"));
-	win->setTooltip("mat_shininess", _("H&arte des Glanzes (10=weich, 100=hart)"));
-	win->setTooltip("mat_em", _("Farbe des Objektes bei absoluter Dunkelheit"));
+	setTooltip("mat_am", _("Farbe des Objektes im Schatten (Umgebungslicht)"));
+	setTooltip("mat_di", _("Farbe des Objektes bei direktem Licht"));
+	setTooltip("mat_sp", _("Farbe von Glanzflecken"));
+	setTooltip("mat_shininess", _("H&arte des Glanzes (10=weich, 100=hart)"));
+	setTooltip("mat_em", _("Farbe des Objektes bei absoluter Dunkelheit"));
 
-	win->setTooltip("transparency_mode:color_key", _("Reines Gr&un wird transparent"));
+	setTooltip("transparency_mode:color_key", _("Reines Gr&un wird transparent"));
 
-	win->event("material_list", std::bind(&ModelMaterialDialog::onMaterialList, this));
-	win->eventX("material_list", "hui:select", std::bind(&ModelMaterialDialog::onMaterialListSelect, this));
-	win->event("add_new_material", std::bind(&ModelMaterialDialog::onAddNewMaterial, this));
-	win->event("add_material", std::bind(&ModelMaterialDialog::onAddMaterial, this));
-	win->event("delete_material", std::bind(&ModelMaterialDialog::onDeleteMaterial, this));
-	win->event("apply_material", std::bind(&ModelMaterialDialog::onApplyMaterial, this));
+	event("material_list", std::bind(&ModelMaterialDialog::onMaterialList, this));
+	eventX("material_list", "hui:select", std::bind(&ModelMaterialDialog::onMaterialListSelect, this));
+	event("add_new_material", std::bind(&ModelMaterialDialog::onAddNewMaterial, this));
+	event("add_material", std::bind(&ModelMaterialDialog::onAddMaterial, this));
+	event("delete_material", std::bind(&ModelMaterialDialog::onDeleteMaterial, this));
+	event("apply_material", std::bind(&ModelMaterialDialog::onApplyMaterial, this));
 
 
-	win->event("mat_add_texture_level", std::bind(&ModelMaterialDialog::onAddTextureLevel, this));
-	win->event("mat_textures", std::bind(&ModelMaterialDialog::onTextures, this));
-	win->eventX("mat_textures", "hui:select", std::bind(&ModelMaterialDialog::onTexturesSelect, this));
-	win->event("mat_delete_texture_level", std::bind(&ModelMaterialDialog::onDeleteTextureLevel, this));
-	win->event("mat_empty_texture_level", std::bind(&ModelMaterialDialog::onEmptyTextureLevel, this));
-	win->event("transparency_mode:material", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
-	win->event("transparency_mode:none", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
-	win->event("transparency_mode:function", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
-	win->event("transparency_mode:color_key", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
-	win->event("transparency_mode:factor", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
+	event("mat_add_texture_level", std::bind(&ModelMaterialDialog::onAddTextureLevel, this));
+	event("mat_textures", std::bind(&ModelMaterialDialog::onTextures, this));
+	eventX("mat_textures", "hui:select", std::bind(&ModelMaterialDialog::onTexturesSelect, this));
+	event("mat_delete_texture_level", std::bind(&ModelMaterialDialog::onDeleteTextureLevel, this));
+	event("mat_empty_texture_level", std::bind(&ModelMaterialDialog::onEmptyTextureLevel, this));
+	event("transparency_mode:material", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
+	event("transparency_mode:none", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
+	event("transparency_mode:function", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
+	event("transparency_mode:color_key", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
+	event("transparency_mode:factor", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
 
-	win->event("default_colors", std::bind(&ModelMaterialDialog::onDefaultColors, this));
-	win->event("mat_am", std::bind(&ModelMaterialDialog::applyData, this));
-	win->event("mat_di", std::bind(&ModelMaterialDialog::applyData, this));
-	win->event("mat_sp", std::bind(&ModelMaterialDialog::applyData, this));
-	win->event("mat_em", std::bind(&ModelMaterialDialog::applyData, this));
-	win->event("mat_shininess", std::bind(&ModelMaterialDialog::applyDataDelayed, this));
+	event("default_colors", std::bind(&ModelMaterialDialog::onDefaultColors, this));
+	event("mat_am", std::bind(&ModelMaterialDialog::applyData, this));
+	event("mat_di", std::bind(&ModelMaterialDialog::applyData, this));
+	event("mat_sp", std::bind(&ModelMaterialDialog::applyData, this));
+	event("mat_em", std::bind(&ModelMaterialDialog::applyData, this));
+	event("mat_shininess", std::bind(&ModelMaterialDialog::applyDataDelayed, this));
 
-	win->event("alpha_factor", std::bind(&ModelMaterialDialog::applyDataDelayed, this));
-	win->event("alpha_source", std::bind(&ModelMaterialDialog::applyDataDelayed, this));
-	win->event("alpha_dest", std::bind(&ModelMaterialDialog::applyDataDelayed, this));
-	win->event("alpha_z_buffer", std::bind(&ModelMaterialDialog::applyData, this));
+	event("alpha_factor", std::bind(&ModelMaterialDialog::applyDataDelayed, this));
+	event("alpha_source", std::bind(&ModelMaterialDialog::applyDataDelayed, this));
+	event("alpha_dest", std::bind(&ModelMaterialDialog::applyDataDelayed, this));
+	event("alpha_z_buffer", std::bind(&ModelMaterialDialog::applyData, this));
 
-	win->expandAll("model_material_dialog_grp_textures", true);
+	expandAll("model_material_dialog_grp_textures", true);
 
 	loadData();
 	apply_queue_depth = 0;
@@ -97,10 +99,10 @@ void ModelMaterialDialog::loadData()
 	enable("mat_sp", temp.user_color);
 	enable("mat_em", temp.user_color);
 	enable("mat_shininess", temp.user_color);
-	win->setColor("mat_am", temp.ambient);
-	win->setColor("mat_di", temp.diffuse);
-	win->setColor("mat_sp", temp.specular);
-	win->setColor("mat_em", temp.emission);
+	setColor("mat_am", temp.ambient);
+	setColor("mat_di", temp.diffuse);
+	setColor("mat_sp", temp.specular);
+	setColor("mat_em", temp.emission);
 	setFloat("mat_shininess", temp.shininess);
 
 	if (temp.transparency_mode == TransparencyModeColorKeySmooth)
@@ -132,10 +134,10 @@ void ModelMaterialDialog::applyData()
 	if (apply_queue_depth > 0)
 		return;
 	if (temp.user_color){
-		temp.ambient = win->getColor("mat_am");
-		temp.diffuse = win->getColor("mat_di");
-		temp.specular = win->getColor("mat_sp");
-		temp.emission = win->getColor("mat_em");
+		temp.ambient = getColor("mat_am");
+		temp.diffuse = getColor("mat_di");
+		temp.specular = getColor("mat_sp");
+		temp.emission = getColor("mat_em");
 		temp.shininess = getFloat("mat_shininess");
 	}
 	temp.alpha_zbuffer = isChecked("alpha_z_buffer");

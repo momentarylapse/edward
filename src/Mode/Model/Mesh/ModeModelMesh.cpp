@@ -259,6 +259,8 @@ void ModeModelMesh::showMaterialDialog()
 {
 	if (!material_dialog){
 		material_dialog = new ModelMaterialDialog(ed, data);
+
+		ed->embed(material_dialog, "root-table", 1, 0);
 		ed->check("mode_model_materials", true);
 	}
 }

@@ -1,5 +1,5 @@
 Dialog model_material_dialog "Material" 350 371
-	Grid ? "" 1 5
+	Grid ? "" 1 5 noexpandx
 		Group model_material_dialog_grp_list "Übersicht"
 			Grid ? "" 1 2
 				ListView material_list "#\\Polygone\\\\Datei" format=ttit select-single
