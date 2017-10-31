@@ -101,7 +101,7 @@ void ModeModelMeshCreatePlatonic::onDrawWin(MultiView::Window *win)
 	if (pos_chosen){
 		mode_model->setMaterialCreation();
 
-		geo->preview(nix::vb_temp);
+		geo->build(nix::vb_temp);
 		nix::Draw3D(nix::vb_temp);
 	}
 }

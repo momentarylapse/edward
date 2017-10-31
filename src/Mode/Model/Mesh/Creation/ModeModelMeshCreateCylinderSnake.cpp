@@ -155,7 +155,7 @@ void ModeModelMeshCreateCylinderSnake::onDrawWin(MultiView::Window *win)
 		nix::SetColor(White);
 	}
 	if (ready_for_scaling){
-		geo->preview(nix::vb_temp);
+		geo->build(nix::vb_temp);
 		nix::EnableLighting(true);
 		mode_model->setMaterialCreation();
 		nix::Draw3D(nix::vb_temp);

@@ -139,7 +139,7 @@ void ModeModelMeshCreateCube::onDrawWin(MultiView::Window *win)
 
 	mode_model->setMaterialCreation();
 	if (pos_chosen){
-		geo->preview(nix::vb_temp);
+		geo->build(nix::vb_temp);
 		nix::Draw3D(nix::vb_temp);
 	}
 }

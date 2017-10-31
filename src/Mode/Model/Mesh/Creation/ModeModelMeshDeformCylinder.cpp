@@ -125,7 +125,7 @@ void ModeModelMeshDeformCylinder::onDrawWin(MultiView::Window* win)
 	parent->onDrawWin(win);
 
 	ModeModel::setMaterialCreation();
-	geo->preview(nix::vb_temp, 1);
+	geo->build(nix::vb_temp);
 
 	nix::Draw3D(nix::vb_temp);
 

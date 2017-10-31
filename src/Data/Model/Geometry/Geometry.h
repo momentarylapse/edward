@@ -51,9 +51,9 @@ public:
 	bool isInside(const vector &v) const;
 
 	void getBoundingBox(vector &min, vector &max);
-	bool isMouseOver(MultiView::Window *win, vector &tp);
+	bool isMouseOver(MultiView::Window *win, const matrix &mat, vector &tp);
 
-	void preview(nix::VertexBuffer *vb, int num_textures = 1) const;
+	void build(nix::VertexBuffer *vb) const;
 
 	Array<ModelVertex> vertex;
 	Array<ModelPolygon> polygon;

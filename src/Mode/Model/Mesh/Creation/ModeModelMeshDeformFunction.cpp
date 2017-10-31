@@ -100,11 +100,10 @@ void ModeModelMeshDeformFunction::onDrawWin(MultiView::Window* win)
 	parent->onDrawWin(win);
 
 	ModeModel::setMaterialCreation();
-	geo->preview(nix::vb_temp, 1);
+	geo->build(nix::vb_temp);
 
 	nix::SetTexture(tex);
 	nix::Draw3D(nix::vb_temp);
-	nix::SetTexture(NULL);
 }
 
 vector ModeModelMeshDeformFunction::transform(const vector &v)

@@ -26,6 +26,8 @@ namespace MultiView{
 ActionController::ActionController(MultiViewImpl *impl)
 {
 	multi_view = impl;
+	geo_mat = m_id;
+
 	reset();
 }
 
@@ -195,14 +197,16 @@ void ActionController::update()
 {
 	resetGeo();
 
+	pos = multi_view->getSelectionCenter();
+	float f = multi_view->cam.radius * 0.15f;
+	if (multi_view->whole_window)
+		f /= 2;
+	matrix s, t;
+	MatrixScale(s, f, f, f);
+	MatrixTranslation(t, pos);
+	geo_mat = t * s;
+
 	if (visible){
-		pos = multi_view->getSelectionCenter();
-		float f = multi_view->cam.radius * 0.15f;
-		if (multi_view->whole_window)
-			f /= 2;
-		matrix s, t;
-		MatrixScale(s, f, f, f);
-		MatrixTranslation(t, pos);
 		//vector dir = multi_view->cam.ang * e_z;
 		//vector ddir = vector(fsign(dir.x), fsign(dir.y), fsign(dir.z));
 		geo.add(new GeometryCylinder(-e_x, e_x, 0.1f, 1, 8));
@@ -225,10 +229,10 @@ void ActionController::update()
 		geo_show.add(new GeometryCube(v_0, -ddir.x * e_x, v_0, -ddir.z * e_z, 1, 1, 1));
 		geo_show.add(new GeometryCube(v_0, v_0, -ddir.y * e_y, -ddir.z * e_z, 1, 1, 1));*/
 		geo_show.add(new GeometryBall(v_0, 0.25f, 16, 8));
-		for (Geometry *g: geo)
-			g->transform(t * s);
+		/*for (Geometry *g: geo)
+			g->transform(geo_mat);
 		for (Geometry *g: geo_show)
-			g->transform(t * s);
+			g->transform(geo_mat);*/
 	}
 	ed->forceRedraw();
 }
@@ -255,12 +259,14 @@ void ActionController::draw(Window *win)
 		return;
 	nix::SetZ(false, false);
 	nix::EnableLighting(true);
-	nix::SetWorldMatrix(m_id);
+	nix::SetWorldMatrix(geo_mat);
 	nix::SetTexture(NULL);
 	nix::SetShader(nix::default_shader_3d);
 	if (!inUse()){
 		foreachi(Geometry *g, geo_show, i){
-			g->preview(nix::vb_temp);
+			if (i == mouse_over_geo)
+				continue;
+			g->build(nix::vb_temp);
 			nix::SetMaterial(Black, Black, Black, 0, MVACColor[i]);
 			nix::Draw3D(nix::vb_temp);
 		}
@@ -268,15 +274,16 @@ void ActionController::draw(Window *win)
 	if (mouse_over_geo >= 0){
 		nix::SetAlpha(AlphaMaterial);
 		nix::SetMaterial(Black, color(0.8f, 0, 0, 0), Black, 0, White);
-		nix::SetOffset(-1);
-		geo_show[mouse_over_geo]->preview(nix::vb_temp);
+		//nix::SetOffset(1);
+		geo_show[mouse_over_geo]->build(nix::vb_temp);
 		nix::Draw3D(nix::vb_temp);
-		nix::SetOffset(0);
+		//nix::SetOffset(0);
 	}
 	nix::SetZ(false, false);
 	nix::EnableLighting(false);
 	nix::SetAlpha(AlphaNone);
 	nix::SetMaterial(White, White, Black, 0, Black);
+	nix::SetWorldMatrix(m_id);
 	/*NixSetColor(Red);
 	vector p = win->Project(pos);
 	NixDrawRect(p.x-15, p.x+15, p.y-15, p.y+15, 0);*/
@@ -296,7 +303,7 @@ void ActionController::drawParams()
 		ed->drawStr(150, 100, f2s(r.x, 1) + "°", Edward::ALIGN_RIGHT);
 		ed->drawStr(150, 120, f2s(r.y, 1) + "°", Edward::ALIGN_RIGHT);
 		ed->drawStr(150, 140, f2s(r.z, 1) + "°", Edward::ALIGN_RIGHT);
-	}else if ((action.mode == ACTION_SCALE) || (action.mode == ACTION_SCALE_2D)){
+	}else if ((action.mode == ACTION_SCALE) or (action.mode == ACTION_SCALE_2D)){
 		ed->drawStr(150, 100, f2s(param.x * 100.0f, 1) + "%", Edward::ALIGN_RIGHT);
 		ed->drawStr(150, 120, f2s(param.y * 100.0f, 1) + "%", Edward::ALIGN_RIGHT);
 		if (multi_view->mode3d)
@@ -312,9 +319,9 @@ bool ActionController::isMouseOver(vector &tp)
 	float z_min = 1;
 	foreachi(Geometry *g, geo, i){
 		vector t;
-		if (g->isMouseOver(multi_view->mouse_win, t)){
+		if (g->isMouseOver(multi_view->mouse_win, geo_mat, t)){
 			float z = multi_view->mouse_win->project(t).z;
-			if ((z < z_min) || (i == 6)){
+			if ((z < z_min) or (i == 6)){
 				mouse_over_geo = i;
 				z_min = z;
 				tp = t;
@@ -326,7 +333,7 @@ bool ActionController::isMouseOver(vector &tp)
 
 bool ActionController::leftButtonDown()
 {
-	if ((!visible) && (action.locked))
+	if (!visible and action.locked)
 		return false;
 	vector tp;
 	if (isMouseOver(multi_view->hover.point)){

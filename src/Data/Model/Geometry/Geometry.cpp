@@ -193,7 +193,7 @@ void Geometry::weld(float epsilon)
 						use_i |= (p.Side[k].Vertex == i);
 						use_j |= (p.Side[k].Vertex == j);
 					}
-					allowed &= (!use_i || !use_j);
+					allowed &= (!use_i or !use_j);
 				}
 				if (!allowed)
 					continue;*/
@@ -262,12 +262,12 @@ void Geometry::getBoundingBox(vector &min, vector &max)
 	}
 }
 
-void Geometry::preview(nix::VertexBuffer *vb, int num_textures) const
+void Geometry::build(nix::VertexBuffer *vb) const
 {
 	vb->clear();
 	for (ModelPolygon &p: const_cast<Array<ModelPolygon>&>(polygon)){
 		p.triangulation_dirty = true;
-		p.addToVertexBuffer(vertex, vb, num_textures);
+		p.addToVertexBuffer(vertex, vb, vb->num_textures);
 	}
 }
 
@@ -275,7 +275,7 @@ void Geometry::preview(nix::VertexBuffer *vb, int num_textures) const
 int Geometry::addEdge(int a, int b, int tria, int side)
 {
 	foreachi(ModelEdge &e, edge, i){
-		if ((e.vertex[0] == a) && (e.vertex[1] == b)){
+		if ((e.vertex[0] == a) and (e.vertex[1] == b)){
 			throw GeometryException("the new polygon would have neighbors of opposite orientation");
 			/*e.RefCount ++;
 			msg_error("surface error? inverse edge");
@@ -283,7 +283,7 @@ int Geometry::addEdge(int a, int b, int tria, int side)
 			e.Side[1] = side;
 			return i;*/
 		}
-		if ((e.vertex[0] == b) && (e.vertex[1] == a)){
+		if ((e.vertex[0] == b) and (e.vertex[1] == a)){
 			if (e.polygon[0] == tria)
 				throw GeometryException("the new polygon would contain the same edge twice");
 			if (e.ref_count > 1)
@@ -404,7 +404,7 @@ void Geometry::removeUnusedVertices()
 		}
 }
 
-bool Geometry::isMouseOver(MultiView::Window *win, vector &tp)
+bool Geometry::isMouseOver(MultiView::Window *win, const matrix &mat, vector &tp)
 {
 	for (ModelPolygon &p: polygon){
 		// care for the sense of rotation?
@@ -415,7 +415,7 @@ bool Geometry::isMouseOver(MultiView::Window *win, vector &tp)
 		Array<vector> v;
 		bool out = false;
 		for (int k=0;k<p.side.num;k++){
-			vector pp = win->project(vertex[p.side[k].vertex].pos);
+			vector pp = win->project(mat * vertex[p.side[k].vertex].pos);
 			if ((pp.z <= 0) or (pp.z >= 1)){
 				out = true;
 				break;
@@ -435,11 +435,11 @@ bool Geometry::isMouseOver(MultiView::Window *win, vector &tp)
 			float f,g;
 			GetBaryCentric(M, v[a], v[b], v[c], f, g);
 			// cursor in triangle?
-			if ((f>0)&&(g>0)&&(f+g<1)){
+			if ((f>0) and (g>0) and (f+g<1)){
 				vector va = vertex[p.side[a].vertex].pos;
 				vector vb = vertex[p.side[b].vertex].pos;
 				vector vc = vertex[p.side[c].vertex].pos;
-				tp = va+f*(vb-va)+g*(vc-va);
+				tp = mat * (va + f*(vb-va) + g*(vc-va));
 				return true;
 			}
 		}

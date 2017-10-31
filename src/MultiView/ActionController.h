@@ -15,6 +15,10 @@ class ActionMultiView;
 class Geometry;
 class Data;
 
+namespace nix{
+	class VertexBuffer;
+}
+
 namespace MultiView{
 
 class MultiView;
@@ -60,6 +64,8 @@ public:
 	int constraints;
 	Array<Geometry*> geo_show;
 	Array<Geometry*> geo;
+	Array<nix::VertexBuffer*> buf;
+	matrix geo_mat;
 	int mouse_over_geo;
 	MultiViewImpl *multi_view;
 	MouseAction action;

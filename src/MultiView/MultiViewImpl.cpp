@@ -360,10 +360,10 @@ void MultiViewImpl::onKeyDown()
 
 int get_select_mode()
 {
-	/*if (ed->GetKey(hui::KEY_CONTROL))
+	if (ed->getKey(hui::KEY_CONTROL))
 		return MultiViewImpl::SELECT_ADD;
-	if (ed->GetKey(hui::KEY_SHIFT))
-		return MultiViewImpl::SELECT_INVERT;*/
+	if (ed->getKey(hui::KEY_SHIFT))
+		return MultiViewImpl::SELECT_INVERT;
 	return MultiViewImpl::SELECT_SET;
 }
 
@@ -524,7 +524,7 @@ void MultiViewImpl::onMouseMove()
 		int t = active_win->type;
 		if ((t == VIEW_PERSPECTIVE) or (t == VIEW_ISOMETRIC)){
 	// camera rotation
-			camRotate(v, mbut);// or (ed->GetKey(hui::KEY_CONTROL)));
+			camRotate(v, mbut or ed->getKey(hui::KEY_CONTROL));
 		}else{
 	// camera translation
 			camMove(v);

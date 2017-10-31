@@ -229,7 +229,7 @@ void ModeMaterial::UpdateShape()
 	for (int i=1;i<=MATERIAL_MAX_TEXTURES;i++){
 		nix::VertexBuffer *vb = MaterialVB[i];
 		vb->clear();
-		geo->preview(vb, i);
+		geo->build(vb);
 	}
 	onUpdateMenu();
 	if (needs_opt_view)

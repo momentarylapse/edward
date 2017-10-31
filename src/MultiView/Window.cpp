@@ -328,6 +328,8 @@ void Window::draw()
 	nix::SetMaterial(Black,White,Black,0,White);//Black);
 	nix::SetColor(White);
 
+	bool index_key = ed->getKey(hui::KEY_I);
+
 	// draw the actual data
 	if (ed->cur_mode)
 		ed->cur_mode->onDrawWin(this);
@@ -346,8 +348,7 @@ void Window::draw()
 				if (sd->view_stage < impl->view_stage)
 					continue;
 
-				//bool _di = ((d.indexable) and (sd->is_selected) and (ed->GetKey(hui::KEY_I)));
-				bool _di = false;
+				bool _di = (d.indexable and sd->is_selected and index_key);
 				if (!d.drawable and !_di)
 					continue;
 				vector p = project(sd->pos);

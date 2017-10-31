@@ -104,7 +104,7 @@ void ModeModelMeshCreateTorus::onDrawWin(MultiView::Window *win)
 
 	if (pos_chosen){
 		mode_model->setMaterialCreation();
-		geo->preview(nix::vb_temp);
+		geo->build(nix::vb_temp);
 		nix::Draw3D(nix::vb_temp);
 		nix::EnableLighting(false);
 		ed->drawStr(100, 100, format("%.3f / %.3f", radius1, radius2));
