@@ -392,7 +392,7 @@ bool ModeModelMesh::optimizeView()
 
 	ed->multi_view_2d->resetView();
 	ed->multi_view_2d->cam.pos = vector(0.5f, 0.5f, 0);
-	/*if ((Bone.num > 0) && (Vertex.num <= 0))
+	/*if ((Bone.num > 0) and (Vertex.num <= 0))
 		SetSubMode(SubModeSkeleton);
 	if (SubMode == SubModeSkeleton)
 		SkeletonOptimizeView();*/
@@ -570,7 +570,7 @@ void ModeModelMesh::drawEffects(MultiView::Window *win)
 	nix::EnableLighting(false);
 	for (ModelEffect &fx: data->fx){
 		vector p = win->project(data->vertex[fx.vertex].pos);
-		if ((p.z > 0) && (p.z < 1))
+		if ((p.z > 0) and (p.z < 1))
 			ed->drawStr(p.x, p.y, fx.get_type());
 	}
 	nix::EnableLighting(multi_view->light_enabled);
@@ -589,7 +589,7 @@ void ModeModelMesh::drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex
 		for (ModelEdge &e: s.edge){
 			if (min(vertex[e.vertex[0]].view_stage, vertex[e.vertex[1]].view_stage) < multi_view->view_stage)
 				continue;
-			if (!e.is_selected && only_selected)
+			if (!e.is_selected and only_selected)
 				continue;
 			float w = max(s.polygon[e.polygon[0]].temp_normal * dir, s.polygon[e.polygon[1]].temp_normal * dir);
 			float f = 0.5f - 0.4f*w;//0.7f - 0.3f * w;
@@ -624,8 +624,8 @@ void ModeModelMesh::drawPolygons(MultiView::Window *win, Array<ModelVertex> &ver
 		nix::SetOffset(1.0f);
 		nix::Draw3D(m.vb);
 		nix::SetOffset(0);
-		nix::SetShader(NULL);
-		nix::SetTexture(NULL);
+		//nix::SetShader(NULL);
+		//nix::SetTexture(NULL);
 	}
 }
 
@@ -649,7 +649,7 @@ void ModeModelMesh::updateVertexBuffers(Array<ModelVertex> &vertex)
 			if (!surf.is_visible)
 				continue;
 			for (ModelPolygon &t: surf.polygon)
-				if ((t.view_stage >= multi_view->view_stage) && (t.material == mi))
+				if ((t.view_stage >= multi_view->view_stage) and (t.material == mi))
 					t.addToVertexBuffer(vertex, m.vb, m.textures.num);
 		}
 

@@ -143,7 +143,7 @@ void ModelMaterial::checkColors()
 void ModelMaterial::applyForRendering()
 {
 	nix::SetAlpha(AlphaNone);
-	nix::SetShader(NULL);
+	nix::SetShader(nix::default_shader_3d);
 	color em = ColorInterpolate(emission, White, 0.1f);
 	nix::SetMaterial(ambient, diffuse, specular, shininess, em);
 	if (true){//MVFXEnabled){
@@ -161,7 +161,7 @@ void ModelMaterial::applyForRendering()
 		}
 		nix::SetShader(material->shader);
 	}
-	Array<nix::Texture*> tex = material->textures;
+	Array<nix::Texture*> tex = textures;
 	if (material->cube_map)
 		tex.add(material->cube_map);
 	nix::SetTextures(tex);

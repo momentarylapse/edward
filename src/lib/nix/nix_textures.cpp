@@ -440,10 +440,10 @@ void SetTextures(Array<Texture*> &textures)
 		if (!t)
 			t = default_texture;
 		glActiveTexture(GL_TEXTURE0+i);
-		if (textures[i]->is_cube_map){
-			glBindTexture(GL_TEXTURE_CUBE_MAP, textures[i]->glTexture);
+		if (t->is_cube_map){
+			glBindTexture(GL_TEXTURE_CUBE_MAP, t->glTexture);
 		}else{
-			glBindTexture(GL_TEXTURE_2D, textures[i]->glTexture);
+			glBindTexture(GL_TEXTURE_2D, t->glTexture);
 		}
 		//TestGLError("SetTex"+i2s(i));
 	}
