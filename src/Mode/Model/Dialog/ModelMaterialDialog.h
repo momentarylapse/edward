@@ -9,7 +9,6 @@
 #define MODELMATERIALDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
-#include "../../../Stuff/EmbeddedDialog.h"
 #include "../../../Stuff/Observer.h"
 #include "../../../Data/Model/ModelMaterial.h"
 class DataModel;

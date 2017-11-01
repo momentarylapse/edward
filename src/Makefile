@@ -342,7 +342,6 @@ OBJ = Action/Action.o \
  MultiView/MultiViewImpl.o \
  MultiView/SingleData.o \
  MultiView/Window.o \
- Stuff/EmbeddedDialog.o \
  Stuff/Observable.o \
  Stuff/Observer.o \
  Stuff/PluginManager.o \
@@ -1436,9 +1435,6 @@ MultiView/SingleData.o : MultiView/SingleData.cpp
 
 MultiView/Window.o : MultiView/Window.cpp
 	$(CPP) -c MultiView/Window.cpp -o $@ $(CXXFLAGS)
-
-Stuff/EmbeddedDialog.o : Stuff/EmbeddedDialog.cpp
-	$(CPP) -c Stuff/EmbeddedDialog.cpp -o $@ $(CXXFLAGS)
 
 Stuff/Observable.o : Stuff/Observable.cpp
 	$(CPP) -c Stuff/Observable.cpp -o $@ $(CXXFLAGS)
