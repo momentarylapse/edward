@@ -10,13 +10,12 @@
 
 #include "../../../lib/hui/hui.h"
 #include "../../../Data/Font/DataFont.h"
-#include "../../../Stuff/EmbeddedDialog.h"
 #include "../../../Stuff/Observer.h"
 
-class FontDialog: public EmbeddedDialog, public Observer
+class FontDialog: public hui::Panel, public Observer
 {
 public:
-	FontDialog(hui::Window *_parent, DataFont *_data);
+	FontDialog(DataFont *_data);
 	virtual ~FontDialog();
 
 	void LoadData();

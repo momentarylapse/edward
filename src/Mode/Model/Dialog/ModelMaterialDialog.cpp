@@ -18,8 +18,7 @@
 string file_secure(const string &filename);
 string render_material(ModelMaterial *m);
 
-ModelMaterialDialog::ModelMaterialDialog(hui::Window *_parent, DataModel *_data) :
-	//EmbeddedDialog(_parent, "model_material_dialog", "root-table", 1, 0, "noexpandx"),
+ModelMaterialDialog::ModelMaterialDialog(DataModel *_data) :
 	Observer("ModelMaterialDialog")
 {
 	fromResource("model_material_dialog");

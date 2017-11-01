@@ -84,7 +84,8 @@ void ModeModelAnimation::onStart()
 	current_move = -1;
 	current_frame = 0;
 
-	dialog = new ModelAnimationDialog(ed, data);
+	dialog = new ModelAnimationDialog(data);
+	ed->embed(dialog, "root-table", 1, 0);
 	timeline = new ModelAnimationTimelinePanel;
 
 	ed->embed(timeline, "vgrid", 0, 1);

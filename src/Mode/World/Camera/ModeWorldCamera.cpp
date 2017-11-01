@@ -53,8 +53,8 @@ ModeWorldCamera::~ModeWorldCamera()
 
 void ModeWorldCamera::onStart()
 {
-	dialog = new CameraDialog(ed, this);
-
+	dialog = new CameraDialog(this);
+	ed->embed(dialog, "root-table", 0, 1);
 
 	string dir = (app->directory_static + "Data/icons/toolbar/").sys_filename();
 	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];

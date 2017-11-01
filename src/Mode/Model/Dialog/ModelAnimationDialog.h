@@ -9,14 +9,13 @@
 #define MODELANIMATIONDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
-#include "../../../Stuff/EmbeddedDialog.h"
 #include "../../../Stuff/Observer.h"
 class DataModel;
 
-class ModelAnimationDialog: public EmbeddedDialog, public Observer
+class ModelAnimationDialog: public hui::Panel, public Observer
 {
 public:
-	ModelAnimationDialog(hui::Window *_parent, DataModel *_data);
+	ModelAnimationDialog(DataModel *_data);
 	virtual ~ModelAnimationDialog();
 
 	void loadData();

@@ -7,7 +7,7 @@ Menu
 
 
 1
-21845
+21929
 0
 0
 0
@@ -96,7 +96,7 @@ ad_dialog
 allow-parent
 
 1
-21845
+21929
 0
 680
 590
@@ -328,7 +328,7 @@ menu_administration
 
 
 1
-21845
+21929
 0
 680
 590
@@ -615,7 +615,7 @@ campoint_dialog
 
 
 1
-21845
+21929
 0
 345
 225
@@ -968,7 +968,7 @@ editor_dialog
 
 
 1
-21845
+21929
 0
 400
 370
@@ -1156,7 +1156,7 @@ font_dialog
 
 
 1
-21845
+21929
 0
 400
 730
@@ -1164,7 +1164,7 @@ font_dialog
 1
 ControlTable
 rand_id_923069
-
+width=320,noexpandx
 
 1
 0
@@ -1487,7 +1487,7 @@ menu_font
 
 
 1
-21845
+21929
 0
 400
 730
@@ -1862,7 +1862,7 @@ rc_dialog
 
 
 1
-21845
+21929
 0
 365
 310
@@ -2105,7 +2105,7 @@ ge_dialog
 
 
 1
-21845
+21929
 0
 365
 380
@@ -2392,7 +2392,7 @@ key_dialog
 allow-parent
 
 1
-21845
+21929
 0
 350
 85
@@ -2459,7 +2459,7 @@ material_dialog
 allow-parent
 
 1
-21845
+21929
 0
 365
 715
@@ -2467,7 +2467,7 @@ allow-parent
 1
 ControlTable
 rand_id_163131
-width=300,noexpandx
+width=320,noexpandx
 
 1
 0
@@ -3142,7 +3142,7 @@ menu_material
 
 
 1
-21845
+21929
 0
 365
 715
@@ -3649,7 +3649,7 @@ material_sound_dialog
 
 
 1
-21845
+21929
 0
 595
 345
@@ -3694,7 +3694,7 @@ animation_dialog
 
 
 1
-21845
+21929
 0
 260
 400
@@ -3702,7 +3702,7 @@ animation_dialog
 1
 ControlTable
 rand_id_99640
-
+width=320,noexpandx
 
 1
 0
@@ -4080,7 +4080,7 @@ deformation_cylinder_dialog
 allow-parent
 
 1
-21845
+21929
 0
 400
 250
@@ -4169,7 +4169,7 @@ deformation_function_dialog
 allow-parent
 
 1
-21845
+21929
 0
 400
 250
@@ -4236,7 +4236,7 @@ easify_dialog
 
 
 1
-21845
+21929
 0
 335
 150
@@ -4391,7 +4391,7 @@ fx_dialog
 
 
 1
-21845
+21929
 0
 470
 205
@@ -4777,7 +4777,7 @@ model_material_dialog
 
 
 1
-21845
+21929
 0
 350
 371
@@ -5295,7 +5295,7 @@ model_material_selection_dialog
 
 
 1
-21845
+21929
 0
 355
 360
@@ -5373,7 +5373,7 @@ menu_model
 
 
 1
-21845
+21929
 0
 355
 360
@@ -7101,7 +7101,7 @@ menu_move
 
 
 1
-21845
+21929
 0
 355
 360
@@ -8059,7 +8059,7 @@ new_ball_dialog
 allow-parent
 
 1
-21845
+21929
 0
 220
 119
@@ -8192,7 +8192,7 @@ new_cube_dialog
 allow-parent
 
 1
-21845
+21929
 0
 100
 50
@@ -8292,7 +8292,7 @@ new_cylinder_dialog
 allow-parent
 
 1
-21845
+21929
 0
 100
 50
@@ -8359,7 +8359,7 @@ new_plane_dialog
 allow-parent
 
 1
-21845
+21929
 0
 100
 50
@@ -8426,7 +8426,7 @@ new_teapot_dialog
 allow-parent
 
 1
-21845
+21929
 0
 100
 50
@@ -8471,7 +8471,7 @@ new_torus_dialog
 allow-parent
 
 1
-21845
+21929
 0
 200
 50
@@ -8549,7 +8549,7 @@ model_dialog
 
 
 1
-21845
+21929
 0
 391
 464
@@ -9089,7 +9089,7 @@ rotation_dialog
 allow-parent
 
 1
-21845
+21929
 0
 155
 105
@@ -9200,7 +9200,7 @@ scaling_dialog
 allow-parent
 
 1
-21845
+21929
 0
 155
 105
@@ -9311,7 +9311,7 @@ menu_skeleton
 
 
 1
-21845
+21929
 0
 155
 105
@@ -10203,7 +10203,7 @@ menu_model_texture
 
 
 1
-21845
+21929
 0
 155
 105
@@ -10270,7 +10270,7 @@ new_animation_dialog
 
 
 1
-21845
+21929
 0
 100
 50
@@ -10381,7 +10381,7 @@ new_terrain_dialog
 
 
 1
-21845
+21929
 0
 300
 120
@@ -10591,7 +10591,7 @@ menu_nomode
 
 
 1
-21845
+21929
 0
 300
 120
@@ -10845,7 +10845,7 @@ progress_dialog
 
 
 1
-21845
+21929
 0
 100
 30
@@ -10868,7 +10868,7 @@ progress_cancelable_dialog
 
 
 1
-21845
+21929
 0
 100
 50
@@ -10913,7 +10913,7 @@ world_scriptfunc_dialog
 
 
 1
-21845
+21929
 0
 335
 145
@@ -11046,7 +11046,7 @@ world_scriptfunc_choice_dialog
 
 
 1
-21845
+21929
 0
 245
 90
@@ -11091,7 +11091,7 @@ scriptvar_dialog
 
 
 1
-21845
+21929
 0
 260
 115
@@ -11180,7 +11180,7 @@ terrain_dialog
 
 
 1
-21845
+21929
 0
 435
 275
@@ -11467,7 +11467,7 @@ terrain_heightmap_dialog
 
 
 1
-21845
+21929
 0
 620
 275
@@ -11721,7 +11721,7 @@ menu_view
 
 
 1
-21845
+21929
 0
 620
 275
@@ -11843,7 +11843,7 @@ welcome_dialog
 
 
 1
-21845
+21929
 0
 640
 360
@@ -11866,7 +11866,7 @@ world_camera_dialog
 allow-parent
 
 1
-21845
+21929
 0
 719
 160
@@ -11874,7 +11874,7 @@ allow-parent
 1
 ControlTable
 rand_id_344942
-
+height=220,noexpandy
 
 1
 0
@@ -11977,7 +11977,7 @@ world_dialog
 
 
 1
-21845
+21929
 0
 410
 420
@@ -12770,7 +12770,7 @@ lightmap_dialog
 
 
 1
-21845
+21929
 0
 420
 540
@@ -12980,7 +12980,7 @@ menu_world
 
 
 1
-21845
+21929
 0
 420
 540
@@ -14059,7 +14059,7 @@ world_new_object_dialog
 allow-parent
 
 1
-21845
+21929
 0
 390
 75
@@ -14126,7 +14126,7 @@ world_object_dialog
 allow-parent
 
 1
-21845
+21929
 0
 390
 220
@@ -14380,7 +14380,7 @@ world_ps_dialog
 
 
 1
-21845
+21929
 0
 370
 380

@@ -1,5 +1,5 @@
 Dialog animation_dialog "Animations-Kontrolle" 260 400
-	Grid ? "" 1 5
+	Grid ? "" 1 5 width=320 noexpandx
 		Group t_list "Übersicht"
 			Grid ? "" 1 2
 				ListView animation_list "#\\Typ\\Frames\\Name"

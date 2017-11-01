@@ -168,7 +168,8 @@ void ModeFont::onStart()
 
 	multi_view->setAllowSelect(false);
 
-	dialog = new FontDialog(ed, data);
+	dialog = new FontDialog(data);
+	ed->embed(dialog, "root-table", 1, 0),
 
 	onUpdate(data, "");
 }
