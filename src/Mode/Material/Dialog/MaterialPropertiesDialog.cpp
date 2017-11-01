@@ -20,45 +20,45 @@ namespace nix{
 };
 
 MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMaterial *_data):
-	EmbeddedDialog(_parent, "material_dialog", "root-table", 1, 0, "noexpandx"),
 	Observer("MaterialPropertiesDialog")
 {
+	fromResource("material_dialog");
 	data = _data;
 
 	// dialog
-	win->event("mat_add_texture_level", std::bind(&MaterialPropertiesDialog::OnAddTextureLevel, this));
-	win->event("mat_textures", std::bind(&MaterialPropertiesDialog::OnTextures, this));
-	win->eventX("mat_textures", "hui:select", std::bind(&MaterialPropertiesDialog::OnTexturesSelect, this));
-	win->event("mat_delete_texture_level", std::bind(&MaterialPropertiesDialog::OnDeleteTextureLevel, this));
-	win->event("mat_empty_texture_level", std::bind(&MaterialPropertiesDialog::OnEmptyTextureLevel, this));
-	win->event("transparency_mode:none", std::bind(&MaterialPropertiesDialog::OnTransparencyMode, this));
-	win->event("transparency_mode:function", std::bind(&MaterialPropertiesDialog::OnTransparencyMode, this));
-	win->event("transparency_mode:color_key", std::bind(&MaterialPropertiesDialog::OnTransparencyMode, this));
-	win->event("transparency_mode:factor", std::bind(&MaterialPropertiesDialog::OnTransparencyMode, this));
-	win->event("reflection_mode:none", std::bind(&MaterialPropertiesDialog::OnReflectionMode, this));
-	win->event("reflection_mode:cube_static", std::bind(&MaterialPropertiesDialog::OnReflectionMode, this));
-	win->event("reflection_mode:cube_dynamic", std::bind(&MaterialPropertiesDialog::OnReflectionMode, this));
-	win->event("reflection_textures", std::bind(&MaterialPropertiesDialog::OnReflectionTextures, this));
-	win->event("find_shader", std::bind(&MaterialPropertiesDialog::OnFindShader, this));
+	event("mat_add_texture_level", std::bind(&MaterialPropertiesDialog::OnAddTextureLevel, this));
+	event("mat_textures", std::bind(&MaterialPropertiesDialog::OnTextures, this));
+	eventX("mat_textures", "hui:select", std::bind(&MaterialPropertiesDialog::OnTexturesSelect, this));
+	event("mat_delete_texture_level", std::bind(&MaterialPropertiesDialog::OnDeleteTextureLevel, this));
+	event("mat_empty_texture_level", std::bind(&MaterialPropertiesDialog::OnEmptyTextureLevel, this));
+	event("transparency_mode:none", std::bind(&MaterialPropertiesDialog::OnTransparencyMode, this));
+	event("transparency_mode:function", std::bind(&MaterialPropertiesDialog::OnTransparencyMode, this));
+	event("transparency_mode:color_key", std::bind(&MaterialPropertiesDialog::OnTransparencyMode, this));
+	event("transparency_mode:factor", std::bind(&MaterialPropertiesDialog::OnTransparencyMode, this));
+	event("reflection_mode:none", std::bind(&MaterialPropertiesDialog::OnReflectionMode, this));
+	event("reflection_mode:cube_static", std::bind(&MaterialPropertiesDialog::OnReflectionMode, this));
+	event("reflection_mode:cube_dynamic", std::bind(&MaterialPropertiesDialog::OnReflectionMode, this));
+	event("reflection_textures", std::bind(&MaterialPropertiesDialog::OnReflectionTextures, this));
+	event("find_shader", std::bind(&MaterialPropertiesDialog::OnFindShader, this));
 
 
-	win->event("mat_am", std::bind(&MaterialPropertiesDialog::ApplyData, this));
-	win->event("mat_di", std::bind(&MaterialPropertiesDialog::ApplyData, this));
-	win->event("mat_sp", std::bind(&MaterialPropertiesDialog::ApplyData, this));
-	win->event("mat_em", std::bind(&MaterialPropertiesDialog::ApplyData, this));
-	win->event("mat_shininess", std::bind(&MaterialPropertiesDialog::ApplyDataDelayed, this));
+	event("mat_am", std::bind(&MaterialPropertiesDialog::ApplyData, this));
+	event("mat_di", std::bind(&MaterialPropertiesDialog::ApplyData, this));
+	event("mat_sp", std::bind(&MaterialPropertiesDialog::ApplyData, this));
+	event("mat_em", std::bind(&MaterialPropertiesDialog::ApplyData, this));
+	event("mat_shininess", std::bind(&MaterialPropertiesDialog::ApplyDataDelayed, this));
 
-	win->event("alpha_factor", std::bind(&MaterialPropertiesDialog::ApplyDataDelayed, this));
-	win->event("alpha_source", std::bind(&MaterialPropertiesDialog::ApplyDataDelayed, this));
-	win->event("alpha_dest", std::bind(&MaterialPropertiesDialog::ApplyDataDelayed, this));
-	win->event("alpha_z_buffer", std::bind(&MaterialPropertiesDialog::ApplyData, this));
+	event("alpha_factor", std::bind(&MaterialPropertiesDialog::ApplyDataDelayed, this));
+	event("alpha_source", std::bind(&MaterialPropertiesDialog::ApplyDataDelayed, this));
+	event("alpha_dest", std::bind(&MaterialPropertiesDialog::ApplyDataDelayed, this));
+	event("alpha_z_buffer", std::bind(&MaterialPropertiesDialog::ApplyData, this));
 
-	win->event("rcjump", std::bind(&MaterialPropertiesDialog::ApplyPhysDataDelayed, this));
-	win->event("rcstatic", std::bind(&MaterialPropertiesDialog::ApplyPhysDataDelayed, this));
-	win->event("rcsliding", std::bind(&MaterialPropertiesDialog::ApplyPhysDataDelayed, this));
-	win->event("rcroll", std::bind(&MaterialPropertiesDialog::ApplyPhysDataDelayed, this));
+	event("rcjump", std::bind(&MaterialPropertiesDialog::ApplyPhysDataDelayed, this));
+	event("rcstatic", std::bind(&MaterialPropertiesDialog::ApplyPhysDataDelayed, this));
+	event("rcsliding", std::bind(&MaterialPropertiesDialog::ApplyPhysDataDelayed, this));
+	event("rcroll", std::bind(&MaterialPropertiesDialog::ApplyPhysDataDelayed, this));
 
-	win->expand("material_dialog_grp_color", 0, true);
+	expand("material_dialog_grp_color", 0, true);
 
 	temp = data->appearance;
 	temp_phys = data->physics;
@@ -71,10 +71,10 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 void MaterialPropertiesDialog::LoadData()
 {
 	FillTextureList();
-	win->setColor("mat_am", temp.ambient);
-	win->setColor("mat_di", temp.diffuse);
-	win->setColor("mat_sp", temp.specular);
-	win->setColor("mat_em", temp.emissive);
+	setColor("mat_am", temp.ambient);
+	setColor("mat_di", temp.diffuse);
+	setColor("mat_sp", temp.specular);
+	setColor("mat_em", temp.emissive);
 	setFloat("mat_shininess", temp.shininess);
 
 	if (temp.transparency_mode == TransparencyModeColorKeySmooth)
@@ -254,10 +254,10 @@ void MaterialPropertiesDialog::ApplyData()
 		apply_queue_depth --;
 	if (apply_queue_depth > 0)
 		return;
-	temp.ambient = win->getColor("mat_am");
-	temp.diffuse = win->getColor("mat_di");
-	temp.specular = win->getColor("mat_sp");
-	temp.emissive = win->getColor("mat_em");
+	temp.ambient = getColor("mat_am");
+	temp.diffuse = getColor("mat_di");
+	temp.specular = getColor("mat_sp");
+	temp.emissive = getColor("mat_em");
 	temp.shininess = getFloat("mat_shininess");
 	temp.alpha_z_buffer = isChecked("alpha_z_buffer");
 	temp.alpha_factor = getFloat("alpha_factor") * 0.01f;

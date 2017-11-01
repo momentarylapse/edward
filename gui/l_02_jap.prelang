@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-1588
+1589
 // Data (ID,Text,Tooltip)
 /ad_dialog
 
@@ -4039,6 +4039,9 @@ model_dialog/rand_id_525995
 
 
 model_dialog/rand_id_539760
+
+
+model_dialog/rand_id_64171
 
 
 model_dialog/script_vars

@@ -187,6 +187,7 @@ void ModeMaterial::onStart()
 	multi_view->setAllowSelect(false);
 
 	AppearanceDialog = new MaterialPropertiesDialog(ed, data);
+	ed->embed(AppearanceDialog, "root-table", 1, 0);
 
 	UpdateShape();
 }

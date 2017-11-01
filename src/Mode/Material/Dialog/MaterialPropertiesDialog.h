@@ -10,10 +10,9 @@
 
 #include "../../../lib/hui/hui.h"
 #include "../../../Data/Material/DataMaterial.h"
-#include "../../../Stuff/EmbeddedDialog.h"
 #include "../../../Stuff/Observer.h"
 
-class MaterialPropertiesDialog: public EmbeddedDialog, public Observer
+class MaterialPropertiesDialog: public hui::Panel, public Observer
 {
 public:
 	MaterialPropertiesDialog(hui::Window *_parent, DataMaterial *_data);
