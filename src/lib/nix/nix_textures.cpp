@@ -416,6 +416,7 @@ void SetTexture(Texture *t)
 	if (!t)
 		t = default_texture;
 
+	glActiveTexture(GL_TEXTURE0);
 	if (t->is_cube_map){
 		glEnable(GL_TEXTURE_CUBE_MAP);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, t->glTexture);

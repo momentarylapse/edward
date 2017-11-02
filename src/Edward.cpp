@@ -851,7 +851,7 @@ bool Edward::fileDialog(int kind,bool save,bool force_in_root_dir)
 	if (kind==FD_MATERIAL){	title=_("Material-Datei");	show_filter=_("Materialien (*.material)");	filter="*.material";	}
 	if (kind==FD_TERRAIN){	title=_("Karten-Datei");	show_filter=_("Karten (*.map)");			filter="*.map";	}
 	if (kind==FD_WORLD){		title=_("Welt-Datei");		show_filter=_("Welten (*.world)");			filter="*.world";	}
-	if (kind==FD_SHADERFILE){title=_("Shader-Datei");	show_filter=_("Shader-Dateien (*.glsl)");	filter="*.glsl";	}
+	if (kind==FD_SHADERFILE){title=_("Shader-Datei");	show_filter=_("Shader-Dateien (*.shader)");	filter="*.shader";	}
 	if (kind==FD_FONT){		title=_("Font-Datei");		show_filter=_("Font-Dateien (*.xfont)");	filter="*.xfont";	}
 	if (kind==FD_SCRIPT){	title=_("Script-Datei");	show_filter=_("Script-Dateien (*.kaba)");	filter="*.kaba";	}
 	if (kind==FD_CAMERAFLIGHT){title=_("Kamera-Datei");	show_filter=_("Kamera-Dateien (*.camera)");	filter="*.camera";	}

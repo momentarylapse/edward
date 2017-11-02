@@ -139,12 +139,6 @@ int create_gl_shader(const string &source, int type)
 Shader *CreateShader(const string &source)
 {
 	auto parts = get_shader_parts(source);
-	/*string source_vertex = get_inside_of_tag(source, "VertexShader");
-	if (source_vertex.num == 0)
-		source_vertex = get_inside_of_tag(source, "Vertex");
-	string source_fragment = get_inside_of_tag(source, "FragmentShader");
-	if (source_fragment.num == 0)
-		source_fragment = get_inside_of_tag(source, "Fragment");*/
 
 	if (parts.num == 0){
 		shader_error = "no shader tags found (<VertexShader>...</VertexShader> or <FragmentShader>...</FragmentShader>)";
@@ -167,20 +161,6 @@ Shader *CreateShader(const string &source)
 		TestGLError("AddShader attach");
 	}
 
-	/*int gl_shader_v = create_gl_shader(source_vertex, GL_VERTEX_SHADER);
-	if ((gl_shader_v < 0) and (source_vertex.num > 0))
-		return NULL;
-	int gl_shader_f = create_gl_shader(source_fragment, GL_FRAGMENT_SHADER);
-	if ((gl_shader_f < 0) and (source_fragment.num > 0))
-		return NULL;
-
-
-	if (gl_shader_v >= 0)
-		glAttachShader(gl_prog, gl_shader_v);
-	if (gl_shader_f >= 0)
-		glAttachShader(gl_prog, gl_shader_f);
-	TestGLError("AddShader attach");*/
-
 	int status;
 	glLinkProgram(prog);
 	TestGLError("AddShader link");
@@ -196,10 +176,6 @@ Shader *CreateShader(const string &source)
 		return NULL;
 	}
 
-	/*if (gl_shader_v >= 0)
-		glDeleteShader(gl_shader_v);
-	if (gl_shader_f >= 0)
-		glDeleteShader(gl_shader_f);*/
 	for (int shader: shaders)
 		glDeleteShader(shader);
 	TestGLError("DeleteShader");
