@@ -321,34 +321,6 @@ void Draw3D(VertexBuffer *vb)
 	TestGLError("Draw3D");
 }
 
-void Draw3DCubeMapped(Texture *cube_map, VertexBuffer *vb)
-{
-	if (!vb)
-		return;
-	if (!cube_map->is_cube_map)
-		return;
-	//_SetMode3d();
-
-	SetTexture(cube_map);
-	TestGLError("Draw3dCube 0");
-	glTexGenf(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
-	glTexGenf(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
-	glTexGenf(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
-	TestGLError("Draw3dCube a");
-	glEnable(GL_TEXTURE_GEN_S);
-	glEnable(GL_TEXTURE_GEN_T);
-	glEnable(GL_TEXTURE_GEN_R);
-	TestGLError("Draw3dCube c");
-	//glEnable(GL_TEXTURE_CUBE_MAP_ARB);
-	Draw3D(vb);
-	glDisable(GL_TEXTURE_GEN_S);
-	glDisable(GL_TEXTURE_GEN_T);
-	glDisable(GL_TEXTURE_GEN_R);
-
-	//Draw3D(-1,buffer,mat);
-	TestGLError("Draw3dCube");
-}
-
 void DrawSpriteR(const rect &src, const vector &pos, const rect &dest)
 {
 #if 0

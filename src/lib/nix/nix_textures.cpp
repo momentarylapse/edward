@@ -339,6 +339,9 @@ void OverwriteTexture__(Texture *t, int target, int subtarget, const Image &imag
 
 	image.setMode(Image::ModeRGBA);
 
+	if (t->is_cube_map)
+		target = GL_TEXTURE_CUBE_MAP;
+
 	if (!image.error){
 		//glEnable(target);
 		glBindTexture(target, t->glTexture);
@@ -346,7 +349,13 @@ void OverwriteTexture__(Texture *t, int target, int subtarget, const Image &imag
 		glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		TestGLError("OverwriteTexture b");
-		if (t->is_dynamic){
+		if (t->is_cube_map){
+		    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		}else if (t->is_dynamic){
 			glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		}else{
@@ -356,12 +365,12 @@ void OverwriteTexture__(Texture *t, int target, int subtarget, const Image &imag
 		}
 		TestGLError("OverwriteTexture c");
 #ifdef GL_GENERATE_MIPMAP
-		if (image.alpha_used) 
+		if (image.alpha_used)
 			glTexImage2D(subtarget, 0, GL_RGBA8, image.width, image.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data.data);
 		else
 			glTexImage2D(subtarget, 0, GL_RGB8, image.width, image.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data.data);
 		TestGLError("OverwriteTexture d");
-		if (!t->is_dynamic)
+		if (!t->is_dynamic and !t->is_cube_map)
 			glGenerateMipmap(GL_TEXTURE_2D);
 		TestGLError("OverwriteTexture e");
 #else

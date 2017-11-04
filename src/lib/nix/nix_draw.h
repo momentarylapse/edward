@@ -30,7 +30,6 @@ void _cdecl Draw2D(const rect &src, const rect &dest, float depth);
 void _cdecl DrawSpriteR(const rect &src, const vector &pos, const rect &dest);
 void _cdecl DrawSprite(const rect &src, const vector &pos, float radius);
 void _cdecl Draw3D(VertexBuffer *vb);
-void _cdecl Draw3DCubeMapped(Texture *cube_map, VertexBuffer *vb);
 
 extern float line_width;
 extern bool smooth_lines;
