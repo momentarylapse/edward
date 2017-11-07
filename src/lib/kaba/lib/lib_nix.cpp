@@ -13,9 +13,11 @@ namespace Kaba{
 #ifdef _X_USE_NIX_
 	#define nix_p(p)		(void*)p
 #else
-	typedef int NixVertexBuffer;
-	typedef int NixTexture;
-	typedef int NixShader;
+	namespace nix{
+		typedef int VertexBuffer;
+		typedef int Texture;
+		typedef int Shader;
+	};
 	#define nix_p(p)		NULL
 #endif
 

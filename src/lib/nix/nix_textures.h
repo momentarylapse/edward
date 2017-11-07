@@ -27,9 +27,9 @@ public:
 	bool is_dynamic, valid, is_cube_map;
 	int life_time;
 	
-	unsigned int glTexture;
-	unsigned int glFrameBuffer;
-	unsigned int glDepthRenderBuffer;
+	unsigned int texture;
+	unsigned int frame_buffer;
+	unsigned int depth_render_buffer;
 
 	Image icon;
 
@@ -68,6 +68,7 @@ void _cdecl SetTexture(Texture *texture);
 void _cdecl SetTextures(Array<Texture*> &textures);
 
 extern Array<Texture*> textures;
+extern int tex_cube_level;
 
 extern int texture_icon_size;
 

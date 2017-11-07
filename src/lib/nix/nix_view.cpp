@@ -296,20 +296,18 @@ bool StartIntoTexture(Texture *texture)
 		#endif
 
 	}else{
-		if (OGLDynamicTextureSupport){
 
-			glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, texture->glFrameBuffer );
-			//glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, texture->glDepthRenderBuffer );
-			glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, texture->glTexture, 0 );
-			glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, texture->glDepthRenderBuffer );
-			GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-			if (status == GL_FRAMEBUFFER_COMPLETE_EXT){
-				//msg_write("hurra");
-			}else{
-				msg_write("we're screwed! (NixStart with dynamic texture target)");
-				return false;
-			}
-		}
+		glBindFramebuffer(GL_FRAMEBUFFER, texture->frame_buffer);
+		//glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, texture->glDepthRenderBuffer );
+		/*glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, texture->glTexture, 0 );
+		glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, texture->glDepthRenderBuffer );
+		GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+		if (status == GL_FRAMEBUFFER_COMPLETE_EXT){
+			//msg_write("hurra");
+		}else{
+			msg_write("we're screwed! (NixStart with dynamic texture target)");
+			return false;
+		}*/
 	}
 	TestGLError("Start 1");
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
@@ -383,8 +381,7 @@ void End()
 			}*/
 		#endif
 	}
-	if (OGLDynamicTextureSupport)
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	ProgressTextureLifes();
 	TestGLError("End post");

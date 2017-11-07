@@ -199,6 +199,7 @@ void Shader::find_locations()
 	location[LOCATION_MATRIX_P2D] = get_location("mat_p2d");
 	for (int i=0; i<NIX_MAX_TEXTURELEVELS; i++)
 		location[LOCATION_TEX + i] = get_location("tex" + i2s(i));
+	location[LOCATION_TEX_CUBE] = get_location("tex_cube");
 	location[LOCATION_CAM_POS] = get_location("CameraPosition");
 	location[LOCATION_CAM_DIR] = get_location("CameraDirection");
 
@@ -312,15 +313,6 @@ void Shader::set_data(int location, const float *data, int size)
 	}else if (size == sizeof(float)*4){
 		glUniform4fv(location, 1, data);
 	}
-
-	//NixSetShader(NULL);
-		
-	/*int loc = glGetUniformLocationARB(my_program, “my_color_texture”);
-
-glActiveTexture(GL_TEXTURE0 + i);
-glBindTexture(GL_TEXTURE_2D, my_texture_object);
-
-glUniform1iARB(my_sampler_uniform_location, i);*/
 	TestGLError("SetShaderData");
 }
 
@@ -362,6 +354,8 @@ void Shader::set_default_data()
 	set_matrix(location[LOCATION_MATRIX_P2D], projection_matrix2d);
 	for (int i=0; i<NIX_MAX_TEXTURELEVELS; i++)
 		set_int(location[LOCATION_TEX + i], i);
+	if (tex_cube_level >= 0)
+		set_int(location[LOCATION_TEX_CUBE], tex_cube_level);
 	set_color(location[LOCATION_MATERIAL_AMBIENT], material.ambient);
 	set_color(location[LOCATION_MATERIAL_DIFFUSIVE], material.diffusive);
 	set_color(location[LOCATION_MATERIAL_SPECULAR], material.specular);
@@ -378,34 +372,6 @@ void Shader::set_default_data()
 	set_color(location[LOCATION_FOG_COLOR], fog._color);
 	set_data(location[LOCATION_FOG_DENSITY], &fog.density, 4);
 }
-
-/*void NixSetDefaultShaderData(int num_textures, const vector &cam_pos)
-{
-	if (NixGLCurrentProgram == 0)
-		return;
-	int loc;
-	loc = glGetUniformLocation(NixGLCurrentProgram, "tex0");
-	if (loc > -1)
-		glUniform1i(loc, 0);
-	// glUniform1i(loc, n) sends the n'th bound texture 
-	loc = glGetUniformLocation(NixGLCurrentProgram, "tex1");
-	if (loc > -1)
-		glUniform1i(loc, 1);
-	loc = glGetUniformLocation(NixGLCurrentProgram, "tex2");
-	if (loc > -1)
-		glUniform1i(loc, 2);
-	loc = glGetUniformLocation(NixGLCurrentProgram, "tex3");
-	if (loc > -1)
-		glUniform1i(loc, 3);
-	loc = glGetUniformLocation(NixGLCurrentProgram, "_CamPos");
-	if (loc > -1){
-		matrix m = NixWorldMatrix * NixViewMatrix, mi;
-		MatrixInverse(m, mi);
-		vector cp = mi * v_0;
-		glUniform3f(loc, cp.x, cp.y, cp.z);
-	}
-	TestGLError("SetDefaultShaderData");
-}*/
 
 
 void init_shaders()
@@ -468,14 +434,19 @@ void init_shaders()
 	default_shader_2d = nix::CreateShader(
 		"<VertexShader>\n"
 		"#version 330 core\n"
+		"\n"
 		"uniform mat4 mat_p2d;\n"
+		"\n"
 		"layout(location = 0) in vec3 inPosition;\n"
 		"layout(location = 2) in vec2 inTexCoord;\n"
+		"\n"
 		"out vec2 fragmentTexCoord;\n"
+		"\n"
 		"void main(){\n"
 		"	gl_Position = mat_p2d * vec4(inPosition,1);\n"
 		"	fragmentTexCoord = inTexCoord;\n"
 		"}\n"
+		"\n"
 		"</VertexShader>\n"
 		"<FragmentShader>\n"
 		"#version 330 core\n"
