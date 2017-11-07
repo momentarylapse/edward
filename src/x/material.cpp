@@ -204,7 +204,7 @@ Material *LoadMaterial(const string &filename, bool as_default)
 		}else if (m->reflection_mode == ReflectionCubeMapStatic){
 			m->cube_map = new nix::CubeMap(m->cube_map_size);
 			for (int i=0;i<6;i++)
-				m->cube_map->fill_cube_map(i, cmt[i]);
+				m->cube_map->fill_side(i, cmt[i]);
 		}
 		// ShaderFile
 		f->ReadComment();

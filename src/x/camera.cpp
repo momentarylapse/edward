@@ -421,7 +421,7 @@ void Camera::Start()
 {
 	cur_cam = this;
 	if (output){
-		output->start_render();
+		nix::StartIntoTexture(output);
 	}else{
 		nix::Scissor(rect((float)nix::target_width * dest.x1,
 					(float)nix::target_width * dest.x2,

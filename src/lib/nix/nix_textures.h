@@ -41,11 +41,8 @@ public:
 	void _cdecl overwrite(const Image &image);
 	void _cdecl reload();
 	void _cdecl unload();
-	void _cdecl set_video_frame(int frame);
-	void _cdecl video_move(float elapsed);
-	bool _cdecl start_render();
-	void _cdecl render_to_cube_map(vector &pos, callback_function *render_scene, int mask);
-	void _cdecl fill_cube_map(int side, Texture *source);
+	//void _cdecl set_video_frame(int frame);
+	//void _cdecl video_move(float elapsed);
 };
 
 class DynamicTexture : public Texture
@@ -60,6 +57,10 @@ class CubeMap : public Texture
 public:
 	CubeMap(int size);
 	void _cdecl __init__(int size);
+
+	void _cdecl overwrite_side(int side, const Image &image);
+	void _cdecl fill_side(int side, Texture *source);
+	void _cdecl render_to_cube_map(vector &pos, callback_function *render_scene, int mask);
 };
 
 

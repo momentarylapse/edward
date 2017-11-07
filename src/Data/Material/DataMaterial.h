@@ -12,7 +12,8 @@
 #include "../../x/material.h"
 
 namespace nix{
-	class Texture;
+	class Textmure;
+	class CubeMap;
 	class Shader;
 };
 
@@ -49,7 +50,7 @@ public:
 		int reflection_mode, reflection_size;
 		float reflection_density;
 		string reflection_texture_file[6];
-		nix::Texture *cube_map;
+		nix::CubeMap *cube_map;
 
 		// shader
 		string shader_file;

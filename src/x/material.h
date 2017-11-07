@@ -9,6 +9,7 @@
 class Model;
 namespace nix{
 	class Texture;
+	class CubeMap;
 	class Shader;
 };
 
@@ -36,7 +37,7 @@ public:
 	// reflection
 	int reflection_mode;
 	float reflection_density;
-	nix::Texture *cube_map;
+	nix::CubeMap *cube_map;
 	int cube_map_size;
 
 	// shader

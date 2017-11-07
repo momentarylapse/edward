@@ -84,7 +84,6 @@ void SIAddPackageNix()
 		class_add_func(IDENTIFIER_FUNC_DELETE, TypeVoid, nix_p(mf(&nix::Texture::__delete__)));
 		class_add_func("overwrite",	TypeVoid,	nix_p(mf(&nix::Texture::overwrite)));
 			func_add_param("image", TypeImage);
-		class_add_func("startRender", TypeBool, nix_p(mf(&nix::Texture::start_render)));
 
 	add_class(TypeDynamicTexture);
 		TypeDynamicTexture->derive_from(TypeTexture, false);

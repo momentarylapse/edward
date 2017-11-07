@@ -101,10 +101,17 @@ void MaterialPropertiesDialog::LoadData()
 		check("reflection_mode:cube_dynamic", true);
 	else
 		check("reflection_mode:none", true);
-	setInt("reflection_size", temp.reflection_size);
+	if (temp.reflection_size >= 512)
+		setInt("reflection_size", 3);
+	else if (temp.reflection_size >= 256)
+		setInt("reflection_size", 2);
+	else if (temp.reflection_size >= 128)
+		setInt("reflection_size", 1);
+	else
+		setInt("reflection_size", 0);
 	setInt("reflection_density", temp.reflection_density);
 	RefillReflTexView();
-	enable("reflection_size", ((temp.reflection_mode == ReflectionCubeMapStatic) || (temp.reflection_mode == ReflectionCubeMapDynamical)));
+	enable("reflection_size", ((temp.reflection_mode == ReflectionCubeMapStatic) or (temp.reflection_mode == ReflectionCubeMapDynamical)));
 	enable("reflection_textures", (temp.reflection_mode == ReflectionCubeMapStatic));
 	enable("reflection_density", (temp.reflection_mode != ReflectionNone));
 	setString("shader_file", temp.shader_file);
@@ -201,7 +208,7 @@ void MaterialPropertiesDialog::OnReflectionMode()
 		temp.reflection_mode = ReflectionCubeMapDynamical;
 	else
 		temp.reflection_mode = ReflectionNone;
-	enable("reflection_size", ((temp.reflection_mode == ReflectionCubeMapStatic) || (temp.reflection_mode == ReflectionCubeMapDynamical)));
+	enable("reflection_size", ((temp.reflection_mode == ReflectionCubeMapStatic) or (temp.reflection_mode == ReflectionCubeMapDynamical)));
 	enable("reflection_textures", (temp.reflection_mode == ReflectionCubeMapStatic));
 	enable("reflection_density", (temp.reflection_mode != ReflectionNone));
 	ApplyData();
@@ -265,7 +272,7 @@ void MaterialPropertiesDialog::ApplyData()
 	temp.alpha_destination = getInt("alpha_dest");
 
 	temp.reflection_density = getInt("reflection_density");
-	temp.reflection_size = getInt("reflection_size");
+	temp.reflection_size = 64 << getInt("reflection_size");
 
 	temp.shader_file = getString("shader_file");
 

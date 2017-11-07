@@ -214,7 +214,7 @@ void ModeMaterial::UpdateShape()
 	if (shape_type == "torus")
 		geo = new GeometryTorus(v_0, e_z, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_NUMX, MATERIAL_NUMY);
 	else if (shape_type == "torusknot")
-		geo = new GeometryTorusKnot(v_0, e_z, MATERIAL_RADIUS1, 40, 22, 2, 5, 60, 16);
+		geo = new GeometryTorusKnot(v_0, e_z, MATERIAL_RADIUS1, 40, 22, 2, 5, 128, 32);
 	else if (shape_type == "teapot")
 		geo = new GeometryTeapot(v_0, MATERIAL_RADIUS1, 6);
 	else if (shape_type == "cube")

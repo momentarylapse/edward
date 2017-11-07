@@ -348,9 +348,24 @@ void DataMaterial::UpdateTextures()
 	appearance.textures.clear();
 	for (string &tf: appearance.texture_files)
 		appearance.textures.add(nix::LoadTexture(tf));
-	if ((appearance.reflection_mode == ReflectionCubeMapStatic) or (appearance.reflection_mode == ReflectionCubeMapDynamical)){
+	if (appearance.reflection_mode == ReflectionCubeMapDynamical){
+		Image im;
+		im.create(128, 128, White);
+		for (int i=0; i<128; i++)
+			for (int j=0; j<128; j++){
+				float f = 0.2;
+				if ((i % 16) == 0 or (j % 16) == 0)
+					f = 0.5;
+				if ((i % 64) == 0 or (j % 64) == 0)
+					f = 1;
+				im.setPixel(i, j, color(1, f, f, f));
+			}
 		for (int i=0;i<6;i++)
-			appearance.cube_map->fill_cube_map(i, nix::LoadTexture(appearance.reflection_texture_file[i]));
+			appearance.cube_map->overwrite_side(i, im);
+		appearance.textures.add(appearance.cube_map);
+	}else if (appearance.reflection_mode == ReflectionCubeMapStatic){
+		for (int i=0;i<6;i++)
+			appearance.cube_map->fill_side(i, nix::LoadTexture(appearance.reflection_texture_file[i]));
 		appearance.textures.add(appearance.cube_map);
 	}
 }

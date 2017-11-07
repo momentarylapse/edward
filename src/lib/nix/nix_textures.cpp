@@ -535,12 +535,6 @@ void DynamicTexture::__init__(int width, int height)
 	new(this) DynamicTexture(width, height);
 }
 
-bool Texture::start_render()
-{
-	return StartIntoTexture(this);
-}
-
-
 static int NixCubeMapTarget[] = {
 	GL_TEXTURE_CUBE_MAP_POSITIVE_X,
 	GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
@@ -564,23 +558,26 @@ void CubeMap::__init__(int size)
 	new(this) CubeMap(size);
 }
 
-void Texture::fill_cube_map(int side, Texture *source)
+void CubeMap::fill_side(int side, Texture *source)
 {
-	if (!is_cube_map)
-		return;
 	if (!source)
 		return;
 	if (source->is_cube_map)
 		return;
 	Image image;
 	image.load(texture_dir + source->filename);
+	overwrite_side(side, image);
+}
+
+void CubeMap::overwrite_side(int side, const Image &image)
+{
 	OverwriteTexture__(this, GL_TEXTURE_CUBE_MAP, NixCubeMapTarget[side], image);
 }
 
+#ifdef NIX_API_DIRECTX9
 void SetCubeMatrix(vector pos,vector ang)
 {
 	// TODO
-#ifdef NIX_API_DIRECTX9
 	if (NixApi==NIX_API_DIRECTX9){
 		matrix t,r;
 		MatrixTranslation(t,-pos);
@@ -589,14 +586,11 @@ void SetCubeMatrix(vector pos,vector ang)
 		lpDevice->SetTransform(D3DTS_VIEW,(D3DXMATRIX*)&NixViewMatrix);
 		lpDevice->Clear(0,NULL,D3DCLEAR_ZBUFFER,0,1.0f,0);
 	}
-#endif
 }
-
 void Texture::render_to_cube_map(vector &pos,callback_function *render_func,int mask)
 {
 	if (mask<1)	return;
 	// TODO
-#ifdef NIX_API_DIRECTX9
 	if (NixApi==NIX_API_DIRECTX9){
 		HRESULT hr;
 		matrix vm=NixViewMatrix;
@@ -655,12 +649,12 @@ void Texture::render_to_cube_map(vector &pos,callback_function *render_func,int 
 		NixViewMatrix=vm;
 		NixSetView(true,NixViewMatrix);
 	}
-#endif
 #ifdef NIX_API_OPENGL
 	if (Api==NIX_API_OPENGL){
 		msg_todo("RenderToCubeMap for OpenGL");
 	}
 #endif
 }
+#endif
 
 };
