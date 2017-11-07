@@ -287,9 +287,11 @@ void ModeModelMesh::toggleMaterialDialog()
 void ModeModelMesh::onDraw()
 {
 	if (data->getNumSelectedVertices() > 0){
-		ed->drawStr(20, 100, format(_("vert: %d"), data->getNumSelectedVertices()));
-		ed->drawStr(20, 120, format(_("poly: %d"), data->getNumSelectedPolygons()));
-		ed->drawStr(20, 140, format(_("surf: %d"), data->getNumSelectedSurfaces()));
+		int nv = data->getNumSelectedVertices();
+		int ne = data->getNumSelectedEdges();
+		int np = data->getNumSelectedPolygons();
+		int ns = data->getNumSelectedSurfaces();
+		ed->drawStr(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons, %d surfaces", nv, ne, np, ns));
 	}
 }
 

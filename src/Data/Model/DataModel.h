@@ -238,6 +238,7 @@ public:
 
 	int getNumSelectedVertices();
 	int getNumSelectedSkinVertices();
+	int getNumSelectedEdges();
 	int getNumSelectedPolygons();
 	int getNumSelectedSurfaces();
 	//int GetNumSelectedBalls();

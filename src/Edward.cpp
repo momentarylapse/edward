@@ -49,7 +49,7 @@ void render_text(const string &text, Image &im)
 	cairo_t *cr;
 
 	// initial surface size guess
-	int w_surf = 512;
+	int w_surf = 1024;
 	int h_surf = font_size * 2;
 
 	surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w_surf, h_surf);
@@ -591,6 +591,7 @@ void Edward::drawStr(int x, int y, const string &str, AlignType a)
 		x -= w;
 	else if (a == ALIGN_CENTER)
 		x -= w / 2;
+	nix::SetTexture(NULL);
 	nix::SetAlpha(AlphaMaterial);
 	color c = nix::GetColor();
 	nix::SetColor(color(0.5f,0.8f,0.8f,0.8f));

@@ -1822,6 +1822,16 @@ int DataModel::getNumSelectedPolygons()
 	return r;
 }
 
+int DataModel::getNumSelectedEdges()
+{
+	int r = 0;
+	for (ModelSurface &s: surface)
+		for (ModelEdge &e: s.edge)
+			if (e.is_selected)
+				r ++;
+	return r;
+}
+
 int DataModel::getNumSelectedSurfaces()
 {
 	int r = 0;
