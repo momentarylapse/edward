@@ -668,8 +668,7 @@ void MultiViewImpl::onDraw()
 	if (ed->input.inside_smart)
 		drawMousePos();
 
-	if (action_con->inUse())
-		action_con->drawParams();
+	action_con->drawPost();
 
 	//printf("%f\n", timer.get()*1000.0f);
 }

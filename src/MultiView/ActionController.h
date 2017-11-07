@@ -66,7 +66,7 @@ public:
 	Array<Geometry*> geo;
 	Array<nix::VertexBuffer*> buf;
 	matrix geo_mat;
-	int mouse_over_geo;
+	int mouse_over_constraint;
 	MultiViewImpl *multi_view;
 	MouseAction action;
 	ActionMultiView *cur_action;
@@ -74,7 +74,7 @@ public:
 	void reset();
 	void resetGeo();
 	void draw(Window *win);
-	void drawParams();
+	void drawPost();
 	void show(bool show);
 	void update();
 	bool leftButtonDown();
