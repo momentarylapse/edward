@@ -342,6 +342,24 @@ void DataMaterial::ApplyForRendering()
 	nix::SetTextures(appearance.textures);
 }
 
+void create_fake_dynamic_cube_map(nix::CubeMap *cube_map)
+{
+	Image im;
+	int size = cube_map->width;
+	im.create(size, size, White);
+	for (int i=0; i<size; i++)
+		for (int j=0; j<size; j++){
+			float f = 0.2;
+			if ((i % 16) == 0 or (j % 16) == 0)
+				f = 0.5;
+			if ((i % 64) == 0 or (j % 64) == 0)
+				f = 1;
+			im.setPixel(i, j, color(1, f, f, f));
+		}
+	for (int i=0;i<6;i++)
+		cube_map->overwrite_side(i, im);
+}
+
 void DataMaterial::UpdateTextures()
 {
 	msg_db_f("Mat.UpdateTextures", 1);
@@ -349,19 +367,7 @@ void DataMaterial::UpdateTextures()
 	for (string &tf: appearance.texture_files)
 		appearance.textures.add(nix::LoadTexture(tf));
 	if (appearance.reflection_mode == ReflectionCubeMapDynamical){
-		Image im;
-		im.create(128, 128, White);
-		for (int i=0; i<128; i++)
-			for (int j=0; j<128; j++){
-				float f = 0.2;
-				if ((i % 16) == 0 or (j % 16) == 0)
-					f = 0.5;
-				if ((i % 64) == 0 or (j % 64) == 0)
-					f = 1;
-				im.setPixel(i, j, color(1, f, f, f));
-			}
-		for (int i=0;i<6;i++)
-			appearance.cube_map->overwrite_side(i, im);
+		create_fake_dynamic_cube_map(appearance.cube_map);
 		appearance.textures.add(appearance.cube_map);
 	}else if (appearance.reflection_mode == ReflectionCubeMapStatic){
 		for (int i=0;i<6;i++)

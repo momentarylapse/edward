@@ -81,12 +81,15 @@ int GetStrWidth(const string &str)
 		(*render_str)(str, im);
 		return im.width;
 	}else{
+#if 0
 		string str2 = str_utf8_to_ubyte(str);
 		int w = 0;
 		for (int i=0;i<str2.num;i++)
 			w += FontGlyphWidth[(unsigned char)str2[i]];
 		return w;
+#endif
 	}
+	return 0;
 }
 
 void DrawLine(float x1, float y1, float x2, float y2, float depth)

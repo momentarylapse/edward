@@ -360,7 +360,7 @@ GLOBALFLAGS = -O2 -g
 #GLOBALFLAGS = -O1 -g
 LIB_DIR = lib
 CXXFLAGS = -std=c++11 `pkg-config --cflags gtk+-3.0` -DUSE_UNWIND=1 $(GLOBALFLAGS)
-CXXFLAGSLINKING = -std=c++11 `pkg-config --cflags --libs gtk+-3.0` -lX11 -lz -lGL -lGLU -lunwind $(GLOBALFLAGS)
+CXXFLAGSLINKING = -std=c++11 `pkg-config --cflags --libs gtk+-3.0` -lX11 -lz -lGL -lunwind $(GLOBALFLAGS)
 
 $(BIN) : $(OBJ) main.o
 	$(CPP) $(OBJ) main.o -o $(BIN) $(CXXFLAGSLINKING)

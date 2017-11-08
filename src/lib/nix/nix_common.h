@@ -26,7 +26,6 @@
 #endif
 	#include <X11/keysym.h>
 	#include <stdlib.h>
-	#include <gdk/gdkx.h>
 	#include <sys/time.h>
 	#include <sys/types.h>
 	#include <fcntl.h>
@@ -40,7 +39,6 @@
 
 #ifdef OS_WINDOWS
 	#include <gl\gl.h>
-	#include <gl\glu.h>
 	#include <gl\glext.h>
 	#include <gl\wglext.h>
 #endif
@@ -49,13 +47,11 @@
 	#include <GL/glx.h>
 	#include <GL/gl.h>
 	#include <GL/glext.h>
-	#include <GL/glu.h>
 #endif
 
 
 namespace nix{
 
-extern bool OGLDynamicTextureSupport;
 extern int current_progrram;
 
 
@@ -63,9 +59,8 @@ extern matrix view_matrix, projection_matrix;
 extern matrix world_matrix, world_view_projection_matrix;
 
 extern bool Usable, DoingEvilThingsToTheDevice;
-extern bool Enabled3D;
 
-extern int FontGlyphWidth[256];
+//extern int FontGlyphWidth[256];
 
 void TestGLError(const char *);
 

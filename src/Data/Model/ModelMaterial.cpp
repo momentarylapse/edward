@@ -9,6 +9,8 @@
 #include "../../lib/nix/nix.h"
 #include "../../Edward.h"
 
+void create_fake_dynamic_cube_map(nix::CubeMap *cube_map); // DataMaterial.cpp
+
 
 ModelMaterial::ModelMaterial()
 {
@@ -89,6 +91,13 @@ void ModelMaterial::operator =(const ModelMaterial &m)
 void ModelMaterial::makeConsistent()
 {
 	material = LoadMaterial(material_file);
+
+	if (material->reflection_mode == ReflectionCubeMapDynamical){
+		if (!material->cube_map)
+			material->cube_map = new nix::CubeMap(material->cube_map_size);
+		create_fake_dynamic_cube_map(material->cube_map);
+	}
+
 	checkTextures();
 	checkTransparency();
 	checkColors();

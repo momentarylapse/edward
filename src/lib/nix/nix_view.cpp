@@ -25,6 +25,8 @@ void create_pixel_projection_matrix(matrix &m);
 matrix view_matrix, projection_matrix;
 matrix projection_matrix2d;
 matrix world_matrix, world_view_projection_matrix;
+matrix inverse_world_view_projection_matrix;
+bool inverse_world_view_projection_matrix_dirty = true;
 vector _CamPos_;
 //bool mode3d = false;
 
@@ -65,6 +67,7 @@ void SetWorldMatrix(const matrix &mat)
 {
 	world_matrix = mat;
 	world_view_projection_matrix = projection_matrix * view_matrix * world_matrix;
+	inverse_world_view_projection_matrix_dirty = true;
 }
 
 static vector ViewPos,ViewDir;
@@ -417,14 +420,19 @@ void ScreenShot(const string &filename, int width, int height)
 	Image image;
 	int dx = target_width;
 	int dy = target_height;
+	//image.create(dx, dy, White);
 	image.data.resize(dx * dy);
+	//glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glReadBuffer(GL_FRONT);
+	TestGLError("read buffer");
 	glReadPixels(	0,
 					0,
 					dx,
 					dy,
+					//GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, &image.data[0]);
 					GL_RGBA, GL_UNSIGNED_BYTE, &image.data[0]);
-	if ((width >= 0) && (height >= 0)){
+	TestGLError("read pixels");
+	/*if ((width >= 0) and (height >= 0)){
 		Array<unsigned int> data2;
 		image.width = width;
 		image.height = height;
@@ -456,7 +464,7 @@ void ScreenShot(const string &filename, int width, int height)
 	}
 	// set alpha to 1
 	for (int i=0;i<image.data.num;i++)
-		image.data[i] |= 0xff000000;
+		image.data[i] |= 0xff000000;*/
 	// save
 	image.save(filename);
 	msg_write("screenshot saved: " + filename.sys_filename());
@@ -476,69 +484,49 @@ void ScreenShotToImage(Image &image)
 
 
 // world -> screen (0...target_width,0...target_height,0...1)
-void GetVecProject(vector &vout,const vector &vin)
+void GetVecProject(vector &vout, const vector &vin)
 {
 	vout = world_view_projection_matrix.project(vin);
-	return;
-
-	/*matrix m;
-	MatrixIdentity(m);*/
-	double vm[16];
-	int i;
-	for (i=0;i<16;i++)
-		vm[i]=view_matrix.e[i];
-		//vm[i]=m.e[i];
-	double pm[16];
-	for (i=0;i<16;i++)
-			pm[i]=projection_matrix.e[i];
-		//pm[i]=m.e[i];
-	double x,y,z;
-	gluProject(vin.x,vin.y,vin.z,vm,pm,OGLViewPort,&x,&y,&z);
-	vout.x=(float)x;
-	vout.y=float((OGLViewPort[1]*2+OGLViewPort[3])-y); // y-Spiegelung
-	vout.z=(float)z;//0.999999970197677613f;//(float)z;
-	/*VecTransform(vout,view_matrix,vin);
-	VecTransform(vout,projection_matrix,vout);
-	vout.y=((ViewPort[1]*2+ViewPort[3])-vout.y*16)/2;
-	vout.x=((ViewPort[0]*2+ViewPort[2])+vout.x*16)/2;
-	vout.z=0.99999997f;*/
-	TestGLError("VecPro");
+	vout.x = nix::target_width * (vout.x + 1) / 2;
+	vout.y = nix::target_height * (-vout.y + 1) / 2;
+	vout.z = (vout.z + 1) / 2;
 }
 
 // world -> screen (0...1,0...1,0...1)
-void GetVecProjectRel(vector &vout,const vector &vin)
+void GetVecProjectRel(vector &vout, const vector &vin)
 {
-	GetVecProject(vout,vin);
-	vout.x/=(float)target_width;
-	vout.y/=(float)target_height;
+	vout = world_view_projection_matrix.project(vin);
+	vout.x = (vout.x + 1) / 2;
+	vout.y = (-vout.y + 1) / 2;
+	vout.z = (vout.z + 1) / 2;
 }
 
 // screen (0...target_width,0...target_height,0...1) -> world
-void GetVecUnproject(vector &vout,const vector &vin)
+void GetVecUnproject(vector &vout, const vector &vin)
 {
-	double vin_y=OGLViewPort[1]*2+OGLViewPort[3]-(double)vin.y; // y-Spiegelung
-	double vm[16];
-	int i;
-	for (i=0;i<16;i++)
-		vm[i]=view_matrix.e[i];
-	double pm[16];
-	for (i=0;i<16;i++)
-		pm[i]=projection_matrix.e[i];
-	double x,y,z;
-	gluUnProject(vin.x,vin_y,vin.z,vm,pm,OGLViewPort,&x,&y,&z);
-	vout.x=(float)x;
-	vout.y=(float)y;
-	vout.z=(float)z;
-	TestGLError("VecUnpro");
+	if (inverse_world_view_projection_matrix_dirty){
+		MatrixInverse(inverse_world_view_projection_matrix, world_view_projection_matrix);
+		inverse_world_view_projection_matrix_dirty = false;
+	}
+
+	vout.x = vin.x*2/nix::target_width - 1;
+	vout.y = - vin.y*2/nix::target_height + 1;
+	vout.z = vin.z*2 - 1;
+	vout = inverse_world_view_projection_matrix.project(vout);
 }
 
 // screen (0...1,0...1,0...1) -> world
-void GetVecUnprojectRel(vector &vout,const vector &vin)
+void GetVecUnprojectRel(vector &vout, const vector &vin)
 {
-	vector vi_r=vin;
-	vi_r.x*=(float)target_width;
-	vi_r.y*=(float)target_height;
-	GetVecUnproject(vout,vi_r);
+	if (inverse_world_view_projection_matrix_dirty){
+		MatrixInverse(inverse_world_view_projection_matrix, world_view_projection_matrix);
+		inverse_world_view_projection_matrix_dirty = false;
+	}
+
+	vout.x = vin.x*2 - 1;
+	vout.y = - vin.y*2 + 1;
+	vout.z = vin.z*2 - 1;
+	vout = inverse_world_view_projection_matrix.project(vout);
 }
 
 };
