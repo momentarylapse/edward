@@ -71,6 +71,8 @@ public:
 	static const string MESSAGE_UPDATE;
 	static const string MESSAGE_SELECTION_CHANGE;
 	static const string MESSAGE_SETTINGS_CHANGE;
+	static const string MESSAGE_CAMERA_CHANGE;
+	static const string MESSAGE_VIEWSTAGE_CHANGE;
 	static const string MESSAGE_ACTION_START;
 	static const string MESSAGE_ACTION_UPDATE;
 	static const string MESSAGE_ACTION_ABORT;

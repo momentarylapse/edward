@@ -57,6 +57,7 @@ class ActionController
 {
 public:
 	ActionController(MultiViewImpl *impl);
+	~ActionController();
 	bool visible;
 	vector pos, pos0, m0;
 	vector param;
@@ -72,7 +73,7 @@ public:
 	ActionMultiView *cur_action;
 	Data *data;
 	void reset();
-	void resetGeo();
+	void deleteGeo();
 	void draw(Window *win);
 	void drawPost();
 	void show(bool show);

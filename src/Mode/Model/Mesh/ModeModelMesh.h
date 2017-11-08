@@ -41,6 +41,7 @@ public:
 	virtual void onUpdate(Observable *o, const string &message);
 	virtual void onUpdateMenu();
 	virtual void onSelectionChange();
+	virtual void onViewStageChange();
 	virtual void onSetMultiView();
 
 	virtual void onDrawWin(MultiView::Window *win);

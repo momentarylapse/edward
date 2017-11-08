@@ -549,6 +549,9 @@ void Edward::onUpdate(Observable *o, const string &message)
 		}else if (message == multi_view_3d->MESSAGE_SELECTION_CHANGE){
 			cur_mode->onSelectionChange();
 			updateMenu();
+		}else if (message == multi_view_3d->MESSAGE_VIEWSTAGE_CHANGE){
+			cur_mode->onViewStageChange();
+			updateMenu();
 		}
 		forceRedraw();
 	}else if (o->getName() == "ActionManager"){
@@ -560,7 +563,8 @@ void Edward::onUpdate(Observable *o, const string &message)
 			updateMenu();
 		}
 	}else if (dynamic_cast<Data*>(o)){
-		cur_mode->onSetMultiView();
+		if (message != Data::MESSAGE_SELECTION)
+			cur_mode->onSetMultiView();
 		// data...
 		forceRedraw();
 		//if (message != o->MESSAGE_CHANGE)

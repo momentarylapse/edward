@@ -23,6 +23,8 @@ public:
 	Data(int _type);
 	virtual ~Data();
 
+	static const string MESSAGE_SELECTION;
+
 	virtual void reset() = 0;
 	virtual bool load(const string &_filename, bool deep = true) = 0;
 	virtual bool save(const string &_filename) = 0;

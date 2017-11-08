@@ -7,11 +7,15 @@
 
 #include "Data.h"
 
+const string Data::MESSAGE_SELECTION = "Selection";
+
 Data::Data(int _type) :
 	Observable("Data")
 {
 	type = _type;
 	action_manager = new ActionManager(this);
+	file_time = 0;
+	binary_file_format = false;
 }
 
 Data::~Data()

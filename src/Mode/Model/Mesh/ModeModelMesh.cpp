@@ -51,7 +51,6 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	Mode<DataModel>("ModelMesh", _parent, ed->multi_view_3d, "menu_model"),
 	Observable("ModelMesh")
 {
-	Observer::subscribe(data);
 
 	selection_mode = NULL;
 	material_dialog = NULL;
@@ -73,6 +72,9 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	mode_model_mesh_texture = new ModeModelMeshTexture(this);
 
 	selection_mode = selection_mode_polygon;
+
+	Observer::subscribe(data);
+	//Observer::subscribe(multi_view);
 }
 
 ModeModelMesh::~ModeModelMesh()
@@ -322,24 +324,26 @@ void ModeModelMesh::onUpdate(Observable *o, const string &message)
 	//data->DebugShow();
 	//msg_write(o->getName() + " - " + message);
 
-	if (o == data){
-		selection_mode->updateMultiView();
-		updateVertexBuffers(data->vertex);
-	}else if (o == multi_view){
-		selection_mode->updateSelection();
-	}
 
 	fillSelectionBuffer(data->vertex);
 }
 
+void ModeModelMesh::onViewStageChange()
+{
+	//msg_write("on view stage change");
+	updateVertexBuffers(data->vertex);
+}
+
 void ModeModelMesh::onSelectionChange()
 {
+	//msg_write("on sel change");
 	selection_mode->updateSelection();
 	fillSelectionBuffer(data->vertex);
 }
 
 void ModeModelMesh::onSetMultiView()
 {
+	//msg_write("on set mv");
 	selection_mode->updateMultiView();
 	updateVertexBuffers(data->vertex);
 }
@@ -380,7 +384,6 @@ void ModeModelMesh::onUpdateMenu()
 
 bool ModeModelMesh::optimizeView()
 {
-	msg_db_f("OptimizeView", 1);
 	MultiView::MultiView *mv = multi_view;
 	bool ww = mv->whole_window;
 	mv->resetView();
@@ -448,7 +451,6 @@ void ModeModelMesh::createNewMaterialForSelection()
 
 void ModeModelMesh::chooseMaterialForSelection()
 {
-	msg_db_f("ChooseMaterialForSelection", 2);
 	if (0 == data->getNumSelectedPolygons()){
 		ed->setMessage(_("kein Dreieck ausgew&ahlt"));
 		return;
@@ -611,8 +613,6 @@ void ModeModelMesh::drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex
 
 void ModeModelMesh::drawPolygons(MultiView::Window *win, Array<ModelVertex> &vertex)
 {
-	msg_db_f("ModelSkin.DrawPolys",2);
-
 	if (multi_view->wire_mode){
 		drawEdges(win, vertex, false);
 		return;
@@ -637,6 +637,7 @@ void ModeModelMesh::drawPolygons(MultiView::Window *win, Array<ModelVertex> &ver
 
 void ModeModelMesh::updateVertexBuffers(Array<ModelVertex> &vertex)
 {
+	//msg_write("update vertex buffers!!!!!!!!!!");
 	// draw all materials separately
 	foreachi(ModelMaterial &m, data->material, mi){
 		int num_tex = min(m.textures.num, 4);

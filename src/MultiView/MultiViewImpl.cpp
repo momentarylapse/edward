@@ -153,6 +153,8 @@ void MultiViewImpl::resetView()
 	view_stage = 0;
 
 	hover.reset();
+	notify(MESSAGE_CAMERA_CHANGE);
+	notify(MESSAGE_VIEWSTAGE_CHANGE);
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
@@ -212,7 +214,7 @@ void MultiViewImpl::camMove(const vector &dir)
 		cam.pos += cam.radius*(r*dir.x+u*dir.y+d*dir.z) * SPEED_MOVE;
 	else
 		cam.pos += (float)NixScreenHeight / cam.zoom*(r*dir.x+u*dir.y) * SPEED_MOVE;*/
-	notify(MESSAGE_UPDATE);
+	notify(MESSAGE_CAMERA_CHANGE);
 }
 
 void MultiViewImpl::camRotate(const vector &dir, bool cam_center)
@@ -225,7 +227,7 @@ void MultiViewImpl::camRotate(const vector &dir, bool cam_center)
 	if (cam_center)
 		cam.pos += cam.radius * (cam.ang * e_z);
 	action_con->update();
-	notify(MESSAGE_UPDATE);
+	notify(MESSAGE_CAMERA_CHANGE);
 }
 
 void MultiViewImpl::setViewBox(const vector &min, const vector &max)
@@ -234,14 +236,14 @@ void MultiViewImpl::setViewBox(const vector &min, const vector &max)
 	float r = (max - min).length_fuzzy() * 1.3f;// * ((float)NixScreenWidth / (float)nix::target_width);
 	if (r > 0)
 		cam.radius = r;
-	notify(MESSAGE_UPDATE);
+	notify(MESSAGE_CAMERA_CHANGE);
 }
 
 void MultiViewImpl::toggleWholeWindow()
 {
 	whole_window = !whole_window;
 	action_con->update();
-	notify(MESSAGE_SETTINGS_CHANGE);
+	notify(MESSAGE_CAMERA_CHANGE);
 }
 
 void MultiViewImpl::toggleGrid()
@@ -1032,7 +1034,7 @@ void MultiViewImpl::viewStagePush()
 				if (sd->is_selected)
 					sd->view_stage = view_stage;
 			}
-	notify(MESSAGE_SETTINGS_CHANGE);
+	notify(MESSAGE_VIEWSTAGE_CHANGE);
 }
 
 void MultiViewImpl::viewStagePop()
@@ -1047,7 +1049,7 @@ void MultiViewImpl::viewStagePop()
 				if (sd->view_stage > view_stage)
 					sd->view_stage = view_stage;
 			}
-	notify(MESSAGE_SETTINGS_CHANGE);
+	notify(MESSAGE_VIEWSTAGE_CHANGE);
 }
 
 void MultiViewImpl::resetMessage3d()

@@ -216,7 +216,6 @@ public:
 	DataModel();
 	virtual ~DataModel();
 
-	static const string MESSAGE_SELECTION;
 	static const string MESSAGE_SKIN_CHANGE;
 
 	virtual void reset();

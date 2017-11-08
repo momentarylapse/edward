@@ -29,7 +29,42 @@ ActionController::ActionController(MultiViewImpl *impl)
 	geo_mat = m_id;
 	mat = m_id;
 
+
+	float r0 = 1.333f;
+	float r1 = 0.666f;
+	float r = 0.1f;
+	geo.add(new GeometryTorus(v_0, e_z, 1.0f, r, 32, 8));
+	geo.add(new GeometryTorus(v_0, e_y, 1.0f, r, 32, 8));
+	geo.add(new GeometryTorus(v_0, e_x, 1.0f, r, 32, 8));
+	geo.add(new GeometryCylinder(-e_x*r0, -e_x*r1, r, 1, 8));
+	geo.add(new GeometryCylinder( e_x*r0,  e_x*r1, r, 1, 8));
+	geo.add(new GeometryCylinder(-e_y*r0, -e_y*r1, r, 1, 8));
+	geo.add(new GeometryCylinder( e_y*r0,  e_y*r1, r, 1, 8));
+	geo.add(new GeometryCylinder(-e_z*r0, -e_z*r1, r, 1, 8));
+	geo.add(new GeometryCylinder( e_z*r0,  e_z*r1, r, 1, 8));
+	r = 0.03f;
+	geo_show.add(new GeometryTorus(v_0, e_z, 1.0f, r, 32, 8));
+	geo_show.add(new GeometryTorus(v_0, e_y, 1.0f, r, 32, 8));
+	geo_show.add(new GeometryTorus(v_0, e_x, 1.0f, r, 32, 8));
+	geo_show.add(new GeometryCylinder(-e_x*r0, -e_x*r1, r, 1, 8));
+	geo_show.add(new GeometryCylinder( e_x*r0,  e_x*r1, r, 1, 8));
+	geo_show.add(new GeometryCylinder(-e_y*r0, -e_y*r1, r, 1, 8));
+	geo_show.add(new GeometryCylinder( e_y*r0,  e_y*r1, r, 1, 8));
+	geo_show.add(new GeometryCylinder(-e_z*r0, -e_z*r1, r, 1, 8));
+	geo_show.add(new GeometryCylinder( e_z*r0,  e_z*r1, r, 1, 8));
+
+	for (auto g: geo_show){
+		nix::VertexBuffer *vb = new nix::VertexBuffer(1);
+		g->build(vb);
+		buf.add(vb);
+	}
+
 	reset();
+}
+
+ActionController::~ActionController()
+{
+	deleteGeo();
 }
 
 void ActionController::startAction(int _constraints)
@@ -177,10 +212,9 @@ void ActionController::reset()
 	visible = false;
 	constraints = ACTION_CONSTRAINTS_NONE;
 	mouse_over_constraint = -1;
-	resetGeo();
 }
 
-void ActionController::resetGeo()
+void ActionController::deleteGeo()
 {
 	for (Geometry *g: geo)
 		delete(g);
@@ -192,8 +226,6 @@ void ActionController::resetGeo()
 
 void ActionController::update()
 {
-	resetGeo();
-
 	pos = multi_view->getSelectionCenter();
 	float f = multi_view->cam.radius * 0.15f;
 	if (multi_view->whole_window)
@@ -203,30 +235,6 @@ void ActionController::update()
 	MatrixTranslation(t, pos);
 	geo_mat = t * s;
 
-	if (visible){
-		float r0 = 1.333f;
-		float r1 = 0.666f;
-		float r = 0.1f;
-		geo.add(new GeometryTorus(v_0, e_z, 1.0f, r, 32, 8));
-		geo.add(new GeometryTorus(v_0, e_y, 1.0f, r, 32, 8));
-		geo.add(new GeometryTorus(v_0, e_x, 1.0f, r, 32, 8));
-		geo.add(new GeometryCylinder(-e_x*r0, -e_x*r1, r, 1, 8));
-		geo.add(new GeometryCylinder( e_x*r0,  e_x*r1, r, 1, 8));
-		geo.add(new GeometryCylinder(-e_y*r0, -e_y*r1, r, 1, 8));
-		geo.add(new GeometryCylinder( e_y*r0,  e_y*r1, r, 1, 8));
-		geo.add(new GeometryCylinder(-e_z*r0, -e_z*r1, r, 1, 8));
-		geo.add(new GeometryCylinder( e_z*r0,  e_z*r1, r, 1, 8));
-		r = 0.03f;
-		geo_show.add(new GeometryTorus(v_0, e_z, 1.0f, r, 32, 8));
-		geo_show.add(new GeometryTorus(v_0, e_y, 1.0f, r, 32, 8));
-		geo_show.add(new GeometryTorus(v_0, e_x, 1.0f, r, 32, 8));
-		geo_show.add(new GeometryCylinder(-e_x*r0, -e_x*r1, r, 1, 8));
-		geo_show.add(new GeometryCylinder( e_x*r0,  e_x*r1, r, 1, 8));
-		geo_show.add(new GeometryCylinder(-e_y*r0, -e_y*r1, r, 1, 8));
-		geo_show.add(new GeometryCylinder( e_y*r0,  e_y*r1, r, 1, 8));
-		geo_show.add(new GeometryCylinder(-e_z*r0, -e_z*r1, r, 1, 8));
-		geo_show.add(new GeometryCylinder( e_z*r0,  e_z*r1, r, 1, 8));
-	}
 	ed->forceRedraw();
 }
 
@@ -246,17 +254,17 @@ struct ACGeoConfig
 string constraint_name(int c)
 {
 	if (c == ACTION_CONSTRAINTS_X)
-		return "X";
+		return _("x-axis");
 	if (c == ACTION_CONSTRAINTS_Y)
-		return "Y";
+		return _("y-axis");
 	if (c == ACTION_CONSTRAINTS_Z)
-		return "Z";
+		return _("z-axis");
 	if (c == ACTION_CONSTRAINTS_XY)
-		return "XY";
+		return _("x-y-plane");
 	if (c == ACTION_CONSTRAINTS_XZ)
-		return "XZ";
+		return _("x-z-plane");
 	if (c == ACTION_CONSTRAINTS_YZ)
-		return "YZ";
+		return _("y-z-plane");
 	return "free";
 }
 
@@ -325,12 +333,11 @@ void ActionController::draw(Window *win)
 	foreachi(Geometry *g, geo_show, i){
 		if (!geo_allow(i, win, m))
 			continue;
-		g->build(nix::vb_temp);
 		if (ac_geo_config[i].constraint == mouse_over_constraint)
 			nix::SetMaterial(Black, White, Black, 0, White);
 		else
 			nix::SetMaterial(Black, Black, Black, 0, ac_geo_config[i].col);
-		nix::Draw3D(nix::vb_temp);
+		nix::Draw3D(buf[i]);
 	}
 	nix::SetZ(false, false);
 	nix::EnableLighting(false);
@@ -355,7 +362,7 @@ void ActionController::draw(Window *win)
 		vector pp = win->project(pos);
 
 		if ((mouse_over_constraint >= 0) and !inUse()){
-			ed->drawStr(pp.x + 80, pp.y + 40, action_name(action.mode) + " " + constraint_name(mouse_over_constraint));
+			ed->drawStr(pp.x + 80, pp.y + 40, action_name(action.mode) + ": " + constraint_name(mouse_over_constraint));
 		}
 	}
 

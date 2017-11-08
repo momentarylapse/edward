@@ -55,7 +55,6 @@
 #include "../../Action/Model/Skeleton/ActionModelReconnectBone.h"
 #include "../../Action/Model/Skeleton/ActionModelSetSubModel.h"
 
-const string DataModel::MESSAGE_SELECTION = "Selection";
 const string DataModel::MESSAGE_SKIN_CHANGE = "SkinChange";
 
 
