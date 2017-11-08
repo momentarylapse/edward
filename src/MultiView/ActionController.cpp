@@ -300,23 +300,39 @@ void ActionController::draw(Window *win)
 	nix::SetZ(false, false);
 	nix::EnableLighting(false);
 	nix::SetAlpha(AlphaNone);
-	nix::SetMaterial(White, White, Black, 0, Black);
 	nix::SetWorldMatrix(m_id);
+
+	if (inUse()){
+		nix::SetMaterial(White, White, Black, 0, color(1, 0.2f, 0.7f, 0.2f));
+		float r = multi_view->cam.radius * 10;
+		if (constraints == ACTION_CONSTRAINTS_X)
+			nix::DrawLine3D(pos - e_x * r, pos + e_x * r);
+		if (constraints == ACTION_CONSTRAINTS_Y)
+			nix::DrawLine3D(pos - e_y * r, pos + e_y * r);
+		if (constraints == ACTION_CONSTRAINTS_Z)
+			nix::DrawLine3D(pos - e_z * r, pos + e_z * r);
+	}
+	nix::SetMaterial(White, White, Black, 0, Black);
+
 	/*NixSetColor(Red);
 	vector p = win->Project(pos);
 	NixDrawRect(p.x-15, p.x+15, p.y-15, p.y+15, 0);*/
 
+	nix::SetShader(nix::default_shader_2d);
+
 	if (win == multi_view->mouse_win){
-		nix::SetShader(nix::default_shader_2d);
+		vector pp = win->project(pos);
 
 		if ((mouse_over_constraint >= 0) and !inUse()){
-			ed->drawStr(multi_view->m.x + 20, multi_view->m.y + 50, "constraint: " + constraint_name(mouse_over_constraint));
+			ed->drawStr(pp.x + 60, pp.y + 60, "constraint: " + constraint_name(mouse_over_constraint));
 		}
-		if (!inUse())
-			return;
+	}
 
-		float x0 = multi_view->m.x + 100;//win->dest.x1 + 120;
-		float y0 = multi_view->m.y + 50;//win->dest.y1 + 100;
+	if (inUse() and (win == multi_view->active_win)){
+		vector pp = win->project(pos);
+
+		float x0 = pp.x + 80;//multi_view->m.x + 100;//win->dest.x1 + 120;
+		float y0 = pp.y + 60;//multi_view->m.y + 50;//win->dest.y1 + 100;
 
 		if (action.mode == ACTION_MOVE){
 			vector t = param;
