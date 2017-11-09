@@ -341,7 +341,7 @@ void ActionController::draw(Window *win)
 	}
 	nix::SetZ(false, false);
 	nix::EnableLighting(false);
-	nix::SetAlpha(AlphaNone);
+	nix::SetAlpha(ALPHA_NONE);
 	nix::SetWorldMatrix(m_id);
 
 	if (inUse()){

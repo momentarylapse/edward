@@ -124,7 +124,7 @@ void ModeMaterial::onDrawWin(MultiView::Window *win)
 	nix::Draw3D(MaterialVB[max(data->appearance.texture_files.num, 1)]);
 
 
-	nix::SetAlpha(AlphaNone);
+	nix::SetAlpha(ALPHA_NONE);
 	nix::SetZ(true,true);
 }
 

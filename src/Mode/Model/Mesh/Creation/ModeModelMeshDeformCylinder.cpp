@@ -130,7 +130,7 @@ void ModeModelMeshDeformCylinder::onDrawWin(MultiView::Window* win)
 	nix::Draw3D(nix::vb_temp);
 
 	nix::line_width = 3;
-	nix::SetAlpha(AlphaNone);
+	nix::SetAlpha(ALPHA_NONE);
 	nix::SetZ(false, false);
 	nix::EnableLighting(false);
 	nix::SetColor(Green);

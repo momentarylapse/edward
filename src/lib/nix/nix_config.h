@@ -72,56 +72,57 @@ enum{
 
 
 
+// alpha modes
+enum{
+	ALPHA_NONE,
+	ALPHA_COLOR_KEY = 10,
+	ALPHA_COLOR_KEY_SMOOTH,
+	ALPHA_COLOR_KEY_HARD,
+	ALPHA_ADD,
+	ALPHA_MATERIAL,
+};
 
-
-#define AlphaNone			0
-#define AlphaZero			0
-#define AlphaOne			1
-#define AlphaSourceColor	2
-#define AlphaSourceInvColor	3
-#define AlphaSourceAlpha	4
-#define AlphaSourceInvAlpha	5
-#define AlphaDestColor		6
-#define AlphaDestInvColor	7
-#define AlphaDestAlpha		8
-#define AlphaDestInvAlpha	9
-
-#define AlphaColorKey		10
-#define AlphaColorKeySmooth	10
-#define AlphaColorKeyHard	11
-#define AlphaAdd			12
-#define AlphaMaterial		13
+// alpha parameters ("functions")
+enum{
+	ALPHA_ZERO,
+	ALPHA_ONE,
+	ALPHA_SOURCE_COLOR,
+	ALPHA_SOURCE_INV_COLOR,
+	ALPHA_SOURCE_ALPHA,
+	ALPHA_SOURCE_INV_ALPHA,
+	ALPHA_DEST_COLOR,
+	ALPHA_DEST_INV_COLOR,
+	ALPHA_DEST_ALPHA,
+	ALPHA_DEST_INV_ALPHA,
+};
 
 enum{
 	CULL_NONE,
 	CULL_CCW,
-	CULL_CW
-};
-#define CULL_DEFAULT		CULL_CCW
-
-enum{
-	StencilNone,
-	StencilIncrease,
-	StencilDecrease,
-	StencilDecreaseNotNegative,
-	StencilSet,
-	StencilMaskEqual,
-	StencilMaskNotEqual,
-	StencilMaskLess,
-	StencilMaskLessEqual,
-	StencilMaskGreater,
-	StencilMaskGreaterEqual,
-	StencilReset
+	CULL_CW,
+	CULL_DEFAULT = CULL_CCW
 };
 
 enum{
-	FogLinear,
-	FogExp,
-	FogExp2
+	STENCIL_NONE,
+	STENCIL_INCREASE,
+	STENCIL_DECREASE,
+	STENCIL_DECREASE_NOT_NEGATIVE,
+	STENCIL_SET,
+	STENCIL_MASK_EQUAL,
+	STENCIL_MASK_NOT_EQUAL,
+	STENCIL_MASK_LESS,
+	STENCIL_MASK_LESS_EQUAL,
+	STENCIL_MASK_GREATER,
+	STENCIL_MASK_GREATER_EQUAL,
+	STENCIL_RESET
 };
 
-#define ShadingPlane			0
-#define ShadingRound			1
+enum{
+	FOG_LINEAR,
+	FOG_EXP,
+	FOG_EXP2
+};
 
 
 namespace nix{

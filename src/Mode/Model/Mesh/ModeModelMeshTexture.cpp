@@ -117,13 +117,13 @@ void ModeModelMeshTexture::onDrawWin(MultiView::Window *win)
 				nix::SetColor(((i+j)%2==0) ? c1 : c2);
 				nix::Draw2D(r_id, r, 0.999f );
 			}
-		nix::SetAlphaSD(AlphaSourceAlpha,AlphaSourceInvAlpha);
+		nix::SetAlphaSD(ALPHA_SOURCE_ALPHA, ALPHA_SOURCE_INV_ALPHA);
 	}
 	nix::SetColor(color(1,0.8f,0.8f,0.8f));
 	nix::SetTexture(cur_tex);
 	nix::Draw2D(s, nix::target_rect, 0.99f);
 	nix::SetTexture(NULL);
-	nix::SetAlphaM(AlphaNone);
+	nix::SetAlphaM(ALPHA_NONE);
 
 	// rectangle of unity
 	a = win->project(v_0);

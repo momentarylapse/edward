@@ -314,7 +314,7 @@ void Window::draw()
 	nix::SetWire(false);
 	nix::EnableLighting(false);
 	nix::EnableFog(false);
-	nix::SetFog(FogExp, 0, 1000, 0, Black); // some shaders need correct fog values
+	nix::SetFog(FOG_EXP, 0, 1000, 0, Black); // some shaders need correct fog values
 	if (impl->grid_enabled)
 		drawGrid();
 
@@ -336,7 +336,7 @@ void Window::draw()
 
 	// draw multiview data
 	nix::SetShader(nix::default_shader_2d);
-	nix::SetAlpha(AlphaNone);
+	nix::SetAlpha(ALPHA_NONE);
 	nix::SetTexture(NULL);
 	nix::SetWire(false);
 	nix::EnableLighting(false);

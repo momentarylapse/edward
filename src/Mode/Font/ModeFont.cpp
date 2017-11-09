@@ -231,7 +231,7 @@ void ModeFont::onDrawWin(MultiView::Window *win)
 
 	// background
 	nix::EnableLighting(false);
-	nix::SetAlpha(AlphaMaterial);
+	nix::SetAlpha(ALPHA_MATERIAL);
 	nix::SetZ(false, false);
 	rect d = rect(0, (float)data->TextureWidth, 0, (float)data->TextureHeight);
 	nix::SetTexture(NULL);
@@ -275,7 +275,7 @@ void ModeFont::onDrawWin(MultiView::Window *win)
 		x = x2;
 	}
 
-	nix::SetAlpha(AlphaNone);
+	nix::SetAlpha(ALPHA_NONE);
 }
 
 

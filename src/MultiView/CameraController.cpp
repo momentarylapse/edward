@@ -116,7 +116,7 @@ void CameraController::draw()
 {
 	updateRects();
 	//NixEnableLighting(true);
-	nix::SetAlpha(AlphaMaterial);
+	nix::SetAlpha(ALPHA_MATERIAL);
 
 	// show/hide button
 	nix::SetColor(ColorBackground);
@@ -138,7 +138,7 @@ void CameraController::draw()
 		draw_icon(r_zoom, tex_zoom, zooming);
 	}
 	nix::SetTexture(NULL);
-	nix::SetAlpha(AlphaNone);
+	nix::SetAlpha(ALPHA_NONE);
 	nix::EnableLighting(false);
 }
 

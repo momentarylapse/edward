@@ -54,22 +54,23 @@ public:
 
 
 // types of transparency
-#define TransparencyModeDefault			-1
-#define TransparencyModeNone			0
-#define TransparencyModeFunctions		1
-#define TransparencyModeColorKeyHard	2
-#define TransparencyModeColorKeySmooth	3
-#define TransparencyModeFactor			4
-
+enum{
+	TRANSPARENCY_NONE,
+	TRANSPARENCY_FUNCTIONS,
+	TRANSPARENCY_COLOR_KEY_HARD,
+	TRANSPARENCY_COLOR_KEY_SMOOTH,
+	TRANSPARENCY_FACTOR,
+	TRANSPARENCY_DEFAULT = -1,
+};
 
 // types of reflection
 enum
 {
-	ReflectionNone,
-	ReflectionMetal,
-	ReflectionMirror,
-	ReflectionCubeMapStatic,
-	ReflectionCubeMapDynamical
+	REFLECTION_NONE,
+	REFLECTION_METAL,
+	REFLECTION_MIRROR,
+	REFLECTION_CUBE_MAP_STATIC,
+	REFLECTION_CUBE_MAP_DYNAMIC
 };
 
 

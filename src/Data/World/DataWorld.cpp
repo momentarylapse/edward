@@ -355,7 +355,7 @@ void DataWorld::MetaData::Reset()
 	ScriptVar.resize(32);
 
 	FogEnabled = false;
-	FogMode = FogExp;
+	FogMode = FOG_EXP;
 	FogStart = 1;
 	FogEnd = 1000;
 	FogDensity = 0.0001f;

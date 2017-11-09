@@ -77,27 +77,27 @@ void MaterialPropertiesDialog::LoadData()
 	setColor("mat_em", temp.emissive);
 	setFloat("mat_shininess", temp.shininess);
 
-	if (temp.transparency_mode == TransparencyModeColorKeySmooth)
+	if (temp.transparency_mode == TRANSPARENCY_COLOR_KEY_SMOOTH)
 		check("transparency_mode:color_key", true);
-	else if (temp.transparency_mode == TransparencyModeColorKeyHard)
+	else if (temp.transparency_mode == TRANSPARENCY_COLOR_KEY_HARD)
 		check("transparency_mode:color_key", true);
-	else if (temp.transparency_mode == TransparencyModeFactor)
+	else if (temp.transparency_mode == TRANSPARENCY_FACTOR)
 		check("transparency_mode:factor", true);
-	else if (temp.transparency_mode == TransparencyModeFunctions)
+	else if (temp.transparency_mode == TRANSPARENCY_FUNCTIONS)
 		check("transparency_mode:function", true);
 	else
 		check("transparency_mode:none", true);
-	enable("alpha_factor", temp.transparency_mode == TransparencyModeFactor);
-	enable("alpha_source", temp.transparency_mode == TransparencyModeFunctions);
-	enable("alpha_dest", temp.transparency_mode == TransparencyModeFunctions);
+	enable("alpha_factor", temp.transparency_mode == TRANSPARENCY_FACTOR);
+	enable("alpha_source", temp.transparency_mode == TRANSPARENCY_FUNCTIONS);
+	enable("alpha_dest", temp.transparency_mode == TRANSPARENCY_FUNCTIONS);
 	setFloat("alpha_factor", temp.alpha_factor * 100.0f);
 	check("alpha_z_buffer", temp.alpha_z_buffer);
 	setInt("alpha_source", temp.alpha_source);
 	setInt("alpha_dest", temp.alpha_destination);
 
-	if (temp.reflection_mode == ReflectionCubeMapStatic)
+	if (temp.reflection_mode == REFLECTION_CUBE_MAP_STATIC)
 		check("reflection_mode:cube_static", true);
-	else if (temp.reflection_mode == ReflectionCubeMapDynamical)
+	else if (temp.reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC)
 		check("reflection_mode:cube_dynamic", true);
 	else
 		check("reflection_mode:none", true);
@@ -111,9 +111,9 @@ void MaterialPropertiesDialog::LoadData()
 		setInt("reflection_size", 0);
 	setInt("reflection_density", temp.reflection_density);
 	RefillReflTexView();
-	enable("reflection_size", ((temp.reflection_mode == ReflectionCubeMapStatic) or (temp.reflection_mode == ReflectionCubeMapDynamical)));
-	enable("reflection_textures", (temp.reflection_mode == ReflectionCubeMapStatic));
-	enable("reflection_density", (temp.reflection_mode != ReflectionNone));
+	enable("reflection_size", ((temp.reflection_mode == REFLECTION_CUBE_MAP_STATIC) or (temp.reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC)));
+	enable("reflection_textures", (temp.reflection_mode == REFLECTION_CUBE_MAP_STATIC));
+	enable("reflection_density", (temp.reflection_mode != REFLECTION_NONE));
 	setString("shader_file", temp.shader_file);
 
 
@@ -187,30 +187,30 @@ void MaterialPropertiesDialog::OnEmptyTextureLevel()
 void MaterialPropertiesDialog::OnTransparencyMode()
 {
 	if (isChecked("transparency_mode:function"))
-		temp.transparency_mode = TransparencyModeFunctions;
+		temp.transparency_mode = TRANSPARENCY_FUNCTIONS;
 	else if (isChecked("transparency_mode:color_key"))
-		temp.transparency_mode = TransparencyModeColorKeyHard;
+		temp.transparency_mode = TRANSPARENCY_COLOR_KEY_HARD;
 	else if (isChecked("transparency_mode:factor"))
-		temp.transparency_mode = TransparencyModeFactor;
+		temp.transparency_mode = TRANSPARENCY_FACTOR;
 	else
-		temp.transparency_mode = TransparencyModeNone;
-	enable("alpha_factor", temp.transparency_mode == TransparencyModeFactor);
-	enable("alpha_source", temp.transparency_mode == TransparencyModeFunctions);
-	enable("alpha_dest", temp.transparency_mode == TransparencyModeFunctions);
+		temp.transparency_mode = TRANSPARENCY_NONE;
+	enable("alpha_factor", temp.transparency_mode == TRANSPARENCY_FACTOR);
+	enable("alpha_source", temp.transparency_mode == TRANSPARENCY_FUNCTIONS);
+	enable("alpha_dest", temp.transparency_mode == TRANSPARENCY_FUNCTIONS);
 	ApplyData();
 }
 
 void MaterialPropertiesDialog::OnReflectionMode()
 {
 	if (isChecked("reflection_mode:cube_static"))
-		temp.reflection_mode = ReflectionCubeMapStatic;
+		temp.reflection_mode = REFLECTION_CUBE_MAP_STATIC;
 	else if (isChecked("reflection_mode:cube_dynamic"))
-		temp.reflection_mode = ReflectionCubeMapDynamical;
+		temp.reflection_mode = REFLECTION_CUBE_MAP_DYNAMIC;
 	else
-		temp.reflection_mode = ReflectionNone;
-	enable("reflection_size", ((temp.reflection_mode == ReflectionCubeMapStatic) or (temp.reflection_mode == ReflectionCubeMapDynamical)));
-	enable("reflection_textures", (temp.reflection_mode == ReflectionCubeMapStatic));
-	enable("reflection_density", (temp.reflection_mode != ReflectionNone));
+		temp.reflection_mode = REFLECTION_NONE;
+	enable("reflection_size", ((temp.reflection_mode == REFLECTION_CUBE_MAP_STATIC) or (temp.reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC)));
+	enable("reflection_textures", (temp.reflection_mode == REFLECTION_CUBE_MAP_STATIC));
+	enable("reflection_density", (temp.reflection_mode != REFLECTION_NONE));
 	ApplyData();
 }
 

@@ -175,14 +175,14 @@ bool DataMaterial::load(const string & _filename, bool deep)
 		f->ReadComment();
 		int MetalDensity = f->ReadInt();
 		if (MetalDensity > 0){
-			appearance.reflection_mode = ReflectionMetal;
+			appearance.reflection_mode = REFLECTION_METAL;
 			appearance.reflection_density = (float)MetalDensity;
 		}
 		f->ReadInt();
 		f->ReadInt();
 		bool Mirror = f->ReadBool();
 		if (Mirror)
-			appearance.reflection_mode = ReflectionMirror;
+			appearance.reflection_mode = REFLECTION_MIRROR;
 		f->ReadBool();
 		// ShaderFile
 		f->ReadComment();
@@ -198,7 +198,7 @@ bool DataMaterial::load(const string & _filename, bool deep)
 		physics.vmin_jump = (float)f->ReadInt() * 0.001f;
 		physics.vmin_sliding = (float)f->ReadInt() * 0.001f;
 
-		appearance.alpha_z_buffer=(appearance.transparency_mode!=TransparencyModeFunctions)and(appearance.transparency_mode!=TransparencyModeFactor);
+		appearance.alpha_z_buffer=(appearance.transparency_mode != TRANSPARENCY_FUNCTIONS) and (appearance.transparency_mode != TRANSPARENCY_FACTOR);
 	}else if (ffv==1){
 		// Colors
 		f->ReadComment();
@@ -217,22 +217,22 @@ bool DataMaterial::load(const string & _filename, bool deep)
 		f->ReadComment();
 		int MetalDensity = f->ReadInt();
 		if (MetalDensity > 0){
-			appearance.reflection_mode = ReflectionMetal;
+			appearance.reflection_mode = REFLECTION_METAL;
 			appearance.reflection_density = (float)MetalDensity;
 		}
 		f->ReadInt();
 		f->ReadInt();
-		appearance.reflection_mode = (f->ReadBool() ? ReflectionMirror : ReflectionNone);
+		appearance.reflection_mode = (f->ReadBool() ? REFLECTION_MIRROR : REFLECTION_NONE);
 		bool Mirror = f->ReadBool();
 		if (Mirror)
-			appearance.reflection_mode = ReflectionMirror;
+			appearance.reflection_mode = REFLECTION_MIRROR;
 		// ShaderFile
 		f->ReadComment();
 		string sf = f->ReadStr();
 		if (sf.num > 0)
 			appearance.shader_file = sf + ".fx.glsl";
 
-		appearance.alpha_z_buffer = (appearance.transparency_mode != TransparencyModeFunctions) and (appearance.transparency_mode != TransparencyModeFactor);
+		appearance.alpha_z_buffer = (appearance.transparency_mode != TRANSPARENCY_FUNCTIONS) and (appearance.transparency_mode != TRANSPARENCY_FACTOR);
 	}else{
 		ed->errorBox(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 1, 4));
 		error = true;
@@ -262,12 +262,12 @@ void DataMaterial::AppearanceData::reset()
 	shininess = 20;
 	emissive = Black;
 
-	transparency_mode = TransparencyModeNone;
+	transparency_mode = TRANSPARENCY_NONE;
 	alpha_source = alpha_destination = 0;
 	alpha_factor = 0.5f;
 	alpha_z_buffer = true;
 
-	reflection_mode = ReflectionNone;
+	reflection_mode = REFLECTION_NONE;
 	reflection_density = 0;
 	reflection_size = 128;
 	for (int i=0;i<6;i++)
@@ -323,16 +323,16 @@ void DataMaterial::ApplyForRendering()
 {
 	nix::SetMaterial(appearance.ambient, appearance.diffuse, appearance.specular, appearance.shininess, appearance.emissive);
 
-	nix::SetAlpha(AlphaNone);
+	nix::SetAlpha(ALPHA_NONE);
 	nix::SetZ(true, true);
-	if (appearance.transparency_mode == TransparencyModeColorKeyHard){
-		nix::SetAlpha(AlphaColorKeyHard);
-	}else if (appearance.transparency_mode == TransparencyModeColorKeySmooth){
-		nix::SetAlpha(AlphaColorKeySmooth);
-	}else if (appearance.transparency_mode == TransparencyModeFunctions){
+	if (appearance.transparency_mode == TRANSPARENCY_COLOR_KEY_HARD){
+		nix::SetAlpha(ALPHA_COLOR_KEY_HARD);
+	}else if (appearance.transparency_mode == TRANSPARENCY_COLOR_KEY_SMOOTH){
+		nix::SetAlpha(ALPHA_COLOR_KEY_SMOOTH);
+	}else if (appearance.transparency_mode == TRANSPARENCY_FUNCTIONS){
 		nix::SetAlpha(appearance.alpha_source, appearance.alpha_destination);
 		nix::SetZ(false, false);
-	}else if (appearance.transparency_mode == TransparencyModeFactor){
+	}else if (appearance.transparency_mode == TRANSPARENCY_FACTOR){
 		nix::SetAlpha(appearance.alpha_factor);
 		nix::SetZ(false, false);
 	}
@@ -366,10 +366,10 @@ void DataMaterial::UpdateTextures()
 	appearance.textures.clear();
 	for (string &tf: appearance.texture_files)
 		appearance.textures.add(nix::LoadTexture(tf));
-	if (appearance.reflection_mode == ReflectionCubeMapDynamical){
+	if (appearance.reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC){
 		create_fake_dynamic_cube_map(appearance.cube_map);
 		appearance.textures.add(appearance.cube_map);
-	}else if (appearance.reflection_mode == ReflectionCubeMapStatic){
+	}else if (appearance.reflection_mode == REFLECTION_CUBE_MAP_STATIC){
 		for (int i=0;i<6;i++)
 			appearance.cube_map->fill_side(i, nix::LoadTexture(appearance.reflection_texture_file[i]));
 		appearance.textures.add(appearance.cube_map);

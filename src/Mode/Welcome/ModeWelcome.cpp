@@ -107,7 +107,6 @@ void ModeWelcome::onUpdate(Observable *o, const string &message)
 
 void ModeWelcome::DrawIcon(int x, int y, int index, int pic_index, const string &name)
 {
-	msg_db_f("DrawIcon", 2);
 	rect s,d;
 	y+=30;
 	float rad=25;
@@ -122,12 +121,12 @@ void ModeWelcome::DrawIcon(int x, int y, int index, int pic_index, const string 
 	d.x2=(float)x+rad;
 	d.y1=(float)y-rad;
 	d.y2=(float)y+rad;
-	nix::SetAlpha(AlphaMaterial);
+	nix::SetAlpha(ALPHA_MATERIAL);
 	nix::SetTexture(tex_icons);
 	nix::SetColor(color((mouse_over==index)?0.3f:0.99f,1,1,1));
 	nix::Draw2D(s, d, 0);
 	nix::SetTexture(NULL);
-	nix::SetAlpha(AlphaNone);
+	nix::SetAlpha(ALPHA_NONE);
 
 	x-=15;
 	nix::SetColor(color(1,0.6f,0.6f,0.6f));
@@ -153,7 +152,6 @@ void ModeWelcome::DrawIcon(int x, int y, int index, int pic_index, const string 
 
 void ModeWelcome::onDraw()
 {
-	msg_db_f("Welcome.Draw", 1);
 	nix::SetColor(Black);
 	nix::Draw2D(r_id, nix::target_rect, 0.999999f);
 	// logo

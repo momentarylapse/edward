@@ -1660,7 +1660,7 @@ void Model::Draw(int detail, bool set_fx, bool allow_shadow)
 		// finally... really draw!!!
 		JustDraw(i, detail);
 		//NixSetShader(-1);
-		nix::SetAlpha(AlphaNone);
+		nix::SetAlpha(ALPHA_NONE);
 	}
 }
 

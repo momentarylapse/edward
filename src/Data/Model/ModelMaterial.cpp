@@ -35,30 +35,27 @@ ModelMaterial::~ModelMaterial()
 
 void ModelMaterial::reset()
 {
+	// file
+	material_file = "";
+	material = LoadMaterial("");
+
+	// color
+	user_color = false;
+	checkColors();
+
 	// transparency
 	user_transparency = false;
-	transparency_mode = TransparencyModeDefault;
+	checkTransparency();
+	transparency_mode = TRANSPARENCY_DEFAULT;
 	alpha_destination = 0;
 	alpha_source = 0;
 	alpha_factor = 50;
 	alpha_zbuffer = true;
 
-	// color
-	user_color = false;
-	ambient = White;
-	diffuse = White;
-	specular = Black;
-	emission = Black;
-	shininess = 20;
-
-	// file
-	material_file = "";
-	material = LoadMaterial("");
-
 	// textures
-	textures = NULL;
 	texture_files.clear();
 	texture_files.add("");
+	textures = NULL;
 
 	if (vb)
 		delete(vb);
@@ -92,7 +89,7 @@ void ModelMaterial::makeConsistent()
 {
 	material = LoadMaterial(material_file);
 
-	if (material->reflection_mode == ReflectionCubeMapDynamical){
+	if (material->reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC){
 		if (!material->cube_map)
 			material->cube_map = new nix::CubeMap(material->cube_map_size);
 		create_fake_dynamic_cube_map(material->cube_map);
@@ -105,7 +102,7 @@ void ModelMaterial::makeConsistent()
 
 void ModelMaterial::checkTransparency()
 {
-	if (transparency_mode == TransparencyModeDefault)
+	if (transparency_mode == TRANSPARENCY_DEFAULT)
 		user_transparency = false;
 	if (!user_transparency){
 		transparency_mode = material->transparency_mode;
@@ -151,20 +148,20 @@ void ModelMaterial::checkColors()
 
 void ModelMaterial::applyForRendering()
 {
-	nix::SetAlpha(AlphaNone);
+	nix::SetAlpha(ALPHA_NONE);
 	nix::SetShader(nix::default_shader_3d);
 	color em = ColorInterpolate(emission, White, 0.1f);
 	nix::SetMaterial(ambient, diffuse, specular, shininess, em);
 	if (true){//MVFXEnabled){
 		nix::SetZ(alpha_zbuffer, alpha_zbuffer);
-		if (transparency_mode == TransparencyModeColorKeyHard)
-			nix::SetAlpha(AlphaColorKeyHard);
-		else if (transparency_mode == TransparencyModeColorKeySmooth)
-			nix::SetAlpha(AlphaColorKeySmooth);
-		else if (transparency_mode == TransparencyModeFunctions){
+		if (transparency_mode == TRANSPARENCY_COLOR_KEY_HARD)
+			nix::SetAlpha(ALPHA_COLOR_KEY_HARD);
+		else if (transparency_mode == TRANSPARENCY_COLOR_KEY_SMOOTH)
+			nix::SetAlpha(ALPHA_COLOR_KEY_SMOOTH);
+		else if (transparency_mode == TRANSPARENCY_FUNCTIONS){
 			nix::SetAlpha(alpha_source, alpha_destination);
 			//NixSetZ(false,false);
-		}else if (transparency_mode == TransparencyModeFactor){
+		}else if (transparency_mode == TRANSPARENCY_FACTOR){
 			nix::SetAlpha(alpha_factor);
 			//NixSetZ(false,false);
 		}

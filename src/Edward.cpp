@@ -596,14 +596,14 @@ void Edward::drawStr(int x, int y, const string &str, AlignType a)
 	else if (a == ALIGN_CENTER)
 		x -= w / 2;
 	nix::SetTexture(NULL);
-	nix::SetAlpha(AlphaMaterial);
+	nix::SetAlpha(ALPHA_MATERIAL);
 	color c = nix::GetColor();
 	nix::SetColor(color(0.5f,0.8f,0.8f,0.8f));
 	nix::DrawRect(float(x), float(x+w), float(y), float(y+20), 0);
 	nix::SetColor(c);
-	nix::SetAlpha(AlphaSourceAlpha, AlphaSourceInvAlpha);
+	nix::SetAlpha(ALPHA_SOURCE_ALPHA, ALPHA_SOURCE_INV_ALPHA);
 	nix::DrawStr(x, y, str);
-	nix::SetAlpha(AlphaNone);
+	nix::SetAlpha(ALPHA_NONE);
 }
 
 void Edward::onDraw()

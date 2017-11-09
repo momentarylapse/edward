@@ -17,7 +17,6 @@ void _cdecl SetLightDirectional(int index, const vector &dir, const color &diffu
 void _cdecl EnableLight(int index, bool enabled);
 void _cdecl SetAmbientLight(const color &c);
 void _cdecl SetMaterial(const color &ambient, const color &diffuse, const color &specular, float shininess, const color &emission);
-void _cdecl SpecularEnable(bool enabled);
 
 
 

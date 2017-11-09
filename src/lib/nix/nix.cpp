@@ -173,11 +173,10 @@ void Init(const string &api, int width, int height)
 
 	SetCull(CULL_DEFAULT);
 	SetWire(false);
-	SetAlpha(AlphaNone);
+	SetAlpha(ALPHA_NONE);
 	nix::EnableLighting(false);
 	nix::SetMaterial(White, White, White, 0, color(0.1f, 0.1f, 0.1f, 0.1f));
 	nix::SetAmbientLight(Black);
-	nix::SpecularEnable(false);
 	CullingInverted = false;
 	SetProjectionPerspective();
 	SetZ(true, true);
@@ -307,12 +306,12 @@ void SetAlpha(int mode)
 {
 	//glDisable(GL_ALPHA_TEST);
 	switch (mode){
-		case AlphaNone:
+		case ALPHA_NONE:
 			glDisable(GL_BLEND);
 			TestGLError("SetAlpha b");
 			break;
-		case AlphaColorKey:
-		case AlphaColorKeyHard:
+		case ALPHA_COLOR_KEY_HARD:
+		case ALPHA_COLOR_KEY_SMOOTH:
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 			/*glEnable(GL_ALPHA_TEST);
@@ -321,7 +320,7 @@ void SetAlpha(int mode)
 			else
 				glAlphaFunc(GL_GEQUAL,0.04f);*/
 			break;
-		case AlphaMaterial:
+		case ALPHA_MATERIAL:
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 			break;
@@ -334,16 +333,26 @@ void SetAlphaM(int mode)
 
 unsigned int OGLGetAlphaMode(int mode)
 {
-	if (mode==AlphaZero)			return GL_ZERO;
-	if (mode==AlphaOne)				return GL_ONE;
-	if (mode==AlphaSourceColor)		return GL_SRC_COLOR;
-	if (mode==AlphaSourceInvColor)	return GL_ONE_MINUS_SRC_COLOR;
-	if (mode==AlphaSourceAlpha)		return GL_SRC_ALPHA;
-	if (mode==AlphaSourceInvAlpha)	return GL_ONE_MINUS_SRC_ALPHA;
-	if (mode==AlphaDestColor)		return GL_DST_COLOR;
-	if (mode==AlphaDestInvColor)	return GL_ONE_MINUS_DST_COLOR;
-	if (mode==AlphaDestAlpha)		return GL_DST_ALPHA;
-	if (mode==AlphaDestInvAlpha)	return GL_ONE_MINUS_DST_ALPHA;
+	if (mode == ALPHA_ZERO)
+		return GL_ZERO;
+	if (mode == ALPHA_ONE)
+		return GL_ONE;
+	if (mode == ALPHA_SOURCE_COLOR)
+		return GL_SRC_COLOR;
+	if (mode == ALPHA_SOURCE_INV_COLOR)
+		return GL_ONE_MINUS_SRC_COLOR;
+	if (mode == ALPHA_SOURCE_ALPHA)
+		return GL_SRC_ALPHA;
+	if (mode == ALPHA_SOURCE_INV_ALPHA)
+		return GL_ONE_MINUS_SRC_ALPHA;
+	if (mode == ALPHA_DEST_COLOR)
+		return GL_DST_COLOR;
+	if (mode == ALPHA_DEST_INV_COLOR)
+		return GL_ONE_MINUS_DST_COLOR;
+	if (mode == ALPHA_DEST_ALPHA)
+		return GL_DST_ALPHA;
+	if (mode == ALPHA_DEST_INV_ALPHA)
+		return GL_ONE_MINUS_DST_ALPHA;
 	// GL_SRC_ALPHA_SATURATE
 	return GL_ZERO;
 }
@@ -372,38 +381,38 @@ void SetAlpha(float factor)
 	TestGLError("SetAlphaF");*/
 }
 
-void SetStencil(int mode,unsigned long param)
+void SetStencil(int mode, unsigned long param)
 {
 	glStencilMask(0xffffffff);
 	
-	if (mode==StencilNone){
+	if (mode == STENCIL_NONE){
 		glDisable(GL_STENCIL_TEST);
-	}else if (mode==StencilReset){
+	}else if (mode == STENCIL_RESET){
 		glClearStencil(param);
 		glClear(GL_STENCIL_BUFFER_BIT);
-	}else if ((mode==StencilIncrease)||(mode==StencilDecrease)||(mode==StencilDecreaseNotNegative)||(mode==StencilSet)){
+	}else if ((mode == STENCIL_INCREASE) or (mode == STENCIL_DECREASE) or (mode == STENCIL_DECREASE_NOT_NEGATIVE) or (mode == STENCIL_SET)){
 		glEnable(GL_STENCIL_TEST);
 		glStencilFunc(GL_ALWAYS,param,0xffffffff);
-		if (mode==StencilIncrease)
+		if (mode == STENCIL_INCREASE)
 			glStencilOp(GL_KEEP,GL_KEEP,GL_INCR);
-		else if ((mode==StencilDecrease)||(mode==StencilDecreaseNotNegative))
+		else if ((mode == STENCIL_DECREASE) or (mode == STENCIL_DECREASE_NOT_NEGATIVE))
 			glStencilOp(GL_KEEP,GL_KEEP,GL_DECR);
-		else if (mode==StencilSet)
+		else if (mode == STENCIL_SET)
 			glStencilOp(GL_KEEP,GL_KEEP,GL_REPLACE);
-	}else if ((mode==StencilMaskEqual)||(mode==StencilMaskNotEqual)||(mode==StencilMaskLessEqual)||(mode==StencilMaskLess)||(mode==StencilMaskGreaterEqual)||(mode==StencilMaskGreater)){
+	}else if ((mode == STENCIL_MASK_EQUAL) or (mode == STENCIL_MASK_NOT_EQUAL) or (mode == STENCIL_MASK_LESS_EQUAL) or (mode == STENCIL_MASK_LESS) or (mode == STENCIL_MASK_GREATER_EQUAL) or (mode == STENCIL_MASK_GREATER)){
 		glEnable(GL_STENCIL_TEST);
 		glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
-		if (mode==StencilMaskEqual)
+		if (mode == STENCIL_MASK_EQUAL)
 			glStencilFunc(GL_EQUAL,param,0xffffffff);
-		else if (mode==StencilMaskNotEqual)
+		else if (mode == STENCIL_MASK_NOT_EQUAL)
 			glStencilFunc(GL_NOTEQUAL,param,0xffffffff);
-		else if (mode==StencilMaskLessEqual)
+		else if (mode == STENCIL_MASK_LESS_EQUAL)
 			glStencilFunc(GL_LEQUAL,param,0xffffffff);
-		else if (mode==StencilMaskLess)
+		else if (mode == STENCIL_MASK_LESS)
 			glStencilFunc(GL_LESS,param,0xffffffff);
-		else if (mode==StencilMaskGreaterEqual)
+		else if (mode == STENCIL_MASK_GREATER_EQUAL)
 			glStencilFunc(GL_GEQUAL,param,0xffffffff);
-		else if (mode==StencilMaskGreater)
+		else if (mode == STENCIL_MASK_GREATER)
 			glStencilFunc(GL_GREATER,param,0xffffffff);
 	}
 	TestGLError("SetStencil");

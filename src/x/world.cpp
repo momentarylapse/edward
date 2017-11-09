@@ -237,7 +237,7 @@ void GodReset()
 	// initial data for empty world...
 	World.ambient = color(1,0.4f,0.4f,0.4f);
 	World.fog._color = White;
-	World.fog.mode = FogExp;
+	World.fog.mode = FOG_EXP;
 	World.fog.density = 0.001f;
 	World.fog.enabled = false;
 	World.fog.start = 0;

@@ -51,10 +51,9 @@ void _cdecl SetAlpha(int src,int dst);
 void _cdecl SetAlpha(float factor);
 void _cdecl SetAlphaM(int mode);
 void _cdecl SetAlphaSD(int src,int dst);
-void _cdecl SetFog(int mode,float start,float end,float density,const color &c);
+void _cdecl SetFog(int mode, float start, float end, float density, const color &c);
 void _cdecl EnableFog(bool enabled);
 void _cdecl SetStencil(int mode,unsigned long param=0);
-void _cdecl SetShading(int mode);
 void _cdecl SetOffset(float offset);
 
 

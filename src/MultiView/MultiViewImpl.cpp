@@ -690,7 +690,7 @@ void MultiViewImpl::SelectionRect::end()
 void MultiViewImpl::SelectionRect::draw(const vector &m)
 {
 	nix::SetZ(false, false);
-	nix::SetAlphaM(AlphaMaterial);
+	nix::SetAlphaM(ALPHA_MATERIAL);
 	nix::SetTexture(NULL);
 	nix::SetColor(ColorSelectionRect);
 	nix::SetCull(CULL_NONE);
@@ -701,7 +701,7 @@ void MultiViewImpl::SelectionRect::draw(const vector &m)
 	nix::DrawLineV(m.x	,pos0.y	,m.y	,0);
 	nix::DrawLineH(pos0.x	,m.x	,pos0.y	,0);
 	nix::DrawLineH(pos0.x	,m.x	,m.y	,0);
-	nix::SetAlphaM(AlphaNone);
+	nix::SetAlphaM(ALPHA_NONE);
 	nix::SetZ(true, true);
 }
 

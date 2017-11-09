@@ -87,6 +87,7 @@ void ModelEffect::clear()
 DataModel::DataModel() :
 	Data(FD_MODEL)
 {
+	radius = 100;
 }
 
 DataModel::~DataModel()
@@ -142,6 +143,9 @@ void DataModel::reset()
 	fx.clear();
 	material.resize(1);
 	material[0].reset();
+	material[0].user_color = true;
+	material[0].diffuse = color(1, 0.2f, 0.4f, 0.6f);
+	material[0].specular = color(1, 0.4f, 0.6f, 0.8f);
 	showVertices(vertex);
 
 	// skeleton

@@ -84,17 +84,6 @@ void SetAmbientLight(const color &c)
 	TestGLError("SetAmbient");
 }
 
-
-void SetShading(int mode)
-{
-	return;
-	if (mode==ShadingPlane)
-		glShadeModel(GL_FLAT);
-	if (mode==ShadingRound)
-		glShadeModel(GL_SMOOTH);
-	TestGLError("SetShading");
-}
-
 void SetMaterial(const color &ambient,const color &diffuse,const color &specular,float shininess,const color &emission)
 {
 	material.ambient = ambient;
@@ -102,10 +91,6 @@ void SetMaterial(const color &ambient,const color &diffuse,const color &specular
 	material.specular = specular;
 	material.shininess = shininess;
 	material.emission = emission;
-}
-
-void SpecularEnable(bool enabled)
-{
 }
 
 

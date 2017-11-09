@@ -12,27 +12,27 @@ color file_read_color4i(File *f); // -> model.cpp
 string MaterialDir;
 
 // materials
-static Array<Material*> Materials;
+static Array<Material*> materials;
 
 void MaterialInit()
 {
 	// create the default material
 	Material *m = new Material;
 	m->name = "-default-";
-	Materials.add(m);
+	materials.add(m);
 }
 
 void MaterialEnd()
 {
-	delete(Materials[0]);
+	delete(materials[0]);
 }
 
 void MaterialReset()
 {
 	// delete materials
-	for (int i=1;i<Materials.num;i++)
-		delete(Materials[i]);
-	Materials.resize(1);
+	for (int i=1;i<materials.num;i++)
+		delete(materials[i]);
+	materials.resize(1);
 }
 
 
@@ -46,16 +46,19 @@ Material::Material()
 	ambient = White;
 	diffuse = White;
 	specular = Black;
-	shininess = 0;
+	shininess = 20;
 	emission = Black;
-	transparency_mode = TransparencyModeNone;
+
+	transparency_mode = TRANSPARENCY_NONE;
 	alpha_source = 0;
 	alpha_destination = 0;
 	alpha_factor = 1;
 	alpha_z_buffer = true;
-	reflection_mode = ReflectionNone;
+
+	reflection_mode = REFLECTION_NONE;
 	reflection_density = 0;
 	cube_map_size = 0;
+
 	rc_jump = 0.5f;
 	rc_static = 0.8f;
 	rc_sliding = 0.4f;
@@ -69,28 +72,24 @@ Material::~Material()
 
 
 static bool _alpha_enabled_ = false;
-static bool _shader_prog_used_ = false;
 
 void Material::apply()
 {
 	nix::SetMaterial(ambient, diffuse, specular, shininess, emission);
-	if ((shader >= 0) || (_shader_prog_used_)){
-		nix::SetShader(shader);
-		_shader_prog_used_ = (shader >= 0);
-	}
+	nix::SetShader(shader);
 
 	if (transparency_mode > 0){
-		if (transparency_mode == TransparencyModeFunctions)
+		if (transparency_mode == TRANSPARENCY_FUNCTIONS)
 			nix::SetAlpha(alpha_source, alpha_destination);
-		else if (transparency_mode == TransparencyModeFactor)
+		else if (transparency_mode == TRANSPARENCY_FACTOR)
 			nix::SetAlpha(alpha_factor);
-		else if (transparency_mode == TransparencyModeColorKeyHard)
-			nix::SetAlpha(AlphaColorKeyHard);
-		else if (transparency_mode == TransparencyModeColorKeySmooth)
-			nix::SetAlpha(AlphaColorKeySmooth);
+		else if (transparency_mode == TRANSPARENCY_COLOR_KEY_HARD)
+			nix::SetAlpha(ALPHA_COLOR_KEY_HARD);
+		else if (transparency_mode == TRANSPARENCY_COLOR_KEY_SMOOTH)
+			nix::SetAlpha(ALPHA_COLOR_KEY_SMOOTH);
 		_alpha_enabled_ = true;
 	}else if (_alpha_enabled_){
-		nix::SetAlpha(AlphaNone);
+		nix::SetAlpha(ALPHA_NONE);
 		_alpha_enabled_ = false;
 	}
 	if (cube_map){
@@ -116,7 +115,7 @@ void Material::copy_from(Model *model, Material *m2, bool user_colors)
 	for (int i=0;i<nt;i++)
 		if (!textures[i])
 			textures[i] = m2->textures[i];
-	if (transparency_mode == TransparencyModeDefault){
+	if (transparency_mode == TRANSPARENCY_DEFAULT){
 		transparency_mode = m2->transparency_mode;
 		alpha_source = m2->alpha_source;
 		alpha_destination = m2->alpha_destination;
@@ -126,7 +125,7 @@ void Material::copy_from(Model *model, Material *m2, bool user_colors)
 	reflection_mode = m2->reflection_mode;
 	reflection_density = m2->reflection_density;
 	cube_map = m2->cube_map;
-/*	if ((cube_map < 0) && (m2->cube_map_size > 0) && (reflection_mode == ReflectionCubeMapDynamical)){
+/*	if ((cube_map < 0) and (m2->cube_map_size > 0) and (reflection_mode == ReflectionCubeMapDynamical)){
 		cube_map = FxCubeMapNew(m2->cube_map_size);
 		FxCubeMapCreate(cube_map, model);
 	}*/
@@ -142,12 +141,12 @@ Material *LoadMaterial(const string &filename, bool as_default)
 {
 	// an empty name loads the default material
 	if (filename.num == 0)
-		return Materials[0];
+		return materials[0];
 
 	if (!as_default){
-		for (int i=0;i<Materials.num;i++)
-			if (Materials[i]->name == filename)
-				return Materials[i];
+		for (int i=0;i<materials.num;i++)
+			if (materials[i]->name == filename)
+				return materials[i];
 	}
 	File *f = FileOpen(MaterialDir + filename + ".material");
 	if (!f){
@@ -155,7 +154,7 @@ Material *LoadMaterial(const string &filename, bool as_default)
 	if (Engine.FileErrorsAreCritical)
 		return NULL;
 #endif
-		return Materials[0];
+		return materials[0];
 	}
 	Material *m = new Material;
 
@@ -198,10 +197,10 @@ Material *LoadMaterial(const string &filename, bool as_default)
 		nix::Texture *cmt[6];
 		for (int i=0;i<6;i++)
 			cmt[i] = nix::LoadTexture(f->ReadStr());
-		if (m->reflection_mode == ReflectionCubeMapDynamical){
+		if (m->reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC){
 			//m->cube_map = FxCubeMapNew(m->cube_map_size);
 			//FxCubeMapCreate(m->cube_map,cmt[0],cmt[1],cmt[2],cmt[3],cmt[4],cmt[5]);
-		}else if (m->reflection_mode == ReflectionCubeMapStatic){
+		}else if (m->reflection_mode == REFLECTION_CUBE_MAP_STATIC){
 			m->cube_map = new nix::CubeMap(m->cube_map_size);
 			for (int i=0;i<6;i++)
 				m->cube_map->fill_side(i, cmt[i]);
@@ -217,10 +216,10 @@ Material *LoadMaterial(const string &filename, bool as_default)
 		m->rc_sliding = (float)f->ReadInt() * 0.001f;
 		m->rc_rolling = (float)f->ReadInt() * 0.001f;
 
-		Materials.add(m);
+		materials.add(m);
 	}else{
 		msg_error(format("wrong file format: %d (expected: 4)", ffv));
-		m = Materials[0];
+		m = materials[0];
 	}
 	FileClose(f);
 	return m;

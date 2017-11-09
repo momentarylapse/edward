@@ -252,7 +252,7 @@ void AdminFile::check(AdminFileList &list)
 		if (m.load(MaterialDir + Name,false)){
 			Time = m.file_time;
 			add_possible_link(l, FD_SHADERFILE, m.appearance.shader_file);
-			if (m.appearance.reflection_mode==ReflectionCubeMapStatic)
+			if (m.appearance.reflection_mode == REFLECTION_CUBE_MAP_STATIC)
 				for (int i=0;i<6;i++)
 					add_possible_link(l, FD_TEXTURE, m.appearance.reflection_texture_file[i]);
 			for (string &tf: m.appearance.texture_files)

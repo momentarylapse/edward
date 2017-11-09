@@ -154,8 +154,7 @@ float _cdecl Font::drawStr(float x, float y, float z, float _height, const strin
 	msg_db_f("XFDrawStr",10);
 	if (centric)
 		x -= getWidth(_height, str) / 2;
-	nix::SetAlpha(AlphaSourceAlpha,AlphaSourceInvAlpha);
-		//NixSetAlpha(AlphaMaterial);
+	nix::SetAlpha(ALPHA_SOURCE_ALPHA, ALPHA_SOURCE_INV_ALPHA);
 	nix::SetTexture(texture);
 	float xf=_height*x_factor * 1.33f;
 	float yf=_height*y_factor;
@@ -179,7 +178,7 @@ float _cdecl Font::drawStr(float x, float y, float z, float _height, const strin
 		nix::Draw2D(glyph[n].src, d, z);
 		w += glyph[n].dx * xf;
 	}
-	nix::SetAlpha(AlphaNone);
+	nix::SetAlpha(ALPHA_NONE);
 	return w;
 }
 
@@ -187,7 +186,7 @@ float _cdecl Font::drawStr(float x, float y, float z, float _height, const strin
 float _cdecl Font::drawStrVert(float x, float y, float z, float _height, const string &str)
 {
 	msg_db_f("XFDrawVertStr",10);
-	nix::SetAlpha(AlphaSourceAlpha,AlphaSourceInvAlpha);
+	nix::SetAlpha(ALPHA_SOURCE_ALPHA, ALPHA_SOURCE_INV_ALPHA);
 	nix::SetTexture(texture);
 	float xf=_height*x_factor;
 	float yf=_height*y_factor;
@@ -207,7 +206,7 @@ float _cdecl Font::drawStrVert(float x, float y, float z, float _height, const s
 		nix::Draw2D(glyph[n].src, d, z);
 		y+=yf*0.8f;
 	}
-	nix::SetAlpha(AlphaNone);
+	nix::SetAlpha(ALPHA_NONE);
 	return 0;
 }
 

@@ -254,11 +254,11 @@ void WorldPropertiesDialog::ApplyData()
 	temp.BackGroundColor = getColor("bgc");
 	temp.FogEnabled = !isChecked("fog_mode:none");
 	if (isChecked("fog_mode:linear"))
-		temp.FogMode = FogLinear;
+		temp.FogMode = FOG_LINEAR;
 	else if (isChecked("fog_mode:exp"))
-		temp.FogMode = FogExp;
+		temp.FogMode = FOG_EXP;
 	else if (isChecked("fog_mode:exp2"))
-		temp.FogMode = FogExp2;
+		temp.FogMode = FOG_EXP2;
 	temp.FogStart = getFloat("fog_start");
 	temp.FogEnd = getFloat("fog_end");
 	temp.FogDensity = 1.0f / getFloat("fog_distance");
@@ -304,11 +304,11 @@ void WorldPropertiesDialog::LoadData()
 	setDecimals(WorldFogDec);
 	setColor("bgc", temp.BackGroundColor);
 	if (temp.FogEnabled){
-		if (temp.FogMode == FogLinear)
+		if (temp.FogMode == FOG_LINEAR)
 			check("fog_mode:linear", true);
-		else if (temp.FogMode == FogExp)
+		else if (temp.FogMode == FOG_EXP)
 			check("fog_mode:exp", true);
-		else if (temp.FogMode == FogExp2)
+		else if (temp.FogMode == FOG_EXP2)
 			check("fog_mode:exp2", true);
 	}else{
 		check("fog_mode:none", true);
@@ -317,9 +317,9 @@ void WorldPropertiesDialog::LoadData()
 	setFloat("fog_end", temp.FogEnd);
 	setFloat("fog_distance", 1.0f / temp.FogDensity);
 	setColor("fog_color", temp.FogColor);
-	enable("fog_start", temp.FogEnabled && (temp.FogMode == FogLinear));
-	enable("fog_end", temp.FogEnabled && (temp.FogMode == FogLinear));
-	enable("fog_distance", temp.FogEnabled && ((temp.FogMode == FogExp) || (temp.FogMode == FogExp2)));
+	enable("fog_start", temp.FogEnabled and (temp.FogMode == FOG_LINEAR));
+	enable("fog_end", temp.FogEnabled and (temp.FogMode == FOG_LINEAR));
+	enable("fog_distance", temp.FogEnabled and ((temp.FogMode == FOG_EXP) or (temp.FogMode == FOG_EXP2)));
 	enable("fog_color", temp.FogEnabled);
 
 	setDecimals(WorldLightDec);

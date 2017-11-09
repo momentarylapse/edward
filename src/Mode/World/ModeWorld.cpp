@@ -152,7 +152,7 @@ bool WorldObject::hover(MultiView::Window *win, vector &mv, vector &tp, float &z
 	if (!o)
 		return false;
 	int d = o->_detail_;
-	if ((d<0)||(d>2))
+	if ((d<0)or(d>2))
 		return false;
 	for (int i=0;i<o->skin[d]->vertex.num;i++){
 		tmv[i] = o->_matrix * o->skin[d]->vertex[i];
@@ -164,13 +164,13 @@ bool WorldObject::hover(MultiView::Window *win, vector &mv, vector &tp, float &z
 		vector a=pmv[o->skin[d]->sub[mm].triangle_index[i*3  ]];
 		vector b=pmv[o->skin[d]->sub[mm].triangle_index[i*3+1]];
 		vector c=pmv[o->skin[d]->sub[mm].triangle_index[i*3+2]];
-		if ((a.z<=0)||(b.z<=0)||(c.z<=0)||(a.z>=1)||(b.z>=1)||(c.z>=1))
+		if ((a.z<=0)or(b.z<=0)or(c.z<=0)or(a.z>=1)or(b.z>=1)or(c.z>=1))
 			continue;
 		float f,g;
 		float az=a.z,bz=b.z,cz=c.z;
 		a.z=b.z=c.z=0;
 		GetBaryCentric(mv,a,b,c,f,g);
-		if ((f>=0)&&(g>=0)&&(f+g<=1)){
+		if ((f>=0)and(g>=0)and(f+g<=1)){
 			float z=az + f*(bz-az) + g*(cz-az);
 			if (z<z_min){
 				z_min=z;
@@ -190,7 +190,7 @@ bool WorldObject::inRect(MultiView::Window *win, rect &r, void *user_data)
 	if (!m)
 		return false;
 	int d = m->_detail_;
-	if ((d<0)||(d>2))
+	if ((d<0)or(d>2))
 		return false;
 	vector min, max;
 	for (int i=0;i<m->skin[d]->vertex.num;i++){
@@ -205,7 +205,7 @@ bool WorldObject::inRect(MultiView::Window *win, rect &r, void *user_data)
 		vector a=pmv[m->skin[d]->sub[mm].triangle_index[i*3  ]];
 		vector b=pmv[m->skin[d]->sub[mm].triangle_index[i*3+1]];
 		vector c=pmv[m->skin[d]->sub[mm].triangle_index[i*3+2]];
-		if ((a.z<=0)||(b.z<=0)||(c.z<=0)||(a.z>=1)||(b.z>=1)||(c.z>=1))
+		if ((a.z<=0)or(b.z<=0)or(c.z<=0)or(a.z>=1)or(b.z>=1)or(c.z>=1))
 			continue;
 		if (i==0)
 			min = max = a;
@@ -216,7 +216,7 @@ bool WorldObject::inRect(MultiView::Window *win, rect &r, void *user_data)
 		max._max(b);
 		max._max(c);
 	}
-	return ((min.x>=r.x1)&&(min.y>=r.y1)&&(max.x<=r.x2)&&(max.y<=r.y2));
+	return ((min.x>=r.x1)and(min.y>=r.y1)and(max.x<=r.x2)and(max.y<=r.y2));
 }
 
 bool WorldTerrain::hover(MultiView::Window *win, vector &mv, vector &tp, float &z, void *user_data)
@@ -247,7 +247,7 @@ bool WorldTerrain::inRect(MultiView::Window *win, rect &r, void *user_data)
 		min._min(p);
 		max._max(p);
 	}
-	return ((min.x>=r.x1)&&(min.y>=r.y1)&&(max.x<=r.x2)&&(max.y<=r.y2));
+	return ((min.x>=r.x1)and(min.y>=r.y1)and(max.x<=r.x2)and(max.y<=r.y2));
 }
 
 
@@ -376,14 +376,14 @@ void DrawSelectionObject(Model *o, float alpha, const color &c)
 	if (!o)
 		return;
 	int d = o->_detail_;
-	if ((d<0)||(d>3))
+	if ((d<0) or (d>3))
 		return;
 	for (int i=0;i<o->material.num;i++){
 		Array<nix::Texture*> tex;
 		for (int j=0; j<o->material[i].textures.num; j++)
 			tex.add(NULL);
 		nix::SetTextures(tex);
-		nix::SetAlpha(AlphaMaterial);
+		nix::SetAlpha(ALPHA_MATERIAL);
 		nix::SetMaterial(Black, color(alpha, 0, 0, 0), Black, 0, c);
 		o->JustDraw(i, d);
 	}
@@ -393,7 +393,7 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha)
 {
 	nix::SetWire(false);
 	nix::EnableLighting(true);
-	nix::SetAlpha(AlphaMaterial);
+	nix::SetAlpha(ALPHA_MATERIAL);
 
 	// save terrain data
 	Material *temp = t->material;
@@ -416,7 +416,7 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha)
 	// restore data
 	t->material = temp;
 
-	nix::SetAlpha(AlphaNone);
+	nix::SetAlpha(ALPHA_NONE);
 	nix::SetWire(mode_world->multi_view->wire_mode);
 	nix::EnableLighting(mode_world->multi_view->light_enabled);
 }
@@ -443,7 +443,7 @@ void ModeWorld::onDrawWin(MultiView::Window *win)
 
 			if (t.is_selected)
 				DrawTerrainColored(t.terrain, Red, TSelectionAlpha);
-			if ((multi_view->hover.type == MVD_WORLD_TERRAIN) && (multi_view->hover.index == i))
+			if ((multi_view->hover.type == MVD_WORLD_TERRAIN) and (multi_view->hover.index == i))
 				DrawTerrainColored(t.terrain, White, TMouseOverAlpha);
 		}
 	}
@@ -470,14 +470,14 @@ void ModeWorld::onDrawWin(MultiView::Window *win)
 		nix::EnableLighting(true);
 
 		// object selection
-		foreachi(WorldObject &o, data->Objects, i)
+		for (WorldObject &o: data->Objects)
 			if (o.is_selected)
 				DrawSelectionObject(o.object, OSelectionAlpha, Red);
 			else if (o.is_special)
 				DrawSelectionObject(o.object, OSelectionAlpha, Green);
-		if ((multi_view->hover.index >= 0) && (multi_view->hover.type == MVD_WORLD_OBJECT))
+		if ((multi_view->hover.index >= 0) and (multi_view->hover.type == MVD_WORLD_OBJECT))
 			DrawSelectionObject(data->Objects[multi_view->hover.index].object, OSelectionAlpha, White);
-		nix::SetAlpha(AlphaNone);
+		nix::SetAlpha(ALPHA_NONE);
 		nix::EnableLighting(multi_view->light_enabled);
 	}
 
@@ -598,12 +598,12 @@ void ModeWorld::ExecutePropertiesDialog()
 	if (num_o + num_t == 0){
 		// nothing selected -> world
 		ExecuteWorldPropertiesDialog();
-	}else if ((num_o == 1) && (num_t == 0)){
+	}else if ((num_o == 1) and (num_t == 0)){
 		// single object -> object
 		foreachi(WorldObject &o, data->Objects, i)
 			if (o.is_selected)
 				ExecuteObjectPropertiesDialog(i);
-	}else if ((num_o == 0) && (num_t == 1)){
+	}else if ((num_o == 0) and (num_t == 1)){
 		// single terrain -> terrain
 		foreachi(WorldTerrain &t, data->Terrains, i)
 			if (t.is_selected)

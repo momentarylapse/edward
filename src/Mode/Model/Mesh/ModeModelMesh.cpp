@@ -682,7 +682,7 @@ void ModeModelMesh::drawSelection(MultiView::Window *win)
 {
 	nix::SetWire(false);
 	nix::SetZ(true,true);
-	nix::SetAlpha(AlphaNone);
+	nix::SetAlpha(ALPHA_NONE);
 	nix::EnableLighting(true);
 
 	nix::SetOffset(1.0f);
@@ -691,7 +691,7 @@ void ModeModelMesh::drawSelection(MultiView::Window *win)
 	ModeModel::setMaterialCreation();
 	nix::Draw3D(vb_creation);
 	nix::SetMaterial(White,White,Black,0,Black);
-	nix::SetAlpha(AlphaNone);
+	nix::SetAlpha(ALPHA_NONE);
 	nix::SetOffset(0);
 }
 
