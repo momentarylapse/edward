@@ -45,7 +45,7 @@ void MeshSelectionModeSurface::onDrawWin(MultiView::Window *win)
 
 	ModelSurface &s = data->surface[multi_view->hover.index];
 	for (ModelPolygon &p: s.polygon)
-		p.addToVertexBuffer(data->vertex, parent->vb_hover, 1);
+		p.addToVertexBuffer(data->show_vertices, parent->vb_hover, 1);
 
 
 	nix::SetWire(false);

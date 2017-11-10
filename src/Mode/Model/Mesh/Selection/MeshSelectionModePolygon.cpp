@@ -32,7 +32,7 @@ void MeshSelectionModePolygon::onDrawWin(MultiView::Window *win)
 
 
 	ModelPolygon &p = data->surface[multi_view->hover.set].polygon[multi_view->hover.index];
-	p.addToVertexBuffer(data->vertex, parent->vb_hover, 1);
+	p.addToVertexBuffer(data->show_vertices, parent->vb_hover, 1);
 
 	nix::SetWire(false);
 	nix::SetOffset(-1.0f);
