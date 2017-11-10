@@ -21,6 +21,9 @@ public:
 	void LoadData();
 	void ApplyData();
 
+	void restart();
+	bool active;
+
 	void RefillInventaryList();
 	void RefillScriptVarList();
 	void FillDetailList();

@@ -314,13 +314,17 @@ bool ModeModel::exportWriteJson(const string &filename)
 
 void ModeModel::executePropertiesDialog()
 {
-	if (properties_dialog)
+	if (properties_dialog){
+		if (!properties_dialog->active){
+			properties_dialog->restart();
+			properties_dialog->show();
+		}
 		return;
+	}
 
 	properties_dialog = new ModelPropertiesDialog(ed, true, data);
 
 	properties_dialog->show();
-	//PropertiesDialog->run();
 }
 
 void ModeModel::allowSelectionModes(bool allow)

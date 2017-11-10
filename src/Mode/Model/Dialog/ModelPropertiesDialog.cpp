@@ -28,6 +28,7 @@ ModelPropertiesDialog::ModelPropertiesDialog(hui::Window *_parent, bool _allow_p
 {
 	fromResource("model_dialog");
 	data = _data;
+	active = false;
 
 	setTooltip("material_list", _("- Doppelklick um ein Material zu editieren\n- Auswahl wird f&ur folgende neue Polygone verwendet"));
 
@@ -47,16 +48,22 @@ ModelPropertiesDialog::ModelPropertiesDialog(hui::Window *_parent, bool _allow_p
 	event("script_find", std::bind(&ModelPropertiesDialog::OnScriptFind, this));
 	event("model_script_var_template", std::bind(&ModelPropertiesDialog::OnModelScriptVarTemplate, this));
 
-	subscribe(data);
-
-	temp = data->meta_data;
-	LoadData();
+	restart();
 }
 
 ModelPropertiesDialog::~ModelPropertiesDialog()
 {
 	mode_model->properties_dialog = NULL;
 	unsubscribe(data);
+}
+
+void ModelPropertiesDialog::restart()
+{
+	subscribe(data);
+
+	temp = data->meta_data;
+	LoadData();
+	active = true;
 }
 
 void ModelPropertiesDialog::LoadData()
@@ -328,11 +335,15 @@ void ModelPropertiesDialog::ApplyData()
 
 void ModelPropertiesDialog::OnClose()
 {
-	destroy();
+	unsubscribe(data);
+	hide();
+	active = false;
 }
 
 void ModelPropertiesDialog::OnOk()
 {
 	ApplyData();
-	destroy();
+	unsubscribe(data);
+	hide();
+	active = false;
 }
