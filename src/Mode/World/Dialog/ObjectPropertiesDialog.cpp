@@ -40,7 +40,7 @@ ObjectPropertiesDialog::~ObjectPropertiesDialog()
 void ObjectPropertiesDialog::OnOk()
 {
 	ApplyData();
-	delete(this);
+	destroy();
 }
 
 
@@ -62,7 +62,7 @@ void ObjectPropertiesDialog::LoadData()
 
 void ObjectPropertiesDialog::OnClose()
 {
-	delete(this);
+	destroy();
 }
 
 

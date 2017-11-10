@@ -111,13 +111,13 @@ void ModelFXDialog::OnFindSoundFile()
 
 void ModelFXDialog::OnClose()
 {
-	delete(this);
+	destroy();
 }
 
 void ModelFXDialog::OnOk()
 {
 	ApplyData();
-	delete(this);
+	destroy();
 }
 
 

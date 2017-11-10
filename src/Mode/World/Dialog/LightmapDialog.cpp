@@ -63,7 +63,7 @@ void LightmapDialog::FillList()
 
 void LightmapDialog::OnClose()
 {
-	delete(this);
+	destroy();
 }
 
 void LightmapDialog::OnType()
@@ -117,7 +117,7 @@ void OnHistDraw(Painter *c)
 
 void OnHistClose()
 {
-	delete(hui::CurWindow);
+	hui::CurWindow->destroy();
 }
 
 void ShowHistogram(Lightmap::Histogram &h, hui::Window *root)
@@ -133,6 +133,7 @@ void ShowHistogram(Lightmap::Histogram &h, hui::Window *root)
 	dlg->event("hui:close", &OnHistClose);
 	dlg->event("close", &OnHistClose);
 	dlg->run();
+	delete(dlg);
 }
 
 void LightmapDialog::OnPreview()
@@ -185,6 +186,6 @@ void LightmapDialog::OnOk()
 	bool ok = lm->Create();
 	delete(lm);
 	if (ok)
-		delete(this);
+		destroy();
 }
 

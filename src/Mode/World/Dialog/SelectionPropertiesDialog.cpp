@@ -44,7 +44,7 @@ void SelectionPropertiesDialog::OnPropertyList()
 {
 	*selected_index = index[getInt("")];
 	*selected_type = type[getInt("")];
-	delete(this);
+	destroy();
 }
 
 
@@ -83,7 +83,7 @@ void SelectionPropertiesDialog::FillList()
 
 void SelectionPropertiesDialog::OnClose()
 {
-	delete(this);
+	destroy();
 }
 
 void SelectionPropertiesDialog::onUpdate(Observable *o, const string &message)

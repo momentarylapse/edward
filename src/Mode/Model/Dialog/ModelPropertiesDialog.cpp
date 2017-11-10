@@ -328,11 +328,11 @@ void ModelPropertiesDialog::ApplyData()
 
 void ModelPropertiesDialog::OnClose()
 {
-	delete(this);
+	destroy();
 }
 
 void ModelPropertiesDialog::OnOk()
 {
 	ApplyData();
-	delete(this);
+	destroy();
 }

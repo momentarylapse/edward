@@ -62,14 +62,14 @@ void TerrainCreationDialog::onUpdate(Observable *o, const string &message)
 
 void TerrainCreationDialog::OnOk()
 {
-	delete(this);
+	destroy();
 }
 
 
 
 void TerrainCreationDialog::OnClose()
 {
-	delete(this);
+	destroy();
 }
 
 

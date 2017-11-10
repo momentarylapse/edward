@@ -294,7 +294,7 @@ void WorldPropertiesDialog::OnMaxScriptVars()
 void WorldPropertiesDialog::OnOk()
 {
 	ApplyData();
-	delete(this);
+	destroy();
 }
 
 

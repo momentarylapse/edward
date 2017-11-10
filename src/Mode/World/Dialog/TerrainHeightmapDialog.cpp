@@ -130,14 +130,14 @@ void TerrainHeightmapDialog::OnOk()
 	float height_factor = getFloat("height_factor");
 	bool additive = isChecked("height_op:add");
 	data->execute(new ActionWorldTerrainApplyHeightmap(data, heightmap_file, height_factor, stretch_x, stretch_z, filter_file));//, additive));
-	delete(this);
+	destroy();
 }
 
 
 
 void TerrainHeightmapDialog::OnClose()
 {
-	delete(this);
+	destroy();
 }
 
 

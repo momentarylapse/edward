@@ -42,7 +42,7 @@ void ModelNewAnimationDialog::onOk()
 			return;
 		}
 	data->addAnimation(index, type);
-	delete(this);
+	destroy();
 }
 
 

@@ -171,7 +171,7 @@ void Edward::onClose()
 
 void Edward::exit()
 {
-	delete(this);
+	destroy();
 	app->end();
 }
 
