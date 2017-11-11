@@ -17,6 +17,7 @@ public:
 	virtual ~ModeCreationBase(){}
 	virtual void onDraw();
 	virtual void onDrawWin(MultiView::Window *win);
+	virtual void onSetMultiView();
 	void abort();
 	string message;
 	hui::Window *dialog;

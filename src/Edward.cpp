@@ -44,6 +44,10 @@ static float font_size = 20;
 
 void render_text(const string &text, Image &im)
 {
+	if (text.num == 0){
+		im.clear();
+		return;
+	}
 	bool failed = false;
 	cairo_surface_t *surface;
 	cairo_t *cr;

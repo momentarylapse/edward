@@ -34,6 +34,11 @@ void ModeCreationBase::onDrawWin(MultiView::Window *win)
 	parent->onDrawWin(win);
 }
 
+void ModeCreationBase::onSetMultiView()
+{
+	parent->onSetMultiView();
+}
+
 void ModeCreationBase::abort()
 {
 	assert(parent);

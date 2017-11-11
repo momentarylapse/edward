@@ -59,9 +59,11 @@ void DrawStr(float x, float y, const string &str)
 	if (render_str){
 		Image im;
 		(*render_str)(str, im);
-		tex_text->overwrite(im);
-		SetTexture(tex_text);
-		Draw2D(r_id, rect(x, x + im.width, y, y + im.height), 0);
+		if (im.width > 0){
+			tex_text->overwrite(im);
+			SetTexture(tex_text);
+			Draw2D(r_id, rect(x, x + im.width, y, y + im.height), 0);
+		}
 	}else{
 		/*string str2 = str_utf8_to_ubyte(str);
 
