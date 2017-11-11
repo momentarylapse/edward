@@ -16,7 +16,6 @@ class ModeModelMeshBrush: public ModeCreation<DataModel>
 {
 public:
 	ModeModelMeshBrush(ModeBase *parent);
-	virtual ~ModeModelMeshBrush();
 
 	virtual void onStart();
 	virtual void onEnd();

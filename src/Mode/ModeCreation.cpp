@@ -37,6 +37,6 @@ void ModeCreationBase::onDrawWin(MultiView::Window *win)
 void ModeCreationBase::abort()
 {
 	assert(parent);
-	ed->setMode(parent);
+	hui::RunLater(0.01f, std::bind(&Edward::setMode, ed, parent));
 }
 

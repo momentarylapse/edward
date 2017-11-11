@@ -26,10 +26,6 @@ ModeModelMeshBrush::ModeModelMeshBrush(ModeBase* _parent) :
 	base_depth = 1;
 }
 
-ModeModelMeshBrush::~ModeModelMeshBrush()
-{
-}
-
 
 Action *ModeModelMeshBrush::getAction()
 {
@@ -176,4 +172,6 @@ void ModeModelMeshBrush::onDrawWin(MultiView::Window* win)
 }
 
 void ModeModelMeshBrush::onClose()
-{	abort();	}
+{
+	abort();
+}
