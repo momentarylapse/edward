@@ -33,6 +33,7 @@ public:
 	void onClose();
 
 	void updateHover();
+	void updateParams();
 
 //private:
 	Geometry *geo;

@@ -39,13 +39,8 @@ public:
 	}
 	void update()
 	{
-		mode->inter->clear();
-		float last = 0;
-		foreachi (vector &pp, mode->param, i){
-			mode->inter->add(pp.z, pp.y - last);
-			last = pp.y;
-		}
-
+		mode->updateParams();
+		redraw("area");
 	}
 
 	float w, h, hf;
@@ -109,9 +104,9 @@ public:
 				if ((m - c).abs() < 10)
 					hover = i;
 			}
+			mode->hover = hover;
+			redraw("area");
 		}
-		mode->hover = hover;
-		redraw("area");
 	}
 
 	virtual void onLeftButtonDown()
@@ -126,7 +121,6 @@ public:
 					break;
 				}
 			update();
-			redraw("area");
 
 		}
 	}
@@ -145,7 +139,7 @@ public:
 	param.add(vector(0.5f,0.5f,1));
 	param.add(vector(1,1,1));
 
-	inter = new Interpolator<float>(Interpolator<float>::TYPE_CUBIC_SPLINE);
+	inter = new Interpolator<float>(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
 
 	hover = -1;
 	radius = 1;
@@ -208,6 +202,17 @@ void ModeModelMeshDeformCylinder::onEnd()
 		restore();
 	delete(dialog);
 	delete(geo);
+}
+
+void ModeModelMeshDeformCylinder::updateParams()
+{
+	inter->clear();
+	float last = 0;
+	for (vector &pp: param){
+		inter->add(pp.z, pp.y - last);
+		last = pp.y;
+	}
+
 }
 
 void ModeModelMeshDeformCylinder::onDrawWin(MultiView::Window* win)
