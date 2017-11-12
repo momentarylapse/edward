@@ -34,8 +34,7 @@ public:
 
 	void updateHover();
 
-private:
-	vector min, max;
+//private:
 	Geometry *geo;
 
 	vector transform(const vector &v);
@@ -47,6 +46,8 @@ private:
 	float radius;
 	Array<vector> param;
 	int hover;
+
+	Interpolator<float> *inter;
 
 	bool has_preview;
 	Array<int> index;

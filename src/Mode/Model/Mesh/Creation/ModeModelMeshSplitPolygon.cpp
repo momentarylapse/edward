@@ -34,7 +34,7 @@ void ModeModelMeshSplitPolygon::onLeftButtonUp()
 	surface = multi_view->MouseOverSet;
 	pos = multi_view->MouseOverTP;*/
 
-	if ((triangle >= 0) && (surface >= 0)){
+	if ((triangle >= 0) and (surface >= 0)){
 		if (edge >= 0)
 			data->execute(new ActionModelSplitEdge(surface, edge, factor));
 		else
@@ -55,7 +55,7 @@ void ModeModelMeshSplitPolygon::onDrawWin(MultiView::Window *win)
 	pos = multi_view->hover.point;
 	edge = -1;
 
-	if ((triangle >= 0) && (surface >= 0)){
+	if ((triangle >= 0) and (surface >= 0)){
 		vector pp = win->project(pos);
 		pp.z = 0;
 		ModelPolygon &poly = data->surface[surface].polygon[triangle];
@@ -77,6 +77,7 @@ void ModeModelMeshSplitPolygon::onDrawWin(MultiView::Window *win)
 			}
 		}
 
+		nix::SetShader(nix::default_shader_2d);
 		nix::EnableLighting(false);
 		/*NixDrawLine3D(data->Vertex[data->Surface[surface].Triangle[triangle].Vertex[0]].pos, pos, Green);
 		NixDrawLine3D(data->Vertex[data->Surface[surface].Triangle[triangle].Vertex[1]].pos, pos, Green);

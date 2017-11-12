@@ -32,17 +32,103 @@ public:
 	{
 		fromResource("deformation_cylinder_dialog");
 		mode = _mode;
+		w = h = 0;
+		hf = 0.3f;
+		hover = -1;
+		update();
+	}
+	void update()
+	{
+		mode->inter->clear();
+		float last = 0;
+		foreachi (vector &pp, mode->param, i){
+			mode->inter->add(pp.z, pp.y - last);
+			last = pp.y;
+		}
+
+	}
+
+	float w, h, hf;
+	int hover;
+	complex project(const vector &v)
+	{
+		return complex(w * v.y, h - h * v.z * hf);
+
+	}
+	vector unproject(const complex &c)
+	{
+		return vector(c.x / w, c.x / w, (h - c.y) / h / hf);
+
 	}
 
 	virtual void onDraw(Painter *p)
 	{
-		float w = p->width;
-		float h = p->height;
+		w = p->width;
+		h = p->height;
 		p->setColor(White);
 		p->drawRect(0, 0, w, h);
-		p->setColor(Black);
 
-		p->drawStr(10, 10, "x");
+		p->setColor(color(1, 0.9f, 0.9f, 0.9f));
+		float y = project(vector(0,0,1)).y;
+		p->drawLine(0, y, w, y);
+
+		foreachi (vector &pp, mode->param, i){
+			complex c = project(pp);
+			p->setColor((hover == i) ? Red : Black);
+			p->drawCircle(c.x, c.y, 3);
+		}
+
+		p->setColor(color(1, 0.7f, 0.7f, 0.7f));
+		complex c1 = complex(0,0);
+		for (float t=0; t<=1.0f; t += 0.01f){
+			complex c2 = project(vector(0, t, mode->inter->get(t)));
+
+			p->drawLine(c1.x, c1.y, c2.x, c2.y);
+			c1 = c2;
+		}
+
+		//p->drawStr(10, 10, "x");
+	}
+
+	virtual void onMouseMove()
+	{
+		complex m = complex(hui::GetEvent()->mx, hui::GetEvent()->my);
+		if (hui::GetEvent()->lbut){
+			if (hover >= 0){
+				vector v = unproject(m);
+				//v.x = mode->param[hover].x;
+				mode->param[hover] = v;
+				mode->param[0].x = mode->param[0].y = 0;
+				mode->param.back().x = mode->param.back().y = 1;
+				update();
+			}
+		}else{
+			hover = -1;
+			foreachi(vector &pp, mode->param, i){
+				complex c = project(pp);
+				if ((m - c).abs() < 10)
+					hover = i;
+			}
+		}
+		mode->hover = hover;
+		redraw("area");
+	}
+
+	virtual void onLeftButtonDown()
+	{
+		complex m = complex(hui::GetEvent()->mx, hui::GetEvent()->my);
+		if (hover < 0){
+			vector v = unproject(m);
+			for (int i=mode->param.num-1; i>=0; i--)
+				if (v.x >= mode->param[i].x){
+					mode->param.insert(v, i+1);
+					hover = i+1;
+					break;
+				}
+			update();
+			redraw("area");
+
+		}
 	}
 
 
@@ -55,9 +141,11 @@ public:
 	geo = NULL;
 	has_preview = false;
 
-	param.add(vector(0, 1, 0));
-	param.add(vector(0.5f, 1, 0));
-	param.add(vector(1, 1, 0));
+	param.add(vector(0,0,1));
+	param.add(vector(0.5f,0.5f,1));
+	param.add(vector(1,1,1));
+
+	inter = new Interpolator<float>(Interpolator<float>::TYPE_CUBIC_SPLINE);
 
 	hover = -1;
 	radius = 1;
@@ -65,6 +153,7 @@ public:
 
 ModeModelMeshDeformCylinder::~ModeModelMeshDeformCylinder()
 {
+	delete inter;
 }
 
 void ModeModelMeshDeformCylinder::onStart()
@@ -78,6 +167,7 @@ void ModeModelMeshDeformCylinder::onStart()
 
 	//ed->activate("");
 
+	vector min, max;
 	data->getBoundingBox(max, min);
 	bool first = true;
 	foreachi(ModelVertex &v, data->vertex, i)
@@ -140,11 +230,11 @@ void ModeModelMeshDeformCylinder::onDrawWin(MultiView::Window* win)
 	vector e2 = dir ^ e1;
 	foreachi(vector &p, param, ip){
 		nix::SetColor((ip == hover) ? Red : Green);
-		vector m = axis[0] + (axis[1] - axis[0]) * p.x;
-		vector v = m + e1 * radius * p.y;
+		vector m = axis[0] + (axis[1] - axis[0]) * p.y;
+		vector v = m + e1 * radius * p.z;
 		for (int i=1; i<=CYLINDER_EDGES; i++){
 			float ang = (float)i / (float)CYLINDER_EDGES * 2 * pi;
-			vector w = m + (e1 * cos(ang) + e2 * sin(ang)) * radius * p.y;
+			vector w = m + (e1 * cos(ang) + e2 * sin(ang)) * radius * p.z;
 			nix::DrawLine3D(w, v);
 			v = w;
 		}
@@ -157,7 +247,7 @@ void ModeModelMeshDeformCylinder::onDrawWin(MultiView::Window* win)
 
 inline bool hover_line(vector &a, vector &b, vector &m)
 {
-	const float r = 5;
+	const float r = 10;
 	//if ((a - m).length() < r)
 	//	return true;
 	if (VecLineDistance(a, b, m) < r){
@@ -174,12 +264,12 @@ void ModeModelMeshDeformCylinder::updateHover()
 	vector e1 = dir.ortho();
 	vector e2 = dir ^ e1;
 	foreachi(vector &p, param, ip){
-		vector m = axis[0] + (axis[1] - axis[0]) * p.x;
-		vector v =  multi_view->mouse_win->project(m + e1 * radius * p.y);
+		vector m = axis[0] + (axis[1] - axis[0]) * p.y;
+		vector v =  multi_view->mouse_win->project(m + e1 * radius * p.z);
 		v.z = 0;
 		for (int i=1; i<=CYLINDER_EDGES; i++){
 			float ang = (float)i / (float)CYLINDER_EDGES * 2 * pi;
-			vector w = multi_view->mouse_win->project(m + (e1 * cos(ang) + e2 * sin(ang)) * radius * p.y);
+			vector w = multi_view->mouse_win->project(m + (e1 * cos(ang) + e2 * sin(ang)) * radius * p.z);
 			w.z = 0;
 			if (hover_line(v, w, multi_view->m)){
 				hover = ip;
@@ -192,25 +282,33 @@ void ModeModelMeshDeformCylinder::updateHover()
 
 vector ModeModelMeshDeformCylinder::transform(const vector &v)
 {
-	vector d = max - min;
-	vector vv = v - min;
-	vv = vector(vv.x / d.x, vv.y / d.y, vv.z / d.z);
-	vector w;
-	//(*f)(w, vv);
-	w = vv;
-	return min + vector(w.x * d.x, w.y * d.y, w.z * d.z);
+	//vector e1 = dir.ortho();
+	//vector e2 = dir ^ e1;
+
+	float ll = (axis[1] - axis[0]).length();
+
+	// axial and radial cylinder components
+	float l = (v - axis[0]) * dir;
+	vector r = v - axis[0] - l * dir;
+
+	float f = inter->get(l / ll);
+
+	r *= f;
+
+	return axis[0] + l * dir + r;
 }
 
 void ModeModelMeshDeformCylinder::onPreview()
 {
 	if (has_preview)
 		restore();
+	msg_write("----prev");
 
 	for (ModelVertex &v: geo->vertex)
 		v.pos = transform(v.pos);
 
 	for (int vi: index)
-			data->vertex[vi].pos = transform(data->vertex[vi].pos);
+		data->vertex[vi].pos = transform(data->vertex[vi].pos);
 	data->notify();
 	has_preview = true;
 	ed->forceRedraw();
