@@ -275,9 +275,11 @@ void ModeModelMeshDeformCylinder::onDrawWin(MultiView::Window* win)
 {
 	parent->onDrawWin(win);
 
-	ModeModel::setMaterialCreation(0.3f);
-	geo->build(nix::vb_temp);
-	nix::Draw3D(nix::vb_temp);
+	if (geo){
+		ModeModel::setMaterialCreation(0.3f);
+		geo->build(nix::vb_temp);
+		nix::Draw3D(nix::vb_temp);
+	}
 
 	nix::line_width = 3;
 	nix::SetAlpha(ALPHA_NONE);
@@ -427,8 +429,10 @@ void ModeModelMeshDeformCylinder::onLeftButtonUp()
 
 void ModeModelMeshDeformCylinder::restore()
 {
-	if (geo)
+	if (geo){
 		delete geo;
+		geo = NULL;
+	}
 
 	foreachi (int vi, index, i)
 		data->vertex[vi].pos = old_pos[i];
