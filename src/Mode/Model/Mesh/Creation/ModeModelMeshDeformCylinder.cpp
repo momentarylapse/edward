@@ -137,7 +137,9 @@ public:
 	has_preview = false;
 
 	param.add(vector(0,0,1));
+	param.add(vector(0.25f,0.25f,1));
 	param.add(vector(0.5f,0.5f,1));
+	param.add(vector(0.75f,0.75f,1));
 	param.add(vector(1,1,1));
 
 	inter = new Interpolator<float>(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
@@ -224,8 +226,10 @@ void ModeModelMeshDeformCylinder::onStart()
 	multi_view->setAllowSelect(false);
 
 	foreachi(ModelVertex &v, data->vertex, i)
-		if (v.is_selected)
+		if (v.is_selected){
+			old_pos.add(v.pos);
 			index.add(i);
+		}
 
 	get_axis(data, axis, radius);
 	dir = axis[1] - axis[0];
@@ -240,35 +244,39 @@ void ModeModelMeshDeformCylinder::onEnd()
 	if (has_preview)
 		restore();
 	delete(dialog);
-	delete(geo);
 	multi_view->setAllowAction(true);
 	multi_view->setAllowSelect(true);
+}
+
+Array<vector> sort_vectors_by_x(Array<vector> &p)
+{
+	Array<vector> pp = p;
+	for (int i=0; i<pp.num; i++)
+		for (int j=i+1; j<pp.num; j++)
+			if (pp[i].x > pp[j].x)
+				pp.swap(i, j);
+	return pp;
 }
 
 void ModeModelMeshDeformCylinder::updateParams()
 {
 	inter->clear();
 	float last = 0;
-	for (vector &pp: param){
+	auto p = sort_vectors_by_x(param);
+	for (vector &pp: p){
 		inter->add(pp.z, pp.y - last);
 		last = pp.y;
 	}
 
-	if (geo)
-		delete geo;
-
-	geo = new GeometryCylinder(axis[0], axis[1], radius, CYLINDER_RINGS, CYLINDER_EDGES);
-	for (auto &v: geo->vertex)
-		v.pos = transform(v.pos);
+	preview();
 }
 
 void ModeModelMeshDeformCylinder::onDrawWin(MultiView::Window* win)
 {
 	parent->onDrawWin(win);
 
-	ModeModel::setMaterialCreation();
+	ModeModel::setMaterialCreation(0.3f);
 	geo->build(nix::vb_temp);
-
 	nix::Draw3D(nix::vb_temp);
 
 	nix::line_width = 3;
@@ -299,7 +307,7 @@ void ModeModelMeshDeformCylinder::onDrawWin(MultiView::Window* win)
 
 inline bool hover_line(vector &a, vector &b, vector &m, vector &tp)
 {
-	const float r = 5;
+	const float r = 8;
 	//if ((a - m).length() < r)
 	//	return true;
 	if (VecLineDistance(a, b, m) < r){
@@ -354,17 +362,24 @@ vector ModeModelMeshDeformCylinder::transform(const vector &v)
 }
 
 void ModeModelMeshDeformCylinder::onPreview()
+{}
+
+void ModeModelMeshDeformCylinder::preview()
 {
 	if (has_preview)
 		restore();
-	msg_write("----prev");
 
-	for (ModelVertex &v: geo->vertex)
+	geo = new GeometryCylinder(axis[0], axis[1], radius, CYLINDER_RINGS, CYLINDER_EDGES);
+
+	for (auto &v: geo->vertex)
 		v.pos = transform(v.pos);
 
 	for (int vi: index)
 		data->vertex[vi].pos = transform(data->vertex[vi].pos);
+
 	data->notify();
+	//mode_model_mesh->updateVertexBuffers(data->vertex);
+
 	has_preview = true;
 	ed->forceRedraw();
 }
@@ -391,7 +406,7 @@ void ModeModelMeshDeformCylinder::onMouseMove()
 				d.normalize();
 				float lm = (m - pp) * d;
 				if (la > 30){
-					param[hover].y = orig_param.y +  lm / la;
+					param[hover].y = clampf(orig_param.y +  lm / la, 0, 1);
 					param[hover].x = param[hover].y;
 				}
 			}
@@ -412,16 +427,13 @@ void ModeModelMeshDeformCylinder::onLeftButtonUp()
 
 void ModeModelMeshDeformCylinder::restore()
 {
-	/*delete(geo);
-	vector d = max - min;
-	geo = new GeometryCube(min, e_x * d.x, e_y * d.y, e_z * d.z, CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
-	ed->forceRedraw();
+	if (geo)
+		delete geo;
 
-	foreachi(int vi, index, ii)
-		data->vertex[vi].pos = old_pos[ii];
-	data->notify();
+	foreachi (int vi, index, i)
+		data->vertex[vi].pos = old_pos[i];
+	has_preview = false;
 
-	has_preview = false;*/
 }
 
 void ModeModelMeshDeformCylinder::onOk()

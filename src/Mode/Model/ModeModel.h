@@ -46,7 +46,7 @@ public:
 
 	static void setMaterialSelected();
 	static void setMaterialHover();
-	static void setMaterialCreation();
+	static void setMaterialCreation(float intensity = 1.0f);
 
 	void executePropertiesDialog();
 

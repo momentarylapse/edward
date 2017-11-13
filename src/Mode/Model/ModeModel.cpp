@@ -188,11 +188,11 @@ void ModeModel::setMaterialHover()
 	nix::SetMaterial(Black,color(0.5f,0,0,0),Black,0,White);
 }
 
-void ModeModel::setMaterialCreation()
+void ModeModel::setMaterialCreation(float intensity)
 {
 	nix::SetAlpha(ALPHA_MATERIAL);
 	nix::SetShader(MultiView::shader_selection);
-	nix::SetMaterial(Black, color(0.3f,0.3f,1,0.3f), Black, 0, color(1,0.1f,0.4f,0.1f));
+	nix::SetMaterial(Black, color(0.3f*intensity,0.3f,1,0.3f), Black, 0, color(1,0.1f,0.4f,0.1f));
 }
 
 void ModeModel::_new()
