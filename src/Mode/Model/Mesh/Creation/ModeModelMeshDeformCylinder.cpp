@@ -24,111 +24,6 @@
 const int CYLINDER_EDGES = 24;
 const int CYLINDER_RINGS = 24;
 
-class DeformationCylinderDialog : public hui::Dialog
-{
-public:
-	DeformationCylinderDialog(ModeModelMeshDeformCylinder *_mode) :
-		hui::Dialog("", 0, 0, ed, true)
-	{
-		fromResource("deformation_cylinder_dialog");
-		mode = _mode;
-		w = h = 0;
-		hf = 0.3f;
-		hover = -1;
-		update();
-	}
-	void update()
-	{
-		mode->updateParams();
-		redraw("area");
-		ed->forceRedraw();
-	}
-
-	float w, h, hf;
-	int hover;
-	complex project(const vector &v)
-	{
-		return complex(w * v.y, h - h * v.z * hf);
-
-	}
-	vector unproject(const complex &c)
-	{
-		return vector(c.x / w, c.x / w, (h - c.y) / h / hf);
-
-	}
-
-	virtual void onDraw(Painter *p)
-	{
-		w = p->width;
-		h = p->height;
-		p->setColor(White);
-		p->drawRect(0, 0, w, h);
-
-		p->setColor(color(1, 0.9f, 0.9f, 0.9f));
-		float y = project(vector(0,0,1)).y;
-		p->drawLine(0, y, w, y);
-
-		foreachi (vector &pp, mode->param, i){
-			complex c = project(pp);
-			p->setColor((hover == i) ? Red : Black);
-			p->drawCircle(c.x, c.y, 3);
-		}
-
-		p->setColor(color(1, 0.7f, 0.7f, 0.7f));
-		complex c1 = complex(0,0);
-		for (float t=0; t<=1.0f; t += 0.01f){
-			complex c2 = project(vector(0, t, mode->inter->get(t)));
-
-			p->drawLine(c1.x, c1.y, c2.x, c2.y);
-			c1 = c2;
-		}
-
-		//p->drawStr(10, 10, "x");
-	}
-
-	virtual void onMouseMove()
-	{
-		complex m = complex(hui::GetEvent()->mx, hui::GetEvent()->my);
-		if (hui::GetEvent()->lbut){
-			if (hover >= 0){
-				vector v = unproject(m);
-				//v.x = mode->param[hover].x;
-				mode->param[hover] = v;
-				mode->param[0].x = mode->param[0].y = 0;
-				mode->param.back().x = mode->param.back().y = 1;
-				update();
-			}
-		}else{
-			hover = -1;
-			foreachi(vector &pp, mode->param, i){
-				complex c = project(pp);
-				if ((m - c).abs() < 10)
-					hover = i;
-			}
-			mode->hover = hover;
-			redraw("area");
-		}
-	}
-
-	virtual void onLeftButtonDown()
-	{
-		complex m = complex(hui::GetEvent()->mx, hui::GetEvent()->my);
-		if (hover < 0){
-			vector v = unproject(m);
-			for (int i=mode->param.num-1; i>=0; i--)
-				if (v.x >= mode->param[i].x){
-					mode->param.insert(v, i+1);
-					hover = i+1;
-					break;
-				}
-			update();
-
-		}
-	}
-
-
-	ModeModelMeshDeformCylinder *mode;
-};
 
  ModeModelMeshDeformCylinder::ModeModelMeshDeformCylinder(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshDeformCylinder", _parent)
@@ -143,6 +38,8 @@ public:
 	param.add(vector(1,1,1));
 
 	inter = new Interpolator<float>(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
+
+	message = _("drag rings, [Control] + click -> copy, [Delete] -> delete, [Shift + Return] -> done");
 
 	hover = -1;
 	radius = 1;
@@ -215,13 +112,6 @@ void get_axis(DataModel *data, vector axis[2], float &radius)
 
 void ModeModelMeshDeformCylinder::onStart()
 {
-	// Dialog
-	dialog = new DeformationCylinderDialog(this);
-	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
-	dialog->event("hui:close", std::bind(&ModeModelMeshDeformCylinder::onClose, this));
-	dialog->event("ok", std::bind(&ModeModelMeshDeformCylinder::onOk, this));
-	dialog->show();
-
 	multi_view->setAllowAction(false);
 	multi_view->setAllowSelect(false);
 
@@ -243,7 +133,6 @@ void ModeModelMeshDeformCylinder::onEnd()
 {
 	if (has_preview)
 		restore();
-	delete(dialog);
 	multi_view->setAllowAction(true);
 	multi_view->setAllowSelect(true);
 }
@@ -310,10 +199,14 @@ void ModeModelMeshDeformCylinder::onDrawWin(MultiView::Window* win)
 inline bool hover_line(vector &a, vector &b, vector &m, vector &tp)
 {
 	const float r = 8;
-	//if ((a - m).length() < r)
-	//	return true;
-	if (VecLineDistance(a, b, m) < r){
-		vector p = VecLineNearestPoint(m, a, b);
+	if ((b-a).length_sqr() < r*r)
+		if (((a+b)/2 - m).length_sqr() < r*r){
+			tp = (a+b)/2;
+			return true;
+		}
+
+	vector p = VecLineNearestPoint(m, a, b);
+	if ((p - m).length_sqr() < r*r){
 		if (p.between(a, b)){
 			tp = p;
 			return true;
@@ -421,10 +314,35 @@ void ModeModelMeshDeformCylinder::onMouseMove()
 
 void ModeModelMeshDeformCylinder::onLeftButtonDown()
 {
+	if (hover >= 0){
+		if (ed->getKey(hui::KEY_CONTROL)){
+			int n = hover;
+			if (n == 0)
+				n = 1;
+			param.insert(param[hover], n);
+			hover = n;
+			updateParams();
+		}
+	}
+
 }
 
 void ModeModelMeshDeformCylinder::onLeftButtonUp()
 {
+}
+
+void ModeModelMeshDeformCylinder::onKeyDown()
+{
+	int k = hui::GetEvent()->key_code;
+	if (k == hui::KEY_SHIFT + hui::KEY_RETURN)
+		onOk();
+	if (k == hui::KEY_DELETE){
+		if ((hover != 0) and (hover != param.num -1)){
+			param.erase(hover);
+			hover = -1;
+			updateParams();
+		}
+	}
 }
 
 void ModeModelMeshDeformCylinder::restore()
