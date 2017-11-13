@@ -18,7 +18,6 @@
 #include "Mode/ModeCreation.h"
 #include "Mode/ModeNone.h"
 #include "MultiView/MultiView.h"
-#include "MultiView/MultiViewImpl.h"
 #include "x/world.h"
 #include "x/camera.h"
 #include "meta.h"
@@ -186,8 +185,6 @@ void Edward::EVENT() \
 	cur_mode->EVENT(); \
 }
 
-IMPLEMENT_EVENT(onKeyDown)
-IMPLEMENT_EVENT(onKeyUp)
 IMPLEMENT_EVENT(onMouseMove)
 IMPLEMENT_EVENT(onMouseWheel)
 IMPLEMENT_EVENT(onMouseEnter)
@@ -198,6 +195,20 @@ IMPLEMENT_EVENT(onMiddleButtonDown)
 IMPLEMENT_EVENT(onMiddleButtonUp)
 IMPLEMENT_EVENT(onRightButtonDown)
 IMPLEMENT_EVENT(onRightButtonUp)
+
+void Edward::onKeyDown()
+{
+	int key_code = hui::GetEvent()->key_code;
+	cur_mode->multi_view->onKeyDown(key_code);
+	cur_mode->onKeyDown(key_code);
+}
+
+void Edward::onKeyUp()
+{
+	int key_code = hui::GetEvent()->key_code;
+	cur_mode->multi_view->onKeyUp(key_code);
+	cur_mode->onKeyUp(key_code);
+}
 
 void Edward::onEvent()
 {
@@ -303,8 +314,8 @@ Edward::Edward(Array<string> arg) :
 	}
 
 	msg_db_r("init modes", 1);*/
-	multi_view_3d = new MultiView::MultiViewImpl(true);
-	multi_view_2d = new MultiView::MultiViewImpl(false);
+	multi_view_3d = new MultiView::MultiView(true);
+	multi_view_2d = new MultiView::MultiView(false);
 	mode_welcome = new ModeWelcome;
 	mode_model = new ModeModel;
 	mode_material = new ModeMaterial;

@@ -109,9 +109,9 @@ void ModeModelMeshCreateCylinderSnake::onLeftButtonUp()
 
 
 
-void ModeModelMeshCreateCylinderSnake::onKeyDown()
+void ModeModelMeshCreateCylinderSnake::onKeyDown(int k)
 {
-	if (hui::GetEvent()->key_code == hui::KEY_SHIFT + hui::KEY_RETURN){
+	if (k == hui::KEY_SHIFT + hui::KEY_RETURN){
 		if (pos.num > 1){
 			ready_for_scaling = true;
 			onMouseMove();

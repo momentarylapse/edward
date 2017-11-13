@@ -339,7 +339,6 @@ OBJ = Action/Action.o \
  MultiView/ActionController.o \
  MultiView/CameraController.o \
  MultiView/MultiView.o \
- MultiView/MultiViewImpl.o \
  MultiView/SingleData.o \
  MultiView/Window.o \
  Stuff/Observable.o \
@@ -1426,9 +1425,6 @@ MultiView/CameraController.o : MultiView/CameraController.cpp
 
 MultiView/MultiView.o : MultiView/MultiView.cpp
 	$(CPP) -c MultiView/MultiView.cpp -o $@ $(CXXFLAGS)
-
-MultiView/MultiViewImpl.o : MultiView/MultiViewImpl.cpp
-	$(CPP) -c MultiView/MultiViewImpl.cpp -o $@ $(CXXFLAGS)
 
 MultiView/SingleData.o : MultiView/SingleData.cpp
 	$(CPP) -c MultiView/SingleData.cpp -o $@ $(CXXFLAGS)

@@ -13,13 +13,12 @@
 namespace MultiView{
 
 class MultiView;
-class MultiViewImpl;
 class Camera;
 
 class Window
 {
 public:
-	Window(MultiViewImpl *impl, int type);
+	Window(MultiView *view, int type);
 
 	int type;
 	matrix projection_matrix;
@@ -29,7 +28,6 @@ public:
 	rect dest;
 	rect name_dest;
 	MultiView *multi_view;
-	MultiViewImpl *impl;
 	quaternion local_ang;
 	Camera *cam;
 	float zoom();

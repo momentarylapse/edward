@@ -6,7 +6,7 @@
  */
 
 #include "CameraController.h"
-#include "MultiViewImpl.h"
+#include "MultiView.h"
 #include "../lib/nix/nix.h"
 #include "../Edward.h"
 
@@ -20,9 +20,9 @@ const color ColorBackground = color(0.5f, 1, 1, 1);
 const color ColorIcon = color(0.5f, 0.2f, 0.2f, 0.8f);
 const color ColorIconHover = color(0.7f, 0.4f, 0.4f, 1);
 
-CameraController::CameraController(MultiViewImpl *_impl)
+CameraController::CameraController(MultiView *_view)
 {
-	impl = _impl;
+	view = _view;
 	moving = false;
 	rotating = false;
 	zooming = false;
@@ -69,17 +69,17 @@ void CameraController::updateRects()
 bool CameraController::isMouseOver()
 {
 	updateRects();
-	return (show && (r.inside(impl->m.x, impl->m.y))) || r2.inside(impl->m.x, impl->m.y);
+	return (show and (r.inside(view->m.x, view->m.y))) or r2.inside(view->m.x, view->m.y);
 }
 
 void CameraController::onLeftButtonDown()
 {
 	updateRects();
-	if (r_show.inside(impl->m.x, impl->m.y))
+	if (r_show.inside(view->m.x, view->m.y))
 		show = !show;
-	moving = r_move.inside(impl->m.x, impl->m.y);
-	rotating = r_rotate.inside(impl->m.x, impl->m.y);
-	zooming = r_zoom.inside(impl->m.x, impl->m.y);
+	moving = r_move.inside(view->m.x, view->m.y);
+	rotating = r_rotate.inside(view->m.x, view->m.y);
+	zooming = r_zoom.inside(view->m.x, view->m.y);
 }
 
 void CameraController::onLeftButtonUp()
@@ -90,17 +90,17 @@ void CameraController::onLeftButtonUp()
 void CameraController::onMouseMove()
 {
 	if (moving)
-		impl->camMove(vector(-impl->v.x, impl->v.y, 0));
+		view->camMove(vector(-view->v.x, view->v.y, 0));
 	if (rotating)
-		impl->camRotate(impl->v, false);
+		view->camRotate(view->v, false);
 	if (zooming)
-		impl->camZoom(pow(1.007f, impl->v.y), false);
+		view->camZoom(pow(1.007f, view->v.y), false);
 }
 
 void CameraController::draw_icon(const rect &rr, nix::Texture *tex, bool active)
 {
 	nix::SetTexture(tex_bg);
-	if (active || rr.inside(impl->m.x, impl->m.y))
+	if (active or rr.inside(view->m.x, view->m.y))
 		nix::SetColor(ColorIconHover);
 	else
 		nix::SetColor(ColorIcon);
@@ -144,7 +144,7 @@ void CameraController::draw()
 
 bool CameraController::inUse()
 {
-	return (moving || rotating || zooming);
+	return (moving or rotating or zooming);
 }
 
 };

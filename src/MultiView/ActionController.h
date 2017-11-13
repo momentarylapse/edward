@@ -22,7 +22,6 @@ namespace nix{
 namespace MultiView{
 
 class MultiView;
-class MultiViewImpl;
 class Window;
 
 
@@ -56,7 +55,7 @@ enum{
 class ActionController
 {
 public:
-	ActionController(MultiViewImpl *impl);
+	ActionController(MultiView *multi_view);
 	~ActionController();
 	bool visible;
 	vector pos, pos0, m0;
@@ -68,7 +67,7 @@ public:
 	Array<nix::VertexBuffer*> buf;
 	matrix geo_mat;
 	int mouse_over_constraint;
-	MultiViewImpl *multi_view;
+	MultiView *multi_view;
 	MouseAction action;
 	ActionMultiView *cur_action;
 	Data *data;

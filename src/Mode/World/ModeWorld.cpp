@@ -303,7 +303,7 @@ void ModeWorld::onUpdate(Observable *o, const string &message)
 
 
 
-void ModeWorld::onKeyDown()
+void ModeWorld::onKeyDown(int key_code)
 {
 }
 
@@ -353,7 +353,7 @@ void ModeWorld::onDraw()
 
 
 
-void ModeWorld::onKeyUp()
+void ModeWorld::onKeyUp(int key_code)
 {
 }
 

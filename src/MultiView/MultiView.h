@@ -55,6 +55,34 @@ struct Camera
 	bool ignore_radius;
 };
 
+
+class ActionController;
+class CameraController;
+
+
+struct DataSet
+{
+	int type;
+	DynamicArray *data;
+	bool selectable, drawable, movable, indexable;
+	void *user_data;
+};
+
+
+
+extern color ColorBackGround;
+extern color ColorBackGroundSelected;
+extern color ColorGrid;
+extern color ColorText;
+extern color ColorWindowType;
+extern color ColorPoint;
+extern color ColorPointSelected;
+extern color ColorPointSpecial;
+extern color ColorWindowSeparator;
+extern color ColorSelectionRect;
+extern color ColorSelectionRectBoundary;
+
+
 // multiview mask (data)
 static const int FLAG_NONE = 0;
 static const int FLAG_SELECT= 1;
@@ -78,45 +106,22 @@ public:
 	static const string MESSAGE_ACTION_ABORT;
 	static const string MESSAGE_ACTION_EXECUTE;
 
-	virtual void onMouseMove(){};
-	virtual void onMouseWheel(){};
-	virtual void onMouseEnter(){};
-	virtual void onMouseLeave(){};
-	virtual void onLeftButtonDown(){};
-	virtual void onLeftButtonUp(){};
-	virtual void onMiddleButtonDown(){};
-	virtual void onMiddleButtonUp(){};
-	virtual void onRightButtonDown(){};
-	virtual void onRightButtonUp(){};
-	virtual void onKeyDown(){};
-	virtual void onKeyUp(){};
-	virtual void onCommand(const string &id){};
-	virtual void onUpdateMenu(){};
-	virtual void onDraw(){};
 
-	virtual void clearData(Data *data) = 0;
-	virtual void addData(int type, const DynamicArray &a, void *user_data, int flags) = 0;
-	//virtual void SetViewStage(int *view_stage, bool allow_handle) = 0;
-	virtual void reset() = 0;
-	virtual void resetView() = 0;
-	virtual void setViewBox(const vector &min, const vector &max) = 0;
+	void onMouseMove();
+	void onMouseWheel();
+	void onMouseEnter();
+	void onMouseLeave();
+	void onLeftButtonDown();
+	void onLeftButtonUp();
+	void onMiddleButtonDown();
+	void onMiddleButtonUp();
+	void onRightButtonDown();
+	void onRightButtonUp();
+	void onKeyDown(int key_code);
+	void onKeyUp(int key_code);
+	void onCommand(const string &id);
 
-	vector virtual getCursor3d() = 0;
-	vector virtual getCursor3d(const vector &depth_reference) = 0;
-
-	virtual void resetMouseAction() = 0;
-	virtual void setMouseAction(const string &name, int mode, bool locked) = 0;
-	//virtual int getMouseActionMode() = 0;
-
-
-	virtual void addMessage3d(const string &str, const vector &pos) = 0;
-	virtual void resetMessage3d() = 0;
-
-	virtual void pushSettings() = 0;
-	virtual void popSettings() = 0;
-
-	virtual void setAllowAction(bool allow) = 0;
-	virtual void setAllowSelect(bool allow) = 0;
+	void onUpdateMenu();
 
 	bool mode3d;
 	bool whole_window;
@@ -166,6 +171,127 @@ public:
 	static color ColorWindowSeparator;
 	static color ColorSelectionRect;
 	static color ColorSelectionRectBoundary;
+
+	void onDraw();
+	void drawMousePos();
+	void toggleWholeWindow();
+	void toggleGrid();
+	void toggleLight();
+	void toggleWire();
+	void camZoom(float factor, bool mouse_rel);
+	void camMove(const vector &dir);
+	void camRotate(const vector &dir, bool cam_center);
+	void setMode(int mode);
+	void clearData(Data *_data);
+	void addData(int type, const DynamicArray &a, void *user_data, int flags);
+	void SetViewStage(int *view_stage, bool allow_handle);
+	void reset();
+	void resetView();
+	void setViewBox(const vector &min, const vector &max);
+	void setAllowSelect(bool allow);
+	void setAllowAction(bool allow);
+	void pushSettings();
+	void popSettings();
+	struct Settings
+	{
+		bool allow_select;
+		bool allow_action;
+		string action_name;
+		int action_mode;
+		bool action_locked;
+	};
+	Array<Settings> settings_stack;
+
+	void viewStagePush();
+	void viewStagePop();
+
+	void selectAll();
+	void selectNone();
+	void invertSelection();
+	bool hasSelection();
+	vector getSelectionCenter();
+
+	void holdCursor(bool holding);
+	void startRect();
+	void endRect();
+	void updateMouse();
+
+	void getHover();
+	void unselectAll();
+	enum{
+		SELECT_SET,
+		SELECT_ADD,
+		SELECT_INVERT
+	};
+	void getSelected(int mode = SELECT_SET);
+	void selectAllInRectangle(int mode = SELECT_SET);
+	bool hoverSelected();
+	bool hasSelectableData();
+
+	string getScaleByZoom(vector &v);
+
+	vector getCursor3d();
+	vector getCursor3d(const vector &depth_reference);
+
+
+	Array<Window*> win;
+
+	bool lbut, mbut, rbut;
+
+	ActionController *action_con;
+	void resetMouseAction();
+	void setMouseAction(const string &name, int mode, bool locked);
+	bool needActionController();
+	CameraController *cam_con;
+
+	Array<DataSet> data;
+	bool allow_view_stage, allow_view_stage_handling;
+
+	bool allow_infinite_scrolling;
+	bool holding_cursor;
+	float holding_x, holding_y;
+
+	struct SelectionRect
+	{
+		bool active;
+		int dist;
+		vector pos0;
+		void start_later(const vector &m);
+		void end();
+		rect get(const vector &m);
+		void draw(const vector &m);
+	};
+	SelectionRect sel_rect;
+	bool allow_select;
+	bool view_moving;
+
+
+	int moving_win;
+	vector moving_start, moving_dp;
+
+	hui::Menu *menu;
+
+	struct Message3d
+	{
+		string str;
+		vector pos;
+	};
+	Array<Message3d> message3d;
+	void addMessage3d(const string &str, const vector &pos);
+	void resetMessage3d();
+
+
+	float SPEED_MOVE;
+	float SPEED_ZOOM_KEY;
+	float SPEED_ZOOM_WHEEL;
+
+	int MIN_MOUSE_MOVE_TO_INTERACT;
+	float MOUSE_ROTATION_SPEED;
+
+
+
+	int POINT_RADIUS;
+	int POINT_RADIUS_HOVER;
 };
 
 };

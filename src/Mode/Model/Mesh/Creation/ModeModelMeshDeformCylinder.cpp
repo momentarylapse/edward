@@ -331,9 +331,8 @@ void ModeModelMeshDeformCylinder::onLeftButtonUp()
 {
 }
 
-void ModeModelMeshDeformCylinder::onKeyDown()
+void ModeModelMeshDeformCylinder::onKeyDown(int k)
 {
-	int k = hui::GetEvent()->key_code;
 	if (k == hui::KEY_SHIFT + hui::KEY_RETURN)
 		onOk();
 	if (k == hui::KEY_DELETE){

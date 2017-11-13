@@ -6,7 +6,7 @@
  */
 
 #include "Window.h"
-#include "MultiViewImpl.h"
+#include "MultiView.h"
 #include "ActionController.h"
 #include "SingleData.h"
 #include "../Edward.h"
@@ -35,11 +35,10 @@ float GetDensity(int i,float t)
 	return t;
 }
 
-Window::Window(MultiViewImpl *_impl, int _type)
+Window::Window(MultiView *_view, int _type)
 {
-	impl = _impl;
-	multi_view = impl;
-	cam = &impl->cam;
+	multi_view = _view;
+	cam = &multi_view->cam;
 	type = _type;
 
 	if (!shader_lines_3d)
@@ -205,7 +204,7 @@ void Window::drawGrid()
 
 color Window::getBackgroundColor()
 {
-	if (this == impl->active_win)
+	if (this == multi_view->active_win)
 		return multi_view->ColorBackGroundSelected;
 	return multi_view->ColorBackGround;
 }
@@ -315,15 +314,15 @@ void Window::draw()
 	nix::EnableLighting(false);
 	nix::EnableFog(false);
 	nix::SetFog(FOG_EXP, 0, 1000, 0, Black); // some shaders need correct fog values
-	if (impl->grid_enabled)
+	if (multi_view->grid_enabled)
 		drawGrid();
 
-	nix::SetWire(impl->wire_mode);
+	nix::SetWire(multi_view->wire_mode);
 	// light
 	vector dir = cam->ang * e_z;
-	nix::SetLightDirectional(impl->light, dir, color(1,0.6f,0.6f,0.6f), 0.5f, 0.7f);
-	nix::EnableLight(impl->light, true);
-	nix::EnableLighting(impl->light_enabled);
+	nix::SetLightDirectional(multi_view->light, dir, color(1,0.6f,0.6f,0.6f), 0.5f, 0.7f);
+	nix::EnableLight(multi_view->light, true);
+	nix::EnableLighting(multi_view->light_enabled);
 	nix::SetAmbientLight(Black);
 	nix::SetMaterial(Black,White,Black,0,White);//Black);
 	nix::SetColor(White);
@@ -340,25 +339,26 @@ void Window::draw()
 	nix::SetTexture(NULL);
 	nix::SetWire(false);
 	nix::EnableLighting(false);
-	foreachi(DataSet &d, impl->data, di){
+	foreachi(DataSet &d, multi_view->data, di){
 		if (d.drawable or d.indexable){
 			for (int i=0;i<d.data->num;i++){
 
 				SingleData *sd = MVGetSingleData(d, i);
-				if (sd->view_stage < impl->view_stage)
+				if (sd->view_stage < multi_view->view_stage)
 					continue;
 
 				bool _di = (d.indexable and sd->is_selected and index_key);
 				if (!d.drawable and !_di)
 					continue;
 				vector p = project(sd->pos);
+				//if (!dest.inside(p.x,  p.y))
 				if ((p.x<dest.x1)or(p.y<dest.y1)or(p.x>dest.x2)or(p.y>dest.y2)or(p.z<=0)or(p.z>=1))
 					continue;
 				if (_di)
 					nix::DrawStr(p.x+3, p.y, i2s(i));
 				if (d.drawable){
 					color c = multi_view->ColorPoint;
-					float radius = (float)impl->POINT_RADIUS;
+					float radius = (float)multi_view->POINT_RADIUS;
 					float z = p.z - 0.0001f;//0.1f;
 					if (sd->is_selected){
 						c = multi_view->ColorPointSelected;
@@ -367,10 +367,10 @@ void Window::draw()
 					}
 					if (sd->is_special)
 						c = multi_view->ColorPointSpecial;
-					if ((impl->hover.set == di) and (i == impl->hover.index)){
+					if ((multi_view->hover.set == di) and (i == multi_view->hover.index)){
 						c = color(c.a,c.r+0.4f,c.g+0.4f,c.b+0.4f);
 						z = 0.0f;
-						radius = (float)impl->POINT_RADIUS_HOVER;
+						radius = (float)multi_view->POINT_RADIUS_HOVER;
 					}
 					nix::SetColor(c);
 					nix::DrawRect(	p.x-radius,
@@ -389,21 +389,21 @@ void Window::draw()
 
 	// type of view
 
-	if (impl->action_con->visible)
-		impl->action_con->draw(this);
+	if (multi_view->action_con->visible)
+		multi_view->action_con->draw(this);
 
 	name_dest = rect(dest.x1 + 3, dest.x1 + 3 + nix::GetStrWidth(view_kind), dest.y1, dest.y1 + 20);
 
 	nix::SetShader(nix::default_shader_2d);
 	nix::SetColor(multi_view->ColorWindowType);
-	if (ed->isActive("nix-area") and (this == impl->active_win))
+	if (ed->isActive("nix-area") and (this == multi_view->active_win))
 		nix::SetColor(multi_view->ColorText);
-	if ((this == impl->mouse_win) and (impl->hover.meta == impl->hover.HOVER_WINDOW_LABEL))
+	if ((this == multi_view->mouse_win) and (multi_view->hover.meta == multi_view->hover.HOVER_WINDOW_LABEL))
 		nix::SetColor(Red);
 	ed->drawStr(dest.x1 + 3, dest.y1, view_kind);
 	nix::SetColor(multi_view->ColorText);
 
-	for (MultiViewImpl::Message3d &m: impl->message3d){
+	for (auto &m: multi_view->message3d){
 		vector p = project(m.pos);
 		if (p.z > 0)
 			ed->drawStr(p.x, p.y, m.str);
@@ -465,7 +465,7 @@ void Window::getMovingFrame(vector &dir, vector &up, vector &right)
 float Window::zoom()
 {
 	//return 1000.0f / radius;
-	if (impl->mode3d)
+	if (multi_view->mode3d)
 		return dest.height() / cam->radius;
 	else
 		return dest.height() * 0.8f / cam->radius;

@@ -17,12 +17,12 @@ namespace nix{
 
 namespace MultiView{
 
-class MultiViewImpl;
+class MultiView;
 
 class CameraController
 {
 public:
-	CameraController(MultiViewImpl *impl);
+	CameraController(MultiView *view);
 	virtual ~CameraController();
 
 	bool isMouseOver();
@@ -39,7 +39,7 @@ public:
 	bool moving, rotating, zooming;
 	rect r, r_move, r_rotate, r_zoom;
 	rect r2, r_show;
-	MultiViewImpl *impl;
+	MultiView *view;
 	nix::Texture *tex_bg;
 	nix::Texture *tex_move, *tex_rotate, *tex_zoom;
 };

@@ -19,7 +19,7 @@ public:
 	virtual void onStart();
 	virtual void onEnd();
 
-	virtual void onKeyDown();
+	virtual void onKeyDown(int key_code);
 
 	virtual void onDrawWin(MultiView::Window *win);
 

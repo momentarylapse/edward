@@ -7,7 +7,6 @@
 
 #include "Mode.h"
 #include "../MultiView/MultiView.h"
-#include "../MultiView/MultiViewImpl.h"
 
 ModeBase::ModeBase(const string &_name, ModeBase *_parent, MultiView::MultiView *_multi_view, const string &_menu) :
 	Observer(_name)

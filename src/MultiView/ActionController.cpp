@@ -7,7 +7,6 @@
 
 #include "ActionController.h"
 #include "MultiView.h"
-#include "MultiViewImpl.h"
 #include "Window.h"
 #include "../Action/ActionMultiView.h"
 #include "../Edward.h"
@@ -23,9 +22,9 @@
 
 namespace MultiView{
 
-ActionController::ActionController(MultiViewImpl *impl)
+ActionController::ActionController(MultiView *view)
 {
-	multi_view = impl;
+	multi_view = view;
 	geo_mat = m_id;
 	mat = m_id;
 
@@ -89,7 +88,7 @@ void ActionController::startAction(int _constraints)
 }
 
 
-vector transform_ang(MultiViewImpl *mv, const vector &ang)
+vector transform_ang(MultiView *mv, const vector &ang)
 {
 	quaternion qmv, qang, q;
 	qmv =  mv->active_win->local_ang;

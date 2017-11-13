@@ -28,8 +28,8 @@ public:
 	virtual void onMiddleButtonUp();
 	virtual void onRightButtonDown();
 	virtual void onRightButtonUp();
-	virtual void onKeyDown();
-	virtual void onKeyUp();
+	virtual void onKeyDown(int key_code);
+	virtual void onKeyUp(int key_code);
 	virtual void onCommand(const string &id);
 	virtual void onUpdate(Observable *o, const string &message);
 	virtual void onUpdateMenu();

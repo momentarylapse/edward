@@ -54,10 +54,9 @@ void ModeModelSkeletonAttachVertices::onUpdate(Observable *o, const string &mess
 	}
 }
 
-void ModeModelSkeletonAttachVertices::onKeyDown()
+void ModeModelSkeletonAttachVertices::onKeyDown(int key_code)
 {
-	int key = hui::GetEvent()->key_code;
-	if (key == hui::KEY_RETURN){
+	if (key_code == hui::KEY_RETURN){
 		Array<int> index;
 		foreachi(ModelVertex &v, data->vertex, i)
 			if (v.is_selected)

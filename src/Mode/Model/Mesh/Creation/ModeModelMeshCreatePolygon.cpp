@@ -65,9 +65,9 @@ void ModeModelMeshCreatePolygon::onDrawWin(MultiView::Window *win)
 
 
 
-void ModeModelMeshCreatePolygon::onKeyDown()
+void ModeModelMeshCreatePolygon::onKeyDown(int key_code)
 {
-	if (hui::GetEvent()->key_code == hui::KEY_SHIFT + hui::KEY_RETURN){
+	if (key_code == hui::KEY_SHIFT + hui::KEY_RETURN){
 		data->execute(new ActionModelAddPolygonAutoSkin(selection, mode_model_mesh->current_material));
 		abort();
 	}
