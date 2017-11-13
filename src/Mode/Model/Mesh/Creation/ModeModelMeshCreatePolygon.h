@@ -15,7 +15,6 @@ class ModeModelMeshCreatePolygon: public ModeCreation<DataModel>
 {
 public:
 	ModeModelMeshCreatePolygon(ModeBase *parent);
-	virtual ~ModeModelMeshCreatePolygon();
 
 	virtual void onStart();
 	virtual void onEnd();

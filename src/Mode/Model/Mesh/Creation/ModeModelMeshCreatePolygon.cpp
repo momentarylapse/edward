@@ -13,16 +13,18 @@
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
 
+
+namespace MultiView{
+	extern nix::Shader *shader_lines_3d;
+};
+
+
 ModeModelMeshCreatePolygon::ModeModelMeshCreatePolygon(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreatePolygon", _parent)
 {
 	message = format(_("Polygon w&ahlen: %d -> Shift + Return"), 0);
 
 	mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_vertex);
-}
-
-ModeModelMeshCreatePolygon::~ModeModelMeshCreatePolygon()
-{
 }
 
 
@@ -45,16 +47,20 @@ void ModeModelMeshCreatePolygon::onDrawWin(MultiView::Window *win)
 {
 	parent->onDrawWin(win);
 
+	nix::SetColor(Green);
+	nix::SetShader(MultiView::shader_lines_3d);
 	for (int i=1;i<selection.num;i++){
-		nix::EnableLighting(false);
-		vector pa = win->project(data->vertex[selection[i - 1]].pos);
-		vector pb = win->project(data->vertex[selection[i    ]].pos);
-		nix::SetColor(Green);
-		if ((pa.z >= 0) and (pa.z < 1) and (pb.z >= 0) and (pb.z <= 1))
-			nix::DrawLine(pa.x, pa.y, pb.x, pb.y, 0);
-		nix::SetColor(White);
-		nix::EnableLighting(true);
+		vector pa = data->vertex[selection[i - 1]].pos;
+		vector pb = data->vertex[selection[i    ]].pos;
+		nix::DrawLine3D(pa, pb);
 	}
+	if (selection.num > 0){
+		if (multi_view->hover.index >= 0)
+			nix::DrawLine3D(data->vertex[selection.back()].pos, data->vertex[multi_view->hover.index].pos);
+		else
+			nix::DrawLine3D(data->vertex[selection.back()].pos, multi_view->getCursor3d());
+	}
+	nix::SetColor(White);
 }
 
 
