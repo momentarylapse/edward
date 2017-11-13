@@ -41,6 +41,7 @@ public:
 	{
 		mode->updateParams();
 		redraw("area");
+		ed->forceRedraw();
 	}
 
 	float w, h, hf;
@@ -150,6 +151,66 @@ ModeModelMeshDeformCylinder::~ModeModelMeshDeformCylinder()
 	delete inter;
 }
 
+vector get_ev(matrix3 &m)
+{
+	vector v = e_z;
+	float vmax = v * (m * v);
+	Random r;
+	for (int i=0; i<10000; i++){
+		vector vv = r.dir();
+		float val = vv * (m * vv);
+		if (val < vmax){
+			vmax = val;
+			v = vv;
+		}
+	}
+	return v;
+}
+
+void get_axis(DataModel *data, vector axis[2], float &radius)
+{
+	vector m = v_0;
+	int n = 0;
+	foreachi(ModelVertex &v, data->vertex, i){
+		if (v.is_selected){
+			m += v.pos;
+			n ++;
+		}
+	}
+	m /= n;
+	matrix3 I;
+	memset(&I, 0, sizeof(I));
+	foreachi(ModelVertex &v, data->vertex, i){
+		if (v.is_selected){
+			vector r = v.pos - m;
+			I._00 += r.y*r.y + r.z*r.z;
+			I._11 += r.x*r.x + r.z*r.z;
+			I._22 += r.x*r.x + r.y*r.y;
+			I._01 -= r.x*r.y;
+			I._02 -= r.x*r.z;
+			I._12 -= r.y*r.z;
+		}
+	}
+	I._10 = I._01;
+	I._20 = I._02;
+	I._21 = I._12;
+
+	vector dir = get_ev(I);
+	//axis[0] = axis[1] = m;
+	float ll[2] = {0,0};
+	radius = 0;
+	foreachi(ModelVertex &v, data->vertex, i)
+		if (v.is_selected){
+			float l = (v.pos - m) * dir;
+			ll[0] = min(ll[0], l);
+			ll[1] = max(ll[1], l);
+			float r = VecLineDistance(v.pos, m, m + dir);
+			radius = max(radius, r);
+		}
+	axis[0] = m + ll[0] * dir;
+	axis[1] = m + ll[1] * dir;
+}
+
 void ModeModelMeshDeformCylinder::onStart()
 {
 	// Dialog
@@ -159,40 +220,18 @@ void ModeModelMeshDeformCylinder::onStart()
 	dialog->event("ok", std::bind(&ModeModelMeshDeformCylinder::onOk, this));
 	dialog->show();
 
-	//ed->activate("");
+	multi_view->setAllowAction(false);
+	multi_view->setAllowSelect(false);
 
-	vector min, max;
-	data->getBoundingBox(max, min);
-	bool first = true;
 	foreachi(ModelVertex &v, data->vertex, i)
-		if (v.is_selected){
+		if (v.is_selected)
 			index.add(i);
-			old_pos.add(v.pos);
-			if (first){
-				min = v.pos;
-				max = v.pos;
-			}else{
-				min._min(v.pos);
-				max._max(v.pos);
-			}
-			first = false;
-		}
-	vector d = max - min;
-	if ((d.x > d.y) and (d.x > d.z)){
-		dir = e_x;
-		radius = ::max(d.y, d.z) / 2;
-	}else if (d.y > d.z){
-		dir = e_y;
-		radius = ::max(d.x, d.z) / 2;
-	}else{
-		dir = e_z;
-		radius = ::max(d.x, d.y) / 2;
-	}
-	vector m = (max + min) / 2;
-	axis[0] = m + (dir * (min - m)) * dir;
-	axis[1] = m + (dir * (max - m)) * dir;
 
-	geo = new GeometryCylinder(axis[0], axis[1], radius, CYLINDER_RINGS, CYLINDER_EDGES);
+	get_axis(data, axis, radius);
+	dir = axis[1] - axis[0];
+	dir.normalize();
+
+	updateParams();
 	hover = -1;
 }
 
@@ -202,6 +241,8 @@ void ModeModelMeshDeformCylinder::onEnd()
 		restore();
 	delete(dialog);
 	delete(geo);
+	multi_view->setAllowAction(true);
+	multi_view->setAllowSelect(true);
 }
 
 void ModeModelMeshDeformCylinder::updateParams()
@@ -213,6 +254,12 @@ void ModeModelMeshDeformCylinder::updateParams()
 		last = pp.y;
 	}
 
+	if (geo)
+		delete geo;
+
+	geo = new GeometryCylinder(axis[0], axis[1], radius, CYLINDER_RINGS, CYLINDER_EDGES);
+	for (auto &v: geo->vertex)
+		v.pos = transform(v.pos);
 }
 
 void ModeModelMeshDeformCylinder::onDrawWin(MultiView::Window* win)
@@ -250,15 +297,17 @@ void ModeModelMeshDeformCylinder::onDrawWin(MultiView::Window* win)
 	nix::line_width = 1;
 }
 
-inline bool hover_line(vector &a, vector &b, vector &m)
+inline bool hover_line(vector &a, vector &b, vector &m, vector &tp)
 {
-	const float r = 10;
+	const float r = 5;
 	//if ((a - m).length() < r)
 	//	return true;
 	if (VecLineDistance(a, b, m) < r){
 		vector p = VecLineNearestPoint(m, a, b);
-		if (p.between(a, b))
+		if (p.between(a, b)){
+			tp = p;
 			return true;
+		}
 	}
 	return false;
 }
@@ -276,8 +325,9 @@ void ModeModelMeshDeformCylinder::updateHover()
 			float ang = (float)i / (float)CYLINDER_EDGES * 2 * pi;
 			vector w = multi_view->mouse_win->project(m + (e1 * cos(ang) + e2 * sin(ang)) * radius * p.z);
 			w.z = 0;
-			if (hover_line(v, w, multi_view->m)){
+			if (hover_line(v, w, multi_view->m, hover_tp)){
 				hover = ip;
+				orig_param = p;
 				return;
 			}
 			v = w;
@@ -321,7 +371,35 @@ void ModeModelMeshDeformCylinder::onPreview()
 
 void ModeModelMeshDeformCylinder::onMouseMove()
 {
-	updateHover();
+	if (hui::GetEvent()->lbut){
+		if (hover >= 0){
+			vector m = multi_view->m;
+			vector a0 = multi_view->mouse_win->project(axis[0]);
+			vector a1 = multi_view->mouse_win->project(axis[1]);
+			vector pp = hover_tp;//multi_view->mouse_win->project(hover_tp);
+			m.z = a0.z = a1.z = pp.z = 0;
+
+			float dpp = VecLineDistance(pp, a0, a1);
+			float dm = VecLineDistance(m, a0, a1);
+			if (dpp > 10){
+				param[hover].z = orig_param.z * dm / dpp;
+			}
+
+			if ((hover != 0) and (hover != param.num-1)){
+				vector d = (a1 - a0);
+				float la = d.length();
+				d.normalize();
+				float lm = (m - pp) * d;
+				if (la > 30){
+					param[hover].y = orig_param.y +  lm / la;
+					param[hover].x = param[hover].y;
+				}
+			}
+			updateParams();
+		}
+	}else{
+		updateHover();
+	}
 }
 
 void ModeModelMeshDeformCylinder::onLeftButtonDown()

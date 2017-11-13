@@ -47,6 +47,8 @@ public:
 	float radius;
 	Array<vector> param;
 	int hover;
+	vector hover_tp;
+	vector orig_param;
 
 	Interpolator<float> *inter;
 
