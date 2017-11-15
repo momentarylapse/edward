@@ -15,6 +15,7 @@ bool smooth_lines = false;
 //static color current_color = White;
 
 unsigned int line_buffer = 0;
+unsigned int color_buffer = 0;
 
 
 render_str_function *render_str = NULL;
@@ -184,6 +185,49 @@ void DrawLines(Array<vector> &p, bool contiguous)
 		glDrawArrays(GL_LINES, 0, p.num);
 	TestGLError("e");
 
+	glDisableVertexAttribArray(0);
+	TestGLError("f");
+}
+
+void DrawLinesColored(Array<vector> &p, Array<color> &c, bool contiguous)
+{
+	current_shader->set_default_data();
+
+	if (line_buffer == 0)
+		glGenBuffers(1, &line_buffer);
+	if (color_buffer == 0)
+		glGenBuffers(1, &color_buffer);
+
+	TestGLError("opt0");
+	glBindBuffer(GL_ARRAY_BUFFER, line_buffer);
+	glBufferData(GL_ARRAY_BUFFER, p.num * sizeof(p[0]), &p[0], GL_STATIC_DRAW);
+	TestGLError("opt1");
+	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
+	glBufferData(GL_ARRAY_BUFFER, c.num * sizeof(c[0]), &c[0], GL_STATIC_DRAW);
+
+	TestGLError("a");
+	glEnableVertexAttribArray(0);
+	TestGLError("b1");
+	glBindBuffer(GL_ARRAY_BUFFER, line_buffer);
+	TestGLError("c1");
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	TestGLError("d1");
+
+	TestGLError("a");
+	glEnableVertexAttribArray(1);
+	TestGLError("b1");
+	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
+	TestGLError("c1");
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	TestGLError("d1");
+
+	if (contiguous)
+		glDrawArrays(GL_LINE_STRIP, 0, p.num);
+	else
+		glDrawArrays(GL_LINES, 0, p.num);
+	TestGLError("e");
+
+	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(0);
 	TestGLError("f");
 }

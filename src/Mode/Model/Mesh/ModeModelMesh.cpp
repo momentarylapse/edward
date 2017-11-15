@@ -45,6 +45,7 @@ ModeModelMesh *mode_model_mesh = NULL;
 
 namespace MultiView{
 	extern nix::Shader *shader_lines_3d;
+	extern nix::Shader *shader_colored_lines_3d;
 }
 
 ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
@@ -588,7 +589,10 @@ void ModeModelMesh::drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex
 	color bg = win->getBackgroundColor();
 
 	nix::SetWire(false);
-	nix::SetShader(MultiView::shader_lines_3d);
+	//nix::SetShader(MultiView::shader_lines_3d);
+	nix::SetShader(MultiView::shader_colored_lines_3d);
+	Array<vector> line_pos;
+	Array<color> line_color;
 
 	vector dir = win->getDirection();
 	for (ModelSurface &s: data->surface){
@@ -599,13 +603,21 @@ void ModeModelMesh::drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex
 				continue;
 			float w = max(s.polygon[e.polygon[0]].temp_normal * dir, s.polygon[e.polygon[1]].temp_normal * dir);
 			float f = 0.5f - 0.4f*w;//0.7f - 0.3f * w;
-			if (e.is_selected)
-				nix::SetColor(color(1, f, 0, 0));
-			else
-				nix::SetColor(f * multi_view->ColorText + (1 - f) * bg);
-			nix::DrawLine3D(vertex[e.vertex[0]].pos, vertex[e.vertex[1]].pos);
+			if (e.is_selected){
+				//nix::SetColor(color(1, f, 0, 0));
+				line_color.add(color(1, f, 0, 0));
+				line_color.add(color(1, f, 0, 0));
+			}else{
+				//nix::SetColor(f * multi_view->ColorText + (1 - f) * bg);
+				line_color.add(f * multi_view->ColorText + (1 - f) * bg);
+				line_color.add(f * multi_view->ColorText + (1 - f) * bg);
+			}
+			//nix::DrawLine3D(vertex[e.vertex[0]].pos, vertex[e.vertex[1]].pos);
+			line_pos.add(vertex[e.vertex[0]].pos);
+			line_pos.add(vertex[e.vertex[1]].pos);
 		}
 	}
+	nix::DrawLinesColored(line_pos, line_color, false);
 	nix::SetColor(White);
 	nix::SetWire(win->multi_view->wire_mode);
 }
