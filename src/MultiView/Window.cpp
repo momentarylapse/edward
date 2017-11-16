@@ -43,53 +43,9 @@ Window::Window(MultiView *_view, int _type)
 	type = _type;
 
 	if (!shader_lines_3d)
-		shader_lines_3d = nix::CreateShader(
-					"<VertexShader>\n"
-					"#version 330 core\n"
-					"uniform mat4 mat_mvp;\n"
-					"layout(location = 0) in vec3 inPosition;\n"
-					//"layout(location = 2) in vec2 inTexCoord;\n"
-					//"out vec2 fragmentTexCoord;\n"
-					"void main(){\n"
-					"	gl_Position = mat_mvp * vec4(inPosition,1);\n"
-					//"	fragmentTexCoord = vec2(inTexCoord.x, 1-inTexCoord.y);\n"
-					"}\n"
-					"</VertexShader>\n"
-					"<FragmentShader>\n"
-					"#version 330 core\n"
-					"struct Material{ vec4 ambient, diffusive, specular, emission; float shininess; };\n"
-					"uniform Material material;\n"
-					//"in vec2 fragmentTexCoord;\n"
-					//"uniform sampler2D tex0;\n"
-					"out vec4 color;\n"
-					"void main(){\n"
-					//"	color = texture(tex0, fragmentTexCoord);\n"
-					"	color = material.emission;\n"
-					"}\n"
-					"</FragmentShader>");
-
+		shader_lines_3d = nix::LoadShader(app->directory_static + "shader/lines.shader");
 	if (!shader_colored_lines_3d)
-		shader_colored_lines_3d = nix::CreateShader(
-					"<VertexShader>\n"
-					"#version 330 core\n"
-					"uniform mat4 mat_mvp;\n"
-					"layout(location = 0) in vec3 inPosition;\n"
-					"layout(location = 1) in vec4 inColor;\n"
-					"out vec2 fragmentTexCoord;\n"
-					"out vec4 fragmentColor;\n"
-					"void main(){\n"
-					"	gl_Position = mat_mvp * vec4(inPosition,1);\n"
-					"	fragmentColor = inColor;\n"
-					"}\n"
-					"</VertexShader>\n"
-					"<FragmentShader>\n"
-					"#version 330 core\n"
-					"in vec4 fragmentColor;\n"
-					"out vec4 color;\n"
-					"void main(){\n"
-					"	color = fragmentColor;\n"
-					"}\n"
-					"</FragmentShader>");
+		shader_colored_lines_3d = nix::LoadShader(app->directory_static + "shader/lines-colored.shader");
 }
 
 

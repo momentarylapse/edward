@@ -2,8 +2,9 @@ message.txt
 Debug
 Release
 .settings
-Data/config.txt
-Data/admin_database.txt
+config.txt
+admin_database.txt
+scriptvars*.txt
 Plugins/_*.kaba
 *~
 *.o

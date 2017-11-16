@@ -151,7 +151,7 @@ void ModeFont::_new()
 
 void ModeFont::onStart()
 {
-	string dir = (app->directory_static + "Data/icons/toolbar/").sys_filename();
+	string dir = app->directory_static + "icons/toolbar/";
 	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
 	t->reset();
 	t->addItem(L("", "new"),dir + "new.png","new");

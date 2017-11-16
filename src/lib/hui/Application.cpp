@@ -27,6 +27,7 @@ string Application::filename;
 string Application::directory;
 string Application::directory_static;
 string Application::initial_working_directory;
+bool Application::installed;
 bool Application::running;
 
 Array<string> Application::_args;
@@ -58,6 +59,7 @@ Application::~Application()
 void Application::_init(const Array<string> &arg, const string &program, bool load_res, const string &def_lang)
 {
 	initial_working_directory = get_current_dir();
+	installed = false;
 
 	#ifdef HUI_API_GTK
 		g_set_prgname(program.c_str());
@@ -65,10 +67,11 @@ void Application::_init(const Array<string> &arg, const string &program, bool lo
 
 	#ifdef OS_LINUX
 		directory = initial_working_directory;
-		directory_static = directory;
+		directory_static = directory + "static/";
 		if (arg.num > 0){
 			filename = arg[0];
 			if ((arg[0].head(5) == "/usr/") or (arg[0].find("/") < 0)){
+				installed = true;
 				// installed version?
 				filename = arg[0];
 				directory = format("%s/.%s/", getenv("HOME"), program.c_str());
@@ -107,14 +110,14 @@ void Application::_init(const Array<string> &arg, const string &program, bool lo
 	SetDefaultErrorHandler(NULL);
 	//msg_write("");
 
-	Config.filename = directory + "Data/config.txt";
+	Config.filename = directory + "config.txt";
 
 
 	//msg_write("HuiAppDirectory " + HuiAppDirectory);
 	//msg_write("HuiInitialWorkingDirectory " + HuiInitialWorkingDirectory);
 
 	if (load_res)
-		LoadResource(directory_static + "Data/hui_resources.txt");
+		LoadResource(directory_static + "hui_resources.txt");
 
 	if (def_lang.num > 0)
 		SetLanguage(Config.getStr("Language", def_lang));
@@ -127,10 +130,10 @@ void Application::_init(const Array<string> &arg, const string &program, bool lo
 
 
 
-	if (file_test_existence(directory_static + "Data/icon.svg"))
-		setProperty("logo", directory_static + "Data/icon.svg");
-	else if (file_test_existence(directory_static + "Data/icon.ico"))
-		setProperty("logo", directory_static + "Data/icon.ico");
+	if (file_test_existence(directory_static + "icon.svg"))
+		setProperty("logo", directory_static + "icon.svg");
+	else if (file_test_existence(directory_static + "icon.ico"))
+		setProperty("logo", directory_static + "icon.ico");
 }
 
 int Application::run()

@@ -592,7 +592,11 @@ void Edward::onUpdate(Observable *o, const string &message)
 void Edward::onExecutePlugin()
 {
 	string temp = dialog_dir[FD_SCRIPT];
-	dialog_dir[FD_SCRIPT] = app->directory_static + "Plugins/";
+	if (app->installed)
+		dialog_dir[FD_SCRIPT] = app->directory_static + "Plugins/";
+	else
+		dialog_dir[FD_SCRIPT] = app->directory + "Plugins/";
+
 	if (fileDialog(FD_SCRIPT, false, false))
 		plugins->execute(dialog_file_complete);
 	dialog_dir[FD_SCRIPT] = temp;
@@ -640,9 +644,9 @@ void Edward::onDraw()
 void Edward::loadKeyCodes()
 {
 	msg_db_f("LoadKeyCodes", 1);
-	File *f = FileOpen(app->directory + "Data/keys.txt");
+	File *f = FileOpen(app->directory + "keys.txt");
 	if (!f)
-		f = FileOpen(app->directory_static + "Data/keys.txt");
+		f = FileOpen(app->directory_static + "keys.txt");
 	f->ReadComment();
 	int nk = f->ReadInt();
 	f->ReadComment();

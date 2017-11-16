@@ -19,8 +19,8 @@ ModeWelcome *mode_welcome = NULL;
 ModeWelcome::ModeWelcome():
 	ModeBase("Welcome", NULL, NULL, "menu_nomode")
 {
-	tex_icons = nix::LoadTexture(app->directory_static + "Data/icons/icons.tga");
-	tex_logo = nix::LoadTexture(app->directory_static + "Data/edward.jpg");
+	tex_icons = nix::LoadTexture(app->directory_static + "icons/icons.tga");
+	tex_logo = nix::LoadTexture(app->directory_static + "edward.jpg");
 	mouse_over = -1;
 	mouse_over_cmd = -1;
 }
