@@ -18,6 +18,11 @@ hui::Timer timer;
 namespace MultiView{
 
 nix::Shader *shader_selection = NULL;
+nix::Shader *shader_lines_3d = NULL;
+nix::Shader *shader_lines_3d_colored = NULL;
+nix::Shader *shader_lines_3d_colored_wide = NULL;
+
+
 
 #define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 //#define MVGetSingleData(d, index)	( dynamic_cast<MultiViewSingleData*> ((char*)(d).data + (d).DataSingleSize * index))
@@ -136,40 +141,15 @@ MultiView::MultiView(bool mode3d) :
 	allow_mouse_actions = true;
 	allow_select = true;
 
-	if (!shader_selection){
-		shader_selection = nix::CreateShader(
-				"<VertexShader>\n"
-				"#version 330 core\n"
-				"uniform mat4 mat_mvp;\n"
-				"uniform mat4 mat_m;\n"
-				"uniform mat4 mat_v;\n"
-				"layout(location = 0) in vec3 inPosition;\n"
-				"layout(location = 1) in vec3 inNormal;\n"
-				"out vec3 fragmentNormal;\n"
-				"void main(){\n"
-				"	gl_Position = mat_mvp * vec4(inPosition,1);\n"
-				"	fragmentNormal = (mat_v * mat_m * vec4(inNormal,0)).xyz;\n"
-				"}\n"
-				"</VertexShader>\n"
-				"<FragmentShader>\n"
-				"#version 330 core\n"
-				"struct Material{ vec4 ambient, diffusive, specular, emission; float shininess; };\n"
-				"struct Light{ vec4 color; vec3 pos; float radius, ambient, specular; };\n"
-				"uniform Material material;\n"
-				"uniform Light light;\n"
-				"in vec3 fragmentNormal;\n"
-				"out vec4 color;\n"
-				"void main(){\n"
-				"	vec3 n = normalize(fragmentNormal);\n"
-				"	vec3 l = light.pos;\n"
-				"	float d = max(-dot(n, l), 0);\n"
-				"	color = material.emission;\n"
-				"	color += material.ambient * light.color * light.ambient;\n"
-				"	color += material.diffusive* light.color * d;\n"
-				"	color.a = material.diffusive.a;\n"
-				"}\n"
-				"</FragmentShader>");
-	}
+
+	if (!shader_lines_3d)
+		shader_lines_3d = nix::LoadShader(app->directory_static + "shader/lines-3d.shader");
+	if (!shader_lines_3d_colored)
+		shader_lines_3d_colored = nix::LoadShader(app->directory_static + "shader/lines-3d-colored.shader");
+	if (!shader_lines_3d_colored_wide)
+		shader_lines_3d_colored_wide = nix::LoadShader(app->directory_static + "shader/lines-3d-colored-wide.shader");
+	if (!shader_selection)
+		shader_selection = nix::LoadShader(app->directory_static + "shader/selection.shader");
 
 	reset();
 }
@@ -1119,6 +1099,22 @@ void MultiView::viewStagePop()
 void MultiView::resetMessage3d()
 {
 	message3d.clear();
+}
+
+void set_wide_lines(float width)
+{
+	if (width == 1.0f){
+		nix::SetShader(shader_lines_3d_colored);
+	}else{
+		auto s = shader_lines_3d_colored_wide;
+		nix::SetShader(s);
+		int loc_tw = s->get_location("target_width");
+		int loc_th = s->get_location("target_height");
+		int loc_lw = s->get_location("line_width");
+		s->set_float(loc_tw, nix::target_width);
+		s->set_float(loc_th, nix::target_height);
+		s->set_float(loc_lw, width);
+	}
 }
 
 

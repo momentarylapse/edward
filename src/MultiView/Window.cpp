@@ -19,9 +19,7 @@ namespace nix{
 
 namespace MultiView{
 
-nix::Shader *shader_lines_3d = NULL;
-nix::Shader *shader_colored_lines_3d = NULL;
-
+extern nix::Shader *shader_lines_3d;
 
 #define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 
@@ -41,11 +39,6 @@ Window::Window(MultiView *_view, int _type)
 	multi_view = _view;
 	cam = &multi_view->cam;
 	type = _type;
-
-	if (!shader_lines_3d)
-		shader_lines_3d = nix::LoadShader(app->directory_static + "shader/lines.shader");
-	if (!shader_colored_lines_3d)
-		shader_colored_lines_3d = nix::LoadShader(app->directory_static + "shader/lines-colored.shader");
 }
 
 

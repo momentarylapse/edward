@@ -14,6 +14,11 @@
 #include "../../Skeleton/ModeModelSkeleton.h"
 #include "MeshSelectionModePolygon.h"
 
+
+namespace MultiView{
+	void set_wide_lines(float width);
+}
+
 MeshSelectionModeEdge::MeshSelectionModeEdge(ModeModelMesh *_parent) :
 	MeshSelectionMode(_parent)
 {
@@ -105,14 +110,20 @@ void MeshSelectionModeEdge::onDrawWin(MultiView::Window *win)
 
 	nix::SetWire(false);
 	nix::SetZ(false, false);
-	nix::EnableLighting(false);
-	nix::SetColor(color(1, 0.7f, 0.7f, 1));
+	MultiView::set_wide_lines(2.0f);
+	//nix::SetColor(color(1, 0.7f, 0.7f, 1));
 	ModelEdge &e = data->surface[multi_view->hover.set].edge[multi_view->hover.index];
-	nix::DrawLine3D(data->show_vertices[e.vertex[0]].pos, data->show_vertices[e.vertex[1]].pos);
+	Array<vector> p;
+	p.add(data->show_vertices[e.vertex[0]].pos);
+	p.add(data->show_vertices[e.vertex[1]].pos);
+	Array<color> c;
+	c.add(color(1, 0.7f, 0.7f, 1));
+	c.add(color(1, 0.7f, 0.7f, 1));
+	nix::DrawLinesColored(p, c, false);
+	//nix::DrawLine3D(data->show_vertices[e.vertex[0]].pos, data->show_vertices[e.vertex[1]].pos);
 	nix::SetColor(White);
 	nix::SetZ(true, true);
 	nix::SetWire(win->multi_view->wire_mode);
-	nix::EnableLighting(multi_view->light_enabled);
 }
 
 

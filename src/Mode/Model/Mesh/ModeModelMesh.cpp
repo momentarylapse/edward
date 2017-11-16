@@ -44,8 +44,7 @@ ModeModelMesh *mode_model_mesh = NULL;
 
 
 namespace MultiView{
-	extern nix::Shader *shader_lines_3d;
-	extern nix::Shader *shader_colored_lines_3d;
+	void set_wide_lines(float width);
 }
 
 ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
@@ -583,23 +582,22 @@ void ModeModelMesh::drawEffects(MultiView::Window *win)
 	nix::EnableLighting(multi_view->light_enabled);
 }
 
-
-void ModeModelMesh::drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex, bool only_selected)
+void draw_edges(DataModel *data, MultiView::Window *win, Array<ModelVertex> &vertex, bool selection_filter)
 {
 	color bg = win->getBackgroundColor();
+	auto *multi_view = win->multi_view;
 
 	nix::SetWire(false);
-	//nix::SetShader(MultiView::shader_lines_3d);
-	nix::SetShader(MultiView::shader_colored_lines_3d);
+	MultiView::set_wide_lines(selection_filter ? 2.0f : 1.0f);
 	Array<vector> line_pos;
 	Array<color> line_color;
 
 	vector dir = win->getDirection();
 	for (ModelSurface &s: data->surface){
 		for (ModelEdge &e: s.edge){
-			if (min(vertex[e.vertex[0]].view_stage, vertex[e.vertex[1]].view_stage) < multi_view->view_stage)
+			if (e.is_selected != selection_filter)
 				continue;
-			if (!e.is_selected and only_selected)
+			if (min(vertex[e.vertex[0]].view_stage, vertex[e.vertex[1]].view_stage) < multi_view->view_stage)
 				continue;
 			float w = max(s.polygon[e.polygon[0]].temp_normal * dir, s.polygon[e.polygon[1]].temp_normal * dir);
 			float f = 0.5f - 0.4f*w;//0.7f - 0.3f * w;
@@ -620,6 +618,13 @@ void ModeModelMesh::drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex
 	nix::DrawLinesColored(line_pos, line_color, false);
 	nix::SetColor(White);
 	nix::SetWire(win->multi_view->wire_mode);
+}
+
+void ModeModelMesh::drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex, bool only_selected)
+{
+	if (!only_selected)
+		draw_edges(data, win, vertex, false);
+	draw_edges(data, win, vertex, true);
 }
 
 

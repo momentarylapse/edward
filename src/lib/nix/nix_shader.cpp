@@ -324,6 +324,14 @@ void Shader::set_int(int location, int i)
 	TestGLError("SetShaderInt");
 }
 
+void Shader::set_float(int location, float f)
+{
+	if (location < 0)
+		return;
+	glUniform1f(location, f);
+	TestGLError("SetShaderFloat");
+}
+
 void Shader::set_color(int location, const color &c)
 {
 	if (location < 0)
