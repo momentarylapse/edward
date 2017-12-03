@@ -181,7 +181,8 @@ void Edward::exit()
 #define IMPLEMENT_EVENT(EVENT) \
 void Edward::EVENT() \
 { \
-	cur_mode->multi_view->EVENT(); \
+	if (cur_mode->multi_view) \
+		cur_mode->multi_view->EVENT(); \
 	cur_mode->EVENT(); \
 }
 
@@ -199,14 +200,16 @@ IMPLEMENT_EVENT(onRightButtonUp)
 void Edward::onKeyDown()
 {
 	int key_code = hui::GetEvent()->key_code;
-	cur_mode->multi_view->onKeyDown(key_code);
+	if (cur_mode->multi_view)
+		cur_mode->multi_view->onKeyDown(key_code);
 	cur_mode->onKeyDown(key_code);
 }
 
 void Edward::onKeyUp()
 {
 	int key_code = hui::GetEvent()->key_code;
-	cur_mode->multi_view->onKeyUp(key_code);
+	if (cur_mode->multi_view)
+		cur_mode->multi_view->onKeyUp(key_code);
 	cur_mode->onKeyUp(key_code);
 }
 
@@ -215,7 +218,8 @@ void Edward::onEvent()
 	string id = hui::GetEvent()->id;
 	if (id.num == 0)
 		id = hui::GetEvent()->message;
-	cur_mode->multi_view->onCommand(id);
+	if (cur_mode->multi_view)
+		cur_mode->multi_view->onCommand(id);
 	cur_mode->onCommandRecursive(id);
 	onCommand(id);
 }
@@ -630,7 +634,8 @@ void Edward::onDraw()
 	auto e = hui::GetEvent();
 	nix::Resize(e->column, e->row);
 
-	cur_mode->multi_view->onDraw();
+	if (cur_mode->multi_view)
+		cur_mode->multi_view->onDraw();
 	cur_mode->onDraw();
 
 	// messages

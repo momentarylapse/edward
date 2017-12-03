@@ -1638,7 +1638,7 @@ void Model::SortingTest(vector &pos,const vector &dpos,matrix *mat,bool allow_sh
 
 void Model::Draw(int detail, bool set_fx, bool allow_shadow)
 {
-	if	(detail < SKIN_HIGH)
+	if (detail < SKIN_HIGH)
 		return;
 //	msg_write("d");
 	// shadows?

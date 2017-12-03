@@ -166,27 +166,27 @@ void DrawLines(Array<vector> &p, bool contiguous)
 	if (line_buffer == 0)
 		glGenBuffers(1, &line_buffer);
 
-	TestGLError("opt0");
+	TestGLError("dls-opt0");
 	glBindBuffer(GL_ARRAY_BUFFER, line_buffer);
 	glBufferData(GL_ARRAY_BUFFER, p.num * sizeof(p[0]), &p[0], GL_STATIC_DRAW);
-	TestGLError("opt1");
+	TestGLError("dls-opt1");
 
-	TestGLError("a");
+	TestGLError("dls-a");
 	glEnableVertexAttribArray(0);
-	TestGLError("b1");
+	TestGLError("dls-b1");
 	glBindBuffer(GL_ARRAY_BUFFER, line_buffer);
-	TestGLError("c1");
+	TestGLError("dls-c1");
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	TestGLError("d1");
+	TestGLError("dls-d1");
 
 	if (contiguous)
 		glDrawArrays(GL_LINE_STRIP, 0, p.num);
 	else
 		glDrawArrays(GL_LINES, 0, p.num);
-	TestGLError("e");
+	TestGLError("dls-e");
 
 	glDisableVertexAttribArray(0);
-	TestGLError("f");
+	TestGLError("dls-f");
 }
 
 void DrawLinesColored(Array<vector> &p, Array<color> &c, bool contiguous)
@@ -198,38 +198,38 @@ void DrawLinesColored(Array<vector> &p, Array<color> &c, bool contiguous)
 	if (color_buffer == 0)
 		glGenBuffers(1, &color_buffer);
 
-	TestGLError("opt0");
+	TestGLError("dlc-opt0");
 	glBindBuffer(GL_ARRAY_BUFFER, line_buffer);
 	glBufferData(GL_ARRAY_BUFFER, p.num * sizeof(p[0]), &p[0], GL_STATIC_DRAW);
-	TestGLError("opt1");
+	TestGLError("dlc-opt1");
 	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
 	glBufferData(GL_ARRAY_BUFFER, c.num * sizeof(c[0]), &c[0], GL_STATIC_DRAW);
 
-	TestGLError("a");
+	TestGLError("dlc-a1");
 	glEnableVertexAttribArray(0);
-	TestGLError("b1");
+	TestGLError("dlc-b1");
 	glBindBuffer(GL_ARRAY_BUFFER, line_buffer);
-	TestGLError("c1");
+	TestGLError("dlc-c1");
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	TestGLError("d1");
+	TestGLError("dlc-d1");
 
-	TestGLError("a");
+	TestGLError("dlc-2a");
 	glEnableVertexAttribArray(1);
-	TestGLError("b1");
+	TestGLError("dlc-b2");
 	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
-	TestGLError("c1");
+	TestGLError("dlc-c2");
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	TestGLError("d1");
+	TestGLError("dlc-d2");
 
 	if (contiguous)
 		glDrawArrays(GL_LINE_STRIP, 0, p.num);
 	else
 		glDrawArrays(GL_LINES, 0, p.num);
-	TestGLError("e");
+	TestGLError("dlc-e");
 
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(0);
-	TestGLError("f");
+	TestGLError("dlc-f");
 }
 
 void DrawLineV(float x, float y1, float y2, float depth)
@@ -261,24 +261,24 @@ void DrawLine3D(const vector &l1, const vector &l2)
 	if (line_buffer == 0)
 		glGenBuffers(1, &line_buffer);
 
-	TestGLError("opt0");
+	TestGLError("dl-opt0");
 	glBindBuffer(GL_ARRAY_BUFFER, line_buffer);
 	glBufferData(GL_ARRAY_BUFFER, 2 * sizeof(v[0]), &v[0], GL_STATIC_DRAW);
-	TestGLError("opt1");
+	TestGLError("dl-opt1");
 
-	TestGLError("a");
+	TestGLError("dl-a");
 	glEnableVertexAttribArray(0);
-	TestGLError("b1");
+	TestGLError("dl-b1");
 	glBindBuffer(GL_ARRAY_BUFFER, line_buffer);
-	TestGLError("c1");
+	TestGLError("dl-c1");
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	TestGLError("d1");
+	TestGLError("dl-d1");
 
 	glDrawArrays(GL_LINES, 0, 2);
-	TestGLError("e");
+	TestGLError("dl-e");
 
 	glDisableVertexAttribArray(0);
-	TestGLError("f");
+	TestGLError("dl-f");
 }
 
 void DrawRect(float x1, float x2, float y1, float y2, float depth)
@@ -317,8 +317,8 @@ void Draw2D(const rect &src, const rect &dest, float depth)
 	vector b = vector(dest.x2, dest.y1, depth);
 	vector c = vector(dest.x1, dest.y2, depth);
 	vector d = vector(dest.x2, dest.y2, depth);
-	vb_2d->addTria(a, v_0, src.x1, 1-src.y1, b, v_0, src.x2, 1-src.y1, c, v_0, src.x1, 1-src.y2);
-	vb_2d->addTria(c, v_0, src.x1, 1-src.y2, b, v_0, src.x2, 1-src.y1, d, v_0, src.x2, 1-src.y2);
+	vb_2d->addTria(a, v_0, src.x1, src.y1, b, v_0, src.x2, src.y1, c, v_0, src.x1, src.y2);
+	vb_2d->addTria(c, v_0, src.x1, src.y2, b, v_0, src.x2, src.y1, d, v_0, src.x2, src.y2);
 	Draw3D(vb_2d);
 }
 

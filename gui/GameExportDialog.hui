@@ -1,73 +1,33 @@
-// IDs
-enum{
-	HMM_GE_DIALOG,
-	HMM_ROOTDIR,
-	HMM_FIND_ROOTDIR,
-	HMM_GED_T_SYSTEM,
-	HMM_GED_SYSTEM,
-	HMM_GED_T_EXPORT_TYPE,
-	HMM_EXPORT_TYPE,
-	HMM_GED_GROUP,
-	HMM_GED_T_WORLD,
-	HMM_DEFAULT_WORLD,
-	HMM_FIND_DEFAULT_WORLD,
-	HMM_GED_T_SCRIPT,
-	HMM_DEFAULT_SCRIPT,
-	HMM_FIND_DEFAULT_SCRIPT,
-	HMM_GED_T_MATERIAL,
-	HMM_DEFAULT_MATERIAL,
-	HMM_FIND_DEFAULT_MATERIAL,
-	HMM_GED_T_FONT,
-	HMM_DEFAULT_FONT,
-	HMM_FIND_DEFAULT_FONT,
-	HMM_CANCEL,
-	HMM_OK,
-	HMM_GED_T_SECOND_WORLD,
-	HMM_DEFAULT_SECOND_WORLD,
-	HMM_FIND_DEFAULT_SECOND_WORLD,
-	HMM_GED_GROUP_DEST
-};
-
-
-
-	// dialog
-	ConfigurationDialog=HuiCreateDialog("Das Spiel exportieren",365,380,Dialog,false,&ConfigurationDialogFunction);
-	ConfigurationDialog->SetID(HMM_GE_DIALOG);
-	ConfigurationDialog->AddEdit("",30,40,295,25,HMM_ROOTDIR);
-	ConfigurationDialog->Enable(HMM_ROOTDIR,false);
-	ConfigurationDialog->AddButton("",330,40,25,25,HMM_FIND_ROOTDIR);
-	ConfigurationDialog->SetImage(HMM_FIND_ROOTDIR,HuiImageOpen);
-	ConfigurationDialog->AddText("System:",30,70,95,25,HMM_GED_T_SYSTEM);
-	ConfigurationDialog->AddComboBox("Linux\\Windows 32",125,70,230,25,HMM_GED_SYSTEM);
-	ConfigurationDialog->AddText("Form:",30,100,95,25,HMM_GED_T_EXPORT_TYPE);
-	ConfigurationDialog->AddComboBox("einzelne Dateien\\Archiv (komprimiert)\\Archiv (unkomprimiert)",125,100,230,25,HMM_EXPORT_TYPE);
-	ConfigurationDialog->AddText("!bold\\Standartwerte des Spiels",10,150,345,25,HMM_GED_GROUP);
-	ConfigurationDialog->AddText("Welt:",30,180,95,25,HMM_GED_T_WORLD);
-	ConfigurationDialog->AddEdit("",125,180,200,25,HMM_DEFAULT_WORLD);
-	ConfigurationDialog->AddButton("",330,180,25,25,HMM_FIND_DEFAULT_WORLD);
-	ConfigurationDialog->SetImage(HMM_FIND_DEFAULT_WORLD,HuiImageOpen);
-	ConfigurationDialog->AddText("Haupt-Script:",30,240,95,25,HMM_GED_T_SCRIPT);
-	ConfigurationDialog->AddEdit("",125,240,200,25,HMM_DEFAULT_SCRIPT);
-	ConfigurationDialog->AddButton("",330,240,25,25,HMM_FIND_DEFAULT_SCRIPT);
-	ConfigurationDialog->SetImage(HMM_FIND_DEFAULT_SCRIPT,HuiImageOpen);
-	ConfigurationDialog->AddText("Material:",30,270,95,25,HMM_GED_T_MATERIAL);
-	ConfigurationDialog->AddEdit("",125,270,200,25,HMM_DEFAULT_MATERIAL);
-	ConfigurationDialog->AddButton("",330,270,25,25,HMM_FIND_DEFAULT_MATERIAL);
-	ConfigurationDialog->SetImage(HMM_FIND_DEFAULT_MATERIAL,HuiImageOpen);
-	ConfigurationDialog->AddText("Font:",30,300,95,25,HMM_GED_T_FONT);
-	ConfigurationDialog->AddEdit("",125,300,200,25,HMM_DEFAULT_FONT);
-	ConfigurationDialog->AddButton("",330,300,25,25,HMM_FIND_DEFAULT_FONT);
-	ConfigurationDialog->SetImage(HMM_FIND_DEFAULT_FONT,HuiImageOpen);
-	ConfigurationDialog->AddButton("Abbrechen",145,340,100,25,HMM_CANCEL);
-	ConfigurationDialog->SetImage(HMM_CANCEL,HuiImageCancel);
-	ConfigurationDialog->AddDefButton("OK",250,340,100,25,HMM_OK);
-	ConfigurationDialog->SetImage(HMM_OK,HuiImageOk);
-	ConfigurationDialog->AddText("Zweite Welt:",30,210,95,25,HMM_GED_T_SECOND_WORLD);
-	ConfigurationDialog->AddEdit("",125,210,200,25,HMM_DEFAULT_SECOND_WORLD);
-	ConfigurationDialog->AddButton("",330,210,25,25,HMM_FIND_DEFAULT_SECOND_WORLD);
-	ConfigurationDialog->SetImage(HMM_FIND_DEFAULT_SECOND_WORLD,HuiImageOpen);
-	ConfigurationDialog->AddText("!bold\\Ziel",10,10,345,25,HMM_GED_GROUP_DEST);
-	ConfigurationDialog->Update();
-
-
-
+Dialog ge_dialog "Das Spiel exportieren" 365 380
+	Grid ? "" 1 3
+		Group ged_group_dest "Ziel"
+			Grid ? "" 3 3
+				.
+				Edit rootdir "" disabled expandx
+				Button find_rootdir "" image="hui:open"
+				Text ged_t_system "System"
+				ComboBox ged_system "Linux\\Windows 32"
+				.
+				Text ged_t_export_type "Form"
+				ComboBox export_type "einzelne Dateien\\Archiv (komprimiert)\\Archiv (unkomprimiert)"
+				.
+		Group ged_group "Standartwerte des Spiels"
+			Grid ? "" 3 5
+				Text ged_t_world "Welt"
+				Edit default_world "" expandx
+				Button find_default_world "" image="hui:open"
+				Text ged_t_second_world "Zweite Welt"
+				Edit default_second_world ""
+				Button find_default_second_world "" image="hui:open"
+				Text ged_t_script "Haupt-Script"
+				Edit default_script ""
+				Button find_default_script "" image="hui:open"
+				Text ged_t_material "Material"
+				Edit default_material ""
+				Button find_default_material "" image="hui:open"
+				Text ged_t_font "Font"
+				Edit default_font ""
+				Button find_default_font "" image="hui:open"
+		Grid ? "" 2 1 buttonbar
+			Button cancel "Abbrechen"
+			Button ok "Ok"

@@ -34,14 +34,11 @@ DataAdministration::~DataAdministration()
 
 void DataAdministration::FraesDir(const string &root_dir, const string &dir, const string &extension)
 {
-	msg_db_f("FraesDir",1);
-	msg_db_m(dir.c_str(),1);
 	Array<DirEntry> list = dir_search(root_dir + dir, "*" + extension, true);
 	for (DirEntry &e: list){
 		if (e.is_dir){
 			FraesDir(root_dir, dir + e.name + "/", extension);
 		}else{
-			msg_db_m(format("%d - %s", cft.num + 1, e.name.c_str()).c_str(),1);
 			cft.add(dir + e.name);
 		}
 	}
@@ -49,7 +46,6 @@ void DataAdministration::FraesDir(const string &root_dir, const string &dir, con
 
 void DataAdministration::MetaFraesDir(int kind)
 {
-	msg_db_f("MetaFraesDir",5);
 	string extension ="x";
 	cft.clear();
 
@@ -66,7 +62,6 @@ void DataAdministration::MetaFraesDir(int kind)
 	if (kind==FD_SOUND)		extension = "";
 	if (extension == "x")
 		return;
-	msg_db_m(("suche... (" + extension + ")\n").c_str(),5);
 	FraesDir(dir, "", extension);
 }
 
@@ -85,7 +80,6 @@ void DataAdministration::TestRootDirectory()
 
 bool DataAdministration::save(const string &_filename)
 {
-	msg_db_f("Admin.Save",5);
 	filename = _filename;
 	admin_file->Create(filename);
 	admin_file->WriteComment("// Number Of Files");
@@ -117,18 +111,16 @@ bool DataAdministration::save(const string &_filename)
 
 void DataAdministration::SaveDatabase()
 {
-	save(app->directory + "Data/admin_database.txt");
+	save(app->directory + "admin_database.txt");
 }
 
 void DataAdministration::reset()
 {
-	msg_db_f("Admin.Reset",5);
 	file_list->clear_deep();
 }
 
 bool DataAdministration::load(const string &_filename, bool deep)
 {
-	msg_db_f("Admin.Load",5);
 	reset();
 	filename = _filename;
 
@@ -165,7 +157,7 @@ bool DataAdministration::load(const string &_filename, bool deep)
 
 void DataAdministration::LoadDatabase()
 {
-	load(app->directory + "Data/admin_database.txt");
+	load(app->directory + "admin_database.txt");
 }
 
 AdminFile *AdminFileList::add_engine_files()
@@ -229,7 +221,6 @@ void AdminFileList::add_from_game_ini_export(AdminFileList *source, GameIniData 
 
 void DataAdministration::UpdateDatabase()
 {
-	msg_db_f("UpdateDatebase",0);
 	ed->progress->start(_("Erstelle Datenbank"), 0);
 	ed->progress->set(_("Initialisierung"), 0);
 

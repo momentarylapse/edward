@@ -278,9 +278,11 @@ void Shader::unref()
 
 void DeleteAllShaders()
 {
+	return;
 	for (Shader *s: shaders)
 		delete(s);
 	shaders.clear();
+	init_shaders();
 }
 
 void SetShader(Shader *s)

@@ -6,12 +6,12 @@ Menu
 
 
 
-1
-21929
 0
+1411402259
+144
 0
-0
-0
+-1835398400
+1411402259
 1
 ItemPopup
 
@@ -95,15 +95,15 @@ SizableDialog
 ad_dialog
 allow-parent
 
-1
-21929
 0
+1411402259
+144
 680
 590
-0
+1411402259
 1
 ControlTable
-rand_id_72328
+rand_id_552485
 
 
 1
@@ -147,7 +147,7 @@ format=ttttc,multiline
 1
 0
 ControlTable
-rand_id_4161
+rand_id_579430
 
 
 1
@@ -327,12 +327,12 @@ Menu
 menu_administration
 
 
-1
-21929
 0
+1411402259
+144
 680
 590
-0
+1411402259
 3
 ItemPopup
 menu_administration_file
@@ -614,12 +614,12 @@ Dialog
 campoint_dialog
 
 
-1
-21929
 0
+1411402259
+144
 345
 225
-0
+1411402259
 31
 Group
 campoint__grp_pos
@@ -967,12 +967,12 @@ Dialog
 editor_dialog
 
 
-1
-21929
 0
+1411402259
+144
 400
 370
-0
+1411402259
 1
 TabControl
 editor_dialog_tab_control
@@ -1155,15 +1155,15 @@ SizableDialog
 font_dialog
 
 
-1
-21929
 0
+1411402259
+144
 400
 730
-0
+1411402259
 1
 ControlTable
-rand_id_923069
+rand_id_452575
 width=320,noexpandx
 
 1
@@ -1185,7 +1185,7 @@ font_dt_font
 -1
 1
 ControlTable
-rand_id_593892
+rand_id_687387
 
 
 1
@@ -1361,7 +1361,7 @@ font_dt_character
 -1
 1
 ControlTable
-rand_id_180372
+rand_id_99640
 
 
 1
@@ -1486,12 +1486,12 @@ Menu
 menu_font
 
 
-1
-21929
 0
+1411402259
+144
 400
 730
-0
+1411402259
 4
 ItemPopup
 menu_file
@@ -1857,48 +1857,114 @@ hui:about
 0
 0
 // Resource
-Dialog
+SizableDialog
 rc_dialog
 
 
-1
-21929
 0
+1411402259
+144
 365
 310
+1411402259
+1
+ControlTable
+rand_id_530808
+
+
+1
 0
-21
-Text
+0
+1
+3
+-1
+3
+Group
+ged_group_rootdir
+
+
+1
+0
+0
+1
+1
+-1
+1
+ControlTable
+rand_id_757293
+
+
+1
+0
+0
+2
+1
+-1
+2
+Edit
+rootdir
+expandx
+
+0
+0
+0
+1
+1
+-1
+0
+Button
+find_rootdir
+
+hui:open
+1
+1
+0
+1
+1
+-1
+0
+Group
 ged_group
 
 
 1
-10
-80
-345
-25
--1
 0
+1
+1
+1
+-1
+1
+ControlTable
+rand_id_304295
+
+
+1
+0
+0
+3
+5
+-1
+15
 Text
 ged_t_world
 
 
 1
-30
-110
-95
-25
+0
+0
+1
+1
 -1
 0
 Edit
 default_world
-
+expandx
 
 1
-125
-110
-200
-25
+1
+0
+1
+1
 -1
 0
 Button
@@ -1906,164 +1972,10 @@ find_default_world
 
 hui:open
 1
-330
-110
-25
-25
--1
+2
 0
-Text
-ged_t_script
-
-
 1
-30
-170
-95
-25
--1
-0
-Edit
-default_script
-
-
 1
-125
-170
-200
-25
--1
-0
-Button
-find_default_script
-
-hui:open
-1
-330
-170
-25
-25
--1
-0
-Text
-ged_t_material
-
-
-1
-30
-200
-95
-25
--1
-0
-Edit
-default_material
-
-
-1
-125
-200
-200
-25
--1
-0
-Button
-find_default_material
-
-hui:open
-1
-330
-200
-25
-25
--1
-0
-Text
-ged_t_font
-
-
-1
-30
-230
-95
-25
--1
-0
-Edit
-default_font
-
-
-1
-125
-230
-200
-25
--1
-0
-Button
-find_default_font
-
-hui:open
-1
-330
-230
-25
-25
--1
-0
-Button
-cancel
-
-hui:cancel
-1
-145
-270
-100
-25
--1
-0
-DefButton
-ok
-
-hui:ok
-1
-250
-270
-100
-25
--1
-0
-Text
-ged_t_rootdir
-
-
-1
-10
-10
-345
-25
--1
-0
-Edit
-rootdir
-
-
-0
-30
-40
-295
-25
--1
-0
-Button
-find_rootdir
-
-hui:open
-1
-330
-40
-25
-25
 -1
 0
 Text
@@ -2071,10 +1983,10 @@ ged_t_second_world
 
 
 1
-30
-140
-95
-25
+0
+1
+1
+1
 -1
 0
 Edit
@@ -2082,10 +1994,10 @@ default_second_world
 
 
 1
-125
-140
-200
-25
+1
+1
+1
+1
 -1
 0
 Button
@@ -2093,33 +2005,198 @@ find_default_second_world
 
 hui:open
 1
-330
-140
-25
-25
+2
+1
+1
+1
 -1
 0
-// Resource
-Dialog
-ge_dialog
+Text
+ged_t_script
 
 
 1
-21929
 0
+2
+1
+1
+-1
+0
+Edit
+default_script
+
+
+1
+1
+2
+1
+1
+-1
+0
+Button
+find_default_script
+
+hui:open
+1
+2
+2
+1
+1
+-1
+0
+Text
+ged_t_material
+
+
+1
+0
+3
+1
+1
+-1
+0
+Edit
+default_material
+
+
+1
+1
+3
+1
+1
+-1
+0
+Button
+find_default_material
+
+hui:open
+1
+2
+3
+1
+1
+-1
+0
+Text
+ged_t_font
+
+
+1
+0
+4
+1
+1
+-1
+0
+Edit
+default_font
+
+
+1
+1
+4
+1
+1
+-1
+0
+Button
+find_default_font
+
+hui:open
+1
+2
+4
+1
+1
+-1
+0
+ControlTable
+rand_id_992228
+buttonbar
+
+1
+0
+2
+2
+1
+-1
+2
+Button
+cancel
+
+
+1
+0
+0
+1
+1
+-1
+0
+Button
+ok
+
+
+1
+1
+0
+1
+1
+-1
+0
+// Resource
+SizableDialog
+ge_dialog
+
+
+0
+1411402259
+144
 365
 380
+1411402259
+1
+ControlTable
+rand_id_576971
+
+
+1
 0
-25
+0
+1
+3
+-1
+3
+Group
+ged_group_dest
+
+
+1
+0
+0
+1
+1
+-1
+1
+ControlTable
+rand_id_877613
+
+
+1
+0
+0
+3
+3
+-1
+6
 Edit
 rootdir
-
+expandx
 
 0
-30
-40
-295
-25
+1
+0
+1
+1
 -1
 0
 Button
@@ -2127,10 +2204,10 @@ find_rootdir
 
 hui:open
 1
-330
-40
-25
-25
+2
+0
+1
+1
 -1
 0
 Text
@@ -2138,10 +2215,10 @@ ged_t_system
 
 
 1
-30
-70
-95
-25
+0
+1
+1
+1
 -1
 0
 ComboBox
@@ -2149,10 +2226,10 @@ ged_system
 
 
 1
-125
-70
-230
-25
+1
+1
+1
+1
 -1
 0
 Text
@@ -2160,10 +2237,10 @@ ged_t_export_type
 
 
 1
-30
-100
-95
-25
+0
+2
+1
+1
 -1
 0
 ComboBox
@@ -2171,43 +2248,54 @@ export_type
 
 
 1
-125
-100
-230
-25
+1
+2
+1
+1
 -1
 0
-Text
+Group
 ged_group
 
 
 1
-10
-150
-345
-25
--1
 0
+1
+1
+1
+-1
+1
+ControlTable
+rand_id_747809
+
+
+1
+0
+0
+3
+5
+-1
+15
 Text
 ged_t_world
 
 
 1
-30
-180
-95
-25
+0
+0
+1
+1
 -1
 0
 Edit
 default_world
-
+expandx
 
 1
-125
-180
-200
-25
+1
+0
+1
+1
 -1
 0
 Button
@@ -2215,131 +2303,10 @@ find_default_world
 
 hui:open
 1
-330
-180
-25
-25
--1
+2
 0
-Text
-ged_t_script
-
-
 1
-30
-240
-95
-25
--1
-0
-Edit
-default_script
-
-
 1
-125
-240
-200
-25
--1
-0
-Button
-find_default_script
-
-hui:open
-1
-330
-240
-25
-25
--1
-0
-Text
-ged_t_material
-
-
-1
-30
-270
-95
-25
--1
-0
-Edit
-default_material
-
-
-1
-125
-270
-200
-25
--1
-0
-Button
-find_default_material
-
-hui:open
-1
-330
-270
-25
-25
--1
-0
-Text
-ged_t_font
-
-
-1
-30
-300
-95
-25
--1
-0
-Edit
-default_font
-
-
-1
-125
-300
-200
-25
--1
-0
-Button
-find_default_font
-
-hui:open
-1
-330
-300
-25
-25
--1
-0
-Button
-cancel
-
-hui:cancel
-1
-145
-340
-100
-25
--1
-0
-DefButton
-ok
-
-hui:ok
-1
-250
-340
-100
-25
 -1
 0
 Text
@@ -2347,10 +2314,10 @@ ged_t_second_world
 
 
 1
-30
-210
-95
-25
+0
+1
+1
+1
 -1
 0
 Edit
@@ -2358,10 +2325,10 @@ default_second_world
 
 
 1
-125
-210
-200
-25
+1
+1
+1
+1
 -1
 0
 Button
@@ -2369,21 +2336,142 @@ find_default_second_world
 
 hui:open
 1
-330
-210
-25
-25
+2
+1
+1
+1
 -1
 0
 Text
-ged_group_dest
+ged_t_script
 
 
 1
-10
-10
-345
-25
+0
+2
+1
+1
+-1
+0
+Edit
+default_script
+
+
+1
+1
+2
+1
+1
+-1
+0
+Button
+find_default_script
+
+hui:open
+1
+2
+2
+1
+1
+-1
+0
+Text
+ged_t_material
+
+
+1
+0
+3
+1
+1
+-1
+0
+Edit
+default_material
+
+
+1
+1
+3
+1
+1
+-1
+0
+Button
+find_default_material
+
+hui:open
+1
+2
+3
+1
+1
+-1
+0
+Text
+ged_t_font
+
+
+1
+0
+4
+1
+1
+-1
+0
+Edit
+default_font
+
+
+1
+1
+4
+1
+1
+-1
+0
+Button
+find_default_font
+
+hui:open
+1
+2
+4
+1
+1
+-1
+0
+ControlTable
+rand_id_628909
+buttonbar
+
+1
+0
+2
+2
+1
+-1
+2
+Button
+cancel
+
+
+1
+0
+0
+1
+1
+-1
+0
+Button
+ok
+
+
+1
+1
+0
+1
+1
 -1
 0
 // Resource
@@ -2391,12 +2479,12 @@ Dialog
 key_dialog
 allow-parent
 
-1
-21929
 0
+1411402259
+144
 350
 85
-0
+1411402259
 5
 Text
 key_dialog_t_key
@@ -2458,15 +2546,15 @@ SizableDialog
 material_dialog
 allow-parent
 
-1
-21929
 0
+1411402259
+144
 365
 715
-0
+1411402259
 1
 ControlTable
-rand_id_163131
+rand_id_35420
 width=320,noexpandx
 
 1
@@ -2488,7 +2576,7 @@ material_dialog_grp_color
 -1
 1
 ControlTable
-rand_id_391690
+rand_id_747802
 
 
 1
@@ -2620,7 +2708,7 @@ material_dialog_grp_textures
 -1
 1
 ControlTable
-rand_id_913026
+rand_id_833238
 
 
 1
@@ -2642,7 +2730,7 @@ format=tit,select-single
 -1
 0
 ControlTable
-rand_id_819695
+rand_id_925376
 
 
 1
@@ -2697,7 +2785,7 @@ material_dialog_grp_transparency
 -1
 1
 ControlTable
-rand_id_359095
+rand_id_873271
 
 
 1
@@ -2862,7 +2950,7 @@ material_dialog_grp_reflection
 -1
 1
 ControlTable
-rand_id_552485
+rand_id_831037
 
 
 1
@@ -2928,7 +3016,7 @@ indent
 -1
 0
 ControlTable
-rand_id_579430
+rand_id_979434
 
 
 1
@@ -2983,7 +3071,7 @@ material_dialog_grp_shader
 -1
 1
 ControlTable
-rand_id_452575
+rand_id_743811
 
 
 1
@@ -3038,7 +3126,7 @@ material_dialog_grp_friction
 -1
 1
 ControlTable
-rand_id_687387
+rand_id_903366
 
 
 1
@@ -3141,12 +3229,12 @@ Menu
 menu_material
 
 
-1
-21929
 0
+1411402259
+144
 365
 715
-0
+1411402259
 3
 ItemPopup
 menu_file
@@ -3648,12 +3736,12 @@ Dialog
 material_sound_dialog
 
 
-1
-21929
 0
+1411402259
+144
 595
 345
-0
+1411402259
 3
 DefButton
 ok
@@ -3693,15 +3781,15 @@ SizableDialog
 animation_dialog
 
 
-1
-21929
 0
+1411402259
+144
 260
 400
-0
+1411402259
 1
 ControlTable
-rand_id_99640
+rand_id_983595
 width=320,noexpandx
 
 1
@@ -3723,7 +3811,7 @@ t_list
 -1
 1
 ControlTable
-rand_id_530808
+rand_id_666880
 
 
 1
@@ -3745,7 +3833,7 @@ animation_list
 -1
 0
 ControlTable
-rand_id_757293
+rand_id_497258
 
 
 1
@@ -3811,7 +3899,7 @@ t_properties
 -1
 1
 ControlTable
-rand_id_304295
+rand_id_163968
 
 
 1
@@ -3899,7 +3987,7 @@ t_frame
 -1
 1
 ControlTable
-rand_id_992228
+rand_id_830011
 
 
 1
@@ -3921,7 +4009,7 @@ expandx
 -1
 0
 ControlTable
-rand_id_576971
+rand_id_888948
 
 
 1
@@ -3965,7 +4053,7 @@ t_simulate
 -1
 1
 ControlTable
-rand_id_877613
+rand_id_76994
 
 
 1
@@ -3976,7 +4064,7 @@ rand_id_877613
 -1
 2
 ControlTable
-rand_id_747809
+rand_id_649706
 
 
 1
@@ -4042,7 +4130,7 @@ parameter
 -1
 0
 ControlTable
-rand_id_628909
+rand_id_248044
 
 
 1
@@ -4079,15 +4167,15 @@ SizableDialog
 deformation_cylinder_dialog
 allow-parent
 
-1
-21929
 0
+1411402259
+144
 400
 250
-0
+1411402259
 1
 ControlTable
-rand_id_35420
+rand_id_629479
 
 
 1
@@ -4109,7 +4197,7 @@ area
 -1
 0
 ControlTable
-rand_id_747802
+rand_id_229136
 
 
 1
@@ -4168,15 +4256,15 @@ SizableDialog
 deformation_function_dialog
 allow-parent
 
-1
-21929
 0
+1411402259
+144
 400
 250
-0
+1411402259
 1
 ControlTable
-rand_id_833238
+rand_id_700619
 
 
 1
@@ -4235,15 +4323,15 @@ SizableDialog
 easify_dialog
 
 
-1
-21929
 0
+1411402259
+144
 335
 150
-0
+1411402259
 1
 ControlTable
-rand_id_925376
+rand_id_316867
 
 
 1
@@ -4265,7 +4353,7 @@ eat_quality
 -1
 1
 ControlTable
-rand_id_873271
+rand_id_328777
 
 
 1
@@ -4320,7 +4408,7 @@ eat_estimate
 -1
 1
 ControlTable
-rand_id_831037
+rand_id_231427
 
 
 1
@@ -4390,12 +4478,12 @@ Dialog
 fx_dialog
 
 
-1
-21929
 0
+1411402259
+144
 470
 205
-0
+1411402259
 3
 DefButton
 ok
@@ -4776,15 +4864,15 @@ SizableDialog
 model_material_dialog
 
 
-1
-21929
 0
+1411402259
+144
 350
 371
-0
+1411402259
 1
 ControlTable
-rand_id_979434
+rand_id_74160
 noexpandx
 
 1
@@ -4806,7 +4894,7 @@ model_material_dialog_grp_list
 -1
 1
 ControlTable
-rand_id_743811
+rand_id_633072
 
 
 1
@@ -4828,7 +4916,7 @@ format=ttit,select-single
 -1
 0
 ControlTable
-rand_id_903366
+rand_id_223656
 
 
 1
@@ -4894,7 +4982,7 @@ model_material_dialog_grp_color
 -1
 1
 ControlTable
-rand_id_983595
+rand_id_651132
 
 
 1
@@ -4916,7 +5004,7 @@ default_colors
 -1
 0
 ControlTable
-rand_id_666880
+rand_id_510685
 
 
 1
@@ -5048,7 +5136,7 @@ model_material_dialog_grp_textures
 -1
 1
 ControlTable
-rand_id_497258
+rand_id_971465
 
 
 1
@@ -5070,7 +5158,7 @@ format=tit,select-single
 -1
 0
 ControlTable
-rand_id_163968
+rand_id_280042
 
 
 1
@@ -5125,7 +5213,7 @@ model_material_dialog_grp_transparency
 -1
 1
 ControlTable
-rand_id_830011
+rand_id_546106
 
 
 1
@@ -5294,15 +5382,15 @@ SizableDialog
 model_material_selection_dialog
 
 
-1
-21929
 0
+1411402259
+144
 355
 360
-0
+1411402259
 1
 ControlTable
-rand_id_888948
+rand_id_719268
 
 
 1
@@ -5372,12 +5460,12 @@ Menu
 menu_model
 
 
-1
-21929
 0
+1411402259
+144
 355
 360
-0
+1411402259
 8
 ItemPopup
 menu_model_file
@@ -7100,12 +7188,12 @@ Menu
 menu_move
 
 
-1
-21929
 0
+1411402259
+144
 355
 360
-0
+1411402259
 6
 ItemPopup
 menu_file
@@ -8058,15 +8146,15 @@ SizableDialog
 new_ball_dialog
 allow-parent
 
-1
-21929
 0
+1411402259
+144
 220
 119
-0
+1411402259
 1
 ControlTable
-rand_id_76994
+rand_id_113280
 
 
 1
@@ -8191,12 +8279,12 @@ SizableDialog
 new_cube_dialog
 allow-parent
 
-1
-21929
 0
+1411402259
+144
 100
 50
-0
+1411402259
 1
 Group
 ncdt_slides
@@ -8210,7 +8298,7 @@ ncdt_slides
 -1
 1
 ControlTable
-rand_id_649706
+rand_id_471483
 
 
 1
@@ -8291,15 +8379,15 @@ SizableDialog
 new_cylinder_dialog
 allow-parent
 
-1
-21929
 0
+1411402259
+144
 100
 50
-0
+1411402259
 1
 ControlTable
-rand_id_248044
+rand_id_592539
 
 
 1
@@ -8358,15 +8446,15 @@ SizableDialog
 new_plane_dialog
 allow-parent
 
-1
-21929
 0
+1411402259
+144
 100
 50
-0
+1411402259
 1
 ControlTable
-rand_id_629479
+rand_id_944318
 
 
 1
@@ -8425,15 +8513,15 @@ SizableDialog
 new_teapot_dialog
 allow-parent
 
-1
-21929
 0
+1411402259
+144
 100
 50
-0
+1411402259
 1
 ControlTable
-rand_id_229136
+rand_id_450917
 
 
 1
@@ -8470,12 +8558,12 @@ SizableDialog
 new_torus_dialog
 allow-parent
 
-1
-21929
 0
+1411402259
+144
 200
 50
-0
+1411402259
 1
 Group
 new_torus_dialog_slides
@@ -8489,7 +8577,7 @@ new_torus_dialog_slides
 -1
 1
 ControlTable
-rand_id_700619
+rand_id_336351
 
 
 1
@@ -8548,15 +8636,15 @@ SizableDialog
 model_dialog
 
 
-1
-21929
 0
+1411402259
+144
 391
 464
-0
+1411402259
 1
 ControlTable
-rand_id_316867
+rand_id_847684
 
 
 1
@@ -8578,7 +8666,7 @@ model_dialog_tab_control
 -1
 4
 ControlTable
-rand_id_328777
+rand_id_434513
 
 
 1
@@ -8589,7 +8677,7 @@ rand_id_328777
 0
 4
 ControlTable
-rand_id_231427
+rand_id_3231
 
 
 1
@@ -8655,7 +8743,7 @@ generate_skin_auto
 -1
 0
 ControlTable
-rand_id_74160
+rand_id_344942
 
 
 1
@@ -8677,7 +8765,7 @@ model_dialog_grp_physics
 -1
 1
 ControlTable
-rand_id_633072
+rand_id_598481
 
 
 1
@@ -8688,7 +8776,7 @@ rand_id_633072
 -1
 3
 ControlTable
-rand_id_223656
+rand_id_833243
 
 
 1
@@ -8765,7 +8853,7 @@ model_dialog_grp_tensor
 -1
 1
 ControlTable
-rand_id_651132
+rand_id_233891
 
 
 1
@@ -8798,7 +8886,7 @@ generate_tensor_auto
 -1
 0
 ControlTable
-rand_id_510685
+rand_id_675475
 
 
 1
@@ -8809,7 +8897,7 @@ rand_id_510685
 2
 2
 ControlTable
-rand_id_971465
+rand_id_482950
 
 
 1
@@ -8886,7 +8974,7 @@ num_items
 -1
 0
 ControlTable
-rand_id_280042
+rand_id_481935
 
 
 1
@@ -8919,7 +9007,7 @@ hui:delete
 -1
 0
 ControlTable
-rand_id_546106
+rand_id_304955
 
 
 1
@@ -8985,7 +9073,7 @@ model_dialog_t_scriptvars
 -1
 1
 ControlTable
-rand_id_719268
+rand_id_712087
 
 
 1
@@ -8996,7 +9084,7 @@ rand_id_719268
 -1
 2
 ControlTable
-rand_id_113280
+rand_id_182555
 
 
 1
@@ -9088,12 +9176,12 @@ Dialog
 rotation_dialog
 allow-parent
 
-1
-21929
 0
+1411402259
+144
 155
 105
-0
+1411402259
 9
 Text
 x
@@ -9199,12 +9287,12 @@ Dialog
 scaling_dialog
 allow-parent
 
-1
-21929
 0
+1411402259
+144
 155
 105
-0
+1411402259
 9
 Text
 x
@@ -9310,12 +9398,12 @@ Menu
 menu_skeleton
 
 
-1
-21929
 0
+1411402259
+144
 155
 105
-0
+1411402259
 6
 ItemPopup
 menu_file
@@ -10202,12 +10290,12 @@ Menu
 menu_model_texture
 
 
-1
-21929
 0
+1411402259
+144
 155
 105
-0
+1411402259
 5
 Item
 texture_menu_sign
@@ -10269,15 +10357,15 @@ SizableDialog
 new_animation_dialog
 
 
-1
-21929
 0
+1411402259
+144
 100
 50
-0
+1411402259
 1
 ControlTable
-rand_id_471483
+rand_id_621822
 
 
 1
@@ -10288,7 +10376,7 @@ rand_id_471483
 -1
 2
 ControlTable
-rand_id_592539
+rand_id_40864
 
 
 1
@@ -10380,15 +10468,15 @@ SizableDialog
 new_terrain_dialog
 
 
-1
-21929
 0
+1411402259
+144
 300
 120
-0
+1411402259
 1
 ControlTable
-rand_id_944318
+rand_id_413983
 
 
 1
@@ -10399,7 +10487,7 @@ rand_id_944318
 -1
 2
 ControlTable
-rand_id_450917
+rand_id_695983
 
 
 1
@@ -10421,7 +10509,7 @@ nterrain_dialog_t_stripes
 -1
 1
 ControlTable
-rand_id_336351
+rand_id_673936
 
 
 1
@@ -10465,7 +10553,7 @@ nterrain_dialog_t_raster
 -1
 1
 ControlTable
-rand_id_847684
+rand_id_637640
 
 
 1
@@ -10509,7 +10597,7 @@ nterrain_dialog_t_terrainsize
 -1
 1
 ControlTable
-rand_id_434513
+rand_id_347115
 
 
 1
@@ -10590,12 +10678,12 @@ Menu
 menu_nomode
 
 
-1
-21929
 0
+1411402259
+144
 300
 120
-0
+1411402259
 2
 ItemPopup
 menu_file
@@ -10844,12 +10932,12 @@ SizableDialog
 progress_dialog
 
 
-1
-21929
 0
+1411402259
+144
 100
 30
-0
+1411402259
 1
 ProgressBar
 progress_bar
@@ -10867,15 +10955,15 @@ SizableDialog
 progress_cancelable_dialog
 
 
-1
-21929
 0
+1411402259
+144
 100
 50
-0
+1411402259
 1
 ControlTable
-rand_id_3231
+rand_id_184622
 
 
 1
@@ -10912,12 +11000,12 @@ Dialog
 world_scriptfunc_dialog
 
 
-1
-21929
 0
+1411402259
+144
 335
 145
-0
+1411402259
 11
 Text
 world_scriptfunc_dialog_t_name
@@ -11045,12 +11133,12 @@ Dialog
 world_scriptfunc_choice_dialog
 
 
-1
-21929
 0
+1411402259
+144
 245
 90
-0
+1411402259
 3
 DefButton
 ok
@@ -11090,12 +11178,12 @@ Dialog
 scriptvar_dialog
 
 
-1
-21929
 0
+1411402259
+144
 260
 115
-0
+1411402259
 7
 Edit
 index
@@ -11179,12 +11267,12 @@ Dialog
 terrain_dialog
 
 
-1
-21929
 0
+1411402259
+144
 435
 275
-0
+1411402259
 4
 DefButton
 ok
@@ -11466,12 +11554,12 @@ Dialog
 terrain_heightmap_dialog
 
 
-1
-21929
 0
+1411402259
+144
 620
 275
-0
+1411402259
 22
 DefButton
 ok
@@ -11720,12 +11808,12 @@ Menu
 menu_view
 
 
-1
-21929
 0
+1411402259
+144
 620
 275
-0
+1411402259
 10
 Item
 view_menu_sign
@@ -11842,12 +11930,12 @@ Dialog
 welcome_dialog
 
 
-1
-21929
 0
+1411402259
+144
 640
 360
-0
+1411402259
 1
 ListView
 welcome_list
@@ -11865,15 +11953,15 @@ SizableDialog
 world_camera_dialog
 allow-parent
 
-1
-21929
 0
+1411402259
+144
 719
 160
-0
+1411402259
 1
 ControlTable
-rand_id_344942
+rand_id_609105
 height=220,noexpandy
 
 1
@@ -11895,7 +11983,7 @@ cam_area
 -1
 0
 ControlTable
-rand_id_598481
+rand_id_627157
 
 
 1
@@ -11976,15 +12064,15 @@ SizableDialog
 world_dialog
 
 
-1
-21929
 0
+1411402259
+144
 410
 420
-0
+1411402259
 1
 ControlTable
-rand_id_833243
+rand_id_730729
 
 
 1
@@ -12006,7 +12094,7 @@ world_dialog_tab_control
 -1
 6
 ControlTable
-rand_id_233891
+rand_id_328374
 
 
 1
@@ -12050,7 +12138,7 @@ world_dialog_grp_skybox
 -1
 1
 ControlTable
-rand_id_675475
+rand_id_740438
 
 
 1
@@ -12083,7 +12171,7 @@ hui:delete
 -1
 0
 ControlTable
-rand_id_482950
+rand_id_202212
 
 
 1
@@ -12171,7 +12259,7 @@ fog_end
 -1
 0
 ControlTable
-rand_id_481935
+rand_id_920914
 
 
 1
@@ -12248,7 +12336,7 @@ fog_color
 -1
 0
 ControlTable
-rand_id_304955
+rand_id_684756
 
 
 1
@@ -12292,7 +12380,7 @@ world_dialog_grp_sun
 -1
 1
 ControlTable
-rand_id_712087
+rand_id_653130
 
 
 1
@@ -12314,7 +12402,7 @@ expandx
 -1
 0
 ControlTable
-rand_id_182555
+rand_id_257265
 
 
 1
@@ -12468,7 +12556,7 @@ hui:media-record
 -1
 0
 ControlTable
-rand_id_621822
+rand_id_532440
 
 
 1
@@ -12501,7 +12589,7 @@ world_dialog_grp_gravitation
 -1
 1
 ControlTable
-rand_id_40864
+rand_id_87643
 
 
 1
@@ -12611,7 +12699,7 @@ luss
 -1
 0
 ControlTable
-rand_id_413983
+rand_id_260496
 
 
 1
@@ -12633,7 +12721,7 @@ nobar
 -1
 0
 ControlTable
-rand_id_695983
+rand_id_877383
 
 
 1
@@ -12666,7 +12754,7 @@ hui:delete
 -1
 0
 ControlTable
-rand_id_673936
+rand_id_686124
 
 
 1
@@ -12677,7 +12765,7 @@ rand_id_673936
 5
 2
 ControlTable
-rand_id_637640
+rand_id_93740
 
 
 1
@@ -12769,12 +12857,12 @@ Dialog
 lightmap_dialog
 
 
-1
-21929
 0
+1411402259
+144
 420
 540
-0
+1411402259
 18
 DefButton
 ok
@@ -12979,12 +13067,12 @@ Menu
 menu_world
 
 
-1
-21929
 0
+1411402259
+144
 420
 540
-0
+1411402259
 7
 ItemPopup
 menu_world_file
@@ -14058,12 +14146,12 @@ Dialog
 world_new_object_dialog
 allow-parent
 
-1
-21929
 0
+1411402259
+144
 390
 75
-0
+1411402259
 5
 Text
 world_object_dialog_t_name
@@ -14125,12 +14213,12 @@ Dialog
 world_object_dialog
 allow-parent
 
-1
-21929
 0
+1411402259
+144
 390
 220
-0
+1411402259
 22
 Text
 world_object_dialog_grp_pos
@@ -14379,12 +14467,12 @@ SizableDialog
 world_ps_dialog
 
 
-1
-21929
 0
+1411402259
+144
 370
 380
-0
+1411402259
 1
 ListView
 property_list
@@ -14801,37 +14889,37 @@ ge_dialog/ge_dialog
 Das Spiel exportieren
 
 ge_dialog/ged_group
-!bold\\Standartwerte des Spiels
+Standartwerte des Spiels
 
 ge_dialog/ged_group_dest
-!bold\\Ziel
+Ziel
 
 ge_dialog/ged_system
 Linux\\Windows 32
 
 ge_dialog/ged_t_export_type
-Form:
+Form
 
 ge_dialog/ged_t_font
-Font:
+Font
 
 ge_dialog/ged_t_material
-Material:
+Material
 
 ge_dialog/ged_t_script
-Haupt-Script:
+Haupt-Script
 
 ge_dialog/ged_t_second_world
-Zweite Welt:
+Zweite Welt
 
 ge_dialog/ged_t_system
-System:
+System
 
 ge_dialog/ged_t_world
-Welt:
+Welt
 
 ge_dialog/ok
-OK
+Ok
 
 key_dialog/cancel
 Abbrechen
@@ -16582,7 +16670,7 @@ Beweglich
 model_dialog/ph_passive
 Kollisionsfähig
 
-model_dialog/rand_id_548042
+model_dialog/rand_id_121258
 ControlTable 12
 
 model_dialog/script_vars
@@ -16880,28 +16968,28 @@ rc_dialog/cancel
 Abbrechen
 
 rc_dialog/ged_group
-!bold\\Standartwerte des Spiels
+Standartwerte des Spiels
+
+rc_dialog/ged_group_rootdir
+Verzeichnis
 
 rc_dialog/ged_t_font
-Font:
+Font
 
 rc_dialog/ged_t_material
-Material:
-
-rc_dialog/ged_t_rootdir
-!bold\\Verzeichnis
+Material
 
 rc_dialog/ged_t_script
-Haupt-Script:
+Haupt-Script
 
 rc_dialog/ged_t_second_world
-Zweite Welt:
+Zweite Welt
 
 rc_dialog/ged_t_world
-Welt:
+Welt
 
 rc_dialog/ok
-OK
+Ok
 
 rc_dialog/rc_dialog
 Grundeinstellungen des Spieles

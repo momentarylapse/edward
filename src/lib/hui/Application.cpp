@@ -36,46 +36,24 @@ Array<string> Application::_args;
 
 Application::Application(const string &app_name, const string &def_lang, int flags)
 {
-	if (flags & FLAG_SILENT)
-		msg_init(true);
-	_init(_args, app_name, (flags & FLAG_LOAD_RESOURCE), def_lang);
-
-	if (flags & FLAG_SILENT)
-		msg_init(directory + "message.txt", false);
-
-	running = false;
-}
-
-Application::~Application()
-{
-	if (Config.changed)
-		Config.save();
-	if ((msg_inited) /*&& (HuiMainLevel == 0)*/)
-		msg_end();
-}
-
-
-
-void Application::_init(const Array<string> &arg, const string &program, bool load_res, const string &def_lang)
-{
 	initial_working_directory = get_current_dir();
 	installed = false;
 
 	#ifdef HUI_API_GTK
-		g_set_prgname(program.c_str());
+		g_set_prgname(app_name.c_str());
 	#endif
 
 	#ifdef OS_LINUX
 		directory = initial_working_directory;
 		directory_static = directory + "static/";
-		if (arg.num > 0){
-			filename = arg[0];
-			if ((arg[0].head(5) == "/usr/") or (arg[0].find("/") < 0)){
+		if (_args.num > 0){
+			filename = _args[0];
+			if ((_args[0].head(5) == "/usr/") or (_args[0].find("/") < 0)){
 				installed = true;
 				// installed version?
-				filename = arg[0];
-				directory = format("%s/.%s/", getenv("HOME"), program.c_str());
-				directory_static = "/usr/share/" + program + "/";
+				filename = _args[0];
+				directory = format("%s/.%s/", getenv("HOME"), app_name.c_str());
+				directory_static = "/usr/share/" + app_name + "/";
 			}
 		}
 		dir_create(directory);
@@ -94,7 +72,7 @@ void Application::_init(const Array<string> &arg, const string &program, bool lo
 
 	if (!msg_inited){
 		dir_create(directory);
-		msg_init(directory + "message.txt", true);
+		msg_init(directory + "message.txt", !(flags & FLAG_SILENT));
 	}
 
 	//msg_write("HuiAppDirectory " + HuiAppDirectory);
@@ -116,7 +94,7 @@ void Application::_init(const Array<string> &arg, const string &program, bool lo
 	//msg_write("HuiAppDirectory " + HuiAppDirectory);
 	//msg_write("HuiInitialWorkingDirectory " + HuiInitialWorkingDirectory);
 
-	if (load_res)
+	if (flags & FLAG_LOAD_RESOURCE)
 		LoadResource(directory_static + "hui_resources.txt");
 
 	if (def_lang.num > 0)
@@ -134,6 +112,20 @@ void Application::_init(const Array<string> &arg, const string &program, bool lo
 		setProperty("logo", directory_static + "icon.svg");
 	else if (file_test_existence(directory_static + "icon.ico"))
 		setProperty("logo", directory_static + "icon.ico");
+}
+
+Application::~Application()
+{
+	if (Config.changed)
+		Config.save();
+	if ((msg_inited) /*&& (HuiMainLevel == 0)*/)
+		msg_end();
+}
+
+
+// deprecated...
+void Application::_init(const Array<string> &arg, const string &program, bool load_res, const string &def_lang)
+{
 }
 
 int Application::run()

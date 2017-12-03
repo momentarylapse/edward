@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-1589
+1591
 // Data (ID,Text,Tooltip)
 /ad_dialog
 
@@ -4035,6 +4035,9 @@ model_dialog/ph_active
 model_dialog/ph_passive
 
 
+model_dialog/rand_id_457701
+
+
 model_dialog/rand_id_525995
 
 
@@ -4339,6 +4342,9 @@ rc_dialog/cancel
 キャンセル
 
 rc_dialog/ged_group
+
+
+rc_dialog/ged_group_rootdir
 
 
 rc_dialog/ged_t_font
@@ -4771,7 +4777,7 @@ world_scriptfunc_dialog/world_scriptfunc_dialog_t_name
 
 
 // Num Language Strings
-264
+276
 // Data (ID,Text)
                   Close dialog box to exit program.
 
@@ -5129,6 +5135,8 @@ Shader-Datei
 
 Shader-Dateien (*.glsl)
 
+Shader-Dateien (*.shader)
+
 Sie haben die Entropie erhöht. Wollen Sie Ihr Werk speichern?
 
 Skalieren
@@ -5243,6 +5251,8 @@ berechne Textur
 
 der letzte Frame kann nicht gelöscht werden
 
+drag rings, [Control] + click -> copy, [Delete] -> delete, [Shift + Return] -> done
+
 frontales Licht
 
 fügt eine weitere Textur-Schicht hinzu (multitexturing)
@@ -5262,6 +5272,8 @@ löscht die ausgewählte Textur-Schicht
 maximale Sichtweite, dahinter hat der Nebel volle Intensität
 
 message.txt öffnen
+
+move
 
 neue Punkte setzen
 
@@ -5287,6 +5299,12 @@ poly: %d
 
 program has crashed, error handler has been called... maybe SegFault... m(-_-)m
 
+reflect
+
+rotate
+
+scale
+
 skalieren
 
 skin: %d
@@ -5298,6 +5316,18 @@ ungerichtetes Umgebungslicht
 verschieben, [linke Maustaste] zum Einfügen
 
 vert: %d
+
+x-axis
+
+x-y-plane
+
+x-z-plane
+
+y-axis
+
+y-z-plane
+
+z-axis
 
 Übereinanderliegende Textur-Schichten (multitexturing)\n- Doppelklick um eine Texturdatei zu wählen
 

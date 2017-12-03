@@ -206,15 +206,15 @@ void SIAddPackageNix()
 		func_add_param("light",			TypeInt);
 		func_add_param("pos",			TypeVector);
 		func_add_param("radius",			TypeFloat32);
-		func_add_param("ambient",		TypeColor);
 		func_add_param("diffuse",		TypeColor);
-		func_add_param("specular",		TypeColor);
+		func_add_param("ambient",		TypeFloat32);
+		func_add_param("specular",		TypeFloat32);
 	add_func("NixSetLightDirectional",									TypeVoid,	nix_p(&nix::SetLightDirectional));
 		func_add_param("light",			TypeInt);
 		func_add_param("dir",			TypeVector);
-		func_add_param("ambient",		TypeColor);
 		func_add_param("diffuse",		TypeColor);
-		func_add_param("specular",		TypeColor);
+		func_add_param("ambient",		TypeFloat32);
+		func_add_param("specular",		TypeFloat32);
 	add_func("NixEnableLight",											TypeVoid,	nix_p(&nix::EnableLight));
 		func_add_param("light",			TypeInt);
 		func_add_param("enabled",		TypeBool);
@@ -257,14 +257,14 @@ void SIAddPackageNix()
 	add_func("NixScreenShotToImage",								TypeVoid,	nix_p(&nix::ScreenShotToImage));
 		func_add_param("im",	TypeImage);
 
-	add_ext_var("TargetWidth",		TypeInt,		nix_p(&nix::target_height));
-	add_ext_var("TargetHeight",		TypeInt,		nix_p(&nix::target_height));
-	add_ext_var("Target",			TypeRect,		nix_p(&nix::target_rect));
-	add_ext_var("Fullscreen",		TypeBool,		nix_p(&nix::Fullscreen));
+	add_ext_var("target_width",		TypeInt,		nix_p(&nix::target_height));
+	add_ext_var("target_height",		TypeInt,		nix_p(&nix::target_height));
+	add_ext_var("target",			TypeRect,		nix_p(&nix::target_rect));
+	add_ext_var("fullscreen",		TypeBool,		nix_p(&nix::Fullscreen));
 	add_ext_var("Api",				TypeString,		nix_p(&nix::ApiName));
 	//add_ext_var("TextureLifeTime",	TypeInt,		nix_p(&nix::TextureMaxFramesToLive));
-	add_ext_var("LineWidth",		TypeFloat32,		nix_p(&nix::line_width));
-	add_ext_var("SmoothLines",		TypeBool,		nix_p(&nix::smooth_lines));
+	//add_ext_var("LineWidth",		TypeFloat32,		nix_p(&nix::line_width));
+	//add_ext_var("SmoothLines",		TypeBool,		nix_p(&nix::smooth_lines));
 
 	// alpha operations
 	add_const("ALPHA_NONE",             TypeInt, nix_p(ALPHA_NONE));

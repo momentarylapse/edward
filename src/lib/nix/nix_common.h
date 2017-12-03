@@ -52,7 +52,7 @@
 
 namespace nix{
 
-extern int current_progrram;
+extern int current_program;
 
 
 extern matrix view_matrix, projection_matrix;

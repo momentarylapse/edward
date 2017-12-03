@@ -1141,7 +1141,7 @@ void GodDraw()
 
 	// force fields ....(obsolete?!)
 #ifdef _X_ALLOW_X_
-	nix::SetAlpha(AlphaSourceAlpha,AlphaOne);
+	nix::SetAlpha(ALPHA_SOURCE_ALPHA, ALPHA_ONE);
 	nix::SetCull(CULL_NONE);
 	nix::SetZ(false,true);
 	for (int i=0;i<World.NumForceFields;i++)
@@ -1152,7 +1152,7 @@ void GodDraw()
 		}
 	nix::SetZ(true,true);
 	nix::SetCull(CULL_DEFAULT);
-	nix::SetAlpha(AlphaNone);
+	nix::SetAlpha(ALPHA_NONE);
 #endif
 }
 

@@ -599,7 +599,7 @@ void draw_edges(DataModel *data, MultiView::Window *win, Array<ModelVertex> &ver
 				continue;
 			if (min(vertex[e.vertex[0]].view_stage, vertex[e.vertex[1]].view_stage) < multi_view->view_stage)
 				continue;
-			float w = max(s.polygon[e.polygon[0]].temp_normal * dir, s.polygon[e.polygon[1]].temp_normal * dir);
+			float w = min(s.polygon[e.polygon[0]].temp_normal * dir, s.polygon[e.polygon[1]].temp_normal * dir);
 			float f = 0.5f - 0.4f*w;//0.7f - 0.3f * w;
 			if (e.is_selected){
 				//nix::SetColor(color(1, f, 0, 0));
