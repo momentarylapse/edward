@@ -1,7 +1,7 @@
 // Language
 日本語
 // Num IDs
-1591
+1595
 // Data (ID,Text,Tooltip)
 /ad_dialog
 
@@ -1884,6 +1884,9 @@ ad_dialog/ad_export_game
 ad_dialog/ad_rudimentary_configuration
 
 
+ad_dialog/ad_t_directory
+
+
 ad_dialog/ad_tab_control
 
 
@@ -2508,6 +2511,9 @@ menu_administration/font_open
 menu_administration/help
 ヘルプ...
 
+menu_administration/load_game
+
+
 menu_administration/material_new
 新規
 
@@ -2540,6 +2546,9 @@ menu_administration/model_new
 
 menu_administration/model_open
 開く...
+
+menu_administration/new_game
+
 
 menu_administration/rudimentary_configuration
 
@@ -4033,6 +4042,9 @@ model_dialog/ph_active
 
 
 model_dialog/ph_passive
+
+
+model_dialog/rand_id_350360
 
 
 model_dialog/rand_id_457701

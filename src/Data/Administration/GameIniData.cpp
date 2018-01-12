@@ -10,7 +10,6 @@
 
 void GameIniData::Load(const string &dir)
 {
-	msg_db_f("LoadGameIni",5);
 	File *f = FileOpen(dir + "game.ini");
 	f->ReadComment();
 	DefScript = f->ReadStr();
@@ -27,7 +26,6 @@ void GameIniData::Load(const string &dir)
 
 void GameIniData::Save(const string &dir)
 {
-	msg_db_f("SaveGameIni",5);
 	File *f = FileCreate(dir + "game.ini");
 	f->WriteStr("// Main Script");
 	f->WriteStr(DefScript);

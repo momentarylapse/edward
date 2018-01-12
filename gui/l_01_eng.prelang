@@ -1,7 +1,7 @@
 // Language
 English
 // Num IDs
-1591
+1595
 // Data (ID,Text,Tooltip)
 /ad_dialog
 Administration
@@ -1884,6 +1884,9 @@ Export game
 ad_dialog/ad_rudimentary_configuration
 Basic settings
 
+ad_dialog/ad_t_directory
+
+
 ad_dialog/ad_tab_control
 Current game\\All files\\Details\\Not needed\\Missing
 
@@ -2508,6 +2511,9 @@ Open...
 menu_administration/help
 Help...
 
+menu_administration/load_game
+
+
 menu_administration/material_new
 New
 
@@ -2540,6 +2546,9 @@ New
 
 menu_administration/model_open
 Open...
+
+menu_administration/new_game
+
 
 menu_administration/rudimentary_configuration
 Basic settings
@@ -4034,6 +4043,9 @@ physics active
 
 model_dialog/ph_passive
 physics passive
+
+model_dialog/rand_id_350360
+
 
 model_dialog/rand_id_457701
 

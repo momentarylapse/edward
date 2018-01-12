@@ -17,6 +17,8 @@ Menu menu_administration "" disabled
 		Separator "" ""
 		Item exit "Beenden" image=hui:quit
 	Menu menu_administration_game "Spiel"
+		Item new_game "Neu..." image=hui:new
+		Item load_game "Laden..." image=hui:open
 		Item export_game "Exportieren..." image=hui:media-play
 		Item rudimentary_configuration "Grundeinstellungen..." image=hui:properties
 	Menu menu_world_help "?"
