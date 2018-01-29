@@ -32,40 +32,40 @@ bool DataCamera::load(const string& _filename, bool deep)
 	reset();
 
 	filename = _filename;
-	File *f = FileOpen(filename);
-	if (!f){
-		ed->setMessage("nicht lesbar");
-		return false;
-	}
+	File *f = NULL;
+
+	try{
+
+	f = FileOpenText(filename);
 	int ffv=f->ReadFileFormatVersion();
 	if (ffv == 2){
 
-		f->ReadComment();
-		int n = f->ReadInt();
+		f->read_comment();
+		int n = f->read_int();
 		//msg_write(NumCamPoints);
 		for (int i=0;i<n;i++){
 			WorldCamPoint c;
 			memset(&c, 0, sizeof(WorldCamPoint));
-			f->ReadComment();
-			c.Type=f->ReadInt();
+			f->read_comment();
+			c.Type=f->read_int();
 			if (c.Type == CPKSetCamPos){
-				f->ReadVector(&c.pos);
-				c.Duration = f->ReadFloat();
+				f->read_vector(&c.pos);
+				c.Duration = f->read_float();
 			}else if (c.Type == CPKSetCamPosRel){
-				f->ReadVector(&c.pos);
-				c.Duration = f->ReadFloat();
+				f->read_vector(&c.pos);
+				c.Duration = f->read_float();
 			}else if (c.Type == CPKSetCamAng){
-				f->ReadVector(&c.Ang);
-				c.Duration = f->ReadFloat();
+				f->read_vector(&c.Ang);
+				c.Duration = f->read_float();
 			}else if (c.Type == CPKSetCamPosAng){
-				f->ReadVector(&c.pos);
-				f->ReadVector(&c.Ang);
-				c.Duration = f->ReadFloat();
+				f->read_vector(&c.pos);
+				f->read_vector(&c.Ang);
+				c.Duration = f->read_float();
 			}else if (c.Type == CPKCamFlight){
-				f->ReadVector(&c.pos);
-				f->ReadVector(&c.Vel);
-				f->ReadVector(&c.Ang);
-				c.Duration = f->ReadFloat();
+				f->read_vector(&c.pos);
+				f->read_vector(&c.Vel);
+				f->read_vector(&c.Ang);
+				c.Duration = f->read_float();
 			}
 			if ((c.Type == CPKSetCamPosAng) && (c.Duration > 0)){
 				WorldCamPoint c2 = c;
@@ -76,7 +76,7 @@ bool DataCamera::load(const string& _filename, bool deep)
 			Point.add(c);
 		}
 
-		f->Close();
+		FileClose(f);
 	}else{
 		ed->errorBox(format(_("Falsches Dateiformat der Datei %s: %d (statt %d)!"), filename.c_str(), ffv, 2));
 		Error=true;
@@ -85,46 +85,61 @@ bool DataCamera::load(const string& _filename, bool deep)
 	UpdateVel();
 	resetHistory();
 	notify();
+
+	}catch(Exception &e){
+		ed->setMessage(e.message());
+	}
+
 	return !Error;
 }
 
 bool DataCamera::save(const string& _filename)
 {
 	filename = _filename;
-	File *f = FileCreate(filename);
-	f->FloatDecimals = 4;
+	File *f = NULL;
+
+	try{
+
+	f = FileCreateText(filename);
+	f->float_decimals = 4;
 	f->WriteFileFormatVersion(false, 2);
 
-	f->WriteComment("// Number Of CamPoints");
-	f->WriteInt(Point.num);
+	f->write_comment("// Number Of CamPoints");
+	f->write_int(Point.num);
 	foreachi(WorldCamPoint &c, Point, i){
-		f->WriteComment(format("// Point No.%d", i));
-		f->WriteInt(c.Type);
+		f->write_comment(format("// Point No.%d", i));
+		f->write_int(c.Type);
 		if (c.Type == CPKSetCamPos){
-			f->WriteVector(&c.pos);
-			f->WriteFloat(c.Duration);
+			f->write_vector(&c.pos);
+			f->write_float(c.Duration);
 		}else if (c.Type == CPKSetCamPosRel){
-			f->WriteVector(&c.pos);
-			f->WriteFloat(c.Duration);
+			f->write_vector(&c.pos);
+			f->write_float(c.Duration);
 		}else if (c.Type == CPKSetCamAng){
-			f->WriteVector(&c.Ang);
-			f->WriteFloat(c.Duration);
+			f->write_vector(&c.Ang);
+			f->write_float(c.Duration);
 		}else if (c.Type == CPKSetCamPosAng){
-			f->WriteVector(&c.pos);
-			f->WriteVector(&c.Ang);
-			f->WriteFloat(c.Duration);
+			f->write_vector(&c.pos);
+			f->write_vector(&c.Ang);
+			f->write_float(c.Duration);
 		}else if (c.Type == CPKCamFlight){
-			f->WriteVector(&c.pos);
-			f->WriteVector(&c.Vel);
-			f->WriteVector(&c.Ang);
-			f->WriteFloat(c.Duration);
+			f->write_vector(&c.pos);
+			f->write_vector(&c.Vel);
+			f->write_vector(&c.Ang);
+			f->write_float(c.Duration);
 		}
 	}
-	f->WriteComment("#");
+	f->write_comment("#");
 
 	delete(f);
 	ed->setMessage(_("Kamera-Script gespeichert!"));
 	action_manager->markCurrentAsSave();
+
+	}catch(Exception &e){
+		FileClose(f);
+		msg_error(e.message());
+	}
+
 	return true;
 }
 

@@ -47,8 +47,6 @@ public:
 	Array<string> cft;
 
 	GameIniData *GameIni;
-
-	static File *admin_file;
 };
 
 #endif /* DATAADMINISTRATION_H_ */

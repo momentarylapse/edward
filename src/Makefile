@@ -229,6 +229,7 @@ OBJ = Action/Action.o \
  lib/kaba/compiler/serializer.o \
  lib/kaba/compiler/serializer_x86.o \
  lib/kaba/kaba.o \
+ lib/kaba/lib/exception.o \
  lib/kaba/lib/lib.o \
  lib/kaba/lib/lib_file.o \
  lib/kaba/lib/lib_hui.o \
@@ -1084,6 +1085,9 @@ lib/kaba/compiler/serializer_x86.o : lib/kaba/compiler/serializer_x86.cpp
 
 lib/kaba/kaba.o : lib/kaba/kaba.cpp
 	$(CPP) -c lib/kaba/kaba.cpp -o $@ $(CXXFLAGS)
+
+lib/kaba/lib/exception.o : lib/kaba/lib/exception.cpp
+	$(CPP) -c lib/kaba/lib/exception.cpp -o $@ $(CXXFLAGS)
 
 lib/kaba/lib/lib.o : lib/kaba/lib/lib.cpp
 	$(CPP) -c lib/kaba/lib/lib.cpp -o $@ $(CXXFLAGS)

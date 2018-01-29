@@ -300,7 +300,7 @@ color ReadColor3(File *f)
 {
 	int c[3];
 	for (int i=0;i<3;i++)
-		c[i] = f->ReadFloat();
+		c[i] = f->read_float();
 	return ColorFromIntRGB(c);
 }
 
@@ -308,7 +308,7 @@ color ReadColor4(File *f)
 {
 	int c[4];
 	for (int i=0;i<4;i++)
-		c[i] = f->ReadFloat();
+		c[i] = f->read_float();
 	return ColorFromIntARGB(c);
 }
 
@@ -394,141 +394,139 @@ bool GodLoadWorld(const string &filename)
 
 // read world file
 //   and put the data into LevelData
-	File *f = FileOpen(MapDir + filename + ".world");
-	if (!f)
-		return false;
+	File *f = NULL;
+
+	try{
+
+	f = FileOpenText(MapDir + filename + ".world");
 
 	int ffv = f->ReadFileFormatVersion();
-	if (ffv != 10){
-		msg_error(format("wrong file format: %d (10 expected)", ffv));
-		delete(f);
-		return false;
-	}
-	bool ok = true;
+	if (ffv != 10)
+		throw Exception(format("wrong file format: %d (10 expected)", ffv));
 	GodResetLevelData();
 
 	// Terrains
-	f->ReadComment();
-	int n = f->ReadInt();
+	f->read_comment();
+	int n = f->read_int();
 	for (int i=0;i<n;i++){
 		LevelDataTerrain t;
-		t.filename = f->ReadStr();
-		f->ReadVector(&t.pos);
+		t.filename = f->read_str();
+		f->read_vector(&t.pos);
 		LevelData.terrain.add(t);
 	}
 
 	// Gravity
-	f->ReadComment();
-	f->ReadVector(&LevelData.gravity);
+	f->read_comment();
+	f->read_vector(&LevelData.gravity);
 
 	// EgoIndex
-	f->ReadComment();
-	LevelData.ego_index = f->ReadInt();
+	f->read_comment();
+	LevelData.ego_index = f->read_int();
 
 	// Background
-	f->ReadComment();
+	f->read_comment();
 	LevelData.background_color = ReadColor4(f);
-	n = f->ReadInt();
+	n = f->read_int();
 	for (int i=0;i<n;i++){
-		LevelData.skybox_filename.add(f->ReadStr());
+		LevelData.skybox_filename.add(f->read_str());
 		LevelData.skybox_ang.add(v_0);
 	}
 
 	// Fog
-	f->ReadComment();
-	LevelData.fog.enabled = f->ReadBool();
-	LevelData.fog.mode = f->ReadWord();
-	LevelData.fog.start = f->ReadFloat();
-	LevelData.fog.end = f->ReadFloat();
-	LevelData.fog.density = f->ReadFloat();
+	f->read_comment();
+	LevelData.fog.enabled = f->read_bool();
+	LevelData.fog.mode = f->read_word();
+	LevelData.fog.start = f->read_float();
+	LevelData.fog.end = f->read_float();
+	LevelData.fog.density = f->read_float();
 	LevelData.fog._color = ReadColor4(f);
 
 	// Music
-	f->ReadComment();
-	World.MusicFieldGlobal.NumMusicFiles = f->ReadInt();
+	f->read_comment();
+	World.MusicFieldGlobal.NumMusicFiles = f->read_int();
 	for (int i=0;i<World.MusicFieldGlobal.NumMusicFiles;i++)
-		World.MusicFieldGlobal.MusicFile[i] = f->ReadStr();
+		World.MusicFieldGlobal.MusicFile[i] = f->read_str();
 	World.MusicFieldCurrent = &World.MusicFieldGlobal;
 	World.MusicCurrent = -1;
 
 	// Objects
-	f->ReadComment();
-	n = f->ReadInt();
+	f->read_comment();
+	n = f->read_int();
 	for (int i=0;i<n;i++){
 		LevelDataObject o;
-		o.filename = f->ReadStr();
-		o.name = f->ReadStr();
-		f->ReadVector(&o.pos);
-		f->ReadVector(&o.ang);
+		o.filename = f->read_str();
+		o.name = f->read_str();
+		f->read_vector(&o.pos);
+		f->read_vector(&o.ang);
 		o.vel = v_0;
 		o.rot = v_0;
 		LevelData.object.add(o);
 	}
 
 	// Scripts
-	f->ReadComment();
-	n = f->ReadInt();
+	f->read_comment();
+	n = f->read_int();
 	for (int i=0;i<n;i++){
-		LevelData.script_filename.add(f->ReadStr());
-		int nr = f->ReadInt();
+		LevelData.script_filename.add(f->read_str());
+		int nr = f->read_int();
 		for (int j=0;j<nr;j++){
-			f->ReadStr();
-			f->ReadInt();
+			f->read_str();
+			f->read_int();
 		}
 	}
 
 	// ScriptVars
-	f->ReadComment();
-	n = f->ReadInt();
+	f->read_comment();
+	n = f->read_int();
 	LevelData.script_var.resize(n);
 	for (int i=0;i<n;i++)
-		LevelData.script_var[i] = f->ReadFloat();
+		LevelData.script_var[i] = f->read_float();
 
 	// light
-	if (f->ReadStr() != "#"){
+	if (f->read_str() != "#"){
 		// Sun
-		LevelData.sun_enabled = f->ReadBool();
+		LevelData.sun_enabled = f->read_bool();
 		for (int i=0;i<3;i++)
 			LevelData.sun_color[i] = ReadColor3(f);
-		LevelData.sun_ang.x = f->ReadFloat();
-		LevelData.sun_ang.y = f->ReadFloat();
+		LevelData.sun_ang.x = f->read_float();
+		LevelData.sun_ang.y = f->read_float();
 		LevelData.sun_ang.z = 0;
 		// Ambient
-		f->ReadComment();
+		f->read_comment();
 		LevelData.ambient = ReadColor3(f);
-		if (f->ReadStr() != "#"){
-			LevelData.physics_enabled = f->ReadBool();
+		if (f->read_str() != "#"){
+			LevelData.physics_enabled = f->read_bool();
 		}
 	}
 
 	// Fields
 	/*NumMusicFields=0;
-	int NumFields=f->ReadIntC();
+	int NumFields=f->read_intC();
 	for (int i=0;i<NumFields;i++){
 		vector min,max;
-		int kind=f->ReadInt();
-		min.x=(float)f->ReadInt();
-		min.y=(float)f->ReadInt();
-		min.z=(float)f->ReadInt();
-		max.x=(float)f->ReadInt();
-		max.y=(float)f->ReadInt();
-		max.z=(float)f->ReadInt();
+		int kind=f->read_int();
+		min.x=(float)f->read_int();
+		min.y=(float)f->read_int();
+		min.z=(float)f->read_int();
+		max.x=(float)f->read_int();
+		max.y=(float)f->read_int();
+		max.z=(float)f->read_int();
 		if (kind==FieldKindLight){
 			bool sunenabled;
 			color ambient;
-			sunenabled=f->ReadBool();
-			float r=(float)f->ReadInt()/255.0f;
-			float g=(float)f->ReadInt()/255.0f;
-			float b=(float)f->ReadInt()/255.0f;
+			sunenabled=f->read_bool();
+			float r=(float)f->read_int()/255.0f;
+			float g=(float)f->read_int()/255.0f;
+			float b=(float)f->read_int()/255.0f;
 			ambient=color(0,r,g,b);
 			fx->AddLighField(min,max,sunenabled,ambient);
 		}
 		if (kind==FieldKindMusic){
 			MusicField[NumMusicFields].PosMin=min;
 			MusicField[NumMusicFields].PosMax=max;
-			MusicField[NumMusicFields].NumMusicFiles=f->ReadInt();
+			MusicField[NumMusicFields].NumMusicFiles=f->read_int();
 			for (int n=0;n<MusicField[NumMusicFields].NumMusicFiles;n++)
-				strcpy(MusicField[NumMusicFields].MusicFile[n],f->ReadStr());
+				strcpy(MusicField[NumMusicFields].MusicFile[n],f->read_str());
 			NumMusicFields++;
 		}
 	}*/
@@ -539,9 +537,14 @@ bool GodLoadWorld(const string &filename)
 	FileClose(f);
 	World.MusicFieldGlobal.NumMusicFiles = 0;
 
-	ok &= GodLoadWorldFromLevelData();
+	return GodLoadWorldFromLevelData();
 
-	return ok;
+	}catch(Exception &e){
+		FileClose(f);
+		msg_error(e.message());
+	}
+
+	return false;
 }
 
 Object *GetObjectByName(const string &name)

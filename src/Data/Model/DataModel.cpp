@@ -257,7 +257,7 @@ bool DataModel::load(const string & _filename, bool deep)
 		ed->makeDirs(filename);
 	//msg_write(dir);
 	//msg_write(filename);
-	File *f = FileOpen(filename);
+	File *f = FileOpenText(filename);
 	if (!f){
 		ed->setMessage(_("Datei ist nicht in der Stimmung, ge&offnet zu werden"));
 		return false;
@@ -274,27 +274,27 @@ bool DataModel::load(const string & _filename, bool deep)
 	}else if (ffv==10){ // old format
 
 		// Materials
-		f->ReadComment();
-		material.resize(f->ReadInt());
+		f->read_comment();
+		material.resize(f->read_int());
 		for (int i=0;i<material.num;i++){
-			material[i].material_file = f->ReadStr();
-			material[i].user_color = f->ReadBool();
+			material[i].material_file = f->read_str();
+			material[i].user_color = f->read_bool();
 			if (material[i].user_color){
 				read_color_argb(f, material[i].ambient);
 				read_color_argb(f, material[i].diffuse);
 				read_color_argb(f, material[i].specular);
 				read_color_argb(f, material[i].emission);
-				material[i].shininess = (float)f->ReadInt();
+				material[i].shininess = (float)f->read_int();
 			}
-			material[i].transparency_mode = f->ReadInt();
+			material[i].transparency_mode = f->read_int();
 			material[i].user_transparency = (material[i].transparency_mode != TransparencyModeDefault);
-			material[i].alpha_source = f->ReadInt();
-			material[i].alpha_destination = f->ReadInt();
-			material[i].alpha_factor = (float)f->ReadInt() * 0.01f;
-			material[i].alpha_zbuffer = f->ReadBool();
-			int n = f->ReadInt();
+			material[i].alpha_source = f->read_int();
+			material[i].alpha_destination = f->read_int();
+			material[i].alpha_factor = (float)f->read_int() * 0.01f;
+			material[i].alpha_zbuffer = f->read_bool();
+			int n = f->read_int();
 			for (int t=0;t<n;t++)
-				material[i].texture_files.add(f->ReadStr());
+				material[i].texture_files.add(f->read_str());
 		}
 		// create subs...
 		for (int k=0;k<4;k++){
@@ -306,97 +306,97 @@ bool DataModel::load(const string & _filename, bool deep)
 	// Physical Skin
 
 		// vertices
-		f->ReadComment();
-		skin[0].vertex.resize(f->ReadInt());
+		f->read_comment();
+		skin[0].vertex.resize(f->read_int());
 		for (int j=0;j<skin[0].vertex.num;j++){
-			skin[0].vertex[j].bone_index = f->ReadInt();
+			skin[0].vertex[j].bone_index = f->read_int();
 			if (skin[0].vertex[j].bone_index < 0)
 				skin[0].vertex[j].bone_index = 0;
-			f->ReadVector(&skin[0].vertex[j].pos);
+			f->read_vector(&skin[0].vertex[j].pos);
 		}
 
 		// triangles
-		skin[0].sub[0].triangle.resize(f->ReadInt());
+		skin[0].sub[0].triangle.resize(f->read_int());
 		for (int j=0;j<skin[0].sub[0].triangle.num;j++){
 			skin[0].sub[0].triangle[j].normal_dirty = true;
 			for (int k=0;k<3;k++)
-				skin[0].sub[0].triangle[j].vertex[k] = f->ReadInt();
+				skin[0].sub[0].triangle[j].vertex[k] = f->read_int();
 		}
 
 		// balls
-		ball.resize(f->ReadInt());
+		ball.resize(f->read_int());
 		for (int j=0;j<ball.num;j++){
-			ball[j].index = f->ReadInt();
-			ball[j].radius = f->ReadFloat();
+			ball[j].index = f->read_int();
+			ball[j].radius = f->read_float();
 		}
 
 		// polys
-		poly.resize(f->ReadInt());
+		poly.resize(f->read_int());
 		for (int j=0;j<poly.num;j++){
-			poly[j].NumFaces = f->ReadInt();
+			poly[j].NumFaces = f->read_int();
 			for (int k=0;k<poly[j].NumFaces;k++){
-				poly[j].Face[k].NumVertices = f->ReadInt();
+				poly[j].Face[k].NumVertices = f->read_int();
 				for (int l=0;l<poly[j].Face[k].NumVertices;l++)
-					poly[j].Face[k].Index[l] = f->ReadInt();
+					poly[j].Face[k].Index[l] = f->read_int();
 			}
 		}
 
 	// Skin[i]
 		for (int i=1;i<4;i++){
-			f->ReadComment();
-			int normal_mode_all = f->ReadInt();
+			f->read_comment();
+			int normal_mode_all = f->read_int();
 			bool pre_normals = (normal_mode_all & NORMAL_MODE_PRE) > 0;
 			normal_mode_all -= (normal_mode_all & NORMAL_MODE_PRE);
 
 			// vertices
-			skin[i].vertex.resize(f->ReadInt());
+			skin[i].vertex.resize(f->read_int());
 			for (int j=0;j<skin[i].vertex.num;j++){
-				skin[i].vertex[j].bone_index = f->ReadInt();
+				skin[i].vertex[j].bone_index = f->read_int();
 				if (skin[i].vertex[j].bone_index < 0)
 					skin[i].vertex[j].bone_index = 0;
-				f->ReadVector(&skin[i].vertex[j].pos);
+				f->read_vector(&skin[i].vertex[j].pos);
 				if (normal_mode_all == NORMAL_MODE_PER_VERTEX)
-					skin[i].vertex[j].normal_mode = f->ReadByte();
+					skin[i].vertex[j].normal_mode = f->read_byte();
 				else
 					skin[i].vertex[j].normal_mode = normal_mode_all;
 				skin[i].vertex[j].normal_dirty = true;
 			}
 
 			// skin vertices
-			skin_vert.resize(f->ReadInt());
+			skin_vert.resize(f->read_int());
 			for (int j=0;j<skin_vert.num;j++){
-				skin_vert[j].x = f->ReadFloat();
-				skin_vert[j].y = f->ReadFloat();
+				skin_vert[j].x = f->read_float();
+				skin_vert[j].y = f->read_float();
 			}
 
 
 
 			// triangles (subs)
-			int num_trias = f->ReadInt();
+			int num_trias = f->read_int();
 			for (int t=0;t<material.num;t++)
-				skin[i].sub[t].triangle.resize(f->ReadInt());
+				skin[i].sub[t].triangle.resize(f->read_int());
 			for (int t=0;t<material.num;t++)
 				for (int j=0;j<skin[i].sub[t].triangle.num;j++)
 					for (int k=0;k<3;k++){
-						skin[i].sub[t].triangle[j].vertex[k] = f->ReadInt();
-						int svi = f->ReadInt();
+						skin[i].sub[t].triangle[j].vertex[k] = f->read_int();
+						int svi = f->read_int();
 						skin[i].sub[t].triangle[j].skin_vertex[0][k] = skin_vert[svi];
-						skin[i].sub[t].triangle[j].normal_index[k] = (int)f->ReadByte();
+						skin[i].sub[t].triangle[j].normal_index[k] = (int)f->read_byte();
 						skin[i].sub[t].triangle[j].normal_dirty = true;
 					}
 		}
 
 	// Skeleton
-		f->ReadComment();
-		bone.resize(f->ReadInt());
+		f->read_comment();
+		bone.resize(f->read_int());
 		for (int i=0;i<bone.num;i++){
-			f->ReadVector(&bone[i].pos);
-			bone[i].parent = f->ReadInt();
+			f->read_vector(&bone[i].pos);
+			bone[i].parent = f->read_int();
 			if (bone[i].parent > 32000)
 				bone[i].parent = -1;
 			if (bone[i].parent >= 0)
 				bone[i].pos += bone[bone[i].parent].pos;
-			bone[i].model_file = f->ReadStr();
+			bone[i].model_file = f->read_str();
 			if (deep)
 				bone[i].model = LoadModel(bone[i].model_file);
 			bone[i].const_pos = false;
@@ -404,17 +404,17 @@ bool DataModel::load(const string & _filename, bool deep)
 		}
 
 	// Animations
-		f->ReadComment();
-		int num_anims = f->ReadInt();
+		f->read_comment();
+		int num_anims = f->read_int();
 		for (int i=0;i<num_anims;i++){
-			int anim_index = f->ReadInt();
+			int anim_index = f->read_int();
 			move.resize(anim_index + 1);
 			ModelMove *m = &move[anim_index];
-			m->name = f->ReadStr();
-			m->type = f->ReadInt();
-			m->frame.resize(f->ReadInt());
-			m->frames_per_sec_const = f->ReadFloat();
-			m->frames_per_sec_factor = f->ReadFloat();
+			m->name = f->read_str();
+			m->type = f->read_int();
+			m->frame.resize(f->read_int());
+			m->frames_per_sec_const = f->read_float();
+			m->frames_per_sec_factor = f->read_float();
 
 			// vertex animation
 			if (m->type == MOVE_TYPE_VERTEX){
@@ -422,10 +422,10 @@ bool DataModel::load(const string & _filename, bool deep)
 					m->frame[fr].duration = 1;
 					for (int s=0;s<4;s++){
 						m->frame[fr].skin[s].dpos.resize(skin[s].vertex.num);
-						int num_vertices = f->ReadInt();
+						int num_vertices = f->read_int();
 						for (int j=0;j<num_vertices;j++){
-							int vertex_index = f->ReadInt();
-							f->ReadVector(&m->frame[fr].skin[s].dpos[vertex_index]);
+							int vertex_index = f->read_int();
+							f->read_vector(&m->frame[fr].skin[s].dpos[vertex_index]);
 						}
 					}
 				}
@@ -433,89 +433,89 @@ bool DataModel::load(const string & _filename, bool deep)
 				Array<bool> VarDeltaPos;
 				VarDeltaPos.resize(bone.num);
 				for (int j=0;j<bone.num;j++)
-					VarDeltaPos[j] = f->ReadBool();
-				m->interpolated_quadratic = f->ReadBool();
-				m->interpolated_loop = f->ReadBool();
+					VarDeltaPos[j] = f->read_bool();
+				m->interpolated_quadratic = f->read_bool();
+				m->interpolated_loop = f->read_bool();
 				for (int fr=0;fr<m->frame.num;fr++){
 					m->frame[fr].duration = 1;
 					m->frame[fr].skel_dpos.resize(bone.num);
 					m->frame[fr].skel_ang.resize(bone.num);
 					for (int j=0;j<bone.num;j++){
-						f->ReadVector(&m->frame[fr].skel_ang[j]);
+						f->read_vector(&m->frame[fr].skel_ang[j]);
 						if (VarDeltaPos[j])
-							f->ReadVector(&m->frame[fr].skel_dpos[j]);
+							f->read_vector(&m->frame[fr].skel_dpos[j]);
 					}
 				}
 			}
 		}
 		// Effects
-		f->ReadComment();
-		fx.resize(f->ReadInt());
+		f->read_comment();
+		fx.resize(f->read_int());
 		if (fx.num>10000)
 			fx.clear();
 		for (int i=0;i<fx.num;i++){
-			string fxkind = f->ReadStr();
+			string fxkind = f->read_str();
 			fx[i].type = -1;
 			if (fxkind == "Script"){
 				fx[i].type = FX_TYPE_SCRIPT;
-				fx[i].vertex = f->ReadInt();
-				fx[i].file = f->ReadStr();
-				f->ReadStr();
+				fx[i].vertex = f->read_int();
+				fx[i].file = f->read_str();
+				f->read_str();
 			}
 			if (fxkind == "Light"){
 				fx[i].type = FX_TYPE_LIGHT;
-				fx[i].vertex = f->ReadInt();
-				fx[i].size = (float)f->ReadInt();
+				fx[i].vertex = f->read_int();
+				fx[i].size = (float)f->read_int();
 				for (int j=0;j<3;j++)
 					read_color_argb(f,fx[i].colors[j]);
 			}
 			if (fxkind == "Sound"){
 				fx[i].type = FX_TYPE_SOUND;
-				fx[i].vertex = f->ReadInt();
-				fx[i].size = (float)f->ReadInt();
-				fx[i].speed = (float)f->ReadInt() * 0.01f;
-				fx[i].file = f->ReadStr();
+				fx[i].vertex = f->read_int();
+				fx[i].size = (float)f->read_int();
+				fx[i].speed = (float)f->read_int() * 0.01f;
+				fx[i].file = f->read_str();
 			}
 			if (fxkind == "ForceField"){
 				fx[i].type = FX_TYPE_FORCEFIELD;
-				fx[i].vertex = f->ReadInt();
-				fx[i].size = (float)f->ReadInt();
-				fx[i].intensity = (float)f->ReadInt();
-				fx[i].inv_quad = f->ReadBool();
+				fx[i].vertex = f->read_int();
+				fx[i].size = (float)f->read_int();
+				fx[i].intensity = (float)f->read_int();
+				fx[i].inv_quad = f->read_bool();
 			}
 			if (fx[i].type<0)
 				msg_error("unknown effekt: " + fxkind);
 		}
 		// LOD-Distances
-		f->ReadComment();
-		meta_data.detail_dist[0]=f->ReadFloat();
-		meta_data.detail_dist[1]=f->ReadFloat();
-		meta_data.detail_dist[2]=f->ReadFloat();
-		meta_data.auto_generate_dists=f->ReadBool();
-		meta_data.detail_factor[1]=f->ReadByte();
-		meta_data.detail_factor[2]=f->ReadByte();
-		meta_data.auto_generate_skin[1]=f->ReadBool();
-		meta_data.auto_generate_skin[2]=f->ReadBool();
+		f->read_comment();
+		meta_data.detail_dist[0]=f->read_float();
+		meta_data.detail_dist[1]=f->read_float();
+		meta_data.detail_dist[2]=f->read_float();
+		meta_data.auto_generate_dists=f->read_bool();
+		meta_data.detail_factor[1]=f->read_byte();
+		meta_data.detail_factor[2]=f->read_byte();
+		meta_data.auto_generate_skin[1]=f->read_bool();
+		meta_data.auto_generate_skin[2]=f->read_bool();
 		// Physics
-		f->ReadComment();
-		meta_data.auto_generate_tensor = f->ReadBool();
+		f->read_comment();
+		meta_data.auto_generate_tensor = f->read_bool();
 		for (int i=0;i<9;i++)
-			meta_data.inertia_tensor.e[i] = f->ReadFloat();
+			meta_data.inertia_tensor.e[i] = f->read_float();
 		// BG Textures
-		/*if (strcmp(f->ReadStr(),"#")!=0){
+		/*if (strcmp(f->read_str(),"#")!=0){
 			for (int i=0;i<4;i++){
 				char sss[512];
-				strcpy(sss,f->ReadStr());
+				strcpy(sss,f->read_str());
 				if (strlen(sss)>0){
 					strcpy(BgTextureFile[i],sss);
 					if (allow_load)
 						BgTexture[i]=NixLoadTexture(sss);
-					BgTextureA[i].x=f->ReadFloat();
-					BgTextureA[i].y=f->ReadFloat();
-					BgTextureA[i].z=f->ReadFloat();
-					BgTextureB[i].x=f->ReadFloat();
-					BgTextureB[i].y=f->ReadFloat();
-					BgTextureB[i].z=f->ReadFloat();
+					BgTextureA[i].x=f->read_float();
+					BgTextureA[i].y=f->read_float();
+					BgTextureA[i].z=f->read_float();
+					BgTextureB[i].x=f->read_float();
+					BgTextureB[i].y=f->read_float();
+					BgTextureB[i].z=f->read_float();
 				}
 			}
 		}*/
@@ -535,39 +535,39 @@ bool DataModel::load(const string & _filename, bool deep)
 
 		// General
 		vector tv;
-		f->ReadComment();
+		f->read_comment();
 		// bounding box
-		f->ReadVector(&tv);
-		f->ReadVector(&tv);
+		f->read_vector(&tv);
+		f->read_vector(&tv);
 		// skins
-		f->ReadInt();
+		f->read_int();
 		// reserved
-		f->ReadInt();
-		f->ReadInt();
-		f->ReadInt();
+		f->read_int();
+		f->read_int();
+		f->read_int();
 		//
 
 		// Materials
-		f->ReadComment();
-		material.resize(f->ReadInt());
+		f->read_comment();
+		material.resize(f->read_int());
 		for (int i=0;i<material.num;i++){
-			material[i].material_file = f->ReadStr();
-			material[i].user_color = f->ReadBool();
+			material[i].material_file = f->read_str();
+			material[i].user_color = f->read_bool();
 			read_color_argb(f, material[i].ambient);
 			read_color_argb(f, material[i].diffuse);
 			read_color_argb(f, material[i].specular);
 			read_color_argb(f, material[i].emission);
-			material[i].shininess = (float)f->ReadInt();
-			material[i].transparency_mode = f->ReadInt();
+			material[i].shininess = (float)f->read_int();
+			material[i].transparency_mode = f->read_int();
 			material[i].user_transparency = (material[i].transparency_mode != TransparencyModeDefault);
-			material[i].alpha_source = f->ReadInt();
-			material[i].alpha_destination = f->ReadInt();
-			material[i].alpha_factor = (float)f->ReadInt() * 0.01f;
-			material[i].alpha_zbuffer = f->ReadBool();
-			int n = f->ReadInt();
+			material[i].alpha_source = f->read_int();
+			material[i].alpha_destination = f->read_int();
+			material[i].alpha_factor = (float)f->read_int() * 0.01f;
+			material[i].alpha_zbuffer = f->read_bool();
+			int n = f->read_int();
 			material[i].texture_files.clear();
 			for (int t=0;t<n;t++)
-				material[i].texture_files.add(f->ReadStr());
+				material[i].texture_files.add(f->read_str());
 		}
 		// create subs...
 		for (int k=0;k<4;k++){
@@ -579,109 +579,109 @@ bool DataModel::load(const string & _filename, bool deep)
 	// Physical Skin
 
 		// vertices
-		f->ReadComment();
-		skin[0].vertex.resize(f->ReadInt());
+		f->read_comment();
+		skin[0].vertex.resize(f->read_int());
 		for (int j=0;j<skin[0].vertex.num;j++)
-			skin[0].vertex[j].bone_index = f->ReadInt();
+			skin[0].vertex[j].bone_index = f->read_int();
 		for (int j=0;j<skin[0].vertex.num;j++)
-			f->ReadVector(&skin[0].vertex[j].pos);
+			f->read_vector(&skin[0].vertex[j].pos);
 
 		// triangles
-		f->ReadInt();
+		f->read_int();
 
 		// balls
-		ball.resize(f->ReadInt());
+		ball.resize(f->read_int());
 		for (int j=0;j<ball.num;j++){
-			ball[j].index = f->ReadInt();
-			ball[j].radius = f->ReadFloat();
+			ball[j].index = f->read_int();
+			ball[j].radius = f->read_float();
 		}
 
 		// polys
-		poly.resize(f->ReadInt());
+		poly.resize(f->read_int());
 		for (int j=0;j<poly.num;j++){
-			poly[j].NumFaces = f->ReadInt();
+			poly[j].NumFaces = f->read_int();
 			for (int k=0;k<poly[j].NumFaces;k++){
-				poly[j].Face[k].NumVertices = f->ReadInt();
+				poly[j].Face[k].NumVertices = f->read_int();
 				for (int l=0;l<poly[j].Face[k].NumVertices;l++)
-					poly[j].Face[k].Index[l] = f->ReadInt();
-				f->ReadFloat();
-				f->ReadFloat();
-				f->ReadFloat();
-				f->ReadFloat();
+					poly[j].Face[k].Index[l] = f->read_int();
+				f->read_float();
+				f->read_float();
+				f->read_float();
+				f->read_float();
 			}
-			poly[j].NumSVertices = f->ReadInt();
+			poly[j].NumSVertices = f->read_int();
 			for (int k=0;k<poly[j].NumSVertices;k++)
-				f->ReadInt();
-			poly[j].NumEdges = f->ReadInt();
+				f->read_int();
+			poly[j].NumEdges = f->read_int();
 			for (int k=0;k<poly[j].NumEdges*2;k++)
-				f->ReadInt();
+				f->read_int();
 			// topology
 			for (int k=0;k<poly[j].NumFaces*poly[j].NumFaces;k++)
-				f->ReadInt();
+				f->read_int();
 			for (int k=0;k<poly[j].NumEdges*poly[j].NumFaces;k++)
-				f->ReadBool();
+				f->read_bool();
 		}
 
 	// Skin[i]
 		for (int i=1;i<4;i++){
 
 			// vertices
-			f->ReadComment();
-			skin[i].vertex.resize(f->ReadInt());
+			f->read_comment();
+			skin[i].vertex.resize(f->read_int());
 			for (int j=0;j<skin[i].vertex.num;j++)
-				f->ReadVector(&skin[i].vertex[j].pos);
+				f->read_vector(&skin[i].vertex[j].pos);
 			for (int j=0;j<skin[i].vertex.num;j++)
-				skin[i].vertex[j].bone_index = f->ReadInt();
+				skin[i].vertex[j].bone_index = f->read_int();
 			for (int j=0;j<skin[i].vertex.num;j++)
 				skin[i].vertex[j].normal_dirty = false;//true;
 
 			// skin vertices
-			skin_vert.resize(f->ReadInt());
+			skin_vert.resize(f->read_int());
 			for (int j=0;j<skin_vert.num;j++){
-				skin_vert[j].x = f->ReadFloat();
-				skin_vert[j].y = f->ReadFloat();
+				skin_vert[j].x = f->read_float();
+				skin_vert[j].y = f->read_float();
 			}
 
 
 
 			// triangles (subs)
 			for (int m=0;m<material.num;m++){
-				skin[i].sub[m].triangle.resize(f->ReadInt());
+				skin[i].sub[m].triangle.resize(f->read_int());
 				// vertex
 				for (int j=0;j<skin[i].sub[m].triangle.num;j++)
 					for (int k=0;k<3;k++)
-						skin[i].sub[m].triangle[j].vertex[k] = f->ReadInt();
+						skin[i].sub[m].triangle[j].vertex[k] = f->read_int();
 				// skin vertex
 				for (int tl=0;tl<material[m].texture_files.num;tl++)
 					for (int j=0;j<skin[i].sub[m].triangle.num;j++)
 						for (int k=0;k<3;k++){
-							int svi = f->ReadInt();
+							int svi = f->read_int();
 							skin[i].sub[m].triangle[j].skin_vertex[tl][k] = skin_vert[svi];
 						}
 				// normals
 				for (int j=0;j<skin[i].sub[m].triangle.num;j++){
 					for (int k=0;k<3;k++){
-						skin[i].sub[m].triangle[j].normal_index[k] = (int)(unsigned short)f->ReadWord();
+						skin[i].sub[m].triangle[j].normal_index[k] = (int)(unsigned short)f->read_word();
 						skin[i].sub[m].triangle[j].normal[k] = get_normal_by_index(skin[i].sub[m].triangle[j].normal_index[k]);
 					}
 					skin[i].sub[m].triangle[j].normal_dirty = false;
 				}
-				f->ReadInt();
+				f->read_int();
 			}
-			f->ReadInt();
+			f->read_int();
 		}
 
 	// Skeleton
-		f->ReadComment();
-		bone.resize(f->ReadInt());
+		f->read_comment();
+		bone.resize(f->read_int());
 		for (ModelBone &b: bone){
-			f->ReadVector(&b.pos);
-			b.parent = f->ReadInt();
+			f->read_vector(&b.pos);
+			b.parent = f->read_int();
 			if ((b.parent < 0) || (b.parent >= bone.num))
 				b.parent = -1;
 			if (b.parent >= 0)
 				b.pos += bone[b.parent].pos;
-			b.model_file = f->ReadStr();
+			b.model_file = f->read_str();
 			if (deep)
 				b.model = LoadModel(b.model_file);
 			b.const_pos = false;
@@ -689,35 +689,35 @@ bool DataModel::load(const string & _filename, bool deep)
 		}
 
 	// Animations
-		f->ReadComment();
-		move.resize(f->ReadInt());
-		int num_anims = f->ReadInt();
-		f->ReadInt();
-		f->ReadInt();
+		f->read_comment();
+		move.resize(f->read_int());
+		int num_anims = f->read_int();
+		f->read_int();
+		f->read_int();
 		for (int i=0;i<num_anims;i++){
-			int anim_index = f->ReadInt();
+			int anim_index = f->read_int();
 			move.resize(anim_index + 1);
 			ModelMove *m = &move[anim_index];
-			m->name = f->ReadStr();
-			m->type = f->ReadInt();
+			m->name = f->read_str();
+			m->type = f->read_int();
 			bool rubber_timing = (m->type & 128);
 			m->type = m->type & 0x7f;
-			m->frame.resize(f->ReadInt());
-			m->frames_per_sec_const = f->ReadFloat();
-			m->frames_per_sec_factor = f->ReadFloat();
+			m->frame.resize(f->read_int());
+			m->frames_per_sec_const = f->read_float();
+			m->frames_per_sec_factor = f->read_float();
 
 			// vertex animation
 			if (m->type == MOVE_TYPE_VERTEX){
 				for (ModelFrame &fr: m->frame){
 					fr.duration = 1;
 					if (rubber_timing)
-						fr.duration = f->ReadFloat();
+						fr.duration = f->read_float();
 					for (int s=0;s<4;s++){
 						fr.skin[s].dpos.resize(skin[s].vertex.num);
-						int num_vertices = f->ReadInt();
+						int num_vertices = f->read_int();
 						for (int j=0;j<num_vertices;j++){
-							int vertex_index = f->ReadInt();
-							f->ReadVector(&fr.skin[s].dpos[vertex_index]);
+							int vertex_index = f->read_int();
+							f->read_vector(&fr.skin[s].dpos[vertex_index]);
 						}
 					}
 				}
@@ -725,19 +725,19 @@ bool DataModel::load(const string & _filename, bool deep)
 				Array<bool> VarDeltaPos;
 				VarDeltaPos.resize(bone.num);
 				for (int j=0;j<bone.num;j++)
-					VarDeltaPos[j] = f->ReadBool();
-				m->interpolated_quadratic = f->ReadBool();
-				m->interpolated_loop = f->ReadBool();
+					VarDeltaPos[j] = f->read_bool();
+				m->interpolated_quadratic = f->read_bool();
+				m->interpolated_loop = f->read_bool();
 				for (ModelFrame &fr: m->frame){
 					fr.duration = 1;
 					if (rubber_timing)
-						fr.duration = f->ReadFloat();
+						fr.duration = f->read_float();
 					fr.skel_dpos.resize(bone.num);
 					fr.skel_ang.resize(bone.num);
 					for (int j=0;j<bone.num;j++){
-						f->ReadVector(&fr.skel_ang[j]);
+						f->read_vector(&fr.skel_ang[j]);
 						if (VarDeltaPos[j])
-							f->ReadVector(&fr.skel_dpos[j]);
+							f->read_vector(&fr.skel_dpos[j]);
 					}
 				}
 			}else{
@@ -745,36 +745,36 @@ bool DataModel::load(const string & _filename, bool deep)
 			}
 		}
 		// Effects
-		f->ReadComment();
-		fx.resize(f->ReadInt());
+		f->read_comment();
+		fx.resize(f->read_int());
 		if (fx.num>10000)
 			fx.clear();
 		for (int i=0;i<fx.num;i++){
-			string fxkind = f->ReadStr();
+			string fxkind = f->read_str();
 			fx[i].type=-1;
 			if (fxkind == "Script"){
 				fx[i].type = FX_TYPE_SCRIPT;
-				fx[i].vertex = f->ReadInt();
-				fx[i].file = f->ReadStr();
-				f->ReadStr();
+				fx[i].vertex = f->read_int();
+				fx[i].file = f->read_str();
+				f->read_str();
 			}else if (fxkind == "Light"){
 				fx[i].type = FX_TYPE_LIGHT;
-				fx[i].vertex = f->ReadInt();
-				fx[i].size = (float)f->ReadInt();
+				fx[i].vertex = f->read_int();
+				fx[i].size = (float)f->read_int();
 				for (int j=0;j<3;j++)
 					read_color_argb(f,fx[i].colors[j]);
 			}else if (fxkind == "Sound"){
 				fx[i].type = FX_TYPE_SOUND;
-				fx[i].vertex = f->ReadInt();
-				fx[i].size = (float)f->ReadInt();
-				fx[i].speed = (float)f->ReadInt() * 0.01f;
-				fx[i].file = f->ReadStr();
+				fx[i].vertex = f->read_int();
+				fx[i].size = (float)f->read_int();
+				fx[i].speed = (float)f->read_int() * 0.01f;
+				fx[i].file = f->read_str();
 			}else if (fxkind == "ForceField"){
 				fx[i].type = FX_TYPE_FORCEFIELD;
-				fx[i].vertex = f->ReadInt();
-				fx[i].size = (float)f->ReadInt();
-				fx[i].intensity = (float)f->ReadInt();
-				fx[i].inv_quad = f->ReadBool();
+				fx[i].vertex = f->read_int();
+				fx[i].size = (float)f->read_int();
+				fx[i].intensity = (float)f->read_int();
+				fx[i].inv_quad = f->read_bool();
 			}else{
 				msg_error("unknown effekt: " + fxkind);
 			}
@@ -782,59 +782,59 @@ bool DataModel::load(const string & _filename, bool deep)
 
 // properties
 		// Physics
-		f->ReadComment();
-		meta_data.mass = f->ReadFloat();
+		f->read_comment();
+		meta_data.mass = f->read_float();
 		for (int i=0;i<9;i++)
-			meta_data.inertia_tensor.e[i] = f->ReadFloat();
-		meta_data.active_physics = f->ReadBool();
-		meta_data.passive_physics = f->ReadBool();
-		radius = f->ReadFloat();
+			meta_data.inertia_tensor.e[i] = f->read_float();
+		meta_data.active_physics = f->read_bool();
+		meta_data.passive_physics = f->read_bool();
+		radius = f->read_float();
 
 		// LOD-Distances
-		f->ReadComment();
-		meta_data.detail_dist[0] = f->ReadFloat();
-		meta_data.detail_dist[1] = f->ReadFloat();
-		meta_data.detail_dist[2] = f->ReadFloat();
+		f->read_comment();
+		meta_data.detail_dist[0] = f->read_float();
+		meta_data.detail_dist[1] = f->read_float();
+		meta_data.detail_dist[2] = f->read_float();
 
 // object data
 		// Object Data
-		f->ReadComment();
-		meta_data.name = f->ReadStr();
-		meta_data.description = f->ReadStr();
+		f->read_comment();
+		meta_data.name = f->read_str();
+		meta_data.description = f->read_str();
 
 		// Inventary
-		f->ReadComment();
-		meta_data.inventary.resize(f->ReadInt());
+		f->read_comment();
+		meta_data.inventary.resize(f->read_int());
 		for (int i=0;i<meta_data.inventary.num;i++){
-			meta_data.inventary[i] = f->ReadStr();
-			f->ReadInt();
+			meta_data.inventary[i] = f->read_str();
+			f->read_int();
 		}
 
 		// Script
-		f->ReadComment();
-		meta_data.script_file = f->ReadStr();
-		meta_data.script_var.resize(f->ReadInt());
+		f->read_comment();
+		meta_data.script_file = f->read_str();
+		meta_data.script_var.resize(f->read_int());
 		for (int i=0;i<meta_data.script_var.num;i++)
-			meta_data.script_var[i] = f->ReadFloat();
+			meta_data.script_var[i] = f->read_float();
 
 
 // additional data for editing
 		// Editor
-		f->ReadComment();
-		meta_data.auto_generate_tensor = f->ReadBool();
-		meta_data.auto_generate_dists = f->ReadBool();
-		meta_data.auto_generate_skin[1] = f->ReadBool();
-		meta_data.auto_generate_skin[2] = f->ReadBool();
-		meta_data.detail_factor[1] = f->ReadInt();
-		meta_data.detail_factor[2] = f->ReadInt();
+		f->read_comment();
+		meta_data.auto_generate_tensor = f->read_bool();
+		meta_data.auto_generate_dists = f->read_bool();
+		meta_data.auto_generate_skin[1] = f->read_bool();
+		meta_data.auto_generate_skin[2] = f->read_bool();
+		meta_data.detail_factor[1] = f->read_int();
+		meta_data.detail_factor[2] = f->read_int();
 		// Normals
-		f->ReadComment();
+		f->read_comment();
 		for (int i=1;i<4;i++){
 			ModelSkin *s = &skin[i];
-			int normal_mode_all = f->ReadInt();
+			int normal_mode_all = f->read_int();
 			if (normal_mode_all == NORMAL_MODE_PER_VERTEX){
 				for (ModelVertex &v: s->vertex)
-					v.normal_mode = f->ReadInt();
+					v.normal_mode = f->read_int();
 			}else{
 				for (ModelVertex &v: s->vertex)
 					v.normal_mode = normal_mode_all;
@@ -842,35 +842,35 @@ bool DataModel::load(const string & _filename, bool deep)
 		}
 
 		// Polygons
-		if (f->ReadStr() == "// Polygons"){
+		if (f->read_str() == "// Polygons"){
 			beginActionGroup("LoadPolygonData");
 			foreachi(ModelVertex &v, skin[1].vertex, i)
 				addVertex(v.pos, v.bone_index, v.normal_mode);
-			int ns = f->ReadInt();
+			int ns = f->read_int();
 			for (int i=0;i<ns;i++){
 				ModelSurface s;
-				int nv = f->ReadInt();
+				int nv = f->read_int();
 				for (int j=0;j<nv;j++){
 					ModelPolygon t;
 					t.is_selected = false;
 					t.triangulation_dirty = true;
-					int n = f->ReadInt();
-					t.material = f->ReadInt();
+					int n = f->read_int();
+					t.material = f->read_int();
 					t.side.resize(n);
 					for (int k=0;k<n;k++){
-						t.side[k].vertex = f->ReadInt();
+						t.side[k].vertex = f->read_int();
 						for (int l=0;l<material[t.material].texture_files.num;l++){
-							t.side[k].skin_vertex[l].x = f->ReadFloat();
-							t.side[k].skin_vertex[l].y = f->ReadFloat();
+							t.side[k].skin_vertex[l].x = f->read_float();
+							t.side[k].skin_vertex[l].y = f->read_float();
 						}
 					}
 					t.normal_dirty = true;
 					s.polygon.add(t);
 				}
-				s.is_physical = f->ReadBool();
-				s.is_visible = f->ReadBool();
+				s.is_physical = f->read_bool();
+				s.is_visible = f->read_bool();
 				s.is_selected = false;
-				f->ReadInt();
+				f->read_int();
 				s.model = this;
 				surface.add(s);
 			}
@@ -890,7 +890,6 @@ bool DataModel::load(const string & _filename, bool deep)
 		error=true;
 	}
 
-	f->Close();
 	delete(f);
 
 
@@ -1108,115 +1107,115 @@ bool DataModel::save(const string & _filename)
 	filename = _filename;
 	ed->makeDirs(filename);
 
-	File *f = FileCreate(filename);
+	File *f = FileCreateText(filename);
 	f->WriteFileFormatVersion(false, 11);//FFVBinary, 11);
-	f->FloatDecimals = 5;
+	f->float_decimals = 5;
 
 // general
-	f->WriteComment("// General");
-	f->WriteVector(&_min);
-	f->WriteVector(&_max);
-	f->WriteInt(3); // skins...
-	f->WriteInt(0); // reserved
-	f->WriteInt(0);
-	f->WriteInt(0);
+	f->write_comment("// General");
+	f->write_vector(&_min);
+	f->write_vector(&_max);
+	f->write_int(3); // skins...
+	f->write_int(0); // reserved
+	f->write_int(0);
+	f->write_int(0);
 
 // materials
-	f->WriteComment("// Materials");
-	f->WriteInt(material.num);
+	f->write_comment("// Materials");
+	f->write_int(material.num);
 	for (ModelMaterial &m: material){
-		f->WriteStr(m.material_file);
-		f->WriteBool(m.user_color);
+		f->write_str(m.material_file);
+		f->write_bool(m.user_color);
 		write_color_argb(f, m.ambient);
 		write_color_argb(f, m.diffuse);
 		write_color_argb(f, m.specular);
 		write_color_argb(f, m.emission);
-		f->WriteInt(m.shininess);
-		f->WriteInt(m.user_transparency ? m.transparency_mode : TransparencyModeDefault);
-		f->WriteInt(m.alpha_source);
-		f->WriteInt(m.alpha_destination);
-		f->WriteInt(m.alpha_factor * 100.0f);
-		f->WriteBool(m.alpha_zbuffer);
-		f->WriteInt(m.texture_files.num);
+		f->write_int(m.shininess);
+		f->write_int(m.user_transparency ? m.transparency_mode : TransparencyModeDefault);
+		f->write_int(m.alpha_source);
+		f->write_int(m.alpha_destination);
+		f->write_int(m.alpha_factor * 100.0f);
+		f->write_bool(m.alpha_zbuffer);
+		f->write_int(m.texture_files.num);
 		for (int t=0;t<m.texture_files.num;t++)
-			f->WriteStr(m.texture_files[t]);
+			f->write_str(m.texture_files[t]);
 	}
 
 // physical skin
-	f->WriteComment("// Physical Skin");
+	f->write_comment("// Physical Skin");
 
 	// vertices
-	f->WriteInt(skin[0].vertex.num);
+	f->write_int(skin[0].vertex.num);
 	for (int j=0;j<skin[0].vertex.num;j++)
-		f->WriteInt(skin[0].vertex[j].bone_index);
+		f->write_int(skin[0].vertex[j].bone_index);
 	for (int j=0;j<skin[0].vertex.num;j++)
-		f->WriteVector(&skin[0].vertex[j].pos);
+		f->write_vector(&skin[0].vertex[j].pos);
 
 	// triangles
-	f->WriteInt(0);
+	f->write_int(0);
 	/*for (int j=0;j<Skin[0].NumTriangles;j++)
 		for (int k=0;k<3;k++)
-			f->WriteInt(Skin[0].Triangle[j].Index[k]);*/
+			f->write_int(Skin[0].Triangle[j].Index[k]);*/
 
 	// balls
-	f->WriteInt(ball.num);
+	f->write_int(ball.num);
 	for (int j=0;j<ball.num;j++){
-		f->WriteInt(ball[j].index);
-		f->WriteFloat(ball[j].radius);
+		f->write_int(ball[j].index);
+		f->write_float(ball[j].radius);
 	}
 
-	f->WriteInt(poly.num);
+	f->write_int(poly.num);
 	for (int j=0;j<poly.num;j++){
-		f->WriteInt(poly[j].NumFaces);
+		f->write_int(poly[j].NumFaces);
 		for (int k=0;k<poly[j].NumFaces;k++){
-			f->WriteInt(poly[j].Face[k].NumVertices);
+			f->write_int(poly[j].Face[k].NumVertices);
 			for (int l=0;l<poly[j].Face[k].NumVertices;l++)
-				f->WriteInt(poly[j].Face[k].Index[l]);
-			f->WriteFloat(poly[j].Face[k].Plane.n.x);
-			f->WriteFloat(poly[j].Face[k].Plane.n.y);
-			f->WriteFloat(poly[j].Face[k].Plane.n.z);
-			f->WriteFloat(poly[j].Face[k].Plane.d);
+				f->write_int(poly[j].Face[k].Index[l]);
+			f->write_float(poly[j].Face[k].Plane.n.x);
+			f->write_float(poly[j].Face[k].Plane.n.y);
+			f->write_float(poly[j].Face[k].Plane.n.z);
+			f->write_float(poly[j].Face[k].Plane.d);
 		}
-		f->WriteInt(poly[j].NumSVertices);
+		f->write_int(poly[j].NumSVertices);
 		for (int k=0;k<poly[j].NumSVertices;k++)
-			f->WriteInt(poly[j].SIndex[k]);
-		f->WriteInt(poly[j].NumEdges);
+			f->write_int(poly[j].SIndex[k]);
+		f->write_int(poly[j].NumEdges);
 		for (int k=0;k<poly[j].NumEdges;k++){
-			f->WriteInt(poly[j].EdgeIndex[k*2 + 0]);
-			f->WriteInt(poly[j].EdgeIndex[k*2 + 1]);
+			f->write_int(poly[j].EdgeIndex[k*2 + 0]);
+			f->write_int(poly[j].EdgeIndex[k*2 + 1]);
 		}
 		// topology
 		for (int k=0;k<poly[j].NumFaces;k++)
 			for (int l=0;l<poly[j].NumFaces;l++)
-				f->WriteInt(poly[j].FacesJoiningEdge[k * poly[j].NumFaces + l]);
+				f->write_int(poly[j].FacesJoiningEdge[k * poly[j].NumFaces + l]);
 		for (int k=0;k<poly[j].NumEdges;k++)
 			for (int l=0;l<poly[j].NumFaces;l++)
-			    f->WriteBool(poly[j].EdgeOnFace[k * poly[j].NumFaces + l]);
+			    f->write_bool(poly[j].EdgeOnFace[k * poly[j].NumFaces + l]);
 	}
 
 // skin
 	for (int i=1;i<4;i++){
 		ModelSkin *s = &skin[i];
-		f->WriteComment(format("// Skin[%d]",i));
+		f->write_comment(format("// Skin[%d]",i));
 
 		// verices
-		f->WriteInt(s->vertex.num);
+		f->write_int(s->vertex.num);
 		for (ModelVertex &v: s->vertex)
-			f->WriteVector(&v.pos);
+			f->write_vector(&v.pos);
 		for (ModelVertex &v: s->vertex)
-			f->WriteInt(v.bone_index);
+			f->write_int(v.bone_index);
 
 	    // skin vertices
 		int num_skin_v = 0;
 		for (int m=0;m<material.num;m++)
 			num_skin_v += s->sub[m].triangle.num * material[m].texture_files.num * 3;
-		f->WriteInt(num_skin_v);
+		f->write_int(num_skin_v);
 		for (int m=0;m<material.num;m++)
 			for (int tl=0;tl<material[m].texture_files.num;tl++)
 		    	for (int j=0;j<s->sub[m].triangle.num;j++)
 					for (int k=0;k<3;k++){
-						f->WriteFloat(s->sub[m].triangle[j].skin_vertex[tl][k].x);
-						f->WriteFloat(s->sub[m].triangle[j].skin_vertex[tl][k].y);
+						f->write_float(s->sub[m].triangle[j].skin_vertex[tl][k].x);
+						f->write_float(s->sub[m].triangle[j].skin_vertex[tl][k].y);
 					}
 
 
@@ -1226,50 +1225,50 @@ bool DataModel::save(const string & _filename)
 			ModelSubSkin *sub = &s->sub[m];
 
 			// triangles
-			f->WriteInt(sub->triangle.num);
+			f->write_int(sub->triangle.num);
 
 			// vertex index
 	    	for (int j=0;j<sub->triangle.num;j++)
 				for (int k=0;k<3;k++)
-					f->WriteInt(sub->triangle[j].vertex[k]);
+					f->write_int(sub->triangle[j].vertex[k]);
 
 			// skin index
 			for (int tl=0;tl<material[m].texture_files.num;tl++)
 		    	for (int j=0;j<sub->triangle.num;j++)
 					for (int k=0;k<3;k++)
-						f->WriteInt(svi ++);
+						f->write_int(svi ++);
 
 			// normal
 	    	for (int j=0;j<sub->triangle.num;j++)
 				for (int k=0;k<3;k++){
 					sub->triangle[j].normal_index[k] = get_normal_index(sub->triangle[j].normal[k]);
-					f->WriteWord(sub->triangle[j].normal_index[k]);
+					f->write_word(sub->triangle[j].normal_index[k]);
 				}
-			f->WriteInt(0);
+			f->write_int(0);
 		}
 
-		f->WriteInt(0);
+		f->write_int(0);
 	}
 
 // skeleton
-	f->WriteComment("// Skeleton");
-	f->WriteInt(bone.num);
+	f->write_comment("// Skeleton");
+	f->write_int(bone.num);
 	for (ModelBone &b: bone){
 		if (b.parent >= 0){
 			vector dpos = b.pos - bone[b.parent].pos;
-			f->WriteVector(&dpos);
+			f->write_vector(&dpos);
 		}else
-			f->WriteVector(&b.pos);
-		f->WriteInt(b.parent);
-		f->WriteStr(b.model_file);
+			f->write_vector(&b.pos);
+		f->write_int(b.parent);
+		f->write_str(b.model_file);
 	}
 
 // animations
-	f->WriteComment("// Animations");
+	f->write_comment("// Animations");
 	if ((move.num == 1) && (move[0].frame.num == 0)){
-		f->WriteInt(0);
+		f->write_int(0);
 	}else
-		f->WriteInt(move.num);
+		f->write_int(move.num);
 	int n_moves = 0;
 	int n_frames_vert = 0;
 	int n_frames_skel = 0;
@@ -1279,157 +1278,157 @@ bool DataModel::save(const string & _filename)
 			if (move[i].type == MOVE_TYPE_VERTEX)	n_frames_vert += move[i].frame.num;
 			if (move[i].type == MOVE_TYPE_SKELETAL)	n_frames_skel += move[i].frame.num;
 		}
-	f->WriteInt(n_moves);
-	f->WriteInt(n_frames_vert);
-	f->WriteInt(n_frames_skel);
+	f->write_int(n_moves);
+	f->write_int(n_frames_vert);
+	f->write_int(n_frames_skel);
 	for (int i=0;i<move.num;i++)
 		if (move[i].frame.num > 0){
 			ModelMove *m = &move[i];
 			bool rubber_timing = m->needsRubberTiming();
-			f->WriteInt(i);
-			f->WriteStr(m->name);
-			f->WriteInt(m->type + (rubber_timing ? 128 : 0));
-			f->WriteInt(m->frame.num);
-			f->WriteFloat(m->frames_per_sec_const);
-			f->WriteFloat(m->frames_per_sec_factor);
+			f->write_int(i);
+			f->write_str(m->name);
+			f->write_int(m->type + (rubber_timing ? 128 : 0));
+			f->write_int(m->frame.num);
+			f->write_float(m->frames_per_sec_const);
+			f->write_float(m->frames_per_sec_factor);
 
 			// vertex animation
 			if (m->type == MOVE_TYPE_VERTEX){
 				for (ModelFrame &fr: m->frame){
 					if (rubber_timing)
-						f->WriteFloat(fr.duration);
+						f->write_float(fr.duration);
 					for (int s=0;s<4;s++){
 						// compress (only write != 0)
 						int num_vertices = 0;
 						for (int j=0;j<skin[s].vertex.num;j++)
 							if (fr.skin[i].dpos[j] != v_0)
 								num_vertices ++;
-						f->WriteInt(num_vertices);
+						f->write_int(num_vertices);
 						for (int j=0;j<skin[s].vertex.num;j++)
 							if (fr.skin[i].dpos[j] != v_0){
-								f->WriteInt(j);
-								f->WriteVector(&fr.skin[i].dpos[j]);
+								f->write_int(j);
+								f->write_vector(&fr.skin[i].dpos[j]);
 							}
 					}
 				}
 			// skeletal animation
 			}else if (m->type == MOVE_TYPE_SKELETAL){
 				for (int j=0;j<bone.num;j++)
-					f->WriteBool((bone[j].parent < 0));
-				f->WriteBool(m->interpolated_quadratic);
-				f->WriteBool(m->interpolated_loop);
+					f->write_bool((bone[j].parent < 0));
+				f->write_bool(m->interpolated_quadratic);
+				f->write_bool(m->interpolated_loop);
 				for (ModelFrame &fr: m->frame){
 					if (rubber_timing)
-						f->WriteFloat(fr.duration);
+						f->write_float(fr.duration);
 					for (int j=0;j<bone.num;j++){
-						f->WriteVector(&fr.skel_ang[j]);
+						f->write_vector(&fr.skel_ang[j]);
 						if (bone[j].parent < 0)
-							f->WriteVector(&fr.skel_dpos[j]);
+							f->write_vector(&fr.skel_dpos[j]);
 					}
 				}
 			}
 		}
 
 // effects
-	f->WriteComment("// Effects");
-	f->WriteInt(fx.num);
+	f->write_comment("// Effects");
+	f->write_int(fx.num);
 	for (int i=0;i<fx.num;i++){
 		if (fx[i].type == FX_TYPE_SCRIPT){
-			f->WriteStr("Script");
-			f->WriteInt(fx[i].vertex);
-			f->WriteStr(fx[i].file);
-			f->WriteStr("");
+			f->write_str("Script");
+			f->write_int(fx[i].vertex);
+			f->write_str(fx[i].file);
+			f->write_str("");
 		}else if (fx[i].type == FX_TYPE_LIGHT){
-			f->WriteStr("Light");
-			f->WriteInt(fx[i].vertex);
-			f->WriteInt((int)fx[i].size);
+			f->write_str("Light");
+			f->write_int(fx[i].vertex);
+			f->write_int((int)fx[i].size);
 			for (int nc=0;nc<3;nc++)
 				write_color_argb(f, fx[i].colors[nc]);
 		}else if (fx[i].type == FX_TYPE_SOUND){
-			f->WriteStr("Sound");
-			f->WriteInt(fx[i].vertex);
-			f->WriteInt((int)fx[i].size);
-			f->WriteInt((int)(fx[i].speed * 100.0f));
-			f->WriteStr(fx[i].file);
+			f->write_str("Sound");
+			f->write_int(fx[i].vertex);
+			f->write_int((int)fx[i].size);
+			f->write_int((int)(fx[i].speed * 100.0f));
+			f->write_str(fx[i].file);
 		}else if (fx[i].type == FX_TYPE_FORCEFIELD){
-			f->WriteStr("ForceField");
-			f->WriteInt(fx[i].vertex);
-			f->WriteInt((int)fx[i].size);
-			f->WriteInt((int)fx[i].intensity);
-			f->WriteBool(fx[i].inv_quad);
+			f->write_str("ForceField");
+			f->write_int(fx[i].vertex);
+			f->write_int((int)fx[i].size);
+			f->write_int((int)fx[i].intensity);
+			f->write_bool(fx[i].inv_quad);
 		}
 	}
 
 // properties
-	f->WriteComment("// Physics");
-	f->WriteFloat(meta_data.mass);
+	f->write_comment("// Physics");
+	f->write_float(meta_data.mass);
 	for (int i=0;i<9;i++)
-		f->WriteFloat(meta_data.inertia_tensor.e[i]);
-	f->WriteBool(meta_data.active_physics);
-	f->WriteBool(meta_data.passive_physics);
-	f->WriteFloat(radius);
+		f->write_float(meta_data.inertia_tensor.e[i]);
+	f->write_bool(meta_data.active_physics);
+	f->write_bool(meta_data.passive_physics);
+	f->write_float(radius);
 
-	f->WriteComment("// LOD-Distances");
-	f->WriteFloat(meta_data.detail_dist[0]);
-	f->WriteFloat(meta_data.detail_dist[1]);
-	f->WriteFloat(meta_data.detail_dist[2]);
+	f->write_comment("// LOD-Distances");
+	f->write_float(meta_data.detail_dist[0]);
+	f->write_float(meta_data.detail_dist[1]);
+	f->write_float(meta_data.detail_dist[2]);
 
 // object data
-	f->WriteComment("// Object Data");
-	f->WriteStr(meta_data.name);
-	f->WriteStr(meta_data.description);
+	f->write_comment("// Object Data");
+	f->write_str(meta_data.name);
+	f->write_str(meta_data.description);
 
 	// inventary
-	f->WriteComment("// Inventary");
-	f->WriteInt(meta_data.inventary.num);
+	f->write_comment("// Inventary");
+	f->write_int(meta_data.inventary.num);
 	for (int i=0;i<meta_data.inventary.num;i++){
-	    f->WriteStr(meta_data.inventary[i]);
-		f->WriteInt(1);
+	    f->write_str(meta_data.inventary[i]);
+		f->write_int(1);
 	}
 
 	// script
-	f->WriteComment("// Script");
-	f->WriteStr(meta_data.script_file);
-	f->WriteInt(meta_data.script_var.num);
+	f->write_comment("// Script");
+	f->write_str(meta_data.script_file);
+	f->write_int(meta_data.script_var.num);
 	for (int i=0;i<meta_data.script_var.num;i++)
-	    f->WriteFloat(meta_data.script_var[i]);
+	    f->write_float(meta_data.script_var[i]);
 
 // additional data for editing
-	f->WriteComment("// Editor");
-	f->WriteBool(meta_data.auto_generate_tensor);
-	f->WriteBool(meta_data.auto_generate_dists);
-	f->WriteBool(meta_data.auto_generate_skin[1]);
-	f->WriteBool(meta_data.auto_generate_skin[2]);
-	f->WriteInt(meta_data.detail_factor[1]);
-	f->WriteInt(meta_data.detail_factor[2]);
-	f->WriteComment("// Normals");
+	f->write_comment("// Editor");
+	f->write_bool(meta_data.auto_generate_tensor);
+	f->write_bool(meta_data.auto_generate_dists);
+	f->write_bool(meta_data.auto_generate_skin[1]);
+	f->write_bool(meta_data.auto_generate_skin[2]);
+	f->write_int(meta_data.detail_factor[1]);
+	f->write_int(meta_data.detail_factor[2]);
+	f->write_comment("// Normals");
 	for (int i=1;i<4;i++){
 		ModelSkin *s = &skin[i];
-		f->WriteInt(NORMAL_MODE_PER_VERTEX);
+		f->write_int(NORMAL_MODE_PER_VERTEX);
 		for (ModelVertex &v: s->vertex)
-			f->WriteInt(v.normal_mode);
+			f->write_int(v.normal_mode);
 	}
-	f->WriteComment("// Polygons");
-	f->WriteInt(surface.num);
+	f->write_comment("// Polygons");
+	f->write_int(surface.num);
 	for (ModelSurface &s: surface){
-		f->WriteInt(s.polygon.num);
+		f->write_int(s.polygon.num);
 		for (ModelPolygon &t: s.polygon){
-			f->WriteInt(t.side.num);
-			f->WriteInt(t.material);
+			f->write_int(t.side.num);
+			f->write_int(t.material);
 			for (ModelPolygonSide &ss: t.side){
-				f->WriteInt(ss.vertex);
+				f->write_int(ss.vertex);
 				for (int l=0;l<material[t.material].texture_files.num;l++){
-					f->WriteFloat(ss.skin_vertex[l].x);
-					f->WriteFloat(ss.skin_vertex[l].y);
+					f->write_float(ss.skin_vertex[l].x);
+					f->write_float(ss.skin_vertex[l].y);
 				}
 			}
 		}
-		f->WriteBool(s.is_physical);
-		f->WriteBool(s.is_visible);
-		f->WriteInt(0);
+		f->write_bool(s.is_physical);
+		f->write_bool(s.is_visible);
+		f->write_int(0);
 	}
 
-	f->WriteComment("#");
+	f->write_comment("#");
 	FileClose(f);
 
 	action_manager->markCurrentAsSave();

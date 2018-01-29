@@ -20,11 +20,10 @@ bool Importer3ds::Import(DataModel *m, const string &filename)
 	m->reset();
 
 	File *f = FileOpen(filename);
-	f->SetBinaryMode(true);
 
 	while(true){
-		int id = f->ReadWord();
-		int length = f->ReadInt();
+		int id = f->read_word();
+		int length = f->read_int();
 		switch (id){
 			case 0x4d4d:
 				msg_write("Main3DS");
@@ -38,7 +37,7 @@ bool Importer3ds::Import(DataModel *m, const string &filename)
 			case 0x4000:
 				msg_write("EditObject");
 				while(true){
-					char c=f->ReadByte();
+					char c=f->read_byte();
 					if (c==0)
 						break;
 				}
@@ -56,10 +55,10 @@ bool Importer3ds::Import(DataModel *m, const string &filename)
 					msg_error("interner Fehler... (zu gro&se Abschnittsl&ange!)");
 					return false;
 				}
-				f->SetPos(length - 6, false);
+				f->seek(length - 6);
 				break;
 		}
-		if (f->GetPos() >= f->GetSize())
+		if (f->get_pos() >= f->get_size())
 			break;
 	}
 
@@ -74,51 +73,51 @@ void Importer3ds::LoadMesh(DataModel *m, File *f, int _length)
 {
 	msg_right();
 	int NumVerticesOld = m->skin[1].vertex.num;
-	int end_pos = f->GetPos() + _length - 6;
+	int end_pos = f->get_pos() + _length - 6;
 	Array<vector> skin_vert;
-	while(f->GetPos() < end_pos){
-		int id = f->ReadWord();
-		int length = f->ReadInt();
+	while(f->get_pos() < end_pos){
+		int id = f->read_word();
+		int length = f->read_int();
 		switch (id){
 			case 0x4110:
 				{msg_write("TriVertexList");
-				int nv=f->ReadWord();
+				int nv=f->read_word();
 				msg_write(format("\t\t\t\tNumVertices: %d",nv));
 				for (int i=0;i<nv;i++){
 					ModelVertex v;
-					v.pos.x = f->ReadFloat();
-					v.pos.y = f->ReadFloat();
-					v.pos.z = f->ReadFloat();
+					v.pos.x = f->read_float();
+					v.pos.y = f->read_float();
+					v.pos.z = f->read_float();
 					v.normal_mode = NORMAL_MODE_ANGULAR;
 					m->skin[1].vertex.add(v);
 				}
 				}break;
 			case 0x4120:
 				{msg_write("TriFaceList");
-				int nt=f->ReadWord();
+				int nt=f->read_word();
 				msg_write(format("\t\t\t\tNumTriangles: %d",nt));
 				for (int i=0;i<nt;i++){
 					ModelTriangle t;
-					t.vertex[0] = f->ReadWord() + NumVerticesOld;
-					t.vertex[1] = f->ReadWord() + NumVerticesOld;
-					t.vertex[2] = f->ReadWord() + NumVerticesOld;
-					f->ReadWord();
+					t.vertex[0] = f->read_word() + NumVerticesOld;
+					t.vertex[1] = f->read_word() + NumVerticesOld;
+					t.vertex[2] = f->read_word() + NumVerticesOld;
+					f->read_word();
 					m->skin[1].sub[0].triangle.add(t);
 				}
 				}break;
 			case 0x4140:
 				{msg_write("TriMappingList");
-				int nv=f->ReadWord();
+				int nv=f->read_word();
 				skin_vert.resize(nv);
 				msg_write(format("\t\t\t\tNumVertices: %d",nv));
 				for (int i=0;i<nv;i++){
-					skin_vert[i].x = f->ReadFloat();
-					skin_vert[i].y = 1 - f->ReadFloat();
+					skin_vert[i].x = f->read_float();
+					skin_vert[i].y = 1 - f->read_float();
 				}
 				}break;
 			default:
 				msg_write(format("-unbekannt-  %x - %d", id, length));
-				f->SetPos(length - 6, false);
+				f->seek(length - 6);
 				break;
 		}
 	}

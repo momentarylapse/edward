@@ -223,10 +223,10 @@ void PostProcessPhys(Model *m, PhysicalSkin *s)
 
 color file_read_color4i(File *f)
 {
-	int a = f->ReadInt();
-	int r = f->ReadInt();
-	int g = f->ReadInt();
-	int b = f->ReadInt();
+	int a = f->read_int();
+	int r = f->read_int();
+	int g = f->read_int();
+	int b = f->read_int();
 	return color((float)a/255.0f, (float)r/255.0f, (float)g/255.0f, (float)b/255.0f);
 }
 
@@ -303,10 +303,10 @@ void Model::ResetData()
 
 void read_color(File *f, color &c)
 {
-	c.a = (float)f->ReadInt() / 255.0f;
-	c.r = (float)f->ReadInt() / 255.0f;
-	c.g = (float)f->ReadInt() / 255.0f;
-	c.b = (float)f->ReadInt() / 255.0f;
+	c.a = (float)f->read_int() / 255.0f;
+	c.r = (float)f->read_int() / 255.0f;
+	c.g = (float)f->read_int() / 255.0f;
+	c.b = (float)f->read_int() / 255.0f;
 }
 
 void Model::reset()
@@ -361,22 +361,16 @@ void Model::Load(const string &filename)
 	msg_write("loading model: " + filename);
 	msg_right();
 
+	File *f = NULL;
+
+	try{
+
 	// load model from file
-	File *f = FileOpen(ObjectDir + filename + ".model");
-	if (!f){
-		error = true;
-		msg_error("-failed");
-		msg_left();
-		return;
-	}
+	f = FileOpenText(ObjectDir + filename + ".model");
+
 	int ffv = f->ReadFileFormatVersion();
-	if (ffv != 11){
-		FileClose(f);
-		error = true;
-		msg_error(format("wrong file format: %d (11 expected)", ffv));
-		msg_left();
-		return;
-	}
+	if (ffv != 11)
+		throw Exception(format("wrong file format: %d (11 expected)", ffv));
 
 	Array<float> temp_sv;
 	_template = new ModelTemplate(this);
@@ -384,40 +378,40 @@ void Model::Load(const string &filename)
 
 // file format 11...
 	// General
-	f->ReadComment();
+	f->read_comment();
 	// bounding box
-	f->ReadVector(&min);
-	f->ReadVector(&max);
+	f->read_vector(&min);
+	f->read_vector(&max);
 	// skins
-	f->ReadInt();
+	f->read_int();
 	// reserved
-	f->ReadInt();
-	f->ReadInt();
-	f->ReadInt();
+	f->read_int();
+	f->read_int();
+	f->read_int();
 
 	// Materials
-	f->ReadComment();
-	int num_materials = f->ReadInt();
+	f->read_comment();
+	int num_materials = f->read_int();
 	material.resize(num_materials);
 	material_is_reference = false;
 	for (int i=0;i<material.num;i++){
 		Material *m = &material[i];
-		Material *mat_from_file = LoadMaterial(f->ReadStr());
-		bool user_colors = f->ReadBool();
+		Material *mat_from_file = LoadMaterial(f->read_str());
+		bool user_colors = f->read_bool();
 		m->ambient = file_read_color4i(f);
 		m->diffuse = file_read_color4i(f);
 		m->specular = file_read_color4i(f);
 		m->emission = file_read_color4i(f);
-		m->shininess = (float)f->ReadInt();
-		m->transparency_mode = f->ReadInt();
-		m->alpha_source = f->ReadInt();
-		m->alpha_destination = f->ReadInt();
-		m->alpha_factor = (float)f->ReadInt() * 0.01f;
-		m->alpha_z_buffer = f->ReadBool();
-		int nt = f->ReadInt();
+		m->shininess = (float)f->read_int();
+		m->transparency_mode = f->read_int();
+		m->alpha_source = f->read_int();
+		m->alpha_destination = f->read_int();
+		m->alpha_factor = (float)f->read_int() * 0.01f;
+		m->alpha_z_buffer = f->read_bool();
+		int nt = f->read_int();
 		m->textures.resize(nt);
 		for (int t=0;t<m->textures.num;t++)
-			m->textures[t] = nix::LoadTexture(f->ReadStr());
+			m->textures[t] = nix::LoadTexture(f->read_str());
 		m->copy_from(this, mat_from_file, user_colors);
 	}
 	
@@ -426,56 +420,56 @@ void Model::Load(const string &filename)
 	phys = new PhysicalSkin;
 	phys_is_reference = false;
 	//   vertices
-	f->ReadComment();
-	phys->num_vertices = f->ReadInt();
+	f->read_comment();
+	phys->num_vertices = f->read_int();
 	phys->bone_nr = new int[phys->num_vertices];
 	phys->vertex = new vector[phys->num_vertices];
 	for (int i=0;i<phys->num_vertices;i++)
-		phys->bone_nr[i] = f->ReadInt();
+		phys->bone_nr[i] = f->read_int();
 	for (int i=0;i<phys->num_vertices;i++)
-		f->ReadVector(&phys->vertex[i]);
+		f->read_vector(&phys->vertex[i]);
 	//   triangles
-	f->ReadInt();
+	f->read_int();
 	//   balls
-	phys->num_balls = f->ReadInt();
+	phys->num_balls = f->read_int();
 	phys->ball = new Ball[phys->num_balls];
 	for (int i=0;i<phys->num_balls;i++){
-		phys->ball[i].index = f->ReadInt();
-		phys->ball[i].radius = f->ReadFloat();
+		phys->ball[i].index = f->read_int();
+		phys->ball[i].radius = f->read_float();
 	}
 	//   convex polyhedron
-	phys->num_polys = f->ReadInt();
+	phys->num_polys = f->read_int();
 	phys->poly = new ConvexPolyhedron[phys->num_polys];
 	for (int i=0;i<phys->num_polys;i++){
 		ConvexPolyhedron *p = &phys->poly[i];
-		p->num_faces = f->ReadInt();
+		p->num_faces = f->read_int();
 		for (int j=0;j<p->num_faces;j++){
-			p->face[j].num_vertices = f->ReadInt();
+			p->face[j].num_vertices = f->read_int();
 			for (int k=0;k<p->face[j].num_vertices;k++)
-				p->face[j].index[k] = f->ReadInt();
-			p->face[j].pl.n.x = f->ReadFloat();
-			p->face[j].pl.n.y = f->ReadFloat();
-			p->face[j].pl.n.z = f->ReadFloat();
-			p->face[j].pl.d = f->ReadFloat();
+				p->face[j].index[k] = f->read_int();
+			p->face[j].pl.n.x = f->read_float();
+			p->face[j].pl.n.y = f->read_float();
+			p->face[j].pl.n.z = f->read_float();
+			p->face[j].pl.d = f->read_float();
 		}
 		// non redundand stuff
-		p->num_vertices = f->ReadInt();
+		p->num_vertices = f->read_int();
 		p->vertex = new int[p->num_vertices];
 		for (int k=0;k<p->num_vertices;k++)
-			p->vertex[k] = f->ReadInt();
-		p->num_edges = f->ReadInt();
+			p->vertex[k] = f->read_int();
+		p->num_edges = f->read_int();
 		p->edge_index = new int[p->num_edges * 2];
 		for (int k=0;k<p->num_edges*2;k++)
-			p->edge_index[k] = f->ReadInt();
+			p->edge_index[k] = f->read_int();
 		// topology
 		p->faces_joining_edge = new int[p->num_faces * p->num_faces];
 		for (int k=0;k<p->num_faces;k++)
 			for (int l=0;l<p->num_faces;l++)
-				p->faces_joining_edge[k * p->num_faces + l] = f->ReadInt();
+				p->faces_joining_edge[k * p->num_faces + l] = f->read_int();
 		p->edge_on_face = new bool[p->num_edges * p->num_faces];
 		for (int k=0;k<p->num_edges;k++)
 			for (int l=0;l<p->num_faces;l++)
-			    p->edge_on_face[k * p->num_faces + l] = f->ReadBool();
+			    p->edge_on_face[k * p->num_faces + l] = f->read_bool();
 	}
 
 	// Visible Skin[d]
@@ -488,65 +482,65 @@ void Model::Load(const string &filename)
 		s->copy_as_ref = false;
 
 		// vertices
-		f->ReadComment();
-		int n_vert = f->ReadInt();
+		f->read_comment();
+		int n_vert = f->read_int();
 		s->vertex.resize(n_vert);
 		s->bone_index.resize(n_vert);
 		for (int i=0;i<s->vertex.num;i++)
-			f->ReadVector(&s->vertex[i]);
+			f->read_vector(&s->vertex[i]);
 		for (int i=0;i<s->vertex.num;i++)
-			s->bone_index[i] = f->ReadInt();
+			s->bone_index[i] = f->read_int();
 
 		// skin vertices
-		int NumSkinVertices = f->ReadInt();
+		int NumSkinVertices = f->read_int();
 		temp_sv.resize(NumSkinVertices * 2);
 		for (int i=0;i<NumSkinVertices * 2;i++)
-			temp_sv[i] = f->ReadFloat();
+			temp_sv[i] = f->read_float();
 
 		// sub skins
 		for (int m=0;m<material.num;m++){
 			SubSkin *sub = &s->sub[m];
 			// triangles
-			sub->num_triangles = f->ReadInt();
+			sub->num_triangles = f->read_int();
 			sub->triangle_index.resize(sub->num_triangles * 3);
 			sub->skin_vertex.resize(material[m].textures.num * sub->num_triangles * 6);
 			sub->normal.resize(sub->num_triangles * 3);
 			// vertices
 			for (int i=0;i<sub->num_triangles * 3;i++)
-				sub->triangle_index[i] = f->ReadInt();
+				sub->triangle_index[i] = f->read_int();
 			// skin vertices
 			for (int i=0;i<material[m].textures.num * sub->num_triangles * 3;i++){
-				int sv = f->ReadInt();
+				int sv = f->read_int();
 				sub->skin_vertex[i * 2    ] = temp_sv[sv * 2    ];
 				sub->skin_vertex[i * 2 + 1] = temp_sv[sv * 2 + 1];
 			}
 			// normals
 			for (int i=0;i<sub->num_triangles * 3;i++)
-				sub->normal[i] = get_normal_by_index(f->ReadInt());
+				sub->normal[i] = get_normal_by_index(f->read_int());
 
-			f->ReadInt();
+			f->read_int();
 			sub->force_update = true;
 			sub->vertex_buffer = NULL;
 		}
-		f->ReadInt();
+		f->read_int();
 	}
 
 	// Skeleton
 	msg_db_m("Skel",1);
-	f->ReadComment();
-	bone.resize(f->ReadInt());
+	f->read_comment();
+	bone.resize(f->read_int());
 	for (int i=0;i<bone.num;i++){
-		f->ReadVector(&bone[i].pos);
-		bone[i].parent = f->ReadInt();
-		bone[i].model = LoadModel(f->ReadStr());
+		f->read_vector(&bone[i].pos);
+		bone[i].parent = f->read_int();
+		bone[i].model = LoadModel(f->read_str());
 	}
 
 	// Animations
-	f->ReadComment();
-	int num_anims_all = f->ReadInt();
-	int num_anims = f->ReadInt();
-	int num_frames_vert = f->ReadInt();
-	int num_frames_skel = f->ReadInt();
+	f->read_comment();
+	int num_anims_all = f->read_int();
+	int num_anims = f->read_int();
+	int num_frames_vert = f->read_int();
+	int num_frames_skel = f->read_int();
 	// animated?
 	meta_move = NULL;
 	if (num_anims_all > 0){
@@ -575,17 +569,17 @@ void Model::Load(const string &filename)
 
 		// moves
 		for (int i=0;i<num_anims;i++){
-			int index = f->ReadInt();
+			int index = f->read_int();
 			
 			// auto animation: use first move!
 			if (i==0)
 				move_operation[0].move = index;
 			Move *m = &meta_move->move[index];
-			f->ReadStr(); // name is irrelevant
-			m->type = f->ReadInt();
-			m->num_frames = f->ReadInt();
-			m->frames_per_sec_const = f->ReadFloat();
-			m->frames_per_sec_factor = f->ReadFloat();
+			f->read_str(); // name is irrelevant
+			m->type = f->read_int();
+			m->num_frames = f->read_int();
+			m->frames_per_sec_const = f->read_float();
+			m->frames_per_sec_factor = f->read_float();
 			
 			if (m->type == MOVE_TYPE_VERTEX){
 				m->frame0 = frame_v;
@@ -595,10 +589,10 @@ void Model::Load(const string &filename)
 						int np = phys->num_vertices;
 						if (s >= 1)
 							np = skin[s - 1]->vertex.num;
-						int num_vertices = f->ReadInt();
+						int num_vertices = f->read_int();
 						for (int j=0;j<num_vertices;j++){
-							int vertex_index = f->ReadInt();
-							f->ReadVector(&meta_move->skin[s].dpos[frame_v * np + vertex_index]);
+							int vertex_index = f->read_int();
+							f->read_vector(&meta_move->skin[s].dpos[frame_v * np + vertex_index]);
 						}
 					}
 					frame_v ++;
@@ -607,16 +601,16 @@ void Model::Load(const string &filename)
 				m->frame0 = frame_s;
 				bool *free_pos = new bool[bone.num];
 				for (int j=0;j<bone.num;j++)
-					free_pos[j] = f->ReadBool();
-				m->inter_quad = f->ReadBool();
-				m->inter_loop = f->ReadBool();
+					free_pos[j] = f->read_bool();
+				m->inter_quad = f->read_bool();
+				m->inter_loop = f->read_bool();
 				for (int fr=0;fr<m->num_frames;fr++){
 					for (int j=0;j<bone.num;j++){
 						vector v;
-						f->ReadVector(&v);
+						f->read_vector(&v);
 						QuaternionRotationV(meta_move->skel_ang[frame_s * bone.num + j], v);
 						if (free_pos[j])
-							f->ReadVector(&meta_move->skel_dpos[frame_s * bone.num + j]);
+							f->read_vector(&meta_move->skel_dpos[frame_s * bone.num + j]);
 					}
 					frame_s ++;
 				}
@@ -628,81 +622,88 @@ void Model::Load(const string &filename)
 
 	// Effects
 	msg_db_m("FX",1);
-	f->ReadComment();
-	int num_fx = f->ReadInt();
+	f->read_comment();
+	int num_fx = f->read_int();
 	msg_db_m(i2s(num_fx).c_str(),2);
 	_template->fx.resize(num_fx);
 	for (int i=0;i<num_fx;i++){
 		ModelEffectData *d = &_template->fx[i];
-		string fxtype = f->ReadStr();
+		string fxtype = f->read_str();
 		msg_db_m(fxtype.c_str(),2);
 		if (fxtype == "Script"){
 			d->type = FX_TYPE_SCRIPT;
-			d->vertex = f->ReadInt();
-			d->filename = f->ReadStr();
-			f->ReadStr();
+			d->vertex = f->read_int();
+			d->filename = f->read_str();
+			f->read_str();
 		}else if (fxtype == "Light"){
 			d->type = FX_TYPE_LIGHT;
-			d->vertex = f->ReadInt();
-			d->radius = f->ReadFloat();
+			d->vertex = f->read_int();
+			d->radius = f->read_float();
 			read_color(f, d->am);
 			read_color(f, d->di);
 			read_color(f, d->sp);
 		}else if (fxtype == "Sound"){
 			d->type=FX_TYPE_SOUND;
-			d->vertex=f->ReadInt();
-			d->radius = (float)f->ReadInt();
-			d->speed = (float)f->ReadInt()*0.01f;
-			d->filename = f->ReadStr();
+			d->vertex=f->read_int();
+			d->radius = (float)f->read_int();
+			d->speed = (float)f->read_int()*0.01f;
+			d->filename = f->read_str();
 		}else if (fxtype == "ForceField"){
 			d->type =FX_TYPE_FORCEFIELD;
-			f->ReadInt();
-			(float)f->ReadInt();
-			(float)f->ReadInt();
-			f->ReadBool();
+			f->read_int();
+			(float)f->read_int();
+			(float)f->read_int();
+			f->read_bool();
 		}else
 			msg_error("unknown effect: " + fxtype);
 	}
 
 	// Physics
-	f->ReadComment();
-	mass = f->ReadFloat();
+	f->read_comment();
+	mass = f->read_float();
 	for (int i=0;i<9;i++)
-		theta_0.e[i] = f->ReadFloat();
-	active_physics = f->ReadBool();
-	passive_physics = f->ReadBool();
-	radius = f->ReadFloat();
+		theta_0.e[i] = f->read_float();
+	active_physics = f->read_bool();
+	passive_physics = f->read_bool();
+	radius = f->read_float();
 
 	// LOD-Distances
-	f->ReadComment();
-	detail_dist[SKIN_HIGH] = f->ReadFloat();
-	detail_dist[SKIN_MEDIUM] = f->ReadFloat();
-	detail_dist[SKIN_LOW] = f->ReadFloat();
+	f->read_comment();
+	detail_dist[SKIN_HIGH] = f->read_float();
+	detail_dist[SKIN_MEDIUM] = f->read_float();
+	detail_dist[SKIN_LOW] = f->read_float();
 	
 
 // object data
 	// Object Data
-	f->ReadComment();
-	name = f->ReadStr();
-	description = f->ReadStr();
+	f->read_comment();
+	name = f->read_str();
+	description = f->read_str();
 
 	// Inventary
-	f->ReadComment();
-	inventary.resize(f->ReadInt());
+	f->read_comment();
+	inventary.resize(f->read_int());
 	for (int i=0;i<inventary.num;i++){
-		inventary[i] = LoadModel(f->ReadStr());
-		f->ReadInt();
+		inventary[i] = LoadModel(f->read_str());
+		f->read_int();
 	}
 
 	// Script
-	f->ReadComment();
-	_template->script_filename = f->ReadStr();
-	script_var.resize(f->ReadInt());
+	f->read_comment();
+	_template->script_filename = f->read_str();
+	script_var.resize(f->read_int());
 	for (int i=0;i<script_var.num;i++)
-		script_var[i] = f->ReadFloat();
+		script_var[i] = f->read_float();
 
 	msg_db_m("deleting file",1);
 	FileClose(f);
+	}catch(Exception &e){
+		FileClose(f);
+		error = true;
+		msg_error(e.message());
+		msg_left();
+		return;
+	}
 
 
 

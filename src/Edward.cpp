@@ -86,7 +86,7 @@ void render_text(const string &text, Image &im)
 		unsigned char *c = c0 + 4 * y * w_surf;
 		for (int x=0;x<w_used;x++){
 			float a = (float)c[1] / 255.0f;
-			im.setPixel(x, y, color(a, 1, 1, 1));
+			im.setPixel(x, y, color(a, a, 1, 1));
 			c += 4;
 		}
 	}
@@ -99,65 +99,65 @@ void render_text(const string &text, Image &im)
 void read_color_4i(File *f,int *c)
 {
 	// argb (file) -> rgba (editor)
-	c[3] = f->ReadInt();
-	c[0] = f->ReadInt();
-	c[1] = f->ReadInt();
-	c[2] = f->ReadInt();
+	c[3] = f->read_int();
+	c[0] = f->read_int();
+	c[1] = f->read_int();
+	c[2] = f->read_int();
 }
 
 void write_color_4i(File *f,int *c)
 {
 	// rgba (editor) -> argb (file)
-	f->WriteInt(c[3]);
-	f->WriteInt(c[0]);
-	f->WriteInt(c[1]);
-	f->WriteInt(c[2]);
+	f->write_int(c[3]);
+	f->write_int(c[0]);
+	f->write_int(c[1]);
+	f->write_int(c[2]);
 }
 
 void write_color_rgba(File *f, const color &c)
 {
-	f->WriteInt((int)(c.r * 255.0f));
-	f->WriteInt((int)(c.g * 255.0f));
-	f->WriteInt((int)(c.b * 255.0f));
-	f->WriteInt((int)(c.a * 255.0f));
+	f->write_int((int)(c.r * 255.0f));
+	f->write_int((int)(c.g * 255.0f));
+	f->write_int((int)(c.b * 255.0f));
+	f->write_int((int)(c.a * 255.0f));
 }
 
 void read_color_rgba(File *f, color &c)
 {
-	c.r = (float)f->ReadInt() / 255.0f;
-	c.g = (float)f->ReadInt() / 255.0f;
-	c.b = (float)f->ReadInt() / 255.0f;
-	c.a = (float)f->ReadInt() / 255.0f;
+	c.r = (float)f->read_int() / 255.0f;
+	c.g = (float)f->read_int() / 255.0f;
+	c.b = (float)f->read_int() / 255.0f;
+	c.a = (float)f->read_int() / 255.0f;
 }
 
 void write_color_argb(File *f, const color &c)
 {
-	f->WriteInt((int)(c.a * 255.0f));
-	f->WriteInt((int)(c.r * 255.0f));
-	f->WriteInt((int)(c.g * 255.0f));
-	f->WriteInt((int)(c.b * 255.0f));
+	f->write_int((int)(c.a * 255.0f));
+	f->write_int((int)(c.r * 255.0f));
+	f->write_int((int)(c.g * 255.0f));
+	f->write_int((int)(c.b * 255.0f));
 }
 
 void read_color_argb(File *f, color &c)
 {
-	c.a = (float)f->ReadInt() / 255.0f;
-	c.r = (float)f->ReadInt() / 255.0f;
-	c.g = (float)f->ReadInt() / 255.0f;
-	c.b = (float)f->ReadInt() / 255.0f;
+	c.a = (float)f->read_int() / 255.0f;
+	c.r = (float)f->read_int() / 255.0f;
+	c.g = (float)f->read_int() / 255.0f;
+	c.b = (float)f->read_int() / 255.0f;
 }
 
 void write_color_3i(File *f, const color &c)
 {
-	f->WriteInt((int)(c.r * 255.0f));
-	f->WriteInt((int)(c.g * 255.0f));
-	f->WriteInt((int)(c.b * 255.0f));
+	f->write_int((int)(c.r * 255.0f));
+	f->write_int((int)(c.g * 255.0f));
+	f->write_int((int)(c.b * 255.0f));
 }
 
 void read_color_3i(File *f, color &c)
 {
-	c.r = (float)f->ReadInt() / 255.0f;
-	c.g = (float)f->ReadInt() / 255.0f;
-	c.b = (float)f->ReadInt() / 255.0f;
+	c.r = (float)f->read_int() / 255.0f;
+	c.g = (float)f->read_int() / 255.0f;
+	c.b = (float)f->read_int() / 255.0f;
 	c.a = 1;
 }
 
@@ -279,7 +279,7 @@ Edward::Edward(Array<string> arg) :
 	bool maximized = hui::Config.getBool("Window.Maximized", false);
 	setSize(w, h);
 	root_dir = hui::Config.getStr("RootDir", "");
-	//HuiConfigReadInt("Api", api, NIX_API_OPENGL);
+	//HuiConfigread_int("Api", api, NIX_API_OPENGL);
 	/*bool LocalDocumentation = HuiConfig.getBool("LocalDocumentation", false);
 	WorldScriptVarFile = HuiConfig.getStr("WorldScriptVarFile", "");
 	ObjectScriptVarFile = HuiConfig.getStr("ObjectScriptVarFile", "");
@@ -648,28 +648,35 @@ void Edward::onDraw()
 
 void Edward::loadKeyCodes()
 {
-	msg_db_f("LoadKeyCodes", 1);
-	File *f = FileOpen(app->directory + "keys.txt");
-	if (!f)
-		f = FileOpen(app->directory_static + "keys.txt");
-	f->ReadComment();
-	int nk = f->ReadInt();
-	f->ReadComment();
-	for (int i=0;i<nk;i++){
-		string id = f->ReadStr();
-		int key_code = f->ReadInt();
-		setKeyCode(id, key_code);
-	}
-	event("volume_subtract", NULL);
-	setKeyCode("volume_subtract", hui::KEY_CONTROL + hui::KEY_J); // TODO ...
-	event("invert_selection", NULL);
-	setKeyCode("invert_selection", hui::KEY_CONTROL + hui::KEY_TAB); // TODO ...
-	event("select_all", NULL);
-	setKeyCode("select_all", hui::KEY_CONTROL + hui::KEY_A); // TODO ...
+	File *f = NULL;
 
-	event("easify_skin", NULL);
-	setKeyCode("easify_skin", hui::KEY_CONTROL + hui::KEY_7); // TODO ...
-	FileClose(f);
+	try{
+		try{
+			f = FileOpenText(app->directory + "keys.txt");
+		}catch(...){
+			f = FileOpenText(app->directory_static + "keys.txt");
+		}
+		f->read_comment();
+		int nk = f->read_int();
+		f->read_comment();
+		for (int i=0; i<nk; i++){
+			string id = f->read_str();
+			int key_code = f->read_int();
+			setKeyCode(id, key_code);
+		}
+		event("volume_subtract", NULL);
+		setKeyCode("volume_subtract", hui::KEY_CONTROL + hui::KEY_J); // TODO ...
+		event("invert_selection", NULL);
+		setKeyCode("invert_selection", hui::KEY_CONTROL + hui::KEY_TAB); // TODO ...
+		event("select_all", NULL);
+		setKeyCode("select_all", hui::KEY_CONTROL + hui::KEY_A); // TODO ...
+
+		event("easify_skin", NULL);
+		setKeyCode("easify_skin", hui::KEY_CONTROL + hui::KEY_7); // TODO ...
+		FileClose(f);
+	}catch(...){
+
+	}
 }
 
 

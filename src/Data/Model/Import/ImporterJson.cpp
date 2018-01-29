@@ -29,8 +29,8 @@ string ImporterJson::rnext()
 {
 	string s;
 	for (int i=0; i<256; i++){
-		char c = f->ReadChar();
-		if (f->Eof)
+		char c = f->read_char();
+		if (f->eof())
 			return "";
 		if (is_whitespace(c))
 			continue;
@@ -40,17 +40,17 @@ string ImporterJson::rnext()
 			return s;
 		bool is_string = (c == '\"');
 		for (int j=0; j<256; j++){
-			c = f->ReadChar();
+			c = f->read_char();
 			if (!is_string)
 				if ((is_whitespace(c)) or is_special(c)){
-					f->SetPos(-1, false);
+					f->seek(-1);
 					break;
 				}
 			s.add(c);
 			if (is_string)
 				if (c == '\"')
 					break;
-			if (f->Eof)
+			if (f->eof())
 				return s;
 		}
 		break;
@@ -221,12 +221,11 @@ bool ImporterJson::Import(DataModel *m, const string &filename)
 	m->reset();
 	m->action_manager->enable(false);
 
-	f = FileOpen(filename);
-	if (!f)
-		return false;
+	try{
+	f = FileOpenText(filename);
 
 	msg_write("lexical");
-	while (!f->Eof)
+	while (!f->eof())
 		tokens.add(rnext());
 	cur_token = 0;
 
@@ -256,6 +255,7 @@ bool ImporterJson::Import(DataModel *m, const string &filename)
 
 	delete(tree);
 
+	}catch(...){}
 
 	m->action_manager->enable(true);
 	return true;

@@ -171,20 +171,20 @@ void AdminFile::check(AdminFileList &list)
 	bool really_scan = true;
 
 	// test file existence
-	File *f = DataAdministration::admin_file;
-	f->SilentFileAccess = true;
-	if (f->Open(ed->getRootDir(Kind) + Name)){
+	File *f = NULL;
+	try{
+		f = FileOpen(ed->getRootDir(Kind) + Name);
 
 		// file ok
 		int _time = f->GetDateModification().time;
 		Missing = false;
-		f->Close();
+		delete(f);
 
 		// different time stamp -> rescan file
 		really_scan = (_time != Time);
 		if (really_scan)
 			remove_all_children();
-	}else{
+	}catch(...){
 
 		// no file -> missing
 		Missing = true;
@@ -193,7 +193,6 @@ void AdminFile::check(AdminFileList &list)
 		if (Kind >= 0)
 			remove_all_children();
 	}
-	f->SilentFileAccess = false;
 
 
 	// rescan file?
@@ -267,11 +266,11 @@ void AdminFile::check(AdminFileList &list)
 		}else
 			Missing=true;
 	}else if (Kind==FD_SCRIPT){
-		if (f->Open(Kaba::config.directory + Name)){
+		try{
+			File *f = FileOpen(Kaba::config.directory + Name);
 			Time = f->GetDateModification().time;
-			f->SetBinaryMode(true);
-			string buf = f->ReadComplete();
-			f->Close();
+			string buf = f->read_complete();
+			delete(f);
 			// would be better to compile the script and look for functions having a string constant as a parameter...
 			//   -> would automatically ignore comments and   function( "aaa" + b )
 			for (int i=0;i<buf.num;i++){
@@ -282,14 +281,17 @@ void AdminFile::check(AdminFileList &list)
 				if (StringBegin(buf,i,ScriptLink[0].str))
 					add_possible_link(l, ScriptLink[0].type, (Name.dirname() + StringAfterString).no_recursion());
 			}
-		}else
+		}catch(...){
 			Missing=true;
+		}
 	}else{
-		if (f->Open(ed->getRootDir(Kind) + Name)){
+		try{
+			File *f = FileOpen(ed->getRootDir(Kind) + Name);
 			Time = f->GetDateModification().time;
-			f->Close();
-		}else
+			delete(f);
+		}catch(...){
 			Missing=true;
+		}
 	}
 
 	// recursively scan linked files

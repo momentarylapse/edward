@@ -148,55 +148,52 @@ Material *LoadMaterial(const string &filename, bool as_default)
 			if (materials[i]->name == filename)
 				return materials[i];
 	}
-	File *f = FileOpen(MaterialDir + filename + ".material");
-	if (!f){
-#ifdef _X_ALLOW_X_
-	if (Engine.FileErrorsAreCritical)
-		return NULL;
-#endif
-		return materials[0];
-	}
+	File *f = NULL;
 	Material *m = new Material;
+
+	try{
+
+	f = FileOpenText(MaterialDir + filename + ".material");
 
 	int ffv = f->ReadFileFormatVersion();
 	if (ffv == 4){
 		m->name = filename;
 		// Textures
-		f->ReadComment();
-		int nt = f->ReadInt();
+		f->read_comment();
+		int nt = f->read_int();
 		m->textures.resize(nt);
 		for (int i=0;i<nt;i++)
-			m->textures[i] = nix::LoadTexture(f->ReadStr());
+			m->textures[i] = nix::LoadTexture(f->read_str());
 		// Colors
-		f->ReadComment();
+		f->read_comment();
 		m->ambient = file_read_color4i(f);
 		m->diffuse = file_read_color4i(f);
 		m->specular = file_read_color4i(f);
-		m->shininess = (float)f->ReadInt();
+		m->shininess = (float)f->read_int();
 		m->emission = file_read_color4i(f);
 		// Transparency
-		f->ReadComment();
-		m->transparency_mode = f->ReadInt();
-		m->alpha_factor = float(f->ReadInt()) * 0.01f;
-		m->alpha_source = f->ReadInt();
-		m->alpha_destination = f->ReadInt();
-		m->alpha_z_buffer = f->ReadBool();
+		f->read_comment();
+		m->transparency_mode = f->read_int();
+		m->alpha_factor = float(f->read_int()) * 0.01f;
+		m->alpha_source = f->read_int();
+		m->alpha_destination = f->read_int();
+		m->alpha_z_buffer = f->read_bool();
 		// Appearance
-		f->ReadComment();
-		f->ReadInt(); //ShiningDensity
-		f->ReadInt(); // ShiningLength
-		f->ReadBool(); // IsWater
+		f->read_comment();
+		f->read_int(); //ShiningDensity
+		f->read_int(); // ShiningLength
+		f->read_bool(); // IsWater
 		// Reflection
 		m->cube_map = NULL;
 		m->cube_map_size = 0;
 		m->reflection_density = 0;
-		f->ReadComment();
-		m->reflection_mode = f->ReadInt();
-		m->reflection_density = float(f->ReadInt()) * 0.01f;
-		m->cube_map_size = f->ReadInt();
+		f->read_comment();
+		m->reflection_mode = f->read_int();
+		m->reflection_density = float(f->read_int()) * 0.01f;
+		m->cube_map_size = f->read_int();
 		nix::Texture *cmt[6];
 		for (int i=0;i<6;i++)
-			cmt[i] = nix::LoadTexture(f->ReadStr());
+			cmt[i] = nix::LoadTexture(f->read_str());
 		if (m->reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC){
 			//m->cube_map = FxCubeMapNew(m->cube_map_size);
 			//FxCubeMapCreate(m->cube_map,cmt[0],cmt[1],cmt[2],cmt[3],cmt[4],cmt[5]);
@@ -206,21 +203,33 @@ Material *LoadMaterial(const string &filename, bool as_default)
 				m->cube_map->fill_side(i, cmt[i]);
 		}
 		// ShaderFile
-		f->ReadComment();
-		string ShaderFile = f->ReadStr();
+		f->read_comment();
+		string ShaderFile = f->read_str();
 		m->shader = nix::LoadShader(ShaderFile);
 		// Physics
-		f->ReadComment();
-		m->rc_jump = (float)f->ReadInt() * 0.001f;
-		m->rc_static = (float)f->ReadInt() * 0.001f;
-		m->rc_sliding = (float)f->ReadInt() * 0.001f;
-		m->rc_rolling = (float)f->ReadInt() * 0.001f;
+		f->read_comment();
+		m->rc_jump = (float)f->read_int() * 0.001f;
+		m->rc_static = (float)f->read_int() * 0.001f;
+		m->rc_sliding = (float)f->read_int() * 0.001f;
+		m->rc_rolling = (float)f->read_int() * 0.001f;
 
 		materials.add(m);
 	}else{
-		msg_error(format("wrong file format: %d (expected: 4)", ffv));
-		m = materials[0];
+		throw Exception(format("wrong file format: %d (expected: 4)", ffv));
 	}
 	FileClose(f);
+
+	}catch(Exception &e){
+		FileClose(f);
+		msg_error(e.message());
+		m = materials[0];
+
+	#ifdef _X_ALLOW_X_
+		if (Engine.FileErrorsAreCritical)
+			return NULL;
+	#endif
+			return materials[0];
+	}
+
 	return m;
 }

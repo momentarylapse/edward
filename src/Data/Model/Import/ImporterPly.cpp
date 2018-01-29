@@ -25,14 +25,11 @@ bool ImporterPly::Import(DataModel *m, const string &filename)
 
 	try{
 
-	f = FileOpen(filename);
-	if (!f)
-		throw string("can't open file");
-	f->SetBinaryMode(false);
+	f = FileOpenText(filename);
 
 	// header
 	while(true){
-		string s = f->ReadStr();
+		string s = f->read_str();
 		if (s == "ply"){
 			continue;
 		}else if (s.head(7) == "comment"){
@@ -44,16 +41,16 @@ bool ImporterPly::Import(DataModel *m, const string &filename)
 		}else if (s.head(7) == "element"){
 			Array<string> el = s.explode(" ");
 			if (el.num != 3)
-				throw string("element can't be parsed: ") + s;
+				throw Exception("element can't be parsed: " + s);
 		}else if (s.head(8) == "property"){
 
 		}else{
-			throw string("don't understand header line: ") + s;
+			throw Exception("don't understand header line: " + s);
 		}
 	}
 
-	}catch(string &e){
-		msg_error(e);
+	}catch(Exception &e){
+		msg_error(e.message());
 		ok = false;
 	}
 

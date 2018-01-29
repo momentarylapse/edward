@@ -30,7 +30,7 @@ bool DataFont::load(const string & _filename, bool deep)
 
 	filename = _filename;
 	ed->makeDirs(filename);
-	File *f = FileOpen(filename);
+	File *f = FileOpenText(filename);
 	if (!f){
 		ed->setMessage(_("Kann XFont-Datei nicht &offnen"));
 		return false;
@@ -40,36 +40,36 @@ bool DataFont::load(const string & _filename, bool deep)
 	ffv = f->ReadFileFormatVersion();
 	if (ffv == 1){
 
-		f->ReadComment();
-		global.TextureFile = f->ReadStr();
-		f->ReadComment();
-		int NumX = f->ReadByte();
-		f->ReadComment();
-		int NumY = f->ReadByte();
-		f->ReadComment();
-		int MaxGlyphWidth = f->ReadByte();
-		f->ReadComment();
-		global.GlyphHeight = f->ReadByte();
-		f->ReadComment();
-		global.GlyphY1 = f->ReadByte();
-		f->ReadComment();
-		global.GlyphY2 = f->ReadByte();
-		f->ReadComment();
-		f->ReadByte(); // XOffset
-		f->ReadComment();
-		global.XFactor = f->ReadByte();
-		f->ReadComment();
-		global.YFactor = f->ReadByte();
-		f->ReadComment();
+		f->read_comment();
+		global.TextureFile = f->read_str();
+		f->read_comment();
+		int NumX = f->read_byte();
+		f->read_comment();
+		int NumY = f->read_byte();
+		f->read_comment();
+		int MaxGlyphWidth = f->read_byte();
+		f->read_comment();
+		global.GlyphHeight = f->read_byte();
+		f->read_comment();
+		global.GlyphY1 = f->read_byte();
+		f->read_comment();
+		global.GlyphY2 = f->read_byte();
+		f->read_comment();
+		f->read_byte(); // XOffset
+		f->read_comment();
+		global.XFactor = f->read_byte();
+		f->read_comment();
+		global.YFactor = f->read_byte();
+		f->read_comment();
 		glyph.resize(NumX*NumY);
 		for (int i=0;i<NumX*NumY;i++){
-			glyph[i].Name = str_m_to_utf8(f->ReadStr());
+			glyph[i].Name = str_m_to_utf8(f->read_str());
 			glyph[i].Width = MaxGlyphWidth;
-			glyph[i].X2 = f->ReadByte();
-			glyph[i].X1 = f->ReadByte();
+			glyph[i].X2 = f->read_byte();
+			glyph[i].X1 = f->read_byte();
 		}
-		f->ReadComment();
-		string str = f->ReadStr();
+		f->read_comment();
+		string str = f->read_str();
 		global.UnknownGlyphNo = 0;
 		foreachi(Glyph &g, glyph, i)
 			if (g.Name == str)
@@ -77,30 +77,30 @@ bool DataFont::load(const string & _filename, bool deep)
 
 	}else if (ffv == 2){
 
-		f->ReadComment();
-		global.TextureFile = f->ReadStr();
-		f->ReadComment();
-		int NumGlyphs = f->ReadWord();
-		f->ReadComment();
-		global.GlyphHeight = f->ReadByte();
-		f->ReadComment();
-		global.GlyphY1 = f->ReadByte();
-		f->ReadComment();
-		global.GlyphY2 = f->ReadByte();
-		f->ReadComment();
-		global.XFactor = f->ReadByte();
-		f->ReadComment();
-		global.YFactor = f->ReadByte();
-		f->ReadComment();
+		f->read_comment();
+		global.TextureFile = f->read_str();
+		f->read_comment();
+		int NumGlyphs = f->read_word();
+		f->read_comment();
+		global.GlyphHeight = f->read_byte();
+		f->read_comment();
+		global.GlyphY1 = f->read_byte();
+		f->read_comment();
+		global.GlyphY2 = f->read_byte();
+		f->read_comment();
+		global.XFactor = f->read_byte();
+		f->read_comment();
+		global.YFactor = f->read_byte();
+		f->read_comment();
 		glyph.resize(NumGlyphs);
 		for (int i=0;i<NumGlyphs;i++){
-			glyph[i].Name = str_m_to_utf8(f->ReadStr());
-			glyph[i].Width = f->ReadByte();
-			glyph[i].X1 = f->ReadByte();
-			glyph[i].X2 = f->ReadByte();
+			glyph[i].Name = str_m_to_utf8(f->read_str());
+			glyph[i].Width = f->read_byte();
+			glyph[i].X1 = f->read_byte();
+			glyph[i].X2 = f->read_byte();
 		}
-		f->ReadComment();
-		string str = f->ReadStr();
+		f->read_comment();
+		string str = f->read_str();
 		global.UnknownGlyphNo=0;
 		foreachi(Glyph &g, glyph, i)
 			if (g.Name == str)
@@ -110,7 +110,6 @@ bool DataFont::load(const string & _filename, bool deep)
 		error = true;
 	}
 
-	f->Close();
 	delete(f);
 
 	if (deep)
@@ -175,38 +174,34 @@ bool DataFont::save(const string & _filename)
 	filename = _filename;
 	ed->makeDirs(filename);
 
-	File *f = new File();
-	if (!f)
-		return false;
-	f->Create(filename);
+	File *f = FileCreateText(filename);
 	f->WriteFileFormatVersion(false, 2);
 
-	f->WriteComment("// Texture");
-	f->WriteStr(global.TextureFile);
-	f->WriteComment("// Num Glyphs");
-	f->WriteWord(glyph.num);
-	f->WriteComment("// Glyph Height");
-	f->WriteByte(global.GlyphHeight);
-	f->WriteComment("// Glyph Y1");
-	f->WriteByte(global.GlyphY1);
-	f->WriteComment("// Glyph Y2");
-	f->WriteByte(global.GlyphY2);
-	f->WriteComment("// Scale Factor X");
-	f->WriteByte(global.XFactor);
-	f->WriteComment("// Scale Factor Y");
-	f->WriteByte(global.YFactor);
-	f->WriteComment("// Glyphs (Char, Width, X1, X2)");
+	f->write_comment("// Texture");
+	f->write_str(global.TextureFile);
+	f->write_comment("// Num Glyphs");
+	f->write_word(glyph.num);
+	f->write_comment("// Glyph Height");
+	f->write_byte(global.GlyphHeight);
+	f->write_comment("// Glyph Y1");
+	f->write_byte(global.GlyphY1);
+	f->write_comment("// Glyph Y2");
+	f->write_byte(global.GlyphY2);
+	f->write_comment("// Scale Factor X");
+	f->write_byte(global.XFactor);
+	f->write_comment("// Scale Factor Y");
+	f->write_byte(global.YFactor);
+	f->write_comment("// Glyphs (Char, Width, X1, X2)");
 	foreachi(Glyph &g, glyph, i){
-		f->WriteStr(g.Name);
-		f->WriteByte(g.Width);
-		f->WriteByte(g.X1);
-		f->WriteByte(g.X2);
+		f->write_str(g.Name);
+		f->write_byte(g.Width);
+		f->write_byte(g.X1);
+		f->write_byte(g.X2);
 	}
-	f->WriteComment("// Unknown Char");
-	f->WriteStr(glyph[global.UnknownGlyphNo].Name);
+	f->write_comment("// Unknown Char");
+	f->write_str(glyph[global.UnknownGlyphNo].Name);
 
-	f->WriteStr("#");
-	f->Close();
+	f->write_str("#");
 	delete(f);
 
 	action_manager->markCurrentAsSave();

@@ -15,13 +15,9 @@
 #include "../Font/DataFont.h"
 #include "../../Edward.h"
 
-File *DataAdministration::admin_file = NULL;
-
 DataAdministration::DataAdministration() :
 	Data(-1)
 {
-	if (!admin_file)
-		admin_file = new File();
 	GameIni = new GameIniData;
 	file_list = new AdminFileList;
 }
@@ -81,31 +77,34 @@ void DataAdministration::TestRootDirectory()
 bool DataAdministration::save(const string &_filename)
 {
 	filename = _filename;
-	admin_file->Create(filename);
-	admin_file->WriteComment("// Number Of Files");
-	admin_file->WriteInt(file_list->num);
-	admin_file->WriteComment("// Files (type, filename, date, missing)");
-	for (AdminFile *a: *file_list){
-		admin_file->WriteInt(a->Kind);
-		admin_file->WriteStr(a->Name);
-		admin_file->WriteInt(a->Time);
-		admin_file->WriteBool(a->Missing);
-	}
-	admin_file->WriteComment("// Links (num dests, dests...)");
-	for (AdminFile *a: *file_list){
-		admin_file->WriteInt(a->Child.num);
-		for (AdminFile *d: a->Child){
-			int n=-1;
-			foreachi(AdminFile *aa, *file_list, k)
-				if (d == aa){
-					n=k;
-					break;
-				}
-			admin_file->WriteInt(n);
+	File* f = NULL;
+	try{
+		f = FileCreateText(filename);
+		f->write_comment("// Number Of Files");
+		f->write_int(file_list->num);
+		f->write_comment("// Files (type, filename, date, missing)");
+		for (AdminFile *a: *file_list){
+			f->write_int(a->Kind);
+			f->write_str(a->Name);
+			f->write_int(a->Time);
+			f->write_bool(a->Missing);
 		}
-	}
-	admin_file->WriteStr("#");
-	admin_file->Close();
+		f->write_comment("// Links (num dests, dests...)");
+		for (AdminFile *a: *file_list){
+			f->write_int(a->Child.num);
+			for (AdminFile *d: a->Child){
+				int n=-1;
+				foreachi(AdminFile *aa, *file_list, k)
+					if (d == aa){
+						n=k;
+						break;
+					}
+				f->write_int(n);
+			}
+		}
+		f->write_str("#");
+		delete(f);
+	}catch(...){}
 	return true;
 }
 
@@ -124,33 +123,36 @@ bool DataAdministration::load(const string &_filename, bool deep)
 	reset();
 	filename = _filename;
 
-	if (!admin_file->Open(filename))
-		return false;
-	admin_file->ReadComment();
-	int num = admin_file->ReadInt();
-	for (int i=0;i<num;i++){
-		AdminFile *a = new AdminFile;
-		file_list->add(a);
-	}
-	// files
-	admin_file->ReadComment();
-	for (AdminFile *a: *file_list){
-		a->Kind = admin_file->ReadInt();
-		a->Name = admin_file->ReadStr().sys_filename();
-		a->Time = admin_file->ReadInt();
-		a->Missing = admin_file->ReadBool();
-		a->Checked = false;
-	}
-	// links
-	admin_file->ReadComment();
-	for (AdminFile *a: *file_list){
-		int nd = admin_file->ReadInt();
-		for (int j=0;j<nd;j++){
-			int n = admin_file->ReadInt();
-			a->add_child((*file_list)[n]);
+	try{
+
+		File *f = FileOpenText(filename);
+		f->read_comment();
+		int num = f->read_int();
+		for (int i=0;i<num;i++){
+			AdminFile *a = new AdminFile;
+			file_list->add(a);
 		}
+		// files
+		f->read_comment();
+		for (AdminFile *a: *file_list){
+			a->Kind = f->read_int();
+			a->Name = f->read_str().sys_filename();
+			a->Time = f->read_int();
+			a->Missing = f->read_bool();
+			a->Checked = false;
+		}
+		// links
+		f->read_comment();
+		for (AdminFile *a: *file_list){
+			int nd = f->read_int();
+			for (int j=0;j<nd;j++){
+				int n = f->read_int();
+				a->add_child((*file_list)[n]);
+			}
+		}
+		delete(f);
+	}catch(...){
 	}
-	admin_file->Close();
 	notify();
 	return true;
 }

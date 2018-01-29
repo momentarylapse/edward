@@ -155,19 +155,28 @@ bool file_delete(const string &filename)
 string file_hash(const string &filename, const string &type)
 {
 	if (type == "md5"){
-		try{
-			return FileReadBinary(filename).md5();
-		}catch(...){
-			return "";
-		}
+		return FileRead(filename).md5();
 	}
 	return "";
 }
 
 string shell_execute(const string &cmd)
 {
-	system(cmd.c_str());
-	return "";
+	FILE *f = popen(cmd.c_str(), "r");
+	string buffer;
+
+	while(true){
+		int c = fgetc(f);
+		if (c == EOF)
+			break;
+		buffer.add(c);
+	}
+
+	int r = pclose(f);
+//	int r = system(cmd.c_str());
+	if (r < 0)
+		throw Exception("does not compute");
+	return buffer;
 }
 
 
@@ -206,7 +215,6 @@ Array<DirEntry> dir_search(const string &dir, const string &filter, bool show_di
 	DIR *_dir;
 	_dir=opendir(dir2.c_str());
 	if (!_dir){
-		msg_db_l(1);
 		return entry_list;
 	}
 	struct dirent *dn;

@@ -172,68 +172,65 @@ void Camera::StartScript(const string &filename,const vector &dpos)
 		return;
 	}
 	msg_write("loading camera script: " + filename);
-	msg_right();
 	cam_point_nr = -1;
 
 
-	File *f = FileOpen(ScriptDir + filename + ".camera");
+	File *f = NULL;
 	float x,y,z;
-	if (f){
-		int ffv=f->ReadFileFormatVersion();
-		if (ffv!=2){
-			f->Close();
-			delete(f);
-			msg_error(format("wrong file format: %d (2 expected)", ffv));
-		}
+	try{
+		f = FileOpenText(ScriptDir + filename + ".camera");
+		int ffv = f->ReadFileFormatVersion();
+		if (ffv!=2)
+			throw Exception(format("wrong file format: %d (2 expected)", ffv));
 		cam_point.clear();
-		f->ReadComment();
-		int n = f->ReadInt();
+		f->read_comment();
+		int n = f->read_int();
 		for (int ip=0;ip<n;ip++){
 			CamPoint p;
-			f->ReadComment();
-			p.type = f->ReadInt();
+			f->read_comment();
+			p.type = f->read_int();
 			if (p.type == CPKSetCamPos){
-				x  =f->ReadFloat();
-				y  =f->ReadFloat();
-				z = f->ReadFloat();
+				x  =f->read_float();
+				y  =f->read_float();
+				z = f->read_float();
 				p.pos = vector(x, y, z) + dpos;
-				p.duration = f->ReadFloat();
+				p.duration = f->read_float();
 			}else if (p.type == CPKSetCamPosRel){
-				x  =f->ReadFloat();
-				y  =f->ReadFloat();
-				z = f->ReadFloat();
+				x  =f->read_float();
+				y  =f->read_float();
+				z = f->read_float();
 				p.pos = vector(x, y, z) + dpos;
-				p.duration = f->ReadFloat();
+				p.duration = f->read_float();
 			}else if (p.type == CPKSetCamAng){
-				x  =f->ReadFloat();
-				y  =f->ReadFloat();
-				z = f->ReadFloat();
+				x  =f->read_float();
+				y  =f->read_float();
+				z = f->read_float();
 				p.ang  = vector(x, y, z);
-				p.duration = f->ReadFloat();
+				p.duration = f->read_float();
 			}else if (p.type == CPKSetCamPosAng){
-				x = f->ReadFloat();
-				y = f->ReadFloat();
-				z = f->ReadFloat();
+				x = f->read_float();
+				y = f->read_float();
+				z = f->read_float();
 				p.pos = vector( x, y, z) + dpos;
-				x  =f->ReadFloat();
-				y  =f->ReadFloat();
-				z = f->ReadFloat();
+				x  =f->read_float();
+				y  =f->read_float();
+				z = f->read_float();
 				p.ang  = vector(x, y, z);
-				p.duration = f->ReadFloat();
+				p.duration = f->read_float();
 			}else if (p.type == CPKCamFlight){
-				x = f->ReadFloat();
-				y = f->ReadFloat();
-				z = f->ReadFloat();
+				x = f->read_float();
+				y = f->read_float();
+				z = f->read_float();
 				p.pos = vector( x, y, z) + dpos;
-				x = f->ReadFloat();
-				y = f->ReadFloat();
-				z = f->ReadFloat();
+				x = f->read_float();
+				y = f->read_float();
+				z = f->read_float();
 				p.vel = vector( x, y, z);
-				x = f->ReadFloat();
-				y = f->ReadFloat();
-				z = f->ReadFloat();
+				x = f->read_float();
+				y = f->read_float();
+				z = f->read_float();
 				p.ang = vector( x, y, z);
-				p.duration = f->ReadFloat();
+				p.duration = f->read_float();
 			}
 			cam_point.add(p);
 		}
@@ -241,9 +238,11 @@ void Camera::StartScript(const string &filename,const vector &dpos)
 		cam_point_nr = 0;
 		flight_time_el = flight_time = 0;
 		ExecuteCamPoint(this);
+	}catch(Exception &e){
+		delete(f);
+		msg_error(e.message());
 	}
 	vel = vel_rt = v_0;
-	msg_left();
 }
 
 void Camera::StopScript()

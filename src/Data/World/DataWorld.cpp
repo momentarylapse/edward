@@ -62,36 +62,39 @@ bool WorldTerrain::Save(const string &filename)
 	FileName.resize(FileName.num - 4);
 
 
-	File *f = FileCreate(filename);
-	if (!f)
-		return false;
+	File *f = NULL;
+
+	try{
+		f = FileCreate(filename);
 
 	f->WriteFileFormatVersion(true, 4);
-	f->WriteByte(0);
+	f->write_byte(0);
 
 	// Metrics
-	f->WriteComment("// Metrics");
-	f->WriteInt(terrain->num_x);
-	f->WriteInt(terrain->num_z);
-	f->WriteFloat(terrain->pattern.x);
-	f->WriteFloat(terrain->pattern.z);
+	f->write_comment("// Metrics");
+	f->write_int(terrain->num_x);
+	f->write_int(terrain->num_z);
+	f->write_float(terrain->pattern.x);
+	f->write_float(terrain->pattern.z);
 
 	// Textures
-	f->WriteComment("// Textures");
-	f->WriteInt(terrain->material->textures.num);
+	f->write_comment("// Textures");
+	f->write_int(terrain->material->textures.num);
 	for (int i=0;i<terrain->material->textures.num;i++){
-		f->WriteStr(terrain->texture_file[i]);
-		f->WriteFloat(terrain->texture_scale[i].x);
-		f->WriteFloat(terrain->texture_scale[i].z);
+		f->write_str(terrain->texture_file[i]);
+		f->write_float(terrain->texture_scale[i].x);
+		f->write_float(terrain->texture_scale[i].z);
 	}
-	f->WriteStr(terrain->material_file);
+	f->write_str(terrain->material_file);
 
 	// height
 	for (int x=0;x<terrain->num_x+1;x++)
 		for (int z=0;z<terrain->num_z+1;z++)
-			f->WriteFloat(terrain->height[x*(terrain->num_z+1) + z]);
+			f->write_float(terrain->height[x*(terrain->num_z+1) + z]);
 
 	FileClose(f);
+
+	}catch(Exception &e){}
 
 	return true;
 }
@@ -118,79 +121,79 @@ bool DataWorld::save(const string & _filename)
 		return;*/
 	filename = _filename;
 	ed->makeDirs(filename);
-	File *f = FileCreate(filename);
-	f->FloatDecimals = 6;
+	File *f = FileCreateText(filename);
+	f->float_decimals = 6;
 
 	f->WriteFileFormatVersion(false, 10);
-	f->WriteComment("// Terrains");
-	f->WriteInt(Terrains.num);
+	f->write_comment("// Terrains");
+	f->write_int(Terrains.num);
 	for (WorldTerrain &t: Terrains){
-		f->WriteStr(t.FileName);
-		f->WriteFloat(t.pos.x);
-		f->WriteFloat(t.pos.y);
-		f->WriteFloat(t.pos.z);
+		f->write_str(t.FileName);
+		f->write_float(t.pos.x);
+		f->write_float(t.pos.y);
+		f->write_float(t.pos.z);
 	}
-	f->WriteComment("// Gravitation");
-	f->WriteFloat(meta_data.Gravity.x);
-	f->WriteFloat(meta_data.Gravity.y);
-	f->WriteFloat(meta_data.Gravity.z);
-	f->WriteComment("// EgoIndex");
-	f->WriteInt(EgoIndex);
-	f->WriteComment("// Background");
+	f->write_comment("// Gravitation");
+	f->write_float(meta_data.Gravity.x);
+	f->write_float(meta_data.Gravity.y);
+	f->write_float(meta_data.Gravity.z);
+	f->write_comment("// EgoIndex");
+	f->write_int(EgoIndex);
+	f->write_comment("// Background");
 	write_color_argb(f, meta_data.BackGroundColor);
 	int ns = 0;
 	foreachi(string &sb, meta_data.SkyBoxFile, i)
 		if (sb.num > 0)
 			ns = i + 1;
-	f->WriteInt(ns);
+	f->write_int(ns);
 	for (int i=0;i<ns;i++)
-		f->WriteStr(meta_data.SkyBoxFile[i]);
-	f->WriteComment("// Fog");
-	f->WriteBool(meta_data.FogEnabled);
-	f->WriteWord(meta_data.FogMode);
-	f->WriteFloat(meta_data.FogStart);
-	f->WriteFloat(meta_data.FogEnd);
-	f->WriteFloat(meta_data.FogDensity);
+		f->write_str(meta_data.SkyBoxFile[i]);
+	f->write_comment("// Fog");
+	f->write_bool(meta_data.FogEnabled);
+	f->write_word(meta_data.FogMode);
+	f->write_float(meta_data.FogStart);
+	f->write_float(meta_data.FogEnd);
+	f->write_float(meta_data.FogDensity);
 	write_color_argb(f, meta_data.FogColor);
-	f->WriteComment("// Music");
-	f->WriteInt(meta_data.MusicFile.num);
+	f->write_comment("// Music");
+	f->write_int(meta_data.MusicFile.num);
 	for (string &m: meta_data.MusicFile)
-		f->WriteStr(m);
-	f->WriteComment("// Objects");
-	f->WriteInt(Objects.num);
+		f->write_str(m);
+	f->write_comment("// Objects");
+	f->write_int(Objects.num);
 	for (WorldObject &o: Objects){
-		f->WriteStr(o.FileName);
-		f->WriteStr(o.Name);
-		f->WriteFloat(o.pos.x);
-		f->WriteFloat(o.pos.y);
-		f->WriteFloat(o.pos.z);
-		f->WriteFloat(o.Ang.x);
-		f->WriteFloat(o.Ang.y);
-		f->WriteFloat(o.Ang.z);
+		f->write_str(o.FileName);
+		f->write_str(o.Name);
+		f->write_float(o.pos.x);
+		f->write_float(o.pos.y);
+		f->write_float(o.pos.z);
+		f->write_float(o.Ang.x);
+		f->write_float(o.Ang.y);
+		f->write_float(o.Ang.z);
 	}
-	f->WriteComment("// Scripts");
-	f->WriteInt(meta_data.ScriptFile.num);
+	f->write_comment("// Scripts");
+	f->write_int(meta_data.ScriptFile.num);
 	for (string &s: meta_data.ScriptFile){
-		f->WriteStr(s);
-		f->WriteInt(0);
+		f->write_str(s);
+		f->write_int(0);
 	}
-	f->WriteComment("// ScriptVars");
-	f->WriteInt(meta_data.ScriptVar.num);
+	f->write_comment("// ScriptVars");
+	f->write_int(meta_data.ScriptVar.num);
 	for (float v: meta_data.ScriptVar)
-		f->WriteFloat(v);
-	f->WriteComment("// Sun");
-	f->WriteBool(meta_data.SunEnabled);
+		f->write_float(v);
+	f->write_comment("// Sun");
+	f->write_bool(meta_data.SunEnabled);
 	write_color_3i(f, meta_data.SunAmbient);
 	write_color_3i(f, meta_data.SunDiffuse);
 	write_color_3i(f, meta_data.SunSpecular);
-	f->WriteFloat(meta_data.SunAng.x);
-	f->WriteFloat(meta_data.SunAng.y);
-	f->WriteComment("// Ambient");
+	f->write_float(meta_data.SunAng.x);
+	f->write_float(meta_data.SunAng.y);
+	f->write_comment("// Ambient");
 	write_color_3i(f, meta_data.Ambient);
-	f->WriteComment("// Physics");
-	f->WriteBool(meta_data.PhysicsEnabled);
-	f->WriteInt(0);
-	f->WriteComment("#");
+	f->write_comment("// Physics");
+	f->write_bool(meta_data.PhysicsEnabled);
+	f->write_int(0);
+	f->write_comment("#");
 
 	delete(f);
 
@@ -203,7 +206,6 @@ bool DataWorld::save(const string & _filename)
 bool DataWorld::load(const string & _filename, bool deep)
 {
 	msg_db_f("World.Load", 1);
-	bool Error=false;
 	int ffv;
 
 	reset();
@@ -212,71 +214,73 @@ bool DataWorld::load(const string & _filename, bool deep)
 	if (this == mode_world->data)
 		ed->makeDirs(filename);
 
-	File *f = FileOpen(filename);
-	if (!f)
-		return false;
+	File *f = NULL;
+
+	try{
+
+		f = FileOpenText(filename);
 	file_time = f->GetDateModification().time;
 
 	ffv = f->ReadFileFormatVersion();
 
-	if ((ffv==10)||(ffv==9)){ // new format
+	if ((ffv==10) or (ffv==9)){ // new format
 		// Terrains
-		f->ReadComment();
-		int n = f->ReadInt();
+		f->read_comment();
+		int n = f->read_int();
 		for (int i=0;i<n;i++){
 			WorldTerrain t;
-			t.FileName = f->ReadStr();
-			f->ReadVector(&t.pos);
+			t.FileName = f->read_str();
+			f->read_vector(&t.pos);
 			Terrains.add(t);
 		}
 		// Gravitation
-		f->ReadComment();
-		meta_data.Gravity.x = f->ReadFloat();
-		meta_data.Gravity.y = f->ReadFloat();
-		meta_data.Gravity.z = f->ReadFloat();
+		f->read_comment();
+		meta_data.Gravity.x = f->read_float();
+		meta_data.Gravity.y = f->read_float();
+		meta_data.Gravity.z = f->read_float();
 		// EgoIndex
-		f->ReadComment();
-		EgoIndex = f->ReadInt();
+		f->read_comment();
+		EgoIndex = f->read_int();
 		// Background
-		f->ReadComment();
+		f->read_comment();
 		if (ffv == 9)
-			f->ReadBool(); // BackGroundColorEnabled
+			f->read_bool(); // BackGroundColorEnabled
 		read_color_argb(f,meta_data.BackGroundColor);
 		if (ffv==9){
-			meta_data.SkyBoxFile[0] = f->ReadStr();
+			meta_data.SkyBoxFile[0] = f->read_str();
 		}else{
-			int ns=f->ReadInt();
+			int ns=f->read_int();
 			if (ns > meta_data.SkyBoxFile.num)
 				meta_data.SkyBoxFile.resize(ns);
 			for (int i=0;i<ns;i++)
-				meta_data.SkyBoxFile[i] = f->ReadStr();
+				meta_data.SkyBoxFile[i] = f->read_str();
 		}
 		// Fog
-		f->ReadComment();
-		meta_data.FogEnabled = f->ReadBool();
-		meta_data.FogMode = f->ReadWord();
-		meta_data.FogStart = f->ReadFloat();
-		meta_data.FogEnd = f->ReadFloat();
-		meta_data.FogDensity = f->ReadFloat();
+		f->read_comment();
+		meta_data.FogEnabled = f->read_bool();
+		meta_data.FogMode = f->read_word();
+		meta_data.FogStart = f->read_float();
+		meta_data.FogEnd = f->read_float();
+		meta_data.FogDensity = f->read_float();
 		read_color_argb(f, meta_data.FogColor);
 		// Music
-		f->ReadComment();
-		n = f->ReadInt();
+		f->read_comment();
+		n = f->read_int();
 		for (int i=0;i<n;i++)
-			meta_data.MusicFile.add(f->ReadStr());
+			meta_data.MusicFile.add(f->read_str());
 		// Objects
-		f->ReadComment();
-		n = f->ReadInt();
+		f->read_comment();
+		n = f->read_int();
 		for (int i=0;i<n;i++){
 			WorldObject o;
-			o.FileName = f->ReadStr();
-			o.Name = f->ReadStr();
-			o.pos.x = f->ReadFloat();
-			o.pos.y = f->ReadFloat();
-			o.pos.z = f->ReadFloat();
-			o.Ang.x = f->ReadFloat();
-			o.Ang.y = f->ReadFloat();
-			o.Ang.z = f->ReadFloat();
+			o.FileName = f->read_str();
+			o.Name = f->read_str();
+			o.pos.x = f->read_float();
+			o.pos.y = f->read_float();
+			o.pos.z = f->read_float();
+			o.Ang.x = f->read_float();
+			o.Ang.y = f->read_float();
+			o.Ang.z = f->read_float();
 			o.object = NULL;
 			o.view_stage = 0;
 			o.is_selected = false;
@@ -284,42 +288,39 @@ bool DataWorld::load(const string & _filename, bool deep)
 			Objects.add(o);
 		}
 		// Scripts
-		f->ReadComment();
-		n = f->ReadInt();
+		f->read_comment();
+		n = f->read_int();
 		for (int i=0;i<n;i++){
-			string s = f->ReadStr();
-			f->ReadInt();
+			string s = f->read_str();
+			f->read_int();
 			meta_data.ScriptFile.add(s);
 		}
 		// ScriptVars
-		f->ReadComment();
-		n = f->ReadInt();
+		f->read_comment();
+		n = f->read_int();
 		meta_data.ScriptVar.clear();
 		for (int i=0;i<n;i++)
-			meta_data.ScriptVar.add(f->ReadFloat());
-		if (f->ReadStr() != "#"){
-			meta_data.SunEnabled = f->ReadBool();
+			meta_data.ScriptVar.add(f->read_float());
+		if (f->read_str() != "#"){
+			meta_data.SunEnabled = f->read_bool();
 			read_color_3i(f, meta_data.SunAmbient);
 			read_color_3i(f, meta_data.SunDiffuse);
 			read_color_3i(f, meta_data.SunSpecular);
-			meta_data.SunAng.x = f->ReadFloat();
-			meta_data.SunAng.y = f->ReadFloat();
-			f->ReadComment();
+			meta_data.SunAng.x = f->read_float();
+			meta_data.SunAng.y = f->read_float();
+			f->read_comment();
 			read_color_3i(f, meta_data.Ambient);
-			if (f->ReadStr() != "#"){
-				meta_data.PhysicsEnabled = f->ReadBool();
+			if (f->read_str() != "#"){
+				meta_data.PhysicsEnabled = f->read_bool();
 			}
 		}
 
 	}else{
-		ed->errorBox(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 8, 10));
-		Error = true;
+		throw Exception(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 8, 10));
 	}
-	f->Close();
+	FileClose(f);
 
-	delete(f);
-
-	if ((!Error)&&(deep)){
+	if (deep){
 		for (int i=0;i<Terrains.num;i++){
 			ed->progress->set(_("Terrains"), (float)i / (float)Terrains.num / 2.0f);
 			Terrains[i].Load(Terrains[i].pos, MapDir + Terrains[i].FileName + ".map", true);
@@ -336,6 +337,7 @@ bool DataWorld::load(const string & _filename, bool deep)
 
 
 
+
 	// debug...
 	/*if (JustCreateLightMap){
 		for (int i=0;i<Object.num;i++)
@@ -345,7 +347,15 @@ bool DataWorld::load(const string & _filename, bool deep)
 	resetHistory();
 	notify();
 
-	return !Error;
+	}catch(Exception &e){
+		FileClose(f);
+		msg_error(e.message());
+
+		//ed->errorBox
+		return false;
+	}
+
+	return true;
 }
 
 

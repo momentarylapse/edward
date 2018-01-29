@@ -129,7 +129,7 @@ string ExporterJson::boneToJson(ModelBone &b)
 
 bool ExporterJson::Export(DataModel *m, const string &filename)
 {
-	File *f = FileCreate(filename);
+	File *f = FileCreateText(filename);
 
 	int n_tria = 0;
 	for (int is=0; is<m->surface.num; is++){
@@ -257,7 +257,7 @@ bool ExporterJson::Export(DataModel *m, const string &filename)
 	str += "]\n";
 	str += "}";
 	str = str.replace("'", "\"");
-	f->WriteStr(str);
+	f->write_str(str);
 
 	delete(f);
 	return true;

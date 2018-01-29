@@ -69,40 +69,40 @@ Font *_cdecl LoadFont(const string &filename)
 	foreachi(Font *ff, Fonts, i)
 		if (ff->filename  == filename.sys_filename())
 			return ff;
-	File *f = FileOpen(FontDir + filename + ".xfont");
-	if (!f)
-		return NULL;
+	File *f = NULL;
+	try{
+		f = FileOpenText(FontDir + filename + ".xfont");
 	int ffv=f->ReadFileFormatVersion();
 	if (ffv==2){
 		Font *font = new Font;
 		font->filename = filename.sys_filename();
-		f->ReadComment();
-		font->texture = nix::LoadTexture(f->ReadStr());
+		f->read_comment();
+		font->texture = nix::LoadTexture(f->read_str());
 		int tx = font->texture->width;
 		int ty = font->texture->height;
-		f->ReadComment();
-		int num_glyphs = f->ReadWord();
-		f->ReadComment();
-		int height = f->ReadByte();
-		f->ReadComment();
-		int y1 = f->ReadByte();
-		f->ReadComment();
-		int y2 = f->ReadByte();
+		f->read_comment();
+		int num_glyphs = f->read_word();
+		f->read_comment();
+		int height = f->read_byte();
+		f->read_comment();
+		int y1 = f->read_byte();
+		f->read_comment();
+		int y2 = f->read_byte();
 		float dy = float(y2-y1);
 		font->height = (float)height/dy;
 		font->y_offset = (float)y1/dy;
-		f->ReadComment();
-		font->x_factor = (float)f->ReadByte()*0.01f;
-		f->ReadComment();
-		font->y_factor = (float)f->ReadByte()*0.01f;
-		f->ReadComment();
+		f->read_comment();
+		font->x_factor = (float)f->read_byte()*0.01f;
+		f->read_comment();
+		font->y_factor = (float)f->read_byte()*0.01f;
+		f->read_comment();
 		int x = 0, y = 0;
 		for (int i=0;i<num_glyphs;i++){
-			string name = f->ReadStr();
+			string name = f->read_str();
 			int c = (unsigned char)str_utf8_to_ubyte(name)[0];
-			int w = f->ReadByte();
-			int x1 = f->ReadByte();
-			int x2 = f->ReadByte();
+			int w = f->read_byte();
+			int x1 = f->read_byte();
+			int x2 = f->read_byte();
 			if (x+w>tx){
 				x = 0;
 				y += height;
@@ -119,7 +119,7 @@ Font *_cdecl LoadFont(const string &filename)
 			font->glyph[c] = g;
 			x += w;
 		}
-		/*int u=(unsigned char)f->ReadStrC()[0];
+		/*int u=(unsigned char)f->read_strC()[0];
 		font->unknown_glyph_no = font->table[u];
 		if (font->unknown_glyph_no<0)
 			font->unknown_glyph_no=0;
@@ -131,6 +131,9 @@ Font *_cdecl LoadFont(const string &filename)
 		msg_error(format("wrong file format: %d (expected: 2)",ffv));
 	}
 	FileClose(f);
+	}catch(Exception &e){
+
+	}
 
 	return Fonts.back();
 }

@@ -52,34 +52,37 @@ bool Terrain::Load(const string &_filename_, const vector &_pos_, bool deep)
 	reset();
 
 	filename = _filename_;
-	File *f = FileOpen(MapDir + filename + ".map");
-	if (f){
+	File *f = NULL;
+
+	try{
+
+		f = FileOpen(MapDir + filename + ".map");
 
 		int ffv = f->ReadFileFormatVersion();
 		if (ffv == 4){
-			f->ReadByte();
+			f->read_byte();
 			// Metrics
-			f->ReadComment();
-			num_x = f->ReadInt();
-			num_z = f->ReadInt();
+			f->read_comment();
+			num_x = f->read_int();
+			num_z = f->read_int();
 			int num = (num_x + 1) * (num_z + 1);
 			height.resize(num);
 			normal.resize(num);
 			vertex.resize(num);
-			pattern.x = f->ReadFloat();
+			pattern.x = f->read_float();
 			pattern.y = 0;
-			pattern.z = f->ReadFloat();
+			pattern.z = f->read_float();
 			// Textures
-			f->ReadComment();
-			int num_textures = f->ReadInt();
+			f->read_comment();
+			int num_textures = f->read_int();
 			for (int i=0;i<num_textures;i++){
-				texture_file[i] = f->ReadStr();
-				texture_scale[i].x = f->ReadFloat();
+				texture_file[i] = f->read_str();
+				texture_scale[i].x = f->read_float();
 				texture_scale[i].y = 0;
-				texture_scale[i].z = f->ReadFloat();
+				texture_scale[i].z = f->read_float();
 			}
 			// Material
-			material_file = f->ReadStr();
+			material_file = f->read_str();
 			if (deep){
 
 				// load textures
@@ -94,7 +97,7 @@ bool Terrain::Load(const string &_filename_, const vector &_pos_, bool deep)
 				// height
 				for (int x=0;x<num_x+1;x++)
 					for (int z=0;z<num_z+1;z++)
-						height[Index(x,z)] = f->ReadFloat();
+						height[Index(x,z)] = f->read_float();
 				for (int x=0;x<num_x/32+1;x++)
 					for (int z=0;z<num_z/32+1;z++)
 						partition[x][z] = -1;
@@ -119,8 +122,11 @@ bool Terrain::Load(const string &_filename_, const vector &_pos_, bool deep)
 
 		changed = false;
 		force_redraw = true;
-	}else
+	}catch(Exception &e){
+		FileClose(f);
 		error = true;
+		msg_error(e.message());
+	}
 	msg_left();
 	return !error;
 }
