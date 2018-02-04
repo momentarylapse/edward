@@ -4,7 +4,7 @@ class Observable
 class Observer
 	//virtual void OnUpdate(Observable o)
 
-class Data : Observable
+class Data extends Observable
 	string filename
 	int file_time
 	bool binary_file_format
@@ -51,7 +51,7 @@ class ModelEffect
 	void __assign__(ModelEffect other)
 		nil
 
-class ModelVertex: MultiViewSingleData
+class ModelVertex extends MultiViewSingleData
 	int normal_mode
 	int bone_index
 
@@ -68,16 +68,16 @@ class ModelPolygonSide
 	vector normal
 	char[3] triangulation
 
-class ModelPolygon: MultiViewSingleData
+class ModelPolygon extends MultiViewSingleData
 	ModelPolygonSide[] side
 	vector temp_normal
 	bool normal_dirty, triangulation_dirty
 	int material
 
 // only for use in MultiView...
-class ModelSkinVertexDummy: MultiViewSingleData
+class ModelSkinVertexDummy extends MultiViewSingleData
 
-class ModelBall: MultiViewSingleData
+class ModelBall extends MultiViewSingleData
 	int index
 	float radius
 
@@ -88,7 +88,7 @@ class ModelPolyhedronFace
 
 
 // TODO: dynamical!
-class ModelPolyhedron: MultiViewSingleData
+class ModelPolyhedron extends MultiViewSingleData
 	int num_faces
 	ModelPolyhedronFace[MODEL_MAX_POLY_FACES] face
 	int num_svertices
@@ -104,7 +104,7 @@ class ModelPolyhedron: MultiViewSingleData
 
 
 
-class ModelTriangle: MultiViewSingleData
+class ModelTriangle extends MultiViewSingleData
 	int[3] vertex
 	//int[3] edge
 	//int[3] edge_direction // which no of triangle in edge's list are we?
@@ -135,7 +135,7 @@ class ModelSkin
 	// sub skins
 	ModelSubSkin[] sub
 
-class ModelBone: MultiViewSingleData
+class ModelBone extends MultiViewSingleData
 	int parent
 	string model_file
 	Model *model
@@ -160,7 +160,7 @@ class ModelMove
 	float frames_per_sec_const, frames_per_sec_factor
 	string name
 
-class ModelEdge: MultiViewSingleData
+class ModelEdge extends MultiViewSingleData
 	//int NormalMode;
 	int[2] vertex
 	int ref_count
@@ -174,7 +174,7 @@ class ModelEdge: MultiViewSingleData
 	//  same for Triangle/Side[1] but Vertex[0 <-> 1]
 
 
-class ModelSurface: MultiViewSingleData
+class ModelSurface extends MultiViewSingleData
 	ModelPolygon[] polygon
 	ModelEdge[] edge
 	int[] vertex
@@ -189,31 +189,31 @@ class Geometry
 	ModelEdge[] edge
 	bool is_closed
 
-class GeometryBall : Geometry
+class GeometryBall extends Geometry
 	extern void __init__(vector pos, float radius, int num_x, int num_y)
 
-class GeometryCube : Geometry
+class GeometryCube extends Geometry
 	extern void __init__(vector pos, vector dv1, vector dv2, vector dv3, int num_1, int num_2, int num_3)
 
-class GeometryCylinder : Geometry
+class GeometryCylinder extends Geometry
 	extern void __init__(vector pos1, vector pos2, float radius, int rings, int edges)
 
-class GeometryCylinderComplex : Geometry
+class GeometryCylinderComplex extends Geometry
 	extern void __init__(vector[] pos, float[] radius, int rings, int edges, bool closed)
 
-class GeometrySphere : Geometry
+class GeometrySphere extends Geometry
 	extern void __init__(vector pos, float radius, int num)
 
-class GeometryTorus : Geometry
+class GeometryTorus extends Geometry
 	extern void __init__(vector pos, vector axis, float radius1, float radius2, int num_x, int num_y)
 
-class GeometryTorusKnot : Geometry
+class GeometryTorusKnot extends Geometry
 	extern void __init__(vector pos, vector axis, float radius1, float radius2, float radius3, int turns, int twists, int rings, int edges)
 
-class GeometryPlane : Geometry
+class GeometryPlane extends Geometry
 	extern void __init__(vector pos, vector dv1, vector dv2, int num_x, int num_y)
 
-class GeometryPlatonic : Geometry
+class GeometryPlatonic extends Geometry
 	extern void __init__(vector pos, float radius, int samples)
 
 
@@ -260,7 +260,7 @@ class ModelMetaData
 	float[] script_var
 	void __assign__(ModelMetaData other)
 
-class DataModel : Data
+class DataModel extends Data
 	
 	// properties
 	ModelBone[] bone
@@ -332,7 +332,7 @@ class DataModel : Data
 
 
 
-class WorldTerrain: MultiViewSingleData
+class WorldTerrain extends MultiViewSingleData
 	string filename
 	//WorldTerrainVertex Vertex[]
 	int vertex_buffer_single
@@ -341,14 +341,14 @@ class WorldTerrain: MultiViewSingleData
 	Terrain *terrain
 
 
-class WorldObject: MultiViewSingleData
+class WorldObject extends MultiViewSingleData
 	string filename, name
 	Model *object
 	vector ang
 
 
 
-class DataWorld: Data
+class DataWorld extends Data
 	WorldObject[] objects
 	WorldTerrain[] terrains
 	int ego_index

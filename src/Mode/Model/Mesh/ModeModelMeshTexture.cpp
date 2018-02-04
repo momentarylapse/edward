@@ -33,7 +33,7 @@ void ModeModelMeshTexture::fetchData()
 			v.is_special = false;
 			v.view_stage = t.view_stage;
 			for (int k=0;k<t.side.num;k++){
-				v.is_selected = data->vertex[t.side[k].vertex].is_selected;
+				v.is_selected = t.is_selected; //data->vertex[t.side[k].vertex].is_selected;
 				v.view_stage = t.view_stage;
 				v.pos = t.side[k].skin_vertex[current_texture_level];
 				skin_vertex.add(v);
@@ -97,6 +97,7 @@ void ModeModelMeshTexture::onDrawWin(MultiView::Window *win)
 	vector a = win->unproject(v_0);
 	vector b = win->unproject(vector((float)nix::target_width,(float)nix::target_height,0));
 
+	nix::SetZ(false, false);
 	s.x1=a.x;
 	s.x2=b.x;
 	s.y1=a.y;
@@ -160,6 +161,36 @@ void ModeModelMeshTexture::onDraw()
 	if (data->getNumSelectedVertices() > 0){
 		ed->drawStr(20, 160, format(_("skin: %d"), getNumSelected()));
 	}
+	if (data->getNumSelectedVertices() > 0){
+		int nv = data->getNumSelectedVertices();
+		int ne = data->getNumSelectedEdges();
+		int np = data->getNumSelectedPolygons();
+		int ns = data->getNumSelectedSurfaces();
+		ed->drawStr(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons, %d surfaces", nv, ne, np, ns));
+	}
+}
+
+void ModeModelMeshTexture::onSelectionChange()
+{
+	//selection_mode->updateSelection();
+	//fillSelectionBuffer(data->vertex);
+
+	int nn = 0;
+	for (ModelSurface &surf: data->surface)
+		for (ModelPolygon &t: surf.polygon){
+			if (t.material != mode_model_mesh->current_material)
+				continue;
+			t.is_selected = true;
+			for (int k=0;k<t.side.num;k++){
+				t.is_selected &= skin_vertex[nn].is_selected;
+				/*if (skin_vertex[nn].is_selected)
+					data->vertex[t.side[k].vertex].is_selected = true;*/
+				nn ++;
+			}
+		}
+
+	data->selectionFromPolygons();
+
 }
 
 void ModeModelMeshTexture::setCurrentTextureLevel(int level)

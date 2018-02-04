@@ -26,6 +26,7 @@ public:
 
 	virtual void onDraw();
 	virtual void onDrawWin(MultiView::Window *win);
+	virtual void onSelectionChange();
 
 	// for MultiView actions
 	void getSelectedSkinVertices(Array<int> &surf, Array<int> &tria, Array<int> &index);

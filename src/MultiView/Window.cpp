@@ -241,7 +241,7 @@ void set_projection_matrix(Window *w)
 		nix::SetProjectionPerspectiveExt(cx, cy, height, height, r / 1000, r * 1000);
 	}else if (w->type == VIEW_2D){
 		float height = w->zoom();
-		nix::SetProjectionOrthoExt(cx, cy, -height, height, 0, 1);
+		nix::SetProjectionOrthoExt(cx, cy, -height, height, -1, 1);
 	}else{
 		float height = w->zoom();
 		nix::SetProjectionOrthoExt(cx, cy, height, -height, - r * 100, r * 100);
@@ -281,7 +281,8 @@ void Window::draw()
 
 
 	nix::SetWorldMatrix(m_id);
-	nix::SetZ(true,true);
+	//nix::SetZ(true,true);
+	nix::SetZ(type != VIEW_2D, type != VIEW_2D);
 	nix::SetWire(false);
 	nix::EnableLighting(false);
 	nix::EnableFog(false);
