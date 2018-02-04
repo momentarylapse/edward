@@ -241,7 +241,7 @@ void set_projection_matrix(Window *w)
 		nix::SetProjectionPerspectiveExt(cx, cy, height, height, r / 1000, r * 1000);
 	}else if (w->type == VIEW_2D){
 		float height = w->zoom();
-		nix::SetProjectionOrthoExt(cx, cy, height, -height, 0, 1);
+		nix::SetProjectionOrthoExt(cx, cy, -height, height, 0, 1);
 	}else{
 		float height = w->zoom();
 		nix::SetProjectionOrthoExt(cx, cy, height, -height, - r * 100, r * 100);
@@ -252,7 +252,6 @@ void set_projection_matrix(Window *w)
 
 void Window::draw()
 {
-	msg_db_f("MultiView.DrawWin",2);
 	matrix rot, trans;
 	nix::Scissor(dest);
 	string view_kind;
