@@ -1,9 +1,11 @@
-Dialog new_cube_dialog "neuer Quader" 100 50 allow-root
+Dialog new_cube_dialog "neuer Quader" width=100 height=50 allow-root
 	Group ncdt_slides "Streifen"
-		Grid ? "" 2 3
+		Grid ? ""
 			Text x "X"
-			SpinButton nc_x "\\1"
+			SpinButton nc_x "" range=1:
+			---|
 			Text y "Y"
-			SpinButton nc_y "\\1"
+			SpinButton nc_y "" range=1:
+			---|
 			Text z "Z"
-			SpinButton nc_z "\\1"
+			SpinButton nc_z "" range=1:

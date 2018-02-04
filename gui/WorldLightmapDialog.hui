@@ -1,28 +1,30 @@
-	// dialog
-	LightmapDialog = HuiCreateDialog("Lightmap erzeugen", 420, 540, MainWin, false);
-	LightmapDialog->SetID("lightmap_dialog");
-	LightmapDialog->AddDefButton("OK", 310, 500, 100, 25, "ok");
-	LightmapDialog->SetImage("ok", "hui:ok");
-	LightmapDialog->AddButton("Abbrechen", 205, 500, 100, 25, "cancel");
-	LightmapDialog->SetImage("cancel", "hui:cancel");
-	LightmapDialog->AddListView("Objekt\\Textur\\Aufl&osung", 10, 10, 400, 265, "lightmap_list");
-	LightmapDialog->AddText("R&aumliche Aufl&osung", 10, 310, 160, 25, "lmt_spacial_resolution");
-	LightmapDialog->AddSpinButton("\\0\\1000\\0.1", 175, 310, 200, 25, "resolution");
-	LightmapDialog->AddText("le", 380, 310, 30, 25, "lu");
-	LightmapDialog->AddComboBox("Raytracing\\Radiosity\\Radiosity schnell\\Photon Map\\Photon Map schnell", 10, 280, 400, 25, "lightmap_type");
-	LightmapDialog->AddText("Zahl der Photonen", 10, 340, 160, 25, "lmt_photons");
-	LightmapDialog->AddSpinButton("\\0", 175, 340, 200, 25, "photons");
-	LightmapDialog->AddText("Oberfl&achen-Helligkeit", 10, 370, 160, 25, "lmt_brightness");
-	LightmapDialog->AddSpinButton("\\0\\100\\0.1", 175, 370, 200, 25, "brightness");
-	LightmapDialog->AddCheckBox("Sonne erlauben", 10, 430, 365, 25, "allow_sun");
-	LightmapDialog->AddText("Helligkeits-Exponent", 10, 400, 160, 25, "lmt_exponent");
-	LightmapDialog->AddSpinButton("\\0\\10\\0.05", 175, 400, 200, 25, "exponent");
-	LightmapDialog->AddButton("Vorschau", 110, 500, 90, 25, "preview");
-	LightmapDialog->AddEdit("", 175, 460, 200, 25, "new_world_name");
-	LightmapDialog->Enable("new_world_name", false);
-	LightmapDialog->AddText("Neuer Weltname", 10, 460, 160, 25, "lmt_new_world");
-	LightmapDialog->AddButton("", 380, 460, 30, 25, "find_new_world");
-	LightmapDialog->SetImage("find_new_world", "hui:save-as");
-	LightmapDialog->Update();
-
-
+Dialog lightmap_dialog "Lightmap erzeugen" width=420 height=540
+	Grid ? "" vertical
+		ListView lightmap_list "Objekt\\Textur\\Auflösung" expandy
+		ComboBox lightmap_type "Raytracing\\Radiosity\\Radiosity schnell\\Photon Map\\Photon Map schnell"
+		Grid ? ""
+			Text lmt_spacial_resolution "Räumliche Auflösung"
+			Grid ? ""
+				SpinButton resolution "" range=0:1000:0.1 expandx
+				Text /lu "le"
+			---|
+			Text lmt_photons "Zahl der Photonen"
+			SpinButton photons "" range=0:
+			---|
+			Text lmt_brightness "Oberflächen-Helligkeit"
+			SpinButton brightness "" range=0:100:0.1
+			---|
+			Text lmt_exponent "Helligkeits-Exponent"
+			SpinButton exponent "" range=0:10:0.05
+			---|
+			.
+			CheckBox allow_sun "Sonne erlauben"
+			---|
+			Text lmt_new_world "Neuer Weltname"
+			Grid ? ""
+				Edit new_world_name "" expandx disabled
+				Button find_new_world "" image=hui:save-as
+		Grid ? "" buttonbar
+			Button /preview "Vorschau"
+			Button /cancel "Abbrechen" image=hui:cancel
+			DefButton /ok" "OK" image=hui:ok

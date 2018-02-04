@@ -1,22 +1,7 @@
-// IDs
-enum{
-	HMM_WORLD_SCRIPTFUNC_CHOICE_DIALOG,
-	HMM_OK,
-	HMM_CANCEL,
-	HMM_FUNCTION
-};
-
-
-
-	// dialog
-	ScriptFunctionDialog=HuiCreateDialog("Script-Funktion",245,90,mworld->ScriptDialog,false,&ScriptFunctionDialogFunction);
-	ScriptFunctionDialog->SetID(HMM_WORLD_SCRIPTFUNC_CHOICE_DIALOG);
-	ScriptFunctionDialog->AddDefButton("OK",135,50,100,25,HMM_OK);
-	ScriptFunctionDialog->SetImage(HMM_OK,HuiImageOk);
-	ScriptFunctionDialog->AddButton("Abbrechen",30,50,100,25,HMM_CANCEL);
-	ScriptFunctionDialog->SetImage(HMM_CANCEL,HuiImageCancel);
-	ScriptFunctionDialog->AddComboBox("",10,10,225,25,HMM_FUNCTION);
-	ScriptFunctionDialog->Update();
-
-
-
+Dialog world_scriptfunc_choice_dialog "Script-Funktion" width=245 height=90
+	Grid ? ""
+		ComboBox function "" expandx
+		---|
+		Grid ? "" buttonbar
+			Button /cancel "Abbrechen" image=hui:cancel
+			DefButton /ok" "OK" image=hui:ok

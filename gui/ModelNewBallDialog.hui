@@ -1,14 +1,15 @@
-Dialog new_ball_dialog "neue Kugel" 220 119 allow-root
-	Grid ? "" 1 4
+Dialog new_ball_dialog "neue Kugel" width=220 height=119 allow-root
+	Grid ? "" vertical
 		RadioButton ball_type:ball "aus Scheiben"
-		Grid nbd_grid_ball "" 2 2 indent
+		Grid nbd_grid_ball "" indent
 			Text new_ball_dialog_t_x "Anzahl der Scheiben"
-			SpinButton nb_x "\\1"
+			SpinButton nb_x "" range=1:
+			---|
 			Text new_ball_dialog_t_y "Punkte pro Scheibe"
-			SpinButton nb_y "\\1"
+			SpinButton nb_y "" range=1:
 		RadioButton ball_type:sphere "Sphäre"
-		Grid nbd_grid_sphere "" 2 1 indent
+		Grid nbd_grid_sphere "" indent
 			Text new_ball_dialog_t_comp "Komplexität"
-			SpinButton nb_complexity "\\1"
+			SpinButton nb_complexity "" range=1:
 
 

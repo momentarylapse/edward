@@ -1,4 +1,4 @@
-Dialog new_teapot_dialog "neue Teekanne" 100 50 allow-root
-	Grid ? "" 2 1
+Dialog new_teapot_dialog "neue Teekanne" width=100 height=50 allow-root
+	Grid ? ""
 		Text new_teapot_dialog_t_samples "Samples"
-		SpinButton ntp_samples "\\1"
+		SpinButton ntp_samples "" range=1:

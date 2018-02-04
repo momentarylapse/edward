@@ -1,49 +1,52 @@
-	// dialog
-	FXDialog = HuiCreateDialog("Einen neuen Effekt erstellen...", 470, 205, MainWin, false);
-	FXDialog->SetID("fx_dialog");
-	FXDialog->AddDefButton("Ok", 360, 165, 100, 25, "ok");
-	FXDialog->SetImage("ok", "hui:ok");
-	FXDialog->AddButton("Abbrechen", 255, 165, 100, 25, "cancel");
-	FXDialog->SetImage("cancel", "hui:cancel");
-	FXDialog->AddTabControl("!nobar\\Script\\Licht\\Sound\\Kraftfeld", 5, 5, 460, 145, "fx_tab_control");
-	FXDialog->SetTabCreationPage("fx_tab_control", 1);
-	FXDialog->AddText("adius", 210, 10, 50, 25, "fxt_lightradius");
-	FXDialog->AddEdit("", 260, 10, 50, 25, "light_radius");
-	FXDialog->AddText("le", 315, 10, 20, 25, "lu");
-	FXDialog->AddText("Ambient", 10, 10, 70, 25, "ambient");
-	FXDialog->AddText("Diffuse", 10, 40, 70, 25, "diffuse");
-	FXDialog->AddText("Specular", 10, 70, 70, 25, "specular");
-	FXDialog->AddColorButton("", 80, 10, 100, 25, "mat_am");
-	FXDialog->AddColorButton("!alpha", 80, 40, 100, 25, "mat_di");
-	FXDialog->AddColorButton("", 80, 70, 100, 25, "mat_sp");
-	FXDialog->SetTabCreationPage("fx_tab_control", 0);
-	FXDialog->AddEdit("", 95, 10, 325, 25, "script_file");
-	FXDialog->Enable("script_file", false);
-	FXDialog->AddText("Datei:", 10, 10, 80, 25, "fxt_scriptfile");
-	FXDialog->AddButton("", 425, 10, 25, 25, "find_scriptfile");
-	FXDialog->SetImage("find_scriptfile", "hui:open");
-	FXDialog->SetTabCreationPage("fx_tab_control", 2);
-	FXDialog->AddText("Sound-Datei", 10, 10, 100, 25, "fxt_soundfile");
-	FXDialog->AddEdit("", 115, 10, 295, 25, "filename");
-	FXDialog->AddText("max. H&orweite", 10, 40, 100, 25, "fxt_soundrange");
-	FXDialog->AddEdit("", 115, 40, 50, 25, "sound_radius");
-	FXDialog->AddButton("", 415, 10, 35, 25, "search");
-	FXDialog->SetImage("search", "hui:open");
-	FXDialog->AddText("Geschwindigkeit", 10, 70, 100, 25, "fxt_soundspeed");
-	FXDialog->AddEdit("", 115, 70, 50, 25, "speed");
-	FXDialog->AddText("%", 170, 70, 15, 25, "percent");
-	FXDialog->AddText("(muss Mono sein!)", 200, 55, 140, 25, "fxt_sound_mono_advice");
-	FXDialog->AddText("le", 170, 40, 20, 25, "lu");
-	FXDialog->SetTabCreationPage("fx_tab_control", 3);
-	FXDialog->AddComboBox("Linear\\1/r^2", 75, 10, 85, 25, "formula");
-	FXDialog->AddText("Abnahme", 10, 10, 65, 25, "fxt_force_formula");
-	FXDialog->AddText("Reichweite", 175, 10, 70, 25, "fxt_force_range");
-	FXDialog->AddEdit("", 245, 10, 75, 25, "forcefield_radius");
-	FXDialog->AddText("le", 325, 10, 20, 25, "lu");
-	FXDialog->AddText("Intensit&at", 10, 40, 65, 25, "fxt_force_intensity");
-	FXDialog->AddEdit("", 75, 40, 85, 25, "intensity");
-	FXDialog->AddText("le/s^2", 165, 40, 45, 25, "luss");
-	FXDialog->AddText("( anziehende Beschleunigung, Linear: maximaler Wert, 1/r^2: Wert bei r=100 le )", 10, 70, 440, 50, "fxt_force_desc");
-	FXDialog->Update();
-
-
+Dialog fx_dialog "Einen neuen Effekt erstellen..." width=470 height=205
+	Grid ? "" vertical
+		TabControl fx_tab_control "Script\\Licht\\Sound\\Kraftfeld" xxx-nobar
+			Grid ? ""
+				Text fxt_scriptfile "Datei"
+				Edit script_file "" disabled expandx
+				Button find_scriptfile "" image=hui:open
+			Grid ? ""
+				Text /ambient "Ambient"
+				ColorButton mat_am ""
+				---|
+				Text /diffuse "Diffuse"
+				ColorButton mat_di ""
+				---|
+				Text /specular "Specular"
+				ColorButton mat_sp ""
+				---|
+				Text fxt_lightradius "Radius"
+				Grid ? ""
+					Edit light_radius "" expandx
+					Text /lu "le"
+			Grid ? ""
+				Text fxt_soundfile "Sound-Datei"
+				Grid ? ""
+					Edit filename "" disabled expandx
+					Button search "" image=hui:open "tooltip=muss mono sein!"
+				---|
+				Text fxt_soundrange "max. Hörweite"
+				Grid ? ""
+					Edit sound_radius "" expandx
+					Text /lu "le"
+				---|
+				Text fxt_soundspeed "Geschwindigkeit"
+				Grid ? ""
+					Edit speed "" expandx
+					Text /percent "%"
+			Grid ? ""
+				Text fxt_force_formula "Abnahme"
+				ComboBox formula "Linear\\1/r^2" expandx
+				---|
+				Text fxt_force_range "Reichweite"
+				Grid ? ""
+					Edit forcefield_radius "" expandx
+					Text /lu "le"
+				---|
+				Text fxt_force_intensity "Intensität"
+				Grid ? ""
+					Edit intensity "" expandx "tooltip=anziehende Beschleunigung, Linear: maximaler Wert, 1/r^2: Wert bei r=100 le"
+					Text /luss "le/s^2"
+		Grid ? "" buttonbar
+			Button /cancel "Abbrechen" image=hui:cancel
+			DefButton /ok "Ok" image=hui:ok

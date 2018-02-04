@@ -1,7 +1,8 @@
-Dialog world_camera_dialog "Kamera-Fahrt" 719 160 allow-root
-	Grid ? "" 1 2 height=220 noexpandy
+Dialog world_camera_dialog "Kamera-Fahrt" width=719 height=160 allow-root
+	Grid ? "" height=220 noexpandy
 		DrawingArea cam_area ""
-		Grid ? "" 6 1
+		---|
+		Grid ? ""
 			Button add_point "Hinzufügen" image=hui:add
 			Button delete_point "Löschen" image=hui:delete
 			CheckBox cam_edit_vel "Geschwindigkeit editieren"

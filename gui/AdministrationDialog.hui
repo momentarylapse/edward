@@ -1,25 +1,22 @@
-Dialog ad_dialog "Verwaltung" 680 590 allow-root
-	Grid ? "" 1 3
-		Grid ? "" 3 1
+Dialog ad_dialog "Verwaltung" width=680 height=590 allow-root
+	Grid ? "" vertical
+		Grid ? ""
 			Text ad_t_directory "Directory"
 			Edit directory "" expandx disabled
 			Button load_game "" image=hui:open
 		TabControl ad_tab_control "Aktuelles Spiel\\Alle Dateien\\Details\\Überflüssig\\Fehlend"
 			ListView file_list_cur "Typ\\Datei\\gefordert von\\fordert\\Fehlend" format=ttttc multiline
 			ListView file_list_all "Typ\\Datei\\gefordert von\\fordert\\Fehlend" format=ttttc multiline
-			Grid ? "" 1 6
+			Grid ? "" vertical
 				Group adt_file "Datei"
 					Text file_details ""
 				Group adt_source "gefordert von"
 					ListView file_list_detail_source "Typ\\Datei\\gefordert von\\fordert\\Fehlend" format=ttttc multiline
 				Group adt_dest "fordert"
 					ListView file_list_detail_dest "Typ\\Datei\\gefordert von\\fordert\\Fehlend" format=ttttc multiline
-				.
-				.
-				.
 			ListView file_list_super "Typ\\Datei\\gefordert von\\fordert\\Fehlend" format=ttttc multiline
 			ListView file_list_missing "Typ\\Datei\\gefordert von\\fordert\\Fehlend" format=ttttc multiline
-		Grid admin_button_bar "" 6 1 buttonbar
+		Grid admin_button_bar "" buttonbar
 			Button delete "Löschen" image=hui:delete
 			Button rename "Umbenennen"
 			Button ad_edit "Bearbeiten" image=hui:edit

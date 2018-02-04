@@ -1,35 +1,32 @@
-	// dialog
-	ObjectDialog = HuiCreateDialog("Objekt-Eigenschaften", 390, 220, MainWin, true);
-	ObjectDialog->SetID("world_object_dialog");
-	ObjectDialog->AddText("Position", 10, 100, 60, 25, "world_object_dialog_grp_pos");
-	ObjectDialog->AddText("Winkel", 10, 130, 60, 25, "world_object_dialog_grp_ang");
-	ObjectDialog->AddDefButton("OK", 280, 175, 100, 25, "ok");
-	ObjectDialog->SetImage("ok", "hui:ok");
-	ObjectDialog->AddButton("Abbrechen", 175, 175, 100, 25, "cancel");
-	ObjectDialog->SetImage("cancel", "hui:cancel");
-	ObjectDialog->AddText("X", 115, 70, 20, 25, "x");
-	ObjectDialog->AddEdit("", 75, 100, 90, 25, "pos_x");
-	ObjectDialog->AddText("Y", 210, 70, 20, 25, "y");
-	ObjectDialog->AddEdit("", 170, 100, 90, 25, "pos_y");
-	ObjectDialog->AddText("Z", 305, 70, 20, 25, "z");
-	ObjectDialog->AddEdit("", 265, 100, 90, 25, "pos_z");
-	ObjectDialog->AddEdit("", 75, 130, 90, 25, "ang_x");
-	ObjectDialog->AddEdit("", 170, 130, 90, 25, "ang_y");
-	ObjectDialog->AddEdit("", 265, 130, 90, 25, "ang_z");
-	ObjectDialog->AddText("°", 360, 130, 20, 25, "degree");
-	ObjectDialog->AddText("Name:", 10, 10, 60, 25, "world_object_dialog_t_name");
-	ObjectDialog->AddEdit("", 75, 10, 305, 25, "name");
-	ObjectDialog->AddButton("&Ubernehmen", 70, 175, 100, 25, "apply");
-	ObjectDialog->SetImage("apply", "hui:apply");
-	ObjectDialog->AddText("Typ:", 10, 40, 60, 25, "world_object_dialog_t_type");
-	ObjectDialog->AddEdit("", 75, 40, 245, 25, "kind");
-	ObjectDialog->Enable("kind", false);
-	ObjectDialog->AddText("le", 360, 100, 20, 25, "lu");
-	ObjectDialog->AddButton("", 325, 40, 25, 25, "find_object");
-	ObjectDialog->Enable("find_object", false);
-	ObjectDialog->SetImage("find_object", "hui:open");
-	ObjectDialog->AddButton("", 355, 40, 25, 25, "edit_object");
-	ObjectDialog->SetImage("edit_object", "hui:edit");
-	ObjectDialog->Update();
-
-
+Dialog world_object_dialog "Objekt-Eigenschaften" width=390 height=220
+	Grid ? "" vertical
+		Grid ? ""
+			Text t_name "Name:"
+			Edit name "" expandx
+			---|
+			Text t_type "Typ:"
+			Grid ? ""
+				Edit kind "" expandx disabled
+				Button find_object "" disabled image=hui:open
+				Button edit_object "" image=hui:edit
+		Grid ? ""
+			.
+			Text /x "X" center
+			Text /y "Y" center
+			Text /z "Z" center
+			---|
+			Text grp_pos "Position"
+			Edit pos_x "" expandx
+			Edit pos_y "" expandx
+			Edit pos_z "" expandx
+			Text /lu "le"
+			---|
+			Text grp_ang "Winkel"
+			Edit ang_x ""
+			Edit ang_y ""
+			Edit ang_z ""
+			Text /degree "°"
+		Grid ? "" buttonbar
+			Button /apply "Übernehmen" image=hui:apply
+			Button /cancel "Abbrechen" image=hui:cancel
+			DefButton /ok" "OK" image=hui:ok

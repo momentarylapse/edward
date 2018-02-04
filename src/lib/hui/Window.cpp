@@ -74,16 +74,19 @@ Window::Window(const string &id, Window *parent)
 	Resource *res = GetResource(id);
 	if (!res){
 		msg_error("Window: undefined resource id: " + id);
+		return;
 	}
+	if (res->type != "Dialog")
+		msg_error("resource type should be Dialog, but is " + res->type);
 
-	int mode = WIN_MODE_CONTROLS;
-	if (res->type == "SizableDialog")
-		mode = WIN_MODE_CONTROLS | WIN_MODE_RESIZABLE;
+	int mode = WIN_MODE_CONTROLS | WIN_MODE_RESIZABLE;
 	bool allow_parent = false;
 	for (string &o: res->options)
 		if ((o == "allow-root") or (o == "allow-parent"))
 			allow_parent = true;
-	_init_(GetLanguage(id, id), -1, -1, res->w, res->h, parent, allow_parent, mode);
+	int width = res->value("width", "300")._int();
+	int height = res->value("height", "200")._int();
+	_init_(GetLanguage(id, id), -1, -1, width, height, parent, allow_parent, mode);
 
 	// menu/toolbar?
 	for (string &o: res->options){
@@ -213,18 +216,6 @@ bool Window::getMouse(int &x, int &y, int button)
 }
 
 
-
-
-
-Window *HuiCreateDialog(const string &title,int width,int height,Window *root,bool allow_root)
-{
-	return new FixedDialog(title, width, height, root, allow_root);
-}
-
-Window *HuiCreateSizableDialog(const string &title,int width,int height,Window *root,bool allow_root)
-{
-	return new Dialog(title, width, height, root, allow_root);
-}
 
 void FuncIgnore()
 {

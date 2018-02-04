@@ -28,17 +28,19 @@ public:
 	string title;
 	string tooltip;
 	Array<string> options;
-	bool enabled;
-	int x, y, w, h;
-	int page;
-	string image;
+	int x, y;
 	Array<Resource> children;
-	void reset();
+	Resource();
 	Resource* get_node(const string &id) const;
-	void load(const string &buffer);
+	bool enabled();
+	string image();
+	bool has(const string &key);
+	string value(const string &key, const string &fallback = "");
 	void show(int indent = 0);
+	string to_string(int indent = 0);
 };
 
+Resource ParseResource(const string &buffer, bool literal = false);
 
 
 // resources

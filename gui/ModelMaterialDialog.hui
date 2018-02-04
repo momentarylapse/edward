@@ -1,49 +1,55 @@
-Dialog model_material_dialog "Material" 350 371
-	Grid ? "" 1 5 noexpandx
+Dialog model_material_dialog "Material" width=350 height=371
+	Grid ? "" vertical noexpandx
 		Group model_material_dialog_grp_list "Übersicht"
-			Grid ? "" 1 2
+			Grid ? ""
 				ListView material_list "#\\Polygone\\\\Datei" format=ttit select-single
-				Grid ? "" 3 1
+				---|
+				Grid ? ""
 					Button add_new_material "neu" image=hui:add
 					Button add_material "laden..." image=hui:open
 					Button apply_material "auf Auswahl anwenden" image=hui:apply
 		Separator sep_vertical "" vertical
 		Expander model_material_dialog_grp_color "Farben"
-			Grid ? "" 1 2
+			Grid ? ""
 				CheckBox default_colors "Farben aus der Datei verwenden"
-				Grid ? "" 2 5
-					Text ambient "Ambient"
+				---|
+				Grid ? ""
+					Text /ambient "Ambient"
 					ColorButton mat_am "" expandx
-					Text diffuse "Diffuse"
+					---|
+					Text /diffuse "Diffuse"
 					ColorButton mat_di "" alpha
-					Text specular "Specular"
+					---|
+					Text /specular "Specular"
 					ColorButton mat_sp ""
-					Text shininess "Shininess"
-					SpinButton mat_shininess "\\0\\10000\\0.1"
-					Text emission "Emission"
+					---|
+					Text /shininess "Shininess"
+					SpinButton mat_shininess "" range=0:10000:0.1
+					---|
+					Text /emission "Emission"
 					ColorButton mat_em ""
 		Expander model_material_dialog_grp_textures "Texturen"
-			Grid ? "" 1 2
+			Grid ? ""
 				ListView mat_textures "Ebene\\\\Textur" format=tit select-single
-				Grid ? "" 3 1
+				---|
+				Grid ? ""
 					Button mat_add_texture_level "neue Ebene" image=hui:add
 					Button mat_delete_texture_level "Löschen" image=hui:delete
 					Button mat_empty_texture_level "Leeren" image=hui:clear
 		Expander model_material_dialog_grp_transparency "Transparenz"
-			Grid ? "" 1 10
+			Grid ? "" vertical
 				RadioButton transparency_mode:material "Transparenz aus der Datei verwenden"
 				RadioButton transparency_mode:none "Keine Transparenz"
 				RadioButton transparency_mode:color_key "Color-Key"
 				RadioButton transparency_mode:function "Funktion"
-				Grid mmat_transp_function_grid "" 2 2 indent
+				Grid mmat_transp_function_grid "" indent
 					Text material_dialog_t_trans_source "Quelle"
 					ComboBox alpha_source "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
+					---|
 					Text material_dialog_t_trans_dest "Ziel"
 					ComboBox alpha_dest "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
 				RadioButton transparency_mode:factor "Faktor"
-				Grid mmat_transp_alpha_grid "" 2 1 indent
-					SpinButton alpha_factor "\\0\\100\\1"
-					Text percent "%"
-				.
-				.
+				Grid mmat_transp_alpha_grid "" indent
+					SpinButton alpha_factor "" range=0:100:1
+					Text /percent "%"
 				CheckBox alpha_z_buffer "Z-Buffer aktiviert"

@@ -1,29 +1,38 @@
-Dialog font_dialog "Font Eigenschaften" 400 730
-	Grid ? "" 1 3 width=320 noexpandx
+Dialog font_dialog "Font Eigenschaften" width=400 height=730
+	Grid ? "" vertical width=320 noexpandx
 		Group font_dt_font "Font"
-			Grid ? "" 2 7
+			Grid ? ""
 				Text font_dt_numglyphs "Zeichenzahl"
 				SpinButton num "0" expandx
+				---|
 				Text font_dt_height "Zeichenhöhe"
 				SpinButton height "0"
+				---|
 				Text font_dt_y1 "Obere Kante"
 				SpinButton y1 "0"
+				---|
 				Text font_dt_y2 "Untere Kante"
 				SpinButton y2 "0"
+				---|
 				Text font_dt_scalex "Skalierung X"
 				SpinButton factorx "0"
+				---|
 				Text font_dt_scaley "Skalierung Y"
 				SpinButton factory "0"
+				---|
 				Text font_dt_unknown "Unbekanntes Zeichen"
 				Edit unknown ""
 		Group font_dt_character "Zeichen"
-			Grid ? "" 2 4
+			Grid ? ""
 				Text font_dt_name "Zeichen"
 				Edit name "" expandx
+				---|
 				Text font_dt_x1 "Linke Kante"
 				SpinButton x1 "0"
+				---|
 				Text font_dt_x2 "Rechte Kante"
 				SpinButton x2 "0"
+				---|
 				Text font_dt_width "Breite"
 				SpinButton width "0"
 		Group font_dt_example "Vorschautext"

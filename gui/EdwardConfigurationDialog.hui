@@ -1,51 +1,26 @@
-// IDs
-enum{
-	HMM_EDITOR_DIALOG,
-	HMM_EDITOR_DIALOG_TAB_CONTROL,
-	HMM_EDITOR_DIALOG_T_VERSION,
-	HMM_VERSION,
-	HMM_EDITOR_DIALOG_T_CREATOR,
-	HMM_CREATOR,
-	HMM_EDITOR_DIALOG_T_ADRESS,
-	HMM_ADRESS,
-	HMM_LOGO,
-	HMM_EDITOR_DIALOG_T_LANGUAGE,
-	HMM_LANGUAGE,
-	HMM_EDITOR_DIALOG_T_WORKINGDIRECTORY,
-	HMM_WORKING_DIRECTORY,
-	HMM_FIND_WORKINGDIR,
-	HMM_LOOK_FOR_UPDATES,
-	HMM_LOCAL_DOCUMENTATION,
-	HMM_KEY_LIST
-};
-
-
-	// dialog
-	EditorDialog=HuiCreateDialog("Edward",400,370,root_dialog,false,&EditorDialogFunction);
-	EditorDialog->SetID(HMM_EDITOR_DIALOG);
-	EditorDialog->AddTabControl("Information\\Einstellungen\\Tasten",5,5,390,360,HMM_EDITOR_DIALOG_TAB_CONTROL);
-	EditorDialog->SetTabCreationPage(HMM_EDITOR_DIALOG_TAB_CONTROL,0);
-	EditorDialog->AddText("Version:",10,235,120,25,HMM_EDITOR_DIALOG_T_VERSION);
-	EditorDialog->AddEdit("",135,235,245,25,HMM_VERSION);
-	EditorDialog->Enable(HMM_VERSION,false);
-	EditorDialog->AddText("Hersteller:",10,265,120,25,HMM_EDITOR_DIALOG_T_CREATOR);
-	EditorDialog->AddEdit("",135,265,245,25,HMM_CREATOR);
-	EditorDialog->Enable(HMM_CREATOR,false);
-	EditorDialog->AddText("Internetseite:",10,295,120,25,HMM_EDITOR_DIALOG_T_ADRESS);
-	EditorDialog->AddButton("",135,295,245,25,HMM_ADRESS);
-	EditorDialog->AddImage("Data/model.png",130,55,128,128,HMM_LOGO);
-	EditorDialog->SetTabCreationPage(HMM_EDITOR_DIALOG_TAB_CONTROL,1);
-	EditorDialog->AddText("Sprache:",10,10,120,25,HMM_EDITOR_DIALOG_T_LANGUAGE);
-	EditorDialog->AddComboBox("",135,10,245,25,HMM_LANGUAGE);
-	EditorDialog->AddText("Arbeitsverzeichnis:",10,40,120,25,HMM_EDITOR_DIALOG_T_WORKINGDIRECTORY);
-	EditorDialog->AddEdit("",135,40,215,25,HMM_WORKING_DIRECTORY);
-	EditorDialog->Enable(HMM_WORKING_DIRECTORY,false);
-	EditorDialog->AddButton("",355,40,25,25,HMM_FIND_WORKINGDIR);
-	EditorDialog->SetImage(HMM_FIND_WORKINGDIR,HuiImageOpen);
-	EditorDialog->AddCheckBox("Beim Start nach Updates suchen",10,100,370,25,HMM_LOOK_FOR_UPDATES);
-	EditorDialog->AddCheckBox("Lokale statt Online-Dokumentation verwenden",10,70,370,25,HMM_LOCAL_DOCUMENTATION);
-	EditorDialog->SetTabCreationPage(HMM_EDITOR_DIALOG_TAB_CONTROL,2);
-	EditorDialog->AddTreeView("!tree\\Befehl\\Tasten",5,5,380,330,HMM_KEY_LIST);
-	EditorDialog->Update();
-
-
+Dialog editor_dialog "Edward" width=400 height=370
+	TabControl editor_dialog_tab_control "Information\\Einstellungen\\Tasten"
+		Grid ? "" vertical
+			DrawingArea logo "model.png" height=150
+			Grid ? ""
+				Text t_version "Version"
+				Text version "" expandx
+				---|
+				Text t_creator "Hersteller"
+				Text creator ""
+				---|
+				Text t_adress "Internetseite"
+				Button adress ""
+		Grid ? "" vertical
+			Grid ? ""
+				Text t_language "Sprache"
+				ComboBox language ""
+				---|
+				Text t_workingdirectory "Arbeitsverzeichnis"
+				Grid ? ""
+					Edit working_directory "" expandx disabled
+					Button find_workingdir "" image=hui:open
+			Grid ? "" vertical
+				CheckBox look_for_updates "Beim Start nach Updates suchen"
+				CheckBox local_documentation "Lokale statt Online-Dokumentation verwenden"
+		TreeView key_list "Befehl\\Tasten" tree

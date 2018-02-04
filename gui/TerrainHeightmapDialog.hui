@@ -1,34 +1,37 @@
-	// dialog
-	TerrainDialog = HuiCreateDialog("H&ohenkarte", 620, 275, MainWin, false);
-	TerrainDialog->SetID("terrain_heightmap_dialog");
-	TerrainDialog->AddDefButton("OK", 510, 230, 100, 25, "ok");
-	TerrainDialog->SetImage("ok", "hui:ok");
-	TerrainDialog->AddButton("Abbrechen", 405, 230, 100, 25, "cancel");
-	TerrainDialog->SetImage("cancel", "hui:cancel");
-	TerrainDialog->AddText("Streckung", 30, 70, 100, 25, "terrain_hm_dialog_t_stretch");
-	TerrainDialog->AddText("X", 135, 70, 20, 25, "x");
-	TerrainDialog->AddSpinButton("1\\0\\1000\\0.01", 155, 70, 100, 25, "stretch_x");
-	TerrainDialog->AddText("Z", 280, 70, 20, 25, "z");
-	TerrainDialog->AddSpinButton("1\\0\\1000\\0.01", 300, 70, 100, 25, "stretch_z");
-	TerrainDialog->AddText("!bold\\H&ohen aus Graustufen einer Bilddatei", 10, 10, 390, 25, "terrain_hm_dialog_grp_heightmap");
-	TerrainDialog->AddText("H&ohenkarte", 30, 40, 100, 25, "terrain_dialog_t_heightmap");
-	TerrainDialog->AddEdit("", 135, 40, 235, 25, "height_image");
-	TerrainDialog->Enable("height_image", false);
-	TerrainDialog->AddButton("", 375, 40, 25, 25, "height_image_find");
-	TerrainDialog->SetImage("height_image_find", "hui:open");
-	TerrainDialog->AddText("Maximale H&ohe", 30, 160, 100, 25, "terrain_hm_dialog_t_gray");
-	TerrainDialog->AddEdit("", 135, 160, 235, 25, "height_factor");
-	TerrainDialog->AddText("le", 375, 160, 25, 25, "lu");
-	TerrainDialog->AddDrawingArea("", 405, 10, 205, 205, "preview");
-	TerrainDialog->AddText("Filter (optional)", 30, 100, 100, 25, "terrain_dialog_t_filter");
-	TerrainDialog->AddEdit("", 135, 100, 235, 25, "filter_image");
-	TerrainDialog->Enable("filter_image", false);
-	TerrainDialog->AddButton("", 375, 100, 25, 25, "filter_image_find");
-	TerrainDialog->SetImage("filter_image_find", "hui:open");
-	TerrainDialog->AddRadioButton("&Uberschreiben", 135, 190, 130, 25, "height_op:set");
-	TerrainDialog->AddRadioButton("Addieren", 270, 190, 130, 25, "height_op:add");
-	TerrainDialog->AddText("Operation", 30, 190, 100, 25, "terrain_hm_dialog_t_op");
-	TerrainDialog->AddText("!bold\\Anwenden", 10, 130, 390, 25, "terrain_dialog_grp_apply");
-	TerrainDialog->Update();
-
-
+Dialog terrain_heightmap_dialog "Höhenkarte" width=620 height=275
+	Grid ? ""
+		Grid ? ""
+			Grid ? ""
+				Group grp_heightmap "Höhen aus Graustufen einer Bilddatei"
+					Grid ? ""
+						Text t_heightmap "Höhenkarte"
+						Grid ? ""
+							Edit height_image "" expandx disabled
+							Button height_image_find "" image=hui:find
+						---|
+						Text t_stretch "Streckung x/z"
+						Grid ? ""
+							SpinButton stretch_x "1" range=0:1000:0.01 expandx
+							SpinButton stretch_z "1" range=0:1000:0.01 expandx
+						---|
+						Text t_filter "Filter (optional)"
+						Grid ? ""
+							Edit filter_image "" expandx disabled
+							Button image_find "" image=hui:open
+				---|
+				Group grp_apply "Anwenden"
+					Grid ? ""
+						Text t_gray "Maximale Höhe"
+						Grid ? ""
+							Edit height_factor "" expandx
+							Text /lu "le"
+						---|
+						Text t_op "Operation"
+						Grid ? ""
+							RadioButton height_op:set "Überschreiben" expandx
+							RadioButton height_op:add "Addieren" expandx
+			DrawingArea preview "" expandy width=250
+		---|
+		Grid ? "" buttonbar
+			Button /cancel "Abbrechen" image=hui:cancel
+			DefButton /ok "OK" image=hui:ok

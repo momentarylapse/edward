@@ -1,75 +1,79 @@
-Dialog world_dialog "Welt-Eigenschaften" 410 420
-	Grid ? "" 1 2
+Dialog world_dialog "Welt-Eigenschaften" width=410 height=420
+	Grid ? "" vertical
 		TabControl world_dialog_tab_control "Hintergrund\\Nebel\\Licht\\Physik\\Scripte\\Variablen"
-			Grid ? "" 1 2
+			Grid ? "" vertical
 				Group world_dialog_grp_bg_color "Farbe"
 					ColorButton bgc "" alpha
 				Group world_dialog_grp_skybox "Skybox Modelle"
-					Grid ? "" 1 2
+					Grid ? "" vertical
 						ListView skybox "#\\Modell"
 						Button remove_skybox "Entfernen" image=hui:delete
-			Grid ? "" 1 7
+			Grid ? "" vertical
 				RadioButton fog_mode:none "Deaktiviert" expandx
 				RadioButton fog_mode:linear "Linear"
-				Grid word_dialog_fog_lin_grid "" 2 2 indent
+				Grid word_dialog_fog_lin_grid "" indent
 					Text world_dialog_t_fog_start "Entfernung"
-					SpinButton fog_start "\\0\\1000000000\\0.1"
+					SpinButton fog_start "" range=0:1000000000:0.1
+					---|
 					Text world_dialog_t_fog_end "bis"
-					SpinButton fog_end "\\0\\1000000000\\0.1"
-				Grid ? "" 2 1
+					SpinButton fog_end "" range=0:1000000000:0.1
+				Grid ? ""
 					RadioButton fog_mode:exp "Exponentiell"
 					RadioButton fog_mode:exp2 "Quadratisch exponentiell"
-				Grid word_dialog_fog_exp_grid "" 2 1 indent
+				Grid word_dialog_fog_exp_grid "" indent
 					Text world_dialog_t_fog_distance "Sichtweite"
-					SpinButton fog_distance "\\0\\1000000000\\0.1"
+					SpinButton fog_distance "" range=0:1000000000:0.1
 				ColorButton fog_color ""
-			Grid ? "" 1 2
+			Grid ? "" vertical
 				Group world_dialog_grp_ambient "Ambient"
 					ColorButton ambient ""
 				Group world_dialog_grp_sun "Sonne"
-					Grid ? "" 1 3
+					Grid ? "" vertical
 						CheckBox sun_enabled "aktiviert" expandx
-						Grid ? "" 3 5
-							Text ambient "Ambient"
+						Grid ? ""
+							Text /ambient "Ambient"
 							ColorButton sun_am ""
-							.
-							Text diffuse "Diffuse"
+							---|
+							Text /diffuse "Diffuse"
 							ColorButton sun_di ""
-							.
-							Text specular "Specular"
+							---|
+							Text /specular "Specular"
 							ColorButton sun_sp ""
-							.
+							---|
 							Text world_dialog_t_sun_ang_x "Richtung X"
 							SpinButton sun_ang_x ""
-							Text degree "°"
+							Text /degree "°"
+							---|
 							Text world_dialog_t_sun_ang_y "Richtung Y"
 							SpinButton sun_ang_y ""
-							Text degree "°"
+							Text /degree "°"
 						Button sun_ang_from_camera "Richtung aus Kamerawinkel" image=hui:media-record
-			Grid ? "" 1 2
+			Grid ? "" vertical
 				CheckBox physics_enabled "Aktiviert"
 				Group world_dialog_grp_gravitation "Gravitation"
-					Grid ? "" 3 3
+					Grid ? ""
 						Text x "X"
-						SpinButton gravitation_x "\\\\\\0.1"
-						Text luss "le/s^2"
+						SpinButton gravitation_x "" range=::0.1
+						Text /luss "le/s^2"
+						---|
 						Text y "Y"
-						SpinButton gravitation_y "\\\\\\0.1"
-						Text luss "le/s^2"
+						SpinButton gravitation_y "" range=::0.1
+						Text /luss "le/s^2"
+						---|
 						Text z "Z"
-						SpinButton gravitation_z "\\\\\\0.1"
-						Text luss "le/s^2"
-			Grid ? "" 1 2
+						SpinButton gravitation_z "" range=::0.1
+						Text /luss "le/s^2"
+			Grid ? "" vertical
 				ListView script_list "Datei" nobar
-				Grid ? "" 2 1
+				Grid ? ""
 					Button add_script "Hinzufügen" image=hui:add
 					Button remove_script "Entfernen" image=hui:delete
-			Grid ? "" 1 2
-				Grid ? "" 2 1
+			Grid ? "" vertical
+				Grid ? ""
 					Text world_dialog_t_max_script_vars "Anzahl:"
-					SpinButton max_script_vars "\\0"
+					SpinButton max_script_vars "" range=0:
 				ListView script_vars "#\\Name\\Wert" format=ttT
-		Grid world_dialog_buttonbar "" 3 1 buttonbar
-			Button apply "Übernehmen" image=hui:apply
-			Button cancel "Abbrechen" image=hui:cancel
-			DefButton ok "OK" image=hui:ok
+		Grid world_dialog_buttonbar "" buttonbar
+			Button /apply "Übernehmen" image=hui:apply
+			Button /cancel "Abbrechen" image=hui:cancel
+			DefButton /ok "OK" image=hui:ok

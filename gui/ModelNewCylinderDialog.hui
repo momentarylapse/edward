@@ -1,6 +1,7 @@
-Dialog new_cylinder_dialog "neuer Zylinder" 100 50 allow-root
-	Grid ? "" 2 2
+Dialog new_cylinder_dialog "neuer Zylinder" width=100 height=50 allow-root
+	Grid ? ""
 		Text new_cylinder_dialog_t_rings "Ringe"
-		SpinButton ncy_rings "\\1"
+		SpinButton ncy_rings "" range=1:
+		---|
 		Text new_cylinder_dialog_t_edges "Kanten"
-		SpinButton ncy_edges "\\2"
+		SpinButton ncy_edges "" range=2:

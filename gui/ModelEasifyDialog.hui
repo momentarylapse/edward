@@ -1,14 +1,15 @@
-Dialog easify_dialog "Geometrie vereinfachen" 335 150
-	Grid ? "" 1 3
+Dialog easify_dialog "Geometrie vereinfachen" width=335 height=150
+	Grid ? "" vertical
 		Group eat_quality "Qualitätsfaktor"
-			Grid ? "" 3 1
+			Grid ? ""
 				Slider quality_slider "" expandx
-				SpinButton quality_factor "\\0\\100\\0.1"
-				Text percent "%"
+				SpinButton quality_factor "" range=0:100:0.1
+				Text /percent "%"
 		Group eat_estimate "ungefähres Ergebnis"
-			Grid ? "" 1 2
+			Grid ? ""
 				Text eat_vertices ""
+				---|
 				Text eat_polygons ""
-		Grid easify_dialog_buttonbar "" 2 1 buttonbar
-			Button cancel "Abbrechen" image=hui:cancel
-			DefButton ok "Ok" image=hui:ok
+		Grid easify_dialog_buttonbar "" buttonbar
+			Button /cancel "Abbrechen" image=hui:cancel
+			DefButton /ok "Ok" image=hui:ok

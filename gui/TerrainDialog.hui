@@ -1,0 +1,42 @@
+Dialog terrain_dialog "Terrain-Eigenschaften" width=435 height=275
+	Grid ? ""
+		TabControl terrain_dialog_tab_control "Eigenschaften\\Texturen\\Material"
+			Grid ? ""
+				Grid ? ""
+					Text t_filename "Terrain-Datei"
+					Edit filename "" expandx disabled
+					Button terrain_save_as "Speichern..." image=hui:save-as
+				---|
+				Grid ? ""
+					.
+					Text /x "X" center
+					Text /z "Z" center
+					---|
+					Text t_stripes "Streifen-Zahl"
+					SpinButton num_x "" range=1: expandx disabled
+					SpinButton num_z "" range=1: expandx disabled
+					---|
+					Text t_raster "Raster-Größe"
+					Edit pattern_x ""
+					Edit pattern_z ""
+					Text /lu "le"
+			Grid ? ""
+				ListView textures "Ebene\\Größe X\\Größe Z\\\\Datei" format=tTTit expandy
+				---|
+				Grid ? ""
+					Button add_texture_level "Neu" image=hui:new
+					Button delete_texture_level "Loeschen" image=hui:delete
+					Button clear_texture_level "Leeren" image=hui:clear
+					Button texture_map_complete "auf ganzes Terrain" image=hui:zoom-fit
+			Grid ? ""
+				CheckBox default_material "Standart Material benutzen"
+				---|
+				Grid ? ""
+					Text t_material "Material"
+					Edit material "" expandx
+					Button material_find "" image=hui:open
+		---|
+		Grid ? "" buttonbar
+			Button /apply "Übernehmen" image=hui:apply
+			Button /cancel "Abbrechen" image=hui:cancel
+			DefButton /ok "OK" image=hui:ok

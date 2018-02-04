@@ -1,70 +1,46 @@
-// IDs
-enum{
-	HMM_CAMPOINT_DIALOG,
-	HMM_CAMPOINT__GRP_POS,
-	HMM_CAMPOINT__GRP_VEL,
-	HMM_CAMPOINT__GRP_ANG,
-	HMM_OK,
-	HMM_CANCEL,
-	HMM_X,
-	HMM_POS_X,
-	HMM_Y,
-	HMM_POS_Y,
-	HMM_Z,
-	HMM_POS_Z,
-	HMM_ANG_X,
-	HMM_ANG_Y,
-	HMM_ANG_Z,
-	HMM_VEL_X,
-	HMM_VEL_Y,
-	HMM_VEL_Z,
-	HMM_WAIT,
-	HMM_CAMPOINT_T_DELAY,
-	HMM_CAMPOINT_T_TYPE,
-	HMM_MS,
-	HMM_DEGREE,
-	HMM_CAMPOINT_TYPE
-};
-
-
-
-	// dialog
-	CamPointDialog=HuiCreateDialog("Kamera-Punkt",345,225,MainWin,false,&CamPointDialogFunction);
-	CamPointDialog->SetID(HMM_CAMPOINT_DIALOG);
-	CamPointDialog->AddGroup("Position",10,75,100,100,HMM_CAMPOINT__GRP_POS);
-	CamPointDialog->AddGroup("Geschwindigkeit",115,75,100,100,HMM_CAMPOINT__GRP_VEL);
-	CamPointDialog->AddGroup("Winkel",220,75,115,100,HMM_CAMPOINT__GRP_ANG);
-	CamPointDialog->AddDefButton("OK",230,185,100,25,HMM_OK);
-	CamPointDialog->SetImage(HMM_OK,HuiImageOk);
-	CamPointDialog->AddButton("Abbrechen",125,185,100,25,HMM_CANCEL);
-	CamPointDialog->SetImage(HMM_CANCEL,HuiImageCancel);
-	CamPointDialog->AddText("X",20,95,20,25,HMM_X);
-	CamPointDialog->AddEdit("",40,95,60,25,HMM_POS_X);
-	CamPointDialog->AddText("Y",20,120,20,25,HMM_Y);
-	CamPointDialog->AddEdit("",40,120,60,25,HMM_POS_Y);
-	CamPointDialog->AddText("Z",20,145,20,25,HMM_Z);
-	CamPointDialog->AddEdit("",40,145,60,25,HMM_POS_Z);
-	CamPointDialog->AddEdit("",250,95,60,25,HMM_ANG_X);
-	CamPointDialog->AddEdit("",250,120,60,25,HMM_ANG_Y);
-	CamPointDialog->AddEdit("",250,145,60,25,HMM_ANG_Z);
-	CamPointDialog->AddEdit("",145,95,60,25,HMM_VEL_X);
-	CamPointDialog->AddEdit("",145,120,60,25,HMM_VEL_Y);
-	CamPointDialog->AddEdit("",145,145,60,25,HMM_VEL_Z);
-	CamPointDialog->AddEdit("",85,40,80,25,HMM_WAIT);
-	CamPointDialog->AddText("Wartezeit",10,40,70,25,HMM_CAMPOINT_T_DELAY);
-	CamPointDialog->AddText("Typ",10,10,70,25,HMM_CAMPOINT_T_TYPE);
-	CamPointDialog->AddText("ms",170,40,20,25,HMM_MS);
-	CamPointDialog->AddText("°",315,95,20,25,HMM_DEGREE);
-	CamPointDialog->AddText("°",315,120,20,25,HMM_DEGREE);
-	CamPointDialog->AddText("°",315,145,20,25,HMM_DEGREE);
-	CamPointDialog->AddComboBox("Position setzen\\Position addieren\\Winkel setzen\\Position&&",85,10,140,25,HMM_CAMPOINT_TYPE);
-	CamPointDialog->AddText("X",125,95,20,25,HMM_X);
-	CamPointDialog->AddText("Y",125,120,20,25,HMM_Y);
-	CamPointDialog->AddText("Z",125,145,20,25,HMM_Z);
-	CamPointDialog->AddText("X",230,95,20,25,HMM_X);
-	CamPointDialog->AddText("Y",230,120,20,25,HMM_Y);
-	CamPointDialog->AddText("Z",230,145,20,25,HMM_Z);
-	CamPointDialog->Update();
-
-
-
+Dialog campoint_dialog "Kamera-Punkt" width=345 height=225
+	Grid ? "" vertical
+		Grid ? ""
+			Text campoint_t_type "Typ"
+			ComboBox campoint_type "Position setzen\\Position addieren\\Winkel setzen\\Position&&" expandx
+			---|
+			Text campoint_t_delay "Wartezeit"
+			Edit wait ""
+			Text /ms "ms"
+		Grid ? ""
+			Group campoint__grp_pos "Position"
+				Grid ? ""
+					Text /x "X"
+					Edit pos_x "" expandx
+					---|
+					Text /z "Y"
+					Edit pos_y ""
+					---|
+					Text /y "Z"
+					Edit pos_z ""
+			Group campoint__grp_vel "Geschwindigkeit"
+				Grid ? ""
+					Text /x "X"
+					Edit vel_x "" expandx
+					---|
+					Text /z "Y"
+					Edit vel_y ""
+					---|
+					Text /y "Z"
+					Edit vel_z ""
+			Group campoint__grp_ang "Winkel"
+				Grid ? ""
+					Text /x "X"
+					Edit ang_x "" expandx
+					Text /degree "°"
+					---|
+					Text /z "Y"
+					Edit ang_y ""
+					Text /degree "°"
+					---|
+					Text /y "Z"
+					Edit ang_z ""
+					Text /degree "°"
+		Grid ? "" buttonbar
+			Button /cancel "Abbrechen" image=hui:cancel
+			DefButton /ok "OK" image=hui:ok

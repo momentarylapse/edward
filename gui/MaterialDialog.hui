@@ -1,64 +1,71 @@
-Dialog material_dialog "Material-Eigenschaften" 365 715 allow-root
-	Grid ? "" 1 7 width=320 noexpandx
+Dialog material_dialog "Material-Eigenschaften" width=365 height=715 allow-root
+	Grid ? "" vertical width=320 noexpandx
 		Expander material_dialog_grp_color "Farben"
-			Grid ? "" 2 5
-				Text ambient "Ambient"
+			Grid ? ""
+				Text /ambient "Ambient"
 				ColorButton mat_am "" expandx
-				Text diffuse "Diffuse"
+				---|
+				Text /diffuse "Diffuse"
 				ColorButton mat_di "" alpha
-				Text specular "Specular"
+				---|
+				Text /specular "Specular"
 				ColorButton mat_sp ""
-				Text shininess "Shininess"
-				SpinButton mat_shininess "\\0\\10000\\0.1"
-				Text emission "Emission"
+				---|
+				Text /shininess "Shininess"
+				SpinButton mat_shininess "" range=0:10000:0.1
+				---|
+				Text /emission "Emission"
 				ColorButton mat_em ""
 		Expander material_dialog_grp_textures "Texturen"
-			Grid ? "" 1 2
+			Grid ? ""
 				ListView mat_textures "Ebene\\\\Textur" format=tit select-single
-				Grid ? "" 3 1
+				---|
+				Grid ? ""
 					Button mat_add_texture_level "neue Ebene" image=hui:add
 					Button mat_delete_texture_level "Löschen" image=hui:delete
 					Button mat_empty_texture_level "Leeren" image=hui:clear
 		Expander material_dialog_grp_transparency "Transparenz"
-			Grid ? "" 1 9
+			Grid ? "" vertical
 				RadioButton transparency_mode:none "Keine Transparenz"
 				RadioButton transparency_mode:color_key "Color-Key"
 				RadioButton transparency_mode:function "Funktion"
-				Grid mat_transp_function_grid "" 2 2 indent
+				Grid mat_transp_function_grid "" indent
 					Text material_dialog_t_trans_source "Quelle"
 					ComboBox alpha_source "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
+					---|
 					Text material_dialog_t_trans_dest "Ziel"
 					ComboBox alpha_dest "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
 				RadioButton transparency_mode:factor "Faktor"
-				Grid mat_transp_alpha_grid "" 2 1 indent
-					SpinButton alpha_factor "\\0\\100\\1"
-					Text percent "%"
-				.
-				.
+				Grid mat_transp_alpha_grid "" indent
+					SpinButton alpha_factor "" range=0:100:1
+					Text /percent "%"
 				CheckBox alpha_z_buffer "Z-Buffer aktiviert"
 		Expander material_dialog_grp_reflection "Reflexionen"
-			Grid ? "" 1 6
+			Grid ? "" vertical
 				RadioButton reflection_mode:none "Keine Reflexion"
 				RadioButton reflection_mode:cube_static "CubeMap statisch"
 				ListView reflection_textures "Seite\\Textur" indent
 				RadioButton reflection_mode:cube_dynamic "CubeMap dynamisch"
 				ComboBox reflection_size "64 x 64\\128 x 128\\256 x 256\\512 x 512" indent
-				Grid ? "" 3 1
+				Grid ? ""
 					Text material_dialog_t_refl_density "Intensität"
-					SpinButton reflection_density "\\0\\100\\1"
-					Text percent "%"
+					SpinButton reflection_density "" range=0:100:1
+					Text /percent "%"
 		Expander material_dialog_grp_shader "Shader"
-			Grid ? "" 2 1
+			Grid ? ""
 				Edit shader_file "" expandx
 				Button find_shader "" image=hui:open
 		Separator sep_vertical "" vertical
 		Expander material_dialog_grp_friction "Reibungs-Konstanten"
-			Grid ? "" 2 4
+			Grid ? ""
 				Text material_physics_dialog_t_rcstatic "Haftreibung"
-				SpinButton rcstatic "\\0\\100\\0.01"
+				SpinButton rcstatic "" range=0:100:0.01
+				---|
 				Text material_physics_dialog_t_rcsliding "Gleitreibung"
-				SpinButton rcsliding "\\0\\100\\0.01"
+				SpinButton rcsliding "" range=0:100:0.01
+				---|
 				Text material_physics_dialog_t_rcjump "Sprungreibung"
-				SpinButton rcjump "\\0\\100\\0.01"
+				SpinButton rcjump "" range=0:100:0.01
+				---|
 				Text material_physics_dialog_t_rcroll "Rollreibung"
-				SpinButton rcroll "\\0\\100\\0.01"
+				SpinButton rcroll "" range=0:100:0.01

@@ -1,6 +1,7 @@
-Dialog new_plane_dialog "neue Ebene" 100 50 allow-root
-	Grid ? "" 2 2
+Dialog new_plane_dialog "neue Ebene" width=100 height=50 allow-root
+	Grid ? ""
 		Text new_plane_dialog_t_x "Streifen X:"
-		SpinButton np_num_x "\\1"
+		SpinButton np_num_x "" range=1:
+		---|
 		Text new_plane_dialog_t_y "Streifen Y:"
-		SpinButton np_num_y "\\1"
+		SpinButton np_num_y "" range=1:
