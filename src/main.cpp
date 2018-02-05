@@ -8,7 +8,7 @@
 #include "lib/hui/hui.h"
 #include "Edward.h"
 
-string AppVersion = "0.4.-1.0";
+string AppVersion = "0.4.-1.1";
 string AppName = "Edward";
 
 
@@ -19,7 +19,7 @@ EdwardApp::EdwardApp() :
 	app = this;
 	setProperty("name", AppName);
 	setProperty("version", AppVersion);
-	setProperty("copyright", "© 2006-2017 by MichiSoft TM"); // ??? min=2004 (objectmaker) max=2006
+	setProperty("copyright", "© 2006-2018 by MichiSoft TM"); // ??? min=2004 (objectmaker) max=2006
 	setProperty("comment", _("Editor f&ur Spiele-Daten der x9-Engine"));
 	setProperty("website", "http://michi.is-a-geek.org/software");
 	setProperty("author", "Michael Ankele <michi@lupina.de>");

@@ -423,7 +423,6 @@ void MultiView::onLeftButtonDown()
 	// menu for selection of view type
 	if (hover.meta == hover.HOVER_WINDOW_LABEL){
 		active_win = mouse_win;
-		menu->openPopup(ed, m.x, m.y);
 	}else if (hover.meta == hover.HOVER_CAMERA_CONTROLLER){
 		cam_con->onLeftButtonDown();
 	}else if (hover.meta == hover.HOVER_ACTION_CONTROLLER){
@@ -475,12 +474,18 @@ void MultiView::onMiddleButtonDown()
 void MultiView::onRightButtonDown()
 {
 	notifyBegin();
-	active_win = mouse_win;
+
+	if (hover.meta == hover.HOVER_WINDOW_LABEL){
+		active_win = mouse_win;
+		menu->openPopup(ed, m.x, m.y);
+	}else{
+		active_win = mouse_win;
 
 // move camera?
-	if (allow_infinite_scrolling)
-		holdCursor(true);
-	view_moving = true;
+		if (allow_infinite_scrolling)
+			holdCursor(true);
+		view_moving = true;
+	}
 
 	notify(MESSAGE_UPDATE);
 	notifyEnd();
