@@ -130,18 +130,7 @@ void ModeModelSkeleton::onUpdateMenu()
 
 void ModeModelSkeleton::onStart()
 {
-	string dir = "icons/toolbar/";
-	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
-	t->reset();
-	t->addItemCheckable(_("neuer Knochen"),dir + "new_vertex.png", "skeleton_new_point");
-	t->addSeparator();
-	t->addItemCheckable(_("Selektieren"), dir + "rf_select.png", "select");
-	t->addItemCheckable(_("Verschieben"), dir + "rf_translate.png", "translate");
-	t->addItemCheckable(_("Rotieren"), dir + "rf_rotate.png", "rotate");
-	t->addItemCheckable(_("Skalieren"), dir + "rf_scale.png", "scale");
-	t->addItemCheckable(_("Spiegeln"),dir + "rf_mirror.png", "mirror");
-	t->enable(true);
-	t->configure(false,true);
+	ed->toolbar[hui::TOOLBAR_LEFT]->setByID("model-skeleton-toolbar");
 
 	subscribe(data);
 	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);

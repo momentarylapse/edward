@@ -56,23 +56,9 @@ void ModeWorldCamera::onStart()
 	dialog = new CameraDialog(this);
 	ed->embed(dialog, "root-table", 0, 1);
 
-	string dir = "icons/toolbar/";
-	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
-	t->reset();
-	t->addItem(L("", "new"),dir + "new.png","cam_new");
-	t->addItem(L("", "open"),dir + "open.png","cam_open");
-	t->addItem(L("", "save"),dir + "save.png","cam_save");
-	t->addSeparator();
-	t->addItem(L("", "undo"),dir + "undo.png","cam_undo");
-	t->addItem(L("", "redo"),dir + "redo.png","cam_redo");
-	t->addSeparator();
-	t->addItem(_("Push"),dir + "view_push.png","view_push");
-	ed->setTooltip("view_push", _("ViewStage Push"));
-	t->addItem(_("Pop"),dir + "view_pop.png","view_pop");
-	ed->setTooltip("view_pop", _("ViewStage Pop"));
-	t->enable(true);
-	t->configure(false,true);
-	t = ed->toolbar[hui::TOOLBAR_LEFT];
+	ed->toolbar[hui::TOOLBAR_TOP]->setByID("world-camera-toolbar");
+
+	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
 

@@ -1,0 +1,7 @@
+Toolbar font-toolbar ""
+	Item /new "Neu" image=icons/toolbar/new.png
+	Item /open "&Offnen..." image=icons/toolbar/open.png
+	Item /save "Speichern..." image=icons/toolbar/save.png
+	Separator
+	Item /undo "R&uckg&angig" image=icons/toolbar/undo.png
+	Item /redo "Wiederherstellen" image=icons/toolbar/redo.png

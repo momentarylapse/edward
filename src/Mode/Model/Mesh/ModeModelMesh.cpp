@@ -84,8 +84,7 @@ ModeModelMesh::~ModeModelMesh()
 
 void ModeModelMesh::onStart()
 {
-	ed->toolbar[hui::TOOLBAR_LEFT]->setByID("model_mesh_toolbar");
-	ed->toolbar[hui::TOOLBAR_LEFT]->configure(false, true);
+	ed->toolbar[hui::TOOLBAR_LEFT]->setByID("model-mesh-toolbar");
 
 	//subscribe(data);
 

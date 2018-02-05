@@ -491,27 +491,8 @@ void ModeWorld::onDrawWin(MultiView::Window *win)
 
 void ModeWorld::onStart()
 {
-	string dir = "icons/toolbar/";
-	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
-	t->reset();
-	t->addItem(L("", "new"),dir + "new.png","new");
-	t->addItem(L("", "open"),dir + "open.png","open");
-	t->addItem(L("", "save"),dir + "save.png","save");
-	t->addSeparator();
-	t->addItem(L("", "undo"),dir + "undo.png","undo");
-	t->addItem(L("", "redo"),dir + "redo.png","redo");
-	t->addSeparator();
-	t->addItem(_("Push"),dir + "view_push.png","view_push");
-	t->addItem(_("Pop"),dir + "view_pop.png","view_pop");
-	t->addSeparator();
-	t->addItem(_("Eigenschaften"), dir + "configure.png", "selection_properties");
-	t->addSeparator();
-	t->addItemCheckable(_("Selektieren"), dir + "rf_select.png", "select");
-	t->addItemCheckable(_("Verschieben"), dir + "rf_translate.png", "translate");
-	t->addItemCheckable(_("Rotieren"), dir + "rf_rotate.png", "rotate");
-	t->enable(true);
-	t->configure(false,true);
-	t = ed->toolbar[hui::TOOLBAR_LEFT];
+	ed->toolbar[hui::TOOLBAR_TOP]->setByID("world-toolbar");
+	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
 

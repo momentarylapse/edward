@@ -1,4 +1,4 @@
-Toolbar model_mesh_toolbar ""
+Toolbar model-mesh-toolbar ""
 	Item new_tria "Polygon" checkable image=icons/toolbar/new_triangle.png
 	Item new_plane "Ebene" checkable image=icons/toolbar/new_plane.png
 	Item new_cube "Quader" checkable image=icons/toolbar/mode_skin.png
@@ -7,7 +7,7 @@ Toolbar model_mesh_toolbar ""
 	Separator
 	Item mode_model_materials "Materialien" checkable image=icons/toolbar/mode_textures.png
 	Separator
-	Item select "Selectieren" checkable image=icons/toolbar/rf_select.png
+	Item select "Selektieren" checkable image=icons/toolbar/rf_select.png
 	Item translate "Verschieben" checkable image=icons/toolbar/rf_translate.png
 	Item rotate "Rotieren" checkable image=icons/toolbar/rf_rotate.png
 	Item scale "Skalieren" checkable image=icons/toolbar/rf_scale.png

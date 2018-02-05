@@ -27,17 +27,8 @@ ModeModelAnimationVertex::~ModeModelAnimationVertex()
 
 void ModeModelAnimationVertex::onStart()
 {
-	string dir = "icons/toolbar/";
-	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
-	t->reset();
-	t->addSeparator();
-	t->addItemCheckable(_("Selektieren"), dir + "rf_select.png", "select");
-	t->addItemCheckable(_("Verschieben"), dir + "rf_translate.png", "translate");
-	t->addItemCheckable(_("Rotieren"), dir + "rf_rotate.png", "rotate");
-	t->addItemCheckable(_("Skalieren"), dir + "rf_scale.png", "scale");
-	t->addItemCheckable(_("Spiegeln"),dir + "rf_mirror.png", "mirror");
-	t->enable(true);
-	t->configure(false,true);
+	ed->toolbar[hui::TOOLBAR_LEFT]->setByID("model-animation-vertex-toolbar");
+
 	mode_model->allowSelectionModes(true);
 
 	chooseMouseFunction(MultiView::ACTION_SELECT);

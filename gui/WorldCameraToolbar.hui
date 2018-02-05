@@ -1,0 +1,10 @@
+Toolbar world-camera-toolbar ""
+	Item cam_new "Neu" image=icons/toolbar/new.png
+	Item cam_open "&Offnen..." image=icons/toolbar/open.png
+	Item cam_save "Speichern..." image=icons/toolbar/save.png
+	Separator
+	Item cam_undo "R&uckg&angig" image=icons/toolbar/undo.png
+	Item cam_redo "Wiederherstellen" image=icons/toolbar/redo.png
+	Separator
+	Item view_push "Push" image=icons/toolbar/view_push.png "tooltip=Viewstage Push"
+	Item view_pop "Pop" image=icons/toolbar/view_pop.png "tooltip=Viewstage Pop"

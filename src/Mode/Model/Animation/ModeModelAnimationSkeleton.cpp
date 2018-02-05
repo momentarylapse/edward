@@ -31,16 +31,7 @@ ModeModelAnimationSkeleton::~ModeModelAnimationSkeleton()
 
 void ModeModelAnimationSkeleton::onStart()
 {
-	string dir = "icons/toolbar/";
-	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
-	t->reset();
-	t->addSeparator();
-	t->addItemCheckable(_("Selektieren"), dir + "rf_select.png", "select");
-	t->addItemCheckable(_("Verschieben"), dir + "rf_translate.png", "translate");
-	t->addItemCheckable(_("Rotieren"), dir + "rf_rotate.png", "rotate");
-	t->addItemCheckable(_("Rekursiv bearbeiten"), "hui:apply", "select-recursive");
-	t->enable(true);
-	t->configure(false,true);
+	ed->toolbar[hui::TOOLBAR_LEFT]->setByID("model-animation-skeleton-toolbar");
 
 	foreachi(ModelBone &b, data->bone, i)
 		mode_model_animation->bone[i].is_selected = b.is_selected;

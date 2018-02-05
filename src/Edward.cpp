@@ -316,6 +316,11 @@ Edward::Edward(Array<string> arg) :
 	}
 
 	msg_db_r("init modes", 1);*/
+
+
+	ed->toolbar[hui::TOOLBAR_TOP]->configure(false, true);
+	ed->toolbar[hui::TOOLBAR_LEFT]->configure(false, true);
+
 	multi_view_3d = new MultiView::MultiView(true);
 	multi_view_2d = new MultiView::MultiView(false);
 	mode_welcome = new ModeWelcome;

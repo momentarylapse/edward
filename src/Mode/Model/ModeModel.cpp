@@ -47,8 +47,7 @@ ModeModel::~ModeModel()
 
 void ModeModel::onStart()
 {
-	ed->toolbar[hui::TOOLBAR_TOP]->setByID("model_toolbar");
-	ed->toolbar[hui::TOOLBAR_TOP]->configure(false, true);
+	ed->toolbar[hui::TOOLBAR_TOP]->setByID("model-toolbar");
 	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);

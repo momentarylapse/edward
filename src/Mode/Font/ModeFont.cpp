@@ -151,18 +151,8 @@ void ModeFont::_new()
 
 void ModeFont::onStart()
 {
-	string dir = "icons/toolbar/";
-	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
-	t->reset();
-	t->addItem(L("", "new"),dir + "new.png","new");
-	t->addItem(L("", "open"),dir + "open.png","open");
-	t->addItem(L("", "save"),dir + "save.png","save");
-	t->addSeparator();
-	t->addItem(L("", "undo"),dir + "undo.png","undo");
-	t->addItem(L("", "redo"),dir + "redo.png","redo");
-	t->enable(true);
-	t->configure(false,true);
-	t = ed->toolbar[hui::TOOLBAR_LEFT];
+	ed->toolbar[hui::TOOLBAR_TOP]->setByID("font-toolbar");
+	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
 
