@@ -47,35 +47,9 @@ ModeModel::~ModeModel()
 
 void ModeModel::onStart()
 {
-	string dir = app->directory_static + "icons/toolbar/";
-	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
-	t->reset();
-	t->addItem(L("", "new"),dir + "new.png","new");
-	t->addItem(L("", "open"),dir + "open.png","open");
-	t->addItem(L("", "save"),dir + "save.png","save");
-	t->addSeparator();
-	t->addItem(L("", "undo"),dir + "undo.png","undo");
-	t->addItem(L("", "redo"),dir + "redo.png","redo");
-	t->addSeparator();
-	t->addItem(_("Push"),dir + "view_push.png","view_push");
-	ed->setTooltip("view_push", _("ViewStage Push"));
-	t->addItem(_("Pop"),dir + "view_pop.png","view_pop");
-	ed->setTooltip("view_pop", _("ViewStage Pop"));
-	t->addSeparator();
-	t->addItemCheckable(_("Vertices"),dir + "model_vertex.svg","mode_model_vertex");
-	t->addItemCheckable(_("Kanten"),dir + "model_edge.svg","mode_model_edge");
-	t->addItemCheckable(_("Polygone"),dir + "model_polygon.svg","mode_model_polygon");
-	t->addItemCheckable(_("Oberfl&achen"),dir + "model_surface.svg","mode_model_surface");
-	t->addSeparator();
-	t->addItemCheckable(_("Textur-Koordinaten"),dir + "model_skin.svg","mode_model_texture_coord");
-	t->addSeparator();
-	t->addItemCheckable(_("Mesh"), dir + "model_mesh.svg", "mode_model_mesh");
-	t->addItemCheckable(_("Skelett"), dir + "mode_skeletton.png", "mode_model_skeleton");
-	t->addItemCheckable(_("Animation"), dir + "mode_move.png", "mode_model_animation");
-	t->addItem(_("Eigenschaften"), dir + "configure.png", "mode_properties");
-	t->enable(true);
-	t->configure(false,true);
-	t = ed->toolbar[hui::TOOLBAR_LEFT];
+	ed->toolbar[hui::TOOLBAR_TOP]->setByID("model_toolbar");
+	ed->toolbar[hui::TOOLBAR_TOP]->configure(false, true);
+	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
 }

@@ -321,7 +321,7 @@ void Panel::_addControl(const string &ns, Resource &cmd, const string &parent_id
 	if (cmd.image().num > 0)
 		setImage(cmd.id, cmd.image());
 
-	string tooltip = GetLanguageT(ns, cmd.id);
+	string tooltip = GetLanguageT(ns, cmd.id, cmd.tooltip);
 	if (tooltip.num > 0)
 		setTooltip(cmd.id, tooltip);
 
@@ -409,7 +409,7 @@ void Panel::_embedResource(const string &ns, Resource &c, const string &parent_i
 	if (c.image().num > 0)
 		setImage(c.id, c.image());
 
-	string tooltip = GetLanguageT(ns, c.id);
+	string tooltip = GetLanguageT(ns, c.id, c.tooltip);
 	if (tooltip.num > 0)
 		setTooltip(c.id, tooltip);
 

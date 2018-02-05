@@ -9,6 +9,13 @@
 	we are re screwed.... TODO: test for _X_USE_HUI_
 #endif
 
+
+namespace hui{
+#ifdef _X_USE_HUI_
+	Menu *CreateMenuFromSource(const string &source);
+#endif
+}
+
 namespace Kaba{
 
 #ifdef _X_USE_HUI_
@@ -48,6 +55,10 @@ void SIAddPackageHui()
 	TypeHuiMenu		= add_type  ("Menu",  sizeof(hui::Menu));
 	Class*
 	TypeHuiMenuP	= add_type_p("Menu*", TypeHuiMenu);
+	Class*
+	TypeHuiToolbar	= add_type  ("Toolbar",  sizeof(hui::Toolbar));
+	Class*
+	TypeHuiToolbarP	= add_type_p("Toolbar*", TypeHuiToolbar);
 	Class*
 	TypeHuiPanel	= add_type  ("Panel", sizeof(hui::Panel));
 	Class*
@@ -95,6 +106,12 @@ void SIAddPackageHui()
 			func_add_param("name",		TypeString);
 			func_add_param("id",		TypeInt);
 			func_add_param("sub_menu",	TypeHuiMenuP);
+
+		add_class(TypeHuiToolbar);
+			class_add_func("setByID", TypeVoid, mf(&hui::Toolbar::setByID));
+				func_add_param("id", TypeString);
+			class_add_func("fromSource", TypeVoid, mf(&hui::Toolbar::fromSource));
+				func_add_param("source", TypeString);
 
 		add_class(TypeHuiPanel);
 			class_add_func(IDENTIFIER_FUNC_INIT,		TypeVoid,		mf(&hui::Panel::__init__));
@@ -312,6 +329,8 @@ void SIAddPackageHui()
 
 		class_add_func("setMenu",			TypeVoid,		mf(&hui::Window::setMenu));
 			func_add_param("menu",		TypeHuiMenuP);
+		class_add_func("toolbar", TypeHuiToolbarP, mf(&hui::Window::getToolbar));
+			func_add_param("index", TypeInt);
 		class_add_func("setMaximized",		TypeVoid,		mf(&hui::Window::setMaximized));
 			func_add_param("max",		TypeBool);
 		class_add_func("isMaximized",		TypeBool,		mf(&hui::Window::isMaximized));
@@ -508,6 +527,8 @@ void SIAddPackageHui()
 		func_add_param("root",		TypeHuiWindowP);
 		func_add_param("title",		TypeString);
 		func_add_param("text",		TypeString);
+	add_func("HuiCreateMenuFromSource", TypeHuiMenuP, (void*)&hui::CreateMenuFromSource);
+		func_add_param("source", TypeString);
 
 	// clipboard
 	add_func("HuiCopyToClipboard",	TypeVoid,			(void*)&hui::Clipboard::Copy);

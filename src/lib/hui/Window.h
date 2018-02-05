@@ -148,6 +148,7 @@ public:
 	Control *main_input_control;
 
 	Toolbar *toolbar[4];
+	Toolbar *_cdecl getToolbar(int index){ return toolbar[index]; }
 
 private:
 

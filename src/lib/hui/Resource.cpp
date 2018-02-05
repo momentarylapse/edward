@@ -201,20 +201,20 @@ Menu *_create_res_menu_(const string &ns, Resource *res)
 		//msg_db_out(2,i2s(j));
 		if (c.type == "Item"){
 			if (sa_contains(c.options, "checkable"))
-				menu->addItemCheckable(get_lang(ns, c.id, "", true), c.id);
+				menu->addItemCheckable(get_lang(ns, c.id, c.title, true), c.id);
 			else if (c.image().num > 0)
-				menu->addItemImage(get_lang(ns, c.id, "", true), c.image(), c.id);
+				menu->addItemImage(get_lang(ns, c.id, c.title, true), c.image(), c.id);
 			else
-				menu->addItem(get_lang(ns, c.id, "", true), c.id);
+				menu->addItem(get_lang(ns, c.id, c.title, true), c.id);
 		}else if (c.type == "ItemImage"){
-			menu->addItemImage(get_lang(ns, c.id, "", true), c.image(), c.id);
+			menu->addItemImage(get_lang(ns, c.id, c.title, true), c.image(), c.id);
 		}else if (c.type == "ItemCheckable"){
-			menu->addItemCheckable(get_lang(ns, c.id, "", true), c.id);
+			menu->addItemCheckable(get_lang(ns, c.id, c.title, true), c.id);
 		}else if ((c.type == "ItemSeparator") or (c.type == "Separator")){
 			menu->addSeparator();
 		}else if ((c.type == "ItemPopup") or (c.type == "Menu")){
 			Menu *sub = _create_res_menu_(ns, &c);
-			menu->addSubMenu(get_lang(ns, c.id, "", true), c.id, sub);
+			menu->addSubMenu(get_lang(ns, c.id, c.title, true), c.id, sub);
 		}
 		if (menu->items.num > 0)
 			menu->items.back()->enable(c.enabled());
@@ -230,8 +230,14 @@ Menu *CreateResourceMenu(const string &id)
 		return NULL;
 	}
 
-	Menu *m = _create_res_menu_(id, res);
-	return m;
+	return _create_res_menu_(id, res);
+}
+
+Menu *CreateMenuFromSource(const string &source)
+{
+	Resource res = ParseResource(source);
+
+	return _create_res_menu_(res.id, &res);
 }
 
 

@@ -130,7 +130,7 @@ void ModeModelSkeleton::onUpdateMenu()
 
 void ModeModelSkeleton::onStart()
 {
-	string dir = app->directory_static + "icons/toolbar/";
+	string dir = "icons/toolbar/";
 	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->addItemCheckable(_("neuer Knochen"),dir + "new_vertex.png", "skeleton_new_point");

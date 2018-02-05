@@ -56,7 +56,7 @@ void ModeWorldCamera::onStart()
 	dialog = new CameraDialog(this);
 	ed->embed(dialog, "root-table", 0, 1);
 
-	string dir = app->directory_static + "icons/toolbar/";
+	string dir = "icons/toolbar/";
 	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
 	t->reset();
 	t->addItem(L("", "new"),dir + "new.png","cam_new");

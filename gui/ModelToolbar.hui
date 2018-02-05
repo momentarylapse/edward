@@ -1,0 +1,21 @@
+Toolbar model_toolbar ""
+	Item /new "Neu" image=icons/toolbar/new.png
+	Item /open "&Offnen..." image=icons/toolbar/open.png
+	Item /save "Speichern..." image=icons/toolbar/save.png
+	Separator
+	Item /undo "R&uckg&angig" image=icons/toolbar/undo.png
+	Item /redo "Wiederherstellen" image=icons/toolbar/redo.png
+	Separator
+	Item view_push "Push" image=icons/toolbar/view_push.png "tooltip=Viewstage Push"
+	Item view_pop "Pop" image=icons/toolbar/view_pop.png "tooltip=Viewstage Pop"
+	Separator
+	Item mode_model_mesh "Mesh" checkable image=icons/toolbar/model_mesh.svg
+	Item mode_model_texture_coord "Textur-Koordinaten" checkable image=icons/toolbar/model_skin.svg
+	Item mode_model_skeletton "Skelett" checkable image=icons/toolbar/mode_skeletton.png
+	Item mode_model_animation "Animationen" checkable image=icons/toolbar/mode_move.png
+	Item mode_properties "Eigenschaften" checkable image=icons/toolbar/configure.png
+	Separator
+	Item mode_model_vertex "Vertex Punkte" checkable image=icons/toolbar/model_vertex.svg
+	Item mode_model_edge "Kanten" checkable image=icons/toolbar/model_edge.svg
+	Item mode_model_polygon "Polygone" checkable image=icons/toolbar/model_polygon.svg
+	Item mode_model_surface "Oberfl&achen" checkable image=icons/toolbar/model_surface.svg

@@ -84,26 +84,8 @@ ModeModelMesh::~ModeModelMesh()
 
 void ModeModelMesh::onStart()
 {
-	string dir = app->directory_static + "icons/toolbar/";
-	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
-	t->reset();
-	t->addItemCheckable(_("Polygon"),dir + "new_triangle.png", "new_tria");
-	t->addItemCheckable(_("Ebene"),dir + "new_plane.png", "new_plane");
-	t->addItemCheckable(_("Quader"),dir + "mode_skin.png", "new_cube");
-	t->addItemCheckable(_("Kugel"), dir + "new_ball.png", "new_ball");
-	t->addItemCheckable(_("Zylinder"), dir + "new_cylinder.png", "new_cylinder");
-	t->addSeparator();
-	t->addItemCheckable(_("Materialien"), dir + "mode_textures.png", "mode_model_materials");
-	t->addSeparator();
-	t->addItemCheckable(_("Selektieren"), dir + "rf_select.png", "select");
-	t->addItemCheckable(_("Verschieben"), dir + "rf_translate.png", "translate");
-	t->addItemCheckable(_("Rotieren"), dir + "rf_rotate.png", "rotate");
-	t->addItemCheckable(_("Skalieren"), dir + "rf_scale.png", "scale");
-	t->addItemCheckable(_("Spiegeln"),dir + "rf_mirror.png", "mirror");
-	t->addItemCheckable(_("paranoider Modus"), "hui:no", "lock_action");
-	t->enable(true);
-	t->configure(false,true);
-
+	ed->toolbar[hui::TOOLBAR_LEFT]->setByID("model_mesh_toolbar");
+	ed->toolbar[hui::TOOLBAR_LEFT]->configure(false, true);
 
 	//subscribe(data);
 

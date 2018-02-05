@@ -31,7 +31,7 @@ ModeModelAnimationSkeleton::~ModeModelAnimationSkeleton()
 
 void ModeModelAnimationSkeleton::onStart()
 {
-	string dir = app->directory_static + "icons/toolbar/";
+	string dir = "icons/toolbar/";
 	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->addSeparator();
