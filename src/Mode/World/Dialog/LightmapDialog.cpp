@@ -124,10 +124,10 @@ void ShowHistogram(Lightmap::Histogram &h, hui::Window *root)
 {
 	hist_p = &h;
 	hui::Window *dlg = new hui::Dialog("Histogram", 400, 300, root, false);
-	dlg->addGrid("", 0, 0, 1, 2, "table");
-	dlg->setTarget("table", 0);
-	dlg->addDrawingArea("", 0, 0, 0, 0, "area");
-	dlg->addButton(_("Schlie&sen"), 0, 1, 0, 0, "close");
+	dlg->addGrid("", 0, 0, "table");
+	dlg->setTarget("table");
+	dlg->addDrawingArea("", 0, 0, "area");
+	dlg->addButton(_("Schlie&sen"), 0, 1, "close");
 	dlg->setImage("close", "hui:close");
 	dlg->eventXP("area", "hui:draw", std::bind(&OnHistDraw, std::placeholders::_1));
 	dlg->event("hui:close", &OnHistClose);
@@ -145,7 +145,7 @@ void LightmapDialog::OnPreview()
 		lm = new LightmapPhotonMapImageSpace(lmd, getInt("photons"));
 	}else if (type == 3){
 		lm = new LightmapPhotonMap(lmd, getInt("photons"));
-	}else if ((type == 1) || (type == 2)){
+	}else if ((type == 1) or (type == 2)){
 		lm = new LightmapRadiosity(lmd);
 	}else{
 		lm = new LightmapRayTracing(lmd);

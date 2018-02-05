@@ -62,14 +62,20 @@ void ModeModelMeshBrush::onStart()
 	multi_view->setAllowSelect(false);
 
 	// Dialog
-	dialog = new hui::FixedDialog(_("Pinsel"), 300, 155, ed, true);//HuiCreateResourceDialog("new_ball_dialog", ed);
-	dialog->addLabel(_("Dicke"), 5, 5, 80, 25, "");
-	dialog->addLabel(_("Tiefe"), 5, 35, 80, 25, "");
-	dialog->addSlider("", 90, 5, 115, 25, "diameter_slider");
-	dialog->addSlider("", 90, 35, 115, 25, "depth_slider");
-	dialog->addEdit("", 215, 5, 80, 25, "diameter");
-	dialog->addEdit("", 215, 35, 80, 25, "depth");
-	dialog->addListView("!nobar\\type", 5, 65, 290, 80, "brush_type");
+	dialog = new hui::Dialog(_("Pinsel"), 300, 155, ed, true);//HuiCreateResourceDialog("new_ball_dialog", ed);
+	dialog->addGrid("", 0, 0, "grid");
+
+	dialog->setTarget("grid");
+	dialog->addGrid("", 0, 0, "grid1");
+	dialog->addListView("!nobar\\type", 0, 1, "brush_type");
+
+	dialog->setTarget("grid1");
+	dialog->addLabel(_("Dicke"), 0, 0, "");
+	dialog->addLabel(_("Tiefe"), 0, 1, "");
+	dialog->addSlider("", 1, 0, "diameter_slider");
+	dialog->addSlider("", 1, 1, "depth_slider");
+	dialog->addEdit("", 2, 0, "diameter");
+	dialog->addEdit("", 2, 1, "depth");
 
 	dialog->event("diameter_slider", std::bind(&ModeModelMeshBrush::onDiameterSlider, this));
 	dialog->event("depth_slider", std::bind(&ModeModelMeshBrush::onDepthSlider, this));

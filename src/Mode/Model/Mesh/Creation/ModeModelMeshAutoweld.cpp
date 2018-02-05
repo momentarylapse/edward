@@ -27,19 +27,19 @@ void ModeModelMeshAutoweld::onStart()
 	radius = radius_default;
 
 	dialog = new hui::Dialog("Autoweld", 240, 60, ed, true);
-	dialog->addGrid("", 0, 0, 1, 2, "table0");
-	dialog->setTarget("table0", 0);
-	dialog->addGrid("", 0, 0, 3, 2, "table1");
-	dialog->addGrid("!buttonbar", 0, 1, 2, 1, "table2");
-	dialog->setTarget("table1", 0);
-	dialog->addLabel("Radius", 0, 0, 0, 0, "");
-	dialog->addSlider("!expandx", 1, 0, 0, 0, "slider");
-	dialog->addLabel("", 2, 0, 0, 0, "radius");
-	dialog->addLabel("Verbindungen", 0, 1, 0, 0, "");
-	dialog->addLabel("", 1, 1, 0, 0, "num_connections");
-	dialog->setTarget("table2", 0);
-	dialog->addButton("Abbrechen", 0, 0, 0, 0, "cancel");
-	dialog->addButton("Ok", 1, 0, 0, 0, "ok");
+	dialog->addGrid("", 0, 0, "table0");
+	dialog->setTarget("table0");
+	dialog->addGrid("", 0, 0, "table1");
+	dialog->addGrid("!buttonbar", 0, 1, "table2");
+	dialog->setTarget("table1");
+	dialog->addLabel("Radius", 0, 0, "");
+	dialog->addSlider("!expandx", 1, 0, "slider");
+	dialog->addLabel("", 2, 0, "radius");
+	dialog->addLabel("Verbindungen", 0, 1, "");
+	dialog->addLabel("", 1, 1, "num_connections");
+	dialog->setTarget("table2");
+	dialog->addButton("Abbrechen", 0, 0, "cancel");
+	dialog->addButton("Ok", 1, 0, "ok");
 	dialog->show();
 
 	dialog->setFloat("slider", 0.5f);

@@ -246,14 +246,12 @@ Edward::Edward(Array<string> arg) :
 	Observer("Edward"),
 	hui::Window(AppName, -1, -1, 800, 600)
 {
-	msg_db_f("Init", 1);
-	
 	setBorderWidth(0);
-	addGrid("", 0, 0, 1, 2, "vgrid");
-	setTarget("vgrid", 0);
-	addGrid("", 0, 0, 2, 1, "root-table");
-	setTarget("root-table", 0);
-	addDrawingArea("!grabfocus,opengl", 0, 0, 0, 0, "nix-area");
+	addGrid("", 0, 0, "vgrid");
+	setTarget("vgrid");
+	addGrid("", 0, 0, "root-table");
+	setTarget("root-table");
+	addDrawingArea("!grabfocus,opengl", 0, 0, "nix-area");
 	setBorderWidth(5);
 	show();
 
