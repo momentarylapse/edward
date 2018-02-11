@@ -157,16 +157,14 @@ Window *CreateResourceDialog(const string &id, Window *root)
 	}
 	
 
-	if (res->type != "Dialog"){
-		msg_error("resource type should be Dialog, but is " + res->type);
+	if ((res->type != "Dialog") and (res->type != "Window")){
+		msg_error("resource type should be Dialog or Window, but is " + res->type);
 		return NULL;
 	}
 
-	string menu_id, toolbar_id;
-	bool allow_parent = false;
-	menu_id = res->value("menu");
-	toolbar_id = res->value("toolbar");
-	allow_parent = res->has("allow-root") or res->has("allow-parent");
+	string menu_id = res->value("menu");
+	string toolbar_id = res->value("toolbar");
+	bool allow_parent = res->has("allow-root") or res->has("allow-parent");
 
 	// dialog
 	int width = res->value("width", "300")._int();
@@ -196,9 +194,7 @@ Menu *_create_res_menu_(const string &ns, Resource *res)
 {
 	Menu *menu = new Menu();
 
-	//msg_db_out(2,i2s(n));
 	for (Resource &c: res->children){
-		//msg_db_out(2,i2s(j));
 		if (c.type == "Item"){
 			if (sa_contains(c.options, "checkable"))
 				menu->addItemCheckable(get_lang(ns, c.id, c.title, true), c.id);
@@ -206,13 +202,9 @@ Menu *_create_res_menu_(const string &ns, Resource *res)
 				menu->addItemImage(get_lang(ns, c.id, c.title, true), c.image(), c.id);
 			else
 				menu->addItem(get_lang(ns, c.id, c.title, true), c.id);
-		}else if (c.type == "ItemImage"){
-			menu->addItemImage(get_lang(ns, c.id, c.title, true), c.image(), c.id);
-		}else if (c.type == "ItemCheckable"){
-			menu->addItemCheckable(get_lang(ns, c.id, c.title, true), c.id);
-		}else if ((c.type == "ItemSeparator") or (c.type == "Separator")){
+		}else if (c.type == "Separator"){
 			menu->addSeparator();
-		}else if ((c.type == "ItemPopup") or (c.type == "Menu")){
+		}else if (c.type == "Menu"){
 			Menu *sub = _create_res_menu_(ns, &c);
 			menu->addSubMenu(get_lang(ns, c.id, c.title, true), c.id, sub);
 		}

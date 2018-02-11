@@ -1,2 +1,2 @@
-Dialog welcome_dialog "Edward hei&st Sie willkommen." width=640 height=360
+Dialog welcome_dialog "Edward heißt Sie willkommen." width=640 height=360
 	ListView welcome_list "" icons

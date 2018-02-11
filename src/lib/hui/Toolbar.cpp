@@ -85,12 +85,9 @@ void Toolbar::fromResource(Resource *res)
 			else
 				addItem(title, cmd.image(), cmd.id);
 			item.back()->setTooltip(tooltip);
-		}else if (cmd.type == "ItemCheckable"){
-			addItemCheckable(title, cmd.image(), cmd.id);
-			item.back()->setTooltip(GetLanguageT(id, cmd.id, cmd.tooltip));
-		}else if ((cmd.type == "ItemSeparator") or (cmd.type == "Separator")){
+		}else if (cmd.type == "Separator"){
 			addSeparator();
-		}else if (cmd.type == "ItemPopup"){
+		}else if (cmd.type == "Menu"){
 			bool ok = false;
 			for (string &o: cmd.options)
 				if (o.find("menu=") == 0){

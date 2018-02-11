@@ -20,7 +20,6 @@ Panel::Panel()
 	win = NULL;
 	parent = NULL;
 	border_width = 5;
-	expander_indent = 20;
 	id = "";
 	num_float_decimals = 3;
 	root_control = NULL;
@@ -76,11 +75,6 @@ void Panel::_ClearPanel_()
 void Panel::setBorderWidth(int width)
 {
 	border_width = width;
-}
-
-void Panel::setIndent(int indent)
-{
-	expander_indent = indent;
 }
 
 void Panel::setDecimals(int decimals)
@@ -316,10 +310,16 @@ void Panel::_addControl(const string &ns, Resource &cmd, const string &parent_id
 				cmd.x, cmd.y,
 				cmd.id);
 
+	for (string &o: cmd.options)
+		setOptions(cmd.id, o);
+
 	enable(cmd.id, cmd.enabled());
+	if (cmd.has("hidden"))
+		hideControl(cmd.id, true);
 
 	if (cmd.image().num > 0)
 		setImage(cmd.id, cmd.image());
+
 
 	string tooltip = GetLanguageT(ns, cmd.id, cmd.tooltip);
 	if (tooltip.num > 0)
@@ -332,59 +332,58 @@ void Panel::_addControl(const string &ns, Resource &cmd, const string &parent_id
 void Panel::fromResource(const string &id)
 {
 	Resource *res = GetResource(id);
+	if (res)
+		setFromResource(res);
+}
+
+void Panel::setFromResource(Resource *res)
+{
 	if (!res)
 		return;
 
-	// title
-	if (win)
+	bool res_is_window = ((res->type == "Dialog") or (res->type == "Window"));
+	bool panel_is_window = win and !parent;
+
+	// directly change window?
+	if (panel_is_window and res_is_window){
+		// title
 		win->setTitle(GetLanguage(id, res->id));
 
-	// size
-	if (win){
+		// size
 		int width = res->value("width", "0")._int();
 		int height = res->value("height", "0")._int();
 		if (width + height > 0)
 			win->setSize(width, height);
+
+		// menu/toolbar?
+		string toolbar = res->value("toolbar");
+		string menu = res->value("menu");
+		if (menu != "")
+			win->setMenu(CreateResourceMenu(menu));
+		if (toolbar != "")
+			win->toolbar[TOOLBAR_TOP]->setByID(toolbar);
 	}
 
-	this->id = id;
+	id = res->id;
 
+	int bw = res->value("borderwidth", "-1")._int();
+	if (bw >= 0)
+		setBorderWidth(bw);
 
-	// menu/toolbar?
-	if (win){
-		for (string &o: res->options){
-			if (o.find("menu=") == 0)
-				win->setMenu(CreateResourceMenu(o.substr(5, -1)));
-			if (o.find("toolbar=") == 0)
-				win->toolbar[TOOLBAR_TOP]->setByID(o.substr(8, -1));
-		}
-	}
 
 	// controls
-	for (Resource &cmd: res->children)
-		_addControl(id, cmd, "");
-
-	msg_db_m("  \\(^_^)/",1);
+	if (res_is_window){
+		for (Resource &cmd: res->children)
+			_addControl(id, cmd, "");
+	}else{
+		embedResource(*res, "", 0, 0);
+	}
 }
 
 void Panel::fromSource(const string &buffer)
 {
 	Resource res = ParseResource(buffer);
-	if (res.type == "Dialog"){
-		if (win){
-			int width = res.value("width", "0")._int();
-			int height = res.value("height", "0")._int();
-			if (width + height > 0)
-				win->setSize(width, height);
-			win->setTitle(res.title);
-		}
-
-		if (res.children.num > 0)
-			embedResource(res.children[0], "", 0, 0);
-	}else{
-		embedResource(res, "", 0, 0);
-	}
-
+	setFromResource(&res);
 }
 
 

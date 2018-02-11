@@ -1,9 +1,9 @@
 Toolbar model-toolbar ""
 	Item /new "Neu" image=icons/toolbar/new.png
-	Item /open "&Offnen..." image=icons/toolbar/open.png
+	Item /open "Öffnen..." image=icons/toolbar/open.png
 	Item /save "Speichern..." image=icons/toolbar/save.png
 	Separator
-	Item /undo "R&uckg&angig" image=icons/toolbar/undo.png
+	Item /undo "Rückgängig" image=icons/toolbar/undo.png
 	Item /redo "Wiederherstellen" image=icons/toolbar/redo.png
 	Separator
 	Item view_push "Push" image=icons/toolbar/view_push.png "tooltip=Viewstage Push"
@@ -18,4 +18,4 @@ Toolbar model-toolbar ""
 	Item mode_model_vertex "Vertex Punkte" checkable image=icons/toolbar/model_vertex.svg
 	Item mode_model_edge "Kanten" checkable image=icons/toolbar/model_edge.svg
 	Item mode_model_polygon "Polygone" checkable image=icons/toolbar/model_polygon.svg
-	Item mode_model_surface "Oberfl&achen" checkable image=icons/toolbar/model_surface.svg
+	Item mode_model_surface "Oberflächen" checkable image=icons/toolbar/model_surface.svg

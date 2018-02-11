@@ -1,4 +1,4 @@
-Dialog material_sound_dialog "Ger&ausche" width=595 height=345
+Dialog material_sound_dialog "Geräusche" width=595 height=345
 	Grid ? ""
 		ListView sound_list "Sound-Datei\\Material\\v min\\v max" expandx
 		---|

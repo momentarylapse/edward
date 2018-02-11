@@ -317,8 +317,6 @@ void SIAddPackageHui()
 		TypeHuiWindow->vtable = TypeHuiPanel->vtable;
 		class_add_func(IDENTIFIER_FUNC_INIT,		TypeVoid,		mf(&hui::Window::__init_ext__), FLAG_OVERRIDE);
 			func_add_param("title",		TypeString);
-			func_add_param("x",		TypeInt);
-			func_add_param("y",		TypeInt);
 			func_add_param("width",		TypeInt);
 			func_add_param("height",		TypeInt);
 		class_add_func_virtual(IDENTIFIER_FUNC_DELETE,		TypeVoid,		mf(&hui::Window::__delete__), FLAG_OVERRIDE);
@@ -381,8 +379,6 @@ void SIAddPackageHui()
 		TypeHuiNixWindow->vtable = TypeHuiWindow->vtable;
 		class_add_func(IDENTIFIER_FUNC_INIT,		TypeVoid,		mf(&hui::NixWindow::__init_ext__), FLAG_OVERRIDE);
 			func_add_param("title",		TypeString);
-			func_add_param("x",		TypeInt);
-			func_add_param("y",		TypeInt);
 			func_add_param("width",		TypeInt);
 			func_add_param("height",		TypeInt);
 		class_add_func_virtual(IDENTIFIER_FUNC_DELETE,		TypeVoid,		mf(&hui::Window::__delete__), FLAG_OVERRIDE);
@@ -395,8 +391,8 @@ void SIAddPackageHui()
 			func_add_param("title",		TypeString);
 			func_add_param("width",		TypeInt);
 			func_add_param("height",		TypeInt);
-			func_add_param("root",		TypeHuiWindowP);
-			func_add_param("allow_root",TypeBool);
+			func_add_param("parent",		TypeHuiWindowP);
+			func_add_param("allow_parent",TypeBool);
 		class_add_func_virtual(IDENTIFIER_FUNC_DELETE,		TypeVoid,		mf(&hui::Window::__delete__), FLAG_OVERRIDE);
 		class_set_vtable(hui::Window);
 	
