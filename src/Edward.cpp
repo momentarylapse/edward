@@ -244,7 +244,7 @@ void Edward::idleFunction()
 
 Edward::Edward(Array<string> arg) :
 	Observer("Edward"),
-	hui::Window(AppName, -1, -1, 800, 600)
+	hui::Window(AppName, 800, 600)
 {
 	setBorderWidth(0);
 	addGrid("", 0, 0, "vgrid");

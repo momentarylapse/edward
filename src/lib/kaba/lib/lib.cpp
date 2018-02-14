@@ -10,7 +10,7 @@
 #include <string.h>
 
 #ifdef WIN32
-	#include "windows.h"
+	#include <windows.h>
 #endif
 #include "../kaba.h"
 #include "common.h"
