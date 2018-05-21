@@ -51,7 +51,7 @@ void DataAdministration::MetaFraesDir(int kind)
 	if (kind==FD_MODEL)		extension = ".model";
 	if (kind==FD_MATERIAL)	extension = ".material";
 	if (kind==FD_FONT)		extension = ".xfont";
-	if (kind==FD_SHADERFILE)	extension = ".glsl";
+	if (kind==FD_SHADERFILE)	extension = ".shader";
 	if (kind==FD_SCRIPT)		extension = ".kaba";
 	if (kind==FD_CAMERAFLIGHT)extension = ".camera";
 	if (kind==FD_TEXTURE)	extension = "";

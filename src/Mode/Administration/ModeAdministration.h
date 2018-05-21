@@ -17,14 +17,19 @@ public:
 	ModeAdministration();
 	virtual ~ModeAdministration();
 
-	virtual void onStart();
-	virtual void onEnd();
+	void _new() override;
+	bool open() override;
 
-	virtual void onCommand(const string &id);
-	virtual void onUpdate(Observable *o, const string &message);
+	void onStart() override;
+	void onEnd() override;
+
+	void onCommand(const string &id) override;
+	void onUpdate(Observable *o, const string &message) override;
 
 	void BasicSettings();
 	void ExportGame();
+
+	void create_project_dir(const string &dir);
 
 	AdministrationDialog *dialog;
 };

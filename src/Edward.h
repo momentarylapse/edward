@@ -113,7 +113,7 @@ public:
 
 	void onExecutePlugin();
 
-	void setRootDirectory(const string &directory);
+	void setRootDirectory(const string &directory, bool compact_mode = false);
 	void updateDialogDir(int kind);
 	void makeDirs(const string &original_dir, bool as_root_dir = false);
 	string getRootDir(int kind);
@@ -137,7 +137,6 @@ public:
 	Array<ModeBase*> mode_queue;
 
 	string root_dir;
-	bool root_dir_correct;
 
 	string dialog_dir[NUM_FDS], root_dir_kind[NUM_FDS];
 	string dialog_file, dialog_file_complete, dialog_file_no_ending;

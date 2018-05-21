@@ -1,4 +1,4 @@
-Menu menu_model "" disabled
+Menu menu_model "Modell" disabled
 	Menu menu_model_file "Datei"
 		Item new "Neu" image=hui:new
 		Item open "Öffnen..." image=hui:open
@@ -17,9 +17,6 @@ Menu menu_model "" disabled
 		Separator "" ""
 		Item execute_plugin "Plugin ausführen..."
 		Separator "" ""
-		Menu menu_model "Modell"
-			Item model_new "Neu" image=hui:new
-			Item model_open "Öffnen..." image=hui:open
 		Menu menu_font "Font"
 			Item font_new "Neu" image=hui:new
 			Item font_open "Öffnen..." image=hui:open
@@ -29,7 +26,10 @@ Menu menu_model "" disabled
 		Menu menu_world "Welt"
 			Item world_new "Neu" image=hui:new
 			Item world_open "Öffnen..." image=hui:open
-		Item administrate "Verwalten" image=hui:preferences
+		Menu menu_project "Projekt"
+			Item project_new "Neu..." image=hui:new
+			Item project_open "Öffnen..." image=hui:open
+			Item administrate "Verwalten" image=hui:preferences
 		Item settings "Einstellungen..." image=hui:preferences
 		Separator "" ""
 		Item exit "Beenden" image=hui:quit

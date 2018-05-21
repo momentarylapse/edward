@@ -937,7 +937,7 @@ menu_file
 
 0
 0
-15
+14
 Item
 new
 image=hui:new
@@ -999,27 +999,9 @@ image=hui:open
 0
 0
 Menu
-menu_font
-
-8
-0
-2
-Item
-font_new
-image=hui:new
-0
-0
-0
-Item
-font_open
-image=hui:open
-1
-0
-0
-Menu
 menu_material
 
-9
+8
 0
 2
 Item
@@ -1037,7 +1019,7 @@ image=hui:open
 Menu
 menu_world
 
-10
+9
 0
 2
 Item
@@ -1052,28 +1034,46 @@ image=hui:open
 1
 0
 0
+Menu
+menu_project
+
+10
+0
+3
+Item
+project_new
+image=hui:new
+0
+0
+0
+Item
+project_open
+image=hui:open
+1
+0
+0
 Item
 administrate
 image=hui:preferences
-11
+2
 0
 0
 Item
 settings
 image=hui:preferences
-12
+11
 0
 0
 Separator
 
 
-13
+12
 0
 0
 Item
 exit
 image=hui:quit
-14
+13
 0
 0
 Item
@@ -1927,7 +1927,7 @@ menu_file
 
 0
 0
-15
+14
 Item
 new
 image=hui:new
@@ -2007,27 +2007,9 @@ image=hui:open
 0
 0
 Menu
-menu_material
-
-9
-0
-2
-Item
-material_new
-image=hui:new
-0
-0
-0
-Item
-material_open
-image=hui:open
-1
-0
-0
-Menu
 menu_world
 
-10
+9
 0
 2
 Item
@@ -2042,28 +2024,46 @@ image=hui:open
 1
 0
 0
+Menu
+menu_project
+
+10
+0
+3
+Item
+project_new
+image=hui:new
+0
+0
+0
+Item
+project_open
+image=hui:open
+1
+0
+0
 Item
 administrate
 image=hui:preferences
-11
+2
 0
 0
 Item
 settings
 image=hui:preferences
-12
+11
 0
 0
 Separator
 
 
-13
+12
 0
 0
 Item
 exit
 image=hui:quit
-14
+13
 0
 0
 Menu
@@ -3337,7 +3337,7 @@ menu_model_file
 
 0
 0
-18
+17
 Item
 new
 image=hui:new
@@ -3441,27 +3441,9 @@ Separator
 0
 0
 Menu
-menu_model
-
-10
-0
-2
-Item
-model_new
-image=hui:new
-0
-0
-0
-Item
-model_open
-image=hui:open
-1
-0
-0
-Menu
 menu_font
 
-11
+10
 0
 2
 Item
@@ -3479,7 +3461,7 @@ image=hui:open
 Menu
 menu_material
 
-12
+11
 0
 2
 Item
@@ -3497,7 +3479,7 @@ image=hui:open
 Menu
 menu_world
 
-13
+12
 0
 2
 Item
@@ -3512,28 +3494,46 @@ image=hui:open
 1
 0
 0
+Menu
+menu_project
+
+13
+0
+3
+Item
+project_new
+image=hui:new
+0
+0
+0
+Item
+project_open
+image=hui:open
+1
+0
+0
 Item
 administrate
 image=hui:preferences
-14
+2
 0
 0
 Item
 settings
 image=hui:preferences
-15
+14
 0
 0
 Separator
 
 
-16
+15
 0
 0
 Item
 exit
 image=hui:quit
-17
+16
 0
 0
 Menu
@@ -8019,7 +8019,7 @@ menu_world_file
 
 0
 0
-18
+17
 Item
 new
 image=hui:new
@@ -8159,19 +8159,19 @@ image=hui:open
 0
 0
 Menu
-menu_world
+menu_project
 
 13
 0
-2
+3
 Item
-world_new
+project_new
 image=hui:new
 0
 0
 0
 Item
-world_open
+project_open
 image=hui:open
 1
 0
@@ -8179,25 +8179,25 @@ image=hui:open
 Item
 administrate
 image=hui:preferences
-14
+2
 0
 0
 Item
 settings
 image=hui:preferences
-15
+14
 0
 0
 Separator
 
 
-16
+15
 0
 0
 Item
 exit
 image=hui:quit
-17
+16
 0
 0
 Menu
@@ -8929,7 +8929,7 @@ checkable,image=icons/toolbar/rf_rotate.png
 // Language
 Deutsch
 // Number Of IDs
-899
+907
 // Text
 /ambient
 Ambient
@@ -8974,7 +8974,7 @@ OK
 OK
 
 /open
-&Offnen...
+Öffnen...
 
 /percent
 %
@@ -9484,7 +9484,7 @@ material_dialog/transparency_mode:none
 Keine Transparenz
 
 material_sound_dialog/material_sound_dialog
-Ger&ausche
+Geräusche
 
 material_sound_dialog/sound_list
 Sound-Datei\\Material\\v min\\v max
@@ -9576,12 +9576,6 @@ Plugin ausführen...
 menu_font/exit
 Beenden
 
-menu_font/font_new
-Neu
-
-menu_font/font_open
-Öffnen...
-
 menu_font/help
 Hilfe...
 
@@ -9597,6 +9591,9 @@ menu_font/material_open
 menu_font/menu_file
 Datei
 
+menu_font/menu_font
+Font
+
 menu_font/menu_font_edit
 Bearbeiten
 
@@ -9608,6 +9605,9 @@ Material
 
 menu_font/menu_model
 Modell
+
+menu_font/menu_project
+Projekt
 
 menu_font/menu_world
 Welt
@@ -9622,6 +9622,12 @@ menu_font/new
 Neu
 
 menu_font/open
+Öffnen...
+
+menu_font/project_new
+Neu...
+
+menu_font/project_open
 Öffnen...
 
 menu_font/save
@@ -9672,12 +9678,6 @@ Hilfe...
 menu_material/light
 Beleuchtung
 
-menu_material/material_new
-Neu
-
-menu_material/material_open
-Öffnen...
-
 menu_material/material_shape_ball
 Kugel
 
@@ -9708,11 +9708,17 @@ Font
 menu_material/menu_help
 ?
 
+menu_material/menu_material
+Material
+
 menu_material/menu_material_shape
 Form
 
 menu_material/menu_model
 Modell
+
+menu_material/menu_project
+Projekt
 
 menu_material/menu_world
 Welt
@@ -9734,6 +9740,12 @@ menu_material/open
 
 menu_material/opt_view
 Optimal
+
+menu_material/project_new
+Neu...
+
+menu_material/project_open
+Öffnen...
 
 menu_material/save
 Speichern
@@ -9921,6 +9933,9 @@ Texture Mapping
 menu_model/menu_material
 Material
 
+menu_model/menu_model
+Modell
+
 menu_model/menu_model_appearance
 Aussehen
 
@@ -9972,6 +9987,9 @@ Ansicht
 menu_model/menu_model_viewstage
 Schicht
 
+menu_model/menu_project
+Projekt
+
 menu_model/menu_rightmouse
 Rechte Maustaste
 
@@ -10022,12 +10040,6 @@ Vertex-Punkte
 
 menu_model/mode_properties
 Eigenschaften...
-
-menu_model/model_new
-Neu
-
-menu_model/model_open
-Öffnen...
 
 menu_model/nearify
 Annähern
@@ -10097,6 +10109,12 @@ Optimal
 
 menu_model/paste
 Einfügen
+
+menu_model/project_new
+Neu...
+
+menu_model/project_open
+Öffnen...
 
 menu_model/redo
 Wiederherstellen
@@ -10788,8 +10806,14 @@ Modell
 menu_world/menu_model_viewstage
 Schicht
 
+menu_world/menu_project
+Projekt
+
 menu_world/menu_terrain_texture
 Terrain Textur
+
+menu_world/menu_world
+Welt
 
 menu_world/menu_world_creation
 Erstellen
@@ -10847,6 +10871,12 @@ Eigene Figur (ego=...)
 
 menu_world/paste
 Einfügen
+
+menu_world/project_new
+Neu...
+
+menu_world/project_open
+Öffnen...
 
 menu_world/redo
 Wiederherstellen
@@ -10940,12 +10970,6 @@ Ganzes Fenster
 
 menu_world/wire
 Drahtgitter
-
-menu_world/world_new
-Neu
-
-menu_world/world_open
-Öffnen...
 
 model-animation-skeleton-toolbar/rotate
 Rotieren
@@ -11047,7 +11071,7 @@ model-toolbar/mode_model_skeleton
 Skelett
 
 model-toolbar/mode_model_surface
-Oberfl&achen
+Oberflächen
 
 model-toolbar/mode_model_texture_coord
 Textur-Koordinaten
@@ -11437,13 +11461,13 @@ terrain_heightmap_dialog/terrain_heightmap_dialog
 Höhenkarte
 
 welcome_dialog/welcome_dialog
-Edward hei&st Sie willkommen.
+Edward heißt Sie willkommen.
 
 world-camera-toolbar/cam_new
 Neu
 
 world-camera-toolbar/cam_open
-&Offnen...
+Öffnen...
 
 world-camera-toolbar/cam_redo
 Wiederherstellen
@@ -11452,7 +11476,7 @@ world-camera-toolbar/cam_save
 Speichern...
 
 world-camera-toolbar/cam_undo
-R&uckg&angig
+Rückgängig
 
 world-camera-toolbar/view_pop
 Pop

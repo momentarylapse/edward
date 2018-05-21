@@ -701,28 +701,13 @@ void Edward::updateDialogDir(int kind)
 }
 
 
-void Edward::setRootDirectory(const string &directory)
+void Edward::setRootDirectory(const string &directory, bool compact_mode)
 {
 	string object_dir, map_dir, texture_dir, sound_dir, script_dir, material_dir, font_dir;
-	bool ufd = (root_dir.find(directory) < 0) && (directory.find(root_dir) < 0);
+	bool ufd = (root_dir.find(directory) < 0) and (directory.find(root_dir) < 0);
 	root_dir = directory;
 	root_dir.dir_ensure_ending();
-	if (root_dir_correct){
-		map_dir = root_dir + "Maps/";
-		dir_create(map_dir);
-		object_dir = root_dir + "Objects/";
-		dir_create(object_dir);
-		texture_dir = root_dir + "Textures/";
-		dir_create(texture_dir);
-		sound_dir = root_dir + "Sounds/";
-		dir_create(sound_dir);
-		script_dir = root_dir + "Scripts/";
-		dir_create(script_dir);
-		material_dir = root_dir + "Materials/";
-		dir_create(material_dir);
-		font_dir = root_dir + "Fonts/";
-		dir_create(font_dir);
-	}else{
+	if (compact_mode){
 		map_dir = root_dir;
 		object_dir = root_dir;
 		texture_dir = root_dir;
@@ -730,6 +715,14 @@ void Edward::setRootDirectory(const string &directory)
 		script_dir = root_dir;
 		material_dir = root_dir;
 		font_dir = root_dir;
+	}else{
+		map_dir = root_dir + "Maps/";
+		object_dir = root_dir + "Objects/";
+		texture_dir = root_dir + "Textures/";
+		sound_dir = root_dir + "Sounds/";
+		script_dir = root_dir + "Scripts/";
+		material_dir = root_dir + "Materials/";
+		font_dir = root_dir + "Fonts/";
 	}
 	MetaSetDirs(texture_dir, map_dir, object_dir, sound_dir, script_dir, material_dir, font_dir);
 #ifndef _X_USE_SOUND_
@@ -748,7 +741,8 @@ void Edward::makeDirs(const string &original_dir, bool as_root_dir)
 	string dir = original_dir;
 	if (dir.num > 0)
 		dir = dir.dirname();
-	bool sub_dir=false;
+	bool sub_dir = false;
+	bool root_dir_correct = false;
 	if (!as_root_dir){
 		// we are in a sub dir?
 		sub_dir=false;
@@ -764,7 +758,7 @@ void Edward::makeDirs(const string &original_dir, bool as_root_dir)
 	}else{
 		root_dir_correct = file_test_existence(dir + "game.ini");
 	}
-	setRootDirectory(dir);
+	setRootDirectory(dir, !root_dir_correct);
 }
 
 
@@ -823,6 +817,10 @@ void Edward::onCommand(const string &id)
 		mode_font->_new();
 	if (id == "font_open")
 		mode_font->open();
+	if (id == "project_new")
+		mode_administration->_new();
+	if (id == "project_open")
+		mode_administration->open();
 	if (id == "administrate")
 		setMode(mode_administration);
 	if (id == "opt_view")
