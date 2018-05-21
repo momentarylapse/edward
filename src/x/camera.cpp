@@ -41,7 +41,6 @@ void CameraInit()
 
 void CameraReset()
 {
-	msg_db_f("CameraReset",1);
 	xcon_del(cameras);
 
 	// create the main-view ("cam")
@@ -172,16 +171,19 @@ void Camera::StartScript(const string &filename,const vector &dpos)
 		return;
 	}
 	msg_write("loading camera script: " + filename);
+	msg_right();
 	cam_point_nr = -1;
 
 
-	File *f = NULL;
+	File *f = FileOpenText(ScriptDir + filename + ".camera");
 	float x,y,z;
-	try{
-		f = FileOpenText(ScriptDir + filename + ".camera");
-		int ffv = f->ReadFileFormatVersion();
-		if (ffv!=2)
-			throw Exception(format("wrong file format: %d (2 expected)", ffv));
+	if (f){
+		int ffv=f->ReadFileFormatVersion();
+		if (ffv!=2){
+			f->close();
+			delete(f);
+			msg_error(format("wrong file format: %d (2 expected)", ffv));
+		}
 		cam_point.clear();
 		f->read_comment();
 		int n = f->read_int();
@@ -238,11 +240,9 @@ void Camera::StartScript(const string &filename,const vector &dpos)
 		cam_point_nr = 0;
 		flight_time_el = flight_time = 0;
 		ExecuteCamPoint(this);
-	}catch(Exception &e){
-		delete(f);
-		msg_error(e.message());
 	}
 	vel = vel_rt = v_0;
+	msg_left();
 }
 
 void Camera::StopScript()
@@ -334,10 +334,8 @@ void ExecuteCamPoint(Camera *view)
 	view->script_ang[1] = view->script_ang[0];
 }
 
-void Camera::OnIterate()
+void Camera::OnIterate(float dt)
 {
-	msg_db_f("Cam.OnIterate",2);
-
 	// ???
 	if (auto_over >= 0)
 		auto_over ++;
@@ -405,14 +403,12 @@ void Camera::OnIterate()
 	jump_to_pos = false;
 }
 
-void CameraCalcMove()
+void CameraCalcMove(float dt)
 {
-	msg_db_f("CamCalcMove",2);
-
 	for(Camera *v: cameras){
 		if (!v->enabled)
 			continue;
-		v->OnIterate();
+		v->OnIterate(dt);
 	}
 }
 

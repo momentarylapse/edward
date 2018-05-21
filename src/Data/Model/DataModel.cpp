@@ -244,7 +244,6 @@ vector get_normal_by_index(int index)
 
 bool DataModel::load(const string & _filename, bool deep)
 {
-	msg_db_f("Model::LoadFromFile",1);
 	//if (allow_load)
 	reset();
 	bool error=false;
@@ -257,8 +256,10 @@ bool DataModel::load(const string & _filename, bool deep)
 		ed->makeDirs(filename);
 	//msg_write(dir);
 	//msg_write(filename);
-	File *f = FileOpenText(filename);
-	if (!f){
+	File *f;
+	try{
+		f = FileOpenText(filename);
+	}catch(FileError &e){
 		ed->setMessage(_("Datei ist nicht in der Stimmung, ge&offnet zu werden"));
 		return false;
 	}
@@ -1062,8 +1063,6 @@ void DataModel::getBoundingBox(vector &min, vector &max)
 
 bool DataModel::save(const string & _filename)
 {
-	msg_db_f("DataModel.Save",1);
-
 	/*if (AutoGenerateSkin[1])
 		CreateSkin(&Skin[1],&Skin[2],(float)DetailFactor[1]*0.01f);
 
@@ -1626,8 +1625,6 @@ int DataModel::get_surf_no(ModelSurface *s)
 
 ModelSurface *DataModel::surfaceJoin(ModelSurface *a, ModelSurface *b)
 {
-	msg_db_f("SurfJoin", 1);
-
 	a->testSanity("Join prae a");
 	b->testSanity("Join prae b");
 
@@ -1693,7 +1690,6 @@ int get_num_trias(DataModel *m, ModelSkin *s)
 
 void DataModel::generateDetailDists(float *dist)
 {
-	msg_db_f("GenerateDetailDists", 3);
 	float radius = getRadius();
 	dist[0] = radius * 10;
 	dist[1] = radius * 40;
@@ -1709,7 +1705,6 @@ void DataModel::generateDetailDists(float *dist)
 
 matrix3 DataModel::generateInertiaTensor(float mass)
 {
-	msg_db_f("GenerateInertiaTensor", 3);
 //	sModeModelSkin *p = &Skin[0];
 
 	// estimate size

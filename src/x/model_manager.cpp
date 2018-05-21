@@ -19,17 +19,14 @@ void ScriptingModelInit(Model *);
 void ModelManagerReset()
 {
 //	ModelManagerRunning = false;
-	msg_db_f("-ModelManagerReset",1);
 	//msg_write(format("mmr %d %d", ModelCopy.num, ModelOriginal.num));
 	Model::AllowDeleteRecursive = false;
 
 	// delete copies of models
-	msg_db_m("-copy",1);
 	while(ModelCopy.num > 0)
 		delete(ModelCopy.back());
 
 	// delete original
-	msg_db_m("-orig",1);
 	while(ModelOriginal.num > 0)
 		delete(ModelOriginal.back());
 	Model::AllowDeleteRecursive = true;
@@ -42,8 +39,6 @@ Model *LoadModelX(const string &filename, bool allow_script_init)
 {
 	if (filename.num == 0)
 		return NULL;
-
-	msg_db_f("MetaLoadModel", 2);
 
 	// already existing? -> copy
 	for (int i=0;i<ModelOriginal.num;i++)
@@ -66,7 +61,6 @@ Model *CopyModel(Model *m, bool allow_script_init)
 {
 	if (!m)
 		return NULL;
-	msg_db_f("CopyModel", 2);
 	// which original
 	if (!m->_template){
 		msg_error("CopyModel: no template!");
@@ -142,8 +136,8 @@ void UnregisterModel(Model *m)
 	msg_write(m->GetFilename());
 }
 
-void ModelManagerIterate()
+void ModelManagerIterate(float dt)
 {
 	for (int i=0;i<ModelCopy.num;i++)
-		ModelCopy[i]->OnIterate();
+		ModelCopy[i]->OnIterate(dt);
 }

@@ -89,7 +89,7 @@ public:
 	vector _cdecl Project(const vector &v);
 	vector _cdecl Unproject(const vector &v);
 
-	virtual void _cdecl OnIterate();
+	virtual void _cdecl OnIterate(float dt);
 
 	void _cdecl __init__();
 	void _cdecl __init_ext__(const vector &pos, const quaternion &ang, const rect &dest);
@@ -98,7 +98,7 @@ public:
 
 void CameraInit();
 void CameraReset();
-void CameraCalcMove();
+void CameraCalcMove(float dt);
 void CameraShiftAll(const vector &dpos);
 
 extern Array<Camera*> cameras;

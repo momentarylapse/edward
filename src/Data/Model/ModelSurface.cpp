@@ -63,8 +63,6 @@ void ModelSurface::addPolygon(Array<int> &v, int material, Array<vector> &sv, in
 	if (int_array_has_duplicates(v))
 		throw GeometryException("AddPolygon: duplicate vertices");
 
-	msg_db_f("Surf.AddTria", 1);
-
 	ModelPolygon t;
 	t.side.resize(v.num);
 	for (int k=0;k<v.num;k++){
@@ -213,7 +211,6 @@ void ModelSurface::updateClosed()
 
 void ModelSurface::removeObsoleteEdge(int index)
 {
-	msg_db_f("Surf.RemoveObsoleteEdge", 2);
 	// correct triangle references
 	for (ModelPolygon &t: polygon)
 		for (int k=0;k<t.side.num;k++)
@@ -228,8 +225,6 @@ void ModelSurface::removeObsoleteEdge(int index)
 
 void ModelSurface::mergeEdges()
 {
-	msg_db_f("Surf.MergeEdges", 1);
-
 	testSanity("MergeEdges prae");
 
 	foreachi(ModelEdge &e, edge, i){
@@ -261,7 +256,6 @@ void ModelSurface::mergeEdges()
 
 void ModelSurface::updateNormals()
 {
-	msg_db_f("Surf.UpdateNormals", 2);
 	Set<int> ee, vert;
 
 	// "flat" triangle normals

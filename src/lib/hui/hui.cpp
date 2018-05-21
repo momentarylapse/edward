@@ -41,7 +41,9 @@
 	#pragma warning(disable : 4995)
 #endif
 #ifdef OS_LINUX
+#if HAS_LIB_XLIB
 	#include <gdk/gdkx.h>
+#endif
 #endif
 
 namespace hui
@@ -113,7 +115,7 @@ int _tmain(int NumArgs, _TCHAR *Args[])
 
 #else
 
-int APIENTRY _tWinMain(HINSTANCE hInstance,
+int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      LPTSTR    lpCmdLine,
                      int       nCmdShow)
@@ -132,7 +134,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 #endif
 
 #endif
-#ifdef OS_LINUX
+#if  defined(OS_LINUX) || defined(OS_MINGW)
 
 int main(int NumArgs, char *Args[])
 {
@@ -140,6 +142,9 @@ int main(int NumArgs, char *Args[])
 }
 
 #endif
+
+
+
 
 // usage:
 //
@@ -173,7 +178,9 @@ void _MakeUsable_()
 #ifdef HUI_API_GTK
 	gtk_init(NULL, NULL);
 	#ifdef OS_LINUX
+#if HAS_LIB_XLIB
 		x_display = XOpenDisplay(0);
+#endif
 	#endif
 
 #if GTK_CHECK_VERSION(3,16,0)

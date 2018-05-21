@@ -155,7 +155,6 @@ void TestObjectSanity(const char *str)
 
 void GodInit()
 {
-	msg_db_f("GodInit",1);
 	World.gravity = v_0;
 	World.NumForceFields = 0;
 
@@ -194,18 +193,15 @@ void GodInit()
 
 void GodReset()
 {
-	msg_db_f("GodReset",1);
 	World.net_msg_enabled = false;
 	World.net_messages.clear();
 
 	// terrains
-	msg_db_m("-terrains",2);
 	for (int i=0;i<World.terrains.num;i++)
 		delete(World.terrains[i]);
 	World.terrains.clear();
 
 	// objects
-	msg_db_m("-objects",2);
 	for (int i=0;i<World.objects.num;i++)
 		if (World.objects[i])
 			GodUnregisterObject(World.objects[i]); // actual deleting done by ModelManager
@@ -217,12 +213,9 @@ void GodReset()
 
 
 	// force fields
-	msg_db_m("-force fields",2);
 	for (int i=0;i<World.NumForceFields;i++)
 		delete(World.ForceField[i]);
 	World.NumForceFields = 0;
-	
-	msg_db_m("-stuff",2);
 
 	// music
 	/*if (meta->MusicEnabled){
@@ -251,7 +244,6 @@ void GodReset()
 
 
 	// physics
-	msg_db_m("-physics",2);
 #ifdef _X_ALLOW_X_
 	LinksReset();
 #endif
@@ -259,6 +251,8 @@ void GodReset()
 	if (ode_world_created){
 		dWorldDestroy(world_id);
 		dSpaceDestroy(space_id);
+	}else{
+		dInitODE();
 	}
 	world_id = dWorldCreate();
 	space_id = dSimpleSpaceCreate(0);
@@ -268,9 +262,7 @@ void GodReset()
 	printf("hash:    %d  %d\n", m1, m2);*/
 	ode_world_created = true;
 	World.terrain_object->body_id = 0;
-	msg_db_r("-dCreateSphere",2);
 	World.terrain_object->geom_id = dCreateSphere(0, 1); // space, radius
-	msg_db_l(2)
 	dGeomSetBody((dGeomID)World.terrain_object->geom_id, (dBodyID)World.terrain_object->body_id);
 #endif
 }
@@ -314,7 +306,6 @@ color ReadColor4(File *f)
 
 bool GodLoadWorldFromLevelData()
 {
-	msg_db_f("GodLoadWorldFromLevelData", 1);
 	World.net_msg_enabled = false;
 	bool ok = true;
 
@@ -389,20 +380,21 @@ bool GodLoadWorldFromLevelData()
 
 bool GodLoadWorld(const string &filename)
 {
-	msg_db_f("GodLoadWorld", 1);
 	LevelData.world_filename = filename;
 
 // read world file
 //   and put the data into LevelData
-	File *f = NULL;
-
-	try{
-
-	f = FileOpenText(MapDir + filename + ".world");
+	File *f = FileOpenText(MapDir + filename + ".world");
+	if (!f)
+		return false;
 
 	int ffv = f->ReadFileFormatVersion();
-	if (ffv != 10)
-		throw Exception(format("wrong file format: %d (10 expected)", ffv));
+	if (ffv != 10){
+		msg_error(format("wrong file format: %d (10 expected)", ffv));
+		delete(f);
+		return false;
+	}
+	bool ok = true;
 	GodResetLevelData();
 
 	// Terrains
@@ -501,7 +493,8 @@ bool GodLoadWorld(const string &filename)
 
 	// Fields
 	/*NumMusicFields=0;
-	int NumFields=f->read_intC();
+	f->read_comment()
+	int NumFields=f->read_int();
 	for (int i=0;i<NumFields;i++){
 		vector min,max;
 		int kind=f->read_int();
@@ -537,14 +530,9 @@ bool GodLoadWorld(const string &filename)
 	FileClose(f);
 	World.MusicFieldGlobal.NumMusicFiles = 0;
 
-	return GodLoadWorldFromLevelData();
+	ok &= GodLoadWorldFromLevelData();
 
-	}catch(Exception &e){
-		FileClose(f);
-		msg_error(e.message());
-	}
-
-	return false;
+	return ok;
 }
 
 Object *GetObjectByName(const string &name)
@@ -608,7 +596,6 @@ Object *GodCreateObject(const string &filename, const string &name, const vector
 		msg_error("CreateObject during game reset");
 		return NULL;
 	}
-	msg_db_f("GodCreateObject", 2);
 	//msg_write(on);
 	Model *m = LoadModelX(filename, false);
 	if (!m)
@@ -768,7 +755,6 @@ vector _cdecl GetG(vector &pos)
 
 void PhysicsDataToODE()
 {
-	msg_db_f("PhysicsDataToODE", 3);
 	// data.. x -> ode
 	for (Model *o: World.objects){
 		if (o){
@@ -789,7 +775,6 @@ void PhysicsDataToODE()
 
 void PhysicsDataFromODE()
 {
-	msg_db_f("PhysicsDataFromODE", 3);
 	// data.. ode -> x
 	for (Object *o: World.objects){
 		if (o){
@@ -812,13 +797,11 @@ void PhysicsDataFromODE()
 void GodDoCollisionDetection()
 {
 #ifdef _X_ALLOW_X_
-	msg_db_f("GodDoCollisionDetection", 2);
 #ifdef _X_ALLOW_PHYSICS_DEBUG_
 	PhysicsDebugColData.Num = 0;
 #endif
 	
 	// object <-> terrain
-	msg_db_m("---T4G",4);
 	for (int i=0;i<World.objects.num;i++)
 		if (World.objects[i])
 			if (World.objects[i]->active_physics)
@@ -828,7 +811,6 @@ void GodDoCollisionDetection()
 	TestObjectSanity("God::Coll   1");
 
 	// object <-> object
-	msg_db_m("---T4O",4);
 	for (int i=0;i<World.objects.num;i++)
 		if (World.objects[i])
 			for (int j=i+1;j<World.objects.num;j++)
@@ -849,7 +831,6 @@ void GodDoCollisionDetection()
 
 void ApplyGravity()
 {
-	msg_db_m("--G",3);
 	for (int i=0;i<World.objects.num;i++)
 		if (World.objects[i])
 			if (!World.objects[i]->frozen){
@@ -874,7 +855,6 @@ void GodCalcMove()
 	if (Engine.Elapsed == 0)
 		return;
 
-	msg_db_f("GodCalcMove",2);
 	//CreateObjectLists();
 	Engine.NumRealColTests = 0;
 
@@ -925,7 +905,6 @@ void GodCalcMove()
 #endif
 
 		// statics and hinges...
-		msg_db_m("--L",3);
 #ifdef _X_ALLOW_X_
 		DoLinks(PhysicsNumLinkSteps);
 #endif
@@ -934,7 +913,6 @@ void GodCalcMove()
 
 #ifndef USE_ODE
 		// propagate through space
-		msg_db_m("--P",3);
 		for (int i=0;i<World.objects.num;i++)
 			if (World.objects[i])
 				//if (!World.objects[i]->Frozen)
@@ -1032,7 +1010,6 @@ void Test4Ground(Object *o)
 void Test4Object(Object *o1,Object *o2)
 {
 #ifdef _X_ALLOW_X_
-	msg_db_f("Test4Object",5);
 
 	// Kollision?
 	if (!CollideObjects(o1, o2))
@@ -1083,7 +1060,6 @@ void Test4Object(Object *o1,Object *o2)
 
 bool GodTrace(const vector &p1, const vector &p2, TraceData &data, bool simple_test, Model *o_ignore)
 {
-	msg_db_f("GodTrace",4);
 	vector dir = p2 - p1;
 	float range = dir.length();
 	dir /= range;
@@ -1119,13 +1095,11 @@ bool GodTrace(const vector &p1, const vector &p2, TraceData &data, bool simple_t
 // do everything needed before drawing the objects
 void GodPreDraw(vector &cam_pos)
 {
-	msg_db_f("GodPreDraw",2);
 	World.add_all_objects_to_lists = false;
 
 // sort models by depth
 	/*MetaClearSorted();
 	// objects
-	msg_db_m("--O",3);
 	for (int i=0;i<NumObjects;i++)
 		if (ObjectExisting[i])
 			Objects[i]->Draw(cam_pos);*/
@@ -1136,11 +1110,9 @@ void GodDrawSorted();
 // actually draw the objects
 void GodDraw()
 {
-	msg_db_f("GodDraw",3);
 	// draw the sorted models
 	//MetaDrawSorted();
 	GodDrawSorted();
-	msg_db_m("b",3);
 
 	// force fields ....(obsolete?!)
 #ifdef _X_ALLOW_X_
@@ -1161,7 +1133,6 @@ void GodDraw()
 
 void GodRegisterObject(Model *o, int index)
 {
-	msg_db_f("GodRegisterObject", 2);
 	int on = index;
 	if (on < 0){
 		// ..... better use a list of "empty" objects???
@@ -1215,7 +1186,6 @@ void GodUnregisterObject(Model *m)
 {
 	if (m->object_id < 0)
 		return;
-	msg_db_f("GodUnregisterObject", 2);
 
 #ifdef USE_ODE
 	if (m->body_id != 0)
@@ -1243,7 +1213,6 @@ void GodRegisterModel(Model *m)
 {
 	if (m->registered)
 		return;
-	msg_db_f("GodRegisterModel", 2);
 	
 	for (int i=0;i<m->material.num;i++){
 		Material *mat = &m->material[i];
@@ -1286,7 +1255,6 @@ void GodUnregisterModel(Model *m)
 {
 	if (!m->registered)
 		return;
-	msg_db_f("GodUnregisterModel", 2);
 	//printf("%p   %s\n", m, MetaGetModelFilename(m));
 	
 	for (int i=SortedTrans.num-1;i>=0;i--)
@@ -1304,7 +1272,6 @@ void GodUnregisterModel(Model *m)
 #endif
 	
 	m->registered = false;
-	//msg_db_m("med",2);
 	//printf("%d\n", m->NumBones);
 
 	// sub models
@@ -1433,8 +1400,6 @@ void GroupDuplicates()
 
 void GodDrawSorted()
 {
-	msg_db_f("GodDrawSorted",2);
-
 	ffframe ++;
 	if ((ffframe % 100) == 0)
 		GroupDuplicates();

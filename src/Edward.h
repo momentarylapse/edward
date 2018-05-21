@@ -74,6 +74,8 @@ public:
 	Edward(Array<string> arg);
 	virtual ~Edward();
 
+	virtual void onDestroy() override;
+
 	bool handleArguments(Array<string> arg);
 	void loadKeyCodes();
 	void exit();
@@ -88,19 +90,19 @@ public:
 	void onCommand(const string &id);
 	void onClose();
 
-	virtual void _cdecl onDraw();
-	virtual void _cdecl onKeyDown();
-	virtual void _cdecl onKeyUp();
-	virtual void _cdecl onMouseMove();
-	virtual void _cdecl onMouseWheel();
-	virtual void _cdecl onMouseEnter();
-	virtual void _cdecl onMouseLeave();
-	virtual void _cdecl onLeftButtonDown();
-	virtual void _cdecl onLeftButtonUp();
-	virtual void _cdecl onMiddleButtonDown();
-	virtual void _cdecl onMiddleButtonUp();
-	virtual void _cdecl onRightButtonDown();
-	virtual void _cdecl onRightButtonUp();
+	virtual void _cdecl onDrawGL();
+	virtual void _cdecl onKeyDown() override;
+	virtual void _cdecl onKeyUp() override;
+	virtual void _cdecl onMouseMove() override;
+	virtual void _cdecl onMouseWheel() override;
+	virtual void _cdecl onMouseEnter() override;
+	virtual void _cdecl onMouseLeave() override;
+	virtual void _cdecl onLeftButtonDown() override;
+	virtual void _cdecl onLeftButtonUp() override;
+	virtual void _cdecl onMiddleButtonDown() override;
+	virtual void _cdecl onMiddleButtonUp() override;
+	virtual void _cdecl onRightButtonDown() override;
+	virtual void _cdecl onRightButtonUp() override;
 	void onEvent();
 	void onAbortCreationMode();
 
@@ -161,7 +163,7 @@ class EdwardApp : public hui::Application
 {
 public:
 	EdwardApp();
-	virtual bool onStartup(const Array<string> &arg);
+	virtual bool onStartup(const Array<string> &arg) override;
 
 };
 

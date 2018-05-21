@@ -102,7 +102,7 @@ Date get_current_date()
 	GetLocalTime(&t);
 	return systime2date(t);
 #endif
-#ifdef OS_LINUX
+#if defined(OS_LINUX) or defined(OS_MINGW)
 	time_t t;
 	t = time(NULL);
 	Date d;
@@ -148,7 +148,7 @@ bool File::eof()
 #ifdef OS_WINDOW
 	return _eof(handle);
 #endif
-#ifdef OS_LINUX
+#if defined(OS_LINUX) or defined(OS_MINGW)
 	int pos = lseek(handle,0,SEEK_CUR);
 	struct stat stat;
 	fstat(handle, &stat);
@@ -278,14 +278,14 @@ string FileReadText(const string &filename)
 void FileWrite(const string &filename, const string &str)
 {
 	File *f = FileCreate(filename);
-	f->write_buffer(str.data, str.num);
+	f->write_buffer(str);
 	FileClose(f);
 }
 
 void FileWriteText(const string &filename, const string &str)
 {
 	File *f = FileCreateText(filename);
-	f->write_buffer(str.data, str.num);
+	f->write_buffer(str);
 	FileClose(f);
 }
 
@@ -293,9 +293,9 @@ void set_mode(File *f)
 {
 #ifdef OS_WINDOWS
 	if (dynamic_cast<TextFile*>(f))
-		_setmode(handle,_O_TEXT);
+		_setmode(f->handle,_O_TEXT);
 	else
-		_setmode(handle,_O_BINARY);
+		_setmode(f->handle,_O_BINARY);
 #endif
 }
 
@@ -323,7 +323,7 @@ void File::create(const string &_filename)
 #ifdef OS_WINDOWS
 	handle = _creat(_filename.sys_filename().c_str(), _S_IREAD | _S_IWRITE);
 #endif
-#ifdef OS_LINUX
+#if defined(OS_LINUX) or defined(OS_MINGW)
 	handle = ::creat(_filename.sys_filename().c_str(), S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 #endif
 	if (handle <= 0)
@@ -339,7 +339,7 @@ void File::append(const string &_filename)
 #ifdef OS_WINDOWS
 	handle = _open(_filename.sys_filename().c_str(), O_WRONLY | O_APPEND | O_CREAT,_S_IREAD | _S_IWRITE);
 #endif
-#ifdef OS_LINUX
+#if defined(OS_LINUX) or defined(OS_MINGW)
 	handle = ::open(_filename.sys_filename().c_str(), O_WRONLY | O_APPEND | O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 #endif
 	if (handle <= 0)
@@ -375,7 +375,7 @@ int File::get_size()
 #ifdef OS_WINDOWS
 	return (int)_filelength(handle);
 #endif
-#ifdef OS_LINUX
+#if defined(OS_LINUX) or defined(OS_MINGW)
 	struct stat _stat;
 	fstat(handle, &_stat);
 	return _stat.st_size;
@@ -388,7 +388,7 @@ long long File::get_size64()
 #ifdef OS_WINDOWS
 	return (long long)_filelength(handle);
 #endif
-#ifdef OS_LINUX
+#if defined(OS_LINUX) or defined(OS_MINGW)
 	struct stat _stat;
 	fstat(handle, &_stat);
 	return _stat.st_size;
@@ -483,19 +483,35 @@ int File::write_buffer(const void *buffer, int size)
 	return r;
 }
 
+int File::read_buffer(string &str)
+{
+	return read_buffer(str.data, str.num);
+}
+
+int File::write_buffer(const string &str)
+{
+	return write_buffer(str.data, str.num);
+}
+
+static void read_buffer_asserted(File *f, void *buf, int size)
+{
+	int r = f->read_buffer(buf, size);
+	if (r < size)
+		throw FileError("end of file '" + f->filename + "'");
+}
 
 // read a single character (1 byte)
 char File::read_char()
 {
 	char c;
-	read_buffer(&c, 1);
+	read_buffer_asserted(this, &c, 1);
 	return c;
 }
 char TextFile::read_char()
 {
 	char c = 0x0d;
 	while (c == 0x0d)
-		read_buffer(&c, 1);
+		read_buffer_asserted(this, &c, 1);
 	return c;
 }
 
@@ -516,7 +532,7 @@ void File::read_comment()
 void TextFile::read_comment()
 {
 #ifdef FILE_COMMENTS_DEBUG
-	msg_write("comment: " + ReadStr());
+	msg_write("comment: " + read_str());
 #else
 	read_str();
 #endif
@@ -526,8 +542,8 @@ void TextFile::read_comment()
 // read a word (2 bytes in binary mode)
 unsigned int File::read_word()
 {
-	unsigned int i;
-	read_buffer(&i, 2);
+	unsigned int i = 0;
+	read_buffer_asserted(this, &i, 2);
 	return i;
 }
 unsigned int TextFile::read_word()
@@ -547,7 +563,7 @@ unsigned int File::read_word_reversed()
 int File::read_int()
 {
 	int i;
-	read_buffer(&i, 4);
+	read_buffer_asserted(this, &i, 4);
 	return i;
 }
 int TextFile::read_int()
@@ -559,7 +575,7 @@ int TextFile::read_int()
 float File::read_float()
 {
 	float f;
-	read_buffer(&f, 4);
+	read_buffer_asserted(this, &f, 4);
 	return f;
 }
 float TextFile::read_float()
@@ -571,7 +587,7 @@ float TextFile::read_float()
 bool File::read_bool()
 {
 	char bb = 0;
-	read_buffer(&bb, 1);
+	read_buffer_asserted(this, &bb, 1);
 	return (bb == '1') or (bb == 0x01); // sigh, old style booleans
 }
 bool TextFile::read_bool()
@@ -589,7 +605,7 @@ string File::read_str()
 	int l = read_word();
 	string str;
 	str.resize(l + 16); // prevents "uninitialized" bytes in syscall parameter... (valgrind)
-	read_buffer(str.data, l);
+	read_buffer_asserted(this, str.data, l);
 	str.resize(l);
 	return str;
 }
@@ -632,7 +648,7 @@ string File::read_str_rw()
 	int l = read_word_reversed();
 	string str;
 	str.resize(l);
-	read_buffer(str.data, l);
+	read_buffer_asserted(this, str.data, l);
 	return str;
 }
 
@@ -716,8 +732,8 @@ void File::write_str(const string &str)
 }
 void TextFile::write_str(const string &str)
 {
-	write_buffer(str.data, str.num);
-	write_buffer("\n", 1);
+	write_buffer(str);
+	write_buffer("\n");
 }
 
 // write a comment line

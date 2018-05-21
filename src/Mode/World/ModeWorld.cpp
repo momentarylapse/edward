@@ -423,8 +423,6 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha)
 
 void ModeWorld::onDrawWin(MultiView::Window *win)
 {
-	msg_db_f("World::DrawWin",2);
-
 	if (ShowEffects){
 		if (win->type == MultiView::VIEW_PERSPECTIVE)
 			data->meta_data.DrawBackground();

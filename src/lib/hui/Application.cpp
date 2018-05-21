@@ -43,22 +43,22 @@ Application::Application(const string &app_name, const string &def_lang, int fla
 		g_set_prgname(app_name.c_str());
 	#endif
 
-	#ifdef OS_LINUX
+	#if defined(OS_LINUX) || defined(OS_MINGW) //defined(__GNUC__) || defined(OS_LINUX)
 		directory = initial_working_directory;
 		directory_static = directory + "static/";
 		if (_args.num > 0){
-			filename = _args[0];
-			if ((_args[0].head(5) == "/usr/") or (_args[0].find("/") < 0)){
+			filename = _args[0].replace("\\", "/");
+
+			directory = filename.dirname();
+			if ((filename.head(5) == "/usr/") or (filename.find("/") < 0)){
 				installed = true;
 				// installed version?
-				filename = _args[0];
 				directory = format("%s/.%s/", getenv("HOME"), app_name.c_str());
 				directory_static = "/usr/share/" + app_name + "/";
 			}
 		}
 		dir_create(directory);
-	#endif
-	#ifdef OS_WINDOWS
+	#else // OS_WINDOWS
 		char *ttt = NULL;
 		int r = _get_pgmptr(&ttt);
 		filename = ttt;
@@ -162,8 +162,18 @@ int Application::run()
 	return 0;
 }
 
-// ends the system loop of the run() command
+// FIXME: when closing the last window, hard_end() gets called... ignoring onEnd()!!!
 void Application::end()
+{
+	SetIdleFunction(NULL);
+
+	onEnd();
+
+	hard_end();
+}
+
+// ends the system loop of the run() command
+void Application::hard_end()
 {
 	SetIdleFunction(NULL);
 

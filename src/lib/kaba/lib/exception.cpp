@@ -9,6 +9,8 @@
 #include "../kaba.h"
 #include "../../file/msg.h"
 #include <stdlib.h>
+#include <assert.h>
+
 
 namespace Kaba{
 
@@ -47,7 +49,7 @@ struct StackFrameInfo
 	void *rbp;
 	Script *s;
 	Function *f;
-	long offset;
+	int64 offset;
 };
 
 
@@ -61,7 +63,7 @@ inline void func_from_rip_test_script(StackFrameInfo &r, Script *s, void *rip, b
 		void *frip = (void*)s->func[i];
 		if (frip >= rip)
 			continue;
-		long offset = (long)rip - (long)frip;
+		int_p offset = (int_p)rip - (int_p)frip;
 		if (offset >= r.offset)
 			continue;
 		if (from_package and offset >= 500)
@@ -171,7 +173,7 @@ void relink_return(void *rip, void *rbp, void *rsp)
 		: "r" (rsp), "r" (rip)
 		: "%rsp");
 
-	printf("rbp=%p\n", rbp2);
+//	printf("rbp=%p\n", rbp2);
 
 	exit(0);
 }
@@ -198,6 +200,8 @@ Array<StackFrameInfo> get_stack_trace(void **rbp)
 	Array<StackFrameInfo> trace;
 
 	void **rsp = NULL;
+//	msg_write("stack trace");
+//	printf("rbp=%p     ...%p\n", rbp, &rsp);
 
 	while (true){
 		rsp = rbp;
@@ -208,6 +212,7 @@ Array<StackFrameInfo> get_stack_trace(void **rbp)
 		void *rip = *rsp;
 		//printf("-- rip: %p\n", rip);
 		rsp ++;
+//		printf("unwind  =>   rip=%p   rsp=%p   rbp=%p\n", rip, rsp, rbp);
 		auto r = get_func_from_rip(rip);
 		if (r.f){
 			r.rsp = rsp;
@@ -225,17 +230,33 @@ Array<StackFrameInfo> get_stack_trace(void **rbp)
 	return trace;
 }
 
+
+// stack unwinding does not work if gcc does not use a stack frame...
+#pragma GCC push_options
+#pragma GCC optimize("no-omit-frame-pointer")
+
 void _cdecl kaba_raise_exception(KabaException *kaba_exception)
 {
 	// get stack frame base pointer rbp
 	void **rbp = NULL;
-	asm volatile("mov %%rbp, %0\n\t"
-		: "=r" (rbp)
+	void **rsp = NULL;
+	asm volatile("movq %%rbp, %0\n\t"
+			"movq %%rsp, %1\n\t"
+		: "=r" (rbp), "=r" (rsp)
 		:
 		: );
 
 	if (_verbose_exception_)
 		msg_error("raise...");
+
+//	printf("rbp=%p   rsp=%p    local=%p\n", rbp, rsp, &rsp);
+
+	// check sanity
+	void **local = (void**)&rsp;
+	// rbp  >  local > rsp
+	assert((rbp > rsp) and (rbp > local) and (local > rsp));
+	assert((int_p)rbp - (int_p)rsp < 10000);
+
 
 	auto trace = get_stack_trace(rbp);
 
@@ -271,12 +292,12 @@ void _cdecl kaba_raise_exception(KabaException *kaba_exception)
 
 			if (ebd.except->params.num > 0){
 				auto v = r.f->var[ebd.except_block->vars[0]];
-				void **p = (void**)((long)r.rbp + v._offset);
+				void **p = (void**)((int_p)r.rbp + v._offset);
 				*p = kaba_exception;
 			}
 
 			// TODO special return
-			relink_return(ebd.except_block->_start, rbp, (void*)((long)r.rsp - 16));
+			relink_return(ebd.except_block->_start, rbp, (void*)((int_p)r.rsp - 16));
 			return;
 		}
 	}
@@ -293,6 +314,7 @@ void _cdecl kaba_raise_exception(KabaException *kaba_exception)
 		msg_write(">>  " + r.s->filename + " : " + r.f->name + format("()  + 0x%x", r.offset));
 	exit(1);
 }
-
+#pragma GCC pop_options
 
 }
+

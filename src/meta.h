@@ -115,7 +115,7 @@ class XContainer : public hui::EventHandler
 {
 public:
 	virtual ~XContainer(){}
-	virtual void _cdecl OnIterate(){}
+	virtual void _cdecl OnIterate(float dt){}
 	virtual void _cdecl OnInit(){}
 	virtual void _cdecl OnDelete(){}
 };

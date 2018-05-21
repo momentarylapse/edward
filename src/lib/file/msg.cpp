@@ -16,9 +16,7 @@
 	#include <windows.h>
 #endif
 
-//#define USE_UNWIND
-
-#ifdef USE_UNWIND
+#if HAS_LIB_UNWIND
 #define UNW_LOCAL_ONLY
 #include <cxxabi.h>
 #include <libunwind.h>
@@ -33,7 +31,6 @@
 
 //#define MSG_LOG_TIMIGS
 //#define MSG_LIKE_HTML
-#define MSG_TRACE_REF
 
 
 
@@ -51,19 +48,6 @@ static int Shift;
 static bool Verbose=false;
 static bool ErrorOccured;
 static string ErrorMsg;
-
-// tracing system
-#define MSG_NUM_TRACES_SAVED		256
-#define MSG_MAX_TRACE_LENGTH		96
-
-#ifdef MSG_TRACE_REF
-	static const char *TraceStr[MSG_NUM_TRACES_SAVED];
-#else
-	dont
-	static char TraceStr[MSG_NUM_TRACES_SAVED][MSG_MAX_TRACE_LENGTH];
-#endif
-static int CurrentTraceLevel=0;
-
 
 // call only once!
 void msg_init(const string &force_filename, bool verbose)
@@ -101,15 +85,6 @@ void msg_set_verbose(bool verbose)
 	Verbose = verbose;
 }
 
-static void _strcpy_save_(char *a, const char *b,int max_length)
-{
-	int l=strlen(b);
-	if (l>max_length-1)
-		l=max_length-1;
-	memcpy(a,b,l);
-	a[l]=0;
-}
-
 void msg_add_str(const string &str)
 {
 	if (!Verbose)	return;
@@ -138,7 +113,7 @@ void ShiftRight(File *f, int s)
 		r=_write(handle," >-\t",4);
 #else
 	for (int i=0;i<s;i++)
-		f->write_buffer("\t",1);
+		f->write_buffer("\t");
 #endif
 }
 
@@ -178,18 +153,6 @@ void msg_write(const string &str)
 		file->write_str(str);
 
 	msg_add_str(str);
-}
-
-void msg_write(const char *str)
-{
-	if (!Verbose)	return;
-	write_date();
-	ShiftRight(file, Shift);
-	string s = string(str);
-	if (file)
-		file->write_str(s);
-
-	msg_add_str(s);
 }
 
 #if 0
@@ -274,11 +237,6 @@ void msg_error(const string &str)
 	ErrorOccured=true;
 }
 
-void msg_error(const char *str)
-{
-	msg_error(string(str));
-}
-
 void msg_right()
 {
 	if (!Verbose)	return;
@@ -304,68 +262,12 @@ void msg_ok()
 	msg_write("-ok");
 }
 
-void msg_trace_r(const char *str,int level)
-{
-	if (CurrentTraceLevel >= MSG_NUM_TRACES_SAVED)
-		return;
-#ifdef MSG_TRACE_REF
-	TraceStr[CurrentTraceLevel ++] = str;
-#else
-	char *mstr=TraceStr[CurrentTraceLevel++];
-	_strcpy_save_(mstr,str,MSG_MAX_TRACE_LENGTH);
-	strcpy(TraceStr[CurrentTraceLevel],"");
-#endif
-	if (MSG_DEBUG_OUTPUT_LEVEL>=level){//CurrentTraceLevel){
-#ifdef MSG_LIKE_HTML
-		msg_write(string("<",str,">"));
-#else
-		msg_write(str);
-#endif
-		msg_right();
-	}
-}
-
-void msg_trace_m(const char *str,int level)
-{
-	if (CurrentTraceLevel >= MSG_NUM_TRACES_SAVED)
-		return;
-#ifdef MSG_TRACE_REF
-	TraceStr[CurrentTraceLevel] = str;
-#else
-	_strcpy_save_(TraceStr[CurrentTraceLevel],str,MSG_MAX_TRACE_LENGTH);
-#endif
-	if (MSG_DEBUG_OUTPUT_LEVEL >= level)//CurrentTraceLevel)
-		msg_write(str);
-}
-
-void msg_trace_l(int level)
-{
-#ifdef MSG_TRACE_REF
-	TraceStr[CurrentTraceLevel--] = NULL;
-#else
-	strcpy(TraceStr[CurrentTraceLevel--],"");
-#endif
-	if (CurrentTraceLevel<0){
-		msg_error("msg_trace_l(): level below 0!");
-		CurrentTraceLevel=0;
-	}
-	if (MSG_DEBUG_OUTPUT_LEVEL>=level){//CurrentTraceLevel){
-#ifdef MSG_LIKE_HTML
-		msg_left();
-		msg_write(string("</",TraceStr[CurrentTraceLevel],">"));
-#else
-		msg_ok();
-		msg_left();
-#endif
-	}
-}
-
 
 string msg_get_trace()
 {
 	Array<string> trace;
 
-#ifdef USE_UNWIND
+#if HAS_LIB_UNWIND
 	unw_cursor_t cursor;
 	unw_context_t context;
 
@@ -401,17 +303,6 @@ string msg_get_trace()
 #endif
 
 	return implode(trace, "\n");
-}
-
-int msg_get_trace_depth()
-{
-	return CurrentTraceLevel;
-}
-
-void msg_set_trace_depth(int depth)
-{
-	if (depth < CurrentTraceLevel)
-		depth = CurrentTraceLevel;
 }
 
 void msg_end(bool del_file)
@@ -474,16 +365,4 @@ void msg_todo(const string &str)
 	TodoStr.add(str);
 	string s = "TODO (Engine): " + str;
 	msg_error(s);
-}
-
-
-MsgBlockTracer::MsgBlockTracer(const char *str, int _level)
-{
-	msg_trace_r(str, _level);
-	level = _level;
-};
-
-MsgBlockTracer::~MsgBlockTracer()
-{
-	msg_trace_l(level);
 }

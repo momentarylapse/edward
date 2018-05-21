@@ -32,7 +32,6 @@ void WorldObject::UpdateData()
 
 bool WorldTerrain::Load(const vector &_pos, const string &filename, bool deep)
 {
-	msg_db_f("Terrain.LoadFromFile", 1);
 	view_stage = 0;
 	is_selected = false;
 	is_special = false;
@@ -55,8 +54,6 @@ bool WorldTerrain::Load(const vector &_pos, const string &filename, bool deep)
 
 bool WorldTerrain::Save(const string &filename)
 {
-	msg_db_f("Terrain.LoadFromFile", 1);
-
 	ed->makeDirs(filename);
 	FileName = filename.substr(MapDir.num, -1);
 	FileName.resize(FileName.num - 4);
@@ -205,7 +202,6 @@ bool DataWorld::save(const string & _filename)
 
 bool DataWorld::load(const string & _filename, bool deep)
 {
-	msg_db_f("World.Load", 1);
 	int ffv;
 
 	reset();
@@ -436,7 +432,7 @@ void DataWorld::reset()
 void DataWorld::GetBoundaryBox(vector &min, vector &max)
 {
 	bool found_any=false;
-	msg_db_m("GetBoundaryBox",2);
+
 	for (WorldObject &o: Objects)
 		if (o.object){
 			vector min2 = o.pos - vector(1,1,1) * o.object->radius;

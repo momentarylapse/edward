@@ -360,7 +360,6 @@ void create_fake_dynamic_cube_map(nix::CubeMap *cube_map)
 
 void DataMaterial::UpdateTextures()
 {
-	msg_db_f("Mat.UpdateTextures", 1);
 	appearance.textures.clear();
 	for (string &tf: appearance.texture_files)
 		appearance.textures.add(nix::LoadTexture(tf));

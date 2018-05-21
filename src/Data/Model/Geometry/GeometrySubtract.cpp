@@ -156,7 +156,6 @@ bool ActionModelSurfaceSubtract::CollidePolygons(DataModel *m, ModelPolygon *t1,
 
 bool CollidePolygonSurface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_index)
 {
-	msg_db_f("CollidePolygonSurface", 0);
 	col.clear();
 
 	// polygon's data
@@ -380,8 +379,6 @@ void find_contours(Geometry &m, ModelPolygon *t, Geometry &s, Array<Array<sCol> 
 
 void sort_and_join_contours(Geometry &m, ModelPolygon *t, Geometry &b, Array<Array<sCol> > &c_in, bool inverse)
 {
-	msg_db_f("sort_and_join_contours", 1);
-
 	// find old vertices
 	Array<sCol> v;
 	for (int k=0;k<t->side.num;k++){
@@ -709,7 +706,6 @@ void simplify_filling(Array<Array<sCol> > &c)
 
 void PolygonSubtract(Geometry &a, ModelPolygon *t, int t_index, Geometry &b, Geometry &out, bool keep_inside)
 {
-	msg_db_f("PolygonSubtract", 0);
 	bool inverse = keep_inside;
 
 	msg_write("-----sub");
@@ -756,7 +752,6 @@ void PolygonSubtract(Geometry &a, ModelPolygon *t, int t_index, Geometry &b, Geo
 // out = a - b (just surface diff)
 bool SurfaceSubtractUnary(Geometry &a, Geometry &b, Geometry &out, bool keep_inside)
 {
-	msg_db_f("SurfSubtractUnary", 0);
 	bool has_changes = false;
 
 	out.vertex = a.vertex;
@@ -781,8 +776,6 @@ bool SurfaceSubtractUnary(Geometry &a, Geometry &b, Geometry &out, bool keep_ins
 // out = a - b
 int GeometrySubtract(Geometry &a, Geometry &b, Geometry &out)
 {
-	msg_db_f("ModelGeometrySubtract", 0);
-
 	a.updateTopology();
 	b.updateTopology();
 	for (ModelPolygon &p: a.polygon)
@@ -821,8 +814,6 @@ int GeometrySubtract(Geometry &a, Geometry &b, Geometry &out)
 // out = a & b
 int GeometryAnd(Geometry &a, Geometry &b, Geometry &out)
 {
-	msg_db_f("ModelGeometryAnd", 0);
-
 	a.updateTopology();
 	b.updateTopology();
 	for (ModelPolygon &p: a.polygon)

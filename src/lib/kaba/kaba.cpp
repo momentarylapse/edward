@@ -18,13 +18,13 @@
 #ifdef OS_LINUX
 	#include <sys/mman.h>
 #endif
-#ifdef OS_WINDOWS
+#if defined(OS_WINDOWS) || defined(OS_MINGW)
 	#include <windows.h>
 #endif
 
 namespace Kaba{
 
-string Version = "0.16.0.0";
+string Version = "0.16.1.0";
 
 //#define ScriptDebug
 
@@ -249,14 +249,14 @@ Script::~Script()
 {
 	if (memory and (!just_analyse)){
 		//delete[](Memory);
-		#ifdef OS_WINDOWS
+		#if defined(OS_WINDOWS) || defined(OS_MINGW)
 			VirtualFree(memory, 0, memory_size);
 		#else
 			int r = munmap(memory, memory_size);
 		#endif
 	}
 	if (opcode){
-		#ifdef OS_WINDOWS
+		#if defined(OS_WINDOWS) || defined(OS_MINGW)
 			VirtualFree(opcode, 0, MEM_RELEASE);
 		#else
 			int r = munmap(opcode, MAX_OPCODE);
@@ -414,7 +414,6 @@ void Script::__Execute()
 	if (__waiting_mode == WAITING_MODE_NONE)
 		return;
 	shift_right=0;
-//	msg_db_f(filename.c_str(),1);
 
 	// handle wait-commands
 	if (__waiting_mode == WAITING_MODE_FIRST){

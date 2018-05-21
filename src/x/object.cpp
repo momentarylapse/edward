@@ -115,8 +115,6 @@ void Object::DoPhysics()
 {
 	if (Engine.Elapsed<=0)
 		return;
-	msg_db_f("object::DoPhysics",2);
-	msg_db_m(name.c_str(),3);
 	
 
 	if (_vec_length_fuzzy_(force_int) * mass_inv > AccThreshold)

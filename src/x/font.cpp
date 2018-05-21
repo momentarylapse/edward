@@ -24,6 +24,7 @@
 \*----------------------------------------------------------------------------*/
 #include "font.h"
 #include "../lib/nix/nix.h"
+#include "../meta.h"
 
 namespace Gui
 {
@@ -69,9 +70,9 @@ Font *_cdecl LoadFont(const string &filename)
 	foreachi(Font *ff, Fonts, i)
 		if (ff->filename  == filename.sys_filename())
 			return ff;
-	File *f = NULL;
-	try{
-		f = FileOpenText(FontDir + filename + ".xfont");
+	File *f = FileOpenText(FontDir + filename + ".xfont");
+	if (!f)
+		return Engine.DefaultFont;
 	int ffv=f->ReadFileFormatVersion();
 	if (ffv==2){
 		Font *font = new Font;
@@ -99,7 +100,9 @@ Font *_cdecl LoadFont(const string &filename)
 		int x = 0, y = 0;
 		for (int i=0;i<num_glyphs;i++){
 			string name = f->read_str();
-			int c = (unsigned char)str_utf8_to_ubyte(name)[0];
+			int c = 0;
+			if (name.num > 0)
+				c = (unsigned char)str_utf8_to_ubyte(name)[0];
 			int w = f->read_byte();
 			int x1 = f->read_byte();
 			int x2 = f->read_byte();
@@ -131,9 +134,6 @@ Font *_cdecl LoadFont(const string &filename)
 		msg_error(format("wrong file format: %d (expected: 2)",ffv));
 	}
 	FileClose(f);
-	}catch(Exception &e){
-
-	}
 
 	return Fonts.back();
 }
@@ -154,7 +154,6 @@ float _cdecl Font::getWidth(float height, const string &str)
 // display a string with our font (values relative to screen)
 float _cdecl Font::drawStr(float x, float y, float z, float _height, const string &str, bool centric)
 {
-	msg_db_f("XFDrawStr",10);
 	if (centric)
 		x -= getWidth(_height, str) / 2;
 	nix::SetAlpha(ALPHA_SOURCE_ALPHA, ALPHA_SOURCE_INV_ALPHA);
@@ -188,7 +187,6 @@ float _cdecl Font::drawStr(float x, float y, float z, float _height, const strin
 // vertically display a text 
 float _cdecl Font::drawStrVert(float x, float y, float z, float _height, const string &str)
 {
-	msg_db_f("XFDrawVertStr",10);
 	nix::SetAlpha(ALPHA_SOURCE_ALPHA, ALPHA_SOURCE_INV_ALPHA);
 	nix::SetTexture(texture);
 	float xf=_height*x_factor;

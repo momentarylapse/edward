@@ -5,6 +5,9 @@ namespace hui
 {
 
 
+string file_dialog_default;
+
+
 static GtkWindow *get_window_save(Window *win)
 {
 	_MakeUsable_();
@@ -48,9 +51,7 @@ void add_filters(GtkWidget *dlg, const string &show_filter, const string &filter
 // file selection for opening (filter should look like "*.txt")
 bool FileDialogOpen(Window *win,const string &title,const string &dir,const string &show_filter,const string &filter)
 {
-	msg_db_r("HuiFileDialogOpen",1);
 	GtkWindow *w = get_window_save(win);
-	msg_db_m("dialog_new",1);
 	GtkWidget *dlg=gtk_file_chooser_dialog_new(	sys_str(title),
 												w,
 												GTK_FILE_CHOOSER_ACTION_OPEN,
@@ -61,16 +62,13 @@ bool FileDialogOpen(Window *win,const string &title,const string &dir,const stri
 	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dlg), sys_str_f(dir));
 	add_filters(dlg, show_filter, filter);
 	gtk_widget_show_all(dlg);
-	msg_db_m("dialog_run",1);
 	int r = gtk_dialog_run(GTK_DIALOG(dlg));
-	msg_db_m("ok",1);
 	if (r == GTK_RESPONSE_ACCEPT){
 		gchar *fn = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg));
 		Filename = fn;
 		g_free(fn);
 	}
 	gtk_widget_destroy(dlg);
-	msg_db_l(1);
 	return (r == GTK_RESPONSE_ACCEPT);
 }
 
@@ -87,6 +85,7 @@ static void try_to_ensure_extension(string &filename, const string &filter)
 		filename += "." + filter_ext;
 }
 
+
 // file selection for saving
 bool FileDialogSave(Window *win,const string &title,const string &dir,const string &show_filter,const string &filter)
 {
@@ -99,6 +98,8 @@ bool FileDialogSave(Window *win,const string &title,const string &dir,const stri
 												NULL);
 	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER (dlg), TRUE);
 	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dlg), sys_str_f(dir));
+	if (file_dialog_default.num > 0)
+		gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dlg), sys_str(file_dialog_default));
 	add_filters(dlg, show_filter, filter);
 	int r = gtk_dialog_run(GTK_DIALOG(dlg));
 	if (r == GTK_RESPONSE_ACCEPT){
@@ -122,22 +123,17 @@ bool SelectColor(Window *win,int r,int g,int b)
 bool SelectFont(Window *win, const string &title)
 {
 #if GTK_CHECK_VERSION(3,0,0)
-	msg_db_r("HuiSelectFont",1);
 	GtkWindow *w = get_window_save(win);
-	msg_db_m("dialog_new",1);
 	GtkWidget *dlg = gtk_font_chooser_dialog_new(sys_str(title), w);
 	gtk_window_set_modal(GTK_WINDOW(dlg), true);
 	gtk_widget_show_all(dlg);
-	msg_db_m("dialog_run",1);
 	int r = gtk_dialog_run(GTK_DIALOG(dlg));
-	msg_db_m("ok",1);
 	if (r == GTK_RESPONSE_OK){
 		gchar *fn = gtk_font_chooser_get_font(GTK_FONT_CHOOSER(dlg));
 		Fontname = fn;
 		g_free(fn);
 	}
 	gtk_widget_destroy(dlg);
-	msg_db_l(1);
 	return (r == GTK_RESPONSE_OK);
 #endif
 	return false;

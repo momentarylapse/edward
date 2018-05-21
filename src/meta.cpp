@@ -62,7 +62,6 @@ string MapDir, ScriptDir;
 
 void MetaInit()
 {
-	msg_db_f("Meta",1);
 	Engine.DefaultFont = NULL;
 
 	Engine.ZBufferEnabled = true;
@@ -96,9 +95,6 @@ void MetaEnd()
 
 void MetaReset()
 {
-	msg_db_f("Meta reset",1);
-	msg_db_m("-items",1);
-
 	MetaDeleteStuffList.clear();
 
 	ModelToIgnore = NULL;
@@ -142,7 +138,6 @@ void MetaDeleteLater(XContainer *p)
 
 void MetaDeleteSelection()
 {
-	msg_db_f("MetaDeleteSelection", 1);
 	for (int i=0;i<MetaDeleteStuffList.num;i++)
 		delete(MetaDeleteStuffList[i]);
 	MetaDeleteStuffList.clear();

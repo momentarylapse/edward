@@ -27,7 +27,6 @@ EdwardApp::EdwardApp() :
 
 bool EdwardApp::onStartup(const Array<string> &arg)
 {
-	msg_db_r("main",1);
 	msg_write(AppName + " " + AppVersion);
 	msg_write("");
 

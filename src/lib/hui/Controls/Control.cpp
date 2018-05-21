@@ -65,9 +65,23 @@ Control::Control(int _type, const string &_id)
 	indent = -1;
 }
 
+void unset_widgets_rec(Control *c)
+{
+	for (auto *cc: c->children)
+		unset_widgets_rec(cc);
+	c->widget = NULL;
+}
+
 Control::~Control()
 {
 	notify_set_del(this);
+
+#ifdef HUI_API_GTK
+	//if (widget)
+	//	gtk_widget_destroy(widget);
+	//unset_widgets_rec(this);
+#endif
+
 	if (parent){
 		for (int i=0;i<parent->children.num;i++)
 			if (parent->children[i] == this)
@@ -82,9 +96,12 @@ Control::~Control()
 			if (panel->controls[i] == this)
 				panel->controls.erase(i);
 	}
+
 #ifdef HUI_API_GTK
 	if (widget)
 		gtk_widget_destroy(widget);
+	widget = NULL;
+	//unset_widgets_rec(this);
 #endif
 }
 
@@ -327,7 +344,6 @@ void Control::notify(const string &message, bool is_default)
 		msg_error("HuiControl.Notify without panel: " + id);
 		return;
 	}
-	msg_db_m("Control.Notify", 2);
 	panel->_set_cur_id_(id);
 	if (id.num == 0)
 		return;

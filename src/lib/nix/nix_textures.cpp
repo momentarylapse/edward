@@ -111,7 +111,6 @@ void avi_grab_frame(int texture,int frame)									// Grabs A Frame From The Str
 
 bool avi_open(int texture,LPCSTR szFile)
 {
-	msg_db_r("OpenAvi",1);
 	avi_info[texture]->hdc = CreateCompatibleDC(0);
 	avi_info[texture]->hdd = DrawDibOpen();
 
@@ -152,7 +151,6 @@ bool avi_open(int texture,LPCSTR szFile)
 	avi_info[texture]->time=0;
 	avi_info[texture]->ActualFrame=1;
 	avi_grab_frame(texture,1);
-	msg_db_l(1);
 	return true;
 }
 
@@ -252,10 +250,11 @@ void Texture::__delete__()
 	this->~Texture();
 }
 
-Texture *LoadTexture(const string &filename)
+Texture *LoadTexture(const string &_filename)
 {
-	if (filename.num < 1)
+	if (_filename.num < 1)
 		return NULL;
+	string filename = _filename.sys_filename();
 	for (Texture *t: textures)
 		if (filename == t->filename)
 			return t->valid ? t : NULL;
@@ -302,7 +301,6 @@ void Texture::reload()
 			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 			if (!avi_open(texture,SysFileName(t->Filename))){
 				avi_info[texture]=NULL;
-				msg_db_l(1);
 				return;
 			}
 

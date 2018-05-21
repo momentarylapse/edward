@@ -329,7 +329,6 @@ Edward::Edward(Array<string> arg) :
 	mode_world = new ModeWorld;
 	mode_font = new ModeFont;
 	mode_administration = new ModeAdministration;
-	msg_db_m("              \\(^_^)/", 1);
 
 	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;
 	mworld->FFVBinaryMap = true;*/
@@ -357,7 +356,7 @@ Edward::Edward(Array<string> arg) :
 	event("send_bug_report", std::bind(&Edward::onSendBugReport, this));
 	event("execute_plugin", std::bind(&Edward::onExecutePlugin, this));
 	event("abort_creation_mode", std::bind(&Edward::onAbortCreationMode, this));
-	eventX("nix-area", "hui:draw-gl", std::bind(&Edward::onDraw, this));
+	eventX("nix-area", "hui:draw-gl", std::bind(&Edward::onDrawGL, this));
 	setKeyCode("abort_creation_mode", hui::KEY_ESCAPE, "hui:cancel");
 
 	//hui::SetIdleFunction(std::bind(&Edward::idleFunction, this));
@@ -366,6 +365,10 @@ Edward::Edward(Array<string> arg) :
 }
 
 Edward::~Edward()
+{
+}
+
+void Edward::onDestroy()
 {
 	delete(plugins);
 	delete(multi_view_2d);
@@ -385,13 +388,13 @@ Edward::~Edward()
 	HuiConfig.setStr("ObjectScriptVarFile", ObjectScriptVarFile);
 	HuiConfig.setStr("ItemScriptVarFile", ItemScriptVarFile);*/
 	//HuiConfig.setInt("UpdateNormalMaxTime (ms)", int(UpdateNormalMaxTime * 1000.0f));
+	hui::Config.save();
 }
 
 bool Edward::handleArguments(Array<string> arg)
 {
 	if (arg.num < 2)
 		return false;
-	msg_db_f("LoadParam", 1);
 
 	for (int i=1; i<arg.num; i++){
 		string param = arg[i];
@@ -506,7 +509,6 @@ void Edward::setMode(ModeBase *m)
 	if (mode_queue.num > 1)
 		return;
 
-	msg_db_f("SetMode", 1);
 	cur_mode->onLeave();
 	if (cur_mode->getData())
 		unsubscribe(cur_mode->getData()->action_manager);
@@ -563,7 +565,6 @@ void Edward::onSendBugReport()
 
 void Edward::onUpdate(Observable *o, const string &message)
 {
-	msg_db_f("Edward.OnUpdate", 2);
 	//msg_write(o->getName() + " - " + message);
 	if (o->getName() == "MultiView"){
 		if (message == multi_view_3d->MESSAGE_SETTINGS_CHANGE){
@@ -632,7 +633,7 @@ void Edward::drawStr(int x, int y, const string &str, AlignType a)
 	nix::SetAlpha(ALPHA_NONE);
 }
 
-void Edward::onDraw()
+void Edward::onDrawGL()
 {
 	auto e = hui::GetEvent();
 	nix::Resize(e->column, e->row);
@@ -744,7 +745,6 @@ void Edward::setRootDirectory(const string &directory)
 
 void Edward::makeDirs(const string &original_dir, bool as_root_dir)
 {
-	msg_db_f("MakeDirs", 1);
 	string dir = original_dir;
 	if (dir.num > 0)
 		dir = dir.dirname();

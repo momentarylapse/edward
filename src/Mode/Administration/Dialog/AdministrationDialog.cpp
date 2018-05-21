@@ -87,8 +87,6 @@ static string FD2Str(int k)
 
 void AdministrationDialog::FillAdminList(int view, const string &lid)
 {
-	msg_db_f("FillAdminList",1);
-
 	reset(lid);
 	string sep = hui::ComboBoxSeparator;
 	hui::ComboBoxSeparator = "::";
@@ -139,7 +137,6 @@ void AdministrationDialog::FillAdminList(int view, const string &lid)
 
 void AdministrationDialog::ShowDetail(int n, const string &lid)
 {
-	msg_db_f("ShowDetail", 1);
 	AdminFileList *l = get_list(lid);
 	assert(l);
 	assert(n >= 0);

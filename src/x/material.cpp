@@ -148,12 +148,20 @@ Material *LoadMaterial(const string &filename, bool as_default)
 			if (materials[i]->name == filename)
 				return materials[i];
 	}
-	File *f = NULL;
-	Material *m = new Material;
-
+	File *f;
+	msg_write("loading material " + filename);
 	try{
-
-	f = FileOpenText(MaterialDir + filename + ".material");
+		f = FileOpenText(MaterialDir + filename + ".material");
+	}catch(FileError &e){
+#ifdef _X_ALLOW_X_
+		if (Engine.FileErrorsAreCritical)
+			msg_error(e.message());
+//	if (Engine.FileErrorsAreCritical)
+	//	return NULL;
+#endif
+		return materials[0];
+	}
+	Material *m = new Material;
 
 	int ffv = f->ReadFileFormatVersion();
 	if (ffv == 4){
@@ -215,21 +223,9 @@ Material *LoadMaterial(const string &filename, bool as_default)
 
 		materials.add(m);
 	}else{
-		throw Exception(format("wrong file format: %d (expected: 4)", ffv));
+		msg_error(format("wrong file format: %d (expected: 4)", ffv));
+		m = materials[0];
 	}
 	FileClose(f);
-
-	}catch(Exception &e){
-		FileClose(f);
-		msg_error(e.message());
-		m = materials[0];
-
-	#ifdef _X_ALLOW_X_
-		if (Engine.FileErrorsAreCritical)
-			return NULL;
-	#endif
-			return materials[0];
-	}
-
 	return m;
 }

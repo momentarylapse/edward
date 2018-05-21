@@ -411,7 +411,7 @@ public:
 	virtual void _cdecl OnDelete(){}
 	virtual void _cdecl OnCollideM(Model *o){}
 	virtual void _cdecl OnCollideT(Terrain *t){}
-	virtual void _cdecl OnIterate(){}
+	virtual void _cdecl OnIterate(float dt){}
 };
 
 

@@ -52,7 +52,6 @@ bool Model::AllowDeleteRecursive = true;
 // make a copy of all the data
 void CopySkinNew(Model *m, Skin *orig, Skin **copy)
 {
-	msg_db_f("CopySkinNew",1);
 	(*copy) = new Skin;
 	(**copy) = *orig;
 
@@ -82,7 +81,6 @@ void CopySkinNew(Model *m, Skin *orig, Skin **copy)
 // create a new skin but reference the data
 void CopySkinAsReference(Model *m, Skin *orig, Skin **copy)
 {
-	msg_db_f("CopySkin(ref)",1);
 	(*copy) = new Skin;
 	(**copy) = *orig;
 	
@@ -101,7 +99,6 @@ void CopySkinAsReference(Model *m, Skin *orig, Skin **copy)
 // update physical data in world coordinates
 void Model::_UpdatePhysAbsolute_()
 {
-	msg_db_f("CalcPhysAbs",1);
 	PhysicalSkinAbsolute *a = &phys_absolute;
 	PhysicalSkin *s = phys;
 
@@ -117,7 +114,6 @@ void Model::_UpdatePhysAbsolute_()
 
 
 	if (!a->is_ok){
-		msg_db_m("...",1);
 		if (!a->p)
 			a->p = new vector[s->num_vertices];
 		if (!a->pl)
@@ -144,7 +140,6 @@ void Model::_UpdatePhysAbsolute_()
 // mark data as obsolete
 void Model::_ResetPhysAbsolute_()
 {
-	msg_db_f("ResetPhysAbsolute",1);
 	phys_absolute.is_ok=false;
 	for (int i=0;i<bone.num;i++)
 		if (bone[i].model)
@@ -244,7 +239,6 @@ static vector get_normal_by_index(int index)
 
 void Model::ResetData()
 {
-	msg_db_f("ResetData", 2);
 	registered = false;
 	object_id = -1;
 	parent = NULL;
@@ -357,20 +351,27 @@ Model::Model(const string &filename)
 
 void Model::Load(const string &filename)
 {
-	msg_db_f("loading model", 1);
 	msg_write("loading model: " + filename);
 	msg_right();
 
-	File *f = NULL;
-
-	try{
-
 	// load model from file
+	File *f;
+	try{
 	f = FileOpenText(ObjectDir + filename + ".model");
-
+	}catch(FileError &e){
+		error = true;
+		msg_error("-failed");
+		msg_left();
+		return;
+	}
 	int ffv = f->ReadFileFormatVersion();
-	if (ffv != 11)
-		throw Exception(format("wrong file format: %d (11 expected)", ffv));
+	if (ffv != 11){
+		FileClose(f);
+		error = true;
+		msg_error(format("wrong file format: %d (11 expected)", ffv));
+		msg_left();
+		return;
+	}
 
 	Array<float> temp_sv;
 	_template = new ModelTemplate(this);
@@ -416,7 +417,6 @@ void Model::Load(const string &filename)
 	}
 	
 	// Physical Skin
-	msg_db_m("Phys",1);
 	phys = new PhysicalSkin;
 	phys_is_reference = false;
 	//   vertices
@@ -474,7 +474,6 @@ void Model::Load(const string &filename)
 
 	// Visible Skin[d]
 	for (int d=0;d<3;d++){
-		msg_db_m("Skin",1);
 		skin[d] = new Skin;
 		Skin *s = skin[d];
 		s->sub.resize(material.num);
@@ -526,7 +525,6 @@ void Model::Load(const string &filename)
 	}
 
 	// Skeleton
-	msg_db_m("Skel",1);
 	f->read_comment();
 	bone.resize(f->read_int());
 	for (int i=0;i<bone.num;i++){
@@ -621,15 +619,12 @@ void Model::Load(const string &filename)
 	temp_sv.clear();
 
 	// Effects
-	msg_db_m("FX",1);
 	f->read_comment();
 	int num_fx = f->read_int();
-	msg_db_m(i2s(num_fx).c_str(),2);
 	_template->fx.resize(num_fx);
 	for (int i=0;i<num_fx;i++){
 		ModelEffectData *d = &_template->fx[i];
 		string fxtype = f->read_str();
-		msg_db_m(fxtype.c_str(),2);
 		if (fxtype == "Script"){
 			d->type = FX_TYPE_SCRIPT;
 			d->vertex = f->read_int();
@@ -695,20 +690,11 @@ void Model::Load(const string &filename)
 	for (int i=0;i<script_var.num;i++)
 		script_var[i] = f->read_float();
 
-	msg_db_m("deleting file",1);
 	FileClose(f);
-	}catch(Exception &e){
-		FileClose(f);
-		error = true;
-		msg_error(e.message());
-		msg_left();
-		return;
-	}
 
 
 
 	// do some post processing...
-	msg_db_m("-calculating model",2);
 	AppraiseDimensions(this);
 
 	for (int i=0;i<MODEL_NUM_SKINS;i++)
@@ -721,7 +707,6 @@ void Model::Load(const string &filename)
 
 	// skeleton
 	if (bone.num>0){
-		msg_db_m("-calculating skeleton",2);
 		bone_pos_0 = new vector[bone.num];
 		for (int i=0;i<bone.num;i++){
 			bone_pos_0[i] = _GetBonePos(i);
@@ -767,8 +752,6 @@ void CopyPhysicalSkin(PhysicalSkin *orig, PhysicalSkin **copy)
 
 Model *Model::GetCopy(bool allow_script_init)
 {
-	msg_db_f("model::GetCopy",1);
-
 	if (is_copy)
 		msg_error("model: copy of copy");
 
@@ -802,7 +785,6 @@ Model *Model::GetCopy(bool allow_script_init)
 
 	// skins
 	if ((meta_move) || (bone.num > 0)){
-		msg_db_m("-new skins ref",2);
 		for (int i=0;i<MODEL_NUM_SKINS;i++){
 			CopySkinAsReference(this, skin[i], &m->skin[i]);
 			m->skin_is_reference[i] = false;
@@ -811,7 +793,6 @@ Model *Model::GetCopy(bool allow_script_init)
 
 	// skeleton
 	if (bone.num > 0){
-		msg_db_m("-new skeleton",2);
 		m->bone_pos_0 = new vector[bone.num];
 		memcpy(m->bone_pos_0, bone_pos_0, sizeof(vector) * bone.num);
 		// copy already done by "*m = *this"...
@@ -840,8 +821,6 @@ Model *Model::GetCopy(bool allow_script_init)
 //    don't delete sub models ...done by meta
 void Model::DeleteBaseModel()
 {
-	msg_db_f("~model", 1);
-
 	UnregisterModel(this);
 
 	if (object_id >= 0)
@@ -883,7 +862,6 @@ void Model::DeleteBaseModel()
 
 	// physical
 	if (phys && !phys_is_reference){
-		msg_db_m("del phys", 2);
 		delete[](phys->bone_nr);
 		delete[](phys->vertex);
 		for (int i=0;i<phys->num_polys;i++){
@@ -904,7 +882,6 @@ void Model::DeleteBaseModel()
 	// skin
 	for (int i=0;i<MODEL_NUM_SKINS;i++)
 		if (skin[i] && !skin_is_reference[i]){
-			msg_db_m(format("del skin[%d]",i).c_str(), 2);
 			Skin *s = skin[i];
 
 			// vertex buffer
@@ -999,7 +976,6 @@ void Model::SetBoneModel(int index, Model *sub)
 		msg_error(format("Model::SetBoneModel: (%s) invalid bone index %d", GetFilename().c_str(), index));
 		return;
 	}
-	msg_db_f("Model::SetBoneModel",2);
 	
 	// remove the old one
 	if (bone[index].model){
@@ -1027,11 +1003,7 @@ Model *Model::GetRoot()
 
 void Model::CalcMove(float elapsed)
 {
-	msg_db_f("model::CalcMove",3);
-
 	if (meta_move){
-
-		msg_db_m("meta_move",10);
 
 		// for handling special cases (-1,-2)
 		int num_ops = num_move_operations;
@@ -1070,8 +1042,6 @@ void Model::CalcMove(float elapsed)
 
 	// vertex animation
 
-		msg_db_m("vertex anim",10);
-
 		bool vertex_animated=false;
 		for (int op=0;op<num_ops;op++){
 			if (move_operation[op].move<0)	continue;
@@ -1106,8 +1076,6 @@ void Model::CalcMove(float elapsed)
 		}
 		
 	// skeletal animation
-
-		msg_db_m("skeletal",10);
 
 		for (int i=0;i<bone.num;i++){
 			Bone *b = &bone[i];
@@ -1255,8 +1223,6 @@ void Model::CalcMove(float elapsed)
 		}
 	}*/
 
-	msg_db_m("rec",10);
-
 	// recursion
 	for (int i=0;i<bone.num;i++)
 		if (bone[i].model){
@@ -1276,7 +1242,6 @@ bool Model::Trace(const vector &p1, const vector &p2, const vector &dir, float r
 	if (!passive_physics)
 		return false;
 	
-	msg_db_f("model::Trace",5);
 	bool hit=false;
 	vector c;
 	float dmin=range;
@@ -1451,7 +1416,6 @@ bool Model::Animate(int mode, float param1, float param2, int move_no, float &ti
 {
 	if (!meta_move)
 		return false;
-	msg_db_f("model::Move",3);
 	if (num_move_operations < 0){
 		num_move_operations = 0;
 	}else if (num_move_operations >= MODEL_MAX_MOVE_OPS - 1){
@@ -1493,7 +1457,6 @@ void Model::BeginEditAnimation()
 // make sure, the model/skin is editable and not just a reference.... (soon)
 void Model::BeginEdit(int detail)
 {
-	msg_db_f("model.BeginEdit", 1);
 	MakeEditable();
 	if (skin_is_reference[detail]){
 		Skin *o = skin[detail];
@@ -1513,8 +1476,6 @@ void Model::EndEdit(int detail)
 // make sure we can edit this object without destroying an original one
 void Model::MakeEditable()
 {
-	msg_db_f("model.MakeEditable", 1);
-
 	// must have its own materials
 	if (material_is_reference){
 		material.make_own();
@@ -1532,7 +1493,6 @@ string Model::GetFilename()
 
 void Model::JustDraw(int mat_no, int detail)
 {
-	msg_db_f("model.JustDraw",5);
 	_detail_needed_[detail] = true;
 	Skin *s = skin[detail];
 	SubSkin &sub = s->sub[mat_no];
@@ -1552,12 +1512,9 @@ void Model::JustDraw(int mat_no, int detail)
 			
 		// vertex buffer existing?
 		if (!sub.vertex_buffer){
-			msg_db_m("vb not existing -> new",3);
 			sub.vertex_buffer = new nix::VertexBuffer(m->textures.num);
 		}
-		msg_db_m("empty",6);
 		sub.vertex_buffer->clear();
-		msg_db_m("new...",6);
 		if (m->textures.num == 1){
 			for (int i=0;i<sub.num_triangles;i++){
 				//msg_write(i);
@@ -1583,7 +1540,6 @@ void Model::JustDraw(int mat_no, int detail)
 								p[vc],n[i*3+2],tc[2]);
 			}
 		}
-		msg_db_m("--ok",6);
 		sub.force_update = false;
 	}
 

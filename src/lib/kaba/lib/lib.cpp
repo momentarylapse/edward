@@ -10,7 +10,7 @@
 #include <string.h>
 
 #ifdef WIN32
-	#include <windows.h>
+	#include "windows.h"
 #endif
 #include "../kaba.h"
 #include "common.h"
@@ -27,7 +27,7 @@
 
 namespace Kaba{
 
-string LibVersion = "0.16.0.0";
+string LibVersion = "0.16.1.0";
 
 const string IDENTIFIER_CLASS = "class";
 const string IDENTIFIER_FUNC_INIT = "__init__";
@@ -147,6 +147,9 @@ Class *TypeImage;
 
 Class *TypeException;
 Class *TypeExceptionP;
+
+Class *TypeClass;
+Class *TypeClassP;
 
 
 Array<Package> Packages;
@@ -361,7 +364,7 @@ int get_virtual_index(void *func, const string &tname, const string &name)
 		}
 	}else{
 
-		long p = (long)func;
+		int_p p = (int_p)func;
 		if ((p & 1) > 0){
 			// virtual function
 			return p / sizeof(void*);
@@ -445,16 +448,99 @@ float _cdecl _Float642Float(double f)
 {	return (float)f;	}
 float _cdecl _Int2Float(int i)
 {	return (float)i;	}
-int _cdecl _Int642Int(long long i)
+int _cdecl _Int642Int(int64 i)
 {	return (int)i;	}
-long long _cdecl _Int2Int64(int i)
-{	return (long long)i;	}
+int64 _cdecl _Int2Int64(int i)
+{	return (int64)i;	}
 char _cdecl _Int2Char(int i)
 {	return (char)i;	}
 int _cdecl _Char2Int(char c)
 {	return (int)c;	}
 bool _cdecl _Pointer2Bool(void *p)
 {	return (p != NULL);	}
+
+
+#pragma GCC push_options
+#pragma GCC optimize("no-omit-frame-pointer")
+
+template<class T>
+void _ultra_sort(DynamicArray &array, int offset_by)
+{
+	T *p = (T*)((char*)array.data + offset_by);
+	for (int i=0; i<array.num; i++){
+		T *q = (T*)((char*)p + array.element_size);
+		for (int j=i+1; j<array.num; j++){
+			if (*p > *q)
+				array.swap(i, j);
+			q = (T*)((char*)q + array.element_size);
+		}
+		p = (T*)((char*)p + array.element_size);
+	}
+}
+
+template<class T>
+void _ultra_sort_p(DynamicArray &array, int offset_by)
+{
+	char **p = (char**)array.data;
+	for (int i=0; i<array.num; i++){
+		T *pp = (T*)(*p + offset_by);
+		char **q = p + 1;
+		for (int j=i+1; j<array.num; j++){
+			T *qq = (T*)(*q + offset_by);
+			if (*pp > *qq){
+				array.swap(i, j);
+				pp = (T*)(*p + offset_by);
+			}
+			q ++;
+		}
+		p ++;
+	}
+}
+
+void _cdecl ultra_sort(DynamicArray &array, Class *type, const string &by)
+{
+	if (!type->is_super_array)
+		kaba_raise_exception(new KabaException("type '" + type->name + "' is not an array"));
+	Class *el = type->parent;
+	if (array.element_size != el->size)
+		kaba_raise_exception(new KabaException("element type size mismatch..."));
+
+	Class *rel = el;
+
+	if (el->is_pointer){
+		rel = el->parent;
+	}
+
+	ClassElement *ell = NULL;
+	for (auto &e: rel->elements)
+		if (e.name == by)
+			ell = &e;
+	if (!ell)
+		kaba_raise_exception(new KabaException("type '" + rel->name + "' does not have an element '" + by + "'"));
+	int offset = ell->offset;
+
+
+	if (el->is_pointer){
+		if (ell->type == TypeString)
+			_ultra_sort_p<string>(array, offset);
+		else if (ell->type == TypeInt)
+			_ultra_sort_p<int>(array, offset);
+		else if (ell->type == TypeFloat)
+			_ultra_sort_p<float>(array, offset);
+		else
+			kaba_raise_exception(new KabaException("can't sort by '" + ell->name + " " + by + "'"));
+	}else{
+		if (ell->type == TypeString)
+			_ultra_sort<string>(array, offset);
+		else if (ell->type == TypeInt)
+			_ultra_sort<int>(array, offset);
+		else if (ell->type == TypeFloat)
+			_ultra_sort<float>(array, offset);
+		else
+			kaba_raise_exception(new KabaException("can't sort by '" + ell->name + " " + by + "'"));
+	}
+}
+
 string _cdecl kaba_shell_execute(const string &cmd)
 {
 	try{
@@ -464,6 +550,8 @@ string _cdecl kaba_shell_execute(const string &cmd)
 	}
 	return "";
 }
+
+#pragma GCC pop_options
 
 
 Array<Statement> Statements;
@@ -600,7 +688,7 @@ void CastInt2Float(Value &r, Value &s)
 void CastInt2Int64(Value &r, Value &s)
 {
 	r.init(TypeInt64);
-	r.as_int64() = (long long)s.as_int();
+	r.as_int64() = (int64)s.as_int();
 }
 void CastInt2Char(Value &r, Value &s)
 {
@@ -694,7 +782,7 @@ public:
 
 class Int64Class
 {
-	long long i;
+	int64 i;
 public:
 	string _cdecl str(){	return i642s(i);	}
 };
@@ -760,7 +848,7 @@ void SIAddPackageBase()
 	TypeVoid			= add_type  ("void",		0, FLAG_CALL_BY_VALUE);
 	TypeBool			= add_type  ("bool",		sizeof(bool), FLAG_CALL_BY_VALUE);
 	TypeInt				= add_type  ("int",			sizeof(int), FLAG_CALL_BY_VALUE);
-	TypeInt64			= add_type  ("int64",		sizeof(long long), FLAG_CALL_BY_VALUE);
+	TypeInt64			= add_type  ("int64",		sizeof(int64), FLAG_CALL_BY_VALUE);
 	TypeFloat32			= add_type  ("float32",		sizeof(float), FLAG_CALL_BY_VALUE);
 	TypeFloat64			= add_type  ("float64",		sizeof(double), FLAG_CALL_BY_VALUE);
 	TypeChar			= add_type  ("char",		sizeof(char), FLAG_CALL_BY_VALUE);
@@ -768,6 +856,9 @@ void SIAddPackageBase()
 
 	TypeException		= add_type  ("Exception",	sizeof(KabaException));
 	TypeExceptionP		= add_type_p("Exception*", TypeException);
+
+	TypeClass 			= add_type  ("Class",	sizeof(Class));
+	TypeClassP			= add_type_p("Class*", TypeClass);
 
 
 	// select default float type
@@ -977,7 +1068,7 @@ void SIAddPackageBase()
 		class_add_element("text", TypeString, config.pointer_size);
 		class_set_vtable(KabaException);
 
-	add_func(IDENTIFIER_RAISE, TypeVoid, (void*)&kaba_raise_exception);
+	add_func(IDENTIFIER_RAISE, TypeVoid, (void*)&kaba_raise_exception, FLAG_RAISES_EXCEPTIONS);
 		func_add_param("e", TypeExceptionP);
 }
 
@@ -995,6 +1086,7 @@ void SIAddBasicCommands()
 	add_statement(IDENTIFIER_NEW, STATEMENT_NEW);
 	add_statement(IDENTIFIER_DELETE, STATEMENT_DELETE, 1);
 	add_statement("sizeof", STATEMENT_SIZEOF, 1);
+	add_statement("type", STATEMENT_TYPE, 1);
 	add_statement(IDENTIFIER_ASM, STATEMENT_ASM);
 	add_statement(IDENTIFIER_TRY, STATEMENT_TRY); // return: ParamType will be defined by the parser!
 	add_statement(IDENTIFIER_EXCEPT, STATEMENT_EXCEPT); // return: ParamType will be defined by the parser!
@@ -1234,6 +1326,12 @@ void SIAddCommands()
 	// system
 	add_func("shell_execute",	TypeString,	(void*)&kaba_shell_execute, FLAG_RAISES_EXCEPTIONS);
 		func_add_param("cmd",	TypeString);
+
+
+	add_func("sort_list",	TypeVoid,	(void*)&ultra_sort, FLAG_RAISES_EXCEPTIONS);
+		func_add_param("list",	TypePointer);
+		func_add_param("class",	TypeClassP);
+		func_add_param("by",	TypeString);
 
 
 // add_func("ExecuteScript",	TypeVoid);

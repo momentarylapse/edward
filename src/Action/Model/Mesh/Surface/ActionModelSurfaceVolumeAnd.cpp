@@ -27,7 +27,6 @@ void *ActionModelSurfaceVolumeAnd::compose(Data *d)
 	if (n == 0)
 		throw ActionException("no closed surfaces selected");
 
-	msg_db_f("Subtract", 1);
 	Array<Geometry> geos;
 	for (int bi=m->surface.num-1; bi>=0; bi--){
 		if (m->surface[bi].is_selected){
@@ -49,7 +48,6 @@ void surf2geo(ModelSurface *s, Geometry &g);
 
 void ActionModelSurfaceVolumeAnd::SurfaceAnd(DataModel *m, ModelSurface *a, int ai, ModelSurface *b, Array<Geometry> &geos)
 {
-	msg_db_f("SurfSubtract", 0);
 	Geometry ga, gb, gc;
 	surf2geo(a, ga);
 	surf2geo(b, gb);

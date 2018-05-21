@@ -44,7 +44,6 @@ LightmapData::~LightmapData()
 
 void LightmapData::Init(DataWorld *w)
 {
-	msg_db_f("LightmapData.Init", 1);
 	source_world = w;
 	world_name_small = w->filename.basename().replace(".world", "");
 
@@ -148,8 +147,6 @@ static void tria_set_mat(LightmapData::Triangle &t, ModelMaterial *m)
 
 void LightmapData::AddModel(const string &filename, matrix &mat, int object_index)
 {
-	msg_db_f("lm_add_model", 1);
-
 	Model mod;
 	mod.mat = mat;
 	mod.id = Models.num;
@@ -217,8 +214,6 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 
 void LightmapData::AddTerrain(WorldTerrain &wt, int terrain_index)
 {
-	msg_db_f("lm_add_terrain", 1);
-
 	Terrain ter;
 	ter.id = Terrains.num;
 

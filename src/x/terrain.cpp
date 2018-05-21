@@ -45,18 +45,14 @@ Terrain::Terrain(const string &_filename_, const vector &_pos_)
 
 bool Terrain::Load(const string &_filename_, const vector &_pos_, bool deep)
 {
-	msg_db_f("loading terrain", 1);
 	msg_write("loading terrain: " + _filename_);
 	msg_right();
 
 	reset();
 
 	filename = _filename_;
-	File *f = NULL;
-
-	try{
-
-		f = FileOpen(MapDir + filename + ".map");
+	File *f = FileOpen(MapDir + filename + ".map");
+	if (f){
 
 		int ffv = f->ReadFileFormatVersion();
 		if (ffv == 4){
@@ -122,18 +118,14 @@ bool Terrain::Load(const string &_filename_, const vector &_pos_, bool deep)
 
 		changed = false;
 		force_redraw = true;
-	}catch(Exception &e){
-		FileClose(f);
+	}else
 		error = true;
-		msg_error(e.message());
-	}
 	msg_left();
 	return !error;
 }
 
 Terrain::~Terrain()
 {
-	msg_db_f("~Terrain",1);
 	delete(vertex_buffer);
 	delete(material);
 }
@@ -141,7 +133,6 @@ Terrain::~Terrain()
 // die Normalen-Vektoren in einem bestimmten Abschnitt der Karte neu berechnen
 void Terrain::Update(int x1,int x2,int z1,int z2,int mode)
 {
-	msg_db_f("Terrain.Update",1);
 	if (x1<0)		x1=0;
 	if (x2<0)		x2=num_x;
 	if (x2>=num_x)	x2=num_x;
@@ -279,7 +270,6 @@ inline void add_edge(int &num, int e0, int e1)
 //    get a part of the terrain
 void Terrain::GetTriangleHull(TriangleHull *h, vector &_pos_, float _radius_)
 {
-	//msg_db_f("Terrain::GetTriangleHull", 1);
 	h->p = &vertex[0];
 	h->index = TempVertexIndex;
 	h->triangle_index = TempTriangleIndex;
@@ -379,7 +369,6 @@ inline bool TracePattern(Terrain *t, const vector &p1,const vector &p2, TraceDat
 
 bool Terrain::Trace(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test)
 {
-	msg_db_m("Terrain,Trace",4);
 	float dmin = range + 1;
 	vector c;
 
@@ -464,7 +453,6 @@ bool Terrain::Trace(const vector &p1, const vector &p2, const vector &dir, float
 
 void Terrain::Draw()
 {
-	msg_db_f("Terrain.Draw",3);
 	redraw = false;
 	// c d
 	// a b

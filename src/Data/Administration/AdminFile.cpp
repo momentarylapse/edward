@@ -40,8 +40,6 @@ void AdminFile::add_child(AdminFile *child)
 {
 	if (!child)
 		return;
-	msg_db_f("AdminFile.add_child",5);
-	msg_db_m(format("link:   %s  ->  %s",Name.c_str(),child->Name.c_str()).c_str(),1);
 
 	// as parent of child
 	bool add = true;
@@ -62,7 +60,6 @@ void AdminFile::add_child(AdminFile *child)
 
 void AdminFile::remove_child(AdminFile *child)
 {
-	msg_db_f("AdminFile.remove_child",5);
 	for (int i=child->Parent.num-1;i>=0;i--)
 		if (child->Parent[i] == this)
 			child->Parent.erase(i);
@@ -155,7 +152,6 @@ void add_possible_link(Array<s_admin_link> &l, int type, const string &filename)
 		if (l[i].type == type)
 			if (l[i].file == filename)
 				return;
-	msg_db_m(string("pos. link: " + filename).c_str(),6);
 	s_admin_link link;
 	link.file = filename;
 	link.type = type;
@@ -164,10 +160,6 @@ void add_possible_link(Array<s_admin_link> &l, int type, const string &filename)
 
 void AdminFile::check(AdminFileList &list)
 {
-	msg_db_f("AdminFile.check", 5);
-	msg_db_m(Name.c_str(), 5);
-
-
 	bool really_scan = true;
 
 	// test file existence

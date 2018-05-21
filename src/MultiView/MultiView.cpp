@@ -663,7 +663,6 @@ void MultiView::drawMousePos()
 
 void MultiView::onDraw()
 {
-	msg_db_f("Multiview.OnDraw",2);
 	timer.reset();
 
 	nix::ResetZ();
@@ -878,7 +877,6 @@ vector MultiView::getCursor3d(const vector &depth_reference)
 
 void MultiView::getHover()
 {
-	msg_db_f("GetMouseOver",6);
 	hover.reset();
 
 	if (!ed->input.inside_smart)
@@ -961,7 +959,6 @@ void MultiView::unselectAll()
 
 void MultiView::getSelected(int mode)
 {
-	msg_db_f("GetSelected",4);
 	notifyBegin();
 	if ((hover.index < 0) or (hover.type < 0)){
 		if (mode == SELECT_SET)
@@ -988,7 +985,6 @@ void MultiView::getSelected(int mode)
 
 void MultiView::selectAllInRectangle(int mode)
 {
-	msg_db_f("SelAllInRect",4);
 	notifyBegin();
 	// reset data
 	unselectAll();

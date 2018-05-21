@@ -25,8 +25,6 @@ AdminFile *AdminFileList::add_unchecked(int kind, const string &filename, AdminF
 {
 	if (filename.num <= 0)
 		return NULL;
-	msg_db_f("AddAdminFileUnchecked",5);
-	msg_db_m(filename.c_str(),5);
 
 	string _filename = filename.sys_filename();
 
@@ -87,8 +85,6 @@ void AdminFileList::add_recursive(AdminFile *to_add)
 
 void AdminFileList::sort()
 {
-	msg_db_f("AdminFileList.sort",1);
-
 	// sorting (by type)
 	for (int i=0;i<num-1;i++)
 		for (int j=i;j<num;j++)
