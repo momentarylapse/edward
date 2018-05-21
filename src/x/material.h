@@ -80,6 +80,7 @@ extern string MaterialDir;
 void MaterialInit();
 void MaterialEnd();
 void MaterialReset();
-Material *LoadMaterial(const string &filename, bool as_default = false);
+void SetDefaultMaterial(Material *m);
+Material *LoadMaterial(const string &filename);
 
 #endif

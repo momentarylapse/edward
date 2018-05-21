@@ -59,7 +59,7 @@ void ModeModelMeshCreateBall::onStart()
 	dialog->enable("nb_complexity", sphere);
 	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
-	dialog->event("hui:close", &hui::FuncIgnore);
+	dialog->event("hui:close", std::bind(&ModeModelMeshCreateBall::abort, this));
 	dialog->event("ball_type:ball", std::bind(&ModeModelMeshCreateBall::onTypeBall, this));
 	dialog->event("ball_type:sphere", std::bind(&ModeModelMeshCreateBall::onTypeSphere, this));
 

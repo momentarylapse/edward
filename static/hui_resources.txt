@@ -8599,7 +8599,7 @@ image=hui:about
 // Resource
 Dialog
 world_new_object_dialog
-width=390,height=75
+width=390,height=75,allow-parent
 0
 0
 1

@@ -12,27 +12,37 @@ color file_read_color4i(File *f); // -> model.cpp
 string MaterialDir;
 
 // materials
+static Material *default_material;
+static Material *trivial_material;
 static Array<Material*> materials;
 
 void MaterialInit()
 {
 	// create the default material
-	Material *m = new Material;
-	m->name = "-default-";
-	materials.add(m);
+	trivial_material = new Material;
+	trivial_material->name = "-default-";
+
+	SetDefaultMaterial(trivial_material);
 }
 
 void MaterialEnd()
 {
-	delete(materials[0]);
+	delete(trivial_material);
 }
 
 void MaterialReset()
 {
-	// delete materials
-	for (int i=1;i<materials.num;i++)
-		delete(materials[i]);
-	materials.resize(1);
+	for (auto *m: materials)
+		delete(m);
+	materials.clear();
+
+	SetDefaultMaterial(trivial_material);
+}
+
+
+void SetDefaultMaterial(Material *m)
+{
+	default_material = m;
 }
 
 
@@ -137,29 +147,21 @@ void Material::copy_from(Model *model, Material *m2, bool user_colors)
 }
 
 
-Material *LoadMaterial(const string &filename, bool as_default)
+Material *LoadMaterial(const string &filename)
 {
 	// an empty name loads the default material
 	if (filename.num == 0)
-		return materials[0];
+		return default_material;
 
-	if (!as_default){
-		for (int i=0;i<materials.num;i++)
-			if (materials[i]->name == filename)
-				return materials[i];
-	}
 	File *f;
 	msg_write("loading material " + filename);
 	try{
 		f = FileOpenText(MaterialDir + filename + ".material");
 	}catch(FileError &e){
 #ifdef _X_ALLOW_X_
-		if (Engine.FileErrorsAreCritical)
-			msg_error(e.message());
-//	if (Engine.FileErrorsAreCritical)
-	//	return NULL;
+		msg_error(e.message());
 #endif
-		return materials[0];
+		return default_material;
 	}
 	Material *m = new Material;
 
@@ -224,7 +226,7 @@ Material *LoadMaterial(const string &filename, bool as_default)
 		materials.add(m);
 	}else{
 		msg_error(format("wrong file format: %d (expected: 4)", ffv));
-		m = materials[0];
+		m = default_material;
 	}
 	FileClose(f);
 	return m;

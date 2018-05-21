@@ -1,4 +1,4 @@
-Dialog world_new_object_dialog "neues Objekt" width=390 height=75
+Dialog world_new_object_dialog "neues Objekt" width=390 height=75 allow-parent
 	Grid ? ""
 		Text t_name "Name"
 		Edit name "" expandx

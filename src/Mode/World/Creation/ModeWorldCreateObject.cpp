@@ -33,7 +33,7 @@ void ModeWorldCreateObject::onStart()
 	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->enable("name", false);
 	dialog->show();
-	dialog->event("hui:close", &hui::FuncIgnore);
+	dialog->event("hui:close", std::bind(&ModeWorldCreateObject::abort, this));
 	dialog->event("find_object", std::bind(&ModeWorldCreateObject::onFindObject, this));
 
 	if (filename.num > 0)

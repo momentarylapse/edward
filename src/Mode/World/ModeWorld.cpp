@@ -615,6 +615,7 @@ void ModeWorld::ExecuteSelectionPropertiesDialog()
 			ExecuteCamPointDialog();
 		}*/
 	}
+	delete(dlg);
 }
 
 
@@ -623,6 +624,7 @@ void ModeWorld::ExecuteObjectPropertiesDialog(int index)
 {
 	ObjectPropertiesDialog *dlg = new ObjectPropertiesDialog(ed, false, data, index);
 	dlg->run();
+	delete(dlg);
 }
 
 
@@ -631,12 +633,14 @@ void ModeWorld::ExecuteTerrainPropertiesDialog(int index)
 {
 	TerrainPropertiesDialog *dlg = new TerrainPropertiesDialog(ed, false, data, index);
 	dlg->run();
+	delete(dlg);
 }
 
 void ModeWorld::ExecuteLightmapDialog()
 {
 	LightmapDialog *dlg = new LightmapDialog(ed, false, data);
 	dlg->run();
+	delete(dlg);
 }
 
 
@@ -715,6 +719,7 @@ void ModeWorld::ApplyHeightmap()
 	}
 	TerrainHeightmapDialog *dlg = new TerrainHeightmapDialog(ed, false, data);
 	dlg->run();
+	delete(dlg);
 }
 
 
