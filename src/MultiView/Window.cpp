@@ -239,12 +239,15 @@ void set_projection_matrix(Window *w)
 	if (w->type == VIEW_PERSPECTIVE){
 		float height = w->dest.height();
 		nix::SetProjectionPerspectiveExt(cx, cy, height, height, r / 1000, r * 1000);
+		MatrixScale(w->reflection_matrix, 1, -1, 1);
 	}else if (w->type == VIEW_2D){
 		float height = w->zoom();
 		nix::SetProjectionOrthoExt(cx, cy, -height, height, -1, 1);
+		MatrixScale(w->reflection_matrix, -1, 1, 1);
 	}else{
 		float height = w->zoom();
 		nix::SetProjectionOrthoExt(cx, cy, height, -height, - r * 100, r * 100);
+		MatrixScale(w->reflection_matrix, 1, -1, 1);
 	}
 	w->projection_matrix = nix::projection_matrix;
 

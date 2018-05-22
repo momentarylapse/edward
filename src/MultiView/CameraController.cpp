@@ -90,7 +90,7 @@ void CameraController::onLeftButtonUp()
 void CameraController::onMouseMove()
 {
 	if (moving)
-		view->camMove(vector(-view->v.x, view->v.y, 0));
+		view->camMove(vector(view->v.x, view->v.y, 0));
 	if (rotating)
 		view->camRotate(view->v, false);
 	if (zooming)

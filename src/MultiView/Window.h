@@ -22,6 +22,7 @@ public:
 
 	int type;
 	matrix projection_matrix;
+	matrix reflection_matrix;
 	matrix view_matrix;
 	matrix pv_matrix;
 	matrix ipv_matrix;

@@ -107,7 +107,7 @@ MultiView::MultiView(bool mode3d) :
 	POINT_RADIUS = 2;
 	POINT_RADIUS_HOVER = 4;
 
-	allow_infinite_scrolling = hui::Config.getBool("MultiView.InfiniteScrolling", true);
+	allow_infinite_scrolling = hui::Config.getBool("MultiView.InfiniteScrolling", false);
 
 	if (mode3d){
 		win.add(new Window(this, VIEW_BACK));
@@ -248,27 +248,26 @@ void MultiView::camZoom(float factor, bool mouse_rel)
 	notify(MESSAGE_UPDATE);
 }
 
+// dir: screen pixels
 void MultiView::camMove(const vector &dir)
 {
-	//vector r = active_win->getDirectionRight();
-	//vector u = active_win->getDirectionUp();
-	cam.pos += (active_win->local_ang * dir) / active_win->zoom();
-	/*vector d, u, r;
-	mouse_win->GetMovingFrame(d, u, r);
-	if (mode3d)
-		cam.pos += cam.radius*(r*dir.x+u*dir.y+d*dir.z) * SPEED_MOVE;
-	else
-		cam.pos += (float)NixScreenHeight / cam.zoom*(r*dir.x+u*dir.y) * SPEED_MOVE;*/
+	vector d = active_win->reflection_matrix * dir;
+	cam.pos -= (active_win->local_ang * d) / active_win->zoom();
+
 	notify(MESSAGE_CAMERA_CHANGE);
 }
 
+// dir: screen pixels...yap
 void MultiView::camRotate(const vector &dir, bool cam_center)
 {
+	vector dang = vector(dir.y, dir.x, 0) * MOUSE_ROTATION_SPEED;
+	// could have used reflection_matrix... but...only VIEW_PERSPECTIVE...
+
 	if (cam_center)
 		cam.pos -= cam.radius * (cam.ang * e_z);
-	quaternion dang;
-	QuaternionRotationV(dang, vector(v.y, v.x, 0) * MOUSE_ROTATION_SPEED);
-	cam.ang = cam.ang * dang;
+	quaternion dq;
+	QuaternionRotationV(dq, dang);
+	cam.ang = cam.ang * dq;
 	if (cam_center)
 		cam.pos += cam.radius * (cam.ang * e_z);
 	action_con->update();
@@ -387,9 +386,9 @@ void MultiView::onKeyDown(int k)
 	if ((k == hui::KEY_SUBTRACT) or (k == hui::KEY_NUM_SUBTRACT))
 		camZoom(1.0f / SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
 	if (k == hui::KEY_RIGHT)
-		camMove( e_x * SPEED_MOVE);
-	if (k == hui::KEY_LEFT)
 		camMove(-e_x * SPEED_MOVE);
+	if (k == hui::KEY_LEFT)
+		camMove( e_x * SPEED_MOVE);
 	if (k == hui::KEY_UP)
 		camMove( e_y * SPEED_MOVE);
 	if (k == hui::KEY_DOWN)
