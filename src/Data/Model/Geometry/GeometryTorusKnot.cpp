@@ -19,7 +19,7 @@ GeometryTorusKnot::GeometryTorusKnot(const vector &_pos, const vector &axis, flo
 		vector er = vector(cos(wx), sin(wx), 0);
 		pos.add(er * radius1 + (er * cos(wy) + e_z * sin(wy)) * radius2);
 	}
-	GeometryCylinder geo = GeometryCylinder(pos, radius3, rings, edges, true);
+	GeometryCylinder geo = GeometryCylinder(pos, radius3, rings, edges, GeometryCylinder::END_LOOP);
 	add(geo);
 }
 

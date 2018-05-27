@@ -83,6 +83,15 @@ void ModelEffect::clear()
 	inv_quad = false;
 }
 
+ModelVertex::ModelVertex(const vector &_pos)
+{
+	pos = _pos;
+	ref_count = 0;
+	normal_mode = NORMAL_MODE_ANGULAR;
+	surface = -1;
+	bone_index = -1;
+	normal_dirty = false;
+}
 
 DataModel::DataModel() :
 	Data(FD_MODEL)
@@ -139,6 +148,7 @@ void DataModel::reset()
 	surface.clear();
 	vertex.clear();
 	ball.clear();
+	cylinder.clear();
 	poly.clear();
 	fx.clear();
 	material.resize(1);
@@ -218,7 +228,7 @@ void DataModel::showVertices(Array<ModelVertex> &vert)
 int get_normal_index(vector &n)
 {
 	int nxy, nz;
-	if ((n.x == 0) && (n.y == 0)){
+	if ((n.x == 0) and (n.y == 0)){
 		nxy = 0;
 		nz = (n.z < 0) ? 255 : 0;
 	}else{
@@ -528,7 +538,7 @@ bool DataModel::load(const string & _filename, bool deep)
 		SetNormalMode(NormalModeAngular,true);
 		skin=&Skin[3];
 		SetNormalMode(NormalModeAngular,true);
-		AlphaZBuffer=(TransparencyMode!=TransparencyModeFunctions)&&(TransparencyMode!=TransparencyModeFactor);*/
+		AlphaZBuffer=(TransparencyMode!=TransparencyModeFunctions)and(TransparencyMode!=TransparencyModeFactor);*/
 
 
 	}else if (ffv==11){ // new format
@@ -819,65 +829,78 @@ bool DataModel::load(const string & _filename, bool deep)
 			meta_data.script_var[i] = f->read_float();
 
 
-// additional data for editing
-		// Editor
-		f->read_comment();
-		meta_data.auto_generate_tensor = f->read_bool();
-		meta_data.auto_generate_dists = f->read_bool();
-		meta_data.auto_generate_skin[1] = f->read_bool();
-		meta_data.auto_generate_skin[2] = f->read_bool();
-		meta_data.detail_factor[1] = f->read_int();
-		meta_data.detail_factor[2] = f->read_int();
-		// Normals
-		f->read_comment();
-		for (int i=1;i<4;i++){
-			ModelSkin *s = &skin[i];
-			int normal_mode_all = f->read_int();
-			if (normal_mode_all == NORMAL_MODE_PER_VERTEX){
-				for (ModelVertex &v: s->vertex)
-					v.normal_mode = f->read_int();
-			}else{
-				for (ModelVertex &v: s->vertex)
-					v.normal_mode = normal_mode_all;
-			}
-		}
 
-		// Polygons
-		if (f->read_str() == "// Polygons"){
-			beginActionGroup("LoadPolygonData");
-			foreachi(ModelVertex &v, skin[1].vertex, i)
-				addVertex(v.pos, v.bone_index, v.normal_mode);
-			int ns = f->read_int();
-			for (int i=0;i<ns;i++){
-				ModelSurface s;
-				int nv = f->read_int();
-				for (int j=0;j<nv;j++){
-					ModelPolygon t;
-					t.is_selected = false;
-					t.triangulation_dirty = true;
-					int n = f->read_int();
-					t.material = f->read_int();
-					t.side.resize(n);
-					for (int k=0;k<n;k++){
-						t.side[k].vertex = f->read_int();
-						for (int l=0;l<material[t.material].texture_files.num;l++){
-							t.side[k].skin_vertex[l].x = f->read_float();
-							t.side[k].skin_vertex[l].y = f->read_float();
-						}
+// optional data / additional data for editing
+		while (true){
+			string s = f->read_str();
+			msg_write("opt:" + s);
+			if (s == "// Editor"){
+				meta_data.auto_generate_tensor = f->read_bool();
+				meta_data.auto_generate_dists = f->read_bool();
+				meta_data.auto_generate_skin[1] = f->read_bool();
+				meta_data.auto_generate_skin[2] = f->read_bool();
+				meta_data.detail_factor[1] = f->read_int();
+				meta_data.detail_factor[2] = f->read_int();
+			}else if (s == "// Normals"){
+				for (int i=1;i<4;i++){
+					ModelSkin *s = &skin[i];
+					int normal_mode_all = f->read_int();
+					if (normal_mode_all == NORMAL_MODE_PER_VERTEX){
+						for (ModelVertex &v: s->vertex)
+							v.normal_mode = f->read_int();
+					}else{
+						for (ModelVertex &v: s->vertex)
+							v.normal_mode = normal_mode_all;
 					}
-					t.normal_dirty = true;
-					s.polygon.add(t);
 				}
-				s.is_physical = f->read_bool();
-				s.is_visible = f->read_bool();
-				s.is_selected = false;
-				f->read_int();
-				s.model = this;
-				surface.add(s);
+			}else if (s == "// Polygons"){
+				beginActionGroup("LoadPolygonData");
+				foreachi(ModelVertex &v, skin[1].vertex, i)
+					addVertex(v.pos, v.bone_index, v.normal_mode);
+				int ns = f->read_int();
+				for (int i=0;i<ns;i++){
+					ModelSurface s;
+					int nv = f->read_int();
+					for (int j=0;j<nv;j++){
+						ModelPolygon t;
+						t.is_selected = false;
+						t.triangulation_dirty = true;
+						int n = f->read_int();
+						t.material = f->read_int();
+						t.side.resize(n);
+						for (int k=0;k<n;k++){
+							t.side[k].vertex = f->read_int();
+							for (int l=0;l<material[t.material].texture_files.num;l++){
+								t.side[k].skin_vertex[l].x = f->read_float();
+								t.side[k].skin_vertex[l].y = f->read_float();
+							}
+						}
+						t.normal_dirty = true;
+						s.polygon.add(t);
+					}
+					s.is_physical = f->read_bool();
+					s.is_visible = f->read_bool();
+					s.is_selected = false;
+					f->read_int();
+					s.model = this;
+					surface.add(s);
+				}
+				for (ModelSurface &s: surface)
+					s.buildFromPolygons();
+				endActionGroup();
+			}else if (s == "// Cylinders"){
+				int n = f->read_int();
+				for (int i=0; i<n; i++){
+					ModelCylinder c;
+					c.index[0] = f->read_int();
+					c.index[1] = f->read_int();
+					c.radius = f->read_float();
+					c.round = f->read_bool();
+					cylinder.add(c);
+				}
+			}else{
+				break;
 			}
-			for (ModelSurface &s: surface)
-				s.buildFromPolygons();
-			endActionGroup();
 		}
 
 
@@ -1264,7 +1287,7 @@ bool DataModel::save(const string & _filename)
 
 // animations
 	f->write_comment("// Animations");
-	if ((move.num == 1) && (move[0].frame.num == 0)){
+	if ((move.num == 1) and (move[0].frame.num == 0)){
 		f->write_int(0);
 	}else
 		f->write_int(move.num);
@@ -1391,6 +1414,18 @@ bool DataModel::save(const string & _filename)
 	f->write_int(meta_data.script_var.num);
 	for (int i=0;i<meta_data.script_var.num;i++)
 	    f->write_float(meta_data.script_var[i]);
+
+
+	if (cylinder.num > 0){
+		f->write_comment("// Cylinders");
+		f->write_int(cylinder.num);
+		for (auto &c: cylinder){
+			f->write_int(c.index[0]);
+			f->write_int(c.index[1]);
+			f->write_float(c.radius);
+			f->write_bool(c.round);
+		}
+	}
 
 // additional data for editing
 	f->write_comment("// Editor");
@@ -1562,7 +1597,7 @@ void DataModel::selectionFromVertices()
 	for (ModelSurface &s: surface){
 		s.is_selected = true;
 		for (ModelEdge &e: s.edge){
-			e.is_selected = (vertex[e.vertex[0]].is_selected && vertex[e.vertex[1]].is_selected);
+			e.is_selected = (vertex[e.vertex[0]].is_selected and vertex[e.vertex[1]].is_selected);
 			e.view_stage = min(vertex[e.vertex[0]].view_stage, vertex[e.vertex[1]].view_stage);
 		}
 		for (ModelPolygon &t: s.polygon){
@@ -1788,7 +1823,7 @@ matrix3 DataModel::generateInertiaTensor(float mass)
 int DataModel::getNumSelectedVertices()
 {
 	int r = 0;
-	/*if ((CreationMode < 0) && ((SubMode == SubModeSkeleton) || ((SubMode == SubModeAnimation) && (move->Type == MoveTypeSkeletal)))){
+	/*if ((CreationMode < 0) and ((SubMode == SubModeSkeleton) || ((SubMode == SubModeAnimation) and (move->Type == MoveTypeSkeletal)))){
 		for (int i=0;i<Bone.num;i++)
 			if (Bone[i].IsSelected)
 				r++;

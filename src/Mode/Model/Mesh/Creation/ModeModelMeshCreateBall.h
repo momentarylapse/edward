@@ -19,17 +19,18 @@ public:
 	ModeModelMeshCreateBall(ModeBase *_parent);
 	virtual ~ModeModelMeshCreateBall();
 
-	virtual void onStart();
-	virtual void onEnd();
+	void onStart() override;
+	void onEnd() override;
 
-	virtual void onMouseMove();
-	virtual void onLeftButtonUp();
+	void onMouseMove() override;
+	void onLeftButtonUp() override;
 
-	virtual void onDrawWin(MultiView::Window *win);
+	void onDrawWin(MultiView::Window *win) override;
 
 	void updateGeometry();
 	void onTypeBall();
 	void onTypeSphere();
+	void onTypePhysical();
 
 private:
 	vector pos;

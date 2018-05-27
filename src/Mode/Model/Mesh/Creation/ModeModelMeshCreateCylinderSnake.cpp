@@ -31,8 +31,8 @@ void ModeModelMeshCreateCylinderSnake::onStart()
 {
 	dialog = hui::CreateResourceDialog("new_cylinder_dialog",ed);
 
-	dialog->setInt("ncy_rings", hui::Config.getInt("NewCylinderRings", 4));
-	dialog->setInt("ncy_edges", hui::Config.getInt("NewCylinderEdges", 8));
+	dialog->setInt("rings", hui::Config.getInt("NewCylinderRings", 4));
+	dialog->setInt("edges", hui::Config.getInt("NewCylinderEdges", 8));
 	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
 	dialog->event("hui:close", std::bind(&ModeModelMeshCreateCylinderSnake::onClose, this));
@@ -56,12 +56,12 @@ void ModeModelMeshCreateCylinderSnake::updateGeometry()
 	if (geo)
 		delete(geo);
 	if (ready_for_scaling){
-		int rings = dialog->getInt("ncy_rings");
-		int edges = dialog->getInt("ncy_edges");
+		int rings = dialog->getInt("rings");
+		int edges = dialog->getInt("edges");
 		hui::Config.setInt("NewCylinderRings", rings);
 		hui::Config.setInt("NewCylinderEdges", edges);
 
-		geo = new GeometryCylinder(pos, radius, rings * (pos.num - 1), edges, closed);
+		geo = new GeometryCylinder(pos, radius, rings * (pos.num - 1), edges, closed ? GeometryCylinder::END_FLAT : GeometryCylinder::END_LOOP);
 	}
 }
 

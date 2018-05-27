@@ -58,6 +58,9 @@ public:
 	bool normal_dirty;
 	int ref_count; // polygons
 	int surface;
+
+	ModelVertex(){}
+	ModelVertex(const vector &pos);
 };
 
 // only for use in MultiView...
@@ -70,6 +73,14 @@ class ModelBall: public MultiView::SingleData
 public:
 	int index;
 	float radius;
+};
+
+class ModelCylinder: public MultiView::SingleData
+{
+public:
+	int index[2];
+	float radius;
+	bool round;
 };
 
 struct ModelPolyhedronFace
@@ -335,6 +346,7 @@ public:
 
 	// geometry (physical)
 	Array<ModelBall> ball;
+	Array<ModelCylinder> cylinder;
 	Array<ModelPolyhedron> poly;
 
 	// general properties

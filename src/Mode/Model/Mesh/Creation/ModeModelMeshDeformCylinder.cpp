@@ -264,7 +264,7 @@ void ModeModelMeshDeformCylinder::preview()
 	if (has_preview)
 		restore();
 
-	geo = new GeometryCylinder(axis[0], axis[1], radius, CYLINDER_RINGS, CYLINDER_EDGES);
+	geo = new GeometryCylinder(axis[0], axis[1], radius, CYLINDER_RINGS, CYLINDER_EDGES, GeometryCylinder::END_OPEN);
 
 	for (auto &v: geo->vertex)
 		v.pos = transform(v.pos);

@@ -12,6 +12,8 @@
 #include "ModeModelMesh.h"
 #include "../Skeleton/ModeModelSkeleton.h"
 #include "../../ModeCreation.h"
+#include "../../../Data/Model/Geometry/GeometrySphere.h"
+#include "../../../Data/Model/Geometry/GeometryCylinder.h"
 #include "Creation/ModeModelMeshCreateVertex.h"
 #include "Creation/ModeModelMeshCreatePolygon.h"
 #include "Creation/ModeModelMeshCreateBall.h"
@@ -291,6 +293,8 @@ void ModeModelMesh::drawAll(MultiView::Window *win, Array<ModelVertex> &vertex)
 	drawSelection(win);
 
 	drawEdges(win, vertex, !selection_mode_edge->isActive());
+
+	drawPhysical(win);
 
 	selection_mode->onDrawWin(win);
 }
@@ -629,6 +633,33 @@ void ModeModelMesh::drawPolygons(MultiView::Window *win, Array<ModelVertex> &ver
 		//nix::SetShader(NULL);
 		//nix::SetTexture(NULL);
 	}
+}
+
+
+void ModeModelMesh::drawPhysical(MultiView::Window *win)
+{
+	nix::SetWire(false);
+	mode_model->setMaterialCreation(0.3f);
+
+	for (auto &b: data->ball){
+		Geometry *geo = new GeometrySphere(data->skin[0].vertex[b.index].pos, b.radius, 6);
+
+		geo->build(nix::vb_temp);
+		nix::Draw3D(nix::vb_temp);
+
+		delete geo;
+	}
+
+	for (auto &c: data->cylinder){
+		Geometry *geo = new GeometryCylinder(data->skin[0].vertex[c.index[0]].pos, data->skin[0].vertex[c.index[1]].pos, c.radius, 1, 24, c.round ? GeometryCylinder::END_ROUND : GeometryCylinder::END_FLAT);
+
+		geo->build(nix::vb_temp);
+		nix::Draw3D(nix::vb_temp);
+
+		delete geo;
+	}
+
+	nix::SetWire(multi_view->wire_mode);
 }
 
 

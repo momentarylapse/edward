@@ -196,10 +196,16 @@ class GeometryCube extends Geometry
 	extern void __init__(vector pos, vector dv1, vector dv2, vector dv3, int num_1, int num_2, int num_3)
 
 class GeometryCylinder extends Geometry
-	extern void __init__(vector pos1, vector pos2, float radius, int rings, int edges)
+	extern void __init__(vector pos1, vector pos2, float radius, int rings, int edges, int end_mode)
 
 class GeometryCylinderComplex extends Geometry
-	extern void __init__(vector[] pos, float[] radius, int rings, int edges, bool closed)
+	extern void __init__(vector[] pos, float[] radius, int rings, int edges, int end_mode)
+
+enum
+	END_OPEN
+	END_FLAT
+	END_ROUND
+	END_LOOP
 
 class GeometrySphere extends Geometry
 	extern void __init__(vector pos, float radius, int num)

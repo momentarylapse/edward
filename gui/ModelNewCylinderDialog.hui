@@ -1,7 +1,11 @@
 Dialog new_cylinder_dialog "neuer Zylinder" width=100 height=50 allow-root
-	Grid ? ""
-		Text new_cylinder_dialog_t_rings "Ringe"
-		SpinButton ncy_rings "" range=1:
-		---|
-		Text new_cylinder_dialog_t_edges "Kanten"
-		SpinButton ncy_edges "" range=2:
+	Grid ? "" vertical
+		RadioButton type:physical "Physikalisch"
+		RadioButton type:visible "Sichtbar"
+		Grid ? "" indent
+			Text t_rings "Ringe"
+			SpinButton rings "" range=1:
+			---|
+			Text t_edges "Kanten"
+			SpinButton edges "" range=2:
+		CheckBox round "Runde Enden"

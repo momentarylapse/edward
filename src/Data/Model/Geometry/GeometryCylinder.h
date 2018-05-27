@@ -17,14 +17,21 @@ class Interpolator;
 class GeometryCylinder : public Geometry
 {
 public:
-	GeometryCylinder(Array<vector> &pos, Array<float> &radius, int rings, int edges, bool closed);
-	GeometryCylinder(Array<vector> &pos, float radius, int rings, int edges, bool closed);
-	GeometryCylinder(const vector &pos1, const vector &pos2, float radius, int rings, int edges);
-	void _cdecl __init2__(Array<vector> &pos, Array<float> &radius, int rings, int edges, bool closed);
-	void _cdecl __init__(const vector &pos1, const vector &pos2, float radius, int rings, int edges);
+	GeometryCylinder(Array<vector> &pos, Array<float> &radius, int rings, int edges, int end_mode = END_FLAT);
+	GeometryCylinder(Array<vector> &pos, float radius, int rings, int edges, int end_mode = END_FLAT);
+	GeometryCylinder(const vector &pos1, const vector &pos2, float radius, int rings, int edges, int end_mode = END_FLAT);
+	void _cdecl __init2__(Array<vector> &pos, Array<float> &radius, int rings, int edges, int end_mode);
+	void _cdecl __init__(const vector &pos1, const vector &pos2, float radius, int rings, int edges, int end_mode);
+
+	enum{
+		END_OPEN,
+		END_FLAT,
+		END_ROUND,
+		END_LOOP
+	};
 
 private:
-	void buildFromPath(Interpolator<vector> &inter, Interpolator<float> &inter_r, int rings, int edges, bool closed);
+	void buildFromPath(Interpolator<vector> &inter, Interpolator<float> &inter_r, int rings, int edges, int end_mode);
 };
 
 #endif /* GEOMETRYCYLINDER_H_ */

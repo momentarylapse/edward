@@ -51,6 +51,7 @@ public:
 	void drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex, bool only_selected);
 	void drawPolygons(MultiView::Window *win, Array<ModelVertex> &vertex);
 	void drawSelection(MultiView::Window *win);
+	void drawPhysical(MultiView::Window *win);
 	void drawAll(MultiView::Window *win, Array<ModelVertex> &vertex);
 
 	virtual bool optimizeView();

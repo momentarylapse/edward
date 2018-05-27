@@ -152,6 +152,7 @@ void ModeModel::setMaterialSelected()
 	nix::SetShader(MultiView::shader_selection);
 	nix::SetMaterial(Black,color(0.3f,0,0,0),Black,0,Red);
 	//nix::SetMaterial(Black,color(0.3f,0,0,0),Black,0,color(1, 0.5f, 0, 1));
+	nix::SetTexture(NULL);
 }
 
 void ModeModel::setMaterialHover()
@@ -159,6 +160,7 @@ void ModeModel::setMaterialHover()
 	nix::SetAlpha(ALPHA_MATERIAL);
 	nix::SetShader(MultiView::shader_selection);
 	nix::SetMaterial(Black,color(0.5f,0,0,0),Black,0,White);
+	nix::SetTexture(NULL);
 }
 
 void ModeModel::setMaterialCreation(float intensity)
@@ -166,6 +168,7 @@ void ModeModel::setMaterialCreation(float intensity)
 	nix::SetAlpha(ALPHA_MATERIAL);
 	nix::SetShader(MultiView::shader_selection);
 	nix::SetMaterial(Black, color(0.3f*intensity,0.3f,1,0.3f), Black, 0, color(1,0.1f,0.4f,0.1f));
+	nix::SetTexture(NULL);
 }
 
 void ModeModel::_new()

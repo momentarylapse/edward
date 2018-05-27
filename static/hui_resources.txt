@@ -4894,64 +4894,70 @@ Grid
 vertical
 0
 0
-4
+5
 RadioButton
-ball_type:ball
+type:physical
 
 0
+0
+0
+RadioButton
+type:ball
+
+1
 0
 0
 Grid
-nbd_grid_ball
+?
 indent
-1
-0
-4
-Text
-new_ball_dialog_t_x
-
-0
-0
-0
-SpinButton
-nb_x
-range=1:
-1
-0
-0
-Text
-new_ball_dialog_t_y
-
-0
-1
-0
-SpinButton
-nb_y
-range=1:
-1
-1
-0
-RadioButton
-ball_type:sphere
-
 2
 0
+4
+Text
+t_x
+
 0
-Grid
-nbd_grid_sphere
-indent
+0
+0
+SpinButton
+x
+range=1:
+1
+0
+0
+Text
+t_y
+
+0
+1
+0
+SpinButton
+y
+range=1:
+1
+1
+0
+RadioButton
+type:sphere
+
 3
 0
+0
+Grid
+?
+indent
+4
+0
 2
 Text
-new_ball_dialog_t_comp
+t_complexity
 
 0
 0
 0
 SpinButton
-nb_complexity
-range=1:
+complexity
+range=1:,expandx
 1
 0
 0
@@ -5019,33 +5025,57 @@ width=100,height=50,allow-root
 1
 Grid
 ?
-
+vertical
 0
 0
 4
+RadioButton
+type:physical
+
+0
+0
+0
+RadioButton
+type:visible
+
+1
+0
+0
+Grid
+?
+indent
+2
+0
+4
 Text
-new_cylinder_dialog_t_rings
+t_rings
 
 0
 0
 0
 SpinButton
-ncy_rings
+rings
 range=1:
 1
 0
 0
 Text
-new_cylinder_dialog_t_edges
+t_edges
 
 0
 1
 0
 SpinButton
-ncy_edges
+edges
 range=2:
 1
 1
+0
+CheckBox
+round
+
+3
+0
 0
 // Resource
 Dialog
@@ -8929,7 +8959,7 @@ checkable,image=icons/toolbar/rf_rotate.png
 // Language
 Deutsch
 // Number Of IDs
-907
+911
 // Text
 /ambient
 Ambient
@@ -11253,23 +11283,26 @@ Typ
 new_animation_dialog/new_animation_type
 Vertex\\Skelett
 
-new_ball_dialog/ball_type:ball
-aus Scheiben
-
-new_ball_dialog/ball_type:sphere
-Sphäre
-
 new_ball_dialog/new_ball_dialog
 neue Kugel
 
-new_ball_dialog/new_ball_dialog_t_comp
+new_ball_dialog/t_complexity
 Komplexität
 
-new_ball_dialog/new_ball_dialog_t_x
+new_ball_dialog/t_x
 Anzahl der Scheiben
 
-new_ball_dialog/new_ball_dialog_t_y
+new_ball_dialog/t_y
 Punkte pro Scheibe
+
+new_ball_dialog/type:ball
+aus Scheiben
+
+new_ball_dialog/type:physical
+Physikalisch
+
+new_ball_dialog/type:sphere
+Sphäre
 
 new_cube_dialog/ncdt_slides
 Streifen
@@ -11289,11 +11322,20 @@ Z
 new_cylinder_dialog/new_cylinder_dialog
 neuer Zylinder
 
-new_cylinder_dialog/new_cylinder_dialog_t_edges
+new_cylinder_dialog/round
+Runde Enden
+
+new_cylinder_dialog/t_edges
 Kanten
 
-new_cylinder_dialog/new_cylinder_dialog_t_rings
+new_cylinder_dialog/t_rings
 Ringe
+
+new_cylinder_dialog/type:physical
+Physikalisch
+
+new_cylinder_dialog/type:visible
+Sichtbar
 
 new_plane_dialog/new_plane_dialog
 neue Ebene

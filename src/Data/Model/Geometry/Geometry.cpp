@@ -35,9 +35,7 @@ void Geometry::clear()
 
 void Geometry::addVertex(const vector &pos)
 {
-	ModelVertex v;
-	v.pos = pos;
-	vertex.add(v);
+	vertex.add(ModelVertex(pos));
 }
 
 void Geometry::addPolygon(Array<int> &v, Array<vector> &sv)
