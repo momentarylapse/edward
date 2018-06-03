@@ -2,6 +2,7 @@
 #include "../kaba.h"
 #include "../../config.h"
 #include "common.h"
+#include "exception.h"
 
 
 #ifdef _X_ALLOW_X_
@@ -19,7 +20,7 @@
 	#include "../../../meta.h"
 	#include "../../../networking.h"
 	#include "../../../input.h"
-	#define x_p(p)		(void*)p
+
 	void _cdecl ExitProgram();
 	void _cdecl ScreenShot();
 	void _cdecl LoadWorldSoon(const string &filename);
@@ -29,11 +30,48 @@
 	void _cdecl DrawSplashScreen(const string &str, float per);
 	using namespace Gui;
 	using namespace Fx;
+#endif
+
+
+
+namespace Kaba{
+
+
+#ifdef _X_ALLOW_X_
+	#define x_p(p)		(void*)p
+
+#pragma GCC push_options
+#pragma GCC optimize("no-omit-frame-pointer")
+
+
+Gui::Font* __LoadFont(const string &filename)
+{
+	KABA_EXCEPTION_WRAPPER(return Gui::LoadFont(filename))
+	return NULL;
+}
+
+Model* __LoadModel(const string &filename)
+{
+	KABA_EXCEPTION_WRAPPER(return LoadModel(filename));
+	return NULL;
+}
+
+Model* __CreateObject(const string &filename, const vector &pos)
+{
+	KABA_EXCEPTION_WRAPPER(return GodCreateObject(filename, filename, pos, q_id));
+	return NULL;
+}
+
+#pragma GCC pop_options
+
+
+
 #else
 	#define x_p(p)		NULL
 #endif
 
-namespace Kaba{
+extern int _class_override_num_params;
+
 
 Class *TypeBone;
 Class *TypeBoneList;
@@ -289,13 +327,7 @@ void SIAddPackageX()
 			func_add_param("z",			TypeFloat32);
 			func_add_param("size",		TypeFloat32);
 			func_add_param("str",		TypeString);
-			func_add_param("centric",	TypeBool);
-		class_add_func("drawStrVert",		TypeFloat32,	x_p(mf(&Font::drawStrVert)));
-			func_add_param("x",			TypeFloat32);
-			func_add_param("y",			TypeFloat32);
-			func_add_param("z",			TypeFloat32);
-			func_add_param("size",		TypeFloat32);
-			func_add_param("str",		TypeString);
+			func_add_param("align",	TypeInt);
 		class_add_func("getWidth",			TypeFloat32,	x_p(mf(&Font::getWidth)));
 			func_add_param("size",		TypeFloat32);
 			func_add_param("s",		TypeString);
@@ -333,22 +365,27 @@ void SIAddPackageX()
 		class_add_element("texture",		TypeTextureP,		GetDAPicture(texture));
 		class_add_element("source",			TypeRect,		GetDAPicture(source));
 		class_add_element("shader",			TypeShaderP,	GetDAPicture(shader));
+		_class_override_num_params = 999;
 		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, x_p(mf(&Picture::__init_ext__)));
 			func_add_param("pos",		TypeVector);
 			func_add_param("width",		TypeFloat32);
 			func_add_param("height",	TypeFloat32);
 			func_add_param("texture",	TypeTextureP);
-		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, x_p(mf(&Picture::__init__)));
-		class_add_func_virtual(IDENTIFIER_FUNC_DELETE, TypeVoid, x_p(mf(&Picture::__delete__)));
+		_class_override_num_params = 0;
+		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, x_p(mf(&Picture::__init__)), FLAG_OVERRIDE);
+		class_add_func_virtual(IDENTIFIER_FUNC_DELETE, TypeVoid, x_p(mf(&Picture::__delete__)), FLAG_OVERRIDE);
 		class_add_func_virtual("__Draw", TypeVoid, x_p(mf(&Picture::Draw)), FLAG_OVERRIDE);
 		class_add_func_virtual("__Update", TypeVoid, x_p(mf(&Picture::Update)), FLAG_OVERRIDE);
+		_class_override_num_params = 1;
 		class_add_func_virtual("onIterate", TypeVoid, x_p(mf(&Picture::OnIterate)), FLAG_OVERRIDE);
 			func_add_param("dt", TypeFloat32);
+		_class_override_num_params = 0;
 		class_add_func_virtual("onHover", TypeVoid, x_p(mf(&Picture::OnHover)), FLAG_OVERRIDE);
 		class_add_func_virtual("onClick", TypeVoid, x_p(mf(&Picture::OnClick)), FLAG_OVERRIDE);
 		class_add_func_virtual("onMouseEnter", TypeVoid, x_p(mf(&Picture::OnMouseEnter)), FLAG_OVERRIDE);
 		class_add_func_virtual("onMouseLeave", TypeVoid, x_p(mf(&Picture::OnMouseLeave)), FLAG_OVERRIDE);
 		class_add_func_virtual("isMouseOver", TypeBool, x_p(mf(&Picture::IsMouseOver)), FLAG_OVERRIDE);
+		_class_override_num_params = -1;
 		class_set_vtable_x(Picture);
 	
 	add_class(TypePicture3D);
@@ -359,21 +396,26 @@ void SIAddPackageX()
 		class_add_element("z",				TypeFloat32,		GetDAPicture3D(pos.z));
 		class_add_element("matrix",			TypeMatrix,		GetDAPicture3D(_matrix));
 		class_add_element("model",			TypeModelP,		GetDAPicture3D(model));
+		_class_override_num_params = 999;
 		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, x_p(mf(&Picture3d::__init_ext__)));
 			func_add_param("m",			TypeModelP);
 			func_add_param("mat",		TypeMatrix);
 			func_add_param("z",			TypeFloat32);
-		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, x_p(mf(&Picture3d::__init__)));
-		class_add_func_virtual(IDENTIFIER_FUNC_DELETE, TypeVoid, x_p(mf(&Picture3d::__delete__)));
+		_class_override_num_params = 0;
+		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, x_p(mf(&Picture3d::__init__)), FLAG_OVERRIDE);
+		class_add_func_virtual(IDENTIFIER_FUNC_DELETE, TypeVoid, x_p(mf(&Picture3d::__delete__)), FLAG_OVERRIDE);
 		class_add_func_virtual("__Draw", TypeVoid, x_p(mf(&Picture3d::Draw)), FLAG_OVERRIDE);
 		class_add_func_virtual("__Update", TypeVoid, x_p(mf(&Picture3d::Update)), FLAG_OVERRIDE);
+		_class_override_num_params = 1;
 		class_add_func_virtual("onIterate", TypeVoid, x_p(mf(&Picture3d::OnIterate)), FLAG_OVERRIDE);
 			func_add_param("dt", TypeFloat32);
+		_class_override_num_params = 0;
 		class_add_func_virtual("onHover", TypeVoid, x_p(mf(&Picture3d::OnHover)), FLAG_OVERRIDE);
 		class_add_func_virtual("onClick", TypeVoid, x_p(mf(&Picture3d::OnClick)), FLAG_OVERRIDE);
 		class_add_func_virtual("onMouseEnter", TypeVoid, x_p(mf(&Picture3d::OnMouseEnter)), FLAG_OVERRIDE);
 		class_add_func_virtual("onMouseLeave", TypeVoid, x_p(mf(&Picture3d::OnMouseLeave)), FLAG_OVERRIDE);
 		class_add_func_virtual("isMouseOver", TypeBool, x_p(mf(&Picture3d::IsMouseOver)), FLAG_OVERRIDE);
+		_class_override_num_params = -1;
 		class_set_vtable_x(Picture3d);
 	
 	add_class(TypeText);
@@ -381,28 +423,32 @@ void SIAddPackageX()
 	//	class_add_element("enabled",		TypeBool,		GetDAText(enabled));
 	//	class_add_element("pos",			TypeVector,		GetDAText(pos));
 	//	class_add_element("color",			TypeColor,		GetDAText(_color));
-		class_add_element("centric",		TypeBool,		GetDAText(centric));
-		class_add_element("vertical",		TypeBool,		GetDAText(vertical));
+		class_add_element("align",		TypeInt,		GetDAText(align));
 		class_add_element("font",			TypeFontP,		GetDAText(font));
 		class_add_element("size",			TypeFloat32,		GetDAText(size));
 		class_add_element("text",			TypeString,		GetDAText(text));
+		_class_override_num_params = 999;
 		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, x_p(mf(&Text::__init_ext__)));
 			func_add_param("pos",		TypeVector);
 			func_add_param("size",		TypeFloat32);
 			func_add_param("c",			TypeColor);
 			func_add_param("str",		TypeString);
-		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, x_p(mf(&Text::__init__)));
-		class_add_func_virtual(IDENTIFIER_FUNC_DELETE, TypeVoid, x_p(mf(&Text::__delete__)));
+			_class_override_num_params = 0;
+		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, x_p(mf(&Text::__init__)), FLAG_OVERRIDE);
+		class_add_func_virtual(IDENTIFIER_FUNC_DELETE, TypeVoid, x_p(mf(&Text::__delete__)), FLAG_OVERRIDE);
 		class_add_func_virtual("__Draw", TypeVoid, x_p(mf(&Text::Draw)), FLAG_OVERRIDE);
 		class_add_func_virtual("__Update", TypeVoid, x_p(mf(&Text::Update)), FLAG_OVERRIDE);
+		_class_override_num_params = 1;
 		class_add_func_virtual("onIterate", TypeVoid, x_p(mf(&Text::OnIterate)), FLAG_OVERRIDE);
 			func_add_param("dt", TypeFloat32);
+		_class_override_num_params = 0;
 		class_add_func_virtual("onHover", TypeVoid, x_p(mf(&Text::OnHover)), FLAG_OVERRIDE);
 		class_add_func_virtual("onClick", TypeVoid, x_p(mf(&Text::OnClick)), FLAG_OVERRIDE);
 		class_add_func_virtual("onMouseEnter", TypeVoid, x_p(mf(&Text::OnMouseEnter)), FLAG_OVERRIDE);
 		class_add_func_virtual("onMouseLeave", TypeVoid, x_p(mf(&Text::OnMouseLeave)), FLAG_OVERRIDE);
 		class_add_func_virtual("isMouseOver", TypeBool, x_p(mf(&Text::IsMouseOver)), FLAG_OVERRIDE);
 		class_add_func("getWidth", TypeFloat32, x_p(mf(&Text::GetWidth)));
+		_class_override_num_params = -1;
 		class_set_vtable_x(Text);
 	
 	add_class(TypeParticle);
@@ -417,45 +463,57 @@ void SIAddPackageX()
 		class_add_element("source",			TypeRect,		GetDAParticle(source));
 		class_add_element("func_delta_t",	TypeFloat32,		GetDAParticle(func_delta_t));
 		class_add_element("elapsed",		TypeFloat32,		GetDAParticle(elapsed));
+		_class_override_num_params = 999;
 		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, x_p(mf(&Particle::__init_ext__)));
 			func_add_param("pos", TypeVector);
 			func_add_param("texture", TypeTextureP);
 			func_add_param("ttl", TypeFloat32);
 			func_add_param("radius", TypeFloat32);
+		_class_override_num_params = 0;
 		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, x_p(mf(&Particle::__init__)));
 		class_add_func_virtual(IDENTIFIER_FUNC_DELETE, TypeVoid, x_p(mf(&Particle::__delete__)));
+		_class_override_num_params = 1;
 		class_add_func_virtual("onIterate", TypeVoid, x_p(mf(&Particle::OnIterate)));
 			func_add_param("dt", TypeFloat32);
+		_class_override_num_params = -1;
 		class_set_vtable_x(Particle);
 
 	add_class(TypeParticleRot);
 		TypeParticleRot->derive_from(TypeParticle, false);
 		class_add_element("ang", TypeVector, GetDAParticle(parameter));
+		_class_override_num_params = 999;
 		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, x_p(mf(&ParticleRot::__init_ext__)));
 			func_add_param("pos", TypeVector);
 			func_add_param("ang", TypeVector);
 			func_add_param("texture", TypeTextureP);
 			func_add_param("ttl", TypeFloat32);
 			func_add_param("radius", TypeFloat32);
-		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, x_p(mf(&ParticleRot::__init__)));
-		class_add_func_virtual(IDENTIFIER_FUNC_DELETE, TypeVoid, x_p(mf(&ParticleRot::__delete__)));
+		_class_override_num_params = 0;
+		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, x_p(mf(&ParticleRot::__init__)), FLAG_OVERRIDE);
+		class_add_func_virtual(IDENTIFIER_FUNC_DELETE, TypeVoid, x_p(mf(&ParticleRot::__delete__)), FLAG_OVERRIDE);
+		_class_override_num_params = 1;
 		class_add_func_virtual("onIterate", TypeVoid, x_p(mf(&ParticleRot::OnIterate)), FLAG_OVERRIDE);
 			func_add_param("dt", TypeFloat32);
+		_class_override_num_params = -1;
 		class_set_vtable_x(ParticleRot);
 
 	add_class(TypeBeam);
 		TypeBeam->derive_from(TypeParticle, false);
 		class_add_element("length",			TypeVector,		GetDAParticle(parameter));
+		_class_override_num_params = 999;
 		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, x_p(mf(&Beam::__init_ext__)));
 			func_add_param("pos", TypeVector);
 			func_add_param("length", TypeVector);
 			func_add_param("texture", TypeTextureP);
 			func_add_param("ttl", TypeFloat32);
 			func_add_param("radius", TypeFloat32);
-		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, x_p(mf(&Beam::__init__)));
-		class_add_func_virtual(IDENTIFIER_FUNC_DELETE, TypeVoid, x_p(mf(&Beam::__delete__)));
+		_class_override_num_params = 0;
+		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, x_p(mf(&Beam::__init__)), FLAG_OVERRIDE);
+		class_add_func_virtual(IDENTIFIER_FUNC_DELETE, TypeVoid, x_p(mf(&Beam::__delete__)), FLAG_OVERRIDE);
+		_class_override_num_params = 1;
 		class_add_func_virtual("onIterate", TypeVoid, x_p(mf(&Beam::OnIterate)), FLAG_OVERRIDE);
 			func_add_param("dt", TypeFloat32);
+		_class_override_num_params = -1;
 		class_set_vtable_x(Beam);
 	
 	add_class(TypeEffect);
@@ -859,9 +917,9 @@ void SIAddPackageX()
 		class_add_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, x_p(mf(&HostDataList::__assign__)));
 			func_add_param("other", TypeHostDataList);
 
-	add_func("LoadFont",			TypeFontP,	x_p(&LoadFont));
+	add_func("LoadFont",			TypeFontP,	x_p(&__LoadFont));
 		func_add_param("filename",		TypeString);
-	add_func("LoadModel",												TypeModelP,	x_p(&LoadModel));
+	add_func("LoadModel",												TypeModelP,	x_p(&__LoadModel));
 		func_add_param("filename",		TypeString);
 /*	add_func("GetModelOID",												TypeInt,	x_p(&MetaGetModelOID));
 		func_add_param("filename",		TypeString);*/
@@ -888,7 +946,7 @@ void SIAddPackageX()
 		func_add_param("o",			TypeModelPListPs);
 	add_func("NextObject",									TypeBool,	x_p(&NextObject));
 		func_add_param("o",		TypeModelPPs);
-	add_func("CreateObject",							TypeModelP,	x_p(&_CreateObject));
+	add_func("CreateObject",							TypeModelP,	x_p(&__CreateObject));
 		func_add_param("filename",		TypeString);
 		func_add_param("pos",		TypeVector);
 	add_func("SplashScreen",					TypeVoid,	x_p(DrawSplashScreen));

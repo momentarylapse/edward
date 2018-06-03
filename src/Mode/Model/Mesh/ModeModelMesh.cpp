@@ -669,7 +669,7 @@ void ModeModelMesh::updateVertexBuffers(Array<ModelVertex> &vertex)
 	//msg_write("update vertex buffers!!!!!!!!!!");
 	// draw all materials separately
 	foreachi(ModelMaterial &m, data->material, mi){
-		int num_tex = min(m.textures.num, 4);
+		int num_tex = m.textures.num;
 		if (!m.vb)
 			m.vb = new nix::VertexBuffer(num_tex);
 		if (m.vb->num_textures != num_tex){
