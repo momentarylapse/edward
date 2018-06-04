@@ -44,6 +44,9 @@ public:
 	void OnClose();
 
 	void onUpdate(Observable *o, const string &message);
+	void restart();
+
+	bool active;
 
 private:
 	DataWorld *data;

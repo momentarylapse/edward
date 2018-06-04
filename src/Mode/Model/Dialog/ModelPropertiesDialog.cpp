@@ -28,7 +28,7 @@ ModelPropertiesDialog::ModelPropertiesDialog(hui::Window *_parent, bool _allow_p
 {
 	fromResource("model_dialog");
 	data = _data;
-	active = false;
+	active = true;
 
 	setTooltip("material_list", _("- Doppelklick um ein Material zu editieren\n- Auswahl wird f&ur folgende neue Polygone verwendet"));
 
@@ -343,7 +343,5 @@ void ModelPropertiesDialog::OnClose()
 void ModelPropertiesDialog::OnOk()
 {
 	ApplyData();
-	unsubscribe(data);
-	hide();
-	active = false;
+	OnClose();
 }

@@ -8,7 +8,7 @@
 #include "lib/hui/hui.h"
 #include "Edward.h"
 
-string AppVersion = "0.4.-1.1";
+string AppVersion = "0.4.-1.2";
 string AppName = "Edward";
 
 

@@ -559,12 +559,16 @@ bool ModeWorld::open()
 
 void ModeWorld::ExecuteWorldPropertiesDialog()
 {
-	if (WorldDialog)
+	if (WorldDialog){
+		if (!WorldDialog->active){
+			WorldDialog->restart();
+			WorldDialog->show();
+		}
 		return;
+	}
 
 	WorldDialog = new WorldPropertiesDialog(ed, true, data);
 	WorldDialog->show();
-	//HuiWaitTillWindowClosed(WorldDialog);
 }
 
 

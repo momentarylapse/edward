@@ -23,6 +23,7 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 {
 	fromResource("world_dialog");
 	data = _data;
+	active = true;
 
 	setTooltip("bgc", _("Farbe des Himmels"));
 	setTooltip("skybox", _("Modelle, die &uber die Hintergrundfarge gemalt werden\n- Doppelklick um ein Modell zu w&ahlen"));
@@ -101,7 +102,9 @@ void WorldPropertiesDialog::OnScriptSelect()
 
 void WorldPropertiesDialog::OnClose()
 {
-	destroy();
+	unsubscribe(data);
+	hide();
+	active = false;
 }
 
 
@@ -294,7 +297,16 @@ void WorldPropertiesDialog::OnMaxScriptVars()
 void WorldPropertiesDialog::OnOk()
 {
 	ApplyData();
-	destroy();
+	OnClose();
+}
+
+void WorldPropertiesDialog::restart()
+{
+	subscribe(data);
+
+	temp = data->meta_data;
+	LoadData();
+	active = true;
 }
 
 
