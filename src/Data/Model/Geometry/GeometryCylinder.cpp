@@ -6,6 +6,7 @@
  */
 
 #include "GeometryCylinder.h"
+#include "GeometryBall.h"
 #include "../DataModel.h"
 
 #define _cyl_vert(i, j)         ( edges      * (i) +(j) % edges)
@@ -78,6 +79,24 @@ matrix make_frame(const vector &pos, const vector &dir, const vector &up, const 
 	*(vector*)&rot.e[8] = dir;
 	MatrixTranspose(rot, rot);
 	return trans * rot;
+}
+
+static Geometry half_ball(float radius, int edges, bool upper)
+{
+	float scale = upper ? 1 : -1;
+	auto ball = GeometryBall(v_0, radius, edges/2, edges);
+	for (int i=ball.polygon.num-1; i>=0; i--){
+		vector m = v_0;
+		for (int k=0; k<ball.polygon[i].side.num; k++)
+			m += ball.vertex[ball.polygon[i].side[k].vertex].pos;
+		if (m.y * scale > 0)
+			ball.polygon.erase(i);
+	}
+	matrix rot;
+	MatrixRotationX(rot, pi/2);
+	ball.transform(rot);
+	ball.removeUnusedVertices();
+	return ball;
 }
 
 void GeometryCylinder::buildFromPath(Interpolator<vector> &inter, Interpolator<float> &inter_r, int rings, int edges, int end_mode)
@@ -192,34 +211,14 @@ void GeometryCylinder::buildFromPath(Interpolator<vector> &inter, Interpolator<f
 		float r0 = inter_r.get(0);
 		float r1 = inter_r.get(1);
 
-		// vertices
-		addVertex(frame0 * vector(0,0,-r0));
-		addVertex(frame1 * vector(0,0, r1));
-
-		// TODO
-
-		// triangles
-		for (int j=0;j<edges;j++){
-			sv.clear();
-			float w = pi*2*(float)j/(float)edges;
-			sv.add(vector(0.5f+(float)sin(w)/2,0.5f+(float)cos(w)/2,0));
-			w = pi*2*(float)((j+1) % edges)/(float)edges;
-			sv.add(vector(0.5f+(float)sin(w)/2,0.5f+(float)cos(w)/2,0));
-			sv.add(vector(0.5f, 0.5f, 0));
-
-			Array<int> v;
-			v.add(j);
-			v.add((j+1) % edges);
-			v.add(vertex.num - 2);
-
-			addPolygonSingleTexture(v, sv);
-
-			v.clear();
-			v.add(vertex.num - j - 3);
-			v.add(vertex.num - ((j + 1) % edges) - 3);
-			v.add(vertex.num - 1);
-			addPolygonSingleTexture(v, sv);
-		}
+		auto b0 = half_ball(r0, edges, true);
+		b0.transform(frame0);
+		b0.invert();
+		add(b0);
+		auto b1 = half_ball(r1, edges, false);
+		b1.transform(frame1);
+		b1.invert();
+		add(b1);
 
 		weld(r0 * 0.001f);
 	}

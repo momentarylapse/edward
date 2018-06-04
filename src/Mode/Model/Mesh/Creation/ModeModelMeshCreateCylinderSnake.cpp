@@ -33,6 +33,9 @@ void ModeModelMeshCreateCylinderSnake::onStart()
 
 	dialog->setInt("rings", hui::Config.getInt("NewCylinderRings", 4));
 	dialog->setInt("edges", hui::Config.getInt("NewCylinderEdges", 8));
+	dialog->check("round", hui::Config.getBool("NewCylinderRound", false));
+	dialog->hideControl("type:visible", true);
+	dialog->hideControl("type:physical", true);
 	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
 	dialog->event("hui:close", std::bind(&ModeModelMeshCreateCylinderSnake::onClose, this));
@@ -56,12 +59,14 @@ void ModeModelMeshCreateCylinderSnake::updateGeometry()
 	if (geo)
 		delete(geo);
 	if (ready_for_scaling){
+		bool round = dialog->isChecked("round");
 		int rings = dialog->getInt("rings");
 		int edges = dialog->getInt("edges");
 		hui::Config.setInt("NewCylinderRings", rings);
 		hui::Config.setInt("NewCylinderEdges", edges);
+		hui::Config.setBool("NewCylinderRound", round);
 
-		geo = new GeometryCylinder(pos, radius, rings * (pos.num - 1), edges, closed ? GeometryCylinder::END_FLAT : GeometryCylinder::END_LOOP);
+		geo = new GeometryCylinder(pos, radius, rings * (pos.num - 1), edges, closed ? GeometryCylinder::END_LOOP : (round ? GeometryCylinder::END_ROUND : GeometryCylinder::END_FLAT));
 	}
 }
 
@@ -125,22 +130,40 @@ void ModeModelMeshCreateCylinderSnake::onKeyDown(int k)
 
 
 
+namespace MultiView{
+extern nix::Shader* shader_lines_3d_colored;
+};
+
 
 void ModeModelMeshCreateCylinderSnake::onDrawWin(MultiView::Window *win)
 {
 	parent->onDrawWin(win);
 
 	if (pos.num > 0){
-		nix::EnableLighting(false);
-		// control polygon
+
+
+		mode_model->setMaterialCreation(2);
+
+		//nix::EnableLighting(false);
+		nix::SetColor(Green);
+
+		// control points
+		nix::SetShader(MultiView::shader_lines_3d_colored);
 		for (int i=0;i<pos.num;i++){
 			vector pp = win->project(pos[i]);
-			nix::SetColor(Green);
 			nix::DrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
-			nix::SetColor(White);
-			if (i > 0)
-				nix::DrawLine3D(pos[i - 1], pos[i]);
 		}
+		nix::SetShader(nix::default_shader_3d);
+		mode_model->setMaterialCreation(2);
+
+
+		// control polygon
+		for (int i=1;i<pos.num;i++)
+			nix::DrawLine3D(pos[i - 1], pos[i]);
+
+		if ((!ready_for_scaling) and (pos.num > 0))
+			nix::DrawLine3D(pos.back(), multi_view->getCursor3d());
+
 
 		// spline curve
 		Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);

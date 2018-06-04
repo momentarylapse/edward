@@ -34,6 +34,7 @@ void ModeModelMeshCreateCylinder::onStart()
 
 	dialog->setInt("rings", hui::Config.getInt("NewCylinderRings", 4));
 	dialog->setInt("edges", hui::Config.getInt("NewCylinderEdges", 8));
+	dialog->check("round", hui::Config.getBool("NewCylinderRound", false));
 	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
 	dialog->event("hui:close", std::bind(&ModeModelMeshCreateCylinder::onClose, this));
@@ -65,6 +66,7 @@ void ModeModelMeshCreateCylinder::updateGeometry()
 		int edges = dialog->getInt("edges");
 		hui::Config.setInt("NewCylinderRings", rings);
 		hui::Config.setInt("NewCylinderEdges", edges);
+		hui::Config.setBool("NewCylinderRound", round);
 
 		Array<float> r = radius;
 		r += radius;
