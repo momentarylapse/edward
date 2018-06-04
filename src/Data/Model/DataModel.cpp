@@ -986,7 +986,21 @@ void DataModel::importFromTriangleSkin(int index)
 			for (int tl=0;tl<material[i].texture_files.num;tl++)
 				for (int k=0;k<3;k++)
 					sv.add(t.skin_vertex[tl][k]);
-			addPolygonWithSkin(v, sv, i);
+			try{
+				addPolygonWithSkin(v, sv, i);
+			}catch(GeometryException &e){
+				msg_error("polygon..." + e.message);
+				msg_write("trying to copy vertices...");
+
+				// copy all vertices m(-_-)m
+				int nv0 = vertex.num;
+				for (int k=0; k<3; k++){
+					addVertex(vertex[v[k]].pos);
+					vertex.back().bone_index = vertex[v[k]].bone_index;
+					v[k] = nv0 + k;
+				}
+				addPolygonWithSkin(v, sv, i);
+			}
 		}
 	}
 
