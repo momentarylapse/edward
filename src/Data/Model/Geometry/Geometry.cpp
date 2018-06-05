@@ -239,11 +239,14 @@ void Geometry::transform(const matrix &mat)
 {
 	for (ModelVertex &v: vertex)
 		v.pos = mat * v.pos;
-	matrix mat2 = mat * (float)pow(mat.determinant(), - 1.0f / 3.0f);
+	//matrix mat2 = mat * (float)pow(mat.determinant(), - 1.0f / 3.0f);
 	for (ModelPolygon &p: polygon){
-		p.temp_normal = mat2.transform_normal(p.temp_normal);
+		/*p.temp_normal = mat2.transform_normal(p.temp_normal);
 		for (int k=0;k<p.side.num;k++)
-			p.side[k].normal = mat2.transform_normal(p.side[k].normal);
+			p.side[k].normal = mat2.transform_normal(p.side[k].normal);*/
+		p.temp_normal = p.getNormal(vertex);
+		for (int k=0;k<p.side.num;k++)
+			p.side[k].normal = p.temp_normal;
 	}
 }
 

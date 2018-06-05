@@ -98,7 +98,7 @@ void ModeModelMeshCreateCylinder::onLeftButtonUp()
 			c.index[0] = data->skin[0].vertex.num;
 			c.index[1] = data->skin[0].vertex.num + 1;
 			c.radius = radius;
-			c.round = dialog->isChecked("rout");
+			c.round = dialog->isChecked("round");
 			data->cylinder.add(c);
 
 			data->skin[0].vertex.add(ModelVertex(pos[0]));

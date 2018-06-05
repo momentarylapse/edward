@@ -200,6 +200,9 @@ void ModelPolygon::addToVertexBuffer(const Array<ModelVertex> &vertex, nix::Vert
 void ModelPolygon::invert()
 {
 	ModelPolygon pp = *this;
-	for (int i=0;i<side.num;i++)
+	for (int i=0;i<side.num;i++){
 		side[i].vertex = pp.side[side.num - i - 1].vertex;
+		side[i].normal = - pp.side[side.num - i - 1].normal;
+	}
+	temp_normal = - temp_normal;
 }
