@@ -14,7 +14,6 @@
 #include "Mode/Material/ModeMaterial.h"
 #include "Mode/World/ModeWorld.h"
 #include "Mode/Font/ModeFont.h"
-#include "Mode/Welcome/ModeWelcome.h"
 #include "Mode/ModeCreation.h"
 #include "Mode/ModeNone.h"
 #include "MultiView/MultiView.h"
@@ -323,7 +322,6 @@ Edward::Edward(Array<string> arg) :
 
 	multi_view_3d = new MultiView::MultiView(true);
 	multi_view_2d = new MultiView::MultiView(false);
-	mode_welcome = new ModeWelcome;
 	mode_model = new ModeModel;
 	mode_material = new ModeMaterial;
 	mode_world = new ModeWorld;

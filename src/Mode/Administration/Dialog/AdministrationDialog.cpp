@@ -13,7 +13,6 @@
 #include "../../../meta.h"
 #include "../../../x/model_manager.h"
 #include "../../../x/font.h"
-#include "../../../Mode/Welcome/ModeWelcome.h"
 #include "../../../Mode/Model/ModeModel.h"
 #include "../../../Mode/Material/ModeMaterial.h"
 #include "../../../Mode/World/ModeWorld.h"
@@ -217,11 +216,11 @@ AdminFile* AdministrationDialog::GetSingleSelectedFile()
 
 void AdministrationDialog::OnClose()
 {
-	ed->setMode(mode_welcome);
+	ed->setMode(mode_model);
 }
 
 void AdministrationDialog::OnExit()
-{	ed->setMode(mode_welcome);	}
+{	ed->setMode(mode_model);	}
 
 void AdministrationDialog::OnRename()
 {}//{	data->Rename();	}
