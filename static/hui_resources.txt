@@ -7505,7 +7505,7 @@ image=icons/toolbar/view_pop.png
 // Resource
 Dialog
 world_dialog
-width=600,height=420
+width=520,height=420
 0
 0
 1
@@ -7520,7 +7520,7 @@ world_dialog_tab_control
 
 0
 0
-6
+5
 Grid
 ?
 vertical
@@ -7885,36 +7885,6 @@ Button
 edit_script_vars
 
 2
-0
-0
-Grid
-?
-vertical
-5
-0
-2
-Grid
-?
-
-0
-0
-2
-Text
-world_dialog_t_max_script_vars
-
-0
-0
-0
-SpinButton
-max_script_vars
-range=0:
-1
-0
-0
-ListView
-script_vars
-format=ttT
-1
 0
 0
 Grid
@@ -9008,7 +8978,7 @@ checkable,image=icons/toolbar/rf_rotate.png
 // Language
 Deutsch
 // Number Of IDs
-916
+914
 // Text
 /ambient
 Ambient
@@ -11618,7 +11588,7 @@ world_dialog/bgc
 
 Farbe des Himmels
 world_dialog/edit_script_vars
-Variablen
+Variablen...
 
 world_dialog/fog_mode:exp
 Exponentiell
@@ -11662,9 +11632,6 @@ Entfernen
 world_dialog/script_list
 Datei
 
-world_dialog/script_vars
-#\\Name\\Wert
-
 world_dialog/skybox
 #\\Modell
 Modelle, die über die Hintergrundfarbe gemalt werden\n- Doppelklick um ein Modell zu wählen
@@ -11686,9 +11653,6 @@ bis
 world_dialog/world_dialog_t_fog_start
 Entfernung
 
-world_dialog/world_dialog_t_max_script_vars
-Anzahl:
-
 world_dialog/world_dialog_t_sun_ang_x
 Richtung X
 
@@ -11696,7 +11660,7 @@ world_dialog/world_dialog_t_sun_ang_y
 Richtung Y
 
 world_dialog/world_dialog_tab_control
-Hintergrund\\Nebel\\Licht\\Physik\\Scripte\\Variablen
+Hintergrund\\Nebel\\Licht\\Physik\\Scripte
 
 world_dialog/x
 X

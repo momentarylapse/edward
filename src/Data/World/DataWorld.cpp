@@ -179,9 +179,7 @@ bool DataWorld::save(const string & _filename)
 		}
 	}
 	f->write_comment("// ScriptVars");
-	f->write_int(meta_data.ScriptVar.num);
-	for (float v: meta_data.ScriptVar)
-		f->write_float(v);
+	f->write_int(0);
 	f->write_comment("// Sun");
 	f->write_bool(meta_data.SunEnabled);
 	write_color_3i(f, meta_data.SunAmbient);
@@ -305,9 +303,8 @@ bool DataWorld::load(const string & _filename, bool deep)
 		// ScriptVars
 		f->read_comment();
 		n = f->read_int();
-		meta_data.ScriptVar.clear();
 		for (int i=0;i<n;i++)
-			meta_data.ScriptVar.add(f->read_float());
+			f->read_float();
 		if (f->read_str() != "#"){
 			meta_data.SunEnabled = f->read_bool();
 			read_color_3i(f, meta_data.SunAmbient);
@@ -368,9 +365,6 @@ bool DataWorld::load(const string & _filename, bool deep)
 
 void DataWorld::MetaData::Reset()
 {
-	ScriptVar.clear();
-	ScriptVar.resize(32);
-
 	FogEnabled = false;
 	FogMode = FOG_EXP;
 	FogStart = 1;

@@ -1,6 +1,6 @@
-Dialog world_dialog "Welt-Eigenschaften" width=600 height=420
+Dialog world_dialog "Welt-Eigenschaften" width=520 height=420
 	Grid ? "" vertical
-		TabControl world_dialog_tab_control "Hintergrund\\Nebel\\Licht\\Physik\\Scripte\\Variablen"
+		TabControl world_dialog_tab_control "Hintergrund\\Nebel\\Licht\\Physik\\Scripte"
 			Grid ? "" vertical
 				Group grp_bg_color "Farbe"
 					ColorButton bgc "" alpha "tooltip=Farbe des Himmels"
@@ -68,12 +68,7 @@ Dialog world_dialog "Welt-Eigenschaften" width=600 height=420
 				Grid ? ""
 					Button add_script "Hinzufügen" image=hui:add
 					Button remove_script "Entfernen" image=hui:delete
-					Button edit_script_vars "Variablen"
-			Grid ? "" vertical
-				Grid ? ""
-					Text world_dialog_t_max_script_vars "Anzahl:"
-					SpinButton max_script_vars "" range=0:
-				ListView script_vars "#\\Name\\Wert" format=ttT
+					Button edit_script_vars "Variablen..."
 		Grid ? "" buttonbar
 			Button /apply "Übernehmen" image=hui:apply
 			Button /cancel "Abbrechen" image=hui:cancel

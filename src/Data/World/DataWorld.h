@@ -135,7 +135,6 @@ public:
 		float FogEnd;
 		float FogDensity;
 		color FogColor;
-		Array<float> ScriptVar;
 
 		// light
 		bool SunEnabled;

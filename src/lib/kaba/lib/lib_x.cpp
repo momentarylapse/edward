@@ -865,7 +865,6 @@ void SIAddPackageX()
 		class_add_element("skybox",		TypeModelPList,		GetDAWorld(skybox));
 		class_add_element("background",		TypeColor,		GetDAWorld(background));
 		class_add_element("fog",		TypeFog,		GetDAWorld(fog));
-		class_add_element("var",		TypeFloatList,		GetDAWorld(var));
 		class_add_element("ambient",		TypeColor,		GetDAWorld(ambient));
 		class_add_element("sun",		TypeLightP,		GetDAWorld(sun));
 		class_add_element("speed_of_sound",		TypeFloat32,		GetDAWorld(speed_of_sound));

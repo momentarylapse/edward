@@ -22,7 +22,6 @@ public:
 	void ApplyData();
 
 	void FillSkyboxList();
-	void FillScriptVarList();
 	void FillScriptList();
 	void OnSunEnabled();
 	void OnSunAngFromCamera();
@@ -38,9 +37,6 @@ public:
 	void OnAddScript();
 	void OnRemoveScript();
 	void OnEditScriptVars();
-	void OnMaxScriptVars();
-	void OnScriptVarEdit();
-	void OnScriptVarTemplate();
 	void OnOk();
 	void OnClose();
 

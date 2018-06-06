@@ -59,9 +59,6 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	event("remove_script", std::bind(&WorldPropertiesDialog::OnRemoveScript, this));
 	event("add_script", std::bind(&WorldPropertiesDialog::OnAddScript, this));
 	event("edit_script_vars", std::bind(&WorldPropertiesDialog::OnEditScriptVars, this));
-	event("max_script_vars", std::bind(&WorldPropertiesDialog::OnMaxScriptVars, this));
-	eventX("script_vars", "hui:change", std::bind(&WorldPropertiesDialog::OnScriptVarEdit, this));
-	//eventM("model_script_var_template", std::bind(&ModelPropertiesDialog::OnModelScriptVarTemplate, this));
 
 	subscribe(data);
 
@@ -288,26 +285,6 @@ void WorldPropertiesDialog::onUpdate(Observable *o, const string &message)
 
 
 
-void WorldPropertiesDialog::OnScriptVarEdit()
-{
-	int row = hui::GetEvent()->row;
-	temp.ScriptVar[row] = s2f(getCell("script_vars", row, 2));
-}
-
-
-
-void WorldPropertiesDialog::FillScriptVarList()
-{
-	reset("script_vars");
-	foreachi(float v, temp.ScriptVar, i)
-		/*if (i<NumObjectScriptVarNames)
-			addString("script_vars", format("%d\\%s\\%.6f", i, ObjectScriptVarName[i].c_str(), v));
-		else*/
-			addString("script_vars", format("%d\\\\%.6f", i, v));
-}
-
-
-
 void WorldPropertiesDialog::FillScriptList()
 {
 	hui::ComboBoxSeparator = ":";
@@ -349,20 +326,6 @@ void WorldPropertiesDialog::ApplyData()
 	temp.Ambient = getColor("ambient");
 
 	data->execute(new ActionWorldEditData(temp));
-}
-
-
-
-void WorldPropertiesDialog::OnScriptVarTemplate()
-{
-}
-
-
-
-void WorldPropertiesDialog::OnMaxScriptVars()
-{
-	temp.ScriptVar.resize(getInt("max_script_vars"));
-	FillScriptVarList();
 }
 
 
@@ -431,10 +394,7 @@ void WorldPropertiesDialog::LoadData()
 	setFloat("gravitation_y", temp.Gravity.y);
 	setFloat("gravitation_z", temp.Gravity.z);
 
-	setInt("max_script_vars", temp.ScriptVar.num);
-
 	FillSkyboxList();
-	FillScriptVarList();
 	FillScriptList();
 }
 
