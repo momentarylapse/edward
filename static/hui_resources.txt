@@ -5404,7 +5404,7 @@ mpd_table_scriptfile
 
 0
 0
-2
+3
 Edit
 script
 expandx
@@ -5417,47 +5417,23 @@ image=hui:open
 1
 0
 0
+Label
+class
+bold
+0
+1
+0
 Group
 model_dialog_t_scriptvars
 
 1
 0
 1
-Grid
-?
-
-0
-0
-2
-Grid
-?
-
-0
-0
-3
-Text
-odt_max_scriptvars
-
-0
-0
-0
-SpinButton
-max_script_vars
-range=0:
-1
-0
-0
-ComboBox
-model_script_var_template
-
-2
-0
-0
 ListView
-script_vars
+variables
 format=ttT
 0
-1
+0
 0
 Grid
 ?
@@ -11137,6 +11113,9 @@ Viewstage Pop
 model-toolbar/view_push
 Push
 Viewstage Push
+model_dialog/class
+klasse...
+
 model_dialog/delete_item
 Item löschen
 
@@ -11188,20 +11167,17 @@ Detailstufen\\Physik\\Inventar\\Script
 model_dialog/model_inventary
 #\\Datei
 
-model_dialog/odt_max_scriptvars
-Anzahl:
-
 model_dialog/ph_active
 Beweglich
 
 model_dialog/ph_passive
 Kollisionsfähig
 
-model_dialog/script_vars
-#\\Name\\Wert
-
 model_dialog/tensor
 \\X\\Y\\Z
+
+model_dialog/variables
+Name\\Typ\\Wert
 
 model_material_dialog/add_material
 laden...

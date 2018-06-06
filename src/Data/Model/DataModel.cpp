@@ -57,6 +57,8 @@
 
 const string DataModel::MESSAGE_SKIN_CHANGE = "SkinChange";
 
+bool DataModelAllowUpdating = true;
+
 
 string ModelEffect::get_type()
 {
@@ -131,6 +133,7 @@ void DataModel::MetaData::reset()
 	// script
 	script_file = "";
 	script_var.clear();
+	variables.clear();
 }
 
 
@@ -250,7 +253,14 @@ vector get_normal_by_index(int index)
 }
 
 
+void report_error(const string &msg)
+{
+	msg_error(msg);
+	if (ed)
+		ed->setMessage(msg);
+}
 
+void update_model_script_data(DataModel::MetaData &m);
 
 bool DataModel::load(const string & _filename, bool deep)
 {
@@ -262,15 +272,17 @@ bool DataModel::load(const string & _filename, bool deep)
 	Array<vector> skin_vert;
 
 	filename = _filename;
-	if (this == mode_model->data)
-		ed->makeDirs(filename);
+	if (ed){
+		if (this == mode_model->data)
+			ed->makeDirs(filename);
+	}
 	//msg_write(dir);
 	//msg_write(filename);
 	File *f;
 	try{
 		f = FileOpenText(filename);
 	}catch(FileError &e){
-		ed->setMessage(_("Datei ist nicht in der Stimmung, ge&offnet zu werden"));
+		report_error(_("Datei ist nicht in der Stimmung, ge&offnet zu werden"));
 		return false;
 	}
 	action_manager->enable(false);
@@ -279,7 +291,7 @@ bool DataModel::load(const string & _filename, bool deep)
 	ffv=f->ReadFileFormatVersion();
 
 	if (ffv<0){
-		ed->errorBox(_("Datei-Format unlesbar!"));
+		report_error(_("Datei-Format unlesbar!"));
 		error=true;
 
 	}else if (ffv==10){ // old format
@@ -548,8 +560,8 @@ bool DataModel::load(const string & _filename, bool deep)
 		vector tv;
 		f->read_comment();
 		// bounding box
-		f->read_vector(&tv);
-		f->read_vector(&tv);
+		f->read_vector(&_min);
+		f->read_vector(&_max);
 		// skins
 		f->read_int();
 		// reserved
@@ -615,22 +627,26 @@ bool DataModel::load(const string & _filename, bool deep)
 				poly[j].Face[k].NumVertices = f->read_int();
 				for (int l=0;l<poly[j].Face[k].NumVertices;l++)
 					poly[j].Face[k].Index[l] = f->read_int();
-				f->read_float();
-				f->read_float();
-				f->read_float();
-				f->read_float();
+				poly[j].Face[k].Plane.n.x = f->read_float();
+				poly[j].Face[k].Plane.n.y = f->read_float();
+				poly[j].Face[k].Plane.n.z = f->read_float();
+				poly[j].Face[k].Plane.d = f->read_float();
 			}
 			poly[j].NumSVertices = f->read_int();
 			for (int k=0;k<poly[j].NumSVertices;k++)
-				f->read_int();
+				poly[j].SIndex[k] = f->read_int();
 			poly[j].NumEdges = f->read_int();
-			for (int k=0;k<poly[j].NumEdges*2;k++)
-				f->read_int();
+			for (int k=0;k<poly[j].NumEdges;k++){
+				poly[j].EdgeIndex[k*2 + 0] = f->read_int();
+				poly[j].EdgeIndex[k*2 + 1] = f->read_int();
+			}
 			// topology
-			for (int k=0;k<poly[j].NumFaces*poly[j].NumFaces;k++)
-				f->read_int();
-			for (int k=0;k<poly[j].NumEdges*poly[j].NumFaces;k++)
-				f->read_bool();
+			for (int k=0;k<poly[j].NumFaces;k++)
+				for (int l=0;l<poly[j].NumFaces;l++)
+					poly[j].FacesJoiningEdge[k * poly[j].NumFaces + l] = f->read_int();
+			for (int k=0;k<poly[j].NumEdges;k++)
+				for (int l=0;l<poly[j].NumFaces;l++)
+				    poly[j].EdgeOnFace[k * poly[j].NumFaces + l] = f->read_bool();
 		}
 
 	// Skin[i]
@@ -898,7 +914,18 @@ bool DataModel::load(const string & _filename, bool deep)
 					c.round = f->read_bool();
 					cylinder.add(c);
 				}
+			}else if (s == "// Script Vars"){
+				int n = f->read_int();
+				for (int i=0; i<n; i++){
+					ModelScriptVariable v;
+					v.name = f->read_str();
+					v.value = f->read_str();
+					meta_data.variables.add(v);
+				}
+			}else if (s == "#"){
+				break;
 			}else{
+				msg_error("unknown: " + s);
 				break;
 			}
 		}
@@ -910,7 +937,7 @@ bool DataModel::load(const string & _filename, bool deep)
 
 
 	}else{
-		ed->errorBox(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 10, 10));
+		report_error(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 10, 10));
 		error=true;
 	}
 
@@ -941,7 +968,7 @@ bool DataModel::load(const string & _filename, bool deep)
 			// test textures
 			for (int t=0;t<material[i].texture_files.num;t++){
 				if ((!material[i].textures[t]) and (material[i].texture_files[t].num > 0))
-					ed->setMessage(format(_("Textur-Datei nicht ladbar: %s"), material[i].texture_files[t].c_str()));
+					report_error(format(_("Textur-Datei nicht ladbar: %s"), material[i].texture_files[t].c_str()));
 			}
 		}
 
@@ -952,6 +979,18 @@ bool DataModel::load(const string & _filename, bool deep)
 			ed->SetTitle(filename);
 			ResetView();
 		}*/
+	}
+
+	// FIXME
+	if ((meta_data.script_file.num > 0) and (meta_data.variables.num == 0)){
+		update_model_script_data(meta_data);
+		msg_write(meta_data.variables.num);
+		for (int i=0; i<min(meta_data.script_var.num, meta_data.variables.num); i++){
+			if (meta_data.variables[i].type == "float")
+				meta_data.variables[i].value = f2s(meta_data.script_var[i], 6);
+			msg_write(meta_data.variables[i].name);
+			msg_write(meta_data.variables[i].value);
+		}
 	}
 
 
@@ -1100,6 +1139,7 @@ void DataModel::getBoundingBox(vector &min, vector &max)
 
 bool DataModel::save(const string & _filename)
 {
+	if (DataModelAllowUpdating){
 	/*if (AutoGenerateSkin[1])
 		CreateSkin(&Skin[1],&Skin[2],(float)DetailFactor[1]*0.01f);
 
@@ -1130,18 +1170,19 @@ bool DataModel::save(const string & _filename)
 	}
 
 
-
 //	PrecreatePhysicalData();
 
 	getBoundingBox(_min, _max);
 	radius = getRadius() * 1.1f;
+	}
 
 
 	// so the materials don't get mixed up
 //	RemoveUnusedData();
 
 	filename = _filename;
-	ed->makeDirs(filename);
+	if (ed)
+		ed->makeDirs(filename);
 
 	File *f = FileCreateText(filename);
 	f->WriteFileFormatVersion(false, 11);//FFVBinary, 11);
@@ -1277,7 +1318,8 @@ bool DataModel::save(const string & _filename)
 			// normal
 	    	for (int j=0;j<sub->triangle.num;j++)
 				for (int k=0;k<3;k++){
-					sub->triangle[j].normal_index[k] = get_normal_index(sub->triangle[j].normal[k]);
+					if (DataModelAllowUpdating)
+						sub->triangle[j].normal_index[k] = get_normal_index(sub->triangle[j].normal[k]);
 					f->write_word(sub->triangle[j].normal_index[k]);
 				}
 			f->write_int(0);
@@ -1428,6 +1470,16 @@ bool DataModel::save(const string & _filename)
 	f->write_int(meta_data.script_var.num);
 	for (int i=0;i<meta_data.script_var.num;i++)
 	    f->write_float(meta_data.script_var[i]);
+
+	// new script vars
+	if (meta_data.variables.num > 0){
+		f->write_str("// Script Vars");
+		f->write_int(meta_data.variables.num);
+		for (auto &v: meta_data.variables){
+			f->write_str(v.name);
+			f->write_str(v.value);
+		}
+	}
 
 
 	if (cylinder.num > 0){

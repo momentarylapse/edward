@@ -38,7 +38,9 @@ void *ActionModelAddVertex::execute(Data *d)
 	vv.bone_index = bone_index;
 	vv.is_selected = false;
 	vv.is_special = false;
-	vv.view_stage = ed->multi_view_3d->view_stage;
+	vv.view_stage = 0;
+	if (ed)
+		vv.view_stage = ed->multi_view_3d->view_stage;
 	vv.ref_count = 0;
 	vv.surface = -1;
 	m->vertex.add(vv);

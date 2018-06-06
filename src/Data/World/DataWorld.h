@@ -87,6 +87,7 @@ class WorldScript
 {
 public:
 	string filename;
+	string class_name;
 	Array<WorldScriptVariable> variables;
 };
 

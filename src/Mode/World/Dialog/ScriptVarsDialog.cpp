@@ -36,9 +36,14 @@ void ScriptVarsDialog::ApplyData()
 
 void ScriptVarsDialog::LoadData()
 {
+	setString("class", _("Klasse: ") + data->class_name);
+	if (data->class_name == "")
+		setString("class", "- no class derived from Controller found -");
+
 	reset("variables");
 	for (auto &v: data->variables)
 		addString("variables", v.name + "\\" + v.type + "\\" + v.value);
+	enable("variables", data->variables.num > 0);
 }
 
 void ScriptVarsDialog::OnClose()

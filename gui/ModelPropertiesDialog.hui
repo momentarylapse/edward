@@ -43,14 +43,10 @@ Dialog model_dialog "Modell-Eigenschaften" width=550 height=580
 					Grid mpd_table_scriptfile ""
 						Edit script "" expandx
 						Button script_find "" image=hui:open
-				Group model_dialog_t_scriptvars "Variablen"
-					Grid ? ""
-						Grid ? ""
-							Text odt_max_scriptvars "Anzahl:"
-							SpinButton max_script_vars "" range=0:
-							ComboBox model_script_var_template ""
 						---|
-						ListView script_vars "#\\Name\\Wert" format=ttT
+						Label class "klasse..." bold
+				Group model_dialog_t_scriptvars "Variablen"
+					ListView variables "Name\\Typ\\Wert" "format=ttT"
 		---|
 		Grid ? "" buttonbar
 			Button /cancel "Abbrechen" image=hui:cancel

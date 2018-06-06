@@ -12,6 +12,7 @@
 #include "../../../Action/Model/Data/ActionModelAddMaterial.h"
 #include "../../../Action/Model/Data/ActionModelEditData.h"
 #include "../../../lib/nix/nix.h"
+#include "../../../lib/kaba/kaba.h"
 #include "../Mesh/ModeModelMeshTexture.h"
 
 
@@ -43,10 +44,8 @@ ModelPropertiesDialog::ModelPropertiesDialog(hui::Window *_parent, bool _allow_p
 	event("num_items", std::bind(&ModelPropertiesDialog::OnNumItems, this));
 	event("model_inventary", std::bind(&ModelPropertiesDialog::OnModelInventary, this));
 	event("delete_item", std::bind(&ModelPropertiesDialog::OnDeleteItem, this));
-	event("max_script_vars", std::bind(&ModelPropertiesDialog::OnMaxScriptVars, this));
 	eventX("script_vars", "hui:change", std::bind(&ModelPropertiesDialog::OnScriptVarEdit, this));
 	event("script_find", std::bind(&ModelPropertiesDialog::OnScriptFind, this));
-	event("model_script_var_template", std::bind(&ModelPropertiesDialog::OnModelScriptVarTemplate, this));
 
 	restart();
 }
@@ -66,8 +65,57 @@ void ModelPropertiesDialog::restart()
 	active = true;
 }
 
+
+void update_model_script_data(DataModel::MetaData &m)
+{
+	if (m.script_file.num == 0)
+		return;
+	//m.class_name = "";
+	try{
+		msg_write(m.script_file);
+		auto ss = Kaba::Load(m.script_file, true);
+
+		Array<string> wanted;
+		for (auto c:ss->syntax->constants)
+			if (c->name == "PARAMETERS" and c->type == Kaba::TypeString)
+				wanted = c->as_string().lower().replace("_", "").replace("\n", "").explode(",");
+
+		for (auto *t: ss->syntax->classes){
+			if (!t->is_derived_from("Model"))
+				continue;
+			msg_write(t->name);
+			//m.class_name = t->name;
+			for (auto &e: t->elements){
+				string nn = e.name.replace("_", "").lower();
+				if (!sa_contains(wanted, nn))
+					continue;
+				bool found = false;
+				for (auto &v: m.variables)
+					if (v.name.lower().replace("_", "") == nn){
+						v.name = e.name;
+						v.type = e.type->name;
+						found = true;
+					}
+				if (found)
+					continue;
+
+				ModelScriptVariable v;
+				v.name = e.name;
+				v.type = e.type->name;
+				m.variables.add(v);
+			}
+		}
+	}catch(Kaba::Exception &e){
+
+		msg_error(e.message);
+	}
+
+}
+
 void ModelPropertiesDialog::LoadData()
 {
+	update_model_script_data(temp);
+
 // viewing properties (LOD)
 	if (temp.auto_generate_dists)
 		data->generateDetailDists(temp.detail_dist);
@@ -95,9 +143,6 @@ void ModelPropertiesDialog::LoadData()
 	setString("script", temp.script_file);
 	setInt("max_script_vars", temp.script_var.num);
 	RefillScriptVarList();
-
-	/*for (int i=0;i<NumScriptVarFiles;i++)
-		SetString("model_script_var_template", data->ScriptVarFile[i]);*/
 }
 
 void ModelPropertiesDialog::FillDetailList()
@@ -193,12 +238,10 @@ void ModelPropertiesDialog::RefillInventaryList()
 
 void ModelPropertiesDialog::RefillScriptVarList()
 {
-	reset("script_vars");
-	foreachi(float v, temp.script_var, i)
-		/*if (i<NumObjectScriptVarNames)
-			addString("script_vars", format("%d\\%s\\%.6f", i, ObjectScriptVarName[i].c_str(), v));
-		else*/
-			addString("script_vars", format("%d\\\\%.6f", i, v));
+	reset("variables");
+	for (auto &v: temp.variables)
+		addString("variables", v.name + "\\" + v.type + "\\" + v.value);
+	enable("variables", temp.variables.num > 0);
 }
 
 
@@ -269,31 +312,20 @@ void ModelPropertiesDialog::OnDeleteItem()
 }
 
 // script
-void ModelPropertiesDialog::OnMaxScriptVars()
-{
-	temp.script_var.resize(getInt("max_script_vars"));
-	RefillScriptVarList();
-}
-
 void ModelPropertiesDialog::OnScriptVarEdit()
 {
 	int row = hui::GetEvent()->row;
 	msg_write(hui::GetEvent()->row);
-	temp.script_var[row] = s2f(getCell("script_vars", row, 2));
+	temp.variables[row].value = getCell("script_vars", row, 2);
 }
 
 void ModelPropertiesDialog::OnScriptFind()
 {
-	if (ed->fileDialog(FD_SCRIPT, false, true))
+	if (ed->fileDialog(FD_SCRIPT, false, true)){
 		setString("script", ed->dialog_file);
-}
-
-void ModelPropertiesDialog::OnModelScriptVarTemplate()
-{
-//	int n = GetInt("");
-	//strcpy(ObjectScriptVarFile, ScriptVarFile[n]);
-//	LoadScriptVarNames(1, ScriptVarFile[n]);
-	RefillScriptVarList();
+		temp.script_file = ed->dialog_file;
+		update_model_script_data(temp);
+	}
 }
 
 void ModelPropertiesDialog::ApplyData()

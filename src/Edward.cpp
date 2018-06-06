@@ -394,10 +394,22 @@ bool Edward::handleArguments(Array<string> arg)
 	if (arg.num < 2)
 		return false;
 
+
+	if (arg[1] == "--update-model"){
+		if (arg.num >= 3){
+			DataModel m;
+			m.load(arg[2], false);
+			//m.save(arg[2]);
+			::exit(0);
+		}
+		return false;
+	}
+
 	for (int i=1; i<arg.num; i++){
 		string param = arg[i];
 
 // convert file types...
+
 	/*if (param == "-cftmodel"){		ConvertFileFormat(FDModel, true);		End();	}
 	if (param == "-cftobject"){	ConvertFileFormat(FDObject, true);		End();	}
 	if (param == "-cftitem"){		ConvertFileFormat(FDItem, true);		End();	}

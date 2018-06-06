@@ -56,6 +56,7 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	event("remove_skybox", std::bind(&WorldPropertiesDialog::OnRemoveSkybox, this));
 	event("physics_enabled", std::bind(&WorldPropertiesDialog::OnPhysicsEnabled, this));
 	eventX("script_list", "hui:select", std::bind(&WorldPropertiesDialog::OnScriptSelect, this));
+	eventX("script_list", "hui:activate", std::bind(&WorldPropertiesDialog::OnEditScriptVars, this));
 	event("remove_script", std::bind(&WorldPropertiesDialog::OnRemoveScript, this));
 	event("add_script", std::bind(&WorldPropertiesDialog::OnAddScript, this));
 	event("edit_script_vars", std::bind(&WorldPropertiesDialog::OnEditScriptVars, this));
@@ -190,6 +191,7 @@ void WorldPropertiesDialog::OnRemoveScript()
 
 void update_script_data(WorldScript &s)
 {
+	s.class_name = "";
 	try{
 		auto ss = Kaba::Load(s.filename, true);
 
@@ -201,6 +203,7 @@ void update_script_data(WorldScript &s)
 		for (auto *t: ss->syntax->classes){
 			if (!t->is_derived_from("Controller"))
 				continue;
+			s.class_name = t->name;
 			for (auto &e: t->elements){
 				string nn = e.name.replace("_", "").lower();
 				if (!sa_contains(wanted, nn))
@@ -208,6 +211,7 @@ void update_script_data(WorldScript &s)
 				bool found = false;
 				for (auto &v: s.variables)
 					if (v.name.lower().replace("_", "") == nn){
+						v.name = e.name;
 						v.type = e.type->name;
 						found = true;
 					}

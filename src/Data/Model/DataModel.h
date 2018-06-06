@@ -220,6 +220,11 @@ public:
 	void clear();
 };
 
+class ModelScriptVariable
+{
+public:
+	string name, type, value;
+};
 
 class DataModel: public Data
 {
@@ -380,6 +385,7 @@ public:
 
 		// script
 		string script_file;
+		Array<ModelScriptVariable> variables;
 		Array<float> script_var;
 
 		void reset();

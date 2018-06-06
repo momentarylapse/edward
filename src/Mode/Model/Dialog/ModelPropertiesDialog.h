@@ -35,10 +35,8 @@ public:
 	void OnNumItems();
 	void OnModelInventary();
 	void OnDeleteItem();
-	void OnMaxScriptVars();
 	void OnScriptVarEdit();
 	void OnScriptFind();
-	void OnModelScriptVarTemplate();
 	void OnOk();
 	void OnClose();
 

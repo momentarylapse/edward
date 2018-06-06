@@ -151,7 +151,7 @@ Material *LoadMaterial(const string &filename)
 {
 	// an empty name loads the default material
 	if (filename.num == 0)
-		return default_material;
+		return new Material;//default_material;
 
 	File *f;
 	msg_write("loading material " + filename);
