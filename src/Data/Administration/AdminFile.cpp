@@ -201,8 +201,8 @@ void AdminFile::check(AdminFileList &list)
 				add_possible_link(l, FD_TERRAIN, w.Terrains[i].FileName);
 			for (int i=0;i<w.meta_data.SkyBoxFile.num;i++)
 				add_possible_link(l, FD_MODEL, w.meta_data.SkyBoxFile[i]);
-			for (int i=0;i<w.meta_data.ScriptFile.num;i++)
-				add_possible_link(l, FD_SCRIPT, w.meta_data.ScriptFile[i]);
+			for (int i=0;i<w.meta_data.scripts.num;i++)
+				add_possible_link(l, FD_SCRIPT, w.meta_data.scripts[i].filename);
 			for (int i=0;i<w.Objects.num;i++)
 				add_possible_link(l, FD_MODEL, w.Objects[i].FileName);
 		}else

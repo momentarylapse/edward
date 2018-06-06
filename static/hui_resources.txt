@@ -1,6 +1,6 @@
 t7
 // Number Of Resources
-61
+62
 // Resource
 Menu
 
@@ -6855,6 +6855,49 @@ image=hui:ok
 0
 // Resource
 Dialog
+script_vars_dialog
+width=360,height=500
+0
+0
+1
+Grid
+?
+vertical
+0
+0
+3
+Label
+class
+bold
+0
+0
+0
+ListView
+variables
+format=ttT
+1
+0
+0
+Grid
+?
+buttonbar
+2
+0
+2
+Button
+cancel
+image=hui:cancel
+0
+0
+0
+DefButton
+ok
+image=hui:ok
+1
+0
+0
+// Resource
+Dialog
 terrain_dialog
 width=435,height=275
 0
@@ -7462,7 +7505,7 @@ image=icons/toolbar/view_pop.png
 // Resource
 Dialog
 world_dialog
-width=410,height=420
+width=600,height=420
 0
 0
 1
@@ -7485,7 +7528,7 @@ vertical
 0
 2
 Group
-world_dialog_grp_bg_color
+grp_bg_color
 
 0
 0
@@ -7497,7 +7540,7 @@ alpha
 0
 0
 Group
-world_dialog_grp_skybox
+grp_skybox
 
 1
 0
@@ -7539,7 +7582,7 @@ fog_mode:linear
 0
 0
 Grid
-word_dialog_fog_lin_grid
+?
 indent
 2
 0
@@ -7587,7 +7630,7 @@ fog_mode:exp2
 0
 0
 Grid
-word_dialog_fog_exp_grid
+?
 indent
 4
 0
@@ -7617,7 +7660,7 @@ vertical
 0
 2
 Group
-world_dialog_grp_ambient
+grp_ambient
 
 0
 0
@@ -7629,7 +7672,7 @@ ambient
 0
 0
 Group
-world_dialog_grp_sun
+grp_sun
 
 1
 0
@@ -7743,7 +7786,7 @@ physics_enabled
 0
 0
 Group
-world_dialog_grp_gravitation
+grp_gravitation
 
 1
 0
@@ -7825,7 +7868,7 @@ Grid
 
 1
 0
-2
+3
 Button
 add_script
 image=hui:add
@@ -7836,6 +7879,12 @@ Button
 remove_script
 image=hui:delete
 1
+0
+0
+Button
+edit_script_vars
+
+2
 0
 0
 Grid
@@ -7869,7 +7918,7 @@ format=ttT
 0
 0
 Grid
-world_dialog_buttonbar
+?
 buttonbar
 1
 0
@@ -8959,7 +9008,7 @@ checkable,image=icons/toolbar/rf_rotate.png
 // Language
 Deutsch
 // Number Of IDs
-911
+916
 // Text
 /ambient
 Ambient
@@ -11418,6 +11467,12 @@ Rotation
 scaling_dialog/scaling_dialog
 Skalierung
 
+script_vars_dialog/script_vars_dialog
+Variablen
+
+script_vars_dialog/variables
+Name\\Typ\\Wert
+
 scriptvar_dialog/scriptvar_dialog
 Script-Variable
 
@@ -11559,6 +11614,12 @@ Kamera-Fahrt
 world_dialog/add_script
 Hinzufügen
 
+world_dialog/bgc
+
+Farbe des Himmels
+world_dialog/edit_script_vars
+Variablen
+
 world_dialog/fog_mode:exp
 Exponentiell
 
@@ -11570,6 +11631,24 @@ Linear
 
 world_dialog/fog_mode:none
 Deaktiviert
+
+world_dialog/fog_start
+
+Abstand, ab dem der Nebel beginnt (Intensität 0)
+world_dialog/grp_ambient
+Ambient
+
+world_dialog/grp_bg_color
+Farbe
+
+world_dialog/grp_gravitation
+Gravitation
+
+world_dialog/grp_skybox
+Skybox Modelle
+
+world_dialog/grp_sun
+Sonne
 
 world_dialog/physics_enabled
 Aktiviert
@@ -11588,7 +11667,7 @@ world_dialog/script_vars
 
 world_dialog/skybox
 #\\Modell
-
+Modelle, die über die Hintergrundfarbe gemalt werden\n- Doppelklick um ein Modell zu wählen
 world_dialog/sun_ang_from_camera
 Richtung aus Kamerawinkel
 
@@ -11597,21 +11676,6 @@ aktiviert
 
 world_dialog/world_dialog
 Welt-Eigenschaften
-
-world_dialog/world_dialog_grp_ambient
-Ambient
-
-world_dialog/world_dialog_grp_bg_color
-Farbe
-
-world_dialog/world_dialog_grp_gravitation
-Gravitation
-
-world_dialog/world_dialog_grp_skybox
-Skybox Modelle
-
-world_dialog/world_dialog_grp_sun
-Sonne
 
 world_dialog/world_dialog_t_fog_distance
 Sichtweite

@@ -1,33 +1,33 @@
-Dialog world_dialog "Welt-Eigenschaften" width=410 height=420
+Dialog world_dialog "Welt-Eigenschaften" width=600 height=420
 	Grid ? "" vertical
 		TabControl world_dialog_tab_control "Hintergrund\\Nebel\\Licht\\Physik\\Scripte\\Variablen"
 			Grid ? "" vertical
-				Group world_dialog_grp_bg_color "Farbe"
-					ColorButton bgc "" alpha
-				Group world_dialog_grp_skybox "Skybox Modelle"
+				Group grp_bg_color "Farbe"
+					ColorButton bgc "" alpha "tooltip=Farbe des Himmels"
+				Group grp_skybox "Skybox Modelle"
 					Grid ? "" vertical
-						ListView skybox "#\\Modell"
+						ListView skybox "#\\Modell" "tooltip=Modelle, die über die Hintergrundfarbe gemalt werden\n- Doppelklick um ein Modell zu wählen"
 						Button remove_skybox "Entfernen" image=hui:delete
 			Grid ? "" vertical
 				RadioButton fog_mode:none "Deaktiviert" expandx
 				RadioButton fog_mode:linear "Linear"
-				Grid word_dialog_fog_lin_grid "" indent
+				Grid ? "" indent
 					Text world_dialog_t_fog_start "Entfernung"
-					SpinButton fog_start "" range=0:1000000000:0.1
+					SpinButton fog_start "" range=0:1000000000:0.1 "tooltip=Abstand, ab dem der Nebel beginnt (Intensität 0)"
 					---|
 					Text world_dialog_t_fog_end "bis"
 					SpinButton fog_end "" range=0:1000000000:0.1
 				Grid ? ""
 					RadioButton fog_mode:exp "Exponentiell"
 					RadioButton fog_mode:exp2 "Quadratisch exponentiell"
-				Grid word_dialog_fog_exp_grid "" indent
+				Grid ? "" indent
 					Text world_dialog_t_fog_distance "Sichtweite"
 					SpinButton fog_distance "" range=0:1000000000:0.1
 				ColorButton fog_color ""
 			Grid ? "" vertical
-				Group world_dialog_grp_ambient "Ambient"
+				Group grp_ambient "Ambient"
 					ColorButton ambient ""
-				Group world_dialog_grp_sun "Sonne"
+				Group grp_sun "Sonne"
 					Grid ? "" vertical
 						CheckBox sun_enabled "aktiviert" expandx
 						Grid ? ""
@@ -50,7 +50,7 @@ Dialog world_dialog "Welt-Eigenschaften" width=410 height=420
 						Button sun_ang_from_camera "Richtung aus Kamerawinkel" image=hui:media-record
 			Grid ? "" vertical
 				CheckBox physics_enabled "Aktiviert"
-				Group world_dialog_grp_gravitation "Gravitation"
+				Group grp_gravitation "Gravitation"
 					Grid ? ""
 						Text x "X"
 						SpinButton gravitation_x "" range=::0.1
@@ -68,12 +68,13 @@ Dialog world_dialog "Welt-Eigenschaften" width=410 height=420
 				Grid ? ""
 					Button add_script "Hinzufügen" image=hui:add
 					Button remove_script "Entfernen" image=hui:delete
+					Button edit_script_vars "Variablen"
 			Grid ? "" vertical
 				Grid ? ""
 					Text world_dialog_t_max_script_vars "Anzahl:"
 					SpinButton max_script_vars "" range=0:
 				ListView script_vars "#\\Name\\Wert" format=ttT
-		Grid world_dialog_buttonbar "" buttonbar
+		Grid ? "" buttonbar
 			Button /apply "Übernehmen" image=hui:apply
 			Button /cancel "Abbrechen" image=hui:cancel
 			DefButton /ok "OK" image=hui:ok

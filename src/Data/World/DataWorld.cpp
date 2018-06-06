@@ -169,10 +169,14 @@ bool DataWorld::save(const string & _filename)
 		f->write_float(o.Ang.z);
 	}
 	f->write_comment("// Scripts");
-	f->write_int(meta_data.ScriptFile.num);
-	for (string &s: meta_data.ScriptFile){
-		f->write_str(s);
-		f->write_int(0);
+	f->write_int(meta_data.scripts.num);
+	for (auto &s: meta_data.scripts){
+		f->write_str(s.filename);
+		f->write_int(s.variables.num);
+		for (auto &v: s.variables){
+			f->write_str(v.name);
+			f->write_str(v.value);
+		}
 	}
 	f->write_comment("// ScriptVars");
 	f->write_int(meta_data.ScriptVar.num);
@@ -287,9 +291,16 @@ bool DataWorld::load(const string & _filename, bool deep)
 		f->read_comment();
 		n = f->read_int();
 		for (int i=0;i<n;i++){
-			string s = f->read_str();
-			f->read_int();
-			meta_data.ScriptFile.add(s);
+			WorldScript s;
+			s.filename = f->read_str();
+			int nv = f->read_int();
+			for (int j=0; j<nv; j++){
+				WorldScriptVariable var;
+				var.name = f->read_str();
+				var.value = f->read_str();
+				s.variables.add(var);
+			}
+			meta_data.scripts.add(s);
 		}
 		// ScriptVars
 		f->read_comment();
@@ -382,7 +393,7 @@ void DataWorld::MetaData::Reset()
 	PhysicsEnabled = false;
 	Gravity = vector(0, -981, 0);
 
-	ScriptFile.clear();
+	scripts.clear();
 	MusicFile.clear();
 }
 

@@ -1,0 +1,7 @@
+Dialog script_vars_dialog "Variablen" width=360 height=500
+	Grid ? "" vertical
+		Label class "" bold
+		ListView variables "Name\\Typ\\Wert" "format=ttT"
+		Grid ? "" buttonbar
+			Button /cancel "Abbrechen" image=hui:cancel
+			DefButton /ok "OK" image=hui:ok

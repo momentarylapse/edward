@@ -37,6 +37,7 @@ public:
 	void OnScriptSelect();
 	void OnAddScript();
 	void OnRemoveScript();
+	void OnEditScriptVars();
 	void OnMaxScriptVars();
 	void OnScriptVarEdit();
 	void OnScriptVarTemplate();

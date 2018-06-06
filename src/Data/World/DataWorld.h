@@ -75,6 +75,21 @@ public:
 	float friction;
 };
 
+class WorldScriptVariable
+{
+public:
+	string name;
+	string type;
+	string value;
+};
+
+class WorldScript
+{
+public:
+	string filename;
+	Array<WorldScriptVariable> variables;
+};
+
 class DataWorld: public Data
 {
 public:
@@ -131,7 +146,7 @@ public:
 		color Ambient;
 
 		// scripts
-		Array<string> ScriptFile;
+		Array<WorldScript> scripts;
 
 		// music
 		Array<string> MusicFile;

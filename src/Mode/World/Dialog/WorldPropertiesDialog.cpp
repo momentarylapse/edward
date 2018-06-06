@@ -12,6 +12,7 @@
 #include "../../../MultiView/MultiView.h"
 #include "../../../lib/kaba/kaba.h"
 #include "../../../lib/nix/nix.h"
+#include "ScriptVarsDialog.h"
 
 #define WorldPhysicsDec			3
 #define WorldLightDec			1
@@ -25,10 +26,10 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	data = _data;
 	active = true;
 
-	setTooltip("bgc", _("Farbe des Himmels"));
-	setTooltip("skybox", _("Modelle, die &uber die Hintergrundfarge gemalt werden\n- Doppelklick um ein Modell zu w&ahlen"));
+//	setTooltip("bgc", _("Farbe des Himmels"));
+//	setTooltip("skybox", _("Modelle, die &uber die Hintergrundfarge gemalt werden\n- Doppelklick um ein Modell zu w&ahlen"));
 
-	setTooltip("fog_start", _("Abstand, ab dem der Nebel beginnt (Intensit&at 0)"));
+//	setTooltip("fog_start", _("Abstand, ab dem der Nebel beginnt (Intensit&at 0)"));
 	setTooltip("fog_end", _("maximale Sichtweite, dahinter hat der Nebel volle Intensit&at"));
 	setTooltip("fog_distance", _("Nebelintensit&at = exp( - Entfernung / Sichtweite )"));
 
@@ -57,6 +58,7 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	eventX("script_list", "hui:select", std::bind(&WorldPropertiesDialog::OnScriptSelect, this));
 	event("remove_script", std::bind(&WorldPropertiesDialog::OnRemoveScript, this));
 	event("add_script", std::bind(&WorldPropertiesDialog::OnAddScript, this));
+	event("edit_script_vars", std::bind(&WorldPropertiesDialog::OnEditScriptVars, this));
 	event("max_script_vars", std::bind(&WorldPropertiesDialog::OnMaxScriptVars, this));
 	eventX("script_vars", "hui:change", std::bind(&WorldPropertiesDialog::OnScriptVarEdit, this));
 	//eventM("model_script_var_template", std::bind(&ModelPropertiesDialog::OnModelScriptVarTemplate, this));
@@ -96,6 +98,7 @@ void WorldPropertiesDialog::OnScriptSelect()
 {
 	int row = getInt("");
 	enable("remove_script", row >= 0);
+	enable("edit_script_vars", row >= 0);
 }
 
 
@@ -152,7 +155,27 @@ void WorldPropertiesDialog::OnRemoveSkybox()
 void WorldPropertiesDialog::OnAddScript()
 {
 	if (ed->fileDialog(FD_SCRIPT, false, true)){
-		temp.ScriptFile.add(ed->dialog_file_complete.substr(Kaba::config.directory.num, -1));
+		WorldScript s;
+		s.filename = ed->dialog_file_complete.substr(Kaba::config.directory.num, -1);
+		temp.scripts.add(s);
+		/*try{
+			auto ss = Kaba::Load(s.filename, true);
+
+			Array<string> wanted;
+			for (auto c:ss->syntax->constants)
+				if (c->name == "PARAMETERS" and c->type == Kaba::TypeString)
+					wanted = c->as_string().lower().replace("_", "").replace("\n", "").explode(",");
+
+			for (auto *t: ss->syntax->classes)
+				if (t->is_derived_from("Controller")){
+					for (auto &e: t->elements){
+						if (sa_contains(wanted, e.name.replace("_", "").lower()))
+							msg_write("    > " + e.name);
+					}
+				}
+		}catch(Exception &e){
+
+		}*/
 		FillScriptList();
 	}
 }
@@ -163,8 +186,57 @@ void WorldPropertiesDialog::OnRemoveScript()
 {
 	int n = getInt("script_list");
 	if (n >= 0){
-		temp.ScriptFile.erase(n);
+		temp.scripts.erase(n);
 		FillScriptList();
+	}
+}
+
+void update_script_data(WorldScript &s)
+{
+	try{
+		auto ss = Kaba::Load(s.filename, true);
+
+		Array<string> wanted;
+		for (auto c:ss->syntax->constants)
+			if (c->name == "PARAMETERS" and c->type == Kaba::TypeString)
+				wanted = c->as_string().lower().replace("_", "").replace("\n", "").explode(",");
+
+		for (auto *t: ss->syntax->classes){
+			if (!t->is_derived_from("Controller"))
+				continue;
+			for (auto &e: t->elements){
+				string nn = e.name.replace("_", "").lower();
+				if (!sa_contains(wanted, nn))
+					continue;
+				bool found = false;
+				for (auto &v: s.variables)
+					if (v.name.lower().replace("_", "") == nn){
+						v.type = e.type->name;
+						found = true;
+					}
+				if (found)
+					continue;
+
+				WorldScriptVariable v;
+				v.name = e.name;
+				v.type = e.type->name;
+				s.variables.add(v);
+			}
+		}
+	}catch(Exception &e){
+
+	}
+
+}
+
+void WorldPropertiesDialog::OnEditScriptVars()
+{
+	int n = getInt("script_list");
+	if (n >= 0){
+		update_script_data(temp.scripts[n]);
+		auto dlg = new ScriptVarsDialog(this, &temp.scripts[n]);
+		dlg->run();
+		delete dlg;
 	}
 }
 
@@ -240,9 +312,10 @@ void WorldPropertiesDialog::FillScriptList()
 {
 	hui::ComboBoxSeparator = ":";
 	reset("script_list");
-	for (string &s: temp.ScriptFile)
-		addString("script_list", s);
+	for (auto &s: temp.scripts)
+		addString("script_list", s.filename);
 	enable("remove_script", false);
+	enable("edit_script_vars", false);
 	hui::ComboBoxSeparator = "\\";
 }
 
