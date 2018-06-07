@@ -150,7 +150,7 @@ void ModeModelMeshDeformFunction::updateFunction()
 			hui::ErrorBox(dialog, "error", _("keine Funktion vom Typ 'void f(vector, vector)' gefunden"));
 
 	}catch(Kaba::Exception &e){
-		hui::ErrorBox(dialog, "error", e.message);
+		hui::ErrorBox(dialog, "error", e.message());
 		f = NULL;
 	}
 }

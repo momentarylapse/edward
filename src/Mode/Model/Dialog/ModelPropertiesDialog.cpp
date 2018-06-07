@@ -107,7 +107,7 @@ void update_model_script_data(DataModel::MetaData &m)
 		}
 	}catch(Kaba::Exception &e){
 
-		msg_error(e.message);
+		msg_error(e.message());
 	}
 
 }

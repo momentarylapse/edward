@@ -41,7 +41,7 @@ void PluginManager::execute(const string & filename)
 		if (f)
 			f();
 	}catch(Kaba::Exception &e){
-		ed->errorBox(e.message);
+		ed->errorBox(e.message());
 	}
 
 	Kaba::DeleteAllScripts(true, true);

@@ -98,7 +98,7 @@ void ModelFXDialog::OnFindScriptFile()
 			else if (!s->MatchFunction("OnEffectIterate", "void", 1, "effect"))
 				ed->errorBox(_("Script-Datei enth&alt keine Funktion \"void OnEffectIterate( effect )\""));
 		}catch(Kaba::Exception &e){
-			ed->errorBox(_("Fehler in Script-Datei: ") + e.message);
+			ed->errorBox(_("Fehler in Script-Datei: ") + e.message());
 		}
 	}
 }
