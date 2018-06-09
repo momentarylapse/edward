@@ -73,7 +73,6 @@ void ModeModelMeshBevelEdges::onDrawWin(MultiView::Window *win)
 {
 	parent->onDrawWin(win);
 
-	nix::EnableLighting(false);
 	ed->drawStr(100, 100, f2s(radius, 3));
 }
 

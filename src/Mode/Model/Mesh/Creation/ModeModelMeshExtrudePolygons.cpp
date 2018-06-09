@@ -9,6 +9,7 @@
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
+#include "../../../../lib/nix/nix.h"
 #include "../../../../Action/Model/Mesh/Polygon/ActionModelExtrudePolygons.h"
 
 ModeModelMeshExtrudePolygons::ModeModelMeshExtrudePolygons(ModeBase *_parent) :

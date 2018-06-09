@@ -13,6 +13,7 @@
 #include "../../../../Data/Model/Geometry/GeometryTeapot.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
+#include "../../../../lib/nix/nix.h"
 
 //extern int FxVB;
 

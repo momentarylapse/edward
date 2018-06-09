@@ -170,7 +170,7 @@ void ModeModelMeshDeformCylinder::onDrawWin(MultiView::Window* win)
 		nix::Draw3D(nix::vb_temp);
 	}
 
-	nix::line_width = 3;
+	MultiView::set_wide_lines(3);
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetZ(false, false);
 	nix::EnableLighting(false);
@@ -193,7 +193,6 @@ void ModeModelMeshDeformCylinder::onDrawWin(MultiView::Window* win)
 
 	nix::SetZ(true, true);
 	nix::EnableLighting(true);
-	nix::line_width = 1;
 }
 
 inline bool hover_line(vector &a, vector &b, vector &m, vector &tp)

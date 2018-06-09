@@ -12,6 +12,7 @@
 #include "../../../../Data/Model/Geometry/GeometrySphere.h"
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
+#include "../../../../lib/nix/nix.h"
 
 ModeModelMeshCreateBall::ModeModelMeshCreateBall(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateBall", _parent)

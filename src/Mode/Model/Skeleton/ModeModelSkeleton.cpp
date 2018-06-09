@@ -8,6 +8,7 @@
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
 #include "../../../MultiView/Window.h"
+#include "../../../lib/nix/nix.h"
 #include "ModeModelSkeleton.h"
 #include "../ModeModel.h"
 #include "../Animation/ModeModelAnimation.h"
@@ -173,6 +174,10 @@ void ModeModelSkeleton::onUpdate(Observable *o, const string &message)
 
 void drawBone(const vector &r, const vector &d, const color &c, MultiView::Window *win)
 {
+	nix::SetColor(c);
+	nix::DrawLine3D(r, d);
+	return;
+
 	vector pr = win->project(r);
 	vector pd = win->project(d);
 	if ((pr.z>0)&&(pd.z>0)&&(pr.z<1)&&(pd.z<1)){
@@ -225,8 +230,7 @@ void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &b
 	nix::SetZ(false, false);
 	nix::EnableLighting(false);
 	nix::SetWire(false);
-	nix::line_width = thin ? 0.5f : 2;
-	nix::smooth_lines = true;
+	MultiView::set_wide_lines(thin ? 0.5f : 3.0f);
 
 	for (ModelBone &b: bone){
 		if (b.view_stage < multi_view->view_stage)
@@ -243,8 +247,6 @@ void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &b
 		drawBone(bone[r].pos, b.pos, c, win);
 	}
 	nix::SetZ(true, true);
-	nix::line_width = 1;
-	nix::smooth_lines = false;
 }
 
 

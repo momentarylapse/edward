@@ -12,6 +12,7 @@
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
+#include "../../../../lib/nix/nix.h"
 
 #define RADIUS_FACTOR	0.5f
 

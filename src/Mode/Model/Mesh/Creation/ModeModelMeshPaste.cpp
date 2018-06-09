@@ -10,6 +10,7 @@
 #include "../../ModeModel.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../Edward.h"
+#include "../../../../lib/nix/nix.h"
 
 ModeModelMeshPaste::ModeModelMeshPaste(ModeBase* _parent) :
 	ModeCreation<DataModel>("ModelMeshPaste", _parent)

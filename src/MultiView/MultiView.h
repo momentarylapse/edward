@@ -8,12 +8,14 @@
 #ifndef MULTIVIEW_H_
 #define MULTIVIEW_H_
 
-#include "../lib/file/file.h"
-#include "../lib/nix/nix.h"
-#include "../Data/Data.h"
+#include "../lib/base/base.h"
+#include "../Stuff/Observable.h"
 
 class Data;
-class Observable;
+
+namespace nix{
+	class Shader;
+}
 
 namespace MultiView{
 
@@ -89,6 +91,16 @@ static const int FLAG_SELECT= 1;
 static const int FLAG_DRAW = 2;
 static const int FLAG_INDEX = 4;
 static const int FLAG_MOVE = 8;
+
+
+
+extern nix::Shader *shader_selection;
+extern nix::Shader *shader_lines_3d;
+extern nix::Shader *shader_lines_3d_colored;
+extern nix::Shader *shader_lines_3d_colored_wide;
+
+
+void set_wide_lines(float width);
 
 class MultiView : public Observable
 {

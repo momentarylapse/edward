@@ -10,14 +10,11 @@
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
+#include "../../../../lib/nix/nix.h"
 #include "../ModeModelMesh.h"
 #include "../../Skeleton/ModeModelSkeleton.h"
 #include "MeshSelectionModePolygon.h"
 
-
-namespace MultiView{
-	void set_wide_lines(float width);
-}
 
 MeshSelectionModeEdge::MeshSelectionModeEdge(ModeModelMesh *_parent) :
 	MeshSelectionMode(_parent)

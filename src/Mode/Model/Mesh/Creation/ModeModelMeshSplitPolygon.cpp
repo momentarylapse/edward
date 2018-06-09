@@ -13,6 +13,7 @@
 #include "../../../../Action/Model/Mesh/Edge/ActionModelSplitEdge.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
+#include "../../../../lib/nix/nix.h"
 
 ModeModelMeshSplitPolygon::ModeModelMeshSplitPolygon(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshSplitPolygon", _parent)

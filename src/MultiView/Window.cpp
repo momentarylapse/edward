@@ -10,6 +10,7 @@
 #include "ActionController.h"
 #include "SingleData.h"
 #include "../Edward.h"
+#include "../lib/nix/nix.h"
 
 
 namespace nix{

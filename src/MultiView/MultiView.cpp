@@ -11,6 +11,7 @@
 #include "ActionController.h"
 #include "CameraController.h"
 #include "SingleData.h"
+#include "../lib/nix/nix.h"
 
 
 hui::Timer timer;

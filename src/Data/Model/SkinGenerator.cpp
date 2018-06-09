@@ -9,6 +9,7 @@
 #include "SkinGenerator.h"
 #include "../../MultiView/MultiView.h"
 #include "../../MultiView/Window.h"
+#include "../../lib/nix/nix.h"
 #include "../../Data/Model/DataModel.h"
 
 SkinGenerator::SkinGenerator()

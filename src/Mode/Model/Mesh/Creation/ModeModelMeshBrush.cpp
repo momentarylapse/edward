@@ -10,6 +10,7 @@
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
+#include "../../../../lib/nix/nix.h"
 #include "../../../../Action/Model/Mesh/Brush/ActionModelBrushExtrude.h"
 #include "../../../../Action/Model/Mesh/Brush/ActionModelBrushSmooth.h"
 #include "../../../../Action/Model/Mesh/Brush/ActionModelBrushComplexify.h"

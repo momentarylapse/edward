@@ -8,6 +8,7 @@
 #include "../../Edward.h"
 #include "../../MultiView/MultiView.h"
 #include "../../MultiView/Window.h"
+#include "../../lib/nix/nix.h"
 #include "ModeFont.h"
 #include "../../Data/Font/DataFont.h"
 #include "../../Data/Font/Import/ImporterCairo.h"

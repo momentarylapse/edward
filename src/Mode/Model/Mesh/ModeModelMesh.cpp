@@ -8,6 +8,7 @@
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
 #include "../../../MultiView/Window.h"
+#include "../../../lib/nix/nix.h"
 #include "../ModeModel.h"
 #include "ModeModelMesh.h"
 #include "../Skeleton/ModeModelSkeleton.h"
@@ -44,10 +45,6 @@
 
 ModeModelMesh *mode_model_mesh = NULL;
 
-
-namespace MultiView{
-	void set_wide_lines(float width);
-}
 
 ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	Mode<DataModel>("ModelMesh", _parent, ed->multi_view_3d, "menu_model"),
