@@ -174,25 +174,13 @@ void ModeModelSkeleton::onUpdate(Observable *o, const string &message)
 
 void drawBone(const vector &r, const vector &d, const color &c, MultiView::Window *win)
 {
-	nix::SetColor(c);
-	nix::DrawLine3D(r, d);
-	return;
-
-	vector pr = win->project(r);
-	vector pd = win->project(d);
-	if ((pr.z>0)&&(pd.z>0)&&(pr.z<1)&&(pd.z<1)){
-		float z=(pr.z+pd.z)/2;
-		pr.z=pd.z=0;
-		vector d=pr-pd;
-		//NixDrawLine(pr.x,pr.y,pd.x,pd.y,c,z);
-		float l=d.length();
-		float w=(float)atan2(d.x,d.y)+pi;
-		nix::SetColor(c);
-		nix::DrawLine(pr.x,pr.y,pr.x+l*(float)sin(w+0.5f)*0.2f,pr.y+l*(float)cos(w+0.5f)*0.2f,z);
-		nix::DrawLine(pr.x,pr.y,pr.x+l*(float)sin(w-0.5f)*0.2f,pr.y+l*(float)cos(w-0.5f)*0.2f,z);
-		nix::DrawLine(pd.x,pd.y,pr.x+l*(float)sin(w+0.5f)*0.2f,pr.y+l*(float)cos(w+0.5f)*0.2f,z);
-		nix::DrawLine(pd.x,pd.y,pr.x+l*(float)sin(w-0.5f)*0.2f,pr.y+l*(float)cos(w-0.5f)*0.2f,z);
-	}
+	Array<vector> v;
+	v.add(r);
+	v.add(d);
+	Array<color> col;
+	col.add(ColorInterpolate(c, MultiView::MultiView::ColorBackGround, 0.5f)); // root
+	col.add(ColorInterpolate(c, MultiView::MultiView::ColorBackGround, 0.8f));
+	nix::DrawLinesColored(v, col, false);
 }
 
 void drawCoordBasis(MultiView::Window *win, const ModelBone &b)
@@ -230,7 +218,7 @@ void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &b
 	nix::SetZ(false, false);
 	nix::EnableLighting(false);
 	nix::SetWire(false);
-	MultiView::set_wide_lines(thin ? 0.5f : 3.0f);
+	MultiView::set_wide_lines(thin ? 1.0f : 5.0f);
 
 	for (ModelBone &b: bone){
 		if (b.view_stage < multi_view->view_stage)
