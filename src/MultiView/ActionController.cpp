@@ -225,7 +225,11 @@ void ActionController::deleteGeo()
 
 void ActionController::update()
 {
-	pos = multi_view->getSelectionCenter();
+	if (cur_action){
+		pos = pos0;
+	}else{
+		pos = multi_view->getSelectionCenter();
+	}
 	float f = multi_view->cam.radius * 0.15f;
 	if (multi_view->whole_window)
 		f /= 2;
