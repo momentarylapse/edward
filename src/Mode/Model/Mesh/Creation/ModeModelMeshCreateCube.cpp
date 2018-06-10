@@ -9,7 +9,6 @@
 #include "../ModeModelMesh.h"
 #include "ModeModelMeshCreateCube.h"
 #include "../../../../Data/Model/Geometry/GeometryCube.h"
-#include "../../../../Data/Model/Geometry/GeometryPlane.h"
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
@@ -18,7 +17,7 @@
 ModeModelMeshCreateCube::ModeModelMeshCreateCube(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateCube", _parent)
 {
-	message = _("W&urfel: Punkt 1 / 3");
+	message = _("W&urfel: ersten Eckpunkt setzen");
 	pos_chosen = false;
 	pos2_chosen = false;
 	for (int i=0;i<3;i++)
@@ -51,7 +50,10 @@ void ModeModelMeshCreateCube::updateGeometry()
 
 		geo = new GeometryCube(pos, length[0], length[1], length[2], num_1, num_2, num_3);
 	}else{
-		geo = new GeometryPlane(pos, length[0], length[1], 1, 1);
+		float min_thick = 10 / ed->multi_view_3d->active_win->zoom(); // 10 px
+		vector n = length[0] ^ length[1];
+		n.normalize();
+		geo = new GeometryCube(pos, length[0], length[1], n * min_thick, 1, 1, 1);
 	}
 }
 
