@@ -71,7 +71,6 @@ void ModeModelAnimationVertex::chooseMouseFunction(int f)
 void ModeModelAnimationVertex::onUpdate(Observable* o, const string &message)
 {
 	if (o == data){
-		updateVertices();
 		data->showVertices(mode_model_animation->vertex);
 		mode_model_mesh->selection_mode->updateMultiView();
 	}else if (o == multi_view){

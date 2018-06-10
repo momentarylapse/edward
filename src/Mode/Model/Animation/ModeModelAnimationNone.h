@@ -19,14 +19,13 @@ public:
 	ModeModelAnimationNone(ModeBase *parent);
 	virtual ~ModeModelAnimationNone();
 
-	virtual void onStart();
-	virtual void onEnd();
+	void onStart() override;
+	void onEnd() override;
 
-	virtual void onCommand(const string &id);
-	virtual void onUpdate(Observable *o, const string &message);
-	virtual void onUpdateMenu();
+	void onUpdate(Observable *o, const string &message) override;
+	void onUpdateMenu() override;
 
-	virtual void onDrawWin(MultiView::Window *win);
+	void onDrawWin(MultiView::Window *win) override;
 };
 
 extern ModeModelAnimationNone *mode_model_animation_none;

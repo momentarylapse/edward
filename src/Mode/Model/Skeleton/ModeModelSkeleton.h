@@ -18,15 +18,16 @@ class ModeModelSkeleton: public Mode<DataModel>
 public:
 	ModeModelSkeleton(ModeBase *_parent);
 
-	virtual void onStart();
-	virtual void onEnd();
+	void onStart() override;
+	void onEnd() override;
 
-	virtual void onCommand(const string &id);
-	virtual void onUpdate(Observable *o, const string &message);
-	virtual void onUpdateMenu();
+	void onCommand(const string &id) override;
+	void onUpdate(Observable *o, const string &message) override;
+	void onUpdateMenu() override;
+	void onSetMultiView() override;
 
-	virtual void onDraw();
-	virtual void onDrawWin(MultiView::Window *win);
+	void onDraw() override;
+	void onDrawWin(MultiView::Window *win) override;
 
 	void addSubModel();
 	void removeSubModel();

@@ -729,6 +729,7 @@ void ModeModelMesh::setSelectionMode(MeshSelectionMode *mode)
 	mode->onStart();
 	mode->updateMultiView();
 	notify();
+	ed->forceRedraw();
 	ed->updateMenu(); // TODO
 }
 

@@ -23,12 +23,12 @@ public:
 
 	static const string MESSAGE_SET_FRAME;
 
-	virtual void onStart();
-	virtual void onEnd();
+	void onStart() override;
+	void onEnd() override;
 
-	virtual void onCommand(const string &id);
-	virtual void onUpdate(Observable *o, const string &message);
-	virtual void onUpdateMenu();
+	void onCommand(const string &id) override;
+	void onUpdate(Observable *o, const string &message) override;
+	void onUpdateMenu() override;
 
 	ModelAnimationDialog *dialog;
 	ModelAnimationTimelinePanel *timeline;

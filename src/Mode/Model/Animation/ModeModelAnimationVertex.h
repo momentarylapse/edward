@@ -19,14 +19,14 @@ public:
 	ModeModelAnimationVertex(ModeBase *parent);
 	virtual ~ModeModelAnimationVertex();
 
-	virtual void onStart();
-	virtual void onEnd();
+	void onStart() override;
+	void onEnd() override;
 
-	virtual void onCommand(const string &id);
-	virtual void onUpdate(Observable *o, const string &message);
-	virtual void onUpdateMenu();
+	void onCommand(const string &id) override;
+	void onUpdate(Observable *o, const string &message) override;
+	void onUpdateMenu() override;
 
-	virtual void onDrawWin(MultiView::Window *win);
+	void onDrawWin(MultiView::Window *win) override;
 
 	void updateVertices();
 	void chooseMouseFunction(int f);

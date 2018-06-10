@@ -15,9 +15,9 @@ class ModeCreationBase : public ModeBase
 public:
 	ModeCreationBase(const string &_name, ModeBase *_parent);
 	virtual ~ModeCreationBase(){}
-	virtual void onDraw();
-	virtual void onDrawWin(MultiView::Window *win);
-	virtual void onSetMultiView();
+	void onDraw() override;
+	void onDrawWin(MultiView::Window *win) override;
+	void onSetMultiView() override;
 	void abort();
 	string message;
 	hui::Window *dialog;

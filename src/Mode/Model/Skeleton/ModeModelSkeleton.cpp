@@ -134,9 +134,7 @@ void ModeModelSkeleton::onStart()
 	ed->toolbar[hui::TOOLBAR_LEFT]->setByID("model-skeleton-toolbar");
 
 	subscribe(data);
-	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
 
-	multi_view->clearData(data);
 
 	chooseMouseFunction(MultiView::ACTION_MOVE);
 	mode_model->allowSelectionModes(false);
@@ -148,24 +146,25 @@ void ModeModelSkeleton::onStart()
 void ModeModelSkeleton::onEnd()
 {
 	unsubscribe(data);
-	unsubscribe(multi_view);
 }
 
+
+void ModeModelSkeleton::onSetMultiView()
+{
+	multi_view->clearData(data);
+
+	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
+	multi_view->addData(	MVD_SKELETON_BONE,
+			data->bone,
+			NULL,
+			MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
+}
 
 
 void ModeModelSkeleton::onUpdate(Observable *o, const string &message)
 {
 	if (o == data){
 		mode_model_mesh->updateVertexBuffers(data->vertex);
-
-		multi_view->clearData(data);
-
-		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		multi_view->addData(	MVD_SKELETON_BONE,
-				data->bone,
-				NULL,
-				MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
-	}else if (o == multi_view){
 	}
 }
 

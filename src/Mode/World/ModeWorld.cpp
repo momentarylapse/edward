@@ -252,12 +252,6 @@ bool WorldTerrain::inRect(MultiView::Window *win, rect &r, void *user_data)
 
 
 
-void ModeWorld::onLeftButtonDown()
-{
-}
-
-
-
 bool ModeWorld::save()
 {
 	if (data->filename == "")
@@ -266,58 +260,15 @@ bool ModeWorld::save()
 }
 
 
-
-void ModeWorld::onMiddleButtonUp()
-{
-}
-
-
-
-void ModeWorld::onMouseMove()
-{
-}
-
-
-
 void ModeWorld::onUpdate(Observable *o, const string &message)
 {
 	if (o == data){
 		data->UpdateData();
-
-		multi_view->clearData(data);
-		multi_view->setAllowSelect(true);
-
-		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-		multi_view->addData(	MVD_WORLD_OBJECT,
-				data->Objects,
-				NULL,
-				MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
-		multi_view->addData(	MVD_WORLD_TERRAIN,
-				data->Terrains,
-				NULL,
-				MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 	}else if (o == multi_view){
 		// selection
 	}
 }
 
-
-
-void ModeWorld::onKeyDown(int key_code)
-{
-}
-
-
-
-void ModeWorld::onMiddleButtonDown()
-{
-}
-
-
-
-void ModeWorld::onRightButtonUp()
-{
-}
 
 
 
@@ -333,12 +284,6 @@ void ModeWorld::_new()
 
 
 
-void ModeWorld::onLeftButtonUp()
-{
-}
-
-
-
 void ModeWorld::onDraw()
 {
 	cur_cam->pos = multi_view->cam.pos;
@@ -349,12 +294,6 @@ void ModeWorld::onDraw()
 		ed->drawStr(10, 100, format("obj: %d", num_ob));
 		ed->drawStr(10, 120, format("ter: %d", num_te));
 	}
-}
-
-
-
-void ModeWorld::onKeyUp(int key_code)
-{
 }
 
 
@@ -496,7 +435,7 @@ void ModeWorld::onStart()
 
 	SetMouseAction(MultiView::ACTION_MOVE);
 
-	onUpdate(data, "");
+	data->UpdateData();
 }
 
 void ModeWorld::SetMouseAction(int mode)
@@ -509,13 +448,6 @@ void ModeWorld::SetMouseAction(int mode)
 	else
 		multi_view->setMouseAction("", mode, false);
 }
-
-
-
-void ModeWorld::onRightButtonDown()
-{
-}
-
 
 
 void ModeWorld::onUpdateMenu()
@@ -756,4 +688,17 @@ bool ModeWorld::Pasteable()
 	return (temp_objects.num + temp_terrains.num) > 0;
 }
 
+void ModeWorld::onSetMultiView()
+{
+	multi_view->clearData(data);
 
+	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
+	multi_view->addData(	MVD_WORLD_OBJECT,
+			data->Objects,
+			NULL,
+			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
+	multi_view->addData(	MVD_WORLD_TERRAIN,
+			data->Terrains,
+			NULL,
+			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
+}

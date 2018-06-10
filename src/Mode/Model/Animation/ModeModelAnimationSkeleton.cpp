@@ -36,18 +36,13 @@ void ModeModelAnimationSkeleton::onStart()
 	foreachi(ModelBone &b, data->bone, i)
 		mode_model_animation->bone[i].is_selected = b.is_selected;
 
-	multi_view->clearData(data);
-
 	chooseMouseFunction(MultiView::ACTION_ROTATE);
 
-	subscribe(data);
 	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
-	onUpdate(data, "");
 }
 
 void ModeModelAnimationSkeleton::onEnd()
 {
-	unsubscribe(data);
 	unsubscribe(multi_view);
 }
 
@@ -80,18 +75,20 @@ void ModeModelAnimationSkeleton::chooseMouseFunction(int f)
 
 void ModeModelAnimationSkeleton::onUpdate(Observable* o, const string &message)
 {
-	if (o == data){
-
-		multi_view->clearData(data);
-		//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-
-		multi_view->addData(	MVD_SKELETON_BONE,
-				mode_model_animation->bone,
-				NULL,
-				MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT);
-	}else if (o == multi_view){
+	if (o == multi_view){
 		updateSelection();
 	}
+}
+
+void ModeModelAnimationSkeleton::onSetMultiView()
+{
+	multi_view->clearData(data);
+	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
+
+	multi_view->addData(	MVD_SKELETON_BONE,
+			mode_model_animation->bone,
+			NULL,
+			MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT);
 }
 
 void ModeModelAnimationSkeleton::onDrawWin(MultiView::Window *win)

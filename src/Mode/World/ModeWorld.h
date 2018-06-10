@@ -18,32 +18,24 @@ public:
 	ModeWorld();
 	virtual ~ModeWorld();
 
-	virtual void onStart();
-	virtual void onEnd();
+	void onStart() override;
+	void onEnd() override;
 
-	virtual void onMouseMove();
-	virtual void onLeftButtonDown();
-	virtual void onLeftButtonUp();
-	virtual void onMiddleButtonDown();
-	virtual void onMiddleButtonUp();
-	virtual void onRightButtonDown();
-	virtual void onRightButtonUp();
-	virtual void onKeyDown(int key_code);
-	virtual void onKeyUp(int key_code);
-	virtual void onCommand(const string &id);
-	virtual void onUpdate(Observable *o, const string &message);
-	virtual void onUpdateMenu();
+	void onCommand(const string &id) override;
+	void onUpdate(Observable *o, const string &message) override;
+	void onUpdateMenu() override;
+	void onSetMultiView() override;
 
-	virtual void onDraw();
-	virtual void onDrawWin(MultiView::Window *win);
+	void onDraw() override;
+	void onDrawWin(MultiView::Window *win) override;
 
 
-	virtual void _new();
-	virtual bool open();
-	virtual bool save();
-	virtual bool saveAs();
+	void _new() override;
+	bool open() override;
+	bool save() override;
+	bool saveAs() override;
 
-	virtual bool optimizeView();
+	bool optimizeView() override;
 
 	void ImportWorldProperties();
 	void LoadTerrain();

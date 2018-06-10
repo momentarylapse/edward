@@ -19,14 +19,15 @@ public:
 	ModeModelAnimationSkeleton(ModeBase *parent);
 	virtual ~ModeModelAnimationSkeleton();
 
-	virtual void onStart();
-	virtual void onEnd();
+	void onStart() override;
+	void onEnd() override;
 
-	virtual void onCommand(const string &id);
-	virtual void onUpdate(Observable *o, const string &message);
-	virtual void onUpdateMenu();
+	void onCommand(const string &id) override;
+	void onUpdate(Observable *o, const string &message) override;
+	void onUpdateMenu() override;
+	void onSetMultiView() override;
 
-	virtual void onDrawWin(MultiView::Window *win);
+	void onDrawWin(MultiView::Window *win) override;
 
 	void chooseMouseFunction(int f);
 	int mouse_action;

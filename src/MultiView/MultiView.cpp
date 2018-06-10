@@ -773,6 +773,8 @@ bool MultiView::needActionController()
 {
 	if (!hasSelection())
 		return false;
+	if (!allow_mouse_actions)
+		return false;
 	if (action_con->action.mode == ACTION_SELECT)
 		return false;
 	return true;
@@ -1037,7 +1039,7 @@ void MultiView::addMessage3d(const string &str, const vector &pos)
 void MultiView::setAllowAction(bool allow)
 {
 	allow_mouse_actions = allow;
-	action_con->show(allow);
+	action_con->show(needActionController());
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
@@ -1066,7 +1068,7 @@ void MultiView::popSettings()
 	action_con->action.name = s.action_name;
 	action_con->action.mode = s.action_mode;
 	action_con->action.locked = s.action_locked;
-	action_con->show(allow_mouse_actions);
+	action_con->show(needActionController());
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 

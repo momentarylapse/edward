@@ -19,15 +19,15 @@ public:
 	ModeWorldEditTerrain(ModeBase *_parent);
 	virtual ~ModeWorldEditTerrain();
 
-	virtual void onStart();
-	virtual void onEnd();
+	void onStart() override;
+	void onEnd() override;
 
-	virtual void onMouseMove();
-	virtual void onLeftButtonDown();
-	virtual void onLeftButtonUp();
-	virtual void onCommand(const string &id);
+	void onMouseMove() override;
+	void onLeftButtonDown() override;
+	void onLeftButtonUp() override;
+	void onCommand(const string &id) override;
 
-	virtual void onDrawWin(MultiView::Window *win);
+	void onDrawWin(MultiView::Window *win) override;
 
 	Action *getAction(const vector &pos);
 	void apply(const vector &pos);

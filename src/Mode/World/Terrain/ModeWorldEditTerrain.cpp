@@ -62,9 +62,9 @@ void ModeWorldEditTerrain::onStart()
 	dialog->setTarget("grid2");
 	dialog->addLabel(_("Dicke"), 0, 0, "");
 	dialog->addLabel(_("Tiefe"), 0, 1, "");
-	dialog->addSlider("", 1, 0, "diameter_slider");
+	dialog->addSlider("!expandx", 1, 0, "diameter_slider");
 	dialog->addSlider("", 1, 1, "depth_slider");
-	dialog->addEdit("", 2, 0, "diameter");
+	dialog->addEdit("!width=60", 2, 0, "diameter");
 	dialog->addEdit("", 2, 1, "depth");
 
 	dialog->event("diameter_slider", std::bind(&ModeWorldEditTerrain::onDiameterSlider, this));
@@ -155,7 +155,7 @@ void ModeWorldEditTerrain::onDrawWin(MultiView::Window* win)
 	float radius = dialog->getFloat("diameter") / 2;
 
 	nix::SetColor(Green);
-	nix::EnableLighting(false);
+	MultiView::set_wide_lines(2);
 	vector e1 = e_x;
 	vector e2 = e_z;
 	e1 *= radius;

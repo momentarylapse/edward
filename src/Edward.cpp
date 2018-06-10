@@ -560,7 +560,7 @@ void Edward::setMode(ModeBase *m)
 
 	setMenu(hui::CreateResourceMenu(cur_mode->menu_id));
 	updateMenu();
-	cur_mode->onEnter();
+	cur_mode->onEnter(); // ????
 	if (cur_mode->getData())
 		subscribe(cur_mode->getData()->action_manager);
 
@@ -603,6 +603,7 @@ void Edward::onUpdate(Observable *o, const string &message)
 		//if (message != o->MESSAGE_CHANGE)
 		updateMenu();
 	}else{
+		forceRedraw();
 		updateMenu();
 	}
 }

@@ -35,10 +35,6 @@ void ModeModelAnimationNone::onEnd()
 	multi_view->clearData(data);
 }
 
-void ModeModelAnimationNone::onCommand(const string& id)
-{
-}
-
 void ModeModelAnimationNone::onUpdate(Observable* o, const string &message)
 {
 	mode_model_mesh->fillSelectionBuffer(mode_model_animation->vertex);
