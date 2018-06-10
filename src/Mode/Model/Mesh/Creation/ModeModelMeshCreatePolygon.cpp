@@ -13,7 +13,6 @@
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
 
-extern color color_creation_line;
 
 ModeModelMeshCreatePolygon::ModeModelMeshCreatePolygon(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreatePolygon", _parent)
@@ -46,7 +45,7 @@ void ModeModelMeshCreatePolygon::onDrawWin(MultiView::Window *win)
 {
 	parent->onDrawWin(win);
 
-	nix::SetColor(color_creation_line);
+	nix::SetColor(multi_view->ColorCreationLine);
 	MultiView::set_wide_lines(2);
 	for (int i=1;i<selection.num;i++){
 		vector pa = data->vertex[selection[i - 1]].pos;

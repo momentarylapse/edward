@@ -22,6 +22,10 @@
 
 namespace MultiView{
 
+
+vector snap_v(MultiView *mv, const vector &v);
+vector snap_v2(const vector &v, float d);
+
 ActionController::ActionController(MultiView *view)
 {
 	multi_view = view;
@@ -145,18 +149,24 @@ void ActionController::updateAction()
 	MatrixTranslation(m_dti, -pos0);
 	if (action.mode == ACTION_MOVE){
 		param = mvac_project_trans(constraints, v2 - v1);
+		if (multi_view->snap_to_grid)
+			param = snap_v(multi_view, param);
 		MatrixTranslation(mat, param);
 	}else if (action.mode == ACTION_ROTATE){
 		//param = mvac_project_trans(constraints, v2 - v1) * 0.003f * multi_view->active_win->zoom();
 		param = mvac_project_trans(constraints, (v2 - v1) ^ dir) * 0.003f * multi_view->active_win->zoom();
 		if (constraints == ACTION_CONSTRAINTS_NONE)
 			param = transform_ang(multi_view, vector(v1p.y - v2p.y, v1p.x - v2p.x, 0) * 0.003f);
+		if (multi_view->snap_to_grid)
+			param = snap_v2(param, pi / 180.0);
 		MatrixRotation(mat, param);
 		mat = m_dt * mat * m_dti;
 	}else if (action.mode == ACTION_SCALE){
 		param = vector(1, 1, 1) + mvac_project_trans(constraints, v2 - v1) * 0.01f * multi_view->active_win->zoom();
 		if (constraints == ACTION_CONSTRAINTS_NONE)
 			param = vector(1, 1, 1) * (1 + (v2p - v1p).x * 0.01f);
+		if (multi_view->snap_to_grid)
+			param = snap_v2(param, 0.01f);
 		MatrixScale(mat, param.x, param.y, param.z);
 		mat = m_dt * mat * m_dti;
 	}else if (action.mode == ACTION_MIRROR){

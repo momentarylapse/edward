@@ -15,7 +15,11 @@
 #include "../../../../lib/nix/nix.h"
 
 const float CYLINDER_CLOSING_DISTANCE = 20;
-extern color color_creation_line;
+
+namespace MultiView{
+	float snap_f(MultiView *mv, float f);
+	string format_length(MultiView *mv, float l);
+}
 
 
 ModeModelMeshCreateCylinderSnake::ModeModelMeshCreateCylinderSnake(ModeBase *_parent) :
@@ -78,10 +82,13 @@ void ModeModelMeshCreateCylinderSnake::onMouseMove()
 	if (ready_for_scaling){
 		vector p = multi_view->getCursor3d(pos.back());
 		radius = (p - pos.back()).length();
+		if (multi_view->snap_to_grid)
+			radius = MultiView::snap_f(multi_view, radius);
 		float min_rad = 10 / multi_view->active_win->zoom(); // 10 px
 		if (radius < min_rad)
 			radius = min_rad;
 		updateGeometry();
+		message = _("Zylinderradius: ") + MultiView::format_length(multi_view, radius);
 	}
 }
 
@@ -122,7 +129,7 @@ void ModeModelMeshCreateCylinderSnake::onKeyDown(int k)
 		if (pos.num > 1){
 			ready_for_scaling = true;
 			onMouseMove();
-			message = _("Zylinder: Radius");
+			message = _("Zylinderradius: ");
 			updateGeometry();
 			ed->forceRedraw();
 		}
@@ -140,7 +147,7 @@ void ModeModelMeshCreateCylinderSnake::onDrawWin(MultiView::Window *win)
 	if (pos.num > 0){
 
 		// control points
-		nix::SetColor(color_creation_line);
+		nix::SetColor(multi_view->ColorCreationLine);
 		nix::SetShader(nix::default_shader_2d);
 		for (int i=0;i<pos.num;i++){
 			vector pp = win->project(pos[i]);
@@ -149,7 +156,7 @@ void ModeModelMeshCreateCylinderSnake::onDrawWin(MultiView::Window *win)
 
 
 		// control polygon
-		nix::SetColor(ColorInterpolate(color_creation_line, multi_view->ColorBackGround, 0.3f));
+		nix::SetColor(ColorInterpolate(multi_view->ColorCreationLine, multi_view->ColorBackGround, 0.3f));
 		MultiView::set_wide_lines(2);
 		for (int i=1;i<pos.num;i++)
 			nix::DrawLine3D(pos[i - 1], pos[i]);
@@ -165,7 +172,7 @@ void ModeModelMeshCreateCylinderSnake::onDrawWin(MultiView::Window *win)
 		if (!ready_for_scaling)
 			inter.add(multi_view->getCursor3d());
 		inter.normalize();
-		nix::SetColor(color_creation_line);
+		nix::SetColor(multi_view->ColorCreationLine);
 		for (int i=0;i<100;i++)
 			nix::DrawLine3D(inter.get((float)i * 0.01f), inter.get((float)i * 0.01f + 0.01f));
 	}

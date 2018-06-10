@@ -41,6 +41,8 @@ Menu menu_model "Modell" disabled
 		Item paste "Einfügen" image=hui:paste
 		Item delete "Löschen" image=hui:delete
 		Separator "" ""
+		Item snap_to_grid "Klebriges Raster" checkable
+		Separator "" ""
 		Item mode_properties "Eigenschaften..." image=hui:preferences
 	Menu menu_model_selection "Auswahl"
 		Item select_all "Alles auswählen" image=hui:select-all

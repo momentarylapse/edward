@@ -23,7 +23,6 @@
 
 const int CYLINDER_EDGES = 24;
 const int CYLINDER_RINGS = 24;
-extern color color_creation_line;
 
 
  ModeModelMeshDeformCylinder::ModeModelMeshDeformCylinder(ModeBase *_parent) :
@@ -172,13 +171,13 @@ void ModeModelMeshDeformCylinder::onDrawWin(MultiView::Window* win)
 	MultiView::set_wide_lines(3);
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetZ(false, false);
-	nix::SetColor(color_creation_line);
+	nix::SetColor(multi_view->ColorCreationLine);
 	nix::DrawLine3D(axis[0], axis[1]);
 
 	vector e1 = dir.ortho();
 	vector e2 = dir ^ e1;
 	foreachi(vector &p, param, ip){
-		nix::SetColor((ip == hover) ? Red : color_creation_line);
+		nix::SetColor((ip == hover) ? Red : multi_view->ColorCreationLine);
 		vector m = axis[0] + (axis[1] - axis[0]) * p.y;
 		vector v = m + e1 * radius * p.z;
 		for (int i=1; i<=CYLINDER_EDGES; i++){

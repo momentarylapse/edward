@@ -144,6 +144,8 @@ public:
 	bool grid_enabled;
 	bool light_enabled;
 
+	bool snap_to_grid;
+
 	int view_stage;
 
 	bool allow_mouse_actions;
@@ -183,6 +185,8 @@ public:
 	static color ColorWindowSeparator;
 	static color ColorSelectionRect;
 	static color ColorSelectionRectBoundary;
+	static color ColorCreation;
+	static color ColorCreationLine;
 
 	void onDraw();
 	void drawMousePos();
@@ -190,6 +194,7 @@ public:
 	void toggleGrid();
 	void toggleLight();
 	void toggleWire();
+	void toggleSnapToGrid();
 	void camZoom(float factor, bool mouse_rel);
 	void camMove(const vector &dir);
 	void camRotate(const vector &dir, bool cam_center);

@@ -112,7 +112,7 @@ void ModeWorldEditTerrain::onMouseMove()
 {
 	if (!brushing)
 		return;
-	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVD_WORLD_TERRAIN))
+	if ((multi_view->hover.index < 0) or (multi_view->hover.type != MVD_WORLD_TERRAIN))
 		return;
 	vector pos = multi_view->hover.point;
 	float radius = dialog->getFloat("diameter") / 2;
@@ -126,7 +126,7 @@ void ModeWorldEditTerrain::onMouseMove()
 
 void ModeWorldEditTerrain::onLeftButtonDown()
 {
-	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVD_WORLD_TERRAIN))
+	if ((multi_view->hover.index < 0) or (multi_view->hover.type != MVD_WORLD_TERRAIN))
 		return;
 	data->beginActionGroup("TerrainBrush");
 	vector pos = multi_view->hover.point;
@@ -149,12 +149,12 @@ void ModeWorldEditTerrain::onCommand(const string& id)
 void ModeWorldEditTerrain::onDrawWin(MultiView::Window* win)
 {
 	parent->onDrawWin(win);
-	if ((multi_view->hover.index < 0) || (multi_view->hover.type != MVD_WORLD_TERRAIN))
+	if ((multi_view->hover.index < 0) or (multi_view->hover.type != MVD_WORLD_TERRAIN))
 		return;
 	vector pos = multi_view->hover.point;
 	float radius = dialog->getFloat("diameter") / 2;
 
-	nix::SetColor(Green);
+	nix::SetColor(multi_view->ColorCreationLine);
 	MultiView::set_wide_lines(2);
 	vector e1 = e_x;
 	vector e2 = e_z;

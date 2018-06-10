@@ -3541,7 +3541,7 @@ menu_model_edit
 
 1
 0
-8
+10
 Item
 undo
 image=hui:undo
@@ -3585,9 +3585,21 @@ Separator
 0
 0
 Item
+snap_to_grid
+checkable
+7
+0
+0
+Separator
+
+
+8
+0
+0
+Item
 mode_properties
 image=hui:preferences
-7
+9
 0
 0
 Menu
@@ -5593,7 +5605,7 @@ menu_skeleton
 disabled
 0
 0
-6
+5
 Menu
 menu_file
 
@@ -5798,88 +5810,40 @@ image=hui:quit
 17
 0
 0
-Item
-current_mode_model_skeleton
-disabled
-1
-0
-0
 Menu
-menu_model_mode
+menu_edit
 
-2
+1
 0
-11
+4
+Separator
+
+
+0
+0
+0
 Item
-mode_model_mesh
-checkable
-0
-0
-0
-Item
-mode_model_skeleton
+snap_to_grid
 checkable
 1
 0
 0
-Item
-mode_model_animation
-checkable
+Separator
+
+
 2
-0
-0
-Separator
-
-
-3
-0
-0
-Item
-mode_model_vertex
-checkable
-4
-0
-0
-Item
-mode_model_edge
-checkable
-5
-0
-0
-Item
-mode_model_triangle
-checkable
-6
-0
-0
-Item
-mode_model_surface
-checkable
-7
-0
-0
-Item
-mode_model_texture_coord
-checkable
-8
-0
-0
-Separator
-
-
-9
 0
 0
 Item
 mode_properties
 image=hui:preferences
-10
+3
 0
 0
 Menu
 menu_model_skeleton
 
-3
+2
 0
 11
 Item
@@ -5951,7 +5915,7 @@ image=hui:copy
 Menu
 menu_model_view
 
-4
+3
 0
 9
 Menu
@@ -6047,7 +6011,7 @@ checkable
 Menu
 menu_help
 
-5
+4
 0
 4
 Item
@@ -8230,7 +8194,7 @@ menu_world_edit
 
 1
 0
-8
+10
 Item
 undo
 image=hui:undo
@@ -8274,9 +8238,21 @@ Separator
 0
 0
 Item
+snap_to_grid
+checkable
+7
+0
+0
+Separator
+
+
+8
+0
+0
+Item
 selection_properties
 image=hui:preferences
-7
+9
 0
 0
 Menu
@@ -8954,7 +8930,7 @@ checkable,image=icons/toolbar/rf_rotate.png
 // Language
 Deutsch
 // Number Of IDs
-914
+908
 // Text
 /ambient
 Ambient
@@ -10174,6 +10150,9 @@ Fehler berichten
 menu_model/settings
 Einstellungen...
 
+menu_model/snap_to_grid
+Klebriges Raster
+
 menu_model/subdivide_surfaces
 Verfeinern
 
@@ -10516,9 +10495,6 @@ menu_nomode/world_open
 menu_skeleton/administrate
 Verwalten
 
-menu_skeleton/current_mode_model_skeleton
--Modell-Modus (Skelett)-
-
 menu_skeleton/delete
 Löschen
 
@@ -10582,6 +10558,9 @@ Neu
 menu_skeleton/material_open
 Öffnen...
 
+menu_skeleton/menu_edit
+Bearbeiten
+
 menu_skeleton/menu_file
 Datei
 
@@ -10603,9 +10582,6 @@ Exportieren
 menu_skeleton/menu_model_import
 Importieren
 
-menu_skeleton/menu_model_mode
-Bearbeitungsmodus
-
 menu_skeleton/menu_model_skeleton
 Skelett
 
@@ -10620,30 +10596,6 @@ Schicht
 
 menu_skeleton/menu_world
 Welt
-
-menu_skeleton/mode_model_animation
-Animation
-
-menu_skeleton/mode_model_edge
-Kanten
-
-menu_skeleton/mode_model_mesh
-Mesh
-
-menu_skeleton/mode_model_skeleton
-Skelett
-
-menu_skeleton/mode_model_surface
-Oberflächen
-
-menu_skeleton/mode_model_texture_coord
-Textur-Koordinaten
-
-menu_skeleton/mode_model_triangle
-Dreiecke
-
-menu_skeleton/mode_model_vertex
-Vertex-Punkte
 
 menu_skeleton/mode_properties
 Eigenschaften...
@@ -10698,6 +10650,9 @@ Markierung
 
 menu_skeleton/skeleton_unlink
 Verbindungen lösen
+
+menu_skeleton/snap_to_grid
+Klebriges Raster
 
 menu_skeleton/view_pop
 heraus-poppen
@@ -10938,6 +10893,9 @@ Punkte
 
 menu_world/show_terrains
 Terrains
+
+menu_world/snap_to_grid
+Klebriges Raster
 
 menu_world/terrain_create
 Neues Terrain...

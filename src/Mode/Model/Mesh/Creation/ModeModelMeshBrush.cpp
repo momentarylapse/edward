@@ -16,7 +16,6 @@
 #include "../../../../Action/Model/Mesh/Brush/ActionModelBrushComplexify.h"
 
 
-extern color color_creation_line;
 
 ModeModelMeshBrush::ModeModelMeshBrush(ModeBase* _parent) :
 	ModeCreation<DataModel>("ModelMeshBrush", _parent)
@@ -167,7 +166,7 @@ void ModeModelMeshBrush::onDrawWin(MultiView::Window* win)
 	vector n = data->surface[multi_view->hover.set].polygon[multi_view->hover.index].temp_normal;
 	float radius = dialog->getFloat("diameter") / 2;
 
-	nix::SetColor(color_creation_line);
+	nix::SetColor(multi_view->ColorCreationLine);
 	MultiView::set_wide_lines(2);
 	vector e1 = n.ortho();
 	vector e2 = n ^ e1;

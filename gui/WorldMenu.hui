@@ -38,6 +38,8 @@ Menu menu_world "Welt" disabled
 		Item paste "Einfügen" image=hui:paste
 		Item delete "Löschen" image=hui:delete
 		Separator "" ""
+		Item snap_to_grid "Klebriges Raster" checkable
+		Separator "" ""
 		Item selection_properties "Eigenschaften..." image=hui:preferences
 	Menu menu_world_selection "Auswahl"
 		Item select_all "Alles auswählen" image=hui:select-all

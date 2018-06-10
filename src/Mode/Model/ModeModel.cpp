@@ -25,9 +25,6 @@
 
 ModeModel *mode_model = NULL;
 
-color color_creation_line = color(1, 0.1f, 0.8f, 0.1f);
-color color_creation = color(1, 0.1f, 0.6f, 0.1f);
-
 ModeModel::ModeModel() :
 	Mode<DataModel>("Model", NULL, new DataModel, NULL, "")
 {

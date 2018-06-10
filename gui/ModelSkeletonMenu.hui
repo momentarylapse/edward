@@ -33,17 +33,9 @@ Menu menu_skeleton "" disabled
 		Item settings "Einstellungen..." image=hui:preferences
 		Separator "" ""
 		Item exit "Beenden" image=hui:quit
-	Item current_mode_model_skeleton "-Modell-Modus (Skelett)-" disabled
-	Menu menu_model_mode "Bearbeitungsmodus"
-		Item mode_model_mesh "Mesh" checkable
-		Item mode_model_skeleton "Skelett" checkable
-		Item mode_model_animation "Animation" checkable
+	Menu menu_edit "Bearbeiten"
 		Separator "" ""
-		Item mode_model_vertex "Vertex-Punkte" checkable
-		Item mode_model_edge "Kanten" checkable
-		Item mode_model_triangle "Dreiecke" checkable
-		Item mode_model_surface "Oberflächen" checkable
-		Item mode_model_texture_coord "Textur-Koordinaten" checkable
+		Item snap_to_grid "Klebriges Raster" checkable
 		Separator "" ""
 		Item mode_properties "Eigenschaften..." image=hui:preferences
 	Menu menu_model_skeleton "Skelett"

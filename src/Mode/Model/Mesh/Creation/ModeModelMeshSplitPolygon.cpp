@@ -15,7 +15,6 @@
 #include "../../../../MultiView/Window.h"
 #include "../../../../lib/nix/nix.h"
 
-extern color color_creation_line;
 
 ModeModelMeshSplitPolygon::ModeModelMeshSplitPolygon(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshSplitPolygon", _parent)
@@ -88,7 +87,7 @@ void ModeModelMeshSplitPolygon::onDrawWin(MultiView::Window *win)
 
 
 		nix::SetZ(false, false);
-		nix::SetColor(color_creation_line);
+		nix::SetColor(multi_view->ColorCreationLine);
 		MultiView::set_wide_lines(2);
 		for (int k=0;k<v.num;k++)
 			nix::DrawLine3D(v[k], pos);

@@ -14,7 +14,10 @@
 #include "../../../../MultiView/Window.h"
 #include "../../../../lib/nix/nix.h"
 
-extern color color_creation_line;
+namespace MultiView{
+	float snap_f(MultiView *mv, float f);
+	string format_length(MultiView *mv, float l);
+}
 
 ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateCylinder", _parent)
@@ -82,10 +85,13 @@ void ModeModelMeshCreateCylinder::onMouseMove()
 	if (pos.num == 2){
 		vector p = multi_view->getCursor3d(pos.back());
 		radius = (p - pos.back()).length();
+		if (multi_view->snap_to_grid)
+			radius = MultiView::snap_f(multi_view, radius);
 		float min_rad = 10 / multi_view->active_win->zoom(); // 10 px
 		if (radius < min_rad)
 			radius = min_rad;
 		updateGeometry();
+		message = _("Zylinderradius: ") + MultiView::format_length(multi_view, radius);
 	}
 }
 
@@ -134,7 +140,7 @@ void ModeModelMeshCreateCylinder::onDrawWin(MultiView::Window *win)
 	if (pos.num > 0){
 
 		// control points
-		nix::SetColor(Green);
+		nix::SetColor(multi_view->ColorCreationLine);
 		nix::SetShader(nix::default_shader_2d);
 		for (int i=0;i<pos.num;i++){
 			vector pp = win->project(pos[i]);
@@ -144,7 +150,6 @@ void ModeModelMeshCreateCylinder::onDrawWin(MultiView::Window *win)
 		//mode_model->setMaterialCreation(2);
 
 		// control polygon
-		nix::SetColor(color_creation_line);
 		MultiView::set_wide_lines(2);
 		if (pos.num == 2)
 			nix::DrawLine3D(pos[0], pos[1]);

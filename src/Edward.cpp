@@ -872,6 +872,7 @@ void Edward::updateMenu()
 		check("grid", mv->grid_enabled);
 		check("light", mv->light_enabled);
 		check("wire", mv->wire_mode);
+		check("snap_to_grid", mv->snap_to_grid);
 	}
 }
 

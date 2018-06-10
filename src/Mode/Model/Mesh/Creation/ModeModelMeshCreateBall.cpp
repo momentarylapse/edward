@@ -14,6 +14,14 @@
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../lib/nix/nix.h"
 
+
+namespace MultiView{
+	float snap_f(MultiView *mv, float f);
+	string format_length(MultiView *mv, float l);
+}
+
+
+
 ModeModelMeshCreateBall::ModeModelMeshCreateBall(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateBall", _parent)
 {
@@ -130,7 +138,7 @@ void ModeModelMeshCreateBall::onLeftButtonUp()
 		abort();
 	}else{
 		pos = multi_view->getCursor3d();
-		message = _("Kugel skalieren");
+		message = _("Kugelradius: ");
 		pos_chosen = true;
 		updateGeometry();
 	}
@@ -149,13 +157,15 @@ void ModeModelMeshCreateBall::onDrawWin(MultiView::Window *win)
 }
 
 
-
 void ModeModelMeshCreateBall::onMouseMove()
 {
 	if (pos_chosen){
 		vector pos2 = multi_view->getCursor3d(pos);
 		radius = (pos2 - pos).length();
+		if (multi_view->snap_to_grid)
+			radius = MultiView::snap_f(multi_view, radius);
 		updateGeometry();
+		message = _("Kugelradius: ") + MultiView::format_length(multi_view, radius);
 	}
 }
 

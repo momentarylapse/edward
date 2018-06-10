@@ -51,6 +51,8 @@ color MultiView::ColorPointSpecial;
 color MultiView::ColorWindowSeparator;
 color MultiView::ColorSelectionRect;
 color MultiView::ColorSelectionRectBoundary;
+color MultiView::ColorCreation;
+color MultiView::ColorCreationLine;
 
 
 void MultiView::Selection::reset()
@@ -85,10 +87,13 @@ MultiView::MultiView(bool mode3d) :
 	ColorWindowSeparator = color(1, 0.1f, 0.1f, 0.6f); // color(1,0.1f,0.1f,0.5f)
 	ColorSelectionRect = color(0.2f,0,0,1);
 	ColorSelectionRectBoundary = color(0.7f,0,0,1);
+	ColorCreation = color(0.5f, 0.1f, 0.6f, 0.1f);
+	ColorCreationLine = color(1, 0.1f, 0.8f, 0.1f);
 
 	view_stage = 0;
 	grid_enabled = true;
 	wire_mode = false;
+	snap_to_grid = false;
 	light = -1;
 	light_enabled = false;
 	whole_window = false;
@@ -193,6 +198,7 @@ void MultiView::resetView()
 	whole_window = false;
 	grid_enabled = true;
 	light_enabled = true;
+	snap_to_grid = false;
 	cam.ignore_radius = false;
 	wire_mode = false;
 
@@ -309,6 +315,12 @@ void MultiView::toggleWire()
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
+void MultiView::toggleSnapToGrid()
+{
+	snap_to_grid = !snap_to_grid;
+	notify(MESSAGE_SETTINGS_CHANGE);
+}
+
 void MultiView::onCommand(const string & id)
 {
 	notifyBegin();
@@ -340,6 +352,8 @@ void MultiView::onCommand(const string & id)
 		toggleWholeWindow();
 	if (id == "grid")
 		toggleGrid();
+	if (id == "snap_to_grid")
+		toggleSnapToGrid();
 	if (id == "light")
 		toggleLight();
 	if (id == "wire")
@@ -642,6 +656,13 @@ string MultiView::getScaleByZoom(vector &v)
 	return format("*10^%d", n*3);
 }
 
+string format_length(MultiView *mv, float l)
+{
+	vector v = vector(l, 0, 0);
+	string unit = mv->getScaleByZoom(v);
+	return f2s(v.x,2) + " " + unit;
+}
+
 void MultiView::drawMousePos()
 {
 	vector m = getCursor3d();
@@ -864,10 +885,32 @@ vector MultiView::getSelectionCenter()
 	return (min + max) / 2;
 }
 
+vector snap_v2(const vector &v, float d)
+{
+	vector w;
+	w.x = d * roundf(v.x / d);
+	w.y = d * roundf(v.y / d);
+	w.z = d * roundf(v.z / d);
+	return w;
+}
+
+vector snap_v(MultiView *mv, const vector &v)
+{
+	return snap_v2(v, mv->active_win->get_grid_d());
+}
+
+float snap_f(MultiView *mv, float f)
+{
+	float d = mv->active_win->get_grid_d();
+	return d * roundf(f / d);
+}
+
 vector MultiView::getCursor3d()
 {
 	if (hover.data)
 		return hover.point;
+	if (snap_to_grid)
+		return snap_v(this, mouse_win->unproject(m, cam.pos));
 	return mouse_win->unproject(m, cam.pos);
 }
 

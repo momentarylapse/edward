@@ -366,6 +366,15 @@ void Window::draw()
 
 	// type of view
 
+	// cursor
+	if (this != multi_view->mouse_win){
+		vector pp = project(multi_view->getCursor3d());
+		nix::SetShader(nix::default_shader_2d);
+		nix::SetColor(multi_view->ColorCreationLine);
+		nix::DrawRect(pp.x-2, pp.x+2, pp.y-2, pp.y+2, 0);
+	}
+
+
 	if (multi_view->allow_mouse_actions)
 		if (multi_view->action_con->visible)
 			multi_view->action_con->draw(this);
