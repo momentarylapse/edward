@@ -366,8 +366,9 @@ void Window::draw()
 
 	// type of view
 
-	if (multi_view->action_con->visible)
-		multi_view->action_con->draw(this);
+	if (multi_view->allow_mouse_actions)
+		if (multi_view->action_con->visible)
+			multi_view->action_con->draw(this);
 
 	name_dest = rect(dest.x1 + 3, dest.x1 + 3 + nix::GetStrWidth(view_kind), dest.y1, dest.y1 + 20);
 

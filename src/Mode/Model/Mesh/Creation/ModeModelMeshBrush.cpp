@@ -67,15 +67,15 @@ void ModeModelMeshBrush::onStart()
 	dialog->addGrid("", 0, 0, "grid");
 
 	dialog->setTarget("grid");
-	dialog->addGrid("", 0, 0, "grid1");
+	dialog->addGrid("!expandx", 0, 0, "grid1");
 	dialog->addListView("!nobar\\type", 0, 1, "brush_type");
 
 	dialog->setTarget("grid1");
 	dialog->addLabel(_("Dicke"), 0, 0, "");
 	dialog->addLabel(_("Tiefe"), 0, 1, "");
-	dialog->addSlider("", 1, 0, "diameter_slider");
+	dialog->addSlider("!expandx", 1, 0, "diameter_slider");
 	dialog->addSlider("", 1, 1, "depth_slider");
-	dialog->addEdit("", 2, 0, "diameter");
+	dialog->addEdit("!width=60", 2, 0, "diameter");
 	dialog->addEdit("", 2, 1, "depth");
 
 	dialog->event("diameter_slider", std::bind(&ModeModelMeshBrush::onDiameterSlider, this));
@@ -171,6 +171,7 @@ void ModeModelMeshBrush::onDrawWin(MultiView::Window* win)
 	vector e2 = n ^ e1;
 	e1 *= radius;
 	e2 *= radius;
+	MultiView::set_wide_lines(2);
 	for (int i=0;i<32;i++){
 		float w1 = i * 2 * pi / 32;
 		float w2 = (i + 1) * 2 * pi / 32;

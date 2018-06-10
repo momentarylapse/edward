@@ -325,6 +325,8 @@ bool geo_allow(int i, Window *win, const matrix &geo_mat)
 
 void ActionController::draw(Window *win)
 {
+	if (!multi_view->allow_mouse_actions)
+		return;
 	if (!visible)
 		return;
 	nix::SetZ(false, false);

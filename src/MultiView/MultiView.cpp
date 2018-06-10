@@ -546,8 +546,9 @@ void MultiView::updateMouse()
 	mbut = hui::GetEvent()->mbut;
 	rbut = hui::GetEvent()->rbut;
 
-	if (cam_con->isMouseOver())
-		return;
+	if (allow_mouse_actions)
+		if (cam_con->isMouseOver())
+			return;
 
 	// which window is the cursor in?
 	for (auto w: win)
@@ -891,7 +892,7 @@ void MultiView::getHover()
 		hover.meta = hover.HOVER_CAMERA_CONTROLLER;
 		return;
 	}
-	if (action_con->isMouseOver(hover.point)){
+	if (allow_mouse_actions and action_con->isMouseOver(hover.point)){
 		hover.meta = hover.HOVER_ACTION_CONTROLLER;
 		return;
 	}
@@ -1036,6 +1037,7 @@ void MultiView::addMessage3d(const string &str, const vector &pos)
 void MultiView::setAllowAction(bool allow)
 {
 	allow_mouse_actions = allow;
+	action_con->show(allow);
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
@@ -1064,6 +1066,7 @@ void MultiView::popSettings()
 	action_con->action.name = s.action_name;
 	action_con->action.mode = s.action_mode;
 	action_con->action.locked = s.action_locked;
+	action_con->show(allow_mouse_actions);
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
