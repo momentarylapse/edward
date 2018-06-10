@@ -15,6 +15,8 @@
 #include "../../../../MultiView/Window.h"
 #include "../../../../lib/nix/nix.h"
 
+extern color color_creation_line;
+
 ModeModelMeshSplitPolygon::ModeModelMeshSplitPolygon(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshSplitPolygon", _parent)
 {
@@ -27,6 +29,12 @@ ModeModelMeshSplitPolygon::ModeModelMeshSplitPolygon(ModeBase *_parent) :
 
 	mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_polygon);
 	mode_model->allowSelectionModes(false);
+}
+
+void ModeModelMeshSplitPolygon::onStart()
+{
+	multi_view->setAllowAction(false);
+	multi_view->setAllowSelect(false);
 }
 
 void ModeModelMeshSplitPolygon::onLeftButtonUp()
@@ -78,15 +86,12 @@ void ModeModelMeshSplitPolygon::onDrawWin(MultiView::Window *win)
 			}
 		}
 
-		nix::SetShader(nix::default_shader_2d);
-		nix::EnableLighting(false);
-		/*NixDrawLine3D(data->Vertex[data->Surface[surface].Triangle[triangle].Vertex[0]].pos, pos, Green);
-		NixDrawLine3D(data->Vertex[data->Surface[surface].Triangle[triangle].Vertex[1]].pos, pos, Green);
-		NixDrawLine3D(data->Vertex[data->Surface[surface].Triangle[triangle].Vertex[2]].pos, pos, Green);*/
-		nix::SetColor(Green);
+
+		nix::SetZ(false, false);
+		nix::SetColor(color_creation_line);
+		MultiView::set_wide_lines(2);
 		for (int k=0;k<v.num;k++)
-			nix::DrawLine(p[k].x, p[k].y, pp.x, pp.y, 0);
-		nix::SetColor(White);
-		nix::EnableLighting(true);
+			nix::DrawLine3D(v[k], pos);
+		nix::SetZ(true, true);
 	}
 }

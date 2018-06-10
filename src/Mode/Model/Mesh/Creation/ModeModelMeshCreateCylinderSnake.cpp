@@ -15,6 +15,7 @@
 #include "../../../../lib/nix/nix.h"
 
 const float CYLINDER_CLOSING_DISTANCE = 20;
+extern color color_creation_line;
 
 
 ModeModelMeshCreateCylinderSnake::ModeModelMeshCreateCylinderSnake(ModeBase *_parent) :
@@ -131,10 +132,6 @@ void ModeModelMeshCreateCylinderSnake::onKeyDown(int k)
 
 
 
-namespace MultiView{
-extern nix::Shader* shader_lines_3d_colored;
-};
-
 
 void ModeModelMeshCreateCylinderSnake::onDrawWin(MultiView::Window *win)
 {
@@ -142,23 +139,18 @@ void ModeModelMeshCreateCylinderSnake::onDrawWin(MultiView::Window *win)
 
 	if (pos.num > 0){
 
-
-		mode_model->setMaterialCreation(2);
-
-		//nix::EnableLighting(false);
-		nix::SetColor(Green);
-
 		// control points
-		nix::SetShader(MultiView::shader_lines_3d_colored);
+		nix::SetColor(color_creation_line);
+		nix::SetShader(nix::default_shader_2d);
 		for (int i=0;i<pos.num;i++){
 			vector pp = win->project(pos[i]);
 			nix::DrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
 		}
-		nix::SetShader(nix::default_shader_3d);
-		mode_model->setMaterialCreation(2);
 
 
 		// control polygon
+		nix::SetColor(ColorInterpolate(color_creation_line, multi_view->ColorBackGround, 0.3f));
+		MultiView::set_wide_lines(2);
 		for (int i=1;i<pos.num;i++)
 			nix::DrawLine3D(pos[i - 1], pos[i]);
 
@@ -173,14 +165,12 @@ void ModeModelMeshCreateCylinderSnake::onDrawWin(MultiView::Window *win)
 		if (!ready_for_scaling)
 			inter.add(multi_view->getCursor3d());
 		inter.normalize();
-		nix::SetColor(Green);
+		nix::SetColor(color_creation_line);
 		for (int i=0;i<100;i++)
 			nix::DrawLine3D(inter.get((float)i * 0.01f), inter.get((float)i * 0.01f + 0.01f));
-		nix::SetColor(White);
 	}
 	if (ready_for_scaling){
 		geo->build(nix::vb_temp);
-		nix::EnableLighting(true);
 		mode_model->setMaterialCreation();
 		nix::Draw3D(nix::vb_temp);
 	}else if (pos.num > 2){

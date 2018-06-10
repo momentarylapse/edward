@@ -18,14 +18,14 @@ class ModeModelMeshCreateCylinderSnake: public ModeCreation<DataModel>
 public:
 	ModeModelMeshCreateCylinderSnake(ModeBase *parent);
 
-	virtual void onStart();
-	virtual void onEnd();
+	void onStart() override;
+	void onEnd() override;
 
-	virtual void onMouseMove();
-	virtual void onLeftButtonUp();
-	virtual void onKeyDown(int k);
+	void onMouseMove() override;
+	void onLeftButtonUp() override;
+	void onKeyDown(int k) override;
 
-	virtual void onDrawWin(MultiView::Window *win);
+	void onDrawWin(MultiView::Window *win) override;
 
 	void updateGeometry();
 

@@ -14,6 +14,8 @@
 #include "../../../../MultiView/Window.h"
 #include "../../../../lib/nix/nix.h"
 
+extern color color_creation_line;
+
 ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateCylinder", _parent)
 {
@@ -125,28 +127,25 @@ void ModeModelMeshCreateCylinder::onLeftButtonUp()
 	}
 }
 
-namespace MultiView{
-extern nix::Shader* shader_lines_3d_colored;
-};
-
 void ModeModelMeshCreateCylinder::onDrawWin(MultiView::Window *win)
 {
 	parent->onDrawWin(win);
 
 	if (pos.num > 0){
-		mode_model->setMaterialCreation(2);
 
-		//nix::EnableLighting(false);
+		// control points
 		nix::SetColor(Green);
-		// control polygon
-		nix::SetShader(MultiView::shader_lines_3d_colored);
+		nix::SetShader(nix::default_shader_2d);
 		for (int i=0;i<pos.num;i++){
 			vector pp = win->project(pos[i]);
 			nix::DrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
 		}
-		nix::SetShader(nix::default_shader_3d);
-		mode_model->setMaterialCreation(2);
 
+		//mode_model->setMaterialCreation(2);
+
+		// control polygon
+		nix::SetColor(color_creation_line);
+		MultiView::set_wide_lines(2);
 		if (pos.num == 2)
 			nix::DrawLine3D(pos[0], pos[1]);
 		else
@@ -154,7 +153,6 @@ void ModeModelMeshCreateCylinder::onDrawWin(MultiView::Window *win)
 		//nix::SetColor(White);
 	}
 	if (pos.num == 2){
-		nix::EnableLighting(true);
 		mode_model->setMaterialCreation();
 		geo->build(nix::vb_temp);
 		nix::Draw3D(nix::vb_temp);

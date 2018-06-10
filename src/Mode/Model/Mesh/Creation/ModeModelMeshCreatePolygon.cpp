@@ -13,11 +13,7 @@
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
 
-
-namespace MultiView{
-	extern nix::Shader *shader_lines_3d;
-};
-
+extern color color_creation_line;
 
 ModeModelMeshCreatePolygon::ModeModelMeshCreatePolygon(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreatePolygon", _parent)
@@ -32,6 +28,9 @@ void ModeModelMeshCreatePolygon::onStart()
 {
 	for (ModelVertex &v: data->vertex)
 		v.is_special = false;
+
+	multi_view->setAllowSelect(false);
+	multi_view->setAllowAction(false);
 }
 
 
@@ -47,8 +46,8 @@ void ModeModelMeshCreatePolygon::onDrawWin(MultiView::Window *win)
 {
 	parent->onDrawWin(win);
 
-	nix::SetColor(Green);
-	nix::SetShader(MultiView::shader_lines_3d);
+	nix::SetColor(color_creation_line);
+	MultiView::set_wide_lines(2);
 	for (int i=1;i<selection.num;i++){
 		vector pa = data->vertex[selection[i - 1]].pos;
 		vector pb = data->vertex[selection[i    ]].pos;
@@ -60,7 +59,6 @@ void ModeModelMeshCreatePolygon::onDrawWin(MultiView::Window *win)
 		else
 			nix::DrawLine3D(data->vertex[selection.back()].pos, multi_view->getCursor3d());
 	}
-	nix::SetColor(White);
 }
 
 

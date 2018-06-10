@@ -16,13 +16,13 @@ class ModeModelMeshCreatePolygon: public ModeCreation<DataModel>
 public:
 	ModeModelMeshCreatePolygon(ModeBase *parent);
 
-	virtual void onStart();
-	virtual void onEnd();
+	void onStart() override;
+	void onEnd() override;
 
-	virtual void onLeftButtonDown();
-	virtual void onKeyDown(int key_code);
+	void onLeftButtonDown() override;
+	void onKeyDown(int key_code) override;
 
-	virtual void onDrawWin(MultiView::Window *win);
+	void onDrawWin(MultiView::Window *win) override;
 
 	Array<int> selection;
 };

@@ -16,9 +16,11 @@ class ModeModelMeshSplitPolygon: public ModeCreation<DataModel>
 public:
 	ModeModelMeshSplitPolygon(ModeBase *parent);
 
-	virtual void onLeftButtonUp();
+	void onStart() override;
 
-	virtual void onDrawWin(MultiView::Window *win);
+	void onLeftButtonUp() override;
+
+	void onDrawWin(MultiView::Window *win) override;
 
 private:
 	int surface, triangle;

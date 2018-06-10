@@ -17,17 +17,17 @@ class ModeModelMeshBrush: public ModeCreation<DataModel>
 public:
 	ModeModelMeshBrush(ModeBase *parent);
 
-	virtual void onStart();
-	virtual void onEnd();
+	void onStart() override;
+	void onEnd() override;
 
-	virtual void onLeftButtonDown();
-	virtual void onLeftButtonUp();
-	virtual void onMouseMove();
+	void onLeftButtonDown() override;
+	void onLeftButtonUp() override;
+	void onMouseMove() override;
 
 	void onDiameterSlider();
 	void onDepthSlider();
 
-	virtual void onDrawWin(MultiView::Window *win);
+	void onDrawWin(MultiView::Window *win) override;
 
 	void onClose();
 

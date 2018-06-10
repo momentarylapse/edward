@@ -25,14 +25,15 @@ ModeModelMeshPaste::ModeModelMeshPaste(ModeBase* _parent) :
 
 void ModeModelMeshPaste::onStart()
 {
-	if (mode_model_mesh->temp_geo.vertex.num > 0){
-		updateGeometry();
-		multi_view->setAllowSelect(false);
-		multi_view->setAllowAction(false);
-	}else{
+	if (mode_model_mesh->temp_geo.vertex.num == 0){
 		ed->setMessage(_("nichts zum Einf&ugen"));
 		abort();
+		return;
 	}
+
+	updateGeometry();
+	multi_view->setAllowSelect(false);
+	multi_view->setAllowAction(false);
 }
 
 void ModeModelMeshPaste::onEnd()

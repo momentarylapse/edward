@@ -16,13 +16,13 @@ class ModeModelMeshExtrudePolygons: public ModeCreation<DataModel>
 public:
 	ModeModelMeshExtrudePolygons(ModeBase *parent);
 
-	virtual void onStart();
-	virtual void onEnd();
+	void onStart() override;
+	void onEnd() override;
 
-	virtual void onLeftButtonDown();
-	virtual void onMouseMove();
+	void onLeftButtonDown() override;
+	void onMouseMove() override;
 
-	virtual void onDrawWin(MultiView::Window *win);
+	void onDrawWin(MultiView::Window *win) override;
 
 	void preview();
 	void cleanUp();

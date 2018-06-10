@@ -19,15 +19,15 @@ public:
 	ModeModelMeshDeformCylinder(ModeBase *parent);
 	virtual ~ModeModelMeshDeformCylinder();
 
-	virtual void onStart();
-	virtual void onEnd();
+	void onStart() override;
+	void onEnd() override;
 
-	virtual void onMouseMove();
-	virtual void onLeftButtonDown();
-	virtual void onLeftButtonUp();
-	virtual void onKeyDown(int key_code);
+	void onMouseMove() override;
+	void onLeftButtonDown() override;
+	void onLeftButtonUp() override;
+	void onKeyDown(int key_code) override;
 
-	virtual void onDrawWin(MultiView::Window *win);
+	void onDrawWin(MultiView::Window *win) override;
 
 	void onPreview();
 	void onOk();

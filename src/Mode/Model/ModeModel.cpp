@@ -16,6 +16,7 @@
 #include "Skeleton/ModeModelSkeleton.h"
 #include "Animation/ModeModelAnimation.h"
 #include "../../lib/nix/nix.h"
+#include "../../MultiView/MultiView.h"
 #include "Mesh/Selection/MeshSelectionModeEdge.h"
 #include "Mesh/Selection/MeshSelectionModePolygon.h"
 #include "Mesh/Selection/MeshSelectionModeSurface.h"
@@ -24,10 +25,8 @@
 
 ModeModel *mode_model = NULL;
 
-
-namespace MultiView{
-	extern nix::Shader *shader_selection;
-}
+color color_creation_line = color(1, 0.1f, 0.8f, 0.1f);
+color color_creation = color(1, 0.1f, 0.6f, 0.1f);
 
 ModeModel::ModeModel() :
 	Mode<DataModel>("Model", NULL, new DataModel, NULL, "")

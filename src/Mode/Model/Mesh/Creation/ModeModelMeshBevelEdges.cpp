@@ -43,6 +43,12 @@ ModeModelMeshBevelEdges::~ModeModelMeshBevelEdges()
 {
 }
 
+void ModeModelMeshBevelEdges::onStart()
+{
+	multi_view->setAllowAction(false);
+	multi_view->setAllowSelect(false);
+}
+
 void ModeModelMeshBevelEdges::onEnd()
 {
 	data->action_manager->clearPreview();

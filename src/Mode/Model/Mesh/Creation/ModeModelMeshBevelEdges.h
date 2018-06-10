@@ -17,12 +17,13 @@ public:
 	ModeModelMeshBevelEdges(ModeBase *_parent);
 	virtual ~ModeModelMeshBevelEdges();
 
-	virtual void onEnd();
+	void onStart() override;
+	void onEnd() override;
 
-	virtual void onMouseMove();
-	virtual void onLeftButtonDown();
+	void onMouseMove() override;
+	void onLeftButtonDown() override;
 
-	virtual void onDrawWin(MultiView::Window *win);
+	void onDrawWin(MultiView::Window *win) override;
 
 private:
 	float radius;
