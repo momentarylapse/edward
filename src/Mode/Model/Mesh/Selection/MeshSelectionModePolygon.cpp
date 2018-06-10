@@ -132,7 +132,6 @@ void MeshSelectionModePolygon::updateSelection()
 void MeshSelectionModePolygon::updateMultiView()
 {
 	multi_view->clearData(data);
-	multi_view->setAllowSelect(true);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	for (ModelSurface &s: data->surface)
 		multi_view->addData(	MVD_MODEL_POLYGON,

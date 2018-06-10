@@ -564,12 +564,11 @@ void MultiView::onMouseMove()
 	notifyBegin();
 	updateMouse();
 
-
 	if (action_con->inUse()){
 		action_con->mouseMove();
 	}else if (cam_con->inUse()){
 		cam_con->onMouseMove();
-	}else if (sel_rect.active){
+	}else if (sel_rect.active and allow_select){
 		selectAllInRectangle(get_select_mode());
 	}else if (view_moving){
 		int t = active_win->type;
@@ -580,7 +579,7 @@ void MultiView::onMouseMove()
 	// camera translation
 			camMove(v);
 		}
-	}else if (sel_rect.dist >= 0){
+	}else if (sel_rect.dist >= 0 and allow_select){
 		sel_rect.dist += abs(v.x) + abs(v.y);
 		if (sel_rect.dist >= MIN_MOUSE_MOVE_TO_INTERACT)
 			startRect();

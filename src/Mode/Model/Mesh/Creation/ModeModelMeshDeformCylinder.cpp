@@ -133,8 +133,6 @@ void ModeModelMeshDeformCylinder::onEnd()
 {
 	if (has_preview)
 		restore();
-	multi_view->setAllowAction(true);
-	multi_view->setAllowSelect(true);
 }
 
 Array<vector> sort_vectors_by_x(Array<vector> &p)

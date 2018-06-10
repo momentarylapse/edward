@@ -37,7 +37,6 @@ void ModeModelAnimationSkeleton::onStart()
 		mode_model_animation->bone[i].is_selected = b.is_selected;
 
 	multi_view->clearData(data);
-	multi_view->setAllowSelect(true);
 
 	chooseMouseFunction(MultiView::ACTION_ROTATE);
 
