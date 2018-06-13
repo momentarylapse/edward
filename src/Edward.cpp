@@ -677,6 +677,8 @@ void Edward::loadKeyCodes()
 		for (int i=0; i<nk; i++){
 			string id = f->read_str();
 			int key_code = f->read_int();
+			if (id == "execute_plugin")
+				key_code = hui::KEY_CONTROL + hui::KEY_P;
 			setKeyCode(id, key_code);
 		}
 		event("volume_subtract", NULL);
@@ -685,6 +687,9 @@ void Edward::loadKeyCodes()
 		setKeyCode("invert_selection", hui::KEY_CONTROL + hui::KEY_TAB); // TODO ...
 		event("select_all", NULL);
 		setKeyCode("select_all", hui::KEY_CONTROL + hui::KEY_A); // TODO ...
+
+		event("finish-action", NULL);
+		setKeyCode("finish-action", hui::KEY_CONTROL + hui::KEY_RETURN); // TODO ...
 
 		event("easify_skin", NULL);
 		setKeyCode("easify_skin", hui::KEY_CONTROL + hui::KEY_7); // TODO ...

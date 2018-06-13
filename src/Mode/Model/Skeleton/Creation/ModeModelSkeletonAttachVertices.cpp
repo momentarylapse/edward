@@ -11,11 +11,10 @@
 #include "../../../../MultiView/MultiView.h"
 #include "../../Mesh/Selection/MeshSelectionModePolygon.h"
 
-ModeModelSkeletonAttachVertices::ModeModelSkeletonAttachVertices(ModeBase* _parent,
-		int _bone_index) :
-		ModeCreation<DataModel>("ModelSkeletonAttachVertices", _parent)
+ModeModelSkeletonAttachVertices::ModeModelSkeletonAttachVertices(ModeBase* _parent, int _bone_index) :
+	ModeCreation<DataModel>("ModelSkeletonAttachVertices", _parent)
 {
-	message = _("Vertices ausw&ahlen, [Return] = fertig");
+	message = _("Vertices ausw&ahlen, [Ctrl + Return] = fertig");
 	bone_index = _bone_index;
 }
 
@@ -25,6 +24,8 @@ void ModeModelSkeletonAttachVertices::onStart()
 	for (ModelVertex &v: data->vertex)
 		v.is_selected = (v.bone_index == bone_index);
 	data->selectionFromVertices();
+
+	mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_vertex);
 
 	mode_model->allowSelectionModes(true);
 	mode_model_mesh->selection_mode->updateMultiView();
@@ -41,6 +42,8 @@ void ModeModelSkeletonAttachVertices::onEnd()
 	unsubscribe(data);
 	unsubscribe(multi_view);
 
+	mode_model->allowSelectionModes(false);
+
 	parent->onUpdate(data, "");
 }
 
@@ -54,9 +57,9 @@ void ModeModelSkeletonAttachVertices::onUpdate(Observable *o, const string &mess
 	}
 }
 
-void ModeModelSkeletonAttachVertices::onKeyDown(int key_code)
+void ModeModelSkeletonAttachVertices::onCommand(const string &id)
 {
-	if (key_code == hui::KEY_RETURN){
+	if (id == "finish-action"){
 		Array<int> index;
 		foreachi(ModelVertex &v, data->vertex, i)
 			if (v.is_selected)
@@ -69,6 +72,11 @@ void ModeModelSkeletonAttachVertices::onKeyDown(int key_code)
 void ModeModelSkeletonAttachVertices::onDrawWin(MultiView::Window *win)
 {
 	mode_model_mesh->onDrawWin(win);
+}
+
+void ModeModelSkeletonAttachVertices::onSetMultiView()
+{
+	mode_model_mesh->onSetMultiView();
 }
 
 

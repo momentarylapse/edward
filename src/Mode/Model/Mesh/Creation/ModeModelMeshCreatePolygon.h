@@ -20,7 +20,7 @@ public:
 	void onEnd() override;
 
 	void onLeftButtonDown() override;
-	void onKeyDown(int key_code) override;
+	void onCommand(const string &id) override;
 
 	void onDrawWin(MultiView::Window *win) override;
 

@@ -62,9 +62,9 @@ void ModeModelMeshCreatePolygon::onDrawWin(MultiView::Window *win)
 
 
 
-void ModeModelMeshCreatePolygon::onKeyDown(int key_code)
+void ModeModelMeshCreatePolygon::onCommand(const string &id)
 {
-	if (key_code == hui::KEY_SHIFT + hui::KEY_RETURN){
+	if (id == "finish-action"){
 		data->execute(new ActionModelAddPolygonAutoSkin(selection, mode_model_mesh->current_material));
 		abort();
 	}
@@ -99,6 +99,6 @@ void ModeModelMeshCreatePolygon::onLeftButtonDown()
 		selection.add(data->vertex.num - 1);
 	}
 	data->vertex[selection.back()].is_special = true;
-	message = format(_("Polygon w&ahlen: %d -> Shift + Return"), selection.num);
+	message = format(_("Polygon w&ahlen: %d -> [Ctrl + Return]"), selection.num);
 }
 
