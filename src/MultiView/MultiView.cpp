@@ -390,6 +390,18 @@ void MultiView::onMouseLeave()
 	onMouseMove();
 }
 
+void activate_next_window(MultiView *mv)
+{
+	if (mv->whole_window)
+		return;
+	for (int i=0; i<mv->win.num; i++)
+		if (mv->win[i] == mv->active_win){
+			mv->active_win = mv->win[(i+1)%mv->win.num];
+			mv->notify(mv->MESSAGE_SETTINGS_CHANGE);
+			break;
+		}
+
+}
 
 
 void MultiView::onKeyDown(int k)
@@ -414,6 +426,8 @@ void MultiView::onKeyDown(int k)
 		camMove(-e_z * SPEED_MOVE);
 	if (k == hui::KEY_ESCAPE)
 		action_con->endAction(false);
+	if (k == hui::KEY_TAB)
+		activate_next_window(this);
 	notifyEnd();
 }
 
