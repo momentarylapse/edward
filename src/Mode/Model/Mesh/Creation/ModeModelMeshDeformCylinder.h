@@ -26,6 +26,7 @@ public:
 	void onLeftButtonDown() override;
 	void onLeftButtonUp() override;
 	void onKeyDown(int key_code) override;
+	void onCommand(const string &id) override;
 
 	void onDrawWin(MultiView::Window *win) override;
 

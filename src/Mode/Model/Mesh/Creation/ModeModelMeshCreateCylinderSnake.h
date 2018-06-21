@@ -23,7 +23,7 @@ public:
 
 	void onMouseMove() override;
 	void onLeftButtonUp() override;
-	void onKeyDown(int k) override;
+	void onCommand(const string& id) override;
 
 	void onDrawWin(MultiView::Window *win) override;
 

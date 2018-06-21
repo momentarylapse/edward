@@ -25,7 +25,7 @@ namespace MultiView{
 ModeModelMeshCreateCylinderSnake::ModeModelMeshCreateCylinderSnake(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateCylinderSnake", _parent)
 {
-	message = _("Zylinderschlange... Punkte + Shift Return");
+	message = _("Zylinderschlange... Punkte + [Ctrl + Return]");
 
 	radius = 0;
 	closed = false;
@@ -123,9 +123,9 @@ void ModeModelMeshCreateCylinderSnake::onLeftButtonUp()
 
 
 
-void ModeModelMeshCreateCylinderSnake::onKeyDown(int k)
+void ModeModelMeshCreateCylinderSnake::onCommand(const string& id)
 {
-	if (k == hui::KEY_SHIFT + hui::KEY_RETURN){
+	if (id == "finish-action"){
 		if (pos.num > 1){
 			ready_for_scaling = true;
 			onMouseMove();
