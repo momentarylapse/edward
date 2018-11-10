@@ -96,32 +96,32 @@ void configure_tree_view_columns(Control *c, GtkWidget *view, const string &_for
 		if (f == 'C'){
 			// editable checkbox
    			renderer = gtk_cell_renderer_toggle_new();
-			column = gtk_tree_view_column_new_with_attributes(sys_str(PartString[i]), renderer, "active", i, NULL);
+			column = gtk_tree_view_column_new_with_attributes(sys_str(PartString[i]), renderer, "active", i, nullptr);
 			g_object_set_data(G_OBJECT(renderer), "column", GINT_TO_POINTER(i));
 			g_signal_connect (G_OBJECT(renderer), "toggled", G_CALLBACK(list_toggle_callback), c);
 		}else if (f == 'c'){
 			// constant checkbox
    			renderer = gtk_cell_renderer_toggle_new();
-			column = gtk_tree_view_column_new_with_attributes(sys_str(PartString[i]), renderer, "active", i, NULL);
+			column = gtk_tree_view_column_new_with_attributes(sys_str(PartString[i]), renderer, "active", i, nullptr);
 		}else if (f == 'i'){
 			// image
    			renderer = gtk_cell_renderer_pixbuf_new();
-			column = gtk_tree_view_column_new_with_attributes(sys_str(PartString[i]), renderer, "pixbuf", i, NULL);
+			column = gtk_tree_view_column_new_with_attributes(sys_str(PartString[i]), renderer, "pixbuf", i, nullptr);
 		}else if (f == 'L'){
 			// list
 			renderer = gtk_cell_renderer_combo_new();
-			column = gtk_tree_view_column_new_with_attributes(sys_str(PartString[i]), renderer, "active", i, NULL);
+			column = gtk_tree_view_column_new_with_attributes(sys_str(PartString[i]), renderer, "active", i, nullptr);
 		}else if (f == 'T'){
 			// editable text
 			renderer = gtk_cell_renderer_text_new();
 			g_object_set_data(G_OBJECT(renderer), "column", GINT_TO_POINTER(i));
-			g_object_set(renderer, "editable", TRUE, NULL);
+			g_object_set(renderer, "editable", TRUE, nullptr);
 			g_signal_connect(renderer, "edited", G_CALLBACK(list_edited_callback), c);
-			column = gtk_tree_view_column_new_with_attributes(sys_str(PartString[i]), renderer, "text", i, NULL);
+			column = gtk_tree_view_column_new_with_attributes(sys_str(PartString[i]), renderer, "text", i, nullptr);
 		}else{
 			// constant text
 			renderer = gtk_cell_renderer_text_new();
-			column = gtk_tree_view_column_new_with_attributes(sys_str(PartString[i]), renderer, "text", i, NULL);
+			column = gtk_tree_view_column_new_with_attributes(sys_str(PartString[i]), renderer, "text", i, nullptr);
 		}
 		gtk_tree_view_append_column(GTK_TREE_VIEW(view), column);
 	}
@@ -169,7 +169,7 @@ ControlListView::ControlListView(const string &title, const string &id, Panel *p
 {
 	GetPartStrings(title);
 
-	GtkWidget *sw = gtk_scrolled_window_new(NULL, NULL);
+	GtkWidget *sw = gtk_scrolled_window_new(nullptr, nullptr);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
 	// "model"
@@ -194,7 +194,7 @@ ControlListView::ControlListView(const string &title, const string &id, Panel *p
 	// frame
 	frame = sw;
 	if (panel->border_width > 0){
-		frame = gtk_frame_new(NULL);
+		frame = gtk_frame_new(nullptr);
 		gtk_container_add(GTK_CONTAINER(frame), sw);
 	}
 	gtk_container_add(GTK_CONTAINER(sw), view);
@@ -205,17 +205,17 @@ ControlListView::ControlListView(const string &title, const string &id, Panel *p
 	configure_tree_view_columns(this, view, HuiFormatString, PartString);
 	gtk_widget_set_hexpand(widget, true);
 	gtk_widget_set_vexpand(widget, true);
-	setOptions(OptionString);
+	set_options(OptionString);
 }
 
-string ControlListView::getString()
+string ControlListView::get_string()
 {
 	return "";
 }
 
-void ControlListView::__setString(const string &str)
+void ControlListView::__set_string(const string &str)
 {
-	__addString(str);
+	__add_string(str);
 }
 
 void set_list_cell(GtkListStore *store, GtkTreeIter &iter, int column, const string &str)
@@ -232,7 +232,7 @@ void set_list_cell(GtkListStore *store, GtkTreeIter &iter, int column, const str
 	}
 }
 
-void ControlListView::__addString(const string& str)
+void ControlListView::__add_string(const string& str)
 {
 	allow_change_messages = false;
 	GtkTreeIter iter;
@@ -244,28 +244,28 @@ void ControlListView::__addString(const string& str)
 	allow_change_messages = true;
 }
 
-void ControlListView::__setInt(int i)
+void ControlListView::__set_int(int i)
 {
 	GtkTreeSelection *sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(widget));
 	if (i >= 0){
 		GtkTreeIter iter;
-		if (gtk_tree_model_iter_nth_child(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)), &iter, NULL, i)){
+		if (gtk_tree_model_iter_nth_child(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)), &iter, nullptr, i)){
 			gtk_tree_selection_select_iter(sel, &iter);
 			GtkTreePath *path = gtk_tree_path_new_from_indices(i, -1);
-			gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(widget), path, NULL, false, 0, 0);
+			gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(widget), path, nullptr, false, 0, 0);
 			gtk_tree_path_free(path);
 		}
 	}else
 		gtk_tree_selection_unselect_all(sel);
 }
 
-int ControlListView::getInt()
+int ControlListView::get_int()
 {
 	GtkTreeSelection *sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(widget));
 
 	for (int i=0; ; i++){
 		GtkTreeIter iter;
-		if (!gtk_tree_model_iter_nth_child(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)), &iter, NULL, i))
+		if (!gtk_tree_model_iter_nth_child(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)), &iter, nullptr, i))
 			return -1;
 		if (gtk_tree_selection_iter_is_selected(sel, &iter))
 			return i;
@@ -274,59 +274,59 @@ int ControlListView::getInt()
 	return -1;
 }
 
-void ControlListView::__changeString(int row, const string& str)
+void ControlListView::__change_string(int row, const string& str)
 {
 	if (row < 0)
 		return;
 	GetPartStrings(str);
 	GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)));
 	GtkTreeIter iter;
-	if (gtk_tree_model_iter_nth_child(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)), &iter, NULL, row))
+	if (gtk_tree_model_iter_nth_child(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)), &iter, nullptr, row))
 		for (int j=0;j<PartString.num;j++)
 			set_list_cell(store, iter, j, PartString[j]);
 }
 
-void ControlListView::__removeString(int row)
+void ControlListView::__remove_string(int row)
 {
 	if (row < 0)
 		return;
 	allow_change_messages = false;
 	GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)));
 	GtkTreeIter iter;
-	if (gtk_tree_model_iter_nth_child(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)), &iter, NULL, row))
+	if (gtk_tree_model_iter_nth_child(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)), &iter, nullptr, row))
 		gtk_list_store_remove(store, &iter);
 	allow_change_messages = true;
 }
 
-string ControlListView::getCell(int row, int column)
+string ControlListView::get_cell(int row, int column)
 {
 	if (row < 0)
 		return "";
 	GtkTreeModel *store = gtk_tree_view_get_model(GTK_TREE_VIEW(widget));
 	GtkTreeIter iter;
-	if (!gtk_tree_model_iter_nth_child(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)), &iter, NULL, row))
+	if (!gtk_tree_model_iter_nth_child(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)), &iter, nullptr, row))
 		return "";
 	return tree_get_cell(store, iter, column);
 }
 
-void ControlListView::__setCell(int row, int column, const string& str)
+void ControlListView::__set_cell(int row, int column, const string& str)
 {
 	if (row < 0)
 		return;
 	GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)));
 	GtkTreeIter iter;
-	if (gtk_tree_model_iter_nth_child(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)), &iter, NULL, row))
+	if (gtk_tree_model_iter_nth_child(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)), &iter, nullptr, row))
 		set_list_cell(store, iter, column, str);
 }
 
-Array<int> ControlListView::getSelection()
+Array<int> ControlListView::get_selection()
 {
 	Array<int> selected;
 	GtkTreeSelection *sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(widget));
 
 	for (int i=0; ; i++){
 		GtkTreeIter iter;
-		if (!gtk_tree_model_iter_nth_child(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)), &iter, NULL, i))
+		if (!gtk_tree_model_iter_nth_child(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)), &iter, nullptr, i))
 			return selected;
 		if (gtk_tree_selection_iter_is_selected(sel, &iter))
 			selected.add(i);
@@ -335,14 +335,14 @@ Array<int> ControlListView::getSelection()
 	return selected;
 }
 
-void ControlListView::__setSelection(Array<int>& selected)
+void ControlListView::__set_selection(const Array<int>& selected)
 {
 	GtkTreeSelection *sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(widget));
 	gtk_tree_selection_set_mode(sel, GTK_SELECTION_MULTIPLE);
 	gtk_tree_selection_unselect_all(sel);
 	for (int i: selected){
 		GtkTreeIter iter;
-		if (!gtk_tree_model_iter_nth_child(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)), &iter, NULL, i))
+		if (!gtk_tree_model_iter_nth_child(gtk_tree_view_get_model(GTK_TREE_VIEW(widget)), &iter, nullptr, i))
 			continue;
 		gtk_tree_selection_select_iter(sel, &iter);
 
@@ -357,7 +357,7 @@ void ControlListView::__reset()
 	allow_change_messages = true;
 }
 
-void ControlListView::__setOption(const string &op, const string &value)
+void ControlListView::__set_option(const string &op, const string &value)
 {
 	if ((op == "multiline") || (op == "select-multi")){
 		GtkTreeSelection *sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(widget));

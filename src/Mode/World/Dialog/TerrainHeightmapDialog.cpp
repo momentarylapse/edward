@@ -13,7 +13,7 @@ TerrainHeightmapDialog::TerrainHeightmapDialog(hui::Window *_parent, bool _allow
 	hui::Dialog("terrain_heightmap_dialog", 400, 300, _parent, _allow_parent),
 	Observer("TerrainHeightmapDialog")
 {
-	fromResource("terrain_heightmap_dialog");
+	from_resource("terrain_heightmap_dialog");
 	data = _data;
 
 	event("cancel", std::bind(&TerrainHeightmapDialog::OnClose, this));
@@ -25,7 +25,7 @@ TerrainHeightmapDialog::TerrainHeightmapDialog(hui::Window *_parent, bool _allow
 	event("stretch_x", std::bind(&TerrainHeightmapDialog::OnSizeChange, this));
 	event("stretch_z", std::bind(&TerrainHeightmapDialog::OnSizeChange, this));
 	event("filter_image_find", std::bind(&TerrainHeightmapDialog::OnFindFilter, this));
-	eventXP("preview", "hui:draw", std::bind(&TerrainHeightmapDialog::OnPreviewDraw, this, std::placeholders::_1));
+	event_xp("preview", "hui:draw", std::bind(&TerrainHeightmapDialog::OnPreviewDraw, this, std::placeholders::_1));
 
 	enable("ok", false);
 
@@ -49,8 +49,8 @@ void TerrainHeightmapDialog::ApplyData()
 
 void TerrainHeightmapDialog::OnSizeChange()
 {
-	stretch_x = getFloat("stretch_x");
-	stretch_z = getFloat("stretch_z");
+	stretch_x = get_float("stretch_x");
+	stretch_z = get_float("stretch_z");
 	redraw("preview");
 }
 
@@ -58,9 +58,9 @@ void TerrainHeightmapDialog::OnSizeChange()
 
 void TerrainHeightmapDialog::OnFindFilter()
 {
-	if (ed->fileDialog(FD_TEXTURE, false, false)){
+	if (ed->file_dialog(FD_TEXTURE, false, false)){
 		filter_file = ed->dialog_file_complete;
-		setString("filter_image", ed->dialog_file);
+		set_string("filter_image", ed->dialog_file);
 		filter.load(filter_file);
 		redraw("preview");
 	}
@@ -68,7 +68,7 @@ void TerrainHeightmapDialog::OnFindFilter()
 
 
 
-void TerrainHeightmapDialog::onUpdate(Observable *o, const string &message)
+void TerrainHeightmapDialog::on_update(Observable *o, const string &message)
 {
 }
 
@@ -76,9 +76,9 @@ void TerrainHeightmapDialog::onUpdate(Observable *o, const string &message)
 
 void TerrainHeightmapDialog::OnFindHeightmap()
 {
-	if (ed->fileDialog(FD_TEXTURE, false, false)){
+	if (ed->file_dialog(FD_TEXTURE, false, false)){
 		heightmap_file = ed->dialog_file_complete;
-		setString("height_image", ed->dialog_file);
+		set_string("height_image", ed->dialog_file);
 		heightmap.load(heightmap_file);
 		redraw("preview");
 		enable("ok", true);
@@ -98,14 +98,14 @@ static float im_interpolate(const Image &im, float x, float y, float stretch_x, 
 	stretch_y *= im.height;
 	x = clampf(x * stretch_x, 0.5f, stretch_x - 0.5f);
 	y = clampf(y * stretch_y, 0.5f, stretch_y - 0.5f);
-	return c2f(im.getPixelInterpolated(x, y));
+	return c2f(im.get_pixel_interpolated(x, y));
 }
 
 void TerrainHeightmapDialog::OnPreviewDraw(Painter *c)
 {
-	if (heightmap.isEmpty()){
-		c->setColor(Black);
-		c->drawRect(0, 0, c->width, c->height);
+	if (heightmap.is_empty()){
+		c->set_color(Black);
+		c->draw_rect(0, 0, c->width, c->height);
 	}else{
 		Image m;
 		int w = c->width, h = c->height;
@@ -115,11 +115,11 @@ void TerrainHeightmapDialog::OnPreviewDraw(Painter *c)
 				float hmx = (float)x / (float)w;
 				float hmy = (float)y / (float)h;
 				float f = im_interpolate(heightmap, hmx, hmy, stretch_x, stretch_z);
-				if (!filter.isEmpty())
+				if (!filter.is_empty())
 					f *= im_interpolate(filter, hmx, hmy, 1, 1);
-				m.setPixel(x, y, color(1, f, f, f));
+				m.set_pixel(x, y, color(1, f, f, f));
 			}
-		c->drawImage(0, 0, m);
+		c->draw_image(0, 0, m);
 	}
 }
 
@@ -127,8 +127,8 @@ void TerrainHeightmapDialog::OnPreviewDraw(Painter *c)
 
 void TerrainHeightmapDialog::OnOk()
 {
-	float height_factor = getFloat("height_factor");
-	bool additive = isChecked("height_op:add");
+	float height_factor = get_float("height_factor");
+	bool additive = is_checked("height_op:add");
 	data->execute(new ActionWorldTerrainApplyHeightmap(data, heightmap_file, height_factor, stretch_x, stretch_z, filter_file));//, additive));
 	destroy();
 }
@@ -144,9 +144,9 @@ void TerrainHeightmapDialog::OnClose()
 
 void TerrainHeightmapDialog::LoadData()
 {
-	setFloat("stretch_x", stretch_x);
-	setFloat("stretch_z", stretch_z);
-	setFloat("height_factor", 100);
+	set_float("stretch_x", stretch_x);
+	set_float("stretch_z", stretch_z);
+	set_float("height_factor", 100);
 	check("height_op:set", true);
 }
 

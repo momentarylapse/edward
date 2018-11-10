@@ -59,14 +59,14 @@ Application::Application(const string &app_name, const string &def_lang, int fla
 		}
 		dir_create(directory);
 	#else // OS_WINDOWS
-		char *ttt = NULL;
+		char *ttt = nullptr;
 		int r = _get_pgmptr(&ttt);
 		filename = ttt;
 		directory = filename.dirname();
 		directory = directory.replace("\\Release\\", "\\");
 		directory = directory.replace("\\Debug\\", "\\");
 		directory = directory.replace("\\Unoptimized\\", "\\");
-		hui_win_instance = (HINSTANCE)GetModuleHandle(NULL);
+		hui_win_instance = (HINSTANCE)GetModuleHandle(nullptr);
 		directory_static = directory;
 	#endif
 
@@ -85,7 +85,7 @@ Application::Application(const string &app_name, const string &def_lang, int fla
 
 	ComboBoxSeparator = "\\";
 	_using_language_ = false;
-	SetDefaultErrorHandler(NULL);
+	SetDefaultErrorHandler(nullptr);
 	//msg_write("");
 
 	Config.filename = directory + "config.txt";
@@ -98,7 +98,7 @@ Application::Application(const string &app_name, const string &def_lang, int fla
 		LoadResource(directory_static + "hui_resources.txt");
 
 	if (def_lang.num > 0)
-		SetLanguage(Config.getStr("Language", def_lang));
+		SetLanguage(Config.get_str("Language", def_lang));
 
 	// at this point:
 	//   HuiAppDirectory -> dir to run binary in (binary dir or ~/.my_app/)
@@ -109,9 +109,9 @@ Application::Application(const string &app_name, const string &def_lang, int fla
 
 
 	if (file_test_existence(directory_static + "icon.svg"))
-		setProperty("logo", directory_static + "icon.svg");
+		set_property("logo", directory_static + "icon.svg");
 	else if (file_test_existence(directory_static + "icon.ico"))
-		setProperty("logo", directory_static + "icon.ico");
+		set_property("logo", directory_static + "icon.ico");
 }
 
 Application::~Application()
@@ -139,9 +139,9 @@ int Application::run()
 	while ((!HuiHaveToExit) and (WM_QUIT!=messages.message)){
 		bool allow=true;
 		if (_idle_function_.is_set())
-			got_message=(PeekMessage(&messages,NULL,0U,0U,PM_REMOVE)!=0);
+			got_message=(PeekMessage(&messages,nullptr,0U,0U,PM_REMOVE)!=0);
 		else
-			got_message=(GetMessage(&messages,NULL,0,0)!=0);
+			got_message=(GetMessage(&messages,nullptr,0,0)!=0);
 		if (got_message){
 			allow=false;
 			TranslateMessage(&messages);
@@ -165,9 +165,9 @@ int Application::run()
 // FIXME: when closing the last window, hard_end() gets called... ignoring onEnd()!!!
 void Application::end()
 {
-	SetIdleFunction(NULL);
+	SetIdleFunction(nullptr);
 
-	onEnd();
+	on_end();
 
 	hard_end();
 }
@@ -175,7 +175,7 @@ void Application::end()
 // ends the system loop of the run() command
 void Application::hard_end()
 {
-	SetIdleFunction(NULL);
+	SetIdleFunction(nullptr);
 
 	foreachb(Window *w, _all_windows_)
 		delete(w);
@@ -206,7 +206,7 @@ void Application::hard_end()
 	if (msg_inited)
 		msg_end();
 }
-void Application::doSingleMainLoop()
+void Application::do_single_main_loop()
 {
 #ifdef HUI_API_WIN
 	MSG messages;
@@ -216,9 +216,9 @@ void Application::doSingleMainLoop()
 
 	bool allow=true;
 	if (_idle_function_)
-		got_message=(PeekMessage(&messages,NULL,0U,0U,PM_REMOVE)!=0);
+		got_message=(PeekMessage(&messages,nullptr,0U,0U,PM_REMOVE)!=0);
 	else
-		got_message=(GetMessage(&messages,NULL,0,0)!=0);
+		got_message=(GetMessage(&messages,nullptr,0,0)!=0);
 	if (got_message){
 		allow=false;
 		TranslateMessage(&messages);
@@ -238,8 +238,13 @@ void Application::doSingleMainLoop()
 	//Callback _if_ = _idle_function_;
 
 	//SetIdleFunction(NULL);
+	int counter = 0;
 	do{
-		gtk_main_iteration();
+		g_main_context_iteration(nullptr, false);
+		gtk_main_iteration_do(false);
+		counter ++;
+		if (counter > 5)
+			break;
 	}while (gtk_events_pending());
 
 	// pop idle function
@@ -248,17 +253,21 @@ void Application::doSingleMainLoop()
 }
 
 
-void Application::setProperty(const string &name, const string &value)
+void Application::set_property(const string &name, const string &value)
 {
-	_properties_[name] = value;
+	_properties_.set(name, value);
 }
 
-string Application::getProperty(const string &name)
+string Application::get_property(const string &name)
 {
-	return _properties_[name];
+	try{
+		return _properties_[name];
+	}catch(...){
+		return "";
+	}
 }
 
-void Application::aboutBox(Window *win)
+void Application::about_box(Window *win)
 {
 	AboutBox(win);
 }

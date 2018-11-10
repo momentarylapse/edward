@@ -26,15 +26,15 @@ void Progress::set(const string &str, float progress)
 		return;
 	time_running += timer.get();
 	if (time_running < 5){
-		dlg->setString("progress_bar", str);
+		dlg->set_string("progress_bar", str);
 	}else{
 		float eta = time_running / progress * (1 - progress);
 		if (eta < 60)
-			dlg->setString("progress_bar", str + format(_(" (noch %.0d s)"), (int)(eta + 0.5f)));
+			dlg->set_string("progress_bar", str + format(_(" (noch %.0d s)"), (int)(eta + 0.5f)));
 		else
-			dlg->setString("progress_bar", str + format(_(" (noch %.0d min)"), (int)(eta / 60 + 0.5f)));
+			dlg->set_string("progress_bar", str + format(_(" (noch %.0d min)"), (int)(eta / 60 + 0.5f)));
 	}
-	dlg->setFloat("progress_bar", progress);
+	dlg->set_float("progress_bar", progress);
 	message = str;
 	//HuiDoSingleMainLoop();
 	hui::Sleep(0.001f);
@@ -50,10 +50,10 @@ void Progress::start(const string &str, float progress)
 {
 	if (!dlg)
 		dlg = hui::CreateResourceDialog("progress_dialog", hui::CurWindow);
-	dlg->setString("progress_bar", str);
-	dlg->setFloat("progress_bar", progress);
+	dlg->set_string("progress_bar", str);
+	dlg->set_float("progress_bar", progress);
 	dlg->show();
-	dlg->event("hui:close", std::bind(&Progress::_ignoreEvent, this));
+	dlg->event("hui:close", std::bind(&Progress::_ignore_event, this));
 	hui::Sleep(0.001f);
 	Cancelled = false;
 	time_running = 0;
@@ -65,25 +65,25 @@ void Progress::cancel()
 	Cancelled = true;
 }
 
-bool Progress::isCancelled()
+bool Progress::is_cancelled()
 {
 	return Cancelled;
 }
 
-void Progress::onClose()
+void Progress::on_close()
 {
 	cancel();
 }
 
-void Progress::startCancelable(const string &str, float progress)
+void Progress::start_cancelable(const string &str, float progress)
 {
 	if (!dlg)
 		dlg = hui::CreateResourceDialog("progress_cancelable_dialog", hui::CurWindow);
-	dlg->setString("progress_bar", str);
-	dlg->setFloat("progress_bar", progress);
+	dlg->set_string("progress_bar", str);
+	dlg->set_float("progress_bar", progress);
 	dlg->show();
-	dlg->event("hui:close", std::bind(&Progress::onClose, this));
-	dlg->event("cancel", std::bind(&Progress::onClose, this));
+	dlg->event("hui:close", std::bind(&Progress::on_close, this));
+	dlg->event("cancel", std::bind(&Progress::on_close, this));
 	hui::Sleep(0.001f);
 	Cancelled = false;
 	time_running = 0;

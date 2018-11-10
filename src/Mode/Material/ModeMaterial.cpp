@@ -38,8 +38,8 @@ ModeMaterial::ModeMaterial() :
 	for (int i=2;i<=MATERIAL_MAX_TEXTURES;i++)
 		MaterialVB[i] = new nix::VertexBuffer(i);
 
-	shape_type = hui::Config.getStr("MaterialShapeType", "teapot");
-	shape_smooth = hui::Config.getBool("MaterialShapeSmooth", true);
+	shape_type = hui::Config.get_str("MaterialShapeType", "teapot");
+	shape_smooth = hui::Config.get_bool("MaterialShapeSmooth", true);
 }
 
 ModeMaterial::~ModeMaterial()
@@ -51,8 +51,8 @@ ModeMaterial::~ModeMaterial()
 void ModeMaterial::_new()
 {
 	data->reset();
-	optimizeView();
-	ed->setMode(mode_material);
+	optimize_view();
+	ed->set_mode(mode_material);
 }
 
 
@@ -60,19 +60,19 @@ void ModeMaterial::_new()
 bool ModeMaterial::save()
 {
 	if (data->filename == "")
-		return saveAs();
+		return save_as();
 	return data->save(data->filename);
 }
 
 
 
-void ModeMaterial::onDraw()
+void ModeMaterial::on_draw()
 {
 }
 
 
 
-void ModeMaterial::onUpdate(Observable *o, const string &message)
+void ModeMaterial::on_update(Observable *o, const string &message)
 {
 	if (o == data){
 		data->UpdateTextures();
@@ -84,7 +84,7 @@ void ModeMaterial::onUpdate(Observable *o, const string &message)
 
 
 
-void ModeMaterial::onCommand(const string & id)
+void ModeMaterial::on_command(const string & id)
 {
 	if (id == "new")
 		_new();
@@ -93,7 +93,7 @@ void ModeMaterial::onCommand(const string & id)
 	if (id == "save")
 		save();
 	if (id == "save_as")
-		saveAs();
+		save_as();
 
 	if (id == "undo")
 		data->undo();
@@ -117,7 +117,7 @@ void ModeMaterial::onCommand(const string & id)
 }
 
 
-void ModeMaterial::onDrawWin(MultiView::Window *win)
+void ModeMaterial::on_draw_win(MultiView::Window *win)
 {
 	data->ApplyForRendering();
 
@@ -132,21 +132,21 @@ void ModeMaterial::onDrawWin(MultiView::Window *win)
 
 bool ModeMaterial::open()
 {
-	if (!ed->allowTermination())
+	if (!ed->allow_termination())
 		return false;
-	if (!ed->fileDialog(FD_MATERIAL, false, false))
+	if (!ed->file_dialog(FD_MATERIAL, false, false))
 		return false;
 	if (!data->load(ed->dialog_file_complete))
 		return false;
 
-	optimizeView();
-	ed->setMode(mode_material);
+	optimize_view();
+	ed->set_mode(mode_material);
 	return true;
 }
 
 
 
-void ModeMaterial::onEnd()
+void ModeMaterial::on_end()
 {
 	delete(AppearanceDialog);
 
@@ -157,18 +157,18 @@ void ModeMaterial::onEnd()
 
 
 
-bool ModeMaterial::saveAs()
+bool ModeMaterial::save_as()
 {
-	if (ed->fileDialog(FD_MATERIAL, true, false))
+	if (ed->file_dialog(FD_MATERIAL, true, false))
 		return data->save(ed->dialog_file_complete);
 	return false;
 }
 
 
 
-void ModeMaterial::onStart()
+void ModeMaterial::on_start()
 {
-	ed->toolbar[hui::TOOLBAR_TOP]->setByID("material-toolbar");
+	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("material-toolbar");
 	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
@@ -185,14 +185,14 @@ void ModeMaterial::onStart()
 void ModeMaterial::SetShapeType(const string &type)
 {
 	shape_type = type;
-	hui::Config.setStr("MaterialShapeType", shape_type);
+	hui::Config.set_str("MaterialShapeType", shape_type);
 	UpdateShape();
 }
 
 void ModeMaterial::SetShapeSmooth(bool smooth)
 {
 	shape_smooth = smooth;
-	hui::Config.setBool("MaterialShapeSmooth", shape_smooth);
+	hui::Config.set_bool("MaterialShapeSmooth", shape_smooth);
 	UpdateShape();
 }
 
@@ -222,12 +222,12 @@ void ModeMaterial::UpdateShape()
 		vb->clear();
 		geo->build(vb);
 	}
-	onUpdateMenu();
+	on_update_menu();
 	if (needs_opt_view)
-		optimizeView();
+		optimize_view();
 }
 
-bool ModeMaterial::optimizeView()
+bool ModeMaterial::optimize_view()
 {
 	multi_view->resetView();
 	if (geo){
@@ -238,7 +238,7 @@ bool ModeMaterial::optimizeView()
 	return true;
 }
 
-void ModeMaterial::onUpdateMenu()
+void ModeMaterial::on_update_menu()
 {
 	ed->check("material_shape_smooth", shape_smooth);
 	ed->check("material_shape_cube", shape_type == "cube");

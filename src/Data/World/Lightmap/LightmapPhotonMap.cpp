@@ -78,7 +78,7 @@ bool LightmapPhotonMap::OnStatus()
 	hui::Sleep(0.050f);
 	int cur = done + getDone();
 	ed->progress->set(format(_("%d von %d"), cur, num_photons), (float)cur / (float)num_photons);
-	return !ed->progress->isCancelled();
+	return !ed->progress->is_cancelled();
 }
 
 void LightmapPhotonMap::Compute()

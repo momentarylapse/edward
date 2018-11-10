@@ -18,15 +18,15 @@ public:
 	void set(float progress);
 	void set(const string &str, float progress);
 	void start(const string &str, float progress);
-	void startCancelable(const string &str, float progress);
+	void start_cancelable(const string &str, float progress);
 	void end();
 
 	void cancel();
-	bool isCancelled();
+	bool is_cancelled();
 
 private:
-	void onClose();
-	void _ignoreEvent(){}
+	void on_close();
+	void _ignore_event(){}
 
 	hui::Window *dlg;
 	bool Cancelled;

@@ -20,15 +20,15 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(hui::Window *_parent,
 	hui::Dialog("model_material_selection_dialog", 400, 300, _parent, _allow_parent),
 	Observer("ModelMaterialSelectionDialog")
 {
-	fromResource("model_material_selection_dialog");
+	from_resource("model_material_selection_dialog");
 	data = _data;
 	FillMaterialList();
 
-	setTooltip("material_list", _("- Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- die Auswahl wird f&ur folgende neue Polygone verwendet"));
+	set_tooltip("material_list", _("- Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- die Auswahl wird f&ur folgende neue Polygone verwendet"));
 
 	event("hui:close", std::bind(&ModelMaterialSelectionDialog::OnClose, this));
-	eventX("material_list", "hui:activate", std::bind(&ModelMaterialSelectionDialog::OnMaterialList, this));
-	eventX("material_list", "hui:select", std::bind(&ModelMaterialSelectionDialog::OnMaterialListSelect, this));
+	event_x("material_list", "hui:activate", std::bind(&ModelMaterialSelectionDialog::OnMaterialList, this));
+	event_x("material_list", "hui:select", std::bind(&ModelMaterialSelectionDialog::OnMaterialListSelect, this));
 	event("add_new_material", std::bind(&ModelMaterialSelectionDialog::OnMaterialAddNew, this));
 	event("add_material", std::bind(&ModelMaterialSelectionDialog::OnMaterialAdd, this));
 	event("edit_material", std::bind(&ModelMaterialSelectionDialog::OnMaterialEdit, this));
@@ -53,9 +53,9 @@ void ModelMaterialSelectionDialog::FillMaterialList()
 			if (t.material == i)
 				nt ++;
 		string im = render_material(&data->material[i]);
-		addString("material_list", format("%d\\%d\\%s\\%s", i, nt, im.c_str(), file_secure(data->material[i].material_file).c_str()));
+		add_string("material_list", format("%d\\%d\\%s\\%s", i, nt, im.c_str(), file_secure(data->material[i].material_file).c_str()));
 	}
-	setInt("material_list", mode_model_mesh->current_material);
+	set_int("material_list", mode_model_mesh->current_material);
 }
 
 void ModelMaterialSelectionDialog::PutAnswer(int *_answer)
@@ -74,13 +74,13 @@ void ModelMaterialSelectionDialog::OnClose()
 void ModelMaterialSelectionDialog::OnMaterialList()
 {
 	if (answer)
-		*answer = getInt("");
+		*answer = get_int("");
 	destroy();
 }
 
 void ModelMaterialSelectionDialog::OnMaterialListSelect()
 {
-	mode_model_mesh->setCurrentMaterial(getInt(""));
+	mode_model_mesh->setCurrentMaterial(get_int(""));
 }
 
 void ModelMaterialSelectionDialog::OnMaterialAddNew()
@@ -90,7 +90,7 @@ void ModelMaterialSelectionDialog::OnMaterialAddNew()
 
 void ModelMaterialSelectionDialog::OnMaterialAdd()
 {
-	if (ed->fileDialog(FD_MATERIAL, false, true))
+	if (ed->file_dialog(FD_MATERIAL, false, true))
 		data->execute(new ActionModelAddMaterial(ed->dialog_file_no_ending));
 }
 
@@ -98,7 +98,7 @@ void ModelMaterialSelectionDialog::OnMaterialEdit()
 {
 }
 
-void ModelMaterialSelectionDialog::onUpdate(Observable *o, const string &message)
+void ModelMaterialSelectionDialog::on_update(Observable *o, const string &message)
 {
 	FillMaterialList();
 }

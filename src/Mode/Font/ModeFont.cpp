@@ -33,7 +33,7 @@ ModeFont::~ModeFont()
 }
 
 
-void ModeFont::onLeftButtonDown()
+void ModeFont::on_left_button_down()
 {
 	vector m = multi_view->getCursor3d();
 	int x=0,y=0;
@@ -48,7 +48,7 @@ void ModeFont::onLeftButtonDown()
 		if ((m.x >= x) && (m.x <= x2) && (m.y >= y) && (m.y <= y + data->global.GlyphHeight)){
 			data->Marked = i;
 			dialog->LoadData();
-			ed->forceRedraw();
+			ed->force_redraw();
 		}
 		x = x2;
 	}
@@ -56,7 +56,7 @@ void ModeFont::onLeftButtonDown()
 
 
 
-void ModeFont::onEnd()
+void ModeFont::on_end()
 {
 	delete(dialog);
 
@@ -67,7 +67,7 @@ void ModeFont::onEnd()
 
 
 
-void ModeFont::onDraw()
+void ModeFont::on_draw()
 {
 	nix::SetZ(false, false);
 	nix::EnableLighting(false);
@@ -80,9 +80,9 @@ void ModeFont::onDraw()
 
 
 
-bool ModeFont::saveAs()
+bool ModeFont::save_as()
 {
-	if (ed->fileDialog(FD_FONT, true, false))
+	if (ed->file_dialog(FD_FONT, true, false))
 		return data->save(ed->dialog_file_complete);
 	return false;
 }
@@ -93,13 +93,13 @@ bool ModeFont::saveAs()
 bool ModeFont::save()
 {
 	if (data->filename == "")
-		return saveAs();
+		return save_as();
 	return data->save(data->filename);
 }
 
 
 
-void ModeFont::onCommand(const string & id)
+void ModeFont::on_command(const string & id)
 {
 	if (id == "new")
 		_new();
@@ -108,7 +108,7 @@ void ModeFont::onCommand(const string & id)
 	if (id == "save")
 		save();
 	if (id == "save_as")
-		saveAs();
+		save_as();
 
 	if (id == "undo")
 		data->undo();
@@ -123,16 +123,16 @@ void ModeFont::onCommand(const string & id)
 
 bool ModeFont::open()
 {
-	if (!ed->allowTermination())
+	if (!ed->allow_termination())
 		return false;
-	if (!ed->fileDialog(FD_FONT, false, false))
+	if (!ed->file_dialog(FD_FONT, false, false))
 		return false;
 	bool ok = data->load(ed->dialog_file_complete);
 	if (!ok)
 		return false;
 
-	optimizeView();
-	ed->setMode(mode_font);
+	optimize_view();
+	ed->set_mode(mode_font);
 	return true;
 }
 
@@ -140,19 +140,19 @@ bool ModeFont::open()
 
 void ModeFont::_new()
 {
-	if (!ed->allowTermination())
+	if (!ed->allow_termination())
 		return;
 
 	data->reset();
-	optimizeView();
-	ed->setMode(mode_font);
+	optimize_view();
+	ed->set_mode(mode_font);
 }
 
 
 
-void ModeFont::onStart()
+void ModeFont::on_start()
 {
-	ed->toolbar[hui::TOOLBAR_TOP]->setByID("font-toolbar");
+	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("font-toolbar");
 	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
@@ -162,18 +162,18 @@ void ModeFont::onStart()
 	dialog = new FontDialog(data);
 	ed->embed(dialog, "root-table", 1, 0),
 
-	onUpdate(data, "");
+	on_update(data, "");
 }
 
 
 
-void ModeFont::onMouseMove()
+void ModeFont::on_mouse_move()
 {
 }
 
 
 
-void ModeFont::onUpdate(Observable *o, const string &message)
+void ModeFont::on_update(Observable *o, const string &message)
 {
 	data->UpdateTexture();
 	data->ApplyFont(font);
@@ -216,7 +216,7 @@ void DrawLineV(int x, int y1, int y2)
 }
 
 
-void ModeFont::onDrawWin(MultiView::Window *win)
+void ModeFont::on_draw_win(MultiView::Window *win)
 {
 	int NumY = data->TextureHeight / data->global.GlyphHeight;
 
@@ -270,11 +270,11 @@ void ModeFont::onDrawWin(MultiView::Window *win)
 }
 
 
-void ModeFont::onUpdateMenu()
+void ModeFont::on_update_menu()
 {
 }
 
-bool ModeFont::optimizeView()
+bool ModeFont::optimize_view()
 {
 	multi_view->reset();
 	multi_view->setViewBox(v_0, vector(data->TextureWidth, data->TextureHeight, 0));

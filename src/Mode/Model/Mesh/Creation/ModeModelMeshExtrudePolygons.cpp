@@ -22,12 +22,12 @@ ModeModelMeshExtrudePolygons::ModeModelMeshExtrudePolygons(ModeBase *_parent) :
 	message = _("Extrudieren: Offset durch Maus, Linke Taste = fertig");
 }
 
-void ModeModelMeshExtrudePolygons::onEnd()
+void ModeModelMeshExtrudePolygons::on_end()
 {
 	cleanUp();
 }
 
-void ModeModelMeshExtrudePolygons::onLeftButtonDown()
+void ModeModelMeshExtrudePolygons::on_left_button_down()
 {
 	cleanUp();
 
@@ -37,7 +37,7 @@ void ModeModelMeshExtrudePolygons::onLeftButtonDown()
 	abort();
 }
 
-void ModeModelMeshExtrudePolygons::onMouseMove()
+void ModeModelMeshExtrudePolygons::on_mouse_move()
 {
 	cleanUp();
 
@@ -45,12 +45,12 @@ void ModeModelMeshExtrudePolygons::onMouseMove()
 	preview();
 }
 
-void ModeModelMeshExtrudePolygons::onDrawWin(MultiView::Window *win)
+void ModeModelMeshExtrudePolygons::on_draw_win(MultiView::Window *win)
 {
-	parent->onDrawWin(win);
+	parent->on_draw_win(win);
 
 	nix::EnableLighting(false);
-	ed->drawStr(100, 100, f2s(offset, 3));
+	ed->draw_str(100, 100, f2s(offset, 3));
 }
 
 void ModeModelMeshExtrudePolygons::preview()
@@ -60,7 +60,7 @@ void ModeModelMeshExtrudePolygons::preview()
 		abort();
 }
 
-void ModeModelMeshExtrudePolygons::onStart()
+void ModeModelMeshExtrudePolygons::on_start()
 {
 	multi_view->setAllowSelect(false);
 	multi_view->setAllowAction(false);
@@ -68,6 +68,6 @@ void ModeModelMeshExtrudePolygons::onStart()
 
 void ModeModelMeshExtrudePolygons::cleanUp()
 {
-	data->action_manager->clearPreview();
+	data->action_manager->clear_preview();
 }
 

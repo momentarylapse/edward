@@ -33,16 +33,16 @@ public:
 	void undo();
 	void redo();
 
-	void beginActionGroup(const string &name);
-	void endActionGroup();
+	void begin_group(const string &name);
+	void end_group();
 
 	bool preview(Action *a);
-	void clearPreview();
+	void clear_preview();
 
 	bool undoable();
 	bool redoable();
-	bool isSave();
-	void markCurrentAsSave();
+	bool is_save();
+	void mark_current_as_save();
 
 	string error_message;
 	string error_location;

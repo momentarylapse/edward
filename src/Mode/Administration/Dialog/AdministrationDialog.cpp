@@ -24,7 +24,7 @@ AdministrationDialog::AdministrationDialog(hui::Window* _parent, bool _allow_par
 	hui::Dialog("ad_dialog", 400, 300, _parent, _allow_parent),
 	Observer("AdministrationDialog")
 {
-	fromResource("ad_dialog");
+	from_resource("ad_dialog");
 	data = _data;
 	file_list.resize(6);
 
@@ -60,7 +60,7 @@ void AdministrationDialog::LoadData()
 	FillAdminList(5, "file_list_missing");
 }
 
-void AdministrationDialog::onUpdate(Observable* o, const string &message)
+void AdministrationDialog::on_update(Observable* o, const string &message)
 {
 	LoadData();
 }
@@ -121,7 +121,7 @@ void AdministrationDialog::FillAdminList(int view, const string &lid)
 	// place them into the list
 	int k=-2;
 	for (AdminFile *a: *l){
-		addString(lid, format("%s::%s::%d::%d::%s",
+		add_string(lid, format("%s::%s::%d::%d::%s",
 			(k != a->Kind) ? FD2Str(a->Kind).c_str() : "",
 			a->Name.c_str(),
 			a->Parent.num, a->Child.num,
@@ -141,10 +141,10 @@ void AdministrationDialog::ShowDetail(int n, const string &lid)
 	assert(n >= 0);
 	assert(n < l->num);
 	SelectedAdminFile = (*l)[n];
-	setString("file_details", SelectedAdminFile->Name);
+	set_string("file_details", SelectedAdminFile->Name);
 	FillAdminList(2, "file_list_detail_source");
 	FillAdminList(3, "file_list_detail_dest");
-	setInt("ad_tab_control", 2);
+	set_int("ad_tab_control", 2);
 }
 
 
@@ -188,7 +188,7 @@ string get_first_list_id_by_tab_page(int page)
 Array<AdminFile*> AdministrationDialog::GetSelectedFilesFromList(const string& lid)
 {
 	Array<AdminFile*> r;
-	Array<int> index = getSelection(lid);
+	Array<int> index = get_selection(lid);
 	AdminFileList *l = get_list(lid);
 	assert(l);
 	for (int i: index)
@@ -198,7 +198,7 @@ Array<AdminFile*> AdministrationDialog::GetSelectedFilesFromList(const string& l
 
 Array<AdminFile*> AdministrationDialog::GetSelectedFiles()
 {
-	int page = getInt("ad_tab_control");
+	int page = get_int("ad_tab_control");
 	Array<AdminFile*> r = GetSelectedFilesFromList(get_first_list_id_by_tab_page(page));
 	if (page == 2)
 		r.append(GetSelectedFilesFromList("file_list_detail_dest"));
@@ -210,17 +210,17 @@ AdminFile* AdministrationDialog::GetSingleSelectedFile()
 	Array<AdminFile*> l = GetSelectedFiles();
 	if (l.num == 1)
 		return l[0];
-	ed->errorBox(_("Es muss genau eine Datei markiert sein!"));
+	ed->error_box(_("Es muss genau eine Datei markiert sein!"));
 	return NULL;
 }
 
 void AdministrationDialog::OnClose()
 {
-	ed->setMode(mode_model);
+	ed->set_mode(mode_model);
 }
 
 void AdministrationDialog::OnExit()
-{	ed->setMode(mode_model);	}
+{	ed->set_mode(mode_model);	}
 
 void AdministrationDialog::OnRename()
 {}//{	data->Rename();	}
@@ -236,30 +236,30 @@ void AdministrationDialog::OnEdit()
 	switch (a->Kind){
 		case -1:
 			if (a->Name == "config.txt")
-				hui::OpenDocument(ed->getRootDir(a->Kind) + a->Name);
+				hui::OpenDocument(ed->get_root_dir(a->Kind) + a->Name);
 			else if (a->Name == "game.ini")
 				mode_administration->BasicSettings();
 			break;
 		case FD_MODEL:
 			if (mode_model->data->load(ObjectDir + a->Name, true))
-				ed->setMode(mode_model);
+				ed->set_mode(mode_model);
 			break;
 		case FD_MATERIAL:
 			if (mode_material->data->load(MaterialDir + a->Name, true))
-				ed->setMode(mode_material);
+				ed->set_mode(mode_material);
 			break;
 		case FD_FONT:
 			if (mode_font->data->load(Gui::FontDir + a->Name, true))
-				ed->setMode(mode_font);
+				ed->set_mode(mode_font);
 			break;
 		case FD_WORLD:
 			if (mode_world->data->load(MapDir + a->Name, true))
-				ed->setMode(mode_world);
+				ed->set_mode(mode_world);
 			break;
 		case FD_TERRAIN:
 			mode_world->data->reset();
 			if (mode_world->data->AddTerrain(a->Name.substr(0, -5), v_0)){
-				ed->setMode(mode_world);
+				ed->set_mode(mode_world);
 			}
 			break;
 		case FD_CAMERAFLIGHT:
@@ -275,7 +275,7 @@ void AdministrationDialog::OnEdit()
 		case FD_SHADERFILE:
 		case FD_SCRIPT:
 		case FD_FILE:
-			hui::OpenDocument(ed->getRootDir(a->Kind) + a->Name);
+			hui::OpenDocument(ed->get_root_dir(a->Kind) + a->Name);
 			break;
 	}
 }
@@ -283,7 +283,7 @@ void AdministrationDialog::OnEdit()
 void AdministrationDialog::OnFileList()
 {
 	string id = hui::GetEvent()->id;
-	int n = getInt(id);
+	int n = get_int(id);
 	ShowDetail(n, id);
 }
 

@@ -113,7 +113,7 @@ bool ImporterCairo::TryImport(DataFont *f, const string &font_name, int w_tex, i
 		for (int y=0;y<h_tex;y++)
 			for (int x=0;x<w_tex;x++){
 				float a = (float)c[1] / 255.0f;
-				im.setPixel(x, y, color(a, 1, 1, 1));
+				im.set_pixel(x, y, color(a, 1, 1, 1));
 				c += 4;
 			}
 		im.alpha_used = true;

@@ -41,7 +41,7 @@ void PluginManager::execute(const string & filename)
 		if (f)
 			f();
 	}catch(Kaba::Exception &e){
-		ed->errorBox(e.message());
+		ed->error_box(e.message());
 	}
 
 	Kaba::DeleteAllScripts(true, true);
@@ -69,8 +69,8 @@ void PluginManager::init()
 	Kaba::DeclareClassOffset("Data", "file_time", offsetof(Data, file_time));
 	Kaba::DeclareClassOffset("Data", "binary_file_format", offsetof(Data, binary_file_format));
 	Kaba::DeclareClassOffset("Data", "type", offsetof(Data, type));
-	Kaba::LinkExternal("Data.BeginActionGroup", Kaba::mf(&Data::beginActionGroup));
-	Kaba::LinkExternal("Data.EndActionGroup", Kaba::mf(&Data::endActionGroup));
+	Kaba::LinkExternal("Data.BeginActionGroup", Kaba::mf(&Data::begin_action_group));
+	Kaba::LinkExternal("Data.EndActionGroup", Kaba::mf(&Data::end_action_group));
 
 	Kaba::DeclareClassSize("MultiViewSingleData", sizeof(MultiView::SingleData));
 	Kaba::DeclareClassOffset("MultiViewSingleData", "pos", offsetof(MultiView::SingleData, pos));

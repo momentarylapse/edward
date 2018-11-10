@@ -59,21 +59,21 @@ void ModeModelMeshCreateBall::onTypePhysical()
 	dialog->enable("complexity", false);
 }
 
-void ModeModelMeshCreateBall::onStart()
+void ModeModelMeshCreateBall::on_start()
 {
 	// Dialog
 	dialog = hui::CreateResourceDialog("new_ball_dialog", ed);
 
-	dialog->setInt("x", hui::Config.getInt("NewBallNumX", 8));
-	dialog->setInt("y",hui::Config.getInt("NewBallNumY", 16));
-	dialog->setInt("complexity", hui::Config.getInt("NewBallComplexity", 8));
-	bool sphere = hui::Config.getBool("NewBallSphere", false);
+	dialog->set_int("x", hui::Config.get_int("NewBallNumX", 8));
+	dialog->set_int("y",hui::Config.get_int("NewBallNumY", 16));
+	dialog->set_int("complexity", hui::Config.get_int("NewBallComplexity", 8));
+	bool sphere = hui::Config.get_bool("NewBallSphere", false);
 	dialog->check("type:ball", !sphere);
 	dialog->check("type:sphere", sphere);
 	dialog->enable("x", !sphere);
 	dialog->enable("y", !sphere);
 	dialog->enable("complexity", sphere);
-	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
+	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
 	dialog->event("hui:close", std::bind(&ModeModelMeshCreateBall::abort, this));
 	dialog->event("type:ball", std::bind(&ModeModelMeshCreateBall::onTypeBall, this));
@@ -87,7 +87,7 @@ void ModeModelMeshCreateBall::onStart()
 }
 
 
-void ModeModelMeshCreateBall::onEnd()
+void ModeModelMeshCreateBall::on_end()
 {
 	delete(dialog);
 }
@@ -97,15 +97,15 @@ void ModeModelMeshCreateBall::updateGeometry()
 	if (geo)
 		delete(geo);
 	if (pos_chosen){
-		bool ball = dialog->isChecked("type:ball");
-		bool sphere = dialog->isChecked("type:sphere");
-		int nx = dialog->getInt("x");
-		int ny = dialog->getInt("y");
-		int complexity = dialog->getInt("complexity");
-		hui::Config.setInt("NewBallNumX", nx);
-		hui::Config.setInt("NewBallNumY", ny);
-		hui::Config.setInt("NewBallComplexity", complexity);
-		hui::Config.setBool("NewBallSphere", sphere);
+		bool ball = dialog->is_checked("type:ball");
+		bool sphere = dialog->is_checked("type:sphere");
+		int nx = dialog->get_int("x");
+		int ny = dialog->get_int("y");
+		int complexity = dialog->get_int("complexity");
+		hui::Config.set_int("NewBallNumX", nx);
+		hui::Config.set_int("NewBallNumY", ny);
+		hui::Config.set_int("NewBallComplexity", complexity);
+		hui::Config.set_bool("NewBallSphere", sphere);
 		if (ball)
 			geo = new GeometryBall(pos, radius, nx, ny);
 		else if (sphere)
@@ -117,10 +117,10 @@ void ModeModelMeshCreateBall::updateGeometry()
 
 
 
-void ModeModelMeshCreateBall::onLeftButtonUp()
+void ModeModelMeshCreateBall::on_left_button_up()
 {
 	if (pos_chosen){
-		bool physical = dialog->isChecked("type:physical");
+		bool physical = dialog->is_checked("type:physical");
 		if (physical){
 			ModelVertex v;
 			v.pos = pos;
@@ -145,9 +145,9 @@ void ModeModelMeshCreateBall::onLeftButtonUp()
 }
 
 
-void ModeModelMeshCreateBall::onDrawWin(MultiView::Window *win)
+void ModeModelMeshCreateBall::on_draw_win(MultiView::Window *win)
 {
-	parent->onDrawWin(win);
+	parent->on_draw_win(win);
 
 	if (pos_chosen){
 		mode_model->setMaterialCreation();
@@ -157,7 +157,7 @@ void ModeModelMeshCreateBall::onDrawWin(MultiView::Window *win)
 }
 
 
-void ModeModelMeshCreateBall::onMouseMove()
+void ModeModelMeshCreateBall::on_mouse_move()
 {
 	if (pos_chosen){
 		vector pos2 = multi_view->getCursor3d(pos);

@@ -28,7 +28,7 @@ DataMaterial::~DataMaterial()
 bool DataMaterial::save(const string & _filename)
 {
 	filename = _filename;
-	ed->makeDirs(filename);
+	ed->make_dirs(filename);
 
 	File *f = FileCreateText(filename);
 	f->WriteFileFormatVersion(false, 4);
@@ -77,7 +77,7 @@ bool DataMaterial::save(const string & _filename)
 	f->write_str("#");
 	delete(f);
 
-	action_manager->markCurrentAsSave();
+	action_manager->mark_current_as_save();
 	return true;
 }
 
@@ -90,17 +90,17 @@ bool DataMaterial::load(const string & _filename, bool deep)
 	reset();
 
 	filename = _filename;
-	ed->makeDirs(filename);
+	ed->make_dirs(filename);
 	File *f = FileOpenText(filename);
 	if (!f){
-		ed->setMessage(_("Kann Material-Datei nicht &offnen"));
+		ed->set_message(_("Kann Material-Datei nicht &offnen"));
 		return false;
 	}
 	file_time = f->GetDateModification().time;
 
 	ffv=f->ReadFileFormatVersion();
 	if (ffv<0){
-		ed->errorBox(_("Datei-Format nicht ladbar!!"));
+		ed->error_box(_("Datei-Format nicht ladbar!!"));
 		error=true;
 	}else if ((ffv == 3) or (ffv == 4)){
 		if (ffv >= 4){
@@ -233,7 +233,7 @@ bool DataMaterial::load(const string & _filename, bool deep)
 
 		appearance.alpha_z_buffer = (appearance.transparency_mode != TRANSPARENCY_FUNCTIONS) and (appearance.transparency_mode != TRANSPARENCY_FACTOR);
 	}else{
-		ed->errorBox(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 1, 4));
+		ed->error_box(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 1, 4));
 		error = true;
 	}
 
@@ -243,7 +243,7 @@ bool DataMaterial::load(const string & _filename, bool deep)
 	if (deep)
 		UpdateTextures();
 
-	resetHistory();
+	reset_history();
 	notify();
 	return !error;
 }
@@ -313,7 +313,7 @@ void DataMaterial::reset()
 	Sound.Reset();
 
 
-	resetHistory();
+	reset_history();
 	notify();
 }
 
@@ -352,7 +352,7 @@ void create_fake_dynamic_cube_map(nix::CubeMap *cube_map)
 				f = 0.5;
 			if ((i % 64) == 0 or (j % 64) == 0)
 				f = 1;
-			im.setPixel(i, j, color(1, f, f, f));
+			im.set_pixel(i, j, color(1, f, f, f));
 		}
 	for (int i=0;i<6;i++)
 		cube_map->overwrite_side(i, im);

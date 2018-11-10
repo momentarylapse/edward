@@ -85,7 +85,7 @@ void render_text(const string &text, Image &im)
 		unsigned char *c = c0 + 4 * y * w_surf;
 		for (int x=0;x<w_used;x++){
 			float a = (float)c[1] / 255.0f;
-			im.setPixel(x, y, color(a, a, 1, 1));
+			im.set_pixel(x, y, color(a, a, 1, 1));
 			c += 4;
 		}
 	}
@@ -165,9 +165,9 @@ color i42c(int *c)
 	return color(float(c[3])/255.0f,float(c[0])/255.0f,float(c[1])/255.0f,float(c[2])/255.0f);
 }
 
-void Edward::onClose()
+void Edward::on_close()
 {
-	if (allowTermination())
+	if (allow_termination())
 		exit();
 }
 
@@ -185,52 +185,52 @@ void Edward::EVENT() \
 	cur_mode->EVENT(); \
 }
 
-IMPLEMENT_EVENT(onMouseMove)
-IMPLEMENT_EVENT(onMouseWheel)
-IMPLEMENT_EVENT(onMouseEnter)
-IMPLEMENT_EVENT(onMouseLeave)
-IMPLEMENT_EVENT(onLeftButtonDown)
-IMPLEMENT_EVENT(onLeftButtonUp)
-IMPLEMENT_EVENT(onMiddleButtonDown)
-IMPLEMENT_EVENT(onMiddleButtonUp)
-IMPLEMENT_EVENT(onRightButtonDown)
-IMPLEMENT_EVENT(onRightButtonUp)
+IMPLEMENT_EVENT(on_mouse_move)
+IMPLEMENT_EVENT(on_mouse_wheel)
+IMPLEMENT_EVENT(on_mouse_enter)
+IMPLEMENT_EVENT(on_mouse_leave)
+IMPLEMENT_EVENT(on_left_button_down)
+IMPLEMENT_EVENT(on_left_button_up)
+IMPLEMENT_EVENT(on_middle_button_down)
+IMPLEMENT_EVENT(on_middle_button_up)
+IMPLEMENT_EVENT(on_right_button_down)
+IMPLEMENT_EVENT(on_right_button_up)
 
-void Edward::onKeyDown()
+void Edward::on_key_down()
 {
 	int key_code = hui::GetEvent()->key_code;
 	if (cur_mode->multi_view)
-		cur_mode->multi_view->onKeyDown(key_code);
-	cur_mode->onKeyDown(key_code);
+		cur_mode->multi_view->on_key_down(key_code);
+	cur_mode->on_key_down(key_code);
 }
 
-void Edward::onKeyUp()
+void Edward::on_key_up()
 {
 	int key_code = hui::GetEvent()->key_code;
 	if (cur_mode->multi_view)
-		cur_mode->multi_view->onKeyUp(key_code);
-	cur_mode->onKeyUp(key_code);
+		cur_mode->multi_view->on_key_up(key_code);
+	cur_mode->on_key_up(key_code);
 }
 
-void Edward::onEvent()
+void Edward::on_event()
 {
 	string id = hui::GetEvent()->id;
 	if (id.num == 0)
 		id = hui::GetEvent()->message;
 	if (cur_mode->multi_view)
-		cur_mode->multi_view->onCommand(id);
-	cur_mode->onCommandRecursive(id);
-	onCommand(id);
+		cur_mode->multi_view->on_command(id);
+	cur_mode->on_command_recursive(id);
+	on_command(id);
 }
 
-void Edward::onAbortCreationMode()
+void Edward::on_abort_creation_mode()
 {
 	ModeCreationBase *m = dynamic_cast<ModeCreationBase*>(cur_mode);
 	if (m)
 		m->abort();
 }
 
-void Edward::idleFunction()
+void Edward::idle_function()
 {
 	/*msg_db_f("Idle", 3);
 
@@ -245,13 +245,13 @@ Edward::Edward(Array<string> arg) :
 	Observer("Edward"),
 	hui::Window(AppName, 800, 600)
 {
-	setBorderWidth(0);
-	addGrid("", 0, 0, "vgrid");
-	setTarget("vgrid");
-	addGrid("", 0, 0, "root-table");
-	setTarget("root-table");
-	addDrawingArea("!grabfocus,opengl", 0, 0, "nix-area");
-	setBorderWidth(5);
+	set_border_width(0);
+	add_grid("", 0, 0, "vgrid");
+	set_target("vgrid");
+	add_grid("", 0, 0, "root-table");
+	set_target("root-table");
+	add_drawing_area("!grabfocus,opengl", 0, 0, "nix-area");
+	set_border_width(5);
 	show();
 
 	ed = this;
@@ -260,7 +260,7 @@ Edward::Edward(Array<string> arg) :
 
 	progress = new Progress;
 
-	loadKeyCodes();
+	load_key_codes();
 
 	possible_sub_dir.add("Fonts");
 	possible_sub_dir.add("Maps");
@@ -271,16 +271,16 @@ Edward::Edward(Array<string> arg) :
 	possible_sub_dir.add("Textures");
 
 	// configuration
-	int w = hui::Config.getInt("Window.Width", 800);
-	int h = hui::Config.getInt("Window.Height", 600);
-	bool maximized = hui::Config.getBool("Window.Maximized", false);
-	setSize(w, h);
-	root_dir = hui::Config.getStr("RootDir", "");
+	int w = hui::Config.get_int("Window.Width", 800);
+	int h = hui::Config.get_int("Window.Height", 600);
+	bool maximized = hui::Config.get_bool("Window.Maximized", false);
+	set_size(w, h);
+	root_dir = hui::Config.get_str("RootDir", "");
 	//HuiConfigread_int("Api", api, NIX_API_OPENGL);
-	/*bool LocalDocumentation = HuiConfig.getBool("LocalDocumentation", false);
-	WorldScriptVarFile = HuiConfig.getStr("WorldScriptVarFile", "");
-	ObjectScriptVarFile = HuiConfig.getStr("ObjectScriptVarFile", "");
-	ItemScriptVarFile = HuiConfig.getStr("ItemScriptVarFile", "");
+	/*bool LocalDocumentation = HuiConfig.get_bool("LocalDocumentation", false);
+	WorldScriptVarFile = HuiConfig.get_str("WorldScriptVarFile", "");
+	ObjectScriptVarFile = HuiConfig.get_str("ObjectScriptVarFile", "");
+	ItemScriptVarFile = HuiConfig.get_str("ItemScriptVarFile", "");
 
 	LoadKeyCodes();
 	SaveKeyCodes();
@@ -294,7 +294,7 @@ Edward::Edward(Array<string> arg) :
 	LoadScriptVarNames(2, "");*/
 
 	// create the main window
-	setMaximized(maximized);
+	set_maximized(maximized);
 
 	// initialize engine
 	nix::Init("OpenGL", w, h);
@@ -331,7 +331,7 @@ Edward::Edward(Array<string> arg) :
 	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;
 	mworld->FFVBinaryMap = true;*/
 
-	makeDirs(root_dir,true);
+	make_dirs(root_dir,true);
 
 	// subscribe to all data to automatically redraw...
 	subscribe(mode_model->data);
@@ -343,53 +343,53 @@ Edward::Edward(Array<string> arg) :
 
 	plugins = new PluginManager();
 
-	if (!handleArguments(arg))
+	if (!handle_arguments(arg))
 		mode_model->_new();
 
 
-	event("hui:close", std::bind(&Edward::onClose, this));
-	event("exit", std::bind(&Edward::onClose, this));
-	event("*", std::bind(&Edward::onEvent, this));
-	event("what_the_fuck", std::bind(&Edward::onAbout, this));
-	event("send_bug_report", std::bind(&Edward::onSendBugReport, this));
-	event("execute_plugin", std::bind(&Edward::onExecutePlugin, this));
-	event("abort_creation_mode", std::bind(&Edward::onAbortCreationMode, this));
-	eventX("nix-area", "hui:draw-gl", std::bind(&Edward::onDrawGL, this));
-	setKeyCode("abort_creation_mode", hui::KEY_ESCAPE, "hui:cancel");
+	event("hui:close", std::bind(&Edward::on_close, this));
+	event("exit", std::bind(&Edward::on_close, this));
+	event("*", std::bind(&Edward::on_event, this));
+	event("what_the_fuck", std::bind(&Edward::on_about, this));
+	event("send_bug_report", std::bind(&Edward::on_send_bug_report, this));
+	event("execute_plugin", std::bind(&Edward::on_execute_plugin, this));
+	event("abort_creation_mode", std::bind(&Edward::on_abort_creation_mode, this));
+	event_x("nix-area", "hui:draw-gl", std::bind(&Edward::on_draw_gl, this));
+	set_key_code("abort_creation_mode", hui::KEY_ESCAPE, "hui:cancel");
 
 	//hui::SetIdleFunction(std::bind(&Edward::idleFunction, this));
-	hui::RunLater(0.010f, std::bind(&Edward::forceRedraw, this));
-	hui::RunLater(0.100f, std::bind(&Edward::optimizeCurrentView, this));
+	hui::RunLater(0.010f, std::bind(&Edward::force_redraw, this));
+	hui::RunLater(0.100f, std::bind(&Edward::optimize_current_view, this));
 }
 
 Edward::~Edward()
 {
 }
 
-void Edward::onDestroy()
+void Edward::on_destroy()
 {
 	delete(plugins);
 	delete(multi_view_2d);
 	delete(multi_view_3d);
 	// saving the configuration data...
 	int w, h;
-	getSizeDesired(w, h);
-	hui::Config.setInt("Window.X", -1);//r.x1);
-	hui::Config.setInt("Window.Y", -1);//r.y1);
-	hui::Config.setInt("Window.Width", w);
-	hui::Config.setInt("Window.Height", h);
-	hui::Config.setBool("Window.Maximized", isMaximized());
-	hui::Config.setStr("RootDir", root_dir);
-	hui::Config.setStr("Language", hui::GetCurLanguage());
-	/*HuiConfig.setBool("LocalDocumentation", LocalDocumentation);
-	HuiConfig.setStr("WorldScriptVarFile", WorldScriptVarFile);
-	HuiConfig.setStr("ObjectScriptVarFile", ObjectScriptVarFile);
-	HuiConfig.setStr("ItemScriptVarFile", ItemScriptVarFile);*/
-	//HuiConfig.setInt("UpdateNormalMaxTime (ms)", int(UpdateNormalMaxTime * 1000.0f));
+	get_size_desired(w, h);
+	hui::Config.set_int("Window.X", -1);//r.x1);
+	hui::Config.set_int("Window.Y", -1);//r.y1);
+	hui::Config.set_int("Window.Width", w);
+	hui::Config.set_int("Window.Height", h);
+	hui::Config.set_bool("Window.Maximized", is_maximized());
+	hui::Config.set_str("RootDir", root_dir);
+	hui::Config.set_str("Language", hui::GetCurLanguage());
+	/*HuiConfig.set_bool("LocalDocumentation", LocalDocumentation);
+	HuiConfig.set_str("WorldScriptVarFile", WorldScriptVarFile);
+	HuiConfig.set_str("ObjectScriptVarFile", ObjectScriptVarFile);
+	HuiConfig.set_str("ItemScriptVarFile", ItemScriptVarFile);*/
+	//HuiConfig.set_int("UpdateNormalMaxTime (ms)", int(UpdateNormalMaxTime * 1000.0f));
 	hui::Config.save();
 }
 
-bool Edward::handleArguments(Array<string> arg)
+bool Edward::handle_arguments(Array<string> arg)
 {
 	if (arg.num < 2)
 		return false;
@@ -441,60 +441,60 @@ bool Edward::handleArguments(Array<string> arg)
 	string ext = param.extension();
 
 	if (ext == "model"){
-		makeDirs(param);
+		make_dirs(param);
 		mode_model->data->load(param, true);
-		setMode(mode_model);
+		set_mode(mode_model);
 		/*if (mmodel->Skin[1].Sub[0].Triangle.num==0)
 			mmodel->SetEditMode(EditModeVertex);*/
 	}else if (ext == "material"){
-		makeDirs(param);
+		make_dirs(param);
 		mode_material->data->load(param, true);
-		setMode(mode_material);
+		set_mode(mode_material);
 	/*}else if ((ext == "map") || (ext == "terrain")){
 		MakeDirs(param);
 		mworld->Terrain.resize(1);
 		mworld->LoadFromFileTerrain(0, v0, param, true);
 		mworld->OptimizeView();
-		SetMode(ModeWorld);*/
+		set_mode(ModeWorld);*/
 	}else if (ext == "world"){
-		makeDirs(param);
+		make_dirs(param);
 		mode_world->data->load(param);
-		setMode(mode_world);
+		set_mode(mode_world);
 		multi_view_3d->whole_window = true;
 	}else if (ext == "xfont"){
-		makeDirs(param);
+		make_dirs(param);
 		mode_font->data->load(param);
-		setMode(mode_font);
+		set_mode(mode_font);
 	}else if (ext == "js"){
 		mode_model->importLoadJson(param);
-		setMode(mode_model);
+		set_mode(mode_model);
 	}else if (ext == "ply"){
 		mode_model->importLoadPly(param);
-		setMode(mode_model);
+		set_mode(mode_model);
 	/*}else if (ext == "mdl"){
 		mmodel->LoadImportFromGameStudioMdl(param);
-		SetMode(ModeModel);
+		set_mode(ModeModel);
 		WholeWindow=true;
 		mmodel->OptimizeView();
 		//mmodel->Changed=false;
 	}else if (ext == "wmb"){
 		mmodel->LoadImportFromGameStudioWmb(param);
-		SetMode(ModeModel);
+		set_mode(ModeModel);
 		WholeWindow=true;
 		mmodel->OptimizeView();*/
 	}else if (ext == "3ds"){
 		mode_model->importLoad3ds(param);
 	}else{
-		errorBox(_("Unbekannte Dateinamenerweiterung: ") + param);
+		error_box(_("Unbekannte Dateinamenerweiterung: ") + param);
 		app->end();
 	}
 	}
 	return true;
 }
 
-void Edward::optimizeCurrentView()
+void Edward::optimize_current_view()
 {
-	cur_mode->optimizeViewRecursice();
+	cur_mode->optimize_view_recursice();
 }
 
 
@@ -502,12 +502,12 @@ void Edward::optimizeCurrentView()
 //  -> data loss?
 bool mode_switch_allowed(ModeBase *m)
 {
-	if (m->equalRoots(ed->cur_mode))
+	if (m->equal_roots(ed->cur_mode))
 		return true;
-	return ed->allowTermination();
+	return ed->allow_termination();
 }
 
-void Edward::setMode(ModeBase *m)
+void Edward::set_mode(ModeBase *m)
 {
 	if (cur_mode == m)
 		return;
@@ -519,19 +519,19 @@ void Edward::setMode(ModeBase *m)
 	if (mode_queue.num > 1)
 		return;
 
-	cur_mode->onLeave();
-	if (cur_mode->getData())
-		unsubscribe(cur_mode->getData()->action_manager);
+	cur_mode->on_leave();
+	if (cur_mode->get_data())
+		unsubscribe(cur_mode->get_data()->action_manager);
 
 	m = mode_queue[0];
 	while(m){
 
 		// close current modes
 		while(cur_mode){
-			if (cur_mode->isAncestorOf(m))
+			if (cur_mode->is_ancestor_of(m))
 				break;
 			msg_write("end " + cur_mode->name);
-			cur_mode->onEnd();
+			cur_mode->on_end();
 			if (cur_mode->multi_view)
 				cur_mode->multi_view->popSettings();
 			cur_mode = cur_mode->parent;
@@ -542,14 +542,14 @@ void Edward::setMode(ModeBase *m)
 
 		// start new modes
 		while(cur_mode != m){
-			cur_mode = cur_mode->getNextChildTo(m);
+			cur_mode = cur_mode->get_next_child_to(m);
 			msg_write("start " + cur_mode->name);
 			if (cur_mode->multi_view)
 				cur_mode->multi_view->pushSettings();
-			cur_mode->onStart();
+			cur_mode->on_start();
 		}
-		cur_mode->onEnter();
-		cur_mode->onSetMultiView();
+		cur_mode->on_enter();
+		cur_mode->on_set_multi_view();
 
 		// nested set calls?
 		mode_queue.erase(0);
@@ -558,57 +558,57 @@ void Edward::setMode(ModeBase *m)
 			m = mode_queue[0];
 	}
 
-	setMenu(hui::CreateResourceMenu(cur_mode->menu_id));
-	updateMenu();
-	cur_mode->onEnter(); // ????
-	if (cur_mode->getData())
-		subscribe(cur_mode->getData()->action_manager);
+	set_menu(hui::CreateResourceMenu(cur_mode->menu_id));
+	update_menu();
+	cur_mode->on_enter(); // ????
+	if (cur_mode->get_data())
+		subscribe(cur_mode->get_data()->action_manager);
 
-	forceRedraw();
+	force_redraw();
 }
 
-void Edward::onAbout()
+void Edward::on_about()
 {	hui::AboutBox(this);	}
 
-void Edward::onSendBugReport()
+void Edward::on_send_bug_report()
 {}//	hui::SendBugReport();	}
 
-void Edward::onUpdate(Observable *o, const string &message)
+void Edward::on_update(Observable *o, const string &message)
 {
 	//msg_write(o->getName() + " - " + message);
-	if (o->getName() == "MultiView"){
+	if (o->get_name() == "MultiView"){
 		if (message == multi_view_3d->MESSAGE_SETTINGS_CHANGE){
-			updateMenu();
+			update_menu();
 		}else if (message == multi_view_3d->MESSAGE_SELECTION_CHANGE){
-			cur_mode->onSelectionChange();
-			updateMenu();
+			cur_mode->on_selection_change();
+			update_menu();
 		}else if (message == multi_view_3d->MESSAGE_VIEWSTAGE_CHANGE){
-			cur_mode->onViewStageChange();
-			updateMenu();
+			cur_mode->on_view_stage_change();
+			update_menu();
 		}
-		forceRedraw();
-	}else if (o->getName() == "ActionManager"){
+		force_redraw();
+	}else if (o->get_name() == "ActionManager"){
 		ActionManager *am = dynamic_cast<ActionManager*>(o);
 		if (message == am->MESSAGE_FAILED){
-			errorBox(format(_("Aktion fehlgeschlagen: %s\nGrund: %s"), am->error_location.c_str(), am->error_message.c_str()));
+			error_box(format(_("Aktion fehlgeschlagen: %s\nGrund: %s"), am->error_location.c_str(), am->error_message.c_str()));
 		}else if (message == am->MESSAGE_SAVED){
-			setMessage(_("Gespeichert!"));
-			updateMenu();
+			set_message(_("Gespeichert!"));
+			update_menu();
 		}
 	}else if (dynamic_cast<Data*>(o)){
 		if (message != Data::MESSAGE_SELECTION)
-			cur_mode->onSetMultiView();
+			cur_mode->on_set_multi_view();
 		// data...
-		forceRedraw();
+		force_redraw();
 		//if (message != o->MESSAGE_CHANGE)
-		updateMenu();
+		update_menu();
 	}else{
-		forceRedraw();
-		updateMenu();
+		force_redraw();
+		update_menu();
 	}
 }
 
-void Edward::onExecutePlugin()
+void Edward::on_execute_plugin()
 {
 	string temp = dialog_dir[FD_SCRIPT];
 	if (app->installed)
@@ -616,17 +616,17 @@ void Edward::onExecutePlugin()
 	else
 		dialog_dir[FD_SCRIPT] = app->directory + "Plugins/";
 
-	if (fileDialog(FD_SCRIPT, false, false))
+	if (file_dialog(FD_SCRIPT, false, false))
 		plugins->execute(dialog_file_complete);
 	dialog_dir[FD_SCRIPT] = temp;
 }
 
-void Edward::forceRedraw()
+void Edward::force_redraw()
 {
 	redraw("nix-area");
 }
 
-void Edward::drawStr(int x, int y, const string &str, AlignType a)
+void Edward::draw_str(int x, int y, const string &str, AlignType a)
 {
 	int w = nix::GetStrWidth(str);
 	if (a == ALIGN_RIGHT)
@@ -644,24 +644,24 @@ void Edward::drawStr(int x, int y, const string &str, AlignType a)
 	nix::SetAlpha(ALPHA_NONE);
 }
 
-void Edward::onDrawGL()
+void Edward::on_draw_gl()
 {
 	auto e = hui::GetEvent();
 	nix::Resize(e->column, e->row);
 
 	if (cur_mode->multi_view)
-		cur_mode->multi_view->onDraw();
-	cur_mode->onDraw();
+		cur_mode->multi_view->on_draw();
+	cur_mode->on_draw();
 
 	// messages
 	nix::SetShader(nix::default_shader_2d);
 	foreachi(string &m, message_str, i)
-		drawStr(nix::target_width / 2, nix::target_height / 2 - 20 - i * 20, m, ALIGN_CENTER);
+		draw_str(nix::target_width / 2, nix::target_height / 2 - 20 - i * 20, m, ALIGN_CENTER);
 }
 
 
 
-void Edward::loadKeyCodes()
+void Edward::load_key_codes()
 {
 	File *f = NULL;
 
@@ -679,20 +679,20 @@ void Edward::loadKeyCodes()
 			int key_code = f->read_int();
 			if (id == "execute_plugin")
 				key_code = hui::KEY_CONTROL + hui::KEY_P;
-			setKeyCode(id, key_code);
+			set_key_code(id, key_code);
 		}
 		event("volume_subtract", NULL);
-		setKeyCode("volume_subtract", hui::KEY_CONTROL + hui::KEY_J); // TODO ...
+		set_key_code("volume_subtract", hui::KEY_CONTROL + hui::KEY_J); // TODO ...
 		event("invert_selection", NULL);
-		setKeyCode("invert_selection", hui::KEY_CONTROL + hui::KEY_TAB); // TODO ...
+		set_key_code("invert_selection", hui::KEY_CONTROL + hui::KEY_TAB); // TODO ...
 		event("select_all", NULL);
-		setKeyCode("select_all", hui::KEY_CONTROL + hui::KEY_A); // TODO ...
+		set_key_code("select_all", hui::KEY_CONTROL + hui::KEY_A); // TODO ...
 
 		event("finish-action", NULL);
-		setKeyCode("finish-action", hui::KEY_CONTROL + hui::KEY_RETURN); // TODO ...
+		set_key_code("finish-action", hui::KEY_CONTROL + hui::KEY_RETURN); // TODO ...
 
 		event("easify_skin", NULL);
-		setKeyCode("easify_skin", hui::KEY_CONTROL + hui::KEY_7); // TODO ...
+		set_key_code("easify_skin", hui::KEY_CONTROL + hui::KEY_7); // TODO ...
 		FileClose(f);
 	}catch(...){
 
@@ -700,7 +700,7 @@ void Edward::loadKeyCodes()
 }
 
 
-void Edward::updateDialogDir(int kind)
+void Edward::update_dialog_dir(int kind)
 {
 	if (kind==FD_MODEL)			root_dir_kind[kind] = ObjectDir;
 	if (kind==FD_MODEL)			root_dir_kind[kind] = ObjectDir;
@@ -717,7 +717,7 @@ void Edward::updateDialogDir(int kind)
 }
 
 
-void Edward::setRootDirectory(const string &directory, bool compact_mode)
+void Edward::set_root_directory(const string &directory, bool compact_mode)
 {
 	string object_dir, map_dir, texture_dir, sound_dir, script_dir, material_dir, font_dir;
 	bool ufd = (root_dir.find(directory) < 0) and (directory.find(root_dir) < 0);
@@ -747,12 +747,12 @@ void Edward::setRootDirectory(const string &directory, bool compact_mode)
 	if (ufd)
 		for (int i=0;i<NUM_FDS;i++){
 			dialog_dir[i] = "";
-			updateDialogDir(i);
+			update_dialog_dir(i);
 		}
 }
 
 
-void Edward::makeDirs(const string &original_dir, bool as_root_dir)
+void Edward::make_dirs(const string &original_dir, bool as_root_dir)
 {
 	string dir = original_dir;
 	if (dir.num > 0)
@@ -774,11 +774,11 @@ void Edward::makeDirs(const string &original_dir, bool as_root_dir)
 	}else{
 		root_dir_correct = file_test_existence(dir + "game.ini");
 	}
-	setRootDirectory(dir, !root_dir_correct);
+	set_root_directory(dir, !root_dir_correct);
 }
 
 
-string Edward::getRootDir(int kind)
+string Edward::get_root_dir(int kind)
 {
 	if (kind==-1)				return root_dir;
 	if (kind==FD_MODEL)			return ObjectDir;
@@ -795,27 +795,27 @@ string Edward::getRootDir(int kind)
 	return root_dir;
 }
 
-void Edward::removeMessage()
+void Edward::remove_message()
 {
 	message_str.erase(0);
-	forceRedraw();
+	force_redraw();
 }
 
-void Edward::setMessage(const string &message)
+void Edward::set_message(const string &message)
 {
 	msg_write(message);
 	message_str.add(message);
-	forceRedraw();
-	hui::RunLater(2.0f, std::bind(&Edward::removeMessage, this));
+	force_redraw();
+	hui::RunLater(2.0f, std::bind(&Edward::remove_message, this));
 }
 
 
-void Edward::errorBox(const string &message)
+void Edward::error_box(const string &message)
 {
 	hui::ErrorBox(this, _("Fehler"), message);
 }
 
-void Edward::onCommand(const string &id)
+void Edward::on_command(const string &id)
 {
 	if (id == "model_new")
 		mode_model->_new();
@@ -838,9 +838,9 @@ void Edward::onCommand(const string &id)
 	if (id == "project_open")
 		mode_administration->open();
 	if (id == "administrate")
-		setMode(mode_administration);
+		set_mode(mode_administration);
 	if (id == "opt_view")
-		optimizeCurrentView();
+		optimize_current_view();
 }
 
 
@@ -852,22 +852,22 @@ string title_filename(const string &filename)
 }
 
 
-void Edward::updateMenu()
+void Edward::update_menu()
 {
-	cur_mode->onUpdateMenuRecursive();
+	cur_mode->on_update_menu_recursive();
 
-	Data *d = cur_mode->getData();
+	Data *d = cur_mode->get_data();
 	if (d){
 		enable("undo", d->action_manager->undoable());
 		enable("redo", d->action_manager->redoable());
 		string title = title_filename(d->filename) + " - " + AppName;
-		if (!d->action_manager->isSave())
+		if (!d->action_manager->is_save())
 			title = "*" + title;
-		setTitle(title);
+		set_title(title);
 		if (cur_mode->multi_view)
 			enable("view_pop", cur_mode->multi_view->view_stage > 0);
 	}else{
-		setTitle(AppName);
+		set_title(AppName);
 	}
 
 	// general multiview stuff
@@ -889,11 +889,11 @@ static string NoEnding(const string &filename)
 	return filename;
 }
 
-bool Edward::fileDialog(int kind,bool save,bool force_in_root_dir)
+bool Edward::file_dialog(int kind,bool save,bool force_in_root_dir)
 {
 	int done;
 
-	updateDialogDir(kind);
+	update_dialog_dir(kind);
 	if (dialog_dir[kind].num < 1)
 		dialog_dir[kind] = root_dir_kind[kind];
 
@@ -919,15 +919,15 @@ bool Edward::fileDialog(int kind,bool save,bool force_in_root_dir)
 
 		if (force_in_root_dir){
 			if (!in_root_dir){
-				errorBox(hui::Filename.sys_filename());
-				errorBox(format(_("Datei liegt nicht im vorgesehenen Verzeichnis: \"%s\"\noder in dessen Unterverzeichnis"), root_dir_kind[kind].sys_filename().c_str()));
+				error_box(hui::Filename.sys_filename());
+				error_box(format(_("Datei liegt nicht im vorgesehenen Verzeichnis: \"%s\"\noder in dessen Unterverzeichnis"), root_dir_kind[kind].sys_filename().c_str()));
 				return false;
 			}
 		}//else
 			//MakeDirs(HuiFileDialogPath);
 
 		if (in_root_dir){
-			updateDialogDir(kind);
+			update_dialog_dir(kind);
 			dialog_dir[kind] = hui::Filename.dirname();
 		}
 		dialog_file_complete = hui::Filename;
@@ -939,14 +939,14 @@ bool Edward::fileDialog(int kind,bool save,bool force_in_root_dir)
 	return false;
 }
 
-bool Edward::allowTermination()
+bool Edward::allow_termination()
 {
 	if (!cur_mode)
 		return true;
-	Data *d = cur_mode->getData();
+	Data *d = cur_mode->get_data();
 	if (!d)
 		return true;
-	if (d->action_manager->isSave())
+	if (d->action_manager->is_save())
 		return true;
 	string answer = hui::QuestionBox(this,_("Dem&utige aber h&ofliche Frage"),_("Sie haben die Entropie erh&oht. Wollen Sie Ihr Werk speichern?"),true);
 	if (answer == "hui:cancel")
@@ -970,6 +970,6 @@ string Edward::get_tex_image(nix::Texture *tex)
 		empty.create(32, 32, White);
 		img = hui::SetImage(empty);
 	}
-	icon_image.add(tex, img);
+	icon_image.set(tex, img);
 	return img;
 }

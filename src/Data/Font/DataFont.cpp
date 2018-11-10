@@ -29,10 +29,10 @@ bool DataFont::load(const string & _filename, bool deep)
 	reset();
 
 	filename = _filename;
-	ed->makeDirs(filename);
+	ed->make_dirs(filename);
 	File *f = FileOpenText(filename);
 	if (!f){
-		ed->setMessage(_("Kann XFont-Datei nicht &offnen"));
+		ed->set_message(_("Kann XFont-Datei nicht &offnen"));
 		return false;
 	}
 	file_time = f->GetDateModification().time;
@@ -106,7 +106,7 @@ bool DataFont::load(const string & _filename, bool deep)
 			if (g.Name == str)
 				global.UnknownGlyphNo = i;
 	}else{
-		ed->setMessage(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 1, 2));
+		ed->set_message(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 1, 2));
 		error = true;
 	}
 
@@ -115,7 +115,7 @@ bool DataFont::load(const string & _filename, bool deep)
 	if (deep)
 		UpdateTexture();
 
-	resetHistory();
+	reset_history();
 	notify();
 	return !error;
 }
@@ -162,7 +162,7 @@ void DataFont::reset()
 			break;
 	};
 
-	resetHistory();
+	reset_history();
 	notify();
 //	SetFont();
 }
@@ -172,7 +172,7 @@ void DataFont::reset()
 bool DataFont::save(const string & _filename)
 {
 	filename = _filename;
-	ed->makeDirs(filename);
+	ed->make_dirs(filename);
 
 	File *f = FileCreateText(filename);
 	f->WriteFileFormatVersion(false, 2);
@@ -204,7 +204,7 @@ bool DataFont::save(const string & _filename)
 	f->write_str("#");
 	delete(f);
 
-	action_manager->markCurrentAsSave();
+	action_manager->mark_current_as_save();
 	return false;
 }
 

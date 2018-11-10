@@ -59,7 +59,7 @@ int ModeModelMeshTexture::getNumSelected()
 }
 
 
-void ModeModelMeshTexture::onStart()
+void ModeModelMeshTexture::on_start()
 {
 	multi_view->view_stage = ed->multi_view_3d->view_stage;
 	mode_model_mesh->applyMouseFunction(multi_view);
@@ -79,7 +79,7 @@ void ModeModelMeshTexture::onStart()
 
 
 
-void ModeModelMeshTexture::onEnd()
+void ModeModelMeshTexture::on_end()
 {
 	Observer::unsubscribe(data);
 	Observer::unsubscribe(multi_view);
@@ -89,7 +89,7 @@ void ModeModelMeshTexture::onEnd()
 #define cur_tex			data->material[mode_model_mesh->current_material].textures[current_texture_level]
 
 
-void ModeModelMeshTexture::onDrawWin(MultiView::Window *win)
+void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 {
 	rect s,r;
 	color c;
@@ -156,21 +156,21 @@ void ModeModelMeshTexture::onDrawWin(MultiView::Window *win)
 
 
 
-void ModeModelMeshTexture::onDraw()
+void ModeModelMeshTexture::on_draw()
 {
 	if (data->getNumSelectedVertices() > 0){
-		ed->drawStr(20, 160, format(_("skin: %d"), getNumSelected()));
+		ed->draw_str(20, 160, format(_("skin: %d"), getNumSelected()));
 	}
 	if (data->getNumSelectedVertices() > 0){
 		int nv = data->getNumSelectedVertices();
 		int ne = data->getNumSelectedEdges();
 		int np = data->getNumSelectedPolygons();
 		int ns = data->getNumSelectedSurfaces();
-		ed->drawStr(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons, %d surfaces", nv, ne, np, ns));
+		ed->draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons, %d surfaces", nv, ne, np, ns));
 	}
 }
 
-void ModeModelMeshTexture::onSelectionChange()
+void ModeModelMeshTexture::on_selection_change()
 {
 	//selection_mode->updateSelection();
 	//fillSelectionBuffer(data->vertex);
@@ -202,7 +202,7 @@ void ModeModelMeshTexture::setCurrentTextureLevel(int level)
 	notify();
 }
 
-void ModeModelMeshTexture::onUpdate(Observable *o, const string &message)
+void ModeModelMeshTexture::on_update(Observable *o, const string &message)
 {
 	// consistency checks
 	if (current_texture_level >= data->material[mode_model_mesh->current_material].textures.num)

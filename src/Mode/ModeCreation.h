@@ -15,9 +15,9 @@ class ModeCreationBase : public ModeBase
 public:
 	ModeCreationBase(const string &_name, ModeBase *_parent);
 	virtual ~ModeCreationBase(){}
-	void onDraw() override;
-	void onDrawWin(MultiView::Window *win) override;
-	void onSetMultiView() override;
+	void on_draw() override;
+	void on_draw_win(MultiView::Window *win) override;
+	void on_set_multi_view() override;
 	void abort();
 	string message;
 	hui::Window *dialog;
@@ -30,11 +30,11 @@ public:
 	ModeCreation(const string &_name, ModeBase *_parent) :
 		ModeCreationBase(_name, _parent)
 	{
-		data = (T*)_parent->getData();
+		data = (T*)_parent->get_data();
 	}
 	virtual ~ModeCreation(){}
 	T *data;
-	virtual Data *getData(){	return data;	}
+	virtual Data *get_data(){	return data;	}
 };
 
 #endif /* MODECREATION_H_ */

@@ -16,7 +16,7 @@ public:
 	ModeNone();
 	virtual ~ModeNone();
 
-	virtual Data *getData(){ return NULL; };
+	virtual Data *get_data(){ return NULL; };
 };
 
 #endif /* SRC_MODE_MODENONE_H_ */

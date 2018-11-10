@@ -42,7 +42,7 @@ public:
 
 	void UpdateTimePos();
 
-	virtual void onUpdate(Observable *o, const string &message);
+	void on_update(Observable *o, const string &message) override;
 
 	DataCamera *data;
 	ModeWorldCamera *mode;

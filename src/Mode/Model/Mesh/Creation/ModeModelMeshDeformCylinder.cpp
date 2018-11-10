@@ -110,7 +110,7 @@ void get_axis(DataModel *data, vector axis[2], float &radius)
 	axis[1] = m + ll[1] * dir;
 }
 
-void ModeModelMeshDeformCylinder::onStart()
+void ModeModelMeshDeformCylinder::on_start()
 {
 	multi_view->setAllowAction(false);
 	multi_view->setAllowSelect(false);
@@ -129,7 +129,7 @@ void ModeModelMeshDeformCylinder::onStart()
 	hover = -1;
 }
 
-void ModeModelMeshDeformCylinder::onEnd()
+void ModeModelMeshDeformCylinder::on_end()
 {
 	if (has_preview)
 		restore();
@@ -158,9 +158,9 @@ void ModeModelMeshDeformCylinder::updateParams()
 	preview();
 }
 
-void ModeModelMeshDeformCylinder::onDrawWin(MultiView::Window* win)
+void ModeModelMeshDeformCylinder::on_draw_win(MultiView::Window* win)
 {
-	parent->onDrawWin(win);
+	parent->on_draw_win(win);
 
 	if (geo){
 		ModeModel::setMaterialCreation(0.3f);
@@ -271,10 +271,10 @@ void ModeModelMeshDeformCylinder::preview()
 	//mode_model_mesh->updateVertexBuffers(data->vertex);
 
 	has_preview = true;
-	ed->forceRedraw();
+	ed->force_redraw();
 }
 
-void ModeModelMeshDeformCylinder::onMouseMove()
+void ModeModelMeshDeformCylinder::on_mouse_move()
 {
 	if (hui::GetEvent()->lbut){
 		if (hover >= 0){
@@ -307,10 +307,10 @@ void ModeModelMeshDeformCylinder::onMouseMove()
 	}
 }
 
-void ModeModelMeshDeformCylinder::onLeftButtonDown()
+void ModeModelMeshDeformCylinder::on_left_button_down()
 {
 	if (hover >= 0){
-		if (ed->getKey(hui::KEY_CONTROL)){
+		if (ed->get_key(hui::KEY_CONTROL)){
 			int n = hover;
 			if (n == 0)
 				n = 1;
@@ -322,11 +322,11 @@ void ModeModelMeshDeformCylinder::onLeftButtonDown()
 
 }
 
-void ModeModelMeshDeformCylinder::onLeftButtonUp()
+void ModeModelMeshDeformCylinder::on_left_button_up()
 {
 }
 
-void ModeModelMeshDeformCylinder::onKeyDown(int k)
+void ModeModelMeshDeformCylinder::on_key_down(int k)
 {
 	if (k == hui::KEY_DELETE){
 		if ((hover != 0) and (hover != param.num -1)){
@@ -355,11 +355,11 @@ void ModeModelMeshDeformCylinder::onOk()
 	if (has_preview)
 		restore();
 
-	data->beginActionGroup("deformation");
+	data->begin_action_group("deformation");
 	for (int vi: index)
 		data->execute(new ActionModelMoveVertex(vi, transform(data->vertex[vi].pos)));
 
-	data->endActionGroup();
+	data->end_action_group();
 
 	abort();
 }
@@ -369,7 +369,7 @@ void ModeModelMeshDeformCylinder::onClose()
 	abort();
 }
 
-void ModeModelMeshDeformCylinder::onCommand(const string& id)
+void ModeModelMeshDeformCylinder::on_command(const string& id)
 {
 	if (id == "finish-action")
 		onOk();

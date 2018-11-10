@@ -16,13 +16,13 @@ class ModeModelMeshCreatePolygon: public ModeCreation<DataModel>
 public:
 	ModeModelMeshCreatePolygon(ModeBase *parent);
 
-	void onStart() override;
-	void onEnd() override;
+	void on_start() override;
+	void on_end() override;
 
-	void onLeftButtonDown() override;
-	void onCommand(const string &id) override;
+	void on_left_button_down() override;
+	void on_command(const string &id) override;
 
-	void onDrawWin(MultiView::Window *win) override;
+	void on_draw_win(MultiView::Window *win) override;
 
 	Array<int> selection;
 };

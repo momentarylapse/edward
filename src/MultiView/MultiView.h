@@ -119,21 +119,21 @@ public:
 	static const string MESSAGE_ACTION_EXECUTE;
 
 
-	void onMouseMove();
-	void onMouseWheel();
-	void onMouseEnter();
-	void onMouseLeave();
-	void onLeftButtonDown();
-	void onLeftButtonUp();
-	void onMiddleButtonDown();
-	void onMiddleButtonUp();
-	void onRightButtonDown();
-	void onRightButtonUp();
-	void onKeyDown(int key_code);
-	void onKeyUp(int key_code);
-	void onCommand(const string &id);
+	void on_mouse_move();
+	void on_mouse_wheel();
+	void on_mouse_enter();
+	void on_mouse_leave();
+	void on_left_button_down();
+	void on_left_button_up();
+	void on_middle_button_down();
+	void on_middle_button_up();
+	void on_right_button_down();
+	void on_right_button_up();
+	void on_key_down(int key_code);
+	void on_key_up(int key_code);
+	void on_command(const string &id);
 
-	void onUpdateMenu();
+	void on_update_menu();
 
 	bool mode3d;
 	bool whole_window;
@@ -188,7 +188,7 @@ public:
 	static color ColorCreation;
 	static color ColorCreationLine;
 
-	void onDraw();
+	void on_draw();
 	void drawMousePos();
 	void toggleWholeWindow();
 	void toggleGrid();

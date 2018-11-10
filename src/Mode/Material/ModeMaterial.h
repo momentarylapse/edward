@@ -23,24 +23,24 @@ public:
 	ModeMaterial();
 	virtual ~ModeMaterial();
 
-	void onStart() override;
-	void onEnd() override;
+	void on_start() override;
+	void on_end() override;
 
-	void onCommand(const string &id) override;
-	void onUpdate(Observable *o, const string &message) override;
+	void on_command(const string &id) override;
+	void on_update(Observable *o, const string &message) override;
 
-	void onDraw() override;
-	void onDrawWin(MultiView::Window *win) override;
+	void on_draw() override;
+	void on_draw_win(MultiView::Window *win) override;
 
-	void onUpdateMenu() override;
+	void on_update_menu() override;
 
 
 	void _new() override;
 	bool open() override;
 	bool save() override;
-	bool saveAs() override;
+	bool save_as() override;
 
-	bool optimizeView() override;
+	bool optimize_view() override;
 
 	nix::VertexBuffer *MaterialVB[MATERIAL_MAX_TEXTURES + 1];
 	MaterialPropertiesDialog *AppearanceDialog;

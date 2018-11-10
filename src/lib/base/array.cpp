@@ -17,7 +17,7 @@ void DynamicArray::init(int _element_size_)
 	num = 0;
 	element_size = _element_size_;
 	allocated = 0;
-	data = NULL;
+	data = nullptr;
 //	printf("init %d\n", element_size);
 }
 
@@ -27,7 +27,7 @@ void DynamicArray::reserve(int size)
 	if (allocated == 0){
 		if (size > 0){
 			allocated = size;
-#if ALIGNMENT > 0
+/*#if ALIGNMENT > 0
 	#if defined(OS_LINUX)
 			posix_memalign(&data, ALIGNMENT, (size_t)allocated * (size_t)element_size);
 	#elif defined(OS_WINDOWS)
@@ -35,9 +35,9 @@ void DynamicArray::reserve(int size)
 	#else // defined(OS_MINGW)
 			data = malloc((size_t)allocated * (size_t)element_size);
 	#endif
-#else
+#else*/
 			data = malloc((size_t)allocated * (size_t)element_size);
-#endif
+//#endif
 //			printf("          new  %p  ", data);
 		}
 	}else if (size > allocated){
@@ -249,7 +249,7 @@ void DynamicArray::clear()
 //		printf("        ~   %p %d  %d\n", data, element_size, num);
 		free(data);
 	}
-	data = NULL;
+	data = nullptr;
 	allocated = 0;
 	num = 0;
 }
@@ -275,7 +275,7 @@ DynamicArray DynamicArray::ref_subarray(int start, int num_elements)
 	DynamicArray s;
 	s.init(element_size);
 	if (num_elements < 0)
-		num_elements = start - num;
+		num_elements = num - start;
 	if (num_elements > num - start)
 		num_elements = num - start;
 	s.num = num_elements;

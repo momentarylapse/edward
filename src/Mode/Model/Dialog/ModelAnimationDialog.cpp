@@ -15,14 +15,14 @@
 ModelAnimationDialog::ModelAnimationDialog(DataModel *_data) :
 	Observer("ModelAnimationDialog")
 {
-	fromResource("animation_dialog");
+	from_resource("animation_dialog");
 	data = _data;
 
 	// dialog
 
 	//event("hui:close", std::bind(&ModelAnimationDialog::onClose);
 	event("animation_list", std::bind(&ModelAnimationDialog::onAnimationList, this));
-	eventX("animation_list", "hui:select", std::bind(&ModelAnimationDialog::onAnimationListSelect, this));
+	event_x("animation_list", "hui:select", std::bind(&ModelAnimationDialog::onAnimationListSelect, this));
 	event("animation_new", std::bind(&ModelAnimationDialog::onAddAnimation, this));
 	event("animation_delete", std::bind(&ModelAnimationDialog::onDeleteAnimation, this));
 	event("animation_copy", std::bind(&ModelAnimationDialog::onCopyAnimation, this));
@@ -63,14 +63,14 @@ void ModelAnimationDialog::loadData()
 			else
 				str += "???";
 			str += format("\\%d\\", m.frame.num) + m.name;
-			addString("animation_list", str);
+			add_string("animation_list", str);
 			if (i == mode_model_animation->current_move)
-				setInt("animation_list", n);
+				set_int("animation_list", n);
 			n ++;
 		}
 	fillAnimation();
-	setFloat("speed", mode_model_animation->time_scale * 100.0f);
-	setFloat("parameter", mode_model_animation->time_param);
+	set_float("speed", mode_model_animation->time_scale * 100.0f);
+	set_float("parameter", mode_model_animation->time_param);
 }
 
 void ModelAnimationDialog::fillAnimation()
@@ -86,10 +86,10 @@ void ModelAnimationDialog::fillAnimation()
 	enable("sim_stop", b);
 	if (b){
 		ModelMove *move = mode_model_animation->cur_move();
-		setString("name", move->name);
-		setInt("frame", mode_model_animation->current_frame);
-		setFloat("fps_const", move->frames_per_sec_const);
-		setFloat("fps_factor", move->frames_per_sec_factor);
+		set_string("name", move->name);
+		set_int("frame", mode_model_animation->current_frame);
+		set_float("fps_const", move->frames_per_sec_const);
+		set_float("fps_factor", move->frames_per_sec_factor);
 	}
 }
 
@@ -104,7 +104,7 @@ void ModelAnimationDialog::onCopyAnimation()
 
 int ModelAnimationDialog::getSelectedAnimation()
 {
-	int s = getInt("animation_list");
+	int s = get_int("animation_list");
 	if (s >= 0){
 		int n = 0;
 		foreachi(ModelMove &m, data->move, i)
@@ -156,10 +156,10 @@ void ModelAnimationDialog::onDeleteAnimation()
 
 void ModelAnimationDialog::onFrame()
 {
-	int frame_lit = getInt("");
+	int frame_lit = get_int("");
 	int frame = loopi(frame_lit, 0, mode_model_animation->cur_move()->frame.num - 1);
 	if (frame != frame_lit)
-		setInt("", frame);
+		set_int("", frame);
 	mode_model_animation->setCurrentFrame(frame);
 }
 
@@ -175,27 +175,27 @@ void ModelAnimationDialog::onDeleteFrame()
 
 void ModelAnimationDialog::onName()
 {
-	data->setAnimationData(mode_model_animation->current_move, getString(""), mode_model_animation->cur_move()->frames_per_sec_const, mode_model_animation->cur_move()->frames_per_sec_factor);
+	data->setAnimationData(mode_model_animation->current_move, get_string(""), mode_model_animation->cur_move()->frames_per_sec_const, mode_model_animation->cur_move()->frames_per_sec_factor);
 }
 
 void ModelAnimationDialog::onFpsConst()
 {
-	data->setAnimationData(mode_model_animation->current_move, mode_model_animation->cur_move()->name, getFloat(""), mode_model_animation->cur_move()->frames_per_sec_factor);
+	data->setAnimationData(mode_model_animation->current_move, mode_model_animation->cur_move()->name, get_float(""), mode_model_animation->cur_move()->frames_per_sec_factor);
 }
 
 void ModelAnimationDialog::onFpsFactor()
 {
-	data->setAnimationData(mode_model_animation->current_move, mode_model_animation->cur_move()->name, mode_model_animation->cur_move()->frames_per_sec_const, getFloat(""));
+	data->setAnimationData(mode_model_animation->current_move, mode_model_animation->cur_move()->name, mode_model_animation->cur_move()->frames_per_sec_const, get_float(""));
 }
 
 void ModelAnimationDialog::onSpeed()
 {
-	mode_model_animation->time_scale = getFloat("") / 100.0f;
+	mode_model_animation->time_scale = get_float("") / 100.0f;
 }
 
 void ModelAnimationDialog::onParameter()
 {
-	mode_model_animation->time_param = getFloat("");
+	mode_model_animation->time_param = get_float("");
 }
 
 void ModelAnimationDialog::onSimulationPlay()
@@ -212,7 +212,7 @@ void ModelAnimationDialog::onSimulationStop()
 	mode_model_animation->updateAnimation();
 }
 
-void ModelAnimationDialog::onUpdate(Observable *o, const string &message)
+void ModelAnimationDialog::on_update(Observable *o, const string &message)
 {
 	if (o == data){
 		loadData();

@@ -15,15 +15,15 @@
 CameraDialog::CameraDialog(ModeWorldCamera *_mode) :
 	Observer("CameraDialog")
 {
-	fromResource("world_camera_dialog");
+	from_resource("world_camera_dialog");
 	mode = _mode;
 	data = mode->data;
 
-	eventXP("cam_area", "hui:draw", std::bind(&CameraDialog::OnAreaDraw, this, std::placeholders::_1));
-	eventX("cam_area", "hui:left-button-down", std::bind(&CameraDialog::OnAreaLeftButtonDown, this));
-	eventX("cam_area", "hui:left-button-up", std::bind(&CameraDialog::OnAreaLeftButtonUp, this));
-	eventX("cam_area", "hui:mouse-move", std::bind(&CameraDialog::OnAreaMouseMove, this));
-	eventX("cam_area", "hui:mouse-wheel", std::bind(&CameraDialog::OnAreaMouseWheel, this));
+	event_xp("cam_area", "hui:draw", std::bind(&CameraDialog::OnAreaDraw, this, std::placeholders::_1));
+	event_x("cam_area", "hui:left-button-down", std::bind(&CameraDialog::OnAreaLeftButtonDown, this));
+	event_x("cam_area", "hui:left-button-up", std::bind(&CameraDialog::OnAreaLeftButtonUp, this));
+	event_x("cam_area", "hui:mouse-move", std::bind(&CameraDialog::OnAreaMouseMove, this));
+	event_x("cam_area", "hui:mouse-wheel", std::bind(&CameraDialog::OnAreaMouseWheel, this));
 	event("add_point", std::bind(&CameraDialog::OnAddPoint, this));
 	event("delete_point", std::bind(&CameraDialog::OnDeletePoint, this));
 	event("cam_edit_vel", std::bind(&CameraDialog::OnCamEditVel, this));
@@ -59,9 +59,9 @@ CameraDialog::~CameraDialog()
 
 void CameraDialog::OnCloseDialog()
 {
-	if (ed->allowTermination()){
+	if (ed->allow_termination()){
 		mode->_new();
-		ed->setMode(mode->parent);
+		ed->set_mode(mode->parent);
 	}
 }
 
@@ -131,10 +131,10 @@ void CameraDialog::OnAreaDraw(Painter *c)
 	color ColorGrid = color(1, 0.75f, 0.75f, 0.75f);
 
 	//HuiPainter *c = beginDraw("cam_area");
-	c->setLineWidth(0.8f);
-	c->setColor(bg);
-	c->drawRect(0, 0, c->width, c->height);
-	c->setFontSize(8);
+	c->set_line_width(0.8f);
+	c->set_color(bg);
+	c->draw_rect(0, 0, c->width, c->height);
+	c->set_font_size(8);
 
 	rect r = rect(0, c->width, 0, c->height);
 	double dt = MIN_GRID_DIST / time_scale; // >= 10 pixel
@@ -147,30 +147,30 @@ void CameraDialog::OnAreaDraw(Painter *c)
 	color c1 = ColorInterpolate(bg, ColorGrid, exp_s_mod);
 	color c2 = ColorGrid;
 	for (int n=nx0;n<nx1;n++){
-		c->setColor(((n % 10) == 0) ? c2 : c1);
+		c->set_color(((n % 10) == 0) ? c2 : c1);
 		int xx = sample2screen(n * dt);
-		c->drawLine(xx, 0, xx, c->height);
+		c->draw_line(xx, 0, xx, c->height);
 	}
-	c->setColor(ColorGrid);
+	c->set_color(ColorGrid);
 	for (int n=nx0;n<nx1;n++){
 		if ((sample2screen(dt) - sample2screen(0)) > 30){
 			if ((((n % 10) % 3) == 0) && ((n % 10) != 9) && ((n % 10) != -9))
-				c->drawStr(sample2screen(n * dt) + 2, r.y1, get_time_str_fuzzy(n * dt, dt * 3));
+				c->draw_str(sample2screen(n * dt) + 2, r.y1, get_time_str_fuzzy(n * dt, dt * 3));
 		}else{
 			if ((n % 10) == 0)
-				c->drawStr(sample2screen(n * dt) + 2, r.y1, get_time_str_fuzzy(n * dt, dt * 10));
+				c->draw_str(sample2screen(n * dt) + 2, r.y1, get_time_str_fuzzy(n * dt, dt * 10));
 		}
 	}
 
 	float dur = data->GetDuration();
-	c->setColor(color(0.15f, 0, 0, 1));
-	c->drawRect(rect(sample2screen(0), sample2screen(dur), r.y1, r.y2));
+	c->set_color(color(0.15f, 0, 0, 1));
+	c->draw_rect(rect(sample2screen(0), sample2screen(dur), r.y1, r.y2));
 
 	float t0 = 0;
 	foreachi(WorldCamPoint &p, data->Point, i){
-		c->setColor(p.is_selected ? Red : Black);
-		c->setLineWidth((i == hover) ? 5.0f : 2.2f);
-		c->drawLine(time_pos[i], r.y1, time_pos[i], r.y2);
+		c->set_color(p.is_selected ? Red : Black);
+		c->set_line_width((i == hover) ? 5.0f : 2.2f);
+		c->draw_line(time_pos[i], r.y1, time_pos[i], r.y2);
 		float t1 = t0 + p.Duration;
 		t0 = t1;
 	}
@@ -185,18 +185,18 @@ void CameraDialog::OnAreaDraw(Painter *c)
 			v_max = vv;
 		v[i] = vv;
 	}
-	c->setLineWidth(1.0f);
-	c->setColor(Green);
+	c->set_line_width(1.0f);
+	c->set_color(Green);
 	for (int i=0; i<N; i++){
 		float t0 = (float)i / (float)N * dur;
 		float t1 = (float)(i+1) / (float)N * dur;
-		c->drawLine(sample2screen(t0), r.y2 - v[i]/v_max * r.height(), sample2screen(t1), r.y2 - v[i+1]/v_max * r.height());
+		c->draw_line(sample2screen(t0), r.y2 - v[i]/v_max * r.height(), sample2screen(t1), r.y2 - v[i+1]/v_max * r.height());
 	}
 
 	if (mode->preview){
-		c->setLineWidth(1.5f);
-		c->setColor(Green);
-		c->drawLine(sample2screen(mode->preview_time), r.y1, sample2screen(mode->preview_time), r.y2);
+		c->set_line_width(1.5f);
+		c->set_color(Green);
+		c->draw_line(sample2screen(mode->preview_time), r.y1, sample2screen(mode->preview_time), r.y2);
 	}
 	//c->end();
 }
@@ -209,7 +209,7 @@ void CameraDialog::OnAreaLeftButtonDown()
 	}else{
 		foreachi(WorldCamPoint &p, data->Point, i)
 			p.is_selected = (i == hover);
-		ed->forceRedraw();
+		ed->force_redraw();
 		redraw("cam_area");
 	}
 }
@@ -264,12 +264,12 @@ void CameraDialog::OnAreaMouseWheel()
 
 void CameraDialog::OnCamEditVel()
 {
-	mode->setEditVel(isChecked(""));
+	mode->setEditVel(is_checked(""));
 }
 
 void CameraDialog::OnCamEditAng()
 {
-	mode->setEditAng(isChecked(""));
+	mode->setEditAng(is_checked(""));
 }
 
 void CameraDialog::OnCamPreview()
@@ -283,7 +283,7 @@ void CameraDialog::OnCamStop()
 }
 
 
-void CameraDialog::onUpdate(Observable *o, const string &message)
+void CameraDialog::on_update(Observable *o, const string &message)
 {
 	/*if (message == data->MESSAGE_CHANGE)*/{
 		LoadData();

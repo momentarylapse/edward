@@ -59,7 +59,7 @@ ModeModelAnimation::~ModeModelAnimation()
 
 
 
-void ModeModelAnimation::onCommand(const string & id)
+void ModeModelAnimation::on_command(const string & id)
 {
 	if (id == "move_frame_inc")
 		setCurrentFrameNext();
@@ -70,12 +70,12 @@ void ModeModelAnimation::onCommand(const string & id)
 	if (id == "move_frame_insert")
 		duplicateCurrentFrame();
 	if (id == "move_frame_interpolate")
-		ed->setMode(new ModeModelAnimationInterpolateFrames(ed->cur_mode));
+		ed->set_mode(new ModeModelAnimationInterpolateFrames(ed->cur_mode));
 }
 
 
 
-void ModeModelAnimation::onStart()
+void ModeModelAnimation::on_start()
 {
 	time_scale = 1;
 	time_param = 0;
@@ -98,7 +98,7 @@ void ModeModelAnimation::onStart()
 	hui::RunLater(0.200f, std::bind(&ModeModelAnimation::idleFunction, this));
 	setCurrentMove(getFirstMove());
 
-	//ed->setMode(mode_model_animation_none);
+	//ed->set_mode(mode_model_animation_none);
 }
 
 int ModeModelAnimation::getFirstMove()
@@ -110,13 +110,13 @@ int ModeModelAnimation::getFirstMove()
 }
 
 
-void ModeModelAnimation::onUpdateMenu()
+void ModeModelAnimation::on_update_menu()
 {
 }
 
 
 
-void ModeModelAnimation::onEnd()
+void ModeModelAnimation::on_end()
 {
 	Observer::unsubscribe(data);
 	Observer::unsubscribe(this);
@@ -136,11 +136,11 @@ void ModeModelAnimation::setCurrentMove(int move_no)
 	setCurrentFrame(0);
 
 	if (cur_move()->type == MOVE_TYPE_SKELETAL)
-		ed->setMode(mode_model_animation_skeleton);
+		ed->set_mode(mode_model_animation_skeleton);
 	else if (cur_move()->type == MOVE_TYPE_VERTEX)
-		ed->setMode(mode_model_animation_vertex);
+		ed->set_mode(mode_model_animation_vertex);
 	else
-		ed->setMode(mode_model_animation_none);
+		ed->set_mode(mode_model_animation_none);
 }
 
 void ModeModelAnimation::setCurrentFrame(int frame_no)
@@ -191,7 +191,7 @@ void ModeModelAnimation::updateAnimation()
 	mode_model_mesh->fillSelectionBuffer(vertex);
 
 	notify();
-	ed->forceRedraw();
+	ed->force_redraw();
 }
 
 void ModeModelAnimation::updateSkeleton()
@@ -230,7 +230,7 @@ void ModeModelAnimation::deleteCurrentFrame()
 	if (cur_move()->frame.num > 1)
 		data->animationDeleteFrame(current_move, current_frame);
 	else
-		ed->setMessage(_("der letzte Frame kann nicht gel&oscht werden"));
+		ed->set_message(_("der letzte Frame kann nicht gel&oscht werden"));
 }
 
 void ModeModelAnimation::duplicateCurrentFrame()
@@ -258,7 +258,7 @@ ModelMove* ModeModelAnimation::cur_move()
 	return empty_move;
 }
 
-void ModeModelAnimation::onUpdate(Observable *o, const string &message)
+void ModeModelAnimation::on_update(Observable *o, const string &message)
 {
 	// consistency check
 	if (((current_move >= 0) and (cur_move()->frame.num == 0)) or (current_move >= data->move.num))
@@ -277,7 +277,7 @@ void ModeModelAnimation::onUpdate(Observable *o, const string &message)
 
 void ModeModelAnimation::idleFunction()
 {
-	if (!isAncestorOf(ed->cur_mode))
+	if (!is_ancestor_of(ed->cur_mode))
 		return;
 
 	iterateAnimation(timer.get());

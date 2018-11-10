@@ -20,11 +20,11 @@ public:
 	void _new() override;
 	bool open() override;
 
-	void onStart() override;
-	void onEnd() override;
+	void on_start() override;
+	void on_end() override;
 
-	void onCommand(const string &id) override;
-	void onUpdate(Observable *o, const string &message) override;
+	void on_command(const string &id) override;
+	void on_update(Observable *o, const string &message) override;
 
 	void BasicSettings();
 	void ExportGame();

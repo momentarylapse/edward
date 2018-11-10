@@ -56,6 +56,12 @@ string::string(const string &s)
 	assign(&s);
 }
 
+string::string(string &&s)
+{
+	init(sizeof(unsigned char));
+	exchange(s);
+}
+
 void string::__init__()
 {
 	new(this) string;
@@ -326,7 +332,7 @@ string string::no_recursion() const
 	Array<string> p = str.explode("/");
 
 	for (int i=1;i<p.num;i++)
-		if (p[i] == ".."){
+		if ((p[i] == "..") and (p[i-1] != "..")){
 			p.erase(i);
 			p.erase(i - 1);
 			i -= 2;
@@ -362,7 +368,7 @@ string format(const string str,...)
 #ifdef OS_WINDOWS
 	int len = _vscprintf(str.c_str(), args);
 #else
-	int len = vsnprintf(NULL, 0, str.c_str(), args);
+	int len = vsnprintf(nullptr, 0, str.c_str(), args);
 #endif
 	tmp.resize(len + 1);
     va_start(args, str);

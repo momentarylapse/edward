@@ -25,9 +25,9 @@ ModeModelAnimationVertex::~ModeModelAnimationVertex()
 {
 }
 
-void ModeModelAnimationVertex::onStart()
+void ModeModelAnimationVertex::on_start()
 {
-	ed->toolbar[hui::TOOLBAR_LEFT]->setByID("model-animation-vertex-toolbar");
+	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-animation-vertex-toolbar");
 
 	mode_model->allowSelectionModes(true);
 
@@ -35,10 +35,10 @@ void ModeModelAnimationVertex::onStart()
 
 	subscribe(data);
 	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
-	onUpdate(data, "");
+	on_update(data, "");
 }
 
-void ModeModelAnimationVertex::onEnd()
+void ModeModelAnimationVertex::on_end()
 {
 	unsubscribe(data);
 	unsubscribe(multi_view);
@@ -46,7 +46,7 @@ void ModeModelAnimationVertex::onEnd()
 	mode_model_mesh->fillSelectionBuffer(data->vertex);
 }
 
-void ModeModelAnimationVertex::onCommand(const string& id)
+void ModeModelAnimationVertex::on_command(const string& id)
 {
 	if (id == "select")
 		chooseMouseFunction(MultiView::ACTION_SELECT);
@@ -68,7 +68,7 @@ void ModeModelAnimationVertex::chooseMouseFunction(int f)
 	multi_view->setMouseAction("ActionModelAnimationTransformVertices", mouse_action, false);
 }
 
-void ModeModelAnimationVertex::onUpdate(Observable* o, const string &message)
+void ModeModelAnimationVertex::on_update(Observable* o, const string &message)
 {
 	if (o == data){
 		data->showVertices(mode_model_animation->vertex);
@@ -78,7 +78,7 @@ void ModeModelAnimationVertex::onUpdate(Observable* o, const string &message)
 	}
 }
 
-void ModeModelAnimationVertex::onUpdateMenu()
+void ModeModelAnimationVertex::on_update_menu()
 {
 	ed->check("select", mouse_action == MultiView::ACTION_SELECT);
 	ed->check("translate", mouse_action == MultiView::ACTION_MOVE);
@@ -87,7 +87,7 @@ void ModeModelAnimationVertex::onUpdateMenu()
 	ed->check("mirror", mouse_action == MultiView::ACTION_MIRROR);
 }
 
-void ModeModelAnimationVertex::onDrawWin(MultiView::Window *win)
+void ModeModelAnimationVertex::on_draw_win(MultiView::Window *win)
 {
 	mode_model_mesh->drawAll(win, mode_model_animation->vertex);
 }

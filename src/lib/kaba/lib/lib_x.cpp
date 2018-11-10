@@ -42,24 +42,26 @@ namespace Kaba{
 
 #pragma GCC push_options
 #pragma GCC optimize("no-omit-frame-pointer")
+#pragma GCC optimize("no-inline")
+#pragma GCC optimize("0")
 
 
 Gui::Font* __LoadFont(const string &filename)
 {
 	KABA_EXCEPTION_WRAPPER(return Gui::LoadFont(filename))
-	return NULL;
+	return nullptr;
 }
 
 Model* __LoadModel(const string &filename)
 {
 	KABA_EXCEPTION_WRAPPER(return LoadModelFull(filename));
-	return NULL;
+	return nullptr;
 }
 
 Model* __CreateObject(const string &filename, const vector &pos)
 {
 	KABA_EXCEPTION_WRAPPER(return GodCreateObject(filename, filename, pos, q_id));
-	return NULL;
+	return nullptr;
 }
 
 #pragma GCC pop_options
@@ -67,7 +69,7 @@ Model* __CreateObject(const string &filename, const vector &pos)
 
 
 #else
-	#define x_p(p)		NULL
+	#define x_p(p)		nullptr
 #endif
 
 extern int _class_override_num_params;
@@ -254,7 +256,7 @@ void amd64_getg(vector &r, vector &v)
 {	r = GetG(v);	}
 #define amd64_wrap(orig, wrap)	((config.instruction_set == Asm::INSTRUCTION_SET_AMD64) ? ((void*)(wrap)) : ((void*)(orig)))
 #else
-#define amd64_wrap(a, b)	NULL
+#define amd64_wrap(a, b)	nullptr
 #endif
 
 
@@ -712,11 +714,13 @@ void SIAddPackageX()
 		class_add_element("output",			TypeTextureP,	GetDACamera(output));
 		class_add_element("input",			TypeTextureP,	GetDACamera(input));
 		class_add_element("shader",			TypeShaderP,	GetDACamera(shader));
+		class_add_element("override_shader",			TypeShaderP,	GetDACamera(override_shader));
 		class_add_element("shaded_displays",TypeBool,		GetDACamera(shaded_displays));
 		class_add_element("pos",			TypeVector,		GetDACamera(pos));
 		class_add_element("ang",			TypeQuaternion,	GetDACamera(ang));
 		class_add_element("vel",			TypeVector,		GetDACamera(vel));
 		class_add_element("rot",			TypeVector,		GetDACamera(rot));
+		class_add_element("m_all",			TypeMatrix,		GetDACamera(m_all));
 		class_add_element("zoom",			TypeFloat32,		GetDACamera(zoom));
 		class_add_element("scale_x",		TypeFloat32,		GetDACamera(scale_x));
 		class_add_element("dest",			TypeRect,		GetDACamera(dest));
@@ -775,7 +779,7 @@ void SIAddPackageX()
 		class_add_func_virtual("on_remove_client",		TypeVoid,	x_p(mf(&Controller::on_remove_client)));
 		class_add_func("add_net_msg_handler",		TypeVoid,			x_p(mf(&Controller::add_net_msg_handler)));
 			func_add_param("name",		TypeString);
-			func_add_param("func",		TypePointer);
+			func_add_param("func",		TypeFunctionP);
 		class_add_func("start_net_msg",		TypeVoid,			x_p(mf(&Controller::start_net_msg)));
 			func_add_param("name",		TypeString);
 			func_add_param("target",		TypeInt);
@@ -959,7 +963,7 @@ void SIAddPackageX()
 	add_func("SplashScreen",					TypeVoid,	x_p(DrawSplashScreen));
 		func_add_param("status",		TypeString);
 		func_add_param("progress",		TypeFloat32);
-	add_func("RenderScene",									TypeVoid, 	NULL);
+	add_func("RenderScene",									TypeVoid, 	nullptr);
 	add_func("GetG",											TypeVector,	amd64_wrap(&GetG, &amd64_getg));
 		func_add_param("pos",		TypeVector);
 	add_func("Trace",											TypeBool,	x_p(&GodTrace));

@@ -20,15 +20,15 @@ Observer::~Observer()
 
 void Observer::subscribe(Observable *o, const string &message)
 {
-	o->addObserver(this, message);
+	o->add_observer(this, message);
 }
 
 void Observer::unsubscribe(Observable *o)
 {
-	o->removeObserver(this);
+	o->remove_observer(this);
 }
 
-string Observer::getName()
+string Observer::get_name()
 {
 	return observer_name;
 }
@@ -46,7 +46,7 @@ ObserverWrapper::ObserverWrapper(void *_handler, void *_func) :
 ObserverWrapper::~ObserverWrapper()
 {}
 
-void ObserverWrapper::onUpdate(Observable *o, const string &message)
+void ObserverWrapper::on_update(Observable *o, const string &message)
 {
 	if (handler){
 		typedef void mfunct(void *);

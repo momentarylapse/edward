@@ -35,14 +35,14 @@ ModeModelMeshCreateTorus::~ModeModelMeshCreateTorus()
 		delete(geo);
 }
 
-void ModeModelMeshCreateTorus::onStart()
+void ModeModelMeshCreateTorus::on_start()
 {
 	// Dialog
 	dialog = hui::CreateResourceDialog("new_torus_dialog", ed);
 
-	dialog->setInt("nt_rings", hui::Config.getInt("NewTorusNumX", 32));
-	dialog->setInt("nt_edges", hui::Config.getInt("NewTorusNumY", 16));
-	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
+	dialog->set_int("nt_rings", hui::Config.get_int("NewTorusNumX", 32));
+	dialog->set_int("nt_edges", hui::Config.get_int("NewTorusNumY", 16));
+	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
 	dialog->event("hui:close", std::bind(&ModeModelMeshCreateTorus::onClose, this));
 
@@ -53,7 +53,7 @@ void ModeModelMeshCreateTorus::onStart()
 }
 
 
-void ModeModelMeshCreateTorus::onEnd()
+void ModeModelMeshCreateTorus::on_end()
 {
 	delete(dialog);
 }
@@ -68,16 +68,16 @@ void ModeModelMeshCreateTorus::updateGeometry()
 	if (geo)
 		delete(geo);
 	if (pos_chosen){
-		int nx = dialog->getInt("nt_rings");
-		int ny = dialog->getInt("nt_edges");
-		hui::Config.setInt("NewTorusNumX", nx);
-		hui::Config.setInt("NewTorusNumY", ny);
+		int nx = dialog->get_int("nt_rings");
+		int ny = dialog->get_int("nt_edges");
+		hui::Config.set_int("NewTorusNumX", nx);
+		hui::Config.set_int("NewTorusNumY", ny);
 		geo = new GeometryTorus(pos, axis, radius1, radius2, nx, ny);
 	}
 }
 
 
-void ModeModelMeshCreateTorus::onLeftButtonUp()
+void ModeModelMeshCreateTorus::on_left_button_up()
 {
 	if (pos_chosen){
 		if (rad_chosen){
@@ -99,22 +99,22 @@ void ModeModelMeshCreateTorus::onLeftButtonUp()
 }
 
 
-void ModeModelMeshCreateTorus::onDrawWin(MultiView::Window *win)
+void ModeModelMeshCreateTorus::on_draw_win(MultiView::Window *win)
 {
-	parent->onDrawWin(win);
+	parent->on_draw_win(win);
 
 	if (pos_chosen){
 		mode_model->setMaterialCreation();
 		geo->build(nix::vb_temp);
 		nix::Draw3D(nix::vb_temp);
 		nix::EnableLighting(false);
-		ed->drawStr(100, 100, format("%.3f / %.3f", radius1, radius2));
+		ed->draw_str(100, 100, format("%.3f / %.3f", radius1, radius2));
 	}
 }
 
 
 
-void ModeModelMeshCreateTorus::onMouseMove()
+void ModeModelMeshCreateTorus::on_mouse_move()
 {
 	axis = multi_view->mouse_win->getDirection();
 	if (pos_chosen){

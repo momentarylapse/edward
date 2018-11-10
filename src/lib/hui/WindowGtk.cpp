@@ -18,6 +18,10 @@ namespace hui
 {
 
 
+void DBDEL(const string &type, const string &id, void *p);
+void DBDEL_DONE();
+
+
 #if !GTK_CHECK_VERSION(3,0,0)
 GtkWidget *gtk_box_new(GtkOrientation orientation, int spacing); // -> hui_window_control_gtk.cpp
 #endif
@@ -34,7 +38,7 @@ inline Window *win_from_widget(void *widget)
 	for (Window *win: _all_windows_)
 		if (win->window == widget)
 			return win;
-	return NULL;
+	return nullptr;
 }
 
 void WinTrySendByKeyCode(Window *win, int key_code)
@@ -54,7 +58,7 @@ static gboolean on_gtk_window_close(GtkWidget *widget, GdkEvent *event, gpointer
 	Event e = Event("", "hui:close");
 	if (win->_send_event_(&e))
 		return true;
-	win->onCloseRequest();
+	win->on_close_request();
 	return true;
 }
 
@@ -89,7 +93,7 @@ static void on_gtk_window_resize(GtkWidget *widget, gpointer user_data)
 
 void Window::_init_(const string &title, int width, int height, Window *root, bool allow_root, int mode)
 {
-	window = NULL;
+	window = nullptr;
 	win = this;
 	if ((mode & WIN_MODE_DUMMY) > 0)
 		return;
@@ -145,9 +149,9 @@ void Window::_init_(const string &title, int width, int height, Window *root, bo
 	desired_height = height;
 
 	// icon
-	string logo = Application::getProperty("logo");
+	string logo = Application::get_property("logo");
 	if (logo.num > 0)
-		gtk_window_set_icon_from_file(GTK_WINDOW(window), sys_str_f(logo), NULL);
+		gtk_window_set_icon_from_file(GTK_WINDOW(window), sys_str_f(logo), nullptr);
 
 	// catch signals
 	g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(&on_gtk_window_close), this);
@@ -175,6 +179,8 @@ void Window::_init_(const string &title, int width, int height, Window *root, bo
 #endif
 	gtk_box_pack_start(GTK_BOX(vbox), toolbar[TOOLBAR_TOP]->widget, FALSE, FALSE, 0);
 
+	infobar = nullptr;
+
 
 	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
@@ -183,8 +189,8 @@ void Window::_init_(const string &title, int width, int height, Window *root, bo
 
 	gtk_box_pack_start(GTK_BOX(hbox), toolbar[TOOLBAR_LEFT]->widget, FALSE, FALSE, 0);
 
-	plugable = NULL;
-	cur_control = NULL;
+	plugable = nullptr;
+	cur_control = nullptr;
 	// free to use...
 	//cur_control = hbox;
 	plugable = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
@@ -200,7 +206,7 @@ void Window::_init_(const string &title, int width, int height, Window *root, bo
 	gtk_box_pack_start(GTK_BOX(vbox), statusbar, FALSE, FALSE, 0);
 	
 #ifdef OS_WINDOWS
-	hWnd = NULL;
+	hWnd = nullptr;
 #endif
 }
 
@@ -219,21 +225,19 @@ void Window::__delete__()
 
 void Window::destroy()
 {
-	onDestroy();
-
-	// quick'n'dirty fix (gtk destroys its widgets recursively)
-	for (Control *c: controls)
-		c->widget = NULL;
+	DBDEL("window", id, this);
+	on_destroy();
 
 	_clean_up_();
 
 	gtk_widget_destroy(window);
-	window = NULL;
+	window = nullptr;
+	DBDEL_DONE();
 }
 
-bool Window::gotDestroyed()
+bool Window::got_destroyed()
 {
-	return window == NULL;
+	return window == nullptr;
 }
 
 // should be called after creating (and filling) the window to actually show it
@@ -268,9 +272,9 @@ void Window::run()
 			break;
 		bool allow=true;
 		if (HuiIdleFunction)
-			got_message=(PeekMessage(&messages,NULL,0U,0U,PM_REMOVE)!=0);
+			got_message=(PeekMessage(&messages,nullptr,0U,0U,PM_REMOVE)!=0);
 		else
-			got_message=(GetMessage(&messages,NULL,0,0)!=0);
+			got_message=(GetMessage(&messages,nullptr,0,0)!=0);
 		if (got_message){
 			allow=false;
 			TranslateMessage(&messages);
@@ -285,17 +289,17 @@ void Window::run()
 	}
 #endif
 #ifdef HUI_API_GTK
-	if (getParent()){
+	if (get_parent()){
 		gtk_dialog_run(GTK_DIALOG(window));
 	}else{
-		while(!gotDestroyed()){
-			Application::doSingleMainLoop();
+		while(!got_destroyed()){
+			Application::do_single_main_loop();
 		}
 	}
 #endif
 }
 
-void Window::setMenu(Menu *_menu)
+void Window::set_menu(Menu *_menu)
 {
 	// remove old menu...
 	if (menu){
@@ -309,10 +313,6 @@ void Window::setMenu(Menu *_menu)
 		}
 		gtk_menu.clear();
 		/*menu->set_win(NULL);
-		foreach(HuiControl *c, list){
-			for (int i=0;i<control.num;i++)
-				if (control[i] == c)
-					control.erase(i);
 		}*/
 		delete(menu);
 	}
@@ -334,8 +334,6 @@ void Window::setMenu(Menu *_menu)
 			gtk_menu_shell_append(GTK_MENU_SHELL(menubar), gtk_menu[i]);
 			g_object_unref(it->widget);
 		}
-		Array<Control*> list = menu->get_all_controls();
-		controls.append(list);
 	}else
 		gtk_widget_hide(menubar);
 }
@@ -347,23 +345,23 @@ void Window::hide()
 }
 
 // set the string in the title bar
-void Window::setTitle(const string &title)
+void Window::set_title(const string &title)
 {
 	gtk_window_set_title(GTK_WINDOW(window),sys_str(title));
 }
 
 // set the upper left corner of the window in screen corrdinates
-void Window::setPosition(int x, int y)
+void Window::set_position(int x, int y)
 {
 	gtk_window_move(GTK_WINDOW(window),x,y);
 }
 
-void Window::getPosition(int &x, int &y)
+void Window::get_position(int &x, int &y)
 {
 	gtk_window_get_position(GTK_WINDOW(window), &x, &y);
 }
 
-void Window::setSize(int width, int height)
+void Window::set_size(int width, int height)
 {
 	desired_width = width;
 	desired_height = height;
@@ -374,17 +372,17 @@ void Window::setSize(int width, int height)
 }
 
 // get the current window position and size (including the frame and menu/toolbars...)
-void Window::getSize(int &width, int &height)
+void Window::get_size(int &width, int &height)
 {
 	gtk_window_get_size(GTK_WINDOW(window), &width, &height);
 }
 
 // set the window position and size it had wouldn't it be maximized (including the frame and menu/toolbars...)
 //    if not maximized this behaves like <SetOuterior>
-void Window::setSizeDesired(int width, int height)
+void Window::set_size_desired(int width, int height)
 {
 	// bad hack
-	bool maximized = isMaximized();
+	bool maximized = is_maximized();
 	if (maximized)
 		gtk_window_unmaximize(GTK_WINDOW(window));
 	gtk_window_resize(GTK_WINDOW(window), width, height);
@@ -396,9 +394,9 @@ void Window::setSizeDesired(int width, int height)
 
 // get the window position and size it had wouldn't it be maximized (including the frame and menu/toolbars...)
 //    if not maximized this behaves like <GetOuterior>
-void Window::getSizeDesired(int &width, int &height)
+void Window::get_size_desired(int &width, int &height)
 {
-	if (isMaximized()){
+	if (is_maximized()){
 		width = desired_width;
 		height = desired_height;
 	}else{
@@ -406,7 +404,7 @@ void Window::getSizeDesired(int &width, int &height)
 	}
 }
 
-void Window::showCursor(bool show)
+void Window::show_cursor(bool show)
 {
 #ifdef OS_WINDOWS
 	int s=::ShowCursor(show);
@@ -419,7 +417,7 @@ void Window::showCursor(bool show)
 	}
 #else
 	if (show)
-		gdk_window_set_cursor(gtk_widget_get_window(vbox), NULL);
+		gdk_window_set_cursor(gtk_widget_get_window(vbox), nullptr);
 	else
 		gdk_window_set_cursor(gtk_widget_get_window(vbox), (GdkCursor*)invisible_cursor);
 #endif
@@ -429,7 +427,7 @@ extern int GtkAreaMouseSet;
 extern int GtkAreaMouseSetX, GtkAreaMouseSetY;
 
 // relative to Interior
-void Window::setCursorPos(int x, int y)
+void Window::set_cursor_pos(int x, int y)
 {
 	if (main_input_control){
 		//msg_write(format("set cursor %d %d  ->  %d %d", (int)input.x, (int)input.y, x, y));
@@ -451,10 +449,10 @@ void Window::setCursorPos(int x, int y)
 	}
 }
 
-void Window::setMaximized(bool maximized)
+void Window::set_maximized(bool maximized)
 {
 	if (maximized){
-		if (!isMaximized())
+		if (!is_maximized())
 			gtk_window_get_size(GTK_WINDOW(window), &desired_width, &desired_height);
 		gtk_window_maximize(GTK_WINDOW(window));
 	}else{
@@ -462,18 +460,18 @@ void Window::setMaximized(bool maximized)
 	}
 }
 
-bool Window::isMaximized()
+bool Window::is_maximized()
 {
 	return gtk_window_is_maximized(GTK_WINDOW(window));
 }
 
-bool Window::isMinimized()
+bool Window::is_minimized()
 {
 	int state = gdk_window_get_state(gtk_widget_get_window(window));
 	return ((state & GDK_WINDOW_STATE_ICONIFIED) > 0);
 }
 
-void Window::setFullscreen(bool fullscreen)
+void Window::set_fullscreen(bool fullscreen)
 {
 	if (fullscreen)
 		gtk_window_fullscreen(GTK_WINDOW(window));
@@ -481,7 +479,7 @@ void Window::setFullscreen(bool fullscreen)
 		gtk_window_unfullscreen(GTK_WINDOW(window));
 }
 
-void Window::enableStatusbar(bool enabled)
+void Window::enable_statusbar(bool enabled)
 {
 	if (enabled)
 	    gtk_widget_show(statusbar);
@@ -490,9 +488,77 @@ void Window::enableStatusbar(bool enabled)
 	statusbar_enabled = enabled;
 }
 
-void Window::setStatusText(const string &str)
+void Window::set_status_text(const string &str)
 {
 	gtk_statusbar_push(GTK_STATUSBAR(statusbar),0,sys_str(str));
+}
+
+static Array<string> __info_bar_responses;
+static int make_info_bar_response(const string &id)
+{
+	foreachi (string &_id, __info_bar_responses, i)
+		if (_id == id)
+			return i + 1234;
+	__info_bar_responses.add(id);
+	return __info_bar_responses.num - 1 + 1234;
+}
+
+void __GtkOnInfoBarResponse(GtkWidget *widget, int response, gpointer data)
+{
+	gtk_widget_destroy(widget);
+	Window *win = (Window*)data;
+
+	int index = response - 1234;
+	if (index >= 0 and index < __info_bar_responses.num){
+		Event e = Event(__info_bar_responses[index], "hui:info");
+		win->_send_event_(&e);
+	}
+	//win->infobar = nullptr;
+	//win->
+}
+
+void Window::set_info_text(const string &str, const Array<string> &options)
+{
+	/*if (infobar)
+		return;*/
+
+
+	infobar = gtk_info_bar_new();
+	gtk_box_pack_start(GTK_BOX(vbox), infobar, FALSE, FALSE, 0);
+	gtk_box_reorder_child(GTK_BOX(vbox), infobar, 2);
+	//gtk_widget_set_no_show_all(infobar, TRUE);
+
+	auto *content_area = gtk_info_bar_get_content_area(GTK_INFO_BAR(infobar));
+	auto *message_label = gtk_label_new("");
+	gtk_label_set_text(GTK_LABEL (message_label), sys_str(str));
+	gtk_container_add(GTK_CONTAINER(content_area), message_label);
+	gtk_widget_show(message_label);
+
+	GtkMessageType type = GTK_MESSAGE_INFO;
+	bool allow_close = false;
+	int num_buttons = 0;
+	for (auto &o: options){
+		if (o == "error")
+			type = GTK_MESSAGE_ERROR;
+		if (o == "warning")
+			type = GTK_MESSAGE_WARNING;
+		if (o == "question")
+			type = GTK_MESSAGE_QUESTION;
+		if (o == "allow-close")
+			allow_close = true;
+		if (o.head(7) == "button:"){
+			auto x = o.explode(":");
+			if (x.num >= 3)
+				gtk_info_bar_add_button(GTK_INFO_BAR(infobar), sys_str(x[2]), make_info_bar_response(x[1]));
+		}
+	}
+	gtk_info_bar_set_message_type(GTK_INFO_BAR(infobar), type);
+	gtk_info_bar_set_show_close_button(GTK_INFO_BAR(infobar), allow_close);
+
+
+	g_signal_connect(infobar, "response", G_CALLBACK(&__GtkOnInfoBarResponse), this);
+
+	gtk_widget_show(infobar);
 }
 
 
@@ -502,18 +568,15 @@ void Panel::activate(const string &control_id)
 	gtk_widget_grab_focus(win->window);
 	gtk_window_present(GTK_WINDOW(win->window));
 	if (control_id.num > 0)
-		for (int i=0;i<controls.num;i++)
-			if (control_id == controls[i]->id)
-				controls[i]->focus();
+		apply_foreach(control_id, [&](Control *c){ c->focus(); });
 }
 
-bool Panel::isActive(const string &control_id)
+bool Panel::is_active(const string &control_id)
 {
 	if (control_id.num > 0){
-		for (int i=0;i<controls.num;i++)
-			if (control_id == controls[i]->id)
-				return controls[i]->hasFocus();
-		return false;
+		bool r = false;
+		apply_foreach(control_id, [&](Control *c){ r = c->has_focus(); });
+		return r;
 	}
 	return (bool)gtk_widget_has_focus(win->window);
 }

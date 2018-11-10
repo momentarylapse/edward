@@ -28,13 +28,14 @@ ControlTabControl::ControlTabControl(const string &title, const string &id, Pane
 	widget = gtk_notebook_new();
 	this->panel = panel; // for addPage()
 
-	for (int i=0;i<PartString.num;i++)
-		addPage(PartString[i]);
+	if (PartString.num > 1 or PartString[0] != "")
+		for (int i=0;i<PartString.num;i++)
+			addPage(PartString[i]);
 
 	cur_page = 0;
 	g_signal_connect(G_OBJECT(widget), "switch-page", G_CALLBACK(&OnGtkTabControlSwitch), this);
 	gtk_notebook_set_scrollable(GTK_NOTEBOOK(widget), true);
-	setOptions(OptionString);
+	set_options(OptionString);
 }
 
 ControlTabControl::~ControlTabControl()
@@ -43,34 +44,44 @@ ControlTabControl::~ControlTabControl()
 	gtk_notebook_set_show_tabs(GTK_NOTEBOOK(widget), false);
 }
 
-string ControlTabControl::getString()
+string ControlTabControl::get_string()
 {
 	return "";
 }
 
-void ControlTabControl::__setString(const string& str)
+void ControlTabControl::__set_string(const string& str)
 {
 }
 
-void ControlTabControl::__setInt(int i)
+void ControlTabControl::__set_int(int i)
 {
 	gtk_notebook_set_current_page(GTK_NOTEBOOK(widget), i);
 	cur_page = i;
 }
 
-int ControlTabControl::getInt()
+int ControlTabControl::get_int()
 {
 	return cur_page;
 }
 
-void ControlTabControl::__addString(const string &str)
+void ControlTabControl::__add_string(const string &str)
 {
 	addPage(str);
 }
 
-void ControlTabControl::__removeString(int row)
+void ControlTabControl::__remove_string(int row)
 {
+	if (row >= 0 and row < pages.num){
+		delete pages[row];
+		pages.erase(row);
+	}
 	gtk_notebook_remove_page(GTK_NOTEBOOK(widget), row);
+}
+
+void ControlTabControl::__change_string(int row, const string& str)
+{
+	auto *child = gtk_notebook_get_nth_page(GTK_NOTEBOOK(widget), row);
+	gtk_notebook_set_tab_label_text(GTK_NOTEBOOK(widget), child, str.c_str());
 }
 
 void ControlTabControl::addPage(const string &str)
@@ -89,6 +100,12 @@ void ControlTabControl::addPage(const string &str)
 
 void ControlTabControl::add(Control *child, int x, int y)
 {
+	if (x >= pages.num)
+		pages.resize(x + 1);
+	if (pages[x])
+		msg_error("overwriting existing tab page... in " + id);
+	pages[x] = child;
+
 	GtkWidget *child_widget = child->get_frame();
 	GtkWidget *target_widget = gtk_notebook_get_nth_page(GTK_NOTEBOOK(widget), x);
 	gtk_container_add(GTK_CONTAINER(target_widget), child_widget);
@@ -98,12 +115,23 @@ void ControlTabControl::add(Control *child, int x, int y)
 	child->parent = this;
 }
 
-void ControlTabControl::__setOption(const string &op, const string &value)
+void ControlTabControl::__set_option(const string &op, const string &value)
 {
 	if (op == "nobar")
 		gtk_notebook_set_show_tabs(GTK_NOTEBOOK(widget), false);
 	else if (op == "bar")
 		gtk_notebook_set_show_tabs(GTK_NOTEBOOK(widget), value._bool());
+	else if (op == "top")
+		gtk_notebook_set_tab_pos(GTK_NOTEBOOK(widget), GTK_POS_TOP);
+	else if (op == "bottom")
+		gtk_notebook_set_tab_pos(GTK_NOTEBOOK(widget), GTK_POS_BOTTOM);
+	else if (op == "left"){
+		gtk_notebook_set_tab_pos(GTK_NOTEBOOK(widget), GTK_POS_LEFT);
+		gtk_notebook_set_scrollable(GTK_NOTEBOOK(widget), false);
+	}else if (op == "right"){
+		gtk_notebook_set_tab_pos(GTK_NOTEBOOK(widget), GTK_POS_RIGHT);
+		gtk_notebook_set_scrollable(GTK_NOTEBOOK(widget), false);
+	}
 }
 
 };

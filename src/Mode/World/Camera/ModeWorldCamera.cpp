@@ -51,12 +51,12 @@ ModeWorldCamera::~ModeWorldCamera()
 	delete(inter_ang);
 }
 
-void ModeWorldCamera::onStart()
+void ModeWorldCamera::on_start()
 {
 	dialog = new CameraDialog(this);
 	ed->embed(dialog, "root-table", 0, 1);
 
-	ed->toolbar[hui::TOOLBAR_TOP]->setByID("world-camera-toolbar");
+	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("world-camera-toolbar");
 
 	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
@@ -72,19 +72,19 @@ void ModeWorldCamera::onStart()
 	loadData();
 }
 
-void ModeWorldCamera::onEnd()
+void ModeWorldCamera::on_end()
 {
 	Observer::unsubscribe(data);
 	Observer::unsubscribe(multi_view);
 	delete(dialog);
 	multi_view->clearData(data);
 
-	parent->onStart();
+	parent->on_start();
 }
 
 void ModeWorldCamera::addPoint()
 {
-	ed->setMode(new ModeWorldCameraCreatePoint(ed->cur_mode));
+	ed->set_mode(new ModeWorldCameraCreatePoint(ed->cur_mode));
 }
 
 void ModeWorldCamera::deletePoint()
@@ -138,7 +138,7 @@ void ModeWorldCamera::previewStop()
 {
 	preview = false;
 	multi_view->cam.ignore_radius = false;
-	ed->forceRedraw();
+	ed->force_redraw();
 	notify();
 }
 
@@ -149,7 +149,7 @@ void ModeWorldCamera::previewUpdate()
 	multi_view->cam.pos = inter_pos->get(preview_time / duration);
 	multi_view->cam.ang = inter_ang->get(preview_time / duration);
 
-	ed->forceRedraw();
+	ed->force_redraw();
 	if (preview_time > duration)
 		previewStop();
 	if (preview)
@@ -157,7 +157,7 @@ void ModeWorldCamera::previewUpdate()
 	notify();
 }
 
-void ModeWorldCamera::onCommand(const string &id)
+void ModeWorldCamera::on_command(const string &id)
 {
 	if (id == "cam_undo")
 		data->action_manager->undo();
@@ -171,16 +171,16 @@ void ModeWorldCamera::onCommand(const string &id)
 	if (id == "cam_save")
 		save();
 	if (id == "cam_save_as")
-		saveAs();
+		save_as();
 }
 
-void ModeWorldCamera::onUpdateMenu()
+void ModeWorldCamera::on_update_menu()
 {
 	ed->enable("cam_undo", data->action_manager->undoable());
 	ed->enable("cam_redo", data->action_manager->redoable());
 }
 
-void ModeWorldCamera::onUpdate(Observable *o, const string &message)
+void ModeWorldCamera::on_update(Observable *o, const string &message)
 {
 	if (message == data->MESSAGE_CHANGE){
 		data->UpdateVel();
@@ -190,7 +190,7 @@ void ModeWorldCamera::onUpdate(Observable *o, const string &message)
 
 void ModeWorldCamera::loadData()
 {
-	onUpdateMenu();
+	on_update_menu();
 
 	*inter_pos = data->BuildPosInterpolator();
 	*inter_ang = data->BuildAngInterpolator();
@@ -212,12 +212,12 @@ void ModeWorldCamera::loadData()
 			data->Vel,
 			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE | MultiView::FLAG_DRAW);
-	ed->forceRedraw();
+	ed->force_redraw();
 }
 
-void ModeWorldCamera::onDrawWin(MultiView::Window *win)
+void ModeWorldCamera::on_draw_win(MultiView::Window *win)
 {
-	parent->onDrawWin(win);
+	parent->on_draw_win(win);
 
 	nix::EnableLighting(false);
 	nix::SetWorldMatrix(m_id);
@@ -250,14 +250,14 @@ void ModeWorldCamera::onDrawWin(MultiView::Window *win)
 
 void ModeWorldCamera::_new()
 {
-	if (ed->allowTermination())
+	if (ed->allow_termination())
 		data->reset();
 }
 
 bool ModeWorldCamera::open()
 {
-	if (ed->allowTermination())
-		if (ed->fileDialog(FD_CAMERAFLIGHT, false, true))
+	if (ed->allow_termination())
+		if (ed->file_dialog(FD_CAMERAFLIGHT, false, true))
 			return data->load(ed->dialog_file_complete);
 	return false;
 }
@@ -267,12 +267,12 @@ bool ModeWorldCamera::save()
 	if (data->filename.num > 0)
 		return data->save(data->filename);
 	else
-		return saveAs();
+		return save_as();
 }
 
-bool ModeWorldCamera::saveAs()
+bool ModeWorldCamera::save_as()
 {
-	if (ed->fileDialog(FD_CAMERAFLIGHT, true, true))
+	if (ed->file_dialog(FD_CAMERAFLIGHT, true, true))
 		return data->save(ed->dialog_file_complete);
 	return false;
 }

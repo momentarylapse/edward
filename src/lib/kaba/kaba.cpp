@@ -24,7 +24,7 @@
 
 namespace Kaba{
 
-string Version = "0.16.3.0";
+string Version = "0.16.7.0";
 
 //#define ScriptDebug
 
@@ -47,8 +47,8 @@ Exception::Exception(const Asm::Exception &e, Script *s) :
 
 static int shift_right=0;
 
-Array<Script*> PublicScript;
-Array<Script*> DeadScript;
+Array<Script*> _public_scripts_;
+Array<Script*> _dead_scripts_;
 
 
 
@@ -57,10 +57,10 @@ Array<Script*> DeadScript;
 Script *Load(const string &filename, bool just_analyse)
 {
 	//msg_write(string("Lade ",filename));
-	Script *s = NULL;
+	Script *s = nullptr;
 
 	// already loaded?
-	for (Script *ps: PublicScript)
+	for (Script *ps: _public_scripts_)
 		if (ps->filename == filename.sys_filename())
 			return ps;
 	
@@ -74,7 +74,7 @@ Script *Load(const string &filename, bool just_analyse)
 	}
 
 	// store script in database
-	PublicScript.add(s);
+	_public_scripts_.add(s);
 	return s;
 }
 
@@ -101,33 +101,34 @@ void Remove(Script *s)
 		i->reference_counter --;
 
 	// put on to-delete-list
-	DeadScript.add(s);
+	_dead_scripts_.add(s);
 
 	// remove from normal list
-	for (int i=0;i<PublicScript.num;i++)
-		if (PublicScript[i] == s)
-			PublicScript.erase(i);
+	for (int i=0;i<_public_scripts_.num;i++)
+		if (_public_scripts_[i] == s)
+			_public_scripts_.erase(i);
 
 	// delete all deletables
-	for (int i=DeadScript.num-1;i>=0;i--)
-		if (DeadScript[i]->reference_counter <= 0){
-			delete(DeadScript[i]);
-			DeadScript.erase(i);
+	for (int i=_dead_scripts_.num-1;i>=0;i--)
+		if (_dead_scripts_[i]->reference_counter <= 0){
+			delete(_dead_scripts_[i]);
+			_dead_scripts_.erase(i);
 		}
 }
 
 void DeleteAllScripts(bool even_immortal, bool force)
 {
 	// try to erase them...
-	foreachb(Script *s, PublicScript)
+	auto to_del = _public_scripts_;
+	foreachb(Script *s, to_del)
 		if ((!s->syntax->flag_immortal) or even_immortal)
 			Remove(s);
 
 	// undead... really KILL!
 	if (force){
-		foreachb(Script *s, DeadScript)
+		foreachb(Script *s, _dead_scripts_)
 			delete(s);
-		DeadScript.clear();
+		_dead_scripts_.clear();
 	}
 
 	//ScriptResetSemiExternalData();
@@ -141,18 +142,16 @@ void DeleteAllScripts(bool even_immortal, bool force)
 }
 
 
-extern Array<Script*> PublicScript;
-
 Class *GetDynamicType(const void *p)
 {
 	VirtualTable *pp = *(VirtualTable**)p;
-	for (Script *s: PublicScript){
+	for (Script *s: _public_scripts_){
 		for (Class *t: s->syntax->classes){
 			if (t->vtable.data == pp)
 				return t;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 Array<Script*> loading_script_stack;
@@ -180,7 +179,8 @@ void Script::Load(const string &_filename, bool _just_analyse)
 		}
 
 	}catch(FileError &e){
-		DoError("script file not loadable");
+		loading_script_stack.pop();
+		DoError("script file not loadable: " + filename);
 	}catch(Exception &e){
 		loading_script_stack.pop();
 		throw e;
@@ -223,24 +223,24 @@ Script::Script()
 
 	reference_counter = 0;
 
-	cur_func = NULL;
-	__first_execution = NULL;
+	cur_func = nullptr;
+	__first_execution = nullptr;
 	__waiting_mode = WAITING_MODE_FIRST;
 	__time_to_wait = 0;
 	show_compiler_stats = !config.compile_silently;
 
-	__thread_opcode = NULL;
+	__thread_opcode = nullptr;
 	__thread_opcode_size = 0;
 
-	__continue_execution = NULL;
+	__continue_execution = nullptr;
 	just_analyse = false;
 
-	opcode = NULL;
+	opcode = nullptr;
 	opcode_size = 0;
-	memory = NULL;
+	memory = nullptr;
 	memory_size = 0;
 	memory_used = 0;
-	__stack = NULL;
+	__stack = nullptr;
 
 	syntax = new SyntaxTree(this);
 }
@@ -351,7 +351,7 @@ void *Script::MatchFunction(const string &name, const string &return_type, int n
 			}
 		}
 
-	return NULL;
+	return nullptr;
 }
 
 void *Script::MatchClassFunction(const string &_class, bool allow_derived, const string &name, const string &return_type, int num_params, ...)
@@ -366,7 +366,7 @@ void *Script::MatchClassFunction(const string &_class, bool allow_derived, const
 
 	Class *root_type = syntax->FindType(_class);
 	if (!root_type)
-		return NULL;
+		return nullptr;
 
 	// match
 	foreachi(Function *f, syntax->functions, i){
@@ -390,7 +390,7 @@ void *Script::MatchClassFunction(const string &_class, bool allow_derived, const
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void print_var(void *p, const string &name, Class *t)

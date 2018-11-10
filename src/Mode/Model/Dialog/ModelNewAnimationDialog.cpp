@@ -12,11 +12,11 @@
 ModelNewAnimationDialog::ModelNewAnimationDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data, int index, int type):
 	hui::Dialog("new_animation_dialog", 400, 300, _parent, _allow_parent)
 {
-	fromResource("new_animation_dialog");
+	from_resource("new_animation_dialog");
 	data = _data;
 
-	setInt("new_animation_index", index);
-	setInt("new_animation_type", type - MOVE_TYPE_VERTEX);
+	set_int("new_animation_index", index);
+	set_int("new_animation_type", type - MOVE_TYPE_VERTEX);
 
 	event("hui:close", std::bind(&ModelNewAnimationDialog::onClose, this));
 	event("cancel", std::bind(&ModelNewAnimationDialog::onClose, this));
@@ -34,11 +34,11 @@ void ModelNewAnimationDialog::onClose()
 
 void ModelNewAnimationDialog::onOk()
 {
-	int index = getInt("new_animation_index");
-	int type = getInt("new_animation_type") + MOVE_TYPE_VERTEX;
+	int index = get_int("new_animation_index");
+	int type = get_int("new_animation_type") + MOVE_TYPE_VERTEX;
 	if (index < data->move.num)
 		if (data->move[index].frame.num > 0){
-			ed->errorBox(_("Es existiert bereits eine Animation mit diesem Index. Bitte einen anderen w&ahlen."));
+			ed->error_box(_("Es existiert bereits eine Animation mit diesem Index. Bitte einen anderen w&ahlen."));
 			return;
 		}
 	data->addAnimation(index, type);

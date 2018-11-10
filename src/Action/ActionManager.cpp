@@ -68,24 +68,24 @@ void ActionManager::add(Action *a)
 
 void *ActionManager::execute(Action *a)
 {
-	clearPreview();
+	clear_preview();
 	error_message = "";
 
 	if (cur_group)
 		return cur_group->addSubAction(a, data);
 
 	try{
-		data->notifyBegin();
+		data->notify_begin();
 		void *p = a->execute_logged(data);
 		if (!a->was_trivial())
 			add(a);
 		if (!cur_group){
-			data->onPostActionUpdate();
+			data->on_post_action_update();
 		}
-		data->notifyEnd();
+		data->notify_end();
 		return p;
 	}catch(ActionException &e){
-		data->notifyEnd();
+		data->notify_end();
 		e.add_parent(a->name());
 		error_message = e.message;
 		error_location = e.where();
@@ -101,12 +101,12 @@ void *ActionManager::execute(Action *a)
 
 void ActionManager::undo()
 {
-	clearPreview();
+	clear_preview();
 	if (undoable()){
-		data->notifyBegin();
+		data->notify_begin();
 		action[-- cur_pos]->undo_logged(data);
-		data->onPostActionUpdate();
-		data->notifyEnd();
+		data->on_post_action_update();
+		data->notify_end();
 	}
 }
 
@@ -114,12 +114,12 @@ void ActionManager::undo()
 
 void ActionManager::redo()
 {
-	clearPreview();
+	clear_preview();
 	if (redoable()){
-		data->notifyBegin();
+		data->notify_begin();
 		action[cur_pos ++]->redo_logged(data);
-		data->onPostActionUpdate();
-		data->notifyEnd();
+		data->on_post_action_update();
+		data->notify_end();
 	}
 }
 
@@ -137,16 +137,16 @@ bool ActionManager::redoable()
 
 
 
-void ActionManager::beginActionGroup(const string &name)
+void ActionManager::begin_group(const string &name)
 {
-	clearPreview();
+	clear_preview();
 	if (!cur_group){
 		cur_group = new ActionGroupManual(name);
 	}
 	cur_group_level ++;
 }
 
-void ActionManager::endActionGroup()
+void ActionManager::end_group()
 {
 	cur_group_level --;
 	assert(cur_group_level >= 0);
@@ -155,11 +155,11 @@ void ActionManager::endActionGroup()
 		ActionGroup *g = cur_group;
 		cur_group = NULL;
 		execute(g);
-		data->onPostActionUpdate();
+		data->on_post_action_update();
 	}
 }
 
-void ActionManager::markCurrentAsSave()
+void ActionManager::mark_current_as_save()
 {
 	save_pos = cur_pos;
 	notify(MESSAGE_SAVED);
@@ -167,7 +167,7 @@ void ActionManager::markCurrentAsSave()
 
 
 
-bool ActionManager::isSave()
+bool ActionManager::is_save()
 {
 	return (cur_pos == save_pos);
 }
@@ -175,15 +175,15 @@ bool ActionManager::isSave()
 
 bool ActionManager::preview(Action *a)
 {
-	clearPreview();
+	clear_preview();
 	try{
-		data->notifyBegin();
+		data->notify_begin();
 		a->execute_logged(data);
-		data->onPostActionUpdate();
-		data->notifyEnd();
+		data->on_post_action_update();
+		data->notify_end();
 		_preview = a;
 	}catch(ActionException &e){
-		data->notifyEnd();
+		data->notify_end();
 		e.add_parent(a->name());
 		error_message = e.message;
 		error_location = e.where();
@@ -196,13 +196,13 @@ bool ActionManager::preview(Action *a)
 }
 
 
-void ActionManager::clearPreview()
+void ActionManager::clear_preview()
 {
 	if (_preview){
-		data->notifyBegin();
+		data->notify_begin();
 		_preview->undo_logged(data);
-		data->onPostActionUpdate();
-		data->notifyEnd();
+		data->on_post_action_update();
+		data->notify_end();
 		delete(_preview);
 		_preview = NULL;
 	}

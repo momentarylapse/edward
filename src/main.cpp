@@ -18,12 +18,12 @@ EdwardApp::EdwardApp() :
 	hui::Application("edward", "Deutsch", hui::FLAG_LOAD_RESOURCE)
 {
 	app = this;
-	setProperty("name", AppName);
-	setProperty("version", AppVersion);
-	setProperty("copyright", "© 2006-2018 by MichiSoft TM"); // ??? min=2004 (objectmaker) max=2006
-	setProperty("comment", _("Editor f&ur Spiele-Daten der x9-Engine"));
-	setProperty("website", "http://michi.is-a-geek.org/software");
-	setProperty("author", "Michael Ankele <michi@lupina.de>");
+	set_property("name", AppName);
+	set_property("version", AppVersion);
+	set_property("copyright", "© 2006-2018 by MichiSoft TM"); // ??? min=2004 (objectmaker) max=2006
+	set_property("comment", _("Editor f&ur Spiele-Daten der x9-Engine"));
+	set_property("website", "http://michi.is-a-geek.org/software");
+	set_property("author", "Michael Ankele <michi@lupina.de>");
 }
 
 #include "lib/kaba/kaba.h"
@@ -58,7 +58,7 @@ bool handle_special_args(const Array<string> &arg)
 
 }
 
-bool EdwardApp::onStartup(const Array<string> &arg)
+bool EdwardApp::on_startup(const Array<string> &arg)
 {
 	if (arg.num >= 2)
 		if (handle_special_args(arg))

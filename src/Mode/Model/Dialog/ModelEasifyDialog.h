@@ -25,7 +25,7 @@ public:
 	void OnClose();
 	void OnOk();
 
-	void onUpdate(Observable *o, const string &message);
+	void on_update(Observable *o, const string &message) override;
 
 private:
 	DataModel *data;

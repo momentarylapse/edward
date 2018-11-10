@@ -22,15 +22,15 @@ ModeWorldCreateObject::~ModeWorldCreateObject()
 {
 }
 
-void ModeWorldCreateObject::onStart()
+void ModeWorldCreateObject::on_start()
 {
 	filename = LastObjectFilename;
 	if (filename.num == 0)
 		onFindObject();
 
 	dialog = hui::CreateResourceDialog("world_new_object_dialog",ed);
-	dialog->setString("kind", filename);
-	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
+	dialog->set_string("kind", filename);
+	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->enable("name", false);
 	dialog->show();
 	dialog->event("hui:close", std::bind(&ModeWorldCreateObject::abort, this));
@@ -43,14 +43,14 @@ void ModeWorldCreateObject::onStart()
 }
 
 
-void ModeWorldCreateObject::onEnd()
+void ModeWorldCreateObject::on_end()
 {
 	delete(dialog);
 }
 
 void ModeWorldCreateObject::onFindObject()
 {
-	if (ed->fileDialog(FD_MODEL, false, true)){
+	if (ed->file_dialog(FD_MODEL, false, true)){
 		filename = ed->dialog_file_no_ending;
 		LastObjectFilename = filename;
 		message = _("neues Objekt setzen");
@@ -58,7 +58,7 @@ void ModeWorldCreateObject::onFindObject()
 }
 
 
-void ModeWorldCreateObject::onLeftButtonDown()
+void ModeWorldCreateObject::on_left_button_down()
 {
 	if (filename.num > 0){
 		data->AddObject(filename, multi_view->getCursor3d());

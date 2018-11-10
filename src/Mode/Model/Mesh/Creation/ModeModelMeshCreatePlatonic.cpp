@@ -35,7 +35,7 @@ ModeModelMeshCreatePlatonic::~ModeModelMeshCreatePlatonic()
 		delete(geo);
 }
 
-void ModeModelMeshCreatePlatonic::onStart()
+void ModeModelMeshCreatePlatonic::on_start()
 {
 	multi_view->setAllowSelect(false);
 	multi_view->setAllowAction(false);
@@ -44,8 +44,8 @@ void ModeModelMeshCreatePlatonic::onStart()
 		return;
 	// Dialog
 	dialog = hui::CreateResourceDialog("new_teapot_dialog", ed);
-	dialog->setInt("ntp_samples", hui::Config.getInt("NewTeapotSamples", 4));
-	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
+	dialog->set_int("ntp_samples", hui::Config.get_int("NewTeapotSamples", 4));
+	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
 	dialog->event("hui:close", std::bind(&ModeModelMeshCreatePlatonic::onClose, this));
 
@@ -53,7 +53,7 @@ void ModeModelMeshCreatePlatonic::onStart()
 }
 
 
-void ModeModelMeshCreatePlatonic::onEnd()
+void ModeModelMeshCreatePlatonic::on_end()
 {
 	if (dialog)
 		delete(dialog);
@@ -70,8 +70,8 @@ void ModeModelMeshCreatePlatonic::updateGeometry()
 		delete(geo);
 	if (pos_chosen){
 		if (type == 306){
-			int samples = dialog->getInt("ntp_samples");
-			hui::Config.setInt("NewTeapotSamples", samples);
+			int samples = dialog->get_int("ntp_samples");
+			hui::Config.set_int("NewTeapotSamples", samples);
 			geo = new GeometryTeapot(pos, radius, samples);
 		}else{
 			geo = new GeometryPlatonic(pos, radius, type);
@@ -80,7 +80,7 @@ void ModeModelMeshCreatePlatonic::updateGeometry()
 }
 
 
-void ModeModelMeshCreatePlatonic::onLeftButtonUp()
+void ModeModelMeshCreatePlatonic::on_left_button_up()
 {
 	if (pos_chosen){
 		data->pasteGeometry(*geo, mode_model_mesh->current_material);
@@ -95,9 +95,9 @@ void ModeModelMeshCreatePlatonic::onLeftButtonUp()
 }
 
 
-void ModeModelMeshCreatePlatonic::onDrawWin(MultiView::Window *win)
+void ModeModelMeshCreatePlatonic::on_draw_win(MultiView::Window *win)
 {
-	parent->onDrawWin(win);
+	parent->on_draw_win(win);
 
 	if (pos_chosen){
 		mode_model->setMaterialCreation();
@@ -109,7 +109,7 @@ void ModeModelMeshCreatePlatonic::onDrawWin(MultiView::Window *win)
 
 
 
-void ModeModelMeshCreatePlatonic::onMouseMove()
+void ModeModelMeshCreatePlatonic::on_mouse_move()
 {
 	if (pos_chosen){
 		vector pos2 = multi_view->getCursor3d(pos);

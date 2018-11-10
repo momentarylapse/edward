@@ -6,12 +6,11 @@ namespace hui
 
 
 //    for all
-bool Panel::isEnabled(const string &id)
+bool Panel::is_enabled(const string &id)
 {
-	for (int i=0;i<controls.num;i++)
-		if (id == controls[i]->id)
-			return controls[i]->enabled;
-	return false;
+	bool r = false;;
+	apply_foreach(id, [&](Control *c){ r = c->enabled; });
+	return r;
 }
 
 

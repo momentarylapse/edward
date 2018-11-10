@@ -22,7 +22,7 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	hui::Dialog("world_dialog", 400, 300, _parent, _allow_parent),
 	Observer("WorldPropertiesDialog")
 {
-	fromResource("world_dialog");
+	from_resource("world_dialog");
 	data = _data;
 	active = true;
 
@@ -30,15 +30,15 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 //	setTooltip("skybox", _("Modelle, die &uber die Hintergrundfarge gemalt werden\n- Doppelklick um ein Modell zu w&ahlen"));
 
 //	setTooltip("fog_start", _("Abstand, ab dem der Nebel beginnt (Intensit&at 0)"));
-	setTooltip("fog_end", _("maximale Sichtweite, dahinter hat der Nebel volle Intensit&at"));
-	setTooltip("fog_distance", _("Nebelintensit&at = exp( - Entfernung / Sichtweite )"));
+	set_tooltip("fog_end", _("maximale Sichtweite, dahinter hat der Nebel volle Intensit&at"));
+	set_tooltip("fog_distance", _("Nebelintensit&at = exp( - Entfernung / Sichtweite )"));
 
-	setTooltip("ambient", _("Generelles Umgebungslicht zus&atzlich zu allen Lichtquellen"));
-	setTooltip("sun_am", _("ungerichtetes Umgebungslicht"));
-	setTooltip("sun_di", _("frontales Licht"));
-	setTooltip("sun_sp", _("Glanzlicht"));
-	setTooltip("sun_ang_x", _("H&ohe &uber dem Horizont"));
-	setTooltip("sun_ang_y", _("Kompassrichtung entlang des Horizonts"));
+	set_tooltip("ambient", _("Generelles Umgebungslicht zus&atzlich zu allen Lichtquellen"));
+	set_tooltip("sun_am", _("ungerichtetes Umgebungslicht"));
+	set_tooltip("sun_di", _("frontales Licht"));
+	set_tooltip("sun_sp", _("Glanzlicht"));
+	set_tooltip("sun_ang_x", _("H&ohe &uber dem Horizont"));
+	set_tooltip("sun_ang_y", _("Kompassrichtung entlang des Horizonts"));
 
 	event("cancel", std::bind(&WorldPropertiesDialog::OnClose, this));
 	event("hui:close", std::bind(&WorldPropertiesDialog::OnClose, this));
@@ -52,11 +52,11 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	event("fog_mode:exp", std::bind(&WorldPropertiesDialog::OnFogModeExp, this));
 	event("fog_mode:exp2", std::bind(&WorldPropertiesDialog::OnFogModeExp, this));
 	event("skybox", std::bind(&WorldPropertiesDialog::OnSkybox, this));
-	eventX("skybox", "hui:select", std::bind(&WorldPropertiesDialog::OnSkyboxSelect, this));
+	event_x("skybox", "hui:select", std::bind(&WorldPropertiesDialog::OnSkyboxSelect, this));
 	event("remove_skybox", std::bind(&WorldPropertiesDialog::OnRemoveSkybox, this));
 	event("physics_enabled", std::bind(&WorldPropertiesDialog::OnPhysicsEnabled, this));
-	eventX("script_list", "hui:select", std::bind(&WorldPropertiesDialog::OnScriptSelect, this));
-	eventX("script_list", "hui:activate", std::bind(&WorldPropertiesDialog::OnEditScriptVars, this));
+	event_x("script_list", "hui:select", std::bind(&WorldPropertiesDialog::OnScriptSelect, this));
+	event_x("script_list", "hui:activate", std::bind(&WorldPropertiesDialog::OnEditScriptVars, this));
 	event("remove_script", std::bind(&WorldPropertiesDialog::OnRemoveScript, this));
 	event("add_script", std::bind(&WorldPropertiesDialog::OnAddScript, this));
 	event("edit_script_vars", std::bind(&WorldPropertiesDialog::OnEditScriptVars, this));
@@ -75,8 +75,8 @@ WorldPropertiesDialog::~WorldPropertiesDialog()
 
 void WorldPropertiesDialog::OnSkybox()
 {
-	int n = getInt("");
-	if (ed->fileDialog(FD_MODEL,false,true)){
+	int n = get_int("");
+	if (ed->file_dialog(FD_MODEL,false,true)){
 		temp.SkyBoxFile[n] = ed->dialog_file_no_ending;
 		FillSkyboxList();
 	}
@@ -84,7 +84,7 @@ void WorldPropertiesDialog::OnSkybox()
 
 void WorldPropertiesDialog::OnSkyboxSelect()
 {
-	int row = getInt("");
+	int row = get_int("");
 	if (row >= 0)
 		enable("remove_skybox", temp.SkyBoxFile[row].num > 0);
 	else
@@ -94,7 +94,7 @@ void WorldPropertiesDialog::OnSkyboxSelect()
 
 void WorldPropertiesDialog::OnScriptSelect()
 {
-	int row = getInt("");
+	int row = get_int("");
 	enable("remove_script", row >= 0);
 	enable("edit_script_vars", row >= 0);
 }
@@ -111,7 +111,7 @@ void WorldPropertiesDialog::OnClose()
 
 void WorldPropertiesDialog::OnSunEnabled()
 {
-	bool b = isChecked("");
+	bool b = is_checked("");
 	enable("sun_am", b);
 	enable("sun_di", b);
 	enable("sun_sp", b);
@@ -123,14 +123,14 @@ void WorldPropertiesDialog::OnSunEnabled()
 
 void WorldPropertiesDialog::OnSunAngFromCamera()
 {
-	setFloat("sun_ang_x", ed->multi_view_3d->cam.ang.x * 180.0f / pi);
-	setFloat("sun_ang_y", ed->multi_view_3d->cam.ang.y * 180.0f / pi);
+	set_float("sun_ang_x", ed->multi_view_3d->cam.ang.x * 180.0f / pi);
+	set_float("sun_ang_y", ed->multi_view_3d->cam.ang.y * 180.0f / pi);
 }
 
 
 void WorldPropertiesDialog::OnPhysicsEnabled()
 {
-	bool b = isChecked("");
+	bool b = is_checked("");
 	enable("gravitation_x", b);
 	enable("gravitation_y", b);
 	enable("gravitation_z", b);
@@ -140,7 +140,7 @@ void WorldPropertiesDialog::OnPhysicsEnabled()
 
 void WorldPropertiesDialog::OnRemoveSkybox()
 {
-	int n = getInt("skybox");
+	int n = get_int("skybox");
 	if (n >= 0)
 		if (temp.SkyBoxFile[n].num > 0){
 			temp.SkyBoxFile[n] = "";
@@ -152,7 +152,7 @@ void WorldPropertiesDialog::OnRemoveSkybox()
 
 void WorldPropertiesDialog::OnAddScript()
 {
-	if (ed->fileDialog(FD_SCRIPT, false, true)){
+	if (ed->file_dialog(FD_SCRIPT, false, true)){
 		WorldScript s;
 		s.filename = ed->dialog_file_complete.substr(Kaba::config.directory.num, -1);
 		temp.scripts.add(s);
@@ -182,7 +182,7 @@ void WorldPropertiesDialog::OnAddScript()
 
 void WorldPropertiesDialog::OnRemoveScript()
 {
-	int n = getInt("script_list");
+	int n = get_int("script_list");
 	if (n >= 0){
 		temp.scripts.erase(n);
 		FillScriptList();
@@ -232,7 +232,7 @@ void update_script_data(WorldScript &s)
 
 void WorldPropertiesDialog::OnEditScriptVars()
 {
-	int n = getInt("script_list");
+	int n = get_int("script_list");
 	if (n >= 0){
 		update_script_data(temp.scripts[n]);
 		auto dlg = new ScriptVarsDialog(this, &temp.scripts[n]);
@@ -274,14 +274,14 @@ void WorldPropertiesDialog::FillSkyboxList()
 	hui::ComboBoxSeparator = ":";
 	reset("skybox");
 	foreachi(string &sb, temp.SkyBoxFile, i)
-		addString("skybox", format("%d:%s", i, sb.c_str()));
+		add_string("skybox", format("%d:%s", i, sb.c_str()));
 	hui::ComboBoxSeparator = "\\";
 	enable("remove_skybox", false);
 }
 
 
 
-void WorldPropertiesDialog::onUpdate(Observable *o, const string &message)
+void WorldPropertiesDialog::on_update(Observable *o, const string &message)
 {
 	temp = data->meta_data;
 	LoadData();
@@ -294,7 +294,7 @@ void WorldPropertiesDialog::FillScriptList()
 	hui::ComboBoxSeparator = ":";
 	reset("script_list");
 	for (auto &s: temp.scripts)
-		addString("script_list", s.filename);
+		add_string("script_list", s.filename);
 	enable("remove_script", false);
 	enable("edit_script_vars", false);
 	hui::ComboBoxSeparator = "\\";
@@ -304,30 +304,30 @@ void WorldPropertiesDialog::FillScriptList()
 
 void WorldPropertiesDialog::ApplyData()
 {
-	temp.PhysicsEnabled = isChecked("physics_enabled");
-	temp.Gravity.x = getFloat("gravitation_x");
-	temp.Gravity.y = getFloat("gravitation_y");
-	temp.Gravity.z = getFloat("gravitation_z");
-	temp.BackGroundColor = getColor("bgc");
-	temp.FogEnabled = !isChecked("fog_mode:none");
-	if (isChecked("fog_mode:linear"))
+	temp.PhysicsEnabled = is_checked("physics_enabled");
+	temp.Gravity.x = get_float("gravitation_x");
+	temp.Gravity.y = get_float("gravitation_y");
+	temp.Gravity.z = get_float("gravitation_z");
+	temp.BackGroundColor = get_color("bgc");
+	temp.FogEnabled = !is_checked("fog_mode:none");
+	if (is_checked("fog_mode:linear"))
 		temp.FogMode = FOG_LINEAR;
-	else if (isChecked("fog_mode:exp"))
+	else if (is_checked("fog_mode:exp"))
 		temp.FogMode = FOG_EXP;
-	else if (isChecked("fog_mode:exp2"))
+	else if (is_checked("fog_mode:exp2"))
 		temp.FogMode = FOG_EXP2;
-	temp.FogStart = getFloat("fog_start");
-	temp.FogEnd = getFloat("fog_end");
-	temp.FogDensity = 1.0f / getFloat("fog_distance");
-	temp.FogColor = getColor("fog_color");
+	temp.FogStart = get_float("fog_start");
+	temp.FogEnd = get_float("fog_end");
+	temp.FogDensity = 1.0f / get_float("fog_distance");
+	temp.FogColor = get_color("fog_color");
 
-	temp.SunEnabled = isChecked("sun_enabled");
-	temp.SunAmbient = getColor("sun_am");
-	temp.SunDiffuse = getColor("sun_di");
-	temp.SunSpecular = getColor("sun_sp");
-	temp.SunAng.x = getFloat("sun_ang_x") / 180.0f * pi;
-	temp.SunAng.y = getFloat("sun_ang_y") / 180.0f * pi;
-	temp.Ambient = getColor("ambient");
+	temp.SunEnabled = is_checked("sun_enabled");
+	temp.SunAmbient = get_color("sun_am");
+	temp.SunDiffuse = get_color("sun_di");
+	temp.SunSpecular = get_color("sun_sp");
+	temp.SunAng.x = get_float("sun_ang_x") / 180.0f * pi;
+	temp.SunAng.y = get_float("sun_ang_y") / 180.0f * pi;
+	temp.Ambient = get_color("ambient");
 
 	data->execute(new ActionWorldEditData(temp));
 }
@@ -353,8 +353,8 @@ void WorldPropertiesDialog::restart()
 
 void WorldPropertiesDialog::LoadData()
 {
-	setDecimals(WorldFogDec);
-	setColor("bgc", temp.BackGroundColor);
+	set_decimals(WorldFogDec);
+	set_color("bgc", temp.BackGroundColor);
 	if (temp.FogEnabled){
 		if (temp.FogMode == FOG_LINEAR)
 			check("fog_mode:linear", true);
@@ -365,38 +365,38 @@ void WorldPropertiesDialog::LoadData()
 	}else{
 		check("fog_mode:none", true);
 	}
-	setFloat("fog_start", temp.FogStart);
-	setFloat("fog_end", temp.FogEnd);
-	setFloat("fog_distance", 1.0f / temp.FogDensity);
-	setColor("fog_color", temp.FogColor);
+	set_float("fog_start", temp.FogStart);
+	set_float("fog_end", temp.FogEnd);
+	set_float("fog_distance", 1.0f / temp.FogDensity);
+	set_color("fog_color", temp.FogColor);
 	enable("fog_start", temp.FogEnabled and (temp.FogMode == FOG_LINEAR));
 	enable("fog_end", temp.FogEnabled and (temp.FogMode == FOG_LINEAR));
 	enable("fog_distance", temp.FogEnabled and ((temp.FogMode == FOG_EXP) or (temp.FogMode == FOG_EXP2)));
 	enable("fog_color", temp.FogEnabled);
 
-	setDecimals(WorldLightDec);
+	set_decimals(WorldLightDec);
 	check("sun_enabled", temp.SunEnabled);
-	setColor("sun_am", temp.SunAmbient);
-	setColor("sun_di", temp.SunDiffuse);
-	setColor("sun_sp", temp.SunSpecular);
-	setFloat("sun_ang_x", temp.SunAng.x * 180.0f / pi);
-	setFloat("sun_ang_y", temp.SunAng.y * 180.0f / pi);
+	set_color("sun_am", temp.SunAmbient);
+	set_color("sun_di", temp.SunDiffuse);
+	set_color("sun_sp", temp.SunSpecular);
+	set_float("sun_ang_x", temp.SunAng.x * 180.0f / pi);
+	set_float("sun_ang_y", temp.SunAng.y * 180.0f / pi);
 	enable("sun_am", temp.SunEnabled);
 	enable("sun_di", temp.SunEnabled);
 	enable("sun_sp", temp.SunEnabled);
 	enable("sun_ang_x", temp.SunEnabled);
 	enable("sun_ang_y", temp.SunEnabled);
 	enable("sun_ang_from_camera", temp.SunEnabled);
-	setColor("ambient", temp.Ambient);
+	set_color("ambient", temp.Ambient);
 
-	setDecimals(WorldPhysicsDec);
+	set_decimals(WorldPhysicsDec);
 	check("physics_enabled", temp.PhysicsEnabled);
 	enable("gravitation_x", temp.PhysicsEnabled);
 	enable("gravitation_y", temp.PhysicsEnabled);
 	enable("gravitation_z", temp.PhysicsEnabled);
-	setFloat("gravitation_x", temp.Gravity.x);
-	setFloat("gravitation_y", temp.Gravity.y);
-	setFloat("gravitation_z", temp.Gravity.z);
+	set_float("gravitation_x", temp.Gravity.x);
+	set_float("gravitation_y", temp.Gravity.y);
+	set_float("gravitation_z", temp.Gravity.z);
 
 	FillSkyboxList();
 	FillScriptList();

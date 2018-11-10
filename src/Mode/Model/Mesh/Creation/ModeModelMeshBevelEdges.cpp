@@ -43,20 +43,20 @@ ModeModelMeshBevelEdges::~ModeModelMeshBevelEdges()
 {
 }
 
-void ModeModelMeshBevelEdges::onStart()
+void ModeModelMeshBevelEdges::on_start()
 {
 	multi_view->setAllowAction(false);
 	multi_view->setAllowSelect(false);
 }
 
-void ModeModelMeshBevelEdges::onEnd()
+void ModeModelMeshBevelEdges::on_end()
 {
-	data->action_manager->clearPreview();
+	data->action_manager->clear_preview();
 }
 
-void ModeModelMeshBevelEdges::onMouseMove()
+void ModeModelMeshBevelEdges::on_mouse_move()
 {
-	data->action_manager->clearPreview();
+	data->action_manager->clear_preview();
 
 	radius += (hui::GetEvent()->dx) / multi_view->active_win->zoom();
 	radius = clampf(radius, rad_max * 0.001f, rad_max);
@@ -66,20 +66,20 @@ void ModeModelMeshBevelEdges::onMouseMove()
 		abort();
 }
 
-void ModeModelMeshBevelEdges::onLeftButtonDown()
+void ModeModelMeshBevelEdges::on_left_button_down()
 {
-	data->action_manager->clearPreview();
+	data->action_manager->clear_preview();
 
 	data->setSelectionState(selection);
 	data->bevelSelectedEdges(radius);
 	abort();
 }
 
-void ModeModelMeshBevelEdges::onDrawWin(MultiView::Window *win)
+void ModeModelMeshBevelEdges::on_draw_win(MultiView::Window *win)
 {
-	parent->onDrawWin(win);
+	parent->on_draw_win(win);
 
-	ed->drawStr(100, 100, f2s(radius, 3));
+	ed->draw_str(100, 100, f2s(radius, 3));
 }
 
 

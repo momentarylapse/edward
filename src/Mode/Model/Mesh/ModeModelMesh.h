@@ -33,19 +33,19 @@ public:
 	ModeModelMesh(ModeBase *parent);
 	virtual ~ModeModelMesh();
 
-	virtual void onStart();
-	virtual void onEnter();
-	virtual void onEnd();
+	void on_start() override;
+	void on_enter() override;
+	void on_end() override;
 
-	virtual void onCommand(const string &id);
-	virtual void onUpdate(Observable *o, const string &message);
-	virtual void onUpdateMenu();
-	virtual void onSelectionChange();
-	virtual void onViewStageChange();
-	virtual void onSetMultiView();
+	void on_command(const string &id) override;
+	void on_update(Observable *o, const string &message) override;
+	void on_update_menu() override;
+	void on_selection_change() override;
+	void on_view_stage_change() override;
+	void on_set_multi_view() override;
 
-	virtual void onDrawWin(MultiView::Window *win);
-	virtual void onDraw();
+	void on_draw_win(MultiView::Window *win) override;
+	void on_draw() override;
 
 	void drawEffects(MultiView::Window *win);
 	void drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex, bool only_selected);
@@ -54,7 +54,7 @@ public:
 	void drawPhysical(MultiView::Window *win);
 	void drawAll(MultiView::Window *win, Array<ModelVertex> &vertex);
 
-	virtual bool optimizeView();
+	bool optimize_view() override;
 
 	void easify();
 

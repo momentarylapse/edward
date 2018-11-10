@@ -14,7 +14,7 @@ ConfigurationDialog::ConfigurationDialog(hui::Window* _parent, bool _allow_paren
 	hui::Dialog(_exporting ? "ge_dialog" : "rc_dialog", 400, 300, _parent, _allow_parent),
 	Observer("ConfigurationDialog")
 {
-	fromResource(_exporting ? "ge_dialog" : "rc_dialog");
+	from_resource(_exporting ? "ge_dialog" : "rc_dialog");
 	exporting = _exporting;
 	data = _data;
 
@@ -44,22 +44,22 @@ void ConfigurationDialog::LoadData()
 		#ifdef HUI_OS_WINDOWS
 			setInt("ged_system", 1);
 		#endif
-		setInt("export_type",0);
+		set_int("export_type",0);
 	}
 
 	//GameIniDialog=GameIni;
 //	data->LoadGameIni(ed->RootDir, &GameIniDialog);
 	GameIniData GameIniDialog = *data->GameIni;
-	setString("default_world",GameIniDialog.DefWorld);
-	setString("default_second_world",GameIniDialog.SecondWorld);
-	setString("default_script",GameIniDialog.DefScript);
-	setString("default_material",GameIniDialog.DefMaterial);
-	setString("default_font",GameIniDialog.DefFont);
+	set_string("default_world",GameIniDialog.DefWorld);
+	set_string("default_second_world",GameIniDialog.SecondWorld);
+	set_string("default_script",GameIniDialog.DefScript);
+	set_string("default_material",GameIniDialog.DefMaterial);
+	set_string("default_font",GameIniDialog.DefFont);
 
-	setString("rootdir",ed->root_dir);
+	set_string("rootdir",ed->root_dir);
 }
 
-void ConfigurationDialog::onUpdate(Observable *o, const string &message)
+void ConfigurationDialog::on_update(Observable *o, const string &message)
 {
 }
 
@@ -67,37 +67,37 @@ void ConfigurationDialog::onUpdate(Observable *o, const string &message)
 void ConfigurationDialog::OnFindRootdir()
 {
 	if (hui::FileDialogDir(this,_("Arbeitsverzeichnis"),ed->root_dir))
-		setString("rootdir", hui::Filename);
+		set_string("rootdir", hui::Filename);
 }
 
 void ConfigurationDialog::OnFindDefaultWorld()
 {
-	if (ed->fileDialog(FD_WORLD, false, true))
-		setString("default_world", ed->dialog_file_no_ending);
+	if (ed->file_dialog(FD_WORLD, false, true))
+		set_string("default_world", ed->dialog_file_no_ending);
 }
 
 void ConfigurationDialog::OnFindDefaultSecondWorld()
 {
-	if (ed->fileDialog(FD_WORLD, false, true))
-		setString("default_second_world", ed->dialog_file_no_ending);
+	if (ed->file_dialog(FD_WORLD, false, true))
+		set_string("default_second_world", ed->dialog_file_no_ending);
 }
 
 void ConfigurationDialog::OnFindDefaultScript()
 {
-	if (ed->fileDialog(FD_SCRIPT, false, true))
-		setString("default_script", ed->dialog_file);
+	if (ed->file_dialog(FD_SCRIPT, false, true))
+		set_string("default_script", ed->dialog_file);
 }
 
 void ConfigurationDialog::OnFindDefaultMaterial()
 {
-	if (ed->fileDialog(FD_MATERIAL, false, true))
-		setString("default_material", ed->dialog_file_no_ending);
+	if (ed->file_dialog(FD_MATERIAL, false, true))
+		set_string("default_material", ed->dialog_file_no_ending);
 }
 
 void ConfigurationDialog::OnFindDefaultFont()
 {
-	if (ed->fileDialog(FD_FONT, false, true))
-		setString("default_font", ed->dialog_file_no_ending);
+	if (ed->file_dialog(FD_FONT, false, true))
+		set_string("default_font", ed->dialog_file_no_ending);
 }
 
 void ConfigurationDialog::OnOk()
@@ -105,31 +105,31 @@ void ConfigurationDialog::OnOk()
 	if (exporting){
 		//GameIniAlt=GameIni;
 		GameIniData GameIniExport = *data->GameIni;
-		string dir = getString("rootdir");
-		GameIniExport.DefWorld = getString("default_world");
-		GameIniExport.SecondWorld = getString("default_second_world");
-		GameIniExport.DefScript = getString("default_script");
-		GameIniExport.DefMaterial = getString("default_material");
-		GameIniExport.DefFont = getString("default_font");
+		string dir = get_string("rootdir");
+		GameIniExport.DefWorld = get_string("default_world");
+		GameIniExport.SecondWorld = get_string("default_second_world");
+		GameIniExport.DefScript = get_string("default_script");
+		GameIniExport.DefMaterial = get_string("default_material");
+		GameIniExport.DefFont = get_string("default_font");
 //		_exporting_type_ = getInt("export_type");
 //		_exporting_system_ = getInt("ged_system");
 		try{
 			data->ExportGame(dir, GameIniExport);
 		}catch(AdminGameExportException &e){
-			ed->errorBox(_("Fehler beim Exportieren: ") + e.message);
+			ed->error_box(_("Fehler beim Exportieren: ") + e.message);
 			return;
 		}
 	}else{
 		// new RootDir?
-		bool rdc = (ed->root_dir != getString("rootdir"));
+		bool rdc = (ed->root_dir != get_string("rootdir"));
 		if (rdc)
-			ed->makeDirs(getString("rootdir"),true);
+			ed->make_dirs(get_string("rootdir"),true);
 //		data->UnlinkGameIni();
-		data->GameIni->DefWorld = getString("default_world");
-		data->GameIni->SecondWorld = getString("default_second_world");
-		data->GameIni->DefScript = getString("default_script");
-		data->GameIni->DefMaterial = getString("default_material");
-		data->GameIni->DefFont = getString("default_font");
+		data->GameIni->DefWorld = get_string("default_world");
+		data->GameIni->SecondWorld = get_string("default_second_world");
+		data->GameIni->DefScript = get_string("default_script");
+		data->GameIni->DefMaterial = get_string("default_material");
+		data->GameIni->DefFont = get_string("default_font");
 //		data->LinkGameIni(data->GameIni);
 		data->GameIni->Save(ed->root_dir);
 		if (rdc)

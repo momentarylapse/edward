@@ -23,48 +23,48 @@ ModeBase::~ModeBase()
 {
 }
 
-void ModeBase::onUpdateMenuRecursive()
+void ModeBase::on_update_menu_recursive()
 {
 	if (parent)
-		parent->onUpdateMenuRecursive();
-	onUpdateMenu();
+		parent->on_update_menu_recursive();
+	on_update_menu();
 }
 
-void ModeBase::onCommandRecursive(const string &id)
+void ModeBase::on_command_recursive(const string &id)
 {
 	if (parent)
-		parent->onCommandRecursive(id);
-	onCommand(id);
+		parent->on_command_recursive(id);
+	on_command(id);
 }
 
-void ModeBase::optimizeViewRecursice()
+void ModeBase::optimize_view_recursice()
 {
-	if (optimizeView())
+	if (optimize_view())
 		return;
 	if (parent)
-		parent->optimizeViewRecursice();
+		parent->optimize_view_recursice();
 }
 
 
 
-ModeBase *ModeBase::getRoot()
+ModeBase *ModeBase::get_root()
 {
 	if (parent)
-		return parent->getRoot();
+		return parent->get_root();
 	return this;
 }
 
-bool ModeBase::isAncestorOf(ModeBase *m)
+bool ModeBase::is_ancestor_of(ModeBase *m)
 {
 	if (m == this)
 		return true;
 	if (m->parent)
-		return isAncestorOf(m->parent);
+		return is_ancestor_of(m->parent);
 	return false;
 }
 
 
-ModeBase *ModeBase::getNextChildTo(ModeBase *target)
+ModeBase *ModeBase::get_next_child_to(ModeBase *target)
 {
 	while(target){
 		if (this == target->parent)
@@ -75,11 +75,11 @@ ModeBase *ModeBase::getNextChildTo(ModeBase *target)
 }
 
 
-bool ModeBase::equalRoots(ModeBase *m)
+bool ModeBase::equal_roots(ModeBase *m)
 {
 	if (!m)
 		return false;
-	return getRoot() == m->getRoot();
+	return get_root() == m->get_root();
 }
 
 void ModeBase::_new()
@@ -97,10 +97,10 @@ bool ModeBase::save()
 
 
 
-bool ModeBase::saveAs()
+bool ModeBase::save_as()
 {
 	if (parent)
-		return parent->saveAs();
+		return parent->save_as();
 	return true;
 }
 

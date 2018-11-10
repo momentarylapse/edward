@@ -19,14 +19,14 @@ class ModeModelMeshTexture: public Mode<DataModel>, public Observable
 public:
 	ModeModelMeshTexture(ModeBase *parent);
 
-	virtual void onStart();
-	virtual void onEnd();
+	void on_start() override;
+	void on_end() override;
 
-	virtual void onUpdate(Observable *o, const string &message);
+	void on_update(Observable *o, const string &message) override;
 
-	virtual void onDraw();
-	virtual void onDrawWin(MultiView::Window *win);
-	virtual void onSelectionChange();
+	void on_draw() override;
+	void on_draw_win(MultiView::Window *win) override;
+	void on_selection_change() override;
 
 	// for MultiView actions
 	void getSelectedSkinVertices(Array<int> &surf, Array<int> &tria, Array<int> &index);

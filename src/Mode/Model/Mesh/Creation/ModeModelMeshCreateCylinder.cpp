@@ -34,14 +34,14 @@ ModeModelMeshCreateCylinder::~ModeModelMeshCreateCylinder()
 		delete(geo);
 }
 
-void ModeModelMeshCreateCylinder::onStart()
+void ModeModelMeshCreateCylinder::on_start()
 {
 	dialog = hui::CreateResourceDialog("new_cylinder_dialog",ed);
 
-	dialog->setInt("rings", hui::Config.getInt("NewCylinderRings", 4));
-	dialog->setInt("edges", hui::Config.getInt("NewCylinderEdges", 8));
-	dialog->check("round", hui::Config.getBool("NewCylinderRound", false));
-	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
+	dialog->set_int("rings", hui::Config.get_int("NewCylinderRings", 4));
+	dialog->set_int("edges", hui::Config.get_int("NewCylinderEdges", 8));
+	dialog->check("round", hui::Config.get_bool("NewCylinderRound", false));
+	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
 	dialog->event("hui:close", std::bind(&ModeModelMeshCreateCylinder::onClose, this));
 	dialog->event("type:visible", std::bind(&ModeModelMeshCreateCylinder::onTypeVisible, this));
@@ -56,7 +56,7 @@ void ModeModelMeshCreateCylinder::onStart()
 }
 
 
-void ModeModelMeshCreateCylinder::onEnd()
+void ModeModelMeshCreateCylinder::on_end()
 {
 	delete(dialog);
 }
@@ -67,12 +67,12 @@ void ModeModelMeshCreateCylinder::updateGeometry()
 		delete(geo);
 	if (pos.num == 2){
 		//bool physical = dialog->isChecked("type:physical");
-		bool round = dialog->isChecked("round");
-		int rings = dialog->getInt("rings");
-		int edges = dialog->getInt("edges");
-		hui::Config.setInt("NewCylinderRings", rings);
-		hui::Config.setInt("NewCylinderEdges", edges);
-		hui::Config.setBool("NewCylinderRound", round);
+		bool round = dialog->is_checked("round");
+		int rings = dialog->get_int("rings");
+		int edges = dialog->get_int("edges");
+		hui::Config.set_int("NewCylinderRings", rings);
+		hui::Config.set_int("NewCylinderEdges", edges);
+		hui::Config.set_bool("NewCylinderRound", round);
 
 		Array<float> r = radius;
 		r += radius;
@@ -80,7 +80,7 @@ void ModeModelMeshCreateCylinder::updateGeometry()
 	}
 }
 
-void ModeModelMeshCreateCylinder::onMouseMove()
+void ModeModelMeshCreateCylinder::on_mouse_move()
 {
 	if (pos.num == 2){
 		vector p = multi_view->getCursor3d(pos.back());
@@ -97,17 +97,17 @@ void ModeModelMeshCreateCylinder::onMouseMove()
 
 
 
-void ModeModelMeshCreateCylinder::onLeftButtonUp()
+void ModeModelMeshCreateCylinder::on_left_button_up()
 {
 	if (pos.num == 2){
-		bool physical = dialog->isChecked("type:physical");
+		bool physical = dialog->is_checked("type:physical");
 
 		if (physical){
 			ModelCylinder c;
 			c.index[0] = data->skin[0].vertex.num;
 			c.index[1] = data->skin[0].vertex.num + 1;
 			c.radius = radius;
-			c.round = dialog->isChecked("round");
+			c.round = dialog->is_checked("round");
 			data->cylinder.add(c);
 
 			data->skin[0].vertex.add(ModelVertex(pos[0]));
@@ -133,9 +133,9 @@ void ModeModelMeshCreateCylinder::onLeftButtonUp()
 	}
 }
 
-void ModeModelMeshCreateCylinder::onDrawWin(MultiView::Window *win)
+void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win)
 {
-	parent->onDrawWin(win);
+	parent->on_draw_win(win);
 
 	if (pos.num > 0){
 

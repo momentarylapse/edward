@@ -22,9 +22,9 @@ public:
 	void subscribe(Observable *o, const string &message = Observable::MESSAGE_ALL);
 	void unsubscribe(Observable *o);
 
-	string getName();
+	string get_name();
 
-	virtual void onUpdate(Observable *o, const string &message){};
+	virtual void on_update(Observable *o, const string &message){};
 
 private:
 	string observer_name;
@@ -36,7 +36,7 @@ public:
 	ObserverWrapper(void *handler, void *func);
 	virtual ~ObserverWrapper();
 
-	virtual void onUpdate(Observable *o, const string &message);
+	void on_update(Observable *o, const string &message) override;
 
 	void *handler, *func;
 };

@@ -1,6 +1,11 @@
 #include "../kaba.h"
 #include "../../file/file.h"
 #include "../../base/set.h"
+#include <stdio.h>
+#include <functional>
+#if HAS_LIB_DL
+#include <dlfcn.h>
+#endif
 
 
 #if defined(OS_LINUX)// || defined(OS_MINGW)
@@ -55,7 +60,7 @@ void AddEspAdd(Asm::InstructionWithParamsList *list,int d)
 
 void try_init_global_var(Class *type, char* g_var)
 {
-	if (type->is_array){
+	if (type->is_array()){
 		for (int i=0;i<type->array_length;i++)
 			try_init_global_var(type->parent, g_var + i * type->parent->size);
 		return;
@@ -90,13 +95,13 @@ void* get_nice_random_addr()
 
 void* get_nice_memory(long size, bool executable)
 {
-	void *mem = NULL;
+	void *mem = nullptr;
 	size = mem_align(size, 4096);
 	if (config.verbose)
 		msg_write("get nice...");
 
 #if defined(OS_WINDOWS) || defined(OS_MINGW)
-	mem = (char*)VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+	mem = (char*)VirtualAlloc(nullptr, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 #else
 
 	// try in 32bit distance from current opcode
@@ -117,9 +122,9 @@ void* get_nice_memory(long size, bool executable)
 	}
 
 	// no?...ok, try anywhere
-	mem = (char*)mmap(NULL, size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS | MAP_EXECUTABLE, -1, 0);
+	mem = (char*)mmap(nullptr, size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS | MAP_EXECUTABLE, -1, 0);
 	if ((int_p)mem == -1)
-		mem = NULL;
+		mem = nullptr;
 #endif
 
 	// failed...
@@ -160,7 +165,7 @@ void Script::AllocateStack()
 {
 	// use your own stack if needed
 	//   wait() used -> needs to switch stacks ("tasks")
-	__stack = NULL;
+	__stack = nullptr;
 	/*for (Command *cmd: syntax->commands){
 		if (cmd->kind == KIND_COMPILER_FUNCTION)
 			if ((cmd->link_no == COMMAND_WAIT) or (cmd->link_no == COMMAND_WAIT_RT) or (cmd->link_no == COMMAND_WAIT_ONE_FRAME)){
@@ -238,6 +243,22 @@ void Script::CompileOsEntryPoint()
 		Asm::AddInstruction(opcode, opcode_size, Asm::INST_CALL, Asm::param_imm(0, 4));
 	TaskReturnOffset=opcode_size;
 	OCORA = Asm::OCParam;
+	AlignOpcode();
+}
+
+void apply_recursive(Node *n, std::function<void(Node*)> f)
+{
+	f(n);
+
+	for (Node *p: n->params)
+		apply_recursive(p, f);
+
+	if (n->instance)
+		apply_recursive(n->instance, f);
+
+	if (n->kind == KIND_BLOCK)
+		for (Node *child: n->as_block()->nodes)
+			apply_recursive(child, f);
 }
 
 void Script::MapConstantsToOpcode()
@@ -255,11 +276,49 @@ void Script::MapConstantsToOpcode()
 					memcpy(c->value.data, &t->_vtable_location_target_, config.pointer_size);
 		}
 
+	Array<bool> used;
+	used.resize(syntax->constants.num);
+	for (Function *f: syntax->functions)
+		for (Node *n: f->block->nodes)
+			apply_recursive(n, [&](Node *n){ if (n->kind == KIND_CONSTANT){ used[n->link_no] = true; if (n->script != syntax->script) msg_error("evil const " + n->as_const()->name); } });
+
+	/*int n = 0;
+	for (bool b: used)
+		if (b)
+			n ++;
+	msg_write(format("     USED:    %d / %d", n, used.num));
+	int size0 = opcode_size;
+
 	foreachi(Constant *c, syntax->constants, i){
 		cnst[i] = (char*)(syntax->asm_meta_info->code_origin + opcode_size);
 		c->map_into(&opcode[opcode_size], cnst[i]);
 		opcode_size += mem_align(c->mapping_size(), 4);
 	}
+	int uncompressed = opcode_size - size0;
+	opcode_size = size0;*/
+
+
+	foreachi(Constant *c, syntax->constants, i)
+		if (used[i]){
+			cnst[i] = (char*)(syntax->asm_meta_info->code_origin + opcode_size);
+			c->map_into(&opcode[opcode_size], cnst[i]);
+			opcode_size += mem_align(c->mapping_size(), 4);
+		}
+
+	/*foreachi(Constant *c, syntax->constants, i)
+		if ((c->mapping_size() > 1) and used[i]){
+			cnst[i] = (char*)(syntax->asm_meta_info->code_origin + opcode_size);
+			c->map_into(&opcode[opcode_size], cnst[i]);
+			opcode_size += mem_align(c->mapping_size(), 4);
+		}
+	foreachi(Constant *c, syntax->constants, i)
+		if ((c->mapping_size() == 1) and used[i]){
+			cnst[i] = (char*)(syntax->asm_meta_info->code_origin + opcode_size);
+			c->map_into(&opcode[opcode_size], cnst[i]);
+			opcode_size += 1;
+		}*/
+
+	//msg_write(format("    compressed:  %d  ->  %d", uncompressed, opcode_size - size0));
 
 	AlignOpcode();
 }
@@ -293,7 +352,7 @@ void Script::CompileTaskEntryPoint()
 
 	if ((!__stack) or (!_main_)){
 		__first_execution = (t_func*)_main_;
-		__continue_execution = NULL;
+		__continue_execution = nullptr;
 		return;
 	}
 
@@ -373,22 +432,28 @@ struct IncludeTranslationData
 	Script *source;
 };
 
-void relink_calls(Script *s, Script *a, IncludeTranslationData &d)
+void relink_calls(Script *s, Script *target, IncludeTranslationData &d)
 {
+	//msg_write("relink ----" + s->filename + " : " + d.source->filename + " -> " + target->filename + "  ---------");
 	for (Node *c: s->syntax->nodes){
 		// keep commands... just redirect var/const/func
-		//msg_write(p2s(c->script));
 		if (c->script != d.source)
 			continue;
+
+		if (c->kind != KIND_CONSTANT)
+			if (c->script->filename.find(".kaba") < 0)
+				continue;
+
+		//msg_write(p2s(c->script));
 		if (c->kind == KIND_VAR_GLOBAL){
 			c->link_no += d.var_off;
-			c->script = a;
+			c->script = target;
 		}else if (c->kind == KIND_CONSTANT){
 			c->link_no += d.const_off;
-			c->script = a;
+			c->script = target;
 		}else if ((c->kind == KIND_FUNCTION) or (c->kind == KIND_VAR_FUNCTION)){
 			c->link_no += d.func_off;
-			c->script = a;
+			c->script = target;
 		}
 	}
 
@@ -396,38 +461,44 @@ void relink_calls(Script *s, Script *a, IncludeTranslationData &d)
 	for (Class *t: s->syntax->classes)
 		for (ClassFunction &f: t->functions)
 			if (f.script == d.source){
-				f.script = a;
+				if (f.script->filename.find(".kaba") < 0)
+					continue;
+				f.script = target;
 				f.nr += d.func_off;
 			}
 }
 
-IncludeTranslationData import_deep(SyntaxTree *a, SyntaxTree *b)
+IncludeTranslationData import_deep(SyntaxTree *dest, SyntaxTree *source)
 {
 	IncludeTranslationData d;
-	d.const_off = a->constants.num;
-	d.var_off = a->root_of_all_evil.var.num;
-	d.func_off = a->functions.num;
-	d.source = b->script;
+	d.const_off = dest->constants.num;
+	d.var_off = dest->root_of_all_evil.var.num;
+	d.func_off = dest->functions.num;
+	d.source = source->script;
 
-	for (Constant *c: b->constants){
+	for (Constant *c: source->constants){
 		Constant *cc = new Constant(c->type);
 		cc->name = c->name;
 		cc->set(*c);
-		a->constants.add(cc);
+		dest->constants.add(cc);
 	}
 
-	a->root_of_all_evil.var.append(b->root_of_all_evil.var);
+	// don't fully include internal libraries
+	if (source->script->filename.find(".kaba") < 0)
+		return d;
 
-	for (Function *f: b->functions){
-		Function *ff = a->AddFunction(f->name, f->return_type);
+	dest->root_of_all_evil.var.append(source->root_of_all_evil.var);
+
+	for (Function *f: source->functions){
+		Function *ff = dest->AddFunction(f->name, f->return_type);
 		*ff = *f;
 		// keep block pointing to include file...
 	}
-	a->classes.append(b->classes);
+	dest->classes.append(source->classes);
 
 	//int asm_off = a->AsmBlocks.num;
-	for (AsmBlock &ab: b->asm_blocks){
-		a->asm_blocks.add(ab);
+	for (AsmBlock &ab: source->asm_blocks){
+		dest->asm_blocks.add(ab);
 	}
 
 	return d;
@@ -436,13 +507,14 @@ IncludeTranslationData import_deep(SyntaxTree *a, SyntaxTree *b)
 void find_all_includes_rec(Script *s, Set<Script*> &includes)
 {
 	for (Script *i: s->syntax->includes){
-		if (i->filename.find(".kaba") < 0)
-			continue;
+		//if (i->filename.find(".kaba") < 0)
+		//	continue;
 		includes.add(i);
 		find_all_includes_rec(i, includes);
 	}
 }
 
+// only for "os"
 void import_includes(Script *s)
 {
 	Set<Script*> includes;
@@ -451,13 +523,14 @@ void import_includes(Script *s)
 	for (Script *i: includes)
 		da.add(import_deep(s->syntax, i->syntax));
 
+
+	for (IncludeTranslationData &d: da)
+		relink_calls(s, s, d);
+
 	// we need to also correct the includes, since we kept the blocks/commands there
-	for (Script *i: includes){
-		for (IncludeTranslationData &d: da){
-			relink_calls(s, s, d);
+	for (Script *i: includes)
+		for (IncludeTranslationData &d: da)
 			relink_calls(i, s, d);
-		}
-	}
 }
 
 void Script::LinkFunctions()
@@ -493,6 +566,66 @@ void Script::LinkFunctions()
 	}
 }
 
+struct DynamicLibraryImport
+{
+	string filename;
+	void *handle;
+	void *get_symbol(const string &name, Script *s)
+	{
+#if HAS_LIB_DL
+		if (!handle)
+			return nullptr;
+		void *p = dlsym(handle, name.c_str());
+		if (!p)
+			s->DoErrorLink("can't load symbol '" + name + "' from library " + filename);
+		return p;
+#else
+		return nullptr;
+#endif
+	}
+};
+static Array<DynamicLibraryImport*> dynamic_libs;
+DynamicLibraryImport *get_dynamic_lib(const string &filename, Script *s)
+{
+#if HAS_LIB_DL
+	for (auto &d: dynamic_libs)
+		if (d->filename == filename)
+			return d;
+	DynamicLibraryImport *d = new DynamicLibraryImport;
+	d->filename = filename;
+	d->handle = dlopen(filename.c_str(), RTLD_NOW);
+	if (!d->handle)
+		s->DoErrorLink("can't load external library " + filename + ": " + dlerror());
+	dynamic_libs.add(d);
+	return d;
+#else
+	s->DoErrorLink("can't load dynamic lib, program is compiled without support for dl library");
+#endif
+	return nullptr;
+}
+
+void parse_magic_linker_string(SyntaxTree *s)
+{
+	for (auto *c: s->constants)
+		if (c->name == "KABA_LINK" and c->type == TypeString){
+			DynamicLibraryImport *d = nullptr;
+			auto xx = c->as_string().explode("\n");
+			for (string &x: xx){
+				if (x.num == 0)
+					continue;
+				if (x[0] == '\t'){
+					if (d and x.find(":")){
+						auto y = x.substr(1, -1).explode(":");
+						LinkExternal(y[0], d->get_symbol(y[1], s->script));
+					}
+				}else{
+					d = get_dynamic_lib(x, s->script);
+				}
+			}
+		}
+
+}
+
 // generate opcode
 void Script::Compiler()
 {
@@ -501,6 +634,8 @@ void Script::Compiler()
 	if (config.compile_os)
 		import_includes(this);
 
+	parse_magic_linker_string(syntax);
+
 	syntax->MapLocalVariablesToStack();
 
 	syntax->BreakDownComplicatedCommands();
@@ -508,8 +643,10 @@ void Script::Compiler()
 	syntax->Show();
 #endif
 
+
 	syntax->SimplifyRefDeref();
 	syntax->SimplifyShiftDeref();
+
 	syntax->PreProcessor();
 
 	if (config.verbose)

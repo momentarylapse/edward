@@ -39,7 +39,7 @@ int SerializerARM::fc_begin(const SerialNodeParam &instance, const Array<SerialN
 	Array<SerialNodeParam> stack_param;
 	Array<SerialNodeParam> xmm_param;
 	for (SerialNodeParam &p: params){
-		if ((p.type == TypeInt) or (p.type == TypeInt64) or (p.type == TypeChar) or (p.type == TypeBool) or (p.type->is_pointer)){
+		if ((p.type == TypeInt) or (p.type == TypeInt64) or (p.type == TypeChar) or (p.type == TypeBool) or p.type->is_pointer()){
 			if (reg_param.num < 4){
 				reg_param.add(p);
 			}else{
@@ -211,7 +211,7 @@ void SerializerARM::SerializeStatement(Node *com, const Array<SerialNodeParam> &
 			}
 			break;
 		case STATEMENT_NEW:{
-			Array<Node> links = syntax_tree->GetExistence("@malloc", NULL);
+			Array<Node> links = syntax_tree->GetExistence("@malloc", nullptr);
 			if (links.num == 0)
 				DoError("@malloc not found????");
 			AddFunctionCall(links[0].script, links[0].link_no, p_none, param_const(TypeInt, ret.type->parent->size), ret);
@@ -226,7 +226,7 @@ void SerializerARM::SerializeStatement(Node *com, const Array<SerialNodeParam> &
 			break;}
 		case STATEMENT_DELETE:{
 			add_cmd_destructor(param[0], false);
-			Array<Node> links = syntax_tree->GetExistence("@free", NULL);
+			Array<Node> links = syntax_tree->GetExistence("@free", nullptr);
 			if (links.num == 0)
 				DoError("@free not found????");
 			AddFunctionCall(links[0].script, links[0].link_no, p_none, param[0], p_none);
@@ -738,7 +738,7 @@ void SerializerARM::AddFunctionIntro(Function *f)
 	Array<Variable> stack_param;
 	Array<Variable> xmm_param;
 	for (Variable &p: param){
-		if ((p.type == TypeInt) or (p.type == TypeChar) or (p.type == TypeBool) or (p.type->is_pointer)){
+		if ((p.type == TypeInt) or (p.type == TypeChar) or (p.type == TypeBool) or p.type->is_pointer()){
 			if (reg_param.num < 4){
 				reg_param.add(p);
 			}else{

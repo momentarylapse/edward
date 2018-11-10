@@ -9,7 +9,14 @@ ClassElement::ClassElement()
 {
 	hidden = false;
 	offset = 0;
-	type = NULL;
+	type = nullptr;
+}
+
+string ClassElement::signature(bool include_class) const
+{
+	if (include_class)
+		return type->name + " " + name;
+	return type->name + " " + name;
 }
 
 
@@ -18,8 +25,8 @@ ClassFunction::ClassFunction()
 	nr = -1;
 	virtual_index = -1;
 	needs_overriding = false;
-	return_type = NULL;
-	script = NULL;
+	return_type = nullptr;
+	script = nullptr;
 }
 
 ClassFunction::ClassFunction(const string &_name, Class *_return_type, Script *s, int no)
@@ -37,12 +44,12 @@ Function* ClassFunction::func() const
 	return script->syntax->functions[nr];
 }
 
-string ClassFunction::signature() const
+string ClassFunction::signature(bool include_class) const
 {
 	Function* f = func();
 	if (needs_overriding)
-		return f->signature() + " [NEEDS OVERRIDING]";
-	return f->signature();
+		return f->signature(include_class) + " [NEEDS OVERRIDING]";
+	return f->signature(include_class);
 }
 
 bool type_match(Class *given, Class *wanted)
@@ -52,15 +59,15 @@ bool type_match(Class *given, Class *wanted)
 		return true;
 
 	// allow any pointer?
-	if ((given->is_pointer) and (wanted == TypePointer))
+	if ((given->is_pointer()) and (wanted == TypePointer))
 		return true;
 
 	// FIXME... quick'n'dirty hack to allow nil as parameter
-	if ((given == TypePointer) and wanted->is_pointer and !wanted->is_silent)
+	if ((given == TypePointer) and wanted->is_pointer() and !wanted->is_pointer_silent())
 		return true;
 
 	// compatible pointers (of same or derived class)
-	if (given->is_pointer and wanted->is_pointer)
+	if (given->is_pointer() and wanted->is_pointer())
 		return given->parent->is_derived_from(wanted->parent);
 
 	return given->is_derived_from(wanted);
@@ -81,31 +88,43 @@ Class::Class(const string &_name, int _size, SyntaxTree *_owner, Class *_parent)
 	name = _name;
 	owner = _owner;
 	size = _size;
-	is_array = false;
-	is_super_array = false;
+	type = Type::OTHER;
 	array_length = 0;
-	is_pointer = false;
-	is_silent = false;
 	parent = _parent;
 	force_call_by_value = false;
 	fully_parsed = true;
-	_vtable_location_target_ = NULL;
-	_vtable_location_compiler_ = NULL;
-	_vtable_location_external_ = NULL;
+	_vtable_location_target_ = nullptr;
+	_vtable_location_compiler_ = nullptr;
+	_vtable_location_external_ = nullptr;
 };
 
 Class::~Class()
 {
 }
 
+bool Class::is_array() const
+{ return type == Type::ARRAY; }
+
+bool Class::is_super_array() const
+{ return type == Type::SUPER_ARRAY; }
+
+bool Class::is_pointer() const
+{ return type == Type::POINTER or type == Type::POINTER_SILENT; }
+
+bool Class::is_pointer_silent() const
+{ return type == Type::POINTER_SILENT; }
+
+bool Class::is_dict() const
+{ return type == Type::DICT; }
+
 bool Class::uses_call_by_reference() const
 {
-	return (!force_call_by_value and !is_pointer) or is_array;
+	return (!force_call_by_value and !is_pointer()) or is_array();
 }
 
 bool Class::uses_return_by_memory() const
 {
-	return (!force_call_by_value and !is_pointer) or is_array;
+	return (!force_call_by_value and !is_pointer()) or is_array();
 }
 
 
@@ -116,7 +135,9 @@ bool Class::is_simple_class() const
 		return true;
 	/*if (is_array)
 		return false;*/
-	if (is_super_array)
+	if (is_super_array())
+		return false;
+	if (is_dict())
 		return false;
 	if (vtable.num > 0)
 		return false;
@@ -139,11 +160,9 @@ bool Class::is_simple_class() const
 
 bool Class::usable_as_super_array() const
 {
-	if (is_super_array)
+	if (is_super_array())
 		return true;
-	if (is_array)
-		return false;
-	if (is_pointer)
+	if (is_array() or is_dict() or is_pointer())
 		return false;
 	if (parent)
 		return parent->usable_as_super_array();
@@ -152,20 +171,20 @@ bool Class::usable_as_super_array() const
 
 Class *Class::get_array_element() const
 {
-	if (is_array or is_super_array)
+	if (is_array() or is_super_array() or is_dict())
 		return parent;
-	if (is_pointer)
-		return NULL;
+	if (is_pointer())
+		return nullptr;
 	if (parent)
 		return parent->get_array_element();
-	return NULL;
+	return nullptr;
 }
 
 bool Class::needs_constructor() const
 {
 	if (!uses_call_by_reference())
 		return false;
-	if (is_super_array)
+	if (is_super_array() or is_dict())
 		return true;
 	if (vtable.num > 0)
 		return true;
@@ -182,7 +201,7 @@ bool Class::is_size_known() const
 {
 	if (!fully_parsed)
 		return false;
-	if (is_super_array or is_pointer)
+	if (is_super_array() or is_dict() or is_pointer())
 		return true;
 	for (ClassElement &e: elements)
 		if (!e.type->is_size_known())
@@ -194,7 +213,7 @@ bool Class::needs_destructor() const
 {
 	if (!uses_call_by_reference())
 		return false;
-	if (is_super_array)
+	if (is_super_array() or is_dict())
 		return true;
 	if (parent){
 		if (parent->get_destructor())
@@ -215,7 +234,7 @@ bool Class::is_derived_from(const Class *root) const
 {
 	if (this == root)
 		return true;
-	if ((is_super_array) or (is_array) or (is_pointer))
+	if (is_super_array() or is_array() or is_dict() or is_pointer())
 		return false;
 	if (!parent)
 		return false;
@@ -226,7 +245,7 @@ bool Class::is_derived_from(const string &root) const
 {
 	if (name == root)
 		return true;
-	if (is_super_array or is_array or is_pointer)
+	if (is_super_array() or is_array() or is_dict() or is_pointer())
 		return false;
 	if (!parent)
 		return false;
@@ -243,7 +262,7 @@ ClassFunction *Class::get_func(const string &_name, const Class *return_type, in
 			}else
 				return &f;
 		}
-	return NULL;
+	return nullptr;
 }
 
 ClassFunction *Class::get_same_func(const string &_name, Function *ff) const
@@ -257,7 +276,7 @@ ClassFunction *Class::get_same_func(const string &_name, Function *ff) const
 			if (match)
 				return &f;
 		}
-	return NULL;
+	return nullptr;
 }
 
 ClassFunction *Class::get_default_constructor() const
@@ -295,7 +314,7 @@ ClassFunction *Class::get_get(const Class *index) const
 			continue;
 		return &cf;
 	}
-	return NULL;
+	return nullptr;
 }
 
 ClassFunction *Class::get_virtual_function(int virtual_index) const
@@ -303,7 +322,7 @@ ClassFunction *Class::get_virtual_function(int virtual_index) const
 	for (ClassFunction &f: functions)
 		if (f.virtual_index == virtual_index)
 			return &f;
-	return NULL;
+	return nullptr;
 }
 
 void Class::link_virtual_table()
@@ -333,7 +352,7 @@ void Class::link_virtual_table()
 			}
 		}
 		if (cf.needs_overriding){
-			msg_error("needs overriding: " + name + " : " + cf.signature());
+			msg_error("needs overriding: " + cf.signature(true));
 		}
 	}
 }
@@ -383,7 +402,7 @@ bool class_func_match(ClassFunction &a, ClassFunction &b)
 
 Class *Class::get_pointer() const
 {
-	return owner->CreateNewClass(name + "*", config.pointer_size, true, false, false, 0, const_cast<Class*>(this));
+	return owner->CreateNewClass(name + "*", Class::Type::POINTER, config.pointer_size, 0, const_cast<Class*>(this));
 }
 
 Class *Class::get_root() const
@@ -421,16 +440,16 @@ void Class::add_function(SyntaxTree *s, int func_no, bool as_virtual, bool overr
 	}
 
 	// override?
-	ClassFunction *orig = NULL;
+	ClassFunction *orig = nullptr;
 	for (ClassFunction &ocf: functions)
 		if (class_func_match(cf, ocf))
 			orig = &ocf;
 	if (override and !orig)
-		s->DoError(format("can not override function '%s', no previous definition", f->signature().c_str()), f->_exp_no, f->_logical_line_no);
+		s->DoError(format("can not override function %s, no previous definition", f->signature(true).c_str()), f->_exp_no, f->_logical_line_no);
 	if (!override and orig){
-		msg_write(f->signature());
-		msg_write(orig->signature());
-		s->DoError(format("function '%s' is already defined, use '%s'", f->signature().c_str(), IDENTIFIER_OVERRIDE.c_str()), f->_exp_no, f->_logical_line_no);
+		msg_write(f->signature(true));
+		msg_write(orig->signature(true));
+		s->DoError(format("function %s is already defined, use '%s'", f->signature(true).c_str(), IDENTIFIER_OVERRIDE.c_str()), f->_exp_no, f->_logical_line_no);
 	}
 	if (override){
 		orig->script = cf.script;
@@ -484,19 +503,19 @@ void *Class::create_instance() const
 
 string Class::var2str(void *p) const
 {
-	if (this == TypeInt)
+	if (this == TypeInt){
 		return i2s(*(int*)p);
-	else if (this == TypeFloat32)
+	}else if (this == TypeFloat32){
 		return f2s(*(float*)p, 3);
-	else if (this == TypeBool)
+	}else if (this == TypeBool){
 		return b2s(*(bool*)p);
-	else if (is_pointer)
+	}else if (is_pointer()){
 		return p2s(*(void**)p);
-	else if (this == TypeString)
+	}else if (this == TypeString){
 		return "\"" + *(string*)p + "\"";
-	else if (this == TypeCString)
+	}else if (this == TypeCString){
 		return "\"" + string((char*)p) + "\"";
-	else if (is_super_array){
+	}else if (is_super_array()){
 		string s;
 		DynamicArray *da = (DynamicArray*)p;
 		for (int i=0; i<da->num; i++){
@@ -505,6 +524,8 @@ string Class::var2str(void *p) const
 			s += parent->var2str(((char*)da->data) + i * da->element_size);
 		}
 		return "[" + s + "]";
+	}else if (is_dict()){
+		return "{...}";
 	}else if (elements.num > 0){
 		string s;
 		foreachi(ClassElement &e, elements, i){
@@ -514,7 +535,7 @@ string Class::var2str(void *p) const
 		}
 		return "(" + s + ")";
 
-	}else if (is_array){
+	}else if (is_array()){
 			string s;
 			for (int i=0; i<array_length; i++){
 				if (i > 0)

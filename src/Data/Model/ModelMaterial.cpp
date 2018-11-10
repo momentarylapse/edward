@@ -120,7 +120,7 @@ void ModelMaterial::checkTextures()
 	// parent has more texture levels?
 	if (material->textures.num > texture_files.num){
 		texture_files.resize(material->textures.num);
-		ed->setMessage(_("Anzahl der Texturen wurde an das Material angepasst!"));
+		ed->set_message(_("Anzahl der Texturen wurde an das Material angepasst!"));
 	}
 
 	// load all textures

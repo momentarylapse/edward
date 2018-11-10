@@ -248,7 +248,7 @@ void ActionController::update()
 	MatrixTranslation(t, pos);
 	geo_mat = t * s;
 
-	ed->forceRedraw();
+	ed->force_redraw();
 }
 
 void ActionController::show(bool show)
@@ -377,7 +377,7 @@ void ActionController::draw(Window *win)
 		vector pp = win->project(pos);
 
 		if ((mouse_over_constraint >= 0) and !inUse()){
-			ed->drawStr(pp.x + 80, pp.y + 40, action_name(action.mode) + ": " + constraint_name(mouse_over_constraint));
+			ed->draw_str(pp.x + 80, pp.y + 40, action_name(action.mode) + ": " + constraint_name(mouse_over_constraint));
 		}
 	}
 
@@ -390,20 +390,20 @@ void ActionController::draw(Window *win)
 		if (action.mode == ACTION_MOVE){
 			vector t = param;
 			string unit = multi_view->getScaleByZoom(t);
-			ed->drawStr(x0, y0,      f2s(t.x, 2) + " " + unit, Edward::ALIGN_RIGHT);
-			ed->drawStr(x0, y0 + 20, f2s(t.y, 2) + " " + unit, Edward::ALIGN_RIGHT);
+			ed->draw_str(x0, y0,      f2s(t.x, 2) + " " + unit, Edward::ALIGN_RIGHT);
+			ed->draw_str(x0, y0 + 20, f2s(t.y, 2) + " " + unit, Edward::ALIGN_RIGHT);
 			if (multi_view->mode3d)
-				ed->drawStr(x0, y0 + 40, f2s(t.z, 2) + " " + unit, Edward::ALIGN_RIGHT);
+				ed->draw_str(x0, y0 + 40, f2s(t.z, 2) + " " + unit, Edward::ALIGN_RIGHT);
 		}else if ((action.mode == ACTION_ROTATE) or (action.mode == ACTION_ROTATE_2D)){
 			vector r = param * 180.0f / pi;
-			ed->drawStr(x0, y0 + 00, f2s(r.x, 1) + "°", Edward::ALIGN_RIGHT);
-			ed->drawStr(x0, y0 + 20, f2s(r.y, 1) + "°", Edward::ALIGN_RIGHT);
-			ed->drawStr(x0, y0 + 40, f2s(r.z, 1) + "°", Edward::ALIGN_RIGHT);
+			ed->draw_str(x0, y0 + 00, f2s(r.x, 1) + "°", Edward::ALIGN_RIGHT);
+			ed->draw_str(x0, y0 + 20, f2s(r.y, 1) + "°", Edward::ALIGN_RIGHT);
+			ed->draw_str(x0, y0 + 40, f2s(r.z, 1) + "°", Edward::ALIGN_RIGHT);
 		}else if ((action.mode == ACTION_SCALE) or (action.mode == ACTION_SCALE_2D)){
-			ed->drawStr(x0, y0 + 00, f2s(param.x * 100.0f, 1) + "%", Edward::ALIGN_RIGHT);
-			ed->drawStr(x0, y0 + 20, f2s(param.y * 100.0f, 1) + "%", Edward::ALIGN_RIGHT);
+			ed->draw_str(x0, y0 + 00, f2s(param.x * 100.0f, 1) + "%", Edward::ALIGN_RIGHT);
+			ed->draw_str(x0, y0 + 20, f2s(param.y * 100.0f, 1) + "%", Edward::ALIGN_RIGHT);
 			if (multi_view->mode3d)
-				ed->drawStr(x0, y0 + 40, f2s(param.z * 100.0f, 1) + "%", Edward::ALIGN_RIGHT);
+				ed->draw_str(x0, y0 + 40, f2s(param.z * 100.0f, 1) + "%", Edward::ALIGN_RIGHT);
 		}
 	}
 }

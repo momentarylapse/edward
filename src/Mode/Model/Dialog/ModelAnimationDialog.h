@@ -39,7 +39,7 @@ public:
 	void onSimulationStop();
 	void onClose();
 
-	void onUpdate(Observable *o, const string &message);
+	void on_update(Observable *o, const string &message) override;
 
 	int getSelectedAnimation();
 

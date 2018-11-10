@@ -182,20 +182,20 @@ Node *SyntaxTree::PreProcessNode(Node *c)
 					c->NumParams = 0;*/
 				}else{
 					// pre process operator
-					int nc = AddConstant(o->return_type);
+					Node *r = add_node_const(AddConstant(o->return_type));
 					if (c->params.num > 1){
-						f(*constants[nc], *constants[c->params[0]->link_no], *constants[c->params[1]->link_no]);
+						f(*r->as_const(), *c->params[0]->as_const(), *c->params[1]->as_const());
 					}else{
 						Value dummy;
-						f(*constants[nc], *constants[c->params[0]->link_no], dummy);
+						f(*r->as_const(), *c->params[0]->as_const(), dummy);
 					}
-					return add_node_const(nc);
+					return r;
 				}
 			}
 		}
 #if 1
 	}else if (c->kind == KIND_FUNCTION){
-		Function *f = c->script->syntax->functions[c->link_no];
+		Function *f = c->as_func();
 		if (!f->is_pure)
 			return c;
 		if (f->return_type->get_default_constructor()) // TODO
@@ -214,12 +214,12 @@ Node *SyntaxTree::PreProcessNode(Node *c)
 			else if (c->params[i]->kind != KIND_CONSTANT)
 				all_const = false;
 		}
-		void *inst = NULL;
+		void *inst = nullptr;
 		if (c->instance){
 			return c;
 			if (c->instance->kind != KIND_CONSTANT)
 				all_const = false;
-			inst = constants[c->instance->link_no]->value.data;
+			inst = c->instance->as_const()->p();
 		}
 		if (!all_const)
 			return c;
@@ -229,13 +229,13 @@ Node *SyntaxTree::PreProcessNode(Node *c)
 		temp.init(f->return_type);
 		Array<void*> p;
 		for (int i=0; i<c->params.num; i++)
-			p.add(constants[c->params[i]->link_no]->p());
+			p.add(c->params[i]->as_const()->p());
 		if (!call_function(f, ff, temp.p(), inst, p))
 			return c;
-		int nc = AddConstant(f->return_type);
-		constants[nc]->set(temp);
+		Node *r = add_node_const(AddConstant(f->return_type));
+		r->as_const()->set(temp);
 		//DoError("...pure function evaluation?!?....TODO");
-		return add_node_const(nc);
+		return r;
 #endif
 	}else if (c->kind == KIND_ARRAY_BUILDER){
 		bool all_consts = true;
@@ -243,14 +243,14 @@ Node *SyntaxTree::PreProcessNode(Node *c)
 			if (c->params[i]->kind != KIND_CONSTANT)
 				all_consts = false;
 		if (all_consts){
-			int nc = AddConstant(c->type);
+			Node *c_array = add_node_const(AddConstant(c->type));
 			int el_size = c->type->parent->size;
-			DynamicArray *da = &constants[nc]->as_array();
+			DynamicArray *da = &c_array->as_const()->as_array();
 			da->init(el_size);
 			da->resize(c->params.num);
 			for (int i=0; i<c->params.num; i++)
-				memcpy((char*)da->data + el_size * i, constants[c->params[i]->link_no]->p(), el_size);
-			return add_node_const(nc);
+				memcpy((char*)da->data + el_size * i, c->params[i]->as_const()->p(), el_size);
+			return c_array;
 		}
 	}/*else if (c->kind == KindReference){
 	// no... we don't know the addresses of globals/constants yet...
@@ -335,9 +335,9 @@ Node *SyntaxTree::PreProcessNodeAddresses(Node *c)
 					*(void**)d1.p() = (void*)c->params[0]->link_no;
 					*(void**)d2.p() = (void*)c->params[1]->link_no;
 					if (c->params[0]->kind == KIND_CONSTANT)
-					    d1.set(*constants[c->params[0]->link_no]);
+					    d1.set(*c->params[0]->as_const());
 					if (c->params[1]->kind == KIND_CONSTANT)
-					    d2.set(*constants[c->params[1]->link_no]);
+					    d2.set(*c->params[1]->as_const());
 					Value r;
 					r.init(c->type);
 					f(r, d1, d2);

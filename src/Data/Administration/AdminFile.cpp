@@ -165,7 +165,7 @@ void AdminFile::check(AdminFileList &list)
 	// test file existence
 	File *f = NULL;
 	try{
-		f = FileOpen(ed->getRootDir(Kind) + Name);
+		f = FileOpen(ed->get_root_dir(Kind) + Name);
 
 		// file ok
 		int _time = f->GetDateModification().time;
@@ -278,7 +278,7 @@ void AdminFile::check(AdminFileList &list)
 		}
 	}else{
 		try{
-			File *f = FileOpen(ed->getRootDir(Kind) + Name);
+			File *f = FileOpen(ed->get_root_dir(Kind) + Name);
 			Time = f->GetDateModification().time;
 			delete(f);
 		}catch(...){

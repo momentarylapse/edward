@@ -41,9 +41,9 @@ ModeModel::~ModeModel()
 
 
 
-void ModeModel::onStart()
+void ModeModel::on_start()
 {
-	ed->toolbar[hui::TOOLBAR_TOP]->setByID("model-toolbar");
+	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("model-toolbar");
 	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
@@ -51,13 +51,13 @@ void ModeModel::onStart()
 
 
 
-void ModeModel::onEnter()
+void ModeModel::on_enter()
 {
-	ed->setMode(mode_model_mesh);
+	ed->set_mode(mode_model_mesh);
 }
 
 
-void ModeModel::onEnd()
+void ModeModel::on_end()
 {
 	if (properties_dialog)
 		delete(properties_dialog);
@@ -70,7 +70,7 @@ void ModeModel::onEnd()
 
 
 
-void ModeModel::onCommand(const string & id)
+void ModeModel::on_command(const string & id)
 {
 	if (id == "new")
 		_new();
@@ -79,7 +79,7 @@ void ModeModel::onCommand(const string & id)
 	if (id == "save")
 		save();
 	if (id == "save_as")
-		saveAs();
+		save_as();
 
 	if (id == "import_from_3ds")
 		importOpen3ds();
@@ -98,7 +98,7 @@ void ModeModel::onCommand(const string & id)
 		data->redo();
 
 	if (id == "mode_model_mesh")
-		ed->setMode(mode_model_mesh);
+		ed->set_mode(mode_model_mesh);
 	if (id == "mode_model_vertex")
 		mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_vertex);
 	if (id == "mode_model_edge")
@@ -108,11 +108,11 @@ void ModeModel::onCommand(const string & id)
 	if (id == "mode_model_surface")
 		mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_surface);
 	if (id == "mode_model_texture_coord")
-		ed->setMode(mode_model_mesh_texture);
+		ed->set_mode(mode_model_mesh_texture);
 	if (id == "mode_model_animation")
-		ed->setMode(mode_model_animation);
+		ed->set_mode(mode_model_animation);
 	if (id == "mode_model_skeleton")
-		ed->setMode(mode_model_skeleton);
+		ed->set_mode(mode_model_skeleton);
 		//SetSubMode(SubModeTextures);
 	if (id == "mode_properties")
 		executePropertiesDialog();
@@ -128,16 +128,16 @@ void ModeModel::onCommand(const string & id)
 
 
 
-void ModeModel::onUpdateMenu()
+void ModeModel::on_update_menu()
 {
 	ed->check("mode_model_vertex", mode_model_mesh->selection_mode_vertex->isActive());
 	ed->check("mode_model_edge", mode_model_mesh->selection_mode_edge->isActive());
 	ed->check("mode_model_polygon", mode_model_mesh->selection_mode_polygon->isActive());
 	ed->check("mode_model_surface", mode_model_mesh->selection_mode_surface->isActive());
-	ed->check("mode_model_texture_coord", mode_model_mesh_texture->isAncestorOf(ed->cur_mode));
-	ed->check("mode_model_mesh", mode_model_mesh->isAncestorOf(ed->cur_mode) && !mode_model_mesh_texture->isAncestorOf(ed->cur_mode));
-	ed->check("mode_model_skeleton", mode_model_skeleton->isAncestorOf(ed->cur_mode));
-	ed->check("mode_model_animation", mode_model_animation->isAncestorOf(ed->cur_mode));
+	ed->check("mode_model_texture_coord", mode_model_mesh_texture->is_ancestor_of(ed->cur_mode));
+	ed->check("mode_model_mesh", mode_model_mesh->is_ancestor_of(ed->cur_mode) && !mode_model_mesh_texture->is_ancestor_of(ed->cur_mode));
+	ed->check("mode_model_skeleton", mode_model_skeleton->is_ancestor_of(ed->cur_mode));
+	ed->check("mode_model_animation", mode_model_animation->is_ancestor_of(ed->cur_mode));
 }
 
 
@@ -169,46 +169,46 @@ void ModeModel::setMaterialCreation(float intensity)
 
 void ModeModel::_new()
 {
-	if (!ed->allowTermination())
+	if (!ed->allow_termination())
 		return;
 	data->reset();
-	ed->setMode(this);
-	mode_model_mesh->optimizeView();
+	ed->set_mode(this);
+	mode_model_mesh->optimize_view();
 }
 
 bool ModeModel::open()
 {
-	if (!ed->allowTermination())
+	if (!ed->allow_termination())
 		return false;
-	if (!ed->fileDialog(FD_MODEL, false, false))
+	if (!ed->file_dialog(FD_MODEL, false, false))
 		return false;
 	if (!data->load(ed->dialog_file_complete))
 		return false;
 
-	ed->setMode(this);
-	mode_model_mesh->optimizeView();
+	ed->set_mode(this);
+	mode_model_mesh->optimize_view();
 	return true;
 }
 
 bool ModeModel::save()
 {
 	if (data->filename == "")
-		return saveAs();
+		return save_as();
 	return data->save(data->filename);
 }
 
-bool ModeModel::saveAs()
+bool ModeModel::save_as()
 {
-	if (ed->fileDialog(FD_MODEL, true, false))
+	if (ed->file_dialog(FD_MODEL, true, false))
 		return data->save(ed->dialog_file_complete);
 	return false;
 }
 
 bool ModeModel::importOpen3ds()
 {
-	if (!ed->allowTermination())
+	if (!ed->allow_termination())
 		return false;
-	if (!ed->fileDialog(FD_FILE, false, false))
+	if (!ed->file_dialog(FD_FILE, false, false))
 		return false;
 	return importLoad3ds(ed->dialog_file_complete);
 }
@@ -219,16 +219,16 @@ bool ModeModel::importLoad3ds(const string &filename)
 	if (!im.Import(data, filename))
 		return false;
 
-	ed->setMode(this);
-	mode_model_mesh->optimizeView();
+	ed->set_mode(this);
+	mode_model_mesh->optimize_view();
 	return true;
 }
 
 bool ModeModel::importOpenJson()
 {
-	if (!ed->allowTermination())
+	if (!ed->allow_termination())
 		return false;
-	if (!ed->fileDialog(FD_FILE, false, false))
+	if (!ed->file_dialog(FD_FILE, false, false))
 		return false;
 	return importLoadJson(ed->dialog_file_complete);
 }
@@ -239,16 +239,16 @@ bool ModeModel::importLoadPly(const string &filename)
 	if (!im.Import(data, filename))
 		return false;
 
-	ed->setMode(this);
-	mode_model_mesh->optimizeView();
+	ed->set_mode(this);
+	mode_model_mesh->optimize_view();
 	return true;
 }
 
 bool ModeModel::importOpenPly()
 {
-	if (!ed->allowTermination())
+	if (!ed->allow_termination())
 		return false;
-	if (!ed->fileDialog(FD_FILE, false, false))
+	if (!ed->file_dialog(FD_FILE, false, false))
 		return false;
 	return importLoadPly(ed->dialog_file_complete);
 }
@@ -259,16 +259,16 @@ bool ModeModel::importLoadJson(const string &filename)
 	if (!im.Import(data, filename))
 		return false;
 
-	ed->setMode(this);
-	mode_model_mesh->optimizeView();
+	ed->set_mode(this);
+	mode_model_mesh->optimize_view();
 	return true;
 }
 
 bool ModeModel::exportSaveJson()
 {
-	if (!ed->allowTermination())
+	if (!ed->allow_termination())
 		return false;
-	if (!ed->fileDialog(FD_FILE, true, false))
+	if (!ed->file_dialog(FD_FILE, true, false))
 		return false;
 	return exportWriteJson(ed->dialog_file_complete);
 }
@@ -279,8 +279,8 @@ bool ModeModel::exportWriteJson(const string &filename)
 	if (!ex.Export(data, filename))
 		return false;
 
-	ed->setMode(this);
-	mode_model_mesh->optimizeView();
+	ed->set_mode(this);
+	mode_model_mesh->optimize_view();
 	return true;
 }
 

@@ -19,7 +19,7 @@ ModeModelSkeletonCreateBone::ModeModelSkeletonCreateBone(ModeBase *_parent) :
 }
 
 
-void ModeModelSkeletonCreateBone::onLeftButtonDown()
+void ModeModelSkeletonCreateBone::on_left_button_down()
 {
 	if (pos_chosen){
 		if (multi_view->hover.index >= 0){

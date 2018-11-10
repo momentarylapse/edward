@@ -93,7 +93,7 @@ void image_load_bmp(const string &filename, Image &image)
 {
 	//msg_write("bmp");
 	unsigned char Header[56];
-	unsigned char *pal = NULL, temp_buffer[8];
+	unsigned char *pal = nullptr, temp_buffer[8];
 	FILE* f = fopen(filename.sys_filename().c_str(), "rb");
 	int r = fread(&Header, 56, 1, f);
 
@@ -162,7 +162,7 @@ void image_save_bmp(const string &filename, const Image &image)
 {
 	try{
 	File *f = FileCreate(filename);
-	image.setMode(image.ModeRGBA);
+	image.set_mode(image.ModeRGBA);
 
 	int row_size = 4 * (int)((image.width * 3 + 3) / 4);
 	int data_size = row_size * image.height;

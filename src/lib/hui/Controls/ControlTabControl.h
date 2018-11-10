@@ -17,19 +17,22 @@ class ControlTabControl : public Control
 {
 public:
 	ControlTabControl(const string &text, const string &id, Panel *panel);
-	~ControlTabControl();
-	virtual string getString();
-	virtual void __setString(const string &str);
-	virtual void __setInt(int i);
-	virtual int getInt();
-	virtual void __addString(const string &str);
-	virtual void __removeString(int row);
-	virtual void __setOption(const string &op, const string &value);
+	~ControlTabControl() override;
+	string get_string() override;
+	void __set_string(const string &str) override;
+	void __set_int(int i) override;
+	int get_int() override;
+	void __add_string(const string &str) override;
+	void __remove_string(int row) override;
+	void __change_string(int row, const string &str) override;
+	void __set_option(const string &op, const string &value);
 
-	virtual void add(Control *child, int x, int y);
+	void add(Control *child, int x, int y) override;
 	void addPage(const string &str);
 
 	int cur_page;
+
+	Array<Control*> pages; // sorted...
 };
 
 };

@@ -96,7 +96,7 @@ void SerializerX86::add_function_call(Script *script, int func_no, const SerialN
 	}else{
 		void *func = (void*)script->func[func_no];
 		if (!func)
-			DoErrorLink("could not link function " + script->syntax->functions[func_no]->name);
+			DoErrorLink("could not link function " + script->syntax->functions[func_no]->signature(true));
 		add_cmd(Asm::INST_CALL, param_const(TypePointer, (int_p)func)); // the actual call
 		// function pointer will be shifted later...
 	}
@@ -292,7 +292,7 @@ void SerializerX86::SerializeStatement(Node *com, const Array<SerialNodeParam> &
 			}
 			break;
 		case STATEMENT_NEW:{
-			Array<Node> links = syntax_tree->GetExistence("@malloc", NULL);
+			Array<Node> links = syntax_tree->GetExistence("@malloc", nullptr);
 			if (links.num == 0)
 				DoError("@malloc not found????");
 			AddFunctionCall(links[0].script, links[0].link_no, p_none, param_const(TypeInt, ret.type->parent->size), ret);
@@ -307,7 +307,7 @@ void SerializerX86::SerializeStatement(Node *com, const Array<SerialNodeParam> &
 			break;}
 		case STATEMENT_DELETE:{
 			add_cmd_destructor(param[0], false);
-			Array<Node> links = syntax_tree->GetExistence("@free", NULL);
+			Array<Node> links = syntax_tree->GetExistence("@free", nullptr);
 			if (links.num == 0)
 				DoError("@free not found????");
 			AddFunctionCall(links[0].script, links[0].link_no, p_none, param[0], p_none);

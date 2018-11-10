@@ -16,7 +16,7 @@ ModeWorldCameraCreatePoint::ModeWorldCameraCreatePoint(ModeBase *_parent) :
 	message = _("Punkt setzen");
 }
 
-void ModeWorldCameraCreatePoint::onLeftButtonDown()
+void ModeWorldCameraCreatePoint::on_left_button_down()
 {
 	vector pos = multi_view->getCursor3d();
 	data->execute(new ActionCameraAddPoint(data, pos, v_0, v_0, 1));

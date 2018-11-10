@@ -33,16 +33,16 @@ ModeModelMeshCreateCylinderSnake::ModeModelMeshCreateCylinderSnake(ModeBase *_pa
 	geo = NULL;
 }
 
-void ModeModelMeshCreateCylinderSnake::onStart()
+void ModeModelMeshCreateCylinderSnake::on_start()
 {
 	dialog = hui::CreateResourceDialog("new_cylinder_dialog",ed);
 
-	dialog->setInt("rings", hui::Config.getInt("NewCylinderRings", 4));
-	dialog->setInt("edges", hui::Config.getInt("NewCylinderEdges", 8));
-	dialog->check("round", hui::Config.getBool("NewCylinderRound", false));
-	dialog->hideControl("type:visible", true);
-	dialog->hideControl("type:physical", true);
-	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
+	dialog->set_int("rings", hui::Config.get_int("NewCylinderRings", 4));
+	dialog->set_int("edges", hui::Config.get_int("NewCylinderEdges", 8));
+	dialog->check("round", hui::Config.get_bool("NewCylinderRound", false));
+	dialog->hide_control("type:visible", true);
+	dialog->hide_control("type:physical", true);
+	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
 	dialog->event("hui:close", std::bind(&ModeModelMeshCreateCylinderSnake::onClose, this));
 
@@ -53,7 +53,7 @@ void ModeModelMeshCreateCylinderSnake::onStart()
 }
 
 
-void ModeModelMeshCreateCylinderSnake::onEnd()
+void ModeModelMeshCreateCylinderSnake::on_end()
 {
 	delete(dialog);
 	if (geo)
@@ -65,19 +65,19 @@ void ModeModelMeshCreateCylinderSnake::updateGeometry()
 	if (geo)
 		delete(geo);
 	if (ready_for_scaling){
-		bool round = dialog->isChecked("round");
-		int rings = dialog->getInt("rings");
-		int edges = dialog->getInt("edges");
-		hui::Config.setInt("NewCylinderRings", rings);
-		hui::Config.setInt("NewCylinderEdges", edges);
-		hui::Config.setBool("NewCylinderRound", round);
+		bool round = dialog->is_checked("round");
+		int rings = dialog->get_int("rings");
+		int edges = dialog->get_int("edges");
+		hui::Config.set_int("NewCylinderRings", rings);
+		hui::Config.set_int("NewCylinderEdges", edges);
+		hui::Config.set_bool("NewCylinderRound", round);
 
 		geo = new GeometryCylinder(pos, radius, rings * (pos.num - 1), edges, closed ? GeometryCylinder::END_LOOP : (round ? GeometryCylinder::END_ROUND : GeometryCylinder::END_FLAT));
 	}
 }
 
 
-void ModeModelMeshCreateCylinderSnake::onMouseMove()
+void ModeModelMeshCreateCylinderSnake::on_mouse_move()
 {
 	if (ready_for_scaling){
 		vector p = multi_view->getCursor3d(pos.back());
@@ -94,7 +94,7 @@ void ModeModelMeshCreateCylinderSnake::onMouseMove()
 
 
 
-void ModeModelMeshCreateCylinderSnake::onLeftButtonUp()
+void ModeModelMeshCreateCylinderSnake::on_left_button_up()
 {
 	if (ready_for_scaling){
 
@@ -109,10 +109,10 @@ void ModeModelMeshCreateCylinderSnake::onLeftButtonUp()
 			if ((pp - multi_view->m).length_fuzzy() < CYLINDER_CLOSING_DISTANCE){
 				closed = true;
 				ready_for_scaling = true;
-				onMouseMove();
+				on_mouse_move();
 				message = _("Zylinder: Radius");
 				updateGeometry();
-				ed->forceRedraw();
+				ed->force_redraw();
 				return;
 			}
 
@@ -123,15 +123,15 @@ void ModeModelMeshCreateCylinderSnake::onLeftButtonUp()
 
 
 
-void ModeModelMeshCreateCylinderSnake::onCommand(const string& id)
+void ModeModelMeshCreateCylinderSnake::on_command(const string& id)
 {
 	if (id == "finish-action"){
 		if (pos.num > 1){
 			ready_for_scaling = true;
-			onMouseMove();
+			on_mouse_move();
 			message = _("Zylinderradius: ");
 			updateGeometry();
-			ed->forceRedraw();
+			ed->force_redraw();
 		}
 	}
 }
@@ -140,9 +140,9 @@ void ModeModelMeshCreateCylinderSnake::onCommand(const string& id)
 
 
 
-void ModeModelMeshCreateCylinderSnake::onDrawWin(MultiView::Window *win)
+void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win)
 {
-	parent->onDrawWin(win);
+	parent->on_draw_win(win);
 
 	if (pos.num > 0){
 
@@ -184,7 +184,7 @@ void ModeModelMeshCreateCylinderSnake::onDrawWin(MultiView::Window *win)
 		vector pp = multi_view->mouse_win->project(pos[0]);
 		pp.z = 0;
 		if ((pp - multi_view->m).length_fuzzy() < CYLINDER_CLOSING_DISTANCE){
-			ed->drawStr(pp.x, pp.y, _("Pfad schlie&sen"));
+			ed->draw_str(pp.x, pp.y, _("Pfad schlie&sen"));
 		}
 	}
 }

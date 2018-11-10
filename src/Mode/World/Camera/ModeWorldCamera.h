@@ -24,25 +24,25 @@ public:
 	ModeWorldCamera(ModeBase *_parent, Data *_data);
 	virtual ~ModeWorldCamera();
 
-	virtual void onStart();
-	virtual void onEnd();
+	void on_start() override;
+	void on_end() override;
 
-	virtual void onCommand(const string &id);
-	virtual void onUpdateMenu();
+	void on_command(const string &id) override;
+	void on_update_menu() override;
 
-	virtual void onDrawWin(MultiView::Window *win);
+	void on_draw_win(MultiView::Window *win) override;
 
 	void addPoint();
 	void deletePoint();
 
 	void loadData();
 
-	virtual void onUpdate(Observable *obs, const string &message);
+	void on_update(Observable *obs, const string &message) override;
 
-	virtual void _new();
-	virtual bool open();
-	virtual bool save();
-	virtual bool saveAs();
+	void _new() override;
+	bool open() override;
+	bool save() override;
+	bool save_as() override;
 
 	void previewStart();
 	void previewStop();

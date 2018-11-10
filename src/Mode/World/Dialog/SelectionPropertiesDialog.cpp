@@ -12,7 +12,7 @@ SelectionPropertiesDialog::SelectionPropertiesDialog(hui::Window *_parent, bool 
 	hui::Dialog("world_ps_dialog", 400, 400, _parent, _allow_parent),
 	Observer("SelectionPropertiesDialog")
 {
-	fromResource("world_ps_dialog");
+	from_resource("world_ps_dialog");
 	data = _data;
 	selected_index = _selected_index;
 	selected_type = _selected_type;
@@ -42,8 +42,8 @@ void SelectionPropertiesDialog::LoadData()
 
 void SelectionPropertiesDialog::OnPropertyList()
 {
-	*selected_index = index[getInt("")];
-	*selected_type = type[getInt("")];
+	*selected_index = index[get_int("")];
+	*selected_type = type[get_int("")];
 	destroy();
 }
 
@@ -53,19 +53,19 @@ void SelectionPropertiesDialog::FillList()
 {
 	hui::ComboBoxSeparator = ":";
 	reset("property_list");
-	addString("property_list", _("Welt") + ":-:" + _(" -- Komplette Welt -- "));
+	add_string("property_list", _("Welt") + ":-:" + _(" -- Komplette Welt -- "));
 	index.add(0);
 	type.add(FD_WORLD);
 
 	foreachi(WorldObject &o, data->Objects, i)
 		if (o.is_selected){
-			addString("property_list", _("Objekt") + format(":%d:", i) + o.Name);
+			add_string("property_list", _("Objekt") + format(":%d:", i) + o.Name);
 			type.add(FD_MODEL);
 			index.add(i);
 		}
 	foreachi(WorldTerrain &t, data->Terrains, i)
 		if (t.is_selected){
-			addString("property_list", _("Terrain") + format(":%d:", i) + t.FileName);
+			add_string("property_list", _("Terrain") + format(":%d:", i) + t.FileName);
 			type.add(FD_TERRAIN);
 			index.add(i);
 		}
@@ -86,7 +86,7 @@ void SelectionPropertiesDialog::OnClose()
 	destroy();
 }
 
-void SelectionPropertiesDialog::onUpdate(Observable *o, const string &message)
+void SelectionPropertiesDialog::on_update(Observable *o, const string &message)
 {
 	LoadData();
 }

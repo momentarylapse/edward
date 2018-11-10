@@ -17,11 +17,12 @@ class ControlGrid : public Control
 {
 public:
 	ControlGrid(const string &text, const string &id, Panel *panel);
-	virtual void add(Control *child, int x, int y);
+	void add(Control *child, int x, int y) override;
 
-	virtual void __setOption(const string &op, const string &value);
+	void __set_option(const string &op, const string &value) override;
 
 	bool button_bar;
+	bool action_bar;
 	bool vertical;
 };
 

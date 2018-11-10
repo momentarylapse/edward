@@ -11,7 +11,7 @@ string file_dialog_default;
 static GtkWindow *get_window_save(Window *win)
 {
 	_MakeUsable_();
-	return win ? GTK_WINDOW(win->window) : NULL;
+	return win ? GTK_WINDOW(win->window) : nullptr;
 }
 
 // choose a directory (<dir> will be selected initially)
@@ -23,7 +23,7 @@ bool FileDialogDir(Window *win, const string &title, const string &dir/*, const 
 												GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
 												"gtk-cancel",	GTK_RESPONSE_CANCEL,
 												"gtk-open",		GTK_RESPONSE_ACCEPT,
-												NULL);
+												nullptr);
 	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dlg), sys_str_f(dir));
 	int r = gtk_dialog_run(GTK_DIALOG(dlg));
 	if (r == GTK_RESPONSE_ACCEPT){
@@ -57,7 +57,7 @@ bool FileDialogOpen(Window *win,const string &title,const string &dir,const stri
 												GTK_FILE_CHOOSER_ACTION_OPEN,
 												"gtk-cancel",	GTK_RESPONSE_CANCEL,
 												"gtk-open",		GTK_RESPONSE_ACCEPT,
-												NULL);
+												nullptr);
 	gtk_window_set_modal(GTK_WINDOW(dlg), true);
 	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dlg), sys_str_f(dir));
 	add_filters(dlg, show_filter, filter);
@@ -89,13 +89,13 @@ static void try_to_ensure_extension(string &filename, const string &filter)
 // file selection for saving
 bool FileDialogSave(Window *win,const string &title,const string &dir,const string &show_filter,const string &filter)
 {
-	GtkWindow *w = win ? GTK_WINDOW(win->window) : NULL;
+	GtkWindow *w = win ? GTK_WINDOW(win->window) : nullptr;
 	GtkWidget* dlg=gtk_file_chooser_dialog_new(	sys_str(title),
 												w,
 												GTK_FILE_CHOOSER_ACTION_SAVE,
 												"gtk-cancel",	GTK_RESPONSE_CANCEL,
 												"gtk-save",		GTK_RESPONSE_ACCEPT,
-												NULL);
+												nullptr);
 	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER (dlg), TRUE);
 	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dlg), sys_str_f(dir));
 	if (file_dialog_default.num > 0)
@@ -185,32 +185,32 @@ void ErrorBox(Window *win,const string &title,const string &text)
 void AboutBox(Window *win)
 {
 	// load license
-	if (Application::getProperty("license") == "")
+	if (Application::get_property("license") == "")
 		if (file_test_existence(Application::directory_static + "license_small.txt"))
-			Application::setProperty("license", FileRead(Application::directory_static + "license_small.txt"));
+			Application::set_property("license", FileRead(Application::directory_static + "license_small.txt"));
 
 	// author list
 	Array<char*> _a_;
-	Array<string> authors = Application::getProperty("author").explode(";");
+	Array<string> authors = Application::get_property("author").explode(";");
 	for (string &author : authors){
 		char *p = new char[author.num + 1];
 		strcpy(p, author.c_str());
 		_a_.add(p);
 	}
-	_a_.add(NULL);
+	_a_.add(nullptr);
 
-	GError *error = NULL;
-	GdkPixbuf *_logo = gdk_pixbuf_new_from_file(Application::getProperty("logo").c_str(), &error);
+	GError *error = nullptr;
+	GdkPixbuf *_logo = gdk_pixbuf_new_from_file(Application::get_property("logo").c_str(), &error);
 	gtk_show_about_dialog(get_window_save(win),
-		"program-name", Application::getProperty("name").c_str(),
-		"website", Application::getProperty("website").c_str(),
-		"version", Application::getProperty("version").c_str(),
-		"license", Application::getProperty("license").c_str(),
-		"comments", sys_str(Application::getProperty("comment").c_str()),
+		"program-name", Application::get_property("name").c_str(),
+		"website", Application::get_property("website").c_str(),
+		"version", Application::get_property("version").c_str(),
+		"license", Application::get_property("license").c_str(),
+		"comments", sys_str(Application::get_property("comment").c_str()),
 		"authors", _a_.data,
 		"logo", _logo,
-		"copyright", Application::getProperty("copyright").c_str(),
-		NULL);
+		"copyright", Application::get_property("copyright").c_str(),
+		nullptr);
 
 	for (char *aa : _a_)
 		delete(aa);

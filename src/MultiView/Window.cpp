@@ -304,11 +304,11 @@ void Window::draw()
 	nix::SetMaterial(Black,White,Black,0,White);//Black);
 	nix::SetColor(White);
 
-	bool index_key = ed->getKey(hui::KEY_I);
+	bool index_key = ed->get_key(hui::KEY_I);
 
 	// draw the actual data
 	if (ed->cur_mode)
-		ed->cur_mode->onDrawWin(this);
+		ed->cur_mode->on_draw_win(this);
 
 	// draw multiview data
 	nix::SetShader(nix::default_shader_2d);
@@ -383,17 +383,17 @@ void Window::draw()
 
 	nix::SetShader(nix::default_shader_2d);
 	nix::SetColor(multi_view->ColorWindowType);
-	if (ed->isActive("nix-area") and (this == multi_view->active_win))
+	if (ed->is_active("nix-area") and (this == multi_view->active_win))
 		nix::SetColor(multi_view->ColorText);
 	if ((this == multi_view->mouse_win) and (multi_view->hover.meta == multi_view->hover.HOVER_WINDOW_LABEL))
 		nix::SetColor(Red);
-	ed->drawStr(dest.x1 + 3, dest.y1, view_kind);
+	ed->draw_str(dest.x1 + 3, dest.y1, view_kind);
 	nix::SetColor(multi_view->ColorText);
 
 	for (auto &m: multi_view->message3d){
 		vector p = project(m.pos);
 		if (p.z > 0)
-			ed->drawStr(p.x, p.y, m.str);
+			ed->draw_str(p.x, p.y, m.str);
 	}
 }
 

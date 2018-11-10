@@ -30,13 +30,13 @@ ModeModelMeshSplitPolygon::ModeModelMeshSplitPolygon(ModeBase *_parent) :
 	mode_model->allowSelectionModes(false);
 }
 
-void ModeModelMeshSplitPolygon::onStart()
+void ModeModelMeshSplitPolygon::on_start()
 {
 	multi_view->setAllowAction(false);
 	multi_view->setAllowSelect(false);
 }
 
-void ModeModelMeshSplitPolygon::onLeftButtonUp()
+void ModeModelMeshSplitPolygon::on_left_button_up()
 {
 	/*triangle = multi_view->MouseOver;
 	surface = multi_view->MouseOverSet;
@@ -50,13 +50,13 @@ void ModeModelMeshSplitPolygon::onLeftButtonUp()
 		//Abort();
 		surface = -1;
 		triangle = -1;
-		ed->forceRedraw();
+		ed->force_redraw();
 	}
 }
 
-void ModeModelMeshSplitPolygon::onDrawWin(MultiView::Window *win)
+void ModeModelMeshSplitPolygon::on_draw_win(MultiView::Window *win)
 {
-	parent->onDrawWin(win);
+	parent->on_draw_win(win);
 
 	triangle = multi_view->hover.index;
 	surface = multi_view->hover.set;

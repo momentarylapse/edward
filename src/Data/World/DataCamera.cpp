@@ -22,7 +22,7 @@ void DataCamera::reset()
 	filename = "";
 	Point.clear();
 	Vel.clear();
-	resetHistory();
+	reset_history();
 	notify();
 }
 
@@ -78,16 +78,16 @@ bool DataCamera::load(const string& _filename, bool deep)
 
 		FileClose(f);
 	}else{
-		ed->errorBox(format(_("Falsches Dateiformat der Datei %s: %d (statt %d)!"), filename.c_str(), ffv, 2));
+		ed->error_box(format(_("Falsches Dateiformat der Datei %s: %d (statt %d)!"), filename.c_str(), ffv, 2));
 		Error=true;
 	}
 	delete(f);
 	UpdateVel();
-	resetHistory();
+	reset_history();
 	notify();
 
 	}catch(Exception &e){
-		ed->setMessage(e.message());
+		ed->set_message(e.message());
 	}
 
 	return !Error;
@@ -132,8 +132,8 @@ bool DataCamera::save(const string& _filename)
 	f->write_comment("#");
 
 	delete(f);
-	ed->setMessage(_("Kamera-Script gespeichert!"));
-	action_manager->markCurrentAsSave();
+	ed->set_message(_("Kamera-Script gespeichert!"));
+	action_manager->mark_current_as_save();
 
 	}catch(Exception &e){
 		FileClose(f);

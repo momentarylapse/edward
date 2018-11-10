@@ -29,19 +29,19 @@ ModeModelSkeleton::ModeModelSkeleton(ModeBase *_parent) :
 
 
 
-void ModeModelSkeleton::onCommand(const string & id)
+void ModeModelSkeleton::on_command(const string & id)
 {
 	if (id == "skeleton_new_point")
-		ed->setMode(new ModeModelSkeletonCreateBone(ed->cur_mode));
+		ed->set_mode(new ModeModelSkeletonCreateBone(ed->cur_mode));
 	if (id == "skeleton_edit_bone"){
 		if (data->getNumSelectedBones() == 1){
 			foreachi(ModelBone &b, data->bone, i)
 				if (b.is_selected){
-					ed->setMode(new ModeModelSkeletonAttachVertices(ed->cur_mode, i));
+					ed->set_mode(new ModeModelSkeletonAttachVertices(ed->cur_mode, i));
 					break;
 				}
 		}else{
-			ed->errorBox(_("Es muss genau 1 Knochen markiert sein!"));
+			ed->error_box(_("Es muss genau 1 Knochen markiert sein!"));
 		}
 	}
 	//if (id == "skeleton_link")
@@ -71,27 +71,27 @@ void ModeModelSkeleton::onCommand(const string & id)
 
 void ModeModelSkeleton::addSubModel()
 {
-	if (!ed->fileDialog(FD_MODEL, false, true))
+	if (!ed->file_dialog(FD_MODEL, false, true))
 		return;
-	data->beginActionGroup("remove-sub-model");
+	data->begin_action_group("remove-sub-model");
 	foreachi(ModelBone &b, data->bone, i)
 		if (b.is_selected)
 			data->setBoneModel(i, ed->dialog_file_no_ending);
-	data->endActionGroup();
+	data->end_action_group();
 }
 
 void ModeModelSkeleton::removeSubModel()
 {
-	data->beginActionGroup("remove-sub-model");
+	data->begin_action_group("remove-sub-model");
 	foreachi(ModelBone &b, data->bone, i)
 		if (b.is_selected)
 			data->setBoneModel(i, "");
-	data->endActionGroup();
+	data->end_action_group();
 }
 
 void ModeModelSkeleton::unlinkSelection()
 {
-	data->beginActionGroup("unlink-bones");
+	data->begin_action_group("unlink-bones");
 	int n = 0;
 	foreachi(ModelBone &b, data->bone, i)
 		if ((b.is_selected) and (b.parent >= 0))
@@ -99,9 +99,9 @@ void ModeModelSkeleton::unlinkSelection()
 				data->reconnectBone(i, -1);
 				n ++;
 			}
-	data->endActionGroup();
+	data->end_action_group();
 
-	ed->setMessage(format(_("%d Verbindungen gel&ost"), n));
+	ed->set_message(format(_("%d Verbindungen gel&ost"), n));
 }
 
 void ModeModelSkeleton::chooseMouseFunction(int f)
@@ -112,13 +112,13 @@ void ModeModelSkeleton::chooseMouseFunction(int f)
 }
 
 
-void ModeModelSkeleton::onDraw()
+void ModeModelSkeleton::on_draw()
 {
 }
 
 
 
-void ModeModelSkeleton::onUpdateMenu()
+void ModeModelSkeleton::on_update_menu()
 {
 	ed->check("select", mouse_action == MultiView::ACTION_SELECT);
 	ed->check("translate", mouse_action == MultiView::ACTION_MOVE);
@@ -129,27 +129,27 @@ void ModeModelSkeleton::onUpdateMenu()
 
 
 
-void ModeModelSkeleton::onStart()
+void ModeModelSkeleton::on_start()
 {
-	ed->toolbar[hui::TOOLBAR_LEFT]->setByID("model-skeleton-toolbar");
+	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-skeleton-toolbar");
 
 	subscribe(data);
 
 
 	chooseMouseFunction(MultiView::ACTION_MOVE);
 	mode_model->allowSelectionModes(false);
-	onUpdate(data, "");
+	on_update(data, "");
 }
 
 
 
-void ModeModelSkeleton::onEnd()
+void ModeModelSkeleton::on_end()
 {
 	unsubscribe(data);
 }
 
 
-void ModeModelSkeleton::onSetMultiView()
+void ModeModelSkeleton::on_set_multi_view()
 {
 	multi_view->clearData(data);
 
@@ -161,7 +161,7 @@ void ModeModelSkeleton::onSetMultiView()
 }
 
 
-void ModeModelSkeleton::onUpdate(Observable *o, const string &message)
+void ModeModelSkeleton::on_update(Observable *o, const string &message)
 {
 	if (o == data){
 		mode_model_mesh->updateVertexBuffers(data->vertex);
@@ -194,7 +194,7 @@ void drawCoordBasis(MultiView::Window *win, const ModelBone &b)
 	}
 }
 
-void ModeModelSkeleton::onDrawWin(MultiView::Window *win)
+void ModeModelSkeleton::on_draw_win(MultiView::Window *win)
 {
 	mode_model_mesh->drawPolygons(win, data->vertex);
 	drawSkeleton(win, data->bone);

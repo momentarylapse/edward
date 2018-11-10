@@ -62,16 +62,16 @@ ModeWorld::~ModeWorld()
 {
 }
 
-bool ModeWorld::saveAs()
+bool ModeWorld::save_as()
 {
-	if (ed->fileDialog(FD_WORLD, true, false))
+	if (ed->file_dialog(FD_WORLD, true, false))
 		return data->save(ed->dialog_file_complete);
 	return false;
 }
 
 
 
-void ModeWorld::onCommand(const string & id)
+void ModeWorld::on_command(const string & id)
 {
 	if (id == "new")
 		_new();
@@ -80,7 +80,7 @@ void ModeWorld::onCommand(const string & id)
 	if (id == "save")
 		save();
 	if (id == "save_as")
-		saveAs();
+		save_as();
 
 	if (id == "undo")
 		data->undo();
@@ -99,23 +99,23 @@ void ModeWorld::onCommand(const string & id)
 		ImportWorldProperties();
 
 	if (id == "create_objects")
-		ed->setMode(new ModeWorldCreateObject(ed->cur_mode));
+		ed->set_mode(new ModeWorldCreateObject(ed->cur_mode));
 	if (id == "terrain_create")
-		ed->setMode(new ModeWorldCreateTerrain(ed->cur_mode));
+		ed->set_mode(new ModeWorldCreateTerrain(ed->cur_mode));
 	if (id == "terrain_load")
 		LoadTerrain();
 
 	if (id == "camscript_create")
-		ed->setMode(mode_world_camera);
+		ed->set_mode(mode_world_camera);
 	if (id == "camscript_load")
-		if (ed->fileDialog(FD_CAMERAFLIGHT, false, true)){
+		if (ed->file_dialog(FD_CAMERAFLIGHT, false, true)){
 			if (mode_world_camera->data->load(ed->dialog_file_complete))
-				ed->setMode(mode_world_camera);
+				ed->set_mode(mode_world_camera);
 			else
 				mode_world_camera->data->reset();
 		}
 	if (id == "edit_terrain_vertices")
-		ed->setMode(new ModeWorldEditTerrain(ed->cur_mode));
+		ed->set_mode(new ModeWorldEditTerrain(ed->cur_mode));
 	if (id == "create_lightmap")
 		ExecuteLightmapDialog();
 
@@ -255,12 +255,12 @@ bool WorldTerrain::inRect(MultiView::Window *win, rect &r, void *user_data)
 bool ModeWorld::save()
 {
 	if (data->filename == "")
-		return saveAs();
+		return save_as();
 	return data->save(data->filename);
 }
 
 
-void ModeWorld::onUpdate(Observable *o, const string &message)
+void ModeWorld::on_update(Observable *o, const string &message)
 {
 	if (o == data){
 		data->UpdateData();
@@ -274,31 +274,31 @@ void ModeWorld::onUpdate(Observable *o, const string &message)
 
 void ModeWorld::_new()
 {
-	if (!ed->allowTermination())
+	if (!ed->allow_termination())
 		return;
 
 	data->reset();
-	optimizeView();
-	ed->setMode(mode_world);
+	optimize_view();
+	ed->set_mode(mode_world);
 }
 
 
 
-void ModeWorld::onDraw()
+void ModeWorld::on_draw()
 {
 	cur_cam->pos = multi_view->cam.pos;
 
 	int num_ob = data->GetSelectedObjects();
 	int num_te = data->GetSelectedTerrains();
 	if (num_ob + num_te > 0){
-		ed->drawStr(10, 100, format("obj: %d", num_ob));
-		ed->drawStr(10, 120, format("ter: %d", num_te));
+		ed->draw_str(10, 100, format("obj: %d", num_ob));
+		ed->draw_str(10, 120, format("ter: %d", num_te));
 	}
 }
 
 
 
-void ModeWorld::onEnd()
+void ModeWorld::on_end()
 {
 	if (WorldDialog)
 		delete(WorldDialog);
@@ -360,7 +360,7 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha)
 	nix::EnableLighting(mode_world->multi_view->light_enabled);
 }
 
-void ModeWorld::onDrawWin(MultiView::Window *win)
+void ModeWorld::on_draw_win(MultiView::Window *win)
 {
 	if (ShowEffects){
 		if (win->type == MultiView::VIEW_PERSPECTIVE)
@@ -426,9 +426,9 @@ void ModeWorld::onDrawWin(MultiView::Window *win)
 
 
 
-void ModeWorld::onStart()
+void ModeWorld::on_start()
 {
-	ed->toolbar[hui::TOOLBAR_TOP]->setByID("world-toolbar");
+	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("world-toolbar");
 	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
@@ -450,7 +450,7 @@ void ModeWorld::SetMouseAction(int mode)
 }
 
 
-void ModeWorld::onUpdateMenu()
+void ModeWorld::on_update_menu()
 {
 	ed->enable("undo", data->action_manager->undoable());
 	ed->enable("redo", data->action_manager->redoable());
@@ -474,9 +474,9 @@ void ModeWorld::onUpdateMenu()
 
 bool ModeWorld::open()
 {
-	if (!ed->allowTermination())
+	if (!ed->allow_termination())
 		return false;
-	if (!ed->fileDialog(FD_WORLD, false, false))
+	if (!ed->file_dialog(FD_WORLD, false, false))
 		return false;
 	ed->progress->start(_("Lade Welt"), 0);
 	bool ok = data->load(ed->dialog_file_complete);
@@ -484,8 +484,8 @@ bool ModeWorld::open()
 	if (!ok)
 		return false;
 
-	ed->setMode(mode_world);
-	optimizeView();
+	ed->set_mode(mode_world);
+	optimize_view();
 	return true;
 }
 
@@ -580,7 +580,7 @@ void ModeWorld::ExecuteLightmapDialog()
 }
 
 
-bool ModeWorld::optimizeView()
+bool ModeWorld::optimize_view()
 {
 	multi_view->resetView();
 	vector min, max;
@@ -595,14 +595,14 @@ bool ModeWorld::optimizeView()
 
 void ModeWorld::LoadTerrain()
 {
-	if (ed->fileDialog(FD_TERRAIN, false, true))
+	if (ed->file_dialog(FD_TERRAIN, false, true))
 		data->AddTerrain(ed->dialog_file_no_ending, multi_view->cam.pos);
 }
 
 void ModeWorld::SetEgo()
 {
 	if (data->GetSelectedObjects() != 1){
-		ed->setMessage(_("Es muss genau ein Objekt markiert sein!"));
+		ed->set_message(_("Es muss genau ein Objekt markiert sein!"));
 		return;
 	}
 	foreachi(WorldObject &o, data->Objects, i)
@@ -613,8 +613,8 @@ void ModeWorld::SetEgo()
 void ModeWorld::ToggleShowEffects()
 {
 	ShowEffects = !ShowEffects;
-	ed->updateMenu();
-	ed->forceRedraw();
+	ed->update_menu();
+	ed->force_redraw();
 }
 
 
@@ -622,8 +622,8 @@ void ModeWorld::ToggleShowEffects()
 void ModeWorld::ToggleShowObjects()
 {
 	ShowObjects = !ShowObjects;
-	ed->updateMenu();
-	ed->forceRedraw();
+	ed->update_menu();
+	ed->force_redraw();
 }
 
 
@@ -631,26 +631,26 @@ void ModeWorld::ToggleShowObjects()
 void ModeWorld::ToggleShowTerrains()
 {
 	ShowTerrains = !ShowTerrains;
-	ed->updateMenu();
-	ed->forceRedraw();
+	ed->update_menu();
+	ed->force_redraw();
 }
 
 
 void ModeWorld::ImportWorldProperties()
 {
-	if (ed->fileDialog(FD_WORLD, false, false)){
+	if (ed->file_dialog(FD_WORLD, false, false)){
 		DataWorld w;
 		if (w.load(ed->dialog_file_complete, false))
 			data->execute(new ActionWorldEditData(w.meta_data));
 		else
-			ed->errorBox(_("Angegebene Welt konnte nicht korrekt geladen werden!"));
+			ed->error_box(_("Angegebene Welt konnte nicht korrekt geladen werden!"));
 	}
 }
 
 void ModeWorld::ApplyHeightmap()
 {
 	if (data->GetSelectedTerrains() == 0){
-		ed->setMessage(_("Es muss mindestens ein Terrain markiert sein!"));
+		ed->set_message(_("Es muss mindestens ein Terrain markiert sein!"));
 		return;
 	}
 	TerrainHeightmapDialog *dlg = new TerrainHeightmapDialog(ed, false, data);
@@ -668,14 +668,14 @@ void ModeWorld::Copy()
 {
 	data->Copy(temp_objects, temp_terrains);
 
-	onUpdateMenu();
-	ed->setMessage(format(_("%d Objekte, %d Terrains kopiert"), temp_objects.num, temp_terrains.num));
+	on_update_menu();
+	ed->set_message(format(_("%d Objekte, %d Terrains kopiert"), temp_objects.num, temp_terrains.num));
 }
 
 void ModeWorld::Paste()
 {
 	data->Paste(temp_objects, temp_terrains);
-	ed->setMessage(format(_("%d Objekte, %d Terrains eingef&ugt"), temp_objects.num, temp_terrains.num));
+	ed->set_message(format(_("%d Objekte, %d Terrains eingef&ugt"), temp_objects.num, temp_terrains.num));
 }
 
 bool ModeWorld::Copyable()
@@ -688,7 +688,7 @@ bool ModeWorld::Pasteable()
 	return (temp_objects.num + temp_terrains.num) > 0;
 }
 
-void ModeWorld::onSetMultiView()
+void ModeWorld::on_set_multi_view()
 {
 	multi_view->clearData(data);
 

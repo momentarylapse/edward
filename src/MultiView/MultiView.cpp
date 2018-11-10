@@ -113,7 +113,7 @@ MultiView::MultiView(bool mode3d) :
 	POINT_RADIUS = 2;
 	POINT_RADIUS_HOVER = 4;
 
-	allow_infinite_scrolling = hui::Config.getBool("MultiView.InfiniteScrolling", false);
+	allow_infinite_scrolling = hui::Config.get_bool("MultiView.InfiniteScrolling", false);
 
 	if (mode3d){
 		win.add(new Window(this, VIEW_BACK));
@@ -124,17 +124,17 @@ MultiView::MultiView(bool mode3d) :
 
 		// Menu
 		menu = new hui::Menu;
-		menu->addItem(_("Ansicht"), "view_menu_sign");
+		menu->add(_("Ansicht"), "view_menu_sign");
 		//menu->enableItem("view_menu_sign", false);
-		menu->addSeparator();
-		menu->addItem(_("Rechts (-x)"), "view_right");
-		menu->addItem(_("Links (x)"), "view_left");
-		menu->addItem(_("Vorne (z)"), "view_front");
-		menu->addItem(_("Hinten (-z)"), "view_back");
-		menu->addItem(_("Oben (-y)"), "view_top");
-		menu->addItem(_("Unten (y)"), "view_bottom");
-		menu->addItem(_("Isometrisch"), "view_isometric");
-		menu->addItem(_("Perspektive"), "view_perspective");
+		menu->add_separator();
+		menu->add(_("Rechts (-x)"), "view_right");
+		menu->add(_("Links (x)"), "view_left");
+		menu->add(_("Vorne (z)"), "view_front");
+		menu->add(_("Hinten (-z)"), "view_back");
+		menu->add(_("Oben (-y)"), "view_top");
+		menu->add(_("Unten (y)"), "view_bottom");
+		menu->add(_("Isometrisch"), "view_isometric");
+		menu->add(_("Perspektive"), "view_perspective");
 	}else{
 		win.add(new Window(this, VIEW_2D));
 		light = -1;
@@ -162,7 +162,7 @@ MultiView::MultiView(bool mode3d) :
 
 MultiView::~MultiView()
 {
-	hui::Config.getBool("MultiView.InfiniteScrolling", allow_infinite_scrolling);
+	hui::Config.get_bool("MultiView.InfiniteScrolling", allow_infinite_scrolling);
 	for (auto w: win)
 		delete w;
 	delete cam_con;
@@ -321,9 +321,9 @@ void MultiView::toggleSnapToGrid()
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
-void MultiView::onCommand(const string & id)
+void MultiView::on_command(const string & id)
 {
-	notifyBegin();
+	notify_begin();
 
 	if (id == "select_all")
 		selectAll();
@@ -363,12 +363,12 @@ void MultiView::onCommand(const string & id)
 		viewStagePush();
 	if (id == "view_pop")
 		viewStagePop();
-	notifyEnd();
+	notify_end();
 }
 
-void MultiView::onMouseWheel()
+void MultiView::on_mouse_wheel()
 {
-	notifyBegin();
+	notify_begin();
 	hui::Event *e = hui::GetEvent();
 
 	// mouse wheel -> zoom
@@ -376,18 +376,18 @@ void MultiView::onMouseWheel()
 		camZoom(SPEED_ZOOM_WHEEL, mouse_win->type != VIEW_PERSPECTIVE);
 	if (e->scroll_y < 0)
 		camZoom(1.0f / SPEED_ZOOM_WHEEL, mouse_win->type != VIEW_PERSPECTIVE);
-	notifyEnd();
+	notify_end();
 }
 
-void MultiView::onMouseEnter()
+void MultiView::on_mouse_enter()
 {
 	notify(MESSAGE_UPDATE);
 }
 
-void MultiView::onMouseLeave()
+void MultiView::on_mouse_leave()
 {
 	//notify(MESSAGE_UPDATE);
-	onMouseMove();
+	on_mouse_move();
 }
 
 void activate_next_window(MultiView *mv)
@@ -404,9 +404,9 @@ void activate_next_window(MultiView *mv)
 }
 
 
-void MultiView::onKeyDown(int k)
+void MultiView::on_key_down(int k)
 {
-	notifyBegin();
+	notify_begin();
 
 	if ((k == hui::KEY_ADD) or (k == hui::KEY_NUM_ADD))
 		camZoom(SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
@@ -428,22 +428,22 @@ void MultiView::onKeyDown(int k)
 		action_con->endAction(false);
 	if (k == hui::KEY_TAB)
 		activate_next_window(this);
-	notifyEnd();
+	notify_end();
 }
 
 
 int get_select_mode()
 {
-	if (ed->getKey(hui::KEY_CONTROL))
+	if (ed->get_key(hui::KEY_CONTROL))
 		return MultiView::SELECT_ADD;
-	if (ed->getKey(hui::KEY_SHIFT))
+	if (ed->get_key(hui::KEY_SHIFT))
 		return MultiView::SELECT_INVERT;
 	return MultiView::SELECT_SET;
 }
 
-void MultiView::onLeftButtonDown()
+void MultiView::on_left_button_down()
 {
-	notifyBegin();
+	notify_begin();
 	updateMouse();
 
 	getHover();
@@ -478,14 +478,14 @@ void MultiView::onLeftButtonDown()
 			}
 		}
 	}
-	notifyEnd();
+	notify_end();
 }
 
 
 
-void MultiView::onMiddleButtonDown()
+void MultiView::on_middle_button_down()
 {
-	notifyBegin();
+	notify_begin();
 	active_win = mouse_win;
 
 // move camera?
@@ -494,18 +494,18 @@ void MultiView::onMiddleButtonDown()
 	view_moving = true;
 
 	notify(MESSAGE_UPDATE);
-	notifyEnd();
+	notify_end();
 }
 
 
 
-void MultiView::onRightButtonDown()
+void MultiView::on_right_button_down()
 {
-	notifyBegin();
+	notify_begin();
 
 	if (hover.meta == hover.HOVER_WINDOW_LABEL){
 		active_win = mouse_win;
-		menu->openPopup(ed, m.x, m.y);
+		menu->open_popup(ed);
 	}else{
 		active_win = mouse_win;
 
@@ -516,49 +516,49 @@ void MultiView::onRightButtonDown()
 	}
 
 	notify(MESSAGE_UPDATE);
-	notifyEnd();
+	notify_end();
 }
 
 
 
-void MultiView::onMiddleButtonUp()
+void MultiView::on_middle_button_up()
 {
-	notifyBegin();
+	notify_begin();
 	if (view_moving){
 		view_moving = false;
 		holdCursor(false);
 	}
-	notifyEnd();
+	notify_end();
 }
 
 
 
-void MultiView::onRightButtonUp()
+void MultiView::on_right_button_up()
 {
-	notifyBegin();
+	notify_begin();
 	if (view_moving){
 		view_moving = false;
 		holdCursor(false);
 	}
-	notifyEnd();
+	notify_end();
 }
 
 
 
-void MultiView::onKeyUp(int key_code)
+void MultiView::on_key_up(int key_code)
 {
 }
 
 
 
-void MultiView::onLeftButtonUp()
+void MultiView::on_left_button_up()
 {
-	notifyBegin();
+	notify_begin();
 	endRect();
 
 	action_con->leftButtonUp();
 	cam_con->onLeftButtonUp();
-	notifyEnd();
+	notify_end();
 }
 
 
@@ -588,9 +588,9 @@ void MultiView::updateMouse()
 }
 
 
-void MultiView::onMouseMove()
+void MultiView::on_mouse_move()
 {
-	notifyBegin();
+	notify_begin();
 	updateMouse();
 
 	if (action_con->inUse()){
@@ -603,7 +603,7 @@ void MultiView::onMouseMove()
 		int t = active_win->type;
 		if ((t == VIEW_PERSPECTIVE) or (t == VIEW_ISOMETRIC)){
 	// camera rotation
-			camRotate(v, mbut or ed->getKey(hui::KEY_CONTROL));
+			camRotate(v, mbut or ed->get_key(hui::KEY_CONTROL));
 		}else{
 	// camera translation
 			camMove(v);
@@ -623,11 +623,11 @@ void MultiView::onMouseMove()
 	// ignore mouse, while "holding"
 	if (holding_cursor){
 		if (fabs(m.x - holding_x) + fabs(m.y - holding_y) > 100)
-			ed->setCursorPos(holding_x, holding_y);
+			ed->set_cursor_pos(holding_x, holding_y);
 	}
 
 	notify(MESSAGE_UPDATE);
-	notifyEnd();
+	notify_end();
 }
 
 
@@ -686,17 +686,17 @@ void MultiView::drawMousePos()
 	string sz = f2s(m.z,2) + " " + unit;
 
 	if (mouse_win->type == VIEW_2D){
-		ed->drawStr(nix::target_width, nix::target_height - 60, sx, Edward::ALIGN_RIGHT);
-		ed->drawStr(nix::target_width, nix::target_height - 40, sy, Edward::ALIGN_RIGHT);
+		ed->draw_str(nix::target_width, nix::target_height - 60, sx, Edward::ALIGN_RIGHT);
+		ed->draw_str(nix::target_width, nix::target_height - 40, sy, Edward::ALIGN_RIGHT);
 	}else{
-		ed->drawStr(nix::target_width, nix::target_height - 80, sx, Edward::ALIGN_RIGHT);
-		ed->drawStr(nix::target_width, nix::target_height - 60, sy, Edward::ALIGN_RIGHT);
-		ed->drawStr(nix::target_width, nix::target_height - 40, sz, Edward::ALIGN_RIGHT);
+		ed->draw_str(nix::target_width, nix::target_height - 80, sx, Edward::ALIGN_RIGHT);
+		ed->draw_str(nix::target_width, nix::target_height - 60, sy, Edward::ALIGN_RIGHT);
+		ed->draw_str(nix::target_width, nix::target_height - 40, sz, Edward::ALIGN_RIGHT);
 	}
 }
 
 
-void MultiView::onDraw()
+void MultiView::on_draw()
 {
 	timer.reset();
 
@@ -1018,7 +1018,7 @@ void MultiView::unselectAll()
 
 void MultiView::getSelected(int mode)
 {
-	notifyBegin();
+	notify_begin();
 	if ((hover.index < 0) or (hover.type < 0)){
 		if (mode == SELECT_SET)
 			unselectAll();
@@ -1039,12 +1039,12 @@ void MultiView::getSelected(int mode)
 	}
 	action_con->show(needActionController());
 	notify(MESSAGE_SELECTION_CHANGE);
-	notifyEnd();
+	notify_end();
 }
 
 void MultiView::selectAllInRectangle(int mode)
 {
-	notifyBegin();
+	notify_begin();
 	// reset data
 	unselectAll();
 
@@ -1072,7 +1072,7 @@ void MultiView::selectAllInRectangle(int mode)
 
 	action_con->show(needActionController());
 	notify(MESSAGE_SELECTION_CHANGE);
-	notifyEnd();
+	notify_end();
 }
 
 void MultiView::holdCursor(bool holding)
@@ -1080,7 +1080,7 @@ void MultiView::holdCursor(bool holding)
 	holding_x = m.x;
 	holding_y = m.y;
 	holding_cursor = holding;
-	ed->showCursor(!holding);
+	ed->show_cursor(!holding);
 }
 
 

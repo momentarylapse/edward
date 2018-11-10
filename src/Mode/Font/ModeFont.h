@@ -22,26 +22,26 @@ public:
 	ModeFont();
 	virtual ~ModeFont();
 
-	virtual void onStart();
-	virtual void onEnd();
+	void on_start() override;
+	void on_end() override;
 
-	virtual void onMouseMove();
-	virtual void onLeftButtonDown();
-	virtual void onCommand(const string &id);
-	virtual void onUpdate(Observable *o, const string &message);
-	virtual void onUpdateMenu();
+	void on_mouse_move() override;
+	void on_left_button_down() override;
+	void on_command(const string &id) override;
+	void on_update(Observable *o, const string &message) override;
+	void on_update_menu() override;
 
-	virtual void onDraw();
-	virtual void onDrawWin(MultiView::Window *win);
+	void on_draw() override;
+	void on_draw_win(MultiView::Window *win) override;
 
 
-	virtual void _new();
-	virtual bool open();
-	virtual bool save();
-	virtual bool saveAs();
+	void _new() override;
+	bool open() override;
+	bool save() override;
+	bool save_as() override;
 
 	void Import();
-	bool optimizeView();
+	bool optimize_view();
 
 	FontDialog *dialog;
 	Gui::Font *font;

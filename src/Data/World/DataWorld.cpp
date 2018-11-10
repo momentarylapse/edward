@@ -37,7 +37,7 @@ bool WorldTerrain::Load(const vector &_pos, const string &filename, bool deep)
 	is_special = false;
 
 	if (deep)
-		ed->makeDirs(filename);
+		ed->make_dirs(filename);
 	FileName = filename.substr(MapDir.num, -1);
 	FileName.resize(FileName.num - 4);
 
@@ -54,7 +54,7 @@ bool WorldTerrain::Load(const vector &_pos, const string &filename, bool deep)
 
 bool WorldTerrain::Save(const string &filename)
 {
-	ed->makeDirs(filename);
+	ed->make_dirs(filename);
 	FileName = filename.substr(MapDir.num, -1);
 	FileName.resize(FileName.num - 4);
 
@@ -117,7 +117,7 @@ bool DataWorld::save(const string & _filename)
 /*	if (!SaveTerrains())
 		return;*/
 	filename = _filename;
-	ed->makeDirs(filename);
+	ed->make_dirs(filename);
 	File *f = FileCreateText(filename);
 	f->float_decimals = 6;
 
@@ -196,7 +196,7 @@ bool DataWorld::save(const string & _filename)
 
 	delete(f);
 
-	action_manager->markCurrentAsSave();
+	action_manager->mark_current_as_save();
 	return true;
 }
 
@@ -210,7 +210,7 @@ bool DataWorld::load(const string & _filename, bool deep)
 
 	filename = _filename;
 	if (this == mode_world->data)
-		ed->makeDirs(filename);
+		ed->make_dirs(filename);
 
 	File *f = NULL;
 
@@ -348,7 +348,7 @@ bool DataWorld::load(const string & _filename, bool deep)
 			Object[i].is_selected = true;
 		CreateLightMap(true);
 	}*/
-	resetHistory();
+	reset_history();
 	notify();
 
 	}catch(Exception &e){
@@ -429,7 +429,7 @@ void DataWorld::reset()
 
 	meta_data.Reset();
 
-	resetHistory();
+	reset_history();
 	notify();
 }
 

@@ -5,6 +5,9 @@
 #include "class.h"
 #include "lexical.h"
 
+
+class complex;
+
 namespace Asm{
 	struct MetaInfo;
 };
@@ -40,6 +43,7 @@ struct Value
 	int64& as_int64() const;
 	float& as_float() const;
 	double& as_float64() const;
+	complex& as_complex() const;
 	string& as_string() const;
 	DynamicArray& as_array() const;
 
@@ -156,7 +160,7 @@ struct Function
 	Function(SyntaxTree *tree, const string &name, Class *return_type);
 	int __get_var(const string &name) const;
 	void Update(Class *class_type);
-	string signature() const;
+	string signature(bool include_class = false) const;
 };
 
 // single operand/command
@@ -225,6 +229,7 @@ public:
 	
 	// syntax parsing
 	void Parser();
+	void ParseTopLevel();
 	void ParseAllClassNames();
 	void ParseAllFunctionBodies();
 	void ParseImport();
@@ -264,8 +269,9 @@ public:
 	void GetConstantValue(const string &str, Value &value);
 	Class *FindType(const string &name);
 	Class *AddClass(Class *type);
-	Class *CreateNewClass(const string &name, int size, bool is_pointer, bool is_silent, bool is_array, int array_size, Class *sub);
-	Class *CreateArrayClass(Class *element_type, int num_elements, const string &name_pre = "", const string &suffix = "");
+	Class *CreateNewClass(const string &name, Class::Type type, int size, int array_size, Class *sub);
+	Class *CreateArrayClass(Class *element_type, int num_elements);
+	Class *CreateDictClass(Class *element_type);
 	Array<Node> GetExistence(const string &name, Block *block);
 	Array<Node> GetExistenceShared(const string &name);
 	void LinkMostImportantOperator(Array<Node*> &operand, Array<Node*> &_operator, Array<int> &op_exp);
@@ -323,8 +329,8 @@ public:
 	Node *add_node_parray(Node *p, Node *index, Class *type);
 	Node *add_node_block(Block *b);
 	Node *cp_node(Node *c);
-	Node *ref_node(Node *sub, Class *override_type = NULL);
-	Node *deref_node(Node *sub, Class *override_type = NULL);
+	Node *ref_node(Node *sub, Class *override_type = nullptr);
+	Node *deref_node(Node *sub, Class *override_type = nullptr);
 	Node *shift_node(Node *sub, bool deref, int shift, Class *type);
 
 	// pre processor
@@ -370,7 +376,7 @@ public:
 };
 
 string Kind2Str(int kind);
-string LinkNr2Str(SyntaxTree *s, int kind, int64 nr);
+string LinkNr2Str(SyntaxTree *s, Function *f, int kind, int64 nr);
 
 
 

@@ -16,16 +16,16 @@ class ModeModelSkeletonAttachVertices: public ModeCreation<DataModel>
 public:
 	ModeModelSkeletonAttachVertices(ModeBase *_parent, int _bone_index);
 
-	void onStart() override;
-	void onEnd() override;
+	void on_start() override;
+	void on_end() override;
 
-	void onCommand(const string &id) override;
+	void on_command(const string &id) override;
 
-	void onDrawWin(MultiView::Window *win) override;
+	void on_draw_win(MultiView::Window *win) override;
 
-	void onSetMultiView() override;
+	void on_set_multi_view() override;
 
-	void onUpdate(Observable *o, const string &message) override;
+	void on_update(Observable *o, const string &message) override;
 
 private:
 	int bone_index;

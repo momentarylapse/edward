@@ -19,18 +19,18 @@ public:
 	ModeModel();
 	virtual ~ModeModel();
 
-	void onStart() override;
-	void onEnd() override;
-	void onEnter() override;
+	void on_start() override;
+	void on_end() override;
+	void on_enter() override;
 
-	void onCommand(const string &id) override;
-	void onUpdateMenu() override;
+	void on_command(const string &id) override;
+	void on_update_menu() override;
 
 
 	void _new() override;
 	bool open() override;
 	bool save() override;
-	bool saveAs() override;
+	bool save_as() override;
 
 	bool importOpen3ds();
 	bool importLoad3ds(const string &filename);

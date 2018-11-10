@@ -54,7 +54,7 @@ void LightmapRayTracing::Compute()
 			}
 		}
 		ed->progress->set(format(_("%d von %d"), ii, vem.num), (float)ii / (float)vem.num);
-		if (ed->progress->isCancelled())
+		if (ed->progress->is_cancelled())
 			throw AbortException();
 	}
 
@@ -66,7 +66,7 @@ void LightmapRayTracing::Compute()
 		foreachi(LightmapData::Vertex &v, data->Vertices, vi){
 			if ((vi & 255) == 0){
 				ed->progress->set(format(_("%d von %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
-				if (ed->progress->isCancelled())
+				if (ed->progress->is_cancelled())
 					throw AbortException();
 			}
 			if (l.Directional){

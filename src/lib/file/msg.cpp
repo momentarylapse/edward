@@ -41,7 +41,7 @@ static Array<string> TodoStr;
 
 bool msg_inited = false;
 
-static File *file = NULL;
+static File *file = nullptr;
 static string msg_file_name = "message.txt";
 static int Shift;
 
@@ -134,14 +134,7 @@ void write_date()
 
 void msg_write(int i)
 {
-	if (!Verbose)	return;
-	write_date();
-	ShiftRight(file, Shift);
-	if (file)
-		file->write_int(i);
-
-	string s = i2s(i);
-	msg_add_str(s);
+	msg_write(i2s(i));
 }
 
 void msg_write(const string &str)
@@ -322,7 +315,7 @@ void msg_end(bool del_file)
 	msg_inited=false;
 	file->close();
 	delete(file);
-	file = NULL;
+	file = nullptr;
 }
 
 void msg_db_out(int dl,const char *str)

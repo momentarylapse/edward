@@ -51,7 +51,7 @@ void LightmapRadiosity::Compute()
 			}
 		}
 		ed->progress->set(format(_("%d von %d"), i_a, data->Vertices.num), sqrt((float)i_a / (float)data->Vertices.num));
-		if (ed->progress->isCancelled())
+		if (ed->progress->is_cancelled())
 			throw AbortException();
 	}
 

@@ -25,14 +25,14 @@ Data::~Data()
 
 
 
-void Data::beginActionGroup(const string &name)
+void Data::begin_action_group(const string &name)
 {
-	action_manager->beginActionGroup(name);
+	action_manager->begin_group(name);
 }
 
-void Data::endActionGroup()
+void Data::end_action_group()
 {
-	action_manager->endActionGroup();
+	action_manager->end_group();
 }
 
 void Data::redo()
@@ -56,7 +56,7 @@ void *Data::execute(Action *a)
 
 
 
-void Data::resetHistory()
+void Data::reset_history()
 {
 	action_manager->reset();
 }

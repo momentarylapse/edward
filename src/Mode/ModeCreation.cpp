@@ -22,26 +22,26 @@ ModeCreationBase::ModeCreationBase(const string &_name, ModeBase *_parent) :
 	dialog = NULL;
 }
 
-void ModeCreationBase::onDraw()
+void ModeCreationBase::on_draw()
 {
 	//ModeBase::onDraw();
 
-	ed->drawStr(nix::target_width / 2, nix::target_height - 20, message);
+	ed->draw_str(nix::target_width / 2, nix::target_height - 20, message);
 }
 
-void ModeCreationBase::onDrawWin(MultiView::Window *win)
+void ModeCreationBase::on_draw_win(MultiView::Window *win)
 {
-	parent->onDrawWin(win);
+	parent->on_draw_win(win);
 }
 
-void ModeCreationBase::onSetMultiView()
+void ModeCreationBase::on_set_multi_view()
 {
-	parent->onSetMultiView();
+	parent->on_set_multi_view();
 }
 
 void ModeCreationBase::abort()
 {
 	assert(parent);
-	hui::RunLater(0.01f, std::bind(&Edward::setMode, ed, parent));
+	hui::RunLater(0.01f, std::bind(&Edward::set_mode, ed, parent));
 }
 

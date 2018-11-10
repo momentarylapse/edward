@@ -242,8 +242,8 @@ public:
 	void exportToTriangleSkin(int index);
 
 	void debugShow();
-	virtual bool testSanity(const string &loc);
-	virtual void onPostActionUpdate();
+	virtual bool test_sanity(const string &loc);
+	virtual void on_post_action_update();
 
 	void setNormalsDirtyByVertices(const Array<int> &index);
 	void setAllNormalsDirty();

@@ -74,52 +74,52 @@ public:
 	Edward(Array<string> arg);
 	virtual ~Edward();
 
-	virtual void onDestroy() override;
+	virtual void on_destroy() override;
 
-	bool handleArguments(Array<string> arg);
-	void loadKeyCodes();
+	bool handle_arguments(Array<string> arg);
+	void load_key_codes();
 	void exit();
 
-	void idleFunction();
+	void idle_function();
 
-	void onAbout();
-	void onSendBugReport();
-	void setMode(ModeBase *m);
+	void on_about();
+	void on_send_bug_report();
+	void set_mode(ModeBase *m);
 
-	void onUpdate(Observable *o, const string &message);
-	void onCommand(const string &id);
-	void onClose();
+	void on_update(Observable *o, const string &message);
+	void on_command(const string &id);
+	void on_close();
 
-	virtual void _cdecl onDrawGL();
-	virtual void _cdecl onKeyDown() override;
-	virtual void _cdecl onKeyUp() override;
-	virtual void _cdecl onMouseMove() override;
-	virtual void _cdecl onMouseWheel() override;
-	virtual void _cdecl onMouseEnter() override;
-	virtual void _cdecl onMouseLeave() override;
-	virtual void _cdecl onLeftButtonDown() override;
-	virtual void _cdecl onLeftButtonUp() override;
-	virtual void _cdecl onMiddleButtonDown() override;
-	virtual void _cdecl onMiddleButtonUp() override;
-	virtual void _cdecl onRightButtonDown() override;
-	virtual void _cdecl onRightButtonUp() override;
-	void onEvent();
-	void onAbortCreationMode();
+	virtual void _cdecl on_draw_gl();
+	virtual void _cdecl on_key_down() override;
+	virtual void _cdecl on_key_up() override;
+	virtual void _cdecl on_mouse_move() override;
+	virtual void _cdecl on_mouse_wheel() override;
+	virtual void _cdecl on_mouse_enter() override;
+	virtual void _cdecl on_mouse_leave() override;
+	virtual void _cdecl on_left_button_down() override;
+	virtual void _cdecl on_left_button_up() override;
+	virtual void _cdecl on_middle_button_down() override;
+	virtual void _cdecl on_middle_button_up() override;
+	virtual void _cdecl on_right_button_down() override;
+	virtual void _cdecl on_right_button_up() override;
+	void on_event();
+	void on_abort_creation_mode();
 
-	void setMessage(const string &message);
-	void removeMessage();
-	void errorBox(const string &message);
+	void set_message(const string &message);
+	void remove_message();
+	void error_box(const string &message);
 	Array<string> message_str;
 
-	void onExecutePlugin();
+	void on_execute_plugin();
 
-	void setRootDirectory(const string &directory, bool compact_mode = false);
-	void updateDialogDir(int kind);
-	void makeDirs(const string &original_dir, bool as_root_dir = false);
-	string getRootDir(int kind);
+	void set_root_directory(const string &directory, bool compact_mode = false);
+	void update_dialog_dir(int kind);
+	void make_dirs(const string &original_dir, bool as_root_dir = false);
+	string get_root_dir(int kind);
 
-	bool fileDialog(int kind, bool save, bool force_in_root_dir);
-	bool allowTermination();
+	bool file_dialog(int kind, bool save, bool force_in_root_dir);
+	bool allow_termination();
 
 	enum AlignType
 	{
@@ -127,10 +127,10 @@ public:
 		ALIGN_CENTER,
 		ALIGN_RIGHT
 	};
-	void drawStr(int x, int y, const string &str, AlignType a = ALIGN_LEFT);
-	void forceRedraw();
-	void updateMenu();
-	void optimizeCurrentView();
+	void draw_str(int x, int y, const string &str, AlignType a = ALIGN_LEFT);
+	void force_redraw();
+	void update_menu();
+	void optimize_current_view();
 
 	ModeBase *no_mode;
 	ModeBase *cur_mode;
@@ -162,7 +162,7 @@ class EdwardApp : public hui::Application
 {
 public:
 	EdwardApp();
-	virtual bool onStartup(const Array<string> &arg) override;
+	virtual bool on_startup(const Array<string> &arg) override;
 
 };
 

@@ -19,14 +19,14 @@ public:
 	ModeModelAnimationInterpolateFrames(ModeBase *_parent);
 	virtual ~ModeModelAnimationInterpolateFrames();
 
-	virtual void onStart();
-	virtual void onEnd();
+	virtual void on_start();
+	virtual void on_end();
 
-	virtual void onDrawWin(MultiView::Window *win);
+	virtual void on_draw_win(MultiView::Window *win);
 
-	virtual void onTimelineMouseMove();
-	virtual void onTimelineLeftButtonUp();
-	virtual void onTimelineDraw(Painter *p);
+	virtual void on_timeline_mouse_move();
+	virtual void on_timeline_left_button_up();
+	virtual void on_timeline_draw(Painter *p);
 
 private:
 };

@@ -45,7 +45,7 @@ void DataAdministration::MetaFraesDir(int kind)
 	string extension ="x";
 	cft.clear();
 
-	string dir = ed->getRootDir(kind);
+	string dir = ed->get_root_dir(kind);
 	if (kind==FD_WORLD)		extension = ".world";
 	if (kind==FD_TERRAIN)	extension = ".map";
 	if (kind==FD_MODEL)		extension = ".model";

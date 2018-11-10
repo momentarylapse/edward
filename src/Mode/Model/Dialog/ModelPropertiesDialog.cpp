@@ -27,11 +27,11 @@ ModelPropertiesDialog::ModelPropertiesDialog(hui::Window *_parent, bool _allow_p
 	hui::Dialog("model_dialog", 400, 300, _parent, _allow_parent),
 	Observer("ModelPropertiesDialog")
 {
-	fromResource("model_dialog");
+	from_resource("model_dialog");
 	data = _data;
 	active = true;
 
-	setTooltip("material_list", _("- Doppelklick um ein Material zu editieren\n- Auswahl wird f&ur folgende neue Polygone verwendet"));
+	set_tooltip("material_list", _("- Doppelklick um ein Material zu editieren\n- Auswahl wird f&ur folgende neue Polygone verwendet"));
 
 	event("cancel", std::bind(&ModelPropertiesDialog::OnClose, this));
 	event("hui:close", std::bind(&ModelPropertiesDialog::OnClose, this));
@@ -39,12 +39,12 @@ ModelPropertiesDialog::ModelPropertiesDialog(hui::Window *_parent, bool _allow_p
 	event("generate_dists_auto", std::bind(&ModelPropertiesDialog::OnGenerateDistsAuto, this));
 	event("ph_passive", std::bind(&ModelPropertiesDialog::OnPhysicsPassive, this));
 	event("generate_tensor_auto", std::bind(&ModelPropertiesDialog::OnGenerateTensorAuto, this));
-	eventX("tensor", "hui:change", std::bind(&ModelPropertiesDialog::OnTensorEdit, this));
+	event_x("tensor", "hui:change", std::bind(&ModelPropertiesDialog::OnTensorEdit, this));
 	event("mass", std::bind(&ModelPropertiesDialog::OnGenerateTensorAuto, this));
 	event("num_items", std::bind(&ModelPropertiesDialog::OnNumItems, this));
 	event("model_inventary", std::bind(&ModelPropertiesDialog::OnModelInventary, this));
 	event("delete_item", std::bind(&ModelPropertiesDialog::OnDeleteItem, this));
-	eventX("script_vars", "hui:change", std::bind(&ModelPropertiesDialog::OnScriptVarEdit, this));
+	event_x("script_vars", "hui:change", std::bind(&ModelPropertiesDialog::OnScriptVarEdit, this));
 	event("script_find", std::bind(&ModelPropertiesDialog::OnScriptFind, this));
 
 	restart();
@@ -119,7 +119,7 @@ void ModelPropertiesDialog::LoadData()
 // viewing properties (LOD)
 	if (temp.auto_generate_dists)
 		data->generateDetailDists(temp.detail_dist);
-	setInt("num_lod", 3);
+	set_int("num_lod", 3);
 	enable("num_lod", false);
 	FillDetailList();
 	check("generate_dists_auto", temp.auto_generate_dists);
@@ -127,7 +127,7 @@ void ModelPropertiesDialog::LoadData()
 	// physics
 	if (temp.auto_generate_tensor)
 		temp.inertia_tensor = data->generateInertiaTensor(temp.mass);
-	setFloat("mass", temp.mass);
+	set_float("mass", temp.mass);
 	check("ph_active", temp.active_physics);
 	check("ph_passive", temp.passive_physics);
 	enable("ph_active", temp.passive_physics);
@@ -135,13 +135,13 @@ void ModelPropertiesDialog::LoadData()
 	enable("tensor", !temp.auto_generate_tensor);
 	check("generate_tensor_auto", temp.auto_generate_tensor);
 	// items
-	setString("model_name", temp.name);
-	setString("model_description", temp.description);
-	setInt("num_items", temp.inventary.num);
+	set_string("model_name", temp.name);
+	set_string("model_description", temp.description);
+	set_int("num_items", temp.inventary.num);
 	RefillInventaryList();
 	// script
-	setString("script", temp.script_file);
-	setInt("max_script_vars", temp.script_var.num);
+	set_string("script", temp.script_file);
+	set_int("max_script_vars", temp.script_var.num);
 	RefillScriptVarList();
 }
 
@@ -149,21 +149,21 @@ void ModelPropertiesDialog::FillDetailList()
 {
 	reset("lod");
 	//DetailDistDec
-	addString("lod", format("0\\%.2f\\%d", temp.detail_dist[0], 100));
-	addString("lod", format("1\\%.2f\\%d", temp.detail_dist[1], temp.detail_factor[1]));
-	addString("lod", format("2\\%.2f\\%d", temp.detail_dist[2], temp.detail_factor[2]));
+	add_string("lod", format("0\\%.2f\\%d", temp.detail_dist[0], 100));
+	add_string("lod", format("1\\%.2f\\%d", temp.detail_dist[1], temp.detail_factor[1]));
+	add_string("lod", format("2\\%.2f\\%d", temp.detail_dist[2], temp.detail_factor[2]));
 }
 
 void ModelPropertiesDialog::FillTensorList()
 {
 	//SetDecimals(InertiaTensorDec);
 	reset("tensor");
-	addString("tensor", format("X\\%.2f\\%.2f\\%.2f", temp.inertia_tensor._00, temp.inertia_tensor._01, temp.inertia_tensor._02));
-	addString("tensor", format("Y\\%.2f\\%.2f\\%.2f", temp.inertia_tensor._10, temp.inertia_tensor._11, temp.inertia_tensor._12));
-	addString("tensor", format("Z\\%.2f\\%.2f\\%.2f", temp.inertia_tensor._20, temp.inertia_tensor._21, temp.inertia_tensor._22));
+	add_string("tensor", format("X\\%.2f\\%.2f\\%.2f", temp.inertia_tensor._00, temp.inertia_tensor._01, temp.inertia_tensor._02));
+	add_string("tensor", format("Y\\%.2f\\%.2f\\%.2f", temp.inertia_tensor._10, temp.inertia_tensor._11, temp.inertia_tensor._12));
+	add_string("tensor", format("Z\\%.2f\\%.2f\\%.2f", temp.inertia_tensor._20, temp.inertia_tensor._21, temp.inertia_tensor._22));
 }
 
-void ModelPropertiesDialog::onUpdate(Observable *o, const string &message)
+void ModelPropertiesDialog::on_update(Observable *o, const string &message)
 {
 	//FillMaterialList();
 	temp = data->meta_data;
@@ -206,7 +206,7 @@ string render_material(ModelMaterial *m)
 
 			// texture "mapping"
 			if (tex)
-				c = c * tex->icon.getPixel(x, y);
+				c = c * tex->icon.get_pixel(x, y);
 			else
 				c = c * 0.8f;
 
@@ -217,7 +217,7 @@ string render_material(ModelMaterial *m)
 			c = c * 0.9f;
 			c.clamp();
 			c.a = 1;
-			img.setPixel(x, y, c);
+			img.set_pixel(x, y, c);
 		}
 	return hui::SetImage(img);
 }
@@ -233,14 +233,14 @@ void ModelPropertiesDialog::RefillInventaryList()
 {
 	reset("model_inventary");
 	foreachi(string &it, temp.inventary, i)
-		addString("model_inventary", format("%d\\%s", i, it.c_str()));
+		add_string("model_inventary", format("%d\\%s", i, it.c_str()));
 }
 
 void ModelPropertiesDialog::RefillScriptVarList()
 {
 	reset("variables");
 	for (auto &v: temp.variables)
-		addString("variables", v.name + "\\" + v.type + "\\" + v.value);
+		add_string("variables", v.name + "\\" + v.type + "\\" + v.value);
 	enable("variables", temp.variables.num > 0);
 }
 
@@ -248,7 +248,7 @@ void ModelPropertiesDialog::RefillScriptVarList()
 // viewings
 void ModelPropertiesDialog::OnGenerateDistsAuto()
 {
-	bool b = isChecked("");
+	bool b = is_checked("");
 	/*Enable("detail_dist_1", !b);
 	Enable("detail_dist_2", !b);
 	Enable("detail_dist_3", !b);*/
@@ -261,17 +261,17 @@ void ModelPropertiesDialog::OnGenerateDistsAuto()
 // physics
 void ModelPropertiesDialog::OnPhysicsPassive()
 {
-	enable("ph_active", isChecked("ph_passive"));
+	enable("ph_active", is_checked("ph_passive"));
 }
 
 void ModelPropertiesDialog::OnGenerateTensorAuto()
 {
 	//case HMM_MASS:
 	//case HMM_GENERATE_TENSOR_AUTO:
-	bool b = isChecked("generate_tensor_auto");
+	bool b = is_checked("generate_tensor_auto");
 	enable("tensor", !b);
 	if (b){
-		temp.inertia_tensor = data->generateInertiaTensor(getFloat("mass"));
+		temp.inertia_tensor = data->generateInertiaTensor(get_float("mass"));
 		FillTensorList();
 	}
 }
@@ -282,29 +282,29 @@ void ModelPropertiesDialog::OnTensorEdit()
 	int row = hui::GetEvent()->row;
 	int col = hui::GetEvent()->column;
 	if (row != col - 1){
-		setCell("", col-1, row+1, getCell("", row, col));
+		set_cell("", col-1, row+1, get_cell("", row, col));
 	}
 }
 
 // inventary
 void ModelPropertiesDialog::OnNumItems()
 {
-	temp.inventary.resize(getInt(""));
+	temp.inventary.resize(get_int(""));
 	RefillInventaryList();
 }
 
 void ModelPropertiesDialog::OnModelInventary()
 {
-	if (ed->fileDialog(FD_MODEL, false, true)){
-		int n = getInt("");
+	if (ed->file_dialog(FD_MODEL, false, true)){
+		int n = get_int("");
 		temp.inventary[n] = ed->dialog_file_no_ending;
-		changeString("model_inventary", n, format("%d\\", n) + ed->dialog_file_no_ending);
+		change_string("model_inventary", n, format("%d\\", n) + ed->dialog_file_no_ending);
 	}
 }
 
 void ModelPropertiesDialog::OnDeleteItem()
 {
-	int n = getInt("model_inventary");
+	int n = get_int("model_inventary");
 	if (n >= 0){
 		temp.inventary[n] = "";
 		RefillInventaryList();
@@ -316,13 +316,13 @@ void ModelPropertiesDialog::OnScriptVarEdit()
 {
 	int row = hui::GetEvent()->row;
 	msg_write(hui::GetEvent()->row);
-	temp.variables[row].value = getCell("script_vars", row, 2);
+	temp.variables[row].value = get_cell("script_vars", row, 2);
 }
 
 void ModelPropertiesDialog::OnScriptFind()
 {
-	if (ed->fileDialog(FD_SCRIPT, false, true)){
-		setString("script", ed->dialog_file);
+	if (ed->file_dialog(FD_SCRIPT, false, true)){
+		set_string("script", ed->dialog_file);
 		temp.script_file = ed->dialog_file;
 		update_model_script_data(temp);
 	}
@@ -331,33 +331,33 @@ void ModelPropertiesDialog::OnScriptFind()
 void ModelPropertiesDialog::ApplyData()
 {
 // visual properties
-	/*temp.DetailDist[0]	= GetFloat("detail_dist_1");
-	temp.DetailDist[1]	= GetFloat("detail_dist_2");
-	temp.DetailDist[2]	= GetFloat("detail_dist_3");
-	temp.DetailFactor[1]	= GetInt("detail_factor_2");
-	temp.DetailFactor[2]	= GetInt("detail_factor_3");
-	temp.AutoGenerateDists	= IsChecked("generate_dists_auto");
-	temp.AutoGenerateSkin[1]	= IsChecked("generate_skin_auto");
-	temp.AutoGenerateSkin[2]	= IsChecked("generate_skin_auto");*/
+	/*temp.DetailDist[0]	= get_float("detail_dist_1");
+	temp.DetailDist[1]	= get_float("detail_dist_2");
+	temp.DetailDist[2]	= get_float("detail_dist_3");
+	temp.DetailFactor[1]	= get_int("detail_factor_2");
+	temp.DetailFactor[2]	= get_int("detail_factor_3");
+	temp.AutoGenerateDists	= is_checked("generate_dists_auto");
+	temp.AutoGenerateSkin[1]	= is_checked("generate_skin_auto");
+	temp.AutoGenerateSkin[2]	= is_checked("generate_skin_auto");*/
 // physics
-	temp.passive_physics = isChecked("ph_passive");
-	temp.active_physics = isChecked("ph_active");
-	temp.mass = getFloat("mass");
-	temp.auto_generate_tensor = isChecked("generate_tensor_auto");
-	temp.inertia_tensor._00 = getCell("tensor", 0, 1)._float();
-	temp.inertia_tensor._01 = getCell("tensor", 0, 2)._float();
-	temp.inertia_tensor._02 = getCell("tensor", 0, 3)._float();
-	temp.inertia_tensor._10 = getCell("tensor", 1, 1)._float();
-	temp.inertia_tensor._11 = getCell("tensor", 1, 2)._float();
-	temp.inertia_tensor._12 = getCell("tensor", 1, 3)._float();
-	temp.inertia_tensor._20 = getCell("tensor", 2, 1)._float();
-	temp.inertia_tensor._21 = getCell("tensor", 2, 2)._float();
-	temp.inertia_tensor._22 = getCell("tensor", 2, 3)._float();
+	temp.passive_physics = is_checked("ph_passive");
+	temp.active_physics = is_checked("ph_active");
+	temp.mass = get_float("mass");
+	temp.auto_generate_tensor = is_checked("generate_tensor_auto");
+	temp.inertia_tensor._00 = get_cell("tensor", 0, 1)._float();
+	temp.inertia_tensor._01 = get_cell("tensor", 0, 2)._float();
+	temp.inertia_tensor._02 = get_cell("tensor", 0, 3)._float();
+	temp.inertia_tensor._10 = get_cell("tensor", 1, 1)._float();
+	temp.inertia_tensor._11 = get_cell("tensor", 1, 2)._float();
+	temp.inertia_tensor._12 = get_cell("tensor", 1, 3)._float();
+	temp.inertia_tensor._20 = get_cell("tensor", 2, 1)._float();
+	temp.inertia_tensor._21 = get_cell("tensor", 2, 2)._float();
+	temp.inertia_tensor._22 = get_cell("tensor", 2, 3)._float();
 // inventary
-	temp.name = getString("model_name");
-	temp.description = getString("model_description");
+	temp.name = get_string("model_name");
+	temp.description = get_string("model_description");
 // script
-	temp.script_file = getString("script");
+	temp.script_file = get_string("script");
 
 	data->execute(new ActionModelEditData(temp));
 

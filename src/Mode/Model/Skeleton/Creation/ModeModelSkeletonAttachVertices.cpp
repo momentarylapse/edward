@@ -18,7 +18,7 @@ ModeModelSkeletonAttachVertices::ModeModelSkeletonAttachVertices(ModeBase* _pare
 	bone_index = _bone_index;
 }
 
-void ModeModelSkeletonAttachVertices::onStart()
+void ModeModelSkeletonAttachVertices::on_start()
 {
 	// relative to absolute pos
 	for (ModelVertex &v: data->vertex)
@@ -33,21 +33,21 @@ void ModeModelSkeletonAttachVertices::onStart()
 
 	subscribe(data);
 	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
-	onUpdate(data, "");
-	onUpdate(multi_view, "");
+	on_update(data, "");
+	on_update(multi_view, "");
 }
 
-void ModeModelSkeletonAttachVertices::onEnd()
+void ModeModelSkeletonAttachVertices::on_end()
 {
 	unsubscribe(data);
 	unsubscribe(multi_view);
 
 	mode_model->allowSelectionModes(false);
 
-	parent->onUpdate(data, "");
+	parent->on_update(data, "");
 }
 
-void ModeModelSkeletonAttachVertices::onUpdate(Observable *o, const string &message)
+void ModeModelSkeletonAttachVertices::on_update(Observable *o, const string &message)
 {
 	if (o == data){
 		mode_model_mesh->selection_mode->updateMultiView();
@@ -57,7 +57,7 @@ void ModeModelSkeletonAttachVertices::onUpdate(Observable *o, const string &mess
 	}
 }
 
-void ModeModelSkeletonAttachVertices::onCommand(const string &id)
+void ModeModelSkeletonAttachVertices::on_command(const string &id)
 {
 	if (id == "finish-action"){
 		Array<int> index;
@@ -69,14 +69,14 @@ void ModeModelSkeletonAttachVertices::onCommand(const string &id)
 	}
 }
 
-void ModeModelSkeletonAttachVertices::onDrawWin(MultiView::Window *win)
+void ModeModelSkeletonAttachVertices::on_draw_win(MultiView::Window *win)
 {
-	mode_model_mesh->onDrawWin(win);
+	mode_model_mesh->on_draw_win(win);
 }
 
-void ModeModelSkeletonAttachVertices::onSetMultiView()
+void ModeModelSkeletonAttachVertices::on_set_multi_view()
 {
-	mode_model_mesh->onSetMultiView();
+	mode_model_mesh->on_set_multi_view();
 }
 
 

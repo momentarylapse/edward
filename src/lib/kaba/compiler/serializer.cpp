@@ -21,7 +21,7 @@ void TempVar::use(int _first, int _last)
 		last = _last;
 }
 
-const SerialNodeParam Serializer::p_none = {-1, -1, 0, NULL, 0};
+const SerialNodeParam Serializer::p_none = {-1, -1, 0, nullptr, 0};
 
 
 int Serializer::add_virtual_reg(int preg)
@@ -65,7 +65,7 @@ SerialNodeParam Serializer::add_temp(Class *t, bool add_constructor)
 	v.last = -1;
 	v.type = t;
 	v.referenced = false;
-	v.force_stack = (t->size > config.pointer_size) or (t->is_super_array) or (t->is_array) or (t->elements.num > 0);
+	v.force_stack = (t->size > config.pointer_size) or t->is_super_array() or t->is_array() or (t->elements.num > 0);
 	v.entangled = 0;
 	temp_var.add(v);
 	SerialNodeParam param;
@@ -684,7 +684,7 @@ void Serializer::SerializeBlock(Block *block)
 
 	for (int i=0;i<block->nodes.num;i++){
 		stack_offset = cur_func->_var_size;
-		next_node = NULL;
+		next_node = nullptr;
 		if (block->nodes.num > i + 1)
 			next_node = block->nodes[i + 1];
 
@@ -1894,7 +1894,7 @@ Asm::InstructionParam Serializer::get_param(int inst, SerialNodeParam &p)
 			//s->DoErrorInternal("get_param: evil local of type " + p.type->name);
 	}else if (p.kind == KIND_REF_TO_CONST){
 		bool imm_allowed = Asm::GetInstructionAllowConst(inst);
-		if ((imm_allowed) and (p.type->is_pointer)){
+		if ((imm_allowed) and (p.type->is_pointer())){
 			return Asm::param_imm(*(int_p*)(p.p + p.shift), p.type->size);
 		}else if ((p.type->size <= 4) and (imm_allowed)){
 			return Asm::param_imm(*(int*)(p.p + p.shift), p.type->size);
@@ -2038,7 +2038,7 @@ Serializer *CreateSerializer(Script *s, Asm::InstructionWithParamsList *list)
 		return new SerializerX86(s, list);
 	if (config.instruction_set == Asm::INSTRUCTION_SET_ARM)
 		return new SerializerARM(s, list);
-	return NULL;
+	return nullptr;
 }
 
 void Script::AssembleFunction(int index, Function *f, Asm::InstructionWithParamsList *list)

@@ -25,10 +25,10 @@ public:
 	ModeModelMeshDeformFunction(ModeBase *parent);
 	virtual ~ModeModelMeshDeformFunction();
 
-	void onStart() override;
-	void onEnd() override;
+	void on_start() override;
+	void on_end() override;
 
-	void onDrawWin(MultiView::Window *win) override;
+	void on_draw_win(MultiView::Window *win) override;
 
 	void onPreview();
 	void onOk();

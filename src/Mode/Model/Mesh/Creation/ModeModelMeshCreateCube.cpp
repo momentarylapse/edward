@@ -41,12 +41,12 @@ void ModeModelMeshCreateCube::updateGeometry()
 	if (geo)
 		delete(geo);
 	if (pos2_chosen){
-		int num_1 = dialog->getInt("nc_x");
-		int num_2 = dialog->getInt("nc_y");
-		int num_3 = dialog->getInt("nc_z");
-		hui::Config.setInt("NewCubeNumX", num_1);
-		hui::Config.setInt("NewCubeNumY", num_2);
-		hui::Config.setInt("NewCubeNumZ", num_3);
+		int num_1 = dialog->get_int("nc_x");
+		int num_2 = dialog->get_int("nc_y");
+		int num_3 = dialog->get_int("nc_z");
+		hui::Config.set_int("NewCubeNumX", num_1);
+		hui::Config.set_int("NewCubeNumY", num_2);
+		hui::Config.set_int("NewCubeNumZ", num_3);
 
 		geo = new GeometryCube(pos, length[0], length[1], length[2], num_1, num_2, num_3);
 	}else{
@@ -70,7 +70,7 @@ void set_dpos3(vector *length, const vector &dpos)
 
 
 
-void ModeModelMeshCreateCube::onLeftButtonUp()
+void ModeModelMeshCreateCube::on_left_button_up()
 {
 	if (pos_chosen){
 		if (pos2_chosen){
@@ -94,7 +94,7 @@ void ModeModelMeshCreateCube::onLeftButtonUp()
 	}
 }
 
-void ModeModelMeshCreateCube::onMouseMove()
+void ModeModelMeshCreateCube::on_mouse_move()
 {
 	if (pos_chosen){
 		if (!pos2_chosen){
@@ -113,15 +113,15 @@ void ModeModelMeshCreateCube::onMouseMove()
 
 
 
-void ModeModelMeshCreateCube::onStart()
+void ModeModelMeshCreateCube::on_start()
 {
 	// Dialog
 	dialog = hui::CreateResourceDialog("new_cube_dialog", ed);
 
-	dialog->setInt("nc_x", hui::Config.getInt("NewCubeNumX", 1));
-	dialog->setInt("nc_y", hui::Config.getInt("NewCubeNumY", 1));
-	dialog->setInt("nc_z", hui::Config.getInt("NewCubeNumZ", 1));
-	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
+	dialog->set_int("nc_x", hui::Config.get_int("NewCubeNumX", 1));
+	dialog->set_int("nc_y", hui::Config.get_int("NewCubeNumY", 1));
+	dialog->set_int("nc_z", hui::Config.get_int("NewCubeNumZ", 1));
+	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
 	dialog->event("hui:close", std::bind(&ModeModelMeshCreateCube::onClose, this));
 
@@ -131,14 +131,14 @@ void ModeModelMeshCreateCube::onStart()
 	ed->activate("");
 }
 
-void ModeModelMeshCreateCube::onEnd()
+void ModeModelMeshCreateCube::on_end()
 {
 	delete(dialog);
 }
 
-void ModeModelMeshCreateCube::onDrawWin(MultiView::Window *win)
+void ModeModelMeshCreateCube::on_draw_win(MultiView::Window *win)
 {
-	parent->onDrawWin(win);
+	parent->on_draw_win(win);
 
 	mode_model->setMaterialCreation();
 	if (pos_chosen){

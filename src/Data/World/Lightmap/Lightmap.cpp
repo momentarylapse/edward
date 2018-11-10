@@ -54,7 +54,7 @@ Lightmap::~Lightmap()
 
 bool Lightmap::Create()
 {
-	ed->progress->startCancelable(_("berechne Licht"), 0);
+	ed->progress->start_cancelable(_("berechne Licht"), 0);
 	data->AddTextureLevels();
 	data->CreateVertices();
 	try{
@@ -79,7 +79,7 @@ Lightmap::Histogram Lightmap::GetHistogram()
 
 bool Lightmap::Preview()
 {
-	ed->progress->startCancelable(_("berechne Licht"), 0);
+	ed->progress->start_cancelable(_("berechne Licht"), 0);
 	data->AddTextureLevels(false);
 	data->CreateVertices();
 	try{
@@ -110,7 +110,7 @@ void fuzzy_image(Image &im)
 	Array<color> c;
 	for (int x=0;x<im.width;x++)
 		for (int y=0;y<im.height;y++)
-			c.add(im.getPixel(x, y));
+			c.add(im.get_pixel(x, y));
 	for (int x=0;x<im.width;x++)
 		for (int y=0;y<im.height;y++){
 			color c0 = c[y + x * im.height];
@@ -123,16 +123,16 @@ void fuzzy_image(Image &im)
 			// undefined pixel -> copy neighbor
 			c0 = c0 + c1 + c2 + c3 + c4;
 			if (c0.a > 0)
-				im.setPixel(x, y, c0 * (1.0f / c0.a));
+				im.set_pixel(x, y, c0 * (1.0f / c0.a));
 			else
 				// no neighbors -> blue
-				im.setPixel(x, y, color(1, 0.3f, 0.3f, 1));
+				im.set_pixel(x, y, color(1, 0.3f, 0.3f, 1));
 		}
 }
 
 bool Lightmap::RenderTextures()
 {
-	ed->progress->startCancelable(_("berechne Textur"), 0);
+	ed->progress->start_cancelable(_("berechne Textur"), 0);
 	dir_create(nix::texture_dir + data->texture_out_dir);
 	dir_create(ObjectDir + data->model_out_dir);
 	dir_create(MapDir + data->model_out_dir);
@@ -149,11 +149,11 @@ bool Lightmap::RenderTextures()
 		foreachi(LightmapData::Vertex &v, data->Vertices, vi){
 			if (v.mod_id != mid)
 				continue;
-			im.setPixel(v.x, v.y, RenderVertex(v));
+			im.set_pixel(v.x, v.y, RenderVertex(v));
 
 			if ((vi & 127) == 0){
 				ed->progress->set(format(_("%d von %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
-				if (ed->progress->isCancelled())
+				if (ed->progress->is_cancelled())
 					throw Lightmap::AbortException();
 			}
 		}
@@ -184,11 +184,11 @@ bool Lightmap::RenderTextures()
 		foreachi(LightmapData::Vertex &v, data->Vertices, vi){
 			if (v.ter_id != tid)
 				continue;
-			im.setPixel(v.x, v.y, RenderVertex(v));
+			im.set_pixel(v.x, v.y, RenderVertex(v));
 
 			if ((vi & 127) == 0){
 				ed->progress->set(format(_("%d von %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
-				if (ed->progress->isCancelled())
+				if (ed->progress->is_cancelled())
 					throw Lightmap::AbortException();
 			}
 		}

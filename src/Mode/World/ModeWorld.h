@@ -18,24 +18,24 @@ public:
 	ModeWorld();
 	virtual ~ModeWorld();
 
-	void onStart() override;
-	void onEnd() override;
+	void on_start() override;
+	void on_end() override;
 
-	void onCommand(const string &id) override;
-	void onUpdate(Observable *o, const string &message) override;
-	void onUpdateMenu() override;
-	void onSetMultiView() override;
+	void on_command(const string &id) override;
+	void on_update(Observable *o, const string &message) override;
+	void on_update_menu() override;
+	void on_set_multi_view() override;
 
-	void onDraw() override;
-	void onDrawWin(MultiView::Window *win) override;
+	void on_draw() override;
+	void on_draw_win(MultiView::Window *win) override;
 
 
 	void _new() override;
 	bool open() override;
 	bool save() override;
-	bool saveAs() override;
+	bool save_as() override;
 
-	bool optimizeView() override;
+	bool optimize_view() override;
 
 	void ImportWorldProperties();
 	void LoadTerrain();

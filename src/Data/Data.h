@@ -29,15 +29,15 @@ public:
 	virtual bool load(const string &_filename, bool deep = true) = 0;
 	virtual bool save(const string &_filename) = 0;
 
-	void resetHistory();
+	void reset_history();
 	void *execute(Action *a);
-	void beginActionGroup(const string &name);
-	void endActionGroup();
+	void begin_action_group(const string &name);
+	void end_action_group();
 	void undo();
 	void redo();
 
-	virtual void onPostActionUpdate(){}
-	virtual bool testSanity(const string &loc){	return true;	}
+	virtual void on_post_action_update(){}
+	virtual bool test_sanity(const string &loc){	return true;	}
 
 	string filename;
 	int file_time;

@@ -12,7 +12,7 @@ TerrainCreationDialog::TerrainCreationDialog(hui::Window *_parent, bool _allow_p
 	hui::Dialog("new_terrain_dialog", 400, 300, _parent, _allow_parent),
 	Observer("TerrainCreationDialog")
 {
-	fromResource("new_terrain_dialog");
+	from_resource("new_terrain_dialog");
 	data = _data;
 
 	event("cancel", std::bind(&TerrainCreationDialog::OnClose, this));
@@ -44,17 +44,17 @@ void TerrainCreationDialog::ApplyData()
 
 void TerrainCreationDialog::LoadData()
 {
-	setFloat("height_factor", 100);
-	setInt("num_x", 64);
-	setInt("num_y", 64);
-	setFloat("terrain_x", 1000);
-	setFloat("terrain_y", 1000);
+	set_float("height_factor", 100);
+	set_int("num_x", 64);
+	set_int("num_y", 64);
+	set_float("terrain_x", 1000);
+	set_float("terrain_y", 1000);
 	OnSizeChange();
 }
 
 
 
-void TerrainCreationDialog::onUpdate(Observable *o, const string &message)
+void TerrainCreationDialog::on_update(Observable *o, const string &message)
 {
 }
 
@@ -76,16 +76,16 @@ void TerrainCreationDialog::OnClose()
 
 void TerrainCreationDialog::OnFindHeightmap()
 {
-	if (ed->fileDialog(FD_TEXTURE, false, false))
-		setString("height_image", ed->dialog_file_complete);
+	if (ed->file_dialog(FD_TEXTURE, false, false))
+		set_string("height_image", ed->dialog_file_complete);
 }
 
 
 
 void TerrainCreationDialog::OnSizeChange()
 {
-	setFloat("pattern_x", getFloat("terrain_x") / (float)getInt("num_x"));
-	setFloat("pattern_y", getFloat("terrain_y") / (float)getInt("num_y"));
+	set_float("pattern_x", get_float("terrain_x") / (float)get_int("num_x"));
+	set_float("pattern_y", get_float("terrain_y") / (float)get_int("num_y"));
 }
 
 

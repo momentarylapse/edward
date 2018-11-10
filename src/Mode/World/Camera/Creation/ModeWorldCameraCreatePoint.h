@@ -16,7 +16,7 @@ class ModeWorldCameraCreatePoint: public ModeCreation<DataCamera>
 public:
 	ModeWorldCameraCreatePoint(ModeBase *_parent);
 
-	virtual void onLeftButtonDown();
+	virtual void on_left_button_down();
 
 	string filename;
 };

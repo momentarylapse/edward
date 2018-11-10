@@ -13,6 +13,10 @@
 namespace hui
 {
 
+
+void DBDEL(const string &type, const string &id, void *p);
+void DBDEL_DONE();
+
 void WinTrySendByKeyCode(Window *win, int key_code);
 
 // safety feature... in case we delete the control while it notifies us
@@ -51,30 +55,33 @@ Control::Control(int _type, const string &_id)
 {
 	type = _type;
 	id = _id;
-	panel = NULL;
-	parent = NULL;
+	panel = nullptr;
+	parent = nullptr;
 	enabled = true;
 #ifdef HUI_API_WIN
-	hWnd = NULL;
+	hWnd = nullptr;
 #endif
 #ifdef HUI_API_GTK
-	widget = NULL;
-	frame = NULL;
+	widget = nullptr;
+	frame = nullptr;
 #endif
 	grab_focus = false;
 	indent = -1;
+	min_width = -1;
+	min_height = -1;
 }
 
 void unset_widgets_rec(Control *c)
 {
 	for (auto *cc: c->children)
 		unset_widgets_rec(cc);
-	c->widget = NULL;
+	c->widget = nullptr;
 }
 
 Control::~Control()
 {
 	notify_set_del(this);
+	DBDEL("control", id, this);
 
 #ifdef HUI_API_GTK
 	//if (widget)
@@ -91,18 +98,16 @@ Control::~Control()
 		Control *c = children.pop();
 		delete(c);
 	}
-	if (panel){
-		for (int i=0;i<panel->controls.num;i++)
-			if (panel->controls[i] == this)
-				panel->controls.erase(i);
-	}
 
+
+	//msg_write("widget: " + p2s(widget));
 #ifdef HUI_API_GTK
 	if (widget)
 		gtk_widget_destroy(widget);
-	widget = NULL;
+	widget = nullptr;
 	//unset_widgets_rec(this);
 #endif
+	DBDEL_DONE();
 }
 
 #ifdef HUI_API_WIN
@@ -149,7 +154,7 @@ void Control::hide(bool hidden)
 		gtk_widget_show(widget);
 }
 
-void Control::setTooltip(const string& str)
+void Control::set_tooltip(const string& str)
 {
 	gtk_widget_set_tooltip_text(widget, sys_str(str));
 }
@@ -159,17 +164,18 @@ void Control::focus()
 	gtk_widget_grab_focus(widget);
 }
 
-bool Control::hasFocus()
+bool Control::has_focus()
 {
 	return gtk_widget_has_focus(widget);
 }
 
-void Control::setOptions(const string &options)
+void Control::set_options(const string &options)
 {
 	allow_signal_level ++;
 	Array<string> a = options.explode(",");
-	int width = -1;
-	int height = -1;
+
+	gtk_widget_set_name(widget, id.c_str());
+
 	for (string &aa : a){
 		int eq = aa.find("=");
 		string op;
@@ -205,14 +211,17 @@ void Control::setOptions(const string &options)
 			gtk_widget_set_can_focus(widget, true);
 			gtk_widget_grab_focus(widget);
 		}else if (eq >= 0){
+
 			string a1 = aa.tail(aa.num-eq-1);
-			if (op == "width")
-				width = a1._int();
-			else if (op == "height")
-				height = a1._int();
-			else if ((op == "marginleft") or (op == "indent")){
+			if ((op == "width") or (op == "min-width")){
+				min_width = a1._int();
+				gtk_widget_set_size_request(get_frame(), min_width, min_height);
+			}else if ((op == "height") or (op == "min-height")){
+				min_height = a1._int();
+				gtk_widget_set_size_request(get_frame(), min_width, min_height);
+			}else if ((op == "marginleft") or (op == "indent")){
 				indent = a1._int();
-				printf("indent %d\n", indent);
+				//printf("indent %d\n", indent);
 #if GTK_CHECK_VERSION(3,12,0)
 				gtk_widget_set_margin_start(get_frame(), a1._int());
 #else
@@ -228,18 +237,36 @@ void Control::setOptions(const string &options)
 				gtk_widget_set_margin_top(get_frame(), a1._int());
 			}else if (op == "marginbottom"){
 				gtk_widget_set_margin_bottom(get_frame(), a1._int());
+			}else if (op == "padding"){
+				string css = "#" + id + format("{padding: %dpx}", a1._int());
+				//msg_write(css);
+				GError *error = nullptr;
+
+				auto *css_provider = gtk_css_provider_new();
+				gtk_css_provider_load_from_data(css_provider, (char*)css.data, css.num, &error);
+				if (error)
+					msg_error(string("css: ") + error->message);
+
+
+				auto *context = gtk_widget_get_style_context(widget);
+				gtk_style_context_add_provider(context,
+								                                GTK_STYLE_PROVIDER(css_provider),
+																GTK_STYLE_PROVIDER_PRIORITY_USER);
+				/*gtk_style_context_add_provider_for_screen
+				                               (gdk_screen_get_default(),
+				                                GTK_STYLE_PROVIDER(css_provider),
+												GTK_STYLE_PROVIDER_PRIORITY_USER);*/
 			}else{
-				__setOption(op, a1);
+				__set_option(op, a1);
 			}
 		}else
-			__setOption(op, "");
+			__set_option(op, "");
 	}
-	if ((width >= 0) or (height >= 0))
-		gtk_widget_set_size_request(get_frame(), width, height);
+
 	allow_signal_level --;
 }
 
-void Control::getSize(int &w, int &h)
+void Control::get_size(int &w, int &h)
 {
 	w = gdk_window_get_width(gtk_widget_get_window(widget));
 	h = gdk_window_get_height(gtk_widget_get_window(widget));
@@ -247,7 +274,7 @@ void Control::getSize(int &w, int &h)
 
 #endif
 
-bool Control::isEnabled()
+bool Control::is_enabled()
 {
 	return enabled;
 }
@@ -259,73 +286,73 @@ void Control::reset()
 	allow_signal_level --;
 }
 
-void Control::setString(const string& str)
+void Control::set_string(const string& str)
 {
 	allow_signal_level ++;
-	__setString(str);
+	__set_string(str);
 	allow_signal_level --;
 }
 
-void Control::addString(const string& str)
+void Control::add_string(const string& str)
 {
 	allow_signal_level ++;
-	__addString(str);
+	__add_string(str);
 	allow_signal_level --;
 }
 
-void Control::setInt(int i)
+void Control::set_int(int i)
 {
 	allow_signal_level ++;
-	__setInt(i);
+	__set_int(i);
 	allow_signal_level --;
 }
 
-void Control::setFloat(float f)
+void Control::set_float(float f)
 {
 	allow_signal_level ++;
-	__setFloat(f);
+	__set_float(f);
 	allow_signal_level --;
 }
 
-void Control::setColor(const color& c)
+void Control::set_color(const color& c)
 {
 	allow_signal_level ++;
-	__setColor(c);
+	__set_color(c);
 	allow_signal_level --;
 }
 
-void Control::addChildString(int parent_row, const string& str)
+void Control::add_child_string(int parent_row, const string& str)
 {
 	allow_signal_level ++;
-	__addChildString(parent_row, str);
+	__add_child_string(parent_row, str);
 	allow_signal_level --;
 }
 
-void Control::changeString(int row, const string& str)
+void Control::change_string(int row, const string& str)
 {
 	allow_signal_level ++;
-	__changeString(row, str);
+	__change_string(row, str);
 	allow_signal_level --;
 }
 
-void Control::removeString(int row)
+void Control::remove_string(int row)
 {
 	allow_signal_level ++;
-	__removeString(row);
+	__remove_string(row);
 	allow_signal_level --;
 }
 
-void Control::setCell(int row, int column, const string& str)
+void Control::set_cell(int row, int column, const string& str)
 {
 	allow_signal_level ++;
-	__setCell(row, column, str);
+	__set_cell(row, column, str);
 	allow_signal_level --;
 }
 
-void Control::setSelection(const Array<int>& sel)
+void Control::set_selection(const Array<int>& sel)
 {
 	allow_signal_level ++;
-	__setSelection(sel);
+	__set_selection(sel);
 	allow_signal_level --;
 }
 
@@ -361,33 +388,33 @@ void Control::notify(const string &message, bool is_default)
 	Window *win = panel->win;
 	if (this == win->main_input_control){
 		if (message == "hui:mouse-move")
-			win->onMouseMove();
+			win->on_mouse_move();
 		else if (message == "hui:mouse-wheel")
-			win->onMouseWheel();
+			win->on_mouse_wheel();
 		else if (message == "hui:mouse-enter")
-			win->onMouseEnter();
+			win->on_mouse_enter();
 		else if (message == "hui:mouse-leave")
-			win->onMouseLeave();
+			win->on_mouse_leave();
 		else if (message == "hui:left-button-down")
-			win->onLeftButtonDown();
+			win->on_left_button_down();
 		else if (message == "hui:left-button-up")
-			win->onLeftButtonUp();
+			win->on_left_button_up();
 		else if (message == "hui:middle-button-down")
-			win->onMiddleButtonDown();
+			win->on_middle_button_down();
 		else if (message == "hui:middle-button-up")
-			win->onMiddleButtonUp();
+			win->on_middle_button_up();
 		else if (message == "hui:right-button-down")
-			win->onRightButtonDown();
+			win->on_right_button_down();
 		else if (message == "hui:right-button-up")
-			win->onRightButtonUp();
+			win->on_right_button_up();
 		else if (message == "hui:key-down"){
-			win->onKeyDown();
+			win->on_key_down();
 			WinTrySendByKeyCode(win, GetEvent()->key_code);
 		}else if (message == "hui:key-up")
-			win->onKeyUp();
+			win->on_key_up();
 		else if (message == "hui:draw"){
 			Painter p(win, id);
-			win->onDraw(&p);
+			win->on_draw(&p);
 		}
 	}else if (type == CONTROL_MULTILINEEDIT){
 		if (message == "hui:key-down"){
@@ -396,6 +423,16 @@ void Control::notify(const string &message, bool is_default)
 		}
 	}
 	notify_pop();
+}
+
+
+void Control::apply_foreach(const string &_id, std::function<void(Control*)> f)
+{
+	if ((id == _id) or (_id == "*"))
+		f(this);
+	for (Control *c: children)
+		if (c->panel == panel)
+			c->apply_foreach(_id, f);
 }
 
 };

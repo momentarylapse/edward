@@ -23,7 +23,7 @@ ModeModelMeshCreatePolygon::ModeModelMeshCreatePolygon(ModeBase *_parent) :
 }
 
 
-void ModeModelMeshCreatePolygon::onStart()
+void ModeModelMeshCreatePolygon::on_start()
 {
 	for (ModelVertex &v: data->vertex)
 		v.is_special = false;
@@ -34,16 +34,16 @@ void ModeModelMeshCreatePolygon::onStart()
 
 
 
-void ModeModelMeshCreatePolygon::onEnd()
+void ModeModelMeshCreatePolygon::on_end()
 {
 	for (ModelVertex &v: data->vertex)
 		v.is_special = false;
 }
 
 
-void ModeModelMeshCreatePolygon::onDrawWin(MultiView::Window *win)
+void ModeModelMeshCreatePolygon::on_draw_win(MultiView::Window *win)
 {
-	parent->onDrawWin(win);
+	parent->on_draw_win(win);
 
 	nix::SetColor(multi_view->ColorCreationLine);
 	MultiView::set_wide_lines(2);
@@ -62,7 +62,7 @@ void ModeModelMeshCreatePolygon::onDrawWin(MultiView::Window *win)
 
 
 
-void ModeModelMeshCreatePolygon::onCommand(const string &id)
+void ModeModelMeshCreatePolygon::on_command(const string &id)
 {
 	if (id == "finish-action"){
 		data->execute(new ActionModelAddPolygonAutoSkin(selection, mode_model_mesh->current_material));
@@ -71,7 +71,7 @@ void ModeModelMeshCreatePolygon::onCommand(const string &id)
 }
 
 
-void ModeModelMeshCreatePolygon::onLeftButtonDown()
+void ModeModelMeshCreatePolygon::on_left_button_down()
 {
 	if (multi_view->hover.index >= 0){
 		// closed loop -> done
@@ -86,7 +86,7 @@ void ModeModelMeshCreatePolygon::onLeftButtonDown()
 		foreachi(int s, selection, i)
 			if (s == multi_view->hover.index)
 				if (i > 0){
-					ed->setMessage(_("keine doppelten Punkte erlaubt!"));
+					ed->set_message(_("keine doppelten Punkte erlaubt!"));
 					abort();
 					return;
 				}

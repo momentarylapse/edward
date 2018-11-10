@@ -31,7 +31,7 @@ void Value::init(Class *_type)
 	clear();
 	type = _type;
 
-	if (type->is_super_array){
+	if (type->is_super_array()){
 		value.resize(sizeof(DynamicArray));
 		as_array().init(type->parent->size);
 	}else{
@@ -41,7 +41,7 @@ void Value::init(Class *_type)
 
 void Value::clear()
 {
-	if (type->is_super_array)
+	if (type->is_super_array())
 		as_array().clear();
 
 	value.clear();
@@ -51,7 +51,7 @@ void Value::clear()
 void Value::set(const Value &v)
 {
 	init(v.type);
-	if (type->is_super_array){
+	if (type->is_super_array()){
 		as_array().resize(v.as_array().num);
 		memcpy(as_array().data, v.as_array().data, as_array().num * type->parent->size);
 
@@ -86,6 +86,11 @@ double& Value::as_float64() const
 	return *(double*)value.data;
 }
 
+complex& Value::as_complex() const
+{
+	return *(complex*)value.data;
+}
+
 string& Value::as_string() const
 {
 	return *(string*)value.data;
@@ -98,7 +103,7 @@ DynamicArray& Value::as_array() const
 
 int Value::mapping_size() const
 {
-	if (type->is_super_array)
+	if (type->is_super_array())
 		return config.super_array_size + (as_array().num * type->parent->size);
 	if (type == TypeCString)
 		return strlen((char*)p()) + 1;
@@ -109,7 +114,7 @@ int Value::mapping_size() const
 
 void Value::map_into(char *memory, char *addr) const
 {
-	if (type->is_super_array){
+	if (type->is_super_array()){
 		// const string -> variable length
 		int size = as_array().element_size * as_array().num;
 		int data_offset = config.super_array_size;
@@ -189,7 +194,7 @@ Node *SyntaxTree::add_node_statement(int index)
 	Node *c = AddNode(KIND_STATEMENT, index, TypeVoid);
 
 	c->script = Packages[0].script;
-	c->instance = NULL;
+	c->instance = nullptr;
 	c->set_num_params(Statements[index].num_params);
 
 	return c;
@@ -236,7 +241,7 @@ Node *SyntaxTree::add_node_operator_by_inline(Node *p1, Node *p2, int inline_ind
 			return add_node_operator_by_index(p1, p2, i);
 
 	DoError("operator inline index not found: " + i2s(inline_index));
-	return NULL;
+	return nullptr;
 }
 
 
@@ -264,15 +269,15 @@ Node *SyntaxTree::add_node_block(Block *b)
 SyntaxTree::SyntaxTree(Script *_script) :
 	root_of_all_evil(this, "RootOfAllEvil", TypeVoid)
 {
-	root_of_all_evil.block = AddBlock(&root_of_all_evil, NULL);
+	root_of_all_evil.block = AddBlock(&root_of_all_evil, nullptr);
 
 	flag_string_const_as_cstring = false;
 	flag_immortal = false;
-	cur_func = NULL;
+	cur_func = nullptr;
 	script = _script;
 	asm_meta_info = new Asm::MetaInfo;
 	for_index_count = 0;
-	Exp.cur_line = NULL;
+	Exp.cur_line = nullptr;
 	parser_loop_depth = 0;
 
 	// "include" default stuff
@@ -291,7 +296,7 @@ void SyntaxTree::ParseBuffer(const string &buffer, bool just_analyse)
 	Parser();
 
 	Exp.clear();
-	
+
 	if (config.verbose)
 		Show();
 
@@ -507,11 +512,11 @@ Function::Function(SyntaxTree *_tree, const string &_name, Class *_return_type)
 {
 	tree = _tree;
 	name = _name;
-	block = NULL;
+	block = nullptr;
 	num_params = 0;
 	return_type = _return_type;
 	literal_return_type = _return_type;
-	_class = NULL;
+	_class = nullptr;
 	is_extern = false;
 	auto_implement = false;
 	is_pure = false;
@@ -528,9 +533,13 @@ int Function::__get_var(const string &name) const
 	return block->get_var(name);
 }
 
-string Function::signature() const
+string Function::signature(bool include_class) const
 {
-	string r = literal_return_type->name + " " + name + "(";
+	string r = literal_return_type->name + " ";
+	if ((name.find(".") >= 0) and !include_class)
+		r += name.explode(".").back() + "(";
+	else
+		r += name + "(";
 	for (int i=0; i<num_params; i++){
 		if (i > 0)
 			r += ", ";
@@ -543,7 +552,7 @@ Function *SyntaxTree::AddFunction(const string &name, Class *type)
 {
 	Function *f = new Function(this, name, type);
 	functions.add(f);
-	f->block = AddBlock(f, NULL);
+	f->block = AddBlock(f, nullptr);
 	return f;
 }
 
@@ -556,7 +565,7 @@ Node::Node(int _kind, long long _link_no, Script *_script, Class *_type)
 	type = _type;
 	kind = _kind;
 	link_no = _link_no;
-	instance = NULL;
+	instance = nullptr;
 	script = _script;
 	ref_count = 0;
 }
@@ -654,7 +663,7 @@ Node exlink_make_var_local(SyntaxTree *ps, Class *t, int var_no)
 	link.kind = KIND_VAR_LOCAL;
 	link.set_num_params(0);
 	link.script = ps->script;
-	link.instance = NULL;
+	link.instance = nullptr;
 	return link;
 }
 
@@ -668,7 +677,7 @@ Node exlink_make_var_element(SyntaxTree *ps, Function *f, ClassElement &e)
 	link.set_num_params(1);
 	link.params[0] = self;
 	link.script = ps->script;
-	link.instance = NULL;
+	link.instance = nullptr;
 	return link;
 }
 
@@ -697,7 +706,7 @@ Array<Node> SyntaxTree::GetExistenceShared(const string &name)
 	link.type = TypeUnknown;
 	link.params.clear();
 	link.script = script;
-	link.instance = NULL;
+	link.instance = nullptr;
 
 	// global variables (=local variables in "RootOfAllEvil")
 	foreachi(Variable &v, root_of_all_evil.var, i)
@@ -705,6 +714,16 @@ Array<Node> SyntaxTree::GetExistenceShared(const string &name)
 			link.type = v.type;
 			link.link_no = i;
 			link.kind = KIND_VAR_GLOBAL;
+			links.add(link);
+			return links;
+		}
+
+	// named constants
+	foreachi(Constant *c, constants, i)
+		if (name == c->name){
+			link.type = c->type;
+			link.link_no = i;
+			link.kind = KIND_CONSTANT;
 			links.add(link);
 			return links;
 		}
@@ -741,7 +760,7 @@ Array<Node> SyntaxTree::GetExistence(const string &name, Block *block)
 	link.type = TypeUnknown;
 	link.params.clear();
 	link.script = script;
-	link.instance = NULL;
+	link.instance = nullptr;
 
 	if (block){
 		Function *f = block->function;
@@ -813,10 +832,10 @@ Class *SyntaxTree::FindType(const string &name)
 		for (Class *c: inc->syntax->classes)
 			if (name == c->name)
 				return c;
-	return NULL;
+	return nullptr;
 }
 
-Class *SyntaxTree::CreateNewClass(const string &name, int size, bool is_pointer, bool is_silent, bool is_array, int array_size, Class *sub)
+Class *SyntaxTree::CreateNewClass(const string &name, Class::Type type, int size, int array_size, Class *sub)
 {
 	// check if it already exists
 	for (Class *t: classes)
@@ -829,38 +848,39 @@ Class *SyntaxTree::CreateNewClass(const string &name, int size, bool is_pointer,
 
 	// add new class
 	Class *t = new Class(name, size, this);
-	t->is_array = is_array and (array_size >= 0);
-	t->is_super_array = is_array and (array_size < 0);
+	t->type = type;
 	t->array_length = max(array_size, 0);
-	t->is_pointer = is_pointer;
-	t->is_silent = is_silent;
 	t->name = name;
 	t->size = size;
 	t->parent = sub;
 	classes.add(t);
-	if (t->is_super_array){
+	if (t->is_super_array() or t->is_dict()){
 		Class *parent = t->parent;
 		t->derive_from(TypeDynamicArray, false);
 		t->parent = parent;
 		AddFunctionHeadersForClass(t);
-	}else if (t->is_array){
+	}else if (t->is_array()){
 		AddFunctionHeadersForClass(t);
 	}
 	return t;
 }
 
-Class *SyntaxTree::CreateArrayClass(Class *element_type, int num_elements, const string &_name_pre, const string &suffix)
+Class *SyntaxTree::CreateArrayClass(Class *element_type, int num_elements)
 {
-	string name_pre = _name_pre;
-	if (name_pre.num == 0)
-		name_pre = element_type->name;
+	string name_pre = element_type->name;
 	if (num_elements < 0){
-		return CreateNewClass(name_pre + "[]" +  suffix,
-			config.super_array_size, false, false, true, num_elements, element_type);
+		return CreateNewClass(name_pre + "[]",
+				Class::Type::SUPER_ARRAY, config.super_array_size, num_elements, element_type);
 	}else{
-		return CreateNewClass(name_pre + format("[%d]", num_elements) + suffix,
-			element_type->size * num_elements, false, false, true, num_elements, element_type);
+		return CreateNewClass(name_pre + format("[%d]", num_elements),
+				Class::Type::ARRAY, element_type->size * num_elements, num_elements, element_type);
 	}
+}
+
+Class *SyntaxTree::CreateDictClass(Class *element_type)
+{
+	return CreateNewClass(element_type->name + "{}",
+			Class::Type::DICT, config.super_array_size, 0, element_type);
 }
 
 void SyntaxTree::ConvertInline()
@@ -929,7 +949,7 @@ Node *conv_calls(SyntaxTree *ps, Node *c, int tt)
 
 	if ((c->kind == KIND_STATEMENT) and (c->link_no == STATEMENT_RETURN))
 		if (c->params.num > 0){
-			if ((c->params[0]->type->is_array) /*or (c->Param[j]->Type->IsSuperArray)*/){
+			if ((c->params[0]->type->is_array()) /*or (c->Param[j]->Type->IsSuperArray)*/){
 				c->set_param(0, ps->ref_node(c->params[0]));
 			}
 			return c;
@@ -944,7 +964,7 @@ Node *conv_calls(SyntaxTree *ps, Node *c, int tt)
 			}
 
 		// return: array reference (-> dereference)
-		if ((c->type->is_array) /*or (c->Type->IsSuperArray)*/){
+		if ((c->type->is_array()) /*or (c->Type->IsSuperArray)*/){
 			c->type = c->type->get_pointer();
 			return ps->deref_node(c);
 			//deref_command_old(this, c);
@@ -955,7 +975,7 @@ Node *conv_calls(SyntaxTree *ps, Node *c, int tt)
 	if (c->kind == KIND_OPERATOR){
 		// parameters: super array as reference
 		for (int j=0;j<c->params.num;j++)
-			if ((c->params[j]->type->is_array) or (c->params[j]->type->is_super_array)){
+			if ((c->params[j]->type->is_array()) or (c->params[j]->type->is_super_array())){
 				c->set_param(j, ps->ref_node(c->params[j]));
 			}
   	}
@@ -1026,7 +1046,7 @@ void convert_return_by_memory(SyntaxTree *ps, Block *b, Function *f)
 			continue;
 
 		// convert into   *-return- = param
-		Node *p_ret = NULL;
+		Node *p_ret = nullptr;
 		foreachi(Variable &v, f->var, i)
 			if (v.name == IDENTIFIER_RETURN_VAR){
 				p_ret = ps->AddNode(KIND_VAR_LOCAL, i, v.type);
@@ -1136,9 +1156,8 @@ Node *SyntaxTree::BreakDownComplicatedCommand(Node *c)
 		// & array
 		Node *c_ref_array = ref_node(c->params[0]);
 		// create command for size constant
-		int nc = AddConstant(TypeInt);
-		constants[nc]->as_int() = el_type->size;
-		Node *c_size = add_node_const(nc);
+		Node *c_size = add_node_const(AddConstant(TypeInt));
+		c_size->as_const()->as_int() = el_type->size;
 		// offset = size * index
 		Node *c_offset = add_node_operator_by_inline(c_index, c_size, INLINE_INT_MULTIPLY);
 		c_offset->type = TypeInt;//TypePointer;
@@ -1161,9 +1180,8 @@ Node *SyntaxTree::BreakDownComplicatedCommand(Node *c)
 		Node *c_index = c->params[1];
 		Node *c_ref_array = c->params[0];
 		// create command for size constant
-		int nc = AddConstant(TypeInt);
-		constants[nc]->as_int() = el_type->size;
-		Node *c_size = add_node_const(nc);
+		Node *c_size = add_node_const(AddConstant(TypeInt));
+		c_size->as_const()->as_int() = el_type->size;
 		// offset = size * index
 		Node *c_offset = add_node_operator_by_inline(c_index, c_size, INLINE_INT_MULTIPLY);
 		c_offset->type = TypeInt;
@@ -1185,9 +1203,8 @@ Node *SyntaxTree::BreakDownComplicatedCommand(Node *c)
 		// & struct
 		Node *c_ref_struct = ref_node(c->params[0]);
 		// create command for shift constant
-		int nc = AddConstant(TypeInt);
-		constants[nc]->as_int() = c->link_no;
-		Node *c_shift = add_node_const(nc);
+		Node *c_shift = add_node_const(AddConstant(TypeInt));
+		c_shift->as_const()->as_int() = c->link_no;
 		// address = &struct + shift
 		Node *c_address = add_node_operator_by_inline(c_ref_struct, c_shift, __get_pointer_add_int());
 		c_address->type = el_type->get_pointer();//TypePointer;
@@ -1205,9 +1222,8 @@ Node *SyntaxTree::BreakDownComplicatedCommand(Node *c)
 
 		Node *c_ref_struct = c->params[0];
 		// create command for shift constant
-		int nc = AddConstant(TypeInt);
-		constants[nc]->as_int() = c->link_no;
-		Node *c_shift = add_node_const(nc);
+		Node *c_shift = add_node_const(AddConstant(TypeInt));
+		c_shift->as_const()->as_int() = c->link_no;
 		// address = &struct + shift
 		Node *c_address = add_node_operator_by_inline(c_ref_struct, c_shift, __get_pointer_add_int());
 		c_address->type = el_type->get_pointer();//TypePointer;

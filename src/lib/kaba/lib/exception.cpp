@@ -9,6 +9,7 @@
 #include "../kaba.h"
 #include "../../file/msg.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <assert.h>
 
 
@@ -53,7 +54,7 @@ struct StackFrameInfo
 };
 
 
-extern Array<Script*> PublicScript;
+extern Array<Script*> _public_scripts_;
 
 inline void func_from_rip_test_script(StackFrameInfo &r, Script *s, void *rip, bool from_package)
 {
@@ -78,11 +79,11 @@ StackFrameInfo get_func_from_rip(void *rip)
 {
 	StackFrameInfo r;
 	r.rip = rip;
-	r.f = NULL;
+	r.f = nullptr;
 	r.offset = 1000000;
 
 	// compiled functions
-	for (Script* s: PublicScript){
+	for (Script* s: _public_scripts_){
 		if ((rip < s->opcode) or (rip > &s->opcode[s->opcode_size]))
 			continue;
 		func_from_rip_test_script(r, s, rip, false);
@@ -99,6 +100,9 @@ StackFrameInfo get_func_from_rip(void *rip)
 
 struct ExceptionBlockData
 {
+	// needs_killing might be a reference to blocks... std::move()...
+	// better keep blocks alive for a while
+	Array<Block*> blocks;
 	Array<Block*> needs_killing;
 	Block *except_block;
 	Node *except;
@@ -116,22 +120,21 @@ inline bool ex_type_match(Class *ex_type, Class *catch_type)
 ExceptionBlockData get_blocks(Script *s, Function *f, void* rip, Class *ex_type)
 {
 	ExceptionBlockData ebd;
-	ebd.except_block = NULL;
-	ebd.except = NULL;
+	ebd.except_block = nullptr;
+	ebd.except = nullptr;
 
-	Array<Block*> blocks;
 	foreachb (Block *b, s->syntax->blocks)
 		if ((b->_start <= rip) and (b->_end >= rip))
-			blocks.add(b);
-	ebd.needs_killing = blocks;
+			ebd.blocks.add(b);
+	ebd.needs_killing = ebd.blocks;
 
 	Array<int> node_index;
-	foreachi (Block *b, blocks, bi){
+	foreachi (Block *b, ebd.blocks, bi){
 		if (bi == 0)
 			continue;
 		int index = -1;
 		foreachi (Node *n, b->nodes, ni){
-			if (n->kind == KIND_BLOCK and n->link_no == blocks[bi-1]->index){
+			if (n->kind == KIND_BLOCK and n->link_no == ebd.blocks[bi-1]->index){
 				node_index.add(ni);
 				index = ni;
 			}
@@ -146,7 +149,7 @@ ExceptionBlockData get_blocks(Script *s, Function *f, void* rip, Class *ex_type)
 				if (!ex_type_match(ex_type, ee->type))
 					continue;
 				//msg_write("try...");
-				ebd.needs_killing = blocks.sub(0, bi);
+				ebd.needs_killing = ebd.blocks.sub(0, bi);
 				//msg_write(b->nodes[index + 2]->link_no);
 				ebd.except = ee;
 				ebd.except_block = s->syntax->blocks[b->nodes[index + 2]->link_no];
@@ -157,7 +160,7 @@ ExceptionBlockData get_blocks(Script *s, Function *f, void* rip, Class *ex_type)
 }
 
 
-void* rbp2 = NULL;
+void* rbp2 = nullptr;
 
 void relink_return(void *rip, void *rbp, void *rsp)
 {
@@ -183,7 +186,7 @@ Class* get_type(void *p)
 	if (!p)
 		return TypeUnknown;
 	void *vtable = *(void**)p;
-	Array<Script*> scripts = PublicScript;
+	Array<Script*> scripts = _public_scripts_;
 	for (auto p: Packages)
 		scripts.add(p.script);
 	for (Script* s: scripts)
@@ -199,7 +202,7 @@ Array<StackFrameInfo> get_stack_trace(void **rbp)
 {
 	Array<StackFrameInfo> trace;
 
-	void **rsp = NULL;
+	void **rsp = nullptr;
 //	msg_write("stack trace");
 //	printf("rbp=%p     ...%p\n", rbp, &rsp);
 
@@ -234,12 +237,14 @@ Array<StackFrameInfo> get_stack_trace(void **rbp)
 // stack unwinding does not work if gcc does not use a stack frame...
 #pragma GCC push_options
 #pragma GCC optimize("no-omit-frame-pointer")
+#pragma GCC optimize("no-inline")
+#pragma GCC optimize("0")
 
 void _cdecl kaba_raise_exception(KabaException *kaba_exception)
 {
 	// get stack frame base pointer rbp
-	void **rbp = NULL;
-	void **rsp = NULL;
+	void **rbp = nullptr;
+	void **rsp = nullptr;
 	asm volatile("movq %%rbp, %0\n\t"
 			"movq %%rsp, %1\n\t"
 		: "=r" (rbp), "=r" (rsp)

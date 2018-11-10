@@ -25,52 +25,52 @@ public:
 	virtual ~ModeBase();
 
 	// Start/End: (once) entering this mode or a sub mode
-	virtual void onStart(){};
-	virtual void onEnd(){};
+	virtual void on_start(){};
+	virtual void on_end(){};
 	// Enter/Leave: exactly this mode
-	virtual void onEnter(){};
-	virtual void onLeave(){};
+	virtual void on_enter(){};
+	virtual void on_leave(){};
 
-	virtual void onSelectionChange(){};
-	virtual void onViewStageChange(){};
-	virtual void onSetMultiView(){};
+	virtual void on_selection_change(){};
+	virtual void on_view_stage_change(){};
+	virtual void on_set_multi_view(){};
 
 	// events to be handled by derived modes
-	virtual void onMouseMove(){};
-	virtual void onMouseWheel(){};
-	virtual void onMouseEnter(){};
-	virtual void onMouseLeave(){};
-	virtual void onLeftButtonDown(){};
-	virtual void onLeftButtonUp(){};
-	virtual void onMiddleButtonDown(){};
-	virtual void onMiddleButtonUp(){};
-	virtual void onRightButtonDown(){};
-	virtual void onRightButtonUp(){};
-	virtual void onKeyDown(int key_code){};
-	virtual void onKeyUp(int key_code){};
-	virtual void onCommand(const string &id){};
-	virtual void onUpdateMenu(){};
+	virtual void on_mouse_move(){};
+	virtual void on_mouse_wheel(){};
+	virtual void on_mouse_enter(){};
+	virtual void on_mouse_leave(){};
+	virtual void on_left_button_down(){};
+	virtual void on_left_button_up(){};
+	virtual void on_middle_button_down(){};
+	virtual void on_middle_button_up(){};
+	virtual void on_right_button_down(){};
+	virtual void on_right_button_up(){};
+	virtual void on_key_down(int key_code){};
+	virtual void on_key_up(int key_code){};
+	virtual void on_command(const string &id){};
+	virtual void on_update_menu(){};
 
-	void onUpdateMenuRecursive();
-	void onCommandRecursive(const string &id);
+	void on_update_menu_recursive();
+	void on_command_recursive(const string &id);
 
-	virtual void onDraw(){};
-	virtual void onDrawWin(MultiView::Window *win){};
+	virtual void on_draw(){};
+	virtual void on_draw_win(MultiView::Window *win){};
 
-	virtual bool optimizeView(){ return false; };
-	virtual void optimizeViewRecursice();
+	virtual bool optimize_view(){ return false; };
+	virtual void optimize_view_recursice();
 
-	ModeBase *getRoot();
-	bool isAncestorOf(ModeBase *m);
-	ModeBase *getNextChildTo(ModeBase *target);
-	bool equalRoots(ModeBase *m);
-	virtual Data *getData() = 0;
+	ModeBase *get_root();
+	bool is_ancestor_of(ModeBase *m);
+	ModeBase *get_next_child_to(ModeBase *target);
+	bool equal_roots(ModeBase *m);
+	virtual Data *get_data() = 0;
 
 
 	virtual void _new();
 	virtual bool open();
 	virtual bool save();
-	virtual bool saveAs();
+	virtual bool save_as();
 
 	string name;
 
@@ -92,11 +92,11 @@ public:
 	Mode(const string &name, ModeBase *parent, MultiView::MultiView *multi_view, const string &menu) :
 		ModeBase(name, parent, multi_view, menu)
 	{
-		data = (T*)parent->getData();
+		data = (T*)parent->get_data();
 	}
 	virtual ~Mode(){}
 	T *data;
-	virtual Data *getData()
+	Data *get_data() override
 	{	return (Data*)data;	}
 };
 

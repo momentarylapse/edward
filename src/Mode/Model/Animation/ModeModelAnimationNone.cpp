@@ -22,31 +22,31 @@ ModeModelAnimationNone::~ModeModelAnimationNone()
 {
 }
 
-void ModeModelAnimationNone::onStart()
+void ModeModelAnimationNone::on_start()
 {
 	multi_view->clearData(data);
 
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	onUpdate(data, "");
+	on_update(data, "");
 }
 
-void ModeModelAnimationNone::onEnd()
+void ModeModelAnimationNone::on_end()
 {
 	multi_view->clearData(data);
 }
 
-void ModeModelAnimationNone::onUpdate(Observable* o, const string &message)
+void ModeModelAnimationNone::on_update(Observable* o, const string &message)
 {
 	mode_model_mesh->fillSelectionBuffer(mode_model_animation->vertex);
 }
 
-void ModeModelAnimationNone::onUpdateMenu()
+void ModeModelAnimationNone::on_update_menu()
 {
 }
 
-void ModeModelAnimationNone::onDrawWin(MultiView::Window *win)
+void ModeModelAnimationNone::on_draw_win(MultiView::Window *win)
 {
-	mode_model_mesh->onDrawWin(win);
+	mode_model_mesh->on_draw_win(win);
 }
 
 

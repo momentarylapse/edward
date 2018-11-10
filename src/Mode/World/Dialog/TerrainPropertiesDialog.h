@@ -36,7 +36,7 @@ public:
 	void OnOk();
 	void OnClose();
 
-	void onUpdate(Observable *o, const string &message);
+	void on_update(Observable *o, const string &message) override;
 
 private:
 	DataWorld *data;

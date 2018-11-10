@@ -40,7 +40,7 @@ void *ActionModelSurfaceVolumeAnd::compose(Data *d)
 	for (Geometry &g: geos)
 		addSubAction(new ActionModelPasteGeometry(g, 0), m);
 
-	ed->setMessage(format(_("%d geschlossene Fl&achen subtrahiert"), n));
+	ed->set_message(format(_("%d geschlossene Fl&achen subtrahiert"), n));
 	return NULL;
 }
 

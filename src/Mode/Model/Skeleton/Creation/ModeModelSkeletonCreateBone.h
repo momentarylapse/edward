@@ -16,7 +16,7 @@ class ModeModelSkeletonCreateBone: public ModeCreation<DataModel>
 public:
 	ModeModelSkeletonCreateBone(ModeBase *_parent);
 
-	virtual void onLeftButtonDown();
+	virtual void on_left_button_down();
 
 private:
 	vector pos;

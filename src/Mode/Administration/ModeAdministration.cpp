@@ -24,7 +24,7 @@ ModeAdministration::~ModeAdministration()
 {
 }
 
-void ModeAdministration::onStart()
+void ModeAdministration::on_start()
 {
 	data->LoadDatabase();
 	data->UpdateDatabase();
@@ -32,12 +32,12 @@ void ModeAdministration::onStart()
 	dialog->show();
 }
 
-void ModeAdministration::onEnd()
+void ModeAdministration::on_end()
 {
 	delete(dialog);
 }
 
-void ModeAdministration::onCommand(const string& id)
+void ModeAdministration::on_command(const string& id)
 {
 	if (id == "export_game")
 		ExportGame();
@@ -45,7 +45,7 @@ void ModeAdministration::onCommand(const string& id)
 		BasicSettings();
 }
 
-void ModeAdministration::onUpdate(Observable* o, const string &message)
+void ModeAdministration::on_update(Observable* o, const string &message)
 {
 }
 
@@ -126,7 +126,7 @@ void ModeAdministration::_new()
 		return;
 
 	create_project_dir(hui::Filename);
-	ed->setRootDirectory(hui::Filename);
+	ed->set_root_directory(hui::Filename);
 	data->reset();
 }
 
@@ -136,11 +136,11 @@ bool ModeAdministration::open()
 		return false;
 
 	if (!file_test_existence(hui::Filename + "game.ini")){
-		ed->errorBox(_("game.ini nicht gefunden"));
+		ed->error_box(_("game.ini nicht gefunden"));
 		return false;
 	}
 
-	ed->setRootDirectory(hui::Filename);
+	ed->set_root_directory(hui::Filename);
 	data->reset();
 	return true;
 }

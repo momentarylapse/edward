@@ -15,12 +15,12 @@ bool SettingDialogData=true;
 FontDialog::FontDialog(DataFont *_data) :
 	Observer("FontDialog")
 {
-	fromResource("font_dialog");
+	from_resource("font_dialog");
 	data = _data;
 	SettingData = false;
 
 
-	setString("text", _("Beispiel Text 0123456789"));
+	set_string("text", _("Beispiel Text 0123456789"));
 
 	event("height", std::bind(&FontDialog::OnHeight, this));
 	event("y1", std::bind(&FontDialog::OnY1, this));
@@ -51,49 +51,49 @@ void FontDialog::LoadData()
 	global = data->global;
 	glyph = data->glyph[data->Marked];
 
-	setInt("num", data->glyph.num);
-	setInt("height", global.GlyphHeight);
-	setInt("y1", global.GlyphY1);
-	setInt("y2", global.GlyphY2);
-	setInt("factorx", global.XFactor);
-	setInt("factory", global.YFactor);
-	setString("unknown", data->glyph[global.UnknownGlyphNo].Name);
+	set_int("num", data->glyph.num);
+	set_int("height", global.GlyphHeight);
+	set_int("y1", global.GlyphY1);
+	set_int("y2", global.GlyphY2);
+	set_int("factorx", global.XFactor);
+	set_int("factory", global.YFactor);
+	set_string("unknown", data->glyph[global.UnknownGlyphNo].Name);
 
-	setString("name", glyph.Name);
-	setInt("x1", glyph.X1);
-	setInt("x2", glyph.X2);
-	setInt("width", glyph.Width);
+	set_string("name", glyph.Name);
+	set_int("x1", glyph.X1);
+	set_int("x2", glyph.X2);
+	set_int("width", glyph.Width);
 
 	SettingData = false;
 }
 
 void FontDialog::OnY1()
 {
-	global.GlyphY1 = getInt("");
+	global.GlyphY1 = get_int("");
 	ApplyGlobalData();
 }
 
 void FontDialog::OnY2()
 {
-	global.GlyphY2 = getInt("");
+	global.GlyphY2 = get_int("");
 	ApplyGlobalData();
 }
 
 void FontDialog::OnHeight()
 {
-	global.GlyphHeight = getInt("");
+	global.GlyphHeight = get_int("");
 	ApplyGlobalData();
 }
 
 void FontDialog::OnFactorX()
 {
-	global.XFactor = getInt("");
+	global.XFactor = get_int("");
 	ApplyGlobalData();
 }
 
 void FontDialog::OnFactorY()
 {
-	global.YFactor = getInt("");
+	global.YFactor = get_int("");
 	ApplyGlobalData();
 }
 
@@ -103,41 +103,41 @@ void FontDialog::OnUnknown()
 
 void FontDialog::OnName()
 {
-	glyph.Name = getString("");
+	glyph.Name = get_string("");
 	ApplyGlyphData();
 }
 
 void FontDialog::OnX1()
 {
-	glyph.X1 = getInt("");
+	glyph.X1 = get_int("");
 	ApplyGlyphData();
 }
 
 void FontDialog::OnX2()
 {
-	glyph.X2 = getInt("");
+	glyph.X2 = get_int("");
 	ApplyGlyphData();
 }
 
 void FontDialog::OnWidth()
 {
-	glyph.Width = getInt("");
+	glyph.Width = get_int("");
 	ApplyGlyphData();
 }
 
-void FontDialog::onUpdate(Observable *o, const string &message)
+void FontDialog::on_update(Observable *o, const string &message)
 {
 	LoadData();
 }
 
 string FontDialog::GetSampleText()
 {
-	return getString("text");
+	return get_string("text");
 }
 
 void FontDialog::OnText()
 {
-	ed->forceRedraw();
+	ed->force_redraw();
 }
 
 void FontDialog::ApplyGlobalData()

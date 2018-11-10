@@ -23,10 +23,10 @@ ModeModelMeshPaste::ModeModelMeshPaste(ModeBase* _parent) :
 	dpos0 = (max + min) / 2;
 }
 
-void ModeModelMeshPaste::onStart()
+void ModeModelMeshPaste::on_start()
 {
 	if (mode_model_mesh->temp_geo.vertex.num == 0){
-		ed->setMessage(_("nichts zum Einf&ugen"));
+		ed->set_message(_("nichts zum Einf&ugen"));
 		abort();
 		return;
 	}
@@ -36,27 +36,27 @@ void ModeModelMeshPaste::onStart()
 	multi_view->setAllowAction(false);
 }
 
-void ModeModelMeshPaste::onEnd()
+void ModeModelMeshPaste::on_end()
 {
 	if (geo)
 		delete(geo);
 }
 
-void ModeModelMeshPaste::onMouseMove()
+void ModeModelMeshPaste::on_mouse_move()
 {
 	updateGeometry();
 }
 
-void ModeModelMeshPaste::onLeftButtonUp()
+void ModeModelMeshPaste::on_left_button_up()
 {
 	data->pasteGeometry(*geo, mode_model_mesh->current_material);
-	ed->setMessage(format(_("%d Vertizes, %d Dreiecke eingef&ugt"), geo->vertex.num, geo->polygon.num));
+	ed->set_message(format(_("%d Vertizes, %d Dreiecke eingef&ugt"), geo->vertex.num, geo->polygon.num));
 	abort();
 }
 
-void ModeModelMeshPaste::onDrawWin(MultiView::Window* win)
+void ModeModelMeshPaste::on_draw_win(MultiView::Window* win)
 {
-	parent->onDrawWin(win);
+	parent->on_draw_win(win);
 
 	mode_model->setMaterialCreation();
 

@@ -23,13 +23,13 @@ ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(ModeBase *_parent) :
 	invert = false;
 }
 
-void ModeModelMeshCreatePlane::onStart()
+void ModeModelMeshCreatePlane::on_start()
 {
 	// Dialog
 	dialog = hui::CreateResourceDialog("new_plane_dialog", ed);
-	dialog->setInt("np_num_x", hui::Config.getInt("NewPlaneNumX", 4));
-	dialog->setInt("np_num_y",hui::Config.getInt("NewPlaneNumY", 4));
-	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
+	dialog->set_int("np_num_x", hui::Config.get_int("NewPlaneNumX", 4));
+	dialog->set_int("np_num_y",hui::Config.get_int("NewPlaneNumY", 4));
+	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
 	dialog->event("hui:close", std::bind(&ModeModelMeshCreatePlane::onClose, this));
 
@@ -40,19 +40,19 @@ void ModeModelMeshCreatePlane::onStart()
 }
 
 
-void ModeModelMeshCreatePlane::onEnd()
+void ModeModelMeshCreatePlane::on_end()
 {
 	delete(dialog);
 }
 
 
-void ModeModelMeshCreatePlane::onLeftButtonUp()
+void ModeModelMeshCreatePlane::on_left_button_up()
 {
 	if (pos_chosen){
-		int nx = dialog->getInt("np_num_x");
-		int ny = dialog->getInt("np_num_y");
-		hui::Config.setInt("NewPlaneNumX", nx);
-		hui::Config.setInt("NewPlaneNumY", ny);
+		int nx = dialog->get_int("np_num_x");
+		int ny = dialog->get_int("np_num_y");
+		hui::Config.set_int("NewPlaneNumX", nx);
+		hui::Config.set_int("NewPlaneNumY", ny);
 
 		if (invert){
 			pos += length[0];
@@ -73,9 +73,9 @@ void ModeModelMeshCreatePlane::onLeftButtonUp()
 
 
 
-void ModeModelMeshCreatePlane::onDrawWin(MultiView::Window *win)
+void ModeModelMeshCreatePlane::on_draw_win(MultiView::Window *win)
 {
-	parent->onDrawWin(win);
+	parent->on_draw_win(win);
 
 	if (pos_chosen){
 		vector n = length[0] ^ length[1];
@@ -97,7 +97,7 @@ void ModeModelMeshCreatePlane::onDrawWin(MultiView::Window *win)
 
 
 
-void ModeModelMeshCreatePlane::onMouseMove()
+void ModeModelMeshCreatePlane::on_mouse_move()
 {
 	if (pos_chosen){
 		vector pos2 = multi_view->getCursor3d();

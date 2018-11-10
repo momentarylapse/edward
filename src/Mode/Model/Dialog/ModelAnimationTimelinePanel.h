@@ -15,10 +15,10 @@ class TimeLineParasite
 {
 public:
 	virtual ~TimeLineParasite(){}
-	virtual void onTimelineLeftButtonDown(){}
-	virtual void onTimelineLeftButtonUp(){}
-	virtual void onTimelineMouseMove(){}
-	virtual void onTimelineDraw(Painter *p){}
+	virtual void on_timeline_left_button_down(){}
+	virtual void on_timeline_left_button_up(){}
+	virtual void on_timeline_mouse_move(){}
+	virtual void on_timeline_draw(Painter *p){}
 };
 
 class ModelAnimationTimelinePanel : public hui::Panel, public Observer
@@ -27,19 +27,19 @@ public:
 	ModelAnimationTimelinePanel();
 	virtual ~ModelAnimationTimelinePanel();
 
-	void onDraw(Painter *c);
-	void onMouseMove();
-	void onLeftButtonDown();
-	void onLeftButtonUp();
-	void onMouseWheel();
+	void on_draw(Painter *c);
+	void on_mouse_move();
+	void on_left_button_down();
+	void on_left_button_up();
+	void on_mouse_wheel();
 
 
 	float screen2sample(float x);
 	float sample2screen(float x);
 	string get_time_str_fuzzy(double t, double dt);
-	void updateHover();
+	void update_hover();
 
-	virtual void onUpdate(Observable *o, const string &message);
+	void on_update(Observable *o, const string &message) override;
 
 	float mx;
 	int hover;
@@ -47,7 +47,7 @@ public:
 
 	TimeLineParasite *default_parasite;
 	TimeLineParasite *parasite;
-	void setParasite(TimeLineParasite *p);
+	void set_parasite(TimeLineParasite *p);
 };
 
 #endif /* SRC_MODE_MODEL_DIALOG_MODELANIMATIONTIMELINEPANEL_H_ */

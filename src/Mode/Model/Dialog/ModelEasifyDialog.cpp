@@ -13,7 +13,7 @@ ModelEasifyDialog::ModelEasifyDialog(hui::Window *_parent, bool _allow_parent, D
 	hui::Dialog("easify_dialog", 400, 300, _parent, _allow_parent),
 	Observer("ModelEasifyDialog")
 {
-	fromResource("easify_dialog");
+	from_resource("easify_dialog");
 
 	data = _data;
 	factor = 0.5f;
@@ -33,21 +33,21 @@ ModelEasifyDialog::~ModelEasifyDialog()
 
 void ModelEasifyDialog::LoadData()
 {
-	setFloat("quality_factor", factor * 100.0f);
-	setFloat("quality_slider", factor);
-	setString("eat_vertices", format(_("Vertexpunkte: %d (von %d)"), (int)(data->vertex.num * factor), data->vertex.num));
-	setString("eat_polygons", format(_("Polygone: %d (von %d)"), (int)(data->getNumPolygons() * factor), data->getNumPolygons()));
+	set_float("quality_factor", factor * 100.0f);
+	set_float("quality_slider", factor);
+	set_string("eat_vertices", format(_("Vertexpunkte: %d (von %d)"), (int)(data->vertex.num * factor), data->vertex.num));
+	set_string("eat_polygons", format(_("Polygone: %d (von %d)"), (int)(data->getNumPolygons() * factor), data->getNumPolygons()));
 }
 
 void ModelEasifyDialog::OnQualityFactor()
 {
-	factor = getFloat("quality_factor") / 100.0f;
+	factor = get_float("quality_factor") / 100.0f;
 	LoadData();
 }
 
 void ModelEasifyDialog::OnQualitySlider()
 {
-	factor = getFloat("");
+	factor = get_float("");
 	LoadData();
 }
 
@@ -62,7 +62,7 @@ void ModelEasifyDialog::OnOk()
 	destroy();
 }
 
-void ModelEasifyDialog::onUpdate(Observable* o, const string &message)
+void ModelEasifyDialog::on_update(Observable* o, const string &message)
 {
 	LoadData();
 }

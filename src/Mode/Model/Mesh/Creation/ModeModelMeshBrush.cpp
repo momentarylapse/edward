@@ -33,10 +33,10 @@ Action *ModeModelMeshBrush::getAction()
 {
 	vector pos = multi_view->hover.point;
 	vector n = data->surface[multi_view->hover.set].polygon[multi_view->hover.index].temp_normal;
-	float radius = dialog->getFloat("diameter") / 2;
-	float depth = dialog->getFloat("depth");
-	int type = dialog->getInt("brush_type");
-	if (ed->getKey(hui::KEY_CONTROL))
+	float radius = dialog->get_float("diameter") / 2;
+	float depth = dialog->get_float("depth");
+	int type = dialog->get_int("brush_type");
+	if (ed->get_key(hui::KEY_CONTROL))
 		depth = - depth;
 
 	Action *a = NULL;
@@ -55,7 +55,7 @@ void ModeModelMeshBrush::apply()
 	data->execute(a);
 }
 
-void ModeModelMeshBrush::onStart()
+void ModeModelMeshBrush::on_start()
 {
 	mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_polygon);
 	mode_model->allowSelectionModes(false);
@@ -65,19 +65,19 @@ void ModeModelMeshBrush::onStart()
 
 	// Dialog
 	dialog = new hui::Dialog(_("Pinsel"), 300, 155, ed, true);//HuiCreateResourceDialog("new_ball_dialog", ed);
-	dialog->addGrid("", 0, 0, "grid");
+	dialog->add_grid("", 0, 0, "grid");
 
-	dialog->setTarget("grid");
-	dialog->addGrid("!expandx", 0, 0, "grid1");
-	dialog->addListView("!nobar\\type", 0, 1, "brush_type");
+	dialog->set_target("grid");
+	dialog->add_grid("!expandx", 0, 0, "grid1");
+	dialog->add_list_view("!nobar\\type", 0, 1, "brush_type");
 
-	dialog->setTarget("grid1");
-	dialog->addLabel(_("Dicke"), 0, 0, "");
-	dialog->addLabel(_("Tiefe"), 0, 1, "");
-	dialog->addSlider("!expandx", 1, 0, "diameter_slider");
-	dialog->addSlider("", 1, 1, "depth_slider");
-	dialog->addEdit("!width=60", 2, 0, "diameter");
-	dialog->addEdit("", 2, 1, "depth");
+	dialog->set_target("grid1");
+	dialog->add_label(_("Dicke"), 0, 0, "");
+	dialog->add_label(_("Tiefe"), 0, 1, "");
+	dialog->add_slider("!expandx", 1, 0, "diameter_slider");
+	dialog->add_slider("", 1, 1, "depth_slider");
+	dialog->add_edit("!width=60", 2, 0, "diameter");
+	dialog->add_edit("", 2, 1, "depth");
 
 	dialog->event("diameter_slider", std::bind(&ModeModelMeshBrush::onDiameterSlider, this));
 	dialog->event("depth_slider", std::bind(&ModeModelMeshBrush::onDepthSlider, this));
@@ -85,15 +85,15 @@ void ModeModelMeshBrush::onStart()
 	base_diameter = multi_view->cam.radius * 0.2f;
 	base_depth = multi_view->cam.radius * 0.02f;
 
-	dialog->addString("brush_type", _("Ausbeulen/Eindellen"));
-	dialog->addString("brush_type", _("Gl&atten"));
-	dialog->addString("brush_type", _("Komplexifizieren"));
-	dialog->setFloat("diameter_slider", 0.5f);
-	dialog->setFloat("depth_slider", 0.5f);
-	dialog->setString("diameter", f2s(base_diameter, 2));
-	dialog->setString("depth", f2s(base_depth, 2));
-	dialog->setInt("brush_type", 0);
-	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
+	dialog->add_string("brush_type", _("Ausbeulen/Eindellen"));
+	dialog->add_string("brush_type", _("Gl&atten"));
+	dialog->add_string("brush_type", _("Komplexifizieren"));
+	dialog->set_float("diameter_slider", 0.5f);
+	dialog->set_float("depth_slider", 0.5f);
+	dialog->set_string("diameter", f2s(base_diameter, 2));
+	dialog->set_string("depth", f2s(base_depth, 2));
+	dialog->set_int("brush_type", 0);
+	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
 	dialog->event("hui:close", std::bind(&ModeModelMeshBrush::onClose, this));
 
@@ -102,29 +102,29 @@ void ModeModelMeshBrush::onStart()
 
 void ModeModelMeshBrush::onDiameterSlider()
 {
-	float x = dialog->getFloat("");
-	dialog->setString("diameter", f2s(base_diameter * exp((x - 0.5f) * 4), 2));
+	float x = dialog->get_float("");
+	dialog->set_string("diameter", f2s(base_diameter * exp((x - 0.5f) * 4), 2));
 }
 
 void ModeModelMeshBrush::onDepthSlider()
 {
-	float x = dialog->getFloat("");
-	dialog->setString("depth", f2s(base_depth * exp((x - 0.5f) * 2), 2));
+	float x = dialog->get_float("");
+	dialog->set_string("depth", f2s(base_depth * exp((x - 0.5f) * 2), 2));
 }
 
-void ModeModelMeshBrush::onEnd()
+void ModeModelMeshBrush::on_end()
 {
 	delete(dialog);
 	if (brushing)
-		data->endActionGroup();
+		data->end_action_group();
 	mode_model->allowSelectionModes(true);
 }
 
-void ModeModelMeshBrush::onLeftButtonDown()
+void ModeModelMeshBrush::on_left_button_down()
 {
 	if (multi_view->hover.index < 0)
 		return;
-	data->beginActionGroup("brush");
+	data->begin_action_group("brush");
 	vector pos = multi_view->hover.point;
 	distance = 0;
 	last_pos = pos;
@@ -133,21 +133,21 @@ void ModeModelMeshBrush::onLeftButtonDown()
 	apply();
 }
 
-void ModeModelMeshBrush::onLeftButtonUp()
+void ModeModelMeshBrush::on_left_button_up()
 {
 	if (brushing)
-		data->endActionGroup();
+		data->end_action_group();
 	brushing = false;
 }
 
-void ModeModelMeshBrush::onMouseMove()
+void ModeModelMeshBrush::on_mouse_move()
 {
 	if (!brushing)
 		return;
 	if (multi_view->hover.index < 0)
 		return;
 	vector pos = multi_view->hover.point;
-	float radius = dialog->getFloat("diameter") / 2;
+	float radius = dialog->get_float("diameter") / 2;
 	distance += (pos - last_pos).length();
 	last_pos = pos;
 	if (distance > radius * 0.7f){
@@ -156,15 +156,15 @@ void ModeModelMeshBrush::onMouseMove()
 	}
 }
 
-void ModeModelMeshBrush::onDrawWin(MultiView::Window* win)
+void ModeModelMeshBrush::on_draw_win(MultiView::Window* win)
 {
-	parent->onDrawWin(win);
+	parent->on_draw_win(win);
 
 	if (multi_view->hover.index < 0)
 		return;
 	vector pos = multi_view->hover.point;
 	vector n = data->surface[multi_view->hover.set].polygon[multi_view->hover.index].temp_normal;
-	float radius = dialog->getFloat("diameter") / 2;
+	float radius = dialog->get_float("diameter") / 2;
 
 	nix::SetColor(multi_view->ColorCreationLine);
 	MultiView::set_wide_lines(2);

@@ -176,7 +176,7 @@ void DataModel::reset()
 
 	meta_data.reset();
 
-	resetHistory();
+	reset_history();
 	notify();
 }
 
@@ -191,7 +191,7 @@ void DataModel::debugShow()
 	}
 }
 
-bool DataModel::testSanity(const string &loc)
+bool DataModel::test_sanity(const string &loc)
 {
 	for (ModelSurface &s: surface){
 		if (!s.testSanity(loc))
@@ -201,7 +201,7 @@ bool DataModel::testSanity(const string &loc)
 }
 
 
-void DataModel::onPostActionUpdate()
+void DataModel::on_post_action_update()
 {
 	showVertices(vertex);
 
@@ -257,7 +257,7 @@ void report_error(const string &msg)
 {
 	msg_error(msg);
 	if (ed)
-		ed->setMessage(msg);
+		ed->set_message(msg);
 }
 
 void update_model_script_data(DataModel::MetaData &m);
@@ -274,7 +274,7 @@ bool DataModel::load(const string & _filename, bool deep)
 	filename = _filename;
 	if (ed){
 		if (this == mode_model->data)
-			ed->makeDirs(filename);
+			ed->make_dirs(filename);
 	}
 	//msg_write(dir);
 	//msg_write(filename);
@@ -870,7 +870,7 @@ bool DataModel::load(const string & _filename, bool deep)
 					}
 				}
 			}else if (s == "// Polygons"){
-				beginActionGroup("LoadPolygonData");
+				begin_action_group("LoadPolygonData");
 				foreachi(ModelVertex &v, skin[1].vertex, i)
 					addVertex(v.pos, v.bone_index, v.normal_mode);
 				int ns = f->read_int();
@@ -903,7 +903,7 @@ bool DataModel::load(const string & _filename, bool deep)
 				}
 				for (ModelSurface &s: surface)
 					s.buildFromPolygons();
-				endActionGroup();
+				end_action_group();
 			}else if (s == "// Cylinders"){
 				int n = f->read_int();
 				for (int i=0; i<n; i++){
@@ -996,10 +996,10 @@ bool DataModel::load(const string & _filename, bool deep)
 
 	action_manager->enable(true);
 	//OptimizeView();
-	resetHistory();
+	reset_history();
 
 	if (deep)
-		onPostActionUpdate();
+		on_post_action_update();
 	return !error;
 }
 
@@ -1009,7 +1009,7 @@ void DataModel::importFromTriangleSkin(int index)
 	surface.clear();
 
 	ModelSkin &s = skin[index];
-	beginActionGroup("ImportFromTriangleSkin");
+	begin_action_group("ImportFromTriangleSkin");
 	foreachi(ModelVertex &v, s.vertex, i){
 		addVertex(v.pos);
 		vertex[i].bone_index = v.bone_index;
@@ -1084,7 +1084,7 @@ void DataModel::importFromTriangleSkin(int index)
 	poly.clear();
 
 	clearSelection();
-	endActionGroup();
+	end_action_group();
 	action_manager->reset();
 }
 
@@ -1182,7 +1182,7 @@ bool DataModel::save(const string & _filename)
 
 	filename = _filename;
 	if (ed)
-		ed->makeDirs(filename);
+		ed->make_dirs(filename);
 
 	File *f = FileCreateText(filename);
 	f->WriteFileFormatVersion(false, 11);//FFVBinary, 11);
@@ -1531,7 +1531,7 @@ bool DataModel::save(const string & _filename)
 	f->write_comment("#");
 	FileClose(f);
 
-	action_manager->markCurrentAsSave();
+	action_manager->mark_current_as_save();
 	return true;
 }
 

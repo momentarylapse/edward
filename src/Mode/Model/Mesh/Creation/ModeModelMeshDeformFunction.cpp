@@ -34,8 +34,8 @@ const int CUBE_SIZE = 20;
 	for (int i=0; i<=8; i++){
 		int x = ::min(i * 64, 511);
 		for (int y=0; y<512; y++){
-			im.setPixel(x, y, Gray);
-			im.setPixel(y, x, Gray);
+			im.set_pixel(x, y, Gray);
+			im.set_pixel(y, x, Gray);
 		}
 	}
 
@@ -50,14 +50,14 @@ ModeModelMeshDeformFunction::~ModeModelMeshDeformFunction()
 	delete(tex);
 }
 
-void ModeModelMeshDeformFunction::onStart()
+void ModeModelMeshDeformFunction::on_start()
 {
 	// Dialog
 	dialog = hui::CreateResourceDialog("deformation_function_dialog", ed);
 	//dialog->setFont("source", "Monospace 10");
 	//dialog->setTabSize("source", 4);
-	dialog->setString("source", "void f(vector o, vector i)\n\to = vector(i.x, i.y+(i.x*i.x-i.x), i.z)\n");
-	dialog->setPositionSpecial(ed, hui::HUI_RIGHT | hui::HUI_TOP);
+	dialog->set_string("source", "void f(vector o, vector i)\n\to = vector(i.x, i.y+(i.x*i.x-i.x), i.z)\n");
+	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->event("hui:close", std::bind(&ModeModelMeshDeformFunction::onClose, this));
 	dialog->event("preview", std::bind(&ModeModelMeshDeformFunction::onPreview, this));
 	dialog->event("ok", std::bind(&ModeModelMeshDeformFunction::onOk, this));
@@ -88,7 +88,7 @@ void ModeModelMeshDeformFunction::onStart()
 	multi_view->setAllowAction(false);
 }
 
-void ModeModelMeshDeformFunction::onEnd()
+void ModeModelMeshDeformFunction::on_end()
 {
 	if (has_preview)
 		restore();
@@ -98,9 +98,9 @@ void ModeModelMeshDeformFunction::onEnd()
 		delete s;
 }
 
-void ModeModelMeshDeformFunction::onDrawWin(MultiView::Window* win)
+void ModeModelMeshDeformFunction::on_draw_win(MultiView::Window* win)
 {
-	parent->onDrawWin(win);
+	parent->on_draw_win(win);
 
 	ModeModel::setMaterialCreation();
 	geo->build(nix::vb_temp);
@@ -136,7 +136,7 @@ void ModeModelMeshDeformFunction::onPreview()
 			data->vertex[vi].pos = transform(data->vertex[vi].pos);
 	data->notify();
 	has_preview = true;
-	ed->forceRedraw();
+	ed->force_redraw();
 }
 
 void ModeModelMeshDeformFunction::updateFunction()
@@ -146,7 +146,7 @@ void ModeModelMeshDeformFunction::updateFunction()
 	Kaba::Script *s = NULL;
 	f = NULL;
 	try{
-		s = Kaba::CreateForSource(dialog->getString("source"));
+		s = Kaba::CreateForSource(dialog->get_string("source"));
 		f = (vec_func*)s->MatchFunction("*", "void", 2, "vector", "vector");
 
 		if (!f)
@@ -163,7 +163,7 @@ void ModeModelMeshDeformFunction::restore()
 	delete(geo);
 	vector d = max - min;
 	geo = new GeometryCube(min, e_x * d.x, e_y * d.y, e_z * d.z, CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
-	ed->forceRedraw();
+	ed->force_redraw();
 
 	foreachi(int vi, index, ii)
 		data->vertex[vi].pos = old_pos[ii];
@@ -181,11 +181,11 @@ void ModeModelMeshDeformFunction::onOk()
 	if (!f)
 		return;
 
-	data->beginActionGroup("deformation");
+	data->begin_action_group("deformation");
 	for (int vi: index)
 		data->execute(new ActionModelMoveVertex(vi, transform(data->vertex[vi].pos)));
 
-	data->endActionGroup();
+	data->end_action_group();
 
 	abort();
 }

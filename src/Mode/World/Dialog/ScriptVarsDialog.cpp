@@ -12,7 +12,7 @@
 ScriptVarsDialog::ScriptVarsDialog(hui::Window *_parent, WorldScript *_data) :
 	hui::Dialog("script_vars_dialog", 400, 300, _parent, false)
 {
-	fromResource("script_vars_dialog");
+	from_resource("script_vars_dialog");
 	data = _data;
 
 	event("cancel", std::bind(&ScriptVarsDialog::OnClose, this));
@@ -29,20 +29,20 @@ ScriptVarsDialog::~ScriptVarsDialog()
 void ScriptVarsDialog::ApplyData()
 {
 	for (int i=0; i<data->variables.num; i++)
-		data->variables[i].value = getCell("variables", i, 2);
+		data->variables[i].value = get_cell("variables", i, 2);
 }
 
 
 
 void ScriptVarsDialog::LoadData()
 {
-	setString("class", _("Klasse: ") + data->class_name);
+	set_string("class", _("Klasse: ") + data->class_name);
 	if (data->class_name == "")
-		setString("class", "- no class derived from Controller found -");
+		set_string("class", "- no class derived from Controller found -");
 
 	reset("variables");
 	for (auto &v: data->variables)
-		addString("variables", v.name + "\\" + v.type + "\\" + v.value);
+		add_string("variables", v.name + "\\" + v.type + "\\" + v.value);
 	enable("variables", data->variables.num > 0);
 }
 
