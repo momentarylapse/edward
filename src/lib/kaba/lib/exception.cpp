@@ -61,7 +61,7 @@ inline void func_from_rip_test_script(StackFrameInfo &r, Script *s, void *rip, b
 	foreachi (Function *f, s->syntax->functions, i){
 		if (from_package and !f->throws_exceptions)
 			continue;
-		void *frip = (void*)s->func[i];
+		void *frip = f->address;
 		if (frip >= rip)
 			continue;
 		int_p offset = (int_p)rip - (int_p)frip;
@@ -108,7 +108,7 @@ struct ExceptionBlockData
 	Node *except;
 };
 
-inline bool ex_type_match(Class *ex_type, Class *catch_type)
+inline bool ex_type_match(const Class *ex_type, const Class *catch_type)
 {
 	if (ex_type == TypeUnknown)
 		return true;
@@ -117,45 +117,54 @@ inline bool ex_type_match(Class *ex_type, Class *catch_type)
 	return ex_type->is_derived_from(catch_type);
 }
 
-ExceptionBlockData get_blocks(Script *s, Function *f, void* rip, Class *ex_type)
+ExceptionBlockData get_blocks(Script *s, Function *f, void* rip, const Class *ex_type)
 {
 	ExceptionBlockData ebd;
 	ebd.except_block = nullptr;
 	ebd.except = nullptr;
 
-	foreachb (Block *b, s->syntax->blocks)
-		if ((b->_start <= rip) and (b->_end >= rip))
-			ebd.blocks.add(b);
-	ebd.needs_killing = ebd.blocks;
+	if (f){
+		// which blocks are we in?
+		auto blocks = f->all_blocks();
+		//printf("%d blocks\n", blocks.num);
+		foreachb (Block *b, blocks){
+			//printf("-block  %p    %p-%p\n", b, b->_start, b->_end);
+			if ((b->_start <= rip) and (b->_end >= rip)){
+//				printf("   inside\n");
+				ebd.blocks.add(b);
+			}
+		}
+	}
 
+
+	// walk through the blocks from inside to outside
 	Array<int> node_index;
 	foreachi (Block *b, ebd.blocks, bi){
-		if (bi == 0)
+		ebd.needs_killing.add(b);
+
+		if (!b->parent)
 			continue;
-		int index = -1;
-		foreachi (Node *n, b->nodes, ni){
-			if (n->kind == KIND_BLOCK and n->link_no == ebd.blocks[bi-1]->index){
-				node_index.add(ni);
-				index = ni;
+
+		// are we in a try block?
+		for (Node *n: b->parent->params){
+			if (n->kind == KIND_STATEMENT and n->link_no == STATEMENT_TRY){
+				if (n->params[0]->as_block() == b){
+					if (_verbose_exception_)
+						msg_write("found try block");
+					auto ee = n->params[1];
+					if (_verbose_exception_)
+						msg_write(ee->type->name);
+					if (!ex_type_match(ex_type, ee->type))
+						continue;
+					if (_verbose_exception_)
+						msg_write("match");
+					ebd.except = ee;
+					ebd.except_block = n->params[2]->as_block();
+					return ebd;
+				}
 			}
 		}
-		if (index < 0){
-			msg_error("block link error...");
-			return ebd;
-		}
-		if (index > 0)
-			if ((b->nodes[index - 1]->kind == KIND_STATEMENT) and (b->nodes[index - 1]->link_no == STATEMENT_TRY)){
-				auto ee = b->nodes[index + 1];
-				if (!ex_type_match(ex_type, ee->type))
-					continue;
-				//msg_write("try...");
-				ebd.needs_killing = ebd.blocks.sub(0, bi);
-				//msg_write(b->nodes[index + 2]->link_no);
-				ebd.except = ee;
-				ebd.except_block = s->syntax->blocks[b->nodes[index + 2]->link_no];
-			}
 	}
-	//msg_write(ia2s(node_index));
 	return ebd;
 }
 
@@ -181,7 +190,7 @@ void relink_return(void *rip, void *rbp, void *rsp)
 	exit(0);
 }
 
-Class* get_type(void *p)
+const Class* get_type(void *p)
 {
 	if (!p)
 		return TypeUnknown;
@@ -190,7 +199,7 @@ Class* get_type(void *p)
 	for (auto p: Packages)
 		scripts.add(p.script);
 	for (Script* s: scripts)
-		for (Class *c: s->syntax->classes)
+		for (auto *c: s->syntax->classes)
 			if (c->_vtable_location_compiler_)
 				if ((c->_vtable_location_target_ == vtable) or (c->_vtable_location_external_ == vtable))
 					return c;
@@ -222,7 +231,7 @@ Array<StackFrameInfo> get_stack_trace(void **rbp)
 			r.rbp = rbp;
 			trace.add(r);
 			if (_verbose_exception_)
-				msg_write(">>  " + r.s->filename + " : " + r.f->name + format("()  +%d", r.offset));
+				msg_write(">>  " + r.s->filename + " : " + r.f->long_name + format("()  +%d", r.offset));
 
 		}else{
 			//if (_verbose_exception_)
@@ -265,26 +274,25 @@ void _cdecl kaba_raise_exception(KabaException *kaba_exception)
 
 	auto trace = get_stack_trace(rbp);
 
-	Class *ex_type = get_type(kaba_exception);
+	const Class *ex_type = get_type(kaba_exception);
 
 	for (auto r: trace){
 
 		if (_verbose_exception_)
-			msg_write(">>  " + r.s->filename + " : " + r.f->name + format("()  +%d", r.offset));
+			msg_write(">>  " + r.s->filename + " : " + r.f->long_name + format("()  +%d", r.offset));
 		auto ebd = get_blocks(r.s, r.f, r.rip, ex_type);
 
 		for (Block *b: ebd.needs_killing){
 			if (_verbose_exception_)
-				msg_write("  block " + i2s(b->index));
-			for (int i: b->vars){
-				auto v = r.f->var[i];
-				char *p = (char*)r.rbp + v._offset;
+				msg_write("  block " + p2s(b));
+			for (Variable *v: b->vars){
+				char *p = (char*)r.rbp + v->_offset;
 				if (_verbose_exception_)
-					msg_write("   " + v.type->name + " " + v.name + "  " + p2s(p));
-				auto cf = v.type->get_destructor();
+					msg_write("   " + v->type->name + " " + v->name + "  " + p2s(p));
+				auto cf = v->type->get_destructor();
 				if (cf){
 					typedef void con_func(void *);
-					con_func * f = (con_func*)cf->script->func[cf->nr];
+					con_func * f = (con_func*)cf->func->address;
 					if (f){
 						f(p);
 					}
@@ -293,11 +301,11 @@ void _cdecl kaba_raise_exception(KabaException *kaba_exception)
 		}
 		if (ebd.except_block){
 			if (_verbose_exception_)
-				msg_write("except_block block: " + i2s(ebd.except_block->index));
+				msg_write("except_block block: " + p2s(ebd.except_block));
 
 			if (ebd.except->params.num > 0){
-				auto v = r.f->var[ebd.except_block->vars[0]];
-				void **p = (void**)((int_p)r.rbp + v._offset);
+				auto v = ebd.except_block->vars[0];
+				void **p = (void**)((int_p)r.rbp + v->_offset);
 				*p = kaba_exception;
 			}
 
@@ -316,7 +324,7 @@ void _cdecl kaba_raise_exception(KabaException *kaba_exception)
 	else
 		msg_error("uncaught " + get_type(kaba_exception)->name + ":  " + kaba_exception->message());
 	for (auto r: trace)
-		msg_write(">>  " + r.s->filename + " : " + r.f->name + format("()  + 0x%x", r.offset));
+		msg_write(">>  " + r.s->filename + " : " + r.f->long_name + format("()  + 0x%x", r.offset));
 	exit(1);
 }
 #pragma GCC pop_options

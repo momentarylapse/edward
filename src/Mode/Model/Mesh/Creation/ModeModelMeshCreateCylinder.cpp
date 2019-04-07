@@ -74,8 +74,7 @@ void ModeModelMeshCreateCylinder::updateGeometry()
 		hui::Config.set_int("NewCylinderEdges", edges);
 		hui::Config.set_bool("NewCylinderRound", round);
 
-		Array<float> r = radius;
-		r += radius;
+		Array<float> r = {radius, radius};
 		geo = new GeometryCylinder(pos, r, rings, edges, round ? GeometryCylinder::END_ROUND : GeometryCylinder::END_FLAT);
 	}
 }

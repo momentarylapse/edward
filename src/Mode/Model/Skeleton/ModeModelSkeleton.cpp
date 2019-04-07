@@ -172,13 +172,10 @@ void ModeModelSkeleton::on_update(Observable *o, const string &message)
 
 void drawBone(const vector &r, const vector &d, const color &c, MultiView::Window *win)
 {
-	Array<vector> v;
-	v.add(r);
-	v.add(d);
 	Array<color> col;
 	col.add(ColorInterpolate(c, MultiView::MultiView::ColorBackGround, 0.5f)); // root
 	col.add(ColorInterpolate(c, MultiView::MultiView::ColorBackGround, 0.8f));
-	nix::DrawLinesColored(v, col, false);
+	nix::DrawLinesColored({r,d}, col, false);
 }
 
 void drawCoordBasis(MultiView::Window *win, const ModelBone &b)
@@ -189,8 +186,8 @@ void drawCoordBasis(MultiView::Window *win, const ModelBone &b)
 		for (int i=0;i<3;i++)
 			e[i] = b._matrix.transform_normal(e[i]);
 	for (int i=0;i<3;i++){
-		nix::SetColor(color(1,0,(i==0)?1:0.5f,0));
-		nix::DrawLine3D(o, o + e[i] * 30 / win->zoom());
+		color cc = color(1,0,(i==0)?1:0.5f,0);
+		nix::DrawLinesColored({o, o + e[i] * 30 / win->zoom()}, {cc,cc}, false);
 	}
 }
 

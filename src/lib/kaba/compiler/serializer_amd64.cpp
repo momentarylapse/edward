@@ -9,7 +9,7 @@ namespace Kaba{
 
 int SerializerAMD64::fc_begin(const SerialNodeParam &instance, const Array<SerialNodeParam> &_params, const SerialNodeParam &ret)
 {
-	Class *type = ret.get_type_save();
+	const Class *type = ret.get_type_save();
 
 	// return data too big... push address
 	SerialNodeParam ret_ref;
@@ -55,15 +55,15 @@ int SerializerAMD64::fc_begin(const SerialNodeParam &instance, const Array<Seria
 				stack_param.add(p);
 			}
 		}else
-			DoError("parameter type currently not supported: " + p.type->name);
+			do_error("parameter type currently not supported: " + p.type->name);
 	}
 	
 	// push parameters onto stack
 	push_size = 8 * stack_param.num;
 	if (push_size > 127)
-		add_cmd(Asm::INST_ADD, param_preg(TypePointer, Asm::REG_RSP), param_const(TypeInt, push_size));
+		add_cmd(Asm::INST_ADD, param_preg(TypePointer, Asm::REG_RSP), param_imm(TypeInt, push_size));
 	else if (push_size > 0)
-		add_cmd(Asm::INST_ADD, param_preg(TypePointer, Asm::REG_RSP), param_const(TypeChar, push_size));
+		add_cmd(Asm::INST_ADD, param_preg(TypePointer, Asm::REG_RSP), param_imm(TypeChar, push_size));
 	foreachb(SerialNodeParam &p, stack_param){
 		add_cmd(Asm::INST_MOV, p_rax, p);
 		add_cmd(Asm::INST_PUSH, p_rax);
@@ -109,7 +109,7 @@ int SerializerAMD64::fc_begin(const SerialNodeParam &instance, const Array<Seria
 
 void SerializerAMD64::fc_end(int push_size, const SerialNodeParam &instance, const Array<SerialNodeParam> &params, const SerialNodeParam &ret)
 {
-	Class *type = ret.get_type_save();
+	const Class *type = ret.get_type_save();
 
 	// return > 4b already got copied to [ret] by the function!
 	if ((type != TypeVoid) and (!type->uses_return_by_memory())){
@@ -133,28 +133,34 @@ void SerializerAMD64::fc_end(int push_size, const SerialNodeParam &instance, con
 	}
 }
 
-void SerializerAMD64::add_function_call(Script *script, int func_no, const SerialNodeParam &instance, const Array<SerialNodeParam> &params, const SerialNodeParam &ret)
+bool dist_fits_32bit(void *a, void *b)
+{
+	int_p d = (int_p)a - (int_p)b;
+	if (d < 0)
+		d = -d;
+	return (d < 0x70000000);
+}
+
+void SerializerAMD64::add_function_call(Function *f, const SerialNodeParam &instance, const Array<SerialNodeParam> &params, const SerialNodeParam &ret)
 {
 	int push_size = fc_begin(instance, params, ret);
 
-	if ((script == this->script) and (!script->syntax->functions[func_no]->is_extern)){
-		add_cmd(Asm::INST_CALL, param_marker(list->get_label("_kaba_func_" + i2s(func_no))));
-	}else{
-		void *func = (void*)script->func[func_no];
-		if (!func)
-			DoErrorLink("could not link function " + script->syntax->functions[func_no]->signature(true));
-		int_p d = (int_p)func - (int_p)this->script->opcode;
-		if (d < 0)
-			d = -d;
-		if (d < 0x70000000){
+	if (f->address){
+		if (dist_fits_32bit(f->address, script->opcode)){
 			// 32bit call distance
-			add_cmd(Asm::INST_CALL, param_const(TypeReg32, (int_p)func)); // the actual call
+			add_cmd(Asm::INST_CALL, param_imm(TypeReg32, (int_p)f->address)); // the actual call
 			// function pointer will be shifted later...(asm translates to RIP-relative)
 		}else{
 			// 64bit call distance
-			add_cmd(Asm::INST_MOV, p_rax, param_const(TypeReg64, (int_p)func));
+			add_cmd(Asm::INST_MOV, p_rax, param_imm(TypeReg64, (int_p)f->address));
 			add_cmd(Asm::INST_CALL, p_rax);
 		}
+	}else if (f->_label >= 0){
+		// 64bit call distance
+		add_cmd(Asm::INST_MOV, p_rax, param_marker(TypePointer, f->_label));
+		add_cmd(Asm::INST_CALL, p_rax);
+	}else{
+		do_error_link("could not link function " + f->signature(true));
 	}
 
 	fc_end(push_size, instance, params, ret);
@@ -162,34 +168,42 @@ void SerializerAMD64::add_function_call(Script *script, int func_no, const Seria
 
 void SerializerAMD64::add_virtual_function_call(int virtual_index, const SerialNodeParam &instance, const Array<SerialNodeParam> &params, const SerialNodeParam &ret)
 {
-	//DoError("virtual function call on amd64 not yet implemented!");
-
 	int push_size = fc_begin(instance, params, ret);
 
-	add_cmd(Asm::INST_MOV, p_rax, instance);
-	add_cmd(Asm::INST_MOV, p_rax, p_deref_eax);
-	add_cmd(Asm::INST_ADD, p_rax, param_const(TypeInt, 8 * virtual_index));
-	add_cmd(Asm::INST_MOV, p_rax, p_deref_eax);
+	add_cmd(Asm::INST_MOV, p_rax, instance); // self
+	add_cmd(Asm::INST_MOV, p_rax, p_deref_eax); // vtable
+	add_cmd(Asm::INST_ADD, p_rax, param_imm(TypeInt, 8 * virtual_index)); // vtable + n
+	add_cmd(Asm::INST_MOV, p_rax, p_deref_eax); // vtable[n]
 	add_cmd(Asm::INST_CALL, p_rax); // the actual call
 
 	fc_end(push_size, instance, params, ret);
+}
+
+void SerializerAMD64::add_pointer_call(const SerialNodeParam &pointer, const Array<SerialNodeParam> &params, const SerialNodeParam &ret)
+{
+	int push_size = fc_begin(p_none, params, ret);
+
+	add_cmd(Asm::INST_MOV, p_rax, pointer);
+	add_cmd(Asm::INST_CALL, p_rax); // the actual call
+
+	fc_end(push_size, p_none, params, ret);
 }
 
 
 void SerializerAMD64::AddFunctionIntro(Function *f)
 {
 	// return, instance, params
-	Array<Variable> param;
+	Array<Variable*> param;
 	if (f->return_type->uses_return_by_memory()){
-		for (Variable &v: f->var)
-			if (v.name == IDENTIFIER_RETURN_VAR){
+		for (Variable *v: f->var)
+			if (v->name == IDENTIFIER_RETURN_VAR){
 				param.add(v);
 				break;
 			}
 	}
 	if (f->_class){
-		for (Variable &v: f->var)
-			if (v.name == IDENTIFIER_SELF){
+		for (Variable *v: f->var)
+			if (v->name == IDENTIFIER_SELF){
 				param.add(v);
 				break;
 			}
@@ -198,55 +212,55 @@ void SerializerAMD64::AddFunctionIntro(Function *f)
 		param.add(f->var[i]);
 
 	// map params...
-	Array<Variable> reg_param;
-	Array<Variable> stack_param;
-	Array<Variable> xmm_param;
-	for (Variable &p: param){
-		if ((p.type == TypeInt) or (p.type == TypeChar) or (p.type == TypeBool) or p.type->is_pointer()){
+	Array<Variable*> reg_param;
+	Array<Variable*> stack_param;
+	Array<Variable*> xmm_param;
+	for (Variable *p: param){
+		if ((p->type == TypeInt) or (p->type == TypeChar) or (p->type == TypeBool) or p->type->is_pointer()){
 			if (reg_param.num < 6){
 				reg_param.add(p);
 			}else{
 				stack_param.add(p);
 			}
-		}else if (p.type == TypeFloat32){
+		}else if (p->type == TypeFloat32){
 			if (xmm_param.num < 8){
 				xmm_param.add(p);
 			}else{
 				stack_param.add(p);
 			}
 		}else
-			DoError("parameter type currently not supported: " + p.type->name);
+			do_error("parameter type currently not supported: " + p->type->name);
 	}
 
 	// xmm0-7
-	foreachib(Variable &p, xmm_param, i){
+	foreachib(Variable *p, xmm_param, i){
 		int reg = Asm::REG_XMM0 + i;
-		add_cmd(Asm::INST_MOVSS, param_local(p.type, p._offset), param_preg(p.type, reg));
+		add_cmd(Asm::INST_MOVSS, param_local(p->type, p->_offset), param_preg(p->type, reg));
 	}
 
 	// rdi, rsi,rdx, rcx, r8, r9
 	int param_regs_root[6] = {7, 6, 2, 1, 8, 9};
-	foreachib(Variable &p, reg_param, i){
+	foreachib(Variable *p, reg_param, i){
 		int root = param_regs_root[i];
-		int preg = get_reg(root, p.type->size);
+		int preg = get_reg(root, p->type->size);
 		if (preg >= 0){
 			int v = add_virtual_reg(preg);
-			add_cmd(Asm::INST_MOV, param_local(p.type, p._offset), param_vreg(p.type, v));
+			add_cmd(Asm::INST_MOV, param_local(p->type, p->_offset), param_vreg(p->type, v));
 			set_virtual_reg(v, cmd.num - 1, cmd.num - 1);
 		}else{
 			// some registers are not 8bit'able
 			int v = add_virtual_reg(get_reg(root, 4));
 			int va = add_virtual_reg(Asm::REG_EAX);
 			add_cmd(Asm::INST_MOV, param_vreg(TypeReg32, va), param_vreg(TypeReg32, v));
-			add_cmd(Asm::INST_MOV, param_local(p.type, p._offset), param_vreg(p.type, va, get_reg(0, p.type->size)));
+			add_cmd(Asm::INST_MOV, param_local(p->type, p->_offset), param_vreg(p->type, va, get_reg(0, p->type->size)));
 			set_virtual_reg(v, cmd.num - 2, cmd.num - 2);
 			set_virtual_reg(va, cmd.num - 2, cmd.num - 1);
 		}
 	}
 		
 	// get parameters from stack
-	foreachb(Variable &p, stack_param){
-		DoError("func with stack...");
+	foreachb(Variable *p, stack_param){
+		do_error("func with stack...");
 		/*int s = 8;
 		add_cmd(Asm::inst_push, p);
 		push_size += s;*/
@@ -273,7 +287,7 @@ void SerializerAMD64::CorrectUnallowedParamCombis2(SerialNode &c)
 	// evil hack to allow inconsistent param types (in address shifts)
 	if (config.instruction_set == Asm::INSTRUCTION_SET_AMD64){
 		if ((c.inst == Asm::INST_ADD) or (c.inst == Asm::INST_MOV)){
-			if ((c.p[0].kind == KIND_REGISTER) and (c.p[1].kind == KIND_REF_TO_CONST)){
+			if ((c.p[0].kind == KIND_REGISTER) and (c.p[1].kind == KIND_CONSTANT_BY_ADDRESS)){
 				// TODO: should become an optimization if value fits into 32 bit...
 				/*if (c.p[0].type->is_pointer){
 #ifdef debug_evil_corrections

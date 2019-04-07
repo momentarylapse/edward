@@ -201,7 +201,7 @@ void update_script_data(WorldScript &s)
 				wanted = c->as_string().lower().replace("_", "").replace("\n", "").explode(",");
 
 		for (auto *t: ss->syntax->classes){
-			if (!t->is_derived_from("Controller"))
+			if (!t->is_derived_from_s("Controller"))
 				continue;
 			s.class_name = t->name;
 			for (auto &e: t->elements){

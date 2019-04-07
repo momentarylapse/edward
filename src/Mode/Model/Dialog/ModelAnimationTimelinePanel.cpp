@@ -14,7 +14,7 @@
 ModelAnimationTimelinePanel::ModelAnimationTimelinePanel() :
 	Observer("ModelAnimationTimelinePanel")
 {
-	add_drawing_area("!height=120,noexpandy", 0, 0, "area");
+	add_drawing_area("!height=80,noexpandy", 0, 0, "area");
 	time_scale = 100;
 	time_offset = -5;
 

@@ -679,6 +679,10 @@ void Edward::load_key_codes()
 			int key_code = f->read_int();
 			if (id == "execute_plugin")
 				key_code = hui::KEY_CONTROL + hui::KEY_P;
+			if (id == "move_frame_inc")
+				key_code = hui::KEY_CONTROL + hui::KEY_RIGHT;
+			if (id == "move_frame_dec")
+				key_code = hui::KEY_CONTROL + hui::KEY_LEFT;
 			set_key_code(id, key_code);
 		}
 		event("volume_subtract", NULL);

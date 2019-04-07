@@ -154,6 +154,12 @@ class ModelFrame
 	vector[] vertex_dpos
 	void __assign__(ModelFrame other)
 
+
+enum
+	MOVE_TYPE_NONE
+	MOVE_TYPE_VERTEX
+	MOVE_TYPE_SKELETAL
+
 class ModelMove
 	int type
 	ModelFrame[] frame
@@ -332,6 +338,15 @@ class DataModel extends Data
 //	extern void Easify(float factor)
 	extern void PasteGeometry(Geometry g, int default_material)
 	
+	extern void add_animation(int index, int type)
+	extern void duplicate_animation(int source, int target)
+	extern void delete_animation(int index)
+	extern void animation_set_data(int index, string name, float fps_const, float fps_factor)
+	extern void animation_add_frame(int index, int frame, ModelFrame f)
+	extern void animation_delete_frame(int index, int frame)
+	extern void animation_set_frame_duration(int index, int frame, float duration)
+	extern void animation_set_bone(int move, int frame, int bone, vector dpos, vector ang)
+	
 	void __assign__(DataModel other)
 
 
@@ -360,12 +375,12 @@ class DataWorld extends Data
 	int ego_index
 
 	// actions
-	extern WorldObject *AddObject(string filename, vector pos)
-	extern WorldTerrain *AddTerrain(string filename, vector pos)
-	extern WorldTerrain *AddNewTerrain(vector pos, vector size, int num_x, int num_z)
+	extern WorldObject *add_object(string filename, vector pos)
+	extern WorldTerrain *add_terrain(string filename, vector pos)
+	extern WorldTerrain *add_new_terrain(vector pos, vector size, int num_x, int num_z)
 
 
-extern DataModel *data_model
+extern DataModel* data_model
 extern DataWorld *data_world
 extern Window *edward
 

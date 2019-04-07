@@ -118,12 +118,12 @@ void ModeModel::on_command(const string & id)
 		executePropertiesDialog();
 
 	// mainly skin debugging...
-	if (id == "detail_1")
+/*	if (id == "detail_1")
 		data->importFromTriangleSkin(1);
 	if (id == "detail_2")
 		data->importFromTriangleSkin(2);
 	if (id == "detail_3")
-		data->importFromTriangleSkin(3);
+		data->importFromTriangleSkin(3);*/
 }
 
 

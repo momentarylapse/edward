@@ -187,6 +187,7 @@ const InstructionName InstructionNames[NUM_INSTRUCTION_NAMES + 1] = {
 	{INST_DD,		"dd"},
 	{INST_DS,		"ds"},
 	{INST_DZ,		"dz"},
+	{INST_ALIGN_OPCODE,	":align:"},
 
 	{INST_ADD,		"add",		3, 1},
 	{INST_ADC,		"adc",		3, 1},
@@ -629,35 +630,11 @@ void InstructionWithParamsList::show()
 	}
 }
 
-int InstructionWithParamsList::add_label(const string &name)
-{
-	so("add_label: " + name);
-	// label already in use? (used before declared)
-	foreachi(Label &l, label, i)
-		if (l.inst_no < 0)
-			if (l.name == name){
-				if ((l.inst_no >= 0) and (name != "$"))
-					SetError("label already declared: " + name);
-				l.inst_no = num;
-				so("----redecl");
-				return i;
-			}
-	Label l;
-	l.name = name;
-	l.inst_no = num;
-	l.value = -1;
-	label.add(l);
-	return label.num - 1;
-}
 
-int InstructionWithParamsList::get_label(const string &name)
+int InstructionWithParamsList::create_label(const string &name)
 {
-	so("add_label: " + name);
-	foreachi(Label &l, label, i)
-		if (l.name == name){
-			so("----reuse");
-			return i;
-		}
+	/*if (name == "$")
+		return -1;*/
 	Label l;
 	l.name = name;
 	l.inst_no = -1;
@@ -666,12 +643,59 @@ int InstructionWithParamsList::get_label(const string &name)
 	return label.num - 1;
 }
 
+int InstructionWithParamsList::_find_label(const string &name)
+{
+	foreachi (Label &l, label, i)
+		if (l.name == name)
+			return i;
+	return -1;
+
+}
+void InstructionWithParamsList::insert_label(int index)
+{
+	if (index < 0)
+		return;
+	Label &l = label[index];
+	if (l.inst_no >= 0 and l.name != "$")
+		SetError("label already declared: " + l.name);
+	l.inst_no = num;
+	so("----redecl");
+
+}
+int64 InstructionWithParamsList::_label_value(int index)
+{
+	if (index < 0)
+		return 0;
+	Label &l = label[index];
+	return l.value;
+
+}
+
+int InstructionWithParamsList::add_label(const string &name)
+{
+	so("add_label: " + name);
+	// label already in use? (used before declared)
+	int l = _find_label(name);
+	if (l >= 0){
+		insert_label(l);
+		return l;
+	}
+	return create_label(name);
+}
+
+// good
+int InstructionWithParamsList::get_label(const string &name)
+{
+	so("add_label: " + name);
+	int l = _find_label(name);
+	if (l >= 0)
+		return l;
+	return create_label(name);
+}
+
 void *InstructionWithParamsList::get_label_value(const string &name)
 {
-	for (Label &l: label)
-		if (l.name == name)
-			return (void*)l.value;
-	return nullptr;
+	return (void*)_label_value(_find_label(name));
 }
 
 
@@ -3098,10 +3122,13 @@ void OpcodeAddImmideate(char *oc, int &ocs, InstructionParam &p, CPUInstruction 
 			//---msg_write("deref....");
 			size = state.addr_size; // inst.has_big_addr
 			if (InstructionSet.set == INSTRUCTION_SET_AMD64){
-				if (inst.has_modrm)
+				if (inst.has_modrm){
 					value -= (int_p)oc + ocs + size + next_param_size; // amd64 uses RIP-relative addressing!
-				else
+					if ((value >= 0x80000000) or (-value >= 0x80000000))
+						SetError(format("RIP relative more than 32 bit   %p  %lx", &oc[ocs], value));
+				}else{
 					size = SIZE_64; // Ov/Mv...
+				}
 			}
 		}
 	//}else if (p.type == ParamTImmediateExt){
@@ -3567,12 +3594,28 @@ void OpcodeAddInstruction(char *oc, int &ocs, CPUInstruction &inst, InstructionP
 	OpcodeAddImmideate(oc, ocs, p2, inst, list, 0);
 }
 
+static void align_opcode(char *oc, int &ocs, int granularity)
+{
+	int mask = granularity - 1;
+	if ((ocs & mask) == 0)
+		return;
+	int ocs_new = (ocs | mask) + 1;
+	for (int i=ocs; i<ocs_new; i++)
+		oc[i] = 0x90;
+	ocs = ocs_new;
+}
+
 void InstructionWithParamsList::AddInstruction(char *oc, int &ocs, int n)
 {
 	int ocs0 = ocs;
 	InstructionWithParams &iwp = (*this)[n];
 	current_inst = n;
 	state.reset(this);
+
+	if (iwp.inst == INST_ALIGN_OPCODE){
+		align_opcode(oc, ocs, 16);
+		return;
+	}
 
 	// test if any instruction matches our wishes
 	int ninst = -1;

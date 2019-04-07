@@ -317,46 +317,56 @@ void Window::draw()
 	nix::SetWire(false);
 	nix::EnableLighting(false);
 	foreachi(DataSet &d, multi_view->data, di){
-		if (d.drawable or d.indexable){
+		if (d.drawable){
 			for (int i=0;i<d.data->num;i++){
 
 				SingleData *sd = MVGetSingleData(d, i);
 				if (sd->view_stage < multi_view->view_stage)
 					continue;
 
-				bool _di = (d.indexable and sd->is_selected and index_key);
-				if (!d.drawable and !_di)
-					continue;
 				vector p = project(sd->pos);
 				//if (!dest.inside(p.x,  p.y))
 				if ((p.x<dest.x1)or(p.y<dest.y1)or(p.x>dest.x2)or(p.y>dest.y2)or(p.z<=0)or(p.z>=1))
 					continue;
-				if (_di)
+				color c = multi_view->ColorPoint;
+				float radius = (float)multi_view->POINT_RADIUS;
+				float z = p.z - 0.0001f;//0.1f;
+				if (sd->is_selected){
+					c = multi_view->ColorPointSelected;
+					//z = 0.05f;
+					z = 0;
+				}
+				if (sd->is_special)
+					c = multi_view->ColorPointSpecial;
+				if ((multi_view->hover.set == di) and (i == multi_view->hover.index)){
+					c = color(c.a,c.r+0.4f,c.g+0.4f,c.b+0.4f);
+					z = 0.0f;
+					radius = (float)multi_view->POINT_RADIUS_HOVER;
+				}
+				nix::SetColor(c);
+				nix::DrawRect(	p.x-radius,
+								p.x+radius,
+								p.y-radius,
+								p.y+radius,
+								z);
+			}
+		}
+		if (d.indexable and index_key){
+			nix::SetColor(multi_view->ColorText);
+			nix::SetAlpha(ALPHA_SOURCE_ALPHA, ALPHA_SOURCE_INV_ALPHA);
+			for (int i=0;i<d.data->num;i++){
+
+				SingleData *sd = MVGetSingleData(d, i);
+				if (sd->view_stage < multi_view->view_stage)
+					continue;
+				if (sd->is_selected){
+					vector p = project(sd->pos);
+					if ((p.x<dest.x1)or(p.y<dest.y1)or(p.x>dest.x2)or(p.y>dest.y2)or(p.z<=0)or(p.z>=1))
+						continue;
 					nix::DrawStr(p.x+3, p.y, i2s(i));
-				if (d.drawable){
-					color c = multi_view->ColorPoint;
-					float radius = (float)multi_view->POINT_RADIUS;
-					float z = p.z - 0.0001f;//0.1f;
-					if (sd->is_selected){
-						c = multi_view->ColorPointSelected;
-						//z = 0.05f;
-						z = 0;
-					}
-					if (sd->is_special)
-						c = multi_view->ColorPointSpecial;
-					if ((multi_view->hover.set == di) and (i == multi_view->hover.index)){
-						c = color(c.a,c.r+0.4f,c.g+0.4f,c.b+0.4f);
-						z = 0.0f;
-						radius = (float)multi_view->POINT_RADIUS_HOVER;
-					}
-					nix::SetColor(c);
-					nix::DrawRect(	p.x-radius,
-									p.x+radius,
-									p.y-radius,
-									p.y+radius,
-									z);
 				}
 			}
+			nix::SetAlpha(ALPHA_NONE);
 		}
 	}
 

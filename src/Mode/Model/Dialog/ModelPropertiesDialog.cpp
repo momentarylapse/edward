@@ -81,7 +81,7 @@ void update_model_script_data(DataModel::MetaData &m)
 				wanted = c->as_string().lower().replace("_", "").replace("\n", "").explode(",");
 
 		for (auto *t: ss->syntax->classes){
-			if (!t->is_derived_from("Model"))
+			if (!t->is_derived_from_s("Model"))
 				continue;
 			msg_write(t->name);
 			//m.class_name = t->name;

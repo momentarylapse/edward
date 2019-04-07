@@ -37,7 +37,7 @@ void PluginManager::execute(const string & filename)
 	try{
 		Kaba::Script *s = Kaba::Load(filename);
 		typedef void func_t();
-		func_t *f = (func_t*)s->MatchFunction("main", "void", 0);
+		func_t *f = (func_t*)s->match_function("main", "void", {});
 		if (f)
 			f();
 	}catch(Kaba::Exception &e){
@@ -83,83 +83,83 @@ void PluginManager::init()
 	// model
 
 	Kaba::DeclareClassSize("ModelEffect", sizeof(ModelEffect));
-	Kaba::DeclareClassOffset("ModelEffect", "Kind", offsetof(ModelEffect, type));
-	Kaba::DeclareClassOffset("ModelEffect", "Surface", offsetof(ModelEffect, surface));
-	Kaba::DeclareClassOffset("ModelEffect", "Vertex", offsetof(ModelEffect, vertex));
-	Kaba::DeclareClassOffset("ModelEffect", "Size", offsetof(ModelEffect, size));
-	Kaba::DeclareClassOffset("ModelEffect", "Speed", offsetof(ModelEffect, speed));
-	Kaba::DeclareClassOffset("ModelEffect", "Intensity", offsetof(ModelEffect, intensity));
-	Kaba::DeclareClassOffset("ModelEffect", "Colors", offsetof(ModelEffect, colors));
-	Kaba::DeclareClassOffset("ModelEffect", "InvQuad", offsetof(ModelEffect, inv_quad));
-	Kaba::DeclareClassOffset("ModelEffect", "File", offsetof(ModelEffect, file));
+	Kaba::DeclareClassOffset("ModelEffect", "kind", offsetof(ModelEffect, type));
+	Kaba::DeclareClassOffset("ModelEffect", "surface", offsetof(ModelEffect, surface));
+	Kaba::DeclareClassOffset("ModelEffect", "vertex", offsetof(ModelEffect, vertex));
+	Kaba::DeclareClassOffset("ModelEffect", "size", offsetof(ModelEffect, size));
+	Kaba::DeclareClassOffset("ModelEffect", "speed", offsetof(ModelEffect, speed));
+	Kaba::DeclareClassOffset("ModelEffect", "intensity", offsetof(ModelEffect, intensity));
+	Kaba::DeclareClassOffset("ModelEffect", "colors", offsetof(ModelEffect, colors));
+	Kaba::DeclareClassOffset("ModelEffect", "inv_quad", offsetof(ModelEffect, inv_quad));
+	Kaba::DeclareClassOffset("ModelEffect", "file", offsetof(ModelEffect, file));
 
 	Kaba::DeclareClassSize("ModelVertex", sizeof(ModelVertex));
-	Kaba::DeclareClassOffset("ModelVertex", "NormalMode", offsetof(ModelVertex, normal_mode));
-	Kaba::DeclareClassOffset("ModelVertex", "BoneIndex", offsetof(ModelVertex, bone_index));
-	Kaba::DeclareClassOffset("ModelVertex", "NormalDirty", offsetof(ModelVertex, normal_dirty));
-	Kaba::DeclareClassOffset("ModelVertex", "RefCount", offsetof(ModelVertex, ref_count));
-	Kaba::DeclareClassOffset("ModelVertex", "Surface", offsetof(ModelVertex, surface));
+	Kaba::DeclareClassOffset("ModelVertex", "normal_mode", offsetof(ModelVertex, normal_mode));
+	Kaba::DeclareClassOffset("ModelVertex", "bone_index", offsetof(ModelVertex, bone_index));
+	Kaba::DeclareClassOffset("ModelVertex", "normal_dirty", offsetof(ModelVertex, normal_dirty));
+	Kaba::DeclareClassOffset("ModelVertex", "ref_count", offsetof(ModelVertex, ref_count));
+	Kaba::DeclareClassOffset("ModelVertex", "surface", offsetof(ModelVertex, surface));
 
 	Kaba::DeclareClassSize("ModelPolygonSide", sizeof(ModelPolygonSide));
-	Kaba::DeclareClassOffset("ModelPolygonSide", "Vertex", offsetof(ModelPolygonSide, vertex));
-	Kaba::DeclareClassOffset("ModelPolygonSide", "Edge", offsetof(ModelPolygonSide, edge));
-	Kaba::DeclareClassOffset("ModelPolygonSide", "EdgeDirection", offsetof(ModelPolygonSide, edge_direction));
-	Kaba::DeclareClassOffset("ModelPolygonSide", "SkinVertex", offsetof(ModelPolygonSide, skin_vertex));
-	Kaba::DeclareClassOffset("ModelPolygonSide", "NormalIndex", offsetof(ModelPolygonSide, normal_index));
-	Kaba::DeclareClassOffset("ModelPolygonSide", "Normal", offsetof(ModelPolygonSide, normal));
-	Kaba::DeclareClassOffset("ModelPolygonSide", "Triangulation", offsetof(ModelPolygonSide, triangulation));
+	Kaba::DeclareClassOffset("ModelPolygonSide", "vertex", offsetof(ModelPolygonSide, vertex));
+	Kaba::DeclareClassOffset("ModelPolygonSide", "edge", offsetof(ModelPolygonSide, edge));
+	Kaba::DeclareClassOffset("ModelPolygonSide", "edge_direction", offsetof(ModelPolygonSide, edge_direction));
+	Kaba::DeclareClassOffset("ModelPolygonSide", "skin_vertex", offsetof(ModelPolygonSide, skin_vertex));
+	Kaba::DeclareClassOffset("ModelPolygonSide", "normal_index", offsetof(ModelPolygonSide, normal_index));
+	Kaba::DeclareClassOffset("ModelPolygonSide", "normal", offsetof(ModelPolygonSide, normal));
+	Kaba::DeclareClassOffset("ModelPolygonSide", "triangulation", offsetof(ModelPolygonSide, triangulation));
 
 	Kaba::DeclareClassSize("ModelPolygon", sizeof(ModelPolygon));
-	Kaba::DeclareClassOffset("ModelPolygon", "Side", offsetof(ModelPolygon, side));
-	Kaba::DeclareClassOffset("ModelPolygon", "TempNormal", offsetof(ModelPolygon, temp_normal));
-	Kaba::DeclareClassOffset("ModelPolygon", "NormalDirty", offsetof(ModelPolygon, normal_dirty));
-	Kaba::DeclareClassOffset("ModelPolygon", "TriangulationDirty", offsetof(ModelPolygon, triangulation_dirty));
-	Kaba::DeclareClassOffset("ModelPolygon", "Material", offsetof(ModelPolygon, material));
+	Kaba::DeclareClassOffset("ModelPolygon", "side", offsetof(ModelPolygon, side));
+	Kaba::DeclareClassOffset("ModelPolygon", "temp_normal", offsetof(ModelPolygon, temp_normal));
+	Kaba::DeclareClassOffset("ModelPolygon", "normal_dirty", offsetof(ModelPolygon, normal_dirty));
+	Kaba::DeclareClassOffset("ModelPolygon", "triangulation_dirty", offsetof(ModelPolygon, triangulation_dirty));
+	Kaba::DeclareClassOffset("ModelPolygon", "material", offsetof(ModelPolygon, material));
 
 	Kaba::DeclareClassSize("ModelSurface", sizeof(ModelSurface));
-	Kaba::DeclareClassOffset("ModelSurface", "Polygon", offsetof(ModelSurface, polygon));
-	Kaba::DeclareClassOffset("ModelSurface", "Edge", offsetof(ModelSurface, edge));
-	Kaba::DeclareClassOffset("ModelSurface", "Vertex", offsetof(ModelSurface, vertex));
-	Kaba::DeclareClassOffset("ModelSurface", "IsClosed", offsetof(ModelSurface, is_closed));
-	Kaba::DeclareClassOffset("ModelSurface", "IsPhysical", offsetof(ModelSurface, is_physical));
-	Kaba::DeclareClassOffset("ModelSurface", "IsVisible", offsetof(ModelSurface, is_visible));
+	Kaba::DeclareClassOffset("ModelSurface", "polygon", offsetof(ModelSurface, polygon));
+	Kaba::DeclareClassOffset("ModelSurface", "edge", offsetof(ModelSurface, edge));
+	Kaba::DeclareClassOffset("ModelSurface", "vertex", offsetof(ModelSurface, vertex));
+	Kaba::DeclareClassOffset("ModelSurface", "is_closed", offsetof(ModelSurface, is_closed));
+	Kaba::DeclareClassOffset("ModelSurface", "is_physical", offsetof(ModelSurface, is_physical));
+	Kaba::DeclareClassOffset("ModelSurface", "is_visible", offsetof(ModelSurface, is_visible));
 	Kaba::DeclareClassOffset("ModelSurface", "model", offsetof(ModelSurface, model));
 
 	Kaba::DeclareClassSize("ModelBone", sizeof(ModelBone));
-	Kaba::DeclareClassOffset("ModelBone", "Parent", offsetof(ModelBone, parent));
-	Kaba::DeclareClassOffset("ModelBone", "ModelFile", offsetof(ModelBone, model_file));
+	Kaba::DeclareClassOffset("ModelBone", "parent", offsetof(ModelBone, parent));
+	Kaba::DeclareClassOffset("ModelBone", "model_file", offsetof(ModelBone, model_file));
 	Kaba::DeclareClassOffset("ModelBone", "model", offsetof(ModelBone, model));
-	Kaba::DeclareClassOffset("ModelBone", "ConstPos", offsetof(ModelBone, const_pos));
-	Kaba::DeclareClassOffset("ModelBone", "Matrix", offsetof(ModelBone, _matrix));
+	Kaba::DeclareClassOffset("ModelBone", "const_pos", offsetof(ModelBone, const_pos));
+	Kaba::DeclareClassOffset("ModelBone", "matrix", offsetof(ModelBone, _matrix));
 
 	Kaba::DeclareClassSize("ModelMove", sizeof(ModelMove));
-	Kaba::DeclareClassOffset("ModelMove", "Name", offsetof(ModelMove, name));
-	Kaba::DeclareClassOffset("ModelMove", "Type", offsetof(ModelMove, type));
+	Kaba::DeclareClassOffset("ModelMove", "name", offsetof(ModelMove, name));
+	Kaba::DeclareClassOffset("ModelMove", "type", offsetof(ModelMove, type));
 	Kaba::DeclareClassOffset("ModelMove", "FramesPerSecConst", offsetof(ModelMove, frames_per_sec_const));
 	Kaba::DeclareClassOffset("ModelMove", "FramesPerSecFactor", offsetof(ModelMove, frames_per_sec_factor));
-	Kaba::DeclareClassOffset("ModelMove", "Frame", offsetof(ModelMove, frame));
+	Kaba::DeclareClassOffset("ModelMove", "frame", offsetof(ModelMove, frame));
 
 	Kaba::DeclareClassSize("ModelFrame", sizeof(ModelFrame));
-	Kaba::DeclareClassOffset("ModelFrame", "SkelAng", offsetof(ModelFrame, skel_ang));
-	Kaba::DeclareClassOffset("ModelFrame", "SkelDPos", offsetof(ModelFrame, skel_dpos));
-	Kaba::DeclareClassOffset("ModelFrame", "DPos", offsetof(ModelFrame, skin));
-	Kaba::DeclareClassOffset("ModelFrame", "VertexDPos", offsetof(ModelFrame, vertex_dpos));
+	Kaba::DeclareClassOffset("ModelFrame", "skel_ang", offsetof(ModelFrame, skel_ang));
+	Kaba::DeclareClassOffset("ModelFrame", "skel_dpos", offsetof(ModelFrame, skel_dpos));
+	Kaba::DeclareClassOffset("ModelFrame", "dpos", offsetof(ModelFrame, skin));
+	Kaba::DeclareClassOffset("ModelFrame", "vertex_dpos", offsetof(ModelFrame, vertex_dpos));
 
 	Kaba::DeclareClassSize("DataModel", sizeof(DataModel));
-	Kaba::DeclareClassOffset("DataModel", "Bone", offsetof(DataModel, bone));
-	Kaba::DeclareClassOffset("DataModel", "Move", offsetof(DataModel, move));
+	Kaba::DeclareClassOffset("DataModel", "bone", offsetof(DataModel, bone));
+	Kaba::DeclareClassOffset("DataModel", "move", offsetof(DataModel, move));
 	//Kaba::DeclareClassOffset("DataModel", "move", offsetof(DataModel, move));
 	//Kaba::DeclareClassOffset("DataModel", "CurrentMove", offsetof(DataModel, CurrentMove));
 	//Kaba::DeclareClassOffset("DataModel", "CurrentFrame", offsetof(DataModel, CurrentFrame));
-	Kaba::DeclareClassOffset("DataModel", "Vertex", offsetof(DataModel, vertex));
-	Kaba::DeclareClassOffset("DataModel", "Surface", offsetof(DataModel, surface));
-	Kaba::DeclareClassOffset("DataModel", "Ball", offsetof(DataModel, ball));
-	Kaba::DeclareClassOffset("DataModel", "Poly", offsetof(DataModel, poly));
-	Kaba::DeclareClassOffset("DataModel", "Material", offsetof(DataModel, material));
-	Kaba::DeclareClassOffset("DataModel", "Fx", offsetof(DataModel, fx));
+	Kaba::DeclareClassOffset("DataModel", "vertex", offsetof(DataModel, vertex));
+	Kaba::DeclareClassOffset("DataModel", "surface", offsetof(DataModel, surface));
+	Kaba::DeclareClassOffset("DataModel", "ball", offsetof(DataModel, ball));
+	Kaba::DeclareClassOffset("DataModel", "poly", offsetof(DataModel, poly));
+	Kaba::DeclareClassOffset("DataModel", "material", offsetof(DataModel, material));
+	Kaba::DeclareClassOffset("DataModel", "fx", offsetof(DataModel, fx));
 	Kaba::DeclareClassOffset("DataModel", "meta_data", offsetof(DataModel, meta_data));
-	Kaba::DeclareClassOffset("DataModel", "Min", offsetof(DataModel, _min));
-	Kaba::DeclareClassOffset("DataModel", "Max", offsetof(DataModel, _max));
+	Kaba::DeclareClassOffset("DataModel", "min", offsetof(DataModel, _min));
+	Kaba::DeclareClassOffset("DataModel", "max", offsetof(DataModel, _max));
 	//Kaba::DeclareClassOffset("DataModel", "CurrentMaterial", offsetof(DataModel, CurrentMaterial));
 	//Kaba::DeclareClassOffset("DataModel", "CurrentTextureLevel", offsetof(DataModel, CurrentTextureLevel));
 	//Kaba::DeclareClassOffset("DataModel", "SkinVertex", offsetof(DataModel, SkinVertex));
@@ -186,7 +186,14 @@ void PluginManager::init()
 	Kaba::LinkExternal("DataModel.BevelSelectedVertices", Kaba::mf(&DataModel::bevelSelectedEdges));
 	Kaba::LinkExternal("DataModel.ExtrudeSelectedPolygons", Kaba::mf(&DataModel::extrudeSelectedPolygons));
 	Kaba::LinkExternal("DataModel.PasteGeometry", Kaba::mf(&DataModel::pasteGeometry));
-
+	Kaba::LinkExternal("DataModel.add_animation", Kaba::mf(&DataModel::addAnimation));
+	Kaba::LinkExternal("DataModel.duplicate_animation", Kaba::mf(&DataModel::duplicateAnimation));
+	Kaba::LinkExternal("DataModel.delete_animation", Kaba::mf(&DataModel::deleteAnimation));
+	Kaba::LinkExternal("DataModel.animation_set_data", Kaba::mf(&DataModel::setAnimationData));
+	Kaba::LinkExternal("DataModel.animation_add_frame", Kaba::mf(&DataModel::animationAddFrame));
+	Kaba::LinkExternal("DataModel.animation_delete_frame", Kaba::mf(&DataModel::animationDeleteFrame));
+	Kaba::LinkExternal("DataModel.animation_set_frame_duration", Kaba::mf(&DataModel::animationSetFrameDuration));
+	Kaba::LinkExternal("DataModel.animation_set_bone", Kaba::mf(&DataModel::animationSetBone));
 
 
 	Kaba::DeclareClassSize("Geometry", sizeof(Geometry));
@@ -206,12 +213,12 @@ void PluginManager::init()
 	// world
 
 	Kaba::DeclareClassSize("DataWorld", sizeof(DataWorld));
-	Kaba::DeclareClassOffset("DataWorld", "Terrains", offsetof(DataWorld, Terrains));
-	Kaba::DeclareClassOffset("DataWorld", "Objects", offsetof(DataWorld, Objects));
-	Kaba::DeclareClassOffset("DataWorld", "EgoIndex", offsetof(DataWorld, EgoIndex));
-	Kaba::LinkExternal("DataWorld.AddObject", Kaba::mf(&DataWorld::AddObject));
-	Kaba::LinkExternal("DataWorld.AddTerrain", Kaba::mf(&DataWorld::AddTerrain));
-	Kaba::LinkExternal("DataWorld.AddNewTerrain", Kaba::mf(&DataWorld::AddNewTerrain));
+	Kaba::DeclareClassOffset("DataWorld", "terrains", offsetof(DataWorld, Terrains));
+	Kaba::DeclareClassOffset("DataWorld", "objects", offsetof(DataWorld, Objects));
+	Kaba::DeclareClassOffset("DataWorld", "ego_index", offsetof(DataWorld, EgoIndex));
+	Kaba::LinkExternal("DataWorld.add_object", Kaba::mf(&DataWorld::AddObject));
+	Kaba::LinkExternal("DataWorld.add_terrain", Kaba::mf(&DataWorld::AddTerrain));
+	Kaba::LinkExternal("DataWorld.add_new_terrain", Kaba::mf(&DataWorld::AddNewTerrain));
 }
 
 

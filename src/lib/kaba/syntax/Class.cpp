@@ -1,7 +1,7 @@
 #include "../../base/base.h"
 #include "../kaba.h"
 #include "../../file/file.h"
-#include "class.h"
+#include "Class.h"
 
 namespace Kaba{
 
@@ -22,37 +22,31 @@ string ClassElement::signature(bool include_class) const
 
 ClassFunction::ClassFunction()
 {
-	nr = -1;
+	func = nullptr;
 	virtual_index = -1;
 	needs_overriding = false;
 	return_type = nullptr;
 	script = nullptr;
 }
 
-ClassFunction::ClassFunction(const string &_name, Class *_return_type, Script *s, int no)
+ClassFunction::ClassFunction(const string &_name, const Class *_return_type, Script *s, Function *_f)
 {
 	name = _name;
 	return_type = _return_type;
 	script = s;
-	nr = no;
+	func = _f;
 	virtual_index = -1;
 	needs_overriding = false;
 }
 
-Function* ClassFunction::func() const
-{
-	return script->syntax->functions[nr];
-}
-
 string ClassFunction::signature(bool include_class) const
 {
-	Function* f = func();
 	if (needs_overriding)
-		return f->signature(include_class) + " [NEEDS OVERRIDING]";
-	return f->signature(include_class);
+		return func->signature(include_class) + " [NEEDS OVERRIDING]";
+	return func->signature(include_class);
 }
 
-bool type_match(Class *given, Class *wanted)
+bool type_match(const Class *given, const Class *wanted)
 {
 	// exact match?
 	if (given == wanted)
@@ -75,7 +69,7 @@ bool type_match(Class *given, Class *wanted)
 
 
 // allow same classes... TODO deprecate...
-bool _type_match(Class *given, bool same_chunk, Class *wanted)
+bool _type_match(const Class *given, bool same_chunk, const Class *wanted)
 {
 	if ((same_chunk) and (wanted == TypeChunk))
 		return true;
@@ -83,7 +77,7 @@ bool _type_match(Class *given, bool same_chunk, Class *wanted)
 	return type_match(given, wanted);
 }
 
-Class::Class(const string &_name, int _size, SyntaxTree *_owner, Class *_parent)
+Class::Class(const string &_name, int _size, SyntaxTree *_owner, const Class *_parent)
 {
 	name = _name;
 	owner = _owner;
@@ -144,9 +138,7 @@ bool Class::is_simple_class() const
 	if (parent)
 		if (!parent->is_simple_class())
 			return false;
-	if (get_default_constructor())
-		return false;
-	if (get_complex_constructors().num > 0)
+	if (get_constructors().num > 0)
 		return false;
 	if (get_destructor())
 		return false;
@@ -169,7 +161,7 @@ bool Class::usable_as_super_array() const
 	return false;
 }
 
-Class *Class::get_array_element() const
+const Class *Class::get_array_element() const
 {
 	if (is_array() or is_super_array() or is_dict())
 		return parent;
@@ -186,6 +178,8 @@ bool Class::needs_constructor() const
 		return false;
 	if (is_super_array() or is_dict())
 		return true;
+	if (is_array())
+		return parent->get_default_constructor();
 	if (vtable.num > 0)
 		return true;
 	if (parent)
@@ -215,6 +209,8 @@ bool Class::needs_destructor() const
 		return false;
 	if (is_super_array() or is_dict())
 		return true;
+	if (is_array())
+		return parent->get_destructor();
 	if (parent){
 		if (parent->get_destructor())
 			return true;
@@ -241,7 +237,7 @@ bool Class::is_derived_from(const Class *root) const
 	return parent->is_derived_from(root);
 }
 
-bool Class::is_derived_from(const string &root) const
+bool Class::is_derived_from_s(const string &root) const
 {
 	if (name == root)
 		return true;
@@ -249,17 +245,21 @@ bool Class::is_derived_from(const string &root) const
 		return false;
 	if (!parent)
 		return false;
-	return parent->is_derived_from(root);
+	return parent->is_derived_from_s(root);
 }
 
-ClassFunction *Class::get_func(const string &_name, const Class *return_type, int num_params, const Class *param0) const
+ClassFunction *Class::get_func(const string &_name, const Class *return_type, const Array<const Class*> &params) const
 {
-	for(ClassFunction &f: functions)
-		if ((f.name == _name) and (f.return_type == return_type) and (f.param_types.num == num_params)){
-			if ((param0) and (num_params > 0)){
-				if (f.param_types[0] == param0)
-					return &f;
-			}else
+	for (auto &f: functions)
+		if ((f.name == _name) and (f.return_type == return_type) and (f.param_types.num == params.num)){
+			bool match = true;
+			for (int i=0; i<params.num; i++){
+				if (params[i] and (f.param_types[i] != params[i])){
+					match = false;
+					break;
+				}
+			}
+			if (match)
 				return &f;
 		}
 	return nullptr;
@@ -267,40 +267,31 @@ ClassFunction *Class::get_func(const string &_name, const Class *return_type, in
 
 ClassFunction *Class::get_same_func(const string &_name, Function *ff) const
 {
-	for (ClassFunction &f: functions)
-		if ((f.name == _name) and (f.return_type == ff->literal_return_type) and (f.param_types.num == ff->num_params)){
-			bool match = true;
-			for (int i=0; i<ff->num_params; i++)
-				if (f.param_types[i] != ff->literal_param_type[i])
-					match = false;
-			if (match)
-				return &f;
-		}
-	return nullptr;
+	return get_func(_name, ff->literal_return_type, ff->literal_param_type);
 }
 
 ClassFunction *Class::get_default_constructor() const
 {
-	return get_func(IDENTIFIER_FUNC_INIT, TypeVoid, 0);
+	return get_func(IDENTIFIER_FUNC_INIT, TypeVoid, {});
 }
 
-Array<ClassFunction*> Class::get_complex_constructors() const
+Array<ClassFunction*> Class::get_constructors() const
 {
 	Array<ClassFunction*> c;
-	for (ClassFunction &f: functions)
-		if ((f.name == IDENTIFIER_FUNC_INIT) and (f.return_type == TypeVoid) and (f.param_types.num > 0))
+	for (auto &f: functions)
+		if ((f.name == IDENTIFIER_FUNC_INIT) and (f.return_type == TypeVoid))
 			c.add(&f);
 	return c;
 }
 
 ClassFunction *Class::get_destructor() const
 {
-	return get_func(IDENTIFIER_FUNC_DELETE, TypeVoid, 0);
+	return get_func(IDENTIFIER_FUNC_DELETE, TypeVoid, {});
 }
 
 ClassFunction *Class::get_assign() const
 {
-	return get_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, 1, this);
+	return get_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, {this});
 }
 
 ClassFunction *Class::get_get(const Class *index) const
@@ -343,12 +334,12 @@ void Class::link_virtual_table()
 	// link virtual functions into vtable
 	for (ClassFunction &cf: functions){
 		if (cf.virtual_index >= 0){
-			if (cf.nr >= 0){
+			if (cf.func){
 				//msg_write(i2s(cf.virtual_index) + ": " + cf.GetFunc()->name);
 				if (cf.virtual_index >= vtable.num)
-					owner->DoError("LinkVirtualTable");
+					owner->do_error("LinkVirtualTable");
 					//vtable.resize(cf.virtual_index + 1);
-				vtable[cf.virtual_index] = (void*)cf.script->func[cf.nr];
+				vtable[cf.virtual_index] = cf.func->address;
 			}
 		}
 		if (cf.needs_overriding){
@@ -365,8 +356,8 @@ void Class::link_external_virtual_table(void *p)
 	int max_vindex = 1;
 	for (ClassFunction &cf: functions)
 		if (cf.virtual_index >= 0){
-			if (cf.nr >= 0)
-				cf.script->func[cf.nr] = (t_func*)t[cf.virtual_index];
+			if (cf.func)
+				cf.func->address = t[cf.virtual_index];
 			if (cf.virtual_index >= vtable.num)
 				max_vindex = max(max_vindex, cf.virtual_index);
 		}
@@ -400,14 +391,14 @@ bool class_func_match(ClassFunction &a, ClassFunction &b)
 }
 
 
-Class *Class::get_pointer() const
+const Class *Class::get_pointer() const
 {
-	return owner->CreateNewClass(name + "*", Class::Type::POINTER, config.pointer_size, 0, const_cast<Class*>(this));
+	return owner->make_class(name + "*", Class::Type::POINTER, config.pointer_size, 0, this);
 }
 
-Class *Class::get_root() const
+const Class *Class::get_root() const
 {
-	Class *r = const_cast<Class*>(this);
+	const Class *r = this;
 	while (r->parent)
 		r = r->parent;
 	return r;
@@ -416,21 +407,20 @@ Class *Class::get_root() const
 void class_func_out(Class *c, ClassFunction *f)
 {
 	string ps;
-	for (Class *p: f->param_types)
+	for (auto *p: f->param_types)
 		ps += "  " + p->name;
 	msg_write(c->name + "." + f->name + ps);
 }
 
-void Class::add_function(SyntaxTree *s, int func_no, bool as_virtual, bool override)
+void Class::add_function(SyntaxTree *s, Function *f, bool as_virtual, bool override)
 {
-	Function *f = s->functions[func_no];
 	ClassFunction cf;
-	cf.name = f->name.substr(name.num + 1, -1);
-	cf.nr = func_no;
+	cf.name = f->name;
+	cf.func = f;
 	cf.script = s->script;
 	cf.return_type = f->return_type;
 	for (int i=0; i<f->num_params; i++)
-		cf.param_types.add(f->var[i].type);
+		cf.param_types.add(f->var[i]->type);
 	if (as_virtual){
 		cf.virtual_index = ProcessClassOffset(name, cf.name, max(vtable.num, 2));
 		if (vtable.num <= cf.virtual_index)
@@ -445,15 +435,15 @@ void Class::add_function(SyntaxTree *s, int func_no, bool as_virtual, bool overr
 		if (class_func_match(cf, ocf))
 			orig = &ocf;
 	if (override and !orig)
-		s->DoError(format("can not override function %s, no previous definition", f->signature(true).c_str()), f->_exp_no, f->_logical_line_no);
+		s->do_error(format("can not override function %s, no previous definition", f->signature(true).c_str()), f->_exp_no, f->_logical_line_no);
 	if (!override and orig){
 		msg_write(f->signature(true));
 		msg_write(orig->signature(true));
-		s->DoError(format("function %s is already defined, use '%s'", f->signature(true).c_str(), IDENTIFIER_OVERRIDE.c_str()), f->_exp_no, f->_logical_line_no);
+		s->do_error(format("function %s is already defined, use '%s'", f->signature(true).c_str(), IDENTIFIER_OVERRIDE.c_str()), f->_exp_no, f->_logical_line_no);
 	}
 	if (override){
 		orig->script = cf.script;
-		orig->nr = cf.nr;
+		orig->func = cf.func;
 		orig->needs_overriding = false;
 		orig->param_types = cf.param_types;
 	}else
@@ -494,14 +484,14 @@ void *Class::create_instance() const
 	ClassFunction *c = get_default_constructor();
 	if (c){
 		typedef void con_func(void *);
-		con_func * f = (con_func*)c->script->func[c->nr];
+		con_func * f = (con_func*)c->func->address;
 		if (f)
 			f(p);
 	}
 	return p;
 }
 
-string Class::var2str(void *p) const
+string Class::var2str(const void *p) const
 {
 	if (this == TypeInt){
 		return i2s(*(int*)p);
@@ -509,6 +499,11 @@ string Class::var2str(void *p) const
 		return f2s(*(float*)p, 3);
 	}else if (this == TypeBool){
 		return b2s(*(bool*)p);
+	}else if (this == TypeClass){
+		return ((Class*)p)->name;
+	}else if (this == TypeClassP){
+		if (p)
+			return "&" + (*(Class**)p)->name;
 	}else if (is_pointer()){
 		return p2s(*(void**)p);
 	}else if (this == TypeString){
@@ -528,8 +523,8 @@ string Class::var2str(void *p) const
 		return "{...}";
 	}else if (elements.num > 0){
 		string s;
-		foreachi(ClassElement &e, elements, i){
-			if (i > 0)
+		for (auto &e: elements){
+			if (s.num > 0)
 				s += ", ";
 			s += e.type->var2str(((char*)p) + e.offset);
 		}
@@ -544,7 +539,7 @@ string Class::var2str(void *p) const
 			}
 			return "[" + s + "]";
 		}
-	return string((char*)p, size).hex();
+	return d2h(p, size, false);
 }
 
 }

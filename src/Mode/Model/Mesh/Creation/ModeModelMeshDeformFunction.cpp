@@ -147,7 +147,7 @@ void ModeModelMeshDeformFunction::updateFunction()
 	f = NULL;
 	try{
 		s = Kaba::CreateForSource(dialog->get_string("source"));
-		f = (vec_func*)s->MatchFunction("*", "void", 2, "vector", "vector");
+		f = (vec_func*)s->match_function("*", "void", {"vector", "vector"});
 
 		if (!f)
 			hui::ErrorBox(dialog, "error", _("keine Funktion vom Typ 'void f(vector, vector)' gefunden"));

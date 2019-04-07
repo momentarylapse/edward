@@ -16,7 +16,7 @@ class Script;
 #include "../base/base.h"
 #include "asm/asm.h"
 #include "lib/lib.h"
-#include "syntax/syntax_tree.h"
+#include "syntax/SyntaxTree.h"
 
 namespace Kaba{
 
@@ -32,14 +32,6 @@ public:
 struct LinkerException : Exception{};
 struct LinkerException : Exception{};*/
 
-enum
-{
-	WAITING_MODE_NONE,
-	WAITING_MODE_FIRST,
-	WAITING_MODE_GT,
-	WAITING_MODE_RT
-};
-#define WaitingModeFinished		WaitingModeNone
 
 // executable (compiled) data
 class Script
@@ -49,37 +41,35 @@ public:
 	Script();
 	~Script();
 
-	void Load(const string &filename, bool just_analyse = false);
+	void load(const string &filename, bool just_analyse = false);
 
 	// building operational code
-	void Compiler();
-	void MapConstantsToMemory();
-	void MapConstantsToOpcode();
-	void MapGlobalVariablesToMemory();
-	void AllocateMemory();
-	void AllocateStack();
-	void AllocateOpcode();
-	void AlignOpcode();
-	void AssembleFunction(int index, Function *f, Asm::InstructionWithParamsList *list);
-	void CompileFunctions(char *oc, int &ocs);
+	void compile();
+	void update_constant_locations();
+	void map_constants_to_opcode();
+	void map_global_variables_to_memory();
+	void map_constants_to_memory(char *mem, int &offset);
+	void allocate_opcode();
+	void align_opcode();
+	void allocate_memory();
+	void assemble_function(int index, Function *f, Asm::InstructionWithParamsList *list);
+	void compile_functions(char *oc, int &ocs);
 	void CompileOsEntryPoint();
 	void LinkOsEntryPoint();
-	void CompileTaskEntryPoint();
-	void LinkFunctions();
+	void link_functions();
 
 	// error messages
-	void DoError(const string &msg, int override_line = -1);
-	void DoErrorLink(const string &msg);
-	void DoErrorInternal(const string &msg);
+	void do_error(const string &msg, int override_line = -1);
+	void do_error_link(const string &msg);
+	void do_error_internal(const string &msg);
 
 	// execution
-	void __Execute();
-	void *MatchFunction(const string &name, const string &return_type, int num_params, ...);
-	void *MatchClassFunction(const string &_class, bool allow_derived, const string &name, const string &return_type, int num_params, ...);
-	void SetVariable(const string &name, void *data);
+	void *match_function(const string &name, const string &return_type, const Array<string> &param_types);
+	void *match_class_function(const string &_class, bool allow_derived, const string &name, const string &return_type, const Array<string> &param_types);
+	void set_variable(const string &name, void *data);
 
 	//debug displaying
-	void ShowVars(bool include_consts=false);
+	void show_vars(bool include_consts=false);
 
 // data
 
@@ -90,25 +80,15 @@ public:
 
 	char *opcode; // executable code
 	int opcode_size;
-	char *__thread_opcode; // executable code DEPRECATED!!!
-	int __thread_opcode_size;
-	char *memory; // memory for global variables, constants etc
-	int memory_size;
-	char *__stack; // stack for local variables etc
 
-	Array<t_func*> func;
-	t_func *__first_execution, *__continue_execution;
+	char *memory;
+	int memory_size;
+
 	Array<Asm::WantedLabel> functions_to_link;
 	Array<int> function_vars_to_link;
 
 	bool just_analyse, show_compiler_stats;
 	Function *cur_func;
-	int __waiting_mode;
-	float __time_to_wait;
-
-	Array<char*> g_var, cnst;
-
-	int memory_used;
 };
 
 Script *Load(const string &filename, bool just_analyse = false);
@@ -118,7 +98,7 @@ void ExecutePublicScripts();
 void DeleteAllScripts(bool even_immortal = false, bool force = false);
 void ExecuteSingleScriptCommand(const string &cmd);
 
-Class *GetDynamicType(const void *p);
+const Class *GetDynamicType(const VirtualBase *p);
 
 };
 

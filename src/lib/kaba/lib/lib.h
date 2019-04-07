@@ -25,6 +25,7 @@ extern string LibVersion;
 class SyntaxTree;
 class Class;
 struct Value;
+class Function;
 
 
 void script_make_super_array(Class *t, SyntaxTree *ps = nullptr);
@@ -35,12 +36,19 @@ extern const string IDENTIFIER_CLASS;
 extern const string IDENTIFIER_FUNC_INIT;
 extern const string IDENTIFIER_FUNC_DELETE;
 extern const string IDENTIFIER_FUNC_ASSIGN;
+extern const string IDENTIFIER_FUNC_GET;
+extern const string IDENTIFIER_FUNC_SUBARRAY;
 extern const string IDENTIFIER_SUPER;
 extern const string IDENTIFIER_SELF;
 extern const string IDENTIFIER_EXTENDS;
 extern const string IDENTIFIER_STATIC;
 extern const string IDENTIFIER_NEW;
 extern const string IDENTIFIER_DELETE;
+extern const string IDENTIFIER_SIZEOF;
+extern const string IDENTIFIER_TYPE;
+extern const string IDENTIFIER_STR;
+extern const string IDENTIFIER_LEN;
+extern const string IDENTIFIER_LET;
 extern const string IDENTIFIER_NAMESPACE;
 extern const string IDENTIFIER_RETURN_VAR;
 extern const string IDENTIFIER_VTABLE_VAR;
@@ -148,6 +156,9 @@ enum
 	STATEMENT_TRY,
 	STATEMENT_EXCEPT,
 	STATEMENT_PASS,
+	STATEMENT_STR,
+	STATEMENT_LEN,
+	STATEMENT_LET,
 	NUM_STATEMENTS
 };
 
@@ -325,9 +336,8 @@ typedef void t_cast_func(Value&, Value&);
 struct TypeCast
 {
 	int penalty;
-	Class *source, *dest;
-	int func_no;
-	Script *script;
+	const Class *source, *dest;
+	Function *f;
 	t_cast_func *func;
 };
 extern Array<TypeCast> TypeCasts;
@@ -360,9 +370,13 @@ struct CompilerConfiguration
 
 	string directory;
 	bool verbose;
+	string verbose_func_filter;
+	string verbose_stage_filter;
+	bool allow_output(const Function *f, const string &stage);
+	bool allow_output_func(const Function *f);
+	bool allow_output_stage(const string &stage);
 	bool compile_silently;
 	bool show_compiler_stats;
-	bool use_const_as_global_var;
 
 	bool compile_os;
 	bool no_function_frame;

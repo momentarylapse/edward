@@ -36,7 +36,7 @@ class DynamicArray
 	void _cdecl swap(int i1, int i2);
 	void _cdecl move(int source, int target);
 	void _cdecl reverse();
-	DynamicArray _cdecl ref_subarray(int start, int num_elements);
+	DynamicArray _cdecl ref_subarray(int start, int end);
 	int _cdecl index(const void *p);
 	void _cdecl clear();
 	void *data;
@@ -72,13 +72,6 @@ class Array : public DynamicArray
 			for (int i=0; i<num; i++)
 				(*this)[i] = *(it++);
 
-		}
-
-		// convenience
-		Array(const T &item)
-		{
-			init(sizeof(T));
-			add(item);
 		}
 
 		// kaba
@@ -162,6 +155,20 @@ class Array : public DynamicArray
 			s.num = num_elements;
 			s.data = ((T*)this->data) + start;
 			return s;
+		}
+
+		bool operator == (const Array<T> &o) const
+		{
+			if (num != o.num)
+				return false;
+			for (int i=0; i<num; i++)
+				if ((*this)[i] != o[i])
+					return false;
+			return true;
+		}
+		bool operator != (const Array<T> &o) const
+		{
+			return !(*this == o);
 		}
 
 		// copy assignment

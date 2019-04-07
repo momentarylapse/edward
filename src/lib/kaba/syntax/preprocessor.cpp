@@ -116,7 +116,7 @@ void PreProcessFunction(SyntaxTree *ps, Node *c)
 						c->NumParams = 0;*/
 					}else{
 						// pre process operator
-						int nc = ps->AddConstant(o->return_type);
+						int nc = ps->add_constant(o->return_type);
 						string d1 = ps->constants[c->params[0]->link_no].value;
 						string d2;
 						if (c->num_params > 1)
@@ -133,20 +133,8 @@ void PreProcessFunction(SyntaxTree *ps, Node *c)
 
 Node *SyntaxTree::PreProcessNode(Node *c)
 {
-	// recursion
-	if (c->kind == KIND_BLOCK){
-		for (int i=0;i<c->as_block()->nodes.num;i++)
-			c->as_block()->nodes[i] = PreProcessNode(c->as_block()->nodes[i]);
-	}
-	for (int i=0;i<c->params.num;i++)
-		c->set_param(i, PreProcessNode(c->params[i]));
-	if (c->instance)
-		c->set_instance(PreProcessNode(c->instance));
-	
-
-	// process...
 	if (c->kind == KIND_OPERATOR){
-		Operator *o = &operators[c->link_no];
+		Operator *o = c->as_op();
 		/*if (c->link_nr == OperatorIntAdd){
 			if (c->param[1]->kind == KindConstant){
 				int v = *(int*)Constants[c->param[1]->link_nr].data;
@@ -155,7 +143,7 @@ Node *SyntaxTree::PreProcessNode(Node *c)
 					*c = *c->param[0];
 				}
 			}
-		}else*/ if (o->func){
+		}else*/ if (o->f->address){
 			bool all_const = true;
 			bool is_address = false;
 			bool is_local = false;
@@ -167,7 +155,7 @@ Node *SyntaxTree::PreProcessNode(Node *c)
 				else if (c->params[i]->kind != KIND_CONSTANT)
 					all_const = false;
 			if (all_const){
-				op_func *f = (op_func*)o->func;
+				op_func *f = (op_func*)o->f->address;
 				if (is_address){
 					// pre process address
 					/*void *d1 = (void*)&c->Param[0]->LinkNr;
@@ -182,7 +170,7 @@ Node *SyntaxTree::PreProcessNode(Node *c)
 					c->NumParams = 0;*/
 				}else{
 					// pre process operator
-					Node *r = add_node_const(AddConstant(o->return_type));
+					Node *r = add_node_const(add_constant(o->return_type));
 					if (c->params.num > 1){
 						f(*r->as_const(), *c->params[0]->as_const(), *c->params[1]->as_const());
 					}else{
@@ -194,13 +182,13 @@ Node *SyntaxTree::PreProcessNode(Node *c)
 			}
 		}
 #if 1
-	}else if (c->kind == KIND_FUNCTION){
+	}else if (c->kind == KIND_FUNCTION_CALL){
 		Function *f = c->as_func();
 		if (!f->is_pure)
 			return c;
 		if (f->return_type->get_default_constructor()) // TODO
 			return c;
-		void *ff = (void*)c->script->func[c->link_no];
+		void *ff = (void*)c->as_func_p();
 		if (!ff)
 			return c;
 		bool all_const = true;
@@ -232,7 +220,7 @@ Node *SyntaxTree::PreProcessNode(Node *c)
 			p.add(c->params[i]->as_const()->p());
 		if (!call_function(f, ff, temp.p(), inst, p))
 			return c;
-		Node *r = add_node_const(AddConstant(f->return_type));
+		Node *r = add_node_const(add_constant(f->return_type));
 		r->as_const()->set(temp);
 		//DoError("...pure function evaluation?!?....TODO");
 		return r;
@@ -243,7 +231,7 @@ Node *SyntaxTree::PreProcessNode(Node *c)
 			if (c->params[i]->kind != KIND_CONSTANT)
 				all_consts = false;
 		if (all_consts){
-			Node *c_array = add_node_const(AddConstant(c->type));
+			Node *c_array = add_node_const(add_constant(c->type));
 			int el_size = c->type->parent->size;
 			DynamicArray *da = &c_array->as_const()->as_array();
 			da->init(el_size);
@@ -289,32 +277,13 @@ Node *SyntaxTree::PreProcessNode(Node *c)
 	return c;
 }
 
-string LinkNr2Str(SyntaxTree *s, int kind, int64 nr);
 
 // may not use AddConstant()!!!
 Node *SyntaxTree::PreProcessNodeAddresses(Node *c)
 {
-	/*msg_write(Kind2Str(c->Kind));
-	if (c->script)
-		msg_write(LinkNr2Str(c->script->pre_script, c->Kind, c->LinkNr));
-	else if (s)
-		msg_write(LinkNr2Str(s->pre_script, c->Kind, c->LinkNr));*/
-
-	// recursion
-	if (c->kind == KIND_BLOCK){
-		for (int i=0;i<c->as_block()->nodes.num;i++)
-			c->as_block()->set(i, PreProcessNodeAddresses(c->as_block()->nodes[i]));
-	}
-	for (int i=0;i<c->params.num;i++)
-		c->set_param(i, PreProcessNodeAddresses(c->params[i]));
-	if (c->instance)
-		c->set_instance(PreProcessNodeAddresses(c->instance));
-	
-
-	// process...
 	if (c->kind == KIND_OPERATOR){
-		Operator *o = &operators[c->link_no];
-		if (o->func){
+		Operator *o = c->as_op();
+		if (o->f->address){
 			bool all_const = true;
 			bool is_address = false;
 			bool is_local = false;
@@ -326,7 +295,7 @@ Node *SyntaxTree::PreProcessNodeAddresses(Node *c)
 				else if (c->params[i]->kind != KIND_CONSTANT)
 					all_const = false;
 			if (all_const){
-				op_func *f = (op_func*)o->func;
+				op_func *f = (op_func*)o->f->address;
 				if (is_address){
 					// pre process address
 					Value d1, d2;
@@ -341,30 +310,25 @@ Node *SyntaxTree::PreProcessNodeAddresses(Node *c)
 					Value r;
 					r.init(c->type);
 					f(r, d1, d2);
-					return AddNode(is_local ? KIND_LOCAL_ADDRESS : KIND_ADDRESS, *(int_p*)r.p(), c->type);
+					return new Node(is_local ? KIND_LOCAL_ADDRESS : KIND_ADDRESS, *(int_p*)r.p(), c->type);
 				}
 			}
 		}
 	}else if (c->kind == KIND_REFERENCE){
-		if (c->script){
-			if ((c->params[0]->kind == KIND_VAR_GLOBAL) or (c->params[0]->kind == KIND_VAR_LOCAL) or (c->params[0]->kind == KIND_CONSTANT)){
-				// pre process ref var
-				if (c->params[0]->kind == KIND_VAR_GLOBAL){
-					return AddNode(KIND_ADDRESS, (int_p)c->params[0]->script->g_var[c->params[0]->link_no], c->type, c->params[0]->script);
-				}else if (c->params[0]->kind == KIND_VAR_LOCAL){
-					return AddNode(KIND_LOCAL_ADDRESS, (int_p)cur_func->var[c->params[0]->link_no]._offset, c->type);
-				}else /*if (c->param[0]->kind == KindConstant)*/{
-					return AddNode(KIND_ADDRESS, (int_p)c->params[0]->script->cnst[c->params[0]->link_no], c->type, c->params[0]->script);
-				}
-			}
+		Node *p0 = c->params[0];
+		if (p0->kind == KIND_VAR_GLOBAL){
+			return new Node(KIND_ADDRESS, (int_p)p0->as_global_p(), c->type);
+		}else if (p0->kind == KIND_VAR_LOCAL){
+			return new Node(KIND_LOCAL_ADDRESS, (int_p)p0->as_local()->_offset, c->type);
+		}else if (p0->kind == KIND_CONSTANT){
+			return new Node(KIND_ADDRESS, (int_p)p0->as_const_p(), c->type);
 		}
 	}else if (c->kind == KIND_DEREFERENCE){
-		if (c->params[0]->kind == KIND_ADDRESS){
-			// pre process deref address
-			return AddNode(KIND_MEMORY, c->params[0]->link_no, c->type);
-		}else if (c->params[0]->kind == KIND_LOCAL_ADDRESS){
-			// pre process deref local address
-			return AddNode(KIND_LOCAL_MEMORY, c->params[0]->link_no, c->type);
+		Node *p0 = c->params[0];
+		if (p0->kind == KIND_ADDRESS){
+			return new Node(KIND_MEMORY, p0->link_no, c->type);
+		}else if (p0->kind == KIND_LOCAL_ADDRESS){
+			return new Node(KIND_LOCAL_MEMORY, p0->link_no, c->type);
 		}
 	}
 	return c;
@@ -372,21 +336,13 @@ Node *SyntaxTree::PreProcessNodeAddresses(Node *c)
 
 void SyntaxTree::PreProcessor()
 {
-	for (Function *f: functions){
-		cur_func = f;
-		foreachi(Node *c, f->block->nodes, i)
-			f->block->nodes[i] = PreProcessNode(c);
-	}
+	transform([&](Node *n){ return PreProcessNode(n); });
 	//Show();
 }
 
 void SyntaxTree::PreProcessorAddresses()
 {
-	for (Function *f: functions){
-		cur_func = f;
-		foreachi(Node *c, f->block->nodes, i)
-			f->block->nodes[i] = PreProcessNodeAddresses(c);
-	}
+	transform([&](Node *n){ return PreProcessNodeAddresses(n); });
 	//Show();
 }
 

@@ -96,10 +96,10 @@ string string::substr(int start, int length) const
 }
 
 string string::head(int size) const
-{	return substr(0, size);	}
+{ size = min(size, num); return substr(0, size); }
 
 string string::tail(int size) const
-{	return substr(num - size, size);	}
+{ size = min(size, num); return substr(num - size, size); }
 
 int string::find(const string &s, int start) const
 {
@@ -599,7 +599,7 @@ string b2s(bool b)
 }
 
 // convert a pointer to a string
-string p2s(void *p)
+string p2s(const void *p)
 {
 	char tmp[64];
 	sprintf(tmp, "%p", p);
@@ -1186,7 +1186,7 @@ string str_utf8_to_m(const string &str)
 	return r;
 }
 
-bool sa_contains(Array<string> &a, const string &s)
+bool sa_contains(const Array<string> &a, const string &s)
 {
 	for (string &aa: a)
 		if (aa == s)

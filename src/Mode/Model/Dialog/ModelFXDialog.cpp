@@ -93,9 +93,9 @@ void ModelFXDialog::OnFindScriptFile()
 
 		try{
 			Kaba::Script *s = Kaba::Load(filename, true); // just analyse
-			if (!s->MatchFunction("OnEffectCreate", "void", 1, "effect"))
+			if (!s->match_function("OnEffectCreate", "void", {"effect"}))
 				ed->error_box(_("Script-Datei enth&alt keine Funktion \"void OnEffectCreate( effect )\""));
-			else if (!s->MatchFunction("OnEffectIterate", "void", 1, "effect"))
+			else if (!s->match_function("OnEffectIterate", "void", {"effect"}))
 				ed->error_box(_("Script-Datei enth&alt keine Funktion \"void OnEffectIterate( effect )\""));
 		}catch(Kaba::Exception &e){
 			ed->error_box(_("Fehler in Script-Datei: ") + e.message());

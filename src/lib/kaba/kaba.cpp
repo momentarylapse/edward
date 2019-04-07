@@ -7,7 +7,6 @@
 | last updated: 2010.07.07 (c) by MichiSoft TM                                 |
 \*----------------------------------------------------------------------------*/
 #include "../file/file.h"
-#include <stdarg.h>
 #include "kaba.h"
 
 #include "../config.h"
@@ -24,7 +23,7 @@
 
 namespace Kaba{
 
-string Version = "0.16.7.0";
+string Version = "0.17.0.0";
 
 //#define ScriptDebug
 
@@ -44,8 +43,6 @@ Exception::Exception(const Asm::Exception &e, Script *s) :
 	text = "assembler: " + message() + ", " + s->filename;
 }
 
-
-static int shift_right=0;
 
 Array<Script*> _public_scripts_;
 Array<Script*> _dead_scripts_;
@@ -67,7 +64,7 @@ Script *Load(const string &filename, bool just_analyse)
 	// load
 	s = new Script();
 	try{
-		s->Load(filename, just_analyse);
+		s->load(filename, just_analyse);
 	}catch(const Exception &e){
 		delete(s);
 		throw e;
@@ -83,10 +80,10 @@ Script *CreateForSource(const string &buffer, bool just_analyse)
 	Script *s = new Script;
 	s->just_analyse = just_analyse;
 	try{
-		s->syntax->ParseBuffer(buffer, just_analyse);
+		s->syntax->parse_buffer(buffer, just_analyse);
 
 		if (!just_analyse)
-			s->Compiler();
+			s->compile();
 	}catch(const Exception &e){
 		delete(s);
 		throw e;
@@ -141,22 +138,24 @@ void DeleteAllScripts(bool even_immortal, bool force)
 	*/
 }
 
-
-Class *GetDynamicType(const void *p)
+VirtualTable* get_vtable(const VirtualBase *p)
 {
-	VirtualTable *pp = *(VirtualTable**)p;
-	for (Script *s: _public_scripts_){
-		for (Class *t: s->syntax->classes){
-			if (t->vtable.data == pp)
+	return *(VirtualTable**)p;
+}
+
+const Class *GetDynamicType(const VirtualBase *p)
+{
+	VirtualTable *pp = get_vtable(p);
+	for (Script *s: _public_scripts_)
+		for (auto *t: s->syntax->classes)
+			if (t->_vtable_location_target_ == pp)
 				return t;
-		}
-	}
 	return nullptr;
 }
 
 Array<Script*> loading_script_stack;
 
-void Script::Load(const string &_filename, bool _just_analyse)
+void Script::load(const string &_filename, bool _just_analyse)
 {
 	loading_script_stack.add(this);
 	just_analyse = _just_analyse;
@@ -166,21 +165,22 @@ void Script::Load(const string &_filename, bool _just_analyse)
 
 	// read file
 		string buffer = FileReadText(config.directory + filename);
-		syntax->ParseBuffer(buffer, just_analyse);
+		syntax->parse_buffer(buffer, just_analyse);
 
 
 		if (!just_analyse)
-			Compiler();
+			compile();
 		/*if (pre_script->FlagShow)
 			pre_script->Show();*/
 		if ((!just_analyse) and (config.verbose)){
 			msg_write(format("Opcode: %d bytes", opcode_size));
-			msg_write(Asm::Disassemble(opcode, opcode_size));
+			if (config.allow_output_stage("dasm"))
+				msg_write(Asm::Disassemble(opcode, opcode_size));
 		}
 
 	}catch(FileError &e){
 		loading_script_stack.pop();
-		DoError("script file not loadable: " + filename);
+		do_error("script file not loadable: " + filename);
 	}catch(Exception &e){
 		loading_script_stack.pop();
 		throw e;
@@ -188,30 +188,27 @@ void Script::Load(const string &_filename, bool _just_analyse)
 	loading_script_stack.pop();
 }
 
-void Script::DoError(const string &str, int override_line)
+void Script::do_error(const string &str, int override_line)
 {
-	syntax->DoError(str, 0, override_line);
+	syntax->do_error(str, 0, override_line);
 }
 
-void Script::DoErrorInternal(const string &str)
+void Script::do_error_internal(const string &str)
 {
-	DoError("internal compiler error: " + str, 0);
+	do_error("internal compiler error: " + str, 0);
 }
 
-void Script::DoErrorLink(const string &str)
+void Script::do_error_link(const string &str)
 {
-	DoError(str, 0);
+	do_error(str, 0);
 }
 
-void Script::SetVariable(const string &name, void *data)
+void Script::set_variable(const string &name, void *data)
 {
 	//msg_write(name);
-	for (int i=0; i<syntax->root_of_all_evil.var.num; i++)
-		if (syntax->root_of_all_evil.var[i].name == name){
-			/*msg_write("var");
-			msg_write(pre_script->RootOfAllEvil.Var[i].Type->Size);
-			msg_write((int)g_var[i]);*/
-			memcpy(g_var[i], data, syntax->root_of_all_evil.var[i].type->size);
+	for (auto *v: syntax->root_of_all_evil.var)
+		if (v->name == name){
+			memcpy(v->memory, data, v->type->size);
 			return;
 		}
 	msg_error("CScript.SetVariable: variable " + name + " not found");
@@ -224,37 +221,21 @@ Script::Script()
 	reference_counter = 0;
 
 	cur_func = nullptr;
-	__first_execution = nullptr;
-	__waiting_mode = WAITING_MODE_FIRST;
-	__time_to_wait = 0;
 	show_compiler_stats = !config.compile_silently;
 
-	__thread_opcode = nullptr;
-	__thread_opcode_size = 0;
-
-	__continue_execution = nullptr;
 	just_analyse = false;
 
 	opcode = nullptr;
 	opcode_size = 0;
+
 	memory = nullptr;
 	memory_size = 0;
-	memory_used = 0;
-	__stack = nullptr;
 
 	syntax = new SyntaxTree(this);
 }
 
 Script::~Script()
 {
-	if (memory and (!just_analyse)){
-		//delete[](Memory);
-		#if defined(OS_WINDOWS) || defined(OS_MINGW)
-			VirtualFree(memory, 0, memory_size);
-		#else
-			int r = munmap(memory, memory_size);
-		#endif
-	}
 	if (opcode){
 		#if defined(OS_WINDOWS) || defined(OS_MINGW)
 			VirtualFree(opcode, 0, MEM_RELEASE);
@@ -262,8 +243,13 @@ Script::~Script()
 			int r = munmap(opcode, MAX_OPCODE);
 		#endif
 	}
-	if (__stack)
-		delete[](__stack);
+	if (memory){
+		#if defined(OS_WINDOWS) || defined(OS_MINGW)
+			VirtualFree(memory, 0, MEM_RELEASE);
+		#else
+			int r = munmap(memory, memory_size);
+		#endif
+	}
 	//msg_write(string2("-----------            Memory:         %p",Memory));
 	delete(syntax);
 }
@@ -293,18 +279,18 @@ void ExecuteSingleScriptCommand(const string &cmd)
 // analyse syntax
 
 	// create a main() function
-	Function *func = ps->AddFunction("--command-func--", TypeVoid);
+	Function *func = ps->add_function("--command-func--", TypeVoid);
 	func->_var_size = 0; // set to -1...
 
 	// parse
 	ps->Exp.reset_parser();
-	ps->ParseCompleteCommand(func->block);
+	ps->parse_complete_command(func->block);
 	//pre_script->GetCompleteCommand((pre_script->Exp->ExpNr,0,0,&func);
 
 	ps->ConvertCallByReference();
 
 // compile
-	s->Compiler();
+	s->compile();
 
 	/*if (true){
 		printf("%s\n\n", Opcode2Asm(s->ThreadOpcode,s->ThreadOpcodeSize));
@@ -313,7 +299,7 @@ void ExecuteSingleScriptCommand(const string &cmd)
 	}*/
 // execute
 	typedef void void_func();
-	void_func *f = (void_func*)s->MatchFunction("--command-func--", "void", 0);
+	void_func *f = (void_func*)s->match_function("--command-func--", "void", {});
 	if (f)
 		f();
 
@@ -324,68 +310,51 @@ void ExecuteSingleScriptCommand(const string &cmd)
 	delete(s);
 }
 
-void *Script::MatchFunction(const string &name, const string &return_type, int num_params, ...)
+void *Script::match_function(const string &name, const string &return_type, const Array<string> &param_types)
 {
-	// process argument list
-	va_list marker;
-	va_start(marker, num_params);
-	Array<string> param_type;
-	for (int p=0;p<num_params;p++)
-		param_type.add(string(va_arg(marker, char*)));
-	va_end(marker);
-
 	// match
-	foreachi(Function *f, syntax->functions, i)
-		if (((f->name == name) or (name == "*")) and (f->literal_return_type->name == return_type) and (num_params == f->num_params)){
+	for (Function *f: syntax->functions)
+		if (f->long_name.match(name) and (f->literal_return_type->name == return_type) and (param_types.num == f->num_params)){
 
 			bool params_ok = true;
-			for (int j=0;j<num_params;j++)
-				//if ((*f)->Var[j].Type->name != param_type[j])
-				if (f->literal_param_type[j]->name != param_type[j])
+			for (int j=0;j<param_types.num;j++)
+				if (f->literal_param_type[j]->name != param_types[j])
 					params_ok = false;
 			if (params_ok){
 				if (just_analyse)
 					return (void*)0xdeadbeaf;
 				else
-					return (void*)func[i];
+					return f->address;
 			}
 		}
 
 	return nullptr;
 }
 
-void *Script::MatchClassFunction(const string &_class, bool allow_derived, const string &name, const string &return_type, int num_params, ...)
+void *Script::match_class_function(const string &_class, bool allow_derived, const string &name, const string &return_type, const Array<string> &param_types)
 {
-	// process argument list
-	va_list marker;
-	va_start(marker, num_params);
-	Array<string> param_type;
-	for (int p=0;p<num_params;p++)
-		param_type.add(string(va_arg(marker, char*)));
-	va_end(marker);
-
-	Class *root_type = syntax->FindType(_class);
+	const Class *root_type = syntax->find_type_by_name(_class);
 	if (!root_type)
 		return nullptr;
 
 	// match
-	foreachi(Function *f, syntax->functions, i){
+	for (Function *f: syntax->functions){
 		if (!f->_class)
 			continue;
 		if (!f->_class->is_derived_from(root_type))
 			continue;
-		if ((f->name.match("*." + name)) and (f->literal_return_type->name == return_type) and (num_params == f->num_params)){
+		if ((f->name == name) and (f->literal_return_type->name == return_type) and (param_types.num == f->num_params)){
 
 			bool params_ok = true;
-			for (int j=0;j<num_params;j++)
+			for (int j=0;j<param_types.num;j++)
 				//if ((*f)->Var[j].Type->name != param_type[j])
-				if (f->literal_param_type[j]->name != param_type[j])
+				if (f->literal_param_type[j]->name != param_types[j])
 					params_ok = false;
 			if (params_ok){
 				if (just_analyse)
 					return (void*)0xdeadbeaf;
 				else
-					return (void*)func[i];
+					return f->address;
 			}
 		}
 	}
@@ -393,57 +362,18 @@ void *Script::MatchClassFunction(const string &_class, bool allow_derived, const
 	return nullptr;
 }
 
-void print_var(void *p, const string &name, Class *t)
+void print_var(void *p, const string &name, const Class *t)
 {
 	msg_write(t->name + " " + name + " = " + t->var2str(p));
 }
 
-void Script::ShowVars(bool include_consts)
+void Script::show_vars(bool include_consts)
 {
-	foreachi(Variable &v, syntax->root_of_all_evil.var, i)
-		print_var((void*)g_var[i], v.name, v.type);
+	for (auto *v: syntax->root_of_all_evil.var)
+		print_var(v->memory, v->name, v->type);
 	/*if (include_consts)
 		foreachi(LocalVariable &c, pre_script->Constant, i)
 			print_var((void*)g_var[i], c.name, c.type);*/
-}
-
-// REALLY DEPRECATED!
-void Script::__Execute()
-{
-	return;
-	if (__waiting_mode == WAITING_MODE_NONE)
-		return;
-	shift_right=0;
-
-	// handle wait-commands
-	if (__waiting_mode == WAITING_MODE_FIRST){
-		GlobalWaitingMode = WAITING_MODE_NONE;
-
-		//msg_right();
-		__first_execution();
-		//msg_left();
-	}else{
-#ifdef _X_ALLOW_X_
-		if (__waiting_mode == WAITING_MODE_RT)
-			__time_to_wait -= Engine.ElapsedRT;
-		else
-			__time_to_wait -= Engine.Elapsed;
-		if (__time_to_wait>0){
-			return;
-		}
-#endif
-		GlobalWaitingMode = WAITING_MODE_NONE;
-		//msg_write(ThisObject);
-
-		//msg_write(">---");
-		//msg_right();
-		__continue_execution();
-		//msg_write("---<");
-		//msg_write("ok");
-		//msg_left();
-	}
-	__waiting_mode = GlobalWaitingMode;
-	__time_to_wait = GlobalTimeToWait;
 }
 
 };

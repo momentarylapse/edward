@@ -53,9 +53,8 @@ void ModelMaterial::reset()
 	alpha_zbuffer = true;
 
 	// textures
-	texture_files.clear();
-	texture_files.add("");
-	textures = NULL;
+	texture_files = {""};
+	textures = {NULL};
 
 	if (vb)
 		delete(vb);
