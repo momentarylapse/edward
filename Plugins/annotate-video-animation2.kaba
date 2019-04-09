@@ -1,0 +1,262 @@
+class BonePos
+	int x, y
+	void __init__()
+		x = -1
+		y = -1
+	void __init__(int _x, int _y)
+		x = _x
+		y = _y
+
+class _Bone
+	string name
+	int parent
+
+class _Camera
+	string image_dir
+	string[] image_files
+	float scale
+	BonePos[][] pos
+	void __init__(string dir)
+		image_dir = dir
+		scale = 0.75
+	void load_1(int num_frames)
+		DirEntry[] list = DirSearch(image_dir, "*.jpg", false)
+		for e in list
+			image_files.add(image_dir + e.name)
+		image_files.resize(num_frames)
+	void load_2(File* f, int num_frames, _Bone[] bones)
+		pos.resize(num_frames)
+		for i in 0:num_frames
+			pos[i].resize(len(bones))
+		try
+			for i in 0:num_frames
+				for j in 0:len(bones)
+					int k = j
+					f >> pos[i][k].x
+					f >> pos[i][k].y
+		except
+			pass
+
+class Annotator extends Dialog
+	string filename
+	string bone_filename
+	_Bone[] bones
+	_Camera[] cams
+	_Camera* cam
+	int frame_no
+	int bone_no
+	int cam_no
+	Image *im
+	void __init__(string _filename)
+		super.__init__("Annotator", 1280, 900, nil, false)
+		filename = _filename
+		im = nil
+		
+		add_drawing_area("!grabfocus", 0, 0, "area")
+		
+		load()
+		cam_no = 0
+		cam = &cams[0]
+		set_frame(0)
+		set_bone(0)
+	
+	void load_bones()
+		let f = FileOpenText(bone_filename)
+		string t
+		f >> t
+		while true
+			_Bone b
+			f >> b.name
+			if b.name == ""
+				break
+			f >> b.parent
+			bones.add(b)
+		delete f
+		
+	void load()
+		let f = FileOpenText(filename)
+		int num_frames, num_bones
+		string t
+		f >> t
+		f >> num_bones
+		f >> bone_filename
+		load_bones()
+		if len(bones) < num_bones
+			bones.resize(num_bones)
+		
+		f >> t
+		f >> t
+		cams.add(_Camera(t))
+		f >> t
+		cams.add(_Camera(t))
+		
+		f >> t
+		f >> num_frames
+		for c in cams
+			c.load_1(num_frames)
+		
+		f >> t
+		for c in cams
+			c.load_2(f, num_frames, bones)
+	
+		delete f
+	void save()
+		let f = FileCreateText(filename)
+		f << "// bones"
+		f << len(bones)
+		f << bone_filename
+		f << "// images"
+		for c in cams
+			f << c.image_dir
+		f << "// frames"
+		f << len(cams[0].pos)
+		f << "// annotation"
+		for c in cams
+			for frame in c.pos
+				for b in frame
+					f << b.x
+					f << b.y
+		delete f
+	
+	void set_frame(int index)
+		frame_no = loopi(index, 0, len(cams[0].image_files)-1)
+		if im
+			delete im
+		let orig = LoadImage(cam.image_files[frame_no])
+		im = orig.scale(orig.width * cam.scale, orig.height * cam.scale)
+		delete orig
+		
+		
+		redraw("area")
+	
+	void set_bone(int index)
+		bone_no = loopi(index, 0, len(bones)-1)
+		redraw("area")
+	
+	override void on_draw(Painter *p)
+		int w = p.width
+		int h = p.height
+		if im
+			p.draw_image(0, 0, *im)
+		p.set_color(White)
+		p.draw_str(10, 20, "frame " + (frame_no+1) + "/" + len(cam.image_files) + "  " + bones[bone_no].name)// + "  bone " + (bone_no + 1) + "/" + len(bones) + " " + bones[bone_no])
+		
+		for b,i in cam.pos[frame_no]
+			p.set_color(Blue)
+			if i == bone_no
+				p.set_color(Red)
+			p.draw_circle(b.x*cam.scale, b.y*cam.scale, 2)
+			if bones[i].parent >= 0
+				p.draw_line(b.x*cam.scale, b.y*cam.scale, cam.pos[frame_no][bones[i].parent].x*cam.scale, cam.pos[frame_no][bones[i].parent].y*cam.scale)
+		Image gim
+		guess_im(gim)
+		p.draw_image(mx+30, my+30, gim)
+	
+	override void on_key_down()
+		int k = HuiGetEvent().key_code
+		if k == KEY_RIGHT
+			set_frame(frame_no + 1)
+		if k == KEY_LEFT
+			set_frame(frame_no - 1)
+		if k == KEY_UP
+			set_bone(bone_no + 1)
+		if k == KEY_DOWN
+			set_bone(bone_no - 1)
+		if k == KEY_CONTROL + KEY_S
+			save()
+		if k == KEY_PLUS
+			zoom(0.9)
+		if k == KEY_MINUS
+			zoom(1/0.9)
+		if k == KEY_C
+			set_cam(cam_no + 1)
+		if k == KEY_G
+			if !guess(mx, my, 20)
+				guess(mx, my, 40)
+		if k == KEY_A
+			if frame_no > 0
+				if !guess(cam.pos[frame_no-1][bone_no].x*cam.scale, cam.pos[frame_no-1][bone_no].y*cam.scale, 20)
+					guess(cam.pos[frame_no-1][bone_no].x*cam.scale, cam.pos[frame_no-1][bone_no].y*cam.scale, 40)
+	
+	void set_cam(int index)
+		cam_no = loopi(index, 0, len(cams)-1)
+		cam = &cams[cam_no]
+		set_frame(frame_no)
+		redraw("area")
+	
+	void zoom(float factor)
+		cam.scale *= factor
+		set_frame(frame_no)
+		redraw("area")
+		
+	
+	override void on_left_button_down()
+		let e = HuiGetEvent()
+		if !guess(e.mouse_x, e.mouse_y, 10)
+			cam.pos[frame_no][bone_no] = BonePos(e.mouse_x/cam.scale, e.mouse_y/cam.scale)
+		redraw("area")
+		
+	
+	float mx, my
+	override void on_mouse_move()
+		let e = HuiGetEvent()
+		mx = e.mouse_x
+		my = e.mouse_y
+		redraw("area")
+	
+	bool guess(float xorig, float yorig, float r)
+		float weight = 0
+		float xx = 0
+		float yy = 0
+		int x0 = xorig - r
+		int x1 = xorig + r
+		int y0 = yorig - r
+		int y1 = yorig + r
+		for x in x0:x1
+			for y in y0:y1
+				color c = im.get_pixel(x, y)
+				if dot_color(c)
+					weight += 1
+					xx += x
+					yy += y
+		if weight > 5
+			xx /= weight
+			yy /= weight
+			cam.pos[frame_no][bone_no] = BonePos(xx/cam.scale, yy/cam.scale)
+			redraw("area")
+			return true
+		return false
+				
+	
+	bool dot_color(color c)
+		if c.r > 0.2 and c.g < c.r/2 and c.b < c.r/2
+			return true
+		if c.g > 0.2 and c.r < c.g/2 and c.b < c.g/2
+			return true
+		return false
+	
+	void guess_im(Image gim)
+		int r = 15
+		int x0 = mx - r
+		int x1 = mx + r
+		int y0 = my - r
+		int y1 = my + r
+		gim.create(x1-x0, y1-y0, Black)
+		for x in x0:x1
+			for y in y0:y1
+				color c = im.get_pixel(x, y)
+				if dot_color(c)
+					gim.set_pixel(x-x0, y-y0, White)//c)
+		
+		
+		
+
+
+void main(string[] arg)
+	if arg.num > 0
+		let d = new Annotator(arg[0])
+		d.run()
+	else
+		if HuiFileDialogOpen(nil, "", "", "*", "*")
+			let d = new Annotator(HuiFilename)
+			d.run()

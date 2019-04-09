@@ -47,7 +47,7 @@ void guess_scale(int[] r, int num_frames, int num_bones)
 			float l = sqrt(dx*dx + dy*dy)
 			ml = max(ml, l)
 		ss += ml
-	scale = ss / weight
+	scale = ss / weight * 0.8
 	print("scale: " + scale)
 
 void _import(string filename)
