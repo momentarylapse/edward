@@ -2,13 +2,46 @@ use hui
 use "api.kaba"
 use "helper.kaba"
 
-float scale
 int anim_index
 
-vector imp(int[] r, int i)
-	return vector(-r[i*2]/scale, -r[i*2+1]/scale, 0)
 
-void import_frame(int[] r, int frame_no)
+quaternion xang(vector ang)
+	float l = ang.length()
+	vector ax = e_z
+	if l > 0
+		ax = ang / l
+	return QuaternionRotationA(ax, l)
+
+float pain(vector[] va, vector[] vb, vector ang)
+	let q = xang(ang)
+	float w = 0
+	for j in 0:len(va)
+		w += (va[j] - q*vb[j]).length_sqr()
+	return w
+
+quaternion import_torso(vector[] p)
+	int[] index
+	vector[] va, vb
+	for b,i in data_model.bone
+		if b.parent == 0
+			index.add(i)
+			let a = p[i] - p[0]
+			va.add(a / a.length())
+			let bb = data_model.bone[i].pos - data_model.bone[0].pos
+			vb.add(bb / bb.length())
+
+	vector ang = v_0
+	float eps = 0.001
+	for i in 0:3000
+		float w0 = pain(va, vb, ang)
+		float wx = pain(va, vb, ang + eps * e_x)
+		float wy = pain(va, vb, ang + eps * e_y)
+		float wz = pain(va, vb, ang + eps * e_z)
+		vector da = vector(wx - w0, wy - w0, wz - w0)
+		ang -= da// * 0.000001
+	return xang(ang)
+
+void import_frame(vector[] p, int frame_no)
 	vector[] pos
 	quaternion[] ang
 	for b,i in data_model.bone
@@ -16,20 +49,28 @@ void import_frame(int[] r, int frame_no)
 		ang.add(q_id)
 	for b,i in data_model.bone
 		if b.parent < 0
-			pos[i] = imp(r, i) - data_model.bone[i].pos
+			pos[i] = p[i] - data_model.bone[i].pos
 		else
-			int p = b.parent
-			vector bdpos = data_model.bone[i].pos - data_model.bone[p].pos
-			vector dp = imp(r, i) - imp(r, p)
+			int ip = b.parent
+			
+			// bone vector
+			vector bdpos = data_model.bone[i].pos - data_model.bone[ip].pos
+			//bdpos /= bdpos.length()
+			vector dp = p[i] - p[ip]
+			/*dp /= dp.length()
+			vector ax = VecCrossProduct(bdpos, dp)
+			ax /= ax.length()
 			float ff = dp.length() / bdpos.length()
 			if ff < 1
-				dp.z = sqrt(bdpos.length_sqr() - dp.length_sqr())
+				dp.z = sqrt(bdpos.length_sqr() - dp.length_sqr())*/
 			let q = rot_onto(bdpos, dp)
-			ang[p] = q
+			ang[ip] = q
+	ang[0] = import_torso(p)
+			
 	for b,i in data_model.bone
 			data_model.animation_set_bone(anim_index, frame_no, i, pos[i], ang[i].angles())
 
-void guess_scale(int[] r, int num_frames, int num_bones)
+/*void guess_scale(int[] r, int num_frames, int num_bones)
 	float weight = 0
 	float ss = 0
 	for b,i in data_model.bone
@@ -49,44 +90,47 @@ void guess_scale(int[] r, int num_frames, int num_bones)
 			ml = max(ml, l)
 		ss += ml
 	scale = ss / weight * 0.8
-	print("scale: " + scale)
+	print("scale: " + scale)*/
 
 void _import(string filename)
 	let f = FileOpenText(filename)
 	string t
 	int num_bones, num_frames
-	// bones
-	f >> t
-	f >> num_bones
-	f >> t
-	// images
-	f >> t
-	f >> t
-	// frames
-	f >> t
 	f >> num_frames
-	// annotation
-	f >> t
-	int[] r
-	for i in 0:num_bones*2*num_frames
-		int k
-		f >> k
-		r.add(k)
-	anim_index = 43
+	f >> num_bones
+	
+	anim_index = 1
 	data_model.BeginActionGroup("import-animation")
 	data_model.add_animation(anim_index, MOVE_TYPE_SKELETAL)
 	data_model.animation_set_data(anim_index, "new", 5, 0)
-	guess_scale(r, num_frames, num_bones)
-	for i in 0:num_frames
-		print("------------frame")
-		if i > 0
-			data_model.animation_add_frame(anim_index, i, data_model.move[anim_index].frame[0])
-		import_frame(r[num_bones*2*i:num_bones*2*(i+1)], i)
+	
+	matrix mat = MatrixRotation(vector(0.30,0,-0.15))
+	
+	let dlg = new Dialog("", 300, 30, edward, false)
+	dlg.add_progress_bar("", 0, 0, "progress")
+	dlg.show()
+	
+	for fi in 0:num_frames
+		if fi > 0
+			data_model.animation_add_frame(anim_index, fi, data_model.move[anim_index].frame[0])
+		vector[] p
+		for bi in 0:num_bones
+			vector pp
+			f >> pp
+			pp = mat * vector(pp.x*1.7,-pp.y*1.8,-pp.z)
+			p.add(pp)
+		import_frame(p, fi)
+		//if fi > 10
+		//	break
+		dlg.set_float("progress", i2f(fi) / i2f(num_frames))
+		HuiDoSingleMainLoop()
+		//HuiSleep(0.001)
 	data_model.EndActionGroup()
 	delete f
+	delete dlg
 
 void main()
-	_import("/home/michi/Projekte/Edward/a1")
+	_import("/home/michi/Projekte/mocap/digest-smooth")
 	return
 	if !HuiFileDialogOpen(edward, "", "", "*", "*")
 		return

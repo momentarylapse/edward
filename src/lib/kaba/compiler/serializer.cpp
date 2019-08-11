@@ -1933,11 +1933,6 @@ Asm::InstructionParam Serializer::get_param(int inst, SerialNodeParam &p)
 		}else if ((p.type->size <= 4) and (imm_allowed)){
 			return Asm::param_imm(*(int*)(p.p + p.shift), p.type->size);
 		}else{
-			msg_write(".");
-			msg_write(p2s((void*)p.p));
-			msg_write(p2s(p.type));
-			msg_write(p.type->name);
-			msg_write(p.shift);
 			return Asm::param_deref_imm(p.p + p.shift, p.type->size);
 		}
 	}else if (p.kind == KIND_IMMEDIATE){
