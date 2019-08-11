@@ -181,7 +181,7 @@ void drawBone(const vector &r, const vector &d, const color &c, MultiView::Windo
 void drawCoordBasis(MultiView::Window *win, const ModelBone &b)
 {
 	vector o = b.pos;
-	vector e[3] = {e_x, e_y, e_z};
+	vector e[3] = {vector::EX, vector::EY, vector::EZ};
 	if (ed->cur_mode == mode_model_animation)
 		for (int i=0;i<3;i++)
 			e[i] = b._matrix.transform_normal(e[i]);
@@ -208,7 +208,7 @@ void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &b
 		b.model->_matrix = b._matrix;
 		b.model->Draw(0, false, false);
 	}
-	nix::SetWorldMatrix(m_id);
+	nix::SetWorldMatrix(matrix::ID);
 
 	nix::SetZ(false, false);
 	nix::EnableLighting(false);

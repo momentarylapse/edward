@@ -52,7 +52,7 @@ ModeModelMeshDeformCylinder::~ModeModelMeshDeformCylinder()
 
 vector get_ev(matrix3 &m)
 {
-	vector v = e_z;
+	vector v = vector::EZ;
 	float vmax = v * (m * v);
 	Random r;
 	for (int i=0; i<10000; i++){

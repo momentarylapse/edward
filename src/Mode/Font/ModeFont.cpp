@@ -227,10 +227,10 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 	rect d = rect(0, (float)data->TextureWidth, 0, (float)data->TextureHeight);
 	nix::SetTexture(NULL);
 	nix::SetColor(White);
-	Draw2D(r_id, &d);
+	Draw2D(rect::ID, &d);
 	nix::SetTexture(data->Texture);
 	nix::SetColor(Black);
-	Draw2D(r_id, &d);
+	Draw2D(rect::ID, &d);
 	nix::SetTexture(NULL);
 
 	// grid (horizontal lines)
@@ -255,7 +255,7 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 		if (i == data->Marked){
 			d = rect(float(x), float(x2), float(y), float(y + data->global.GlyphHeight));
 			nix::SetColor(color(0.2f,1,0,0));
-			Draw2D(r_id, &d);
+			Draw2D(rect::ID, &d);
 		}
 		nix::SetColor(color(0.3f,0.8f,0.0f,0.0f));
 		DrawLineV(x + g.X1, y + data->global.GlyphY1, y + data->global.GlyphY2);

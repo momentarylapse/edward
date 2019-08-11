@@ -21,7 +21,7 @@
 
 ActionMultiView::ActionMultiView()
 {
-	mat = m_id;
+	mat = matrix::ID;
 }
 
 ActionMultiView::~ActionMultiView()

@@ -82,7 +82,7 @@ void ModeWorldEditTerrain::on_start()
 	dialog->set_int("brush_type", 0);
 	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
-	dialog->event("hui:close", hui::FuncIgnore);
+	dialog->event("hui:close", [=]{ });
 
 	ed->activate("");
 }
@@ -156,8 +156,8 @@ void ModeWorldEditTerrain::on_draw_win(MultiView::Window* win)
 
 	nix::SetColor(multi_view->ColorCreationLine);
 	MultiView::set_wide_lines(2);
-	vector e1 = e_x;
-	vector e2 = e_z;
+	vector e1 = vector::EX;
+	vector e2 = vector::EZ;
 	e1 *= radius;
 	e2 *= radius;
 	for (int i=0;i<32;i++){

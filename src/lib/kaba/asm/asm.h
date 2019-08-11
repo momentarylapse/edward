@@ -226,6 +226,8 @@ enum{
 	INST_MINSD,
 	INST_MAXSS,
 	INST_MAXSD,
+	INST_CVTSS2SD,
+	INST_CVTSD2SS,
 	INST_CVTTSS2SI,
 	INST_CVTTSD2SI,
 	INST_CVTSI2SS,
@@ -492,7 +494,7 @@ class Exception : public ::Exception
 {
 public:
 	Exception(const string &message, const string &expression, int line, int column);
-	virtual ~Exception();
+	~Exception() override;
 	void print() const;
 	int line, column;
 };

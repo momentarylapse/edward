@@ -308,6 +308,8 @@ void SerializerX86::SerializeStatement(Node *com, const Array<SerialNodeParam> &
 							add_cmd(Asm::INST_MOVSS, p_xmm0, t);
 						else
 							add_cmd(Asm::INST_FLD, t);
+					}else if (cur_func->return_type == TypeFloat64){
+						add_cmd(Asm::INST_MOVSD, p_xmm0, t);
 					}else if (cur_func->return_type->size == 1){
 						int v = add_virtual_reg(Asm::REG_AL);
 						add_cmd(Asm::INST_MOV, param_vreg(cur_func->return_type, v), t);
@@ -327,7 +329,7 @@ void SerializerX86::SerializeStatement(Node *com, const Array<SerialNodeParam> &
 			break;
 		case STATEMENT_NEW:{
 			// malloc()
-			Array<Node*> links = syntax_tree->get_existence("@malloc", nullptr);
+			Array<Node*> links = syntax_tree->get_existence("@malloc", nullptr, syntax_tree->base_class, false);
 			if (links.num == 0)
 				do_error("@malloc not found????");
 			AddFunctionCall(links[0]->as_func(), p_none, {param_imm(TypeInt, ret.type->parent->size)}, ret);
@@ -349,15 +351,15 @@ void SerializerX86::SerializeStatement(Node *com, const Array<SerialNodeParam> &
 			add_cmd_destructor(param[0], false);
 
 			// free()
-			Array<Node*> links = syntax_tree->get_existence("@free", nullptr);
+			Array<Node*> links = syntax_tree->get_existence("@free", nullptr, syntax_tree->base_class, false);
 			if (links.num == 0)
 				do_error("@free not found????");
 			AddFunctionCall(links[0]->as_func(), p_none, {param[0]}, p_none);
 			clear_nodes(links);
 			break;}
-		case STATEMENT_RAISE:
-			//AddFunctionCall();
-			break;
+		/*case STATEMENT_RAISE:
+			AddFunctionCall();
+			break;*/
 		case STATEMENT_TRY:{
 			int marker_finish = list->create_label("_TRY_AFTER_" + i2s(num_markers ++));
 			serialize_block(com->params[0]->as_block());
@@ -389,6 +391,14 @@ void SerializerX86::SerializeInlineFunction(Node *com, const Array<SerialNodePar
 			add_cmd(Asm::INST_CVTTSS2SI, param_vreg(TypeInt, veax), p_xmm0);
 			add_cmd(Asm::INST_MOV, ret, param_vreg(TypeInt, veax));
 			}break;
+		case INLINE_FLOAT_TO_FLOAT64:
+			add_cmd(Asm::INST_CVTSS2SD, p_xmm0, param[0]);
+			add_cmd(Asm::INST_MOVSD, ret, p_xmm0);
+			break;
+		case INLINE_FLOAT64_TO_FLOAT:
+			add_cmd(Asm::INST_CVTSD2SS, p_xmm0, param[0]);
+			add_cmd(Asm::INST_MOVSS, ret, p_xmm0);
+			break;
 		case INLINE_INT_TO_CHAR:{
 			int veax = add_virtual_reg(Asm::REG_EAX);
 			add_cmd(Asm::INST_MOV, param_vreg(TypeInt, veax), param[0]);
@@ -630,6 +640,17 @@ void SerializerX86::SerializeInlineFunction(Node *com, const Array<SerialNodePar
 		case INLINE_INT64_DECREASE:
 			add_cmd(Asm::INST_SUB, param[0], param_imm(TypeInt64, 0x1));
 			break;
+		case INLINE_INT64_TO_INT:{
+			int vrax = add_virtual_reg(Asm::REG_RAX);
+			add_cmd(Asm::INST_MOV, param_vreg(TypeInt64, vrax), param[0]);
+			add_cmd(Asm::INST_MOV, ret, param_vreg(TypeInt, vrax, Asm::REG_EAX));
+			}break;
+		case INLINE_INT_TO_INT64:{
+			int vrax = add_virtual_reg(Asm::REG_RAX);
+			add_cmd(Asm::INST_XOR, param_vreg(TypeInt64, vrax), param_vreg(TypeInt64, vrax));
+			add_cmd(Asm::INST_MOV, param_vreg(TypeInt, vrax, Asm::REG_EAX), param[0]);
+			add_cmd(Asm::INST_MOV, ret, param_vreg(TypeInt64, vrax));
+			}break;
 // float
 		case INLINE_FLOAT_ADD_ASSIGN:
 		case INLINE_FLOAT_SUBTRACT_ASSIGN:

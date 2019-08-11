@@ -372,7 +372,7 @@ bool Geometry::isInside(const vector &p) const
 		if (t.triangulation_dirty)
 			t.updateTriangulation(vertex);
 		for (int k=t.side.num-2;k>=0;k--)
-			if (LineIntersectsTriangle(v[t.side[k].triangulation[0]], v[t.side[k].triangulation[1]], v[t.side[k].triangulation[2]], p, p + e_x, col, false))
+			if (LineIntersectsTriangle(v[t.side[k].triangulation[0]], v[t.side[k].triangulation[1]], v[t.side[k].triangulation[2]], p, p + vector::EX, col, false))
 				if (col.x > p.x)
 					n ++;
 	}

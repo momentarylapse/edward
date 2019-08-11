@@ -25,7 +25,7 @@ ModeModelMeshCreateTorus::ModeModelMeshCreateTorus(ModeBase *_parent) :
 	rad_chosen = false;
 	radius1 = 0;
 	radius2 = 0;
-	axis = e_z;
+	axis = vector::EZ;
 	geo = NULL;
 }
 

@@ -8,6 +8,7 @@
 \*----------------------------------------------------------------------------*/
 #include "../file/file.h"
 #include "kaba.h"
+#include <cassert>
 
 #include "../config.h"
 #ifdef _X_ALLOW_X_
@@ -23,7 +24,7 @@
 
 namespace Kaba{
 
-string Version = "0.17.0.0";
+string Version = "0.17.2.11";
 
 //#define ScriptDebug
 
@@ -138,22 +139,27 @@ void DeleteAllScripts(bool even_immortal, bool force)
 	*/
 }
 
-VirtualTable* get_vtable(const VirtualBase *p)
-{
+VirtualTable* get_vtable(const VirtualBase *p) {
 	return *(VirtualTable**)p;
 }
 
-const Class *GetDynamicType(const VirtualBase *p)
-{
-	VirtualTable *pp = get_vtable(p);
+// TODO...namespace
+const Class *GetDynamicType(const VirtualBase *p) {
+	auto *pp = get_vtable(p);
 	for (Script *s: _public_scripts_)
-		for (auto *t: s->syntax->classes)
+		for (auto *t: s->syntax->base_class->classes)
 			if (t->_vtable_location_target_ == pp)
 				return t;
 	return nullptr;
 }
 
-Array<Script*> loading_script_stack;
+// wrapper preventing compiler complaints for Array<Script*>.pop()
+struct LoadingScript {
+	Script *s = nullptr;
+	LoadingScript() {}
+	LoadingScript(Script *_s) { s = _s; }
+};
+Array<LoadingScript> loading_script_stack;
 
 void Script::load(const string &_filename, bool _just_analyse)
 {
@@ -206,7 +212,7 @@ void Script::do_error_link(const string &str)
 void Script::set_variable(const string &name, void *data)
 {
 	//msg_write(name);
-	for (auto *v: syntax->root_of_all_evil.var)
+	for (auto *v: syntax->root_of_all_evil->var)
 		if (v->name == name){
 			memcpy(v->memory, data, v->type->size);
 			return;
@@ -217,6 +223,7 @@ void Script::set_variable(const string &name, void *data)
 Script::Script()
 {
 	filename = "-empty script-";
+	used_by_default = false;
 
 	reference_counter = 0;
 
@@ -236,20 +243,25 @@ Script::Script()
 
 Script::~Script()
 {
+	int r = 0;
 	if (opcode){
 		#if defined(OS_WINDOWS) || defined(OS_MINGW)
 			VirtualFree(opcode, 0, MEM_RELEASE);
 		#else
-			int r = munmap(opcode, MAX_OPCODE);
+			r = munmap(opcode, MAX_OPCODE);
 		#endif
 	}
-	if (memory){
+	if (r != 0)
+		msg_error("munmap...op");
+	if (memory and memory_size > 0){
 		#if defined(OS_WINDOWS) || defined(OS_MINGW)
 			VirtualFree(memory, 0, MEM_RELEASE);
 		#else
-			int r = munmap(memory, memory_size);
+			r = munmap(memory, memory_size);
 		#endif
 	}
+	if (r != 0)
+		msg_error("munmap...mem");
 	//msg_write(string2("-----------            Memory:         %p",Memory));
 	delete(syntax);
 }
@@ -314,15 +326,15 @@ void *Script::match_function(const string &name, const string &return_type, cons
 {
 	// match
 	for (Function *f: syntax->functions)
-		if (f->long_name.match(name) and (f->literal_return_type->name == return_type) and (param_types.num == f->num_params)){
+		if (f->long_name().match(name) and (f->literal_return_type->long_name() == return_type) and (param_types.num == f->num_params)){
 
 			bool params_ok = true;
 			for (int j=0;j<param_types.num;j++)
-				if (f->literal_param_type[j]->name != param_types[j])
+				if (f->literal_param_type[j]->long_name() != param_types[j])
 					params_ok = false;
 			if (params_ok){
 				if (just_analyse)
-					return (void*)0xdeadbeaf;
+					return (void*)(int_p)0xdeadbeaf;
 				else
 					return f->address;
 			}
@@ -331,9 +343,10 @@ void *Script::match_function(const string &name, const string &return_type, cons
 	return nullptr;
 }
 
+// DEPRECATED?
 void *Script::match_class_function(const string &_class, bool allow_derived, const string &name, const string &return_type, const Array<string> &param_types)
 {
-	const Class *root_type = syntax->find_type_by_name(_class);
+	const Class *root_type = syntax->find_root_type_by_name(_class, syntax->base_class, false);
 	if (!root_type)
 		return nullptr;
 
@@ -352,7 +365,7 @@ void *Script::match_class_function(const string &_class, bool allow_derived, con
 					params_ok = false;
 			if (params_ok){
 				if (just_analyse)
-					return (void*)0xdeadbeaf;
+					return (void*)(int_p)0xdeadbeaf;
 				else
 					return f->address;
 			}
@@ -369,11 +382,27 @@ void print_var(void *p, const string &name, const Class *t)
 
 void Script::show_vars(bool include_consts)
 {
-	for (auto *v: syntax->root_of_all_evil.var)
+	for (auto *v: syntax->root_of_all_evil->var)
 		print_var(v->memory, v->name, v->type);
 	/*if (include_consts)
 		foreachi(LocalVariable &c, pre_script->Constant, i)
 			print_var((void*)g_var[i], c.name, c.type);*/
+}
+
+Array<const Class*> Script::classes() {
+	return syntax->base_class->classes;
+}
+
+Array<Function*> Script::functions() {
+	return syntax->functions;
+}
+
+Array<Variable*> Script::variables() {
+	return syntax->root_of_all_evil->var;
+}
+
+Array<Constant*> Script::constants() {
+	return syntax->base_class->constants;
 }
 
 };

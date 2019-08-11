@@ -307,7 +307,7 @@ void Model::reset()
 {
 	error = false;
 	pos = vel = rot = v_0;
-	ang = q_id;
+	ang = quaternion::ID;
 	object_id = -1;
 	registered = false;
 	on_ground = false;
@@ -1449,7 +1449,7 @@ void Model::BeginEditAnimation()
 		return;
 	num_move_operations = -2;
 	for (int i=0;i<bone.num;i++){
-		bone[i].cur_ang = q_id;//quaternion(1,v_0);
+		bone[i].cur_ang = quaternion::ID;
 		bone[i].cur_pos = bone[i].pos;
 	}
 }

@@ -72,11 +72,12 @@ enum
 	KIND_DEREF_GLOBAL_LOOKUP, // ARM
 };
 
-struct Node;
+class Node;
 
 // single operand/command
-struct Node
+class Node
 {
+public:
 	int kind;
 	int64 link_no;
 	// parameters
@@ -86,6 +87,10 @@ struct Node
 	// return value
 	const Class *type;
 	Node(int kind, int64 link_no, const Class *type);
+	Node(const Class *c);
+	Node(const Block *b);
+	Node(const Function *f);
+	Node(const Constant *c);
 	virtual ~Node();
 	Block *as_block() const;
 	Function *as_func() const;
@@ -114,8 +119,9 @@ string kind2str(int kind);
 string node2str(SyntaxTree *s, Node *n);
 
 // {...}-block
-struct Block : Node
+class Block : public Node
 {
+public:
 	Block(Function *f, Block *parent);
 	virtual ~Block();
 	Array<Variable*> vars;
@@ -126,6 +132,8 @@ struct Block : Node
 	int level;
 	void add(Node *c);
 	void set(int index, Node *c);
+	
+	const Class *name_space() const;
 
 	Variable *get_var(const string &name);
 	Variable *add_var(const string &name, const Class *type);

@@ -44,7 +44,7 @@ void CameraReset()
 	xcon_del(cameras);
 
 	// create the main-view ("cam")
-	cam = new Camera(v_0, q_id, r_id);
+	cam = new Camera(v_0, quaternion::ID, rect::ID);
 	cur_cam = cam;
 }
 
@@ -64,14 +64,14 @@ void Camera::reset()
 	shaded_displays = true;
 
 	enabled = false;
-	dest = r_id;
+	dest = rect::ID;
 	cam_point_nr = -1;
 	cam_point.clear();
 
 	show = false;
 	
 	pos = vel = rot = v_0;
-	ang = q_id;
+	ang = quaternion::ID;
 	last_pos = view_pos = vel_rt = pos_0 = vel_0 = ang_0 = pos_1 = vel_1 = ang_1 = v_0;
 	a_pos = b_pos = a_ang = b_ang = v_0;
 	script_rot_0 = script_rot_1 = v_0;

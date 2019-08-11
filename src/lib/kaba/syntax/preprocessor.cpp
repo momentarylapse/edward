@@ -143,7 +143,7 @@ Node *SyntaxTree::PreProcessNode(Node *c)
 					*c = *c->param[0];
 				}
 			}
-		}else*/ if (o->f->address){
+		}else*/ if (o->f->address_preprocess){
 			bool all_const = true;
 			bool is_address = false;
 			bool is_local = false;
@@ -155,7 +155,7 @@ Node *SyntaxTree::PreProcessNode(Node *c)
 				else if (c->params[i]->kind != KIND_CONSTANT)
 					all_const = false;
 			if (all_const){
-				op_func *f = (op_func*)o->f->address;
+				op_func *f = (op_func*)o->f->address_preprocess;
 				if (is_address){
 					// pre process address
 					/*void *d1 = (void*)&c->Param[0]->LinkNr;
@@ -188,7 +188,7 @@ Node *SyntaxTree::PreProcessNode(Node *c)
 			return c;
 		if (f->return_type->get_default_constructor()) // TODO
 			return c;
-		void *ff = (void*)c->as_func_p();
+		void *ff = f->address_preprocess;
 		if (!ff)
 			return c;
 		bool all_const = true;
@@ -235,7 +235,7 @@ Node *SyntaxTree::PreProcessNode(Node *c)
 			int el_size = c->type->parent->size;
 			DynamicArray *da = &c_array->as_const()->as_array();
 			da->init(el_size);
-			da->resize(c->params.num);
+			da->simple_resize(c->params.num);
 			for (int i=0; i<c->params.num; i++)
 				memcpy((char*)da->data + el_size * i, c->params[i]->as_const()->p(), el_size);
 			return c_array;

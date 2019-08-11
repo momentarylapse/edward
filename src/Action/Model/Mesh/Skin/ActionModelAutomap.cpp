@@ -101,7 +101,7 @@ Array<Island> find_connected(Set<int> &set, int surf, ModelSurface *s, const vec
 Array<Island> get_islands(DataModel *m)
 {
 	const int num_dirs = 6;
-	vector dir[num_dirs] = {e_x, e_y, e_z, -e_x, -e_y, -e_z};
+	vector dir[num_dirs] = {vector::EX, vector::EY, vector::EZ, -vector::EX, -vector::EY, -vector::EZ};
 	Array<Island> islands;
 	foreachi(ModelSurface &s, m->surface, surf){
 		Array<int> g = group_by_dirs(&s, dir, num_dirs);

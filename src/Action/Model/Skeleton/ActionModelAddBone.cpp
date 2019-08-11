@@ -22,7 +22,7 @@ void *ActionModelAddBone::execute(Data *d)
 	b.parent = parent;
 	b.const_pos = false;
 	b.pos = pos;
-	b._matrix = m_id;
+	b._matrix = matrix::ID;
 	b.model = NULL;
 	b.view_stage = 0;
 	b.is_special = b.is_selected = false;

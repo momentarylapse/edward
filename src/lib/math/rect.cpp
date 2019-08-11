@@ -1,5 +1,8 @@
 #include "math.h"
 
+const rect rect::ID = rect(0,1,0,1);
+const rect rect::EMPTY = rect(0,0,0,0);
+
 rect::rect(float x1, float x2, float y1, float y2)
 {
 	this->x1 = x1;
@@ -10,7 +13,7 @@ rect::rect(float x1, float x2, float y1, float y2)
 
 string rect::str() const
 {
-	return format("(%f, %f, %f, %f)", x1, x2, y1, y2);
+	return format("(%f:%f, %f:%f)", x1, x2, y1, y2);
 }
 
 float rect::width() const

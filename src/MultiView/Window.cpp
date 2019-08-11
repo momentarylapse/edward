@@ -84,7 +84,7 @@ void Window::drawGrid()
 	// spherical for perspective view
 	if (type == VIEW_PERSPECTIVE){
 		nix::SetShader(shader_lines_3d);
-		vector PerspectiveViewPos = cam->radius * (cam->ang * e_z) - cam->pos;
+		vector PerspectiveViewPos = cam->radius * (cam->ang * vector::EZ) - cam->pos;
 		//NixSetZ(false,false);
 		// horizontal
 		float r = cam->radius * 1000 * 0.6f;
@@ -187,23 +187,23 @@ quaternion view_ang(int type, Camera *cam)
 {
 	quaternion ang;
 	if (type == VIEW_FRONT){
-		QuaternionRotationA(ang, e_y, -pi);
+		QuaternionRotationA(ang, vector::EY, -pi);
 	}else if (type == VIEW_BACK){
-		ang = q_id;
+		ang = quaternion::ID;
 	}else if (type == VIEW_RIGHT){
-		QuaternionRotationA(ang, e_y, -pi/2);
+		QuaternionRotationA(ang, vector::EY, -pi/2);
 	}else if (type == VIEW_LEFT){
-		QuaternionRotationA(ang, e_y, pi/2);
+		QuaternionRotationA(ang, vector::EY, pi/2);
 	}else if (type == VIEW_TOP){
-		QuaternionRotationA(ang, e_x, pi/2);
+		QuaternionRotationA(ang, vector::EX, pi/2);
 	}else if (type == VIEW_BOTTOM){
-		QuaternionRotationA(ang, e_x, -pi/2);
+		QuaternionRotationA(ang, vector::EX, -pi/2);
 	}else if (type == VIEW_PERSPECTIVE){
 		ang = cam->ang;
 	}else if (type == VIEW_ISOMETRIC){
 		ang = cam->ang;
 	}else if (type == VIEW_2D){
-		QuaternionRotationA(ang, e_y, -pi);
+		QuaternionRotationA(ang, vector::EY, -pi);
 	}
 	return ang;
 }
@@ -276,7 +276,7 @@ void Window::draw()
 	local_ang = view_ang(type, cam);
 	if (type == VIEW_PERSPECTIVE){
 		if (!cam->ignore_radius)
-			pos -= cam->radius * (cam->ang * e_z);
+			pos -= cam->radius * (cam->ang * vector::EZ);
 	}
 	nix::SetViewPosAng(pos, local_ang);
 	view_matrix = nix::view_matrix;
@@ -284,7 +284,7 @@ void Window::draw()
 	MatrixInverse(ipv_matrix, pv_matrix);
 
 
-	nix::SetWorldMatrix(m_id);
+	nix::SetWorldMatrix(matrix::ID);
 	//nix::SetZ(true,true);
 	nix::SetZ(type != VIEW_2D, type != VIEW_2D);
 	nix::SetWire(false);
@@ -296,7 +296,7 @@ void Window::draw()
 
 	nix::SetWire(multi_view->wire_mode);
 	// light
-	vector dir = cam->ang * e_z;
+	vector dir = cam->ang * vector::EZ;
 	nix::SetLightDirectional(multi_view->light, dir, color(1,0.6f,0.6f,0.6f), 0.5f, 0.7f);
 	nix::EnableLight(multi_view->light, true);
 	nix::EnableLighting(multi_view->light_enabled);
@@ -439,17 +439,17 @@ vector Window::unproject(const vector &p, const vector &o)
 
 vector Window::getDirection()
 {
-	return local_ang * e_z;
+	return local_ang * vector::EZ;
 }
 
 vector Window::getDirectionUp()
 {
-	return local_ang * e_y;
+	return local_ang * vector::EY;
 }
 
 vector Window::getDirectionRight()
 {
-	return local_ang * e_x;
+	return local_ang * vector::EX;
 }
 
 void Window::getMovingFrame(vector &dir, vector &up, vector &right)

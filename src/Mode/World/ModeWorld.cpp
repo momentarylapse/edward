@@ -419,7 +419,7 @@ void ModeWorld::on_draw_win(MultiView::Window *win)
 	}
 
 
-	nix::SetWorldMatrix(m_id);
+	nix::SetWorldMatrix(matrix::ID);
 	nix::SetZ(true,true);
 	nix::EnableFog(false);
 }

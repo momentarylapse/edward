@@ -7,5 +7,5 @@ void main()
 	for i in 0:N
 		for j in 0:N
 			vector pos = vector(i * 200, 120, j * 200)
-			data_world.AddObject("Characters/1st Char/1st", pos)
+			data_world.add_object("Characters/1st Char/1st", pos)
 	data_world.EndActionGroup()

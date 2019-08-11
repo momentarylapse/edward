@@ -271,12 +271,12 @@ void MultiView::camRotate(const vector &dir, bool cam_center)
 	// could have used reflection_matrix... but...only VIEW_PERSPECTIVE...
 
 	if (cam_center)
-		cam.pos -= cam.radius * (cam.ang * e_z);
+		cam.pos -= cam.radius * (cam.ang * vector::EZ);
 	quaternion dq;
 	QuaternionRotationV(dq, dang);
 	cam.ang = cam.ang * dq;
 	if (cam_center)
-		cam.pos += cam.radius * (cam.ang * e_z);
+		cam.pos += cam.radius * (cam.ang * vector::EZ);
 	action_con->update();
 	notify(MESSAGE_CAMERA_CHANGE);
 }
@@ -413,17 +413,17 @@ void MultiView::on_key_down(int k)
 	if ((k == hui::KEY_SUBTRACT) or (k == hui::KEY_NUM_SUBTRACT))
 		camZoom(1.0f / SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
 	if (k == hui::KEY_RIGHT)
-		camMove(-e_x * SPEED_MOVE);
+		camMove(-vector::EX * SPEED_MOVE);
 	if (k == hui::KEY_LEFT)
-		camMove( e_x * SPEED_MOVE);
+		camMove( vector::EX * SPEED_MOVE);
 	if (k == hui::KEY_UP)
-		camMove( e_y * SPEED_MOVE);
+		camMove( vector::EY * SPEED_MOVE);
 	if (k == hui::KEY_DOWN)
-		camMove(-e_y * SPEED_MOVE);
+		camMove(-vector::EY * SPEED_MOVE);
 	if (k == hui::KEY_SHIFT + hui::KEY_UP)
-		camMove( e_z * SPEED_MOVE);
+		camMove( vector::EZ * SPEED_MOVE);
 	if (k == hui::KEY_SHIFT + hui::KEY_DOWN)
-		camMove(-e_z * SPEED_MOVE);
+		camMove(-vector::EZ * SPEED_MOVE);
 	if (k == hui::KEY_ESCAPE)
 		action_con->endAction(false);
 	if (k == hui::KEY_TAB)

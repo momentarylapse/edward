@@ -8,41 +8,47 @@ namespace Kaba{
 class Script;
 class SyntaxTree;
 class Class;
-struct Function;
+class Function;
+class Constant;
+class Variable;
 
 
-struct ClassElement{
+class ClassElement
+{
+public:
 	string name;
 	const Class *type;
 	long long offset;
 	bool hidden;
 	ClassElement();
+	ClassElement(const string &name, const Class *type, int offset);
 	string signature(bool include_class) const;
 };
 
 // TODO: use Function instead!
-struct ClassFunction{
-	string name;
-	Script *script;
+class ClassFunction
+{
+public:
 	Function *func;
 	// _func_(x)  ->  p.func(x)
-	Array<const Class*> param_types; // literal!
 	const Class *return_type; // literal!
 	int virtual_index;
 	bool needs_overriding;
 	ClassFunction();
-	ClassFunction(const string &name, const Class *return_type, Script *s, Function *f);
+	ClassFunction(const Class *return_type, Function *f);
 	string signature(bool include_class) const;
 };
 
 typedef void *VirtualTable;
 
-class Class{
+class Class
+{
 public:
 	//Class();
 	Class(const string &name, int size, SyntaxTree *owner, const Class *parent = nullptr);
 	~Class();
 	string name;
+	string long_name() const;
 	long long size; // complete size of type
 	int array_length;
 
@@ -64,7 +70,12 @@ public:
 	bool fully_parsed;
 	Array<ClassElement> elements;
 	Array<ClassFunction> functions;
+	Array<Function*> static_functions;
+	Array<Variable*> static_variables;
+	Array<Constant*> constants;
+	Array<const Class*> classes;
 	const Class *parent;
+	const Class *name_space;
 	SyntaxTree *owner; // to share and be able to delete...
 	Array<void*> vtable;
 	void *_vtable_location_compiler_; // may point to const/opcode
@@ -108,8 +119,6 @@ extern const Class *TypeReg8; // dummy for compilation
 extern const Class *TypeVoid;
 extern const Class *TypePointer;
 extern const Class *TypeChunk;
-extern const Class *TypeFunction;
-extern const Class *TypeFunctionP;
 extern const Class *TypeBool;
 extern const Class *TypeInt;
 extern const Class *TypeInt64;
@@ -130,6 +139,10 @@ extern const Class *TypeExceptionP;
 
 extern const Class *TypeClass;
 extern const Class *TypeClassP;
+extern const Class *TypeFunction;
+extern const Class *TypeFunctionP;
+extern const Class *TypeFunctionCode;
+extern const Class *TypeFunctionCodeP;
 
 };
 

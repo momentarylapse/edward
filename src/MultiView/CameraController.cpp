@@ -104,11 +104,11 @@ void CameraController::draw_icon(const rect &rr, nix::Texture *tex, bool active)
 		nix::SetColor(ColorIconHover);
 	else
 		nix::SetColor(ColorIcon);
-	nix::Draw2D(r_id, rr, 0);
+	nix::Draw2D(rect::ID, rr, 0);
 	if (tex){
 		nix::SetTexture(tex);
 		nix::SetColor(White);
-		nix::Draw2D(r_id, rr, 0);
+		nix::Draw2D(rect::ID, rr, 0);
 	}
 }
 
@@ -121,7 +121,7 @@ void CameraController::draw()
 	// show/hide button
 	nix::SetColor(ColorBackground);
 	nix::SetTexture(tex_bg);
-	nix::Draw2D(r_id, r2, 0);
+	nix::Draw2D(rect::ID, r2, 0);
 	draw_icon(r_show, NULL, false);
 
 	if (show){

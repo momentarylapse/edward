@@ -24,8 +24,10 @@ extern string LibVersion;
 
 class SyntaxTree;
 class Class;
-struct Value;
+class Value;
 class Function;
+class Variable;
+class Constant;
 
 
 void script_make_super_array(Class *t, SyntaxTree *ps = nullptr);
@@ -112,8 +114,9 @@ enum
 	NUM_PRIMITIVE_OPERATORS
 };
 
-struct PrimitiveOperator
+class PrimitiveOperator
 {
+public:
 	string name;
 	int id;
 	bool left_modifiable;
@@ -129,8 +132,9 @@ extern PrimitiveOperator PrimitiveOperators[];
 //--------------------------------------------------------------------------------------------------
 // commands
 
-struct Statement
+class Statement
 {
+public:
 	string name;
 	int num_params;
 };
@@ -152,7 +156,7 @@ enum
 	STATEMENT_SIZEOF,
 	STATEMENT_TYPE,
 	STATEMENT_ASM,
-	STATEMENT_RAISE,
+	//STATEMENT_RAISE,
 	STATEMENT_TRY,
 	STATEMENT_EXCEPT,
 	STATEMENT_PASS,
@@ -333,8 +337,9 @@ enum
 // type casting
 
 typedef void t_cast_func(Value&, Value&);
-struct TypeCast
+class TypeCast
 {
+public:
 	int penalty;
 	const Class *source, *dest;
 	Function *f;
@@ -355,8 +360,9 @@ enum
 	ABI_GNU_ARM_64,
 };
 
-struct CompilerConfiguration
+class CompilerConfiguration
 {
+public:
 	int instruction_set;
 	int abi;
 	bool allow_std_lib;
@@ -443,13 +449,7 @@ int ProcessClassNumVirtuals(const string &class_name, int num_virtual);
 //--------------------------------------------------------------------------------------------------
 // packages
 
-struct Package
-{
-	string name;
-	Script *script;
-	bool used_by_default;
-};
-extern Array<Package> Packages;
+extern Array<Script*> Packages;
 
 
 };

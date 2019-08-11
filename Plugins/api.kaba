@@ -1,3 +1,7 @@
+use hui
+use nix
+use x
+
 class Observable
 	int dummy
 	

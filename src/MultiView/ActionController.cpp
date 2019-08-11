@@ -29,32 +29,32 @@ vector snap_v2(const vector &v, float d);
 ActionController::ActionController(MultiView *view)
 {
 	multi_view = view;
-	geo_mat = m_id;
-	mat = m_id;
+	geo_mat = matrix::ID;
+	mat = matrix::ID;
 
 
 	float r0 = 1.333f;
 	float r1 = 0.666f;
 	float r = 0.1f;
-	geo.add(new GeometryTorus(v_0, e_z, 1.0f, r, 32, 8));
-	geo.add(new GeometryTorus(v_0, e_y, 1.0f, r, 32, 8));
-	geo.add(new GeometryTorus(v_0, e_x, 1.0f, r, 32, 8));
-	geo.add(new GeometryCylinder(-e_x*r0, -e_x*r1, r, 1, 8));
-	geo.add(new GeometryCylinder( e_x*r0,  e_x*r1, r, 1, 8));
-	geo.add(new GeometryCylinder(-e_y*r0, -e_y*r1, r, 1, 8));
-	geo.add(new GeometryCylinder( e_y*r0,  e_y*r1, r, 1, 8));
-	geo.add(new GeometryCylinder(-e_z*r0, -e_z*r1, r, 1, 8));
-	geo.add(new GeometryCylinder( e_z*r0,  e_z*r1, r, 1, 8));
+	geo.add(new GeometryTorus(v_0, vector::EZ, 1.0f, r, 32, 8));
+	geo.add(new GeometryTorus(v_0, vector::EY, 1.0f, r, 32, 8));
+	geo.add(new GeometryTorus(v_0, vector::EX, 1.0f, r, 32, 8));
+	geo.add(new GeometryCylinder(-vector::EX*r0, -vector::EX*r1, r, 1, 8));
+	geo.add(new GeometryCylinder( vector::EX*r0,  vector::EX*r1, r, 1, 8));
+	geo.add(new GeometryCylinder(-vector::EY*r0, -vector::EY*r1, r, 1, 8));
+	geo.add(new GeometryCylinder( vector::EY*r0,  vector::EY*r1, r, 1, 8));
+	geo.add(new GeometryCylinder(-vector::EZ*r0, -vector::EZ*r1, r, 1, 8));
+	geo.add(new GeometryCylinder( vector::EZ*r0,  vector::EZ*r1, r, 1, 8));
 	r = 0.03f;
-	geo_show.add(new GeometryTorus(v_0, e_z, 1.0f, r, 32, 8));
-	geo_show.add(new GeometryTorus(v_0, e_y, 1.0f, r, 32, 8));
-	geo_show.add(new GeometryTorus(v_0, e_x, 1.0f, r, 32, 8));
-	geo_show.add(new GeometryCylinder(-e_x*r0, -e_x*r1, r, 1, 8));
-	geo_show.add(new GeometryCylinder( e_x*r0,  e_x*r1, r, 1, 8));
-	geo_show.add(new GeometryCylinder(-e_y*r0, -e_y*r1, r, 1, 8));
-	geo_show.add(new GeometryCylinder( e_y*r0,  e_y*r1, r, 1, 8));
-	geo_show.add(new GeometryCylinder(-e_z*r0, -e_z*r1, r, 1, 8));
-	geo_show.add(new GeometryCylinder( e_z*r0,  e_z*r1, r, 1, 8));
+	geo_show.add(new GeometryTorus(v_0, vector::EZ, 1.0f, r, 32, 8));
+	geo_show.add(new GeometryTorus(v_0, vector::EY, 1.0f, r, 32, 8));
+	geo_show.add(new GeometryTorus(v_0, vector::EX, 1.0f, r, 32, 8));
+	geo_show.add(new GeometryCylinder(-vector::EX*r0, -vector::EX*r1, r, 1, 8));
+	geo_show.add(new GeometryCylinder( vector::EX*r0,  vector::EX*r1, r, 1, 8));
+	geo_show.add(new GeometryCylinder(-vector::EY*r0, -vector::EY*r1, r, 1, 8));
+	geo_show.add(new GeometryCylinder( vector::EY*r0,  vector::EY*r1, r, 1, 8));
+	geo_show.add(new GeometryCylinder(-vector::EZ*r0, -vector::EZ*r1, r, 1, 8));
+	geo_show.add(new GeometryCylinder( vector::EZ*r0,  vector::EZ*r1, r, 1, 8));
 
 	for (auto g: geo_show){
 		nix::VertexBuffer *vb = new nix::VertexBuffer(1);
@@ -79,7 +79,7 @@ void ActionController::startAction(int _constraints)
 	if (action.name == "")
 		return;
 
-	mat = m_id;
+	mat = matrix::ID;
 
 	m0 = multi_view->hover.point;
 	pos0 = pos;
@@ -122,16 +122,16 @@ vector mvac_project_trans(int mode, const vector &v)
 vector mvac_mirror(int mode)
 {
 	if (mode == ACTION_CONSTRAINTS_X)
-		return e_x;
+		return vector::EX;
 	else if (mode == ACTION_CONSTRAINTS_Y)
-		return e_y;
+		return vector::EY;
 	else if (mode == ACTION_CONSTRAINTS_Z)
-		return e_z;
+		return vector::EZ;
 	else if (mode == ACTION_CONSTRAINTS_XY)
-		return e_z;
+		return vector::EZ;
 	else if (mode == ACTION_CONSTRAINTS_XZ)
-		return e_y;
-	return e_x;
+		return vector::EY;
+	return vector::EX;
 }
 
 void ActionController::updateAction()
@@ -179,7 +179,7 @@ void ActionController::updateAction()
 		mat = m_dt * mat * m_dti;
 	}else{
 		param = v_0;
-		mat = m_id;
+		mat = matrix::ID;
 	}
 	cur_action->update_and_notify(data, mat);
 
@@ -204,7 +204,7 @@ void ActionController::endAction(bool set)
 		multi_view->notify(multi_view->MESSAGE_ACTION_ABORT);
 	}
 	cur_action = NULL;
-	mat = m_id;
+	mat = matrix::ID;
 }
 
 bool ActionController::isSelecting()
@@ -311,11 +311,11 @@ bool geo_allow(int i, Window *win, const matrix &geo_mat)
 {
 	int c = ac_geo_config[i].constraint;
 	vector pp = win->project(geo_mat * v_0);
-	vector ppx = win->project(geo_mat * e_x);
+	vector ppx = win->project(geo_mat * vector::EX);
 	ppx.z = pp.z;
-	vector ppy = win->project(geo_mat * e_y);
+	vector ppy = win->project(geo_mat * vector::EY);
 	ppy.z = pp.z;
-	vector ppz = win->project(geo_mat * e_z);
+	vector ppz = win->project(geo_mat * vector::EZ);
 	ppz.z = pp.z;
 
 	if (c == ACTION_CONSTRAINTS_X)
@@ -357,17 +357,17 @@ void ActionController::draw(Window *win)
 	nix::SetZ(false, false);
 	nix::EnableLighting(false);
 	nix::SetAlpha(ALPHA_NONE);
-	nix::SetWorldMatrix(m_id);
+	nix::SetWorldMatrix(matrix::ID);
 
 	if (inUse()){
 		nix::SetMaterial(White, White, Black, 0, color(1, 0.2f, 0.7f, 0.2f));
 		float r = multi_view->cam.radius * 10;
 		if (constraints == ACTION_CONSTRAINTS_X)
-			nix::DrawLine3D(pos - e_x * r, pos + e_x * r);
+			nix::DrawLine3D(pos - vector::EX * r, pos + vector::EX * r);
 		if (constraints == ACTION_CONSTRAINTS_Y)
-			nix::DrawLine3D(pos - e_y * r, pos + e_y * r);
+			nix::DrawLine3D(pos - vector::EY * r, pos + vector::EY * r);
 		if (constraints == ACTION_CONSTRAINTS_Z)
-			nix::DrawLine3D(pos - e_z * r, pos + e_z * r);
+			nix::DrawLine3D(pos - vector::EZ * r, pos + vector::EZ * r);
 	}
 	nix::SetMaterial(White, White, Black, 0, Black);
 

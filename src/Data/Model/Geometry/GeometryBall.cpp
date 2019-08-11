@@ -15,8 +15,8 @@ GeometryBall::GeometryBall(const vector &pos, float radius, int num_x, int num_y
 	// ball from disks
 
 	// create new vertices
-	addVertex(pos + e_y * radius);
-	addVertex(pos - e_y * radius);
+	addVertex(pos + vector::EY * radius);
+	addVertex(pos - vector::EY * radius);
 	for (int x=0;x<num_x+1;x++)
 		for (int y=0;y<num_y+1;y++){
 			if ((x>0)&&(x<num_x)&&(y<num_y))

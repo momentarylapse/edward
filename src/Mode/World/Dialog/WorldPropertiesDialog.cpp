@@ -196,11 +196,11 @@ void update_script_data(WorldScript &s)
 		auto ss = Kaba::Load(s.filename, true);
 
 		Array<string> wanted;
-		for (auto c:ss->syntax->constants)
+		for (auto c: ss->syntax->base_class->constants)
 			if (c->name == "PARAMETERS" and c->type == Kaba::TypeString)
 				wanted = c->as_string().lower().replace("_", "").replace("\n", "").explode(",");
 
-		for (auto *t: ss->syntax->classes){
+		for (auto *t: ss->syntax->base_class->classes){
 			if (!t->is_derived_from_s("Controller"))
 				continue;
 			s.class_name = t->name;

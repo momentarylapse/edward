@@ -14,7 +14,7 @@
 
 SkinGenerator::SkinGenerator()
 {
-	m = m_id;
+	m = matrix::ID;
 }
 
 SkinGenerator::~SkinGenerator()
@@ -23,7 +23,7 @@ SkinGenerator::~SkinGenerator()
 
 void SkinGenerator::init_affine(const vector &dir_u, float f_u, const vector &dir_v, float f_v)
 {
-	m = m_id;
+	m = matrix::ID;
 	m._00 = dir_u.x;
 	m._01 = dir_u.y;
 	m._02 = dir_u.z;
@@ -73,7 +73,7 @@ void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, i
 		suy += u*y;
 		svy += v*y;
 	}
-	matrix mm = m_id;
+	matrix mm = matrix::ID;
 	mm._00 = sxx;
 	mm._01 = sxy;
 	mm._02 = sx;
@@ -87,7 +87,7 @@ void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, i
 	MatrixInverse(imm, mm);
 	vector uu = imm * vector(sux, suy, su);
 	vector vv = imm * vector(svx, svy, sv);
-	m = m_id;
+	m = matrix::ID;
 	m._00 = uu.x;
 	m._01 = uu.y;
 	m._03 = uu.z;

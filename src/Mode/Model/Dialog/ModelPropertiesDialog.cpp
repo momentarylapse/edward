@@ -76,11 +76,11 @@ void update_model_script_data(DataModel::MetaData &m)
 		auto ss = Kaba::Load(m.script_file, true);
 
 		Array<string> wanted;
-		for (auto c:ss->syntax->constants)
+		for (auto c:ss->syntax->base_class->constants)
 			if (c->name == "PARAMETERS" and c->type == Kaba::TypeString)
 				wanted = c->as_string().lower().replace("_", "").replace("\n", "").explode(",");
 
-		for (auto *t: ss->syntax->classes){
+		for (auto *t: ss->syntax->base_class->classes){
 			if (!t->is_derived_from_s("Model"))
 				continue;
 			msg_write(t->name);
@@ -194,7 +194,7 @@ string render_material(ModelMaterial *m)
 	img.create(N, N, Black);
 	vector light_dir = vector(-1, -1, -1);
 	light_dir.normalize();
-	vector cam_dir = - e_z;
+	vector cam_dir = - vector::EZ;
 	vector light_sp_dir = light_dir + cam_dir;
 	light_sp_dir.normalize();
 	for (int x=0;x<N;x++)

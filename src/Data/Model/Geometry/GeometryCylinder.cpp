@@ -72,7 +72,7 @@ void GeometryCylinder::__init__(const vector& pos1, const vector& pos2, float ra
 
 matrix make_frame(const vector &pos, const vector &dir, const vector &up, const vector right)
 {
-	matrix rot = m_id, trans;
+	matrix rot = matrix::ID, trans;
 	MatrixTranslation(trans, pos);
 	*(vector*)&rot.e[0] = right;
 	*(vector*)&rot.e[4] = up;

@@ -1693,9 +1693,9 @@ ModelPolygon *DataModel::addTriangle(int a, int b, int c, int material)
 	v.add(b);
 	v.add(c);
 	Array<vector> sv;
-	sv.add(e_y);
+	sv.add(vector::EY);
 	sv.add(v_0);
-	sv.add(e_x);
+	sv.add(vector::EX);
 	return (ModelPolygon*) execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
 }
 

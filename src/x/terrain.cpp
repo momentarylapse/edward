@@ -598,7 +598,7 @@ void Terrain::Draw()
 	material->apply();
 
 	// the actual drawing
-	nix::SetWorldMatrix(m_id);
+	nix::SetWorldMatrix(matrix::ID);
 	nix::Draw3D(vertex_buffer);
 
 	pos_old = cur_cam->pos;

@@ -14,11 +14,10 @@
 namespace hui
 {
 
-class Configuration
-{
+class Configuration {
 public:
 	Configuration();
-	Configuration(const string &filename);
+	explicit Configuration(const string &filename);
 	~Configuration();
 	void _cdecl __init__();
 	void _cdecl __init_ext__(const string &filename);
@@ -43,8 +42,6 @@ public:
 extern Configuration Config;
 
 
-
-void _cdecl RegisterFileType(const string &ending, const string &description, const string &icon_path, const string &open_with, const string &command_name, bool set_default);
 
 };
 

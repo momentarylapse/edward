@@ -72,7 +72,7 @@ void ActionModelDeleteBone::undo(Data *d)
 	b.parent = parent;
 	b.const_pos = false;
 	b.pos = pos;
-	b._matrix = m_id;
+	b._matrix = matrix::ID;
 	b.model_file = filename;
 	b.model = (Model*)model;
 	b.view_stage = 0;

@@ -202,13 +202,13 @@ void ModeMaterial::UpdateShape()
 	if (geo)
 		delete(geo);
 	if (shape_type == "torus")
-		geo = new GeometryTorus(v_0, e_z, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_NUMX, MATERIAL_NUMY);
+		geo = new GeometryTorus(v_0, vector::EZ, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_NUMX, MATERIAL_NUMY);
 	else if (shape_type == "torusknot")
-		geo = new GeometryTorusKnot(v_0, e_z, MATERIAL_RADIUS1, 40, 22, 2, 5, 128, 32);
+		geo = new GeometryTorusKnot(v_0, vector::EZ, MATERIAL_RADIUS1, 40, 22, 2, 5, 128, 32);
 	else if (shape_type == "teapot")
 		geo = new GeometryTeapot(v_0, MATERIAL_RADIUS1, 6);
 	else if (shape_type == "cube")
-		geo = new GeometryCube(-vector(1,1,1) * MATERIAL_RADIUS1/2, e_x * MATERIAL_RADIUS1, e_y * MATERIAL_RADIUS1, e_z * MATERIAL_RADIUS1, 1, 1, 1);
+		geo = new GeometryCube(-vector(1,1,1) * MATERIAL_RADIUS1/2, vector::EX * MATERIAL_RADIUS1, vector::EY * MATERIAL_RADIUS1, vector::EZ * MATERIAL_RADIUS1, 1, 1, 1);
 		//geo = new ModelGeometryPlatonic(v_0, MATERIAL_RADIUS1, 6);
 	else if (shape_type == "icosahedron")
 		geo = new GeometryPlatonic(v_0, MATERIAL_RADIUS1, 20);

@@ -7,9 +7,17 @@ namespace Kaba{
 
 ClassElement::ClassElement()
 {
-	hidden = false;
 	offset = 0;
 	type = nullptr;
+	hidden = false;
+}
+
+ClassElement::ClassElement(const string &_name, const Class *_type, int _offset)
+{
+	name = _name;
+	offset = _offset;
+	type = _type;
+	hidden = false;
 }
 
 string ClassElement::signature(bool include_class) const
@@ -26,14 +34,11 @@ ClassFunction::ClassFunction()
 	virtual_index = -1;
 	needs_overriding = false;
 	return_type = nullptr;
-	script = nullptr;
 }
 
-ClassFunction::ClassFunction(const string &_name, const Class *_return_type, Script *s, Function *_f)
+ClassFunction::ClassFunction(const Class *_return_type, Function *_f)
 {
-	name = _name;
 	return_type = _return_type;
-	script = s;
 	func = _f;
 	virtual_index = -1;
 	needs_overriding = false;
@@ -77,14 +82,14 @@ bool _type_match(const Class *given, bool same_chunk, const Class *wanted)
 	return type_match(given, wanted);
 }
 
-Class::Class(const string &_name, int _size, SyntaxTree *_owner, const Class *_parent)
-{
+Class::Class(const string &_name, int _size, SyntaxTree *_owner, const Class *_parent) {
 	name = _name;
 	owner = _owner;
 	size = _size;
 	type = Type::OTHER;
 	array_length = 0;
 	parent = _parent;
+	name_space = nullptr;
 	force_call_by_value = false;
 	fully_parsed = true;
 	_vtable_location_target_ = nullptr;
@@ -92,8 +97,18 @@ Class::Class(const string &_name, int _size, SyntaxTree *_owner, const Class *_p
 	_vtable_location_external_ = nullptr;
 };
 
-Class::~Class()
-{
+Class::~Class() {
+	for (auto *c: constants)
+		delete c;
+	for (auto *c: classes)
+		delete c;
+}
+
+string Class::long_name() const {
+	if (name_space)
+		if (name_space != name_space->owner->base_class)
+			return name_space->long_name() + "." + name;
+	return name;
 }
 
 bool Class::is_array() const
@@ -251,10 +266,10 @@ bool Class::is_derived_from_s(const string &root) const
 ClassFunction *Class::get_func(const string &_name, const Class *return_type, const Array<const Class*> &params) const
 {
 	for (auto &f: functions)
-		if ((f.name == _name) and (f.return_type == return_type) and (f.param_types.num == params.num)){
+		if ((f.func->name == _name) and (f.return_type == return_type) and (f.func->num_params == params.num)){
 			bool match = true;
 			for (int i=0; i<params.num; i++){
-				if (params[i] and (f.param_types[i] != params[i])){
+				if (params[i] and (f.func->literal_param_type[i] != params[i])){
 					match = false;
 					break;
 				}
@@ -279,7 +294,7 @@ Array<ClassFunction*> Class::get_constructors() const
 {
 	Array<ClassFunction*> c;
 	for (auto &f: functions)
-		if ((f.name == IDENTIFIER_FUNC_INIT) and (f.return_type == TypeVoid))
+		if ((f.func->name == IDENTIFIER_FUNC_INIT) and (f.return_type == TypeVoid))
 			c.add(&f);
 	return c;
 }
@@ -297,11 +312,11 @@ ClassFunction *Class::get_assign() const
 ClassFunction *Class::get_get(const Class *index) const
 {
 	for (ClassFunction &cf: functions){
-		if (cf.name != "__get__")
+		if (cf.func->name != "__get__")
 			continue;
-		if (cf.param_types.num != 1)
+		if (cf.func->num_params != 1)
 			continue;
-		if (cf.param_types[0] != index)
+		if (cf.func->literal_param_type[0] != index)
 			continue;
 		return &cf;
 	}
@@ -378,51 +393,41 @@ void Class::link_external_virtual_table(void *p)
 
 bool class_func_match(ClassFunction &a, ClassFunction &b)
 {
-	if (a.name != b.name)
+	if (a.func->name != b.func->name)
 		return false;
 	if (a.return_type != b.return_type)
 		return false;
-	if (a.param_types.num != b.param_types.num)
+	if (a.func->num_params != b.func->num_params)
 		return false;
-	for (int i=0; i<a.param_types.num; i++)
-		if (!type_match(b.param_types[i], a.param_types[i]))
+	for (int i=0; i<a.func->num_params; i++)
+		if (!type_match(b.func->literal_param_type[i], a.func->literal_param_type[i]))
 			return false;
 	return true;
 }
 
 
-const Class *Class::get_pointer() const
-{
+const Class *Class::get_pointer() const {
 	return owner->make_class(name + "*", Class::Type::POINTER, config.pointer_size, 0, this);
 }
 
-const Class *Class::get_root() const
-{
+const Class *Class::get_root() const {
 	const Class *r = this;
 	while (r->parent)
 		r = r->parent;
 	return r;
 }
 
-void class_func_out(Class *c, ClassFunction *f)
-{
-	string ps;
-	for (auto *p: f->param_types)
-		ps += "  " + p->name;
-	msg_write(c->name + "." + f->name + ps);
+void class_func_out(Class *c, ClassFunction *f) {
+	msg_write(f->signature(true));
 }
 
 void Class::add_function(SyntaxTree *s, Function *f, bool as_virtual, bool override)
 {
 	ClassFunction cf;
-	cf.name = f->name;
 	cf.func = f;
-	cf.script = s->script;
 	cf.return_type = f->return_type;
-	for (int i=0; i<f->num_params; i++)
-		cf.param_types.add(f->var[i]->type);
 	if (as_virtual){
-		cf.virtual_index = ProcessClassOffset(name, cf.name, max(vtable.num, 2));
+		cf.virtual_index = ProcessClassOffset(name, cf.func->name, max(vtable.num, 2));
 		if (vtable.num <= cf.virtual_index)
 			vtable.resize(cf.virtual_index + 1);
 		_vtable_location_compiler_ = vtable.data;
@@ -442,12 +447,11 @@ void Class::add_function(SyntaxTree *s, Function *f, bool as_virtual, bool overr
 		s->do_error(format("function %s is already defined, use '%s'", f->signature(true).c_str(), IDENTIFIER_OVERRIDE.c_str()), f->_exp_no, f->_logical_line_no);
 	}
 	if (override){
-		orig->script = cf.script;
 		orig->func = cf.func;
 		orig->needs_overriding = false;
-		orig->param_types = cf.param_types;
-	}else
+	}else{
 		functions.add(cf);
+	}
 }
 
 bool Class::derive_from(const Class* root, bool increase_size)
@@ -462,10 +466,10 @@ bool Class::derive_from(const Class* root, bool increase_size)
 	if (parent->functions.num > 0){
 		// inheritance of functions
 		for (ClassFunction &f: parent->functions){
-			if (f.name == IDENTIFIER_FUNC_ASSIGN)
+			if (f.func->name == IDENTIFIER_FUNC_ASSIGN)
 				continue;
 			ClassFunction ff = f;
-			ff.needs_overriding = (f.name == IDENTIFIER_FUNC_INIT) or (f.name == IDENTIFIER_FUNC_DELETE) or (f.name == IDENTIFIER_FUNC_ASSIGN);
+			ff.needs_overriding = (f.func->name == IDENTIFIER_FUNC_INIT) or (f.func->name == IDENTIFIER_FUNC_DELETE) or (f.func->name == IDENTIFIER_FUNC_ASSIGN);
 			functions.add(ff);
 		}
 		found = true;
@@ -497,6 +501,8 @@ string Class::var2str(const void *p) const
 		return i2s(*(int*)p);
 	}else if (this == TypeFloat32){
 		return f2s(*(float*)p, 3);
+	}else if (this == TypeFloat64){
+		return f2s((float)*(double*)p, 3);
 	}else if (this == TypeBool){
 		return b2s(*(bool*)p);
 	}else if (this == TypeClass){

@@ -53,7 +53,7 @@ string::string(const void *str, int l)
 string::string(const string &s)
 {
 	init(sizeof(unsigned char));
-	assign(&s);
+	simple_assign(&s);
 }
 
 string::string(string &&s)
@@ -352,7 +352,7 @@ string string::extension() const
 static bool format_locale_set = false;
 
 // connecting strings
-string format(const string str,...)
+string format(const string &str,...)
 {
 	string tmp;
 	va_list args;

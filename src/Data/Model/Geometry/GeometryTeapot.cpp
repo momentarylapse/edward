@@ -371,7 +371,7 @@ GeometryTeapot::GeometryTeapot(const vector &pos, float radius, int samples)
 
 	matrix rot, trans, scale;
 	MatrixRotationX(rot, - pi / 2);
-	MatrixTranslation(trans, pos - e_y * radius / 2);
+	MatrixTranslation(trans, pos - vector::EY * radius / 2);
 	MatrixScale(scale, radius / 3, radius / 3, radius / 3);
 	transform(trans * rot * scale);
 }

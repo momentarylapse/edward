@@ -621,7 +621,7 @@ Object *GodCreateObject(const string &filename, const string &name, const vector
 
 Object *_cdecl _CreateObject(const string &filename, const vector &pos)
 {
-	return GodCreateObject(filename, filename, pos, q_id);
+	return GodCreateObject(filename, filename, pos, quaternion::ID);
 }
 
 void AddNewForceField(vector pos,vector dir,int kind,int shape,float r,float v,float a,bool visible,float t)
@@ -1350,16 +1350,16 @@ inline void draw_pmv(Array<PartialModelView> &vp)
 {
 	// camera frustrum data
 	vector pos = cur_cam->pos;
-	vector dir = cur_cam->ang * e_z;
+	vector dir = cur_cam->ang * vector::EZ;
 	quaternion a2;
 	a2 = cur_cam->ang * quaternion(vector(0, +0.9f, 0));
-	vector dir_l = a2 * e_z;
+	vector dir_l = a2 * vector::EZ;
 	a2 = cur_cam->ang * quaternion(vector(0, -0.9f, 0));
-	vector dir_r = a2 * e_z;
+	vector dir_r = a2 * vector::EZ;
 	a2 = cur_cam->ang * quaternion(vector(+1.0f, 0, 0));
-	vector dir_t = a2 * e_z;
+	vector dir_t = a2 * vector::EZ;
 	a2 = cur_cam->ang * quaternion(vector(-1.0f, 0, 0));
-	vector dir_b = a2 * e_z;
+	vector dir_b = a2 * vector::EZ;
 	
 	for (int i=0;i<vp.num;i++){
 		PartialModel *p = (PartialModel*)vp[i].p;

@@ -82,7 +82,7 @@ void ModeModelMeshDeformFunction::on_start()
 		}
 
 	vector d = max - min;
-	geo = new GeometryCube(min, e_x * d.x, e_y * d.y, e_z * d.z, CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
+	geo = new GeometryCube(min, vector::EX * d.x, vector::EY * d.y, vector::EZ * d.z, CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
 
 	multi_view->setAllowSelect(false);
 	multi_view->setAllowAction(false);
@@ -162,7 +162,7 @@ void ModeModelMeshDeformFunction::restore()
 {
 	delete(geo);
 	vector d = max - min;
-	geo = new GeometryCube(min, e_x * d.x, e_y * d.y, e_z * d.z, CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
+	geo = new GeometryCube(min, vector::EX * d.x, vector::EY * d.y, vector::EZ * d.z, CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
 	ed->force_redraw();
 
 	foreachi(int vi, index, ii)

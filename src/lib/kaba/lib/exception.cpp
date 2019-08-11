@@ -93,7 +93,7 @@ StackFrameInfo get_func_from_rip(void *rip)
 
 	// externally linked...
 	for (auto p: Packages){
-		func_from_rip_test_script(r, p.script, rip, true);
+		func_from_rip_test_script(r, p, rip, true);
 	}
 	return r;
 }
@@ -173,6 +173,7 @@ void* rbp2 = nullptr;
 
 void relink_return(void *rip, void *rbp, void *rsp)
 {
+#ifdef OS_LINUX
 	if (_verbose_exception_)
 		printf("relink to rip=%p, rbp=%p  rsp=%p\n", rip, rbp, rsp);
 	// ARGH....
@@ -186,8 +187,22 @@ void relink_return(void *rip, void *rbp, void *rsp)
 		: "%rsp");
 
 //	printf("rbp=%p\n", rbp2);
+#endif
 
 	exit(0);
+}
+
+const Class* _get_type(void *p, void *vtable, const Class *ns) {
+	for (auto *c: ns->classes) {
+		if (c->_vtable_location_compiler_)
+			if ((c->_vtable_location_target_ == vtable) or (c->_vtable_location_external_ == vtable))
+				return c;
+		auto *r = _get_type(p, vtable, c);
+		if (r)
+			return r;
+
+	}
+	return nullptr;
 }
 
 const Class* get_type(void *p)
@@ -195,14 +210,14 @@ const Class* get_type(void *p)
 	if (!p)
 		return TypeUnknown;
 	void *vtable = *(void**)p;
-	Array<Script*> scripts = _public_scripts_;
+	auto scripts = _public_scripts_;
 	for (auto p: Packages)
-		scripts.add(p.script);
-	for (Script* s: scripts)
-		for (auto *c: s->syntax->classes)
-			if (c->_vtable_location_compiler_)
-				if ((c->_vtable_location_target_ == vtable) or (c->_vtable_location_external_ == vtable))
-					return c;
+		scripts.add(p);
+	for (Script* s: scripts) {
+		auto *r = _get_type(p, vtable, s->syntax->base_class);
+		if (r)
+			return r;
+	}
 	return TypeUnknown;
 }
 
@@ -231,7 +246,7 @@ Array<StackFrameInfo> get_stack_trace(void **rbp)
 			r.rbp = rbp;
 			trace.add(r);
 			if (_verbose_exception_)
-				msg_write(">>  " + r.s->filename + " : " + r.f->long_name + format("()  +%d", r.offset));
+				msg_write(">>  " + r.s->filename + " : " + r.f->long_name() + format("()  +%d", r.offset));
 
 		}else{
 			//if (_verbose_exception_)
@@ -251,6 +266,7 @@ Array<StackFrameInfo> get_stack_trace(void **rbp)
 
 void _cdecl kaba_raise_exception(KabaException *kaba_exception)
 {
+#ifdef OS_LINUX
 	// get stack frame base pointer rbp
 	void **rbp = nullptr;
 	void **rsp = nullptr;
@@ -279,7 +295,7 @@ void _cdecl kaba_raise_exception(KabaException *kaba_exception)
 	for (auto r: trace){
 
 		if (_verbose_exception_)
-			msg_write(">>  " + r.s->filename + " : " + r.f->long_name + format("()  +%d", r.offset));
+			msg_write(">>  " + r.s->filename + " : " + r.f->long_name() + format("()  +%d", r.offset));
 		auto ebd = get_blocks(r.s, r.f, r.rip, ex_type);
 
 		for (Block *b: ebd.needs_killing){
@@ -324,7 +340,8 @@ void _cdecl kaba_raise_exception(KabaException *kaba_exception)
 	else
 		msg_error("uncaught " + get_type(kaba_exception)->name + ":  " + kaba_exception->message());
 	for (auto r: trace)
-		msg_write(">>  " + r.s->filename + " : " + r.f->long_name + format("()  + 0x%x", r.offset));
+		msg_write(">>  " + r.s->filename + " : " + r.f->long_name() + format("()  + 0x%x", r.offset));
+#endif
 	exit(1);
 }
 #pragma GCC pop_options

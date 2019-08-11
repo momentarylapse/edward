@@ -116,7 +116,7 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 						(float)j/16.0f*nix::target_height,
 						(float)(j+1)/16.0f*nix::target_height);
 				nix::SetColor(((i+j)%2==0) ? c1 : c2);
-				nix::Draw2D(r_id, r, 0.999f );
+				nix::Draw2D(rect::ID, r, 0.999f );
 			}
 		nix::SetAlphaSD(ALPHA_SOURCE_ALPHA, ALPHA_SOURCE_INV_ALPHA);
 	}

@@ -1,3 +1,4 @@
+use hui
 use "api.kaba"
 
 string vecToJson(vector v)
@@ -41,15 +42,14 @@ string moveToJson(ModelMove m)
 		str += "				'parent': " + b.parent + ",\n"
 		str += "				'keys': [\n"
 		for f,j in m.frame
-			quaternion q
-			QuaternionRotationV(q, f.skel_ang[i])
+			let q = QuaternionRotationV(f.skel_ang[i])
 			str += "					{\n"
 			str += "						'time': " + (j / m.frames_per_sec_const) + ",\n"
 			str += "						'pos': [0,0,0],\n"
 			str += "						'rot': [" + qToJson(q) + "],\n"
 			str += "						'scl': [1,1,1]\n"
 			str += "					},\n"
-		QuaternionRotationV(q, m.frame[0].skel_ang[i])
+		let q = QuaternionRotationV(m.frame[0].skel_ang[i])
 		str += "					{\n"
 		str += "						'time': " + (m.frame.num / m.frames_per_sec_const) + ",\n"
 		str += "						'pos': [0,0,0],\n"
