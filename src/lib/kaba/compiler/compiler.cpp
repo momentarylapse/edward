@@ -64,7 +64,7 @@ void try_init_global_var(const Class *type, char* g_var, SyntaxTree *ps) {
 			try_init_global_var(type->parent, g_var + i * type->parent->size, ps);
 		return;
 	}
-	ClassFunction *cf = type->get_default_constructor();
+	Function *cf = type->get_default_constructor();
 	if (!cf) {
 		if (type->needs_constructor())
 			ps->do_error("global variable without default constructor...");
@@ -72,14 +72,14 @@ void try_init_global_var(const Class *type, char* g_var, SyntaxTree *ps) {
 	}
 	typedef void init_func(void *);
 	//msg_write("global init: " + v.type->name);
-	init_func *ff = (init_func*)cf->func->address;
+	init_func *ff = (init_func*)cf->address;
 	if (ff)
 		ff(g_var);
 }
 
 void init_all_global_objects(SyntaxTree *ps)
 {
-	for (Variable *v: ps->root_of_all_evil->var)
+	for (Variable *v: ps->base_class->static_variables)
 		if (!v->is_extern)
 			try_init_global_var(v->type, (char*)v->memory, ps);
 }
@@ -183,7 +183,7 @@ int mem_size_needed(const Class *c) {
 void Script::allocate_memory()
 {
 	memory_size = mem_size_needed(syntax->base_class);
-	for (auto *v: syntax->root_of_all_evil->var)
+	for (auto *v: syntax->base_class->static_variables)
 		memory_size += mem_align(v->type->size, 4);
 
 	memory = (char*)get_nice_memory(memory_size, false);
@@ -205,28 +205,28 @@ void Script::update_constant_locations() {
 	_update_const_locations(syntax->base_class);
 }
 
-void Script::map_global_variables_to_memory()
-{
-	// global variables -> into Memory
-	int override_offset = 0;
-	for (Variable *v: syntax->root_of_all_evil->var){
-		if (v->is_extern){
+void Script::_map_global_variables_to_memory(char *mem, int &offset, char *address, const Class *name_space) {
+	for (Variable *v: name_space->static_variables) {
+		if (v->is_extern) {
 			v->memory = GetExternalLink(v->name);
 			if (!v->memory)
 				do_error_link("external variable " + v->name + " was not linked");
-		}else{
+		} else {
 			int size_aligned = mem_align(v->type->size, 4);
-			if (config.override_variables_offset){
-				v->memory = (char*)(int_p)(config.variables_offset + override_offset);
-				override_offset += size_aligned;
-			}else{
-				v->memory = &memory[memory_size];
-				memory_size += size_aligned;
-				//v->memory_owner = true;
-			}
+			v->memory = &address[offset];
+			offset += size_aligned;
 			//memset(v->memory, 0, v->type->size); // reset all global variables to 0
 		}
 	}
+}
+
+void Script::map_global_variables_to_memory() {
+	// global variables -> into Memory
+	int override_offset = 0;
+	if (config.override_variables_offset)
+		_map_global_variables_to_memory(memory, override_offset, (char*)config.variables_offset, syntax->base_class);
+	else
+		_map_global_variables_to_memory(memory, memory_size, memory, syntax->base_class);
 }
 
 void Script::align_opcode() {
@@ -278,15 +278,13 @@ void remap_virtual_tables(Script *s, char *mem, int &offset, const Class *ct)
 }
 
 
-void _map_constants_to_memory(char *mem, int &offset, const Class *ns) {
-	//update_constant_locations();
-	//return;
+void _map_constants_to_memory(char *mem, int &offset, char *address, const Class *ns) {
 
 	// also allow named constants... might be imported by other scripts!
 	for (Constant *c: ns->constants)
-		if (c->used or c->name[0] != '-'){
-//			c->address = (void*)(syntax->asm_meta_info->code_origin + opcode_size);
-			c->address = &mem[offset];
+		if (c->used /*or c->name[0] != '-'*/){
+			c->address = (void*)(address + offset);//ns->owner->asm_meta_info->code_origin + offset);
+		//	c->address = &mem[offset];
 			c->map_into(&mem[offset], (char*)c->address);
 			offset += mem_align(c->mapping_size(), 4);
 		}
@@ -305,13 +303,10 @@ void _map_constants_to_memory(char *mem, int &offset, const Class *ns) {
 		}*/
 
 	for (auto *c: ns->classes)
-		_map_constants_to_memory(mem, offset, c);
+		_map_constants_to_memory(mem, offset, address, c);
 }
 
-void Script::map_constants_to_memory(char *mem, int &offset)
-{
-	//update_constant_locations();
-	//return;
+void Script::map_constants_to_memory(char *mem, int &offset, char *address) {
 
 	remap_virtual_tables(this, mem, offset, syntax->base_class);
 
@@ -334,14 +329,13 @@ void Script::map_constants_to_memory(char *mem, int &offset)
 	opcode_size = size0;*/
 
 
-	_map_constants_to_memory(mem, offset, syntax->base_class);
+	_map_constants_to_memory(mem, offset, address, syntax->base_class);
 
 	//msg_write(format("    compressed:  %d  ->  %d", uncompressed, opcode_size - size0));
 }
 
-void Script::map_constants_to_opcode()
-{
-	map_constants_to_memory(opcode, opcode_size);
+void Script::map_constants_to_opcode() {
+	map_constants_to_memory(opcode, opcode_size, (char*)(long)syntax->asm_meta_info->code_origin);
 	align_opcode();
 }
 
@@ -396,8 +390,8 @@ void import_deep(SyntaxTree *dest, SyntaxTree *source)
 	if (source->script->filename.find(".kaba") < 0)
 		return;
 
-	dest->root_of_all_evil->var.append(source->root_of_all_evil->var);
-	source->root_of_all_evil->var.clear();
+	dest->base_class->static_variables.append(source->base_class->static_variables);
+	source->base_class->static_variables.clear();
 	dest->functions.append(source->functions);
 	source->functions.clear();
 	dest->base_class->classes.append(source->base_class->classes);
@@ -536,23 +530,23 @@ void Script::compile()
 
 	parse_magic_linker_string(syntax);
 
-	syntax->MapLocalVariablesToStack();
+	syntax->break_down_complicated_commands();
 
-	syntax->BreakDownComplicatedCommands();
+	syntax->map_local_variables_to_stack();
+	
+	syntax->simplify_ref_deref();
+	syntax->simplify_shift_deref();
 
-	syntax->SimplifyRefDeref();
-	syntax->SimplifyShiftDeref();
-
-	syntax->PreProcessor();
-	syntax->MakeFunctionsInline();
+	syntax->pre_processor();
+	syntax->make_functions_inline();
 
 	if (config.verbose)
-		syntax->Show("comp:a");
+		syntax->show("comp:a");
 
 	allocate_memory();
 	map_global_variables_to_memory();
 	if (!config.compile_os)
-		map_constants_to_memory(memory, memory_size);
+		map_constants_to_memory(memory, memory_size, memory);
 
 	allocate_opcode();
 
@@ -568,10 +562,10 @@ void Script::compile()
 
 
 
-	syntax->PreProcessorAddresses();
+	syntax->pre_processor_addresses();
 
 	if (config.verbose)
-		syntax->Show("comp:b");
+		syntax->show("comp:b");
 
 
 // compile functions into Opcode

@@ -1,4 +1,5 @@
 use hui
+use file
 use "api.kaba"
 
 string vecToJson(vector v)
@@ -34,7 +35,7 @@ vector bone_anim_pos(ModelFrame f, int i)
 	int parent = data_model.bone[i].parent
 	if parent >= 0
 		vector dpos = data_model.bone[i].pos - data_model.bone[parent].pos
-		let q = QuaternionRotationV(f.skel_ang[parent])
+		let q = quaternion.rotation_v(f.skel_ang[parent])
 		return bone_anim_pos(f, parent) + q * dpos
 	return f.skel_dpos[i] + data_model.bone[i].pos
 
@@ -50,7 +51,7 @@ string moveToJson(ModelMove m)
 		str += "				'parent': " + /*b.parent + */ "-1,\n"
 		str += "				'keys': [\n"
 		for f,j in m.frame
-			let q = QuaternionRotationV(f.skel_ang[i])
+			let q = quaternion.rotation_v(f.skel_ang[i])
 			let dpos = bone_anim_pos(f, i) // - b.pos
 			/*if b.parent >= 0
 				let dq = QuaternionRotationV(f.skel_ang[b.parent])
@@ -64,7 +65,7 @@ string moveToJson(ModelMove m)
 			str += "						'scl': [1,1,1]\n"
 			str += "					},\n"
 		// looping...
-		let q = QuaternionRotationV(m.frame[0].skel_ang[i])
+		let q = quaternion.rotation_v(m.frame[0].skel_ang[i])
 		str += "					{\n"
 		str += "						'time': " + (m.frame.num / m.frames_per_sec_const) + ",\n"
 		str += "						'pos': [0,0,0],\n"
@@ -98,7 +99,7 @@ string boneToJson(ModelBone b)
 void main()
 	if !HuiFileDialogSave(edward, "Save JSON", "", "*.js", "*.js")
 		return
-	File *f = FileCreateText(HuiFilename)
+	File *f = Filesystem.create_text(HuiFilename)
 	
 	int n_tria = 0
 	for s in data_model.surface

@@ -96,7 +96,7 @@ vector transform_ang(MultiView *mv, const vector &ang)
 {
 	quaternion qmv, qang, q;
 	qmv =  mv->active_win->local_ang;
-	QuaternionRotationV(qang, ang);
+	qang = quaternion::rotation_v( ang);
 	q = qmv * qang * qmv.bar();
 	return q.get_angles();
 }
@@ -145,13 +145,13 @@ void ActionController::updateAction()
 	vector v1p = multi_view->active_win->project(v1);
 	vector dir = multi_view->active_win->getDirection();
 	matrix m_dt, m_dti;
-	MatrixTranslation(m_dt, pos0);
-	MatrixTranslation(m_dti, -pos0);
+	m_dt = matrix::translation( pos0);
+	m_dti = matrix::translation( -pos0);
 	if (action.mode == ACTION_MOVE){
 		param = mvac_project_trans(constraints, v2 - v1);
 		if (multi_view->snap_to_grid)
 			param = snap_v(multi_view, param);
-		MatrixTranslation(mat, param);
+		mat = matrix::translation( param);
 	}else if (action.mode == ACTION_ROTATE){
 		//param = mvac_project_trans(constraints, v2 - v1) * 0.003f * multi_view->active_win->zoom();
 		param = mvac_project_trans(constraints, (v2 - v1) ^ dir) * 0.003f * multi_view->active_win->zoom();
@@ -159,7 +159,7 @@ void ActionController::updateAction()
 			param = transform_ang(multi_view, vector(v1p.y - v2p.y, v1p.x - v2p.x, 0) * 0.003f);
 		if (multi_view->snap_to_grid)
 			param = snap_v2(param, pi / 180.0);
-		MatrixRotation(mat, param);
+		mat = matrix::rotation( param);
 		mat = m_dt * mat * m_dti;
 	}else if (action.mode == ACTION_SCALE){
 		param = vector(1, 1, 1) + mvac_project_trans(constraints, v2 - v1) * 0.01f * multi_view->active_win->zoom();
@@ -167,15 +167,15 @@ void ActionController::updateAction()
 			param = vector(1, 1, 1) * (1 + (v2p - v1p).x * 0.01f);
 		if (multi_view->snap_to_grid)
 			param = snap_v2(param, 0.01f);
-		MatrixScale(mat, param.x, param.y, param.z);
+		mat = matrix::scale( param.x, param.y, param.z);
 		mat = m_dt * mat * m_dti;
 	}else if (action.mode == ACTION_MIRROR){
 		param = mvac_mirror(constraints);
 		if (constraints == ACTION_CONSTRAINTS_NONE)
 			param = multi_view->active_win->getDirectionRight();
 		plane pl;
-		PlaneFromPointNormal(pl, v_0, param);
-		MatrixReflect(mat, pl);
+		pl = plane::from_point_normal( v_0, param);
+		mat = matrix::reflection( pl);
 		mat = m_dt * mat * m_dti;
 	}else{
 		param = v_0;
@@ -244,8 +244,8 @@ void ActionController::update()
 	if (multi_view->whole_window)
 		f /= 2;
 	matrix s, t;
-	MatrixScale(s, f, f, f);
-	MatrixTranslation(t, pos);
+	s = matrix::scale( f, f, f);
+	t = matrix::translation( pos);
 	geo_mat = t * s;
 
 	ed->force_redraw();

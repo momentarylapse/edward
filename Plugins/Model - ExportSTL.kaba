@@ -1,3 +1,4 @@
+use file
 use hui
 use "api.kaba"
 
@@ -7,7 +8,7 @@ void main()
 		return
 	if !HuiFileDialogSave(edward, "Save STL", "", "*.stl", "*.stl")
 		return
-	File *f = FileCreate(HuiFilename)
+	File *f = Filesystem.create(HuiFilename)
 	f << "solid test"
 	for p in data_model.surface[0].polygon
 		for k in 0:p.side.num - 2

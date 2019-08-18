@@ -67,7 +67,7 @@ BspTree::~BspTree()
 void BspTree::add(ModelPolygon &p, DataModel *m, float epsilon)
 {
 	plane pl;
-	PlaneFromPointNormal(pl, m->vertex[p.side[0].vertex].pos, p.temp_normal);
+	pl = plane::from_point_normal( m->vertex[p.side[0].vertex].pos, p.temp_normal);
 	if (b)
 		b->add(p, m, pl, epsilon);
 	else

@@ -48,8 +48,8 @@ static float circum_radius(const vector &p1, const vector &p2, const vector &p3,
 	n.normalize();
 	vector a_ortho = a ^ n;
 	a_ortho.normalize();
-	float mu = VecDotProduct(b, b - a) / (2 * VecDotProduct(a_ortho, b));
-	//float r = sqrt(VecDotProduct(a, a) + mu*mu);
+	float mu = vector::dot(b, b - a) / (2 * vector::dot(a_ortho, b));
+	//float r = sqrt(vector::dot(a, a) + mu*mu);
 	m = p1 + a/2 + a_ortho * mu;
 	return (m - p1).length();//r;
 }

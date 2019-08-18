@@ -340,10 +340,9 @@ void undo_rot(DataModel *m, ModelFrame &f, int b)
 	int r = m->bone[b].parent;
 	while (r >= 0){
 		quaternion q, qr, qri;
-		QuaternionRotationV(q, f.skel_ang[b]);
-		QuaternionRotationV(qr, f.skel_ang[r]);
-		qri = qr;
-		qri.invert();
+		q = quaternion::rotation_v( f.skel_ang[b]);
+		qr = quaternion::rotation_v( f.skel_ang[r]);
+		qri = qr.inverse();
 		f.skel_ang[b] = (q * qr).get_angles();
 		r = m->bone[r].parent;
 		break;

@@ -1,14 +1,14 @@
 // b = q*a
 quaternion rot_onto(vector a, vector b)
-	vector n = VecCrossProduct(a, b)
+	vector n = vector.cross(a, b)
 	n /= n.length()
 	vector e1 = a / a.length()
-	vector e2 = VecCrossProduct(e1, n)
-	float ang = atan2(VecDotProduct(b, e2), VecDotProduct(b, e1))
-	return QuaternionRotationA(n, ang).bar()
+	vector e2 = vector.cross(e1, n)
+	float ang = atan2(vector.dot(b, e2), vector.dot(b, e1))
+	return quaternion.rotation_a(n, ang).bar()
 
 void __main()
-	let qq = QuaternionRotationV(vector(0.2, 0.5, -0.4))
+	let qq = quaternion.rotation_v(vector(0.2, 0.5, -0.4))
 	vector a = vector(7,-2,4)
 	vector b = qq*a
 	let q = rot_onto(a, b)

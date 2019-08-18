@@ -124,7 +124,7 @@ void LightmapData::SetResolution(float res)
 
 static void update_tria(LightmapData::Triangle &t)
 {
-	PlaneFromPoints(t.pl, t.v[0], t.v[1], t.v[2]);
+	t.pl = plane::from_points( t.v[0], t.v[1], t.v[2]);
 	t.ray[0] = Ray(t.v[0], t.v[1]);
 	t.ray[1] = Ray(t.v[1], t.v[2]);
 	t.ray[2] = Ray(t.v[2], t.v[0]);

@@ -101,8 +101,8 @@ void ModeModelMeshCreateCube::on_mouse_move()
 			vector pos2 = multi_view->getCursor3d();
 			vector dir0 = multi_view->mouse_win->getDirectionRight();
 			vector dir1 = multi_view->mouse_win->getDirectionUp();
-			length[0] = dir0 * VecDotProduct(dir0, pos2 - pos);
-			length[1] = dir1 * VecDotProduct(dir1, pos2 - pos);
+			length[0] = dir0 * vector::dot(dir0, pos2 - pos);
+			length[1] = dir1 * vector::dot(dir1, pos2 - pos);
 			updateGeometry();
 		}else{
 			set_dpos3(length, multi_view->getCursor3d() - pos);

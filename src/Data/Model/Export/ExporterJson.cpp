@@ -62,13 +62,13 @@ vector getMoveDPos(DataModel *m, ModelFrame &f, int bi)
 		return b.pos + f.skel_dpos[bi];
 	ModelBone &pb = m->bone[r];
 	quaternion q;
-	QuaternionRotationV(q, f.skel_ang[r]);
+	q = quaternion::rotation_v( f.skel_ang[r]);
 	return q * (b.pos - pb.pos) + getMoveDPos(m, f, r);
 }
 
 void getMoveData(DataModel *m, ModelFrame &f, int b, quaternion &q, vector &t)
 {
-	QuaternionRotationV(q, f.skel_ang[b]);
+	q = quaternion::rotation_v( f.skel_ang[b]);
 	t = getMoveDPos(m, f, b);//f.skel_dpos[b];
 }
 

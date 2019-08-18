@@ -99,8 +99,8 @@ bool ActionModelSurfaceSubtract::CollidePolygons(DataModel *m, ModelPolygon *t1,
 	for (int k=0;k<t2->side.num;k++)
 		v2.add(m->vertex[t2->side[k].vertex].pos);
 	plane pl1, pl2;
-	PlaneFromPointNormal(pl1, m->vertex[t1->side[0].vertex].pos, t1->temp_normal);
-	PlaneFromPointNormal(pl2, m->vertex[t2->side[0].vertex].pos, t2->temp_normal);
+	pl1 = plane::from_point_normal( m->vertex[t1->side[0].vertex].pos, t1->temp_normal);
+	pl2 = plane::from_point_normal( m->vertex[t2->side[0].vertex].pos, t2->temp_normal);
 	bool bcol = false;
 
 
@@ -163,7 +163,7 @@ bool CollidePolygonSurface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_ind
 	for (int k=0;k<pa->side.num;k++)
 		v.add(a.vertex[pa->side[k].vertex].pos);
 	plane pl;
-	PlaneFromPointNormal(pl, a.vertex[pa->side[0].vertex].pos, pa->temp_normal);
+	pl = plane::from_point_normal( a.vertex[pa->side[0].vertex].pos, pa->temp_normal);
 
 	Array<int> vv = pa->triangulate(a.vertex);
 
@@ -192,7 +192,7 @@ bool CollidePolygonSurface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_ind
 		for (int k=0;k<pb.side.num;k++)
 			v2.add(b.vertex[pb.side[k].vertex].pos);
 		plane pl2;
-		PlaneFromPointNormal(pl2, b.vertex[pb.side[0].vertex].pos, pb.temp_normal);
+		pl2 = plane::from_point_normal( b.vertex[pb.side[0].vertex].pos, pb.temp_normal);
 
 		Array<int> vv2 = pb.triangulate(b.vertex);
 		for (int kk=0;kk<pa->side.num;kk++){

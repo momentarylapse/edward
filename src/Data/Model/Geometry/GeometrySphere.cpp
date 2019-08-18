@@ -17,11 +17,11 @@ GeometrySphere::GeometrySphere(const vector &pos, float radius, int num)
 	//	nv = Vertex.num;
 		matrix mat;
 		if (f==0)	MatrixIdentity(mat);
-		if (f==1)	MatrixRotationX(mat, pi/2);
-		if (f==2)	MatrixRotationX(mat,-pi/2);
-		if (f==3)	MatrixRotationY(mat, pi/2);
-		if (f==4)	MatrixRotationX(mat, pi);
-		if (f==5)	MatrixRotationY(mat,-pi/2);
+		if (f==1)	mat = matrix::rotation_x( pi/2);
+		if (f==2)	mat = matrix::rotation_x(-pi/2);
+		if (f==3)	mat = matrix::rotation_y( pi/2);
+		if (f==4)	mat = matrix::rotation_x( pi);
+		if (f==5)	mat = matrix::rotation_y(-pi/2);
 		// create new vertices
 		for (int x=0;x<num+1;x++)
 			for (int y=0;y<num+1;y++){

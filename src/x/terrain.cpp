@@ -179,8 +179,8 @@ void Terrain::Update(int x1,int x2,int z1,int z2,int mode)
 		for (int i=x1;i<x2;i++)
 			for (int j=z1;j<z2;j++){
 				int nt=(i*num_z+j)*2;
-				PlaneFromPoints(pl[nt  ],vertex[Index(i  ,j  )],vertex[Index(i  ,j+1)],vertex[Index(i+1,j+1)]);
-				PlaneFromPoints(pl[nt+1],vertex[Index(i  ,j  )],vertex[Index(i+1,j+1)],vertex[Index(i+1,j  )]);
+				pl[nt  ] = plane::from_points(vertex[Index(i  ,j  )],vertex[Index(i  ,j+1)],vertex[Index(i+1,j+1)]);
+				pl[nt+1] = plane::from_points(vertex[Index(i  ,j  )],vertex[Index(i+1,j+1)],vertex[Index(i+1,j  )]);
 			}
 
 	force_redraw = true;
@@ -220,7 +220,7 @@ float Terrain::gimme_height_n(const vector &p, vector &n)
 	float he=gimme_height(p);
 	vector vdx=vector(pattern.x, dhx,0            );
 	vector vdz=vector(0        ,-dhz,pattern.z);
-	n=VecCrossProduct(vdz,vdx);
+	n=vector::cross(vdz,vdx);
 	n.normalize();
 	return he;
 }

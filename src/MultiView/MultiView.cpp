@@ -190,7 +190,7 @@ void MultiView::reset()
 void MultiView::resetView()
 {
 	cam.pos = v_0;
-	cam.ang = v_0;
+	cam.ang = quaternion::ID;
 	if (mode3d)
 		cam.radius = 100;
 	else
@@ -273,7 +273,7 @@ void MultiView::camRotate(const vector &dir, bool cam_center)
 	if (cam_center)
 		cam.pos -= cam.radius * (cam.ang * vector::EZ);
 	quaternion dq;
-	QuaternionRotationV(dq, dang);
+	dq = quaternion::rotation_v( dang);
 	cam.ang = cam.ang * dq;
 	if (cam_center)
 		cam.pos += cam.radius * (cam.ang * vector::EZ);

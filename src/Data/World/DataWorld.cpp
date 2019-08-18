@@ -26,7 +26,7 @@ void WorldObject::UpdateData()
 	if (!object)
 		return;
 	object->pos = pos;
-	object->ang = Ang;
+	object->ang = quaternion::rotation_v(Ang);
 	object->UpdateMatrix();
 }
 
@@ -333,7 +333,7 @@ bool DataWorld::load(const string & _filename, bool deep)
 			ed->progress->set(format(_("Objekt %d von %d"), i, Objects.num), (float)i / (float)Objects.num / 2.0f + 0.5f);
 			Objects[i].object = (Object*)LoadModel(Objects[i].FileName);
 			Objects[i].object->pos = Objects[i].pos;
-			Objects[i].object->ang = Objects[i].Ang;
+			Objects[i].object->ang = quaternion::rotation_v(Objects[i].Ang);
 //			if (Objects[i].object)
 //				GodRegisterModel(Objects[i].object);
 		}

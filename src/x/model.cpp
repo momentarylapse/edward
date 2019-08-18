@@ -125,7 +125,7 @@ void Model::_UpdatePhysAbsolute_()
 		// convex polyhedron
 		for (int i=0;i<s->num_polys;i++)
 			for (int k=0;k<s->poly[i].num_faces;k++)
-				PlaneTransform(a->pl[i * MODEL_MAX_POLY_FACES+k], _matrix, s->poly[i].face[k].pl);
+				a->pl[i * MODEL_MAX_POLY_FACES+k] = s->poly[i].face[k].pl.transform(_matrix);
 		a->is_ok = true;
 	}
 	
@@ -606,7 +606,7 @@ void Model::Load(const string &filename)
 					for (int j=0;j<bone.num;j++){
 						vector v;
 						f->read_vector(&v);
-						QuaternionRotationV(meta_move->skel_ang[frame_s * bone.num + j], v);
+						meta_move->skel_ang[frame_s * bone.num + j] = quaternion::rotation_v( v);
 						if (free_pos[j])
 							f->read_vector(&meta_move->skel_dpos[frame_s * bone.num + j]);
 					}
@@ -710,7 +710,7 @@ void Model::Load(const string &filename)
 		bone_pos_0 = new vector[bone.num];
 		for (int i=0;i<bone.num;i++){
 			bone_pos_0[i] = _GetBonePos(i);
-			MatrixTranslation(bone[i].dmatrix, bone_pos_0[i]);
+			bone[i].dmatrix = matrix::translation( bone_pos_0[i]);
 		}
 	}
 	
@@ -1113,11 +1113,11 @@ void Model::CalcMove(float elapsed)
 					w0=m->ang[i][(f-1+m->NumFrames)%m->NumFrames]; // last value
 					w3=m->ang[i][(f+2             )%m->NumFrames]; // third value
 					// interpolate the current alignment
-					QuaternionInterpolate(w,w0,w1,w2,w3,df);
+					w = quaternion::interpolate(w0,w1,w2,w3,df);
 					p=(1.0f-df)*p1+df*p2 + SkeletonDPos[i];
 				}else*/{
 					// interpolate the current alignment
-					QuaternionInterpolate(w,w1,w2,df);
+					w = quaternion::interpolate(w1,w2,df);
 					p=(1.0f-df)*p1+df*p2 + b->pos;
 				}
 
@@ -1145,20 +1145,20 @@ void Model::CalcMove(float elapsed)
 
 				// w = w_old         + w_new * f
 				}else if (op->operation == MOVE_OP_ADD_1_FACTOR){
-					QuaternionScale(w, op->param1);
+					w = w.scale_angle(op->param1);
 					b->cur_ang = w * b->cur_ang;
 					b->cur_pos += op->param1 * p;
 
 				// w = w_old * (1-f) + w_new * f
 				}else if (op->operation == MOVE_OP_MIX_1_FACTOR){
-					QuaternionInterpolate(b->cur_ang, b->cur_ang, w, op->param1);
+					b->cur_ang = quaternion::interpolate( b->cur_ang, w, op->param1);
 					b->cur_pos = (1 - op->param1) * b->cur_pos + op->param1 * p;
 
 				// w = w_old * a     + w_new * b
 				}else if (op->operation == MOVE_OP_MIX_2_FACTOR){
-					QuaternionScale(b->cur_ang, op->param1);
-					QuaternionScale(w         , op->param2);
-					QuaternionInterpolate(b->cur_ang, b->cur_ang, w, 0.5f);
+					b->cur_ang = b->cur_ang.scale_angle(op->param1);
+					w = w.scale_angle(op->param2);
+					b->cur_ang = quaternion::interpolate( b->cur_ang, w, 0.5f);
 					b->cur_pos = op->param1 * b->cur_pos + op->param2 * p;
 				}
 			}
@@ -1169,8 +1169,8 @@ void Model::CalcMove(float elapsed)
 
 			// create matrices (model -> skeleton)
 			matrix t,r;
-			MatrixTranslation(t, b->cur_pos);
-			MatrixRotationQ(r, b->cur_ang);
+			t = matrix::translation( b->cur_pos);
+			r = matrix::rotation_q( b->cur_ang);
 			MatrixMultiply(b->dmatrix, t, r);
 		}
 
@@ -1282,7 +1282,7 @@ bool Model::Trace(const vector &p1, const vector &p2, const vector &dir, float r
 	if (!o.bounding_cube(tm, radius + range / 2))
 		return false;
 	// Strahl schneidet Ebene mit Modell (senkrecht zum Strahl)
-	PlaneFromPointNormal(pl,o,dir);
+	pl = plane::from_point_normal(o,dir);
 	_plane_intersect_line_(c,pl,p1,p2);
 	// Schnitt nah genau an Modell?
 	if (!o.bounding_cube(c, radius * 2))
@@ -1296,7 +1296,7 @@ bool Model::Trace(const vector &p1, const vector &p2, const vector &dir, float r
 // Trace-Test
 	// Kugeln
 	for (int i=0;i<phys->num_balls;i++){
-		PlaneFromPointNormal(pl, p[phys->ball[i].index],dir);
+		pl = plane::from_point_normal( p[phys->ball[i].index],dir);
 		if (!_plane_intersect_line_(c,pl,p1,p2))
 			continue;
 		if (_vec_length_fuzzy_(p[phys->ball[i].index]-c) > phys->ball[i].radius)

@@ -26,7 +26,7 @@ void *ActionModelAnimationTransformBones::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	quaternion q;
-	QuaternionRotationM(q, mat);
+	q = quaternion::rotation_m( mat);
 	vector dang = q.get_angles();
 	foreachi(int i, index, ii){
 		m->move[move].frame[frame].skel_ang[i] = VecAngAdd(old_data[ii], dang);

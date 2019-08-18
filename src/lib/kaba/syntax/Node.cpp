@@ -11,8 +11,6 @@
 
 namespace Kaba{
 
-extern bool next_extern;
-
 string kind2str(int kind) {
 	if (kind == KIND_VAR_LOCAL)
 		return "local";
@@ -105,13 +103,15 @@ string Node::sig() const {
 	if (kind == KIND_CONSTANT)
 		return t + as_const()->str();
 	if (kind == KIND_FUNCTION_CALL)
-		return as_func()->signature(true);
+		return as_func()->signature();
 	if (kind == KIND_POINTER_CALL)
 		return "";
 	if (kind == KIND_INLINE_CALL)
-		return as_func()->signature(true);
+		return as_func()->signature();
 	if (kind == KIND_VIRTUAL_CALL)
 		return t + i2s(link_no);//s->Functions[nr]->name;
+	if (kind == KIND_CONSTRUCTOR_AS_FUNCTION)
+		return as_func()->signature();
 	if (kind == KIND_STATEMENT)
 		return t + as_statement()->name;
 	if (kind == KIND_OPERATOR)
@@ -202,7 +202,6 @@ Variable *Block::add_var(const string &name, const Class *type) {
 	if (get_var(name))
 		function->owner->do_error(format("variable '%s' already declared in this context", name.c_str()));
 	Variable *v = new Variable(name, type);
-	v->is_extern = next_extern;
 	function->var.add(v);
 	vars.add(v);
 	return v;
@@ -218,9 +217,7 @@ Variable *Block::get_var(const string &name) {
 }
 
 const Class *Block::name_space() const {
-	if (function->_class)
-		return function->_class;
-	return function->owner->base_class;
+	return function->name_space;
 }
 
 

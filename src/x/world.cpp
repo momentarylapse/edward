@@ -335,7 +335,7 @@ bool GodLoadWorldFromLevelData()
 	for (int i=0;i<World.skybox.num;i++){
 		World.skybox[i] = LoadModel(LevelData.skybox_filename[i]);
 		if (World.skybox[i])
-			QuaternionRotationV(World.skybox[i]->ang, LevelData.skybox_ang[i]);
+			World.skybox[i]->ang = quaternion::rotation_v( LevelData.skybox_ang[i]);
 		LevelData.skybox_filename[i].clear();
 	}
 	LevelData.skybox_filename.clear();
@@ -350,7 +350,7 @@ bool GodLoadWorldFromLevelData()
 	foreachi(LevelDataObject &o, LevelData.object, i)
 		if (o.filename.num > 0){
 			quaternion q;
-			QuaternionRotationV(q, o.ang);
+			q = quaternion::rotation_v( o.ang);
 			Object *oo = GodCreateObject(o.filename, o.name, o.pos, q, i);
 			ok &= (oo >= 0);
 			if (oo){
@@ -1352,13 +1352,13 @@ inline void draw_pmv(Array<PartialModelView> &vp)
 	vector pos = cur_cam->pos;
 	vector dir = cur_cam->ang * vector::EZ;
 	quaternion a2;
-	a2 = cur_cam->ang * quaternion(vector(0, +0.9f, 0));
+	a2 = cur_cam->ang * quaternion::rotation_v(vector(0, +0.9f, 0));
 	vector dir_l = a2 * vector::EZ;
-	a2 = cur_cam->ang * quaternion(vector(0, -0.9f, 0));
+	a2 = cur_cam->ang * quaternion::rotation_v(vector(0, -0.9f, 0));
 	vector dir_r = a2 * vector::EZ;
-	a2 = cur_cam->ang * quaternion(vector(+1.0f, 0, 0));
+	a2 = cur_cam->ang * quaternion::rotation_v(vector(+1.0f, 0, 0));
 	vector dir_t = a2 * vector::EZ;
-	a2 = cur_cam->ang * quaternion(vector(-1.0f, 0, 0));
+	a2 = cur_cam->ang * quaternion::rotation_v(vector(-1.0f, 0, 0));
 	vector dir_b = a2 * vector::EZ;
 	
 	for (int i=0;i<vp.num;i++){

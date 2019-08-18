@@ -337,7 +337,7 @@ void pm_tree_get_list(LightmapPhotonMap *lm, const vector &p, const vector &n, i
 
 		float d2 = (p - t->p->pos).length_sqr();
 		//printf("%f  %d\n", d2, b);
-		if ((d2 < max_r2) && (VecDotProduct(n, t->p->n) > 0.7f)){
+		if ((d2 < max_r2) && (vector::dot(n, t->p->n) > 0.7f)){
 			//printf("----found!!! %f\n", d2);
 			t->p->tree_r2[thread_id] = d2;
 			pm_insert(t->p, l, lnum, thread_id);

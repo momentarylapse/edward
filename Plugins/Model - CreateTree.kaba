@@ -7,12 +7,10 @@ const float BRANCH_ANGLE = 0.5
 const float DIR_RAND = 0.2
 
 vector get_rotated(vector dir)
-	vector v1 = VecCrossProduct(dir, e_x)
-	v1.normalize()
-	vector v2 = VecCrossProduct(dir, v1)
+	vector v1 = vector.cross(dir, e_x).normalized()
+	vector v2 = vector.cross(dir, v1)
 	float w = rand(2 * pi)
-	vector bdir = dir * 0.5 + cos(w) * v1 + sin(w) * v2
-	bdir.normalize()
+	vector bdir = (dir * 0.5 + cos(w) * v1 + sin(w) * v2).normalized()
 	return bdir
 
 void branch(vector pos0, vector dir0, int num, float radius, float length)
@@ -24,7 +22,7 @@ void branch(vector pos0, vector dir0, int num, float radius, float length)
 		dir.x += rand(DIR_RAND * 2) - DIR_RAND
 		dir.y += 0.5
 		dir.z += rand(DIR_RAND * 2) - DIR_RAND
-		dir.normalize()
+		dir = dir.normalized()
 		p += dir * length
 		pos.add(p)
 		

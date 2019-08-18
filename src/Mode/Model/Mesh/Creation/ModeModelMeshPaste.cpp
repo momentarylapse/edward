@@ -69,7 +69,7 @@ void ModeModelMeshPaste::updateGeometry()
 	if (geo)
 		delete(geo);
 	matrix m;
-	MatrixTranslation(m, multi_view->getCursor3d() - dpos0);
+	m = matrix::translation( multi_view->getCursor3d() - dpos0);
 	geo = new Geometry;
 	geo->add(mode_model_mesh->temp_geo);
 	geo->transform(m);

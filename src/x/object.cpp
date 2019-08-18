@@ -58,10 +58,10 @@ Object::Object()
 	mass = 10000.0f;
 	mass_inv = 0;
 	radius = 30000000;
-	Matrix3Identity( theta_0 );
-	Matrix3Identity( theta );
+	theta_0 = matrix3::ID;
+	theta = matrix3::ID;
 	memset(&theta_inv, 0, sizeof(theta_inv));
-	MatrixIdentity(_matrix);
+	_matrix = matrix::ID;
 	//theta = theta * 10000000.0f;
 	g_factor = 1;
 	active_physics = false;
@@ -82,7 +82,7 @@ void Object::AddForce(const vector &f, const vector &rho)
 	if (!active_physics)
 		return;
 	force_ext += f;
-	torque_ext += VecCrossProduct(rho, f);
+	torque_ext += vector::cross(rho, f);
 	//TestVectorSanity(f, "f addf");
 	//TestVectorSanity(rho, "rho addf");
 	//TestVectorSanity(torque, "Torque addf");
@@ -202,10 +202,10 @@ void Object::UpdateTheta()
 {
 	if (active_physics){
 		matrix3 r,r_inv;
-		Matrix3RotationQ(r, ang);
-		Matrix3Transpose(r_inv, r);
+		r = matrix3::rotation_q( ang);
+		r_inv = r.transpose();
 		theta = (r * theta_0 * r_inv);
-		Matrix3Inverse(theta_inv, theta);
+		theta_inv = theta.inverse();
 	}else{
 		// Theta and ThetaInv already = identity
 		memset(&theta_inv, 0, sizeof(matrix3));
@@ -215,8 +215,8 @@ void Object::UpdateTheta()
 void Object::UpdateMatrix()
 {
 	matrix trans,rot;
-	MatrixRotationQ(rot, ang);
-	MatrixTranslation(trans, pos);
+	rot = matrix::rotation_q( ang);
+	trans = matrix::translation( pos);
 	MatrixMultiply(_matrix, trans, rot);
 }
 

@@ -77,6 +77,7 @@ class ModelPolygon extends MultiViewSingleData
 	vector temp_normal
 	bool normal_dirty, triangulation_dirty
 	int material
+	void __init__()
 
 // only for use in MultiView...
 class ModelSkinVertexDummy extends MultiViewSingleData
@@ -147,6 +148,7 @@ class ModelBone extends MultiViewSingleData
 
 	// for editing
 	matrix matrix
+	void __init__()
 
 class ModelFrame
 	// skeleton animation
@@ -192,6 +194,7 @@ class ModelSurface extends MultiViewSingleData
 	bool is_closed
 
 	void *model
+	void __init__()
 
 class Geometry
 	ModelVertex[] vertex
@@ -364,12 +367,14 @@ class WorldTerrain extends MultiViewSingleData
 	int show_texture
 	bool changed
 	Terrain *terrain
+	void __init__()
 
 
 class WorldObject extends MultiViewSingleData
 	string filename, name
 	Model *object
 	vector ang
+	void __init__()
 
 
 

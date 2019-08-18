@@ -39,7 +39,7 @@ void *ActionWorldRotateObjects::execute(Data *d)
 {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	quaternion q;
-	QuaternionRotationM(q, mat);
+	q = quaternion::rotation_m( mat);
 	foreachi(int i, index, ii){
 		w->Objects[i].pos = mat * old_data[ii];
 		w->Objects[i].Ang = VecAngAdd(old_ang[ii], q.get_angles());

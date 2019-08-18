@@ -370,9 +370,9 @@ GeometryTeapot::GeometryTeapot(const vector &pos, float radius, int samples)
 	weld(0.01f / samples);
 
 	matrix rot, trans, scale;
-	MatrixRotationX(rot, - pi / 2);
-	MatrixTranslation(trans, pos - vector::EY * radius / 2);
-	MatrixScale(scale, radius / 3, radius / 3, radius / 3);
+	rot = matrix::rotation_x( - pi / 2);
+	trans = matrix::translation( pos - vector::EY * radius / 2);
+	scale = matrix::scale( radius / 3, radius / 3, radius / 3);
 	transform(trans * rot * scale);
 }
 

@@ -1,4 +1,5 @@
 use hui
+use file
 use "api.kaba"
 use "helper.kaba"
 
@@ -10,7 +11,7 @@ quaternion xang(vector ang)
 	vector ax = e_z
 	if l > 0
 		ax = ang / l
-	return QuaternionRotationA(ax, l)
+	return quaternion.rotation_a(ax, l)
 
 float pain(vector[] va, vector[] vb, vector ang)
 	let q = xang(ang)
@@ -46,7 +47,7 @@ void import_frame(vector[] p, int frame_no)
 	quaternion[] ang
 	for b,i in data_model.bone
 		pos.add(v_0)
-		ang.add(q_id)
+		ang.add(quaternion.ID)
 	for b,i in data_model.bone
 		if b.parent < 0
 			pos[i] = p[i] - data_model.bone[i].pos
@@ -93,7 +94,7 @@ void import_frame(vector[] p, int frame_no)
 	print("scale: " + scale)*/
 
 void _import(string filename)
-	let f = FileOpenText(filename)
+	let f = Filesystem.open_text(filename)
 	string t
 	int num_bones, num_frames
 	f >> num_frames
@@ -104,7 +105,7 @@ void _import(string filename)
 	data_model.add_animation(anim_index, MOVE_TYPE_SKELETAL)
 	data_model.animation_set_data(anim_index, "new", 5, 0)
 	
-	matrix mat = MatrixRotation(vector(0.30,0,-0.15))
+	matrix mat = matrix.rotation(vector(0.30,0,-0.15))
 	
 	let dlg = new Dialog("", 300, 30, edward, false)
 	dlg.add_progress_bar("", 0, 0, "progress")

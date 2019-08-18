@@ -43,9 +43,9 @@ void SkinGenerator::init_projective(MultiView::Window *win)
 {
 	rect d = win->dest;
 	matrix s, t1, t2;
-	MatrixScale(s, nix::target_width / (d.x2 - d.x1) / 2, - nix::target_height / (d.y2 - d.y1) / 2, 1);
-	MatrixTranslation(t2, vector(- d.x1 / nix::target_width * 2, - d.y1 / nix::target_height * 2, 0));
-	MatrixTranslation(t1, vector(1, -1, 0));
+	s = matrix::scale( nix::target_width / (d.x2 - d.x1) / 2, - nix::target_height / (d.y2 - d.y1) / 2, 1);
+	t2 = matrix::translation( vector(- d.x1 / nix::target_width * 2, - d.y1 / nix::target_height * 2, 0));
+	t1 = matrix::translation( vector(1, -1, 0));
 	init_projective(t2 * s * t1 * win->pv_matrix);
 }
 
@@ -84,7 +84,7 @@ void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, i
 	mm._21 = sy;
 	mm._22 = p.side.num;
 	matrix imm;
-	MatrixInverse(imm, mm);
+	imm = mm.inverse();
 	vector uu = imm * vector(sux, suy, su);
 	vector vv = imm * vector(svx, svy, sv);
 	m = matrix::ID;
@@ -95,8 +95,7 @@ void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, i
 	m._11 = vv.y;
 	m._13 = vv.z;
 	m._22 = 0;
-	matrix iR;
-	MatrixTranspose(iR, R);
+	matrix iR = R.inverse();
 	m = m * iR;
 }
 

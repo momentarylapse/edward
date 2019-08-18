@@ -146,8 +146,8 @@ void Window::drawGrid()
 	// vertical
 	n=vux2-vux1;
 	n/=n.length_fuzzy();	//n.normalize();
-	va=n*VecDotProduct(n,vux1);
-	vb=n*VecDotProduct(n,vux2);
+	va=n*vector::dot(n,vux1);
+	vb=n*vector::dot(n,vux2);
 	fa=(va.x+va.y+va.z)/D;
 	fb=(vb.x+vb.y+vb.z)/D;
 	if (fa>fb){	t=fa;	fa=fb;	fb=t;	}
@@ -162,8 +162,8 @@ void Window::drawGrid()
 	// horizontal
 	n=vuy2-vuy1;
 	n/=n.length_fuzzy();	//-normalize(n);
-	va=n*VecDotProduct(n,vuy1);
-	vb=n*VecDotProduct(n,vuy2);
+	va=n*vector::dot(n,vuy1);
+	vb=n*vector::dot(n,vuy2);
 	fa=(va.x+va.y+va.z)/D;
 	fb=(vb.x+vb.y+vb.z)/D;
 	if (fa>fb){	t=fa;	fa=fb;	fb=t;	}
@@ -187,23 +187,23 @@ quaternion view_ang(int type, Camera *cam)
 {
 	quaternion ang;
 	if (type == VIEW_FRONT){
-		QuaternionRotationA(ang, vector::EY, -pi);
+		ang = quaternion::rotation_a( vector::EY, -pi);
 	}else if (type == VIEW_BACK){
 		ang = quaternion::ID;
 	}else if (type == VIEW_RIGHT){
-		QuaternionRotationA(ang, vector::EY, -pi/2);
+		ang = quaternion::rotation_a( vector::EY, -pi/2);
 	}else if (type == VIEW_LEFT){
-		QuaternionRotationA(ang, vector::EY, pi/2);
+		ang = quaternion::rotation_a( vector::EY, pi/2);
 	}else if (type == VIEW_TOP){
-		QuaternionRotationA(ang, vector::EX, pi/2);
+		ang = quaternion::rotation_a( vector::EX, pi/2);
 	}else if (type == VIEW_BOTTOM){
-		QuaternionRotationA(ang, vector::EX, -pi/2);
+		ang = quaternion::rotation_a( vector::EX, -pi/2);
 	}else if (type == VIEW_PERSPECTIVE){
 		ang = cam->ang;
 	}else if (type == VIEW_ISOMETRIC){
 		ang = cam->ang;
 	}else if (type == VIEW_2D){
-		QuaternionRotationA(ang, vector::EY, -pi);
+		ang = quaternion::rotation_a( vector::EY, -pi);
 	}
 	return ang;
 }
@@ -240,15 +240,15 @@ void set_projection_matrix(Window *w)
 	if (w->type == VIEW_PERSPECTIVE){
 		float height = w->dest.height();
 		nix::SetProjectionPerspectiveExt(cx, cy, height, height, r / 1000, r * 1000);
-		MatrixScale(w->reflection_matrix, 1, -1, 1);
+		w->reflection_matrix = matrix::scale( 1, -1, 1);
 	}else if (w->type == VIEW_2D){
 		float height = w->zoom();
 		nix::SetProjectionOrthoExt(cx, cy, -height, height, -1, 1);
-		MatrixScale(w->reflection_matrix, -1, 1, 1);
+		w->reflection_matrix = matrix::scale( -1, 1, 1);
 	}else{
 		float height = w->zoom();
 		nix::SetProjectionOrthoExt(cx, cy, height, -height, - r * 100, r * 100);
-		MatrixScale(w->reflection_matrix, 1, -1, 1);
+		w->reflection_matrix = matrix::scale( 1, -1, 1);
 	}
 	w->projection_matrix = nix::projection_matrix;
 
@@ -281,7 +281,7 @@ void Window::draw()
 	nix::SetViewPosAng(pos, local_ang);
 	view_matrix = nix::view_matrix;
 	pv_matrix = projection_matrix * view_matrix;
-	MatrixInverse(ipv_matrix, pv_matrix);
+	ipv_matrix = pv_matrix.inverse();
 
 
 	nix::SetWorldMatrix(matrix::ID);

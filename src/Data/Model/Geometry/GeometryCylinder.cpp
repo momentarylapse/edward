@@ -73,11 +73,11 @@ void GeometryCylinder::__init__(const vector& pos1, const vector& pos2, float ra
 matrix make_frame(const vector &pos, const vector &dir, const vector &up, const vector right)
 {
 	matrix rot = matrix::ID, trans;
-	MatrixTranslation(trans, pos);
+	trans = matrix::translation( pos);
 	*(vector*)&rot.e[0] = right;
 	*(vector*)&rot.e[4] = up;
 	*(vector*)&rot.e[8] = dir;
-	MatrixTranspose(rot, rot);
+	rot = rot.transpose();
 	return trans * rot;
 }
 
@@ -93,7 +93,7 @@ static Geometry half_ball(float radius, int edges, bool upper)
 			ball.polygon.erase(i);
 	}
 	matrix rot;
-	MatrixRotationX(rot, pi/2);
+	rot = matrix::rotation_x( pi/2);
 	ball.transform(rot);
 	ball.removeUnusedVertices();
 	return ball;

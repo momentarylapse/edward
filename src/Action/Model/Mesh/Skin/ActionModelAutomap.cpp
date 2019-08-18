@@ -157,7 +157,7 @@ void Island::map_primitive(DataModel *m)
 
 	// rotate
 	matrix rot;
-	MatrixRotationZ(rot, -phi_min);
+	rot = matrix::rotation_z( -phi_min);
 	for (vector &v: skin)
 		v = rot * v;
 

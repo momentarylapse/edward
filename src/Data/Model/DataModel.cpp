@@ -123,7 +123,7 @@ void DataModel::MetaData::reset()
 	active_physics = true;
 	passive_physics = true;
 	auto_generate_tensor = true;
-	Matrix3Identity(inertia_tensor);
+	inertia_tensor = matrix3::ID;
 
 	// object data
 	name = "";
@@ -1880,7 +1880,7 @@ matrix3 DataModel::generateInertiaTensor(float mass)
 		t._21 = t._12;
 		t._02 = t._20;
 	}else
-		Matrix3Identity(t);
+		t = matrix3::ID;
 
 	return t;
 }
@@ -2251,9 +2251,9 @@ ModelFrame ModelMove::interpolate(float time)
 		for (int i=0; i<n; i++){
 			f.skel_dpos[i] = (1 - t) * f0.skel_dpos[i] + t * f1.skel_dpos[i];
 			quaternion q0, q1, q;
-			QuaternionRotationV(q0, f0.skel_ang[i]);
-			QuaternionRotationV(q1, f1.skel_ang[i]);
-			QuaternionInterpolate(q, q0, q1, t);
+			q0 = quaternion::rotation_v( f0.skel_ang[i]);
+			q1 = quaternion::rotation_v( f1.skel_ang[i]);
+			q = quaternion::interpolate( q0, q1, t);
 			f.skel_ang[i] = q.get_angles();
 		}
 	}

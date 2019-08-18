@@ -274,14 +274,14 @@ void ExecuteCamPoint(Camera *view)
 		ExecuteCamPoint(view);
 		return;
 	}else if (p->type == CPKSetCamAng){
-		view->ang = p->ang;
+		view->ang = quaternion::rotation_v(p->ang);
 		view->script_rot_1 = v_0;
 		view->cam_point_nr ++;
 		ExecuteCamPoint(view);
 		return;
 	}else if (p->type == CPKSetCamPosAng){
 		view->pos = p->pos;
-		view->ang = p->ang;
+		view->ang = quaternion::rotation_v(p->ang);
 		view->script_rot_1 = v_0;
 		if (p->duration <= 0){
 			view->cam_point_nr ++;
@@ -311,7 +311,7 @@ void ExecuteCamPoint(Camera *view)
 		if (view->cam_point_nr>0){
 			view->pos = view->cam_point[view->cam_point_nr - 1].pos;
 			view->vel = view->cam_point[view->cam_point_nr - 1].vel;
-			view->ang = view->cam_point[view->cam_point_nr - 1].ang;
+			view->ang = quaternion::rotation_v(view->cam_point[view->cam_point_nr - 1].ang);
 		}
 		SetAim(	view,
 				p->pos, p->vel, p->ang,
@@ -362,7 +362,7 @@ void Camera::OnIterate(float dt)
 				vel = vel_1;
 				vel_rt = vel * Engine.TimeScale;
 			}
-			ang = ang_1;
+			ang = quaternion::rotation_v(ang_1);
 			if (cam_point_nr >= 0){
 				cam_point_nr ++;
 				ExecuteCamPoint(this);
@@ -387,7 +387,7 @@ void Camera::OnIterate(float dt)
 			// linear angular interpolation
 			//View[i]->Ang=VecAngInterpolate(    ...View[i]->Ang0 + View[i]->Rot*t;
 			// cubic angular interpolation
-			ang= a_ang*t3 + b_ang*t2 + script_rot_0*t + ang_0;
+			ang= quaternion::rotation_v(a_ang*t3 + b_ang*t2 + script_rot_0*t + ang_0);
 		}
 	}else{
 
@@ -443,8 +443,7 @@ void Camera::SetView()
 	nix::SetProjectionPerspectiveExt(center_x, center_y, height * scale_x, height, min_depth, max_depth);
 	nix::SetViewPosAng(view_pos, ang);
 	
-	m_all = nix::projection_matrix * nix::view_matrix;
-	MatrixInverse(im_all, m_all);
+	m_all = (nix::projection_matrix * nix::view_matrix).inverse();
 
 	// clipping planes
 	for (int i=0;i<clipping_plane.num;i++){
@@ -469,8 +468,7 @@ void Camera::SetViewLocal()
 	nix::SetProjectionPerspectiveExt(center_x, center_y, height * scale_x, height, 0.01f, 1000000.0f);
 	nix::SetViewPosAng(v_0, ang);
 	
-	m_all = nix::projection_matrix * nix::view_matrix;
-	MatrixInverse(im_all, m_all);
+	m_all = (nix::projection_matrix * nix::view_matrix).inverse();
 }
 
 vector Camera::Project(const vector &v)

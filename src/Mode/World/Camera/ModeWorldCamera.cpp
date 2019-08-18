@@ -147,7 +147,7 @@ void ModeWorldCamera::previewUpdate()
 	preview_time += 0.050f;
 	float duration = data->GetDuration();
 	multi_view->cam.pos = inter_pos->get(preview_time / duration);
-	multi_view->cam.ang = inter_ang->get(preview_time / duration);
+	multi_view->cam.ang = quaternion::rotation_v(inter_ang->get(preview_time / duration));
 
 	ed->force_redraw();
 	if (preview_time > duration)
