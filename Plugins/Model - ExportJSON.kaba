@@ -30,6 +30,14 @@ string materialToJson(ModelMaterial m)
 	str += "	}"
 	return str
 
+vector bone_anim_pos(ModelFrame f, int i)
+	int parent = data_model.bone[i].parent
+	if parent >= 0
+		vector dpos = data_model.bone[i].pos - data_model.bone[parent].pos
+		let q = QuaternionRotationV(f.skel_ang[parent])
+		return bone_anim_pos(f, parent) + q * dpos
+	return f.skel_dpos[i] + data_model.bone[i].pos
+
 string moveToJson(ModelMove m)
 	string str
 	str += "	{\n"
@@ -39,16 +47,23 @@ string moveToJson(ModelMove m)
 	str += "		'hierarchy': [\n"
 	for b,i in data_model.bone
 		str += "			{\n"
-		str += "				'parent': " + b.parent + ",\n"
+		str += "				'parent': " + /*b.parent + */ "-1,\n"
 		str += "				'keys': [\n"
 		for f,j in m.frame
 			let q = QuaternionRotationV(f.skel_ang[i])
+			let dpos = bone_anim_pos(f, i) // - b.pos
+			/*if b.parent >= 0
+				let dq = QuaternionRotationV(f.skel_ang[b.parent])
+				//dpos -= dq * bone_anim_pos(f, b.parent)
+				q *= dq.bar()*/
+			print(dpos)
 			str += "					{\n"
 			str += "						'time': " + (j / m.frames_per_sec_const) + ",\n"
-			str += "						'pos': [0,0,0],\n"
+			str += "						'pos': [" + vecToJson(dpos) + "],\n"
 			str += "						'rot': [" + qToJson(q) + "],\n"
 			str += "						'scl': [1,1,1]\n"
 			str += "					},\n"
+		// looping...
 		let q = QuaternionRotationV(m.frame[0].skel_ang[i])
 		str += "					{\n"
 		str += "						'time': " + (m.frame.num / m.frames_per_sec_const) + ",\n"
@@ -68,9 +83,12 @@ string moveToJson(ModelMove m)
 string boneToJson(ModelBone b)
 	string str
 	str += "	{\n"
-	str += "		'parent': " + b.parent + ",\n"
+	str += "		'parent': " + /*b.parent + */ "-1,\n"
+	vector pos = b.pos
+	/*if b.parent >= 0
+		pos -= data_model.bone[b.parent].pos*/
 	str += "		'name': 'xxx',\n"
-	str += "		'pos': [" + b.pos.x + ", " + b.pos.y + ", " + b.pos.z + "],\n"
+	str += "		'pos': [" + vecToJson(pos) + "],\n"
 	str += "		'scl': [1,1,1],\n"
 	str += "		'rot': [0,0,0],\n"
 	str += "		'rotq': [0,0,0,1]\n"
@@ -80,7 +98,7 @@ string boneToJson(ModelBone b)
 void main()
 	if !HuiFileDialogSave(edward, "Save JSON", "", "*.js", "*.js")
 		return
-	File *f = FileCreate(HuiFilename)
+	File *f = FileCreateText(HuiFilename)
 	
 	int n_tria = 0
 	for s in data_model.surface
@@ -157,7 +175,7 @@ void main()
 				str += "	42, " + va + ", " + vb + ", " + vc + ", " + p.material + ", "
 				str += "0, 0, 0, "
 				str += "" + na + ", " + nb + ", " + nc
-				if (is < data_model.surface.num - 1) or (ip < s.polygon.num - 1) or (k < p.side.num - 3)
+				if (is < data_model.surface.num - 1) or (ip < s.polygon.num - 1) or (k < p.side.num - 1)
 					str += ",\n"
 			n_normals += p.side.num
 	str += "],\n"
@@ -186,10 +204,14 @@ void main()
 			str += ", "
 	str += "],\n"
 	str += "'animations': [\n"
+	bool first_anim = true
 	for m,i in data_model.move
-		str += moveToJson(m)
-		if i < data_model.move.num - 1
+		if len(m.frame) == 0
+			continue
+		if !first_anim
 			str += ",\n"
+		str += moveToJson(m)
+		first_anim = false
 	str += "]\n"
 	str += "}"
 	str = str.replace("'", "\"")
