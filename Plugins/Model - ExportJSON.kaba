@@ -48,15 +48,15 @@ string moveToJson(ModelMove m)
 	str += "		'hierarchy': [\n"
 	for b,i in data_model.bone
 		str += "			{\n"
-		str += "				'parent': " + /*b.parent + */ "-1,\n"
+		str += "				'parent': -1,\n" #b.parent
 		str += "				'keys': [\n"
 		for f,j in m.frame
 			let q = quaternion.rotation_v(f.skel_ang[i])
-			let dpos = bone_anim_pos(f, i) // - b.pos
-			/*if b.parent >= 0
-				let dq = QuaternionRotationV(f.skel_ang[b.parent])
-				//dpos -= dq * bone_anim_pos(f, b.parent)
-				q *= dq.bar()*/
+			let dpos = bone_anim_pos(f, i) # - b.pos
+#			if b.parent >= 0
+#				let dq = QuaternionRotationV(f.skel_ang[b.parent])
+#				#dpos -= dq * bone_anim_pos(f, b.parent)
+#				q *= dq.bar()
 			print(dpos)
 			str += "					{\n"
 			str += "						'time': " + (j / m.frames_per_sec_const) + ",\n"
@@ -64,7 +64,7 @@ string moveToJson(ModelMove m)
 			str += "						'rot': [" + qToJson(q) + "],\n"
 			str += "						'scl': [1,1,1]\n"
 			str += "					},\n"
-		// looping...
+		# looping...
 		let q = quaternion.rotation_v(m.frame[0].skel_ang[i])
 		str += "					{\n"
 		str += "						'time': " + (m.frame.num / m.frames_per_sec_const) + ",\n"
@@ -84,10 +84,10 @@ string moveToJson(ModelMove m)
 string boneToJson(ModelBone b)
 	string str
 	str += "	{\n"
-	str += "		'parent': " + /*b.parent + */ "-1,\n"
+	str += "		'parent': -1,\n" #b.parent
 	vector pos = b.pos
-	/*if b.parent >= 0
-		pos -= data_model.bone[b.parent].pos*/
+	#if b.parent >= 0
+#		pos -= data_model.bone[b.parent].pos
 	str += "		'name': 'xxx',\n"
 	str += "		'pos': [" + vecToJson(pos) + "],\n"
 	str += "		'scl': [1,1,1],\n"
@@ -119,23 +119,23 @@ void main()
 	str += "},\n"
 	str += "'influencesPerVertex': 1,\n"
 	str += "'scale': 1.000,\n"
-	/*str += "'materials': [\n"
-	str += "	{\n"
-	str += "		'DbgColor' : 15658734,\n"
-	str += "		'DbgIndex' : 0,\n"
-	str += "		'DbgName' : 'Michi 1',\n"
-	str += "		'blending' : 'NormalBlending',\n"
-	str += "		'colorAmbient' : [0.75, 0.75, 0.75],\n"
-	str += "		'colorDiffuse' : [1.0, 1.0, 1.0],\n"
-	str += "		'colorSpecular' : [0.5, 0.5, 0.5],\n"
-	str += "		'depthTest' : true,\n"
-	str += "		'depthWrite' : true,\n"
-	str += "		'shading' : 'Phong',\n"
-	str += "		'specularCoef' : 50,\n"
-	str += "		'transparency' : 1.0,\n"
-	str += "		'transparent' : false,\n"
-	str += "		'vertexColors' : false\n"
-	str += "	}],\n"*/
+#	str += "'materials': [\n"
+#	str += "	{\n"
+#	str += "		'DbgColor' : 15658734,\n"
+#	str += "		'DbgIndex' : 0,\n"
+#	str += "		'DbgName' : 'Michi 1',\n"
+#	str += "		'blending' : 'NormalBlending',\n"
+#	str += "		'colorAmbient' : [0.75, 0.75, 0.75],\n"
+#	str += "		'colorDiffuse' : [1.0, 1.0, 1.0],\n"
+#	str += "		'colorSpecular' : [0.5, 0.5, 0.5],\n"
+#	str += "		'depthTest' : true,\n"
+#	str += "		'depthWrite' : true,\n"
+#	str += "		'shading' : 'Phong',\n"
+#	str += "		'specularCoef' : 50,\n"
+#	str += "		'transparency' : 1.0,\n"
+#	str += "		'transparent' : false,\n"
+#	str += "		'vertexColors' : false\n"
+#	str += "	}],\n"
 	str += "'materials': [\n"
 	for m,i in data_model.material
 		str += materialToJson(m)
@@ -180,12 +180,12 @@ void main()
 					str += ",\n"
 			n_normals += p.side.num
 	str += "],\n"
-	/*str += "'morphTargets': [\n"
-	for int i, 0, data_model.Move.num
-		str += moveToJson(data_model.Move[i])
-		if i < data_model.Move.num - 1
-			str += ",\n"
-	str += "],\n"*/
+#	str += "'morphTargets': [\n"
+#	for int i, 0, data_model.Move.num
+#		str += moveToJson(data_model.Move[i])
+#		if i < data_model.Move.num - 1
+#			str += ",\n"
+#	str += "],\n"
 	str += "'bones': [\n"
 	for b,i in data_model.bone
 		str += boneToJson(b)

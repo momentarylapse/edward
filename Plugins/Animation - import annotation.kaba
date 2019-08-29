@@ -39,7 +39,7 @@ quaternion import_torso(vector[] p)
 		float wy = pain(va, vb, ang + eps * e_y)
 		float wz = pain(va, vb, ang + eps * e_z)
 		vector da = vector(wx - w0, wy - w0, wz - w0)
-		ang -= da// * 0.000001
+		ang -= da# * 0.000001
 	return xang(ang)
 
 void import_frame(vector[] p, int frame_no)
@@ -54,16 +54,16 @@ void import_frame(vector[] p, int frame_no)
 		else
 			int ip = b.parent
 			
-			// bone vector
+			# bone vector
 			vector bdpos = data_model.bone[i].pos - data_model.bone[ip].pos
-			//bdpos /= bdpos.length()
+			#bdpos /= bdpos.length()
 			vector dp = p[i] - p[ip]
-			/*dp /= dp.length()
-			vector ax = VecCrossProduct(bdpos, dp)
-			ax /= ax.length()
-			float ff = dp.length() / bdpos.length()
-			if ff < 1
-				dp.z = sqrt(bdpos.length_sqr() - dp.length_sqr())*/
+			#dp /= dp.length()
+#			vector ax = VecCrossProduct(bdpos, dp)
+#			ax /= ax.length()
+#			float ff = dp.length() / bdpos.length()
+#			if ff < 1
+#				dp.z = sqrt(bdpos.length_sqr() - dp.length_sqr())
 			let q = rot_onto(bdpos, dp)
 			ang[ip] = q
 	ang[0] = import_torso(p)
@@ -71,27 +71,27 @@ void import_frame(vector[] p, int frame_no)
 	for b,i in data_model.bone
 			data_model.animation_set_bone(anim_index, frame_no, i, pos[i], ang[i].angles())
 
-/*void guess_scale(int[] r, int num_frames, int num_bones)
-	float weight = 0
-	float ss = 0
-	for b,i in data_model.bone
-		if i >= num_bones
-			break
-		if b.parent < 0
-			continue
-		vector dpos = b.pos - data_model.bone[b.parent].pos
-		float w = dpos.length()
-		weight += w
-		float ml = 0
-		for f in 0:num_frames
-			int i0 = f*num_bones*2
-			int dx = r[i0 + i*2] - r[i0 + b.parent*2]
-			int dy = r[i0 + i*2+1] - r[i0 + b.parent*2+1]
-			float l = sqrt(dx*dx + dy*dy)
-			ml = max(ml, l)
-		ss += ml
-	scale = ss / weight * 0.8
-	print("scale: " + scale)*/
+#void guess_scale(int[] r, int num_frames, int num_bones)
+#	float weight = 0
+#	float ss = 0
+#	for b,i in data_model.bone
+#		if i >= num_bones
+#			break
+#		if b.parent < 0
+#			continue
+#		vector dpos = b.pos - data_model.bone[b.parent].pos
+#		float w = dpos.length()
+#		weight += w
+#		float ml = 0
+#		for f in 0:num_frames
+#			int i0 = f*num_bones*2
+#			int dx = r[i0 + i*2] - r[i0 + b.parent*2]
+#			int dy = r[i0 + i*2+1] - r[i0 + b.parent*2+1]
+#			float l = sqrt(dx*dx + dy*dy)
+#			ml = max(ml, l)
+#		ss += ml
+#	scale = ss / weight * 0.8
+#	print("scale: " + scale)
 
 void _import(string filename)
 	let f = Filesystem.open_text(filename)
@@ -121,11 +121,11 @@ void _import(string filename)
 			pp = mat * vector(pp.x*1.7,-pp.y*1.8,-pp.z)
 			p.add(pp)
 		import_frame(p, fi)
-		//if fi > 10
-		//	break
+		#if fi > 10
+		#	break
 		dlg.set_float("progress", i2f(fi) / i2f(num_frames))
 		HuiDoSingleMainLoop()
-		//HuiSleep(0.001)
+		#HuiSleep(0.001)
 	data_model.EndActionGroup()
 	delete f
 	delete dlg

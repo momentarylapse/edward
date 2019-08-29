@@ -1,4 +1,4 @@
-// b = q*a
+# b = q*a
 quaternion rot_onto(vector a, vector b)
 	vector n = vector.cross(a, b)
 	n /= n.length()
