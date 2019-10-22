@@ -61,6 +61,7 @@ struct Camera
 class ActionController;
 class CameraController;
 
+typedef bool HoverFunction(const SingleData *p, Window *win, vector &m, vector &tp, float &z, void *user_data);
 
 struct DataSet
 {
@@ -68,6 +69,7 @@ struct DataSet
 	DynamicArray *data;
 	bool selectable, drawable, movable, indexable;
 	void *user_data;
+	HoverFunction *func_hover;
 };
 
 
@@ -201,6 +203,7 @@ public:
 	void setMode(int mode);
 	void clearData(Data *_data);
 	void addData(int type, const DynamicArray &a, void *user_data, int flags);
+	void set_hover_func(int type, HoverFunction *f);
 	void SetViewStage(int *view_stage, bool allow_handle);
 	void reset();
 	void resetView();

@@ -58,44 +58,48 @@ void MeshSelectionModePolygon::onStart()
 }
 
 
-
-bool ModelPolygon::hover(MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data)
+bool poly_hover(ModelPolygon *pol, MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data, const Array<ModelVertex> &vertex)
 {
 	// care for the sense of rotation?
-	if (temp_normal * win->getDirection() > 0)
+	if (pol->temp_normal * win->getDirection() > 0)
 		return false;
 
 	DataModel *m = mode_model_mesh->data; // surf->model;
 
 	// project all points
 	Array<vector> p;
-	for (int k=0;k<side.num;k++){
-		vector pp = win->project(m->show_vertices[side[k].vertex].pos);
+	for (int k=0;k<pol->side.num;k++){
+		vector pp = win->project(vertex[pol->side[k].vertex].pos);
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
 		p.add(pp);
 	}
 
 	// test all sub-triangles
-	if (triangulation_dirty)
-		updateTriangulation(m->vertex);
-	for (int k=side.num-3; k>=0; k--){
-		int a = side[k].triangulation[0];
-		int b = side[k].triangulation[1];
-		int c = side[k].triangulation[2];
+	if (pol->triangulation_dirty)
+		pol->updateTriangulation(vertex);
+	for (int k=pol->side.num-3; k>=0; k--){
+		int a = pol->side[k].triangulation[0];
+		int b = pol->side[k].triangulation[1];
+		int c = pol->side[k].triangulation[2];
 		float f,g;
 		GetBaryCentric(M, p[a], p[b], p[c], f, g);
 		// cursor in triangle?
 		if ((f>0)&&(g>0)&&(f+g<1)){
-			vector va = m->show_vertices[side[a].vertex].pos;
-			vector vb = m->show_vertices[side[b].vertex].pos;
-			vector vc = m->show_vertices[side[c].vertex].pos;
+			vector va = vertex[pol->side[a].vertex].pos;
+			vector vb = vertex[pol->side[b].vertex].pos;
+			vector vc = vertex[pol->side[c].vertex].pos;
 			tp = va+f*(vb-va)+g*(vc-va);
 			z = win->project(tp).z;
 			return true;
 		}
 	}
 	return false;
+}
+bool ModelPolygon::hover(MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data)
+{
+	DataModel *m = mode_model_mesh->data; // surf->model;
+	return poly_hover(this, win, M, tp, z, user_data, m->show_vertices);
 }
 
 inline bool in_irect(const vector &p, rect &r)

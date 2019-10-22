@@ -14,7 +14,7 @@
 
 ModeModelAnimationSkeleton *mode_model_animation_skeleton = NULL;
 
-void DrawBone(const vector &r, const vector &d, const color &c, MultiView::Window *win);
+bool poly_hover(ModelPolygon *pol, MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data, const Array<ModelVertex> &vertex);
 
 ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(ModeBase* _parent) :
 	Mode<DataModel>("ModelAnimationSkeleton", _parent, ed->multi_view_3d, "menu_move"),
@@ -80,15 +80,28 @@ void ModeModelAnimationSkeleton::on_update(Observable* o, const string &message)
 	}
 }
 
+bool bone_hover(const MultiView::SingleData *pp, MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data) {
+	auto *me = (ModeModelAnimationSkeleton*)user_data;
+	for (auto &s: me->data->surface)
+		for (auto &p: s.polygon) {
+			if (pp == &mode_model_animation->bone[me->data->vertex[p.side[0].vertex].bone_index]) {
+				if (poly_hover(&p, win, m, tp, z, user_data, mode_model_animation->vertex))
+					return true;
+			}
+		}
+	return false;
+}
+
 void ModeModelAnimationSkeleton::on_set_multi_view()
 {
 	multi_view->clearData(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 
-	multi_view->addData(	MVD_SKELETON_BONE,
+	multi_view->addData(MVD_SKELETON_BONE,
 			mode_model_animation->bone,
-			NULL,
+			this,
 			MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT);
+	multi_view->set_hover_func(MVD_SKELETON_BONE, &bone_hover);
 }
 
 void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win)

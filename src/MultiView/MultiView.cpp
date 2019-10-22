@@ -238,6 +238,13 @@ void MultiView::addData(int type, const DynamicArray & a, void *user_data, int f
 	data.add(d);
 }
 
+void MultiView::set_hover_func(int type, HoverFunction *f)
+{
+	for (auto &d: data)
+		if (d.type == type)
+			d.func_hover = f;
+}
+
 void MultiView::SetViewStage(int *view_stage, bool allow_handle)
 {}
 
@@ -966,7 +973,11 @@ void MultiView::getHover()
 					continue;
 				float z;
 				vector tp, mop;
-				bool mo = sd->hover(mouse_win, m, tp, z, d.user_data);
+				bool mo = false;
+				if (d.func_hover)
+					mo = d.func_hover(sd, mouse_win, m, tp, z, d.user_data);
+				else
+					mo = sd->hover(mouse_win, m, tp, z, d.user_data);
 				if (mo){
 					if (z<z_min){
 						z_min = z;
