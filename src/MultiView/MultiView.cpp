@@ -141,7 +141,7 @@ MultiView::MultiView(bool mode3d) :
 	}
 	action_con = new ActionController(this);
 	cam_con = new CameraController(this);
-	m = v_0;
+	m = v = v_0;
 	holding_cursor = false;
 	holding_x = holding_y = 0;
 	allow_mouse_actions = true;
@@ -567,8 +567,10 @@ void MultiView::updateMouse()
 {
 	m.x = hui::GetEvent()->mx;
 	m.y = hui::GetEvent()->my;
+	m.z = 0;
 	v.x = hui::GetEvent()->dx;
 	v.y = hui::GetEvent()->dy;
+	v.z = 0;
 
 	lbut = hui::GetEvent()->lbut;
 	mbut = hui::GetEvent()->mbut;
