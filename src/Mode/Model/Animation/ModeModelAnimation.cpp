@@ -210,9 +210,8 @@ void ModeModelAnimation::updateSkeleton()
 			ModelBone &pb = data->bone[b.parent];
 			bone[i].pos = pb._matrix * (b.pos - pb.pos); // cur_mat * dpos_at_rest
 		}
-		matrix trans, rot;
-		trans = matrix::translation( bone[i].pos);
-		rot = matrix::rotation(f.skel_ang[i]);
+		auto trans = matrix::translation( bone[i].pos);
+		auto rot = matrix::rotation(f.skel_ang[i]);
 		b._matrix = trans * rot;
 		bone[i]._matrix = b._matrix;
 	}

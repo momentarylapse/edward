@@ -94,7 +94,8 @@ void ModeModelAnimationSkeleton::on_set_multi_view()
 void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win)
 {
 	mode_model_mesh->drawPolygons(win, mode_model_animation->vertex);
-	mode_model_skeleton->drawSkeleton(win, mode_model_animation->bone);
+	mode_model_skeleton->drawSkeleton(win, mode_model_animation->bone, true);
+	mode_model_mesh->drawSelection(win);
 }
 
 
@@ -123,6 +124,14 @@ void ModeModelAnimationSkeleton::updateSelection()
 						bc.is_selected = true;
 			}
 	}
+
+
+	// select geometry
+	for (auto &v: data->vertex)
+		v.is_selected = data->bone[v.bone_index].is_selected;
+	data->selectionFromVertices();
+
+	mode_model_mesh->fillSelectionBuffer(mode_model_animation->vertex);
 }
 
 void ModeModelAnimationSkeleton::copy()
@@ -144,7 +153,7 @@ void ModeModelAnimationSkeleton::copy()
 	}else{
 		temp.clear();
 		temp.add(mode_model_animation->cur_move()->frame[current_frame]);
-		ed->set_message(format(_("Animation von allen &d Knochen kopiert"), data->bone.num));
+		ed->set_message(format(_("Animation von allen %d Knochen kopiert"), data->bone.num));
 	}
 }
 
@@ -169,7 +178,7 @@ void ModeModelAnimationSkeleton::paste()
 		foreachi(ModelBone &b, data->bone, i)
 			if (b.is_selected)
 				data->animationSetBone(current_move, current_frame, i, temp[0].skel_dpos[i], temp[0].skel_ang[i]);
-		ed->set_message(format(_("Animation eingef&ugt -  auf &d Knochen"), n));
+		ed->set_message(format(_("Animation eingef&ugt -  auf %d Knochen"), n));
 	}
 	data->end_action_group();
 }
