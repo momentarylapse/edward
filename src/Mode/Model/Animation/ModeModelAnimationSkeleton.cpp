@@ -11,6 +11,8 @@
 #include "../Skeleton/ModeModelSkeleton.h"
 #include "../Animation/ModeModelAnimation.h"
 #include "../Mesh/ModeModelMesh.h"
+#include "../ModeModel.h"
+#include "../../../lib/nix/nix.h"
 
 ModeModelAnimationSkeleton *mode_model_animation_skeleton = NULL;
 
@@ -109,6 +111,28 @@ void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win)
 	mode_model_mesh->drawPolygons(win, mode_model_animation->vertex);
 	mode_model_skeleton->drawSkeleton(win, mode_model_animation->bone, true);
 	mode_model_mesh->drawSelection(win);
+
+
+	if ((multi_view->hover.index < 0) or (multi_view->hover.type != MVD_SKELETON_BONE))
+		return;
+
+	mode_model_mesh->vb_hover->clear();
+
+
+	for (auto &s: data->surface)
+		for (ModelPolygon &p: s.polygon)
+			if (data->vertex[p.side[0].vertex].bone_index == multi_view->hover.index)
+				p.addToVertexBuffer(mode_model_animation->vertex, mode_model_mesh->vb_hover, 1);
+
+
+	nix::SetWire(false);
+	nix::SetOffset(1.0f);
+	mode_model->setMaterialHover();
+	nix::Draw3D(mode_model_mesh->vb_hover);
+	nix::SetMaterial(White,White,Black,0,Black);
+	nix::SetAlpha(ALPHA_NONE);
+	nix::SetOffset(0);
+	nix::SetWire(multi_view->wire_mode);
 }
 
 
