@@ -1,5 +1,5 @@
 // NumKeyCodes
-95
+96
 // KeyCodes
 new
 312
@@ -99,6 +99,8 @@ create_new_material
 274
 choose_material
 18
+translate
+62
 rotate
 60
 scale
@@ -160,7 +162,7 @@ sounds
 import
 307
 texture
-62
+1086
 create_objects
 57
 terrain_create

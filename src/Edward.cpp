@@ -697,6 +697,7 @@ void Edward::load_key_codes()
 
 		event("easify_skin", NULL);
 		set_key_code("easify_skin", hui::KEY_CONTROL + hui::KEY_7); // TODO ...
+
 		FileClose(f);
 	}catch(...){
 
