@@ -61,7 +61,7 @@ void add_esp_add(Asm::InstructionWithParamsList *list,int d)
 void try_init_global_var(const Class *type, char* g_var, SyntaxTree *ps) {
 	if (type->is_array()) {
 		for (int i=0;i<type->array_length;i++)
-			try_init_global_var(type->parent, g_var + i * type->parent->size, ps);
+			try_init_global_var(type->param, g_var + i * type->param->size, ps);
 		return;
 	}
 	Function *cf = type->get_default_constructor();
@@ -88,14 +88,14 @@ static int64 _opcode_rand_state_ = 10000;
 
 void* get_nice_random_addr()
 {
-	int64 p = ((int_p)&Init) & 0xfffffffffffff000;
+	int64 p = ((int_p)&init) & 0xfffffffffffff000;
 	_opcode_rand_state_ = (_opcode_rand_state_ * 1664525 + 1013904223);
 	p += (int64)(_opcode_rand_state_ & 0x3fff) * 4096;
 	return (void*)p;
 
 }
 
-void* get_nice_memory(long size, bool executable)
+void* get_nice_memory(long size, bool executable, Script *script)
 {
 	if (size == 0)
 		return nullptr;
@@ -109,28 +109,32 @@ void* get_nice_memory(long size, bool executable)
 #else
 
 	int prot = PROT_READ | PROT_WRITE;
-	int flags = MAP_PRIVATE | MAP_ANONYMOUS;
+	int flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED_NOREPLACE;
 	if (executable){
 		prot |= PROT_EXEC;
 		flags |= MAP_EXECUTABLE;
 	}
 
 	// try in 32bit distance from current opcode
-	for (int i=0; i<100; i++){
+	for (int i=0; i<100000; i++){
 		void *addr0 = get_nice_random_addr();
 		//opcode = (char*)mmap(addr0, max_opcode, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED | MAP_ANONYMOUS | MAP_EXECUTABLE | MAP_32BIT, -1, 0);
 		mem = (char*)mmap(addr0, size, prot, flags, -1, 0);
-		if (config.verbose)
-			printf("%d  %p  ->  %p\n", i, addr0, mem);
 		if ((int_p)mem != -1){
+			if (config.verbose)
+				printf("%d  %p  ->  %p\n", i, addr0, mem);
 			if (labs((int_p)mem - (int_p)addr0) < 1000000000)
 				return mem;
-			else
-				munmap(mem, size);
+			munmap(mem, size);
 			if (config.verbose)
 				msg_write("...try again");
 		}
+		if (i > 5) {
+			prot |= PROT_EXEC;
+			flags |= MAP_EXECUTABLE;
+		}
 	}
+	script->do_error(format("och, can't allocate %dkb memory in a usable address range", size/1024));
 
 	// no?...ok, try anywhere
 	mem = (char*)mmap(nullptr, size, prot, flags, -1, 0);
@@ -154,7 +158,7 @@ void Script::allocate_opcode()
 	if (config.compile_os)
 		max_opcode *= 10;
 
-	opcode = (char*)get_nice_memory(max_opcode, true);
+	opcode = (char*)get_nice_memory(max_opcode, true, this);
 	if (config.verbose)
 		msg_write("opcode:  " + p2s(opcode));
 
@@ -186,7 +190,7 @@ void Script::allocate_memory()
 	for (auto *v: syntax->base_class->static_variables)
 		memory_size += mem_align(v->type->size, 4);
 
-	memory = (char*)get_nice_memory(memory_size, false);
+	memory = (char*)get_nice_memory(memory_size, false, this);
 	if (config.verbose)
 		msg_write("memory:  " + p2s(memory));
 	memory_size = 0;
@@ -208,7 +212,7 @@ void Script::update_constant_locations() {
 void Script::_map_global_variables_to_memory(char *mem, int &offset, char *address, const Class *name_space) {
 	for (Variable *v: name_space->static_variables) {
 		if (v->is_extern) {
-			v->memory = GetExternalLink(v->name);
+			v->memory = get_external_link(v->name);
 			if (!v->memory)
 				do_error_link("external variable " + v->name + " was not linked");
 		} else {
@@ -244,7 +248,7 @@ void Script::CompileOsEntryPoint() {
 			nf = index;
 	// call
 	if (nf>=0)
-		Asm::AddInstruction(opcode, opcode_size, Asm::INST_CALL, Asm::param_imm(0, 4));
+		Asm::add_instruction(opcode, opcode_size, Asm::INST_CALL, Asm::param_imm(0, 4));
 	TaskReturnOffset=opcode_size;
 	OCORA = Asm::OCParam;
 	align_opcode();
@@ -498,7 +502,7 @@ void parse_magic_linker_string(SyntaxTree *s)
 				if (x[0] == '\t'){
 					if (d and x.find(":")){
 						auto y = x.substr(1, -1).explode(":");
-						LinkExternal(y[0], d->get_symbol(y[1], s->script));
+						link_external(y[0], d->get_symbol(y[1], s->script));
 					}
 				}else{
 					d = get_dynamic_lib(x, s->script);
@@ -509,30 +513,20 @@ void parse_magic_linker_string(SyntaxTree *s)
 }
 
 // generate opcode
-void Script::compile()
-{
+void Script::compile() {
 	Asm::CurrentMetaInfo = syntax->asm_meta_info;
 
 	if (config.compile_os)
 		import_includes(this);
 
 	parse_magic_linker_string(syntax);
-
-	syntax->break_down_complicated_commands();
-
-	syntax->map_local_variables_to_stack();
 	
-	syntax->simplify_ref_deref();
-	syntax->simplify_shift_deref();
-
-	syntax->pre_processor();
-	syntax->make_functions_inline();
-
-	if (config.verbose)
-		syntax->show("comp:a");
+	syntax->digest();
 
 	allocate_memory();
 	map_global_variables_to_memory();
+
+	// useful because some constants might have ended up outside of RIP-relative addressing!
 	if (!config.compile_os)
 		map_constants_to_memory(memory, memory_size, memory);
 
@@ -550,10 +544,13 @@ void Script::compile()
 
 
 
+	if (config.verbose)
+		syntax->show("compile:b");
+
 	syntax->pre_processor_addresses();
 
 	if (config.verbose)
-		syntax->show("comp:b");
+		syntax->show("compile:eval-addr");
 
 
 // compile functions into Opcode

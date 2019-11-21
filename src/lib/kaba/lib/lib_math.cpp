@@ -1,9 +1,9 @@
-#include <algorithm>
 #include "../../file/file.h"
 #include "../../math/math.h"
 #include "../kaba.h"
 #include "../../config.h"
 #include "common.h"
+#include "exception.h"
 
 #ifdef _X_USE_ALGEBRA_
 	#include "../../algebra/algebra.h"
@@ -35,6 +35,7 @@ namespace Kaba{
 // we're always using math types
 #define type_p(p)			(void*)p
 
+extern const Class *TypeStringList;
 extern const Class *TypeComplexList;
 extern const Class *TypeFloatList;
 extern const Class *TypeVectorList;
@@ -43,184 +44,22 @@ extern const Class *TypePlane;
 extern const Class *TypePlaneList;
 extern const Class *TypeMatrix3;
 extern const Class *TypeIntList;
+extern const Class *TypeBoolList;
 extern const Class *TypeFloatPs;
+extern const Class *TypeAny;
 
 
 float _cdecl f_sqr(float f){	return f*f;	}
 
-
-#define IMPLEMENT_IOP(OP, TYPE) \
-{ \
-	int n = min(num, b.num); \
-	TYPE *pa = (TYPE*)data; \
-	TYPE *pb = (TYPE*)b.data; \
-	for (int i=0;i<n;i++) \
-		*(pa ++) OP *(pb ++); \
-}
-
-#define IMPLEMENT_IOP2(OP, TYPE) \
-{ \
-	TYPE *pa = (TYPE*)data; \
-	for (int i=0;i<num;i++) \
-		*(pa ++) OP x; \
-}
-
-#define IMPLEMENT_OP(OP, TYPE, LISTTYPE) \
-{ \
-	int n = min(num, b.num); \
-	LISTTYPE r; \
-	r.resize(n); \
-	TYPE *pa = (TYPE*)data; \
-	TYPE *pb = (TYPE*)b.data; \
-	TYPE *pr = (TYPE*)r.data; \
-	for (int i=0;i<n;i++) \
-		*(pr ++) = *(pa ++) OP *(pb ++); \
-	return r; \
-}
-
-class IntList : public Array<int>
-{
+class ComplexList : public Array<complex> {
 public:
-	int _cdecl sum()
-	{
-		int r = 0;
-		for (int i=0;i<num;i++)
-			r += (*this)[i];
-		return r;
-	}
-	void _cdecl sort()
-	{	std::sort((int*)data, (int*)data + num);	}
-	void _cdecl unique()
-	{
-		int ndiff = 0;
-		int i0 = 1;
-		while(((int*)data)[i0] != ((int*)data)[i0-1])
-			i0 ++;
-		for (int i=i0;i<num;i++){
-			if (((int*)data)[i] == ((int*)data)[i-1])
-				ndiff ++;
-			else
-				((int*)data)[i - ndiff] = ((int*)data)[i];
-		}
-		resize(num - ndiff);
-	}
-	
-	// a += b
-	void _cdecl iadd(IntList &b)	IMPLEMENT_IOP(+=, int)
-	void _cdecl isub(IntList &b)	IMPLEMENT_IOP(-=, int)
-	void _cdecl imul(IntList &b)	IMPLEMENT_IOP(*=, int)
-	void _cdecl idiv(IntList &b)	IMPLEMENT_IOP(/=, int)
-
-	// a = b + c
-	IntList _cdecl add(IntList &b)	IMPLEMENT_OP(+, int, IntList)
-	IntList _cdecl sub(IntList &b)	IMPLEMENT_OP(-, int, IntList)
-	IntList _cdecl mul(IntList &b)	IMPLEMENT_OP(*, int, IntList)
-	IntList _cdecl div(IntList &b)	IMPLEMENT_OP(/, int, IntList)
-
-	// a += x
-	void _cdecl add2(int x)	IMPLEMENT_IOP2(+=, int)
-	void _cdecl sub2(int x)	IMPLEMENT_IOP2(-=, int)
-	void _cdecl mul2(int x)	IMPLEMENT_IOP2(*=, int)
-	void _cdecl div2(int x)	IMPLEMENT_IOP2(/=, int)
-	void _cdecl assign_int(int x)	IMPLEMENT_IOP2(=, int)
-};
-
-
-
-
-void _cdecl super_array_add_s_com(DynamicArray *a, DynamicArray *b)
-{	int n = min(a->num, b->num);	complex *pa = (complex*)a->data;	complex *pb = (complex*)b->data;	for (int i=0;i<n;i++)	*(pa ++) += *(pb ++);	}
-void _cdecl super_array_sub_s_com(DynamicArray *a, DynamicArray *b)
-{	int n = min(a->num, b->num);	complex *pa = (complex*)a->data;	complex *pb = (complex*)b->data;	for (int i=0;i<n;i++)	*(pa ++) -= *(pb ++);	}
-void _cdecl super_array_mul_s_com(DynamicArray *a, DynamicArray *b)
-{	int n = min(a->num, b->num);	complex *pa = (complex*)a->data;	complex *pb = (complex*)b->data;	for (int i=0;i<n;i++)	*(pa ++) *= *(pb ++);	}
-void _cdecl super_array_div_s_com(DynamicArray *a, DynamicArray *b)
-{	int n = min(a->num, b->num);	complex *pa = (complex*)a->data;	complex *pb = (complex*)b->data;	for (int i=0;i<n;i++)	*(pa ++) /= *(pb ++);	}
-
-void _cdecl super_array_add_s_com_com(DynamicArray *a, complex x)
-{	complex *pa = (complex*)a->data;	for (int i=0;i<a->num;i++)	*(pa ++) += x;	}
-void _cdecl super_array_sub_s_com_com(DynamicArray *a, complex x)
-{	complex *pa = (complex*)a->data;	for (int i=0;i<a->num;i++)	*(pa ++) -= x;	}
-void _cdecl super_array_mul_s_com_com(DynamicArray *a, complex x)
-{	complex *pa = (complex*)a->data;	for (int i=0;i<a->num;i++)	*(pa ++) *= x;	}
-void _cdecl super_array_div_s_com_com(DynamicArray *a, complex x)
-{	complex *pa = (complex*)a->data;	for (int i=0;i<a->num;i++)	*(pa ++) /= x;	}
-void _cdecl super_array_mul_s_com_float(DynamicArray *a, float x)
-{	complex *pa = (complex*)a->data;	for (int i=0;i<a->num;i++)	*(pa ++) *= x;	}
-
-class FloatList : public Array<float>
-{
-public:
-	float _cdecl _max()
-	{
-		float max = 0;
-		if (num > 0)
-			max = (*this)[0];
-		for (int i=1;i<num;i++)
-			if ((*this)[i] > max)
-				max = (*this)[i];
-		return max;
-	}
-	float _cdecl _min()
-	{
-		float min = 0;
-		if (num > 0)
-			min = (*this)[0];
-		for (int i=1;i<num;i++)
-			if ((*this)[i] < min)
-				min = (*this)[i];
-		return min;
-	}
-	float _cdecl sum()
-	{
-		float r = 0;
-		for (int i=0;i<num;i++)
-			r += (*this)[i];
-		return r;
-	}
-	float _cdecl sum2()
-	{
-		float r = 0;
-		for (int i=0;i<num;i++)
-			r += (*this)[i] * (*this)[i];
-		return r;
-	}
-
-	void _cdecl sort()
-	{	std::sort((float*)data, (float*)data + num);	}
-	
-	// a += b
-	void _cdecl iadd(FloatList &b)	IMPLEMENT_IOP(+=, float)
-	void _cdecl isub(FloatList &b)	IMPLEMENT_IOP(-=, float)
-	void _cdecl imul(FloatList &b)	IMPLEMENT_IOP(*=, float)
-	void _cdecl idiv(FloatList &b)	IMPLEMENT_IOP(/=, float)
-
-	// a = b + c
-	FloatList _cdecl add(FloatList &b)	IMPLEMENT_OP(+, float, FloatList)
-	FloatList _cdecl sub(FloatList &b)	IMPLEMENT_OP(-, float, FloatList)
-	FloatList _cdecl mul(FloatList &b)	IMPLEMENT_OP(*, float, FloatList)
-	FloatList _cdecl div(FloatList &b)	IMPLEMENT_OP(/, float, FloatList)
-
-	// a += x
-	void _cdecl iadd2(float x)	IMPLEMENT_IOP2(+=, float)
-	void _cdecl isub2(float x)	IMPLEMENT_IOP2(-=, float)
-	void _cdecl imul2(float x)	IMPLEMENT_IOP2(*=, float)
-	void _cdecl idiv2(float x)	IMPLEMENT_IOP2(/=, float)
-	void _cdecl assign_float(float x)	IMPLEMENT_IOP2(=, float)
-};
-
-class ComplexList : public Array<complex>
-{
-public:
-	complex _cdecl sum()
-	{
+	complex _cdecl sum() {
 		complex r = complex(0, 0);
 		for (int i=0;i<num;i++)
 			r += (*this)[i];
 		return r;
 	}
-	float _cdecl sum2()
-	{
+	float _cdecl sum2() {
 		float r = 0;
 		for (int i=0;i<num;i++)
 			r += (*this)[i].abs_sqr();
@@ -234,10 +73,10 @@ public:
 	void _cdecl idiv(ComplexList &b)	IMPLEMENT_IOP(/=, complex)
 
 	// a = b + c
-	ComplexList _cdecl add(ComplexList &b)	IMPLEMENT_OP(+, complex, ComplexList)
-	ComplexList _cdecl sub(ComplexList &b)	IMPLEMENT_OP(-, complex, ComplexList)
-	ComplexList _cdecl mul(ComplexList &b)	IMPLEMENT_OP(*, complex, ComplexList)
-	ComplexList _cdecl div(ComplexList &b)	IMPLEMENT_OP(/, complex, ComplexList)
+	Array<complex> _cdecl add(ComplexList &b)	IMPLEMENT_OP(+, complex, complex)
+	Array<complex> _cdecl sub(ComplexList &b)	IMPLEMENT_OP(-, complex, complex)
+	Array<complex> _cdecl mul(ComplexList &b)	IMPLEMENT_OP(*, complex, complex)
+	Array<complex> _cdecl div(ComplexList &b)	IMPLEMENT_OP(/, complex, complex)
 
 	// a += x
 	void _cdecl iadd2(complex x)	IMPLEMENT_IOP2(+=, complex)
@@ -249,21 +88,17 @@ public:
 	void _cdecl assign_complex(complex x)	IMPLEMENT_IOP2(=, complex)
 };
 
-Array<int> _cdecl int_range(int start, int end)
-{
+Array<int> _cdecl int_range(int start, int end) {
 	Array<int> a;
 	//a.__init__(); // done by kaba-constructors for temp variables
-	for (int i=start;i<end;i++)
+	for (int i=start; i<end; i++)
 		a.add(i);
 	return a;
 }
 
-Array<float> _cdecl float_range(float start, float end, float step)
-{
+Array<float> _cdecl float_range(float start, float end, float step) {
 	Array<float> a;
-	//a.__init__(); // done by kaba-constructors for temp variables
-	//msg_write(a.element_size);
-	for (float f=start;f<end;f+=step)
+	for (float f=start; f<end; f+=step)
 		a.add(f);
 	return a;
 }
@@ -274,22 +109,6 @@ float _cdecl maxf(float a, float b)
 float _cdecl minf(float a, float b)
 {	return (a < b) ? a : b;	}
 
-string _cdecl ff2s(complex &x){	return x.str();	}
-string _cdecl fff2s(vector &x){	return x.str();	}
-string _cdecl ffff2s(quaternion &x){	return x.str();	}
-
-
-
-string CastVector2StringP(string &s) {
-	return ((vector*)s.data)->str();
-}
-string CastFFFF2StringP(string &s) {
-	return ((quaternion*)s.data)->str();
-}
-string CastComplex2StringP(string &s) {
-	return ((complex*)s.data)->str();
-}
-
 vector _quat_vec_mul(quaternion &a, vector &b)
 {	return a * b;	}
 color _col_mul_c(color &a, color &b)
@@ -298,20 +117,109 @@ color _col_mul_f(color &a, float b)
 {	return a * b;	}
 
 
-void __complex_set(complex &r, float x, float y)
-{	r = complex(x, y);	}
-void __color_set(color &_r, float a, float r, float g, float b)
-{	_r = color(a, r, g, b);	}
-void __vector_set(vector &r, float x, float y, float z)
-{	r = vector(x, y, z);	}
-void __rect_set(rect &r, float x1, float x2, float y1, float y2)
-{	r = rect(x1, x2, y1, y2);	}
+complex __complex_set(float x, float y)
+{ return complex(x, y); }
+color __color_set(float a, float r, float g, float b)
+{ return color(a, r, g, b); }
+vector __vector_set(float x, float y, float z)
+{ return vector(x, y, z); }
+rect __rect_set(float x1, float x2, float y1, float y2)
+{ return rect(x1, x2, y1, y2); }
+
+
+
+complex op_complex_add(complex &a, complex &b) { return a + b; }
+complex op_complex_sub(complex &a, complex &b) { return a - b; }
+complex op_complex_mul(complex &a, complex &b) { return a * b; }
+complex op_complex_div(complex &a, complex &b) { return a / b; }
+
+
+
+#pragma GCC push_options
+#pragma GCC optimize("no-omit-frame-pointer")
+#pragma GCC optimize("no-inline")
+#pragma GCC optimize("0")
+
+
+void kaba_array_resize(void *p, const Class *type, int num);
+
+
+class KabaAny : public Any {
+public:
+	Any _cdecl _map_get(const string &key)
+	{ KABA_EXCEPTION_WRAPPER(return map_get(key)); return Any(); }
+	void _cdecl _map_set(const string &key, Any &a)
+	{ KABA_EXCEPTION_WRAPPER(map_set(key, a)); }
+	Any _cdecl _array_get(int i)
+	{ KABA_EXCEPTION_WRAPPER(return array_get(i)); return Any(); }
+	void _cdecl _array_set(int i, Any &a)
+	{ KABA_EXCEPTION_WRAPPER(array_set(i, a)); }
+	void _cdecl _array_add(Any &a)
+	{ KABA_EXCEPTION_WRAPPER(add(a)); }
+	
+	static void unwrap(Any &aa, void *var, const Class *type) {
+		if (type == TypeInt) {
+			*(int*)var = aa._int();
+		} else if (type == TypeFloat32) {
+			*(float*)var = aa._float();
+		} else if (type == TypeBool) {
+			*(bool*)var = aa._bool();
+		} else if (type == TypeString) {
+			*(string*)var = aa.str();
+		} else if (type->is_pointer()) {
+			*(const void**)var = *aa.as_pointer();
+		} else if (type->is_super_array() and (aa.type == TYPE_ARRAY)) {
+			auto *t_el = type->get_array_element();
+			auto *a = (DynamicArray*)var;
+			auto *b = aa.as_array();
+			int n = b->num;
+			kaba_array_resize(var, type, n);
+			for (int i=0; i<n; i++)
+				unwrap(aa[i], (char*)a->data + i * t_el->size, t_el);
+		} else if (type->is_array() and (aa.type == TYPE_ARRAY)) {
+			auto *t_el = type->get_array_element();
+			auto *b = aa.as_array();
+			int n = min(type->array_length, b->num);
+			for (int i=0; i<n; i++)
+				unwrap((*b)[i], (char*)var + i*t_el->size, t_el);
+		} else if (aa.type == TYPE_HASH) {
+			auto *map = aa.as_map();
+			auto keys = aa.keys();
+			for (auto &e: type->elements)
+				for (string &k: keys)
+					if (e.name == k)
+						unwrap(aa[k], (char*)var + e.offset, e.type);
+		} else {
+			msg_error("unwrap... "  + aa.str() + " -> " + type->long_name());
+		}
+	}
+};
+
+Any kaba_int2any(int i) {
+	return Any(i);
+}
+Any kaba_float2any(float f) {
+	return Any(f);
+}
+Any kaba_bool2any(bool b) {
+	return Any(b);
+}
+Any kaba_str2any(const string &str) {
+	return Any(str);
+}
+Any kaba_pointer2any(const void *p) {
+	return Any(p);
+}
+
+#pragma GCC pop_options
+
+
 
 void SIAddPackageMath() {
 	add_package("math", true);
 
 	// types
-	TypeComplex = add_type("complex", sizeof(float) * 2);
+	TypeComplex = add_type("complex", sizeof(complex));
 	TypeComplexList = add_type_a("complex[]", TypeComplex, -1);
 	TypeVector = add_type("vector", sizeof(vector));
 	TypeVectorList = add_type_a("vector[]", TypeVector, -1);
@@ -330,7 +238,7 @@ void SIAddPackageMath() {
 	const Class *TypeFloatArray9 = add_type_a("float[9]", TypeFloat32, 9);
 	const Class *TypeVli = add_type("vli", sizeof(vli));
 	const Class *TypeCrypto = add_type("Crypto", sizeof(Crypto));
-	const Class *TypeAny = add_type("any", sizeof(Any));
+	TypeAny = add_type("any", sizeof(Any));
 	const Class *TypeFloatInterpolator = add_type("FloatInterpolator", sizeof(Interpolator<float>));
 	const Class *TypeVectorInterpolator = add_type("VectorInterpolator", sizeof(Interpolator<vector>));
 	const Class *TypeRandom = add_type("Random", sizeof(Random));
@@ -346,63 +254,36 @@ void SIAddPackageMath() {
 		((Class*)TypePlane)->_amd64_allow_pass_in_xmm = true;
 		((Class*)TypeRect)->_amd64_allow_pass_in_xmm = true;
 	}
-	
-	
-	add_class(TypeIntList);
-		class_add_func("sort", TypeVoid, mf(&IntList::sort));
-		class_add_func("unique", TypeVoid, mf(&IntList::unique));
-		class_add_func("sum", TypeInt, mf(&IntList::sum), FLAG_PURE);
-		class_add_func("__iadd__", TypeVoid, mf(&IntList::iadd));
-			func_add_param("other", TypeIntList);
-		class_add_func("__isub__", TypeVoid, mf(&IntList::isub));
-			func_add_param("other", TypeIntList);
-		class_add_func("__imul__", TypeVoid, mf(&IntList::imul));
-			func_add_param("other", TypeIntList);
-		class_add_func("__idiv__", TypeVoid, mf(&IntList::idiv));
-			func_add_param("other", TypeIntList);
-		class_add_func("__add__", TypeIntList, mf(&IntList::add), FLAG_PURE);
-			func_add_param("other", TypeIntList);
-		class_add_func("__sub__", TypeIntList, mf(&IntList::sub), FLAG_PURE);
-			func_add_param("other", TypeIntList);
-		class_add_func("__mul__", TypeIntList, mf(&IntList::mul), FLAG_PURE);
-			func_add_param("other", TypeIntList);
-		class_add_func("__div__", TypeIntList, mf(&IntList::div), FLAG_PURE);
-			func_add_param("other", TypeIntList);
-		class_add_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, mf(&IntList::assign_int));
-			func_add_param("other", TypeInt);
 
-	add_class(TypeFloatList);
-		class_add_func("sort", TypeVoid, mf(&FloatList::sort));
-		class_add_func("sum", TypeFloat32, mf(&FloatList::sum), FLAG_PURE);
-		class_add_func("sum2", TypeFloat32, mf(&FloatList::sum2), FLAG_PURE);
-		class_add_func("max", TypeFloat32, mf(&FloatList::_max), FLAG_PURE);
-		class_add_func("min", TypeFloat32, mf(&FloatList::_min), FLAG_PURE);
-		class_add_func("__iadd__", TypeVoid, mf(&FloatList::iadd));
-			func_add_param("other", TypeFloatList);
-		class_add_func("__isub__", TypeVoid, mf(&FloatList::isub));
-			func_add_param("other", TypeFloatList);
-		class_add_func("__imul__", TypeVoid, mf(&FloatList::imul));
-			func_add_param("other", TypeFloatList);
-		class_add_func("__idiv__", TypeVoid, mf(&FloatList::idiv));
-			func_add_param("other", TypeFloatList);
-		class_add_func("__add__", TypeFloatList, mf(&FloatList::add), FLAG_PURE);
-			func_add_param("other", TypeFloatList);
-		class_add_func("__sub__", TypeFloatList, mf(&FloatList::sub), FLAG_PURE);
-			func_add_param("other", TypeFloatList);
-		class_add_func("__mul__", TypeFloatList, mf(&FloatList::mul), FLAG_PURE);
-			func_add_param("other", TypeFloatList);
-		class_add_func("__div__", TypeFloatList, mf(&FloatList::div), FLAG_PURE);
-			func_add_param("other", TypeFloatList);
-		class_add_func("__iadd__", TypeVoid, mf(&FloatList::iadd2));
-			func_add_param("other", TypeFloat32);
-		class_add_func("__isub__", TypeVoid, mf(&FloatList::isub2));
-			func_add_param("other", TypeFloat32);
-		class_add_func("__imul__", TypeVoid, mf(&FloatList::imul2));
-			func_add_param("other", TypeFloat32);
-		class_add_func("__idiv__", TypeVoid, mf(&FloatList::idiv2));
-			func_add_param("other", TypeFloat32);
-		class_add_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, mf(&FloatList::assign_float));
-			func_add_param("other", TypeFloat32);
+
+	add_class(TypeComplex);
+		class_add_elementx("x", TypeFloat32, &complex::x);
+		class_add_elementx("y", TypeFloat32, &complex::y);
+		class_add_func("abs", TypeFloat32, mf(&complex::abs), FLAG_PURE);
+		class_add_func("abs_sqr", TypeFloat32, mf(&complex::abs_sqr), FLAG_PURE);
+		class_add_func("bar", TypeComplex, 		mf(&complex::bar), FLAG_PURE);
+		class_add_func("str", TypeString, mf(&complex::str), FLAG_PURE);
+		class_add_const("I", TypeComplex, &complex::I);
+		class_add_func("create", TypeComplex, (void*)__complex_set, ScriptFlag(FLAG_PURE | FLAG_STATIC));
+			func_set_inline(InlineID::COMPLEX_SET);
+			func_add_param("x", TypeFloat32);
+			func_add_param("y", TypeFloat32);
+		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, (void*)__complex_set);
+			func_add_param("x", TypeFloat32);
+			func_add_param("y", TypeFloat32);	
+	//	add_operator(OperatorID::ASSIGN, TypeVoid, TypeComplex, TypeComplex, InlineID::COMPLEX_ASSIGN);
+		add_operator(OperatorID::ADD, TypeComplex, TypeComplex, TypeComplex, InlineID::COMPLEX_ADD, (void*)op_complex_add);
+		add_operator(OperatorID::SUBTRACT, TypeComplex, TypeComplex, TypeComplex, InlineID::COMPLEX_SUBTRACT, (void*)op_complex_sub);
+		add_operator(OperatorID::MULTIPLY, TypeComplex, TypeComplex, TypeComplex, InlineID::COMPLEX_MULTIPLY, (void*)op_complex_mul);
+		add_operator(OperatorID::MULTIPLY, TypeComplex, TypeFloat32, TypeComplex, InlineID::COMPLEX_MULTIPLY_FC);
+		add_operator(OperatorID::MULTIPLY, TypeComplex, TypeComplex, TypeFloat32, InlineID::COMPLEX_MULTIPLY_CF);
+		add_operator(OperatorID::DIVIDE, TypeComplex, TypeComplex, TypeComplex, InlineID::NONE /*InlineID::COMPLEX_DIVIDE*/, (void*)op_complex_div);
+		add_operator(OperatorID::ADDS, TypeVoid, TypeComplex, TypeComplex, InlineID::COMPLEX_ADD_ASSIGN);
+		add_operator(OperatorID::SUBTRACTS, TypeVoid, TypeComplex, TypeComplex, InlineID::COMPLEX_SUBTARCT_ASSIGN);
+		add_operator(OperatorID::MULTIPLYS, TypeVoid, TypeComplex, TypeComplex, InlineID::COMPLEX_MULTIPLY_ASSIGN);
+		add_operator(OperatorID::DIVIDES, TypeVoid, TypeComplex, TypeComplex, InlineID::COMPLEX_DIVIDE_ASSIGN);
+		add_operator(OperatorID::EQUAL, TypeBool, TypeComplex, TypeComplex, InlineID::COMPLEX_EQUAL);
+		add_operator(OperatorID::NEGATIVE, TypeComplex, nullptr, TypeComplex, InlineID::COMPLEX_NEGATE);
 
 	add_class(TypeComplexList);
 		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, mf(&ComplexList::__init__));
@@ -438,34 +319,13 @@ void SIAddPackageMath() {
 			func_add_param("other", TypeFloat32);
 		class_add_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, mf(&ComplexList::assign_complex));
 			func_add_param("other", TypeComplex);
-	
-	add_class(TypeVectorList);
-		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, mf(&Array<vector>::__init__));
-	add_class(TypePlaneList);
-		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, mf(&Array<plane>::__init__));
 
-	
-	add_class(TypeComplex);
-		class_add_elementx("x", TypeFloat32, &complex::x);
-		class_add_elementx("y", TypeFloat32, &complex::y);
-		class_add_func("abs", TypeFloat32, mf(&complex::abs), FLAG_PURE);
-		class_add_func("abs_sqr", TypeFloat32, mf(&complex::abs_sqr), FLAG_PURE);
-		class_add_func("bar", TypeComplex, 		mf(&complex::bar), FLAG_PURE);
-		class_add_func("str", TypeString, mf(&complex::str), FLAG_PURE);
-		class_add_const("I", TypeComplex, &complex::I);
-		class_add_func("create", TypeComplex, (void*)__complex_set, ScriptFlag(FLAG_PURE | FLAG_STATIC));
-			func_set_inline(InlineID::COMPLEX_SET);
-			func_add_param("x", TypeFloat32);
-			func_add_param("y", TypeFloat32);
-		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, (void*)__complex_set);
-			func_add_param("x", TypeFloat32);
-			func_add_param("y", TypeFloat32);
 	
 	add_class(TypeVector);
 		class_add_elementx("x", TypeFloat32, &vector::x);
 		class_add_elementx("y", TypeFloat32, &vector::y);
 		class_add_elementx("z", TypeFloat32, &vector::z);
-		class_add_element("e", TypeFloatArray3, 0, FLAG_HIDDEN);
+		class_add_element("_e", TypeFloatArray3, 0);
 		class_add_func("length", TypeFloat32, type_p(mf(&vector::length)), FLAG_PURE);
 		class_add_func("length_sqr", TypeFloat32, type_p(mf(&vector::length_sqr)), FLAG_PURE);
 		class_add_func("length_fuzzy", TypeFloat32, type_p(mf(&vector::length_fuzzy)), FLAG_PURE);
@@ -495,6 +355,33 @@ void SIAddPackageMath() {
 			func_add_param("x", TypeFloat32);
 			func_add_param("y", TypeFloat32);
 			func_add_param("z", TypeFloat32);
+		class_add_func("ang_add", TypeVector, mf(&VecAngAdd), ScriptFlag(FLAG_PURE | FLAG_STATIC));
+			func_add_param("ang1", TypeVector);
+			func_add_param("ang2", TypeVector);
+		class_add_func("ang_interpolate", TypeVector, mf(&VecAngInterpolate), ScriptFlag(FLAG_PURE | FLAG_STATIC));
+			func_add_param("ang1", TypeVector);
+			func_add_param("ang2", TypeVector);
+			func_add_param("t", TypeFloat32);
+		class_add_const("0", TypeVector, (void*)&vector::ZERO);
+		class_add_const("O", TypeVector, (void*)&vector::ZERO);
+		class_add_const("EX", TypeVector, (void*)&vector::EX);
+		class_add_const("EY", TypeVector, (void*)&vector::EY);
+		class_add_const("EZ", TypeVector, (void*)&vector::EZ);
+		add_operator(OperatorID::ADD, TypeVector, TypeVector, TypeVector, InlineID::VECTOR_ADD);
+		add_operator(OperatorID::SUBTRACT, TypeVector, TypeVector, TypeVector, InlineID::VECTOR_SUBTRACT);
+		add_operator(OperatorID::MULTIPLY, TypeFloat32, TypeVector, TypeVector, InlineID::VECTOR_MULTIPLY_VV);
+		add_operator(OperatorID::MULTIPLY, TypeVector, TypeVector, TypeFloat32, InlineID::VECTOR_MULTIPLY_VF);
+		add_operator(OperatorID::MULTIPLY, TypeVector, TypeFloat32, TypeVector, InlineID::VECTOR_MULTIPLY_FV);
+		add_operator(OperatorID::DIVIDE, TypeVector, TypeVector, TypeFloat32, InlineID::VECTOR_DIVIDE_VF);
+		add_operator(OperatorID::ADDS, TypeVoid, TypeVector, TypeVector, InlineID::VECTOR_ADD_ASSIGN);
+		add_operator(OperatorID::SUBTRACTS, TypeVoid, TypeVector, TypeVector, InlineID::VECTOR_SUBTARCT_ASSIGN);
+		add_operator(OperatorID::MULTIPLYS, TypeVoid, TypeVector, TypeFloat32, InlineID::VECTOR_MULTIPLY_ASSIGN);
+		add_operator(OperatorID::DIVIDES, TypeVoid, TypeVector, TypeFloat32, InlineID::VECTOR_DIVIDE_ASSIGN);
+		add_operator(OperatorID::NEGATIVE, TypeVector, nullptr, TypeVector, InlineID::VECTOR_NEGATE);
+	
+	add_class(TypeVectorList);
+		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, mf(&Array<vector>::__init__));
+
 	
 	add_class(TypeQuaternion);
 		class_add_elementx("x", TypeFloat32, &quaternion::x);
@@ -616,6 +503,9 @@ void SIAddPackageMath() {
 			func_add_param("p", TypeVector);
 			func_add_param("n", TypeVector);
 	
+	add_class(TypePlaneList);
+		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, mf(&Array<plane>::__init__));
+	
 	add_class(TypeMatrix);
 		class_add_element("_00", TypeFloat32, 0);
 		class_add_element("_10", TypeFloat32, 4);
@@ -633,8 +523,8 @@ void SIAddPackageMath() {
 		class_add_element("_13", TypeFloat32, 52);
 		class_add_element("_23", TypeFloat32, 56);
 		class_add_element("_33", TypeFloat32, 60);
-		class_add_element("e", TypeFloatArray4x4, 0, FLAG_HIDDEN);
-		class_add_element("_e", TypeFloatArray16, 0, FLAG_HIDDEN);
+		class_add_element("e", TypeFloatArray4x4, 0);
+		class_add_element("_e", TypeFloatArray16, 0);
 		class_add_func("__imul__", TypeVoid, mf(&matrix::imul));
 			func_add_param("other", TypeMatrix);
 		class_add_func("__mul__", TypeMatrix, mf(&matrix::mul), FLAG_PURE);
@@ -688,15 +578,15 @@ void SIAddPackageMath() {
 		class_add_element("_13", TypeFloat32, 24);
 		class_add_element("_23", TypeFloat32, 28);
 		class_add_element("_33", TypeFloat32, 32);
-		class_add_element("e", TypeFloatArray3x3, 0, FLAG_HIDDEN);
-		class_add_element("_e", TypeFloatArray9, 0, FLAG_HIDDEN);
+		class_add_element("e", TypeFloatArray3x3, 0);
+		class_add_element("_e", TypeFloatArray9, 0);
 		class_add_func("__mul__", TypeMatrix3, mf(&matrix3::mul), FLAG_PURE);
 			func_add_param("other", TypeMatrix3);
 		class_add_func("__mul__", TypeVector, mf(&matrix3::mul_v), FLAG_PURE);
 			func_add_param("other", TypeVector);
 		class_add_func("str", TypeString, mf(&matrix3::str), FLAG_PURE);
 		class_add_func("inverse", TypeMatrix3, mf(&matrix3::inverse), FLAG_PURE);
-		class_add_const("m3_id", TypeMatrix3, (void*)&matrix3::ID);
+		class_add_const("ID", TypeMatrix3, (void*)&matrix3::ID);
 	
 	add_class(TypeVli);
 		class_add_element("sign", TypeBool, 0);
@@ -757,33 +647,45 @@ void SIAddPackageMath() {
 		class_add_func(IDENTIFIER_FUNC_DELETE, TypeVoid, any_p(mf(&Any::clear)));
 		class_add_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, any_p(mf(&Any::set)));
 			func_add_param("a", TypeAny);
-		class_add_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, any_p(mf(&Any::set_str)));
-			func_add_param("s", TypeString);
-		class_add_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, any_p(mf(&Any::set_int)));
-			func_add_param("i", TypeInt);
-		class_add_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, any_p(mf(&Any::set_float)));
-			func_add_param("f", TypeFloat32);
-		class_add_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, any_p(mf(&Any::set_bool)));
-			func_add_param("b", TypeBool);
 		class_add_func("__iadd__", TypeVoid, any_p(mf(&Any::_add)));
 			func_add_param("a", TypeAny);
 		class_add_func("__isub__", TypeVoid, any_p(mf(&Any::_sub)));
 			func_add_param("a", TypeAny);
 		class_add_func("clear", TypeVoid, any_p(mf(&Any::clear)));
-		class_add_func("__get__", TypeAny, any_p(mf(&Any::get)));
+		class_add_func("length", TypeInt, any_p(mf(&Any::length)));
+		class_add_func("__get__", TypeAny, any_p(mf(&KabaAny::_map_get)), FLAG_RAISES_EXCEPTIONS);
 			func_add_param("key", TypeString);
-		class_add_func("hset", TypeVoid, any_p(mf(&Any::hset)));
+		class_add_func("set", TypeVoid, any_p(mf(&KabaAny::_map_set)), FLAG_RAISES_EXCEPTIONS);
 			func_add_param("key", TypeString);
 			func_add_param("value", TypeAny);
-		class_add_func("__get__", TypeAny, any_p(mf(&Any::at)));
+		class_add_func("__get__", TypeAny, any_p(mf(&KabaAny::_array_get)), FLAG_RAISES_EXCEPTIONS);
 			func_add_param("index", TypeInt);
-		class_add_func("aset", TypeVoid, any_p(mf(&Any::aset)));
+		class_add_func("set", TypeVoid, any_p(mf(&KabaAny::_array_set)), FLAG_RAISES_EXCEPTIONS);
 			func_add_param("index", TypeInt);
 			func_add_param("value", TypeAny);
+		class_add_func("add", TypeVoid, any_p(mf(&KabaAny::_array_add)), FLAG_RAISES_EXCEPTIONS);
+			func_add_param("a", TypeAny);
+		class_add_func("keys", TypeStringList, any_p(mf(&Any::keys)));//, FLAG_RAISES_EXCEPTIONS);
 		class_add_func("bool", TypeBool, any_p(mf(&Any::_bool)));
 		class_add_func("int", TypeInt, any_p(mf(&Any::_int)));
 		class_add_func("float", TypeFloat32, any_p(mf(&Any::_float)));
 		class_add_func("str", TypeString, any_p(mf(&Any::str)));
+		class_add_func("repr", TypeString, any_p(mf(&Any::repr)));
+		class_add_func("unwrap", TypeVoid, (void*)&KabaAny::unwrap, FLAG_RAISES_EXCEPTIONS);
+			func_add_param("var", TypePointer);
+			func_add_param("type", TypeClassP);
+
+
+	add_funcx("@int2any", TypeAny, &kaba_int2any, FLAG_STATIC);
+		func_add_param("i", TypeInt);
+	add_funcx("@float2any", TypeAny, &kaba_float2any, FLAG_STATIC);
+		func_add_param("i", TypeFloat32);
+	add_funcx("@bool2any", TypeAny, &kaba_bool2any, FLAG_STATIC);
+		func_add_param("i", TypeBool);
+	add_funcx("@str2any", TypeAny, &kaba_str2any, FLAG_STATIC);
+		func_add_param("s", TypeString);
+	add_funcx("@pointer2any", TypeAny, &kaba_pointer2any, FLAG_STATIC);
+		func_add_param("p", TypePointer);
 
 
 	add_class(TypeCrypto);
@@ -798,6 +700,11 @@ void SIAddPackageMath() {
 		class_add_func("decrypt", TypeString, algebra_p(mf(&Crypto::Decrypt)));
 			func_add_param("str", TypeString);
 			func_add_param("cut", TypeBool);
+		class_add_func("create_keys", TypeVoid, algebra_p(&CryptoCreateKeys), FLAG_STATIC);
+			func_add_param("c1", TypeCrypto);
+			func_add_param("c2", TypeCrypto);
+			func_add_param("type", TypeString);
+			func_add_param("bits", TypeInt);
 
 	add_class(TypeRandom);
 		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, mf(&Random::__init__));
@@ -815,7 +722,7 @@ void SIAddPackageMath() {
 		class_add_func("normal", TypeFloat32, mf(&Random::normal));
 			func_add_param("mean", TypeFloat32);
 			func_add_param("stddev", TypeFloat32);
-		class_add_func("inBall", TypeVector, mf(&Random::in_ball));
+		class_add_func("in_ball", TypeVector, mf(&Random::in_ball));
 			func_add_param("r", TypeFloat32);
 		class_add_func("dir", TypeVector, mf(&Random::dir));
 	
@@ -939,27 +846,14 @@ void SIAddPackageMath() {
 		func_add_param("start", TypeFloat32);
 		func_add_param("end", TypeFloat32);
 		func_add_param("step", TypeFloat32);
-	// vectors
-	add_func("VecAngAdd", TypeVector, mf(&VecAngAdd), ScriptFlag(FLAG_PURE | FLAG_STATIC));
-		func_add_param("ang1", TypeVector);
-		func_add_param("ang2", TypeVector);
-	add_func("VecAngInterpolate", TypeVector, mf(&VecAngInterpolate), ScriptFlag(FLAG_PURE | FLAG_STATIC));
-		func_add_param("ang1", TypeVector);
-		func_add_param("ang2", TypeVector);
-		func_add_param("t", TypeFloat32);
 	// other types
-	add_func("GetBaryCentric", TypeVoid, (void*)&GetBaryCentric, ScriptFlag(FLAG_PURE | FLAG_STATIC));
+	add_func("bary_centric", TypeVoid, (void*)&GetBaryCentric, ScriptFlag(FLAG_PURE | FLAG_STATIC));
 		func_add_param("p", TypeVector);
 		func_add_param("a", TypeVector);
 		func_add_param("b", TypeVector);
 		func_add_param("c", TypeVector);
 		func_add_param("f", TypeFloatPs);
 		func_add_param("g", TypeFloatPs);
-	add_func("CryptoCreateKeys", TypeVoid, algebra_p(&CryptoCreateKeys), FLAG_STATIC);
-		func_add_param("c1", TypeCrypto);
-		func_add_param("c2", TypeCrypto);
-		func_add_param("type", TypeString);
-		func_add_param("bits", TypeInt);
 	// random numbers
 	add_func("randi", TypeInt, (void*)&randi, FLAG_STATIC);
 		func_add_param("max", TypeInt);
@@ -971,11 +865,6 @@ void SIAddPackageMath() {
 	
 	// float
 	add_const("pi",  TypeFloat32, *(void**)&pi);
-	// vector
-	add_const("v_0", TypeVector, (void*)&vector::ZERO);
-	add_const("e_x", TypeVector, (void*)&vector::EX);
-	add_const("e_y", TypeVector, (void*)&vector::EY);
-	add_const("e_z", TypeVector, (void*)&vector::EZ);
 	// color
 	add_const("White",  TypeColor, (void*)&White);
 	add_const("Black",  TypeColor, (void*)&Black);
@@ -985,28 +874,6 @@ void SIAddPackageMath() {
 	add_const("Blue",   TypeColor, (void*)&Blue);
 	add_const("Yellow", TypeColor, (void*)&Yellow);
 	add_const("Orange", TypeColor, (void*)&Orange);
-
-
-
-	// internal type casts
-	add_func("-v2s-", TypeString, (void*)&fff2s, ScriptFlag(FLAG_PURE | FLAG_STATIC));
-		func_add_param("v", TypeVector);
-	add_func("-complex2s-", TypeString, (void*)&ff2s, ScriptFlag(FLAG_PURE | FLAG_STATIC));
-		func_add_param("z", TypeComplex);
-	add_func("-quaternion2s-", TypeString, (void*)&ffff2s, ScriptFlag(FLAG_PURE | FLAG_STATIC));
-		func_add_param("q", TypeQuaternion);
-	add_func("-plane2s-", TypeString, (void*)&ffff2s, ScriptFlag(FLAG_PURE | FLAG_STATIC));
-		func_add_param("p", TypePlane);
-	add_func("-color2s-", TypeString, (void*)&ffff2s, ScriptFlag(FLAG_PURE | FLAG_STATIC));
-		func_add_param("c", TypeColor);
-	add_func("-rect2s-", TypeString, (void*)&ffff2s, ScriptFlag(FLAG_PURE | FLAG_STATIC));
-		func_add_param("r", TypeRect);
-	add_type_cast(50, TypeVector, TypeString, "-v2s-", (void*)&CastVector2StringP);
-	add_type_cast(50, TypeComplex, TypeString, "-complex2s-", (void*)&CastComplex2StringP);
-	add_type_cast(50, TypeColor, TypeString, "-color2s-", (void*)&CastFFFF2StringP);
-	add_type_cast(50, TypeQuaternion, TypeString, "-quaternion2s-", (void*)&CastFFFF2StringP);
-	add_type_cast(50, TypePlane, TypeString, "-plane2s-", (void*)&CastFFFF2StringP);
-	add_type_cast(50, TypeRect, TypeString, "-rect2s-", (void*)&CastFFFF2StringP);
 }
 
 };

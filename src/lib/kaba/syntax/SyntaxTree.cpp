@@ -9,6 +9,7 @@ namespace Kaba{
 
 
 extern const Class *TypeDynamicArray;
+extern const Class *TypeDictBase;
 
 
 bool next_extern = false;
@@ -17,22 +18,28 @@ bool next_const = false;
 
 
 static Array<Node*> _transform_insert_before_;
+Node *conv_break_down_med_level(SyntaxTree *tree, Node *c);
 
-Node *conv_cbr(SyntaxTree *ps, Node *c, Variable *var);
 
 string Operator::sig() const {
-	return "(" + param_type_1->name + ") " + primitive->name + " (" + param_type_2->name + ")";
+	if (param_type_1 and param_type_2)
+		return "(" + param_type_1->name + ") " + primitive->name + " (" + param_type_2->name + ")";
+	if (param_type_1)
+		return "(" + param_type_1->name + ") " + primitive->name;
+	return primitive->name + " (" + param_type_2->name + ")";
 }
 
 
 Node *SyntaxTree::cp_node(Node *c) {
-	Node *cmd = new Node(c->kind, c->link_no, c->type);
-	cmd->set_num_params(c->params.num);
-	for (int i=0;i<c->params.num;i++)
-		if (c->params[i])
-			cmd->set_param(i, cp_node(c->params[i]));
-	if (c->instance)
-		cmd->set_instance(cp_node(c->instance));
+	Node *cmd;
+	if (c->kind == NodeKind::BLOCK)
+		cmd = new Block(c->as_block()->function, c->as_block()->parent);
+	else
+		cmd = new Node(c->kind, c->link_no, c->type);
+	cmd->set_num_uparams(c->uparams.num);
+	for (int i=0;i<c->uparams.num;i++)
+		if (c->uparams[i])
+			cmd->set_uparam(i, cp_node(c->uparams[i]));
 	return cmd;
 }
 
@@ -44,7 +51,7 @@ const Class *SyntaxTree::make_class_func(Function *f) {
 			params += ",";
 		params += f->literal_param_type[i]->name;
 	}
-	return make_class("func(" + params + ")->" + f->return_type->name, Class::Type::POINTER, config.pointer_size, 0, TypeVoid);
+	return make_class("func(" + params + ")->" + f->return_type->name, Class::Type::POINTER, config.pointer_size, 0, nullptr, TypeVoid, base_class);
 
 	return TypePointer;
 }
@@ -52,49 +59,41 @@ const Class *SyntaxTree::make_class_func(Function *f) {
 Node *SyntaxTree::ref_node(Node *sub, const Class *override_type) {
 	const Class *t = override_type ? override_type : sub->type->get_pointer();
 
-	if (sub->kind == NodeKind::CLASS) {
-		// Class pointer
-		auto *c = add_constant(TypeClassP, base_class);
-		c->as_int64() = (int64)(int_p)sub->as_class();
-		return add_node_const(c);
-	} else if (sub->kind == NodeKind::FUNCTION_NAME) {
-		// can't be const because the function might not be compiled yet!
-		return new Node(NodeKind::FUNCTION_POINTER, sub->link_no, make_class_func(sub->as_func()));
-		// could also happen later via transform()
-	}
+	/*if (sub->kind == NodeKind::DEREF_ADDRESS_SHIFT) {
+		sub->kind = NodeKind::ADDRESS_SHIFT;
+		sub->type = t;
+		return sub;
+	}*/
 
 	Node *c = new Node(NodeKind::REFERENCE, 0, t);
-	c->set_num_params(1);
-	c->set_param(0, sub);
+	c->set_num_uparams(1);
+	c->set_uparam(0, sub);
 	return c;
 }
 
 Node *SyntaxTree::deref_node(Node *sub, const Class *override_type) {
 	Node *c = new Node(NodeKind::UNKNOWN, 0, TypeVoid);
 	c->kind = NodeKind::DEREFERENCE;
-	c->set_num_params(1);
-	c->set_param(0, sub);
+	c->set_num_uparams(1);
+	c->set_uparam(0, sub);
 	if (override_type)
 		c->type = override_type;
 	else
-		c->type = sub->type->parent;
+		c->type = sub->type->param;
 	return c;
 }
 
 Node *SyntaxTree::shift_node(Node *sub, bool deref, int shift, const Class *type) {
 	Node *c = new Node(deref ? NodeKind::DEREF_ADDRESS_SHIFT : NodeKind::ADDRESS_SHIFT, shift, type);
-	c->set_num_params(1);
-	c->set_param(0, sub);
+	c->set_num_uparams(1);
+	c->set_uparam(0, sub);
 	return c;
 }
 
 Node *SyntaxTree::add_node_statement(StatementID id) {
 	auto *s = statement_from_id(id);
 	Node *c = new Node(NodeKind::STATEMENT, (int64)s, TypeVoid);
-
-	c->instance = nullptr;
-	c->set_num_params(s->num_params);
-
+	c->set_num_uparams(s->num_params);
 	return c;
 }
 
@@ -102,33 +101,45 @@ Node *SyntaxTree::add_node_statement(StatementID id) {
 Node *SyntaxTree::add_node_member_call(Function *f, Node *inst, bool force_non_virtual) {
 	Node *c;
 	if ((f->virtual_index >= 0) and (!force_non_virtual)) {
-		c = new Node(NodeKind::VIRTUAL_CALL, f->virtual_index, f->literal_return_type);
+		c = new Node(NodeKind::VIRTUAL_CALL, (int_p)f, f->literal_return_type);
 	} else {
-		c = add_node_call(f);
+		c = new Node(NodeKind::FUNCTION_CALL, (int_p)f, f->literal_return_type);
 	}
+	c->set_num_uparams(f->num_params + 1);
 	c->set_instance(inst);
-	c->set_num_params(f->num_params);
 	return c;
 }
 
+// non-member!
 Node *SyntaxTree::add_node_call(Function *f) {
+	// FIXME: literal_return_type???
 	Node *c = new Node(NodeKind::FUNCTION_CALL, (int_p)f, f->return_type);
-	c->set_num_params(f->num_params);
+	if (f->is_static)
+		c->set_num_uparams(f->num_params);
+	else
+		c->set_num_uparams(f->num_params + 1);
 	return c;
 }
 
 Node *SyntaxTree::add_node_func_name(Function *f) {
-	return new Node(NodeKind::FUNCTION_NAME, (int_p)f, TypeFunctionCode);
+	return new Node(NodeKind::FUNCTION, (int_p)f, TypeFunctionP);
+}
+
+Node *SyntaxTree::add_node_class(const Class *c) {
+	return new Node(NodeKind::CLASS, (int_p)c, TypeClassP);
 }
 
 
 Node *SyntaxTree::add_node_operator(Node *p1, Node *p2, Operator *op) {
 	Node *cmd = new Node(NodeKind::OPERATOR, (int_p)op, op->return_type);
-	bool unitary = ((op->param_type_1 == TypeVoid) or (op->param_type_2 == TypeVoid));
-	cmd->set_num_params( unitary ? 1 : 2); // unary / binary
-	cmd->set_param(0, p1);
-	if (!unitary)
-		cmd->set_param(1, p2);
+	if (op->primitive->param_flags == 3) {
+		cmd->set_num_uparams(2); // binary
+		cmd->set_uparam(0, p1);
+		cmd->set_uparam(1, p2);
+	} else {
+		cmd->set_num_uparams(1); // unary
+		cmd->set_uparam(0, p1);
+	}
 	return cmd;
 }
 
@@ -142,30 +153,41 @@ Node *SyntaxTree::add_node_operator_by_inline(Node *p1, Node *p2, InlineID inlin
 }
 
 
-Node *SyntaxTree::add_node_local_var(Variable *v) {
-	if (!v)
-		script->do_error_internal("var = nil");
+Node *SyntaxTree::add_node_local(Variable *v, const Class *type) {
+	return new Node(NodeKind::VAR_LOCAL, (int_p)v, type);
+}
+
+Node *SyntaxTree::add_node_local(Variable *v) {
 	return new Node(NodeKind::VAR_LOCAL, (int_p)v, v->type);
+}
+
+Node *SyntaxTree::add_node_global(Variable *v) {
+	return new Node(NodeKind::VAR_GLOBAL, (int_p)v, v->type);
 }
 
 Node *SyntaxTree::add_node_parray(Node *p, Node *index, const Class *type) {
 	Node *cmd_el = new Node(NodeKind::POINTER_AS_ARRAY, 0, type);
-	cmd_el->set_num_params(2);
-	cmd_el->set_param(0, p);
-	cmd_el->set_param(1, index);
+	cmd_el->set_num_uparams(2);
+	cmd_el->set_uparam(0, p);
+	cmd_el->set_uparam(1, index);
 	return cmd_el;
 }
 
 Node *SyntaxTree::add_node_dyn_array(Node *array, Node *index) {
-	auto *t = array->type;
-	return add_node_parray(shift_node(array, false, 0, t->get_pointer()), index, t->get_array_element());
+	Node *cmd_el = new Node(NodeKind::DYNAMIC_ARRAY, 0, array->type->get_array_element());
+	cmd_el->set_num_uparams(2);
+	cmd_el->set_uparam(0, array);
+	cmd_el->set_uparam(1, index);
+	return cmd_el;
+	//auto *t = array->type;
+	//return add_node_parray(shift_node(array, false, 0, t->get_pointer()), index, t->get_array_element());
 }
 
 Node *SyntaxTree::add_node_array(Node *array, Node *index) {
-	auto *el = new Node(NodeKind::ARRAY, 0, array->type->parent);
-	el->set_num_params(2);
-	el->set_param(0, array);
-	el->set_param(1, index);
+	auto *el = new Node(NodeKind::ARRAY, 0, array->type->param);
+	el->set_num_uparams(2);
+	el->set_uparam(0, array);
+	el->set_uparam(1, index);
 	return el;
 }
 
@@ -195,7 +217,7 @@ SyntaxTree::SyntaxTree(Script *_script) {
 
 
 void SyntaxTree::parse_buffer(const string &buffer, bool just_analyse) {
-	Exp.analyse(this, buffer + string("\0", 1)); // compatibility... expected by lexical
+	Exp.analyse(this, buffer);
 	
 	pre_compiler(just_analyse);
 
@@ -204,20 +226,59 @@ void SyntaxTree::parse_buffer(const string &buffer, bool just_analyse) {
 	Exp.clear();
 
 	if (config.verbose)
-		show("par:a");
+		show("parse:a");
 
-	convert_call_by_reference();
+}
 
-	/*if (FlagShow)
-		Show();*/
+void SyntaxTree::digest() {
+	if (config.verbose)
+		show("digest:pre");
+
+	transform([&](Node* n){ return conv_class_and_func_to_const(n); });
+
+	eval_const_expressions();
+
+	transformb([&](Node* n, Block* b){ return conv_break_down_high_level(n, b); });
+	if (config.verbose)
+		show("digest:break-high");
+
+
+	transform([&](Node* n){ return conv_break_down_med_level(this, n); });
+	transform([&](Node* n){ return conv_break_down_low_level(n); });
+	if (config.verbose)
+		show("digest:break-low");
 
 	simplify_shift_deref();
 	simplify_ref_deref();
-	
-	pre_processor();
+
+	eval_const_expressions();
 
 	if (config.verbose)
-		show("par:b");
+		show("digest:pre-proc");
+
+	transform([&](Node* n){ return conv_func_inline(n); });
+	if (config.verbose)
+		show("digest:inline");
+
+	convert_call_by_reference();
+	if (config.verbose)
+		show("digest:call-by-ref");
+
+	map_local_variables_to_stack();
+	if (config.verbose)
+		show("digest:map");
+
+	simplify_ref_deref();
+	simplify_shift_deref();
+	if (config.verbose)
+		show("digest:deref");
+
+	eval_const_expressions();
+	if (config.verbose)
+		show("digest:map");
+
+
+	//pre_processor_addresses();
 }
 
 
@@ -245,6 +306,9 @@ void SyntaxTree::do_error(const string &str, int override_exp_no, int override_l
 		expr = Exp.line[logical_line].exp[exp_no].name;
 	}
 
+#ifdef CPU_ARM
+	msg_error(str);
+#endif
 	throw Exception(str, expr, physical_line, pos, script);
 }
 
@@ -304,9 +368,13 @@ Node *SyntaxTree::add_node_const(Constant *c) {
 	return new Node(NodeKind::CONSTANT, (int_p)c, c->type);
 }
 
-PrimitiveOperator *SyntaxTree::which_primitive_operator(const string &name) {
-	for (int i=0;i<(int)OperatorID::_COUNT_;i++)
-		if (name == PrimitiveOperators[i].name)
+/*Node *SyntaxTree::add_node_block(Block *b) {
+	return new Node(NodeKind::BLOCK, (int_p)b, TypeVoid);
+}*/
+
+PrimitiveOperator *SyntaxTree::which_primitive_operator(const string &name, int param_flags) {
+	for (int i=0; i<(int)OperatorID::_COUNT_; i++)
+		if (name == PrimitiveOperators[i].name and param_flags == PrimitiveOperators[i].param_flags)
 			return &PrimitiveOperators[i];
 	return nullptr;
 }
@@ -322,27 +390,33 @@ Statement *SyntaxTree::which_statement(const string &name) {
 	for (auto *s: Statements)
 		if (name == s->name)
 			return s;
+
+	// transitional hack
+	if (name == "delete")
+		return which_statement(IDENTIFIER_DELETE);
+
 	return nullptr;
 }
 
 
 // xxxxx FIXME
-Node *exlink_make_var_local(SyntaxTree *ps, const Class *t, Variable *v) {
-	return new Node(NodeKind::VAR_LOCAL, (int_p)v, t);
-}
 
-Node *exlink_make_var_element(SyntaxTree *ps, Function *f, ClassElement &e) {
-	Node *self = ps->add_node_local_var(f->__get_var(IDENTIFIER_SELF));
-	Node *link = new Node(NodeKind::DEREF_ADDRESS_SHIFT, e.offset, e.type);
-	link->set_num_params(1);
-	link->params[0] = self;
+Node *SyntaxTree::exlink_add_element(Function *f, ClassElement &e) {
+	Node *self = add_node_local(f->__get_var(IDENTIFIER_SELF));
+	Node *link = new Node(NodeKind::ADDRESS_SHIFT, e.offset, e.type);
+	link->set_num_uparams(1);
+	link->uparams[0] = self;
 	return link;
 }
 
-Node *exlink_make_class_func(SyntaxTree *ps, Function *f, Function *cf) {
-	Node *link = new Node(NodeKind::FUNCTION_NAME, (int_p)cf, TypeFunctionCode);
-	Node *self = ps->add_node_local_var(f->__get_var(IDENTIFIER_SELF));
-	link->set_instance(self);
+// functions of our "self" class
+Node *SyntaxTree::exlink_add_class_func(Function *f, Function *cf) {
+	Node *link = add_node_func_name(cf);
+	Node *self = add_node_local(f->__get_var(IDENTIFIER_SELF));
+	if (!f->is_static) {
+		link->set_num_uparams(1);
+		link->set_instance(self);
+	}
 	return link;
 }
 
@@ -353,7 +427,7 @@ Array<Node*> SyntaxTree::get_existence_global(const string &name, const Class *n
 		// global variables (=local variables in "RootOfAllEvil")
 		for (Variable *v: base_class->static_variables)
 			if (v->name == name)
-				return {new Node(NodeKind::VAR_GLOBAL, (int_p)v, v->type)};
+				return {add_node_global(v)};
 		// TODO.... namespace...
 	}
 
@@ -365,12 +439,12 @@ Array<Node*> SyntaxTree::get_existence_global(const string &name, const Class *n
 			// named constants
 			for (Constant *c: ns->constants)
 				if (name == c->name)
-					return {new Node(c)};
+					return {add_node_const(c)};
 
 			// then the (real) functions
-			for (Function *f: ns->static_functions)
+			for (Function *f: ns->functions)
 				if (f->name == name and f->is_static)
-					links.add(new Node(NodeKind::FUNCTION_NAME, (int_p)f, TypeFunctionCode));
+					links.add(add_node_func_name(f));
 			if (links.num > 0 and !prefer_class)
 				return links;
 		}
@@ -378,7 +452,7 @@ Array<Node*> SyntaxTree::get_existence_global(const string &name, const Class *n
 		// types
 		for (const Class *c: ns->classes)
 			if (c->name == name)
-				return {new Node(c)};
+				return {add_node_class(c)};
 
 		// prefer class...
 		if (links.num > 0)
@@ -391,23 +465,23 @@ Array<Node*> SyntaxTree::get_existence_global(const string &name, const Class *n
 	return {};
 }
 
-Node* block_get_existence(SyntaxTree *tree, const string &name, Block *block) {
+Node* SyntaxTree::get_existence_block(const string &name, Block *block) {
 	Function *f = block->function;
 
 	// first test local variables
 	auto *v = block->get_var(name);
 	if (v)
-		return exlink_make_var_local(tree, v->type, v);
+		return add_node_local(v);
 	if (!f->is_static){
 		if ((name == IDENTIFIER_SUPER) and (f->name_space->parent))
-			return exlink_make_var_local(tree, f->name_space->parent->get_pointer(), f->__get_var(IDENTIFIER_SELF));
+			return add_node_local(f->__get_var(IDENTIFIER_SELF), f->name_space->parent);
 		// class elements (within a class function)
 		for (auto &e: f->name_space->elements)
 			if (e.name == name)
-				return exlink_make_var_element(tree, f, e);
-		for (auto *cf: f->name_space->member_functions)
+				return exlink_add_element(f, e);
+		for (auto *cf: f->name_space->functions)
 			if (cf->name == name)
-				return exlink_make_class_func(tree, f, cf);
+				return exlink_add_class_func(f, cf);
 	}
 	return nullptr;
 }
@@ -415,7 +489,7 @@ Node* block_get_existence(SyntaxTree *tree, const string &name, Block *block) {
 Array<Node*> SyntaxTree::get_existence(const string &name, Block *block, const Class *ns, bool prefer_class)
 {
 	if (block and !prefer_class) {
-		Node *n = block_get_existence(this, name, block);
+		Node *n = get_existence_block(name, block);
 		if (n)
 			return {n};
 	}
@@ -429,13 +503,14 @@ Array<Node*> SyntaxTree::get_existence(const string &name, Block *block, const C
 		// then the statements
 		auto s = which_statement(name);
 		if (s){
+			//return {add_node_statement(s->id)};
 			Node *n = new Node(NodeKind::STATEMENT, (int64)s, TypeVoid);
-			n->set_num_params(s->num_params);
+			n->set_num_uparams(s->num_params);
 			return {n};
 		}
 
 		// operators
-		auto w = which_primitive_operator(name);
+		auto w = which_primitive_operator(name, 2); // negate/not...
 		if (w)
 			return {new Node(NodeKind::PRIMITIVE_OPERATOR, (int_p)w, TypeUnknown)};
 	}
@@ -470,64 +545,67 @@ const Class *SyntaxTree::find_root_type_by_name(const string &name, const Class 
 	return nullptr;
 }
 
-Class *SyntaxTree::create_new_class(const string &name, Class::Type type, int size, int array_size, const Class *sub, Class *ns) {
+Class *SyntaxTree::create_new_class(const string &name, Class::Type type, int size, int array_size, const Class *parent, const Class *param, const Class *ns) {
 	if (find_root_type_by_name(name, ns, false))
 		do_error("class already exists");
 
-	Class *t = new Class(name, size, this, sub);
+	Class *t = new Class(name, size, this, parent, param);
 	t->type = type;
 	t->_logical_line_no = Exp.get_line_no();
 	t->_exp_no = Exp.cur_exp;
+	owned_classes.add(t);
 	
 	// link namespace
-	ns->classes.add(t);
+	(const_cast<Class*>(ns))->classes.add(t);
 	t->name_space = ns;
 	
 	t->array_length = max(array_size, 0);
 	if (t->is_super_array() or t->is_dict()) {
 		t->derive_from(TypeDynamicArray, false); // we already set its size!
-		if (sub->needs_constructor() and !sub->get_default_constructor())
-			do_error(format("can not create a dynamic array from type %s, missing default constructor", sub->name.c_str()));
-		t->parent = sub;
+		if (param->needs_constructor() and !param->get_default_constructor())
+			do_error(format("can not create a dynamic array from type %s, missing default constructor", param->long_name().c_str()));
+		t->param = param;
 		add_missing_function_headers_for_class(t);
 	} else if (t->is_array()) {
-		if (sub->needs_constructor() and !sub->get_default_constructor())
-			do_error(format("can not create an array from type %s, missing default constructor", sub->name.c_str()));
+		if (param->needs_constructor() and !param->get_default_constructor())
+			do_error(format("can not create an array from type %s, missing default constructor", param->long_name().c_str()));
 		add_missing_function_headers_for_class(t);
 	}
 	return t;
 }
 
-const Class *SyntaxTree::make_class(const string &name, Class::Type type, int size, int array_size, const Class *sub) {
+const Class *SyntaxTree::make_class(const string &name, Class::Type type, int size, int array_size, const Class *parent, const Class *param, const Class *ns) {
+	//msg_write("make class " + name + " ns=" + ns->long_name() + " param=" + param->long_name());
+	
 	// check if it already exists
-	auto *tt = find_root_type_by_name(name, base_class, false);
+	auto *tt = find_root_type_by_name(name, ns, false);
 	if (tt)
 		return tt;
 
 	// add new class
-	return create_new_class(name, type, size, array_size, sub, base_class);
+	return create_new_class(name, type, size, array_size, parent, param, ns);
 }
 
 const Class *SyntaxTree::make_class_super_array(const Class *element_type) {
-	string name = element_type->long_name() + "[]";
-	return make_class(name, Class::Type::SUPER_ARRAY, config.super_array_size, -1, element_type);
+	string name = element_type->name + "[]";
+	return make_class(name, Class::Type::SUPER_ARRAY, config.super_array_size, -1, TypeDynamicArray, element_type, element_type->name_space);
 }
 
 const Class *SyntaxTree::make_class_array(const Class *element_type, int num_elements) {
-	string name = element_type->long_name() + format("[%d]", num_elements);
-	return make_class(name, Class::Type::ARRAY, element_type->size * num_elements, num_elements, element_type);
+	string name = element_type->name + format("[%d]", num_elements);
+	return make_class(name, Class::Type::ARRAY, element_type->size * num_elements, num_elements, nullptr, element_type, element_type->name_space);
 }
 
 const Class *SyntaxTree::make_class_dict(const Class *element_type) {
-	string name = element_type->long_name() + "{}";
-	return make_class(name, Class::Type::DICT, config.super_array_size, 0, element_type);
+	string name = element_type->name + "{}";
+	return make_class(name, Class::Type::DICT, config.super_array_size, 0, TypeDictBase, element_type, element_type->name_space);
 }
 
-Node *conv_cbr(SyntaxTree *ps, Node *c, Variable *var) {
+Node *SyntaxTree::conv_cbr(Node *c, Variable *var) {
 	// convert
 	if ((c->kind == NodeKind::VAR_LOCAL) and (c->as_local() == var)) {
 		c->type = c->type->get_pointer();
-		return ps->deref_node(c);
+		return deref_node(c);
 	}
 	return c;
 }
@@ -546,27 +624,27 @@ void conv_return(SyntaxTree *ps, nodes *c) {
 #endif
 
 
-Node *conv_calls(SyntaxTree *ps, Node *c, int tt) {
+Node *SyntaxTree::conv_calls(Node *c) {
 	if ((c->kind == NodeKind::STATEMENT) and (c->as_statement()->id == StatementID::RETURN))
-		if (c->params.num > 0) {
-			if ((c->params[0]->type->is_array()) /*or (c->Param[j]->Type->IsSuperArray)*/) {
-				c->set_param(0, ps->ref_node(c->params[0]));
+		if (c->uparams.num > 0) {
+			if ((c->uparams[0]->type->is_array()) /*or (c->Param[j]->Type->IsSuperArray)*/) {
+				c->set_uparam(0, ref_node(c->uparams[0]));
 			}
 			return c;
 		}
 
-	if ((c->kind == NodeKind::FUNCTION_CALL) or (c->kind == NodeKind::VIRTUAL_CALL) or (c->kind == NodeKind::ARRAY_BUILDER) or (c->kind == NodeKind::CONSTRUCTOR_AS_FUNCTION)) {
+	if ((c->kind == NodeKind::FUNCTION_CALL) or (c->kind == NodeKind::VIRTUAL_CALL) or (c->kind == NodeKind::CONSTRUCTOR_AS_FUNCTION)) {
 
-		// parameters: array/class as reference
-		for (int j=0;j<c->params.num;j++)
-			if (c->params[j]->type->uses_call_by_reference()) {
-				c->set_param(j, ps->ref_node(c->params[j]));
+		// parameters, instance: class as reference
+		for (int j=0;j<c->uparams.num;j++)
+			if (c->uparams[j] and c->uparams[j]->type->uses_call_by_reference()) {
+				c->set_uparam(j, ref_node(c->uparams[j]));
 			}
 
 		// return: array reference (-> dereference)
 		if ((c->type->is_array()) /*or (c->Type->IsSuperArray)*/) {
 			c->type = c->type->get_pointer();
-			return ps->deref_node(c);
+			return deref_node(c);
 			//deref_command_old(this, c);
 		}
 	}
@@ -574,9 +652,11 @@ Node *conv_calls(SyntaxTree *ps, Node *c, int tt) {
 	// special string / list operators
 	if (c->kind == NodeKind::OPERATOR) {
 		// parameters: super array as reference
-		for (int j=0;j<c->params.num;j++)
-			if ((c->params[j]->type->is_array()) or (c->params[j]->type->is_super_array())) {
-				c->set_param(j, ps->ref_node(c->params[j]));
+		for (int j=0;j<c->uparams.num;j++)
+			if ((c->uparams[j]->type->is_array()) or (c->uparams[j]->type->is_super_array())) {
+				c->set_uparam(j, ref_node(c->uparams[j]));
+				// REALLY ?!?!?!?  FIXME?!?!?
+				msg_write("this might be bad");
 			}
   	}
 	return c;
@@ -584,24 +664,24 @@ Node *conv_calls(SyntaxTree *ps, Node *c, int tt) {
 
 
 // remove &*x
-Node *easyfy_ref_deref(SyntaxTree *ps, Node *c, int l) {
+Node *SyntaxTree::conv_easyfy_ref_deref(Node *c, int l) {
 	if (c->kind == NodeKind::REFERENCE) {
-		if (c->params[0]->kind == NodeKind::DEREFERENCE) {
+		if (c->uparams[0]->kind == NodeKind::DEREFERENCE) {
 			// remove 2 knots...
-			return c->params[0]->params[0];
+			return c->uparams[0]->uparams[0];
 		}
 	}
 	return c;
 }
 
 // remove (*x)[] and (*x).y
-Node *easyfy_shift_deref(SyntaxTree *ps, Node *c, int l) {
+Node *SyntaxTree::conv_easyfy_shift_deref(Node *c, int l) {
 	if ((c->kind == NodeKind::ADDRESS_SHIFT) or (c->kind == NodeKind::ARRAY)) {
-		if (c->params[0]->kind == NodeKind::DEREFERENCE) {
+		if (c->uparams[0]->kind == NodeKind::DEREFERENCE) {
 			// unify 2 knots (remove 1)
-			Node *t = c->params[0]->params[0];
+			Node *t = c->uparams[0]->uparams[0];
 			c->kind = (c->kind == NodeKind::ADDRESS_SHIFT) ? NodeKind::DEREF_ADDRESS_SHIFT : NodeKind::POINTER_AS_ARRAY;
-			c->set_param(0, t);
+			c->set_uparam(0, t);
 			return c;
 		}
 	}
@@ -610,8 +690,8 @@ Node *easyfy_shift_deref(SyntaxTree *ps, Node *c, int l) {
 }
 
 
-Node *convert_return_by_memory(SyntaxTree *ps, Node *n, Function *f) {
-	ps->script->cur_func = f;
+Node *SyntaxTree::conv_return_by_memory(Node *n, Function *f) {
+	script->cur_func = f;
 
 	if ((n->kind != NodeKind::STATEMENT) or (n->as_statement()->id != StatementID::RETURN))
 		return n;
@@ -620,17 +700,17 @@ Node *convert_return_by_memory(SyntaxTree *ps, Node *n, Function *f) {
 	Node *p_ret = nullptr;
 	for (Variable *v: f->var)
 		if (v->name == IDENTIFIER_RETURN_VAR) {
-			p_ret = ps->add_node_local_var(v);
+			p_ret = add_node_local(v);
 		}
 	if (!p_ret)
-		ps->do_error("-return- not found...");
-	Node *ret = ps->deref_node(p_ret);
-	Node *cmd_assign = ps->link_operator_id(OperatorID::ASSIGN, ret, n->params[0]);
+		do_error("-return- not found...");
+	Node *ret = deref_node(p_ret);
+	Node *cmd_assign = link_operator_id(OperatorID::ASSIGN, ret, n->uparams[0]);
 	if (!cmd_assign)
-		ps->do_error("no = operator for return from function found: " + f->long_name());
+		do_error("no = operator for return from function found: " + f->long_name());
 	_transform_insert_before_.add(cmd_assign);
 
-	n->set_num_params(0);
+	n->set_num_uparams(0);
 	return n;
 }
 
@@ -644,13 +724,25 @@ void SyntaxTree::convert_call_by_reference() {
 	// convert functions
 	for (Function *f: functions) {
 		
+		// TODO: convert self...
+		if (!f->is_static and f->name_space->uses_call_by_reference()) {
+			for (auto *v: f->var)
+				if (v->name == IDENTIFIER_SELF) {
+					//msg_write("CONV SELF....");
+					v->type = v->type->get_pointer();
+
+					// internal usage...
+					transform_block(f->block, [&](Node *n){ return conv_cbr(n, v); });
+				}
+		}
+
 		// parameter: array/class as reference
 		for (int j=0;j<f->num_params;j++)
 			if (f->var[j]->type->uses_call_by_reference()) {
 				f->var[j]->type = f->var[j]->type->get_pointer();
 
 				// internal usage...
-				transform_block(f->block, [&](Node *n){ return conv_cbr(this, n, f->var[j]); });
+				transform_block(f->block, [&](Node *n){ return conv_cbr(n, f->var[j]); });
 			}
 
 		// return: array as reference
@@ -668,21 +760,21 @@ void SyntaxTree::convert_call_by_reference() {
 	for (Function *f: functions)
 		if (f->return_type->uses_return_by_memory())
 			//convert_return_by_memory(this, f->block, f);
-			transform_block(f->block, [&](Node *n){ return convert_return_by_memory(this, n, f); });
+			transform_block(f->block, [&](Node *n){ return conv_return_by_memory(n, f); });
 
 	// convert function calls
-	transform([&](Node *n){ return conv_calls(this, n, 0); });
+	transform([&](Node *n){ return conv_calls(n); });
 }
 
 
 void SyntaxTree::simplify_ref_deref() {
 	// remove &*
-	transform([&](Node *n){ return easyfy_ref_deref(this, n, 0); });
+	transform([&](Node *n){ return conv_easyfy_ref_deref(n, 0); });
 }
 
 void SyntaxTree::simplify_shift_deref() {
 	// remove &*
-	transform([&](Node *n){ return easyfy_shift_deref(this, n, 0); });
+	transform([&](Node *n){ return conv_easyfy_shift_deref(n, 0); });
 }
 
 InlineID __get_pointer_add_int() {
@@ -691,7 +783,16 @@ InlineID __get_pointer_add_int() {
 	return InlineID::INT_ADD;
 }
 
-Node *SyntaxTree::break_down_complicated_command(Node *c) {
+
+Node *conv_break_down_med_level(SyntaxTree *tree, Node *c) {
+	if (c->kind == NodeKind::DYNAMIC_ARRAY) {
+		return tree->conv_break_down_low_level(tree->add_node_parray(tree->shift_node(c->uparams[0], false, 0, c->type->get_pointer()), c->uparams[1], c->type));
+	}
+	return c;
+}
+
+Node *SyntaxTree::conv_break_down_low_level(Node *c) {
+
 	if (c->kind == NodeKind::ARRAY) {
 
 		auto *el_type = c->type;
@@ -703,9 +804,9 @@ Node *SyntaxTree::break_down_complicated_command(Node *c) {
 //        -> * -> size
 //             -> index
 
-		Node *c_index = c->params[1];
+		Node *c_index = c->uparams[1];
 		// & array
-		Node *c_ref_array = ref_node(c->params[0]);
+		Node *c_ref_array = ref_node(c->uparams[0]);
 		// create command for size constant
 		Node *c_size = add_node_const(add_constant_int(el_type->size));
 		// offset = size * index
@@ -727,8 +828,8 @@ Node *SyntaxTree::break_down_complicated_command(Node *c) {
 //        -> * -> size
 //             -> index
 
-		Node *c_index = c->params[1];
-		Node *c_ref_array = c->params[0];
+		Node *c_index = c->uparams[1];
+		Node *c_ref_array = c->uparams[0];
 		// create command for size constant
 		Node *c_size = add_node_const(add_constant_int(el_type->size));
 		// offset = size * index
@@ -750,7 +851,7 @@ Node *SyntaxTree::break_down_complicated_command(Node *c) {
 //        -> shift
 
 		// & struct
-		Node *c_ref_struct = ref_node(c->params[0]);
+		Node *c_ref_struct = ref_node(c->uparams[0]);
 		// create command for shift constant
 		Node *c_shift = add_node_const(add_constant_int(c->link_no));
 		// address = &struct + shift
@@ -768,7 +869,7 @@ Node *SyntaxTree::break_down_complicated_command(Node *c) {
 // * -> + -> struct_pointer
 //        -> shift
 
-		Node *c_ref_struct = c->params[0];
+		Node *c_ref_struct = c->uparams[0];
 		// create command for shift constant
 		Node *c_shift = add_node_const(add_constant_int(c->link_no));
 		// address = &struct + shift
@@ -776,135 +877,56 @@ Node *SyntaxTree::break_down_complicated_command(Node *c) {
 		c_address->type = el_type->get_pointer();//TypePointer;
 		// * address
 		return deref_node(c_address);
-	} else if (c->kind == NodeKind::ARRAY_BUILDER_FOR) {
-
-		_transform_insert_before_.add(c->params[0]);
-		return c->params[1];
 	}
 	return c;
 }
 
-
-Node *SyntaxTree::break_down_for_loops(Node *c) {
-	if ((c->kind == NodeKind::STATEMENT) and (c->as_statement()->id == StatementID::FOR_RANGE)) {
-
-		// [VAR, START, STOP, STEP, BLOCK]
-		auto var = c->params[0];
-		auto val0 = c->params[1];
-		auto val1 = c->params[2];
-		auto step = c->params[3];
-		auto block = c->params[4];
-
-		c->link_no = (int_p)statement_from_id(StatementID::FOR_DIGEST);
-		c->set_num_params(4);
-		// [INIT, CMP, BLOCK, INC]
-
-		Node *cmd_assign = add_node_operator_by_inline(var, val0, InlineID::INT_ASSIGN);
-		c->set_param(0, cmd_assign);
-
-		// while(for_var < val1)
-		Node *cmd_cmp = add_node_operator_by_inline(cp_node(var), val1, InlineID::INT_SMALLER);
-		c->set_param(1, cmd_cmp);
-
-		c->set_param(2, block);
-
-
-		// ...for_var += 1
-		Node *cmd_inc;
-		if (var->type == TypeInt) {
-			if (step->as_const()->as_int() == 1)
-				cmd_inc = add_node_operator_by_inline(cp_node(var), step /*dummy*/, InlineID::INT_INCREASE);
-			else
-				cmd_inc = add_node_operator_by_inline(cp_node(var), step, InlineID::INT_ADD_ASSIGN);
-		} else {
-			cmd_inc = add_node_operator_by_inline(cp_node(var), step, InlineID::FLOAT_ADD_ASSIGN);
-		}
-		c->set_param(3, cmd_inc); // add to loop-block
-
-	} else if ((c->kind == NodeKind::STATEMENT) and (c->as_statement()->id == StatementID::FOR_ARRAY)) {
-
-		// [VAR, INDEX, ARRAY, BLOCK]
-		auto var = c->params[0];
-		auto index = c->params[1];
-		auto array = c->params[2];
-		auto block = c->params[3];
-
-		c->link_no = (int_p)statement_from_id(StatementID::FOR_DIGEST);
-		c->set_num_params(4);
-		// [INIT, CMP, BLOCK, INC]
-
-
-		// 0
-		Node *val0 = add_node_const(add_constant_int(0));
-
-		// implement
-		// for_index = 0
-		Node *cmd_assign = add_node_operator_by_inline(index, val0, InlineID::INT_ASSIGN);
-		c->set_param(0, cmd_assign);
-
-		Node *val1;
-		if (array->type->usable_as_super_array()) {
-			// array.num
-			val1 = new Node(NodeKind::ADDRESS_SHIFT, config.pointer_size, TypeInt);
-			val1->set_num_params(1);
-			val1->set_param(0, cp_node(array));
-		} else {
-			// array.size
-			val1 = add_node_const(add_constant_int(array->type->array_length));
-		}
-
-		// while(for_index < val1)
-		Node *cmd_cmp = add_node_operator_by_inline(cp_node(index), val1, InlineID::INT_SMALLER);
-		c->set_param(1, cmd_cmp);
-
-		// ...block
-		c->set_param(2, block);
-
-		// ...for_index += 1
-		Node *cmd_inc = add_node_operator_by_inline(cp_node(index), val1 /*dummy*/, InlineID::INT_INCREASE);
-		c->set_param(3, cmd_inc);
-
-		// array[index]
-		Node *el;
-		if (array->type->usable_as_super_array()) {
-			el = add_node_dyn_array(array, cp_node(index));
-		} else {
-			el = add_node_array(array, cp_node(index));
-		}
-
-		// &for_var = &array[index]
-		Node *cmd_var_assign = add_node_operator_by_inline(var, ref_node(el), InlineID::POINTER_ASSIGN);
-		block->params.insert(cmd_var_assign, 0);
-
-	}
-	return c;
-}
 
 Node* SyntaxTree::transform_node(Node *n, std::function<Node*(Node*)> F) {
 	if (n->kind == NodeKind::BLOCK) {
 		transform_block(n->as_block(), F);
 	} else {
-		for (int i=0; i<n->params.num; i++)
-			n->set_param(i, transform_node(n->params[i], F));
-
-
-		if (n->instance)
-			n->set_instance(transform_node(n->instance, F));
+		for (int i=0; i<n->uparams.num; i++)
+			n->set_uparam(i, transform_node(n->uparams[i], F));
 	}
-
 	return F(n);
 }
 
+Node* SyntaxTree::transformb_node(Node *n, Block *b, std::function<Node*(Node*, Block*)> F) {
+	if (n->kind == NodeKind::BLOCK) {
+		transformb_block(n->as_block(), F);
+	} else {
+		for (int i=0; i<n->uparams.num; i++)
+			n->set_uparam(i, transformb_node(n->uparams[i], b, F));
+	}
+	return F(n, b);
+}
 
 void SyntaxTree::transform_block(Block *block, std::function<Node*(Node*)> F) {
 	//foreachi (Node *n, block->nodes, i){
-	for (int i=0; i<block->params.num; i++) {
-		block->params[i] = transform_node(block->params[i], F);
+	for (int i=0; i<block->uparams.num; i++) {
+		block->uparams[i] = transform_node(block->uparams[i], F);
 		if (_transform_insert_before_.num > 0) {
 			for (auto *ib: _transform_insert_before_) {
 				if (config.verbose)
 					msg_error("INSERT BEFORE...");
-				block->params.insert(ib, i);
+				block->uparams.insert(ib, i);
+				i ++;
+			}
+			_transform_insert_before_.clear();
+		}
+	}
+}
+
+void SyntaxTree::transformb_block(Block *block, std::function<Node*(Node*, Block*)> F) {
+	//foreachi (Node *n, block->nodes, i){
+	for (int i=0; i<block->uparams.num; i++) {
+		block->uparams[i] = transformb_node(block->uparams[i], block, F);
+		if (_transform_insert_before_.num > 0) {
+			for (auto *ib: _transform_insert_before_) {
+				if (config.verbose)
+					msg_error("INSERT BEFORE...");
+				block->uparams.insert(ib, i);
 				i ++;
 			}
 			_transform_insert_before_.clear();
@@ -919,49 +941,184 @@ void SyntaxTree::transform(std::function<Node*(Node*)> F) {
 		transform_block(f->block, F);
 	}
 }
+void SyntaxTree::transformb(std::function<Node*(Node*, Block*)> F) {
+	for (Function *f: functions) {
+		cur_func = f;
+		transformb_block(f->block, F);
+	}
+}
 
-Node *conv_constr_func(SyntaxTree *ps, Node *n) {
+bool node_is_executable(Node *n) {
+	if ((n->kind == NodeKind::CONSTANT) or (n->kind == NodeKind::VAR_LOCAL) or (n->kind == NodeKind::VAR_GLOBAL))
+		return false;
+	if ((n->kind == NodeKind::ADDRESS_SHIFT) or (n->kind == NodeKind::ARRAY) or (n->kind == NodeKind::DYNAMIC_ARRAY) or (n->kind == NodeKind::REFERENCE) or (n->kind == NodeKind::DEREFERENCE) or (n->kind == NodeKind::DEREF_ADDRESS_SHIFT))
+		return node_is_executable(n->uparams[0]);
+	return true;
+}
+
+Node *SyntaxTree::conv_class_and_func_to_const(Node *n) {
+	if (n->kind == NodeKind::FUNCTION) {
+		return add_node_const(add_constant_pointer(TypeFunctionP, n->as_func()));
+	} else if (n->kind == NodeKind::CLASS) {
+		return add_node_const(add_constant_pointer(TypeClassP, n->as_class()));
+	}
+	return n;
+}
+
+
+Node *SyntaxTree::conv_break_down_high_level(Node *n, Block *b) {
 	if (n->kind == NodeKind::CONSTRUCTOR_AS_FUNCTION) {
 		if (config.verbose) {
 			msg_error("constr func....");
 			n->show();
 		}
-		auto *f = ps->cur_func;
 		
 		// temp var
-		auto *vv = f->block->add_var(f->create_slightly_hidden_name(), n->type);
+		auto *f = cur_func;
+		auto *vv = b->add_var(f->create_slightly_hidden_name(), n->type);
 		vv->explicitly_constructed = true;
-		Node *dummy = ps->add_node_local_var(vv);
+		Node *dummy = add_node_local(vv);
 		
-		auto *ib = ps->cp_node(n);
+		auto *ib = cp_node(n);
 		ib->kind = NodeKind::FUNCTION_CALL;
 		ib->type = TypeVoid;
-		ib->set_instance(ps->ref_node(dummy));
+		ib->set_instance(dummy);
 		if (config.verbose)
 			ib->show();
 
 		_transform_insert_before_.add(ib);
 
-		// n->instance should be a reference to local... FIXME
-		return ps->cp_node(dummy);//n->instance->params[0]);
+		return cp_node(dummy);
+	} else if (n->kind == NodeKind::ARRAY_BUILDER) {
+		auto *t_el = n->type->get_array_element();
+		Function *cf = n->type->get_func("add", TypeVoid, {t_el});
+		if (!cf)
+			do_error(format("[..]: can not find %s.add(%s) function???", n->type->long_name().c_str(), t_el->long_name().c_str()));
+
+		// temp var
+		auto *f = cur_func;
+		auto *vv = b->add_var(f->create_slightly_hidden_name(), n->type);
+		Node *array = add_node_local(vv);
+
+		Block *bb = new Block(f, b);
+		for (int i=0; i<n->uparams.num; i++){
+			auto *cc = add_node_member_call(cf, cp_node(array));
+			cc->set_uparam(1, n->uparams[i]);
+			bb->add(cc);
+		}
+		_transform_insert_before_.add(bb);
+		return array;
+	} else if ((n->kind == NodeKind::STATEMENT) and (n->as_statement()->id == StatementID::FOR_RANGE)) {
+
+		// [VAR, START, STOP, STEP, BLOCK]
+		auto var = n->uparams[0];
+		auto val0 = n->uparams[1];
+		auto val1 = n->uparams[2];
+		auto step = n->uparams[3];
+		auto block = n->uparams[4];
+
+		n->link_no = (int_p)statement_from_id(StatementID::FOR_DIGEST);
+		n->set_num_uparams(4);
+		// [INIT, CMP, BLOCK, INC]
+
+		Node *cmd_assign = add_node_operator_by_inline(var, val0, InlineID::INT_ASSIGN);
+		n->set_uparam(0, cmd_assign);
+
+		// while(for_var < val1)
+		Node *cmd_cmp = add_node_operator_by_inline(cp_node(var), val1, InlineID::INT_SMALLER);
+		n->set_uparam(1, cmd_cmp);
+
+		n->set_uparam(2, block);
+
+
+		// ...for_var += 1
+		Node *cmd_inc;
+		if (var->type == TypeInt) {
+			if (step->as_const()->as_int() == 1)
+				cmd_inc = add_node_operator_by_inline(cp_node(var), nullptr, InlineID::INT_INCREASE);
+			else
+				cmd_inc = add_node_operator_by_inline(cp_node(var), step, InlineID::INT_ADD_ASSIGN);
+		} else {
+			cmd_inc = add_node_operator_by_inline(cp_node(var), step, InlineID::FLOAT_ADD_ASSIGN);
+		}
+		n->set_uparam(3, cmd_inc); // add to loop-block
+
+	} else if ((n->kind == NodeKind::STATEMENT) and (n->as_statement()->id == StatementID::FOR_ARRAY)) {
+
+		// [VAR, INDEX, ARRAY, BLOCK]
+		auto var = n->uparams[0];
+		auto index = n->uparams[1];
+		auto array = n->uparams[2];
+		auto block = n->uparams[3];
+		
+		
+		// array needs execution?
+		if (node_is_executable(array)) {
+			// -> assign into variable before the loop
+			auto *v = b->add_var(b->function->create_slightly_hidden_name(), array->type);
+
+			auto *assign = link_operator_id(OperatorID::ASSIGN, add_node_local(v), array);
+			_transform_insert_before_.add(assign);
+
+			array = add_node_local(v);
+		}
+
+		n->link_no = (int_p)statement_from_id(StatementID::FOR_DIGEST);
+		n->set_num_uparams(4);
+		// [INIT, CMP, BLOCK, INC]
+
+
+		// 0
+		Node *val0 = add_node_const(add_constant_int(0));
+
+		// implement
+		// for_index = 0
+		Node *cmd_assign = add_node_operator_by_inline(index, val0, InlineID::INT_ASSIGN);
+		n->set_uparam(0, cmd_assign);
+
+		Node *val1;
+		if (array->type->usable_as_super_array()) {
+			// array.num
+			val1 = new Node(NodeKind::ADDRESS_SHIFT, config.pointer_size, TypeInt);
+			val1->set_num_uparams(1);
+			val1->set_uparam(0, cp_node(array));
+		} else {
+			// array.size
+			val1 = add_node_const(add_constant_int(array->type->array_length));
+		}
+
+		// while(for_index < val1)
+		Node *cmd_cmp = add_node_operator_by_inline(cp_node(index), val1, InlineID::INT_SMALLER);
+		n->set_uparam(1, cmd_cmp);
+
+		// ...block
+		n->set_uparam(2, block);
+
+		// ...for_index += 1
+		Node *cmd_inc = add_node_operator_by_inline(cp_node(index), nullptr, InlineID::INT_INCREASE);
+		n->set_uparam(3, cmd_inc);
+
+		// array[index]
+		Node *el;
+		if (array->type->usable_as_super_array()) {
+			el = add_node_dyn_array(array, cp_node(index));
+		} else {
+			el = add_node_array(array, cp_node(index));
+		}
+
+		// &for_var = &array[index]
+		Node *cmd_var_assign = add_node_operator_by_inline(var, ref_node(el), InlineID::POINTER_ASSIGN);
+		block->uparams.insert(cmd_var_assign, 0);
+
+	} else if (n->kind == NodeKind::ARRAY_BUILDER_FOR) {
+
+		_transform_insert_before_.add(n->uparams[0]);
+		return n->uparams[1];
 	}
 	return n;
 }
 
-// split arrays and address shifts into simpler commands...
-void SyntaxTree::break_down_complicated_commands() {
-	if (config.verbose) {
-		show("break:a");
-		msg_write("BreakDownComplicatedCommands");
-	}
-	transform([&](Node* n){ return break_down_for_loops(n); });
-	transform([&](Node* n){ return break_down_complicated_command(n); });
-	transform([&](Node* n){ return conv_constr_func(this, n); });
-	if (config.verbose)
-		show("break:b");
-}
-
-Node* conv_func_inline(SyntaxTree *ps, Node *n) {
+Node* SyntaxTree::conv_func_inline(Node *n) {
 	if (n->kind == NodeKind::FUNCTION_CALL) {
 		if (n->as_func()->inline_no != InlineID::NONE) {
 			n->kind = NodeKind::INLINE_CALL;
@@ -976,13 +1133,6 @@ Node* conv_func_inline(SyntaxTree *ps, Node *n) {
 	}
 	return n;
 }
-
-void SyntaxTree::make_functions_inline() {
-	transform([&](Node* n){ return conv_func_inline(this, n); });
-	if (config.verbose)
-		show("break:c");
-}
-
 
 
 void MapLVSX86Return(Function *f) {
@@ -1039,11 +1189,11 @@ void SyntaxTree::map_local_variables_to_stack() {
 					// "real" local variables
 					v->_offset = - f->_var_size - s;
 					f->_var_size += s;
-				}				
+				}
 			}
 		} else if (config.instruction_set == Asm::InstructionSet::AMD64) {
 			f->_var_size = 0;
-			
+
 			foreachi(Variable *v, f->var, i) {
 				long long s = mem_align(v->type->size, 4);
 				v->_offset = - f->_var_size - s;
@@ -1054,7 +1204,7 @@ void SyntaxTree::map_local_variables_to_stack() {
 
 			foreachi(Variable *v, f->var, i) {
 				int s = mem_align(v->type->size, 4);
-				v->_offset = f->_var_size + s;
+				v->_offset = f->_var_size;// + s;
 				f->_var_size += s;
 			}
 		}
@@ -1065,7 +1215,7 @@ void SyntaxTree::map_local_variables_to_stack() {
 // no included scripts may be deleted before us!!!
 SyntaxTree::~SyntaxTree() {
 	// delete all classes, functions etc created by this script
-	
+
 	if (asm_meta_info)
 		delete asm_meta_info;
 

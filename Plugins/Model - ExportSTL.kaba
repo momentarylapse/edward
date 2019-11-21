@@ -4,9 +4,9 @@ use "api.kaba"
 
 void main()
 	if data_model.surface.num != 1
-		HuiErrorBox(edward, "Error", "Requires exactly 1 surface")
+		ErrorBox(edward, "Error", "Requires exactly 1 surface")
 		return
-	if !HuiFileDialogSave(edward, "Save STL", "", "*.stl", "*.stl")
+	if !FileDialogSave(edward, "Save STL", "", "*.stl", "*.stl")
 		return
 	File *f = Filesystem.create(HuiFilename)
 	f << "solid test"
@@ -19,11 +19,11 @@ void main()
 			vector vb = data_model.vertex[p.side[b].vertex].pos
 			vector vc = data_model.vertex[p.side[c].vertex].pos
 			vector n = p.temp_normal
-			f << "facet normal " + n.x.str() + " " + n.y.str() + " " + n.z.str()
+			f << "facet normal {{n.x}} {{n.y}} {{n.z}}"
 			f << "    outer loop"
-			f << "        vertex " + va.x.str() + " " + va.y.str() + " " + va.z.str()
-			f << "        vertex " + vb.x.str() + " " + vb.y.str() + " " + vb.z.str()
-			f << "        vertex " + vc.x.str() + " " + vc.y.str() + " " + vc.z.str()
+			f << "        vertex {{va.x}} {{va.y}} {{va.z}}"
+			f << "        vertex {{vb.x}} {{vb.y}} {{vb.z}}"
+			f << "        vertex {{vc.x}} {{vc.y}} {{vc.z}}"
 			f << "    endloop"
 			f << "endfacet"
 	f << "end solid"

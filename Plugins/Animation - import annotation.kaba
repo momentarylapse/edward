@@ -8,7 +8,7 @@ int anim_index
 
 quaternion xang(vector ang)
 	float l = ang.length()
-	vector ax = e_z
+	vector ax = vector.EZ
 	if l > 0
 		ax = ang / l
 	return quaternion.rotation_a(ax, l)
@@ -31,13 +31,13 @@ quaternion import_torso(vector[] p)
 			let bb = data_model.bone[i].pos - data_model.bone[0].pos
 			vb.add(bb / bb.length())
 
-	vector ang = v_0
+	vector ang = vector.0
 	float eps = 0.001
 	for i in 0:3000
 		float w0 = pain(va, vb, ang)
-		float wx = pain(va, vb, ang + eps * e_x)
-		float wy = pain(va, vb, ang + eps * e_y)
-		float wz = pain(va, vb, ang + eps * e_z)
+		float wx = pain(va, vb, ang + eps * vector.EX)
+		float wy = pain(va, vb, ang + eps * vector.EY)
+		float wz = pain(va, vb, ang + eps * vector.EZ)
 		vector da = vector(wx - w0, wy - w0, wz - w0)
 		ang -= da# * 0.000001
 	return xang(ang)
@@ -46,7 +46,7 @@ void import_frame(vector[] p, int frame_no)
 	vector[] pos
 	quaternion[] ang
 	for b,i in data_model.bone
-		pos.add(v_0)
+		pos.add(vector.0)
 		ang.add(quaternion.ID)
 	for b,i in data_model.bone
 		if b.parent < 0
@@ -123,8 +123,8 @@ void _import(string filename)
 		import_frame(p, fi)
 		#if fi > 10
 		#	break
-		dlg.set_float("progress", i2f(fi) / i2f(num_frames))
-		HuiDoSingleMainLoop()
+		dlg.set_float("progress", float(fi) / float(num_frames))
+		DoSingleMainLoop()
 		#HuiSleep(0.001)
 	data_model.EndActionGroup()
 	delete f
@@ -133,8 +133,6 @@ void _import(string filename)
 void main()
 	_import("/home/michi/Projekte/mocap/digest-smooth")
 	return
-	if !HuiFileDialogOpen(edward, "", "", "*", "*")
+	if !FileDialogOpen(edward, "", "", "*", "*")
 		return
 	_import(HuiFilename)
-
-		

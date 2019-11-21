@@ -19,23 +19,19 @@ namespace Kaba{
 bool _verbose_exception_ = false;
 
 
-KabaException::KabaException(const string &message)
-{
+KabaException::KabaException(const string &message) {
 	text = message;
 }
 
-void KabaException::__init__(const string &message)
-{
+void KabaException::__init__(const string &message) {
 	new(this) KabaException(message);
 }
 
-void KabaException::__delete__()
-{
+void KabaException::__delete__() {
 	this->~KabaException();
 }
 
-string KabaException::message()
-{
+string KabaException::message() {
 	return text;
 }
 
@@ -43,8 +39,7 @@ string KabaException::message()
 
 
 
-struct StackFrameInfo
-{
+struct StackFrameInfo {
 	void *rip;
 	void *rsp;
 	void *rbp;
@@ -146,12 +141,12 @@ ExceptionBlockData get_blocks(Script *s, Function *f, void* rip, const Class *ex
 			continue;
 
 		// are we in a try block?
-		for (Node *n: b->parent->params){
+		for (Node *n: b->parent->uparams){
 			if ((n->kind == NodeKind::STATEMENT) and (n->as_statement()->id == StatementID::TRY)){
-				if (n->params[0]->as_block() == b){
+				if (n->uparams[0]->as_block() == b){
 					if (_verbose_exception_)
 						msg_write("found try block");
-					auto ee = n->params[1];
+					auto ee = n->uparams[1];
 					if (_verbose_exception_)
 						msg_write(ee->type->name);
 					if (!ex_type_match(ex_type, ee->type))
@@ -159,7 +154,7 @@ ExceptionBlockData get_blocks(Script *s, Function *f, void* rip, const Class *ex
 					if (_verbose_exception_)
 						msg_write("match");
 					ebd.except = ee;
-					ebd.except_block = n->params[2]->as_block();
+					ebd.except_block = n->uparams[2]->as_block();
 					return ebd;
 				}
 			}
@@ -170,6 +165,8 @@ ExceptionBlockData get_blocks(Script *s, Function *f, void* rip, const Class *ex
 
 
 void* rbp2 = nullptr;
+
+#ifdef CPU_AMD64
 
 void relink_return(void *rip, void *rbp, void *rsp)
 {
@@ -184,13 +181,14 @@ void relink_return(void *rip, void *rbp, void *rsp)
 			"ret"
 		: "=r" (rbp2)
 		: "r" (rsp), "r" (rip)
-		: "%rsp");
+		: );
 
 //	printf("rbp=%p\n", rbp2);
 #endif
 
 	exit(0);
 }
+#endif
 
 const Class* _get_type(void *p, void *vtable, const Class *ns) {
 	for (auto *c: ns->classes) {
@@ -221,6 +219,7 @@ const Class* get_type(void *p)
 	return TypeUnknown;
 }
 
+#ifdef CPU_AMD64
 
 Array<StackFrameInfo> get_stack_trace(void **rbp)
 {
@@ -319,7 +318,7 @@ void _cdecl kaba_raise_exception(KabaException *kaba_exception)
 			if (_verbose_exception_)
 				msg_write("except_block block: " + p2s(ebd.except_block));
 
-			if (ebd.except->params.num > 0){
+			if (ebd.except->uparams.num > 0){
 				auto v = ebd.except_block->vars[0];
 				void **p = (void**)((int_p)r.rbp + v->_offset);
 				*p = kaba_exception;
@@ -345,6 +344,16 @@ void _cdecl kaba_raise_exception(KabaException *kaba_exception)
 	exit(1);
 }
 #pragma GCC pop_options
+
+#else
+
+void _cdecl kaba_raise_exception(KabaException *kaba_exception) {
+	msg_error("exception handling not working on this architecture...");
+	msg_write(kaba_exception->message());
+	exit(1);
+}
+
+#endif
 
 }
 

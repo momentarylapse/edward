@@ -18,10 +18,10 @@ public:
 	string name;
 	const Class *type;
 	long long offset;
-	bool hidden;
 	ClassElement();
 	ClassElement(const string &name, const Class *type, int offset);
 	string signature(bool include_class) const;
+	bool hidden() const;
 };
 
 typedef void *VirtualTable;
@@ -29,7 +29,7 @@ typedef void *VirtualTable;
 class Class {
 public:
 	//Class();
-	Class(const string &name, int size, SyntaxTree *owner, const Class *parent = nullptr);
+	Class(const string &name, int size, SyntaxTree *owner, const Class *parent = nullptr, const Class *param = nullptr);
 	~Class();
 	string name;
 	string long_name() const;
@@ -53,12 +53,12 @@ public:
 	bool is_pointer_silent() const;
 	bool fully_parsed;
 	Array<ClassElement> elements;
-	Array<Function*> member_functions;
-	Array<Function*> static_functions;
+	Array<Function*> functions;
 	Array<Variable*> static_variables;
 	Array<Constant*> constants;
 	Array<const Class*> classes;
-	const Class *parent;
+	const Class *parent; // derived from
+	const Class *param; // for pointers/arrays etc
 	const Class *name_space;
 	SyntaxTree *owner; // to share and be able to delete...
 	int _logical_line_no;
@@ -95,7 +95,6 @@ public:
 	void link_virtual_table();
 	void link_external_virtual_table(void *p);
 	void *create_instance() const;
-	string var2str(const void *p) const;
 };
 extern const Class *TypeUnknown;
 extern const Class *TypeReg128; // dummy for compilation

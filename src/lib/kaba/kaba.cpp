@@ -24,7 +24,7 @@
 
 namespace Kaba{
 
-string Version = "0.17.7.0";
+string Version = "0.17.10.2";
 
 //#define ScriptDebug
 
@@ -181,7 +181,7 @@ void Script::load(const string &_filename, bool _just_analyse)
 		if ((!just_analyse) and (config.verbose)){
 			msg_write(format("Opcode: %d bytes", opcode_size));
 			if (config.allow_output_stage("dasm"))
-				msg_write(Asm::Disassemble(opcode, opcode_size));
+				msg_write(Asm::disassemble(opcode, opcode_size));
 		}
 
 	}catch(FileError &e){
@@ -196,6 +196,9 @@ void Script::load(const string &_filename, bool _just_analyse)
 
 void Script::do_error(const string &str, int override_line)
 {
+#ifdef CPU_ARM
+	msg_error(str);
+#endif
 	syntax->do_error(str, 0, override_line);
 }
 
@@ -272,7 +275,7 @@ void ExecuteSingleScriptCommand(const string &cmd)
 {
 	if (cmd.num < 1)
 		return;
-	msg_write("script command: " + cmd);
+	//msg_write("script command: " + cmd);
 
 	// empty script
 	Script *s = new Script();
@@ -281,12 +284,16 @@ void ExecuteSingleScriptCommand(const string &cmd)
 	try{
 
 // find expressions
-	ps->Exp.analyse(ps, cmd + string("\0", 1));
+	ps->Exp.analyse(ps, cmd);
 	if (ps->Exp.line[0].exp.num < 1){
 		//clear_exp_buffer(&ps->Exp);
 		delete(s);
 		return;
 	}
+	
+	for (auto *p: Packages)
+		if ((p->filename == "file") or (p->filename == "image") or (p->filename == "kaba"))
+			ps->add_include_data(p);
 
 // analyse syntax
 
@@ -297,9 +304,21 @@ void ExecuteSingleScriptCommand(const string &cmd)
 	// parse
 	ps->Exp.reset_parser();
 	ps->parse_complete_command(func->block);
-	//pre_script->GetCompleteCommand((pre_script->Exp->ExpNr,0,0,&func);
+	
+	// implicit print(...)?
+	if (func->block->uparams[0]->type != TypeVoid) {
+		auto *n = ps->add_converter_str(func->block->uparams[0], true);
+		
+		Array<Node*> links = ps->get_existence("print", nullptr, nullptr, false);
+		Function *f = links[0]->as_func();
 
-	ps->convert_call_by_reference();
+		Node *cmd = ps->add_node_call(f);
+		cmd->set_uparam(0, n);
+		func->block->uparams[0] = cmd;
+	}
+	for (auto *c: ps->owned_classes)
+		ps->auto_implement_functions(c);
+	//ps->show("aaaa");
 
 // compile
 	s->compile();
@@ -311,7 +330,7 @@ void ExecuteSingleScriptCommand(const string &cmd)
 	}*/
 // execute
 	typedef void void_func();
-	void_func *f = (void_func*)s->match_function("--command-func--", "void", {});
+	void_func *f = (void_func*)func->address;
 	if (f)
 		f();
 
@@ -375,13 +394,11 @@ void *Script::match_class_function(const string &_class, bool allow_derived, con
 	return nullptr;
 }
 
-void print_var(void *p, const string &name, const Class *t)
-{
-	msg_write(t->name + " " + name + " = " + t->var2str(p));
+void print_var(void *p, const string &name, const Class *t) {
+	msg_write(t->name + " " + name + " = " + var2str(p, t));
 }
 
-void Script::show_vars(bool include_consts)
-{
+void Script::show_vars(bool include_consts) {
 	for (auto *v: syntax->base_class->static_variables)
 		print_var(v->memory, v->name, v->type);
 	/*if (include_consts)

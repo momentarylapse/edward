@@ -4,7 +4,7 @@ use "api.kaba"
 Dialog *dlg
 
 void CreateTorusKnot(int nx, int ny, int rings, int edges, float r1, float r2, float r3)
-	Geometry *g = new GeometryTorusKnot(v_0, e_z, r1, r2, r3, nx, ny, rings, edges)
+	Geometry *g = new GeometryTorusKnot(vector.0, vector.EZ, r1, r2, r3, nx, ny, rings, edges)
 	data_model.PasteGeometry(*g, 0)
 	delete(g)
 
@@ -19,10 +19,10 @@ void OnOk()
 	int nx = dlg.get_int("nx")
 	int ny = dlg.get_int("ny")
 	if gcd(nx, ny) != 1
-		HuiErrorBox(dlg, "Error", "GreatestCommonDivisor(Loops, Twists) = 1 violated")
+		ErrorBox(dlg, "Error", "GreatestCommonDivisor(Loops, Twists) = 1 violated")
 	else
 		CreateTorusKnot(nx, ny, dlg.get_int("rings"), dlg.get_int("edges"), dlg.get_float("radius1"), dlg.get_float("radius2"), dlg.get_float("radius3"))
-		delete(dlg)
+		del dlg
 
 void main()
 	dlg = new Dialog("Torus Knot", 300, 300, edward, false)
@@ -44,6 +44,6 @@ void main()
 	dlg.add_spin_button("15\\0\\100000000000000\\0.1", 1, 6, "radius3")
 	dlg.add_button("Ok", 1, 7, "ok")
 	
-	dlg.event("ok", &OnOk)
+	dlg.event("ok", OnOk)
 	
 	dlg.run()

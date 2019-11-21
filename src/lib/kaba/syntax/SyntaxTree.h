@@ -87,7 +87,7 @@ public:
 	const Class *parse_type(const Class *ns);
 	void parse_variable_def(bool single, Block *block);
 	void parse_global_const(const string &name, const Class *type);
-	PrimitiveOperator *which_primitive_operator(const string &name);
+	PrimitiveOperator *which_primitive_operator(const string &name, int param_flags = 3);
 	Statement *which_statement(const string &name);
 	const Class *which_owned_class(const string &name);
 
@@ -111,23 +111,24 @@ public:
 	void get_constant_value(const string &str, Value &value);
 	const Class *find_root_type_by_name(const string &name, const Class *_namespace, bool allow_recursion);
 	const Class *add_class(const Class *type);
-	Class *create_new_class(const string &name, Class::Type type, int size, int array_size, const Class *sub, Class *ns);
-	const Class *make_class(const string &name, Class::Type type, int size, int array_size, const Class *sub);
+	Class *create_new_class(const string &name, Class::Type type, int size, int array_size, const Class *parent, const Class *param, const Class *ns);
+	const Class *make_class(const string &name, Class::Type type, int size, int array_size, const Class *parent, const Class *param, const Class *ns);
 	const Class *make_class_super_array(const Class *element_type);
 	const Class *make_class_array(const Class *element_type, int num_elements);
 	const Class *make_class_dict(const Class *element_type);
 	const Class *make_class_func(Function *f);
 	Array<Node*> get_existence(const string &name, Block *block, const Class *ns, bool prefer_class);
 	Array<Node*> get_existence_global(const string &name, const Class *ns, bool prefer_class);
+	Node* get_existence_block(const string &name, Block *block);
 	void link_most_important_operator(Array<Node*> &operand, Array<Node*> &_operator, Array<int> &op_exp);
 	Node *link_operator(PrimitiveOperator *primop, Node *param1, Node *param2);
 	Node *link_operator_id(OperatorID op_no, Node *param1, Node *param2);
 	Node *parse_operand_extension(Array<Node*> operands, Block *block);
 	Array<Node*> parse_operand_extension_element(Node *operand);
 	Node *parse_operand_extension_array(Node *operand, Block *block);
-	Node *parse_operand_extension_call(Array<Node*> operands, Block *block, bool check = true);
-	Array<Node*> make_class_node_callable(const Class *t, Block *block);
-	void make_func_node_callable(Node *l, bool check);
+	Node *parse_operand_extension_call(Array<Node*> operands, Block *block);
+	Array<Node*> make_class_node_callable(const Class *t, Block *block, Array<Node*> &params);
+	void make_func_node_callable(Node *l);
 	const Class *parse_type_extension_array(const Class *c);
 	const Class *parse_type_extension_dict(const Class *c);
 	const Class *parse_type_extension_pointer(const Class *c);
@@ -161,26 +162,37 @@ public:
 	Node *parse_statement_sizeof(Block *block);
 	Node *parse_statement_type(Block *block);
 	Node *parse_statement_str(Block *block);
+	Node *parse_statement_repr(Block *block);
 	Node *parse_statement_len(Block *block);
 	Node *parse_statement_let(Block *block);
 	Node *parse_statement_map(Block *block);
 	Node *parse_statement_lambda(Block *block);
 	Node *parse_statement_sorted(Block *block);
-	Node *parse_statement_filter(Block *block);
+	Node *parse_statement_dyn(Block *block);
 
 	void create_asm_meta_info();
 
 	// neccessary conversions
+	void digest();
 	void convert_call_by_reference();
-	void break_down_complicated_commands();
-	Node *break_down_for_loops(Node *c);
-	Node *break_down_complicated_command(Node *c);
-	void make_functions_inline();
 	void map_local_variables_to_stack();
+	Node *conv_class_and_func_to_const(Node *n);
+	Node *conv_break_down_high_level(Node *n, Block *b);
+	Node *conv_break_down_low_level(Node *c);
+	Node *conv_cbr(Node *c, Variable *var);
+	Node *conv_calls(Node *c);
+	Node *conv_easyfy_ref_deref(Node *c, int l);
+	Node *conv_easyfy_shift_deref(Node *c, int l);
+	Node *conv_return_by_memory(Node *n, Function *f);
+	Node* conv_func_inline(Node *n);
 
 	void transform(std::function<Node*(Node*)> F);
 	static void transform_block(Block *block, std::function<Node*(Node*)> F);
 	static Node* transform_node(Node *n, std::function<Node*(Node*)> F);
+
+	void transformb(std::function<Node*(Node*, Block*)> F);
+	static void transformb_block(Block *block, std::function<Node*(Node*, Block*)> F);
+	static Node* transformb_node(Node *n, Block *b, std::function<Node*(Node*, Block*)> F);
 
 	// data creation
 	Constant *add_constant(const Class *type, Class *name_space = nullptr);
@@ -192,11 +204,17 @@ public:
 	Node *add_node_statement(StatementID id);
 	Node *add_node_member_call(Function *f, Node *inst, bool force_non_virtual = false);
 	Node *add_node_func_name(Function *f);
+	Node *add_node_class(const Class *c);
 	Node *add_node_call(Function *f);
 	Node *add_node_const(Constant *c);
+	//Node *add_node_block(Block *b);
 	Node *add_node_operator(Node *p1, Node *p2, Operator *op);
 	Node *add_node_operator_by_inline(Node *p1, Node *p2, InlineID inline_index);
-	Node *add_node_local_var(Variable *var);
+	Node *add_node_global(Variable *var);
+	Node *add_node_local(Variable *var);
+	Node *add_node_local(Variable *var, const Class *type);
+	Node *exlink_add_element(Function *f, ClassElement &e);
+	Node *exlink_add_class_func(Function *f, Function *cf);
 	Node *add_node_parray(Node *p, Node *index, const Class *type);
 	Node *add_node_dyn_array(Node *array, Node *index);
 	Node *add_node_array(Node *array, Node *index);
@@ -205,14 +223,15 @@ public:
 	Node *ref_node(Node *sub, const Class *override_type = nullptr);
 	Node *deref_node(Node *sub, const Class *override_type = nullptr);
 	Node *shift_node(Node *sub, bool deref, int shift, const Class *type);
+	Node *add_converter_str(Node *sub, bool repr);
 
 	// pre processor
-	Node *pre_process_node(Node *c);
-	void pre_processor();
+	Node *conv_eval_const_func(Node *c);
+	void eval_const_expressions();
 	Node *pre_process_node_addresses(Node *c);
 	void pre_processor_addresses();
-	void simplify_ref_deref();
 	void simplify_shift_deref();
+	void simplify_ref_deref();
 
 	void show(const string &stage);
 
@@ -225,7 +244,7 @@ public:
 	bool flag_string_const_as_cstring;
 
 	Class *base_class;
-	//Array<const Class*> classes;
+	Array<const Class*> owned_classes;
 	Array<Script*> includes;
 	Array<Define> defines;
 	Asm::MetaInfo *asm_meta_info;

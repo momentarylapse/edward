@@ -1,8 +1,9 @@
 BIN = ../edward
 CPP = g++
-GLOBALFLAGS = -O2 -g -std=c++14 -DHAS_LIB_GTK3=1 -DHAS_LIB_ZLIB=1 -DHAS_LIB_GL=1 -DHAS_LIB_UNWIND=1
-CXXFLAGS =  `pkg-config --cflags gtk+-3.0` $(GLOBALFLAGS)
-CXXFLAGSLINKING =  `pkg-config --cflags --libs gtk+-3.0` -lz -lGL -lunwind $(GLOBALFLAGS)
+GLOBALFLAGS = -O2 -g -std=c++14  -DHAS_LIB_GTK3=1 -DHAS_LIB_ZLIB=1 -DHAS_LIB_GL=1 -DHAS_LIB_UNWIND=1
+CXXFLAGS =   `pkg-config --cflags gtk+-3.0` $(GLOBALFLAGS)
+CXXFLAGSLINKING =   `pkg-config --cflags --libs gtk+-3.0` -lz -lGL -lunwind $(GLOBALFLAGS)
+prefix = /usr/local
 
 OBJ = Action/Font/ActionFontEditGlobal.o \
  Action/Font/ActionFontEditGlyph.o \
@@ -140,6 +141,7 @@ OBJ = Action/Font/ActionFontEditGlobal.o \
  Data/World/DataCamera.o \
  Data/World/DataWorld.o \
  Data/Data.o \
+ lib/any/any.o \
  lib/base/array.o \
  lib/base/strings.o \
  lib/file/file.o \
@@ -224,17 +226,23 @@ OBJ = Action/Font/ActionFontEditGlobal.o \
  lib/image/image_tga.o \
  lib/image/ImagePainter.o \
  lib/kaba/asm/asm.o \
+ lib/kaba/asm/asm_arm.o \
+ lib/kaba/asm/asm_x86.o \
  lib/kaba/compiler/compiler.o \
  lib/kaba/compiler/mapper.o \
  lib/kaba/compiler/serializer.o \
  lib/kaba/compiler/serializer_amd64.o \
  lib/kaba/compiler/serializer_arm.o \
  lib/kaba/compiler/serializer_x86.o \
+ lib/kaba/lib/dict.o \
+ lib/kaba/lib/dynamic.o \
  lib/kaba/lib/exception.o \
  lib/kaba/lib/lib.o \
+ lib/kaba/lib/lib_base.o \
  lib/kaba/lib/lib_file.o \
  lib/kaba/lib/lib_hui.o \
  lib/kaba/lib/lib_image.o \
+ lib/kaba/lib/lib_kaba.o \
  lib/kaba/lib/lib_math.o \
  lib/kaba/lib/lib_net.o \
  lib/kaba/lib/lib_nix.o \
@@ -247,8 +255,8 @@ OBJ = Action/Font/ActionFontEditGlobal.o \
  lib/kaba/syntax/implicit.o \
  lib/kaba/syntax/lexical.o \
  lib/kaba/syntax/Node.o \
- lib/kaba/syntax/Parser.o \
  lib/kaba/syntax/parser.o \
+ lib/kaba/syntax/Parser.o \
  lib/kaba/syntax/precompiler.o \
  lib/kaba/syntax/preprocessor.o \
  lib/kaba/syntax/SyntaxTree.o \
@@ -775,6 +783,9 @@ Data/World/DataWorld.o : Data/World/DataWorld.cpp Data/World/DataWorld.h Data/Da
 Data/Data.o : Data/Data.cpp Data/Data.h lib/file/file.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/file/msg.h lib/file/file_op.h Action/Action.h Action/ActionManager.h Stuff/Observable.h lib/hui/hui.h lib/hui/common.h lib/config.h lib/image/image.h lib/image/color.h lib/hui/Callback.h lib/hui/Application.h lib/base/map.h lib/base/set.h lib/hui/main.h lib/hui/Event.h lib/hui/Menu.h lib/hui/Panel.h lib/hui/Window.h lib/hui/common_dlg.h lib/hui/language.h lib/hui/Config.h lib/hui/Resource.h lib/hui/utility.h lib/hui/Painter.h lib/image/Painter.h lib/hui/Timer.h lib/hui/Toolbar.h lib/hui/error.h lib/hui/Clipboard.h
 	$(CPP) -c Data/Data.cpp -o $@ $(CXXFLAGS)
 
+lib/any/any.o : lib/any/any.cpp lib/any/any.h lib/file/file.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/file/msg.h lib/file/file_op.h lib/base/map.h lib/base/set.h
+	$(CPP) -c lib/any/any.cpp -o $@ $(CXXFLAGS)
+
 lib/base/array.o : lib/base/array.cpp lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h
 	$(CPP) -c lib/base/array.cpp -o $@ $(CXXFLAGS)
 
@@ -1024,8 +1035,14 @@ lib/image/image_tga.o : lib/image/image_tga.cpp lib/image/image.h lib/config.h l
 lib/image/ImagePainter.o : lib/image/ImagePainter.cpp lib/image/ImagePainter.h lib/image/Painter.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/image/color.h lib/math/rect.h lib/image/image.h lib/config.h lib/math/complex.h
 	$(CPP) -c lib/image/ImagePainter.cpp -o $@ $(CXXFLAGS)
 
-lib/kaba/asm/asm.o : lib/kaba/asm/asm.cpp lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/file/file.h lib/file/msg.h lib/file/file_op.h lib/kaba/asm/asm.h
+lib/kaba/asm/asm.o : lib/kaba/asm/asm.cpp lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/file/file.h lib/file/msg.h lib/file/file_op.h lib/kaba/asm/asm.h lib/kaba/asm/internal.h
 	$(CPP) -c lib/kaba/asm/asm.cpp -o $@ $(CXXFLAGS)
+
+lib/kaba/asm/asm_arm.o : lib/kaba/asm/asm_arm.cpp lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/file/msg.h lib/kaba/asm/asm.h lib/kaba/asm/internal.h
+	$(CPP) -c lib/kaba/asm/asm_arm.cpp -o $@ $(CXXFLAGS)
+
+lib/kaba/asm/asm_x86.o : lib/kaba/asm/asm_x86.cpp lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/file/msg.h lib/kaba/asm/asm.h lib/kaba/asm/internal.h
+	$(CPP) -c lib/kaba/asm/asm_x86.cpp -o $@ $(CXXFLAGS)
 
 lib/kaba/compiler/compiler.o : lib/kaba/compiler/compiler.cpp lib/kaba/kaba.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/file/file.h lib/file/msg.h lib/file/file_op.h lib/base/set.h
 	$(CPP) -c lib/kaba/compiler/compiler.cpp -o $@ $(CXXFLAGS)
@@ -1045,11 +1062,20 @@ lib/kaba/compiler/serializer_arm.o : lib/kaba/compiler/serializer_arm.cpp lib/ka
 lib/kaba/compiler/serializer_x86.o : lib/kaba/compiler/serializer_x86.cpp lib/kaba/kaba.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/kaba/compiler/serializer_x86.h lib/kaba/compiler/serializer.h lib/file/file.h lib/file/msg.h lib/file/file_op.h
 	$(CPP) -c lib/kaba/compiler/serializer_x86.cpp -o $@ $(CXXFLAGS)
 
+lib/kaba/lib/dict.o : lib/kaba/lib/dict.cpp lib/kaba/kaba.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/kaba/lib/common.h lib/kaba/lib/exception.h lib/kaba/lib/dynamic.h lib/base/map.h lib/base/set.h
+	$(CPP) -c lib/kaba/lib/dict.cpp -o $@ $(CXXFLAGS)
+
+lib/kaba/lib/dynamic.o : lib/kaba/lib/dynamic.cpp lib/kaba/lib/dynamic.h lib/kaba/kaba.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/kaba/lib/common.h lib/kaba/lib/exception.h lib/any/any.h lib/file/file.h lib/file/msg.h lib/file/file_op.h
+	$(CPP) -c lib/kaba/lib/dynamic.cpp -o $@ $(CXXFLAGS)
+
 lib/kaba/lib/exception.o : lib/kaba/lib/exception.cpp lib/kaba/lib/exception.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/kaba/kaba.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/file/msg.h
 	$(CPP) -c lib/kaba/lib/exception.cpp -o $@ $(CXXFLAGS)
 
-lib/kaba/lib/lib.o : lib/kaba/lib/lib.cpp lib/kaba/kaba.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/kaba/lib/common.h lib/kaba/lib/exception.h lib/config.h lib/math/complex.h lib/hui/hui.h lib/hui/common.h lib/file/file.h lib/file/msg.h lib/file/file_op.h lib/image/image.h lib/image/color.h lib/hui/Callback.h lib/hui/Application.h lib/base/map.h lib/base/set.h lib/hui/main.h lib/hui/Event.h lib/hui/Menu.h lib/hui/Panel.h lib/hui/Window.h lib/hui/common_dlg.h lib/hui/language.h lib/hui/Config.h lib/hui/Resource.h lib/hui/utility.h lib/hui/Painter.h lib/image/Painter.h lib/hui/Timer.h lib/hui/Toolbar.h lib/hui/error.h lib/hui/Clipboard.h
+lib/kaba/lib/lib.o : lib/kaba/lib/lib.cpp lib/kaba/kaba.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/kaba/lib/common.h lib/kaba/lib/exception.h lib/kaba/lib/dict.h lib/config.h lib/math/complex.h lib/any/any.h lib/file/file.h lib/file/msg.h lib/file/file_op.h lib/hui/hui.h lib/hui/common.h lib/image/image.h lib/image/color.h lib/hui/Callback.h lib/hui/Application.h lib/base/map.h lib/base/set.h lib/hui/main.h lib/hui/Event.h lib/hui/Menu.h lib/hui/Panel.h lib/hui/Window.h lib/hui/common_dlg.h lib/hui/language.h lib/hui/Config.h lib/hui/Resource.h lib/hui/utility.h lib/hui/Painter.h lib/image/Painter.h lib/hui/Timer.h lib/hui/Toolbar.h lib/hui/error.h lib/hui/Clipboard.h
 	$(CPP) -c lib/kaba/lib/lib.cpp -o $@ $(CXXFLAGS)
+
+lib/kaba/lib/lib_base.o : lib/kaba/lib/lib_base.cpp lib/kaba/kaba.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/kaba/lib/common.h lib/kaba/lib/exception.h lib/kaba/lib/dynamic.h lib/file/file.h lib/file/msg.h lib/file/file_op.h
+	$(CPP) -c lib/kaba/lib/lib_base.cpp -o $@ $(CXXFLAGS)
 
 lib/kaba/lib/lib_file.o : lib/kaba/lib/lib_file.cpp lib/file/file.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/file/msg.h lib/file/file_op.h lib/kaba/kaba.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/config.h lib/kaba/lib/common.h lib/kaba/lib/exception.h
 	$(CPP) -c lib/kaba/lib/lib_file.cpp -o $@ $(CXXFLAGS)
@@ -1060,7 +1086,10 @@ lib/kaba/lib/lib_hui.o : lib/kaba/lib/lib_hui.cpp lib/file/file.h lib/base/base.
 lib/kaba/lib/lib_image.o : lib/kaba/lib/lib_image.cpp lib/file/file.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/file/msg.h lib/file/file_op.h lib/kaba/kaba.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/config.h lib/kaba/lib/common.h lib/image/image.h lib/image/color.h
 	$(CPP) -c lib/kaba/lib/lib_image.cpp -o $@ $(CXXFLAGS)
 
-lib/kaba/lib/lib_math.o : lib/kaba/lib/lib_math.cpp lib/file/file.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/file/msg.h lib/file/file_op.h lib/math/math.h lib/image/color.h lib/math/vector.h lib/math/matrix.h lib/math/matrix3.h lib/math/quaternion.h lib/math/plane.h lib/math/rect.h lib/math/complex.h lib/math/interpolation.h lib/math/random.h lib/math/ray.h lib/kaba/kaba.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/config.h lib/kaba/lib/common.h
+lib/kaba/lib/lib_kaba.o : lib/kaba/lib/lib_kaba.cpp lib/kaba/kaba.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/kaba/lib/common.h lib/kaba/lib/exception.h lib/kaba/lib/dynamic.h
+	$(CPP) -c lib/kaba/lib/lib_kaba.cpp -o $@ $(CXXFLAGS)
+
+lib/kaba/lib/lib_math.o : lib/kaba/lib/lib_math.cpp lib/file/file.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/file/msg.h lib/file/file_op.h lib/math/math.h lib/image/color.h lib/math/vector.h lib/math/matrix.h lib/math/matrix3.h lib/math/quaternion.h lib/math/plane.h lib/math/rect.h lib/math/complex.h lib/math/interpolation.h lib/math/random.h lib/math/ray.h lib/kaba/kaba.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/config.h lib/kaba/lib/common.h lib/kaba/lib/exception.h lib/any/any.h
 	$(CPP) -c lib/kaba/lib/lib_math.cpp -o $@ $(CXXFLAGS)
 
 lib/kaba/lib/lib_net.o : lib/kaba/lib/lib_net.cpp lib/file/file.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/file/msg.h lib/file/file_op.h lib/kaba/kaba.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/config.h lib/kaba/lib/common.h lib/net/net.h
@@ -1081,7 +1110,7 @@ lib/kaba/lib/lib_x.o : lib/kaba/lib/lib_x.cpp lib/file/file.h lib/base/base.h li
 lib/kaba/syntax/Class.o : lib/kaba/syntax/Class.cpp lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/kaba/kaba.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/file/file.h lib/file/msg.h lib/file/file_op.h
 	$(CPP) -c lib/kaba/syntax/Class.cpp -o $@ $(CXXFLAGS)
 
-lib/kaba/syntax/Constant.o : lib/kaba/syntax/Constant.cpp lib/kaba/kaba.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/file/file.h lib/file/msg.h lib/file/file_op.h
+lib/kaba/syntax/Constant.o : lib/kaba/syntax/Constant.cpp lib/kaba/kaba.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/kaba/lib/dynamic.h lib/file/file.h lib/file/msg.h lib/file/file_op.h
 	$(CPP) -c lib/kaba/syntax/Constant.cpp -o $@ $(CXXFLAGS)
 
 lib/kaba/syntax/Function.o : lib/kaba/syntax/Function.cpp lib/kaba/kaba.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/file/file.h lib/file/msg.h lib/file/file_op.h lib/base/set.h
@@ -1096,11 +1125,11 @@ lib/kaba/syntax/lexical.o : lib/kaba/syntax/lexical.cpp lib/base/base.h lib/base
 lib/kaba/syntax/Node.o : lib/kaba/syntax/Node.cpp lib/kaba/kaba.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/file/file.h lib/file/msg.h lib/file/file_op.h
 	$(CPP) -c lib/kaba/syntax/Node.cpp -o $@ $(CXXFLAGS)
 
-lib/kaba/syntax/Parser.o : lib/kaba/syntax/Parser.cpp lib/kaba/syntax/Parser.h
-	$(CPP) -c lib/kaba/syntax/Parser.cpp -o $@ $(CXXFLAGS)
-
-lib/kaba/syntax/parser.o : lib/kaba/syntax/parser.cpp lib/kaba/kaba.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/file/file.h lib/file/msg.h lib/file/file_op.h
+lib/kaba/syntax/parser.o : lib/kaba/syntax/parser.cpp lib/kaba/kaba.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/file/file.h lib/file/msg.h lib/file/file_op.h lib/hui/Application.h lib/base/map.h lib/base/set.h lib/hui/common.h lib/config.h
 	$(CPP) -c lib/kaba/syntax/parser.cpp -o $@ $(CXXFLAGS)
+
+lib/kaba/syntax/Parser.o : lib/kaba/syntax/Parser.cpp lib/kaba/syntax/Parser.h lib/kaba/syntax/lexical.h
+	$(CPP) -c lib/kaba/syntax/Parser.cpp -o $@ $(CXXFLAGS)
 
 lib/kaba/syntax/precompiler.o : lib/kaba/syntax/precompiler.cpp lib/kaba/kaba.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/kaba/asm/asm.h lib/kaba/lib/lib.h lib/kaba/syntax/SyntaxTree.h lib/kaba/syntax/lexical.h lib/kaba/syntax/Class.h lib/kaba/syntax/Constant.h lib/kaba/syntax/Function.h lib/kaba/syntax/Node.h lib/file/file.h lib/file/msg.h lib/file/file_op.h
 	$(CPP) -c lib/kaba/syntax/precompiler.cpp -o $@ $(CXXFLAGS)
@@ -1135,7 +1164,7 @@ lib/math/plane.o : lib/math/plane.cpp lib/math/math.h lib/base/base.h lib/base/m
 lib/math/quaternion.o : lib/math/quaternion.cpp lib/math/math.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/image/color.h lib/math/vector.h lib/math/matrix.h lib/math/matrix3.h lib/math/quaternion.h lib/math/plane.h lib/math/rect.h lib/math/complex.h lib/math/interpolation.h lib/math/random.h lib/math/ray.h lib/file/file.h lib/file/msg.h lib/file/file_op.h
 	$(CPP) -c lib/math/quaternion.cpp -o $@ $(CXXFLAGS)
 
-lib/math/random.o : lib/math/random.cpp lib/math/math.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/image/color.h lib/math/vector.h lib/math/matrix.h lib/math/matrix3.h lib/math/quaternion.h lib/math/plane.h lib/math/rect.h lib/math/complex.h lib/math/interpolation.h lib/math/random.h lib/math/ray.h
+lib/math/random.o : lib/math/random.cpp lib/math/math.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/image/color.h lib/math/vector.h lib/math/matrix.h lib/math/matrix3.h lib/math/quaternion.h lib/math/plane.h lib/math/rect.h lib/math/complex.h lib/math/interpolation.h lib/math/random.h lib/math/ray.h lib/file/file.h lib/file/msg.h lib/file/file_op.h
 	$(CPP) -c lib/math/random.cpp -o $@ $(CXXFLAGS)
 
 lib/math/ray.o : lib/math/ray.cpp lib/math/math.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/image/color.h lib/math/vector.h lib/math/matrix.h lib/math/matrix3.h lib/math/quaternion.h lib/math/plane.h lib/math/rect.h lib/math/complex.h lib/math/interpolation.h lib/math/random.h lib/math/ray.h
@@ -1210,7 +1239,7 @@ Mode/Model/Animation/ModeModelAnimation.o : Mode/Model/Animation/ModeModelAnimat
 Mode/Model/Animation/ModeModelAnimationNone.o : Mode/Model/Animation/ModeModelAnimationNone.cpp Mode/Model/Animation/ModeModelAnimationNone.h Mode/Mode.h lib/hui/hui.h lib/hui/common.h lib/config.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/file/file.h lib/file/msg.h lib/file/file_op.h lib/image/image.h lib/image/color.h lib/hui/Callback.h lib/hui/Application.h lib/base/map.h lib/base/set.h lib/hui/main.h lib/hui/Event.h lib/hui/Menu.h lib/hui/Panel.h lib/hui/Window.h lib/hui/common_dlg.h lib/hui/language.h lib/hui/Config.h lib/hui/Resource.h lib/hui/utility.h lib/hui/Painter.h lib/image/Painter.h lib/hui/Timer.h lib/hui/Toolbar.h lib/hui/error.h lib/hui/Clipboard.h lib/math/math.h lib/math/vector.h lib/math/matrix.h lib/math/matrix3.h lib/math/quaternion.h lib/math/plane.h lib/math/rect.h lib/math/complex.h lib/math/interpolation.h lib/math/random.h lib/math/ray.h Data/Data.h Action/Action.h Action/ActionManager.h Stuff/Observable.h Stuff/Observer.h Data/Model/DataModel.h MultiView/SingleData.h x/model.h x/material.h Data/Model/ModelPolygon.h Data/Model/ModelSurface.h Data/Model/ModelMaterial.h Mode/Model/Animation/ModeModelAnimation.h Edward.h Stuff/Progress.h Stuff/PluginManager.h MultiView/MultiView.h Mode/Model/Mesh/ModeModelMesh.h Data/Model/Geometry/Geometry.h
 	$(CPP) -c Mode/Model/Animation/ModeModelAnimationNone.cpp -o $@ $(CXXFLAGS)
 
-Mode/Model/Animation/ModeModelAnimationSkeleton.o : Mode/Model/Animation/ModeModelAnimationSkeleton.cpp Mode/Model/Animation/ModeModelAnimationSkeleton.h Mode/Mode.h lib/hui/hui.h lib/hui/common.h lib/config.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/file/file.h lib/file/msg.h lib/file/file_op.h lib/image/image.h lib/image/color.h lib/hui/Callback.h lib/hui/Application.h lib/base/map.h lib/base/set.h lib/hui/main.h lib/hui/Event.h lib/hui/Menu.h lib/hui/Panel.h lib/hui/Window.h lib/hui/common_dlg.h lib/hui/language.h lib/hui/Config.h lib/hui/Resource.h lib/hui/utility.h lib/hui/Painter.h lib/image/Painter.h lib/hui/Timer.h lib/hui/Toolbar.h lib/hui/error.h lib/hui/Clipboard.h lib/math/math.h lib/math/vector.h lib/math/matrix.h lib/math/matrix3.h lib/math/quaternion.h lib/math/plane.h lib/math/rect.h lib/math/complex.h lib/math/interpolation.h lib/math/random.h lib/math/ray.h Data/Data.h Action/Action.h Action/ActionManager.h Stuff/Observable.h Stuff/Observer.h Data/Model/DataModel.h MultiView/SingleData.h x/model.h x/material.h Data/Model/ModelPolygon.h Data/Model/ModelSurface.h Data/Model/ModelMaterial.h Edward.h Stuff/Progress.h Stuff/PluginManager.h MultiView/MultiView.h Mode/Model/Skeleton/ModeModelSkeleton.h Mode/Model/Animation/ModeModelAnimation.h Mode/Model/Mesh/ModeModelMesh.h Data/Model/Geometry/Geometry.h
+Mode/Model/Animation/ModeModelAnimationSkeleton.o : Mode/Model/Animation/ModeModelAnimationSkeleton.cpp Mode/Model/Animation/ModeModelAnimationSkeleton.h Mode/Mode.h lib/hui/hui.h lib/hui/common.h lib/config.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/file/file.h lib/file/msg.h lib/file/file_op.h lib/image/image.h lib/image/color.h lib/hui/Callback.h lib/hui/Application.h lib/base/map.h lib/base/set.h lib/hui/main.h lib/hui/Event.h lib/hui/Menu.h lib/hui/Panel.h lib/hui/Window.h lib/hui/common_dlg.h lib/hui/language.h lib/hui/Config.h lib/hui/Resource.h lib/hui/utility.h lib/hui/Painter.h lib/image/Painter.h lib/hui/Timer.h lib/hui/Toolbar.h lib/hui/error.h lib/hui/Clipboard.h lib/math/math.h lib/math/vector.h lib/math/matrix.h lib/math/matrix3.h lib/math/quaternion.h lib/math/plane.h lib/math/rect.h lib/math/complex.h lib/math/interpolation.h lib/math/random.h lib/math/ray.h Data/Data.h Action/Action.h Action/ActionManager.h Stuff/Observable.h Stuff/Observer.h Data/Model/DataModel.h MultiView/SingleData.h x/model.h x/material.h Data/Model/ModelPolygon.h Data/Model/ModelSurface.h Data/Model/ModelMaterial.h Edward.h Stuff/Progress.h Stuff/PluginManager.h MultiView/MultiView.h Mode/Model/Skeleton/ModeModelSkeleton.h Mode/Model/Animation/ModeModelAnimation.h Mode/Model/Mesh/ModeModelMesh.h Data/Model/Geometry/Geometry.h Mode/Model/ModeModel.h Mode/Model/Dialog/ModelPropertiesDialog.h lib/nix/nix.h lib/nix/nix_config.h lib/nix/nix_draw.h lib/nix/nix_light.h lib/nix/nix_vertexbuffer.h lib/nix/nix_shader.h lib/nix/nix_view.h lib/nix/nix_textures.h
 	$(CPP) -c Mode/Model/Animation/ModeModelAnimationSkeleton.cpp -o $@ $(CXXFLAGS)
 
 Mode/Model/Animation/ModeModelAnimationVertex.o : Mode/Model/Animation/ModeModelAnimationVertex.cpp Mode/Model/Animation/ModeModelAnimationVertex.h Mode/Mode.h lib/hui/hui.h lib/hui/common.h lib/config.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/file/file.h lib/file/msg.h lib/file/file_op.h lib/image/image.h lib/image/color.h lib/hui/Callback.h lib/hui/Application.h lib/base/map.h lib/base/set.h lib/hui/main.h lib/hui/Event.h lib/hui/Menu.h lib/hui/Panel.h lib/hui/Window.h lib/hui/common_dlg.h lib/hui/language.h lib/hui/Config.h lib/hui/Resource.h lib/hui/utility.h lib/hui/Painter.h lib/image/Painter.h lib/hui/Timer.h lib/hui/Toolbar.h lib/hui/error.h lib/hui/Clipboard.h lib/math/math.h lib/math/vector.h lib/math/matrix.h lib/math/matrix3.h lib/math/quaternion.h lib/math/plane.h lib/math/rect.h lib/math/complex.h lib/math/interpolation.h lib/math/random.h lib/math/ray.h Data/Data.h Action/Action.h Action/ActionManager.h Stuff/Observable.h Stuff/Observer.h Data/Model/DataModel.h MultiView/SingleData.h x/model.h x/material.h Data/Model/ModelPolygon.h Data/Model/ModelSurface.h Data/Model/ModelMaterial.h Mode/Model/Animation/ModeModelAnimation.h Mode/Model/ModeModel.h Mode/Model/Dialog/ModelPropertiesDialog.h Mode/Model/Skeleton/ModeModelSkeleton.h Edward.h Stuff/Progress.h Stuff/PluginManager.h MultiView/MultiView.h Mode/Model/Mesh/Selection/MeshSelectionModePolygon.h Mode/Model/Mesh/Selection/MeshSelectionMode.h Mode/Model/Mesh/ModeModelMesh.h Data/Model/Geometry/Geometry.h
@@ -1442,36 +1471,42 @@ meta.o : meta.cpp lib/file/file.h lib/base/base.h lib/base/macros.h lib/base/arr
 	$(CPP) -c meta.cpp -o $@ $(CXXFLAGS)
 
 install :
-	mkdir -p /usr/share/edward
-	cp -rf ../static/*    /usr/share/edward
-	cp -rf ../Plugins     /usr/share/edward
+	mkdir -p $(prefix)/share/edward
 	xdg-desktop-menu install ../static/michisoft-edward.desktop
 	xdg-mime install ../static/michisoft-x-model.xml
-	xdg-icon-resource install --context mimetypes --size  32 ../static/icons/png/model_32.png  application-x-michisoft-x-model --noupdate
-	xdg-icon-resource install --context mimetypes --size  48 ../static/icons/png/model_48.png  application-x-michisoft-x-model --noupdate
-	xdg-icon-resource install --context mimetypes --size  64 ../static/icons/png/model_64.png  application-x-michisoft-x-model --noupdate
-	xdg-icon-resource install --context mimetypes --size  128 ../static/icons/png/model_128.png  application-x-michisoft-x-model --noupdate
 	xdg-mime install ../static/michisoft-x-font.xml
-	xdg-icon-resource install --context mimetypes --size  32 ../static/icons/png/font_32.png  application-x-michisoft-x-font --noupdate
-	xdg-icon-resource install --context mimetypes --size  48 ../static/icons/png/font_48.png  application-x-michisoft-x-font --noupdate
-	xdg-icon-resource install --context mimetypes --size  64 ../static/icons/png/font_64.png  application-x-michisoft-x-font --noupdate
-	xdg-icon-resource install --context mimetypes --size  128 ../static/icons/png/font_128.png  application-x-michisoft-x-font --noupdate
 	xdg-mime install ../static/michisoft-x-material.xml
-	xdg-icon-resource install --context mimetypes --size  32 ../static/icons/png/material_32.png  application-x-michisoft-x-material --noupdate
-	xdg-icon-resource install --context mimetypes --size  48 ../static/icons/png/material_48.png  application-x-michisoft-x-material --noupdate
-	xdg-icon-resource install --context mimetypes --size  64 ../static/icons/png/material_64.png  application-x-michisoft-x-material --noupdate
-	xdg-icon-resource install --context mimetypes --size  128 ../static/icons/png/material_128.png  application-x-michisoft-x-material --noupdate
 	xdg-mime install ../static/michisoft-x-world.xml
-	xdg-icon-resource install --context mimetypes --size  32 ../static/icons/png/world_32.png  application-x-michisoft-x-world --noupdate
-	xdg-icon-resource install --context mimetypes --size  48 ../static/icons/png/world_48.png  application-x-michisoft-x-world --noupdate
-	xdg-icon-resource install --context mimetypes --size  64 ../static/icons/png/world_64.png  application-x-michisoft-x-world --noupdate
-	xdg-icon-resource install --context mimetypes --size  128 ../static/icons/png/world_128.png  application-x-michisoft-x-world --noupdate
 	xdg-mime install ../static/michisoft-x-terrain.xml
-	xdg-icon-resource install --context mimetypes --size  32 ../static/icons/png/terrain_32.png  application-x-michisoft-x-terrain --noupdate
-	xdg-icon-resource install --context mimetypes --size  48 ../static/icons/png/terrain_48.png  application-x-michisoft-x-terrain --noupdate
-	xdg-icon-resource install --context mimetypes --size  64 ../static/icons/png/terrain_64.png  application-x-michisoft-x-terrain --noupdate
-	xdg-icon-resource install --context mimetypes --size  128 ../static/icons/png/terrain_128.png  application-x-michisoft-x-terrain
-	cp $(BIN) /usr/bin
+	xdg-icon-resource install --context mimetypes --size 32 ../static/icons/png/model_32.png application-x-michisoft-x-model --noupdate
+	xdg-icon-resource install --context mimetypes --size 48 ../static/icons/png/model_48.png application-x-michisoft-x-model --noupdate
+	xdg-icon-resource install --context mimetypes --size 64 ../static/icons/png/model_64.png application-x-michisoft-x-model --noupdate
+	xdg-icon-resource install --context mimetypes --size 128 ../static/icons/png/model_128.png application-x-michisoft-x-model --noupdate
+	xdg-icon-resource install --context mimetypes --size 32 ../static/icons/png/font_32.png application-x-michisoft-x-font --noupdate
+	xdg-icon-resource install --context mimetypes --size 48 ../static/icons/png/font_48.png application-x-michisoft-x-font --noupdate
+	xdg-icon-resource install --context mimetypes --size 64 ../static/icons/png/font_64.png application-x-michisoft-x-font --noupdate
+	xdg-icon-resource install --context mimetypes --size 128 ../static/icons/png/font_128.png application-x-michisoft-x-font --noupdate
+	xdg-icon-resource install --context mimetypes --size 32 ../static/icons/png/material_32.png application-x-michisoft-x-material --noupdate
+	xdg-icon-resource install --context mimetypes --size 48 ../static/icons/png/material_48.png application-x-michisoft-x-material --noupdate
+	xdg-icon-resource install --context mimetypes --size 64 ../static/icons/png/material_64.png application-x-michisoft-x-material --noupdate
+	xdg-icon-resource install --context mimetypes --size 128 ../static/icons/png/material_128.png application-x-michisoft-x-material --noupdate
+	xdg-icon-resource install --context mimetypes --size 32 ../static/icons/png/world_32.png application-x-michisoft-x-world --noupdate
+	xdg-icon-resource install --context mimetypes --size 48 ../static/icons/png/world_48.png application-x-michisoft-x-world --noupdate
+	xdg-icon-resource install --context mimetypes --size 64 ../static/icons/png/world_64.png application-x-michisoft-x-world --noupdate
+	xdg-icon-resource install --context mimetypes --size 128 ../static/icons/png/world_128.png application-x-michisoft-x-world --noupdate
+	xdg-icon-resource install --context mimetypes --size 32 ../static/icons/png/terrain_32.png application-x-michisoft-x-terrain --noupdate
+	xdg-icon-resource install --context mimetypes --size 48 ../static/icons/png/terrain_48.png application-x-michisoft-x-terrain --noupdate
+	xdg-icon-resource install --context mimetypes --size 64 ../static/icons/png/terrain_64.png application-x-michisoft-x-terrain --noupdate
+	xdg-icon-resource install --context mimetypes --size 128 ../static/icons/png/terrain_128.png application-x-michisoft-x-terrain
+	cp -rf '../static/icons' $(prefix)/share/edward
+	cp -rf '../static/shader' $(prefix)/share/edward
+	cp -f '../static/edward.jpg' $(prefix)/share/edward
+	cp -f '../static/hui_resources.txt' $(prefix)/share/edward
+	cp -f '../static/icon.svg' $(prefix)/share/edward
+	cp -f '../static/license.txt' $(prefix)/share/edward
+	cp -f '../static/license_small.txt' $(prefix)/share/edward
+	cp -rf '../Plugins' $(prefix)/share/edward
+	cp $(BIN) $(prefix)/bin
 
 clean :
 	rm -f $(BIN)

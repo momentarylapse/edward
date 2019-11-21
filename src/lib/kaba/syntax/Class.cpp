@@ -8,20 +8,22 @@ namespace Kaba{
 ClassElement::ClassElement() {
 	offset = 0;
 	type = nullptr;
-	hidden = false;
 }
 
 ClassElement::ClassElement(const string &_name, const Class *_type, int _offset) {
 	name = _name;
 	offset = _offset;
 	type = _type;
-	hidden = false;
 }
 
 string ClassElement::signature(bool include_class) const {
 	if (include_class)
 		return type->name + " " + name;
 	return type->name + " " + name;
+}
+
+bool ClassElement::hidden() const {
+	return (name[0] == '_') or (name[0] == '-');
 }
 
 
@@ -40,7 +42,7 @@ bool type_match(const Class *given, const Class *wanted) {
 
 	// compatible pointers (of same or derived class)
 	if (given->is_pointer() and wanted->is_pointer())
-		return given->parent->is_derived_from(wanted->parent);
+		return given->param->is_derived_from(wanted->param);
 
 	return given->is_derived_from(wanted);
 }
@@ -54,13 +56,14 @@ bool _type_match(const Class *given, bool same_chunk, const Class *wanted) {
 	return type_match(given, wanted);
 }
 
-Class::Class(const string &_name, int _size, SyntaxTree *_owner, const Class *_parent) {
+Class::Class(const string &_name, int _size, SyntaxTree *_owner, const Class *_parent, const Class *_param) {
 	name = _name;
 	owner = _owner;
 	size = _size;
 	type = Type::OTHER;
 	array_length = 0;
 	parent = _parent;
+	param = _param;
 	name_space = nullptr;
 	force_call_by_value = false;
 	fully_parsed = true;
@@ -76,10 +79,7 @@ Class::~Class() {
 		delete c;
 	for (auto *v: static_variables)
 		delete v;
-	for (auto *f: member_functions)
-		if (f->name_space == this)
-			delete f;
-	for (auto *f: static_functions)
+	for (auto *f: functions)
 		if (f->name_space == this)
 			delete f;
 	for (auto *c: classes)
@@ -165,7 +165,7 @@ bool Class::usable_as_super_array() const {
 
 const Class *Class::get_array_element() const {
 	if (is_array() or is_super_array() or is_dict())
-		return parent;
+		return param;
 	if (is_pointer())
 		return nullptr;
 	if (parent)
@@ -179,7 +179,7 @@ bool Class::needs_constructor() const {
 	if (is_super_array() or is_dict())
 		return true;
 	if (is_array())
-		return parent->needs_constructor();
+		return param->needs_constructor();
 	if (vtable.num > 0)
 		return true;
 	if (parent)
@@ -208,7 +208,7 @@ bool Class::needs_destructor() const {
 	if (is_super_array() or is_dict())
 		return true;
 	if (is_array())
-		return parent->get_destructor();
+		return param->get_destructor();
 	if (parent) {
 		if (parent->get_destructor())
 			return true;
@@ -227,8 +227,8 @@ bool Class::needs_destructor() const {
 bool Class::is_derived_from(const Class *root) const {
 	if (this == root)
 		return true;
-	if (is_super_array() or is_array() or is_dict() or is_pointer())
-		return false;
+	/*if (is_super_array() or is_array() or is_dict() or is_pointer())
+		return false;*/  // since parent/param split
 	if (!parent)
 		return false;
 	return parent->is_derived_from(root);
@@ -237,15 +237,16 @@ bool Class::is_derived_from(const Class *root) const {
 bool Class::is_derived_from_s(const string &root) const {
 	if (name == root)
 		return true;
-	if (is_super_array() or is_array() or is_dict() or is_pointer())
-		return false;
+	/*if (is_super_array() or is_array() or is_dict() or is_pointer())
+		return false;*/
 	if (!parent)
 		return false;
 	return parent->is_derived_from_s(root);
 }
 
+// don't care if static
 Function *Class::get_func(const string &_name, const Class *return_type, const Array<const Class*> &params) const {
-	for (auto *f: member_functions)
+	for (auto *f: functions)
 		if ((f->name == _name) and (f->literal_return_type == return_type) and (f->num_params == params.num)) {
 			bool match = true;
 			for (int i=0; i<params.num; i++) {
@@ -270,7 +271,7 @@ Function *Class::get_default_constructor() const {
 
 Array<Function*> Class::get_constructors() const {
 	Array<Function*> c;
-	for (auto *f: member_functions)
+	for (auto *f: functions)
 		if ((f->name == IDENTIFIER_FUNC_INIT) and (f->literal_return_type == TypeVoid))
 			c.add(f);
 	return c;
@@ -285,7 +286,7 @@ Function *Class::get_assign() const {
 }
 
 Function *Class::get_get(const Class *index) const {
-	for (Function *cf: member_functions) {
+	for (Function *cf: functions) {
 		if (cf->name != "__get__")
 			continue;
 		if (cf->num_params != 1)
@@ -298,7 +299,7 @@ Function *Class::get_get(const Class *index) const {
 }
 
 Function *Class::get_virtual_function(int virtual_index) const {
-	for (Function *f: member_functions)
+	for (Function *f: functions)
 		if (f->virtual_index == virtual_index)
 			return f;
 	return nullptr;
@@ -319,7 +320,7 @@ void Class::link_virtual_table() {
 		vtable[1] = mf(&VirtualBase::__delete_external__);
 
 	// link virtual functions into vtable
-	for (Function *cf: member_functions) {
+	for (Function *cf: functions) {
 		if (cf->virtual_index >= 0) {
 			//msg_write(i2s(cf->virtual_index) + ": " + cf->signature());
 			if (cf->virtual_index >= vtable.num)
@@ -340,7 +341,7 @@ void Class::link_external_virtual_table(void *p) {
 	VirtualTable *t = (VirtualTable*)p;
 	vtable.clear();
 	int max_vindex = 1;
-	for (Function *cf: member_functions)
+	for (Function *cf: functions)
 		if (cf->virtual_index >= 0) {
 			cf->address = t[cf->virtual_index];
 			if (cf->virtual_index >= vtable.num)
@@ -376,7 +377,7 @@ bool class_func_match(Function *a, Function *b) {
 
 
 const Class *Class::get_pointer() const {
-	return owner->make_class(name + "*", Class::Type::POINTER, config.pointer_size, 0, this);
+	return owner->make_class(name + "*", Class::Type::POINTER, config.pointer_size, 0, nullptr, this, name_space);
 }
 
 const Class *Class::get_root() const {
@@ -392,7 +393,7 @@ void Class::add_function(SyntaxTree *s, Function *f, bool as_virtual, bool overr
 	if (f->is_static) {
 		if (config.verbose)
 			msg_write("   STATIC");
-		static_functions.add(f);
+		functions.add(f);
 	} else {
 		if (config.verbose)
 			msg_write("   MEMBER");
@@ -405,7 +406,7 @@ void Class::add_function(SyntaxTree *s, Function *f, bool as_virtual, bool overr
 		// override?
 		Function *orig = nullptr;
 		int orig_index = -1;
-		foreachi (Function *ocf, member_functions, i)
+		foreachi (Function *ocf, functions, i)
 			if (class_func_match(f, ocf)) {
 				orig = ocf;
 				orig_index = i;
@@ -423,9 +424,9 @@ void Class::add_function(SyntaxTree *s, Function *f, bool as_virtual, bool overr
 			f->virtual_index = orig->virtual_index;
 			if (orig->name_space == this)
 				delete orig;
-			member_functions[orig_index] = f;
+			functions[orig_index] = f;
 		} else {
-			member_functions.add(f);
+			functions.add(f);
 		}
 
 		if (f->virtual_index >= 0) {
@@ -442,13 +443,16 @@ void Class::add_function(SyntaxTree *s, Function *f, bool as_virtual, bool overr
 }
 
 void Class::derive_from(const Class* root, bool increase_size) {
+	if (config.verbose)
+		msg_write("DERIVE  " + long_name() + " from " + root->long_name());
 	parent = const_cast<Class*>(root);
+	param = root->param;
 
 	// inheritance of elements
 	elements = parent->elements;
 
 	// inheritance of functions
-	for (Function *f: parent->member_functions) {
+	for (Function *f: parent->functions) {
 		if (f->name == IDENTIFIER_FUNC_ASSIGN)
 			continue;
 		Function *ff = f;
@@ -463,9 +467,8 @@ void Class::derive_from(const Class* root, bool increase_size) {
 		}
 		if (config.verbose)
 			msg_write("INHERIT   " + ff->signature());
-		member_functions.add(ff);
+		functions.add(ff);
 	}
-	static_functions.append(parent->static_functions);
 
 	if (increase_size)
 		size += parent->size;
@@ -484,60 +487,6 @@ void *Class::create_instance() const {
 			f(p);
 	}
 	return p;
-}
-
-string Class::var2str(const void *p) const {
-	if (this == TypeInt) {
-		return i2s(*(int*)p);
-	} else if (this == TypeFloat32) {
-		return f2s(*(float*)p, 3);
-	} else if (this == TypeFloat64) {
-		return f2s((float)*(double*)p, 3);
-	} else if (this == TypeBool) {
-		return b2s(*(bool*)p);
-	} else if (this == TypeClass) {
-		return ((Class*)p)->name;
-	} else if (this == TypeClassP) {
-		if (p)
-			return "&" + (*(Class**)p)->name;
-	} else if (is_pointer()) {
-		return p2s(*(void**)p);
-	} else if (this == TypeString) {
-		return "\"" + *(string*)p + "\"";
-	} else if (this == TypeCString) {
-		return "\"" + string((char*)p) + "\"";
-	} else if (is_super_array()) {
-		string s;
-		DynamicArray *da = (DynamicArray*)p;
-		for (int i=0; i<da->num; i++) {
-			if (i > 0)
-				s += ", ";
-			s += parent->var2str(((char*)da->data) + i * da->element_size);
-		}
-		return "[" + s + "]";
-	} else if (is_dict()) {
-		return "{...}";
-	} else if (elements.num > 0) {
-		string s;
-		for (auto &e: elements) {
-			if (e.hidden)
-				continue;
-			if (s.num > 0)
-				s += ", ";
-			s += e.type->var2str(((char*)p) + e.offset);
-		}
-		return "(" + s + ")";
-
-	} else if (is_array()) {
-			string s;
-			for (int i=0; i<array_length; i++) {
-				if (i > 0)
-					s += ", ";
-				s += parent->var2str(((char*)p) + i * parent->size);
-			}
-			return "[" + s + "]";
-		}
-	return d2h(p, size, false);
 }
 
 }

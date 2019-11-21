@@ -49,6 +49,7 @@ extern const string IDENTIFIER_DELETE;
 extern const string IDENTIFIER_SIZEOF;
 extern const string IDENTIFIER_TYPE;
 extern const string IDENTIFIER_STR;
+extern const string IDENTIFIER_REPR;
 extern const string IDENTIFIER_LEN;
 extern const string IDENTIFIER_LET;
 extern const string IDENTIFIER_NAMESPACE;
@@ -81,7 +82,7 @@ extern const string IDENTIFIER_ASM;
 extern const string IDENTIFIER_MAP;
 extern const string IDENTIFIER_LAMBDA;
 extern const string IDENTIFIER_SORTED;
-extern const string IDENTIFIER_FILTER;
+extern const string IDENTIFIER_DYN;
 
 
 //--------------------------------------------------------------------------------------------------
@@ -93,6 +94,7 @@ enum class OperatorID {
 	SUBTRACT,      //  -
 	MULTIPLY,      //  *
 	DIVIDE,        //  /
+	NEGATIVE,      //  -
 	ADDS,          // +=
 	SUBTRACTS,     // -=
 	MULTIPLYS,     // *=
@@ -114,7 +116,9 @@ enum class OperatorID {
 	INCREASE,      // ++
 	DECREASE,      // --
 	IS,            // is
+	IN,            // in
 	EXTENDS,       // extends
+	EXPONENT,      // ^
 	_COUNT_
 };
 
@@ -125,6 +129,8 @@ public:
 	bool left_modifiable;
 	unsigned char level; // order of operators ("Punkt vor Strich")
 	string function_name;
+	int param_flags; // 1 = only left, 2 = only right, 3 = both
+	bool order_inverted; // (param, instance) instead of (instance, param)
 };
 extern PrimitiveOperator PrimitiveOperators[];
 
@@ -157,12 +163,13 @@ enum class StatementID {
 	EXCEPT,
 	PASS,
 	STR,
+	REPR,
 	LEN,
 	LET,
 	MAP,
 	LAMBDA,
 	SORTED,
-	FILTER
+	DYN
 };
 
 class Statement {
@@ -273,8 +280,6 @@ enum class InlineID {
 	FLOAT_SUBTARCT,
 	FLOAT_SUBTRACT_ASSIGN,
 	FLOAT_MULTIPLY,
-	FLOAT_MULTIPLY_FI,
-	FLOAT_MULTIPLY_IF,
 	FLOAT_MULTIPLY_ASSIGN,
 	FLOAT_DIVIDE,
 	FLOAT_DIVIDE_ASSIGN,
@@ -292,8 +297,6 @@ enum class InlineID {
 	FLOAT64_SUBTRACT,
 	FLOAT64_SUBTRACT_ASSIGN,
 	FLOAT64_MULTIPLY,
-	FLOAT64_MULTIPLY_FI,
-	FLOAT64_MULTIPLY_IF,
 	FLOAT64_MULTIPLY_ASSIGN,
 	FLOAT64_DIVIDE,
 	FLOAT64_DIVIDE_ASSIGN,
@@ -343,13 +346,11 @@ enum class InlineID {
 //--------------------------------------------------------------------------------------------------
 // type casting
 
-typedef void t_cast_func(Value&, Value&);
 class TypeCast {
 public:
 	int penalty;
 	const Class *source, *dest;
 	Function *f;
-	t_cast_func *func;
 };
 extern Array<TypeCast> TypeCasts;
 
@@ -426,25 +427,33 @@ void* mf(T tmf) {
 }
 
 
-void Init(Asm::InstructionSet instruction_set = Asm::InstructionSet::NATIVE, Abi abi = Abi::NATIVE, bool allow_std_lib = true);
-void End();
+void init(Asm::InstructionSet instruction_set = Asm::InstructionSet::NATIVE, Abi abi = Abi::NATIVE, bool allow_std_lib = true);
+void clean_up();
 
 
 
-void ResetExternalData();
-void LinkExternal(const string &name, void *pointer);
+void reset_external_data();
+void link_external(const string &name, void *pointer);
 template<typename T>
-void LinkExternalClassFunc(const string &name, T pointer) {
-	LinkExternal(name, mf(pointer));
+void link_external_class_func(const string &name, T pointer) {
+	link_external(name, mf(pointer));
 }
-void DeclareClassSize(const string &class_name, int offset);
-void DeclareClassOffset(const string &class_name, const string &element, int offset);
-void DeclareClassVirtualIndex(const string &class_name, const string &func, void *p, void *instance);
+void declare_class_size(const string &class_name, int offset);
+void _declare_class_element(const string &name, int offset);
+template<class T>
+void declare_class_element(const string &name, T pointer) {
+	_declare_class_element(name, *(int*)(void*)&pointer);
+}
+void _link_external_virtual(const string &name, void *p, void *instance);
+template<class T>
+void link_external_virtual(const string &name, T pointer, void *instance) {
+	_link_external_virtual(name, mf(pointer), instance);
+}
 
-void *GetExternalLink(const string &name);
+void *get_external_link(const string &name);
 int process_class_offset(const string &class_name, const string &element, int offset);
-int ProcessClassSize(const string &class_name, int size);
-int ProcessClassNumVirtuals(const string &class_name, int num_virtual);
+int process_class_size(const string &class_name, int size);
+int process_class_num_virtuals(const string &class_name, int num_virtual);
 
 
 

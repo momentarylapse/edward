@@ -3,13 +3,13 @@ use file
 use "api.kaba"
 
 string vecToJson(vector v)
-	return "" + v.x + ", " + v.y + ", " + v.z
+	return "{{v.x}}, {{v.y}}, {{v.z}}"
 
 string col3ToJson(color c)
-	return "" + c.r + ", " + c.g + ", " + c.b
+	return "{{c.r}}, {{c.g}}, {{c.b}}"
 
 string qToJson(quaternion q)
-	return "" + q.x + ", " + q.y + ", " + q.z + ", " + q.w
+	return "{{q.x}}, {{q.y}}, {{q.z}}, {{q.w}}"
 
 string materialToJson(ModelMaterial m)
 	string str
@@ -18,13 +18,13 @@ string materialToJson(ModelMaterial m)
 	str += "		'DbgIndex' : 0,\n"
 	str += "		'DbgName' : 'Test',\n"
 	str += "		'blending' : 'NormalBlending',\n"
-	str += "		'colorAmbient' : [" + col3ToJson(m.ambient) + "],\n"
-	str += "		'colorDiffuse' : [" + col3ToJson(m.diffuse) + "],\n"
-	str += "		'colorSpecular' : [" + col3ToJson(m.specular) + "],\n"
+	str += "		'colorAmbient' : [{{col3ToJson(m.ambient)}}],\n"
+	str += "		'colorDiffuse' : [{{col3ToJson(m.diffuse)}}],\n"
+	str += "		'colorSpecular' : [{{col3ToJson(m.specular)}}],\n"
 	str += "		'depthTest' : true,\n"
 	str += "		'depthWrite' : true,\n"
 	str += "		'shading' : 'Phong',\n"
-	str += "		'specularCoef' : " + m.shininess + ",\n"
+	str += "		'specularCoef' : {{m.shininess}},\n"
 	str += "		'transparency' : 1.0,\n"
 	str += "		'transparent' : false,\n"
 	str += "		'vertexColors' : false\n"
@@ -42,9 +42,9 @@ vector bone_anim_pos(ModelFrame f, int i)
 string moveToJson(ModelMove m)
 	string str
 	str += "	{\n"
-	str += "		'name': '" + m.name + "',\n"
-	str += "		'fps': " + m.frames_per_sec_const + ",\n"
-	str += "		'length': " + (m.frame.num / m.frames_per_sec_const) + ",\n"
+	str += "		'name': '{{m.name}}',\n"
+	str += "		'fps': {{m.frames_per_sec_const}},\n"
+	str += "		'length': {{(m.frame.num / m.frames_per_sec_const)}},\n"
 	str += "		'hierarchy': [\n"
 	for b,i in data_model.bone
 		str += "			{\n"
@@ -59,17 +59,17 @@ string moveToJson(ModelMove m)
 #				q *= dq.bar()
 			print(dpos)
 			str += "					{\n"
-			str += "						'time': " + (j / m.frames_per_sec_const) + ",\n"
-			str += "						'pos': [" + vecToJson(dpos) + "],\n"
-			str += "						'rot': [" + qToJson(q) + "],\n"
+			str += "						'time': {{(j / m.frames_per_sec_const)}},\n"
+			str += "						'pos': [{{vecToJson(dpos)}}],\n"
+			str += "						'rot': [{{qToJson(q)}}],\n"
 			str += "						'scl': [1,1,1]\n"
 			str += "					},\n"
 		# looping...
 		let q = quaternion.rotation_v(m.frame[0].skel_ang[i])
 		str += "					{\n"
-		str += "						'time': " + (m.frame.num / m.frames_per_sec_const) + ",\n"
+		str += "						'time': {{(m.frame.num / m.frames_per_sec_const)}},\n"
 		str += "						'pos': [0,0,0],\n"
-		str += "						'rot': [" + qToJson(q) + "],\n"
+		str += "						'rot': [{{qToJson(q)}}],\n"
 		str += "						'scl': [1,1,1]\n"
 		str += "					}\n"
 		str += "				]\n"
@@ -89,7 +89,7 @@ string boneToJson(ModelBone b)
 	#if b.parent >= 0
 #		pos -= data_model.bone[b.parent].pos
 	str += "		'name': 'xxx',\n"
-	str += "		'pos': [" + vecToJson(pos) + "],\n"
+	str += "		'pos': [{{vecToJson(pos)}}],\n"
 	str += "		'scl': [1,1,1],\n"
 	str += "		'rot': [0,0,0],\n"
 	str += "		'rotq': [0,0,0,1]\n"
@@ -97,7 +97,7 @@ string boneToJson(ModelBone b)
 	return str
 
 void main()
-	if !HuiFileDialogSave(edward, "Save JSON", "", "*.js", "*.js")
+	if !FileDialogSave(edward, "Save JSON", "", "*.js", "*.js")
 		return
 	File *f = Filesystem.create_text(HuiFilename)
 	
@@ -109,13 +109,13 @@ void main()
 	string str = "{'metadata':{\n"
 	str += "	'formatVersion': 3,\n"
 	str += "	'generatedBy': 'Edward',\n"
-	str += "	'vertices': " + data_model.vertex.num + ",\n"
-	str += "	'faces': " + n_tria + ",\n"
-	str += "	'normals': " + (n_tria*3) + ",\n"
+	str += "	'vertices': {{data_model.vertex.num}},\n"
+	str += "	'faces': {{n_tria}},\n"
+	str += "	'normals': {{(n_tria*3)}},\n"
 	str += "	'colors': 0,\n"
 	str += "	'uvs': 1,\n"
 	str += "	'morphTargets': 0,\n"
-	str += "	'bones': " + data_model.bone.num + "\n"
+	str += "	'bones': {{data_model.bone.num}}\n"
 	str += "},\n"
 	str += "'influencesPerVertex': 1,\n"
 	str += "'scale': 1.000,\n"
@@ -173,9 +173,9 @@ void main()
 				int nb = n_normals + _b
 				int nc = n_normals + _c
 				vector n = p.temp_normal
-				str += "	42, " + va + ", " + vb + ", " + vc + ", " + p.material + ", "
+				str += "	42, {{va}}, {{vb}}, {{vc}}, {{p.material}}, "
 				str += "0, 0, 0, "
-				str += "" + na + ", " + nb + ", " + nc
+				str += "{{na}}, {{nb}}, {{nc}}"
 				if (is < data_model.surface.num - 1) or (ip < s.polygon.num - 1) or (k < p.side.num - 1)
 					str += ",\n"
 			n_normals += p.side.num

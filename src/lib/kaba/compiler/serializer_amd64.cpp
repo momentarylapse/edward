@@ -7,15 +7,14 @@
 namespace Kaba{
 
 
-int SerializerAMD64::fc_begin(const SerialNodeParam &instance, const Array<SerialNodeParam> &_params, const SerialNodeParam &ret)
-{
+int SerializerAMD64::fc_begin(Function *__f, const Array<SerialNodeParam> &_params, const SerialNodeParam &ret) {
 	const Class *type = ret.get_type_save();
 
 	// return data too big... push address
 	SerialNodeParam ret_ref;
 	if (type->uses_return_by_memory()){
 		//add_temp(type, ret_temp);
-		ret_ref = AddReference(/*ret_temp*/ ret);
+		ret_ref = add_reference(/*ret_temp*/ ret);
 		//add_ref();
 		//add_cmd(Asm::inst_lea, KindRegister, (char*)RegEaxCompilerFunctionReturn.kind, CompilerFunctionReturn.param);
 	}
@@ -27,8 +26,8 @@ int SerializerAMD64::fc_begin(const SerialNodeParam &instance, const Array<Seria
 	Array<SerialNodeParam> params = _params;
 		
 	// instance as first parameter
-	if (instance.type)
-		params.insert(instance, 0);
+/*	if (instance.type)
+		params.insert(instance, 0);*/
 
 	// return as _very_ first parameter
 	if (type->uses_return_by_memory()){
@@ -107,7 +106,7 @@ int SerializerAMD64::fc_begin(const SerialNodeParam &instance, const Array<Seria
 	return push_size;
 }
 
-void SerializerAMD64::fc_end(int push_size, const SerialNodeParam &instance, const Array<SerialNodeParam> &params, const SerialNodeParam &ret) {
+void SerializerAMD64::fc_end(int push_size, const Array<SerialNodeParam> &params, const SerialNodeParam &ret) {
 	const Class *type = ret.get_type_save();
 
 	// return > 4b already got copied to [ret] by the function!
@@ -154,8 +153,9 @@ bool dist_fits_32bit(void *a, void *b) {
 	return (d < 0x70000000);
 }
 
-void SerializerAMD64::add_function_call(Function *f, const SerialNodeParam &instance, const Array<SerialNodeParam> &params, const SerialNodeParam &ret) {
-	int push_size = fc_begin(instance, params, ret);
+void SerializerAMD64::add_function_call(Function *f, const Array<SerialNodeParam> &params, const SerialNodeParam &ret) {
+	call_used = true;
+	int push_size = fc_begin(f, params, ret);
 
 	if (f->address) {
 		if (dist_fits_32bit(f->address, script->opcode)) {
@@ -180,34 +180,35 @@ void SerializerAMD64::add_function_call(Function *f, const SerialNodeParam &inst
 		do_error_link("could not link function " + f->signature());
 	}
 
-	fc_end(push_size, instance, params, ret);
+	fc_end(push_size, params, ret);
 }
 
-void SerializerAMD64::add_virtual_function_call(int virtual_index, const SerialNodeParam &instance, const Array<SerialNodeParam> &params, const SerialNodeParam &ret)
-{
-	int push_size = fc_begin(instance, params, ret);
+void SerializerAMD64::add_virtual_function_call(Function *f, const Array<SerialNodeParam> &params, const SerialNodeParam &ret) {
+	call_used = true;
+	int push_size = fc_begin(f, params, ret);
 
-	add_cmd(Asm::INST_MOV, p_rax, instance); // self
+	add_cmd(Asm::INST_MOV, p_rax, params[0]); // self
 	add_cmd(Asm::INST_MOV, p_rax, p_deref_eax); // vtable
-	add_cmd(Asm::INST_ADD, p_rax, param_imm(TypeInt, 8 * virtual_index)); // vtable + n
+	add_cmd(Asm::INST_ADD, p_rax, param_imm(TypeInt, 8 * f->virtual_index)); // vtable + n
 	add_cmd(Asm::INST_MOV, p_rax, p_deref_eax); // vtable[n]
 	add_cmd(Asm::INST_CALL, p_rax); // the actual call
 
-	fc_end(push_size, instance, params, ret);
+	fc_end(push_size, params, ret);
 }
 
-void SerializerAMD64::add_pointer_call(const SerialNodeParam &pointer, const Array<SerialNodeParam> &params, const SerialNodeParam &ret)
-{
-	int push_size = fc_begin(p_none, params, ret);
+void SerializerAMD64::add_pointer_call(const SerialNodeParam &pointer, const Array<SerialNodeParam> &params, const SerialNodeParam &ret) {
+	//do_error("pointer call not working...");
+	call_used = true;
+	int push_size = fc_begin(nullptr, params, ret);
 
 	add_cmd(Asm::INST_MOV, p_rax, pointer);
 	add_cmd(Asm::INST_CALL, p_rax); // the actual call
 
-	fc_end(push_size, p_none, params, ret);
+	fc_end(push_size, params, ret);
 }
 
 
-void SerializerAMD64::AddFunctionIntro(Function *f)
+void SerializerAMD64::add_function_intro_params(Function *f)
 {
 	// return, instance, params
 	Array<Variable*> param;
@@ -289,7 +290,7 @@ void SerializerAMD64::AddFunctionIntro(Function *f)
 	}
 }
 
-void SerializerAMD64::AddFunctionOutro(Function *f)
+void SerializerAMD64::add_function_outro(Function *f)
 {
 	add_cmd(Asm::INST_LEAVE);
 	add_cmd(Asm::INST_RET);
@@ -297,12 +298,20 @@ void SerializerAMD64::AddFunctionOutro(Function *f)
 
 //#define debug_evil_corrections
 
-void SerializerAMD64::CorrectUnallowedParamCombis2(SerialNode &c)
+void _test_param_mem(SerialNodeParam &p) {
+	//if (p.kind == NodeKind::ADDRESS)
+}
+
+void SerializerAMD64::correct_unallowed_param_combis2(SerialNode &c)
 {
 	// push 8 bit -> push 32 bit
 	if (c.inst == Asm::INST_PUSH)
 		if (c.p[0].kind == NodeKind::REGISTER)
 			c.p[0].p = reg_resize(c.p[0].p, config.pointer_size);
+
+	_test_param_mem(c.p[0]);
+	_test_param_mem(c.p[1]);
+
 
 
 	// FIXME

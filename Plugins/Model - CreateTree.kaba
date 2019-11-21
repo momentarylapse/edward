@@ -7,7 +7,7 @@ const float BRANCH_ANGLE = 0.5
 const float DIR_RAND = 0.2
 
 vector get_rotated(vector dir)
-	vector v1 = vector.cross(dir, e_x).normalized()
+	vector v1 = vector.cross(dir, vector.EX).normalized()
 	vector v2 = vector.cross(dir, v1)
 	float w = rand(2 * pi)
 	vector bdir = (dir * 0.5 + cos(w) * v1 + sin(w) * v2).normalized()
@@ -39,4 +39,4 @@ void branch(vector pos0, vector dir0, int num, float radius, float length)
 	delete(g)
 
 void main()
-	branch(v_0, e_y, MAX_LENGTH, 5, 40)
+	branch(vector.0, vector.EY, MAX_LENGTH, 5, 40)

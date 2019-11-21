@@ -12,14 +12,14 @@
 namespace Kaba{
 
 string kind2str(NodeKind kind) {
+	if (kind == NodeKind::PLACEHOLDER)
+		return "placeholder";
 	if (kind == NodeKind::VAR_LOCAL)
 		return "local";
 	if (kind == NodeKind::VAR_GLOBAL)
 		return "global";
-	if (kind == NodeKind::FUNCTION_NAME)
+	if (kind == NodeKind::FUNCTION)
 		return "function name";
-	if (kind == NodeKind::FUNCTION_POINTER)
-		return "function pointer";
 	if (kind == NodeKind::CONSTANT)
 		return "constant";
 	if (kind == NodeKind::CONSTANT_BY_ADDRESS)
@@ -44,6 +44,8 @@ string kind2str(NodeKind kind) {
 		return "address shift";
 	if (kind == NodeKind::ARRAY)
 		return "array element";
+	if (kind == NodeKind::DYNAMIC_ARRAY)
+		return "dynamic array element";
 	if (kind == NodeKind::POINTER_AS_ARRAY)
 		return "pointer as array element";
 	if (kind == NodeKind::REFERENCE)
@@ -96,24 +98,24 @@ string kind2str(NodeKind kind) {
 
 string Node::sig() const {
 	string t = type->name + " ";
+	if (kind == NodeKind::PLACEHOLDER)
+		return "";
 	if (kind == NodeKind::VAR_LOCAL)
 		return t + as_local()->name;
 	if (kind == NodeKind::VAR_GLOBAL)
 		return t + as_global()->name;
-	if (kind == NodeKind::FUNCTION_POINTER)
-		return t + as_func()->long_name();
-	if (kind == NodeKind::FUNCTION_NAME)
+	if (kind == NodeKind::FUNCTION)
 		return t + as_func()->long_name();
 	if (kind == NodeKind::CONSTANT)
 		return t + as_const()->str();
 	if (kind == NodeKind::FUNCTION_CALL)
 		return as_func()->signature();
 	if (kind == NodeKind::POINTER_CALL)
-		return "";
+		return t + "(...)";
 	if (kind == NodeKind::INLINE_CALL)
 		return as_func()->signature();
 	if (kind == NodeKind::VIRTUAL_CALL)
-		return t + i2s(link_no);//s->Functions[nr]->name;
+		return as_func()->signature();
 	if (kind == NodeKind::CONSTRUCTOR_AS_FUNCTION)
 		return as_func()->signature();
 	if (kind == NodeKind::STATEMENT)
@@ -128,6 +130,8 @@ string Node::sig() const {
 		return t + i2s(link_no);
 	if (kind == NodeKind::ARRAY)
 		return t;
+	if (kind == NodeKind::DYNAMIC_ARRAY)
+		return t;
 	if (kind == NodeKind::POINTER_AS_ARRAY)
 		return t;
 	if (kind == NodeKind::REFERENCE)
@@ -139,7 +143,7 @@ string Node::sig() const {
 	if (kind == NodeKind::CLASS)
 		return as_class()->name;
 	if (kind == NodeKind::REGISTER)
-		return t + Asm::GetRegName(link_no);
+		return t + Asm::get_reg_name(link_no);
 	if (kind == NodeKind::ADDRESS)
 		return t + d2h(&link_no, config.pointer_size);
 	if (kind == NodeKind::MEMORY)
@@ -160,13 +164,11 @@ void Node::show() const {
 	string orig;
 	msg_write(str() + orig);
 	msg_right();
-	if (instance)
-		instance->show();
-	for (Node *p: params)
+	for (Node *p: uparams)
 		if (p)
 			p->show();
 		else
-			msg_write("<param nil>");
+			msg_write("<-NULL->");
 	msg_left();
 }
 
@@ -195,11 +197,11 @@ inline void set_command(Node *&a, Node *b) {
 
 void Block::add(Node *c) {
 	if (c)
-		params.add(c);
+		uparams.add(c);
 }
 
 void Block::set(int index, Node *c) {
-	params[index] = c;
+	uparams[index] = c;
 }
 
 Variable *Block::add_var(const string &name, const Class *type) {
@@ -229,18 +231,10 @@ Node::Node(NodeKind _kind, int64 _link_no, const Class *_type) {
 	type = _type;
 	kind = _kind;
 	link_no = _link_no;
-	instance = nullptr;
 }
 
-Node::Node(const Class *c) : Node(NodeKind::CLASS, (int_p)c, TypeClass) {}
-Node::Node(const Block *b) : Node(NodeKind::BLOCK, (int_p)b, TypeVoid) {}
-Node::Node(const Function *f) : Node(NodeKind::FUNCTION_NAME, (int_p)f, TypeFunction) {}
-Node::Node(const Constant *c) : Node(NodeKind::CONSTANT, (int_p)c, c->type) {}
-
 Node::~Node() {
-	if (instance)
-		delete instance;
-	for (auto &p: params)
+	for (auto &p: uparams)
 		if (p)
 			delete p;
 }
@@ -294,20 +288,23 @@ PrimitiveOperator *Node::as_prim_op() const {
 }
 
 void Node::set_instance(Node *p) {
-	set_command(instance, p);
+	if (uparams.num == 0)
+		msg_write("no inst...dfljgkldfjg");
+	set_command(uparams[0], p);
 }
 
-void Node::set_num_params(int n) {
-	params.resize(n);
+void Node::set_num_uparams(int n) {
+	uparams.resize(n);
 }
 
-void Node::set_param(int index, Node *p) {
-	/*if ((index < 0) or (index >= params.num)){
+void Node::set_uparam(int index, Node *p) {
+	/*if ((index < 0) or (index >= uparams.num)){
 		show();
 		throw Exception(format("internal: Node.set_param...  %d %d", index, params.num), "", 0);
 	}*/
-	set_command(params[index], p);
+	set_command(uparams[index], p);
 }
+
 
 }
 

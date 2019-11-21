@@ -9,12 +9,12 @@ void main()
 	
 	data_model.BeginActionGroup("CreateGon")
 	
-	data_model.AddVertex(v_0, 0, -1)
-	data_model.AddVertex(e_z * height, 0, -1)
+	data_model.AddVertex(vector.0, 0, -1)
+	data_model.AddVertex(vector.EZ * height, 0, -1)
 	for i in 0:N
-		float w = i2f(i) * 2 * pi / N
+		float w = float(i) * 2 * pi / N
 		data_model.AddVertex(vector(cos(w), sin(w), 0) * R, 0, -1)
-		data_model.AddVertex(vector(cos(w), sin(w), 0) * R + e_z * height, 0, -1)
+		data_model.AddVertex(vector(cos(w), sin(w), 0) * R + vector.EZ * height, 0, -1)
 	
 	int[] v
 	for i in 0:N
