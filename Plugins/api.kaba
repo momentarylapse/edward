@@ -388,10 +388,67 @@ class DataWorld extends Data
 	extern WorldTerrain *add_terrain(string filename, vector pos)
 	extern WorldTerrain *add_new_terrain(vector pos, vector size, int num_x, int num_z)
 
+enum
+	ACTION_SELECT
+	ACTION_MOVE
+	ACTION_ROTATE
+	ACTION_ROTATE_2D
+	ACTION_SCALE
+	ACTION_SCALE_2D
+	ACTION_MIRROR
+	ACTION_ONCE
+
+enum
+	ACTION_CONSTRAINTS_NONE
+	ACTION_CONSTRAINTS_X
+	ACTION_CONSTRAINTS_Y
+	ACTION_CONSTRAINTS_Z
+	ACTION_CONSTRAINTS_XY
+	ACTION_CONSTRAINTS_XZ
+	ACTION_CONSTRAINTS_YZ
+
+class ActionController
+	extern void start_action(MultiViewWindow* win, int constraints)
+	extern void update_action()
+	extern void update_param(vector param)
+	extern void end_action(bool set)
+
+class MultiViewWindow
+	quaternion local_ang
+
+class MultiView
+	#extern void on_mouse_move()
+	#extern void set_mouse_action(string name, int type, bool locked) #"ActionModelAnimationTransformBones", mouse_action, false);
+	ActionController* action_con
+	MultiViewWindow* mouse_win
+	MultiViewWindow* active_win
+
+class Mode
+	string name
+	MultiView* multi_view
+
+class Edward
+	Mode* cur_mode
+
+
+
+class PSMoveController
+	vector pos, acc, rot
+	quaternion ang, dang
+	float trigger
+	float rumble
+	bool[8] button # triangle, circle, cross, square, select, start, PS, ---
+	color color
+extern PSMoveController[] psmoves
+extern void psmove_init_tracker()
+extern void psmove_kill_tracker()
+extern void psmove_update_tracker()
+
 
 extern DataModel* data_model
-extern DataWorld *data_world
-extern Window *edward
+extern DataWorld* data_world
+extern Window* edward
+extern Edward* ed
 
 extern int GeometrySubtract(Geometry a, Geometry b, Geometry out)
 extern int GeometryAnd(Geometry a, Geometry b, Geometry out)

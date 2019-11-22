@@ -27,6 +27,16 @@ else
 	add_project_arguments('-DHAS_LIB_UNWIND=0', language : ['cpp'])
 endif
 
+# optional dependency: psmove
+d1 = cc.find_library('psmoveapi', required : false)
+d2 = cc.find_library('psmoveapi_tracker', required : false)
+if d1.found() and d2.found()
+	add_project_arguments('-DHAS_LIB_PSMOVE=1', language : ['cpp'])
+	deps += [d1,d2]
+else
+	add_project_arguments('-DHAS_LIB_PSMOVE=0', language : ['cpp'])
+endif
+
 
 sources = [
 	'src/Action/Font/ActionFontEditGlobal.cpp',

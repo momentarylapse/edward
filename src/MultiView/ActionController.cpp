@@ -57,7 +57,7 @@ ActionController::ActionController(MultiView *view)
 	geo_show.add(new GeometryCylinder( vector::EZ*r0,  vector::EZ*r1, r, 1, 8));
 
 	for (auto g: geo_show){
-		nix::VertexBuffer *vb = new nix::VertexBuffer(1);
+		auto *vb = new nix::VertexBuffer(1);
 		g->build(vb);
 		buf.add(vb);
 	}
@@ -70,17 +70,17 @@ ActionController::~ActionController()
 	deleteGeo();
 }
 
-void ActionController::startAction(int _constraints)
+void ActionController::start_action(Window *_win, int _constraints)
 {
 	if (cur_action)
-		endAction(false);
+		end_action(false);
 	if (!multi_view->allow_mouse_actions)
 		return;
 	if (action.name == "")
 		return;
 
 	mat = matrix::ID;
-
+	active_win = _win;
 	m0 = multi_view->hover.point;
 	pos0 = pos;
 	constraints = _constraints;
@@ -92,12 +92,11 @@ void ActionController::startAction(int _constraints)
 }
 
 
-vector transform_ang(MultiView *mv, const vector &ang)
+vector transform_ang(Window *w, const vector &ang)
 {
-	quaternion qmv, qang, q;
-	qmv =  mv->active_win->local_ang;
-	qang = quaternion::rotation_v( ang);
-	q = qmv * qang * qmv.bar();
+	auto qmv =  w->local_ang;
+	auto qang = quaternion::rotation_v( ang);
+	auto q = qmv * qang * qmv.bar();
 	return q.get_angles();
 }
 
@@ -134,51 +133,69 @@ vector mvac_mirror(int mode)
 	return vector::EX;
 }
 
-void ActionController::updateAction()
+void ActionController::update_action()
 {
 	if (!cur_action)
 		return;
 
 	vector v2p = multi_view->m;
-	vector v2  = multi_view->active_win->unproject(v2p, m0);
+	vector v2  = active_win->unproject(v2p, m0);
 	vector v1  = m0;
-	vector v1p = multi_view->active_win->project(v1);
-	vector dir = multi_view->active_win->getDirection();
-	matrix m_dt, m_dti;
-	m_dt = matrix::translation( pos0);
-	m_dti = matrix::translation( -pos0);
+	vector v1p = active_win->project(v1);
+	vector dir = active_win->getDirection();
+	vector _param = v_0;
+	auto m_dt = matrix::translation( pos0);
+	auto m_dti = matrix::translation( -pos0);
 	if (action.mode == ACTION_MOVE){
-		param = mvac_project_trans(constraints, v2 - v1);
+		_param = mvac_project_trans(constraints, v2 - v1);
 		if (multi_view->snap_to_grid)
-			param = snap_v(multi_view, param);
+			_param = snap_v(multi_view, param);
+	}else if (action.mode == ACTION_ROTATE){
+		//_param = mvac_project_trans(constraints, v2 - v1) * 0.003f * multi_view->active_win->zoom();
+		_param = mvac_project_trans(constraints, (v2 - v1) ^ dir) * 0.003f * multi_view->active_win->zoom();
+		if (constraints == ACTION_CONSTRAINTS_NONE)
+			_param = transform_ang(active_win, vector(v1p.y - v2p.y, v1p.x - v2p.x, 0) * 0.003f);
+		if (multi_view->snap_to_grid)
+			_param = snap_v2(param, pi / 180.0);
+	}else if (action.mode == ACTION_SCALE){
+		_param = vector(1, 1, 1) + mvac_project_trans(constraints, v2 - v1) * 0.01f * multi_view->active_win->zoom();
+		if (constraints == ACTION_CONSTRAINTS_NONE)
+			_param = vector(1, 1, 1) * (1 + (v2p - v1p).x * 0.01f);
+		if (multi_view->snap_to_grid)
+			_param = snap_v2(param, 0.01f);
+	}else if (action.mode == ACTION_MIRROR){
+		_param = mvac_mirror(constraints);
+		if (constraints == ACTION_CONSTRAINTS_NONE)
+			_param = active_win->getDirectionRight();
+	}else{
+		param = v_0;
+	}
+	update_param(_param);
+}
+
+void ActionController::update_param(const vector &_param)
+{
+	if (!cur_action)
+		return;
+
+	auto m_dt = matrix::translation( pos0);
+	auto m_dti = matrix::translation( -pos0);
+
+	param = _param;
+	if (action.mode == ACTION_MOVE){
 		mat = matrix::translation( param);
 	}else if (action.mode == ACTION_ROTATE){
-		//param = mvac_project_trans(constraints, v2 - v1) * 0.003f * multi_view->active_win->zoom();
-		param = mvac_project_trans(constraints, (v2 - v1) ^ dir) * 0.003f * multi_view->active_win->zoom();
-		if (constraints == ACTION_CONSTRAINTS_NONE)
-			param = transform_ang(multi_view, vector(v1p.y - v2p.y, v1p.x - v2p.x, 0) * 0.003f);
-		if (multi_view->snap_to_grid)
-			param = snap_v2(param, pi / 180.0);
 		mat = matrix::rotation( param);
 		mat = m_dt * mat * m_dti;
 	}else if (action.mode == ACTION_SCALE){
-		param = vector(1, 1, 1) + mvac_project_trans(constraints, v2 - v1) * 0.01f * multi_view->active_win->zoom();
-		if (constraints == ACTION_CONSTRAINTS_NONE)
-			param = vector(1, 1, 1) * (1 + (v2p - v1p).x * 0.01f);
-		if (multi_view->snap_to_grid)
-			param = snap_v2(param, 0.01f);
 		mat = matrix::scale( param.x, param.y, param.z);
 		mat = m_dt * mat * m_dti;
 	}else if (action.mode == ACTION_MIRROR){
-		param = mvac_mirror(constraints);
-		if (constraints == ACTION_CONSTRAINTS_NONE)
-			param = multi_view->active_win->getDirectionRight();
 		plane pl;
 		pl = plane::from_point_normal( v_0, param);
 		mat = matrix::reflection( pl);
 		mat = m_dt * mat * m_dti;
 	}else{
-		param = v_0;
 		mat = matrix::ID;
 	}
 	cur_action->update_and_notify(data, mat);
@@ -190,7 +207,7 @@ void ActionController::updateAction()
 
 
 
-void ActionController::endAction(bool set)
+void ActionController::end_action(bool set)
 {
 	if (!cur_action)
 		return;
@@ -442,11 +459,11 @@ bool ActionController::leftButtonDown()
 		return false;
 	vector tp;
 	if (isMouseOver(multi_view->hover.point)){
-		startAction(mouse_over_constraint);
+		start_action(multi_view->active_win, mouse_over_constraint);
 		return true;
 	}
 	if (multi_view->hover.index >= 0){
-		startAction(ACTION_CONSTRAINTS_NONE);
+		start_action(multi_view->active_win, ACTION_CONSTRAINTS_NONE);
 		return true;
 	}
 	return false;
@@ -454,7 +471,7 @@ bool ActionController::leftButtonDown()
 
 void ActionController::leftButtonUp()
 {
-	endAction(true);
+	end_action(true);
 
 	update();
 }
@@ -466,7 +483,7 @@ bool ActionController::inUse()
 
 void ActionController::mouseMove()
 {
-	updateAction();
+	update_action();
 }
 
 };

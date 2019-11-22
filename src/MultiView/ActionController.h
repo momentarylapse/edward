@@ -68,6 +68,7 @@ public:
 	matrix geo_mat;
 	int mouse_over_constraint;
 	MultiView *multi_view;
+	Window *active_win;
 	MouseAction action;
 	ActionMultiView *cur_action;
 	Data *data;
@@ -82,9 +83,10 @@ public:
 	void leftButtonUp();
 	bool isMouseOver(vector &tp);
 	bool inUse();
-	void startAction(int constraints);
-	void updateAction();
-	void endAction(bool set);
+	void start_action(Window *active_win, int constraints);
+	void update_action();
+	void update_param(const vector &p);
+	void end_action(bool set);
 	bool isSelecting();
 };
 

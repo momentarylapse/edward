@@ -10,6 +10,8 @@
 #include "../lib/kaba/kaba.h"
 #include "../Edward.h"
 #include "../MultiView/MultiView.h"
+#include "../MultiView/ActionController.h"
+#include "../MultiView/Window.h"
 #include "../Mode/Model/ModeModel.h"
 #include "../Mode/World/ModeWorld.h"
 #include "../Data/Model/Geometry/GeometryBall.h"
@@ -21,6 +23,192 @@
 #include "../Data/Model/Geometry/GeometryTeapot.h"
 #include "../Data/Model/Geometry/GeometryTorus.h"
 #include "../Data/Model/Geometry/GeometryTorusKnot.h"
+
+#define HAS_LIB_PSMOVEAPI 1
+
+
+#if HAS_LIB_PSMOVEAPI
+
+//#include <psmoveapi/psmoveapi.h>
+#include <psmoveapi/psmove.h>
+#include <psmoveapi/psmove_tracker.h>
+#include <psmoveapi/psmove_fusion.h>
+
+
+PSMoveTracker *m_tracker = NULL;
+PSMoveFusion *m_fusion = NULL;
+
+struct MyPSMoveController {
+	PSMove* psmove;
+	vector pos, dpos, pos_last;
+	vector acc, rot, mag;
+	color col;
+	quaternion ang, dang;
+	float trigger, rumble;
+	bool button[8];
+	MyPSMoveController() {}
+	MyPSMoveController(PSMove *m) {
+		psmove = m;
+		col = Black;
+		rumble = 0;
+		trigger = 0;
+		ang = quaternion::ID;
+		dang = quaternion::ID;
+	}
+
+	void update() {
+		if (!psmove)
+			return;
+
+		while (psmove_poll(psmove)) {}
+
+		psmove_fusion_get_position(m_fusion, psmove, &pos.x, &pos.y, &pos.z);
+		pos.y = - pos.y;
+
+		dpos = pos - pos_last;
+		pos_last = pos;
+
+		matrix *mat = (matrix*)psmove_fusion_get_modelview_matrix(m_fusion, psmove);
+		matrix s = matrix::scale( 1,  1,  -1);
+		quaternion q = quaternion::rotation_m( s * *mat * s);
+		dang = ang * q;
+		ang = q.bar();
+		//ang = quaternion::rotation_m( *mat);
+
+		psmove_set_rumble(psmove, rumble*255);
+		trigger = (float)psmove_get_trigger(psmove) / 255.0f;
+
+		psmove_get_accelerometer_frame(psmove, Frame_SecondHalf, &acc.x, &acc.y, &acc.z);
+		acc.y = - acc.y;
+		psmove_get_gyroscope_frame(psmove, Frame_SecondHalf, &rot.x, &rot.y, &rot.z);
+		rot.y = - rot.y;
+
+		int _buttons = psmove_get_buttons(psmove);
+		button[0] = ((_buttons & Btn_TRIANGLE) != 0);
+		button[1] = ((_buttons & Btn_CIRCLE) != 0);
+		button[2] = ((_buttons & Btn_CROSS) != 0);
+		button[3] = ((_buttons & Btn_SQUARE) != 0);
+		button[4] = ((_buttons & Btn_SELECT) != 0);
+		button[5] = ((_buttons & Btn_START) != 0);
+		button[6] = ((_buttons & Btn_PS) != 0);
+	}
+
+	void reset_orientation()
+	{
+		psmove_reset_orientation(psmove);
+		ang = quaternion::ID;
+	}
+};
+Array<MyPSMoveController> psmoves;
+
+void _psmove_init_tracker()
+{
+	if (m_tracker)
+		return;
+	int count = min(1, psmove_count_connected());
+	m_tracker = psmove_tracker_new();
+	m_fusion = psmove_fusion_new(m_tracker, 1., 1000.);
+	psmove_tracker_set_mirror(m_tracker, PSMove_True);
+	psmove_tracker_set_exposure(m_tracker, Exposure_LOW);
+	for (int i=0; i<count; i++) {
+		msg_write("psmove controller found: " + i2s(i));
+		PSMove *m = psmove_connect_by_id(i);
+
+		psmove_enable_orientation(m, PSMove_True);
+		if (!psmove_has_orientation(m))
+			msg_error("psmove without orientation");
+
+		msg_write("registering for tracking...");
+		while (psmove_tracker_enable(m_tracker, m) != Tracker_CALIBRATED);
+		msg_write("  ok");
+		psmove_reset_orientation(m);
+		psmoves.add(MyPSMoveController(m));
+	}
+}
+
+void _psmove_kill_tracker()
+{
+	psmoves.clear();
+	if (m_fusion)
+		psmove_fusion_free(m_fusion);
+	if (m_tracker)
+		psmove_tracker_free(m_tracker);
+}
+
+void _psmove_update_tracker()
+{
+	if (!m_tracker)
+		return;
+	for (auto &c: psmoves)
+		c.update();
+
+	psmove_tracker_update_image(m_tracker);
+	psmove_tracker_update(m_tracker, NULL);
+}
+
+
+#if 0
+struct ExampleHandler : public psmoveapi::Handler {
+    ExampleHandler() : color{0.f, 0.f, 0.f} , rumble(0.f), interactive(false) {}
+
+    virtual void connect(Controller *controller) {
+        printf("Connect: %s\n", controller->serial);
+    }
+
+    virtual void update(Controller *controller) {
+        if (!interactive) {
+            controller->color = color;
+            controller->rumble = rumble;
+        } else {
+            if ((controller->buttons & Btn_TRIANGLE) != 0) {
+                //printf("Triangle pressed, with trigger value: %.2f\n", controller->trigger);
+                controller->rumble = controller->trigger;
+            } else {
+                controller->rumble = 0.f;
+            }
+
+            controller->color = { 0.f, 0.f, controller->trigger };
+
+            /*printf("Accel: %.2f, %.2f, %.2f\n", controller->accelerometer.x, controller->accelerometer.y, controller->accelerometer.z);
+            printf("Gyro: %.2f, %.2f, %.2f\n", controller->gyroscope.x, controller->gyroscope.y, controller->gyroscope.z);
+            printf("Magnetometer: %.2f, %.2f, %.2f\n", controller->magnetometer.x, controller->magnetometer.y, controller->magnetometer.z);
+            printf("Connection [%c] USB [%c] Bluetooth; Buttons: 0x%04x\n", controller->usb ? 'x' : ' ', controller->bluetooth ? 'x' : ' ', controller->buttons);*/
+
+            psm_controller.trigger = controller->trigger;
+            controller->rumble = psm_controller.rumble;
+            controller->color = {psm_controller.col.r, psm_controller.col.g, psm_controller.col.b};
+            psm_controller.accel = vector(-controller->accelerometer.x, controller->accelerometer.y, controller->accelerometer.z);
+            psm_controller.gyro = vector(-controller->gyroscope.x, controller->gyroscope.y, controller->gyroscope.z);
+            psm_controller.mag = vector(-controller->magnetometer.x, controller->magnetometer.y, controller->magnetometer.z);
+            psm_controller.button[0] = ((controller->buttons & Btn_TRIANGLE) != 0);
+            psm_controller.button[1] = ((controller->buttons & Btn_CIRCLE) != 0);
+            psm_controller.button[2] = ((controller->buttons & Btn_CROSS) != 0);
+            psm_controller.button[3] = ((controller->buttons & Btn_SQUARE) != 0);
+            psm_controller.button[4] = ((controller->buttons & Btn_SELECT) != 0);
+            psm_controller.button[5] = ((controller->buttons & Btn_START) != 0);
+            psm_controller.button[6] = ((controller->buttons & Btn_PS) != 0);
+        }
+    }
+
+    virtual void disconnect(Controller *controller) {
+        printf("Disconnect: %s\n", controller->serial);
+    }
+
+    RGB color;
+    float rumble;
+    bool interactive;
+};
+
+ExampleHandler *psmove_handler = NULL;
+psmoveapi::PSMoveAPI *psmove_api = NULL;
+#endif
+
+
+#endif
+
+
+
+
 
 PluginManager::PluginManager()
 {
@@ -44,7 +232,7 @@ void PluginManager::execute(const string & filename)
 		ed->error_box(e.message());
 	}
 
-	Kaba::DeleteAllScripts(true, true);
+	//Kaba::DeleteAllScripts(true, true);
 }
 
 #define _offsetof(t, x)	((int)(long)((char*)&(((t*)ppp)->x) - ppp))
@@ -56,9 +244,34 @@ void PluginManager::init() {
 
 	GlobalMainWin = ed;
 
+	Kaba::link_external("psmoves", &psmoves);
+
+
+	Kaba::declare_class_size("PSMoveController", sizeof(MyPSMoveController));
+	Kaba::declare_class_element("PSMoveController.pos", &MyPSMoveController::pos);
+	Kaba::declare_class_element("PSMoveController.acc", &MyPSMoveController::acc);
+	Kaba::declare_class_element("PSMoveController.rot", &MyPSMoveController::rot);
+	Kaba::declare_class_element("PSMoveController.ang", &MyPSMoveController::ang);
+	Kaba::declare_class_element("PSMoveController.dang", &MyPSMoveController::dang);
+	Kaba::declare_class_element("PSMoveController.trigger", &MyPSMoveController::trigger);
+	Kaba::declare_class_element("PSMoveController.rumble", &MyPSMoveController::rumble);
+	Kaba::declare_class_element("PSMoveController.button", &MyPSMoveController::button);
+	Kaba::declare_class_element("PSMoveController.color", &MyPSMoveController::col);
+	Kaba::link_external("psmove_init_tracker", (void*)&_psmove_init_tracker);
+	Kaba::link_external("psmove_kill_tracker", (void*)&_psmove_kill_tracker);
+	Kaba::link_external("psmove_update_tracker", (void*)&_psmove_update_tracker);
+
+
+
 	Kaba::link_external("edward", &GlobalMainWin);
+	Kaba::link_external("ed", &ed);
 	Kaba::link_external("data_model", &mode_model->data);
 	Kaba::link_external("data_world", &mode_world->data);
+
+	Kaba::declare_class_element("Edward.cur_mode", &Edward::cur_mode);
+
+	Kaba::declare_class_element("Mode.name", &ModeBase::name);
+	Kaba::declare_class_element("Mode.multi_view", &ModeBase::multi_view);
 
 	Kaba::declare_class_size("Observable", sizeof(Observable));
 	//Kaba::declare_class_element("Observable.observable_name", offsetof(Observable, observable_name));
@@ -78,6 +291,19 @@ void PluginManager::init() {
 	Kaba::declare_class_element("MultiViewSingleData.m_delta", &MultiView::SingleData::m_delta);
 	Kaba::declare_class_element("MultiViewSingleData.m_old", &MultiView::SingleData::m_old);
 	Kaba::declare_class_element("MultiViewSingleData.is_special", &MultiView::SingleData::is_special);
+
+
+	Kaba::declare_class_element("MultiView.action_con", &MultiView::MultiView::action_con);
+	Kaba::declare_class_element("MultiView.active_win", &MultiView::MultiView::active_win);
+	Kaba::declare_class_element("MultiView.mouse_win", &MultiView::MultiView::mouse_win);
+	//Kaba::link_external_class_func("MultiView.")
+
+	Kaba::declare_class_element("MultiViewWindow.local_ang", &MultiView::Window::local_ang);
+
+	Kaba::link_external_class_func("ActionController.start_action", &MultiView::ActionController::start_action);
+	Kaba::link_external_class_func("ActionController.update_action", &MultiView::ActionController::update_action);
+	Kaba::link_external_class_func("ActionController.update_param", &MultiView::ActionController::update_param);
+	Kaba::link_external_class_func("ActionController.end_action", &MultiView::ActionController::end_action);
 
 	// model
 

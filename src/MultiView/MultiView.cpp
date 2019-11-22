@@ -432,7 +432,7 @@ void MultiView::on_key_down(int k)
 	if (k == hui::KEY_SHIFT + hui::KEY_DOWN)
 		camMove(-vector::EZ * SPEED_MOVE);
 	if (k == hui::KEY_ESCAPE)
-		action_con->endAction(false);
+		action_con->end_action(false);
 	if (k == hui::KEY_TAB)
 		activate_next_window(this);
 	notify_end();
@@ -472,12 +472,12 @@ void MultiView::on_left_button_down()
 					sel_rect.start_later(m);
 				}
 			}else if (allow_mouse_actions and hoverSelected()){
-				action_con->startAction(ACTION_CONSTRAINTS_NONE);
+				action_con->start_action(active_win, ACTION_CONSTRAINTS_NONE);
 			}
 		}else{
 			if (allow_select){
 				if (hoverSelected() and (get_select_mode() == MultiView::SELECT_SET)){
-					action_con->startAction(ACTION_CONSTRAINTS_NONE);
+					action_con->start_action(active_win, ACTION_CONSTRAINTS_NONE);
 				}else{
 					getSelected(get_select_mode());
 					sel_rect.start_later(m);
