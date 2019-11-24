@@ -70,7 +70,7 @@ ActionController::~ActionController()
 	deleteGeo();
 }
 
-void ActionController::start_action(Window *_win, int _constraints)
+void ActionController::start_action(Window *_win, const vector &_m, int _constraints)
 {
 	if (cur_action)
 		end_action(false);
@@ -81,11 +81,11 @@ void ActionController::start_action(Window *_win, int _constraints)
 
 	mat = matrix::ID;
 	active_win = _win;
-	m0 = multi_view->hover.point;
+	m0 = _m;
 	pos0 = pos;
 	constraints = _constraints;
 	if (constraints == ACTION_CONSTRAINTS_NONE)
-		pos0 = multi_view->hover.point;
+		pos0 = m0;
 	cur_action = ActionMultiViewFactory(action.name, data);
 	cur_action->execute_logged(data);
 	multi_view->notify(multi_view->MESSAGE_ACTION_START);
@@ -260,9 +260,8 @@ void ActionController::update()
 	float f = multi_view->cam.radius * 0.15f;
 	if (multi_view->whole_window)
 		f /= 2;
-	matrix s, t;
-	s = matrix::scale( f, f, f);
-	t = matrix::translation( pos);
+	auto s = matrix::scale(f, f, f);
+	auto t = matrix::translation(pos);
 	geo_mat = t * s;
 
 	ed->force_redraw();
@@ -457,13 +456,13 @@ bool ActionController::leftButtonDown()
 {
 	if (!visible and action.locked)
 		return false;
-	vector tp;
-	if (isMouseOver(multi_view->hover.point)){
-		start_action(multi_view->active_win, mouse_over_constraint);
+	vector hp = multi_view->hover.point;
+	if (isMouseOver(hp)){
+		start_action(multi_view->active_win, hp, mouse_over_constraint);
 		return true;
 	}
 	if (multi_view->hover.index >= 0){
-		start_action(multi_view->active_win, ACTION_CONSTRAINTS_NONE);
+		start_action(multi_view->active_win, hp, ACTION_CONSTRAINTS_NONE);
 		return true;
 	}
 	return false;

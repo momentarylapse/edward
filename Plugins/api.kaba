@@ -408,13 +408,18 @@ enum
 	ACTION_CONSTRAINTS_YZ
 
 class ActionController
-	extern void start_action(MultiViewWindow* win, int constraints)
+	extern void start_action(MultiViewWindow* win, vector m, int constraints)
 	extern void update_action()
 	extern void update_param(vector param)
 	extern void end_action(bool set)
+	vector pos
 
 class MultiViewWindow
 	quaternion local_ang
+
+class MultiViewCamera
+	vector pos
+	quaternion ang
 
 class MultiView
 	#extern void on_mouse_move()
@@ -422,6 +427,10 @@ class MultiView
 	ActionController* action_con
 	MultiViewWindow* mouse_win
 	MultiViewWindow* active_win
+	MultiViewCamera cam
+	extern void cam_move(vector dpos)
+	extern void cam_rotate(quaternion dq, bool cam_center)
+	extern void cam_zoom(float factor, bool mouse_rel)
 
 class Mode
 	string name

@@ -91,6 +91,7 @@ struct MyPSMoveController {
 		button[4] = ((_buttons & Btn_SELECT) != 0);
 		button[5] = ((_buttons & Btn_START) != 0);
 		button[6] = ((_buttons & Btn_PS) != 0);
+		button[7] = ((_buttons & Btn_MOVE) != 0);
 	}
 
 	void reset_orientation()
@@ -296,7 +297,10 @@ void PluginManager::init() {
 	Kaba::declare_class_element("MultiView.action_con", &MultiView::MultiView::action_con);
 	Kaba::declare_class_element("MultiView.active_win", &MultiView::MultiView::active_win);
 	Kaba::declare_class_element("MultiView.mouse_win", &MultiView::MultiView::mouse_win);
-	//Kaba::link_external_class_func("MultiView.")
+	Kaba::declare_class_element("MultiView.cam", &MultiView::MultiView::cam);
+	Kaba::link_external_class_func("MultiView.cam_move", &MultiView::MultiView::cam_move);
+	Kaba::link_external_class_func("MultiView.cam_rotate", &MultiView::MultiView::cam_rotate);
+	Kaba::link_external_class_func("MultiView.cam_zoom", &MultiView::MultiView::cam_zoom);
 
 	Kaba::declare_class_element("MultiViewWindow.local_ang", &MultiView::Window::local_ang);
 
@@ -304,6 +308,7 @@ void PluginManager::init() {
 	Kaba::link_external_class_func("ActionController.update_action", &MultiView::ActionController::update_action);
 	Kaba::link_external_class_func("ActionController.update_param", &MultiView::ActionController::update_param);
 	Kaba::link_external_class_func("ActionController.end_action", &MultiView::ActionController::end_action);
+	Kaba::declare_class_element("ActionController.pos", &MultiView::ActionController::pos);
 
 	// model
 

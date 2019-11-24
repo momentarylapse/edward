@@ -90,11 +90,11 @@ void CameraController::onLeftButtonUp()
 void CameraController::onMouseMove()
 {
 	if (moving)
-		view->camMove(vector(view->v.x, view->v.y, 0));
+		view->cam_move_pixel(vector(view->v.x, view->v.y, 0));
 	if (rotating)
-		view->camRotate(view->v, false);
+		view->cam_rotate_pixel(view->v, false);
 	if (zooming)
-		view->camZoom(pow(1.007f, view->v.y), false);
+		view->cam_zoom(pow(1.007f, view->v.y), false);
 }
 
 void CameraController::draw_icon(const rect &rr, nix::Texture *tex, bool active)

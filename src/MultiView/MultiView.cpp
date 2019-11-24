@@ -250,7 +250,7 @@ void MultiView::SetViewStage(int *view_stage, bool allow_handle)
 
 
 
-void MultiView::camZoom(float factor, bool mouse_rel)
+void MultiView::cam_zoom(float factor, bool mouse_rel)
 {
 	vector mup;
 	if (mouse_rel)
@@ -263,24 +263,26 @@ void MultiView::camZoom(float factor, bool mouse_rel)
 }
 
 // dir: screen pixels
-void MultiView::camMove(const vector &dir)
-{
+void MultiView::cam_move_pixel(const vector &dir) {
 	vector d = active_win->reflection_matrix * dir;
-	cam.pos -= (active_win->local_ang * d) / active_win->zoom();
+	cam_move(-(active_win->local_ang * d) / active_win->zoom());
+}
 
+void MultiView::cam_move(const vector &dpos) {
+	cam.pos += dpos;
 	notify(MESSAGE_CAMERA_CHANGE);
 }
 
 // dir: screen pixels...yap
-void MultiView::camRotate(const vector &dir, bool cam_center)
-{
+void MultiView::cam_rotate_pixel(const vector &dir, bool cam_center) {
 	vector dang = vector(dir.y, dir.x, 0) * MOUSE_ROTATION_SPEED;
 	// could have used reflection_matrix... but...only VIEW_PERSPECTIVE...
+	cam_rotate(quaternion::rotation_v(dang), cam_center);
+}
 
+void MultiView::cam_rotate(const quaternion &dq, bool cam_center) {
 	if (cam_center)
 		cam.pos -= cam.radius * (cam.ang * vector::EZ);
-	quaternion dq;
-	dq = quaternion::rotation_v( dang);
 	cam.ang = cam.ang * dq;
 	if (cam_center)
 		cam.pos += cam.radius * (cam.ang * vector::EZ);
@@ -380,9 +382,9 @@ void MultiView::on_mouse_wheel()
 
 	// mouse wheel -> zoom
 	if (e->scroll_y > 0)
-		camZoom(SPEED_ZOOM_WHEEL, mouse_win->type != VIEW_PERSPECTIVE);
+		cam_zoom(SPEED_ZOOM_WHEEL, mouse_win->type != VIEW_PERSPECTIVE);
 	if (e->scroll_y < 0)
-		camZoom(1.0f / SPEED_ZOOM_WHEEL, mouse_win->type != VIEW_PERSPECTIVE);
+		cam_zoom(1.0f / SPEED_ZOOM_WHEEL, mouse_win->type != VIEW_PERSPECTIVE);
 	notify_end();
 }
 
@@ -416,21 +418,21 @@ void MultiView::on_key_down(int k)
 	notify_begin();
 
 	if ((k == hui::KEY_ADD) or (k == hui::KEY_NUM_ADD))
-		camZoom(SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
+		cam_zoom(SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
 	if ((k == hui::KEY_SUBTRACT) or (k == hui::KEY_NUM_SUBTRACT))
-		camZoom(1.0f / SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
+		cam_zoom(1.0f / SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
 	if (k == hui::KEY_RIGHT)
-		camMove(-vector::EX * SPEED_MOVE);
+		cam_move_pixel(-vector::EX * SPEED_MOVE);
 	if (k == hui::KEY_LEFT)
-		camMove( vector::EX * SPEED_MOVE);
+		cam_move_pixel( vector::EX * SPEED_MOVE);
 	if (k == hui::KEY_UP)
-		camMove( vector::EY * SPEED_MOVE);
+		cam_move_pixel( vector::EY * SPEED_MOVE);
 	if (k == hui::KEY_DOWN)
-		camMove(-vector::EY * SPEED_MOVE);
+		cam_move_pixel(-vector::EY * SPEED_MOVE);
 	if (k == hui::KEY_SHIFT + hui::KEY_UP)
-		camMove( vector::EZ * SPEED_MOVE);
+		cam_move_pixel( vector::EZ * SPEED_MOVE);
 	if (k == hui::KEY_SHIFT + hui::KEY_DOWN)
-		camMove(-vector::EZ * SPEED_MOVE);
+		cam_move_pixel(-vector::EZ * SPEED_MOVE);
 	if (k == hui::KEY_ESCAPE)
 		action_con->end_action(false);
 	if (k == hui::KEY_TAB)
@@ -472,12 +474,12 @@ void MultiView::on_left_button_down()
 					sel_rect.start_later(m);
 				}
 			}else if (allow_mouse_actions and hoverSelected()){
-				action_con->start_action(active_win, ACTION_CONSTRAINTS_NONE);
+				action_con->start_action(active_win, hover.point, ACTION_CONSTRAINTS_NONE);
 			}
 		}else{
 			if (allow_select){
 				if (hoverSelected() and (get_select_mode() == MultiView::SELECT_SET)){
-					action_con->start_action(active_win, ACTION_CONSTRAINTS_NONE);
+					action_con->start_action(active_win, hover.point, ACTION_CONSTRAINTS_NONE);
 				}else{
 					getSelected(get_select_mode());
 					sel_rect.start_later(m);
@@ -612,10 +614,10 @@ void MultiView::on_mouse_move()
 		int t = active_win->type;
 		if ((t == VIEW_PERSPECTIVE) or (t == VIEW_ISOMETRIC)){
 	// camera rotation
-			camRotate(v, mbut or ed->get_key(hui::KEY_CONTROL));
+			cam_rotate_pixel(v, mbut or ed->get_key(hui::KEY_CONTROL));
 		}else{
 	// camera translation
-			camMove(v);
+			cam_move_pixel(v);
 		}
 	}else if (sel_rect.dist >= 0 and allow_select){
 		sel_rect.dist += abs(v.x) + abs(v.y);

@@ -2,44 +2,70 @@ use api
 use hui
 use thread
 
+enum
+	MODE_NONE
+	MODE_OBJECT_ROTATE  # triangle
+	MODE_CAM_ROTATE     # trigger
+	MODE_CAM_ROTATE_EGO # move
+
 class X
-	bool holding
 	quaternion q0
 	ActionController* ac
+	MultiView* mv
 	MultiViewWindow* win
-	void __init__()
-		holding = false
+	int mode
 	
-	void start_grab(PSMoveController m)
-		print("start grab")
-		holding = true
-		ac = ed.cur_mode.multi_view.action_con
-		win = ed.cur_mode.multi_view.active_win
+	void __init__()
+		mode = MODE_NONE
+	
+	void start_grab(PSMoveController m, int _mode)
+		mode = _mode
+		mv = ed.cur_mode.multi_view
+		ac = mv.action_con
+		win = mv.active_win
 		q0 = rel_ang(m)
-		ac.start_action(win, 0)
+		if mode == MODE_OBJECT_ROTATE
+			ac.start_action(win, ac.pos, 0)
+		
 	void end_grab()
-		print("end grab")
-		holding = false
-		ac.end_action(true)
+		if mode == MODE_OBJECT_ROTATE
+			ac.end_action(true)
+		mode = MODE_NONE
 	quaternion rel_ang(PSMoveController m)
 		return m.ang * win.local_ang.bar()
 	void update_hold(PSMoveController m)
 		let qq = rel_ang(m) * q0.bar()
 		#print(qq.angles())
-		ac.update_param(qq.angles())
+		if mode == MODE_OBJECT_ROTATE
+			ac.update_param(qq.angles())
+		else if mode == MODE_CAM_ROTATE_EGO
+			mv.cam_rotate(m.dang, true)
+		else if mode == MODE_CAM_ROTATE
+			mv.cam_rotate(m.dang, false)
 	
 	void step()
 		psmove_update_tracker()
 		#if ed.cur_mode.name == "ModelAnimationSkeleton"
 		for m in psmoves
-			if holding
+			if mode == MODE_OBJECT_ROTATE
+				if !m.button[0]
+					end_grab()
+			else if mode == MODE_CAM_ROTATE
 				if m.trigger < 0.2
 					end_grab()
-				else
-					update_hold(m)
-			else
+			else if mode == MODE_CAM_ROTATE_EGO
+				if !m.button[7]
+					end_grab()
+			else #  MODE_NONE
 				if m.trigger > 0.7
-					start_grab(m)
+					start_grab(m, MODE_CAM_ROTATE)
+				else if m.button[7]
+					start_grab(m, MODE_CAM_ROTATE_EGO)
+				else if m.button[0]
+					start_grab(m, MODE_OBJECT_ROTATE)
+					
+			if mode > MODE_NONE
+				update_hold(m)
 			#print(str(m.button))
 			#print(m.ang)
 
@@ -47,7 +73,4 @@ void main()
 	psmove_init_tracker()
 	print("plugin: {{len(psmoves)}} controller found...")
 	let x = new X()
-	RunRepeated(0.07, x, X.step)
-
-void _main()
-	print(ed.cur_mode.name)
+	RunRepeated(0.03, x, X.step)

@@ -83,7 +83,7 @@ public:
 	void leftButtonUp();
 	bool isMouseOver(vector &tp);
 	bool inUse();
-	void start_action(Window *active_win, int constraints);
+	void start_action(Window *active_win, const vector &m, int constraints);
 	void update_action();
 	void update_param(const vector &p);
 	void end_action(bool set);

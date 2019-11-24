@@ -197,9 +197,11 @@ public:
 	void toggleLight();
 	void toggleWire();
 	void toggleSnapToGrid();
-	void camZoom(float factor, bool mouse_rel);
-	void camMove(const vector &dir);
-	void camRotate(const vector &dir, bool cam_center);
+	void cam_zoom(float factor, bool mouse_rel);
+	void cam_move(const vector &dpos);
+	void cam_move_pixel(const vector &dir);
+	void cam_rotate(const quaternion &dang, bool cam_center);
+	void cam_rotate_pixel(const vector &dir, bool cam_center);
 	void setMode(int mode);
 	void clearData(Data *_data);
 	void addData(int type, const DynamicArray &a, void *user_data, int flags);
