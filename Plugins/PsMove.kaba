@@ -23,7 +23,7 @@ class X
 		mv = ed.cur_mode.multi_view
 		ac = mv.action_con
 		win = mv.active_win
-		q0 = rel_ang(m)
+		q0 = m.ang#rel_ang(m)
 		if mode == MODE_OBJECT_ROTATE
 			ac.start_action(win, ac.pos, 0)
 		
@@ -32,9 +32,10 @@ class X
 			ac.end_action(true)
 		mode = MODE_NONE
 	quaternion rel_ang(PSMoveController m)
-		return m.ang * win.local_ang.bar()
+		return win.local_ang * (m.ang * q0.bar()) * win.local_ang.bar()
+		#return m.ang * win.local_ang.bar()
 	void update_hold(PSMoveController m)
-		let qq = rel_ang(m) * q0.bar()
+		let qq = rel_ang(m) # * q0.bar()
 		#print(qq.angles())
 		if mode == MODE_OBJECT_ROTATE
 			ac.update_param(qq.angles())
