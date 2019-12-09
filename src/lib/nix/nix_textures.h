@@ -19,17 +19,27 @@ void ReincarnateTextures();
 void ProgressTextureLifes();
 
 
+
 class Texture
 {
 public:
+	enum class Type {
+		DEFAULT,
+		DYNAMIC,
+		CUBE,
+		DEPTH,
+		IMAGE
+	};
+	Type type;
 	string filename;
 	int width, height;
-	bool is_dynamic, valid, is_cube_map;
+	bool valid;
 	int life_time;
 	
 	unsigned int texture;
 	unsigned int frame_buffer;
 	unsigned int depth_render_buffer;
+	unsigned int internal_format;
 
 	Image icon;
 
@@ -39,6 +49,8 @@ public:
 	void _cdecl __delete__();
 
 	void _cdecl overwrite(const Image &image);
+	void _cdecl read(Image &image);
+	void _cdecl read_float(Array<float> &data);
 	void _cdecl reload();
 	void _cdecl unload();
 	//void _cdecl set_video_frame(int frame);
@@ -50,6 +62,13 @@ class DynamicTexture : public Texture
 public:
 	DynamicTexture(int width, int height);
 	void _cdecl __init__(int width, int height);
+};
+
+class ImageTexture : public Texture
+{
+public:
+	ImageTexture(int width, int height, const string &format);
+	void _cdecl __init__(int width, int height, const string &format);
 };
 
 class DepthTexture : public Texture
