@@ -114,6 +114,7 @@ void _psmove_init_tracker()
 	for (int i=0; i<count; i++) {
 		msg_write("psmove controller found: " + i2s(i));
 		PSMove *m = psmove_connect_by_id(i);
+		msg_write(p2s(m));
 
 		psmove_enable_orientation(m, PSMove_True);
 		if (!psmove_has_orientation(m))
