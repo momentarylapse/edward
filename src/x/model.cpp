@@ -1168,10 +1168,9 @@ void Model::CalcMove(float elapsed)
 				b->cur_pos = bone[b->parent].dmatrix * b->pos;
 
 			// create matrices (model -> skeleton)
-			matrix t,r;
-			t = matrix::translation( b->cur_pos);
-			r = matrix::rotation_q( b->cur_ang);
-			MatrixMultiply(b->dmatrix, t, r);
+			auto t = matrix::translation(b->cur_pos);
+			auto r = matrix::rotation_q(b->cur_ang);
+			b->dmatrix = t * r;
 		}
 
 		// create the animated data
@@ -1226,7 +1225,7 @@ void Model::CalcMove(float elapsed)
 	// recursion
 	for (int i=0;i<bone.num;i++)
 		if (bone[i].model){
-			MatrixMultiply(bone[i].model->_matrix, _matrix, bone[i].dmatrix);
+			bone[i].model->_matrix = _matrix * bone[i].dmatrix;
 			bone[i].model->CalcMove(elapsed);
 		}
 }

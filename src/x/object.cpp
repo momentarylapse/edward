@@ -214,10 +214,9 @@ void Object::UpdateTheta()
 
 void Object::UpdateMatrix()
 {
-	matrix trans,rot;
-	rot = matrix::rotation_q( ang);
-	trans = matrix::translation( pos);
-	MatrixMultiply(_matrix, trans, rot);
+	auto rot = matrix::rotation_q( ang);
+	auto trans = matrix::translation( pos);
+	_matrix = trans * rot;
 }
 
 // scripts have to call this after 

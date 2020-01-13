@@ -119,7 +119,7 @@ void TerrainHeightmapDialog::OnPreviewDraw(Painter *c)
 					f *= im_interpolate(filter, hmx, hmy, 1, 1);
 				m.set_pixel(x, y, color(1, f, f, f));
 			}
-		c->draw_image(0, 0, m);
+		c->draw_image(0, 0, &m);
 	}
 }
 

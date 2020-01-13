@@ -84,8 +84,8 @@ void Camera::reset()
 	jump_to_pos = false;
 	auto_over = false;
 
-	MatrixIdentity(m_all);
-	MatrixIdentity(im_all);
+	m_all = matrix::ID;
+	im_all = matrix::ID;
 }
 
 Camera::Camera()
@@ -101,9 +101,8 @@ Camera::Camera()
 	xcon_reg(this, cameras);
 }
 
-Camera::Camera(const vector &_pos, const quaternion &_ang, const rect &_dest)
+Camera::Camera(const vector &_pos, const quaternion &_ang, const rect &_dest) : Camera()
 {
-	new(this) Camera;
 	pos = _pos;
 	ang = _ang;
 	dest = _dest;

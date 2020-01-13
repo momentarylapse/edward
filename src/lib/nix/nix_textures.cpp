@@ -311,9 +311,9 @@ void Texture::reload()
 			return;
 		#endif
 	}else{
-		Image image;
-		image.load(_filename);
-		overwrite(image);
+		auto image = Image::load(_filename);
+		overwrite(*image);
+		delete image;
 	}
 	life_time = 0;
 }
@@ -327,7 +327,7 @@ void OverwriteTexture__(Texture *t, int target, int subtarget, const Image &imag
 		avi_info[texture]=NULL;
 	#endif
 
-	image.set_mode(Image::ModeRGBA);
+	image.set_mode(Image::Mode::RGBA);
 
 	if (t->type == t->Type::CUBE)
 		target = GL_TEXTURE_CUBE_MAP;

@@ -16,7 +16,7 @@ GeometrySphere::GeometrySphere(const vector &pos, float radius, int num)
 	for (int f=0;f<6;f++){
 	//	nv = Vertex.num;
 		matrix mat;
-		if (f==0)	MatrixIdentity(mat);
+		if (f==0)	mat = matrix::ID;
 		if (f==1)	mat = matrix::rotation_x( pi/2);
 		if (f==2)	mat = matrix::rotation_x(-pi/2);
 		if (f==3)	mat = matrix::rotation_y( pi/2);
