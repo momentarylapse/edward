@@ -24,7 +24,7 @@
 #include "../Data/Model/Geometry/GeometryTorus.h"
 #include "../Data/Model/Geometry/GeometryTorusKnot.h"
 
-#define HAS_LIB_PSMOVEAPI 1
+//#define HAS_LIB_PSMOVEAPI 1
 
 
 #if HAS_LIB_PSMOVEAPI
@@ -246,6 +246,8 @@ void PluginManager::init() {
 
 	GlobalMainWin = ed;
 
+
+#if HAS_LIB_PSMOVEAPI
 	Kaba::link_external("psmoves", &psmoves);
 
 
@@ -262,7 +264,7 @@ void PluginManager::init() {
 	Kaba::link_external("psmove_init_tracker", (void*)&_psmove_init_tracker);
 	Kaba::link_external("psmove_kill_tracker", (void*)&_psmove_kill_tracker);
 	Kaba::link_external("psmove_update_tracker", (void*)&_psmove_update_tracker);
-
+#endif
 
 
 	Kaba::link_external("edward", &GlobalMainWin);
