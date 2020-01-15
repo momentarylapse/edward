@@ -19,28 +19,31 @@ public:
 	ModelMaterialDialog(DataModel *_data);
 	virtual ~ModelMaterialDialog();
 
-	void loadData();
-	void applyData();
-	void applyDataDelayed();
-	void fillMaterialList();
+	void load_data();
+	void apply_data();
+	void apply_data_delayed();
+	void fill_material_list();
 
-	void onMaterialList();
-	void onMaterialListSelect();
-	void onAddNewMaterial();
-	void onAddMaterial();
-	void onDeleteMaterial();
-	void onApplyMaterial();
+	void on_material_list();
+	void on_material_list_select();
+	void on_material_list_right_click();
+	void on_add_new_material();
+	void on_add_material();
+	void on_delete_material();
+	void on_apply_material();
 
-	void onDefaultColors();
+	void on_default_colors();
 
-	void onTextures();
-	void onTexturesSelect();
-	void onAddTextureLevel();
-	void onDeleteTextureLevel();
-	void onEmptyTextureLevel();
-	void onTransparencyMode();
+	void on_textures();
+	void on_textures_right_click();
+	void on_textures_select();
+	void on_texture_level_add();
+	void on_texture_level_delete();
+	void on_texture_level_clear();
+	void on_texture_level_load();
+	void on_transparency_mode();
 
-	void fillTextureList();
+	void fill_texture_list();
 
 	void on_update(Observable *o, const string &message) override;
 
@@ -48,6 +51,8 @@ private:
 	DataModel *data;
 	ModelMaterial temp;
 	int apply_queue_depth;
+	hui::Menu *popup_materials;
+	hui::Menu *popup_textures;
 };
 
 #endif /* MODELMATERIALDIALOG_H_ */

@@ -28,11 +28,8 @@ ModelMaterialDialog::ModelMaterialDialog(DataModel *_data) :
 	subscribe(mode_model_mesh);
 	subscribe(mode_model_mesh_texture);
 
-
-	set_tooltip("mat_textures", _("&Ubereinanderliegende Textur-Schichten (multitexturing)\n- Doppelklick um eine Texturdatei zu w&ahlen"));
-	set_tooltip("mat_add_texture_level", _("f&ugt eine weitere Textur-Schicht hinzu (multitexturing)"));
-	set_tooltip("mat_delete_texture_level", _("l&oscht die ausgew&ahlte Textur-Schicht"));
-	set_tooltip("mat_empty_texture_level", _("l&oscht die Textur der ausgew&ahlten Textur-Schicht"));
+	popup_materials = hui::CreateResourceMenu("model-material-list-popup");
+	popup_textures = hui::CreateResourceMenu("model-texture-list-popup");
 
 	set_tooltip("mat_am", _("Farbe des Objektes im Schatten (Umgebungslicht)"));
 	set_tooltip("mat_di", _("Farbe des Objektes bei direktem Licht"));
@@ -42,40 +39,43 @@ ModelMaterialDialog::ModelMaterialDialog(DataModel *_data) :
 
 	set_tooltip("transparency_mode:color_key", _("Reines Gr&un wird transparent"));
 
-	event("material_list", std::bind(&ModelMaterialDialog::onMaterialList, this));
-	event_x("material_list", "hui:select", std::bind(&ModelMaterialDialog::onMaterialListSelect, this));
-	event("add_new_material", std::bind(&ModelMaterialDialog::onAddNewMaterial, this));
-	event("add_material", std::bind(&ModelMaterialDialog::onAddMaterial, this));
-	event("delete_material", std::bind(&ModelMaterialDialog::onDeleteMaterial, this));
-	event("apply_material", std::bind(&ModelMaterialDialog::onApplyMaterial, this));
+	event("material_list", std::bind(&ModelMaterialDialog::on_material_list, this));
+	event_x("material_list", "hui:select", std::bind(&ModelMaterialDialog::on_material_list_select, this));
+	event_x("material_list", "hui:right-button-down", std::bind(&ModelMaterialDialog::on_material_list_right_click, this));
+	event("add_new_material", std::bind(&ModelMaterialDialog::on_add_new_material, this));
+	event("add_material", std::bind(&ModelMaterialDialog::on_add_material, this));
+	event("delete_material", std::bind(&ModelMaterialDialog::on_delete_material, this));
+	event("apply_material", std::bind(&ModelMaterialDialog::on_apply_material, this));
 
 
-	event("mat_add_texture_level", std::bind(&ModelMaterialDialog::onAddTextureLevel, this));
-	event("mat_textures", std::bind(&ModelMaterialDialog::onTextures, this));
-	event_x("mat_textures", "hui:select", std::bind(&ModelMaterialDialog::onTexturesSelect, this));
-	event("mat_delete_texture_level", std::bind(&ModelMaterialDialog::onDeleteTextureLevel, this));
-	event("mat_empty_texture_level", std::bind(&ModelMaterialDialog::onEmptyTextureLevel, this));
-	event("transparency_mode:material", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
-	event("transparency_mode:none", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
-	event("transparency_mode:function", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
-	event("transparency_mode:color_key", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
-	event("transparency_mode:factor", std::bind(&ModelMaterialDialog::onTransparencyMode, this));
+	event("texture-level-add", std::bind(&ModelMaterialDialog::on_texture_level_add, this));
+	event("mat_textures", std::bind(&ModelMaterialDialog::on_textures, this));
+	event_x("mat_textures", "hui:select", std::bind(&ModelMaterialDialog::on_textures_select, this));
+	event_x("mat_textures", "hui:right-button-down", std::bind(&ModelMaterialDialog::on_textures_right_click, this));
+	event("texture-level-delete", std::bind(&ModelMaterialDialog::on_texture_level_delete, this));
+	event("texture-level-clear", std::bind(&ModelMaterialDialog::on_texture_level_clear, this));
+	event("texture-level-load", std::bind(&ModelMaterialDialog::on_texture_level_load, this));
+	event("transparency_mode:material", std::bind(&ModelMaterialDialog::on_transparency_mode, this));
+	event("transparency_mode:none", std::bind(&ModelMaterialDialog::on_transparency_mode, this));
+	event("transparency_mode:function", std::bind(&ModelMaterialDialog::on_transparency_mode, this));
+	event("transparency_mode:color_key", std::bind(&ModelMaterialDialog::on_transparency_mode, this));
+	event("transparency_mode:factor", std::bind(&ModelMaterialDialog::on_transparency_mode, this));
 
-	event("default_colors", std::bind(&ModelMaterialDialog::onDefaultColors, this));
-	event("mat_am", std::bind(&ModelMaterialDialog::applyData, this));
-	event("mat_di", std::bind(&ModelMaterialDialog::applyData, this));
-	event("mat_sp", std::bind(&ModelMaterialDialog::applyData, this));
-	event("mat_em", std::bind(&ModelMaterialDialog::applyData, this));
-	event("mat_shininess", std::bind(&ModelMaterialDialog::applyDataDelayed, this));
+	event("default_colors", std::bind(&ModelMaterialDialog::on_default_colors, this));
+	event("mat_am", std::bind(&ModelMaterialDialog::apply_data, this));
+	event("mat_di", std::bind(&ModelMaterialDialog::apply_data, this));
+	event("mat_sp", std::bind(&ModelMaterialDialog::apply_data, this));
+	event("mat_em", std::bind(&ModelMaterialDialog::apply_data, this));
+	event("mat_shininess", std::bind(&ModelMaterialDialog::apply_data_delayed, this));
 
-	event("alpha_factor", std::bind(&ModelMaterialDialog::applyDataDelayed, this));
-	event("alpha_source", std::bind(&ModelMaterialDialog::applyDataDelayed, this));
-	event("alpha_dest", std::bind(&ModelMaterialDialog::applyDataDelayed, this));
-	event("alpha_z_buffer", std::bind(&ModelMaterialDialog::applyData, this));
+	event("alpha_factor", std::bind(&ModelMaterialDialog::apply_data_delayed, this));
+	event("alpha_source", std::bind(&ModelMaterialDialog::apply_data_delayed, this));
+	event("alpha_dest", std::bind(&ModelMaterialDialog::apply_data_delayed, this));
+	event("alpha_z_buffer", std::bind(&ModelMaterialDialog::apply_data, this));
 
 	expand_all("model_material_dialog_grp_textures", true);
 
-	loadData();
+	load_data();
 	apply_queue_depth = 0;
 }
 
@@ -84,14 +84,17 @@ ModelMaterialDialog::~ModelMaterialDialog()
 	unsubscribe(mode_model_mesh_texture);
 	unsubscribe(mode_model_mesh);
 	unsubscribe(data);
+
+	delete popup_materials;
+	delete popup_textures;
 }
 
-void ModelMaterialDialog::loadData()
+void ModelMaterialDialog::load_data()
 {
 	temp = data->material[mode_model_mesh->current_material];
-	fillMaterialList();
+	fill_material_list();
 
-	fillTextureList();
+	fill_texture_list();
 	check("default_colors", !temp.user_color);
 	enable("mat_am", temp.user_color);
 	enable("mat_di", temp.user_color);
@@ -126,7 +129,7 @@ void ModelMaterialDialog::loadData()
 }
 
 
-void ModelMaterialDialog::applyData()
+void ModelMaterialDialog::apply_data()
 {
 	if (apply_queue_depth > 0)
 		apply_queue_depth --;
@@ -147,13 +150,13 @@ void ModelMaterialDialog::applyData()
 	data->execute(new ActionModelEditMaterial(mode_model_mesh->current_material, temp));
 }
 
-void ModelMaterialDialog::applyDataDelayed()
+void ModelMaterialDialog::apply_data_delayed()
 {
 	apply_queue_depth ++;
-	hui::RunLater(0.5f, std::bind(&ModelMaterialDialog::applyData, this));
+	hui::RunLater(0.5f, std::bind(&ModelMaterialDialog::apply_data, this));
 }
 
-void ModelMaterialDialog::fillMaterialList()
+void ModelMaterialDialog::fill_material_list()
 {
 	reset("material_list");
 	for (int i=0;i<data->material.num;i++){
@@ -171,7 +174,7 @@ void ModelMaterialDialog::fillMaterialList()
 
 
 // material
-void ModelMaterialDialog::onMaterialList()
+void ModelMaterialDialog::on_material_list()
 {
 	/*int s = GetInt("");
 	if (s < 0)
@@ -182,42 +185,42 @@ void ModelMaterialDialog::onMaterialList()
 	mode_model->ExecuteMaterialDialog(0);*/
 }
 
-void ModelMaterialDialog::onMaterialListSelect()
+void ModelMaterialDialog::on_material_list_select()
 {
 	mode_model_mesh->setCurrentMaterial(get_int(""));
 }
 
-void ModelMaterialDialog::onAddNewMaterial()
+void ModelMaterialDialog::on_add_new_material()
 {
 	data->execute(new ActionModelAddMaterial(""));
 }
 
-void ModelMaterialDialog::onAddMaterial()
+void ModelMaterialDialog::on_add_material()
 {
 	if (ed->file_dialog(FD_MATERIAL, false, true))
 		data->execute(new ActionModelAddMaterial(ed->dialog_file_no_ending));
 }
 
-void ModelMaterialDialog::onDeleteMaterial()
+void ModelMaterialDialog::on_delete_material()
 {
 	hui::ErrorBox(win, "", "noch nicht implementiert");
 }
 
-void ModelMaterialDialog::onApplyMaterial()
+void ModelMaterialDialog::on_apply_material()
 {
 	data->setMaterialSelection(mode_model_mesh->current_material);
 }
 
 
-void ModelMaterialDialog::onDefaultColors()
+void ModelMaterialDialog::on_default_colors()
 {
 	temp.user_color = !is_checked("");
 	if (!temp.user_color)
 		temp.checkColors();
-	applyData();
+	apply_data();
 }
 
-void ModelMaterialDialog::fillTextureList()
+void ModelMaterialDialog::fill_texture_list()
 {
 	reset("mat_textures");
 	for (int i=0;i<temp.texture_files.num;i++){
@@ -229,7 +232,7 @@ void ModelMaterialDialog::fillTextureList()
 }
 
 
-void ModelMaterialDialog::onAddTextureLevel()
+void ModelMaterialDialog::on_texture_level_add()
 {
 	if (temp.texture_files.num >= MATERIAL_MAX_TEXTURES){
 		ed->error_box(format(_("H&ochstens %d Textur-Ebenen erlaubt!"), MATERIAL_MAX_TEXTURES));
@@ -237,28 +240,32 @@ void ModelMaterialDialog::onAddTextureLevel()
 	}
 	temp.texture_files.add("");
 	temp.checkTextures();
-	applyData();
+	apply_data();
 }
 
-void ModelMaterialDialog::onTextures()
+void ModelMaterialDialog::on_textures()
 {
-	int sel = get_int("");
-	if ((sel >= 0) && (sel <temp.texture_files.num))
+	on_textures_select();
+	on_texture_level_load();
+}
+
+void ModelMaterialDialog::on_texture_level_load()
+{
+	int sel = get_int("mat_textures");
+	if (sel >= 0)
 		if (ed->file_dialog(FD_TEXTURE, false, true)){
 			temp.texture_files[sel] = ed->dialog_file;
 			temp.checkTextures();
-			applyData();
+			apply_data();
 		}
 }
 
-void ModelMaterialDialog::onTexturesSelect()
-{
+void ModelMaterialDialog::on_textures_select() {
 	int sel = get_int("");
 	mode_model_mesh_texture->setCurrentTextureLevel(sel);
 }
 
-void ModelMaterialDialog::onDeleteTextureLevel()
-{
+void ModelMaterialDialog::on_texture_level_delete() {
 	int sel = get_int("mat_textures");
 	if (sel >= 0){
 		if (temp.texture_files.num <= 1){
@@ -266,22 +273,22 @@ void ModelMaterialDialog::onDeleteTextureLevel()
 			return;
 		}
 		temp.texture_files.erase(sel);
-		applyData();
-		fillTextureList();
+		apply_data();
+		fill_texture_list();
 	}
 }
 
-void ModelMaterialDialog::onEmptyTextureLevel()
+void ModelMaterialDialog::on_texture_level_clear()
 {
 	int sel = get_int("mat_textures");
 	if (sel >= 0){
 		temp.texture_files[sel] = "";
-		applyData();
-		fillTextureList();
+		apply_data();
+		fill_texture_list();
 	}
 }
 
-void ModelMaterialDialog::onTransparencyMode()
+void ModelMaterialDialog::on_transparency_mode()
 {
 	if (is_checked("transparency_mode:function"))
 		temp.transparency_mode = TransparencyModeFunctions;
@@ -296,11 +303,32 @@ void ModelMaterialDialog::onTransparencyMode()
 	enable("alpha_factor", temp.transparency_mode == TransparencyModeFactor);
 	enable("alpha_source", temp.transparency_mode == TransparencyModeFunctions);
 	enable("alpha_dest", temp.transparency_mode == TransparencyModeFunctions);
-	applyData();
+	apply_data();
+}
+
+void ModelMaterialDialog::on_material_list_right_click() {
+	int n = hui::GetEvent()->row;
+	if (n >= 0) {
+		mode_model_mesh->setCurrentMaterial(n);
+	}
+	popup_materials->enable("apply_material", n>=0);
+	popup_materials->enable("delete_material", n>=0);
+	popup_materials->open_popup(this);
+}
+
+void ModelMaterialDialog::on_textures_right_click() {
+	int n = hui::GetEvent()->row;
+	if (n >= 0) {
+		mode_model_mesh_texture->setCurrentTextureLevel(n);
+	}
+	popup_textures->enable("texture-level-delete", n>=0);
+	popup_textures->enable("texture-level-clear", n>=0);
+	popup_textures->enable("texture-level-load", n>=0);
+	popup_textures->open_popup(this);
 }
 
 void ModelMaterialDialog::on_update(Observable *o, const string &message)
 {
-	loadData();
+	load_data();
 }
 

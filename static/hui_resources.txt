@@ -1,7 +1,7 @@
 t7
-// Number Of Resources
-62
-// Resource
+# Number Of Resources
+64
+# Resource
 Menu
 
 disabled
@@ -50,7 +50,7 @@ zzz_setbgimage
 4
 0
 0
-// Resource
+# Resource
 Dialog
 ad_dialog
 width=680,height=590,allow-root
@@ -201,7 +201,7 @@ image=hui:preferences
 5
 0
 0
-// Resource
+# Resource
 Menu
 menu_administration
 disabled
@@ -370,7 +370,7 @@ image=hui:about
 3
 0
 0
-// Resource
+# Resource
 Dialog
 campoint_dialog
 width=345,height=225
@@ -605,7 +605,7 @@ image=hui:ok
 1
 0
 0
-// Resource
+# Resource
 Dialog
 editor_dialog
 width=400,height=370
@@ -744,7 +744,7 @@ tree
 2
 0
 0
-// Resource
+# Resource
 Dialog
 font_dialog
 width=400,height=730
@@ -925,7 +925,7 @@ text
 0
 0
 0
-// Resource
+# Resource
 Menu
 menu_font
 disabled
@@ -1130,7 +1130,7 @@ image=hui:about
 3
 0
 0
-// Resource
+# Resource
 Toolbar
 font-toolbar
 
@@ -1173,7 +1173,7 @@ image=icons/toolbar/redo.png
 5
 0
 0
-// Resource
+# Resource
 Dialog
 rc_dialog
 width=365,height=250
@@ -1306,7 +1306,7 @@ ok
 1
 0
 0
-// Resource
+# Resource
 Dialog
 ge_dialog
 width=365,height=380
@@ -1487,7 +1487,7 @@ ok
 1
 0
 0
-// Resource
+# Resource
 Dialog
 key_dialog
 width=350,height=85
@@ -1542,7 +1542,7 @@ image=hui:cancel
 1
 0
 0
-// Resource
+# Resource
 Dialog
 material_dialog
 width=365,height=715,allow-root
@@ -1915,7 +1915,7 @@ range=0:100:0.01
 1
 3
 0
-// Resource
+# Resource
 Menu
 menu_material
 disabled
@@ -2192,7 +2192,7 @@ image=hui:about
 3
 0
 0
-// Resource
+# Resource
 Dialog
 material_sound_dialog
 width=595,height=345
@@ -2229,7 +2229,7 @@ image=hui:ok
 1
 0
 0
-// Resource
+# Resource
 Toolbar
 material-toolbar
 
@@ -2272,7 +2272,7 @@ image=icons/toolbar/redo.png
 5
 0
 0
-// Resource
+# Resource
 Dialog
 animation_dialog
 width=260,height=400
@@ -2483,7 +2483,7 @@ image=hui:media-stop
 1
 0
 0
-// Resource
+# Resource
 Toolbar
 model-animation-skeleton-toolbar
 
@@ -2520,7 +2520,7 @@ checkable,image=hui:apply
 4
 0
 0
-// Resource
+# Resource
 Toolbar
 model-animation-vertex-toolbar
 
@@ -2557,7 +2557,7 @@ checkable,image=icons/toolbar/rf_mirror.png
 4
 0
 0
-// Resource
+# Resource
 Dialog
 deformation_cylinder_dialog
 width=400,height=250,allow-root
@@ -2606,7 +2606,7 @@ image=hui:ok
 0
 0
 0
-// Resource
+# Resource
 Dialog
 deformation_function_dialog
 width=400,height=250,allow-root
@@ -2643,7 +2643,7 @@ image=hui:ok
 1
 0
 0
-// Resource
+# Resource
 Dialog
 easify_dialog
 width=335,height=150
@@ -2728,7 +2728,7 @@ image=hui:ok
 1
 0
 0
-// Resource
+# Resource
 Dialog
 fx_dialog
 width=470,height=205
@@ -2999,7 +2999,7 @@ image=hui:ok
 1
 0
 0
-// Resource
+# Resource
 Dialog
 model_material_dialog
 width=350,height=371
@@ -3018,40 +3018,10 @@ model_material_dialog_grp_list
 0
 0
 1
-Grid
-?
-
-0
-0
-2
 ListView
 material_list
-format=ttit,select-single
+format=ttit,select-single,width=330
 0
-0
-0
-Grid
-?
-
-0
-1
-3
-Button
-add_new_material
-image=hui:add
-0
-0
-0
-Button
-add_material
-image=hui:open
-1
-0
-0
-Button
-apply_material
-image=hui:apply
-2
 0
 0
 Separator
@@ -3150,40 +3120,10 @@ model_material_dialog_grp_textures
 3
 0
 1
-Grid
-?
-
-0
-0
-2
 ListView
 mat_textures
 format=tit,select-single
 0
-0
-0
-Grid
-?
-
-0
-1
-3
-Button
-mat_add_texture_level
-image=hui:add
-0
-0
-0
-Button
-mat_delete_texture_level
-image=hui:delete
-1
-0
-0
-Button
-mat_empty_texture_level
-image=hui:clear
-2
 0
 0
 Expander
@@ -3282,7 +3222,44 @@ alpha_z_buffer
 7
 0
 0
-// Resource
+# Resource
+Menu
+model-material-list-popup
+
+0
+0
+5
+Item
+header
+disabled
+0
+0
+0
+Item
+add_new_material
+image=hui:add
+1
+0
+0
+Item
+add_material
+image=hui:open
+2
+0
+0
+Item
+apply_material
+image=hui:apply
+3
+0
+0
+Item
+delete_material
+image=hui:delete
+4
+0
+0
+# Resource
 Dialog
 model_material_selection_dialog
 width=355,height=360
@@ -3325,7 +3302,7 @@ image=hui:edit
 2
 0
 0
-// Resource
+# Resource
 Menu
 menu_model
 disabled
@@ -4280,7 +4257,7 @@ image=hui:about
 3
 0
 0
-// Resource
+# Resource
 Toolbar
 model-mesh-toolbar
 
@@ -4371,7 +4348,7 @@ checkable,image=hui:no
 13
 0
 0
-// Resource
+# Resource
 Menu
 menu_move
 disabled
@@ -4894,7 +4871,7 @@ image=hui:about
 3
 0
 0
-// Resource
+# Resource
 Dialog
 new_ball_dialog
 width=220,height=119,allow-root
@@ -4973,7 +4950,7 @@ range=1:,expandx
 1
 0
 0
-// Resource
+# Resource
 Dialog
 new_cube_dialog
 width=100,height=50,allow-root
@@ -5028,7 +5005,7 @@ range=1:
 1
 2
 0
-// Resource
+# Resource
 Dialog
 new_cylinder_dialog
 width=100,height=50,allow-root
@@ -5089,7 +5066,7 @@ round
 3
 0
 0
-// Resource
+# Resource
 Dialog
 new_plane_dialog
 width=100,height=50,allow-root
@@ -5126,7 +5103,7 @@ range=1:
 1
 1
 0
-// Resource
+# Resource
 Dialog
 new_teapot_dialog
 width=100,height=50,allow-root
@@ -5151,7 +5128,7 @@ range=1:
 1
 0
 0
-// Resource
+# Resource
 Dialog
 new_torus_dialog
 width=200,height=50,allow-root
@@ -5194,7 +5171,7 @@ range=2:
 1
 1
 0
-// Resource
+# Resource
 Dialog
 model_dialog
 width=550,height=580
@@ -5465,7 +5442,7 @@ image=hui:ok
 1
 0
 0
-// Resource
+# Resource
 Dialog
 rotation_dialog
 width=155,height=105
@@ -5532,7 +5509,7 @@ degree
 2
 2
 0
-// Resource
+# Resource
 Dialog
 scaling_dialog
 width=155,height=105
@@ -5599,7 +5576,7 @@ percent
 2
 2
 0
-// Resource
+# Resource
 Menu
 menu_skeleton
 disabled
@@ -6038,7 +6015,7 @@ image=hui:about
 3
 0
 0
-// Resource
+# Resource
 Toolbar
 model-skeleton-toolbar
 
@@ -6087,7 +6064,50 @@ checkable,image=icons/toolbar/rf_mirror.png
 6
 0
 0
-// Resource
+# Resource
+Menu
+model-texture-list-popup
+
+0
+0
+6
+Item
+header
+disabled
+0
+0
+0
+Separator
+
+
+1
+0
+0
+Item
+texture-level-add
+image=hui:add
+2
+0
+0
+Item
+texture-level-load
+image=hui:open
+3
+0
+0
+Item
+texture-level-clear
+image=hui:clear
+4
+0
+0
+Item
+texture-level-delete
+image=hui:delete
+5
+0
+0
+# Resource
 Menu
 menu_model_texture
 disabled
@@ -6124,7 +6144,7 @@ image=hui:delete
 4
 0
 0
-// Resource
+# Resource
 Toolbar
 model-toolbar
 
@@ -6251,7 +6271,7 @@ checkable,image=icons/toolbar/model_surface.svg
 19
 0
 0
-// Resource
+# Resource
 Dialog
 new_animation_dialog
 width=100,height=50
@@ -6312,7 +6332,7 @@ image=hui:ok
 1
 0
 0
-// Resource
+# Resource
 Dialog
 new_terrain_dialog
 width=300,height=120
@@ -6421,7 +6441,7 @@ image=hui:ok
 1
 0
 0
-// Resource
+# Resource
 Menu
 menu_nomode
 disabled
@@ -6560,7 +6580,7 @@ image=hui:about
 3
 0
 0
-// Resource
+# Resource
 Dialog
 progress_dialog
 width=100,height=30
@@ -6573,7 +6593,7 @@ progress_bar
 0
 0
 0
-// Resource
+# Resource
 Dialog
 progress_cancelable_dialog
 width=100,height=50
@@ -6598,7 +6618,7 @@ image=hui:cancel
 0
 1
 0
-// Resource
+# Resource
 Dialog
 world_scriptfunc_dialog
 width=335,height=145
@@ -6689,7 +6709,7 @@ image=hui:ok
 2
 0
 0
-// Resource
+# Resource
 Dialog
 world_scriptfunc_choice_dialog
 width=245,height=90
@@ -6726,7 +6746,7 @@ image=hui:ok
 1
 0
 0
-// Resource
+# Resource
 Dialog
 scriptvar_dialog
 width=360,height=115
@@ -6793,7 +6813,7 @@ image=hui:ok
 1
 0
 0
-// Resource
+# Resource
 Dialog
 script_vars_dialog
 width=360,height=500
@@ -6836,7 +6856,7 @@ image=hui:ok
 1
 0
 0
-// Resource
+# Resource
 Dialog
 terrain_dialog
 width=435,height=275
@@ -7047,7 +7067,7 @@ image=hui:ok
 2
 0
 0
-// Resource
+# Resource
 Dialog
 terrain_heightmap_dialog
 width=620,height=275
@@ -7240,7 +7260,7 @@ image=hui:ok
 1
 0
 0
-// Resource
+# Resource
 Menu
 menu_view
 disabled
@@ -7307,7 +7327,7 @@ view_perspective
 9
 0
 0
-// Resource
+# Resource
 Dialog
 welcome_dialog
 width=640,height=360
@@ -7320,7 +7340,7 @@ icons
 0
 0
 0
-// Resource
+# Resource
 Dialog
 world_camera_dialog
 width=719,height=160,allow-root
@@ -7381,7 +7401,7 @@ image=hui:media-stop
 5
 0
 0
-// Resource
+# Resource
 Toolbar
 world-camera-toolbar
 
@@ -7442,7 +7462,7 @@ image=icons/toolbar/view_pop.png
 8
 0
 0
-// Resource
+# Resource
 Dialog
 world_dialog
 width=520,height=420
@@ -7851,7 +7871,7 @@ image=hui:ok
 2
 0
 0
-// Resource
+# Resource
 Dialog
 lightmap_dialog
 width=420,height=540
@@ -7996,7 +8016,7 @@ image=hui:ok
 2
 0
 0
-// Resource
+# Resource
 Menu
 menu_world
 disabled
@@ -8597,7 +8617,7 @@ image=hui:about
 3
 0
 0
-// Resource
+# Resource
 Dialog
 world_new_object_dialog
 width=390,height=75,allow-parent
@@ -8646,7 +8666,7 @@ image=hui:open
 1
 0
 0
-// Resource
+# Resource
 Dialog
 world_object_dialog
 width=390,height=220
@@ -8815,7 +8835,7 @@ image=hui:ok
 2
 0
 0
-// Resource
+# Resource
 Dialog
 world_ps_dialog
 width=370,height=380
@@ -8828,7 +8848,7 @@ property_list
 0
 0
 0
-// Resource
+# Resource
 Toolbar
 world-toolbar
 
@@ -8925,13 +8945,13 @@ checkable,image=icons/toolbar/rf_rotate.png
 14
 0
 0
-// Number Of Languages
+# Number Of Languages
 3
-// Language
+# Language
 Deutsch
-// Number Of IDs
-908
-// Text
+# Number Of IDs
+912
+# Text
 /ambient
 Ambient
 
@@ -10984,6 +11004,21 @@ Selektieren
 model-animation-vertex-toolbar/translate
 Verschieben
 
+model-material-list-popup/add_material
+laden...
+
+model-material-list-popup/add_new_material
+neu
+
+model-material-list-popup/apply_material
+auf Auswahl anwenden
+
+model-material-list-popup/delete_material
+loeschen
+
+model-material-list-popup/header
+Material
+
 model-mesh-toolbar/lock_action
 paranoider Modus
 
@@ -11038,6 +11073,21 @@ neuer Knochen
 model-skeleton-toolbar/translate
 Verschieben
 
+model-texture-list-popup/header
+Textur
+
+model-texture-list-popup/texture-level-add
+neue Ebene
+f&ugt eine weitere Textur-Schicht hinzu (multitexturing)
+model-texture-list-popup/texture-level-clear
+Leeren
+l&oscht die Textur der ausgew&ahlten Textur-Schicht
+model-texture-list-popup/texture-level-delete
+Löschen
+l&oscht die ausgew&ahlte Textur-Schicht
+model-texture-list-popup/texture-level-load
+Laden...
+eine Texturdatei in die ausgew&ahlten Textur-Schicht laden
 model-toolbar/mode_model_animation
 Animationen
 
@@ -11137,12 +11187,6 @@ model_dialog/tensor
 model_dialog/variables
 Name\\Typ\\Wert
 
-model_material_dialog/add_material
-laden...
-
-model_material_dialog/add_new_material
-neu
-
 model_material_dialog/alpha_dest
 Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha
 
@@ -11152,24 +11196,12 @@ Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\
 model_material_dialog/alpha_z_buffer
 Z-Buffer aktiviert
 
-model_material_dialog/apply_material
-auf Auswahl anwenden
-
 model_material_dialog/default_colors
 Farben aus der Datei verwenden
 
-model_material_dialog/mat_add_texture_level
-neue Ebene
-
-model_material_dialog/mat_delete_texture_level
-Löschen
-
-model_material_dialog/mat_empty_texture_level
-Leeren
-
 model_material_dialog/mat_textures
 Ebene\\\\Textur
-
+Übereinanderliegende Textur-Schichten (multitexturing)\n- Aktionen per Rechtsklick
 model_material_dialog/material_dialog_t_trans_dest
 Ziel
 
@@ -11178,7 +11210,7 @@ Quelle
 
 model_material_dialog/material_list
 #\\Polygone\\\\Datei
-
+Materialien\n - Aktionen per Rechtsklick
 model_material_dialog/model_material_dialog
 Material
 
@@ -11656,14 +11688,14 @@ Name der Funktion:
 world_scriptfunc_dialog/world_scriptfunc_dialog
 Script-Funktion
 
-// Num Language Strings
+# Num Language Strings
 0
-// Text
-// Language
+# Text
+# Language
 English
-// Number Of IDs
+# Number Of IDs
 963
-// Text
+# Text
 /ambient
 Ambient
 
@@ -14553,9 +14585,9 @@ world_scriptfunc_dialog/world_scriptfunc_dialog_t_delaydesc
 world_scriptfunc_dialog/world_scriptfunc_dialog_t_name
 name of function:
 
-// Num Language Strings
+# Num Language Strings
 236
-// Text
+# Text
                   Close dialog box to exit program.
                   Close dialog box to exit program.
    - ohne Datei -
@@ -15028,11 +15060,11 @@ y-z-plane
 y-z-plane
 z-axis
 z-axis
-// Language
+# Language
 日本語
-// Number Of IDs
+# Number Of IDs
 525
-// Text
+# Text
 /alpha_dest
 AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha
 
@@ -16608,6 +16640,6 @@ CalcMove 1\\CalcMove 2\\Render 1\\Render 2\\Render 3\\GetInput 1\\GetInput 2
 world_scriptfunc_dialog/ok
 OK
 
-// Num Language Strings
+# Num Language Strings
 0
-// Text
+# Text
