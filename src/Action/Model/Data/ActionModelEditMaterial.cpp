@@ -9,41 +9,26 @@
 #include "ActionModelEditMaterial.h"
 #include <assert.h>
 
-ActionModelEditMaterial::ActionModelEditMaterial(int _index, const ModelMaterial::Color &_c)
-{
+ActionModelEditMaterial::ActionModelEditMaterial(int _index, const ModelMaterial::Color &_c) {
 	index = _index;
 	mode = 0;
 	col = _c;
 }
 
-ActionModelEditMaterial::ActionModelEditMaterial(int _index, const ModelMaterial::Alpha &_a)
-{
+ActionModelEditMaterial::ActionModelEditMaterial(int _index, const ModelMaterial::Alpha &_a) {
 	index = _index;
 	mode = 1;
 	alpha = _a;
 }
 
 void *ActionModelEditMaterial::execute(Data *d) {
-	DataModel *m = dynamic_cast<DataModel*>(d);
+	auto *m = dynamic_cast<DataModel*>(d);
 	assert((index >= 0) and (index < m->material.num));
 
 	if (mode == 0) {
 		std::swap(col, m->material[index]->col);
 	} else if (mode == 1) {
 		std::swap(alpha, m->material[index]->alpha);
-	} else if (mode == 2) {
-
-/*
-	// correct skin vertices
-	// (copy highest texture level when adding more levels)
-	for (ModelSurface &s: m->surface)
-		for (ModelPolygon &p: s.polygon){
-			if (p.material == index){
-				for (ModelPolygonSide &side: p.side)
-					for (int l=mat.texture_levels.num;l<m->material[index].texture_levels.num;l++)
-						side.skin_vertex[l] = side.skin_vertex[mat.texture_levels.num - 1];
-			}
-		}*/
 	}
 	m->notify(m->MESSAGE_MATERIAL_CHANGE);
 
@@ -52,8 +37,7 @@ void *ActionModelEditMaterial::execute(Data *d) {
 
 
 
-void ActionModelEditMaterial::undo(Data *d)
-{
+void ActionModelEditMaterial::undo(Data *d) {
 	execute(d);
 }
 
@@ -66,7 +50,7 @@ ActionModelMaterialAddTexture::ActionModelMaterialAddTexture(int _index) {
 }
 
 void *ActionModelMaterialAddTexture::execute(Data *d) {
-	DataModel *m = dynamic_cast<DataModel*>(d);
+	auto *m = dynamic_cast<DataModel*>(d);
 	assert((index >= 0) and (index < m->material.num));
 
 	auto *tl = new ModelMaterial::TextureLevel();
@@ -91,7 +75,7 @@ void *ActionModelMaterialAddTexture::execute(Data *d) {
 }
 
 void ActionModelMaterialAddTexture::undo(Data *d) {
-	DataModel *m = dynamic_cast<DataModel*>(d);
+	auto *m = dynamic_cast<DataModel*>(d);
 	assert((index >= 0) and (index < m->material.num));
 
 	auto tl = m->material[index]->texture_levels.pop();
@@ -110,8 +94,13 @@ ActionModelMaterialDeleteTexture::ActionModelMaterialDeleteTexture(int _index, i
 	tl = nullptr;
 }
 
+ActionModelMaterialDeleteTexture::~ActionModelMaterialDeleteTexture() {
+	if (tl)
+		delete tl;
+}
+
 void *ActionModelMaterialDeleteTexture::execute(Data *d) {
-	DataModel *m = dynamic_cast<DataModel*>(d);
+	auto *m = dynamic_cast<DataModel*>(d);
 	assert((index >= 0) and (index < m->material.num));
 	assert((level >= 0) and (level < m->material[index]->texture_levels.num));
 
@@ -128,10 +117,11 @@ void *ActionModelMaterialDeleteTexture::execute(Data *d) {
 }
 
 void ActionModelMaterialDeleteTexture::undo(Data *d) {
-	DataModel *m = dynamic_cast<DataModel*>(d);
+	auto *m = dynamic_cast<DataModel*>(d);
 	assert((index >= 0) and (index < m->material.num));
 
 	m->material[index]->texture_levels.insert(tl, level);
+	tl = nullptr;
 
 	m->notify(m->MESSAGE_TEXTURE_CHANGE);
 }
@@ -150,7 +140,7 @@ ActionModelMaterialLoadTexture::ActionModelMaterialLoadTexture(int _index, int _
 }
 
 void *ActionModelMaterialLoadTexture::execute(Data *d) {
-	DataModel *m = dynamic_cast<DataModel*>(d);
+	auto *m = dynamic_cast<DataModel*>(d);
 	assert((index >= 0) and (index < m->material.num));
 
 	auto *tl = m->material[index]->texture_levels[level];
@@ -164,5 +154,46 @@ void *ActionModelMaterialLoadTexture::execute(Data *d) {
 }
 
 void ActionModelMaterialLoadTexture::undo(Data *d) {
+	execute(d);
+}
+
+
+
+
+
+
+ActionModelMaterialScaleTexture::ActionModelMaterialScaleTexture(int _index, int _level, int _width, int _height) {
+	index = _index;
+	level = _level;
+	width = _width;
+	height = _height;
+	image = nullptr;
+}
+
+ActionModelMaterialScaleTexture::~ActionModelMaterialScaleTexture() {
+	if (image)
+		delete image;
+}
+
+void *ActionModelMaterialScaleTexture::execute(Data *d) {
+	auto *m = dynamic_cast<DataModel*>(d);
+	assert((index >= 0) and (index < m->material.num));
+
+	auto *tl = m->material[index]->texture_levels[level];
+
+	if (!image) {
+		image = tl->image->scale(width, height);
+	}
+	std::swap(tl->image, image);
+	tl->edited = true;
+	tl->update_texture();
+
+
+
+	m->notify(m->MESSAGE_TEXTURE_CHANGE);
+	return NULL;
+}
+
+void ActionModelMaterialScaleTexture::undo(Data *d) {
 	execute(d);
 }

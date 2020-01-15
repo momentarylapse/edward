@@ -46,6 +46,8 @@ ModelMaterialDialog::ModelMaterialDialog(DataModel *_data) :
 	event("texture-level-delete", [=]{ on_texture_level_delete(); });
 	event("texture-level-clear", [=]{ on_texture_level_clear(); });
 	event("texture-level-load", [=]{ on_texture_level_load(); });
+	event("texture-level-save", [=]{ on_texture_level_save(); });
+	event("texture-level-scale", [=]{ on_texture_level_scale(); });
 	event("transparency_mode:material", [=]{ on_transparency_mode(); });
 	event("transparency_mode:none", [=]{ on_transparency_mode(); });
 	event("transparency_mode:function", [=]{ on_transparency_mode(); });
@@ -274,6 +276,57 @@ void ModelMaterialDialog::on_texture_level_load() {
 			data->execute(new ActionModelMaterialLoadTexture(mode_model_mesh->current_material, sel, ed->dialog_file));
 }
 
+void ModelMaterialDialog::on_texture_level_save() {
+	int sel = get_int("mat_textures");
+	if (sel >= 0)
+		if (ed->file_dialog(FD_TEXTURE, true, true)) {
+			auto tl = data->material[mode_model_mesh->current_material]->texture_levels[sel];
+			tl->image->save(nix::texture_dir + ed->dialog_file);
+			tl->filename = ed->dialog_file; // ...
+			tl->edited = false;
+		}
+}
+
+class TextureScaleDialog : public hui::Dialog {
+public:
+	TextureScaleDialog(hui::Window *parent, int w, int h) : hui::Dialog(_("Textur skalieren"), 300, 100, parent, false) {
+		width = height = -1;
+		from_resource("texture-scale-dialog");
+		set_int("width", w);
+		set_int("height", h);
+		event("ok", [=]{ on_ok(); });
+		event("cancel", [=]{ on_cancel(); });
+	}
+	void on_ok() {
+		width = get_int("width");
+		height = get_int("height");
+		destroy();
+	}
+	void on_cancel() {
+		destroy();
+	}
+	int width, height;
+
+	static bool ask(hui::Window *parent, int &w, int &h) {
+		auto *dlg = new TextureScaleDialog(parent, w, h);
+		dlg->run();
+		w = dlg->width;
+		h = dlg->height;
+		delete dlg;
+		return w > 0;
+	}
+};
+
+void ModelMaterialDialog::on_texture_level_scale() {
+	int sel = get_int("mat_textures");
+	if (sel >= 0) {
+		auto tl = data->material[mode_model_mesh->current_material]->texture_levels[sel];
+		int w = tl->image->width, h = tl->image->height;
+		if (TextureScaleDialog::ask(win, w, h))
+			data->execute(new ActionModelMaterialScaleTexture(mode_model_mesh->current_material, sel, w, h));
+	}
+}
+
 void ModelMaterialDialog::on_textures_select() {
 	int sel = get_int("");
 	mode_model_mesh_texture->setCurrentTextureLevel(sel);
@@ -318,6 +371,8 @@ void ModelMaterialDialog::on_textures_right_click() {
 	popup_textures->enable("texture-level-delete", n>=0);
 	popup_textures->enable("texture-level-clear", n>=0);
 	popup_textures->enable("texture-level-load", n>=0);
+	popup_textures->enable("texture-level-save", n>=0);
+	popup_textures->enable("texture-level-scale", n>=0);
 	popup_textures->open_popup(this);
 }
 

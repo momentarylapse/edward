@@ -1,0 +1,11 @@
+Dialog texture-scale-dialog 'Textur skalieren' width=300 height=100
+	Grid ? '' vertical
+		Grid ? ''
+			Label ? 'Width'
+			SpinButton width '' range=1:4096 expandx
+			---|
+			Label ? 'Height'
+			SpinButton height '' range=1:4096 expandx
+		Grid ? '' button-bar
+			Button cancel 'Cancel'
+			DefButton ok 'Ok'

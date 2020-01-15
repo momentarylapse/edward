@@ -42,6 +42,7 @@ private:
 class ActionModelMaterialDeleteTexture : public Action {
 public:
 	ActionModelMaterialDeleteTexture(int index, int level);
+	~ActionModelMaterialDeleteTexture();
 	string name(){ return "ModelMaterialDeleteTexture"; }
 
 	void *execute(Data *d);
@@ -64,6 +65,22 @@ public:
 private:
 	int index, level;
 	string filename;
+};
+
+
+class ActionModelMaterialScaleTexture : public Action {
+public:
+	ActionModelMaterialScaleTexture(int index, int level, int width, int height);
+	~ActionModelMaterialScaleTexture();
+	string name(){ return "ModelMaterialScaleTexture"; }
+
+	void *execute(Data *d);
+	void undo(Data *d);
+
+private:
+	int index, level;
+	int width, height;
+	Image *image;
 };
 
 #endif /* ACTIONMODELEDITMATERIAL_H_ */

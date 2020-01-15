@@ -1,6 +1,6 @@
 t7
 # Number Of Resources
-64
+65
 # Resource
 Menu
 
@@ -6070,7 +6070,7 @@ model-texture-list-popup
 
 0
 0
-6
+8
 Item
 header
 disabled
@@ -6096,15 +6096,27 @@ image=hui:open
 0
 0
 Item
+texture-level-save
+image=hui:save
+4
+0
+0
+Item
+texture-level-scale
+image=hui:edit
+5
+0
+0
+Item
 texture-level-clear
 image=hui:clear
-4
+6
 0
 0
 Item
 texture-level-delete
 image=hui:delete
-5
+7
 0
 0
 # Resource
@@ -6142,6 +6154,67 @@ Item
 texture_empty
 image=hui:delete
 4
+0
+0
+# Resource
+Dialog
+texture-scale-dialog
+width=300,height=100
+0
+0
+1
+Grid
+?
+vertical
+0
+0
+2
+Grid
+?
+
+0
+0
+4
+Label
+?
+
+0
+0
+0
+SpinButton
+width
+range=1:4096,expandx
+1
+0
+0
+Label
+?
+
+0
+1
+0
+SpinButton
+height
+range=1:4096,expandx
+1
+1
+0
+Grid
+?
+button-bar
+1
+0
+2
+Button
+cancel
+
+0
+0
+0
+DefButton
+ok
+
+1
 0
 0
 # Resource
@@ -8950,7 +9023,7 @@ checkable,image=icons/toolbar/rf_rotate.png
 # Language
 Deutsch
 # Number Of IDs
-917
+922
 # Text
 /ambient
 Ambient
@@ -11081,13 +11154,19 @@ neue Ebene
 fügt eine weitere Textur-Schicht hinzu (multitexturing)
 model-texture-list-popup/texture-level-clear
 leeren
-löscht die Textur der ausgewählten Textur-Schicht
+ersetzt die Textur der ausgewählten Textur-Schicht durch homogenes Wei&s
 model-texture-list-popup/texture-level-delete
 löschen
 löscht die ausgewählte Textur-Schicht
 model-texture-list-popup/texture-level-load
 laden...
 eine Texturdatei in die ausgewählten Textur-Schicht laden
+model-texture-list-popup/texture-level-save
+speichern...
+Textur in eine Datei speichern
+model-texture-list-popup/texture-level-scale
+skalieren...
+Textur skalieren
 model-toolbar/mode_model_animation
 Animationen
 
@@ -11507,6 +11586,15 @@ Streckung x/z
 
 terrain_heightmap_dialog/terrain_heightmap_dialog
 Höhenkarte
+
+texture-scale-dialog/cancel
+Cancel
+
+texture-scale-dialog/ok
+Ok
+
+texture-scale-dialog/texture-scale-dialog
+Textur skalieren
 
 welcome_dialog/welcome_dialog
 Edward heißt Sie willkommen.

@@ -41,6 +41,8 @@ public:
 	void on_texture_level_delete();
 	void on_texture_level_clear();
 	void on_texture_level_load();
+	void on_texture_level_save();
+	void on_texture_level_scale();
 	void on_transparency_mode();
 
 	void fill_texture_list();

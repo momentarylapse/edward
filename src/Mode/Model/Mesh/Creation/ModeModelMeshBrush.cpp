@@ -17,7 +17,9 @@
 
 
 
-vector map_uv(DataModel *m, int surf, int poly, const vector &pos) {
+// map from 3d-world-space into UV-space for a polygon
+// D: Tp -> Tuv
+vector map_uv(DataModel *m, int surf, int poly, const vector &pos, matrix &D) {
 	auto &p = m->surface[surf].polygon[poly];
 
 	for (int k=0; k<p.side.num-2; k++) {
@@ -33,6 +35,8 @@ vector map_uv(DataModel *m, int surf, int poly, const vector &pos) {
 		float f, g;
 		GetBaryCentric(pos, a, b, c, f, g);
 		if (f >= 0 and g >= 0 and f+g <= 1) {
+			D = matrix(sb-sa, sc-sa, v_0) * matrix(b-a, c-a, vector::cross(b-a, c-a)).inverse();
+			//D = matrix::ID;
 			return sa + f * (sb - sa) + g * (sc - sa);
 		}
 	}
@@ -58,35 +62,39 @@ public:
 
 		auto *tl = m->material[0]->texture_levels[0];
 
-		vector v = map_uv(m, surf, poly, pos);
-		int x = clampi(v.x * tl->image->width, 0, tl->image->width);
-		int y = clampf(v.y * tl->image->height, 0, tl->image->height);
-		tl->image->set_pixel(x, y, col);
+		vector e1 = n.ortho();
+		vector e2 = n ^ e1;
+
+		matrix D;
+		vector v = map_uv(m, surf, poly, pos, D);
+		int xx = clampi(v.x * tl->image->width, 0, tl->image->width);
+		int yy = clampf(v.y * tl->image->height, 0, tl->image->height);
+
+		vector f1 = D.transform_normal(e1);
+		vector f2 = D.transform_normal(e2);
+		float rr = (f1.length_sqr() + f2.length_sqr()) * radius * radius;
+		int dx = sqrt(rr) * tl->image->width * 1.1f;
+		int dy = sqrt(rr) * tl->image->height * 1.1f;
+		int x0 = max(xx - dx, 0);
+		int y0 = max(yy - dy, 0);
+		int x1 = min(xx + dx, tl->image->width);
+		int y1 = min(yy + dy, tl->image->height);
+
+		// just draw a fuzzy circle in UV-space...
+		for (int i=x0; i<x1; i++)
+			for (int j=y0; j<y1; j++) {
+				vector vv = vector((float)i / (float)tl->image->width, (float)j / (float)tl->image->height, 0);
+				float dd = (vv - v).length_sqr();
+				float a = exp(-pow(dd / rr, 4)*2);
+				if (a > 0.001f) {
+					color c = tl->image->get_pixel(i, j);
+					tl->image->set_pixel(i, j, (1-a) * c + a * col);
+				}
+			}
+
 		tl->edited = true;
 		tl->update_texture();
 		m->notify(m->MESSAGE_TEXTURE_CHANGE);
-
-		/*for (auto &s: m->surface) {
-			for (auto &p: s.polygon) {
-				for (int k=0; k<p.side.num-2; k++) {
-					p.side[0].triangulation
-				}
-			}
-		}
-
-		for (int x=0; x<tl->image->width; x++)
-			for (int y=0; y<tl->image->height; <++) {
-
-			}*/
-
-		/*for (int i=0;i<m->vertex.num;i++){
-			float d2 = (pos - m->vertex[i].pos).length_sqr();
-			if (d2 < r2 * 2){
-				index.add(i);
-				pos_old.add(m->vertex[i].pos);
-				m->vertex[i].pos += n * depth * exp(- d2 / r2 * 2);
-			}
-		}*/
 
 		return NULL;
 	}
@@ -120,6 +128,7 @@ Action *ModeModelMeshBrush::getAction()
 	float radius = dialog->get_float("diameter") / 2;
 	float depth = dialog->get_float("depth");
 	int type = dialog->get_int("brush_type");
+	auto col = dialog->get_color("color");
 	if (ed->get_key(hui::KEY_CONTROL))
 		depth = - depth;
 
@@ -131,7 +140,7 @@ Action *ModeModelMeshBrush::getAction()
 	else if (type == 2)
 		a = new ActionModelBrushComplexify(pos, n, radius, depth);
 	else if (type == 3)
-		a = new ActionModelBrushTexturePaint(pos, n, radius, depth, multi_view->hover.set, multi_view->hover.index, Red);
+		a = new ActionModelBrushTexturePaint(pos, n, radius, depth, multi_view->hover.set, multi_view->hover.index, col);
 	return a;
 }
 
@@ -159,11 +168,13 @@ void ModeModelMeshBrush::on_start()
 
 	dialog->set_target("grid1");
 	dialog->add_label(_("Dicke"), 0, 0, "");
-	dialog->add_label(_("Tiefe"), 0, 1, "");
 	dialog->add_slider("!expandx", 1, 0, "diameter_slider");
-	dialog->add_slider("", 1, 1, "depth_slider");
 	dialog->add_edit("!width=60", 2, 0, "diameter");
+	dialog->add_label(_("Tiefe"), 0, 1, "");
+	dialog->add_slider("", 1, 1, "depth_slider");
 	dialog->add_edit("", 2, 1, "depth");
+	dialog->add_label(_("Farbe"), 0, 2, "");
+	dialog->add_color_button("", 2,2, "color");
 
 	dialog->event("diameter_slider", std::bind(&ModeModelMeshBrush::onDiameterSlider, this));
 	dialog->event("depth_slider", std::bind(&ModeModelMeshBrush::onDepthSlider, this));
@@ -171,10 +182,10 @@ void ModeModelMeshBrush::on_start()
 	base_diameter = multi_view->cam.radius * 0.2f;
 	base_depth = multi_view->cam.radius * 0.02f;
 
-	dialog->add_string("brush_type", _("Ausbeulen/Eindellen"));
+	dialog->add_string("brush_type", _("Ausbeulen/eindellen"));
 	dialog->add_string("brush_type", _("Gl&atten"));
 	dialog->add_string("brush_type", _("Komplexifizieren"));
-	dialog->add_string("brush_type", _("In Texture malen"));
+	dialog->add_string("brush_type", _("In Textur malen"));
 	dialog->set_float("diameter_slider", 0.5f);
 	dialog->set_float("depth_slider", 0.5f);
 	dialog->set_string("diameter", f2s(base_diameter, 2));
