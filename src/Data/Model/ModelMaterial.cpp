@@ -12,17 +12,31 @@
 void create_fake_dynamic_cube_map(nix::CubeMap *cube_map); // DataMaterial.cpp
 
 
-ModelMaterial::ModelMaterial()
-{
+ModelMaterial::ModelMaterial() {
+	// file
+	filename = "";
+	material = LoadMaterial("");
+
+	// color
+	col.user = false;
+	checkColors();
+
+	// transparency
+	alpha.user = false;
+	checkTransparency();
+	alpha.mode = TRANSPARENCY_DEFAULT;
+	alpha.destination = 0;
+	alpha.source = 0;
+	alpha.factor = 50;
+	alpha.zbuffer = true;
+
 	vb = NULL;
-	reset();
 }
 
-ModelMaterial::ModelMaterial(const string &filename)
-{
-	vb = NULL;
-	reset();
-	material_file = filename;
+
+// ONLY ActionModelAddMaterial
+ModelMaterial::ModelMaterial(const string &_filename) : ModelMaterial() {
+	filename = _filename;
 	makeConsistent();
 }
 
@@ -33,60 +47,41 @@ ModelMaterial::~ModelMaterial()
 	vb = NULL;
 }
 
+ModelMaterial::TextureLevel::TextureLevel() {
+	texture = NULL;
+	image = NULL;
+}
+
+ModelMaterial::TextureLevel::~TextureLevel() {
+	if (image)
+		delete image;
+}
+
+void ModelMaterial::TextureLevel::reload_image() {
+	if (image)
+		delete image;
+	if (filename == "")
+		image = new Image(32, 32, White);
+	else
+		image = Image::load(nix::texture_dir + filename);
+	update_texture();
+}
+
+void ModelMaterial::TextureLevel::update_texture() {
+	if (!texture)
+		texture = new nix::Texture();
+	texture->overwrite(*image);
+}
+
+// DEPRECATED
 void ModelMaterial::reset()
 {
-	// file
-	material_file = "";
-	material = LoadMaterial("");
-
-	// color
-	user_color = false;
-	checkColors();
-
-	// transparency
-	user_transparency = false;
-	checkTransparency();
-	transparency_mode = TRANSPARENCY_DEFAULT;
-	alpha_destination = 0;
-	alpha_source = 0;
-	alpha_factor = 50;
-	alpha_zbuffer = true;
-
-	// textures
-	texture_files = {""};
-	textures = {NULL};
-
-	if (vb)
-		delete(vb);
-	vb = NULL;
 }
 
-void ModelMaterial::operator =(const ModelMaterial &m)
-{
-	user_transparency = m.user_transparency;
-	transparency_mode = m.transparency_mode;
-	alpha_destination = m.alpha_destination;
-	alpha_source = m.alpha_source;
-	alpha_factor = m.alpha_factor;
-	alpha_zbuffer = m.alpha_zbuffer;
-
-	user_color = m.user_color;
-	ambient = m.ambient;
-	diffuse = m.diffuse;
-	specular = m.specular;
-	emission = m.emission;
-	shininess = m.shininess;
-
-	material_file = m.material_file;
-	material = m.material;
-
-	texture_files = m.texture_files;
-	textures = m.textures;
-}
 
 void ModelMaterial::makeConsistent()
 {
-	material = LoadMaterial(material_file);
+	material = LoadMaterial(filename);
 
 	if (material->reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC){
 		if (!material->cube_map)
@@ -101,14 +96,14 @@ void ModelMaterial::makeConsistent()
 
 void ModelMaterial::checkTransparency()
 {
-	if (transparency_mode == TRANSPARENCY_DEFAULT)
-		user_transparency = false;
-	if (!user_transparency){
-		transparency_mode = material->transparency_mode;
-		alpha_source = material->alpha_source;
-		alpha_destination = material->alpha_destination;
-		alpha_factor	= material->alpha_factor;
-		alpha_zbuffer = material->alpha_z_buffer;
+	if (alpha.mode == TRANSPARENCY_DEFAULT)
+		alpha.user = false;
+	if (!alpha.user){
+		alpha.mode = material->transparency_mode;
+		alpha.source = material->alpha_source;
+		alpha.destination = material->alpha_destination;
+		alpha.factor	= material->alpha_factor;
+		alpha.zbuffer = material->alpha_z_buffer;
 	}
 }
 
@@ -116,32 +111,43 @@ void ModelMaterial::checkTransparency()
 
 void ModelMaterial::checkTextures()
 {
+
+	msg_write("--------Mat.check textures()");
 	// parent has more texture levels?
-	if (material->textures.num > texture_files.num){
-		texture_files.resize(material->textures.num);
+	if (material->textures.num > texture_levels.num){
+		texture_levels.resize(material->textures.num);
 		ed->set_message(_("Anzahl der Texturen wurde an das Material angepasst!"));
 	}
 
 	// load all textures
-	textures.clear();
-	for (string &tf: texture_files)
-		textures.add(nix::LoadTexture(tf));
+	foreachi (auto *t, texture_levels, i) {
+		/*auto *prev = t->texture;
+		t->texture = nix::LoadTexture(t->filename);
 
-	// parent overwrites unused textures
-	for (int i=0;i<material->textures.num;i++)
-		if (!textures[i])
-			if (texture_files[i] == "")
-				textures[i] = material->textures[i];
+		// parent overwrites unused textures
+		if (i < material->textures.num)
+			if (t->filename == "")
+				t->texture = material->textures[i];
+
+		if (t->texture != prev) {
+			delete t->image;
+			if (t->filename == "")
+				t->image = new Image(16, 16, White);
+			else
+				t->image = Image::load(t->filename);
+		}*/
+		t->reload_image();
+	}
 }
 
 void ModelMaterial::checkColors()
 {
-	if (!user_color){
-		ambient = material->ambient;
-		diffuse = material->diffuse;
-		specular = material->specular;
-		shininess = material->shininess;
-		emission = material->emission;
+	if (!col.user){
+		col.ambient = material->ambient;
+		col.diffuse = material->diffuse;
+		col.specular = material->specular;
+		col.shininess = material->shininess;
+		col.emission = material->emission;
 	}
 }
 
@@ -149,24 +155,26 @@ void ModelMaterial::applyForRendering()
 {
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetShader(nix::default_shader_3d);
-	color em = ColorInterpolate(emission, White, 0.1f);
-	nix::SetMaterial(ambient, diffuse, specular, shininess, em);
+	color em = ColorInterpolate(col.emission, White, 0.1f);
+	nix::SetMaterial(col.ambient, col.diffuse, col.specular, col.shininess, em);
 	if (true){//MVFXEnabled){
-		nix::SetZ(alpha_zbuffer, alpha_zbuffer);
-		if (transparency_mode == TRANSPARENCY_COLOR_KEY_HARD)
+		nix::SetZ(alpha.zbuffer, alpha.zbuffer);
+		if (alpha.mode == TRANSPARENCY_COLOR_KEY_HARD)
 			nix::SetAlpha(ALPHA_COLOR_KEY_HARD);
-		else if (transparency_mode == TRANSPARENCY_COLOR_KEY_SMOOTH)
+		else if (alpha.mode == TRANSPARENCY_COLOR_KEY_SMOOTH)
 			nix::SetAlpha(ALPHA_COLOR_KEY_SMOOTH);
-		else if (transparency_mode == TRANSPARENCY_FUNCTIONS){
-			nix::SetAlpha(alpha_source, alpha_destination);
+		else if (alpha.mode == TRANSPARENCY_FUNCTIONS){
+			nix::SetAlpha(alpha.source, alpha.destination);
 			//NixSetZ(false,false);
-		}else if (transparency_mode == TRANSPARENCY_FACTOR){
-			nix::SetAlpha(alpha_factor);
+		}else if (alpha.mode == TRANSPARENCY_FACTOR){
+			nix::SetAlpha(alpha.factor);
 			//NixSetZ(false,false);
 		}
 		nix::SetShader(material->shader);
 	}
-	Array<nix::Texture*> tex = textures;
+	Array<nix::Texture*> tex;
+	for (auto *t: texture_levels)
+		tex.add(t->texture);
 	if (material->cube_map)
 		tex.add(material->cube_map);
 	nix::SetTextures(tex);

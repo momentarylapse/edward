@@ -182,12 +182,13 @@ vector img_get_ball_n(int x, int y, int N)
 string render_material(ModelMaterial *m)
 {
 	// texture?
-	nix::Texture *tex = nix::LoadTexture(m->texture_files[0]);
+	/*nix::Texture *tex = nix::LoadTexture(m->texture_levels[0].texture);
 	if (!tex)
 		if (m->material->textures.num > 0)
-			tex = m->material->textures[0];
+			tex = m->material->textures[0];*/
+	auto tim = m->texture_levels[0]->image;
 
-	const int N = 32;
+	const int N = 48;
 
 	// simulate a lit sphere
 	Image img;
@@ -202,24 +203,21 @@ string render_material(ModelMaterial *m)
 			// ambient + diffuse + emission
 			vector n = img_get_ball_n(x, y, N);
 			float f = clampf(n * light_dir, 0, 1);
-			color c = m->ambient * 0.3f + m->diffuse * f + m->emission;
+			color c = m->col.ambient * 0.3f + m->col.diffuse * f + m->col.emission;
 
 			// texture "mapping"
-			if (tex)
-				c = c * tex->icon.get_pixel(x, y);
-			else
-				c = c * 0.8f;
+			c = c * tim->get_pixel((x * tim->width) / N, (y * tim->height) / N);
 
 			// specular
-			f = pow(n * light_sp_dir, m->shininess) * 0.4f;
-			c += m->specular * f;
+			f = pow(n * light_sp_dir, m->col.shininess) * 0.4f;
+			c += m->col.specular * f;
 
 			c = c * 0.9f;
 			c.clamp();
 			c.a = 1;
 			img.set_pixel(x, y, c);
 		}
-	return hui::SetImage(img);
+	return hui::SetImage(&img, format("image:material-%p", m));
 }
 
 string file_secure(const string &filename)

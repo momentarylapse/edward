@@ -52,8 +52,8 @@ void ModelMaterialSelectionDialog::FillMaterialList()
 			for (ModelPolygon &t: s.polygon)
 			if (t.material == i)
 				nt ++;
-		string im = render_material(&data->material[i]);
-		add_string("material_list", format("%d\\%d\\%s\\%s", i, nt, im.c_str(), file_secure(data->material[i].material_file).c_str()));
+		string im = render_material(data->material[i]);
+		add_string("material_list", format("%d\\%d\\%s\\%s", i, nt, im.c_str(), file_secure(data->material[i]->filename).c_str()));
 	}
 	set_int("material_list", mode_model_mesh->current_material);
 }

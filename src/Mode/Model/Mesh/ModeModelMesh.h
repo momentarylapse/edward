@@ -33,6 +33,8 @@ public:
 	ModeModelMesh(ModeBase *parent);
 	virtual ~ModeModelMesh();
 
+	static const string MESSAGE_CURRENT_MATERIAL_CHANGE;
+
 	void on_start() override;
 	void on_enter() override;
 	void on_end() override;

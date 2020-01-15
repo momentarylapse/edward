@@ -19,7 +19,7 @@ public:
 	string vecToJson(vector &v);
 	string col3ToJson(color &c);
 	string qToJson(quaternion &q);
-	string materialToJson(ModelMaterial &m);
+	string materialToJson(ModelMaterial *m);
 	string moveToJson(ModelMove &m, DataModel *model);
 	string boneToJson(ModelBone &b);
 

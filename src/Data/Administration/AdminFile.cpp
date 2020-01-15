@@ -230,10 +230,10 @@ void AdminFile::check(AdminFileList &list)
 			}
 			for (string &s: m.meta_data.inventary)
 				add_possible_link(l, FD_MODEL, s);
-			for (int i=0;i<m.material.num;i++){
-				add_possible_link(l, FD_MATERIAL, m.material[i].material_file);
-				for (int j=0;j<m.material[i].texture_files.num;j++)
-					add_possible_link(l, FD_TEXTURE, m.material[i].texture_files[j]);
+			for (auto mat: m.material){
+				add_possible_link(l, FD_MATERIAL, mat->filename);
+				for (auto tl: mat->texture_levels)
+					add_possible_link(l, FD_TEXTURE, tl->filename);
 			}
 			add_possible_link(l, FD_SCRIPT, m.meta_data.script_file);
 		}else

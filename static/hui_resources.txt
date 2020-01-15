@@ -8950,7 +8950,7 @@ checkable,image=icons/toolbar/rf_rotate.png
 # Language
 Deutsch
 # Number Of IDs
-912
+917
 # Text
 /ambient
 Ambient
@@ -11014,7 +11014,7 @@ model-material-list-popup/apply_material
 auf Auswahl anwenden
 
 model-material-list-popup/delete_material
-loeschen
+löschen
 
 model-material-list-popup/header
 Material
@@ -11078,16 +11078,16 @@ Textur
 
 model-texture-list-popup/texture-level-add
 neue Ebene
-f&ugt eine weitere Textur-Schicht hinzu (multitexturing)
+fügt eine weitere Textur-Schicht hinzu (multitexturing)
 model-texture-list-popup/texture-level-clear
-Leeren
-l&oscht die Textur der ausgew&ahlten Textur-Schicht
+leeren
+löscht die Textur der ausgewählten Textur-Schicht
 model-texture-list-popup/texture-level-delete
-Löschen
-l&oscht die ausgew&ahlte Textur-Schicht
+löschen
+löscht die ausgewählte Textur-Schicht
 model-texture-list-popup/texture-level-load
-Laden...
-eine Texturdatei in die ausgew&ahlten Textur-Schicht laden
+laden...
+eine Texturdatei in die ausgewählten Textur-Schicht laden
 model-toolbar/mode_model_animation
 Animationen
 
@@ -11199,6 +11199,21 @@ Z-Buffer aktiviert
 model_material_dialog/default_colors
 Farben aus der Datei verwenden
 
+model_material_dialog/mat_am
+
+Farbe des Objektes im Schatten (Umgebungslicht)
+model_material_dialog/mat_di
+
+Farbe des Objektes bei direktem Licht
+model_material_dialog/mat_em
+
+Farbe des Objektes bei absoluter Dunkelheit
+model_material_dialog/mat_shininess
+
+Härte des Glanzes (10=weich, 100=hart)
+model_material_dialog/mat_sp
+
+Farbe von Glanzflecken
 model_material_dialog/mat_textures
 Ebene\\\\Textur
 Übereinanderliegende Textur-Schichten (multitexturing)\n- Aktionen per Rechtsklick
@@ -11228,7 +11243,7 @@ Transparenz
 
 model_material_dialog/transparency_mode:color_key
 Color-Key
-
+Reines Grün wird transparent
 model_material_dialog/transparency_mode:factor
 Faktor
 

@@ -32,7 +32,7 @@ string ExporterJson::qToJson(quaternion &q)
 	return format("%f, %f, %f, %f", -q.x, q.y, q.z, -q.w);
 }
 
-string ExporterJson::materialToJson(ModelMaterial &m)
+string ExporterJson::materialToJson(ModelMaterial *m)
 {
 	string str;
 	str += "	{\n";
@@ -40,13 +40,13 @@ string ExporterJson::materialToJson(ModelMaterial &m)
 	str += "		'DbgIndex' : 0,\n";
 	str += "		'DbgName' : 'Test',\n";
 	str += "		'blending' : 'NormalBlending',\n";
-	str += "		'colorAmbient' : [" + col3ToJson(m.ambient) + "],\n";
-	str += "		'colorDiffuse' : [" + col3ToJson(m.diffuse) + "],\n";
-	str += "		'colorSpecular' : [" + col3ToJson(m.specular) + "],\n";
+	str += "		'colorAmbient' : [" + col3ToJson(m->col.ambient) + "],\n";
+	str += "		'colorDiffuse' : [" + col3ToJson(m->col.diffuse) + "],\n";
+	str += "		'colorSpecular' : [" + col3ToJson(m->col.specular) + "],\n";
 	str += "		'depthTest' : true,\n";
 	str += "		'depthWrite' : true,\n";
 	str += "		'shading' : 'Phong',\n";
-	str += "		'specularCoef' : " + f2s(m.shininess,6) + ",\n";
+	str += "		'specularCoef' : " + f2s(m->col.shininess,6) + ",\n";
 	str += "		'transparency' : 1.0,\n";
 	str += "		'transparent' : false,\n";
 	str += "		'vertexColors' : false\n";
@@ -171,7 +171,7 @@ bool ExporterJson::Export(DataModel *m, const string &filename)
 	str += "		'vertexColors' : false\n"
 	str += "	}],\n"*/
 	str += "'materials': [\n";
-	foreachi(ModelMaterial &mat, m->material, i){
+	foreachi(ModelMaterial *mat, m->material, i){
 		str += materialToJson(mat);
 		if (i < m->material.num - 1)
 			str += ",\n";

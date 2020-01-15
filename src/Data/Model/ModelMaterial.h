@@ -15,14 +15,14 @@ namespace nix{
 	class VertexBuffer;
 };
 
+class Image;
+
 class ModelMaterial
 {
 public:
 	ModelMaterial();
 	ModelMaterial(const string &filename);
 	virtual ~ModelMaterial();
-
-	void operator=(const ModelMaterial &m);
 
 	void reset();
 	void makeConsistent();
@@ -31,23 +31,36 @@ public:
 	void checkTransparency();
 	void applyForRendering();
 
-	string material_file;
+	string filename;
 	Material *material;
-	Array<nix::Texture*> textures;
-	Array<string> texture_files;
 
-	bool user_transparency;
-	int transparency_mode;
-	int alpha_source, alpha_destination;
-	float alpha_factor;
-	bool alpha_zbuffer;
+	struct TextureLevel {
+		TextureLevel();
+		~TextureLevel();
+		string filename;
+		nix::Texture *texture;
+		Image *image;
+		void reload_image();
+		void update_texture();
+	};
+	Array<TextureLevel*> texture_levels;
 
-	bool user_color;
-	color ambient;
-	color diffuse;
-	color specular;
-	color emission;
-	float shininess;
+	struct Alpha {
+		bool user;
+		int mode;
+		int source, destination;
+		float factor;
+		bool zbuffer;
+	} alpha;
+
+	struct Color {
+		bool user;
+		color ambient;
+		color diffuse;
+		color specular;
+		color emission;
+		float shininess;
+	} col;
 
 	nix::VertexBuffer *vb;
 };

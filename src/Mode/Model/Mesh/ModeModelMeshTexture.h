@@ -19,6 +19,8 @@ class ModeModelMeshTexture: public Mode<DataModel>, public Observable
 public:
 	ModeModelMeshTexture(ModeBase *parent);
 
+	static const string MESSAGE_TEXTURE_LEVEL_CHANGE;
+
 	void on_start() override;
 	void on_end() override;
 

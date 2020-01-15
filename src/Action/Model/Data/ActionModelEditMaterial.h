@@ -11,10 +11,10 @@
 #include "../../Action.h"
 #include "../../../Data/Model/DataModel.h"
 
-class ActionModelEditMaterial : public Action
-{
+class ActionModelEditMaterial : public Action {
 public:
-	ActionModelEditMaterial(int _index, const ModelMaterial &_mat);
+	ActionModelEditMaterial(int index, const ModelMaterial::Color &_col);
+	ActionModelEditMaterial(int index, const ModelMaterial::Alpha &_a);
 	string name(){ return "ModelEditMaterial"; }
 
 	void *execute(Data *d);
@@ -22,7 +22,48 @@ public:
 
 private:
 	int index;
-	ModelMaterial mat;
+	int mode;
+	ModelMaterial::Color col;
+	ModelMaterial::Alpha alpha;
+};
+
+class ActionModelMaterialAddTexture : public Action {
+public:
+	ActionModelMaterialAddTexture(int _index);
+	string name(){ return "ModelMaterialAddTexture"; }
+
+	void *execute(Data *d);
+	void undo(Data *d);
+
+private:
+	int index;
+};
+
+class ActionModelMaterialDeleteTexture : public Action {
+public:
+	ActionModelMaterialDeleteTexture(int index, int level);
+	string name(){ return "ModelMaterialDeleteTexture"; }
+
+	void *execute(Data *d);
+	void undo(Data *d);
+
+private:
+	int index, level;
+	ModelMaterial::TextureLevel *tl;
+};
+
+
+class ActionModelMaterialLoadTexture : public Action {
+public:
+	ActionModelMaterialLoadTexture(int index, int level, const string &filename);
+	string name(){ return "ModelMaterialAddTexture"; }
+
+	void *execute(Data *d);
+	void undo(Data *d);
+
+private:
+	int index, level;
+	string filename;
 };
 
 #endif /* ACTIONMODELEDITMATERIAL_H_ */

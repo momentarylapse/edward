@@ -21,9 +21,12 @@ void *ActionModelAddMaterial::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModelMaterial mat = ModelMaterial(filename);
+	auto mat = new ModelMaterial(filename);
+	mat->texture_levels.add(new ModelMaterial::TextureLevel());
+	mat->texture_levels[0]->reload_image();
 
 	m->material.add(mat);
+	m->notify(m->MESSAGE_MATERIAL_CHANGE);
 	return &m->material.back();
 }
 
@@ -33,7 +36,8 @@ void ActionModelAddMaterial::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	m->material.pop();
+	delete m->material.pop();
+	m->notify(m->MESSAGE_MATERIAL_CHANGE);
 }
 
 

@@ -56,6 +56,8 @@
 #include "../../Action/Model/Skeleton/ActionModelSetSubModel.h"
 
 const string DataModel::MESSAGE_SKIN_CHANGE = "SkinChange";
+const string DataModel::MESSAGE_MATERIAL_CHANGE = "MaterialChange";
+const string DataModel::MESSAGE_TEXTURE_CHANGE = "TextureChange";
 
 bool DataModelAllowUpdating = true;
 
@@ -154,11 +156,15 @@ void DataModel::reset()
 	cylinder.clear();
 	poly.clear();
 	fx.clear();
+
+	material.clear();
 	material.resize(1);
-	material[0].reset();
-	material[0].user_color = true;
-	material[0].diffuse = color(1, 0.2f, 0.4f, 0.6f);
-	material[0].specular = color(1, 0.4f, 0.6f, 0.8f);
+	material[0] = new ModelMaterial();
+	material[0]->texture_levels.add(new ModelMaterial::TextureLevel());
+	material[0]->texture_levels[0]->reload_image();
+	material[0]->col.user = true;
+	material[0]->col.diffuse = color(1, 0.2f, 0.4f, 0.6f);
+	material[0]->col.specular = color(1, 0.4f, 0.6f, 0.8f);
 	showVertices(vertex);
 
 	// skeleton
@@ -300,24 +306,29 @@ bool DataModel::load(const string & _filename, bool deep)
 		f->read_comment();
 		material.resize(f->read_int());
 		for (int i=0;i<material.num;i++){
-			material[i].material_file = f->read_str();
-			material[i].user_color = f->read_bool();
-			if (material[i].user_color){
-				read_color_argb(f, material[i].ambient);
-				read_color_argb(f, material[i].diffuse);
-				read_color_argb(f, material[i].specular);
-				read_color_argb(f, material[i].emission);
-				material[i].shininess = (float)f->read_int();
+			material[i] = new ModelMaterial();
+			material[i]->filename = f->read_str();
+			material[i]->col.user = f->read_bool();
+			if (material[i]->col.user){
+				read_color_argb(f, material[i]->col.ambient);
+				read_color_argb(f, material[i]->col.diffuse);
+				read_color_argb(f, material[i]->col.specular);
+				read_color_argb(f, material[i]->col.emission);
+				material[i]->col.shininess = (float)f->read_int();
 			}
-			material[i].transparency_mode = f->read_int();
-			material[i].user_transparency = (material[i].transparency_mode != TransparencyModeDefault);
-			material[i].alpha_source = f->read_int();
-			material[i].alpha_destination = f->read_int();
-			material[i].alpha_factor = (float)f->read_int() * 0.01f;
-			material[i].alpha_zbuffer = f->read_bool();
+			material[i]->alpha.mode = f->read_int();
+			material[i]->alpha.user = (material[i]->alpha.mode != TransparencyModeDefault);
+			material[i]->alpha.source = f->read_int();
+			material[i]->alpha.destination = f->read_int();
+			material[i]->alpha.factor = (float)f->read_int() * 0.01f;
+			material[i]->alpha.zbuffer = f->read_bool();
 			int n = f->read_int();
-			for (int t=0;t<n;t++)
-				material[i].texture_files.add(f->read_str());
+			material[i]->texture_levels.clear();
+			for (int t=0;t<n;t++) {
+				auto *tl = new ModelMaterial::TextureLevel();
+				tl->filename = f->read_str();
+				material[i]->texture_levels.add(tl);
+			}
 		}
 		// create subs...
 		for (int k=0;k<4;k++){
@@ -574,29 +585,33 @@ bool DataModel::load(const string & _filename, bool deep)
 		f->read_comment();
 		material.resize(f->read_int());
 		for (int i=0;i<material.num;i++){
-			material[i].material_file = f->read_str();
-			material[i].user_color = f->read_bool();
-			read_color_argb(f, material[i].ambient);
-			read_color_argb(f, material[i].diffuse);
-			read_color_argb(f, material[i].specular);
-			read_color_argb(f, material[i].emission);
-			material[i].shininess = (float)f->read_int();
-			material[i].transparency_mode = f->read_int();
-			material[i].user_transparency = (material[i].transparency_mode != TransparencyModeDefault);
-			material[i].alpha_source = f->read_int();
-			material[i].alpha_destination = f->read_int();
-			material[i].alpha_factor = (float)f->read_int() * 0.01f;
-			material[i].alpha_zbuffer = f->read_bool();
+			material[i] = new ModelMaterial();
+			material[i]->filename = f->read_str();
+			material[i]->col.user = f->read_bool();
+			read_color_argb(f, material[i]->col.ambient);
+			read_color_argb(f, material[i]->col.diffuse);
+			read_color_argb(f, material[i]->col.specular);
+			read_color_argb(f, material[i]->col.emission);
+			material[i]->col.shininess = (float)f->read_int();
+			material[i]->alpha.mode = f->read_int();
+			material[i]->alpha.user = (material[i]->alpha.mode != TransparencyModeDefault);
+			material[i]->alpha.source = f->read_int();
+			material[i]->alpha.destination = f->read_int();
+			material[i]->alpha.factor = (float)f->read_int() * 0.01f;
+			material[i]->alpha.zbuffer = f->read_bool();
 			int n = f->read_int();
-			material[i].texture_files.clear();
-			for (int t=0;t<n;t++)
-				material[i].texture_files.add(f->read_str());
+			material[i]->texture_levels.clear();
+			for (int t=0;t<n;t++) {
+				auto tl = new ModelMaterial::TextureLevel();
+				tl->filename = f->read_str();
+				material[i]->texture_levels.add(tl);
+			}
 		}
 		// create subs...
 		for (int k=0;k<4;k++){
 			skin[k].sub.resize(material.num);
 			for (int j=0;j<material.num;j++)
-				skin[k].sub[j].num_textures = material[j].texture_files.num;
+				skin[k].sub[j].num_textures = material[j]->texture_levels.num;
 		}
 
 	// Physical Skin
@@ -679,7 +694,7 @@ bool DataModel::load(const string & _filename, bool deep)
 					for (int k=0;k<3;k++)
 						skin[i].sub[m].triangle[j].vertex[k] = f->read_int();
 				// skin vertex
-				for (int tl=0;tl<material[m].texture_files.num;tl++)
+				for (int tl=0;tl<material[m]->texture_levels.num;tl++)
 					for (int j=0;j<skin[i].sub[m].triangle.num;j++)
 						for (int k=0;k<3;k++){
 							int svi = f->read_int();
@@ -886,7 +901,7 @@ bool DataModel::load(const string & _filename, bool deep)
 						t.side.resize(n);
 						for (int k=0;k<n;k++){
 							t.side[k].vertex = f->read_int();
-							for (int l=0;l<material[t.material].texture_files.num;l++){
+							for (int l=0;l<material[t.material]->texture_levels.num;l++){
 								t.side[k].skin_vertex[l].x = f->read_float();
 								t.side[k].skin_vertex[l].y = f->read_float();
 							}
@@ -963,12 +978,12 @@ bool DataModel::load(const string & _filename, bool deep)
 			}
 
 		for (int i=0;i<material.num;i++){
-			material[i].makeConsistent();
+			material[i]->makeConsistent();
 
 			// test textures
-			for (int t=0;t<material[i].texture_files.num;t++){
-				if ((!material[i].textures[t]) and (material[i].texture_files[t].num > 0))
-					report_error(format(_("Textur-Datei nicht ladbar: %s"), material[i].texture_files[t].c_str()));
+			for (auto &t: material[i]->texture_levels){
+				if ((!t->texture) and (t->filename.num > 0))
+					report_error(format(_("Textur-Datei nicht ladbar: %s"), t->filename.c_str()));
 			}
 		}
 
@@ -1022,7 +1037,7 @@ void DataModel::importFromTriangleSkin(int index)
 			for (int k=0;k<3;k++)
 				v.add(t.vertex[k]);
 			Array<vector> sv;
-			for (int tl=0;tl<material[i].texture_files.num;tl++)
+			for (int tl=0;tl<material[i]->texture_levels.num;tl++)
 				for (int k=0;k<3;k++)
 					sv.add(t.skin_vertex[tl][k]);
 			try{
@@ -1112,8 +1127,8 @@ void DataModel::exportToTriangleSkin(int index)
 			}
 		}
 	}
-	foreachi(ModelMaterial &m, material, i)
-		sk.sub[i].num_textures = m.texture_files.num;
+	foreachi(ModelMaterial *m, material, i)
+		sk.sub[i].num_textures = m->texture_levels.num;
 }
 
 
@@ -1200,22 +1215,22 @@ bool DataModel::save(const string & _filename)
 // materials
 	f->write_comment("// Materials");
 	f->write_int(material.num);
-	for (ModelMaterial &m: material){
-		f->write_str(m.material_file);
-		f->write_bool(m.user_color);
-		write_color_argb(f, m.ambient);
-		write_color_argb(f, m.diffuse);
-		write_color_argb(f, m.specular);
-		write_color_argb(f, m.emission);
-		f->write_int(m.shininess);
-		f->write_int(m.user_transparency ? m.transparency_mode : TransparencyModeDefault);
-		f->write_int(m.alpha_source);
-		f->write_int(m.alpha_destination);
-		f->write_int(m.alpha_factor * 100.0f);
-		f->write_bool(m.alpha_zbuffer);
-		f->write_int(m.texture_files.num);
-		for (int t=0;t<m.texture_files.num;t++)
-			f->write_str(m.texture_files[t]);
+	for (ModelMaterial *m: material){
+		f->write_str(m->filename);
+		f->write_bool(m->col.user);
+		write_color_argb(f, m->col.ambient);
+		write_color_argb(f, m->col.diffuse);
+		write_color_argb(f, m->col.specular);
+		write_color_argb(f, m->col.emission);
+		f->write_int(m->col.shininess);
+		f->write_int(m->alpha.user ? m->alpha.mode : TransparencyModeDefault);
+		f->write_int(m->alpha.source);
+		f->write_int(m->alpha.destination);
+		f->write_int(m->alpha.factor * 100.0f);
+		f->write_bool(m->alpha.zbuffer);
+		f->write_int(m->texture_levels.num);
+		for (int t=0;t<m->texture_levels.num;t++)
+			f->write_str(m->texture_levels[t]->filename);
 	}
 
 // physical skin
@@ -1285,10 +1300,10 @@ bool DataModel::save(const string & _filename)
 	    // skin vertices
 		int num_skin_v = 0;
 		for (int m=0;m<material.num;m++)
-			num_skin_v += s->sub[m].triangle.num * material[m].texture_files.num * 3;
+			num_skin_v += s->sub[m].triangle.num * material[m]->texture_levels.num * 3;
 		f->write_int(num_skin_v);
 		for (int m=0;m<material.num;m++)
-			for (int tl=0;tl<material[m].texture_files.num;tl++)
+			for (int tl=0;tl<material[m]->texture_levels.num;tl++)
 		    	for (int j=0;j<s->sub[m].triangle.num;j++)
 					for (int k=0;k<3;k++){
 						f->write_float(s->sub[m].triangle[j].skin_vertex[tl][k].x);
@@ -1310,7 +1325,7 @@ bool DataModel::save(const string & _filename)
 					f->write_int(sub->triangle[j].vertex[k]);
 
 			// skin index
-			for (int tl=0;tl<material[m].texture_files.num;tl++)
+			for (int tl=0;tl<material[m]->texture_levels.num;tl++)
 		    	for (int j=0;j<sub->triangle.num;j++)
 					for (int k=0;k<3;k++)
 						f->write_int(svi ++);
@@ -1517,7 +1532,7 @@ bool DataModel::save(const string & _filename)
 			f->write_int(t.material);
 			for (ModelPolygonSide &ss: t.side){
 				f->write_int(ss.vertex);
-				for (int l=0;l<material[t.material].texture_files.num;l++){
+				for (int l=0;l<material[t.material]->texture_levels.num;l++){
 					f->write_float(ss.skin_vertex[l].x);
 					f->write_float(ss.skin_vertex[l].y);
 				}

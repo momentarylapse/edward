@@ -1,7 +1,7 @@
 Menu model-texture-list-popup ""
 	Item header "Textur" disabled
 	Separator
-	Item texture-level-add "neue Ebene" image=hui:add "tooltip=f&ugt eine weitere Textur-Schicht hinzu (multitexturing)"
-	Item texture-level-load "Laden..." image=hui:open "tooltip=eine Texturdatei in die ausgew&ahlten Textur-Schicht laden"
-	Item texture-level-clear "Leeren" image=hui:clear "tooltip=l&oscht die Textur der ausgew&ahlten Textur-Schicht"
-	Item texture-level-delete "Löschen" image=hui:delete "tooltip=l&oscht die ausgew&ahlte Textur-Schicht"
+	Item texture-level-add "neue Ebene" image=hui:add "tooltip=fügt eine weitere Textur-Schicht hinzu (multitexturing)"
+	Item texture-level-load "laden..." image=hui:open "tooltip=eine Texturdatei in die ausgewählten Textur-Schicht laden"
+	Item texture-level-clear "leeren" image=hui:clear "tooltip=löscht die Textur der ausgewählten Textur-Schicht"
+	Item texture-level-delete "löschen" image=hui:delete "tooltip=löscht die ausgewählte Textur-Schicht"

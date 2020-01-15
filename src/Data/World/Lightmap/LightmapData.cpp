@@ -140,9 +140,9 @@ static void tria_set_mat(LightmapData::Triangle &t, Material *m)
 
 static void tria_set_mat(LightmapData::Triangle &t, ModelMaterial *m)
 {
-	t.am = m->ambient;
-	t.di = m->diffuse;
-	t.em = m->emission;
+	t.am = m->col.ambient;
+	t.di = m->col.diffuse;
+	t.em = m->col.emission;
 }
 
 void LightmapData::AddModel(const string &filename, matrix &mat, int object_index)
@@ -182,7 +182,7 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 					t.n[l] = mat.transform_normal(p.side[n].normal);
 				}
 				update_tria(t);
-				tria_set_mat(t, &m->material[p.material]);
+				tria_set_mat(t, m->material[p.material]);
 				mod.area += t.area;
 				Trias.add(t);
 			}
@@ -271,8 +271,10 @@ void LightmapData::AddTextureLevels(bool modify)
 {
 	for (Model &m: Models){
 		if (modify){
-			for (ModelMaterial &mat: m.orig->material)
-				mat.texture_files.add("");
+			for (ModelMaterial *mat: m.orig->material) {
+				auto tl = new ModelMaterial::TextureLevel();
+				mat->texture_levels.add(tl);
+			}
 		}
 		m.orig->automap(-1, 1); // TODO...
 	}

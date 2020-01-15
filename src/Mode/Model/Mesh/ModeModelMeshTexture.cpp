@@ -12,6 +12,8 @@
 #include "ModeModelMesh.h"
 #include "ModeModelMeshTexture.h"
 
+const string ModeModelMeshTexture::MESSAGE_TEXTURE_LEVEL_CHANGE = "TextureLevelChange";
+
 ModeModelMeshTexture *mode_model_mesh_texture = NULL;
 
 ModeModelMeshTexture::ModeModelMeshTexture(ModeBase *_parent) :
@@ -86,7 +88,7 @@ void ModeModelMeshTexture::on_end()
 	skin_vertex.clear();
 }
 
-#define cur_tex			data->material[mode_model_mesh->current_material].textures[current_texture_level]
+#define cur_tex			data->material[mode_model_mesh->current_material]->texture_levels[current_texture_level]->texture
 
 
 void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
@@ -199,14 +201,14 @@ void ModeModelMeshTexture::setCurrentTextureLevel(int level)
 	//	return;
 	current_texture_level = level;
 	fetchData();
-	notify();
+	notify(MESSAGE_TEXTURE_LEVEL_CHANGE);
 }
 
 void ModeModelMeshTexture::on_update(Observable *o, const string &message)
 {
 	// consistency checks
-	if (current_texture_level >= data->material[mode_model_mesh->current_material].textures.num)
-		setCurrentTextureLevel(data->material[mode_model_mesh->current_material].textures.num - 1);
+	if (current_texture_level >= data->material[mode_model_mesh->current_material]->texture_levels.num)
+		setCurrentTextureLevel(data->material[mode_model_mesh->current_material]->texture_levels.num - 1);
 
 	if (o == data){
 

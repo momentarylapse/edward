@@ -20,8 +20,8 @@ public:
 	virtual ~ModelMaterialDialog();
 
 	void load_data();
-	void apply_data();
-	void apply_data_delayed();
+	void apply_data_color();
+	void apply_data_alpha();
 	void fill_material_list();
 
 	void on_material_list();
@@ -49,7 +49,7 @@ public:
 
 private:
 	DataModel *data;
-	ModelMaterial temp;
+	//ModelMaterial temp;
 	int apply_queue_depth;
 	hui::Menu *popup_materials;
 	hui::Menu *popup_textures;

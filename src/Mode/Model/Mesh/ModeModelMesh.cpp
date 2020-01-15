@@ -45,6 +45,7 @@
 
 ModeModelMesh *mode_model_mesh = NULL;
 
+const string ModeModelMesh::MESSAGE_CURRENT_MATERIAL_CHANGE = "CurrentMaterialChange";
 
 ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	Mode<DataModel>("ModelMesh", _parent, ed->multi_view_3d, "menu_model"),
@@ -549,7 +550,7 @@ void ModeModelMesh::setCurrentMaterial(int index)
 	if (current_material == index)
 		return;
 	current_material = index;
-	notify();
+	notify(MESSAGE_CURRENT_MATERIAL_CHANGE);
 	mode_model_mesh_texture->setCurrentTextureLevel(0);
 }
 
@@ -618,14 +619,14 @@ void ModeModelMesh::drawPolygons(MultiView::Window *win, Array<ModelVertex> &ver
 	}
 
 	// draw all materials separately
-	foreachi(ModelMaterial &m, data->material, mi){
-		if (!m.vb)
+	foreachi(ModelMaterial *m, data->material, mi){
+		if (!m->vb)
 			continue;
 
 		// draw
-		m.applyForRendering();
+		m->applyForRendering();
 		nix::SetOffset(1.0f);
-		nix::Draw3D(m.vb);
+		nix::Draw3D(m->vb);
 		nix::SetOffset(0);
 		//nix::SetShader(NULL);
 		//nix::SetTexture(NULL);
@@ -665,23 +666,23 @@ void ModeModelMesh::updateVertexBuffers(Array<ModelVertex> &vertex)
 {
 	//msg_write("update vertex buffers!!!!!!!!!!");
 	// draw all materials separately
-	foreachi(ModelMaterial &m, data->material, mi){
-		int num_tex = m.textures.num;
-		if (!m.vb)
-			m.vb = new nix::VertexBuffer(num_tex);
-		if (m.vb->num_textures != num_tex){
-			delete(m.vb);
-			m.vb = new nix::VertexBuffer(num_tex);
+	foreachi(ModelMaterial *m, data->material, mi){
+		int num_tex = m->texture_levels.num;
+		if (!m->vb)
+			m->vb = new nix::VertexBuffer(num_tex);
+		if (m->vb->num_textures != num_tex){
+			delete(m->vb);
+			m->vb = new nix::VertexBuffer(num_tex);
 		}
 
-		m.vb->clear();
+		m->vb->clear();
 
 		for (ModelSurface &surf: data->surface){
 			if (!surf.is_visible)
 				continue;
 			for (ModelPolygon &t: surf.polygon)
 				if ((t.view_stage >= multi_view->view_stage) and (t.material == mi))
-					t.addToVertexBuffer(vertex, m.vb, m.textures.num);
+					t.addToVertexBuffer(vertex, m->vb, m->texture_levels.num);
 		}
 
 		//m.vb->optimize();

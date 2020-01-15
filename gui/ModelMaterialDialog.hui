@@ -9,26 +9,26 @@ Dialog model_material_dialog "Material" width=350 height=371
 				---|
 				Grid ? ""
 					Text /ambient "Ambient"
-					ColorButton mat_am "" expandx
+					ColorButton mat_am "" "tooltip=Farbe des Objektes im Schatten (Umgebungslicht)" expandx
 					---|
 					Text /diffuse "Diffuse"
-					ColorButton mat_di "" alpha
+					ColorButton mat_di "" "tooltip=Farbe des Objektes bei direktem Licht" alpha
 					---|
 					Text /specular "Specular"
-					ColorButton mat_sp ""
+					ColorButton mat_sp "" "tooltip=Farbe von Glanzflecken"
 					---|
 					Text /shininess "Shininess"
-					SpinButton mat_shininess "" range=0:10000:0.1
+					SpinButton mat_shininess "" "tooltip=Härte des Glanzes (10=weich, 100=hart)" range=0:10000:0.1
 					---|
 					Text /emission "Emission"
-					ColorButton mat_em ""
+					ColorButton mat_em "" "tooltip=Farbe des Objektes bei absoluter Dunkelheit"
 		Expander model_material_dialog_grp_textures "Texturen"
 			ListView mat_textures "Ebene\\\\Textur" "tooltip=Übereinanderliegende Textur-Schichten (multitexturing)\n- Aktionen per Rechtsklick" format=tit select-single
 		Expander model_material_dialog_grp_transparency "Transparenz"
 			Grid ? "" vertical
 				RadioButton transparency_mode:material "Transparenz aus der Datei verwenden"
 				RadioButton transparency_mode:none "Keine Transparenz"
-				RadioButton transparency_mode:color_key "Color-Key"
+				RadioButton transparency_mode:color_key "Color-Key" "tooltip=Reines Grün wird transparent"
 				RadioButton transparency_mode:function "Funktion"
 				Grid mmat_transp_function_grid "" indent
 					Text material_dialog_t_trans_source "Quelle"

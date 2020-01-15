@@ -298,7 +298,6 @@ Edward::Edward(Array<string> arg) :
 
 	// initialize engine
 	nix::Init("OpenGL", w, h);
-	nix::texture_icon_size = 32;
 	nix::render_str = &render_text;
 
 	MetaInit();
@@ -969,11 +968,13 @@ string Edward::get_tex_image(nix::Texture *tex)
 
 	string img;
 	if (tex){
-		img = hui::SetImage(tex->icon);
+		Image im;
+		tex->read(im);
+		img = hui::SetImage(&im);
 	}else{
 		Image empty;
-		empty.create(32, 32, White);
-		img = hui::SetImage(empty);
+		empty.create(48, 48, White);
+		img = hui::SetImage(&empty);
 	}
 	icon_image.set(tex, img);
 	return img;

@@ -233,6 +233,8 @@ public:
 	virtual ~DataModel();
 
 	static const string MESSAGE_SKIN_CHANGE;
+	static const string MESSAGE_MATERIAL_CHANGE;
+	static const string MESSAGE_TEXTURE_CHANGE;
 
 	virtual void reset();
 	virtual bool load(const string &_filename, bool deep = true);
@@ -355,7 +357,7 @@ public:
 	Array<ModelPolyhedron> poly;
 
 	// general properties
-	Array<ModelMaterial> material;
+	Array<ModelMaterial*> material;
 	vector _min, _max;
 
 	// effects

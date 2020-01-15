@@ -67,7 +67,7 @@ void ModelSurface::addPolygon(Array<int> &v, int material, Array<vector> &sv, in
 	t.side.resize(v.num);
 	for (int k=0;k<v.num;k++){
 		t.side[k].vertex = v[k];
-		for (int i=0;i<model->material[material].texture_files.num;i++)
+		for (int i=0;i<model->material[material]->texture_levels.num;i++)
 			t.side[k].skin_vertex[i] = sv[i * v.num + k];
 	}
 	for (int k=0;k<v.num;k++){

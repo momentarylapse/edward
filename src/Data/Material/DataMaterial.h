@@ -12,7 +12,7 @@
 #include "../../x/material.h"
 
 namespace nix{
-	class Textmure;
+	class Texture;
 	class CubeMap;
 	class Shader;
 };
