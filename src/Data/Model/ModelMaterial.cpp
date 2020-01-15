@@ -50,11 +50,14 @@ ModelMaterial::~ModelMaterial()
 ModelMaterial::TextureLevel::TextureLevel() {
 	texture = NULL;
 	image = NULL;
+	edited = false;
 }
 
 ModelMaterial::TextureLevel::~TextureLevel() {
 	if (image)
 		delete image;
+	if (texture)
+		delete texture;
 }
 
 void ModelMaterial::TextureLevel::reload_image() {
@@ -64,6 +67,7 @@ void ModelMaterial::TextureLevel::reload_image() {
 		image = new Image(32, 32, White);
 	else
 		image = Image::load(nix::texture_dir + filename);
+	edited = false;
 	update_texture();
 }
 

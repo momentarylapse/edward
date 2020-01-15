@@ -17,6 +17,90 @@
 
 
 
+vector map_uv(DataModel *m, int surf, int poly, const vector &pos) {
+	auto &p = m->surface[surf].polygon[poly];
+
+	for (int k=0; k<p.side.num-2; k++) {
+		int ta = p.side[k].triangulation[0];
+		int tb = p.side[k].triangulation[1];
+		int tc = p.side[k].triangulation[2];
+		vector a = m->vertex[p.side[ta].vertex].pos;
+		vector b = m->vertex[p.side[tb].vertex].pos;
+		vector c = m->vertex[p.side[tc].vertex].pos;
+		vector sa = p.side[ta].skin_vertex[0];
+		vector sb = p.side[tb].skin_vertex[0];
+		vector sc = p.side[tc].skin_vertex[0];
+		float f, g;
+		GetBaryCentric(pos, a, b, c, f, g);
+		if (f >= 0 and g >= 0 and f+g <= 1) {
+			return sa + f * (sb - sa) + g * (sc - sa);
+		}
+	}
+	return v_0;
+}
+
+
+class ActionModelBrushTexturePaint: public Action {
+public:
+	ActionModelBrushTexturePaint(const vector &_pos, const vector &_n, float _radius, float _depth, int _surf, int _poly, const color &_col) {
+		pos = _pos;
+		n = _n;
+		radius = _radius;
+		depth = _depth;
+		surf = _surf;
+		poly = _poly;
+		col = _col;
+	}
+	string name(){	return "ModelBrushTexturePaint";	}
+
+	void *execute(Data *d) {
+		DataModel *m = dynamic_cast<DataModel*>(d);
+
+		auto *tl = m->material[0]->texture_levels[0];
+
+		vector v = map_uv(m, surf, poly, pos);
+		int x = clampi(v.x * tl->image->width, 0, tl->image->width);
+		int y = clampf(v.y * tl->image->height, 0, tl->image->height);
+		tl->image->set_pixel(x, y, col);
+		tl->edited = true;
+		tl->update_texture();
+		m->notify(m->MESSAGE_TEXTURE_CHANGE);
+
+		/*for (auto &s: m->surface) {
+			for (auto &p: s.polygon) {
+				for (int k=0; k<p.side.num-2; k++) {
+					p.side[0].triangulation
+				}
+			}
+		}
+
+		for (int x=0; x<tl->image->width; x++)
+			for (int y=0; y<tl->image->height; <++) {
+
+			}*/
+
+		/*for (int i=0;i<m->vertex.num;i++){
+			float d2 = (pos - m->vertex[i].pos).length_sqr();
+			if (d2 < r2 * 2){
+				index.add(i);
+				pos_old.add(m->vertex[i].pos);
+				m->vertex[i].pos += n * depth * exp(- d2 / r2 * 2);
+			}
+		}*/
+
+		return NULL;
+	}
+	void undo(Data *d) {
+	}
+
+private:
+	vector pos, n;
+	float radius, depth;
+	int surf, poly;
+	color col;
+};
+
+
 ModeModelMeshBrush::ModeModelMeshBrush(ModeBase* _parent) :
 	ModeCreation<DataModel>("ModelMeshBrush", _parent)
 {
@@ -46,6 +130,8 @@ Action *ModeModelMeshBrush::getAction()
 		a = new ActionModelBrushSmooth(pos, n, radius);
 	else if (type == 2)
 		a = new ActionModelBrushComplexify(pos, n, radius, depth);
+	else if (type == 3)
+		a = new ActionModelBrushTexturePaint(pos, n, radius, depth, multi_view->hover.set, multi_view->hover.index, Red);
 	return a;
 }
 
@@ -64,7 +150,7 @@ void ModeModelMeshBrush::on_start()
 	multi_view->setAllowSelect(false);
 
 	// Dialog
-	dialog = new hui::Dialog(_("Pinsel"), 300, 155, ed, true);//HuiCreateResourceDialog("new_ball_dialog", ed);
+	dialog = new hui::Dialog(_("Pinsel"), 400, 240, ed, true);//HuiCreateResourceDialog("new_ball_dialog", ed);
 	dialog->add_grid("", 0, 0, "grid");
 
 	dialog->set_target("grid");
@@ -88,6 +174,7 @@ void ModeModelMeshBrush::on_start()
 	dialog->add_string("brush_type", _("Ausbeulen/Eindellen"));
 	dialog->add_string("brush_type", _("Gl&atten"));
 	dialog->add_string("brush_type", _("Komplexifizieren"));
+	dialog->add_string("brush_type", _("In Texture malen"));
 	dialog->set_float("diameter_slider", 0.5f);
 	dialog->set_float("depth_slider", 0.5f);
 	dialog->set_string("diameter", f2s(base_diameter, 2));

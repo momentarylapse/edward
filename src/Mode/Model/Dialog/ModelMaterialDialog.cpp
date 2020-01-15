@@ -234,14 +234,18 @@ void ModelMaterialDialog::on_default_colors() {
 }
 
 void ModelMaterialDialog::fill_texture_list() {
-	auto temp = data->material[mode_model_mesh->current_material];
+	auto mat = data->material[mode_model_mesh->current_material];
 	reset("mat_textures");
-	for (int i=0;i<temp->texture_levels.num;i++) {
+	for (int i=0;i<mat->texture_levels.num;i++) {
 		string id = format("image:material[%d]-texture[%d]", mode_model_mesh->current_material, i);
-		auto *im = temp->texture_levels[i]->image->scale(48, 48);
-		hui::SetImage(im, id);
-		add_string("mat_textures", format("Tex[%d]\\%s\\%s", i, id.c_str(), file_secure(temp->texture_levels[i]->filename).c_str()));
-		delete im;
+		auto *img = mat->texture_levels[i]->image;
+		auto *icon = mat->texture_levels[i]->image->scale(48, 48);
+		hui::SetImage(icon, id);
+		string ext = format(" (%dx%d)", img->width, img->height);
+		if (mat->texture_levels[i]->edited)
+			ext += " *";
+		add_string("mat_textures", format("Tex[%d]\\%s\\%s", i, id.c_str(), (file_secure(mat->texture_levels[i]->filename) + ext).c_str()));
+		delete icon;
 	}
 	set_int("mat_textures", mode_model_mesh_texture->current_texture_level);
 }

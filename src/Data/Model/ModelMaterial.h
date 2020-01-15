@@ -40,6 +40,7 @@ public:
 		string filename;
 		nix::Texture *texture;
 		Image *image;
+		bool edited;
 		void reload_image();
 		void update_texture();
 	};
