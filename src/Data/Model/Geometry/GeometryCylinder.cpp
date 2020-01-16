@@ -70,30 +70,23 @@ void GeometryCylinder::__init__(const vector& pos1, const vector& pos2, float ra
 	new (this) GeometryCylinder(pos1, pos2, radius, rings, edges, end_mode);
 }
 
-matrix make_frame(const vector &pos, const vector &dir, const vector &up, const vector right)
-{
-	matrix rot = matrix::ID, trans;
-	trans = matrix::translation( pos);
-	*(vector*)&rot.e[0] = right;
-	*(vector*)&rot.e[4] = up;
-	*(vector*)&rot.e[8] = dir;
-	rot = rot.transpose();
+matrix make_frame(const vector &pos, const vector &dir, const vector &up, const vector right) {
+	auto rot = matrix(right, up, dir);
+	auto trans = matrix::translation(pos);
 	return trans * rot;
 }
 
-static Geometry half_ball(float radius, int edges, bool upper)
-{
+static Geometry half_ball(float radius, int edges, bool upper) {
 	float scale = upper ? 1 : -1;
 	auto ball = GeometryBall(v_0, radius, edges/2, edges);
-	for (int i=ball.polygon.num-1; i>=0; i--){
+	for (int i=ball.polygon.num-1; i>=0; i--) {
 		vector m = v_0;
 		for (int k=0; k<ball.polygon[i].side.num; k++)
 			m += ball.vertex[ball.polygon[i].side[k].vertex].pos;
 		if (m.y * scale > 0)
 			ball.polygon.erase(i);
 	}
-	matrix rot;
-	rot = matrix::rotation_x( pi/2);
+	matrix rot = matrix::rotation_x( pi/2);
 	ball.transform(rot);
 	ball.removeUnusedVertices();
 	return ball;
@@ -113,16 +106,14 @@ void GeometryCylinder::buildFromPath(Interpolator<vector> &inter, Interpolator<f
 		// interpolated point on path
 		float t = (float)i / (float)rings;
 		vector p0 = inter.get(t);
-		vector dir = inter.getTang(t);
-		dir.normalize();
+		vector dir = inter.getTang(t).normalized();
 
 		// moving frame
 		vector u = r_last ^ dir;
 		if (i == 0)
 			u = dir.ortho();
 		u.normalize();
-		vector r = dir ^ u;
-		r.normalize();
+		vector r = (dir ^ u).normalized();
 		r_last = r;
 		matrix frame = make_frame(p0, dir, u, r);
 		if (i == 0)
