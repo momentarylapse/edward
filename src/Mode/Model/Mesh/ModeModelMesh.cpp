@@ -27,7 +27,6 @@
 #include "Creation/ModeModelMeshSplitPolygon.h"
 #include "Creation/ModeModelMeshAutoweld.h"
 #include "Creation/ModeModelMeshBevelEdges.h"
-#include "Creation/ModeModelMeshBrush.h"
 #include "Creation/ModeModelMeshExtrudePolygons.h"
 #include "Creation/ModeModelMeshPaste.h"
 #include "../../../Action/Model/Mesh/Skin/ActionModelSkinVerticesFromProjection.h"
@@ -185,8 +184,6 @@ void ModeModelMesh::on_command(const string & id)
 		ed->set_mode(new ModeModelMeshSplitPolygon(this));
 	if (id == "bevel_edges")
 		ed->set_mode(new ModeModelMeshBevelEdges(this));
-	if (id == "deformation_brush")
-		ed->set_mode(new ModeModelMeshBrush(this));
 	if (id == "deformation_function")
 		ed->set_mode(new ModeModelMeshDeformFunction(this));
 	if (id == "deformation_cylinder")

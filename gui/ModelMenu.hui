@@ -101,7 +101,6 @@ Menu menu_model "Modell" disabled
 		Item nearify "Annähern"
 		Item flatten_vertices "Einebnen"
 		Menu menu_model_deformation "Deformation"
-			Item deformation_brush "Z-Pinsel"
 			Item deformation_cylinder "Zylinderradius"
 			Item deformation_function "Funktion"
 		Item triangulate_selection "--Triangulieren"

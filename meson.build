@@ -341,7 +341,6 @@ sources = [
 	'src/Mode/Model/Dialog/ModelPropertiesDialog.cpp',
 	'src/Mode/Model/Mesh/Creation/ModeModelMeshAutoweld.cpp',
 	'src/Mode/Model/Mesh/Creation/ModeModelMeshBevelEdges.cpp',
-	'src/Mode/Model/Mesh/Creation/ModeModelMeshBrush.cpp',
 	'src/Mode/Model/Mesh/Creation/ModeModelMeshCreateBall.cpp',
 	'src/Mode/Model/Mesh/Creation/ModeModelMeshCreateCube.cpp',
 	'src/Mode/Model/Mesh/Creation/ModeModelMeshCreateCylinder.cpp',

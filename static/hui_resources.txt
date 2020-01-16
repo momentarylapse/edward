@@ -1,6 +1,6 @@
 t7
 # Number Of Resources
-67
+68
 # Resource
 Menu
 
@@ -2559,7 +2559,7 @@ checkable,image=icons/toolbar/rf_mirror.png
 0
 # Resource
 Dialog
-model-brush-dialog
+model-deformation-brush-dialog
 width=350,height=371
 0
 0
@@ -2575,7 +2575,7 @@ Grid
 
 0
 0
-8
+6
 Label
 t-diameter
 
@@ -2611,18 +2611,6 @@ depth
 
 2
 1
-0
-Label
-t-color
-
-0
-2
-0
-ColorButton
-color
-
-1
-2
 0
 ListView
 brush-type
@@ -3993,23 +3981,17 @@ menu_model_deformation
 
 7
 0
-3
-Item
-deformation_brush
-
-0
-0
-0
+2
 Item
 deformation_cylinder
 
-1
+0
 0
 0
 Item
 deformation_function
 
-2
+1
 0
 0
 Item
@@ -6215,6 +6197,79 @@ Item
 texture_empty
 image=hui:delete
 4
+0
+0
+# Resource
+Dialog
+model-texture-paint-brush-dialog
+width=350,height=371
+0
+0
+1
+Grid
+?
+vertical,noexpandx,width=350
+0
+0
+2
+Grid
+?
+
+0
+0
+8
+Label
+t-diameter
+
+0
+0
+0
+Slider
+diameter-slider
+expandx
+1
+0
+0
+Edit
+diameter
+width=60
+2
+0
+0
+Label
+t-color
+
+0
+1
+0
+ColorButton
+color
+
+1
+1
+0
+Label
+t-opacity
+
+0
+2
+0
+Slider
+opacity-slider
+
+1
+2
+0
+SpinButton
+opacity
+range=0:1:0.01
+2
+2
+0
+ListView
+brush-type
+nobar
+1
 0
 0
 # Resource
@@ -9145,7 +9200,7 @@ checkable,image=icons/toolbar/rf_rotate.png
 # Language
 Deutsch
 # Number Of IDs
-935
+938
 # Text
 /ambient
 Ambient
@@ -10019,9 +10074,6 @@ Kopieren
 
 menu_model/cut_out
 Heraustrennen
-
-menu_model/deformation_brush
-Z-Pinsel
 
 menu_model/deformation_cylinder
 Zylinderradius
@@ -11199,19 +11251,16 @@ Selektieren
 model-animation-vertex-toolbar/translate
 Verschieben
 
-model-brush-dialog/brush-type
+model-deformation-brush-dialog/brush-type
 type
 
-model-brush-dialog/model-brush-dialog
+model-deformation-brush-dialog/model-deformation-brush-dialog
 Deformation
 
-model-brush-dialog/t-color
-Farbe
-
-model-brush-dialog/t-depth
+model-deformation-brush-dialog/t-depth
 Tiefe
 
-model-brush-dialog/t-diameter
+model-deformation-brush-dialog/t-diameter
 Dicke
 
 model-material-list-popup/add_material
@@ -11301,6 +11350,21 @@ Textur in eine Datei speichern
 model-texture-list-popup/texture-level-scale
 skalieren...
 Textur skalieren
+model-texture-paint-brush-dialog/brush-type
+type
+
+model-texture-paint-brush-dialog/model-texture-paint-brush-dialog
+Deformation
+
+model-texture-paint-brush-dialog/t-color
+Farbe
+
+model-texture-paint-brush-dialog/t-diameter
+Dicke
+
+model-texture-paint-brush-dialog/t-opacity
+Deckkraft
+
 model-texture-toolbar/lock_action
 paranoider Modus
 

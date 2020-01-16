@@ -10,6 +10,8 @@
 
 #include "ModeModelMesh.h"
 
+class PaintBrushPanel;
+
 class ModeModelMeshPaint: public Mode<DataModel>, public Observable {
 public:
 	ModeModelMeshPaint(ModeBase *parent);
@@ -17,12 +19,25 @@ public:
 	void on_start() override;
 	void on_end() override;
 
-	//ModelMaterialDialog *dialog;
+	PaintBrushPanel *dialog;
 
 	void on_selection_change() override;
 	void on_set_multi_view() override;
 	void on_draw() override;
 	void on_draw_win(MultiView::Window *win) override;
+
+
+	void on_left_button_down() override;
+	void on_left_button_up() override;
+	void on_mouse_move() override;
+
+	Action *get_action();
+	void apply();
+
+private:
+	bool brushing;
+	float distance;
+	vector last_pos;
 };
 
 extern ModeModelMeshPaint *mode_model_mesh_paint;

@@ -10,7 +10,7 @@
 
 #include "ModeModelMesh.h"
 
-class BrushPanel;
+class DeformBrushPanel;
 
 class ModeModelMeshDeform: public Mode<DataModel>, public Observable {
 public:
@@ -19,7 +19,7 @@ public:
 	void on_start() override;
 	void on_end() override;
 
-	BrushPanel *dialog;
+	DeformBrushPanel *dialog;
 
 	void on_selection_change() override;
 	void on_set_multi_view() override;
@@ -30,9 +30,6 @@ public:
 	void on_left_button_down() override;
 	void on_left_button_up() override;
 	void on_mouse_move() override;
-
-	void on_diameter_slider();
-	void on_depth_slider();
 
 	Action *get_action();
 	void apply();

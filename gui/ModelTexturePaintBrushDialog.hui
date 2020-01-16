@@ -1,14 +1,14 @@
-Dialog model-brush-dialog "Deformation" width=350 height=371
+Dialog model-texture-paint-brush-dialog "Deformation" width=350 height=371
 	Grid ? "" vertical noexpandx width=350
 		Grid ? ""
 			Label t-diameter "Dicke"
 			Slider diameter-slider "" expandx
 			Edit diameter "" width=60
 			---|
-			Label t-depth "Tiefe"
-			Slider depth-slider ""
-			Edit depth ""
-			---|
 			Label t-color "Farbe"
 			ColorButton color ""
+			---|
+			Label t-opacity "Deckkraft"
+			Slider opacity-slider ""
+			SpinButton opacity "" range=0:1:0.01
 		ListView brush-type "type" nobar

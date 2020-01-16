@@ -18,15 +18,15 @@
 ModeModelMeshDeform *mode_model_mesh_deform = NULL;
 
 
-class BrushPanel : public hui::Panel {
+class DeformBrushPanel : public hui::Panel {
 public:
-	BrushPanel(ModeModelMeshDeform *_mode) {
+	DeformBrushPanel(ModeModelMeshDeform *_mode) {
 		mode = _mode;
 
 		base_diameter = mode->multi_view->cam.radius * 0.2f;
 		base_depth = mode->multi_view->cam.radius * 0.02f;
 
-		from_resource("model-brush-dialog");
+		from_resource("model-deformation-brush-dialog");
 
 		event("diameter-slider", [=]{ on_diameter_slider(); });
 		event("depth-slider", [=]{ on_depth_slider(); });
@@ -34,7 +34,6 @@ public:
 		add_string("brush-type", _("Ausbeulen/eindellen"));
 		add_string("brush-type", _("Gl&atten"));
 		add_string("brush-type", _("Komplexifizieren"));
-		add_string("brush-type", _("In Textur malen"));
 		set_float("diameter-slider", 0.5f);
 		set_float("depth-slider", 0.5f);
 		set_string("diameter", f2s(base_diameter, 2));
@@ -69,8 +68,7 @@ ModeModelMeshDeform::~ModeModelMeshDeform() {
 
 void ModeModelMeshDeform::on_start() {
 
-	msg_write("deform dialog...");
-	dialog = new BrushPanel(this);
+	dialog = new DeformBrushPanel(this);
 	ed->embed(dialog, "root-table", 1, 0);
 
 	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
