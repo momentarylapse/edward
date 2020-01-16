@@ -42,6 +42,9 @@
 #include "Selection/MeshSelectionModeSurface.h"
 #include "Selection/MeshSelectionModeVertex.h"
 #include "ModeModelMeshTexture.h"
+#include "ModeModelMeshMaterial.h"
+#include "ModeModelMeshDeform.h"
+#include "ModeModelMeshPaint.h"
 
 ModeModelMesh *mode_model_mesh = NULL;
 
@@ -53,7 +56,6 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 {
 
 	selection_mode = NULL;
-	material_dialog = NULL;
 	current_material = 0;
 
 	// vertex buffers
@@ -70,6 +72,9 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	selection_mode_polygon = new MeshSelectionModePolygon(this);
 	selection_mode_surface = new MeshSelectionModeSurface(this);
 	mode_model_mesh_texture = new ModeModelMeshTexture(this);
+	mode_model_mesh_material = new ModeModelMeshMaterial(this);
+	mode_model_mesh_deform = new ModeModelMeshDeform(this);
+	mode_model_mesh_paint = new ModeModelMeshPaint(this);
 
 	selection_mode = selection_mode_polygon;
 
@@ -106,8 +111,6 @@ void ModeModelMesh::on_end()
 	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
-
-	closeMaterialDialog();
 }
 
 
@@ -208,8 +211,6 @@ void ModeModelMesh::on_command(const string & id)
 		createNewMaterialForSelection();
 	if (id == "choose_material")
 		chooseMaterialForSelection();
-	if (id == "mode_model_materials")
-		toggleMaterialDialog();
 	if (id == "text_from_bg")
 		data->execute(new ActionModelSkinVerticesFromProjection(data, multi_view));
 	if (id == "automapping")
@@ -237,34 +238,6 @@ void ModeModelMesh::on_command(const string & id)
 	if (id == "fx_edit")
 		editEffects();
 }
-
-void ModeModelMesh::showMaterialDialog()
-{
-	if (!material_dialog){
-		material_dialog = new ModelMaterialDialog(data);
-
-		ed->embed(material_dialog, "root-table", 1, 0);
-		ed->check("mode_model_materials", true);
-	}
-}
-
-void ModeModelMesh::closeMaterialDialog()
-{
-	if (material_dialog){
-		delete(material_dialog);
-		material_dialog = NULL;
-		ed->check("mode_model_materials", false);
-	}
-}
-
-void ModeModelMesh::toggleMaterialDialog()
-{
-	if (material_dialog)
-		closeMaterialDialog();
-	else
-		showMaterialDialog();
-}
-
 
 
 void ModeModelMesh::on_draw()
@@ -313,20 +286,20 @@ void ModeModelMesh::on_update(Observable *o, const string &message)
 
 void ModeModelMesh::on_view_stage_change()
 {
-	//msg_write("on view stage change");
+	//msg_write("mesh: on view stage change");
 	updateVertexBuffers(data->vertex);
 }
 
 void ModeModelMesh::on_selection_change()
 {
-	//msg_write("on sel change");
+	//msg_write("mesh: on sel change");
 	selection_mode->updateSelection();
 	fillSelectionBuffer(data->vertex);
 }
 
 void ModeModelMesh::on_set_multi_view()
 {
-	//msg_write("on set mv");
+	//msg_write("mesh: on set mv");
 	selection_mode->updateMultiView();
 	updateVertexBuffers(data->vertex);
 }
@@ -361,8 +334,6 @@ void ModeModelMesh::on_update_menu()
 	ed->check("scale", mouse_action == MultiView::ACTION_SCALE);
 	ed->check("mirror", mouse_action == MultiView::ACTION_MIRROR);
 	ed->check("lock_action", lock_action);
-
-	ed->check("mode_model_materials", material_dialog);
 }
 
 bool ModeModelMesh::optimize_view()

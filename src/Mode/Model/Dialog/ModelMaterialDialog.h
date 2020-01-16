@@ -16,7 +16,7 @@ class DataModel;
 class ModelMaterialDialog: public hui::Panel, public Observer
 {
 public:
-	ModelMaterialDialog(DataModel *_data);
+	ModelMaterialDialog(DataModel *_data, bool full=true);
 	virtual ~ModelMaterialDialog();
 
 	void load_data();

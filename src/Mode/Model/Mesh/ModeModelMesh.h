@@ -13,7 +13,6 @@
 #include "../../../Data/Model/Geometry/Geometry.h"
 
 class DataModel;
-class ModelMaterialDialog;
 namespace nix{
 	class VertexBuffer;
 };
@@ -66,11 +65,6 @@ public:
 	void addEffects(int type);
 	void editEffects();
 	void clearEffects();
-
-	ModelMaterialDialog *material_dialog;
-	void showMaterialDialog();
-	void closeMaterialDialog();
-	void toggleMaterialDialog();
 
 	void chooseMouseFunction(int f, bool lock);
 	void applyMouseFunction(MultiView::MultiView *mv);

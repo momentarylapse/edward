@@ -18,7 +18,7 @@
 string file_secure(const string &filename);
 string render_material(ModelMaterial *m);
 
-ModelMaterialDialog::ModelMaterialDialog(DataModel *_data) :
+ModelMaterialDialog::ModelMaterialDialog(DataModel *_data, bool full) :
 	Observer("ModelMaterialDialog") {
 	from_resource("model_material_dialog");
 
@@ -65,6 +65,9 @@ ModelMaterialDialog::ModelMaterialDialog(DataModel *_data) :
 	event("alpha_source", [=]{ apply_data_alpha(); });
 	event("alpha_dest", [=]{ apply_data_alpha(); });
 	event("alpha_z_buffer", [=]{ apply_data_alpha(); });
+
+	hide_control("model_material_dialog_grp_color", !full);
+	hide_control("model_material_dialog_grp_transparency", !full);
 
 	expand_all("model_material_dialog_grp_textures", true);
 

@@ -13,6 +13,7 @@
 #include "../../../lib/file/file.h"
 
 class DataModel;
+class ModelMaterialDialog;
 
 class ModeModelMeshTexture: public Mode<DataModel>, public Observable
 {
@@ -36,6 +37,8 @@ public:
 
 	void fetchData();
 	int getNumSelected();
+
+	ModelMaterialDialog *dialog;
 
 	Array<ModelSkinVertexDummy> skin_vertex;
 

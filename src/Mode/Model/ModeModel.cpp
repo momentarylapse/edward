@@ -13,6 +13,9 @@
 #include "../../Data/Model/Import/ImporterPly.h"
 #include "../../Data/Model/Export/ExporterJson.h"
 #include "Mesh/ModeModelMesh.h"
+#include "Mesh/ModeModelMeshMaterial.h"
+#include "Mesh/ModeModelMeshDeform.h"
+#include "Mesh/ModeModelMeshPaint.h"
 #include "Skeleton/ModeModelSkeleton.h"
 #include "Animation/ModeModelAnimation.h"
 #include "../../lib/nix/nix.h"
@@ -107,6 +110,12 @@ void ModeModel::on_command(const string & id)
 		mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_polygon);
 	if (id == "mode_model_surface")
 		mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_surface);
+	if (id == "mode_model_deform")
+		ed->set_mode(mode_model_mesh_deform);
+	if (id == "mode_model_paint")
+		ed->set_mode(mode_model_mesh_paint);
+	if (id == "mode_model_materials")
+		ed->set_mode(mode_model_mesh_material);
 	if (id == "mode_model_texture_coord")
 		ed->set_mode(mode_model_mesh_texture);
 	if (id == "mode_model_animation")
@@ -135,7 +144,10 @@ void ModeModel::on_update_menu()
 	ed->check("mode_model_polygon", mode_model_mesh->selection_mode_polygon->isActive());
 	ed->check("mode_model_surface", mode_model_mesh->selection_mode_surface->isActive());
 	ed->check("mode_model_texture_coord", mode_model_mesh_texture->is_ancestor_of(ed->cur_mode));
-	ed->check("mode_model_mesh", mode_model_mesh->is_ancestor_of(ed->cur_mode) && !mode_model_mesh_texture->is_ancestor_of(ed->cur_mode));
+	ed->check("mode_model_materials", mode_model_mesh_material->is_ancestor_of(ed->cur_mode));
+	ed->check("mode_model_deform", mode_model_mesh_deform->is_ancestor_of(ed->cur_mode));
+	ed->check("mode_model_paint", mode_model_mesh_paint->is_ancestor_of(ed->cur_mode));
+	ed->check("mode_model_mesh", mode_model_mesh->is_ancestor_of(ed->cur_mode) and !mode_model_mesh_texture->is_ancestor_of(ed->cur_mode) and !mode_model_mesh_material->is_ancestor_of(ed->cur_mode) and !mode_model_mesh_deform->is_ancestor_of(ed->cur_mode) and !mode_model_mesh_paint->is_ancestor_of(ed->cur_mode));
 	ed->check("mode_model_skeleton", mode_model_skeleton->is_ancestor_of(ed->cur_mode));
 	ed->check("mode_model_animation", mode_model_animation->is_ancestor_of(ed->cur_mode));
 }

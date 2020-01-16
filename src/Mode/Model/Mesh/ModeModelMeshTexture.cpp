@@ -11,6 +11,7 @@
 #include "../../../lib/nix/nix.h"
 #include "ModeModelMesh.h"
 #include "ModeModelMeshTexture.h"
+#include "../Dialog/ModelMaterialDialog.h"
 
 const string ModeModelMeshTexture::MESSAGE_TEXTURE_LEVEL_CHANGE = "TextureLevelChange";
 
@@ -21,6 +22,7 @@ ModeModelMeshTexture::ModeModelMeshTexture(ModeBase *_parent) :
 	Observable("ModelMeshTexture")
 {
 	current_texture_level = 0;
+	dialog = nullptr;
 }
 
 
@@ -63,6 +65,8 @@ int ModeModelMeshTexture::getNumSelected()
 
 void ModeModelMeshTexture::on_start()
 {
+	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-texture-toolbar");
+
 	multi_view->view_stage = ed->multi_view_3d->view_stage;
 	mode_model_mesh->applyMouseFunction(multi_view);
 
@@ -76,7 +80,8 @@ void ModeModelMeshTexture::on_start()
 	ed->DeleteControl("side_table");
 	ed->EmbedDialog()*/
 
-	mode_model_mesh->showMaterialDialog();
+	dialog = new ModelMaterialDialog(data, false);
+	ed->embed(dialog, "root-table", 1, 0);
 }
 
 
@@ -86,6 +91,8 @@ void ModeModelMeshTexture::on_end()
 	Observer::unsubscribe(data);
 	Observer::unsubscribe(multi_view);
 	skin_vertex.clear();
+	delete dialog;
+	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-mesh-toolbar"); // -> mesh
 }
 
 #define cur_tex			data->material[mode_model_mesh->current_material]->texture_levels[current_texture_level]->texture
@@ -202,6 +209,7 @@ void ModeModelMeshTexture::setCurrentTextureLevel(int level)
 	current_texture_level = level;
 	fetchData();
 	notify(MESSAGE_TEXTURE_LEVEL_CHANGE);
+	ed->force_redraw();
 }
 
 void ModeModelMeshTexture::on_update(Observable *o, const string &message)
