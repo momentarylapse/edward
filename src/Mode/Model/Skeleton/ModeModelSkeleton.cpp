@@ -137,7 +137,7 @@ void ModeModelSkeleton::on_start()
 
 
 	chooseMouseFunction(MultiView::ACTION_MOVE);
-	mode_model->allowSelectionModes(false);
+	mode_model->allow_selection_modes(false);
 	on_update(data, "");
 }
 
@@ -164,7 +164,7 @@ void ModeModelSkeleton::on_set_multi_view()
 void ModeModelSkeleton::on_update(Observable *o, const string &message)
 {
 	if (o == data){
-		mode_model_mesh->updateVertexBuffers(data->vertex);
+		mode_model_mesh->update_vertex_buffers(data->vertex);
 	}
 }
 
@@ -193,7 +193,7 @@ void drawCoordBasis(MultiView::Window *win, const ModelBone &b)
 
 void ModeModelSkeleton::on_draw_win(MultiView::Window *win)
 {
-	mode_model_mesh->drawPolygons(win, data->vertex);
+	mode_model_mesh->draw_polygons(win, data->vertex);
 	drawSkeleton(win, data->bone);
 }
 

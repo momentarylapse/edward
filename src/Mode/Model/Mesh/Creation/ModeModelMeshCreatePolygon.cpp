@@ -19,7 +19,7 @@ ModeModelMeshCreatePolygon::ModeModelMeshCreatePolygon(ModeBase *_parent) :
 {
 	message = format(_("Polygon w&ahlen: %d -> Shift + Return"), 0);
 
-	mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_vertex);
+	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_vertex);
 }
 
 

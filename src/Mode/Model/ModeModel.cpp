@@ -85,14 +85,14 @@ void ModeModel::on_command(const string & id)
 		save_as();
 
 	if (id == "import_from_3ds")
-		importOpen3ds();
+		import_open_3ds();
 	if (id == "import_from_json")
-		importOpenJson();
+		import_open_json();
 	if (id == "import_from_ply")
-		importOpenPly();
+		import_open_ply();
 
 	if (id == "export_to_json")
-		exportSaveJson();
+		export_save_json();
 
 	// TODO -> edward?
 	if (id == "undo")
@@ -103,13 +103,13 @@ void ModeModel::on_command(const string & id)
 	if (id == "mode_model_mesh")
 		ed->set_mode(mode_model_mesh);
 	if (id == "mode_model_vertex")
-		mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_vertex);
+		mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_vertex);
 	if (id == "mode_model_edge")
-		mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_edge);
+		mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_edge);
 	if (id == "mode_model_polygon")
-		mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_polygon);
+		mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_polygon);
 	if (id == "mode_model_surface")
-		mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_surface);
+		mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_surface);
 	if (id == "mode_model_deform")
 		ed->set_mode(mode_model_mesh_deform);
 	if (id == "mode_model_paint")
@@ -124,7 +124,7 @@ void ModeModel::on_command(const string & id)
 		ed->set_mode(mode_model_skeleton);
 		//SetSubMode(SubModeTextures);
 	if (id == "mode_properties")
-		executePropertiesDialog();
+		execute_properties_dialog();
 
 	// mainly skin debugging...
 /*	if (id == "detail_1")
@@ -154,7 +154,7 @@ void ModeModel::on_update_menu()
 
 
 
-void ModeModel::setMaterialSelected()
+void ModeModel::set_material_selected()
 {
 	nix::SetAlpha(ALPHA_MATERIAL);
 	nix::SetShader(MultiView::shader_selection);
@@ -163,7 +163,7 @@ void ModeModel::setMaterialSelected()
 	nix::SetTexture(NULL);
 }
 
-void ModeModel::setMaterialHover()
+void ModeModel::set_material_hover()
 {
 	nix::SetAlpha(ALPHA_MATERIAL);
 	nix::SetShader(MultiView::shader_selection);
@@ -171,7 +171,7 @@ void ModeModel::setMaterialHover()
 	nix::SetTexture(NULL);
 }
 
-void ModeModel::setMaterialCreation(float intensity)
+void ModeModel::set_material_creation(float intensity)
 {
 	nix::SetAlpha(ALPHA_MATERIAL);
 	nix::SetShader(MultiView::shader_selection);
@@ -216,16 +216,16 @@ bool ModeModel::save_as()
 	return false;
 }
 
-bool ModeModel::importOpen3ds()
+bool ModeModel::import_open_3ds()
 {
 	if (!ed->allow_termination())
 		return false;
 	if (!ed->file_dialog(FD_FILE, false, false))
 		return false;
-	return importLoad3ds(ed->dialog_file_complete);
+	return import_load_3ds(ed->dialog_file_complete);
 }
 
-bool ModeModel::importLoad3ds(const string &filename)
+bool ModeModel::import_load_3ds(const string &filename)
 {
 	Importer3ds im;
 	if (!im.Import(data, filename))
@@ -236,16 +236,16 @@ bool ModeModel::importLoad3ds(const string &filename)
 	return true;
 }
 
-bool ModeModel::importOpenJson()
+bool ModeModel::import_open_json()
 {
 	if (!ed->allow_termination())
 		return false;
 	if (!ed->file_dialog(FD_FILE, false, false))
 		return false;
-	return importLoadJson(ed->dialog_file_complete);
+	return import_load_json(ed->dialog_file_complete);
 }
 
-bool ModeModel::importLoadPly(const string &filename)
+bool ModeModel::import_load_ply(const string &filename)
 {
 	ImporterPly im;
 	if (!im.Import(data, filename))
@@ -256,16 +256,16 @@ bool ModeModel::importLoadPly(const string &filename)
 	return true;
 }
 
-bool ModeModel::importOpenPly()
+bool ModeModel::import_open_ply()
 {
 	if (!ed->allow_termination())
 		return false;
 	if (!ed->file_dialog(FD_FILE, false, false))
 		return false;
-	return importLoadPly(ed->dialog_file_complete);
+	return import_load_ply(ed->dialog_file_complete);
 }
 
-bool ModeModel::importLoadJson(const string &filename)
+bool ModeModel::import_load_json(const string &filename)
 {
 	ImporterJson im;
 	if (!im.Import(data, filename))
@@ -276,16 +276,16 @@ bool ModeModel::importLoadJson(const string &filename)
 	return true;
 }
 
-bool ModeModel::exportSaveJson()
+bool ModeModel::export_save_json()
 {
 	if (!ed->allow_termination())
 		return false;
 	if (!ed->file_dialog(FD_FILE, true, false))
 		return false;
-	return exportWriteJson(ed->dialog_file_complete);
+	return export_write_json(ed->dialog_file_complete);
 }
 
-bool ModeModel::exportWriteJson(const string &filename)
+bool ModeModel::export_write_json(const string &filename)
 {
 	ExporterJson ex;
 	if (!ex.Export(data, filename))
@@ -296,7 +296,7 @@ bool ModeModel::exportWriteJson(const string &filename)
 	return true;
 }
 
-void ModeModel::executePropertiesDialog()
+void ModeModel::execute_properties_dialog()
 {
 	if (properties_dialog){
 		if (!properties_dialog->active){
@@ -311,7 +311,7 @@ void ModeModel::executePropertiesDialog()
 	properties_dialog->show();
 }
 
-void ModeModel::allowSelectionModes(bool allow)
+void ModeModel::allow_selection_modes(bool allow)
 {
 	ed->enable("mode_model_vertex", allow);
 	ed->enable("mode_model_edge", allow);

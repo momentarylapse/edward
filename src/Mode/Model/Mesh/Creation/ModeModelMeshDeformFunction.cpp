@@ -102,7 +102,7 @@ void ModeModelMeshDeformFunction::on_draw_win(MultiView::Window* win)
 {
 	parent->on_draw_win(win);
 
-	ModeModel::setMaterialCreation();
+	ModeModel::set_material_creation();
 	geo->build(nix::vb_temp);
 
 	nix::SetTexture(tex);

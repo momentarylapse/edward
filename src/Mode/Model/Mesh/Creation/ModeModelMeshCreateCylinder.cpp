@@ -157,7 +157,7 @@ void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win)
 		//nix::SetColor(White);
 	}
 	if (pos.num == 2){
-		mode_model->setMaterialCreation();
+		mode_model->set_material_creation();
 		geo->build(nix::vb_temp);
 		nix::Draw3D(nix::vb_temp);
 	}

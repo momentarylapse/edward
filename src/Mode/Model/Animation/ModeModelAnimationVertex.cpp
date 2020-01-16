@@ -29,7 +29,7 @@ void ModeModelAnimationVertex::on_start()
 {
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-animation-vertex-toolbar");
 
-	mode_model->allowSelectionModes(true);
+	mode_model->allow_selection_modes(true);
 
 	chooseMouseFunction(MultiView::ACTION_SELECT);
 
@@ -43,7 +43,7 @@ void ModeModelAnimationVertex::on_end()
 	unsubscribe(data);
 	unsubscribe(multi_view);
 	data->showVertices(data->vertex);
-	mode_model_mesh->fillSelectionBuffer(data->vertex);
+	mode_model_mesh->fill_selection_buffer(data->vertex);
 }
 
 void ModeModelAnimationVertex::on_command(const string& id)
@@ -89,7 +89,7 @@ void ModeModelAnimationVertex::on_update_menu()
 
 void ModeModelAnimationVertex::on_draw_win(MultiView::Window *win)
 {
-	mode_model_mesh->drawAll(win, mode_model_animation->vertex);
+	mode_model_mesh->draw_all(win, mode_model_animation->vertex);
 }
 
 void ModeModelAnimationVertex::updateVertices()

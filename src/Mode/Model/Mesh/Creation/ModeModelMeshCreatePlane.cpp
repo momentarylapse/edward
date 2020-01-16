@@ -90,7 +90,7 @@ void ModeModelMeshCreatePlane::on_draw_win(MultiView::Window *win)
 		nix::vb_temp->addTria(a, -n, 0, 0, d, -n, 0, 0, b, -n, 0, 0);
 		nix::vb_temp->addTria(b,  n, 0, 0, d,  n, 0, 0, c,  n, 0, 0);
 		nix::vb_temp->addTria(b,  n, 0, 0, c,  n, 0, 0, a,  n, 0, 0);
-		mode_model->setMaterialCreation();
+		mode_model->set_material_creation();
 		nix::Draw3D(nix::vb_temp);
 	}
 }

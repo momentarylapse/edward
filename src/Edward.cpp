@@ -465,10 +465,10 @@ bool Edward::handle_arguments(Array<string> arg)
 		mode_font->data->load(param);
 		set_mode(mode_font);
 	}else if (ext == "js"){
-		mode_model->importLoadJson(param);
+		mode_model->import_load_json(param);
 		set_mode(mode_model);
 	}else if (ext == "ply"){
-		mode_model->importLoadPly(param);
+		mode_model->import_load_ply(param);
 		set_mode(mode_model);
 	/*}else if (ext == "mdl"){
 		mmodel->LoadImportFromGameStudioMdl(param);
@@ -482,7 +482,7 @@ bool Edward::handle_arguments(Array<string> arg)
 		WholeWindow=true;
 		mmodel->OptimizeView();*/
 	}else if (ext == "3ds"){
-		mode_model->importLoad3ds(param);
+		mode_model->import_load_3ds(param);
 	}else{
 		error_box(_("Unbekannte Dateinamenerweiterung: ") + param);
 		app->end();

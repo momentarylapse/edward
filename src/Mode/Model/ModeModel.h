@@ -13,8 +13,7 @@
 #include "Dialog/ModelPropertiesDialog.h"
 
 
-class ModeModel: public Mode<DataModel>
-{
+class ModeModel: public Mode<DataModel> {
 public:
 	ModeModel();
 	virtual ~ModeModel();
@@ -32,27 +31,27 @@ public:
 	bool save() override;
 	bool save_as() override;
 
-	bool importOpen3ds();
-	bool importLoad3ds(const string &filename);
+	bool import_open_3ds();
+	bool import_load_3ds(const string &filename);
 
-	bool importOpenJson();
-	bool importLoadJson(const string &filename);
+	bool import_open_json();
+	bool import_load_json(const string &filename);
 
-	bool importOpenPly();
-	bool importLoadPly(const string &filename);
+	bool import_open_ply();
+	bool import_load_ply(const string &filename);
 
-	bool exportSaveJson();
-	bool exportWriteJson(const string &filename);
+	bool export_save_json();
+	bool export_write_json(const string &filename);
 
-	static void setMaterialSelected();
-	static void setMaterialHover();
-	static void setMaterialCreation(float intensity = 1.0f);
+	static void set_material_selected();
+	static void set_material_hover();
+	static void set_material_creation(float intensity = 1.0f);
 
-	void executePropertiesDialog();
+	void execute_properties_dialog();
 
 	ModelPropertiesDialog *properties_dialog;
 
-	void allowSelectionModes(bool allow);
+	void allow_selection_modes(bool allow);
 };
 
 extern ModeModel* mode_model;

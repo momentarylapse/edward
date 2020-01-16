@@ -13,21 +13,12 @@
 #include "../../../Data/Model/Geometry/Geometry.h"
 
 class DataModel;
-namespace nix{
+namespace nix {
 	class VertexBuffer;
 };
 class MeshSelectionMode;
 
-enum
-{
-	SELECTION_MODE_VERTEX,
-	SELECTION_MODE_EDGE,
-	SELECTION_MODE_POLYGON,
-	SELECTION_MODE_SURFACE
-};
-
-class ModeModelMesh: public Mode<DataModel>, public Observable
-{
+class ModeModelMesh: public Mode<DataModel>, public Observable {
 public:
 	ModeModelMesh(ModeBase *parent);
 	virtual ~ModeModelMesh();
@@ -48,26 +39,26 @@ public:
 	void on_draw_win(MultiView::Window *win) override;
 	void on_draw() override;
 
-	void drawEffects(MultiView::Window *win);
-	void drawEdges(MultiView::Window *win, Array<ModelVertex> &vertex, bool only_selected);
-	void drawPolygons(MultiView::Window *win, Array<ModelVertex> &vertex);
-	void drawSelection(MultiView::Window *win);
-	void drawPhysical(MultiView::Window *win);
-	void drawAll(MultiView::Window *win, Array<ModelVertex> &vertex);
+	void draw_effects(MultiView::Window *win);
+	void draw_edges(MultiView::Window *win, Array<ModelVertex> &vertex, bool only_selected);
+	void draw_polygons(MultiView::Window *win, Array<ModelVertex> &vertex);
+	void draw_selection(MultiView::Window *win);
+	void draw_physical(MultiView::Window *win);
+	void draw_all(MultiView::Window *win, Array<ModelVertex> &vertex);
 
 	bool optimize_view() override;
 
 	void easify();
 
-	void createNewMaterialForSelection();
-	void chooseMaterialForSelection();
+	void create_new_material_for_selection();
+	void choose_material_for_selection();
 
-	void addEffects(int type);
-	void editEffects();
-	void clearEffects();
+	void add_effects(int type);
+	void edit_effects();
+	void clear_effects();
 
-	void chooseMouseFunction(int f, bool lock);
-	void applyMouseFunction(MultiView::MultiView *mv);
+	void choose_mouse_function(int f, bool lock);
+	void apply_mouse_function(MultiView::MultiView *mv);
 	int mouse_action;
 	bool lock_action;
 
@@ -78,7 +69,7 @@ public:
 	Geometry temp_geo;
 
 	MeshSelectionMode *selection_mode;
-	void setSelectionMode(MeshSelectionMode *mode);
+	void set_selection_mode(MeshSelectionMode *mode);
 	MeshSelectionMode *selection_mode_vertex;
 	MeshSelectionMode *selection_mode_edge;
 	MeshSelectionMode *selection_mode_polygon;
@@ -86,13 +77,16 @@ public:
 
 
 	int current_material;
-	void setCurrentMaterial(int index);
+	void set_current_material(int index);
 
-	void updateVertexBuffers(Array<ModelVertex> &vertex);
-	void fillSelectionBuffer(Array<ModelVertex> &vertex);
+	void update_vertex_buffers(Array<ModelVertex> &vertex);
+	void fill_selection_buffer(Array<ModelVertex> &vertex);
 
-	void toggleSelectCW();
+	void toggle_select_cw();
 	bool select_cw;
+
+	bool allow_draw_hover;
+	void set_allow_draw_hover(bool allow);
 
 	nix::VertexBuffer *vb_marked, *vb_hover, *vb_creation;
 };

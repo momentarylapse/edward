@@ -68,7 +68,7 @@ void ModeModelMeshTexture::on_start()
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-texture-toolbar");
 
 	multi_view->view_stage = ed->multi_view_3d->view_stage;
-	mode_model_mesh->applyMouseFunction(multi_view);
+	mode_model_mesh->apply_mouse_function(multi_view);
 
 	fetchData();
 

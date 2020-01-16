@@ -37,7 +37,7 @@ void MeshSelectionModePolygon::onDrawWin(MultiView::Window *win)
 
 	nix::SetWire(false);
 	nix::SetOffset(-1.0f);
-	mode_model->setMaterialHover();
+	mode_model->set_material_hover();
 	nix::Draw3D(parent->vb_hover);
 	nix::SetMaterial(White,White,Black,0,Black);
 	nix::SetAlpha(ALPHA_NONE);

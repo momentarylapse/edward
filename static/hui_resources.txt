@@ -6217,7 +6217,7 @@ Grid
 
 0
 0
-8
+11
 Label
 t-diameter
 
@@ -6265,6 +6265,24 @@ opacity
 range=0:1:0.01
 2
 2
+0
+Label
+t-pressure
+
+0
+3
+0
+CheckBox
+scale-by-pressure
+
+1
+3
+0
+CheckBox
+opacity-by-pressure
+
+1
+4
 0
 ListView
 brush-type
@@ -9200,7 +9218,7 @@ checkable,image=icons/toolbar/rf_rotate.png
 # Language
 Deutsch
 # Number Of IDs
-938
+941
 # Text
 /ambient
 Ambient
@@ -11356,6 +11374,12 @@ type
 model-texture-paint-brush-dialog/model-texture-paint-brush-dialog
 Deformation
 
+model-texture-paint-brush-dialog/opacity-by-pressure
+beeinflusst Deckkraft
+
+model-texture-paint-brush-dialog/scale-by-pressure
+beeinflusst Größe
+
 model-texture-paint-brush-dialog/t-color
 Farbe
 
@@ -11364,6 +11388,9 @@ Dicke
 
 model-texture-paint-brush-dialog/t-opacity
 Deckkraft
+
+model-texture-paint-brush-dialog/t-pressure
+Druck
 
 model-texture-toolbar/lock_action
 paranoider Modus

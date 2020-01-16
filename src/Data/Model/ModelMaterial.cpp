@@ -64,7 +64,7 @@ void ModelMaterial::TextureLevel::reload_image() {
 	if (image)
 		delete image;
 	if (filename == "")
-		image = new Image(32, 32, White);
+		image = new Image(512, 512, White);
 	else
 		image = Image::load(nix::texture_dir + filename);
 	edited = false;

@@ -33,6 +33,7 @@ public:
 
 	Action *get_action();
 	void apply();
+	float radius();
 
 private:
 	bool brushing;

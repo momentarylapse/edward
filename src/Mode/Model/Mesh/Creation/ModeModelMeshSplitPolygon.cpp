@@ -26,8 +26,8 @@ ModeModelMeshSplitPolygon::ModeModelMeshSplitPolygon(ModeBase *_parent) :
 
 	message = _("neuen Punkt in Polygon setzen");
 
-	mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_polygon);
-	mode_model->allowSelectionModes(false);
+	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_polygon);
+	mode_model->allow_selection_modes(false);
 }
 
 void ModeModelMeshSplitPolygon::on_start()

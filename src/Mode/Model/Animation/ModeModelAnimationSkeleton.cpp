@@ -108,9 +108,9 @@ void ModeModelAnimationSkeleton::on_set_multi_view()
 
 void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win)
 {
-	mode_model_mesh->drawPolygons(win, mode_model_animation->vertex);
+	mode_model_mesh->draw_polygons(win, mode_model_animation->vertex);
 	mode_model_skeleton->drawSkeleton(win, mode_model_animation->bone, true);
-	mode_model_mesh->drawSelection(win);
+	mode_model_mesh->draw_selection(win);
 
 
 	if ((multi_view->hover.index < 0) or (multi_view->hover.type != MVD_SKELETON_BONE))
@@ -127,7 +127,7 @@ void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win)
 
 	nix::SetWire(false);
 	nix::SetOffset(1.0f);
-	mode_model->setMaterialHover();
+	mode_model->set_material_hover();
 	nix::Draw3D(mode_model_mesh->vb_hover);
 	nix::SetMaterial(White,White,Black,0,Black);
 	nix::SetAlpha(ALPHA_NONE);
@@ -168,7 +168,7 @@ void ModeModelAnimationSkeleton::updateSelection()
 		v.is_selected = data->bone[v.bone_index].is_selected;
 	data->selectionFromVertices();
 
-	mode_model_mesh->fillSelectionBuffer(mode_model_animation->vertex);
+	mode_model_mesh->fill_selection_buffer(mode_model_animation->vertex);
 }
 
 void ModeModelAnimationSkeleton::copy()

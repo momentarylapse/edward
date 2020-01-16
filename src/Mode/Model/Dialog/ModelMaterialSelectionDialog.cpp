@@ -80,7 +80,7 @@ void ModelMaterialSelectionDialog::OnMaterialList()
 
 void ModelMaterialSelectionDialog::OnMaterialListSelect()
 {
-	mode_model_mesh->setCurrentMaterial(get_int(""));
+	mode_model_mesh->set_current_material(get_int(""));
 }
 
 void ModelMaterialSelectionDialog::OnMaterialAddNew()

@@ -213,7 +213,7 @@ void ModelMaterialDialog::on_material_list() {
 }
 
 void ModelMaterialDialog::on_material_list_select() {
-	mode_model_mesh->setCurrentMaterial(get_int(""));
+	mode_model_mesh->set_current_material(get_int(""));
 }
 
 void ModelMaterialDialog::on_add_new_material() {
@@ -359,7 +359,7 @@ void ModelMaterialDialog::on_transparency_mode() {
 void ModelMaterialDialog::on_material_list_right_click() {
 	int n = hui::GetEvent()->row;
 	if (n >= 0) {
-		mode_model_mesh->setCurrentMaterial(n);
+		mode_model_mesh->set_current_material(n);
 	}
 	popup_materials->enable("apply_material", n>=0);
 	popup_materials->enable("delete_material", n>=0);

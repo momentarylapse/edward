@@ -15,7 +15,7 @@ ModeModelMeshCreateVertex::ModeModelMeshCreateVertex(ModeBase *_parent) :
 {
 	message = _("neue Punkte setzen");
 
-	mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_vertex);
+	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_vertex);
 }
 
 ModeModelMeshCreateVertex::~ModeModelMeshCreateVertex()

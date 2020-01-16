@@ -116,7 +116,7 @@ public:
 	PaintBrushPanel(ModeModelMeshPaint *_mode) {
 		mode = _mode;
 
-		base_diameter = mode->multi_view->cam.radius * 0.2f;
+		base_diameter = mode->multi_view->cam.radius * 0.1f;
 
 		from_resource("model-texture-paint-brush-dialog");
 
@@ -131,6 +131,8 @@ public:
 		set_float("opacity", 1.0f);
 		set_int("brush-type", 0);
 		set_color("color", Red);
+		check("scale-by-pressure", true);
+		check("opacity-by-pressure", true);
 	}
 
 	void on_diameter_slider() {
@@ -171,8 +173,9 @@ void ModeModelMeshPaint::on_start() {
 	multi_view->setAllowAction(false);
 
 	// enter
-	mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_polygon);
-	mode_model->allowSelectionModes(false);
+	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_polygon);
+	mode_model->allow_selection_modes(false);
+	mode_model_mesh->set_allow_draw_hover(false);
 
 
 
@@ -186,7 +189,8 @@ void ModeModelMeshPaint::on_end() {
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-mesh-toolbar"); // back to mesh....ARGH
 
 	multi_view->setAllowAction(true);
-	mode_model->allowSelectionModes(true);
+	mode_model->allow_selection_modes(true);
+	mode_model_mesh->set_allow_draw_hover(true);
 	delete dialog;
 }
 
@@ -224,18 +228,25 @@ void ModeModelMeshPaint::on_selection_change() {
 	parent->on_selection_change();
 }
 
+float ModeModelMeshPaint::radius() {
+	float radius = dialog->get_float("diameter") / 2;
+	if (dialog->is_checked("scale-by-pressure"))
+		radius *= hui::GetEvent()->pressure;
+	return radius;
+}
 
 Action *ModeModelMeshPaint::get_action() {
 	vector pos = multi_view->hover.point;
 	vector n = data->surface[multi_view->hover.set].polygon[multi_view->hover.index].temp_normal;
-	float radius = dialog->get_float("diameter") / 2;
 	int type = dialog->get_int("brush-type");
 	auto col = dialog->get_color("color");
 	col.a = dialog->get_float("opacity");
+	if (dialog->is_checked("opacity-by-pressure"))
+		col.a *= hui::GetEvent()->pressure;
 
 	Action *a = NULL;
 	if (type == 0)
-		a = new ActionModelBrushTexturePaint(pos, n, radius, multi_view->hover.set, multi_view->hover.index, col);
+		a = new ActionModelBrushTexturePaint(pos, n, radius(), multi_view->hover.set, multi_view->hover.index, col);
 	return a;
 }
 
@@ -263,10 +274,9 @@ void ModeModelMeshPaint::on_mouse_move() {
 	if (multi_view->hover.index < 0)
 		return;
 	vector pos = multi_view->hover.point;
-	float radius = dialog->get_float("diameter") / 2;
 	distance += (pos - last_pos).length();
 	last_pos = pos;
-	if (distance > radius * 0.7f) {
+	if (distance > radius() * 0.7f) {
 		distance = 0;
 		apply();
 	}

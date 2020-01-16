@@ -178,7 +178,7 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win)
 	}
 	if (ready_for_scaling){
 		geo->build(nix::vb_temp);
-		mode_model->setMaterialCreation();
+		mode_model->set_material_creation();
 		nix::Draw3D(nix::vb_temp);
 	}else if (pos.num > 2){
 		vector pp = multi_view->mouse_win->project(pos[0]);

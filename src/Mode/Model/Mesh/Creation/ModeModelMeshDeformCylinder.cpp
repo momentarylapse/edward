@@ -163,7 +163,7 @@ void ModeModelMeshDeformCylinder::on_draw_win(MultiView::Window* win)
 	parent->on_draw_win(win);
 
 	if (geo){
-		ModeModel::setMaterialCreation(0.3f);
+		ModeModel::set_material_creation(0.3f);
 		geo->build(nix::vb_temp);
 		nix::Draw3D(nix::vb_temp);
 	}

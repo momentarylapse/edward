@@ -92,7 +92,7 @@ void ModeModelAnimation::on_start()
 
 	Observer::subscribe(this, MESSAGE_SET_FRAME);
 	Observer::subscribe(data);
-	mode_model->allowSelectionModes(false);
+	mode_model->allow_selection_modes(false);
 
 	timer.reset();
 	hui::RunLater(0.200f, std::bind(&ModeModelAnimation::idleFunction, this));
@@ -187,8 +187,8 @@ void ModeModelAnimation::updateAnimation()
 	}
 
 
-	mode_model_mesh->updateVertexBuffers(vertex);
-	mode_model_mesh->fillSelectionBuffer(vertex);
+	mode_model_mesh->update_vertex_buffers(vertex);
+	mode_model_mesh->fill_selection_buffer(vertex);
 
 	notify();
 	ed->force_redraw();

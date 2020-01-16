@@ -32,7 +32,7 @@ void MeshSelectionModeVertex::onEnd()
 
 void MeshSelectionModeVertex::onDrawWin(MultiView::Window *win)
 {
-	parent->drawEffects(win);
+	parent->draw_effects(win);
 }
 
 
