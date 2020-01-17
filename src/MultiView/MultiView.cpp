@@ -168,6 +168,8 @@ void MultiView::reset_view()
 	snap_to_grid = false;
 	cam.ignore_radius = false;
 	wire_mode = false;
+	window_partition_x = 0.5f;
+	window_partition_y = 0.5f;
 
 	view_stage = 0;
 
@@ -713,19 +715,19 @@ void MultiView::on_draw()
 		float d = scheme.WINDOW_DIVIDER_THICKNESS / 2;
 
 		// top left
-		win[0]->dest = rect(area.x1, xm-d, area.y1, ym-d);
+		win[0]->dest = rect(area.x1, xm-d+1, area.y1, ym-d+1);
 		win[0]->draw();
 
 		// top right
-		win[1]->dest = rect(xm+d, area.x2, area.y1, ym-d);
+		win[1]->dest = rect(xm+d-1, area.x2, area.y1, ym-d+1);
 		win[1]->draw();
 
 		// bottom left
-		win[2]->dest = rect(area.x1, xm+d, ym+d, area.y2);
+		win[2]->dest = rect(area.x1, xm-d+1, ym+d-1, area.y2);
 		win[2]->draw();
 
 		// bottom right
-		win[3]->dest = rect(xm+d, area.x2, ym+d, area.y2);
+		win[3]->dest = rect(xm+d-1, area.x2, ym+d-1, area.y2);
 		win[3]->draw();
 
 		nix::Scissor(nix::target_rect);

@@ -9,8 +9,8 @@ Toolbar world-toolbar ""
 	Item view_push "Push" image=icons/toolbar/view_push.png "tooltip=Viewstage Push"
 	Item view_pop "Pop" image=icons/toolbar/view_pop.png "tooltip=Viewstage Pop"
 	Separator
-	Item mode_world "Objekte und Terrains" checkable image=icons/toolbar/world.png
-	Item mode_world_terrain "Höhenkarte" checkable image=icons/toolbar/model_paint.png
+	Item mode_world "Objekte und Terrains" checkable image=icons/toolbar/model-surface.png
+	Item mode_world_terrain "Höhenkarte" checkable image=icons/toolbar/terrain.png
 	Item mode_world_camera "Kamerafahrt" checkable image=icons/toolbar/world-cam.png
 	Separator
 	Item selection_properties "Eigenschaften" image=icons/toolbar/configure.png

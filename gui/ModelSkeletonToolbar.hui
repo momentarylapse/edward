@@ -1,8 +1,8 @@
 Toolbar model-skeleton-toolbar ""
-	Item skeleton_new_point "neuer Knochen" checkable image=icons/toolbar/new_vertex.png
+	Item skeleton_new_point "neuer Knochen" checkable image=icons/toolbar/new-vertex.png
 	Separator
-	Item select "Selektieren" checkable image=icons/toolbar/rf_select.png
-	Item translate "Verschieben" checkable image=icons/toolbar/rf_translate.png
-	Item rotate "Rotieren" checkable image=icons/toolbar/rf_rotate.png
-	Item scale "Skalieren" checkable image=icons/toolbar/rf_scale.png
-	Item mirror "Spiegeln" checkable image=icons/toolbar/rf_mirror.png
+	Item /select "Selektieren" checkable image=icons/toolbar/rf-select.png
+	Item /translate "Verschieben" checkable image=icons/toolbar/rf-translate.png
+	Item /rotate "Rotieren" checkable image=icons/toolbar/rf-rotate.png
+	Item /scale "Skalieren" checkable image=icons/toolbar/rf-scale.png
+	Item /mirror "Spiegeln" checkable image=icons/toolbar/rf-mirror.png

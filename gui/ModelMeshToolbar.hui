@@ -1,15 +1,14 @@
 Toolbar model-mesh-toolbar ""
-	Item new_tria "Polygon" checkable image=icons/toolbar/new_triangle.png
-	Item new_plane "Ebene" checkable image=icons/toolbar/new_plane.png
-	Item new_cube "Quader" checkable image=icons/toolbar/mode_skin.png
-	Item new_ball "Kugel" checkable image=icons/toolbar/new_ball.png
-	Item new_cylinder "Zylinder" checkable image=icons/toolbar/new_cylinder.png
+	Item new_tria "Polygon" checkable image=icons/toolbar/new-triangle.png
+	Item new_plane "Ebene" checkable image=icons/toolbar/new-plane.png
+	Item new_cube "Quader" checkable image=icons/toolbar/model-surface.png
+	Item new_ball "Kugel" checkable image=icons/toolbar/new-ball.png
+	Item new_cylinder "Zylinder" checkable image=icons/toolbar/new-cylinder.png
 	Separator
-	Item select "Selektieren" checkable image=icons/toolbar/rf_select.png
-	Item translate "Verschieben" checkable image=icons/toolbar/rf_translate.png
-	Item rotate "Rotieren" checkable image=icons/toolbar/rf_rotate.png
-	Item scale "Skalieren" checkable image=icons/toolbar/rf_scale.png
-	Item mirror "Spiegeln" checkable image=icons/toolbar/rf_mirror.png
-	Item lock_action "paranoider Modus" checkable image=hui:no
+	Item /select "Selektieren" checkable image=icons/toolbar/rf-select.png
+	Item /translate "Verschieben" checkable image=icons/toolbar/rf-translate.png
+	Item /rotate "Rotieren" checkable image=icons/toolbar/rf-rotate.png
+	Item /scale "Skalieren" checkable image=icons/toolbar/rf-scale.png
+	Item /mirror "Spiegeln" checkable image=icons/toolbar/rf-mirror.png
 	Separator
-	Item snap_to_grid "Klebriges Raster" checkable image=hui:yes
+	Item snap_to_grid "Klebriges Raster" checkable image=icons/toolbar/snap-to-grid.png

@@ -9,16 +9,16 @@ Toolbar model-toolbar ""
 	Item view_push "Push" image=icons/toolbar/view_push.png "tooltip=Viewstage Push"
 	Item view_pop "Pop" image=icons/toolbar/view_pop.png "tooltip=Viewstage Pop"
 	Separator
-	Item mode_model_mesh "Mesh" checkable image=icons/toolbar/model_mesh.svg
-	Item mode_model_deform "Deformations-Modus" checkable image=icons/toolbar/model_deform.png
-	Item mode_model_materials "Materialien" checkable image=icons/toolbar/mode_textures.png
-	Item mode_model_texture_coord "Textur-Koordinaten" checkable image=icons/toolbar/model_skin.svg
-	Item mode_model_paint "Auf Oberfläche (in Textur) malen" checkable image=icons/toolbar/model_paint.png
-	Item mode_model_skeleton "Skelett" checkable image=icons/toolbar/mode_skeleton.png
-	Item mode_model_animation "Animationen" checkable image=icons/toolbar/mode_move.png
+	Item mode_model_mesh "Mesh" checkable image=icons/toolbar/model-surface.png
+	Item mode_model_deform "Deformations-Modus" checkable image=icons/toolbar/model-deform.png
+	Item mode_model_materials "Materialien" checkable image=icons/toolbar/model-textures.png
+	Item mode_model_texture_coord "Textur-Koordinaten" checkable image=icons/toolbar/model-uv.png
+	Item mode_model_paint "Auf Oberfläche (in Textur) malen" checkable image=icons/toolbar/model-paint.png
+	Item mode_model_skeleton "Skelett" checkable image=icons/toolbar/model-skeleton.png
+	Item mode_model_animation "Animationen" checkable image=icons/toolbar/model-move.png
 	Item mode_properties "Eigenschaften" checkable image=icons/toolbar/configure.png
 	Separator
-	Item mode_model_vertex "Vertex Punkte" checkable image=icons/toolbar/model_vertex.svg
-	Item mode_model_edge "Kanten" checkable image=icons/toolbar/model_edge.svg
-	Item mode_model_polygon "Polygone" checkable image=icons/toolbar/model_polygon.svg
-	Item mode_model_surface "Oberflächen" checkable image=icons/toolbar/model_surface.svg
+	Item mode_model_vertex "Vertex Punkte" checkable image=icons/toolbar/model-vertex.png
+	Item mode_model_edge "Kanten" checkable image=icons/toolbar/model-edge.png
+	Item mode_model_polygon "Polygone" checkable image=icons/toolbar/model-polygon.png
+	Item mode_model_surface "Oberflächen" checkable image=icons/toolbar/model-surface.png

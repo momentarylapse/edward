@@ -1,6 +1,6 @@
 Toolbar model-animation-skeleton-toolbar ""
-	Item select "Selektieren" checkable image=icons/toolbar/rf_select.png
-	Item translate "Verschieben" checkable image=icons/toolbar/rf_translate.png
-	Item rotate "Rotieren" checkable image=icons/toolbar/rf_rotate.png
-	Item scale "Skalieren" checkable image=icons/toolbar/rf_scale.png
+	Item /select "Selektieren" checkable image=icons/toolbar/rf-select.png
+	Item /translate "Verschieben" checkable image=icons/toolbar/rf-translate.png
+	Item /rotate "Rotieren" checkable image=icons/toolbar/rf-rotate.png
+	Item /scale "Skalieren" checkable image=icons/toolbar/rf-scale.png
 	Item select-recursive "Rekursiv bearbeiten" checkable image=hui:apply

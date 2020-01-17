@@ -1,7 +1,7 @@
 Toolbar world-edit-toolbar ""
-	Item create_objects "Objekt hinzufügen" image=hui:add
-	Item terrain_create "Terrain hinzufügen" image=hui:add
+	Item create_objects "Objekt hinzufügen" image=icons/toolbar/model-surface.png
+	Item terrain_create "Terrain hinzufügen" image=icons/toolbar/terrain.png
 	Separator
-	Item /select "Selektieren" checkable image=icons/toolbar/rf_select.png
-	Item /translate "Verschieben" checkable image=icons/toolbar/rf_translate.png
-	Item /rotate "Rotieren" checkable image=icons/toolbar/rf_rotate.png
+	Item /select "Selektieren" checkable image=icons/toolbar/rf-select.png
+	Item /translate "Verschieben" checkable image=icons/toolbar/rf-translate.png
+	Item /rotate "Rotieren" checkable image=icons/toolbar/rf-rotate.png
