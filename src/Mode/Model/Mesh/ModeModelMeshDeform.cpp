@@ -20,11 +20,10 @@ ModeModelMeshDeform *mode_model_mesh_deform = NULL;
 
 class DeformBrushPanel : public hui::Panel {
 public:
-	DeformBrushPanel(ModeModelMeshDeform *_mode) {
-		mode = _mode;
+	DeformBrushPanel(MultiView::MultiView *mv) {
 
-		base_diameter = mode->multi_view->cam.radius * 0.2f;
-		base_depth = mode->multi_view->cam.radius * 0.02f;
+		base_diameter = mv->cam.radius * 0.2f;
+		base_depth = mv->cam.radius * 0.02f;
 
 		from_resource("model-deformation-brush-dialog");
 
@@ -51,7 +50,6 @@ public:
 		set_string("depth", f2s(base_depth * exp((x - 0.5f) * 2), 2));
 	}
 
-	ModeModelMeshDeform *mode;
 	float base_diameter, base_depth;
 };
 
@@ -68,7 +66,7 @@ ModeModelMeshDeform::~ModeModelMeshDeform() {
 
 void ModeModelMeshDeform::on_start() {
 
-	dialog = new DeformBrushPanel(this);
+	dialog = new DeformBrushPanel(multi_view);
 	ed->embed(dialog, "root-table", 1, 0);
 
 	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];

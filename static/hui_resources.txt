@@ -1,6 +1,6 @@
 t7
 # Number Of Resources
-68
+69
 # Resource
 Menu
 
@@ -8140,6 +8140,49 @@ image=hui:ok
 0
 0
 # Resource
+Toolbar
+world-edit-toolbar
+
+0
+0
+6
+Item
+create_objects
+image=hui:add
+0
+0
+0
+Item
+terrain_create
+image=hui:add
+1
+0
+0
+Separator
+
+
+2
+0
+0
+Item
+select
+checkable,image=icons/toolbar/rf_select.png
+3
+0
+0
+Item
+translate
+checkable,image=icons/toolbar/rf_translate.png
+4
+0
+0
+Item
+rotate
+checkable,image=icons/toolbar/rf_rotate.png
+5
+0
+0
+# Resource
 Dialog
 lightmap_dialog
 width=420,height=540
@@ -9122,7 +9165,7 @@ world-toolbar
 
 0
 0
-15
+16
 Item
 new
 image=icons/toolbar/new.png
@@ -9184,33 +9227,39 @@ Separator
 0
 0
 Item
-selection_properties
-image=icons/toolbar/configure.png
+mode_world
+checkable,image=icons/toolbar/world.png
 10
+0
+0
+Item
+mode_world_terrain
+checkable,image=icons/toolbar/model_paint.png
+11
+0
+0
+Item
+mode_world_camera
+checkable,image=icons/toolbar/world-cam.png
+12
 0
 0
 Separator
 
 
-11
-0
-0
-Item
-select
-checkable,image=icons/toolbar/rf_select.png
-12
-0
-0
-Item
-translate
-checkable,image=icons/toolbar/rf_translate.png
 13
 0
 0
 Item
-rotate
-checkable,image=icons/toolbar/rf_rotate.png
+selection_properties
+image=icons/toolbar/configure.png
 14
+0
+0
+Item
+create_lightmap
+image=hui:execute
+15
 0
 0
 # Number Of Languages
@@ -9218,7 +9267,7 @@ checkable,image=icons/toolbar/rf_rotate.png
 # Language
 Deutsch
 # Number Of IDs
-941
+947
 # Text
 /ambient
 Ambient
@@ -11872,6 +11921,24 @@ Viewstage Pop
 world-camera-toolbar/view_push
 Push
 Viewstage Push
+world-edit-toolbar/create_objects
+Objekt hinzufügen
+
+world-edit-toolbar/terrain_create
+Terrain hinzufügen
+
+world-toolbar/create_lightmap
+Lightmap rendern
+
+world-toolbar/mode_world
+Objekte und Terrains
+
+world-toolbar/mode_world_camera
+Kamerafahrt
+
+world-toolbar/mode_world_terrain
+Höhenkarte
+
 world-toolbar/selection_properties
 Eigenschaften
 

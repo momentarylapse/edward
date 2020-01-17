@@ -26,9 +26,9 @@
 #include "Creation/ModeWorldCreateObject.h"
 #include "Creation/ModeWorldCreateTerrain.h"
 #include "Camera/ModeWorldCamera.h"
-#include "Terrain/ModeWorldEditTerrain.h"
 #include "../../Action/World/ActionWorldEditData.h"
 #include "../../Action/World/ActionWorldSetEgo.h"
+#include "Terrain/ModeWorldTerrain.h"
 
 ModeWorld *mode_world = NULL;
 
@@ -49,6 +49,7 @@ ModeWorld::ModeWorld() :
 	subscribe(data);
 
 	WorldDialog = NULL;
+	mouse_action = -1;
 
 	ShowTerrains = true;
 	ShowObjects = true;
@@ -56,6 +57,7 @@ ModeWorld::ModeWorld() :
 	TerrainShowTextureLevel = -1;
 
 	mode_world_camera = new ModeWorldCamera(this, new DataCamera);
+	mode_world_terrain = new ModeWorldTerrain(this);
 }
 
 ModeWorld::~ModeWorld()
@@ -105,6 +107,13 @@ void ModeWorld::on_command(const string & id)
 	if (id == "terrain_load")
 		LoadTerrain();
 
+	if (id == "mode_world")
+		ed->set_mode(mode_world);
+	if (id == "mode_world_camera")
+		ed->set_mode(mode_world_camera);
+	if (id == "mode_world_terrain")
+		ed->set_mode(mode_world_terrain);
+
 	if (id == "camscript_create")
 		ed->set_mode(mode_world_camera);
 	if (id == "camscript_load")
@@ -115,7 +124,7 @@ void ModeWorld::on_command(const string & id)
 				mode_world_camera->data->reset();
 		}
 	if (id == "edit_terrain_vertices")
-		ed->set_mode(new ModeWorldEditTerrain(ed->cur_mode));
+		ed->set_mode(mode_world_terrain);
 	if (id == "create_lightmap")
 		ExecuteLightmapDialog();
 
@@ -429,9 +438,7 @@ void ModeWorld::on_draw_win(MultiView::Window *win)
 void ModeWorld::on_start()
 {
 	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("world-toolbar");
-	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
-	t->reset();
-	t->enable(false);
+	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("world-edit-toolbar");
 
 	SetMouseAction(MultiView::ACTION_MOVE);
 
@@ -461,6 +468,10 @@ void ModeWorld::on_update_menu()
 	ed->check("show_objects", ShowObjects);
 	ed->check("show_terrains", ShowTerrains);
 	ed->check("show_fx", ShowEffects);
+
+	ed->check("mode_world", mode_world->is_ancestor_of(ed->cur_mode) and !mode_world_camera->is_ancestor_of(ed->cur_mode) and !mode_world_terrain->is_ancestor_of(ed->cur_mode));
+	ed->check("mode_world_camera", mode_world_camera->is_ancestor_of(ed->cur_mode));
+	ed->check("mode_world_terrain", mode_world_terrain->is_ancestor_of(ed->cur_mode));
 
 	ed->enable("select", multi_view->allow_mouse_actions);
 	ed->enable("translate", multi_view->allow_mouse_actions);

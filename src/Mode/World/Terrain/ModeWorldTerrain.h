@@ -13,11 +13,13 @@
 #include "../../../Data/World/DataWorld.h"
 #include "../../../lib/hui/hui.h"
 
-class ModeWorldEditTerrain: public ModeCreation<DataWorld>, public hui::EventHandler
+class TerrainDeformBrushPanel;
+
+class ModeWorldTerrain: public ModeCreation<DataWorld>, public hui::EventHandler
 {
 public:
-	ModeWorldEditTerrain(ModeBase *_parent);
-	virtual ~ModeWorldEditTerrain();
+	ModeWorldTerrain(ModeBase *_parent);
+	virtual ~ModeWorldTerrain();
 
 	void on_start() override;
 	void on_end() override;
@@ -29,16 +31,17 @@ public:
 
 	void on_draw_win(MultiView::Window *win) override;
 
-	Action *getAction(const vector &pos);
+	Action *get_action(const vector &pos);
 	void apply(const vector &pos);
 
-	void onDepthSlider();
-	void onDiameterSlider();
+	TerrainDeformBrushPanel *dialog;
 
 private:
 	float base_diameter, base_depth;
 	bool brushing;
 	vector last_pos;
 };
+
+extern ModeWorldTerrain *mode_world_terrain;
 
 #endif /* MODEWORLDEDITTERRAIN_H_ */

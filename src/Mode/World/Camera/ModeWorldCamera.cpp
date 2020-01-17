@@ -34,11 +34,14 @@ ModeWorldCamera *mode_world_camera = NULL;
 }*/
 
 ModeWorldCamera::ModeWorldCamera(ModeBase *_parent, Data *_data) :
-	Mode<DataCamera>("WorldCamera", _parent, _data, ed->multi_view_3d, ""),
+	Mode<DataCamera>("WorldCamera", _parent, _data, ed->multi_view_3d, "menu_world"),
 	Observable("WorldCamera")
 {
 	edit_vel = false;
 	edit_ang = false;
+	dialog = nullptr;
+	preview_time = 0;
+	preview = false;
 
 
 	inter_pos = new Interpolator<vector>(Interpolator<vector>::TYPE_CUBIC_SPLINE);
@@ -56,7 +59,7 @@ void ModeWorldCamera::on_start()
 	dialog = new CameraDialog(this);
 	ed->embed(dialog, "root-table", 0, 1);
 
-	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("world-camera-toolbar");
+	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("world-camera-toolbar");
 
 	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
@@ -78,8 +81,7 @@ void ModeWorldCamera::on_end()
 	Observer::unsubscribe(multi_view);
 	delete(dialog);
 	multi_view->clearData(data);
-
-	parent->on_start();
+	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("world-edit-toolbar"); // ...
 }
 
 void ModeWorldCamera::addPoint()

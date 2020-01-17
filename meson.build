@@ -382,7 +382,7 @@ sources = [
 	'src/Mode/World/Dialog/TerrainHeightmapDialog.cpp',
 	'src/Mode/World/Dialog/TerrainPropertiesDialog.cpp',
 	'src/Mode/World/Dialog/WorldPropertiesDialog.cpp',
-	'src/Mode/World/Terrain/ModeWorldEditTerrain.cpp',
+	'src/Mode/World/Terrain/ModeWorldTerrain.cpp',
 	'src/Mode/World/ModeWorld.cpp',
 	'src/Mode/Mode.cpp',
 	'src/Mode/ModeCreation.cpp',
