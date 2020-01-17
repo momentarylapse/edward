@@ -17,6 +17,7 @@
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
 #include "../../../../MultiView/DrawingHelper.h"
+#include "../../../../MultiView/ColorScheme.h"
 #include "../../../../Action/ActionGroup.h"
 #include "../../../../Action/Model/Mesh/Vertex/Helper/ActionModelMoveVertex.h"
 #include "../Selection/MeshSelectionModePolygon.h"
@@ -169,16 +170,16 @@ void ModeModelMeshDeformCylinder::on_draw_win(MultiView::Window* win)
 		nix::Draw3D(nix::vb_temp);
 	}
 
-	set_wide_lines(3);
+	set_wide_lines(scheme.LINE_WIDTH_MEDIUM);
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetZ(false, false);
-	nix::SetColor(multi_view->ColorCreationLine);
+	nix::SetColor(scheme.CREATION_LINE);
 	nix::DrawLine3D(axis[0], axis[1]);
 
 	vector e1 = dir.ortho();
 	vector e2 = dir ^ e1;
 	foreachi(vector &p, param, ip){
-		nix::SetColor((ip == hover) ? Red : multi_view->ColorCreationLine);
+		nix::SetColor((ip == hover) ? scheme.SELECTION : scheme.CREATION_LINE);
 		vector m = axis[0] + (axis[1] - axis[0]) * p.y;
 		vector v = m + e1 * radius * p.z;
 		for (int i=1; i<=CYLINDER_EDGES; i++){
@@ -272,7 +273,7 @@ void ModeModelMeshDeformCylinder::preview()
 	//mode_model_mesh->updateVertexBuffers(data->vertex);
 
 	has_preview = true;
-	ed->force_redraw();
+	multi_view->force_redraw();
 }
 
 void ModeModelMeshDeformCylinder::on_mouse_move()

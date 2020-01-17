@@ -13,6 +13,7 @@
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
 #include "../../../../MultiView/DrawingHelper.h"
+#include "../../../../MultiView/ColorScheme.h"
 #include "../../../../lib/nix/nix.h"
 
 const float CYLINDER_CLOSING_DISTANCE = 20;
@@ -107,7 +108,7 @@ void ModeModelMeshCreateCylinderSnake::on_left_button_up()
 				on_mouse_move();
 				message = _("Zylinder: Radius");
 				updateGeometry();
-				ed->force_redraw();
+				multi_view->force_redraw();
 				return;
 			}
 
@@ -126,7 +127,7 @@ void ModeModelMeshCreateCylinderSnake::on_command(const string& id)
 			on_mouse_move();
 			message = _("Zylinderradius: ");
 			updateGeometry();
-			ed->force_redraw();
+			multi_view->force_redraw();
 		}
 	}
 }
@@ -142,7 +143,7 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win)
 	if (pos.num > 0){
 
 		// control points
-		nix::SetColor(multi_view->ColorCreationLine);
+		nix::SetColor(scheme.CREATION_LINE);
 		nix::SetShader(nix::default_shader_2d);
 		for (int i=0;i<pos.num;i++){
 			vector pp = win->project(pos[i]);
@@ -151,8 +152,8 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win)
 
 
 		// control polygon
-		nix::SetColor(ColorInterpolate(multi_view->ColorCreationLine, multi_view->ColorBackGround, 0.3f));
-		set_wide_lines(2);
+		nix::SetColor(ColorInterpolate(scheme.CREATION_LINE, scheme.BACKGROUND, 0.3f));
+		set_wide_lines(scheme.LINE_WIDTH_HELPER);
 		for (int i=1;i<pos.num;i++)
 			nix::DrawLine3D(pos[i - 1], pos[i]);
 
@@ -167,7 +168,8 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win)
 		if (!ready_for_scaling)
 			inter.add(multi_view->get_cursor());
 		inter.normalize();
-		nix::SetColor(multi_view->ColorCreationLine);
+		nix::SetColor(scheme.CREATION_LINE);
+		set_wide_lines(scheme.LINE_WIDTH_HELPER);
 		for (int i=0;i<100;i++)
 			nix::DrawLine3D(inter.get((float)i * 0.01f), inter.get((float)i * 0.01f + 0.01f));
 	}
@@ -183,7 +185,7 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win)
 		vector pp = multi_view->mouse_win->project(pos[0]);
 		pp.z = 0;
 		if ((pp - multi_view->m).length_fuzzy() < CYLINDER_CLOSING_DISTANCE){
-			ed->draw_str(pp.x, pp.y, _("Pfad schlie&sen"));
+			draw_str(pp.x, pp.y, _("Pfad schlie&sen"));
 		}
 	}
 }

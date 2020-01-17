@@ -9,11 +9,11 @@
 #include "MultiView.h"
 #include "ActionController.h"
 #include "SingleData.h"
+#include "ColorScheme.h"
+#include "DrawingHelper.h"
 #include "../Edward.h"
 #include "../lib/nix/nix.h"
 
-void draw_str_bg(int x, int y, const string &str, const color &fg, const color &bg, Edward::AlignType align);
-extern string font_name;
 
 
 namespace nix{
@@ -25,9 +25,6 @@ namespace MultiView{
 
 extern nix::Shader *shader_lines_3d;
 
-extern color ColorTextBG;
-extern color ColorWindowTitle;
-extern color ColorWindowTitleBG;
 
 #define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 
@@ -115,7 +112,7 @@ void Window::drawGrid()
 				p.add(pb);
 			}
 		}
-		nix::SetColor(ColorInterpolate(bg, multi_view->ColorGrid, 0.1f));
+		nix::SetColor(ColorInterpolate(bg, scheme.GRID, 0.1f));
 		nix::DrawLines(p, false);
 
 		p.clear();
@@ -132,7 +129,7 @@ void Window::drawGrid()
 			p.add(pa);
 			p.add(pb);
 		}
-		nix::SetColor(ColorInterpolate(bg, multi_view->ColorGrid, 0.6f));
+		nix::SetColor(ColorInterpolate(bg, scheme.GRID, 0.6f));
 		nix::DrawLines(p, false);
 		//NixSetZ(true,true);
 		return;
@@ -162,7 +159,7 @@ void Window::drawGrid()
 	b=(int)fb+1;
 	for (int i=a;i<b;i++){
 		int x=(int)project(vector((float)i*D,(float)i*D,(float)i*D)).x;
-		nix::SetColor(ColorInterpolate(bg, multi_view->ColorGrid, GetDensity(i,(float)nix::target_width/(fb-fa))));
+		nix::SetColor(ColorInterpolate(bg, scheme.GRID, GetDensity(i,(float)nix::target_width/(fb-fa))));
 		nix::DrawLineV(x,dest.y1,dest.y2,0.99998f-GetDensity(i,(float)nix::target_width/(fb-fa))*0.00005f);
 	}
 
@@ -178,7 +175,7 @@ void Window::drawGrid()
 	b=(int)fb+1;
 	for (int i=a;i<b;i++){
 		int y=(int)project(vector((float)i*D,(float)i*D,(float)i*D)).y;
-		nix::SetColor(ColorInterpolate(bg, multi_view->ColorGrid, GetDensity(i,(float)nix::target_width/(fb-fa))));
+		nix::SetColor(ColorInterpolate(bg, scheme.GRID, GetDensity(i,(float)nix::target_width/(fb-fa))));
 		nix::DrawLineH(dest.x1,dest.x2,y,0.99998f-GetDensity(i,(float)nix::target_width/(fb-fa))*0.00005f);
 	}
 }
@@ -186,8 +183,8 @@ void Window::drawGrid()
 color Window::getBackgroundColor()
 {
 	if (this == multi_view->active_win)
-		return multi_view->ColorBackGroundSelected;
-	return multi_view->ColorBackGround;
+		return scheme.BACKGROUND_SELECTED;
+	return scheme.BACKGROUND;
 }
 
 quaternion view_ang(int type, Camera *cam)
@@ -334,20 +331,20 @@ void Window::draw()
 				//if (!dest.inside(p.x,  p.y))
 				if ((p.x<dest.x1)or(p.y<dest.y1)or(p.x>dest.x2)or(p.y>dest.y2)or(p.z<=0)or(p.z>=1))
 					continue;
-				color c = multi_view->ColorPoint;
-				float radius = (float)multi_view->POINT_RADIUS;
+				color c = scheme.POINT;
+				float radius = scheme.POINT_RADIUS;
 				float z = p.z - 0.0001f;//0.1f;
 				if (sd->is_selected){
-					c = multi_view->ColorPointSelected;
+					c = scheme.POINT_SELECTED;
 					//z = 0.05f;
 					z = 0;
 				}
 				if (sd->is_special)
-					c = multi_view->ColorPointSpecial;
+					c = scheme.POINT_SPECIAL;
 				if ((multi_view->hover.set == di) and (i == multi_view->hover.index)){
-					c = color(c.a,c.r+0.4f,c.g+0.4f,c.b+0.4f);
+					c = scheme.hoverify(c);
 					z = 0.0f;
-					radius = (float)multi_view->POINT_RADIUS_HOVER;
+					radius = scheme.POINT_RADIUS_HOVER;
 				}
 				nix::SetColor(c);
 				nix::DrawRect(	p.x-radius,
@@ -358,7 +355,7 @@ void Window::draw()
 			}
 		}
 		if (d.indexable and index_key){
-			nix::SetColor(multi_view->ColorText);
+			nix::SetColor(scheme.TEXT);
 			nix::SetAlpha(ALPHA_SOURCE_ALPHA, ALPHA_SOURCE_INV_ALPHA);
 			for (int i=0;i<d.data->num;i++){
 
@@ -386,7 +383,7 @@ void Window::draw()
 	if (this != multi_view->mouse_win){
 		vector pp = project(multi_view->get_cursor());
 		nix::SetShader(nix::default_shader_2d);
-		nix::SetColor(multi_view->ColorCreationLine);
+		nix::SetColor(scheme.CREATION_LINE);
 		nix::DrawRect(pp.x-2, pp.x+2, pp.y-2, pp.y+2, 0);
 	}
 
@@ -398,19 +395,19 @@ void Window::draw()
 	name_dest = rect(dest.x1 + 3, dest.x1 + 3 + nix::GetStrWidth(view_kind), dest.y1, dest.y1 + 20);
 
 	nix::SetShader(nix::default_shader_2d);
-	nix::SetColor(multi_view->ColorWindowType);
-	bg = ColorWindowTitleBG;
+	nix::SetColor(scheme.WINDOW_TITLE);
+	bg = scheme.WINDOW_TITLE_BG;
 	if (ed->is_active("nix-area") and (this == multi_view->active_win)) {}
 		// active?!?
 	if ((this == multi_view->mouse_win) and (multi_view->hover.meta == multi_view->hover.HOVER_WINDOW_LABEL))
-		bg = ColorInterpolate(bg, White, 0.2f);
-	draw_str_bg(dest.x1 + 3, dest.y1 + 3, view_kind.upper(), ColorWindowTitle, bg, Edward::AlignType::ALIGN_LEFT);
-	nix::SetColor(multi_view->ColorText);
+		bg = scheme.hoverify(bg);
+	draw_str_bg(dest.x1 + 3, dest.y1 + 3, view_kind.upper(), scheme.WINDOW_TITLE, bg, TextAlign::LEFT);
+	nix::SetColor(scheme.TEXT);
 
 	for (auto &m: multi_view->message3d){
 		vector p = project(m.pos);
 		if (p.z > 0)
-			ed->draw_str(p.x, p.y, m.str);
+			draw_str(p.x, p.y, m.str);
 	}
 }
 

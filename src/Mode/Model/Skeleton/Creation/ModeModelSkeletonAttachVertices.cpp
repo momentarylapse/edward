@@ -28,7 +28,7 @@ void ModeModelSkeletonAttachVertices::on_start()
 	//mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_vertex);
 
 	mode_model->allow_selection_modes(true);
-	mode_model_mesh->selection_mode->updateMultiView();
+	mode_model_mesh->selection_mode->update_multi_view();
 	multi_view->set_allow_action(false);
 
 	subscribe(data);
@@ -50,9 +50,9 @@ void ModeModelSkeletonAttachVertices::on_end()
 void ModeModelSkeletonAttachVertices::on_update(Observable *o, const string &message)
 {
 	if (o == data){
-		mode_model_mesh->selection_mode->updateMultiView();
+		mode_model_mesh->selection_mode->update_multi_view();
 	}else if (o == multi_view){
-		mode_model_mesh->selection_mode->updateSelection();
+		mode_model_mesh->selection_mode->update_selection();
 		mode_model_mesh->fill_selection_buffer(data->vertex);
 	}
 }

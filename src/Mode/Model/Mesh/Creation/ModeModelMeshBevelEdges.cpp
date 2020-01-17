@@ -39,10 +39,6 @@ ModeModelMeshBevelEdges::ModeModelMeshBevelEdges(ModeBase *_parent) :
 		abort();
 }
 
-ModeModelMeshBevelEdges::~ModeModelMeshBevelEdges()
-{
-}
-
 void ModeModelMeshBevelEdges::on_start()
 {
 	multi_view->set_allow_action(false);
@@ -64,6 +60,8 @@ void ModeModelMeshBevelEdges::on_mouse_move()
 	data->setSelectionState(selection);
 	if (!data->action_manager->preview(new ActionModelBevelEdges(radius)))
 		abort();
+
+	message = _("Radius skalieren [Linke Maustaste = fertig]   ") + multi_view->format_length(radius);
 }
 
 void ModeModelMeshBevelEdges::on_left_button_down()
@@ -78,8 +76,6 @@ void ModeModelMeshBevelEdges::on_left_button_down()
 void ModeModelMeshBevelEdges::on_draw_win(MultiView::Window *win)
 {
 	parent->on_draw_win(win);
-
-	ed->draw_str(100, 100, f2s(radius, 3));
 }
 
 

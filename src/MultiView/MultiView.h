@@ -71,18 +71,6 @@ struct DataSet {
 
 
 
-extern color ColorBackGround;
-extern color ColorBackGroundSelected;
-extern color ColorGrid;
-extern color ColorText;
-extern color ColorWindowType;
-extern color ColorPoint;
-extern color ColorPointSelected;
-extern color ColorPointSpecial;
-extern color ColorWindowSeparator;
-extern color ColorSelectionRect;
-extern color ColorSelectionRectBoundary;
-
 
 // multiview mask (data)
 static const int FLAG_NONE = 0;
@@ -172,20 +160,7 @@ public:
 	};
 	Selection hover;
 
-
-	static color ColorBackGround;
-	static color ColorBackGroundSelected;
-	static color ColorGrid;
-	static color ColorText;
-	static color ColorWindowType;
-	static color ColorPoint;
-	static color ColorPointSelected;
-	static color ColorPointSpecial;
-	static color ColorWindowSeparator;
-	static color ColorSelectionRect;
-	static color ColorSelectionRectBoundary;
-	static color ColorCreation;
-	static color ColorCreationLine;
+	void force_redraw();
 
 	void on_draw();
 	void draw_mouse_pos();
@@ -313,11 +288,6 @@ public:
 
 	int MIN_MOUSE_MOVE_TO_INTERACT;
 	float MOUSE_ROTATION_SPEED;
-
-
-
-	int POINT_RADIUS;
-	int POINT_RADIUS_HOVER;
 };
 
 };

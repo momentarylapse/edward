@@ -7,6 +7,7 @@
 
 #include "ModeCreation.h"
 #include "../Edward.h"
+#include "../MultiView/DrawingHelper.h"
 #include "../lib/nix/nix.h"
 #include <assert.h>
 
@@ -26,7 +27,7 @@ void ModeCreationBase::on_draw() {
 	//ModeBase::onDraw();
 	on_draw_post();
 
-	ed->draw_str(nix::target_width / 2, nix::target_height - 20, message);
+	draw_str(nix::target_width / 2, nix::target_height - 20, message);
 }
 
 void ModeCreationBase::on_draw_win(MultiView::Window *win) {
@@ -39,6 +40,6 @@ void ModeCreationBase::on_set_multi_view() {
 
 void ModeCreationBase::abort() {
 	assert(parent);
-	hui::RunLater(0.01f, std::bind(&Edward::set_mode, ed, parent));
+	hui::RunLater(0.01f, [=]{ ed->set_mode(parent); });
 }
 

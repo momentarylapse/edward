@@ -10,6 +10,7 @@
 #include "../ModeModel.h"
 #include "../../../MultiView/MultiView.h"
 #include "../../../MultiView/DrawingHelper.h"
+#include "../../../MultiView/ColorScheme.h"
 #include "../../../Edward.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../Action/Model/Mesh/Brush/ActionModelBrushExtrude.h"
@@ -112,8 +113,8 @@ void ModeModelMeshDeform::on_draw_win(MultiView::Window *win) {
 	vector n = data->surface[multi_view->hover.set].polygon[multi_view->hover.index].temp_normal;
 	float radius = dialog->get_float("diameter") / 2;
 
-	nix::SetColor(multi_view->ColorCreationLine);
-	set_wide_lines(2);
+	nix::SetColor(scheme.CREATION_LINE);
+	set_wide_lines(scheme.LINE_WIDTH_MEDIUM);
 	draw_circle(pos, n, radius);
 }
 

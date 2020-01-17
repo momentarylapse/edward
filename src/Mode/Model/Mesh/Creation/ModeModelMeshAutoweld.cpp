@@ -9,6 +9,7 @@
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
+#include "../../../../MultiView/ColorScheme.h"
 #include "../../../../lib/nix/nix.h"
 
 ModeModelMeshAutoweld::ModeModelMeshAutoweld(ModeBase* _parent) :
@@ -60,7 +61,7 @@ void ModeModelMeshAutoweld::onSlider()
 {
 	radius = radius_default * exp((dialog->get_float("slider") - 0.5f) * 5);
 	dialog->set_string("radius", f2s(radius, 2));
-	ed->force_redraw();
+	multi_view->force_redraw();
 }
 
 void ModeModelMeshAutoweld::onCancel()
@@ -80,7 +81,7 @@ void ModeModelMeshAutoweld::on_draw_win(MultiView::Window* win)
 
 	nix::EnableLighting(false);
 	nix::SetTexture(NULL);
-	nix::SetColor(Green);
+	nix::SetColor(scheme.CREATION_LINE);
 	float r = 5;
 	int n = 0;
 	for (int i=0;i<data->surface.num;i++){

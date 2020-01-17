@@ -17,37 +17,26 @@
 
 MeshSelectionModeVertex::MeshSelectionModeVertex(ModeModelMesh *_parent) :
 	MeshSelectionMode(_parent)
-{
+{}
+
+void MeshSelectionModeVertex::on_start() {
 }
 
-void MeshSelectionModeVertex::onStart()
-{
-}
-
-void MeshSelectionModeVertex::onEnd()
-{
+void MeshSelectionModeVertex::on_end() {
 }
 
 
 
-void MeshSelectionModeVertex::onDrawWin(MultiView::Window *win)
-{
+void MeshSelectionModeVertex::on_draw_win(MultiView::Window *win) {
 	parent->draw_effects(win);
 }
 
 
-
-void MeshSelectionModeVertex::onDraw()
-{
-}
-
-void MeshSelectionModeVertex::updateSelection()
-{
+void MeshSelectionModeVertex::update_selection() {
 	data->selectionFromVertices();
 }
 
-void MeshSelectionModeVertex::updateMultiView()
-{
+void MeshSelectionModeVertex::update_multi_view() {
 	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	multi_view->add_data(	MVD_MODEL_VERTEX,

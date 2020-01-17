@@ -39,7 +39,7 @@ private:
 	Geometry *geo;
 	nix::Texture *tex;
 	Kaba::Script *s;
-	typedef _cdecl void vec_func(vector&, const vector &);
+	typedef _cdecl vector vec_func(const vector &);
 	vec_func *f;
 
 	void updateFunction();

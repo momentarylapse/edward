@@ -15,7 +15,7 @@ MeshSelectionMode::MeshSelectionMode(ModeModelMesh *_parent)
 	multi_view = parent->multi_view;
 }
 
-bool MeshSelectionMode::isActive()
+bool MeshSelectionMode::is_active()
 {
 	return mode_model_mesh->selection_mode == this;
 }

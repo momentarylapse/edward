@@ -10,18 +10,17 @@
 
 #include "MeshSelectionMode.h"
 
-class MeshSelectionModeEdge: public MeshSelectionMode
-{
+class MeshSelectionModeEdge: public MeshSelectionMode {
 public:
 	MeshSelectionModeEdge(ModeModelMesh *parent);
 
-	virtual void onStart();
-	virtual void onEnd();
+	void on_start() override;
+	void on_end() override;
 
-	virtual void updateSelection();
-	virtual void updateMultiView();
+	void update_selection() override;
+	void update_multi_view() override;
 
-	virtual void onDrawWin(MultiView::Window *win);
+	void on_draw_win(MultiView::Window *win) override;
 };
 
 #endif /* MODEMODELMESHEDGE_H_ */

@@ -121,14 +121,6 @@ public:
 	bool file_dialog(int kind, bool save, bool force_in_root_dir);
 	bool allow_termination();
 
-	enum AlignType
-	{
-		ALIGN_LEFT,
-		ALIGN_CENTER,
-		ALIGN_RIGHT
-	};
-	void draw_str(int x, int y, const string &str, AlignType a = ALIGN_LEFT);
-	void force_redraw();
 	void update_menu();
 	void optimize_current_view();
 

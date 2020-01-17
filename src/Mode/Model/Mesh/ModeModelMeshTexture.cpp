@@ -8,6 +8,7 @@
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
 #include "../../../MultiView/Window.h"
+#include "../../../MultiView/DrawingHelper.h"
 #include "../../../lib/nix/nix.h"
 #include "ModeModelMesh.h"
 #include "ModeModelMeshTexture.h"
@@ -168,14 +169,14 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 void ModeModelMeshTexture::on_draw()
 {
 	if (data->getNumSelectedVertices() > 0){
-		ed->draw_str(20, 160, format(_("skin: %d"), getNumSelected()));
+		draw_str(20, 160, format(_("skin: %d"), getNumSelected()));
 	}
 	if (data->getNumSelectedVertices() > 0){
 		int nv = data->getNumSelectedVertices();
 		int ne = data->getNumSelectedEdges();
 		int np = data->getNumSelectedPolygons();
 		int ns = data->getNumSelectedSurfaces();
-		ed->draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons, %d surfaces", nv, ne, np, ns));
+		draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons, %d surfaces", nv, ne, np, ns));
 	}
 }
 
@@ -209,7 +210,7 @@ void ModeModelMeshTexture::setCurrentTextureLevel(int level)
 	current_texture_level = level;
 	fetchData();
 	notify(MESSAGE_TEXTURE_LEVEL_CHANGE);
-	ed->force_redraw();
+	multi_view->force_redraw();
 }
 
 void ModeModelMeshTexture::on_update(Observable *o, const string &message)

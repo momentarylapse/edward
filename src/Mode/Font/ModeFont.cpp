@@ -45,10 +45,10 @@ void ModeFont::on_left_button_down()
 			y += data->global.GlyphHeight;
 		}
 
-		if ((m.x >= x) && (m.x <= x2) && (m.y >= y) && (m.y <= y + data->global.GlyphHeight)){
+		if ((m.x >= x) and (m.x <= x2) and (m.y >= y) and (m.y <= y + data->global.GlyphHeight)){
 			data->Marked = i;
 			dialog->LoadData();
-			ed->force_redraw();
+			multi_view->force_redraw();
 		}
 		x = x2;
 	}

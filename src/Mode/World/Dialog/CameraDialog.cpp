@@ -209,7 +209,7 @@ void CameraDialog::OnAreaLeftButtonDown()
 	}else{
 		foreachi(WorldCamPoint &p, data->Point, i)
 			p.is_selected = (i == hover);
-		ed->force_redraw();
+		mode->multi_view->force_redraw();
 		redraw("cam_area");
 	}
 }

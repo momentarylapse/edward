@@ -110,7 +110,6 @@ void ModeModelMeshCreateTorus::on_draw_win(MultiView::Window *win) {
 		geo->build(nix::vb_temp);
 		nix::Draw3D(nix::vb_temp);
 		nix::EnableLighting(false);
-		ed->draw_str(100, 100, format("%.3f / %.3f", radius1, radius2));
 
 		if (win == multi_view->mouse_win) {
 			draw_helper_line(win, pos, multi_view->get_cursor());

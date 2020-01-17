@@ -8,6 +8,8 @@
 #include "../Edward.h"
 #include "MultiView.h"
 #include "Window.h"
+#include "ColorScheme.h"
+#include "DrawingHelper.h"
 #include "ActionController.h"
 #include "CameraController.h"
 #include "SingleData.h"
@@ -40,24 +42,6 @@ const string MultiView::MESSAGE_ACTION_UPDATE = "ActionUpdate";
 const string MultiView::MESSAGE_ACTION_ABORT = "ActionAbort";
 const string MultiView::MESSAGE_ACTION_EXECUTE = "ActionExecute";
 
-color MultiView::ColorBackGround;
-color MultiView::ColorBackGroundSelected;
-color MultiView::ColorGrid;
-color MultiView::ColorText;
-color ColorTextBG;
-color ColorWindowTitle;
-color ColorWindowTitleBG;
-color MultiView::ColorWindowType;
-color MultiView::ColorPoint;
-color MultiView::ColorPointSelected;
-color MultiView::ColorPointSpecial;
-color MultiView::ColorWindowSeparator;
-color MultiView::ColorSelectionRect;
-color MultiView::ColorSelectionRectBoundary;
-color MultiView::ColorCreation;
-color MultiView::ColorCreationLine;
-const float DIVIDER_THICKNESS = 5;
-
 
 void MultiView::Selection::reset()
 {
@@ -69,33 +53,6 @@ void MultiView::Selection::reset()
 MultiView::MultiView(bool mode3d) :
 	Observable("MultiView")
 {
-	/*ColorBackGround3D = color(1,0,0,0.15f);
-	ColorBackGround2D = color(1,0,0,0.10f);
-	ColorGrid = color(1,0.7f,0.7f,0.7f);
-	ColorText = White;
-	ColorWindowType = color(1, 0.5f, 0.5f, 0.5f);
-	ColorPoint = color(1, 0.2f, 0.2f, 0.9f);
-	ColorPointSelected = color(1, 0.9f, 0.2f, 0.2f);
-	ColorPointSpecial = color(1, 0.2f, 0.8f, 0.2f);
-	ColorWindowSeparator = color(1, 0.1f, 0.1f, 0.6f); // color(1,0.1f,0.1f,0.5f)
-	ColorSelectionRect = color(0.2f,0,0,1);
-	ColorSelectionRectBoundary = color(0.7f,0,0,1);*/
-	ColorBackGround = color(1,0.9f,0.9f,0.9f);
-	ColorBackGroundSelected = color(1,0.96f,0.96f,0.96f);
-	ColorGrid = color(1,0.5f,0.5f,0.5f);
-	ColorText = color(1, 0.1f, 0.1f, 0.1f);
-	ColorTextBG = color(1, 0.7f, 0.7f, 0.7f);
-	ColorWindowTitle = color(1, 0.35f, 0.35f, 0.35f);
-	ColorWindowTitleBG = ColorTextBG;//color(1, 0.4f, 0.4f, 0.4f);
-	ColorWindowType = color(1, 0.5f, 0.5f, 0.5f);
-	ColorPoint = color(1, 0.2f, 0.2f, 0.9f);
-	ColorPointSelected = color(1, 0.9f, 0.2f, 0.2f);
-	ColorPointSpecial = color(1, 0.2f, 0.8f, 0.2f);
-	ColorWindowSeparator = color(1, 0.4f, 0.4f, 0.75f);
-	ColorSelectionRect = color(0.2f,0,0,1);
-	ColorSelectionRectBoundary = color(0.7f,0,0,1);
-	ColorCreation = color(0.5f, 0.1f, 0.6f, 0.1f);
-	ColorCreationLine = color(1, 0.1f, 0.8f, 0.1f);
 
 	view_stage = 0;
 	grid_enabled = true;
@@ -122,9 +79,6 @@ MultiView::MultiView(bool mode3d) :
 
 	MIN_MOUSE_MOVE_TO_INTERACT = 5;
 	MOUSE_ROTATION_SPEED = 0.0033f;
-
-	POINT_RADIUS = 2;
-	POINT_RADIUS_HOVER = 4;
 
 	allow_infinite_scrolling = hui::Config.get_bool("MultiView.InfiniteScrolling", false);
 
@@ -484,7 +438,7 @@ void MultiView::on_left_button_down()
 		cam_con->onLeftButtonDown();
 	}else if (hover.meta == hover.HOVER_ACTION_CONTROLLER){
 		active_win = mouse_win;
-		action_con->leftButtonDown();
+		action_con->on_left_button_down();
 	}else{
 		active_win = mouse_win;
 		if (action_con->action.locked){
@@ -587,7 +541,7 @@ void MultiView::on_left_button_up()
 	moving_cross_x = false;
 	moving_cross_y = false;
 
-	action_con->leftButtonUp();
+	action_con->on_left_button_up();
 	cam_con->onLeftButtonUp();
 	notify_end();
 }
@@ -626,8 +580,8 @@ void MultiView::on_mouse_move()
 	notify_begin();
 	update_mouse();
 
-	if (action_con->inUse()){
-		action_con->mouseMove();
+	if (action_con->in_use()){
+		action_con->on_mouse_move();
 	}else if (cam_con->inUse()){
 		cam_con->onMouseMove();
 	}else if (sel_rect.active and allow_select){
@@ -695,9 +649,12 @@ void MultiView::end_selection_rect()
 }
 
 
+void MultiView::force_redraw() {
+	ed->redraw("nix-area");
+}
 
-string MultiView::get_unit_by_zoom(vector &v)
-{
+
+string MultiView::get_unit_by_zoom(vector &v) {
 	const char *units[] = {"y", "z", "a", "f", "p", "n", "\u00b5", "m", "", "k", "M", "G", "T", "P", "E", "Z", "Y"};
 	float l = active_win->get_grid_d() * 10.1f;
 
@@ -708,8 +665,7 @@ string MultiView::get_unit_by_zoom(vector &v)
 	return format("*10^%d", n*3);
 }
 
-string MultiView::format_length(float l)
-{
+string MultiView::format_length(float l) {
 	vector v = vector(l, 0, 0);
 	string unit = get_unit_by_zoom(v);
 	return f2s(v.x,2) + " " + unit;
@@ -724,9 +680,9 @@ void MultiView::draw_mouse_pos()
 	string sz = f2s(m.z,2) + " " + unit;
 
 	if (mouse_win->type == VIEW_2D){
-		ed->draw_str(nix::target_width, nix::target_height - 60, sx + "\n" + sy, Edward::ALIGN_RIGHT);
+		draw_str(nix::target_width, nix::target_height - 60, sx + "\n" + sy, TextAlign::RIGHT);
 	}else{
-		ed->draw_str(nix::target_width, nix::target_height - 80, sx + "\n" + sy +  + "\n" + sz, Edward::ALIGN_RIGHT);
+		draw_str(nix::target_width, nix::target_height - 80, sx + "\n" + sy +  + "\n" + sz, TextAlign::RIGHT);
 	}
 }
 
@@ -738,7 +694,8 @@ void MultiView::on_draw()
 	nix::ResetZ();
 	nix::SetProjectionOrtho(false);
 	nix::SetZ(true,true);
-	nix::SetColor(ColorText);
+	nix::SetColor(scheme.TEXT);
+	set_font(scheme.FONT_NAME, scheme.FONT_SIZE);
 
 	area = nix::target_rect;
 
@@ -753,7 +710,7 @@ void MultiView::on_draw()
 	}else{
 		float xm = area.x1 + area.width() * window_partition_x;
 		float ym = area.y1 + area.height() * window_partition_y;
-		float d = DIVIDER_THICKNESS / 2;
+		float d = scheme.WINDOW_DIVIDER_THICKNESS / 2;
 
 		// top left
 		win[0]->dest = rect(area.x1, xm-d, area.y1, ym-d);
@@ -777,10 +734,10 @@ void MultiView::on_draw()
 		nix::SetShader(nix::default_shader_2d);
 		nix::SetTexture(NULL);
 
-		color c2 = ColorInterpolate(ColorWindowSeparator, White, 0.4f);
-		nix::SetColor((hover.meta == hover.HOVER_WINDOW_DIVIDER_Y or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : ColorWindowSeparator);
+		color c2 = scheme.hoverify(scheme.WINDOW_DIVIDER);
+		nix::SetColor((hover.meta == hover.HOVER_WINDOW_DIVIDER_Y or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
 		nix::DrawRect(area.x1, area.x2, ym-d, ym+d, 0);
-		nix::SetColor((hover.meta == hover.HOVER_WINDOW_DIVIDER_X or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : ColorWindowSeparator);
+		nix::SetColor((hover.meta == hover.HOVER_WINDOW_DIVIDER_X or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
 		nix::DrawRect(xm-d, xm+d, area.y1, area.y2, 0);
 	}
 	nix::EnableLighting(false);
@@ -791,12 +748,12 @@ void MultiView::on_draw()
 
 	cam_con->draw();
 
-	nix::SetColor(ColorText);
+	nix::SetColor(scheme.TEXT);
 
 	if (ed->input.inside_smart)
 		draw_mouse_pos();
 
-	action_con->drawPost();
+	action_con->draw_post();
 
 	//printf("%f\n", timer.get()*1000.0f);
 }
@@ -818,11 +775,11 @@ void MultiView::SelectionRect::draw(const vector &m)
 	nix::SetZ(false, false);
 	nix::SetAlphaM(ALPHA_MATERIAL);
 	nix::SetTexture(NULL);
-	nix::SetColor(ColorSelectionRect);
+	nix::SetColor(scheme.SELECTION_RECT);
 	nix::SetCull(CULL_NONE);
 	nix::DrawRect(m.x, pos0.x, m.y, pos0.y, 0);
 	nix::SetCull(CULL_DEFAULT);
-	nix::SetColor(ColorSelectionRectBoundary);
+	nix::SetColor(scheme.SELECTION_RECT_BOUNDARY);
 	nix::DrawLineV(pos0.x	,pos0.y	,m.y	,0);
 	nix::DrawLineV(m.x	,pos0.y	,m.y	,0);
 	nix::DrawLineH(pos0.x	,m.x	,pos0.y	,0);
@@ -1022,7 +979,7 @@ void MultiView::get_hover()
 			return;
 		}
 	}
-	if (allow_mouse_actions and action_con->isMouseOver(hover.point)){
+	if (allow_mouse_actions and action_con->is_mouse_over(hover.point)){
 		hover.meta = hover.HOVER_ACTION_CONTROLLER;
 		return;
 	}

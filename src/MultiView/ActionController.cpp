@@ -7,9 +7,9 @@
 
 #include "ActionController.h"
 #include "MultiView.h"
+#include "DrawingHelper.h"
 #include "Window.h"
 #include "../Action/ActionMultiView.h"
-#include "../Edward.h"
 #include "../lib/nix/nix.h"
 #include "../Data/Model/Geometry/Geometry.h"
 #include "../Data/Model/Geometry/GeometryBall.h"
@@ -64,7 +64,7 @@ ActionController::ActionController(MultiView *view)
 
 ActionController::~ActionController()
 {
-	deleteGeo();
+	delete_geo();
 }
 
 void ActionController::start_action(Window *_win, const vector &_m, int _constraints)
@@ -216,7 +216,7 @@ void ActionController::end_action(bool set)
 	mat = matrix::ID;
 }
 
-bool ActionController::isSelecting()
+bool ActionController::is_selecting()
 {
 	if (action.mode == ACTION_SELECT)
 		return true;
@@ -232,7 +232,7 @@ void ActionController::reset()
 	mouse_over_constraint = -1;
 }
 
-void ActionController::deleteGeo()
+void ActionController::delete_geo()
 {
 	for (Geometry *g: geo)
 		delete(g);
@@ -256,7 +256,7 @@ void ActionController::update()
 	auto t = matrix::translation(pos);
 	geo_mat = t * s;
 
-	ed->force_redraw();
+	multi_view->force_redraw();
 }
 
 void ActionController::show(bool show)
@@ -367,7 +367,7 @@ void ActionController::draw(Window *win)
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetWorldMatrix(matrix::ID);
 
-	if (inUse()){
+	if (in_use()){
 		nix::SetMaterial(White, White, Black, 0, color(1, 0.2f, 0.7f, 0.2f));
 		float r = multi_view->cam.radius * 10;
 		if (constraints == ACTION_CONSTRAINTS_X)
@@ -384,12 +384,12 @@ void ActionController::draw(Window *win)
 	if (win == multi_view->mouse_win){
 		vector pp = win->project(pos);
 
-		if ((mouse_over_constraint >= 0) and !inUse()){
-			ed->draw_str(pp.x + 80, pp.y + 40, action_name(action.mode) + ": " + constraint_name(mouse_over_constraint));
+		if ((mouse_over_constraint >= 0) and !in_use()){
+			draw_str(pp.x + 80, pp.y + 40, action_name(action.mode) + ": " + constraint_name(mouse_over_constraint));
 		}
 	}
 
-	if (inUse() and (win == multi_view->active_win)){
+	if (in_use() and (win == multi_view->active_win)){
 		vector pp = win->project(pos);
 
 		float x0 = pp.x + 120;//multi_view->m.x + 100;//win->dest.x1 + 120;
@@ -411,15 +411,15 @@ void ActionController::draw(Window *win)
 			else
 				s = format("%.1f%%\n%.1f%%", param.x*100, param.y*100);
 		}
-		ed->draw_str(x0, y0, s, Edward::ALIGN_RIGHT);
+		draw_str(x0, y0, s, TextAlign::RIGHT);
 	}
 }
 
-void ActionController::drawPost()
+void ActionController::draw_post()
 {
 }
 
-bool ActionController::isMouseOver(vector &tp)
+bool ActionController::is_mouse_over(vector &tp)
 {
 	mouse_over_constraint = -1;
 	if (!visible)
@@ -443,12 +443,12 @@ bool ActionController::isMouseOver(vector &tp)
 	return (mouse_over_constraint >= 0);
 }
 
-bool ActionController::leftButtonDown()
+bool ActionController::on_left_button_down()
 {
 	if (!visible and action.locked)
 		return false;
 	vector hp = multi_view->hover.point;
-	if (isMouseOver(hp)){
+	if (is_mouse_over(hp)){
 		start_action(multi_view->active_win, hp, mouse_over_constraint);
 		return true;
 	}
@@ -459,19 +459,19 @@ bool ActionController::leftButtonDown()
 	return false;
 }
 
-void ActionController::leftButtonUp()
+void ActionController::on_left_button_up()
 {
 	end_action(true);
 
 	update();
 }
 
-bool ActionController::inUse()
+bool ActionController::in_use()
 {
 	return cur_action;
 }
 
-void ActionController::mouseMove()
+void ActionController::on_mouse_move()
 {
 	update_action();
 }

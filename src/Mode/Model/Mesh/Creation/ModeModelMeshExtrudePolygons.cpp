@@ -43,6 +43,8 @@ void ModeModelMeshExtrudePolygons::on_mouse_move()
 
 	offset += (hui::GetEvent()->dx) / multi_view->active_win->zoom();
 	preview();
+
+	message = _("Extrudieren: Offset durch Maus, Linke Taste = fertig    " + multi_view->format_length(offset));
 }
 
 void ModeModelMeshExtrudePolygons::on_draw_win(MultiView::Window *win)
@@ -50,7 +52,6 @@ void ModeModelMeshExtrudePolygons::on_draw_win(MultiView::Window *win)
 	parent->on_draw_win(win);
 
 	nix::EnableLighting(false);
-	ed->draw_str(100, 100, f2s(offset, 3));
 }
 
 void ModeModelMeshExtrudePolygons::preview()

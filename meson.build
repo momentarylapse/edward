@@ -389,6 +389,7 @@ sources = [
 	'src/Mode/ModeNone.cpp',
 	'src/MultiView/ActionController.cpp',
 	'src/MultiView/CameraController.cpp',
+	'src/MultiView/ColorScheme.cpp',
 	'src/MultiView/DrawingHelper.cpp',
 	'src/MultiView/MultiView.cpp',
 	'src/MultiView/SingleData.cpp',

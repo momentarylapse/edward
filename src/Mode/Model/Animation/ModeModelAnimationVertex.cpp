@@ -72,9 +72,9 @@ void ModeModelAnimationVertex::on_update(Observable* o, const string &message)
 {
 	if (o == data){
 		data->showVertices(mode_model_animation->vertex);
-		mode_model_mesh->selection_mode->updateMultiView();
+		mode_model_mesh->selection_mode->update_multi_view();
 	}else if (o == multi_view){
-		mode_model_mesh->selection_mode->updateSelection();
+		mode_model_mesh->selection_mode->update_selection();
 	}
 }
 

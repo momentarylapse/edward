@@ -13,6 +13,7 @@
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
 #include "../../../../MultiView/DrawingHelper.h"
+#include "../../../../MultiView/ColorScheme.h"
 #include "../../../../lib/nix/nix.h"
 
 
@@ -138,7 +139,7 @@ void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win)
 	if (pos.num > 0){
 
 		// control points
-		nix::SetColor(multi_view->ColorCreationLine);
+		nix::SetColor(scheme.CREATION_LINE);
 		nix::SetShader(nix::default_shader_2d);
 		for (int i=0;i<pos.num;i++){
 			vector pp = win->project(pos[i]);
@@ -148,7 +149,7 @@ void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win)
 		//mode_model->setMaterialCreation(2);
 
 		// control polygon
-		set_wide_lines(2);
+		set_wide_lines(scheme.LINE_WIDTH_MEDIUM);
 		if (pos.num == 2)
 			nix::DrawLine3D(pos[0], pos[1]);
 		else

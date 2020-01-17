@@ -4318,7 +4318,7 @@ model-mesh-toolbar
 
 0
 0
-12
+14
 Item
 new_tria
 checkable,image=icons/toolbar/new_triangle.png
@@ -4389,6 +4389,18 @@ Item
 lock_action
 checkable,image=hui:no
 11
+0
+0
+Separator
+
+
+12
+0
+0
+Item
+snap_to_grid
+checkable,image=hui:yes
+13
 0
 0
 # Resource
@@ -9267,7 +9279,7 @@ image=hui:execute
 # Language
 Deutsch
 # Number Of IDs
-947
+948
 # Text
 /ambient
 Ambient
@@ -11374,6 +11386,9 @@ Skalieren
 
 model-mesh-toolbar/select
 Selektieren
+
+model-mesh-toolbar/snap_to_grid
+Klebriges Raster
 
 model-mesh-toolbar/translate
 Verschieben

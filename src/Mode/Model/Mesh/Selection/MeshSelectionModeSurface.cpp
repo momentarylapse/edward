@@ -17,16 +17,13 @@
 
 MeshSelectionModeSurface::MeshSelectionModeSurface(ModeModelMesh *_parent) :
 	MeshSelectionMode(_parent)
-{
-}
+{}
 
-void MeshSelectionModeSurface::updateSelection()
-{
+void MeshSelectionModeSurface::update_selection() {
 	data->selectionFromSurfaces();
 }
 
-void MeshSelectionModeSurface::updateMultiView()
-{
+void MeshSelectionModeSurface::update_multi_view() {
 	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	multi_view->add_data(	MVD_MODEL_SURFACE,
@@ -35,8 +32,7 @@ void MeshSelectionModeSurface::updateMultiView()
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 }
 
-void MeshSelectionModeSurface::onDrawWin(MultiView::Window *win)
-{
+void MeshSelectionModeSurface::on_draw_win(MultiView::Window *win) {
 	if ((multi_view->hover.index < 0) or (multi_view->hover.type != MVD_MODEL_SURFACE))
 		return;
 
@@ -60,20 +56,17 @@ void MeshSelectionModeSurface::onDrawWin(MultiView::Window *win)
 
 
 
-void MeshSelectionModeSurface::onEnd()
-{
+void MeshSelectionModeSurface::on_end() {
 }
 
-bool ModelSurface::hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data)
-{
+bool ModelSurface::hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data) {
 	for (int i=0;i<polygon.num;i++)
 		if (polygon[i].hover(win, m, tp, z, user_data))
 			return true;
 	return false;
 }
 
-bool ModelSurface::inRect(MultiView::Window *win, rect &r, void *user_data)
-{
+bool ModelSurface::inRect(MultiView::Window *win, rect &r, void *user_data) {
 	for (int i=0;i<polygon.num;i++)
 		if (polygon[i].inRect(win, r, user_data))
 			return true;
@@ -82,14 +75,7 @@ bool ModelSurface::inRect(MultiView::Window *win, rect &r, void *user_data)
 
 
 
-void MeshSelectionModeSurface::onStart()
-{
-}
-
-
-
-void MeshSelectionModeSurface::onDraw()
-{
+void MeshSelectionModeSurface::on_start() {
 }
 
 

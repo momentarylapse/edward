@@ -9,6 +9,7 @@
 #include "../../../MultiView/MultiView.h"
 #include "../../../MultiView/Window.h"
 #include "../../../MultiView/DrawingHelper.h"
+#include "../../../MultiView/ColorScheme.h"
 #include "../../../lib/nix/nix.h"
 #include "../ModeModel.h"
 #include "ModeModelMesh.h"
@@ -246,7 +247,7 @@ void ModeModelMesh::on_draw()
 		int ne = data->getNumSelectedEdges();
 		int np = data->getNumSelectedPolygons();
 		int ns = data->getNumSelectedSurfaces();
-		ed->draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons, %d surfaces", nv, ne, np, ns));
+		draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons, %d surfaces", nv, ne, np, ns));
 	}
 }
 
@@ -263,12 +264,12 @@ void ModeModelMesh::draw_all(MultiView::Window *win, Array<ModelVertex> &vertex)
 
 	draw_selection(win);
 
-	draw_edges(win, vertex, !selection_mode_edge->isActive());
+	draw_edges(win, vertex, !selection_mode_edge->is_active());
 
 	draw_physical(win);
 
 	if (allow_draw_hover)
-		selection_mode->onDrawWin(win);
+		selection_mode->on_draw_win(win);
 }
 
 
@@ -294,14 +295,14 @@ void ModeModelMesh::on_view_stage_change()
 void ModeModelMesh::on_selection_change()
 {
 	//msg_write("mesh: on sel change");
-	selection_mode->updateSelection();
+	selection_mode->update_selection();
 	fill_selection_buffer(data->vertex);
 }
 
 void ModeModelMesh::on_set_multi_view()
 {
 	//msg_write("mesh: on set mv");
-	selection_mode->updateMultiView();
+	selection_mode->update_multi_view();
 	update_vertex_buffers(data->vertex);
 }
 
@@ -322,6 +323,7 @@ void ModeModelMesh::on_update_menu()
 	ed->check("new_torus", cm_name == "ModelMeshCreateTorus");
 
 	ed->check("select_cw", select_cw);
+	ed->check("snap_to_grid", multi_view->snap_to_grid);
 
 	ed->enable("select", multi_view->allow_mouse_actions);
 	ed->enable("translate", multi_view->allow_mouse_actions);
@@ -532,7 +534,7 @@ void ModeModelMesh::draw_effects(MultiView::Window *win)
 	for (ModelEffect &fx: data->fx){
 		vector p = win->project(data->vertex[fx.vertex].pos);
 		if ((p.z > 0) and (p.z < 1))
-			ed->draw_str(p.x, p.y, fx.get_type());
+			draw_str(p.x, p.y, fx.get_type());
 	}
 	nix::EnableLighting(multi_view->light_enabled);
 }
@@ -556,15 +558,14 @@ void _draw_edges(DataModel *data, MultiView::Window *win, Array<ModelVertex> &ve
 				continue;
 			float w = min(s.polygon[e.polygon[0]].temp_normal * dir, s.polygon[e.polygon[1]].temp_normal * dir);
 			float f = 0.5f - 0.4f*w;//0.7f - 0.3f * w;
+			color cc;
 			if (e.is_selected){
-				//nix::SetColor(color(1, f, 0, 0));
-				line_color.add(color(1, f, 0, 0));
-				line_color.add(color(1, f, 0, 0));
+				cc = color(1, f, 0, 0);
 			}else{
-				//nix::SetColor(f * multi_view->ColorText + (1 - f) * bg);
-				line_color.add(f * multi_view->ColorText + (1 - f) * bg);
-				line_color.add(f * multi_view->ColorText + (1 - f) * bg);
+				cc = ColorInterpolate(scheme.TEXT, bg, 1-f);
 			}
+			line_color.add(cc);
+			line_color.add(cc);
 			//nix::DrawLine3D(vertex[e.vertex[0]].pos, vertex[e.vertex[1]].pos);
 			line_pos.add(vertex[e.vertex[0]].pos);
 			line_pos.add(vertex[e.vertex[1]].pos);
@@ -697,12 +698,12 @@ void ModeModelMesh::draw_selection(MultiView::Window *win)
 void ModeModelMesh::set_selection_mode(MeshSelectionMode *mode)
 {
 	if (selection_mode)
-		selection_mode->onEnd();
+		selection_mode->on_end();
 	selection_mode = mode;
-	mode->onStart();
-	mode->updateMultiView();
+	mode->on_start();
+	mode->update_multi_view();
 	notify();
-	ed->force_redraw();
+	multi_view->force_redraw();
 	ed->update_menu(); // TODO
 }
 

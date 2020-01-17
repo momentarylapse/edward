@@ -8,6 +8,7 @@
 #include "../../Edward.h"
 #include "../../MultiView/MultiView.h"
 #include "../../MultiView/Window.h"
+#include "../../MultiView/DrawingHelper.h"
 #include "ModeWorld.h"
 #include "../../Data/World/DataWorld.h"
 #include "../../Data/World/DataCamera.h"
@@ -293,16 +294,13 @@ void ModeWorld::_new()
 
 
 
-void ModeWorld::on_draw()
-{
+void ModeWorld::on_draw() {
 	cur_cam->pos = multi_view->cam.pos;
 
 	int num_ob = data->GetSelectedObjects();
 	int num_te = data->GetSelectedTerrains();
-	if (num_ob + num_te > 0){
-		ed->draw_str(10, 100, format("obj: %d", num_ob));
-		ed->draw_str(10, 120, format("ter: %d", num_te));
-	}
+	if (num_ob + num_te > 0)
+		draw_str(10, 100, format(_("selected: %d objects, %d terrains"), num_ob, num_te));
 }
 
 
@@ -625,7 +623,7 @@ void ModeWorld::ToggleShowEffects()
 {
 	ShowEffects = !ShowEffects;
 	ed->update_menu();
-	ed->force_redraw();
+	multi_view->force_redraw();
 }
 
 
@@ -634,7 +632,7 @@ void ModeWorld::ToggleShowObjects()
 {
 	ShowObjects = !ShowObjects;
 	ed->update_menu();
-	ed->force_redraw();
+	multi_view->force_redraw();
 }
 
 
@@ -643,7 +641,7 @@ void ModeWorld::ToggleShowTerrains()
 {
 	ShowTerrains = !ShowTerrains;
 	ed->update_menu();
-	ed->force_redraw();
+	multi_view->force_redraw();
 }
 
 

@@ -11,6 +11,7 @@
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
 #include "../../../../MultiView/DrawingHelper.h"
+#include "../../../../MultiView/ColorScheme.h"
 #include "../../../../lib/nix/nix.h"
 #include "../ModeModelMesh.h"
 #include "../../Skeleton/ModeModelSkeleton.h"
@@ -23,7 +24,7 @@ MeshSelectionModeEdge::MeshSelectionModeEdge(ModeModelMesh *_parent) :
 }
 
 
-void MeshSelectionModeEdge::onStart()
+void MeshSelectionModeEdge::on_start()
 {
 }
 
@@ -82,12 +83,12 @@ bool ModelEdge::inRect(MultiView::Window *win, rect &r, void *user_data)
 	return true;
 }
 
-void MeshSelectionModeEdge::updateSelection()
+void MeshSelectionModeEdge::update_selection()
 {
 	data->selectionFromEdges();
 }
 
-void MeshSelectionModeEdge::updateMultiView()
+void MeshSelectionModeEdge::update_multi_view()
 {
 	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
@@ -98,7 +99,7 @@ void MeshSelectionModeEdge::updateMultiView()
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 }
 
-void MeshSelectionModeEdge::onDrawWin(MultiView::Window *win)
+void MeshSelectionModeEdge::on_draw_win(MultiView::Window *win)
 {
 	if (multi_view->hover.type != MVD_MODEL_EDGE)
 		return;
@@ -107,15 +108,14 @@ void MeshSelectionModeEdge::onDrawWin(MultiView::Window *win)
 
 	nix::SetWire(false);
 	nix::SetZ(false, false);
-	set_wide_lines(2.0f);
-	//nix::SetColor(color(1, 0.7f, 0.7f, 1));
+	set_wide_lines(scheme.LINE_WIDTH_MEDIUM);
 	ModelEdge &e = data->surface[multi_view->hover.set].edge[multi_view->hover.index];
 	Array<vector> p;
 	p.add(data->show_vertices[e.vertex[0]].pos);
 	p.add(data->show_vertices[e.vertex[1]].pos);
 	Array<color> c;
-	c.add(color(1, 0.7f, 0.7f, 1));
-	c.add(color(1, 0.7f, 0.7f, 1));
+	c.add(scheme.HOVER);
+	c.add(scheme.HOVER);
 	nix::DrawLinesColored(p, c, false);
 	//nix::DrawLine3D(data->show_vertices[e.vertex[0]].pos, data->show_vertices[e.vertex[1]].pos);
 	nix::SetColor(White);
@@ -125,7 +125,7 @@ void MeshSelectionModeEdge::onDrawWin(MultiView::Window *win)
 
 
 
-void MeshSelectionModeEdge::onEnd()
+void MeshSelectionModeEdge::on_end()
 {
 }
 

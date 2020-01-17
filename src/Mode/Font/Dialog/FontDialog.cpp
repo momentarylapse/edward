@@ -8,6 +8,7 @@
 #include "FontDialog.h"
 //#include "../../../Action/World/ActionWorldEditObject.h"
 #include "../../../Edward.h"
+#include "../../../MultiView/MultiView.h"
 
 
 bool SettingDialogData=true;
@@ -137,7 +138,7 @@ string FontDialog::GetSampleText()
 
 void FontDialog::OnText()
 {
-	ed->force_redraw();
+	ed->multi_view_2d->force_redraw();
 }
 
 void FontDialog::ApplyGlobalData()

@@ -140,7 +140,7 @@ void ModeWorldCamera::previewStop()
 {
 	preview = false;
 	multi_view->cam.ignore_radius = false;
-	ed->force_redraw();
+	multi_view->force_redraw();
 	notify();
 }
 
@@ -151,7 +151,7 @@ void ModeWorldCamera::previewUpdate()
 	multi_view->cam.pos = inter_pos->get(preview_time / duration);
 	multi_view->cam.ang = quaternion::rotation_v(inter_ang->get(preview_time / duration));
 
-	ed->force_redraw();
+	multi_view->force_redraw();
 	if (preview_time > duration)
 		previewStop();
 	if (preview)
@@ -214,7 +214,7 @@ void ModeWorldCamera::loadData()
 			data->Vel,
 			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE | MultiView::FLAG_DRAW);
-	ed->force_redraw();
+	multi_view->force_redraw();
 }
 
 void ModeWorldCamera::on_draw_win(MultiView::Window *win)

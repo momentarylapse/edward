@@ -9,6 +9,7 @@
 #include "../../../MultiView/MultiView.h"
 #include "../../../MultiView/Window.h"
 #include "../../../MultiView/DrawingHelper.h"
+#include "../../../MultiView/ColorScheme.h"
 #include "../../../lib/nix/nix.h"
 #include "ModeModelSkeleton.h"
 #include "../ModeModel.h"
@@ -174,8 +175,8 @@ void ModeModelSkeleton::on_update(Observable *o, const string &message)
 void drawBone(const vector &r, const vector &d, const color &c, MultiView::Window *win)
 {
 	Array<color> col;
-	col.add(ColorInterpolate(c, MultiView::MultiView::ColorBackGround, 0.5f)); // root
-	col.add(ColorInterpolate(c, MultiView::MultiView::ColorBackGround, 0.8f));
+	col.add(ColorInterpolate(c, scheme.BACKGROUND, 0.5f)); // root
+	col.add(ColorInterpolate(c, scheme.BACKGROUND, 0.8f));
 	nix::DrawLinesColored({r,d}, col, false);
 }
 
@@ -214,7 +215,7 @@ void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &b
 	nix::SetZ(false, false);
 	nix::EnableLighting(false);
 	nix::SetWire(false);
-	set_wide_lines(thin ? 1.0f : 5.0f);
+	set_wide_lines(thin ? scheme.LINE_WIDTH_THIN : scheme.LINE_WIDTH_BONE);
 
 	for (ModelBone &b: bone){
 		if (b.view_stage < multi_view->view_stage)
@@ -225,9 +226,9 @@ void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &b
 		int r = b.parent;
 		if (r < 0)
 			continue;
-		color c = bone[r].is_selected ? Red : Blue;
+		color c = bone[r].is_selected ? scheme.SELECTION : scheme.POINT;
 		if (multi_view->hover.index == r)
-			c = ColorInterpolate(c, White, 0.3f);
+			c = ColorInterpolate(c, scheme.HOVER, 0.3f);
 		drawBone(bone[r].pos, b.pos, c, win);
 	}
 	nix::SetZ(true, true);

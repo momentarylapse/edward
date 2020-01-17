@@ -114,8 +114,7 @@ vector ModeModelMeshDeformFunction::transform(const vector &v)
 	vector d = max - min;
 	vector vv = v - min;
 	vv = vector(vv.x / d.x, vv.y / d.y, vv.z / d.z);
-	vector w;
-	(*f)(w, vv);
+	vector w = (*f)(vv);
 	return min + vector(w.x * d.x, w.y * d.y, w.z * d.z);
 }
 
@@ -136,7 +135,7 @@ void ModeModelMeshDeformFunction::onPreview()
 			data->vertex[vi].pos = transform(data->vertex[vi].pos);
 	data->notify();
 	has_preview = true;
-	ed->force_redraw();
+	multi_view->force_redraw();
 }
 
 void ModeModelMeshDeformFunction::updateFunction()
@@ -147,10 +146,10 @@ void ModeModelMeshDeformFunction::updateFunction()
 	f = NULL;
 	try{
 		s = Kaba::CreateForSource(dialog->get_string("source"));
-		f = (vec_func*)s->match_function("*", "void", {"vector", "vector"});
+		f = (vec_func*)s->match_function("*", "vector", {"vector"});
 
 		if (!f)
-			hui::ErrorBox(dialog, "error", _("keine Funktion vom Typ 'void f(vector, vector)' gefunden"));
+			hui::ErrorBox(dialog, "error", _("keine Funktion vom Typ 'vector f(vector)' gefunden"));
 
 	}catch(Kaba::Exception &e){
 		hui::ErrorBox(dialog, "error", e.message());
@@ -160,10 +159,10 @@ void ModeModelMeshDeformFunction::updateFunction()
 
 void ModeModelMeshDeformFunction::restore()
 {
-	delete(geo);
+	delete geo;
 	vector d = max - min;
 	geo = new GeometryCube(min, vector::EX * d.x, vector::EY * d.y, vector::EZ * d.z, CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
-	ed->force_redraw();
+	multi_view->force_redraw();
 
 	foreachi(int vi, index, ii)
 		data->vertex[vi].pos = old_pos[ii];

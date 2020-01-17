@@ -191,7 +191,7 @@ void ModeModelAnimation::updateAnimation()
 	mode_model_mesh->fill_selection_buffer(vertex);
 
 	notify();
-	ed->force_redraw();
+	multi_view->force_redraw();
 }
 
 void ModeModelAnimation::updateSkeleton()

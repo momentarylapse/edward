@@ -14,6 +14,7 @@
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
 #include "../../../../MultiView/DrawingHelper.h"
+#include "../../../../MultiView/ColorScheme.h"
 #include "../../../../lib/nix/nix.h"
 
 
@@ -51,7 +52,7 @@ void ModeModelMeshSplitPolygon::on_left_button_up()
 		//Abort();
 		surface = -1;
 		triangle = -1;
-		ed->force_redraw();
+		multi_view->force_redraw();
 	}
 }
 
@@ -88,8 +89,8 @@ void ModeModelMeshSplitPolygon::on_draw_win(MultiView::Window *win)
 
 
 		nix::SetZ(false, false);
-		nix::SetColor(multi_view->ColorCreationLine);
-		set_wide_lines(2);
+		nix::SetColor(scheme.CREATION_LINE);
+		set_wide_lines(scheme.LINE_WIDTH_MEDIUM);
 		for (int k=0;k<v.num;k++)
 			nix::DrawLine3D(v[k], pos);
 		nix::SetZ(true, true);

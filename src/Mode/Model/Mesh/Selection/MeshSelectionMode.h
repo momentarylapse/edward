@@ -10,21 +10,20 @@
 
 #include "../ModeModelMesh.h"
 
-class MeshSelectionMode
-{
+class MeshSelectionMode {
 public:
 	MeshSelectionMode(ModeModelMesh *_parent);
-	virtual ~MeshSelectionMode(){}
+	virtual ~MeshSelectionMode() {}
 
-	virtual void onStart(){}
-	virtual void onEnd(){}
+	virtual void on_start() {}
+	virtual void on_end() {}
 
-	virtual void updateSelection(){}
-	virtual void updateMultiView(){}
+	virtual void update_selection() {}
+	virtual void update_multi_view() {}
 
-	virtual void onDrawWin(MultiView::Window *win){}
+	virtual void on_draw_win(MultiView::Window *win) {}
 
-	bool isActive();
+	bool is_active();
 
 	ModeModelMesh *parent;
 	DataModel *data;

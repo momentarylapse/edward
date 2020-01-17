@@ -15,7 +15,6 @@ class ModeModelMeshBevelEdges: public ModeCreation<DataModel>
 {
 public:
 	ModeModelMeshBevelEdges(ModeBase *_parent);
-	virtual ~ModeModelMeshBevelEdges();
 
 	void on_start() override;
 	void on_end() override;

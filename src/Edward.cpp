@@ -17,6 +17,8 @@
 #include "Mode/ModeCreation.h"
 #include "Mode/ModeNone.h"
 #include "MultiView/MultiView.h"
+#include "MultiView/ColorScheme.h"
+#include "MultiView/DrawingHelper.h"
 #include "x/world.h"
 #include "x/camera.h"
 #include "meta.h"
@@ -35,70 +37,6 @@ string SoundDir;
 extern string AppName;
 
 
-
-string font_name = "Sans Semi-Bold";
-float font_size = 12;
-static nix::Texture *tex_round = nullptr;
-
-namespace MultiView {
-	extern color ColorTextBG;
-}
-
-
-void render_text(const string &text, Image &im)
-{
-	if (text.num == 0){
-		im.clear();
-		return;
-	}
-	bool failed = false;
-	cairo_surface_t *surface;
-	cairo_t *cr;
-
-	// initial surface size guess
-	int w_surf = 1024;
-	int h_surf = font_size * 2;
-
-	surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w_surf, h_surf);
-	cr = cairo_create(surface);
-
-	cairo_set_source_rgba(cr, 0, 0, 0, 1);
-	cairo_rectangle(cr, 0, 0, w_surf, h_surf);
-	cairo_fill(cr);
-
-	int x = 0, y = 0;
-
-	cairo_set_source_rgba(cr, 1, 1, 1, 1);
-
-	PangoLayout *layout = pango_cairo_create_layout(cr);
-	PangoFontDescription *desc = pango_font_description_from_string((font_name + " " + f2s(font_size, 1)).c_str());
-	pango_layout_set_font_description(layout, desc);
-	pango_font_description_free(desc);
-
-	pango_layout_set_text(layout, (char*)text.data, text.num);
-	//int baseline = pango_layout_get_baseline(layout) / PANGO_SCALE;
-	int w_used, h_used;
-	pango_layout_get_pixel_size(layout, &w_used, &h_used);
-
-	pango_cairo_show_layout(cr, layout);
-	g_object_unref(layout);
-
-	cairo_surface_flush(surface);
-	unsigned char *c0 = cairo_image_surface_get_data(surface);
-	im.create(w_used, h_used, White);
-	for (int y=0;y<h_used;y++){
-		unsigned char *c = c0 + 4 * y * w_surf;
-		for (int x=0;x<w_used;x++){
-			float a = (float)c[1] / 255.0f;
-			im.set_pixel(x, y, color(a, a, 1, 1));
-			c += 4;
-		}
-	}
-	im.alpha_used = true;
-
-	cairo_destroy(cr);
-	cairo_surface_destroy(surface);
-}
 
 void read_color_4i(File *f,int *c)
 {
@@ -245,20 +183,6 @@ void Edward::idle_function()
 		hui::Sleep(0.010f);*/
 }
 
-nix::Texture *create_round_texture(int n) {
-	auto t = new nix::Texture();
-	Image im;
-	im.create(n, n, color(0,0,0,0));
-	for (int i=0; i<n; i++)
-		for (int j=0; j<n; j++) {
-			float r = sqrt(pow(i - n/2, 2) + pow(j - n/2, 2));
-			float f = clampf((n*0.45f - r)*0.5f, 0, 1);
-			im.set_pixel(i, j, color(f, 1, 1, 1));
-		}
-	t->overwrite(im);
-	return t;
-}
-
 Edward::Edward(Array<string> arg) :
 	Observer("Edward"),
 	hui::Window(AppName, 800, 600)
@@ -322,8 +246,6 @@ Edward::Edward(Array<string> arg) :
 	CameraInit();
 	GodInit();
 
-	tex_round = create_round_texture(32);
-
 	/*RegisterFileTypes();
 
 	for (int i=0;i<NumFDs;i++)
@@ -377,8 +299,8 @@ Edward::Edward(Array<string> arg) :
 	set_key_code("abort_creation_mode", hui::KEY_ESCAPE, "hui:cancel");
 
 	//hui::SetIdleFunction(std::bind(&Edward::idleFunction, this));
-	hui::RunLater(0.010f, std::bind(&Edward::force_redraw, this));
-	hui::RunLater(0.100f, std::bind(&Edward::optimize_current_view, this));
+	hui::RunLater(0.010f, [=]{ cur_mode->multi_view->force_redraw(); });
+	hui::RunLater(0.100f, [=]{ optimize_current_view(); });
 }
 
 Edward::~Edward()
@@ -387,9 +309,9 @@ Edward::~Edward()
 
 void Edward::on_destroy()
 {
-	delete(plugins);
-	delete(multi_view_2d);
-	delete(multi_view_3d);
+	delete plugins;
+	delete multi_view_2d;
+	delete multi_view_3d;
 	// saving the configuration data...
 	int w, h;
 	get_size_desired(w, h);
@@ -583,7 +505,7 @@ void Edward::set_mode(ModeBase *m)
 	if (cur_mode->get_data())
 		subscribe(cur_mode->get_data()->action_manager);
 
-	force_redraw();
+	cur_mode->multi_view->force_redraw();
 }
 
 void Edward::on_about()
@@ -605,7 +527,7 @@ void Edward::on_update(Observable *o, const string &message)
 			cur_mode->on_view_stage_change();
 			update_menu();
 		}
-		force_redraw();
+		cur_mode->multi_view->force_redraw();
 	}else if (o->get_name() == "ActionManager"){
 		ActionManager *am = dynamic_cast<ActionManager*>(o);
 		if (message == am->MESSAGE_FAILED){
@@ -618,11 +540,11 @@ void Edward::on_update(Observable *o, const string &message)
 		if (message != Data::MESSAGE_SELECTION)
 			cur_mode->on_set_multi_view();
 		// data...
-		force_redraw();
+		cur_mode->multi_view->force_redraw();
 		//if (message != o->MESSAGE_CHANGE)
 		update_menu();
 	}else{
-		force_redraw();
+		cur_mode->multi_view->force_redraw();
 		update_menu();
 	}
 }
@@ -640,71 +562,6 @@ void Edward::on_execute_plugin()
 	dialog_dir[FD_SCRIPT] = temp;
 }
 
-void Edward::force_redraw()
-{
-	redraw("nix-area");
-}
-
-void draw_round_rect(const rect &r) {
-	float R = 13;
-	float x[4] = {r.x1, r.x1 + R, r.x2 - R, r.x2};
-	float y[4] = {r.y1, r.y1 + R, r.y2 - R, r.y2};
-	float u[4] = {0, 0.5f, 0.5f, 1};
-	/*vector p[16], n[16];
-	float uv[32];
-
-	nix::vb_temp->clear();
-	for (int i=0; i<3; i++)
-		for (int j=0; j<3; j++) {
-		}
-	nix::vb_temp->addTrias(18, )*/
-
-	for (int i=0; i<3; i++)
-		for (int j=0; j<3; j++)
-			nix::Draw2D(rect(u[i], u[i+1], u[j], u[j+1]),    rect(x[i], x[i+1], y[j], y[j+1]), 0);
-}
-
-void draw_str_bg(int x, int y, const string &str, const color &fg, const color &bg, Edward::AlignType align) {
-	color c0 = nix::GetColor();
-	auto xx = str.explode("\n");
-	float line_h = font_size * 1.5f;
-	float h = line_h * xx.num;
-	Array<int> ww;
-	int wmax = 0;
-	for (string &s: xx) {
-		int w = nix::GetStrWidth(s);
-		ww.add(w);
-		wmax = max(wmax, w);
-	}
-	if (align == Edward::ALIGN_RIGHT)
-		x -= wmax;
-	else if (align == Edward::ALIGN_CENTER)
-		x -= wmax / 2;
-	nix::SetTexture(tex_round);
-	nix::SetAlpha(ALPHA_MATERIAL);
-	nix::SetColor(color(1, 0.7f, 0.7f, 0.8f));
-	float r = 8;
-	nix::SetColor(bg);
-	draw_round_rect(rect(float(x-r), float(x+wmax+r), float(y-r), float(y+h+r)));
-	nix::SetColor(fg);
-	nix::SetTexture(nullptr);
-	nix::SetAlpha(ALPHA_SOURCE_ALPHA, ALPHA_SOURCE_INV_ALPHA);
-	foreachi (string &s, xx, i) {
-		if (align == Edward::ALIGN_RIGHT)
-			nix::DrawStr(x+wmax-ww[i], y+line_h*i, s);
-		else if (align == Edward::ALIGN_CENTER)
-			nix::DrawStr(x+wmax/2-ww[i]/2, y+line_h*i, s);
-		else if (align == Edward::ALIGN_LEFT)
-			nix::DrawStr(x, y+line_h*i, s);
-	}
-	nix::SetAlpha(ALPHA_NONE);
-	nix::SetColor(c0);
-}
-
-void Edward::draw_str(int x, int y, const string &str, AlignType a) {
-	color c0 = nix::GetColor();
-	draw_str_bg(x, y, str, c0, MultiView::ColorTextBG, a);
-}
 
 void Edward::on_draw_gl()
 {
@@ -718,7 +575,7 @@ void Edward::on_draw_gl()
 	// messages
 	nix::SetShader(nix::default_shader_2d);
 	foreachi(string &m, message_str, i)
-		draw_str(nix::target_width / 2, nix::target_height / 2 - 20 - i * 20, m, ALIGN_CENTER);
+		draw_str(nix::target_width / 2, nix::target_height / 2 - 20 - i * 20, m, TextAlign::CENTER);
 }
 
 
@@ -865,14 +722,14 @@ string Edward::get_root_dir(int kind)
 void Edward::remove_message()
 {
 	message_str.erase(0);
-	force_redraw();
+	cur_mode->multi_view->force_redraw();
 }
 
 void Edward::set_message(const string &message)
 {
 	msg_write(message);
 	message_str.add(message);
-	force_redraw();
+	cur_mode->multi_view->force_redraw();
 	hui::RunLater(2.0f, std::bind(&Edward::remove_message, this));
 }
 

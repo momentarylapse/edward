@@ -24,7 +24,7 @@ MeshSelectionModePolygon::MeshSelectionModePolygon(ModeModelMesh *_parent) :
 {
 }
 
-void MeshSelectionModePolygon::onDrawWin(MultiView::Window *win)
+void MeshSelectionModePolygon::on_draw_win(MultiView::Window *win)
 {
 	if ((multi_view->hover.index < 0) or (multi_view->hover.type != MVD_MODEL_POLYGON))
 		return;
@@ -47,13 +47,13 @@ void MeshSelectionModePolygon::onDrawWin(MultiView::Window *win)
 
 
 
-void MeshSelectionModePolygon::onEnd()
+void MeshSelectionModePolygon::on_end()
 {
 }
 
 
 
-void MeshSelectionModePolygon::onStart()
+void MeshSelectionModePolygon::on_start()
 {
 }
 
@@ -128,12 +128,12 @@ bool ModelPolygon::inRect(MultiView::Window *win, rect &r, void *user_data)
 }
 
 
-void MeshSelectionModePolygon::updateSelection()
+void MeshSelectionModePolygon::update_selection()
 {
 	data->selectionFromPolygons();
 }
 
-void MeshSelectionModePolygon::updateMultiView()
+void MeshSelectionModePolygon::update_multi_view()
 {
 	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);

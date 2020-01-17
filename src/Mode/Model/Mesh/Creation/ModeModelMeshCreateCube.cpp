@@ -62,13 +62,13 @@ void ModeModelMeshCreateCube::update_geometry()
 bool ModeModelMeshCreateCube::set_dpos3() {
 	vector n = (length[0] ^ length[1]).normalized();
 	vector dpos = multi_view->get_cursor() - pos2;
-	length[2] = n * (n * dpos);
+	length[2] = multi_view->maybe_snap_v(n * (n * dpos));
 	float min_thick = 10 / ed->multi_view_3d->active_win->zoom(); // 10 px
 
 
 	if (fabs(multi_view->mouse_win->getDirection() * n) > 0.97f) {
 		// cursor in cube plane -> use radius
-		length[2] = n * max(dpos.length(), min_thick);
+		length[2] = n * multi_view->maybe_snap_f(max(dpos.length(), min_thick));
 		if (multi_view->mouse_win->getDirection() * n < 0)
 			length[2] = -length[2];
 		return true;

@@ -139,10 +139,10 @@ void ModeModel::on_command(const string & id)
 
 void ModeModel::on_update_menu()
 {
-	ed->check("mode_model_vertex", mode_model_mesh->selection_mode_vertex->isActive());
-	ed->check("mode_model_edge", mode_model_mesh->selection_mode_edge->isActive());
-	ed->check("mode_model_polygon", mode_model_mesh->selection_mode_polygon->isActive());
-	ed->check("mode_model_surface", mode_model_mesh->selection_mode_surface->isActive());
+	ed->check("mode_model_vertex", mode_model_mesh->selection_mode_vertex->is_active());
+	ed->check("mode_model_edge", mode_model_mesh->selection_mode_edge->is_active());
+	ed->check("mode_model_polygon", mode_model_mesh->selection_mode_polygon->is_active());
+	ed->check("mode_model_surface", mode_model_mesh->selection_mode_surface->is_active());
 	ed->check("mode_model_texture_coord", mode_model_mesh_texture->is_ancestor_of(ed->cur_mode));
 	ed->check("mode_model_materials", mode_model_mesh_material->is_ancestor_of(ed->cur_mode));
 	ed->check("mode_model_deform", mode_model_mesh_deform->is_ancestor_of(ed->cur_mode));
