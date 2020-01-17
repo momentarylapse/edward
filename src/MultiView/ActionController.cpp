@@ -23,9 +23,6 @@
 namespace MultiView{
 
 
-vector snap_v(MultiView *mv, const vector &v);
-vector snap_v2(const vector &v, float d);
-
 ActionController::ActionController(MultiView *view)
 {
 	multi_view = view;
@@ -144,25 +141,20 @@ void ActionController::update_action()
 	vector v1p = active_win->project(v1);
 	vector dir = active_win->getDirection();
 	vector _param = v_0;
-	auto m_dt = matrix::translation( pos0);
-	auto m_dti = matrix::translation( -pos0);
 	if (action.mode == ACTION_MOVE){
 		_param = mvac_project_trans(constraints, v2 - v1);
-		if (multi_view->snap_to_grid)
-			_param = snap_v(multi_view, param);
+		_param = multi_view->maybe_snap_v(_param);
 	}else if (action.mode == ACTION_ROTATE){
 		//_param = mvac_project_trans(constraints, v2 - v1) * 0.003f * multi_view->active_win->zoom();
 		_param = mvac_project_trans(constraints, (v2 - v1) ^ dir) * 0.003f * multi_view->active_win->zoom();
 		if (constraints == ACTION_CONSTRAINTS_NONE)
 			_param = transform_ang(active_win, vector(v1p.y - v2p.y, v1p.x - v2p.x, 0) * 0.003f);
-		if (multi_view->snap_to_grid)
-			_param = snap_v2(param, pi / 180.0);
+		_param = multi_view->maybe_snap_v2(_param, pi / 180.0);
 	}else if (action.mode == ACTION_SCALE){
 		_param = vector(1, 1, 1) + mvac_project_trans(constraints, v2 - v1) * 0.01f * multi_view->active_win->zoom();
 		if (constraints == ACTION_CONSTRAINTS_NONE)
 			_param = vector(1, 1, 1) * (1 + (v2p - v1p).x * 0.01f);
-		if (multi_view->snap_to_grid)
-			_param = snap_v2(param, 0.01f);
+		_param = multi_view->maybe_snap_v2(_param, 0.01f);
 	}else if (action.mode == ACTION_MIRROR){
 		_param = mvac_mirror(constraints);
 		if (constraints == ACTION_CONSTRAINTS_NONE)
@@ -406,7 +398,7 @@ void ActionController::draw(Window *win)
 		string s;
 		if (action.mode == ACTION_MOVE){
 			vector t = param;
-			string unit = multi_view->get_scale_by_zoom(t);
+			string unit = multi_view->get_unit_by_zoom(t);
 			s = f2s(t.x, 2) + " " + unit + "\n" + f2s(t.y, 2) + " " + unit;
 			if (multi_view->mode3d)
 				s += "\n" + f2s(t.z, 2) + " " + unit;

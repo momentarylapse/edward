@@ -696,7 +696,7 @@ void MultiView::end_selection_rect()
 
 
 
-string MultiView::get_scale_by_zoom(vector &v)
+string MultiView::get_unit_by_zoom(vector &v)
 {
 	const char *units[] = {"y", "z", "a", "f", "p", "n", "\u00b5", "m", "", "k", "M", "G", "T", "P", "E", "Z", "Y"};
 	float l = active_win->get_grid_d() * 10.1f;
@@ -708,17 +708,17 @@ string MultiView::get_scale_by_zoom(vector &v)
 	return format("*10^%d", n*3);
 }
 
-string format_length(MultiView *mv, float l)
+string MultiView::format_length(float l)
 {
 	vector v = vector(l, 0, 0);
-	string unit = mv->get_scale_by_zoom(v);
+	string unit = get_unit_by_zoom(v);
 	return f2s(v.x,2) + " " + unit;
 }
 
 void MultiView::draw_mouse_pos()
 {
 	vector m = get_cursor();
-	string unit = get_scale_by_zoom(m);
+	string unit = get_unit_by_zoom(m);
 	string sx = f2s(m.x,2) + " " + unit;
 	string sy = f2s(m.y,2) + " " + unit;
 	string sz = f2s(m.z,2) + " " + unit;
@@ -942,8 +942,7 @@ vector MultiView::get_selection_center()
 	return (min + max) / 2;
 }
 
-vector snap_v2(const vector &v, float d)
-{
+vector MultiView::snap_v2(const vector &v, float d) {
 	vector w;
 	w.x = d * roundf(v.x / d);
 	w.y = d * roundf(v.y / d);
@@ -951,28 +950,42 @@ vector snap_v2(const vector &v, float d)
 	return w;
 }
 
-vector snap_v(MultiView *mv, const vector &v)
-{
-	return snap_v2(v, mv->active_win->get_grid_d());
+vector MultiView::snap_v(const vector &v) {
+	return snap_v2(v, active_win->get_grid_d());
 }
 
-float snap_f(MultiView *mv, float f)
-{
-	float d = mv->active_win->get_grid_d();
+float MultiView::snap_f(float f) {
+	float d = active_win->get_grid_d();
 	return d * roundf(f / d);
 }
 
-vector MultiView::get_cursor()
-{
+vector MultiView::maybe_snap_v2(const vector &v, float d) {
+	if (snap_to_grid)
+		return snap_v2(v, d);
+	return v;
+}
+
+vector MultiView::maybe_snap_v(const vector &v) {
+	if (snap_to_grid)
+		return snap_v(v);
+	return v;
+}
+
+float MultiView::maybe_snap_f(float f) {
+	if (snap_to_grid)
+		return snap_f(f);
+	return f;
+}
+
+vector MultiView::get_cursor() {
 	if (hover.data)
 		return hover.point;
 	if (snap_to_grid)
-		return snap_v(this, mouse_win->unproject(m, cam.pos));
+		return snap_v(mouse_win->unproject(m, cam.pos));
 	return mouse_win->unproject(m, cam.pos);
 }
 
-vector MultiView::get_cursor(const vector &depth_reference)
-{
+vector MultiView::get_cursor(const vector &depth_reference) {
 	return mouse_win->unproject(m, depth_reference);
 }
 
@@ -1213,21 +1226,6 @@ void MultiView::reset_message_3d()
 	message3d.clear();
 }
 
-void set_wide_lines(float width)
-{
-	if (width == 1.0f){
-		nix::SetShader(shader_lines_3d_colored);
-	}else{
-		auto s = shader_lines_3d_colored_wide;
-		nix::SetShader(s);
-		int loc_tw = s->get_location("target_width");
-		int loc_th = s->get_location("target_height");
-		int loc_lw = s->get_location("line_width");
-		s->set_float(loc_tw, nix::target_width);
-		s->set_float(loc_th, nix::target_height);
-		s->set_float(loc_lw, width);
-	}
-}
 
 
 };

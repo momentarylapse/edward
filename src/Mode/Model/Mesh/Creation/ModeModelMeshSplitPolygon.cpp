@@ -13,6 +13,7 @@
 #include "../../../../Action/Model/Mesh/Edge/ActionModelSplitEdge.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
+#include "../../../../MultiView/DrawingHelper.h"
 #include "../../../../lib/nix/nix.h"
 
 
@@ -88,7 +89,7 @@ void ModeModelMeshSplitPolygon::on_draw_win(MultiView::Window *win)
 
 		nix::SetZ(false, false);
 		nix::SetColor(multi_view->ColorCreationLine);
-		MultiView::set_wide_lines(2);
+		set_wide_lines(2);
 		for (int k=0;k<v.num;k++)
 			nix::DrawLine3D(v[k], pos);
 		nix::SetZ(true, true);

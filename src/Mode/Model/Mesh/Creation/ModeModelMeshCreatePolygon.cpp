@@ -12,6 +12,7 @@
 #include "../../../../lib/nix/nix.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
+#include "../../../../MultiView/DrawingHelper.h"
 
 
 ModeModelMeshCreatePolygon::ModeModelMeshCreatePolygon(ModeBase *_parent) :
@@ -46,7 +47,7 @@ void ModeModelMeshCreatePolygon::on_draw_win(MultiView::Window *win)
 	parent->on_draw_win(win);
 
 	nix::SetColor(multi_view->ColorCreationLine);
-	MultiView::set_wide_lines(2);
+	set_wide_lines(2);
 	for (int i=1;i<selection.num;i++){
 		vector pa = data->vertex[selection[i - 1]].pos;
 		vector pb = data->vertex[selection[i    ]].pos;

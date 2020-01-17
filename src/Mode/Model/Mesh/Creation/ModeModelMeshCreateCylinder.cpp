@@ -12,14 +12,10 @@
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
+#include "../../../../MultiView/DrawingHelper.h"
 #include "../../../../lib/nix/nix.h"
 
-namespace MultiView{
-	float snap_f(MultiView *mv, float f);
-	string format_length(MultiView *mv, float l);
-}
 
-void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b);
 
 ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateCylinder", _parent)
@@ -81,18 +77,19 @@ void ModeModelMeshCreateCylinder::updateGeometry()
 	}
 }
 
-void ModeModelMeshCreateCylinder::on_mouse_move()
-{
-	if (pos.num == 2){
+void ModeModelMeshCreateCylinder::on_mouse_move() {
+	if (pos.num == 2) {
 		vector p = multi_view->get_cursor(pos.back());
 		radius = (p - pos.back()).length();
 		if (multi_view->snap_to_grid)
-			radius = MultiView::snap_f(multi_view, radius);
+			radius = multi_view->snap_f(radius);
 		float min_rad = 10 / multi_view->active_win->zoom(); // 10 px
 		if (radius < min_rad)
 			radius = min_rad;
 		updateGeometry();
-		message = _("Zylinderradius: ") + MultiView::format_length(multi_view, radius);
+		message = _("Zylinderradius: ") + multi_view->format_length(radius);
+	} else if (pos.num == 1) {
+		message = _("Zylinderl&ange: ") + multi_view->format_length((multi_view->get_cursor() - pos[0]).length());
 	}
 }
 
@@ -151,7 +148,7 @@ void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win)
 		//mode_model->setMaterialCreation(2);
 
 		// control polygon
-		MultiView::set_wide_lines(2);
+		set_wide_lines(2);
 		if (pos.num == 2)
 			nix::DrawLine3D(pos[0], pos[1]);
 		else

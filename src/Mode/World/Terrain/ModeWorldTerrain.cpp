@@ -10,6 +10,7 @@
 #include "../../../Action/World/Terrain/ActionWorldTerrainBrushExtrude.h"
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
+#include "../../../MultiView/DrawingHelper.h"
 #include "../../../lib/nix/nix.h"
 
 const float BRUSH_PARTITION = 0.3f;
@@ -150,14 +151,6 @@ void ModeWorldTerrain::on_draw_win(MultiView::Window* win) {
 	float radius = dialog->get_float("diameter") / 2;
 
 	nix::SetColor(multi_view->ColorCreationLine);
-	MultiView::set_wide_lines(2);
-	vector e1 = vector::EX;
-	vector e2 = vector::EZ;
-	e1 *= radius;
-	e2 *= radius;
-	for (int i=0;i<32;i++) {
-		float w1 = i * 2 * pi / 32;
-		float w2 = (i + 1) * 2 * pi / 32;
-		nix::DrawLine3D(pos + sin(w1) * e1 + cos(w1) * e2, pos + sin(w2) * e1 + cos(w2) * e2);
-	}
+	set_wide_lines(2);
+	draw_circle(pos, vector::EY, radius);
 }

@@ -12,15 +12,9 @@
 #include "../../../../Data/Model/Geometry/GeometrySphere.h"
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
+#include "../../../../MultiView/DrawingHelper.h"
 #include "../../../../lib/nix/nix.h"
 
-
-namespace MultiView{
-	float snap_f(MultiView *mv, float f);
-	string format_length(MultiView *mv, float l);
-}
-
-void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b);
 
 
 ModeModelMeshCreateBall::ModeModelMeshCreateBall(ModeBase *_parent) :
@@ -167,9 +161,9 @@ void ModeModelMeshCreateBall::on_mouse_move()
 		vector pos2 = multi_view->get_cursor(pos);
 		radius = (pos2 - pos).length();
 		if (multi_view->snap_to_grid)
-			radius = MultiView::snap_f(multi_view, radius);
+			radius = multi_view->snap_f(radius);
 		updateGeometry();
-		message = _("Kugelradius: ") + MultiView::format_length(multi_view, radius);
+		message = _("Kugelradius: ") + multi_view->format_length(radius);
 	}
 }
 

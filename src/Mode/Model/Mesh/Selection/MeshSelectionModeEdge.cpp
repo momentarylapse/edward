@@ -10,6 +10,7 @@
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
+#include "../../../../MultiView/DrawingHelper.h"
 #include "../../../../lib/nix/nix.h"
 #include "../ModeModelMesh.h"
 #include "../../Skeleton/ModeModelSkeleton.h"
@@ -106,7 +107,7 @@ void MeshSelectionModeEdge::onDrawWin(MultiView::Window *win)
 
 	nix::SetWire(false);
 	nix::SetZ(false, false);
-	MultiView::set_wide_lines(2.0f);
+	set_wide_lines(2.0f);
 	//nix::SetColor(color(1, 0.7f, 0.7f, 1));
 	ModelEdge &e = data->surface[multi_view->hover.set].edge[multi_view->hover.index];
 	Array<vector> p;

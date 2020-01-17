@@ -8,6 +8,7 @@
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
 #include "../../../MultiView/Window.h"
+#include "../../../MultiView/DrawingHelper.h"
 #include "../../../lib/nix/nix.h"
 #include "../ModeModel.h"
 #include "ModeModelMesh.h"
@@ -542,7 +543,7 @@ void _draw_edges(DataModel *data, MultiView::Window *win, Array<ModelVertex> &ve
 	auto *multi_view = win->multi_view;
 
 	nix::SetWire(false);
-	MultiView::set_wide_lines(selection_filter ? 2.0f : 1.0f);
+	set_wide_lines(selection_filter ? 2.0f : 1.0f);
 	Array<vector> line_pos;
 	Array<color> line_color;
 

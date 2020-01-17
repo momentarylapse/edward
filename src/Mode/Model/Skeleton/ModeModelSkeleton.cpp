@@ -8,6 +8,7 @@
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
 #include "../../../MultiView/Window.h"
+#include "../../../MultiView/DrawingHelper.h"
 #include "../../../lib/nix/nix.h"
 #include "ModeModelSkeleton.h"
 #include "../ModeModel.h"
@@ -213,7 +214,7 @@ void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &b
 	nix::SetZ(false, false);
 	nix::EnableLighting(false);
 	nix::SetWire(false);
-	MultiView::set_wide_lines(thin ? 1.0f : 5.0f);
+	set_wide_lines(thin ? 1.0f : 5.0f);
 
 	for (ModelBone &b: bone){
 		if (b.view_stage < multi_view->view_stage)

@@ -12,17 +12,12 @@
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
+#include "../../../../MultiView/DrawingHelper.h"
 #include "../../../../lib/nix/nix.h"
 
 #define RADIUS_FACTOR	0.5f
 
 
-namespace MultiView{
-	float snap_f(MultiView *mv, float f);
-	string format_length(MultiView *mv, float l);
-}
-
-void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b);
 
 ModeModelMeshCreateTorus::ModeModelMeshCreateTorus(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateTorus", _parent)
@@ -132,18 +127,15 @@ void ModeModelMeshCreateTorus::on_mouse_move()
 		vector m = multi_view->get_cursor(pos);
 		if (rad_chosen){
 			radius2 = (m - pos).length() * RADIUS_FACTOR;
-			if (multi_view->snap_to_grid)
-				radius2 = MultiView::snap_f(multi_view, radius2);
-			message = _("Torus au&sen skalieren: ") + MultiView::format_length(multi_view, radius1) + " / " + MultiView::format_length(multi_view, radius2);
+			radius2 = multi_view->maybe_snap_f(radius2);
+			message = _("Torus au&sen skalieren: ") + multi_view->format_length(radius1) + " / " + multi_view->format_length(radius2);
 		}else{
 			radius1 = (m - pos).length();
 			radius2 = radius1 * RADIUS_FACTOR;
-			if (multi_view->snap_to_grid) {
-				radius1 = MultiView::snap_f(multi_view, radius1);
-				radius2 = MultiView::snap_f(multi_view, radius2);
-			}
+			radius1 = multi_view->maybe_snap_f(radius1);
+			radius2 = multi_view->maybe_snap_f(radius2);
 
-			message = _("Torus innen skalieren: ") + MultiView::format_length(multi_view, radius1);
+			message = _("Torus innen skalieren: ") + multi_view->format_length(radius1);
 		}
 		updateGeometry();
 	}

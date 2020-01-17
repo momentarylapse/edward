@@ -99,8 +99,6 @@ extern nix::Shader *shader_lines_3d_colored;
 extern nix::Shader *shader_lines_3d_colored_wide;
 
 
-void set_wide_lines(float width);
-
 class MultiView : public Observable {
 public:
 	MultiView(bool _mode3d);
@@ -246,7 +244,14 @@ public:
 	bool hover_selected();
 	bool has_selectable_data();
 
-	string get_scale_by_zoom(vector &v);
+	string get_unit_by_zoom(vector &v);
+	string format_length(float l);
+	static vector snap_v2(const vector &v, float d);
+	vector snap_v(const vector &v);
+	float snap_f(float f);
+	vector maybe_snap_v2(const vector &v, float d);
+	vector maybe_snap_v(const vector &v);
+	float maybe_snap_f(float f);
 
 	vector get_cursor();
 	vector get_cursor(const vector &depth_reference);

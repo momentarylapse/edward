@@ -16,6 +16,7 @@
 #include "../../../../lib/kaba/kaba.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
+#include "../../../../MultiView/DrawingHelper.h"
 #include "../../../../Action/ActionGroup.h"
 #include "../../../../Action/Model/Mesh/Vertex/Helper/ActionModelMoveVertex.h"
 #include "../Selection/MeshSelectionModePolygon.h"
@@ -168,7 +169,7 @@ void ModeModelMeshDeformCylinder::on_draw_win(MultiView::Window* win)
 		nix::Draw3D(nix::vb_temp);
 	}
 
-	MultiView::set_wide_lines(3);
+	set_wide_lines(3);
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetZ(false, false);
 	nix::SetColor(multi_view->ColorCreationLine);

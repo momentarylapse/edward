@@ -12,15 +12,10 @@
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
+#include "../../../../MultiView/DrawingHelper.h"
 #include "../../../../lib/nix/nix.h"
 
 const float CYLINDER_CLOSING_DISTANCE = 20;
-
-namespace MultiView{
-	float snap_f(MultiView *mv, float f);
-	string format_length(MultiView *mv, float l);
-}
-void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b);
 
 
 ModeModelMeshCreateCylinderSnake::ModeModelMeshCreateCylinderSnake(ModeBase *_parent) :
@@ -83,13 +78,12 @@ void ModeModelMeshCreateCylinderSnake::on_mouse_move()
 	if (ready_for_scaling){
 		vector p = multi_view->get_cursor(pos.back());
 		radius = (p - pos.back()).length();
-		if (multi_view->snap_to_grid)
-			radius = MultiView::snap_f(multi_view, radius);
+		radius = multi_view->maybe_snap_f(radius);
 		float min_rad = 10 / multi_view->active_win->zoom(); // 10 px
 		if (radius < min_rad)
 			radius = min_rad;
 		updateGeometry();
-		message = _("Zylinderradius: ") + MultiView::format_length(multi_view, radius);
+		message = _("Zylinderradius: ") + multi_view->format_length(radius);
 	}
 }
 
@@ -158,7 +152,7 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win)
 
 		// control polygon
 		nix::SetColor(ColorInterpolate(multi_view->ColorCreationLine, multi_view->ColorBackGround, 0.3f));
-		MultiView::set_wide_lines(2);
+		set_wide_lines(2);
 		for (int i=1;i<pos.num;i++)
 			nix::DrawLine3D(pos[i - 1], pos[i]);
 

@@ -12,13 +12,9 @@
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
+#include "../../../../MultiView/DrawingHelper.h"
 #include "../../../../lib/nix/nix.h"
 
-
-namespace MultiView{
-	float snap_v(MultiView *mv, vector &v);
-	string format_length(MultiView *mv, float l);
-}
 
 
 ModeModelMeshCreateCube::ModeModelMeshCreateCube(ModeBase *_parent) :
@@ -116,12 +112,12 @@ void ModeModelMeshCreateCube::on_mouse_move() {
 			length[1] = dir1 * vector::dot(dir1, pos2 - pos);
 			update_geometry();
 
-			message = _("W&urfel Grundseite: ") + MultiView::format_length(multi_view, length[0].length()) + " x " + MultiView::format_length(multi_view, length[1].length());
+			message = _("W&urfel Grundseite: ") + multi_view->format_length(length[0].length()) + " x " + multi_view->format_length(length[1].length());
 		} else {
 			set_dpos3();
 			update_geometry();
 
-			message = _("W&urfel: ") + MultiView::format_length(multi_view, length[0].length()) + " x " + MultiView::format_length(multi_view, length[1].length()) + " x " + MultiView::format_length(multi_view, length[2].length());
+			message = _("W&urfel: ") + multi_view->format_length(length[0].length()) + " x " + multi_view->format_length(length[1].length()) + " x " + multi_view->format_length(length[2].length());
 		}
 	}
 }
@@ -147,23 +143,6 @@ void ModeModelMeshCreateCube::on_start() {
 
 void ModeModelMeshCreateCube::on_end() {
 	delete dialog;
-}
-
-void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b) {
-	nix::SetZ(false, false);
-	nix::SetColor(MultiView::MultiView::ColorText);
-	MultiView::set_wide_lines(3.0f);
-	nix::DrawLine3D(a, b);
-	MultiView::set_wide_lines(1.0f);
-	//nix::SetZ(true, true);
-	vector pa = win->project(a);
-	vector pb = win->project(b);
-	//vector d = (pb - pa).normalized();
-	//vector e = d ^ vector::EZ;
-	float r = 3;
-	nix::SetShader(nix::default_shader_2d);
-	nix::DrawRect(pa.x-r, pa.x+r, pa.y-r, pa.y+r, 0);
-	nix::DrawRect(pb.x-r, pb.x+r, pb.y-r, pb.y+r, 0);
 }
 
 void ModeModelMeshCreateCube::on_draw_win(MultiView::Window *win) {
