@@ -340,7 +340,7 @@ bool ModeModelMesh::optimize_view()
 {
 	MultiView::MultiView *mv = multi_view;
 	bool ww = mv->whole_window;
-	mv->resetView();
+	mv->reset_view();
 	mv->whole_window = ww;
 	if (data->vertex.num > 0){
 		vector min = data->vertex[0].pos, max = data->vertex[0].pos;
@@ -348,10 +348,10 @@ bool ModeModelMesh::optimize_view()
 			min._min(v.pos);
 			max._max(v.pos);
 		}
-		mv->setViewBox(min, max);
+		mv->set_view_box(min, max);
 	}
 
-	ed->multi_view_2d->resetView();
+	ed->multi_view_2d->reset_view();
 	ed->multi_view_2d->cam.pos = vector(0.5f, 0.5f, 0);
 	/*if ((Bone.num > 0) and (Vertex.num <= 0))
 		SetSubMode(SubModeSkeleton);
@@ -440,7 +440,7 @@ void ModeModelMesh::apply_mouse_function(MultiView::MultiView *mv)
 	if (!mv->mode3d)
 		name = "ActionModelTransformSkinVertices";
 
-	mv->setMouseAction(name, mouse_action, lock_action);
+	mv->set_mouse_action(name, mouse_action, lock_action);
 }
 
 void ModeModelMesh::copy()

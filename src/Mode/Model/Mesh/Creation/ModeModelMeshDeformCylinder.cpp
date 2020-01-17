@@ -112,8 +112,8 @@ void get_axis(DataModel *data, vector axis[2], float &radius)
 
 void ModeModelMeshDeformCylinder::on_start()
 {
-	multi_view->setAllowAction(false);
-	multi_view->setAllowSelect(false);
+	multi_view->set_allow_action(false);
+	multi_view->set_allow_select(false);
 
 	foreachi(ModelVertex &v, data->vertex, i)
 		if (v.is_selected){

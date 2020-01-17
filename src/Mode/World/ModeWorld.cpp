@@ -449,11 +449,11 @@ void ModeWorld::SetMouseAction(int mode)
 {
 	mouse_action = mode;
 	if (mode == MultiView::ACTION_MOVE)
-		multi_view->setMouseAction("ActionWorldMoveSelection", mode, false);
+		multi_view->set_mouse_action("ActionWorldMoveSelection", mode, false);
 	else if (mode == MultiView::ACTION_ROTATE)
-		multi_view->setMouseAction("ActionWorldRotateObjects", mode, false);
+		multi_view->set_mouse_action("ActionWorldRotateObjects", mode, false);
 	else
-		multi_view->setMouseAction("", mode, false);
+		multi_view->set_mouse_action("", mode, false);
 }
 
 
@@ -593,10 +593,10 @@ void ModeWorld::ExecuteLightmapDialog()
 
 bool ModeWorld::optimize_view()
 {
-	multi_view->resetView();
+	multi_view->reset_view();
 	vector min, max;
 	data->GetBoundaryBox(min, max);
-	multi_view->setViewBox(min, max);
+	multi_view->set_view_box(min, max);
 
 	//ShowEffects = false;
 	TerrainShowTextureLevel = -1;
@@ -701,14 +701,14 @@ bool ModeWorld::Pasteable()
 
 void ModeWorld::on_set_multi_view()
 {
-	multi_view->clearData(data);
+	multi_view->clear_data(data);
 
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	multi_view->addData(	MVD_WORLD_OBJECT,
+	multi_view->add_data(	MVD_WORLD_OBJECT,
 			data->Objects,
 			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
-	multi_view->addData(	MVD_WORLD_TERRAIN,
+	multi_view->add_data(	MVD_WORLD_TERRAIN,
 			data->Terrains,
 			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);

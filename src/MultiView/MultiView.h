@@ -13,19 +13,18 @@
 
 class Data;
 
-namespace nix{
+namespace nix {
 	class Shader;
 }
 
-namespace MultiView{
+namespace MultiView {
 
 class MultiView;
 class Window;
 class SingleData;
 
 
-enum
-{
+enum {
 	VIEW_RIGHT,
 	VIEW_LEFT,
 	VIEW_FRONT,
@@ -38,7 +37,7 @@ enum
 };
 
 
-enum{
+enum {
 	ACTION_SELECT,
 	ACTION_MOVE,
 	ACTION_ROTATE,
@@ -49,8 +48,7 @@ enum{
 	ACTION_ONCE,
 };
 
-struct Camera
-{
+struct Camera {
 	vector pos;
 	quaternion ang;
 	float radius;
@@ -63,8 +61,7 @@ class CameraController;
 
 typedef bool HoverFunction(const SingleData *p, Window *win, vector &m, vector &tp, float &z, void *user_data);
 
-struct DataSet
-{
+struct DataSet {
 	int type;
 	DynamicArray *data;
 	bool selectable, drawable, movable, indexable;
@@ -104,8 +101,7 @@ extern nix::Shader *shader_lines_3d_colored_wide;
 
 void set_wide_lines(float width);
 
-class MultiView : public Observable
-{
+class MultiView : public Observable {
 public:
 	MultiView(bool _mode3d);
 	virtual ~MultiView();
@@ -139,6 +135,7 @@ public:
 
 	bool mode3d;
 	bool whole_window;
+	rect area;
 
 	int light;
 
@@ -158,10 +155,12 @@ public:
 	Window *active_win;
 	Window *mouse_win;
 
-	struct Selection
-	{
-		enum{
+	struct Selection {
+		enum {
 			HOVER_NONE,
+			HOVER_WINDOW_DIVIDER_X,
+			HOVER_WINDOW_DIVIDER_Y,
+			HOVER_WINDOW_DIVIDER_CENTER,
 			HOVER_WINDOW_LABEL,
 			HOVER_ACTION_CONTROLLER,
 			HOVER_CAMERA_CONTROLLER,
@@ -191,31 +190,29 @@ public:
 	static color ColorCreationLine;
 
 	void on_draw();
-	void drawMousePos();
-	void toggleWholeWindow();
-	void toggleGrid();
-	void toggleLight();
-	void toggleWire();
-	void toggleSnapToGrid();
+	void draw_mouse_pos();
+	void toggle_whole_window();
+	void toggle_grid();
+	void toggle_light();
+	void toggle_wire();
+	void toggle_snap_to_grid();
 	void cam_zoom(float factor, bool mouse_rel);
 	void cam_move(const vector &dpos);
 	void cam_move_pixel(const vector &dir);
 	void cam_rotate(const quaternion &dang, bool cam_center);
 	void cam_rotate_pixel(const vector &dir, bool cam_center);
-	void setMode(int mode);
-	void clearData(Data *_data);
-	void addData(int type, const DynamicArray &a, void *user_data, int flags);
+	void clear_data(Data *_data);
+	void add_data(int type, const DynamicArray &a, void *user_data, int flags);
 	void set_hover_func(int type, HoverFunction *f);
-	void SetViewStage(int *view_stage, bool allow_handle);
+	void set_view_stage(int *view_stage, bool allow_handle);
 	void reset();
-	void resetView();
-	void setViewBox(const vector &min, const vector &max);
-	void setAllowSelect(bool allow);
-	void setAllowAction(bool allow);
-	void pushSettings();
-	void popSettings();
-	struct Settings
-	{
+	void reset_view();
+	void set_view_box(const vector &min, const vector &max);
+	void set_allow_select(bool allow);
+	void set_allow_action(bool allow);
+	void push_settings();
+	void pop_settings();
+	struct Settings {
 		bool allow_select;
 		bool allow_action;
 		string action_name;
@@ -224,36 +221,35 @@ public:
 	};
 	Array<Settings> settings_stack;
 
-	void viewStagePush();
-	void viewStagePop();
+	void view_stage_push();
+	void view_stage_pop();
 
-	void selectAll();
-	void selectNone();
-	void invertSelection();
-	bool hasSelection();
-	vector getSelectionCenter();
+	void select_all();
+	void select_none();
+	void invert_selection();
+	bool has_selection();
+	vector get_selection_center();
 
-	void holdCursor(bool holding);
-	void startRect();
-	void endRect();
-	void updateMouse();
+	void hold_cursor(bool holding);
+	void start_selection_rect();
+	void end_selection_rect();
+	void update_mouse();
 
-	void getHover();
-	void unselectAll();
-	enum{
+	void get_hover();
+	enum {
 		SELECT_SET,
 		SELECT_ADD,
 		SELECT_INVERT
 	};
-	void getSelected(int mode = SELECT_SET);
-	void selectAllInRectangle(int mode = SELECT_SET);
-	bool hoverSelected();
-	bool hasSelectableData();
+	void get_selected(int mode = SELECT_SET);
+	void select_all_in_rectangle(int mode = SELECT_SET);
+	bool hover_selected();
+	bool has_selectable_data();
 
-	string getScaleByZoom(vector &v);
+	string get_scale_by_zoom(vector &v);
 
-	vector getCursor3d();
-	vector getCursor3d(const vector &depth_reference);
+	vector get_cursor();
+	vector get_cursor(const vector &depth_reference);
 
 
 	Array<Window*> win;
@@ -261,9 +257,9 @@ public:
 	bool lbut, mbut, rbut;
 
 	ActionController *action_con;
-	void resetMouseAction();
-	void setMouseAction(const string &name, int mode, bool locked);
-	bool needActionController();
+	void reset_mouse_action();
+	void set_mouse_action(const string &name, int mode, bool locked);
+	bool need_action_controller();
 	CameraController *cam_con;
 
 	Array<DataSet> data;
@@ -273,8 +269,7 @@ public:
 	bool holding_cursor;
 	float holding_x, holding_y;
 
-	struct SelectionRect
-	{
+	struct SelectionRect {
 		bool active;
 		int dist;
 		vector pos0;
@@ -291,16 +286,20 @@ public:
 	int moving_win;
 	vector moving_start, moving_dp;
 
+	bool moving_cross_x;
+	bool moving_cross_y;
+	float window_partition_x;
+	float window_partition_y;
+
 	hui::Menu *menu;
 
-	struct Message3d
-	{
+	struct Message3d {
 		string str;
 		vector pos;
 	};
 	Array<Message3d> message3d;
-	void addMessage3d(const string &str, const vector &pos);
-	void resetMessage3d();
+	void add_message_3d(const string &str, const vector &pos);
+	void reset_message_3d();
 
 
 	float SPEED_MOVE;

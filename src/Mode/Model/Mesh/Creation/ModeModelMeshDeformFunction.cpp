@@ -84,8 +84,8 @@ void ModeModelMeshDeformFunction::on_start()
 	vector d = max - min;
 	geo = new GeometryCube(min, vector::EX * d.x, vector::EY * d.y, vector::EZ * d.z, CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
 
-	multi_view->setAllowSelect(false);
-	multi_view->setAllowAction(false);
+	multi_view->set_allow_select(false);
+	multi_view->set_allow_action(false);
 }
 
 void ModeModelMeshDeformFunction::on_end()

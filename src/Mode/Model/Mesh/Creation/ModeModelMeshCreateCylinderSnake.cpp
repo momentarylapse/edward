@@ -46,8 +46,8 @@ void ModeModelMeshCreateCylinderSnake::on_start()
 	dialog->show();
 	dialog->event("hui:close", std::bind(&ModeModelMeshCreateCylinderSnake::onClose, this));
 
-	multi_view->setAllowSelect(false);
-	multi_view->setAllowAction(false);
+	multi_view->set_allow_select(false);
+	multi_view->set_allow_action(false);
 
 	ed->activate("");
 }
@@ -80,7 +80,7 @@ void ModeModelMeshCreateCylinderSnake::updateGeometry()
 void ModeModelMeshCreateCylinderSnake::on_mouse_move()
 {
 	if (ready_for_scaling){
-		vector p = multi_view->getCursor3d(pos.back());
+		vector p = multi_view->get_cursor(pos.back());
 		radius = (p - pos.back()).length();
 		if (multi_view->snap_to_grid)
 			radius = MultiView::snap_f(multi_view, radius);
@@ -117,7 +117,7 @@ void ModeModelMeshCreateCylinderSnake::on_left_button_up()
 			}
 
 		}
-		pos.add(multi_view->getCursor3d());
+		pos.add(multi_view->get_cursor());
 	}
 }
 
@@ -162,7 +162,7 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win)
 			nix::DrawLine3D(pos[i - 1], pos[i]);
 
 		if ((!ready_for_scaling) and (pos.num > 0))
-			nix::DrawLine3D(pos.back(), multi_view->getCursor3d());
+			nix::DrawLine3D(pos.back(), multi_view->get_cursor());
 
 
 		// spline curve
@@ -170,7 +170,7 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win)
 		for (vector &p: pos)
 			inter.add(p);
 		if (!ready_for_scaling)
-			inter.add(multi_view->getCursor3d());
+			inter.add(multi_view->get_cursor());
 		inter.normalize();
 		nix::SetColor(multi_view->ColorCreationLine);
 		for (int i=0;i<100;i++)

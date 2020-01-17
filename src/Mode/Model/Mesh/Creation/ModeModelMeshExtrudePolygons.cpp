@@ -62,8 +62,8 @@ void ModeModelMeshExtrudePolygons::preview()
 
 void ModeModelMeshExtrudePolygons::on_start()
 {
-	multi_view->setAllowSelect(false);
-	multi_view->setAllowAction(false);
+	multi_view->set_allow_select(false);
+	multi_view->set_allow_action(false);
 }
 
 void ModeModelMeshExtrudePolygons::cleanUp()

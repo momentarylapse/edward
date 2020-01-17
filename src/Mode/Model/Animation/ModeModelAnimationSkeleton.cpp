@@ -72,7 +72,7 @@ void ModeModelAnimationSkeleton::chooseMouseFunction(int f)
 	mouse_action = f;
 
 	// mouse action
-	multi_view->setMouseAction("ActionModelAnimationTransformBones", mouse_action, false);
+	multi_view->set_mouse_action("ActionModelAnimationTransformBones", mouse_action, false);
 }
 
 void ModeModelAnimationSkeleton::on_update(Observable* o, const string &message)
@@ -96,10 +96,10 @@ bool bone_hover(const MultiView::SingleData *pp, MultiView::Window *win, vector 
 
 void ModeModelAnimationSkeleton::on_set_multi_view()
 {
-	multi_view->clearData(data);
+	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 
-	multi_view->addData(MVD_SKELETON_BONE,
+	multi_view->add_data(MVD_SKELETON_BONE,
 			mode_model_animation->bone,
 			this,
 			MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT);

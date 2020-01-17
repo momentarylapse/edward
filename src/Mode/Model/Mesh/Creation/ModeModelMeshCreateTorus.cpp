@@ -46,8 +46,8 @@ void ModeModelMeshCreateTorus::on_start()
 	dialog->show();
 	dialog->event("hui:close", std::bind(&ModeModelMeshCreateTorus::onClose, this));
 
-	multi_view->setAllowSelect(false);
-	multi_view->setAllowAction(false);
+	multi_view->set_allow_select(false);
+	multi_view->set_allow_action(false);
 
 	ed->activate("");
 }
@@ -91,7 +91,7 @@ void ModeModelMeshCreateTorus::on_left_button_up()
 			rad_chosen = true;
 		}
 	}else{
-		pos = multi_view->getCursor3d();
+		pos = multi_view->get_cursor();
 		message = _("Torus au&sen skalieren");
 		pos_chosen = true;
 		updateGeometry();
@@ -118,7 +118,7 @@ void ModeModelMeshCreateTorus::on_mouse_move()
 {
 	axis = multi_view->mouse_win->getDirection();
 	if (pos_chosen){
-		vector pos2 = multi_view->getCursor3d(pos);
+		vector pos2 = multi_view->get_cursor(pos);
 		if (rad_chosen){
 			radius2 = (pos2 - pos).length() * RADIUS_FACTOR;
 		}else{

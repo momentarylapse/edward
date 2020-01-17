@@ -80,8 +80,8 @@ void ModeModelMeshCreateBall::on_start()
 	dialog->event("type:sphere", std::bind(&ModeModelMeshCreateBall::onTypeSphere, this));
 	dialog->event("type:physical", std::bind(&ModeModelMeshCreateBall::onTypePhysical, this));
 
-	multi_view->setAllowSelect(false);
-	multi_view->setAllowAction(false);
+	multi_view->set_allow_select(false);
+	multi_view->set_allow_action(false);
 
 	ed->activate("");
 }
@@ -137,7 +137,7 @@ void ModeModelMeshCreateBall::on_left_button_up()
 
 		abort();
 	}else{
-		pos = multi_view->getCursor3d();
+		pos = multi_view->get_cursor();
 		message = _("Kugelradius: ");
 		pos_chosen = true;
 		updateGeometry();
@@ -160,7 +160,7 @@ void ModeModelMeshCreateBall::on_draw_win(MultiView::Window *win)
 void ModeModelMeshCreateBall::on_mouse_move()
 {
 	if (pos_chosen){
-		vector pos2 = multi_view->getCursor3d(pos);
+		vector pos2 = multi_view->get_cursor(pos);
 		radius = (pos2 - pos).length();
 		if (multi_view->snap_to_grid)
 			radius = MultiView::snap_f(multi_view, radius);

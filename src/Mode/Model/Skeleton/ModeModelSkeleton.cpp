@@ -108,7 +108,7 @@ void ModeModelSkeleton::chooseMouseFunction(int f)
 {
 	mouse_action = f;
 
-	multi_view->setMouseAction("ActionModelTransformBones", mouse_action, false);
+	multi_view->set_mouse_action("ActionModelTransformBones", mouse_action, false);
 }
 
 
@@ -151,10 +151,10 @@ void ModeModelSkeleton::on_end()
 
 void ModeModelSkeleton::on_set_multi_view()
 {
-	multi_view->clearData(data);
+	multi_view->clear_data(data);
 
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	multi_view->addData(	MVD_SKELETON_BONE,
+	multi_view->add_data(	MVD_SKELETON_BONE,
 			data->bone,
 			NULL,
 			MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);

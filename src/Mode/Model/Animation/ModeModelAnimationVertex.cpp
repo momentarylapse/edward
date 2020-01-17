@@ -65,7 +65,7 @@ void ModeModelAnimationVertex::chooseMouseFunction(int f)
 	mouse_action = f;
 
 	// mouse action
-	multi_view->setMouseAction("ActionModelAnimationTransformVertices", mouse_action, false);
+	multi_view->set_mouse_action("ActionModelAnimationTransformVertices", mouse_action, false);
 }
 
 void ModeModelAnimationVertex::on_update(Observable* o, const string &message)

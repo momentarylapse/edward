@@ -229,7 +229,7 @@ bool ActionController::isSelecting()
 	if (action.mode == ACTION_SELECT)
 		return true;
 	if (!action.locked)
-		return !multi_view->hoverSelected();
+		return !multi_view->hover_selected();
 	return false;
 }
 
@@ -255,7 +255,7 @@ void ActionController::update()
 	if (cur_action){
 		pos = pos0;
 	}else{
-		pos = multi_view->getSelectionCenter();
+		pos = multi_view->get_selection_center();
 	}
 	float f = multi_view->cam.radius * 0.15f;
 	if (multi_view->whole_window)
@@ -405,7 +405,7 @@ void ActionController::draw(Window *win)
 
 		if (action.mode == ACTION_MOVE){
 			vector t = param;
-			string unit = multi_view->getScaleByZoom(t);
+			string unit = multi_view->get_scale_by_zoom(t);
 			ed->draw_str(x0, y0,      f2s(t.x, 2) + " " + unit, Edward::ALIGN_RIGHT);
 			ed->draw_str(x0, y0 + 20, f2s(t.y, 2) + " " + unit, Edward::ALIGN_RIGHT);
 			if (multi_view->mode3d)

@@ -88,10 +88,10 @@ void MeshSelectionModeEdge::updateSelection()
 
 void MeshSelectionModeEdge::updateMultiView()
 {
-	multi_view->clearData(data);
+	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	for (ModelSurface &s: data->surface)
-		multi_view->addData(	MVD_MODEL_EDGE,
+		multi_view->add_data(	MVD_MODEL_EDGE,
 			s.edge,
 			&s,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);

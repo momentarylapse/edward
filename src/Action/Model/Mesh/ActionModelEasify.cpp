@@ -74,7 +74,7 @@ static float get_weight(DataModel *m, ModelSurface &s, ModelEdge &e, Array<Array
 
 void ActionModelEasify::CalculateWeights(DataModel *m)
 {
-	ed->multi_view_3d->resetMessage3d();
+	ed->multi_view_3d->reset_message_3d();
 
 	foreachi(ModelSurface &s, m->surface, si){
 

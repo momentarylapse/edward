@@ -33,8 +33,8 @@ void ModeModelMeshCreatePlane::on_start()
 	dialog->show();
 	dialog->event("hui:close", std::bind(&ModeModelMeshCreatePlane::onClose, this));
 
-	multi_view->setAllowSelect(false);
-	multi_view->setAllowAction(false);
+	multi_view->set_allow_select(false);
+	multi_view->set_allow_action(false);
 
 	ed->activate("");
 }
@@ -65,7 +65,7 @@ void ModeModelMeshCreatePlane::on_left_button_up()
 
 		abort();
 	}else{
-		pos = multi_view->getCursor3d();
+		pos = multi_view->get_cursor();
 		message = _("Ebene: zweiter Punkt");
 		pos_chosen = true;
 	}
@@ -100,7 +100,7 @@ void ModeModelMeshCreatePlane::on_draw_win(MultiView::Window *win)
 void ModeModelMeshCreatePlane::on_mouse_move()
 {
 	if (pos_chosen){
-		vector pos2 = multi_view->getCursor3d();
+		vector pos2 = multi_view->get_cursor();
 		vector dir0, dir1, dir2;
 		multi_view->mouse_win->getMovingFrame(dir0, dir1, dir2);
 		length[0] = dir1 * vector::dot(dir1, pos2 - pos);

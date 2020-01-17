@@ -101,7 +101,13 @@ MultiView::MultiView(bool mode3d) :
 	mouse_win = NULL;
 	active_win = NULL;
 	allow_mouse_actions = true;
+	area = rect::ID;
 
+
+	moving_cross_x = false;
+	moving_cross_y = false;
+	window_partition_x = 0.5f;
+	window_partition_y = 0.5f;
 
 	SPEED_MOVE = 20;
 	SPEED_ZOOM_KEY = 1.15f;
@@ -182,12 +188,12 @@ void MultiView::reset()
 	hover.reset();
 	action_con->reset();
 
-	clearData(NULL);
-	resetMouseAction();
-	resetView();
+	clear_data(NULL);
+	reset_mouse_action();
+	reset_view();
 }
 
-void MultiView::resetView()
+void MultiView::reset_view()
 {
 	cam.pos = v_0;
 	cam.ang = quaternion::ID;
@@ -210,22 +216,22 @@ void MultiView::resetView()
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
-void MultiView::resetMouseAction()
+void MultiView::reset_mouse_action()
 {
 	action_con->cur_action = NULL;
 	action_con->action.reset();
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
-void MultiView::clearData(Data *_data)
+void MultiView::clear_data(Data *_data)
 {
 	data.clear();
 	action_con->data = _data;
 	if (!_data)
-		resetMouseAction();
+		reset_mouse_action();
 }
 
-void MultiView::addData(int type, const DynamicArray & a, void *user_data, int flags)
+void MultiView::add_data(int type, const DynamicArray & a, void *user_data, int flags)
 {
 	DataSet d;
 	d.type = type;
@@ -245,7 +251,7 @@ void MultiView::set_hover_func(int type, HoverFunction *f)
 			d.func_hover = f;
 }
 
-void MultiView::SetViewStage(int *view_stage, bool allow_handle)
+void MultiView::set_view_stage(int *view_stage, bool allow_handle)
 {}
 
 
@@ -290,7 +296,7 @@ void MultiView::cam_rotate(const quaternion &dq, bool cam_center) {
 	notify(MESSAGE_CAMERA_CHANGE);
 }
 
-void MultiView::setViewBox(const vector &min, const vector &max)
+void MultiView::set_view_box(const vector &min, const vector &max)
 {
 	cam.pos = (min + max) / 2;
 	float r = (max - min).length_fuzzy() * 1.3f;// * ((float)NixScreenWidth / (float)nix::target_width);
@@ -299,32 +305,32 @@ void MultiView::setViewBox(const vector &min, const vector &max)
 	notify(MESSAGE_CAMERA_CHANGE);
 }
 
-void MultiView::toggleWholeWindow()
+void MultiView::toggle_whole_window()
 {
 	whole_window = !whole_window;
 	action_con->update();
 	notify(MESSAGE_CAMERA_CHANGE);
 }
 
-void MultiView::toggleGrid()
+void MultiView::toggle_grid()
 {
 	grid_enabled = !grid_enabled;
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
-void MultiView::toggleLight()
+void MultiView::toggle_light()
 {
 	light_enabled = !light_enabled;
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
-void MultiView::toggleWire()
+void MultiView::toggle_wire()
 {
 	wire_mode = !wire_mode;
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
-void MultiView::toggleSnapToGrid()
+void MultiView::toggle_snap_to_grid()
 {
 	snap_to_grid = !snap_to_grid;
 	notify(MESSAGE_SETTINGS_CHANGE);
@@ -335,11 +341,11 @@ void MultiView::on_command(const string & id)
 	notify_begin();
 
 	if (id == "select_all")
-		selectAll();
+		select_all();
 	if (id == "select_none")
-		selectNone();
+		select_none();
 	if (id == "invert_selection")
-		invertSelection();
+		invert_selection();
 
 	if (id == "view_right")
 		active_win->type = VIEW_RIGHT;
@@ -358,20 +364,20 @@ void MultiView::on_command(const string & id)
 	if (id == "view_isometric")
 		active_win->type = VIEW_ISOMETRIC;
 	if (id == "whole_window")
-		toggleWholeWindow();
+		toggle_whole_window();
 	if (id == "grid")
-		toggleGrid();
+		toggle_grid();
 	if (id == "snap_to_grid")
-		toggleSnapToGrid();
+		toggle_snap_to_grid();
 	if (id == "light")
-		toggleLight();
+		toggle_light();
 	if (id == "wire")
-		toggleWire();
+		toggle_wire();
 
 	if (id == "view_push")
-		viewStagePush();
+		view_stage_push();
 	if (id == "view_pop")
-		viewStagePop();
+		view_stage_pop();
 	notify_end();
 }
 
@@ -453,13 +459,20 @@ int get_select_mode()
 void MultiView::on_left_button_down()
 {
 	notify_begin();
-	updateMouse();
+	update_mouse();
 
-	getHover();
+	get_hover();
 
 	// menu for selection of view type
 	if (hover.meta == hover.HOVER_WINDOW_LABEL){
 		active_win = mouse_win;
+	}else if (hover.meta == hover.HOVER_WINDOW_DIVIDER_X){
+		moving_cross_x = true;
+	}else if (hover.meta == hover.HOVER_WINDOW_DIVIDER_Y){
+		moving_cross_y = true;
+	}else if (hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER){
+		moving_cross_x = true;
+		moving_cross_y = true;
 	}else if (hover.meta == hover.HOVER_CAMERA_CONTROLLER){
 		cam_con->onLeftButtonDown();
 	}else if (hover.meta == hover.HOVER_ACTION_CONTROLLER){
@@ -470,18 +483,18 @@ void MultiView::on_left_button_down()
 		if (action_con->action.locked){
 			if (action_con->action.mode == ACTION_SELECT){
 				if (allow_select){
-					getSelected(get_select_mode());
+					get_selected(get_select_mode());
 					sel_rect.start_later(m);
 				}
-			}else if (allow_mouse_actions and hoverSelected()){
+			}else if (allow_mouse_actions and hover_selected()){
 				action_con->start_action(active_win, hover.point, ACTION_CONSTRAINTS_NONE);
 			}
 		}else{
 			if (allow_select){
-				if (hoverSelected() and (get_select_mode() == MultiView::SELECT_SET)){
+				if (hover_selected() and (get_select_mode() == MultiView::SELECT_SET)){
 					action_con->start_action(active_win, hover.point, ACTION_CONSTRAINTS_NONE);
 				}else{
-					getSelected(get_select_mode());
+					get_selected(get_select_mode());
 					sel_rect.start_later(m);
 				}
 			}
@@ -499,7 +512,7 @@ void MultiView::on_middle_button_down()
 
 // move camera?
 	if (allow_infinite_scrolling)
-		holdCursor(true);
+		hold_cursor(true);
 	view_moving = true;
 
 	notify(MESSAGE_UPDATE);
@@ -520,7 +533,7 @@ void MultiView::on_right_button_down()
 
 // move camera?
 		if (allow_infinite_scrolling)
-			holdCursor(true);
+			hold_cursor(true);
 		view_moving = true;
 	}
 
@@ -535,7 +548,7 @@ void MultiView::on_middle_button_up()
 	notify_begin();
 	if (view_moving){
 		view_moving = false;
-		holdCursor(false);
+		hold_cursor(false);
 	}
 	notify_end();
 }
@@ -547,7 +560,7 @@ void MultiView::on_right_button_up()
 	notify_begin();
 	if (view_moving){
 		view_moving = false;
-		holdCursor(false);
+		hold_cursor(false);
 	}
 	notify_end();
 }
@@ -563,7 +576,9 @@ void MultiView::on_key_up(int key_code)
 void MultiView::on_left_button_up()
 {
 	notify_begin();
-	endRect();
+	end_selection_rect();
+	moving_cross_x = false;
+	moving_cross_y = false;
 
 	action_con->leftButtonUp();
 	cam_con->onLeftButtonUp();
@@ -572,7 +587,7 @@ void MultiView::on_left_button_up()
 
 
 
-void MultiView::updateMouse()
+void MultiView::update_mouse()
 {
 	m.x = hui::GetEvent()->mx;
 	m.y = hui::GetEvent()->my;
@@ -602,14 +617,14 @@ void MultiView::updateMouse()
 void MultiView::on_mouse_move()
 {
 	notify_begin();
-	updateMouse();
+	update_mouse();
 
 	if (action_con->inUse()){
 		action_con->mouseMove();
 	}else if (cam_con->inUse()){
 		cam_con->onMouseMove();
 	}else if (sel_rect.active and allow_select){
-		selectAllInRectangle(get_select_mode());
+		select_all_in_rectangle(get_select_mode());
 	}else if (view_moving){
 		int t = active_win->type;
 		if ((t == VIEW_PERSPECTIVE) or (t == VIEW_ISOMETRIC)){
@@ -619,13 +634,18 @@ void MultiView::on_mouse_move()
 	// camera translation
 			cam_move_pixel(v);
 		}
+	}else if (moving_cross_x or moving_cross_y){
+		if (moving_cross_x)
+			window_partition_x = clampf((m.x - area.x1) / area.width(), 0.01f, 0.99f);
+		if (moving_cross_y)
+			window_partition_y = clampf((m.y - area.y1) / area.height(), 0.01f, 0.99f);
 	}else if (sel_rect.dist >= 0 and allow_select){
 		sel_rect.dist += abs(v.x) + abs(v.y);
 		if (sel_rect.dist >= MIN_MOUSE_MOVE_TO_INTERACT)
-			startRect();
+			start_selection_rect();
 	}else{
 
-		getHover();
+		get_hover();
 
 	}
 
@@ -644,7 +664,7 @@ void MultiView::on_mouse_move()
 
 
 
-void MultiView::startRect()
+void MultiView::start_selection_rect()
 {
 	sel_rect.active = true;
 	sel_rect.dist = -1;
@@ -660,7 +680,7 @@ void MultiView::startRect()
 	notify(MESSAGE_UPDATE);
 }
 
-void MultiView::endRect()
+void MultiView::end_selection_rect()
 {
 	sel_rect.end();
 
@@ -669,7 +689,7 @@ void MultiView::endRect()
 
 
 
-string MultiView::getScaleByZoom(vector &v)
+string MultiView::get_scale_by_zoom(vector &v)
 {
 	const char *units[] = {"y", "z", "a", "f", "p", "n", "\u00b5", "m", "", "k", "M", "G", "T", "P", "E", "Z", "Y"};
 	float l = active_win->get_grid_d() * 10.1f;
@@ -684,14 +704,14 @@ string MultiView::getScaleByZoom(vector &v)
 string format_length(MultiView *mv, float l)
 {
 	vector v = vector(l, 0, 0);
-	string unit = mv->getScaleByZoom(v);
+	string unit = mv->get_scale_by_zoom(v);
 	return f2s(v.x,2) + " " + unit;
 }
 
-void MultiView::drawMousePos()
+void MultiView::draw_mouse_pos()
 {
-	vector m = getCursor3d();
-	string unit = getScaleByZoom(m);
+	vector m = get_cursor();
+	string unit = get_scale_by_zoom(m);
 	string sx = f2s(m.x,2) + " " + unit;
 	string sy = f2s(m.y,2) + " " + unit;
 	string sz = f2s(m.z,2) + " " + unit;
@@ -716,30 +736,34 @@ void MultiView::on_draw()
 	nix::SetZ(true,true);
 	nix::SetColor(ColorText);
 
+	area = nix::target_rect;
 
 	if (!mode3d){
-		win[0]->dest = nix::target_rect;
+		win[0]->dest = area;
 		win[0]->draw();
 	}else if (whole_window){
 		for (auto w: win)
 			w->dest = rect(0,0,0,0);
-		active_win->dest = nix::target_rect;
+		active_win->dest = area;
 		active_win->draw();
 	}else{
+		float xm = area.x1 + area.width() * window_partition_x;
+		float ym = area.y1 + area.height() * window_partition_y;
+
 		// top left
-		win[0]->dest = rect(0,nix::target_width/2,0,nix::target_height/2);
+		win[0]->dest = rect(area.x1, xm, area.y1, ym);
 		win[0]->draw();
 
 		// top right
-		win[1]->dest = rect(nix::target_width/2,nix::target_width,0,nix::target_height/2);
+		win[1]->dest = rect(xm, area.x2, area.y1, ym);
 		win[1]->draw();
 
 		// bottom left
-		win[2]->dest = rect(0,nix::target_width/2,nix::target_height/2,nix::target_height);
+		win[2]->dest = rect(area.x1, xm, ym, area.y2);
 		win[2]->draw();
 
 		// bottom right
-		win[3]->dest = rect(nix::target_width/2,nix::target_width,nix::target_height/2,nix::target_height);
+		win[3]->dest = rect(xm, area.x2, ym, area.y2);
 		win[3]->draw();
 
 		nix::Scissor(nix::target_rect);
@@ -747,9 +771,12 @@ void MultiView::on_draw()
 
 		nix::SetShader(nix::default_shader_2d);
 		nix::SetTexture(NULL);
-		nix::SetColor(ColorWindowSeparator);
-		nix::DrawRect(0, nix::target_width, nix::target_height/2-1, nix::target_height/2+2, 0);
-		nix::DrawRect(nix::target_width/2-1, nix::target_width/2+2, 0, nix::target_height, 0);
+
+		color c2 = ColorInterpolate(ColorWindowSeparator, White, 0.4f);
+		nix::SetColor((hover.meta == hover.HOVER_WINDOW_DIVIDER_Y or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : ColorWindowSeparator);
+		nix::DrawRect(area.x1, area.x2, ym-1, ym+2, 0);
+		nix::SetColor((hover.meta == hover.HOVER_WINDOW_DIVIDER_X or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : ColorWindowSeparator);
+		nix::DrawRect(xm-1, xm+2, area.y1, area.y2, 0);
 	}
 	nix::EnableLighting(false);
 
@@ -762,7 +789,7 @@ void MultiView::on_draw()
 	nix::SetColor(ColorText);
 
 	if (ed->input.inside_smart)
-		drawMousePos();
+		draw_mouse_pos();
 
 	action_con->drawPost();
 
@@ -804,20 +831,20 @@ rect MultiView::SelectionRect::get(const vector &m)
 	return rect(min(m.x, pos0.x), max(m.x, pos0.x), min(m.y, pos0.y), max(m.y, pos0.y));
 }
 
-void MultiView::setMouseAction(const string & name, int mode, bool locked)
+void MultiView::set_mouse_action(const string & name, int mode, bool locked)
 {
 	if (!mode3d and (mode == ACTION_ROTATE))
 		mode = ACTION_ROTATE_2D;
 	action_con->action.name = name;
 	action_con->action.mode = mode;
 	action_con->action.locked = locked;
-	action_con->show(needActionController());
+	action_con->show(need_action_controller());
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
-bool MultiView::needActionController()
+bool MultiView::need_action_controller()
 {
-	if (!hasSelection())
+	if (!has_selection())
 		return false;
 	if (!allow_mouse_actions)
 		return false;
@@ -826,7 +853,7 @@ bool MultiView::needActionController()
 	return true;
 }
 
-void MultiView::selectAll()
+void MultiView::select_all()
 {
 	if (!allow_select)
 		return;
@@ -840,11 +867,11 @@ void MultiView::selectAll()
 			if (sd->view_stage >= view_stage)
 				sd->is_selected = true;
 		}
-	action_con->show(needActionController());
+	action_con->show(need_action_controller());
 	notify(MESSAGE_SELECTION_CHANGE);
 }
 
-void MultiView::selectNone()
+void MultiView::select_none()
 {
 	if (!allow_select)
 		return;
@@ -857,11 +884,11 @@ void MultiView::selectNone()
 			SingleData* sd = MVGetSingleData(d, i);
 			sd->is_selected = false;
 		}
-	action_con->show(needActionController());
+	action_con->show(need_action_controller());
 	notify(MESSAGE_SELECTION_CHANGE);
 }
 
-void MultiView::invertSelection()
+void MultiView::invert_selection()
 {
 	if (!allow_select)
 		return;
@@ -875,11 +902,11 @@ void MultiView::invertSelection()
 			if (sd->view_stage >= view_stage)
 				sd->is_selected = !sd->is_selected;
 		}
-	action_con->show(needActionController());
+	action_con->show(need_action_controller());
 	notify(MESSAGE_SELECTION_CHANGE);
 }
 
-bool MultiView::hasSelection()
+bool MultiView::has_selection()
 {
 	for (DataSet &d: data)
 		for (int i=0;i<d.data->num;i++){
@@ -890,7 +917,7 @@ bool MultiView::hasSelection()
 	return false;
 }
 
-vector MultiView::getSelectionCenter()
+vector MultiView::get_selection_center()
 {
 	vector min = v_0, max = v_0;
 	bool first = true;
@@ -930,7 +957,7 @@ float snap_f(MultiView *mv, float f)
 	return d * roundf(f / d);
 }
 
-vector MultiView::getCursor3d()
+vector MultiView::get_cursor()
 {
 	if (hover.data)
 		return hover.point;
@@ -939,18 +966,33 @@ vector MultiView::getCursor3d()
 	return mouse_win->unproject(m, cam.pos);
 }
 
-vector MultiView::getCursor3d(const vector &depth_reference)
+vector MultiView::get_cursor(const vector &depth_reference)
 {
 	return mouse_win->unproject(m, depth_reference);
 }
 
 
-void MultiView::getHover()
+void MultiView::get_hover()
 {
 	hover.reset();
 
 	if (!ed->input.inside_smart)
 		return;
+
+	if (!whole_window) {
+		float xm = win[0]->dest.x2;
+		float ym = win[0]->dest.y2;
+		if ((m.x >= xm - 5) and (m.x <= xm + 5) and (m.y >= ym - 5) and (m.y <= ym + 5)) {
+			hover.meta = hover.HOVER_WINDOW_DIVIDER_CENTER;
+			return;
+		} else if ((m.x >= xm - 5) and (m.x <= xm + 5)) {
+			hover.meta = hover.HOVER_WINDOW_DIVIDER_X;
+			return;
+		} else if ((m.y >= ym - 5) and (m.y <= ym + 5)) {
+			hover.meta = hover.HOVER_WINDOW_DIVIDER_Y;
+			return;
+		}
+	}
 
 	/*if (!MVSelectable)
 		return;*/
@@ -1004,14 +1046,14 @@ void MultiView::getHover()
 			}
 }
 
-bool MultiView::hoverSelected()
+bool MultiView::hover_selected()
 {
 	if (hover.index < 0)
 		return false;
 	return hover.data->is_selected;
 }
 
-bool MultiView::hasSelectableData()
+bool MultiView::has_selectable_data()
 {
 	for (DataSet &d: data)
 		if (d.selectable)
@@ -1019,24 +1061,12 @@ bool MultiView::hasSelectableData()
 	return false;
 }
 
-void MultiView::unselectAll()
-{
-	for (DataSet &d: data)
-		if (d.selectable)
-			for (int i=0;i<d.data->num;i++){
-				SingleData* sd = MVGetSingleData(d,i);
-				sd->is_selected = false;
-			}
-	action_con->show(needActionController());
-	notify(MESSAGE_SELECTION_CHANGE);
-}
-
-void MultiView::getSelected(int mode)
+void MultiView::get_selected(int mode)
 {
 	notify_begin();
 	if ((hover.index < 0) or (hover.type < 0)){
 		if (mode == SELECT_SET)
-			unselectAll();
+			select_none();
 	}else{
 		SingleData* sd=MVGetSingleData(data[hover.set], hover.index);
 		if (sd->is_selected){
@@ -1045,23 +1075,23 @@ void MultiView::getSelected(int mode)
 			}
 		}else{
 			if (mode == SELECT_SET){
-				unselectAll();
+				select_none();
 				sd->is_selected=true;
 			}else{
 				sd->is_selected=true;
 			}
 		}
 	}
-	action_con->show(needActionController());
+	action_con->show(need_action_controller());
 	notify(MESSAGE_SELECTION_CHANGE);
 	notify_end();
 }
 
-void MultiView::selectAllInRectangle(int mode)
+void MultiView::select_all_in_rectangle(int mode)
 {
 	notify_begin();
 	// reset data
-	unselectAll();
+	select_none();
 
 	rect r = sel_rect.get(m);
 
@@ -1085,12 +1115,12 @@ void MultiView::selectAllInRectangle(int mode)
 					sd->is_selected = sd->m_delta;
 			}
 
-	action_con->show(needActionController());
+	action_con->show(need_action_controller());
 	notify(MESSAGE_SELECTION_CHANGE);
 	notify_end();
 }
 
-void MultiView::holdCursor(bool holding)
+void MultiView::hold_cursor(bool holding)
 {
 	holding_x = m.x;
 	holding_y = m.y;
@@ -1100,7 +1130,7 @@ void MultiView::holdCursor(bool holding)
 
 
 
-void MultiView::addMessage3d(const string &str, const vector &pos)
+void MultiView::add_message_3d(const string &str, const vector &pos)
 {
 	Message3d m;
 	m.str = str;
@@ -1108,20 +1138,20 @@ void MultiView::addMessage3d(const string &str, const vector &pos)
 	message3d.add(m);
 }
 
-void MultiView::setAllowAction(bool allow)
+void MultiView::set_allow_action(bool allow)
 {
 	allow_mouse_actions = allow;
-	action_con->show(needActionController());
+	action_con->show(need_action_controller());
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
-void MultiView::setAllowSelect(bool allow)
+void MultiView::set_allow_select(bool allow)
 {
 	allow_select = allow;
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
-void MultiView::pushSettings()
+void MultiView::push_settings()
 {
 	Settings s;
 	s.allow_select = allow_select;
@@ -1132,7 +1162,7 @@ void MultiView::pushSettings()
 	settings_stack.add(s);
 }
 
-void MultiView::popSettings()
+void MultiView::pop_settings()
 {
 	Settings s = settings_stack.pop();
 	allow_select = s.allow_select;
@@ -1140,11 +1170,11 @@ void MultiView::popSettings()
 	action_con->action.name = s.action_name;
 	action_con->action.mode = s.action_mode;
 	action_con->action.locked = s.action_locked;
-	action_con->show(needActionController());
+	action_con->show(need_action_controller());
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
-void MultiView::viewStagePush()
+void MultiView::view_stage_push()
 {
 	view_stage ++;
 
@@ -1158,7 +1188,7 @@ void MultiView::viewStagePush()
 	notify(MESSAGE_VIEWSTAGE_CHANGE);
 }
 
-void MultiView::viewStagePop()
+void MultiView::view_stage_pop()
 {
 	if (view_stage <= 0)
 		return;
@@ -1173,7 +1203,7 @@ void MultiView::viewStagePop()
 	notify(MESSAGE_VIEWSTAGE_CHANGE);
 }
 
-void MultiView::resetMessage3d()
+void MultiView::reset_message_3d()
 {
 	message3d.clear();
 }

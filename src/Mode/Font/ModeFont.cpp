@@ -35,7 +35,7 @@ ModeFont::~ModeFont()
 
 void ModeFont::on_left_button_down()
 {
-	vector m = multi_view->getCursor3d();
+	vector m = multi_view->get_cursor();
 	int x=0,y=0;
 	foreachi(DataFont::Glyph &g, data->glyph, i){
 		int x2 = x + g.Width;
@@ -157,7 +157,7 @@ void ModeFont::on_start()
 	t->reset();
 	t->enable(false);
 
-	multi_view->setAllowSelect(false);
+	multi_view->set_allow_select(false);
 
 	dialog = new FontDialog(data);
 	ed->embed(dialog, "root-table", 1, 0),
@@ -277,7 +277,7 @@ void ModeFont::on_update_menu()
 bool ModeFont::optimize_view()
 {
 	multi_view->reset();
-	multi_view->setViewBox(v_0, vector(data->TextureWidth, data->TextureHeight, 0));
+	multi_view->set_view_box(v_0, vector(data->TextureWidth, data->TextureHeight, 0));
 	return true;
 }
 

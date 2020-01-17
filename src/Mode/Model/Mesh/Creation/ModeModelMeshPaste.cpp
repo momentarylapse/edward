@@ -32,8 +32,8 @@ void ModeModelMeshPaste::on_start()
 	}
 
 	updateGeometry();
-	multi_view->setAllowSelect(false);
-	multi_view->setAllowAction(false);
+	multi_view->set_allow_select(false);
+	multi_view->set_allow_action(false);
 }
 
 void ModeModelMeshPaste::on_end()
@@ -69,7 +69,7 @@ void ModeModelMeshPaste::updateGeometry()
 	if (geo)
 		delete(geo);
 	matrix m;
-	m = matrix::translation( multi_view->getCursor3d() - dpos0);
+	m = matrix::translation( multi_view->get_cursor() - dpos0);
 	geo = new Geometry;
 	geo->add(mode_model_mesh->temp_geo);
 	geo->transform(m);

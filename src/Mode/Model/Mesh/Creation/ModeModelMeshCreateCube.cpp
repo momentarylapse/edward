@@ -80,14 +80,14 @@ void ModeModelMeshCreateCube::on_left_button_up()
 
 			abort();
 		}else{
-			pos2 = multi_view->getCursor3d();
+			pos2 = multi_view->get_cursor();
 			message = _("W&urfel: Punkt 3 / 3");
 			pos2_chosen = true;
 			set_dpos3(length, v_0);
 			updateGeometry();
 		}
 	}else{
-		pos = multi_view->getCursor3d();
+		pos = multi_view->get_cursor();
 		message = _("W&urfel: Punkt 2 / 3");
 		pos_chosen = true;
 		updateGeometry();
@@ -98,14 +98,14 @@ void ModeModelMeshCreateCube::on_mouse_move()
 {
 	if (pos_chosen){
 		if (!pos2_chosen){
-			vector pos2 = multi_view->getCursor3d();
+			vector pos2 = multi_view->get_cursor();
 			vector dir0 = multi_view->mouse_win->getDirectionRight();
 			vector dir1 = multi_view->mouse_win->getDirectionUp();
 			length[0] = dir0 * vector::dot(dir0, pos2 - pos);
 			length[1] = dir1 * vector::dot(dir1, pos2 - pos);
 			updateGeometry();
 		}else{
-			set_dpos3(length, multi_view->getCursor3d() - pos);
+			set_dpos3(length, multi_view->get_cursor() - pos);
 			updateGeometry();
 		}
 	}
@@ -125,8 +125,8 @@ void ModeModelMeshCreateCube::on_start()
 	dialog->show();
 	dialog->event("hui:close", std::bind(&ModeModelMeshCreateCube::onClose, this));
 
-	multi_view->setAllowSelect(false);
-	multi_view->setAllowAction(false);
+	multi_view->set_allow_select(false);
+	multi_view->set_allow_action(false);
 
 	ed->activate("");
 }

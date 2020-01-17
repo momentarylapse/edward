@@ -45,8 +45,8 @@ ModeModelMeshBevelEdges::~ModeModelMeshBevelEdges()
 
 void ModeModelMeshBevelEdges::on_start()
 {
-	multi_view->setAllowAction(false);
-	multi_view->setAllowSelect(false);
+	multi_view->set_allow_action(false);
+	multi_view->set_allow_select(false);
 }
 
 void ModeModelMeshBevelEdges::on_end()

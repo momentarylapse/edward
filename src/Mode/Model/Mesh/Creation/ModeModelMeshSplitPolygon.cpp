@@ -32,8 +32,8 @@ ModeModelMeshSplitPolygon::ModeModelMeshSplitPolygon(ModeBase *_parent) :
 
 void ModeModelMeshSplitPolygon::on_start()
 {
-	multi_view->setAllowAction(false);
-	multi_view->setAllowSelect(false);
+	multi_view->set_allow_action(false);
+	multi_view->set_allow_select(false);
 }
 
 void ModeModelMeshSplitPolygon::on_left_button_up()

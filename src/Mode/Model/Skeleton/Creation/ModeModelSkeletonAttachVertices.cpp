@@ -29,7 +29,7 @@ void ModeModelSkeletonAttachVertices::on_start()
 
 	mode_model->allow_selection_modes(true);
 	mode_model_mesh->selection_mode->updateMultiView();
-	multi_view->setAllowAction(false);
+	multi_view->set_allow_action(false);
 
 	subscribe(data);
 	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);

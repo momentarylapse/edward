@@ -24,7 +24,7 @@ ModeModelAnimationNone::~ModeModelAnimationNone()
 
 void ModeModelAnimationNone::on_start()
 {
-	multi_view->clearData(data);
+	multi_view->clear_data(data);
 
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	on_update(data, "");
@@ -32,7 +32,7 @@ void ModeModelAnimationNone::on_start()
 
 void ModeModelAnimationNone::on_end()
 {
-	multi_view->clearData(data);
+	multi_view->clear_data(data);
 }
 
 void ModeModelAnimationNone::on_update(Observable* o, const string &message)

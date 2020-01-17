@@ -18,7 +18,7 @@ ModeWorldCameraCreatePoint::ModeWorldCameraCreatePoint(ModeBase *_parent) :
 
 void ModeWorldCameraCreatePoint::on_left_button_down()
 {
-	vector pos = multi_view->getCursor3d();
+	vector pos = multi_view->get_cursor();
 	data->execute(new ActionCameraAddPoint(data, pos, v_0, v_0, 1));
 	abort();
 }

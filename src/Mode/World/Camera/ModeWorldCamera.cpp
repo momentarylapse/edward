@@ -68,7 +68,7 @@ void ModeWorldCamera::on_start()
 	preview = false;
 	preview_time = 0;
 
-	multi_view->resetMouseAction();
+	multi_view->reset_mouse_action();
 
 	Observer::subscribe(data);
 	Observer::subscribe(multi_view);
@@ -80,7 +80,7 @@ void ModeWorldCamera::on_end()
 	Observer::unsubscribe(data);
 	Observer::unsubscribe(multi_view);
 	delete(dialog);
-	multi_view->clearData(data);
+	multi_view->clear_data(data);
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("world-edit-toolbar"); // ...
 }
 
@@ -197,20 +197,20 @@ void ModeWorldCamera::loadData()
 	*inter_pos = data->BuildPosInterpolator();
 	*inter_ang = data->BuildAngInterpolator();
 
-	multi_view->clearData(data);
+	multi_view->clear_data(data);
 
 	// left -> translate
-	multi_view->setMouseAction("ActionCameraMoveSelection", MultiView::ACTION_MOVE, true);
+	multi_view->set_mouse_action("ActionCameraMoveSelection", MultiView::ACTION_MOVE, true);
 	// middle/right -> rotate
 	/*multi_view->SetMouseAction(1, "ActionWorldRotateObjects", MultiView::ActionRotate2d);
 	multi_view->SetMouseAction(2, "ActionWorldRotateObjects", MultiView::ActionRotate);*/
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	multi_view->addData(	MVD_WORLD_CAM_POINT,
+	multi_view->add_data(	MVD_WORLD_CAM_POINT,
 			data->Point,
 			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE | MultiView::FLAG_DRAW);
 	if (edit_vel)
-	multi_view->addData(	MVD_WORLD_CAM_POINT_VEL,
+	multi_view->add_data(	MVD_WORLD_CAM_POINT_VEL,
 			data->Vel,
 			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE | MultiView::FLAG_DRAW);

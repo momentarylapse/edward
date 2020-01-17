@@ -174,7 +174,7 @@ void ModeMaterial::on_start()
 	t->enable(false);
 
 
-	multi_view->setAllowSelect(false);
+	multi_view->set_allow_select(false);
 
 	AppearanceDialog = new MaterialPropertiesDialog(ed, data);
 	ed->embed(AppearanceDialog, "root-table", 1, 0);
@@ -229,11 +229,11 @@ void ModeMaterial::UpdateShape()
 
 bool ModeMaterial::optimize_view()
 {
-	multi_view->resetView();
+	multi_view->reset_view();
 	if (geo){
 		vector min, max;
 		geo->getBoundingBox(min, max);
-		multi_view->setViewBox(min, max);
+		multi_view->set_view_box(min, max);
 	}
 	return true;
 }

@@ -49,8 +49,8 @@ void ModeModelMeshCreateCylinder::on_start()
 
 	dialog->check("type:visible", true);
 
-	multi_view->setAllowSelect(false);
-	multi_view->setAllowAction(false);
+	multi_view->set_allow_select(false);
+	multi_view->set_allow_action(false);
 
 	ed->activate("");
 }
@@ -82,7 +82,7 @@ void ModeModelMeshCreateCylinder::updateGeometry()
 void ModeModelMeshCreateCylinder::on_mouse_move()
 {
 	if (pos.num == 2){
-		vector p = multi_view->getCursor3d(pos.back());
+		vector p = multi_view->get_cursor(pos.back());
 		radius = (p - pos.back()).length();
 		if (multi_view->snap_to_grid)
 			radius = MultiView::snap_f(multi_view, radius);
@@ -119,7 +119,7 @@ void ModeModelMeshCreateCylinder::on_left_button_up()
 
 		abort();
 	}else{
-		pos.add(multi_view->getCursor3d());
+		pos.add(multi_view->get_cursor());
 
 		if (pos.num > 1){
 			//OnMouseMove();
@@ -153,7 +153,7 @@ void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win)
 		if (pos.num == 2)
 			nix::DrawLine3D(pos[0], pos[1]);
 		else
-			nix::DrawLine3D(pos[0], multi_view->getCursor3d());
+			nix::DrawLine3D(pos[0], multi_view->get_cursor());
 		//nix::SetColor(White);
 	}
 	if (pos.num == 2){

@@ -28,8 +28,8 @@ void ModeModelMeshCreatePolygon::on_start()
 	for (ModelVertex &v: data->vertex)
 		v.is_special = false;
 
-	multi_view->setAllowSelect(false);
-	multi_view->setAllowAction(false);
+	multi_view->set_allow_select(false);
+	multi_view->set_allow_action(false);
 }
 
 
@@ -56,7 +56,7 @@ void ModeModelMeshCreatePolygon::on_draw_win(MultiView::Window *win)
 		if (multi_view->hover.index >= 0)
 			nix::DrawLine3D(data->vertex[selection.back()].pos, data->vertex[multi_view->hover.index].pos);
 		else
-			nix::DrawLine3D(data->vertex[selection.back()].pos, multi_view->getCursor3d());
+			nix::DrawLine3D(data->vertex[selection.back()].pos, multi_view->get_cursor());
 	}
 }
 
@@ -95,7 +95,7 @@ void ModeModelMeshCreatePolygon::on_left_button_down()
 		selection.add(multi_view->hover.index);
 
 	}else{
-		data->addVertex(multi_view->getCursor3d());
+		data->addVertex(multi_view->get_cursor());
 		selection.add(data->vertex.num - 1);
 	}
 	data->vertex[selection.back()].is_special = true;

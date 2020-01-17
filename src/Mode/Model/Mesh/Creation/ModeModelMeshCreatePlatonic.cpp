@@ -37,8 +37,8 @@ ModeModelMeshCreatePlatonic::~ModeModelMeshCreatePlatonic()
 
 void ModeModelMeshCreatePlatonic::on_start()
 {
-	multi_view->setAllowSelect(false);
-	multi_view->setAllowAction(false);
+	multi_view->set_allow_select(false);
+	multi_view->set_allow_action(false);
 
 	if (type != 306)
 		return;
@@ -87,7 +87,7 @@ void ModeModelMeshCreatePlatonic::on_left_button_up()
 
 		abort();
 	}else{
-		pos = multi_view->getCursor3d();
+		pos = multi_view->get_cursor();
 		message = _("skalieren");
 		pos_chosen = true;
 		updateGeometry();
@@ -112,7 +112,7 @@ void ModeModelMeshCreatePlatonic::on_draw_win(MultiView::Window *win)
 void ModeModelMeshCreatePlatonic::on_mouse_move()
 {
 	if (pos_chosen){
-		vector pos2 = multi_view->getCursor3d(pos);
+		vector pos2 = multi_view->get_cursor(pos);
 		radius = (pos2 - pos).length();
 		updateGeometry();
 	}
