@@ -44,6 +44,9 @@ color MultiView::ColorBackGround;
 color MultiView::ColorBackGroundSelected;
 color MultiView::ColorGrid;
 color MultiView::ColorText;
+color ColorTextBG;
+color ColorWindowTitle;
+color ColorWindowTitleBG;
 color MultiView::ColorWindowType;
 color MultiView::ColorPoint;
 color MultiView::ColorPointSelected;
@@ -53,6 +56,7 @@ color MultiView::ColorSelectionRect;
 color MultiView::ColorSelectionRectBoundary;
 color MultiView::ColorCreation;
 color MultiView::ColorCreationLine;
+const float DIVIDER_THICKNESS = 5;
 
 
 void MultiView::Selection::reset()
@@ -79,12 +83,15 @@ MultiView::MultiView(bool mode3d) :
 	ColorBackGround = color(1,0.9f,0.9f,0.9f);
 	ColorBackGroundSelected = color(1,0.96f,0.96f,0.96f);
 	ColorGrid = color(1,0.5f,0.5f,0.5f);
-	ColorText = Black;
+	ColorText = color(1, 0.1f, 0.1f, 0.1f);
+	ColorTextBG = color(1, 0.7f, 0.7f, 0.7f);
+	ColorWindowTitle = color(1, 0.35f, 0.35f, 0.35f);
+	ColorWindowTitleBG = ColorTextBG;//color(1, 0.4f, 0.4f, 0.4f);
 	ColorWindowType = color(1, 0.5f, 0.5f, 0.5f);
 	ColorPoint = color(1, 0.2f, 0.2f, 0.9f);
 	ColorPointSelected = color(1, 0.9f, 0.2f, 0.2f);
 	ColorPointSpecial = color(1, 0.2f, 0.8f, 0.2f);
-	ColorWindowSeparator = color(1, 0.1f, 0.1f, 0.6f); // color(1,0.1f,0.1f,0.5f)
+	ColorWindowSeparator = color(1, 0.4f, 0.4f, 0.75f);
 	ColorSelectionRect = color(0.2f,0,0,1);
 	ColorSelectionRectBoundary = color(0.7f,0,0,1);
 	ColorCreation = color(0.5f, 0.1f, 0.6f, 0.1f);
@@ -717,12 +724,9 @@ void MultiView::draw_mouse_pos()
 	string sz = f2s(m.z,2) + " " + unit;
 
 	if (mouse_win->type == VIEW_2D){
-		ed->draw_str(nix::target_width, nix::target_height - 60, sx, Edward::ALIGN_RIGHT);
-		ed->draw_str(nix::target_width, nix::target_height - 40, sy, Edward::ALIGN_RIGHT);
+		ed->draw_str(nix::target_width, nix::target_height - 60, sx + "\n" + sy, Edward::ALIGN_RIGHT);
 	}else{
-		ed->draw_str(nix::target_width, nix::target_height - 80, sx, Edward::ALIGN_RIGHT);
-		ed->draw_str(nix::target_width, nix::target_height - 60, sy, Edward::ALIGN_RIGHT);
-		ed->draw_str(nix::target_width, nix::target_height - 40, sz, Edward::ALIGN_RIGHT);
+		ed->draw_str(nix::target_width, nix::target_height - 80, sx + "\n" + sy +  + "\n" + sz, Edward::ALIGN_RIGHT);
 	}
 }
 
@@ -749,21 +753,22 @@ void MultiView::on_draw()
 	}else{
 		float xm = area.x1 + area.width() * window_partition_x;
 		float ym = area.y1 + area.height() * window_partition_y;
+		float d = DIVIDER_THICKNESS / 2;
 
 		// top left
-		win[0]->dest = rect(area.x1, xm, area.y1, ym);
+		win[0]->dest = rect(area.x1, xm-d, area.y1, ym-d);
 		win[0]->draw();
 
 		// top right
-		win[1]->dest = rect(xm, area.x2, area.y1, ym);
+		win[1]->dest = rect(xm+d, area.x2, area.y1, ym-d);
 		win[1]->draw();
 
 		// bottom left
-		win[2]->dest = rect(area.x1, xm, ym, area.y2);
+		win[2]->dest = rect(area.x1, xm+d, ym+d, area.y2);
 		win[2]->draw();
 
 		// bottom right
-		win[3]->dest = rect(xm, area.x2, ym, area.y2);
+		win[3]->dest = rect(xm+d, area.x2, ym+d, area.y2);
 		win[3]->draw();
 
 		nix::Scissor(nix::target_rect);
@@ -774,9 +779,9 @@ void MultiView::on_draw()
 
 		color c2 = ColorInterpolate(ColorWindowSeparator, White, 0.4f);
 		nix::SetColor((hover.meta == hover.HOVER_WINDOW_DIVIDER_Y or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : ColorWindowSeparator);
-		nix::DrawRect(area.x1, area.x2, ym-1, ym+2, 0);
+		nix::DrawRect(area.x1, area.x2, ym-d, ym+d, 0);
 		nix::SetColor((hover.meta == hover.HOVER_WINDOW_DIVIDER_X or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : ColorWindowSeparator);
-		nix::DrawRect(xm-1, xm+2, area.y1, area.y2, 0);
+		nix::DrawRect(xm-d, xm+d, area.y1, area.y2, 0);
 	}
 	nix::EnableLighting(false);
 
@@ -979,6 +984,17 @@ void MultiView::get_hover()
 	if (!ed->input.inside_smart)
 		return;
 
+
+	/*if (!MVSelectable)
+		return;*/
+	if (menu and (mouse_win->name_dest.inside(m.x, m.y))){
+		hover.meta = hover.HOVER_WINDOW_LABEL;
+		return;
+	}
+	if (cam_con->isMouseOver()){
+		hover.meta = hover.HOVER_CAMERA_CONTROLLER;
+		return;
+	}
 	if (!whole_window) {
 		float xm = win[0]->dest.x2;
 		float ym = win[0]->dest.y2;
@@ -992,17 +1008,6 @@ void MultiView::get_hover()
 			hover.meta = hover.HOVER_WINDOW_DIVIDER_Y;
 			return;
 		}
-	}
-
-	/*if (!MVSelectable)
-		return;*/
-	if (menu and (mouse_win->name_dest.inside(m.x, m.y))){
-		hover.meta = hover.HOVER_WINDOW_LABEL;
-		return;
-	}
-	if (cam_con->isMouseOver()){
-		hover.meta = hover.HOVER_CAMERA_CONTROLLER;
-		return;
 	}
 	if (allow_mouse_actions and action_con->isMouseOver(hover.point)){
 		hover.meta = hover.HOVER_ACTION_CONTROLLER;

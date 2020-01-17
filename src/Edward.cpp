@@ -36,8 +36,13 @@ extern string AppName;
 
 
 
-static string font_name = "Sans 14";
-static float font_size = 20;
+string font_name = "Sans Semi-Bold";
+float font_size = 12;
+static nix::Texture *tex_round = nullptr;
+
+namespace MultiView {
+	extern color ColorTextBG;
+}
 
 
 void render_text(const string &text, Image &im)
@@ -66,7 +71,7 @@ void render_text(const string &text, Image &im)
 	cairo_set_source_rgba(cr, 1, 1, 1, 1);
 
 	PangoLayout *layout = pango_cairo_create_layout(cr);
-	PangoFontDescription *desc = pango_font_description_from_string(font_name.c_str());
+	PangoFontDescription *desc = pango_font_description_from_string((font_name + " " + f2s(font_size, 1)).c_str());
 	pango_layout_set_font_description(layout, desc);
 	pango_font_description_free(desc);
 
@@ -240,6 +245,19 @@ void Edward::idle_function()
 		hui::Sleep(0.010f);*/
 }
 
+nix::Texture *create_round_texture(int n) {
+	auto t = new nix::Texture();
+	Image im;
+	im.create(n, n, color(0,0,0,0));
+	for (int i=0; i<n; i++)
+		for (int j=0; j<n; j++) {
+			float r = sqrt(pow(i - n/2, 2) + pow(j - n/2, 2));
+			float f = clampf((n*0.45f - r)*0.5f, 0, 1);
+			im.set_pixel(i, j, color(f, 1, 1, 1));
+		}
+	t->overwrite(im);
+	return t;
+}
 
 Edward::Edward(Array<string> arg) :
 	Observer("Edward"),
@@ -303,6 +321,8 @@ Edward::Edward(Array<string> arg) :
 	MetaInit();
 	CameraInit();
 	GodInit();
+
+	tex_round = create_round_texture(32);
 
 	/*RegisterFileTypes();
 
@@ -625,22 +645,65 @@ void Edward::force_redraw()
 	redraw("nix-area");
 }
 
-void Edward::draw_str(int x, int y, const string &str, AlignType a)
-{
-	int w = nix::GetStrWidth(str);
-	if (a == ALIGN_RIGHT)
-		x -= w;
-	else if (a == ALIGN_CENTER)
-		x -= w / 2;
-	nix::SetTexture(NULL);
+void draw_round_rect(const rect &r) {
+	float R = 13;
+	float x[4] = {r.x1, r.x1 + R, r.x2 - R, r.x2};
+	float y[4] = {r.y1, r.y1 + R, r.y2 - R, r.y2};
+	float u[4] = {0, 0.5f, 0.5f, 1};
+	/*vector p[16], n[16];
+	float uv[32];
+
+	nix::vb_temp->clear();
+	for (int i=0; i<3; i++)
+		for (int j=0; j<3; j++) {
+		}
+	nix::vb_temp->addTrias(18, )*/
+
+	for (int i=0; i<3; i++)
+		for (int j=0; j<3; j++)
+			nix::Draw2D(rect(u[i], u[i+1], u[j], u[j+1]),    rect(x[i], x[i+1], y[j], y[j+1]), 0);
+}
+
+void draw_str_bg(int x, int y, const string &str, const color &fg, const color &bg, Edward::AlignType align) {
+	color c0 = nix::GetColor();
+	auto xx = str.explode("\n");
+	float line_h = font_size * 1.5f;
+	float h = line_h * xx.num;
+	Array<int> ww;
+	int wmax = 0;
+	for (string &s: xx) {
+		int w = nix::GetStrWidth(s);
+		ww.add(w);
+		wmax = max(wmax, w);
+	}
+	if (align == Edward::ALIGN_RIGHT)
+		x -= wmax;
+	else if (align == Edward::ALIGN_CENTER)
+		x -= wmax / 2;
+	nix::SetTexture(tex_round);
 	nix::SetAlpha(ALPHA_MATERIAL);
-	color c = nix::GetColor();
-	nix::SetColor(color(0.5f,0.8f,0.8f,0.8f));
-	nix::DrawRect(float(x), float(x+w), float(y), float(y+20), 0);
-	nix::SetColor(c);
+	nix::SetColor(color(1, 0.7f, 0.7f, 0.8f));
+	float r = 8;
+	nix::SetColor(bg);
+	draw_round_rect(rect(float(x-r), float(x+wmax+r), float(y-r), float(y+h+r)));
+	nix::SetColor(fg);
+	nix::SetTexture(nullptr);
 	nix::SetAlpha(ALPHA_SOURCE_ALPHA, ALPHA_SOURCE_INV_ALPHA);
-	nix::DrawStr(x, y, str);
+	foreachi (string &s, xx, i) {
+		if (align == Edward::ALIGN_RIGHT)
+			nix::DrawStr(x+wmax-ww[i], y+line_h*i, s);
+		else if (align == Edward::ALIGN_CENTER)
+			nix::DrawStr(x+wmax/2-ww[i]/2, y+line_h*i, s);
+		else if (align == Edward::ALIGN_LEFT)
+			nix::DrawStr(x, y+line_h*i, s);
+	}
 	nix::SetAlpha(ALPHA_NONE);
+	nix::SetColor(c0);
+}
+
+void Edward::draw_str(int x, int y, const string &str, AlignType a) {
+	color c0 = nix::GetColor();
+	draw_str_bg(x, y, str, c0, MultiView::ColorTextBG, a);
 }
 
 void Edward::on_draw_gl()

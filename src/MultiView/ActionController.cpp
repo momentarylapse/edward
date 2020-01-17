@@ -403,24 +403,23 @@ void ActionController::draw(Window *win)
 		float x0 = pp.x + 120;//multi_view->m.x + 100;//win->dest.x1 + 120;
 		float y0 = pp.y + 40;//multi_view->m.y + 50;//win->dest.y1 + 100;
 
+		string s;
 		if (action.mode == ACTION_MOVE){
 			vector t = param;
 			string unit = multi_view->get_scale_by_zoom(t);
-			ed->draw_str(x0, y0,      f2s(t.x, 2) + " " + unit, Edward::ALIGN_RIGHT);
-			ed->draw_str(x0, y0 + 20, f2s(t.y, 2) + " " + unit, Edward::ALIGN_RIGHT);
+			s = f2s(t.x, 2) + " " + unit + "\n" + f2s(t.y, 2) + " " + unit;
 			if (multi_view->mode3d)
-				ed->draw_str(x0, y0 + 40, f2s(t.z, 2) + " " + unit, Edward::ALIGN_RIGHT);
+				s += "\n" + f2s(t.z, 2) + " " + unit;
 		}else if ((action.mode == ACTION_ROTATE) or (action.mode == ACTION_ROTATE_2D)){
 			vector r = param * 180.0f / pi;
-			ed->draw_str(x0, y0 + 00, f2s(r.x, 1) + "°", Edward::ALIGN_RIGHT);
-			ed->draw_str(x0, y0 + 20, f2s(r.y, 1) + "°", Edward::ALIGN_RIGHT);
-			ed->draw_str(x0, y0 + 40, f2s(r.z, 1) + "°", Edward::ALIGN_RIGHT);
+			s = format("%.1f°\n%.1f°\n%.1f°", r.x, r.y, r.z);
 		}else if ((action.mode == ACTION_SCALE) or (action.mode == ACTION_SCALE_2D)){
-			ed->draw_str(x0, y0 + 00, f2s(param.x * 100.0f, 1) + "%", Edward::ALIGN_RIGHT);
-			ed->draw_str(x0, y0 + 20, f2s(param.y * 100.0f, 1) + "%", Edward::ALIGN_RIGHT);
 			if (multi_view->mode3d)
-				ed->draw_str(x0, y0 + 40, f2s(param.z * 100.0f, 1) + "%", Edward::ALIGN_RIGHT);
+				s = format("%.1f%%\n%.1f%%\n%.1f%%", param.x*100, param.y*100, param.z*100);
+			else
+				s = format("%.1f%%\n%.1f%%", param.x*100, param.y*100);
 		}
+		ed->draw_str(x0, y0, s, Edward::ALIGN_RIGHT);
 	}
 }
 

@@ -12,6 +12,9 @@
 #include "../Edward.h"
 #include "../lib/nix/nix.h"
 
+void draw_str_bg(int x, int y, const string &str, const color &fg, const color &bg, Edward::AlignType align);
+extern string font_name;
+
 
 namespace nix{
 	extern matrix view_matrix;
@@ -21,6 +24,10 @@ namespace nix{
 namespace MultiView{
 
 extern nix::Shader *shader_lines_3d;
+
+extern color ColorTextBG;
+extern color ColorWindowTitle;
+extern color ColorWindowTitleBG;
 
 #define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 
@@ -256,7 +263,6 @@ void set_projection_matrix(Window *w)
 
 void Window::draw()
 {
-	matrix rot, trans;
 	nix::Scissor(dest);
 	string view_kind;
 	nix::EnableLighting(false);
@@ -385,7 +391,7 @@ void Window::draw()
 	}
 
 
-	if (multi_view->allow_mouse_actions)
+	if (multi_view->allow_mouse_actions and !multi_view->sel_rect.active)
 		if (multi_view->action_con->visible)
 			multi_view->action_con->draw(this);
 
@@ -393,11 +399,12 @@ void Window::draw()
 
 	nix::SetShader(nix::default_shader_2d);
 	nix::SetColor(multi_view->ColorWindowType);
-	if (ed->is_active("nix-area") and (this == multi_view->active_win))
-		nix::SetColor(multi_view->ColorText);
+	bg = ColorWindowTitleBG;
+	if (ed->is_active("nix-area") and (this == multi_view->active_win)) {}
+		// active?!?
 	if ((this == multi_view->mouse_win) and (multi_view->hover.meta == multi_view->hover.HOVER_WINDOW_LABEL))
-		nix::SetColor(Red);
-	ed->draw_str(dest.x1 + 3, dest.y1, view_kind);
+		bg = ColorInterpolate(bg, White, 0.2f);
+	draw_str_bg(dest.x1 + 3, dest.y1 + 3, view_kind.upper(), ColorWindowTitle, bg, Edward::AlignType::ALIGN_LEFT);
 	nix::SetColor(multi_view->ColorText);
 
 	for (auto &m: multi_view->message3d){

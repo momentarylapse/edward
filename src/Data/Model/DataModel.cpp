@@ -163,8 +163,8 @@ void DataModel::reset()
 	material[0]->texture_levels.add(new ModelMaterial::TextureLevel());
 	material[0]->texture_levels[0]->reload_image();
 	material[0]->col.user = true;
-	material[0]->col.diffuse = color(1, 0.2f, 0.4f, 0.6f);
-	material[0]->col.specular = color(1, 0.4f, 0.6f, 0.8f);
+	material[0]->col.diffuse = White;
+	material[0]->col.specular = White;
 	showVertices(vertex);
 
 	// skeleton
