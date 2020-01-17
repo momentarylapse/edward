@@ -137,7 +137,9 @@ void ModeModelMesh::on_command(const string & id)
 	if (id == "invert_trias")
 		data->invertSelection();
 	if (id == "extrude_triangles")
-		ed->set_mode(new ModeModelMeshExtrudePolygons(this));
+		ed->set_mode(new ModeModelMeshExtrudePolygons(this, false));
+	if (id == "extrude_triangles_independent")
+		ed->set_mode(new ModeModelMeshExtrudePolygons(this, true));
 	if (id == "autoweld_surfaces")
 		ed->set_mode(new ModeModelMeshAutoweld(this));
 	if (id == "convert_to_triangles")

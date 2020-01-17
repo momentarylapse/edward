@@ -11,15 +11,15 @@
 
 
 
-ActionModelAddPolygonSingleTexture::ActionModelAddPolygonSingleTexture(Array<int> &_v, int _material, Array<vector> &_sv) :
-	v(_v), sv(_sv)
+ActionModelAddPolygonSingleTexture::ActionModelAddPolygonSingleTexture(const Array<int> &_v, int _material, const Array<vector> &_sv)
 {
 	material = _material;
+	v = _v;
+	sv = _sv;
 }
 
 
-void *ActionModelAddPolygonSingleTexture::compose(Data *d)
-{
+void *ActionModelAddPolygonSingleTexture::compose(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	Array<vector> sv2;

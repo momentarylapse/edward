@@ -13,18 +13,18 @@ class DataModel;
 class ModelSurface;
 class vector;
 
-class ActionModelExtrudePolygons: public ActionGroup
-{
+class ActionModelExtrudePolygons: public ActionGroup {
 public:
-	ActionModelExtrudePolygons(float _offset);
-	virtual ~ActionModelExtrudePolygons(){}
-	string name(){	return "ModelExtrudePolygons";	}
+	ActionModelExtrudePolygons(float offset, bool independent);
+	string name() { return "ModelExtrudePolygons"; }
 
 	void *compose(Data *d);
 
 private:
-	void ExtrudeSurface(ModelSurface &s, int surface, DataModel *m);
+	void extrude_surface(ModelSurface &s, int surface, DataModel *m);
+	void extrude_surface_indep(ModelSurface &s, int surface, DataModel *m);
 	float offset;
+	bool independent;
 };
 
 #endif /* ACTIONMODELEXTRUDEPOLYGONS_H_ */

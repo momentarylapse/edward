@@ -12,19 +12,17 @@
 class DataModel;
 class vector;
 
-class ActionModelAddPolygonSingleTexture: public ActionGroup
-{
+class ActionModelAddPolygonSingleTexture: public ActionGroup {
 public:
-	ActionModelAddPolygonSingleTexture(Array<int> &_v, int _material, Array<vector> &_sv);
-	virtual ~ActionModelAddPolygonSingleTexture(){}
+	ActionModelAddPolygonSingleTexture(const Array<int> &_v, int _material, const Array<vector> &_sv);
 	string name(){	return "ModelAddPolygonSingleTexture";	}
 
 	void *compose(Data *d);
 
 private:
-	Array<int> &v;
+	Array<int> v;
 	int material;
-	Array<vector> &sv;
+	Array<vector> sv;
 };
 
 #endif /* ACTIONMODELADDPOLYGONSINGLETEXTURE_H_ */

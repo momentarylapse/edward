@@ -11,10 +11,9 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshExtrudePolygons: public ModeCreation<DataModel>
-{
+class ModeModelMeshExtrudePolygons: public ModeCreation<DataModel> {
 public:
-	ModeModelMeshExtrudePolygons(ModeBase *parent);
+	ModeModelMeshExtrudePolygons(ModeBase *parent, bool independent);
 
 	void on_start() override;
 	void on_end() override;
@@ -29,6 +28,7 @@ public:
 
 private:
 	float offset;
+	bool independent;
 	ModelSelectionState selection;
 };
 

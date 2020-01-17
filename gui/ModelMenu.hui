@@ -103,7 +103,6 @@ Menu menu_model "Modell" disabled
 		Menu menu_model_deformation "Deformation"
 			Item deformation_cylinder "Zylinderradius"
 			Item deformation_function "Funktion"
-		Item triangulate_selection "--Triangulieren"
 		Separator "" ""
 		Item menu_edge_header "Auf Kanten" disabled
 		Item bevel_edges "Abfräsen"
@@ -111,7 +110,8 @@ Menu menu_model "Modell" disabled
 		Item menu_tria_header "Auf Polygone" disabled
 		Item cut_out "Heraustrennen" image=hui:cut
 		Item new_extract "Zerteilen"
-		Item extrude_triangles "Extrudieren"
+		Item extrude_triangles "Extrudieren (zusammenhängend)"
+		Item extrude_triangles_independent "Extrudieren (unabhängig)"
 		Item convert_to_triangles "In Dreiecke zerlegen"
 		Item untriangulate_selection "Un-Triangulieren"
 		Separator "" ""

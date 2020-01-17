@@ -3994,56 +3994,56 @@ deformation_function
 1
 0
 0
-Item
-triangulate_selection
-
-8
-0
-0
 Separator
 
 
-9
+8
 0
 0
 Item
 menu_edge_header
 disabled
-10
+9
 0
 0
 Item
 bevel_edges
 
-11
+10
 0
 0
 Separator
 
 
-12
+11
 0
 0
 Item
 menu_tria_header
 disabled
-13
+12
 0
 0
 Item
 cut_out
 image=hui:cut
-14
+13
 0
 0
 Item
 new_extract
 
-15
+14
 0
 0
 Item
 extrude_triangles
+
+15
+0
+0
+Item
+extrude_triangles_independent
 
 16
 0
@@ -10191,7 +10191,10 @@ menu_model/export_to_json
 Three.js (json)...
 
 menu_model/extrude_triangles
-Extrudieren
+Extrudieren (zusammenhängend)
+
+menu_model/extrude_triangles_independent
+Extrudieren (unabhängig)
 
 menu_model/flatten_vertices
 Einebnen
@@ -10504,9 +10507,6 @@ Verfeinern
 
 menu_model/text_from_bg
 Aus Hintergrund (Auswahl)
-
-menu_model/triangulate_selection
---Triangulieren
 
 menu_model/undo
 Rückgängig

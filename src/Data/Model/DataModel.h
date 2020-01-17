@@ -306,7 +306,7 @@ public:
 	void bevelSelectedEdges(float radius);
 	void flattenSelectedVertices();
 	void triangulateSelectedVertices();
-	void extrudeSelectedPolygons(float offset);
+	void extrudeSelectedPolygons(float offset, bool independent);
 	void autoWeldSurfaces(const Set<int> &surfaces, float d);
 	void autoWeldSelectedSurfaces(float d);
 	void setNormalModeSelection(int mode);

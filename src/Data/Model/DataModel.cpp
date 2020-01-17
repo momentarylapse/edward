@@ -2086,8 +2086,8 @@ void DataModel::flattenSelectedVertices()
 void DataModel::triangulateSelectedVertices()
 {	execute(new ActionModelTriangulateVertices());	}
 
-void DataModel::extrudeSelectedPolygons(float offset)
-{	execute(new ActionModelExtrudePolygons(offset));	}
+void DataModel::extrudeSelectedPolygons(float offset, bool independent)
+{	execute(new ActionModelExtrudePolygons(offset, independent));	}
 
 void DataModel::autoWeldSurfaces(const Set<int> &surfaces, float epsilon)
 {	execute(new ActionModelAutoWeldSelection(epsilon));	}
