@@ -10,13 +10,12 @@
 
 #include "Mode.h"
 
-class ModeCreationBase : public ModeBase
-{
+class ModeCreationBase : public ModeBase {
 public:
 	ModeCreationBase(const string &_name, ModeBase *_parent);
-	virtual ~ModeCreationBase(){}
 	void on_draw() override;
 	void on_draw_win(MultiView::Window *win) override;
+	virtual void on_draw_post() {};
 	void on_set_multi_view() override;
 	void abort();
 	string message;
@@ -24,17 +23,15 @@ public:
 };
 
 template<class T>
-class ModeCreation: public ModeCreationBase
-{
+class ModeCreation: public ModeCreationBase {
 public:
 	ModeCreation(const string &_name, ModeBase *_parent) :
 		ModeCreationBase(_name, _parent)
 	{
 		data = (T*)_parent->get_data();
 	}
-	virtual ~ModeCreation(){}
 	T *data;
-	virtual Data *get_data(){	return data;	}
+	virtual Data *get_data() { return data; }
 };
 
 #endif /* MODECREATION_H_ */

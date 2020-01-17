@@ -14,6 +14,13 @@
 #include "../../../../MultiView/Window.h"
 #include "../../../../lib/nix/nix.h"
 
+
+namespace MultiView{
+	float snap_v(MultiView *mv, vector &v);
+	string format_length(MultiView *mv, float l);
+}
+
+
 ModeModelMeshCreateCube::ModeModelMeshCreateCube(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateCube", _parent)
 {
@@ -25,18 +32,16 @@ ModeModelMeshCreateCube::ModeModelMeshCreateCube(ModeBase *_parent) :
 	geo = NULL;
 }
 
-ModeModelMeshCreateCube::~ModeModelMeshCreateCube()
-{
+ModeModelMeshCreateCube::~ModeModelMeshCreateCube(){
 	if (geo)
 		delete(geo);
 }
 
-void ModeModelMeshCreateCube::onClose()
-{
+void ModeModelMeshCreateCube::on_close() {
 	abort();
 }
 
-void ModeModelMeshCreateCube::updateGeometry()
+void ModeModelMeshCreateCube::update_geometry()
 {
 	if (geo)
 		delete(geo);
@@ -58,63 +63,72 @@ void ModeModelMeshCreateCube::updateGeometry()
 }
 
 
-void set_dpos3(vector *length, const vector &dpos)
-{
-	vector n = length[0] ^ length[1];
-	n.normalize();
+bool ModeModelMeshCreateCube::set_dpos3() {
+	vector n = (length[0] ^ length[1]).normalized();
+	vector dpos = multi_view->get_cursor() - pos2;
 	length[2] = n * (n * dpos);
 	float min_thick = 10 / ed->multi_view_3d->active_win->zoom(); // 10 px
+
+
+	if (fabs(multi_view->mouse_win->getDirection() * n) > 0.97f) {
+		// cursor in cube plane -> use radius
+		length[2] = n * max(dpos.length(), min_thick);
+		if (multi_view->mouse_win->getDirection() * n < 0)
+			length[2] = -length[2];
+		return true;
+	}
+
 	if (length[2].length() < min_thick)
 		length[2] = n * min_thick;
+	return false;
 }
 
 
 
-void ModeModelMeshCreateCube::on_left_button_up()
-{
-	if (pos_chosen){
-		if (pos2_chosen){
+void ModeModelMeshCreateCube::on_left_button_up() {
+	if (pos_chosen) {
+		if (pos2_chosen) {
 
 			data->pasteGeometry(*geo, mode_model_mesh->current_material);
 			data->selectOnlySurface(&data->surface.back());
 
 			abort();
-		}else{
+		} else {
 			pos2 = multi_view->get_cursor();
-			message = _("W&urfel: Punkt 3 / 3");
 			pos2_chosen = true;
-			set_dpos3(length, v_0);
-			updateGeometry();
+			set_dpos3();
 		}
-	}else{
+	} else {
 		pos = multi_view->get_cursor();
-		message = _("W&urfel: Punkt 2 / 3");
 		pos_chosen = true;
-		updateGeometry();
 	}
+
+	on_mouse_move();
 }
 
-void ModeModelMeshCreateCube::on_mouse_move()
-{
-	if (pos_chosen){
-		if (!pos2_chosen){
+void ModeModelMeshCreateCube::on_mouse_move() {
+	if (pos_chosen) {
+		if (!pos2_chosen) {
 			vector pos2 = multi_view->get_cursor();
 			vector dir0 = multi_view->mouse_win->getDirectionRight();
 			vector dir1 = multi_view->mouse_win->getDirectionUp();
 			length[0] = dir0 * vector::dot(dir0, pos2 - pos);
 			length[1] = dir1 * vector::dot(dir1, pos2 - pos);
-			updateGeometry();
-		}else{
-			set_dpos3(length, multi_view->get_cursor() - pos);
-			updateGeometry();
+			update_geometry();
+
+			message = _("W&urfel Grundseite: ") + MultiView::format_length(multi_view, length[0].length()) + " x " + MultiView::format_length(multi_view, length[1].length());
+		} else {
+			set_dpos3();
+			update_geometry();
+
+			message = _("W&urfel: ") + MultiView::format_length(multi_view, length[0].length()) + " x " + MultiView::format_length(multi_view, length[1].length()) + " x " + MultiView::format_length(multi_view, length[2].length());
 		}
 	}
 }
 
 
 
-void ModeModelMeshCreateCube::on_start()
-{
+void ModeModelMeshCreateCube::on_start() {
 	// Dialog
 	dialog = hui::CreateResourceDialog("new_cube_dialog", ed);
 
@@ -123,7 +137,7 @@ void ModeModelMeshCreateCube::on_start()
 	dialog->set_int("nc_z", hui::Config.get_int("NewCubeNumZ", 1));
 	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
 	dialog->show();
-	dialog->event("hui:close", std::bind(&ModeModelMeshCreateCube::onClose, this));
+	dialog->event("hui:close", std::bind(&ModeModelMeshCreateCube::on_close, this));
 
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
@@ -131,19 +145,43 @@ void ModeModelMeshCreateCube::on_start()
 	ed->activate("");
 }
 
-void ModeModelMeshCreateCube::on_end()
-{
-	delete(dialog);
+void ModeModelMeshCreateCube::on_end() {
+	delete dialog;
 }
 
-void ModeModelMeshCreateCube::on_draw_win(MultiView::Window *win)
-{
+void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b) {
+	nix::SetZ(false, false);
+	nix::SetColor(MultiView::MultiView::ColorText);
+	MultiView::set_wide_lines(3.0f);
+	nix::DrawLine3D(a, b);
+	MultiView::set_wide_lines(1.0f);
+	//nix::SetZ(true, true);
+	vector pa = win->project(a);
+	vector pb = win->project(b);
+	//vector d = (pb - pa).normalized();
+	//vector e = d ^ vector::EZ;
+	float r = 3;
+	nix::SetShader(nix::default_shader_2d);
+	nix::DrawRect(pa.x-r, pa.x+r, pa.y-r, pa.y+r, 0);
+	nix::DrawRect(pb.x-r, pb.x+r, pb.y-r, pb.y+r, 0);
+}
+
+void ModeModelMeshCreateCube::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
 
 	mode_model->set_material_creation();
-	if (pos_chosen){
+	if (pos_chosen) {
 		geo->build(nix::vb_temp);
 		nix::Draw3D(nix::vb_temp);
+	}
+	if (pos2_chosen and win == multi_view->mouse_win) {
+		vector m = multi_view->get_cursor();
+		if (set_dpos3()) {
+			draw_helper_line(win, pos2, m);
+		} else {
+			vector n = (length[0] ^ length[1]).normalized();
+			draw_helper_line(win, m + n * (n * (pos2-m)), m);
+		}
 	}
 }
 

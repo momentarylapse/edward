@@ -19,6 +19,8 @@ namespace MultiView{
 	string format_length(MultiView *mv, float l);
 }
 
+void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b);
+
 ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateCylinder", _parent)
 {
@@ -160,6 +162,9 @@ void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win)
 		mode_model->set_material_creation();
 		geo->build(nix::vb_temp);
 		nix::Draw3D(nix::vb_temp);
+
+		if (win == multi_view->mouse_win)
+			draw_helper_line(win, pos[1], multi_view->get_cursor());
 	}
 }
 

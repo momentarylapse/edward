@@ -15,7 +15,8 @@
 #include "../../../../MultiView/Window.h"
 #include "../../../../lib/nix/nix.h"
 
-//extern int FxVB;
+
+void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b);
 
 ModeModelMeshCreatePlatonic::ModeModelMeshCreatePlatonic(ModeBase *_parent, int _type) :
 	ModeCreation<DataModel>("ModelMeshCreatePlatonic", _parent)
@@ -104,6 +105,9 @@ void ModeModelMeshCreatePlatonic::on_draw_win(MultiView::Window *win)
 
 		geo->build(nix::vb_temp);
 		nix::Draw3D(nix::vb_temp);
+
+		if (win == multi_view->mouse_win)
+			draw_helper_line(win, pos, multi_view->get_cursor());
 	}
 }
 

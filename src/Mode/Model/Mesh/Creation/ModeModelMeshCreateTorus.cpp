@@ -16,6 +16,14 @@
 
 #define RADIUS_FACTOR	0.5f
 
+
+namespace MultiView{
+	float snap_f(MultiView *mv, float f);
+	string format_length(MultiView *mv, float l);
+}
+
+void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b);
+
 ModeModelMeshCreateTorus::ModeModelMeshCreateTorus(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateTorus", _parent)
 {
@@ -99,16 +107,19 @@ void ModeModelMeshCreateTorus::on_left_button_up()
 }
 
 
-void ModeModelMeshCreateTorus::on_draw_win(MultiView::Window *win)
-{
+void ModeModelMeshCreateTorus::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
 
-	if (pos_chosen){
+	if (pos_chosen) {
 		mode_model->set_material_creation();
 		geo->build(nix::vb_temp);
 		nix::Draw3D(nix::vb_temp);
 		nix::EnableLighting(false);
 		ed->draw_str(100, 100, format("%.3f / %.3f", radius1, radius2));
+
+		if (win == multi_view->mouse_win) {
+			draw_helper_line(win, pos, multi_view->get_cursor());
+		}
 	}
 }
 
@@ -118,12 +129,21 @@ void ModeModelMeshCreateTorus::on_mouse_move()
 {
 	axis = multi_view->mouse_win->getDirection();
 	if (pos_chosen){
-		vector pos2 = multi_view->get_cursor(pos);
+		vector m = multi_view->get_cursor(pos);
 		if (rad_chosen){
-			radius2 = (pos2 - pos).length() * RADIUS_FACTOR;
+			radius2 = (m - pos).length() * RADIUS_FACTOR;
+			if (multi_view->snap_to_grid)
+				radius2 = MultiView::snap_f(multi_view, radius2);
+			message = _("Torus au&sen skalieren: ") + MultiView::format_length(multi_view, radius1) + " / " + MultiView::format_length(multi_view, radius2);
 		}else{
-			radius1 = (pos2 - pos).length();
+			radius1 = (m - pos).length();
 			radius2 = radius1 * RADIUS_FACTOR;
+			if (multi_view->snap_to_grid) {
+				radius1 = MultiView::snap_f(multi_view, radius1);
+				radius2 = MultiView::snap_f(multi_view, radius2);
+			}
+
+			message = _("Torus innen skalieren: ") + MultiView::format_length(multi_view, radius1);
 		}
 		updateGeometry();
 	}

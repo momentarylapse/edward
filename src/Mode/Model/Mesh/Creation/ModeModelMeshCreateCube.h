@@ -27,9 +27,11 @@ public:
 
 	void on_draw_win(MultiView::Window *win) override;
 
-	void onClose();
+	void on_close();
 
-	void updateGeometry();
+	void update_geometry();
+
+	bool set_dpos3();
 
 private:
 	vector pos, pos2;
