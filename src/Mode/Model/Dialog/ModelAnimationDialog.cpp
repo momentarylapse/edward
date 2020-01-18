@@ -20,23 +20,22 @@ ModelAnimationDialog::ModelAnimationDialog(DataModel *_data) :
 
 	// dialog
 
-	//event("hui:close", std::bind(&ModelAnimationDialog::onClose);
-	event("animation_list", std::bind(&ModelAnimationDialog::on_animation_list, this));
-	event_x("animation_list", "hui:select", std::bind(&ModelAnimationDialog::on_animation_list_select, this));
-	event_x("animation_list", "hui:right-button-down", std::bind(&ModelAnimationDialog::on_animation_list_right_click, this));
-	event("animation_new", std::bind(&ModelAnimationDialog::on_add_animation, this));
-	event("animation_delete", std::bind(&ModelAnimationDialog::on_delete_animation, this));
-	event("animation_copy", std::bind(&ModelAnimationDialog::on_copy_animation, this));
-	event("frame", std::bind(&ModelAnimationDialog::on_frame, this));
-	event("new_frame", std::bind(&ModelAnimationDialog::on_add_frame, this));
-	event("delete_frame", std::bind(&ModelAnimationDialog::on_delete_frame, this));
-	event("name", std::bind(&ModelAnimationDialog::on_name, this));
-	event("fps_const", std::bind(&ModelAnimationDialog::on_fps_const, this));
-	event("fps_factor", std::bind(&ModelAnimationDialog::on_fps_factor, this));
-	event("speed", std::bind(&ModelAnimationDialog::on_speed, this));
-	event("parameter", std::bind(&ModelAnimationDialog::on_parameter, this));
-	event("sim_start", std::bind(&ModelAnimationDialog::on_simulation_play, this));
-	event("sim_stop", std::bind(&ModelAnimationDialog::on_simulation_stop, this));
+	event("animation_list", [=]{ on_animation_list(); });
+	event_x("animation_list", "hui:select", [=]{ on_animation_list_select(); });
+	event_x("animation_list", "hui:right-button-down", [=]{ on_animation_list_right_click(); });
+	event("animation_new", [=]{ on_add_animation(); });
+	event("animation_delete", [=]{ on_delete_animation(); });
+	event("animation_copy", [=]{ on_copy_animation(); });
+	event("frame", [=]{ on_frame(); });
+	event("new_frame", [=]{ on_add_frame(); });
+	event("delete_frame", [=]{ on_delete_frame(); });
+	event("name", [=]{ on_name(); });
+	event("fps_const", [=]{ on_fps_const(); });
+	event("fps_factor", [=]{ on_fps_factor(); });
+	event("speed", [=]{ on_speed(); });
+	event("parameter", [=]{ on_parameter(); });
+	event("sim_start", [=]{ on_simulation_play(); });
+	event("sim_stop", [=]{ on_simulation_stop(); });
 
 	subscribe(data);
 	subscribe(mode_model_animation);
@@ -130,9 +129,6 @@ void ModelAnimationDialog::on_animation_list_right_click() {
 	popup->enable("animation_copy", n >= 0);
 	popup->enable("animation_delete", n >= 0);
 	popup->open_popup(this);
-}
-
-void ModelAnimationDialog::apply_data() {
 }
 
 void ModelAnimationDialog::on_add_animation() {

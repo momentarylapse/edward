@@ -19,7 +19,6 @@ public:
 	virtual ~ModelAnimationDialog();
 
 	void load_data();
-	void apply_data();
 
 	void fill_animation();
 	void on_animation_list();

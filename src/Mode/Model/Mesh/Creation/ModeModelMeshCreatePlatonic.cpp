@@ -41,14 +41,13 @@ void ModeModelMeshCreatePlatonic::on_start()
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
 
-	if (type != 306)
-		return;
-	// Dialog
-	dialog = new hui::Panel();
-	dialog->from_resource("new_teapot_dialog");
-	dialog->set_int("ntp_samples", hui::Config.get_int("NewTeapotSamples", 4));
-
-	ed->activate("");
+	if (type == 306) {
+		// teapot
+		dialog = new hui::Panel();
+		dialog->from_resource("new_teapot_dialog");
+		dialog->set_int("ntp_samples", hui::Config.get_int("NewTeapotSamples", 4));
+		ed->set_side_panel(dialog);
+	}
 }
 
 

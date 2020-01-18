@@ -5204,7 +5204,7 @@ width=100,height=50,allow-root
 1
 Group
 g-title
-Teekanne
+
 0
 0
 1
@@ -11785,7 +11785,7 @@ new_plane_dialog/new_plane_dialog_t_y
 Streifen Y:
 
 new_teapot_dialog/g-title
-neue
+neue Teekanne
 
 new_teapot_dialog/new_teapot_dialog
 neue Teekanne
