@@ -10,7 +10,7 @@
 
 #include "Data/Model/DataModel.h"
 
-string AppVersion = "0.4.-1.2";
+string AppVersion = "0.4.-1.3";
 string AppName = "Edward";
 
 

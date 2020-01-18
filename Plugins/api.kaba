@@ -441,19 +441,6 @@ class Edward
 
 
 
-class PSMoveController
-	vector pos, acc, rot
-	quaternion ang, dang
-	float trigger
-	float rumble
-	bool[8] button # triangle, circle, cross, square, select, start, PS, ---
-	color color
-extern PSMoveController[] psmoves
-extern void psmove_init_tracker()
-extern void psmove_kill_tracker()
-extern void psmove_update_tracker()
-
-
 extern DataModel* data_model
 extern DataWorld* data_world
 extern Window* edward

@@ -1,6 +1,7 @@
 use api
 use hui
 use thread
+use "helper/psmove.kaba"
 
 enum
 	MODE_NONE
@@ -8,17 +9,21 @@ enum
 	MODE_CAM_ROTATE     # trigger
 	MODE_CAM_ROTATE_EGO # move
 
-class X
+class X extends Object
 	quaternion q0
 	ActionController* ac
 	MultiView* mv
 	MultiViewWindow* win
 	int mode
+	PsMoveManager pm
 	
-	void __init__()
+	override void __init__()
 		mode = MODE_NONE
+		
+		pm.connect()
+		print("plugin: {{len(pm.psmoves)}} controller found...")
 	
-	void start_grab(PSMoveController m, int _mode)
+	void start_grab(PsMoveController m, int _mode)
 		mode = _mode
 		mv = ed.cur_mode.multi_view
 		ac = mv.action_con
@@ -31,10 +36,10 @@ class X
 		if mode == MODE_OBJECT_ROTATE
 			ac.end_action(true)
 		mode = MODE_NONE
-	quaternion rel_ang(PSMoveController m)
+	quaternion rel_ang(PsMoveController m)
 		return win.local_ang * (m.ang * q0.bar()) * win.local_ang.bar()
 		#return m.ang * win.local_ang.bar()
-	void update_hold(PSMoveController m)
+	void update_hold(PsMoveController m)
 		let qq = rel_ang(m) # * q0.bar()
 		#print(qq.angles())
 		if mode == MODE_OBJECT_ROTATE
@@ -45,9 +50,9 @@ class X
 			mv.cam_rotate(m.dang, false)
 	
 	void step()
-		psmove_update_tracker()
+		pm.update()
 		#if ed.cur_mode.name == "ModelAnimationSkeleton"
-		for m in psmoves
+		for m in pm.psmoves
 			if mode == MODE_OBJECT_ROTATE
 				if !m.button[0]
 					end_grab()
@@ -71,7 +76,5 @@ class X
 			#print(m.ang)
 
 void main()
-	psmove_init_tracker()
-	print("plugin: {{len(psmoves)}} controller found...")
 	let x = new X()
 	RunRepeated(0.03, x, X.step)
