@@ -20,6 +20,35 @@
 ModeModelMeshPaint *mode_model_mesh_paint = NULL;
 
 
+struct BrushConfig {
+	float exponent;
+	string name;
+
+	string get_icon() const {
+		Image im;
+		int n = 48;
+		im.create(n, n, White);
+		for (int i=0; i<n; i++)
+			for (int j=0; j<n; j++) {
+				vector vv = vector((float)i / (float)n - 0.5f, (float)j / (float)n - 0.5f, 0) * 2;
+				float dd = vv * vv;
+				float a = exp(-pow(dd, exponent)*2);
+				im.set_pixel(i, j, a * Black + (1-a) * White);
+
+			}
+		return hui::SetImage(&im, "image:paint-brush-" + name);
+	}
+};
+
+const int NUM_BRUSHES = 6;
+const BrushConfig BRUSH_PARAM[NUM_BRUSHES] = {
+		{400.0f, "extra hard"},
+		{4.0f, "hard"},
+		{2.0f, "medium"},
+		{1.0f, "medium soft"},
+		{0.5f, "soft"},
+		{0.25f, "extra soft"}
+};
 
 
 // map from 3d-world-space into UV-space for a polygon
@@ -48,49 +77,82 @@ vector map_uv(DataModel *m, int surf, int poly, const vector &pos, matrix &D) {
 	return v_0;
 }
 
+matrix inv_2d(const matrix &DD) {
+	float det = DD._00 * DD._11 - DD._01 * DD._10;
+	matrix i;
+	i._00 = DD._11;
+	i._01 = -DD._10;
+	i._10 = -DD._01;
+	i._11 = DD._00;
+	return i * (1 / det);
+}
+
+float quad_2d(const matrix &DD, const vector &v) {
+	return (v.x*v.x*DD._00 + v.y*v.y*DD._11 + 2*v.x*v.y*DD._01);
+}
+
+complex eigen_value_2d(const matrix &m) {
+	float d = sqrt( (m._00 + m._11)*(m._00 + m._11) - 4*(m._00*m._11 - m._01*m._01));
+	return complex(m._00+m._11 + d, m._00+m._11 - d) / 2;
+}
+
 
 class ActionModelBrushTexturePaint: public Action {
 public:
-	ActionModelBrushTexturePaint(const vector &_pos, const vector &_n, float _radius, int _surf, int _poly, const color &_col) {
+	ActionModelBrushTexturePaint(const vector &_pos, const vector &_n, float _radius, int _surf, int _poly, const color &_col, float _opacity, const BrushConfig &_brush) {
 		pos = _pos;
 		n = _n;
 		radius = _radius;
 		surf = _surf;
 		poly = _poly;
 		col = _col;
+		opacity = _opacity;
+		brush = _brush;
 	}
 	string name(){	return "ModelBrushTexturePaint";	}
 
 	void *execute(Data *d) {
 		DataModel *m = dynamic_cast<DataModel*>(d);
 
-		auto *tl = m->material[0]->texture_levels[0];
+		auto *tl = m->material[m->surface[surf].polygon[poly].material]->texture_levels[0];
 
 		vector e1 = n.ortho();
 		vector e2 = n ^ e1;
 
 		matrix D;
 		vector v = map_uv(m, surf, poly, pos, D);
-		int xx = clampi(v.x * tl->image->width, 0, tl->image->width);
-		int yy = clampf(v.y * tl->image->height, 0, tl->image->height);
 
-		vector f1 = D.transform_normal(e1);
-		vector f2 = D.transform_normal(e2);
-		float rr = (f1.length_sqr() + f2.length_sqr()) * radius * radius;
-		int dx = sqrt(rr) * tl->image->width * 1.1f;
-		int dy = sqrt(rr) * tl->image->height * 1.1f;
-		int x0 = max(xx - dx, 0);
-		int y0 = max(yy - dy, 0);
-		int x1 = min(xx + dx, tl->image->width);
-		int y1 = min(yy + dy, tl->image->height);
+		auto DD = D * D.transpose();
+		auto iDD = inv_2d(DD);
 
-		// just draw a fuzzy circle in UV-space...
-		for (int i=x0; i<x1; i++)
-			for (int j=y0; j<y1; j++) {
-				vector vv = vector((float)i / (float)tl->image->width, (float)j / (float)tl->image->height, 0);
-				float dd = (vv - v).length_sqr();
-				float a = exp(-pow(dd / rr, 4)*2) * col.a;
-				if (a > 0.001f) {
+		float threshold = 0.001f;
+
+		// maximal pixel area from ellipsis
+		auto ev = eigen_value_2d(DD);
+		float rmax = sqrt(max(ev.x, ev.y)) * radius * 1.2f;
+		if (brush.exponent < 1.2f)
+			rmax *= 2;
+		if (brush.exponent < 0.8f)
+			rmax *= 5;
+
+		// pixel
+		int i0 = clampi(v.x * tl->image->width, 0, tl->image->width);
+		int j0 = clampf(v.y * tl->image->height, 0, tl->image->height);
+		int di = rmax * tl->image->width;
+		int dj = rmax * tl->image->height;
+
+
+		float rr = radius * radius;
+
+		// draw a fuzzy ellipsis UV-space
+		for (int ii=i0-di; ii<i0+di; ii++)
+			for (int jj=j0-dj; jj<j0+dj; jj++) {
+				int i = loopi(ii, 0, tl->image->width);
+				int j = loopi(jj, 0, tl->image->height);
+				vector vv = vector((float)ii / (float)tl->image->width, (float)jj / (float)tl->image->height, 0);
+				float dd = quad_2d(iDD, vv-v);
+				float a = exp(-pow(dd / rr, brush.exponent)*2) * opacity;
+				if (a > threshold) {
 					color c = tl->image->get_pixel(i, j);
 					tl->image->set_pixel(i, j, (1-a) * c + a * col);
 				}
@@ -110,7 +172,10 @@ private:
 	float radius;
 	int surf, poly;
 	color col;
+	float opacity;
+	BrushConfig brush;
 };
+
 
 
 class PaintBrushPanel : public hui::Panel {
@@ -124,14 +189,18 @@ public:
 
 		event("diameter-slider", [=]{ on_diameter_slider(); });
 		event("opacity-slider", [=]{ on_opacity_slider(); });
+		event("alpha-slider", [=]{ on_alpha_slider(); });
 
-		add_string("brush-type", _("In Textur malen"));
+		for (int i=0; i<NUM_BRUSHES; i++)
+			add_string("brush-type", BRUSH_PARAM[i].get_icon() + "\\" + BRUSH_PARAM[i].name);
 		set_float("diameter-slider", 0.5f);
 		set_float("opacity-slider", 1.0f);
+		set_float("alpha-slider", 1.0f);
 
 		set_string("diameter", f2s(base_diameter, 2));
 		set_float("opacity", 1.0f);
-		set_int("brush-type", 0);
+		set_float("alpha", 1.0f);
+		set_int("brush-type", 2);
 		set_color("color", Red);
 		check("scale-by-pressure", true);
 		check("opacity-by-pressure", true);
@@ -145,6 +214,11 @@ public:
 	void on_opacity_slider() {
 		float x = get_float("");
 		set_float("opacity", x);
+	}
+
+	void on_alpha_slider() {
+		float x = get_float("");
+		set_float("alpha", x);
 	}
 
 	ModeModelMeshPaint *mode;
@@ -234,14 +308,12 @@ Action *ModeModelMeshPaint::get_action() {
 	vector n = data->surface[multi_view->hover.set].polygon[multi_view->hover.index].temp_normal;
 	int type = dialog->get_int("brush-type");
 	auto col = dialog->get_color("color");
-	col.a = dialog->get_float("opacity");
+	col.a = dialog->get_float("alpha");
+	float opacity = dialog->get_float("opacity");
 	if (dialog->is_checked("opacity-by-pressure"))
 		col.a *= hui::GetEvent()->pressure;
 
-	Action *a = NULL;
-	if (type == 0)
-		a = new ActionModelBrushTexturePaint(pos, n, radius(), multi_view->hover.set, multi_view->hover.index, col);
-	return a;
+	return new ActionModelBrushTexturePaint(pos, n, radius(), multi_view->hover.set, multi_view->hover.index, col, opacity, BRUSH_PARAM[type]);
 }
 
 void ModeModelMeshPaint::on_left_button_down() {
