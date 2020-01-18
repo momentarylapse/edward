@@ -1,13 +1,7 @@
 Dialog animation_dialog "Animations-Kontrolle" width=260 height=400
-	Grid ? "" vertical width=320 noexpandx
+	Grid ? "" vertical
 		Group t_list "Übersicht"
-			Grid ? ""
-				ListView animation_list "#\\Typ\\Frames\\Name"
-				---|
-				Grid ? ""
-					Button animation_new "Neu" image=hui:new
-					Button animation_copy "Kopieren" image=hui:copy
-					Button animation_delete "Löschen" image=hui:delete
+			ListView animation_list "#\\Typ\\Frames\\Name"
 		Separator sep_vertical "" vertical
 		Group t_properties "Eigenschaften"
 			Grid ? ""

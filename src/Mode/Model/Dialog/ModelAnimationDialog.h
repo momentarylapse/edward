@@ -18,35 +18,36 @@ public:
 	ModelAnimationDialog(DataModel *_data);
 	virtual ~ModelAnimationDialog();
 
-	void loadData();
-	void applyData();
+	void load_data();
+	void apply_data();
 
-	void fillAnimation();
-	void onAnimationList();
-	void onAnimationListSelect();
-	void onAddAnimation();
-	void onCopyAnimation();
-	void onDeleteAnimation();
-	void onFrame();
-	void onAddFrame();
-	void onDeleteFrame();
-	void onName();
-	void onFpsConst();
-	void onFpsFactor();
-	void onSpeed();
-	void onParameter();
-	void onSimulationPlay();
-	void onSimulationStop();
-	void onClose();
+	void fill_animation();
+	void on_animation_list();
+	void on_animation_list_select();
+	void on_animation_list_right_click();
+	void on_add_animation();
+	void on_copy_animation();
+	void on_delete_animation();
+	void on_frame();
+	void on_add_frame();
+	void on_delete_frame();
+	void on_name();
+	void on_fps_const();
+	void on_fps_factor();
+	void on_speed();
+	void on_parameter();
+	void on_simulation_play();
+	void on_simulation_stop();
 
 	void on_update(Observable *o, const string &message) override;
 
-	int getSelectedAnimation();
+	int get_selected_animation();
 
-	int getFirstFreeIndex();
+	int get_first_free_index();
 
 private:
 	DataModel *data;
+	hui::Menu *popup;
 };
 
 #endif /* MODELANIMATIONDIALOG_H_ */

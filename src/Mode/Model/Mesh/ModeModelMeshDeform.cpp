@@ -69,7 +69,7 @@ ModeModelMeshDeform::~ModeModelMeshDeform() {
 void ModeModelMeshDeform::on_start() {
 
 	dialog = new DeformBrushPanel(multi_view);
-	ed->embed(dialog, "root-table", 1, 0);
+	ed->set_side_panel(dialog);
 
 	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
@@ -95,7 +95,7 @@ void ModeModelMeshDeform::on_end() {
 	multi_view->set_allow_action(true);
 	mode_model->allow_selection_modes(true);
 	mode_model_mesh->set_allow_draw_hover(true);
-	delete dialog;
+	ed->set_side_panel(nullptr);
 }
 
 void ModeModelMeshDeform::on_set_multi_view() {

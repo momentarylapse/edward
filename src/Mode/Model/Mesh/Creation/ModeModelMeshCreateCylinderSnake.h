@@ -13,8 +13,7 @@
 
 class Geometry;
 
-class ModeModelMeshCreateCylinderSnake: public ModeCreation<DataModel>
-{
+class ModeModelMeshCreateCylinderSnake: public ModeCreation<DataModel> {
 public:
 	ModeModelMeshCreateCylinderSnake(ModeBase *parent);
 
@@ -27,9 +26,7 @@ public:
 
 	void on_draw_win(MultiView::Window *win) override;
 
-	void updateGeometry();
-
-	void onClose();
+	void update_geometry();
 
 private:
 	Array<vector> pos;

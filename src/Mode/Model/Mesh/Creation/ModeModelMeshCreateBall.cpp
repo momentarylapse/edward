@@ -54,10 +54,9 @@ void ModeModelMeshCreateBall::onTypePhysical()
 	dialog->enable("complexity", false);
 }
 
-void ModeModelMeshCreateBall::on_start()
-{
-	// Dialog
-	dialog = hui::CreateResourceDialog("new_ball_dialog", ed);
+void ModeModelMeshCreateBall::on_start() {
+	dialog = new hui::Panel();
+	dialog->from_resource("new_ball_dialog");
 
 	dialog->set_int("x", hui::Config.get_int("NewBallNumX", 8));
 	dialog->set_int("y",hui::Config.get_int("NewBallNumY", 16));
@@ -68,23 +67,18 @@ void ModeModelMeshCreateBall::on_start()
 	dialog->enable("x", !sphere);
 	dialog->enable("y", !sphere);
 	dialog->enable("complexity", sphere);
-	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
-	dialog->show();
-	dialog->event("hui:close", std::bind(&ModeModelMeshCreateBall::abort, this));
 	dialog->event("type:ball", std::bind(&ModeModelMeshCreateBall::onTypeBall, this));
 	dialog->event("type:sphere", std::bind(&ModeModelMeshCreateBall::onTypeSphere, this));
 	dialog->event("type:physical", std::bind(&ModeModelMeshCreateBall::onTypePhysical, this));
+	ed->set_side_panel(dialog);
 
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
-
-	ed->activate("");
 }
 
 
-void ModeModelMeshCreateBall::on_end()
-{
-	delete(dialog);
+void ModeModelMeshCreateBall::on_end() {
+	ed->set_side_panel(nullptr);
 }
 
 void ModeModelMeshCreateBall::updateGeometry()

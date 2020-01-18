@@ -13,8 +13,7 @@
 
 class Geometry;
 
-class ModeModelMeshCreateCylinder: public ModeCreation<DataModel>
-{
+class ModeModelMeshCreateCylinder: public ModeCreation<DataModel> {
 public:
 	ModeModelMeshCreateCylinder(ModeBase *parent);
 	virtual ~ModeModelMeshCreateCylinder();
@@ -27,12 +26,10 @@ public:
 
 	void on_draw_win(MultiView::Window *win) override;
 
-	void onTypeVisible();
-	void onTypePhysical();
+	void on_type_visible();
+	void on_type_physical();
 
-	void updateGeometry();
-
-	void onClose();
+	void update_geometry();
 
 private:
 	Array<vector> pos;

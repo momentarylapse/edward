@@ -148,7 +148,7 @@ bool ModeMaterial::open()
 
 void ModeMaterial::on_end()
 {
-	delete(AppearanceDialog);
+	ed->set_side_panel(nullptr);
 
 	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
 	t->reset();
@@ -177,7 +177,7 @@ void ModeMaterial::on_start()
 	multi_view->set_allow_select(false);
 
 	AppearanceDialog = new MaterialPropertiesDialog(ed, data);
-	ed->embed(AppearanceDialog, "root-table", 1, 0);
+	ed->set_side_panel(AppearanceDialog);
 
 	UpdateShape();
 }

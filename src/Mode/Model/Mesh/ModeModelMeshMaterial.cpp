@@ -26,7 +26,7 @@ ModeModelMeshMaterial::~ModeModelMeshMaterial() {
 void ModeModelMeshMaterial::on_start() {
 
 	dialog = new ModelMaterialDialog(data);
-	ed->embed(dialog, "root-table", 1, 0);
+	ed->set_side_panel(dialog);
 
 	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
@@ -39,7 +39,7 @@ void ModeModelMeshMaterial::on_start() {
 }
 
 void ModeModelMeshMaterial::on_end() {
-	delete dialog;
+	ed->set_side_panel(nullptr);
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-mesh-toolbar"); // back to mesh....ARGH
 
 	multi_view->set_allow_action(true);

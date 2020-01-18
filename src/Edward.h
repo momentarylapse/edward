@@ -141,6 +141,9 @@ public:
 
 	PluginManager *plugins;
 
+	hui::Panel *side_panel, *prev_side_panel;
+	void set_side_panel(hui::Panel *panel);
+
 
 	Map<nix::Texture*, string> icon_image;
 	string get_tex_image(nix::Texture *tex);

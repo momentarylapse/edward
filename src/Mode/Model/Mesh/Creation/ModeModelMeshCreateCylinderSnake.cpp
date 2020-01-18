@@ -32,16 +32,15 @@ ModeModelMeshCreateCylinderSnake::ModeModelMeshCreateCylinderSnake(ModeBase *_pa
 
 void ModeModelMeshCreateCylinderSnake::on_start()
 {
-	dialog = hui::CreateResourceDialog("new_cylinder_dialog",ed);
+	dialog = new hui::Panel();
+	dialog->from_resource("new_cylinder_dialog");
 
 	dialog->set_int("rings", hui::Config.get_int("NewCylinderRings", 4));
 	dialog->set_int("edges", hui::Config.get_int("NewCylinderEdges", 8));
 	dialog->check("round", hui::Config.get_bool("NewCylinderRound", false));
 	dialog->hide_control("type:visible", true);
 	dialog->hide_control("type:physical", true);
-	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
-	dialog->show();
-	dialog->event("hui:close", std::bind(&ModeModelMeshCreateCylinderSnake::onClose, this));
+	ed->set_side_panel(dialog);
 
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
@@ -52,12 +51,12 @@ void ModeModelMeshCreateCylinderSnake::on_start()
 
 void ModeModelMeshCreateCylinderSnake::on_end()
 {
-	delete(dialog);
+	ed->set_side_panel(nullptr);
 	if (geo)
 		delete(geo);
 }
 
-void ModeModelMeshCreateCylinderSnake::updateGeometry()
+void ModeModelMeshCreateCylinderSnake::update_geometry()
 {
 	if (geo)
 		delete(geo);
@@ -83,7 +82,7 @@ void ModeModelMeshCreateCylinderSnake::on_mouse_move()
 		float min_rad = 10 / multi_view->active_win->zoom(); // 10 px
 		if (radius < min_rad)
 			radius = min_rad;
-		updateGeometry();
+		update_geometry();
 		message = _("Zylinderradius: ") + multi_view->format_length(radius);
 	}
 }
@@ -107,7 +106,7 @@ void ModeModelMeshCreateCylinderSnake::on_left_button_up()
 				ready_for_scaling = true;
 				on_mouse_move();
 				message = _("Zylinder: Radius");
-				updateGeometry();
+				update_geometry();
 				multi_view->force_redraw();
 				return;
 			}
@@ -126,7 +125,7 @@ void ModeModelMeshCreateCylinderSnake::on_command(const string& id)
 			ready_for_scaling = true;
 			on_mouse_move();
 			message = _("Zylinderradius: ");
-			updateGeometry();
+			update_geometry();
 			multi_view->force_redraw();
 		}
 	}
@@ -188,9 +187,4 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win)
 			draw_str(pp.x, pp.y, _("Pfad schlie&sen"));
 		}
 	}
-}
-
-void ModeModelMeshCreateCylinderSnake::onClose()
-{
-	abort();
 }

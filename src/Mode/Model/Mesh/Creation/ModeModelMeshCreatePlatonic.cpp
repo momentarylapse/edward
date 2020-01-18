@@ -44,11 +44,9 @@ void ModeModelMeshCreatePlatonic::on_start()
 	if (type != 306)
 		return;
 	// Dialog
-	dialog = hui::CreateResourceDialog("new_teapot_dialog", ed);
+	dialog = new hui::Panel();
+	dialog->from_resource("new_teapot_dialog");
 	dialog->set_int("ntp_samples", hui::Config.get_int("NewTeapotSamples", 4));
-	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
-	dialog->show();
-	dialog->event("hui:close", std::bind(&ModeModelMeshCreatePlatonic::onClose, this));
 
 	ed->activate("");
 }
@@ -57,12 +55,7 @@ void ModeModelMeshCreatePlatonic::on_start()
 void ModeModelMeshCreatePlatonic::on_end()
 {
 	if (dialog)
-		delete(dialog);
-}
-
-void ModeModelMeshCreatePlatonic::onClose()
-{
-	abort();
+		ed->set_side_panel(nullptr);
 }
 
 void ModeModelMeshCreatePlatonic::updateGeometry()

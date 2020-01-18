@@ -27,8 +27,6 @@ public:
 
 	void on_draw_win(MultiView::Window *win) override;
 
-	void on_close();
-
 	void update_geometry();
 
 	bool set_dpos3();

@@ -82,7 +82,7 @@ void ModeModelMeshTexture::on_start()
 	ed->EmbedDialog()*/
 
 	dialog = new ModelMaterialDialog(data, false);
-	ed->embed(dialog, "root-table", 1, 0);
+	ed->set_side_panel(dialog);
 }
 
 
@@ -92,7 +92,7 @@ void ModeModelMeshTexture::on_end()
 	Observer::unsubscribe(data);
 	Observer::unsubscribe(multi_view);
 	skin_vertex.clear();
-	delete dialog;
+	ed->set_side_panel(nullptr);
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-mesh-toolbar"); // -> mesh
 }
 

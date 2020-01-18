@@ -58,7 +58,7 @@ void ModeFont::on_left_button_down()
 
 void ModeFont::on_end()
 {
-	delete(dialog);
+	ed->set_side_panel(nullptr);
 
 	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
 	t->reset();
@@ -160,7 +160,7 @@ void ModeFont::on_start()
 	multi_view->set_allow_select(false);
 
 	dialog = new FontDialog(data);
-	ed->embed(dialog, "root-table", 1, 0),
+	ed->set_side_panel(dialog);
 
 	on_update(data, "");
 }

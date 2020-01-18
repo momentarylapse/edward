@@ -21,40 +21,41 @@ ModelAnimationDialog::ModelAnimationDialog(DataModel *_data) :
 	// dialog
 
 	//event("hui:close", std::bind(&ModelAnimationDialog::onClose);
-	event("animation_list", std::bind(&ModelAnimationDialog::onAnimationList, this));
-	event_x("animation_list", "hui:select", std::bind(&ModelAnimationDialog::onAnimationListSelect, this));
-	event("animation_new", std::bind(&ModelAnimationDialog::onAddAnimation, this));
-	event("animation_delete", std::bind(&ModelAnimationDialog::onDeleteAnimation, this));
-	event("animation_copy", std::bind(&ModelAnimationDialog::onCopyAnimation, this));
-	event("frame", std::bind(&ModelAnimationDialog::onFrame, this));
-	event("new_frame", std::bind(&ModelAnimationDialog::onAddFrame, this));
-	event("delete_frame", std::bind(&ModelAnimationDialog::onDeleteFrame, this));
-	event("name", std::bind(&ModelAnimationDialog::onName, this));
-	event("fps_const", std::bind(&ModelAnimationDialog::onFpsConst, this));
-	event("fps_factor", std::bind(&ModelAnimationDialog::onFpsFactor, this));
-	event("speed", std::bind(&ModelAnimationDialog::onSpeed, this));
-	event("parameter", std::bind(&ModelAnimationDialog::onParameter, this));
-	event("sim_start", std::bind(&ModelAnimationDialog::onSimulationPlay, this));
-	event("sim_stop", std::bind(&ModelAnimationDialog::onSimulationStop, this));
+	event("animation_list", std::bind(&ModelAnimationDialog::on_animation_list, this));
+	event_x("animation_list", "hui:select", std::bind(&ModelAnimationDialog::on_animation_list_select, this));
+	event_x("animation_list", "hui:right-button-down", std::bind(&ModelAnimationDialog::on_animation_list_right_click, this));
+	event("animation_new", std::bind(&ModelAnimationDialog::on_add_animation, this));
+	event("animation_delete", std::bind(&ModelAnimationDialog::on_delete_animation, this));
+	event("animation_copy", std::bind(&ModelAnimationDialog::on_copy_animation, this));
+	event("frame", std::bind(&ModelAnimationDialog::on_frame, this));
+	event("new_frame", std::bind(&ModelAnimationDialog::on_add_frame, this));
+	event("delete_frame", std::bind(&ModelAnimationDialog::on_delete_frame, this));
+	event("name", std::bind(&ModelAnimationDialog::on_name, this));
+	event("fps_const", std::bind(&ModelAnimationDialog::on_fps_const, this));
+	event("fps_factor", std::bind(&ModelAnimationDialog::on_fps_factor, this));
+	event("speed", std::bind(&ModelAnimationDialog::on_speed, this));
+	event("parameter", std::bind(&ModelAnimationDialog::on_parameter, this));
+	event("sim_start", std::bind(&ModelAnimationDialog::on_simulation_play, this));
+	event("sim_stop", std::bind(&ModelAnimationDialog::on_simulation_stop, this));
 
 	subscribe(data);
 	subscribe(mode_model_animation);
 
-	loadData();
+	popup = hui::CreateResourceMenu("model-animation-list-popup");
+
+	load_data();
 }
 
-ModelAnimationDialog::~ModelAnimationDialog()
-{
+ModelAnimationDialog::~ModelAnimationDialog() {
 	unsubscribe(mode_model_animation);
 	unsubscribe(data);
 }
 
-void ModelAnimationDialog::loadData()
-{
+void ModelAnimationDialog::load_data() {
 	reset("animation_list");
 	int n = 0;
 	foreachi(ModelMove &m, data->move, i)
-		if (m.frame.num > 0){
+		if (m.frame.num > 0) {
 			string str = i2s(i) + "\\";
 			if (m.type == MOVE_TYPE_VERTEX)
 				str += _("Vertex");
@@ -68,13 +69,12 @@ void ModelAnimationDialog::loadData()
 				set_int("animation_list", n);
 			n ++;
 		}
-	fillAnimation();
+	fill_animation();
 	set_float("speed", mode_model_animation->time_scale * 100.0f);
 	set_float("parameter", mode_model_animation->time_param);
 }
 
-void ModelAnimationDialog::fillAnimation()
-{
+void ModelAnimationDialog::fill_animation() {
 	bool b = (mode_model_animation->cur_move()->type != MOVE_TYPE_NONE);
 	enable("name", b);
 	enable("frame", b);
@@ -84,7 +84,7 @@ void ModelAnimationDialog::fillAnimation()
 	enable("fps_factor", b);
 	enable("sim_start", b);
 	enable("sim_stop", b);
-	if (b){
+	if (b) {
 		ModelMove *move = mode_model_animation->cur_move();
 		set_string("name", move->name);
 		set_int("frame", mode_model_animation->current_frame);
@@ -93,22 +93,20 @@ void ModelAnimationDialog::fillAnimation()
 	}
 }
 
-void ModelAnimationDialog::onCopyAnimation()
-{
-	int index = getFirstFreeIndex();
+void ModelAnimationDialog::on_copy_animation() {
+	int index = get_first_free_index();
 
-	ModelDuplicateAnimationDialog *dlg = new ModelDuplicateAnimationDialog(win, false, data, index, mode_model_animation->current_move);
+	auto *dlg = new ModelDuplicateAnimationDialog(win, false, data, index, mode_model_animation->current_move);
 	dlg->run();
 	delete dlg;
 }
 
-int ModelAnimationDialog::getSelectedAnimation()
-{
+int ModelAnimationDialog::get_selected_animation() {
 	int s = get_int("animation_list");
-	if (s >= 0){
+	if (s >= 0) {
 		int n = 0;
 		foreachi(ModelMove &m, data->move, i)
-			if (m.frame.num > 0){
+			if (m.frame.num > 0) {
 				if (n == s)
 					return i;
 				n ++;
@@ -117,113 +115,99 @@ int ModelAnimationDialog::getSelectedAnimation()
 	return -1;
 }
 
-void ModelAnimationDialog::onAnimationList()
-{
-	int s = getSelectedAnimation();
-	mode_model_animation->setCurrentMove(s);
+void ModelAnimationDialog::on_animation_list() {
+	int s = get_selected_animation();
+	mode_model_animation->set_current_move(s);
 }
 
-void ModelAnimationDialog::onAnimationListSelect()
-{
-	int s = getSelectedAnimation();
-	mode_model_animation->setCurrentMove(s);
+void ModelAnimationDialog::on_animation_list_select() {
+	int s = get_selected_animation();
+	mode_model_animation->set_current_move(s);
 }
 
-void ModelAnimationDialog::onClose()
-{
+void ModelAnimationDialog::on_animation_list_right_click() {
+	int n = hui::GetEvent()->row;
+	popup->enable("animation_copy", n >= 0);
+	popup->enable("animation_delete", n >= 0);
+	popup->open_popup(this);
 }
 
-void ModelAnimationDialog::applyData()
-{
+void ModelAnimationDialog::apply_data() {
 }
 
-void ModelAnimationDialog::onAddAnimation()
-{
-	int index = getFirstFreeIndex();
+void ModelAnimationDialog::on_add_animation() {
+	int index = get_first_free_index();
 	int type = (data->bone.num > 0) ? MOVE_TYPE_SKELETAL : MOVE_TYPE_VERTEX;
 
-	ModelNewAnimationDialog *dlg = new ModelNewAnimationDialog(win, false, data, index, type);
+	auto *dlg = new ModelNewAnimationDialog(win, false, data, index, type);
 	dlg->run();
 	delete dlg;
 }
 
-void ModelAnimationDialog::onDeleteAnimation()
-{
-	int s = getSelectedAnimation();
+void ModelAnimationDialog::on_delete_animation() {
+	int s = get_selected_animation();
 	if (s >= 0)
 		data->deleteAnimation(s);
 }
 
-void ModelAnimationDialog::onFrame()
-{
+void ModelAnimationDialog::on_frame() {
 	int frame_lit = get_int("");
 	int frame = loopi(frame_lit, 0, mode_model_animation->cur_move()->frame.num - 1);
 	if (frame != frame_lit)
 		set_int("", frame);
-	mode_model_animation->setCurrentFrame(frame);
+	mode_model_animation->set_current_frame(frame);
 }
 
-void ModelAnimationDialog::onAddFrame()
-{
-	mode_model_animation->duplicateCurrentFrame();
+void ModelAnimationDialog::on_add_frame() {
+	mode_model_animation->duplicate_current_frame();
 }
 
-void ModelAnimationDialog::onDeleteFrame()
-{
-	mode_model_animation->deleteCurrentFrame();
+void ModelAnimationDialog::on_delete_frame() {
+	mode_model_animation->delete_current_frame();
 }
 
-void ModelAnimationDialog::onName()
-{
+void ModelAnimationDialog::on_name() {
 	data->setAnimationData(mode_model_animation->current_move, get_string(""), mode_model_animation->cur_move()->frames_per_sec_const, mode_model_animation->cur_move()->frames_per_sec_factor);
 }
 
-void ModelAnimationDialog::onFpsConst()
-{
+void ModelAnimationDialog::on_fps_const() {
 	data->setAnimationData(mode_model_animation->current_move, mode_model_animation->cur_move()->name, get_float(""), mode_model_animation->cur_move()->frames_per_sec_factor);
 }
 
-void ModelAnimationDialog::onFpsFactor()
-{
+void ModelAnimationDialog::on_fps_factor() {
 	data->setAnimationData(mode_model_animation->current_move, mode_model_animation->cur_move()->name, mode_model_animation->cur_move()->frames_per_sec_const, get_float(""));
 }
 
-void ModelAnimationDialog::onSpeed()
-{
+void ModelAnimationDialog::on_speed() {
 	mode_model_animation->time_scale = get_float("") / 100.0f;
 }
 
-void ModelAnimationDialog::onParameter()
-{
+void ModelAnimationDialog::on_parameter() {
 	mode_model_animation->time_param = get_float("");
 }
 
-void ModelAnimationDialog::onSimulationPlay()
-{
+void ModelAnimationDialog::on_simulation_play() {
 	mode_model_animation->playing = (mode_model_animation->cur_move()->frame.num > 0);
 	mode_model_animation->sim_frame_time = 0;
-	mode_model_animation->updateAnimation();
+	mode_model_animation->update_animation();
 }
 
-void ModelAnimationDialog::onSimulationStop()
-{
+void ModelAnimationDialog::on_simulation_stop() {
 	mode_model_animation->playing = false;
 	mode_model_animation->sim_frame_time = 0;
-	mode_model_animation->updateAnimation();
+	mode_model_animation->update_animation();
 }
 
-void ModelAnimationDialog::on_update(Observable *o, const string &message)
-{
-	if (o == data){
-		loadData();
-	}else{
-		loadData();
+void ModelAnimationDialog::on_update(Observable *o, const string &message) {
+	if (o == data) {
+		load_data();
+	} else {
+		load_data();
 		//fillAnimation();
 	}
 }
 
-int ModelAnimationDialog::getFirstFreeIndex()
-{
+int ModelAnimationDialog::get_first_free_index() {
 	foreachi(ModelMove &m, data->move, i)
 		if (m.frame.num == 0){
 			return i;

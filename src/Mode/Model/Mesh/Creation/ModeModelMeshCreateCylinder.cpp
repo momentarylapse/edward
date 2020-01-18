@@ -27,26 +27,23 @@ ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(ModeBase *_parent) :
 	geo = NULL;
 }
 
-ModeModelMeshCreateCylinder::~ModeModelMeshCreateCylinder()
-{
+ModeModelMeshCreateCylinder::~ModeModelMeshCreateCylinder() {
 	if (geo)
-		delete(geo);
+		delete geo;
 }
 
-void ModeModelMeshCreateCylinder::on_start()
-{
-	dialog = hui::CreateResourceDialog("new_cylinder_dialog",ed);
+void ModeModelMeshCreateCylinder::on_start() {
+	dialog = new hui::Panel();
+	dialog->from_resource("new_cylinder_dialog");
 
 	dialog->set_int("rings", hui::Config.get_int("NewCylinderRings", 4));
 	dialog->set_int("edges", hui::Config.get_int("NewCylinderEdges", 8));
 	dialog->check("round", hui::Config.get_bool("NewCylinderRound", false));
-	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
-	dialog->show();
-	dialog->event("hui:close", std::bind(&ModeModelMeshCreateCylinder::onClose, this));
-	dialog->event("type:visible", std::bind(&ModeModelMeshCreateCylinder::onTypeVisible, this));
-	dialog->event("type:physical", std::bind(&ModeModelMeshCreateCylinder::onTypePhysical, this));
+	dialog->event("type:visible", std::bind(&ModeModelMeshCreateCylinder::on_type_visible, this));
+	dialog->event("type:physical", std::bind(&ModeModelMeshCreateCylinder::on_type_physical, this));
 
 	dialog->check("type:visible", true);
+	ed->set_side_panel(dialog);
 
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
@@ -55,13 +52,11 @@ void ModeModelMeshCreateCylinder::on_start()
 }
 
 
-void ModeModelMeshCreateCylinder::on_end()
-{
-	delete(dialog);
+void ModeModelMeshCreateCylinder::on_end() {
+	ed->set_side_panel(nullptr);
 }
 
-void ModeModelMeshCreateCylinder::updateGeometry()
-{
+void ModeModelMeshCreateCylinder::update_geometry() {
 	if (geo)
 		delete(geo);
 	if (pos.num == 2){
@@ -87,7 +82,7 @@ void ModeModelMeshCreateCylinder::on_mouse_move() {
 		float min_rad = 10 / multi_view->active_win->zoom(); // 10 px
 		if (radius < min_rad)
 			radius = min_rad;
-		updateGeometry();
+		update_geometry();
 		message = _("Zylinderradius: ") + multi_view->format_length(radius);
 	} else if (pos.num == 1) {
 		message = _("Zylinderl&ange: ") + multi_view->format_length((multi_view->get_cursor() - pos[0]).length());
@@ -96,12 +91,11 @@ void ModeModelMeshCreateCylinder::on_mouse_move() {
 
 
 
-void ModeModelMeshCreateCylinder::on_left_button_up()
-{
-	if (pos.num == 2){
+void ModeModelMeshCreateCylinder::on_left_button_up() {
+	if (pos.num == 2) {
 		bool physical = dialog->is_checked("type:physical");
 
-		if (physical){
+		if (physical) {
 			ModelCylinder c;
 			c.index[0] = data->skin[0].vertex.num;
 			c.index[1] = data->skin[0].vertex.num + 1;
@@ -112,36 +106,35 @@ void ModeModelMeshCreateCylinder::on_left_button_up()
 			data->skin[0].vertex.add(ModelVertex(pos[0]));
 			data->skin[0].vertex.add(ModelVertex(pos[1]));
 
-		}else{
+		} else {
 			data->pasteGeometry(*geo, mode_model_mesh->current_material);
 			data->selectOnlySurface(&data->surface.back());
 		}
 
 		abort();
-	}else{
+	} else {
 		pos.add(multi_view->get_cursor());
 
-		if (pos.num > 1){
+		if (pos.num > 1) {
 			//OnMouseMove();
 			message = _("Zylinder: Radius");
-			updateGeometry();
+			update_geometry();
 			//ed->ForceRedraw();
-		}else{
+		} else {
 			message = _("Zylinder: Endpunkt");
 		}
 	}
 }
 
-void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win)
-{
+void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
 
-	if (pos.num > 0){
+	if (pos.num > 0) {
 
 		// control points
 		nix::SetColor(scheme.CREATION_LINE);
 		nix::SetShader(nix::default_shader_2d);
-		for (int i=0;i<pos.num;i++){
+		for (int i=0;i<pos.num;i++) {
 			vector pp = win->project(pos[i]);
 			nix::DrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
 		}
@@ -156,7 +149,7 @@ void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win)
 			nix::DrawLine3D(pos[0], multi_view->get_cursor());
 		//nix::SetColor(White);
 	}
-	if (pos.num == 2){
+	if (pos.num == 2) {
 		mode_model->set_material_creation();
 		geo->build(nix::vb_temp);
 		nix::Draw3D(nix::vb_temp);
@@ -166,19 +159,12 @@ void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win)
 	}
 }
 
-void ModeModelMeshCreateCylinder::onTypePhysical()
-{
+void ModeModelMeshCreateCylinder::on_type_physical() {
 	dialog->enable("rings", false);
 	dialog->enable("edges", false);
 }
 
-void ModeModelMeshCreateCylinder::onTypeVisible()
-{
+void ModeModelMeshCreateCylinder::on_type_visible() {
 	dialog->enable("rings", true);
 	dialog->enable("edges", true);
-}
-
-void ModeModelMeshCreateCylinder::onClose()
-{
-	abort();
 }

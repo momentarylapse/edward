@@ -1,8 +1,8 @@
 Dialog new_torus_dialog "neuer Torus" width=200 height=50 allow-root
-	Group new_torus_dialog_slides "Streifen"
+	Group new_torus_dialog_slides "neuer Torus: Streifen"
 		Grid ? ""
 			Text new_torus_dialog_t_rings "Radial"
-			SpinButton nt_rings "" range=3:
+			SpinButton nt_rings "" range=3: expandx
 			---|
 			Text new_torus_dialog_t_edges "Kanten"
 			SpinButton nt_edges "" range=2:

@@ -1,7 +1,7 @@
 Dialog model_material_dialog "Material" width=350 height=371
-	Grid ? "" vertical noexpandx
+	Grid ? "" vertical
 		Group model_material_dialog_grp_list "Übersicht"
-			ListView material_list "#\\Polygone\\\\Datei" "tooltip=Materialien\n - Aktionen per Rechtsklick" format=ttit select-single width=330
+			ListView material_list "#\\Polygone\\\\Datei" "tooltip=Materialien\n - Aktionen per Rechtsklick" format=ttit select-single
 		Separator sep_vertical "" vertical
 		Expander model_material_dialog_grp_color "Farben"
 			Grid ? ""

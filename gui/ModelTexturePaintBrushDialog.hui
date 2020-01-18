@@ -1,6 +1,6 @@
 Dialog model-texture-paint-brush-dialog "Deformation" width=350 height=371
-	Group g-brush "Pinsel noexpandx width=330
-		Grid ? "" vertical
+	Grid ? "" vertical
+		Group g-brush "Pinsel"
 			Grid ? ""
 				Label t-diameter "Dicke"
 				Slider diameter-slider "" expandx
@@ -16,10 +16,9 @@ Dialog model-texture-paint-brush-dialog "Deformation" width=350 height=371
 				Label t-alpha "Alpha"
 				Slider alpha-slider ""
 				SpinButton alpha "" range=0:1:0.01
-				---|
-				Label t-pressure "Druck"
+		Group g-pressure "Druck"
+			Grid ? "" vertical
 				CheckBox scale-by-pressure "beeinflusst Größe"
-				---|
-				.
 				CheckBox opacity-by-pressure "beeinflusst Deckkraft"
+		Group g-type "Form"
 			ListView brush-type "icon\\type" format=it nobar

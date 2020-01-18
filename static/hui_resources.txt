@@ -1,6 +1,6 @@
 t7
 # Number Of Resources
-69
+70
 # Resource
 Menu
 
@@ -753,7 +753,7 @@ width=400,height=730
 1
 Grid
 ?
-vertical,width=320,noexpandx
+vertical
 0
 0
 3
@@ -1551,7 +1551,7 @@ width=365,height=715,allow-root
 1
 Grid
 ?
-vertical,width=320,noexpandx
+vertical
 0
 0
 7
@@ -2281,7 +2281,7 @@ width=260,height=400
 1
 Grid
 ?
-vertical,width=320,noexpandx
+vertical
 0
 0
 5
@@ -2291,40 +2291,10 @@ t_list
 0
 0
 1
-Grid
-?
-
-0
-0
-2
 ListView
 animation_list
 
 0
-0
-0
-Grid
-?
-
-0
-1
-3
-Button
-animation_new
-image=hui:new
-0
-0
-0
-Button
-animation_copy
-image=hui:copy
-1
-0
-0
-Button
-animation_delete
-image=hui:delete
-2
 0
 0
 Separator
@@ -2484,6 +2454,43 @@ image=hui:media-stop
 0
 0
 # Resource
+Menu
+model-animation-list-popup
+
+0
+0
+5
+Item
+title
+disabled
+0
+0
+0
+Separator
+
+
+1
+0
+0
+Item
+animation_new
+
+2
+0
+0
+Item
+animation_copy
+
+3
+0
+0
+Item
+animation_delete
+
+4
+0
+0
+# Resource
 Toolbar
 model-animation-skeleton-toolbar
 
@@ -2566,10 +2573,16 @@ width=350,height=371
 1
 Grid
 ?
-vertical,noexpandx,width=350
+vertical
 0
 0
 2
+Group
+g-brush
+
+0
+0
+1
 Grid
 ?
 
@@ -2612,10 +2625,16 @@ depth
 2
 1
 0
+Group
+g-type
+
+1
+0
+1
 ListView
 brush-type
 nobar
-1
+0
 0
 0
 # Resource
@@ -3069,7 +3088,7 @@ width=350,height=371
 1
 Grid
 ?
-vertical,noexpandx
+vertical
 0
 0
 5
@@ -3081,7 +3100,7 @@ model_material_dialog_grp_list
 1
 ListView
 material_list
-format=ttit,select-single,width=330
+format=ttit,select-single
 0
 0
 0
@@ -3289,35 +3308,41 @@ model-material-list-popup
 
 0
 0
-5
+6
 Item
 header
 disabled
 0
 0
 0
+Separator
+
+
+1
+0
+0
 Item
 add_new_material
 image=hui:add
-1
+2
 0
 0
 Item
 add_material
 image=hui:open
-2
+3
 0
 0
 Item
 apply_material
 image=hui:apply
-3
+4
 0
 0
 Item
 delete_material
 image=hui:delete
-4
+5
 0
 0
 # Resource
@@ -4927,6 +4952,12 @@ width=220,height=119,allow-root
 0
 0
 1
+Group
+g-title:
+
+0
+0
+1
 Grid
 ?
 vertical
@@ -4959,7 +4990,7 @@ t_x
 0
 SpinButton
 x
-range=1:
+range=1:,expandx
 1
 0
 0
@@ -5026,7 +5057,7 @@ x
 0
 SpinButton
 nc_x
-range=1:
+range=1:,expandx
 1
 0
 0
@@ -5058,6 +5089,12 @@ range=1:
 Dialog
 new_cylinder_dialog
 width=100,height=50,allow-root
+0
+0
+1
+Group
+g-title
+
 0
 0
 1
@@ -5093,7 +5130,7 @@ t_rings
 0
 SpinButton
 rings
-range=1:
+range=1:,expandx
 1
 0
 0
@@ -5122,6 +5159,12 @@ width=100,height=50,allow-root
 0
 0
 1
+Group
+g-plane
+
+0
+0
+1
 Grid
 ?
 
@@ -5136,7 +5179,7 @@ new_plane_dialog_t_x
 0
 SpinButton
 np_num_x
-range=1:
+range=1:,expandx
 1
 0
 0
@@ -5159,6 +5202,12 @@ width=100,height=50,allow-root
 0
 0
 1
+Group
+g-title
+Teekanne
+0
+0
+1
 Grid
 ?
 
@@ -5173,7 +5222,7 @@ new_teapot_dialog_t_samples
 0
 SpinButton
 ntp_samples
-range=1:
+range=1:,expandx
 1
 0
 0
@@ -5204,7 +5253,7 @@ new_torus_dialog_t_rings
 0
 SpinButton
 nt_rings
-range=3:
+range=3:,expandx
 1
 0
 0
@@ -6212,24 +6261,24 @@ width=350,height=371
 0
 0
 1
-Group
-g-brush
-noexpandx,width=330
-0
-0
-1
 Grid
 ?
 vertical
 0
 0
-2
+3
+Group
+g-brush
+
+0
+0
+1
 Grid
 ?
 
 0
 0
-14
+11
 Label
 t-diameter
 
@@ -6296,28 +6345,40 @@ range=0:1:0.01
 2
 3
 0
-Label
-t-pressure
+Group
+g-pressure
 
+1
 0
-4
+1
+Grid
+?
+vertical
 0
+0
+2
 CheckBox
 scale-by-pressure
 
-1
-4
+0
+0
 0
 CheckBox
 opacity-by-pressure
 
 1
-5
 0
+0
+Group
+g-type
+
+2
+0
+1
 ListView
 brush-type
 format=it,nobar
-1
+0
 0
 0
 # Resource
@@ -9291,7 +9352,7 @@ image=hui:execute
 # Language
 Deutsch
 # Number Of IDs
-931
+939
 # Text
 /ambient
 Ambient
@@ -9449,20 +9510,11 @@ Parameter
 animation_dialog/ani_dt_sim_speed
 Geschwindigkeit
 
-animation_dialog/animation_copy
-Kopieren
-
-animation_dialog/animation_delete
-Löschen
-
 animation_dialog/animation_dialog
 Animations-Kontrolle
 
 animation_dialog/animation_list
 #\\Typ\\Frames\\Name
-
-animation_dialog/animation_new
-Neu
 
 animation_dialog/delete_frame
 löschen
@@ -11318,11 +11370,29 @@ Ganzes Fenster
 menu_world/wire
 Drahtgitter
 
+model-animation-list-popup/animation_copy
+kopieren...
+
+model-animation-list-popup/animation_delete
+löschen
+
+model-animation-list-popup/animation_new
+neu...
+
+model-animation-list-popup/title
+Animation
+
 model-animation-skeleton-toolbar/select-recursive
 Rekursiv bearbeiten
 
 model-deformation-brush-dialog/brush-type
 type
+
+model-deformation-brush-dialog/g-brush
+Deformations-Pinsel
+
+model-deformation-brush-dialog/g-type
+Funktion
 
 model-deformation-brush-dialog/model-deformation-brush-dialog
 Deformation
@@ -11396,6 +11466,12 @@ icon\\type
 model-texture-paint-brush-dialog/g-brush
 Pinsel
 
+model-texture-paint-brush-dialog/g-pressure
+Druck
+
+model-texture-paint-brush-dialog/g-type
+Form
+
 model-texture-paint-brush-dialog/model-texture-paint-brush-dialog
 Deformation
 
@@ -11416,9 +11492,6 @@ Dicke
 
 model-texture-paint-brush-dialog/t-opacity
 Deckkraft
-
-model-texture-paint-brush-dialog/t-pressure
-Druck
 
 model-texture-toolbar/mirror
 Spiegeln
@@ -11639,6 +11712,9 @@ Typ
 new_animation_dialog/new_animation_type
 Vertex\\Skelett
 
+new_ball_dialog/g-title:
+neue Kugel
+
 new_ball_dialog/new_ball_dialog
 neue Kugel
 
@@ -11661,7 +11737,7 @@ new_ball_dialog/type:sphere
 Sphäre
 
 new_cube_dialog/ncdt_slides
-Streifen
+neuer Würfel: Streifen
 
 new_cube_dialog/new_cube_dialog
 neuer Quader
@@ -11674,6 +11750,9 @@ Y
 
 new_cube_dialog/z
 Z
+
+new_cylinder_dialog/g-title
+neuer Zylinder
 
 new_cylinder_dialog/new_cylinder_dialog
 neuer Zylinder
@@ -11693,6 +11772,9 @@ Physikalisch
 new_cylinder_dialog/type:visible
 Sichtbar
 
+new_plane_dialog/g-plane
+neue Ebene
+
 new_plane_dialog/new_plane_dialog
 neue Ebene
 
@@ -11701,6 +11783,9 @@ Streifen X:
 
 new_plane_dialog/new_plane_dialog_t_y
 Streifen Y:
+
+new_teapot_dialog/g-title
+neue
 
 new_teapot_dialog/new_teapot_dialog
 neue Teekanne
@@ -11724,7 +11809,7 @@ new_torus_dialog/new_torus_dialog
 neuer Torus
 
 new_torus_dialog/new_torus_dialog_slides
-Streifen
+neuer Torus: Streifen
 
 new_torus_dialog/new_torus_dialog_t_edges
 Kanten

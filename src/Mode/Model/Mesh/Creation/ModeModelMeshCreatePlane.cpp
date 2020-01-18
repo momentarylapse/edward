@@ -23,15 +23,13 @@ ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(ModeBase *_parent) :
 	invert = false;
 }
 
-void ModeModelMeshCreatePlane::on_start()
-{
+void ModeModelMeshCreatePlane::on_start() {
 	// Dialog
-	dialog = hui::CreateResourceDialog("new_plane_dialog", ed);
+	dialog = new hui::Panel();
+	dialog->from_resource("new_plane_dialog");
 	dialog->set_int("np_num_x", hui::Config.get_int("NewPlaneNumX", 4));
 	dialog->set_int("np_num_y",hui::Config.get_int("NewPlaneNumY", 4));
-	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
-	dialog->show();
-	dialog->event("hui:close", std::bind(&ModeModelMeshCreatePlane::onClose, this));
+	ed->set_side_panel(dialog);
 
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
@@ -40,9 +38,8 @@ void ModeModelMeshCreatePlane::on_start()
 }
 
 
-void ModeModelMeshCreatePlane::on_end()
-{
-	delete(dialog);
+void ModeModelMeshCreatePlane::on_end() {
+	ed->set_side_panel(nullptr);
 }
 
 
@@ -107,9 +104,4 @@ void ModeModelMeshCreatePlane::on_mouse_move()
 		length[1] = dir2 * vector::dot(dir2, pos2 - pos);
 		invert = (((length[0] ^ length[1]) * dir0) > 0);
 	}
-}
-
-void ModeModelMeshCreatePlane::onClose()
-{
-	abort();
 }

@@ -181,6 +181,7 @@ private:
 class PaintBrushPanel : public hui::Panel {
 public:
 	PaintBrushPanel(ModeModelMeshPaint *_mode) {
+		msg_write("++ PaintBrushPanel " + p2s(this));
 		mode = _mode;
 
 		base_diameter = mode->multi_view->cam.radius * 0.1f;
@@ -204,6 +205,9 @@ public:
 		set_color("color", Red);
 		check("scale-by-pressure", true);
 		check("opacity-by-pressure", true);
+	}
+	~PaintBrushPanel() {
+		msg_write("~~~PaintBrushPanel  " + p2s(this));
 	}
 
 	void on_diameter_slider() {
@@ -241,9 +245,9 @@ ModeModelMeshPaint::~ModeModelMeshPaint() {
 void ModeModelMeshPaint::on_start() {
 
 	dialog = new PaintBrushPanel(this);
-	ed->embed(dialog, "root-table", 1, 0);
+	ed->set_side_panel(dialog);
 
-	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
+	auto *t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
 	multi_view->set_allow_action(false);
@@ -267,7 +271,7 @@ void ModeModelMeshPaint::on_end() {
 	multi_view->set_allow_action(true);
 	mode_model->allow_selection_modes(true);
 	mode_model_mesh->set_allow_draw_hover(true);
-	delete dialog;
+	ed->set_side_panel(nullptr);
 }
 
 void ModeModelMeshPaint::on_set_multi_view() {

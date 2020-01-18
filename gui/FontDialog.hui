@@ -1,5 +1,5 @@
 Dialog font_dialog "Font Eigenschaften" width=400 height=730
-	Grid ? "" vertical width=320 noexpandx
+	Grid ? "" vertical
 		Group font_dt_font "Font"
 			Grid ? ""
 				Text font_dt_numglyphs "Zeichenzahl"

@@ -1,5 +1,5 @@
 Dialog material_dialog "Material-Eigenschaften" width=365 height=715 allow-root
-	Grid ? "" vertical width=320 noexpandx
+	Grid ? "" vertical
 		Expander material_dialog_grp_color "Farben"
 			Grid ? ""
 				Text /ambient "Ambient"

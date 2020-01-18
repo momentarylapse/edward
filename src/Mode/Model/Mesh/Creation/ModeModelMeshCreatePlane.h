@@ -11,8 +11,7 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshCreatePlane: public ModeCreation<DataModel>
-{
+class ModeModelMeshCreatePlane: public ModeCreation<DataModel> {
 public:
 	ModeModelMeshCreatePlane(ModeBase *parent);
 
@@ -23,8 +22,6 @@ public:
 	void on_left_button_up() override;
 
 	void on_draw_win(MultiView::Window *win) override;
-
-	void onClose();
 
 private:
 	vector pos, pos2;

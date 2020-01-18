@@ -33,10 +33,6 @@ ModeModelMeshCreateCube::~ModeModelMeshCreateCube(){
 		delete(geo);
 }
 
-void ModeModelMeshCreateCube::on_close() {
-	abort();
-}
-
 void ModeModelMeshCreateCube::update_geometry()
 {
 	if (geo)
@@ -125,15 +121,13 @@ void ModeModelMeshCreateCube::on_mouse_move() {
 
 
 void ModeModelMeshCreateCube::on_start() {
-	// Dialog
-	dialog = hui::CreateResourceDialog("new_cube_dialog", ed);
+	dialog = new hui::Panel();
+	dialog->from_resource("new_cube_dialog");
 
 	dialog->set_int("nc_x", hui::Config.get_int("NewCubeNumX", 1));
 	dialog->set_int("nc_y", hui::Config.get_int("NewCubeNumY", 1));
 	dialog->set_int("nc_z", hui::Config.get_int("NewCubeNumZ", 1));
-	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
-	dialog->show();
-	dialog->event("hui:close", std::bind(&ModeModelMeshCreateCube::on_close, this));
+	ed->set_side_panel(dialog);
 
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
@@ -142,7 +136,7 @@ void ModeModelMeshCreateCube::on_start() {
 }
 
 void ModeModelMeshCreateCube::on_end() {
-	delete dialog;
+	ed->set_side_panel(nullptr);
 }
 
 void ModeModelMeshCreateCube::on_draw_win(MultiView::Window *win) {

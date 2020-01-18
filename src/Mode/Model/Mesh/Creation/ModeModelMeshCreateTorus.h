@@ -25,9 +25,7 @@ public:
 
 	void on_draw_win(MultiView::Window *win) override;
 
-	void onClose();
-
-	void updateGeometry();
+	void update_geometry();
 
 private:
 	vector pos, axis;

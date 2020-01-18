@@ -53,15 +53,14 @@ ModeModelMeshDeformFunction::~ModeModelMeshDeformFunction()
 void ModeModelMeshDeformFunction::on_start()
 {
 	// Dialog
-	dialog = hui::CreateResourceDialog("deformation_function_dialog", ed);
+	dialog = new hui::Panel();
+	dialog->from_resource("deformation_function_dialog");
 	//dialog->setFont("source", "Monospace 10");
 	//dialog->setTabSize("source", 4);
-	dialog->set_string("source", "void f(vector o, vector i)\n\to = vector(i.x, i.y+(i.x*i.x-i.x), i.z)\n");
-	dialog->set_position_special(ed, hui::HUI_RIGHT | hui::HUI_TOP);
-	dialog->event("hui:close", std::bind(&ModeModelMeshDeformFunction::onClose, this));
+	dialog->set_string("source", "vector f(vector v)\n\treturn vector(v.x, v.y+(v.x*v.x-v.x), v.z)\n");
 	dialog->event("preview", std::bind(&ModeModelMeshDeformFunction::onPreview, this));
 	dialog->event("ok", std::bind(&ModeModelMeshDeformFunction::onOk, this));
-	dialog->show();
+	ed->set_side_panel(dialog);
 
 	//ed->activate("");
 
@@ -92,7 +91,7 @@ void ModeModelMeshDeformFunction::on_end()
 {
 	if (has_preview)
 		restore();
-	delete(dialog);
+	ed->set_side_panel(nullptr);
 	delete(geo);
 	if (s)
 		delete s;
@@ -149,10 +148,10 @@ void ModeModelMeshDeformFunction::updateFunction()
 		f = (vec_func*)s->match_function("*", "vector", {"vector"});
 
 		if (!f)
-			hui::ErrorBox(dialog, "error", _("keine Funktion vom Typ 'vector f(vector)' gefunden"));
+			hui::ErrorBox(ed, "error", _("keine Funktion vom Typ 'vector f(vector)' gefunden"));
 
 	}catch(Kaba::Exception &e){
-		hui::ErrorBox(dialog, "error", e.message());
+		hui::ErrorBox(ed, "error", e.message());
 		f = NULL;
 	}
 }
@@ -186,10 +185,5 @@ void ModeModelMeshDeformFunction::onOk()
 
 	data->end_action_group();
 
-	abort();
-}
-
-void ModeModelMeshDeformFunction::onClose()
-{
 	abort();
 }

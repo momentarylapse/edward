@@ -97,12 +97,12 @@ void ModeWorldTerrain::on_start() {
 
 
 	dialog = new TerrainDeformBrushPanel(multi_view);
-	ed->embed(dialog, "root-table", 1, 0);
+	ed->set_side_panel(dialog);
 
 }
 
 void ModeWorldTerrain::on_end() {
-	delete dialog;
+	ed->set_side_panel(nullptr);
 	multi_view->set_allow_action(true);
 	multi_view->set_allow_select(true);
 	if (brushing)

@@ -47,22 +47,23 @@ public:
 	float sim_frame_time;
 
 	hui::Timer timer;
+	int runner;
 
-	void idleFunction();
+	void idle_function();
 
-	void setCurrentMove(int move);
+	void set_current_move(int move);
 	int getFirstMove();
-	void setCurrentFrame(int frame);
-	void setCurrentFrameNext();
-	void setCurrentFramePrevious();
-	void deleteCurrentFrame();
-	void duplicateCurrentFrame();
+	void set_current_frame(int frame);
+	void set_current_frame_next();
+	void set_current_frame_previous();
+	void delete_current_frame();
+	void duplicate_current_frame();
 
-	void updateAnimation();
-	void updateSkeleton();
-	void iterateAnimation(float dt);
+	void update_animation();
+	void update_skeleton();
+	void iterate_animation(float dt);
 
-	ModelFrame getInterpolation();
+	ModelFrame get_interpolation();
 };
 
 extern ModeModelAnimation *mode_model_animation;

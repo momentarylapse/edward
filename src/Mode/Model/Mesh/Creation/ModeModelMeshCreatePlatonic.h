@@ -26,8 +26,6 @@ public:
 
 	void on_draw_win(MultiView::Window *win) override;
 
-	void onClose();
-
 	void updateGeometry();
 
 private:

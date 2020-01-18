@@ -164,7 +164,7 @@ void ModelAnimationTimelinePanel::on_mouse_move()
 void ModelAnimationTimelinePanel::on_left_button_down()
 {
 	if (hover >= 0)
-		mode_model_animation->setCurrentFrame(hover);
+		mode_model_animation->set_current_frame(hover);
 
 
 	parasite->on_timeline_left_button_down();

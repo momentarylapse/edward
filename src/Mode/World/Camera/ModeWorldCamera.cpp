@@ -56,8 +56,10 @@ ModeWorldCamera::~ModeWorldCamera()
 
 void ModeWorldCamera::on_start()
 {
+	// timeline....
 	dialog = new CameraDialog(this);
-	ed->embed(dialog, "root-table", 0, 1);
+	ed->embed(dialog, "vgrid", 0, 1);
+	//ed->set_side_panel(dialog);
 
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("world-camera-toolbar");
 
@@ -79,7 +81,8 @@ void ModeWorldCamera::on_end()
 {
 	Observer::unsubscribe(data);
 	Observer::unsubscribe(multi_view);
-	delete(dialog);
+	//ed->set_side_panel(nullptr);
+	delete dialog;
 	multi_view->clear_data(data);
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("world-edit-toolbar"); // ...
 }

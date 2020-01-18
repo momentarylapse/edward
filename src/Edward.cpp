@@ -193,12 +193,18 @@ Edward::Edward(Array<string> arg) :
 	add_grid("", 0, 0, "root-table");
 	set_target("root-table");
 	add_drawing_area("!grabfocus,opengl", 0, 0, "nix-area");
+	add_revealer("!slide=left", 1, 0, "side-bar-revealer");
+	set_target("side-bar-revealer");
+	add_grid("!noexpandx,width=360", 0, 0, "side-bar-grid");
+	reveal("side-bar-revealer", false);
 	set_border_width(5);
 	show();
 
 	ed = this;
 	no_mode = new ModeNone;
 	cur_mode = no_mode;
+	side_panel = nullptr;
+	prev_side_panel = nullptr;
 
 	progress = new Progress;
 
@@ -899,3 +905,20 @@ string Edward::get_tex_image(nix::Texture *tex)
 	icon_image.set(tex, img);
 	return img;
 }
+
+void Edward::set_side_panel(hui::Panel *panel) {
+	if (side_panel) {
+		// close
+		reveal("side-bar-revealer", false);
+		delete side_panel;
+		side_panel = nullptr;
+	}
+	if (panel) {
+		// open
+		side_panel = panel;
+		ed->embed(panel, "side-bar-grid", 0, 0);
+		reveal("side-bar-revealer", true);
+	}
+}
+
+

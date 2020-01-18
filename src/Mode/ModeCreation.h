@@ -19,7 +19,7 @@ public:
 	void on_set_multi_view() override;
 	void abort();
 	string message;
-	hui::Window *dialog;
+	hui::Panel *dialog;
 };
 
 template<class T>
