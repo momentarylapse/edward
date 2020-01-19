@@ -181,7 +181,6 @@ private:
 class PaintBrushPanel : public hui::Panel {
 public:
 	PaintBrushPanel(ModeModelMeshPaint *_mode) {
-		msg_write("++ PaintBrushPanel " + p2s(this));
 		mode = _mode;
 
 		base_diameter = mode->multi_view->cam.radius * 0.1f;
@@ -205,9 +204,6 @@ public:
 		set_color("color", Red);
 		check("scale-by-pressure", true);
 		check("opacity-by-pressure", true);
-	}
-	~PaintBrushPanel() {
-		msg_write("~~~PaintBrushPanel  " + p2s(this));
 	}
 
 	void on_diameter_slider() {

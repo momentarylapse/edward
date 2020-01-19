@@ -202,6 +202,7 @@ void ModelPolygon::invert()
 	ModelPolygon pp = *this;
 	for (int i=0;i<side.num;i++){
 		side[i].vertex = pp.side[side.num - i - 1].vertex;
+		memcpy(side[i].skin_vertex, pp.side[side.num - i - 1].skin_vertex, sizeof(side[i].skin_vertex));
 		side[i].normal = - pp.side[side.num - i - 1].normal;
 	}
 	temp_normal = - temp_normal;

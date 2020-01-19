@@ -86,7 +86,7 @@ static Geometry half_ball(float radius, int edges, bool upper) {
 		if (m.y * scale > 0)
 			ball.polygon.erase(i);
 	}
-	matrix rot = matrix::rotation_x( pi/2);
+	matrix rot = matrix::rotation_x(pi/2);
 	ball.transform(rot);
 	ball.removeUnusedVertices();
 	return ball;
