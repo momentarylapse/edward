@@ -7,12 +7,14 @@
 
 #include "Storage.h"
 #include "Format/FormatModel.h"
+#include "Format/FormatModelJson.h"
 #include "../Edward.h"
 
 Storage *storage = nullptr;
 
 Storage::Storage() {
 	formats.add(new FormatModel());
+	formats.add(new FormatModelJson());
 }
 
 Storage::~Storage() {
@@ -30,7 +32,11 @@ void Storage::load(const string &filename, Data *data, bool deep) {
 	int type = data_type(data);
 	string ext = filename.extension();
 	for (auto *f: formats) {
-		if (f->category != type or f->extension != ext)
+		if (f->category != type)
+			continue;
+		if (f->extension != ext)
+			continue;
+		if ((int)f->flags & (int)Format::Flag::LOAD == 0)
 			continue;
 		f->load(filename, data, deep);
 		return;
@@ -42,7 +48,11 @@ void Storage::save(const string &filename, Data *data) {
 	int type = data_type(data);
 	string ext = filename.extension();
 	for (auto *f: formats) {
-		if (f->category != type or f->extension != ext)
+		if (f->category != type)
+			continue;
+		if (f->extension != ext)
+			continue;
+		if ((int)f->flags & (int)Format::Flag::SAVE == 0)
 			continue;
 		f->save(filename, data);
 		return;

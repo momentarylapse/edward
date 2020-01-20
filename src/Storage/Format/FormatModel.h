@@ -17,7 +17,6 @@ class File;
 class FormatModel : public TypedFormat<DataModel> {
 public:
 	FormatModel();
-	virtual ~FormatModel();
 
 	void _load(const string &filename, DataModel *data, bool deep) override;
 	void _save(const string &filename, DataModel *data) override;

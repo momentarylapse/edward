@@ -23,9 +23,19 @@ public:
 };
 
 
+
+
 class Format {
 public:
-	Format(int cat, const string &ext, const string &desc);
+	enum class Flag {
+		NONE = 0,
+		LOAD = 1,
+		SAVE = 2,
+		LOAD_AND_SAVE = 3,
+	};
+
+
+	Format(int cat, const string &ext, const string &desc, Flag flags);
 	virtual ~Format();
 
 	void warning(const string &message);
@@ -36,6 +46,7 @@ public:
 	string extension;
 	string description;
 	int category;
+	Flag flags;
 };
 
 
@@ -43,7 +54,7 @@ public:
 template<class T>
 class TypedFormat : public Format {
 public:
-	TypedFormat(int cat, const string &ext, const string &desc) : Format(cat, ext, desc) {}
+	TypedFormat(int cat, const string &ext, const string &desc, Flag flags) : Format(cat, ext, desc, flags) {}
 	virtual void _load(const string &filename, T *data, bool deep) {}
 	virtual void _save(const string &filename, T *data) {}
 

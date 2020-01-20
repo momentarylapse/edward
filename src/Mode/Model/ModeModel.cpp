@@ -6,12 +6,11 @@
  */
 
 #include "../../Edward.h"
+#include "../../Storage/Storage.h"
 #include "ModeModel.h"
 #include "../../Data/Model/DataModel.h"
 #include "../../Data/Model/Import/Importer3ds.h"
-#include "../../Data/Model/Import/ImporterJson.h"
 #include "../../Data/Model/Import/ImporterPly.h"
-#include "../../Data/Model/Export/ExporterJson.h"
 #include "Mesh/ModeModelMesh.h"
 #include "Mesh/ModeModelMeshMaterial.h"
 #include "Mesh/ModeModelMeshDeform.h"
@@ -265,21 +264,20 @@ bool ModeModel::import_open_ply()
 	return import_load_ply(ed->dialog_file_complete);
 }
 
-bool ModeModel::import_load_json(const string &filename)
-{
-	ImporterJson im;
-	if (!im.Import(data, filename))
-		return false;
+bool ModeModel::import_load_json(const string &filename) {
+	try {
+		storage->load(filename, data);
 
-	ed->set_mode(this);
-	mode_model_mesh->optimize_view();
-	return true;
+		ed->set_mode(this);
+		mode_model_mesh->optimize_view();
+		return true;
+	} catch(...) {
+		return false;
+	}
 }
 
 bool ModeModel::export_save_json()
 {
-	if (!ed->allow_termination())
-		return false;
 	if (!ed->file_dialog(FD_FILE, true, false))
 		return false;
 	return export_write_json(ed->dialog_file_complete);
@@ -287,12 +285,7 @@ bool ModeModel::export_save_json()
 
 bool ModeModel::export_write_json(const string &filename)
 {
-	ExporterJson ex;
-	if (!ex.Export(data, filename))
-		return false;
-
-	ed->set_mode(this);
-	mode_model_mesh->optimize_view();
+	storage->save(filename, data);
 	return true;
 }
 

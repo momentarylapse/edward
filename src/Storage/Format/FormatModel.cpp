@@ -11,11 +11,9 @@
 #include "../../Edward.h"
 #include "../../x/model_manager.h"
 
-FormatModel::FormatModel() : TypedFormat<DataModel>(FD_MODEL, "model", _("Model")) {
+FormatModel::FormatModel() : TypedFormat<DataModel>(FD_MODEL, "model", _("Model"), Flag::LOAD_AND_SAVE) {
 }
 
-FormatModel::~FormatModel() {
-}
 
 void update_model_script_data(DataModel::MetaData &m);
 

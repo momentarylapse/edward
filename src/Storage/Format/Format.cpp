@@ -10,10 +10,11 @@
 
 FormatError::FormatError(const string &message) : Exception(message) {}
 
-Format::Format(int cat, const string &ext, const string &desc) {
+Format::Format(int cat, const string &ext, const string &desc, Flag _flags) {
 	category = cat;
 	extension = ext;
 	description = desc;
+	flags = _flags;
 }
 
 Format::~Format() {
