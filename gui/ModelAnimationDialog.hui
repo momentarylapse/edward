@@ -5,13 +5,13 @@ Dialog animation_dialog "Animation" width=260 height=400
 		Separator
 		Group t_properties "Properties"
 			Grid ? ""
-				Text t_name "Name"
+				Text t_name "Name:"
 				Edit name "" expandx
 				---|
-				Text t_animationfpsconst "Frames/s const"
+				Text t_animationfpsconst "Frames/s const:"
 				SpinButton fps_const "" range=0:100:0.01
 				---|
-				Text t_animationfpsfactor "Frames/s factor"
+				Text t_animationfpsfactor "Frames/s factor:"
 				SpinButton fps_factor "" range=0:100:0.01
 		Group t_frame "Frame"
 			Grid ? ""
@@ -23,11 +23,11 @@ Dialog animation_dialog "Animation" width=260 height=400
 		Group t_simulate "Preview"
 			Grid ? ""
 				Grid ? ""
-					Text ani_dt_sim_speed "Speed"
+					Text ani_dt_sim_speed "Speed:"
 					SpinButton speed "" range=0: expandx
 					Text /percent "%"
 					---|
-					Text ani_dt_sim_param "Parameter"
+					Text ani_dt_sim_param "Parameter:"
 					SpinButton parameter "0"
 				---|
 				Grid ? ""

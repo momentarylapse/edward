@@ -29,32 +29,32 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	popup_skybox = hui::CreateResourceMenu("world-skybox-popup");
 	popup_script = hui::CreateResourceMenu("world-script-popup");
 
-	event("cancel", [=]{ OnClose(); });
-	event("hui:close", [=]{ OnClose(); });
-	event("apply", [=]{ ApplyData(); });
-	event("ok", [=]{ OnOk(); });
+	event("cancel", [=]{ on_close(); });
+	event("hui:close", [=]{ on_close(); });
+	event("apply", [=]{ apply_data(); });
+	event("ok", [=]{ on_ok(); });
 
-	event("sun_enabled", [=]{ OnSunEnabled(); });
-	event("sun_ang_from_camera", [=]{ OnSunAngFromCamera(); });
-	event("fog_mode:none", [=]{ OnFogModeNone(); });
-	event("fog_mode:linear", [=]{ OnFogModeLinear(); });
-	event("fog_mode:exp", [=]{ OnFogModeExp(); });
-	event("fog_mode:exp2", [=]{ OnFogModeExp(); });
+	event("sun_enabled", [=]{ on_sun_enabled(); });
+	event("sun_ang_from_camera", [=]{ on_sun_ang_from_camera(); });
+	event("fog_mode:none", [=]{ on_fog_mode_none(); });
+	event("fog_mode:linear", [=]{ on_fog_mode_linear(); });
+	event("fog_mode:exp", [=]{ on_fog_mode_exp(); });
+	event("fog_mode:exp2", [=]{ on_fog_mode_exp(); });
 	event_x("skybox", "hui:activate", [=]{ on_skybox_select(); });
 	event_x("skybox", "hui:right-button-down", [=]{ on_skybox_right_click(); });
 	event("skybox-remove", [=]{ on_skybox_remove(); });
 	event("skybox-select", [=]{ on_skybox_select(); });
-	event("physics_enabled", [=]{ OnPhysicsEnabled(); });
+	event("physics_enabled", [=]{ on_physics_enabled(); });
 	event_x("script_list", "hui:right-button-down", [=]{ on_script_right_click(); });
-	event_x("script_list", "hui:activate", [=]{ OnEditScriptVars(); });
-	event("remove_script", [=]{ OnRemoveScript(); });
-	event("add_script", [=]{ OnAddScript(); });
-	event("edit_script_vars", [=]{ OnEditScriptVars(); });
+	event_x("script_list", "hui:activate", [=]{ on_edit_script_vars(); });
+	event("remove_script", [=]{ on_script_remove(); });
+	event("add_script", [=]{ on_script_add(); });
+	event("edit_script_vars", [=]{ on_edit_script_vars(); });
 
 	subscribe(data);
 
 	temp = data->meta_data;
-	LoadData();
+	load_data();
 }
 
 WorldPropertiesDialog::~WorldPropertiesDialog() {
@@ -75,7 +75,7 @@ void WorldPropertiesDialog::on_skybox_select() {
 	int n = get_int("skybox");
 	if (ed->file_dialog(FD_MODEL,false,true)) {
 		temp.SkyBoxFile[n] = ed->dialog_file_no_ending;
-		FillSkyboxList();
+		fill_skybox_list();
 	}
 }
 
@@ -89,14 +89,14 @@ void WorldPropertiesDialog::on_script_right_click() {
 
 
 
-void WorldPropertiesDialog::OnClose() {
+void WorldPropertiesDialog::on_close() {
 	unsubscribe(data);
 	hide();
 	active = false;
 }
 
 
-void WorldPropertiesDialog::OnSunEnabled() {
+void WorldPropertiesDialog::on_sun_enabled() {
 	bool b = is_checked("");
 	enable("sun_am", b);
 	enable("sun_di", b);
@@ -107,13 +107,13 @@ void WorldPropertiesDialog::OnSunEnabled() {
 }
 
 
-void WorldPropertiesDialog::OnSunAngFromCamera() {
+void WorldPropertiesDialog::on_sun_ang_from_camera() {
 	set_float("sun_ang_x", ed->multi_view_3d->cam.ang.x * 180.0f / pi);
 	set_float("sun_ang_y", ed->multi_view_3d->cam.ang.y * 180.0f / pi);
 }
 
 
-void WorldPropertiesDialog::OnPhysicsEnabled() {
+void WorldPropertiesDialog::on_physics_enabled() {
 	bool b = is_checked("");
 	enable("gravitation_x", b);
 	enable("gravitation_y", b);
@@ -127,13 +127,13 @@ void WorldPropertiesDialog::on_skybox_remove() {
 	if (n >= 0)
 		if (temp.SkyBoxFile[n].num > 0) {
 			temp.SkyBoxFile[n] = "";
-			FillSkyboxList();
+			fill_skybox_list();
 		}
 }
 
 
 
-void WorldPropertiesDialog::OnAddScript() {
+void WorldPropertiesDialog::on_script_add() {
 	if (ed->file_dialog(FD_SCRIPT, false, true)) {
 		WorldScript s;
 		s.filename = ed->dialog_file_complete.substr(Kaba::config.directory.num, -1);
@@ -156,17 +156,17 @@ void WorldPropertiesDialog::OnAddScript() {
 		}catch(Exception &e){
 
 		}*/
-		FillScriptList();
+		fill_script_list();
 	}
 }
 
 
 
-void WorldPropertiesDialog::OnRemoveScript() {
+void WorldPropertiesDialog::on_script_remove() {
 	int n = get_int("script_list");
 	if (n >= 0) {
 		temp.scripts.erase(n);
-		FillScriptList();
+		fill_script_list();
 	}
 }
 
@@ -210,7 +210,7 @@ void update_script_data(WorldScript &s) {
 
 }
 
-void WorldPropertiesDialog::OnEditScriptVars() {
+void WorldPropertiesDialog::on_edit_script_vars() {
 	int n = get_int("script_list");
 	if (n >= 0) {
 		update_script_data(temp.scripts[n]);
@@ -222,21 +222,21 @@ void WorldPropertiesDialog::OnEditScriptVars() {
 
 
 
-void WorldPropertiesDialog::OnFogModeNone() {
+void WorldPropertiesDialog::on_fog_mode_none() {
 	enable("fog_start", false);
 	enable("fog_end", false);
 	enable("fog_distance", false);
 	enable("fog_color", false);
 }
 
-void WorldPropertiesDialog::OnFogModeLinear() {
+void WorldPropertiesDialog::on_fog_mode_linear() {
 	enable("fog_start", true);
 	enable("fog_end", true);
 	enable("fog_distance", false);
 	enable("fog_color", true);
 }
 
-void WorldPropertiesDialog::OnFogModeExp() {
+void WorldPropertiesDialog::on_fog_mode_exp() {
 	enable("fog_start", false);
 	enable("fog_end", false);
 	enable("fog_distance", true);
@@ -245,7 +245,7 @@ void WorldPropertiesDialog::OnFogModeExp() {
 
 
 
-void WorldPropertiesDialog::FillSkyboxList() {
+void WorldPropertiesDialog::fill_skybox_list() {
 	hui::ComboBoxSeparator = ":";
 	reset("skybox");
 	foreachi(string &sb, temp.SkyBoxFile, i)
@@ -257,12 +257,12 @@ void WorldPropertiesDialog::FillSkyboxList() {
 
 void WorldPropertiesDialog::on_update(Observable *o, const string &message) {
 	temp = data->meta_data;
-	LoadData();
+	load_data();
 }
 
 
 
-void WorldPropertiesDialog::FillScriptList() {
+void WorldPropertiesDialog::fill_script_list() {
 	hui::ComboBoxSeparator = ":";
 	reset("script_list");
 	for (auto &s: temp.scripts)
@@ -274,7 +274,7 @@ void WorldPropertiesDialog::FillScriptList() {
 
 
 
-void WorldPropertiesDialog::ApplyData() {
+void WorldPropertiesDialog::apply_data() {
 	temp.PhysicsEnabled = is_checked("physics_enabled");
 	temp.Gravity.x = get_float("gravitation_x");
 	temp.Gravity.y = get_float("gravitation_y");
@@ -305,22 +305,22 @@ void WorldPropertiesDialog::ApplyData() {
 
 
 
-void WorldPropertiesDialog::OnOk() {
-	ApplyData();
-	OnClose();
+void WorldPropertiesDialog::on_ok() {
+	apply_data();
+	on_close();
 }
 
 void WorldPropertiesDialog::restart() {
 	subscribe(data);
 
 	temp = data->meta_data;
-	LoadData();
+	load_data();
 	active = true;
 }
 
 
 
-void WorldPropertiesDialog::LoadData() {
+void WorldPropertiesDialog::load_data() {
 	set_decimals(WorldFogDec);
 	set_color("bgc", temp.BackGroundColor);
 	if (temp.FogEnabled) {
@@ -366,8 +366,8 @@ void WorldPropertiesDialog::LoadData() {
 	set_float("gravitation_y", temp.Gravity.y);
 	set_float("gravitation_z", temp.Gravity.z);
 
-	FillSkyboxList();
-	FillScriptList();
+	fill_skybox_list();
+	fill_script_list();
 }
 
 

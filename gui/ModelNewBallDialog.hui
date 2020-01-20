@@ -1,15 +1,15 @@
 Dialog new_ball_dialog "New ball" width=220 height=119 allow-root
-	Group g-title: "new Sphere"
+	Group g-title: "New sphere"
 		Grid ? "" vertical
-			RadioButton type:physical "physical"
+			RadioButton type:physical "Physical"
 			RadioButton type:ball "From disks"
 			Grid ? "" indent
-				Text t_x "Number of disks"
+				Text t_x "Disks:"
 				SpinButton x "" range=1: expandx
 				---|
-				Text t_y "Sections per disk"
+				Text t_y "Sections per disk:"
 				SpinButton y "" range=1:
-			RadioButton type:sphere "sphere"
+			RadioButton type:sphere "Sphere"
 			Grid ? "" indent
-				Text t_complexity "Complexity"
+				Text t_complexity "Complexity:"
 				SpinButton complexity "" range=1: expandx

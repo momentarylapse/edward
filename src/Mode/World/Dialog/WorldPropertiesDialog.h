@@ -12,33 +12,32 @@
 #include "../../../Data/World/DataWorld.h"
 #include "../../../Stuff/Observer.h"
 
-class WorldPropertiesDialog: public hui::Dialog, public Observer
-{
+class WorldPropertiesDialog: public hui::Dialog, public Observer {
 public:
 	WorldPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data);
 	virtual ~WorldPropertiesDialog();
 
-	void LoadData();
-	void ApplyData();
+	void load_data();
+	void apply_data();
 
-	void FillSkyboxList();
-	void FillScriptList();
-	void OnSunEnabled();
-	void OnSunAngFromCamera();
-	void OnFogModeNone();
-	void OnFogModeLinear();
-	void OnFogModeExp();
-	void OnFogEnabled();
+	void fill_skybox_list();
+	void fill_script_list();
+	void on_sun_enabled();
+	void on_sun_ang_from_camera();
+	void on_fog_mode_none();
+	void on_fog_mode_linear();
+	void on_fog_mode_exp();
+	void on_fog_enabled();
 	void on_skybox_right_click();
 	void on_skybox_select();
 	void on_skybox_remove();
-	void OnPhysicsEnabled();
+	void on_physics_enabled();
 	void on_script_right_click();
-	void OnAddScript();
-	void OnRemoveScript();
-	void OnEditScriptVars();
-	void OnOk();
-	void OnClose();
+	void on_script_add();
+	void on_script_remove();
+	void on_edit_script_vars();
+	void on_ok();
+	void on_close();
 
 	void on_update(Observable *o, const string &message) override;
 	void restart();

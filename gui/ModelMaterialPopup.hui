@@ -1,7 +1,7 @@
 Menu model-material-list-popup ""
 	Item header "Material" disabled
 	Separator
-	Item add_new_material "new" image=hui:add
-	Item add_material "load..." image=hui:open
-	Item apply_material "apply to selection" image=hui:apply
-	Item delete_material "delete" image=hui:delete
+	Item add_new_material "Add new" image=hui:add
+	Item add_material "Load..." image=hui:open
+	Item apply_material "Apply to selection" image=hui:apply
+	Item delete_material "Delete" image=hui:delete

@@ -740,9 +740,9 @@ void Edward::set_message(const string &message)
 }
 
 
-void Edward::error_box(const string &message)
-{
-	hui::ErrorBox(this, _("Error"), message);
+void Edward::error_box(const string &message) {
+	set_info_text(message, {"error", "allow-close"});
+	//hui::ErrorBox(this, _("Error"), message);
 }
 
 void Edward::on_command(const string &id)

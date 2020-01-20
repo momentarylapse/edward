@@ -2,19 +2,19 @@ Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 	Grid ? "" vertical
 		Expander material_dialog_grp_color "Colors"
 			Grid ? ""
-				Text /ambient "Ambient"
+				Text /ambient "Ambient:"
 				ColorButton mat_am "" expandx
 				---|
-				Text /diffuse "Diffuse"
+				Text /diffuse "Diffuse:"
 				ColorButton mat_di "" alpha
 				---|
-				Text /specular "Specular"
+				Text /specular "Specular:"
 				ColorButton mat_sp ""
 				---|
-				Text /shininess "Shininess"
+				Text /shininess "Shininess:"
 				SpinButton mat_shininess "" range=0:10000:0.1
 				---|
-				Text /emission "Emission"
+				Text /emission "Emission:"
 				ColorButton mat_em ""
 		Expander material_dialog_grp_textures "Textures"
 			Grid ? ""
@@ -30,12 +30,12 @@ Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 				RadioButton transparency_mode:color_key "Color key"
 				RadioButton transparency_mode:function "Function"
 				Grid mat_transp_function_grid "" indent
-					Text material_dialog_t_trans_source "source"
+					Text material_dialog_t_trans_source "Source:"
 					ComboBox alpha_source "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
 					---|
-					Text material_dialog_t_trans_dest "dest"
+					Text material_dialog_t_trans_dest "Dest:"
 					ComboBox alpha_dest "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
-				RadioButton transparency_mode:factor "Factor"
+				RadioButton transparency_mode:factor "Factor:"
 				Grid mat_transp_alpha_grid "" indent
 					SpinButton alpha_factor "" range=0:100:1
 					Text /percent "%"
@@ -43,12 +43,12 @@ Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 		Expander material_dialog_grp_reflection "Reflexions"
 			Grid ? "" vertical
 				RadioButton reflection_mode:none "No reflection"
-				RadioButton reflection_mode:cube_static "CubeMap static"
+				RadioButton reflection_mode:cube_static "Cube-map static"
 				ListView reflection_textures "face\\texture" indent
-				RadioButton reflection_mode:cube_dynamic "CubeMap dynamic"
+				RadioButton reflection_mode:cube_dynamic "Cube-map dynamic"
 				ComboBox reflection_size "64 x 64\\128 x 128\\256 x 256\\512 x 512" indent
 				Grid ? ""
-					Text material_dialog_t_refl_density "density:"
+					Text material_dialog_t_refl_density "Density:"
 					SpinButton reflection_density "" range=0:100:1
 					Text /percent "%"
 		Expander material_dialog_grp_shader "Shader"
@@ -56,16 +56,16 @@ Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 				Edit shader_file "" expandx
 				Button find_shader "" image=hui:open
 		Separator
-		Expander material_dialog_grp_friction "Coefficients of friction"
+		Expander material_dialog_grp_friction "Friction"
 			Grid ? ""
-				Text material_physics_dialog_t_rcstatic "static:"
+				Text material_physics_dialog_t_rcstatic "Static:"
 				SpinButton rcstatic "" range=0:100:0.01
 				---|
-				Text material_physics_dialog_t_rcsliding "sliding:"
+				Text material_physics_dialog_t_rcsliding "Sliding:"
 				SpinButton rcsliding "" range=0:100:0.01
 				---|
-				Text material_physics_dialog_t_rcjump "jumping:"
+				Text material_physics_dialog_t_rcjump "Jumping:"
 				SpinButton rcjump "" range=0:100:0.01
 				---|
-				Text material_physics_dialog_t_rcroll "Rolling resistance"
+				Text material_physics_dialog_t_rcroll "Rolling resistance:"
 				SpinButton rcroll "" range=0:100:0.01

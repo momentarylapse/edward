@@ -6,30 +6,30 @@ Dialog ge_dialog "Export the game" width=365 height=380
 				Edit rootdir "" disabled expandx
 				Button find_rootdir "" image="hui:open"
 				---|
-				Text ged_t_system "system aimed for:"
+				Text ged_t_system "System aimed for:"
 				ComboBox ged_system "linux\\windows 32"
 				---|
-				Text ged_t_export_type "type of export:"
+				Text ged_t_export_type "Type of export:"
 				ComboBox export_type "single files\\archive (compressed)\\archive (uncompressed)"
 		Group ged_group "Startup game values"
 			Grid ? ""
-				Text ged_t_world "world:"
+				Text ged_t_world "World:"
 				Edit default_world "" expandx
 				Button find_default_world "" image="hui:open"
 				---|
-				Text ged_t_second_world "second world"
+				Text ged_t_second_world "Second world"
 				Edit default_second_world ""
 				Button find_default_second_world "" image="hui:open"
 				---|
-				Text ged_t_script "main script:"
+				Text ged_t_script "Main script:"
 				Edit default_script ""
 				Button find_default_script "" image="hui:open"
 				---|
-				Text ged_t_material "material:"
+				Text ged_t_material "Material:"
 				Edit default_material ""
 				Button find_default_material "" image="hui:open"
 				---|
-				Text ged_t_font "font:"
+				Text ged_t_font "Font:"
 				Edit default_font ""
 				Button find_default_font "" image="hui:open"
 		Grid ? "" buttonbar

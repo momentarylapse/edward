@@ -1,8 +1,8 @@
 Dialog new_torus_dialog "new Torus" width=200 height=50 allow-root
-	Group new_torus_dialog_slides "Stripes"
+	Group new_torus_dialog_slides "New torus"
 		Grid ? ""
-			Text new_torus_dialog_t_rings "Rings"
+			Text new_torus_dialog_t_rings "Rings:"
 			SpinButton nt_rings "" range=3: expandx
 			---|
-			Text new_torus_dialog_t_edges "Edges"
+			Text new_torus_dialog_t_edges "Edges:"
 			SpinButton nt_edges "" range=2:

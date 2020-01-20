@@ -24,41 +24,41 @@ Dialog world_dialog "World properties" width=520 height=420
 				ColorButton fog_color ""
 			Grid ? "" vertical
 				Group grp_ambient "Ambient"
-					ColorButton ambient "ambient" "tooltip=general ambient light independent of other light sources"
+					ColorButton ambient "" "tooltip=general ambient light independent of other light sources"
 				Group grp_sun "Sun"
 					Grid ? "" vertical
-						CheckBox sun_enabled "enabled" expandx
+						CheckBox sun_enabled "Enabled" expandx
 						Grid ? ""
-							Text /ambient "Ambient"
+							Text /ambient "Ambient:"
 							ColorButton sun_am "" "tooltip=undirectional ambient light"
 							---|
-							Text /diffuse "Diffuse"
+							Text /diffuse "Diffuse:"
 							ColorButton sun_di "" "tooltip=direct light"
 							---|
-							Text /specular "Specular"
+							Text /specular "Specular:"
 							ColorButton sun_sp "" "tooltip=specular highlights"
 							---|
-							Text world_dialog_t_sun_ang_x "X: Altitude above horizon (X-Z-plane)"
-							SpinButton sun_ang_x "" "tooltip=Height above the horizon"
+							Text world_dialog_t_sun_ang_x "X: altitude above horizon (X-Z-plane)"
+							SpinButton sun_ang_x "" "tooltip=height above the horizon"
 							Text /degree "°"
 							---|
-							Text world_dialog_t_sun_ang_y "Y: Direction (Angle to Z-axis)"
+							Text world_dialog_t_sun_ang_y "Y: direction (angle to Z-axis)"
 							SpinButton sun_ang_y "" "tooltip=compass direction along horizon"
 							Text /degree "°"
 						Button sun_ang_from_camera "Direction from camera" image=hui:media-record
 			Grid ? "" vertical
-				CheckBox physics_enabled "enabled"
+				CheckBox physics_enabled "Enabled"
 				Group grp_gravitation "Gravity"
 					Grid ? ""
-						Text x "X"
+						Text /x "X"
 						SpinButton gravitation_x "" range=::0.1
 						Text /luss "lu/s²"
 						---|
-						Text y "Y"
+						Text /y "Y"
 						SpinButton gravitation_y "" range=::0.1
 						Text /luss "lu/s²"
 						---|
-						Text z "Z"
+						Text /z "Z"
 						SpinButton gravitation_z "" range=::0.1
 						Text /luss "lu/s²"
 			ListView script_list "File" nobar

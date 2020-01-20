@@ -1,12 +1,12 @@
 Dialog new_cylinder_dialog "New Cylinder" width=100 height=50 allow-root
-	Group g-title "new Cylinder"
+	Group g-title "New cylinder"
 		Grid ? "" vertical
 			RadioButton type:physical "Physical"
 			RadioButton type:visible "Visible"
 			Grid ? "" indent
-				Text t_rings "Rings"
+				Text t_rings "Rings:"
 				SpinButton rings "" range=1: expandx
 				---|
-				Text t_edges "Edges"
+				Text t_edges "Edges:"
 				SpinButton edges "" range=2:
 			CheckBox round "Round edges"

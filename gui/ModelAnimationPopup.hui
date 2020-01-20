@@ -1,6 +1,6 @@
 Menu model-animation-list-popup ""
 	Item title "Animation" disabled
 	Separator
-	Item animation_new "new..."
-	Item animation_copy "copy..."
-	Item animation_delete "delete"
+	Item animation_new "New..."
+	Item animation_copy "Copy..."
+	Item animation_delete "Delete"

@@ -1,6 +1,6 @@
 Menu world-script-popup "Script"
 	Item title "Script" disabled
 	Separator
-	Item add_script "add..." image=hui:add
-	Item remove_script "remove" image=hui:delete
-	Item edit_script_vars "variables..."
+	Item add_script "Add..." image=hui:add
+	Item remove_script "Remove" image=hui:delete
+	Item edit_script_vars "Edit variables..."

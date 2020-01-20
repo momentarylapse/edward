@@ -1,5 +1,5 @@
 Dialog new_teapot_dialog "new teapot" width=100 height=50 allow-root
-	Group g-title "New tapot"
+	Group g-title "New teapot"
 		Grid ? ""
-			Text new_teapot_dialog_t_samples "Samples"
+			Text t_samples "Samples:"
 			SpinButton ntp_samples "" range=1: expandx

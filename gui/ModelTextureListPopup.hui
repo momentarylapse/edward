@@ -1,9 +1,9 @@
 Menu model-texture-list-popup ""
 	Item header "Texture" disabled
 	Separator
-	Item texture-level-add "new level" image=hui:add "tooltip=add an additional texture level (multitexturing)"
-	Item texture-level-load "load..." image=hui:open "tooltip=load a texture file into the selected texture level"
-	Item texture-level-save "save..." image=hui:save "tooltip=save texture into file"
-	Item texture-level-scale "scale..." image=hui:edit "tooltip=scale texture"
-	Item texture-level-clear "clear" image=hui:clear "tooltip=replace the selected texture with homogenous white"
-	Item texture-level-delete "delete" image=hui:delete "tooltip=delete the selected texture level"
+	Item texture-level-add "New level" image=hui:add "tooltip=add an additional texture level (multitexturing)"
+	Item texture-level-load "Load..." image=hui:open "tooltip=load a texture file into the selected texture level"
+	Item texture-level-save "Save..." image=hui:save "tooltip=save texture into file"
+	Item texture-level-scale "Scale..." image=hui:edit "tooltip=scale texture"
+	Item texture-level-clear "Clear" image=hui:clear "tooltip=replace the selected texture with homogenous white"
+	Item texture-level-delete "Delete" image=hui:delete "tooltip=delete the selected texture level"

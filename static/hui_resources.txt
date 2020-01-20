@@ -5118,7 +5118,7 @@ Grid
 0
 4
 Text
-new_plane_dialog_t_x
+x
 
 0
 0
@@ -5130,7 +5130,7 @@ range=1:,expandx
 0
 0
 Text
-new_plane_dialog_t_y
+y
 
 0
 1
@@ -5161,7 +5161,7 @@ Grid
 0
 2
 Text
-new_teapot_dialog_t_samples
+t_samples
 
 0
 0
@@ -9324,10 +9324,10 @@ image=hui:execute
 # Language
 English
 # Number Of IDs
-946
+938
 # Text
 /ambient
-Ambient
+Ambient:
 
 /apply
 Apply
@@ -9342,10 +9342,10 @@ Cancel
 Delete
 
 /diffuse
-Diffuse
+Diffuse:
 
 /emission
-Emission
+Emission:
 
 /lu
 lu
@@ -9396,10 +9396,10 @@ Scale
 Select
 
 /shininess
-Shininess
+Shininess:
 
 /specular
-Specular
+Specular:
 
 /translate
 Move
@@ -9720,25 +9720,25 @@ ge_dialog/ged_system
 linux\\windows 32
 
 ge_dialog/ged_t_export_type
-type of export:
+Type of export:
 
 ge_dialog/ged_t_font
-font:
+Font:
 
 ge_dialog/ged_t_material
-material:
+Material:
 
 ge_dialog/ged_t_script
-main script:
+Main script:
 
 ge_dialog/ged_t_second_world
-second world
+Second world
 
 ge_dialog/ged_t_system
-system aimed for:
+System aimed for:
 
 ge_dialog/ged_t_world
-world:
+World:
 
 ge_dialog/ok
 OK
@@ -9804,7 +9804,7 @@ material_dialog/material_dialog_grp_color
 Colors
 
 material_dialog/material_dialog_grp_friction
-Coefficients of friction
+Friction
 
 material_dialog/material_dialog_grp_reflection
 Reflexions
@@ -9819,31 +9819,31 @@ material_dialog/material_dialog_grp_transparency
 Transparency
 
 material_dialog/material_dialog_t_refl_density
-density:
+Density:
 
 material_dialog/material_dialog_t_trans_dest
-dest
+Dest:
 
 material_dialog/material_dialog_t_trans_source
-source
+Source:
 
 material_dialog/material_physics_dialog_t_rcjump
-jumping:
+Jumping:
 
 material_dialog/material_physics_dialog_t_rcroll
-Rolling resistance
+Rolling resistance:
 
 material_dialog/material_physics_dialog_t_rcsliding
-sliding:
+Sliding:
 
 material_dialog/material_physics_dialog_t_rcstatic
-static:
+Static:
 
 material_dialog/reflection_mode:cube_dynamic
-CubeMap dynamic
+Cube-map dynamic
 
 material_dialog/reflection_mode:cube_static
-CubeMap static
+Cube-map static
 
 material_dialog/reflection_mode:none
 No reflection
@@ -9858,7 +9858,7 @@ material_dialog/transparency_mode:color_key
 Color key
 
 material_dialog/transparency_mode:factor
-Factor
+Factor:
 
 material_dialog/transparency_mode:function
 Function
@@ -11334,13 +11334,13 @@ menu_world/wire
 Wire frame
 
 model-animation-list-popup/animation_copy
-copy...
+Copy...
 
 model-animation-list-popup/animation_delete
-delete
+Delete
 
 model-animation-list-popup/animation_new
-new...
+New...
 
 model-animation-list-popup/title
 Animation
@@ -11367,16 +11367,16 @@ model-deformation-brush-dialog/t-diameter
 Diameter
 
 model-material-list-popup/add_material
-load...
+Load...
 
 model-material-list-popup/add_new_material
-new
+Add new
 
 model-material-list-popup/apply_material
-apply to selection
+Apply to selection
 
 model-material-list-popup/delete_material
-delete
+Delete
 
 model-material-list-popup/header
 Material
@@ -11406,22 +11406,22 @@ model-texture-list-popup/header
 Texture
 
 model-texture-list-popup/texture-level-add
-new level
+New level
 add an additional texture level (multitexturing)
 model-texture-list-popup/texture-level-clear
-clear
+Clear
 replace the selected texture with homogenous white
 model-texture-list-popup/texture-level-delete
-delete
+Delete
 delete the selected texture level
 model-texture-list-popup/texture-level-load
-load...
+Load...
 load a texture file into the selected texture level
 model-texture-list-popup/texture-level-save
-save...
+Save...
 save texture into file
 model-texture-list-popup/texture-level-scale
-scale...
+Scale...
 scale texture
 model-texture-paint-brush-dialog/brush-type
 icon\\type
@@ -11514,19 +11514,19 @@ model-toolbar/view_push
 Push
 Viewstage Push
 model_dialog/class
-Class...
+class...
 
 model_dialog/delete_item
 Delete item
 
 model_dialog/generate_dists_auto
-auto calculation
+Auto calculation
 
 model_dialog/generate_skin_auto
 Automatically create level of details
 
 model_dialog/generate_tensor_auto
-auto
+Auto
 
 model_dialog/lod
 #\\Visibility\\Details (%)
@@ -11541,19 +11541,19 @@ model_dialog/model_dialog_grp_tensor
 Moment of inertia tensor
 
 model_dialog/model_dialog_t_description
-Description
+Description:
 
 model_dialog/model_dialog_t_mass
-Mass
+Mass:
 
 model_dialog/model_dialog_t_maxitems
-Max items
+Max items:
 
 model_dialog/model_dialog_t_name
-Name
+Name:
 
 model_dialog/model_dialog_t_num_lod
-Number
+Number:
 
 model_dialog/model_dialog_t_scriptfile
 File
@@ -11562,16 +11562,16 @@ model_dialog/model_dialog_t_scriptvars
 Script variables
 
 model_dialog/model_dialog_tab_control
-level of detail\\physics\\inventary\\script
+Level of detail\\Physics\\Inventory\\Script
 
 model_dialog/model_inventary
 #\\File
 
 model_dialog/ph_active
-physics active
+Physics active
 
 model_dialog/ph_passive
-physics passive
+Physics passive
 
 model_dialog/tensor
 \\X\\Y\\Z
@@ -11610,10 +11610,10 @@ model_material_dialog/mat_textures
 Level\\\\Texture
 Mixing texture levels (multitexturing)\n- Actions via right click
 model_material_dialog/material_dialog_t_trans_dest
-dest
+Dest:
 
 model_material_dialog/material_dialog_t_trans_source
-source
+Source:
 
 model_material_dialog/material_list
 #\\Polygons\\\\File
@@ -11643,7 +11643,7 @@ model_material_dialog/transparency_mode:function
 Function
 
 model_material_dialog/transparency_mode:material
-Transparency from material
+From material
 
 model_material_dialog/transparency_mode:none
 No transparency
@@ -11667,46 +11667,37 @@ new_animation_dialog/new_animation_type
 vertex\\skeleton
 
 new_ball_dialog/g-title:
-new Sphere
+New sphere
 
 new_ball_dialog/new_ball_dialog
 New ball
 
 new_ball_dialog/t_complexity
-Complexity
+Complexity:
 
 new_ball_dialog/t_x
-Number of disks
+Disks:
 
 new_ball_dialog/t_y
-Sections per disk
+Sections per disk:
 
 new_ball_dialog/type:ball
 From disks
 
 new_ball_dialog/type:physical
-physical
+Physical
 
 new_ball_dialog/type:sphere
-sphere
+Sphere
 
 new_cube_dialog/ncdt_slides
-Stripes
+New cube: stripes
 
 new_cube_dialog/new_cube_dialog
 new cube
 
-new_cube_dialog/x
-X
-
-new_cube_dialog/y
-Y
-
-new_cube_dialog/z
-Z
-
 new_cylinder_dialog/g-title
-new Cylinder
+New cylinder
 
 new_cylinder_dialog/new_cylinder_dialog
 New Cylinder
@@ -11715,10 +11706,10 @@ new_cylinder_dialog/round
 Round edges
 
 new_cylinder_dialog/t_edges
-Edges
+Edges:
 
 new_cylinder_dialog/t_rings
-Rings
+Rings:
 
 new_cylinder_dialog/type:physical
 Physical
@@ -11727,25 +11718,19 @@ new_cylinder_dialog/type:visible
 Visible
 
 new_plane_dialog/g-plane
-New plane
+New plane: stripes
 
 new_plane_dialog/new_plane_dialog
 New plane
 
-new_plane_dialog/new_plane_dialog_t_x
-# srtipes X:
-
-new_plane_dialog/new_plane_dialog_t_y
-# stripes Y:
-
 new_teapot_dialog/g-title
-New tapot
+New teapot
 
 new_teapot_dialog/new_teapot_dialog
 new teapot
 
-new_teapot_dialog/new_teapot_dialog_t_samples
-Samples
+new_teapot_dialog/t_samples
+Samples:
 
 new_terrain_dialog/new_terrain_dialog
 New terrain
@@ -11763,13 +11748,13 @@ new_torus_dialog/new_torus_dialog
 new Torus
 
 new_torus_dialog/new_torus_dialog_slides
-Stripes
+New torus
 
 new_torus_dialog/new_torus_dialog_t_edges
-Edges
+Edges:
 
 new_torus_dialog/new_torus_dialog_t_rings
-Rings
+Rings:
 
 progress_cancelable_dialog/cancel
 Cancel
@@ -11943,13 +11928,13 @@ world-edit-toolbar/terrain_create
 add terrain
 
 world-script-popup/add_script
-add...
+Add...
 
 world-script-popup/edit_script_vars
-variables...
+Edit variables...
 
 world-script-popup/remove_script
-remove
+Remove
 
 world-script-popup/title
 Script
@@ -11958,10 +11943,10 @@ world-script-popup/world-script-popup
 Script
 
 world-skybox-popup/skybox-remove
-remove
+Remove
 
 world-skybox-popup/skybox-select
-select...
+Select...
 
 world-skybox-popup/title
 Skybox
@@ -12012,7 +11997,7 @@ world_camera_dialog/world_camera_dialog
 Camera flight
 
 world_dialog/ambient
-ambient
+
 general ambient light independent of other light sources
 world_dialog/bgc
 
@@ -12054,7 +12039,7 @@ world_dialog/grp_sun
 Sun
 
 world_dialog/physics_enabled
-enabled
+Enabled
 
 world_dialog/script_list
 File
@@ -12070,7 +12055,7 @@ Direction from camera
 
 world_dialog/sun_ang_x
 
-Height above the horizon
+height above the horizon
 world_dialog/sun_ang_y
 
 compass direction along horizon
@@ -12078,7 +12063,7 @@ world_dialog/sun_di
 
 direct light
 world_dialog/sun_enabled
-enabled
+Enabled
 
 world_dialog/sun_sp
 
@@ -12096,22 +12081,13 @@ world_dialog/world_dialog_t_fog_start
 Distance
 
 world_dialog/world_dialog_t_sun_ang_x
-X: Altitude above horizon (X-Z-plane)
+X: altitude above horizon (X-Z-plane)
 
 world_dialog/world_dialog_t_sun_ang_y
-Y: Direction (Angle to Z-axis)
+Y: direction (angle to Z-axis)
 
 world_dialog/world_dialog_tab_control
 Background\\Fog\\Light\\Physics\\Scripts
-
-world_dialog/x
-X
-
-world_dialog/y
-Y
-
-world_dialog/z
-Z
 
 world_new_object_dialog/t_name
 Name

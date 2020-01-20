@@ -214,7 +214,7 @@ void ModelMaterialDialog::on_material_load() {
 }
 
 void ModelMaterialDialog::on_material_delete() {
-	hui::ErrorBox(win, "", _("not implemented yet"));
+	ed->error_box(_("not implemented yet"));
 }
 
 void ModelMaterialDialog::on_material_apply() {
