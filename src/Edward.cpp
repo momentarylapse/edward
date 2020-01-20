@@ -19,6 +19,7 @@
 #include "MultiView/MultiView.h"
 #include "MultiView/ColorScheme.h"
 #include "MultiView/DrawingHelper.h"
+#include "Storage/Storage.h"
 #include "x/world.h"
 #include "x/camera.h"
 #include "meta.h"
@@ -274,6 +275,8 @@ Edward::Edward(Array<string> arg) :
 	mode_world = new ModeWorld;
 	mode_font = new ModeFont;
 	mode_administration = new ModeAdministration;
+
+	storage = new Storage();
 
 	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;
 	mworld->FFVBinaryMap = true;*/
