@@ -29,9 +29,11 @@ class Format {
 public:
 	enum class Flag {
 		NONE = 0,
-		LOAD = 1,
-		SAVE = 2,
-		LOAD_AND_SAVE = 3,
+		READ = 1,
+		WRITE = 2,
+		READ_WRITE = 3,
+		CANONICAL = 4,
+		CANONICAL_READ_WRITE = 7,
 	};
 
 

@@ -9,8 +9,6 @@
 #include "../../Storage/Storage.h"
 #include "ModeModel.h"
 #include "../../Data/Model/DataModel.h"
-#include "../../Data/Model/Import/Importer3ds.h"
-#include "../../Data/Model/Import/ImporterPly.h"
 #include "Mesh/ModeModelMesh.h"
 #include "Mesh/ModeModelMeshMaterial.h"
 #include "Mesh/ModeModelMeshDeform.h"
@@ -226,13 +224,15 @@ bool ModeModel::import_open_3ds()
 
 bool ModeModel::import_load_3ds(const string &filename)
 {
-	Importer3ds im;
-	if (!im.Import(data, filename))
-		return false;
+	try {
+		storage->load(filename, data);
 
-	ed->set_mode(this);
-	mode_model_mesh->optimize_view();
-	return true;
+		ed->set_mode(this);
+		mode_model_mesh->optimize_view();
+		return true;
+	} catch(...) {
+		return false;
+	}
 }
 
 bool ModeModel::import_open_json()
@@ -246,13 +246,15 @@ bool ModeModel::import_open_json()
 
 bool ModeModel::import_load_ply(const string &filename)
 {
-	ImporterPly im;
-	if (!im.Import(data, filename))
-		return false;
+	try {
+		storage->load(filename, data);
 
-	ed->set_mode(this);
-	mode_model_mesh->optimize_view();
-	return true;
+		ed->set_mode(this);
+		mode_model_mesh->optimize_view();
+		return true;
+	} catch(...) {
+		return false;
+	}
 }
 
 bool ModeModel::import_open_ply()

@@ -1,22 +1,18 @@
 /*
- * Importer3ds.cpp
+ * FormatModel3ds.cpp
  *
- *  Created on: 07.03.2013
+ *  Created on: 20.01.2020
  *      Author: michi
  */
 
-#include "Importer3ds.h"
+#include "FormatModel3ds.h"
+#include "../../Edward.h"
 
-Importer3ds::Importer3ds()
-{
+FormatModel3ds::FormatModel3ds() : TypedFormat<DataModel>(FD_MODEL, "3ds", _("Model 3ds"), Flag::READ) {
 }
 
-Importer3ds::~Importer3ds()
-{
-}
+void FormatModel3ds::_load(const string &filename, DataModel *m, bool deep) {
 
-bool Importer3ds::Import(DataModel *m, const string &filename)
-{
 	m->reset();
 
 	File *f = FileOpen(filename);
@@ -44,16 +40,15 @@ bool Importer3ds::Import(DataModel *m, const string &filename)
 				break;
 			case 0x4100:
 				msg_write("ObjTrimesh");
-				LoadMesh(m, f, length);
+				load_mesh(m, f, length);
 				break;
 			case 0x0000:
-				msg_error("interner Fehler... (0x0000)");
+				throw FormatError("internal error... (0x0000)");
 				break;
 			default:
 				msg_write(format("-unbekannt-  %x - %d", id, length));
 				if (length>10000000){
-					msg_error("interner Fehler... (zu gro&se Abschnittsl&ange!)");
-					return false;
+					throw FormatError("internal error... (chunk too large)");
 				}
 				f->seek(length - 6);
 				break;
@@ -66,10 +61,11 @@ bool Importer3ds::Import(DataModel *m, const string &filename)
 
 	m->importFromTriangleSkin(1);
 	m->reset_history();
-	return true;
 }
 
-void Importer3ds::LoadMesh(DataModel *m, File *f, int _length)
+
+
+void FormatModel3ds::load_mesh(DataModel *m, File *f, int _length)
 {
 	msg_right();
 	int NumVerticesOld = m->skin[1].vertex.num;
@@ -128,3 +124,7 @@ void Importer3ds::LoadMesh(DataModel *m, File *f, int _length)
 	msg_left();
 }
 
+
+
+void FormatModel3ds::_save(const string &filename, DataModel *data) {
+}

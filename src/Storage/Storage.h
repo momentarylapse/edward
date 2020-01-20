@@ -18,6 +18,9 @@ public:
 	void load(const string &filename, Data *data, bool deep = true);
 	void save(const string &filename, Data *data);
 
+	bool open(Data *data);
+	bool save_as(Data *data);
+
 	Array<Format*> formats;
 };
 

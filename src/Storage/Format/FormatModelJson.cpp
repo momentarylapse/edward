@@ -8,7 +8,7 @@
 #include "FormatModelJson.h"
 #include "../../Edward.h"
 
-FormatModelJson::FormatModelJson() : TypedFormat<DataModel>(FD_MODEL, "json", _("Model json"), Flag::LOAD_AND_SAVE) {
+FormatModelJson::FormatModelJson() : TypedFormat<DataModel>(FD_MODEL, "json", _("Model json"), Flag::READ_WRITE) {
 	f = nullptr;
 	cur_token = -1;
 }

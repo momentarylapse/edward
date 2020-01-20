@@ -1,26 +1,20 @@
 /*
- * ImporterPly.cpp
+ * FormatModelPly.cpp
  *
- *  Created on: Jun 10, 2015
- *      Author: ankele
+ *  Created on: 20.01.2020
+ *      Author: michi
  */
 
-#include "ImporterPly.h"
+#include "FormatModelPly.h"
+#include "../../Edward.h"
 
-ImporterPly::ImporterPly()
-{
+FormatModelPly::FormatModelPly() : TypedFormat<DataModel>(FD_MODEL, "ply", _("Model ply"), Flag::READ) {
 }
 
-ImporterPly::~ImporterPly()
-{
-}
-
-
-bool ImporterPly::Import(DataModel *m, const string &filename)
-{
+void FormatModelPly::_load(const string &filename, DataModel *m, bool deep) {
 	m->reset();
 	m->action_manager->enable(false);
-	f = NULL;
+	File *f = NULL;
 	bool ok = true;
 
 	try{
@@ -58,5 +52,7 @@ bool ImporterPly::Import(DataModel *m, const string &filename)
 		delete(f);
 
 	m->action_manager->enable(true);
-	return ok;
+}
+
+void FormatModelPly::_save(const string &filename, DataModel *data) {
 }
