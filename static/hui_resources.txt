@@ -9352,7 +9352,7 @@ image=hui:execute
 # Language
 Deutsch
 # Number Of IDs
-939
+947
 # Text
 /ambient
 Ambient
@@ -11696,7 +11696,7 @@ bearbeiten
 
 model_material_selection_dialog/material_list
 #\\Polygone\\\\Datei
-
+- Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- die Auswahl wird für folgende neue Polygone verwendet
 model_material_selection_dialog/model_material_selection_dialog
 Ein Material auswählen
 
@@ -12033,12 +12033,21 @@ Kamera-Fahrt
 world_dialog/add_script
 Hinzufügen
 
+world_dialog/ambient
+
+Generelles Umgebungslicht zusätzlich zu allen Lichtquellen
 world_dialog/bgc
 
 Farbe des Himmels
 world_dialog/edit_script_vars
 Variablen...
 
+world_dialog/fog_distance
+
+Nebelintensität = exp( - Entfernung / Sichtweite )
+world_dialog/fog_end
+
+maximale Sichtweite, dahinter hat der Nebel volle Intensität
 world_dialog/fog_mode:exp
 Exponentiell
 
@@ -12084,12 +12093,27 @@ Datei
 world_dialog/skybox
 #\\Modell
 Modelle, die über die Hintergrundfarbe gemalt werden\n- Doppelklick um ein Modell zu wählen
+world_dialog/sun_am
+
+ungerichtetes Umgebungslicht
 world_dialog/sun_ang_from_camera
 Richtung aus Kamerawinkel
 
+world_dialog/sun_ang_x
+
+Höhe &uber dem Horizont
+world_dialog/sun_ang_y
+
+Kompassrichtung entlang des Horizonts
+world_dialog/sun_di
+
+frontales Licht
 world_dialog/sun_enabled
 aktiviert
 
+world_dialog/sun_sp
+
+Glanzlicht
 world_dialog/world_dialog
 Welt-Eigenschaften
 
@@ -12177,7 +12201,7 @@ Script-Funktion
 # Language
 English
 # Number Of IDs
-963
+1114
 # Text
 /ambient
 Ambient
@@ -12206,17 +12230,26 @@ lu
 /luss
 lu/s^2
 
+/mirror
+Reflect
+
 /ms
 ms
 
 /mu
 mu
 
+/new
+New
+
 /ok
 Ok
 
 /ok"
 Ok
+
+/open
+Open...
 
 /percent
 %
@@ -12227,11 +12260,26 @@ Preview
 /redo
 Redo
 
+/rotate
+Rotate
+
+/save
+Save...
+
+/scale
+Scale
+
+/select
+Select
+
 /shininess
 Shininess
 
 /specular
 Specular
+
+/translate
+Move
 
 /undo
 Undo
@@ -12623,6 +12671,9 @@ max. range
 fx_dialog/fxt_soundspeed
 speed
 
+fx_dialog/intensity
+
+attracting acceleration, Linear: maximum value, 1/r^2: Value at r=100 lu
 fx_dialog/lu
 lu
 
@@ -12977,6 +13028,9 @@ Material
 menu_font/menu_model
 Model
 
+menu_font/menu_project
+Project
+
 menu_font/menu_world
 World
 
@@ -12990,6 +13044,12 @@ menu_font/new
 New
 
 menu_font/open
+Open...
+
+menu_font/project_new
+New...
+
+menu_font/project_open
 Open...
 
 menu_font/save
@@ -13085,6 +13145,9 @@ Shape
 menu_material/menu_model
 Model
 
+menu_material/menu_project
+Project
+
 menu_material/menu_world
 World
 
@@ -13105,6 +13168,12 @@ Open...
 
 menu_material/opt_view
 Optimal
+
+menu_material/project_new
+New...
+
+menu_material/project_open
+Open...
 
 menu_material/save
 Save
@@ -13204,6 +13273,9 @@ Three.js (json)...
 
 menu_model/extrude_triangles
 Extrude
+
+menu_model/extrude_triangles_independent
+Extrude (independent)
 
 menu_model/flatten_vertices
 Flatten
@@ -13346,6 +13418,9 @@ View
 menu_model/menu_model_viewstage
 Viewstage
 
+menu_model/menu_project
+Project
+
 menu_model/menu_rightmouse
 Right mouse button
 
@@ -13472,6 +13547,12 @@ Optimal
 menu_model/paste
 Paste
 
+menu_model/project_new
+New...
+
+menu_model/project_open
+Open...
+
 menu_model/redo
 Redo
 
@@ -13504,6 +13585,9 @@ Report a bug
 
 menu_model/settings
 Settings...
+
+menu_model/snap_to_grid
+Sticky grid
 
 menu_model/subdivide_surfaces
 Subdivide
@@ -13913,6 +13997,9 @@ New
 menu_skeleton/material_open
 Open...
 
+menu_skeleton/menu_edit
+Edit
+
 menu_skeleton/menu_file
 File
 
@@ -14029,6 +14116,9 @@ Selection
 
 menu_skeleton/skeleton_unlink
 Unlink
+
+menu_skeleton/snap_to_grid
+Sticky grid
 
 menu_skeleton/view_pop
 Pop out
@@ -14162,6 +14252,9 @@ Model
 menu_world/menu_model_viewstage
 Viewstage
 
+menu_world/menu_project
+Project
+
 menu_world/menu_terrain_texture
 Terrain texture
 
@@ -14225,6 +14318,12 @@ Own character
 menu_world/paste
 Paste
 
+menu_world/project_new
+New...
+
+menu_world/project_open
+Open...
+
 menu_world/redo
 Redo
 
@@ -14260,6 +14359,9 @@ Points
 
 menu_world/show_terrains
 Terrains
+
+menu_world/snap_to_grid
+Sticky grid
 
 menu_world/terrain_create
 Terrain (new)...
@@ -14324,8 +14426,191 @@ New
 menu_world/world_open
 Open...
 
+model-animation-list-popup/animation_copy
+copy...
+
+model-animation-list-popup/animation_delete
+delete
+
+model-animation-list-popup/animation_new
+new...
+
+model-animation-list-popup/title
+Animation
+
+model-animation-skeleton-toolbar/select-recursive
+Edit recursively
+
+model-deformation-brush-dialog/brush-type
+type
+
+model-deformation-brush-dialog/g-brush
+Deformation brush
+
+model-deformation-brush-dialog/g-type
+Function
+
+model-deformation-brush-dialog/model-deformation-brush-dialog
+Deformation
+
+model-deformation-brush-dialog/t-depth
+Depth
+
+model-deformation-brush-dialog/t-diameter
+Diameter
+
+model-material-list-popup/add_material
+load...
+
+model-material-list-popup/add_new_material
+new
+
+model-material-list-popup/apply_material
+apply to selection
+
+model-material-list-popup/delete_material
+delete
+
+model-material-list-popup/header
+Material
+
+model-mesh-toolbar/new_ball
+Sphere
+
+model-mesh-toolbar/new_cube
+Cube
+
+model-mesh-toolbar/new_cylinder
+Cylinder
+
+model-mesh-toolbar/new_plane
+Plane
+
+model-mesh-toolbar/new_tria
+Polygon
+
+model-mesh-toolbar/snap_to_grid
+Sticky grid
+
+model-skeleton-toolbar/skeleton_new_point
+new bone
+
+model-texture-list-popup/header
+Texture
+
+model-texture-list-popup/texture-level-add
+new level
+add an additional texture level (multitexturing)
+model-texture-list-popup/texture-level-clear
+clear
+replace the selected texture with homogenous white
+model-texture-list-popup/texture-level-delete
+delete
+delete the selected texture level
+model-texture-list-popup/texture-level-load
+load...
+load a texture file into the selected texture level
+model-texture-list-popup/texture-level-save
+save...
+save texture into file
+model-texture-list-popup/texture-level-scale
+scale...
+scale texture
+model-texture-paint-brush-dialog/brush-type
+icon\\type
+
+model-texture-paint-brush-dialog/g-brush
+Brush
+
+model-texture-paint-brush-dialog/g-pressure
+Pressure
+
+model-texture-paint-brush-dialog/g-type
+Shape
+
+model-texture-paint-brush-dialog/model-texture-paint-brush-dialog
+Deformation
+
+model-texture-paint-brush-dialog/opacity-by-pressure
+influence opacity
+
+model-texture-paint-brush-dialog/scale-by-pressure
+influence size
+
+model-texture-paint-brush-dialog/t-alpha
+Alpha
+
+model-texture-paint-brush-dialog/t-color
+Color
+
+model-texture-paint-brush-dialog/t-diameter
+Diameter
+
+model-texture-paint-brush-dialog/t-opacity
+Opacity
+
+model-texture-toolbar/mirror
+Reflect
+
+model-texture-toolbar/rotate
+Rotate
+
+model-texture-toolbar/scale
+Scale
+
+model-texture-toolbar/select
+Select
+
+model-texture-toolbar/translate
+Move
+
+model-toolbar/mode_model_animation
+Animations
+
+model-toolbar/mode_model_deform
+Deformation mode
+
+model-toolbar/mode_model_edge
+Edges
+
+model-toolbar/mode_model_materials
+Materials
+
+model-toolbar/mode_model_mesh
+Mesh
+
+model-toolbar/mode_model_paint
+Paint on mesh (into texture)
+
+model-toolbar/mode_model_polygon
+Polygons
+
+model-toolbar/mode_model_skeleton
+Skeleton
+
+model-toolbar/mode_model_surface
+Surfaces
+
+model-toolbar/mode_model_texture_coord
+Texture coordinates
+
+model-toolbar/mode_model_vertex
+Vertex points
+
+model-toolbar/mode_properties
+Properties
+
+model-toolbar/view_pop
+Pop
+Viewstage Pop
+model-toolbar/view_push
+Push
+Viewstage Push
 model_dialog/cancel
 Cancel
+
+model_dialog/class
+Class...
 
 model_dialog/delete_item
 Delete item
@@ -14399,6 +14684,9 @@ model_dialog/script_vars
 model_dialog/tensor
 \\X\\Y\\Z
 
+model_dialog/variables
+Name\\Type\\Value
+
 model_material_dialog/add_material
 New...
 
@@ -14432,15 +14720,30 @@ emission
 model_material_dialog/mat_add_texture_level
 new level
 
+model_material_dialog/mat_am
+
+Color in shadows (ambient light)
 model_material_dialog/mat_delete_texture_level
 delete level
 
+model_material_dialog/mat_di
+
+Color in direct light
+model_material_dialog/mat_em
+
+Color in absolute darkness
 model_material_dialog/mat_empty_texture_level
 Empty
 
+model_material_dialog/mat_shininess
+
+Harshness of highlights (10=soft, 100=harsh)
+model_material_dialog/mat_sp
+
+Color of specular highlights
 model_material_dialog/mat_textures
 Level\\Texture
-
+Mixing texture levels (multitexturing)\n- Actions via right click
 model_material_dialog/material_dialog_t_trans_dest
 dest
 
@@ -14449,7 +14752,7 @@ source
 
 model_material_dialog/material_list
 Material\\Triangles\\File
-
+Materials\n - Actions via right click
 model_material_dialog/model_material_dialog
 Material
 
@@ -14476,7 +14779,7 @@ specular
 
 model_material_dialog/transparency_mode:color_key
 Color key
-
+Pure green turns transparent
 model_material_dialog/transparency_mode:factor
 Factor
 
@@ -14500,7 +14803,7 @@ edit
 
 model_material_selection_dialog/material_list
 Material\\Triangles\\File
-
+- double click to apply material\n- select and press button \"edit\" to edit\n- selection will be used for new polygons
 model_material_selection_dialog/model_material_selection_dialog
 Select a material
 
@@ -14528,6 +14831,9 @@ from slices
 new_ball_dialog/ball_type:sphere
 sphere
 
+new_ball_dialog/g-title:
+new Sphere
+
 new_ball_dialog/new_ball_dialog
 New ball
 
@@ -14539,6 +14845,24 @@ new_ball_dialog/new_ball_dialog_t_x
 
 new_ball_dialog/new_ball_dialog_t_y
 # vertices per disc
+
+new_ball_dialog/t_complexity
+Complexity
+
+new_ball_dialog/t_x
+Number of disks
+
+new_ball_dialog/t_y
+Sections per disk
+
+new_ball_dialog/type:ball
+From disks
+
+new_ball_dialog/type:physical
+physical
+
+new_ball_dialog/type:sphere
+sphere
 
 new_cube_dialog/ncdt_slides
 Stripes
@@ -14555,6 +14879,9 @@ Y
 new_cube_dialog/z
 Z
 
+new_cylinder_dialog/g-title
+new Cylinder
+
 new_cylinder_dialog/new_cylinder_dialog
 New Cylinder
 
@@ -14564,6 +14891,24 @@ edges
 new_cylinder_dialog/new_cylinder_dialog_t_rings
 rings
 
+new_cylinder_dialog/round
+Round edges
+
+new_cylinder_dialog/t_edges
+Edges
+
+new_cylinder_dialog/t_rings
+Rings
+
+new_cylinder_dialog/type:physical
+Physical
+
+new_cylinder_dialog/type:visible
+Visible
+
+new_plane_dialog/g-plane
+New plane
+
 new_plane_dialog/new_plane_dialog
 New plane
 
@@ -14572,6 +14917,9 @@ new_plane_dialog/new_plane_dialog_t_x
 
 new_plane_dialog/new_plane_dialog_t_y
 # stripes Y:
+
+new_teapot_dialog/g-title
+New tapot
 
 new_teapot_dialog/new_teapot_dialog
 new teapot
@@ -14672,6 +15020,12 @@ X
 scaling_dialog/z
 Z
 
+script_vars_dialog/script_vars_dialog
+Variables
+
+script_vars_dialog/variables
+Name\\Type\\Value
+
 scriptvar_dialog/cancel
 Cancel
 
@@ -14723,6 +15077,12 @@ Terrain file
 terrain_dialog/t_material
 Material
 
+terrain_dialog/t_raster
+Grid size
+
+terrain_dialog/t_stripes
+Stripes
+
 terrain_dialog/terrain_dialog
 Terrain properties
 
@@ -14762,6 +15122,9 @@ Cancel
 terrain_heightmap_dialog/grp_apply
 Apply
 
+terrain_heightmap_dialog/grp_heightmap
+Height from brightness of a image file
+
 terrain_heightmap_dialog/height_op:add
 Add
 
@@ -14788,6 +15151,9 @@ Maximum height
 
 terrain_heightmap_dialog/t_heightmap
 Height map
+
+terrain_heightmap_dialog/t_op
+Operation
 
 terrain_heightmap_dialog/t_stretch
 Scaling x/z
@@ -14822,9 +15188,66 @@ X
 terrain_heightmap_dialog/z
 Z
 
+texture-scale-dialog/cancel
+Cancel
+
+texture-scale-dialog/ok
+Ok
+
+texture-scale-dialog/texture-scale-dialog
+Scale texture
+
 welcome_dialog/welcome_dialog
 Welcome to Edward.
 
+world-camera-toolbar/cam_new
+New
+
+world-camera-toolbar/cam_open
+Open...
+
+world-camera-toolbar/cam_redo
+Redo
+
+world-camera-toolbar/cam_save
+Save...
+
+world-camera-toolbar/cam_undo
+Undo
+
+world-camera-toolbar/view_pop
+Pop
+Viewstage Pop
+world-camera-toolbar/view_push
+Push
+Viewstage Push
+world-edit-toolbar/create_objects
+add object
+
+world-edit-toolbar/terrain_create
+add terrain
+
+world-toolbar/create_lightmap
+Render lightmap
+
+world-toolbar/mode_world
+Objects and terrains
+
+world-toolbar/mode_world_camera
+Camera flight
+
+world-toolbar/mode_world_terrain
+Height map
+
+world-toolbar/selection_properties
+Properties
+
+world-toolbar/view_pop
+Pop
+Viewstage Pop
+world-toolbar/view_push
+Push
+Viewstage Push
 world_camera_dialog/add_point
 Add
 
@@ -14851,10 +15274,13 @@ Add
 
 world_dialog/ambient
 ambient
-
+general ambient light independent of other light sources
 world_dialog/apply
 Apply
 
+world_dialog/bgc
+
+Sky color
 world_dialog/cancel
 Cancel
 
@@ -14864,6 +15290,15 @@ world_dialog/degree
 world_dialog/diffuse
 diffuse
 
+world_dialog/edit_script_vars
+Variables...
+
+world_dialog/fog_distance
+
+fog intensity = exp( - distance / viewing-distance )
+world_dialog/fog_end
+
+maximum viewing distance before full fog intensity
 world_dialog/fog_mode:exp
 Exponential
 
@@ -14875,6 +15310,24 @@ Linear
 
 world_dialog/fog_mode:none
 Deactivated
+
+world_dialog/fog_start
+
+Distance, at which fog starts (intensity 0)
+world_dialog/grp_ambient
+Ambient
+
+world_dialog/grp_bg_color
+Color
+
+world_dialog/grp_gravitation
+Gravity
+
+world_dialog/grp_skybox
+Skybox models
+
+world_dialog/grp_sun
+Sun
 
 world_dialog/luss
 lu/s^2
@@ -14899,16 +15352,31 @@ world_dialog/script_vars
 
 world_dialog/skybox
 #\\model ('SkyBox')
-
+Models drawn over the sky color\n- double click to select
 world_dialog/specular
 specular
 
+world_dialog/sun_am
+
+undirectional ambient light
 world_dialog/sun_ang_from_camera
 Direction from camera
 
+world_dialog/sun_ang_x
+
+Height above the horizon
+world_dialog/sun_ang_y
+
+compass direction along horizon
+world_dialog/sun_di
+
+direct light
 world_dialog/sun_enabled
 enabled
 
+world_dialog/sun_sp
+
+specular highlights
 world_dialog/world_dialog
 World properties
 
@@ -15046,12 +15514,21 @@ Delete
 
 world_scriptfunc_dialog/level
 0
-
+influences order
 world_scriptfunc_dialog/location
 CalcMove 1\\CalcMove 2\\Render 1\\Render 2\\Render 3\\GetInput 1\\GetInput 2
 
 world_scriptfunc_dialog/ok
 OK
+
+world_scriptfunc_dialog/t_called_by
+Call by:
+
+world_scriptfunc_dialog/t_delay
+Pseudo delay:
+
+world_scriptfunc_dialog/t_name
+Function name:
 
 world_scriptfunc_dialog/world_scriptfunc_dialog
 Script function
@@ -15069,7 +15546,7 @@ world_scriptfunc_dialog/world_scriptfunc_dialog_t_name
 name of function:
 
 # Num Language Strings
-236
+280
 # Text
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -15121,12 +15598,16 @@ Angegebene Welt konnte nicht korrekt geladen werden!
 World could not be loaded correctly!
 Animation
 Animation
+Animation eingefügt -  auf %d Knochen
+Animation inserted - on %d bones
 Animation eingefügt -  auf &d Knochen
 Animation pastes - on %d bones
 Animation eingefügt - einzelner Knochen
 Animation pasted - single bone
 Animation eingefügt - einzelner Knochen auf mehrere
 Animation pasted - single bone onto multiple
+Animation von allen %d Knochen kopiert
+copied animation of %d bones
 Animation von allen &d Knochen kopiert
 Animation copied from %d bones
 Animation von einzelnem Knochen kopiert
@@ -15141,6 +15622,8 @@ Arbeitsverzeichnis \"%s\" enthält keine \"game.ini\"-Datei. Soll diese erstellt
 Woring directory \"%s\" does not contain a file named \"game.ini\". Do you want one to be created?
 Ausbeulen/Eindellen
 Bump in/out
+Ausbeulen/eindellen
+bump in/out
 Beispiel Text 0123456789
 Example text 0123456789
 Beschreibung
@@ -15201,6 +15684,8 @@ Exportiere Spiel
 Export game
 Extrudieren: Offset durch Maus, Linke Taste = fertig
 Extrude: offset via mouse, left button = done
+Extrudieren: Offset durch Maus, Linke Taste = fertig    
+Extrude: Offset via mouse, left click = done
 Falsches Datei-Format der Datei '%s': %d (statt %d - %d)
 File %s has a wrong file format: %d (expected: %d - %d)!
 Falsches Dateiformat der Datei %s: %d (statt %d)!
@@ -15287,14 +15772,24 @@ Karten-Datei
 Terrain files
 Kein Punkt markiert!
 No vertex point selected
+Kein Punkt mit Effekt markiert!
+No vertex with effects selected!
+Klasse: 
+Class: 
 Knochen setzen
 Set bone
+Knochen setzen oder Wurzel-Knochen wählen
+Place bone or choose parent bone
+Komplexifizieren
+Complexify
 Kraftfeld
 Forcefield
 Kugel
 Sphere
 Kugel skalieren
 Scale the sphere
+Kugelradius: 
+Sphere radius: 
 Kugelzentrum wählen
 Select center of sphere
 Lade Welt
@@ -15327,6 +15822,8 @@ Modell-Datei
 Model file
 Modelle (*.model)
 Models (*.model)
+Modelle, die über die Hintergrundfarge gemalt werden\n- Doppelklick um ein Modell zu wählen
+Models drawn over the sky color\n- double click to select
 Nachrichten
 Messages
 Name:
@@ -15357,6 +15854,8 @@ Polygon
 Polygon
 Polygon wählen: %d -> Shift + Return
 Select polygon: %d -> Shift + Return
+Polygon wählen: %d -> [Ctrl + Return]
+Choose polygon -> [Ctrl + Return]
 Polygone
 Polygons
 Polygone: %d (von %d)
@@ -15365,10 +15864,18 @@ Pop
 Pop
 Program was compiled without network support...
 Program was compiled without network support...
+Projekt-Verzeichnis öffnen
+Open project directory
+Punkt setzen
+Add point
 Push
 Push
 Quader
 Cube
+Radius skalieren [Linke Maustaste = fertig]
+Scale radius [left click = done]
+Radius skalieren [Linke Maustaste = fertig]   
+Scale radius [left click = done]   
 Rechts
 Right
 Rechts (-x)
@@ -15385,6 +15892,10 @@ Script
 Script
 Script-Datei
 Script file
+Script-Datei enthält keine Funktion \"void OnEffectCreate( effect )\"
+Script file does not contain a function \"void OnEffectCreate( effect )\"
+Script-Datei enthält keine Funktion \"void OnEffectIterate( effect )\"
+Script file does not contain a function \"void OnEffectIterate( effect )\"
 Script-Dateien (*.kaba)
 Script files (*.kaba)
 Selektieren
@@ -15421,6 +15932,8 @@ Teste Dateien
 Checking files
 Textur
 Texture
+Textur skalieren
+Scale texture
 Textur-Datei
 Texture file
 Textur-Datei nicht ladbar: %s
@@ -15431,6 +15944,16 @@ Texturen (bmp,jpg,tga,png,avi)
 Textures (bmp,jpg,tga,png,avi)
 Tiefe
 Depth
+Torus außen skalieren
+Torus outer scale
+Torus außen skalieren: 
+Torus outer scale: 
+Torus innen skalieren
+Torus inner scale
+Torus innen skalieren: 
+Torus inner scale:
+Toruszentrum wählen
+Select torus center
 Unbekannte Dateinamenerweiterung: 
 Unknown file extension: 
 Unbenannt
@@ -15443,8 +15966,14 @@ Verschieben
 Move
 Vertex
 Vertex
+Vertexpunkte: %d (von %d)
+Vertices: %d (of %d)
 Vertices
 Vertices
+Vertices auswählen, [Ctrl + Return] = fertig
+Select vertices, [Ctrl + Return] = done
+Verzeichnis für neues Projekt wählen
+Choose a directory for the new project
 ViewStage Pop
 ViewStage Pop
 ViewStage Push
@@ -15459,12 +15988,18 @@ Welt-Datei
 World file
 Welten (*.world)
 Worlds (*.world)
+Würfel Grundseite: 
+Cube base area: 
+Würfel: 
+Cube: 
 Würfel: Punkt 1 / 3
 Cube: point 1 / 3
 Würfel: Punkt 2 / 3
 Cube: point 2 / 3
 Würfel: Punkt 3 / 3
 Cube: point 3 / 3
+Würfel: ersten Eckpunkt setzen
+Cube: place first corner point
 Your comments and the contents of the file message.txt will be sent.
 Your comments and the contents of the file message.txt will be sent.
 Zentrum wählen
@@ -15479,22 +16014,40 @@ Zylinder: Radius
 Cylinder: radius
 Zylinder: Startpunkt
 Cylinder: starting point
+Zylinderlänge: 
+Cylinder length: 
+Zylinderradius: 
+Cylinder radius: 
+Zylinderschlange... Punkte + [Ctrl + Return]
+Cylinder snake... points + [Ctrl + Return]
 [Engine]
 [Engine]
 \\\\   - keine Texturen -
 \\\\   - no textures -
 administrieren
 administrate
+auf Zeitleiste klicken
+click on timeline
+auf das Terrain malen
+paint onto terrain
 beliebige Datei
 arbitrary file
 berechne Licht
 calculating light
 berechne Textur
 calculating texture
+der letzte Frame kann nicht gelöscht werden
+can not delete the only frame
+drag rings, [Control] + click -> copy, [Delete] -> delete, [Ctrl + Return] -> done
+drag rings, [Control] + click -> copy, [Delete] -> delete, [Ctrl + Return] -> done
+game.ini nicht gefunden
+game.ini not found
 i'm now going to clean up...
 i'm now going to clean up...
 kein Dreieck ausgewählt
 no triangle selected
+keine Funktion vom Typ 'vector f(vector)' gefunden
+no function of type 'vector f(vector)' found
 keine doppelten Punkte erlaubt!
 No double points allowed!
 maximale Sichtweite, dahinter hat der Nebel volle Intensität
@@ -15505,6 +16058,12 @@ move
 move
 neue Punkte setzen
 place new vertex
+neuen Punkt in Polygon setzen
+place new vertex into polygon
+neues Objekt auswählen
+select new object
+neues Objekt setzen
+place new object
 neues Terrain...
 new terrain...
 nichts markiert
@@ -15523,12 +16082,18 @@ rotate
 rotate
 scale
 scale
+selected: %d objects, %d terrains
+selected: %d objects, %d terrains
 skalieren
 scale
 skin: %d
 skin: %d
+source
+source
 surf: %d
 surf: %d
+verschieben, [linke Maustaste] zum Einfügen
+move, [left click] to insert
 vert: %d
 vert: %d
 x-axis

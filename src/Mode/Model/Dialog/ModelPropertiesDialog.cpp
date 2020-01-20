@@ -31,8 +31,6 @@ ModelPropertiesDialog::ModelPropertiesDialog(hui::Window *_parent, bool _allow_p
 	data = _data;
 	active = true;
 
-	set_tooltip("material_list", _("- Doppelklick um ein Material zu editieren\n- Auswahl wird f&ur folgende neue Polygone verwendet"));
-
 	event("cancel", std::bind(&ModelPropertiesDialog::OnClose, this));
 	event("hui:close", std::bind(&ModelPropertiesDialog::OnClose, this));
 	event("ok", std::bind(&ModelPropertiesDialog::OnOk, this));

@@ -16,36 +16,36 @@ Dialog world_dialog "Welt-Eigenschaften" width=520 height=420
 					SpinButton fog_start "" range=0:1000000000:0.1 "tooltip=Abstand, ab dem der Nebel beginnt (Intensität 0)"
 					---|
 					Text world_dialog_t_fog_end "bis"
-					SpinButton fog_end "" range=0:1000000000:0.1
+					SpinButton fog_end "" range=0:1000000000:0.1 "tooltip=maximale Sichtweite, dahinter hat der Nebel volle Intensität"
 				Grid ? ""
 					RadioButton fog_mode:exp "Exponentiell"
 					RadioButton fog_mode:exp2 "Quadratisch exponentiell"
 				Grid ? "" indent
 					Text world_dialog_t_fog_distance "Sichtweite"
-					SpinButton fog_distance "" range=0:1000000000:0.1
+					SpinButton fog_distance "" range=0:1000000000:0.1 "tooltip=Nebelintensität = exp( - Entfernung / Sichtweite )"
 				ColorButton fog_color ""
 			Grid ? "" vertical
 				Group grp_ambient "Ambient"
-					ColorButton ambient ""
+					ColorButton ambient "" "tooltip=Generelles Umgebungslicht zusätzlich zu allen Lichtquellen"
 				Group grp_sun "Sonne"
 					Grid ? "" vertical
 						CheckBox sun_enabled "aktiviert" expandx
 						Grid ? ""
 							Text /ambient "Ambient"
-							ColorButton sun_am ""
+							ColorButton sun_am "" "tooltip=ungerichtetes Umgebungslicht"
 							---|
 							Text /diffuse "Diffuse"
-							ColorButton sun_di ""
+							ColorButton sun_di "" "tooltip=frontales Licht"
 							---|
 							Text /specular "Specular"
-							ColorButton sun_sp ""
+							ColorButton sun_sp "" "tooltip=Glanzlicht"
 							---|
 							Text world_dialog_t_sun_ang_x "Richtung X"
-							SpinButton sun_ang_x ""
+							SpinButton sun_ang_x "" "tooltip=Höhe &uber dem Horizont"
 							Text /degree "°"
 							---|
 							Text world_dialog_t_sun_ang_y "Richtung Y"
-							SpinButton sun_ang_y ""
+							SpinButton sun_ang_y "" "tooltip=Kompassrichtung entlang des Horizonts"
 							Text /degree "°"
 						Button sun_ang_from_camera "Richtung aus Kamerawinkel" image=hui:media-record
 			Grid ? "" vertical

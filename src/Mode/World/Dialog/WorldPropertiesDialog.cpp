@@ -26,20 +26,6 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	data = _data;
 	active = true;
 
-//	setTooltip("bgc", _("Farbe des Himmels"));
-//	setTooltip("skybox", _("Modelle, die &uber die Hintergrundfarge gemalt werden\n- Doppelklick um ein Modell zu w&ahlen"));
-
-//	setTooltip("fog_start", _("Abstand, ab dem der Nebel beginnt (Intensit&at 0)"));
-	set_tooltip("fog_end", _("maximale Sichtweite, dahinter hat der Nebel volle Intensit&at"));
-	set_tooltip("fog_distance", _("Nebelintensit&at = exp( - Entfernung / Sichtweite )"));
-
-	set_tooltip("ambient", _("Generelles Umgebungslicht zus&atzlich zu allen Lichtquellen"));
-	set_tooltip("sun_am", _("ungerichtetes Umgebungslicht"));
-	set_tooltip("sun_di", _("frontales Licht"));
-	set_tooltip("sun_sp", _("Glanzlicht"));
-	set_tooltip("sun_ang_x", _("H&ohe &uber dem Horizont"));
-	set_tooltip("sun_ang_y", _("Kompassrichtung entlang des Horizonts"));
-
 	event("cancel", std::bind(&WorldPropertiesDialog::OnClose, this));
 	event("hui:close", std::bind(&WorldPropertiesDialog::OnClose, this));
 	event("apply", std::bind(&WorldPropertiesDialog::ApplyData, this));

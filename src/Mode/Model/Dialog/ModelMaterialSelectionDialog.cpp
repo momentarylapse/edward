@@ -24,8 +24,6 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(hui::Window *_parent,
 	data = _data;
 	FillMaterialList();
 
-	set_tooltip("material_list", _("- Doppelklick um ein Material anzuwenden\n- selektieren und den Knopf \"Bearb.\" zum Bearbeiten\n- die Auswahl wird f&ur folgende neue Polygone verwendet"));
-
 	event("hui:close", std::bind(&ModelMaterialSelectionDialog::OnClose, this));
 	event_x("material_list", "hui:activate", std::bind(&ModelMaterialSelectionDialog::OnMaterialList, this));
 	event_x("material_list", "hui:select", std::bind(&ModelMaterialSelectionDialog::OnMaterialListSelect, this));
