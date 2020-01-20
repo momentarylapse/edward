@@ -1,30 +1,30 @@
-Dialog lightmap_dialog "Lightmap erzeugen" width=420 height=540
+Dialog lightmap_dialog "Create lightmap" width=420 height=540
 	Grid ? "" vertical
-		ListView lightmap_list "Objekt\\Textur\\Auflösung" expandy
-		ComboBox lightmap_type "Raytracing\\Radiosity\\Radiosity schnell\\Photon Map\\Photon Map schnell"
+		ListView lightmap_list "Object\\Texture\\Resolution" expandy
+		ComboBox lightmap_type "Raytracing\\Radiosity\\Radiosity fast\\Photon Map\\Photon map fast"
 		Grid ? ""
-			Text lmt_spacial_resolution "Räumliche Auflösung"
+			Text lmt_spacial_resolution "Spacial resolution"
 			Grid ? ""
 				SpinButton resolution "" range=0:1000:0.1 expandx
-				Text /lu "le"
+				Text /lu "lu"
 			---|
-			Text lmt_photons "Zahl der Photonen"
+			Text lmt_photons "Number of photons"
 			SpinButton photons "" range=0:
 			---|
-			Text lmt_brightness "Oberflächen-Helligkeit"
+			Text lmt_brightness "Surface brightness"
 			SpinButton brightness "" range=0:100:0.1
 			---|
-			Text lmt_exponent "Helligkeits-Exponent"
+			Text lmt_exponent "Brightness exponent"
 			SpinButton exponent "" range=0:10:0.05
 			---|
 			.
-			CheckBox allow_sun "Sonne erlauben"
+			CheckBox allow_sun "Allow sun"
 			---|
-			Text lmt_new_world "Neuer Weltname"
+			Text lmt_new_world "New world name"
 			Grid ? ""
 				Edit new_world_name "" expandx disabled
 				Button find_new_world "" image=hui:save-as
 		Grid ? "" buttonbar
-			Button /preview "Vorschau"
-			Button /cancel "Abbrechen" image=hui:cancel
-			DefButton /ok" "OK" image=hui:ok
+			Button /preview "Preview"
+			Button /cancel "Cancel" image=hui:cancel
+			DefButton /ok" "Ok" image=hui:ok

@@ -1,21 +1,19 @@
-Dialog new_terrain_dialog "neues Terrain" width=300 height=120
+Dialog new_terrain_dialog "New terrain" width=300 height=120
 	Grid ? ""
 		Grid ? "" vertical
-			Group nterrain_dialog_t_stripes "Streifen-Zahl (X, Z)"
+			Group nterrain_dialog_t_stripes "Number of stripes (X, Z)"
 				Grid ? ""
 					SpinButton num_x "" range=1:
 					SpinButton num_z "" range=1:
-			Group nterrain_dialog_t_raster "Raster-Größe"
+			Group nterrain_dialog_t_raster "Raster size"
 				Grid ? ""
 					SpinButton pattern_x "" range=0::0.01 disabled
 					SpinButton pattern_z "" range=0::0.01 disabled
-			Group nterrain_dialog_t_terrainsize "Terrain-Größe"
+			Group nterrain_dialog_t_terrainsize "Terrain size"
 				Grid ? ""
 					SpinButton terrain_x "" range=0::0.01
 					SpinButton terrain_z "" range=0::0.01
 		---|
 		Grid new_terrain_buttonbar "" buttonbar
-			Button /cancel "Abbrechen" image=hui:cancel
-			DefButton /ok "OK" image=hui:ok
-
-
+			Button /cancel "Cancel" image=hui:cancel
+			DefButton /ok "Ok" image=hui:ok

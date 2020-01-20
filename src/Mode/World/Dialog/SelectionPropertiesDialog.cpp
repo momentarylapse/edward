@@ -53,13 +53,13 @@ void SelectionPropertiesDialog::FillList()
 {
 	hui::ComboBoxSeparator = ":";
 	reset("property_list");
-	add_string("property_list", _("Welt") + ":-:" + _(" -- Komplette Welt -- "));
+	add_string("property_list", _("World") + ":-:" + _(" -- Whole world -- "));
 	index.add(0);
 	type.add(FD_WORLD);
 
 	foreachi(WorldObject &o, data->Objects, i)
 		if (o.is_selected){
-			add_string("property_list", _("Objekt") + format(":%d:", i) + o.Name);
+			add_string("property_list", _("Object") + format(":%d:", i) + o.Name);
 			type.add(FD_MODEL);
 			index.add(i);
 		}
@@ -71,7 +71,7 @@ void SelectionPropertiesDialog::FillList()
 		}
 	/*for (int i=0;i<CamPoint.num;i++)
 		if (CamPoint[i].IsSelected){
-			PropertySelectionDialog->AddString(HMM_PROPERTY_LIST, _("KameraPunkt") + format(":%d:  ---", i));
+			PropertySelectionDialog->AddString(HMM_PROPERTY_LIST, _("Camera point") + format(":%d:  ---", i));
 			PropertySelectionType.add(FDCameraFlight);
 			PropertySelectionIndex.add(i);
 		}*/

@@ -14,7 +14,7 @@
 ModeModelSkeletonAttachVertices::ModeModelSkeletonAttachVertices(ModeBase* _parent, int _bone_index) :
 	ModeCreation<DataModel>("ModelSkeletonAttachVertices", _parent)
 {
-	message = _("Vertices ausw&ahlen, [Ctrl + Return] = fertig");
+	message = _("Select vertices, [Ctrl + Return] = done");
 	bone_index = _bone_index;
 }
 

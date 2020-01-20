@@ -222,7 +222,7 @@ string file_secure(const string &filename)
 {
 	if (filename.num > 0)
 		return filename;
-	return _("   - ohne Datei -");
+	return _("   - no file -");
 }
 
 void ModelPropertiesDialog::RefillInventaryList()

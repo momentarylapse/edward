@@ -21,7 +21,7 @@
 ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateCylinder", _parent)
 {
-	message = _("Zylinder: Startpunkt");
+	message = _("Cylinder: starting point");
 
 	radius = 0;
 	geo = NULL;
@@ -83,9 +83,9 @@ void ModeModelMeshCreateCylinder::on_mouse_move() {
 		if (radius < min_rad)
 			radius = min_rad;
 		update_geometry();
-		message = _("Zylinderradius: ") + multi_view->format_length(radius);
+		message = _("Cylinder radius: ") + multi_view->format_length(radius);
 	} else if (pos.num == 1) {
-		message = _("Zylinderl&ange: ") + multi_view->format_length((multi_view->get_cursor() - pos[0]).length());
+		message = _("Cylinder length: ") + multi_view->format_length((multi_view->get_cursor() - pos[0]).length());
 	}
 }
 
@@ -117,11 +117,11 @@ void ModeModelMeshCreateCylinder::on_left_button_up() {
 
 		if (pos.num > 1) {
 			//OnMouseMove();
-			message = _("Zylinder: Radius");
+			message = _("Cylinder: radius");
 			update_geometry();
 			//ed->ForceRedraw();
 		} else {
-			message = _("Zylinder: Endpunkt");
+			message = _("Cylinder: ...points");
 		}
 	}
 }

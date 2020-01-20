@@ -65,7 +65,7 @@ void DataAdministration::TestRootDirectory()
 {
 	/*RootDirCorrect = file_test_existence(RootDir + "game.ini");
 	if (!RootDirCorrect){
-		if (HuiQuestionBox(MainWin,_("Frage"), format(_("Arbeitsverzeichnis \"%s\" enth&alt keine \"game.ini\"-Datei. Soll diese erstellt werden?"),RootDir.c_str()),false)=="hui:yes"){
+		if (HuiQuestionBox(MainWin,_("Question"), format(_("Woring directory \"%s\" does not contain a file named \"game.ini\". Do you want one to be created?"),RootDir.c_str()),false)=="hui:yes"){
 			GameIni.reset();
 			SaveGameIni(RootDir, &GameIni);
 		}
@@ -223,8 +223,8 @@ void AdminFileList::add_from_game_ini_export(AdminFileList *source, GameIniData 
 
 void DataAdministration::UpdateDatabase()
 {
-	ed->progress->start(_("Erstelle Datenbank"), 0);
-	ed->progress->set(_("Initialisierung"), 0);
+	ed->progress->start(_("Creating database"), 0);
+	ed->progress->set(_("Initializing"), 0);
 
 	// make sure the "Engine"-files are the first 3 ones
 	AdminFile *f_game_ini = file_list->add_engine_files();
@@ -252,7 +252,7 @@ void DataAdministration::UpdateDatabase()
 	for (int i=0;i<file_list->num;i++){
 		(*file_list)[i]->check(*file_list);
 
-		ed->progress->set(_("Teste Dateien"), (float)i / (float)file_list->num);
+		ed->progress->set(_("Checking files"), (float)i / (float)file_list->num);
 	}
 
 
@@ -273,7 +273,7 @@ void DataAdministration::ExportGame(const string &dir, GameIniData &game_ini)
 	list.add((*file_list)[1]);
 	list.add_from_game_ini_export(file_list, game_ini);
 
-	ed->progress->start(_("Exportiere Spiel"), 0);
+	ed->progress->start(_("Export game"), 0);
 	int num_ok = 0;
 
 	game_ini.Save(dir);

@@ -1,15 +1,15 @@
-Dialog terrain_heightmap_dialog "Höhenkarte" width=620 height=275
+Dialog terrain_heightmap_dialog "Heightmap" width=620 height=275
 	Grid ? ""
 		Grid ? ""
 			Grid ? ""
-				Group grp_heightmap "Höhen aus Graustufen einer Bilddatei"
+				Group grp_heightmap "Height from brightness of a image file"
 					Grid ? ""
-						Text t_heightmap "Höhenkarte"
+						Text t_heightmap "Height map"
 						Grid ? ""
 							Edit height_image "" expandx disabled
 							Button height_image_find "" image=hui:find
 						---|
-						Text t_stretch "Streckung x/z"
+						Text t_stretch "Scaling x/z"
 						Grid ? ""
 							SpinButton stretch_x "1" range=0:1000:0.01 expandx
 							SpinButton stretch_z "1" range=0:1000:0.01 expandx
@@ -19,19 +19,19 @@ Dialog terrain_heightmap_dialog "Höhenkarte" width=620 height=275
 							Edit filter_image "" expandx disabled
 							Button image_find "" image=hui:open
 				---|
-				Group grp_apply "Anwenden"
+				Group grp_apply "Apply"
 					Grid ? ""
-						Text t_gray "Maximale Höhe"
+						Text t_gray "Maximum height"
 						Grid ? ""
 							Edit height_factor "" expandx
-							Text /lu "le"
+							Text /lu "lu"
 						---|
 						Text t_op "Operation"
 						Grid ? ""
-							RadioButton height_op:set "Überschreiben" expandx
-							RadioButton height_op:add "Addieren" expandx
+							RadioButton height_op:set "Overwrite" expandx
+							RadioButton height_op:add "Add" expandx
 			DrawingArea preview "" expandy width=250
 		---|
 		Grid ? "" buttonbar
-			Button /cancel "Abbrechen" image=hui:cancel
-			DefButton /ok "OK" image=hui:ok
+			Button /cancel "Cancel" image=hui:cancel
+			DefButton /ok "Ok" image=hui:ok

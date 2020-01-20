@@ -21,7 +21,7 @@ FontDialog::FontDialog(DataFont *_data) :
 	SettingData = false;
 
 
-	set_string("text", _("Beispiel Text 0123456789"));
+	set_string("text", _("Example text 0123456789"));
 
 	event("height", std::bind(&FontDialog::OnHeight, this));
 	event("y1", std::bind(&FontDialog::OnY1, this));

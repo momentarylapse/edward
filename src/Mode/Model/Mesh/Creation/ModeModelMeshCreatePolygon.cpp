@@ -19,7 +19,7 @@
 ModeModelMeshCreatePolygon::ModeModelMeshCreatePolygon(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreatePolygon", _parent)
 {
-	message = format(_("Polygon w&ahlen: %d -> Shift + Return"), 0);
+	message = format(_("Select polygon: %d -> Shift + Return"), 0);
 
 	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_vertex);
 }
@@ -88,7 +88,7 @@ void ModeModelMeshCreatePolygon::on_left_button_down()
 		foreachi(int s, selection, i)
 			if (s == multi_view->hover.index)
 				if (i > 0){
-					ed->set_message(_("keine doppelten Punkte erlaubt!"));
+					ed->set_message(_("No double points allowed!"));
 					abort();
 					return;
 				}
@@ -101,6 +101,6 @@ void ModeModelMeshCreatePolygon::on_left_button_down()
 		selection.add(data->vertex.num - 1);
 	}
 	data->vertex[selection.back()].is_special = true;
-	message = format(_("Polygon w&ahlen: %d -> [Ctrl + Return]"), selection.num);
+	message = format(_("Choose polygon -> [Ctrl + Return]"), selection.num);
 }
 

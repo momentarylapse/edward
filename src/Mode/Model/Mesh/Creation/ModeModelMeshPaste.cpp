@@ -15,7 +15,7 @@
 ModeModelMeshPaste::ModeModelMeshPaste(ModeBase* _parent) :
 	ModeCreation<DataModel>("ModelMeshPaste", _parent)
 {
-	message = _("verschieben, [linke Maustaste] zum Einf&ugen");
+	message = _("move, [left click] to insert");
 	geo = NULL;
 
 	vector min, max;
@@ -26,7 +26,7 @@ ModeModelMeshPaste::ModeModelMeshPaste(ModeBase* _parent) :
 void ModeModelMeshPaste::on_start()
 {
 	if (mode_model_mesh->temp_geo.vertex.num == 0){
-		ed->set_message(_("nichts zum Einf&ugen"));
+		ed->set_message(_("nothing to paste"));
 		abort();
 		return;
 	}
@@ -50,7 +50,7 @@ void ModeModelMeshPaste::on_mouse_move()
 void ModeModelMeshPaste::on_left_button_up()
 {
 	data->pasteGeometry(*geo, mode_model_mesh->current_material);
-	ed->set_message(format(_("%d Vertizes, %d Dreiecke eingef&ugt"), geo->vertex.num, geo->polygon.num));
+	ed->set_message(format(_("%d vertices, %d triangles pasted"), geo->vertex.num, geo->polygon.num));
 	abort();
 }
 

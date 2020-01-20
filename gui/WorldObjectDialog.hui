@@ -1,10 +1,10 @@
-Dialog world_object_dialog "Objekt-Eigenschaften" width=390 height=220
+Dialog world_object_dialog "Object properties" width=390 height=220
 	Grid ? "" vertical
 		Grid ? ""
 			Text t_name "Name:"
 			Edit name "" expandx
 			---|
-			Text t_type "Typ:"
+			Text t_type "Type:"
 			Grid ? ""
 				Edit kind "" expandx disabled
 				Button find_object "" disabled image=hui:open
@@ -19,14 +19,14 @@ Dialog world_object_dialog "Objekt-Eigenschaften" width=390 height=220
 			Edit pos_x "" expandx
 			Edit pos_y "" expandx
 			Edit pos_z "" expandx
-			Text /lu "le"
+			Text /lu "lu"
 			---|
-			Text grp_ang "Winkel"
+			Text grp_ang "Orientation"
 			Edit ang_x ""
 			Edit ang_y ""
 			Edit ang_z ""
 			Text /degree "°"
 		Grid ? "" buttonbar
-			Button /apply "Übernehmen" image=hui:apply
-			Button /cancel "Abbrechen" image=hui:cancel
-			DefButton /ok" "OK" image=hui:ok
+			Button /apply "Apply" image=hui:apply
+			Button /cancel "Cancel" image=hui:cancel
+			DefButton /ok" "Ok" image=hui:ok

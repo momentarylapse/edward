@@ -34,7 +34,7 @@ public:
 		event("diameter-slider", [=]{ on_diameter_slider(); });
 		event("depth-slider", [=]{ on_depth_slider(); });
 
-		add_string("brush-type", _("Ausbeulen/eindellen"));
+		add_string("brush-type", _("bump in/out"));
 		set_float("diameter-slider", 0.5f);
 		set_float("depth-slider", 0.5f);
 		set_string("diameter", f2s(base_diameter, 2));
@@ -59,7 +59,7 @@ ModeWorldTerrain::ModeWorldTerrain(ModeBase* _parent) :
 	ModeCreation("WorldEditTerrain", _parent)
 {
 	brushing = false;
-	message = _("auf das Terrain malen");
+	message = _("paint onto terrain");
 	base_depth = 1;
 	base_diameter = 1;
 	dialog = nullptr;

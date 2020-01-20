@@ -1,6 +1,6 @@
 Toolbar model-texture-toolbar ""
-	Item select "Selektieren" checkable image=icons/toolbar/rf-select.png
-	Item translate "Verschieben" checkable image=icons/toolbar/rf-translate.png
-	Item rotate "Rotieren" checkable image=icons/toolbar/rf-rotate.png
-	Item scale "Skalieren" checkable image=icons/toolbar/rf-scale.png
-	Item mirror "Spiegeln" checkable image=icons/toolbar/rf-mirror.png
+	Item select "Select" checkable image=icons/toolbar/rf-select.png
+	Item translate "Move" checkable image=icons/toolbar/rf-translate.png
+	Item rotate "Rotate" checkable image=icons/toolbar/rf-rotate.png
+	Item scale "Scale" checkable image=icons/toolbar/rf-scale.png
+	Item mirror "Reflect" checkable image=icons/toolbar/rf-mirror.png

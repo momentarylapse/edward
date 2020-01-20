@@ -1,35 +1,34 @@
 Menu menu_font "Font" disabled
-	Menu menu_file "Datei"
-		Item new "Neu" image=hui:new
-		Item open "Öffnen..." image=hui:open
-		Item save "Speichern" image=hui:save
-		Item save_as "Speichern unter..." image=hui:save-as
-		Separator "" ""
-		Item execute_plugin "Plugin ausführen..."
-		Separator "" ""
-		Menu menu_model "Modell"
-			Item model_new "Neu" image=hui:new
-			Item model_open "Öffnen..." image=hui:open
+	Menu menu_file "File"
+		Item new "New" image=hui:new
+		Item open "Open..." image=hui:open
+		Item save "Save" image=hui:save
+		Item save_as "Save as..." image=hui:save-as
+		Separator
+		Item execute_plugin "Execute plugin"
+		Separator
+		Menu menu_model "Model"
+			Item model_new "New" image=hui:new
+			Item model_open "Open..." image=hui:open
 		Menu menu_material "Material"
-			Item material_new "Neu" image=hui:new
-			Item material_open "Öffnen..." image=hui:open
-		Menu menu_world "Welt"
-			Item world_new "Neu" image=hui:new
-			Item world_open "Öffnen..." image=hui:open
-		Menu menu_project "Projekt"
-			Item project_new "Neu..." image=hui:new
-			Item project_open "Öffnen..." image=hui:open
-			Item administrate "Verwalten" image=hui:preferences
-		Item settings "Einstellungen..." image=hui:preferences
-		Separator "" ""
-		Item exit "Beenden" image=hui:quit
-	Item current_mode_font "-Schrift-Modus-" disabled
-	Menu menu_font_edit "Bearbeiten"
-		Item import "Importieren..." image=hui:font
+			Item material_new "New" image=hui:new
+			Item material_open "Open..." image=hui:open
+		Menu menu_world "World"
+			Item world_new "New" image=hui:new
+			Item world_open "Open..." image=hui:open
+		Menu menu_project "Project"
+			Item project_new "New..." image=hui:new
+			Item project_open "Open..." image=hui:open
+			Item administrate "Administrate" image=hui:preferences
+		Item settings "Settings..." image=hui:preferences
+		Separator
+		Item exit "Exit" image=hui:quit
+	Item current_mode_font "-Font-Mode-" disabled
+	Menu menu_font_edit "Edit"
+		Item import "Import..." image=hui:font
 		Item texture "Textur..." image=hui:open
 	Menu menu_help "?"
-		Item help "Hilfe..." image=hui:help
-		Separator "" ""
-		Item send_bug_report "Fehler berichten"
-		Item what_the_fuck "\"über\"" image=hui:about
-
+		Item help "Help..." image=hui:help
+		Separator
+		Item send_bug_report "Report a bug"
+		Item what_the_fuck "\"about\"" image=hui:about

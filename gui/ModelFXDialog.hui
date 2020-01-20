@@ -1,8 +1,8 @@
-Dialog fx_dialog "Einen neuen Effekt erstellen..." width=470 height=205
+Dialog fx_dialog "Add a new effect..." width=470 height=205
 	Grid ? "" vertical
-		TabControl fx_tab_control "Script\\Licht\\Sound\\Kraftfeld" xxx-nobar
+		TabControl fx_tab_control "Script\\Light\\Sound\\Force field" xxx-nobar
 			Grid ? ""
-				Text fxt_scriptfile "Datei"
+				Text fxt_scriptfile "script file"
 				Edit script_file "" disabled expandx
 				Button find_scriptfile "" image=hui:open
 			Grid ? ""
@@ -15,38 +15,38 @@ Dialog fx_dialog "Einen neuen Effekt erstellen..." width=470 height=205
 				Text /specular "Specular"
 				ColorButton mat_sp ""
 				---|
-				Text fxt_lightradius "Radius"
+				Text fxt_lightradius "radius"
 				Grid ? ""
 					Edit light_radius "" expandx
-					Text /lu "le"
+					Text /lu "lu"
 			Grid ? ""
-				Text fxt_soundfile "Sound-Datei"
+				Text fxt_soundfile "sound file"
 				Grid ? ""
 					Edit filename "" disabled expandx
-					Button search "" image=hui:open "tooltip=muss mono sein!"
+					Button search "" image=hui:open "tooltip=has to be mono!"
 				---|
-				Text fxt_soundrange "max. Hörweite"
+				Text fxt_soundrange "max. range"
 				Grid ? ""
 					Edit sound_radius "" expandx
-					Text /lu "le"
+					Text /lu "lu"
 				---|
-				Text fxt_soundspeed "Geschwindigkeit"
+				Text fxt_soundspeed "speed"
 				Grid ? ""
 					Edit speed "" expandx
 					Text /percent "%"
 			Grid ? ""
-				Text fxt_force_formula "Abnahme"
-				ComboBox formula "Linear\\1/r^2" expandx
+				Text fxt_force_formula "formula"
+				ComboBox formula "Linear\\1/r²" expandx
 				---|
-				Text fxt_force_range "Reichweite"
+				Text fxt_force_range "range"
 				Grid ? ""
 					Edit forcefield_radius "" expandx
-					Text /lu "le"
+					Text /lu "lu"
 				---|
-				Text fxt_force_intensity "Intensität"
+				Text fxt_force_intensity "density"
 				Grid ? ""
-					Edit intensity "" expandx "tooltip=anziehende Beschleunigung, Linear: maximaler Wert, 1/r^2: Wert bei r=100 le"
-					Text /luss "le/s^2"
+					Edit intensity "" expandx "tooltip=attracting acceleration, Linear: maximum value, 1/r²: Value at r=100 lu"
+					Text /luss "lu/s²"
 		Grid ? "" buttonbar
-			Button /cancel "Abbrechen" image=hui:cancel
+			Button /cancel "Cancel" image=hui:cancel
 			DefButton /ok "Ok" image=hui:ok

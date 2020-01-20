@@ -66,7 +66,7 @@ void ConfigurationDialog::on_update(Observable *o, const string &message)
 
 void ConfigurationDialog::OnFindRootdir()
 {
-	if (hui::FileDialogDir(this,_("Arbeitsverzeichnis"),ed->root_dir))
+	if (hui::FileDialogDir(this,_("Working directory"),ed->root_dir))
 		set_string("rootdir", hui::Filename);
 }
 
@@ -116,7 +116,7 @@ void ConfigurationDialog::OnOk()
 		try{
 			data->ExportGame(dir, GameIniExport);
 		}catch(AdminGameExportException &e){
-			ed->error_box(_("Fehler beim Exportieren: ") + e.message);
+			ed->error_box(_("Error while exporting:") + e.message);
 			return;
 		}
 	}else{

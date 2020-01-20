@@ -78,7 +78,7 @@ bool DataCamera::load(const string& _filename, bool deep)
 
 		FileClose(f);
 	}else{
-		ed->error_box(format(_("Falsches Dateiformat der Datei %s: %d (statt %d)!"), filename.c_str(), ffv, 2));
+		ed->error_box(format(_("Invalid file format of the file %s: %d (%d expected)!"), filename.c_str(), ffv, 2));
 		Error=true;
 	}
 	delete(f);
@@ -132,7 +132,7 @@ bool DataCamera::save(const string& _filename)
 	f->write_comment("#");
 
 	delete(f);
-	ed->set_message(_("Kamera-Script gespeichert!"));
+	ed->set_message(_("Camera script saved!"));
 	action_manager->mark_current_as_save();
 
 	}catch(Exception &e){

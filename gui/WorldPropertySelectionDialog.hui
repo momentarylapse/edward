@@ -1,4 +1,2 @@
-Dialog world_ps_dialog "Zu bearbeitende Eigenschaften wählen" width=370 height=380
-	ListView property_list "Typ\\Index\\Name"
-
-
+Dialog world_ps_dialog "Choose properies for editing" width=370 height=380
+	ListView property_list "type\\index\\name"

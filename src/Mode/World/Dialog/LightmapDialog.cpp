@@ -108,7 +108,7 @@ void OnHistDraw(Painter *c)
 	}
 	c->set_color(Black);
 	c->set_font("Sans", 12, true, false);
-	c->draw_str(w / 2 - 40, hh + 20, _("Helligkeit"));
+	c->draw_str(w / 2 - 40, hh + 20, _("Brightness"));
 	c->set_line_width(1.5f);
 	for (int i=0;i<hist_p->f.num-1;i++)
 		c->draw_line((w * i) / hist_p->f.num, hh - hh * hist_p->f[i], (w * (i + 1)) / hist_p->f.num, hh - hh * hist_p->f[i + 1]);
@@ -127,7 +127,7 @@ void ShowHistogram(Lightmap::Histogram &h, hui::Window *root)
 	dlg->add_grid("", 0, 0, "table");
 	dlg->set_target("table");
 	dlg->add_drawing_area("", 0, 0, "area");
-	dlg->add_button(_("Schlie&sen"), 0, 1, "close");
+	dlg->add_button(_("Close"), 0, 1, "close");
 	dlg->set_image("close", "hui:close");
 	dlg->event_xp("area", "hui:draw", std::bind(&OnHistDraw, std::placeholders::_1));
 	dlg->event("hui:close", &OnHistClose);

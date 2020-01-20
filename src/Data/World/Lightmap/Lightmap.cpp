@@ -54,7 +54,7 @@ Lightmap::~Lightmap()
 
 bool Lightmap::Create()
 {
-	ed->progress->start_cancelable(_("berechne Licht"), 0);
+	ed->progress->start_cancelable(_("calculating light"), 0);
 	data->AddTextureLevels();
 	data->CreateVertices();
 	try{
@@ -79,7 +79,7 @@ Lightmap::Histogram Lightmap::GetHistogram()
 
 bool Lightmap::Preview()
 {
-	ed->progress->start_cancelable(_("berechne Licht"), 0);
+	ed->progress->start_cancelable(_("calculating light"), 0);
 	data->AddTextureLevels(false);
 	data->CreateVertices();
 	try{
@@ -132,7 +132,7 @@ void fuzzy_image(Image &im)
 
 bool Lightmap::RenderTextures()
 {
-	ed->progress->start_cancelable(_("berechne Textur"), 0);
+	ed->progress->start_cancelable(_("calculating texture"), 0);
 	dir_create(nix::texture_dir + data->texture_out_dir);
 	dir_create(ObjectDir + data->model_out_dir);
 	dir_create(MapDir + data->model_out_dir);
@@ -152,7 +152,7 @@ bool Lightmap::RenderTextures()
 			im.set_pixel(v.x, v.y, RenderVertex(v));
 
 			if ((vi & 127) == 0){
-				ed->progress->set(format(_("%d von %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
+				ed->progress->set(format(_("%d of %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
 				if (ed->progress->is_cancelled())
 					throw Lightmap::AbortException();
 			}
@@ -188,7 +188,7 @@ bool Lightmap::RenderTextures()
 			im.set_pixel(v.x, v.y, RenderVertex(v));
 
 			if ((vi & 127) == 0){
-				ed->progress->set(format(_("%d von %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
+				ed->progress->set(format(_("%d of %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
 				if (ed->progress->is_cancelled())
 					throw Lightmap::AbortException();
 			}

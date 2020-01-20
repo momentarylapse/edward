@@ -122,7 +122,7 @@ void ModeAdministration::create_project_dir(const string &dir)
 
 void ModeAdministration::_new()
 {
-	if (!hui::FileDialogDir(hui::CurWindow, _("Verzeichnis für neues Projekt wählen"), ""))
+	if (!hui::FileDialogDir(hui::CurWindow, _("Choose a directory for the new project"), ""))
 		return;
 
 	create_project_dir(hui::Filename);
@@ -132,11 +132,11 @@ void ModeAdministration::_new()
 
 bool ModeAdministration::open()
 {
-	if (!hui::FileDialogDir(hui::CurWindow, _("Projekt-Verzeichnis öffnen"), ""))
+	if (!hui::FileDialogDir(hui::CurWindow, _("Open project directory"), ""))
 		return false;
 
 	if (!file_test_existence(hui::Filename + "game.ini")){
-		ed->error_box(_("game.ini nicht gefunden"));
+		ed->error_box(_("game.ini not found"));
 		return false;
 	}
 

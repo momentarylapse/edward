@@ -1,9 +1,9 @@
-Dialog world_new_object_dialog "neues Objekt" width=390 height=75 allow-parent
+Dialog world_new_object_dialog "new Object" width=390 height=75 allow-parent
 	Grid ? ""
 		Text t_name "Name"
 		Edit name "" expandx
 		---|
-		Text t_type "Typ"
+		Text t_type "Type"
 		Grid ? ""
 			Edit kind "" disabled expandx
 			Button find_object "" image=hui:open

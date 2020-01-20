@@ -91,17 +91,17 @@ MultiView::MultiView(bool mode3d) :
 
 		// Menu
 		menu = new hui::Menu;
-		menu->add(_("Ansicht"), "view_menu_sign");
+		menu->add(_("View"), "view_menu_sign");
 		//menu->enableItem("view_menu_sign", false);
 		menu->add_separator();
-		menu->add(_("Rechts (-x)"), "view_right");
-		menu->add(_("Links (x)"), "view_left");
-		menu->add(_("Vorne (z)"), "view_front");
-		menu->add(_("Hinten (-z)"), "view_back");
-		menu->add(_("Oben (-y)"), "view_top");
-		menu->add(_("Unten (y)"), "view_bottom");
-		menu->add(_("Isometrisch"), "view_isometric");
-		menu->add(_("Perspektive"), "view_perspective");
+		menu->add(_("Right (-x)"), "view_right");
+		menu->add(_("Left (x)"), "view_left");
+		menu->add(_("Front (z)"), "view_front");
+		menu->add(_("Back (-z)"), "view_back");
+		menu->add(_("Top (-y)"), "view_top");
+		menu->add(_("Bottom (y)"), "view_bottom");
+		menu->add(_("Isometric"), "view_isometric");
+		menu->add(_("Perspective"), "view_perspective");
 	}else{
 		win.add(new Window(this, VIEW_2D));
 		light = -1;

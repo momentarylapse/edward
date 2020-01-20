@@ -1,101 +1,100 @@
-Menu menu_world "Welt" disabled
-	Menu menu_world_file "Datei"
-		Item new "Neu" image=hui:new
-		Item open "Öffnen..." image=hui:open
-		Item save "Speichern" image=hui:save
-		Item save_as "Speichern unter..." image=hui:save-as
-		Separator "" ""
-		Menu menu_world_export "Exportieren"
-			Item export_group "Gruppe..."
-			Item export_world "Welt"
-		Menu menu_world_import "Importieren"
-			Item import_group "Gruppe..."
-			Item import_world_properties "Eigenschaften aus anderer Welt..."
-		Separator "" ""
-		Item execute_plugin "Plugin ausführen..."
-		Separator "" ""
-		Menu menu_model "Modell"
-			Item model_new "Neu" image=hui:new
-			Item model_open "Öffnen..." image=hui:open
+Menu menu_world "World" disabled
+	Menu menu_world_file "File"
+		Item new "New" image=hui:new
+		Item open "Open..." image=hui:open
+		Item save "Save" image=hui:save
+		Item save_as "Save as..." image=hui:save-as
+		Separator
+		Menu menu_world_export "Export"
+			Item export_group "Groupe..."
+			Item export_world "Export world"
+		Menu menu_world_import "Import"
+			Item import_group "Groupe..."
+			Item import_world_properties "World properties..."
+		Separator
+		Item execute_plugin "Execute plugin"
+		Separator
+		Menu menu_model "Model"
+			Item model_new "New" image=hui:new
+			Item model_open "Open..." image=hui:open
 		Menu menu_font "Font"
-			Item font_new "Neu" image=hui:new
-			Item font_open "Öffnen..." image=hui:open
+			Item font_new "New" image=hui:new
+			Item font_open "Open..." image=hui:open
 		Menu menu_material "Material"
-			Item material_new "Neu" image=hui:new
-			Item material_open "Öffnen..." image=hui:open
-		Menu menu_project "Projekt"
-			Item project_new "Neu..." image=hui:new
-			Item project_open "Öffnen..." image=hui:open
-			Item administrate "Verwalten" image=hui:preferences
-		Item settings "Einstellungen..." image=hui:preferences
-		Separator "" ""
-		Item exit "Beenden" image=hui:quit
-	Menu menu_world_edit "Bearbeiten"
-		Item undo "Rückgängig" image=hui:undo
-		Item redo "Wiederherstellen" image=hui:redo
-		Separator "" ""
-		Item copy "Kopieren" image=hui:copy
-		Item paste "Einfügen" image=hui:paste
-		Item delete "Löschen" image=hui:delete
-		Separator "" ""
-		Item snap_to_grid "Klebriges Raster" checkable
-		Separator "" ""
-		Item selection_properties "Eigenschaften..." image=hui:preferences
-	Menu menu_world_selection "Auswahl"
-		Item select_all "Alles auswählen" image=hui:select-all
-		Item select_none "Nichts auswählen"
-		Item invert_selection "Invertieren"
-		Separator "" ""
-		Item edit_terrain_selectable "Terrains Markierbar" checkable
-	Menu menu_world_creation "Erstellen"
-		Item menu_world_sign_add "Zur Welt hinzufügen" disabled
-		Item create_objects "Objekte..." image=hui:open
-		Item terrain_create "Neues Terrain..." image=hui:new
-		Item terrain_load "Terrain laden..." image=hui:open
-		Separator "" ""
-		Item camscript_create "Neue Kamera-Fahrt..." image=hui:new
-		Item camscript_load "Kamera-Fahrt laden..." image=hui:open
-	Menu menu_world_operation "Operationen"
+			Item material_new "New" image=hui:new
+			Item material_open "Open..." image=hui:open
+		Menu menu_project "Project"
+			Item project_new "New..." image=hui:new
+			Item project_open "Open..." image=hui:open
+			Item administrate "Administrate" image=hui:preferences
+		Item settings "Settings..." image=hui:preferences
+		Separator
+		Item exit "Exit" image=hui:quit
+	Menu menu_world_edit "Edit"
+		Item undo "Undo" image=hui:undo
+		Item redo "Redo" image=hui:redo
+		Separator
+		Item copy "Copy" image=hui:copy
+		Item paste "Paste" image=hui:paste
+		Item delete "Delete" image=hui:delete
+		Separator
+		Item snap_to_grid "Sticky grid" checkable
+		Separator
+		Item selection_properties "Properties..." image=hui:preferences
+	Menu menu_world_selection "Selection"
+		Item select_all "Select all" image=hui:select-all
+		Item select_none "Select none"
+		Item invert_selection "Invert"
+		Separator
+		Item edit_terrain_selectable "Selectable" checkable
+	Menu menu_world_creation "Create"
+		Item menu_world_sign_add "Add to world" disabled
+		Item create_objects "Objects..." image=hui:open
+		Item terrain_create "Terrain (new)..." image=hui:new
+		Item terrain_load "Terrain (load)..." image=hui:open
+		Separator
+		Item camscript_create "CameraFlight (new)..." image=hui:new
+		Item camscript_load "CameraFlight (load)..." image=hui:open
+	Menu menu_world_operation "Operations"
 		Item menu_world_sign_terrain "Terrain" disabled
-		Item edit_terrain_vertices "Höhen bearbeiten" image=hui:edit
-		Item terrain_heightmap "Höhenarte" image=hui:edit
-		Item terrain_rescale "Streifenzahl ändern" image=hui:edit
-		Separator "" ""
-		Item menu_world_sign_object "Objekte" disabled
-		Item height_to_terrain "Höhe = Terrain"
-		Item own_figure "Eigene Figur (ego=...)"
-		Separator "" ""
-		Item create_lightmap "Lightmap rendern..." image=hui:convert
-	Menu menu_world_view "Ansicht"
-		Menu menu_model_viewstage "Schicht"
-			Item view_push "hinein-pushen"
-			Item view_pop "heraus-poppen"
-		Menu menu_terrain_texture "Terrain Textur"
-			Item terrain_show_texture_final "Komplett" checkable
-			Separator "" ""
-			Item terrain_show_texture_level0 "Ebene 0" checkable
-			Item terrain_show_texture_level1 "Ebene 1" checkable
-			Item terrain_show_texture_level2 "Ebene 2" checkable
-			Item terrain_show_texture_level3 "Ebene 3" checkable
-			Item terrain_show_texture_level4 "Ebene 4" checkable
-			Item terrain_show_texture_level5 "Ebene 5" checkable
-			Item terrain_show_texture_level6 "Ebene 6" checkable
-			Item terrain_show_texture_level7 "Ebene 7" checkable
-		Separator "" ""
-		Item wire "Drahtgitter" checkable
-		Item grid "Raster" checkable
-		Item light "Beleuchtung" checkable
-		Item show_points "Punkte" checkable
-		Separator "" ""
-		Item show_objects "Objekte" checkable
+		Item edit_terrain_vertices "Edit vertices" image=hui:edit
+		Item terrain_heightmap "Heightmap" image=hui:edit
+		Item terrain_rescale "Change number of stripes" image=hui:edit
+		Separator
+		Item menu_world_sign_object "Objects" disabled
+		Item height_to_terrain "Height = terrain"
+		Item own_figure "Own character"
+		Separator
+		Item create_lightmap "Render lightmap..." image=hui:convert
+	Menu menu_world_view "View"
+		Menu menu_model_viewstage "Viewstage"
+			Item view_push "Push in"
+			Item view_pop "Pop out"
+		Menu menu_terrain_texture "Terrain texture"
+			Item terrain_show_texture_final "Final" checkable
+			Separator
+			Item terrain_show_texture_level0 "Level 0" checkable
+			Item terrain_show_texture_level1 "Level 1" checkable
+			Item terrain_show_texture_level2 "Level 2" checkable
+			Item terrain_show_texture_level3 "Level 3" checkable
+			Item terrain_show_texture_level4 "Level 4" checkable
+			Item terrain_show_texture_level5 "Level 5" checkable
+			Item terrain_show_texture_level6 "Level 6" checkable
+			Item terrain_show_texture_level7 "Level 7" checkable
+		Separator
+		Item wire "Wire frame" checkable
+		Item grid "Grid" checkable
+		Item light "Light" checkable
+		Item show_points "Points" checkable
+		Separator
+		Item show_objects "Objects" checkable
 		Item show_terrains "Terrains" checkable
-		Item show_fx "Effekte" checkable
-		Separator "" ""
+		Item show_fx "Effects" checkable
+		Separator
 		Item opt_view "Optimal" image=hui:zoom-fit
-		Item whole_window "Ganzes Fenster" checkable
+		Item whole_window "Use complete window" checkable
 	Menu menu_world_help "?"
-		Item help "Hilfe..." image=hui:help
-		Separator "" ""
-		Item send_bug_report "Fehler berichten"
-		Item what_the_fuck "\"über\"" image=hui:about
-
+		Item help "Help..." image=hui:help
+		Separator
+		Item send_bug_report "Report a bug"
+		Item what_the_fuck "\"about\"" image=hui:about

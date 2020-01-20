@@ -30,9 +30,9 @@ void Progress::set(const string &str, float progress)
 	}else{
 		float eta = time_running / progress * (1 - progress);
 		if (eta < 60)
-			dlg->set_string("progress_bar", str + format(_(" (noch %.0d s)"), (int)(eta + 0.5f)));
+			dlg->set_string("progress_bar", str + format(_(" (%.0d s remaining)"), (int)(eta + 0.5f)));
 		else
-			dlg->set_string("progress_bar", str + format(_(" (noch %.0d min)"), (int)(eta / 60 + 0.5f)));
+			dlg->set_string("progress_bar", str + format(_(" (%.0d min remaining)"), (int)(eta / 60 + 0.5f)));
 	}
 	dlg->set_float("progress_bar", progress);
 	message = str;

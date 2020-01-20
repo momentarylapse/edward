@@ -131,7 +131,7 @@ void TerrainPropertiesDialog::OnDeleteTextureLevel()
 {
 	int n = get_int("textures");
 	if (temp.NumTextures <= 1){
-		ed->error_box(_("Mindestens eine Textur-Ebene muss existieren!"));
+		ed->error_box(_("There has to be at least one texture level!"));
 		return;
 	}
 	for (int i=n;i<temp.NumTextures-1;i++){
@@ -181,7 +181,7 @@ void TerrainPropertiesDialog::OnClose()
 void TerrainPropertiesDialog::OnAddTextureLevel()
 {
 	if (temp.NumTextures >= MATERIAL_MAX_TEXTURES){
-		ed->error_box(format(_("Es sind nur maximal %d Texturen pro Terrain erlaubt!"), MATERIAL_MAX_TEXTURES));
+		ed->error_box(format(_("No more than %d textures per terrain allowed!"), MATERIAL_MAX_TEXTURES));
 		return;
 	}
 	int l = temp.NumTextures;

@@ -12,7 +12,7 @@
 ModeModelAnimationInterpolateFrames::ModeModelAnimationInterpolateFrames(ModeBase* _parent) :
 	ModeCreation<DataModel>("ModelMeshAnimationInterpolateFrames", _parent)
 {
-	message = _("auf Zeitleiste klicken");
+	message = _("click on timeline");
 }
 
 ModeModelAnimationInterpolateFrames::~ModeModelAnimationInterpolateFrames()

@@ -25,9 +25,9 @@ ModeWorldCamera *mode_world_camera = NULL;
 	if (type == CPKSetCamAng)
 		return "SetAng";
 	if (type == CPKSetCamPosAng)
-		return _("Sprung");//"SetPosAng";
+		return _("Jump");//"SetPosAng";
 	if (type == CPKCamFlight)
-		return _("Flug");
+		return _("Flight");
 	if (type == CPKCamFlightRel)
 		return "FlightRel";
 	return "???";

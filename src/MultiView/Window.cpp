@@ -215,21 +215,21 @@ quaternion view_ang(int type, Camera *cam)
 string view_name(int type)
 {
 	if (type == VIEW_FRONT){
-		return _("Vorne");
+		return _("Front");
 	}else if (type == VIEW_BACK){
-		return _("Hinten");
+		return _("Back");
 	}else if (type == VIEW_RIGHT){
-		return _("Rechts");
+		return _("Right");
 	}else if (type == VIEW_LEFT){
-		return _("Links");
+		return _("Left");
 	}else if (type == VIEW_TOP){
-		return _("Oben");
+		return _("Top");
 	}else if (type == VIEW_BOTTOM){
-		return _("Unten");
+		return _("Bottom");
 	}else if (type == VIEW_PERSPECTIVE){
-		return _("Perspektive");
+		return _("Perspective");
 	}else if (type == VIEW_ISOMETRIC){
-		return _("Isometrisch");
+		return _("Isometric");
 	}else if (type == VIEW_2D){
 		return _("2D");
 	}

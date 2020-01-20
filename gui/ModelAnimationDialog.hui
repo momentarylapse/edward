@@ -1,30 +1,30 @@
-Dialog animation_dialog "Animations-Kontrolle" width=260 height=400
+Dialog animation_dialog "Animation" width=260 height=400
 	Grid ? "" vertical
-		Group t_list "Übersicht"
-			ListView animation_list "#\\Typ\\Frames\\Name"
-		Separator sep_vertical "" vertical
-		Group t_properties "Eigenschaften"
+		Group t_list "Overview"
+			ListView animation_list "#\\type\\num frames\\name"
+		Separator
+		Group t_properties "Properties"
 			Grid ? ""
 				Text t_name "Name"
 				Edit name "" expandx
 				---|
 				Text t_animationfpsconst "Frames/s const"
-				SpinButton fps_const "" range=0:100:0.01
+				SpinButton fps_const "\\0\\100\\0.01" range=0:100:0.01
 				---|
 				Text t_animationfpsfactor "Frames/s factor"
-				SpinButton fps_factor "" range=0:100:0.01
+				SpinButton fps_factor "\\0\\100\\0.01" range=0:100:0.01
 		Group t_frame "Frame"
 			Grid ? ""
 				SpinButton frame "" expandx
 				---|
 				Grid ? ""
-					Button new_frame "neuer Frame" image=hui:new
-					Button delete_frame "löschen" image=hui:delete
-		Group t_simulate "Vorschau"
+					Button new_frame "new frame" image=hui:new
+					Button delete_frame "delete" image=hui:delete
+		Group t_simulate "Preview"
 			Grid ? ""
 				Grid ? ""
-					Text ani_dt_sim_speed "Geschwindigkeit"
-					SpinButton speed "" range=0: expandx
+					Text ani_dt_sim_speed "Speed"
+					SpinButton speed "\\0" range=0: expandx
 					Text /percent "%"
 					---|
 					Text ani_dt_sim_param "Parameter"
@@ -32,4 +32,4 @@ Dialog animation_dialog "Animations-Kontrolle" width=260 height=400
 				---|
 				Grid ? ""
 					Button sim_start "Start" image=hui:media-play
-					Button sim_stop "Stopp" image=hui:media-stop
+					Button sim_stop "Stop" image=hui:media-stop

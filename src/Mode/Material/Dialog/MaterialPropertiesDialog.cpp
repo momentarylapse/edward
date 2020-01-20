@@ -138,7 +138,7 @@ void MaterialPropertiesDialog::on_update(Observable *o, const string &message)
 void MaterialPropertiesDialog::OnAddTextureLevel()
 {
 	if (temp.texture_files.num >= MATERIAL_MAX_TEXTURES){
-		ed->error_box(format(_("H&ochstens %d Textur-Ebenen erlaubt!"), MATERIAL_MAX_TEXTURES));
+		ed->error_box(format(_("Only %d texture levels allowed!"), MATERIAL_MAX_TEXTURES));
 		return;
 	}
 	temp.texture_files.add("");
@@ -250,7 +250,7 @@ void MaterialPropertiesDialog::OnFindShader()
 			set_string("shader_file", ed->dialog_file);
 			ApplyData();
 		}else{
-			ed->error_box(_("Fehler in der Shader-Datei:\n") + nix::shader_error);
+			ed->error_box(_("Error in shader file:\n") + nix::shader_error);
 		}
 	}
 }
@@ -325,7 +325,7 @@ void MaterialPropertiesDialog::FillTextureList()
 		add_string("mat_textures", format("Tex[%d]\\%s\\%s", i, img.c_str(), file_secure(temp.texture_files[i]).c_str()));
 	}
 	if (temp.texture_files.num == 0)
-		add_string("mat_textures", _("\\\\   - keine Texturen -"));
+		add_string("mat_textures", _("\\\\   - no textures -"));
 	enable("mat_delete_texture_level", false);
 	enable("mat_empty_texture_level", false);
 }

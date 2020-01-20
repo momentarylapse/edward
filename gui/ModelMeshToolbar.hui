@@ -1,14 +1,14 @@
 Toolbar model-mesh-toolbar ""
 	Item new_tria "Polygon" checkable image=icons/toolbar/new-triangle.png
-	Item new_plane "Ebene" checkable image=icons/toolbar/new-plane.png
-	Item new_cube "Quader" checkable image=icons/toolbar/model-surface.png
-	Item new_ball "Kugel" checkable image=icons/toolbar/new-ball.png
-	Item new_cylinder "Zylinder" checkable image=icons/toolbar/new-cylinder.png
+	Item new_plane "Plane" checkable image=icons/toolbar/new-plane.png
+	Item new_cube "Cube" checkable image=icons/toolbar/model-surface.png
+	Item new_ball "Sphere" checkable image=icons/toolbar/new-ball.png
+	Item new_cylinder "Cylinder" checkable image=icons/toolbar/new-cylinder.png
 	Separator
-	Item /select "Selektieren" checkable image=icons/toolbar/rf-select.png
-	Item /translate "Verschieben" checkable image=icons/toolbar/rf-translate.png
-	Item /rotate "Rotieren" checkable image=icons/toolbar/rf-rotate.png
-	Item /scale "Skalieren" checkable image=icons/toolbar/rf-scale.png
-	Item /mirror "Spiegeln" checkable image=icons/toolbar/rf-mirror.png
+	Item /select "Select" checkable image=icons/toolbar/rf-select.png
+	Item /translate "Move" checkable image=icons/toolbar/rf-translate.png
+	Item /rotate "Rotate" checkable image=icons/toolbar/rf-rotate.png
+	Item /scale "Scale" checkable image=icons/toolbar/rf-scale.png
+	Item /mirror "Reflect" checkable image=icons/toolbar/rf-mirror.png
 	Separator
-	Item snap_to_grid "Klebriges Raster" checkable image=icons/toolbar/snap-to-grid.png
+	Item snap_to_grid "Sticky grid" checkable image=icons/toolbar/snap-to-grid.png

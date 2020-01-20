@@ -36,7 +36,7 @@ void ScriptVarsDialog::ApplyData()
 
 void ScriptVarsDialog::LoadData()
 {
-	set_string("class", _("Klasse: ") + data->class_name);
+	set_string("class", _("Class: ") + data->class_name);
 	if (data->class_name == "")
 		set_string("class", "- no class derived from Controller found -");
 

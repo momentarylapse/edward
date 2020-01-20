@@ -1,29 +1,28 @@
 Menu menu_administration "" disabled
-	Menu menu_administration_file "Datei"
-		Menu menu_model "Modell"
-			Item model_new "Neu" image=hui:new
-			Item model_open "Öffnen..." image=hui:open
+	Menu menu_administration_file "File"
+		Menu menu_model "Model"
+			Item model_new "New" image=hui:new
+			Item model_open "Open..." image=hui:open
 		Menu menu_font "Font"
-			Item font_new "Neu" image=hui:new
-			Item font_open "Öffnen..." image=hui:open
+			Item font_new "New" image=hui:new
+			Item font_open "Open..." image=hui:open
 		Menu menu_material "Material"
-			Item material_new "Neu" image=hui:new
-			Item material_open "Öffnen..." image=hui:open
-		Menu menu_world "Welt"
-			Item world_new "Neu" image=hui:new
-			Item world_open "Öffnen..." image=hui:open
-		Item administrate "Verwalten" image=hui:preferences
-		Item settings "Einstellungen..." image=hui:preferences
-		Separator "" ""
-		Item exit "Beenden" image=hui:quit
-	Menu menu_administration_game "Spiel"
-		Item new_game "Neu..." image=hui:new
-		Item load_game "Laden..." image=hui:open
-		Item export_game "Exportieren..." image=hui:media-play
-		Item rudimentary_configuration "Grundeinstellungen..." image=hui:properties
+			Item material_new "New" image=hui:new
+			Item material_open "Open..." image=hui:open
+		Menu menu_world "World"
+			Item world_new "New" image=hui:new
+			Item world_open "Open..." image=hui:open
+		Item administrate "Administrate" image=hui:preferences
+		Item settings "Settings..." image=hui:preferences
+		Separator
+		Item exit "Exit" image=hui:quit
+	Menu menu_administration_game "Game"
+		Item new_game "New..." image=hui:new
+		Item load_game "Load..." image=hui:open
+		Item export_game "Export..." image=hui:media-play
+		Item rudimentary_configuration "Basic settings" image=hui:properties
 	Menu menu_world_help "?"
-		Item help "Hilfe..." image=hui:help
-		Separator "" ""
-		Item send_bug_report "Fehler berichten"
-		Item what_the_fuck "\"über\"" image=hui:about
-
+		Item help "Help..." image=hui:help
+		Separator
+		Item send_bug_report "Report a bug"
+		Item what_the_fuck "\"about\"" image=hui:about

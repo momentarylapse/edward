@@ -2,7 +2,7 @@ Dialog deformation_cylinder_dialog "Deformation" width=400 height=250 allow-root
 	Grid ? "" vertical
 		DrawingArea area ""
 		Grid ? ""
-			Text def_cyl_t_axis "Achse"
+			Text def_cyl_t_axis "Axis"
 			ComboBox axis "X\\Y\\Z"
 		Grid deformation_cyl_dialog_buttonbar "" buttonbar
-			DefButton /ok "OK" image=hui:ok
+			DefButton /ok "Ok" image=hui:ok

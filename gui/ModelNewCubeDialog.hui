@@ -1,5 +1,5 @@
-Dialog new_cube_dialog "neuer Quader" width=100 height=50 allow-root
-	Group ncdt_slides "neuer Würfel: Streifen"
+Dialog new_cube_dialog "new cube" width=100 height=50 allow-root
+	Group ncdt_slides "Stripes"
 		Grid ? ""
 			Text x "X"
 			SpinButton nc_x "" range=1: expandx

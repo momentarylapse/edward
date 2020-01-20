@@ -22,7 +22,7 @@ const float CYLINDER_CLOSING_DISTANCE = 20;
 ModeModelMeshCreateCylinderSnake::ModeModelMeshCreateCylinderSnake(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateCylinderSnake", _parent)
 {
-	message = _("Zylinderschlange... Punkte + [Ctrl + Return]");
+	message = _("Cylinder snake... points + [Ctrl + Return]");
 
 	radius = 0;
 	closed = false;
@@ -83,7 +83,7 @@ void ModeModelMeshCreateCylinderSnake::on_mouse_move()
 		if (radius < min_rad)
 			radius = min_rad;
 		update_geometry();
-		message = _("Zylinderradius: ") + multi_view->format_length(radius);
+		message = _("Cylinder radius: ") + multi_view->format_length(radius);
 	}
 }
 
@@ -105,7 +105,7 @@ void ModeModelMeshCreateCylinderSnake::on_left_button_up()
 				closed = true;
 				ready_for_scaling = true;
 				on_mouse_move();
-				message = _("Zylinder: Radius");
+				message = _("Cylinder: radius");
 				update_geometry();
 				multi_view->force_redraw();
 				return;
@@ -124,7 +124,7 @@ void ModeModelMeshCreateCylinderSnake::on_command(const string& id)
 		if (pos.num > 1){
 			ready_for_scaling = true;
 			on_mouse_move();
-			message = _("Zylinderradius: ");
+			message = _("Cylinder radius: ");
 			update_geometry();
 			multi_view->force_redraw();
 		}
@@ -184,7 +184,7 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win)
 		vector pp = multi_view->mouse_win->project(pos[0]);
 		pp.z = 0;
 		if ((pp - multi_view->m).length_fuzzy() < CYLINDER_CLOSING_DISTANCE){
-			draw_str(pp.x, pp.y, _("Pfad schlie&sen"));
+			draw_str(pp.x, pp.y, _("Close path"));
 		}
 	}
 }

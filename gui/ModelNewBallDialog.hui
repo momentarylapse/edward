@@ -1,17 +1,15 @@
-Dialog new_ball_dialog "neue Kugel" width=220 height=119 allow-root
-	Group g-title: "neue Kugel"
+Dialog new_ball_dialog "New ball" width=220 height=119 allow-root
+	Group g-title: "new Sphere"
 		Grid ? "" vertical
-			RadioButton type:physical "Physikalisch"
-			RadioButton type:ball "aus Scheiben"
+			RadioButton type:physical "physical"
+			RadioButton type:ball "From disks"
 			Grid ? "" indent
-				Text t_x "Anzahl der Scheiben"
+				Text t_x "Number of disks"
 				SpinButton x "" range=1: expandx
 				---|
-				Text t_y "Punkte pro Scheibe"
+				Text t_y "Sections per disk"
 				SpinButton y "" range=1:
-			RadioButton type:sphere "Sphäre"
+			RadioButton type:sphere "sphere"
 			Grid ? "" indent
-				Text t_complexity "Komplexität"
+				Text t_complexity "Complexity"
 				SpinButton complexity "" range=1: expandx
-
-

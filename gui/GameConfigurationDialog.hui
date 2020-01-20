@@ -1,26 +1,26 @@
-Dialog rc_dialog "Grundeinstellungen des Spieles" width=365 height=250
+Dialog rc_dialog "Rudimentary configuration" width=365 height=250
 	Grid ? "" vertical
-		Group ged_group "Standartwerte des Spiels"
+		Group ged_group "Startup game values"
 			Grid ? ""
-				Text ged_t_world "Welt"
+				Text ged_t_world "world:"
 				Edit default_world "" expandx
 				Button find_default_world "" image="hui:open"
 				---|
-				Text ged_t_second_world "Zweite Welt"
+				Text ged_t_second_world "second world"
 				Edit default_second_world ""
 				Button find_default_second_world "" image="hui:open"
 				---|
-				Text ged_t_script "Haupt-Script"
+				Text ged_t_script "main script:"
 				Edit default_script ""
 				Button find_default_script "" image="hui:open"
 				---|
-				Text ged_t_material "Material"
+				Text ged_t_material "material:"
 				Edit default_material ""
 				Button find_default_material "" image="hui:open"
 				---|
-				Text ged_t_font "Font"
+				Text ged_t_font "font:"
 				Edit default_font ""
 				Button find_default_font "" image="hui:open"
 		Grid ? "" buttonbar
-			Button cancel "Abbrechen"
-			Button ok "Ok"
+			Button cancel "Cancel"
+			Button ok "OK"

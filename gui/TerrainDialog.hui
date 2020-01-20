@@ -1,35 +1,35 @@
-Dialog terrain_dialog "Terrain-Eigenschaften" width=435 height=275
+Dialog terrain_dialog "Terrain properties" width=435 height=275
 	Grid ? ""
-		TabControl terrain_dialog_tab_control "Eigenschaften\\Texturen\\Material"
+		TabControl terrain_dialog_tab_control "properties\\textures\\material\\import"
 			Grid ? ""
 				Grid ? ""
-					Text t_filename "Terrain-Datei"
+					Text t_filename "Terrain file"
 					Edit filename "" expandx disabled
-					Button terrain_save_as "Speichern..." image=hui:save-as
+					Button terrain_save_as "Save..." image=hui:save-as
 				---|
 				Grid ? ""
 					.
 					Text /x "X" center
 					Text /z "Z" center
 					---|
-					Text t_stripes "Streifen-Zahl"
+					Text t_stripes "Stripes"
 					SpinButton num_x "" range=1: expandx disabled
 					SpinButton num_z "" range=1: expandx disabled
 					---|
-					Text t_raster "Raster-Größe"
+					Text t_raster "Grid size"
 					Edit pattern_x ""
 					Edit pattern_z ""
-					Text /lu "le"
+					Text /lu "lu"
 			Grid ? ""
-				ListView textures "Ebene\\Größe X\\Größe Z\\\\Datei" format=tTTit expandy
+				ListView textures "Level\\Size X\\Size Z\\\\File" format=tTTit expandy
 				---|
 				Grid ? ""
-					Button add_texture_level "Neu" image=hui:new
-					Button delete_texture_level "Loeschen" image=hui:delete
-					Button clear_texture_level "Leeren" image=hui:clear
-					Button texture_map_complete "auf ganzes Terrain" image=hui:zoom-fit
+					Button add_texture_level "New" image=hui:new
+					Button delete_texture_level "Delete texture level" image=hui:delete
+					Button clear_texture_level "Clear" image=hui:clear
+					Button texture_map_complete "1:1 mapping" image=hui:zoom-fit
 			Grid ? ""
-				CheckBox default_material "Standart Material benutzen"
+				CheckBox default_material "use default material"
 				---|
 				Grid ? ""
 					Text t_material "Material"
@@ -37,6 +37,6 @@ Dialog terrain_dialog "Terrain-Eigenschaften" width=435 height=275
 					Button material_find "" image=hui:open
 		---|
 		Grid ? "" buttonbar
-			Button /apply "Übernehmen" image=hui:apply
-			Button /cancel "Abbrechen" image=hui:cancel
-			DefButton /ok "OK" image=hui:ok
+			Button /apply "Apply" image=hui:apply
+			Button /cancel "Cancel" image=hui:cancel
+			DefButton /ok "Ok" image=hui:ok

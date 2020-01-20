@@ -16,7 +16,7 @@
 ModeModelMeshBevelEdges::ModeModelMeshBevelEdges(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshBevelEdges", _parent)
 {
-	message = _("Radius skalieren [Linke Maustaste = fertig]");
+	message = _("Scale radius [left click = done]");
 
 
 	data->getSelectionState(selection);
@@ -61,7 +61,7 @@ void ModeModelMeshBevelEdges::on_mouse_move()
 	if (!data->action_manager->preview(new ActionModelBevelEdges(radius)))
 		abort();
 
-	message = _("Radius skalieren [Linke Maustaste = fertig]   ") + multi_view->format_length(radius);
+	message = _("Scale radius [left click = done]   ") + multi_view->format_length(radius);
 }
 
 void ModeModelMeshBevelEdges::on_left_button_down()

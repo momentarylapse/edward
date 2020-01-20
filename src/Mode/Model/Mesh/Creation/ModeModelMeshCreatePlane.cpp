@@ -17,7 +17,7 @@
 ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreatePlane", _parent)
 {
-	message = _("Ebene: erster Punkt");
+	message = _("Plane: first point");
 	pos_chosen = false;
 	length[0] = length[1] = v_0;
 	invert = false;
@@ -63,7 +63,7 @@ void ModeModelMeshCreatePlane::on_left_button_up()
 		abort();
 	}else{
 		pos = multi_view->get_cursor();
-		message = _("Ebene: zweiter Punkt");
+		message = _("Plane: second point");
 		pos_chosen = true;
 	}
 }

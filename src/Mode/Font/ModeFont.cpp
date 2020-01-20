@@ -283,7 +283,7 @@ bool ModeFont::optimize_view()
 
 void ModeFont::Import()
 {
-	if (hui::SelectFont(ed, _("Font importieren"))){
+	if (hui::SelectFont(ed, _("Import font"))){
 		ImporterCairo imp;
 		imp.Import(data, hui::Fontname);
 	}

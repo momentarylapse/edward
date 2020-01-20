@@ -1,7 +1,7 @@
-Dialog material_sound_dialog "Geräusche" width=595 height=345
+Dialog material_sound_dialog "Sounds" width=595 height=345
 	Grid ? ""
-		ListView sound_list "Sound-Datei\\Material\\v min\\v max" expandx
+		ListView sound_list "Sound file\\Material\\v min\\v max" expandx
 		---|
 		Grid ? "" buttonbar
-			Button /cancel "Abbrechen" image=hui:cancel
-			DefButton /ok "OK" image=hui:ok
+			Button /cancel "Cancel" image=hui:cancel
+			DefButton /ok "Ok" image=hui:ok

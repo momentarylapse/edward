@@ -1,9 +1,9 @@
-Dialog key_dialog "Tasten Kombination" width=350 height=85
+Dialog key_dialog "Key combination" width=350 height=85
 	Grid ? "" vertical
 		Grid ? ""
-			Text key_dialog_t_key "Tastenkombination:"
+			Text key_dialog_t_key "combination:"
 			Edit key "" expandx disabled
 			Button key_reset "" image=hui:clear
 		Grid ? "" buttonbar
-			DefButton /ok "OK" image=hui:ok
-			Button /cancel "Abbrechen" image=hui:cancel
+			DefButton /ok "Ok" image=hui:ok
+			Button /cancel "Cancel" image=hui:cancel

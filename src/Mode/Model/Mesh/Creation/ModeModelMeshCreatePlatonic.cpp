@@ -23,7 +23,7 @@ ModeModelMeshCreatePlatonic::ModeModelMeshCreatePlatonic(ModeBase *_parent, int 
 {
 	type = _type;
 
-	message = _("Zentrum w&ahlen");
+	message = _("Select center");
 
 	pos_chosen = false;
 	radius = 0;
@@ -81,7 +81,7 @@ void ModeModelMeshCreatePlatonic::on_left_button_up()
 		abort();
 	}else{
 		pos = multi_view->get_cursor();
-		message = _("skalieren");
+		message = _("scale");
 		pos_chosen = true;
 		updateGeometry();
 	}

@@ -1,53 +1,53 @@
-Dialog model_dialog "Modell-Eigenschaften" width=550 height=580
+Dialog model_dialog "Model properties" width=550 height=580
 	Grid ? ""
-		TabControl model_dialog_tab_control "Detailstufen\\Physik\\Inventar\\Script"
+		TabControl model_dialog_tab_control "level of detail\\physics\\inventary\\script"
 			Grid ? "" vertical
 				Grid ? ""
-					Text model_dialog_t_num_lod "Anzahl"
+					Text model_dialog_t_num_lod "Number"
 					SpinButton num_lod "" range=1 expandx
-				ListView lod "#\\Sichtweite\\Detailgrad (%)" format=tTT
-				CheckBox generate_dists_auto "Sichtweiten automatisch berechnen"
-				CheckBox generate_skin_auto "Detailstufen automatisch erzeugen"
+				ListView lod "#\\Visibility\\Details (%)" format=tTT
+				CheckBox generate_dists_auto "auto calculation"
+				CheckBox generate_skin_auto "Automatically create level of details"
 			Grid ? "ControlTable 12"
-				Group model_dialog_grp_physics "Generell"
+				Group model_dialog_grp_physics "General"
 					Grid ? "" vertical
 						Grid ? ""
-							Text model_dialog_t_mass "Masse"
+							Text model_dialog_t_mass "Mass"
 							SpinButton mass "" range=0:1000000000000:0.01 expandx
-							Text /mu "me"
-						CheckBox ph_passive "Kollisionsfähig"
-						CheckBox ph_active "Beweglich"
+							Text /mu "mu"
+						CheckBox ph_passive "physics passive"
+						CheckBox ph_active "physics active"
 				---|
-				Group model_dialog_grp_tensor "Trägheitstensor"
+				Group model_dialog_grp_tensor "Moment of inertia tensor"
 					Grid ? ""
 						ListView tensor "\\X\\Y\\Z" format=tTTT
 						---|
-						CheckBox generate_tensor_auto "automatisch"
+						CheckBox generate_tensor_auto "auto"
 			Grid ? ""
 				Grid ? ""
 					Text model_dialog_t_name "Name"
 					Edit model_name "" expandx
 					---|
-					Text model_dialog_t_description "Beschreibung"
+					Text model_dialog_t_description "Description"
 					Edit model_description ""
 					---|
-					Text model_dialog_t_maxitems "Items"
+					Text model_dialog_t_maxitems "Max items"
 					SpinButton num_items "" range=0:
 				---|
 				Grid ? ""
-					ListView model_inventary "#\\Datei"
+					ListView model_inventary "#\\File"
 					---|
-					Button delete_item "Item löschen" image=hui:delete
+					Button delete_item "Delete item" image=hui:delete
 			Grid ? "" vertical
-				Group model_dialog_t_scriptfile "Datei"
+				Group model_dialog_t_scriptfile "File"
 					Grid mpd_table_scriptfile ""
 						Edit script "" expandx
 						Button script_find "" image=hui:open
 						---|
-						Label class "klasse..." bold
-				Group model_dialog_t_scriptvars "Variablen"
-					ListView variables "Name\\Typ\\Wert" "format=ttT"
+						Label class "Class..." bold
+				Group model_dialog_t_scriptvars "Script variables"
+					ListView variables "Name\\Type\\Value" format=ttT
 		---|
 		Grid ? "" buttonbar
-			Button /cancel "Abbrechen" image=hui:cancel
-			DefButton /ok "OK" image=hui:ok
+			Button /cancel "Cancel" image=hui:cancel
+			DefButton /ok "Ok" image=hui:ok

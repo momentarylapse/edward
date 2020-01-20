@@ -26,7 +26,7 @@ ModeModelMeshSplitPolygon::ModeModelMeshSplitPolygon(ModeBase *_parent) :
 	factor = 0;
 	edge = -1;
 
-	message = _("neuen Punkt in Polygon setzen");
+	message = _("place new vertex into polygon");
 
 	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_polygon);
 	mode_model->allow_selection_modes(false);

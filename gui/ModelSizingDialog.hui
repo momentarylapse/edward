@@ -1,4 +1,4 @@
-Dialog scaling_dialog "Skalierung" width=155 height=105
+Dialog scaling_dialog "Scaling" width=155 height=105
 	Grid ? ""
 		Text /x "X"
 		Edit scale_x "" expandx

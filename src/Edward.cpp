@@ -432,7 +432,7 @@ bool Edward::handle_arguments(Array<string> arg)
 	}else if (ext == "3ds"){
 		mode_model->import_load_3ds(param);
 	}else{
-		error_box(_("Unbekannte Dateinamenerweiterung: ") + param);
+		error_box(_("Unknown file extension: ") + param);
 		app->end();
 	}
 	}
@@ -537,9 +537,9 @@ void Edward::on_update(Observable *o, const string &message)
 	}else if (o->get_name() == "ActionManager"){
 		ActionManager *am = dynamic_cast<ActionManager*>(o);
 		if (message == am->MESSAGE_FAILED){
-			error_box(format(_("Aktion fehlgeschlagen: %s\nGrund: %s"), am->error_location.c_str(), am->error_message.c_str()));
+			error_box(format(_("Action failed: %s\nReason: %s"), am->error_location.c_str(), am->error_message.c_str()));
 		}else if (message == am->MESSAGE_SAVED){
-			set_message(_("Gespeichert!"));
+			set_message(_("Saved!"));
 			update_menu();
 		}
 	}else if (dynamic_cast<Data*>(o)){
@@ -742,7 +742,7 @@ void Edward::set_message(const string &message)
 
 void Edward::error_box(const string &message)
 {
-	hui::ErrorBox(this, _("Fehler"), message);
+	hui::ErrorBox(this, _("Error"), message);
 }
 
 void Edward::on_command(const string &id)
@@ -778,7 +778,7 @@ string title_filename(const string &filename)
 {
 	if (filename.num > 0)
 		return filename.basename();// + " (" + filename.dirname() + ")";
-	return _("Unbenannt");
+	return _("Unknown");
 }
 
 
@@ -829,17 +829,17 @@ bool Edward::file_dialog(int kind,bool save,bool force_in_root_dir)
 
 
 	string title, show_filter, filter;
-	if (kind==FD_MODEL){		title=_("Modell-Datei");	show_filter=_("Modelle (*.model)");			filter="*.model";	}
-	if (kind==FD_TEXTURE){	title=_("Textur-Datei");	show_filter=_("Texturen (bmp,jpg,tga,png,avi)");filter="*.jpg;*.bmp;*.tga;*.png;*.avi";	}
-	if (kind==FD_SOUND){		title=_("Sound-Datei");		show_filter=_("Sounds (wav,ogg)");			filter="*.wav;*.ogg";	}
-	if (kind==FD_MATERIAL){	title=_("Material-Datei");	show_filter=_("Materialien (*.material)");	filter="*.material";	}
-	if (kind==FD_TERRAIN){	title=_("Karten-Datei");	show_filter=_("Karten (*.map)");			filter="*.map";	}
-	if (kind==FD_WORLD){		title=_("Welt-Datei");		show_filter=_("Welten (*.world)");			filter="*.world";	}
-	if (kind==FD_SHADERFILE){title=_("Shader-Datei");	show_filter=_("Shader-Dateien (*.shader)");	filter="*.shader";	}
-	if (kind==FD_FONT){		title=_("Font-Datei");		show_filter=_("Font-Dateien (*.xfont)");	filter="*.xfont";	}
-	if (kind==FD_SCRIPT){	title=_("Script-Datei");	show_filter=_("Script-Dateien (*.kaba)");	filter="*.kaba";	}
-	if (kind==FD_CAMERAFLIGHT){title=_("Kamera-Datei");	show_filter=_("Kamera-Dateien (*.camera)");	filter="*.camera";	}
-	if (kind==FD_FILE){		title=_("beliebige Datei");	show_filter=_("Dateien (*.*)");				filter="*";	}
+	if (kind==FD_MODEL){		title=_("Model file");	show_filter=_("Models (*.model)");			filter="*.model";	}
+	if (kind==FD_TEXTURE){	title=_("Texture file");	show_filter=_("Textures (bmp,jpg,tga,png,avi)");filter="*.jpg;*.bmp;*.tga;*.png;*.avi";	}
+	if (kind==FD_SOUND){		title=_("Sound file");		show_filter=_("Sounds (wav,ogg)");			filter="*.wav;*.ogg";	}
+	if (kind==FD_MATERIAL){	title=_("Material file");	show_filter=_("Materials (*.material)");	filter="*.material";	}
+	if (kind==FD_TERRAIN){	title=_("Terrain files");	show_filter=_("Terrains (*.map)");			filter="*.map";	}
+	if (kind==FD_WORLD){		title=_("World file");		show_filter=_("Worlds (*.world)");			filter="*.world";	}
+	if (kind==FD_SHADERFILE){title=_("Shader file");	show_filter=_("Shader files (*.shader)");	filter="*.shader";	}
+	if (kind==FD_FONT){		title=_("Font file");		show_filter=_("Font files (*.xfont)");	filter="*.xfont";	}
+	if (kind==FD_SCRIPT){	title=_("Script file");	show_filter=_("Script files (*.kaba)");	filter="*.kaba";	}
+	if (kind==FD_CAMERAFLIGHT){title=_("Camera file");	show_filter=_("Camera files (*.camera)");	filter="*.camera";	}
+	if (kind==FD_FILE){		title=_("arbitrary file");	show_filter=_("Files (*.*)");				filter="*";	}
 
 	if (save)	done=hui::FileDialogSave(this,title,dialog_dir[kind],show_filter,filter);
 	else		done=hui::FileDialogOpen(this,title,dialog_dir[kind],show_filter,filter);
@@ -850,7 +850,7 @@ bool Edward::file_dialog(int kind,bool save,bool force_in_root_dir)
 		if (force_in_root_dir){
 			if (!in_root_dir){
 				error_box(hui::Filename.sys_filename());
-				error_box(format(_("Datei liegt nicht im vorgesehenen Verzeichnis: \"%s\"\noder in dessen Unterverzeichnis"), root_dir_kind[kind].sys_filename().c_str()));
+				error_box(format(_("The file ist not int the appropriate directory: \"%s\"\nor in a subdirectory."), root_dir_kind[kind].sys_filename().c_str()));
 				return false;
 			}
 		}//else
@@ -878,7 +878,7 @@ bool Edward::allow_termination()
 		return true;
 	if (d->action_manager->is_save())
 		return true;
-	string answer = hui::QuestionBox(this,_("Dem&utige aber h&ofliche Frage"),_("Sie haben die Entropie erh&oht. Wollen Sie Ihr Werk speichern?"),true);
+	string answer = hui::QuestionBox(this,_("Quite a polite question"),_("You increased entropy. Do you wish to save your work?"),true);
 	if (answer == "hui:cancel")
 		return false;
 	if (answer == "hui:no")

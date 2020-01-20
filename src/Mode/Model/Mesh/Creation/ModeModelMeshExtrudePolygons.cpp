@@ -20,7 +20,7 @@ ModeModelMeshExtrudePolygons::ModeModelMeshExtrudePolygons(ModeBase *_parent, bo
 	independent = _independent;
 	offset = 0;
 
-	message = _("Extrudieren: Offset durch Maus, Linke Taste = fertig");
+	message = _("Extrude: offset via mouse, left button = done");
 }
 
 void ModeModelMeshExtrudePolygons::on_end() {
@@ -42,7 +42,7 @@ void ModeModelMeshExtrudePolygons::on_mouse_move() {
 	offset += (hui::GetEvent()->dx) / multi_view->active_win->zoom();
 	preview();
 
-	message = _("Extrudieren: Offset durch Maus, Linke Taste = fertig    " + multi_view->format_length(offset));
+	message = _("Extrude: Offset via mouse, left click = done" + multi_view->format_length(offset));
 }
 
 void ModeModelMeshExtrudePolygons::on_draw_win(MultiView::Window *win) {

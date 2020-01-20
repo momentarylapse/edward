@@ -372,7 +372,7 @@ void ModeModelMesh::create_new_material_for_selection()
 #if 0
 	msg_db_f("CreateNewMaterialForSelection", 2);
 	if (0 == data->getNumSelectedPolygons()){
-		ed->set_message(_("kein Dreieck ausgew&ahlt"));
+		ed->set_message(_("no triangle selected"));
 		return;
 	}
 
@@ -411,7 +411,7 @@ void ModeModelMesh::create_new_material_for_selection()
 void ModeModelMesh::choose_material_for_selection()
 {
 	if (0 == data->getNumSelectedPolygons()){
-		ed->set_message(_("kein Dreieck ausgew&ahlt"));
+		ed->set_message(_("no triangle selected"));
 		return;
 	}
 
@@ -453,13 +453,13 @@ void ModeModelMesh::copy()
 	data->copyGeometry(temp_geo);
 
 	on_update_menu();
-	ed->set_message(format(_("%d Vertizes, %d Dreiecke kopiert"), temp_geo.vertex.num, temp_geo.polygon.num));
+	ed->set_message(format(_("%d vertices, %d triangles copied"), temp_geo.vertex.num, temp_geo.polygon.num));
 }
 
 void ModeModelMesh::paste()
 {
 	data->pasteGeometry(temp_geo, current_material);
-	ed->set_message(format(_("%d Vertizes, %d Dreiecke eingef&ugt"), temp_geo.vertex.num, temp_geo.polygon.num));
+	ed->set_message(format(_("%d vertices, %d triangles pasted"), temp_geo.vertex.num, temp_geo.polygon.num));
 }
 
 bool ModeModelMesh::copyable()
@@ -470,7 +470,7 @@ bool ModeModelMesh::copyable()
 void ModeModelMesh::add_effects(int type)
 {
 	if (data->getNumSelectedVertices() == 0){
-		ed->set_message(_("Kein Punkt markiert!"));
+		ed->set_message(_("No vertex point selected"));
 		return;
 	}
 	ModelFXDialog *dlg = new ModelFXDialog(ed, false, data, type, -1);
@@ -488,7 +488,7 @@ void ModeModelMesh::edit_effects()
 			n ++;
 		}
 	if (n != 1){
-		ed->set_message(_("Es muss genau ein Punkt mit Effekt markiert sein!"));
+		ed->set_message(_("One vertex point with effects has to be selected!"));
 		return;
 	}
 	ModelFXDialog *dlg = new ModelFXDialog(ed, false, data, -1, index);
@@ -503,7 +503,7 @@ void ModeModelMesh::clear_effects()
 		if (data->vertex[fx.vertex].is_selected)
 			n ++;
 	if (n == 0){
-		ed->set_message(_("Kein Punkt mit Effekt markiert!"));
+		ed->set_message(_("No vertex with effects selected!"));
 		return;
 	}
 	data->selectionClearEffects();

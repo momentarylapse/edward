@@ -13,7 +13,7 @@
 ModeModelSkeletonCreateBone::ModeModelSkeletonCreateBone(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelSkeletonCreateBone", _parent)
 {
-	message = _("Knochen setzen oder Wurzel-Knochen w&ahlen");
+	message = _("Place bone or choose parent bone");
 	pos_chosen = false;
 	bone_parent = -1;
 }
@@ -35,7 +35,7 @@ void ModeModelSkeletonCreateBone::on_left_button_down()
 			bone_parent = multi_view->hover.index;
 			data->bone[bone_parent].is_special = true;
 			pos_chosen = true;
-			message = _("Knochen setzen");
+			message = _("Set bone");
 		}else{
 			pos = multi_view->get_cursor();
 			data->addBone(pos, -1);

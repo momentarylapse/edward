@@ -43,7 +43,7 @@ void ModeModelSkeleton::on_command(const string & id)
 					break;
 				}
 		}else{
-			ed->error_box(_("Es muss genau 1 Knochen markiert sein!"));
+			ed->error_box(_("Please select exactly one bone!"));
 		}
 	}
 	//if (id == "skeleton_link")
@@ -103,7 +103,7 @@ void ModeModelSkeleton::unlinkSelection()
 			}
 	data->end_action_group();
 
-	ed->set_message(format(_("%d Verbindungen gel&ost"), n));
+	ed->set_message(format(_("destroyed %d links"), n));
 }
 
 void ModeModelSkeleton::chooseMouseFunction(int f)

@@ -1,7 +1,7 @@
-Dialog world_scriptfunc_choice_dialog "Script-Funktion" width=245 height=90
+Dialog world_scriptfunc_choice_dialog "Script function" width=245 height=90
 	Grid ? ""
 		ComboBox function "" expandx
 		---|
 		Grid ? "" buttonbar
-			Button /cancel "Abbrechen" image=hui:cancel
-			DefButton /ok" "OK" image=hui:ok
+			Button /cancel "Cancel" image=hui:cancel
+			DefButton /ok" "Ok" image=hui:ok

@@ -1,8 +1,8 @@
-Dialog new_plane_dialog "neue Ebene" width=100 height=50 allow-root
-	Group g-plane "neue Ebene"
+Dialog new_plane_dialog "New plane" width=100 height=50 allow-root
+	Group g-plane "New plane"
 		Grid ? ""
-			Text new_plane_dialog_t_x "Streifen X:"
+			Text new_plane_dialog_t_x "# srtipes X:"
 			SpinButton np_num_x "" range=1: expandx
 			---|
-			Text new_plane_dialog_t_y "Streifen Y:"
+			Text new_plane_dialog_t_y "# stripes Y:"
 			SpinButton np_num_y "" range=1:

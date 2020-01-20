@@ -1,5 +1,5 @@
-Dialog progress_cancelable_dialog "in Arbeit" width=100 height=50
+Dialog progress_cancelable_dialog "working" width=100 height=50
 	Grid ? ""
 		ProgressBar progress_bar ""
 		---|
-		Button cancel "Abbrechen" image=hui:cancel
+		Button cancel "Cancel" image=hui:cancel

@@ -487,7 +487,7 @@ bool ModeWorld::open()
 		return false;
 	if (!ed->file_dialog(FD_WORLD, false, false))
 		return false;
-	ed->progress->start(_("Lade Welt"), 0);
+	ed->progress->start(_("Loading world"), 0);
 	bool ok = data->load(ed->dialog_file_complete);
 	ed->progress->end();
 	if (!ok)
@@ -611,7 +611,7 @@ void ModeWorld::LoadTerrain()
 void ModeWorld::SetEgo()
 {
 	if (data->GetSelectedObjects() != 1){
-		ed->set_message(_("Es muss genau ein Objekt markiert sein!"));
+		ed->set_message(_("Please select exactly one object!"));
 		return;
 	}
 	foreachi(WorldObject &o, data->Objects, i)
@@ -652,14 +652,14 @@ void ModeWorld::ImportWorldProperties()
 		if (w.load(ed->dialog_file_complete, false))
 			data->execute(new ActionWorldEditData(w.meta_data));
 		else
-			ed->error_box(_("Angegebene Welt konnte nicht korrekt geladen werden!"));
+			ed->error_box(_("World could not be loaded correctly!"));
 	}
 }
 
 void ModeWorld::ApplyHeightmap()
 {
 	if (data->GetSelectedTerrains() == 0){
-		ed->set_message(_("Es muss mindestens ein Terrain markiert sein!"));
+		ed->set_message(_("No terrain selected!"));
 		return;
 	}
 	TerrainHeightmapDialog *dlg = new TerrainHeightmapDialog(ed, false, data);
@@ -678,13 +678,13 @@ void ModeWorld::Copy()
 	data->Copy(temp_objects, temp_terrains);
 
 	on_update_menu();
-	ed->set_message(format(_("%d Objekte, %d Terrains kopiert"), temp_objects.num, temp_terrains.num));
+	ed->set_message(format(_("copied %d objects, %d terrains"), temp_objects.num, temp_terrains.num));
 }
 
 void ModeWorld::Paste()
 {
 	data->Paste(temp_objects, temp_terrains);
-	ed->set_message(format(_("%d Objekte, %d Terrains eingef&ugt"), temp_objects.num, temp_terrains.num));
+	ed->set_message(format(_("added %d objects, %d terrains"), temp_objects.num, temp_terrains.num));
 }
 
 bool ModeWorld::Copyable()

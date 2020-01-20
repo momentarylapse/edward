@@ -39,7 +39,7 @@ void ModelDuplicateAnimationDialog::onOk()
 	int index = get_int("new_animation_index");
 	if (index < data->move.num)
 		if (data->move[index].frame.num > 0){
-			ed->error_box(_("Es existiert bereits eine Animation mit diesem Index. Bitte einen anderen w&ahlen."));
+			ed->error_box(_("This index is already taken by another animation."));
 			return;
 		}
 	data->duplicateAnimation(source, index);

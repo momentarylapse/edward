@@ -32,7 +32,7 @@ bool DataFont::load(const string & _filename, bool deep)
 	ed->make_dirs(filename);
 	File *f = FileOpenText(filename);
 	if (!f){
-		ed->set_message(_("Kann XFont-Datei nicht &offnen"));
+		ed->set_message(_("Can't load font file"));
 		return false;
 	}
 	file_time = f->GetDateModification().time;
@@ -106,7 +106,7 @@ bool DataFont::load(const string & _filename, bool deep)
 			if (g.Name == str)
 				global.UnknownGlyphNo = i;
 	}else{
-		ed->set_message(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 1, 2));
+		ed->set_message(format(_("File %s has a wrong file format: %d (expected: %d - %d)!"), filename.c_str(), ffv, 1, 2));
 		error = true;
 	}
 

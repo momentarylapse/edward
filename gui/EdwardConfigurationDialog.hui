@@ -1,26 +1,26 @@
-Dialog editor_dialog "Edward" width=400 height=370
-	TabControl editor_dialog_tab_control "Information\\Einstellungen\\Tasten"
+Dialog editor_dialog "Editor" width=400 height=370
+	TabControl editor_dialog_tab_control "Information\\Properties\\Keys"
 		Grid ? "" vertical
-			DrawingArea logo "model.png" height=150
+			DrawingArea logo "Data/model.png" height=150
 			Grid ? ""
 				Text t_version "Version"
 				Text version "" expandx
 				---|
-				Text t_creator "Hersteller"
+				Text t_creator "Creator"
 				Text creator ""
 				---|
-				Text t_adress "Internetseite"
+				Text t_adress "Website"
 				Button adress ""
 		Grid ? "" vertical
 			Grid ? ""
-				Text t_language "Sprache"
+				Text t_language "Language"
 				ComboBox language ""
 				---|
-				Text t_workingdirectory "Arbeitsverzeichnis"
+				Text t_workingdirectory "Working directory"
 				Grid ? ""
 					Edit working_directory "" expandx disabled
 					Button find_workingdir "" image=hui:open
 			Grid ? "" vertical
-				CheckBox look_for_updates "Beim Start nach Updates suchen"
-				CheckBox local_documentation "Lokale statt Online-Dokumentation verwenden"
-		TreeView key_list "Befehl\\Tasten" tree
+				CheckBox look_for_updates "Look for updates at program start"
+				CheckBox local_documentation "Use local documentation instead of online version"
+		TreeView key_list "command\\keys" tree

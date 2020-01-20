@@ -219,7 +219,7 @@ void ModeModelAnimation::delete_current_frame() {
 	if (cur_move()->frame.num > 1)
 		data->animationDeleteFrame(current_move, current_frame);
 	else
-		ed->set_message(_("der letzte Frame kann nicht gel&oscht werden"));
+		ed->set_message(_("can not delete the only frame"));
 }
 
 void ModeModelAnimation::duplicate_current_frame() {

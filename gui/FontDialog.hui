@@ -1,41 +1,39 @@
-Dialog font_dialog "Font Eigenschaften" width=400 height=730
+Dialog font_dialog "Font properties" width=400 height=730
 	Grid ? "" vertical
 		Group font_dt_font "Font"
 			Grid ? ""
-				Text font_dt_numglyphs "Zeichenzahl"
+				Text font_dt_numglyphs "Number of characters"
 				SpinButton num "0" expandx
 				---|
-				Text font_dt_height "Zeichenhöhe"
+				Text font_dt_height "Character height"
 				SpinButton height "0"
 				---|
-				Text font_dt_y1 "Obere Kante"
+				Text font_dt_y1 "Upper edge"
 				SpinButton y1 "0"
 				---|
-				Text font_dt_y2 "Untere Kante"
+				Text font_dt_y2 "Lower edge"
 				SpinButton y2 "0"
 				---|
-				Text font_dt_scalex "Skalierung X"
+				Text font_dt_scalex "Scaling X"
 				SpinButton factorx "0"
 				---|
-				Text font_dt_scaley "Skalierung Y"
+				Text font_dt_scaley "Scaling Y"
 				SpinButton factory "0"
 				---|
-				Text font_dt_unknown "Unbekanntes Zeichen"
+				Text font_dt_unknown "Unknown character"
 				Edit unknown ""
-		Group font_dt_character "Zeichen"
+		Group font_dt_character "Character"
 			Grid ? ""
-				Text font_dt_name "Zeichen"
+				Text font_dt_name "Character"
 				Edit name "" expandx
 				---|
-				Text font_dt_x1 "Linke Kante"
+				Text font_dt_x1 "Left edge"
 				SpinButton x1 "0"
 				---|
-				Text font_dt_x2 "Rechte Kante"
+				Text font_dt_x2 "Right edge"
 				SpinButton x2 "0"
 				---|
-				Text font_dt_width "Breite"
+				Text font_dt_width "Width"
 				SpinButton width "0"
-		Group font_dt_example "Vorschautext"
+		Group font_dt_example "Preview text"
 			Edit text ""
-
-

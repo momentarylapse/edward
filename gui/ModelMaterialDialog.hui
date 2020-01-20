@@ -1,43 +1,43 @@
 Dialog model_material_dialog "Material" width=350 height=371
 	Grid ? "" vertical
-		Group model_material_dialog_grp_list "Übersicht"
-			ListView material_list "#\\Polygone\\\\Datei" "tooltip=Materialien\n - Aktionen per Rechtsklick" format=ttit select-single
-		Separator sep_vertical "" vertical
-		Expander model_material_dialog_grp_color "Farben"
+		Group model_material_dialog_grp_list "Overview"
+			ListView material_list "Material\\Triangles\\File" format=ttit select-single "tooltip=Materials\n - Actions via right click"
+		Separator
+		Expander model_material_dialog_grp_color "Colors"
 			Grid ? ""
-				CheckBox default_colors "Farben aus der Datei verwenden"
+				CheckBox default_colors "Use colors from material"
 				---|
 				Grid ? ""
 					Text /ambient "Ambient"
-					ColorButton mat_am "" "tooltip=Farbe des Objektes im Schatten (Umgebungslicht)" expandx
+					ColorButton mat_am "" expandx "tooltip=Color in shadows (ambient light)"
 					---|
 					Text /diffuse "Diffuse"
-					ColorButton mat_di "" "tooltip=Farbe des Objektes bei direktem Licht" alpha
+					ColorButton mat_di "" alpha "tooltip=Color in direct light"
 					---|
 					Text /specular "Specular"
-					ColorButton mat_sp "" "tooltip=Farbe von Glanzflecken"
+					ColorButton mat_sp "" "tooltip=Color of specular highlights"
 					---|
 					Text /shininess "Shininess"
-					SpinButton mat_shininess "" "tooltip=Härte des Glanzes (10=weich, 100=hart)" range=0:10000:0.1
+					SpinButton mat_shininess "" range=0:10000:0.1 "tooltip=Harshness of highlights (10=soft, 100=harsh)"
 					---|
 					Text /emission "Emission"
-					ColorButton mat_em "" "tooltip=Farbe des Objektes bei absoluter Dunkelheit"
-		Expander model_material_dialog_grp_textures "Texturen"
-			ListView mat_textures "Ebene\\\\Textur" "tooltip=Übereinanderliegende Textur-Schichten (multitexturing)\n- Aktionen per Rechtsklick" format=tit select-single
-		Expander model_material_dialog_grp_transparency "Transparenz"
+					ColorButton mat_em "" "tooltip=Color in absolute darkness"
+		Expander model_material_dialog_grp_textures "Textures"
+			ListView mat_textures "Level\\Texture" format=tit select-single "tooltip=Mixing texture levels (multitexturing)\n- Actions via right click"
+		Expander model_material_dialog_grp_transparency "Transparency"
 			Grid ? "" vertical
-				RadioButton transparency_mode:material "Transparenz aus der Datei verwenden"
-				RadioButton transparency_mode:none "Keine Transparenz"
-				RadioButton transparency_mode:color_key "Color-Key" "tooltip=Reines Grün wird transparent"
-				RadioButton transparency_mode:function "Funktion"
+				RadioButton transparency_mode:material "Transparency from material"
+				RadioButton transparency_mode:none "No transparency"
+				RadioButton transparency_mode:color_key "Color key" "tooltip=Pure green turns transparent"
+				RadioButton transparency_mode:function "Function"
 				Grid mmat_transp_function_grid "" indent
-					Text material_dialog_t_trans_source "Quelle"
-					ComboBox alpha_source "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
+					Text material_dialog_t_trans_source "source"
+					ComboBox alpha_source "AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha"
 					---|
-					Text material_dialog_t_trans_dest "Ziel"
-					ComboBox alpha_dest "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
-				RadioButton transparency_mode:factor "Faktor"
+					Text material_dialog_t_trans_dest "dest"
+					ComboBox alpha_dest "AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha"
+				RadioButton transparency_mode:factor "Factor"
 				Grid mmat_transp_alpha_grid "" indent
 					SpinButton alpha_factor "" range=0:100:1
 					Text /percent "%"
-				CheckBox alpha_z_buffer "Z-Buffer aktiviert"
+				CheckBox alpha_z_buffer "Z-buffer enabled"

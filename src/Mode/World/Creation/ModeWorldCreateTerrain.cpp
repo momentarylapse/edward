@@ -13,7 +13,7 @@
 ModeWorldCreateTerrain::ModeWorldCreateTerrain(ModeBase *_parent) :
 	ModeCreation<DataWorld>("WorldCreateTerrain", _parent)
 {
-	message = _("neues Terrain...");
+	message = _("new terrain...");
 }
 
 ModeWorldCreateTerrain::~ModeWorldCreateTerrain()

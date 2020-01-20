@@ -20,7 +20,7 @@
 ModeModelMeshCreateCube::ModeModelMeshCreateCube(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateCube", _parent)
 {
-	message = _("W&urfel: ersten Eckpunkt setzen");
+	message = _("Cube: place first corner point");
 	pos_chosen = false;
 	pos2_chosen = false;
 	for (int i=0;i<3;i++)
@@ -108,12 +108,12 @@ void ModeModelMeshCreateCube::on_mouse_move() {
 			length[1] = dir1 * vector::dot(dir1, pos2 - pos);
 			update_geometry();
 
-			message = _("W&urfel Grundseite: ") + multi_view->format_length(length[0].length()) + " x " + multi_view->format_length(length[1].length());
+			message = _("Cube base area: ") + multi_view->format_length(length[0].length()) + " x " + multi_view->format_length(length[1].length());
 		} else {
 			set_dpos3();
 			update_geometry();
 
-			message = _("W&urfel: ") + multi_view->format_length(length[0].length()) + " x " + multi_view->format_length(length[1].length()) + " x " + multi_view->format_length(length[2].length());
+			message = _("Cube: ") + multi_view->format_length(length[0].length()) + " x " + multi_view->format_length(length[1].length()) + " x " + multi_view->format_length(length[2].length());
 		}
 	}
 }

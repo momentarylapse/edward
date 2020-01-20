@@ -1,37 +1,37 @@
-Dialog ge_dialog "Das Spiel exportieren" width=365 height=380
+Dialog ge_dialog "Export the game" width=365 height=380
 	Grid ? "" vertical
-		Group ged_group_dest "Ziel"
+		Group ged_group_dest "Destination"
 			Grid ? ""
 				.
 				Edit rootdir "" disabled expandx
 				Button find_rootdir "" image="hui:open"
 				---|
-				Text ged_t_system "System"
-				ComboBox ged_system "Linux\\Windows 32"
+				Text ged_t_system "system aimed for:"
+				ComboBox ged_system "linux\\windows 32"
 				---|
-				Text ged_t_export_type "Form"
-				ComboBox export_type "einzelne Dateien\\Archiv (komprimiert)\\Archiv (unkomprimiert)"
-		Group ged_group "Standartwerte des Spiels"
+				Text ged_t_export_type "type of export:"
+				ComboBox export_type "single files\\archive (compressed)\\archive (uncompressed)"
+		Group ged_group "Startup game values"
 			Grid ? ""
-				Text ged_t_world "Welt"
+				Text ged_t_world "world:"
 				Edit default_world "" expandx
 				Button find_default_world "" image="hui:open"
 				---|
-				Text ged_t_second_world "Zweite Welt"
+				Text ged_t_second_world "second world"
 				Edit default_second_world ""
 				Button find_default_second_world "" image="hui:open"
 				---|
-				Text ged_t_script "Haupt-Script"
+				Text ged_t_script "main script:"
 				Edit default_script ""
 				Button find_default_script "" image="hui:open"
 				---|
-				Text ged_t_material "Material"
+				Text ged_t_material "material:"
 				Edit default_material ""
 				Button find_default_material "" image="hui:open"
 				---|
-				Text ged_t_font "Font"
+				Text ged_t_font "font:"
 				Edit default_font ""
 				Button find_default_font "" image="hui:open"
 		Grid ? "" buttonbar
-			Button cancel "Abbrechen"
-			Button ok "Ok"
+			Button cancel "Cancel"
+			Button ok "OK"

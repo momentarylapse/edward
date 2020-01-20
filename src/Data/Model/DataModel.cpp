@@ -67,11 +67,11 @@ string ModelEffect::get_type()
 	if (type == FX_TYPE_SCRIPT)
 		return _("Script");
 	if (type == FX_TYPE_LIGHT)
-		return _("Licht");
+		return _("Light");
 	if (type == FX_TYPE_SOUND)
 		return _("Sound");
 	if (type == FX_TYPE_FORCEFIELD)
-		return _("Kraftfeld");
+		return _("Forcefield");
 	return "???";
 }
 
@@ -288,7 +288,7 @@ bool DataModel::load(const string & _filename, bool deep)
 	try{
 		f = FileOpenText(filename);
 	}catch(FileError &e){
-		report_error(_("Datei ist nicht in der Stimmung, ge&offnet zu werden"));
+		report_error(_("The file is not in the mood of beeing opened"));
 		return false;
 	}
 	action_manager->enable(false);
@@ -297,7 +297,7 @@ bool DataModel::load(const string & _filename, bool deep)
 	ffv=f->ReadFileFormatVersion();
 
 	if (ffv<0){
-		report_error(_("Datei-Format unlesbar!"));
+		report_error(_("File format unreadable!"));
 		error=true;
 
 	}else if (ffv==10){ // old format
@@ -952,7 +952,7 @@ bool DataModel::load(const string & _filename, bool deep)
 
 
 	}else{
-		report_error(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 10, 10));
+		report_error(format(_("File %s has a wrong file format: %d (expected: %d - %d)!"), filename.c_str(), ffv, 10, 10));
 		error=true;
 	}
 
@@ -983,7 +983,7 @@ bool DataModel::load(const string & _filename, bool deep)
 			// test textures
 			for (auto &t: material[i]->texture_levels){
 				if ((!t->texture) and (t->filename.num > 0))
-					report_error(format(_("Textur-Datei nicht ladbar: %s"), t->filename.c_str()));
+					report_error(format(_("Texture file not loadable: %s"), t->filename.c_str()));
 			}
 		}
 

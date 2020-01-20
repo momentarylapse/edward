@@ -10,18 +10,18 @@
 
 #include "Data/Model/DataModel.h"
 
-string AppVersion = "0.4.-1.3";
+string AppVersion = "0.4.-1.4";
 string AppName = "Edward";
 
 
 EdwardApp::EdwardApp() :
-	hui::Application("edward", "Deutsch", hui::FLAG_LOAD_RESOURCE)
+	hui::Application("edward", "English", hui::FLAG_LOAD_RESOURCE)
 {
 	app = this;
 	set_property("name", AppName);
 	set_property("version", AppVersion);
 	set_property("copyright", "© 2006-2020 by MichiSoft TM"); // ??? min=2004 (objectmaker) max=2006
-	set_property("comment", _("Editor f&ur Spiele-Daten der x9-Engine"));
+	set_property("comment", _("Editor for game data of the x9 engine"));
 	set_property("website", "http://michi.is-a-geek.org/software");
 	set_property("author", "Michael Ankele <michi@lupina.de>");
 }

@@ -1,18 +1,18 @@
-Dialog world_scriptfunc_dialog "Script-Funktion" width=335 height=145
+Dialog world_scriptfunc_dialog "Script function" width=335 height=145
 	Grid ? ""
 		Grid ? ""
-			Text t_name "Name der Funktion:"
+			Text t_name "Function name:"
 			Grid ? ""
 				Edit function "" expandx
 				Button find "" image=hui:open
 			---|
-			Text t_called_by "Aufruf durch:"
+			Text t_called_by "Call by:"
 			ComboBox location "CalcMove 1\\CalcMove 2\\Render 1\\Render 2\\Render 3\\GetInput 1\\GetInput 2"
 			---|
-			Text t_delay "Pseudo-Verzögerung:"
-			Edit level "0" "tooltip=für Reihenfolge"
+			Text t_delay "Pseudo delay:"
+			Edit level "0" "tooltip=influences order"
 		---|
 		Grid ? "" buttonbar
-			Button /delete "Löschen" image=hui:delete
-			Button /cancel "Abbrechen" image=hui:cancel
-			DefButton /ok "OK" image=hui:ok
+			Button /delete "Delete" image=hui:delete
+			Button /cancel "Cancel" image=hui:cancel
+			DefButton /ok "Ok" image=hui:ok

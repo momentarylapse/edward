@@ -1,9 +1,8 @@
-Menu "" "" disabled
-	Menu "" "Allerlei"
-		Menu "" "Editor"
-			Item undo "Rückgängig"
-			Item redo "Wiederherstellen"
-			Item zzz_invertselection "Auswahl invertieren"
-			Item zzz_enableselection "Auswahl aktivieren"
-			Item zzz_setbgimage "Hintergrundbild setzen"
-
+Menu  "" disabled
+	Menu  "Allerlei"
+		Menu  "Editor"
+			Item undo "Undo"
+			Item redo "Redo"
+			Item zzz_invertselection "Invert selection"
+			Item zzz_enableselection "Enable selection"
+			Item zzz_setbgimage "Set background image"

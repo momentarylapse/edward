@@ -13,7 +13,7 @@
 ModeModelMeshCreateVertex::ModeModelMeshCreateVertex(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateVertex", _parent)
 {
-	message = _("neue Punkte setzen");
+	message = _("place new vertex");
 
 	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_vertex);
 }

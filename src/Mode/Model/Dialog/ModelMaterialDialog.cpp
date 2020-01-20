@@ -259,7 +259,7 @@ void ModelMaterialDialog::fill_texture_list() {
 void ModelMaterialDialog::on_texture_level_add() {
 	auto temp = data->material[mode_model_mesh->current_material];
 	if (temp->texture_levels.num >= MATERIAL_MAX_TEXTURES) {
-		ed->error_box(format(_("H&ochstens %d Textur-Ebenen erlaubt!"), MATERIAL_MAX_TEXTURES));
+		ed->error_box(format(_("Only %d texture levels allowed!"), MATERIAL_MAX_TEXTURES));
 		return;
 	}
 
@@ -292,7 +292,7 @@ void ModelMaterialDialog::on_texture_level_save() {
 
 class TextureScaleDialog : public hui::Dialog {
 public:
-	TextureScaleDialog(hui::Window *parent, int w, int h) : hui::Dialog(_("Textur skalieren"), 300, 100, parent, false) {
+	TextureScaleDialog(hui::Window *parent, int w, int h) : hui::Dialog(_("Scale texture"), 300, 100, parent, false) {
 		width = height = -1;
 		from_resource("texture-scale-dialog");
 		set_int("width", w);
@@ -339,7 +339,7 @@ void ModelMaterialDialog::on_texture_level_delete() {
 	int sel = get_int("mat_textures");
 	if (sel >= 0) {
 		if (data->material[mode_model_mesh->current_material]->texture_levels.num <= 1) {
-			ed->error_box(_("Mindestens eine Textur-Ebene muss vorhanden sein!"));
+			ed->error_box(_("At least one texture level has to exist!"));
 			return;
 		}
 		data->execute(new ActionModelMaterialDeleteTexture(mode_model_mesh->current_material, sel));

@@ -1,25 +1,25 @@
-Dialog ad_dialog "Verwaltung" width=680 height=590 allow-root
+Dialog ad_dialog "Administration" width=680 height=590 allow-root
 	Grid ? "" vertical
 		Grid ? ""
-			Text ad_t_directory "Directory"
+			Text ad_t_directory "Verzeichnis"
 			Edit directory "" expandx disabled
 			Button load_game "" image=hui:open
-		TabControl ad_tab_control "Aktuelles Spiel\\Alle Dateien\\Details\\Überflüssig\\Fehlend"
-			ListView file_list_cur "Typ\\Datei\\gefordert von\\fordert\\Fehlend" format=ttttc multiline
-			ListView file_list_all "Typ\\Datei\\gefordert von\\fordert\\Fehlend" format=ttttc multiline
+		TabControl ad_tab_control "Current game\\All files\\Details\\Not needed\\Missing"
+			ListView file_list_cur "Type\\File\\Needed by\\Needs\\Missing" format=ttttc multiline
+			ListView file_list_all "Type\\File\\Needed by\\Needs\\Missing" format=ttttc multiline
 			Grid ? "" vertical
-				Group adt_file "Datei"
+				Group adt_file "File"
 					Text file_details ""
-				Group adt_source "gefordert von"
-					ListView file_list_detail_source "Typ\\Datei\\gefordert von\\fordert\\Fehlend" format=ttttc multiline
-				Group adt_dest "fordert"
-					ListView file_list_detail_dest "Typ\\Datei\\gefordert von\\fordert\\Fehlend" format=ttttc multiline
-			ListView file_list_super "Typ\\Datei\\gefordert von\\fordert\\Fehlend" format=ttttc multiline
-			ListView file_list_missing "Typ\\Datei\\gefordert von\\fordert\\Fehlend" format=ttttc multiline
+				Group adt_source "Needed by"
+					ListView file_list_detail_source "Type\\File\\Needed by\\Needs\\Missing" format=ttttc multiline
+				Group adt_dest "Needs"
+					ListView file_list_detail_dest "Type\\File\\Needed by\\Needs\\Missing" format=ttttc multiline
+			ListView file_list_super "Type\\File\\Needed by\\Needs\\Missing" format=ttttc multiline
+			ListView file_list_missing "Type\\File\\Needed by\\Needs\\Missing" format=ttttc multiline
 		Grid admin_button_bar "" buttonbar
-			Button delete "Löschen" image=hui:delete
-			Button rename "Umbenennen"
-			Button ad_edit "Bearbeiten" image=hui:edit
+			Button delete "Delete" image=hui:delete
+			Button rename "Rename"
+			Button ad_edit "Edit" image=hui:edit
 			Text dummy_text "" expandx
-			Button ad_export_game "Spiel exportieren" image=hui:refresh
-			Button ad_rudimentary_configuration "Grundeinstellungen" image=hui:preferences
+			Button ad_export_game "Export game" image=hui:refresh
+			Button ad_rudimentary_configuration "Basic settings" image=hui:preferences

@@ -15,7 +15,7 @@ static string LastObjectFilename;
 ModeWorldCreateObject::ModeWorldCreateObject(ModeBase *_parent) :
 	ModeCreation<DataWorld>("WorldCreateObject", _parent)
 {
-	message = _("neues Objekt ausw&ahlen");
+	message = _("select new object");
 }
 
 ModeWorldCreateObject::~ModeWorldCreateObject()
@@ -36,7 +36,7 @@ void ModeWorldCreateObject::on_start()
 	ed->set_side_panel(dialog);
 
 	if (filename.num > 0)
-		message = _("neues Objekt setzen");
+		message = _("place new object");
 
 	ed->activate("");
 }
@@ -52,7 +52,7 @@ void ModeWorldCreateObject::onFindObject()
 	if (ed->file_dialog(FD_MODEL, false, true)){
 		filename = ed->dialog_file_no_ending;
 		LastObjectFilename = filename;
-		message = _("neues Objekt setzen");
+		message = _("place new object");
 	}
 }
 

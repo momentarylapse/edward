@@ -1,24 +1,24 @@
 Toolbar model-toolbar ""
-	Item /new "Neu" image=icons/toolbar/new.png
-	Item /open "Öffnen..." image=icons/toolbar/open.png
-	Item /save "Speichern..." image=icons/toolbar/save.png
+	Item /new "New" image=icons/toolbar/new.png
+	Item /open "Open..." image=icons/toolbar/open.png
+	Item /save "Save..." image=icons/toolbar/save.png
 	Separator
-	Item /undo "Rückgängig" image=icons/toolbar/undo.png
-	Item /redo "Wiederherstellen" image=icons/toolbar/redo.png
+	Item /undo "Undo" image=icons/toolbar/undo.png
+	Item /redo "Redo" image=icons/toolbar/redo.png
 	Separator
 	Item view_push "Push" image=icons/toolbar/view_push.png "tooltip=Viewstage Push"
 	Item view_pop "Pop" image=icons/toolbar/view_pop.png "tooltip=Viewstage Pop"
 	Separator
 	Item mode_model_mesh "Mesh" checkable image=icons/toolbar/model-surface.png
-	Item mode_model_deform "Deformations-Modus" checkable image=icons/toolbar/model-deform.png
-	Item mode_model_materials "Materialien" checkable image=icons/toolbar/model-textures.png
-	Item mode_model_texture_coord "Textur-Koordinaten" checkable image=icons/toolbar/model-uv.png
-	Item mode_model_paint "Auf Oberfläche (in Textur) malen" checkable image=icons/toolbar/model-paint.png
-	Item mode_model_skeleton "Skelett" checkable image=icons/toolbar/model-skeleton.png
-	Item mode_model_animation "Animationen" checkable image=icons/toolbar/model-move.png
-	Item mode_properties "Eigenschaften" checkable image=icons/toolbar/configure.png
+	Item mode_model_deform "Deformation mode" checkable image=icons/toolbar/model-deform.png
+	Item mode_model_materials "Materials" checkable image=icons/toolbar/model-textures.png
+	Item mode_model_texture_coord "Texture coordinates" checkable image=icons/toolbar/model-uv.png
+	Item mode_model_paint "Paint on mesh (into texture)" checkable image=icons/toolbar/model-paint.png
+	Item mode_model_skeleton "Skeleton" checkable image=icons/toolbar/model-skeleton.png
+	Item mode_model_animation "Animations" checkable image=icons/toolbar/model-move.png
+	Item mode_properties "Properties" checkable image=icons/toolbar/configure.png
 	Separator
-	Item mode_model_vertex "Vertex Punkte" checkable image=icons/toolbar/model-vertex.png
-	Item mode_model_edge "Kanten" checkable image=icons/toolbar/model-edge.png
-	Item mode_model_polygon "Polygone" checkable image=icons/toolbar/model-polygon.png
-	Item mode_model_surface "Oberflächen" checkable image=icons/toolbar/model-surface.png
+	Item mode_model_vertex "Vertex points" checkable image=icons/toolbar/model-vertex.png
+	Item mode_model_edge "Edges" checkable image=icons/toolbar/model-edge.png
+	Item mode_model_polygon "Polygons" checkable image=icons/toolbar/model-polygon.png
+	Item mode_model_surface "Surfaces" checkable image=icons/toolbar/model-surface.png

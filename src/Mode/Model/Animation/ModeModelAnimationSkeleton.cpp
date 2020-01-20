@@ -175,7 +175,7 @@ void ModeModelAnimationSkeleton::copy()
 {
 	int n = data->getNumSelectedBones();
 	if (n == 0){
-		ed->set_message(_("nichts markiert"));
+		ed->set_message(_("nothing selected"));
 		return;
 	}else if (n == 1){
 		temp.clear();
@@ -186,18 +186,18 @@ void ModeModelAnimationSkeleton::copy()
 				f.skel_dpos.add(mode_model_animation->cur_move()->frame[current_frame].skel_dpos[i]);
 			}
 		temp.add(f);
-		ed->set_message(format(_("Animation von einzelnem Knochen kopiert"), n));
+		ed->set_message(format(_("Animation copied from single bone"), n));
 	}else{
 		temp.clear();
 		temp.add(mode_model_animation->cur_move()->frame[current_frame]);
-		ed->set_message(format(_("Animation von allen %d Knochen kopiert"), data->bone.num));
+		ed->set_message(format(_("copied animation of %d bones"), data->bone.num));
 	}
 }
 
 void ModeModelAnimationSkeleton::paste()
 {
 	if (temp.num == 0){
-		ed->set_message(_("Zwischenablage leer"));
+		ed->set_message(_("Clipboard is empty"));
 		return;
 	}
 	data->begin_action_group("paste-animation");
@@ -208,14 +208,14 @@ void ModeModelAnimationSkeleton::paste()
 			if (b.is_selected)
 				data->animationSetBone(current_move, current_frame, i, temp[0].skel_dpos[0], temp[0].skel_ang[0]);
 		if (n == 1)
-			ed->set_message(_("Animation eingef&ugt - einzelner Knochen"));
+			ed->set_message(_("Animation pasted - single bone"));
 		else
-			ed->set_message(_("Animation eingef&ugt - einzelner Knochen auf mehrere"));
+			ed->set_message(_("Animation pasted - single bone onto multiple"));
 	}else{
 		foreachi(ModelBone &b, data->bone, i)
 			if (b.is_selected)
 				data->animationSetBone(current_move, current_frame, i, temp[0].skel_dpos[i], temp[0].skel_ang[i]);
-		ed->set_message(format(_("Animation eingef&ugt -  auf %d Knochen"), n));
+		ed->set_message(format(_("Animation inserted - on %d bones"), n));
 	}
 	data->end_action_group();
 }

@@ -20,7 +20,7 @@
 ModeModelMeshCreateBall::ModeModelMeshCreateBall(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateBall", _parent)
 {
-	message = _("Kugelzentrum w&ahlen");
+	message = _("Select center of sphere");
 
 	pos_chosen = false;
 	radius = 0;
@@ -127,7 +127,7 @@ void ModeModelMeshCreateBall::on_left_button_up()
 		abort();
 	}else{
 		pos = multi_view->get_cursor();
-		message = _("Kugelradius: ");
+		message = _("Sphere radius: ");
 		pos_chosen = true;
 		updateGeometry();
 	}
@@ -157,7 +157,7 @@ void ModeModelMeshCreateBall::on_mouse_move()
 		if (multi_view->snap_to_grid)
 			radius = multi_view->snap_f(radius);
 		updateGeometry();
-		message = _("Kugelradius: ") + multi_view->format_length(radius);
+		message = _("Sphere radius: ") + multi_view->format_length(radius);
 	}
 }
 

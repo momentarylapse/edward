@@ -93,14 +93,14 @@ bool DataMaterial::load(const string & _filename, bool deep)
 	ed->make_dirs(filename);
 	File *f = FileOpenText(filename);
 	if (!f){
-		ed->set_message(_("Kann Material-Datei nicht &offnen"));
+		ed->set_message(_("Can't load material file"));
 		return false;
 	}
 	file_time = f->GetDateModification().time;
 
 	ffv=f->ReadFileFormatVersion();
 	if (ffv<0){
-		ed->error_box(_("Datei-Format nicht ladbar!!"));
+		ed->error_box(_("File format unreadable!"));
 		error=true;
 	}else if ((ffv == 3) or (ffv == 4)){
 		if (ffv >= 4){
@@ -233,7 +233,7 @@ bool DataMaterial::load(const string & _filename, bool deep)
 
 		appearance.alpha_z_buffer = (appearance.transparency_mode != TRANSPARENCY_FUNCTIONS) and (appearance.transparency_mode != TRANSPARENCY_FACTOR);
 	}else{
-		ed->error_box(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 1, 4));
+		ed->error_box(format(_("File %s has a wrong file format: %d (expected: %d - %d)!"), filename.c_str(), ffv, 1, 4));
 		error = true;
 	}
 

@@ -13,7 +13,7 @@
 ModeWorldCameraCreatePoint::ModeWorldCameraCreatePoint(ModeBase *_parent) :
 	ModeCreation<DataCamera>("WorldCameraCreatePoint", _parent)
 {
-	message = _("Punkt setzen");
+	message = _("Add point");
 }
 
 void ModeWorldCameraCreatePoint::on_left_button_down()

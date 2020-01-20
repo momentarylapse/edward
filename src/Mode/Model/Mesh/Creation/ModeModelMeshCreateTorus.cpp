@@ -22,7 +22,7 @@
 ModeModelMeshCreateTorus::ModeModelMeshCreateTorus(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateTorus", _parent)
 {
-	message = _("Toruszentrum w&ahlen");
+	message = _("Select torus center");
 
 	pos_chosen = false;
 	rad_chosen = false;
@@ -82,12 +82,12 @@ void ModeModelMeshCreateTorus::on_left_button_up()
 
 			abort();
 		}else{
-			message = _("Torus innen skalieren");
+			message = _("Torus inner scale");
 			rad_chosen = true;
 		}
 	}else{
 		pos = multi_view->get_cursor();
-		message = _("Torus au&sen skalieren");
+		message = _("Torus outer scale");
 		pos_chosen = true;
 		update_geometry();
 	}
@@ -119,14 +119,14 @@ void ModeModelMeshCreateTorus::on_mouse_move()
 		if (rad_chosen){
 			radius2 = (m - pos).length() * RADIUS_FACTOR;
 			radius2 = multi_view->maybe_snap_f(radius2);
-			message = _("Torus au&sen skalieren: ") + multi_view->format_length(radius1) + " / " + multi_view->format_length(radius2);
+			message = _("Torus outer scale: ") + multi_view->format_length(radius1) + " / " + multi_view->format_length(radius2);
 		}else{
 			radius1 = (m - pos).length();
 			radius2 = radius1 * RADIUS_FACTOR;
 			radius1 = multi_view->maybe_snap_f(radius1);
 			radius2 = multi_view->maybe_snap_f(radius2);
 
-			message = _("Torus innen skalieren: ") + multi_view->format_length(radius1);
+			message = _("Torus inner scale:") + multi_view->format_length(radius1);
 		}
 		update_geometry();
 	}

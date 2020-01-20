@@ -1,46 +1,46 @@
-Dialog campoint_dialog "Kamera-Punkt" width=345 height=225
+Dialog campoint_dialog "Camera point" width=345 height=225
 	Grid ? "" vertical
 		Grid ? ""
-			Text campoint_t_type "Typ"
-			ComboBox campoint_type "Position setzen\\Position addieren\\Winkel setzen\\Position&&" expandx
+			Text campoint_t_type "type"
+			ComboBox campoint_type "PositionSet\\PositionAdd\\AngleSet\\Position & Angle Set\\Flight\\FlightRelative" expandx
 			---|
-			Text campoint_t_delay "Wartezeit"
+			Text campoint_t_delay "delay"
 			Edit wait ""
 			Text /ms "ms"
 		Grid ? ""
-			Group campoint__grp_pos "Position"
+			Group campoint__grp_pos "position"
 				Grid ? ""
 					Text /x "X"
 					Edit pos_x "" expandx
 					---|
-					Text /z "Y"
+					Text /z "Z"
 					Edit pos_y ""
 					---|
-					Text /y "Z"
+					Text /y "Y"
 					Edit pos_z ""
-			Group campoint__grp_vel "Geschwindigkeit"
+			Group campoint__grp_vel "velocity"
 				Grid ? ""
 					Text /x "X"
 					Edit vel_x "" expandx
 					---|
-					Text /z "Y"
+					Text /z "Z"
 					Edit vel_y ""
 					---|
-					Text /y "Z"
+					Text /y "Y"
 					Edit vel_z ""
-			Group campoint__grp_ang "Winkel"
+			Group campoint__grp_ang "angle"
 				Grid ? ""
 					Text /x "X"
 					Edit ang_x "" expandx
 					Text /degree "°"
 					---|
-					Text /z "Y"
+					Text /z "Z"
 					Edit ang_y ""
 					Text /degree "°"
 					---|
-					Text /y "Z"
+					Text /y "Y"
 					Edit ang_z ""
 					Text /degree "°"
 		Grid ? "" buttonbar
-			Button /cancel "Abbrechen" image=hui:cancel
-			DefButton /ok "OK" image=hui:ok
+			Button /cancel "Cancel" image=hui:cancel
+			DefButton /ok "Ok" image=hui:ok

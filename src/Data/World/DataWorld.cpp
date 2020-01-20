@@ -320,7 +320,7 @@ bool DataWorld::load(const string & _filename, bool deep)
 		}
 
 	}else{
-		throw Exception(format(_("Falsches Datei-Format der Datei '%s': %d (statt %d - %d)"), filename.c_str(), ffv, 8, 10));
+		throw Exception(format(_("File %s has a wrong file format: %d (expected: %d - %d)!"), filename.c_str(), ffv, 8, 10));
 	}
 	FileClose(f);
 
@@ -330,7 +330,7 @@ bool DataWorld::load(const string & _filename, bool deep)
 			Terrains[i].Load(Terrains[i].pos, MapDir + Terrains[i].FileName + ".map", true);
 		}
 		for (int i=0;i<Objects.num;i++){
-			ed->progress->set(format(_("Objekt %d von %d"), i, Objects.num), (float)i / (float)Objects.num / 2.0f + 0.5f);
+			ed->progress->set(format(_("Object %d / %d"), i, Objects.num), (float)i / (float)Objects.num / 2.0f + 0.5f);
 			Objects[i].object = (Object*)LoadModel(Objects[i].FileName);
 			Objects[i].object->pos = Objects[i].pos;
 			Objects[i].object->ang = quaternion::rotation_v(Objects[i].Ang);

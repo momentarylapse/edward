@@ -32,9 +32,9 @@ public:
 		event("diameter-slider", [=]{ on_diameter_slider(); });
 		event("depth-slider", [=]{ on_depth_slider(); });
 
-		add_string("brush-type", _("Ausbeulen/eindellen"));
-		add_string("brush-type", _("Gl&atten"));
-		add_string("brush-type", _("Komplexifizieren"));
+		add_string("brush-type", _("bump in/out"));
+		add_string("brush-type", _("Smoothen"));
+		add_string("brush-type", _("Complexify"));
 		set_float("diameter-slider", 0.5f);
 		set_float("depth-slider", 0.5f);
 		set_string("diameter", f2s(base_diameter, 2));

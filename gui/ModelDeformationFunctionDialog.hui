@@ -3,5 +3,5 @@ Dialog deformation_function_dialog "Deformation" width=400 height=250 allow-root
 		MultilineEdit source ""
 		---|
 		Grid deformation_dialog_buttonbar "" buttonbar
-			Button /preview "Vorschau" image=hui:apply
-			DefButton /ok "OK" image=hui:ok
+			Button /preview "Preview" image=hui:apply
+			DefButton /ok "Ok" image=hui:ok

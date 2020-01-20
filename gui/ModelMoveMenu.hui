@@ -1,88 +1,87 @@
 Menu menu_move "" disabled
-	Menu menu_file "Datei"
-		Item new "Neu" image=hui:new
-		Item open "Öffnen..." image=hui:open
-		Item save "Speichern" image=hui:save
-		Item save_as "Speichern unter..." image=hui:save-as
-		Separator "" ""
-		Menu menu_model_import "Importieren"
+	Menu menu_file "File"
+		Item new "New" image=hui:new
+		Item open "Open..." image=hui:open
+		Item save "Save" image=hui:save
+		Item save_as "Save as..." image=hui:save-as
+		Separator
+		Menu menu_model_import "Import"
 			Item import_from_gamestudio "GameStudio..." image=hui:open
 			Item import_from_3ds "3D Studio Max..." image=hui:open
 			Item import_from_json "Three.js (json)..." image=hui:open
 			Item import_from_lineage2 "Lineage II..." image=hui:open
-		Menu menu_model_export "Exportieren"
-			Item export_to_gamestudio "GameStudio..."
+		Menu menu_model_export "Export"
+			Item export_to_gamestudio "To GameStudio..."
 			Item export_to_json "Three.js (json)..."
-		Separator "" ""
-		Item execute_plugin "Plugin ausführen..."
-		Separator "" ""
-		Menu menu_model "Modell"
-			Item model_new "Neu" image=hui:new
-			Item model_open "Öffnen..." image=hui:open
+		Separator
+		Item execute_plugin "Execute plugin"
+		Separator
+		Menu menu_model "Model"
+			Item model_new "New" image=hui:new
+			Item model_open "Open..." image=hui:open
 		Menu menu_font "Font"
-			Item font_new "Neu" image=hui:new
-			Item font_open "Öffnen..." image=hui:open
+			Item font_new "New" image=hui:new
+			Item font_open "Open..." image=hui:open
 		Menu menu_material "Material"
-			Item material_new "Neu" image=hui:new
-			Item material_open "Öffnen..." image=hui:open
-		Menu menu_world "Welt"
-			Item world_new "Neu" image=hui:new
-			Item world_open "Öffnen..." image=hui:open
-		Item administrate "Verwalten" image=hui:preferences
-		Item settings "Einstellungen..." image=hui:preferences
-		Separator "" ""
-		Item exit "Beenden" image=hui:quit
-	Menu menu_model_edit "Bearbeiten"
-		Item undo "Rückgängig" image=hui:undo
-		Item redo "Wiederherstellen" image=hui:redo
-		Separator "" ""
-		Item copy "Kopieren" image=hui:copy
-		Item paste "Einfügen" image=hui:paste
-		Item move_reset "Zurücksetzen" image=hui:delete
-		Separator "" ""
-		Item mode_properties "Eigenschaften..." image=hui:preferences
-	Menu menu_model_selection "Auswahl"
-		Item select_all "Alles auswählen" image=hui:select-all
-		Item select_none "Nichts auswählen"
-		Item invert_selection "Invertieren"
+			Item material_new "New" image=hui:new
+			Item material_open "Open..." image=hui:open
+		Menu menu_world "World"
+			Item world_new "New" image=hui:new
+			Item world_open "Open..." image=hui:open
+		Item administrate "Administrate" image=hui:preferences
+		Item settings "Settings..." image=hui:preferences
+		Separator
+		Item exit "Exit" image=hui:quit
+	Menu menu_model_edit "Edit"
+		Item undo "Undo" image=hui:undo
+		Item redo "Redo" image=hui:redo
+		Separator
+		Item copy "Copy" image=hui:copy
+		Item paste "Paste" image=hui:paste
+		Item move_reset "Reset" image=hui:delete
+		Separator
+		Item mode_properties "Properties..." image=hui:preferences
+	Menu menu_model_selection "Selection"
+		Item select_all "Select all" image=hui:select-all
+		Item select_none "Select none"
+		Item invert_selection "Invert"
 	Menu menu_model_move "Animation"
-		Item move_allframes "Alle Frames beeinflussen" checkable
-		Separator "" ""
+		Item move_allframes "Effect all frames" checkable
+		Separator
 		Item move_frame_sign "Frame" disabled
-		Item move_frame_inc "Nächster" image=hui:forward
-		Item move_frame_dec "Vorheriger" image=hui:back
-		Item move_frame_delete "Löschen" image=hui:delete
-		Item move_frame_interpolate "Neu interpolieren" image=hui:new
-		Item move_frame_insert "Neu einfügen" image=hui:new
-	Menu menu_model_view "Ansicht"
-		Menu menu_model_mode "Bearbeitungsmodus"
+		Item move_frame_inc "Last" image=hui:forward
+		Item move_frame_dec "Next" image=hui:back
+		Item move_frame_delete "Selete" image=hui:delete
+		Item move_frame_interpolate "New interpolated" image=hui:new
+		Item move_frame_insert "Insert" image=hui:new
+	Menu menu_model_view "View"
+		Menu menu_model_mode "Mode"
 			Item mode_model_mesh "Mesh" checkable
-			Item mode_model_skeleton "Skelett" checkable
+			Item mode_model_skeleton "Skeleton" checkable
 			Item mode_model_animation "Animation" checkable
-			Separator "" ""
-			Item mode_model_vertex "Vertex-Punkte" checkable
-			Item mode_model_edge "Kanten" checkable
-			Item mode_model_triangle "Dreiecke" checkable
-			Item mode_model_surface "Oberflächen" checkable
-			Item mode_model_texture_coord "Textur-Koordinaten" checkable
-		Menu menu_model_viewstage "Schicht"
-			Item view_push "hinein-pushen"
-			Item view_pop "heraus-poppen"
-		Menu menu_model_skin "Oberfläche"
-			Item detail_0 "Physik. Oberfläche" checkable
-			Item detail_1 "hohe Detailstufe" checkable
-			Item detail_2 "mittlere Detailstufe" checkable
-			Item detail_3 "niedere Detailstufe" checkable
-		Separator "" ""
-		Item wire "Drahtgitter" checkable
-		Item grid "Raster" checkable
-		Item light "Beleuchtung" checkable
-		Separator "" ""
+			Separator
+			Item mode_model_vertex "Vertices" checkable
+			Item mode_model_edge "Edges" checkable
+			Item mode_model_triangle "Triangles" checkable
+			Item mode_model_surface "Surfaces" checkable
+			Item mode_model_texture_coord "Texture coordinates" checkable
+		Menu menu_model_viewstage "Viewstage"
+			Item view_push "Push in"
+			Item view_pop "Pop out"
+		Menu menu_model_skin "Skin"
+			Item detail_0 "Physical skin" checkable
+			Item detail_1 "High-precicion skin" checkable
+			Item detail_2 "Med-precicion skin" checkable
+			Item detail_3 "Low-precicion skin" checkable
+		Separator
+		Item wire "Wire frame" checkable
+		Item grid "Grid" checkable
+		Item light "Light" checkable
+		Separator
 		Item opt_view "Optimal" image=hui:zoom-fit
-		Item whole_window "Ganzes Fenster" checkable
+		Item whole_window "Use complete window" checkable
 	Menu menu_help "?"
-		Item help "Hilfe..." image=hui:help
-		Separator "" ""
-		Item send_bug_report "Fehler berichten"
-		Item what_the_fuck "\"über\"" image=hui:about
-
+		Item help "Help..." image=hui:help
+		Separator
+		Item send_bug_report "Report a bug"
+		Item what_the_fuck "\"about\"" image=hui:about

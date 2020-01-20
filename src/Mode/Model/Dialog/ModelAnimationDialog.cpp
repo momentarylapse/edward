@@ -59,7 +59,7 @@ void ModelAnimationDialog::load_data() {
 			if (m.type == MOVE_TYPE_VERTEX)
 				str += _("Vertex");
 			else if (m.type == MOVE_TYPE_SKELETAL)
-				str += _("Skelett");
+				str += _("Skeleton");
 			else
 				str += "???";
 			str += format("\\%d\\", m.frame.num) + m.name;

@@ -1,13 +1,13 @@
-Dialog scriptvar_dialog "Script-Variable" width=360 height=115
+Dialog scriptvar_dialog "Script variable" width=360 height=115
 	Grid ? ""
 		Grid ? ""
 			Text t_index "Index:"
 			Edit index "" disabled expandx
 			---|
-			Text t_value "Wert:"
+			Text t_value "Value:"
 			Edit value ""
 			Text t_type ""
 		---|
 		Grid ? "" buttonbar
-			Button /cancel "Abbrechen" image=hui:cancel
-			DefButton /ok" "OK" image=hui:ok
+			Button /cancel "Cancel" image=hui:cancel
+			DefButton /ok" "Ok" image=hui:ok

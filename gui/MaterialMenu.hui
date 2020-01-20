@@ -1,47 +1,46 @@
 Menu menu_material "Material" disabled
-	Menu menu_file "Datei"
-		Item new "Neu" image=hui:new
-		Item open "Öffnen..." image=hui:open
-		Item save "Speichern" image=hui:save
-		Item save_as "Speichern unter..." image=hui:save-as
-		Separator "" ""
-		Item execute_plugin "Plugin ausführen..."
-		Separator "" ""
-		Menu menu_model "Modell"
-			Item model_new "Neu" image=hui:new
-			Item model_open "Öffnen..." image=hui:open
+	Menu menu_file "File"
+		Item new "New" image=hui:new
+		Item open "Open..." image=hui:open
+		Item save "Save" image=hui:save
+		Item save_as "Save as..." image=hui:save-as
+		Separator
+		Item execute_plugin "Execute plugin"
+		Separator
+		Menu menu_model "Model"
+			Item model_new "New" image=hui:new
+			Item model_open "Open..." image=hui:open
 		Menu menu_font "Font"
-			Item font_new "Neu" image=hui:new
-			Item font_open "Öffnen..." image=hui:open
-		Menu menu_world "Welt"
-			Item world_new "Neu" image=hui:new
-			Item world_open "Öffnen..." image=hui:open
-		Menu menu_project "Projekt"
-			Item project_new "Neu..." image=hui:new
-			Item project_open "Öffnen..." image=hui:open
-			Item administrate "Verwalten" image=hui:preferences
-		Item settings "Einstellungen..." image=hui:preferences
-		Separator "" ""
-		Item exit "Beenden" image=hui:quit
-	Menu menu_world_view "Ansicht"
-		Menu menu_material_shape "Form"
-			Item material_shape_cube "Würfel" checkable
-			Item material_shape_icosahedron "Ikosaeder" checkable
-			Item material_shape_ball "Kugel" checkable
+			Item font_new "New" image=hui:new
+			Item font_open "Open..." image=hui:open
+		Menu menu_world "World"
+			Item world_new "New" image=hui:new
+			Item world_open "Open..." image=hui:open
+		Menu menu_project "Project"
+			Item project_new "New..." image=hui:new
+			Item project_open "Open..." image=hui:open
+			Item administrate "Administrate" image=hui:preferences
+		Item settings "Settings..." image=hui:preferences
+		Separator
+		Item exit "Exit" image=hui:quit
+	Menu menu_world_view "View"
+		Menu menu_material_shape "Shape"
+			Item material_shape_cube "Cube" checkable
+			Item material_shape_icosahedron "Icosaeder" checkable
+			Item material_shape_ball "Ball" checkable
 			Item material_shape_torus "Torus" checkable
-			Item material_shape_torusknot "Torusknoten" checkable
-			Item material_shape_teapot "Teekanne" checkable
-		Item material_shape_smooth "Rund" checkable
-		Separator "" ""
-		Item wire "Drahtgitter" checkable
-		Item grid "Raster" checkable
-		Item light "Beleuchtung" checkable
-		Separator "" ""
+			Item material_shape_torusknot "Torusknot" checkable
+			Item material_shape_teapot "Teapot" checkable
+		Item material_shape_smooth "Smooth" checkable
+		Separator
+		Item wire "Wire frame" checkable
+		Item grid "Grid" checkable
+		Item light "Light" checkable
+		Separator
 		Item opt_view "Optimal" image=hui:zoom-fit
-		Item whole_window "Ganzes Fenster" checkable
+		Item whole_window "Use complete window" checkable
 	Menu menu_help "?"
-		Item help "Hilfe..." image=hui:help
-		Separator "" ""
-		Item send_bug_report "Fehler berichten"
-		Item what_the_fuck "\"über\"" image=hui:about
-
+		Item help "Help..." image=hui:help
+		Separator
+		Item send_bug_report "Report a bug"
+		Item what_the_fuck "\"about\"" image=hui:about

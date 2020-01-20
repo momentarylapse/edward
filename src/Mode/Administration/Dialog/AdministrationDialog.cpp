@@ -70,17 +70,17 @@ void AdministrationDialog::on_update(Observable* o, const string &message)
 static string FD2Str(int k)
 {
 	if (k==-1)				return _("[Engine]");
-	if (k==FD_MODEL)			return _("Modell");
-	if (k==FD_TEXTURE)		return _("Textur");
+	if (k==FD_MODEL)			return _("Model");
+	if (k==FD_TEXTURE)		return _("Texture");
 	if (k==FD_SOUND)			return _("Sound");
 	if (k==FD_MATERIAL)		return _("Material");
 	if (k==FD_TERRAIN)		return _("Terrain");
-	if (k==FD_WORLD)			return _("Welt");
+	if (k==FD_WORLD)			return _("World");
 	if (k==FD_SHADERFILE)	return _("Shader");
 	if (k==FD_FONT)			return _("Font");
 	if (k==FD_SCRIPT)		return _("Script");
-	if (k==FD_CAMERAFLIGHT)	return _("Kamera");
-	if (k==FD_FILE)			return _("Datei");
+	if (k==FD_CAMERAFLIGHT)	return _("Camera");
+	if (k==FD_FILE)			return _("File");
 	return "???";
 }
 
@@ -210,7 +210,7 @@ AdminFile* AdministrationDialog::GetSingleSelectedFile()
 	Array<AdminFile*> l = GetSelectedFiles();
 	if (l.num == 1)
 		return l[0];
-	ed->error_box(_("Es muss genau eine Datei markiert sein!"));
+	ed->error_box(_("Please select exactly one file!"));
 	return NULL;
 }
 

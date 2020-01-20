@@ -1,7 +1,7 @@
 Toolbar material-toolbar ""
-	Item /new "Neu" image=icons/toolbar/new.png
-	Item /open "Öffnen..." image=icons/toolbar/open.png
-	Item /save "Speichern..." image=icons/toolbar/save.png
+	Item /new "New" image=icons/toolbar/new.png
+	Item /open "Open..." image=icons/toolbar/open.png
+	Item /save "Save..." image=icons/toolbar/save.png
 	Separator
-	Item /undo "Rückgängig" image=icons/toolbar/undo.png
-	Item /redo "Wiederherstellen" image=icons/toolbar/redo.png
+	Item /undo "Undo" image=icons/toolbar/undo.png
+	Item /redo "Redo" image=icons/toolbar/redo.png

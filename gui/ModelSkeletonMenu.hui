@@ -1,74 +1,73 @@
 Menu menu_skeleton "" disabled
-	Menu menu_file "Datei"
-		Item new "Neu" image=hui:new
-		Item open "Öffnen..." image=hui:open
-		Item save "Speichern" image=hui:save
-		Item save_as "Speichern unter..." image=hui:save-as
-		Separator "" ""
-		Menu menu_model_import "Importieren"
+	Menu menu_file "File"
+		Item new "New" image=hui:new
+		Item open "Open..." image=hui:open
+		Item save "Save" image=hui:save
+		Item save_as "Save as..." image=hui:save-as
+		Separator
+		Menu menu_model_import "Import"
 			Item import_from_gamestudio "GameStudio..." image=hui:open
 			Item import_from_3ds "3D Studio Max..." image=hui:open
 			Item import_from_json "Three.js (json)..." image=hui:open
 			Item import_from_ply "Polygons (ply)..." image=hui:open
 			Item import_from_lineage2 "Lineage II..." image=hui:open
-		Menu menu_model_export "Exportieren"
-			Item export_to_gamestudio "GameStudio..."
+		Menu menu_model_export "Export"
+			Item export_to_gamestudio "To GameStudio..."
 			Item export_to_json "Three.js (json)..."
-		Separator "" ""
-		Item execute_plugin "Plugin ausführen..."
-		Separator "" ""
-		Menu menu_model "Modell"
-			Item model_new "Neu" image=hui:new
-			Item model_open "Öffnen..." image=hui:open
+		Separator
+		Item execute_plugin "Execute plugin"
+		Separator
+		Menu menu_model "Model"
+			Item model_new "New" image=hui:new
+			Item model_open "Open..." image=hui:open
 		Menu menu_font "Font"
-			Item font_new "Neu" image=hui:new
-			Item font_open "Öffnen..." image=hui:open
+			Item font_new "New" image=hui:new
+			Item font_open "Open..." image=hui:open
 		Menu menu_material "Material"
-			Item material_new "Neu" image=hui:new
-			Item material_open "Öffnen..." image=hui:open
-		Menu menu_world "Welt"
-			Item world_new "Neu" image=hui:new
-			Item world_open "Öffnen..." image=hui:open
-		Item administrate "Verwalten" image=hui:preferences
-		Item settings "Einstellungen..." image=hui:preferences
-		Separator "" ""
-		Item exit "Beenden" image=hui:quit
-	Menu menu_edit "Bearbeiten"
-		Separator "" ""
-		Item snap_to_grid "Klebriges Raster" checkable
-		Separator "" ""
-		Item mode_properties "Eigenschaften..." image=hui:preferences
-	Menu menu_model_skeleton "Skelett"
-		Item skeleton_import "Importieren..." image=hui:open
-		Separator "" ""
-		Item skeleton_selection_sign "Markierung" disabled
-		Item skeleton_add_model "Modell anhängen" image=hui:open
-		Item skeleton_no_model "Kein Modell" image=hui:delete
-		Item skeleton_edit_bone "Vertex-Zuordnung" image=hui:edit
-		Item skeleton_unlink "Verbindungen lösen" image=hui:delete
-		Item delete "Löschen" image=hui:delete
-		Separator "" ""
-		Item skeleton_new_point "Neuer Punkt" image=hui:new
-		Item skeleton_link "Verbindungen erstellen" image=hui:copy
-	Menu menu_model_view "Ansicht"
-		Menu menu_model_viewstage "Schicht"
-			Item view_push "hinein-pushen"
-			Item view_pop "heraus-poppen"
-		Menu menu_model_skin "Oberfläche"
-			Item detail_0 "Physik. Oberfläche" checkable
-			Item detail_1 "hohe Detailstufe" checkable
-			Item detail_2 "mittlere Detailstufe" checkable
-			Item detail_3 "niedere Detailstufe" checkable
-		Separator "" ""
-		Item wire "Drahtgitter" checkable
-		Item grid "Raster" checkable
-		Item light "Beleuchtung" checkable
-		Separator "" ""
+			Item material_new "New" image=hui:new
+			Item material_open "Open..." image=hui:open
+		Menu menu_world "World"
+			Item world_new "New" image=hui:new
+			Item world_open "Open..." image=hui:open
+		Item administrate "Administrate" image=hui:preferences
+		Item settings "Settings..." image=hui:preferences
+		Separator
+		Item exit "Exit" image=hui:quit
+	Menu menu_edit "Edit"
+		Separator
+		Item snap_to_grid "Sticky grid" checkable
+		Separator
+		Item mode_properties "Properties..." image=hui:preferences
+	Menu menu_model_skeleton "Skeleton"
+		Item skeleton_import "Import..." image=hui:open
+		Separator
+		Item skeleton_selection_sign "Selection" disabled
+		Item skeleton_add_model "Add model" image=hui:open
+		Item skeleton_no_model "No model" image=hui:delete
+		Item skeleton_edit_bone "Vertices of bone" image=hui:edit
+		Item skeleton_unlink "Unlink" image=hui:delete
+		Item delete "Delete" image=hui:delete
+		Separator
+		Item skeleton_new_point "New vertex" image=hui:new
+		Item skeleton_link "Create link" image=hui:copy
+	Menu menu_model_view "View"
+		Menu menu_model_viewstage "Viewstage"
+			Item view_push "Push in"
+			Item view_pop "Pop out"
+		Menu menu_model_skin "Skin"
+			Item detail_0 "Physical skin" checkable
+			Item detail_1 "High-precicion skin" checkable
+			Item detail_2 "Med-precicion skin" checkable
+			Item detail_3 "Low-precicion skin" checkable
+		Separator
+		Item wire "Wire frame" checkable
+		Item grid "Grid" checkable
+		Item light "Light" checkable
+		Separator
 		Item opt_view "Optimal" image=hui:zoom-fit
-		Item whole_window "Ganzes Fenster" checkable
+		Item whole_window "Use complete window" checkable
 	Menu menu_help "?"
-		Item help "Hilfe..." image=hui:help
-		Separator "" ""
-		Item send_bug_report "Fehler berichten"
-		Item what_the_fuck "\"über\"" image=hui:about
-
+		Item help "Help..." image=hui:help
+		Separator
+		Item send_bug_report "Report a bug"
+		Item what_the_fuck "\"about\"" image=hui:about
