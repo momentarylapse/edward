@@ -24,13 +24,12 @@ public:
 	void apply_data_alpha();
 	void fill_material_list();
 
-	void on_material_list();
 	void on_material_list_select();
 	void on_material_list_right_click();
-	void on_add_new_material();
-	void on_add_material();
-	void on_delete_material();
-	void on_apply_material();
+	void on_material_add();
+	void on_material_load();
+	void on_material_delete();
+	void on_material_apply();
 
 	void on_default_colors();
 

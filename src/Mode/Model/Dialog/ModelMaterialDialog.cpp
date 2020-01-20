@@ -30,13 +30,12 @@ ModelMaterialDialog::ModelMaterialDialog(DataModel *_data, bool full) :
 	popup_materials = hui::CreateResourceMenu("model-material-list-popup");
 	popup_textures = hui::CreateResourceMenu("model-texture-list-popup");
 
-	event("material_list", [=]{ on_material_list(); });
 	event_x("material_list", "hui:select", [=]{ on_material_list_select(); });
 	event_x("material_list", "hui:right-button-down", [=]{ on_material_list_right_click(); });
-	event("add_new_material", [=]{ on_add_new_material(); });
-	event("add_material", [=]{ on_add_material(); });
-	event("delete_material", [=]{ on_delete_material(); });
-	event("apply_material", [=]{ on_apply_material(); });
+	event("add_new_material", [=]{ on_material_add(); });
+	event("add_material", [=]{ on_material_load(); });
+	event("delete_material", [=]{ on_material_delete(); });
+	event("apply_material", [=]{ on_material_apply(); });
 
 
 	event("texture-level-add", [=]{ on_texture_level_add(); });
@@ -197,39 +196,28 @@ void ModelMaterialDialog::fill_material_list() {
 		add_string("material_list", format("Mat[%d]\\%d\\%s\\%s", i, nt, im.c_str(), file_secure(data->material[i]->filename).c_str()));
 	}
 	set_int("material_list", mode_model_mesh->current_material);
-	//Enable("delete_material", false);
 }
 
 
-// material
-void ModelMaterialDialog::on_material_list() {
-	/*int s = GetInt("");
-	if (s < 0)
-		return;
-
-	mode_model_mesh->CurrentMaterial = s;
-	mode_model_mesh_texture->CurrentTextureLevel = 0;
-	mode_model->ExecuteMaterialDialog(0);*/
-}
 
 void ModelMaterialDialog::on_material_list_select() {
 	mode_model_mesh->set_current_material(get_int(""));
 }
 
-void ModelMaterialDialog::on_add_new_material() {
+void ModelMaterialDialog::on_material_add() {
 	data->execute(new ActionModelAddMaterial(""));
 }
 
-void ModelMaterialDialog::on_add_material() {
+void ModelMaterialDialog::on_material_load() {
 	if (ed->file_dialog(FD_MATERIAL, false, true))
 		data->execute(new ActionModelAddMaterial(ed->dialog_file_no_ending));
 }
 
-void ModelMaterialDialog::on_delete_material() {
-	hui::ErrorBox(win, "", "noch nicht implementiert");
+void ModelMaterialDialog::on_material_delete() {
+	hui::ErrorBox(win, "", _("not implemented yet"));
 }
 
-void ModelMaterialDialog::on_apply_material() {
+void ModelMaterialDialog::on_material_apply() {
 	data->setMaterialSelection(mode_model_mesh->current_material);
 }
 

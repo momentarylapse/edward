@@ -1,7 +1,7 @@
 Dialog model_material_dialog "Material" width=350 height=371
 	Grid ? "" vertical
 		Group model_material_dialog_grp_list "Overview"
-			ListView material_list "Material\\Triangles\\File" format=ttit select-single "tooltip=Materials\n - Actions via right click"
+			ListView material_list "#\\Polygons\\\\File" format=ttit select-single "tooltip=Materials\n - Actions via right click"
 		Separator
 		Expander model_material_dialog_grp_color "Colors"
 			Grid ? ""
@@ -23,7 +23,7 @@ Dialog model_material_dialog "Material" width=350 height=371
 					Text /emission "Emission"
 					ColorButton mat_em "" "tooltip=Color in absolute darkness"
 		Expander model_material_dialog_grp_textures "Textures"
-			ListView mat_textures "Level\\Texture" format=tit select-single "tooltip=Mixing texture levels (multitexturing)\n- Actions via right click"
+			ListView mat_textures "Level\\\\Texture" format=tit select-single "tooltip=Mixing texture levels (multitexturing)\n- Actions via right click"
 		Expander model_material_dialog_grp_transparency "Transparency"
 			Grid ? "" vertical
 				RadioButton transparency_mode:material "Transparency from material"

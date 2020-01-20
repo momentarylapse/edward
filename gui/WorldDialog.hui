@@ -5,9 +5,7 @@ Dialog world_dialog "World properties" width=520 height=420
 				Group grp_bg_color "Color"
 					ColorButton bgc "" alpha "tooltip=Sky color"
 				Group grp_skybox "Skybox models"
-					Grid ? "" vertical
-						ListView skybox "#\\model ('SkyBox')" "tooltip=Models drawn over the sky color\n- double click to select"
-						Button remove_skybox "Remove" image=hui:delete
+					ListView skybox "#\\Model" "tooltip=Models drawn over the sky color\n- double click to select"
 			Grid ? "" vertical
 				RadioButton fog_mode:none "Deactivated" expandx
 				RadioButton fog_mode:linear "Linear"
@@ -49,7 +47,7 @@ Dialog world_dialog "World properties" width=520 height=420
 							Text /degree "°"
 						Button sun_ang_from_camera "Direction from camera" image=hui:media-record
 			Grid ? "" vertical
-				CheckBox physics_enabled "Enabled"
+				CheckBox physics_enabled "enabled"
 				Group grp_gravitation "Gravity"
 					Grid ? ""
 						Text x "X"
@@ -63,12 +61,7 @@ Dialog world_dialog "World properties" width=520 height=420
 						Text z "Z"
 						SpinButton gravitation_z "" range=::0.1
 						Text /luss "lu/s²"
-			Grid ? "" vertical
-				ListView script_list "File" nobar
-				Grid ? ""
-					Button add_script "Add" image=hui:add
-					Button remove_script "Remove" image=hui:delete
-					Button edit_script_vars "Variables..."
+			ListView script_list "File" nobar
 		Grid ? "" buttonbar
 			Button /apply "Apply" image=hui:apply
 			Button /cancel "Cancel" image=hui:cancel

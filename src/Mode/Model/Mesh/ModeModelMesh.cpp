@@ -420,7 +420,7 @@ void ModeModelMesh::choose_material_for_selection()
 
 	// dialog
 	ModelMaterialSelectionDialog *dlg = new ModelMaterialSelectionDialog(ed, false, data);
-	dlg->PutAnswer(&SelectionDialogReturnIndex);
+	dlg->put_answer(&SelectionDialogReturnIndex);
 	dlg->run();
 	delete dlg;
 

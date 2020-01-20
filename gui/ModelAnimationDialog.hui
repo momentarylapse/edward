@@ -9,10 +9,10 @@ Dialog animation_dialog "Animation" width=260 height=400
 				Edit name "" expandx
 				---|
 				Text t_animationfpsconst "Frames/s const"
-				SpinButton fps_const "\\0\\100\\0.01" range=0:100:0.01
+				SpinButton fps_const "" range=0:100:0.01
 				---|
 				Text t_animationfpsfactor "Frames/s factor"
-				SpinButton fps_factor "\\0\\100\\0.01" range=0:100:0.01
+				SpinButton fps_factor "" range=0:100:0.01
 		Group t_frame "Frame"
 			Grid ? ""
 				SpinButton frame "" expandx
@@ -24,7 +24,7 @@ Dialog animation_dialog "Animation" width=260 height=400
 			Grid ? ""
 				Grid ? ""
 					Text ani_dt_sim_speed "Speed"
-					SpinButton speed "\\0" range=0: expandx
+					SpinButton speed "" range=0: expandx
 					Text /percent "%"
 					---|
 					Text ani_dt_sim_param "Parameter"

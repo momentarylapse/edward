@@ -29,11 +29,11 @@ public:
 	void OnFogModeLinear();
 	void OnFogModeExp();
 	void OnFogEnabled();
-	void OnSkybox();
-	void OnSkyboxSelect();
-	void OnRemoveSkybox();
+	void on_skybox_right_click();
+	void on_skybox_select();
+	void on_skybox_remove();
 	void OnPhysicsEnabled();
-	void OnScriptSelect();
+	void on_script_right_click();
 	void OnAddScript();
 	void OnRemoveScript();
 	void OnEditScriptVars();
@@ -46,6 +46,8 @@ public:
 	bool active;
 
 private:
+	hui::Menu *popup_skybox;
+	hui::Menu *popup_script;
 	DataWorld *data;
 
 	DataWorld::MetaData temp;

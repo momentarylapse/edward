@@ -26,26 +26,30 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	data = _data;
 	active = true;
 
-	event("cancel", std::bind(&WorldPropertiesDialog::OnClose, this));
-	event("hui:close", std::bind(&WorldPropertiesDialog::OnClose, this));
-	event("apply", std::bind(&WorldPropertiesDialog::ApplyData, this));
-	event("ok", std::bind(&WorldPropertiesDialog::OnOk, this));
+	popup_skybox = hui::CreateResourceMenu("world-skybox-popup");
+	popup_script = hui::CreateResourceMenu("world-script-popup");
 
-	event("sun_enabled", std::bind(&WorldPropertiesDialog::OnSunEnabled, this));
-	event("sun_ang_from_camera", std::bind(&WorldPropertiesDialog::OnSunAngFromCamera, this));
-	event("fog_mode:none", std::bind(&WorldPropertiesDialog::OnFogModeNone, this));
-	event("fog_mode:linear", std::bind(&WorldPropertiesDialog::OnFogModeLinear, this));
-	event("fog_mode:exp", std::bind(&WorldPropertiesDialog::OnFogModeExp, this));
-	event("fog_mode:exp2", std::bind(&WorldPropertiesDialog::OnFogModeExp, this));
-	event("skybox", std::bind(&WorldPropertiesDialog::OnSkybox, this));
-	event_x("skybox", "hui:select", std::bind(&WorldPropertiesDialog::OnSkyboxSelect, this));
-	event("remove_skybox", std::bind(&WorldPropertiesDialog::OnRemoveSkybox, this));
-	event("physics_enabled", std::bind(&WorldPropertiesDialog::OnPhysicsEnabled, this));
-	event_x("script_list", "hui:select", std::bind(&WorldPropertiesDialog::OnScriptSelect, this));
-	event_x("script_list", "hui:activate", std::bind(&WorldPropertiesDialog::OnEditScriptVars, this));
-	event("remove_script", std::bind(&WorldPropertiesDialog::OnRemoveScript, this));
-	event("add_script", std::bind(&WorldPropertiesDialog::OnAddScript, this));
-	event("edit_script_vars", std::bind(&WorldPropertiesDialog::OnEditScriptVars, this));
+	event("cancel", [=]{ OnClose(); });
+	event("hui:close", [=]{ OnClose(); });
+	event("apply", [=]{ ApplyData(); });
+	event("ok", [=]{ OnOk(); });
+
+	event("sun_enabled", [=]{ OnSunEnabled(); });
+	event("sun_ang_from_camera", [=]{ OnSunAngFromCamera(); });
+	event("fog_mode:none", [=]{ OnFogModeNone(); });
+	event("fog_mode:linear", [=]{ OnFogModeLinear(); });
+	event("fog_mode:exp", [=]{ OnFogModeExp(); });
+	event("fog_mode:exp2", [=]{ OnFogModeExp(); });
+	event_x("skybox", "hui:activate", [=]{ on_skybox_select(); });
+	event_x("skybox", "hui:right-button-down", [=]{ on_skybox_right_click(); });
+	event("skybox-remove", [=]{ on_skybox_remove(); });
+	event("skybox-select", [=]{ on_skybox_select(); });
+	event("physics_enabled", [=]{ OnPhysicsEnabled(); });
+	event_x("script_list", "hui:right-button-down", [=]{ on_script_right_click(); });
+	event_x("script_list", "hui:activate", [=]{ OnEditScriptVars(); });
+	event("remove_script", [=]{ OnRemoveScript(); });
+	event("add_script", [=]{ OnAddScript(); });
+	event("edit_script_vars", [=]{ OnEditScriptVars(); });
 
 	subscribe(data);
 
@@ -53,50 +57,46 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	LoadData();
 }
 
-WorldPropertiesDialog::~WorldPropertiesDialog()
-{
+WorldPropertiesDialog::~WorldPropertiesDialog() {
 	mode_world->WorldDialog = NULL;
 	unsubscribe(data);
+	delete popup_skybox;
+	delete popup_script;
 }
 
-void WorldPropertiesDialog::OnSkybox()
-{
-	int n = get_int("");
-	if (ed->file_dialog(FD_MODEL,false,true)){
+void WorldPropertiesDialog::on_skybox_right_click() {
+	int n = hui::GetEvent()->row;
+	popup_skybox->enable("skybox-select", n >= 0);
+	popup_skybox->enable("skybox-remove", n >= 0);
+	popup_skybox->open_popup(this);
+}
+
+void WorldPropertiesDialog::on_skybox_select() {
+	int n = get_int("skybox");
+	if (ed->file_dialog(FD_MODEL,false,true)) {
 		temp.SkyBoxFile[n] = ed->dialog_file_no_ending;
 		FillSkyboxList();
 	}
 }
 
-void WorldPropertiesDialog::OnSkyboxSelect()
-{
-	int row = get_int("");
-	if (row >= 0)
-		enable("remove_skybox", temp.SkyBoxFile[row].num > 0);
-	else
-		enable("remove_skybox", false);
-}
 
-
-void WorldPropertiesDialog::OnScriptSelect()
-{
-	int row = get_int("");
-	enable("remove_script", row >= 0);
-	enable("edit_script_vars", row >= 0);
+void WorldPropertiesDialog::on_script_right_click() {
+	int n = hui::GetEvent()->row;
+	popup_script->enable("remove_script", n >= 0);
+	popup_script->enable("edit_script_vars", n >= 0);
+	popup_script->open_popup(this);
 }
 
 
 
-void WorldPropertiesDialog::OnClose()
-{
+void WorldPropertiesDialog::OnClose() {
 	unsubscribe(data);
 	hide();
 	active = false;
 }
 
 
-void WorldPropertiesDialog::OnSunEnabled()
-{
+void WorldPropertiesDialog::OnSunEnabled() {
 	bool b = is_checked("");
 	enable("sun_am", b);
 	enable("sun_di", b);
@@ -107,15 +107,13 @@ void WorldPropertiesDialog::OnSunEnabled()
 }
 
 
-void WorldPropertiesDialog::OnSunAngFromCamera()
-{
+void WorldPropertiesDialog::OnSunAngFromCamera() {
 	set_float("sun_ang_x", ed->multi_view_3d->cam.ang.x * 180.0f / pi);
 	set_float("sun_ang_y", ed->multi_view_3d->cam.ang.y * 180.0f / pi);
 }
 
 
-void WorldPropertiesDialog::OnPhysicsEnabled()
-{
+void WorldPropertiesDialog::OnPhysicsEnabled() {
 	bool b = is_checked("");
 	enable("gravitation_x", b);
 	enable("gravitation_y", b);
@@ -124,11 +122,10 @@ void WorldPropertiesDialog::OnPhysicsEnabled()
 
 
 
-void WorldPropertiesDialog::OnRemoveSkybox()
-{
+void WorldPropertiesDialog::on_skybox_remove() {
 	int n = get_int("skybox");
 	if (n >= 0)
-		if (temp.SkyBoxFile[n].num > 0){
+		if (temp.SkyBoxFile[n].num > 0) {
 			temp.SkyBoxFile[n] = "";
 			FillSkyboxList();
 		}
@@ -136,9 +133,8 @@ void WorldPropertiesDialog::OnRemoveSkybox()
 
 
 
-void WorldPropertiesDialog::OnAddScript()
-{
-	if (ed->file_dialog(FD_SCRIPT, false, true)){
+void WorldPropertiesDialog::OnAddScript() {
+	if (ed->file_dialog(FD_SCRIPT, false, true)) {
 		WorldScript s;
 		s.filename = ed->dialog_file_complete.substr(Kaba::config.directory.num, -1);
 		temp.scripts.add(s);
@@ -166,19 +162,17 @@ void WorldPropertiesDialog::OnAddScript()
 
 
 
-void WorldPropertiesDialog::OnRemoveScript()
-{
+void WorldPropertiesDialog::OnRemoveScript() {
 	int n = get_int("script_list");
-	if (n >= 0){
+	if (n >= 0) {
 		temp.scripts.erase(n);
 		FillScriptList();
 	}
 }
 
-void update_script_data(WorldScript &s)
-{
+void update_script_data(WorldScript &s) {
 	s.class_name = "";
-	try{
+	try {
 		auto ss = Kaba::Load(s.filename, true);
 
 		Array<string> wanted;
@@ -186,17 +180,17 @@ void update_script_data(WorldScript &s)
 			if (c->name == "PARAMETERS" and c->type == Kaba::TypeString)
 				wanted = c->as_string().lower().replace("_", "").replace("\n", "").explode(",");
 
-		for (auto *t: ss->syntax->base_class->classes){
+		for (auto *t: ss->syntax->base_class->classes) {
 			if (!t->is_derived_from_s("Controller"))
 				continue;
 			s.class_name = t->name;
-			for (auto &e: t->elements){
+			for (auto &e: t->elements) {
 				string nn = e.name.replace("_", "").lower();
 				if (!sa_contains(wanted, nn))
 					continue;
 				bool found = false;
 				for (auto &v: s.variables)
-					if (v.name.lower().replace("_", "") == nn){
+					if (v.name.lower().replace("_", "") == nn) {
 						v.name = e.name;
 						v.type = e.type->name;
 						found = true;
@@ -210,16 +204,15 @@ void update_script_data(WorldScript &s)
 				s.variables.add(v);
 			}
 		}
-	}catch(Exception &e){
+	} catch(Exception &e) {
 
 	}
 
 }
 
-void WorldPropertiesDialog::OnEditScriptVars()
-{
+void WorldPropertiesDialog::OnEditScriptVars() {
 	int n = get_int("script_list");
-	if (n >= 0){
+	if (n >= 0) {
 		update_script_data(temp.scripts[n]);
 		auto dlg = new ScriptVarsDialog(this, &temp.scripts[n]);
 		dlg->run();
@@ -229,24 +222,21 @@ void WorldPropertiesDialog::OnEditScriptVars()
 
 
 
-void WorldPropertiesDialog::OnFogModeNone()
-{
+void WorldPropertiesDialog::OnFogModeNone() {
 	enable("fog_start", false);
 	enable("fog_end", false);
 	enable("fog_distance", false);
 	enable("fog_color", false);
 }
 
-void WorldPropertiesDialog::OnFogModeLinear()
-{
+void WorldPropertiesDialog::OnFogModeLinear() {
 	enable("fog_start", true);
 	enable("fog_end", true);
 	enable("fog_distance", false);
 	enable("fog_color", true);
 }
 
-void WorldPropertiesDialog::OnFogModeExp()
-{
+void WorldPropertiesDialog::OnFogModeExp() {
 	enable("fog_start", false);
 	enable("fog_end", false);
 	enable("fog_distance", true);
@@ -255,28 +245,24 @@ void WorldPropertiesDialog::OnFogModeExp()
 
 
 
-void WorldPropertiesDialog::FillSkyboxList()
-{
+void WorldPropertiesDialog::FillSkyboxList() {
 	hui::ComboBoxSeparator = ":";
 	reset("skybox");
 	foreachi(string &sb, temp.SkyBoxFile, i)
 		add_string("skybox", format("%d:%s", i, sb.c_str()));
 	hui::ComboBoxSeparator = "\\";
-	enable("remove_skybox", false);
 }
 
 
 
-void WorldPropertiesDialog::on_update(Observable *o, const string &message)
-{
+void WorldPropertiesDialog::on_update(Observable *o, const string &message) {
 	temp = data->meta_data;
 	LoadData();
 }
 
 
 
-void WorldPropertiesDialog::FillScriptList()
-{
+void WorldPropertiesDialog::FillScriptList() {
 	hui::ComboBoxSeparator = ":";
 	reset("script_list");
 	for (auto &s: temp.scripts)
@@ -288,8 +274,7 @@ void WorldPropertiesDialog::FillScriptList()
 
 
 
-void WorldPropertiesDialog::ApplyData()
-{
+void WorldPropertiesDialog::ApplyData() {
 	temp.PhysicsEnabled = is_checked("physics_enabled");
 	temp.Gravity.x = get_float("gravitation_x");
 	temp.Gravity.y = get_float("gravitation_y");
@@ -320,14 +305,12 @@ void WorldPropertiesDialog::ApplyData()
 
 
 
-void WorldPropertiesDialog::OnOk()
-{
+void WorldPropertiesDialog::OnOk() {
 	ApplyData();
 	OnClose();
 }
 
-void WorldPropertiesDialog::restart()
-{
+void WorldPropertiesDialog::restart() {
 	subscribe(data);
 
 	temp = data->meta_data;
@@ -337,18 +320,17 @@ void WorldPropertiesDialog::restart()
 
 
 
-void WorldPropertiesDialog::LoadData()
-{
+void WorldPropertiesDialog::LoadData() {
 	set_decimals(WorldFogDec);
 	set_color("bgc", temp.BackGroundColor);
-	if (temp.FogEnabled){
+	if (temp.FogEnabled) {
 		if (temp.FogMode == FOG_LINEAR)
 			check("fog_mode:linear", true);
 		else if (temp.FogMode == FOG_EXP)
 			check("fog_mode:exp", true);
 		else if (temp.FogMode == FOG_EXP2)
 			check("fog_mode:exp2", true);
-	}else{
+	} else {
 		check("fog_mode:none", true);
 	}
 	set_float("fog_start", temp.FogStart);

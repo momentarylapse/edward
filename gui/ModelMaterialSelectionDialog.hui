@@ -1,8 +1,6 @@
 Dialog model_material_selection_dialog "Select a material" width=355 height=360
 	Grid ? ""
-		ListView material_list "Material\\Triangles\\File" format=ttit select-single "tooltip=- double click to apply material\n- select and press button \"edit\" to edit\n- selection will be used for new polygons"
+		ListView material_list "#\\Polygons\\\\File" format=ttit select-single "tooltip=- double click to apply material\n- select and press button \"edit\" to edit\n- selection will be used for new polygons"
 		---|
-		Grid msd_table_2 "" buttonbar
-			Button add_new_material "new" image=hui:add
-			Button add_material "New..." image=hui:open
-			Button edit_material "edit" image=hui:edit
+		Grid ? "" buttonbar
+			Button /apply "Apply" image=hui:apply

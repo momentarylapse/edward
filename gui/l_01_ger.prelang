@@ -1,7 +1,7 @@
 # Language
 Deutsch
 # Num IDs
-1154
+1155
 # Data (ID,Text,Tooltip)
 /ambient
 Ambient
@@ -3465,8 +3465,11 @@ Name der Funktion:
 world_scriptfunc_dialog/world_scriptfunc_dialog
 Script-Funktion
 
+model_material_selection_dialog/\apply
+Anwenden
+
 # Num Language Strings
-217
+218
 # Data (ID,Text)
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -3902,3 +3905,5 @@ y-z-plane
 y-z-Ebene
 z-axis
 z-Achse
+not implemented yet
+noch nicht implementiert

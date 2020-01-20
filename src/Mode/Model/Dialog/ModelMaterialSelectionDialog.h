@@ -12,27 +12,28 @@
 #include "../../../Stuff/Observer.h"
 class DataModel;
 
-class ModelMaterialSelectionDialog: public hui::Dialog, public Observer
-{
+class ModelMaterialSelectionDialog: public hui::Dialog, public Observer {
 public:
 	ModelMaterialSelectionDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data);
 	virtual ~ModelMaterialSelectionDialog();
 
-	void OnClose();
-	void OnMaterialList();
-	void OnMaterialListSelect();
-	void OnMaterialAddNew();
-	void OnMaterialAdd();
-	void OnMaterialEdit();
+	void on_close();
+	void on_apply();
+	void on_material_list_right_click();
+	void on_material_add();
+	void on_material_load();
+	void on_material_edit();
+	void on_material_delete();
 
 	void on_update(Observable *o, const string &message) override;
 
-	void FillMaterialList();
+	void fill_material_list();
 
-	void PutAnswer(int *_answer);
+	void put_answer(int *_answer);
 private:
 	int *answer;
 	DataModel *data;
+	hui::Menu *popup_materials;
 };
 
 #endif /* MODELMATERIALSELECTIONDIALOG_H_ */

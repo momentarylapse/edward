@@ -1,6 +1,6 @@
 t7
 # Number Of Resources
-70
+72
 # Resource
 Menu
 
@@ -3323,27 +3323,15 @@ format=ttit,select-single
 0
 0
 Grid
-msd_table_2
+?
 buttonbar
 0
 1
-3
-Button
-add_new_material
-image=hui:add
-0
-0
-0
-Button
-add_material
-image=hui:open
 1
-0
-0
 Button
-edit_material
-image=hui:edit
-2
+apply
+image=hui:apply
+0
 0
 0
 # Resource
@@ -7816,22 +7804,10 @@ grp_skybox
 1
 0
 1
-Grid
-?
-vertical
-0
-0
-2
 ListView
 skybox
-SkyBox')"
+
 0
-0
-0
-Button
-remove_skybox
-image=hui:delete
-1
 0
 0
 Grid
@@ -8122,40 +8098,10 @@ luss
 2
 2
 0
-Grid
-?
-vertical
-4
-0
-2
 ListView
 script_list
 nobar
-0
-0
-0
-Grid
-?
-
-1
-0
-3
-Button
-add_script
-image=hui:add
-0
-0
-0
-Button
-remove_script
-image=hui:delete
-1
-0
-0
-Button
-edit_script_vars
-
-2
+4
 0
 0
 Grid
@@ -9203,6 +9149,74 @@ property_list
 0
 0
 # Resource
+Menu
+world-script-popup
+
+0
+0
+5
+Item
+title
+disabled
+0
+0
+0
+Separator
+
+
+1
+0
+0
+Item
+add_script
+image=hui:add
+2
+0
+0
+Item
+remove_script
+image=hui:delete
+3
+0
+0
+Item
+edit_script_vars
+
+4
+0
+0
+# Resource
+Menu
+world-skybox-popup
+
+0
+0
+4
+Item
+title
+disabled
+0
+0
+0
+Separator
+
+
+1
+0
+0
+Item
+skybox-select
+image=hui:open
+2
+0
+0
+Item
+skybox-remove
+image=hui:delete
+3
+0
+0
+# Resource
 Toolbar
 world-toolbar
 
@@ -9310,7 +9324,7 @@ image=hui:execute
 # Language
 English
 # Number Of IDs
-947
+946
 # Text
 /ambient
 Ambient
@@ -9468,12 +9482,6 @@ animation_dialog/animation_list
 animation_dialog/delete_frame
 delete
 
-animation_dialog/fps_const
-\\0\\100\\0.01
-
-animation_dialog/fps_factor
-\\0\\100\\0.01
-
 animation_dialog/new_frame
 new frame
 
@@ -9485,9 +9493,6 @@ Start
 
 animation_dialog/sim_stop
 Stop
-
-animation_dialog/speed
-\\0
 
 animation_dialog/t_animationfpsconst
 Frames/s const
@@ -11602,7 +11607,7 @@ model_material_dialog/mat_sp
 
 Color of specular highlights
 model_material_dialog/mat_textures
-Level\\Texture
+Level\\\\Texture
 Mixing texture levels (multitexturing)\n- Actions via right click
 model_material_dialog/material_dialog_t_trans_dest
 dest
@@ -11611,7 +11616,7 @@ model_material_dialog/material_dialog_t_trans_source
 source
 
 model_material_dialog/material_list
-Material\\Triangles\\File
+#\\Polygons\\\\File
 Materials\n - Actions via right click
 model_material_dialog/model_material_dialog
 Material
@@ -11643,17 +11648,8 @@ Transparency from material
 model_material_dialog/transparency_mode:none
 No transparency
 
-model_material_selection_dialog/add_material
-New...
-
-model_material_selection_dialog/add_new_material
-new
-
-model_material_selection_dialog/edit_material
-edit
-
 model_material_selection_dialog/material_list
-Material\\Triangles\\File
+#\\Polygons\\\\File
 - double click to apply material\n- select and press button \"edit\" to edit\n- selection will be used for new polygons
 model_material_selection_dialog/model_material_selection_dialog
 Select a material
@@ -11946,6 +11942,33 @@ add object
 world-edit-toolbar/terrain_create
 add terrain
 
+world-script-popup/add_script
+add...
+
+world-script-popup/edit_script_vars
+variables...
+
+world-script-popup/remove_script
+remove
+
+world-script-popup/title
+Script
+
+world-script-popup/world-script-popup
+Script
+
+world-skybox-popup/skybox-remove
+remove
+
+world-skybox-popup/skybox-select
+select...
+
+world-skybox-popup/title
+Skybox
+
+world-skybox-popup/world-skybox-popup
+Skybox
+
 world-toolbar/create_lightmap
 Render lightmap
 
@@ -11988,18 +12011,12 @@ Delete
 world_camera_dialog/world_camera_dialog
 Camera flight
 
-world_dialog/add_script
-Add
-
 world_dialog/ambient
 ambient
 general ambient light independent of other light sources
 world_dialog/bgc
 
 Sky color
-world_dialog/edit_script_vars
-Variables...
-
 world_dialog/fog_distance
 
 fog intensity = exp( - distance / viewing-distance )
@@ -12037,19 +12054,13 @@ world_dialog/grp_sun
 Sun
 
 world_dialog/physics_enabled
-Enabled
-
-world_dialog/remove_script
-Remove
-
-world_dialog/remove_skybox
-Remove
+enabled
 
 world_dialog/script_list
 File
 
 world_dialog/skybox
-#\\model (
+#\\Model
 Models drawn over the sky color\n- double click to select
 world_dialog/sun_am
 
@@ -12159,7 +12170,7 @@ Script function
 # Language
 Deutsch
 # Number Of IDs
-947
+948
 # Text
 /ambient
 Ambient
@@ -14492,6 +14503,9 @@ Transparenz aus der Datei verwenden
 model_material_dialog/transparency_mode:none
 Keine Transparenz
 
+model_material_selection_dialog/\apply
+Anwenden
+
 model_material_selection_dialog/add_material
 laden...
 
@@ -15003,7 +15017,7 @@ world_scriptfunc_dialog/world_scriptfunc_dialog
 Script-Funktion
 
 # Num Language Strings
-217
+218
 # Text
                   Close dialog box to exit program.
                   Close dialog box to exit program.
@@ -15395,6 +15409,8 @@ no function of type 'vector f(vector)' found
 keine Funktion vom Typ 'vector f(vector)' gefunden
 no triangle selected
 kein Dreieck ausgewählt
+not implemented yet
+noch nicht implementiert
 nothing selected
 nichts markiert
 nothing to paste
