@@ -15,8 +15,9 @@ public:
 	Storage();
 	~Storage();
 
-	void load(const string &filename, Data *data, bool deep = true);
-	void save(const string &filename, Data *data);
+	bool load(const string &filename, Data *data, bool deep = true);
+	bool save(const string &filename, Data *data);
+	bool auto_save(Data *data);
 
 	bool open(Data *data);
 	bool save_as(Data *data);

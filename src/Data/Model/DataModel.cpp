@@ -245,16 +245,6 @@ void report_error(const string &msg)
 }
 
 
-#include "../../Storage/Storage.h"
-
-bool DataModel::load(const string & _filename, bool deep) {
-	try {
-		storage->load(_filename, this, deep);
-	} catch (FormatError &e) {
-		return false;
-	}
-	return true;
-}
 
 void DataModel::importFromTriangleSkin(int index)
 {
@@ -387,13 +377,6 @@ void DataModel::getBoundingBox(vector &min, vector &max)
 		min._min(skin[0].vertex[ball[i].index].pos - vector(1,1,1) * ball[i].radius);
 		max._max(skin[0].vertex[ball[i].index].pos + vector(1,1,1) * ball[i].radius);
 	}
-}
-
-
-bool DataModel::save(const string & _filename)
-{
-	storage->save(_filename, this);
-	return true;
 }
 
 void DataModel::setNormalsDirtyByVertices(const Array<int> &index)

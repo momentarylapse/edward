@@ -185,13 +185,8 @@ void ModeModel::_new()
 	mode_model_mesh->optimize_view();
 }
 
-bool ModeModel::open()
-{
-	if (!ed->allow_termination())
-		return false;
-	if (!ed->file_dialog(FD_MODEL, false, false))
-		return false;
-	if (!data->load(ed->dialog_file_complete))
+bool ModeModel::open() {
+	if (!storage->open(data))
 		return false;
 
 	ed->set_mode(this);
@@ -199,18 +194,12 @@ bool ModeModel::open()
 	return true;
 }
 
-bool ModeModel::save()
-{
-	if (data->filename == "")
-		return save_as();
-	return data->save(data->filename);
+bool ModeModel::save() {
+	return storage->auto_save(data);
 }
 
-bool ModeModel::save_as()
-{
-	if (ed->file_dialog(FD_MODEL, true, false))
-		return data->save(ed->dialog_file_complete);
-	return false;
+bool ModeModel::save_as() {
+	return storage->save_as(data);
 }
 
 bool ModeModel::import_open_3ds()

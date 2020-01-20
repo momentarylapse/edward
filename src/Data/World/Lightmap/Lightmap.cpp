@@ -16,6 +16,7 @@
 #include "../../../x/terrain.h"
 #include "../../../meta.h"
 #include "../../../lib/nix/nix.h"
+#include "../../../Storage/Storage.h"
 
 
 Lightmap::Histogram::Histogram(Array<float> &e)
@@ -173,7 +174,7 @@ bool Lightmap::RenderTextures()
 			mat->col.user = true;
 		}
 		m.new_name = data->model_out_dir + i2s(mid);
-		m.orig->save(ObjectDir + m.new_name + ".model");
+		storage->save(ObjectDir + m.new_name + ".model", m.orig);
 	}
 
 	foreachi(LightmapData::Terrain &t, data->Terrains, tid){
@@ -225,6 +226,6 @@ void Lightmap::CreateNewWorld()
 	for (LightmapData::Model &m: data->Models)
 		w.Objects[m.object_index].FileName = m.new_name;
 
-	w.save(MapDir + data->new_world_name + ".world");
+	storage->save(MapDir + data->new_world_name + ".world", &w);
 }
 

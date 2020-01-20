@@ -18,22 +18,18 @@ namespace nix{
 };
 
 
-class DataFont: public Data
-{
+class DataFont: public Data {
 public:
 	DataFont();
 	virtual ~DataFont();
 
 	void reset();
-	bool load(const string &_filename, bool deep = true);
-	bool save(const string &_filename);
 
 	void UpdateTexture();
 	void ApplyFont(Gui::Font *f);
 
 	// properties
-	struct GlobalData
-	{
+	struct GlobalData {
 		string TextureFile;
 
 		int UnknownGlyphNo;
@@ -44,7 +40,7 @@ public:
 	};
 	GlobalData global;
 
-	struct Glyph{
+	struct Glyph {
 		string Name;
 		int Width, X1, X2;
 	};

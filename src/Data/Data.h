@@ -17,8 +17,7 @@ class ActionManager;
 class Action;
 class Observable;
 
-class Data : public Observable
-{
+class Data : public Observable {
 public:
 	Data(int _type);
 	virtual ~Data();
@@ -26,8 +25,6 @@ public:
 	static const string MESSAGE_SELECTION;
 
 	virtual void reset() = 0;
-	virtual bool load(const string &_filename, bool deep = true) = 0;
-	virtual bool save(const string &_filename) = 0;
 
 	void reset_history();
 	void *execute(Action *a);

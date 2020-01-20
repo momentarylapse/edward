@@ -348,7 +348,7 @@ bool Edward::handle_arguments(Array<string> arg)
 	if (arg[1] == "--update-model"){
 		if (arg.num >= 3){
 			DataModel m;
-			m.load(arg[2], false);
+			storage->load(arg[2], &m, false);
 			//m.save(arg[2]);
 			::exit(0);
 		}
@@ -392,13 +392,13 @@ bool Edward::handle_arguments(Array<string> arg)
 
 	if (ext == "model"){
 		make_dirs(param);
-		mode_model->data->load(param, true);
+		storage->load(param, mode_model->data);
 		set_mode(mode_model);
 		/*if (mmodel->Skin[1].Sub[0].Triangle.num==0)
 			mmodel->SetEditMode(EditModeVertex);*/
 	}else if (ext == "material"){
 		make_dirs(param);
-		mode_material->data->load(param, true);
+		storage->load(param, mode_material->data);
 		set_mode(mode_material);
 	/*}else if ((ext == "map") || (ext == "terrain")){
 		MakeDirs(param);
@@ -408,18 +408,18 @@ bool Edward::handle_arguments(Array<string> arg)
 		set_mode(ModeWorld);*/
 	}else if (ext == "world"){
 		make_dirs(param);
-		mode_world->data->load(param);
+		storage->load(param, mode_world->data);
 		set_mode(mode_world);
 		multi_view_3d->whole_window = true;
 	}else if (ext == "xfont"){
 		make_dirs(param);
-		mode_font->data->load(param);
+		storage->load(param, mode_font->data);
 		set_mode(mode_font);
 	}else if (ext == "js"){
-		mode_model->import_load_json(param);
+		storage->load(param, mode_model->data);
 		set_mode(mode_model);
 	}else if (ext == "ply"){
-		mode_model->import_load_ply(param);
+		storage->load(param, mode_model->data);
 		set_mode(mode_model);
 	/*}else if (ext == "mdl"){
 		mmodel->LoadImportFromGameStudioMdl(param);
@@ -433,7 +433,7 @@ bool Edward::handle_arguments(Array<string> arg)
 		WholeWindow=true;
 		mmodel->OptimizeView();*/
 	}else if (ext == "3ds"){
-		mode_model->import_load_3ds(param);
+		storage->load(param, mode_model->data);
 	}else{
 		error_box(_("Unknown file extension: ") + param);
 		app->end();

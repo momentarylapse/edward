@@ -6,6 +6,7 @@
  */
 
 #include "../../Edward.h"
+#include "../../Storage/Storage.h"
 #include "../../MultiView/MultiView.h"
 #include "../../MultiView/Window.h"
 #include "../../lib/nix/nix.h"
@@ -80,21 +81,18 @@ void ModeFont::on_draw()
 
 
 
-bool ModeFont::save_as()
-{
-	if (ed->file_dialog(FD_FONT, true, false))
-		return data->save(ed->dialog_file_complete);
-	return false;
+bool ModeFont::save_as() {
+	return storage->save_as(data);
 }
 
 
 
 
-bool ModeFont::save()
-{
+bool ModeFont::save() {
 	if (data->filename == "")
 		return save_as();
-	return data->save(data->filename);
+	storage->save(data->filename, data);
+	return true;
 }
 
 
@@ -123,12 +121,7 @@ void ModeFont::on_command(const string & id)
 
 bool ModeFont::open()
 {
-	if (!ed->allow_termination())
-		return false;
-	if (!ed->file_dialog(FD_FONT, false, false))
-		return false;
-	bool ok = data->load(ed->dialog_file_complete);
-	if (!ok)
+	if (!storage->open(data))
 		return false;
 
 	optimize_view();

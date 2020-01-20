@@ -23,16 +23,13 @@ public:
 	DataMaterial();
 	virtual ~DataMaterial();
 
-	void reset();
-	bool load(const string &_filename, bool deep = true);
-	bool save(const string &_filename);
+	void reset() override;
 
 	void ApplyForRendering();
 	void UpdateTextures();
 
 
-	struct AppearanceData
-	{
+	struct AppearanceData {
 		// properties
 		Array<nix::Texture*> textures;
 		Array<string> texture_files;
@@ -62,8 +59,7 @@ public:
 
 	AppearanceData appearance;
 
-	struct PhysicsData
-	{
+	struct PhysicsData {
 		float friction_jump, friction_static, friction_sliding, friction_rolling;
 		float vmin_jump, vmin_sliding;
 		// ...
@@ -74,8 +70,7 @@ public:
 	};
 	PhysicsData physics;
 
-	struct SoundData
-	{
+	struct SoundData {
 		int NumRules;
 
 		void Reset();

@@ -10,6 +10,7 @@
 #include "../../../Data/Administration/AdminFile.h"
 #include "../../../Data/Administration/AdminFileList.h"
 #include "../../../Edward.h"
+#include "../../../Storage/Storage.h"
 #include "../../../meta.h"
 #include "../../../x/model_manager.h"
 #include "../../../x/font.h"
@@ -241,19 +242,19 @@ void AdministrationDialog::OnEdit()
 				mode_administration->BasicSettings();
 			break;
 		case FD_MODEL:
-			if (mode_model->data->load(ObjectDir + a->Name, true))
+			if (storage->load(ObjectDir + a->Name, mode_model->data, true))
 				ed->set_mode(mode_model);
 			break;
 		case FD_MATERIAL:
-			if (mode_material->data->load(MaterialDir + a->Name, true))
+			if (storage->load(MaterialDir + a->Name, mode_material->data, true))
 				ed->set_mode(mode_material);
 			break;
 		case FD_FONT:
-			if (mode_font->data->load(Gui::FontDir + a->Name, true))
+			if (storage->load(Gui::FontDir + a->Name, mode_font->data, true))
 				ed->set_mode(mode_font);
 			break;
 		case FD_WORLD:
-			if (mode_world->data->load(MapDir + a->Name, true))
+			if (storage->load(MapDir + a->Name, mode_world->data, true))
 				ed->set_mode(mode_world);
 			break;
 		case FD_TERRAIN:

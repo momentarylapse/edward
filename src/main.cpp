@@ -9,6 +9,7 @@
 #include "Edward.h"
 
 #include "Data/Model/DataModel.h"
+#include "Storage/Storage.h"
 
 string AppVersion = "0.4.-1.4";
 string AppName = "Edward";
@@ -47,9 +48,9 @@ bool handle_special_args(const Array<string> &arg)
 			if (ext == "model"){
 				DataModelAllowUpdating = false;
 				DataModel m;
-				m.load(arg[2], false);
+				storage->load(arg[2], &m, false);
 				if (arg[1] == "--update")
-					m.save(arg[2]);
+					storage->save(arg[2], &m);
 				return true;
 			}
 		}

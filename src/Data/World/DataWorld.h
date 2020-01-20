@@ -91,15 +91,12 @@ public:
 	Array<WorldScriptVariable> variables;
 };
 
-class DataWorld: public Data
-{
+class DataWorld: public Data {
 public:
 	DataWorld();
 	virtual ~DataWorld();
 
-	void reset();
-	bool load(const string &_filename, bool deep = true);
-	bool save(const string &_filename);
+	void reset() override;
 
 
 	void GetBoundaryBox(vector &min, vector &max);
@@ -119,7 +116,7 @@ public:
 
 	Array<WorldLink> Links;
 
-	struct MetaData{
+	struct MetaData {
 
 		// physics
 		bool PhysicsEnabled;

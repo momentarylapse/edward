@@ -13,6 +13,7 @@
 #include "../Material/DataMaterial.h"
 #include "../Font/DataFont.h"
 #include "../../Edward.h"
+#include "../../Storage/Storage.h"
 #include "../../meta.h"
 #include "../../x/terrain.h"
 #include "../../x/model_manager.h"
@@ -195,7 +196,7 @@ void AdminFile::check(AdminFileList &list)
 	Array<s_admin_link> l;
 	if (Kind==FD_WORLD){
 		DataWorld w;
-		if (w.load(MapDir + Name, false)){
+		if (storage->load(MapDir + Name, &w, false)){
 			Time = w.file_time;
 			for (int i=0;i<w.Terrains.num;i++)
 				add_possible_link(l, FD_TERRAIN, w.Terrains[i].FileName);
@@ -218,7 +219,7 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FD_MODEL){
 		DataModel m;
-		if (m.load(ObjectDir + Name,false)){
+		if (storage->load(ObjectDir + Name, &m, false)){
 			Time = m.file_time;
 			for (int i=0;i<m.bone.num;i++)
 				add_possible_link(l, FD_MODEL, m.bone[i].model_file);
@@ -240,7 +241,7 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FD_MATERIAL){
 		DataMaterial m;
-		if (m.load(MaterialDir + Name,false)){
+		if (storage->load(MaterialDir + Name, &m, false)){
 			Time = m.file_time;
 			add_possible_link(l, FD_SHADERFILE, m.appearance.shader_file);
 			if (m.appearance.reflection_mode == REFLECTION_CUBE_MAP_STATIC)
@@ -252,7 +253,7 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FD_FONT){
 		DataFont f;
-		if (f.load(Gui::FontDir + Name,false)){
+		if (storage->load(Gui::FontDir + Name, &f, false)){
 			Time = f.file_time;
 			add_possible_link(l, FD_TEXTURE, f.global.TextureFile);
 		}else

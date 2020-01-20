@@ -6,6 +6,7 @@
  */
 
 #include "../../Edward.h"
+#include "../../Storage/Storage.h"
 #include "ModeMaterial.h"
 #include "../../Data/Material/DataMaterial.h"
 #include "Dialog/MaterialPropertiesDialog.h"
@@ -57,24 +58,19 @@ void ModeMaterial::_new()
 
 
 
-bool ModeMaterial::save()
-{
-	if (data->filename == "")
-		return save_as();
-	return data->save(data->filename);
+bool ModeMaterial::save() {
+	return storage->auto_save(data);
 }
 
 
 
-void ModeMaterial::on_draw()
-{
+void ModeMaterial::on_draw() {
 }
 
 
 
-void ModeMaterial::on_update(Observable *o, const string &message)
-{
-	if (o == data){
+void ModeMaterial::on_update(Observable *o, const string &message) {
+	if (o == data) {
 		data->UpdateTextures();
 		if (data->appearance.shader)
 			data->appearance.shader->unref();
@@ -84,8 +80,7 @@ void ModeMaterial::on_update(Observable *o, const string &message)
 
 
 
-void ModeMaterial::on_command(const string & id)
-{
+void ModeMaterial::on_command(const string & id) {
 	if (id == "new")
 		_new();
 	if (id == "open")
@@ -117,8 +112,7 @@ void ModeMaterial::on_command(const string & id)
 }
 
 
-void ModeMaterial::on_draw_win(MultiView::Window *win)
-{
+void ModeMaterial::on_draw_win(MultiView::Window *win) {
 	data->ApplyForRendering();
 
 	nix::Draw3D(MaterialVB[max(data->appearance.texture_files.num, 1)]);
@@ -130,13 +124,8 @@ void ModeMaterial::on_draw_win(MultiView::Window *win)
 
 
 
-bool ModeMaterial::open()
-{
-	if (!ed->allow_termination())
-		return false;
-	if (!ed->file_dialog(FD_MATERIAL, false, false))
-		return false;
-	if (!data->load(ed->dialog_file_complete))
+bool ModeMaterial::open() {
+	if (!storage->open(data))
 		return false;
 
 	optimize_view();
@@ -146,8 +135,7 @@ bool ModeMaterial::open()
 
 
 
-void ModeMaterial::on_end()
-{
+void ModeMaterial::on_end() {
 	ed->set_side_panel(nullptr);
 
 	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
@@ -157,17 +145,13 @@ void ModeMaterial::on_end()
 
 
 
-bool ModeMaterial::save_as()
-{
-	if (ed->file_dialog(FD_MATERIAL, true, false))
-		return data->save(ed->dialog_file_complete);
-	return false;
+bool ModeMaterial::save_as() {
+	return storage->save_as(data);
 }
 
 
 
-void ModeMaterial::on_start()
-{
+void ModeMaterial::on_start() {
 	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("material-toolbar");
 	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
@@ -182,22 +166,19 @@ void ModeMaterial::on_start()
 	UpdateShape();
 }
 
-void ModeMaterial::SetShapeType(const string &type)
-{
+void ModeMaterial::SetShapeType(const string &type) {
 	shape_type = type;
 	hui::Config.set_str("MaterialShapeType", shape_type);
 	UpdateShape();
 }
 
-void ModeMaterial::SetShapeSmooth(bool smooth)
-{
+void ModeMaterial::SetShapeSmooth(bool smooth) {
 	shape_smooth = smooth;
 	hui::Config.set_bool("MaterialShapeSmooth", shape_smooth);
 	UpdateShape();
 }
 
-void ModeMaterial::UpdateShape()
-{
+void ModeMaterial::UpdateShape() {
 	bool needs_opt_view = !geo;
 	if (geo)
 		delete(geo);
@@ -217,7 +198,7 @@ void ModeMaterial::UpdateShape()
 	if (shape_smooth)
 		geo->smoothen();
 
-	for (int i=1;i<=MATERIAL_MAX_TEXTURES;i++){
+	for (int i=1;i<=MATERIAL_MAX_TEXTURES;i++) {
 		nix::VertexBuffer *vb = MaterialVB[i];
 		vb->clear();
 		geo->build(vb);
@@ -227,10 +208,9 @@ void ModeMaterial::UpdateShape()
 		optimize_view();
 }
 
-bool ModeMaterial::optimize_view()
-{
+bool ModeMaterial::optimize_view() {
 	multi_view->reset_view();
-	if (geo){
+	if (geo) {
 		vector min, max;
 		geo->getBoundingBox(min, max);
 		multi_view->set_view_box(min, max);
@@ -238,8 +218,7 @@ bool ModeMaterial::optimize_view()
 	return true;
 }
 
-void ModeMaterial::on_update_menu()
-{
+void ModeMaterial::on_update_menu() {
 	ed->check("material_shape_smooth", shape_smooth);
 	ed->check("material_shape_cube", shape_type == "cube");
 	ed->check("material_shape_ball", shape_type == "ball");

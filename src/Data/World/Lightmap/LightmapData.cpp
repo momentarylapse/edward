@@ -11,6 +11,7 @@
 #include "../../../x/object.h"
 #include "../../../x/model_manager.h"
 #include "../../../x/terrain.h"
+#include "../../../Storage/Storage.h"
 
 bool LightmapData::Triangle::intersect(const Ray &r, vector &cp) const
 {
@@ -159,7 +160,7 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 
 	DataModel *m = new DataModel();
 	mod.orig = m;
-	m->load(ObjectDir + filename + ".model");
+	storage->load(ObjectDir + filename + ".model", m);
 
 
 	mod.new_name = format("Lightmap/%s/%s_%d", world_name_small.c_str(), mod.orig_name.c_str(), mod.id);

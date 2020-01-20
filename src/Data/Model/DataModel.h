@@ -236,9 +236,7 @@ public:
 	static const string MESSAGE_MATERIAL_CHANGE;
 	static const string MESSAGE_TEXTURE_CHANGE;
 
-	virtual void reset();
-	virtual bool load(const string &_filename, bool deep = true);
-	virtual bool save(const string &_filename);
+	void reset() override;
 
 	void importFromTriangleSkin(int index);
 	void exportToTriangleSkin(int index);

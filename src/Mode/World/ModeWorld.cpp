@@ -6,6 +6,7 @@
  */
 
 #include "../../Edward.h"
+#include "../../Storage/Storage.h"
 #include "../../MultiView/MultiView.h"
 #include "../../MultiView/Window.h"
 #include "../../MultiView/DrawingHelper.h"
@@ -65,11 +66,8 @@ ModeWorld::~ModeWorld()
 {
 }
 
-bool ModeWorld::save_as()
-{
-	if (ed->file_dialog(FD_WORLD, true, false))
-		return data->save(ed->dialog_file_complete);
-	return false;
+bool ModeWorld::save_as() {
+	return storage->save_as(data);
 }
 
 
@@ -262,11 +260,8 @@ bool WorldTerrain::inRect(MultiView::Window *win, rect &r, void *user_data)
 
 
 
-bool ModeWorld::save()
-{
-	if (data->filename == "")
-		return save_as();
-	return data->save(data->filename);
+bool ModeWorld::save() {
+	return storage->auto_save(data);
 }
 
 
@@ -481,16 +476,8 @@ void ModeWorld::on_update_menu()
 
 
 
-bool ModeWorld::open()
-{
-	if (!ed->allow_termination())
-		return false;
-	if (!ed->file_dialog(FD_WORLD, false, false))
-		return false;
-	ed->progress->start(_("Loading world"), 0);
-	bool ok = data->load(ed->dialog_file_complete);
-	ed->progress->end();
-	if (!ok)
+bool ModeWorld::open() {
+	if (!storage->open(data))
 		return false;
 
 	ed->set_mode(mode_world);
@@ -649,7 +636,7 @@ void ModeWorld::ImportWorldProperties()
 {
 	if (ed->file_dialog(FD_WORLD, false, false)){
 		DataWorld w;
-		if (w.load(ed->dialog_file_complete, false))
+		if (storage->load(ed->dialog_file_complete, &w, false))
 			data->execute(new ActionWorldEditData(w.meta_data));
 		else
 			ed->error_box(_("World could not be loaded correctly!"));
