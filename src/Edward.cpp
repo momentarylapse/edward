@@ -9,6 +9,7 @@
 
 #include "Edward.h"
 #include "Mode/Administration/ModeAdministration.h"
+#include "Mode/Administration/Dialog/ConfigurationDialog.h"
 #include "Mode/Model/ModeModel.h"
 #include "Mode/Model/Mesh/ModeModelMesh.h"
 #include "Mode/Material/ModeMaterial.h"
@@ -591,6 +592,11 @@ void Edward::on_command(const string &id)
 		mode_administration->_new();
 	if (id == "project_open")
 		mode_administration->open();
+	if (id == "project_settings") {
+		auto *dlg = new ConfigurationDialog(ed, mode_administration->data, false);
+		dlg->run();
+		delete dlg;
+	}
 	if (id == "administrate")
 		set_mode(mode_administration);
 	if (id == "opt_view")

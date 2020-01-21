@@ -997,7 +997,7 @@ menu_project
 
 10
 0
-3
+4
 Item
 project_new
 image=hui:new
@@ -1014,6 +1014,12 @@ Item
 administrate
 image=hui:preferences
 2
+0
+0
+Item
+project_settings
+image=hui:preferences
+3
 0
 0
 Item
@@ -1133,7 +1139,7 @@ image=icons/toolbar/redo.png
 0
 # Resource
 Dialog
-rc_dialog
+game-config-dialog
 width=365,height=250
 0
 0
@@ -1143,11 +1149,23 @@ Grid
 vertical
 0
 0
-2
+3
 Group
-ged_group
+g-dir
 
 0
+0
+1
+Edit
+root-directory
+disabled
+0
+0
+0
+Group
+g-init
+
+1
 0
 1
 Grid
@@ -1157,99 +1175,99 @@ Grid
 0
 15
 Text
-ged_t_world
+t-world
 
 0
 0
 0
 Edit
-default_world
+world
 expandx
 1
 0
 0
 Button
-find_default_world
-image="hui:open"
+find-world
+image=hui:open
 2
 0
 0
 Text
-ged_t_second_world
+t-second-world
 
 0
 1
 0
 Edit
-default_second_world
+second-world
 
 1
 1
 0
 Button
-find_default_second_world
-image="hui:open"
+find-second-world
+image=hui:open
 2
 1
 0
 Text
-ged_t_script
+t-script
 
 0
 2
 0
 Edit
-default_script
+script
 
 1
 2
 0
 Button
-find_default_script
-image="hui:open"
+find-script
+image=hui:open
 2
 2
 0
 Text
-ged_t_material
+t-material
 
 0
 3
 0
 Edit
-default_material
+material
 
 1
 3
 0
 Button
-find_default_material
-image="hui:open"
+find-material
+image=hui:open
 2
 3
 0
 Text
-ged_t_font
+t-font
 
 0
 4
 0
 Edit
-default_font
+font
 
 1
 4
 0
 Button
-find_default_font
-image="hui:open"
+find-font
+image=hui:open
 2
 4
 0
 Grid
 ?
 buttonbar
-1
+2
 0
 2
 Button
@@ -1987,7 +2005,7 @@ menu_project
 
 10
 0
-3
+4
 Item
 project_new
 image=hui:new
@@ -2004,6 +2022,12 @@ Item
 administrate
 image=hui:preferences
 2
+0
+0
+Item
+project_settings
+image=hui:preferences
+3
 0
 0
 Item
@@ -3508,7 +3532,7 @@ menu_project
 
 13
 0
-3
+4
 Item
 project_new
 image=hui:new
@@ -3525,6 +3549,12 @@ Item
 administrate
 image=hui:preferences
 2
+0
+0
+Item
+project_settings
+image=hui:preferences
+3
 0
 0
 Item
@@ -5807,10 +5837,34 @@ image=hui:open
 1
 0
 0
+Menu
+menu_project
+
+14
+0
+4
+Item
+project_new
+image=hui:new
+0
+0
+0
+Item
+project_open
+image=hui:open
+1
+0
+0
 Item
 administrate
 image=hui:preferences
-14
+2
+0
+0
+Item
+project_settings
+image=hui:preferences
+3
 0
 0
 Item
@@ -8472,7 +8526,7 @@ menu_project
 
 13
 0
-3
+4
 Item
 project_new
 image=hui:new
@@ -8489,6 +8543,12 @@ Item
 administrate
 image=hui:preferences
 2
+0
+0
+Item
+project_settings
+image=hui:preferences
+3
 0
 0
 Item
@@ -9324,7 +9384,7 @@ image=hui:execute
 # Language
 English
 # Number Of IDs
-938
+945
 # Text
 /ambient
 Ambient:
@@ -9468,10 +9528,10 @@ ad_dialog/rename
 Rename
 
 animation_dialog/ani_dt_sim_param
-Parameter
+Parameter:
 
 animation_dialog/ani_dt_sim_speed
-Speed
+Speed:
 
 animation_dialog/animation_dialog
 Animation
@@ -9495,10 +9555,10 @@ animation_dialog/sim_stop
 Stop
 
 animation_dialog/t_animationfpsconst
-Frames/s const
+Frames/s const:
 
 animation_dialog/t_animationfpsfactor
-Frames/s factor
+Frames/s factor:
 
 animation_dialog/t_frame
 Frame
@@ -9507,7 +9567,7 @@ animation_dialog/t_list
 Overview
 
 animation_dialog/t_name
-Name
+Name:
 
 animation_dialog/t_properties
 Properties
@@ -9701,6 +9761,30 @@ attracting acceleration, Linear: maximum value, 1/r²: Value at r=100 lu
 fx_dialog/search
 
 has to be mono!
+game-config-dialog/g-dir
+Directory
+
+game-config-dialog/g-init
+Startup game values
+
+game-config-dialog/game-config-dialog
+Rudimentary configuration
+
+game-config-dialog/t-font
+Font:
+
+game-config-dialog/t-material
+Material:
+
+game-config-dialog/t-script
+Main script:
+
+game-config-dialog/t-second-world
+Second world
+
+game-config-dialog/t-world
+World:
+
 ge_dialog/cancel
 Cancel
 
@@ -9948,7 +10032,7 @@ menu_administration/world_open
 Open...
 
 menu_font/administrate
-Administrate
+Administrate...
 
 menu_font/current_mode_font
 -Font-Mode-
@@ -10013,6 +10097,9 @@ New...
 menu_font/project_open
 Open...
 
+menu_font/project_settings
+Settings...
+
 menu_font/save
 Save
 
@@ -10038,7 +10125,7 @@ menu_font/world_open
 Open...
 
 menu_material/administrate
-Administrate
+Administrate...
 
 menu_material/execute_plugin
 Execute plugin
@@ -10130,6 +10217,9 @@ New...
 menu_material/project_open
 Open...
 
+menu_material/project_settings
+Settings...
+
 menu_material/save
 Save
 
@@ -10158,7 +10248,7 @@ menu_material/world_open
 Open...
 
 menu_model/administrate
-Administrate
+Administrate...
 
 menu_model/align_to_grid
 Align to grid
@@ -10498,6 +10588,9 @@ New...
 
 menu_model/project_open
 Open...
+
+menu_model/project_settings
+Settings...
 
 menu_model/redo
 Redo
@@ -10872,7 +10965,7 @@ menu_nomode/world_open
 Open...
 
 menu_skeleton/administrate
-Administrate
+Administrate...
 
 menu_skeleton/delete
 Delete
@@ -10973,6 +11066,9 @@ View
 menu_skeleton/menu_model_viewstage
 Viewstage
 
+menu_skeleton/menu_project
+Project
+
 menu_skeleton/menu_world
 World
 
@@ -10993,6 +11089,15 @@ Open...
 
 menu_skeleton/opt_view
 Optimal
+
+menu_skeleton/project_new
+New...
+
+menu_skeleton/project_open
+Open...
+
+menu_skeleton/project_settings
+Settings...
 
 menu_skeleton/save
 Save
@@ -11082,7 +11187,7 @@ menu_view/view_top
 Top (-y)
 
 menu_world/administrate
-Administrate
+Administrate...
 
 menu_world/camscript_create
 CameraFlight (new)...
@@ -11236,6 +11341,9 @@ New...
 
 menu_world/project_open
 Open...
+
+menu_world/project_settings
+Settings...
 
 menu_world/redo
 Redo
@@ -11764,33 +11872,6 @@ working
 
 progress_dialog/progress_dialog
 working
-
-rc_dialog/cancel
-Cancel
-
-rc_dialog/ged_group
-Startup game values
-
-rc_dialog/ged_t_font
-font:
-
-rc_dialog/ged_t_material
-material:
-
-rc_dialog/ged_t_script
-main script:
-
-rc_dialog/ged_t_second_world
-second world
-
-rc_dialog/ged_t_world
-world:
-
-rc_dialog/ok
-OK
-
-rc_dialog/rc_dialog
-Rudimentary configuration
 
 rotation_dialog/rotation_dialog
 Rotation

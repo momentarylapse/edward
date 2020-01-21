@@ -52,14 +52,14 @@ void ModeAdministration::on_update(Observable* o, const string &message)
 
 void ModeAdministration::BasicSettings()
 {
-	ConfigurationDialog *dlg = new ConfigurationDialog(hui::CurWindow, false, data, false);
+	ConfigurationDialog *dlg = new ConfigurationDialog(hui::CurWindow, data, false);
 	dlg->run();
 	delete dlg;
 }
 
 void ModeAdministration::ExportGame()
 {
-	ConfigurationDialog *dlg = new ConfigurationDialog(hui::CurWindow, false, data, true);
+	ConfigurationDialog *dlg = new ConfigurationDialog(hui::CurWindow, data, true);
 	dlg->run();
 	delete dlg;
 

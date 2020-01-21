@@ -29,7 +29,11 @@ Menu menu_skeleton "" disabled
 		Menu menu_world "World"
 			Item world_new "New" image=hui:new
 			Item world_open "Open..." image=hui:open
-		Item administrate "Administrate" image=hui:preferences
+		Menu menu_project "Project"
+			Item project_new "New..." image=hui:new
+			Item project_open "Open..." image=hui:open
+			Item administrate "Administrate..." image=hui:preferences
+			Item project_settings "Settings..." image=hui:preferences
 		Item settings "Settings..." image=hui:preferences
 		Separator
 		Item exit "Exit" image=hui:quit

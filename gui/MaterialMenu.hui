@@ -19,7 +19,8 @@ Menu menu_material "Material" disabled
 		Menu menu_project "Project"
 			Item project_new "New..." image=hui:new
 			Item project_open "Open..." image=hui:open
-			Item administrate "Administrate" image=hui:preferences
+			Item administrate "Administrate..." image=hui:preferences
+			Item project_settings "Settings..." image=hui:preferences
 		Item settings "Settings..." image=hui:preferences
 		Separator
 		Item exit "Exit" image=hui:quit

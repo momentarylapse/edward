@@ -12,24 +12,20 @@
 #include "../../../Stuff/Observer.h"
 class DataAdministration;
 
-class ConfigurationDialog: public hui::Dialog, public Observer
-{
+class ConfigurationDialog: public hui::Dialog {
 public:
-	ConfigurationDialog(hui::Window *_parent, bool _allow_parent, DataAdministration *_data, bool _exporting);
-	virtual ~ConfigurationDialog();
+	ConfigurationDialog(hui::Window *_parent, DataAdministration *_data, bool _exporting);
 
-	void LoadData();
+	void load_data();
 
-	void on_update(Observable *o, const string &message) override;
-
-	void OnClose();
-	void OnFindRootdir();
-	void OnFindDefaultWorld();
-	void OnFindDefaultSecondWorld();
-	void OnFindDefaultScript();
-	void OnFindDefaultMaterial();
-	void OnFindDefaultFont();
-	void OnOk();
+	void on_close();
+	void on_find_root_dir();
+	void on_find_world();
+	void on_find_second_world();
+	void on_find_script();
+	void on_find_material();
+	void on_find_font();
+	void on_ok();
 
 
 private:

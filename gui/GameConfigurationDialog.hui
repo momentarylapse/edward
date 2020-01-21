@@ -1,26 +1,28 @@
-Dialog rc_dialog "Rudimentary configuration" width=365 height=250
+Dialog game-config-dialog "Rudimentary configuration" width=365 height=250
 	Grid ? "" vertical
-		Group ged_group "Startup game values"
+		Group g-dir "Directory"
+			Edit root-directory "" disabled
+		Group g-init "Startup game values"
 			Grid ? ""
-				Text ged_t_world "world:"
-				Edit default_world "" expandx
-				Button find_default_world "" image="hui:open"
+				Text t-world "World:"
+				Edit world "" expandx
+				Button find-world "" image=hui:open
 				---|
-				Text ged_t_second_world "second world"
-				Edit default_second_world ""
-				Button find_default_second_world "" image="hui:open"
+				Text t-second-world "Second world"
+				Edit second-world ""
+				Button find-second-world "" image=hui:open
 				---|
-				Text ged_t_script "main script:"
-				Edit default_script ""
-				Button find_default_script "" image="hui:open"
+				Text t-script "Main script:"
+				Edit script ""
+				Button find-script "" image=hui:open
 				---|
-				Text ged_t_material "material:"
-				Edit default_material ""
-				Button find_default_material "" image="hui:open"
+				Text t-material "Material:"
+				Edit material ""
+				Button find-material "" image=hui:open
 				---|
-				Text ged_t_font "font:"
-				Edit default_font ""
-				Button find_default_font "" image="hui:open"
+				Text t-font "Font:"
+				Edit font ""
+				Button find-font "" image=hui:open
 		Grid ? "" buttonbar
-			Button cancel "Cancel"
-			Button ok "OK"
+			Button /cancel "Cancel"
+			Button /ok "OK"
