@@ -6485,7 +6485,7 @@ model-toolbar
 
 0
 0
-23
+24
 Item
 new
 image=icons/toolbar/new.png
@@ -6588,40 +6588,46 @@ checkable,image=icons/toolbar/model-move.png
 16
 0
 0
+Separator
+
+
+17
+0
+0
 Item
 mode_properties
-checkable,image=icons/toolbar/configure.png
-17
+image=icons/toolbar/configure.png
+18
 0
 0
 Separator
 
 
-18
+19
 0
 0
 Item
 mode_model_vertex
 checkable,image=icons/toolbar/model-vertex.png
-19
+20
 0
 0
 Item
 mode_model_edge
 checkable,image=icons/toolbar/model-edge.png
-20
+21
 0
 0
 Item
 mode_model_polygon
 checkable,image=icons/toolbar/model-polygon.png
-21
+22
 0
 0
 Item
 mode_model_surface
 checkable,image=icons/toolbar/model-surface.png
-22
+23
 0
 0
 # Resource

@@ -8,6 +8,7 @@
 #include "../../Edward.h"
 #include "../../Storage/Storage.h"
 #include "ModeModel.h"
+#include "Dialog/ModelPropertiesDialog.h"
 #include "../../Data/Model/DataModel.h"
 #include "Mesh/ModeModelMesh.h"
 #include "Mesh/ModeModelMeshMaterial.h"
@@ -28,21 +29,17 @@ ModeModel *mode_model = NULL;
 ModeModel::ModeModel() :
 	Mode<DataModel>("Model", NULL, new DataModel, NULL, "")
 {
-	properties_dialog = NULL;
-
 	mode_model_mesh = new ModeModelMesh(this);
 	mode_model_skeleton = new ModeModelSkeleton(this);
 	mode_model_animation = new ModeModelAnimation(this);
 }
 
-ModeModel::~ModeModel()
-{
+ModeModel::~ModeModel() {
 }
 
 
 
-void ModeModel::on_start()
-{
+void ModeModel::on_start() {
 	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("model-toolbar");
 	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
@@ -51,18 +48,12 @@ void ModeModel::on_start()
 
 
 
-void ModeModel::on_enter()
-{
+void ModeModel::on_enter() {
 	ed->set_mode(mode_model_mesh);
 }
 
 
-void ModeModel::on_end()
-{
-	if (properties_dialog)
-		delete(properties_dialog);
-	properties_dialog = NULL;
-
+void ModeModel::on_end() {
 	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
 	t->reset();
 	t->enable(false);
@@ -70,8 +61,7 @@ void ModeModel::on_end()
 
 
 
-void ModeModel::on_command(const string & id)
-{
+void ModeModel::on_command(const string & id) {
 	if (id == "new")
 		_new();
 	if (id == "open")
@@ -121,7 +111,7 @@ void ModeModel::on_command(const string & id)
 		ed->set_mode(mode_model_skeleton);
 		//SetSubMode(SubModeTextures);
 	if (id == "mode_properties")
-		execute_properties_dialog();
+		run_properties_dialog();
 
 	// mainly skin debugging...
 /*	if (id == "detail_1")
@@ -134,8 +124,7 @@ void ModeModel::on_command(const string & id)
 
 
 
-void ModeModel::on_update_menu()
-{
+void ModeModel::on_update_menu() {
 	ed->check("mode_model_vertex", mode_model_mesh->selection_mode_vertex->is_active());
 	ed->check("mode_model_edge", mode_model_mesh->selection_mode_edge->is_active());
 	ed->check("mode_model_polygon", mode_model_mesh->selection_mode_polygon->is_active());
@@ -151,8 +140,7 @@ void ModeModel::on_update_menu()
 
 
 
-void ModeModel::set_material_selected()
-{
+void ModeModel::set_material_selected() {
 	nix::SetAlpha(ALPHA_MATERIAL);
 	nix::SetShader(MultiView::shader_selection);
 	nix::SetMaterial(Black,color(0.3f,0,0,0),Black,0,Red);
@@ -160,24 +148,21 @@ void ModeModel::set_material_selected()
 	nix::SetTexture(NULL);
 }
 
-void ModeModel::set_material_hover()
-{
+void ModeModel::set_material_hover() {
 	nix::SetAlpha(ALPHA_MATERIAL);
 	nix::SetShader(MultiView::shader_selection);
 	nix::SetMaterial(Black,color(0.5f,0,0,0),Black,0,White);
 	nix::SetTexture(NULL);
 }
 
-void ModeModel::set_material_creation(float intensity)
-{
+void ModeModel::set_material_creation(float intensity) {
 	nix::SetAlpha(ALPHA_MATERIAL);
 	nix::SetShader(MultiView::shader_selection);
 	nix::SetMaterial(Black, color(0.3f*intensity,0.3f,1,0.3f), Black, 0, color(1,0.1f,0.4f,0.1f));
 	nix::SetTexture(NULL);
 }
 
-void ModeModel::_new()
-{
+void ModeModel::_new() {
 	if (!ed->allow_termination())
 		return;
 	data->reset();
@@ -202,8 +187,7 @@ bool ModeModel::save_as() {
 	return storage->save_as(data);
 }
 
-bool ModeModel::import_open_3ds()
-{
+bool ModeModel::import_open_3ds() {
 	if (!ed->allow_termination())
 		return false;
 	if (!storage->file_dialog(FD_FILE, false, false))
@@ -211,8 +195,7 @@ bool ModeModel::import_open_3ds()
 	return import_load_3ds(storage->dialog_file_complete);
 }
 
-bool ModeModel::import_load_3ds(const string &filename)
-{
+bool ModeModel::import_load_3ds(const string &filename) {
 	try {
 		storage->load(filename, data);
 
@@ -224,8 +207,7 @@ bool ModeModel::import_load_3ds(const string &filename)
 	}
 }
 
-bool ModeModel::import_open_json()
-{
+bool ModeModel::import_open_json() {
 	if (!ed->allow_termination())
 		return false;
 	if (!storage->file_dialog(FD_FILE, false, false))
@@ -233,8 +215,7 @@ bool ModeModel::import_open_json()
 	return import_load_json(storage->dialog_file_complete);
 }
 
-bool ModeModel::import_load_ply(const string &filename)
-{
+bool ModeModel::import_load_ply(const string &filename) {
 	try {
 		storage->load(filename, data);
 
@@ -246,8 +227,7 @@ bool ModeModel::import_load_ply(const string &filename)
 	}
 }
 
-bool ModeModel::import_open_ply()
-{
+bool ModeModel::import_open_ply() {
 	if (!ed->allow_termination())
 		return false;
 	if (!storage->file_dialog(FD_FILE, false, false))
@@ -267,36 +247,23 @@ bool ModeModel::import_load_json(const string &filename) {
 	}
 }
 
-bool ModeModel::export_save_json()
-{
+bool ModeModel::export_save_json() {
 	if (!storage->file_dialog(FD_FILE, true, false))
 		return false;
 	return export_write_json(storage->dialog_file_complete);
 }
 
-bool ModeModel::export_write_json(const string &filename)
-{
-	storage->save(filename, data);
-	return true;
+bool ModeModel::export_write_json(const string &filename) {
+	return storage->save(filename, data);
 }
 
-void ModeModel::execute_properties_dialog()
-{
-	if (properties_dialog){
-		if (!properties_dialog->active){
-			properties_dialog->restart();
-			properties_dialog->show();
-		}
-		return;
-	}
-
-	properties_dialog = new ModelPropertiesDialog(ed, true, data);
-
-	properties_dialog->show();
+void ModeModel::run_properties_dialog() {
+	auto dlg = new ModelPropertiesDialog(ed, data);
+	dlg->run();
+	delete dlg;
 }
 
-void ModeModel::allow_selection_modes(bool allow)
-{
+void ModeModel::allow_selection_modes(bool allow) {
 	ed->enable("mode_model_vertex", allow);
 	ed->enable("mode_model_edge", allow);
 	ed->enable("mode_model_polygon", allow);

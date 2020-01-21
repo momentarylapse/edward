@@ -10,12 +10,10 @@
 
 #include "../../../lib/hui/hui.h"
 #include "../../../Data/Model/DataModel.h"
-#include "../../../Stuff/Observer.h"
 
-class ModelPropertiesDialog: public hui::Dialog, public Observer
-{
+class ModelPropertiesDialog: public hui::Dialog {
 public:
-	ModelPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data);
+	ModelPropertiesDialog(hui::Window *_parent, DataModel *_data);
 	virtual ~ModelPropertiesDialog();
 
 	void LoadData();
@@ -39,8 +37,6 @@ public:
 	void OnScriptFind();
 	void OnOk();
 	void OnClose();
-
-	void on_update(Observable *o, const string &message) override;
 
 private:
 	DataModel *data;

@@ -21,12 +21,9 @@
 #define InertiaTensorDec			2
 #define DetailDistDec				2
 
-extern matrix3 InertiaTensorTemp;
-extern float DetailDistTemp1, DetailDistTemp2, DetailDistTemp3;
 
-ModelPropertiesDialog::ModelPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data):
-	hui::Dialog("model_dialog", 400, 300, _parent, _allow_parent),
-	Observer("ModelPropertiesDialog")
+ModelPropertiesDialog::ModelPropertiesDialog(hui::Window *_parent, DataModel *_data):
+	hui::Dialog("model_dialog", 400, 300, _parent, false)
 {
 	from_resource("model_dialog");
 	data = _data;
@@ -49,16 +46,10 @@ ModelPropertiesDialog::ModelPropertiesDialog(hui::Window *_parent, bool _allow_p
 	restart();
 }
 
-ModelPropertiesDialog::~ModelPropertiesDialog()
-{
-	mode_model->properties_dialog = NULL;
-	unsubscribe(data);
+ModelPropertiesDialog::~ModelPropertiesDialog() {
 }
 
-void ModelPropertiesDialog::restart()
-{
-	subscribe(data);
-
+void ModelPropertiesDialog::restart() {
 	temp = data->meta_data;
 	LoadData();
 	active = true;
@@ -174,12 +165,6 @@ void ModelPropertiesDialog::FillTensorList()
 	add_string("tensor", format("Z\\%.2f\\%.2f\\%.2f", temp.inertia_tensor._20, temp.inertia_tensor._21, temp.inertia_tensor._22));
 }
 
-void ModelPropertiesDialog::on_update(Observable *o, const string &message)
-{
-	//FillMaterialList();
-	temp = data->meta_data;
-	LoadData();
-}
 
 vector img_get_ball_n(int x, int y, int N)
 {
@@ -379,15 +364,12 @@ void ModelPropertiesDialog::ApplyData()
 			//Change();
 }
 
-void ModelPropertiesDialog::OnClose()
-{
-	unsubscribe(data);
+void ModelPropertiesDialog::OnClose() {
 	hide();
 	active = false;
 }
 
-void ModelPropertiesDialog::OnOk()
-{
+void ModelPropertiesDialog::OnOk() {
 	ApplyData();
 	OnClose();
 }

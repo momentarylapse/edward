@@ -16,7 +16,8 @@ Toolbar model-toolbar ""
 	Item mode_model_paint "Paint on mesh (into texture)" checkable image=icons/toolbar/model-paint.png
 	Item mode_model_skeleton "Skeleton" checkable image=icons/toolbar/model-skeleton.png
 	Item mode_model_animation "Animations" checkable image=icons/toolbar/model-move.png
-	Item mode_properties "Properties" checkable image=icons/toolbar/configure.png
+	Separator
+	Item mode_properties "Properties" image=icons/toolbar/configure.png
 	Separator
 	Item mode_model_vertex "Vertex points" checkable image=icons/toolbar/model-vertex.png
 	Item mode_model_edge "Edges" checkable image=icons/toolbar/model-edge.png

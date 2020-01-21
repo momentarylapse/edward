@@ -10,7 +10,6 @@
 
 #include "../Mode.h"
 #include "../../Data/Model/DataModel.h"
-#include "Dialog/ModelPropertiesDialog.h"
 
 
 class ModeModel: public Mode<DataModel> {
@@ -47,9 +46,7 @@ public:
 	static void set_material_hover();
 	static void set_material_creation(float intensity = 1.0f);
 
-	void execute_properties_dialog();
-
-	ModelPropertiesDialog *properties_dialog;
+	void run_properties_dialog();
 
 	void allow_selection_modes(bool allow);
 };
