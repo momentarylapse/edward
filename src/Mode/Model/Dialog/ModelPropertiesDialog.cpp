@@ -7,6 +7,7 @@
 
 #include "ModelPropertiesDialog.h"
 #include "../../../Edward.h"
+#include "../../../Storage/Storage.h"
 #include "../ModeModel.h"
 #include "../Mesh/ModeModelMesh.h"
 #include "../../../Action/Model/Data/ActionModelAddMaterial.h"
@@ -31,19 +32,19 @@ ModelPropertiesDialog::ModelPropertiesDialog(hui::Window *_parent, bool _allow_p
 	data = _data;
 	active = true;
 
-	event("cancel", std::bind(&ModelPropertiesDialog::OnClose, this));
-	event("hui:close", std::bind(&ModelPropertiesDialog::OnClose, this));
-	event("ok", std::bind(&ModelPropertiesDialog::OnOk, this));
-	event("generate_dists_auto", std::bind(&ModelPropertiesDialog::OnGenerateDistsAuto, this));
-	event("ph_passive", std::bind(&ModelPropertiesDialog::OnPhysicsPassive, this));
-	event("generate_tensor_auto", std::bind(&ModelPropertiesDialog::OnGenerateTensorAuto, this));
-	event_x("tensor", "hui:change", std::bind(&ModelPropertiesDialog::OnTensorEdit, this));
-	event("mass", std::bind(&ModelPropertiesDialog::OnGenerateTensorAuto, this));
-	event("num_items", std::bind(&ModelPropertiesDialog::OnNumItems, this));
-	event("model_inventary", std::bind(&ModelPropertiesDialog::OnModelInventary, this));
-	event("delete_item", std::bind(&ModelPropertiesDialog::OnDeleteItem, this));
-	event_x("script_vars", "hui:change", std::bind(&ModelPropertiesDialog::OnScriptVarEdit, this));
-	event("script_find", std::bind(&ModelPropertiesDialog::OnScriptFind, this));
+	event("cancel", [=]{ OnClose(); });
+	event("hui:close", [=]{ OnClose(); });
+	event("ok", [=]{ OnOk(); });
+	event("generate_dists_auto", [=]{ OnGenerateDistsAuto(); });
+	event("ph_passive", [=]{ OnPhysicsPassive(); });
+	event("generate_tensor_auto", [=]{ OnGenerateTensorAuto(); });
+	event_x("tensor", "hui:change", [=]{ OnTensorEdit(); });
+	event("mass", [=]{ OnGenerateTensorAuto(); });
+	event("num_items", [=]{ OnNumItems(); });
+	event("model_inventary", [=]{ OnModelInventary(); });
+	event("delete_item", [=]{ OnDeleteItem(); });
+	event_x("script_vars", "hui:change", [=]{ OnScriptVarEdit(); });
+	event("script_find", [=]{ OnScriptFind(); });
 
 	restart();
 }
@@ -291,10 +292,10 @@ void ModelPropertiesDialog::OnNumItems()
 
 void ModelPropertiesDialog::OnModelInventary()
 {
-	if (ed->file_dialog(FD_MODEL, false, true)){
+	if (storage->file_dialog(FD_MODEL, false, true)){
 		int n = get_int("");
-		temp.inventary[n] = ed->dialog_file_no_ending;
-		change_string("model_inventary", n, format("%d\\", n) + ed->dialog_file_no_ending);
+		temp.inventary[n] = storage->dialog_file_no_ending;
+		change_string("model_inventary", n, format("%d\\", n) + storage->dialog_file_no_ending);
 	}
 }
 
@@ -317,9 +318,9 @@ void ModelPropertiesDialog::OnScriptVarEdit()
 
 void ModelPropertiesDialog::OnScriptFind()
 {
-	if (ed->file_dialog(FD_SCRIPT, false, true)){
-		set_string("script", ed->dialog_file);
-		temp.script_file = ed->dialog_file;
+	if (storage->file_dialog(FD_SCRIPT, false, true)){
+		set_string("script", storage->dialog_file);
+		temp.script_file = storage->dialog_file;
 		update_model_script_data(temp);
 	}
 }

@@ -6,7 +6,7 @@
  */
 
 #include "SelectionPropertiesDialog.h"
-#include "../../../Edward.h"
+#include "../../../Storage/Storage.h"
 
 SelectionPropertiesDialog::SelectionPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data, int *_selected_type, int *_selected_index):
 	hui::Dialog("world_ps_dialog", 400, 400, _parent, _allow_parent),

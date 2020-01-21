@@ -12,6 +12,7 @@
 #include "../../Action/Action.h"
 #include "../../Action/ActionManager.h"
 #include "../../Edward.h"
+#include "../../Storage/Storage.h"
 #include "../../MultiView/MultiView.h"
 #include "../../x/model_manager.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelAddVertex.h"
@@ -58,8 +59,6 @@
 const string DataModel::MESSAGE_SKIN_CHANGE = "SkinChange";
 const string DataModel::MESSAGE_MATERIAL_CHANGE = "MaterialChange";
 const string DataModel::MESSAGE_TEXTURE_CHANGE = "TextureChange";
-
-extern bool DataModelAllowUpdating;
 
 
 string ModelEffect::get_type()

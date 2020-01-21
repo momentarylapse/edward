@@ -7,6 +7,7 @@
 
 #include "TerrainCreationDialog.h"
 #include "../../../Edward.h"
+#include "../../../Storage/Storage.h"
 
 TerrainCreationDialog::TerrainCreationDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data) :
 	hui::Dialog("new_terrain_dialog", 400, 300, _parent, _allow_parent),
@@ -76,8 +77,8 @@ void TerrainCreationDialog::OnClose()
 
 void TerrainCreationDialog::OnFindHeightmap()
 {
-	if (ed->file_dialog(FD_TEXTURE, false, false))
-		set_string("height_image", ed->dialog_file_complete);
+	if (storage->file_dialog(FD_TEXTURE, false, false))
+		set_string("height_image", storage->dialog_file_complete);
 }
 
 

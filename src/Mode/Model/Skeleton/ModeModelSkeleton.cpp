@@ -6,6 +6,7 @@
  */
 
 #include "../../../Edward.h"
+#include "../../../Storage/Storage.h"
 #include "../../../MultiView/MultiView.h"
 #include "../../../MultiView/Window.h"
 #include "../../../MultiView/DrawingHelper.h"
@@ -73,12 +74,12 @@ void ModeModelSkeleton::on_command(const string & id)
 
 void ModeModelSkeleton::addSubModel()
 {
-	if (!ed->file_dialog(FD_MODEL, false, true))
+	if (!storage->file_dialog(FD_MODEL, false, true))
 		return;
 	data->begin_action_group("remove-sub-model");
 	foreachi(ModelBone &b, data->bone, i)
 		if (b.is_selected)
-			data->setBoneModel(i, ed->dialog_file_no_ending);
+			data->setBoneModel(i, storage->dialog_file_no_ending);
 	data->end_action_group();
 }
 

@@ -11,6 +11,7 @@
 #include "../../../Action/Model/Data/ActionModelAddMaterial.h"
 #include "../ModeModel.h"
 #include "../../../Edward.h"
+#include "../../../Storage/Storage.h"
 #include "../Mesh/ModeModelMeshTexture.h"
 
 string file_secure(const string &filename);
@@ -93,8 +94,8 @@ void ModelMaterialSelectionDialog::on_material_add() {
 }
 
 void ModelMaterialSelectionDialog::on_material_load() {
-	if (ed->file_dialog(FD_MATERIAL, false, true))
-		data->execute(new ActionModelAddMaterial(ed->dialog_file_no_ending));
+	if (storage->file_dialog(FD_MATERIAL, false, true))
+		data->execute(new ActionModelAddMaterial(storage->dialog_file_no_ending));
 }
 
 void ModelMaterialSelectionDialog::on_material_delete() {

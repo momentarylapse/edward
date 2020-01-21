@@ -11,6 +11,8 @@
 #include "../../lib/base/base.h"
 
 class Data;
+class File;
+class color;
 
 class FormatError : public Exception {
 public:
@@ -22,7 +24,30 @@ public:
 	FormatUnhandledError() : FormatError("") {}
 };
 
+void read_color_argb(File *f, color &c);
+void write_color_argb(File *f, const color &c);
+void read_color_rgba(File *f, color &c);
+void write_color_rgba(File *f, const color &c);
+void read_color_3i(File *f, color &c);
+void write_color_3i(File *f, const color &c);
 
+
+
+// file types
+enum {
+	FD_MODEL,
+	FD_TEXTURE,
+	FD_SOUND,
+	FD_MATERIAL,
+	FD_TERRAIN,
+	FD_WORLD,
+	FD_SHADERFILE,
+	FD_FONT,
+	FD_SCRIPT,
+	FD_CAMERAFLIGHT,
+	FD_FILE, // any file
+	NUM_FDS
+};
 
 
 class Format {

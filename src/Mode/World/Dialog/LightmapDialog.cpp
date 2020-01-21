@@ -14,6 +14,7 @@
 #include "../../../Data/World/DataWorld.h"
 #include "../../../x/model_manager.h"
 #include "../../../Edward.h"
+#include "../../../Storage/Storage.h"
 
 LightmapDialog::LightmapDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data) :
 	hui::Dialog("", 400, 400, _parent, _allow_parent)
@@ -21,13 +22,13 @@ LightmapDialog::LightmapDialog(hui::Window *_parent, bool _allow_parent, DataWor
 	from_resource("lightmap_dialog");
 	data = _data;
 
-	event("cancel", std::bind(&LightmapDialog::OnClose, this));
-	event("hui:close", std::bind(&LightmapDialog::OnClose, this));
-	event("ok", std::bind(&LightmapDialog::OnOk, this));
-	event("preview", std::bind(&LightmapDialog::OnPreview, this));
-	event("resolution", std::bind(&LightmapDialog::OnResolution, this));
-	event("lightmap_type", std::bind(&LightmapDialog::OnType, this));
-	event("find_new_world", std::bind(&LightmapDialog::OnFindNewWorld, this));
+	event("cancel", [=]{ OnClose(); });
+	event("hui:close", [=]{ OnClose(); });
+	event("ok", [=]{ OnOk(); });
+	event("preview", [=]{ OnPreview(); });
+	event("resolution", [=]{ OnResolution(); });
+	event("lightmap_type", [=]{ OnType(); });
+	event("find_new_world", [=]{ OnFindNewWorld(); });
 
 	//LoadData();
 	set_float("brightness", 10.0f);
@@ -165,8 +166,8 @@ void LightmapDialog::OnResolution()
 
 void LightmapDialog::OnFindNewWorld()
 {
-	if (ed->file_dialog(FD_WORLD, true, true))
-		set_string("new_world_name", ed->dialog_file_no_ending);
+	if (storage->file_dialog(FD_WORLD, true, true))
+		set_string("new_world_name", storage->dialog_file_no_ending);
 }
 
 void LightmapDialog::OnOk()

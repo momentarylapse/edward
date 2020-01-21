@@ -206,9 +206,9 @@ bool ModeModel::import_open_3ds()
 {
 	if (!ed->allow_termination())
 		return false;
-	if (!ed->file_dialog(FD_FILE, false, false))
+	if (!storage->file_dialog(FD_FILE, false, false))
 		return false;
-	return import_load_3ds(ed->dialog_file_complete);
+	return import_load_3ds(storage->dialog_file_complete);
 }
 
 bool ModeModel::import_load_3ds(const string &filename)
@@ -228,9 +228,9 @@ bool ModeModel::import_open_json()
 {
 	if (!ed->allow_termination())
 		return false;
-	if (!ed->file_dialog(FD_FILE, false, false))
+	if (!storage->file_dialog(FD_FILE, false, false))
 		return false;
-	return import_load_json(ed->dialog_file_complete);
+	return import_load_json(storage->dialog_file_complete);
 }
 
 bool ModeModel::import_load_ply(const string &filename)
@@ -250,9 +250,9 @@ bool ModeModel::import_open_ply()
 {
 	if (!ed->allow_termination())
 		return false;
-	if (!ed->file_dialog(FD_FILE, false, false))
+	if (!storage->file_dialog(FD_FILE, false, false))
 		return false;
-	return import_load_ply(ed->dialog_file_complete);
+	return import_load_ply(storage->dialog_file_complete);
 }
 
 bool ModeModel::import_load_json(const string &filename) {
@@ -269,9 +269,9 @@ bool ModeModel::import_load_json(const string &filename) {
 
 bool ModeModel::export_save_json()
 {
-	if (!ed->file_dialog(FD_FILE, true, false))
+	if (!storage->file_dialog(FD_FILE, true, false))
 		return false;
-	return export_write_json(ed->dialog_file_complete);
+	return export_write_json(storage->dialog_file_complete);
 }
 
 bool ModeModel::export_write_json(const string &filename)

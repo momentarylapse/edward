@@ -702,13 +702,6 @@ void FormatModel::_load(const string &filename, DataModel *data, bool deep) {
 	int ffv;
 
 
-	data->filename = filename;
-	if (ed){
-		if (data == mode_model->data)
-			ed->make_dirs(filename);
-	}
-	//msg_write(dir);
-	//msg_write(filename);
 	File *f = FileOpenText(filename);
 	data->action_manager->enable(false);
 	data->file_time = f->GetDateModification().time;
@@ -828,9 +821,6 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 	// so the materials don't get mixed up
 //	RemoveUnusedData();
 
-	data->filename = filename;
-	if (ed)
-		ed->make_dirs(filename);
 
 	File *f = FileCreateText(filename);
 	f->WriteFileFormatVersion(false, 11);//FFVBinary, 11);
@@ -915,7 +905,7 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 				f->write_int(p.FacesJoiningEdge[k * p.NumFaces + l]);
 		for (int k=0;k<p.NumEdges;k++)
 			for (int l=0;l<p.NumFaces;l++)
-			    f->write_bool(p.EdgeOnFace[k * p.NumFaces + l]);
+				f->write_bool(p.EdgeOnFace[k * p.NumFaces + l]);
 	}
 
 // skin
@@ -930,14 +920,14 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 		for (ModelVertex &v: s->vertex)
 			f->write_int(v.bone_index);
 
-	    // skin vertices
+		// skin vertices
 		int num_skin_v = 0;
 		for (int m=0;m<data->material.num;m++)
 			num_skin_v += s->sub[m].triangle.num * data->material[m]->texture_levels.num * 3;
 		f->write_int(num_skin_v);
 		for (int m=0;m<data->material.num;m++)
 			for (int tl=0;tl<data->material[m]->texture_levels.num;tl++)
-		    	for (int j=0;j<s->sub[m].triangle.num;j++)
+				for (int j=0;j<s->sub[m].triangle.num;j++)
 					for (int k=0;k<3;k++){
 						f->write_float(s->sub[m].triangle[j].skin_vertex[tl][k].x);
 						f->write_float(s->sub[m].triangle[j].skin_vertex[tl][k].y);
@@ -953,18 +943,18 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 			f->write_int(sub->triangle.num);
 
 			// vertex index
-	    	for (int j=0;j<sub->triangle.num;j++)
+			for (int j=0;j<sub->triangle.num;j++)
 				for (int k=0;k<3;k++)
 					f->write_int(sub->triangle[j].vertex[k]);
 
 			// skin index
 			for (int tl=0;tl<data->material[m]->texture_levels.num;tl++)
-		    	for (int j=0;j<sub->triangle.num;j++)
+				for (int j=0;j<sub->triangle.num;j++)
 					for (int k=0;k<3;k++)
 						f->write_int(svi ++);
 
 			// normal
-	    	for (int j=0;j<sub->triangle.num;j++)
+			for (int j=0;j<sub->triangle.num;j++)
 				for (int k=0;k<3;k++){
 					if (DataModelAllowUpdating)
 						sub->triangle[j].normal_index[k] = get_normal_index(sub->triangle[j].normal[k]);
@@ -1108,7 +1098,7 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 	f->write_comment("// Inventary");
 	f->write_int(data->meta_data.inventary.num);
 	for (int i=0;i<data->meta_data.inventary.num;i++){
-	    f->write_str(data->meta_data.inventary[i]);
+		f->write_str(data->meta_data.inventary[i]);
 		f->write_int(1);
 	}
 
@@ -1117,7 +1107,7 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 	f->write_str(data->meta_data.script_file);
 	f->write_int(data->meta_data.script_var.num);
 	for (int i=0;i<data->meta_data.script_var.num;i++)
-	    f->write_float(data->meta_data.script_var[i]);
+		f->write_float(data->meta_data.script_var[i]);
 
 	// new script vars
 	if (data->meta_data.variables.num > 0){
@@ -1178,6 +1168,4 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 
 	f->write_comment("#");
 	FileClose(f);
-
-	data->action_manager->mark_current_as_save();
 }

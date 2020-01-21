@@ -7,6 +7,7 @@
 
 #include "MaterialPropertiesDialog.h"
 #include "../../../Edward.h"
+#include "../../../Storage/Storage.h"
 #include "../ModeMaterial.h"
 #include "../../../Action/Material/ActionMaterialEditAppearance.h"
 #include "../../../Action/Material/ActionMaterialEditPhysics.h"
@@ -149,8 +150,8 @@ void MaterialPropertiesDialog::OnTextures()
 {
 	int sel = get_int("");
 	if ((sel >= 0) and (sel < temp.texture_files.num))
-		if (ed->file_dialog(FD_TEXTURE, false, true)){
-			temp.texture_files[sel] = ed->dialog_file;
+		if (storage->file_dialog(FD_TEXTURE, false, true)){
+			temp.texture_files[sel] = storage->dialog_file;
 			ApplyData();
 			//mmaterial->Texture[sel] = MetaLoadTexture(mmaterial->TextureFile[sel]);
 			FillTextureList();
@@ -217,8 +218,8 @@ void MaterialPropertiesDialog::OnReflectionMode()
 void MaterialPropertiesDialog::OnReflectionTextures()
 {
 	int sel=get_int("");
-	if (ed->file_dialog(FD_TEXTURE,false,true)){
-		temp.reflection_texture_file[sel] = ed->dialog_file;
+	if (storage->file_dialog(FD_TEXTURE,false,true)){
+		temp.reflection_texture_file[sel] = storage->dialog_file;
 		if ((sel==0) and (temp.reflection_texture_file[0].find(".") >= 0)){
 			int p=temp.reflection_texture_file[0].find(".");
 			for (int i=1;i<6;i++){
@@ -245,9 +246,9 @@ bool TestShaderFile(const string &filename)
 
 void MaterialPropertiesDialog::OnFindShader()
 {
-	if (ed->file_dialog(FD_SHADERFILE,false,true)){
-		if (TestShaderFile(ed->dialog_file)){
-			set_string("shader_file", ed->dialog_file);
+	if (storage->file_dialog(FD_SHADERFILE,false,true)){
+		if (TestShaderFile(storage->dialog_file)){
+			set_string("shader_file", storage->dialog_file);
 			ApplyData();
 		}else{
 			ed->error_box(_("Error in shader file:\n") + nix::shader_error);

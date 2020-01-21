@@ -11,6 +11,7 @@
 #include "Dialog/AdministrationDialog.h"
 #include "Dialog/ConfigurationDialog.h"
 #include "../../Edward.h"
+#include "../../Storage/Storage.h"
 
 ModeAdministration *mode_administration;
 
@@ -126,7 +127,7 @@ void ModeAdministration::_new()
 		return;
 
 	create_project_dir(hui::Filename);
-	ed->set_root_directory(hui::Filename);
+	storage->set_root_directory(hui::Filename);
 	data->reset();
 }
 
@@ -140,7 +141,7 @@ bool ModeAdministration::open()
 		return false;
 	}
 
-	ed->set_root_directory(hui::Filename);
+	storage->set_root_directory(hui::Filename);
 	data->reset();
 	return true;
 }

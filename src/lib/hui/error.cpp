@@ -109,7 +109,7 @@ public:
 	{
 		add_grid("", 0, 0, "root");
 		set_target("root");
-		add_label(Application::get_property("name") + " " + Application::get_property("version") + _(" has crashed.\t\tThe last lines of the file message.txt:"), 0, 0, "error_header");
+		add_label(Application::get_property("name") + " " + Application::get_property("version") + _(" has crashed.		The last lines of the file message.txt:"), 0, 0, "error_header");
 		add_list_view(_("Messages"), 0, 1, "message_list");
 		add_grid("!buttonbar", 0, 2, "buttonbar");
 		set_target("buttonbar");

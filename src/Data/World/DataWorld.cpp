@@ -8,6 +8,7 @@
 #include "DataWorld.h"
 #include "../../Mode/World/ModeWorld.h"
 #include "../../Edward.h"
+#include "../../Storage/Storage.h"
 #include "../../x/object.h"
 #include "../../x/model_manager.h"
 #include "../../x/terrain.h"
@@ -36,8 +37,6 @@ bool WorldTerrain::Load(const vector &_pos, const string &filename, bool deep)
 	is_selected = false;
 	is_special = false;
 
-	if (deep)
-		ed->make_dirs(filename);
 	FileName = filename.substr(MapDir.num, -1);
 	FileName.resize(FileName.num - 4);
 
@@ -54,7 +53,6 @@ bool WorldTerrain::Load(const vector &_pos, const string &filename, bool deep)
 
 bool WorldTerrain::Save(const string &filename)
 {
-	ed->make_dirs(filename);
 	FileName = filename.substr(MapDir.num, -1);
 	FileName.resize(FileName.num - 4);
 

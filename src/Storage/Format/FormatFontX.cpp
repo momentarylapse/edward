@@ -16,8 +16,6 @@ void FormatFontX::_load(const string &filename, DataFont *data, bool deep) {
 	int ffv;
 	data->reset();
 
-	data->filename = filename;
-	ed->make_dirs(filename);
 	File *f = FileOpenText(filename);
 	data->file_time = f->GetDateModification().time;
 

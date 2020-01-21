@@ -116,8 +116,8 @@ void ModeWorld::on_command(const string & id)
 	if (id == "camscript_create")
 		ed->set_mode(mode_world_camera);
 	if (id == "camscript_load")
-		if (ed->file_dialog(FD_CAMERAFLIGHT, false, true)){
-			if (mode_world_camera->data->load(ed->dialog_file_complete))
+		if (storage->file_dialog(FD_CAMERAFLIGHT, false, true)){
+			if (mode_world_camera->data->load(storage->dialog_file_complete))
 				ed->set_mode(mode_world_camera);
 			else
 				mode_world_camera->data->reset();
@@ -591,8 +591,8 @@ bool ModeWorld::optimize_view()
 
 void ModeWorld::LoadTerrain()
 {
-	if (ed->file_dialog(FD_TERRAIN, false, true))
-		data->AddTerrain(ed->dialog_file_no_ending, multi_view->cam.pos);
+	if (storage->file_dialog(FD_TERRAIN, false, true))
+		data->AddTerrain(storage->dialog_file_no_ending, multi_view->cam.pos);
 }
 
 void ModeWorld::SetEgo()
@@ -634,9 +634,9 @@ void ModeWorld::ToggleShowTerrains()
 
 void ModeWorld::ImportWorldProperties()
 {
-	if (ed->file_dialog(FD_WORLD, false, false)){
+	if (storage->file_dialog(FD_WORLD, false, false)){
 		DataWorld w;
-		if (storage->load(ed->dialog_file_complete, &w, false))
+		if (storage->load(storage->dialog_file_complete, &w, false))
 			data->execute(new ActionWorldEditData(w.meta_data));
 		else
 			ed->error_box(_("World could not be loaded correctly!"));

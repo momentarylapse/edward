@@ -7,6 +7,7 @@
 
 #include "DataCamera.h"
 #include "../../Edward.h"
+#include "../../Storage/Storage.h"
 
 DataCamera::DataCamera() :
 	Data(FD_CAMERAFLIGHT)

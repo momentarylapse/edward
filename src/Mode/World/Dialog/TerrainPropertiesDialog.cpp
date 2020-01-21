@@ -8,6 +8,7 @@
 #include "TerrainPropertiesDialog.h"
 #include "../../../Action/World/Terrain/ActionWorldEditTerrain.h"
 #include "../../../Edward.h"
+#include "../../../Storage/Storage.h"
 #include "../../../x/terrain.h"
 #include "../../../x/material.h"
 #include "../../../lib/nix/nix.h"
@@ -25,21 +26,21 @@ TerrainPropertiesDialog::TerrainPropertiesDialog(hui::Window *_parent, bool _all
 	assert(index >= 0);
 	assert(index < data->Terrains.num);
 
-	event("cancel", std::bind(&TerrainPropertiesDialog::OnClose, this));
-	event("hui:close", std::bind(&TerrainPropertiesDialog::OnClose, this));
-	event("apply", std::bind(&TerrainPropertiesDialog::ApplyData, this));
-	event("ok", std::bind(&TerrainPropertiesDialog::OnOk, this));
+	event("cancel", [=]{ OnClose(); });
+	event("hui:close", [=]{ OnClose(); });
+	event("apply", [=]{ ApplyData(); });
+	event("ok", [=]{ OnOk(); });
 
-	event("add_texture_level", std::bind(&TerrainPropertiesDialog::OnAddTextureLevel, this));
-	event("delete_texture_level", std::bind(&TerrainPropertiesDialog::OnDeleteTextureLevel, this));
-	event("clear_texture_level", std::bind(&TerrainPropertiesDialog::OnClearTextureLevel, this));
-	event("texture_map_complete", std::bind(&TerrainPropertiesDialog::OnTextureMapComplete, this));
-	event("textures", std::bind(&TerrainPropertiesDialog::OnTextures, this));
-	event_x("textures", "hui:change", std::bind(&TerrainPropertiesDialog::OnTexturesEdit, this));
-	event_x("textures", "hui:select", std::bind(&TerrainPropertiesDialog::OnTexturesSelect, this));
-	event("material_find", std::bind(&TerrainPropertiesDialog::OnMaterialFind, this));
-	event("default_material", std::bind(&TerrainPropertiesDialog::OnDefaultMaterial, this));
-	event("terrain_save_as", std::bind(&TerrainPropertiesDialog::OnSaveAs, this));
+	event("add_texture_level", [=]{ OnAddTextureLevel(); });
+	event("delete_texture_level", [=]{ OnDeleteTextureLevel(); });
+	event("clear_texture_level", [=]{ OnClearTextureLevel(); });
+	event("texture_map_complete", [=]{ OnTextureMapComplete(); });
+	event("textures", [=]{ OnTextures(); });
+	event_x("textures", "hui:change", [=]{ OnTexturesEdit(); });
+	event_x("textures", "hui:select", [=]{ OnTexturesSelect(); });
+	event("material_find", [=]{ OnMaterialFind(); });
+	event("default_material", [=]{ OnDefaultMaterial(); });
+	event("terrain_save_as", [=]{ OnSaveAs(); });
 
 	subscribe(data);
 
@@ -62,8 +63,8 @@ void TerrainPropertiesDialog::ApplyData()
 void TerrainPropertiesDialog::OnTextures()
 {
 	int n = get_int("textures");
-	if (ed->file_dialog(FD_TEXTURE, false, true)){
-		temp.TextureFile[n] = ed->dialog_file;
+	if (storage->file_dialog(FD_TEXTURE, false, true)){
+		temp.TextureFile[n] = storage->dialog_file;
 		FillTextureList();
 	}
 }
@@ -119,10 +120,10 @@ void TerrainPropertiesDialog::OnTexturesEdit()
 
 void TerrainPropertiesDialog::OnSaveAs()
 {
-	if (!ed->file_dialog(FD_TERRAIN, true, true))
+	if (!storage->file_dialog(FD_TERRAIN, true, true))
 		return;
-	data->Terrains[index].Save(ed->dialog_file_complete);
-	set_string("filename", ed->dialog_file_no_ending);
+	data->Terrains[index].Save(storage->dialog_file_complete);
+	set_string("filename", storage->dialog_file_no_ending);
 }
 
 
@@ -154,8 +155,8 @@ void TerrainPropertiesDialog::OnDefaultMaterial()
 
 void TerrainPropertiesDialog::OnMaterialFind()
 {
-	if (ed->file_dialog(FD_MATERIAL, false, true))
-		set_string("material", ed->dialog_file_no_ending);
+	if (storage->file_dialog(FD_MATERIAL, false, true))
+		set_string("material", storage->dialog_file_no_ending);
 }
 
 

@@ -12,6 +12,7 @@
 #include "../../../Action/Model/Data/ActionModelEditMaterial.h"
 #include "../../../Action/Model/Data/ActionModelEditData.h"
 #include "../../../Edward.h"
+#include "../../../Storage/Storage.h"
 #include "../../../lib/nix/nix.h"
 #include "../Mesh/ModeModelMeshTexture.h"
 
@@ -209,8 +210,8 @@ void ModelMaterialDialog::on_material_add() {
 }
 
 void ModelMaterialDialog::on_material_load() {
-	if (ed->file_dialog(FD_MATERIAL, false, true))
-		data->execute(new ActionModelAddMaterial(ed->dialog_file_no_ending));
+	if (storage->file_dialog(FD_MATERIAL, false, true))
+		data->execute(new ActionModelAddMaterial(storage->dialog_file_no_ending));
 }
 
 void ModelMaterialDialog::on_material_delete() {
@@ -263,17 +264,17 @@ void ModelMaterialDialog::on_textures() {
 void ModelMaterialDialog::on_texture_level_load() {
 	int sel = get_int("mat_textures");
 	if (sel >= 0)
-		if (ed->file_dialog(FD_TEXTURE, false, true))
-			data->execute(new ActionModelMaterialLoadTexture(mode_model_mesh->current_material, sel, ed->dialog_file));
+		if (storage->file_dialog(FD_TEXTURE, false, true))
+			data->execute(new ActionModelMaterialLoadTexture(mode_model_mesh->current_material, sel, storage->dialog_file));
 }
 
 void ModelMaterialDialog::on_texture_level_save() {
 	int sel = get_int("mat_textures");
 	if (sel >= 0)
-		if (ed->file_dialog(FD_TEXTURE, true, true)) {
+		if (storage->file_dialog(FD_TEXTURE, true, true)) {
 			auto tl = data->material[mode_model_mesh->current_material]->texture_levels[sel];
-			tl->image->save(nix::texture_dir + ed->dialog_file);
-			tl->filename = ed->dialog_file; // ...
+			tl->image->save(nix::texture_dir + storage->dialog_file);
+			tl->filename = storage->dialog_file; // ...
 			tl->edited = false;
 		}
 }

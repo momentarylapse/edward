@@ -9,6 +9,7 @@
 #include "AdminFile.h"
 #include "GameIniData.h"
 #include "../../Edward.h"
+#include "../../Storage/Storage.h"
 
 AdminFile *AdminFileList::get(int kind, const string &name)
 {

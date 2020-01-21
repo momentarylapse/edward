@@ -8,6 +8,7 @@
 #include "ModeWorldCreateObject.h"
 #include "../../../Data/World/DataWorld.h"
 #include "../../../Edward.h"
+#include "../../../Storage/Storage.h"
 #include "../../../MultiView/MultiView.h"
 
 static string LastObjectFilename;
@@ -49,8 +50,8 @@ void ModeWorldCreateObject::on_end()
 
 void ModeWorldCreateObject::onFindObject()
 {
-	if (ed->file_dialog(FD_MODEL, false, true)){
-		filename = ed->dialog_file_no_ending;
+	if (storage->file_dialog(FD_MODEL, false, true)){
+		filename = storage->dialog_file_no_ending;
 		LastObjectFilename = filename;
 		message = _("place new object");
 	}

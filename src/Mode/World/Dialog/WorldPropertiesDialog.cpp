@@ -7,6 +7,7 @@
 
 #include "WorldPropertiesDialog.h"
 #include "../../../Edward.h"
+#include "../../../Storage/Storage.h"
 #include "../ModeWorld.h"
 #include "../../../Action/World/ActionWorldEditData.h"
 #include "../../../MultiView/MultiView.h"
@@ -73,8 +74,8 @@ void WorldPropertiesDialog::on_skybox_right_click() {
 
 void WorldPropertiesDialog::on_skybox_select() {
 	int n = get_int("skybox");
-	if (ed->file_dialog(FD_MODEL,false,true)) {
-		temp.SkyBoxFile[n] = ed->dialog_file_no_ending;
+	if (storage->file_dialog(FD_MODEL,false,true)) {
+		temp.SkyBoxFile[n] = storage->dialog_file_no_ending;
 		fill_skybox_list();
 	}
 }
@@ -134,9 +135,9 @@ void WorldPropertiesDialog::on_skybox_remove() {
 
 
 void WorldPropertiesDialog::on_script_add() {
-	if (ed->file_dialog(FD_SCRIPT, false, true)) {
+	if (storage->file_dialog(FD_SCRIPT, false, true)) {
 		WorldScript s;
-		s.filename = ed->dialog_file_complete.substr(Kaba::config.directory.num, -1);
+		s.filename = storage->dialog_file_complete.substr(Kaba::config.directory.num, -1);
 		temp.scripts.add(s);
 		/*try{
 			auto ss = Kaba::Load(s.filename, true);

@@ -9,6 +9,7 @@
 #include "../Dialog/CameraDialog.h"
 #include "../../../Data/World/DataCamera.h"
 #include "../../../Edward.h"
+#include "../../../Storage/Storage.h"
 #include "../../../lib/math/interpolation.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../MultiView/MultiView.h"
@@ -262,8 +263,8 @@ void ModeWorldCamera::_new()
 bool ModeWorldCamera::open()
 {
 	if (ed->allow_termination())
-		if (ed->file_dialog(FD_CAMERAFLIGHT, false, true))
-			return data->load(ed->dialog_file_complete);
+		if (storage->file_dialog(FD_CAMERAFLIGHT, false, true))
+			return data->load(storage->dialog_file_complete);
 	return false;
 }
 
@@ -277,8 +278,8 @@ bool ModeWorldCamera::save()
 
 bool ModeWorldCamera::save_as()
 {
-	if (ed->file_dialog(FD_CAMERAFLIGHT, true, true))
-		return data->save(ed->dialog_file_complete);
+	if (storage->file_dialog(FD_CAMERAFLIGHT, true, true))
+		return data->save(storage->dialog_file_complete);
 	return false;
 }
 

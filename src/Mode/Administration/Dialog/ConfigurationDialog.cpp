@@ -9,6 +9,7 @@
 #include "../../../Data/Administration/DataAdministration.h"
 #include "../../../Data/Administration/GameIniData.h"
 #include "../../../Edward.h"
+#include "../../../Storage/Storage.h"
 
 ConfigurationDialog::ConfigurationDialog(hui::Window* _parent, bool _allow_parent, DataAdministration *_data, bool _exporting):
 	hui::Dialog(_exporting ? "ge_dialog" : "rc_dialog", 400, 300, _parent, _allow_parent),
@@ -19,15 +20,15 @@ ConfigurationDialog::ConfigurationDialog(hui::Window* _parent, bool _allow_paren
 	data = _data;
 
 	// dialog
-	event("hui:close", std::bind(&ConfigurationDialog::OnClose, this));
-	event("cancel", std::bind(&ConfigurationDialog::OnClose, this));
-	event("ok", std::bind(&ConfigurationDialog::OnOk, this));
-	event("find_rootdir", std::bind(&ConfigurationDialog::OnFindRootdir, this));
-	event("find_default_world", std::bind(&ConfigurationDialog::OnFindDefaultWorld, this));
-	event("find_default_second_world", std::bind(&ConfigurationDialog::OnFindDefaultSecondWorld, this));
-	event("find_default_script", std::bind(&ConfigurationDialog::OnFindDefaultScript, this));
-	event("find_default_material", std::bind(&ConfigurationDialog::OnFindDefaultMaterial, this));
-	event("find_default_font", std::bind(&ConfigurationDialog::OnFindDefaultFont, this));
+	event("hui:close", [=]{ OnClose(); });
+	event("cancel", [=]{ OnClose(); });
+	event("ok", [=]{ OnOk(); });
+	event("find_rootdir", [=]{ OnFindRootdir(); });
+	event("find_default_world", [=]{ OnFindDefaultWorld(); });
+	event("find_default_second_world", [=]{ OnFindDefaultSecondWorld(); });
+	event("find_default_script", [=]{ OnFindDefaultScript(); });
+	event("find_default_material", [=]{ OnFindDefaultMaterial(); });
+	event("find_default_font", [=]{ OnFindDefaultFont(); });
 
 	LoadData();
 	subscribe(data);
@@ -56,7 +57,7 @@ void ConfigurationDialog::LoadData()
 	set_string("default_material",GameIniDialog.DefMaterial);
 	set_string("default_font",GameIniDialog.DefFont);
 
-	set_string("rootdir",ed->root_dir);
+	set_string("rootdir",storage->root_dir);
 }
 
 void ConfigurationDialog::on_update(Observable *o, const string &message)
@@ -66,38 +67,38 @@ void ConfigurationDialog::on_update(Observable *o, const string &message)
 
 void ConfigurationDialog::OnFindRootdir()
 {
-	if (hui::FileDialogDir(this,_("Working directory"),ed->root_dir))
+	if (hui::FileDialogDir(this,_("Working directory"),storage->root_dir))
 		set_string("rootdir", hui::Filename);
 }
 
 void ConfigurationDialog::OnFindDefaultWorld()
 {
-	if (ed->file_dialog(FD_WORLD, false, true))
-		set_string("default_world", ed->dialog_file_no_ending);
+	if (storage->file_dialog(FD_WORLD, false, true))
+		set_string("default_world", storage->dialog_file_no_ending);
 }
 
 void ConfigurationDialog::OnFindDefaultSecondWorld()
 {
-	if (ed->file_dialog(FD_WORLD, false, true))
-		set_string("default_second_world", ed->dialog_file_no_ending);
+	if (storage->file_dialog(FD_WORLD, false, true))
+		set_string("default_second_world", storage->dialog_file_no_ending);
 }
 
 void ConfigurationDialog::OnFindDefaultScript()
 {
-	if (ed->file_dialog(FD_SCRIPT, false, true))
-		set_string("default_script", ed->dialog_file);
+	if (storage->file_dialog(FD_SCRIPT, false, true))
+		set_string("default_script", storage->dialog_file);
 }
 
 void ConfigurationDialog::OnFindDefaultMaterial()
 {
-	if (ed->file_dialog(FD_MATERIAL, false, true))
-		set_string("default_material", ed->dialog_file_no_ending);
+	if (storage->file_dialog(FD_MATERIAL, false, true))
+		set_string("default_material", storage->dialog_file_no_ending);
 }
 
 void ConfigurationDialog::OnFindDefaultFont()
 {
-	if (ed->file_dialog(FD_FONT, false, true))
-		set_string("default_font", ed->dialog_file_no_ending);
+	if (storage->file_dialog(FD_FONT, false, true))
+		set_string("default_font", storage->dialog_file_no_ending);
 }
 
 void ConfigurationDialog::OnOk()
@@ -121,9 +122,9 @@ void ConfigurationDialog::OnOk()
 		}
 	}else{
 		// new RootDir?
-		bool rdc = (ed->root_dir != get_string("rootdir"));
+		bool rdc = (storage->root_dir != get_string("rootdir"));
 		if (rdc)
-			ed->make_dirs(get_string("rootdir"),true);
+			storage->set_root_directory(get_string("rootdir"));
 //		data->UnlinkGameIni();
 		data->GameIni->DefWorld = get_string("default_world");
 		data->GameIni->SecondWorld = get_string("default_second_world");
@@ -131,7 +132,7 @@ void ConfigurationDialog::OnOk()
 		data->GameIni->DefMaterial = get_string("default_material");
 		data->GameIni->DefFont = get_string("default_font");
 //		data->LinkGameIni(data->GameIni);
-		data->GameIni->Save(ed->root_dir);
+		data->GameIni->Save(storage->root_dir);
 		if (rdc)
 			data->UpdateDatabase();
 	}

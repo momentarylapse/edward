@@ -237,7 +237,7 @@ void AdministrationDialog::OnEdit()
 	switch (a->Kind){
 		case -1:
 			if (a->Name == "config.txt")
-				hui::OpenDocument(ed->get_root_dir(a->Kind) + a->Name);
+				hui::OpenDocument(storage->get_root_dir(a->Kind) + a->Name);
 			else if (a->Name == "game.ini")
 				mode_administration->BasicSettings();
 			break;
@@ -276,7 +276,7 @@ void AdministrationDialog::OnEdit()
 		case FD_SHADERFILE:
 		case FD_SCRIPT:
 		case FD_FILE:
-			hui::OpenDocument(ed->get_root_dir(a->Kind) + a->Name);
+			hui::OpenDocument(storage->get_root_dir(a->Kind) + a->Name);
 			break;
 	}
 }

@@ -6,7 +6,7 @@
  */
 
 #include "DataFont.h"
-#include "../../Edward.h"
+#include "../../Storage/Storage.h"
 #include "../../Action/Font/ActionFontEditGlobal.h"
 #include "../../Action/Font/ActionFontEditGlyph.h"
 #include "../../x/font.h"

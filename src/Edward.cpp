@@ -31,99 +31,26 @@
 Edward *ed = NULL;
 EdwardApp *app = NULL;
 
+extern string AppName;
+
 #ifndef _X_USE_SOUND_
 string SoundDir;
 #endif
 
-extern string AppName;
 
 
-
-void read_color_4i(File *f,int *c)
-{
-	// argb (file) -> rgba (editor)
-	c[3] = f->read_int();
-	c[0] = f->read_int();
-	c[1] = f->read_int();
-	c[2] = f->read_int();
-}
-
-void write_color_4i(File *f,int *c)
-{
-	// rgba (editor) -> argb (file)
-	f->write_int(c[3]);
-	f->write_int(c[0]);
-	f->write_int(c[1]);
-	f->write_int(c[2]);
-}
-
-void write_color_rgba(File *f, const color &c)
-{
-	f->write_int((int)(c.r * 255.0f));
-	f->write_int((int)(c.g * 255.0f));
-	f->write_int((int)(c.b * 255.0f));
-	f->write_int((int)(c.a * 255.0f));
-}
-
-void read_color_rgba(File *f, color &c)
-{
-	c.r = (float)f->read_int() / 255.0f;
-	c.g = (float)f->read_int() / 255.0f;
-	c.b = (float)f->read_int() / 255.0f;
-	c.a = (float)f->read_int() / 255.0f;
-}
-
-void write_color_argb(File *f, const color &c)
-{
-	f->write_int((int)(c.a * 255.0f));
-	f->write_int((int)(c.r * 255.0f));
-	f->write_int((int)(c.g * 255.0f));
-	f->write_int((int)(c.b * 255.0f));
-}
-
-void read_color_argb(File *f, color &c)
-{
-	c.a = (float)f->read_int() / 255.0f;
-	c.r = (float)f->read_int() / 255.0f;
-	c.g = (float)f->read_int() / 255.0f;
-	c.b = (float)f->read_int() / 255.0f;
-}
-
-void write_color_3i(File *f, const color &c)
-{
-	f->write_int((int)(c.r * 255.0f));
-	f->write_int((int)(c.g * 255.0f));
-	f->write_int((int)(c.b * 255.0f));
-}
-
-void read_color_3i(File *f, color &c)
-{
-	c.r = (float)f->read_int() / 255.0f;
-	c.g = (float)f->read_int() / 255.0f;
-	c.b = (float)f->read_int() / 255.0f;
-	c.a = 1;
-}
-
-color i42c(int *c)
-{
-	return color(float(c[3])/255.0f,float(c[0])/255.0f,float(c[1])/255.0f,float(c[2])/255.0f);
-}
-
-void Edward::on_close()
-{
+void Edward::on_close() {
 	if (allow_termination())
 		exit();
 }
 
-void Edward::exit()
-{
+void Edward::exit() {
 	destroy();
 	app->end();
 }
 
 #define IMPLEMENT_EVENT(EVENT) \
-void Edward::EVENT() \
-{ \
+void Edward::EVENT() { \
 	if (cur_mode->multi_view) \
 		cur_mode->multi_view->EVENT(); \
 	cur_mode->EVENT(); \
@@ -211,20 +138,12 @@ Edward::Edward(Array<string> arg) :
 
 	load_key_codes();
 
-	possible_sub_dir.add("Fonts");
-	possible_sub_dir.add("Maps");
-	possible_sub_dir.add("Materials");
-	possible_sub_dir.add("Objects");
-	possible_sub_dir.add("Scripts");
-	possible_sub_dir.add("Sounds");
-	possible_sub_dir.add("Textures");
-
 	// configuration
 	int w = hui::Config.get_int("Window.Width", 800);
 	int h = hui::Config.get_int("Window.Height", 600);
 	bool maximized = hui::Config.get_bool("Window.Maximized", false);
 	set_size(w, h);
-	root_dir = hui::Config.get_str("RootDir", "");
+
 	//HuiConfigread_int("Api", api, NIX_API_OPENGL);
 	/*bool LocalDocumentation = HuiConfig.get_bool("LocalDocumentation", false);
 	WorldScriptVarFile = HuiConfig.get_str("WorldScriptVarFile", "");
@@ -278,10 +197,10 @@ Edward::Edward(Array<string> arg) :
 
 	storage = new Storage();
 
+	storage->set_root_directory(hui::Config.get_str("RootDir", ""));
+
 	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;
 	mworld->FFVBinaryMap = true;*/
-
-	make_dirs(root_dir,true);
 
 	// subscribe to all data to automatically redraw...
 	subscribe(mode_model->data);
@@ -329,7 +248,7 @@ void Edward::on_destroy()
 	hui::Config.set_int("Window.Width", w);
 	hui::Config.set_int("Window.Height", h);
 	hui::Config.set_bool("Window.Maximized", is_maximized());
-	hui::Config.set_str("RootDir", root_dir);
+	hui::Config.set_str("RootDir", storage->root_dir);
 	hui::Config.set_str("Language", hui::GetCurLanguage());
 	/*HuiConfig.set_bool("LocalDocumentation", LocalDocumentation);
 	HuiConfig.set_str("WorldScriptVarFile", WorldScriptVarFile);
@@ -337,6 +256,7 @@ void Edward::on_destroy()
 	HuiConfig.set_str("ItemScriptVarFile", ItemScriptVarFile);*/
 	//HuiConfig.set_int("UpdateNormalMaxTime (ms)", int(UpdateNormalMaxTime * 1000.0f));
 	hui::Config.save();
+	delete storage;
 }
 
 bool Edward::handle_arguments(Array<string> arg)
@@ -391,13 +311,11 @@ bool Edward::handle_arguments(Array<string> arg)
 	string ext = param.extension();
 
 	if (ext == "model"){
-		make_dirs(param);
 		storage->load(param, mode_model->data);
 		set_mode(mode_model);
 		/*if (mmodel->Skin[1].Sub[0].Triangle.num==0)
 			mmodel->SetEditMode(EditModeVertex);*/
 	}else if (ext == "material"){
-		make_dirs(param);
 		storage->load(param, mode_material->data);
 		set_mode(mode_material);
 	/*}else if ((ext == "map") || (ext == "terrain")){
@@ -407,12 +325,10 @@ bool Edward::handle_arguments(Array<string> arg)
 		mworld->OptimizeView();
 		set_mode(ModeWorld);*/
 	}else if (ext == "world"){
-		make_dirs(param);
 		storage->load(param, mode_world->data);
 		set_mode(mode_world);
 		multi_view_3d->whole_window = true;
 	}else if (ext == "xfont"){
-		make_dirs(param);
 		storage->load(param, mode_font->data);
 		set_mode(mode_font);
 	}else if (ext == "js"){
@@ -560,15 +476,15 @@ void Edward::on_update(Observable *o, const string &message)
 
 void Edward::on_execute_plugin()
 {
-	string temp = dialog_dir[FD_SCRIPT];
+	string temp = storage->dialog_dir[FD_SCRIPT];
 	if (app->installed)
-		dialog_dir[FD_SCRIPT] = app->directory_static + "Plugins/";
+		storage->dialog_dir[FD_SCRIPT] = app->directory_static + "Plugins/";
 	else
-		dialog_dir[FD_SCRIPT] = app->directory + "Plugins/";
+		storage->dialog_dir[FD_SCRIPT] = app->directory + "Plugins/";
 
-	if (file_dialog(FD_SCRIPT, false, false))
-		plugins->execute(dialog_file_complete);
-	dialog_dir[FD_SCRIPT] = temp;
+	if (storage->file_dialog(FD_SCRIPT, false, false))
+		plugins->execute(storage->dialog_file_complete);
+	storage->dialog_dir[FD_SCRIPT] = temp;
 }
 
 
@@ -632,101 +548,6 @@ void Edward::load_key_codes()
 	}
 }
 
-
-void Edward::update_dialog_dir(int kind)
-{
-	if (kind==FD_MODEL)			root_dir_kind[kind] = ObjectDir;
-	if (kind==FD_MODEL)			root_dir_kind[kind] = ObjectDir;
-	if (kind==FD_TEXTURE)		root_dir_kind[kind] = nix::texture_dir;
-	if (kind==FD_SOUND)			root_dir_kind[kind] = SoundDir;
-	if (kind==FD_MATERIAL)		root_dir_kind[kind] = MaterialDir;
-	if (kind==FD_TERRAIN)		root_dir_kind[kind] = MapDir;
-	if (kind==FD_WORLD)			root_dir_kind[kind] = MapDir;
-	if (kind==FD_SHADERFILE)		root_dir_kind[kind] = MaterialDir;
-	if (kind==FD_FONT)			root_dir_kind[kind] = Gui::FontDir;
-	if (kind==FD_SCRIPT)			root_dir_kind[kind] = ScriptDir;
-	if (kind==FD_CAMERAFLIGHT)	root_dir_kind[kind] = ScriptDir;
-	if (kind==FD_FILE)			root_dir_kind[kind] = root_dir;
-}
-
-
-void Edward::set_root_directory(const string &directory, bool compact_mode)
-{
-	string object_dir, map_dir, texture_dir, sound_dir, script_dir, material_dir, font_dir;
-	bool ufd = (root_dir.find(directory) < 0) and (directory.find(root_dir) < 0);
-	root_dir = directory;
-	root_dir.dir_ensure_ending();
-	if (compact_mode){
-		map_dir = root_dir;
-		object_dir = root_dir;
-		texture_dir = root_dir;
-		sound_dir = root_dir;
-		script_dir = root_dir;
-		material_dir = root_dir;
-		font_dir = root_dir;
-	}else{
-		map_dir = root_dir + "Maps/";
-		object_dir = root_dir + "Objects/";
-		texture_dir = root_dir + "Textures/";
-		sound_dir = root_dir + "Sounds/";
-		script_dir = root_dir + "Scripts/";
-		material_dir = root_dir + "Materials/";
-		font_dir = root_dir + "Fonts/";
-	}
-	MetaSetDirs(texture_dir, map_dir, object_dir, sound_dir, script_dir, material_dir, font_dir);
-#ifndef _X_USE_SOUND_
-	SoundDir = sound_dir;
-#endif
-	if (ufd)
-		for (int i=0;i<NUM_FDS;i++){
-			dialog_dir[i] = "";
-			update_dialog_dir(i);
-		}
-}
-
-
-void Edward::make_dirs(const string &original_dir, bool as_root_dir)
-{
-	string dir = original_dir;
-	if (dir.num > 0)
-		dir = dir.dirname();
-	bool sub_dir = false;
-	bool root_dir_correct = false;
-	if (!as_root_dir){
-		// we are in a sub dir?
-		sub_dir=false;
-		for (string &p: possible_sub_dir){
-			if (dir.find(p) >= 0){
-				dir = dir.substr(0, dir.find(p));
-				sub_dir=true;
-				break;
-			}
-		}
-		root_dir_correct = sub_dir;
-		root_dir_correct &= file_test_existence(dir + "game.ini");
-	}else{
-		root_dir_correct = file_test_existence(dir + "game.ini");
-	}
-	set_root_directory(dir, !root_dir_correct);
-}
-
-
-string Edward::get_root_dir(int kind)
-{
-	if (kind==-1)				return root_dir;
-	if (kind==FD_MODEL)			return ObjectDir;
-	if (kind==FD_TEXTURE)		return nix::texture_dir;
-	if (kind==FD_SOUND)			return SoundDir;
-	if (kind==FD_MATERIAL)		return MaterialDir;
-	if (kind==FD_TERRAIN)		return MapDir;
-	if (kind==FD_WORLD)			return MapDir;
-	if (kind==FD_SHADERFILE)		return MaterialDir;
-	if (kind==FD_FONT)			return Gui::FontDir;
-	if (kind==FD_SCRIPT)			return ScriptDir;
-	if (kind==FD_CAMERAFLIGHT)	return ScriptDir;
-	if (kind==FD_FILE)			return root_dir;
-	return root_dir;
-}
 
 void Edward::remove_message()
 {
@@ -812,64 +633,6 @@ void Edward::update_menu()
 		check("wire", mv->wire_mode);
 		check("snap_to_grid", mv->snap_to_grid);
 	}
-}
-
-static string NoEnding(const string &filename)
-{
-	int p = filename.rfind(".");
-	if (p >= 0)
-		return filename.substr(0, p);
-	return filename;
-}
-
-bool Edward::file_dialog(int kind,bool save,bool force_in_root_dir)
-{
-	int done;
-
-	update_dialog_dir(kind);
-	if (dialog_dir[kind].num < 1)
-		dialog_dir[kind] = root_dir_kind[kind];
-
-
-	string title, show_filter, filter;
-	if (kind==FD_MODEL){		title=_("Model file");	show_filter=_("Models (*.model)");			filter="*.model";	}
-	if (kind==FD_TEXTURE){	title=_("Texture file");	show_filter=_("Textures (bmp,jpg,tga,png,avi)");filter="*.jpg;*.bmp;*.tga;*.png;*.avi";	}
-	if (kind==FD_SOUND){		title=_("Sound file");		show_filter=_("Sounds (wav,ogg)");			filter="*.wav;*.ogg";	}
-	if (kind==FD_MATERIAL){	title=_("Material file");	show_filter=_("Materials (*.material)");	filter="*.material";	}
-	if (kind==FD_TERRAIN){	title=_("Terrain files");	show_filter=_("Terrains (*.map)");			filter="*.map";	}
-	if (kind==FD_WORLD){		title=_("World file");		show_filter=_("Worlds (*.world)");			filter="*.world";	}
-	if (kind==FD_SHADERFILE){title=_("Shader file");	show_filter=_("Shader files (*.shader)");	filter="*.shader";	}
-	if (kind==FD_FONT){		title=_("Font file");		show_filter=_("Font files (*.xfont)");	filter="*.xfont";	}
-	if (kind==FD_SCRIPT){	title=_("Script file");	show_filter=_("Script files (*.kaba)");	filter="*.kaba";	}
-	if (kind==FD_CAMERAFLIGHT){title=_("Camera file");	show_filter=_("Camera files (*.camera)");	filter="*.camera";	}
-	if (kind==FD_FILE){		title=_("arbitrary file");	show_filter=_("Files (*.*)");				filter="*";	}
-
-	if (save)	done=hui::FileDialogSave(this,title,dialog_dir[kind],show_filter,filter);
-	else		done=hui::FileDialogOpen(this,title,dialog_dir[kind],show_filter,filter);
-	if (done){
-
-		bool in_root_dir = (hui::Filename.sys_filename().find(root_dir_kind[kind].sys_filename()) >= 0);
-
-		if (force_in_root_dir){
-			if (!in_root_dir){
-				error_box(hui::Filename.sys_filename());
-				error_box(format(_("The file ist not int the appropriate directory: \"%s\"\nor in a subdirectory."), root_dir_kind[kind].sys_filename().c_str()));
-				return false;
-			}
-		}//else
-			//MakeDirs(HuiFileDialogPath);
-
-		if (in_root_dir){
-			update_dialog_dir(kind);
-			dialog_dir[kind] = hui::Filename.dirname();
-		}
-		dialog_file_complete = hui::Filename;
-		dialog_file = dialog_file_complete.substr(root_dir_kind[kind].num, -1);
-		dialog_file_no_ending = NoEnding(dialog_file);
-
-		return true;
-	}
-	return false;
 }
 
 bool Edward::allow_termination()

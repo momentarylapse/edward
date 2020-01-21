@@ -24,24 +24,8 @@ namespace MultiView{
 
 
 
-// file types
-enum{
-	FD_MODEL,
-	FD_TEXTURE,
-	FD_SOUND,
-	FD_MATERIAL,
-	FD_TERRAIN,
-	FD_WORLD,
-	FD_SHADERFILE,
-	FD_FONT,
-	FD_SCRIPT,
-	FD_CAMERAFLIGHT,
-	FD_FILE, // any file
-	NUM_FDS
-};
-
 // multiview data
-enum{
+enum {
 	MVD_MODEL_SURFACE,
 	MVD_MODEL_VERTEX,
 	MVD_MODEL_SKIN_VERTEX,
@@ -58,18 +42,7 @@ enum{
 };
 
 
-void read_color_4i(File *f, int *c);
-void write_color_4i(File *f, int *c);
-void read_color_argb(File *f, color &c);
-void write_color_argb(File *f, const color &c);
-void read_color_rgba(File *f, color &c);
-void write_color_rgba(File *f, const color &c);
-void read_color_3i(File *f, color &c);
-void write_color_3i(File *f, const color &c);
-color i42c(int *c);
-
-class Edward : public Observer, public hui::Window
-{
+class Edward : public Observer, public hui::Window {
 public:
 	Edward(Array<string> arg);
 	virtual ~Edward();
@@ -113,12 +86,6 @@ public:
 
 	void on_execute_plugin();
 
-	void set_root_directory(const string &directory, bool compact_mode = false);
-	void update_dialog_dir(int kind);
-	void make_dirs(const string &original_dir, bool as_root_dir = false);
-	string get_root_dir(int kind);
-
-	bool file_dialog(int kind, bool save, bool force_in_root_dir);
 	bool allow_termination();
 
 	void update_menu();
@@ -127,12 +94,6 @@ public:
 	ModeBase *no_mode;
 	ModeBase *cur_mode;
 	Array<ModeBase*> mode_queue;
-
-	string root_dir;
-
-	string dialog_dir[NUM_FDS], root_dir_kind[NUM_FDS];
-	string dialog_file, dialog_file_complete, dialog_file_no_ending;
-	Array<string> possible_sub_dir;
 
 	MultiView::MultiView *multi_view_2d;
 	MultiView::MultiView *multi_view_3d;

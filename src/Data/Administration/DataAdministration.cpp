@@ -14,6 +14,7 @@
 #include "../Material/DataMaterial.h"
 #include "../Font/DataFont.h"
 #include "../../Edward.h"
+#include "../../Storage/Storage.h"
 
 DataAdministration::DataAdministration() :
 	Data(-1)
@@ -45,7 +46,7 @@ void DataAdministration::MetaFraesDir(int kind)
 	string extension ="x";
 	cft.clear();
 
-	string dir = ed->get_root_dir(kind);
+	string dir = storage->get_root_dir(kind);
 	if (kind==FD_WORLD)		extension = ".world";
 	if (kind==FD_TERRAIN)	extension = ".map";
 	if (kind==FD_MODEL)		extension = ".model";
@@ -229,7 +230,7 @@ void DataAdministration::UpdateDatabase()
 	// make sure the "Engine"-files are the first 3 ones
 	AdminFile *f_game_ini = file_list->add_engine_files();
 
-	GameIni->Load(ed->root_dir);
+	GameIni->Load(storage->root_dir);
 
 	// find all files
 	// iterate file types
@@ -266,7 +267,7 @@ void DataAdministration::UpdateDatabase()
 
 void DataAdministration::ExportGame(const string &dir, GameIniData &game_ini)
 {
-	if (dir == ed->root_dir)
+	if (dir == storage->root_dir)
 		throw AdminGameExportException("export dir = root dir");
 	AdminFileList list;
 	list.add((*file_list)[0]);
@@ -283,7 +284,7 @@ void DataAdministration::ExportGame(const string &dir, GameIniData &game_ini)
 		if (a->Missing)
 			continue;
 
-		string source = ed->root_dir;
+		string source = storage->root_dir;
 		string target = dir;
 		if ((a->Kind == FD_WORLD) || (a->Kind == FD_TERRAIN)){
 			source += "Maps/";

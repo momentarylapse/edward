@@ -7,7 +7,7 @@
 
 #include "TerrainHeightmapDialog.h"
 #include "../../../Action/World/Terrain/ActionWorldTerrainApplyHeightmap.h"
-#include "../../../Edward.h"
+#include "../../../Storage/Storage.h"
 
 TerrainHeightmapDialog::TerrainHeightmapDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data) :
 	hui::Dialog("terrain_heightmap_dialog", 400, 300, _parent, _allow_parent),
@@ -16,16 +16,16 @@ TerrainHeightmapDialog::TerrainHeightmapDialog(hui::Window *_parent, bool _allow
 	from_resource("terrain_heightmap_dialog");
 	data = _data;
 
-	event("cancel", std::bind(&TerrainHeightmapDialog::OnClose, this));
-	event("hui:close", std::bind(&TerrainHeightmapDialog::OnClose, this));
-	event("apply", std::bind(&TerrainHeightmapDialog::ApplyData, this));
-	event("ok", std::bind(&TerrainHeightmapDialog::OnOk, this));
+	event("cancel", [=]{ OnClose(); });
+	event("hui:close", [=]{ OnClose(); });
+	event("apply", [=]{ ApplyData(); });
+	event("ok", [=]{ OnOk(); });
 
-	event("height_image_find", std::bind(&TerrainHeightmapDialog::OnFindHeightmap, this));
-	event("stretch_x", std::bind(&TerrainHeightmapDialog::OnSizeChange, this));
-	event("stretch_z", std::bind(&TerrainHeightmapDialog::OnSizeChange, this));
-	event("filter_image_find", std::bind(&TerrainHeightmapDialog::OnFindFilter, this));
-	event_xp("preview", "hui:draw", std::bind(&TerrainHeightmapDialog::OnPreviewDraw, this, std::placeholders::_1));
+	event("height_image_find", [=]{ OnFindHeightmap(); });
+	event("stretch_x", [=]{ OnSizeChange(); });
+	event("stretch_z", [=]{ OnSizeChange(); });
+	event("filter_image_find", [=]{ OnFindFilter(); });
+	event_xp("preview", "hui:draw", [=](Painter *p){ OnPreviewDraw(p); });
 
 	enable("ok", false);
 
@@ -58,9 +58,9 @@ void TerrainHeightmapDialog::OnSizeChange()
 
 void TerrainHeightmapDialog::OnFindFilter()
 {
-	if (ed->file_dialog(FD_TEXTURE, false, false)){
-		filter_file = ed->dialog_file_complete;
-		set_string("filter_image", ed->dialog_file);
+	if (storage->file_dialog(FD_TEXTURE, false, false)){
+		filter_file = storage->dialog_file_complete;
+		set_string("filter_image", storage->dialog_file);
 		filter.load(filter_file);
 		redraw("preview");
 	}
@@ -76,9 +76,9 @@ void TerrainHeightmapDialog::on_update(Observable *o, const string &message)
 
 void TerrainHeightmapDialog::OnFindHeightmap()
 {
-	if (ed->file_dialog(FD_TEXTURE, false, false)){
-		heightmap_file = ed->dialog_file_complete;
-		set_string("height_image", ed->dialog_file);
+	if (storage->file_dialog(FD_TEXTURE, false, false)){
+		heightmap_file = storage->dialog_file_complete;
+		set_string("height_image", storage->dialog_file);
 		heightmap.load(heightmap_file);
 		redraw("preview");
 		enable("ok", true);
