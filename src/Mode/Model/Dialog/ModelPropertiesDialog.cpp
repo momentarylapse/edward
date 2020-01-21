@@ -43,7 +43,7 @@ ModelPropertiesDialog::ModelPropertiesDialog(hui::Window *_parent, bool _allow_p
 	event("num_items", [=]{ OnNumItems(); });
 	event("model_inventary", [=]{ OnModelInventary(); });
 	event("delete_item", [=]{ OnDeleteItem(); });
-	event_x("script_vars", "hui:change", [=]{ OnScriptVarEdit(); });
+	event_x("variables", "hui:change", [=]{ OnScriptVarEdit(); });
 	event("script_find", [=]{ OnScriptFind(); });
 
 	restart();
@@ -64,49 +64,61 @@ void ModelPropertiesDialog::restart()
 	active = true;
 }
 
+const Kaba::Class *get_class(Kaba::Script *s, const string &parent) {
+	for (auto *t: s->syntax->base_class->classes)
+		if (t->is_derived_from_s(parent))
+			return t;
+	throw Exception(format(_("script does not contain a class derived from '%s'"), parent.c_str()));
+	return nullptr;
+}
 
-void update_model_script_data(DataModel::MetaData &m)
-{
+void update_model_script_data(DataModel::MetaData &m) {
+
+	// remove undefined
+	for (int i=m.variables.num; i>=0; i--)
+		if (m.variables[i].value == "")
+			m.variables.erase(i);
+	m._script_class = "";
+
 	if (m.script_file.num == 0)
 		return;
+
+
 	//m.class_name = "";
-	try{
-		msg_write(m.script_file);
+	try {
 		auto ss = Kaba::Load(m.script_file, true);
 
 		Array<string> wanted;
-		for (auto c:ss->syntax->base_class->constants)
+		for (auto c: ss->syntax->base_class->constants)
 			if (c->name == "PARAMETERS" and c->type == Kaba::TypeString)
 				wanted = c->as_string().lower().replace("_", "").replace("\n", "").explode(",");
 
-		for (auto *t: ss->syntax->base_class->classes){
-			if (!t->is_derived_from_s("Model"))
+		auto *t = get_class(ss, "Model");
+		m._script_class = t->long_name();
+
+		//m.class_name = t->name;
+		for (auto &e: t->elements) {
+			string nn = e.name.replace("_", "").lower();
+			if (!sa_contains(wanted, nn))
 				continue;
-			msg_write(t->name);
-			//m.class_name = t->name;
-			for (auto &e: t->elements){
-				string nn = e.name.replace("_", "").lower();
-				if (!sa_contains(wanted, nn))
-					continue;
-				bool found = false;
-				for (auto &v: m.variables)
-					if (v.name.lower().replace("_", "") == nn){
-						v.name = e.name;
-						v.type = e.type->name;
-						found = true;
-					}
-				if (found)
-					continue;
+			bool found = false;
+			for (auto &v: m.variables)
+				if (v.name.lower().replace("_", "") == nn) {
+					v.name = e.name;
+					v.type = e.type->name;
+					found = true;
+				}
+			if (found)
+				continue;
 
-				ModelScriptVariable v;
-				v.name = e.name;
-				v.type = e.type->name;
-				m.variables.add(v);
-			}
+			ModelScriptVariable v;
+			v.name = e.name;
+			v.type = e.type->name;
+			m.variables.add(v);
 		}
-	}catch(Kaba::Exception &e){
+	} catch (Exception &e) {
 
-		msg_error(e.message());
+		ed->error_box(e.message());
 	}
 
 }
@@ -239,6 +251,11 @@ void ModelPropertiesDialog::RefillScriptVarList()
 	for (auto &v: temp.variables)
 		add_string("variables", v.name + "\\" + v.type + "\\" + v.value);
 	enable("variables", temp.variables.num > 0);
+
+	if (temp._script_class == "")
+		set_string("class", _("\u274C     no class derived from 'Model' found"));
+	else
+		set_string("class", "\u2714    class: '" + temp._script_class + "'");
 }
 
 
@@ -312,8 +329,7 @@ void ModelPropertiesDialog::OnDeleteItem()
 void ModelPropertiesDialog::OnScriptVarEdit()
 {
 	int row = hui::GetEvent()->row;
-	msg_write(hui::GetEvent()->row);
-	temp.variables[row].value = get_cell("script_vars", row, 2);
+	temp.variables[row].value = get_cell("variables", row, 2);
 }
 
 void ModelPropertiesDialog::OnScriptFind()
@@ -322,6 +338,7 @@ void ModelPropertiesDialog::OnScriptFind()
 		set_string("script", storage->dialog_file);
 		temp.script_file = storage->dialog_file;
 		update_model_script_data(temp);
+		RefillScriptVarList();
 	}
 }
 

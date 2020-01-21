@@ -366,8 +366,7 @@ public:
 	void editEffect(int index, const ModelEffect &effect);
 	void selectionClearEffects();
 
-	struct MetaData
-	{
+	struct MetaData {
 		// level of detail
 		float detail_dist[3];
 		int detail_factor[3];
@@ -387,6 +386,7 @@ public:
 		string script_file;
 		Array<ModelScriptVariable> variables;
 		Array<float> script_var;
+		string _script_class;
 
 		void reset();
 	};

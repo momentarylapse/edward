@@ -5482,7 +5482,7 @@ image=hui:open
 0
 Label
 class
-bold
+italic
 0
 1
 0

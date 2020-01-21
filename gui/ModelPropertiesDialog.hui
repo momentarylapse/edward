@@ -44,7 +44,7 @@ Dialog model_dialog "Model properties" width=550 height=580
 						Edit script "" expandx
 						Button script_find "" image=hui:open
 						---|
-						Label class "class..." bold
+						Label class "class..." italic
 				Group model_dialog_t_scriptvars "Script variables"
 					ListView variables "Name\\Type\\Value" format=ttT
 		---|
