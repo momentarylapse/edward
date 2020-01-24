@@ -66,7 +66,7 @@ const Kaba::Class *get_class(Kaba::Script *s, const string &parent) {
 void update_model_script_data(DataModel::MetaData &m) {
 
 	// remove undefined
-	for (int i=m.variables.num; i>=0; i--)
+	for (int i=m.variables.num-1; i>=0; i--)
 		if (m.variables[i].value == "")
 			m.variables.erase(i);
 	m._script_class = "";
