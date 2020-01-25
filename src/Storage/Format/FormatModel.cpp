@@ -697,13 +697,10 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 
 void FormatModel::_load(const string &filename, DataModel *data, bool deep) {
 
-	//if (allow_load)
-	data->reset();
 	int ffv;
 
 
 	File *f = FileOpenText(filename);
-	data->action_manager->enable(false);
 	data->file_time = f->GetDateModification().time;
 
 	ffv=f->ReadFileFormatVersion();
@@ -771,9 +768,6 @@ void FormatModel::_load(const string &filename, DataModel *data, bool deep) {
 	}
 
 
-	data->action_manager->enable(true);
-	//OptimizeView();
-	data->reset_history();
 
 	if (deep)
 		data->on_post_action_update();

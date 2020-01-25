@@ -287,8 +287,8 @@ public:
 	// high level (actions)
 	void addVertex(const vector &pos, int bone_index = 0, int normal_mode = -1);
 	ModelPolygon *addTriangle(int a, int b, int c, int material);
-	ModelPolygon *addPolygon(Array<int> &v, int material);
-	ModelPolygon *addPolygonWithSkin(Array<int> &v, Array<vector> &sv, int material);
+	ModelPolygon *addPolygon(const Array<int> &v, int material);
+	ModelPolygon *addPolygonWithSkin(const Array<int> &v, const Array<vector> &sv, int material);
 
 	void deleteSelection(bool greedy = false);
 	void invertSelection();

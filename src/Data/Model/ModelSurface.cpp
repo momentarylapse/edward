@@ -49,7 +49,7 @@ void ModelSurface::addVertex(int v)
 	model->vertex[v].surface = surf;
 }
 
-bool int_array_has_duplicates(Array<int> &a)
+bool int_array_has_duplicates(const Array<int> &a)
 {
 	for (int i=0; i<a.num; i++)
 		for (int j=i+1; j<a.num; j++)
@@ -58,7 +58,7 @@ bool int_array_has_duplicates(Array<int> &a)
 	return false;
 }
 
-void ModelSurface::addPolygon(Array<int> &v, int material, Array<vector> &sv, int index)
+void ModelSurface::addPolygon(const Array<int> &v, int material, const Array<vector> &sv, int index)
 {
 	if (int_array_has_duplicates(v))
 		throw GeometryException("AddPolygon: duplicate vertices");

@@ -12,46 +12,115 @@ FormatModelPly::FormatModelPly() : TypedFormat<DataModel>(FD_MODEL, "ply", _("Mo
 }
 
 void FormatModelPly::_load(const string &filename, DataModel *m, bool deep) {
-	m->reset();
-	m->action_manager->enable(false);
 	File *f = NULL;
-	bool ok = true;
 
-	try{
+	//m->material.add(new ModelMaterial());
+
+	try {
 
 	f = FileOpenText(filename);
 
-	// header
-	while(true){
-		string s = f->read_str();
-		if (s == "ply"){
-			continue;
-		}else if (s.head(7) == "comment"){
-			continue;
-		}else if (s == "format ascii 1.0"){
-			continue;
-		}else if (s == "end_header"){
-			break;
-		}else if (s.head(7) == "element"){
-			Array<string> el = s.explode(" ");
-			if (el.num != 3)
-				throw Exception("element can't be parsed: " + s);
-		}else if (s.head(8) == "property"){
+	struct Element {
+		string name;
+		int num;
+		int properties;
+	};
+	Array<Element> elements;
 
-		}else{
-			throw Exception("don't understand header line: " + s);
+	// header
+	while (true) {
+		string s = f->read_str();
+		if (s == "ply") {
+			continue; // ignore
+		} else if (s.head(7) == "comment") {
+			continue; // ignore
+		} else if (s == "format ascii 1.0") {
+			continue; // ignore
+		} else if (s.head(8) == "obj_info") {
+			continue; // ignore
+		} else if (s.head(7) == "element") {
+			auto el = s.explode(" ");
+			if (el.num != 3)
+				throw FormatError("element can't be parsed: " + s);
+			Element e;
+			e.name = el[1];
+			e.num = el[2]._int();
+			e.properties = 0;
+			elements.add(e);
+		} else if (s.head(8) == "property") {
+			auto el = s.explode(" ");
+
+		} else if (s == "end_header") {
+			break;
+		} else {
+			throw FormatError("don't understand header line: " + s);
 		}
 	}
 
-	}catch(Exception &e){
-		msg_error(e.message());
-		ok = false;
+	for (auto &e: elements) {
+		if (e.name == "vertex") {
+			m->vertex.resize(e.num);
+			for (int i=0; i<e.num; i++) {
+				string t = f->read_str();
+				auto tt = t.explode(" ");
+				if (tt.num < 3)
+					continue;
+				m->vertex[i].surface = -1;
+				m->vertex[i].pos.x = tt[0]._float();
+				m->vertex[i].pos.y = tt[1]._float();
+				m->vertex[i].pos.z = tt[2]._float();
+			}
+		} else if (e.name == "face") {
+
+
+			ModelSurface s;
+			s.model = m;
+			s.is_physical = false;
+			s.is_visible = true;
+			s.is_selected = false;
+
+			for (int i=0; i<e.num; i++) {
+				string t = f->read_str();
+				auto tt = t.explode(" ");
+				if (tt.num < 3)
+					continue;
+				int n = tt[0]._int();
+				if (n < 3)
+					continue;
+				/*ModelPolygon p;
+				p.is_selected = false;
+				p.triangulation_dirty = true;
+				p.material = 0;
+				p.side.resize(n);
+				for (int k=0;k<n;k++) {
+					p.side[k].vertex = tt[1+k]._int();
+				}
+				p.normal_dirty = true;
+				s.polygon.add(p);*/
+				try{
+					m->addPolygon({tt[1]._int(), tt[2]._int(), tt[3]._int()}, 0);
+				}catch(...){
+				}
+			}
+			/*m->surface.add(s);
+			try{
+			m->surface[0].buildFromPolygons();
+			}catch(...){
+			}*/
+		} else {
+			// ignore
+			for (int i=0; i<e.num; i++)
+				f->read_str();
+		}
+	}
+
+	} catch (Exception &e) {
+		delete f;
+		throw e;
 	}
 
 	if (f)
 		delete(f);
-
-	m->action_manager->enable(true);
 }
 
 void FormatModelPly::_save(const string &filename, DataModel *data) {

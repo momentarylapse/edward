@@ -67,6 +67,7 @@ bool Storage::load(const string &filename, Data *data, bool deep) {
 				continue;
 
 			guess_root_directory(filename);
+			data->reset();
 			f->load(filename, data, deep);
 			data->filename = filename;
 			data->reset_history();

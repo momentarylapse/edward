@@ -529,20 +529,11 @@ void DataModel::selectOnlySurface(ModelSurface *s)
 	selectionFromSurfaces();
 }
 
-ModelPolygon *DataModel::addTriangle(int a, int b, int c, int material)
-{
-	Array<int> v;
-	v.add(a);
-	v.add(b);
-	v.add(c);
-	Array<vector> sv;
-	sv.add(vector::EY);
-	sv.add(v_0);
-	sv.add(vector::EX);
-	return (ModelPolygon*) execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
+ModelPolygon *DataModel::addTriangle(int a, int b, int c, int material) {
+	return (ModelPolygon*)execute(new ActionModelAddPolygonSingleTexture({a,b,c}, material, {vector::EY, v_0, vector::EX}));
 }
 
-ModelPolygon *DataModel::addPolygon(Array<int> &v, int material)
+ModelPolygon *DataModel::addPolygon(const Array<int> &v, int material)
 {
 	Array<vector> sv;
 	for (int i=0;i<v.num;i++){
@@ -552,7 +543,7 @@ ModelPolygon *DataModel::addPolygon(Array<int> &v, int material)
 	return (ModelPolygon*)execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
 }
 
-ModelPolygon *DataModel::addPolygonWithSkin(Array<int> &v, Array<vector> &sv, int material)
+ModelPolygon *DataModel::addPolygonWithSkin(const Array<int> &v, const Array<vector> &sv, int material)
 {
 	return (ModelPolygon*)execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
 }

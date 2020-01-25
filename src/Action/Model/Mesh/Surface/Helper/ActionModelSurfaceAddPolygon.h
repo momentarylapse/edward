@@ -11,18 +11,16 @@
 #include "../../../../Action.h"
 class vector;
 
-class ActionModelSurfaceAddPolygon: public Action
-{
+class ActionModelSurfaceAddPolygon: public Action {
 public:
-	ActionModelSurfaceAddPolygon(int _surface, Array<int> &_v, int _material, Array<vector> &_sv, int _index = -1);
-	virtual ~ActionModelSurfaceAddPolygon();
-	string name(){	return "ModelSurfaceAddPolygon";	}
+	ActionModelSurfaceAddPolygon(int _surface, const Array<int> &_v, int _material, const Array<vector> &_sv, int _index = -1);
+	string name() { return "ModelSurfaceAddPolygon"; }
 
 	void *execute(Data *d);
 	void undo(Data *d);
 
 	// abort: don't undo because exception was thrown without adding a polygon
-	void abort(Data *d){}
+	void abort(Data *d) {}
 
 private:
 	int surface;

@@ -20,8 +20,7 @@ class ModelPolygon;
 
 struct SurfaceInsideTestData;
 
-class ModelSurface: public MultiView::SingleData
-{
+class ModelSurface: public MultiView::SingleData {
 public:
 	ModelSurface();
 
@@ -34,11 +33,11 @@ public:
 	DataModel *model;
 	SurfaceInsideTestData *inside_data;
 
-	virtual bool hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data);
-	virtual bool inRect(MultiView::Window *win, rect &r, void *user_data);
+	bool hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data) override;
+	bool inRect(MultiView::Window *win, rect &r, void *user_data) override;
 
 	void addVertex(int v);
-	void addPolygon(Array<int> &v, int material, Array<vector> &sv, int index = -1);
+	void addPolygon(const Array<int> &v, int material, const Array<vector> &sv, int index = -1);
 	void removePolygon(int index);
 	int addEdgeForNewPolygon(int a, int b, int tria, int side);
 	void removeObsoleteEdge(int index);
