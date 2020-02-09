@@ -51,6 +51,12 @@ class WorldObjectListPanel : public hui::Panel, Observer {
 public:
 	ModeWorld *world;
 	DataWorld *data;
+
+	struct Index {
+		int type, index;
+	};
+	Array<Index> list_indices;
+
 	WorldObjectListPanel(ModeWorld *w) : Observer("WorldObjectListPanel") {
 		from_resource("world-object-list-dialog");
 
@@ -69,14 +75,42 @@ public:
 		fill_list();
 	}
 
+	string light_type(WorldLight &l) {
+		if (l.mode == LightMode::DIRECTIONAL)
+			return "directional";
+		if (l.mode == LightMode::POINT)
+			return "point";
+		return "???";
+	}
+
 	void fill_list() {
+		hide_control("g-object", true);
+		hide_control("g-terrain", true);
+		hide_control("g-light", true);
+		hide_control("g-camera", true);
+		hide_control("g-script", true);
 		reset("list");
+		list_indices.clear();
+
 		add_string("list", "Camera\\cam");
-		add_string("list", "Light\\sun");
-		for (auto &t: data->Terrains)
+		list_indices.add({MVD_WORLD_CAMERA, 0});
+
+		foreachi (auto &l, data->lights, i) {
+			add_string("list", "Light\\" + light_type(l));
+			list_indices.add({MVD_WORLD_LIGHT, i});
+		}
+		foreachi (auto &s, data->meta_data.scripts, i) {
+			add_string("list", "Script\\" + s.filename);
+			list_indices.add({MVD_WORLD_SCRIPT, i});
+		}
+		foreachi (auto &t, data->Terrains, i) {
 			add_string("list", "Terrain\\" + t.FileName);
-		for (auto &o: data->Objects)
+			list_indices.add({MVD_WORLD_TERRAIN, i});
+		}
+		foreachi (auto &o, data->Objects, i) {
 			add_string("list", "Object\\" + ((o.Name == "") ? o.FileName : o.Name));
+			list_indices.add({MVD_WORLD_OBJECT, i});
+		}
 	}
 
 	void on_list_select() {
@@ -90,8 +124,18 @@ public:
 		set_float("ang_z", 0);
 
 		int n = get_int("");
-		if (n >= 2 + data->Terrains.num) {
-			auto &o = data->Objects[n - 2 - data->Terrains.num];
+		if (n < 0)
+			return;
+
+		auto &ii = list_indices[n];
+		hide_control("g-object", ii.type != MVD_WORLD_OBJECT);
+		hide_control("g-terrain", ii.type != MVD_WORLD_TERRAIN);
+		hide_control("g-light", ii.type != MVD_WORLD_LIGHT);
+		hide_control("g-camera", ii.type != MVD_WORLD_CAMERA);
+		hide_control("g-script", ii.type != MVD_WORLD_SCRIPT);
+
+		if (ii.type == MVD_WORLD_OBJECT) {
+			auto &o = data->Objects[ii.index];
 			set_string("name", o.Name);
 			set_string("kind", o.FileName);
 			set_float("pos_x", o.pos.x);
@@ -100,18 +144,43 @@ public:
 			set_float("ang_x", o.Ang.x * 180.0f / pi);
 			set_float("ang_y", o.Ang.y * 180.0f / pi);
 			set_float("ang_z", o.Ang.z * 180.0f / pi);
-		} else if (n >= 2) {
-			auto &t = data->Terrains[n - 2];
+			world->multi_view->select_none();
+			o.is_selected = true;
+		} else if (ii.type == MVD_WORLD_TERRAIN) {
+			auto &t = data->Terrains[ii.index];
 			set_string("kind", t.FileName);
 			set_float("pos_x", t.pos.x);
 			set_float("pos_y", t.pos.y);
 			set_float("pos_z", t.pos.z);
-		} else if (n == 0) {
-		} else if (n == 1) {
-			set_float("ang_x", data->meta_data.SunAng.x * 180.0f / pi);
-			set_float("ang_y", data->meta_data.SunAng.y * 180.0f / pi);
-			set_float("ang_z", data->meta_data.SunAng.z * 180.0f / pi);
-
+			world->multi_view->select_none();
+			t.is_selected = true;
+		} else if (ii.type == MVD_WORLD_SCRIPT) {
+			auto &s = data->meta_data.scripts[ii.index];
+			set_string("kind", s.filename);
+		} else if (ii.type == MVD_WORLD_LIGHT) {
+			auto &l = data->lights[ii.index];
+			check("sun_enabled", l.enabled);
+			set_color("sun_am", l.ambient);
+			set_color("sun_di", l.diffuse);
+			set_color("sun_sp", l.specular);
+			set_float("pos_x", l.pos.x);
+			set_float("pos_y", l.pos.y);
+			set_float("pos_z", l.pos.z);
+			set_float("ang_x", l.ang.x * 180.0f / pi);
+			set_float("ang_y", l.ang.y * 180.0f / pi);
+			set_float("ang_z", l.ang.z * 180.0f / pi);
+			world->multi_view->select_none();
+			l.is_selected = true;
+		} else if (ii.type == MVD_WORLD_CAMERA) {
+			auto &c = data->cameras[ii.index];
+			set_float("pos_x", c.pos.x);
+			set_float("pos_y", c.pos.y);
+			set_float("pos_z", c.pos.z);
+			set_float("ang_x", c.ang.x * 180.0f / pi);
+			set_float("ang_y", c.ang.y * 180.0f / pi);
+			set_float("ang_z", c.ang.z * 180.0f / pi);
+			world->multi_view->select_none();
+			c.is_selected = true;
 		}
 	}
 };
@@ -358,8 +427,20 @@ void ModeWorld::on_draw() {
 
 	int num_ob = data->GetSelectedObjects();
 	int num_te = data->GetSelectedTerrains();
-	if (num_ob + num_te > 0)
-		draw_str(10, 100, format(_("selected: %d objects, %d terrains"), num_ob, num_te));
+	int num_cam = data->get_selected_cameras();
+	int num_li = data->get_selected_lights();
+	if (num_ob + num_te + num_cam + num_li > 0) {
+		Array<string> ss;
+		if (num_ob > 0)
+			ss.add(format(_("%d objects"), num_ob));
+		if (num_te > 0)
+			ss.add(format(_("%d terrains"), num_te));
+		if (num_cam > 0)
+			ss.add(format(_("%d cameras"), num_cam));
+		if (num_li > 0)
+			ss.add(format(_("%d lights"), num_li));
+		draw_str(10, 100, _("selected: ") + implode(ss, ", "));
+	}
 }
 
 
@@ -367,11 +448,15 @@ void ModeWorld::on_draw() {
 void ModeWorld::on_end() {
 	if (WorldDialog)
 		delete WorldDialog;
-	ed->set_side_panel(nullptr);
 	WorldDialog = NULL;
 
 	ed->toolbar[hui::TOOLBAR_TOP]->reset();
 	ed->toolbar[hui::TOOLBAR_TOP]->enable(false);
+}
+
+
+void ModeWorld::on_leave() {
+	ed->set_side_panel(nullptr);
 }
 
 
@@ -424,11 +509,36 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha) {
 	nix::EnableLighting(mode_world->multi_view->light_enabled);
 }
 
+
+
+void apply_lighting(DataWorld *w) {
+	auto &m = w->meta_data;
+	nix::SetFog(m.FogMode, m.FogStart, m.FogEnd, m.FogDensity, m.FogColor);
+	nix::EnableFog(m.FogEnabled);
+	for (auto &ll: w->lights)
+		if (ll.mode == LightMode::DIRECTIONAL) {
+			nix::SetLightDirectional(ed->multi_view_3d->light, -ll.ang.ang2dir(), ll.diffuse, 0.5f, 0.8f);
+			nix::EnableLight(ed->multi_view_3d->light, ll.enabled);
+		}
+	nix::SetAmbientLight(m.Ambient);
+}
+
+void draw_background(DataWorld *w) {
+	nix::ResetToColor(w->meta_data.BackGroundColor);
+	/*NixSetZ(false,false);
+	NixSetWire(false);
+	NixSetColor(BackGroundColor);
+	NixDraw2D(r_id, NixTargetRect, 0);
+	NixSetWire(ed->multi_view_3d->wire_mode);
+	NixSetZ(true,true);*/
+}
+
+
 void ModeWorld::on_draw_win(MultiView::Window *win) {
 	if (ShowEffects) {
 		if (win->type == MultiView::VIEW_PERSPECTIVE)
-			data->meta_data.DrawBackground();
-		data->meta_data.ApplyToDraw();
+			draw_background(data);
+		apply_lighting(data);
 	}
 
 // terrain
@@ -480,9 +590,21 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		nix::SetAlpha(ALPHA_NONE);
 		nix::EnableLighting(multi_view->light_enabled);
 	}
-
-
 	nix::SetWorldMatrix(matrix::ID);
+
+
+	// lights
+	for (auto &l: data->lights) {
+		if (l.view_stage < multi_view->view_stage)
+			continue;
+
+		nix::SetColor(color(1, 0.9f, 0.6f, 0.3f));
+		set_wide_lines(5);
+		nix::DrawLine3D(l.pos, l.pos - l.ang.ang2dir() * win->cam->radius * 0.1f);
+		set_wide_lines(1.0f);
+	}
+
+
 	nix::SetZ(true,true);
 	nix::EnableFog(false);
 }
@@ -493,12 +615,17 @@ void ModeWorld::on_start() {
 	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("world-toolbar");
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("world-edit-toolbar");
 
-	dialog = new WorldObjectListPanel(this);
-	ed->set_side_panel(dialog);
-
 	SetMouseAction(MultiView::ACTION_MOVE);
 
 	data->UpdateData();
+}
+
+void ModeWorld::on_enter() {
+	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("world-toolbar");
+	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("world-edit-toolbar");
+
+	dialog = new WorldObjectListPanel(this);
+	ed->set_side_panel(dialog);
 }
 
 void ModeWorld::SetMouseAction(int mode) {
@@ -739,4 +866,12 @@ void ModeWorld::on_set_multi_view() {
 			data->Terrains,
 			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
+	multi_view->add_data(	MVD_WORLD_LIGHT,
+			data->lights,
+			NULL,
+			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE | MultiView::FLAG_DRAW);
+	multi_view->add_data(	MVD_WORLD_CAMERA,
+			data->cameras,
+			NULL,
+			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE | MultiView::FLAG_DRAW);
 }

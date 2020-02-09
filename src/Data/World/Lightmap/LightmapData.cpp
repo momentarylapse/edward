@@ -83,15 +83,16 @@ void LightmapData::Init(DataWorld *w)
 		if (light[i].Directional)
 			light[i].Pos -= lm_m;*/
 
-	if (w->meta_data.SunEnabled){
-		Light l;
-		l.Directional = true;
-		l.Dir = -w->meta_data.SunAng.ang2dir();
-		l.Ambient = w->meta_data.SunAmbient;
-		l.Diffuse = w->meta_data.SunDiffuse;
-		l.Specular = Black;
-		Lights.add(l);
-	}
+	for (auto &ll: w->lights)
+		if (ll.enabled and ll.mode == LightMode::DIRECTIONAL){
+			Light l;
+			l.Directional = true;
+			l.Dir = -ll.ang.ang2dir();
+			l.Ambient = ll.ambient;
+			l.Diffuse = ll.diffuse;
+			l.Specular = Black;
+			Lights.add(l);
+		}
 	Ambient = w->meta_data.Ambient;
 
 	SetResolution(GuessResolution());

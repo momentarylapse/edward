@@ -9213,7 +9213,7 @@ Grid
 vertical
 0
 0
-2
+7
 Group
 g-list
 
@@ -9227,7 +9227,7 @@ expandx
 0
 0
 Group
-g-object
+g-camera
 
 1
 0
@@ -9237,7 +9237,25 @@ Grid
 vertical
 0
 0
+0
+Group
+g-script
+
 2
+0
+1
+Grid
+?
+vertical
+0
+0
+0
+Group
+g-object
+
+3
+0
+1
 Grid
 ?
 
@@ -9286,10 +9304,82 @@ image=hui:edit
 2
 0
 0
+Group
+g-terrain
+
+4
+0
+1
+Grid
+?
+
+0
+0
+0
+Group
+g-light
+expandx
+5
+0
+1
+Grid
+?
+vertical,expandx
+0
+0
+2
+CheckBox
+sun_enabled
+expandx
+0
+0
+0
 Grid
 ?
 
 1
+0
+6
+Text
+ambient
+
+0
+0
+0
+ColorButton
+sun_am
+expandx
+1
+0
+0
+Text
+diffuse
+
+0
+1
+0
+ColorButton
+sun_di
+
+1
+1
+0
+Text
+specular
+
+0
+2
+0
+ColorButton
+sun_sp
+
+1
+2
+0
+Grid
+?
+indent
+6
 0
 13
 Text
@@ -9311,7 +9401,7 @@ center
 0
 0
 Text
-grp_pos
+t-pos
 
 0
 1
@@ -9341,7 +9431,7 @@ lu
 1
 0
 Text
-grp_ang
+t-ang
 
 0
 2
@@ -9559,7 +9649,7 @@ image=hui:execute
 # Language
 English
 # Number Of IDs
-952
+960
 # Text
 /ambient
 Ambient:
@@ -12183,20 +12273,44 @@ add object
 world-edit-toolbar/terrain_create
 add terrain
 
+world-object-list-dialog/g-camera
+Camera
+
+world-object-list-dialog/g-light
+Light
+
 world-object-list-dialog/g-list
 List
 
 world-object-list-dialog/g-object
 Object
 
-world-object-list-dialog/grp_ang
-Orientation
+world-object-list-dialog/g-script
+Script
 
-world-object-list-dialog/grp_pos
-Position
+world-object-list-dialog/g-terrain
+Terrain
 
 world-object-list-dialog/list
 Type\\Name
+
+world-object-list-dialog/sun_am
+
+undirectional ambient light
+world-object-list-dialog/sun_di
+
+direct light
+world-object-list-dialog/sun_enabled
+Enabled
+
+world-object-list-dialog/sun_sp
+
+specular highlights
+world-object-list-dialog/t-ang
+Orientation
+
+world-object-list-dialog/t-pos
+Position
 
 world-object-list-dialog/t_name
 Name:

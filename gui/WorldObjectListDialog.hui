@@ -2,31 +2,49 @@ Dialog world-object-list-dialog "" width=400 height=300
 	Grid ? "" vertical
 		Group g-list "List"
 			ListView list "Type\\Name" expandx
-		Group g-object "Object"
+		Group g-camera "Camera"
 			Grid ? "" vertical
+		Group g-script "Script"
+			Grid ? "" vertical
+		Group g-object "Object"
+			Grid ? ""
+				Text t_name "Name:"
+				Edit name "" expandx
+				---|
+				Text t_type "Type:"
 				Grid ? ""
-					Text t_name "Name:"
-					Edit name "" expandx
-					---|
-					Text t_type "Type:"
-					Grid ? ""
-						Edit kind "" expandx disabled
-						Button find_object "" disabled image=hui:open
-						Button edit_object "" image=hui:edit
+					Edit kind "" expandx disabled
+					Button find_object "" disabled image=hui:open
+					Button edit_object "" image=hui:edit
+		Group g-terrain "Terrain"
+			Grid ? ""
+		Group g-light "Light" expandx
+			Grid ? "" vertical expandx
+				CheckBox sun_enabled "Enabled" expandx
 				Grid ? ""
-					.
-					Text /x "X" center
-					Text /y "Y" center
-					Text /z "Z" center
+					Text /ambient "Ambient:"
+					ColorButton sun_am "" "tooltip=undirectional ambient light" expandx
 					---|
-					Text grp_pos "Position"
-					Edit pos_x "" expandx
-					Edit pos_y "" expandx
-					Edit pos_z "" expandx
-					Text /lu "lu"
+					Text /diffuse "Diffuse:"
+					ColorButton sun_di "" "tooltip=direct light"
 					---|
-					Text grp_ang "Orientation"
-					Edit ang_x ""
-					Edit ang_y ""
-					Edit ang_z ""
-					Text /degree "°"
+					Text /specular "Specular:"
+					ColorButton sun_sp "" "tooltip=specular highlights"
+					---|
+		Grid ? "" indent
+			.
+			Text /x "X" center
+			Text /y "Y" center
+			Text /z "Z" center
+			---|
+			Text t-pos "Position"
+			Edit pos_x "" expandx
+			Edit pos_y "" expandx
+			Edit pos_z "" expandx
+			Text /lu "lu"
+			---|
+			Text t-ang "Orientation"
+			Edit ang_x ""
+			Edit ang_y ""
+			Edit ang_z ""
+			Text /degree "°"

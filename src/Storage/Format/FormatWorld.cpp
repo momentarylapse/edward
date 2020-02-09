@@ -117,12 +117,12 @@ void FormatWorld::_load(const string &filename, DataWorld *data, bool deep) {
 		for (int i=0;i<n;i++)
 			f->read_float();
 		if (f->read_str() != "#"){
-			data->meta_data.SunEnabled = f->read_bool();
-			read_color_3i(f, data->meta_data.SunAmbient);
-			read_color_3i(f, data->meta_data.SunDiffuse);
-			read_color_3i(f, data->meta_data.SunSpecular);
-			data->meta_data.SunAng.x = f->read_float();
-			data->meta_data.SunAng.y = f->read_float();
+			data->lights[0].enabled = f->read_bool();
+			read_color_3i(f, data->lights[0].ambient);
+			read_color_3i(f, data->lights[0].diffuse);
+			read_color_3i(f, data->lights[0].specular);
+			data->lights[0].ang.x = f->read_float();
+			data->lights[0].ang.y = f->read_float();
 			f->read_comment();
 			read_color_3i(f, data->meta_data.Ambient);
 			if (f->read_str() != "#"){
@@ -233,12 +233,12 @@ void FormatWorld::_save(const string &filename, DataWorld *data) {
 	f->write_comment("// ScriptVars");
 	f->write_int(0);
 	f->write_comment("// Sun");
-	f->write_bool(data->meta_data.SunEnabled);
-	write_color_3i(f, data->meta_data.SunAmbient);
-	write_color_3i(f, data->meta_data.SunDiffuse);
-	write_color_3i(f, data->meta_data.SunSpecular);
-	f->write_float(data->meta_data.SunAng.x);
-	f->write_float(data->meta_data.SunAng.y);
+	f->write_bool(data->lights[0].enabled);
+	write_color_3i(f, data->lights[0].ambient);
+	write_color_3i(f, data->lights[0].diffuse);
+	write_color_3i(f, data->lights[0].specular);
+	f->write_float(data->lights[0].ang.x);
+	f->write_float(data->lights[0].ang.y);
 	f->write_comment("// Ambient");
 	write_color_3i(f, data->meta_data.Ambient);
 	f->write_comment("// Physics");

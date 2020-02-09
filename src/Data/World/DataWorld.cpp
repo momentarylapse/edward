@@ -120,11 +120,6 @@ void DataWorld::MetaData::Reset()
 	FogDensity = 0.0001f;
 	FogColor = color(1, 0.8f, 0.8f, 0.8f);
 
-	SunAng=vector(-pi/4,0,0);
-	SunEnabled=true;
-	SunAmbient = color(1, 0.05f, 0.05f, 0.05f);
-	SunDiffuse= color(1, 0.8f, 0.8f, 0.8f);
-	SunSpecular = Black;
 	Ambient = color(1, 0.25f, 0.25f, 0.25f);
 
 	SkyBoxFile.clear();
@@ -140,29 +135,7 @@ void DataWorld::MetaData::Reset()
 }
 
 
-void DataWorld::MetaData::ApplyToDraw()
-{
-	nix::SetFog(FogMode, FogStart, FogEnd, FogDensity, FogColor);
-	nix::EnableFog(FogEnabled);
-	nix::SetLightDirectional(ed->multi_view_3d->light, -SunAng.ang2dir(), SunDiffuse, 0.5f, 0.8f);
-	nix::EnableLight(ed->multi_view_3d->light, SunEnabled);
-	nix::SetAmbientLight(Ambient);
-}
-
-void DataWorld::MetaData::DrawBackground()
-{
-	nix::ResetToColor(BackGroundColor);
-	/*NixSetZ(false,false);
-	NixSetWire(false);
-	NixSetColor(BackGroundColor);
-	NixDraw2D(r_id, NixTargetRect, 0);
-	NixSetWire(ed->multi_view_3d->wire_mode);
-	NixSetZ(true,true);*/
-}
-
-
-void DataWorld::reset()
-{
+void DataWorld::reset() {
 	filename = "";
 
 	// delete old data...
@@ -174,6 +147,23 @@ void DataWorld::reset()
 	Terrains.clear();
 
 	EgoIndex = -1;
+
+	cameras.clear();
+	WorldCamera cam;
+	cam.ang = v_0;
+	cameras.add(cam);
+
+	lights.clear();
+	WorldLight sun;
+	sun.pos = vector(0,1000,0);
+	sun.ang = vector(-pi/4,0,0);
+	sun.enabled = true;
+	sun.mode = LightMode::DIRECTIONAL;
+	sun.radius = 0;
+	sun.ambient = color(1, 0.05f, 0.05f, 0.05f);
+	sun.diffuse= color(1, 0.8f, 0.8f, 0.8f);
+	sun.specular = Black;
+	lights.add(sun);
 
 	meta_data.Reset();
 
@@ -216,34 +206,27 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 	}
 }
 
-int DataWorld::GetSelectedObjects()
-{
-	int n = 0;
-	for (WorldObject &o: Objects)
-		if (o.is_selected)
-			n ++;
-	return n;
-}
+#define IMPLEMENT_COUNT_SELECTED(FUNC, ARRAY) \
+	int DataWorld::FUNC() {                   \
+		int n = 0;                            \
+		for (auto &o: ARRAY)                  \
+			if (o.is_selected)                \
+				n ++;                         \
+		return n;                             \
+	}
+
+IMPLEMENT_COUNT_SELECTED(GetSelectedObjects, Objects)
+IMPLEMENT_COUNT_SELECTED(GetSelectedTerrains, Terrains)
+IMPLEMENT_COUNT_SELECTED(get_selected_lights, lights)
+IMPLEMENT_COUNT_SELECTED(get_selected_cameras, cameras)
 
 
-
-int DataWorld::GetSelectedTerrains()
-{
-	int n = 0;
-	for (WorldTerrain &t: Terrains)
-		if (t.is_selected)
-			n ++;
-	return n;
-}
-
-
-void DataWorld::UpdateData()
-{
-	foreachi(WorldObject &o, Objects, i){
+void DataWorld::UpdateData() {
+	foreachi(auto &o, Objects, i){
 		o.UpdateData();
 		o.is_special = (i == EgoIndex);
 	}
-	for (WorldTerrain &t: Terrains)
+	for (auto &t: Terrains)
 		t.UpdateData();
 }
 

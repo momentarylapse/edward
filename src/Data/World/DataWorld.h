@@ -24,8 +24,7 @@ public:
 	vector Normal;
 };*/
 
-class WorldTerrain: public MultiView::SingleData
-{
+class WorldTerrain: public MultiView::SingleData {
 public:
 	string FileName;
 	//Array<WorldTerrainVertex> Vertex;
@@ -36,13 +35,12 @@ public:
 
 	bool Load(const vector &pos, const string &filename, bool deep = true);
 	bool Save(const string &filename);
-	virtual bool hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data);
-	virtual bool inRect(MultiView::Window *win, rect &r, void *user_data);
+	bool hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data) override;
+	bool inRect(MultiView::Window *win, rect &r, void *user_data) override;
 	void UpdateData();
 };
 
-class WorldEditingTerrain
-{
+class WorldEditingTerrain {
 public:
 	string FileName;
 	int NumX, NumZ;
@@ -53,20 +51,18 @@ public:
 	vector TextureScale[MATERIAL_MAX_TEXTURES];
 };
 
-class WorldObject: public MultiView::SingleData
-{
+class WorldObject: public MultiView::SingleData {
 public:
 	string FileName, Name;
 	Object *object;
 	vector Ang;
 
-	virtual bool hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data);
-	virtual bool inRect(MultiView::Window *win, rect &r, void *user_data);
+	bool hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data) override;
+	bool inRect(MultiView::Window *win, rect &r, void *user_data) override;
 	void UpdateData();
 };
 
-class WorldLink: public MultiView::SingleData
-{
+class WorldLink: public MultiView::SingleData {
 public:
 	int type;
 	int object[2];
@@ -75,20 +71,41 @@ public:
 	float friction;
 };
 
-class WorldScriptVariable
-{
+class WorldScriptVariable {
 public:
 	string name;
 	string type;
 	string value;
 };
 
-class WorldScript
-{
+class WorldScript {
 public:
 	string filename;
 	string class_name;
 	Array<WorldScriptVariable> variables;
+};
+
+class WorldCamera: public MultiView::SingleData {
+public:
+	string name;
+	vector ang;
+};
+
+enum class LightMode {
+	DIRECTIONAL,
+	POINT
+};
+
+class WorldLight: public MultiView::SingleData {
+public:
+	string name;
+	LightMode mode;
+	vector ang;
+	float radius;
+	bool enabled;
+	color ambient;
+	color diffuse;
+	color specular;
 };
 
 class DataWorld: public Data {
@@ -102,6 +119,8 @@ public:
 	void GetBoundaryBox(vector &min, vector &max);
 	int GetSelectedObjects();
 	int GetSelectedTerrains();
+	int get_selected_cameras();
+	int get_selected_lights();
 
 	void UpdateData();
 
@@ -115,6 +134,9 @@ public:
 	int EgoIndex;
 
 	Array<WorldLink> Links;
+
+	Array<WorldLight> lights;
+	Array<WorldCamera> cameras;
 
 	struct MetaData {
 
@@ -134,12 +156,6 @@ public:
 		float FogDensity;
 		color FogColor;
 
-		// light
-		bool SunEnabled;
-		vector SunAng;
-		color SunAmbient;
-		color SunDiffuse;
-		color SunSpecular;
 		color Ambient;
 
 		// scripts
@@ -149,11 +165,8 @@ public:
 		Array<string> MusicFile;
 
 		void Reset();
-		void DrawBackground();
-		void ApplyToDraw();
 	};
 	MetaData meta_data;
-
 
 
 

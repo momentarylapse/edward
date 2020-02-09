@@ -12,18 +12,15 @@
 class DataWorld;
 class vector;
 
-class ActionWorldMoveSelection: public ActionMultiView
-{
+class ActionWorldMoveSelection: public ActionMultiView {
 public:
 	ActionWorldMoveSelection(DataWorld *d);
-	virtual ~ActionWorldMoveSelection();
-	string name(){	return "WorldMoveSelection";	}
+	string name() override { return "WorldMoveSelection"; }
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 private:
-	Array<int> terrain_index;
-	Array<vector> terrain_old_data;
+	Array<int> type;
 };
 
 #endif /* ACTIONWORLDMOVESELECTION_H_ */

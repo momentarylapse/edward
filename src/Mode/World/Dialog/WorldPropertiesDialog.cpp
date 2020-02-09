@@ -293,12 +293,12 @@ void WorldPropertiesDialog::apply_data() {
 	temp.FogDensity = 1.0f / get_float("fog_distance");
 	temp.FogColor = get_color("fog_color");
 
-	temp.SunEnabled = is_checked("sun_enabled");
+	/*temp.SunEnabled = is_checked("sun_enabled");
 	temp.SunAmbient = get_color("sun_am");
 	temp.SunDiffuse = get_color("sun_di");
 	temp.SunSpecular = get_color("sun_sp");
 	temp.SunAng.x = get_float("sun_ang_x") / 180.0f * pi;
-	temp.SunAng.y = get_float("sun_ang_y") / 180.0f * pi;
+	temp.SunAng.y = get_float("sun_ang_y") / 180.0f * pi;*/
 	temp.Ambient = get_color("ambient");
 
 	data->execute(new ActionWorldEditData(temp));
@@ -344,7 +344,7 @@ void WorldPropertiesDialog::load_data() {
 	enable("fog_color", temp.FogEnabled);
 
 	set_decimals(WorldLightDec);
-	check("sun_enabled", temp.SunEnabled);
+	/*check("sun_enabled", temp.SunEnabled);
 	set_color("sun_am", temp.SunAmbient);
 	set_color("sun_di", temp.SunDiffuse);
 	set_color("sun_sp", temp.SunSpecular);
@@ -355,7 +355,7 @@ void WorldPropertiesDialog::load_data() {
 	enable("sun_sp", temp.SunEnabled);
 	enable("sun_ang_x", temp.SunEnabled);
 	enable("sun_ang_y", temp.SunEnabled);
-	enable("sun_ang_from_camera", temp.SunEnabled);
+	enable("sun_ang_from_camera", temp.SunEnabled);*/
 	set_color("ambient", temp.Ambient);
 
 	set_decimals(WorldPhysicsDec);

@@ -21,6 +21,8 @@ public:
 
 	void on_start() override;
 	void on_end() override;
+	void on_enter() override;
+	void on_leave() override;
 
 	void on_command(const string &id) override;
 	void on_update(Observable *o, const string &message) override;

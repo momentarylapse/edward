@@ -12,17 +12,16 @@
 class DataWorld;
 class vector;
 
-class ActionWorldRotateObjects: public ActionMultiView
-{
+class ActionWorldRotateObjects: public ActionMultiView {
 public:
 	ActionWorldRotateObjects(DataWorld *d);
-	virtual ~ActionWorldRotateObjects();
-	string name(){	return "WorldRotateObjects";	}
+	string name() override { return "WorldRotateObjects"; }
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 private:
 	Array<vector> old_ang;
+	Array<int> type;
 };
 
 #endif /* ACTIONWORLDROTATEOBJECTS_H_ */

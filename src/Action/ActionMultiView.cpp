@@ -19,40 +19,34 @@
 #include "../Mode/Model/Mesh/ModeModelMeshTexture.h"
 #include "Model/Skeleton/ActionModelTransformBones.h"
 
-ActionMultiView::ActionMultiView()
-{
+ActionMultiView::ActionMultiView() {
 	mat = matrix::ID;
 }
 
-ActionMultiView::~ActionMultiView()
-{
+ActionMultiView::~ActionMultiView() {
 }
 
 
 
-void ActionMultiView::abort(Data *d)
-{
+void ActionMultiView::abort(Data *d) {
 	undo(d);
 }
 
 
 
-void ActionMultiView::abort_and_notify(Data *d)
-{
+void ActionMultiView::abort_and_notify(Data *d) {
 	abort(d);
 	d->notify(message());
 }
 
-void ActionMultiView::update_and_notify(Data *d, const matrix &m)
-{
+void ActionMultiView::update_and_notify(Data *d, const matrix &m) {
 	abort(d);
 	mat = m;
 	execute(d);
 	d->notify(message());
 }
 
-ActionMultiView *ActionMultiViewFactory(const string &name, Data *d)
-{
+ActionMultiView *ActionMultiViewFactory(const string &name, Data *d) {
 	if (name == "ActionModelTransformVertices")
 		return new ActionModelTransformVertices((DataModel*)d);
 	if (name == "ActionModelTransformSkinVertices")
