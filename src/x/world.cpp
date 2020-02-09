@@ -319,7 +319,6 @@ bool GodLoadWorldFromLevelData()
 
 	// set up light (sun and ambient)
 	World.ambient = LevelData.ambient;
-	nix::SetAmbientLight(World.ambient);
 
 #ifdef _X_ALLOW_X_
 	World.sun = new Light::Light;

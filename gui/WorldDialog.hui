@@ -1,6 +1,6 @@
 Dialog world_dialog "World properties" width=520 height=420
 	Grid ? "" vertical
-		TabControl world_dialog_tab_control "Background\\Fog\\Light\\Physics\\Scripts"
+		TabControl world_dialog_tab_control "Background\\Fog\\Physics\\Scripts"
 			Grid ? "" vertical
 				Group grp_bg_color "Color"
 					ColorButton bgc "" alpha "tooltip=Sky color"
@@ -22,30 +22,6 @@ Dialog world_dialog "World properties" width=520 height=420
 					Text world_dialog_t_fog_distance "Distance"
 					SpinButton fog_distance "" range=0:1000000000:0.1 "tooltip=fog intensity = exp( - distance / viewing-distance )"
 				ColorButton fog_color ""
-			Grid ? "" vertical
-				Group grp_ambient "Ambient"
-					ColorButton ambient "" "tooltip=general ambient light independent of other light sources"
-				Group grp_sun "Sun"
-					Grid ? "" vertical
-						CheckBox sun_enabled "Enabled" expandx
-						Grid ? ""
-							Text /ambient "Ambient:"
-							ColorButton sun_am "" "tooltip=undirectional ambient light"
-							---|
-							Text /diffuse "Diffuse:"
-							ColorButton sun_di "" "tooltip=direct light"
-							---|
-							Text /specular "Specular:"
-							ColorButton sun_sp "" "tooltip=specular highlights"
-							---|
-							Text world_dialog_t_sun_ang_x "X: altitude above horizon (X-Z-plane)"
-							SpinButton sun_ang_x "" "tooltip=height above the horizon"
-							Text /degree "°"
-							---|
-							Text world_dialog_t_sun_ang_y "Y: direction (angle to Z-axis)"
-							SpinButton sun_ang_y "" "tooltip=compass direction along horizon"
-							Text /degree "°"
-						Button sun_ang_from_camera "Direction from camera" image=hui:media-record
 			Grid ? "" vertical
 				CheckBox physics_enabled "Enabled"
 				Group grp_gravitation "Gravity"

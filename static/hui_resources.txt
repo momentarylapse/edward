@@ -7839,7 +7839,7 @@ world_dialog_tab_control
 
 0
 0
-5
+4
 Grid
 ?
 vertical
@@ -7966,126 +7966,6 @@ vertical
 2
 0
 2
-Group
-grp_ambient
-
-0
-0
-1
-ColorButton
-ambient
-
-0
-0
-0
-Group
-grp_sun
-
-1
-0
-1
-Grid
-?
-vertical
-0
-0
-3
-CheckBox
-sun_enabled
-expandx
-0
-0
-0
-Grid
-?
-
-1
-0
-12
-Text
-ambient
-
-0
-0
-0
-ColorButton
-sun_am
-
-1
-0
-0
-Text
-diffuse
-
-0
-1
-0
-ColorButton
-sun_di
-
-1
-1
-0
-Text
-specular
-
-0
-2
-0
-ColorButton
-sun_sp
-
-1
-2
-0
-Text
-world_dialog_t_sun_ang_x
-
-0
-3
-0
-SpinButton
-sun_ang_x
-
-1
-3
-0
-Text
-degree
-
-2
-3
-0
-Text
-world_dialog_t_sun_ang_y
-
-0
-4
-0
-SpinButton
-sun_ang_y
-
-1
-4
-0
-Text
-degree
-
-2
-4
-0
-Button
-sun_ang_from_camera
-image=hui:media-record
-2
-0
-0
-Grid
-?
-vertical
-3
-0
-2
 CheckBox
 physics_enabled
 
@@ -8161,7 +8041,7 @@ luss
 ListView
 script_list
 nobar
-4
+3
 0
 0
 Grid
@@ -9339,42 +9219,54 @@ Grid
 
 1
 0
-6
+8
 Text
-ambient
+t-type
 
 0
 0
 0
-ColorButton
-sun_am
+ComboBox
+sun_type
 expandx
 1
 0
 0
 Text
-diffuse
+t-color
 
 0
 1
 0
 ColorButton
-sun_di
+sun_col
 
 1
 1
 0
 Text
-specular
+t-radius
 
 0
 2
 0
-ColorButton
-sun_sp
+Edit
+radius
 
 1
 2
+0
+Text
+t-harshness
+
+0
+3
+0
+SpinButton
+harshness
+range=0:1:0.01
+1
+3
 0
 Grid
 ?
@@ -9649,7 +9541,7 @@ image=hui:execute
 # Language
 English
 # Number Of IDs
-960
+950
 # Text
 /ambient
 Ambient:
@@ -12294,23 +12186,29 @@ Terrain
 world-object-list-dialog/list
 Type\\Name
 
-world-object-list-dialog/sun_am
-
-undirectional ambient light
-world-object-list-dialog/sun_di
-
-direct light
 world-object-list-dialog/sun_enabled
 Enabled
 
-world-object-list-dialog/sun_sp
+world-object-list-dialog/sun_type
+directional\\point
 
-specular highlights
 world-object-list-dialog/t-ang
 Orientation
 
+world-object-list-dialog/t-color
+Color:
+
+world-object-list-dialog/t-harshness
+Harshness:
+
 world-object-list-dialog/t-pos
 Position
+
+world-object-list-dialog/t-radius
+Radius:
+
+world-object-list-dialog/t-type
+Type:
 
 world-object-list-dialog/t_name
 Name:
@@ -12387,9 +12285,6 @@ Delete
 world_camera_dialog/world_camera_dialog
 Camera flight
 
-world_dialog/ambient
-
-general ambient light independent of other light sources
 world_dialog/bgc
 
 Sky color
@@ -12414,9 +12309,6 @@ Deactivated
 world_dialog/fog_start
 
 Distance, at which fog starts (intensity 0)
-world_dialog/grp_ambient
-Ambient
-
 world_dialog/grp_bg_color
 Color
 
@@ -12425,9 +12317,6 @@ Gravity
 
 world_dialog/grp_skybox
 Skybox models
-
-world_dialog/grp_sun
-Sun
 
 world_dialog/physics_enabled
 Enabled
@@ -12438,27 +12327,6 @@ File
 world_dialog/skybox
 #\\Model
 Models drawn over the sky color\n- double click to select
-world_dialog/sun_am
-
-undirectional ambient light
-world_dialog/sun_ang_from_camera
-Direction from camera
-
-world_dialog/sun_ang_x
-
-height above the horizon
-world_dialog/sun_ang_y
-
-compass direction along horizon
-world_dialog/sun_di
-
-direct light
-world_dialog/sun_enabled
-Enabled
-
-world_dialog/sun_sp
-
-specular highlights
 world_dialog/world_dialog
 World properties
 
@@ -12471,14 +12339,8 @@ to
 world_dialog/world_dialog_t_fog_start
 Distance
 
-world_dialog/world_dialog_t_sun_ang_x
-X: altitude above horizon (X-Z-plane)
-
-world_dialog/world_dialog_t_sun_ang_y
-Y: direction (angle to Z-axis)
-
 world_dialog/world_dialog_tab_control
-Background\\Fog\\Light\\Physics\\Scripts
+Background\\Fog\\Physics\\Scripts
 
 world_new_object_dialog/t_name
 Name
@@ -15321,7 +15183,7 @@ world_dialog/world_dialog_t_sun_ang_y
 Richtung Y
 
 world_dialog/world_dialog_tab_control
-Hintergrund\\Nebel\\Licht\\Physik\\Scripte
+Hintergrund\\Nebel\\Physik\\Scripte
 
 world_dialog/x
 X

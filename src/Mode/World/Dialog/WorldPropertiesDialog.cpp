@@ -35,8 +35,6 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	event("apply", [=]{ apply_data(); });
 	event("ok", [=]{ on_ok(); });
 
-	event("sun_enabled", [=]{ on_sun_enabled(); });
-	event("sun_ang_from_camera", [=]{ on_sun_ang_from_camera(); });
 	event("fog_mode:none", [=]{ on_fog_mode_none(); });
 	event("fog_mode:linear", [=]{ on_fog_mode_linear(); });
 	event("fog_mode:exp", [=]{ on_fog_mode_exp(); });
@@ -94,23 +92,6 @@ void WorldPropertiesDialog::on_close() {
 	unsubscribe(data);
 	hide();
 	active = false;
-}
-
-
-void WorldPropertiesDialog::on_sun_enabled() {
-	bool b = is_checked("");
-	enable("sun_am", b);
-	enable("sun_di", b);
-	enable("sun_sp", b);
-	enable("sun_ang_x", b);
-	enable("sun_ang_y", b);
-	enable("sun_ang_from_camera", b);
-}
-
-
-void WorldPropertiesDialog::on_sun_ang_from_camera() {
-	set_float("sun_ang_x", ed->multi_view_3d->cam.ang.x * 180.0f / pi);
-	set_float("sun_ang_y", ed->multi_view_3d->cam.ang.y * 180.0f / pi);
 }
 
 
@@ -293,14 +274,6 @@ void WorldPropertiesDialog::apply_data() {
 	temp.FogDensity = 1.0f / get_float("fog_distance");
 	temp.FogColor = get_color("fog_color");
 
-	/*temp.SunEnabled = is_checked("sun_enabled");
-	temp.SunAmbient = get_color("sun_am");
-	temp.SunDiffuse = get_color("sun_di");
-	temp.SunSpecular = get_color("sun_sp");
-	temp.SunAng.x = get_float("sun_ang_x") / 180.0f * pi;
-	temp.SunAng.y = get_float("sun_ang_y") / 180.0f * pi;*/
-	temp.Ambient = get_color("ambient");
-
 	data->execute(new ActionWorldEditData(temp));
 }
 
@@ -342,21 +315,6 @@ void WorldPropertiesDialog::load_data() {
 	enable("fog_end", temp.FogEnabled and (temp.FogMode == FOG_LINEAR));
 	enable("fog_distance", temp.FogEnabled and ((temp.FogMode == FOG_EXP) or (temp.FogMode == FOG_EXP2)));
 	enable("fog_color", temp.FogEnabled);
-
-	set_decimals(WorldLightDec);
-	/*check("sun_enabled", temp.SunEnabled);
-	set_color("sun_am", temp.SunAmbient);
-	set_color("sun_di", temp.SunDiffuse);
-	set_color("sun_sp", temp.SunSpecular);
-	set_float("sun_ang_x", temp.SunAng.x * 180.0f / pi);
-	set_float("sun_ang_y", temp.SunAng.y * 180.0f / pi);
-	enable("sun_am", temp.SunEnabled);
-	enable("sun_di", temp.SunEnabled);
-	enable("sun_sp", temp.SunEnabled);
-	enable("sun_ang_x", temp.SunEnabled);
-	enable("sun_ang_y", temp.SunEnabled);
-	enable("sun_ang_from_camera", temp.SunEnabled);*/
-	set_color("ambient", temp.Ambient);
 
 	set_decimals(WorldPhysicsDec);
 	check("physics_enabled", temp.PhysicsEnabled);

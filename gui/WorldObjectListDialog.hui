@@ -22,14 +22,17 @@ Dialog world-object-list-dialog "" width=400 height=300
 			Grid ? "" vertical expandx
 				CheckBox sun_enabled "Enabled" expandx
 				Grid ? ""
-					Text /ambient "Ambient:"
-					ColorButton sun_am "" "tooltip=undirectional ambient light" expandx
+					Text t-type "Type:"
+					ComboBox sun_type "directional\\point" expandx
 					---|
-					Text /diffuse "Diffuse:"
-					ColorButton sun_di "" "tooltip=direct light"
+					Text t-color "Color:"
+					ColorButton sun_col ""
 					---|
-					Text /specular "Specular:"
-					ColorButton sun_sp "" "tooltip=specular highlights"
+					Text t-radius "Radius:"
+					Edit radius ""
+					---|
+					Text t-harshness "Harshness:"
+					SpinButton harshness "" range=0:1:0.01
 					---|
 		Grid ? "" indent
 			.

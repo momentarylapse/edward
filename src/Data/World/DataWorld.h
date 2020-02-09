@@ -103,9 +103,11 @@ public:
 	vector ang;
 	float radius;
 	bool enabled;
-	color ambient;
-	color diffuse;
-	color specular;
+	color col;
+	float harshness;
+
+	color ambient();
+	color diffuse();
 };
 
 class DataWorld: public Data {
@@ -155,8 +157,6 @@ public:
 		float FogEnd;
 		float FogDensity;
 		color FogColor;
-
-		color Ambient;
 
 		// scripts
 		Array<WorldScript> scripts;

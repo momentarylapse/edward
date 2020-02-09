@@ -22,8 +22,6 @@ public:
 
 	void fill_skybox_list();
 	void fill_script_list();
-	void on_sun_enabled();
-	void on_sun_ang_from_camera();
 	void on_fog_mode_none();
 	void on_fog_mode_linear();
 	void on_fog_mode_exp();

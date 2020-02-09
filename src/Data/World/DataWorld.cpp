@@ -101,6 +101,14 @@ void WorldTerrain::UpdateData()
 	terrain->pos = pos;
 }
 
+color WorldLight::ambient() {
+	return col * ((1 - harshness) / 2);
+}
+
+color WorldLight::diffuse() {
+	return col * harshness;
+}
+
 DataWorld::DataWorld() :
 	Data(FD_WORLD)
 {
@@ -119,8 +127,6 @@ void DataWorld::MetaData::Reset()
 	FogEnd = 1000;
 	FogDensity = 0.0001f;
 	FogColor = color(1, 0.8f, 0.8f, 0.8f);
-
-	Ambient = color(1, 0.25f, 0.25f, 0.25f);
 
 	SkyBoxFile.clear();
 	SkyBoxFile.resize(32);
@@ -160,9 +166,8 @@ void DataWorld::reset() {
 	sun.enabled = true;
 	sun.mode = LightMode::DIRECTIONAL;
 	sun.radius = 0;
-	sun.ambient = color(1, 0.05f, 0.05f, 0.05f);
-	sun.diffuse= color(1, 0.8f, 0.8f, 0.8f);
-	sun.specular = Black;
+	sun.col = White;
+	sun.harshness = 0.75;
 	lights.add(sun);
 
 	meta_data.Reset();

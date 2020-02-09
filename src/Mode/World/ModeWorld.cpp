@@ -56,14 +56,21 @@ public:
 		int type, index;
 	};
 	Array<Index> list_indices;
+	int selected;
 
 	WorldObjectListPanel(ModeWorld *w) : Observer("WorldObjectListPanel") {
 		from_resource("world-object-list-dialog");
 
 		world = w;
 		data = world->data;
+		selected = -1;
 		subscribe(data, data->MESSAGE_CHANGE);
 		event_x("list", "hui:select", [=]{ on_list_select(); });
+		event("sun_enabled", [=]{ on_change(); });
+		event("sun_type", [=]{ on_change(); });
+		event("sun_col", [=]{ on_change(); });
+		event("harshness", [=]{ on_change(); });
+		event("radius", [=]{ on_change(); });
 
 		fill_list();
 	}
@@ -91,6 +98,7 @@ public:
 		hide_control("g-script", true);
 		reset("list");
 		list_indices.clear();
+		selected = -1;
 
 		add_string("list", "Camera\\cam");
 		list_indices.add({MVD_WORLD_CAMERA, 0});
@@ -123,11 +131,11 @@ public:
 		set_float("ang_y", 0);
 		set_float("ang_z", 0);
 
-		int n = get_int("");
-		if (n < 0)
+		selected = get_int("");
+		if (selected < 0)
 			return;
 
-		auto &ii = list_indices[n];
+		auto &ii = list_indices[selected];
 		hide_control("g-object", ii.type != MVD_WORLD_OBJECT);
 		hide_control("g-terrain", ii.type != MVD_WORLD_TERRAIN);
 		hide_control("g-light", ii.type != MVD_WORLD_LIGHT);
@@ -160,9 +168,10 @@ public:
 		} else if (ii.type == MVD_WORLD_LIGHT) {
 			auto &l = data->lights[ii.index];
 			check("sun_enabled", l.enabled);
-			set_color("sun_am", l.ambient);
-			set_color("sun_di", l.diffuse);
-			set_color("sun_sp", l.specular);
+			set_color("sun_col", l.col);
+			set_int("type", (int)l.mode);
+			set_float("radius", l.radius);
+			set_float("harshness", l.harshness);
 			set_float("pos_x", l.pos.x);
 			set_float("pos_y", l.pos.y);
 			set_float("pos_z", l.pos.z);
@@ -183,6 +192,20 @@ public:
 			c.is_selected = true;
 		}
 	}
+
+	void on_change() {
+		if (selected < 0)
+			return;
+		auto &ii = list_indices[selected];
+		if (ii.type == MVD_WORLD_LIGHT) {
+			auto &l = data->lights[ii.index];
+			l.enabled = is_checked("sun_enabled");
+			l.harshness = get_float("harshness");
+			l.radius = get_float("radius");
+			l.col = get_color("sun_col");
+			world->multi_view->force_redraw();
+		}
+	}
 };
 
 
@@ -196,7 +219,7 @@ ModeWorld::ModeWorld() :
 
 	ShowTerrains = true;
 	ShowObjects = true;
-	ShowEffects = false;
+	ShowEffects = true;
 	TerrainShowTextureLevel = -1;
 
 	mode_world_camera = new ModeWorldCamera(this, new DataCamera);
@@ -517,10 +540,10 @@ void apply_lighting(DataWorld *w) {
 	nix::EnableFog(m.FogEnabled);
 	for (auto &ll: w->lights)
 		if (ll.mode == LightMode::DIRECTIONAL) {
-			nix::SetLightDirectional(ed->multi_view_3d->light, -ll.ang.ang2dir(), ll.diffuse, 0.5f, 0.8f);
+			nix::SetLightDirectional(ed->multi_view_3d->light, -ll.ang.ang2dir(), ll.col, ll.harshness);
 			nix::EnableLight(ed->multi_view_3d->light, ll.enabled);
+			//nix::SetAmbientLight(ll.ambient());
 		}
-	nix::SetAmbientLight(m.Ambient);
 }
 
 void draw_background(DataWorld *w) {
@@ -717,7 +740,7 @@ void ModeWorld::ExecuteSelectionPropertiesDialog() {
 	//ExecuteWorldPropertiesDialog();
 	int sel_type, sel_index;
 
-	SelectionPropertiesDialog *dlg = new SelectionPropertiesDialog(ed, false, data, &sel_type, &sel_index);
+	auto *dlg = new SelectionPropertiesDialog(ed, false, data, &sel_type, &sel_index);
 	dlg->run();
 
 	if (sel_type >= 0) {

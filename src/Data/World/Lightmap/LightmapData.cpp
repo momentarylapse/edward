@@ -88,12 +88,12 @@ void LightmapData::Init(DataWorld *w)
 			Light l;
 			l.Directional = true;
 			l.Dir = -ll.ang.ang2dir();
-			l.Ambient = ll.ambient;
-			l.Diffuse = ll.diffuse;
+			l.Ambient = ll.ambient();
+			l.Diffuse = ll.diffuse();
 			l.Specular = Black;
 			Lights.add(l);
 		}
-	Ambient = w->meta_data.Ambient;
+	Ambient = Black;
 
 	SetResolution(GuessResolution());
 }

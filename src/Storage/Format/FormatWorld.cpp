@@ -118,13 +118,16 @@ void FormatWorld::_load(const string &filename, DataWorld *data, bool deep) {
 			f->read_float();
 		if (f->read_str() != "#"){
 			data->lights[0].enabled = f->read_bool();
-			read_color_3i(f, data->lights[0].ambient);
-			read_color_3i(f, data->lights[0].diffuse);
-			read_color_3i(f, data->lights[0].specular);
+			color am, am2, di, sp;
+			read_color_3i(f, am);
+			read_color_3i(f, di);
+			read_color_3i(f, sp);
 			data->lights[0].ang.x = f->read_float();
 			data->lights[0].ang.y = f->read_float();
 			f->read_comment();
-			read_color_3i(f, data->meta_data.Ambient);
+			read_color_3i(f, am2);
+			data->lights[0].col = (am + am2) * 2 + di;
+			data->lights[0].harshness = di.r / data->lights[0].col.r;
 			if (f->read_str() != "#"){
 				data->meta_data.PhysicsEnabled = f->read_bool();
 			}
@@ -234,13 +237,13 @@ void FormatWorld::_save(const string &filename, DataWorld *data) {
 	f->write_int(0);
 	f->write_comment("// Sun");
 	f->write_bool(data->lights[0].enabled);
-	write_color_3i(f, data->lights[0].ambient);
-	write_color_3i(f, data->lights[0].diffuse);
-	write_color_3i(f, data->lights[0].specular);
+	write_color_3i(f, data->lights[0].ambient());
+	write_color_3i(f, data->lights[0].diffuse());
+	write_color_3i(f, Black);
 	f->write_float(data->lights[0].ang.x);
 	f->write_float(data->lights[0].ang.y);
 	f->write_comment("// Ambient");
-	write_color_3i(f, data->meta_data.Ambient);
+	write_color_3i(f, Black);
 	f->write_comment("// Physics");
 	f->write_bool(data->meta_data.PhysicsEnabled);
 	f->write_int(0);

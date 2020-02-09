@@ -3355,7 +3355,7 @@ world_dialog/world_dialog_t_sun_ang_y
 Richtung Y
 
 world_dialog/world_dialog_tab_control
-Hintergrund\\Nebel\\Licht\\Physik\\Scripte
+Hintergrund\\Nebel\\Physik\\Scripte
 
 world_dialog/x
 X

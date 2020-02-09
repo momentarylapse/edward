@@ -260,8 +260,7 @@ void set_projection_matrix(Window *w)
 
 void Window::draw()
 {
-	nix::Scissor(dest);
-	string view_kind;
+	nix::Scissor(rect(dest.x1, dest.x2+1, dest.y1, dest.y2));
 	nix::EnableLighting(false);
 	nix::SetTexture(NULL);
 
@@ -275,7 +274,7 @@ void Window::draw()
 
 	// camera matrix
 	vector pos = cam->pos;
-	view_kind = view_name(type);
+	string view_kind = view_name(type);
 	local_ang = view_ang(type, cam);
 	if (type == VIEW_PERSPECTIVE){
 		if (!cam->ignore_radius)
@@ -300,10 +299,9 @@ void Window::draw()
 	nix::SetWire(multi_view->wire_mode);
 	// light
 	vector dir = cam->ang * vector::EZ;
-	nix::SetLightDirectional(multi_view->light, dir, color(1,0.6f,0.6f,0.6f), 0.5f, 0.7f);
+	nix::SetLightDirectional(multi_view->light, dir, White, 0.7f);
 	nix::EnableLight(multi_view->light, true);
 	nix::EnableLighting(multi_view->light_enabled);
-	nix::SetAmbientLight(Black);
 	nix::SetMaterial(Black,White,Black,0,White);//Black);
 	nix::SetColor(White);
 
