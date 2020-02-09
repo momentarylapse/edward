@@ -25,6 +25,7 @@
 #include "Dialog/TerrainPropertiesDialog.h"
 #include "Dialog/TerrainHeightmapDialog.h"
 #include "Dialog/LightmapDialog.h"
+#include "Dialog/WorldPropertiesDialog.h"
 #include "Creation/ModeWorldCreateObject.h"
 #include "Creation/ModeWorldCreateTerrain.h"
 #include "Camera/ModeWorldCamera.h"
@@ -45,12 +46,83 @@ ModeWorld *mode_world = NULL;
 #define TSelectionAlpha				0.20f
 #define TMouseOverAlpha				0.20f
 
+
+class WorldObjectListPanel : public hui::Panel, Observer {
+public:
+	ModeWorld *world;
+	DataWorld *data;
+	WorldObjectListPanel(ModeWorld *w) : Observer("WorldObjectListPanel") {
+		from_resource("world-object-list-dialog");
+
+		world = w;
+		data = world->data;
+		subscribe(data, data->MESSAGE_CHANGE);
+		event_x("list", "hui:select", [=]{ on_list_select(); });
+
+		fill_list();
+	}
+	~WorldObjectListPanel() {
+		unsubscribe(data);
+	}
+
+	void on_update(Observable *o, const string &m) override {
+		fill_list();
+	}
+
+	void fill_list() {
+		reset("list");
+		add_string("list", "Camera\\cam");
+		add_string("list", "Light\\sun");
+		for (auto &t: data->Terrains)
+			add_string("list", "Terrain\\" + t.FileName);
+		for (auto &o: data->Objects)
+			add_string("list", "Object\\" + ((o.Name == "") ? o.FileName : o.Name));
+	}
+
+	void on_list_select() {
+		set_string("name", "");
+		set_string("kind", "");
+		set_float("pos_x", 0);
+		set_float("pos_y", 0);
+		set_float("pos_z", 0);
+		set_float("ang_x", 0);
+		set_float("ang_y", 0);
+		set_float("ang_z", 0);
+
+		int n = get_int("");
+		if (n >= 2 + data->Terrains.num) {
+			auto &o = data->Objects[n - 2 - data->Terrains.num];
+			set_string("name", o.Name);
+			set_string("kind", o.FileName);
+			set_float("pos_x", o.pos.x);
+			set_float("pos_y", o.pos.y);
+			set_float("pos_z", o.pos.z);
+			set_float("ang_x", o.Ang.x * 180.0f / pi);
+			set_float("ang_y", o.Ang.y * 180.0f / pi);
+			set_float("ang_z", o.Ang.z * 180.0f / pi);
+		} else if (n >= 2) {
+			auto &t = data->Terrains[n - 2];
+			set_string("kind", t.FileName);
+			set_float("pos_x", t.pos.x);
+			set_float("pos_y", t.pos.y);
+			set_float("pos_z", t.pos.z);
+		} else if (n == 0) {
+		} else if (n == 1) {
+			set_float("ang_x", data->meta_data.SunAng.x * 180.0f / pi);
+			set_float("ang_y", data->meta_data.SunAng.y * 180.0f / pi);
+			set_float("ang_z", data->meta_data.SunAng.z * 180.0f / pi);
+
+		}
+	}
+};
+
+
 ModeWorld::ModeWorld() :
-	Mode<DataWorld>("World", NULL, new DataWorld, ed->multi_view_3d, "menu_world")
-{
+	Mode<DataWorld>("World", NULL, new DataWorld, ed->multi_view_3d, "menu_world") {
 	subscribe(data);
 
-	WorldDialog = NULL;
+	WorldDialog = nullptr;
+	dialog = nullptr;
 	mouse_action = -1;
 
 	ShowTerrains = true;
@@ -62,8 +134,7 @@ ModeWorld::ModeWorld() :
 	mode_world_terrain = new ModeWorldTerrain(this);
 }
 
-ModeWorld::~ModeWorld()
-{
+ModeWorld::~ModeWorld() {
 }
 
 bool ModeWorld::save_as() {
@@ -72,8 +143,7 @@ bool ModeWorld::save_as() {
 
 
 
-void ModeWorld::on_command(const string & id)
-{
+void ModeWorld::on_command(const string & id) {
 	if (id == "new")
 		_new();
 	if (id == "open")
@@ -116,7 +186,7 @@ void ModeWorld::on_command(const string & id)
 	if (id == "camscript_create")
 		ed->set_mode(mode_world_camera);
 	if (id == "camscript_load")
-		if (storage->file_dialog(FD_CAMERAFLIGHT, false, true)){
+		if (storage->file_dialog(FD_CAMERAFLIGHT, false, true)) {
 			if (mode_world_camera->data->load(storage->dialog_file_complete))
 				ed->set_mode(mode_world_camera);
 			else
@@ -154,21 +224,20 @@ void ModeWorld::on_command(const string & id)
 vector tmv[MODEL_MAX_VERTICES*5],pmv[MODEL_MAX_VERTICES*5];
 bool tvm[MODEL_MAX_VERTICES*5];
 
-bool WorldObject::hover(MultiView::Window *win, vector &mv, vector &tp, float &z, void *user_data)
-{
+bool WorldObject::hover(MultiView::Window *win, vector &mv, vector &tp, float &z, void *user_data) {
 	Object *o = object;
 	if (!o)
 		return false;
 	int d = o->_detail_;
 	if ((d<0)or(d>2))
 		return false;
-	for (int i=0;i<o->skin[d]->vertex.num;i++){
+	for (int i=0;i<o->skin[d]->vertex.num;i++) {
 		tmv[i] = o->_matrix * o->skin[d]->vertex[i];
 		pmv[i] = win->project(tmv[i]);
 	}
 	float z_min=1;
 	for (int mm=0;mm<o->material.num;mm++)
-	for (int i=0;i<o->skin[d]->sub[mm].num_triangles;i++){
+	for (int i=0;i<o->skin[d]->sub[mm].num_triangles;i++) {
 		vector a=pmv[o->skin[d]->sub[mm].triangle_index[i*3  ]];
 		vector b=pmv[o->skin[d]->sub[mm].triangle_index[i*3+1]];
 		vector c=pmv[o->skin[d]->sub[mm].triangle_index[i*3+2]];
@@ -178,9 +247,9 @@ bool WorldObject::hover(MultiView::Window *win, vector &mv, vector &tp, float &z
 		float az=a.z,bz=b.z,cz=c.z;
 		a.z=b.z=c.z=0;
 		GetBaryCentric(mv,a,b,c,f,g);
-		if ((f>=0)and(g>=0)and(f+g<=1)){
+		if ((f>=0)and(g>=0)and(f+g<=1)) {
 			float z=az + f*(bz-az) + g*(cz-az);
-			if (z<z_min){
+			if (z<z_min) {
 				z_min=z;
 				tp=tmv[o->skin[d]->sub[mm].triangle_index[i*3  ]]
 					+ f*(tmv[o->skin[d]->sub[mm].triangle_index[i*3+1]]-tmv[o->skin[d]->sub[mm].triangle_index[i*3  ]])
@@ -192,8 +261,7 @@ bool WorldObject::hover(MultiView::Window *win, vector &mv, vector &tp, float &z
 	return (z_min<1);
 }
 
-bool WorldObject::inRect(MultiView::Window *win, rect &r, void *user_data)
-{
+bool WorldObject::inRect(MultiView::Window *win, rect &r, void *user_data) {
 	Object *m = object;
 	if (!m)
 		return false;
@@ -201,7 +269,7 @@ bool WorldObject::inRect(MultiView::Window *win, rect &r, void *user_data)
 	if ((d<0)or(d>2))
 		return false;
 	vector min, max;
-	for (int i=0;i<m->skin[d]->vertex.num;i++){
+	for (int i=0;i<m->skin[d]->vertex.num;i++) {
 		tmv[i] = m->_matrix * m->skin[d]->vertex[i];
 		pmv[i] = win->project(tmv[i]);
 		if (r.inside(pmv[i].x, pmv[i].y))
@@ -209,7 +277,7 @@ bool WorldObject::inRect(MultiView::Window *win, rect &r, void *user_data)
 	}
 	return false;
 	for (int mm=0;mm<m->material.num;mm++)
-	for (int i=0;i<m->skin[d]->sub[mm].num_triangles;i++){
+	for (int i=0;i<m->skin[d]->sub[mm].num_triangles;i++) {
 		vector a=pmv[m->skin[d]->sub[mm].triangle_index[i*3  ]];
 		vector b=pmv[m->skin[d]->sub[mm].triangle_index[i*3+1]];
 		vector c=pmv[m->skin[d]->sub[mm].triangle_index[i*3+2]];
@@ -227,8 +295,7 @@ bool WorldObject::inRect(MultiView::Window *win, rect &r, void *user_data)
 	return ((min.x>=r.x1)and(min.y>=r.y1)and(max.x<=r.x2)and(max.y<=r.y2));
 }
 
-bool WorldTerrain::hover(MultiView::Window *win, vector &mv, vector &tp, float &z, void *user_data)
-{
+bool WorldTerrain::hover(MultiView::Window *win, vector &mv, vector &tp, float &z, void *user_data) {
 	//msg_db_f(format("IMOT index= %d",index).c_str(),3);
 	Terrain *t = terrain;
 	if (!t)
@@ -243,11 +310,10 @@ bool WorldTerrain::hover(MultiView::Window *win, vector &mv, vector &tp, float &
 	return hit;
 }
 
-bool WorldTerrain::inRect(MultiView::Window *win, rect &r, void *user_data)
-{
+bool WorldTerrain::inRect(MultiView::Window *win, rect &r, void *user_data) {
 	Terrain *t = terrain;
 	vector min,max;
-	for (int i=0;i<8;i++){
+	for (int i=0;i<8;i++) {
 		vector v=t->pos+vector((i%2)==0?t->min.x:t->max.x,((i/2)%2)==0?t->min.y:t->max.y,((i/4)%2)==0?t->min.z:t->max.z);
 		vector p = win->project(v);
 		if (i==0)
@@ -265,11 +331,10 @@ bool ModeWorld::save() {
 }
 
 
-void ModeWorld::on_update(Observable *o, const string &message)
-{
-	if (o == data){
+void ModeWorld::on_update(Observable *o, const string &message) {
+	if (o == data) {
 		data->UpdateData();
-	}else if (o == multi_view){
+	} else if (o == multi_view) {
 		// selection
 	}
 }
@@ -277,8 +342,7 @@ void ModeWorld::on_update(Observable *o, const string &message)
 
 
 
-void ModeWorld::_new()
-{
+void ModeWorld::_new() {
 	if (!ed->allow_termination())
 		return;
 
@@ -300,10 +364,10 @@ void ModeWorld::on_draw() {
 
 
 
-void ModeWorld::on_end()
-{
+void ModeWorld::on_end() {
 	if (WorldDialog)
-		delete(WorldDialog);
+		delete WorldDialog;
+	ed->set_side_panel(nullptr);
 	WorldDialog = NULL;
 
 	ed->toolbar[hui::TOOLBAR_TOP]->reset();
@@ -312,14 +376,13 @@ void ModeWorld::on_end()
 
 
 
-void DrawSelectionObject(Model *o, float alpha, const color &c)
-{
+void DrawSelectionObject(Model *o, float alpha, const color &c) {
 	if (!o)
 		return;
 	int d = o->_detail_;
 	if ((d<0) or (d>3))
 		return;
-	for (int i=0;i<o->material.num;i++){
+	for (int i=0;i<o->material.num;i++) {
 		Array<nix::Texture*> tex;
 		for (int j=0; j<o->material[i].textures.num; j++)
 			tex.add(NULL);
@@ -330,8 +393,7 @@ void DrawSelectionObject(Model *o, float alpha, const color &c)
 	}
 }
 
-void DrawTerrainColored(Terrain *t, const color &c, float alpha)
-{
+void DrawTerrainColored(Terrain *t, const color &c, float alpha) {
 	nix::SetWire(false);
 	nix::EnableLighting(true);
 	nix::SetAlpha(ALPHA_MATERIAL);
@@ -362,17 +424,16 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha)
 	nix::EnableLighting(mode_world->multi_view->light_enabled);
 }
 
-void ModeWorld::on_draw_win(MultiView::Window *win)
-{
-	if (ShowEffects){
+void ModeWorld::on_draw_win(MultiView::Window *win) {
+	if (ShowEffects) {
 		if (win->type == MultiView::VIEW_PERSPECTIVE)
 			data->meta_data.DrawBackground();
 		data->meta_data.ApplyToDraw();
 	}
 
 // terrain
-	if (ShowTerrains){
-		foreachi(WorldTerrain &t, data->Terrains, i){
+	if (ShowTerrains) {
+		foreachi(WorldTerrain &t, data->Terrains, i) {
 			if (!t.terrain)
 				continue;
 			if (t.view_stage < multi_view->view_stage)
@@ -390,15 +451,15 @@ void ModeWorld::on_draw_win(MultiView::Window *win)
 	nix::EnableLighting(multi_view->light_enabled);
 
 // objects (models)
-	if (ShowObjects){
+	if (ShowObjects) {
 		//GodDraw();
 		//MetaDrawSorted();
 		//NixSetWire(false);
 
-		for (WorldObject &o: data->Objects){
+		for (WorldObject &o: data->Objects) {
 			if (o.view_stage < multi_view->view_stage)
 				continue;
-			if (o.object){
+			if (o.object) {
 				for (int i=0;i<o.object->material.num;i++)
 					o.object->material[i].shader = NULL;
 				o.object->Draw(0, false, false);
@@ -428,18 +489,19 @@ void ModeWorld::on_draw_win(MultiView::Window *win)
 
 
 
-void ModeWorld::on_start()
-{
+void ModeWorld::on_start() {
 	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("world-toolbar");
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("world-edit-toolbar");
+
+	dialog = new WorldObjectListPanel(this);
+	ed->set_side_panel(dialog);
 
 	SetMouseAction(MultiView::ACTION_MOVE);
 
 	data->UpdateData();
 }
 
-void ModeWorld::SetMouseAction(int mode)
-{
+void ModeWorld::SetMouseAction(int mode) {
 	mouse_action = mode;
 	if (mode == MultiView::ACTION_MOVE)
 		multi_view->set_mouse_action("ActionWorldMoveSelection", mode, false);
@@ -450,8 +512,7 @@ void ModeWorld::SetMouseAction(int mode)
 }
 
 
-void ModeWorld::on_update_menu()
-{
+void ModeWorld::on_update_menu() {
 	ed->enable("undo", data->action_manager->undoable());
 	ed->enable("redo", data->action_manager->redoable());
 
@@ -485,10 +546,9 @@ bool ModeWorld::open() {
 	return true;
 }
 
-void ModeWorld::ExecuteWorldPropertiesDialog()
-{
-	if (WorldDialog){
-		if (!WorldDialog->active){
+void ModeWorld::ExecuteWorldPropertiesDialog() {
+	if (WorldDialog) {
+		if (!WorldDialog->active) {
 			WorldDialog->restart();
 			WorldDialog->show();
 		}
@@ -501,25 +561,24 @@ void ModeWorld::ExecuteWorldPropertiesDialog()
 
 
 
-void ModeWorld::ExecutePropertiesDialog()
-{
+void ModeWorld::ExecutePropertiesDialog() {
 	int num_o = data->GetSelectedObjects();
 	int num_t = data->GetSelectedTerrains();
 
-	if (num_o + num_t == 0){
+	if (num_o + num_t == 0) {
 		// nothing selected -> world
 		ExecuteWorldPropertiesDialog();
-	}else if ((num_o == 1) and (num_t == 0)){
+	} else if ((num_o == 1) and (num_t == 0)) {
 		// single object -> object
 		foreachi(WorldObject &o, data->Objects, i)
 			if (o.is_selected)
 				ExecuteObjectPropertiesDialog(i);
-	}else if ((num_o == 0) and (num_t == 1)){
+	} else if ((num_o == 0) and (num_t == 1)) {
 		// single terrain -> terrain
 		foreachi(WorldTerrain &t, data->Terrains, i)
 			if (t.is_selected)
 				ExecuteTerrainPropertiesDialog(i);
-	}else{
+	} else {
 		// multiple selections -> choose
 		ExecuteSelectionPropertiesDialog();
 	}
@@ -527,57 +586,52 @@ void ModeWorld::ExecutePropertiesDialog()
 
 
 
-void ModeWorld::ExecuteSelectionPropertiesDialog()
-{
+void ModeWorld::ExecuteSelectionPropertiesDialog() {
 	//ExecuteWorldPropertiesDialog();
 	int sel_type, sel_index;
 
 	SelectionPropertiesDialog *dlg = new SelectionPropertiesDialog(ed, false, data, &sel_type, &sel_index);
 	dlg->run();
 
-	if (sel_type >= 0){
-		if (sel_type == FD_WORLD){
+	if (sel_type >= 0) {
+		if (sel_type == FD_WORLD) {
 			ExecuteWorldPropertiesDialog();
-		}else if (sel_type == FD_MODEL){
+		} else if (sel_type == FD_MODEL) {
 			ExecuteObjectPropertiesDialog(sel_index);
-		}else if (sel_type==FD_TERRAIN){
+		} else if (sel_type==FD_TERRAIN) {
 			ExecuteTerrainPropertiesDialog(sel_index);
-		}/*if (sel_type == FDCameraFlight){
+		}/*if (sel_type == FDCameraFlight) {
 			CamPointDialogIndex=PropertySelectionIndex[PropertySelectionChosen];
 			ExecuteCamPointDialog();
 		}*/
 	}
-	delete(dlg);
+	delete dlg;
 }
 
 
 
-void ModeWorld::ExecuteObjectPropertiesDialog(int index)
-{
-	ObjectPropertiesDialog *dlg = new ObjectPropertiesDialog(ed, false, data, index);
+void ModeWorld::ExecuteObjectPropertiesDialog(int index) {
+	auto *dlg = new ObjectPropertiesDialog(ed, false, data, index);
 	dlg->run();
-	delete(dlg);
+	delete dlg;
 }
 
 
 
-void ModeWorld::ExecuteTerrainPropertiesDialog(int index)
-{
-	TerrainPropertiesDialog *dlg = new TerrainPropertiesDialog(ed, false, data, index);
+void ModeWorld::ExecuteTerrainPropertiesDialog(int index) {
+	auto *dlg = new TerrainPropertiesDialog(ed, false, data, index);
 	dlg->run();
-	delete(dlg);
+	delete dlg;
 }
 
-void ModeWorld::ExecuteLightmapDialog()
-{
-	LightmapDialog *dlg = new LightmapDialog(ed, false, data);
+void ModeWorld::ExecuteLightmapDialog() {
+	auto *dlg = new LightmapDialog(ed, false, data);
 	dlg->run();
-	delete(dlg);
+	delete dlg;
 }
 
 
-bool ModeWorld::optimize_view()
-{
+bool ModeWorld::optimize_view() {
 	multi_view->reset_view();
 	vector min, max;
 	data->GetBoundaryBox(min, max);
@@ -589,15 +643,13 @@ bool ModeWorld::optimize_view()
 	return true;
 }
 
-void ModeWorld::LoadTerrain()
-{
+void ModeWorld::LoadTerrain() {
 	if (storage->file_dialog(FD_TERRAIN, false, true))
 		data->AddTerrain(storage->dialog_file_no_ending, multi_view->cam.pos);
 }
 
-void ModeWorld::SetEgo()
-{
-	if (data->GetSelectedObjects() != 1){
+void ModeWorld::SetEgo() {
+	if (data->GetSelectedObjects() != 1) {
 		ed->set_message(_("Please select exactly one object!"));
 		return;
 	}
@@ -606,8 +658,7 @@ void ModeWorld::SetEgo()
 			data->execute(new ActionWorldSetEgo(i));
 }
 
-void ModeWorld::ToggleShowEffects()
-{
+void ModeWorld::ToggleShowEffects() {
 	ShowEffects = !ShowEffects;
 	ed->update_menu();
 	multi_view->force_redraw();
@@ -615,8 +666,7 @@ void ModeWorld::ToggleShowEffects()
 
 
 
-void ModeWorld::ToggleShowObjects()
-{
+void ModeWorld::ToggleShowObjects() {
 	ShowObjects = !ShowObjects;
 	ed->update_menu();
 	multi_view->force_redraw();
@@ -624,17 +674,15 @@ void ModeWorld::ToggleShowObjects()
 
 
 
-void ModeWorld::ToggleShowTerrains()
-{
+void ModeWorld::ToggleShowTerrains() {
 	ShowTerrains = !ShowTerrains;
 	ed->update_menu();
 	multi_view->force_redraw();
 }
 
 
-void ModeWorld::ImportWorldProperties()
-{
-	if (storage->file_dialog(FD_WORLD, false, false)){
+void ModeWorld::ImportWorldProperties() {
+	if (storage->file_dialog(FD_WORLD, false, false)) {
 		DataWorld w;
 		if (storage->load(storage->dialog_file_complete, &w, false))
 			data->execute(new ActionWorldEditData(w.meta_data));
@@ -643,9 +691,8 @@ void ModeWorld::ImportWorldProperties()
 	}
 }
 
-void ModeWorld::ApplyHeightmap()
-{
-	if (data->GetSelectedTerrains() == 0){
+void ModeWorld::ApplyHeightmap() {
+	if (data->GetSelectedTerrains() == 0) {
 		ed->set_message(_("No terrain selected!"));
 		return;
 	}
@@ -660,32 +707,27 @@ void ModeWorld::ApplyHeightmap()
 
 
 
-void ModeWorld::Copy()
-{
+void ModeWorld::Copy() {
 	data->Copy(temp_objects, temp_terrains);
 
 	on_update_menu();
 	ed->set_message(format(_("copied %d objects, %d terrains"), temp_objects.num, temp_terrains.num));
 }
 
-void ModeWorld::Paste()
-{
+void ModeWorld::Paste() {
 	data->Paste(temp_objects, temp_terrains);
 	ed->set_message(format(_("added %d objects, %d terrains"), temp_objects.num, temp_terrains.num));
 }
 
-bool ModeWorld::Copyable()
-{
+bool ModeWorld::Copyable() {
 	return (data->GetSelectedObjects() + data->GetSelectedTerrains()) > 0;
 }
 
-bool ModeWorld::Pasteable()
-{
+bool ModeWorld::Pasteable() {
 	return (temp_objects.num + temp_terrains.num) > 0;
 }
 
-void ModeWorld::on_set_multi_view()
-{
+void ModeWorld::on_set_multi_view() {
 	multi_view->clear_data(data);
 
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);

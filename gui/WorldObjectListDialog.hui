@@ -1,0 +1,32 @@
+Dialog world-object-list-dialog "" width=400 height=300
+	Grid ? "" vertical
+		Group g-list "List"
+			ListView list "Type\\Name" expandx
+		Group g-object "Object"
+			Grid ? "" vertical
+				Grid ? ""
+					Text t_name "Name:"
+					Edit name "" expandx
+					---|
+					Text t_type "Type:"
+					Grid ? ""
+						Edit kind "" expandx disabled
+						Button find_object "" disabled image=hui:open
+						Button edit_object "" image=hui:edit
+				Grid ? ""
+					.
+					Text /x "X" center
+					Text /y "Y" center
+					Text /z "Z" center
+					---|
+					Text grp_pos "Position"
+					Edit pos_x "" expandx
+					Edit pos_y "" expandx
+					Edit pos_z "" expandx
+					Text /lu "lu"
+					---|
+					Text grp_ang "Orientation"
+					Edit ang_x ""
+					Edit ang_y ""
+					Edit ang_z ""
+					Text /degree "°"

@@ -10,10 +10,11 @@
 
 #include "../Mode.h"
 #include "../../Data/World/DataWorld.h"
-#include "Dialog/WorldPropertiesDialog.h"
 
-class ModeWorld: public Mode<DataWorld>
-{
+class WorldPropertiesDialog;
+class WorldObjectListPanel;
+
+class ModeWorld: public Mode<DataWorld> {
 public:
 	ModeWorld();
 	virtual ~ModeWorld();
@@ -49,6 +50,7 @@ public:
 	void ExecuteTerrainPropertiesDialog(int index);
 	void ExecuteLightmapDialog();
 	WorldPropertiesDialog *WorldDialog;
+	WorldObjectListPanel *dialog;
 
 	bool ShowTerrains;
 	bool ShowObjects;
