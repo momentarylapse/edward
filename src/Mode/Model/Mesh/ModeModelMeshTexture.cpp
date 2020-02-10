@@ -113,8 +113,6 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 	s.y1=a.y;
 	s.y2=b.y;
 
-	nix::EnableLighting(false);
-
 	if (true){//mul->FXEnabled){
 		// background pattern to show transparency
 		color c1 = Black;

@@ -261,7 +261,6 @@ void set_projection_matrix(Window *w)
 void Window::draw()
 {
 	nix::Scissor(rect(dest.x1, dest.x2+1, dest.y1, dest.y2));
-	nix::EnableLighting(false);
 	nix::SetTexture(NULL);
 
 	color bg = getBackgroundColor();
@@ -290,7 +289,6 @@ void Window::draw()
 	//nix::SetZ(true,true);
 	nix::SetZ(type != VIEW_2D, type != VIEW_2D);
 	nix::SetWire(false);
-	nix::EnableLighting(false);
 	nix::EnableFog(false);
 	nix::SetFog(FOG_EXP, 0, 1000, 0, Black); // some shaders need correct fog values
 	if (multi_view->grid_enabled)
@@ -301,7 +299,6 @@ void Window::draw()
 	vector dir = cam->ang * vector::EZ;
 	nix::SetLightDirectional(multi_view->light, dir, White, 0.7f);
 	nix::EnableLight(multi_view->light, true);
-	nix::EnableLighting(multi_view->light_enabled);
 	nix::SetMaterial(Black,White,Black,0,White);//Black);
 	nix::SetColor(White);
 
@@ -316,7 +313,6 @@ void Window::draw()
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetTexture(NULL);
 	nix::SetWire(false);
-	nix::EnableLighting(false);
 	foreachi(DataSet &d, multi_view->data, di){
 		if (d.drawable){
 			for (int i=0;i<d.data->num;i++){

@@ -79,7 +79,6 @@ void ModeModelMeshAutoweld::on_draw_win(MultiView::Window* win)
 {
 	parent->on_draw_win(win);
 
-	nix::EnableLighting(false);
 	nix::SetTexture(NULL);
 	nix::SetColor(scheme.CREATION_LINE);
 	float r = 5;

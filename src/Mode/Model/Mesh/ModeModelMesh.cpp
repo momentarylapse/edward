@@ -532,13 +532,11 @@ void ModeModelMesh::set_current_material(int index)
 
 void ModeModelMesh::draw_effects(MultiView::Window *win)
 {
-	nix::EnableLighting(false);
 	for (ModelEffect &fx: data->fx){
 		vector p = win->project(data->vertex[fx.vertex].pos);
 		if ((p.z > 0) and (p.z < 1))
 			draw_str(p.x, p.y, fx.get_type());
 	}
-	nix::EnableLighting(multi_view->light_enabled);
 }
 
 void _draw_edges(DataModel *data, MultiView::Window *win, Array<ModelVertex> &vertex, bool selection_filter)
@@ -685,7 +683,6 @@ void ModeModelMesh::draw_selection(MultiView::Window *win)
 	nix::SetWire(false);
 	nix::SetZ(true,true);
 	nix::SetAlpha(ALPHA_NONE);
-	nix::EnableLighting(true);
 
 	nix::SetOffset(1.0f);
 	ModeModel::set_material_selected();

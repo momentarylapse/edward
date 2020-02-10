@@ -328,7 +328,6 @@ void ActionController::draw(Window *win) {
 	if (!visible)
 		return;
 	nix::SetZ(false, false);
-	nix::EnableLighting(true);
 	matrix m = mat * geo_mat;
 	nix::SetWorldMatrix(m);
 	nix::SetTexture(NULL);
@@ -343,7 +342,6 @@ void ActionController::draw(Window *win) {
 		nix::Draw3D(buf[i]);
 	}
 	nix::SetZ(false, false);
-	nix::EnableLighting(false);
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetWorldMatrix(matrix::ID);
 

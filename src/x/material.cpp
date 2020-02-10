@@ -215,7 +215,7 @@ Material *LoadMaterial(const string &filename)
 		// ShaderFile
 		f->read_comment();
 		string ShaderFile = f->read_str();
-		m->shader = nix::LoadShader(ShaderFile);
+		m->shader = nix::Shader::load(ShaderFile);
 		// Physics
 		f->read_comment();
 		m->rc_jump = (float)f->read_int() * 0.001f;

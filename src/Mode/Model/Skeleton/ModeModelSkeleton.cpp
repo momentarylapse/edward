@@ -214,7 +214,6 @@ void ModeModelSkeleton::drawSkeleton(MultiView::Window *win, Array<ModelBone> &b
 	nix::SetWorldMatrix(matrix::ID);
 
 	nix::SetZ(false, false);
-	nix::EnableLighting(false);
 	nix::SetWire(false);
 	set_wide_lines(thin ? scheme.LINE_WIDTH_THIN : scheme.LINE_WIDTH_BONE);
 

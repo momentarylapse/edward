@@ -53,7 +53,7 @@ void DataMaterial::AppearanceData::reset() {
 }
 
 nix::Shader *DataMaterial::AppearanceData::get_shader() const {
-	return nix::LoadShader(shader_file);
+	return nix::Shader::load(shader_file);
 }
 
 

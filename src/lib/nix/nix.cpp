@@ -178,8 +178,7 @@ void Init(const string &api, int width, int height)
 	SetCull(CULL_DEFAULT);
 	SetWire(false);
 	SetAlpha(ALPHA_NONE);
-	nix::EnableLighting(false);
-	nix::SetMaterial(White, White, White, 0, color(0.1f, 0.1f, 0.1f, 0.1f));
+	SetMaterial(White, White, White, 0, color(0.1f, 0.1f, 0.1f, 0.1f));
 	CullingInverted = false;
 	SetProjectionPerspective();
 	SetZ(true, true);

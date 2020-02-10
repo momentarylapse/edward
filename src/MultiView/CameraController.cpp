@@ -115,7 +115,6 @@ void CameraController::draw_icon(const rect &rr, nix::Texture *tex, bool active)
 void CameraController::draw()
 {
 	updateRects();
-	//NixEnableLighting(true);
 	nix::SetAlpha(ALPHA_MATERIAL);
 
 	// show/hide button
@@ -139,7 +138,6 @@ void CameraController::draw()
 	}
 	nix::SetTexture(NULL);
 	nix::SetAlpha(ALPHA_NONE);
-	nix::EnableLighting(false);
 }
 
 bool CameraController::inUse()

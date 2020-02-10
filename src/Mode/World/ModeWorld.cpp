@@ -503,7 +503,6 @@ void DrawSelectionObject(Model *o, float alpha, const color &c) {
 
 void DrawTerrainColored(Terrain *t, const color &c, float alpha) {
 	nix::SetWire(false);
-	nix::EnableLighting(true);
 	nix::SetAlpha(ALPHA_MATERIAL);
 
 	// save terrain data
@@ -529,7 +528,6 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha) {
 
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetWire(mode_world->multi_view->wire_mode);
-	nix::EnableLighting(mode_world->multi_view->light_enabled);
 }
 
 
@@ -581,7 +579,6 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		}
 	}
 	nix::SetWire(multi_view->wire_mode);
-	nix::EnableLighting(multi_view->light_enabled);
 
 // objects (models)
 	if (ShowObjects) {
@@ -600,7 +597,6 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 			}
 		}
 		nix::SetWire(false);
-		nix::EnableLighting(true);
 
 		// object selection
 		for (WorldObject &o: data->Objects)
@@ -611,7 +607,6 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		if ((multi_view->hover.index >= 0) and (multi_view->hover.type == MVD_WORLD_OBJECT))
 			DrawSelectionObject(data->Objects[multi_view->hover.index].object, OSelectionAlpha, White);
 		nix::SetAlpha(ALPHA_NONE);
-		nix::EnableLighting(multi_view->light_enabled);
 	}
 	nix::SetWorldMatrix(matrix::ID);
 

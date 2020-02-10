@@ -13,7 +13,6 @@
 
 namespace nix{
 
-void _cdecl EnableLighting(bool enabled);
 void _cdecl SetLightRadial(int index, const vector &pos, float radius, const color &col, float harshness);
 void _cdecl SetLightDirectional(int index, const vector &dir, const color &col, float harshness);
 void _cdecl EnableLight(int index, bool enabled);

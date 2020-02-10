@@ -116,13 +116,13 @@ MultiView::MultiView(bool mode3d) :
 
 
 	if (!shader_lines_3d)
-		shader_lines_3d = nix::LoadShader(app->directory_static + "shader/lines-3d.shader");
+		shader_lines_3d = nix::Shader::load(app->directory_static + "shader/lines-3d.shader");
 	if (!shader_lines_3d_colored)
-		shader_lines_3d_colored = nix::LoadShader(app->directory_static + "shader/lines-3d-colored.shader");
+		shader_lines_3d_colored = nix::Shader::load(app->directory_static + "shader/lines-3d-colored.shader");
 	if (!shader_lines_3d_colored_wide)
-		shader_lines_3d_colored_wide = nix::LoadShader(app->directory_static + "shader/lines-3d-colored-wide.shader");
+		shader_lines_3d_colored_wide = nix::Shader::load(app->directory_static + "shader/lines-3d-colored-wide.shader");
 	if (!shader_selection)
-		shader_selection = nix::LoadShader(app->directory_static + "shader/selection.shader");
+		shader_selection = nix::Shader::load(app->directory_static + "shader/selection.shader");
 
 	reset();
 }
@@ -731,7 +731,6 @@ void MultiView::on_draw()
 		win[3]->draw();
 
 		nix::Scissor(nix::target_rect);
-		nix::EnableLighting(false);
 
 		nix::SetShader(nix::default_shader_2d);
 		nix::SetTexture(NULL);
@@ -742,7 +741,6 @@ void MultiView::on_draw()
 		nix::SetColor((hover.meta == hover.HOVER_WINDOW_DIVIDER_X or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
 		nix::DrawRect(xm-d, xm+d, area.y1, area.y2, 0);
 	}
-	nix::EnableLighting(false);
 
 	nix::SetShader(nix::default_shader_2d);
 	if (sel_rect.active)

@@ -71,7 +71,6 @@ void ModeFont::on_end()
 void ModeFont::on_draw()
 {
 	nix::SetZ(false, false);
-	nix::EnableLighting(false);
 	nix::SetColor(White);
 	nix::DrawRect(0, (float)nix::target_width, nix::target_height * 0.9f, (float)nix::target_height, 0);
 	nix::SetColor(Black);
@@ -214,7 +213,6 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 	int NumY = data->TextureHeight / data->global.GlyphHeight;
 
 	// background
-	nix::EnableLighting(false);
 	nix::SetAlpha(ALPHA_MATERIAL);
 	nix::SetZ(false, false);
 	rect d = rect(0, (float)data->TextureWidth, 0, (float)data->TextureHeight);

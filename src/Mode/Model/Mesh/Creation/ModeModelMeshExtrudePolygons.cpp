@@ -47,8 +47,6 @@ void ModeModelMeshExtrudePolygons::on_mouse_move() {
 
 void ModeModelMeshExtrudePolygons::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
-
-	nix::EnableLighting(false);
 }
 
 void ModeModelMeshExtrudePolygons::preview() {

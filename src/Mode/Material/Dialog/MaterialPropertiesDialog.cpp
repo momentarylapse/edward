@@ -239,7 +239,7 @@ void MaterialPropertiesDialog::OnReflectionTextures()
 
 bool TestShaderFile(const string &filename)
 {
-	nix::Shader *shader = nix::LoadShader(filename);
+	nix::Shader *shader = nix::Shader::load(filename);
 	shader->unref();
 	return shader;
 }
