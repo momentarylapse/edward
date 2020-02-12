@@ -59,7 +59,7 @@ public:
 	int ref_count; // polygons
 	int surface;
 
-	ModelVertex(){}
+	ModelVertex();
 	ModelVertex(const vector &pos);
 };
 

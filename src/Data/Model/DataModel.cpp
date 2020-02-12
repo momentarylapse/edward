@@ -86,8 +86,7 @@ void ModelEffect::clear()
 	inv_quad = false;
 }
 
-ModelVertex::ModelVertex(const vector &_pos)
-{
+ModelVertex::ModelVertex(const vector &_pos) {
 	pos = _pos;
 	ref_count = 0;
 	normal_mode = NORMAL_MODE_ANGULAR;
@@ -95,6 +94,8 @@ ModelVertex::ModelVertex(const vector &_pos)
 	bone_index = -1;
 	normal_dirty = false;
 }
+
+ModelVertex::ModelVertex() : ModelVertex(v_0) {}
 
 DataModel::DataModel() :
 	Data(FD_MODEL)

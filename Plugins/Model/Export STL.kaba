@@ -1,6 +1,6 @@
 use file
 use hui
-use "api.kaba"
+use "../api.kaba"
 
 void main()
 	if data_model.surface.num != 1

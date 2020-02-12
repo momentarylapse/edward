@@ -1,6 +1,6 @@
 use hui
 use file
-use "api.kaba"
+use "../api.kaba"
 
 string vecToJson(vector v)
 	return "{{v.x}}, {{v.y}}, {{v.z}}"

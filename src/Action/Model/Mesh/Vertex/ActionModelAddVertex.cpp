@@ -36,8 +36,6 @@ void *ActionModelAddVertex::execute(Data *d)
 	else
 		vv.normal_mode = normal_mode;
 	vv.bone_index = bone_index;
-	vv.is_selected = false;
-	vv.is_special = false;
 	vv.view_stage = 0;
 	if (ed)
 		vv.view_stage = ed->multi_view_3d->view_stage;

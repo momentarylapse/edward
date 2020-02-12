@@ -1,0 +1,99 @@
+use "../api.kaba"
+
+const float D = 30.0
+const float RMAX = 200.0
+
+float f(vector _p)
+	vector p = _p + vector(0.2,0.1,0)
+	vector d = p.normalized()
+	float r = 1 + abs(cos(d.x*pi*4) * 0.5 + cos(d.y*pi) * 0.5) + abs(cos(d.x*pi*8) * 0.2 + cos(d.y*pi*5) * 0.2)
+	return p.length() - r*20
+
+int single_p_from_mask(int mask)
+	if mask == 1+2+4
+		return 0
+	if mask == 1+8+16
+		return 1
+	if mask == 2+8+32
+		return 2
+	if mask == 4+16+32
+		return 3
+	print("MASK: {{mask}}")
+	return -1
+
+# e list dependent!
+int some_p_from_mask(int mask)
+	if mask == 1+4+8+32
+		return 1 # 02|13
+	if mask == 2+4+8+16
+		return 0 # 01|23
+	if mask ==1+2+16+32
+		return 0 # 03|12
+	print("MASK: {{mask}}")
+	return -1
+
+void check_tetra(vector[] p, float[] ff, int[] i)
+	let e = [0,1, 0,2, 0,3, 1,2, 1,3, 2,3]
+	int mask = 0
+	int nv = len(data_model.vertex)
+	for k in 0:6
+		int a = i[e[k*2]]
+		int b = i[e[k*2+1]]
+		if ff[a] * ff[b] < 0
+			data_model.AddVertex((p[a] + p[b]) / 2, 0, 0)
+			mask += 1<<k
+	if len(data_model.vertex) == nv + 3
+		int ex = single_p_from_mask(mask)
+		let sig = [1.0, -1.0, 1.0, -1.0]
+		if ff[i[ex]] * sig[ex] < 0
+			data_model.AddTriangle(nv, nv+2, nv+1, 0)
+		else
+			data_model.AddTriangle(nv, nv+1, nv+2, 0)
+	else if len(data_model.vertex) == nv + 4
+		int ex = some_p_from_mask(mask)
+		if ex < 0
+			return
+		if ff[i[ex]] < 0
+			data_model.AddTriangle(nv+1, nv, nv+2, 0)
+			data_model.AddTriangle(nv+1, nv+2, nv+3, 0)
+		else
+			data_model.AddTriangle(nv, nv+1, nv+2, 0)
+			data_model.AddTriangle(nv+2, nv+1, nv+3, 0)
+
+void make_tetra(vector[] p, int[] i)
+	int nv = len(data_model.vertex)
+	for k in i
+		data_model.AddVertex(p[k], 0, 1)
+	data_model.AddTriangle(nv+1, nv, nv+2, 0)
+	data_model.AddTriangle(nv, nv+1, nv+3, 0)
+	data_model.AddTriangle(nv+2, nv, nv+3, 0)
+	data_model.AddTriangle(nv+1, nv+2, nv+3, 0)
+	
+
+# process cube cell
+void check_cube(vector p)
+	# cube corners + center
+	let q = [p, p + vector(D,0,0), p + vector(0,D,0), p + vector(D,D,0), p + vector(0,0,D), p + vector(D,0,D), p + vector(0,D,D), p + vector(D,D,D), p + vector(D,D,D)/2]
+	let ff = map(f, q)
+	#if ff.min() * ff.max() > 0
+	#	return
+	
+	# bottom, top, front, back, left, right
+	let e = [0,1,2,8, 2,1,3,8,  5,4,6,8, 5,6,7,8,  1,0,4,8, 1,4,5,8,  2,3,6,8, 6,3,7,8,  0,2,4,8, 4,2,6,8,  3,1,5,8, 3,5,7,8]
+	for i in 0:12
+		check_tetra(q, ff, e[i*4:i*4+4])
+		#make_tetra(q, e[i*4:i*4+4])
+
+void main()
+	int nv = data_model.vertex.num
+	
+	data_model.BeginActionGroup("Iso Surface")
+	
+	for x in -RMAX:RMAX:D
+		for y in -RMAX:RMAX:D
+			for z in -RMAX:RMAX:D
+				check_cube(vector(x,y,z))
+
+	data_model.EndActionGroup()
+	
+	#data_model.SelectOnlySurface(data_model.surface[data_model.surface.num - 1])

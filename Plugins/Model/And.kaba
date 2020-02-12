@@ -1,11 +1,11 @@
-use "api.kaba"
+use "../api.kaba"
 
 void main()
 
 	Geometry *a = new GeometryCube(vector(-50, -50, -10), vector.EX * 100, vector.EY * 100, vector.EZ * 20, 1, 1, 1)
 	Geometry *b = new GeometryCube(vector(-10.1, -10.2, -50), vector.EX * 20, vector.EY * 20, vector.EZ * 100, 1, 1, 1)
 	Geometry c
-	GeometrySubtract(*a, *b, c)
+	GeometryAnd(a, b, c)
 	del a
 	del b
 	
