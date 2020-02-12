@@ -13,8 +13,10 @@
 #include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
-void ActionModelCollapseVertices::CollapseVerticesInSurface(DataModel *m, ModelSurface &s, int surf)
+void ActionModelCollapseVertices::CollapseVertices(DataModel *m)
 {
+	msg_todo("collapse vertives");
+#if 0
 	Set<int> vert;
 	vector pos = v_0;
 	for (int v: s.vertex)
@@ -25,6 +27,8 @@ void ActionModelCollapseVertices::CollapseVerticesInSurface(DataModel *m, ModelS
 	if (vert.num < 2)
 		return;
 	pos /= vert.num;
+#endif
+
 #if 0
 	// delete triangles between 2+ selected vertices
 	foreachib(ModelPolygon &t, s.Polygon, ti){
@@ -68,8 +72,7 @@ void *ActionModelCollapseVertices::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	foreachi(ModelSurface &s, m->surface, si)
-		CollapseVerticesInSurface(m, s, si);
+	CollapseVertices(m);
 
 	return NULL;
 }

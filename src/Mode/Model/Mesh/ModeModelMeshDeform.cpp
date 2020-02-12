@@ -112,7 +112,7 @@ void ModeModelMeshDeform::on_draw_win(MultiView::Window *win) {
 	if (multi_view->hover.index < 0)
 		return;
 	vector pos = multi_view->hover.point;
-	vector n = data->surface[multi_view->hover.set].polygon[multi_view->hover.index].temp_normal;
+	vector n = data->polygon[multi_view->hover.index].temp_normal;
 	float radius = dialog->get_float("diameter") / 2;
 
 	nix::SetColor(scheme.CREATION_LINE);
@@ -127,7 +127,7 @@ void ModeModelMeshDeform::on_selection_change() {
 
 Action *ModeModelMeshDeform::get_action() {
 	vector pos = multi_view->hover.point;
-	vector n = data->surface[multi_view->hover.set].polygon[multi_view->hover.index].temp_normal;
+	vector n = data->polygon[multi_view->hover.index].temp_normal;
 	float radius = dialog->get_float("diameter") / 2;
 	float depth = dialog->get_float("depth");
 	int type = dialog->get_int("brush-type");

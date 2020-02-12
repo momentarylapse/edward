@@ -21,7 +21,7 @@ public:
 
 	void *compose(Data *d);
 
-	void CollapseVerticesInSurface(DataModel *m, ModelSurface &s, int surf);
+	void CollapseVertices(DataModel *m);
 };
 
 #endif /* ACTIONMODELCOLLAPSEVERTICES_H_ */

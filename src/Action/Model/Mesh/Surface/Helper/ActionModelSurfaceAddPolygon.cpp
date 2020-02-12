@@ -10,8 +10,7 @@
 
 // might create a "disjoint" surface -> don't use alone!
 
-ActionModelSurfaceAddPolygon::ActionModelSurfaceAddPolygon(int _surface, const Array<int> &_v, int _material, const Array<vector> &_sv, int _index) {
-	surface = _surface;
+ActionModelSurfaceAddPolygon::ActionModelSurfaceAddPolygon(const Array<int> &_v, int _material, const Array<vector> &_sv, int _index) {
 	index = _index;
 	v = _v;
 	material = _material;
@@ -21,12 +20,10 @@ ActionModelSurfaceAddPolygon::ActionModelSurfaceAddPolygon(int _surface, const A
 void ActionModelSurfaceAddPolygon::undo(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModelSurface &s = m->surface[surface];
-
 	if (index >= 0)
-		s.removePolygon(index);
+		m->_removePolygon(index);
 	else
-		s.removePolygon(s.polygon.num -1);
+		m->_removePolygon(m->polygon.num -1);
 }
 
 
@@ -34,13 +31,11 @@ void ActionModelSurfaceAddPolygon::undo(Data *d) {
 void *ActionModelSurfaceAddPolygon::execute(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	auto &s = m->surface[surface];
-
-	s.addPolygon(v, material, sv, index);
+	m->_addPolygon(v, material, sv, index);
 
 	if (index >= 0)
-		return &s.polygon[index];
-	return &s.polygon.back();
+		return &m->polygon[index];
+	return &m->polygon.back();
 }
 
 

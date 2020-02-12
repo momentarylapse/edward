@@ -10,10 +10,7 @@
 #include "../../Surface/Helper/ActionModelSurfaceDeletePolygon.h"
 #include "../../Surface/Helper/ActionModelSurfaceAddPolygon.h"
 
-ActionModelPolygonAddVertex::ActionModelPolygonAddVertex(int _surface,
-		int _poly, int _side, int _vertex, const vector* _sv)
-{
-	surface = _surface;
+ActionModelPolygonAddVertex::ActionModelPolygonAddVertex(int _poly, int _side, int _vertex, const vector* _sv) {
 	poly = _poly;
 	side = _side;
 	vertex = _vertex;
@@ -21,11 +18,9 @@ ActionModelPolygonAddVertex::ActionModelPolygonAddVertex(int _surface,
 		sv[i] = _sv[i];
 }
 
-void* ActionModelPolygonAddVertex::compose(Data* d)
-{
+void* ActionModelPolygonAddVertex::compose(Data* d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	ModelSurface &s = m->surface[surface];
-	ModelPolygon &t = s.polygon[poly];
+	ModelPolygon &t = m->polygon[poly];
 
 
 	// save old polygon data
@@ -39,10 +34,10 @@ void* ActionModelPolygonAddVertex::compose(Data* d)
 		_sv.insert(sv[l], side + 1 + l * t.side.num);
 
 	// delete
-	addSubAction(new ActionModelSurfaceDeletePolygon(surface, poly), m);
+	addSubAction(new ActionModelSurfaceDeletePolygon(poly), m);
 
 	// recreate
-	addSubAction(new ActionModelSurfaceAddPolygon(surface, v, material, _sv, poly), m);
+	addSubAction(new ActionModelSurfaceAddPolygon(v, material, _sv, poly), m);
 
 	return NULL;
 }

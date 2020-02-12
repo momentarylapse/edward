@@ -12,18 +12,16 @@
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../Data/Model/SkinGenerator.h"
 
-ActionModelSplitPolygon::ActionModelSplitPolygon(int _surface, int _polygon, const vector &_pos) :
+ActionModelSplitPolygon::ActionModelSplitPolygon(int _polygon, const vector &_pos) :
 	pos(_pos)
 {
-	surface = _surface;
 	polygon = _polygon;
 }
 
 void *ActionModelSplitPolygon::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	ModelSurface &s = m->surface[surface];
-	ModelPolygon &t = s.polygon[polygon];
+	ModelPolygon &t = m->polygon[polygon];
 
 	// old triangle data
 	ModelPolygon temp = t;
@@ -33,7 +31,7 @@ void *ActionModelSplitPolygon::compose(Data *d)
 	sg.init_polygon(m->vertex, t);
 
 	// delete old triangle
-	addSubAction(new ActionModelSurfaceDeletePolygon(surface, polygon), m);
+	addSubAction(new ActionModelSurfaceDeletePolygon(polygon), m);
 
 	// create new vertex
 	addSubAction(new ActionModelAddVertex(pos), m);
@@ -51,7 +49,7 @@ void *ActionModelSplitPolygon::compose(Data *d)
 			sv.add(temp.side[(k+1)%temp.side.num].skin_vertex[l]);
 			sv.add(sg.get(pos, l));
 		}
-		addSubAction(new ActionModelSurfaceAddPolygon(surface, v, temp.material, sv), m);
+		addSubAction(new ActionModelSurfaceAddPolygon(v, temp.material, sv), m);
 	}
 
 	return NULL;

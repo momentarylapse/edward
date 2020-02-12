@@ -58,7 +58,6 @@ void ModeModelMeshCreatePlane::on_left_button_up()
 
 		GeometryPlane pl = GeometryPlane(pos, length[0], length[1], nx, ny);
 		data->pasteGeometry(pl, mode_model_mesh->current_material);
-		data->selectOnlySurface(&data->surface.back());
 
 		abort();
 	}else{

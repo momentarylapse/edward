@@ -40,7 +40,7 @@ struct PolyRef
 };
 
 // all weights are of dimension [area]
-static float get_weight(DataModel *m, ModelSurface &s, ModelEdge &e, Array<Array<PolyRef> > &ref)
+static float get_weight(DataModel *m, ModelEdge &e, Array<Array<PolyRef> > &ref)
 {
 	float w = 0;
 	int a = e.vertex[0];
@@ -59,7 +59,7 @@ static float get_weight(DataModel *m, ModelSurface &s, ModelEdge &e, Array<Array
 			continue;
 		if ((e.ref_count > 1) && (rr[i].poly == e.polygon[1]))
 			continue;
-		ModelPolygon &p = s.polygon[rr[i].poly];
+		ModelPolygon &p = m->polygon[rr[i].poly];
 
 		// how much does the plane change
 		vector area = p.getAreaVector(m->vertex);
@@ -76,72 +76,67 @@ void ActionModelEasify::CalculateWeights(DataModel *m)
 {
 	ed->multi_view_3d->reset_message_3d();
 
-	foreachi(ModelSurface &s, m->surface, si){
+	// find all polygon sides for each vertex
+	Array<Array<PolyRef> > ref;
+	ref.resize(m->vertex.num);
 
-		// find all polygon sides for each vertex
-		Array<Array<PolyRef> > ref;
-		ref.resize(m->vertex.num);
-
-		foreachi(ModelPolygon &p, s.polygon, ti){
-			for (int k=0;k<p.side.num;k++){
-				PolyRef r;
-				r.poly = ti;
-				r.side = k;
-				ref[p.side[k].vertex].add(r);
-			}
+	foreachi(ModelPolygon &p, m->polygon, ti){
+		for (int k=0;k<p.side.num;k++){
+			PolyRef r;
+			r.poly = ti;
+			r.side = k;
+			ref[p.side[k].vertex].add(r);
 		}
+	}
 
 
-		// calculate edge weights
-		for (ModelEdge &e: s.edge)
-			e.weight = get_weight(m, s, e, ref);
+	// calculate edge weights
+	for (ModelEdge &e: m->edge)
+		e.weight = get_weight(m, e, ref);
 
-		// correction for boundary edges
-		foreachi(ModelEdge &e, s.edge, ei)
-			if (e.ref_count == 1){
-				// find all edges sharing a vertex with e
-				Array<PolyRef> rr;
-				rr.append(ref[e.vertex[0]]);
-				rr.append(ref[e.vertex[1]]);
-				Set<int> ee;
-				for (int i=0;i<rr.num;i++){
-					ModelPolygon &p = s.polygon[rr[i].poly];
-					int k = rr[i].side;
-					ee.add(p.side[k].edge);
-					ee.add(p.side[(k-1+p.side.num) % p.side.num].edge);
+	// correction for boundary edges
+	foreachi(ModelEdge &e, m->edge, ei)
+		if (e.ref_count == 1){
+			// find all edges sharing a vertex with e
+			Array<PolyRef> rr;
+			rr.append(ref[e.vertex[0]]);
+			rr.append(ref[e.vertex[1]]);
+			Set<int> ee;
+			for (int i=0;i<rr.num;i++){
+				ModelPolygon &p = m->polygon[rr[i].poly];
+				int k = rr[i].side;
+				ee.add(p.side[k].edge);
+				ee.add(p.side[(k-1+p.side.num) % p.side.num].edge);
+			}
+
+			// compute damage...
+			for (int eee: ee)
+				if (eee != ei){
+					vector nv = (m->vertex[m->edge[eee].vertex[0]].pos + m->vertex[m->edge[eee].vertex[1]].pos) / 2;
+
+					vector area = (m->vertex[m->edge[ei].vertex[0]].pos - nv) ^ (m->vertex[m->edge[ei].vertex[1]].pos - nv);
+					m->edge[eee].weight +=  area.length();
 				}
 
-				// compute damage...
-				for (int eee: ee)
-					if (eee != ei){
-						vector nv = (m->vertex[s.edge[eee].vertex[0]].pos + m->vertex[s.edge[eee].vertex[1]].pos) / 2;
-
-						vector area = (m->vertex[s.edge[ei].vertex[0]].pos - nv) ^ (m->vertex[s.edge[ei].vertex[1]].pos - nv);
-						s.edge[eee].weight +=  area.length();
-					}
-
-			}
+		}
 
 
 //		foreachi(s.Edge, e, i)
 //			ed->multi_view_3d->AddMessage3d(f2s(we[i], 1), (m->Vertex[e.Vertex[0]].pos + m->Vertex[e.Vertex[1]].pos) / 2);
-	}
 }
 
 bool ActionModelEasify::EasifyStep(DataModel *m)
 {
 	CalculateWeights(m);
 
-	int _surface = 0, _edge = -1;
+	int _edge = -1;
 	// remove least important
 	float min = 0;
-	foreachi(ModelSurface &s, m->surface, si)
-		foreachi(ModelEdge &e, s.edge, ei)
-			if ((e.weight < min) || (_edge < 0)){
-				min = e.weight;
-				_surface = si;
-				_edge = ei;
-			}
+	foreachi(ModelEdge &e, m->edge, ei)
+		if ((e.weight < min) || (_edge < 0)){
+			min = e.weight;
+			_edge = ei;
+		}
 
 	if (_edge >= 0){
 		/*ModelEdge _e = m->Surface[_surface].Edge[_edge];
@@ -155,7 +150,7 @@ bool ActionModelEasify::EasifyStep(DataModel *m)
 			m->Surface[_surface].Edge[ie].Weight += _e.Weight / ee.num;*/
 
 		// remove
-		addSubAction(new ActionModelCollapseEdge(_surface, _edge), m);
+		addSubAction(new ActionModelCollapseEdge(_edge), m);
 		return true;
 	}
 	return false;
@@ -181,8 +176,4 @@ void *ActionModelEasify::compose(Data *d)
 	float dt = t.get();
 	msg_write(format("easify: %f", dt));
 	return NULL;
-}
-
-ActionModelEasify::~ActionModelEasify()
-{
 }

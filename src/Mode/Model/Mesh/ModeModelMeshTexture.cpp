@@ -27,24 +27,22 @@ ModeModelMeshTexture::ModeModelMeshTexture(ModeBase *_parent) :
 }
 
 
-void ModeModelMeshTexture::fetchData()
-{
+void ModeModelMeshTexture::fetchData() {
 	skin_vertex.clear();
-	for (ModelSurface &surf: data->surface)
-		for (ModelPolygon &t: surf.polygon){
-			if (t.material != mode_model_mesh->current_material)
-				continue;
-			ModelSkinVertexDummy v;
-			v.m_delta = v.m_old = false;
-			v.is_special = false;
+	for (ModelPolygon &t: data->polygon) {
+		if (t.material != mode_model_mesh->current_material)
+			continue;
+		ModelSkinVertexDummy v;
+		v.m_delta = v.m_old = false;
+		v.is_special = false;
+		v.view_stage = t.view_stage;
+		for (int k=0;k<t.side.num;k++){
+			v.is_selected = t.is_selected; //data->vertex[t.side[k].vertex].is_selected;
 			v.view_stage = t.view_stage;
-			for (int k=0;k<t.side.num;k++){
-				v.is_selected = t.is_selected; //data->vertex[t.side[k].vertex].is_selected;
-				v.view_stage = t.view_stage;
-				v.pos = t.side[k].skin_vertex[current_texture_level];
-				skin_vertex.add(v);
-			}
+			v.pos = t.side[k].skin_vertex[current_texture_level];
+			skin_vertex.add(v);
 		}
+	}
 
 	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
@@ -145,21 +143,20 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 	nix::SetColor(White);
 
 	// draw triangles (outlines) of current material
-	for (ModelSurface &surf: data->surface)
-		for (ModelPolygon &t: surf.polygon){
-			if (t.material != mode_model_mesh->current_material)
-				continue;
-			if (t.view_stage < multi_view->view_stage)
-				continue;
-			Array<vector> v;
-			for (int k=0;k<t.side.num;k++)
-				v.add(win->project(t.side[k].skin_vertex[current_texture_level]));
-			v.add(v[0]);
-			for (int k=0;k<t.side.num;k++)
-				nix::DrawLine(	v[k].x,v[k].y,
-								v[k+1].x,v[k+1].y,
-								0.9f);
-		}
+	for (ModelPolygon &t: data->polygon) {
+		if (t.material != mode_model_mesh->current_material)
+			continue;
+		if (t.view_stage < multi_view->view_stage)
+			continue;
+		Array<vector> v;
+		for (int k=0;k<t.side.num;k++)
+			v.add(win->project(t.side[k].skin_vertex[current_texture_level]));
+		v.add(v[0]);
+		for (int k=0;k<t.side.num;k++)
+			nix::DrawLine(	v[k].x,v[k].y,
+							v[k+1].x,v[k+1].y,
+							0.9f);
+	}
 }
 
 
@@ -184,18 +181,17 @@ void ModeModelMeshTexture::on_selection_change()
 	//fillSelectionBuffer(data->vertex);
 
 	int nn = 0;
-	for (ModelSurface &surf: data->surface)
-		for (ModelPolygon &t: surf.polygon){
-			if (t.material != mode_model_mesh->current_material)
-				continue;
-			t.is_selected = true;
-			for (int k=0;k<t.side.num;k++){
-				t.is_selected &= skin_vertex[nn].is_selected;
-				/*if (skin_vertex[nn].is_selected)
-					data->vertex[t.side[k].vertex].is_selected = true;*/
-				nn ++;
-			}
+	for (ModelPolygon &t: data->polygon) {
+		if (t.material != mode_model_mesh->current_material)
+			continue;
+		t.is_selected = true;
+		for (int k=0;k<t.side.num;k++){
+			t.is_selected &= skin_vertex[nn].is_selected;
+			/*if (skin_vertex[nn].is_selected)
+				data->vertex[t.side[k].vertex].is_selected = true;*/
+			nn ++;
 		}
+	}
 
 	data->selectionFromPolygons();
 
@@ -221,13 +217,12 @@ void ModeModelMeshTexture::on_update(Observable *o, const string &message)
 
 		if (message == DataModel::MESSAGE_SKIN_CHANGE){
 			int svi = 0;
-			for (ModelSurface &surf: data->surface)
-				for (ModelPolygon &t: surf.polygon){
-					if (t.material != mode_model_mesh->current_material)
-						continue;
-					for (int k=0;k<t.side.num;k++)
-						skin_vertex[svi ++].pos = t.side[k].skin_vertex[current_texture_level];
-				}
+			for (ModelPolygon &t: data->polygon){
+				if (t.material != mode_model_mesh->current_material)
+					continue;
+				for (int k=0;k<t.side.num;k++)
+					skin_vertex[svi ++].pos = t.side[k].skin_vertex[current_texture_level];
+			}
 		}else if (message == data->MESSAGE_CHANGE){
 
 			fetchData();
@@ -241,19 +236,17 @@ void ModeModelMeshTexture::on_update(Observable *o, const string &message)
 
 
 // used by actions
-void ModeModelMeshTexture::getSelectedSkinVertices(Array<int> & surf, Array<int> &tria, Array<int> & index)
+void ModeModelMeshTexture::getSelectedSkinVertices(Array<int> &tria, Array<int> & index)
 {
 	int i = 0;
-	foreachi(ModelSurface &s, data->surface, si)
-		foreachi(ModelPolygon &t, s.polygon, ti)
-			if (t.material == mode_model_mesh->current_material){
-				for (int k=0;k<t.side.num;k++){
-					if (skin_vertex[i].is_selected){
-						index.add(k);
-						surf.add(si);
-						tria.add(ti);
-					}
-					i ++;
+	foreachi(ModelPolygon &t, data->polygon, ti)
+		if (t.material == mode_model_mesh->current_material){
+			for (int k=0;k<t.side.num;k++){
+				if (skin_vertex[i].is_selected){
+					index.add(k);
+					tria.add(ti);
 				}
+				i ++;
 			}
+		}
 }

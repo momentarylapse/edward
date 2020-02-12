@@ -133,12 +133,9 @@ void FormatModelJson::_save(const string &filename, DataModel *m) {
 	File *f = FileCreateText(filename);
 
 	int n_tria = 0;
-	for (int is=0; is<m->surface.num; is++){
-		ModelSurface &s = m->surface[is];
-		for (int ip=0; ip<s.polygon.num; ip++){
-			ModelPolygon &p = s.polygon[ip];
-			n_tria += p.side.num - 2;
-		}
+	for (int ip=0; ip<m->polygon.num; ip++){
+		ModelPolygon &p = m->polygon[ip];
+		n_tria += p.side.num - 2;
 	}
 
 	string str = "{'metadata':{\n";
@@ -188,38 +185,34 @@ void FormatModelJson::_save(const string &filename, DataModel *m) {
 	str += "],\n";
 	str += "'uvs': [[0,0]],\n";
 	str += "'normals': [\n";
-	foreachi(ModelSurface &s, m->surface, is){
-		foreachi(ModelPolygon &p, s.polygon, ip){
-			for (int k=0; k<p.side.num; k++){
-				str += "	" + vecToJson(p.side[k].normal);
-				if ((is < m->surface.num - 1) or (ip < s.polygon.num - 1) or (k < p.side.num - 1))
-					str += ",\n";
-			}
+	foreachi(ModelPolygon &p, m->polygon, ip){
+		for (int k=0; k<p.side.num; k++){
+			str += "	" + vecToJson(p.side[k].normal);
+			if ((ip < m->polygon.num - 1) or (k < p.side.num - 1))
+				str += ",\n";
 		}
 	}
 	str += "],\n";
 	str += "'faces': [\n";
 	int n_normals = 0;
-	foreachi(ModelSurface &s, m->surface, is){
-		foreachi(ModelPolygon &p, s.polygon, ip){
-			for (int k=0; k<p.side.num-2; k++){
-				// reflected coordinates!
-				int a = p.side[k].triangulation[0];
-				int b = p.side[k].triangulation[1];
-				int c = p.side[k].triangulation[2];
-				int va = p.side[a].vertex;
-				int vb = p.side[b].vertex;
-				int vc = p.side[c].vertex;
-				int na = n_normals + a;
-				int nb = n_normals + b;
-				int nc = n_normals + c;
-				vector n = p.temp_normal;
-				str += format("	42, %d, %d, %d, %d, 0, 0, 0, %d, %d, %d", va, vc, vb, p.material, na, nc, nb);
-				if ((is < m->surface.num - 1) or (ip < s.polygon.num - 1) or (k < p.side.num - 3))
-					str += ",\n";
-			}
-			n_normals += p.side.num;
+	foreachi(ModelPolygon &p, m->polygon, ip){
+		for (int k=0; k<p.side.num-2; k++){
+			// reflected coordinates!
+			int a = p.side[k].triangulation[0];
+			int b = p.side[k].triangulation[1];
+			int c = p.side[k].triangulation[2];
+			int va = p.side[a].vertex;
+			int vb = p.side[b].vertex;
+			int vc = p.side[c].vertex;
+			int na = n_normals + a;
+			int nb = n_normals + b;
+			int nc = n_normals + c;
+			vector n = p.temp_normal;
+			str += format("	42, %d, %d, %d, %d, 0, 0, 0, %d, %d, %d", va, vc, vb, p.material, na, nc, nb);
+			if ((ip < m->polygon.num - 1) or (k < p.side.num - 3))
+				str += ",\n";
 		}
+		n_normals += p.side.num;
 	}
 	str += "],\n";
 	/*str += "'morphTargets': [\n"

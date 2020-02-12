@@ -10,17 +10,14 @@
 
 #include "../../../../ActionGroup.h"
 
-class ActionModelPolygonRemoveVertex: public ActionGroup
-{
+class ActionModelPolygonRemoveVertex: public ActionGroup {
 public:
-	ActionModelPolygonRemoveVertex(int _surface, int _poly, int _side);
-	virtual ~ActionModelPolygonRemoveVertex(){}
-	string name(){	return "ModelPolygonRemoveVertex";	}
+	ActionModelPolygonRemoveVertex(int _poly, int _side);
+	string name(){ return "ModelPolygonRemoveVertex"; }
 
 	void *compose(Data *d);
 
 private:
-	int surface;
 	int poly;
 	int side;
 };

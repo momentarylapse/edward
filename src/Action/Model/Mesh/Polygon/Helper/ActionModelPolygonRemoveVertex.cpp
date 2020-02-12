@@ -10,18 +10,14 @@
 #include "../../Surface/Helper/ActionModelSurfaceDeletePolygon.h"
 #include "../../Surface/Helper/ActionModelSurfaceAddPolygon.h"
 
-ActionModelPolygonRemoveVertex::ActionModelPolygonRemoveVertex(int _surface, int _poly, int _side)
-{
-	surface = _surface;
+ActionModelPolygonRemoveVertex::ActionModelPolygonRemoveVertex(int _poly, int _side) {
 	poly = _poly;
 	side = _side;
 }
 
-void *ActionModelPolygonRemoveVertex::compose(Data *d)
-{
+void *ActionModelPolygonRemoveVertex::compose(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	ModelSurface &s = m->surface[surface];
-	ModelPolygon &t = s.polygon[poly];
+	ModelPolygon &t = m->polygon[poly];
 
 
 	// save old polygon data
@@ -35,11 +31,11 @@ void *ActionModelPolygonRemoveVertex::compose(Data *d)
 		_sv.erase(side + l * t.side.num);
 
 	// delete
-	addSubAction(new ActionModelSurfaceDeletePolygon(surface, poly), m);
+	addSubAction(new ActionModelSurfaceDeletePolygon(poly), m);
 
 	// recreate
 	if (v.num > 2)
-		addSubAction(new ActionModelSurfaceAddPolygon(surface, v, material, _sv, poly), m);
+		addSubAction(new ActionModelSurfaceAddPolygon(v, material, _sv, poly), m);
 
 	return NULL;
 }

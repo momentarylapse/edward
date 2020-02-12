@@ -14,13 +14,13 @@ class DataModel;
 class ActionModelSurfaceRelinkPolygon : public ActionGroup
 {
 public:
-	ActionModelSurfaceRelinkPolygon(int _surface, int _polygon, Array<int> &_v, int _new_surface = -1);
+	ActionModelSurfaceRelinkPolygon(int _polygon, Array<int> &_v);
 	virtual ~ActionModelSurfaceRelinkPolygon(){}
 	string name(){	return "ModelSurfaceRelinkPolygon";	}
 
 	void *compose(Data *d);
 private:
-	int surface, polygon, new_surface;
+	int polygon;
 	Array<int> &v;
 };
 

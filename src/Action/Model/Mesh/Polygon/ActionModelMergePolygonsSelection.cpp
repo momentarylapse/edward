@@ -17,8 +17,7 @@ ActionModelMergePolygonsSelection::ActionModelMergePolygonsSelection()
 void *ActionModelMergePolygonsSelection::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(ModelSurface &s, m->surface, si)
-		MergePolygonsInSurface(m, &s, si);
+	MergePolygonsInSurface(m);
 	return NULL;
 }
 
@@ -32,18 +31,18 @@ int polygons_count_shared_vertices(ModelPolygon &a, ModelPolygon &b)
 	return n;
 }
 
-void ActionModelMergePolygonsSelection::MergePolygonsInSurface(DataModel *m, ModelSurface *s, int surface)
+void ActionModelMergePolygonsSelection::MergePolygonsInSurface(DataModel *m)
 {
-	int num_old_poly = s->polygon.num;
+	int num_old_poly = m->polygon.num;
 	bool found;
 	do{
 		found = false;
 
-		foreachi(ModelEdge &e, s->edge, ei){
+		foreachi(ModelEdge &e, m->edge, ei){
 			if (e.ref_count < 2)
 				continue;
-			ModelPolygon &p0 = s->polygon[e.polygon[0]];
-			ModelPolygon &p1 = s->polygon[e.polygon[1]];
+			ModelPolygon &p0 = m->polygon[e.polygon[0]];
+			ModelPolygon &p1 = m->polygon[e.polygon[1]];
 			if ((!p0.is_selected) && (e.polygon[0] < num_old_poly))
 				continue;
 			if ((!p1.is_selected) && (e.polygon[1] < num_old_poly))
@@ -63,7 +62,7 @@ void ActionModelMergePolygonsSelection::MergePolygonsInSurface(DataModel *m, Mod
 			if (polygons_count_shared_vertices(p0, p1) != 2)
 				continue;
 
-			MergePolygons(m, s, surface, ei);
+			MergePolygons(m, ei);
 			found = true;
 			num_old_poly -= 2;
 			break;
@@ -79,12 +78,12 @@ void loop_sides(ModelPolygon &p, int steps)
 		p.side[i] = temp.side[(i+p.side.num*5+steps) % p.side.num];
 }
 
-void ActionModelMergePolygonsSelection::MergePolygons(DataModel *m, ModelSurface *s, int surface, int edge)
+void ActionModelMergePolygonsSelection::MergePolygons(DataModel *m, int edge)
 {
-	ModelEdge e = s->edge[edge];
+	ModelEdge e = m->edge[edge];
 	//msg_write(format("merge %d %d", e.Vertex[0], e.Vertex[1]));
-	ModelPolygon p0 = s->polygon[e.polygon[0]];
-	ModelPolygon p1 = s->polygon[e.polygon[1]];
+	ModelPolygon p0 = m->polygon[e.polygon[0]];
+	ModelPolygon p1 = m->polygon[e.polygon[1]];
 
 	/*msg_write(ia2s(p0.GetVertices()));
 	msg_write(e.Side[0]);
@@ -103,9 +102,9 @@ void ActionModelMergePolygonsSelection::MergePolygons(DataModel *m, ModelSurface
 	//msg_write(ia2s(v));
 
 	// delete old polygons
-	addSubAction(new ActionModelSurfaceDeletePolygon(surface, max(e.polygon[0], e.polygon[1])), m);
-	addSubAction(new ActionModelSurfaceDeletePolygon(surface, min(e.polygon[0], e.polygon[1])), m);
+	addSubAction(new ActionModelSurfaceDeletePolygon(max(e.polygon[0], e.polygon[1])), m);
+	addSubAction(new ActionModelSurfaceDeletePolygon(min(e.polygon[0], e.polygon[1])), m);
 
 	// add merged
-	addSubAction(new ActionModelSurfaceAddPolygon(surface, v, p0.material, sv), m);
+	addSubAction(new ActionModelSurfaceAddPolygon(v, p0.material, sv), m);
 }

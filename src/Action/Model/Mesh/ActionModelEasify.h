@@ -15,7 +15,6 @@ class ActionModelEasify: public ActionGroup
 {
 public:
 	ActionModelEasify(float factor);
-	virtual ~ActionModelEasify();
 	string name(){	return "ModelEasify";	}
 
 	void *compose(Data *d);

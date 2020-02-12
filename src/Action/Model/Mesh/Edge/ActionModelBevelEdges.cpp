@@ -26,10 +26,7 @@ void *ActionModelBevelEdges::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	foreachi(ModelSurface &s, m->surface, i){
-		bevelSurface(m, &s, i);
-		//_foreach_it_.update();
-	}
+	bevelSurface(m);
 	return NULL;
 }
 
@@ -93,13 +90,13 @@ struct PolygonRelink
 	}
 };
 
-int get_next_edge(ModelSurface *s, int edge, int ek, int dir, int &next_dir)
+int get_next_edge(DataModel *m, int edge, int ek, int dir, int &next_dir)
 {
-	ModelEdge &e = s->edge[edge];
+	ModelEdge &e = m->edge[edge];
 	if (e.ref_count < 2)
 		return -1;
 	int np = (ek + dir) % 2;
-	ModelPolygon &p = s->polygon[e.polygon[np]];
+	ModelPolygon &p = m->polygon[e.polygon[np]];
 	int side = (e.side[np] + p.side.num + dir) % p.side.num;
 	next_dir = p.side[side].edge_direction;
 	return p.side[side].edge;
@@ -114,7 +111,7 @@ void ActionModelBevelEdges::build_vertices(Array<VertexToCome> &vv, DataModel *m
 		}
 }
 
-void ActionModelBevelEdges::do_poly_relink(ModelPolygon &p, PolygonRelink &r, int i, int surface, DataModel *m)
+void ActionModelBevelEdges::do_poly_relink(ModelPolygon &p, PolygonRelink &r, int i, DataModel *m)
 {
 	Array<int> v;
 	int material = p.material;
@@ -155,15 +152,15 @@ void ActionModelBevelEdges::do_poly_relink(ModelPolygon &p, PolygonRelink &r, in
 			ssv[k + l*v.num] = sv[k*MATERIAL_MAX_TEXTURES + l];
 
 	// relink
-	addSubAction(new ActionModelSurfaceDeletePolygon(surface, i), m);
-	addSubAction(new ActionModelSurfaceAddPolygon(surface, v, material, ssv, i), m);
+	addSubAction(new ActionModelSurfaceDeletePolygon(i), m);
+	addSubAction(new ActionModelSurfaceAddPolygon(v, material, ssv, i), m);
 }
 
 
 static Array<VertexToCome> ev[2];
 static Array<Array<VertexToCome> > pv;
 
-void add_edge_neighbour(ModelSurface *s, ModelEdge &e, int k, int dir, PolygonToCome &pp)
+void add_edge_neighbour(DataModel *s, ModelEdge &e, int k, int dir, PolygonToCome &pp)
 {
 	ModelPolygon &p = s->polygon[e.polygon[k]];
 	int nei_side = (e.side[k] + p.side.num + 2*dir - 1) % p.side.num;
@@ -175,18 +172,19 @@ void add_edge_neighbour(ModelSurface *s, ModelEdge &e, int k, int dir, PolygonTo
 	}
 }
 
-void ActionModelBevelEdges::bevelSurface(DataModel *m, ModelSurface *s, int surface)
+void ActionModelBevelEdges::bevelSurface(DataModel *m)
 {
-	ev[0].resize(s->edge.num);
-	ev[1].resize(s->edge.num);
-	pv.resize(s->polygon.num);
+	// seems a bit wasteful...
+	ev[0].resize(m->edge.num);
+	ev[1].resize(m->edge.num);
+	pv.resize(m->polygon.num);
 
 	Array<VertexData> vdata;
-	vdata.resize(s->vertex.num);
+	vdata.resize(m->vertex.num);
 	Array<int> obsolete_vertex;
 
 	// (potentially) new vertices on edges
-	foreachi(ModelEdge &e, s->edge, i){
+	foreachi(ModelEdge &e, m->edge, i){
 		vector d = m->vertex[e.vertex[1]].pos - m->vertex[e.vertex[0]].pos;
 		d.normalize();
 		ev[0][i].pos = m->vertex[e.vertex[0]].pos + d * length;
@@ -196,7 +194,7 @@ void ActionModelBevelEdges::bevelSurface(DataModel *m, ModelSurface *s, int surf
 	}
 
 	// (potentially) new vertices in polygons
-	foreachi(ModelPolygon &p, s->polygon, i){
+	foreachi(ModelPolygon &p, m->polygon, i){
 		pv[i].resize(p.side.num);
 		for (int k=0;k<p.side.num;k++){
 			vector dir0 = m->vertex[p.side[(k+p.side.num-1)%p.side.num].vertex].pos - m->vertex[p.side[k].vertex].pos;
@@ -211,31 +209,31 @@ void ActionModelBevelEdges::bevelSurface(DataModel *m, ModelSurface *s, int surf
 	Array<PolygonToCome> new_poly;
 
 	// closedness at vertices
-	foreachi(int v, s->vertex, vi)
-		if (m->vertex[v].is_selected){
+	foreachi(auto &v, m->vertex, vi)
+		if (v.is_selected){
 			VertexData vd;
-			vd.v = v;
+			vd.v = vi;
 			vd.closed = true;
 
-			for (ModelEdge &e: s->edge)
-				if ((e.vertex[0] == v) || (e.vertex[1] == v))
+			for (ModelEdge &e: m->edge)
+				if ((e.vertex[0] == vi) || (e.vertex[1] == vi))
 					vd.closed &= (e.ref_count == 2);
 			vdata[vi] = vd;
-			obsolete_vertex.add(v);
+			obsolete_vertex.add(vi);
 		}
 
 	// edges...
-	foreachi(ModelEdge &e, s->edge, ei)
+	foreachi(ModelEdge &e, m->edge, ei)
 		if (e.is_selected){
 			// selected -> new polygon
 			if (e.ref_count < 2)
 				continue;
 			PolygonToCome pp;
 
-			add_edge_neighbour(s, e, 0, 0, pp);
-			add_edge_neighbour(s, e, 1, 1, pp);
-			add_edge_neighbour(s, e, 1, 0, pp);
-			add_edge_neighbour(s, e, 0, 1, pp);
+			add_edge_neighbour(m, e, 0, 0, pp);
+			add_edge_neighbour(m, e, 1, 1, pp);
+			add_edge_neighbour(m, e, 1, 0, pp);
+			add_edge_neighbour(m, e, 0, 1, pp);
 
 			new_poly.add(pp);
 		}else{
@@ -247,14 +245,14 @@ void ActionModelBevelEdges::bevelSurface(DataModel *m, ModelSurface *s, int surf
 		}
 
 	// close vertices
-	foreachi(int v, s->vertex, vi)
-		if ((m->vertex[v].is_selected) && (vdata[vi].closed)){
+	foreachi(auto &v, m->vertex, vi)
+		if ((v.is_selected) && (vdata[vi].closed)){
 			PolygonToCome pp;
 			int edge = -1, edgedir;
 			// find first edge
-			foreachi(ModelEdge &e, s->edge, ei){
+			foreachi(ModelEdge &e, m->edge, ei){
 				for (int k=0; k<2; k++)
-					if (e.vertex[k] == v){
+					if (e.vertex[k] == vi){
 						edge = ei;
 						edgedir = k;
 					}
@@ -268,13 +266,13 @@ void ActionModelBevelEdges::bevelSurface(DataModel *m, ModelSurface *s, int surf
 				if (ev[edgedir][edge].ref_count > 0)
 					pp.add(&ev[edgedir][edge]);
 				else{
-					ModelEdge &e = s->edge[edge];
+					ModelEdge &e = m->edge[edge];
 					VertexToCome &v = pv[e.polygon[  edgedir]][ e.side[  edgedir]];
 					if (v.ref_count > 0)
 						pp.add(&v);
 				}
 
-				edge = get_next_edge(s, edge, edgedir, 1, edgedir);
+				edge = get_next_edge(m, edge, edgedir, 1, edgedir);
 				if (edge < 0)
 					throw ActionException("BevelPoly: no next edge at closed vertex found!");
 			}while(edge != edge0);
@@ -286,8 +284,8 @@ void ActionModelBevelEdges::bevelSurface(DataModel *m, ModelSurface *s, int surf
 
 	// relink polys
 	Array<PolygonRelink> pr;
-	pr.resize(s->polygon.num);
-	foreachi(ModelPolygon &p, s->polygon, i){
+	pr.resize(m->polygon.num);
+	foreachi(ModelPolygon &p, m->polygon, i){
 		bool relink = false;
 		for (int k=0; k<p.side.num; k++)
 			relink |= m->vertex[p.side[k].vertex].is_selected;
@@ -324,7 +322,7 @@ void ActionModelBevelEdges::bevelSurface(DataModel *m, ModelSurface *s, int surf
 	// relink
 	foreachi(PolygonRelink &r, pr, i)
 		if (r.v.num > 0)
-			do_poly_relink(s->polygon[i], r, i, surface, m);
+			do_poly_relink(m->polygon[i], r, i, m);
 
 	// new polygons
 	for (PolygonToCome &p: new_poly){

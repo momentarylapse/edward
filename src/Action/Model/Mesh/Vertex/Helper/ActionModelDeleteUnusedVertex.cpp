@@ -32,7 +32,6 @@ void ActionModelDeleteUnusedVertex::undo(Data *d)
 	vv.is_special = false;
 	vv.view_stage = ed->multi_view_3d->view_stage;
 	vv.ref_count = 0;
-	vv.surface = -1;
 	m->vertex.insert(vv, vertex);
 
 	// correct animations
@@ -45,19 +44,14 @@ void ActionModelDeleteUnusedVertex::undo(Data *d)
 
 
 	// correct references
-	for (ModelSurface &s: m->surface){
-		for (ModelPolygon &t: s.polygon)
-			for (int k=0;k<t.side.num;k++)
-				if (t.side[k].vertex >= vertex)
-					t.side[k].vertex ++;
-		for (ModelEdge &e: s.edge)
-			for (int k=0;k<2;k++)
-				if (e.vertex[k] >= vertex)
-					e.vertex[k] ++;
-		for (int &v: s.vertex)
-			if (v >= vertex)
-				v ++;
-	}
+	for (ModelPolygon &t: m->polygon)
+		for (int k=0;k<t.side.num;k++)
+			if (t.side[k].vertex >= vertex)
+				t.side[k].vertex ++;
+	for (ModelEdge &e: m->edge)
+		for (int k=0;k<2;k++)
+			if (e.vertex[k] >= vertex)
+				e.vertex[k] ++;
 
 	// fx
 	for (ModelEffect &f: m->fx)
@@ -73,7 +67,6 @@ void *ActionModelDeleteUnusedVertex::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	assert(m->vertex[vertex].ref_count == 0);
-	assert(m->vertex[vertex].surface < 0);
 
 	// save old data
 	pos = m->vertex[vertex].pos;
@@ -91,19 +84,14 @@ void *ActionModelDeleteUnusedVertex::execute(Data *d)
 		}
 
 	// correct references
-	for (ModelSurface &s: m->surface){
-		for (ModelPolygon &t: s.polygon)
-			for (int k=0;k<t.side.num;k++)
-				if (t.side[k].vertex > vertex)
-					t.side[k].vertex --;
-		for (ModelEdge &e: s.edge)
-			for (int k=0;k<2;k++)
-				if (e.vertex[k] > vertex)
-					e.vertex[k] --;
-		for (int &v: s.vertex)
-			if (v > vertex)
-				v --;
-	}
+	for (ModelPolygon &t: m->polygon)
+		for (int k=0;k<t.side.num;k++)
+			if (t.side[k].vertex > vertex)
+				t.side[k].vertex --;
+	for (ModelEdge &e: m->edge)
+		for (int k=0;k<2;k++)
+			if (e.vertex[k] > vertex)
+				e.vertex[k] --;
 
 	// fx
 	fx.clear();

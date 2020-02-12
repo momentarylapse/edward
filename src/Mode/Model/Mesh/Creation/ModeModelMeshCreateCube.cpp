@@ -82,7 +82,6 @@ void ModeModelMeshCreateCube::on_left_button_up() {
 		if (pos2_chosen) {
 
 			data->pasteGeometry(*geo, mode_model_mesh->current_material);
-			data->selectOnlySurface(&data->surface.back());
 
 			abort();
 		} else {

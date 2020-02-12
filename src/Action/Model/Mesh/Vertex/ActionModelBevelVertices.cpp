@@ -16,16 +16,11 @@
 
 void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 {
-	int surface = m->vertex[vi].surface;
-	if (surface < 0)
-		return;
-	ModelSurface &s = m->surface[surface];
-
 	float epsilon = length * 0.0001f;
 	bool closed = true;
 
 	// restrict length
-	foreachib(ModelEdge &e, s.edge, ei)
+	foreachib(ModelEdge &e, m->edge, ei)
 		for (int k=0;k<2;k++)
 			if (e.vertex[k] == vi){
 				length = min(length, (m->vertex[e.vertex[(k+1)%2]].pos - m->vertex[e.vertex[k]].pos).length());
@@ -39,7 +34,7 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 	bool split = true;
 	while(split){
 		split = false;
-		foreachib(ModelEdge &e, s.edge, ei){
+		foreachib(ModelEdge &e, m->edge, ei){
 			for (int k=0;k<2;k++)
 				if (e.vertex[k] == vi){
 
@@ -56,7 +51,7 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 					float f = length/edge_length;
 					if (k > 0)
 						f = 1 - f;
-					addSubAction(new ActionModelSplitEdge(surface, ei, f), m);
+					addSubAction(new ActionModelSplitEdge(ei, f), m);
 					split = true;
 					break;
 				}
@@ -71,10 +66,10 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 
 
 	// remove vi from polygons
-	foreachi(ModelPolygon &t, s.polygon, i)
+	foreachi(ModelPolygon &t, m->polygon, i)
 		for (int k=0;k<t.side.num;k++)
 			if (t.side[k].vertex == vi){
-				addSubAction(new ActionModelPolygonRemoveVertex(surface, i, k), m);
+				addSubAction(new ActionModelPolygonRemoveVertex(i, k), m);
 				_foreach_it_.update(); // TODO
 				break;
 			}
@@ -82,7 +77,7 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 
 	// close hole
 	if (closed){
-		Array<int> loop = s.getBoundaryLoop(m->vertex.num - 1);
+		Array<int> loop = m->get_boundary_loop(m->vertex.num - 1);
 		loop.reverse();
 		addSubAction(new ActionModelAddPolygonAutoSkin(loop, mode_model_mesh->current_material), m);
 	}

@@ -13,17 +13,15 @@ class DataModel;
 class ModelSurface;
 class vector;
 
-class ActionModelCutOutPolygons: public ActionGroup
-{
+class ActionModelCutOutPolygons: public ActionGroup {
 public:
 	ActionModelCutOutPolygons();
-	virtual ~ActionModelCutOutPolygons(){}
 	string name(){	return "ModelCutOutPolygons";	}
 
 	void *compose(Data *d);
 
 private:
-	void CutOutSurface(ModelSurface &s, int surface, DataModel *m);
+	void CutOutSurface(DataModel *m);
 };
 
 #endif /* ACTIONMODELCUTOUTPOLYGONS_H_ */

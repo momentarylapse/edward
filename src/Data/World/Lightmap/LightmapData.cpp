@@ -166,28 +166,25 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 
 	mod.new_name = format("Lightmap/%s/%s_%d", world_name_small.c_str(), mod.orig_name.c_str(), mod.id);
 
-	foreachi(ModelSurface &s, m->surface, surf){
-		s.updateNormals();
-		foreachi(ModelPolygon &p, s.polygon, i){
-			if (p.triangulation_dirty)
-				p.updateTriangulation(m->vertex);
-			for (int k=0;k<p.side.num-2;k++){
-				Triangle t;
-				t.mod_id = mod.id;
-				t.ter_id = -1;
-				t.surf = surf;
-				t.poly = i;
-				t.side = k;
-				for (int l=0;l<3;l++){
-					int n = p.side[k].triangulation[l];
-					t.v[l] = mat * m->vertex[p.side[n].vertex].pos;
-					t.n[l] = mat.transform_normal(p.side[n].normal);
-				}
-				update_tria(t);
-				tria_set_mat(t, m->material[p.material]);
-				mod.area += t.area;
-				Trias.add(t);
+	m->updateNormals();
+	foreachi(ModelPolygon &p, m->polygon, i){
+		if (p.triangulation_dirty)
+			p.updateTriangulation(m->vertex);
+		for (int k=0;k<p.side.num-2;k++){
+			Triangle t;
+			t.mod_id = mod.id;
+			t.ter_id = -1;
+			t.poly = i;
+			t.side = k;
+			for (int l=0;l<3;l++){
+				int n = p.side[k].triangulation[l];
+				t.v[l] = mat * m->vertex[p.side[n].vertex].pos;
+				t.n[l] = mat.transform_normal(p.side[n].normal);
 			}
+			update_tria(t);
+			tria_set_mat(t, m->material[p.material]);
+			mod.area += t.area;
+			Trias.add(t);
 		}
 	}
 	area += mod.area;
@@ -334,7 +331,7 @@ void LightmapData::CreateVertices()
 
 		for (int i=m.offset;i<m.offset + m.num_trias;i++){
 			LightmapData::Triangle &t = Trias[i];
-			ModelPolygon &p = m.orig->surface[t.surf].polygon[t.poly];
+			ModelPolygon &p = m.orig->polygon[t.poly];
 			for (int k=0;k<3;k++){
 				int si = p.side[t.side].triangulation[k];
 				t.sv[k] = p.side[si].skin_vertex[1];

@@ -19,29 +19,26 @@ ActionModelCutOutPolygons::ActionModelCutOutPolygons()
 void *ActionModelCutOutPolygons::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachib(ModelSurface &s, m->surface, si){
-		CutOutSurface(s, si, m);
-		_foreach_it_.update(); // TODO
-	}
+	CutOutSurface(m);
 
 	return NULL;
 }
 
 
-void ActionModelCutOutPolygons::CutOutSurface(ModelSurface &s, int surface, DataModel *m)
+void ActionModelCutOutPolygons::CutOutSurface(DataModel *m)
 {
 	Set<int> sel_poly;
-	foreachi(ModelPolygon &t, s.polygon, ti)
+	foreachi(ModelPolygon &t, m->polygon, ti)
 		if (t.is_selected)
 			sel_poly.add(ti);
-	if ((sel_poly.num == 0) or (sel_poly.num == s.polygon.num))
+	if ((sel_poly.num == 0) or (sel_poly.num == m->polygon.num))
 		return;
 
 	// find boundary
 	Set<int> boundary;
-	for (ModelEdge &e: s.edge)
+	for (ModelEdge &e: m->edge)
 		if (e.ref_count == 2)
-			if ((s.polygon[e.polygon[0]].is_selected != s.polygon[e.polygon[1]].is_selected)){
+			if ((m->polygon[e.polygon[0]].is_selected != m->polygon[e.polygon[1]].is_selected)){
 				boundary.add(e.vertex[0]);
 				boundary.add(e.vertex[1]);
 			}
@@ -54,13 +51,8 @@ void ActionModelCutOutPolygons::CutOutSurface(ModelSurface &s, int surface, Data
 		//_foreach_it_.update(); // TODO
 	}
 
-	// create new surface
-	addSubAction(new ActionModelAddEmptySurface(), m);
-	int new_surf = m->surface.num - 1;
-	ModelSurface &s2 = m->surface[surface];
-
 	// move selected polygons
-	foreachib(ModelPolygon &t, s2.polygon, ti)
+	foreachib(ModelPolygon &t, m->polygon, ti)
 		if (t.is_selected){
 			Array<int> v;
 			for (int k=0;k<t.side.num;k++){
@@ -70,7 +62,7 @@ void ActionModelCutOutPolygons::CutOutSurface(ModelSurface &s, int surface, Data
 				if (n >= 0)
 					v[k] = new_vert[n];
 			}
-			addSubAction(new ActionModelSurfaceRelinkPolygon(surface, ti, v, new_surf), m);
+			addSubAction(new ActionModelSurfaceRelinkPolygon(ti, v), m);
 			_foreach_it_.update(); // TODO
 		}
 }

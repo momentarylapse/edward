@@ -11,12 +11,10 @@
 #include "../../../Action.h"
 #include "../../../../lib/math/math.h"
 
-class ActionModelAddVertex: public Action
-{
+class ActionModelAddVertex: public Action {
 public:
 	ActionModelAddVertex(const vector &_pos, int _bone_index = 0, int _normal_mode = -1);
-	virtual ~ActionModelAddVertex();
-	string name(){	return "ModelAddVertex";	}
+	string name(){ return "ModelAddVertex"; }
 
 	void *execute(Data *d);
 	void undo(Data *d);

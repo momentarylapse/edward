@@ -23,20 +23,18 @@ void *ActionModelExtrudePolygons::compose(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	if (independent) {
-		foreachi(ModelSurface &s, m->surface, si)
-			extrude_surface_indep(s, si, m);
+		extrude_surface_indep(m);
 	} else {
-		foreachi(ModelSurface &s, m->surface, si)
-			extrude_surface(s, si, m);
+		extrude_surface(m);
 	}
 
 	return NULL;
 }
 
 
-void ActionModelExtrudePolygons::extrude_surface(ModelSurface &s, int surface, DataModel *m) {
+void ActionModelExtrudePolygons::extrude_surface(DataModel *m) {
 	Set<int> sel_poly, sel_vert;
-	foreachi(ModelPolygon &t, s.polygon, ti)
+	foreachi(ModelPolygon &t, m->polygon, ti)
 		if (t.is_selected) {
 			sel_poly.add(ti);
 			for (int k=0;k<t.side.num;k++)
@@ -47,10 +45,10 @@ void ActionModelExtrudePolygons::extrude_surface(ModelSurface &s, int surface, D
 
 	// find boundary
 	Set<int> boundary;
-	for (ModelEdge &e: s.edge) {
+	for (ModelEdge &e: m->edge) {
 		int n_sel = 0;
 		for (int k=0;k<e.ref_count;k++)
-			if (s.polygon[e.polygon[k]].is_selected)
+			if (m->polygon[e.polygon[k]].is_selected)
 				n_sel ++;
 		if (n_sel == 1)  {
 			boundary.add(e.vertex[0]);
@@ -68,7 +66,7 @@ void ActionModelExtrudePolygons::extrude_surface(ModelSurface &s, int surface, D
 	// move selected polygons
 	for (int v: sel_vert){
 		vector dir = v_0;
-		for (ModelPolygon &t: s.polygon)
+		for (ModelPolygon &t: m->polygon)
 			if (t.is_selected)
 				for (int k=0;k<t.side.num;k++)
 					if (v == t.side[k].vertex)
@@ -78,7 +76,7 @@ void ActionModelExtrudePolygons::extrude_surface(ModelSurface &s, int surface, D
 	}
 
 	// re-link outer (=unselected) boundary polygons
-	foreachi(ModelPolygon &t, s.polygon, ti)
+	foreachi(ModelPolygon &t, m->polygon, ti)
 		if (!t.is_selected){
 			Array<int> v;
 			bool on_boundary = false;
@@ -91,7 +89,7 @@ void ActionModelExtrudePolygons::extrude_surface(ModelSurface &s, int surface, D
 				}
 			}
 			if (on_boundary) {
-				addSubAction(new ActionModelSurfaceRelinkPolygon(surface, ti, v), m);
+				addSubAction(new ActionModelSurfaceRelinkPolygon(ti, v), m);
 				_foreach_it_.update(); // TODO
 			}
 		}
@@ -99,7 +97,7 @@ void ActionModelExtrudePolygons::extrude_surface(ModelSurface &s, int surface, D
 	Array<int> sewing;
 
 	// fill "sides" of the extrusion
-	foreachb(ModelEdge &e, s.edge)
+	foreachb(ModelEdge &e, m->edge)
 		if (e.ref_count == 1) {
 			int n0 = boundary.find(e.vertex[0]);
 			int n1 = boundary.find(e.vertex[1]);
@@ -123,11 +121,11 @@ void ActionModelExtrudePolygons::extrude_surface(ModelSurface &s, int surface, D
 }
 
 
-void ActionModelExtrudePolygons::extrude_surface_indep(ModelSurface &s, int surface, DataModel *m) {
+void ActionModelExtrudePolygons::extrude_surface_indep(DataModel *m) {
 	Array<int> sewing;
 
-	for (int ti=0; ti<s.polygon.num; ti++) {
-		ModelPolygon &t = s.polygon[ti];
+	for (int ti=0; ti<m->polygon.num; ti++) {
+		ModelPolygon &t = m->polygon[ti];
 		if (!t.is_selected)
 			continue;
 
@@ -146,7 +144,7 @@ void ActionModelExtrudePolygons::extrude_surface_indep(ModelSurface &s, int surf
 		}
 
 		// re-link polygon
-		addSubAction(new ActionModelSurfaceRelinkPolygon(surface, ti, new_vert), m);
+		addSubAction(new ActionModelSurfaceRelinkPolygon(ti, new_vert), m);
 
 		// fill "sides" of the extrusion
 		for (int i=0; i<sel_vert.num; i++) {

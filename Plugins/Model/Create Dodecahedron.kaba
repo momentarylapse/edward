@@ -52,5 +52,5 @@ void main()
 		
 	data_model.EndActionGroup()
 	
-	data_model.SelectOnlySurface(data_model.surface[data_model.surface.num - 1])
+	#data_model.SelectOnlySurface(data_model.surface[data_model.surface.num - 1])
 	

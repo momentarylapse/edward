@@ -20,6 +20,7 @@ ActionModelSurfaceVolumeAnd::ActionModelSurfaceVolumeAnd()
 void *ActionModelSurfaceVolumeAnd::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
+#if 0
 	int n = 0;
 	for (ModelSurface &s: m->surface)
 		if ((s.is_selected) && (s.is_closed))
@@ -41,6 +42,8 @@ void *ActionModelSurfaceVolumeAnd::compose(Data *d)
 		addSubAction(new ActionModelPasteGeometry(g, 0), m);
 
 	ed->set_message(format(_("%d closed surfaces subtracted"), n));
+#endif
+	msg_todo("ActionModelSurfaceVolumeAnd");
 	return NULL;
 }
 
@@ -48,6 +51,7 @@ void surf2geo(ModelSurface *s, Geometry &g);
 
 void ActionModelSurfaceVolumeAnd::SurfaceAnd(DataModel *m, ModelSurface *a, int ai, ModelSurface *b, Array<Geometry> &geos)
 {
+#if 0
 	Geometry ga, gb, gc;
 	surf2geo(a, ga);
 	surf2geo(b, gb);
@@ -57,4 +61,5 @@ void ActionModelSurfaceVolumeAnd::SurfaceAnd(DataModel *m, ModelSurface *a, int 
 		geos.add(gc);
 		addSubAction(new ActionModelDeleteSurface(ai), m);
 	}
+#endif
 }

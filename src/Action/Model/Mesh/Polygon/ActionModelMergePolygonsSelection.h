@@ -16,13 +16,12 @@ class ActionModelMergePolygonsSelection: public ActionGroup
 {
 public:
 	ActionModelMergePolygonsSelection();
-	virtual ~ActionModelMergePolygonsSelection(){}
 	string name(){	return "ModelMergePolygonsSelection";	}
 
 	void *compose(Data *d);
 private:
-	void MergePolygonsInSurface(DataModel *m, ModelSurface *s, int surface);
-	void MergePolygons(DataModel *m, ModelSurface *s, int surface, int edge);
+	void MergePolygonsInSurface(DataModel *m);
+	void MergePolygons(DataModel *m, int edge);
 };
 
 #endif /* ACTIONMODELMERGESELECTIONSELECTION_H_ */

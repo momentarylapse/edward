@@ -3,14 +3,11 @@ use hui
 use "../api.kaba"
 
 void main()
-	if data_model.surface.num != 1
-		ErrorBox(edward, "Error", "Requires exactly 1 surface")
-		return
 	if !FileDialogSave(edward, "Save STL", "", "*.stl", "*.stl")
 		return
 	File *f = Filesystem.create(HuiFilename)
 	f << "solid test"
-	for p in data_model.surface[0].polygon
+	for p in data_model.polygon
 		for k in 0:p.side.num - 2
 			int a = p.side[k].triangulation[0]
 			int b = p.side[k].triangulation[1]

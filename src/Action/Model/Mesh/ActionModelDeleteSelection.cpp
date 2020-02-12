@@ -20,8 +20,7 @@ void *ActionModelDeleteSelection::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	foreachib(ModelSurface &s, m->surface, si){
-		foreachib(ModelPolygon &t, s.polygon, ti){
+		foreachib(ModelPolygon &t, m->polygon, ti){
 			bool del = false;
 			if (greedy){
 				for (int k=0;k<t.side.num;k++)
@@ -30,14 +29,9 @@ void *ActionModelDeleteSelection::compose(Data *d)
 				del = t.is_selected;
 			}
 			if (del)
-				addSubAction(new ActionModelSurfaceDeletePolygon(si, ti), m);
+				addSubAction(new ActionModelSurfaceDeletePolygon(ti), m);
 			_foreach_it_.update(); // TODO
 		}
-
-		if (s.polygon.num == 0)
-			addSubAction(new ActionModelDeleteEmptySurface(si), m);
-		_foreach_it_.update(); // TODO
-	}
 
 	foreachib(ModelVertex &v, m->vertex, i)
 		if (v.is_selected)

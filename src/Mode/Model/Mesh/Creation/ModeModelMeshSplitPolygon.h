@@ -11,8 +11,7 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshSplitPolygon: public ModeCreation<DataModel>
-{
+class ModeModelMeshSplitPolygon: public ModeCreation<DataModel> {
 public:
 	ModeModelMeshSplitPolygon(ModeBase *parent);
 
@@ -23,9 +22,8 @@ public:
 	void on_draw_win(MultiView::Window *win) override;
 
 private:
-	int surface, triangle;
 	vector pos;
-	int edge;
+	int triangle, edge;
 	float factor;
 };
 

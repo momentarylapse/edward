@@ -189,10 +189,9 @@ void ModelMaterialDialog::fill_material_list() {
 	reset("material_list");
 	for (int i=0;i<data->material.num;i++) {
 		int nt = 0;
-		for (ModelSurface &s: data->surface)
-			for (ModelPolygon &t: s.polygon)
-				if (t.material == i)
-					nt ++;
+		for (ModelPolygon &t: data->polygon)
+			if (t.material == i)
+				nt ++;
 		string im = render_material(data->material[i]);
 		add_string("material_list", format("Mat[%d]\\%d\\%s\\%s", i, nt, im.c_str(), file_secure(data->material[i]->filename).c_str()));
 	}

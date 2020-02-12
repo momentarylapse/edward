@@ -11,18 +11,16 @@
 #include "../../../../Action.h"
 class vector;
 
-class ActionModelSurfaceDeletePolygon: public Action
-{
+class ActionModelSurfaceDeletePolygon: public Action {
 public:
-	ActionModelSurfaceDeletePolygon(int _surface, int _index);
-	virtual ~ActionModelSurfaceDeletePolygon();
-	string name(){	return "ModelSurfaceDeletePolygon";	}
+	ActionModelSurfaceDeletePolygon(int _index);
+	string name() override { return "ModelSurfaceDeletePolygon"; }
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
-	int surface, index;
+	int index;
 	int material;
 	Array<int> vertex;
 	Array<vector> skin;

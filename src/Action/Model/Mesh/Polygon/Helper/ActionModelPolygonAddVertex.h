@@ -12,17 +12,14 @@
 #include "../../../../../x/material.h"
 #include "../../../../../lib/math/math.h"
 
-class ActionModelPolygonAddVertex: public ActionGroup
-{
+class ActionModelPolygonAddVertex: public ActionGroup {
 public:
-	ActionModelPolygonAddVertex(int _surface, int _poly, int _side, int _vertex, const vector *_sv);
-	virtual ~ActionModelPolygonAddVertex(){}
-	string name(){	return "ModelPolygonAddVertex";	}
+	ActionModelPolygonAddVertex(int _poly, int _side, int _vertex, const vector *_sv);
+	string name() override { return "ModelPolygonAddVertex"; }
 
-	void *compose(Data *d);
+	void *compose(Data *d) override;
 
 private:
-	int surface;
 	int poly;
 	int side;
 	int vertex;

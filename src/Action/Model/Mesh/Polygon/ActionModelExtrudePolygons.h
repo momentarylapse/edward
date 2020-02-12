@@ -21,8 +21,8 @@ public:
 	void *compose(Data *d);
 
 private:
-	void extrude_surface(ModelSurface &s, int surface, DataModel *m);
-	void extrude_surface_indep(ModelSurface &s, int surface, DataModel *m);
+	void extrude_surface(DataModel *m);
+	void extrude_surface_indep(DataModel *m);
 	float offset;
 	bool independent;
 };

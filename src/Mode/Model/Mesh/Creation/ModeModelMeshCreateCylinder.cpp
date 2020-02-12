@@ -108,7 +108,6 @@ void ModeModelMeshCreateCylinder::on_left_button_up() {
 
 		} else {
 			data->pasteGeometry(*geo, mode_model_mesh->current_material);
-			data->selectOnlySurface(&data->surface.back());
 		}
 
 		abort();

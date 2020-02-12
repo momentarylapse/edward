@@ -13,7 +13,7 @@ class vector;
 
 class ActionModelSurfaceAddPolygon: public Action {
 public:
-	ActionModelSurfaceAddPolygon(int _surface, const Array<int> &_v, int _material, const Array<vector> &_sv, int _index = -1);
+	ActionModelSurfaceAddPolygon(const Array<int> &_v, int _material, const Array<vector> &_sv, int _index = -1);
 	string name() { return "ModelSurfaceAddPolygon"; }
 
 	void *execute(Data *d);
@@ -23,7 +23,6 @@ public:
 	void abort(Data *d) {}
 
 private:
-	int surface;
 	int index;
 	Array<int> v;
 	int material;

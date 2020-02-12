@@ -23,9 +23,9 @@ public:
 
 	void *compose(Data *d);
 
-	void bevelSurface(DataModel *m, ModelSurface *s, int surface);
+	void bevelSurface(DataModel *m);
 	void build_vertices(Array<VertexToCome> &vv, DataModel *m);
-	void do_poly_relink(ModelPolygon &p, PolygonRelink &r, int i, int surface, DataModel *m);
+	void do_poly_relink(ModelPolygon &p, PolygonRelink &r, int i, DataModel *m);
 private:
 	float length;
 };

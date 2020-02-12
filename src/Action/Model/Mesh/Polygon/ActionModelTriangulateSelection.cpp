@@ -17,8 +17,7 @@ ActionModelTriangulateSelection::ActionModelTriangulateSelection()
 void *ActionModelTriangulateSelection::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(ModelSurface &s, m->surface, si){
-		foreachib(ModelPolygon &t, s.polygon, ti)
+		foreachib(ModelPolygon &t, m->polygon, ti)
 			if (t.is_selected){
 				if (t.side.num == 3)
 					continue;
@@ -27,7 +26,7 @@ void *ActionModelTriangulateSelection::compose(Data *d)
 				ModelPolygon temp = t;
 
 				// delete old polygon
-				addSubAction(new ActionModelSurfaceDeletePolygon(si, ti), m);
+				addSubAction(new ActionModelSurfaceDeletePolygon(ti), m);
 
 				// triangulate
 				Array<int> vv = temp.triangulate(m->vertex);
@@ -39,13 +38,12 @@ void *ActionModelTriangulateSelection::compose(Data *d)
 					for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 						for (int k=0;k<3;k++)
 							sv.add(temp.side[vv[i*3+k]].skin_vertex[l]);
-					addSubAction(new ActionModelSurfaceAddPolygon(si, v, temp.material, sv), m);
+					addSubAction(new ActionModelSurfaceAddPolygon(v, temp.material, sv), m);
 				}
 
 
 				_foreach_it_.update(); // TODO
 			}
-	}
 	return NULL;
 }
 

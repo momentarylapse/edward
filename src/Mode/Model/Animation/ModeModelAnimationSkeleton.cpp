@@ -84,13 +84,12 @@ void ModeModelAnimationSkeleton::on_update(Observable* o, const string &message)
 
 bool bone_hover(const MultiView::SingleData *pp, MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data) {
 	auto *me = (ModeModelAnimationSkeleton*)user_data;
-	for (auto &s: me->data->surface)
-		for (auto &p: s.polygon) {
-			if (pp == &mode_model_animation->bone[me->data->vertex[p.side[0].vertex].bone_index]) {
-				if (poly_hover(&p, win, m, tp, z, user_data, mode_model_animation->vertex))
-					return true;
-			}
+	for (auto &p: me->data->polygon) {
+		if (pp == &mode_model_animation->bone[me->data->vertex[p.side[0].vertex].bone_index]) {
+			if (poly_hover(&p, win, m, tp, z, user_data, mode_model_animation->vertex))
+				return true;
 		}
+	}
 	return false;
 }
 
@@ -119,10 +118,9 @@ void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win)
 	mode_model_mesh->vb_hover->clear();
 
 
-	for (auto &s: data->surface)
-		for (ModelPolygon &p: s.polygon)
-			if (data->vertex[p.side[0].vertex].bone_index == multi_view->hover.index)
-				p.addToVertexBuffer(mode_model_animation->vertex, mode_model_mesh->vb_hover, 1);
+	for (ModelPolygon &p: data->polygon)
+		if (data->vertex[p.side[0].vertex].bone_index == multi_view->hover.index)
+			p.addToVertexBuffer(mode_model_animation->vertex, mode_model_mesh->vb_hover, 1);
 
 
 	nix::SetWire(false);

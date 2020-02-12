@@ -53,8 +53,8 @@ const BrushConfig BRUSH_PARAM[NUM_BRUSHES] = {
 
 // map from 3d-world-space into UV-space for a polygon
 // D: Tp -> Tuv
-vector map_uv(DataModel *m, int surf, int poly, const vector &pos, matrix &D) {
-	auto &p = m->surface[surf].polygon[poly];
+vector map_uv(DataModel *m, int poly, const vector &pos, matrix &D) {
+	auto &p = m->polygon[poly];
 
 	for (int k=0; k<p.side.num-2; k++) {
 		int ta = p.side[k].triangulation[0];
@@ -99,11 +99,10 @@ complex eigen_value_2d(const matrix &m) {
 
 class ActionModelBrushTexturePaint: public Action {
 public:
-	ActionModelBrushTexturePaint(const vector &_pos, const vector &_n, float _radius, int _surf, int _poly, const color &_col, float _opacity, const BrushConfig &_brush) {
+	ActionModelBrushTexturePaint(const vector &_pos, const vector &_n, float _radius, int _poly, const color &_col, float _opacity, const BrushConfig &_brush) {
 		pos = _pos;
 		n = _n;
 		radius = _radius;
-		surf = _surf;
 		poly = _poly;
 		col = _col;
 		opacity = _opacity;
@@ -114,13 +113,13 @@ public:
 	void *execute(Data *d) {
 		DataModel *m = dynamic_cast<DataModel*>(d);
 
-		auto *tl = m->material[m->surface[surf].polygon[poly].material]->texture_levels[0];
+		auto *tl = m->material[m->polygon[poly].material]->texture_levels[0];
 
 		vector e1 = n.ortho();
 		vector e2 = n ^ e1;
 
 		matrix D;
-		vector v = map_uv(m, surf, poly, pos, D);
+		vector v = map_uv(m, poly, pos, D);
 
 		auto DD = D * D.transpose();
 		auto iDD = inv_2d(DD);
@@ -170,7 +169,7 @@ public:
 private:
 	vector pos, n;
 	float radius;
-	int surf, poly;
+	int poly;
 	color col;
 	float opacity;
 	BrushConfig brush;
@@ -284,7 +283,7 @@ void ModeModelMeshPaint::on_draw_win(MultiView::Window *win) {
 	if (multi_view->hover.index < 0)
 		return;
 	vector pos = multi_view->hover.point;
-	vector n = data->surface[multi_view->hover.set].polygon[multi_view->hover.index].temp_normal;
+	vector n = data->polygon[multi_view->hover.index].temp_normal;
 	float radius = dialog->get_float("diameter") / 2;
 
 	nix::SetColor(scheme.CREATION_LINE);
@@ -305,7 +304,7 @@ float ModeModelMeshPaint::radius() {
 
 Action *ModeModelMeshPaint::get_action() {
 	vector pos = multi_view->hover.point;
-	vector n = data->surface[multi_view->hover.set].polygon[multi_view->hover.index].temp_normal;
+	vector n = data->polygon[multi_view->hover.index].temp_normal;
 	int type = dialog->get_int("brush-type");
 	auto col = dialog->get_color("color");
 	col.a = dialog->get_float("alpha");
@@ -313,7 +312,7 @@ Action *ModeModelMeshPaint::get_action() {
 	if (dialog->is_checked("opacity-by-pressure"))
 		col.a *= hui::GetEvent()->pressure;
 
-	return new ActionModelBrushTexturePaint(pos, n, radius(), multi_view->hover.set, multi_view->hover.index, col, opacity, BRUSH_PARAM[type]);
+	return new ActionModelBrushTexturePaint(pos, n, radius(), multi_view->hover.index, col, opacity, BRUSH_PARAM[type]);
 }
 
 void ModeModelMeshPaint::on_left_button_down() {

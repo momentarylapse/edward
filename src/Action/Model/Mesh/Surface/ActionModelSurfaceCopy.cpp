@@ -65,6 +65,8 @@ ActionModelSurfaceCopy::~ActionModelSurfaceCopy()
 
 void *ActionModelSurfaceCopy::compose(Data *d)
 {
+	msg_todo("ActionModelSurfaceCopy");
+#if 0
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	ModelSurface s = m->surface[surface];
 
@@ -91,4 +93,6 @@ void *ActionModelSurfaceCopy::compose(Data *d)
 		cp.temp_normal = cp.getNormal(m->vertex);
 
 	return copy;
+#endif
+	return NULL;
 }

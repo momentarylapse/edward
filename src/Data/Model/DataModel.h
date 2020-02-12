@@ -23,8 +23,7 @@ class ModelMaterial;
 class Geometry;
 
 
-class GeometryException : public ActionException
-{
+class GeometryException : public ActionException {
 public:
 	GeometryException(const string &message) : ActionException(message){}
 };
@@ -37,8 +36,7 @@ public:
 #define TransparencyModeFactor			4
 
 
-struct ModelEffect
-{
+struct ModelEffect {
 	int type, surface, vertex;
 	float size, speed, intensity;
 	color colors[3];
@@ -49,42 +47,36 @@ struct ModelEffect
 	string get_type();
 };
 
-class ModelVertex: public MultiView::SingleData
-{
+class ModelVertex: public MultiView::SingleData {
 public:
 	int normal_mode;
 	int bone_index;
 
 	bool normal_dirty;
 	int ref_count; // polygons
-	int surface;
 
 	ModelVertex();
 	ModelVertex(const vector &pos);
 };
 
 // only for use in MultiView...
-class ModelSkinVertexDummy: public MultiView::SingleData
-{
+class ModelSkinVertexDummy: public MultiView::SingleData {
 };
 
-class ModelBall: public MultiView::SingleData
-{
+class ModelBall: public MultiView::SingleData {
 public:
 	int index;
 	float radius;
 };
 
-class ModelCylinder: public MultiView::SingleData
-{
+class ModelCylinder: public MultiView::SingleData {
 public:
 	int index[2];
 	float radius;
 	bool round;
 };
 
-struct ModelPolyhedronFace
-{
+struct ModelPolyhedronFace {
 	int NumVertices;
 	int Index[MODEL_MAX_POLY_VERTICES_PER_FACE];
 	plane Plane;
@@ -109,8 +101,7 @@ public:
 	int FacesJoiningEdge[MODEL_MAX_POLY_FACES * MODEL_MAX_POLY_FACES]; // [face1 * NumFaces + face2]
 };
 
-class ModelTriangle: public MultiView::SingleData
-{
+class ModelTriangle: public MultiView::SingleData {
 public:
 	int vertex[3];
 	//int Edge[3];
@@ -125,8 +116,7 @@ public:
 
 
 // triangles belonging to one material
-struct ModelSubSkin
-{
+struct ModelSubSkin {
 	int num_textures; // "read only" (updated automatically...)
 
 	// triangles
@@ -135,8 +125,7 @@ struct ModelSubSkin
 
 
 // geometry
-struct ModelSkin
-{
+struct ModelSkin {
 	// vertices
 	Array<ModelVertex> vertex;
 
@@ -144,8 +133,7 @@ struct ModelSkin
 	Array<ModelSubSkin> sub;
 };
 
-class ModelBone: public MultiView::SingleData
-{
+class ModelBone: public MultiView::SingleData {
 public:
 	int parent;
 	string model_file;
@@ -156,8 +144,7 @@ public:
 	matrix _matrix;
 };
 
-struct ModelFrame
-{
+struct ModelFrame {
 	float duration;
 
 	// skeleton animation
@@ -171,8 +158,7 @@ struct ModelFrame
 	Array<vector> vertex_dpos;
 };
 
-struct ModelMove
-{
+struct ModelMove {
 	int type;
 	Array<ModelFrame> frame;
 	float frames_per_sec_const, frames_per_sec_factor;
@@ -185,8 +171,7 @@ struct ModelMove
 	ModelFrame interpolate(float time);
 };
 
-class ModelEdge: public MultiView::SingleData
-{
+class ModelEdge: public MultiView::SingleData {
 public:
 	//int NormalMode;
 	int vertex[2];
@@ -204,30 +189,26 @@ public:
 };
 
 
-class ModelSelectionState
-{
+class ModelSelectionState {
 public:
-	struct EdgeSelection
-	{
+	struct EdgeSelection {
 		EdgeSelection(){};
 		EdgeSelection(int v[2]);
 		int v[2];
 	};
 	Set<int> vertex;
 	Set<int> surface;
-	Array<Set<int> > polygon;
-	Array<Array<EdgeSelection> > edge;
+	Set<int> polygon;
+	Array<EdgeSelection> edge;
 	void clear();
 };
 
-class ModelScriptVariable
-{
+class ModelScriptVariable {
 public:
 	string name, type, value;
 };
 
-class DataModel: public Data
-{
+class DataModel: public Data {
 public:
 	DataModel();
 	virtual ~DataModel();
@@ -264,12 +245,9 @@ public:
 	void selectionFromVertices();
 	void selectionFromPolygons();
 	void selectionFromEdges();
-	void selectionFromSurfaces();
 	void getSelectionState(ModelSelectionState &s);
 	void setSelectionState(ModelSelectionState &s);
-	Set<int> getSelectedSurfaces();
 	Set<int> getSelectedVertices();
-	void selectOnlySurface(ModelSurface *s);
 
 
 	float getRadius();
@@ -280,9 +258,8 @@ public:
 
 	// low level (un-action'ed)
 	//void LowLevelAddVertex(const vector &vd);
-	ModelSurface *addSurface(int surf_no = -1);
-	ModelSurface *surfaceJoin(ModelSurface *a, ModelSurface *b);
-	int get_surf_no(ModelSurface *s);
+	void _addPolygon(const Array<int> &v, int material, const Array<vector> &sv, int index = -1);
+	void _removePolygon(int index);
 
 	// high level (actions)
 	void addVertex(const vector &pos, int bone_index = 0, int normal_mode = -1);
@@ -343,8 +320,25 @@ public:
 
 	// geometry
 	Array<ModelVertex> vertex;
-	Array<ModelSurface> surface;
+	Array<ModelPolygon> polygon;
+	Array<ModelEdge> edge;
 	Array<ModelSkinVertexDummy> skin_vertex; // only temporary...
+
+	void build_topology();
+
+	int add_edge_for_new_polygon(int a, int b, int tria, int side);
+	void remove_obsolete_edge(int index);
+	void merge_edges();
+
+	int find_edge(int vertex0, int vertex1);
+
+	bool is_inside(const vector &p);
+	void begin_inside_tests();
+	bool inside_test(const vector &p);
+	void end_inside_tests();
+	Array<int> get_boundary_loop(int v0);
+	Array<Array<int> > get_connected_components();
+
 
 	// old geometry
 	ModelSkin skin[4];
@@ -352,7 +346,7 @@ public:
 	// geometry (physical)
 	Array<ModelBall> ball;
 	Array<ModelCylinder> cylinder;
-	Array<ModelPolyhedron> poly;
+	Array<ModelPolyhedron> polyhedron;
 
 	// general properties
 	Array<ModelMaterial*> material;

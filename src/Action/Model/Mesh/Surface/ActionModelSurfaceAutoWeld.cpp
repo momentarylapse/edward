@@ -21,6 +21,8 @@ ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(int _surface1, int _surfa
 
 void *ActionModelSurfaceAutoWeld::compose(Data *d)
 {
+	msg_todo("ActionModelSurfaceAutoWeld");
+#if 0
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	if (surface1 >= surface2)
@@ -93,4 +95,6 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 	}
 
 	return a;
+#endif
+	return NULL;
 }

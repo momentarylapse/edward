@@ -26,9 +26,8 @@ inline int tria_sort_vert_by_edge(const ModelPolygon &t, const ModelEdge &e, int
 }
 #endif
 
-ActionModelSplitEdge::ActionModelSplitEdge(int _surface, int _edge, float _factor)
+ActionModelSplitEdge::ActionModelSplitEdge(int _edge, float _factor)
 {
-	surface = _surface;
 	edge = _edge;
 	factor = _factor;
 }
@@ -36,13 +35,10 @@ ActionModelSplitEdge::ActionModelSplitEdge(int _surface, int _edge, float _facto
 void *ActionModelSplitEdge::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	assert(surface >= 0);
-	assert(surface < m->surface.num);
-	ModelSurface &s = m->surface[surface];
 	assert(edge >= 0);
-	assert(edge < s.edge.num);
+	assert(edge < m->edge.num);
 
-	ModelEdge &e = s.edge[edge];
+	ModelEdge &e = m->edge[edge];
 	assert(e.polygon[0] >= 0);
 
 
@@ -56,14 +52,14 @@ void *ActionModelSplitEdge::compose(Data *d)
 	ModelEdge ee = e;
 	for (int i=ee.ref_count-1;i>=0;i--){
 		int poly = ee.polygon[i];
-		ModelPolygon &t = s.polygon[poly];
+		ModelPolygon &t = m->polygon[poly];
 
 		vector isv[MATERIAL_MAX_TEXTURES];
 		float f = (i == 0) ? factor : 1 - factor;
 		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 			isv[l] = t.side[ee.side[i]].skin_vertex[l] * (1 - f) + t.side[(ee.side[i] + 1) % t.side.num].skin_vertex[l] * f;
 
-		addSubAction(new ActionModelPolygonAddVertex(surface, poly, ee.side[i], new_vertex, isv), m);
+		addSubAction(new ActionModelPolygonAddVertex(poly, ee.side[i], new_vertex, isv), m);
 	}
 	return NULL;
 }

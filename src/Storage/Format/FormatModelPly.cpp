@@ -65,19 +65,12 @@ void FormatModelPly::_load(const string &filename, DataModel *m, bool deep) {
 				auto tt = t.explode(" ");
 				if (tt.num < 3)
 					continue;
-				m->vertex[i].surface = -1;
 				m->vertex[i].pos.x = tt[0]._float();
 				m->vertex[i].pos.y = tt[1]._float();
 				m->vertex[i].pos.z = tt[2]._float();
 			}
 		} else if (e.name == "face") {
 
-
-			ModelSurface s;
-			s.model = m;
-			s.is_physical = false;
-			s.is_visible = true;
-			s.is_selected = false;
 
 			for (int i=0; i<e.num; i++) {
 				string t = f->read_str();
@@ -102,11 +95,6 @@ void FormatModelPly::_load(const string &filename, DataModel *m, bool deep) {
 				}catch(...){
 				}
 			}
-			/*m->surface.add(s);
-			try{
-			m->surface[0].buildFromPolygons();
-			}catch(...){
-			}*/
 		} else {
 			// ignore
 			for (int i=0; i<e.num; i++)

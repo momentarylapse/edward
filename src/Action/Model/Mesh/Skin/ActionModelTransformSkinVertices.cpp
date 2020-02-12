@@ -16,24 +16,17 @@ ActionModelTransformSkinVertices::ActionModelTransformSkinVertices(DataModel *d,
 	texture_level = _texture_level;
 
 	// list of selected skin vertices and save old pos
-	mode_model_mesh_texture->getSelectedSkinVertices(surface, tria, index);
-	foreachi(int k, index, i){
-		ModelPolygon &t = d->surface[surface[i]].polygon[tria[i]];
+	mode_model_mesh_texture->getSelectedSkinVertices(tria, index);
+	foreachi(int k, index, i) {
+		ModelPolygon &t = d->polygon[tria[i]];
 		old_data.add(t.side[k].skin_vertex[texture_level]);
 	}
 }
 
-ActionModelTransformSkinVertices::~ActionModelTransformSkinVertices()
-{
-}
-
-
-
-void *ActionModelTransformSkinVertices::execute(Data *d)
-{
+void *ActionModelTransformSkinVertices::execute(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(int k, index, ii){
-		ModelPolygon &t = m->surface[surface[ii]].polygon[tria[ii]];
+	foreachi(int k, index, ii) {
+		ModelPolygon &t = m->polygon[tria[ii]];
 		vector &v = t.side[k].skin_vertex[texture_level];
 		v = mat * v;
 	}
@@ -42,17 +35,15 @@ void *ActionModelTransformSkinVertices::execute(Data *d)
 
 
 
-void ActionModelTransformSkinVertices::undo(Data *d)
-{
+void ActionModelTransformSkinVertices::undo(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	foreachi(int k, index, i){
-		ModelPolygon &t = m->surface[surface[i]].polygon[tria[i]];
+	foreachi(int k, index, i) {
+		ModelPolygon &t = m->polygon[tria[i]];
 		vector &v = t.side[k].skin_vertex[texture_level];
 		v = old_data[i];
 	}
 }
 
-const string& ActionModelTransformSkinVertices::message()
-{
+const string& ActionModelTransformSkinVertices::message() {
 	return DataModel::MESSAGE_SKIN_CHANGE;
 }

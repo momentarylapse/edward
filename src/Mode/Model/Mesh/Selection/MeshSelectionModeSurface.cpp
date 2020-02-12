@@ -20,16 +20,12 @@ MeshSelectionModeSurface::MeshSelectionModeSurface(ModeModelMesh *_parent) :
 {}
 
 void MeshSelectionModeSurface::update_selection() {
-	data->selectionFromSurfaces();
+	//data->selectionFromSurfaces();
 }
 
 void MeshSelectionModeSurface::update_multi_view() {
 	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	multi_view->add_data(	MVD_MODEL_SURFACE,
-			data->surface,
-			data,
-			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 }
 
 void MeshSelectionModeSurface::on_draw_win(MultiView::Window *win) {
@@ -39,10 +35,10 @@ void MeshSelectionModeSurface::on_draw_win(MultiView::Window *win) {
 	parent->vb_hover->clear();
 
 
-	ModelSurface &s = data->surface[multi_view->hover.index];
+	/*ModelSurface &s = data->surface[multi_view->hover.index];
 	for (ModelPolygon &p: s.polygon)
 		p.addToVertexBuffer(data->show_vertices, parent->vb_hover, 1);
-
+*/
 
 	nix::SetWire(false);
 	nix::SetOffset(1.0f);

@@ -29,9 +29,7 @@ void MeshSelectionModeEdge::on_start()
 }
 
 
-bool ModelEdge::hover(MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data)
-{
-	ModelSurface *surf = (ModelSurface*)user_data;
+bool ModelEdge::hover(MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data) {
 
 	DataModel *m = mode_model_mesh->data; // surf->model;
 
@@ -66,10 +64,7 @@ bool ModelEdge::hover(MultiView::Window *win, vector &M, vector &tp, float &z, v
 	return true;
 }
 
-bool ModelEdge::inRect(MultiView::Window *win, rect &r, void *user_data)
-{
-	ModelSurface *surf = (ModelSurface*)user_data;
-
+bool ModelEdge::inRect(MultiView::Window *win, rect &r, void *user_data) {
 	DataModel *m = mode_model_mesh->data; // surf->model;
 
 	// all vertices within rectangle?
@@ -92,10 +87,9 @@ void MeshSelectionModeEdge::update_multi_view()
 {
 	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	for (ModelSurface &s: data->surface)
-		multi_view->add_data(	MVD_MODEL_EDGE,
-			s.edge,
-			&s,
+	multi_view->add_data(	MVD_MODEL_EDGE,
+			data->edge,
+			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 }
 
@@ -109,7 +103,7 @@ void MeshSelectionModeEdge::on_draw_win(MultiView::Window *win)
 	nix::SetWire(false);
 	nix::SetZ(false, false);
 	set_wide_lines(scheme.LINE_WIDTH_MEDIUM);
-	ModelEdge &e = data->surface[multi_view->hover.set].edge[multi_view->hover.index];
+	auto &e = data->edge[multi_view->hover.index];
 	Array<vector> p;
 	p.add(data->show_vertices[e.vertex[0]].pos);
 	p.add(data->show_vertices[e.vertex[1]].pos);

@@ -125,7 +125,6 @@ void PluginManager::init() {
 	Kaba::declare_class_element("ModelVertex.bone_index", &ModelVertex::bone_index);
 	Kaba::declare_class_element("ModelVertex.normal_dirty", &ModelVertex::normal_dirty);
 	Kaba::declare_class_element("ModelVertex.ref_count", &ModelVertex::ref_count);
-	Kaba::declare_class_element("ModelVertex.surface", &ModelVertex::surface);
 
 	Kaba::declare_class_size("ModelPolygonSide", sizeof(ModelPolygonSide));
 	Kaba::declare_class_element("ModelPolygonSide.vertex", &ModelPolygonSide::vertex);
@@ -143,7 +142,7 @@ void PluginManager::init() {
 	Kaba::declare_class_element("ModelPolygon.triangulation_dirty", &ModelPolygon::triangulation_dirty);
 	Kaba::declare_class_element("ModelPolygon.material", &ModelPolygon::material);
 
-	Kaba::declare_class_size("ModelSurface", sizeof(ModelSurface));
+	/*Kaba::declare_class_size("ModelSurface", sizeof(ModelSurface));
 	Kaba::declare_class_element("ModelSurface.polygon", &ModelSurface::polygon);
 	Kaba::declare_class_element("ModelSurface.edge", &ModelSurface::edge);
 	Kaba::declare_class_element("ModelSurface.vertex", &ModelSurface::vertex);
@@ -151,7 +150,7 @@ void PluginManager::init() {
 	Kaba::declare_class_element("ModelSurface.is_physical", &ModelSurface::is_physical);
 	Kaba::declare_class_element("ModelSurface.is_visible", &ModelSurface::is_visible);
 	Kaba::declare_class_element("ModelSurface.model", &ModelSurface::model);
-
+*/
 	Kaba::declare_class_size("ModelBone", sizeof(ModelBone));
 	Kaba::declare_class_element("ModelBone.parent", &ModelBone::parent);
 	Kaba::declare_class_element("ModelBone.model_file", &ModelBone::model_file);
@@ -179,9 +178,9 @@ void PluginManager::init() {
 	//Kaba::declare_class_element("DataModel.CurrentMove", &DataModel::CurrentMove);
 	//Kaba::declare_class_element("DataModel.CurrentFrame", &DataModel::CurrentFrame);
 	Kaba::declare_class_element("DataModel.vertex", &DataModel::vertex);
-	Kaba::declare_class_element("DataModel.surface", &DataModel::surface);
+	Kaba::declare_class_element("DataModel.polygon", &DataModel::polygon);
 	Kaba::declare_class_element("DataModel.ball", &DataModel::ball);
-	Kaba::declare_class_element("DataModel.poly", &DataModel::poly);
+	Kaba::declare_class_element("DataModel.polyhedron", &DataModel::polyhedron);
 	Kaba::declare_class_element("DataModel.material", &DataModel::material);
 	Kaba::declare_class_element("DataModel.fx", &DataModel::fx);
 	Kaba::declare_class_element("DataModel.meta_data", &DataModel::meta_data);
@@ -201,8 +200,6 @@ void PluginManager::init() {
 	Kaba::link_external_class_func("DataModel.InvertSelection", &DataModel::invertSelection);
 	Kaba::link_external_class_func("DataModel.SelectionFromVertices", &DataModel::selectionFromVertices);
 	Kaba::link_external_class_func("DataModel.SelectionFromPolygons", &DataModel::selectionFromPolygons);
-	Kaba::link_external_class_func("DataModel.SelectionFromSurfaces", &DataModel::selectionFromSurfaces);
-	Kaba::link_external_class_func("DataModel.SelectOnlySurface", &DataModel::selectOnlySurface);
 	Kaba::link_external_class_func("DataModel.AddVertex", &DataModel::addVertex);
 	Kaba::link_external_class_func("DataModel.AddTriangle", &DataModel::addTriangle);
 	Kaba::link_external_class_func("DataModel.AddPolygon", &DataModel::addPolygon);

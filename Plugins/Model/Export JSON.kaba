@@ -102,9 +102,8 @@ void main()
 	File *f = Filesystem.create_text(HuiFilename)
 	
 	int n_tria = 0
-	for s in data_model.surface
-		for p in s.polygon
-			n_tria += p.side.num - 2
+	for p in data_model.polygon
+		n_tria += p.side.num - 2
 	
 	string str = "{'metadata':{\n"
 	str += "	'formatVersion': 3,\n"
@@ -151,34 +150,32 @@ void main()
 	str += "],\n"
 	str += "'uvs': [[0,0]],\n"
 	str += "'normals': [\n"
-	for s,is in data_model.surface
-		for p,ip in s.polygon
-			for side,k in p.side
-				str += "	" + vecToJson(side.normal)
-				if (is < data_model.surface.num - 1) or (ip < s.polygon.num - 1) or (k < p.side.num - 1)
-					str += ",\n"
+	for p,ip in data_model.polygon
+		for side,k in p.side
+			str += "	" + vecToJson(side.normal)
+			if (ip < data_model.polygon.num - 1) or (k < p.side.num - 1)
+				str += ",\n"
 	str += "],\n"
 	str += "'faces': [\n"
 	int n_normals = 0
-	for s,is in data_model.surface
-		for p,ip in s.polygon
-			for side,k in p.side
-				int _a = side.triangulation[0]
-				int _b = side.triangulation[1]
-				int _c = side.triangulation[2]
-				int va = p.side[_a].vertex
-				int vb = p.side[_b].vertex
-				int vc = p.side[_c].vertex
-				int na = n_normals + _a
-				int nb = n_normals + _b
-				int nc = n_normals + _c
-				vector n = p.temp_normal
-				str += "	42, {{va}}, {{vb}}, {{vc}}, {{p.material}}, "
-				str += "0, 0, 0, "
-				str += "{{na}}, {{nb}}, {{nc}}"
-				if (is < data_model.surface.num - 1) or (ip < s.polygon.num - 1) or (k < p.side.num - 1)
-					str += ",\n"
-			n_normals += p.side.num
+	for p,ip in data_model.polygon
+		for side,k in p.side
+			int _a = side.triangulation[0]
+			int _b = side.triangulation[1]
+			int _c = side.triangulation[2]
+			int va = p.side[_a].vertex
+			int vb = p.side[_b].vertex
+			int vc = p.side[_c].vertex
+			int na = n_normals + _a
+			int nb = n_normals + _b
+			int nc = n_normals + _c
+			vector n = p.temp_normal
+			str += "	42, {{va}}, {{vb}}, {{vc}}, {{p.material}}, "
+			str += "0, 0, 0, "
+			str += "{{na}}, {{nb}}, {{nc}}"
+			if (ip < data_model.polygon.num - 1) or (k < p.side.num - 1)
+				str += ",\n"
+		n_normals += p.side.num
 	str += "],\n"
 #	str += "'morphTargets': [\n"
 #	for int i, 0, data_model.Move.num

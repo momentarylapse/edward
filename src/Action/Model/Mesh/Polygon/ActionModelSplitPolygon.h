@@ -12,16 +12,14 @@
 class DataModel;
 class vector;
 
-class ActionModelSplitPolygon: public ActionGroup
-{
+class ActionModelSplitPolygon: public ActionGroup {
 public:
-	ActionModelSplitPolygon(int _surface, int _polygon, const vector &_pos);
-	virtual ~ActionModelSplitPolygon(){}
+	ActionModelSplitPolygon(int _polygon, const vector &_pos);
 	string name(){	return "ModelSplitPolygon";	}
 
 	void *compose(Data *d);
 private:
-	int surface, polygon;
+	int polygon;
 	const vector &pos;
 };
 

@@ -12,20 +12,17 @@
 class vector;
 class DataModel;
 
-class ActionModelTransformSkinVertices: public ActionMultiView
-{
+class ActionModelTransformSkinVertices: public ActionMultiView {
 public:
 	ActionModelTransformSkinVertices(DataModel *d, int texture_level);
-	virtual ~ActionModelTransformSkinVertices();
-	virtual string name(){	return "ModelTransformSkinVertices";	}
-	virtual const string &message();
+	string name() override { return "ModelTransformSkinVertices"; }
+	const string &message() override;
 
-	virtual void *execute(Data *d);
-	virtual void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	int texture_level;
-	Array<int> surface;
 	Array<int> tria;
 };
 

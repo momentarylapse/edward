@@ -12,16 +12,13 @@
 class DataModel;
 class vector;
 
-class ActionModelSplitEdge : public ActionGroup
-{
+class ActionModelSplitEdge : public ActionGroup {
 public:
-	ActionModelSplitEdge(int _surface, int _edge, float _factor);
-	virtual ~ActionModelSplitEdge(){}
-	string name(){	return "ModelSplitEdge";	}
+	ActionModelSplitEdge(int _edge, float _factor);
+	string name(){ return "ModelSplitEdge"; }
 
 	void *compose(Data *d);
 private:
-	int surface;
 	int edge;
 	float factor;
 };

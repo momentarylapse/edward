@@ -111,8 +111,8 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 	}
 
 	// polys
-	data->poly.resize(f->read_int());
-	for (auto &p: data->poly) {
+	data->polyhedron.resize(f->read_int());
+	for (auto &p: data->polyhedron) {
 		p.NumFaces = f->read_int();
 		for (int k=0;k<p.NumFaces;k++){
 			p.Face[k].NumVertices = f->read_int();
@@ -384,8 +384,8 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 	}
 
 	// polys
-	data->poly.resize(f->read_int());
-	for (auto &p: data->poly){
+	data->polyhedron.resize(f->read_int());
+	for (auto &p: data->polyhedron){
 		p.NumFaces = f->read_int();
 		for (int k=0;k<p.NumFaces;k++){
 			p.Face[k].NumVertices = f->read_int();
@@ -634,12 +634,11 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 				}
 			}
 		}else if (s == "// Polygons"){
-			data->begin_action_group("LoadPolygonData");
+			//data->begin_action_group("LoadPolygonData");
 			foreachi(ModelVertex &v, data->skin[1].vertex, i)
 				data->addVertex(v.pos, v.bone_index, v.normal_mode);
 			int ns = f->read_int();
 			for (int i=0;i<ns;i++){
-				ModelSurface s;
 				int nv = f->read_int();
 				for (int j=0;j<nv;j++){
 					ModelPolygon t;
@@ -656,18 +655,14 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 						}
 					}
 					t.normal_dirty = true;
-					s.polygon.add(t);
+					data->polygon.add(t);
 				}
-				s.is_physical = f->read_bool();
-				s.is_visible = f->read_bool();
-				s.is_selected = false;
+				f->read_bool();
+				f->read_bool();
 				f->read_int();
-				s.model = data;
-				data->surface.add(s);
 			}
-			for (ModelSurface &s: data->surface)
-				s.buildFromPolygons();
-			data->end_action_group();
+			//data->end_action_group();
+			data->build_topology();
 		}else if (s == "// Cylinders"){
 			int n = f->read_int();
 			for (int i=0; i<n; i++){
@@ -727,7 +722,7 @@ void FormatModel::_load(const string &filename, DataModel *data, bool deep) {
 	if (deep){
 
 		// import...
-		if (data->surface.num == 0)
+		if (data->polygon.num == 0)
 			data->importFromTriangleSkin(1);
 
 		for (ModelMove &m: data->move)
@@ -873,8 +868,8 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 		f->write_float(data->ball[j].radius);
 	}
 
-	f->write_int(data->poly.num);
-	for (auto &p: data->poly) {
+	f->write_int(data->polyhedron.num);
+	for (auto &p: data->polyhedron) {
 		f->write_int(p.NumFaces);
 		for (int k=0;k<p.NumFaces;k++){
 			f->write_int(p.Face[k].NumVertices);
@@ -1141,24 +1136,22 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 			f->write_int(v.normal_mode);
 	}
 	f->write_comment("// Polygons");
-	f->write_int(data->surface.num);
-	for (ModelSurface &s: data->surface){
-		f->write_int(s.polygon.num);
-		for (ModelPolygon &t: s.polygon){
-			f->write_int(t.side.num);
-			f->write_int(t.material);
-			for (ModelPolygonSide &ss: t.side){
-				f->write_int(ss.vertex);
-				for (int l=0;l<data->material[t.material]->texture_levels.num;l++){
-					f->write_float(ss.skin_vertex[l].x);
-					f->write_float(ss.skin_vertex[l].y);
-				}
+	f->write_int(1);
+	f->write_int(data->polygon.num);
+	for (ModelPolygon &t: data->polygon){
+		f->write_int(t.side.num);
+		f->write_int(t.material);
+		for (ModelPolygonSide &ss: t.side){
+			f->write_int(ss.vertex);
+			for (int l=0;l<data->material[t.material]->texture_levels.num;l++){
+				f->write_float(ss.skin_vertex[l].x);
+				f->write_float(ss.skin_vertex[l].y);
 			}
 		}
-		f->write_bool(s.is_physical);
-		f->write_bool(s.is_visible);
-		f->write_int(0);
 	}
+	f->write_bool(false);
+	f->write_bool(true);
+	f->write_int(0);
 
 	f->write_comment("#");
 	FileClose(f);

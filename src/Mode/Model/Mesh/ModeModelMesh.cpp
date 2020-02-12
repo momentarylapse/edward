@@ -550,26 +550,24 @@ void _draw_edges(DataModel *data, MultiView::Window *win, Array<ModelVertex> &ve
 	Array<color> line_color;
 
 	vector dir = win->getDirection();
-	for (ModelSurface &s: data->surface){
-		for (ModelEdge &e: s.edge){
-			if (e.is_selected != selection_filter)
-				continue;
-			if (min(vertex[e.vertex[0]].view_stage, vertex[e.vertex[1]].view_stage) < multi_view->view_stage)
-				continue;
-			float w = min(s.polygon[e.polygon[0]].temp_normal * dir, s.polygon[e.polygon[1]].temp_normal * dir);
-			float f = 0.5f - 0.4f*w;//0.7f - 0.3f * w;
-			color cc;
-			if (e.is_selected){
-				cc = color(1, f, 0, 0);
-			}else{
-				cc = ColorInterpolate(scheme.TEXT, bg, 1-f);
-			}
-			line_color.add(cc);
-			line_color.add(cc);
-			//nix::DrawLine3D(vertex[e.vertex[0]].pos, vertex[e.vertex[1]].pos);
-			line_pos.add(vertex[e.vertex[0]].pos);
-			line_pos.add(vertex[e.vertex[1]].pos);
+	for (ModelEdge &e: data->edge){
+		if (e.is_selected != selection_filter)
+			continue;
+		if (min(vertex[e.vertex[0]].view_stage, vertex[e.vertex[1]].view_stage) < multi_view->view_stage)
+			continue;
+		float w = min(data->polygon[e.polygon[0]].temp_normal * dir, data->polygon[e.polygon[1]].temp_normal * dir);
+		float f = 0.5f - 0.4f*w;//0.7f - 0.3f * w;
+		color cc;
+		if (e.is_selected){
+			cc = color(1, f, 0, 0);
+		}else{
+			cc = ColorInterpolate(scheme.TEXT, bg, 1-f);
 		}
+		line_color.add(cc);
+		line_color.add(cc);
+		//nix::DrawLine3D(vertex[e.vertex[0]].pos, vertex[e.vertex[1]].pos);
+		line_pos.add(vertex[e.vertex[0]].pos);
+		line_pos.add(vertex[e.vertex[1]].pos);
 	}
 	nix::DrawLinesColored(line_pos, line_color, false);
 	nix::SetColor(White);
@@ -650,13 +648,9 @@ void ModeModelMesh::update_vertex_buffers(Array<ModelVertex> &vertex)
 
 		m->vb->clear();
 
-		for (ModelSurface &surf: data->surface){
-			if (!surf.is_visible)
-				continue;
-			for (ModelPolygon &t: surf.polygon)
-				if ((t.view_stage >= multi_view->view_stage) and (t.material == mi))
-					t.addToVertexBuffer(vertex, m->vb, m->texture_levels.num);
-		}
+		for (ModelPolygon &t: data->polygon)
+			if ((t.view_stage >= multi_view->view_stage) and (t.material == mi))
+				t.addToVertexBuffer(vertex, m->vb, m->texture_levels.num);
 
 		//m.vb->optimize();
 	}
@@ -669,12 +663,10 @@ void ModeModelMesh::fill_selection_buffer(Array<ModelVertex> &vertex)
 	vb_marked->clear();
 
 	// create selection buffers
-	for (ModelSurface &s: data->surface){
-		for (ModelPolygon &t: s.polygon)
-			/*if (t.view_stage >= ViewStage)*/{
-			if (t.is_selected)
-				t.addToVertexBuffer(vertex, vb_marked, 1);
-		}
+	for (ModelPolygon &t: data->polygon)
+		/*if (t.view_stage >= ViewStage)*/{
+		if (t.is_selected)
+			t.addToVertexBuffer(vertex, vb_marked, 1);
 	}
 }
 

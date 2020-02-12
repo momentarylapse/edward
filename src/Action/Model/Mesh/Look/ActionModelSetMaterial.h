@@ -15,7 +15,6 @@ class ActionModelSetMaterial: public Action
 {
 public:
 	ActionModelSetMaterial(DataModel *m, int _material);
-	virtual ~ActionModelSetMaterial();
 	string name(){	return "ModelSetMaterial";	}
 
 	void *execute(Data *d);
@@ -23,7 +22,6 @@ public:
 
 private:
 	int material;
-	Array<int> surface;
 	Array<int> triangle;
 	Array<int> old_material;
 };

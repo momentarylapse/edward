@@ -51,8 +51,7 @@ void ModelMaterialSelectionDialog::fill_material_list()
 	reset("material_list");
 	for (int i=0;i<data->material.num;i++){
 		int nt = 0;
-		for (ModelSurface &s: data->surface)
-			for (ModelPolygon &t: s.polygon)
+		for (ModelPolygon &t: data->polygon)
 			if (t.material == i)
 				nt ++;
 		string im = render_material(data->material[i]);

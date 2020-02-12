@@ -8,6 +8,7 @@
 #include "DataModel.h"
 #include "ModelSurface.h"
 #include "Geometry/Geometry.h"
+#include "BspTree.h"
 #include "../../Mode/Model/ModeModel.h"
 #include "../../Action/Action.h"
 #include "../../Action/ActionManager.h"
@@ -90,7 +91,6 @@ ModelVertex::ModelVertex(const vector &_pos) {
 	pos = _pos;
 	ref_count = 0;
 	normal_mode = NORMAL_MODE_ANGULAR;
-	surface = -1;
 	bone_index = -1;
 	normal_dirty = false;
 }
@@ -150,11 +150,12 @@ void DataModel::reset()
 			skin[i].sub[j].triangle.clear();
 		skin[i].sub.resize(1);
 	}
-	surface.clear();
+	polygon.clear();
+	edge.clear();
 	vertex.clear();
 	ball.clear();
 	cylinder.clear();
-	poly.clear();
+	polyhedron.clear();
 	fx.clear();
 
 	material.clear();
@@ -190,18 +191,44 @@ void DataModel::debugShow()
 {
 	msg_write("------------");
 	msg_write(vertex.num);
-	msg_write(surface.num);
-	for (ModelSurface &s: surface){
-		msg_write(s.polygon.num);
-		s.testSanity("Model.DebugShow");
-	}
+	msg_write(polygon.num);
+	test_sanity("Model.DebugShow");
 }
 
 bool DataModel::test_sanity(const string &loc)
 {
-	for (ModelSurface &s: surface){
-		if (!s.testSanity(loc))
+	for (ModelPolygon &t: polygon)
+		for (int k=0;k<t.side.num;k++)
+			for (int kk=k+1;kk<t.side.num;kk++)
+				if (t.side[k].vertex == t.side[kk].vertex){
+					msg_error(loc + ": surf broken!   identical vertices in poly");
+					return false;
+				}
+	foreachi(ModelEdge &e, edge, i){
+		if (e.vertex[0] == e.vertex[1]){
+			msg_error(loc + ": surf broken!   trivial edge");
 			return false;
+		}
+		for (int k=0;k<e.ref_count;k++){
+			ModelPolygon &t = polygon[e.polygon[k]];
+			if (t.side[e.side[k]].edge != i){
+				msg_error(loc + ": surf broken!   edge linkage");
+				msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.side[k], t.side[e.side[k]].edge, t.side[e.side[k]].edge_direction));
+				return false;
+			}
+			if (t.side[e.side[k]].edge_direction != k){
+				msg_error(loc + ": surf broken!   edge linkage (dir)");
+				msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.side[k], t.side[e.side[k]].edge, t.side[e.side[k]].edge_direction));
+				return false;
+			}
+			for (int j=0;j<2;j++)
+				if (e.vertex[(j + k) % 2] != t.side[(e.side[k] + j) % t.side.num].vertex){
+					msg_error(loc + ": surf broken!   edge linkage (vert)");
+					msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.side[k], t.side[e.side[k]].edge, t.side[e.side[k]].edge_direction));
+					return false;
+				}
+		}
+
 	}
 	return true;
 }
@@ -212,20 +239,14 @@ void DataModel::on_post_action_update()
 	showVertices(vertex);
 
 	updateNormals();
-	for (ModelSurface &s: surface){
-		s.pos = v_0;
-		for (int k=0;k<s.vertex.num;k++)
-			s.pos += vertex[s.vertex[k]].pos;
-		s.pos /= s.vertex.num;
-		for (ModelPolygon &p: s.polygon){
-			p.pos = v_0;
-			for (int k=0;k<p.side.num;k++)
-				p.pos += vertex[p.side[k].vertex].pos;
-			p.pos /= p.side.num;
-		}
-		for (ModelEdge &e: s.edge)
-			e.pos = (vertex[e.vertex[0]].pos + vertex[e.vertex[1]].pos) / 2;
+	for (ModelPolygon &p: polygon){
+		p.pos = v_0;
+		for (int k=0;k<p.side.num;k++)
+			p.pos += vertex[p.side[k].vertex].pos;
+		p.pos /= p.side.num;
 	}
+	for (ModelEdge &e: edge)
+		e.pos = (vertex[e.vertex[0]].pos + vertex[e.vertex[1]].pos) / 2;
 }
 
 void DataModel::showVertices(Array<ModelVertex> &vert)
@@ -249,7 +270,8 @@ void report_error(const string &msg)
 void DataModel::importFromTriangleSkin(int index)
 {
 	vertex.clear();
-	surface.clear();
+	polygon.clear();
+	edge.clear();
 
 	ModelSkin &s = skin[index];
 	begin_action_group("ImportFromTriangleSkin");
@@ -292,7 +314,7 @@ void DataModel::importFromTriangleSkin(int index)
 		addVertex(v.pos);
 		vertex[i].bone_index = v.bone_index;
 	}
-	for (ModelPolyhedron &p: poly){
+	for (ModelPolyhedron &p: polyhedron){
 		msg_write("----");
 		int nv0 = vertex.num;
 		Array<int> vv;
@@ -321,10 +343,10 @@ void DataModel::importFromTriangleSkin(int index)
 				msg_error(e.message);
 			}
 		}
-		surface.back().is_physical = true;
-		surface.back().is_visible = false;
+		//surface.back().is_physical = true;
+		//surface.back().is_visible = false;
 	}
-	poly.clear();
+	polyhedron.clear();
 
 	clearSelection();
 	end_action_group();
@@ -337,22 +359,18 @@ void DataModel::exportToTriangleSkin(int index)
 	sk.vertex = vertex;
 	sk.sub.clear();
 	sk.sub.resize(material.num);
-	for (ModelSurface &s: surface){
-		if (!s.is_visible)
-			continue;
-		for (ModelPolygon &t: s.polygon){
-			if (t.triangulation_dirty)
-				t.updateTriangulation(vertex);
-			for (int i=0;i<t.side.num-2;i++){
-				ModelTriangle tt;
-				for (int k=0;k<3;k++){
-					tt.vertex[k] = t.side[t.side[i].triangulation[k]].vertex;
-					tt.normal[k] = t.side[t.side[i].triangulation[k]].normal;
-					for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
-						tt.skin_vertex[l][k] = t.side[t.side[i].triangulation[k]].skin_vertex[l];
-				}
-				sk.sub[t.material].triangle.add(tt);
+	for (ModelPolygon &t: polygon){
+		if (t.triangulation_dirty)
+			t.updateTriangulation(vertex);
+		for (int i=0;i<t.side.num-2;i++){
+			ModelTriangle tt;
+			for (int k=0;k<3;k++){
+				tt.vertex[k] = t.side[t.side[i].triangulation[k]].vertex;
+				tt.normal[k] = t.side[t.side[i].triangulation[k]].normal;
+				for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
+					tt.skin_vertex[l][k] = t.side[t.side[i].triangulation[k]].skin_vertex[l];
 			}
+			sk.sub[t.material].triangle.add(tt);
 		}
 	}
 	foreachi(ModelMaterial *m, material, i)
@@ -385,44 +403,182 @@ void DataModel::setNormalsDirtyByVertices(const Array<int> &index)
 	for (int i=0; i<index.num; i++)
 		sindex.add(index[i]);
 
-	for (ModelSurface &s: surface)
-		for (ModelPolygon &t: s.polygon)
-			for (int k=0;k<t.side.num;k++)
-				if (!t.normal_dirty)
-					if (sindex.contains(t.side[k].vertex)){
-						t.normal_dirty = true;
-						break;
-					}
+	for (ModelPolygon &t: polygon)
+		for (int k=0;k<t.side.num;k++)
+			if (!t.normal_dirty)
+				if (sindex.contains(t.side[k].vertex)){
+					t.normal_dirty = true;
+					break;
+				}
 }
 
-void DataModel::setAllNormalsDirty()
-{
-	for (ModelSurface &s: surface)
-		for (ModelPolygon &t: s.polygon)
-			t.normal_dirty = true;
+void DataModel::setAllNormalsDirty() {
+	for (ModelPolygon &t: polygon)
+		t.normal_dirty = true;
 }
+
+struct PolySideData {
+	int poly;
+	int side;
+};
+
+
+inline int find_other_tria_from_edge(DataModel *m, int e, int t) {
+	if (m->edge[e].polygon[0] == t)
+		return m->edge[e].polygon[1];
+	return m->edge[e].polygon[0];
+}
+
+// return: closed circle... don't run again to the left
+inline bool find_tria_top(DataModel *m, const Array<PolySideData> &pd, Set<int> &used, bool to_the_right) {
+	int t0 = 0;
+	while(true){
+		int side = pd[t0].side;
+		if (!to_the_right){
+			int ns = m->polygon[pd[t0].poly].side.num;
+			side = (side + ns - 1) % ns;
+		}
+		int e = m->polygon[pd[t0].poly].side[side].edge;
+		if (!m->edge[e].is_round)
+			return false;
+		int tt = find_other_tria_from_edge(m, e, pd[t0].poly);
+		if (tt < 0)
+			return false;
+		t0 = -1;
+		for (int i=0;i<pd.num;i++)
+			if (pd[i].poly == tt)
+				t0 = i;
+		if (t0 <= 0)
+			return (t0 == 0);
+		used.add(t0);
+	}
+}
+
 
 void DataModel::updateNormals()
 {
-	for (ModelSurface &s: surface)
-		s.updateNormals();
-}
+	Set<int> ee, vert;
 
-ModelSurface *DataModel::addSurface(int surf_no)
-{
-	ModelSurface s;
-	s.model = this;
-	s.view_stage = ed->multi_view_3d->view_stage;
-	s.is_selected = true;
-	s.is_closed = false;
-	s.is_visible = true;
-	s.is_physical = true;
-	if (surf_no >= 0){
-		surface.insert(s, surf_no);
-		return &surface[surf_no];
-	}else{
-		surface.add(s);
-		return &surface.back();
+	// "flat" triangle normals
+	for (ModelPolygon &t: polygon)
+		if (t.normal_dirty){
+			t.normal_dirty = false;
+
+			t.temp_normal = t.getNormal(vertex);
+
+			for (int k=0;k<t.side.num;k++){
+				t.side[k].normal = t.temp_normal;
+				int e = t.side[k].edge;
+				if (edge[e].ref_count == 2)
+					ee.add(e);
+			}
+		}
+
+	// round edges?
+	for (int ip: ee){
+		ModelEdge &e = edge[ip];
+
+		// adjoined triangles
+		ModelPolygon &t1 = polygon[e.polygon[0]];
+		ModelPolygon &t2 = polygon[e.polygon[1]];
+
+		ModelVertex &v1 = vertex[e.vertex[0]];
+		ModelVertex &v2 = vertex[e.vertex[1]];
+
+		// round?
+		e.is_round = false;
+		if ((v1.normal_mode == NORMAL_MODE_ANGULAR) || (v2.normal_mode == NORMAL_MODE_ANGULAR))
+			e.is_round = (t1.temp_normal * t2.temp_normal > 0.6f);
+
+		if (((v1.normal_mode == NORMAL_MODE_ANGULAR) && (e.is_round)) || (v1.normal_mode == NORMAL_MODE_SMOOTH))
+			vert.add(e.vertex[0]);
+		if (((v2.normal_mode == NORMAL_MODE_ANGULAR) && (e.is_round)) || (v2.normal_mode == NORMAL_MODE_SMOOTH))
+			vert.add(e.vertex[1]);
+
+		/*if (e.IsRound){
+			vector n = t1.TempNormal + t2.TempNormal;
+			VecNormalize(n);
+			for (int k=0;k<3;k++)
+				if ((t1.Vertex[k] == e.Vertex[0]) || (t1.Vertex[k] == e.Vertex[1]))
+					t1.Normal[k] = n;
+			for (int k=0;k<3;k++)
+				if ((t2.Vertex[k] == e.Vertex[0]) || (t2.Vertex[k] == e.Vertex[1]))
+					t2.Normal[k] = n;
+		}*/
+	}
+
+	// find all triangles shared by each found vertex
+	Array<Array<PolySideData> > poly_side;
+	poly_side.resize(vert.num);
+	foreachi(ModelPolygon &t, polygon, i){
+		for (int k=0;k<t.side.num;k++){
+			int n = vert.find(t.side[k].vertex);
+			if (n >= 0){
+				t.side[k].normal = t.temp_normal;
+				PolySideData d;
+				d.poly = i;
+				d.side = k;
+				poly_side[n].add(d);
+			}
+		}
+	}
+
+	// per vertex...
+	foreachi(int ip, vert, nn){
+
+		// hard vertex -> nothing to do
+		if (vertex[ip].normal_mode == NORMAL_MODE_HARD)
+			continue;
+
+		Array<PolySideData> &pd = poly_side[nn];
+
+		// smooth vertex
+		if (vertex[ip].normal_mode == NORMAL_MODE_SMOOTH){
+
+			// average normal
+			vector n = v_0;
+			for (int i=0;i<pd.num;i++)
+				n += polygon[pd[i].poly].side[pd[i].side].normal;
+			n.normalize();
+			// apply normal...
+			for (int i=0;i<pd.num;i++)
+				polygon[pd[i].poly].side[pd[i].side].normal = n;
+			continue;
+		}
+
+		// angular vertex...
+
+		// find groups of triangles that are connected by round edges
+		while (pd.num > 0){
+
+			// start with the 1st triangle
+			Set<int> used;
+			used.add(0);
+
+			// search to the right
+			bool closed = find_tria_top(this, pd, used, true);
+
+			// search to the left
+			if (!closed)
+				find_tria_top(this, pd, used, false);
+
+			if (used.num == 1){
+				// no smoothly connected triangles...
+				pd.erase(0);
+				continue;
+			}
+
+			// average normal
+			vector n = v_0;
+			for (int i=0;i<used.num;i++)
+				n += polygon[pd[used[i]].poly].side[pd[used[i]].side].normal;
+			n.normalize();
+			// apply normal... and remove from list
+			for (int i=used.num-1;i>=0;i--){
+				polygon[pd[used[i]].poly].side[pd[used[i]].side].normal = n;
+				pd.erase(used[i]);
+			}
+		}
 	}
 }
 
@@ -434,50 +590,24 @@ void DataModel::clearSelection()
 {
 	for (ModelVertex &v: vertex)
 		v.is_selected = false;
-	for (ModelSurface &s: surface){
-		s.is_selected = false;
-		for (ModelPolygon &t: s.polygon)
-			t.is_selected = false;
-		for (ModelEdge &e: s.edge)
-			e.is_selected = false;
-	}
+	for (ModelPolygon &t: polygon)
+		t.is_selected = false;
+	for (ModelEdge &e: edge)
+		e.is_selected = false;
 	notify(MESSAGE_SELECTION);
 }
 
-void DataModel::selectionFromSurfaces()
-{
+void DataModel::selectionFromPolygons() {
 	for (ModelVertex &v: vertex)
 		v.is_selected = false;
-	for (ModelSurface &s: surface){
-		for (int v: s.vertex)
-			vertex[v].is_selected = s.is_selected;
-		for (ModelPolygon &t: s.polygon)
-			t.is_selected = s.is_selected;
-		for (ModelEdge &e: s.edge)
-			e.is_selected = s.is_selected;
-	}
-	notify(MESSAGE_SELECTION);
-}
-
-void DataModel::selectionFromPolygons()
-{
-	for (ModelVertex &v: vertex)
-		v.is_selected = false;
-	for (ModelSurface &s: surface){
-		for (ModelEdge &e: s.edge)
-			e.is_selected = false;
-		for (ModelPolygon &t: s.polygon)
-			if (t.is_selected)
-				for (int k=0;k<t.side.num;k++){
-					vertex[t.side[k].vertex].is_selected = true;
-					s.edge[t.side[k].edge].is_selected = true;
-				}
-	}
-	for (ModelSurface &s: surface){
-		s.is_selected = true;
-		for (ModelPolygon &t: s.polygon)
-			s.is_selected &= t.is_selected;
-	}
+	for (ModelEdge &e: edge)
+		e.is_selected = false;
+	for (ModelPolygon &t: polygon)
+		if (t.is_selected)
+			for (int k=0;k<t.side.num;k++){
+				vertex[t.side[k].vertex].is_selected = true;
+				edge[t.side[k].edge].is_selected = true;
+			}
 	notify(MESSAGE_SELECTION);
 }
 
@@ -485,49 +615,32 @@ void DataModel::selectionFromEdges()
 {
 	for (ModelVertex &v: vertex)
 		v.is_selected = false;
-	for (ModelSurface &s: surface){
-		for (ModelEdge &e: s.edge)
-			if (e.is_selected)
-				for (int k=0;k<2;k++)
-					vertex[e.vertex[k]].is_selected = true;
-		for (ModelPolygon &p: s.polygon){
-			p.is_selected = true;
-			for (int k=0;k<p.side.num;k++)
-				p.is_selected &= s.edge[p.side[k].edge].is_selected;
-		}
-		s.is_selected = true;
-		for (ModelEdge &e: s.edge)
-			s.is_selected &= e.is_selected;
+	for (ModelEdge &e: edge)
+		if (e.is_selected)
+			for (int k=0;k<2;k++)
+				vertex[e.vertex[k]].is_selected = true;
+	for (ModelPolygon &p: polygon){
+		p.is_selected = true;
+		for (int k=0;k<p.side.num;k++)
+			p.is_selected &= edge[p.side[k].edge].is_selected;
 	}
 	notify(MESSAGE_SELECTION);
 }
 
-void DataModel::selectionFromVertices()
-{
-	for (ModelSurface &s: surface){
-		s.is_selected = true;
-		for (ModelEdge &e: s.edge){
-			e.is_selected = (vertex[e.vertex[0]].is_selected and vertex[e.vertex[1]].is_selected);
-			e.view_stage = min(vertex[e.vertex[0]].view_stage, vertex[e.vertex[1]].view_stage);
-		}
-		for (ModelPolygon &t: s.polygon){
-			t.is_selected = true;
-			t.view_stage = vertex[t.side[0].vertex].view_stage;
-			for (int k=0;k<t.side.num;k++){
-				t.is_selected &= vertex[t.side[k].vertex].is_selected;
-				t.view_stage = min(t.view_stage, vertex[t.side[k].vertex].view_stage);
-			}
-			s.is_selected &= t.is_selected;
+void DataModel::selectionFromVertices() {
+	for (ModelEdge &e: edge) {
+		e.is_selected = (vertex[e.vertex[0]].is_selected and vertex[e.vertex[1]].is_selected);
+		e.view_stage = min(vertex[e.vertex[0]].view_stage, vertex[e.vertex[1]].view_stage);
+	}
+	for (ModelPolygon &t: polygon) {
+		t.is_selected = true;
+		t.view_stage = vertex[t.side[0].vertex].view_stage;
+		for (int k=0;k<t.side.num;k++) {
+			t.is_selected &= vertex[t.side[k].vertex].is_selected;
+			t.view_stage = min(t.view_stage, vertex[t.side[k].vertex].view_stage);
 		}
 	}
 	notify(MESSAGE_SELECTION);
-}
-
-void DataModel::selectOnlySurface(ModelSurface *s)
-{
-	for (ModelSurface &ss: surface)
-		ss.is_selected = (&ss == s);
-	selectionFromSurfaces();
 }
 
 ModelPolygon *DataModel::addTriangle(int a, int b, int c, int material) {
@@ -551,60 +664,210 @@ ModelPolygon *DataModel::addPolygonWithSkin(const Array<int> &v, const Array<vec
 
 
 
-int DataModel::get_surf_no(ModelSurface *s)
-{
-	foreachi(ModelSurface &ss, surface, i)
-		if (&ss == s)
-			return i;
-	return -1;
-}
-
-ModelSurface *DataModel::surfaceJoin(ModelSurface *a, ModelSurface *b)
-{
-	a->testSanity("Join prae a");
-	b->testSanity("Join prae b");
-
-	int ai = get_surf_no(a);
-	int bi = get_surf_no(b);
-
-	// correct edge data of b
-	for (ModelEdge &e: b->edge){
-		if (e.polygon[0] >= 0)
-			e.polygon[0] += a->polygon.num;
-		if (e.polygon[1] >= 0)
-			e.polygon[1] += a->polygon.num;
-	}
-
-	// correct triangle data of b
-	for (ModelPolygon &t: b->polygon)
-		for (int k=0;k<t.side.num;k++)
-			t.side[k].edge += a->edge.num;
-
-	// correct vertex data of b
-	for (int v: b->vertex)
-		vertex[v].surface = ai;
-
-	// insert data
-	a->vertex.join(b->vertex);
-	a->edge.append(b->edge);
-	a->polygon.append(b->polygon);
-
-	// remove surface
-	if (bi >= 0)
-		surface.erase(bi);
-	a = &surface[ai];
-	a->testSanity("Join post a");
-
-	return a;
-}
-
 void DataModel::createSkin(ModelSkin *src, ModelSkin *dst, float quality_factor)
 {
 	msg_todo("DataModel::CreateSkin");
 }
 
 
+bool int_array_has_duplicates(const Array<int> &a) {
+	for (int i=0; i<a.num; i++)
+		for (int j=i+1; j<a.num; j++)
+			if (a[i] == a[j])
+				return true;
+	return false;
+}
 
+
+void DataModel::_addPolygon(const Array<int> &v, int _material, const Array<vector> &sv, int index)
+{
+	if (int_array_has_duplicates(v))
+		throw GeometryException("AddPolygon: duplicate vertices");
+
+	ModelPolygon t;
+	t.side.resize(v.num);
+	for (int k=0;k<v.num;k++){
+		t.side[k].vertex = v[k];
+		for (int i=0;i<material[_material]->texture_levels.num;i++)
+			t.side[k].skin_vertex[i] = sv[i * v.num + k];
+	}
+	for (int k=0;k<v.num;k++){
+		try{
+			t.side[k].edge = add_edge_for_new_polygon(t.side[k].vertex, t.side[(k + 1) % v.num].vertex, polygon.num, k);
+			t.side[k].edge_direction = edge[t.side[k].edge].ref_count - 1;
+		}catch(GeometryException &e){
+			// failed -> clean up
+			for (int i=edge.num-1;i>=0;i--)
+				for (int j=0;j<edge[i].ref_count;j++)
+					if (edge[i].polygon[j] == polygon.num){
+						edge[i].ref_count --;
+						if (edge[i].ref_count == 0)
+							edge.resize(i);
+					}
+			throw(e);
+		}
+	}
+
+	for (int vv: v)
+		vertex[vv].ref_count ++;
+
+	// closed?
+//	updateClosed();
+
+	t.is_selected = false;
+	t.material = _material;
+	t.view_stage = ed->multi_view_3d->view_stage;
+	t.normal_dirty = true;
+	t.triangulation_dirty = true;
+	if (index >= 0){
+		polygon.insert(t, index);
+
+		// correct edges
+		for (ModelEdge &e: edge)
+			for (int k=0;k<e.ref_count;k++)
+				if (e.polygon[k] >= index)
+					e.polygon[k] ++;
+
+		// correct own edges
+		for (int k=0;k<t.side.num;k++)
+			edge[polygon[index].side[k].edge].polygon[polygon[index].side[k].edge_direction] = index;
+	}else
+		polygon.add(t);
+}
+
+void DataModel::_removePolygon(int index)
+{
+	ModelPolygon &t = polygon[index];
+
+	// unref the vertices
+	for (int k=0;k<t.side.num;k++){
+		vertex[t.side[k].vertex].ref_count --;
+	}
+
+	Set<int> obsolete;
+
+	// remove from its edges
+	for (int k=0;k<t.side.num;k++){
+		ModelEdge &e = edge[t.side[k].edge];
+		e.ref_count --;
+		if (e.ref_count > 0){
+			// edge has other triangle...
+			if (t.side[k].edge_direction > 0){
+				e.polygon[1] = -1;
+			}else{
+				// flip ownership
+				e.polygon[0] = e.polygon[1];
+				e.side[0] = e.side[1];
+				e.polygon[1] = -1;
+
+				// swap vertices
+				int v = e.vertex[0];
+				e.vertex[0] = e.vertex[1];
+				e.vertex[1] = v;
+
+				// relink other triangle
+				polygon[e.polygon[0]].side[e.side[0]].edge_direction = 0;
+			}
+		}else{
+			e.polygon[0] = -1;
+			obsolete.add(t.side[k].edge);
+		}
+	}
+
+	// correct edge links
+	foreachi(ModelEdge &e, edge, i)
+		for (int k=0;k<e.ref_count;k++)
+			if (e.polygon[k] > index)
+				e.polygon[k] --;
+			else if (e.polygon[k] == index){
+				throw GeometryException("RemoveTriangle: tria == index");
+			}
+
+	polygon.erase(index);
+
+	//TestSanity("rem poly 0");
+
+	// remove obsolete edges
+	foreachb(int o, obsolete)
+		remove_obsolete_edge(o);
+
+/*	if (!TestSanity("rem poly"))
+		throw GeometryException("RemoveTriangle: TestSanity failed");*/
+}
+
+void DataModel::build_topology()
+{
+	// clear
+	edge.clear();
+	for (ModelVertex &v: vertex)
+		v.ref_count = 0;
+
+	// add all triangles
+	foreachi(ModelPolygon &t, polygon, ti){
+		// vertices
+		for (int k=0;k<t.side.num;k++)
+			vertex[t.side[k].vertex].ref_count ++;
+
+		// edges
+		for (int k=0;k<t.side.num;k++){
+			t.side[k].edge = add_edge_for_new_polygon(t.side[k].vertex, t.side[(k + 1) % t.side.num].vertex, ti, k);
+			t.side[k].edge_direction = edge[t.side[k].edge].ref_count - 1;
+		}
+	}
+
+//	updateClosed();
+}
+
+
+void DataModel::remove_obsolete_edge(int index)
+{
+	// correct triangle references
+	for (ModelPolygon &t: polygon)
+		for (int k=0;k<t.side.num;k++)
+			if (t.side[k].edge > index)
+				t.side[k].edge --;
+			else if (t.side[k].edge == index)
+				msg_error(format("surf rm edge: edge not really obsolete  rc=%d (%d,%d) (%d,%d)", edge[index].ref_count, t.side[k].vertex, t.side[(k+1)%t.side.num].vertex, edge[index].vertex[0], edge[index].vertex[1]));
+
+	// delete
+	edge.erase(index);
+}
+
+int DataModel::add_edge_for_new_polygon(int a, int b, int tria, int side)
+{
+	foreachi(ModelEdge &e, edge, i){
+		if ((e.vertex[0] == a) && (e.vertex[1] == b)){
+			throw GeometryException("the new polygon would have neighbors of opposite orientation");
+			/*e.RefCount ++;
+			msg_error("surface error? inverse edge");
+			e.Polygon[1] = tria;
+			e.Side[1] = side;
+			return i;*/
+		}
+		if ((e.vertex[0] == b) && (e.vertex[1] == a)){
+			if (e.polygon[0] == tria)
+				throw GeometryException("the new polygon would contain the same edge twice");
+			if (e.ref_count > 1)
+				throw GeometryException("there would be more than 2 polygons sharing an egde");
+			e.ref_count ++;
+			e.polygon[1] = tria;
+			e.side[1] = side;
+			return i;
+		}
+	}
+	ModelEdge ee;
+	ee.vertex[0] = a;
+	ee.vertex[1] = b;
+	ee.is_selected = false;
+	ee.is_special = false;
+	ee.is_round = false;
+	ee.ref_count = 1;
+	ee.polygon[0] = tria;
+	ee.side[0] = side;
+	ee.polygon[1] = -1;
+	edge.add(ee);
+	return edge.num - 1;
+}
 
 float DataModel::getRadius()
 {
@@ -667,8 +930,7 @@ matrix3 DataModel::generateInertiaTensor(float mass)
 	for (int i=0;i<9;i++)
 		t.e[i] = 0;
 
-	for (ModelSurface &s: surface)
-		s.beginInsideTests();
+	begin_inside_tests();
 
 	for (int i=0;i<n_theta;i++){
 		float x=min.x+(float(i)+0.5f)*(max.x-min.x)/n_theta;
@@ -685,11 +947,10 @@ matrix3 DataModel::generateInertiaTensor(float mass)
 					if (VecLength(r-p->Vertex[b->Index].Pos)<b->Radius)
 						inside=true;
 				}*/
-				for (ModelSurface &s: surface)
-					if (s.insideTest(r)){
-						inside = true;
-						break;
-					}
+				if (inside_test(r)){
+					inside = true;
+					break;
+				}
 				if (inside){
 					//msg_write("in");
 					num_ds++;
@@ -705,8 +966,7 @@ matrix3 DataModel::generateInertiaTensor(float mass)
 	}
 
 
-	for (ModelSurface &s: surface)
-		s.endInsideTests();
+	end_inside_tests();
 
 	if (num_ds>0){
 		float f = mass / num_ds;
@@ -720,6 +980,52 @@ matrix3 DataModel::generateInertiaTensor(float mass)
 	return t;
 }
 
+struct SurfaceInsideTestData : BspTree{};
+static SurfaceInsideTestData *inside_data = NULL;
+
+void DataModel::begin_inside_tests()
+{
+#if 0
+	if (!is_closed)
+		return;
+	inside_data = new SurfaceInsideTestData;
+	/*inside_data->num_trias = 0;
+	for (ModelPolygon &t, Polygon)
+		inside_data->num_trias += (t.Side.num - 2);
+	inside_data->ray.resize(inside_data->num_trias * 3);
+	inside_data->pl.resize(inside_data->num_trias);
+	Ray *r = &inside_data->ray[0];
+	plane *pl = &inside_data->pl[0];
+	for (ModelPolygon &t, Polygon){
+		if (t.TriangulationDirty)
+			t.UpdateTriangulation(model->Vertex);
+		for (int k=0;k<t.Side.num-2;k++){
+			*(pl ++) = plane(model->Vertex[t.Side[0].Vertex].pos, t.TempNormal);
+			*(r ++) = Ray(model->Vertex[t.Side[t.Side[k].Triangulation[0]].Vertex].pos, model->Vertex[t.Side[t.Side[k].Triangulation[1]].Vertex].pos);
+			*(r ++) = Ray(model->Vertex[t.Side[t.Side[k].Triangulation[1]].Vertex].pos, model->Vertex[t.Side[t.Side[k].Triangulation[2]].Vertex].pos);
+			*(r ++) = Ray(model->Vertex[t.Side[t.Side[k].Triangulation[2]].Vertex].pos, model->Vertex[t.Side[t.Side[k].Triangulation[0]].Vertex].pos);
+		}
+	}*/
+
+	float epsilon = getRadius() * 0.001f;
+	for (ModelPolygon &p: polygon)
+		inside_data->add(p, this, epsilon);
+#endif
+}
+
+bool DataModel::inside_test(const vector &p)
+{
+	if (!inside_data)
+		return false;
+	return inside_data->inside(p);
+
+}
+
+void DataModel::end_inside_tests()
+{
+//	if (inside_data)
+	//	delete(inside_data);
+}
 
 int DataModel::getNumSelectedVertices()
 {
@@ -748,30 +1054,24 @@ int DataModel::getNumSelectedSkinVertices()
 int DataModel::getNumSelectedPolygons()
 {
 	int r = 0;
-	for (ModelSurface &s: surface)
-		for (ModelPolygon &t: s.polygon)
-			if (t.is_selected)
-				r ++;
+	for (ModelPolygon &t: polygon)
+		if (t.is_selected)
+			r ++;
 	return r;
 }
 
 int DataModel::getNumSelectedEdges()
 {
 	int r = 0;
-	for (ModelSurface &s: surface)
-		for (ModelEdge &e: s.edge)
-			if (e.is_selected)
-				r ++;
+	for (ModelEdge &e: edge)
+		if (e.is_selected)
+			r ++;
 	return r;
 }
 
 int DataModel::getNumSelectedSurfaces()
 {
-	int r = 0;
-	for (ModelSurface &s: surface)
-		if (s.is_selected)
-			r ++;
-	return r;
+	return 0;
 }
 
 int DataModel::getNumSelectedBones()
@@ -785,10 +1085,7 @@ int DataModel::getNumSelectedBones()
 
 int DataModel::getNumPolygons()
 {
-	int r = 0;
-	for (ModelSurface &s: surface)
-		r += s.polygon.num;
-	return r;
+	return polygon.num;
 }
 
 void DataModel::reconnectBone(int index, int parent)
@@ -846,16 +1143,15 @@ void DataModel::copyGeometry(Geometry &geo)
 		}
 
 	// copy triangles
-	for (ModelSurface &s: surface)
-		for (ModelPolygon &t: s.polygon)
-			if (t.is_selected){
-				ModelPolygon tt = t;
-				for (int k=0;k<t.side.num;k++)
-					foreachi(int v, vert, vi)
-						if (v == t.side[k].vertex)
-							tt.side[k].vertex = vi;
-				geo.polygon.add(tt);
-			}
+	for (ModelPolygon &t: polygon)
+		if (t.is_selected){
+			ModelPolygon tt = t;
+			for (int k=0;k<t.side.num;k++)
+				foreachi(int v, vert, vi)
+					if (v == t.side[k].vertex)
+						tt.side[k].vertex = vi;
+			geo.polygon.add(tt);
+		}
 }
 
 void DataModel::deleteSelection(bool greedy)
@@ -865,7 +1161,10 @@ void DataModel::invertSurfaces(const Set<int> &surfaces)
 {	execute(new ActionModelSurfaceInvert(surfaces));	}
 
 void DataModel::invertSelection()
-{	invertSurfaces(getSelectedSurfaces());	}
+{
+	msg_todo("invert selection");
+	//invertSurfaces(getSelectedSurfaces());
+}
 
 void DataModel::subtractSelection()
 {	execute(new ActionModelSurfaceVolumeSubtract());	}
@@ -895,7 +1194,10 @@ void DataModel::easify(float factor)
 {	execute(new ActionModelEasify(factor));	}
 
 void DataModel::subdivideSelectedSurfaces()
-{	execute(new ActionModelSurfacesSubdivide(getSelectedSurfaces()));	}
+{
+	//execute(new ActionModelSurfacesSubdivide(getSelectedSurfaces()));
+	msg_todo("subdivide");
+}
 
 void DataModel::bevelSelectedEdges(float radius)
 {	execute(new ActionModelBevelEdges(radius));	}
@@ -953,35 +1255,18 @@ Set<int> DataModel::getSelectedVertices()
 	return vv;
 }
 
-Set<int> DataModel::getSelectedSurfaces()
-{
-	Set<int> ss;
-	foreachi(ModelSurface &surf, surface, i)
-		if (surf.is_selected)
-			ss.add(i);
-	return ss;
-}
-
 void DataModel::getSelectionState(ModelSelectionState& s)
 {
 	s.clear();
 	foreachi(ModelVertex &v, vertex, i)
 		if (v.is_selected)
 			s.vertex.add(i);
-	foreachi(ModelSurface &surf, surface, i){
-		if (surf.is_selected)
-			s.surface.add(i);
-		Set<int> sel;
-		foreachi(ModelPolygon &t, surf.polygon, j)
-			if (t.is_selected)
-				sel.add(j);
-		s.polygon.add(sel);
-		Array<ModelSelectionState::EdgeSelection> esel;
-		foreachi(ModelEdge &e, surf.edge, j)
-			if (e.is_selected)
-				esel.add(e.vertex);
-		s.edge.add(esel);
-	}
+	foreachi(ModelPolygon &t, polygon, j)
+		if (t.is_selected)
+			s.polygon.add(j);
+	foreachi(ModelEdge &e, edge, j)
+		if (e.is_selected)
+			s.edge.add(e.vertex);
 }
 
 void DataModel::setSelectionState(ModelSelectionState& s)
@@ -989,22 +1274,46 @@ void DataModel::setSelectionState(ModelSelectionState& s)
 	clearSelection();
 	for (int v: s.vertex)
 		vertex[v].is_selected = true;
-	for (int si: s.surface)
-		surface[si].is_selected = true;
-	for (int i=0;i<s.polygon.num;i++)
-		for (int j: s.polygon[i])
-			surface[i].polygon[j].is_selected = true;
-	for (int i=0;i<s.edge.num;i++)
-		for (ModelSelectionState::EdgeSelection &es: s.edge[i]){
-			int ne = surface[i].findEdge(es.v[0], es.v[1]);
+	for (int p: s.polygon)
+		polygon[p].is_selected = true;
+	for (auto &es: s.edge) {
+			int ne = find_edge(es.v[0], es.v[1]);
 			if (ne >= 0)
-				surface[i].edge[ne].is_selected = true;
+				edge[ne].is_selected = true;
 		}
 	notify(MESSAGE_SELECTION);
 }
 
 
+int DataModel::find_edge(int vertex0, int vertex1)
+{
+	foreachi(ModelEdge &e, edge, i)
+		if (((e.vertex[0] == vertex0) && (e.vertex[1] == vertex1)) || ((e.vertex[1] == vertex0) && (e.vertex[0] == vertex1)))
+			return i;
+	return -1;
+}
 
+
+Array<int> DataModel::get_boundary_loop(int v0)
+{
+	Array<int> loop;
+	int last = v0;
+	bool found = true;
+	while(found){
+		found = false;
+		for (ModelEdge &e: edge)
+			if (e.ref_count == 1)
+				if (e.vertex[0] == last){
+					last = e.vertex[1];
+					loop.add(last);
+					if (last == v0)
+						return loop;
+					found = true;
+					break;
+				}
+	}
+	return loop;
+}
 
 
 

@@ -19,9 +19,10 @@ ActionModelSurfacesSubdivide::ActionModelSurfacesSubdivide(const Set<int> &_surf
 
 void *ActionModelSurfacesSubdivide::compose(Data *d)
 {
-	DataModel *m = dynamic_cast<DataModel*>(d);
+	msg_todo("ActionModelSurfacesSubdivide");
+	/*DataModel *m = dynamic_cast<DataModel*>(d);
 	for (int i=surfaces.num-1; i>=0; i--)
-		SubdivideSurface(m, &m->surface[surfaces[i]], surfaces[i]);
+		SubdivideSurface(m, &m->surface[surfaces[i]], surfaces[i]);*/
 	return NULL;
 }
 
@@ -104,11 +105,12 @@ void ActionModelSurfacesSubdivide::SubdivideSurface(DataModel *m, ModelSurface *
 			nsv.add(svv);
 		}
 	}
-
+/*
 	for (int i=s->polygon.num-1; i>=0; i--)
 		addSubAction(new ActionModelSurfaceDeletePolygon(surface, i), m);
 
 	for (int i=0; i<nv.num; i++)
 		addSubAction(new ActionModelSurfaceAddPolygon(surface, nv[i], nmat[i], nsv[i]), m);
+		*/
 }
 

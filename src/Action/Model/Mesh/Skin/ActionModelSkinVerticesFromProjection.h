@@ -17,19 +17,16 @@ namespace MultiView{
 	class MultiView;
 };
 
-class ActionModelSkinVerticesFromProjection : public Action
-{
+class ActionModelSkinVerticesFromProjection : public Action {
 public:
 	ActionModelSkinVerticesFromProjection(DataModel *m, MultiView::MultiView *mv);
-	virtual ~ActionModelSkinVerticesFromProjection();
-	virtual string name(){	return "ModelSkinVerticesFromProjection";	}
-	virtual const string &message();
+	string name() override { return "ModelSkinVerticesFromProjection"; }
+	const string &message() override;
 
-	virtual void *execute(Data *d);
-	virtual void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
-	Array<int> surface;
 	Array<int> tria;
 	Array<int> vert_on_tria;
 	Array<vector> old_pos[MATERIAL_MAX_TEXTURES];

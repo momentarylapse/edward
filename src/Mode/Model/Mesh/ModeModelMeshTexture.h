@@ -32,7 +32,7 @@ public:
 	void on_selection_change() override;
 
 	// for MultiView actions
-	void getSelectedSkinVertices(Array<int> &surf, Array<int> &tria, Array<int> &index);
+	void getSelectedSkinVertices(Array<int> &tria, Array<int> &index);
 
 
 	void fetchData();

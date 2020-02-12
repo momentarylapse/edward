@@ -61,13 +61,12 @@ void *ActionModelMaterialAddTexture::execute(Data *d) {
 	// correct skin vertices
 	// (copy highest texture level when adding more levels)
 	int ntl = m->material[index]->texture_levels.num;
-	for (ModelSurface &s: m->surface)
-		for (ModelPolygon &p: s.polygon) {
-			if (p.material == index) {
-				for (ModelPolygonSide &side: p.side)
-					side.skin_vertex[ntl] = side.skin_vertex[ntl - 1];
-			}
+	for (ModelPolygon &p: m->polygon) {
+		if (p.material == index) {
+			for (ModelPolygonSide &side: p.side)
+				side.skin_vertex[ntl] = side.skin_vertex[ntl - 1];
 		}
+	}
 
 
 	m->notify(m->MESSAGE_TEXTURE_CHANGE);

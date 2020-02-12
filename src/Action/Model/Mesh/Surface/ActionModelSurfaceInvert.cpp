@@ -11,20 +11,17 @@
 
 ActionModelSurfaceInvert::ActionModelSurfaceInvert(const Set<int> &_surfaces)
 {
-	surfaces = _surfaces;
-}
-
-ActionModelSurfaceInvert::~ActionModelSurfaceInvert()
-{
+	//surfaces = _surfaces;
 }
 
 bool ActionModelSurfaceInvert::was_trivial()
 {
-	return surfaces.num == 0;
+	return true;//surfaces.num == 0;
 }
 
-void ActionModelSurfaceInvert::InvertSurface(ModelSurface &s)
+void ActionModelSurfaceInvert::InvertSurface(DataModel *m)
 {
+#if 0
 	s.testSanity("inv prae");
 
 	// flip polygons
@@ -70,18 +67,22 @@ void ActionModelSurfaceInvert::InvertSurface(ModelSurface &s)
 	}
 
 	s.testSanity("inv post");
+#endif
 }
 
 void *ActionModelSurfaceInvert::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
+#if 0
 	for (int surface: surfaces){
 
 		assert((surface >= 0) && (surface < m->surface.num));
 
 		InvertSurface(m->surface[surface]);
 	}
+#endif
+	msg_todo("ActionModelSurfaceInvert");
 
 	return NULL;
 }

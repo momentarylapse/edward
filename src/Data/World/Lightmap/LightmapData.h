@@ -91,7 +91,7 @@ public:
 		/*int nb, nc;
 		int x, y;
 		bool t_rot;*/
-		int ter_id, mod_id, surf, poly, side;
+		int ter_id, mod_id, poly, side;
 		color am, di, em;
 		float area;
 		int num_vertices;

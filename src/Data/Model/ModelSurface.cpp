@@ -33,30 +33,14 @@ ModelSurface::ModelSurface()
 
 void ModelSurface::addVertex(int v)
 {
-	int surf = model->get_surf_no(this);
-	if (surf < 0)
-		throw GeometryException("Surface.AddVertex: surface not part of the model??");
-	if ((model->vertex[v].surface != surf) && (model->vertex[v].surface >= 0))
-		throw GeometryException("Surface.AddVertex: vertex already part of an other surface");
-
 	// set -> unique
 	vertex.add(v);
 
 	// ref count
 	model->vertex[v].ref_count ++;
-
-	// back reference
-	model->vertex[v].surface = surf;
 }
 
-bool int_array_has_duplicates(const Array<int> &a)
-{
-	for (int i=0; i<a.num; i++)
-		for (int j=i+1; j<a.num; j++)
-			if (a[i] == a[j])
-				return true;
-	return false;
-}
+bool int_array_has_duplicates(const Array<int> &a);
 
 void ModelSurface::addPolygon(const Array<int> &v, int material, const Array<vector> &sv, int index)
 {
@@ -387,12 +371,8 @@ void ModelSurface::buildFromPolygons()
 	// clear
 	edge.clear();
 	vertex.clear();
-	int n = model->get_surf_no(this);
 	for (ModelVertex &v: model->vertex)
-		if (v.surface == n){
-			v.surface = -1;
-			v.ref_count = 0;
-		}
+		v.ref_count = 0;
 
 	// add all triangles
 	foreachi(ModelPolygon &t, polygon, ti){
@@ -419,7 +399,6 @@ void ModelSurface::removePolygon(int index)
 	for (int k=0;k<t.side.num;k++){
 		model->vertex[t.side[k].vertex].ref_count --;
 		if (model->vertex[t.side[k].vertex].ref_count == 0){
-			model->vertex[t.side[k].vertex].surface = -1;
 			vertex.erase(t.side[k].vertex);
 		}
 	}

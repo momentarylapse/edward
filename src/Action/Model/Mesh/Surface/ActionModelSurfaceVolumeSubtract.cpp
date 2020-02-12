@@ -19,6 +19,8 @@ ActionModelSurfaceVolumeSubtract::ActionModelSurfaceVolumeSubtract()
 
 void *ActionModelSurfaceVolumeSubtract::compose(Data *d)
 {
+	msg_todo("ActionModelSurfaceVolumeSubtract");
+#if 0
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	int n = 0;
 	for (ModelSurface &s: m->surface)
@@ -41,6 +43,7 @@ void *ActionModelSurfaceVolumeSubtract::compose(Data *d)
 		addSubAction(new ActionModelPasteGeometry(g, 0), m);
 
 	ed->set_message(format(_("%d closed surfaces subtracted"), n));
+#endif
 	return NULL;
 }
 
@@ -66,6 +69,6 @@ void ActionModelSurfaceVolumeSubtract::SurfaceSubtract(DataModel *m, ModelSurfac
 
 	if (status == 1){
 		geos.add(gc);
-		addSubAction(new ActionModelDeleteSurface(ai), m);
+//		addSubAction(new ActionModelDeleteSurface(ai), m);
 	}
 }

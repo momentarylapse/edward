@@ -16,6 +16,8 @@ ActionModelAutoWeldSelection::ActionModelAutoWeldSelection(float _epsilon)
 
 void *ActionModelAutoWeldSelection::compose(Data *d)
 {
+	msg_todo("auto weld...");
+#if 0
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	bool found = true;
 	while (found){
@@ -35,6 +37,7 @@ void *ActionModelAutoWeldSelection::compose(Data *d)
 					break;
 			}
 	}
+#endif
 	return NULL;
 }
 

@@ -186,7 +186,7 @@ class ModelEdge extends MultiViewSingleData
 	#  same for Triangle/Side[1] but Vertex[0 <-> 1]
 
 
-class ModelSurface extends MultiViewSingleData
+class __ModelSurface extends MultiViewSingleData
 	ModelPolygon[] polygon
 	ModelEdge[] edge
 	int[] vertex
@@ -295,7 +295,8 @@ class DataModel extends Data
 
 	# geometry
 	ModelVertex[] vertex
-	ModelSurface[] surface
+	ModelPolygon[] polygon
+	ModelEdge[] edge
 #	MultiViewSingleData SkinVertex[] # only temporary...
 #	int SkinVertMat, SkinVertTL
 
@@ -319,8 +320,8 @@ class DataModel extends Data
 	extern void ClearSelection()
 	extern void SelectionFromVertices()
 	extern void SelectionFromPolygons()
-	extern void SelectionFromSurfaces()
-	extern void SelectOnlySurface(ModelSurface s)
+	#extern void SelectionFromSurfaces()
+	#extern void SelectOnlySurface(ModelSurface s)
 	
 	extern void AddVertex(vector pos, int bone_index, int normal_mode)
 	extern ModelPolygon *AddTriangle(int a, int b, int c, int material)
