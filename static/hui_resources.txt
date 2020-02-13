@@ -4032,7 +4032,7 @@ image=hui:cut
 0
 0
 Item
-new_extract
+split_polygon
 
 14
 0
@@ -10477,7 +10477,7 @@ menu_model/extrude_triangles_independent
 Extrude (independent)
 
 menu_model/flatten_vertices
-Flatten
+Flatten 2d
 
 menu_model/font_new
 New
@@ -10531,7 +10531,7 @@ menu_model/invert_selection
 Invert
 
 menu_model/invert_trias
-Triangle inversion
+Invert polygons
 
 menu_model/just_selection
 Selection
@@ -10624,16 +10624,16 @@ menu_model/menu_rightmouse
 Right mouse button
 
 menu_model/menu_surface_header
-On surfaces
+Surfaces
 
 menu_model/menu_tria_header
-On triangles
+Polygons
 
 menu_model/menu_vertex2_header
 Vertex points
 
 menu_model/menu_vertex_header
-On vertices
+Vertices
 
 menu_model/menu_world
 World
@@ -10691,9 +10691,6 @@ Cylinder snake
 
 menu_model/new_dodecahedron
 Dodecahedron
-
-menu_model/new_extract
-Extract
 
 menu_model/new_icosahedron
 Icosahedron
@@ -10785,8 +10782,11 @@ Settings...
 menu_model/snap_to_grid
 Sticky grid
 
+menu_model/split_polygon
+Split
+
 menu_model/subdivide_surfaces
-Subdivide
+Subdivide/smoothen
 
 menu_model/text_from_bg
 Texture coordinates from background

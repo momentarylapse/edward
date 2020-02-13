@@ -96,11 +96,11 @@ Menu menu_model "Model" disabled
 			Item scale_2d "Scale 2D" checkable
 			Item mirror "mirror" checkable
 		Separator
-		Item menu_vertex_header "On vertices" disabled
+		Item menu_vertex_header "Vertices" disabled
 		Item align_to_grid "Align to grid"
 		Item connect "Connect Points"
 		Item nearify "Nearify"
-		Item flatten_vertices "Flatten"
+		Item flatten_vertices "Flatten 2d"
 		Menu menu_model_deformation "Deformation"
 			Item deformation_cylinder "Cylinder radius"
 			Item deformation_function "Function"
@@ -108,21 +108,21 @@ Menu menu_model "Model" disabled
 		Item menu_edge_header "Edges" disabled
 		Item bevel_edges "Bevel edges"
 		Separator
-		Item menu_tria_header "On triangles" disabled
+		Item menu_tria_header "Polygons" disabled
 		Item cut_out "Cut off" image=hui:cut
-		Item new_extract "Extract"
+		Item split_polygon "Split"
 		Item extrude_triangles "Extrude"
 		Item extrude_triangles_independent "Extrude (independent)"
 		Item convert_to_triangles "Dissect into triangles"
 		Item untriangulate_selection "Un-triangulate"
 		Separator
-		Item menu_surface_header "On surfaces" disabled
-		Item invert_trias "Triangle inversion"
+		Item menu_surface_header "Surfaces" disabled
+		Item invert_trias "Invert polygons"
 		Item autoweld_surfaces "Weld..."
 		Item volume_subtract "Volume subtract" image=hui:cut
 		Item volume_and "Restrict volume"
 		Item new_outline "Outline"
-		Item subdivide_surfaces "Subdivide"
+		Item subdivide_surfaces "Subdivide/smoothen"
 		Separator
 		Item menu_all_header "All" disabled
 		Item easify_skin "Easify skin"

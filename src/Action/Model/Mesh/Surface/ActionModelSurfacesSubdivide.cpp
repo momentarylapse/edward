@@ -12,28 +12,23 @@
 #include "../Vertex/Helper/ActionModelMoveVertex.h"
 #include "../../../../Data/Model/DataModel.h"
 
-ActionModelSurfacesSubdivide::ActionModelSurfacesSubdivide(const Set<int> &_surfaces) :
-	surfaces(_surfaces)
+bool selection_consistent_surfaces(const ModelSelectionState &s, DataModel *m);
+
+ActionModelSurfacesSubdivide::ActionModelSurfacesSubdivide(const ModelSelectionState &s) :
+	sel(s)
 {
 }
 
-void *ActionModelSurfacesSubdivide::compose(Data *d)
-{
-	msg_todo("ActionModelSurfacesSubdivide");
-	/*DataModel *m = dynamic_cast<DataModel*>(d);
-	for (int i=surfaces.num-1; i>=0; i--)
-		SubdivideSurface(m, &m->surface[surfaces[i]], surfaces[i]);*/
-	return NULL;
-}
+void *ActionModelSurfacesSubdivide::compose(Data *d) {
+	auto m = dynamic_cast<DataModel*>(d);
+	if (!selection_consistent_surfaces(sel, m))
+		throw ActionException("surface selection inconsistent");
 
-// Catmull-Clark subdivision
-void ActionModelSurfacesSubdivide::SubdivideSurface(DataModel *m, ModelSurface *s, int surface)
-{
-#if 0
 	// new polygon vertices
 	int nv_p0 = m->vertex.num;
 	Array<vector> new_poly_vert;
-	for (ModelPolygon &p: s->polygon){
+	for (int ip: sel.polygon) {
+		auto &p = m->polygon[ip];
 		vector pos = v_0;
 		for (int k=0; k<p.side.num; k++)
 			pos += m->vertex[p.side[k].vertex].pos;
@@ -45,7 +40,8 @@ void ActionModelSurfacesSubdivide::SubdivideSurface(DataModel *m, ModelSurface *
 	// new edge vertices
 	Array<vector> old_edge_vert;
 	int nv_e0 = m->vertex.num;
-	for (ModelEdge &e: s->edge){
+	for (int ie: sel.edge) {
+		auto &e = m->edge[ie];
 		vector pos = m->vertex[e.vertex[0]].pos + m->vertex[e.vertex[1]].pos;
 		old_edge_vert.add(pos / 2);
 		for (int k=0; k<e.ref_count; k++)
@@ -55,10 +51,10 @@ void ActionModelSurfacesSubdivide::SubdivideSurface(DataModel *m, ModelSurface *
 	}
 
 	// move old vertices
-	for (int v: s->vertex){
+	for (int v: sel.vertex){
 		vector F = v_0, R = v_0, P = m->vertex[v].pos;
 		int n = 0;
-		foreachi(ModelPolygon &p, s->polygon, i)
+		foreachi(ModelPolygon &p, m->polygon, i)
 			for (int k=0; k<p.side.num; k++)
 				if (p.side[k].vertex == v){
 					F += new_poly_vert[i];
@@ -74,7 +70,8 @@ void ActionModelSurfacesSubdivide::SubdivideSurface(DataModel *m, ModelSurface *
 	Array<Array<int> > nv;
 	Array<Array<vector> > nsv;
 	Array<int> nmat;
-	foreachib(ModelPolygon &p, s->polygon, i){
+	for (int i: sel.polygon) {
+		auto &p = m->polygon[i];
 		Array<int> v = p.getVertices();
 		Array<vector> sv = p.getSkinVertices();
 		int mat = p.material;
@@ -106,13 +103,14 @@ void ActionModelSurfacesSubdivide::SubdivideSurface(DataModel *m, ModelSurface *
 			nsv.add(svv);
 		}
 	}
-/*
-	for (int i=s->polygon.num-1; i>=0; i--)
-		addSubAction(new ActionModelSurfaceDeletePolygon(surface, i), m);
+
+	for (int i=sel.polygon.num-1; i>=0; i--)
+		addSubAction(new ActionModelSurfaceDeletePolygon(sel.polygon[i]), m);
 
 	for (int i=0; i<nv.num; i++)
-		addSubAction(new ActionModelSurfaceAddPolygon(surface, nv[i], nmat[i], nsv[i]), m);
-		*/
-#endif
+		addSubAction(new ActionModelSurfaceAddPolygon(nv[i], nmat[i], nsv[i]), m);
+
+
+	return NULL;
 }
 

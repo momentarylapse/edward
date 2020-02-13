@@ -1189,9 +1189,8 @@ void DataModel::pasteGeometry(Geometry& geo, int default_material)
 void DataModel::easify(float factor)
 {	execute(new ActionModelEasify(factor));	}
 
-void DataModel::subdivideSelectedSurfaces(const ModelSelectionState &s)
-{
-	//execute(new ActionModelSurfacesSubdivide(getSelectedSurfaces()));
+void DataModel::subdivideSelectedSurfaces(const ModelSelectionState &s) {
+	execute(new ActionModelSurfacesSubdivide(get_selection()));
 	msg_todo("subdivide");
 }
 

@@ -12,20 +12,16 @@
 #include "../../../../lib/math/math.h"
 class DataModel;
 class ModelSurface;
-template<class T>
-class Set;
+class ModelSelectionState;
 
-class ActionModelSurfacesSubdivide : public ActionGroup
-{
+class ActionModelSurfacesSubdivide : public ActionGroup {
 public:
-	ActionModelSurfacesSubdivide(const Set<int> &surfaces);
-	virtual ~ActionModelSurfacesSubdivide(){};
-	string name(){	return "ModelSurfacesSubdivide";	}
+	ActionModelSurfacesSubdivide(const ModelSelectionState &sel);
+	string name() override { return "ModelSurfacesSubdivide"; }
 
-	void *compose(Data *d);
+	void *compose(Data *d) override;
 private:
-	void SubdivideSurface(DataModel *m, ModelSurface *s, int surface);
-	const Set<int> &surfaces;
+	const ModelSelectionState &sel;
 };
 
 #endif /* ACTIONMODELSURFACESSUBDIVIDE_H_ */

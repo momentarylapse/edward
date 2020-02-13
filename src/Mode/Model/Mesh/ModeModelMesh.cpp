@@ -185,7 +185,7 @@ void ModeModelMesh::on_command(const string & id)
 		ed->set_mode(new ModeModelMeshCreatePlatonic(this, 20));
 	if (id == "new_teapot")
 		ed->set_mode(new ModeModelMeshCreatePlatonic(this, 306));
-	if (id == "new_extract")
+	if (id == "split_polygon")
 		ed->set_mode(new ModeModelMeshSplitPolygon(this));
 	if (id == "bevel_edges")
 		ed->set_mode(new ModeModelMeshBevelEdges(this));
