@@ -8,6 +8,8 @@
 #include "ActionModelAutomap.h"
 #include "../../../../lib/base/set.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/ModelMesh.h"
+#include "../../../../Data/Model/ModelPolygon.h"
 
 ActionModelAutomap::ActionModelAutomap(int _material, int _texture_level)
 {
@@ -43,7 +45,7 @@ int max_index(Array<float> &d)
 Array<int> group_by_dirs(DataModel *m, const vector *dir, int num_dirs)
 {
 	Array<int> r;
-	foreachi(ModelPolygon &p, m->polygon, i){
+	foreachi(ModelPolygon &p, m->mesh->polygon, i){
 		Array<float> d;
 		for (int k=0;k<num_dirs;k++)
 			d.add(p.temp_normal * dir[k]);
@@ -62,9 +64,9 @@ Set<int> extract_connected(Set<int> &set, DataModel *m)
 	while(found){
 		found = false;
 		for (int i: r){
-			ModelPolygon &p = m->polygon[i];
+			ModelPolygon &p = m->mesh->polygon[i];
 			for (int k=0;k<p.side.num;k++){
-				int neigh = m->edge[p.side[k].edge].polygon[1 - p.side[k].edge_direction];
+				int neigh = m->mesh->edge[p.side[k].edge].polygon[1 - p.side[k].edge_direction];
 				if (neigh < 0)
 					continue;
 				if (set.find(neigh) >= 0){
@@ -122,9 +124,9 @@ void Island::map_primitive(DataModel *m)
 
 	// map (project on plane)
 	for (int i: p){
-		ModelPolygon &pp = m->polygon[i];
+		ModelPolygon &pp = m->mesh->polygon[i];
 		for (int k=0;k<pp.side.num;k++){
-			vector v = m->vertex[pp.side[k].vertex].pos;
+			vector v = m->mesh->vertex[pp.side[k].vertex].pos;
 			vector t = vector(v * e1, v * e2, 0);
 			skin.add(t);
 		}
@@ -177,7 +179,7 @@ void Island::apply(DataModel *m, int texture_level)
 {
 	int n = 0;
 	for (int i: p){
-		ModelPolygon &pp = m->polygon[i];
+		ModelPolygon &pp = m->mesh->polygon[i];
 		for (int k=0;k<pp.side.num;k++)
 			pp.side[k].skin_vertex[texture_level] = skin[n ++];
 	}
@@ -237,7 +239,7 @@ void *ActionModelAutomap::execute(Data *d)
 
 	// save old
 	old_pos.clear();
-	for (ModelPolygon &p: m->polygon)
+	for (ModelPolygon &p: m->mesh->polygon)
 		for (int k=0;k<p.side.num;k++)
 			old_pos.add(p.side[k].skin_vertex[texture_level]);
 
@@ -263,7 +265,7 @@ void ActionModelAutomap::undo(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	int n = 0;
-	for (ModelPolygon &p: m->polygon)
+	for (ModelPolygon &p: m->mesh->polygon)
 		for (int k=0;k<p.side.num;k++)
 			p.side[k].skin_vertex[texture_level] = old_pos[n ++];
 }

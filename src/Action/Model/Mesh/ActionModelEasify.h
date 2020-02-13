@@ -10,6 +10,7 @@
 
 #include "../../ActionGroup.h"
 class DataModel;
+class ModelMesh;
 
 class ActionModelEasify: public ActionGroup
 {
@@ -21,8 +22,8 @@ public:
 
 private:
 	float factor;
-	void CalculateWeights(DataModel *m);
-	bool EasifyStep(DataModel *m);
+	void CalculateWeights(ModelMesh *m);
+	bool EasifyStep(ModelMesh *m);
 };
 
 #endif /* ACTIONMODELEASIFY_H_ */

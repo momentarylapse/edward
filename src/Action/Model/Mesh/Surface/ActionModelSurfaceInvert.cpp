@@ -7,6 +7,8 @@
 
 #include "ActionModelSurfaceInvert.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/ModelMesh.h"
+#include "../../../../Data/Model/ModelPolygon.h"
 #include <assert.h>
 
 ActionModelSurfaceInvert::ActionModelSurfaceInvert(const Set<int> &_poly, bool _consistent) {
@@ -22,7 +24,7 @@ void ActionModelSurfaceInvert::invert_polygons(DataModel *m) {
 
 	// flip polygons
 	for (int ti: poly) {
-		auto &t = m->polygon[ti];
+		auto &t = m->mesh->polygon[ti];
 		for (int k=0; k<t.side.num/2; k++) {
 			int kk = t.side.num - k - 1;
 
@@ -56,7 +58,7 @@ void ActionModelSurfaceInvert::invert_polygons(DataModel *m) {
 void ActionModelSurfaceInvert::invert_edges(DataModel *m) {
 	// flip edges
 	for (int ei: edges) {
-		auto &e = m->edge[ei];
+		auto &e = m->mesh->edge[ei];
 		// swap vertices
 		int v = e.vertex[0];
 		e.vertex[0] = e.vertex[1];
@@ -64,9 +66,9 @@ void ActionModelSurfaceInvert::invert_edges(DataModel *m) {
 
 		// relink sides
 		for (int k=0;k<e.ref_count;k++) {
-			if (e.side[k] < m->polygon[e.polygon[k]].side.num - 1)
-				e.side[k] = m->polygon[e.polygon[k]].side.num - 2 - e.side[k];
-			m->polygon[e.polygon[k]].side[e.side[k]].edge_direction = k;
+			if (e.side[k] < m->mesh->polygon[e.polygon[k]].side.num - 1)
+				e.side[k] = m->mesh->polygon[e.polygon[k]].side.num - 2 - e.side[k];
+			m->mesh->polygon[e.polygon[k]].side[e.side[k]].edge_direction = k;
 		}
 	}
 }

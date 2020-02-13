@@ -8,6 +8,7 @@
 #include "ActionModelAddPolygonWithSkinGenerator.h"
 #include "ActionModelAddPolygon.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/ModelMesh.h"
 #include "../../../../Data/Model/SkinGenerator.h"
 
 
@@ -25,7 +26,7 @@ void *ActionModelAddPolygonWithSkinGenerator::compose(Data *d)
 	Array<vector> sv;
 	for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 		for (int k=0;k<v.num;k++)
-			sv.add(sg.get(m->vertex[v[k]].pos, l));
+			sv.add(sg.get(m->mesh->vertex[v[k]].pos, l));
 
 	return addSubAction(new ActionModelAddPolygon(v, material, sv), m);
 }

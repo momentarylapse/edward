@@ -11,14 +11,12 @@
 #include "../../../ActionGroup.h"
 class DataModel;
 
-class ActionModelSurfaceAutoWeld : public ActionGroup
-{
+class ActionModelSurfaceAutoWeld : public ActionGroup {
 public:
 	ActionModelSurfaceAutoWeld(int _surface1, int _surface2, float _epsilon);
-	virtual ~ActionModelSurfaceAutoWeld(){}
-	string name(){	return "ModelSurfaceAutoWeld";	}
+	string name() override { return "ModelSurfaceAutoWeld"; }
 
-	void *compose(Data *d);
+	void *compose(Data *d) override;
 private:
 	int surface1, surface2;
 	float epsilon;

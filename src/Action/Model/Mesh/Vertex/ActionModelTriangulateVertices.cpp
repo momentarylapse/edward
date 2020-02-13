@@ -8,6 +8,8 @@
 #include "ActionModelTriangulateVertices.h"
 #include "../Polygon/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/ModelMesh.h"
+#include "../../../../Data/Model/ModelPolygon.h"
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 
@@ -15,7 +17,7 @@ ActionModelTriangulateVertices::ActionModelTriangulateVertices()
 {
 }
 
-static int find_rand_sel(DataModel *m)
+static int find_rand_sel(ModelMesh *m)
 {
 	foreachi(ModelVertex &v, m->vertex, i)
 		if (v.is_selected)
@@ -23,7 +25,7 @@ static int find_rand_sel(DataModel *m)
 	return -1;
 }
 
-static int find_closest_sel(DataModel *m, int i0)
+static int find_closest_sel(ModelMesh *m, int i0)
 {
 	float dmin = 0;
 	int imin = -1;
@@ -54,7 +56,7 @@ static float circum_radius(const vector &p1, const vector &p2, const vector &p3,
 	return (m - p1).length();//r;
 }
 
-static bool tria_ok(DataModel *m, int i0, int i1, int i2, float &r)
+static bool tria_ok(ModelMesh *m, int i0, int i1, int i2, float &r)
 {
 	vector cm;
 	r = circum_radius(m->vertex[i0].pos, m->vertex[i1].pos, m->vertex[i2].pos, cm);
@@ -71,11 +73,11 @@ static bool tria_ok(DataModel *m, int i0, int i1, int i2, float &r)
 	return true;
 }
 
-static int find_for_edge(DataModel *m, int i0, int i1, Set<int> used)
+static int find_for_edge(ModelMesh *m, int i0, int i1, Set<int> used)
 {
 	float rmin = 0;
 	int imin = -1;
-	foreachi(ModelVertex &v, m->vertex, i)
+	foreachi(auto &v, m->vertex, i)
 		if ((v.is_selected) && (!used.contains(i))){
 			float r;
 			if (!tria_ok(m, i0, i1, i, r))
@@ -131,10 +133,10 @@ void *ActionModelTriangulateVertices::compose(Data *d)
 	Set<int> used;
 	Array<int> boundary;
 
-	int i0 = find_rand_sel(m);
+	int i0 = find_rand_sel(m->mesh);
 	if (i0 < 0)
 		throw ActionException("no selected vertex found");
-	int i1 = find_closest_sel(m, i0);
+	int i1 = find_closest_sel(m->mesh, i0);
 	if (i1 < 0)
 		throw ActionException("no 2 selected vertices found");
 	used.add(i0);
@@ -142,7 +144,7 @@ void *ActionModelTriangulateVertices::compose(Data *d)
 	boundary.add(i0);
 	boundary.add(i1);
 	//msg_write("b:" + ia2s(boundary));
-	int i2 = find_for_edge(m, i0, i1, used);
+	int i2 = find_for_edge(m->mesh, i0, i1, used);
 	if (i2 < 0)
 		throw ActionException("no third selected vertex found");
 
@@ -154,7 +156,7 @@ void *ActionModelTriangulateVertices::compose(Data *d)
 		for (int i=0; i<boundary.num; i++){
 			i0 = boundary[i];
 			i1 = boundary[(i+1)%boundary.num];
-			int i2 = find_for_edge(m, i0, i1, used);
+			int i2 = find_for_edge(m->mesh, i0, i1, used);
 			//msg_write(i2);
 			if (i2 < 0)
 				continue;
@@ -169,7 +171,7 @@ void *ActionModelTriangulateVertices::compose(Data *d)
 			i1 = boundary[(i+1)%boundary.num];
 			i2 = boundary[(i+2)%boundary.num];
 			float r;
-			if (tria_ok(m, i0, i1, i2, r)){
+			if (tria_ok(m->mesh, i0, i1, i2, r)){
 				try{
 					add_tria2(d, i0, i1, i2, boundary);
 				}catch(...){

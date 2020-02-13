@@ -8,6 +8,7 @@
 #include "ActionModelAddPolygonAutoSkin.h"
 #include "ActionModelAddPolygonWithSkinGenerator.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/ModelMesh.h"
 #include "../../../../Data/Model/SkinGenerator.h"
 
 ActionModelAddPolygonAutoSkin::ActionModelAddPolygonAutoSkin(Array<int> &_vertex, int _material)
@@ -21,7 +22,7 @@ void *ActionModelAddPolygonAutoSkin::compose(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	SkinGenerator sg;
-	sg.init_point_cloud_boundary(m->vertex, vertex);
+	sg.init_point_cloud_boundary(m->mesh->vertex, vertex);
 
 	return addSubAction(new ActionModelAddPolygonWithSkinGenerator(vertex, material, sg), m);
 }

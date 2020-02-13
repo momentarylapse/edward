@@ -10,6 +10,8 @@
 #include "../Surface/Helper/ActionModelSurfaceAddPolygon.h"
 #include "../Vertex/ActionModelAddVertex.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/ModelMesh.h"
+#include "../../../../Data/Model/ModelPolygon.h"
 #include "../../../../Data/Model/SkinGenerator.h"
 
 ActionModelSplitPolygon::ActionModelSplitPolygon(int _polygon, const vector &_pos) :
@@ -21,21 +23,21 @@ ActionModelSplitPolygon::ActionModelSplitPolygon(int _polygon, const vector &_po
 void *ActionModelSplitPolygon::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	ModelPolygon &t = m->polygon[polygon];
+	ModelPolygon &t = m->mesh->polygon[polygon];
 
 	// old triangle data
 	ModelPolygon temp = t;
 
 	// skin interpolation
 	SkinGeneratorMulti sg;
-	sg.init_polygon(m->vertex, t);
+	sg.init_polygon(m->mesh->vertex, t);
 
 	// delete old triangle
 	addSubAction(new ActionModelSurfaceDeletePolygon(polygon), m);
 
 	// create new vertex
 	addSubAction(new ActionModelAddVertex(pos), m);
-	int new_vertex = m->vertex.num - 1;
+	int new_vertex = m->mesh->vertex.num - 1;
 
 	// create 3 new triangles
 	for (int k=0;k<temp.side.num;k++){

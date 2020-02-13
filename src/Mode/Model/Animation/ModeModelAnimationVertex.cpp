@@ -42,8 +42,8 @@ void ModeModelAnimationVertex::on_end()
 {
 	unsubscribe(data);
 	unsubscribe(multi_view);
-	data->showVertices(data->vertex);
-	mode_model_mesh->fill_selection_buffer(data->vertex);
+	data->showVertices(data->mesh->vertex);
+	mode_model_mesh->fill_selection_buffer(data->mesh->vertex);
 }
 
 void ModeModelAnimationVertex::on_command(const string& id)

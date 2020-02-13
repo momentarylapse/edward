@@ -9,6 +9,8 @@
 #include "../Polygon/Helper/ActionModelPolygonAddVertex.h"
 #include "../Vertex/ActionModelAddVertex.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/ModelMesh.h"
+#include "../../../../Data/Model/ModelPolygon.h"
 #include <assert.h>
 
 #if 0
@@ -34,7 +36,8 @@ ActionModelSplitEdge::ActionModelSplitEdge(int _edge, float _factor)
 
 void *ActionModelSplitEdge::compose(Data *d)
 {
-	DataModel *m = dynamic_cast<DataModel*>(d);
+	DataModel *mod = dynamic_cast<DataModel*>(d);
+	auto *m = mod->mesh;
 	assert(edge >= 0);
 	assert(edge < m->edge.num);
 
@@ -44,7 +47,7 @@ void *ActionModelSplitEdge::compose(Data *d)
 
 	// add vertex
 	vector pos = m->vertex[e.vertex[0]].pos * (1 - factor) + m->vertex[e.vertex[1]].pos * factor;
-	addSubAction(new ActionModelAddVertex(pos), m);
+	addSubAction(new ActionModelAddVertex(pos), mod);
 	int new_vertex = m->vertex.num - 1;
 
 
@@ -59,7 +62,7 @@ void *ActionModelSplitEdge::compose(Data *d)
 		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 			isv[l] = t.side[ee.side[i]].skin_vertex[l] * (1 - f) + t.side[(ee.side[i] + 1) % t.side.num].skin_vertex[l] * f;
 
-		addSubAction(new ActionModelPolygonAddVertex(poly, ee.side[i], new_vertex, isv), m);
+		addSubAction(new ActionModelPolygonAddVertex(poly, ee.side[i], new_vertex, isv), mod);
 	}
 	return NULL;
 }

@@ -7,6 +7,7 @@
 
 #include "ActionModelDeleteUnusedVertex.h"
 #include "../../../../../Data/Model/DataModel.h"
+#include "../../../../../Data/Model/ModelMesh.h"
 #include "../../../../../Edward.h"
 #include "../../../../../MultiView/MultiView.h"
 #include <assert.h>
@@ -19,20 +20,10 @@ ActionModelDeleteUnusedVertex::ActionModelDeleteUnusedVertex(int _vertex)
 	vertex = _vertex;
 }
 
-void ActionModelDeleteUnusedVertex::undo(Data *d)
-{
+void ActionModelDeleteUnusedVertex::undo(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	// new vertex
-	ModelVertex vv;
-	vv.pos = pos;
-	vv.normal_mode = normal_mode;
-	vv.bone_index = bone;
-	vv.is_selected = false;
-	vv.is_special = false;
-	vv.view_stage = ed->multi_view_3d->view_stage;
-	vv.ref_count = 0;
-	m->vertex.insert(vv, vertex);
+	m->mesh->add_vertex(pos, bone, normal_mode, vertex);
 
 	// correct animations
 	int i = 0;
@@ -42,16 +33,6 @@ void ActionModelDeleteUnusedVertex::undo(Data *d)
 				f.vertex_dpos.insert(move[i ++], vertex);
 		}
 
-
-	// correct references
-	for (ModelPolygon &t: m->polygon)
-		for (int k=0;k<t.side.num;k++)
-			if (t.side[k].vertex >= vertex)
-				t.side[k].vertex ++;
-	for (ModelEdge &e: m->edge)
-		for (int k=0;k<2;k++)
-			if (e.vertex[k] >= vertex)
-				e.vertex[k] ++;
 
 	// fx
 	for (ModelEffect &f: m->fx)
@@ -63,50 +44,41 @@ void ActionModelDeleteUnusedVertex::undo(Data *d)
 
 
 
-void *ActionModelDeleteUnusedVertex::execute(Data *d)
-{
+void *ActionModelDeleteUnusedVertex::execute(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	assert(m->vertex[vertex].ref_count == 0);
+	auto &v = m->mesh->vertex[vertex];
+	assert(v.ref_count == 0);
 
 	// save old data
-	pos = m->vertex[vertex].pos;
-	normal_mode = m->vertex[vertex].normal_mode;
-	bone = m->vertex[vertex].bone_index;
+	pos = v.pos;
+	normal_mode = v.normal_mode;
+	bone = v.bone_index;
 
 	// move data
 	move.clear();
 	for (ModelMove &mv: m->move)
-		if (mv.type == MOVE_TYPE_VERTEX){
-			for (ModelFrame &f: mv.frame){
+		if (mv.type == MOVE_TYPE_VERTEX) {
+			for (ModelFrame &f: mv.frame) {
 				move.add(f.vertex_dpos[vertex]);
 				f.vertex_dpos.erase(vertex);
 			}
 		}
 
-	// correct references
-	for (ModelPolygon &t: m->polygon)
-		for (int k=0;k<t.side.num;k++)
-			if (t.side[k].vertex > vertex)
-				t.side[k].vertex --;
-	for (ModelEdge &e: m->edge)
-		for (int k=0;k<2;k++)
-			if (e.vertex[k] > vertex)
-				e.vertex[k] --;
-
 	// fx
 	fx.clear();
 	fx_index.clear();
 	foreachib(ModelEffect &f, m->fx, i)
-		if (f.vertex == vertex){
+		if (f.vertex == vertex) {
 			fx.add(f);
 			fx_index.add(i);
 			m->fx.erase(i);
 			_foreach_it_.update(); // TODO
-		}else if (f.vertex > vertex)
+		} else if (f.vertex > vertex) {
 			f.vertex --;
+		}
 
 	// erase
-	m->vertex.erase(vertex);
+	m->mesh->remove_lonely_vertex(vertex);
 	return NULL;
 }
 

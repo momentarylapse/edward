@@ -6,11 +6,12 @@
  */
 
 #include "ActionModelAddEffects.h"
+#include "../../../../Data/Model/ModelMesh.h"
 
 ActionModelAddEffects::ActionModelAddEffects(DataModel *m, const ModelEffect& _effect)
 {
 	effect = _effect;
-	foreachi(ModelVertex &v, m->vertex, i)
+	foreachi(ModelVertex &v, m->mesh->vertex, i)
 		if (v.is_selected)
 			vertex.add(i);
 }

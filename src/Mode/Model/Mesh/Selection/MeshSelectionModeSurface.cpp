@@ -10,7 +10,6 @@
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../lib/nix/nix.h"
-#include "../../../../Data/Model/ModelSurface.h"
 #include "../ModeModelMesh.h"
 #include "MeshSelectionModePolygon.h"
 #include "../../ModeModel.h"
@@ -24,10 +23,10 @@ MeshSelectionModeSurface::MeshSelectionModeSurface(ModeModelMesh *_parent) :
 void expand_sel_to_surfaces(DataModel *m) {
 	while (true) {
 		bool changed = false;
-		for (auto &e: m->edge)
-			if (m->vertex[e.vertex[0]].is_selected != m->vertex[e.vertex[1]].is_selected) {
-				m->vertex[e.vertex[0]].is_selected = true;
-				m->vertex[e.vertex[1]].is_selected = true;
+		for (auto &e: m->mesh->edge)
+			if (m->mesh->vertex[e.vertex[0]].is_selected != m->mesh->vertex[e.vertex[1]].is_selected) {
+				m->mesh->vertex[e.vertex[0]].is_selected = true;
+				m->mesh->vertex[e.vertex[1]].is_selected = true;
 				changed = true;
 			}
 		if (!changed)
@@ -46,7 +45,7 @@ void MeshSelectionModeSurface::update_multi_view() {
 	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	multi_view->add_data(	MVD_MODEL_POLYGON,
-			data->polygon,
+			data->mesh->polygon,
 			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 }
@@ -57,7 +56,7 @@ void MeshSelectionModeSurface::on_draw_win(MultiView::Window *win) {
 
 	parent->vb_hover->clear();
 
-	auto &p = data->polygon[multi_view->hover.index];
+	auto &p = data->mesh->polygon[multi_view->hover.index];
 	p.addToVertexBuffer(data->show_vertices, parent->vb_hover, 1);
 	/*ModelSurface &s = data->surface[multi_view->hover.index];
 	for (ModelPolygon &p: s.polygon)
@@ -77,20 +76,6 @@ void MeshSelectionModeSurface::on_draw_win(MultiView::Window *win) {
 
 
 void MeshSelectionModeSurface::on_end() {
-}
-
-bool ModelSurface::hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data) {
-	for (int i=0;i<polygon.num;i++)
-		if (polygon[i].hover(win, m, tp, z, user_data))
-			return true;
-	return false;
-}
-
-bool ModelSurface::inRect(MultiView::Window *win, rect &r, void *user_data) {
-	for (int i=0;i<polygon.num;i++)
-		if (polygon[i].inRect(win, r, user_data))
-			return true;
-	return false;
 }
 
 

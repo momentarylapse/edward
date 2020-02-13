@@ -155,15 +155,15 @@ void ModeModelAnimation::set_current_frame_previous() {
 }
 
 void ModeModelAnimation::update_animation() {
-	vertex.resize(data->vertex.num);
-	foreachi(ModelVertex &v, data->vertex, i) {
+	vertex.resize(data->mesh->vertex.num);
+	foreachi(auto &v, data->mesh->vertex, i) {
 		vertex[i].view_stage = v.view_stage;
 		vertex[i].is_selected = v.is_selected;
 	}
 
 	if (cur_move()->type == MOVE_TYPE_SKELETAL) {
 		update_skeleton();
-		foreachi(ModelVertex &v, data->vertex, i){
+		foreachi(auto &v, data->mesh->vertex, i){
 			if (v.bone_index >= data->bone.num) {
 				vertex[i].pos = v.pos;
 			} else {
@@ -172,11 +172,11 @@ void ModeModelAnimation::update_animation() {
 			}
 		}
 	} else if (cur_move()->type == MOVE_TYPE_VERTEX) {
-		ModelFrame f = get_interpolation();
-		foreachi(ModelVertex &v, data->vertex, i)
+		auto f = get_interpolation();
+		foreachi(auto &v, data->mesh->vertex, i)
 			vertex[i].pos = v.pos + f.vertex_dpos[i];
 	} else {
-		vertex = data->vertex;
+		vertex = data->mesh->vertex;
 	}
 
 
@@ -193,9 +193,9 @@ void ModeModelAnimation::update_skeleton() {
 	if (cur_move()->type != MOVE_TYPE_SKELETAL) {
 		return;
 	}
-	ModelFrame f = get_interpolation();
+	auto f = get_interpolation();
 
-	foreachi(ModelBone &b, data->bone, i) {
+	foreachi(auto &b, data->bone, i) {
 		if (b.parent < 0) {
 			bone[i].pos = b.pos + f.skel_dpos[i];
 		} else {

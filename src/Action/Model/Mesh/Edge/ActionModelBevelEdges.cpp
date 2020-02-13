@@ -12,6 +12,7 @@
 #include "../Surface/Helper/ActionModelSurfaceAddPolygon.h"
 #include "../Polygon/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/ModelMesh.h"
 #include "../../../../Data/Model/SkinGenerator.h"
 #include "../../../../lib/base/map.h"
 #include "../../../../Mode/Model/Mesh/ModeModelMesh.h"
@@ -26,7 +27,7 @@ void *ActionModelBevelEdges::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	bevelSurface(m);
+	bevelSurface(m->mesh);
 	return NULL;
 }
 
@@ -90,7 +91,7 @@ struct PolygonRelink
 	}
 };
 
-int get_next_edge(DataModel *m, int edge, int ek, int dir, int &next_dir)
+int get_next_edge(ModelMesh *m, int edge, int ek, int dir, int &next_dir)
 {
 	ModelEdge &e = m->edge[edge];
 	if (e.ref_count < 2)
@@ -106,7 +107,7 @@ void ActionModelBevelEdges::build_vertices(Array<VertexToCome> &vv, DataModel *m
 {
 	for (VertexToCome &v: vv)
 		if (v.ref_count > 0){
-			v.v = m->vertex.num;
+			v.v = m->mesh->vertex.num;
 			addSubAction(new ActionModelAddVertex(v.pos, v.bone), m);
 		}
 }
@@ -118,7 +119,7 @@ void ActionModelBevelEdges::do_poly_relink(ModelPolygon &p, PolygonRelink &r, in
 	Array<vector> sv;
 
 	SkinGeneratorMulti sg;
-	sg.init_polygon(m->vertex, p);
+	sg.init_polygon(m->mesh->vertex, p);
 
 	//msg_write("r!");
 	for (int k=0;k<p.side.num;k++){
@@ -160,8 +161,7 @@ void ActionModelBevelEdges::do_poly_relink(ModelPolygon &p, PolygonRelink &r, in
 static Array<VertexToCome> ev[2];
 static Array<Array<VertexToCome> > pv;
 
-void add_edge_neighbour(DataModel *s, ModelEdge &e, int k, int dir, PolygonToCome &pp)
-{
+void add_edge_neighbour(ModelMesh *s, ModelEdge &e, int k, int dir, PolygonToCome &pp) {
 	ModelPolygon &p = s->polygon[e.polygon[k]];
 	int nei_side = (e.side[k] + p.side.num + 2*dir - 1) % p.side.num;
 	int nei = p.side[nei_side].edge;
@@ -172,7 +172,7 @@ void add_edge_neighbour(DataModel *s, ModelEdge &e, int k, int dir, PolygonToCom
 	}
 }
 
-void ActionModelBevelEdges::bevelSurface(DataModel *m)
+void ActionModelBevelEdges::bevelSurface(ModelMesh *m)
 {
 	// seems a bit wasteful...
 	ev[0].resize(m->edge.num);
@@ -314,15 +314,15 @@ void ActionModelBevelEdges::bevelSurface(DataModel *m)
 	}
 
 	// really build stuff
-	build_vertices(ev[0], m);
-	build_vertices(ev[1], m);
+	build_vertices(ev[0], m->model);
+	build_vertices(ev[1], m->model);
 	for (Array<VertexToCome> &vv: pv)
-		build_vertices(vv, m);
+		build_vertices(vv, m->model);
 
 	// relink
 	foreachi(PolygonRelink &r, pr, i)
 		if (r.v.num > 0)
-			do_poly_relink(m->polygon[i], r, i, m);
+			do_poly_relink(m->polygon[i], r, i, m->model);
 
 	// new polygons
 	for (PolygonToCome &p: new_poly){
@@ -330,12 +330,12 @@ void ActionModelBevelEdges::bevelSurface(DataModel *m)
 		for (int k=0;k<p.v.num;k++)
 			v.add(p.v[k]->v);
 		//msg_write(ia2s(v));
-		addSubAction(new ActionModelAddPolygonAutoSkin(v, mode_model_mesh->current_material), m);
+		addSubAction(new ActionModelAddPolygonAutoSkin(v, mode_model_mesh->current_material), m->model);
 	}
 
 	// remove obsolete vertices
 	foreachb(int v, obsolete_vertex)
-		addSubAction(new ActionModelDeleteUnusedVertex(v), m);
+		addSubAction(new ActionModelDeleteUnusedVertex(v), m->model);
 
 	ev[0].clear();
 	ev[1].clear();

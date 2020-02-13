@@ -10,9 +10,9 @@
 
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/ModelSelection.h"
 
-class ModeModelMeshBevelEdges: public ModeCreation<DataModel>
-{
+class ModeModelMeshBevelEdges: public ModeCreation<DataModel> {
 public:
 	ModeModelMeshBevelEdges(ModeBase *_parent);
 
@@ -27,7 +27,7 @@ public:
 private:
 	float radius;
 	float rad_max;
-	ModelSelectionState selection;
+	ModelSelection selection;
 };
 
 #endif /* MODEMODELMESHBEVELEDGES_H_ */

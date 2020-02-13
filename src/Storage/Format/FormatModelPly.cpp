@@ -7,6 +7,9 @@
 
 #include "FormatModelPly.h"
 #include "../../Edward.h"
+#include "../../Data/Model/DataModel.h"
+#include "../../Data/Model/ModelMesh.h"
+#include "../../Data/Model/ModelPolygon.h"
 
 FormatModelPly::FormatModelPly() : TypedFormat<DataModel>(FD_MODEL, "ply", _("Model ply"), Flag::READ) {
 }
@@ -59,15 +62,15 @@ void FormatModelPly::_load(const string &filename, DataModel *m, bool deep) {
 
 	for (auto &e: elements) {
 		if (e.name == "vertex") {
-			m->vertex.resize(e.num);
+			m->mesh->vertex.resize(e.num);
 			for (int i=0; i<e.num; i++) {
 				string t = f->read_str();
 				auto tt = t.explode(" ");
 				if (tt.num < 3)
 					continue;
-				m->vertex[i].pos.x = tt[0]._float();
-				m->vertex[i].pos.y = tt[1]._float();
-				m->vertex[i].pos.z = tt[2]._float();
+				m->mesh->vertex[i].pos.x = tt[0]._float();
+				m->mesh->vertex[i].pos.y = tt[1]._float();
+				m->mesh->vertex[i].pos.z = tt[2]._float();
 			}
 		} else if (e.name == "face") {
 

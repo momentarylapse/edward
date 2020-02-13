@@ -101,7 +101,7 @@ void ModeModelMeshCreateCylinder::on_left_button_up() {
 			c.index[1] = data->skin[0].vertex.num + 1;
 			c.radius = radius;
 			c.round = dialog->is_checked("round");
-			data->cylinder.add(c);
+			data->phys_mesh->cylinder.add(c);
 
 			data->skin[0].vertex.add(ModelVertex(pos[0]));
 			data->skin[0].vertex.add(ModelVertex(pos[1]));

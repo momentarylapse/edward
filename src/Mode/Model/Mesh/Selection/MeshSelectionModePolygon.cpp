@@ -32,7 +32,7 @@ void MeshSelectionModePolygon::on_draw_win(MultiView::Window *win)
 	parent->vb_hover->clear();
 
 
-	auto &p = data->polygon[multi_view->hover.index];
+	auto &p = data->mesh->polygon[multi_view->hover.index];
 	p.addToVertexBuffer(data->show_vertices, parent->vb_hover, 1);
 
 	nix::SetWire(false);
@@ -134,7 +134,7 @@ void MeshSelectionModePolygon::update_multi_view() {
 	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	multi_view->add_data(	MVD_MODEL_POLYGON,
-			data->polygon,
+			data->mesh->polygon,
 			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 }

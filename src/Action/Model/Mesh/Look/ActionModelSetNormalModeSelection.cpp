@@ -7,11 +7,13 @@
 
 #include "ActionModelSetNormalModeSelection.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/ModelMesh.h"
+#include "../../../../Data/Model/ModelPolygon.h"
 
 ActionModelSetNormalModeSelection::ActionModelSetNormalModeSelection(DataModel *m, int _mode)
 {
 	mode = _mode;
-	foreachi(ModelVertex &v, m->vertex, i)
+	foreachi(ModelVertex &v, m->mesh->vertex, i)
 		if (v.is_selected)
 			index.add(i);
 }
@@ -27,8 +29,8 @@ void *ActionModelSetNormalModeSelection::execute(Data *d)
 	// per vertex
 	old_mode.clear();
 	for (int i: index){
-		old_mode.add(m->vertex[i].normal_mode);
-		m->vertex[i].normal_mode = mode;
+		old_mode.add(m->mesh->vertex[i].normal_mode);
+		m->mesh->vertex[i].normal_mode = mode;
 	}
 	m->setNormalsDirtyByVertices(index);
 
@@ -43,7 +45,7 @@ void ActionModelSetNormalModeSelection::undo(Data *d)
 
 	// per vertex
 	foreachi(int i, index, ii)
-		m->vertex[i].normal_mode = old_mode[ii];
+		m->mesh->vertex[i].normal_mode = old_mode[ii];
 
 	m->setNormalsDirtyByVertices(index);
 }

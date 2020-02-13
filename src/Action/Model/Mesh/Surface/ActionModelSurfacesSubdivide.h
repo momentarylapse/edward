@@ -12,16 +12,16 @@
 #include "../../../../lib/math/math.h"
 class DataModel;
 class ModelSurface;
-class ModelSelectionState;
+class ModelSelection;
 
 class ActionModelSurfacesSubdivide : public ActionGroup {
 public:
-	ActionModelSurfacesSubdivide(const ModelSelectionState &sel);
+	ActionModelSurfacesSubdivide(const ModelSelection &sel);
 	string name() override { return "ModelSurfacesSubdivide"; }
 
 	void *compose(Data *d) override;
 private:
-	const ModelSelectionState &sel;
+	const ModelSelection &sel;
 };
 
 #endif /* ACTIONMODELSURFACESSUBDIVIDE_H_ */

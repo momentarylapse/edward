@@ -7,11 +7,12 @@
 
 #include "ActionModelFlattenVertices.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/ModelMesh.h"
 #include <assert.h>
 
 ActionModelFlattenVertices::ActionModelFlattenVertices(DataModel* m)
 {
-	foreachi(ModelVertex &v, m->vertex, i)
+	foreachi(ModelVertex &v, m->mesh->vertex, i)
 		if (v.is_selected){
 			index.add(i);
 			old_pos.add(v.pos);
@@ -77,11 +78,11 @@ void* ActionModelFlattenVertices::execute(Data* d)
 	plane pl;
 
 	for (int i: index)
-		cloud.add(m->vertex[i].pos);
+		cloud.add(m->mesh->vertex[i].pos);
 	PlaneFromPointCloud(pl, cloud);
 
 	for (int i: index)
-		m->vertex[i].pos -= pl.distance(m->vertex[i].pos) * pl.n;
+		m->mesh->vertex[i].pos -= pl.distance(m->mesh->vertex[i].pos) * pl.n;
 
 	m->setNormalsDirtyByVertices(index);
 	return NULL;
@@ -92,7 +93,7 @@ void ActionModelFlattenVertices::undo(Data* d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	foreachi(int i, index, ii)
-		m->vertex[i].pos = old_pos[ii];
+		m->mesh->vertex[i].pos = old_pos[ii];
 
 	m->setNormalsDirtyByVertices(index);
 }

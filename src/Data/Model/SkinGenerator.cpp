@@ -10,7 +10,8 @@
 #include "../../MultiView/MultiView.h"
 #include "../../MultiView/Window.h"
 #include "../../lib/nix/nix.h"
-#include "../../Data/Model/DataModel.h"
+#include "../../Data/Model/ModelMesh.h"
+#include "../../Data/Model/ModelPolygon.h"
 
 SkinGenerator::SkinGenerator()
 {

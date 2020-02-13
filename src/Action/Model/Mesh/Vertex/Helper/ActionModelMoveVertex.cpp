@@ -7,24 +7,21 @@
 
 #include "ActionModelMoveVertex.h"
 #include "../../../../../Data/Model/DataModel.h"
+#include "../../../../../Data/Model/ModelMesh.h"
+#include "../../../../../Data/Model/ModelPolygon.h"
 #include <assert.h>
 
-ActionModelMoveVertex::ActionModelMoveVertex(int _vertex, const vector &_pos)
-{
+ActionModelMoveVertex::ActionModelMoveVertex(int _vertex, const vector &_pos) {
 	vertex = _vertex;
 	pos = _pos;
 }
 
-void *ActionModelMoveVertex::execute(Data *d)
-{
+void *ActionModelMoveVertex::execute(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	vector temp = m->vertex[vertex].pos;
-	m->vertex[vertex].pos = pos;
-	pos = temp;
+	std::swap(m->mesh->vertex[vertex].pos, pos);
 	return NULL;
 }
 
-void ActionModelMoveVertex::undo(Data *d)
-{
+void ActionModelMoveVertex::undo(Data *d) {
 	execute(d);
 }

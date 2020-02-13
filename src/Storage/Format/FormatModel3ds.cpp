@@ -7,6 +7,9 @@
 
 #include "FormatModel3ds.h"
 #include "../../Edward.h"
+#include "../../Data/Model/DataModel.h"
+#include "../../Data/Model/ModelMesh.h"
+#include "../../Data/Model/ModelPolygon.h"
 
 FormatModel3ds::FormatModel3ds() : TypedFormat<DataModel>(FD_MODEL, "3ds", _("Model 3ds"), Flag::READ) {
 }

@@ -189,7 +189,7 @@ void ModelMaterialDialog::fill_material_list() {
 	reset("material_list");
 	for (int i=0;i<data->material.num;i++) {
 		int nt = 0;
-		for (ModelPolygon &t: data->polygon)
+		for (auto &t: data->mesh->polygon)
 			if (t.material == i)
 				nt ++;
 		string im = render_material(data->material[i]);

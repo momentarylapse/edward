@@ -13,7 +13,13 @@
 #include "../MultiView/ActionController.h"
 #include "../MultiView/Window.h"
 #include "../Mode/Model/ModeModel.h"
+#include "../Mode/Model/ModeModel.h"
 #include "../Mode/World/ModeWorld.h"
+#include "../Data/Model/DataModel.h"
+#include "../Data/Model/ModelMesh.h"
+#include "../Data/Model/ModelPolygon.h"
+#include "../Data/Model/ModelSelection.h"
+#include "../Data/Model/ModelMaterial.h"
 #include "../Data/Model/Geometry/GeometryBall.h"
 #include "../Data/Model/Geometry/GeometryCube.h"
 #include "../Data/Model/Geometry/GeometryCylinder.h"
@@ -170,16 +176,22 @@ void PluginManager::init() {
 	Kaba::declare_class_element("ModelFrame.dpos", &ModelFrame::skin);
 	Kaba::declare_class_element("ModelFrame.vertex_dpos", &ModelFrame::vertex_dpos);
 
+
+	Kaba::declare_class_size("ModelMesh", sizeof(ModelMesh));
+	Kaba::declare_class_element("ModelMesh.vertex", &ModelMesh::vertex);
+	Kaba::declare_class_element("ModelMesh.polygon", &ModelMesh::polygon);
+	Kaba::declare_class_element("ModelMesh.edge", &ModelMesh::edge);
+	Kaba::declare_class_element("ModelMesh.ball", &ModelMesh::ball);
+	Kaba::declare_class_element("ModelMesh.cylinder", &ModelMesh::cylinder);
+
 	Kaba::declare_class_size("DataModel", sizeof(DataModel));
 	Kaba::declare_class_element("DataModel.bone", &DataModel::bone);
 	Kaba::declare_class_element("DataModel.move", &DataModel::move);
 	//Kaba::declare_class_element("DataModel.move", &DataModel::move);
 	//Kaba::declare_class_element("DataModel.CurrentMove", &DataModel::CurrentMove);
 	//Kaba::declare_class_element("DataModel.CurrentFrame", &DataModel::CurrentFrame);
-	Kaba::declare_class_element("DataModel.vertex", &DataModel::vertex);
-	Kaba::declare_class_element("DataModel.polygon", &DataModel::polygon);
-	Kaba::declare_class_element("DataModel.ball", &DataModel::ball);
-	Kaba::declare_class_element("DataModel.polyhedron", &DataModel::polyhedron);
+	Kaba::declare_class_element("DataModel.mesh", &DataModel::mesh);
+	Kaba::declare_class_element("DataModel.phys_mesh", &DataModel::phys_mesh);
 	Kaba::declare_class_element("DataModel.material", &DataModel::material);
 	Kaba::declare_class_element("DataModel.fx", &DataModel::fx);
 	Kaba::declare_class_element("DataModel.meta_data", &DataModel::meta_data);

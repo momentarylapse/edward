@@ -11,17 +11,20 @@
 #include "../Vertex/ActionModelAddVertex.h"
 #include "../Vertex/Helper/ActionModelMoveVertex.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/ModelMesh.h"
+#include "../../../../Data/Model/ModelPolygon.h"
+#include "../../../../Data/Model/ModelSelection.h"
 
-bool selection_consistent_surfaces(const ModelSelectionState &s, DataModel *m);
 
-ActionModelSurfacesSubdivide::ActionModelSurfacesSubdivide(const ModelSelectionState &s) :
+ActionModelSurfacesSubdivide::ActionModelSurfacesSubdivide(const ModelSelection &s) :
 	sel(s)
 {
 }
 
 void *ActionModelSurfacesSubdivide::compose(Data *d) {
-	auto m = dynamic_cast<DataModel*>(d);
-	if (!selection_consistent_surfaces(sel, m))
+	auto mod = dynamic_cast<DataModel*>(d);
+	auto m = mod->mesh;
+	if (!sel.consistent_surfaces(m))
 		throw ActionException("surface selection inconsistent");
 
 	// new polygon vertices
@@ -34,7 +37,7 @@ void *ActionModelSurfacesSubdivide::compose(Data *d) {
 			pos += m->vertex[p.side[k].vertex].pos;
 		pos /= p.side.num;
 		new_poly_vert.add(pos);
-		addSubAction(new ActionModelAddVertex(pos), m);
+		addSubAction(new ActionModelAddVertex(pos), mod);
 	}
 
 	// new edge vertices
@@ -47,7 +50,7 @@ void *ActionModelSurfacesSubdivide::compose(Data *d) {
 		for (int k=0; k<e.ref_count; k++)
 			pos += new_poly_vert[e.polygon[k]];
 		pos /= 2 + e.ref_count;
-		addSubAction(new ActionModelAddVertex(pos), m);
+		addSubAction(new ActionModelAddVertex(pos), mod);
 	}
 
 	// move old vertices
@@ -63,7 +66,7 @@ void *ActionModelSurfacesSubdivide::compose(Data *d) {
 				}
 		R /= n;
 		F /= n;
-		addSubAction(new ActionModelMoveVertex(v, (F + 2*R + (n-3) * P) / n), m);
+		addSubAction(new ActionModelMoveVertex(v, (F + 2*R + (n-3) * P) / n), mod);
 	}
 
 	// subdivide polygons
@@ -105,10 +108,10 @@ void *ActionModelSurfacesSubdivide::compose(Data *d) {
 	}
 
 	for (int i=sel.polygon.num-1; i>=0; i--)
-		addSubAction(new ActionModelSurfaceDeletePolygon(sel.polygon[i]), m);
+		addSubAction(new ActionModelSurfaceDeletePolygon(sel.polygon[i]), mod);
 
 	for (int i=0; i<nv.num; i++)
-		addSubAction(new ActionModelSurfaceAddPolygon(nv[i], nmat[i], nsv[i]), m);
+		addSubAction(new ActionModelSurfaceAddPolygon(nv[i], nmat[i], nsv[i]), mod);
 
 
 	return NULL;

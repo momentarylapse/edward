@@ -10,16 +10,18 @@
 #include "Vertex/Helper/ActionModelDeleteUnusedVertex.h"
 #include "Surface/Helper/ActionModelDeleteEmptySurface.h"
 #include "../../../Data/Model/DataModel.h"
+#include "../../../Data/Model/ModelMesh.h"
+#include "../../../Data/Model/ModelPolygon.h"
+#include "../../../Data/Model/ModelSelection.h"
 
-ActionModelDeleteSelection::ActionModelDeleteSelection(const ModelSelectionState &s, bool _greedy) : sel(s)
-{
+ActionModelDeleteSelection::ActionModelDeleteSelection(const ModelSelection &s, bool _greedy) : sel(s) {
 	greedy = _greedy;
 }
 
 void *ActionModelDeleteSelection::compose(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-		foreachib(ModelPolygon &t, m->polygon, ti) {
+		foreachib(ModelPolygon &t, m->mesh->polygon, ti) {
 			bool del = false;
 			if (greedy) {
 				for (int k=0;k<t.side.num;k++)
@@ -33,7 +35,7 @@ void *ActionModelDeleteSelection::compose(Data *d) {
 		}
 
 		foreachb (int i, sel.vertex)
-			if (m->vertex[i].ref_count == 0) {
+			if (m->mesh->vertex[i].ref_count == 0) {
 				addSubAction(new ActionModelDeleteUnusedVertex(i), m);
 			}
 

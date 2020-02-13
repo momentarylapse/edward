@@ -11,8 +11,7 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelMeshCreatePolygon: public ModeCreation<DataModel>
-{
+class ModeModelMeshCreatePolygon: public ModeCreation<DataModel> {
 public:
 	ModeModelMeshCreatePolygon(ModeBase *parent);
 

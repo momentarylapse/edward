@@ -9,6 +9,8 @@
 #include "ActionModelSurfaceDeletePolygon.h"
 #include "ActionModelSurfaceAddPolygon.h"
 #include "../../../../../Data/Model/DataModel.h"
+#include "../../../../../Data/Model/ModelMesh.h"
+#include "../../../../../Data/Model/ModelPolygon.h"
 #include <assert.h>
 
 ActionModelSurfaceRelinkPolygon::ActionModelSurfaceRelinkPolygon(int _polygon, Array<int> &_v) :
@@ -22,7 +24,7 @@ void *ActionModelSurfaceRelinkPolygon::compose(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	// old triangle data
-	ModelPolygon &t = m->polygon[polygon];
+	ModelPolygon &t = m->mesh->polygon[polygon];
 	assert(v.num == t.side.num);
 	int material = t.material;
 	Array<vector> sv = t.getSkinVertices();

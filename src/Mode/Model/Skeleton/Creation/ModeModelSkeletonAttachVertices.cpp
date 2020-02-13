@@ -9,6 +9,7 @@
 #include "../../ModeModel.h"
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
+#include "../../../../Data/Model/ModelMesh.h"
 #include "../../Mesh/Selection/MeshSelectionModePolygon.h"
 
 ModeModelSkeletonAttachVertices::ModeModelSkeletonAttachVertices(ModeBase* _parent, int _bone_index) :
@@ -21,7 +22,7 @@ ModeModelSkeletonAttachVertices::ModeModelSkeletonAttachVertices(ModeBase* _pare
 void ModeModelSkeletonAttachVertices::on_start()
 {
 	// relative to absolute pos
-	for (ModelVertex &v: data->vertex)
+	for (auto &v: data->mesh->vertex)
 		v.is_selected = (v.bone_index == bone_index);
 	data->selectionFromVertices();
 
@@ -53,7 +54,7 @@ void ModeModelSkeletonAttachVertices::on_update(Observable *o, const string &mes
 		mode_model_mesh->selection_mode->update_multi_view();
 	}else if (o == multi_view){
 		mode_model_mesh->selection_mode->update_selection();
-		mode_model_mesh->fill_selection_buffer(data->vertex);
+		mode_model_mesh->fill_selection_buffer(data->mesh->vertex);
 	}
 }
 
@@ -61,7 +62,7 @@ void ModeModelSkeletonAttachVertices::on_command(const string &id)
 {
 	if (id == "finish-action"){
 		Array<int> index;
-		foreachi(ModelVertex &v, data->vertex, i)
+		foreachi(auto &v, data->mesh->vertex, i)
 			if (v.is_selected)
 				index.add(i);
 		data->boneAttachVertices(bone_index, index);

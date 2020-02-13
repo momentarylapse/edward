@@ -8,6 +8,8 @@
 #include "LightmapData.h"
 #include "../../../Data/World/DataWorld.h"
 #include "../../../Data/Model/DataModel.h"
+#include "../../../Data/Model/ModelMesh.h"
+#include "../../../Data/Model/ModelPolygon.h"
 #include "../../../x/object.h"
 #include "../../../x/model_manager.h"
 #include "../../../x/terrain.h"
@@ -167,9 +169,9 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 	mod.new_name = format("Lightmap/%s/%s_%d", world_name_small.c_str(), mod.orig_name.c_str(), mod.id);
 
 	m->updateNormals();
-	foreachi(ModelPolygon &p, m->polygon, i){
+	foreachi(auto &p, m->mesh->polygon, i){
 		if (p.triangulation_dirty)
-			p.updateTriangulation(m->vertex);
+			p.updateTriangulation(m->mesh->vertex);
 		for (int k=0;k<p.side.num-2;k++){
 			Triangle t;
 			t.mod_id = mod.id;
@@ -178,7 +180,7 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 			t.side = k;
 			for (int l=0;l<3;l++){
 				int n = p.side[k].triangulation[l];
-				t.v[l] = mat * m->vertex[p.side[n].vertex].pos;
+				t.v[l] = mat * m->mesh->vertex[p.side[n].vertex].pos;
 				t.n[l] = mat.transform_normal(p.side[n].normal);
 			}
 			update_tria(t);
@@ -196,7 +198,7 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 			msg_write("......fx light");
 			Light l;
 			l.Directional = false;
-			l.Pos = mat * m->vertex[fx.vertex].pos;
+			l.Pos = mat * m->mesh->vertex[fx.vertex].pos;
 			l.Radius = fx.size;
 			l.Ambient = fx.colors[0];
 			l.Diffuse = fx.colors[1];
@@ -330,8 +332,8 @@ void LightmapData::CreateVertices()
 		int h = m.tex_height;
 
 		for (int i=m.offset;i<m.offset + m.num_trias;i++){
-			LightmapData::Triangle &t = Trias[i];
-			ModelPolygon &p = m.orig->polygon[t.poly];
+			auto &t = Trias[i];
+			auto &p = m.orig->mesh->polygon[t.poly];
 			for (int k=0;k<3;k++){
 				int si = p.side[t.side].triangulation[k];
 				t.sv[k] = p.side[si].skin_vertex[1];

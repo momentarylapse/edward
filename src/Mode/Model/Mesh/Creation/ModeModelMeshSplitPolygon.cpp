@@ -65,10 +65,10 @@ void ModeModelMeshSplitPolygon::on_draw_win(MultiView::Window *win)
 	if (triangle >= 0) {
 		vector pp = win->project(pos);
 		pp.z = 0;
-		ModelPolygon &poly = data->polygon[triangle];
+		auto &poly = data->mesh->polygon[triangle];
 		Array<vector> v, p;
 		for (int k=0;k<poly.side.num;k++){
-			v.add(data->vertex[poly.side[k].vertex].pos);
+			v.add(data->mesh->vertex[poly.side[k].vertex].pos);
 			p.add(win->project(v[k]));
 			p.back().z = 0;
 		}

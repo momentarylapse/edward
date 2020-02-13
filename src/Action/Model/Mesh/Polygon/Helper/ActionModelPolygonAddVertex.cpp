@@ -7,6 +7,8 @@
 
 #include "ActionModelPolygonAddVertex.h"
 #include "../../../../../Data/Model/DataModel.h"
+#include "../../../../../Data/Model/ModelMesh.h"
+#include "../../../../../Data/Model/ModelPolygon.h"
 #include "../../Surface/Helper/ActionModelSurfaceDeletePolygon.h"
 #include "../../Surface/Helper/ActionModelSurfaceAddPolygon.h"
 
@@ -20,7 +22,7 @@ ActionModelPolygonAddVertex::ActionModelPolygonAddVertex(int _poly, int _side, i
 
 void* ActionModelPolygonAddVertex::compose(Data* d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	ModelPolygon &t = m->polygon[poly];
+	ModelPolygon &t = m->mesh->polygon[poly];
 
 
 	// save old polygon data

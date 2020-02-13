@@ -9,7 +9,6 @@
 #include "Helper/ActionModelJoinSurfaces.h"
 #include "../Vertex/Helper/ActionModelDeleteUnusedVertex.h"
 #include "Helper/ActionModelSurfaceRelinkPolygon.h"
-#include "../../../../Data/Model/ModelSurface.h"
 
 ActionModelSurfaceAutoWeld::ActionModelSurfaceAutoWeld(int _surface1, int _surface2, float _epsilon)
 {

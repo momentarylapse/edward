@@ -7,6 +7,9 @@
 
 #include <algorithm>
 #include "ActionModelEditMaterial.h"
+#include "../../../Data/Model/ModelMesh.h"
+#include "../../../Data/Model/ModelPolygon.h"
+
 #include <assert.h>
 
 ActionModelEditMaterial::ActionModelEditMaterial(int _index, const ModelMaterial::Color &_c) {
@@ -61,7 +64,7 @@ void *ActionModelMaterialAddTexture::execute(Data *d) {
 	// correct skin vertices
 	// (copy highest texture level when adding more levels)
 	int ntl = m->material[index]->texture_levels.num;
-	for (ModelPolygon &p: m->polygon) {
+	for (ModelPolygon &p: m->mesh->polygon) {
 		if (p.material == index) {
 			for (ModelPolygonSide &side: p.side)
 				side.skin_vertex[ntl] = side.skin_vertex[ntl - 1];

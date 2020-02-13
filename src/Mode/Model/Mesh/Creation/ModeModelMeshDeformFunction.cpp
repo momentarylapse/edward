@@ -66,7 +66,7 @@ void ModeModelMeshDeformFunction::on_start()
 
 	data->getBoundingBox(max, min);
 	bool first = true;
-	foreachi(ModelVertex &v, data->vertex, i)
+	foreachi(ModelVertex &v, data->mesh->vertex, i)
 		if (v.is_selected){
 			index.add(i);
 			old_pos.add(v.pos);
@@ -131,7 +131,7 @@ void ModeModelMeshDeformFunction::onPreview()
 		v.pos = transform(v.pos);
 
 	for (int vi: index)
-			data->vertex[vi].pos = transform(data->vertex[vi].pos);
+			data->mesh->vertex[vi].pos = transform(data->mesh->vertex[vi].pos);
 	data->notify();
 	has_preview = true;
 	multi_view->force_redraw();
@@ -164,7 +164,7 @@ void ModeModelMeshDeformFunction::restore()
 	multi_view->force_redraw();
 
 	foreachi(int vi, index, ii)
-		data->vertex[vi].pos = old_pos[ii];
+		data->mesh->vertex[vi].pos = old_pos[ii];
 	data->notify();
 
 	has_preview = false;
@@ -181,7 +181,7 @@ void ModeModelMeshDeformFunction::onOk()
 
 	data->begin_action_group("deformation");
 	for (int vi: index)
-		data->execute(new ActionModelMoveVertex(vi, transform(data->vertex[vi].pos)));
+		data->execute(new ActionModelMoveVertex(vi, transform(data->mesh->vertex[vi].pos)));
 
 	data->end_action_group();
 

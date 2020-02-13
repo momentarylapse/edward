@@ -14,6 +14,7 @@
 
 class DataModel;
 class ModelMaterialDialog;
+class ModelSkinVertexDummy;
 
 class ModeModelMeshTexture: public Mode<DataModel>, public Observable
 {

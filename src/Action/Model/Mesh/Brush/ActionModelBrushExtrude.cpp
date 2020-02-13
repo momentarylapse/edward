@@ -7,6 +7,7 @@
 
 #include "ActionModelBrushExtrude.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/ModelMesh.h"
 
 ActionModelBrushExtrude::ActionModelBrushExtrude(const vector &_pos, const vector &_n, float _radius, float _depth)
 {
@@ -22,12 +23,12 @@ void* ActionModelBrushExtrude::execute(Data* d)
 
 	float r2 = radius * radius;
 
-	for (int i=0;i<m->vertex.num;i++){
-		float d2 = (pos - m->vertex[i].pos).length_sqr();
+	for (int i=0;i<m->mesh->vertex.num;i++){
+		float d2 = (pos - m->mesh->vertex[i].pos).length_sqr();
 		if (d2 < r2 * 2){
 			index.add(i);
-			pos_old.add(m->vertex[i].pos);
-			m->vertex[i].pos += n * depth * exp(- d2 / r2 * 2);
+			pos_old.add(m->mesh->vertex[i].pos);
+			m->mesh->vertex[i].pos += n * depth * exp(- d2 / r2 * 2);
 		}
 	}
 	m->setNormalsDirtyByVertices(index);
@@ -42,7 +43,7 @@ void ActionModelBrushExtrude::undo(Data* d)
 
 	m->setNormalsDirtyByVertices(index);
 	foreachi(int i, index, ii)
-		m->vertex[i].pos = pos_old[ii];
+		m->mesh->vertex[i].pos = pos_old[ii];
 
 	index.clear();
 	pos_old.clear();

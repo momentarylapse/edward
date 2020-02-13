@@ -7,6 +7,8 @@
 
 #include "ActionModelSurfaceDeletePolygon.h"
 #include "../../../../../Data/Model/DataModel.h"
+#include "../../../../../Data/Model/ModelMesh.h"
+#include "../../../../../Data/Model/ModelPolygon.h"
 
 // might create an empty surface -> don't use alone!
 
@@ -17,7 +19,7 @@ ActionModelSurfaceDeletePolygon::ActionModelSurfaceDeletePolygon(int _index) {
 void ActionModelSurfaceDeletePolygon::undo(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	m->_addPolygon(vertex, material, skin, index);
+	m->mesh->_addPolygon(vertex, material, skin, index);
 }
 
 
@@ -25,7 +27,7 @@ void ActionModelSurfaceDeletePolygon::undo(Data *d) {
 void *ActionModelSurfaceDeletePolygon::execute(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModelPolygon &t = m->polygon[index];
+	ModelPolygon &t = m->mesh->polygon[index];
 
 	// save old data
 	material = t.material;
@@ -33,7 +35,7 @@ void *ActionModelSurfaceDeletePolygon::execute(Data *d) {
 	skin = t.getSkinVertices();
 
 	// erase
-	m->_removePolygon(index);
+	m->mesh->_removePolygon(index);
 
 	return NULL;
 }

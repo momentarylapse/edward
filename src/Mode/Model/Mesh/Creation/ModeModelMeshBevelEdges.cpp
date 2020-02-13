@@ -19,14 +19,14 @@ ModeModelMeshBevelEdges::ModeModelMeshBevelEdges(ModeBase *_parent) :
 	message = _("Scale radius [left click = done]");
 
 
-	selection = data->get_selection();
+	selection = data->mesh->get_selection();
 
 	// find maximal radius
 	rad_max = -1;
-	for (ModelEdge &e: data->edge)
-		if ((data->vertex[e.vertex[0]].is_selected) or (data->vertex[e.vertex[1]].is_selected)){
-		float l = (data->vertex[e.vertex[0]].pos - data->vertex[e.vertex[1]].pos).length();
-		if ((data->vertex[e.vertex[0]].is_selected) and (data->vertex[e.vertex[1]].is_selected))
+	for (ModelEdge &e: data->mesh->edge)
+		if ((data->mesh->vertex[e.vertex[0]].is_selected) or (data->mesh->vertex[e.vertex[1]].is_selected)){
+		float l = (data->mesh->vertex[e.vertex[0]].pos - data->mesh->vertex[e.vertex[1]].pos).length();
+		if ((data->mesh->vertex[e.vertex[0]].is_selected) and (data->mesh->vertex[e.vertex[1]].is_selected))
 			l /= 2;
 		if ((l < rad_max) or (rad_max < 0))
 			rad_max = l;

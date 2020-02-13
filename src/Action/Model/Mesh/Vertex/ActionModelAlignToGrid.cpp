@@ -7,11 +7,12 @@
 
 #include "ActionModelAlignToGrid.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/ModelMesh.h"
 #include <assert.h>
 
 ActionModelAlignToGrid::ActionModelAlignToGrid(DataModel *m, float _grid_dist)
 {
-	foreachi(ModelVertex &v, m->vertex, i)
+	foreachi(ModelVertex &v, m->mesh->vertex, i)
 		if (v.is_selected)
 			index.add(i);
 	grid_dist = _grid_dist;
@@ -37,12 +38,12 @@ void *ActionModelAlignToGrid::execute(Data *d)
 
 	for (int i: index){
 		// save old data
-		old_pos.add(m->vertex[i].pos);
+		old_pos.add(m->mesh->vertex[i].pos);
 
 		// apply
-		align_float(m->vertex[i].pos.x, grid_dist);
-		align_float(m->vertex[i].pos.y, grid_dist);
-		align_float(m->vertex[i].pos.z, grid_dist);
+		align_float(m->mesh->vertex[i].pos.x, grid_dist);
+		align_float(m->mesh->vertex[i].pos.y, grid_dist);
+		align_float(m->mesh->vertex[i].pos.z, grid_dist);
 	}
 
 	m->setNormalsDirtyByVertices(index);
@@ -58,7 +59,7 @@ void ActionModelAlignToGrid::undo(Data *d)
 
 	// apply old data
 	foreachi(int vi, index, i)
-		m->vertex[vi].pos = old_pos[i];
+		m->mesh->vertex[vi].pos = old_pos[i];
 
 	m->setNormalsDirtyByVertices(index);
 }

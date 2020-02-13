@@ -10,7 +10,7 @@
 
 #include "../../../ActionGroup.h"
 class DataModel;
-class ModelSurface;
+class ModelMesh;
 class ModelPolygon;
 class VertexToCome;
 class PolygonRelink;
@@ -23,7 +23,7 @@ public:
 
 	void *compose(Data *d);
 
-	void bevelSurface(DataModel *m);
+	void bevelSurface(ModelMesh *m);
 	void build_vertices(Array<VertexToCome> &vv, DataModel *m);
 	void do_poly_relink(ModelPolygon &p, PolygonRelink &r, int i, DataModel *m);
 private:

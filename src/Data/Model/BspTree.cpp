@@ -7,6 +7,8 @@
 
 #include "BspTree.h"
 #include "DataModel.h"
+#include "ModelPolygon.h"
+#include "ModelMesh.h"
 
 struct BspBranch
 {
@@ -26,7 +28,7 @@ struct BspBranch
 		if (o)
 			delete(o);
 	}
-	void add(ModelPolygon &p, DataModel *m, const plane &_pl, float epsilon)
+	void add(ModelPolygon &p, ModelMesh *m, const plane &_pl, float epsilon)
 	{
 		bool some_in = false;
 		bool some_out = false;
@@ -64,7 +66,7 @@ BspTree::~BspTree()
 		delete(b);
 }
 
-void BspTree::add(ModelPolygon &p, DataModel *m, float epsilon)
+void BspTree::add(ModelPolygon &p, ModelMesh *m, float epsilon)
 {
 	plane pl;
 	pl = plane::from_point_normal( m->vertex[p.side[0].vertex].pos, p.temp_normal);

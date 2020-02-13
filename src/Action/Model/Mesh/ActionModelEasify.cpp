@@ -8,19 +8,20 @@
 #include "ActionModelEasify.h"
 #include "Edge/ActionModelCollapseEdge.h"
 #include "../../../Data/Model/DataModel.h"
+#include "../../../Data/Model/ModelMesh.h"
+#include "../../../Data/Model/ModelPolygon.h"
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
 
 
-#if 1
-static vector get_deformed_area(DataModel *m, ModelPolygon &t, int index, const vector &new_pos)
-{
+
+static vector get_deformed_area(ModelMesh *m, ModelPolygon &t, int index, const vector &new_pos) {
 	// Newell's method
 	vector n = v_0;
 	vector p1 = m->vertex[t.side.back().vertex].pos;
 	if ((t.side.num - 1) == index)
 		p1 = new_pos;
-	for (int i=0; i<t.side.num; i++){
+	for (int i=0; i<t.side.num; i++) {
 		vector p0 = p1;
 		if (i == index)
 			p1 = new_pos;
@@ -33,15 +34,13 @@ static vector get_deformed_area(DataModel *m, ModelPolygon &t, int index, const 
 	return n * 0.5f;
 }
 
-struct PolyRef
-{
+struct PolyRef {
 	int poly;
 	int side;
 };
 
 // all weights are of dimension [area]
-static float get_weight(DataModel *m, ModelEdge &e, Array<Array<PolyRef> > &ref)
-{
+static float get_weight(ModelMesh *m, ModelEdge &e, Array<Array<PolyRef> > &ref) {
 	float w = 0;
 	int a = e.vertex[0];
 	int b = e.vertex[1];
@@ -52,7 +51,7 @@ static float get_weight(DataModel *m, ModelEdge &e, Array<Array<PolyRef> > &ref)
 	rr.append(ref[b]);
 
 	// polygon plane change
-	for (int i=0;i<rr.num;i++){
+	for (int i=0;i<rr.num;i++) {
 		// find all polygons sharing a vertex with <e>
 		// ...but not containing <e>
 		if (rr[i].poly == e.polygon[0])
@@ -72,16 +71,15 @@ static float get_weight(DataModel *m, ModelEdge &e, Array<Array<PolyRef> > &ref)
 	return w;
 }
 
-void ActionModelEasify::CalculateWeights(DataModel *m)
-{
+void ActionModelEasify::CalculateWeights(ModelMesh *m) {
 	ed->multi_view_3d->reset_message_3d();
 
 	// find all polygon sides for each vertex
 	Array<Array<PolyRef> > ref;
 	ref.resize(m->vertex.num);
 
-	foreachi(ModelPolygon &p, m->polygon, ti){
-		for (int k=0;k<p.side.num;k++){
+	foreachi(ModelPolygon &p, m->polygon, ti) {
+		for (int k=0;k<p.side.num;k++) {
 			PolyRef r;
 			r.poly = ti;
 			r.side = k;
@@ -96,13 +94,13 @@ void ActionModelEasify::CalculateWeights(DataModel *m)
 
 	// correction for boundary edges
 	foreachi(ModelEdge &e, m->edge, ei)
-		if (e.ref_count == 1){
+		if (e.ref_count == 1) {
 			// find all edges sharing a vertex with e
 			Array<PolyRef> rr;
 			rr.append(ref[e.vertex[0]]);
 			rr.append(ref[e.vertex[1]]);
 			Set<int> ee;
-			for (int i=0;i<rr.num;i++){
+			for (int i=0;i<rr.num;i++) {
 				ModelPolygon &p = m->polygon[rr[i].poly];
 				int k = rr[i].side;
 				ee.add(p.side[k].edge);
@@ -111,7 +109,7 @@ void ActionModelEasify::CalculateWeights(DataModel *m)
 
 			// compute damage...
 			for (int eee: ee)
-				if (eee != ei){
+				if (eee != ei) {
 					vector nv = (m->vertex[m->edge[eee].vertex[0]].pos + m->vertex[m->edge[eee].vertex[1]].pos) / 2;
 
 					vector area = (m->vertex[m->edge[ei].vertex[0]].pos - nv) ^ (m->vertex[m->edge[ei].vertex[1]].pos - nv);
@@ -125,20 +123,19 @@ void ActionModelEasify::CalculateWeights(DataModel *m)
 //			ed->multi_view_3d->AddMessage3d(f2s(we[i], 1), (m->Vertex[e.Vertex[0]].pos + m->Vertex[e.Vertex[1]].pos) / 2);
 }
 
-bool ActionModelEasify::EasifyStep(DataModel *m)
-{
+bool ActionModelEasify::EasifyStep(ModelMesh *m) {
 	CalculateWeights(m);
 
 	int _edge = -1;
 	// remove least important
 	float min = 0;
 	foreachi(ModelEdge &e, m->edge, ei)
-		if ((e.weight < min) || (_edge < 0)){
+		if ((e.weight < min) || (_edge < 0)) {
 			min = e.weight;
 			_edge = ei;
 		}
 
-	if (_edge >= 0){
+	if (_edge >= 0) {
 		/*ModelEdge _e = m->Surface[_surface].Edge[_edge];
 		// distribute weights
 		Array<int> ee;
@@ -150,12 +147,12 @@ bool ActionModelEasify::EasifyStep(DataModel *m)
 			m->Surface[_surface].Edge[ie].Weight += _e.Weight / ee.num;*/
 
 		// remove
-		addSubAction(new ActionModelCollapseEdge(_edge), m);
+		addSubAction(new ActionModelCollapseEdge(_edge), m->model);
 		return true;
 	}
 	return false;
 }
-#endif
+
 
 ActionModelEasify::ActionModelEasify(float _factor)
 {
@@ -166,13 +163,13 @@ void *ActionModelEasify::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	hui::Timer t;
-#if 1
+
 	//CalculateWeights(m);
-	int n = (int)((float)m->getNumPolygons() * factor);
-	while(m->getNumPolygons() > n)
-		if (!EasifyStep(m))
+	int n = (int)((float)m->mesh->polygon.num * factor);
+	while(m->mesh->polygon.num > n)
+		if (!EasifyStep(m->mesh))
 			break;
-#endif
+
 	float dt = t.get();
 	msg_write(format("easify: %f", dt));
 	return NULL;

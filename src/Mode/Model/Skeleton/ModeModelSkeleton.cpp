@@ -5,6 +5,13 @@
  *      Author: michi
  */
 
+#include "ModeModelSkeleton.h"
+#include "Creation/ModeModelSkeletonCreateBone.h"
+#include "Creation/ModeModelSkeletonAttachVertices.h"
+#include "../ModeModel.h"
+#include "../Animation/ModeModelAnimation.h"
+#include "../Mesh/Selection/MeshSelectionModePolygon.h"
+#include "../../../Data/Model/ModelSelection.h"
 #include "../../../Edward.h"
 #include "../../../Storage/Storage.h"
 #include "../../../MultiView/MultiView.h"
@@ -12,12 +19,6 @@
 #include "../../../MultiView/DrawingHelper.h"
 #include "../../../MultiView/ColorScheme.h"
 #include "../../../lib/nix/nix.h"
-#include "ModeModelSkeleton.h"
-#include "../ModeModel.h"
-#include "../Animation/ModeModelAnimation.h"
-#include "Creation/ModeModelSkeletonCreateBone.h"
-#include "Creation/ModeModelSkeletonAttachVertices.h"
-#include "../Mesh/Selection/MeshSelectionModePolygon.h"
 
 
 
@@ -37,7 +38,7 @@ void ModeModelSkeleton::on_command(const string & id)
 	if (id == "skeleton_new_point")
 		ed->set_mode(new ModeModelSkeletonCreateBone(ed->cur_mode));
 	if (id == "skeleton_edit_bone"){
-		if (data->getNumSelectedBones() == 1){
+		if (data->get_selection().bone.num == 1){
 			foreachi(ModelBone &b, data->bone, i)
 				if (b.is_selected){
 					ed->set_mode(new ModeModelSkeletonAttachVertices(ed->cur_mode, i));
@@ -167,7 +168,7 @@ void ModeModelSkeleton::on_set_multi_view()
 void ModeModelSkeleton::on_update(Observable *o, const string &message)
 {
 	if (o == data){
-		mode_model_mesh->update_vertex_buffers(data->vertex);
+		mode_model_mesh->update_vertex_buffers(data->mesh->vertex);
 	}
 }
 
@@ -196,7 +197,7 @@ void drawCoordBasis(MultiView::Window *win, const ModelBone &b)
 
 void ModeModelSkeleton::on_draw_win(MultiView::Window *win)
 {
-	mode_model_mesh->draw_polygons(win, data->vertex);
+	mode_model_mesh->draw_polygons(win, data->mesh->vertex);
 	drawSkeleton(win, data->bone);
 }
 

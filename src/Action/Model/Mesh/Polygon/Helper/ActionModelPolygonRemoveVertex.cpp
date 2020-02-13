@@ -7,6 +7,8 @@
 
 #include "ActionModelPolygonRemoveVertex.h"
 #include "../../../../../Data/Model/DataModel.h"
+#include "../../../../../Data/Model/ModelMesh.h"
+#include "../../../../../Data/Model/ModelPolygon.h"
 #include "../../Surface/Helper/ActionModelSurfaceDeletePolygon.h"
 #include "../../Surface/Helper/ActionModelSurfaceAddPolygon.h"
 
@@ -17,7 +19,7 @@ ActionModelPolygonRemoveVertex::ActionModelPolygonRemoveVertex(int _poly, int _s
 
 void *ActionModelPolygonRemoveVertex::compose(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	ModelPolygon &t = m->polygon[poly];
+	auto &t = m->mesh->polygon[poly];
 
 
 	// save old polygon data

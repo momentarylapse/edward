@@ -10,17 +10,17 @@
 
 #include "../../ActionGroup.h"
 class DataModel;
-class ModelSelectionState;
+class ModelSelection;
 
 class ActionModelDeleteSelection: public ActionGroup {
 public:
-	ActionModelDeleteSelection(const ModelSelectionState &s, bool _greedy);
+	ActionModelDeleteSelection(const ModelSelection &s, bool _greedy);
 	string name() override { return "ModelDeleteSelection"; }
 
 	void *compose(Data *d) override;
 private:
 	bool greedy;
-	const ModelSelectionState &sel;
+	const ModelSelection &sel;
 };
 
 #endif /* ACTIONMODELDELETESELECTION_H_ */

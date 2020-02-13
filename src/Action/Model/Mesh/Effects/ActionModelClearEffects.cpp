@@ -6,11 +6,12 @@
  */
 
 #include "ActionModelClearEffects.h"
+#include "../../../../Data/Model/ModelMesh.h"
 
 ActionModelClearEffects::ActionModelClearEffects(DataModel *m)
 {
 	foreachi(ModelEffect &fx, m->fx, i)
-		if (m->vertex[fx.vertex].is_selected){
+		if (m->mesh->vertex[fx.vertex].is_selected){
 			effects.add(fx);
 			index.add(i);
 		}

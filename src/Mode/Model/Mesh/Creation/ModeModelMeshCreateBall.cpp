@@ -116,8 +116,8 @@ void ModeModelMeshCreateBall::on_left_button_up()
 			ModelBall b;
 			b.index = data->skin[0].vertex.num;
 			b.radius = radius;
-			data->skin[0].vertex.add(v);
-			data->ball.add(b);
+			data->phys_mesh->vertex.add(v);
+			data->phys_mesh->ball.add(b);
 
 		}else{
 			data->pasteGeometry(*geo, mode_model_mesh->current_material);

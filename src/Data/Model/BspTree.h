@@ -9,17 +9,16 @@
 #define BSPTREE_H_
 
 struct BspBranch;
-class DataModel;
+class ModelMesh;
 class ModelPolygon;
 class vector;
 
-class BspTree
-{
+class BspTree {
 public:
 	BspTree();
 	BspBranch *b;
 	~BspTree();
-	void add(ModelPolygon &p, DataModel *m, float epsilon);
+	void add(ModelPolygon &p, ModelMesh *m, float epsilon);
 	bool inside(const vector &v);
 };
 

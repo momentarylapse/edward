@@ -13,12 +13,16 @@
 #include "../../lib/base/set.h"
 #include "../../x/model.h"
 #include "../../x/material.h"
-#include "ModelPolygon.h"
 #include "ModelMaterial.h"
 
 class DataModel;
 class ModelMaterial;
+class ModelMesh;
+class ModelPolygon;
+class ModelVertex;
+class ModelEdge;
 class Geometry;
+class ModelSelection;
 
 
 class GeometryException : public ActionException {
@@ -45,59 +49,6 @@ struct ModelEffect {
 	string get_type();
 };
 
-class ModelVertex: public MultiView::SingleData {
-public:
-	int normal_mode;
-	int bone_index;
-
-	bool normal_dirty;
-	int ref_count; // polygons
-
-	ModelVertex();
-	ModelVertex(const vector &pos);
-};
-
-// only for use in MultiView...
-class ModelSkinVertexDummy: public MultiView::SingleData {
-};
-
-class ModelBall: public MultiView::SingleData {
-public:
-	int index;
-	float radius;
-};
-
-class ModelCylinder: public MultiView::SingleData {
-public:
-	int index[2];
-	float radius;
-	bool round;
-};
-
-struct ModelPolyhedronFace {
-	int NumVertices;
-	int Index[MODEL_MAX_POLY_VERTICES_PER_FACE];
-	plane Plane;
-};
-
-
-// TODO: dynamical!
-class ModelPolyhedron: public MultiView::SingleData
-{
-public:
-	int NumFaces;
-	ModelPolyhedronFace Face[MODEL_MAX_POLY_FACES];
-	int NumSVertices;
-	int SIndex[MODEL_MAX_POLY_FACES * MODEL_MAX_POLY_VERTICES_PER_FACE];
-
-	// non redundant edge list!
-	int NumEdges;
-	int EdgeIndex[MODEL_MAX_POLY_EDGES * 2];
-
-	// "topology"
-	bool EdgeOnFace[MODEL_MAX_POLY_EDGES * MODEL_MAX_POLY_FACES]; // [edge * NumFaces + face]
-	int FacesJoiningEdge[MODEL_MAX_POLY_FACES * MODEL_MAX_POLY_FACES]; // [face1 * NumFaces + face2]
-};
 
 class ModelTriangle: public MultiView::SingleData {
 public:
@@ -169,32 +120,7 @@ struct ModelMove {
 	ModelFrame interpolate(float time);
 };
 
-class ModelEdge: public MultiView::SingleData {
-public:
-	//int NormalMode;
-	int vertex[2];
-	int ref_count, polygon[2], side[2];
-	bool is_round; // for editing
-	float weight; // for easify'ing
 
-	// constraints:
-	//  Vertex[0] = surf.Polygon[Triangle[0]].Vertex[Side[0]]
-	//  Vertex[1] = surf.Polygon[Triangle[0]].Vertex[(Side[0] + 1) % 3]
-	//  same for Polygon/Side[1] but Vertex[0 <-> 1]
-
-	virtual bool hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data);
-	virtual bool inRect(MultiView::Window *win, rect &r, void *user_data);
-};
-
-
-class ModelSelectionState {
-public:
-	Set<int> vertex;
-	Set<int> polygon;
-	Set<int> edge;
-	void clear();
-	void expand_to_surfaces(DataModel *m);
-};
 
 class ModelScriptVariable {
 public:
@@ -216,8 +142,8 @@ public:
 	void exportToTriangleSkin(int index);
 
 	void debugShow();
-	virtual bool test_sanity(const string &loc);
-	virtual void on_post_action_update();
+	bool test_sanity(const string &loc) override;
+	void on_post_action_update() override;
 
 	void setNormalsDirtyByVertices(const Array<int> &index);
 	void setAllNormalsDirty();
@@ -225,20 +151,14 @@ public:
 
 
 
-	int getNumSelectedVertices();
 	int getNumSelectedSkinVertices();
-	int getNumSelectedEdges();
-	int getNumSelectedPolygons();
-	//int GetNumSelectedBalls();
-	int getNumSelectedBones();
-	int getNumPolygons();
 
 	void clearSelection();
 	void selectionFromVertices();
 	void selectionFromPolygons();
 	void selectionFromEdges();
-	ModelSelectionState get_selection() const;
-	void set_selection(const ModelSelectionState &s);
+	ModelSelection get_selection() const;
+	void set_selection(const ModelSelection &s);
 
 
 	float getRadius();
@@ -246,11 +166,6 @@ public:
 	void generateDetailDists(float *dist);
 	matrix3 generateInertiaTensor(float mass);
 	void createSkin(ModelSkin *src, ModelSkin *dst, float quality_factor);
-
-	// low level (un-action'ed)
-	//void LowLevelAddVertex(const vector &vd);
-	void _addPolygon(const Array<int> &v, int material, const Array<vector> &sv, int index = -1);
-	void _removePolygon(int index);
 
 	// high level (actions)
 	void addVertex(const vector &pos, int bone_index = 0, int normal_mode = -1);
@@ -260,8 +175,8 @@ public:
 
 	void delete_polygon(int index);
 
-	void delete_selection(const ModelSelectionState &s, bool greedy = false);
-	void invert_polygons(const ModelSelectionState &s);
+	void delete_selection(const ModelSelection &s, bool greedy = false);
+	void invert_polygons(const ModelSelection &s);
 	void subtractSelection();
 	void andSelection();
 	void cutOutSelection();
@@ -281,7 +196,7 @@ public:
 	void copyGeometry(Geometry &geo); // not an action...
 	void pasteGeometry(Geometry &geo, int default_material);
 	void easify(float factor);
-	void subdivideSelectedSurfaces(const ModelSelectionState &s);
+	void subdivideSelectedSurfaces(const ModelSelection &s);
 	void automap(int material, int texture_level);
 
 
@@ -311,32 +226,12 @@ public:
 	void animationSetBone(int move, int frame, int bone, const vector &dpos, const vector &ang);
 
 	// geometry
-	Array<ModelVertex> vertex;
-	Array<ModelPolygon> polygon;
-	Array<ModelEdge> edge;
-	Array<ModelSkinVertexDummy> skin_vertex; // only temporary...
-
-	void build_topology();
-
-	int add_edge_for_new_polygon(int a, int b, int tria, int side);
-	void remove_obsolete_edge(int index);
-	void merge_edges();
-
-	bool is_inside(const vector &p);
-	void begin_inside_tests();
-	bool inside_test(const vector &p);
-	void end_inside_tests();
-	Array<int> get_boundary_loop(int v0);
-	Array<Array<int> > get_connected_components();
+	ModelMesh *mesh;
+	ModelMesh *phys_mesh;
 
 
 	// old geometry
 	ModelSkin skin[4];
-
-	// geometry (physical)
-	Array<ModelBall> ball;
-	Array<ModelCylinder> cylinder;
-	Array<ModelPolyhedron> polyhedron;
 
 	// general properties
 	Array<ModelMaterial*> material;

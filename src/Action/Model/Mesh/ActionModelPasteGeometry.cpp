@@ -9,6 +9,7 @@
 #include "Vertex/ActionModelAddVertex.h"
 #include "Polygon/ActionModelAddPolygon.h"
 #include "../../../Data/Model/DataModel.h"
+#include "../../../Data/Model/ModelMesh.h"
 #include "../../../Data/Model/Geometry/Geometry.h"
 
 ActionModelPasteGeometry::ActionModelPasteGeometry(Geometry &_geo, int _default_material) :
@@ -22,9 +23,7 @@ void *ActionModelPasteGeometry::compose(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	m->clearSelection();
 
-	int nv = m->vertex.num;
-	for (ModelVertex &v: m->vertex)
-		v.is_selected = false;
+	int nv = m->mesh->vertex.num;
 
 	for (ModelVertex &v: geo.vertex)
 		addSubAction(new ActionModelAddVertex(v.pos), m);

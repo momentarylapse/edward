@@ -7,6 +7,7 @@
 
 #include "ModelEasifyDialog.h"
 #include "../../../Data/Model/DataModel.h"
+#include "../../../Data/Model/ModelMesh.h"
 #include "../../../Edward.h"
 
 ModelEasifyDialog::ModelEasifyDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data):
@@ -35,8 +36,8 @@ void ModelEasifyDialog::LoadData()
 {
 	set_float("quality_factor", factor * 100.0f);
 	set_float("quality_slider", factor);
-	set_string("eat_vertices", format(_("Vertices: %d (of %d)"), (int)(data->vertex.num * factor), data->vertex.num));
-	set_string("eat_polygons", format(_("Polygons: %d (of %d)"), (int)(data->getNumPolygons() * factor), data->getNumPolygons()));
+	set_string("eat_vertices", format(_("Vertices: %d (of %d)"), (int)(data->mesh->vertex.num * factor), data->mesh->vertex.num));
+	set_string("eat_polygons", format(_("Polygons: %d (of %d)"), (int)(data->mesh->polygon.num * factor), data->mesh->polygon.num));
 }
 
 void ModelEasifyDialog::OnQualityFactor()

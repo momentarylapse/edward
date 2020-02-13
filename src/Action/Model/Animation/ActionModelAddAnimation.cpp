@@ -7,6 +7,7 @@
 
 #include "ActionModelAddAnimation.h"
 #include "../../../Data/Model/DataModel.h"
+#include "../../../Data/Model/ModelMesh.h"
 #include <assert.h>
 
 ActionModelAddAnimation::ActionModelAddAnimation(int _index, int _type)
@@ -38,7 +39,7 @@ void *ActionModelAddAnimation::execute(Data *d)
 		f.skel_ang.resize(m->bone.num);
 		f.skel_dpos.resize(m->bone.num);
 	}else if (type ==MOVE_TYPE_VERTEX){
-		f.vertex_dpos.resize(m->vertex.num);
+		f.vertex_dpos.resize(m->mesh->vertex.num);
 	}
 	m->move[index].frame.add(f);
 	return NULL;

@@ -7,13 +7,15 @@
 
 #include "ActionModelSetMaterial.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/ModelMesh.h"
+#include "../../../../Data/Model/ModelPolygon.h"
 
 ActionModelSetMaterial::ActionModelSetMaterial(DataModel *m, int _material)
 {
 	material = _material;
 
 	// save old data
-	foreachi(ModelPolygon &t, m->polygon, ti)
+	foreachi(ModelPolygon &t, m->mesh->polygon, ti)
 		if (t.is_selected){
 			triangle.add(ti);
 			old_material.add(t.material);
@@ -27,7 +29,7 @@ void *ActionModelSetMaterial::execute(Data *d)
 
 
 	for (int i: triangle){
-		ModelPolygon &t = m->polygon[i];
+		ModelPolygon &t = m->mesh->polygon[i];
 		t.material = material;
 	}
 	return NULL;
@@ -40,7 +42,7 @@ void ActionModelSetMaterial::undo(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	foreachi (int i, triangle, k){
-		ModelPolygon &t = m->polygon[i];
+		ModelPolygon &t = m->mesh->polygon[i];
 		t.material = old_material[k];
 	}
 }

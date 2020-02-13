@@ -10,20 +10,20 @@
 
 #include "../DataModel.h"
 #include "../ModelPolygon.h"
+#include "../ModelMesh.h"
 
 class ModelVertex;
 class ModelPolygon;
 class vector;
 class matrix;
-namespace nix{
+namespace nix {
 	class VertexBuffer;
 };
-namespace MultiView{
+namespace MultiView {
 	class Window;
 };
 
-class Geometry
-{
+class Geometry {
 public:
 	void clear();
 

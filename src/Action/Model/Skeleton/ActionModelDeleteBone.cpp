@@ -7,6 +7,7 @@
 
 #include "ActionModelDeleteBone.h"
 #include "../../../Data/Model/DataModel.h"
+#include "../../../Data/Model/ModelMesh.h"
 
 ActionModelDeleteBone::ActionModelDeleteBone(int _index)
 {
@@ -52,7 +53,7 @@ void *ActionModelDeleteBone::execute(Data *d)
 
 	// save + correct vertices
 	vertex.clear();
-	foreachi(ModelVertex &v, m->vertex, vi)
+	foreachi(ModelVertex &v, m->mesh->vertex, vi)
 		if (v.bone_index == index){
 			v.bone_index = -1;
 			vertex.add(vi);
@@ -98,11 +99,11 @@ void ActionModelDeleteBone::undo(Data *d)
 		}
 
 	// correct vertices
-	for (ModelVertex &v: m->vertex)
+	for (ModelVertex &v: m->mesh->vertex)
 		if (v.bone_index >= index)
 			v.bone_index ++;
 	for (int vi: vertex)
-		m->vertex[vi].bone_index = index;
+		m->mesh->vertex[vi].bone_index = index;
 }
 
 

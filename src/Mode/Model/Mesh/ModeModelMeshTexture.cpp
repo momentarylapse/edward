@@ -10,6 +10,8 @@
 #include "../../../MultiView/Window.h"
 #include "../../../MultiView/DrawingHelper.h"
 #include "../../../lib/nix/nix.h"
+#include "../../../Data/Model/ModelSelection.h"
+#include "../../../Data/Model/ModelMesh.h"
 #include "ModeModelMesh.h"
 #include "ModeModelMeshTexture.h"
 #include "../Dialog/ModelMaterialDialog.h"
@@ -29,7 +31,7 @@ ModeModelMeshTexture::ModeModelMeshTexture(ModeBase *_parent) :
 
 void ModeModelMeshTexture::fetchData() {
 	skin_vertex.clear();
-	for (ModelPolygon &t: data->polygon) {
+	for (ModelPolygon &t: data->mesh->polygon) {
 		if (t.material != mode_model_mesh->current_material)
 			continue;
 		ModelSkinVertexDummy v;
@@ -143,7 +145,7 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 	nix::SetColor(White);
 
 	// draw triangles (outlines) of current material
-	for (ModelPolygon &t: data->polygon) {
+	for (ModelPolygon &t: data->mesh->polygon) {
 		if (t.material != mode_model_mesh->current_material)
 			continue;
 		if (t.view_stage < multi_view->view_stage)
@@ -161,16 +163,13 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 
 
 
-void ModeModelMeshTexture::on_draw()
-{
-	if (data->getNumSelectedVertices() > 0){
+void ModeModelMeshTexture::on_draw() {
+	auto s = data->get_selection();
+	/*if (data->getNumSelectedVertices() > 0){
 		draw_str(20, 160, format(_("skin: %d"), getNumSelected()));
-	}
-	if (data->getNumSelectedVertices() > 0){
-		int nv = data->getNumSelectedVertices();
-		int ne = data->getNumSelectedEdges();
-		int np = data->getNumSelectedPolygons();
-		draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons", nv, ne, np));
+	}*/
+	if (s.vertex.num > 0){
+		draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons", s.vertex.num, s.edge.num, s.polygon.num));
 	}
 }
 
@@ -180,7 +179,7 @@ void ModeModelMeshTexture::on_selection_change()
 	//fillSelectionBuffer(data->vertex);
 
 	int nn = 0;
-	for (ModelPolygon &t: data->polygon) {
+	for (ModelPolygon &t: data->mesh->polygon) {
 		if (t.material != mode_model_mesh->current_material)
 			continue;
 		t.is_selected = true;
@@ -216,7 +215,7 @@ void ModeModelMeshTexture::on_update(Observable *o, const string &message)
 
 		if (message == DataModel::MESSAGE_SKIN_CHANGE){
 			int svi = 0;
-			for (ModelPolygon &t: data->polygon){
+			for (ModelPolygon &t: data->mesh->polygon){
 				if (t.material != mode_model_mesh->current_material)
 					continue;
 				for (int k=0;k<t.side.num;k++)
@@ -238,7 +237,7 @@ void ModeModelMeshTexture::on_update(Observable *o, const string &message)
 void ModeModelMeshTexture::getSelectedSkinVertices(Array<int> &tria, Array<int> & index)
 {
 	int i = 0;
-	foreachi(ModelPolygon &t, data->polygon, ti)
+	foreachi(ModelPolygon &t, data->mesh->polygon, ti)
 		if (t.material == mode_model_mesh->current_material){
 			for (int k=0;k<t.side.num;k++){
 				if (skin_vertex[i].is_selected){

@@ -7,6 +7,8 @@
 
 #include "ActionModelSurfaceAddPolygon.h"
 #include "../../../../../Data/Model/DataModel.h"
+#include "../../../../../Data/Model/ModelMesh.h"
+#include "../../../../../Data/Model/ModelPolygon.h"
 
 // might create a "disjoint" surface -> don't use alone!
 
@@ -21,9 +23,9 @@ void ActionModelSurfaceAddPolygon::undo(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	if (index >= 0)
-		m->_removePolygon(index);
+		m->mesh->_removePolygon(index);
 	else
-		m->_removePolygon(m->polygon.num -1);
+		m->mesh->_removePolygon(m->mesh->polygon.num -1);
 }
 
 
@@ -31,11 +33,11 @@ void ActionModelSurfaceAddPolygon::undo(Data *d) {
 void *ActionModelSurfaceAddPolygon::execute(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	m->_addPolygon(v, material, sv, index);
+	m->mesh->_addPolygon(v, material, sv, index);
 
 	if (index >= 0)
-		return &m->polygon[index];
-	return &m->polygon.back();
+		return &m->mesh->polygon[index];
+	return &m->mesh->polygon.back();
 }
 
 

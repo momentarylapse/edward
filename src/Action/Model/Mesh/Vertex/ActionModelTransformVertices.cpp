@@ -7,15 +7,16 @@
 
 #include "ActionModelTransformVertices.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/ModelMesh.h"
 
 ActionModelTransformVertices::ActionModelTransformVertices(DataModel *d) :
 	ActionMultiView()
 {
 	// list of selected vertices and save old pos
-	foreachi(ModelVertex &v, d->vertex, i)
+	foreachi(ModelVertex &v, d->mesh->vertex, i)
 		if (v.is_selected){
 			index.add(i);
-			old_data.add(d->vertex[i].pos);
+			old_data.add(d->mesh->vertex[i].pos);
 		}
 }
 
@@ -29,7 +30,7 @@ void ActionModelTransformVertices::undo(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(int i, index, ii)
-		m->vertex[i].pos = old_data[ii];
+		m->mesh->vertex[i].pos = old_data[ii];
 	m->setNormalsDirtyByVertices(index);
 }
 
@@ -39,7 +40,7 @@ void *ActionModelTransformVertices::execute(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	for (int i: index)
-		m->vertex[i].pos =  mat * m->vertex[i].pos;
+		m->mesh->vertex[i].pos =  mat * m->mesh->vertex[i].pos;
 	m->setNormalsDirtyByVertices(index);
 	return NULL;
 }

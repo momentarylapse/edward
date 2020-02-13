@@ -88,7 +88,7 @@ void MeshSelectionModeEdge::update_multi_view()
 	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	multi_view->add_data(	MVD_MODEL_EDGE,
-			data->edge,
+			data->mesh->edge,
 			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 }
@@ -103,7 +103,7 @@ void MeshSelectionModeEdge::on_draw_win(MultiView::Window *win)
 	nix::SetWire(false);
 	nix::SetZ(false, false);
 	set_wide_lines(scheme.LINE_WIDTH_MEDIUM);
-	auto &e = data->edge[multi_view->hover.index];
+	auto &e = data->mesh->edge[multi_view->hover.index];
 	Array<vector> p;
 	p.add(data->show_vertices[e.vertex[0]].pos);
 	p.add(data->show_vertices[e.vertex[1]].pos);

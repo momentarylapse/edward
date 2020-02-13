@@ -10,6 +10,7 @@
 
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../Data/Model/ModelSelection.h"
 
 class ModeModelMeshExtrudePolygons: public ModeCreation<DataModel> {
 public:
@@ -29,7 +30,7 @@ public:
 private:
 	float offset;
 	bool independent;
-	ModelSelectionState selection;
+	ModelSelection selection;
 };
 
 #endif /* MODEMODELMESHEXTRUDEPOLYGONS_H_ */

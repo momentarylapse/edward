@@ -72,7 +72,7 @@ void get_axis(DataModel *data, vector axis[2], float &radius)
 {
 	vector m = v_0;
 	int n = 0;
-	foreachi(ModelVertex &v, data->vertex, i){
+	foreachi(ModelVertex &v, data->mesh->vertex, i){
 		if (v.is_selected){
 			m += v.pos;
 			n ++;
@@ -81,7 +81,7 @@ void get_axis(DataModel *data, vector axis[2], float &radius)
 	m /= n;
 	matrix3 I;
 	memset(&I, 0, sizeof(I));
-	foreachi(ModelVertex &v, data->vertex, i){
+	foreachi(ModelVertex &v, data->mesh->vertex, i){
 		if (v.is_selected){
 			vector r = v.pos - m;
 			I._00 += r.y*r.y + r.z*r.z;
@@ -100,7 +100,7 @@ void get_axis(DataModel *data, vector axis[2], float &radius)
 	//axis[0] = axis[1] = m;
 	float ll[2] = {0,0};
 	radius = 0;
-	foreachi(ModelVertex &v, data->vertex, i)
+	foreachi(ModelVertex &v, data->mesh->vertex, i)
 		if (v.is_selected){
 			float l = (v.pos - m) * dir;
 			ll[0] = min(ll[0], l);
@@ -117,7 +117,7 @@ void ModeModelMeshDeformCylinder::on_start()
 	multi_view->set_allow_action(false);
 	multi_view->set_allow_select(false);
 
-	foreachi(ModelVertex &v, data->vertex, i)
+	foreachi(ModelVertex &v, data->mesh->vertex, i)
 		if (v.is_selected){
 			old_pos.add(v.pos);
 			index.add(i);
@@ -267,7 +267,7 @@ void ModeModelMeshDeformCylinder::preview()
 		v.pos = transform(v.pos);
 
 	for (int vi: index)
-		data->vertex[vi].pos = transform(data->vertex[vi].pos);
+		data->mesh->vertex[vi].pos = transform(data->mesh->vertex[vi].pos);
 
 	data->notify();
 	//mode_model_mesh->updateVertexBuffers(data->vertex);
@@ -339,40 +339,36 @@ void ModeModelMeshDeformCylinder::on_key_down(int k)
 	}
 }
 
-void ModeModelMeshDeformCylinder::restore()
-{
-	if (geo){
+void ModeModelMeshDeformCylinder::restore() {
+	if (geo) {
 		delete geo;
 		geo = NULL;
 	}
 
 	foreachi (int vi, index, i)
-		data->vertex[vi].pos = old_pos[i];
+		data->mesh->vertex[vi].pos = old_pos[i];
 	has_preview = false;
 
 }
 
-void ModeModelMeshDeformCylinder::onOk()
-{
+void ModeModelMeshDeformCylinder::onOk() {
 	if (has_preview)
 		restore();
 
 	data->begin_action_group("deformation");
 	for (int vi: index)
-		data->execute(new ActionModelMoveVertex(vi, transform(data->vertex[vi].pos)));
+		data->execute(new ActionModelMoveVertex(vi, transform(data->mesh->vertex[vi].pos)));
 
 	data->end_action_group();
 
 	abort();
 }
 
-void ModeModelMeshDeformCylinder::onClose()
-{
+void ModeModelMeshDeformCylinder::onClose() {
 	abort();
 }
 
-void ModeModelMeshDeformCylinder::on_command(const string& id)
-{
+void ModeModelMeshDeformCylinder::on_command(const string& id) {
 	if (id == "finish-action")
 		onOk();
 }

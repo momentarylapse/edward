@@ -7,6 +7,8 @@
 
 #include "FormatModel.h"
 #include "../../Data/Model/DataModel.h"
+#include "../../Data/Model/ModelMesh.h"
+#include "../../Data/Model/ModelPolygon.h"
 #include "../../Mode/Model/ModeModel.h"
 #include "../../Edward.h"
 #include "../../x/model_manager.h"
@@ -104,15 +106,15 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 	}
 
 	// balls
-	data->ball.resize(f->read_int());
-	for (int j=0;j<data->ball.num;j++){
-		data->ball[j].index = f->read_int();
-		data->ball[j].radius = f->read_float();
+	data->phys_mesh->ball.resize(f->read_int());
+	for (auto &b: data->phys_mesh->ball){
+		b.index = f->read_int();
+		b.radius = f->read_float();
 	}
 
 	// polys
-	data->polyhedron.resize(f->read_int());
-	for (auto &p: data->polyhedron) {
+	data->phys_mesh->polyhedron.resize(f->read_int());
+	for (auto &p: data->phys_mesh->polyhedron) {
 		p.NumFaces = f->read_int();
 		for (int k=0;k<p.NumFaces;k++){
 			p.Face[k].NumVertices = f->read_int();
@@ -377,15 +379,15 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 	f->read_int();
 
 	// balls
-	data->ball.resize(f->read_int());
-	for (int j=0;j<data->ball.num;j++){
-		data->ball[j].index = f->read_int();
-		data->ball[j].radius = f->read_float();
+	data->phys_mesh->ball.resize(f->read_int());
+	for (auto &b: data->phys_mesh->ball){
+		b.index = f->read_int();
+		b.radius = f->read_float();
 	}
 
 	// polys
-	data->polyhedron.resize(f->read_int());
-	for (auto &p: data->polyhedron){
+	data->phys_mesh->polyhedron.resize(f->read_int());
+	for (auto &p: data->phys_mesh->polyhedron){
 		p.NumFaces = f->read_int();
 		for (int k=0;k<p.NumFaces;k++){
 			p.Face[k].NumVertices = f->read_int();
@@ -655,14 +657,14 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 						}
 					}
 					t.normal_dirty = true;
-					data->polygon.add(t);
+					data->mesh->polygon.add(t);
 				}
 				f->read_bool();
 				f->read_bool();
 				f->read_int();
 			}
 			//data->end_action_group();
-			data->build_topology();
+			data->mesh->build_topology();
 		}else if (s == "// Cylinders"){
 			int n = f->read_int();
 			for (int i=0; i<n; i++){
@@ -671,7 +673,7 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 				c.index[1] = f->read_int();
 				c.radius = f->read_float();
 				c.round = f->read_bool();
-				data->cylinder.add(c);
+				data->phys_mesh->cylinder.add(c);
 			}
 		}else if (s == "// Script Vars"){
 			int n = f->read_int();
@@ -722,7 +724,7 @@ void FormatModel::_load(const string &filename, DataModel *data, bool deep) {
 	if (deep){
 
 		// import...
-		if (data->polygon.num == 0)
+		if (data->mesh->polygon.num == 0)
 			data->importFromTriangleSkin(1);
 
 		for (ModelMove &m: data->move)
@@ -862,14 +864,14 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 			f->write_int(Skin[0].Triangle[j].Index[k]);*/
 
 	// balls
-	f->write_int(data->ball.num);
-	for (int j=0;j<data->ball.num;j++){
-		f->write_int(data->ball[j].index);
-		f->write_float(data->ball[j].radius);
+	f->write_int(data->phys_mesh->ball.num);
+	for (auto &b: data->phys_mesh->ball){
+		f->write_int(b.index);
+		f->write_float(b.radius);
 	}
 
-	f->write_int(data->polyhedron.num);
-	for (auto &p: data->polyhedron) {
+	f->write_int(data->phys_mesh->polyhedron.num);
+	for (auto &p: data->phys_mesh->polyhedron) {
 		f->write_int(p.NumFaces);
 		for (int k=0;k<p.NumFaces;k++){
 			f->write_int(p.Face[k].NumVertices);
@@ -1083,8 +1085,8 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 	f->write_str(data->meta_data.name);
 	f->write_str(data->meta_data.description);
 
-	// inventary
-	f->write_comment("// Inventary");
+	// inventory
+	f->write_comment("// Inventory");
 	f->write_int(data->meta_data.inventary.num);
 	for (int i=0;i<data->meta_data.inventary.num;i++){
 		f->write_str(data->meta_data.inventary[i]);
@@ -1109,10 +1111,10 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 	}
 
 
-	if (data->cylinder.num > 0){
+	if (data->phys_mesh->cylinder.num > 0){
 		f->write_comment("// Cylinders");
-		f->write_int(data->cylinder.num);
-		for (auto &c: data->cylinder){
+		f->write_int(data->phys_mesh->cylinder.num);
+		for (auto &c: data->phys_mesh->cylinder){
 			f->write_int(c.index[0]);
 			f->write_int(c.index[1]);
 			f->write_float(c.radius);
@@ -1137,8 +1139,8 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 	}
 	f->write_comment("// Polygons");
 	f->write_int(1);
-	f->write_int(data->polygon.num);
-	for (ModelPolygon &t: data->polygon){
+	f->write_int(data->mesh->polygon.num);
+	for (auto &t: data->mesh->polygon){
 		f->write_int(t.side.num);
 		f->write_int(t.material);
 		for (ModelPolygonSide &ss: t.side){

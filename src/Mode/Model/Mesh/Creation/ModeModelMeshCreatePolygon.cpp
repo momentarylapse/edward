@@ -27,7 +27,7 @@ ModeModelMeshCreatePolygon::ModeModelMeshCreatePolygon(ModeBase *_parent) :
 
 void ModeModelMeshCreatePolygon::on_start()
 {
-	for (ModelVertex &v: data->vertex)
+	for (ModelVertex &v: data->mesh->vertex)
 		v.is_special = false;
 
 	multi_view->set_allow_select(false);
@@ -38,7 +38,7 @@ void ModeModelMeshCreatePolygon::on_start()
 
 void ModeModelMeshCreatePolygon::on_end()
 {
-	for (ModelVertex &v: data->vertex)
+	for (ModelVertex &v: data->mesh->vertex)
 		v.is_special = false;
 }
 
@@ -50,15 +50,15 @@ void ModeModelMeshCreatePolygon::on_draw_win(MultiView::Window *win)
 	nix::SetColor(scheme.CREATION_LINE);
 	set_wide_lines(scheme.LINE_WIDTH_MEDIUM);
 	for (int i=1;i<selection.num;i++){
-		vector pa = data->vertex[selection[i - 1]].pos;
-		vector pb = data->vertex[selection[i    ]].pos;
+		vector pa = data->mesh->vertex[selection[i - 1]].pos;
+		vector pb = data->mesh->vertex[selection[i    ]].pos;
 		nix::DrawLine3D(pa, pb);
 	}
 	if (selection.num > 0){
 		if (multi_view->hover.index >= 0)
-			nix::DrawLine3D(data->vertex[selection.back()].pos, data->vertex[multi_view->hover.index].pos);
+			nix::DrawLine3D(data->mesh->vertex[selection.back()].pos, data->mesh->vertex[multi_view->hover.index].pos);
 		else
-			nix::DrawLine3D(data->vertex[selection.back()].pos, multi_view->get_cursor());
+			nix::DrawLine3D(data->mesh->vertex[selection.back()].pos, multi_view->get_cursor());
 	}
 }
 
@@ -98,9 +98,9 @@ void ModeModelMeshCreatePolygon::on_left_button_down()
 
 	}else{
 		data->addVertex(multi_view->get_cursor());
-		selection.add(data->vertex.num - 1);
+		selection.add(data->mesh->vertex.num - 1);
 	}
-	data->vertex[selection.back()].is_special = true;
+	data->mesh->vertex[selection.back()].is_special = true;
 	message = format(_("Choose polygon -> [Ctrl + Return]"), selection.num);
 }
 

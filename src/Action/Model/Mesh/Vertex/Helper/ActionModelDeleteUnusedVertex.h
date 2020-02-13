@@ -10,10 +10,11 @@
 
 #include "../../../../Action.h"
 #include "../../../../../lib/math/math.h"
+#include "../../../../../Data/Model/DataModel.h" // can't we use Array<ModelEffect> ?!?!?
+
 class ModelEffect;
 
-class ActionModelDeleteUnusedVertex: public Action
-{
+class ActionModelDeleteUnusedVertex: public Action {
 public:
 	ActionModelDeleteUnusedVertex(int _vertex);
 	virtual ~ActionModelDeleteUnusedVertex(){}

@@ -13,6 +13,7 @@
 #include "../Mesh/ModeModelMesh.h"
 #include "../ModeModel.h"
 #include "../../../lib/nix/nix.h"
+#include "../../../Data/Model/ModelSelection.h"
 
 ModeModelAnimationSkeleton *mode_model_animation_skeleton = NULL;
 
@@ -84,8 +85,8 @@ void ModeModelAnimationSkeleton::on_update(Observable* o, const string &message)
 
 bool bone_hover(const MultiView::SingleData *pp, MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data) {
 	auto *me = (ModeModelAnimationSkeleton*)user_data;
-	for (auto &p: me->data->polygon) {
-		if (pp == &mode_model_animation->bone[me->data->vertex[p.side[0].vertex].bone_index]) {
+	for (auto &p: me->data->mesh->polygon) {
+		if (pp == &mode_model_animation->bone[me->data->mesh->vertex[p.side[0].vertex].bone_index]) {
 			if (poly_hover(&p, win, m, tp, z, user_data, mode_model_animation->vertex))
 				return true;
 		}
@@ -118,8 +119,8 @@ void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win)
 	mode_model_mesh->vb_hover->clear();
 
 
-	for (ModelPolygon &p: data->polygon)
-		if (data->vertex[p.side[0].vertex].bone_index == multi_view->hover.index)
+	for (ModelPolygon &p: data->mesh->polygon)
+		if (data->mesh->vertex[p.side[0].vertex].bone_index == multi_view->hover.index)
 			p.addToVertexBuffer(mode_model_animation->vertex, mode_model_mesh->vb_hover, 1);
 
 
@@ -146,15 +147,15 @@ void ModeModelAnimationSkeleton::on_update_menu()
 
 void ModeModelAnimationSkeleton::updateSelection()
 {
-	foreachi(ModelBone &b, data->bone, i)
+	foreachi(auto &b, data->bone, i)
 		b.is_selected = mode_model_animation->bone[i].is_selected;
 
 	// also select children?
 	if (select_recursive){
 		// this works thanks to lucky circumstances... might break in the future
-		foreachi(ModelBone &b, data->bone, i)
+		foreachi(auto &b, data->bone, i)
 			if (b.is_selected){
-				for (ModelBone &bc: data->bone)
+				for (auto &bc: data->bone)
 					if (bc.parent == i)
 						bc.is_selected = true;
 			}
@@ -162,7 +163,7 @@ void ModeModelAnimationSkeleton::updateSelection()
 
 
 	// select geometry
-	for (auto &v: data->vertex)
+	for (auto &v: data->mesh->vertex)
 		v.is_selected = data->bone[v.bone_index].is_selected;
 	data->selectionFromVertices();
 
@@ -171,14 +172,14 @@ void ModeModelAnimationSkeleton::updateSelection()
 
 void ModeModelAnimationSkeleton::copy()
 {
-	int n = data->getNumSelectedBones();
+	int n = data->get_selection().bone.num;
 	if (n == 0){
 		ed->set_message(_("nothing selected"));
 		return;
 	}else if (n == 1){
 		temp.clear();
 		ModelFrame f;
-		foreachi(ModelBone &b, data->bone, i)
+		foreachi(auto &b, data->bone, i)
 			if (b.is_selected){
 				f.skel_ang.add(mode_model_animation->cur_move()->frame[current_frame].skel_ang[i]);
 				f.skel_dpos.add(mode_model_animation->cur_move()->frame[current_frame].skel_dpos[i]);
@@ -199,10 +200,10 @@ void ModeModelAnimationSkeleton::paste()
 		return;
 	}
 	data->begin_action_group("paste-animation");
-	int n = data->getNumSelectedBones();
+	int n = data->get_selection().bone.num;
 	int nt = temp[0].skel_ang.num;
 	if (nt == 1){
-		foreachi(ModelBone &b, data->bone, i)
+		foreachi(auto &b, data->bone, i)
 			if (b.is_selected)
 				data->animationSetBone(current_move, current_frame, i, temp[0].skel_dpos[0], temp[0].skel_ang[0]);
 		if (n == 1)
@@ -210,7 +211,7 @@ void ModeModelAnimationSkeleton::paste()
 		else
 			ed->set_message(_("Animation pasted - single bone onto multiple"));
 	}else{
-		foreachi(ModelBone &b, data->bone, i)
+		foreachi(auto &b, data->bone, i)
 			if (b.is_selected)
 				data->animationSetBone(current_move, current_frame, i, temp[0].skel_dpos[i], temp[0].skel_ang[i]);
 		ed->set_message(format(_("Animation inserted - on %d bones"), n));
