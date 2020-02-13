@@ -126,13 +126,11 @@ bool ModelPolygon::inRect(MultiView::Window *win, rect &r, void *user_data)
 }
 
 
-void MeshSelectionModePolygon::update_selection()
-{
+void MeshSelectionModePolygon::update_selection() {
 	data->selectionFromPolygons();
 }
 
-void MeshSelectionModePolygon::update_multi_view()
-{
+void MeshSelectionModePolygon::update_multi_view() {
 	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	multi_view->add_data(	MVD_MODEL_POLYGON,
