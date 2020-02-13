@@ -279,6 +279,9 @@ class ModelMetaData
 	float[] script_var
 	void __assign__(ModelMetaData other)
 
+class ModelSelection
+	int[] vertex, polygon, edge
+
 class DataModel extends Data
 	
 	# properties
@@ -317,34 +320,34 @@ class DataModel extends Data
 
 	ModelMetaData meta_data
 	
-	extern void ClearSelection()
-	extern void SelectionFromVertices()
-	extern void SelectionFromPolygons()
-	#extern void SelectionFromSurfaces()
+	extern void clear_selection()
+	extern void selection_from_vertices()
+	extern void selection_from_polygons()
 	#extern void SelectOnlySurface(ModelSurface s)
 	
-	extern void AddVertex(vector pos, int bone_index, int normal_mode)
-	extern ModelPolygon *AddTriangle(int a, int b, int c, int material)
-	extern ModelPolygon *AddPolygon(int[] v, int material)
+	extern void add_vertex(vector pos, int bone_index, int normal_mode)
+	extern ModelPolygon *add_triangle(int a, int b, int c, int material)
+	extern ModelPolygon *add_polygon(int[] v, int material)
+	extern void delete_polygon(int index)
 	
-	extern void DeleteSelection(bool greedy)
-	extern void InvertSelection()
-	extern void SubtractSelection()
+	extern void delete_selection(ModelSelection s, bool greedy)
+	extern void invert_polygons(ModelSelection s)
+	extern void subtract_selection()
 #	extern void CutOutSelection()
-	extern void ConvertSelectionToTriangles()
+	extern void convert_selection_to_triangles()
 #	extern void AlignToGridSelection(float grid_d)
 #	extern void NearifySelectedVertices()
 #	extern void CollapseSelectedVertices()
-	extern void BevelSelectedVertices(float radius)
+	extern void bevel_selected_vertices(float radius)
 #	extern void FlattenSelectedVertices()
-	extern void TriangulateSelectedVertices()
-	extern void ExtrudeSelectedPolygons(float offset)
+	extern void triangulate_selected_vertices()
+	extern void extrude_selected_polygons(float offset)
 #	extern void AutoWeldSelectedSurfaces(float d)
 #	extern void SetNormalModeSelection(int mode)
 #	extern void SetNormalModeAll(int mode)
 #	extern void SetMaterialSelection(int material)
 #	extern void Easify(float factor)
-	extern void PasteGeometry(Geometry g, int default_material)
+	extern void paste_geometry(Geometry g, int default_material)
 	
 	extern void add_animation(int index, int type)
 	extern void duplicate_animation(int source, int target)

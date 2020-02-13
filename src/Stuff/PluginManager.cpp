@@ -111,7 +111,6 @@ void PluginManager::init() {
 
 	Kaba::declare_class_size("ModelEffect", sizeof(ModelEffect));
 	Kaba::declare_class_element("ModelEffect.kind", &ModelEffect::type);
-	Kaba::declare_class_element("ModelEffect.surface", &ModelEffect::surface);
 	Kaba::declare_class_element("ModelEffect.vertex", &ModelEffect::vertex);
 	Kaba::declare_class_element("ModelEffect.size", &ModelEffect::size);
 	Kaba::declare_class_element("ModelEffect.speed", &ModelEffect::speed);
@@ -196,20 +195,21 @@ void PluginManager::init() {
 	Kaba::declare_class_element("DataModel.TimeScale", &DataModel::TimeScale);
 	Kaba::declare_class_element("DataModel.TimeParam", &DataModel::TimeParam);
 	Kaba::declare_class_element("DataModel.SimFrame", &DataModel::SimFrame);*/
-	Kaba::link_external_class_func("DataModel.ClearSelection", &DataModel::clearSelection);
-	Kaba::link_external_class_func("DataModel.InvertSelection", &DataModel::invertSelection);
-	Kaba::link_external_class_func("DataModel.SelectionFromVertices", &DataModel::selectionFromVertices);
-	Kaba::link_external_class_func("DataModel.SelectionFromPolygons", &DataModel::selectionFromPolygons);
-	Kaba::link_external_class_func("DataModel.AddVertex", &DataModel::addVertex);
-	Kaba::link_external_class_func("DataModel.AddTriangle", &DataModel::addTriangle);
-	Kaba::link_external_class_func("DataModel.AddPolygon", &DataModel::addPolygon);
-	Kaba::link_external_class_func("DataModel.DeleteSelection", &DataModel::deleteSelection);
-	Kaba::link_external_class_func("DataModel.SubtractSelection", &DataModel::subtractSelection);
-	Kaba::link_external_class_func("DataModel.ConvertSelectionToTriangles", &DataModel::convertSelectionToTriangles);
-	Kaba::link_external_class_func("DataModel.TriangulateSelectedVertices", &DataModel::triangulateSelectedVertices);
-	Kaba::link_external_class_func("DataModel.BevelSelectedVertices", &DataModel::bevelSelectedEdges);
-	Kaba::link_external_class_func("DataModel.ExtrudeSelectedPolygons", &DataModel::extrudeSelectedPolygons);
-	Kaba::link_external_class_func("DataModel.PasteGeometry", &DataModel::pasteGeometry);
+	Kaba::link_external_class_func("DataModel.clear_selection", &DataModel::clearSelection);
+	Kaba::link_external_class_func("DataModel.invert_polygons", &DataModel::invert_polygons);
+	Kaba::link_external_class_func("DataModel.selection_from_vertices", &DataModel::selectionFromVertices);
+	Kaba::link_external_class_func("DataModel.selection_from_polygons", &DataModel::selectionFromPolygons);
+	Kaba::link_external_class_func("DataModel.add_vertex", &DataModel::addVertex);
+	Kaba::link_external_class_func("DataModel.add_triangle", &DataModel::addTriangle);
+	Kaba::link_external_class_func("DataModel.add_polygon", &DataModel::addPolygon);
+	Kaba::link_external_class_func("DataModel.delete_selection", &DataModel::delete_selection);
+	Kaba::link_external_class_func("DataModel.delete_polygon", &DataModel::delete_polygon);
+	Kaba::link_external_class_func("DataModel.subtract_selection", &DataModel::subtractSelection);
+	Kaba::link_external_class_func("DataModel.convert_selection_to_triangles", &DataModel::convertSelectionToTriangles);
+	Kaba::link_external_class_func("DataModel.triangulate_selected_vertices", &DataModel::triangulateSelectedVertices);
+	Kaba::link_external_class_func("DataModel.bevel_selected_vertices", &DataModel::bevelSelectedEdges);
+	Kaba::link_external_class_func("DataModel.extrude_selected_polygons", &DataModel::extrudeSelectedPolygons);
+	Kaba::link_external_class_func("DataModel.paste_geometry", &DataModel::pasteGeometry);
 	Kaba::link_external_class_func("DataModel.add_animation", &DataModel::addAnimation);
 	Kaba::link_external_class_func("DataModel.duplicate_animation", &DataModel::duplicateAnimation);
 	Kaba::link_external_class_func("DataModel.delete_animation", &DataModel::deleteAnimation);

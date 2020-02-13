@@ -14,11 +14,9 @@
 #include "../../x/model.h"
 #include "../../x/material.h"
 #include "ModelPolygon.h"
-#include "ModelSurface.h"
 #include "ModelMaterial.h"
 
 class DataModel;
-class ModelSurface;
 class ModelMaterial;
 class Geometry;
 
@@ -37,7 +35,7 @@ public:
 
 
 struct ModelEffect {
-	int type, surface, vertex;
+	int type, vertex;
 	float size, speed, intensity;
 	color colors[3];
 	bool inv_quad;
@@ -191,16 +189,11 @@ public:
 
 class ModelSelectionState {
 public:
-	struct EdgeSelection {
-		EdgeSelection(){};
-		EdgeSelection(int v[2]);
-		int v[2];
-	};
 	Set<int> vertex;
-	Set<int> surface;
 	Set<int> polygon;
-	Array<EdgeSelection> edge;
+	Set<int> edge;
 	void clear();
+	void expand_to_surfaces(DataModel *m);
 };
 
 class ModelScriptVariable {
@@ -236,7 +229,6 @@ public:
 	int getNumSelectedSkinVertices();
 	int getNumSelectedEdges();
 	int getNumSelectedPolygons();
-	int getNumSelectedSurfaces();
 	//int GetNumSelectedBalls();
 	int getNumSelectedBones();
 	int getNumPolygons();
@@ -245,9 +237,8 @@ public:
 	void selectionFromVertices();
 	void selectionFromPolygons();
 	void selectionFromEdges();
-	void getSelectionState(ModelSelectionState &s);
-	void setSelectionState(ModelSelectionState &s);
-	Set<int> getSelectedVertices();
+	ModelSelectionState get_selection() const;
+	void set_selection(const ModelSelectionState &s);
 
 
 	float getRadius();
@@ -267,9 +258,10 @@ public:
 	ModelPolygon *addPolygon(const Array<int> &v, int material);
 	ModelPolygon *addPolygonWithSkin(const Array<int> &v, const Array<vector> &sv, int material);
 
-	void deleteSelection(bool greedy = false);
-	void invertSelection();
-	void invertSurfaces(const Set<int> &surfaces);
+	void delete_polygon(int index);
+
+	void delete_selection(const ModelSelectionState &s, bool greedy = false);
+	void invert_polygons(const ModelSelectionState &s);
 	void subtractSelection();
 	void andSelection();
 	void cutOutSelection();
@@ -289,7 +281,7 @@ public:
 	void copyGeometry(Geometry &geo); // not an action...
 	void pasteGeometry(Geometry &geo, int default_material);
 	void easify(float factor);
-	void subdivideSelectedSurfaces();
+	void subdivideSelectedSurfaces(const ModelSelectionState &s);
 	void automap(int material, int texture_level);
 
 
@@ -329,8 +321,6 @@ public:
 	int add_edge_for_new_polygon(int a, int b, int tria, int side);
 	void remove_obsolete_edge(int index);
 	void merge_edges();
-
-	int find_edge(int vertex0, int vertex1);
 
 	bool is_inside(const vector &p);
 	void begin_inside_tests();

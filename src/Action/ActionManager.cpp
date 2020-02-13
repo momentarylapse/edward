@@ -97,8 +97,6 @@ void *ActionManager::execute(Action *a)
 	}
 }
 
-
-
 void ActionManager::undo()
 {
 	clear_preview();

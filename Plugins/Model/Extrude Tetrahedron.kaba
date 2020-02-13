@@ -19,17 +19,17 @@ void main()
 			float R = ((q[1]-q[0]).length() + (q[2]-q[1]).length() + (q[0]-q[2]).length()) / 3
 			float h = sqrt(2.0/3) * R
 			
-			data_model.AddVertex((q[0]+q[1]+q[2])/3 + p.temp_normal * h, 0, 1)
+			data_model.add_vertex((q[0]+q[1]+q[2])/3 + p.temp_normal * h, 0, 1)
 	
-	data_model.ClearSelection()
-	for i in poly
-		data_model.polygon[i].is_selected = true
-	data_model.DeleteSelection(false)
+	#data_model.ClearSelection()
+	for i in 0:len(poly)
+		data_model.delete_polygon(poly[len(poly)-i-1])
+	#data_model.DeleteSelection(false)
 	
 	for v,i in vv
-		data_model.AddTriangle(v[0], v[1], nv+i, 0)
-		data_model.AddTriangle(v[1], v[2], nv+i, 0)
-		data_model.AddTriangle(v[2], v[0], nv+i, 0)
+		data_model.add_triangle(v[0], v[1], nv+i, 0)
+		data_model.add_triangle(v[1], v[2], nv+i, 0)
+		data_model.add_triangle(v[2], v[0], nv+i, 0)
 	
 	data_model.EndActionGroup()
 

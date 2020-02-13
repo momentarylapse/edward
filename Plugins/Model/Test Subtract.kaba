@@ -9,4 +9,4 @@ void main()
 	del a
 	del b
 	
-	data_model.PasteGeometry(c, 0)
+	data_model.paste_geometry(c, 0)

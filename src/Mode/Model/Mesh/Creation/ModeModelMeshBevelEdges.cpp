@@ -19,7 +19,7 @@ ModeModelMeshBevelEdges::ModeModelMeshBevelEdges(ModeBase *_parent) :
 	message = _("Scale radius [left click = done]");
 
 
-	data->getSelectionState(selection);
+	selection = data->get_selection();
 
 	// find maximal radius
 	rad_max = -1;
@@ -56,7 +56,7 @@ void ModeModelMeshBevelEdges::on_mouse_move()
 	radius += (hui::GetEvent()->dx) / multi_view->active_win->zoom();
 	radius = clampf(radius, rad_max * 0.001f, rad_max);
 
-	data->setSelectionState(selection);
+	data->set_selection(selection);
 	if (!data->action_manager->preview(new ActionModelBevelEdges(radius)))
 		abort();
 
@@ -67,7 +67,7 @@ void ModeModelMeshBevelEdges::on_left_button_down()
 {
 	data->action_manager->clear_preview();
 
-	data->setSelectionState(selection);
+	data->set_selection(selection);
 	data->bevelSelectedEdges(radius);
 	abort();
 }

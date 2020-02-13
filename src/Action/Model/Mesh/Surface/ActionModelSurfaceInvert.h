@@ -13,10 +13,9 @@
 class Data;
 class DataModel;
 
-class ActionModelSurfaceInvert : public Action
-{
+class ActionModelSurfaceInvert : public Action {
 public:
-	ActionModelSurfaceInvert(const Set<int> &surfaces);
+	ActionModelSurfaceInvert(const Set<int> &poly, bool consistent);
 	string name(){	return "ModelSurfaceInvert";	}
 
 	void *execute(Data *d);
@@ -25,7 +24,11 @@ public:
 	virtual bool was_trivial();
 
 private:
-	void InvertSurface(DataModel *m);
+	void invert_polygons(DataModel *m);
+	void invert_edges(DataModel *m);
+	Set<int> poly;
+	Set<int> edges;
+	bool consistent;
 };
 
 #endif /* ACTIONMODELSURFACEINVERT_H_ */

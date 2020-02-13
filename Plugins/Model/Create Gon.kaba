@@ -9,12 +9,12 @@ void main()
 	
 	data_model.BeginActionGroup("CreateGon")
 	
-	data_model.AddVertex(vector.0, 0, -1)
-	data_model.AddVertex(vector.EZ * height, 0, -1)
+	data_model.add_vertex(vector.0, 0, -1)
+	data_model.add_vertex(vector.EZ * height, 0, -1)
 	for i in 0:N
 		float w = float(i) * 2 * pi / N
-		data_model.AddVertex(vector(cos(w), sin(w), 0) * R, 0, -1)
-		data_model.AddVertex(vector(cos(w), sin(w), 0) * R + vector.EZ * height, 0, -1)
+		data_model.add_vertex(vector(cos(w), sin(w), 0) * R, 0, -1)
+		data_model.add_vertex(vector(cos(w), sin(w), 0) * R + vector.EZ * height, 0, -1)
 	
 	int[] v
 	for i in 0:N
@@ -22,9 +22,9 @@ void main()
 		v.add(nv + 2 + i * 2)
 		v.add(nv + 3 + i * 2)
 		v.add(nv + 3 + ((i + 1) % N) * 2)
-		data_model.AddTriangle(nv    , v[1], v[0], 0)
-		data_model.AddTriangle(nv + 1, v[3], v[2], 0)
-		data_model.AddPolygon(v, 0)
+		data_model.add_triangle(nv    , v[1], v[0], 0)
+		data_model.add_triangle(nv + 1, v[3], v[2], 0)
+		data_model.add_polygon(v, 0)
 		v.clear()
 		
 	data_model.EndActionGroup()

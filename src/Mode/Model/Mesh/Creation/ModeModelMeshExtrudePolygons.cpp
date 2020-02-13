@@ -15,7 +15,7 @@
 ModeModelMeshExtrudePolygons::ModeModelMeshExtrudePolygons(ModeBase *_parent, bool _independent) :
 	ModeCreation<DataModel>("ModelMeshExtrudePolygons", _parent)
 {
-	data->getSelectionState(selection);
+	selection = data->get_selection();
 
 	independent = _independent;
 	offset = 0;
@@ -30,7 +30,7 @@ void ModeModelMeshExtrudePolygons::on_end() {
 void ModeModelMeshExtrudePolygons::on_left_button_down() {
 	cleanUp();
 
-	data->setSelectionState(selection);
+	data->set_selection(selection);
 	data->execute(new ActionModelExtrudePolygons(offset, independent));
 
 	abort();
@@ -50,7 +50,7 @@ void ModeModelMeshExtrudePolygons::on_draw_win(MultiView::Window *win) {
 }
 
 void ModeModelMeshExtrudePolygons::preview() {
-	data->setSelectionState(selection);
+	data->set_selection(selection);
 	if (!data->action_manager->preview(new ActionModelExtrudePolygons(offset, independent)))
 		abort();
 }

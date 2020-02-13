@@ -9,24 +9,21 @@
 #include "../../../../Data/Model/DataModel.h"
 #include <assert.h>
 
-ActionModelSurfaceInvert::ActionModelSurfaceInvert(const Set<int> &_surfaces)
-{
-	//surfaces = _surfaces;
+ActionModelSurfaceInvert::ActionModelSurfaceInvert(const Set<int> &_poly, bool _consistent) {
+	poly = _poly;
+	consistent = _consistent;
 }
 
-bool ActionModelSurfaceInvert::was_trivial()
-{
-	return true;//surfaces.num == 0;
+bool ActionModelSurfaceInvert::was_trivial() {
+	return poly.num == 0;
 }
 
-void ActionModelSurfaceInvert::InvertSurface(DataModel *m)
-{
-#if 0
-	s.testSanity("inv prae");
+void ActionModelSurfaceInvert::invert_polygons(DataModel *m) {
 
 	// flip polygons
-	foreachi(ModelPolygon &t, s.polygon, ti){
-		for (int k=0;k<t.side.num/2;k++){
+	for (int ti: poly) {
+		auto &t = m->polygon[ti];
+		for (int k=0; k<t.side.num/2; k++) {
 			int kk = t.side.num - k - 1;
 
 			// swap vertices
@@ -47,51 +44,49 @@ void ActionModelSurfaceInvert::InvertSurface(DataModel *m)
 			t.side[kk-1].edge = e;
 		}
 
+		for (int k=0; k<t.side.num; k++)
+			edges.add(t.side[k].edge);
+
 		// mark for update
 		t.normal_dirty = true;
 	}
 
+}
+
+void ActionModelSurfaceInvert::invert_edges(DataModel *m) {
 	// flip edges
-	for (ModelEdge &e: s.edge){
+	for (int ei: edges) {
+		auto &e = m->edge[ei];
 		// swap vertices
 		int v = e.vertex[0];
 		e.vertex[0] = e.vertex[1];
 		e.vertex[1] = v;
 
 		// relink sides
-		for (int k=0;k<e.ref_count;k++){
-			if (e.side[k] < s.polygon[e.polygon[k]].side.num - 1)
-				e.side[k] = s.polygon[e.polygon[k]].side.num - 2 - e.side[k];
-			s.polygon[e.polygon[k]].side[e.side[k]].edge_direction = k;
+		for (int k=0;k<e.ref_count;k++) {
+			if (e.side[k] < m->polygon[e.polygon[k]].side.num - 1)
+				e.side[k] = m->polygon[e.polygon[k]].side.num - 2 - e.side[k];
+			m->polygon[e.polygon[k]].side[e.side[k]].edge_direction = k;
 		}
 	}
-
-	s.testSanity("inv post");
-#endif
 }
 
-void *ActionModelSurfaceInvert::execute(Data *d)
-{
+void *ActionModelSurfaceInvert::execute(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
+	if (!consistent)
+		throw ActionException("inconsistent surface");
 
-#if 0
-	for (int surface: surfaces){
-
-		assert((surface >= 0) && (surface < m->surface.num));
-
-		InvertSurface(m->surface[surface]);
-	}
-#endif
-	msg_todo("ActionModelSurfaceInvert");
+	invert_polygons(m);
+	invert_edges(m);
 
 	return NULL;
 }
 
 
 
-void ActionModelSurfaceInvert::undo(Data *d)
-{
-	execute(d);
+void ActionModelSurfaceInvert::undo(Data *d) {
+	if (consistent)
+		execute(d);
 }
 
 

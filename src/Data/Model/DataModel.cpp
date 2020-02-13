@@ -28,6 +28,7 @@
 #include "../../Action/Model/Mesh/Polygon/ActionModelTriangulateSelection.h"
 #include "../../Action/Model/Mesh/Polygon/ActionModelMergePolygonsSelection.h"
 #include "../../Action/Model/Mesh/Polygon/ActionModelCutOutPolygons.h"
+#include "../../Action/Model/Mesh/Surface/Helper/ActionModelSurfaceDeletePolygon.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelSurfaceVolumeSubtract.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelSurfaceVolumeAnd.h"
 #include "../../Action/Model/Mesh/Surface/ActionModelSurfaceInvert.h"
@@ -60,6 +61,8 @@
 const string DataModel::MESSAGE_SKIN_CHANGE = "SkinChange";
 const string DataModel::MESSAGE_MATERIAL_CHANGE = "MaterialChange";
 const string DataModel::MESSAGE_TEXTURE_CHANGE = "TextureChange";
+
+bool selection_consistent_surfaces(const ModelSelectionState &s, DataModel *m);
 
 
 string ModelEffect::get_type()
@@ -1069,11 +1072,6 @@ int DataModel::getNumSelectedEdges()
 	return r;
 }
 
-int DataModel::getNumSelectedSurfaces()
-{
-	return 0;
-}
-
 int DataModel::getNumSelectedBones()
 {
 	int r = 0;
@@ -1154,16 +1152,14 @@ void DataModel::copyGeometry(Geometry &geo)
 		}
 }
 
-void DataModel::deleteSelection(bool greedy)
-{	execute(new ActionModelDeleteSelection(greedy));	}
+void DataModel::delete_selection(const ModelSelectionState &s, bool greedy)
+{	execute(new ActionModelDeleteSelection(s, greedy));	}
 
-void DataModel::invertSurfaces(const Set<int> &surfaces)
-{	execute(new ActionModelSurfaceInvert(surfaces));	}
+void DataModel::delete_polygon(int index)
+{	execute(new ActionModelSurfaceDeletePolygon(index));	}
 
-void DataModel::invertSelection()
-{
-	msg_todo("invert selection");
-	//invertSurfaces(getSelectedSurfaces());
+void DataModel::invert_polygons(const ModelSelectionState &s) {
+	execute(new ActionModelSurfaceInvert(s.polygon, selection_consistent_surfaces(s, this)));
 }
 
 void DataModel::subtractSelection()
@@ -1193,7 +1189,7 @@ void DataModel::pasteGeometry(Geometry& geo, int default_material)
 void DataModel::easify(float factor)
 {	execute(new ActionModelEasify(factor));	}
 
-void DataModel::subdivideSelectedSurfaces()
+void DataModel::subdivideSelectedSurfaces(const ModelSelectionState &s)
 {
 	//execute(new ActionModelSurfacesSubdivide(getSelectedSurfaces()));
 	msg_todo("subdivide");
@@ -1239,25 +1235,43 @@ void DataModel::selectionClearEffects()
 {	execute(new ActionModelClearEffects(this));	}
 
 
-void ModelSelectionState::clear()
-{
+void ModelSelectionState::clear() {
 	vertex.clear();
-	surface.clear();
 	polygon.clear();
+	edge.clear();
 }
 
-Set<int> DataModel::getSelectedVertices()
-{
-	Set<int> vv;
-	foreachi(ModelVertex &v, vertex, i)
-		if (v.is_selected)
-			vv.add(i);
-	return vv;
+bool selection_consistent_surfaces(const ModelSelectionState &s, DataModel *m) {
+	for (int ei: s.edge) {
+		auto &e = m->edge[ei];
+		if (!s.polygon.contains(e.polygon[0]))
+			return false;
+		if (!s.polygon.contains(e.polygon[1]))
+			return false;
+	}
+	return true;
 }
 
-void DataModel::getSelectionState(ModelSelectionState& s)
-{
-	s.clear();
+void ModelSelectionState::expand_to_surfaces(DataModel *m) {
+	while (true) {
+		bool changed = false;
+		for (auto &e: m->edge)
+			if (vertex.contains(e.vertex[0]) != vertex.contains(e.vertex[1])) {
+				vertex.add(e.vertex[0]);
+				vertex.add(e.vertex[1]);
+				changed = true;
+			}
+		if (!changed)
+			break;
+	}
+	foreachi (auto &p, m->polygon, i)
+		for (int k=0; k<p.side.num; k++)
+			if (vertex.contains(p.side[k].vertex))
+				polygon.add(i);
+}
+
+ModelSelectionState DataModel::get_selection() const {
+	ModelSelectionState s;
 	foreachi(ModelVertex &v, vertex, i)
 		if (v.is_selected)
 			s.vertex.add(i);
@@ -1266,31 +1280,19 @@ void DataModel::getSelectionState(ModelSelectionState& s)
 			s.polygon.add(j);
 	foreachi(ModelEdge &e, edge, j)
 		if (e.is_selected)
-			s.edge.add(e.vertex);
+			s.edge.add(j);
+	return s;
 }
 
-void DataModel::setSelectionState(ModelSelectionState& s)
-{
+void DataModel::set_selection(const ModelSelectionState& s) {
 	clearSelection();
 	for (int v: s.vertex)
 		vertex[v].is_selected = true;
 	for (int p: s.polygon)
 		polygon[p].is_selected = true;
-	for (auto &es: s.edge) {
-			int ne = find_edge(es.v[0], es.v[1]);
-			if (ne >= 0)
-				edge[ne].is_selected = true;
-		}
+	for (int e: s.edge)
+		edge[e].is_selected = true;
 	notify(MESSAGE_SELECTION);
-}
-
-
-int DataModel::find_edge(int vertex0, int vertex1)
-{
-	foreachi(ModelEdge &e, edge, i)
-		if (((e.vertex[0] == vertex0) && (e.vertex[1] == vertex1)) || ((e.vertex[1] == vertex0) && (e.vertex[0] == vertex1)))
-			return i;
-	return -1;
 }
 
 
@@ -1334,12 +1336,6 @@ int DataModel::GetNumMarkedKonvPolys()
 			r++;
 	return r;
  }*/
-
-ModelSelectionState::EdgeSelection::EdgeSelection(int _v[2])
-{
-	v[0] = _v[0];
-	v[1] = _v[1];
-}
 
 float ModelMove::duration()
 {

@@ -170,8 +170,7 @@ void ModeModelMeshTexture::on_draw()
 		int nv = data->getNumSelectedVertices();
 		int ne = data->getNumSelectedEdges();
 		int np = data->getNumSelectedPolygons();
-		int ns = data->getNumSelectedSurfaces();
-		draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons, %d surfaces", nv, ne, np, ns));
+		draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons", nv, ne, np));
 	}
 }
 

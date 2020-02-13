@@ -49,6 +49,7 @@ void *ActionModelSurfaceVolumeSubtract::compose(Data *d)
 
 void surf2geo(ModelSurface *s, Geometry &g)
 {
+#if 0
 	g.clear();
 	for (int v: s->vertex)
 		g.vertex.add(s->model->vertex[v]);
@@ -58,6 +59,7 @@ void surf2geo(ModelSurface *s, Geometry &g)
 			pp.side[i].vertex = s->vertex.find(p.side[i].vertex);
 		g.polygon.add(pp);
 	}
+#endif
 }
 
 void ActionModelSurfaceVolumeSubtract::SurfaceSubtract(DataModel *m, ModelSurface *a, int ai, ModelSurface *b, Array<Geometry> &geos)

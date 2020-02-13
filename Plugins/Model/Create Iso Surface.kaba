@@ -40,34 +40,34 @@ void check_tetra(vector[] p, float[] ff, int[] i)
 		int a = i[e[k*2]]
 		int b = i[e[k*2+1]]
 		if ff[a] * ff[b] < 0
-			data_model.AddVertex((p[a] + p[b]) / 2, 0, 0)
+			data_model.add_vertex((p[a] + p[b]) / 2, 0, 0)
 			mask += 1<<k
 	if len(data_model.vertex) == nv + 3
 		int ex = single_p_from_mask(mask)
 		let sig = [1.0, -1.0, 1.0, -1.0]
 		if ff[i[ex]] * sig[ex] < 0
-			data_model.AddTriangle(nv, nv+2, nv+1, 0)
+			data_model.add_triangle(nv, nv+2, nv+1, 0)
 		else
-			data_model.AddTriangle(nv, nv+1, nv+2, 0)
+			data_model.add_triangle(nv, nv+1, nv+2, 0)
 	else if len(data_model.vertex) == nv + 4
 		int ex = some_p_from_mask(mask)
 		if ex < 0
 			return
 		if ff[i[ex]] < 0
-			data_model.AddTriangle(nv+1, nv, nv+2, 0)
-			data_model.AddTriangle(nv+1, nv+2, nv+3, 0)
+			data_model.add_triangle(nv+1, nv, nv+2, 0)
+			data_model.add_triangle(nv+1, nv+2, nv+3, 0)
 		else
-			data_model.AddTriangle(nv, nv+1, nv+2, 0)
-			data_model.AddTriangle(nv+2, nv+1, nv+3, 0)
+			data_model.add_triangle(nv, nv+1, nv+2, 0)
+			data_model.add_triangle(nv+2, nv+1, nv+3, 0)
 
 void make_tetra(vector[] p, int[] i)
 	int nv = len(data_model.vertex)
 	for k in i
-		data_model.AddVertex(p[k], 0, 1)
-	data_model.AddTriangle(nv+1, nv, nv+2, 0)
-	data_model.AddTriangle(nv, nv+1, nv+3, 0)
-	data_model.AddTriangle(nv+2, nv, nv+3, 0)
-	data_model.AddTriangle(nv+1, nv+2, nv+3, 0)
+		data_model.add_vertex(p[k], 0, 1)
+	data_model.add_triangle(nv+1, nv, nv+2, 0)
+	data_model.add_triangle(nv, nv+1, nv+3, 0)
+	data_model.add_triangle(nv+2, nv, nv+3, 0)
+	data_model.add_triangle(nv+1, nv+2, nv+3, 0)
 	
 
 # process cube cell

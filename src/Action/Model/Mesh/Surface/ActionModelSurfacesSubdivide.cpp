@@ -29,6 +29,7 @@ void *ActionModelSurfacesSubdivide::compose(Data *d)
 // Catmull-Clark subdivision
 void ActionModelSurfacesSubdivide::SubdivideSurface(DataModel *m, ModelSurface *s, int surface)
 {
+#if 0
 	// new polygon vertices
 	int nv_p0 = m->vertex.num;
 	Array<vector> new_poly_vert;
@@ -112,5 +113,6 @@ void ActionModelSurfacesSubdivide::SubdivideSurface(DataModel *m, ModelSurface *
 	for (int i=0; i<nv.num; i++)
 		addSubAction(new ActionModelSurfaceAddPolygon(surface, nv[i], nmat[i], nsv[i]), m);
 		*/
+#endif
 }
 

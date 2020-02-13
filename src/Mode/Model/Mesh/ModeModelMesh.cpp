@@ -120,7 +120,7 @@ void ModeModelMesh::on_end()
 void ModeModelMesh::on_command(const string & id)
 {
 	if (id == "delete")
-		data->deleteSelection(selection_mode == selection_mode_vertex);
+		data->delete_selection(data->get_selection(), selection_mode == selection_mode_vertex);
 	if (id == "copy")
 		copy();
 	if (id == "paste")
@@ -135,7 +135,7 @@ void ModeModelMesh::on_command(const string & id)
 	if (id == "volume_and")
 		data->andSelection();
 	if (id == "invert_trias")
-		data->invertSelection();
+		data->invert_polygons(data->get_selection());
 	if (id == "extrude_triangles")
 		ed->set_mode(new ModeModelMeshExtrudePolygons(this, false));
 	if (id == "extrude_triangles_independent")
@@ -157,7 +157,7 @@ void ModeModelMesh::on_command(const string & id)
 	if (id == "triangulate_selection")
 		data->triangulateSelectedVertices();
 	if (id == "subdivide_surfaces")
-		data->subdivideSelectedSurfaces();
+		data->subdivideSelectedSurfaces(data->get_selection());
 
 	if (id == "new_point")
 		ed->set_mode(new ModeModelMeshCreateVertex(this));
@@ -248,8 +248,7 @@ void ModeModelMesh::on_draw()
 		int nv = data->getNumSelectedVertices();
 		int ne = data->getNumSelectedEdges();
 		int np = data->getNumSelectedPolygons();
-		int ns = data->getNumSelectedSurfaces();
-		draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons, %d surfaces", nv, ne, np, ns));
+		draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons", nv, ne, np));
 	}
 }
 
