@@ -24,14 +24,13 @@ MeshSelectionModeEdge::MeshSelectionModeEdge(ModeModelMesh *_parent) :
 }
 
 
-void MeshSelectionModeEdge::on_start()
-{
+void MeshSelectionModeEdge::on_start() {
 }
 
 
 bool ModelEdge::hover(MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data) {
 
-	DataModel *m = mode_model_mesh->data; // surf->model;
+	auto *m = mode_model_mesh->data->edit_mesh; // surf->model;
 
 	// project all points
 	vector pp0 = win->project(m->show_vertices[vertex[0]].pos);
@@ -65,7 +64,7 @@ bool ModelEdge::hover(MultiView::Window *win, vector &M, vector &tp, float &z, v
 }
 
 bool ModelEdge::inRect(MultiView::Window *win, rect &r, void *user_data) {
-	DataModel *m = mode_model_mesh->data; // surf->model;
+	auto *m = mode_model_mesh->data->edit_mesh; // surf->model;
 
 	// all vertices within rectangle?
 	for (int k=0;k<2;k++){
@@ -78,23 +77,20 @@ bool ModelEdge::inRect(MultiView::Window *win, rect &r, void *user_data) {
 	return true;
 }
 
-void MeshSelectionModeEdge::update_selection()
-{
-	data->selectionFromEdges();
+void MeshSelectionModeEdge::update_selection() {
+	data->edit_mesh->selection_from_edges();
 }
 
-void MeshSelectionModeEdge::update_multi_view()
-{
+void MeshSelectionModeEdge::update_multi_view() {
 	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	multi_view->add_data(	MVD_MODEL_EDGE,
-			data->mesh->edge,
+			data->edit_mesh->edge,
 			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 }
 
-void MeshSelectionModeEdge::on_draw_win(MultiView::Window *win)
-{
+void MeshSelectionModeEdge::on_draw_win(MultiView::Window *win) {
 	if (multi_view->hover.type != MVD_MODEL_EDGE)
 		return;
 	if (multi_view->hover.index < 0)
@@ -103,13 +99,12 @@ void MeshSelectionModeEdge::on_draw_win(MultiView::Window *win)
 	nix::SetWire(false);
 	nix::SetZ(false, false);
 	set_wide_lines(scheme.LINE_WIDTH_MEDIUM);
-	auto &e = data->mesh->edge[multi_view->hover.index];
+	auto m = data->edit_mesh;
+	auto &e = m->edge[multi_view->hover.index];
 	Array<vector> p;
-	p.add(data->show_vertices[e.vertex[0]].pos);
-	p.add(data->show_vertices[e.vertex[1]].pos);
-	Array<color> c;
-	c.add(scheme.HOVER);
-	c.add(scheme.HOVER);
+	p.add(m->show_vertices[e.vertex[0]].pos);
+	p.add(m->show_vertices[e.vertex[1]].pos);
+	Array<color> c = {scheme.HOVER, scheme.HOVER};
 	nix::DrawLinesColored(p, c, false);
 	//nix::DrawLine3D(data->show_vertices[e.vertex[0]].pos, data->show_vertices[e.vertex[1]].pos);
 	nix::SetColor(White);
@@ -119,7 +114,6 @@ void MeshSelectionModeEdge::on_draw_win(MultiView::Window *win)
 
 
 
-void MeshSelectionModeEdge::on_end()
-{
+void MeshSelectionModeEdge::on_end() {
 }
 

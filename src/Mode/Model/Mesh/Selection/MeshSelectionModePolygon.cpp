@@ -24,16 +24,16 @@ MeshSelectionModePolygon::MeshSelectionModePolygon(ModeModelMesh *_parent) :
 {
 }
 
-void MeshSelectionModePolygon::on_draw_win(MultiView::Window *win)
-{
+void MeshSelectionModePolygon::on_draw_win(MultiView::Window *win) {
 	if ((multi_view->hover.index < 0) or (multi_view->hover.type != MVD_MODEL_POLYGON))
 		return;
 
 	parent->vb_hover->clear();
 
 
-	auto &p = data->mesh->polygon[multi_view->hover.index];
-	p.addToVertexBuffer(data->show_vertices, parent->vb_hover, 1);
+	auto *m = data->edit_mesh;
+	auto &p = m->polygon[multi_view->hover.index];
+	p.addToVertexBuffer(m->show_vertices, parent->vb_hover, 1);
 
 	nix::SetWire(false);
 	nix::SetOffset(-1.0f);
@@ -47,26 +47,23 @@ void MeshSelectionModePolygon::on_draw_win(MultiView::Window *win)
 
 
 
-void MeshSelectionModePolygon::on_end()
-{
+void MeshSelectionModePolygon::on_end() {
 }
 
 
 
-void MeshSelectionModePolygon::on_start()
-{
+void MeshSelectionModePolygon::on_start() {
 }
 
 
-bool poly_hover(ModelPolygon *pol, MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data, const Array<ModelVertex> &vertex)
-{
+bool poly_hover(ModelPolygon *pol, MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data, const Array<ModelVertex> &vertex) {
 	// care for the sense of rotation?
 	if (pol->temp_normal * win->getDirection() > 0)
 		return false;
 
 	// project all points
 	Array<vector> p;
-	for (int k=0;k<pol->side.num;k++){
+	for (int k=0;k<pol->side.num;k++) {
 		vector pp = win->project(vertex[pol->side[k].vertex].pos);
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
@@ -76,14 +73,14 @@ bool poly_hover(ModelPolygon *pol, MultiView::Window *win, vector &M, vector &tp
 	// test all sub-triangles
 	if (pol->triangulation_dirty)
 		pol->updateTriangulation(vertex);
-	for (int k=pol->side.num-3; k>=0; k--){
+	for (int k=pol->side.num-3; k>=0; k--) {
 		int a = pol->side[k].triangulation[0];
 		int b = pol->side[k].triangulation[1];
 		int c = pol->side[k].triangulation[2];
 		float f,g;
 		GetBaryCentric(M, p[a], p[b], p[c], f, g);
 		// cursor in triangle?
-		if ((f>0)&&(g>0)&&(f+g<1)){
+		if ((f>0) and (g>0) and (f+g<1)) {
 			vector va = vertex[pol->side[a].vertex].pos;
 			vector vb = vertex[pol->side[b].vertex].pos;
 			vector vc = vertex[pol->side[c].vertex].pos;
@@ -94,15 +91,9 @@ bool poly_hover(ModelPolygon *pol, MultiView::Window *win, vector &M, vector &tp
 	}
 	return false;
 }
-bool ModelPolygon::hover(MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data)
-{
-	DataModel *m = mode_model_mesh->data; // surf->model;
+bool ModelPolygon::hover(MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data) {
+	auto *m = mode_model_mesh->data->edit_mesh; // surf->model;
 	return poly_hover(this, win, M, tp, z, user_data, m->show_vertices);
-}
-
-inline bool in_irect(const vector &p, rect &r)
-{
-	return ((p.x > r.x1) and (p.x < r.x2) and (p.y > r.y1) and (p.y < r.y2));
 }
 
 bool ModelPolygon::inRect(MultiView::Window *win, rect &r, void *user_data)
@@ -112,14 +103,14 @@ bool ModelPolygon::inRect(MultiView::Window *win, rect &r, void *user_data)
 		if (temp_normal * win->getDirection() > 0)
 			return false;
 
-	DataModel *m = mode_model_mesh->data; // surf->model;
+	auto *m = mode_model_mesh->data->edit_mesh; // surf->model;
 
 	// all vertices within rectangle?
-	for (int k=0;k<side.num;k++){
+	for (int k=0;k<side.num;k++) {
 		vector pp = win->project(m->show_vertices[side[k].vertex].pos); // mmodel->GetVertex(ia)
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
-		if (in_irect(pp, r))
+		if (r.inside(pp.x, pp.y))
 			return true;
 	}
 	return false;
@@ -127,14 +118,14 @@ bool ModelPolygon::inRect(MultiView::Window *win, rect &r, void *user_data)
 
 
 void MeshSelectionModePolygon::update_selection() {
-	data->selectionFromPolygons();
+	data->edit_mesh->selection_from_polygons();
 }
 
 void MeshSelectionModePolygon::update_multi_view() {
 	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	multi_view->add_data(	MVD_MODEL_POLYGON,
-			data->mesh->polygon,
+			data->edit_mesh->polygon,
 			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 }

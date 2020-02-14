@@ -111,9 +111,9 @@ mirror
 55
 cutting_line
 310
-detail_0
+detail_physical
 33
-detail_1
+detail_high
 34
 detail_2
 35

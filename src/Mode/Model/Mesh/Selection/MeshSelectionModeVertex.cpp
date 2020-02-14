@@ -33,14 +33,15 @@ void MeshSelectionModeVertex::on_draw_win(MultiView::Window *win) {
 
 
 void MeshSelectionModeVertex::update_selection() {
-	data->selectionFromVertices();
+	data->edit_mesh->selection_from_vertices();
 }
 
 void MeshSelectionModeVertex::update_multi_view() {
 	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	multi_view->add_data(	MVD_MODEL_VERTEX,
-			data->show_vertices,
+	multi_view->add_data(MVD_MODEL_VERTEX,
+			//data->show_vertices,
+			data->edit_mesh->vertex,
 			NULL,
 			MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 }

@@ -228,6 +228,7 @@ public:
 	// geometry
 	ModelMesh *mesh;
 	ModelMesh *phys_mesh;
+	ModelMesh *edit_mesh;
 
 
 	// old geometry
@@ -235,7 +236,6 @@ public:
 
 	// general properties
 	Array<ModelMaterial*> material;
-	vector _min, _max;
 
 	// effects
 	Array<ModelEffect> fx;
@@ -273,19 +273,12 @@ public:
 
 
 
-	float radius;
-
-
-
 
 	// editor
 
 	bool force_new_normals[4];
 	bool normal_indices_ok[4];
 
-
-	void showVertices(Array<ModelVertex> &vert);
-	Array<ModelVertex> show_vertices;
 };
 
 #endif /* DATAMODEL_H_ */

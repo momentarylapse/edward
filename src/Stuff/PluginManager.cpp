@@ -195,8 +195,6 @@ void PluginManager::init() {
 	Kaba::declare_class_element("DataModel.material", &DataModel::material);
 	Kaba::declare_class_element("DataModel.fx", &DataModel::fx);
 	Kaba::declare_class_element("DataModel.meta_data", &DataModel::meta_data);
-	Kaba::declare_class_element("DataModel.min", &DataModel::_min);
-	Kaba::declare_class_element("DataModel.max", &DataModel::_max);
 	//Kaba::declare_class_element("DataModel.CurrentMaterial", &DataModel::CurrentMaterial);
 	//Kaba::declare_class_element("DataModel.CurrentTextureLevel", &DataModel::CurrentTextureLevel);
 	//Kaba::declare_class_element("DataModel.SkinVertex", &DataModel::SkinVertex);

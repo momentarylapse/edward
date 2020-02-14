@@ -19,10 +19,9 @@ ModeModelSkeletonAttachVertices::ModeModelSkeletonAttachVertices(ModeBase* _pare
 	bone_index = _bone_index;
 }
 
-void ModeModelSkeletonAttachVertices::on_start()
-{
+void ModeModelSkeletonAttachVertices::on_start() {
 	// relative to absolute pos
-	for (auto &v: data->mesh->vertex)
+	for (auto &v: data->edit_mesh->vertex)
 		v.is_selected = (v.bone_index == bone_index);
 	data->selectionFromVertices();
 
@@ -38,8 +37,7 @@ void ModeModelSkeletonAttachVertices::on_start()
 	on_update(multi_view, "");
 }
 
-void ModeModelSkeletonAttachVertices::on_end()
-{
+void ModeModelSkeletonAttachVertices::on_end() {
 	unsubscribe(data);
 	unsubscribe(multi_view);
 
@@ -48,21 +46,19 @@ void ModeModelSkeletonAttachVertices::on_end()
 	parent->on_update(data, "");
 }
 
-void ModeModelSkeletonAttachVertices::on_update(Observable *o, const string &message)
-{
-	if (o == data){
+void ModeModelSkeletonAttachVertices::on_update(Observable *o, const string &message) {
+	if (o == data) {
 		mode_model_mesh->selection_mode->update_multi_view();
-	}else if (o == multi_view){
+	} else if (o == multi_view) {
 		mode_model_mesh->selection_mode->update_selection();
-		mode_model_mesh->fill_selection_buffer(data->mesh->vertex);
+		mode_model_mesh->fill_selection_buffer(data->edit_mesh->vertex);
 	}
 }
 
-void ModeModelSkeletonAttachVertices::on_command(const string &id)
-{
-	if (id == "finish-action"){
+void ModeModelSkeletonAttachVertices::on_command(const string &id) {
+	if (id == "finish-action") {
 		Array<int> index;
-		foreachi(auto &v, data->mesh->vertex, i)
+		foreachi(auto &v, data->edit_mesh->vertex, i)
 			if (v.is_selected)
 				index.add(i);
 		data->boneAttachVertices(bone_index, index);
@@ -70,13 +66,11 @@ void ModeModelSkeletonAttachVertices::on_command(const string &id)
 	}
 }
 
-void ModeModelSkeletonAttachVertices::on_draw_win(MultiView::Window *win)
-{
+void ModeModelSkeletonAttachVertices::on_draw_win(MultiView::Window *win) {
 	mode_model_mesh->on_draw_win(win);
 }
 
-void ModeModelSkeletonAttachVertices::on_set_multi_view()
-{
+void ModeModelSkeletonAttachVertices::on_set_multi_view() {
 	mode_model_mesh->on_set_multi_view();
 }
 

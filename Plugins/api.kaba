@@ -318,7 +318,6 @@ class DataModel extends Data
 
 	# general properties
 	ModelMaterial[] material
-	vector min, max
 
 	# effects
 	ModelEffect[] fx

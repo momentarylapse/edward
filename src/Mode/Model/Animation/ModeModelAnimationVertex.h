@@ -13,11 +13,9 @@
 
 class DataModel;
 
-class ModeModelAnimationVertex: public Mode<DataModel>
-{
+class ModeModelAnimationVertex: public Mode<DataModel> {
 public:
 	ModeModelAnimationVertex(ModeBase *parent);
-	virtual ~ModeModelAnimationVertex();
 
 	void on_start() override;
 	void on_end() override;
@@ -28,7 +26,6 @@ public:
 
 	void on_draw_win(MultiView::Window *win) override;
 
-	void updateVertices();
 	void chooseMouseFunction(int f);
 
 	int mouse_action;

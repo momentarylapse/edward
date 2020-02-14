@@ -21,12 +21,7 @@ ModeModelAnimationVertex::ModeModelAnimationVertex(ModeBase* _parent) :
 	mouse_action = -1;
 }
 
-ModeModelAnimationVertex::~ModeModelAnimationVertex()
-{
-}
-
-void ModeModelAnimationVertex::on_start()
-{
+void ModeModelAnimationVertex::on_start() {
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-animation-vertex-toolbar");
 
 	mode_model->allow_selection_modes(true);
@@ -38,16 +33,14 @@ void ModeModelAnimationVertex::on_start()
 	on_update(data, "");
 }
 
-void ModeModelAnimationVertex::on_end()
-{
+void ModeModelAnimationVertex::on_end() {
 	unsubscribe(data);
 	unsubscribe(multi_view);
-	data->showVertices(data->mesh->vertex);
+	data->mesh->set_show_vertices(data->mesh->vertex);
 	mode_model_mesh->fill_selection_buffer(data->mesh->vertex);
 }
 
-void ModeModelAnimationVertex::on_command(const string& id)
-{
+void ModeModelAnimationVertex::on_command(const string& id) {
 	if (id == "select")
 		chooseMouseFunction(MultiView::ACTION_SELECT);
 	if (id == "translate")
@@ -60,26 +53,23 @@ void ModeModelAnimationVertex::on_command(const string& id)
 		chooseMouseFunction(MultiView::ACTION_MIRROR);
 }
 
-void ModeModelAnimationVertex::chooseMouseFunction(int f)
-{
+void ModeModelAnimationVertex::chooseMouseFunction(int f) {
 	mouse_action = f;
 
 	// mouse action
 	multi_view->set_mouse_action("ActionModelAnimationTransformVertices", mouse_action, false);
 }
 
-void ModeModelAnimationVertex::on_update(Observable* o, const string &message)
-{
-	if (o == data){
-		data->showVertices(mode_model_animation->vertex);
+void ModeModelAnimationVertex::on_update(Observable* o, const string &message) {
+	if (o == data) {
+		data->mesh->set_show_vertices(mode_model_animation->vertex);
 		mode_model_mesh->selection_mode->update_multi_view();
-	}else if (o == multi_view){
+	} else if (o == multi_view) {
 		mode_model_mesh->selection_mode->update_selection();
 	}
 }
 
-void ModeModelAnimationVertex::on_update_menu()
-{
+void ModeModelAnimationVertex::on_update_menu() {
 	ed->check("select", mouse_action == MultiView::ACTION_SELECT);
 	ed->check("translate", mouse_action == MultiView::ACTION_MOVE);
 	ed->check("rotate", mouse_action == MultiView::ACTION_ROTATE);
@@ -87,18 +77,18 @@ void ModeModelAnimationVertex::on_update_menu()
 	ed->check("mirror", mouse_action == MultiView::ACTION_MIRROR);
 }
 
-void ModeModelAnimationVertex::on_draw_win(MultiView::Window *win)
-{
-	mode_model_mesh->draw_all(win, mode_model_animation->vertex);
-}
+void ModeModelAnimationVertex::on_draw_win(MultiView::Window *win) {
+	mode_model_mesh->draw_polygons(win, data->mesh, mode_model_animation->vertex);
 
-void ModeModelAnimationVertex::updateVertices()
-{
-	// deprecated by mode_model_animation->vertex
-	/*vertex.resize(data->Vertex.num);
-	foreachi(ModelVertex &v, vertex, i)
-		v.pos = data->Vertex[i].AnimatedPos;*/
-}
+	mode_model_skeleton->drawSkeleton(win, data->bone, true);
 
+	mode_model_mesh->draw_selection(win);
+
+//	draw_edges(win, data->edit_mesh, data->edit_mesh->vertex, !selection_mode_edge->is_active());
+
+	if (mode_model_mesh->allow_draw_hover)
+		mode_model_mesh->selection_mode->on_draw_win(win);
+
+}
 
 

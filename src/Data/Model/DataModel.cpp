@@ -105,7 +105,7 @@ DataModel::DataModel() :
 {
 	mesh = new ModelMesh(this);
 	phys_mesh = new ModelMesh(this);
-	radius = 100;
+	edit_mesh = mesh;
 }
 
 DataModel::~DataModel() {
@@ -114,8 +114,7 @@ DataModel::~DataModel() {
 }
 
 
-void DataModel::MetaData::reset()
-{
+void DataModel::MetaData::reset() {
 	// level of detail
 	detail_dist[0] = 2000;
 	detail_dist[1] = 4000;
@@ -146,11 +145,10 @@ void DataModel::MetaData::reset()
 
 
 
-void DataModel::reset()
-{
+void DataModel::reset() {
 
 	filename = "";
-	for (int i=0;i<4;i++){
+	for (int i=0;i<4;i++) {
 		skin[i].vertex.clear();
 		for (int j=0;j<material.num;j++)
 			skin[i].sub[j].triangle.clear();
@@ -170,7 +168,6 @@ void DataModel::reset()
 	material[0]->col.user = true;
 	material[0]->col.diffuse = White;
 	material[0]->col.specular = White;
-	showVertices(mesh->vertex);
 
 	// skeleton
 	bone.clear();
@@ -182,8 +179,6 @@ void DataModel::reset()
 		skin[i].sub.resize(1);
 		skin[i].sub[0].num_textures = 1;
 	}
-
-	radius = 42;
 
 	meta_data.reset();
 
@@ -204,14 +199,8 @@ bool DataModel::test_sanity(const string &loc) {
 
 
 void DataModel::on_post_action_update() {
-	showVertices(mesh->vertex);
 	mesh->on_post_action_update();
 }
-
-void DataModel::showVertices(Array<ModelVertex> &vert) {
-	show_vertices.set_ref(vert);
-}
-
 
 
 void DataModel::importFromTriangleSkin(int index) {
@@ -221,11 +210,11 @@ void DataModel::importFromTriangleSkin(int index) {
 
 	ModelSkin &s = skin[index];
 	begin_action_group("ImportFromTriangleSkin");
-	foreachi(ModelVertex &v, s.vertex, i){
+	foreachi(ModelVertex &v, s.vertex, i) {
 		addVertex(v.pos, v.bone_index);
 	}
-	for (int i=0;i<material.num;i++){
-		for (ModelTriangle &t: s.sub[i].triangle){
+	for (int i=0;i<material.num;i++) {
+		for (ModelTriangle &t: s.sub[i].triangle) {
 			if ((t.vertex[0] == t.vertex[1]) || (t.vertex[1] == t.vertex[2]) || (t.vertex[2] == t.vertex[0]))
 				continue;
 			Array<int> v;
@@ -235,15 +224,15 @@ void DataModel::importFromTriangleSkin(int index) {
 			for (int tl=0;tl<material[i]->texture_levels.num;tl++)
 				for (int k=0;k<3;k++)
 					sv.add(t.skin_vertex[tl][k]);
-			try{
+			try {
 				addPolygonWithSkin(v, sv, i);
-			}catch(GeometryException &e){
+			} catch(GeometryException &e) {
 				msg_error("polygon..." + e.message);
 				msg_write("trying to copy vertices...");
 
 				// copy all vertices m(-_-)m
 				int nv0 = mesh->vertex.num;
-				for (int k=0; k<3; k++){
+				for (int k=0; k<3; k++) {
 					addVertex(mesh->vertex[v[k]].pos, mesh->vertex[v[k]].bone_index);
 					v[k] = nv0 + k;
 				}
@@ -347,45 +336,41 @@ ModelPolygon *DataModel::addTriangle(int a, int b, int c, int material) {
 ModelPolygon *DataModel::addPolygon(const Array<int> &v, int material)
 {
 	Array<vector> sv;
-	for (int i=0;i<v.num;i++){
+	for (int i=0;i<v.num;i++) {
 		float w = (float)i / (float)v.num * 2 * pi;
 		sv.add(vector(0.5f + cos(w) * 0.5f, 0.5f + sin(w), 0));
 	}
 	return (ModelPolygon*)execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
 }
 
-ModelPolygon *DataModel::addPolygonWithSkin(const Array<int> &v, const Array<vector> &sv, int material)
-{
+ModelPolygon *DataModel::addPolygonWithSkin(const Array<int> &v, const Array<vector> &sv, int material) {
 	return (ModelPolygon*)execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
 }
 
 
 
-void DataModel::createSkin(ModelSkin *src, ModelSkin *dst, float quality_factor)
-{
+void DataModel::createSkin(ModelSkin *src, ModelSkin *dst, float quality_factor) {
 	msg_todo("DataModel::CreateSkin");
 }
 
 
 float DataModel::getRadius() {
 	float radius = 0;
-	for (ModelVertex &v: mesh->vertex)
+	for (auto &v: mesh->vertex)
 		radius = max(v.pos.length(), radius);
 	return radius;
 }
 
 float DetailDistTemp1,DetailDistTemp2,DetailDistTemp3;
 
-int get_num_trias(DataModel *m, ModelSkin *s)
-{
+int get_num_trias(DataModel *m, ModelSkin *s) {
 	int n = 0;
 	for (int i=0;i<m->material.num;i++)
 		n += s->sub[i].triangle.num;
 	return n;
 }
 
-void DataModel::generateDetailDists(float *dist)
-{
+void DataModel::generateDetailDists(float *dist) {
 	float radius = getRadius();
 	dist[0] = radius * 10;
 	dist[1] = radius * 40;
@@ -474,10 +459,9 @@ matrix3 DataModel::generateInertiaTensor(float mass)
 	return t;
 }
 
-int DataModel::getNumSelectedSkinVertices()
-{
+int DataModel::getNumSelectedSkinVertices() {
 	int r = 0;
-	for (ModelSkinVertexDummy &v: mesh->skin_vertex)
+	for (auto &v: mesh->skin_vertex)
 		if (v.is_selected)
 			r ++;
 	return r;

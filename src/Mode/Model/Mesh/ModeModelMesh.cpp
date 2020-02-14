@@ -54,8 +54,7 @@ const string ModeModelMesh::MESSAGE_CURRENT_SKIN_CHANGE = "CurrentSkinChange";
 
 ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	Mode<DataModel>("ModelMesh", _parent, ed->multi_view_3d, "menu_model"),
-	Observable("ModelMesh")
-{
+	Observable("ModelMesh") {
 
 	selection_mode = NULL;
 	current_material = 0;
@@ -86,13 +85,11 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	//Observer::subscribe(multi_view);
 }
 
-ModeModelMesh::~ModeModelMesh()
-{
+ModeModelMesh::~ModeModelMesh() {
 	Observer::unsubscribe(data);
 }
 
-void ModeModelMesh::on_start()
-{
+void ModeModelMesh::on_start() {
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-mesh-toolbar");
 
 	//subscribe(data);
@@ -103,24 +100,21 @@ void ModeModelMesh::on_start()
 	mode_model->allow_selection_modes(true);
 }
 
-void ModeModelMesh::on_enter()
-{
+void ModeModelMesh::on_enter() {
 	current_material = 0;
 }
 
-void ModeModelMesh::on_end()
-{
+void ModeModelMesh::on_end() {
 	//unsubscribe(data);
 
-	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
+	auto *t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
 }
 
 
 
-void ModeModelMesh::on_command(const string & id)
-{
+void ModeModelMesh::on_command(const string & id) {
 	if (id == "delete")
 		data->delete_selection(data->get_selection(), selection_mode == selection_mode_vertex);
 	if (id == "copy")
@@ -250,26 +244,21 @@ void ModeModelMesh::on_command(const string & id)
 
 
 void ModeModelMesh::on_draw() {
-	auto s = data->get_selection();
-	if (s.vertex.num > 0){
+	auto s = data->edit_mesh->get_selection();
+	if (s.vertex.num > 0) {
 		draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons", s.vertex.num, s.edge.num, s.polygon.num));
 	}
 }
 
 
-void ModeModelMesh::on_draw_win(MultiView::Window *win)
-{
-	draw_all(win, data->mesh->vertex);
-}
+void ModeModelMesh::on_draw_win(MultiView::Window *win) {
+	draw_polygons(win, data->mesh, data->mesh->vertex);
 
-void ModeModelMesh::draw_all(MultiView::Window *win, Array<ModelVertex> &vertex)
-{
-	draw_polygons(win, vertex);
 	mode_model_skeleton->drawSkeleton(win, data->bone, true);
 
 	draw_selection(win);
 
-	draw_edges(win, vertex, !selection_mode_edge->is_active());
+	draw_edges(win, data->edit_mesh, data->edit_mesh->vertex, !selection_mode_edge->is_active());
 
 	if (current_skin == SKIN_PHYSICAL)
 		draw_physical(win);
@@ -280,8 +269,7 @@ void ModeModelMesh::draw_all(MultiView::Window *win, Array<ModelVertex> &vertex)
 
 
 
-void ModeModelMesh::on_update(Observable *o, const string &message)
-{
+void ModeModelMesh::on_update(Observable *o, const string &message) {
 	// consistency checks
 	if (current_material >= data->material.num)
 		set_current_material(data->material.num - 1);
@@ -289,33 +277,29 @@ void ModeModelMesh::on_update(Observable *o, const string &message)
 	//msg_write(o->getName() + " - " + message);
 
 
-	fill_selection_buffer(data->mesh->vertex);
+	fill_selection_buffer(data->edit_mesh->vertex);
 }
 
-void ModeModelMesh::on_view_stage_change()
-{
+void ModeModelMesh::on_view_stage_change() {
 	//msg_write("mesh: on view stage change");
-	update_vertex_buffers(data->mesh->vertex);
+	update_vertex_buffers(data->edit_mesh->vertex);
 }
 
-void ModeModelMesh::on_selection_change()
-{
+void ModeModelMesh::on_selection_change() {
 	//msg_write("mesh: on sel change");
 	selection_mode->update_selection();
-	fill_selection_buffer(data->mesh->vertex);
+	fill_selection_buffer(data->edit_mesh->vertex);
 }
 
-void ModeModelMesh::on_set_multi_view()
-{
+void ModeModelMesh::on_set_multi_view() {
 	//msg_write("mesh: on set mv");
 	selection_mode->update_multi_view();
-	update_vertex_buffers(data->mesh->vertex);
+	update_vertex_buffers(data->edit_mesh->vertex);
 }
 
 
 
-void ModeModelMesh::on_update_menu()
-{
+void ModeModelMesh::on_update_menu() {
 	ed->enable("copy", copyable());
 	ed->enable("paste", pasteable());
 	ed->enable("delete", copyable());
@@ -371,11 +355,10 @@ bool ModeModelMesh::optimize_view() {
 
 
 
-void ModeModelMesh::create_new_material_for_selection()
-{
+void ModeModelMesh::create_new_material_for_selection() {
 #if 0
 	msg_db_f("CreateNewMaterialForSelection", 2);
-	if (0 == data->getNumSelectedPolygons()){
+	if (0 == data->getNumSelectedPolygons()) {
 		ed->set_message(_("no triangle selected"));
 		return;
 	}
@@ -389,13 +372,13 @@ void ModeModelMesh::create_new_material_for_selection()
 	int cmi = data->current_material;
 	data->current_material = data->material.num;
 
-	if (mode_model->ExecuteMaterialDialog(0)){//, true)){
+	if (mode_model->ExecuteMaterialDialog(0)) {//, true)) {
 		data->material.num ++;
 
 		data->current_texture_level = 0;
 
 		// create new subs
-		for (int i=0;i<4;i++){
+		for (int i=0;i<4;i++) {
 			data->Skin[i].Sub.resize(data->material.num);
 			data->Skin[i].Sub[data->current_material].NumTextures = data->material[data->current_material].NumTextures;
 		}
@@ -412,9 +395,8 @@ void ModeModelMesh::create_new_material_for_selection()
 #endif
 }
 
-void ModeModelMesh::choose_material_for_selection()
-{
-	if (data->get_selection().polygon.num == 0){
+void ModeModelMesh::choose_material_for_selection() {
+	if (data->get_selection().polygon.num == 0) {
 		ed->set_message(_("no polygon selected"));
 		return;
 	}
@@ -423,7 +405,7 @@ void ModeModelMesh::choose_material_for_selection()
 
 
 	// dialog
-	ModelMaterialSelectionDialog *dlg = new ModelMaterialSelectionDialog(ed, false, data);
+	auto *dlg = new ModelMaterialSelectionDialog(ed, false, data);
 	dlg->put_answer(&SelectionDialogReturnIndex);
 	dlg->run();
 	delete dlg;
@@ -432,16 +414,14 @@ void ModeModelMesh::choose_material_for_selection()
 		data->setMaterialSelection(SelectionDialogReturnIndex);
 }
 
-void ModeModelMesh::choose_mouse_function(int f, bool _lock_action)
-{
+void ModeModelMesh::choose_mouse_function(int f, bool _lock_action) {
 	mouse_action = f;
 	lock_action = _lock_action;
 	apply_mouse_function(ed->multi_view_3d);
 	apply_mouse_function(ed->multi_view_2d);
 }
 
-void ModeModelMesh::apply_mouse_function(MultiView::MultiView *mv)
-{
+void ModeModelMesh::apply_mouse_function(MultiView::MultiView *mv) {
 	if (!mv)
 		return;
 
@@ -452,16 +432,14 @@ void ModeModelMesh::apply_mouse_function(MultiView::MultiView *mv)
 	mv->set_mouse_action(name, mouse_action, lock_action);
 }
 
-void ModeModelMesh::copy()
-{
+void ModeModelMesh::copy() {
 	data->copyGeometry(temp_geo);
 
 	on_update_menu();
 	ed->set_message(format(_("%d vertices, %d triangles copied"), temp_geo.vertex.num, temp_geo.polygon.num));
 }
 
-void ModeModelMesh::paste()
-{
+void ModeModelMesh::paste() {
 	data->pasteGeometry(temp_geo, current_material);
 	ed->set_message(format(_("%d vertices, %d triangles pasted"), temp_geo.vertex.num, temp_geo.polygon.num));
 }
@@ -471,62 +449,56 @@ bool ModeModelMesh::copyable() {
 	return s.vertex.num > 0;
 }
 
-void ModeModelMesh::add_effects(int type)
-{
-	if (data->get_selection().vertex.num == 0){
+void ModeModelMesh::add_effects(int type) {
+	if (data->get_selection().vertex.num == 0) {
 		ed->set_message(_("No vertex point selected"));
 		return;
 	}
-	ModelFXDialog *dlg = new ModelFXDialog(ed, false, data, type, -1);
+	auto *dlg = new ModelFXDialog(ed, false, data, type, -1);
 	dlg->run();
 	delete dlg;
 }
 
-void ModeModelMesh::edit_effects()
-{
+void ModeModelMesh::edit_effects() {
 	int index;
 	int n = 0;
 	foreachi(ModelEffect &fx, data->fx, i)
-		if (data->mesh->vertex[fx.vertex].is_selected){
+		if (data->mesh->vertex[fx.vertex].is_selected) {
 			index = i;
 			n ++;
 		}
-	if (n != 1){
+	if (n != 1) {
 		ed->set_message(_("One vertex point with effects has to be selected!"));
 		return;
 	}
-	ModelFXDialog *dlg = new ModelFXDialog(ed, false, data, -1, index);
+	auto *dlg = new ModelFXDialog(ed, false, data, -1, index);
 	dlg->run();
 	delete dlg;
 }
 
-void ModeModelMesh::clear_effects()
-{
+void ModeModelMesh::clear_effects() {
 	int n = 0;
 	for (ModelEffect &fx: data->fx)
 		if (data->mesh->vertex[fx.vertex].is_selected)
 			n ++;
-	if (n == 0){
+	if (n == 0) {
 		ed->set_message(_("No vertex with effects selected!"));
 		return;
 	}
 	data->selectionClearEffects();
 }
 
-bool ModeModelMesh::pasteable()
-{
+bool ModeModelMesh::pasteable() {
 	return temp_geo.vertex.num > 0;
 }
 
-void ModeModelMesh::easify()
-{
-	ModelEasifyDialog *dlg = new ModelEasifyDialog(ed, false, data);
+void ModeModelMesh::easify() {
+	auto *dlg = new ModelEasifyDialog(ed, false, data);
 	dlg->run();
 	delete dlg;
 }
 
-void ModeModelMesh::set_current_material(int index)
-{
+void ModeModelMesh::set_current_material(int index) {
 	if (current_material == index)
 		return;
 	current_material = index;
@@ -537,21 +509,31 @@ void ModeModelMesh::set_current_material(int index)
 void ModeModelMesh::set_current_skin(int index) {
 	if (current_skin == index)
 		return;
+
+	data->edit_mesh = data->mesh;
+	if (index == SKIN_PHYSICAL) {
+		data->edit_mesh = data->phys_mesh;
+		data->phys_mesh->set_show_vertices(data->phys_mesh->vertex);
+	}
+	data->reset_history();
+	ed->set_message(_("changing mesh... cleared history"));
+
 	current_skin = index;
+
+	selection_mode->update_multi_view();
+	update_vertex_buffers(data->mesh->vertex);
 	notify(MESSAGE_CURRENT_SKIN_CHANGE);
 }
 
-void ModeModelMesh::draw_effects(MultiView::Window *win)
-{
-	for (ModelEffect &fx: data->fx){
+void ModeModelMesh::draw_effects(MultiView::Window *win) {
+	for (ModelEffect &fx: data->fx) {
 		vector p = win->project(data->mesh->vertex[fx.vertex].pos);
 		if ((p.z > 0) and (p.z < 1))
 			draw_str(p.x, p.y, fx.get_type());
 	}
 }
 
-void _draw_edges(DataModel *data, MultiView::Window *win, Array<ModelVertex> &vertex, bool selection_filter)
-{
+void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, Array<ModelVertex> &vertex, bool selection_filter) {
 	color bg = win->getBackgroundColor();
 	auto *multi_view = win->multi_view;
 
@@ -561,7 +543,7 @@ void _draw_edges(DataModel *data, MultiView::Window *win, Array<ModelVertex> &ve
 	Array<color> line_color;
 
 	vector dir = win->getDirection();
-	for (auto &e: data->mesh->edge){
+	for (auto &e: m->edge) {
 		if (e.is_selected != selection_filter)
 			continue;
 		if (min(vertex[e.vertex[0]].view_stage, vertex[e.vertex[1]].view_stage) < multi_view->view_stage)
@@ -569,9 +551,9 @@ void _draw_edges(DataModel *data, MultiView::Window *win, Array<ModelVertex> &ve
 		float w = min(data->mesh->polygon[e.polygon[0]].temp_normal * dir, data->mesh->polygon[e.polygon[1]].temp_normal * dir);
 		float f = 0.5f - 0.4f*w;//0.7f - 0.3f * w;
 		color cc;
-		if (e.is_selected){
+		if (e.is_selected) {
 			cc = color(1, f, 0, 0);
-		}else{
+		} else {
 			cc = ColorInterpolate(scheme.TEXT, bg, 1-f);
 		}
 		line_color.add(cc);
@@ -585,23 +567,21 @@ void _draw_edges(DataModel *data, MultiView::Window *win, Array<ModelVertex> &ve
 	nix::SetWire(win->multi_view->wire_mode);
 }
 
-void ModeModelMesh::draw_edges(MultiView::Window *win, Array<ModelVertex> &vertex, bool only_selected)
-{
+void ModeModelMesh::draw_edges(MultiView::Window *win, ModelMesh *m, Array<ModelVertex> &vertex, bool only_selected) {
 	if (!only_selected)
-		_draw_edges(data, win, vertex, false);
-	_draw_edges(data, win, vertex, true);
+		_draw_edges(data, win, m, vertex, false);
+	_draw_edges(data, win, m, vertex, true);
 }
 
 
-void ModeModelMesh::draw_polygons(MultiView::Window *win, Array<ModelVertex> &vertex)
-{
-	if (multi_view->wire_mode){
-		draw_edges(win, vertex, false);
+void ModeModelMesh::draw_polygons(MultiView::Window *win, ModelMesh *mesh, Array<ModelVertex> &vertex) {
+	if (multi_view->wire_mode) {
+		draw_edges(win, mesh, vertex, false);
 		return;
 	}
 
 	// draw all materials separately
-	foreachi(ModelMaterial *m, data->material, mi){
+	foreachi(ModelMaterial *m, data->material, mi) {
 		if (!m->vb)
 			continue;
 
@@ -616,12 +596,11 @@ void ModeModelMesh::draw_polygons(MultiView::Window *win, Array<ModelVertex> &ve
 }
 
 
-void ModeModelMesh::draw_physical(MultiView::Window *win)
-{
+void ModeModelMesh::draw_physical(MultiView::Window *win) {
 	nix::SetWire(false);
 	mode_model->set_material_creation(0.7f);
 
-	for (auto &b: data->phys_mesh->ball){
+	for (auto &b: data->phys_mesh->ball) {
 		Geometry *geo = new GeometrySphere(data->phys_mesh->vertex[b.index].pos, b.radius, 6);
 
 		geo->build(nix::vb_temp);
@@ -630,7 +609,7 @@ void ModeModelMesh::draw_physical(MultiView::Window *win)
 		delete geo;
 	}
 
-	for (auto &c: data->phys_mesh->cylinder){
+	for (auto &c: data->phys_mesh->cylinder) {
 		Geometry *geo = new GeometryCylinder(data->phys_mesh->vertex[c.index[0]].pos, data->skin[0].vertex[c.index[1]].pos, c.radius, 1, 24, c.round ? GeometryCylinder::END_ROUND : GeometryCylinder::END_FLAT);
 
 		geo->build(nix::vb_temp);
@@ -651,15 +630,14 @@ void ModeModelMesh::draw_physical(MultiView::Window *win)
 
 
 
-void ModeModelMesh::update_vertex_buffers(Array<ModelVertex> &vertex)
-{
+void ModeModelMesh::update_vertex_buffers(Array<ModelVertex> &vertex) {
 	//msg_write("update vertex buffers!!!!!!!!!!");
 	// draw all materials separately
-	foreachi(ModelMaterial *m, data->material, mi){
+	foreachi(ModelMaterial *m, data->material, mi) {
 		int num_tex = m->texture_levels.num;
 		if (!m->vb)
 			m->vb = new nix::VertexBuffer(num_tex);
-		if (m->vb->num_textures != num_tex){
+		if (m->vb->num_textures != num_tex) {
 			delete(m->vb);
 			m->vb = new nix::VertexBuffer(num_tex);
 		}
@@ -676,20 +654,18 @@ void ModeModelMesh::update_vertex_buffers(Array<ModelVertex> &vertex)
 
 
 
-void ModeModelMesh::fill_selection_buffer(Array<ModelVertex> &vertex)
-{
+void ModeModelMesh::fill_selection_buffer(Array<ModelVertex> &vertex) {
 	vb_marked->clear();
 
 	// create selection buffers
-	for (ModelPolygon &t: data->mesh->polygon)
+	for (auto &t: data->edit_mesh->polygon)
 		/*if (t.view_stage >= ViewStage)*/{
 		if (t.is_selected)
 			t.addToVertexBuffer(vertex, vb_marked, 1);
 	}
 }
 
-void ModeModelMesh::draw_selection(MultiView::Window *win)
-{
+void ModeModelMesh::draw_selection(MultiView::Window *win) {
 	nix::SetWire(false);
 	nix::SetZ(true,true);
 	nix::SetAlpha(ALPHA_NONE);
@@ -704,8 +680,7 @@ void ModeModelMesh::draw_selection(MultiView::Window *win)
 	nix::SetOffset(0);
 }
 
-void ModeModelMesh::set_selection_mode(MeshSelectionMode *mode)
-{
+void ModeModelMesh::set_selection_mode(MeshSelectionMode *mode) {
 	if (selection_mode)
 		selection_mode->on_end();
 	selection_mode = mode;
@@ -716,8 +691,7 @@ void ModeModelMesh::set_selection_mode(MeshSelectionMode *mode)
 	ed->update_menu(); // TODO
 }
 
-void ModeModelMesh::toggle_select_cw()
-{
+void ModeModelMesh::toggle_select_cw() {
 	select_cw = !select_cw;
 	notify();
 	ed->update_menu();

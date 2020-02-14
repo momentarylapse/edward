@@ -41,11 +41,11 @@ public:
 	void on_draw() override;
 
 	void draw_effects(MultiView::Window *win);
-	void draw_edges(MultiView::Window *win, Array<ModelVertex> &vertex, bool only_selected);
-	void draw_polygons(MultiView::Window *win, Array<ModelVertex> &vertex);
+	void draw_edges(MultiView::Window *win, ModelMesh *m, Array<ModelVertex> &vertex, bool only_selected);
+	void draw_polygons(MultiView::Window *win, ModelMesh *m, Array<ModelVertex> &vertex);
 	void draw_selection(MultiView::Window *win);
 	void draw_physical(MultiView::Window *win);
-	void draw_all(MultiView::Window *win, Array<ModelVertex> &vertex);
+	//void draw_all(MultiView::Window *win, Array<ModelVertex> &vertex);
 
 	bool optimize_view() override;
 

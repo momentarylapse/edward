@@ -276,7 +276,7 @@ int ModelMesh::add_edge_for_new_polygon(int a, int b, int tria, int side)
 
 
 void ModelMesh::on_post_action_update() {
-	show_vertices(vertex);
+	set_show_vertices(vertex);
 
 	update_normals();
 	for (ModelPolygon &p: polygon) {
@@ -289,8 +289,8 @@ void ModelMesh::on_post_action_update() {
 		e.pos = (vertex[e.vertex[0]].pos + vertex[e.vertex[1]].pos) / 2;
 }
 
-void ModelMesh::show_vertices(Array<ModelVertex> &vert) {
-	//show_vertices.set_ref(vert);
+void ModelMesh::set_show_vertices(Array<ModelVertex> &vert) {
+	show_vertices.set_ref(vert);
 }
 
 

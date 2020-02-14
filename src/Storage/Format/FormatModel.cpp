@@ -324,8 +324,8 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 	vector tv;
 	f->read_comment();
 	// bounding box
-	f->read_vector(&data->_min);
-	f->read_vector(&data->_max);
+	f->read_vector(&tv);
+	f->read_vector(&tv);
 	// skins
 	f->read_int();
 	// reserved
@@ -617,7 +617,7 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 		data->meta_data.inertia_tensor.e[i] = f->read_float();
 	data->meta_data.active_physics = f->read_bool();
 	data->meta_data.passive_physics = f->read_bool();
-	data->radius = f->read_float();
+	f->read_float(); // radius
 
 	// LOD-Distances
 	f->read_comment();
@@ -839,9 +839,6 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 
 
 	//	PrecreatePhysicalData();
-
-		data->getBoundingBox(data->_min, data->_max);
-		data->radius = data->getRadius() * 1.1f;
 	}
 
 
@@ -855,8 +852,10 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 
 // general
 	f->write_comment("// General");
-	f->write_vector(&data->_min);
-	f->write_vector(&data->_max);
+	vector _min, _max;
+	data->getBoundingBox(_min, _max);
+	f->write_vector(&_min);
+	f->write_vector(&_max);
 	f->write_int(3); // skins...
 	f->write_int(0); // reserved
 	f->write_int(0);
@@ -1110,7 +1109,7 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 		f->write_float(data->meta_data.inertia_tensor.e[i]);
 	f->write_bool(data->meta_data.active_physics);
 	f->write_bool(data->meta_data.passive_physics);
-	f->write_float(data->radius);
+	f->write_float(data->getRadius());
 
 	f->write_comment("// LOD-Distances");
 	f->write_float(data->meta_data.detail_dist[0]);

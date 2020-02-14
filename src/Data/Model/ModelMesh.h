@@ -113,7 +113,6 @@ public:
 
 
 	void on_post_action_update();
-	void show_vertices(Array<ModelVertex> &vert);
 	void import_from_triangle_skin(int index);
 	void exportTo_triangle_skin(ModelSkin &skin);
 	void get_bounding_box(vector &min, vector &max, bool dont_reset = false);
@@ -128,6 +127,8 @@ public:
 	ModelSelection get_selection() const;
 	void set_selection(const ModelSelection &s);
 
+	void set_show_vertices(Array<ModelVertex> &vert);
+	Array<ModelVertex> show_vertices;
 };
 
 #endif /* SRC_DATA_MODEL_MODELMESH_H_ */

@@ -106,9 +106,8 @@ void ModeModelAnimationSkeleton::on_set_multi_view()
 	multi_view->set_hover_func(MVD_SKELETON_BONE, &bone_hover);
 }
 
-void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win)
-{
-	mode_model_mesh->draw_polygons(win, mode_model_animation->vertex);
+void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win) {
+	mode_model_mesh->draw_polygons(win, data->mesh, mode_model_animation->vertex);
 	mode_model_skeleton->drawSkeleton(win, mode_model_animation->bone, true);
 	mode_model_mesh->draw_selection(win);
 

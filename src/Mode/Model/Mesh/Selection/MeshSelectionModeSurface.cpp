@@ -20,32 +20,32 @@ MeshSelectionModeSurface::MeshSelectionModeSurface(ModeModelMesh *_parent) :
 {}
 
 
-void expand_sel_to_surfaces(DataModel *m) {
+void expand_sel_to_surfaces(ModelMesh *m) {
 	while (true) {
 		bool changed = false;
-		for (auto &e: m->mesh->edge)
-			if (m->mesh->vertex[e.vertex[0]].is_selected != m->mesh->vertex[e.vertex[1]].is_selected) {
-				m->mesh->vertex[e.vertex[0]].is_selected = true;
-				m->mesh->vertex[e.vertex[1]].is_selected = true;
+		for (auto &e: m->edge)
+			if (m->vertex[e.vertex[0]].is_selected != m->vertex[e.vertex[1]].is_selected) {
+				m->vertex[e.vertex[0]].is_selected = true;
+				m->vertex[e.vertex[1]].is_selected = true;
 				changed = true;
 			}
 		if (!changed)
 			break;
 	}
-	m->selectionFromVertices();
+	m->selection_from_vertices();
 }
 
 void MeshSelectionModeSurface::update_selection() {
-	data->selectionFromPolygons();
-	expand_sel_to_surfaces(data);
+	data->edit_mesh->selection_from_polygons();
+	expand_sel_to_surfaces(data->edit_mesh);
 	//data->selectionFromSurfaces();
 }
 
 void MeshSelectionModeSurface::update_multi_view() {
 	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	multi_view->add_data(	MVD_MODEL_POLYGON,
-			data->mesh->polygon,
+	multi_view->add_data(MVD_MODEL_POLYGON,
+			data->edit_mesh->polygon,
 			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 }
@@ -56,12 +56,9 @@ void MeshSelectionModeSurface::on_draw_win(MultiView::Window *win) {
 
 	parent->vb_hover->clear();
 
-	auto &p = data->mesh->polygon[multi_view->hover.index];
-	p.addToVertexBuffer(data->show_vertices, parent->vb_hover, 1);
-	/*ModelSurface &s = data->surface[multi_view->hover.index];
-	for (ModelPolygon &p: s.polygon)
-		p.addToVertexBuffer(data->show_vertices, parent->vb_hover, 1);
-*/
+	auto m = data->edit_mesh;
+	auto &p = m->polygon[multi_view->hover.index];
+	p.addToVertexBuffer(m->show_vertices, parent->vb_hover, 1);
 
 	nix::SetWire(false);
 	nix::SetOffset(1.0f);
@@ -81,7 +78,7 @@ void MeshSelectionModeSurface::on_end() {
 
 
 void MeshSelectionModeSurface::on_start() {
-	expand_sel_to_surfaces(data);
+	expand_sel_to_surfaces(data->edit_mesh);
 }
 
 
