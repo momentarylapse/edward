@@ -24,6 +24,7 @@ public:
 	virtual ~ModeModelMesh();
 
 	static const string MESSAGE_CURRENT_MATERIAL_CHANGE;
+	static const string MESSAGE_CURRENT_SKIN_CHANGE;
 
 	void on_start() override;
 	void on_enter() override;
@@ -79,6 +80,9 @@ public:
 	int current_material;
 	void set_current_material(int index);
 
+	int current_skin;
+	void set_current_skin(int skin);
+
 	void update_vertex_buffers(Array<ModelVertex> &vertex);
 	void fill_selection_buffer(Array<ModelVertex> &vertex);
 
@@ -88,7 +92,7 @@ public:
 	bool allow_draw_hover;
 	void set_allow_draw_hover(bool allow);
 
-	nix::VertexBuffer *vb_marked, *vb_hover, *vb_creation;
+	nix::VertexBuffer *vb_marked, *vb_hover, *vb_creation, *vb_phys;
 };
 
 extern ModeModelMesh *mode_model_mesh;

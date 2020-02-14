@@ -50,6 +50,7 @@
 ModeModelMesh *mode_model_mesh = NULL;
 
 const string ModeModelMesh::MESSAGE_CURRENT_MATERIAL_CHANGE = "CurrentMaterialChange";
+const string ModeModelMesh::MESSAGE_CURRENT_SKIN_CHANGE = "CurrentSkinChange";
 
 ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	Mode<DataModel>("ModelMesh", _parent, ed->multi_view_3d, "menu_model"),
@@ -58,6 +59,7 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 
 	selection_mode = NULL;
 	current_material = 0;
+	current_skin = SKIN_HIGH;
 
 	// vertex buffers
 	vb_marked = new nix::VertexBuffer(1);
@@ -239,6 +241,11 @@ void ModeModelMesh::on_command(const string & id)
 		clear_effects();
 	if (id == "fx_edit")
 		edit_effects();
+
+	if (id == "detail_physical")
+		set_current_skin(SKIN_PHYSICAL);
+	if (id == "detail_high")
+		set_current_skin(SKIN_HIGH);
 }
 
 
@@ -264,7 +271,8 @@ void ModeModelMesh::draw_all(MultiView::Window *win, Array<ModelVertex> &vertex)
 
 	draw_edges(win, vertex, !selection_mode_edge->is_active());
 
-	draw_physical(win);
+	if (current_skin == SKIN_PHYSICAL)
+		draw_physical(win);
 
 	if (allow_draw_hover)
 		selection_mode->on_draw_win(win);
@@ -335,6 +343,11 @@ void ModeModelMesh::on_update_menu()
 	ed->check("scale", mouse_action == MultiView::ACTION_SCALE);
 	ed->check("mirror", mouse_action == MultiView::ACTION_MIRROR);
 	ed->check("lock_action", lock_action);
+
+	ed->check("detail_physical", current_skin == SKIN_PHYSICAL);
+	ed->check("detail_high", current_skin == SKIN_HIGH);
+	ed->check("detail_2", current_skin == SKIN_MEDIUM);
+	ed->check("detail_3", current_skin == SKIN_LOW);
 }
 
 bool ModeModelMesh::optimize_view() {
@@ -521,6 +534,13 @@ void ModeModelMesh::set_current_material(int index)
 	mode_model_mesh_texture->setCurrentTextureLevel(0);
 }
 
+void ModeModelMesh::set_current_skin(int index) {
+	if (current_skin == index)
+		return;
+	current_skin = index;
+	notify(MESSAGE_CURRENT_SKIN_CHANGE);
+}
+
 void ModeModelMesh::draw_effects(MultiView::Window *win)
 {
 	for (ModelEffect &fx: data->fx){
@@ -599,7 +619,7 @@ void ModeModelMesh::draw_polygons(MultiView::Window *win, Array<ModelVertex> &ve
 void ModeModelMesh::draw_physical(MultiView::Window *win)
 {
 	nix::SetWire(false);
-	mode_model->set_material_creation(0.3f);
+	mode_model->set_material_creation(0.7f);
 
 	for (auto &b: data->phys_mesh->ball){
 		Geometry *geo = new GeometrySphere(data->phys_mesh->vertex[b.index].pos, b.radius, 6);
@@ -618,6 +638,13 @@ void ModeModelMesh::draw_physical(MultiView::Window *win)
 
 		delete geo;
 	}
+
+
+	nix::vb_temp->clear();
+	for (ModelPolygon &t: data->phys_mesh->polygon)
+		if (t.view_stage >= multi_view->view_stage)
+			t.addToVertexBuffer(data->phys_mesh->vertex, nix::vb_temp, 1);
+	nix::Draw3D(nix::vb_temp);
 
 	nix::SetWire(multi_view->wire_mode);
 }

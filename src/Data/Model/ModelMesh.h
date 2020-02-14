@@ -65,35 +65,6 @@ public:
 
 
 
-#define MODEL_MAX_POLY_FACES			32
-#define MODEL_MAX_POLY_EDGES			(MODEL_MAX_POLY_FACES*4)
-#define MODEL_MAX_POLY_VERTICES_PER_FACE	16
-
-// DEPRECATED....SOON
-struct ModelPolyhedronFace {
-	int NumVertices;
-	int Index[MODEL_MAX_POLY_VERTICES_PER_FACE];
-	plane Plane;
-};
-
-
-// TODO: dynamical!
-class ModelPolyhedron: public MultiView::SingleData {
-public:
-	int NumFaces;
-	ModelPolyhedronFace Face[MODEL_MAX_POLY_FACES];
-	int NumSVertices;
-	int SIndex[MODEL_MAX_POLY_FACES * MODEL_MAX_POLY_VERTICES_PER_FACE];
-
-	// non redundant edge list!
-	int NumEdges;
-	int EdgeIndex[MODEL_MAX_POLY_EDGES * 2];
-
-	// "topology"
-	bool EdgeOnFace[MODEL_MAX_POLY_EDGES * MODEL_MAX_POLY_FACES]; // [edge * NumFaces + face]
-	int FacesJoiningEdge[MODEL_MAX_POLY_FACES * MODEL_MAX_POLY_FACES]; // [face1 * NumFaces + face2]
-};
-
 
 
 
@@ -138,7 +109,6 @@ public:
 	// purely physical
 	Array<ModelBall> ball;
 	Array<ModelCylinder> cylinder;
-	Array<ModelPolyhedron> polyhedron; // MERGE WITH POLYGON...
 
 
 

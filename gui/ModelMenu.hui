@@ -141,8 +141,8 @@ Menu menu_model "Model" disabled
 			Item view_push "Push in"
 			Item view_pop "Pop out"
 		Menu menu_model_skin "Skin"
-			Item detail_0 "Physical skin" checkable
-			Item detail_1 "High-precicion skin" checkable
+			Item detail_physical "Physical skin" checkable
+			Item detail_high "High-precicion skin" checkable
 			Item detail_2 "Med-precicion skin" checkable
 			Item detail_3 "Low-precicion skin" checkable
 		Separator

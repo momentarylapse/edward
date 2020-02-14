@@ -30,8 +30,6 @@ void ModelMesh::clear() {
 
 	ball.clear();
 	cylinder.clear();
-
-	polyhedron.clear();
 }
 
 bool ModelMesh::test_sanity(const string &loc) {

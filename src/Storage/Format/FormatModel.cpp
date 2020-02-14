@@ -111,7 +111,11 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 	}
 
 	// polys
-	data->phys_mesh->polyhedron.resize(f->read_int());
+	if (f->read_int() > 0) {
+		msg_error("aaaaaah v10 polyhedron...");
+		throw Exception("ag");
+	}
+	/*data->phys_mesh->polyhedron.resize(f->read_int());
 	for (auto &p: data->phys_mesh->polyhedron) {
 		p.NumFaces = f->read_int();
 		for (int k=0;k<p.NumFaces;k++){
@@ -119,7 +123,7 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 			for (int l=0;l<p.Face[k].NumVertices;l++)
 				p.Face[k].Index[l] = f->read_int();
 		}
-	}
+	}*/
 
 // Skin[i]
 	for (int i=1;i<4;i++){
@@ -902,7 +906,8 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 		f->write_float(b.radius);
 	}
 
-	f->write_int(data->phys_mesh->polyhedron.num);
+	f->write_int(0);
+	/*f->write_int(data->phys_mesh->polyhedron.num);
 	for (auto &p: data->phys_mesh->polyhedron) {
 		f->write_int(p.NumFaces);
 		for (int k=0;k<p.NumFaces;k++){
@@ -929,7 +934,7 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 		for (int k=0;k<p.NumEdges;k++)
 			for (int l=0;l<p.NumFaces;l++)
 				f->write_bool(p.EdgeOnFace[k * p.NumFaces + l]);
-	}
+	}*/
 
 // skin
 	for (int i=1;i<4;i++){

@@ -4218,13 +4218,13 @@ menu_model_skin
 0
 4
 Item
-detail_0
+detail_physical
 checkable
 0
 0
 0
 Item
-detail_1
+detail_high
 checkable
 1
 0
@@ -10443,17 +10443,17 @@ Function
 menu_model/delete
 Delete
 
-menu_model/detail_0
-Physical skin
-
-menu_model/detail_1
-High-precicion skin
-
 menu_model/detail_2
 Med-precicion skin
 
 menu_model/detail_3
 Low-precicion skin
+
+menu_model/detail_high
+High-precicion skin
+
+menu_model/detail_physical
+Physical skin
 
 menu_model/easify_skin
 Easify skin
