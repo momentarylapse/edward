@@ -252,16 +252,16 @@ void ModeModelMesh::on_draw() {
 
 
 void ModeModelMesh::on_draw_win(MultiView::Window *win) {
+
+	// visible skin
 	draw_polygons(win, data->mesh, data->mesh->vertex);
 
 	mode_model_skeleton->drawSkeleton(win, data->bone, true);
 
-	draw_selection(win);
-
-	draw_edges(win, data->edit_mesh, data->edit_mesh->vertex, !selection_mode_edge->is_active());
-
 	if (current_skin == SKIN_PHYSICAL)
 		draw_physical(win);
+
+	draw_selection(win);
 
 	if (allow_draw_hover)
 		selection_mode->on_draw_win(win);
@@ -538,7 +538,8 @@ void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, Array<Mo
 	auto *multi_view = win->multi_view;
 
 	nix::SetWire(false);
-	set_wide_lines(selection_filter ? 2.0f : 1.0f);
+	nix::SetOffset(-2);
+	set_wide_lines(selection_filter ? 2.3f : 1.5f);
 	Array<vector> line_pos;
 	Array<color> line_color;
 
@@ -548,11 +549,18 @@ void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, Array<Mo
 			continue;
 		if (min(vertex[e.vertex[0]].view_stage, vertex[e.vertex[1]].view_stage) < multi_view->view_stage)
 			continue;
-		float w = min(data->mesh->polygon[e.polygon[0]].temp_normal * dir, data->mesh->polygon[e.polygon[1]].temp_normal * dir);
+
+		float w = 1;
+		if (e.polygon[0] >= 0 and e.polygon[1] >= 0)
+			w = min(m->polygon[e.polygon[0]].temp_normal * dir, m->polygon[e.polygon[1]].temp_normal * dir);
+		else if (e.polygon[0] >= 0)
+			w = m->polygon[e.polygon[0]].temp_normal * dir;
+		else if (e.polygon[1] >= 0)
+			w = m->polygon[e.polygon[1]].temp_normal * dir;
 		float f = 0.5f - 0.4f*w;//0.7f - 0.3f * w;
 		color cc;
 		if (e.is_selected) {
-			cc = color(1, f, 0, 0);
+			cc = ColorInterpolate(scheme.SELECTION, bg, 1-f);
 		} else {
 			cc = ColorInterpolate(scheme.TEXT, bg, 1-f);
 		}
@@ -565,6 +573,7 @@ void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, Array<Mo
 	nix::DrawLinesColored(line_pos, line_color, false);
 	nix::SetColor(White);
 	nix::SetWire(win->multi_view->wire_mode);
+	nix::SetOffset(0);
 }
 
 void ModeModelMesh::draw_edges(MultiView::Window *win, ModelMesh *m, Array<ModelVertex> &vertex, bool only_selected) {
@@ -574,6 +583,7 @@ void ModeModelMesh::draw_edges(MultiView::Window *win, ModelMesh *m, Array<Model
 }
 
 
+// always visible mesh!
 void ModeModelMesh::draw_polygons(MultiView::Window *win, ModelMesh *mesh, Array<ModelVertex> &vertex) {
 	if (multi_view->wire_mode) {
 		draw_edges(win, mesh, vertex, false);
@@ -587,12 +597,15 @@ void ModeModelMesh::draw_polygons(MultiView::Window *win, ModelMesh *mesh, Array
 
 		// draw
 		m->applyForRendering();
-		nix::SetOffset(1.0f);
+		nix::SetOffset(0);
 		nix::Draw3D(m->vb);
 		nix::SetOffset(0);
 		//nix::SetShader(NULL);
 		//nix::SetTexture(NULL);
 	}
+
+	if (!multi_view->wire_mode)
+		draw_edges(win, mesh, vertex, selection_mode_surface->is_active());
 }
 
 
@@ -610,7 +623,7 @@ void ModeModelMesh::draw_physical(MultiView::Window *win) {
 	}
 
 	for (auto &c: data->phys_mesh->cylinder) {
-		Geometry *geo = new GeometryCylinder(data->phys_mesh->vertex[c.index[0]].pos, data->skin[0].vertex[c.index[1]].pos, c.radius, 1, 24, c.round ? GeometryCylinder::END_ROUND : GeometryCylinder::END_FLAT);
+		Geometry *geo = new GeometryCylinder(data->phys_mesh->vertex[c.index[0]].pos, data->phys_mesh->vertex[c.index[1]].pos, c.radius, 1, 24, c.round ? GeometryCylinder::END_ROUND : GeometryCylinder::END_FLAT);
 
 		geo->build(nix::vb_temp);
 		nix::Draw3D(nix::vb_temp);
@@ -620,10 +633,13 @@ void ModeModelMesh::draw_physical(MultiView::Window *win) {
 
 
 	nix::vb_temp->clear();
-	for (ModelPolygon &t: data->phys_mesh->polygon)
+	for (auto &t: data->phys_mesh->polygon)
 		if (t.view_stage >= multi_view->view_stage)
 			t.addToVertexBuffer(data->phys_mesh->vertex, nix::vb_temp, 1);
+	nix::SetOffset(-0.5f);
 	nix::Draw3D(nix::vb_temp);
+	nix::SetOffset(0);
+	draw_edges(win, data->phys_mesh, data->phys_mesh->vertex, false);
 
 	nix::SetWire(multi_view->wire_mode);
 }
@@ -670,7 +686,7 @@ void ModeModelMesh::draw_selection(MultiView::Window *win) {
 	nix::SetZ(true,true);
 	nix::SetAlpha(ALPHA_NONE);
 
-	nix::SetOffset(1.0f);
+	nix::SetOffset(-1.0f);
 	ModeModel::set_material_selected();
 	nix::Draw3D(vb_marked);
 	ModeModel::set_material_creation();

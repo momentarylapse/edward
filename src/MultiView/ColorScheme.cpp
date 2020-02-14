@@ -14,7 +14,7 @@ ColorScheme scheme;
 ColorScheme::ColorScheme() {
 	BACKGROUND = color(1,0.9f,0.9f,0.9f);
 	BACKGROUND_SELECTED = color(1,0.96f,0.96f,0.96f);
-	SELECTION = Red;
+	SELECTION = color(1, 0.8f,0,0);
 	HOVER = White;
 	GRID = color(1,0.5f,0.5f,0.5f);
 	TEXT = color(1, 0.1f, 0.1f, 0.1f);
@@ -43,8 +43,8 @@ ColorScheme::ColorScheme() {
 	LINE_WIDTH_BONE = 5;
 	WINDOW_DIVIDER_THICKNESS = 5;
 
-	POINT_RADIUS = 2;
-	POINT_RADIUS_HOVER = 4;
+	POINT_RADIUS = 3;
+	POINT_RADIUS_HOVER = 5;
 }
 
 color ColorScheme::hoverify(const color &c) const {

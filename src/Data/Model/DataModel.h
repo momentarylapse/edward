@@ -139,7 +139,6 @@ public:
 	void reset() override;
 
 	void importFromTriangleSkin(int index);
-	void exportToTriangleSkin(int index);
 
 	void debugShow();
 	bool test_sanity(const string &loc) override;

@@ -831,7 +831,7 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 		data->updateNormals();
 
 		// export...
-		data->exportToTriangleSkin(1);
+		data->mesh->export_to_triangle_skin(data->skin[1]);
 		for (int d=1;d<4;d++){
 			if (data->skin[d].sub.num != data->material.num){
 				data->skin[d].sub.resize(data->material.num);

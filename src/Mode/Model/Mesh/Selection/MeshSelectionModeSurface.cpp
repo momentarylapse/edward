@@ -38,7 +38,6 @@ void expand_sel_to_surfaces(ModelMesh *m) {
 void MeshSelectionModeSurface::update_selection() {
 	data->edit_mesh->selection_from_polygons();
 	expand_sel_to_surfaces(data->edit_mesh);
-	//data->selectionFromSurfaces();
 }
 
 void MeshSelectionModeSurface::update_multi_view() {

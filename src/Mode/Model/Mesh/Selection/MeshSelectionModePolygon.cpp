@@ -36,7 +36,7 @@ void MeshSelectionModePolygon::on_draw_win(MultiView::Window *win) {
 	p.addToVertexBuffer(m->show_vertices, parent->vb_hover, 1);
 
 	nix::SetWire(false);
-	nix::SetOffset(-1.0f);
+	nix::SetOffset(-2.0f);
 	mode_model->set_material_hover();
 	nix::Draw3D(parent->vb_hover);
 	nix::SetMaterial(White,White,Black,0,Black);

@@ -391,7 +391,7 @@ void ModelMesh::importFromTriangleSkin(int index) {
 }
 #endif
 
-void ModelMesh::exportTo_triangle_skin(ModelSkin &sk) {
+void ModelMesh::export_to_triangle_skin(ModelSkin &sk) {
 	sk.vertex = vertex;
 	sk.sub.clear();
 	sk.sub.resize(model->material.num);
@@ -489,6 +489,11 @@ inline bool find_tria_top(ModelMesh *m, const Array<PolySideData> &pd, Set<int> 
 
 void ModelMesh::update_normals()
 {
+	if (this == model->phys_mesh) {
+		for (auto &v: vertex)
+			v.normal_mode = NORMAL_MODE_HARD;
+	}
+
 	Set<int> ee, vert;
 
 	// "flat" triangle normals

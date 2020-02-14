@@ -200,6 +200,7 @@ bool DataModel::test_sanity(const string &loc) {
 
 void DataModel::on_post_action_update() {
 	mesh->on_post_action_update();
+	phys_mesh->on_post_action_update();
 }
 
 
@@ -286,10 +287,6 @@ void DataModel::importFromTriangleSkin(int index) {
 	action_manager->reset();
 }
 
-void DataModel::exportToTriangleSkin(int index) {
-	mesh->exportTo_triangle_skin(skin[index]);
-}
-
 
 void DataModel::getBoundingBox(vector &min, vector &max) {
 	mesh->get_bounding_box(min, max);
@@ -302,15 +299,18 @@ void DataModel::setNormalsDirtyByVertices(const Array<int> &index) {
 
 void DataModel::setAllNormalsDirty() {
 	mesh->set_all_normals_dirty();
+	phys_mesh->set_all_normals_dirty();
 }
 
 
 void DataModel::updateNormals() {
 	mesh->update_normals();
+	phys_mesh->update_normals();
 }
 
 void DataModel::clearSelection() {
 	mesh->clear_selection();
+	phys_mesh->clear_selection();
 }
 
 void DataModel::selectionFromPolygons() {

@@ -114,7 +114,7 @@ public:
 
 	void on_post_action_update();
 	void import_from_triangle_skin(int index);
-	void exportTo_triangle_skin(ModelSkin &skin);
+	void export_to_triangle_skin(ModelSkin &skin);
 	void get_bounding_box(vector &min, vector &max, bool dont_reset = false);
 	void set_normals_dirty_by_vertices(const Array<int> &index);
 	void set_all_normals_dirty();
