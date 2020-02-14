@@ -6,16 +6,16 @@ void main()
 	data_model.BeginActionGroup("ExtrudeTetrahedron")
 	
 	int[] poly
-	int nv = len(data_model.vertex)
+	int nv = len(data_model.mesh.vertex)
 	int[][] vv
 	
-	for p,ip in data_model.polygon
+	for p,ip in data_model.mesh.polygon
 		if p.is_selected and len(p.side) == 3
 			poly.add(ip)
 			
 			let v = [for side in p.side side.vertex]
 			vv.add(v)
-			let q = [for vi in v data_model.vertex[vi].pos]
+			let q = [for vi in v data_model.mesh.vertex[vi].pos]
 			float R = ((q[1]-q[0]).length() + (q[2]-q[1]).length() + (q[0]-q[2]).length()) / 3
 			float h = sqrt(2.0/3) * R
 			

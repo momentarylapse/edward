@@ -35,8 +35,8 @@ void branch(vector pos0, vector dir0, int num, float radius, float length)
 	r.add(radius)
 	r.add(0)
 	Geometry *g = new GeometryCylinderComplex(pos, r, 5, 16, 0)
-	data_model.PasteGeometry(*g, 0)
-	delete(g)
+	data_model.paste_geometry(g, 0)
+	del g
 
 void main()
 	branch(vector.0, vector.EY, MAX_LENGTH, 5, 40)

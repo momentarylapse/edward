@@ -12,7 +12,7 @@ void add5(int nv, int v0, int v1, int v2, int v3, int v4)
 	data_model.add_polygon(v, 0)
 
 void main()
-	int nv = data_model.vertex.num
+	int nv = data_model.mesh.vertex.num
 	
 	data_model.BeginActionGroup("CreateDodecahedron")
 	

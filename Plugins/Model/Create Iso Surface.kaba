@@ -35,21 +35,21 @@ int some_p_from_mask(int mask)
 void check_tetra(vector[] p, float[] ff, int[] i)
 	let e = [0,1, 0,2, 0,3, 1,2, 1,3, 2,3]
 	int mask = 0
-	int nv = len(data_model.vertex)
+	int nv = len(data_model.mesh.vertex)
 	for k in 0:6
 		int a = i[e[k*2]]
 		int b = i[e[k*2+1]]
 		if ff[a] * ff[b] < 0
 			data_model.add_vertex((p[a] + p[b]) / 2, 0, 0)
 			mask += 1<<k
-	if len(data_model.vertex) == nv + 3
+	if len(data_model.mesh.vertex) == nv + 3
 		int ex = single_p_from_mask(mask)
 		let sig = [1.0, -1.0, 1.0, -1.0]
 		if ff[i[ex]] * sig[ex] < 0
 			data_model.add_triangle(nv, nv+2, nv+1, 0)
 		else
 			data_model.add_triangle(nv, nv+1, nv+2, 0)
-	else if len(data_model.vertex) == nv + 4
+	else if len(data_model.mesh.vertex) == nv + 4
 		int ex = some_p_from_mask(mask)
 		if ex < 0
 			return
@@ -61,7 +61,7 @@ void check_tetra(vector[] p, float[] ff, int[] i)
 			data_model.add_triangle(nv+2, nv+1, nv+3, 0)
 
 void make_tetra(vector[] p, int[] i)
-	int nv = len(data_model.vertex)
+	int nv = len(data_model.mesh.vertex)
 	for k in i
 		data_model.add_vertex(p[k], 0, 1)
 	data_model.add_triangle(nv+1, nv, nv+2, 0)
@@ -85,7 +85,7 @@ void check_cube(vector p)
 		#make_tetra(q, e[i*4:i*4+4])
 
 void main()
-	int nv = data_model.vertex.num
+	int nv = len(data_model.mesh.vertex)
 	
 	data_model.BeginActionGroup("Iso Surface")
 	

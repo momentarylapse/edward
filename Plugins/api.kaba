@@ -282,6 +282,14 @@ class ModelMetaData
 class ModelSelection
 	int[] vertex, polygon, edge
 
+class ModelMesh
+	ModelVertex[] vertex
+	ModelPolygon[] polygon
+	ModelEdge[] edge
+	
+	# geometry (physical)
+	ModelBall[] ball
+
 class DataModel extends Data
 	
 	# properties
@@ -297,17 +305,14 @@ class DataModel extends Data
 #	float TimeScale,TimeParam,SimFrame
 
 	# geometry
-	ModelVertex[] vertex
-	ModelPolygon[] polygon
-	ModelEdge[] edge
+	ModelMesh* mesh
+	ModelMesh* phys_mesh
 #	MultiViewSingleData SkinVertex[] # only temporary...
 #	int SkinVertMat, SkinVertTL
 
 	# old geometry
 	ModelSkin[4] skin
 
-	# geometry (physical)
-	ModelBall[] ball
 	
 	#ModelPolyhedron Poly[]
 

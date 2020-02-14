@@ -89,12 +89,10 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 
 	// vertices
 	f->read_comment();
-	data->skin[0].vertex.resize(f->read_int());
-	for (int j=0;j<data->skin[0].vertex.num;j++){
-		data->skin[0].vertex[j].bone_index = f->read_int();
-		if (data->skin[0].vertex[j].bone_index < 0)
-			data->skin[0].vertex[j].bone_index = 0;
-		f->read_vector(&data->skin[0].vertex[j].pos);
+	data->phys_mesh->vertex.resize(f->read_int());
+	for (auto &v: data->phys_mesh->vertex){
+		v.bone_index = max(f->read_int(), 0);
+		f->read_vector(&v.pos);
 	}
 
 	// triangles
@@ -369,11 +367,11 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 
 	// vertices
 	f->read_comment();
-	data->skin[0].vertex.resize(f->read_int());
-	for (int j=0;j<data->skin[0].vertex.num;j++)
-		data->skin[0].vertex[j].bone_index = f->read_int();
-	for (int j=0;j<data->skin[0].vertex.num;j++)
-		f->read_vector(&data->skin[0].vertex[j].pos);
+	data->phys_mesh->vertex.resize(f->read_int());
+	for (int j=0;j<data->phys_mesh->vertex.num;j++)
+		data->phys_mesh->vertex[j].bone_index = f->read_int();
+	for (int j=0;j<data->phys_mesh->vertex.num;j++)
+		f->read_vector(&data->phys_mesh->vertex[j].pos);
 
 	// triangles
 	f->read_int();
@@ -386,33 +384,67 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 	}
 
 	// polys
-	data->phys_mesh->polyhedron.resize(f->read_int());
-	for (auto &p: data->phys_mesh->polyhedron){
-		p.NumFaces = f->read_int();
-		for (int k=0;k<p.NumFaces;k++){
-			p.Face[k].NumVertices = f->read_int();
-			for (int l=0;l<p.Face[k].NumVertices;l++)
-				p.Face[k].Index[l] = f->read_int();
-			p.Face[k].Plane.n.x = f->read_float();
-			p.Face[k].Plane.n.y = f->read_float();
-			p.Face[k].Plane.n.z = f->read_float();
-			p.Face[k].Plane.d = f->read_float();
+	int num_polys = f->read_int();
+	for (int i=0; i<num_polys; i++){
+		//msg_write("POLYHEDRON! " + format("%d/%d", i, num_polys));
+
+		Array<Array<int>> vv;
+		int NumFaces = f->read_int();
+		for (int k=0;k<NumFaces;k++){
+			int nv = f->read_int();
+			Array<int> vertex;
+			for (int l=0;l<nv;l++) {
+				vertex.add(f->read_int());
+			}
+			vv.add(vertex);
+			// plane xyzd
+			f->read_float();
+			f->read_float();
+			f->read_float();
+			f->read_float();
 		}
-		p.NumSVertices = f->read_int();
-		for (int k=0;k<p.NumSVertices;k++)
-			p.SIndex[k] = f->read_int();
-		p.NumEdges = f->read_int();
-		for (int k=0;k<p.NumEdges;k++){
-			p.EdgeIndex[k*2 + 0] = f->read_int();
-			p.EdgeIndex[k*2 + 1] = f->read_int();
+		int NumSVertices = f->read_int();
+		for (int k=0;k<NumSVertices;k++)
+			f->read_int();
+		int NumEdges = f->read_int();
+		for (int k=0;k<NumEdges;k++){
+			f->read_int();
+			f->read_int();
 		}
 		// topology
-		for (int k=0;k<p.NumFaces;k++)
-			for (int l=0;l<p.NumFaces;l++)
-				p.FacesJoiningEdge[k * p.NumFaces + l] = f->read_int();
-		for (int k=0;k<p.NumEdges;k++)
-			for (int l=0;l<p.NumFaces;l++)
-				p.EdgeOnFace[k * p.NumFaces + l] = f->read_bool();
+		for (int k=0;k<NumFaces;k++)
+			for (int l=0;l<NumFaces;l++)
+				f->read_int();
+		for (int k=0;k<NumEdges;k++)
+			for (int l=0;l<NumFaces;l++)
+				f->read_bool();
+
+		Array<int> relink;
+		for (auto &_vv: vv) {
+			for (int &v: _vv) {
+				for (int k=0; k<relink.num; k+=2)
+					if (relink[k] == v) {
+						v = relink[k+1];
+						break;
+					}
+				if (data->phys_mesh->vertex[v].ref_count > 0) {
+					//msg_write("clone vertex");
+					relink.append({v, data->phys_mesh->vertex.num});
+					v = data->phys_mesh->vertex.num;
+					data->phys_mesh->add_vertex(data->phys_mesh->vertex[v].pos, 0, 0);
+				}
+			}
+		}
+		for (auto &_vv: vv) {
+			Array<vector> sv;
+			sv.resize(_vv.num);
+			//msg_write(ia2s(_vv));
+			try{
+				data->phys_mesh->_addPolygon(_vv, 0, sv);
+			}catch(GeometryException &e) {
+				msg_error(e.message);
+			}
+		}
 	}
 
 // Skin[i]
@@ -851,17 +883,17 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 	f->write_comment("// Physical Skin");
 
 	// vertices
-	f->write_int(data->skin[0].vertex.num);
-	for (int j=0;j<data->skin[0].vertex.num;j++)
-		f->write_int(data->skin[0].vertex[j].bone_index);
-	for (int j=0;j<data->skin[0].vertex.num;j++)
-		f->write_vector(&data->skin[0].vertex[j].pos);
+	f->write_int(data->phys_mesh->vertex.num);
+	for (int j=0;j<data->phys_mesh->vertex.num;j++)
+		f->write_int(data->phys_mesh->vertex[j].bone_index);
+	for (int j=0;j<data->phys_mesh->vertex.num;j++)
+		f->write_vector(&data->phys_mesh->vertex[j].pos);
 
 	// triangles
 	f->write_int(0);
-	/*for (int j=0;j<Skin[0].NumTriangles;j++)
+	/*for (int j=0;j<phys_mesh->NumTriangles;j++)
 		for (int k=0;k<3;k++)
-			f->write_int(Skin[0].Triangle[j].Index[k]);*/
+			f->write_int(phys_mesh->Triangle[j].Index[k]);*/
 
 	// balls
 	f->write_int(data->phys_mesh->ball.num);

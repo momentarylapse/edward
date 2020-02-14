@@ -102,13 +102,13 @@ void main()
 	File *f = Filesystem.create_text(HuiFilename)
 	
 	int n_tria = 0
-	for p in data_model.polygon
+	for p in data_model.mesh.polygon
 		n_tria += p.side.num - 2
 	
 	string str = "{'metadata':{\n"
 	str += "	'formatVersion': 3,\n"
 	str += "	'generatedBy': 'Edward',\n"
-	str += "	'vertices': {{data_model.vertex.num}},\n"
+	str += "	'vertices': {{data_model.mesh.vertex.num}},\n"
 	str += "	'faces': {{n_tria}},\n"
 	str += "	'normals': {{(n_tria*3)}},\n"
 	str += "	'colors': 0,\n"
@@ -143,22 +143,22 @@ void main()
 	str += "],\n"
 	str += "'colors': [],\n"
 	str += "'vertices': [\n"
-	for v,i in data_model.vertex
+	for v,i in data_model.mesh.vertex
 		str += "	" + vecToJson(v.pos)
-		if i < data_model.vertex.num - 1
+		if i < data_model.mesh.vertex.num - 1
 			str += ",\n"
 	str += "],\n"
 	str += "'uvs': [[0,0]],\n"
 	str += "'normals': [\n"
-	for p,ip in data_model.polygon
+	for p,ip in data_model.mesh.polygon
 		for side,k in p.side
 			str += "	" + vecToJson(side.normal)
-			if (ip < data_model.polygon.num - 1) or (k < p.side.num - 1)
+			if (ip < data_model.mesh.polygon.num - 1) or (k < p.side.num - 1)
 				str += ",\n"
 	str += "],\n"
 	str += "'faces': [\n"
 	int n_normals = 0
-	for p,ip in data_model.polygon
+	for p,ip in data_model.mesh.polygon
 		for side,k in p.side
 			int _a = side.triangulation[0]
 			int _b = side.triangulation[1]
@@ -173,7 +173,7 @@ void main()
 			str += "	42, {{va}}, {{vb}}, {{vc}}, {{p.material}}, "
 			str += "0, 0, 0, "
 			str += "{{na}}, {{nb}}, {{nc}}"
-			if (ip < data_model.polygon.num - 1) or (k < p.side.num - 1)
+			if (ip < data_model.mesh.polygon.num - 1) or (k < p.side.num - 1)
 				str += ",\n"
 		n_normals += p.side.num
 	str += "],\n"
@@ -190,15 +190,15 @@ void main()
 			str += ",\n"
 	str += "],\n"
 	str += "'skinIndices': ["
-	for v,i in data_model.vertex
+	for v,i in data_model.mesh.vertex
 		str += v.bone_index
-		if i < data_model.vertex.num - 1
+		if i < data_model.mesh.vertex.num - 1
 			str += ", "
 	str += "],\n"
 	str += "'skinWeights': ["
-	for v,i in data_model.vertex
+	for v,i in data_model.mesh.vertex
 		str += "1"
-		if i < data_model.vertex.num - 1
+		if i < data_model.mesh.vertex.num - 1
 			str += ", "
 	str += "],\n"
 	str += "'animations': [\n"
@@ -214,4 +214,4 @@ void main()
 	str += "}"
 	str = str.replace("'", "\"")
 	f << str
-	delete f
+	del f
