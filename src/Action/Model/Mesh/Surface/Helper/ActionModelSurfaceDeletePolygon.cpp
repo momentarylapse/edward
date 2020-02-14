@@ -19,7 +19,7 @@ ActionModelSurfaceDeletePolygon::ActionModelSurfaceDeletePolygon(int _index) {
 void ActionModelSurfaceDeletePolygon::undo(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	m->mesh->_addPolygon(vertex, material, skin, index);
+	m->edit_mesh->_addPolygon(vertex, material, skin, index);
 }
 
 
@@ -27,7 +27,7 @@ void ActionModelSurfaceDeletePolygon::undo(Data *d) {
 void *ActionModelSurfaceDeletePolygon::execute(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	ModelPolygon &t = m->mesh->polygon[index];
+	ModelPolygon &t = m->edit_mesh->polygon[index];
 
 	// save old data
 	material = t.material;
@@ -35,7 +35,7 @@ void *ActionModelSurfaceDeletePolygon::execute(Data *d) {
 	skin = t.getSkinVertices();
 
 	// erase
-	m->mesh->_removePolygon(index);
+	m->edit_mesh->_removePolygon(index);
 
 	return NULL;
 }

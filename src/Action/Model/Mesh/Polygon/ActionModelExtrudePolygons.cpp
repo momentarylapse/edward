@@ -36,7 +36,7 @@ void *ActionModelExtrudePolygons::compose(Data *d) {
 
 void ActionModelExtrudePolygons::extrude_surface(DataModel *m) {
 	Set<int> sel_poly, sel_vert;
-	foreachi(ModelPolygon &t, m->mesh->polygon, ti)
+	foreachi(auto &t, m->edit_mesh->polygon, ti)
 		if (t.is_selected) {
 			sel_poly.add(ti);
 			for (int k=0;k<t.side.num;k++)
@@ -47,10 +47,10 @@ void ActionModelExtrudePolygons::extrude_surface(DataModel *m) {
 
 	// find boundary
 	Set<int> boundary;
-	for (ModelEdge &e: m->mesh->edge) {
+	for (ModelEdge &e: m->edit_mesh->edge) {
 		int n_sel = 0;
 		for (int k=0;k<e.ref_count;k++)
-			if (m->mesh->polygon[e.polygon[k]].is_selected)
+			if (m->edit_mesh->polygon[e.polygon[k]].is_selected)
 				n_sel ++;
 		if (n_sel == 1)  {
 			boundary.add(e.vertex[0]);
@@ -61,24 +61,24 @@ void ActionModelExtrudePolygons::extrude_surface(DataModel *m) {
 	// copy boundary vertices
 	Array<int> new_vert;
 	for (int v: boundary) {
-		addSubAction(new ActionModelAddVertex(m->mesh->vertex[v].pos), m);
-		new_vert.add(m->mesh->vertex.num - 1);
+		addSubAction(new ActionModelAddVertex(m->edit_mesh->vertex[v].pos), m);
+		new_vert.add(m->edit_mesh->vertex.num - 1);
 	}
 
 	// move selected polygons
 	for (int v: sel_vert){
 		vector dir = v_0;
-		for (ModelPolygon &t: m->mesh->polygon)
+		for (auto &t: m->edit_mesh->polygon)
 			if (t.is_selected)
 				for (int k=0;k<t.side.num;k++)
 					if (v == t.side[k].vertex)
 						dir += t.temp_normal;
 		dir.normalize();
-		addSubAction(new ActionModelMoveVertex(v, m->mesh->vertex[v].pos + dir * offset), m);
+		addSubAction(new ActionModelMoveVertex(v, m->edit_mesh->vertex[v].pos + dir * offset), m);
 	}
 
 	// re-link outer (=unselected) boundary polygons
-	foreachi(ModelPolygon &t, m->mesh->polygon, ti)
+	foreachi(auto &t, m->edit_mesh->polygon, ti)
 		if (!t.is_selected){
 			Array<int> v;
 			bool on_boundary = false;
@@ -99,7 +99,7 @@ void ActionModelExtrudePolygons::extrude_surface(DataModel *m) {
 	Array<int> sewing;
 
 	// fill "sides" of the extrusion
-	foreachb(ModelEdge &e, m->mesh->edge)
+	foreachb(auto &e, m->edit_mesh->edge)
 		if (e.ref_count == 1) {
 			int n0 = boundary.find(e.vertex[0]);
 			int n1 = boundary.find(e.vertex[1]);
@@ -126,8 +126,8 @@ void ActionModelExtrudePolygons::extrude_surface(DataModel *m) {
 void ActionModelExtrudePolygons::extrude_surface_indep(DataModel *m) {
 	Array<int> sewing;
 
-	for (int ti=0; ti<m->mesh->polygon.num; ti++) {
-		ModelPolygon &t = m->mesh->polygon[ti];
+	for (int ti=0; ti<m->edit_mesh->polygon.num; ti++) {
+		auto &t = m->edit_mesh->polygon[ti];
 		if (!t.is_selected)
 			continue;
 
@@ -141,8 +141,8 @@ void ActionModelExtrudePolygons::extrude_surface_indep(DataModel *m) {
 		// copy/move boundary vertices
 		Array<int> new_vert;
 		for (int v: sel_vert) {
-			addSubAction(new ActionModelAddVertex(m->mesh->vertex[v].pos + n*offset), m);
-			new_vert.add(m->mesh->vertex.num - 1);
+			addSubAction(new ActionModelAddVertex(m->edit_mesh->vertex[v].pos + n*offset), m);
+			new_vert.add(m->edit_mesh->vertex.num - 1);
 		}
 
 		// re-link polygon

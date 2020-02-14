@@ -12,7 +12,7 @@
 
 ActionModelAlignToGrid::ActionModelAlignToGrid(DataModel *m, float _grid_dist)
 {
-	foreachi(ModelVertex &v, m->mesh->vertex, i)
+	foreachi(ModelVertex &v, m->edit_mesh->vertex, i)
 		if (v.is_selected)
 			index.add(i);
 	grid_dist = _grid_dist;
@@ -38,12 +38,12 @@ void *ActionModelAlignToGrid::execute(Data *d)
 
 	for (int i: index){
 		// save old data
-		old_pos.add(m->mesh->vertex[i].pos);
+		old_pos.add(m->edit_mesh->vertex[i].pos);
 
 		// apply
-		align_float(m->mesh->vertex[i].pos.x, grid_dist);
-		align_float(m->mesh->vertex[i].pos.y, grid_dist);
-		align_float(m->mesh->vertex[i].pos.z, grid_dist);
+		align_float(m->edit_mesh->vertex[i].pos.x, grid_dist);
+		align_float(m->edit_mesh->vertex[i].pos.y, grid_dist);
+		align_float(m->edit_mesh->vertex[i].pos.z, grid_dist);
 	}
 
 	m->setNormalsDirtyByVertices(index);
@@ -52,14 +52,13 @@ void *ActionModelAlignToGrid::execute(Data *d)
 
 
 
-void ActionModelAlignToGrid::undo(Data *d)
-{
+void ActionModelAlignToGrid::undo(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	assert(index.num == old_pos.num);
 
 	// apply old data
 	foreachi(int vi, index, i)
-		m->mesh->vertex[vi].pos = old_pos[i];
+		m->edit_mesh->vertex[vi].pos = old_pos[i];
 
 	m->setNormalsDirtyByVertices(index);
 }

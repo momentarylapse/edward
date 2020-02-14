@@ -282,7 +282,7 @@ void ModeModelMesh::on_update(Observable *o, const string &message) {
 
 void ModeModelMesh::on_view_stage_change() {
 	//msg_write("mesh: on view stage change");
-	update_vertex_buffers(data->edit_mesh->vertex);
+	update_vertex_buffers(data->mesh->vertex);
 }
 
 void ModeModelMesh::on_selection_change() {
@@ -294,7 +294,7 @@ void ModeModelMesh::on_selection_change() {
 void ModeModelMesh::on_set_multi_view() {
 	//msg_write("mesh: on set mv");
 	selection_mode->update_multi_view();
-	update_vertex_buffers(data->edit_mesh->vertex);
+	update_vertex_buffers(data->mesh->vertex);
 }
 
 

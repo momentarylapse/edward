@@ -27,7 +27,7 @@ void *ActionModelBevelEdges::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	bevelSurface(m->mesh);
+	bevelSurface(m->edit_mesh);
 	return NULL;
 }
 
@@ -107,7 +107,7 @@ void ActionModelBevelEdges::build_vertices(Array<VertexToCome> &vv, DataModel *m
 {
 	for (VertexToCome &v: vv)
 		if (v.ref_count > 0){
-			v.v = m->mesh->vertex.num;
+			v.v = m->edit_mesh->vertex.num;
 			addSubAction(new ActionModelAddVertex(v.pos, v.bone), m);
 		}
 }
@@ -119,7 +119,7 @@ void ActionModelBevelEdges::do_poly_relink(ModelPolygon &p, PolygonRelink &r, in
 	Array<vector> sv;
 
 	SkinGeneratorMulti sg;
-	sg.init_polygon(m->mesh->vertex, p);
+	sg.init_polygon(m->edit_mesh->vertex, p);
 
 	//msg_write("r!");
 	for (int k=0;k<p.side.num;k++){

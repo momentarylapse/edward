@@ -165,9 +165,9 @@ void *ActionModelEasify::compose(Data *d)
 	hui::Timer t;
 
 	//CalculateWeights(m);
-	int n = (int)((float)m->mesh->polygon.num * factor);
-	while(m->mesh->polygon.num > n)
-		if (!EasifyStep(m->mesh))
+	int n = (int)((float)m->edit_mesh->polygon.num * factor);
+	while(m->edit_mesh->polygon.num > n)
+		if (!EasifyStep(m->edit_mesh))
 			break;
 
 	float dt = t.get();

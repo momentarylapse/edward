@@ -53,7 +53,7 @@ void *ActionModelDeleteBone::execute(Data *d)
 
 	// save + correct vertices
 	vertex.clear();
-	foreachi(ModelVertex &v, m->mesh->vertex, vi)
+	foreachi(ModelVertex &v, m->edit_mesh->vertex, vi)
 		if (v.bone_index == index){
 			v.bone_index = -1;
 			vertex.add(vi);
@@ -99,11 +99,11 @@ void ActionModelDeleteBone::undo(Data *d)
 		}
 
 	// correct vertices
-	for (ModelVertex &v: m->mesh->vertex)
+	for (ModelVertex &v: m->edit_mesh->vertex)
 		if (v.bone_index >= index)
 			v.bone_index ++;
 	for (int vi: vertex)
-		m->mesh->vertex[vi].bone_index = index;
+		m->edit_mesh->vertex[vi].bone_index = index;
 }
 
 

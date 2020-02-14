@@ -20,33 +20,32 @@ ActionModelSplitPolygon::ActionModelSplitPolygon(int _polygon, const vector &_po
 	polygon = _polygon;
 }
 
-void *ActionModelSplitPolygon::compose(Data *d)
-{
+void *ActionModelSplitPolygon::compose(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	ModelPolygon &t = m->mesh->polygon[polygon];
+	auto &t = m->edit_mesh->polygon[polygon];
 
 	// old triangle data
 	ModelPolygon temp = t;
 
 	// skin interpolation
 	SkinGeneratorMulti sg;
-	sg.init_polygon(m->mesh->vertex, t);
+	sg.init_polygon(m->edit_mesh->vertex, t);
 
 	// delete old triangle
 	addSubAction(new ActionModelSurfaceDeletePolygon(polygon), m);
 
 	// create new vertex
 	addSubAction(new ActionModelAddVertex(pos), m);
-	int new_vertex = m->mesh->vertex.num - 1;
+	int new_vertex = m->edit_mesh->vertex.num - 1;
 
 	// create 3 new triangles
-	for (int k=0;k<temp.side.num;k++){
+	for (int k=0;k<temp.side.num;k++) {
 		Array<int> v;
 		v.add(temp.side[k].vertex);
 		v.add(temp.side[(k+1)%temp.side.num].vertex);
 		v.add(new_vertex);
 		Array<vector> sv;
-		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++){
+		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++) {
 			sv.add(temp.side[k].skin_vertex[l]);
 			sv.add(temp.side[(k+1)%temp.side.num].skin_vertex[l]);
 			sv.add(sg.get(pos, l));

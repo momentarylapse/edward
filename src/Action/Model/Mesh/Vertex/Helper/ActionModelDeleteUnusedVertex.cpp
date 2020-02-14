@@ -23,7 +23,7 @@ ActionModelDeleteUnusedVertex::ActionModelDeleteUnusedVertex(int _vertex)
 void ActionModelDeleteUnusedVertex::undo(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	m->mesh->add_vertex(pos, bone, normal_mode, vertex);
+	m->edit_mesh->add_vertex(pos, bone, normal_mode, vertex);
 
 	// correct animations
 	int i = 0;
@@ -46,7 +46,7 @@ void ActionModelDeleteUnusedVertex::undo(Data *d) {
 
 void *ActionModelDeleteUnusedVertex::execute(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	auto &v = m->mesh->vertex[vertex];
+	auto &v = m->edit_mesh->vertex[vertex];
 	assert(v.ref_count == 0);
 
 	// save old data
@@ -78,7 +78,7 @@ void *ActionModelDeleteUnusedVertex::execute(Data *d) {
 		}
 
 	// erase
-	m->mesh->remove_lonely_vertex(vertex);
+	m->edit_mesh->remove_lonely_vertex(vertex);
 	return NULL;
 }
 

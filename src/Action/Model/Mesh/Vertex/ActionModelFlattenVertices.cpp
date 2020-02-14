@@ -12,7 +12,7 @@
 
 ActionModelFlattenVertices::ActionModelFlattenVertices(DataModel* m)
 {
-	foreachi(ModelVertex &v, m->mesh->vertex, i)
+	foreachi(ModelVertex &v, m->edit_mesh->vertex, i)
 		if (v.is_selected){
 			index.add(i);
 			old_pos.add(v.pos);
@@ -78,11 +78,11 @@ void* ActionModelFlattenVertices::execute(Data* d)
 	plane pl;
 
 	for (int i: index)
-		cloud.add(m->mesh->vertex[i].pos);
+		cloud.add(m->edit_mesh->vertex[i].pos);
 	PlaneFromPointCloud(pl, cloud);
 
 	for (int i: index)
-		m->mesh->vertex[i].pos -= pl.distance(m->mesh->vertex[i].pos) * pl.n;
+		m->edit_mesh->vertex[i].pos -= pl.distance(m->edit_mesh->vertex[i].pos) * pl.n;
 
 	m->setNormalsDirtyByVertices(index);
 	return NULL;
@@ -93,7 +93,7 @@ void ActionModelFlattenVertices::undo(Data* d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	foreachi(int i, index, ii)
-		m->mesh->vertex[i].pos = old_pos[ii];
+		m->edit_mesh->vertex[i].pos = old_pos[ii];
 
 	m->setNormalsDirtyByVertices(index);
 }

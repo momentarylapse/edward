@@ -23,9 +23,9 @@ void ActionModelSurfaceAddPolygon::undo(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	if (index >= 0)
-		m->mesh->_removePolygon(index);
+		m->edit_mesh->_removePolygon(index);
 	else
-		m->mesh->_removePolygon(m->mesh->polygon.num -1);
+		m->edit_mesh->_removePolygon(m->edit_mesh->polygon.num -1);
 }
 
 
@@ -33,11 +33,11 @@ void ActionModelSurfaceAddPolygon::undo(Data *d) {
 void *ActionModelSurfaceAddPolygon::execute(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	m->mesh->_addPolygon(v, material, sv, index);
+	m->edit_mesh->_addPolygon(v, material, sv, index);
 
 	if (index >= 0)
-		return &m->mesh->polygon[index];
-	return &m->mesh->polygon.back();
+		return &m->edit_mesh->polygon[index];
+	return &m->edit_mesh->polygon.back();
 }
 
 

@@ -20,21 +20,21 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 	bool closed = true;
 
 	// restrict length
-	foreachib(ModelEdge &e, m->mesh->edge, ei)
+	foreachib(ModelEdge &e, m->edit_mesh->edge, ei)
 		for (int k=0;k<2;k++)
 			if (e.vertex[k] == vi){
-				length = min(length, (m->mesh->vertex[e.vertex[(k+1)%2]].pos - m->mesh->vertex[e.vertex[k]].pos).length());
+				length = min(length, (m->edit_mesh->vertex[e.vertex[(k+1)%2]].pos - m->edit_mesh->vertex[e.vertex[k]].pos).length());
 				if (e.ref_count < 2)
 					closed = false;
 			}
 
-	int n_vert = m->mesh->vertex.num;
+	int n_vert = m->edit_mesh->vertex.num;
 
 	// split the edges
 	bool split = true;
 	while(split){
 		split = false;
-		foreachib(ModelEdge &e, m->mesh->edge, ei){
+		foreachib(ModelEdge &e, m->edit_mesh->edge, ei){
 			for (int k=0;k<2;k++)
 				if (e.vertex[k] == vi){
 
@@ -42,7 +42,7 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 					if (e.vertex[1-k] >= n_vert)
 						continue;
 
-					vector dir = m->mesh->vertex[e.vertex[1-k]].pos - m->mesh->vertex[e.vertex[k]].pos;
+					vector dir = m->edit_mesh->vertex[e.vertex[1-k]].pos - m->edit_mesh->vertex[e.vertex[k]].pos;
 					float edge_length = dir.length();
 					if (edge_length < length + epsilon)
 						continue;
@@ -61,12 +61,12 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 	}
 
 	// nothing done...
-	if (n_vert == m->mesh->vertex.num)
+	if (n_vert == m->edit_mesh->vertex.num)
 		return;
 
 
 	// remove vi from polygons
-	foreachi(ModelPolygon &t, m->mesh->polygon, i)
+	foreachi(ModelPolygon &t, m->edit_mesh->polygon, i)
 		for (int k=0;k<t.side.num;k++)
 			if (t.side[k].vertex == vi){
 				addSubAction(new ActionModelPolygonRemoveVertex(i, k), m);
@@ -77,7 +77,7 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 
 	// close hole
 	if (closed){
-		Array<int> loop = m->mesh->get_boundary_loop(m->mesh->vertex.num - 1);
+		Array<int> loop = m->edit_mesh->get_boundary_loop(m->edit_mesh->vertex.num - 1);
 		loop.reverse();
 		addSubAction(new ActionModelAddPolygonAutoSkin(loop, mode_model_mesh->current_material), m);
 	}
@@ -94,8 +94,8 @@ ActionModelBevelVertices::ActionModelBevelVertices(float _length)
 void *ActionModelBevelVertices::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	for (int i=m->mesh->vertex.num-1;i>=0;i--)
-		if (m->mesh->vertex[i].is_selected)
+	for (int i=m->edit_mesh->vertex.num-1;i>=0;i--)
+		if (m->edit_mesh->vertex[i].is_selected)
 			BevelVertex(m, fabs(length), i);
 	return NULL;
 }

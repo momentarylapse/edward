@@ -22,7 +22,7 @@ ActionModelPolygonAddVertex::ActionModelPolygonAddVertex(int _poly, int _side, i
 
 void* ActionModelPolygonAddVertex::compose(Data* d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	ModelPolygon &t = m->mesh->polygon[poly];
+	ModelPolygon &t = m->edit_mesh->polygon[poly];
 
 
 	// save old polygon data

@@ -433,9 +433,10 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 					}
 				if (data->phys_mesh->vertex[v].ref_count > 0) {
 					//msg_write("clone vertex");
-					relink.append({v, data->phys_mesh->vertex.num});
-					v = data->phys_mesh->vertex.num;
+					int nv = data->phys_mesh->vertex.num;
+					relink.append({v, nv});
 					data->phys_mesh->add_vertex(data->phys_mesh->vertex[v].pos, 0, 0);
+					v = nv;
 				}
 			}
 		}

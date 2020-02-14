@@ -28,16 +28,14 @@ inline int tria_sort_vert_by_edge(const ModelPolygon &t, const ModelEdge &e, int
 }
 #endif
 
-ActionModelSplitEdge::ActionModelSplitEdge(int _edge, float _factor)
-{
+ActionModelSplitEdge::ActionModelSplitEdge(int _edge, float _factor) {
 	edge = _edge;
 	factor = _factor;
 }
 
-void *ActionModelSplitEdge::compose(Data *d)
-{
+void *ActionModelSplitEdge::compose(Data *d) {
 	DataModel *mod = dynamic_cast<DataModel*>(d);
-	auto *m = mod->mesh;
+	auto *m = mod->edit_mesh;
 	assert(edge >= 0);
 	assert(edge < m->edge.num);
 
@@ -53,7 +51,7 @@ void *ActionModelSplitEdge::compose(Data *d)
 
 	// adjacent polygons
 	ModelEdge ee = e;
-	for (int i=ee.ref_count-1;i>=0;i--){
+	for (int i=ee.ref_count-1;i>=0;i--) {
 		int poly = ee.polygon[i];
 		ModelPolygon &t = m->polygon[poly];
 

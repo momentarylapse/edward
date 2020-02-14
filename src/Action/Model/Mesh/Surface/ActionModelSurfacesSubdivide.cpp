@@ -23,7 +23,7 @@ ActionModelSurfacesSubdivide::ActionModelSurfacesSubdivide(const ModelSelection 
 
 void *ActionModelSurfacesSubdivide::compose(Data *d) {
 	auto mod = dynamic_cast<DataModel*>(d);
-	auto m = mod->mesh;
+	auto m = mod->edit_mesh;
 	if (!sel.consistent_surfaces(m))
 		throw ActionException("surface selection inconsistent");
 

@@ -21,7 +21,7 @@ ActionModelDeleteSelection::ActionModelDeleteSelection(const ModelSelection &s, 
 void *ActionModelDeleteSelection::compose(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-		foreachib(ModelPolygon &t, m->mesh->polygon, ti) {
+		foreachib(ModelPolygon &t, m->edit_mesh->polygon, ti) {
 			bool del = false;
 			if (greedy) {
 				for (int k=0;k<t.side.num;k++)
@@ -35,7 +35,7 @@ void *ActionModelDeleteSelection::compose(Data *d) {
 		}
 
 		foreachb (int i, sel.vertex)
-			if (m->mesh->vertex[i].ref_count == 0) {
+			if (m->edit_mesh->vertex[i].ref_count == 0) {
 				addSubAction(new ActionModelDeleteUnusedVertex(i), m);
 			}
 

@@ -19,7 +19,7 @@ ActionModelPolygonRemoveVertex::ActionModelPolygonRemoveVertex(int _poly, int _s
 
 void *ActionModelPolygonRemoveVertex::compose(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	auto &t = m->mesh->polygon[poly];
+	auto &t = m->edit_mesh->polygon[poly];
 
 
 	// save old polygon data

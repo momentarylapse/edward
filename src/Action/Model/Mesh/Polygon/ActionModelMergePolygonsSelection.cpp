@@ -35,16 +35,16 @@ int polygons_count_shared_vertices(ModelPolygon &a, ModelPolygon &b)
 
 void ActionModelMergePolygonsSelection::MergePolygonsInSurface(DataModel *m)
 {
-	int num_old_poly = m->mesh->polygon.num;
+	int num_old_poly = m->edit_mesh->polygon.num;
 	bool found;
 	do{
 		found = false;
 
-		foreachi(ModelEdge &e, m->mesh->edge, ei){
+		foreachi(ModelEdge &e, m->edit_mesh->edge, ei){
 			if (e.ref_count < 2)
 				continue;
-			ModelPolygon &p0 = m->mesh->polygon[e.polygon[0]];
-			ModelPolygon &p1 = m->mesh->polygon[e.polygon[1]];
+			ModelPolygon &p0 = m->edit_mesh->polygon[e.polygon[0]];
+			ModelPolygon &p1 = m->edit_mesh->polygon[e.polygon[1]];
 			if ((!p0.is_selected) && (e.polygon[0] < num_old_poly))
 				continue;
 			if ((!p1.is_selected) && (e.polygon[1] < num_old_poly))
@@ -54,9 +54,9 @@ void ActionModelMergePolygonsSelection::MergePolygonsInSurface(DataModel *m)
 				continue;
 
 			if (p0.normal_dirty)
-				p0.temp_normal = p0.getNormal(m->mesh->vertex);
+				p0.temp_normal = p0.getNormal(m->edit_mesh->vertex);
 			if (p1.normal_dirty)
-				p1.temp_normal = p1.getNormal(m->mesh->vertex);
+				p1.temp_normal = p1.getNormal(m->edit_mesh->vertex);
 
 			if (p0.temp_normal * p1.temp_normal < 0.98f)
 				continue;
@@ -82,10 +82,10 @@ void loop_sides(ModelPolygon &p, int steps)
 
 void ActionModelMergePolygonsSelection::MergePolygons(DataModel *m, int edge)
 {
-	ModelEdge e = m->mesh->edge[edge];
+	ModelEdge e = m->edit_mesh->edge[edge];
 	//msg_write(format("merge %d %d", e.Vertex[0], e.Vertex[1]));
-	ModelPolygon p0 = m->mesh->polygon[e.polygon[0]];
-	ModelPolygon p1 = m->mesh->polygon[e.polygon[1]];
+	ModelPolygon p0 = m->edit_mesh->polygon[e.polygon[0]];
+	ModelPolygon p1 = m->edit_mesh->polygon[e.polygon[1]];
 
 	/*msg_write(ia2s(p0.GetVertices()));
 	msg_write(e.Side[0]);

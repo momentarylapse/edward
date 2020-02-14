@@ -18,17 +18,16 @@ ActionModelPasteGeometry::ActionModelPasteGeometry(Geometry &_geo, int _default_
 	default_material = _default_material;
 }
 
-void *ActionModelPasteGeometry::compose(Data *d)
-{
+void *ActionModelPasteGeometry::compose(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	m->clearSelection();
 
-	int nv = m->mesh->vertex.num;
+	int nv = m->edit_mesh->vertex.num;
 
 	for (ModelVertex &v: geo.vertex)
 		addSubAction(new ActionModelAddVertex(v.pos), m);
 
-	for (ModelPolygon &t: geo.polygon){
+	for (ModelPolygon &t: geo.polygon) {
 		Array<int> v;
 		for (int k=0;k<t.side.num;k++)
 			v.add(nv + t.side[k].vertex);

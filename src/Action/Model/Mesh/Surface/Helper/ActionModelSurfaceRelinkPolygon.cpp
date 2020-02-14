@@ -19,12 +19,11 @@ ActionModelSurfaceRelinkPolygon::ActionModelSurfaceRelinkPolygon(int _polygon, A
 	polygon = _polygon;
 }
 
-void *ActionModelSurfaceRelinkPolygon::compose(Data *d)
-{
+void *ActionModelSurfaceRelinkPolygon::compose(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	// old triangle data
-	ModelPolygon &t = m->mesh->polygon[polygon];
+	auto &t = m->edit_mesh->polygon[polygon];
 	assert(v.num == t.side.num);
 	int material = t.material;
 	Array<vector> sv = t.getSkinVertices();

@@ -18,7 +18,7 @@ ActionModelMoveVertex::ActionModelMoveVertex(int _vertex, const vector &_pos) {
 
 void *ActionModelMoveVertex::execute(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	std::swap(m->mesh->vertex[vertex].pos, pos);
+	std::swap(m->edit_mesh->vertex[vertex].pos, pos);
 	return NULL;
 }
 
