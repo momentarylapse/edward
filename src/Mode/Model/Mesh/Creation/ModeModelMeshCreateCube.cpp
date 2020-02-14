@@ -30,14 +30,13 @@ ModeModelMeshCreateCube::ModeModelMeshCreateCube(ModeBase *_parent) :
 
 ModeModelMeshCreateCube::~ModeModelMeshCreateCube(){
 	if (geo)
-		delete(geo);
+		delete geo;
 }
 
-void ModeModelMeshCreateCube::update_geometry()
-{
+void ModeModelMeshCreateCube::update_geometry() {
 	if (geo)
-		delete(geo);
-	if (pos2_chosen){
+		delete geo;
+	if (pos2_chosen) {
 		int num_1 = dialog->get_int("nc_x");
 		int num_2 = dialog->get_int("nc_y");
 		int num_3 = dialog->get_int("nc_z");
@@ -45,8 +44,11 @@ void ModeModelMeshCreateCube::update_geometry()
 		hui::Config.set_int("NewCubeNumY", num_2);
 		hui::Config.set_int("NewCubeNumZ", num_3);
 
+		if (mode_model_mesh->current_skin == SKIN_PHYSICAL)
+			num_1 = num_2 = num_3 = 1;
+
 		geo = new GeometryCube(pos, length[0], length[1], length[2], num_1, num_2, num_3);
-	}else{
+	} else {
 		float min_thick = 10 / ed->multi_view_3d->active_win->zoom(); // 10 px
 		vector n = length[0] ^ length[1];
 		n.normalize();
@@ -127,6 +129,10 @@ void ModeModelMeshCreateCube::on_start() {
 	dialog->set_int("nc_y", hui::Config.get_int("NewCubeNumY", 1));
 	dialog->set_int("nc_z", hui::Config.get_int("NewCubeNumZ", 1));
 	ed->set_side_panel(dialog);
+
+	bool physical = (mode_model_mesh->current_skin == SKIN_PHYSICAL);
+	if (physical)
+		dialog->enable("*", false);
 
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);

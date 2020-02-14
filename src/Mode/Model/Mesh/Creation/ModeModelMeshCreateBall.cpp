@@ -27,31 +27,21 @@ ModeModelMeshCreateBall::ModeModelMeshCreateBall(ModeBase *_parent) :
 	geo = NULL;
 }
 
-ModeModelMeshCreateBall::~ModeModelMeshCreateBall()
-{
+ModeModelMeshCreateBall::~ModeModelMeshCreateBall() {
 	if (geo)
-		delete(geo);
+		delete geo;
 }
 
-void ModeModelMeshCreateBall::onTypeBall()
-{
+void ModeModelMeshCreateBall::onTypeBall() {
 	dialog->enable("x", true);
 	dialog->enable("y", true);
 	dialog->enable("complexity", false);
 }
 
-void ModeModelMeshCreateBall::onTypeSphere()
-{
+void ModeModelMeshCreateBall::onTypeSphere() {
 	dialog->enable("x", false);
 	dialog->enable("y", false);
 	dialog->enable("complexity", true);
-}
-
-void ModeModelMeshCreateBall::onTypePhysical()
-{
-	dialog->enable("x", false);
-	dialog->enable("y", false);
-	dialog->enable("complexity", false);
 }
 
 void ModeModelMeshCreateBall::on_start() {
@@ -67,10 +57,13 @@ void ModeModelMeshCreateBall::on_start() {
 	dialog->enable("x", !sphere);
 	dialog->enable("y", !sphere);
 	dialog->enable("complexity", sphere);
-	dialog->event("type:ball", std::bind(&ModeModelMeshCreateBall::onTypeBall, this));
-	dialog->event("type:sphere", std::bind(&ModeModelMeshCreateBall::onTypeSphere, this));
-	dialog->event("type:physical", std::bind(&ModeModelMeshCreateBall::onTypePhysical, this));
+	dialog->event("type:ball", [=]{ onTypeBall(); });
+	dialog->event("type:sphere", [=]{ onTypeSphere(); });
 	ed->set_side_panel(dialog);
+
+	bool physical = (mode_model_mesh->current_skin == SKIN_PHYSICAL);
+	if (physical)
+		dialog->enable("*", false);
 
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
@@ -81,11 +74,10 @@ void ModeModelMeshCreateBall::on_end() {
 	ed->set_side_panel(nullptr);
 }
 
-void ModeModelMeshCreateBall::updateGeometry()
-{
+void ModeModelMeshCreateBall::updateGeometry() {
 	if (geo)
-		delete(geo);
-	if (pos_chosen){
+		delete geo;
+	if (pos_chosen) {
 		bool ball = dialog->is_checked("type:ball");
 		bool sphere = dialog->is_checked("type:sphere");
 		int nx = dialog->get_int("x");
@@ -106,25 +98,23 @@ void ModeModelMeshCreateBall::updateGeometry()
 
 
 
-void ModeModelMeshCreateBall::on_left_button_up()
-{
-	if (pos_chosen){
-		bool physical = dialog->is_checked("type:physical");
-		if (physical){
+void ModeModelMeshCreateBall::on_left_button_up() {
+	if (pos_chosen) {
+		if (mode_model_mesh->current_skin == SKIN_PHYSICAL) {
 			ModelVertex v;
 			v.pos = pos;
 			ModelBall b;
-			b.index = data->skin[0].vertex.num;
+			b.index = data->phys_mesh->vertex.num;
 			b.radius = radius;
 			data->phys_mesh->vertex.add(v);
 			data->phys_mesh->ball.add(b);
 
-		}else{
+		} else {
 			data->pasteGeometry(*geo, mode_model_mesh->current_material);
 		}
 
 		abort();
-	}else{
+	} else {
 		pos = multi_view->get_cursor();
 		message = _("Sphere radius: ");
 		pos_chosen = true;
@@ -133,11 +123,10 @@ void ModeModelMeshCreateBall::on_left_button_up()
 }
 
 
-void ModeModelMeshCreateBall::on_draw_win(MultiView::Window *win)
-{
+void ModeModelMeshCreateBall::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
 
-	if (pos_chosen){
+	if (pos_chosen) {
 		mode_model->set_material_creation();
 		geo->build(nix::vb_temp);
 		nix::Draw3D(nix::vb_temp);
@@ -148,9 +137,8 @@ void ModeModelMeshCreateBall::on_draw_win(MultiView::Window *win)
 }
 
 
-void ModeModelMeshCreateBall::on_mouse_move()
-{
-	if (pos_chosen){
+void ModeModelMeshCreateBall::on_mouse_move() {
+	if (pos_chosen) {
 		vector pos2 = multi_view->get_cursor(pos);
 		radius = (pos2 - pos).length();
 		if (multi_view->snap_to_grid)

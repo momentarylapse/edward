@@ -26,9 +26,6 @@ public:
 
 	void on_draw_win(MultiView::Window *win) override;
 
-	void on_type_visible();
-	void on_type_physical();
-
 	void update_geometry();
 
 private:

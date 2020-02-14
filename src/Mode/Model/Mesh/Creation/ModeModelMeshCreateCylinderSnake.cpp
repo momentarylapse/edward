@@ -30,8 +30,7 @@ ModeModelMeshCreateCylinderSnake::ModeModelMeshCreateCylinderSnake(ModeBase *_pa
 	geo = NULL;
 }
 
-void ModeModelMeshCreateCylinderSnake::on_start()
-{
+void ModeModelMeshCreateCylinderSnake::on_start() {
 	dialog = new hui::Panel();
 	dialog->from_resource("new_cylinder_dialog");
 
@@ -42,6 +41,10 @@ void ModeModelMeshCreateCylinderSnake::on_start()
 	dialog->hide_control("type:physical", true);
 	ed->set_side_panel(dialog);
 
+	bool physical = (mode_model_mesh->current_skin == SKIN_PHYSICAL);
+	if (physical)
+		dialog->enable("*", false);
+
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
 
@@ -49,17 +52,15 @@ void ModeModelMeshCreateCylinderSnake::on_start()
 }
 
 
-void ModeModelMeshCreateCylinderSnake::on_end()
-{
+void ModeModelMeshCreateCylinderSnake::on_end() {
 	ed->set_side_panel(nullptr);
 	if (geo)
-		delete(geo);
+		delete geo;
 }
 
-void ModeModelMeshCreateCylinderSnake::update_geometry()
-{
+void ModeModelMeshCreateCylinderSnake::update_geometry() {
 	if (geo)
-		delete(geo);
+		delete geo;
 	if (ready_for_scaling){
 		bool round = dialog->is_checked("round");
 		int rings = dialog->get_int("rings");
@@ -73,9 +74,8 @@ void ModeModelMeshCreateCylinderSnake::update_geometry()
 }
 
 
-void ModeModelMeshCreateCylinderSnake::on_mouse_move()
-{
-	if (ready_for_scaling){
+void ModeModelMeshCreateCylinderSnake::on_mouse_move() {
+	if (ready_for_scaling) {
 		vector p = multi_view->get_cursor(pos.back());
 		radius = (p - pos.back()).length();
 		radius = multi_view->maybe_snap_f(radius);
@@ -89,18 +89,17 @@ void ModeModelMeshCreateCylinderSnake::on_mouse_move()
 
 
 
-void ModeModelMeshCreateCylinderSnake::on_left_button_up()
-{
-	if (ready_for_scaling){
+void ModeModelMeshCreateCylinderSnake::on_left_button_up() {
+	if (ready_for_scaling) {
 
 		data->pasteGeometry(*geo, mode_model_mesh->current_material);
 
 		abort();
-	}else{
-		if (pos.num > 2){
+	} else {
+		if (pos.num > 2) {
 			vector pp = multi_view->mouse_win->project(pos[0]);
 			pp.z = 0;
-			if ((pp - multi_view->m).length_fuzzy() < CYLINDER_CLOSING_DISTANCE){
+			if ((pp - multi_view->m).length_fuzzy() < CYLINDER_CLOSING_DISTANCE) {
 				closed = true;
 				ready_for_scaling = true;
 				on_mouse_move();
@@ -117,10 +116,9 @@ void ModeModelMeshCreateCylinderSnake::on_left_button_up()
 
 
 
-void ModeModelMeshCreateCylinderSnake::on_command(const string& id)
-{
-	if (id == "finish-action"){
-		if (pos.num > 1){
+void ModeModelMeshCreateCylinderSnake::on_command(const string& id) {
+	if (id == "finish-action") {
+		if (pos.num > 1) {
 			ready_for_scaling = true;
 			on_mouse_move();
 			message = _("Cylinder radius: ");
@@ -134,16 +132,15 @@ void ModeModelMeshCreateCylinderSnake::on_command(const string& id)
 
 
 
-void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win)
-{
+void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
 
-	if (pos.num > 0){
+	if (pos.num > 0) {
 
 		// control points
 		nix::SetColor(scheme.CREATION_LINE);
 		nix::SetShader(nix::default_shader_2d);
-		for (int i=0;i<pos.num;i++){
+		for (int i=0;i<pos.num;i++) {
 			vector pp = win->project(pos[i]);
 			nix::DrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
 		}
@@ -172,17 +169,17 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win)
 			nix::DrawLine3D(inter.get((float)i * 0.01f), inter.get((float)i * 0.01f + 0.01f));
 	}
 
-	if (ready_for_scaling){
+	if (ready_for_scaling) {
 		geo->build(nix::vb_temp);
 		mode_model->set_material_creation();
 		nix::Draw3D(nix::vb_temp);
 
 		if (win == multi_view->mouse_win)
 			draw_helper_line(win, pos.back(), multi_view->get_cursor());
-	}else if (pos.num > 2){
+	} else if (pos.num > 2) {
 		vector pp = multi_view->mouse_win->project(pos[0]);
 		pp.z = 0;
-		if ((pp - multi_view->m).length_fuzzy() < CYLINDER_CLOSING_DISTANCE){
+		if ((pp - multi_view->m).length_fuzzy() < CYLINDER_CLOSING_DISTANCE) {
 			draw_str(pp.x, pp.y, _("Close path"));
 		}
 	}

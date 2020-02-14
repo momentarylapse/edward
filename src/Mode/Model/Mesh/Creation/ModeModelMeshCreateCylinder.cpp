@@ -39,11 +39,12 @@ void ModeModelMeshCreateCylinder::on_start() {
 	dialog->set_int("rings", hui::Config.get_int("NewCylinderRings", 4));
 	dialog->set_int("edges", hui::Config.get_int("NewCylinderEdges", 8));
 	dialog->check("round", hui::Config.get_bool("NewCylinderRound", false));
-	dialog->event("type:visible", std::bind(&ModeModelMeshCreateCylinder::on_type_visible, this));
-	dialog->event("type:physical", std::bind(&ModeModelMeshCreateCylinder::on_type_physical, this));
 
-	dialog->check("type:visible", true);
 	ed->set_side_panel(dialog);
+
+	bool physical = (mode_model_mesh->current_skin == SKIN_PHYSICAL);
+	if (physical)
+		dialog->enable("*", false);
 
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
@@ -58,7 +59,7 @@ void ModeModelMeshCreateCylinder::on_end() {
 
 void ModeModelMeshCreateCylinder::update_geometry() {
 	if (geo)
-		delete(geo);
+		delete geo;
 	if (pos.num == 2){
 		//bool physical = dialog->isChecked("type:physical");
 		bool round = dialog->is_checked("round");
@@ -93,18 +94,18 @@ void ModeModelMeshCreateCylinder::on_mouse_move() {
 
 void ModeModelMeshCreateCylinder::on_left_button_up() {
 	if (pos.num == 2) {
-		bool physical = dialog->is_checked("type:physical");
+		bool physical = (mode_model_mesh->current_skin == SKIN_PHYSICAL);
 
 		if (physical) {
 			ModelCylinder c;
-			c.index[0] = data->skin[0].vertex.num;
-			c.index[1] = data->skin[0].vertex.num + 1;
+			c.index[0] = data->phys_mesh->vertex.num;
+			c.index[1] = data->phys_mesh->vertex.num + 1;
 			c.radius = radius;
 			c.round = dialog->is_checked("round");
 			data->phys_mesh->cylinder.add(c);
 
-			data->skin[0].vertex.add(ModelVertex(pos[0]));
-			data->skin[0].vertex.add(ModelVertex(pos[1]));
+			data->phys_mesh->vertex.add(ModelVertex(pos[0]));
+			data->phys_mesh->vertex.add(ModelVertex(pos[1]));
 
 		} else {
 			data->pasteGeometry(*geo, mode_model_mesh->current_material);
@@ -156,14 +157,4 @@ void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win) {
 		if (win == multi_view->mouse_win)
 			draw_helper_line(win, pos[1], multi_view->get_cursor());
 	}
-}
-
-void ModeModelMeshCreateCylinder::on_type_physical() {
-	dialog->enable("rings", false);
-	dialog->enable("edges", false);
-}
-
-void ModeModelMeshCreateCylinder::on_type_visible() {
-	dialog->enable("rings", true);
-	dialog->enable("edges", true);
 }

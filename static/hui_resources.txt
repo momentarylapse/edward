@@ -4939,23 +4939,17 @@ Grid
 vertical
 0
 0
-5
-RadioButton
-type:physical
-
-0
-0
-0
+4
 RadioButton
 type:ball
 
-1
+0
 0
 0
 Grid
 ?
 indent
-2
+1
 0
 4
 Text
@@ -4985,13 +4979,13 @@ range=1:
 RadioButton
 type:sphere
 
-3
+2
 0
 0
 Grid
 ?
 indent
-4
+3
 0
 2
 Text
@@ -5079,23 +5073,11 @@ Grid
 vertical
 0
 0
-4
-RadioButton
-type:physical
-
-0
-0
-0
-RadioButton
-type:visible
-
-1
-0
-0
+2
 Grid
 ?
 indent
-2
+0
 0
 4
 Text
@@ -5125,7 +5107,7 @@ range=2:
 CheckBox
 round
 
-3
+1
 0
 0
 # Resource
@@ -9541,7 +9523,7 @@ image=hui:execute
 # Language
 English
 # Number Of IDs
-950
+947
 # Text
 /ambient
 Ambient:
@@ -11949,9 +11931,6 @@ Sections per disk:
 new_ball_dialog/type:ball
 From disks
 
-new_ball_dialog/type:physical
-Physical
-
 new_ball_dialog/type:sphere
 Sphere
 
@@ -11975,12 +11954,6 @@ Edges:
 
 new_cylinder_dialog/t_rings
 Rings:
-
-new_cylinder_dialog/type:physical
-Physical
-
-new_cylinder_dialog/type:visible
-Visible
 
 new_plane_dialog/g-plane
 New plane: stripes

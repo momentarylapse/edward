@@ -598,7 +598,7 @@ void ModeModelMesh::draw_polygons(MultiView::Window *win, ModelMesh *mesh, Array
 
 void ModeModelMesh::draw_physical(MultiView::Window *win) {
 	nix::SetWire(false);
-	mode_model->set_material_creation(0.7f);
+	mode_model->set_material_creation(1.5f);
 
 	for (auto &b: data->phys_mesh->ball) {
 		Geometry *geo = new GeometrySphere(data->phys_mesh->vertex[b.index].pos, b.radius, 6);

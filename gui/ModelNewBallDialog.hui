@@ -1,7 +1,6 @@
 Dialog new_ball_dialog "New ball" width=220 height=119 allow-root
 	Group g-title: "New sphere"
 		Grid ? "" vertical
-			RadioButton type:physical "Physical"
 			RadioButton type:ball "From disks"
 			Grid ? "" indent
 				Text t_x "Disks:"
