@@ -34,7 +34,7 @@ Dialog world-object-list-dialog "" width=400 height=300
 					Text t-harshness "Harshness:"
 					SpinButton harshness "" range=0:1:0.01
 					---|
-		Grid ? "" indent
+		Grid g-location "" indent
 			.
 			Text /x "X" center
 			Text /y "Y" center

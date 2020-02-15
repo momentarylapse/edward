@@ -1,0 +1,25 @@
+use file
+use hui
+use "../api.kaba"
+
+void main()
+	if !FileDialogSave(edward, "Topology", "", "*.top", "*.top")
+		return
+	File *f = Filesystem.create_text(HuiFilename)
+	for p in data_model.mesh.polygon
+		vector va = data_model.mesh.vertex[p.side[0].vertex].pos
+		vector vb = data_model.mesh.vertex[p.side[1].vertex].pos
+		vector vc = data_model.mesh.vertex[p.side[2].vertex].pos
+		vector n = p.temp_normal
+		string s
+		if p.material == 1
+			s = "portal"
+		else
+			s = "wall"
+		s += " {{va.x}} {{va.y}} {{va.z}}"
+		s += " {{vb.x}} {{vb.y}} {{vb.z}}"
+		s += " {{vc.x}} {{vc.y}} {{vc.z}}"
+		if p.material == 1
+			s += " 0"
+		f << s
+	del f

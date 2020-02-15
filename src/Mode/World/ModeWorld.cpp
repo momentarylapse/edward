@@ -56,15 +56,18 @@ public:
 		int type, index;
 	};
 	Array<Index> list_indices;
-	int selected;
+	int editing;
+	bool allow_sel_change_signal;
 
 	WorldObjectListPanel(ModeWorld *w) : Observer("WorldObjectListPanel") {
 		from_resource("world-object-list-dialog");
 
 		world = w;
 		data = world->data;
-		selected = -1;
+		editing = -1;
+		allow_sel_change_signal = true;
 		subscribe(data, data->MESSAGE_CHANGE);
+		subscribe(w->multi_view, w->multi_view->MESSAGE_SELECTION_CHANGE);
 		event_x("list", "hui:select", [=]{ on_list_select(); });
 		event("sun_enabled", [=]{ on_change(); });
 		event("sun_type", [=]{ on_change(); });
@@ -75,11 +78,17 @@ public:
 		fill_list();
 	}
 	~WorldObjectListPanel() {
+		unsubscribe(world->multi_view);
 		unsubscribe(data);
 	}
 
 	void on_update(Observable *o, const string &m) override {
-		fill_list();
+		if (o == data) {
+			fill_list();
+		} else if (o == world->multi_view) {
+			if (allow_sel_change_signal)
+				selection_from_world();
+		}
 	}
 
 	string light_type(WorldLight &l) {
@@ -91,18 +100,14 @@ public:
 	}
 
 	void fill_list() {
-		hide_control("g-object", true);
-		hide_control("g-terrain", true);
-		hide_control("g-light", true);
-		hide_control("g-camera", true);
-		hide_control("g-script", true);
+		set_editing(-1);
 		reset("list");
 		list_indices.clear();
-		selected = -1;
 
-		add_string("list", "Camera\\cam");
-		list_indices.add({MVD_WORLD_CAMERA, 0});
-
+		foreachi (auto &c, data->cameras, i) {
+			add_string("list", "Camera\\cam");
+			list_indices.add({MVD_WORLD_CAMERA, i});
+		}
 		foreachi (auto &l, data->lights, i) {
 			add_string("list", "Light\\" + light_type(l));
 			list_indices.add({MVD_WORLD_LIGHT, i});
@@ -119,28 +124,96 @@ public:
 			add_string("list", "Object\\" + ((o.Name == "") ? o.FileName : o.Name));
 			list_indices.add({MVD_WORLD_OBJECT, i});
 		}
+		selection_from_world();
+	}
+
+	void selection_from_world() {
+		Array<int> sel;
+
+		foreachi (auto &ii, list_indices, i) {
+			if (ii.type == MVD_WORLD_OBJECT) {
+				auto &o = data->Objects[ii.index];
+				if (o.is_selected)
+					sel.add(i);
+			} else if (ii.type == MVD_WORLD_TERRAIN) {
+				auto &t = data->Terrains[ii.index];
+				if (t.is_selected)
+					sel.add(i);
+			} else if (ii.type == MVD_WORLD_SCRIPT) {
+				auto &s = data->meta_data.scripts[ii.index];
+				//if (s.is_selected)
+				//	sel.add(i);
+			} else if (ii.type == MVD_WORLD_LIGHT) {
+				auto &l = data->lights[ii.index];
+				if (l.is_selected)
+					sel.add(i);
+			} else if (ii.type == MVD_WORLD_CAMERA) {
+				auto &c = data->cameras[ii.index];
+				if (c.is_selected)
+					sel.add(i);
+			}
+		}
+		set_selection("list", sel);
+		if (sel.num == 1)
+			set_editing(sel[0]);
+		else
+			set_editing(-1);
 	}
 
 	void on_list_select() {
-		set_string("name", "");
-		set_string("kind", "");
-		set_float("pos_x", 0);
-		set_float("pos_y", 0);
-		set_float("pos_z", 0);
-		set_float("ang_x", 0);
-		set_float("ang_y", 0);
-		set_float("ang_z", 0);
+		auto sel = get_selection("list");
+		selection_to_world(sel);
 
-		selected = get_int("");
-		if (selected < 0)
+		if (sel.num == 1)
+			set_editing(sel[0]);
+		else
+			set_editing(-1);
+	}
+
+	void selection_to_world(const Array<int> &sel) {
+		allow_sel_change_signal = false;
+
+		world->multi_view->select_none();
+
+		for (int s: sel) {
+		auto &ii = list_indices[s];
+			if (ii.type == MVD_WORLD_OBJECT) {
+				auto &o = data->Objects[ii.index];
+				o.is_selected = true;
+			} else if (ii.type == MVD_WORLD_TERRAIN) {
+				auto &t = data->Terrains[ii.index];
+				t.is_selected = true;
+			} else if (ii.type == MVD_WORLD_SCRIPT) {
+				auto &s = data->meta_data.scripts[ii.index];
+			} else if (ii.type == MVD_WORLD_LIGHT) {
+				auto &l = data->lights[ii.index];
+				l.is_selected = true;
+			} else if (ii.type == MVD_WORLD_CAMERA) {
+				auto &c = data->cameras[ii.index];
+				c.is_selected = true;
+			}
+		}
+		allow_sel_change_signal = true;
+	}
+	void set_editing(int s) {
+		editing = s;
+		if (editing < 0) {
+			hide_control("g-object", true);
+			hide_control("g-terrain", true);
+			hide_control("g-light", true);
+			hide_control("g-camera", true);
+			hide_control("g-script", true);
+			hide_control("g-location", true);
 			return;
+		}
 
-		auto &ii = list_indices[selected];
+		auto &ii = list_indices[editing];
 		hide_control("g-object", ii.type != MVD_WORLD_OBJECT);
 		hide_control("g-terrain", ii.type != MVD_WORLD_TERRAIN);
 		hide_control("g-light", ii.type != MVD_WORLD_LIGHT);
 		hide_control("g-camera", ii.type != MVD_WORLD_CAMERA);
 		hide_control("g-script", ii.type != MVD_WORLD_SCRIPT);
+		hide_control("g-location", false);
 
 		if (ii.type == MVD_WORLD_OBJECT) {
 			auto &o = data->Objects[ii.index];
@@ -152,16 +225,12 @@ public:
 			set_float("ang_x", o.Ang.x * 180.0f / pi);
 			set_float("ang_y", o.Ang.y * 180.0f / pi);
 			set_float("ang_z", o.Ang.z * 180.0f / pi);
-			world->multi_view->select_none();
-			o.is_selected = true;
 		} else if (ii.type == MVD_WORLD_TERRAIN) {
 			auto &t = data->Terrains[ii.index];
 			set_string("kind", t.FileName);
 			set_float("pos_x", t.pos.x);
 			set_float("pos_y", t.pos.y);
 			set_float("pos_z", t.pos.z);
-			world->multi_view->select_none();
-			t.is_selected = true;
 		} else if (ii.type == MVD_WORLD_SCRIPT) {
 			auto &s = data->meta_data.scripts[ii.index];
 			set_string("kind", s.filename);
@@ -178,8 +247,6 @@ public:
 			set_float("ang_x", l.ang.x * 180.0f / pi);
 			set_float("ang_y", l.ang.y * 180.0f / pi);
 			set_float("ang_z", l.ang.z * 180.0f / pi);
-			world->multi_view->select_none();
-			l.is_selected = true;
 		} else if (ii.type == MVD_WORLD_CAMERA) {
 			auto &c = data->cameras[ii.index];
 			set_float("pos_x", c.pos.x);
@@ -188,15 +255,13 @@ public:
 			set_float("ang_x", c.ang.x * 180.0f / pi);
 			set_float("ang_y", c.ang.y * 180.0f / pi);
 			set_float("ang_z", c.ang.z * 180.0f / pi);
-			world->multi_view->select_none();
-			c.is_selected = true;
 		}
 	}
 
 	void on_change() {
-		if (selected < 0)
+		if (editing < 0)
 			return;
-		auto &ii = list_indices[selected];
+		auto &ii = list_indices[editing];
 		if (ii.type == MVD_WORLD_LIGHT) {
 			auto &l = data->lights[ii.index];
 			l.enabled = is_checked("sun_enabled");
