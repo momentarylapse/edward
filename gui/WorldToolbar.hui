@@ -14,4 +14,3 @@ Toolbar world-toolbar ""
 	Item mode_world_camera "Camera flight" checkable image=icons/toolbar/world-cam.png
 	Separator
 	Item selection_properties "Properties" image=icons/toolbar/configure.png
-	Item create_lightmap "Render lightmap" image=hui:execute

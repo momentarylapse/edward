@@ -15,11 +15,10 @@ class ActionWorldEditData : public Action
 {
 public:
 	ActionWorldEditData(const DataWorld::MetaData &_data);
-	virtual ~ActionWorldEditData();
-	string name(){	return "WorldEditData";	}
+	string name() override { return "WorldEditData"; }
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	DataWorld::MetaData data;

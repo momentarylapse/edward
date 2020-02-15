@@ -48,7 +48,9 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	event_x("script_list", "hui:activate", [=]{ on_edit_script_vars(); });
 	event("remove_script", [=]{ on_script_remove(); });
 	event("add_script", [=]{ on_script_add(); });
+	event("create_script", [=]{ on_create_script(); });
 	event("edit_script_vars", [=]{ on_edit_script_vars(); });
+	event("edit_script", [=]{ on_edit_script(); });
 
 	subscribe(data);
 
@@ -57,7 +59,7 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 }
 
 WorldPropertiesDialog::~WorldPropertiesDialog() {
-	mode_world->WorldDialog = NULL;
+	mode_world->world_dialog = NULL;
 	unsubscribe(data);
 	delete popup_skybox;
 	delete popup_script;
@@ -200,6 +202,34 @@ void WorldPropertiesDialog::on_edit_script_vars() {
 		dlg->run();
 		delete dlg;
 	}
+}
+
+void WorldPropertiesDialog::on_edit_script() {
+	int n = get_int("script_list");
+	if (n >= 0) {
+		string filename = Kaba::config.directory + temp.scripts[n].filename;
+		int r = system(("sgribthmaker '" + filename + "'").c_str());
+		//hui::OpenDocument(filename);
+	}
+}
+
+void WorldPropertiesDialog::on_create_script() {
+	if (!storage->file_dialog(FD_SCRIPT, true, true))
+		return;
+	string source = "use api\n\n"\
+			"class X extends Controller\n"\
+			"\toverride void on_init()\n"\
+			"\t\tpass\n\n"\
+			"\toverride void on_iterate(float dt)\n"\
+			"\t\tpass\n\n"\
+			"\toverride void on_delete()\n"\
+			"\t\tpass\n\n";
+	FileWriteText(storage->dialog_file_complete, source);
+
+	WorldScript s;
+	s.filename = storage->dialog_file_complete.substr(Kaba::config.directory.num, -1);
+	temp.scripts.add(s);
+	fill_script_list();
 }
 
 

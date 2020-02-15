@@ -46,8 +46,6 @@ Menu menu_world "World" disabled
 		Item select_all "Select all" image=hui:select-all
 		Item select_none "Select none"
 		Item invert_selection "Invert"
-		Separator
-		Item edit_terrain_selectable "Selectable" checkable
 	Menu menu_world_creation "Create"
 		Item menu_world_sign_add "Add to world" disabled
 		Item create_objects "Objects..." image=hui:open

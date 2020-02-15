@@ -6,18 +6,42 @@ Dialog world-object-list-dialog "" width=400 height=300
 			Grid ? "" vertical
 		Group g-script "Script"
 			Grid ? "" vertical
+				Grid ? ""
+					Text t-script-file "File:"
+					Edit script-file "" expandx
+					Button script-edit "" image=hui:edit
+					---|
+					Text t-script-class "Class:"
+					Text script-class ""
+				ListView script-variables "Name\\Type\\Value" height=200 noexpandy
 		Group g-object "Object"
 			Grid ? ""
-				Text t_name "Name:"
-				Edit name "" expandx
+				Text t-ob-name "Name:"
+				Edit ob-name "" expandx
 				---|
-				Text t_type "Type:"
+				Text t-ob-type "Type:"
 				Grid ? ""
-					Edit kind "" expandx disabled
+					Edit ob-kind "" expandx disabled
 					Button find_object "" disabled image=hui:open
 					Button edit_object "" image=hui:edit
 		Group g-terrain "Terrain"
-			Grid ? ""
+			Grid ? "" vertical
+				Grid ? ""
+					Text t-terrain-file "File:" hgroup=a
+					Edit terrain-file "" expandx
+				Grid ? ""
+					.
+					Text /x "X" center
+					Text /z "Z" center
+					---|
+					Text t-terrain-stripes "Stripes:" hgroup=a
+					SpinButton terrain-num-x "" range=1: disabled
+					SpinButton terrain-num-z "" range=1: disabled
+					---|
+					Text t-terrain-raster "Grid size:"
+					Edit terrain-pattern-x "" disabled
+					Edit terrain-pattern-z "" disabled
+					Text /lu "lu"
 		Group g-light "Light" expandx
 			Grid ? "" vertical expandx
 				CheckBox sun_enabled "Enabled" expandx
@@ -34,20 +58,21 @@ Dialog world-object-list-dialog "" width=400 height=300
 					Text t-harshness "Harshness:"
 					SpinButton harshness "" range=0:1:0.01
 					---|
-		Grid g-location "" indent
-			.
-			Text /x "X" center
-			Text /y "Y" center
-			Text /z "Z" center
-			---|
-			Text t-pos "Position"
-			Edit pos_x "" expandx
-			Edit pos_y "" expandx
-			Edit pos_z "" expandx
-			Text /lu "lu"
-			---|
-			Text t-ang "Orientation"
-			Edit ang_x ""
-			Edit ang_y ""
-			Edit ang_z ""
-			Text /degree "°"
+		Group g-location "Location"
+			Grid ? ""
+				.
+				Text /x "X" center
+				Text /y "Y" center
+				Text /z "Z" center
+				---|
+				Text t-pos "Position"
+				Edit pos_x "" expandx
+				Edit pos_y "" expandx
+				Edit pos_z "" expandx
+				Text /lu "lu"
+				---|
+				Text t-ang "Orientation"
+				Edit ang_x ""
+				Edit ang_y ""
+				Edit ang_z ""
+				Text /degree "°"

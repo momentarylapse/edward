@@ -32,8 +32,10 @@ public:
 	void on_physics_enabled();
 	void on_script_right_click();
 	void on_script_add();
+	void on_create_script();
 	void on_script_remove();
 	void on_edit_script_vars();
+	void on_edit_script();
 	void on_ok();
 	void on_close();
 

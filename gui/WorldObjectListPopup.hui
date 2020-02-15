@@ -1,0 +1,8 @@
+Menu world-object-list-popup "Objects"
+	Item title "Objects" disabled
+	Separator
+	Item create_objects "Add object..." image=hui:open
+	Item terrain_create "Create new terrain..." image=hui:new
+	Item terrain_load "Add terrain from file..." image=hui:open
+	Separator
+	Item delete "Delete" image=hui:delete

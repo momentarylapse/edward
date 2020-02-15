@@ -40,10 +40,10 @@ public:
 
 	bool optimize_view() override;
 
-	void ImportWorldProperties();
-	void LoadTerrain();
-	void SetEgo();
-	void ApplyHeightmap();
+	void import_world_properties();
+	void load_terrain();
+	void set_ego();
+	void apply_heightmap();
 
 	void ExecutePropertiesDialog();
 	void ExecuteSelectionPropertiesDialog();
@@ -51,28 +51,24 @@ public:
 	void ExecuteObjectPropertiesDialog(int index);
 	void ExecuteTerrainPropertiesDialog(int index);
 	void ExecuteLightmapDialog();
-	WorldPropertiesDialog *WorldDialog;
+	WorldPropertiesDialog *world_dialog;
 	WorldObjectListPanel *dialog;
 
-	bool ShowTerrains;
-	bool ShowObjects;
-	bool ShowEffects;
+	bool show_effects;
 	int TerrainShowTextureLevel;
 
-	void ToggleShowTerrains();
-	void ToggleShowObjects();
-	void ToggleShowEffects();
+	void toggle_show_effects();
 
-	void SetMouseAction(int mode);
+	void set_mouse_action(int mode);
 	int mouse_action;
 
 	Material temp_material;
 
 	// clip board
-	void Copy();
-	void Paste();
-	bool Copyable();
-	bool Pasteable();
+	void copy();
+	void paste();
+	bool copyable();
+	bool pasteable();
 
 	Array<WorldObject> temp_objects;
 	Array<WorldTerrain> temp_terrains;

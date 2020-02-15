@@ -32,6 +32,7 @@
 #include "../../Action/World/ActionWorldEditData.h"
 #include "../../Action/World/ActionWorldSetEgo.h"
 #include "Terrain/ModeWorldTerrain.h"
+#include "../../lib/kaba/kaba.h"
 
 ModeWorld *mode_world = NULL;
 
@@ -47,6 +48,8 @@ ModeWorld *mode_world = NULL;
 #define TMouseOverAlpha				0.20f
 
 
+const bool LIST_SHOW_SCRIPTS = false;
+
 class WorldObjectListPanel : public hui::Panel, Observer {
 public:
 	ModeWorld *world;
@@ -58,9 +61,12 @@ public:
 	Array<Index> list_indices;
 	int editing;
 	bool allow_sel_change_signal;
+	hui::Menu *popup;
 
 	WorldObjectListPanel(ModeWorld *w) : Observer("WorldObjectListPanel") {
 		from_resource("world-object-list-dialog");
+
+		popup = hui::CreateResourceMenu("world-object-list-popup");
 
 		world = w;
 		data = world->data;
@@ -69,17 +75,20 @@ public:
 		subscribe(data, data->MESSAGE_CHANGE);
 		subscribe(w->multi_view, w->multi_view->MESSAGE_SELECTION_CHANGE);
 		event_x("list", "hui:select", [=]{ on_list_select(); });
+		event_x("list", "hui:right-button-down", [=]{ on_list_right_click(); });
 		event("sun_enabled", [=]{ on_change(); });
 		event("sun_type", [=]{ on_change(); });
 		event("sun_col", [=]{ on_change(); });
 		event("harshness", [=]{ on_change(); });
 		event("radius", [=]{ on_change(); });
+		event("script-edit", [=]{ on_script_edit(); });
 
 		fill_list();
 	}
 	~WorldObjectListPanel() {
 		unsubscribe(world->multi_view);
 		unsubscribe(data);
+		delete popup;
 	}
 
 	void on_update(Observable *o, const string &m) override {
@@ -112,6 +121,7 @@ public:
 			add_string("list", "Light\\" + light_type(l));
 			list_indices.add({MVD_WORLD_LIGHT, i});
 		}
+		if (LIST_SHOW_SCRIPTS)
 		foreachi (auto &s, data->meta_data.scripts, i) {
 			add_string("list", "Script\\" + s.filename);
 			list_indices.add({MVD_WORLD_SCRIPT, i});
@@ -158,6 +168,12 @@ public:
 			set_editing(sel[0]);
 		else
 			set_editing(-1);
+	}
+
+	void on_list_right_click() {
+		int row = hui::GetEvent()->row;
+		popup->enable("delete", row >= 0);
+		popup->open_popup(win);
 	}
 
 	void on_list_select() {
@@ -213,12 +229,12 @@ public:
 		hide_control("g-light", ii.type != MVD_WORLD_LIGHT);
 		hide_control("g-camera", ii.type != MVD_WORLD_CAMERA);
 		hide_control("g-script", ii.type != MVD_WORLD_SCRIPT);
-		hide_control("g-location", false);
+		hide_control("g-location", ii.type == MVD_WORLD_SCRIPT);
 
 		if (ii.type == MVD_WORLD_OBJECT) {
 			auto &o = data->Objects[ii.index];
-			set_string("name", o.Name);
-			set_string("kind", o.FileName);
+			set_string("ob-name", o.Name);
+			set_string("ob-kind", o.FileName);
 			set_float("pos_x", o.pos.x);
 			set_float("pos_y", o.pos.y);
 			set_float("pos_z", o.pos.z);
@@ -227,13 +243,24 @@ public:
 			set_float("ang_z", o.Ang.z * 180.0f / pi);
 		} else if (ii.type == MVD_WORLD_TERRAIN) {
 			auto &t = data->Terrains[ii.index];
-			set_string("kind", t.FileName);
+			set_string("terrain-file", t.FileName);
+			set_int("terrain-num-x", t.terrain->num_x);
+			set_int("terrain-num-z", t.terrain->num_z);
+			set_float("terrain-pattern-x", t.terrain->pattern.x);
+			set_float("terrain-pattern-z", t.terrain->pattern.z);
 			set_float("pos_x", t.pos.x);
 			set_float("pos_y", t.pos.y);
 			set_float("pos_z", t.pos.z);
+			set_float("ang_x", 0);
+			set_float("ang_y", 0);
+			set_float("ang_z", 0);
 		} else if (ii.type == MVD_WORLD_SCRIPT) {
 			auto &s = data->meta_data.scripts[ii.index];
-			set_string("kind", s.filename);
+			set_string("script-file", s.filename);
+			set_string("script-class", "???");
+			reset("script-variables");
+			for (auto &v: s.variables)
+				add_string("script-variables", v.name + "\\" + v.type + "\\" + v.value);
 		} else if (ii.type == MVD_WORLD_LIGHT) {
 			auto &l = data->lights[ii.index];
 			check("sun_enabled", l.enabled);
@@ -271,6 +298,17 @@ public:
 			world->multi_view->force_redraw();
 		}
 	}
+
+	void on_script_edit() {
+		if (editing < 0)
+			return;
+		auto &ii = list_indices[editing];
+		if (ii.type == MVD_WORLD_SCRIPT) {
+			string filename = Kaba::config.directory + data->meta_data.scripts[ii.index].filename;
+			int r = system(("sgribthmaker '" + filename + "'").c_str());
+			//hui::OpenDocument(filename);
+		}
+	}
 };
 
 
@@ -278,13 +316,11 @@ ModeWorld::ModeWorld() :
 	Mode<DataWorld>("World", NULL, new DataWorld, ed->multi_view_3d, "menu_world") {
 	subscribe(data);
 
-	WorldDialog = nullptr;
+	world_dialog = nullptr;
 	dialog = nullptr;
 	mouse_action = -1;
 
-	ShowTerrains = true;
-	ShowObjects = true;
-	ShowEffects = true;
+	show_effects = true;
 	TerrainShowTextureLevel = -1;
 
 	mode_world_camera = new ModeWorldCamera(this, new DataCamera);
@@ -317,21 +353,21 @@ void ModeWorld::on_command(const string & id) {
 
 
 	if (id == "copy")
-		Copy();
+		copy();
 	if (id == "paste")
-		Paste();
+		paste();
 	if (id == "delete")
 		data->DeleteSelection();
 
 	if (id == "import_world_properties")
-		ImportWorldProperties();
+		import_world_properties();
 
 	if (id == "create_objects")
 		ed->set_mode(new ModeWorldCreateObject(ed->cur_mode));
 	if (id == "terrain_create")
 		ed->set_mode(new ModeWorldCreateTerrain(ed->cur_mode));
 	if (id == "terrain_load")
-		LoadTerrain();
+		load_terrain();
 
 	if (id == "mode_world")
 		ed->set_mode(mode_world);
@@ -355,26 +391,22 @@ void ModeWorld::on_command(const string & id) {
 		ExecuteLightmapDialog();
 
 	if (id == "own_figure")
-		SetEgo();
+		set_ego();
 	if (id == "terrain_heightmap")
-		ApplyHeightmap();
+		apply_heightmap();
 
 	if (id == "selection_properties")
 		ExecutePropertiesDialog();
 
-	if (id == "show_objects")
-		ToggleShowObjects();
-	if (id == "show_terrains")
-		ToggleShowTerrains();
 	if (id == "show_fx")
-		ToggleShowEffects();
+		toggle_show_effects();
 
 	if (id == "select")
-		SetMouseAction(MultiView::ACTION_SELECT);
+		set_mouse_action(MultiView::ACTION_SELECT);
 	if (id == "translate")
-		SetMouseAction(MultiView::ACTION_MOVE);
+		set_mouse_action(MultiView::ACTION_MOVE);
 	if (id == "rotate")
-		SetMouseAction(MultiView::ACTION_ROTATE);
+		set_mouse_action(MultiView::ACTION_ROTATE);
 }
 
 #define MODEL_MAX_VERTICES	65536
@@ -534,9 +566,9 @@ void ModeWorld::on_draw() {
 
 
 void ModeWorld::on_end() {
-	if (WorldDialog)
-		delete WorldDialog;
-	WorldDialog = NULL;
+	if (world_dialog)
+		delete world_dialog;
+	world_dialog = NULL;
 
 	ed->toolbar[hui::TOOLBAR_TOP]->reset();
 	ed->toolbar[hui::TOOLBAR_TOP]->enable(false);
@@ -621,58 +653,54 @@ void draw_background(DataWorld *w) {
 
 
 void ModeWorld::on_draw_win(MultiView::Window *win) {
-	if (ShowEffects) {
+	if (show_effects) {
 		if (win->type == MultiView::VIEW_PERSPECTIVE)
 			draw_background(data);
 		apply_lighting(data);
 	}
 
 // terrain
-	if (ShowTerrains) {
-		foreachi(WorldTerrain &t, data->Terrains, i) {
-			if (!t.terrain)
-				continue;
-			if (t.view_stage < multi_view->view_stage)
-				continue;
+	foreachi(WorldTerrain &t, data->Terrains, i) {
+		if (!t.terrain)
+			continue;
+		if (t.view_stage < multi_view->view_stage)
+			continue;
 
-			t.terrain->Draw();
+		t.terrain->Draw();
 
-			if (t.is_selected)
-				DrawTerrainColored(t.terrain, Red, TSelectionAlpha);
-			if ((multi_view->hover.type == MVD_WORLD_TERRAIN) and (multi_view->hover.index == i))
-				DrawTerrainColored(t.terrain, White, TMouseOverAlpha);
-		}
+		if (t.is_selected)
+			DrawTerrainColored(t.terrain, Red, TSelectionAlpha);
+		if ((multi_view->hover.type == MVD_WORLD_TERRAIN) and (multi_view->hover.index == i))
+			DrawTerrainColored(t.terrain, White, TMouseOverAlpha);
 	}
 	nix::SetWire(multi_view->wire_mode);
 
 // objects (models)
-	if (ShowObjects) {
 		//GodDraw();
 		//MetaDrawSorted();
 		//NixSetWire(false);
 
-		for (WorldObject &o: data->Objects) {
-			if (o.view_stage < multi_view->view_stage)
-				continue;
-			if (o.object) {
-				for (int i=0;i<o.object->material.num;i++)
-					o.object->material[i].shader = NULL;
-				o.object->Draw(0, false, false);
-				o.object->_detail_ = 0;
-			}
+	for (WorldObject &o: data->Objects) {
+		if (o.view_stage < multi_view->view_stage)
+			continue;
+		if (o.object) {
+			for (int i=0;i<o.object->material.num;i++)
+				o.object->material[i].shader = NULL;
+			o.object->Draw(0, false, false);
+			o.object->_detail_ = 0;
 		}
-		nix::SetWire(false);
-
-		// object selection
-		for (WorldObject &o: data->Objects)
-			if (o.is_selected)
-				DrawSelectionObject(o.object, OSelectionAlpha, Red);
-			else if (o.is_special)
-				DrawSelectionObject(o.object, OSelectionAlpha, Green);
-		if ((multi_view->hover.index >= 0) and (multi_view->hover.type == MVD_WORLD_OBJECT))
-			DrawSelectionObject(data->Objects[multi_view->hover.index].object, OSelectionAlpha, White);
-		nix::SetAlpha(ALPHA_NONE);
 	}
+	nix::SetWire(false);
+
+	// object selection
+	for (WorldObject &o: data->Objects)
+		if (o.is_selected)
+			DrawSelectionObject(o.object, OSelectionAlpha, Red);
+		else if (o.is_special)
+			DrawSelectionObject(o.object, OSelectionAlpha, Green);
+	if ((multi_view->hover.index >= 0) and (multi_view->hover.type == MVD_WORLD_OBJECT))
+		DrawSelectionObject(data->Objects[multi_view->hover.index].object, OSelectionAlpha, White);
+	nix::SetAlpha(ALPHA_NONE);
 	nix::SetWorldMatrix(matrix::ID);
 
 
@@ -698,7 +726,7 @@ void ModeWorld::on_start() {
 	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("world-toolbar");
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("world-edit-toolbar");
 
-	SetMouseAction(MultiView::ACTION_MOVE);
+	set_mouse_action(MultiView::ACTION_MOVE);
 
 	data->UpdateData();
 }
@@ -711,7 +739,7 @@ void ModeWorld::on_enter() {
 	ed->set_side_panel(dialog);
 }
 
-void ModeWorld::SetMouseAction(int mode) {
+void ModeWorld::set_mouse_action(int mode) {
 	mouse_action = mode;
 	if (mode == MultiView::ACTION_MOVE)
 		multi_view->set_mouse_action("ActionWorldMoveSelection", mode, false);
@@ -726,12 +754,10 @@ void ModeWorld::on_update_menu() {
 	ed->enable("undo", data->action_manager->undoable());
 	ed->enable("redo", data->action_manager->redoable());
 
-	ed->enable("copy", Copyable());
-	ed->enable("paste", Pasteable());
+	ed->enable("copy", copyable());
+	ed->enable("paste", pasteable());
 
-	ed->check("show_objects", ShowObjects);
-	ed->check("show_terrains", ShowTerrains);
-	ed->check("show_fx", ShowEffects);
+	ed->check("show_fx", show_effects);
 
 	ed->check("mode_world", mode_world->is_ancestor_of(ed->cur_mode) and !mode_world_camera->is_ancestor_of(ed->cur_mode) and !mode_world_terrain->is_ancestor_of(ed->cur_mode));
 	ed->check("mode_world_camera", mode_world_camera->is_ancestor_of(ed->cur_mode));
@@ -757,16 +783,16 @@ bool ModeWorld::open() {
 }
 
 void ModeWorld::ExecuteWorldPropertiesDialog() {
-	if (WorldDialog) {
-		if (!WorldDialog->active) {
-			WorldDialog->restart();
-			WorldDialog->show();
+	if (world_dialog) {
+		if (!world_dialog->active) {
+			world_dialog->restart();
+			world_dialog->show();
 		}
 		return;
 	}
 
-	WorldDialog = new WorldPropertiesDialog(ed, true, data);
-	WorldDialog->show();
+	world_dialog = new WorldPropertiesDialog(ed, true, data);
+	world_dialog->show();
 }
 
 
@@ -853,12 +879,12 @@ bool ModeWorld::optimize_view() {
 	return true;
 }
 
-void ModeWorld::LoadTerrain() {
+void ModeWorld::load_terrain() {
 	if (storage->file_dialog(FD_TERRAIN, false, true))
 		data->AddTerrain(storage->dialog_file_no_ending, multi_view->cam.pos);
 }
 
-void ModeWorld::SetEgo() {
+void ModeWorld::set_ego() {
 	if (data->GetSelectedObjects() != 1) {
 		ed->set_message(_("Please select exactly one object!"));
 		return;
@@ -868,30 +894,14 @@ void ModeWorld::SetEgo() {
 			data->execute(new ActionWorldSetEgo(i));
 }
 
-void ModeWorld::ToggleShowEffects() {
-	ShowEffects = !ShowEffects;
+void ModeWorld::toggle_show_effects() {
+	show_effects = !show_effects;
 	ed->update_menu();
 	multi_view->force_redraw();
 }
 
 
-
-void ModeWorld::ToggleShowObjects() {
-	ShowObjects = !ShowObjects;
-	ed->update_menu();
-	multi_view->force_redraw();
-}
-
-
-
-void ModeWorld::ToggleShowTerrains() {
-	ShowTerrains = !ShowTerrains;
-	ed->update_menu();
-	multi_view->force_redraw();
-}
-
-
-void ModeWorld::ImportWorldProperties() {
+void ModeWorld::import_world_properties() {
 	if (storage->file_dialog(FD_WORLD, false, false)) {
 		DataWorld w;
 		if (storage->load(storage->dialog_file_complete, &w, false))
@@ -901,14 +911,14 @@ void ModeWorld::ImportWorldProperties() {
 	}
 }
 
-void ModeWorld::ApplyHeightmap() {
+void ModeWorld::apply_heightmap() {
 	if (data->GetSelectedTerrains() == 0) {
 		ed->set_message(_("No terrain selected!"));
 		return;
 	}
-	TerrainHeightmapDialog *dlg = new TerrainHeightmapDialog(ed, false, data);
+	auto *dlg = new TerrainHeightmapDialog(ed, false, data);
 	dlg->run();
-	delete(dlg);
+	delete dlg;
 }
 
 
@@ -917,23 +927,23 @@ void ModeWorld::ApplyHeightmap() {
 
 
 
-void ModeWorld::Copy() {
+void ModeWorld::copy() {
 	data->Copy(temp_objects, temp_terrains);
 
 	on_update_menu();
 	ed->set_message(format(_("copied %d objects, %d terrains"), temp_objects.num, temp_terrains.num));
 }
 
-void ModeWorld::Paste() {
+void ModeWorld::paste() {
 	data->Paste(temp_objects, temp_terrains);
 	ed->set_message(format(_("added %d objects, %d terrains"), temp_objects.num, temp_terrains.num));
 }
 
-bool ModeWorld::Copyable() {
+bool ModeWorld::copyable() {
 	return (data->GetSelectedObjects() + data->GetSelectedTerrains()) > 0;
 }
 
-bool ModeWorld::Pasteable() {
+bool ModeWorld::pasteable() {
 	return (temp_objects.num + temp_terrains.num) > 0;
 }
 

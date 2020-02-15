@@ -1,6 +1,6 @@
 t7
 # Number Of Resources
-73
+74
 # Resource
 Menu
 
@@ -8508,7 +8508,7 @@ menu_world_selection
 
 2
 0
-5
+3
 Item
 select_all
 image=hui:select-all
@@ -8525,18 +8525,6 @@ Item
 invert_selection
 
 2
-0
-0
-Separator
-
-
-3
-0
-0
-Item
-edit_terrain_selectable
-checkable
-4
 0
 0
 Menu
@@ -9111,6 +9099,48 @@ Grid
 vertical
 0
 0
+2
+Grid
+?
+
+0
+0
+5
+Text
+t-script-file
+
+0
+0
+0
+Edit
+script-file
+expandx
+1
+0
+0
+Button
+script-edit
+image=hui:edit
+2
+0
+0
+Text
+t-script-class
+
+0
+1
+0
+Text
+script-class
+
+1
+1
+0
+ListView
+script-variables
+height=200,noexpandy
+1
+0
 0
 Group
 g-object
@@ -9125,19 +9155,19 @@ Grid
 0
 4
 Text
-t_name
+t-ob-name
 
 0
 0
 0
 Edit
-name
+ob-name
 expandx
 1
 0
 0
 Text
-t_type
+t-ob-type
 
 0
 1
@@ -9149,7 +9179,7 @@ Grid
 1
 3
 Edit
-kind
+ob-kind
 expandx,disabled
 0
 0
@@ -9174,9 +9204,87 @@ g-terrain
 1
 Grid
 ?
+vertical
+0
+0
+2
+Grid
+?
 
 0
 0
+2
+Text
+t-terrain-file
+hgroup=a
+0
+0
+0
+Edit
+terrain-file
+expandx
+1
+0
+0
+Grid
+?
+
+1
+0
+9
+Text
+x
+center
+1
+0
+0
+Text
+z
+center
+2
+0
+0
+Text
+t-terrain-stripes
+hgroup=a
+0
+1
+0
+SpinButton
+terrain-num-x
+range=1:,disabled
+1
+1
+0
+SpinButton
+terrain-num-z
+range=1:,disabled
+2
+1
+0
+Text
+t-terrain-raster
+
+0
+2
+0
+Edit
+terrain-pattern-x
+disabled
+1
+2
+0
+Edit
+terrain-pattern-z
+disabled
+2
+2
+0
+Text
+lu
+
+3
+2
 0
 Group
 g-light
@@ -9250,10 +9358,16 @@ range=0:1:0.01
 1
 3
 0
-Grid
+Group
 g-location
-indent
+
 6
+0
+1
+Grid
+?
+
+0
 0
 13
 Text
@@ -9335,6 +9449,55 @@ degree
 2
 0
 # Resource
+Menu
+world-object-list-popup
+
+0
+0
+7
+Item
+title
+disabled
+0
+0
+0
+Separator
+
+
+1
+0
+0
+Item
+create_objects
+image=hui:open
+2
+0
+0
+Item
+terrain_create
+image=hui:new
+3
+0
+0
+Item
+terrain_load
+image=hui:open
+4
+0
+0
+Separator
+
+
+5
+0
+0
+Item
+delete
+image=hui:delete
+6
+0
+0
+# Resource
 Dialog
 world_ps_dialog
 width=370,height=380
@@ -9353,7 +9516,7 @@ world-script-popup
 
 0
 0
-5
+6
 Item
 title
 disabled
@@ -9373,15 +9536,21 @@ image=hui:add
 0
 0
 Item
-remove_script
-image=hui:delete
+create_script
+image=hui:new
 3
 0
 0
 Item
-edit_script_vars
+edit_script
 
 4
+0
+0
+Item
+remove_script
+image=hui:delete
+5
 0
 0
 # Resource
@@ -9421,7 +9590,7 @@ world-toolbar
 
 0
 0
-16
+15
 Item
 new
 image=icons/toolbar/new.png
@@ -9512,18 +9681,12 @@ image=icons/toolbar/configure.png
 14
 0
 0
-Item
-create_lightmap
-image=hui:execute
-15
-0
-0
 # Number Of Languages
 3
 # Language
 English
 # Number Of IDs
-947
+959
 # Text
 /ambient
 Ambient:
@@ -11346,9 +11509,6 @@ Objects...
 menu_world/delete
 Delete
 
-menu_world/edit_terrain_selectable
-Selectable
-
 menu_world/edit_terrain_vertices
 Edit vertices
 
@@ -12147,6 +12307,9 @@ Light
 world-object-list-dialog/g-list
 List
 
+world-object-list-dialog/g-location
+Location
+
 world-object-list-dialog/g-object
 Object
 
@@ -12158,6 +12321,9 @@ Terrain
 
 world-object-list-dialog/list
 Type\\Name
+
+world-object-list-dialog/script-variables
+Name\\Type\\Value
 
 world-object-list-dialog/sun_enabled
 Enabled
@@ -12174,26 +12340,62 @@ Color:
 world-object-list-dialog/t-harshness
 Harshness:
 
+world-object-list-dialog/t-ob-name
+Name:
+
+world-object-list-dialog/t-ob-type
+Type:
+
 world-object-list-dialog/t-pos
 Position
 
 world-object-list-dialog/t-radius
 Radius:
 
+world-object-list-dialog/t-script-class
+Class:
+
+world-object-list-dialog/t-script-file
+File:
+
+world-object-list-dialog/t-terrain-file
+File:
+
+world-object-list-dialog/t-terrain-raster
+Grid size:
+
+world-object-list-dialog/t-terrain-stripes
+Stripes:
+
 world-object-list-dialog/t-type
 Type:
 
-world-object-list-dialog/t_name
-Name:
+world-object-list-popup/create_objects
+Add object...
 
-world-object-list-dialog/t_type
-Type:
+world-object-list-popup/delete
+Delete
+
+world-object-list-popup/terrain_create
+Create new terrain...
+
+world-object-list-popup/terrain_load
+Add terrain from file...
+
+world-object-list-popup/title
+Objects
+
+world-object-list-popup/world-object-list-popup
+Objects
 
 world-script-popup/add_script
 Add...
 
-world-script-popup/edit_script_vars
-Edit variables...
+world-script-popup/create_script
+Create new...
+
+world-script-popup/edit_script
+Edit...
 
 world-script-popup/remove_script
 Remove
@@ -12215,9 +12417,6 @@ Skybox
 
 world-skybox-popup/world-skybox-popup
 Skybox
-
-world-toolbar/create_lightmap
-Render lightmap
 
 world-toolbar/mode_world
 Objects and terrains
