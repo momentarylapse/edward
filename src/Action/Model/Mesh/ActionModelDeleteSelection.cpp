@@ -21,23 +21,26 @@ ActionModelDeleteSelection::ActionModelDeleteSelection(const ModelSelection &s, 
 void *ActionModelDeleteSelection::compose(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
+	Set<int> polys;
+
+	if (greedy) {
 		foreachib(ModelPolygon &t, m->edit_mesh->polygon, ti) {
 			bool del = false;
-			if (greedy) {
-				for (int k=0;k<t.side.num;k++)
-					del |= sel.vertex.contains(t.side[k].vertex);
-			} else {
-				del = t.is_selected;
-			}
-			if (del)
-				addSubAction(new ActionModelSurfaceDeletePolygon(ti), m);
-			_foreach_it_.update(); // TODO
+			for (int k=0; k<t.side.num; k++)
+				if (sel.vertex.contains(t.side[k].vertex))
+					polys.add(ti);
 		}
+	} else {
+		polys = sel.polygon;
+	}
 
-		foreachb (int i, sel.vertex)
-			if (m->edit_mesh->vertex[i].ref_count == 0) {
-				addSubAction(new ActionModelDeleteUnusedVertex(i), m);
-			}
+	foreachb (int i, polys)
+		addSubAction(new ActionModelSurfaceDeletePolygon(i), m);
+
+	foreachb (int i, sel.vertex)
+		if (m->edit_mesh->vertex[i].ref_count == 0) {
+			addSubAction(new ActionModelDeleteUnusedVertex(i), m);
+		}
 
 	return NULL;
 }

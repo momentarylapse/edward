@@ -107,6 +107,7 @@ Menu menu_model "Model" disabled
 		Separator
 		Item menu_edge_header "Edges" disabled
 		Item bevel_edges "Bevel edges"
+		Item cut_loop "Cut loop"
 		Separator
 		Item menu_tria_header "Polygons" disabled
 		Item cut_out "Cut off" image=hui:cut

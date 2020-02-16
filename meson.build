@@ -346,6 +346,7 @@ sources = [
 	'src/Mode/Model/Mesh/Creation/ModeModelMeshCreatePolygon.cpp',
 	'src/Mode/Model/Mesh/Creation/ModeModelMeshCreateTorus.cpp',
 	'src/Mode/Model/Mesh/Creation/ModeModelMeshCreateVertex.cpp',
+	'src/Mode/Model/Mesh/Creation/ModeModelMeshCutLoop.cpp',
 	'src/Mode/Model/Mesh/Creation/ModeModelMeshDeformCylinder.cpp',
 	'src/Mode/Model/Mesh/Creation/ModeModelMeshDeformFunction.cpp',
 	'src/Mode/Model/Mesh/Creation/ModeModelMeshExtrudePolygons.cpp',

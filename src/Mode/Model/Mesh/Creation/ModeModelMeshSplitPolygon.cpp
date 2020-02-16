@@ -31,14 +31,12 @@ ModeModelMeshSplitPolygon::ModeModelMeshSplitPolygon(ModeBase *_parent) :
 	mode_model->allow_selection_modes(false);
 }
 
-void ModeModelMeshSplitPolygon::on_start()
-{
+void ModeModelMeshSplitPolygon::on_start() {
 	multi_view->set_allow_action(false);
 	multi_view->set_allow_select(false);
 }
 
-void ModeModelMeshSplitPolygon::on_left_button_up()
-{
+void ModeModelMeshSplitPolygon::on_left_button_up() {
 	/*triangle = multi_view->MouseOver;
 	surface = multi_view->MouseOverSet;
 	pos = multi_view->MouseOverTP;*/
@@ -54,8 +52,7 @@ void ModeModelMeshSplitPolygon::on_left_button_up()
 	}
 }
 
-void ModeModelMeshSplitPolygon::on_draw_win(MultiView::Window *win)
-{
+void ModeModelMeshSplitPolygon::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
 
 	triangle = multi_view->hover.index;
@@ -67,15 +64,15 @@ void ModeModelMeshSplitPolygon::on_draw_win(MultiView::Window *win)
 		pp.z = 0;
 		auto &poly = data->mesh->polygon[triangle];
 		Array<vector> v, p;
-		for (int k=0;k<poly.side.num;k++){
+		for (int k=0;k<poly.side.num;k++) {
 			v.add(data->mesh->vertex[poly.side[k].vertex].pos);
 			p.add(win->project(v[k]));
 			p.back().z = 0;
 		}
 
 		// close to an edge?
-		for (int k=0;k<v.num;k++){
-			if (VecLineDistance(pp, p[k], p[(k + 1) % v.num]) < 10){
+		for (int k=0;k<v.num;k++) {
+			if (VecLineDistance(pp, p[k], p[(k + 1) % v.num]) < 10) {
 				float f = (pp - p[k]).length() / (p[k] - p[(k + 1) % v.num]).length();
 				pos = v[k] * (1 - f) + v[(k + 1) % v.num] * f;
 				pp = win->project(pos);

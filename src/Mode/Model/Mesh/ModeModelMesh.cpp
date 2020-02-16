@@ -26,6 +26,7 @@
 #include "Creation/ModeModelMeshCreatePlane.h"
 #include "Creation/ModeModelMeshCreateTorus.h"
 #include "Creation/ModeModelMeshCreatePlatonic.h"
+#include "Creation/ModeModelMeshCutLoop.h"
 #include "Creation/ModeModelMeshSplitPolygon.h"
 #include "Creation/ModeModelMeshAutoweld.h"
 #include "Creation/ModeModelMeshBevelEdges.h"
@@ -185,6 +186,10 @@ void ModeModelMesh::on_command(const string & id) {
 		ed->set_mode(new ModeModelMeshSplitPolygon(this));
 	if (id == "bevel_edges")
 		ed->set_mode(new ModeModelMeshBevelEdges(this));
+	if (id == "cut_loop") {
+		msg_write(sizeof(ModeModelMeshCutLoop));
+		ed->set_mode(new ModeModelMeshCutLoop(this));
+	}
 	if (id == "deformation_function")
 		ed->set_mode(new ModeModelMeshDeformFunction(this));
 	if (id == "deformation_cylinder")

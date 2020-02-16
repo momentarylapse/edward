@@ -83,8 +83,7 @@ void MeshSelectionModeEdge::update_selection() {
 
 void MeshSelectionModeEdge::update_multi_view() {
 	multi_view->clear_data(data);
-	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	multi_view->add_data(	MVD_MODEL_EDGE,
+	multi_view->add_data(MVD_MODEL_EDGE,
 			data->edit_mesh->edge,
 			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
