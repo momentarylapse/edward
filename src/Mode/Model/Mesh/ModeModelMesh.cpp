@@ -103,6 +103,9 @@ void ModeModelMesh::on_start() {
 
 void ModeModelMesh::on_enter() {
 	current_material = 0;
+	mode_model->allow_selection_modes(true);
+	multi_view->set_allow_action(true);
+	multi_view->set_allow_select(true);
 }
 
 void ModeModelMesh::on_end() {

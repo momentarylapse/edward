@@ -19,9 +19,10 @@
 
 
 ModeModelMeshSplitPolygon::ModeModelMeshSplitPolygon(ModeBase *_parent) :
-	ModeCreation<DataModel>("ModelMeshSplitPolygon", _parent)
-{
-	triangle = -1;
+	ModeCreation<DataModel>("ModelMeshSplitPolygon", _parent) {}
+
+void ModeModelMeshSplitPolygon::on_start() {
+	polygon = -1;
 	factor = 0;
 	edge = -1;
 
@@ -29,9 +30,7 @@ ModeModelMeshSplitPolygon::ModeModelMeshSplitPolygon(ModeBase *_parent) :
 
 	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_polygon);
 	mode_model->allow_selection_modes(false);
-}
 
-void ModeModelMeshSplitPolygon::on_start() {
 	multi_view->set_allow_action(false);
 	multi_view->set_allow_select(false);
 }
@@ -41,13 +40,13 @@ void ModeModelMeshSplitPolygon::on_left_button_up() {
 	surface = multi_view->MouseOverSet;
 	pos = multi_view->MouseOverTP;*/
 
-	if (triangle >= 0) {
+	if (polygon >= 0) {
 		if (edge >= 0)
 			data->execute(new ActionModelSplitEdge(edge, factor));
 		else
-			data->execute(new ActionModelSplitPolygon(triangle, pos));
+			data->execute(new ActionModelSplitPolygon(polygon, pos));
 		//Abort();
-		triangle = -1;
+		polygon = -1;
 		multi_view->force_redraw();
 	}
 }
@@ -55,14 +54,14 @@ void ModeModelMeshSplitPolygon::on_left_button_up() {
 void ModeModelMeshSplitPolygon::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
 
-	triangle = multi_view->hover.index;
+	polygon = multi_view->hover.index;
 	pos = multi_view->hover.point;
 	edge = -1;
 
-	if (triangle >= 0) {
+	if (polygon >= 0) {
 		vector pp = win->project(pos);
 		pp.z = 0;
-		auto &poly = data->mesh->polygon[triangle];
+		auto &poly = data->mesh->polygon[polygon];
 		Array<vector> v, p;
 		for (int k=0;k<poly.side.num;k++) {
 			v.add(data->mesh->vertex[poly.side[k].vertex].pos);

@@ -7,24 +7,22 @@
 
 #include "ModeModelMeshCreateVertex.h"
 #include "../ModeModelMesh.h"
+#include "../../ModeModel.h"
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 
 ModeModelMeshCreateVertex::ModeModelMeshCreateVertex(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreateVertex", _parent)
-{
+{}
+
+void ModeModelMeshCreateVertex::on_start() {
 	message = _("place new vertex");
 
 	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_vertex);
-}
-
-ModeModelMeshCreateVertex::~ModeModelMeshCreateVertex()
-{
+	mode_model->allow_selection_modes(false);
 }
 
 
-void ModeModelMeshCreateVertex::on_left_button_down()
-{
+void ModeModelMeshCreateVertex::on_left_button_down() {
 	data->addVertex(multi_view->get_cursor());
-	//Abort();
 }

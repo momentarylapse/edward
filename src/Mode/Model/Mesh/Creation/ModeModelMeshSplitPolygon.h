@@ -22,9 +22,9 @@ public:
 	void on_draw_win(MultiView::Window *win) override;
 
 private:
-	vector pos;
-	int triangle, edge;
-	float factor;
+	vector pos = v_0;
+	int polygon = -1, edge = -1;
+	float factor = 0;
 };
 
 #endif /* MODEMODELMESHSPLITPOLYGON_H_ */

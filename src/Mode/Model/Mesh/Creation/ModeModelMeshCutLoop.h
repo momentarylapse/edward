@@ -26,7 +26,7 @@ public:
 
 private:
 
-	bool valid_loop;
+	bool valid_loop = false;
 	Array<int> edges;
 	Array<int> edge_directions;
 	Array<int> polygons;

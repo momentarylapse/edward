@@ -25,8 +25,8 @@ public:
 	void on_draw_win(MultiView::Window *win) override;
 
 private:
-	float radius;
-	float rad_max;
+	float radius = -1;
+	float rad_max = -1;
 	ModelSelection selection;
 };
 

@@ -21,17 +21,16 @@
 
 
 ModeModelMeshCutLoop::ModeModelMeshCutLoop(ModeBase *_parent) :
-	ModeCreation<DataModel>("ModelMeshCutLoop", _parent)
-{
+	ModeCreation<DataModel>("ModelMeshCutLoop", _parent) {}
+
+void ModeModelMeshCutLoop::on_start() {
 	valid_loop = false;
 
 	message = _("click on an edge to cut");
 
 	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_edge);
 	mode_model->allow_selection_modes(false);
-}
 
-void ModeModelMeshCutLoop::on_start() {
 	multi_view->set_allow_action(false);
 	multi_view->set_allow_select(false);
 }

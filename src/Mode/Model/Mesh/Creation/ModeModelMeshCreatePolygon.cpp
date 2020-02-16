@@ -7,6 +7,7 @@
 
 #include "ModeModelMeshCreatePolygon.h"
 #include "../ModeModelMesh.h"
+#include "../../ModeModel.h"
 #include "../../../../Edward.h"
 #include "../../../../Action/Model/Mesh/Polygon/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../lib/nix/nix.h"
@@ -22,6 +23,7 @@ ModeModelMeshCreatePolygon::ModeModelMeshCreatePolygon(ModeBase *_parent) :
 	message = format(_("Select polygon: %d -> Shift + Return"), 0);
 
 	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_vertex);
+	mode_model->allow_selection_modes(false);
 }
 
 

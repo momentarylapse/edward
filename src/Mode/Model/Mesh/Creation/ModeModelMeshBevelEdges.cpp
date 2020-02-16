@@ -14,8 +14,9 @@
 #include "../../../../MultiView/Window.h"
 
 ModeModelMeshBevelEdges::ModeModelMeshBevelEdges(ModeBase *_parent) :
-	ModeCreation<DataModel>("ModelMeshBevelEdges", _parent)
-{
+	ModeCreation<DataModel>("ModelMeshBevelEdges", _parent) {}
+
+void ModeModelMeshBevelEdges::on_start() {
 	message = _("Scale radius [left click = done]");
 
 
@@ -36,21 +37,16 @@ ModeModelMeshBevelEdges::ModeModelMeshBevelEdges(ModeBase *_parent) :
 
 	if (!data->action_manager->preview(new ActionModelBevelEdges(radius)))
 		abort();
-}
 
-void ModeModelMeshBevelEdges::on_start()
-{
 	multi_view->set_allow_action(false);
 	multi_view->set_allow_select(false);
 }
 
-void ModeModelMeshBevelEdges::on_end()
-{
+void ModeModelMeshBevelEdges::on_end() {
 	data->action_manager->clear_preview();
 }
 
-void ModeModelMeshBevelEdges::on_mouse_move()
-{
+void ModeModelMeshBevelEdges::on_mouse_move() {
 	data->action_manager->clear_preview();
 
 	radius += (hui::GetEvent()->dx) / multi_view->active_win->zoom();
@@ -63,8 +59,7 @@ void ModeModelMeshBevelEdges::on_mouse_move()
 	message = _("Scale radius [left click = done]   ") + multi_view->format_length(radius);
 }
 
-void ModeModelMeshBevelEdges::on_left_button_down()
-{
+void ModeModelMeshBevelEdges::on_left_button_down() {
 	data->action_manager->clear_preview();
 
 	data->set_selection(selection);
@@ -72,8 +67,7 @@ void ModeModelMeshBevelEdges::on_left_button_down()
 	abort();
 }
 
-void ModeModelMeshBevelEdges::on_draw_win(MultiView::Window *win)
-{
+void ModeModelMeshBevelEdges::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
 }
 
