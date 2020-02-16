@@ -29,15 +29,6 @@ extern nix::Shader *shader_lines_3d;
 #define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 
 
-float GetDensity(int i,float t)
-{
-	if (i%10==0)	t*=10;
-	if (i%100==0)	t*=10;
-	t=(float)sqrt(t)/60;
-	if (t>0.6f)		t=0.6f;
-	if (i==0)		t=1;
-	return t;
-}
 
 Window::Window(MultiView *_view, int _type)
 {
@@ -50,20 +41,121 @@ Window::Window(MultiView *_view, int _type)
 
 #define GRID_CONST	5.0f
 
-float Window::get_grid_d()
-{
+float Window::get_grid_d() {
 	return exp10(ceil(log10(GRID_CONST / zoom())));
 }
 
+int grid_level(int i) {
+	if (i == 0)
+		return 0;
+	if (i % 10 == 0)
+		return 1;
+	if (i % 100 == 0)
+		return 2;
+	return 3;
+}
+
+const float LOW_MAX = 0.25f;
+const float MID_MAX = 0.5f;
+
+float grid_density(int level, float d_err) {
+	if (level == 0)
+		return 1;
+	if (level == 1)
+		d_err += 1;
+	return min(pow(10.0f, d_err-1.0f) * LOW_MAX, MID_MAX);
+}
+
+rect win_get_bounds(Window *w, const vector &ax1, const vector &ax2) {
+	vector p[4];
+	p[0] = w->unproject(vector(w->dest.x1, w->dest.my(), 0), w->cam->pos);
+	p[1] = w->unproject(vector(w->dest.x2, w->dest.my(), 0), w->cam->pos);
+	p[2] = w->unproject(vector(w->dest.mx(), w->dest.y1, 0), w->cam->pos);
+	p[3] = w->unproject(vector(w->dest.mx(), w->dest.y2, 0), w->cam->pos);
+
+	rect r = rect::ID;
+	for (int i=0; i<4; i++) {
+		float x = p[i] * ax1;
+		float y = p[i] * ax2;
+		if (i == 0 or x < r.x1)
+			r.x1 = x;
+		if (i == 0 or x > r.x2)
+			r.x2 = x;
+		if (i == 0 or y < r.y1)
+			r.y1 = y;
+		if (i == 0 or y > r.y2)
+			r.y2 = y;
+	}
+	return r;
+}
+
+void draw_grid_3d(const color &bg, Window *w, int plane, float alpha) {
+
+	//msg_write("grid " + f2s(alpha, 3));
+	//return exp10(ceil(log10(GRID_CONST / zoom())));
+	float D = w->get_grid_d();
+	float DERR = log10(D) - log10(GRID_CONST / w->zoom());
+
+	Array<vector> p[4];
+	Array<color> col[4];
+
+	vector dir_1, dir_2;
+	if (plane == 2) {
+		dir_1 = vector::EX;
+		dir_2 = vector::EY;
+	} else if (plane == 1) {
+		dir_1 = vector::EX;
+		dir_2 = vector::EZ;
+	} else if (plane == 0) {
+		dir_1 = vector::EY;
+		dir_2 = vector::EZ;
+	}
+
+
+	rect r = win_get_bounds(w, dir_1, dir_2);
+
+	int ix0 = int(ceil(r.x1 / D));
+	int ix1 = int(floor(r.x2 / D));
+	for (int i=ix0; i<=ix1; i++) {
+		int level = grid_level(i);
+		float dens = grid_density(level, DERR);
+		color c = ColorInterpolate(bg, scheme.GRID, alpha * dens);
+		p[level].add(dir_1 * (float)(i*D) + dir_2 * r.y1);
+		p[level].add(dir_1 * (float)(i*D) + dir_2 * r.y2);
+		col[level].add(c);
+		col[level].add(c);
+	}
+
+
+	int iy0 = int(ceil(r.y1 / D));
+	int iy1 = int(floor(r.y2 / D));
+	for (int i=iy0; i<=iy1; i++) {
+		int level = grid_level(i);
+		float dens = grid_density(level, DERR);
+		color c = ColorInterpolate(bg, scheme.GRID, alpha * dens);
+		p[level].add(dir_2 * (float)(i*D) + dir_1 * r.x1);
+		p[level].add(dir_2 * (float)(i*D) + dir_1 * r.x2);
+		col[level].add(c);
+		col[level].add(c);
+	}
+
+	nix::SetShader(shader_lines_3d_colored);
+	for (int l=3; l>=1; l--)
+		nix::DrawLinesColored(p[l], col[l], false);
+	set_wide_lines(2.0f);
+	nix::DrawLinesColored(p[0], col[0], false);
+	set_wide_lines(1.0f);
+}
+
+
 void Window::drawGrid()
 {
-	if (type == VIEW_ISOMETRIC)
+	if (type == VIEW_2D)
 		return;
-	rect d;
-	vector bg_a,bg_b;
-	Array<vector> p;
 
 	nix::SetTexture(NULL);
+	nix::SetShader(shader_lines_3d_colored);
+	nix::SetZ(false, false);
 
 	// Hintergrund-Bilder
 	/*if(win<4)
@@ -81,103 +173,21 @@ void Window::drawGrid()
 
 // grid of coordinates
 
-	if (type == VIEW_2D)
-		return;
 	color bg = getBackgroundColor();
 
-	// spherical for perspective view
-	if (type == VIEW_PERSPECTIVE){
-		nix::SetShader(shader_lines_3d);
-		vector PerspectiveViewPos = cam->radius * (cam->ang * vector::EZ) - cam->pos;
-		//NixSetZ(false,false);
-		// horizontal
-		float r = cam->radius * 1000 * 0.6f;
-		for (int j=-16;j<16;j++)
-			for (int i=0;i<64;i++){
-				if (j == 0)
-					continue;
-				vector pa = vector(float(j)/32*pi,float(i  )/32*pi,0).ang2dir() * r - PerspectiveViewPos;
-				vector pb = vector(float(j)/32*pi,float(i+1)/32*pi,0).ang2dir() * r - PerspectiveViewPos;
-				p.add(pa);
-				p.add(pb);
-			}
-		// vertical
-		for (int j=0;j<32;j++){
-			if (j == 0)
-				continue;
-			for (int i=0;i<64;i++){
-				vector pa = vector(float(i  )/32*pi,float(j)/32*pi,0).ang2dir() * r - PerspectiveViewPos;
-				vector pb = vector(float(i+1)/32*pi,float(j)/32*pi,0).ang2dir() * r - PerspectiveViewPos;
-				p.add(pa);
-				p.add(pb);
-			}
-		}
-		nix::SetColor(ColorInterpolate(bg, scheme.GRID, 0.1f));
-		nix::DrawLines(p, false);
+	vector d = getDirection();
+	d.x = abs(d.x);
+	d.y = abs(d.y);
+	d.z = abs(d.z);
 
-		p.clear();
-		for (int i=0;i<64;i++){
-			vector pa = vector(0,float(i  )/32*pi,0).ang2dir() * r - PerspectiveViewPos;
-			vector pb = vector(0,float(i+1)/32*pi,0).ang2dir() * r - PerspectiveViewPos;
-			p.add(pa);
-			p.add(pb);
-		}
-		// vertical
-		for (int i=0;i<64;i++){
-			vector pa = vector(float(i  )/32*pi,0,0).ang2dir() * r - PerspectiveViewPos;
-			vector pb = vector(float(i+1)/32*pi,0,0).ang2dir() * r - PerspectiveViewPos;
-			p.add(pa);
-			p.add(pb);
-		}
-		nix::SetColor(ColorInterpolate(bg, scheme.GRID, 0.6f));
-		nix::DrawLines(p, false);
-		//NixSetZ(true,true);
-		return;
-	}
+	float DMIN = 0.4f;
 
-	// rectangular
-	float D = get_grid_d();
-	int a,b;
-	float fa,fb,t;
-
-	vector vux1 = unproject(vector(dest.x1,0,0));
-	vector vux2 = unproject(vector(dest.x2,0,0));
-	vector vuy1 = unproject(vector(0,dest.y1,0));
-	vector vuy2 = unproject(vector(0,dest.y2,0));
-	vector n,va,vb;
-	nix::SetShader(nix::default_shader_2d);
-
-	// vertical
-	n=vux2-vux1;
-	n/=n.length_fuzzy();	//n.normalize();
-	va=n*vector::dot(n,vux1);
-	vb=n*vector::dot(n,vux2);
-	fa=(va.x+va.y+va.z)/D;
-	fb=(vb.x+vb.y+vb.z)/D;
-	if (fa>fb){	t=fa;	fa=fb;	fb=t;	}
-	a=(int)fa;
-	b=(int)fb+1;
-	for (int i=a;i<b;i++){
-		int x=(int)project(vector((float)i*D,(float)i*D,(float)i*D)).x;
-		nix::SetColor(ColorInterpolate(bg, scheme.GRID, GetDensity(i,(float)nix::target_width/(fb-fa))));
-		nix::DrawLine(x, dest.y1, x, dest.y2, 0.99998f-GetDensity(i,(float)nix::target_width/(fb-fa))*0.00005f);
-	}
-
-	// horizontal
-	n=vuy2-vuy1;
-	n/=n.length_fuzzy();	//-normalize(n);
-	va=n*vector::dot(n,vuy1);
-	vb=n*vector::dot(n,vuy2);
-	fa=(va.x+va.y+va.z)/D;
-	fb=(vb.x+vb.y+vb.z)/D;
-	if (fa>fb){	t=fa;	fa=fb;	fb=t;	}
-	a=(int)fa;
-	b=(int)fb+1;
-	for (int i=a;i<b;i++){
-		int y=(int)project(vector((float)i*D,(float)i*D,(float)i*D)).y;
-		nix::SetColor(ColorInterpolate(bg, scheme.GRID, GetDensity(i,(float)nix::target_width/(fb-fa))));
-		nix::DrawLine(dest.x1, y, dest.x2, y, 0.99998f-GetDensity(i,(float)nix::target_width/(fb-fa))*0.00005f);
-	}
+	if (d.z > DMIN)
+		draw_grid_3d(bg, this, 2, (d.z - DMIN) / (1-DMIN));
+	if (d.y > DMIN)
+		draw_grid_3d(bg, this, 1, (d.y - DMIN) / (1-DMIN));
+	if (d.x > DMIN)
+		draw_grid_3d(bg, this, 0, (d.x - DMIN) / (1-DMIN));
 }
 
 color Window::getBackgroundColor()

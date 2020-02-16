@@ -16,7 +16,7 @@ ColorScheme::ColorScheme() {
 	BACKGROUND_SELECTED = color(1,0.96f,0.96f,0.96f);
 	SELECTION = color(1, 0.8f,0,0);
 	HOVER = White;
-	GRID = color(1,0.5f,0.5f,0.5f);
+	GRID = color(1,0.65f,0.65f,0.65f);
 	TEXT = color(1, 0.1f, 0.1f, 0.1f);
 	TEXT_BG = color(1, 0.7f, 0.7f, 0.7f);
 	WINDOW_TITLE = color(1, 0.35f, 0.35f, 0.35f);

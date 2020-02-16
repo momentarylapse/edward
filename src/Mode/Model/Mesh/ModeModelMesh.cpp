@@ -189,10 +189,8 @@ void ModeModelMesh::on_command(const string & id) {
 		ed->set_mode(new ModeModelMeshSplitPolygon(this));
 	if (id == "bevel_edges")
 		ed->set_mode(new ModeModelMeshBevelEdges(this));
-	if (id == "cut_loop") {
-		msg_write(sizeof(ModeModelMeshCutLoop));
+	if (id == "cut_loop")
 		ed->set_mode(new ModeModelMeshCutLoop(this));
-	}
 	if (id == "deformation_function")
 		ed->set_mode(new ModeModelMeshDeformFunction(this));
 	if (id == "deformation_cylinder")
