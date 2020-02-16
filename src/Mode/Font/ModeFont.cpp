@@ -189,22 +189,20 @@ void Draw2D(const rect &source, const rect *dest)
 		nix::Draw2D(source, nix::target_rect, 0);
 }
 
-void DrawLineH(int x1, int x2, int y)
-{
+void DrawLineH(int x1, int x2, int y) {
 	MultiView::MultiView *mv = mode_font->multi_view;
 	x1 = int(nix::target_width/2-(mv->cam.pos.x - x1)*mv->active_win->zoom());
 	x2 = int(nix::target_width/2-(mv->cam.pos.x - x2)*mv->active_win->zoom());
 	y  = int(nix::target_height/2-(mv->cam.pos.y - y )*mv->active_win->zoom());
-	nix::DrawLineH(x1, x2,y, 0);
+	nix::DrawLine(x1, y, x2, y, 0);
 }
 
-void DrawLineV(int x, int y1, int y2)
-{
+void DrawLineV(int x, int y1, int y2) {
 	MultiView::MultiView *mv = mode_font->multi_view;
 	x  = int(nix::target_width/2-(mv->cam.pos.x - x )*mv->active_win->zoom());
 	y1 = int(nix::target_height/2-(mv->cam.pos.y - y1)*mv->active_win->zoom());
 	y2 = int(nix::target_height/2-(mv->cam.pos.y - y2)*mv->active_win->zoom());
-	nix::DrawLineV(x, y1, y2, 0);
+	nix::DrawLine(x, y1, x, y2, 0);
 }
 
 

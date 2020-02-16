@@ -730,7 +730,7 @@ void MultiView::on_draw()
 		win[3]->dest = rect(xm+d-1, area.x2, ym+d-1, area.y2);
 		win[3]->draw();
 
-		nix::Scissor(nix::target_rect);
+		nix::SetScissor(nix::target_rect);
 
 		nix::SetShader(nix::default_shader_2d);
 		nix::SetTexture(NULL);
@@ -770,8 +770,7 @@ void MultiView::SelectionRect::end()
 	dist = -1;
 }
 
-void MultiView::SelectionRect::draw(const vector &m)
-{
+void MultiView::SelectionRect::draw(const vector &m) {
 	nix::SetZ(false, false);
 	nix::SetAlphaM(ALPHA_MATERIAL);
 	nix::SetTexture(NULL);
@@ -780,10 +779,10 @@ void MultiView::SelectionRect::draw(const vector &m)
 	nix::DrawRect(m.x, pos0.x, m.y, pos0.y, 0);
 	nix::SetCull(CULL_DEFAULT);
 	nix::SetColor(scheme.SELECTION_RECT_BOUNDARY);
-	nix::DrawLineV(pos0.x	,pos0.y	,m.y	,0);
-	nix::DrawLineV(m.x	,pos0.y	,m.y	,0);
-	nix::DrawLineH(pos0.x	,m.x	,pos0.y	,0);
-	nix::DrawLineH(pos0.x	,m.x	,m.y	,0);
+	nix::DrawLine(pos0.x, pos0.y, pos0.x, m.y, 0);
+	nix::DrawLine(m.x, pos0.y, m.x, m.y, 0);
+	nix::DrawLine(pos0.x, pos0.y, m.x, pos0.y, 0);
+	nix::DrawLine(pos0.x, m.y, m.x, m.y, 0);
 	nix::SetAlphaM(ALPHA_NONE);
 	nix::SetZ(true, true);
 }

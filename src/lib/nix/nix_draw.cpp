@@ -37,14 +37,6 @@ color GetColor()
 	return material.emission;
 }
 
-void DrawChar(float x, float y, char c)
-{
-	char str[2];
-	str[0]=c;
-	str[1]=0;
-	DrawStr(x,y,str);
-}
-
 string str_utf8_to_ubyte(const string &str)
 {
 	string r;
@@ -161,8 +153,7 @@ void DrawLine(float x1, float y1, float x2, float y2, float depth)
 	TestGLError("DrawLine");
 }
 
-void DrawLines(const Array<vector> &p, bool contiguous)
-{
+void DrawLines(const Array<vector> &p, bool contiguous) {
 	current_shader->set_default_data();
 	Array<color> c;
 	c.resize(p.num);
@@ -197,8 +188,7 @@ void DrawLines(const Array<vector> &p, bool contiguous)
 	TestGLError("dls-f");
 }
 
-void DrawLinesColored(const Array<vector> &p, const Array<color> &c, bool contiguous)
-{
+void DrawLinesColored(const Array<vector> &p, const Array<color> &c, bool contiguous) {
 	current_shader->set_default_data();
 
 	if (line_buffer == 0)
@@ -240,28 +230,7 @@ void DrawLinesColored(const Array<vector> &p, const Array<color> &c, bool contig
 	TestGLError("dlc-f");
 }
 
-void DrawLineV(float x, float y1, float y2, float depth)
-{
-	DrawLine(x, y1, x, y2, depth);
-	/*if (y1>y2){
-		float y=y2;	y2=y1;	y1=y;
-	}
-	NixDraw2D(rect::ID, rect(x, x + 1, y1, y2), depth);*/
-}
-
-void DrawLineH(float x1, float x2, float y, float depth)
-{
-	DrawLine(x1, y, x2, y, depth);
-	/*if (x1>x2){
-		float x=x2;
-		x2=x1;
-		x1=x;
-	}
-	NixDraw2D(rect::ID, rect(x1, x2, y, y + 1), depth);*/
-}
-
-void DrawLine3D(const vector &l1, const vector &l2)
-{
+void DrawLine3D(const vector &l1, const vector &l2) {
 	vector v[2] = {l1, l2};
 	color c[2] = {material.emission, material.emission};
 
@@ -302,37 +271,11 @@ void DrawLine3D(const vector &l1, const vector &l2)
 	TestGLError("dl-f");
 }
 
-void DrawRect(float x1, float x2, float y1, float y2, float depth)
-{
-	/*float t;
-	if (x1>x2){
-		t=x1;	x1=x2;	x2=t;
-	}
-	if (y1>y2){
-		t=y1;	y1=y2;	y2=t;
-	}
-	if (!Fullscreen){
-		int pa=40;
-		for (int i=0;i<int(x2-x1-1)/pa+1;i++){
-			for (int j=0;j<int(y2-y1-1)/pa+1;j++){
-				float _x1=x1+i*pa;
-				float _y1=y1+j*pa;
-
-				float _x2=x2;
-				if (x2-x1-i*pa>pa)	_x2=x1+i*pa+pa;
-				float _y2=y2;
-				if (y2-y1-j*pa>pa)	_y2=y1+j*pa+pa;
-
-				Draw2D(r_id, rect(_x1, _x2, _y1, _y2), depth);
-			}
-		}
-		return;
-	}*/
+void DrawRect(float x1, float x2, float y1, float y2, float depth) {
 	Draw2D(rect::ID, rect(x1, x2, y1, y2), depth);
 }
 
-void Draw2D(const rect &src, const rect &dest, float depth)
-{
+void Draw2D(const rect &src, const rect &dest, float depth) {
 	vb_2d->clear();
 	vector a = vector(dest.x1, dest.y1, depth);
 	vector b = vector(dest.x2, dest.y1, depth);
@@ -345,8 +288,7 @@ void Draw2D(const rect &src, const rect &dest, float depth)
 
 
 
-void Draw3D(VertexBuffer *vb)
-{
+void Draw3D(VertexBuffer *vb) {
 	if (vb->dirty)
 		vb->update();
 
@@ -367,7 +309,7 @@ void Draw3D(VertexBuffer *vb)
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 0, (void*)0);
 	TestGLError("d2");
 
-	for (int i=0; i<vb->num_textures; i++){
+	for (int i=0; i<vb->num_textures; i++) {
 		glEnableVertexAttribArray(2 + i);
 		TestGLError("b3");
 		glBindBuffer(GL_ARRAY_BUFFER, vb->buf_t[i]);
@@ -387,57 +329,16 @@ void Draw3D(VertexBuffer *vb)
 	TestGLError("f");
 
 
-	NumTrias += vb->num_triangles;
 	TestGLError("Draw3D");
 }
 
-void DrawSpriteR(const rect &src, const vector &pos, const rect &dest)
-{
-#if 0
-	rect d;
-	float depth;
-	vector p;
-	NixGetVecProject(p,pos);
-	if ((p.z<=0.0f)||(p.z>=1.0))
-		return;
-	depth=p.z;
-	vector u = NixViewMatrix * pos;
-	float q=NixMaxDepth/(NixMaxDepth-NixMinDepth);
-	float f=1.0f/(u.z*q*NixMinDepth*NixView3DRatio);
-#ifdef NIX_API_OPENGL
-	if (NixApi==NIX_API_OPENGL){
-		//depth=depth*2.0f-1.0f;
-		//f*=2;
-	}
-#endif
-	//if (f>20)	f=20;
-	d.x1=p.x+f*(dest.x1)*NixViewScale.x*NixTargetWidth;
-	d.x2=p.x+f*(dest.x2)*NixViewScale.x*NixTargetWidth;
-	d.y1=p.y+f*(dest.y1)*NixViewScale.y*NixTargetHeight*NixView3DRatio;
-	d.y2=p.y+f*(dest.y2)*NixViewScale.y*NixTargetHeight*NixView3DRatio;
-	NixDraw2D(src, d, depth);
-#endif
-}
-
-void DrawSprite(const rect &src,const vector &pos,float radius)
-{
-	rect d;
-	d.x1=-radius;
-	d.x2=radius;
-	d.y1=-radius;
-	d.y2=radius;
-	DrawSpriteR(src, pos, d);
-}
-
-void ResetToColor(const color &c)
-{
+void ResetToColor(const color &c) {
 	glClearColor(c.r, c.g, c.b, c.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	TestGLError("ResetToColor");
 }
 
-void ResetZ()
-{
+void ResetZ() {
 	glClear(GL_DEPTH_BUFFER_BIT);
 	TestGLError("ResetZ");
 }

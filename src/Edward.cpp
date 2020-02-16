@@ -166,7 +166,7 @@ Edward::Edward(Array<string> arg) :
 	set_maximized(maximized);
 
 	// initialize engine
-	nix::Init("OpenGL", w, h);
+	nix::Init();
 	nix::render_str = &render_text;
 
 	MetaInit();
@@ -489,10 +489,9 @@ void Edward::on_execute_plugin()
 }
 
 
-void Edward::on_draw_gl()
-{
+void Edward::on_draw_gl() {
 	auto e = hui::GetEvent();
-	nix::Resize(e->column, e->row);
+	nix::SetViewport(e->column, e->row);
 
 	if (cur_mode->multi_view)
 		cur_mode->multi_view->on_draw();

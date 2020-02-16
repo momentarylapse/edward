@@ -160,7 +160,7 @@ void Window::drawGrid()
 	for (int i=a;i<b;i++){
 		int x=(int)project(vector((float)i*D,(float)i*D,(float)i*D)).x;
 		nix::SetColor(ColorInterpolate(bg, scheme.GRID, GetDensity(i,(float)nix::target_width/(fb-fa))));
-		nix::DrawLineV(x,dest.y1,dest.y2,0.99998f-GetDensity(i,(float)nix::target_width/(fb-fa))*0.00005f);
+		nix::DrawLine(x, dest.y1, x, dest.y2, 0.99998f-GetDensity(i,(float)nix::target_width/(fb-fa))*0.00005f);
 	}
 
 	// horizontal
@@ -176,7 +176,7 @@ void Window::drawGrid()
 	for (int i=a;i<b;i++){
 		int y=(int)project(vector((float)i*D,(float)i*D,(float)i*D)).y;
 		nix::SetColor(ColorInterpolate(bg, scheme.GRID, GetDensity(i,(float)nix::target_width/(fb-fa))));
-		nix::DrawLineH(dest.x1,dest.x2,y,0.99998f-GetDensity(i,(float)nix::target_width/(fb-fa))*0.00005f);
+		nix::DrawLine(dest.x1, y, dest.x2, y, 0.99998f-GetDensity(i,(float)nix::target_width/(fb-fa))*0.00005f);
 	}
 }
 
@@ -260,7 +260,7 @@ void set_projection_matrix(Window *w)
 
 void Window::draw()
 {
-	nix::Scissor(rect(dest.x1, dest.x2+1, dest.y1, dest.y2));
+	nix::SetScissor(rect(dest.x1, dest.x2+1, dest.y1, dest.y2));
 	nix::SetTexture(NULL);
 
 	color bg = getBackgroundColor();
@@ -279,7 +279,7 @@ void Window::draw()
 		if (!cam->ignore_radius)
 			pos -= cam->radius * (cam->ang * vector::EZ);
 	}
-	nix::SetViewPosAng(pos, local_ang);
+	nix::SetViewMatrix(matrix::rotation_q(local_ang.bar()) * matrix::translation(-pos));
 	view_matrix = nix::view_matrix;
 	pv_matrix = projection_matrix * view_matrix;
 	ipv_matrix = pv_matrix.inverse();

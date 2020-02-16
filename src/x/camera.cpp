@@ -415,47 +415,32 @@ void Camera::Start()
 {
 	cur_cam = this;
 	if (output){
-		nix::StartIntoTexture(output);
+		nix::StartFrameIntoTexture(output);
 	}else{
-		nix::Scissor(rect((float)nix::target_width * dest.x1,
+		nix::SetScissor(rect((float)nix::target_width * dest.x1,
 					(float)nix::target_width * dest.x2,
 					(float)nix::target_height * dest.y1,
 					(float)nix::target_height * dest.y2));
 	}
 }
 
-int num_used_clipping_planes = 0;
 
-void Camera::SetView()
-{
+void Camera::SetView() {
 	// Kamera-Position der Ansicht
 	// im Spiegel: Pos!=ViewPos...
 	view_pos = pos;
-	
-	for (int i=0;i<num_used_clipping_planes;i++)
-		nix::EnableClipPlane(i, false);
 
 	// View-Transformation setzen (Kamera)
 	float center_x = (float)nix::target_width * (dest.x1 + dest.x2) / 2;
 	float center_y = (float)nix::target_height * (dest.y1 + dest.y2) / 2;
 	float height = (float)nix::target_height * (dest.y2 - dest.y1) / zoom;
 	nix::SetProjectionPerspectiveExt(center_x, center_y, height * scale_x, height, min_depth, max_depth);
-	nix::SetViewPosAng(view_pos, ang);
+	nix::SetViewMatrix(matrix::rotation_q(ang.bar()) * matrix::translation(-view_pos));
 	
 	m_all = (nix::projection_matrix * nix::view_matrix).inverse();
-
-	// clipping planes
-	for (int i=0;i<clipping_plane.num;i++){
-		nix::SetClipPlane(i, clipping_plane[i]);
-		nix::EnableClipPlane(i, true);
-	}
-	/*for (int i=ClippingPlane.num;i<num_used_clipping_planes;i++)
-		NixEnableClipPlane(i, false);*/
-	num_used_clipping_planes = clipping_plane.num;
 }
 
-void Camera::SetViewLocal()
-{
+void Camera::SetViewLocal() {
 	// Kamera-Position der Ansicht
 	// im Spiegel: Pos!=ViewPos...
 	view_pos = pos;
@@ -465,13 +450,12 @@ void Camera::SetViewLocal()
 	float center_y = (float)nix::target_height * (dest.y1 + dest.y2) / 2;
 	float height = (float)nix::target_height * (dest.y2 - dest.y1) / zoom;
 	nix::SetProjectionPerspectiveExt(center_x, center_y, height * scale_x, height, 0.01f, 1000000.0f);
-	nix::SetViewPosAng(v_0, ang);
+	nix::SetViewMatrix(matrix::rotation_q(ang.bar()));
 	
 	m_all = (nix::projection_matrix * nix::view_matrix).inverse();
 }
 
-vector Camera::Project(const vector &v)
-{
+vector Camera::Project(const vector &v) {
 	float x = m_all._00 * v.x + m_all._01 * v.y + m_all._02 * v.z + m_all._03;
 	float y = m_all._10 * v.x + m_all._11 * v.y + m_all._12 * v.z + m_all._13;
 	float z = m_all._20 * v.x + m_all._21 * v.y + m_all._22 * v.z + m_all._23;
@@ -481,8 +465,7 @@ vector Camera::Project(const vector &v)
 	return vector(x/w * 0.5f + 0.5f, 0.5f - y/w * 0.5f, z/w * 0.5f + 0.5f);
 }
 
-vector Camera::Unproject(const vector &v)
-{
+vector Camera::Unproject(const vector &v) {
 	float xx = (v.x - 0.5f) * 2;
 	float yy = (0.5f - v.y) * 2;
 	float zz = (v.z - 0.5f) * 2;
