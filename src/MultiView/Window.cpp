@@ -304,6 +304,7 @@ void Window::draw()
 	if (multi_view->grid_enabled)
 		drawGrid();
 
+	nix::SetZ(true, true);
 	nix::SetWire(multi_view->wire_mode);
 	// light
 	vector dir = cam->ang * vector::EZ;

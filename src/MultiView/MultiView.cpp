@@ -60,7 +60,7 @@ MultiView::MultiView(bool mode3d) :
 	snap_to_grid = false;
 	light = -1;
 	light_enabled = false;
-	whole_window = false;
+	whole_window = true;
 	this->mode3d = mode3d;
 	mouse_win = NULL;
 	active_win = NULL;
@@ -158,11 +158,13 @@ void MultiView::reset_view()
 {
 	cam.pos = v_0;
 	cam.ang = quaternion::ID;
-	if (mode3d)
+	if (mode3d) {
 		cam.radius = 100;
-	else
+		cam.ang = quaternion::rotation_v(vector(0.4f, 0, 0));
+	} else {
 		cam.radius = 1;
-	whole_window = false;
+	}
+	whole_window = true;
 	grid_enabled = true;
 	light_enabled = true;
 	snap_to_grid = false;
@@ -262,7 +264,7 @@ void MultiView::cam_rotate(const quaternion &dq, bool cam_center) {
 void MultiView::set_view_box(const vector &min, const vector &max)
 {
 	cam.pos = (min + max) / 2;
-	float r = (max - min).length_fuzzy() * 1.3f;// * ((float)NixScreenWidth / (float)nix::target_width);
+	float r = (max - min).length_fuzzy() * 1.8f;// * ((float)NixScreenWidth / (float)nix::target_width);
 	if (r > 0)
 		cam.radius = r;
 	notify(MESSAGE_CAMERA_CHANGE);

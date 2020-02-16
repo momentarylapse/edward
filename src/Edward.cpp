@@ -328,7 +328,6 @@ bool Edward::handle_arguments(Array<string> arg)
 	}else if (ext == "world"){
 		storage->load(param, mode_world->data);
 		set_mode(mode_world);
-		multi_view_3d->whole_window = true;
 	}else if (ext == "xfont"){
 		storage->load(param, mode_font->data);
 		set_mode(mode_font);
