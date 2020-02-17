@@ -10,15 +10,14 @@
 
 class DataModel;
 class ModelVertex;
-namespace nix{
+namespace nix {
 	class VertexBuffer;
 };
 
 #include "../../x/material.h"
 #include "../../MultiView/SingleData.h"
 
-class ModelPolygonSide
-{
+class ModelPolygonSide {
 public:
 	int vertex;
 	int edge;
@@ -29,25 +28,25 @@ public:
 	unsigned char triangulation[3];
 };
 
-class ModelPolygon: public MultiView::SingleData
-{
+class ModelPolygon: public MultiView::SingleData {
 public:
 	Array<ModelPolygonSide> side;
 	vector temp_normal;
 	bool normal_dirty, triangulation_dirty;
 	int material;
 
-	virtual bool hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data);
-	virtual bool inRect(MultiView::Window *win, rect &r, void *user_data);
+	float hover_distance(MultiView::Window *win, const vector &m, vector &tp, float &z) override;
+	bool in_rect(MultiView::Window *win, const rect &r) override;
+	bool overlap_rect(MultiView::Window *win, const rect &r) override;
 
 	Array<int> triangulate(const Array<ModelVertex> &vertex) const;
-	void updateTriangulation(const Array<ModelVertex> &vertex);
-	vector getNormal(const Array<ModelVertex> &vertex) const;
-	vector getAreaVector(const Array<ModelVertex> &vertex) const;
-	Array<int> getVertices() const;
-	Array<vector> getSkinVertices() const;
+	void update_triangulation(const Array<ModelVertex> &vertex);
+	vector get_normal(const Array<ModelVertex> &vertex) const;
+	vector get_area_vector(const Array<ModelVertex> &vertex) const;
+	Array<int> get_vertices() const;
+	Array<vector> get_skin_vertices() const;
 	void invert();
-	void addToVertexBuffer(const Array<ModelVertex> &vertex, nix::VertexBuffer *vb, int num_textures);
+	void add_to_vertex_buffer(const Array<ModelVertex> &vertex, nix::VertexBuffer *vb, int num_textures);
 };
 
 

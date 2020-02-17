@@ -26,18 +26,21 @@ public:
 
 class WorldTerrain: public MultiView::SingleData {
 public:
-	string FileName;
+	string filename;
 	//Array<WorldTerrainVertex> Vertex;
 	int VertexBufferSingle;
 	int ShowTexture;
 	bool Changed;
 	Terrain *terrain;
 
-	bool Load(const vector &pos, const string &filename, bool deep = true);
-	bool Save(const string &filename);
-	bool hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data) override;
-	bool inRect(MultiView::Window *win, rect &r, void *user_data) override;
-	void UpdateData();
+	bool load(const vector &pos, const string &filename, bool deep = true);
+	bool save(const string &filename);
+
+	float hover_distance(MultiView::Window *win, const vector &m, vector &tp, float &z) override;
+	bool in_rect(MultiView::Window *win, const rect &r) override;
+	bool overlap_rect(MultiView::Window *win, const rect &r) override;
+
+	void update_data();
 };
 
 class WorldEditingTerrain {
@@ -53,13 +56,15 @@ public:
 
 class WorldObject: public MultiView::SingleData {
 public:
-	string FileName, Name;
+	string filename, name;
 	Object *object;
-	vector Ang;
+	vector ang;
 
-	bool hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data) override;
-	bool inRect(MultiView::Window *win, rect &r, void *user_data) override;
-	void UpdateData();
+	float hover_distance(MultiView::Window *win, const vector &m, vector &tp, float &z) override;
+	bool in_rect(MultiView::Window *win, const rect &r) override;
+	bool overlap_rect(MultiView::Window *win, const rect &r) override;
+
+	void update_data();
 };
 
 class WorldLink: public MultiView::SingleData {

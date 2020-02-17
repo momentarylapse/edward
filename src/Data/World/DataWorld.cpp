@@ -22,28 +22,26 @@
 #include "../../MultiView/MultiView.h"
 
 
-void WorldObject::UpdateData()
-{
+void WorldObject::update_data() {
 	if (!object)
 		return;
 	object->pos = pos;
-	object->ang = quaternion::rotation_v(Ang);
+	object->ang = quaternion::rotation_v(ang);
 	object->UpdateMatrix();
 }
 
-bool WorldTerrain::Load(const vector &_pos, const string &filename, bool deep)
-{
+bool WorldTerrain::load(const vector &_pos, const string &_filename, bool deep) {
 	view_stage = 0;
 	is_selected = false;
 	is_special = false;
 
-	FileName = filename.substr(MapDir.num, -1);
-	FileName.resize(FileName.num - 4);
+	filename = _filename.substr(MapDir.num, -1);
+	filename.resize(filename.num - 4);
 
 	terrain = new Terrain();
-	bool Error = !terrain->Load(FileName, _pos, deep);
+	bool Error = !terrain->Load(filename, _pos, deep);
 
-	if (Error){
+	if (Error) {
 		delete(terrain);
 		terrain = NULL;
 	}
@@ -51,10 +49,9 @@ bool WorldTerrain::Load(const vector &_pos, const string &filename, bool deep)
 	return !Error;
 }
 
-bool WorldTerrain::Save(const string &filename)
-{
-	FileName = filename.substr(MapDir.num, -1);
-	FileName.resize(FileName.num - 4);
+bool WorldTerrain::save(const string &_filename) {
+	filename = _filename.substr(MapDir.num, -1);
+	filename.resize(filename.num - 4);
 
 
 	File *f = NULL;
@@ -94,8 +91,7 @@ bool WorldTerrain::Save(const string &filename)
 	return true;
 }
 
-void WorldTerrain::UpdateData()
-{
+void WorldTerrain::update_data() {
 	if (!terrain)
 		return;
 	terrain->pos = pos;
@@ -228,11 +224,11 @@ IMPLEMENT_COUNT_SELECTED(get_selected_cameras, cameras)
 
 void DataWorld::UpdateData() {
 	foreachi(auto &o, Objects, i){
-		o.UpdateData();
+		o.update_data();
 		o.is_special = (i == EgoIndex);
 	}
 	for (auto &t: Terrains)
-		t.UpdateData();
+		t.update_data();
 }
 
 WorldObject* DataWorld::AddObject(const string& filename, const vector& pos)

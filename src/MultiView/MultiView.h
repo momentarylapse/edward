@@ -59,14 +59,13 @@ struct Camera {
 class ActionController;
 class CameraController;
 
-typedef bool HoverFunction(const SingleData *p, Window *win, vector &m, vector &tp, float &z, void *user_data);
+typedef std::function<float(const SingleData *p, Window *win, const vector &m, vector &tp, float &z)> HoverDistanceFunction;
 
 struct DataSet {
 	int type;
 	DynamicArray *data;
 	bool selectable, drawable, movable, indexable;
-	void *user_data;
-	HoverFunction *func_hover;
+	HoverDistanceFunction func_hover;
 };
 
 
@@ -175,8 +174,8 @@ public:
 	void cam_rotate(const quaternion &dang, bool cam_center);
 	void cam_rotate_pixel(const vector &dir, bool cam_center);
 	void clear_data(Data *_data);
-	void add_data(int type, const DynamicArray &a, void *user_data, int flags);
-	void set_hover_func(int type, HoverFunction *f);
+	void add_data(int type, const DynamicArray &a, int flags);
+	void set_hover_func(int type, HoverDistanceFunction f);
 	void set_view_stage(int *view_stage, bool allow_handle);
 	void reset();
 	void reset_view();

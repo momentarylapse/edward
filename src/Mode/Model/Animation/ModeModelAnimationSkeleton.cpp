@@ -17,7 +17,7 @@
 
 ModeModelAnimationSkeleton *mode_model_animation_skeleton = NULL;
 
-bool poly_hover(ModelPolygon *pol, MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data, const Array<ModelVertex> &vertex);
+float poly_hover(ModelPolygon *pol, MultiView::Window *win, const vector &M, vector &tp, float &z, const Array<ModelVertex> &vertex);
 
 ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(ModeBase* _parent) :
 	Mode<DataModel>("ModelAnimationSkeleton", _parent, ed->multi_view_3d, "menu_move"),
@@ -28,12 +28,10 @@ ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(ModeBase* _parent) :
 	mouse_action = -1;
 }
 
-ModeModelAnimationSkeleton::~ModeModelAnimationSkeleton()
-{
+ModeModelAnimationSkeleton::~ModeModelAnimationSkeleton() {
 }
 
-void ModeModelAnimationSkeleton::on_start()
-{
+void ModeModelAnimationSkeleton::on_start() {
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-animation-skeleton-toolbar");
 
 	foreachi(ModelBone &b, data->bone, i)
@@ -44,20 +42,18 @@ void ModeModelAnimationSkeleton::on_start()
 	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
 }
 
-void ModeModelAnimationSkeleton::on_end()
-{
+void ModeModelAnimationSkeleton::on_end() {
 	unsubscribe(multi_view);
 }
 
-void ModeModelAnimationSkeleton::on_command(const string& id)
-{
+void ModeModelAnimationSkeleton::on_command(const string& id) {
 	if (id == "select")
 		chooseMouseFunction(MultiView::ACTION_SELECT);
 	if (id == "translate")
 		chooseMouseFunction(MultiView::ACTION_MOVE);
 	if (id == "rotate")
 		chooseMouseFunction(MultiView::ACTION_ROTATE);
-	if (id == "select-recursive"){
+	if (id == "select-recursive") {
 		select_recursive = !select_recursive;
 		updateSelection();
 		ed->update_menu();
@@ -68,47 +64,46 @@ void ModeModelAnimationSkeleton::on_command(const string& id)
 		paste();
 }
 
-void ModeModelAnimationSkeleton::chooseMouseFunction(int f)
-{
+void ModeModelAnimationSkeleton::chooseMouseFunction(int f) {
 	mouse_action = f;
 
 	// mouse action
 	multi_view->set_mouse_action("ActionModelAnimationTransformBones", mouse_action, false);
 }
 
-void ModeModelAnimationSkeleton::on_update(Observable* o, const string &message)
-{
-	if (o == multi_view){
+void ModeModelAnimationSkeleton::on_update(Observable* o, const string &message) {
+	if (o == multi_view) {
 		updateSelection();
 	}
 }
 
-bool bone_hover(const MultiView::SingleData *pp, MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data) {
-	auto *me = (ModeModelAnimationSkeleton*)user_data;
+float bone_hover(const MultiView::SingleData *pp, MultiView::Window *win, const vector &m, vector &tp, float &z, ModeModelAnimationSkeleton *me) {
+	float dmin = 100;
 	for (auto &p: me->data->mesh->polygon) {
 		if (pp == &mode_model_animation->bone[me->data->mesh->vertex[p.side[0].vertex].bone_index]) {
-			if (poly_hover(&p, win, m, tp, z, user_data, mode_model_animation->vertex))
-				return true;
+			float d = poly_hover(&p, win, m, tp, z, mode_model_animation->vertex);
+			if (d >= 0 and d < dmin)
+				dmin = d;
 		}
 	}
-	return false;
+	if (dmin == 100)
+		return -1;
+	return dmin;
 }
 
-void ModeModelAnimationSkeleton::on_set_multi_view()
-{
+void ModeModelAnimationSkeleton::on_set_multi_view() {
 	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 
 	multi_view->add_data(MVD_SKELETON_BONE,
 			mode_model_animation->bone,
-			this,
 			MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT);
-	multi_view->set_hover_func(MVD_SKELETON_BONE, &bone_hover);
+	multi_view->set_hover_func(MVD_SKELETON_BONE, [=](const MultiView::SingleData *pp, MultiView::Window *win, const vector &m, vector &tp, float &z){ return bone_hover(pp, win, m, tp, z, this); });
 }
 
 void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win) {
 	mode_model_mesh->draw_polygons(win, data->mesh, mode_model_animation->vertex);
-	mode_model_skeleton->drawSkeleton(win, mode_model_animation->bone, true);
+	mode_model_skeleton->draw_skeleton(win, mode_model_animation->bone, true);
 	mode_model_mesh->draw_selection(win);
 
 
@@ -120,7 +115,7 @@ void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win) {
 
 	for (ModelPolygon &p: data->mesh->polygon)
 		if (data->mesh->vertex[p.side[0].vertex].bone_index == multi_view->hover.index)
-			p.addToVertexBuffer(mode_model_animation->vertex, mode_model_mesh->vb_hover, 1);
+			p.add_to_vertex_buffer(mode_model_animation->vertex, mode_model_mesh->vb_hover, 1);
 
 
 	nix::SetWire(false);

@@ -44,7 +44,7 @@ public:
 	Array<ModelSkinVertexDummy> skin_vertex;
 
 	int current_texture_level;
-	void setCurrentTextureLevel(int level);
+	void set_current_texture_level(int level);
 };
 
 extern ModeModelMeshTexture *mode_model_mesh_texture;

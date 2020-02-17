@@ -33,7 +33,7 @@ void MeshSelectionModePolygon::on_draw_win(MultiView::Window *win) {
 
 	auto *m = data->edit_mesh;
 	auto &p = m->polygon[multi_view->hover.index];
-	p.addToVertexBuffer(m->show_vertices, parent->vb_hover, 1);
+	p.add_to_vertex_buffer(m->show_vertices, parent->vb_hover, 1);
 
 	nix::SetWire(false);
 	nix::SetOffset(-2.0f);
@@ -56,23 +56,23 @@ void MeshSelectionModePolygon::on_start() {
 }
 
 
-bool poly_hover(ModelPolygon *pol, MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data, const Array<ModelVertex> &vertex) {
+float poly_hover(ModelPolygon *pol, MultiView::Window *win, const vector &M, vector &tp, float &z, const Array<ModelVertex> &vertex) {
 	// care for the sense of rotation?
 	if (pol->temp_normal * win->getDirection() > 0)
-		return false;
+		return -1;
 
 	// project all points
 	Array<vector> p;
 	for (int k=0;k<pol->side.num;k++) {
 		vector pp = win->project(vertex[pol->side[k].vertex].pos);
 		if ((pp.z <= 0) or (pp.z >= 1))
-			return false;
+			return -1;
 		p.add(pp);
 	}
 
 	// test all sub-triangles
 	if (pol->triangulation_dirty)
-		pol->updateTriangulation(vertex);
+		pol->update_triangulation(vertex);
 	for (int k=pol->side.num-3; k>=0; k--) {
 		int a = pol->side[k].triangulation[0];
 		int b = pol->side[k].triangulation[1];
@@ -86,18 +86,18 @@ bool poly_hover(ModelPolygon *pol, MultiView::Window *win, vector &M, vector &tp
 			vector vc = vertex[pol->side[c].vertex].pos;
 			tp = va+f*(vb-va)+g*(vc-va);
 			z = win->project(tp).z;
-			return true;
+			return 0;
 		}
 	}
-	return false;
-}
-bool ModelPolygon::hover(MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data) {
-	auto *m = mode_model_mesh->data->edit_mesh; // surf->model;
-	return poly_hover(this, win, M, tp, z, user_data, m->show_vertices);
+	return -1;
 }
 
-bool ModelPolygon::inRect(MultiView::Window *win, rect &r, void *user_data)
-{
+float ModelPolygon::hover_distance(MultiView::Window *win, const vector &M, vector &tp, float &z) {
+	auto *m = mode_model_mesh->data->edit_mesh; // surf->model;
+	return poly_hover(this, win, M, tp, z, m->show_vertices);
+}
+
+bool ModelPolygon::in_rect(MultiView::Window *win, const rect &r) {
 	// care for the sense of rotation?
 	if (mode_model_mesh->select_cw)
 		if (temp_normal * win->getDirection() > 0)
@@ -106,8 +106,8 @@ bool ModelPolygon::inRect(MultiView::Window *win, rect &r, void *user_data)
 	auto *m = mode_model_mesh->data->edit_mesh; // surf->model;
 
 	// all vertices within rectangle?
-	for (int k=0;k<side.num;k++) {
-		vector pp = win->project(m->show_vertices[side[k].vertex].pos); // mmodel->GetVertex(ia)
+	for (int k=0; k<side.num; k++) {
+		vector pp = win->project(m->show_vertices[side[k].vertex].pos);
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
 		if (r.inside(pp.x, pp.y))
@@ -116,6 +116,9 @@ bool ModelPolygon::inRect(MultiView::Window *win, rect &r, void *user_data)
 	return false;
 }
 
+bool ModelPolygon::overlap_rect(MultiView::Window *win, const rect &r) {
+	return in_rect(win, r);
+}
 
 void MeshSelectionModePolygon::update_selection() {
 	data->edit_mesh->selection_from_polygons();
@@ -124,8 +127,7 @@ void MeshSelectionModePolygon::update_selection() {
 void MeshSelectionModePolygon::update_multi_view() {
 	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	multi_view->add_data(	MVD_MODEL_POLYGON,
+	multi_view->add_data(MVD_MODEL_POLYGON,
 			data->edit_mesh->polygon,
-			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 }

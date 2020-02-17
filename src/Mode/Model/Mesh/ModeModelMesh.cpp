@@ -262,7 +262,7 @@ void ModeModelMesh::on_draw_win(MultiView::Window *win) {
 	// visible skin
 	draw_polygons(win, data->mesh, data->mesh->vertex);
 
-	mode_model_skeleton->drawSkeleton(win, data->bone, true);
+	mode_model_skeleton->draw_skeleton(win, data->bone, true);
 
 	if (current_skin == SKIN_PHYSICAL)
 		draw_physical(win);
@@ -509,7 +509,7 @@ void ModeModelMesh::set_current_material(int index) {
 		return;
 	current_material = index;
 	notify(MESSAGE_CURRENT_MATERIAL_CHANGE);
-	mode_model_mesh_texture->setCurrentTextureLevel(0);
+	mode_model_mesh_texture->set_current_texture_level(0);
 }
 
 void ModeModelMesh::set_current_skin(int index) {
@@ -641,7 +641,7 @@ void ModeModelMesh::draw_physical(MultiView::Window *win) {
 	nix::vb_temp->clear();
 	for (auto &t: data->phys_mesh->polygon)
 		if (t.view_stage >= multi_view->view_stage)
-			t.addToVertexBuffer(data->phys_mesh->vertex, nix::vb_temp, 1);
+			t.add_to_vertex_buffer(data->phys_mesh->vertex, nix::vb_temp, 1);
 	nix::SetOffset(-0.5f);
 	nix::Draw3D(nix::vb_temp);
 	nix::SetOffset(0);
@@ -668,7 +668,7 @@ void ModeModelMesh::update_vertex_buffers(Array<ModelVertex> &vertex) {
 
 		for (ModelPolygon &t: data->mesh->polygon)
 			if ((t.view_stage >= multi_view->view_stage) and (t.material == mi))
-				t.addToVertexBuffer(vertex, m->vb, m->texture_levels.num);
+				t.add_to_vertex_buffer(vertex, m->vb, m->texture_levels.num);
 
 		//m.vb->optimize();
 	}
@@ -683,7 +683,7 @@ void ModeModelMesh::fill_selection_buffer(Array<ModelVertex> &vertex) {
 	for (auto &t: data->edit_mesh->polygon)
 		/*if (t.view_stage >= ViewStage)*/{
 		if (t.is_selected)
-			t.addToVertexBuffer(vertex, vb_marked, 1);
+			t.add_to_vertex_buffer(vertex, vb_marked, 1);
 	}
 }
 

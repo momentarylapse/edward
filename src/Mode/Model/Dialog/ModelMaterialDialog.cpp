@@ -320,7 +320,7 @@ void ModelMaterialDialog::on_texture_level_scale() {
 
 void ModelMaterialDialog::on_textures_select() {
 	int sel = get_int("");
-	mode_model_mesh_texture->setCurrentTextureLevel(sel);
+	mode_model_mesh_texture->set_current_texture_level(sel);
 }
 
 void ModelMaterialDialog::on_texture_level_delete() {
@@ -357,7 +357,7 @@ void ModelMaterialDialog::on_material_list_right_click() {
 void ModelMaterialDialog::on_textures_right_click() {
 	int n = hui::GetEvent()->row;
 	if (n >= 0) {
-		mode_model_mesh_texture->setCurrentTextureLevel(n);
+		mode_model_mesh_texture->set_current_texture_level(n);
 	}
 	popup_textures->enable("texture-level-delete", n>=0);
 	popup_textures->enable("texture-level-clear", n>=0);

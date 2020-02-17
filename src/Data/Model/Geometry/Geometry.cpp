@@ -50,7 +50,7 @@ void Geometry::addPolygon(Array<int> &v, Array<vector> &sv)
 	p.material = -1;
 	p.normal_dirty = true;
 	p.triangulation_dirty = true;
-	p.temp_normal = p.getNormal(vertex);
+	p.temp_normal = p.get_normal(vertex);
 	for (int k=0;k<p.side.num;k++)
 		p.side[k].normal = p.temp_normal;
 	polygon.add(p);
@@ -244,7 +244,7 @@ void Geometry::transform(const matrix &mat)
 		/*p.temp_normal = mat2.transform_normal(p.temp_normal);
 		for (int k=0;k<p.side.num;k++)
 			p.side[k].normal = mat2.transform_normal(p.side[k].normal);*/
-		p.temp_normal = p.getNormal(vertex);
+		p.temp_normal = p.get_normal(vertex);
 		for (int k=0;k<p.side.num;k++)
 			p.side[k].normal = p.temp_normal;
 	}
@@ -268,7 +268,7 @@ void Geometry::build(nix::VertexBuffer *vb) const
 	vb->clear();
 	for (ModelPolygon &p: const_cast<Array<ModelPolygon>&>(polygon)){
 		p.triangulation_dirty = true;
-		p.addToVertexBuffer(vertex, vb, vb->num_textures);
+		p.add_to_vertex_buffer(vertex, vb, vb->num_textures);
 	}
 }
 
@@ -370,7 +370,7 @@ bool Geometry::isInside(const vector &p) const
 		// real intersection
 		vector col;
 		if (t.triangulation_dirty)
-			t.updateTriangulation(vertex);
+			t.update_triangulation(vertex);
 		for (int k=t.side.num-2;k>=0;k--)
 			if (LineIntersectsTriangle(v[t.side[k].triangulation[0]], v[t.side[k].triangulation[1]], v[t.side[k].triangulation[2]], p, p + vector::EX, col, false))
 				if (col.x > p.x)
@@ -427,7 +427,7 @@ bool Geometry::isMouseOver(MultiView::Window *win, const matrix &mat, vector &tp
 			continue;
 
 		// test all sub-triangles
-		p.updateTriangulation(vertex);
+		p.update_triangulation(vertex);
 		vector M = win->multi_view->m;
 		for (int k=p.side.num-3; k>=0; k--){
 			int a = p.side[k].triangulation[0];

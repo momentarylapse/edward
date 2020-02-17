@@ -42,10 +42,8 @@ void MeshSelectionModeSurface::update_selection() {
 
 void MeshSelectionModeSurface::update_multi_view() {
 	multi_view->clear_data(data);
-	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 	multi_view->add_data(MVD_MODEL_POLYGON,
 			data->edit_mesh->polygon,
-			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 }
 
@@ -57,7 +55,7 @@ void MeshSelectionModeSurface::on_draw_win(MultiView::Window *win) {
 
 	auto m = data->edit_mesh;
 	auto &p = m->polygon[multi_view->hover.index];
-	p.addToVertexBuffer(m->show_vertices, parent->vb_hover, 1);
+	p.add_to_vertex_buffer(m->show_vertices, parent->vb_hover, 1);
 
 	nix::SetWire(false);
 	nix::SetOffset(1.0f);

@@ -21,20 +21,21 @@ SingleData::SingleData() {
 	pos = v_0;
 }
 
-bool SingleData::hover(Window *win, vector &m, vector &tp, float &z, void *user_data) {
+float SingleData::hover_distance(Window *win, const vector &m, vector &tp, float &z) {
 	vector p = win->project(pos);
 	if ((p.z <= 0) or (p.z >= 1))
-		return false;
-	float _radius = scheme.POINT_RADIUS_HOVER;
-	if ((m.x >= p.x - _radius) and (m.x <= p.x + _radius) and (m.y >= p.y - _radius) and (m.y <= p.y + _radius)) {
-		z = p.z;
-		tp = pos;
-		return true;
-	}
-	return false;
+		return -1;
+	z = p.z;
+	tp = pos;
+	return abs(p.x - m.x) + abs(p.y - m.y);
 }
 
-bool SingleData::inRect(Window *win, rect &r, void *user_data) {
+bool SingleData::in_rect(Window *win, const rect &r) {
+	vector p = win->project(pos);
+	return r.inside(p.x, p.y);
+}
+
+bool SingleData::overlap_rect(Window *win, const rect &r) {
 	vector p = win->project(pos);
 	return r.inside(p.x, p.y);
 }

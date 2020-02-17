@@ -397,7 +397,7 @@ void ModelMesh::export_to_triangle_skin(ModelSkin &sk) {
 	sk.sub.resize(model->material.num);
 	for (auto &t: polygon) {
 		if (t.triangulation_dirty)
-			t.updateTriangulation(vertex);
+			t.update_triangulation(vertex);
 		for (int i=0;i<t.side.num-2;i++) {
 			ModelTriangle tt;
 			for (int k=0;k<3;k++) {
@@ -501,7 +501,7 @@ void ModelMesh::update_normals()
 		if (t.normal_dirty){
 			t.normal_dirty = false;
 
-			t.temp_normal = t.getNormal(vertex);
+			t.temp_normal = t.get_normal(vertex);
 
 			for (int k=0;k<t.side.num;k++){
 				t.side[k].normal = t.temp_normal;
@@ -818,4 +818,30 @@ void ModelMesh::_shift_vertex_links(int offset, int delta) {
 		for (int k=0;k<2;k++)
 			if (e.vertex[k] >= offset)
 				e.vertex[k] += delta;
+}
+
+
+// TODO
+float ModelBall::hover_distance(MultiView::Window *win, const vector &m, vector &tp, float &z) {
+	return MultiView::SingleData::hover_distance(win, m, tp, z);
+}
+
+bool ModelBall::in_rect(MultiView::Window *win, const rect &r) {
+	return MultiView::SingleData::in_rect(win, r);
+}
+
+bool ModelBall::overlap_rect(MultiView::Window *win, const rect &r) {
+	return MultiView::SingleData::in_rect(win, r);
+}
+
+float ModelCylinder::hover_distance(MultiView::Window *win, const vector &m, vector &tp, float &z) {
+	return MultiView::SingleData::hover_distance(win, m, tp, z);
+}
+
+bool ModelCylinder::in_rect(MultiView::Window *win, const rect &r) {
+	return MultiView::SingleData::in_rect(win, r);
+}
+
+bool ModelCylinder::overlap_rect(MultiView::Window *win, const rect &r) {
+	return MultiView::SingleData::in_rect(win, r);
 }

@@ -31,8 +31,8 @@ void *ActionModelSurfaceDeletePolygon::execute(Data *d) {
 
 	// save old data
 	material = t.material;
-	vertex = t.getVertices();
-	skin = t.getSkinVertices();
+	vertex = t.get_vertices();
+	skin = t.get_skin_vertices();
 
 	// erase
 	m->edit_mesh->_removePolygon(index);

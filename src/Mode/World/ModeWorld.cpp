@@ -127,11 +127,11 @@ public:
 			list_indices.add({MVD_WORLD_SCRIPT, i});
 		}
 		foreachi (auto &t, data->Terrains, i) {
-			add_string("list", "Terrain\\" + t.FileName);
+			add_string("list", "Terrain\\" + t.filename);
 			list_indices.add({MVD_WORLD_TERRAIN, i});
 		}
 		foreachi (auto &o, data->Objects, i) {
-			add_string("list", "Object\\" + ((o.Name == "") ? o.FileName : o.Name));
+			add_string("list", "Object\\" + ((o.name == "") ? o.filename : o.name));
 			list_indices.add({MVD_WORLD_OBJECT, i});
 		}
 		selection_from_world();
@@ -233,17 +233,17 @@ public:
 
 		if (ii.type == MVD_WORLD_OBJECT) {
 			auto &o = data->Objects[ii.index];
-			set_string("ob-name", o.Name);
-			set_string("ob-kind", o.FileName);
+			set_string("ob-name", o.name);
+			set_string("ob-kind", o.filename);
 			set_float("pos_x", o.pos.x);
 			set_float("pos_y", o.pos.y);
 			set_float("pos_z", o.pos.z);
-			set_float("ang_x", o.Ang.x * 180.0f / pi);
-			set_float("ang_y", o.Ang.y * 180.0f / pi);
-			set_float("ang_z", o.Ang.z * 180.0f / pi);
+			set_float("ang_x", o.ang.x * 180.0f / pi);
+			set_float("ang_y", o.ang.y * 180.0f / pi);
+			set_float("ang_z", o.ang.z * 180.0f / pi);
 		} else if (ii.type == MVD_WORLD_TERRAIN) {
 			auto &t = data->Terrains[ii.index];
-			set_string("terrain-file", t.FileName);
+			set_string("terrain-file", t.filename);
 			set_int("terrain-num-x", t.terrain->num_x);
 			set_int("terrain-num-z", t.terrain->num_z);
 			set_float("terrain-pattern-x", t.terrain->pattern.x);
@@ -413,13 +413,13 @@ void ModeWorld::on_command(const string & id) {
 vector tmv[MODEL_MAX_VERTICES*5],pmv[MODEL_MAX_VERTICES*5];
 bool tvm[MODEL_MAX_VERTICES*5];
 
-bool WorldObject::hover(MultiView::Window *win, vector &mv, vector &tp, float &z, void *user_data) {
+float WorldObject::hover_distance(MultiView::Window *win, const vector &mv, vector &tp, float &z) {
 	Object *o = object;
 	if (!o)
-		return false;
+		return -1;
 	int d = o->_detail_;
 	if ((d<0)or(d>2))
-		return false;
+		return -1;
 	for (int i=0;i<o->skin[d]->vertex.num;i++) {
 		tmv[i] = o->_matrix * o->skin[d]->vertex[i];
 		pmv[i] = win->project(tmv[i]);
@@ -447,10 +447,10 @@ bool WorldObject::hover(MultiView::Window *win, vector &mv, vector &tp, float &z
 		}
 	}
 	z = z_min;
-	return (z_min<1);
+	return (z_min<1) ? 0 : -1;
 }
 
-bool WorldObject::inRect(MultiView::Window *win, rect &r, void *user_data) {
+bool WorldObject::in_rect(MultiView::Window *win, const rect &r) {
 	Object *m = object;
 	if (!m)
 		return false;
@@ -484,11 +484,15 @@ bool WorldObject::inRect(MultiView::Window *win, rect &r, void *user_data) {
 	return ((min.x>=r.x1)and(min.y>=r.y1)and(max.x<=r.x2)and(max.y<=r.y2));
 }
 
-bool WorldTerrain::hover(MultiView::Window *win, vector &mv, vector &tp, float &z, void *user_data) {
+bool WorldObject::overlap_rect(MultiView::Window *win, const rect &r) {
+	return in_rect(win, r);
+}
+
+float WorldTerrain::hover_distance(MultiView::Window *win, const vector &mv, vector &tp, float &z) {
 	//msg_db_f(format("IMOT index= %d",index).c_str(),3);
 	Terrain *t = terrain;
 	if (!t)
-		return false;
+		return -1;
 	float r = win->cam->radius * 100;
 	vector a = win->unproject(mv);
 	vector b = win->unproject(mv, win->cam->pos + win->getDirection() * r);
@@ -496,10 +500,10 @@ bool WorldTerrain::hover(MultiView::Window *win, vector &mv, vector &tp, float &
 	bool hit = t->Trace(a, b, v_0, r, td, false);
 	tp = td.point;
 	z = win->project(tp).z;
-	return hit;
+	return hit ? 0 : -1;
 }
 
-bool WorldTerrain::inRect(MultiView::Window *win, rect &r, void *user_data) {
+bool WorldTerrain::in_rect(MultiView::Window *win, const rect &r) {
 	Terrain *t = terrain;
 	vector min,max;
 	for (int i=0;i<8;i++) {
@@ -511,6 +515,9 @@ bool WorldTerrain::inRect(MultiView::Window *win, rect &r, void *user_data) {
 		max._max(p);
 	}
 	return ((min.x>=r.x1)and(min.y>=r.y1)and(max.x<=r.x2)and(max.y<=r.y2));
+}
+bool WorldTerrain::overlap_rect(MultiView::Window *win, const rect &r) {
+	return in_rect(win, r);
 }
 
 
@@ -950,21 +957,16 @@ bool ModeWorld::pasteable() {
 void ModeWorld::on_set_multi_view() {
 	multi_view->clear_data(data);
 
-	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	multi_view->add_data(	MVD_WORLD_OBJECT,
+	multi_view->add_data(MVD_WORLD_OBJECT,
 			data->Objects,
-			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
-	multi_view->add_data(	MVD_WORLD_TERRAIN,
+	multi_view->add_data(MVD_WORLD_TERRAIN,
 			data->Terrains,
-			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
-	multi_view->add_data(	MVD_WORLD_LIGHT,
+	multi_view->add_data(MVD_WORLD_LIGHT,
 			data->lights,
-			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE | MultiView::FLAG_DRAW);
-	multi_view->add_data(	MVD_WORLD_CAMERA,
+	multi_view->add_data(MVD_WORLD_CAMERA,
 			data->cameras,
-			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE | MultiView::FLAG_DRAW);
 }

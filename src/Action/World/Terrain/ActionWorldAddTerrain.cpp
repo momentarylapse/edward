@@ -81,7 +81,7 @@ void *ActionWorldAddTerrain::execute(Data *d)
 		t.terrain->force_redraw = true;
 	}else{
 		t.terrain = new Terrain(filename, pos);
-		t.FileName = filename;
+		t.filename = filename;
 	}
 
 	w->Terrains.add(t);

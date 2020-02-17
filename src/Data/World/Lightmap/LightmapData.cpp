@@ -56,7 +56,7 @@ void LightmapData::Init(DataWorld *w)
 	foreachi(WorldObject &o, w->Objects, i)
 		if ((o.is_selected) && (!o.object->active_physics)){
 			o.object->UpdateMatrix();
-			AddModel(o.FileName, o.object->_matrix, i);
+			AddModel(o.filename, o.object->_matrix, i);
 		}
 	foreachi(WorldTerrain &t, w->Terrains, i)
 		if (t.is_selected)
@@ -171,7 +171,7 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 	m->updateNormals();
 	foreachi(auto &p, m->mesh->polygon, i){
 		if (p.triangulation_dirty)
-			p.updateTriangulation(m->mesh->vertex);
+			p.update_triangulation(m->mesh->vertex);
 		for (int k=0;k<p.side.num-2;k++){
 			Triangle t;
 			t.mod_id = mod.id;
@@ -218,7 +218,7 @@ void LightmapData::AddTerrain(WorldTerrain &wt, int terrain_index)
 	Terrain ter;
 	ter.id = Terrains.num;
 
-	ter.orig_name = wt.FileName.basename();
+	ter.orig_name = wt.filename.basename();
 	msg_write(ter.orig_name);
 	ter.offset = Trias.num;
 	ter.terrain_index = terrain_index;

@@ -26,8 +26,8 @@ void* ActionModelPolygonAddVertex::compose(Data* d) {
 
 
 	// save old polygon data
-	Array<int> v = t.getVertices();
-	Array<vector> _sv = t.getSkinVertices();
+	Array<int> v = t.get_vertices();
+	Array<vector> _sv = t.get_skin_vertices();
 	int material = t.material;
 
 	// insert vertex

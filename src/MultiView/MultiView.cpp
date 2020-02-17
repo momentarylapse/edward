@@ -181,27 +181,23 @@ void MultiView::reset_view()
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
-void MultiView::reset_mouse_action()
-{
+void MultiView::reset_mouse_action() {
 	action_con->cur_action = NULL;
 	action_con->action.reset();
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
-void MultiView::clear_data(Data *_data)
-{
+void MultiView::clear_data(Data *_data) {
 	data.clear();
 	action_con->data = _data;
 	if (!_data)
 		reset_mouse_action();
 }
 
-void MultiView::add_data(int type, const DynamicArray & a, void *user_data, int flags)
-{
+void MultiView::add_data(int type, const DynamicArray &a, int flags) {
 	DataSet d;
 	d.type = type;
 	d.data = (DynamicArray*)&a;
-	d.user_data = user_data;
 	d.selectable = (flags & FLAG_SELECT)>0;
 	d.drawable = (flags & FLAG_DRAW)>0;
 	d.indexable = (flags & FLAG_INDEX)>0;
@@ -209,8 +205,7 @@ void MultiView::add_data(int type, const DynamicArray & a, void *user_data, int 
 	data.add(d);
 }
 
-void MultiView::set_hover_func(int type, HoverFunction *f)
-{
+void MultiView::set_hover_func(int type, HoverDistanceFunction f) {
 	for (auto &d: data)
 		if (d.type == type)
 			d.func_hover = f;
@@ -984,41 +979,44 @@ void MultiView::get_hover()
 		hover.meta = hover.HOVER_ACTION_CONTROLLER;
 		return;
 	}
-	float z_min=1;
+	float z_min = 1;
+	float dist_min = 30;
 	foreachi(DataSet &d, data, di)
 		if (d.selectable)
-			for (int i=0;i<d.data->num;i++){
+			for (int i=0; i<d.data->num; i++){
 				SingleData* sd = MVGetSingleData(d, i);
 				if (sd->view_stage < view_stage)
 					continue;
 				float z;
 				vector tp, mop;
-				bool mo = false;
+				float hover_dist;
 				if (d.func_hover)
-					mo = d.func_hover(sd, mouse_win, m, tp, z, d.user_data);
+					hover_dist = d.func_hover(sd, mouse_win, m, tp, z);
 				else
-					mo = sd->hover(mouse_win, m, tp, z, d.user_data);
-				if (mo){
-					if (z<z_min){
-						z_min = z;
+					hover_dist = sd->hover_distance(mouse_win, m, tp, z);
+				if (hover_dist < 0)
+					continue;
+				if (hover_dist > dist_min)
+					continue;
+				if (z < z_min) {
+					z_min = z;
+					mop = tp;
+				} else {
+					if (sd->is_selected) {
 						mop = tp;
-					}else{
-						if (sd->is_selected){
-							mop = tp;
-						}else
-							continue;
+					} else {
+						continue;
 					}
 				}
-				if (mo){
-					hover.index = i;
-					hover.set = di;
-					hover.type = d.type;
-					hover.point = mop;
-					hover.meta = hover.HOVER_DATA;
-					hover.data = sd;
-					if (sd->is_selected)
-						return;
-				}
+				dist_min = hover_dist;
+				hover.index = i;
+				hover.set = di;
+				hover.type = d.type;
+				hover.point = mop;
+				hover.meta = hover.HOVER_DATA;
+				hover.data = sd;
+				if (sd->is_selected)
+					return;
 			}
 }
 
@@ -1080,7 +1078,7 @@ void MultiView::select_all_in_rectangle(int mode)
 					continue;
 
 				// selected?
-				sd->m_delta = sd->inRect(active_win, r, d.user_data);
+				sd->m_delta = sd->in_rect(active_win, r);
 
 				// add the selection layers
 				if (mode == SELECT_INVERT)

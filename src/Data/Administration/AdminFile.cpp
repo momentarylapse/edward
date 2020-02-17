@@ -199,18 +199,18 @@ void AdminFile::check(AdminFileList &list)
 		if (storage->load(MapDir + Name, &w, false)){
 			Time = w.file_time;
 			for (int i=0;i<w.Terrains.num;i++)
-				add_possible_link(l, FD_TERRAIN, w.Terrains[i].FileName);
+				add_possible_link(l, FD_TERRAIN, w.Terrains[i].filename);
 			for (int i=0;i<w.meta_data.SkyBoxFile.num;i++)
 				add_possible_link(l, FD_MODEL, w.meta_data.SkyBoxFile[i]);
 			for (int i=0;i<w.meta_data.scripts.num;i++)
 				add_possible_link(l, FD_SCRIPT, w.meta_data.scripts[i].filename);
 			for (int i=0;i<w.Objects.num;i++)
-				add_possible_link(l, FD_MODEL, w.Objects[i].FileName);
+				add_possible_link(l, FD_MODEL, w.Objects[i].filename);
 		}else
 			Missing=true;
 	}else if (Kind==FD_TERRAIN){
 		WorldTerrain t;
-		if (t.Load(v_0, MapDir + Name, false)){
+		if (t.load(v_0, MapDir + Name, false)){
 			Time = 0; // TODO
 			for (int i=0;i<t.terrain->material->textures.num;i++)
 				add_possible_link(l, FD_TEXTURE, t.terrain->texture_file[i]);

@@ -28,21 +28,23 @@ void MeshSelectionModeEdge::on_start() {
 }
 
 
-bool ModelEdge::hover(MultiView::Window *win, vector &M, vector &tp, float &z, void *user_data) {
+float ModelEdge::hover_distance(MultiView::Window *win, const vector &M, vector &tp, float &z) {
 
 	auto *m = mode_model_mesh->data->edit_mesh; // surf->model;
 
 	// project all points
 	vector pp0 = win->project(m->show_vertices[vertex[0]].pos);
 	if ((pp0.z <= 0) or (pp0.z >= 1))
-		return false;
+		return -1;
 	vector pp1 = win->project(m->show_vertices[vertex[1]].pos);
 	if ((pp1.z <= 0) or (pp1.z >= 1))
-		return false;
-	const float rr = 5;
+		return -1;
+	const float rr = 50;
 	rect r = rect(min(pp0.x, pp1.x) - rr, max(pp0.x, pp1.x) + rr, min(pp0.y, pp1.y) - rr, max(pp0.y, pp1.y) + rr);
 	if (!r.inside(M.x, M.y))
-		return false;
+		return -1;
+
+	//VecLineNearestPoint()
 
 	float z0 = pp0.z;
 	float z1 = pp1.z;
@@ -50,31 +52,35 @@ bool ModelEdge::hover(MultiView::Window *win, vector &M, vector &tp, float &z, v
 	vector d = pp1 - pp0;
 	float l = d.length();
 	if (l < 2)
-		return false;
+		return -1;
 	d /= l;
 	vector d2 = vector(d.y, -d.x, 0);
 	float dd = fabs(d2 * (M - pp0));
 	if (dd > rr)
-		return false;
+		return -1;
 
 	float f = (pp0 + d * ((M - pp0) * d)).factor_between(pp0, pp1);
 	tp = m->show_vertices[vertex[0]].pos * (1 - f) + m->show_vertices[vertex[1]].pos * f;
 	z = z0 * (1 - f) + z1 * f;
-	return true;
+	return dd;
 }
 
-bool ModelEdge::inRect(MultiView::Window *win, rect &r, void *user_data) {
+bool ModelEdge::in_rect(MultiView::Window *win, const rect &r) {
 	auto *m = mode_model_mesh->data->edit_mesh; // surf->model;
 
 	// all vertices within rectangle?
-	for (int k=0;k<2;k++){
-		vector pp = win->project(m->show_vertices[vertex[k]].pos); // mmodel->GetVertex(ia)
+	for (int k=0; k<2; k++) {
+		vector pp = win->project(m->show_vertices[vertex[k]].pos);
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
 		if (!r.inside(pp.x, pp.y))
 			return false;
 	}
 	return true;
+}
+
+bool ModelEdge::overlap_rect(MultiView::Window *win, const rect &r) {
+	return in_rect(win, r);
 }
 
 void MeshSelectionModeEdge::update_selection() {
@@ -85,7 +91,6 @@ void MeshSelectionModeEdge::update_multi_view() {
 	multi_view->clear_data(data);
 	multi_view->add_data(MVD_MODEL_EDGE,
 			data->edit_mesh->edge,
-			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 }
 

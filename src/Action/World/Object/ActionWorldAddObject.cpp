@@ -38,10 +38,10 @@ void *ActionWorldAddObject::execute(Data *d)
 
 	WorldObject o;
 	o.pos = pos;
-	o.Ang = ang;
+	o.ang = ang;
 	o.is_selected = true;
 	o.is_special = false;
-	o.FileName = filename;
+	o.filename = filename;
 	o.view_stage = 0;//mode_world->ViewStage;
 	o.object = (Object*)LoadModel(filename);
 	w->Objects.add(o);

@@ -12,9 +12,9 @@ FormatTerrain::FormatTerrain() : TypedFormat<WorldTerrain>(FD_TERRAIN, "terrain"
 }
 
 void FormatTerrain::_load(const string &filename, WorldTerrain *data, bool deep) {
-	data->Load(v_0, filename, deep);
+	data->load(v_0, filename, deep);
 }
 
 void FormatTerrain::_save(const string &filename, WorldTerrain *data) {
-	data->Save(filename);
+	data->save(filename);
 }

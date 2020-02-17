@@ -59,13 +59,13 @@ void SelectionPropertiesDialog::FillList()
 
 	foreachi(WorldObject &o, data->Objects, i)
 		if (o.is_selected){
-			add_string("property_list", _("Object") + format(":%d:", i) + o.Name);
+			add_string("property_list", _("Object") + format(":%d:", i) + o.name);
 			type.add(FD_MODEL);
 			index.add(i);
 		}
 	foreachi(WorldTerrain &t, data->Terrains, i)
 		if (t.is_selected){
-			add_string("property_list", _("Terrain") + format(":%d:", i) + t.FileName);
+			add_string("property_list", _("Terrain") + format(":%d:", i) + t.filename);
 			type.add(FD_TERRAIN);
 			index.add(i);
 		}

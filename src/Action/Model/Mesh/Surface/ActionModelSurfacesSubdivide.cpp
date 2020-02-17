@@ -75,8 +75,8 @@ void *ActionModelSurfacesSubdivide::compose(Data *d) {
 	Array<int> nmat;
 	for (int i: sel.polygon) {
 		auto &p = m->polygon[i];
-		Array<int> v = p.getVertices();
-		Array<vector> sv = p.getSkinVertices();
+		Array<int> v = p.get_vertices();
+		Array<vector> sv = p.get_skin_vertices();
 		int mat = p.material;
 
 		// average skin vertex

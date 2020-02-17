@@ -48,14 +48,14 @@ void ObjectPropertiesDialog::OnOk()
 void ObjectPropertiesDialog::LoadData()
 {
 	set_decimals(3);
-	set_string("name", temp.Name);
-	set_string("kind", temp.FileName);
+	set_string("name", temp.name);
+	set_string("kind", temp.filename);
 	set_float("pos_x", temp.pos.x);
 	set_float("pos_y", temp.pos.y);
 	set_float("pos_z", temp.pos.z);
-	set_float("ang_x", temp.Ang.x * 180.0f / pi);
-	set_float("ang_y", temp.Ang.y * 180.0f / pi);
-	set_float("ang_z", temp.Ang.z * 180.0f / pi);
+	set_float("ang_x", temp.ang.x * 180.0f / pi);
+	set_float("ang_y", temp.ang.y * 180.0f / pi);
+	set_float("ang_z", temp.ang.z * 180.0f / pi);
 }
 
 
@@ -85,10 +85,10 @@ void ObjectPropertiesDialog::ApplyData()
 	temp.pos.x = get_float("pos_x");
 	temp.pos.y = get_float("pos_y");
 	temp.pos.z = get_float("pos_z");
-	temp.Ang.x = get_float("ang_x") * pi / 180.0f;
-	temp.Ang.y = get_float("ang_y") * pi / 180.0f;
-	temp.Ang.z = get_float("ang_z") * pi / 180.0f;
-	temp.Name = get_string("name");
+	temp.ang.x = get_float("ang_x") * pi / 180.0f;
+	temp.ang.y = get_float("ang_y") * pi / 180.0f;
+	temp.ang.z = get_float("ang_z") * pi / 180.0f;
+	temp.name = get_string("name");
 
 	data->execute(new ActionWorldEditObject(index, temp));
 }

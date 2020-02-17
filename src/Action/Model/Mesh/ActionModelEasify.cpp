@@ -61,7 +61,7 @@ static float get_weight(ModelMesh *m, ModelEdge &e, Array<Array<PolyRef> > &ref)
 		ModelPolygon &p = m->polygon[rr[i].poly];
 
 		// how much does the plane change
-		vector area = p.getAreaVector(m->vertex);
+		vector area = p.get_area_vector(m->vertex);
 		vector area2 = get_deformed_area(m, p, rr[i].side, new_pos);
 		w += (area ^ area2).length() / (area.length() + area2.length()) * 4;
 	}

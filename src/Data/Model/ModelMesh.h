@@ -42,8 +42,9 @@ public:
 	//  Vertex[1] = surf.Polygon[Triangle[0]].Vertex[(Side[0] + 1) % 3]
 	//  same for Polygon/Side[1] but Vertex[0 <-> 1]
 
-	virtual bool hover(MultiView::Window *win, vector &m, vector &tp, float &z, void *user_data);
-	virtual bool inRect(MultiView::Window *win, rect &r, void *user_data);
+	float hover_distance(MultiView::Window *win, const vector &m, vector &tp, float &z) override;
+	bool in_rect(MultiView::Window *win, const rect &r) override;
+	bool overlap_rect(MultiView::Window *win, const rect &r) override;
 };
 
 // only for use in MultiView...
@@ -54,6 +55,10 @@ class ModelBall: public MultiView::SingleData {
 public:
 	int index;
 	float radius;
+
+	float hover_distance(MultiView::Window *win, const vector &m, vector &tp, float &z) override;
+	bool in_rect(MultiView::Window *win, const rect &r) override;
+	bool overlap_rect(MultiView::Window *win, const rect &r) override;
 };
 
 class ModelCylinder: public MultiView::SingleData {
@@ -61,6 +66,10 @@ public:
 	int index[2];
 	float radius;
 	bool round;
+
+	float hover_distance(MultiView::Window *win, const vector &m, vector &tp, float &z) override;
+	bool in_rect(MultiView::Window *win, const rect &r) override;
+	bool overlap_rect(MultiView::Window *win, const rect &r) override;
 };
 
 

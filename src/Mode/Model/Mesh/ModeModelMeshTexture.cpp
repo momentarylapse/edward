@@ -38,7 +38,7 @@ void ModeModelMeshTexture::fetchData() {
 		v.m_delta = v.m_old = false;
 		v.is_special = false;
 		v.view_stage = t.view_stage;
-		for (int k=0;k<t.side.num;k++){
+		for (int k=0; k<t.side.num; k++) {
 			v.is_selected = t.is_selected; //data->vertex[t.side[k].vertex].is_selected;
 			v.view_stage = t.view_stage;
 			v.pos = t.side[k].skin_vertex[current_texture_level];
@@ -48,9 +48,8 @@ void ModeModelMeshTexture::fetchData() {
 
 	multi_view->clear_data(data);
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	multi_view->add_data(	MVD_MODEL_SKIN_VERTEX,
+	multi_view->add_data(MVD_MODEL_SKIN_VERTEX,
 			skin_vertex,
-			NULL,
 			MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 }
 
@@ -64,8 +63,7 @@ int ModeModelMeshTexture::getNumSelected()
 }
 
 
-void ModeModelMeshTexture::on_start()
-{
+void ModeModelMeshTexture::on_start() {
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-texture-toolbar");
 
 	multi_view->view_stage = ed->multi_view_3d->view_stage;
@@ -87,8 +85,7 @@ void ModeModelMeshTexture::on_start()
 
 
 
-void ModeModelMeshTexture::on_end()
-{
+void ModeModelMeshTexture::on_end() {
 	Observer::unsubscribe(data);
 	Observer::unsubscribe(multi_view);
 	skin_vertex.clear();
@@ -195,8 +192,7 @@ void ModeModelMeshTexture::on_selection_change()
 
 }
 
-void ModeModelMeshTexture::setCurrentTextureLevel(int level)
-{
+void ModeModelMeshTexture::set_current_texture_level(int level) {
 	//if (CurrentTextureLevel == level)
 	//	return;
 	current_texture_level = level;
@@ -209,7 +205,7 @@ void ModeModelMeshTexture::on_update(Observable *o, const string &message)
 {
 	// consistency checks
 	if (current_texture_level >= data->material[mode_model_mesh->current_material]->texture_levels.num)
-		setCurrentTextureLevel(data->material[mode_model_mesh->current_material]->texture_levels.num - 1);
+		set_current_texture_level(data->material[mode_model_mesh->current_material]->texture_levels.num - 1);
 
 	if (o == data){
 

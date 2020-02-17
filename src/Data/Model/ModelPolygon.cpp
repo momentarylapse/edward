@@ -12,7 +12,7 @@
 #include "ModelMesh.h" // for Vertex
 #include "../../lib/nix/nix.h"
 
-vector ModelPolygon::getAreaVector(const Array<ModelVertex> &vertex) const
+vector ModelPolygon::get_area_vector(const Array<ModelVertex> &vertex) const
 {
 	// Newell's method
 	vector n = v_0;
@@ -27,7 +27,7 @@ vector ModelPolygon::getAreaVector(const Array<ModelVertex> &vertex) const
 	return n * 0.5f;
 }
 
-vector ModelPolygon::getNormal(const Array<ModelVertex> &vertex) const
+vector ModelPolygon::get_normal(const Array<ModelVertex> &vertex) const
 {
 	// Newell's method
 	vector n = v_0;
@@ -43,7 +43,7 @@ vector ModelPolygon::getNormal(const Array<ModelVertex> &vertex) const
 	return n;
 }
 
-Array<int> ModelPolygon::getVertices() const
+Array<int> ModelPolygon::get_vertices() const
 {
 	Array<int> v;
 	v.resize(side.num);
@@ -52,7 +52,7 @@ Array<int> ModelPolygon::getVertices() const
 	return v;
 }
 
-Array<vector> ModelPolygon::getSkinVertices() const
+Array<vector> ModelPolygon::get_skin_vertices() const
 {
 	Array<vector> sv;
 	sv.resize(side.num * MATERIAL_MAX_TEXTURES);
@@ -158,7 +158,7 @@ Array<int> ModelPolygon::triangulate(const Array<ModelVertex> &vertex) const
 	return output;
 }
 
-void ModelPolygon::updateTriangulation(const Array<ModelVertex> &vertex)
+void ModelPolygon::update_triangulation(const Array<ModelVertex> &vertex)
 {
 	Array<int> v = triangulate(vertex);
 	for (int i=0; i<v.num; i+=3)
@@ -167,10 +167,10 @@ void ModelPolygon::updateTriangulation(const Array<ModelVertex> &vertex)
 	triangulation_dirty = false;
 }
 
-void ModelPolygon::addToVertexBuffer(const Array<ModelVertex> &vertex, nix::VertexBuffer *buffer, int num_textures)
+void ModelPolygon::add_to_vertex_buffer(const Array<ModelVertex> &vertex, nix::VertexBuffer *buffer, int num_textures)
 {
 	if (triangulation_dirty)
-		updateTriangulation(vertex);
+		update_triangulation(vertex);
 	for (int i=0; i<side.num-2; i++){
 		const ModelPolygonSide &a = side[side[i].triangulation[0]];
 		const ModelPolygonSide &b = side[side[i].triangulation[1]];

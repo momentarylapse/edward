@@ -209,14 +209,12 @@ void ModeWorldCamera::loadData()
 	/*multi_view->SetMouseAction(1, "ActionWorldRotateObjects", MultiView::ActionRotate2d);
 	multi_view->SetMouseAction(2, "ActionWorldRotateObjects", MultiView::ActionRotate);*/
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	multi_view->add_data(	MVD_WORLD_CAM_POINT,
+	multi_view->add_data(MVD_WORLD_CAM_POINT,
 			data->Point,
-			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE | MultiView::FLAG_DRAW);
 	if (edit_vel)
-	multi_view->add_data(	MVD_WORLD_CAM_POINT_VEL,
+	multi_view->add_data(MVD_WORLD_CAM_POINT_VEL,
 			data->Vel,
-			NULL,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE | MultiView::FLAG_DRAW);
 	multi_view->force_redraw();
 }

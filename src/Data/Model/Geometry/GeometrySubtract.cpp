@@ -779,9 +779,9 @@ int GeometrySubtract(Geometry &a, Geometry &b, Geometry &out)
 	a.updateTopology();
 	b.updateTopology();
 	for (ModelPolygon &p: a.polygon)
-		p.temp_normal = p.getNormal(a.vertex);
+		p.temp_normal = p.get_normal(a.vertex);
 	for (ModelPolygon &p: b.polygon)
-		p.temp_normal = p.getNormal(b.vertex);
+		p.temp_normal = p.get_normal(b.vertex);
 	if (!b.is_closed)
 		return -1;
 
@@ -817,9 +817,9 @@ int GeometryAnd(Geometry &a, Geometry &b, Geometry &out)
 	a.updateTopology();
 	b.updateTopology();
 	for (ModelPolygon &p: a.polygon)
-		p.temp_normal = p.getNormal(a.vertex);
+		p.temp_normal = p.get_normal(a.vertex);
 	for (ModelPolygon &p: b.polygon)
-		p.temp_normal = p.getNormal(b.vertex);
+		p.temp_normal = p.get_normal(b.vertex);
 	if (!b.is_closed)
 		return -1;
 

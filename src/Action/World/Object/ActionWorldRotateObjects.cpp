@@ -17,7 +17,7 @@ ActionWorldRotateObjects::ActionWorldRotateObjects(DataWorld *d) :
 		if (o.is_selected) {
 			index.add(i);
 			old_data.add(o.pos);
-			old_ang.add(o.Ang);
+			old_ang.add(o.ang);
 			type.add(MVD_WORLD_OBJECT);
 		}
 	foreachi(auto &o, d->cameras, i)
@@ -41,7 +41,7 @@ void ActionWorldRotateObjects::undo(Data *d) {
 	foreachi(int i, index, ii) {
 		if (type[ii] == MVD_WORLD_OBJECT) {
 			w->Objects[i].pos = old_data[ii];
-			w->Objects[i].Ang = old_ang[ii];
+			w->Objects[i].ang = old_ang[ii];
 		} else if (type[ii] == MVD_WORLD_CAMERA) {
 			w->cameras[i].pos = old_data[ii];
 			w->cameras[i].ang = old_ang[ii];
@@ -60,7 +60,7 @@ void *ActionWorldRotateObjects::execute(Data *d) {
 	foreachi(int i, index, ii) {
 		if (type[ii] == MVD_WORLD_OBJECT) {
 			w->Objects[i].pos = mat * old_data[ii];
-			w->Objects[i].Ang = VecAngAdd(old_ang[ii], q.get_angles());
+			w->Objects[i].ang = VecAngAdd(old_ang[ii], q.get_angles());
 		} else if (type[ii] == MVD_WORLD_CAMERA) {
 			w->cameras[i].pos = mat * old_data[ii];
 			w->cameras[i].ang = VecAngAdd(old_ang[ii], q.get_angles());

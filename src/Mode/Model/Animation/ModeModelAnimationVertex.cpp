@@ -80,7 +80,7 @@ void ModeModelAnimationVertex::on_update_menu() {
 void ModeModelAnimationVertex::on_draw_win(MultiView::Window *win) {
 	mode_model_mesh->draw_polygons(win, data->mesh, mode_model_animation->vertex);
 
-	mode_model_skeleton->drawSkeleton(win, data->bone, true);
+	mode_model_skeleton->draw_skeleton(win, data->bone, true);
 
 	mode_model_mesh->draw_selection(win);
 

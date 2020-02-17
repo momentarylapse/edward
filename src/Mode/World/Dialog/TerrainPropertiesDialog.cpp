@@ -122,7 +122,7 @@ void TerrainPropertiesDialog::OnSaveAs()
 {
 	if (!storage->file_dialog(FD_TERRAIN, true, true))
 		return;
-	data->Terrains[index].Save(storage->dialog_file_complete);
+	data->Terrains[index].save(storage->dialog_file_complete);
 	set_string("filename", storage->dialog_file_no_ending);
 }
 
@@ -219,7 +219,7 @@ void TerrainPropertiesDialog::on_update(Observable *o, const string &message)
 
 	Terrain *t = data->Terrains[index].terrain;
 	assert(t);
-	temp.FileName = data->Terrains[index].FileName;
+	temp.FileName = data->Terrains[index].filename;
 	temp.NumX = t->num_x;
 	temp.NumZ = t->num_z;
 	temp.Pattern = t->pattern;

@@ -32,6 +32,10 @@ ColorScheme::ColorScheme() {
 	CREATION_LINE = color(1, 0.1f, 0.8f, 0.1f);
 	HELPER_LINE = color(1, 0.2f, 0.2f, 0.2f);
 
+	AXIS_X = color(1, 0.8f, 0.2f, 0.2f);
+	AXIS_Y = color(1, 0.2f, 0.8f, 0.2f);
+	AXIS_Z = color(1, 0.2f, 0.2f, 0.8f);
+
 	FONT_NAME = "Sans Semi-Bold";
 	FONT_SIZE = 12;
 	TEXT_LINE_HEIGHT = FONT_SIZE * 1.4f;

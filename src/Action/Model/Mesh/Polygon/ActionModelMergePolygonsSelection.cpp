@@ -54,9 +54,9 @@ void ActionModelMergePolygonsSelection::MergePolygonsInSurface(DataModel *m)
 				continue;
 
 			if (p0.normal_dirty)
-				p0.temp_normal = p0.getNormal(m->edit_mesh->vertex);
+				p0.temp_normal = p0.get_normal(m->edit_mesh->vertex);
 			if (p1.normal_dirty)
-				p1.temp_normal = p1.getNormal(m->edit_mesh->vertex);
+				p1.temp_normal = p1.get_normal(m->edit_mesh->vertex);
 
 			if (p0.temp_normal * p1.temp_normal < 0.98f)
 				continue;
@@ -98,8 +98,8 @@ void ActionModelMergePolygonsSelection::MergePolygons(DataModel *m, int edge)
 	p0.side.pop();
 	p1.side.pop();
 	p0.side += p1.side;
-	Array<int> v = p0.getVertices();
-	Array<vector> sv = p0.getSkinVertices();
+	Array<int> v = p0.get_vertices();
+	Array<vector> sv = p0.get_skin_vertices();
 
 	//msg_write(ia2s(v));
 

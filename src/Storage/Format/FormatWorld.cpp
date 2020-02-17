@@ -38,7 +38,7 @@ void FormatWorld::_load(const string &filename, DataWorld *data, bool deep) {
 		int n = f->read_int();
 		for (int i=0;i<n;i++){
 			WorldTerrain t;
-			t.FileName = f->read_str();
+			t.filename = f->read_str();
 			f->read_vector(&t.pos);
 			data->Terrains.add(t);
 		}
@@ -82,14 +82,14 @@ void FormatWorld::_load(const string &filename, DataWorld *data, bool deep) {
 		n = f->read_int();
 		for (int i=0;i<n;i++){
 			WorldObject o;
-			o.FileName = f->read_str();
-			o.Name = f->read_str();
+			o.filename = f->read_str();
+			o.name = f->read_str();
 			o.pos.x = f->read_float();
 			o.pos.y = f->read_float();
 			o.pos.z = f->read_float();
-			o.Ang.x = f->read_float();
-			o.Ang.y = f->read_float();
-			o.Ang.z = f->read_float();
+			o.ang.x = f->read_float();
+			o.ang.y = f->read_float();
+			o.ang.z = f->read_float();
 			o.object = NULL;
 			o.view_stage = 0;
 			o.is_selected = false;
@@ -141,13 +141,13 @@ void FormatWorld::_load(const string &filename, DataWorld *data, bool deep) {
 	if (deep){
 		for (int i=0;i<data->Terrains.num;i++){
 			ed->progress->set(_("Terrains"), (float)i / (float)data->Terrains.num / 2.0f);
-			data->Terrains[i].Load(data->Terrains[i].pos, MapDir + data->Terrains[i].FileName + ".map", true);
+			data->Terrains[i].load(data->Terrains[i].pos, MapDir + data->Terrains[i].filename + ".map", true);
 		}
 		for (int i=0;i<data->Objects.num;i++){
 			//ed->progress->set(format(_("Object %d / %d"), i, data->Objects.num), (float)i / (float)data->Objects.num / 2.0f + 0.5f);
-			data->Objects[i].object = (Object*)LoadModel(data->Objects[i].FileName);
+			data->Objects[i].object = (Object*)LoadModel(data->Objects[i].filename);
 			data->Objects[i].object->pos = data->Objects[i].pos;
-			data->Objects[i].object->ang = quaternion::rotation_v(data->Objects[i].Ang);
+			data->Objects[i].object->ang = quaternion::rotation_v(data->Objects[i].ang);
 //			if (Objects[i].object)
 //				GodRegisterModel(Objects[i].object);
 		}
@@ -180,7 +180,7 @@ void FormatWorld::_save(const string &filename, DataWorld *data) {
 	f->write_comment("// Terrains");
 	f->write_int(data->Terrains.num);
 	for (auto &t: data->Terrains) {
-		f->write_str(t.FileName);
+		f->write_str(t.filename);
 		f->write_float(t.pos.x);
 		f->write_float(t.pos.y);
 		f->write_float(t.pos.z);
@@ -214,14 +214,14 @@ void FormatWorld::_save(const string &filename, DataWorld *data) {
 	f->write_comment("// Objects");
 	f->write_int(data->Objects.num);
 	for (auto &o: data->Objects) {
-		f->write_str(o.FileName);
-		f->write_str(o.Name);
+		f->write_str(o.filename);
+		f->write_str(o.name);
 		f->write_float(o.pos.x);
 		f->write_float(o.pos.y);
 		f->write_float(o.pos.z);
-		f->write_float(o.Ang.x);
-		f->write_float(o.Ang.y);
-		f->write_float(o.Ang.z);
+		f->write_float(o.ang.x);
+		f->write_float(o.ang.y);
+		f->write_float(o.ang.z);
 	}
 	f->write_comment("// Scripts");
 	f->write_int(data->meta_data.scripts.num);

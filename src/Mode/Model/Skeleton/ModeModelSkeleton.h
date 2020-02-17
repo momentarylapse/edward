@@ -29,14 +29,14 @@ public:
 	void on_draw() override;
 	void on_draw_win(MultiView::Window *win) override;
 
-	void addSubModel();
-	void removeSubModel();
-	void unlinkSelection();
+	void add_sub_model();
+	void remove_sub_model();
+	void unlink_selection();
 
-	void drawSkeleton(MultiView::Window *win, Array<ModelBone> &bone, bool thin = false);
+	void draw_skeleton(MultiView::Window *win, Array<ModelBone> &bone, bool thin = false);
 
 
-	void chooseMouseFunction(int f);
+	void choose_mouse_function(int f);
 	int mouse_action;
 };
 
