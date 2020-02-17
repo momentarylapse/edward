@@ -4144,7 +4144,7 @@ menu_model_mode
 
 0
 0
-9
+11
 Item
 mode_model_mesh
 checkable
@@ -4152,51 +4152,63 @@ checkable
 0
 0
 Item
-mode_model_skeleton
+mode_model_deform
 checkable
 1
 0
 0
 Item
-mode_model_animation
+mode_model_texture_coord
 checkable
 2
 0
 0
-Separator
-
-
+Item
+mode_model_paint
+checkable
 3
 0
 0
 Item
-mode_model_vertex
+mode_model_skeleton
 checkable
 4
 0
 0
 Item
-mode_model_edge
+mode_model_animation
 checkable
 5
 0
 0
-Item
-mode_model_triangle
-checkable
+Separator
+
+
 6
 0
 0
 Item
-mode_model_surface
+mode_model_vertex
 checkable
 7
 0
 0
 Item
-mode_model_texture_coord
+mode_model_edge
 checkable
 8
+0
+0
+Item
+mode_model_polygon
+checkable
+9
+0
+0
+Item
+mode_model_surface
+checkable
+10
 0
 0
 Menu
@@ -9692,7 +9704,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-960
+962
 # Text
 /ambient
 Ambient:
@@ -10598,13 +10610,13 @@ menu_model/delete
 Delete
 
 menu_model/detail_2
-Med-precicion skin
+Med-precision skin
 
 menu_model/detail_3
-Low-precicion skin
+Low-precision skin
 
 menu_model/detail_high
-High-precicion skin
+High-precision skin (default)
 
 menu_model/detail_physical
 Physical skin
@@ -10796,7 +10808,10 @@ menu_model/mirror
 mirror
 
 menu_model/mode_model_animation
-Animation
+Animations
+
+menu_model/mode_model_deform
+Deformation mode
 
 menu_model/mode_model_edge
 Edges
@@ -10807,6 +10822,12 @@ Materials...
 menu_model/mode_model_mesh
 Mesh
 
+menu_model/mode_model_paint
+Paint on mesh (into texture)
+
+menu_model/mode_model_polygon
+Polygons
+
 menu_model/mode_model_skeleton
 Skeleton
 
@@ -10815,9 +10836,6 @@ Surfaces
 
 menu_model/mode_model_texture_coord
 Texture coordinates
-
-menu_model/mode_model_triangle
-Triangles
 
 menu_model/mode_model_vertex
 Vertices

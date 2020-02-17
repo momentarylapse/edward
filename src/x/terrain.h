@@ -15,7 +15,7 @@
 class Material;
 class TraceData;
 namespace nix{
-	class VertexBuffer;
+	class OldVertexBuffer;
 };
 
 enum{
@@ -75,7 +75,7 @@ public:
 	Array<float> height;
 	Array<vector> vertex, normal;
 	Array<plane> pl; // for collision detection
-	nix::VertexBuffer *vertex_buffer;
+	nix::OldVertexBuffer *vertex_buffer;
 	int partition[128][128], partition_old[128][128];
 	vector pattern, min, max;
 	Material *material;

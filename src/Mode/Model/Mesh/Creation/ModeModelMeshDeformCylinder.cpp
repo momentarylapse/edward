@@ -167,7 +167,7 @@ void ModeModelMeshDeformCylinder::on_draw_win(MultiView::Window* win)
 	if (geo){
 		ModeModel::set_material_creation(0.3f);
 		geo->build(nix::vb_temp);
-		nix::Draw3D(nix::vb_temp);
+		nix::DrawTriangles(nix::vb_temp);
 	}
 
 	set_wide_lines(scheme.LINE_WIDTH_MEDIUM);

@@ -73,7 +73,7 @@ void *ActionWorldAddTerrain::execute(Data *d)
 		for (int x=0;x<num_x/32+1;x++)
 			for (int z=0;z<num_z/32+1;z++)
 				t.terrain->partition[x][z] = -1;
-		t.terrain->vertex_buffer = new nix::VertexBuffer(1);
+		t.terrain->vertex_buffer = new nix::OldVertexBuffer(1);
 		t.terrain->Update(-1, -1, -1, -1, TerrainUpdateAll);
 		// bounding box
 		t.terrain->min = pos;

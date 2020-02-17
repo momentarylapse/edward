@@ -186,7 +186,7 @@ void CreateVB(Model *m, Skin *s)
 #else
 	for (int t=0;t<s->sub.num;t++){
 		if (!s->sub[t].vertex_buffer)
-			s->sub[t].vertex_buffer = new nix::VertexBuffer(m->material[t].textures.num);
+			s->sub[t].vertex_buffer = new nix::OldVertexBuffer(m->material[t].textures.num);
 		s->sub[t].force_update = true;
 	}
 #endif
@@ -1511,7 +1511,7 @@ void Model::JustDraw(int mat_no, int detail)
 			
 		// vertex buffer existing?
 		if (!sub.vertex_buffer){
-			sub.vertex_buffer = new nix::VertexBuffer(m->textures.num);
+			sub.vertex_buffer = new nix::OldVertexBuffer(m->textures.num);
 		}
 		sub.vertex_buffer->clear();
 		if (m->textures.num == 1){

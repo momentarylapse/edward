@@ -35,9 +35,7 @@ public:
 	color CREATION_LINE;
 	color HELPER_LINE;
 
-	color AXIS_X;
-	color AXIS_Y;
-	color AXIS_Z;
+	color AXIS[3];
 
 	string FONT_NAME;
 	float FONT_SIZE;

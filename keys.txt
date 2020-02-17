@@ -45,7 +45,7 @@ zzz_setbgimage
 306
 mode_model_vertex
 22
-mode_model_triangle
+mode_model_polygon
 23
 mode_model_animation
 32
@@ -53,7 +53,7 @@ mode_model_skeleton
 28
 mode_model_texture_coord
 26
-mode_model_texture
+mode_model_deform
 27
 mode_properties
 24

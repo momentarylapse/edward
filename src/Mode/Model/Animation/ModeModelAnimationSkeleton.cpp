@@ -110,22 +110,19 @@ void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win) {
 	if ((multi_view->hover.index < 0) or (multi_view->hover.type != MVD_SKELETON_BONE))
 		return;
 
-	mode_model_mesh->vb_hover->clear();
-
-
+	VertexStagingBuffer vbs;
 	for (ModelPolygon &p: data->mesh->polygon)
 		if (data->mesh->vertex[p.side[0].vertex].bone_index == multi_view->hover.index)
-			p.add_to_vertex_buffer(mode_model_animation->vertex, mode_model_mesh->vb_hover, 1);
+			p.add_to_vertex_buffer(mode_model_animation->vertex, vbs, 1);
+	vbs.build(mode_model_mesh->vb_hover, 1);
 
 
-	nix::SetWire(false);
 	nix::SetOffset(1.0f);
 	mode_model->set_material_hover();
-	nix::Draw3D(mode_model_mesh->vb_hover);
+	nix::DrawTriangles(mode_model_mesh->vb_hover);
 	nix::SetMaterial(White,White,Black,0,Black);
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetOffset(0);
-	nix::SetWire(multi_view->wire_mode);
 }
 
 

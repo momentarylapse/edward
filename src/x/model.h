@@ -36,7 +36,7 @@ class Material;
 class TraceData;
 class Terrain;
 namespace nix{
-	class VertexBuffer;
+	class OldVertexBuffer;
 };
 
 
@@ -87,7 +87,7 @@ public:
 	// normals
 	CopyAsRefArray<vector> normal;
 
-	nix::VertexBuffer *vertex_buffer;
+	nix::OldVertexBuffer *vertex_buffer;
 
 	// refill the vertex buffer etc...
 	bool force_update;

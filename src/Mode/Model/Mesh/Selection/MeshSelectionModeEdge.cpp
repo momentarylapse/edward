@@ -100,7 +100,6 @@ void MeshSelectionModeEdge::on_draw_win(MultiView::Window *win) {
 	if (multi_view->hover.index < 0)
 		return;
 
-	nix::SetWire(false);
 	nix::SetZ(false, false);
 	set_wide_lines(scheme.LINE_WIDTH_MEDIUM);
 	auto m = data->edit_mesh;
@@ -113,7 +112,6 @@ void MeshSelectionModeEdge::on_draw_win(MultiView::Window *win) {
 	//nix::DrawLine3D(data->show_vertices[e.vertex[0]].pos, data->show_vertices[e.vertex[1]].pos);
 	nix::SetColor(White);
 	nix::SetZ(true, true);
-	nix::SetWire(win->multi_view->wire_mode);
 }
 
 

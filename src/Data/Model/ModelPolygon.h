@@ -17,6 +17,13 @@ namespace nix {
 #include "../../x/material.h"
 #include "../../MultiView/SingleData.h"
 
+class VertexStagingBuffer {
+public:
+	Array<vector> p, n;
+	Array<float> uv[MATERIAL_MAX_TEXTURES];
+	void build(nix::VertexBuffer *vb, int num_textures);
+};
+
 class ModelPolygonSide {
 public:
 	int vertex;
@@ -46,7 +53,7 @@ public:
 	Array<int> get_vertices() const;
 	Array<vector> get_skin_vertices() const;
 	void invert();
-	void add_to_vertex_buffer(const Array<ModelVertex> &vertex, nix::VertexBuffer *vb, int num_textures);
+	void add_to_vertex_buffer(const Array<ModelVertex> &vertex, VertexStagingBuffer &vbs, int num_textures);
 };
 
 

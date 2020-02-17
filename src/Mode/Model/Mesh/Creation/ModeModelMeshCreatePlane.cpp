@@ -69,33 +69,21 @@ void ModeModelMeshCreatePlane::on_left_button_up()
 
 
 
-void ModeModelMeshCreatePlane::on_draw_win(MultiView::Window *win)
-{
+void ModeModelMeshCreatePlane::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
 
-	if (pos_chosen){
-		vector n = length[0] ^ length[1];
-		n.normalize();
-		/// vertices
-		vector a = pos;
-		vector b = pos + length[0];
-		vector c = pos + length[1];
-		vector d = pos + length[0] + length[1];
-		nix::vb_temp->clear();
-		nix::vb_temp->addTria(a, -n, 0, 0, c, -n, 0, 0, d, -n, 0, 0);
-		nix::vb_temp->addTria(a, -n, 0, 0, d, -n, 0, 0, b, -n, 0, 0);
-		nix::vb_temp->addTria(b,  n, 0, 0, d,  n, 0, 0, c,  n, 0, 0);
-		nix::vb_temp->addTria(b,  n, 0, 0, c,  n, 0, 0, a,  n, 0, 0);
+	if (pos_chosen) {
+		auto geo = GeometryPlane(pos, length[0], length[1], 1,1);
+		geo.build(nix::vb_temp);
 		mode_model->set_material_creation();
-		nix::Draw3D(nix::vb_temp);
+		nix::DrawTriangles(nix::vb_temp);
 	}
 }
 
 
 
-void ModeModelMeshCreatePlane::on_mouse_move()
-{
-	if (pos_chosen){
+void ModeModelMeshCreatePlane::on_mouse_move() {
+	if (pos_chosen) {
 		vector pos2 = multi_view->get_cursor();
 		vector dir0, dir1, dir2;
 		multi_view->mouse_win->getMovingFrame(dir0, dir1, dir2);

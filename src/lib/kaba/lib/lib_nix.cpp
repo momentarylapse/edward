@@ -32,7 +32,7 @@ nix::Texture* __LoadTexture(const string &filename)
 
 #else
 	namespace nix{
-		typedef int VertexBuffer;
+		typedef int OldVertexBuffer;
 		typedef int Texture;
 		typedef int Shader;
 		typedef int UniformBuffer;
@@ -66,7 +66,7 @@ void SIAddPackageNix()
 	
 	TypeVectorArray		= add_type_a(TypeVector, 1, "vector[?]");
 	TypeVectorArrayP	= add_type_p(TypeVectorArray);
-	TypeVertexBuffer	= add_type  ("VertexBuffer", sizeof(nix::VertexBuffer));
+	TypeVertexBuffer	= add_type  ("VertexBuffer", sizeof(nix::OldVertexBuffer));
 	TypeVertexBufferP	= add_type_p(TypeVertexBuffer);
 	TypeTexture			= add_type  ("Texture", sizeof(nix::Texture));
 	TypeTextureP		= add_type_p(TypeTexture);
@@ -80,11 +80,11 @@ void SIAddPackageNix()
 	auto TypeUniformBuffer = add_type  ("UniformBuffer", sizeof(nix::UniformBuffer));
 	
 	add_class(TypeVertexBuffer);
-		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, nix_p(mf(&nix::VertexBuffer::__init__)));
+		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, nix_p(mf(&nix::OldVertexBuffer::__init__)));
 			func_add_param("num_textures", TypeInt);
-		class_add_func(IDENTIFIER_FUNC_DELETE, TypeVoid, nix_p(mf(&nix::VertexBuffer::__delete__)));
-		class_add_func("clear", TypeVoid, nix_p(mf(&nix::VertexBuffer::clear)));
-		class_add_func("add_tria", TypeVoid, nix_p(mf(&nix::VertexBuffer::addTria)));
+		class_add_func(IDENTIFIER_FUNC_DELETE, TypeVoid, nix_p(mf(&nix::OldVertexBuffer::__delete__)));
+		class_add_func("clear", TypeVoid, nix_p(mf(&nix::OldVertexBuffer::clear)));
+		class_add_func("add_tria", TypeVoid, nix_p(mf(&nix::OldVertexBuffer::addTria)));
 			func_add_param("p1", TypeVector);
 			func_add_param("n1", TypeVector);
 			func_add_param("u1", TypeFloat32);
@@ -97,7 +97,7 @@ void SIAddPackageNix()
 			func_add_param("n3", TypeVector);
 			func_add_param("u3", TypeFloat32);
 			func_add_param("v3", TypeFloat32);
-		class_add_func("add_trias", TypeVoid, nix_p(mf(&nix::VertexBuffer::addTrias)));
+		class_add_func("add_trias", TypeVoid, nix_p(mf(&nix::OldVertexBuffer::addTrias)));
 			func_add_param("num_trias", TypeInt);
 			func_add_param("p", TypeVectorArrayP);
 			func_add_param("n", TypeVectorArrayP);

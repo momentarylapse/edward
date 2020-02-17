@@ -130,22 +130,24 @@ Menu menu_model "Model" disabled
 	Menu menu_model_view "View"
 		Menu menu_model_mode "Mode"
 			Item mode_model_mesh "Mesh" checkable
+			Item mode_model_deform "Deformation mode" checkable
+			Item mode_model_texture_coord "Texture coordinates" checkable
+			Item mode_model_paint "Paint on mesh (into texture)" checkable
 			Item mode_model_skeleton "Skeleton" checkable
-			Item mode_model_animation "Animation" checkable
+			Item mode_model_animation "Animations" checkable
 			Separator
 			Item mode_model_vertex "Vertices" checkable
 			Item mode_model_edge "Edges" checkable
-			Item mode_model_triangle "Triangles" checkable
+			Item mode_model_polygon "Polygons" checkable
 			Item mode_model_surface "Surfaces" checkable
-			Item mode_model_texture_coord "Texture coordinates" checkable
 		Menu menu_model_viewstage "Viewstage"
 			Item view_push "Push in"
 			Item view_pop "Pop out"
 		Menu menu_model_skin "Skin"
 			Item detail_physical "Physical skin" checkable
-			Item detail_high "High-precicion skin" checkable
-			Item detail_2 "Med-precicion skin" checkable
-			Item detail_3 "Low-precicion skin" checkable
+			Item detail_high "High-precision skin (default)" checkable
+			Item detail_2 "Med-precision skin" checkable
+			Item detail_3 "Low-precision skin" checkable
 		Separator
 		Item wire "Wire frame" checkable
 		Item grid "Grid" checkable

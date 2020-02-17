@@ -22,7 +22,7 @@ extern unsigned int VertexArrayID;
 
 namespace nix{
 
-string version = "0.13.2.2";
+string version = "0.13.3.0";
 
 
 // libraries (in case Visual C++ is used)

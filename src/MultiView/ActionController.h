@@ -15,25 +15,23 @@ class ActionMultiView;
 class Geometry;
 class Data;
 
-namespace nix{
+namespace nix {
 	class VertexBuffer;
 }
 
-namespace MultiView{
+namespace MultiView {
 
 class MultiView;
 class Window;
 
 
-struct MouseAction
-{
+struct MouseAction {
 	string name;
 	int mode;
 	bool active;
 	bool locked;
 
-	void reset()
-	{
+	void reset() {
 		name = "";
 		mode = 0;
 		active = false;
@@ -42,7 +40,7 @@ struct MouseAction
 };
 
 
-enum{
+enum {
 	ACTION_CONSTRAINTS_NONE,
 	ACTION_CONSTRAINTS_X,
 	ACTION_CONSTRAINTS_Y,
@@ -52,8 +50,7 @@ enum{
 	ACTION_CONSTRAINTS_YZ,
 };
 
-class ActionController
-{
+class ActionController {
 public:
 	ActionController(MultiView *multi_view);
 	~ActionController();

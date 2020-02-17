@@ -305,7 +305,6 @@ void Window::draw()
 		drawGrid();
 
 	nix::SetZ(true, true);
-	nix::SetWire(multi_view->wire_mode);
 	// light
 	vector dir = cam->ang * vector::EZ;
 	nix::SetLightDirectional(multi_view->light, dir, White, 0.7f);
@@ -323,7 +322,6 @@ void Window::draw()
 	nix::SetShader(nix::default_shader_2d);
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetTexture(NULL);
-	nix::SetWire(false);
 	foreachi(DataSet &d, multi_view->data, di){
 		if (d.drawable){
 			for (int i=0;i<d.data->num;i++){

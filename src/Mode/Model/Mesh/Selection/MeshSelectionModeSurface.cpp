@@ -51,20 +51,18 @@ void MeshSelectionModeSurface::on_draw_win(MultiView::Window *win) {
 	if ((multi_view->hover.index < 0) or (multi_view->hover.type != MVD_MODEL_POLYGON))
 		return;
 
-	parent->vb_hover->clear();
-
+	VertexStagingBuffer vbs;
 	auto m = data->edit_mesh;
 	auto &p = m->polygon[multi_view->hover.index];
-	p.add_to_vertex_buffer(m->show_vertices, parent->vb_hover, 1);
+	p.add_to_vertex_buffer(m->show_vertices, vbs, 1);
+	vbs.build(parent->vb_hover, 1);
 
-	nix::SetWire(false);
 	nix::SetOffset(1.0f);
 	mode_model->set_material_hover();
-	nix::Draw3D(parent->vb_hover);
+	nix::DrawTriangles(parent->vb_hover);
 	nix::SetMaterial(White,White,Black,0,Black);
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetOffset(0);
-	nix::SetWire(multi_view->wire_mode);
 }
 
 

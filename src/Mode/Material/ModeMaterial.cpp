@@ -35,16 +35,18 @@ ModeMaterial::ModeMaterial() :
 
 	AppearanceDialog = NULL;
 
-	MaterialVB[1] = nix::vb_temp;
-	for (int i=2;i<=MATERIAL_MAX_TEXTURES;i++)
-		MaterialVB[i] = new nix::VertexBuffer(i);
+	for (int i=1; i<=MATERIAL_MAX_TEXTURES/2; i++) {
+		string f = "3f,3fn";
+		for (int j=0; j<i; j++)
+			f += ",2f";
+		MaterialVB[i] = new nix::VertexBuffer(f);
+	}
 
 	shape_type = hui::Config.get_str("MaterialShapeType", "teapot");
 	shape_smooth = hui::Config.get_bool("MaterialShapeSmooth", true);
 }
 
-ModeMaterial::~ModeMaterial()
-{
+ModeMaterial::~ModeMaterial() {
 	if (geo)
 		delete(geo);
 }
@@ -115,7 +117,7 @@ void ModeMaterial::on_command(const string & id) {
 void ModeMaterial::on_draw_win(MultiView::Window *win) {
 	data->ApplyForRendering();
 
-	nix::Draw3D(MaterialVB[max(data->appearance.texture_files.num, 1)]);
+	nix::DrawTriangles(MaterialVB[max(data->appearance.texture_files.num, 1)]);
 
 
 	nix::SetAlpha(ALPHA_NONE);
@@ -198,10 +200,8 @@ void ModeMaterial::UpdateShape() {
 	if (shape_smooth)
 		geo->smoothen();
 
-	for (int i=1;i<=MATERIAL_MAX_TEXTURES;i++) {
-		nix::VertexBuffer *vb = MaterialVB[i];
-		vb->clear();
-		geo->build(vb);
+	for (int i=1; i<=MATERIAL_MAX_TEXTURES; i++) {
+		geo->build(MaterialVB[i]);
 	}
 	on_update_menu();
 	if (needs_opt_view)

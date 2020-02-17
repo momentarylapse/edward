@@ -61,7 +61,7 @@ void *ActionWorldEditTerrain::execute(Data *d)
 	// update
 	if (old_data.NumTextures != data.NumTextures){
 		delete(t->vertex_buffer);
-		t->vertex_buffer = new nix::VertexBuffer(data.NumTextures);
+		t->vertex_buffer = new nix::OldVertexBuffer(data.NumTextures);
 	}
 	t->force_redraw = true;
 

@@ -32,9 +32,9 @@ ColorScheme::ColorScheme() {
 	CREATION_LINE = color(1, 0.1f, 0.8f, 0.1f);
 	HELPER_LINE = color(1, 0.2f, 0.2f, 0.2f);
 
-	AXIS_X = color(1, 0.8f, 0.2f, 0.2f);
-	AXIS_Y = color(1, 0.2f, 0.8f, 0.2f);
-	AXIS_Z = color(1, 0.2f, 0.2f, 0.8f);
+	AXIS[0] = color(1, 0.8f, 0.2f, 0.2f);
+	AXIS[1] = color(1, 0.2f, 0.8f, 0.2f);
+	AXIS[2] = color(1, 0.3f, 0.3f, 1.0f);
 
 	FONT_NAME = "Sans Semi-Bold";
 	FONT_SIZE = 12;

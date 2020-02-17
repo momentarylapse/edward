@@ -13,12 +13,11 @@
 
 class MaterialPropertiesDialog;
 class Geometry;
-namespace nix{
+namespace nix {
 	class VertexBuffer;
 };
 
-class ModeMaterial: public Mode<DataMaterial>
-{
+class ModeMaterial: public Mode<DataMaterial> {
 public:
 	ModeMaterial();
 	virtual ~ModeMaterial();

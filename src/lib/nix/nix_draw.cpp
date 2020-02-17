@@ -23,7 +23,7 @@ unsigned int color_buffer = 0;
 render_str_function *render_str = NULL;
 extern Texture *tex_text;
 extern Shader *current_shader;
-extern VertexBuffer *vb_2d;
+extern OldVertexBuffer *vb_2d;
 
 
 
@@ -288,7 +288,7 @@ void Draw2D(const rect &src, const rect &dest, float depth) {
 
 
 
-void Draw3D(VertexBuffer *vb) {
+void Draw3D(OldVertexBuffer *vb) {
 	if (vb->dirty)
 		vb->update();
 
@@ -330,6 +330,17 @@ void Draw3D(VertexBuffer *vb) {
 
 
 	TestGLError("Draw3D");
+}
+
+void DrawTriangles(VertexBuffer *vb) {
+	current_shader->set_default_data();
+
+	SetVertexBuffer(vb);
+
+	// Draw the triangle !
+	glDrawArrays(GL_TRIANGLES, 0, vb->count()); // Starting from vertex 0; 3 vertices total -> 1 triangle
+
+	TestGLError("Draw");
 }
 
 void ResetToColor(const color &c) {

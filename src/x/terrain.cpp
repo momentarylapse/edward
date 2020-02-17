@@ -98,7 +98,7 @@ bool Terrain::Load(const string &_filename_, const vector &_pos_, bool deep)
 					for (int z=0;z<num_z/32+1;z++)
 						partition[x][z] = -1;
 
-				vertex_buffer = new nix::VertexBuffer(num_textures);
+				vertex_buffer = new nix::OldVertexBuffer(num_textures);
 			}
 		}else{
 			msg_error(format("wrong file format: %d (4 expected)",ffv));

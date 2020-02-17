@@ -263,13 +263,14 @@ void Geometry::getBoundingBox(vector &min, vector &max)
 	}
 }
 
-void Geometry::build(nix::VertexBuffer *vb) const
-{
-	vb->clear();
-	for (ModelPolygon &p: const_cast<Array<ModelPolygon>&>(polygon)){
+void Geometry::build(nix::VertexBuffer *vb) const {
+	VertexStagingBuffer vbs;
+	int num_textures = vb->num_buffers - 2;
+	for (auto &p: const_cast<Array<ModelPolygon>&>(polygon)){
 		p.triangulation_dirty = true;
-		p.add_to_vertex_buffer(vertex, vb, vb->num_textures);
+		p.add_to_vertex_buffer(vertex, vbs, num_textures);
 	}
+	vbs.build(vb, num_textures);
 }
 
 

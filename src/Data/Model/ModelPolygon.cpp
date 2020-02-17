@@ -12,12 +12,20 @@
 #include "ModelMesh.h" // for Vertex
 #include "../../lib/nix/nix.h"
 
-vector ModelPolygon::get_area_vector(const Array<ModelVertex> &vertex) const
-{
+
+void VertexStagingBuffer::build(nix::VertexBuffer *vb, int num_textures) {
+	vb->update(0, p);
+	vb->update(1, n);
+	for (int l=0; l<num_textures; l++)
+		vb->update(l+2, uv[l]);
+
+}
+
+vector ModelPolygon::get_area_vector(const Array<ModelVertex> &vertex) const {
 	// Newell's method
 	vector n = v_0;
 	vector p1 = vertex[side.back().vertex].pos;
-	for (int i=0; i<side.num; i++){
+	for (int i=0; i<side.num; i++) {
 		vector p0 = p1;
 		p1 = vertex[side[i].vertex].pos;
 		n.x += (p0.y - p1.y) * (p0.z + p1.z);
@@ -27,12 +35,11 @@ vector ModelPolygon::get_area_vector(const Array<ModelVertex> &vertex) const
 	return n * 0.5f;
 }
 
-vector ModelPolygon::get_normal(const Array<ModelVertex> &vertex) const
-{
+vector ModelPolygon::get_normal(const Array<ModelVertex> &vertex) const {
 	// Newell's method
 	vector n = v_0;
 	vector p1 = vertex[side.back().vertex].pos;
-	for (int i=0; i<side.num; i++){
+	for (int i=0; i<side.num; i++) {
 		vector p0 = p1;
 		p1 = vertex[side[i].vertex].pos;
 		n.x += (p0.y - p1.y) * (p0.z + p1.z);
@@ -43,8 +50,7 @@ vector ModelPolygon::get_normal(const Array<ModelVertex> &vertex) const
 	return n;
 }
 
-Array<int> ModelPolygon::get_vertices() const
-{
+Array<int> ModelPolygon::get_vertices() const {
 	Array<int> v;
 	v.resize(side.num);
 	for (int i=0; i<side.num; i++)
@@ -52,8 +58,7 @@ Array<int> ModelPolygon::get_vertices() const
 	return v;
 }
 
-Array<vector> ModelPolygon::get_skin_vertices() const
-{
+Array<vector> ModelPolygon::get_skin_vertices() const {
 	Array<vector> sv;
 	sv.resize(side.num * MATERIAL_MAX_TEXTURES);
 	int n = 0;
@@ -64,8 +69,7 @@ Array<vector> ModelPolygon::get_skin_vertices() const
 }
 
 
-static float get_ang(const Array<ModelVertex> &vertex, int a, int b, int c, const vector &flat_n)
-{
+static float get_ang(const Array<ModelVertex> &vertex, int a, int b, int c, const vector &flat_n) {
 	vector v1 = vertex[b].pos - vertex[a].pos;
 	vector v2 = vertex[c].pos - vertex[b].pos;
 	v1.normalize();
@@ -75,11 +79,10 @@ static float get_ang(const Array<ModelVertex> &vertex, int a, int b, int c, cons
 	return atan2(x, y);
 }
 
-static bool vertex_in_tria(const Array<ModelVertex> &vertex, int a, int b, int c, int v)
-{
+static bool vertex_in_tria(const Array<ModelVertex> &vertex, int a, int b, int c, int v) {
 	float f, g;
 	GetBaryCentric(vertex[v].pos, vertex[a].pos, vertex[b].pos, vertex[c].pos, f, g);
-	return ((f > 0) && (g > 0) && (f + g < 1));
+	return ((f > 0) and (g > 0) and (f + g < 1));
 }
 
 /*static vector get_cloud_normal(DataModel *m, const Array<int> &v)
@@ -99,23 +102,22 @@ static bool vertex_in_tria(const Array<ModelVertex> &vertex, int a, int b, int c
 	return v_0;
 }*/
 
-Array<int> ModelPolygon::triangulate(const Array<ModelVertex> &vertex) const
-{
+Array<int> ModelPolygon::triangulate(const Array<ModelVertex> &vertex) const {
 	Array<int> output;
 
 	Array<int> v, vi;
-	for (int k=0;k<side.num;k++){
+	for (int k=0; k<side.num; k++) {
 		v.add(side[k].vertex);
 		vi.add(k);
 	}
 
-	while(v.num > 3){
+	while(v.num > 3) {
 
 		// find largest angle (sharpest)
 		// TODO: prevent colinear triangles!
 		int i_max = 0;
 		float f_max = 0;
-		for (int i=0;i<v.num;i++){
+		for (int i=0;i<v.num;i++) {
 			float f = get_ang(vertex, v[i], v[(i+1) % v.num], v[(i+2) % v.num], temp_normal);
 			if (f < 0)
 				continue;
@@ -127,19 +129,19 @@ Array<int> ModelPolygon::triangulate(const Array<ModelVertex> &vertex) const
 			if (f_l >= 0)
 				f += 0.01f / (f_l + 0.01f);
 
-			if (f > f_max){
+			if (f > f_max) {
 				// other vertices within this triangle?
 				bool ok = true;
-				for (int j=0;j<v.num;j++){
-					if ((j == i) || (j == ((i+1) % v.num)) || (j == ((i+2) % v.num)))
+				for (int j=0;j<v.num;j++) {
+					if ((j == i) or (j == ((i+1) % v.num)) or (j == ((i+2) % v.num)))
 						continue;
-					if (vertex_in_tria(vertex, v[i], v[(i+1) % v.num], v[(i+2) % v.num], v[j])){
+					if (vertex_in_tria(vertex, v[i], v[(i+1) % v.num], v[(i+2) % v.num], v[j])) {
 						ok = false;
 						break;
 					}
 				}
 
-				if (ok){
+				if (ok) {
 					f_max = f;
 					i_max = i;
 				}
@@ -158,50 +160,41 @@ Array<int> ModelPolygon::triangulate(const Array<ModelVertex> &vertex) const
 	return output;
 }
 
-void ModelPolygon::update_triangulation(const Array<ModelVertex> &vertex)
-{
-	Array<int> v = triangulate(vertex);
+void ModelPolygon::update_triangulation(const Array<ModelVertex> &vertex) {
+	auto v = triangulate(vertex);
 	for (int i=0; i<v.num; i+=3)
 		for (int k=0; k<3; k++)
 			side[i/3].triangulation[k] = v[i + k];
 	triangulation_dirty = false;
 }
 
-void ModelPolygon::add_to_vertex_buffer(const Array<ModelVertex> &vertex, nix::VertexBuffer *buffer, int num_textures)
-{
+void ModelPolygon::add_to_vertex_buffer(const Array<ModelVertex> &vertex, VertexStagingBuffer &vbs, int num_textures) {
 	if (triangulation_dirty)
 		update_triangulation(vertex);
-	for (int i=0; i<side.num-2; i++){
-		const ModelPolygonSide &a = side[side[i].triangulation[0]];
-		const ModelPolygonSide &b = side[side[i].triangulation[1]];
-		const ModelPolygonSide &c = side[side[i].triangulation[2]];
-		if (num_textures > 1){
-			float ta[MATERIAL_MAX_TEXTURES * 2], tb[MATERIAL_MAX_TEXTURES * 2], tc[MATERIAL_MAX_TEXTURES * 2];
-			for (int l=0;l<num_textures;l++){
-				ta[l*2  ] = a.skin_vertex[l].x;
-				ta[l*2+1] = a.skin_vertex[l].y;
-				tb[l*2  ] = b.skin_vertex[l].x;
-				tb[l*2+1] = b.skin_vertex[l].y;
-				tc[l*2  ] = c.skin_vertex[l].x;
-				tc[l*2+1] = c.skin_vertex[l].y;
-			}
-			buffer->addTriaM(
-					vertex[a.vertex].pos, a.normal, ta,
-					vertex[b.vertex].pos, b.normal, tb,
-					vertex[c.vertex].pos, c.normal, tc);
-		}else{
-			buffer->addTria(
-					vertex[a.vertex].pos, a.normal, a.skin_vertex[0].x, a.skin_vertex[0].y,
-					vertex[b.vertex].pos, b.normal, b.skin_vertex[0].x, b.skin_vertex[0].y,
-					vertex[c.vertex].pos, c.normal, c.skin_vertex[0].x, c.skin_vertex[0].y);
+	for (int i=0; i<side.num-2; i++) {
+		auto &a = side[side[i].triangulation[0]];
+		auto &b = side[side[i].triangulation[1]];
+		auto &c = side[side[i].triangulation[2]];
+		vbs.p.add(vertex[a.vertex].pos);
+		vbs.p.add(vertex[b.vertex].pos);
+		vbs.p.add(vertex[c.vertex].pos);
+		vbs.n.add(a.normal);
+		vbs.n.add(b.normal);
+		vbs.n.add(c.normal);
+		for (int l=0; l<num_textures; l++){
+			vbs.uv[l].add(a.skin_vertex[l].x);
+			vbs.uv[l].add(a.skin_vertex[l].y);
+			vbs.uv[l].add(b.skin_vertex[l].x);
+			vbs.uv[l].add(b.skin_vertex[l].y);
+			vbs.uv[l].add(c.skin_vertex[l].x);
+			vbs.uv[l].add(c.skin_vertex[l].y);
 		}
 	}
 }
 
-void ModelPolygon::invert()
-{
+void ModelPolygon::invert() {
 	ModelPolygon pp = *this;
-	for (int i=0;i<side.num;i++){
+	for (int i=0; i<side.num; i++) {
 		side[i].vertex = pp.side[side.num - i - 1].vertex;
 		memcpy(side[i].skin_vertex, pp.side[side.num - i - 1].skin_vertex, sizeof(side[i].skin_vertex));
 		side[i].normal = - pp.side[side.num - i - 1].normal;

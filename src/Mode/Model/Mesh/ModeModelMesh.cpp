@@ -53,6 +53,15 @@ ModeModelMesh *mode_model_mesh = NULL;
 const string ModeModelMesh::MESSAGE_CURRENT_MATERIAL_CHANGE = "CurrentMaterialChange";
 const string ModeModelMesh::MESSAGE_CURRENT_SKIN_CHANGE = "CurrentSkinChange";
 
+
+
+string vb_format(int num_tex) {
+	string f = "3f,3fn";
+	for (int i=0; i<num_tex; i++)
+		f += ",2f";
+	return f;
+}
+
 ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	Mode<DataModel>("ModelMesh", _parent, ed->multi_view_3d, "menu_model"),
 	Observable("ModelMesh") {
@@ -62,9 +71,9 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	current_skin = SKIN_HIGH;
 
 	// vertex buffers
-	vb_marked = new nix::VertexBuffer(1);
-	vb_hover = new nix::VertexBuffer(1);
-	vb_creation = new nix::VertexBuffer(1);
+	vb_marked = new nix::VertexBuffer(vb_format(1));
+	vb_hover = new nix::VertexBuffer(vb_format(1));
+	vb_creation = new nix::VertexBuffer(vb_format(1));
 
 	select_cw = false;
 	allow_draw_hover = true;
@@ -543,7 +552,6 @@ void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, Array<Mo
 	color bg = win->getBackgroundColor();
 	auto *multi_view = win->multi_view;
 
-	nix::SetWire(false);
 	nix::SetOffset(-2);
 	set_wide_lines(selection_filter ? 2.3f : 1.5f);
 	Array<vector> line_pos;
@@ -578,7 +586,6 @@ void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, Array<Mo
 	}
 	nix::DrawLinesColored(line_pos, line_color, false);
 	nix::SetColor(White);
-	nix::SetWire(win->multi_view->wire_mode);
 	nix::SetOffset(0);
 }
 
@@ -604,7 +611,7 @@ void ModeModelMesh::draw_polygons(MultiView::Window *win, ModelMesh *mesh, Array
 		// draw
 		m->applyForRendering();
 		nix::SetOffset(0);
-		nix::Draw3D(m->vb);
+		nix::DrawTriangles(m->vb);
 		nix::SetOffset(0);
 		//nix::SetShader(NULL);
 		//nix::SetTexture(NULL);
@@ -616,38 +623,30 @@ void ModeModelMesh::draw_polygons(MultiView::Window *win, ModelMesh *mesh, Array
 
 
 void ModeModelMesh::draw_physical(MultiView::Window *win) {
-	nix::SetWire(false);
 	mode_model->set_material_creation(1.5f);
 
 	for (auto &b: data->phys_mesh->ball) {
-		Geometry *geo = new GeometrySphere(data->phys_mesh->vertex[b.index].pos, b.radius, 6);
-
-		geo->build(nix::vb_temp);
-		nix::Draw3D(nix::vb_temp);
-
-		delete geo;
+		auto geo = GeometrySphere(data->phys_mesh->vertex[b.index].pos, b.radius, 6);
+		geo.build(nix::vb_temp);
+		nix::DrawTriangles(nix::vb_temp);
 	}
 
 	for (auto &c: data->phys_mesh->cylinder) {
-		Geometry *geo = new GeometryCylinder(data->phys_mesh->vertex[c.index[0]].pos, data->phys_mesh->vertex[c.index[1]].pos, c.radius, 1, 24, c.round ? GeometryCylinder::END_ROUND : GeometryCylinder::END_FLAT);
-
-		geo->build(nix::vb_temp);
-		nix::Draw3D(nix::vb_temp);
-
-		delete geo;
+		auto geo = GeometryCylinder(data->phys_mesh->vertex[c.index[0]].pos, data->phys_mesh->vertex[c.index[1]].pos, c.radius, 1, 24, c.round ? GeometryCylinder::END_ROUND : GeometryCylinder::END_FLAT);
+		geo.build(nix::vb_temp);
+		nix::DrawTriangles(nix::vb_temp);
 	}
 
 
-	nix::vb_temp->clear();
+	VertexStagingBuffer vbs;
 	for (auto &t: data->phys_mesh->polygon)
 		if (t.view_stage >= multi_view->view_stage)
-			t.add_to_vertex_buffer(data->phys_mesh->vertex, nix::vb_temp, 1);
+			t.add_to_vertex_buffer(data->phys_mesh->vertex, vbs, 1);
+	vbs.build(nix::vb_temp, 1);
 	nix::SetOffset(-0.5f);
-	nix::Draw3D(nix::vb_temp);
+	nix::DrawTriangles(nix::vb_temp);
 	nix::SetOffset(0);
 	draw_edges(win, data->phys_mesh, data->phys_mesh->vertex, false);
-
-	nix::SetWire(multi_view->wire_mode);
 }
 
 
@@ -658,17 +657,18 @@ void ModeModelMesh::update_vertex_buffers(Array<ModelVertex> &vertex) {
 	foreachi(ModelMaterial *m, data->material, mi) {
 		int num_tex = m->texture_levels.num;
 		if (!m->vb)
-			m->vb = new nix::VertexBuffer(num_tex);
-		if (m->vb->num_textures != num_tex) {
-			delete(m->vb);
-			m->vb = new nix::VertexBuffer(num_tex);
+			m->vb = new nix::VertexBuffer(vb_format(num_tex));
+		if (m->vb->num_buffers-2 != num_tex) {
+			delete m->vb;
+			m->vb = new nix::VertexBuffer(vb_format(num_tex));
 		}
 
-		m->vb->clear();
+		VertexStagingBuffer vbs;
 
 		for (ModelPolygon &t: data->mesh->polygon)
 			if ((t.view_stage >= multi_view->view_stage) and (t.material == mi))
-				t.add_to_vertex_buffer(vertex, m->vb, m->texture_levels.num);
+				t.add_to_vertex_buffer(vertex, vbs, m->texture_levels.num);
+		vbs.build(m->vb, m->texture_levels.num);
 
 		//m.vb->optimize();
 	}
@@ -677,26 +677,26 @@ void ModeModelMesh::update_vertex_buffers(Array<ModelVertex> &vertex) {
 
 
 void ModeModelMesh::fill_selection_buffer(Array<ModelVertex> &vertex) {
-	vb_marked->clear();
 
 	// create selection buffers
+	VertexStagingBuffer vbs;
 	for (auto &t: data->edit_mesh->polygon)
 		/*if (t.view_stage >= ViewStage)*/{
 		if (t.is_selected)
-			t.add_to_vertex_buffer(vertex, vb_marked, 1);
+			t.add_to_vertex_buffer(vertex, vbs, 1);
 	}
+	vbs.build(vb_marked, 1);
 }
 
 void ModeModelMesh::draw_selection(MultiView::Window *win) {
-	nix::SetWire(false);
 	nix::SetZ(true,true);
 	nix::SetAlpha(ALPHA_NONE);
 
 	nix::SetOffset(-1.0f);
 	ModeModel::set_material_selected();
-	nix::Draw3D(vb_marked);
+	nix::DrawTriangles(vb_marked);
 	ModeModel::set_material_creation();
-	nix::Draw3D(vb_creation);
+	nix::DrawTriangles(vb_creation);
 	nix::SetMaterial(White,White,Black,0,Black);
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetOffset(0);

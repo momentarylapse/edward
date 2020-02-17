@@ -175,8 +175,8 @@ void draw_coord_basis(MultiView::Window *win, const ModelBone &b) {
 		for (int i=0;i<3;i++)
 			e[i] = b._matrix.transform_normal(e[i]);
 	for (int i=0; i<3; i++) {
-		color cc = color(1,0,(i==0)?1:0.5f,0);
-		nix::DrawLinesColored({o, o + e[i] * 30 / win->zoom()}, {cc,cc}, false);
+		color cc = scheme.AXIS[i];
+		nix::DrawLinesColored({o, o + e[i] * 40 / win->zoom()}, {cc,cc}, false);
 	}
 }
 
@@ -198,7 +198,6 @@ void ModeModelSkeleton::draw_skeleton(MultiView::Window *win, Array<ModelBone> &
 	nix::SetWorldMatrix(matrix::ID);
 
 	nix::SetZ(false, false);
-	nix::SetWire(false);
 	set_wide_lines(thin ? scheme.LINE_WIDTH_THIN : scheme.LINE_WIDTH_BONE);
 
 	for (ModelBone &b: bone) {

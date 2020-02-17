@@ -53,7 +53,7 @@ ActionController::ActionController(MultiView *view) {
 	geo_show.add(new GeometryCylinder( vector::EZ*r0,  vector::EZ*r1, r, 1, 8));
 
 	for (auto g: geo_show){
-		auto *vb = new nix::VertexBuffer(1);
+		auto *vb = new nix::VertexBuffer("3f,3fn,2f");
 		g->build(vb);
 		buf.add(vb);
 	}
@@ -339,7 +339,7 @@ void ActionController::draw(Window *win) {
 			nix::SetMaterial(Black, White, Black, 0, White);
 		else
 			nix::SetMaterial(Black, Black, Black, 0, ac_geo_config[i].col);
-		nix::Draw3D(buf[i]);
+		nix::DrawTriangles(buf[i]);
 	}
 	nix::SetZ(false, false);
 	nix::SetAlpha(ALPHA_NONE);

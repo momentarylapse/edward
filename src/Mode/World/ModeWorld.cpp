@@ -606,7 +606,6 @@ void DrawSelectionObject(Model *o, float alpha, const color &c) {
 }
 
 void DrawTerrainColored(Terrain *t, const color &c, float alpha) {
-	nix::SetWire(false);
 	nix::SetAlpha(ALPHA_MATERIAL);
 
 	// save terrain data
@@ -631,7 +630,6 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha) {
 	t->material = temp;
 
 	nix::SetAlpha(ALPHA_NONE);
-	nix::SetWire(mode_world->multi_view->wire_mode);
 }
 
 
@@ -667,6 +665,7 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 	}
 
 // terrain
+	nix::SetWire(multi_view->wire_mode);
 	foreachi(WorldTerrain &t, data->Terrains, i) {
 		if (!t.terrain)
 			continue;
@@ -680,7 +679,6 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		if ((multi_view->hover.type == MVD_WORLD_TERRAIN) and (multi_view->hover.index == i))
 			DrawTerrainColored(t.terrain, White, TMouseOverAlpha);
 	}
-	nix::SetWire(multi_view->wire_mode);
 
 // objects (models)
 		//GodDraw();

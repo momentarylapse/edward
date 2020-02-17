@@ -987,6 +987,8 @@ void MultiView::get_hover()
 				SingleData* sd = MVGetSingleData(d, i);
 				if (sd->view_stage < view_stage)
 					continue;
+
+				// trace
 				float z;
 				vector tp, mop;
 				float hover_dist;
@@ -994,6 +996,7 @@ void MultiView::get_hover()
 					hover_dist = d.func_hover(sd, mouse_win, m, tp, z);
 				else
 					hover_dist = sd->hover_distance(mouse_win, m, tp, z);
+
 				if (hover_dist < 0)
 					continue;
 				if (hover_dist > dist_min)

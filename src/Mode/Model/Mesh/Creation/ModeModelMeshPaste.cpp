@@ -61,7 +61,7 @@ void ModeModelMeshPaste::on_draw_win(MultiView::Window* win)
 	mode_model->set_material_creation();
 
 	geo->build(nix::vb_temp);
-	nix::Draw3D(nix::vb_temp);
+	nix::DrawTriangles(nix::vb_temp);
 }
 
 void ModeModelMeshPaste::updateGeometry()
