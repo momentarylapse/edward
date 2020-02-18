@@ -10,6 +10,9 @@
 #ifndef _NIX_VERTEXBUFFER_EXISTS_
 #define _NIX_VERTEXBUFFER_EXISTS_
 
+#define MAX_VB_ATTRIBUTES 8
+#define MAX_VB_BUFFERS 8
+
 
 namespace nix
 {
@@ -46,18 +49,15 @@ class VertexBuffer {
 public:
 	struct Buffer {
 		unsigned int buffer;
-		unsigned int format;
-		bool normalized;
-		int num_components;
 		int count;
-	} buf[6];
+	} buf[MAX_VB_BUFFERS];
 	struct Attribute {
 		unsigned int buffer;
 		int num_components;
 		unsigned int type;
 		bool normalized;
 		int stride;
-	} attr[6];
+	} attr[MAX_VB_ATTRIBUTES];
 	int num_attributes;
 	int num_buffers;
 

@@ -21,54 +21,9 @@ namespace MultiView{
 static nix::Texture *tex_round;
 static string font_name = "Sans";
 static float font_size = 12;
+static color _cur_line_color_ = White;
 
-void set_wide_lines(float width) {
-	if (width == 1.0f) {
-		nix::SetShader(MultiView::shader_lines_3d_colored);
-	} else {
-		auto s = MultiView::shader_lines_3d_colored_wide;
-		nix::SetShader(s);
-		int loc_tw = s->get_location("target_width");
-		int loc_th = s->get_location("target_height");
-		int loc_lw = s->get_location("line_width");
-		s->set_float(loc_tw, nix::target_width);
-		s->set_float(loc_th, nix::target_height);
-		s->set_float(loc_lw, width);
-	}
-}
-
-
-void draw_circle(const vector &pos, const vector &n, float radius) {
-
-	vector e1 = n.ortho();
-	vector e2 = n ^ e1;
-	e1 *= radius;
-	e2 *= radius;
-	int N = 64;
-	for (int i=0;i<N;i++) {
-		float w1 = i * 2 * pi / N;
-		float w2 = (i + 1) * 2 * pi / N;
-		nix::DrawLine3D(pos + sin(w1) * e1 + cos(w1) * e2, pos + sin(w2) * e1 + cos(w2) * e2);
-	}
-}
-
-
-void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b) {
-	nix::SetZ(false, false);
-	nix::SetColor(scheme.TEXT);
-	set_wide_lines(scheme.LINE_WIDTH_HELPER);
-	nix::DrawLine3D(a, b);
-	set_wide_lines(1.0f);
-	//nix::SetZ(true, true);
-	vector pa = win->project(a);
-	vector pb = win->project(b);
-	//vector d = (pb - pa).normalized();
-	//vector e = d ^ vector::EZ;
-	float r = 3;
-	nix::SetShader(nix::default_shader_2d);
-	nix::DrawRect(pa.x-r, pa.x+r, pa.y-r, pa.y+r, 0);
-	nix::DrawRect(pb.x-r, pb.x+r, pb.y-r, pb.y+r, 0);
-}
+static nix::VertexBuffer *vb_lines = nullptr;
 
 
 nix::Texture *create_round_texture(int n) {
@@ -85,9 +40,91 @@ nix::Texture *create_round_texture(int n) {
 	return t;
 }
 
+void drawing_helper_init() {
+	vb_lines = new nix::VertexBuffer("3f,4f");
+	tex_round = create_round_texture(32);
+}
+
+void set_wide_lines(float width) {
+	if (width == 1.0f) {
+		nix::SetShader(MultiView::shader_lines_3d_colored);
+	} else {
+		auto s = MultiView::shader_lines_3d_colored_wide;
+		nix::SetShader(s);
+		int loc_tw = s->get_location("target_width");
+		int loc_th = s->get_location("target_height");
+		int loc_lw = s->get_location("line_width");
+		s->set_float(loc_tw, nix::target_width);
+		s->set_float(loc_th, nix::target_height);
+		s->set_float(loc_lw, width);
+	}
+}
+
+void set_line_color(const color &c) {
+	_cur_line_color_ = c;
+}
+
+
+
+void draw_line_2d(float x1, float y1, float x2, float y2, float depth) {
+	draw_line(vector(x1, y1, depth), vector(x2, y2, depth));
+}
+
+void draw_lines(const Array<vector> &p, bool contiguous) {
+	Array<color> c;
+	c.resize(p.num);
+	for (int i=0; i<c.num; i++)
+		c[i] = _cur_line_color_;
+	draw_lines_colored(p, c, contiguous);
+}
+
+void draw_lines_colored(const Array<vector> &p, const Array<color> &c, bool contiguous) {
+	set_wide_lines(2);
+	vb_lines->update(0, p);
+	vb_lines->update(1, c);
+	nix::DrawLines(vb_lines, contiguous);
+}
+
+void draw_line(const vector &l1, const vector &l2) {
+	draw_lines_colored({l1, l2}, {_cur_line_color_, _cur_line_color_}, false);
+}
+
+
+void draw_circle(const vector &pos, const vector &n, float radius) {
+
+	vector e1 = n.ortho();
+	vector e2 = n ^ e1;
+	e1 *= radius;
+	e2 *= radius;
+	int N = 64;
+	Array<vector> p;
+	for (int i=0; i<=N; i++) {
+		float w = i * 2 * pi / N;
+		p.add(pos + sin(w) * e1 + cos(w) * e2);
+	}
+	draw_lines(p, true);
+}
+
+
+void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b) {
+	nix::SetZ(false, false);
+	nix::SetColor(scheme.TEXT);
+	set_wide_lines(scheme.LINE_WIDTH_HELPER);
+	draw_line(a, b);
+	set_wide_lines(1.0f);
+	//nix::SetZ(true, true);
+	vector pa = win->project(a);
+	vector pb = win->project(b);
+	//vector d = (pb - pa).normalized();
+	//vector e = d ^ vector::EZ;
+	float r = 3;
+	nix::SetShader(nix::default_shader_2d);
+	nix::DrawRect(pa.x-r, pa.x+r, pa.y-r, pa.y+r, 0);
+	nix::DrawRect(pb.x-r, pb.x+r, pb.y-r, pb.y+r, 0);
+}
+
+
 void draw_round_rect(const rect &r) {
-	if (!tex_round)
-		tex_round = create_round_texture(32);
 
 	float R = 13;
 	float x[4] = {r.x1, r.x1 + R, r.x2 - R, r.x2};

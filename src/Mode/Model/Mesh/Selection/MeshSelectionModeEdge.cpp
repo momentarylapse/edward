@@ -108,9 +108,7 @@ void MeshSelectionModeEdge::on_draw_win(MultiView::Window *win) {
 	p.add(m->show_vertices[e.vertex[0]].pos);
 	p.add(m->show_vertices[e.vertex[1]].pos);
 	Array<color> c = {scheme.HOVER, scheme.HOVER};
-	nix::DrawLinesColored(p, c, false);
-	//nix::DrawLine3D(data->show_vertices[e.vertex[0]].pos, data->show_vertices[e.vertex[1]].pos);
-	nix::SetColor(White);
+	draw_lines_colored(p, c, false);
 	nix::SetZ(true, true);
 }
 

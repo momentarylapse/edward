@@ -346,16 +346,16 @@ void ActionController::draw(Window *win) {
 	nix::SetWorldMatrix(matrix::ID);
 
 	if (in_use()) {
-		nix::SetMaterial(White, White, Black, 0, color(1, 0.2f, 0.7f, 0.2f));
+		set_line_color(color(1, 0.2f, 0.7f, 0.2f));
+		set_wide_lines(1.0f);
 		float r = multi_view->cam.radius * 10;
 		if (constraints == ACTION_CONSTRAINTS_X)
-			nix::DrawLine3D(pos - vector::EX * r, pos + vector::EX * r);
+			draw_line(pos - vector::EX * r, pos + vector::EX * r);
 		if (constraints == ACTION_CONSTRAINTS_Y)
-			nix::DrawLine3D(pos - vector::EY * r, pos + vector::EY * r);
+			draw_line(pos - vector::EY * r, pos + vector::EY * r);
 		if (constraints == ACTION_CONSTRAINTS_Z)
-			nix::DrawLine3D(pos - vector::EZ * r, pos + vector::EZ * r);
+			draw_line(pos - vector::EZ * r, pos + vector::EZ * r);
 	}
-	nix::SetMaterial(White, White, Black, 0, Black);
 
 	nix::SetShader(nix::default_shader_2d);
 

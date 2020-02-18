@@ -143,11 +143,11 @@ void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win) {
 
 		// control polygon
 		set_wide_lines(scheme.LINE_WIDTH_MEDIUM);
+		set_line_color(scheme.CREATION_LINE);
 		if (pos.num == 2)
-			nix::DrawLine3D(pos[0], pos[1]);
+			draw_line(pos[0], pos[1]);
 		else
-			nix::DrawLine3D(pos[0], multi_view->get_cursor());
-		//nix::SetColor(White);
+			draw_line(pos[0], multi_view->get_cursor());
 	}
 	if (pos.num == 2) {
 		mode_model->set_material_creation();

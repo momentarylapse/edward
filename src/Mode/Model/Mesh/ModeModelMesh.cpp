@@ -261,6 +261,7 @@ void ModeModelMesh::on_command(const string & id) {
 void ModeModelMesh::on_draw() {
 	auto s = data->edit_mesh->get_selection();
 	if (s.vertex.num > 0) {
+		nix::SetShader(nix::default_shader_2d);
 		draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons", s.vertex.num, s.edge.num, s.polygon.num));
 	}
 }
@@ -541,6 +542,7 @@ void ModeModelMesh::set_current_skin(int index) {
 }
 
 void ModeModelMesh::draw_effects(MultiView::Window *win) {
+	nix::SetShader(nix::default_shader_2d);
 	for (ModelEffect &fx: data->fx) {
 		vector p = win->project(data->mesh->vertex[fx.vertex].pos);
 		if ((p.z > 0) and (p.z < 1))
@@ -580,12 +582,10 @@ void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, Array<Mo
 		}
 		line_color.add(cc);
 		line_color.add(cc);
-		//nix::DrawLine3D(vertex[e.vertex[0]].pos, vertex[e.vertex[1]].pos);
 		line_pos.add(vertex[e.vertex[0]].pos);
 		line_pos.add(vertex[e.vertex[1]].pos);
 	}
-	nix::DrawLinesColored(line_pos, line_color, false);
-	nix::SetColor(White);
+	draw_lines_colored(line_pos, line_color, false);
 	nix::SetOffset(0);
 }
 

@@ -165,7 +165,7 @@ void draw_bone(const vector &r, const vector &d, const color &c, MultiView::Wind
 	Array<color> col;
 	col.add(ColorInterpolate(c, scheme.BACKGROUND, 0.5f)); // root
 	col.add(ColorInterpolate(c, scheme.BACKGROUND, 0.8f));
-	nix::DrawLinesColored({r,d}, col, false);
+	draw_lines_colored({r,d}, col, false);
 }
 
 void draw_coord_basis(MultiView::Window *win, const ModelBone &b) {
@@ -176,7 +176,7 @@ void draw_coord_basis(MultiView::Window *win, const ModelBone &b) {
 			e[i] = b._matrix.transform_normal(e[i]);
 	for (int i=0; i<3; i++) {
 		color cc = scheme.AXIS[i];
-		nix::DrawLinesColored({o, o + e[i] * 40 / win->zoom()}, {cc,cc}, false);
+		draw_lines_colored({o, o + e[i] * 40 / win->zoom()}, {cc,cc}, false);
 	}
 }
 

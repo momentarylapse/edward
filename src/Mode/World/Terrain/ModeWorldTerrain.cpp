@@ -151,7 +151,7 @@ void ModeWorldTerrain::on_draw_win(MultiView::Window* win) {
 	vector pos = multi_view->hover.point;
 	float radius = dialog->get_float("diameter") / 2;
 
-	nix::SetColor(scheme.CREATION_LINE);
+	set_line_color(scheme.CREATION_LINE);
 	set_wide_lines(scheme.LINE_WIDTH_HELPER);
 	draw_circle(pos, vector::EY, radius);
 }

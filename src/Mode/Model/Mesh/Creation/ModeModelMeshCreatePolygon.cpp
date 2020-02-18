@@ -49,18 +49,18 @@ void ModeModelMeshCreatePolygon::on_draw_win(MultiView::Window *win)
 {
 	parent->on_draw_win(win);
 
-	nix::SetColor(scheme.CREATION_LINE);
+	set_line_color(scheme.CREATION_LINE);
 	set_wide_lines(scheme.LINE_WIDTH_MEDIUM);
 	for (int i=1;i<selection.num;i++){
 		vector pa = data->mesh->vertex[selection[i - 1]].pos;
 		vector pb = data->mesh->vertex[selection[i    ]].pos;
-		nix::DrawLine3D(pa, pb);
+		draw_line(pa, pb);
 	}
 	if (selection.num > 0){
 		if (multi_view->hover.index >= 0)
-			nix::DrawLine3D(data->mesh->vertex[selection.back()].pos, data->mesh->vertex[multi_view->hover.index].pos);
+			draw_line(data->mesh->vertex[selection.back()].pos, data->mesh->vertex[multi_view->hover.index].pos);
 		else
-			nix::DrawLine3D(data->mesh->vertex[selection.back()].pos, multi_view->get_cursor());
+			draw_line(data->mesh->vertex[selection.back()].pos, multi_view->get_cursor());
 	}
 }
 

@@ -775,11 +775,12 @@ void MultiView::SelectionRect::draw(const vector &m) {
 	nix::SetCull(CULL_NONE);
 	nix::DrawRect(m.x, pos0.x, m.y, pos0.y, 0);
 	nix::SetCull(CULL_DEFAULT);
-	nix::SetColor(scheme.SELECTION_RECT_BOUNDARY);
-	nix::DrawLine(pos0.x, pos0.y, pos0.x, m.y, 0);
-	nix::DrawLine(m.x, pos0.y, m.x, m.y, 0);
-	nix::DrawLine(pos0.x, pos0.y, m.x, pos0.y, 0);
-	nix::DrawLine(pos0.x, m.y, m.x, m.y, 0);
+	set_line_color(scheme.SELECTION_RECT_BOUNDARY);
+	set_wide_lines(2.0f);
+	draw_line_2d(pos0.x, pos0.y, pos0.x, m.y, 0);
+	draw_line_2d(m.x, pos0.y, m.x, m.y, 0);
+	draw_line_2d(pos0.x, pos0.y, m.x, pos0.y, 0);
+	draw_line_2d(pos0.x, m.y, m.x, m.y, 0);
 	nix::SetAlphaM(ALPHA_NONE);
 	nix::SetZ(true, true);
 }

@@ -168,6 +168,7 @@ Edward::Edward(Array<string> arg) :
 	// initialize engine
 	nix::Init();
 	nix::render_str = &render_text;
+	drawing_helper_init();
 
 	MetaInit();
 	CameraInit();

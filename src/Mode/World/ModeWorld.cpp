@@ -566,6 +566,7 @@ void ModeWorld::on_draw() {
 			ss.add(format(_("%d cameras"), num_cam));
 		if (num_li > 0)
 			ss.add(format(_("%d lights"), num_li));
+		nix::SetShader(nix::default_shader_2d);
 		draw_str(10, 100, _("selected: ") + implode(ss, ", "));
 	}
 }
@@ -714,9 +715,9 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		if (l.view_stage < multi_view->view_stage)
 			continue;
 
-		nix::SetColor(color(1, 0.9f, 0.6f, 0.3f));
+		set_line_color(color(1, 0.9f, 0.6f, 0.3f));
 		set_wide_lines(5);
-		nix::DrawLine3D(l.pos, l.pos - l.ang.ang2dir() * win->cam->radius * 0.1f);
+		draw_line(l.pos, l.pos - l.ang.ang2dir() * win->cam->radius * 0.1f);
 		set_wide_lines(1.0f);
 	}
 

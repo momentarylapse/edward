@@ -134,14 +134,16 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 	// rectangle of unity
 	a = win->project(v_0);
 	b = win->project(vector(1, 1, 0));
-	nix::SetColor(Red);
-	nix::DrawLine(a.x, a.y, b.x, a.y, 0.98f);
-	nix::DrawLine(b.x, a.y, b.x, b.y, 0.98f);
-	nix::DrawLine(a.x, a.y, a.x, b.y, 0.98f);
-	nix::DrawLine(a.x, b.y, b.x, b.y, 0.98f);
-	nix::SetColor(White);
+	set_line_color(Red);
+	set_wide_lines(1.0f);
+	draw_line_2d(a.x, a.y, b.x, a.y, 0.98f);
+	draw_line_2d(b.x, a.y, b.x, b.y, 0.98f);
+	draw_line_2d(a.x, a.y, a.x, b.y, 0.98f);
+	draw_line_2d(a.x, b.y, b.x, b.y, 0.98f);
+
 
 	// draw triangles (outlines) of current material
+	set_line_color(White);
 	for (ModelPolygon &t: data->mesh->polygon) {
 		if (t.material != mode_model_mesh->current_material)
 			continue;
@@ -152,7 +154,7 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 			v.add(win->project(t.side[k].skin_vertex[current_texture_level]));
 		v.add(v[0]);
 		for (int k=0;k<t.side.num;k++)
-			nix::DrawLine(	v[k].x,v[k].y,
+			draw_line_2d(	v[k].x,v[k].y,
 							v[k+1].x,v[k+1].y,
 							0.9f);
 	}
@@ -161,6 +163,7 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 
 
 void ModeModelMeshTexture::on_draw() {
+	nix::SetShader(nix::default_shader_2d);
 	auto s = data->get_selection();
 	/*if (data->getNumSelectedVertices() > 0){
 		draw_str(20, 160, format(_("skin: %d"), getNumSelected()));

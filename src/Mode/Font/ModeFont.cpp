@@ -9,6 +9,7 @@
 #include "../../Storage/Storage.h"
 #include "../../MultiView/MultiView.h"
 #include "../../MultiView/Window.h"
+#include "../../MultiView/DrawingHelper.h"
 #include "../../lib/nix/nix.h"
 #include "ModeFont.h"
 #include "../../Data/Font/DataFont.h"
@@ -72,6 +73,7 @@ void ModeFont::on_draw()
 {
 	nix::SetZ(false, false);
 	nix::SetColor(White);
+	nix::SetShader(nix::default_shader_2d);
 	nix::DrawRect(0, (float)nix::target_width, nix::target_height * 0.9f, (float)nix::target_height, 0);
 	nix::SetColor(Black);
 	if (dialog)
@@ -189,20 +191,20 @@ void Draw2D(const rect &source, const rect *dest)
 		nix::Draw2D(source, nix::target_rect, 0);
 }
 
-void DrawLineH(int x1, int x2, int y) {
+void DrawLineH(float x1, float x2, float y) {
 	MultiView::MultiView *mv = mode_font->multi_view;
-	x1 = int(nix::target_width/2-(mv->cam.pos.x - x1)*mv->active_win->zoom());
-	x2 = int(nix::target_width/2-(mv->cam.pos.x - x2)*mv->active_win->zoom());
-	y  = int(nix::target_height/2-(mv->cam.pos.y - y )*mv->active_win->zoom());
-	nix::DrawLine(x1, y, x2, y, 0);
+	x1 = nix::target_width/2-(mv->cam.pos.x - x1)*mv->active_win->zoom();
+	x2 = nix::target_width/2-(mv->cam.pos.x - x2)*mv->active_win->zoom();
+	y  = nix::target_height/2-(mv->cam.pos.y - y )*mv->active_win->zoom();
+	draw_line_2d(x1, y, x2, y, 0);
 }
 
-void DrawLineV(int x, int y1, int y2) {
+void DrawLineV(float x, float y1, float y2) {
 	MultiView::MultiView *mv = mode_font->multi_view;
-	x  = int(nix::target_width/2-(mv->cam.pos.x - x )*mv->active_win->zoom());
-	y1 = int(nix::target_height/2-(mv->cam.pos.y - y1)*mv->active_win->zoom());
-	y2 = int(nix::target_height/2-(mv->cam.pos.y - y2)*mv->active_win->zoom());
-	nix::DrawLine(x, y1, x, y2, 0);
+	x  = nix::target_width/2-(mv->cam.pos.x - x )*mv->active_win->zoom();
+	y1 = nix::target_height/2-(mv->cam.pos.y - y1)*mv->active_win->zoom();
+	y2 = nix::target_height/2-(mv->cam.pos.y - y2)*mv->active_win->zoom();
+	draw_line_2d(x, y1, x, y2, 0);
 }
 
 
@@ -223,34 +225,36 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 	nix::SetTexture(NULL);
 
 	// grid (horizontal lines)
+	set_wide_lines(1.0f);
 	for (int i=0;i<NumY;i++){
-		nix::SetColor(color(0.3f,0.0f,0.8f,0.0f));
+		set_line_color(color(0.3f,0.0f,0.8f,0.0f));
 		DrawLineH(0, data->TextureWidth,i*data->global.GlyphHeight+data->global.GlyphY1);
-		nix::SetColor(color(0.3f,0.0f,1.0f,0.0f));
+		set_line_color(color(0.3f,0.0f,1.0f,0.0f));
 		DrawLineH(0, data->TextureWidth,i*data->global.GlyphHeight+data->global.GlyphY2);
-		nix::SetColor(color(0.5f,0.5f,0.5f,0.5f));
+		set_line_color(color(0.5f,0.5f,0.5f,0.5f));
 		DrawLineH(0, data->TextureWidth,(i+1)*data->global.GlyphHeight);
 	}
 
 	// separate glyphs
-	int x=0,y=0;
+	float x=0,y=0;
 	foreachi(DataFont::Glyph &g, data->glyph, i){
-		int x2 = x + g.Width;
+		float x2 = x + g.Width;
 		if (x2 > data->TextureWidth){
 			x = 0;
 			x2 = g.Width;
 			y += data->global.GlyphHeight;
 		}
 		if (i == data->Marked){
-			d = rect(float(x), float(x2), float(y), float(y + data->global.GlyphHeight));
+			d = rect(x, x2, y, y + data->global.GlyphHeight);
 			nix::SetColor(color(0.2f,1,0,0));
 			Draw2D(rect::ID, &d);
 		}
-		nix::SetColor(color(0.3f,0.8f,0.0f,0.0f));
+		set_wide_lines(1.0f);
+		set_line_color(color(0.3f,0.8f,0.0f,0.0f));
 		DrawLineV(x + g.X1, y + data->global.GlyphY1, y + data->global.GlyphY2);
-		nix::SetColor(color(0.3f,0.8f,0.0f,0.0f));
+		set_line_color(color(0.3f,0.8f,0.0f,0.0f));
 		DrawLineV(x + g.X2, y + data->global.GlyphY1, y + data->global.GlyphY2);
-		nix::SetColor(color(0.3f,0.5f,0.5f,0.5f));
+		set_line_color(color(0.3f,0.5f,0.5f,0.5f));
 		DrawLineV(x2, y, y + data->global.GlyphHeight);
 		x = x2;
 	}

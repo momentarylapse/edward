@@ -166,9 +166,15 @@ VertexBuffer::VertexBuffer(const string &f) {
 	msg_write("new VertexBuffer " + f);
 	auto xx = f.explode(",");
 	num_buffers = num_attributes = xx.num;
+	if (num_attributes > MAX_VB_ATTRIBUTES) {
+		throw Exception("VertexBuffer: too many attributes: " + f);
+		num_buffers = num_attributes = 0;
+	}
 	for (int i=0; i<xx.num; i++) {
 		string &x = xx[i];
 		auto &b = buf[i];
+		b.count = 0;
+
 		auto &a = attr[i];
 		glGenBuffers(1, &b.buffer);
 		a.buffer = b.buffer;
@@ -191,7 +197,7 @@ VertexBuffer::VertexBuffer(const string &f) {
 			a.type = GL_FLOAT;
 			a.num_components = 4;
 		} else {
-			msg_error("unhandled vertex format... " + x);
+			throw Exception("VertexBuffer: unhandled format: " + x);
 		}
 	}
 }
@@ -202,7 +208,17 @@ VertexBuffer::~VertexBuffer() {
 		glDeleteBuffers(1, &buf[i].buffer);
 }
 
+void VertexBuffer::__init__(const string &f) {
+	new(this) VertexBuffer(f);
+}
+
+void VertexBuffer::__delete__() {
+	this->~VertexBuffer();
+}
+
 void VertexBuffer::update(int index, const DynamicArray &a) {
+	if (index < 0 or index >= MAX_VB_BUFFERS)
+		throw Exception("VertexBuffer: invalid index " + i2s(index));
 	buf[index].count = a.num;
 	glBindBuffer(GL_ARRAY_BUFFER, buf[index].buffer);
 	glBufferData(GL_ARRAY_BUFFER, a.num * a.element_size, a.data, GL_STATIC_DRAW);

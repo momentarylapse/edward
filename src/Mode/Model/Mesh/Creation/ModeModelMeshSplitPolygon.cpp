@@ -82,10 +82,10 @@ void ModeModelMeshSplitPolygon::on_draw_win(MultiView::Window *win) {
 
 
 		nix::SetZ(false, false);
-		nix::SetColor(scheme.CREATION_LINE);
+		set_line_color(scheme.CREATION_LINE);
 		set_wide_lines(scheme.LINE_WIDTH_MEDIUM);
 		for (int k=0;k<v.num;k++)
-			nix::DrawLine3D(v[k], pos);
+			draw_line(v[k], pos);
 		nix::SetZ(true, true);
 	}
 }

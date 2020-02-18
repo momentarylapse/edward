@@ -139,11 +139,11 @@ void draw_grid_3d(const color &bg, Window *w, int plane, float alpha) {
 		col[level].add(c);
 	}
 
-	nix::SetShader(shader_lines_3d_colored);
+	set_wide_lines(1.0f);
 	for (int l=3; l>=1; l--)
-		nix::DrawLinesColored(p[l], col[l], false);
+		draw_lines_colored(p[l], col[l], false);
 	set_wide_lines(2.0f);
-	nix::DrawLinesColored(p[0], col[0], false);
+	draw_lines_colored(p[0], col[0], false);
 	set_wide_lines(1.0f);
 }
 
@@ -154,7 +154,6 @@ void Window::drawGrid()
 		return;
 
 	nix::SetTexture(NULL);
-	nix::SetShader(shader_lines_3d_colored);
 	nix::SetZ(false, false);
 
 	// Hintergrund-Bilder
@@ -375,10 +374,6 @@ void Window::draw()
 			nix::SetAlpha(ALPHA_NONE);
 		}
 	}
-
-	// DEBUG!
-	//NixSetZ(false,false);
-	//NixDrawLine3D(MouseOverTP,MouseOverTP+vector(0,ViewRadius/3,0),Green);
 
 	// type of view
 

@@ -89,187 +89,6 @@ int GetStrWidth(const string &str)
 	return 0;
 }
 
-void DrawLine(float x1, float y1, float x2, float y2, float depth)
-{
-	DrawLine3D(vector(x1, y1, depth), vector(x2, y2, depth));
-	return;
-
-	float dx=x2-x1;
-	if (dx<0)	dx=-dx;
-	float dy=y2-y1;
-	if (dy<0)	dy=-dy;
-	//_SetMode2d();
-
-#ifdef OS_LINUX
-	// internal line drawing function \(^_^)/
-	if (smooth_lines){
-		// antialiasing!
-		glLineWidth(line_width + 0.5);
-		glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-		glEnable(GL_LINE_SMOOTH);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}else
-		glLineWidth(line_width);
-	glBegin(GL_LINES);
-		glVertex3f(x1, y1, depth);
-		glVertex3f(x2, y2, depth);
-	glEnd();
-	if (smooth_lines){
-		glDisable(GL_LINE_SMOOTH);
-		glDisable(GL_BLEND);
-	}
-#else
-
-	// own line drawing function (T_T)
-	if (dx>dy){
-		if (x1>x2){
-			float x=x2;	x2=x1;	x1=x;
-			float y=y2;	y2=y1;	y1=y;
-		}
-		glBegin(GL_TRIANGLES);
-			glVertex3f(x1,y1+1,depth);
-			glVertex3f(x1,y1  ,depth);
-			glVertex3f(x2,y2+1,depth);
-			glVertex3f(x2,y2  ,depth);
-			glVertex3f(x2,y2+1,depth);
-			glVertex3f(x1,y1  ,depth);
-		glEnd();
-	}else{
-		if (y1<y2){
-			float x=x2;	x2=x1;	x1=x;
-			float y=y2;	y2=y1;	y1=y;
-		}
-		glBegin(GL_TRIANGLES);
-			glVertex3f(x1+1,y1,depth);
-			glVertex3f(x1  ,y1,depth);
-			glVertex3f(x2+1,y2,depth);
-			glVertex3f(x2  ,y2,depth);
-			glVertex3f(x2+1,y2,depth);
-			glVertex3f(x1  ,y1,depth);
-		glEnd();
-	}
-#endif
-	TestGLError("DrawLine");
-}
-
-void DrawLines(const Array<vector> &p, bool contiguous) {
-	current_shader->set_default_data();
-	Array<color> c;
-	c.resize(p.num);
-	for (int i=0; i<c.num; i++)
-		c[i] = material.emission;
-	DrawLinesColored(p, c, contiguous);
-	return;
-
-	if (line_buffer == 0)
-		glGenBuffers(1, &line_buffer);
-
-	TestGLError("dls-opt0");
-	glBindBuffer(GL_ARRAY_BUFFER, line_buffer);
-	glBufferData(GL_ARRAY_BUFFER, p.num * sizeof(p[0]), &p[0], GL_STATIC_DRAW);
-	TestGLError("dls-opt1");
-
-	TestGLError("dls-a");
-	glEnableVertexAttribArray(0);
-	TestGLError("dls-b1");
-	glBindBuffer(GL_ARRAY_BUFFER, line_buffer);
-	TestGLError("dls-c1");
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	TestGLError("dls-d1");
-
-	if (contiguous)
-		glDrawArrays(GL_LINE_STRIP, 0, p.num);
-	else
-		glDrawArrays(GL_LINES, 0, p.num);
-	TestGLError("dls-e");
-
-	glDisableVertexAttribArray(0);
-	TestGLError("dls-f");
-}
-
-void DrawLinesColored(const Array<vector> &p, const Array<color> &c, bool contiguous) {
-	current_shader->set_default_data();
-
-	if (line_buffer == 0)
-		glGenBuffers(1, &line_buffer);
-	if (color_buffer == 0)
-		glGenBuffers(1, &color_buffer);
-
-	TestGLError("dlc-opt0");
-	glBindBuffer(GL_ARRAY_BUFFER, line_buffer);
-	glBufferData(GL_ARRAY_BUFFER, p.num * sizeof(p[0]), &p[0], GL_STATIC_DRAW);
-	TestGLError("dlc-opt1");
-	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
-	glBufferData(GL_ARRAY_BUFFER, c.num * sizeof(c[0]), &c[0], GL_STATIC_DRAW);
-
-	TestGLError("dlc-a1");
-	glEnableVertexAttribArray(0);
-	TestGLError("dlc-b1");
-	glBindBuffer(GL_ARRAY_BUFFER, line_buffer);
-	TestGLError("dlc-c1");
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	TestGLError("dlc-d1");
-
-	TestGLError("dlc-2a");
-	glEnableVertexAttribArray(1);
-	TestGLError("dlc-b2");
-	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
-	TestGLError("dlc-c2");
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	TestGLError("dlc-d2");
-
-	if (contiguous)
-		glDrawArrays(GL_LINE_STRIP, 0, p.num);
-	else
-		glDrawArrays(GL_LINES, 0, p.num);
-	TestGLError("dlc-e");
-
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(0);
-	TestGLError("dlc-f");
-}
-
-void DrawLine3D(const vector &l1, const vector &l2) {
-	vector v[2] = {l1, l2};
-	color c[2] = {material.emission, material.emission};
-
-	current_shader->set_default_data();
-
-	if (line_buffer == 0)
-		glGenBuffers(1, &line_buffer);
-	if (color_buffer == 0)
-		glGenBuffers(1, &color_buffer);
-
-	TestGLError("dl-opt0");
-	glBindBuffer(GL_ARRAY_BUFFER, line_buffer);
-	glBufferData(GL_ARRAY_BUFFER, 2 * sizeof(v[0]), &v[0], GL_STATIC_DRAW);
-	TestGLError("dl-opt1");
-	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
-	glBufferData(GL_ARRAY_BUFFER, 2 * sizeof(c[0]), &c[0], GL_STATIC_DRAW);
-
-	TestGLError("dl-a");
-	glEnableVertexAttribArray(0);
-	TestGLError("dl-b1");
-	glBindBuffer(GL_ARRAY_BUFFER, line_buffer);
-	TestGLError("dl-c1");
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	TestGLError("dl-d1");
-
-	TestGLError("dlc-2a");
-	glEnableVertexAttribArray(1);
-	TestGLError("dlc-b2");
-	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
-	TestGLError("dlc-c2");
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	TestGLError("dlc-d2");
-
-	glDrawArrays(GL_LINES, 0, 2);
-	TestGLError("dl-e");
-
-	glDisableVertexAttribArray(0);
-	TestGLError("dl-f");
-}
 
 void DrawRect(float x1, float x2, float y1, float y2, float depth) {
 	Draw2D(rect::ID, rect(x1, x2, y1, y2), depth);
@@ -333,15 +152,32 @@ void Draw3D(OldVertexBuffer *vb) {
 }
 
 void DrawTriangles(VertexBuffer *vb) {
+	if (vb->count() == 0)
+		return;
 	current_shader->set_default_data();
 
 	SetVertexBuffer(vb);
 
-	// Draw the triangle !
 	glDrawArrays(GL_TRIANGLES, 0, vb->count()); // Starting from vertex 0; 3 vertices total -> 1 triangle
 
-	TestGLError("Draw");
+	TestGLError("DrawTriangles");
 }
+
+
+void DrawLines(VertexBuffer *vb, bool contiguous) {
+	if (vb->count() == 0)
+		return;
+	current_shader->set_default_data();
+
+	SetVertexBuffer(vb);
+
+	if (contiguous)
+		glDrawArrays(GL_LINE_STRIP, 0, vb->count());
+	else
+		glDrawArrays(GL_LINES, 0, vb->count());
+	TestGLError("DrawLines");
+}
+
 
 void ResetToColor(const color &c) {
 	glClearColor(c.r, c.g, c.b, c.a);

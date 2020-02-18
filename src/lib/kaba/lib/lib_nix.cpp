@@ -48,6 +48,7 @@ extern const Class *TypeFloatList;
 extern const Class *TypeFloatArrayP;
 extern const Class *TypeVectorArray;
 extern const Class *TypeVectorArrayP;
+extern const Class *TypeDynamicArray;
 const Class *TypeVertexBuffer;
 const Class *TypeVertexBufferP;
 const Class *TypeTexture;
@@ -66,7 +67,7 @@ void SIAddPackageNix()
 	
 	TypeVectorArray		= add_type_a(TypeVector, 1, "vector[?]");
 	TypeVectorArrayP	= add_type_p(TypeVectorArray);
-	TypeVertexBuffer	= add_type  ("VertexBuffer", sizeof(nix::OldVertexBuffer));
+	TypeVertexBuffer	= add_type  ("VertexBuffer", sizeof(nix::VertexBuffer));
 	TypeVertexBufferP	= add_type_p(TypeVertexBuffer);
 	TypeTexture			= add_type  ("Texture", sizeof(nix::Texture));
 	TypeTextureP		= add_type_p(TypeTexture);
@@ -80,28 +81,13 @@ void SIAddPackageNix()
 	auto TypeUniformBuffer = add_type  ("UniformBuffer", sizeof(nix::UniformBuffer));
 	
 	add_class(TypeVertexBuffer);
-		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, nix_p(mf(&nix::OldVertexBuffer::__init__)));
-			func_add_param("num_textures", TypeInt);
-		class_add_func(IDENTIFIER_FUNC_DELETE, TypeVoid, nix_p(mf(&nix::OldVertexBuffer::__delete__)));
-		class_add_func("clear", TypeVoid, nix_p(mf(&nix::OldVertexBuffer::clear)));
-		class_add_func("add_tria", TypeVoid, nix_p(mf(&nix::OldVertexBuffer::addTria)));
-			func_add_param("p1", TypeVector);
-			func_add_param("n1", TypeVector);
-			func_add_param("u1", TypeFloat32);
-			func_add_param("v1", TypeFloat32);
-			func_add_param("p2", TypeVector);
-			func_add_param("n2", TypeVector);
-			func_add_param("u2", TypeFloat32);
-			func_add_param("v2", TypeFloat32);
-			func_add_param("p3", TypeVector);
-			func_add_param("n3", TypeVector);
-			func_add_param("u3", TypeFloat32);
-			func_add_param("v3", TypeFloat32);
-		class_add_func("add_trias", TypeVoid, nix_p(mf(&nix::OldVertexBuffer::addTrias)));
-			func_add_param("num_trias", TypeInt);
-			func_add_param("p", TypeVectorArrayP);
-			func_add_param("n", TypeVectorArrayP);
-			func_add_param("t", TypeFloatArrayP);
+		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, nix_p(mf(&nix::VertexBuffer::__init__)));
+			func_add_param("format", TypeString);
+		class_add_func(IDENTIFIER_FUNC_DELETE, TypeVoid, nix_p(mf(&nix::VertexBuffer::__delete__)));
+		class_add_func("void", TypeVoid, nix_p(mf(&nix::VertexBuffer::update)));
+			func_add_param("index", TypeInt);
+			func_add_param("data", TypeDynamicArray);
+		class_add_func("count", TypeInt, nix_p(mf(&nix::VertexBuffer::count)));
 
 
 	add_class(TypeTexture);
@@ -202,7 +188,7 @@ void SIAddPackageNix()
 		func_add_param("c", TypeColor);
 	add_func("NixSetWorldMatrix", TypeVoid, nix_p(&nix::SetWorldMatrix), FLAG_STATIC);
 		func_add_param("m", TypeMatrix);
-	add_func("NixDraw3D", TypeVoid, nix_p(&nix::Draw3D), FLAG_STATIC);
+	add_func("NixDrawTriangles", TypeVoid, nix_p(&nix::DrawTriangles), FLAG_STATIC);
 		func_add_param("vb", TypeVertexBufferP);
 	add_func("NixDraw2D", TypeVoid, nix_p(&nix::Draw2D), FLAG_STATIC);
 		func_add_param("source", TypeRect);
@@ -212,17 +198,9 @@ void SIAddPackageNix()
 		func_add_param("x", TypeFloat32);
 		func_add_param("y", TypeFloat32);
 		func_add_param("str", TypeString);
-	add_func("NixDrawLine", TypeVoid, nix_p(&nix::DrawLine), FLAG_STATIC);
-		func_add_param("x1", TypeFloat32);
-		func_add_param("y1", TypeFloat32);
-		func_add_param("x2", TypeFloat32);
-		func_add_param("y2", TypeFloat32);
-		func_add_param("z", TypeFloat32);
-	add_func("NixDrawLine3D", TypeVoid, nix_p(&nix::DrawLine3D), FLAG_STATIC);
-		func_add_param("l1", TypeVector);
-		func_add_param("l2", TypeVector);
-	//add_func("NixDrawModel2D", TypeVoid, FLAG_STATIC);
-	//	func_add_param("???", TypeFloat); // ???
+	add_func("NixDrawLines", TypeVoid, nix_p(&nix::DrawLines), FLAG_STATIC);
+		func_add_param("vb", TypeVertexBufferP);
+		func_add_param("contiguous", TypeBool);
 	add_func("NixSetAlphaM", TypeVoid, nix_p(&nix::SetAlphaM), FLAG_STATIC);
 		func_add_param("mode", TypeInt);
 	add_func("NixSetAlphaSD", TypeVoid, nix_p(&nix::SetAlphaSD), FLAG_STATIC);
