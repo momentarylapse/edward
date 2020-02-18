@@ -169,7 +169,7 @@ void ModeModelMeshCutLoop::on_draw_win(MultiView::Window *win) {
 	calculate_edge_positions(f);
 
 	nix::SetZ(false, false);
-	set_line_color(scheme.CREATION_LINE);
+	set_color(scheme.CREATION_LINE);
 	set_line_width(scheme.LINE_WIDTH_MEDIUM);
 	pos.add(pos[0]);
 	draw_lines(pos, true);

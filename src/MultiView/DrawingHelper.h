@@ -17,14 +17,18 @@ namespace MultiView {
 class string;
 class color;
 class Image;
+class rect;
 
 void drawing_helper_init();
 
-void set_line_color(const color &c);
+void set_color(const color &c);
 void set_line_width(float width);
 void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b);
 void draw_circle(const vector &pos, const vector &n, float radius);
 
+
+void draw_rect(float x1, float x2, float y1, float y2, float depth);
+void draw_2d(const rect &src, const rect &dest, float depth);
 
 void draw_line_2d(float x1, float y1, float x2, float y2, float depth);
 void draw_line(const vector &l1, const vector &l2);
@@ -38,6 +42,7 @@ enum class TextAlign {
 };
 void draw_str_bg(int x, int y, const string &str, const color &fg, const color &bg, TextAlign align);
 void draw_str(int x, int y, const string &str, TextAlign a = TextAlign::LEFT);
+int get_str_width(const string &str);
 void set_font_size(float size);
 void set_font(const string &name, float size);
 

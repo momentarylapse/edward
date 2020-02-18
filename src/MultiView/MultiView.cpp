@@ -693,7 +693,7 @@ void MultiView::on_draw()
 	nix::ResetZ();
 	nix::SetProjectionOrtho(false);
 	nix::SetZ(true,true);
-	nix::SetColor(scheme.TEXT);
+	set_color(scheme.TEXT);
 	set_font(scheme.FONT_NAME, scheme.FONT_SIZE);
 
 	area = nix::target_rect;
@@ -733,20 +733,20 @@ void MultiView::on_draw()
 		nix::SetTexture(NULL);
 
 		color c2 = scheme.hoverify(scheme.WINDOW_DIVIDER);
-		nix::SetColor((hover.meta == hover.HOVER_WINDOW_DIVIDER_Y or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
-		nix::DrawRect(area.x1, area.x2, ym-d, ym+d, 0);
-		nix::SetColor((hover.meta == hover.HOVER_WINDOW_DIVIDER_X or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
-		nix::DrawRect(xm-d, xm+d, area.y1, area.y2, 0);
+		set_color((hover.meta == hover.HOVER_WINDOW_DIVIDER_Y or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
+		draw_rect(area.x1, area.x2, ym-d, ym+d, 0);
+		set_color((hover.meta == hover.HOVER_WINDOW_DIVIDER_X or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
+		draw_rect(xm-d, xm+d, area.y1, area.y2, 0);
 	}
 
-	nix::SetShader(nix::default_shader_2d);
 	nix::SetProjectionOrtho(false);
 	if (sel_rect.active)
 		sel_rect.draw(m);
 
 	cam_con->draw();
 
-	nix::SetColor(scheme.TEXT);
+	set_color(scheme.TEXT);
+	nix::SetShader(nix::default_shader_2d);
 
 	if (ed->input.inside_smart)
 		draw_mouse_pos();
@@ -772,11 +772,12 @@ void MultiView::SelectionRect::draw(const vector &m) {
 	nix::SetZ(false, false);
 	nix::SetAlphaM(ALPHA_MATERIAL);
 	nix::SetTexture(NULL);
-	nix::SetColor(scheme.SELECTION_RECT);
+	set_color(scheme.SELECTION_RECT);
 	nix::SetCull(CULL_NONE);
-	nix::DrawRect(m.x, pos0.x, m.y, pos0.y, 0);
+	nix::SetShader(nix::default_shader_2d);
+	draw_rect(m.x, pos0.x, m.y, pos0.y, 0);
 	nix::SetCull(CULL_DEFAULT);
-	set_line_color(scheme.SELECTION_RECT_BOUNDARY);
+	set_color(scheme.SELECTION_RECT_BOUNDARY);
 	set_line_width(2.0f);
 	draw_line_2d(pos0.x, pos0.y, pos0.x, m.y, 0);
 	draw_line_2d(m.x, pos0.y, m.x, m.y, 0);

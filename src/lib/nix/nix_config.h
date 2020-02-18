@@ -52,8 +52,6 @@
 
 
 typedef void callback_function();
-typedef void render_str_function(const string &text, Image &image);
-
 
 
 #define NIX_MAX_TEXTURELEVELS	8
@@ -112,13 +110,11 @@ enum {
 };
 
 
-namespace nix{
+namespace nix {
 
 //extern int device_width, device_height;						// render target size (window, won't change)
 extern int target_width, target_height;						// current render target size (window/texture)
 extern bool Fullscreen;
-extern callback_function *RefillAllVertexBuffers;			// animate the application to refill lost VertexBuffers
-extern render_str_function *render_str;
 extern bool LightingEnabled;
 extern bool CullingInverted;
 

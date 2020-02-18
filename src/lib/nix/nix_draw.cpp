@@ -12,98 +12,9 @@
 
 namespace nix{
 
-float line_width = 1;
-bool smooth_lines = false;
-//static color current_color = White;
-
-unsigned int line_buffer = 0;
-unsigned int color_buffer = 0;
-
-
-render_str_function *render_str = NULL;
-extern Texture *tex_text;
 extern Shader *current_shader;
-extern OldVertexBuffer *vb_2d;
 
 
-
-void SetColor(const color &c)
-{
-	material.emission = c;
-}
-
-color GetColor()
-{
-	return material.emission;
-}
-
-string str_utf8_to_ubyte(const string &str)
-{
-	string r;
-	for (int i=0;i<str.num;i++)
-		if (((unsigned int)str[i] & 0x80) > 0){
-			r.add(((str[i] & 0x1f) << 6) + (str[i + 1] & 0x3f));
-			i ++;
-		}else
-			r.add(str[i]);
-	return r;
-}
-
-void DrawStr(float x, float y, const string &str)
-{
-	if (render_str){
-		Image im;
-		(*render_str)(str, im);
-		if (im.width > 0){
-			tex_text->overwrite(im);
-			SetTexture(tex_text);
-			Draw2D(rect::ID, rect(x, x + im.width, y, y + im.height), 0);
-		}
-	}else{
-		/*string str2 = str_utf8_to_ubyte(str);
-
-		glRasterPos3f(x, (y+2+int(float(FontHeight)*0.75f)),-1.0f);
-		glListBase(OGLFontDPList);
-		glCallLists(str2.num,GL_UNSIGNED_BYTE,(char*)str2.data);
-		glRasterPos3f(0,0,0);
-		TestGLError("DrawStr");*/
-	}
-}
-
-int GetStrWidth(const string &str)
-{
-
-	if (render_str){
-		Image im;
-		(*render_str)(str, im);
-		return im.width;
-	}else{
-#if 0
-		string str2 = str_utf8_to_ubyte(str);
-		int w = 0;
-		for (int i=0;i<str2.num;i++)
-			w += FontGlyphWidth[(unsigned char)str2[i]];
-		return w;
-#endif
-	}
-	return 0;
-}
-
-
-void DrawRect(float x1, float x2, float y1, float y2, float depth) {
-	Draw2D(rect::ID, rect(x1, x2, y1, y2), depth);
-}
-
-void Draw2D(const rect &src, const rect &dest, float depth) {
-	vb_2d->clear();
-	vector a = vector(dest.x1, dest.y1, depth);
-	vector b = vector(dest.x2, dest.y1, depth);
-	vector c = vector(dest.x1, dest.y2, depth);
-	vector d = vector(dest.x2, dest.y2, depth);
-	vb_2d->addTria(a, v_0, src.x1, src.y1, b, v_0, src.x2, src.y1, c, v_0, src.x1, src.y2);
-	vb_2d->addTria(c, v_0, src.x1, src.y2, b, v_0, src.x2, src.y1, d, v_0, src.x2, src.y2);
-	Draw3D(vb_2d);
-}
 
 
 

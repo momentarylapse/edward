@@ -138,16 +138,16 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win) {
 	if (pos.num > 0) {
 
 		// control points
-		nix::SetColor(scheme.CREATION_LINE);
+		set_color(scheme.CREATION_LINE);
 		nix::SetShader(nix::default_shader_2d);
 		for (int i=0;i<pos.num;i++) {
 			vector pp = win->project(pos[i]);
-			nix::DrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
+			draw_rect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
 		}
 
 
 		// control polygon
-		set_line_color(ColorInterpolate(scheme.CREATION_LINE, scheme.BACKGROUND, 0.3f));
+		set_color(ColorInterpolate(scheme.CREATION_LINE, scheme.BACKGROUND, 0.3f));
 		set_line_width(scheme.LINE_WIDTH_HELPER);
 		draw_lines(pos, true);
 
@@ -162,7 +162,7 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win) {
 		if (!ready_for_scaling)
 			inter.add(multi_view->get_cursor());
 		inter.normalize();
-		set_line_color(scheme.CREATION_LINE);
+		set_color(scheme.CREATION_LINE);
 		set_line_width(scheme.LINE_WIDTH_HELPER);
 		for (int i=0; i<100; i++)
 			draw_line(inter.get((float)i * 0.01f), inter.get((float)i * 0.01f + 0.01f));

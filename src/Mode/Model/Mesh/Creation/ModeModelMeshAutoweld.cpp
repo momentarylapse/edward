@@ -80,10 +80,10 @@ void ModeModelMeshAutoweld::on_draw_win(MultiView::Window* win)
 	parent->on_draw_win(win);
 
 	nix::SetTexture(NULL);
-	nix::SetColor(scheme.CREATION_LINE);
 	float r = 5;
 	int n = 0;
 #if 0
+	set_color(scheme.CREATION_LINE);
 	for (int i=0;i<data->surface.num;i++){
 		ModelSurface *a = &data->surface[i];
 		if (!a->is_selected)

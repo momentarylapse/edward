@@ -76,7 +76,9 @@ void ModeModelMeshCreatePlane::on_draw_win(MultiView::Window *win) {
 		auto geo = GeometryPlane(pos, length[0], length[1], 1,1);
 		geo.build(nix::vb_temp);
 		mode_model->set_material_creation();
+		nix::SetCull(CULL_NONE);
 		nix::DrawTriangles(nix::vb_temp);
+		nix::SetCull(CULL_DEFAULT);
 	}
 }
 

@@ -13,17 +13,19 @@
 
 
 namespace MultiView{
-	extern nix::Shader *shader_selection;
-	extern nix::Shader *shader_lines_3d;
+	//extern nix::Shader *shader_selection;
+	//extern nix::Shader *shader_lines_3d;
 	extern nix::Shader *shader_lines_3d_colored;
 	extern nix::Shader *shader_lines_3d_colored_wide;
 }
 static nix::Texture *tex_round;
+static nix::Texture *tex_text;
 static string font_name = "Sans";
 static float font_size = 12;
-static color _cur_line_color_ = White;
+static color _cur_color_ = White;
 
 static nix::VertexBuffer *vb_lines = nullptr;
+static nix::VertexBuffer *vb_2d = nullptr;
 
 
 nix::Texture *create_round_texture(int n) {
@@ -42,7 +44,9 @@ nix::Texture *create_round_texture(int n) {
 
 void drawing_helper_init() {
 	vb_lines = new nix::VertexBuffer("3f,4f");
+	vb_2d = new nix::VertexBuffer("3f,4f,2f");
 	tex_round = create_round_texture(32);
+	tex_text = new nix::Texture();
 }
 
 void set_line_width(float width) {
@@ -60,8 +64,8 @@ void set_line_width(float width) {
 	}
 }
 
-void set_line_color(const color &c) {
-	_cur_line_color_ = c;
+void set_color(const color &c) {
+	_cur_color_ = c;
 }
 
 
@@ -74,7 +78,7 @@ void draw_lines(const Array<vector> &p, bool contiguous) {
 	Array<color> c;
 	c.resize(p.num);
 	for (int i=0; i<c.num; i++)
-		c[i] = _cur_line_color_;
+		c[i] = _cur_color_;
 	draw_lines_colored(p, c, contiguous);
 }
 
@@ -86,7 +90,7 @@ void draw_lines_colored(const Array<vector> &p, const Array<color> &c, bool cont
 }
 
 void draw_line(const vector &l1, const vector &l2) {
-	draw_lines_colored({l1, l2}, {_cur_line_color_, _cur_line_color_}, false);
+	draw_lines_colored({l1, l2}, {_cur_color_, _cur_color_}, false);
 }
 
 
@@ -108,7 +112,7 @@ void draw_circle(const vector &pos, const vector &n, float radius) {
 
 void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b) {
 	nix::SetZ(false, false);
-	nix::SetColor(scheme.TEXT);
+	set_color(scheme.TEXT);
 	set_line_width(scheme.LINE_WIDTH_HELPER);
 	draw_line(a, b);
 	set_line_width(1.0f);
@@ -119,9 +123,28 @@ void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b) 
 	//vector e = d ^ vector::EZ;
 	float r = 3;
 	nix::SetShader(nix::default_shader_2d);
-	nix::DrawRect(pa.x-r, pa.x+r, pa.y-r, pa.y+r, 0);
-	nix::DrawRect(pb.x-r, pb.x+r, pb.y-r, pb.y+r, 0);
+	draw_rect(pa.x-r, pa.x+r, pa.y-r, pa.y+r, 0);
+	draw_rect(pb.x-r, pb.x+r, pb.y-r, pb.y+r, 0);
 }
+
+
+void draw_rect(float x1, float x2, float y1, float y2, float depth) {
+	draw_2d(rect::ID, rect(x1, x2, y1, y2), depth);
+}
+
+void draw_2d(const rect &src, const rect &dest, float depth) {
+	vector a = vector(dest.x1, dest.y1, depth);
+	vector b = vector(dest.x2, dest.y1, depth);
+	vector c = vector(dest.x1, dest.y2, depth);
+	vector d = vector(dest.x2, dest.y2, depth);
+	color col = _cur_color_;
+
+	vb_2d->update(0, Array<vector>{a,b,c, c,b,d});
+	vb_2d->update(1, Array<color>{col,col,col, col,col,col});
+	vb_2d->update(2, Array<float>{src.x1,src.y1, src.x2,src.y1, src.x1,src.y2,  src.x1,src.y2, src.x2,src.y1, src.x2,src.y2});
+	nix::DrawTriangles(vb_2d);
+}
+
 
 
 void draw_round_rect(const rect &r) {
@@ -141,18 +164,35 @@ void draw_round_rect(const rect &r) {
 
 	for (int i=0; i<3; i++)
 		for (int j=0; j<3; j++)
-			nix::Draw2D(rect(u[i], u[i+1], u[j], u[j+1]),    rect(x[i], x[i+1], y[j], y[j+1]), 0);
+			draw_2d(rect(u[i], u[i+1], u[j], u[j+1]),    rect(x[i], x[i+1], y[j], y[j+1]), 0);
+}
+
+
+int get_str_width(const string &str) {
+	Image im;
+	render_text(str, im);
+	return im.width;
+}
+
+void _draw_str(float x, float y, const string &str) {
+	Image im;
+	render_text(str, im);
+	if (im.width > 0) {
+		tex_text->overwrite(im);
+		SetTexture(tex_text);
+		draw_2d(rect::ID, rect(x, x + im.width, y, y + im.height), 0);
+	}
 }
 
 void draw_str_bg(int x, int y, const string &str, const color &fg, const color &bg, TextAlign align) {
-	color c0 = nix::GetColor();
+	color c0 = _cur_color_;
 	auto xx = str.explode("\n");
 	float line_h = scheme.TEXT_LINE_HEIGHT;
 	float h = line_h * xx.num;
 	Array<int> ww;
 	int wmax = 0;
 	for (string &s: xx) {
-		int w = nix::GetStrWidth(s);
+		int w = get_str_width(s);
 		ww.add(w);
 		wmax = max(wmax, w);
 	}
@@ -163,25 +203,25 @@ void draw_str_bg(int x, int y, const string &str, const color &fg, const color &
 	nix::SetTexture(tex_round);
 	nix::SetAlpha(ALPHA_MATERIAL);
 	float r = 8;
-	nix::SetColor(bg);
+	set_color(bg);
 	draw_round_rect(rect(float(x-r), float(x+wmax+r), float(y-r), float(y+h+r)));
-	nix::SetColor(fg);
+	set_color(fg);
 	nix::SetTexture(nullptr);
 	nix::SetAlpha(ALPHA_SOURCE_ALPHA, ALPHA_SOURCE_INV_ALPHA);
 	foreachi (string &s, xx, i) {
 		if (align == TextAlign::RIGHT)
-			nix::DrawStr(x+wmax-ww[i], y+line_h*i, s);
+			_draw_str(x+wmax-ww[i], y+line_h*i, s);
 		else if (align == TextAlign::CENTER)
-			nix::DrawStr(x+wmax/2-ww[i]/2, y+line_h*i, s);
+			_draw_str(x+wmax/2-ww[i]/2, y+line_h*i, s);
 		else if (align == TextAlign::LEFT)
-			nix::DrawStr(x, y+line_h*i, s);
+			_draw_str(x, y+line_h*i, s);
 	}
 	nix::SetAlpha(ALPHA_NONE);
-	nix::SetColor(c0);
+	set_color(c0);
 }
 
 void draw_str(int x, int y, const string &str, TextAlign a) {
-	color c0 = nix::GetColor();
+	color c0 = _cur_color_;
 	draw_str_bg(x, y, str, c0, scheme.TEXT_BG, a);
 }
 
@@ -201,9 +241,8 @@ void set_font(const string &name, float size) {
 }
 
 
-void render_text(const string &text, Image &im)
-{
-	if (text.num == 0){
+void render_text(const string &text, Image &im) {
+	if (text.num == 0) {
 		im.clear();
 		return;
 	}
@@ -242,9 +281,9 @@ void render_text(const string &text, Image &im)
 	cairo_surface_flush(surface);
 	unsigned char *c0 = cairo_image_surface_get_data(surface);
 	im.create(w_used, h_used, White);
-	for (int y=0;y<h_used;y++){
+	for (int y=0;y<h_used;y++) {
 		unsigned char *c = c0 + 4 * y * w_surf;
-		for (int x=0;x<w_used;x++){
+		for (int x=0;x<w_used;x++) {
 			float a = (float)c[1] / 255.0f;
 			im.set_pixel(x, y, color(a, a, 1, 1));
 			c += 4;
@@ -255,3 +294,7 @@ void render_text(const string &text, Image &im)
 	cairo_destroy(cr);
 	cairo_surface_destroy(surface);
 }
+
+
+
+

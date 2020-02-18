@@ -7,6 +7,7 @@
 
 #include "CameraController.h"
 #include "MultiView.h"
+#include "DrawingHelper.h"
 #include "../lib/nix/nix.h"
 #include "../Edward.h"
 
@@ -101,35 +102,35 @@ void CameraController::draw_icon(const rect &rr, nix::Texture *tex, bool active)
 {
 	nix::SetTexture(tex_bg);
 	if (active or rr.inside(view->m.x, view->m.y))
-		nix::SetColor(ColorIconHover);
+		set_color(ColorIconHover);
 	else
-		nix::SetColor(ColorIcon);
-	nix::Draw2D(rect::ID, rr, 0);
+		set_color(ColorIcon);
+	draw_2d(rect::ID, rr, 0);
 	if (tex){
 		nix::SetTexture(tex);
-		nix::SetColor(White);
-		nix::Draw2D(rect::ID, rr, 0);
+		set_color(White);
+		draw_2d(rect::ID, rr, 0);
 	}
 }
 
-void CameraController::draw()
-{
+void CameraController::draw() {
 	updateRects();
 	nix::SetAlpha(ALPHA_MATERIAL);
 
 	// show/hide button
-	nix::SetColor(ColorBackground);
+	set_color(ColorBackground);
 	nix::SetTexture(tex_bg);
-	nix::Draw2D(rect::ID, r2, 0);
+	nix::SetShader(nix::default_shader_2d);
+	draw_2d(rect::ID, r2, 0);
 	draw_icon(r_show, NULL, false);
 
-	if (show){
+	if (show) {
 		// elongated background
-		nix::SetColor(ColorBackground);
+		set_color(ColorBackground);
 		nix::SetTexture(tex_bg);
-		nix::Draw2D(rect(0, 0.5f, 0, 1), rect(r.x1, r.x1 + CC_RADIUS/2 + CC_BORDER, r.y1, r.y2), 0);
-		nix::Draw2D(rect(0.5f, 0.5f, 0, 1), rect(r.x1 + CC_RADIUS/2 + CC_BORDER, r.x2 - CC_RADIUS/2 - CC_BORDER, r.y1, r.y2), 0);
-		nix::Draw2D(rect(0.5f, 1, 0, 1), rect(r.x2 - CC_RADIUS/2 - CC_BORDER, r.x2, r.y1, r.y2), 0);
+		draw_2d(rect(0, 0.5f, 0, 1), rect(r.x1, r.x1 + CC_RADIUS/2 + CC_BORDER, r.y1, r.y2), 0);
+		draw_2d(rect(0.5f, 0.5f, 0, 1), rect(r.x1 + CC_RADIUS/2 + CC_BORDER, r.x2 - CC_RADIUS/2 - CC_BORDER, r.y1, r.y2), 0);
+		draw_2d(rect(0.5f, 1, 0, 1), rect(r.x2 - CC_RADIUS/2 - CC_BORDER, r.x2, r.y1, r.y2), 0);
 
 		// icons
 		draw_icon(r_move, tex_move, moving);

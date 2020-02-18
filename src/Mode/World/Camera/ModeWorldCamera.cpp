@@ -235,16 +235,16 @@ void ModeWorldCamera::on_draw_win(MultiView::Window *win)
 			inter.add2(last_pos, last_vel, 0);
 			inter.add2(c.pos, c.Vel, c.Duration);
 			inter.normalize();
-			set_line_color(White);
+			set_color(White);
 			int N = 50;
 			for (int n=0;n<N;n++)
 				draw_line(inter.get((float)n / N), inter.get((float)(n+1) / N));
 			if (edit_vel){
-				set_line_color(Green);
+				set_color(Green);
 				draw_line(c.pos, c.pos + c.Vel);
 			}
 		}else{
-			set_line_color(Grey);
+			set_color(Grey);
 			draw_line(last_pos, c.pos);
 		}
 		last_pos = c.pos;

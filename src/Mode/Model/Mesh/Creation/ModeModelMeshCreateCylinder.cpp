@@ -132,18 +132,18 @@ void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win) {
 	if (pos.num > 0) {
 
 		// control points
-		nix::SetColor(scheme.CREATION_LINE);
+		set_color(scheme.CREATION_LINE);
 		nix::SetShader(nix::default_shader_2d);
 		for (int i=0;i<pos.num;i++) {
 			vector pp = win->project(pos[i]);
-			nix::DrawRect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
+			draw_rect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
 		}
 
 		//mode_model->setMaterialCreation(2);
 
 		// control polygon
 		set_line_width(scheme.LINE_WIDTH_MEDIUM);
-		set_line_color(scheme.CREATION_LINE);
+		set_color(scheme.CREATION_LINE);
 		if (pos.num == 2)
 			draw_line(pos[0], pos[1]);
 		else

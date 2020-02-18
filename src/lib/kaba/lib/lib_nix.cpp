@@ -190,14 +190,6 @@ void SIAddPackageNix()
 		func_add_param("m", TypeMatrix);
 	add_func("NixDrawTriangles", TypeVoid, nix_p(&nix::DrawTriangles), FLAG_STATIC);
 		func_add_param("vb", TypeVertexBufferP);
-	add_func("NixDraw2D", TypeVoid, nix_p(&nix::Draw2D), FLAG_STATIC);
-		func_add_param("source", TypeRect);
-		func_add_param("dest", TypeRect);
-		func_add_param("z", TypeFloat32);
-	add_func("NixDrawStr", TypeVoid, nix_p(&nix::DrawStr), FLAG_STATIC);
-		func_add_param("x", TypeFloat32);
-		func_add_param("y", TypeFloat32);
-		func_add_param("str", TypeString);
 	add_func("NixDrawLines", TypeVoid, nix_p(&nix::DrawLines), FLAG_STATIC);
 		func_add_param("vb", TypeVertexBufferP);
 		func_add_param("contiguous", TypeBool);
@@ -259,8 +251,6 @@ void SIAddPackageNix()
 		func_add_param("specular", TypeColor);
 		func_add_param("shininess", TypeFloat32);
 		func_add_param("emission", TypeColor);
-	add_func("NixSetColor", TypeVoid, nix_p(&nix::SetColor), FLAG_STATIC);
-		func_add_param("c", TypeColor);
 	add_func("NixSetTexture", TypeVoid, nix_p(&nix::SetTexture), FLAG_STATIC);
 		func_add_param("t", TypeTexture);
 	add_func("NixSetShader", TypeVoid, nix_p(&nix::SetShader), FLAG_STATIC);

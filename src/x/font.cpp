@@ -154,6 +154,7 @@ float _cdecl Font::getWidth(float height, const string &str)
 // display a string with our font (values relative to screen)
 float _cdecl Font::drawStr(float x, float y, float z, float _height, const string &str, bool centric)
 {
+#if 0
 	if (centric)
 		x -= getWidth(_height, str) / 2;
 	nix::SetAlpha(ALPHA_SOURCE_ALPHA, ALPHA_SOURCE_INV_ALPHA);
@@ -182,11 +183,13 @@ float _cdecl Font::drawStr(float x, float y, float z, float _height, const strin
 	}
 	nix::SetAlpha(ALPHA_NONE);
 	return w;
+#endif
 }
 
 // vertically display a text 
 float _cdecl Font::drawStrVert(float x, float y, float z, float _height, const string &str)
 {
+#if 0
 	nix::SetAlpha(ALPHA_SOURCE_ALPHA, ALPHA_SOURCE_INV_ALPHA);
 	nix::SetTexture(texture);
 	float xf=_height*x_factor;
@@ -209,6 +212,7 @@ float _cdecl Font::drawStrVert(float x, float y, float z, float _height, const s
 	}
 	nix::SetAlpha(ALPHA_NONE);
 	return 0;
+#endif
 }
 
 };

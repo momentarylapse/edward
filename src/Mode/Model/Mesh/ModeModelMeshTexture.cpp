@@ -120,21 +120,21 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 						(float)(i+1)/16.0f*nix::target_width,
 						(float)j/16.0f*nix::target_height,
 						(float)(j+1)/16.0f*nix::target_height);
-				nix::SetColor(((i+j)%2==0) ? c1 : c2);
-				nix::Draw2D(rect::ID, r, 0.999f );
+				set_color(((i+j)%2==0) ? c1 : c2);
+				draw_2d(rect::ID, r, 0.999f );
 			}
 		nix::SetAlphaSD(ALPHA_SOURCE_ALPHA, ALPHA_SOURCE_INV_ALPHA);
 	}
-	nix::SetColor(color(1,0.8f,0.8f,0.8f));
+	set_color(color(1,0.8f,0.8f,0.8f));
 	nix::SetTexture(cur_tex);
-	nix::Draw2D(s, nix::target_rect, 0.99f);
+	draw_2d(s, nix::target_rect, 0.99f);
 	nix::SetTexture(NULL);
 	nix::SetAlphaM(ALPHA_NONE);
 
 	// rectangle of unity
 	a = win->project(v_0);
 	b = win->project(vector(1, 1, 0));
-	set_line_color(Red);
+	set_color(Red);
 	set_line_width(1.0f);
 	draw_line_2d(a.x, a.y, b.x, a.y, 0.98f);
 	draw_line_2d(b.x, a.y, b.x, b.y, 0.98f);
@@ -143,7 +143,7 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 
 
 	// draw triangles (outlines) of current material
-	set_line_color(White);
+	set_color(White);
 	for (ModelPolygon &t: data->mesh->polygon) {
 		if (t.material != mode_model_mesh->current_material)
 			continue;

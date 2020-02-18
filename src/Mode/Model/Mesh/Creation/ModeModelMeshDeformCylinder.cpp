@@ -171,7 +171,7 @@ void ModeModelMeshDeformCylinder::on_draw_win(MultiView::Window* win)
 	}
 
 	set_line_width(scheme.LINE_WIDTH_MEDIUM);
-	set_line_color(scheme.CREATION_LINE);
+	set_color(scheme.CREATION_LINE);
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetZ(false, false);
 	draw_line(axis[0], axis[1]);
@@ -179,7 +179,7 @@ void ModeModelMeshDeformCylinder::on_draw_win(MultiView::Window* win)
 	vector e1 = dir.ortho();
 	vector e2 = dir ^ e1;
 	foreachi(vector &p, param, ip){
-		set_line_color((ip == hover) ? scheme.SELECTION : scheme.CREATION_LINE);
+		set_color((ip == hover) ? scheme.SELECTION : scheme.CREATION_LINE);
 		vector m = axis[0] + (axis[1] - axis[0]) * p.y;
 		draw_circle(m, dir, radius * p.z);
 	}

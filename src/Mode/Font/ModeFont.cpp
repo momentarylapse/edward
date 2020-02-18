@@ -69,13 +69,12 @@ void ModeFont::on_end()
 
 
 
-void ModeFont::on_draw()
-{
+void ModeFont::on_draw() {
 	nix::SetZ(false, false);
-	nix::SetColor(White);
+	set_color(White);
 	nix::SetShader(nix::default_shader_2d);
-	nix::DrawRect(0, (float)nix::target_width, nix::target_height * 0.9f, (float)nix::target_height, 0);
-	nix::SetColor(Black);
+	draw_rect(0, (float)nix::target_width, nix::target_height * 0.9f, (float)nix::target_height, 0);
+	set_color(Black);
 	if (dialog)
 		font->drawStr(0, (float)nix::target_height * 0.9f, 0, (float)nix::target_height * 0.1f, dialog->GetSampleText());
 }
@@ -186,9 +185,9 @@ void Draw2D(const rect &source, const rect *dest)
 				nix::target_width/2-(mv->cam.pos.x-dest->x2)*mv->active_win->zoom(),
 				nix::target_height/2-(mv->cam.pos.y-dest->y1)*mv->active_win->zoom(),
 				nix::target_height/2-(mv->cam.pos.y-dest->y2)*mv->active_win->zoom());
-		nix::Draw2D(source, d, 0);
+		draw_2d(source, d, 0);
 	}else
-		nix::Draw2D(source, nix::target_rect, 0);
+		draw_2d(source, nix::target_rect, 0);
 }
 
 void DrawLineH(float x1, float x2, float y) {
@@ -217,21 +216,21 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 	nix::SetZ(false, false);
 	rect d = rect(0, (float)data->TextureWidth, 0, (float)data->TextureHeight);
 	nix::SetTexture(NULL);
-	nix::SetColor(White);
+	set_color(White);
 	Draw2D(rect::ID, &d);
 	nix::SetTexture(data->Texture);
-	nix::SetColor(Black);
+	set_color(Black);
 	Draw2D(rect::ID, &d);
 	nix::SetTexture(NULL);
 
 	// grid (horizontal lines)
 	set_line_width(1.0f);
 	for (int i=0;i<NumY;i++){
-		set_line_color(color(0.3f,0.0f,0.8f,0.0f));
+		set_color(color(0.3f,0.0f,0.8f,0.0f));
 		DrawLineH(0, data->TextureWidth,i*data->global.GlyphHeight+data->global.GlyphY1);
-		set_line_color(color(0.3f,0.0f,1.0f,0.0f));
+		set_color(color(0.3f,0.0f,1.0f,0.0f));
 		DrawLineH(0, data->TextureWidth,i*data->global.GlyphHeight+data->global.GlyphY2);
-		set_line_color(color(0.5f,0.5f,0.5f,0.5f));
+		set_color(color(0.5f,0.5f,0.5f,0.5f));
 		DrawLineH(0, data->TextureWidth,(i+1)*data->global.GlyphHeight);
 	}
 
@@ -246,15 +245,15 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 		}
 		if (i == data->Marked){
 			d = rect(x, x2, y, y + data->global.GlyphHeight);
-			nix::SetColor(color(0.2f,1,0,0));
+			set_color(color(0.2f,1,0,0));
 			Draw2D(rect::ID, &d);
 		}
 		set_line_width(1.0f);
-		set_line_color(color(0.3f,0.8f,0.0f,0.0f));
+		set_color(color(0.3f,0.8f,0.0f,0.0f));
 		DrawLineV(x + g.X1, y + data->global.GlyphY1, y + data->global.GlyphY2);
-		set_line_color(color(0.3f,0.8f,0.0f,0.0f));
+		set_color(color(0.3f,0.8f,0.0f,0.0f));
 		DrawLineV(x + g.X2, y + data->global.GlyphY1, y + data->global.GlyphY2);
-		set_line_color(color(0.3f,0.5f,0.5f,0.5f));
+		set_color(color(0.3f,0.5f,0.5f,0.5f));
 		DrawLineV(x2, y, y + data->global.GlyphHeight);
 		x = x2;
 	}

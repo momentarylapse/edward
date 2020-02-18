@@ -715,7 +715,7 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		if (l.view_stage < multi_view->view_stage)
 			continue;
 
-		set_line_color(color(1, 0.9f, 0.6f, 0.3f));
+		set_color(color(1, 0.9f, 0.6f, 0.3f));
 		set_line_width(5);
 		draw_line(l.pos, l.pos - l.ang.ang2dir() * win->cam->radius * 0.1f);
 		set_line_width(1.0f);

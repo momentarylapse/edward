@@ -49,7 +49,7 @@ void ModeModelMeshCreatePolygon::on_draw_win(MultiView::Window *win)
 {
 	parent->on_draw_win(win);
 
-	set_line_color(scheme.CREATION_LINE);
+	set_color(scheme.CREATION_LINE);
 	set_line_width(scheme.LINE_WIDTH_MEDIUM);
 	for (int i=1;i<selection.num;i++){
 		vector pa = data->mesh->vertex[selection[i - 1]].pos;

@@ -115,7 +115,7 @@ void ModeModelMeshDeform::on_draw_win(MultiView::Window *win) {
 	vector n = data->mesh->polygon[multi_view->hover.index].temp_normal;
 	float radius = dialog->get_float("diameter") / 2;
 
-	set_line_color(scheme.CREATION_LINE);
+	set_color(scheme.CREATION_LINE);
 	set_line_width(scheme.LINE_WIDTH_MEDIUM);
 	draw_circle(pos, n, radius);
 }
