@@ -57,7 +57,7 @@ void MeshSelectionModePolygon::on_start() {
 
 float poly_hover(ModelPolygon *pol, MultiView::Window *win, const vector &M, vector &tp, float &z, const Array<ModelVertex> &vertex) {
 	// care for the sense of rotation?
-	if (pol->temp_normal * win->getDirection() > 0)
+	if (pol->temp_normal * win->get_direction() > 0)
 		return -1;
 
 	// project all points
@@ -99,7 +99,7 @@ float ModelPolygon::hover_distance(MultiView::Window *win, const vector &M, vect
 bool ModelPolygon::in_rect(MultiView::Window *win, const rect &r) {
 	// care for the sense of rotation?
 	if (mode_model_mesh->select_cw)
-		if (temp_normal * win->getDirection() > 0)
+		if (temp_normal * win->get_direction() > 0)
 			return false;
 
 	auto *m = mode_model_mesh->data->edit_mesh; // surf->model;

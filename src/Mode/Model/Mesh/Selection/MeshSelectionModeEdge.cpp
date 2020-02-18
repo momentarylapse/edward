@@ -101,7 +101,7 @@ void MeshSelectionModeEdge::on_draw_win(MultiView::Window *win) {
 		return;
 
 	nix::SetZ(false, false);
-	set_wide_lines(scheme.LINE_WIDTH_MEDIUM);
+	set_line_width(scheme.LINE_WIDTH_MEDIUM);
 	auto m = data->edit_mesh;
 	auto &e = m->edge[multi_view->hover.index];
 	Array<vector> p;

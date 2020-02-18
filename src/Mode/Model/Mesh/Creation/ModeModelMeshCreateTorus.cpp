@@ -111,7 +111,7 @@ void ModeModelMeshCreateTorus::on_draw_win(MultiView::Window *win) {
 
 void ModeModelMeshCreateTorus::on_mouse_move()
 {
-	axis = multi_view->mouse_win->getDirection();
+	axis = multi_view->mouse_win->get_direction();
 	if (pos_chosen){
 		vector m = multi_view->get_cursor(pos);
 		if (rad_chosen){

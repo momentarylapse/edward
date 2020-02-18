@@ -86,7 +86,7 @@ void ModeModelMeshCreatePlane::on_mouse_move() {
 	if (pos_chosen) {
 		vector pos2 = multi_view->get_cursor();
 		vector dir0, dir1, dir2;
-		multi_view->mouse_win->getMovingFrame(dir0, dir1, dir2);
+		multi_view->mouse_win->get_moving_frame(dir0, dir1, dir2);
 		length[0] = dir1 * vector::dot(dir1, pos2 - pos);
 		length[1] = dir2 * vector::dot(dir2, pos2 - pos);
 		invert = (((length[0] ^ length[1]) * dir0) > 0);

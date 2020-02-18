@@ -225,7 +225,7 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 	nix::SetTexture(NULL);
 
 	// grid (horizontal lines)
-	set_wide_lines(1.0f);
+	set_line_width(1.0f);
 	for (int i=0;i<NumY;i++){
 		set_line_color(color(0.3f,0.0f,0.8f,0.0f));
 		DrawLineH(0, data->TextureWidth,i*data->global.GlyphHeight+data->global.GlyphY1);
@@ -249,7 +249,7 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 			nix::SetColor(color(0.2f,1,0,0));
 			Draw2D(rect::ID, &d);
 		}
-		set_wide_lines(1.0f);
+		set_line_width(1.0f);
 		set_line_color(color(0.3f,0.8f,0.0f,0.0f));
 		DrawLineV(x + g.X1, y + data->global.GlyphY1, y + data->global.GlyphY2);
 		set_line_color(color(0.3f,0.8f,0.0f,0.0f));

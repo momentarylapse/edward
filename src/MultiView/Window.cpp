@@ -139,22 +139,23 @@ void draw_grid_3d(const color &bg, Window *w, int plane, float alpha) {
 		col[level].add(c);
 	}
 
-	set_wide_lines(1.0f);
+	set_line_width(1.0f);
 	for (int l=3; l>=1; l--)
 		draw_lines_colored(p[l], col[l], false);
-	set_wide_lines(2.0f);
+	set_line_width(2.0f);
 	draw_lines_colored(p[0], col[0], false);
-	set_wide_lines(1.0f);
+	set_line_width(1.0f);
 }
 
 
-void Window::drawGrid()
+void Window::draw_grid()
 {
 	if (type == VIEW_2D)
 		return;
 
 	nix::SetTexture(NULL);
 	nix::SetZ(false, false);
+	set_projection_matrix();
 
 	// Hintergrund-Bilder
 	/*if(win<4)
@@ -172,9 +173,9 @@ void Window::drawGrid()
 
 // grid of coordinates
 
-	color bg = getBackgroundColor();
+	color bg = get_background_color();
 
-	vector d = getDirection();
+	vector d = get_direction();
 	d.x = abs(d.x);
 	d.y = abs(d.y);
 	d.z = abs(d.z);
@@ -189,7 +190,7 @@ void Window::drawGrid()
 		draw_grid_3d(bg, this, 0, (d.x - DMIN) / (1-DMIN));
 }
 
-color Window::getBackgroundColor()
+color Window::get_background_color()
 {
 	if (this == multi_view->active_win)
 		return scheme.BACKGROUND_SELECTED;
@@ -245,79 +246,50 @@ string view_name(int type)
 	return "???";
 }
 
-void set_projection_matrix(Window *w)
-{
-	float r = w->cam->radius;
-	float cx = (w->dest.x1 + w->dest.x2) / 2;
-	float cy = (w->dest.y1 + w->dest.y2) / 2;
-	if (w->type == VIEW_PERSPECTIVE){
-		float height = w->dest.height();
+void Window::set_projection_matrix() {
+	nix::SetViewMatrix(view_matrix);
+	float r = cam->radius;
+	float cx = (dest.x1 + dest.x2) / 2;
+	float cy = (dest.y1 + dest.y2) / 2;
+	if (type == VIEW_PERSPECTIVE){
+		float height = dest.height();
 		nix::SetProjectionPerspectiveExt(cx, cy, height, height, r / 1000, r * 1000);
-		w->reflection_matrix = matrix::scale( 1, -1, 1);
-	}else if (w->type == VIEW_2D){
-		float height = w->zoom();
+		reflection_matrix = matrix::scale( 1, -1, 1);
+	}else if (type == VIEW_2D){
+		float height = zoom();
 		nix::SetProjectionOrthoExt(cx, cy, -height, height, -1, 1);
-		w->reflection_matrix = matrix::scale( -1, 1, 1);
+		reflection_matrix = matrix::scale( -1, 1, 1);
 	}else{
-		float height = w->zoom();
+		float height = zoom();
 		nix::SetProjectionOrthoExt(cx, cy, height, -height, - r * 100, r * 100);
-		w->reflection_matrix = matrix::scale( 1, -1, 1);
+		reflection_matrix = matrix::scale( 1, -1, 1);
 	}
-	w->projection_matrix = nix::projection_matrix;
-
+	projection_matrix = nix::projection_matrix;
 }
 
-void Window::draw()
-{
-	nix::SetScissor(rect(dest.x1, dest.x2+1, dest.y1, dest.y2));
-	nix::SetTexture(NULL);
+void Window::set_projection_matrix_pixel() {
+	nix::SetViewMatrix(matrix::ID);
+	nix::SetProjectionOrtho(false);
+}
 
-	color bg = getBackgroundColor();
-
-	set_projection_matrix(this);
-
-	// background color
-	nix::ResetToColor(bg);
-	nix::SetShader(nix::default_shader_2d);
-
+void Window::update_matrices() {
 	// camera matrix
 	vector pos = cam->pos;
-	string view_kind = view_name(type);
 	local_ang = view_ang(type, cam);
 	if (type == VIEW_PERSPECTIVE){
 		if (!cam->ignore_radius)
 			pos -= cam->radius * (cam->ang * vector::EZ);
 	}
-	nix::SetViewMatrix(matrix::rotation_q(local_ang.bar()) * matrix::translation(-pos));
-	view_matrix = nix::view_matrix;
+	view_matrix = matrix::rotation(local_ang.bar()) * matrix::translation(-pos);
 	pv_matrix = projection_matrix * view_matrix;
 	ipv_matrix = pv_matrix.inverse();
+}
 
-
-	nix::SetWorldMatrix(matrix::ID);
-	//nix::SetZ(true,true);
-	nix::SetZ(type != VIEW_2D, type != VIEW_2D);
-	nix::SetWire(false);
-	nix::EnableFog(false);
-	nix::SetFog(FOG_EXP, 0, 1000, 0, Black); // some shaders need correct fog values
-	if (multi_view->grid_enabled)
-		drawGrid();
-
-	nix::SetZ(true, true);
-	// light
-	vector dir = cam->ang * vector::EZ;
-	nix::SetLightDirectional(multi_view->light, dir, White, 0.7f);
-	nix::EnableLight(multi_view->light, true);
-	nix::SetMaterial(Black,White,Black,0,White);//Black);
-	nix::SetColor(White);
-
+void Window::draw_data_points() {
 	bool index_key = ed->get_key(hui::KEY_I);
 
-	// draw the actual data
-	if (ed->cur_mode)
-		ed->cur_mode->on_draw_win(this);
-
 	// draw multiview data
+	set_projection_matrix_pixel();
 	nix::SetShader(nix::default_shader_2d);
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetTexture(NULL);
@@ -375,20 +347,11 @@ void Window::draw()
 		}
 	}
 
-	// type of view
+}
 
-	// cursor
-	if (this != multi_view->mouse_win){
-		vector pp = project(multi_view->get_cursor());
-		nix::SetShader(nix::default_shader_2d);
-		nix::SetColor(scheme.CREATION_LINE);
-		nix::DrawRect(pp.x-2, pp.x+2, pp.y-2, pp.y+2, 0);
-	}
-
-
-	if (multi_view->allow_mouse_actions and !multi_view->sel_rect.active)
-		if (multi_view->action_con->visible)
-			multi_view->action_con->draw(this);
+void Window::draw_header() {
+	color bg = get_background_color();
+	string view_kind = view_name(type);
 
 	name_dest = rect(dest.x1 + 3, dest.x1 + 3 + nix::GetStrWidth(view_kind), dest.y1, dest.y1 + 20);
 
@@ -401,6 +364,68 @@ void Window::draw()
 		bg = scheme.hoverify(bg);
 	draw_str_bg(dest.x1 + 3, dest.y1 + 3, view_kind.upper(), scheme.WINDOW_TITLE, bg, TextAlign::LEFT);
 	nix::SetColor(scheme.TEXT);
+}
+
+void Window::draw() {
+	nix::SetScissor(rect(dest.x1, dest.x2+1, dest.y1, dest.y2));
+	nix::SetTexture(NULL);
+
+	color bg = get_background_color();
+
+	// background color
+	nix::ResetToColor(bg);
+	nix::SetShader(nix::default_shader_2d);
+
+	update_matrices();
+	set_projection_matrix();
+
+
+	nix::SetWorldMatrix(matrix::ID);
+	//nix::SetZ(true,true);
+	nix::SetZ(type != VIEW_2D, type != VIEW_2D);
+	nix::SetWire(false);
+	nix::EnableFog(false);
+	nix::SetFog(FOG_EXP, 0, 1000, 0, Black); // some shaders need correct fog values
+	if (multi_view->grid_enabled)
+		draw_grid();
+
+	nix::SetZ(true, true);
+	// light
+	vector dir = cam->ang * vector::EZ;
+	nix::SetLightDirectional(multi_view->light, dir, White, 0.7f);
+	nix::EnableLight(multi_view->light, true);
+	nix::SetMaterial(Black,White,Black,0,White);//Black);
+	nix::SetColor(White);
+
+	// draw the actual data
+	set_projection_matrix();
+	if (ed->cur_mode)
+		ed->cur_mode->on_draw_win(this);
+
+	nix::SetShader(nix::default_shader_2d);
+	nix::SetAlpha(ALPHA_NONE);
+	nix::SetTexture(NULL);
+	set_projection_matrix_pixel();
+
+	draw_data_points();
+
+	// type of view
+
+	// cursor
+	if (this != multi_view->mouse_win) {
+		vector pp = project(multi_view->get_cursor());
+		nix::SetShader(nix::default_shader_2d);
+		nix::SetColor(scheme.CREATION_LINE);
+		nix::DrawRect(pp.x-2, pp.x+2, pp.y-2, pp.y+2, 0);
+	}
+
+
+	if (multi_view->allow_mouse_actions and !multi_view->sel_rect.active)
+		if (multi_view->action_con->visible)
+			multi_view->action_con->draw(this);
+
+
+	draw_header();
 
 	for (auto &m: multi_view->message3d){
 		vector p = project(m.pos);
@@ -410,8 +435,7 @@ void Window::draw()
 }
 
 
-vector Window::project(const vector &p)
-{
+vector Window::project(const vector &p) {
 	vector r = pv_matrix.project(p);
 	r.x = nix::target_width * (r.x + 1) / 2;
 	r.y = nix::target_height * (-r.y + 1) / 2;
@@ -419,8 +443,7 @@ vector Window::project(const vector &p)
 	return r;
 }
 
-vector Window::unproject(const vector &p)
-{
+vector Window::unproject(const vector &p) {
 	vector r;
 	r.x = p.x*2/nix::target_width - 1;
 	r.y = - p.y*2/nix::target_height + 1;
@@ -429,8 +452,7 @@ vector Window::unproject(const vector &p)
 	//return pv_matrix.unproject(r);
 }
 
-vector Window::unproject(const vector &p, const vector &o)
-{
+vector Window::unproject(const vector &p, const vector &o) {
 	vector op = project(o);
 	vector r;
 	r.x = p.x*2/nix::target_width - 1;
@@ -439,30 +461,25 @@ vector Window::unproject(const vector &p, const vector &o)
 	return ipv_matrix.project(r);
 }
 
-vector Window::getDirection()
-{
+vector Window::get_direction() {
 	return local_ang * vector::EZ;
 }
 
-vector Window::getDirectionUp()
-{
+vector Window::get_direction_up() {
 	return local_ang * vector::EY;
 }
 
-vector Window::getDirectionRight()
-{
+vector Window::get_direction_right() {
 	return local_ang * vector::EX;
 }
 
-void Window::getMovingFrame(vector &dir, vector &up, vector &right)
-{
-	dir = getDirection();
-	up = getDirectionUp();
+void Window::get_moving_frame(vector &dir, vector &up, vector &right) {
+	dir = get_direction();
+	up = get_direction_up();
 	right = dir ^ up;
 }
 
-float Window::zoom()
-{
+float Window::zoom() {
 	//return 1000.0f / radius;
 	if (multi_view->mode3d)
 		return dest.height() / cam->radius;

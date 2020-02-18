@@ -21,7 +21,7 @@ class Image;
 void drawing_helper_init();
 
 void set_line_color(const color &c);
-void set_wide_lines(float width);
+void set_line_width(float width);
 void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b);
 void draw_circle(const vector &pos, const vector &n, float radius);
 

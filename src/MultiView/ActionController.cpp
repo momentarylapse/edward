@@ -132,7 +132,7 @@ void ActionController::update_action() {
 	vector v2  = active_win->unproject(v2p, m0);
 	vector v1  = m0;
 	vector v1p = active_win->project(v1);
-	vector dir = active_win->getDirection();
+	vector dir = active_win->get_direction();
 	vector _param = v_0;
 	if (action.mode == ACTION_MOVE) {
 		_param = mvac_project_trans(constraints, v2 - v1);
@@ -151,7 +151,7 @@ void ActionController::update_action() {
 	} else if (action.mode == ACTION_MIRROR) {
 		_param = mvac_mirror(constraints);
 		if (constraints == ACTION_CONSTRAINTS_NONE)
-			_param = active_win->getDirectionRight();
+			_param = active_win->get_direction_right();
 	} else {
 		param = v_0;
 	}
@@ -322,6 +322,7 @@ bool geo_allow(int i, Window *win, const matrix &geo_mat) {
 	return true;
 }
 
+// in 2d mode!
 void ActionController::draw(Window *win) {
 	if (!multi_view->allow_mouse_actions)
 		return;
@@ -332,6 +333,7 @@ void ActionController::draw(Window *win) {
 	nix::SetWorldMatrix(m);
 	nix::SetTexture(NULL);
 	nix::SetShader(nix::default_shader_3d);
+	win->set_projection_matrix();
 	foreachi(Geometry *g, geo_show, i) {
 		if (!geo_allow(i, win, m))
 			continue;
@@ -344,10 +346,11 @@ void ActionController::draw(Window *win) {
 	nix::SetZ(false, false);
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetWorldMatrix(matrix::ID);
+	win->set_projection_matrix_pixel();
 
 	if (in_use()) {
 		set_line_color(color(1, 0.2f, 0.7f, 0.2f));
-		set_wide_lines(1.0f);
+		set_line_width(1.0f);
 		float r = multi_view->cam.radius * 10;
 		if (constraints == ACTION_CONSTRAINTS_X)
 			draw_line(pos - vector::EX * r, pos + vector::EX * r);

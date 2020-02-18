@@ -152,6 +152,6 @@ void ModeWorldTerrain::on_draw_win(MultiView::Window* win) {
 	float radius = dialog->get_float("diameter") / 2;
 
 	set_line_color(scheme.CREATION_LINE);
-	set_wide_lines(scheme.LINE_WIDTH_HELPER);
+	set_line_width(scheme.LINE_WIDTH_HELPER);
 	draw_circle(pos, vector::EY, radius);
 }

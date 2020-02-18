@@ -148,7 +148,7 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win) {
 
 		// control polygon
 		set_line_color(ColorInterpolate(scheme.CREATION_LINE, scheme.BACKGROUND, 0.3f));
-		set_wide_lines(scheme.LINE_WIDTH_HELPER);
+		set_line_width(scheme.LINE_WIDTH_HELPER);
 		draw_lines(pos, true);
 
 		if ((!ready_for_scaling) and (pos.num > 0))
@@ -163,7 +163,7 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win) {
 			inter.add(multi_view->get_cursor());
 		inter.normalize();
 		set_line_color(scheme.CREATION_LINE);
-		set_wide_lines(scheme.LINE_WIDTH_HELPER);
+		set_line_width(scheme.LINE_WIDTH_HELPER);
 		for (int i=0; i<100; i++)
 			draw_line(inter.get((float)i * 0.01f), inter.get((float)i * 0.01f + 0.01f));
 	}

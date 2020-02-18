@@ -15,8 +15,7 @@ namespace MultiView{
 class MultiView;
 class Camera;
 
-class Window
-{
+class Window {
 public:
 	Window(MultiView *view, int type);
 
@@ -35,16 +34,24 @@ public:
 	float get_grid_d();
 
 	void draw();
-	void drawGrid();
+	void draw_grid();
+	void draw_data_points();
+	void draw_header();
+
 	vector project(const vector &p);
 	vector unproject(const vector &p);
 	vector unproject(const vector &p, const vector &o);
-	vector getDirection();
-	vector getDirectionUp();
-	vector getDirectionRight();
-	void getMovingFrame(vector &dir, vector &up, vector &right);
 
-	color getBackgroundColor();
+	void update_matrices();
+	void set_projection_matrix();
+	void set_projection_matrix_pixel();
+
+	vector get_direction();
+	vector get_direction_up();
+	vector get_direction_right();
+	void get_moving_frame(vector &dir, vector &up, vector &right);
+
+	color get_background_color();
 };
 
 };

@@ -198,7 +198,7 @@ void ModeModelSkeleton::draw_skeleton(MultiView::Window *win, Array<ModelBone> &
 	nix::SetWorldMatrix(matrix::ID);
 
 	nix::SetZ(false, false);
-	set_wide_lines(thin ? scheme.LINE_WIDTH_THIN : scheme.LINE_WIDTH_BONE);
+	set_line_width(thin ? scheme.LINE_WIDTH_THIN : scheme.LINE_WIDTH_BONE);
 
 	for (ModelBone &b: bone) {
 		if (b.view_stage < multi_view->view_stage)

@@ -64,10 +64,10 @@ bool ModeModelMeshCreateCube::set_dpos3() {
 	float min_thick = 10 / ed->multi_view_3d->active_win->zoom(); // 10 px
 
 
-	if (fabs(multi_view->mouse_win->getDirection() * n) > 0.97f) {
+	if (fabs(multi_view->mouse_win->get_direction() * n) > 0.97f) {
 		// cursor in cube plane -> use radius
 		length[2] = n * multi_view->maybe_snap_f(max(dpos.length(), min_thick));
-		if (multi_view->mouse_win->getDirection() * n < 0)
+		if (multi_view->mouse_win->get_direction() * n < 0)
 			length[2] = -length[2];
 		return true;
 	}
@@ -103,8 +103,8 @@ void ModeModelMeshCreateCube::on_mouse_move() {
 	if (pos_chosen) {
 		if (!pos2_chosen) {
 			vector pos2 = multi_view->get_cursor();
-			vector dir0 = multi_view->mouse_win->getDirectionRight();
-			vector dir1 = multi_view->mouse_win->getDirectionUp();
+			vector dir0 = multi_view->mouse_win->get_direction_right();
+			vector dir1 = multi_view->mouse_win->get_direction_up();
 			length[0] = dir0 * vector::dot(dir0, pos2 - pos);
 			length[1] = dir1 * vector::dot(dir1, pos2 - pos);
 			update_geometry();

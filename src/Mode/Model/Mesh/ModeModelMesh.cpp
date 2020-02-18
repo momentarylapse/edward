@@ -551,15 +551,15 @@ void ModeModelMesh::draw_effects(MultiView::Window *win) {
 }
 
 void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, Array<ModelVertex> &vertex, bool selection_filter) {
-	color bg = win->getBackgroundColor();
+	color bg = win->get_background_color();
 	auto *multi_view = win->multi_view;
 
 	nix::SetOffset(-2);
-	set_wide_lines(selection_filter ? 2.3f : 1.5f);
+	set_line_width(selection_filter ? 2.3f : 1.5f);
 	Array<vector> line_pos;
 	Array<color> line_color;
 
-	vector dir = win->getDirection();
+	vector dir = win->get_direction();
 	for (auto &e: m->edge) {
 		if (e.is_selected != selection_filter)
 			continue;

@@ -19,11 +19,8 @@ namespace nix{
 
 void TestGLError(const char*);
 
-void create_pixel_projection_matrix(matrix &m);
-
 
 matrix view_matrix, projection_matrix;
-matrix projection_matrix2d;
 matrix world_matrix, world_view_projection_matrix;
 
 float view_jitter_x = 0, view_jitter_y = 0;
@@ -35,6 +32,14 @@ Texture *RenderingToTexture = NULL;
 	extern HGLRC hRC;
 #endif
 
+
+
+matrix create_pixel_projection_matrix() {
+	auto t = matrix::translation(vector(-float(target_width)/2.0f,-float(target_height)/2.0f,-0.5f));
+	auto s = matrix::scale(2.0f / float(target_width), -2.0f / float(target_height), 2);
+	return s * t;
+}
+
 void SetViewport(int width, int height) {
 	target_width = max(width, 1);
 	target_height = max(height, 1);
@@ -43,9 +48,6 @@ void SetViewport(int width, int height) {
 	// screen
 	glViewport(0, 0, target_width, target_height);
 	TestGLError("glViewport");
-
-	// projection 2d
-	create_pixel_projection_matrix(projection_matrix2d);
 }
 
 void SetWorldMatrix(const matrix &mat) {
@@ -53,13 +55,6 @@ void SetWorldMatrix(const matrix &mat) {
 	world_view_projection_matrix = projection_matrix * view_matrix * world_matrix;
 }
 
-
-
-void create_pixel_projection_matrix(matrix &m) {
-	auto t = matrix::translation(vector(-float(target_width)/2.0f,-float(target_height)/2.0f,-0.5f));
-	auto s = matrix::scale(2.0f / float(target_width), -2.0f / float(target_height), 2);
-	m = s * t;
-}
 
 // 3D-Matrizen erstellen (Einstellungen ueber SetPerspectiveMode vor NixStart() zu treffen)
 // enable3d: true  -> 3D-Ansicht auf (View3DWidth,View3DHeight) gemapt
@@ -104,7 +99,7 @@ void SetProjectionOrtho(bool relative) {
 	} else {
 		// orthogonal projection (pixel coordinates)
 		//NixSetProjectionOrthoExt(0, 0, 1, 1, )
-		create_pixel_projection_matrix(m);
+		m = create_pixel_projection_matrix();
 	}
 
 	SetProjectionMatrix(m);
@@ -112,6 +107,7 @@ void SetProjectionOrtho(bool relative) {
 
 void SetProjectionMatrix(const matrix &m) {
 	projection_matrix = m;
+	world_view_projection_matrix = projection_matrix * view_matrix * world_matrix;
 }
 
 void SetViewMatrix(const matrix &m) {

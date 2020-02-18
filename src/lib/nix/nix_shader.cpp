@@ -23,7 +23,6 @@ Shader *override_shader = NULL;
 static Array<Shader*> shaders;
 
 int current_program = 0;
-extern matrix projection_matrix2d;
 
 string shader_error;
 
@@ -384,7 +383,6 @@ void Shader::set_default_data() {
 	set_matrix(location[LOCATION_MATRIX_M], world_matrix);
 	set_matrix(location[LOCATION_MATRIX_V], view_matrix);
 	set_matrix(location[LOCATION_MATRIX_P], projection_matrix);
-	set_matrix(location[LOCATION_MATRIX_P2D], projection_matrix2d);
 	for (int i=0; i<NIX_MAX_TEXTURELEVELS; i++)
 		set_int(location[LOCATION_TEX + i], i);
 	if (tex_cube_level >= 0)
@@ -474,7 +472,7 @@ void init_shaders() {
 		"<VertexShader>\n"
 		"#version 330 core\n"
 		"\n"
-		"uniform mat4 mat_p2d;\n"
+		"uniform mat4 mat_mvp;\n"
 		"\n"
 		"layout(location = 0) in vec3 inPosition;\n"
 		"layout(location = 2) in vec2 inTexCoord;\n"
@@ -482,7 +480,7 @@ void init_shaders() {
 		"out vec2 fragmentTexCoord;\n"
 		"\n"
 		"void main() {\n"
-		"	gl_Position = mat_p2d * vec4(inPosition,1);\n"
+		"	gl_Position = mat_mvp * vec4(inPosition,1);\n"
 		"	fragmentTexCoord = inTexCoord;\n"
 		"}\n"
 		"\n"

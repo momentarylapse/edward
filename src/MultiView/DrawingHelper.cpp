@@ -45,7 +45,7 @@ void drawing_helper_init() {
 	tex_round = create_round_texture(32);
 }
 
-void set_wide_lines(float width) {
+void set_line_width(float width) {
 	if (width == 1.0f) {
 		nix::SetShader(MultiView::shader_lines_3d_colored);
 	} else {
@@ -79,7 +79,7 @@ void draw_lines(const Array<vector> &p, bool contiguous) {
 }
 
 void draw_lines_colored(const Array<vector> &p, const Array<color> &c, bool contiguous) {
-	set_wide_lines(2);
+	set_line_width(2);
 	vb_lines->update(0, p);
 	vb_lines->update(1, c);
 	nix::DrawLines(vb_lines, contiguous);
@@ -109,9 +109,9 @@ void draw_circle(const vector &pos, const vector &n, float radius) {
 void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b) {
 	nix::SetZ(false, false);
 	nix::SetColor(scheme.TEXT);
-	set_wide_lines(scheme.LINE_WIDTH_HELPER);
+	set_line_width(scheme.LINE_WIDTH_HELPER);
 	draw_line(a, b);
-	set_wide_lines(1.0f);
+	set_line_width(1.0f);
 	//nix::SetZ(true, true);
 	vector pa = win->project(a);
 	vector pb = win->project(b);

@@ -410,7 +410,7 @@ bool Geometry::isMouseOver(MultiView::Window *win, const matrix &mat, vector &tp
 {
 	for (ModelPolygon &p: polygon){
 		// care for the sense of rotation?
-		if (p.temp_normal * win->getDirection() > 0)
+		if (p.temp_normal * win->get_direction() > 0)
 			continue;
 
 		// project all points

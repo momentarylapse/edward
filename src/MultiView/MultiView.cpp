@@ -740,6 +740,7 @@ void MultiView::on_draw()
 	}
 
 	nix::SetShader(nix::default_shader_2d);
+	nix::SetProjectionOrtho(false);
 	if (sel_rect.active)
 		sel_rect.draw(m);
 
@@ -776,7 +777,7 @@ void MultiView::SelectionRect::draw(const vector &m) {
 	nix::DrawRect(m.x, pos0.x, m.y, pos0.y, 0);
 	nix::SetCull(CULL_DEFAULT);
 	set_line_color(scheme.SELECTION_RECT_BOUNDARY);
-	set_wide_lines(2.0f);
+	set_line_width(2.0f);
 	draw_line_2d(pos0.x, pos0.y, pos0.x, m.y, 0);
 	draw_line_2d(m.x, pos0.y, m.x, m.y, 0);
 	draw_line_2d(pos0.x, pos0.y, m.x, pos0.y, 0);

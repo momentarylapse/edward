@@ -142,7 +142,7 @@ void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win) {
 		//mode_model->setMaterialCreation(2);
 
 		// control polygon
-		set_wide_lines(scheme.LINE_WIDTH_MEDIUM);
+		set_line_width(scheme.LINE_WIDTH_MEDIUM);
 		set_line_color(scheme.CREATION_LINE);
 		if (pos.num == 2)
 			draw_line(pos[0], pos[1]);

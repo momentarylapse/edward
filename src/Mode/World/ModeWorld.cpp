@@ -495,7 +495,7 @@ float WorldTerrain::hover_distance(MultiView::Window *win, const vector &mv, vec
 		return -1;
 	float r = win->cam->radius * 100;
 	vector a = win->unproject(mv);
-	vector b = win->unproject(mv, win->cam->pos + win->getDirection() * r);
+	vector b = win->unproject(mv, win->cam->pos + win->get_direction() * r);
 	TraceData td;
 	bool hit = t->Trace(a, b, v_0, r, td, false);
 	tp = td.point;
@@ -716,9 +716,9 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 			continue;
 
 		set_line_color(color(1, 0.9f, 0.6f, 0.3f));
-		set_wide_lines(5);
+		set_line_width(5);
 		draw_line(l.pos, l.pos - l.ang.ang2dir() * win->cam->radius * 0.1f);
-		set_wide_lines(1.0f);
+		set_line_width(1.0f);
 	}
 
 
