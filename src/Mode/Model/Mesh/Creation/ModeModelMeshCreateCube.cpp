@@ -47,7 +47,7 @@ void ModeModelMeshCreateCube::update_geometry() {
 		if (mode_model_mesh->current_skin == SKIN_PHYSICAL)
 			num_1 = num_2 = num_3 = 1;
 
-		geo = new GeometryCube(pos, length[0], length[1], length[2], num_1, num_2, num_3);
+		geo = new GeometryCube(pos-length[2]/2, length[0], length[1], length[2], num_1, num_2, num_3);
 	} else {
 		float min_thick = 10 / ed->multi_view_3d->active_win->zoom(); // 10 px
 		vector n = length[0] ^ length[1];
@@ -60,18 +60,18 @@ void ModeModelMeshCreateCube::update_geometry() {
 bool ModeModelMeshCreateCube::set_dpos3() {
 	vector n = (length[0] ^ length[1]).normalized();
 	vector dpos = multi_view->get_cursor() - pos2;
-	length[2] = multi_view->maybe_snap_v(n * (n * dpos));
 	float min_thick = 10 / ed->multi_view_3d->active_win->zoom(); // 10 px
 
 
-	if (fabs(multi_view->mouse_win->get_direction() * n) > 0.97f) {
+	if (fabs(multi_view->mouse_win->get_edit_direction() * n) > 0.90f) {
 		// cursor in cube plane -> use radius
-		length[2] = n * multi_view->maybe_snap_f(max(dpos.length(), min_thick));
+		length[2] = n * multi_view->maybe_snap_f(max(dpos.length(), min_thick)) * 2;
 		if (multi_view->mouse_win->get_direction() * n < 0)
 			length[2] = -length[2];
 		return true;
 	}
 
+	length[2] = multi_view->maybe_snap_v(n * (n * dpos)) * 2;
 	if (length[2].length() < min_thick)
 		length[2] = n * min_thick;
 	return false;
@@ -103,10 +103,10 @@ void ModeModelMeshCreateCube::on_mouse_move() {
 	if (pos_chosen) {
 		if (!pos2_chosen) {
 			vector pos2 = multi_view->get_cursor();
-			vector dir0 = multi_view->mouse_win->get_direction_right();
-			vector dir1 = multi_view->mouse_win->get_direction_up();
-			length[0] = dir0 * vector::dot(dir0, pos2 - pos);
-			length[1] = dir1 * vector::dot(dir1, pos2 - pos);
+			vector dir[3];
+			multi_view->mouse_win->get_edit_frame(dir[0], dir[1], dir[2]);
+			length[0] = dir[2] * vector::dot(dir[2], pos2 - pos);
+			length[1] = dir[1] * vector::dot(dir[1], pos2 - pos);
 			update_geometry();
 
 			message = _("Cube base area: ") + multi_view->format_length(length[0].length()) + " x " + multi_view->format_length(length[1].length());

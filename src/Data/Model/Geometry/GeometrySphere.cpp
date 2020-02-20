@@ -28,7 +28,7 @@ GeometrySphere::GeometrySphere(const vector &pos, float radius, int num)
 				vector dp=vector(float(x*2-num),float(y*2-num),float(num));
 				dp.normalize();
 				dp = mat * dp;
-				addVertex(pos + radius * dp);
+				add_vertex(pos + radius * dp);
 			}
 		// create new triangles
 		for (int x=0;x<num;x++)
@@ -43,7 +43,7 @@ GeometrySphere::GeometrySphere(const vector &pos, float radius, int num)
 				sv.add(vector((float) x   /(float)num,(float) y   /(float)num,0));
 				sv.add(vector((float)(x+1)/(float)num,(float) y   /(float)num,0));
 				sv.add(vector((float)(x+1)/(float)num,(float)(y+1)/(float)num,0));
-				addPolygonSingleTexture(v, sv);
+				add_polygon_single_texture(v, sv);
 			}
 		nv += (num + 1) * (num + 1);
 	}

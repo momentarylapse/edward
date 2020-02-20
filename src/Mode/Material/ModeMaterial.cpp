@@ -212,7 +212,7 @@ bool ModeMaterial::optimize_view() {
 	multi_view->reset_view();
 	if (geo) {
 		vector min, max;
-		geo->getBoundingBox(min, max);
+		geo->get_bounding_box(min, max);
 		multi_view->set_view_box(min, max);
 	}
 	return true;

@@ -19,7 +19,7 @@ ModeModelMeshPaste::ModeModelMeshPaste(ModeBase* _parent) :
 	geo = NULL;
 
 	vector min, max;
-	mode_model_mesh->temp_geo.getBoundingBox(min, max);
+	mode_model_mesh->temp_geo.get_bounding_box(min, max);
 	dpos0 = (max + min) / 2;
 }
 

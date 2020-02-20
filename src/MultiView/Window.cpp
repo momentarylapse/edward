@@ -70,6 +70,10 @@ rect win_get_bounds(Window *w, const vector &ax1, const vector &ax2) {
 	p[1] = w->unproject(vector(w->dest.x2, w->dest.my(), 0), w->cam->pos);
 	p[2] = w->unproject(vector(w->dest.mx(), w->dest.y1, 0), w->cam->pos);
 	p[3] = w->unproject(vector(w->dest.mx(), w->dest.y2, 0), w->cam->pos);
+	p[0] = w->unproject(vector(w->dest.x1, w->dest.y1, 0), w->cam->pos);
+	p[1] = w->unproject(vector(w->dest.x2, w->dest.y1, 0), w->cam->pos);
+	p[2] = w->unproject(vector(w->dest.x1, w->dest.y2, 0), w->cam->pos);
+	p[3] = w->unproject(vector(w->dest.x2, w->dest.y2, 0), w->cam->pos);
 
 	rect r = rect::ID;
 	for (int i=0; i<4; i++) {
@@ -85,6 +89,40 @@ rect win_get_bounds(Window *w, const vector &ax1, const vector &ax2) {
 			r.y2 = y;
 	}
 	return r;
+}
+
+rect move_rect(const rect &r, int dx, int dy) {
+	return rect(r.x1 + r.width() * dx, r.x2 + r.width() * dx, r.y1 + r.height() * dy, r.y2 + r.height() * dy);
+}
+
+void add_grid(const rect &r, Array<vector> p[4], Array<color> col[4], float D, float DERR, const vector &dir_1, const vector &dir_2, float alpha) {
+
+	int ix0 = int(ceil(r.x1 / D));
+	int ix1 = int(floor(r.x2 / D));
+	for (int i=ix0; i<=ix1; i++) {
+		int level = grid_level(i);
+		float dens = grid_density(level, DERR);
+		color c = scheme.GRID; //ColorInterpolate(bg, scheme.GRID, alpha * dens);
+		c.a = alpha * dens;
+		p[level].add(dir_1 * (float)(i*D) + dir_2 * r.y1);
+		p[level].add(dir_1 * (float)(i*D) + dir_2 * r.y2);
+		col[level].add(c);
+		col[level].add(c);
+	}
+
+
+	int iy0 = int(ceil(r.y1 / D));
+	int iy1 = int(floor(r.y2 / D));
+	for (int i=iy0; i<=iy1; i++) {
+		int level = grid_level(i);
+		float dens = grid_density(level, DERR);
+		color c = scheme.GRID;//ColorInterpolate(bg, scheme.GRID, alpha * dens);
+		c.a = alpha * dens;
+		p[level].add(dir_2 * (float)(i*D) + dir_1 * r.x1);
+		p[level].add(dir_2 * (float)(i*D) + dir_1 * r.x2);
+		col[level].add(c);
+		col[level].add(c);
+	}
 }
 
 void draw_grid_3d(const color &bg, Window *w, int plane, float alpha) {
@@ -111,31 +149,16 @@ void draw_grid_3d(const color &bg, Window *w, int plane, float alpha) {
 
 
 	rect r = win_get_bounds(w, dir_1, dir_2);
+	add_grid(r, p, col, D, DERR, dir_1, dir_2, alpha);
+	/*add_grid(move_rect(r, 1, 0), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);
+	add_grid(move_rect(r, -1, 0), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);
+	add_grid(move_rect(r, 1, -1), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);
+	add_grid(move_rect(r, 0, -1), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);
+	add_grid(move_rect(r, -1, -1), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);
+	add_grid(move_rect(r, 1, 1), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);
+	add_grid(move_rect(r, 0, 1), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);
+	add_grid(move_rect(r, -1, 1), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);*/
 
-	int ix0 = int(ceil(r.x1 / D));
-	int ix1 = int(floor(r.x2 / D));
-	for (int i=ix0; i<=ix1; i++) {
-		int level = grid_level(i);
-		float dens = grid_density(level, DERR);
-		color c = ColorInterpolate(bg, scheme.GRID, alpha * dens);
-		p[level].add(dir_1 * (float)(i*D) + dir_2 * r.y1);
-		p[level].add(dir_1 * (float)(i*D) + dir_2 * r.y2);
-		col[level].add(c);
-		col[level].add(c);
-	}
-
-
-	int iy0 = int(ceil(r.y1 / D));
-	int iy1 = int(floor(r.y2 / D));
-	for (int i=iy0; i<=iy1; i++) {
-		int level = grid_level(i);
-		float dens = grid_density(level, DERR);
-		color c = ColorInterpolate(bg, scheme.GRID, alpha * dens);
-		p[level].add(dir_2 * (float)(i*D) + dir_1 * r.x1);
-		p[level].add(dir_2 * (float)(i*D) + dir_1 * r.x2);
-		col[level].add(c);
-		col[level].add(c);
-	}
 
 	set_line_width(1.0f);
 	for (int l=3; l>=1; l--)
@@ -171,6 +194,7 @@ void Window::draw_grid()
 
 // grid of coordinates
 
+	nix::SetAlpha(ALPHA_SOURCE_ALPHA, ALPHA_SOURCE_INV_ALPHA);
 	color bg = get_background_color();
 
 	vector d = get_direction();
@@ -186,10 +210,35 @@ void Window::draw_grid()
 		draw_grid_3d(bg, this, 1, (d.y - DMIN) / (1-DMIN));
 	if (d.x > DMIN)
 		draw_grid_3d(bg, this, 0, (d.x - DMIN) / (1-DMIN));
+	nix::SetAlpha(ALPHA_NONE);
 }
 
-color Window::get_background_color()
-{
+int Window::active_grid() {
+	vector d = get_direction();
+	d.x = abs(d.x);
+	d.y = abs(d.y);
+	d.z = abs(d.z);
+	if (d.x > d.y and d.x > d.z)
+		return 0;
+	if (d.y > d.z)
+		return 1;
+	return 2;
+}
+
+vector Window::active_grid_direction() {
+	vector dd = vector::EZ;
+	int ag = active_grid();
+	if (ag == 0)
+		dd = vector::EX;
+	if (ag == 1)
+		dd = vector::EY;
+
+	if (dd * get_direction() < 0)
+		return -dd;
+	return dd;
+}
+
+color Window::get_background_color() {
 	if (this == multi_view->active_win)
 		return scheme.BACKGROUND_SELECTED;
 	return scheme.BACKGROUND;
@@ -279,6 +328,7 @@ void Window::update_matrices() {
 			pos -= cam->radius * (cam->ang * vector::EZ);
 	}
 	view_matrix = matrix::rotation(local_ang.bar()) * matrix::translation(-pos);
+	nix::SetViewMatrix(view_matrix);
 	pv_matrix = projection_matrix * view_matrix;
 	ipv_matrix = pv_matrix.inverse();
 }
@@ -374,8 +424,8 @@ void Window::draw() {
 	nix::ResetToColor(bg);
 	nix::SetShader(nix::default_shader_2d);
 
-	update_matrices();
 	set_projection_matrix();
+	update_matrices();
 
 
 	nix::SetWorldMatrix(matrix::ID);
@@ -463,18 +513,29 @@ vector Window::get_direction() {
 	return local_ang * vector::EZ;
 }
 
-vector Window::get_direction_up() {
-	return local_ang * vector::EY;
+vector Window::get_edit_direction() {
+	if (multi_view->edit_coordinate_mode == MultiView::CoordinateMode::CAMERA)
+		return get_direction();
+	return active_grid_direction();
 }
 
-vector Window::get_direction_right() {
-	return local_ang * vector::EX;
-}
-
-void Window::get_moving_frame(vector &dir, vector &up, vector &right) {
+void Window::get_camera_frame(vector &dir, vector &up, vector &right) {
 	dir = get_direction();
-	up = get_direction_up();
+	up = local_ang * vector::EY;
 	right = dir ^ up;
+}
+
+void Window::get_active_grid_frame(vector &dir, vector &up, vector &right) {
+	dir = active_grid_direction();
+	up = dir.ortho();
+	right = dir ^ up;
+}
+
+void Window::get_edit_frame(vector &dir, vector &up, vector &right) {
+	if (multi_view->edit_coordinate_mode == MultiView::CoordinateMode::CAMERA)
+		get_camera_frame(dir, up, right);
+	else
+		get_active_grid_frame(dir, up, right);
 }
 
 float Window::zoom() {

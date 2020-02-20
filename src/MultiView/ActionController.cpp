@@ -151,7 +151,7 @@ void ActionController::update_action() {
 	} else if (action.mode == ACTION_MIRROR) {
 		_param = mvac_mirror(constraints);
 		if (constraints == ACTION_CONSTRAINTS_NONE)
-			_param = active_win->get_direction_right();
+			_param = active_win->cam->ang * vector::EX;
 	} else {
 		param = v_0;
 	}
@@ -409,7 +409,7 @@ bool ActionController::is_mouse_over(vector &tp) {
 		vector t;
 		if (!geo_allow(i, multi_view->mouse_win, geo_mat))
 			continue;
-		if (g->isMouseOver(multi_view->mouse_win, geo_mat, t)) {
+		if (g->is_mouse_over(multi_view->mouse_win, geo_mat, t)) {
 			float z = multi_view->mouse_win->project(t).z;
 			if ((z < z_min) or (ac_geo_config[i].priority >= priority)) {
 				mouse_over_constraint = ac_geo_config[i].constraint;

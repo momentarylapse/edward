@@ -15,12 +15,12 @@ GeometryBall::GeometryBall(const vector &pos, float radius, int num_x, int num_y
 	// ball from disks
 
 	// create new vertices
-	addVertex(pos + vector::EY * radius);
-	addVertex(pos - vector::EY * radius);
+	add_vertex(pos + vector::EY * radius);
+	add_vertex(pos - vector::EY * radius);
 	for (int x=0;x<num_x+1;x++)
 		for (int y=0;y<num_y+1;y++){
 			if ((x>0)&&(x<num_x)&&(y<num_y))
-				addVertex(pos + radius * vector(pi*(float(x)-(float)num_x/2.0f)/num_x,pi*2.0f* y/num_y,0).ang2dir());
+				add_vertex(pos + radius * vector(pi*(float(x)-(float)num_x/2.0f)/num_x,pi*2.0f* y/num_y,0).ang2dir());
 		}
 	// create new triangles
 	for (int y=0;y<num_y;y++){
@@ -32,7 +32,7 @@ GeometryBall::GeometryBall(const vector &pos, float radius, int num_x, int num_y
 		sv.add(ball_ang(0, y+1));
 		sv.add(ball_ang(1, y));
 		sv.add(ball_ang(1, y+1));
-		addPolygonSingleTexture(v, sv);
+		add_polygon_single_texture(v, sv);
 	}
 	for (int y=0;y<num_y;y++){
 		Array<int> v;
@@ -43,7 +43,7 @@ GeometryBall::GeometryBall(const vector &pos, float radius, int num_x, int num_y
 		sv.add(ball_ang(num_x - 1, y));
 		sv.add(ball_ang(num_x, y));
 		sv.add(ball_ang(num_x - 1, y+1));
-		addPolygonSingleTexture(v, sv);
+		add_polygon_single_texture(v, sv);
 	}
 	for (int x=1;x<num_x-1;x++)
 		for (int y=0;y<num_y;y++){
@@ -57,7 +57,7 @@ GeometryBall::GeometryBall(const vector &pos, float radius, int num_x, int num_y
 			sv.add(ball_ang(x  , y  ));
 			sv.add(ball_ang(x+1, y  ));
 			sv.add(ball_ang(x+1, y+1));
-			addPolygonSingleTexture(v, sv);
+			add_polygon_single_texture(v, sv);
 		}
 }
 

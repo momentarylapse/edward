@@ -224,7 +224,7 @@ bool CollidePolygonSurface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_ind
 bool PolygonInsideSurface(Geometry &m, ModelPolygon *t, Geometry &s)
 {
 	for (ModelPolygonSide &side: t->side)
-		if (!s.isInside(m.vertex[side.vertex].pos))
+		if (!s.is_inside(m.vertex[side.vertex].pos))
 			return false;
 	return true;
 }
@@ -383,7 +383,7 @@ void sort_and_join_contours(Geometry &m, ModelPolygon *t, Geometry &b, Array<Arr
 	Array<sCol> v;
 	for (int k=0;k<t->side.num;k++){
 		vector pos = m.vertex[t->side[k].vertex].pos;
-		if (b.isInside(pos) == inverse)
+		if (b.is_inside(pos) == inverse)
 			v.add(sCol(pos, k));
 	}
 
@@ -732,7 +732,7 @@ void PolygonSubtract(Geometry &a, ModelPolygon *t, int t_index, Geometry &b, Geo
 		Array<vector> sv;
 		for (int i=0;i<c.num;i++){
 			vv.add(out.vertex.num);
-			out.addVertex(c[i].p);
+			out.add_vertex(c[i].p);
 		}
 
 		// skin vertices
@@ -744,7 +744,7 @@ void PolygonSubtract(Geometry &a, ModelPolygon *t, int t_index, Geometry &b, Geo
 					sv.add(sg.get(c[i].p, l));
 
 		// fill contour with polygons
-		out.addPolygon(vv, sv);
+		out.add_polygon(vv, sv);
 		out.polygon.back().material = t->material;
 	}
 }
@@ -768,7 +768,7 @@ bool SurfaceSubtractUnary(Geometry &a, Geometry &b, Geometry &out, bool keep_ins
 			has_changes = true;
 		}
 
-	out.removeUnusedVertices();
+	out.remove_unused_vertices();
 	return has_changes;
 }
 
@@ -776,8 +776,8 @@ bool SurfaceSubtractUnary(Geometry &a, Geometry &b, Geometry &out, bool keep_ins
 // out = a - b
 int GeometrySubtract(Geometry &a, Geometry &b, Geometry &out)
 {
-	a.updateTopology();
-	b.updateTopology();
+	a.update_topology();
+	b.update_topology();
 	for (ModelPolygon &p: a.polygon)
 		p.temp_normal = p.get_normal(a.vertex);
 	for (ModelPolygon &p: b.polygon)
@@ -805,7 +805,7 @@ int GeometrySubtract(Geometry &a, Geometry &b, Geometry &out)
 
 
 	vector min, max;
-	out.getBoundingBox(min, max);
+	out.get_bounding_box(min, max);
 	out.weld((max - min).length() / 4000);
 
 	return diff ? 1 : 0;
@@ -814,8 +814,8 @@ int GeometrySubtract(Geometry &a, Geometry &b, Geometry &out)
 // out = a & b
 int GeometryAnd(Geometry &a, Geometry &b, Geometry &out)
 {
-	a.updateTopology();
-	b.updateTopology();
+	a.update_topology();
+	b.update_topology();
 	for (ModelPolygon &p: a.polygon)
 		p.temp_normal = p.get_normal(a.vertex);
 	for (ModelPolygon &p: b.polygon)
@@ -842,7 +842,7 @@ int GeometryAnd(Geometry &a, Geometry &b, Geometry &out)
 
 
 	vector min, max;
-	out.getBoundingBox(min, max);
+	out.get_bounding_box(min, max);
 	out.weld((max - min).length() / 4000);
 
 	return diff ? 1 : 0;

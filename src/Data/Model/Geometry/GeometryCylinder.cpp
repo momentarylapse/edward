@@ -88,7 +88,7 @@ static Geometry half_ball(float radius, int edges, bool upper) {
 	}
 	matrix rot = matrix::rotation_x(pi/2);
 	ball.transform(rot);
-	ball.removeUnusedVertices();
+	ball.remove_unused_vertices();
 	return ball;
 }
 
@@ -126,7 +126,7 @@ void GeometryCylinder::buildFromPath(Interpolator<vector> &inter, Interpolator<f
 			float w = pi*2*(float)j/(float)edges;
 			vector p = frame * (vector((float)cos(w), (float)sin(w), 0) * radius);
 			if ((j < edges) and (i < rings_vertex))
-				addVertex(p);
+				add_vertex(p);
 			sv.add(vector((float)j / (float)edges, t, 0));
 		}
 	}
@@ -144,7 +144,7 @@ void GeometryCylinder::buildFromPath(Interpolator<vector> &inter, Interpolator<f
 			_sv.add(_cyl_svert(i, j+1));
 			_sv.add(_cyl_svert(i, j));
 			_sv.add(_cyl_svert(i+1, j));
-			addPolygonSingleTexture(v, _sv);
+			add_polygon_single_texture(v, _sv);
 		}
 
 	if (end_mode == END_LOOP){
@@ -172,7 +172,7 @@ void GeometryCylinder::buildFromPath(Interpolator<vector> &inter, Interpolator<f
 			_sv.add(_cyl_svert(i, j+1));
 			_sv.add(_cyl_svert(i, j));
 			_sv.add(_cyl_svert(rings, j));
-			addPolygonSingleTexture(v, _sv);
+			add_polygon_single_texture(v, _sv);
 		}
 	}
 
@@ -190,11 +190,11 @@ void GeometryCylinder::buildFromPath(Interpolator<vector> &inter, Interpolator<f
 		Array<int> v;
 		for (int j=0;j<edges;j++)
 			v.add(j);
-		addPolygonSingleTexture(v, sv);
+		add_polygon_single_texture(v, sv);
 		v.clear();
 		for (int j=0;j<edges;j++)
 			v.add(vertex.num - j - 1);
-		addPolygonSingleTexture(v, sv);
+		add_polygon_single_texture(v, sv);
 	}
 
 	if (end_mode == END_ROUND){

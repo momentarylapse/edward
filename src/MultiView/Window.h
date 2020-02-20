@@ -38,6 +38,9 @@ public:
 	void draw_data_points();
 	void draw_header();
 
+	int active_grid();
+	vector active_grid_direction();
+
 	vector project(const vector &p);
 	vector unproject(const vector &p);
 	vector unproject(const vector &p, const vector &o);
@@ -47,9 +50,10 @@ public:
 	void set_projection_matrix_pixel();
 
 	vector get_direction();
-	vector get_direction_up();
-	vector get_direction_right();
-	void get_moving_frame(vector &dir, vector &up, vector &right);
+	vector get_edit_direction();
+	void get_camera_frame(vector &dir, vector &up, vector &right);
+	void get_active_grid_frame(vector &dir, vector &up, vector &right);
+	void get_edit_frame(vector &dir, vector &up, vector &right);
 
 	color get_background_color();
 };

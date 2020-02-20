@@ -33,12 +33,12 @@ void Geometry::clear()
 	vertex.clear();
 }
 
-void Geometry::addVertex(const vector &pos)
+void Geometry::add_vertex(const vector &pos)
 {
 	vertex.add(ModelVertex(pos));
 }
 
-void Geometry::addPolygon(Array<int> &v, Array<vector> &sv)
+void Geometry::add_polygon(const Array<int> &v, const Array<vector> &sv)
 {
 	ModelPolygon p;
 	p.side.resize(v.num);
@@ -56,7 +56,7 @@ void Geometry::addPolygon(Array<int> &v, Array<vector> &sv)
 	polygon.add(p);
 }
 
-void Geometry::addPolygonAutoTexture(Array<int> &v)
+void Geometry::add_polygon_auto_texture(const Array<int> &v)
 {
 	SkinGenerator sg;
 	sg.init_point_cloud_boundary(vertex, v);
@@ -66,20 +66,20 @@ void Geometry::addPolygonAutoTexture(Array<int> &v)
 		for (int k=0; k<v.num; k++)
 			sv.add(sg.get(vertex[v[k]].pos));
 
-	addPolygon(v, sv);
+	add_polygon(v, sv);
 }
 
-void Geometry::addPolygonSingleTexture(Array<int> &v, Array<vector> &sv)
+void Geometry::add_polygon_single_texture(const Array<int> &v, const Array<vector> &sv)
 {
 	Array<vector> sv2;
 	for (int l=0; l<MATERIAL_MAX_TEXTURES; l++)
 		for (int k=0; k<v.num; k++)
 			sv2.add(sv[k]);
 
-	addPolygon(v, sv2);
+	add_polygon(v, sv2);
 }
 
-void Geometry::addBezier3(Array<vector> &v, int num_x, int num_y, float epsilon)
+void Geometry::add_bezier3(const Array<vector> &v, int num_x, int num_y, float epsilon)
 {
 	vector vv[4][4] = {{v[0], v[1], v[2], v[3]}, {v[4], v[5], v[6], v[7]}, {v[8], v[9], v[10], v[11]}, {v[12], v[13], v[14], v[15]}};
 	Array<vector> pp;
@@ -106,7 +106,7 @@ void Geometry::addBezier3(Array<vector> &v, int num_x, int num_y, float epsilon)
 			}else{
 				vn[i*(num_y+1)+j] = vertex.num;
 				pp.add(p);
-				addVertex(p);
+				add_vertex(p);
 			}
 		}
 	for (int i=0; i<num_x; i++)
@@ -129,41 +129,18 @@ void Geometry::addBezier3(Array<vector> &v, int num_x, int num_y, float epsilon)
 							sv.erase(kk);
 							kk --;
 						}
-			addPolygonSingleTexture(vv, sv);
+			add_polygon_single_texture(vv, sv);
 		}
 }
 
-void Geometry::add5(int nv, int v0, int v1, int v2, int v3, int v4)
-{
+void Geometry::add_easy(int nv, const Array<int> &delta) {
 	Array<int> v;
-	v.add(nv + v0);
-	v.add(nv + v1);
-	v.add(nv + v2);
-	v.add(nv + v3);
-	v.add(nv + v4);
-	addPolygonAutoTexture(v);
+	for (int d: delta)
+		v.add(nv + d);
+	add_polygon_auto_texture(v);
 }
 
-void Geometry::add4(int nv, int v0, int v1, int v2, int v3)
-{
-	Array<int> v;
-	v.add(nv + v0);
-	v.add(nv + v1);
-	v.add(nv + v2);
-	v.add(nv + v3);
-	addPolygonAutoTexture(v);
-}
-
-void Geometry::add3(int nv, int v0, int v1, int v2)
-{
-	Array<int> v;
-	v.add(nv + v0);
-	v.add(nv + v1);
-	v.add(nv + v2);
-	addPolygonAutoTexture(v);
-}
-
-void Geometry::add(Geometry& geo)
+void Geometry::add(const Geometry& geo)
 {
 	int nv = vertex.num;
 	int np = polygon.num;
@@ -209,7 +186,7 @@ void Geometry::weld(float epsilon)
 			}
 }
 
-void Geometry::weld(Geometry &geo, float epsilon)
+void Geometry::weld(const Geometry &geo, float epsilon)
 {
 }
 
@@ -250,7 +227,7 @@ void Geometry::transform(const matrix &mat)
 	}
 }
 
-void Geometry::getBoundingBox(vector &min, vector &max)
+void Geometry::get_bounding_box(vector &min, vector &max)
 {
 	if (vertex.num > 0){
 		min = max = vertex[0].pos;
@@ -274,7 +251,7 @@ void Geometry::build(nix::VertexBuffer *vb) const {
 }
 
 
-int Geometry::addEdge(int a, int b, int tria, int side)
+int Geometry::add_edge(int a, int b, int tria, int side)
 {
 	foreachi(ModelEdge &e, edge, i){
 		if ((e.vertex[0] == a) and (e.vertex[1] == b)){
@@ -310,7 +287,7 @@ int Geometry::addEdge(int a, int b, int tria, int side)
 	return edge.num - 1;
 }
 
-void Geometry::updateTopology()
+void Geometry::update_topology()
 {
 	// clear
 	edge.clear();
@@ -320,7 +297,7 @@ void Geometry::updateTopology()
 
 		// edges
 		for (int k=0;k<t.side.num;k++){
-			t.side[k].edge = addEdge(t.side[k].vertex, t.side[(k + 1) % t.side.num].vertex, ti, k);
+			t.side[k].edge = add_edge(t.side[k].vertex, t.side[(k + 1) % t.side.num].vertex, ti, k);
 			t.side[k].edge_direction = edge[t.side[k].edge].ref_count - 1;
 		}
 	}
@@ -333,7 +310,7 @@ void Geometry::updateTopology()
 		}
 }
 
-bool Geometry::isInside(const vector &p) const
+bool Geometry::is_inside(const vector &p) const
 {
 	// how often does a ray from p intersect the surface?
 	int n = 0;
@@ -388,7 +365,7 @@ void Geometry::invert()
 		p.invert();
 }
 
-void Geometry::removeUnusedVertices()
+void Geometry::remove_unused_vertices()
 {
 	for (ModelVertex &v: vertex)
 		v.ref_count = 0;
@@ -406,7 +383,7 @@ void Geometry::removeUnusedVertices()
 		}
 }
 
-bool Geometry::isMouseOver(MultiView::Window *win, const matrix &mat, vector &tp)
+bool Geometry::is_mouse_over(MultiView::Window *win, const matrix &mat, vector &tp)
 {
 	for (ModelPolygon &p: polygon){
 		// care for the sense of rotation?

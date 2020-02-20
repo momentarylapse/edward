@@ -18,7 +18,7 @@ GeometryPlane::GeometryPlane(const vector &pos, const vector &dv1, const vector 
 	vector dy = dv2 / num_y;
 	for (int x=0;x<num_x+1;x++)
 		for (int y=0;y<num_y+1;y++)
-			addVertex(pos + dx*(float)x + dy*(float)y);
+			add_vertex(pos + dx*(float)x + dy*(float)y);
 
 	// triangles
 	for (int x=0;x<num_x;x++)
@@ -33,7 +33,7 @@ GeometryPlane::GeometryPlane(const vector &pos, const vector &dv1, const vector 
 			v.add((num_y+1)*(x  )+y+1);
 			v.add((num_y+1)*(x  )+y);
 			v.add((num_y+1)*(x+1)+y);
-			addPolygonSingleTexture(v, sv);
+			add_polygon_single_texture(v, sv);
 		}
 }
 

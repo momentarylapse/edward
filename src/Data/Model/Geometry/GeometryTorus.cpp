@@ -23,7 +23,7 @@ GeometryTorus::GeometryTorus(const vector &pos, const vector &axis, float radius
 			float wy = (float)j / (float)num_y * 2 * pi;
 			vector e_r = d1 * cos(wx) + d2 * sin(wx);
 			vector p = pos + e_r * radius1 + (e_r * cos(wy) + axis * sin(wy)) * radius2;
-			addVertex(p);
+			add_vertex(p);
 		}
 
 	// polygons
@@ -39,7 +39,7 @@ GeometryTorus::GeometryTorus(const vector &pos, const vector &axis, float radius
 			sv.add(vector((float) i    / (float)num_x, (float) j    / (float)num_y, 0));
 			sv.add(vector((float) i    / (float)num_x, (float)(j+1) / (float)num_y, 0));
 			sv.add(vector((float)(i+1) / (float)num_x, (float)(j+1) / (float)num_y, 0));
-			addPolygonSingleTexture(v, sv);
+			add_polygon_single_texture(v, sv);
 		}
 }
 

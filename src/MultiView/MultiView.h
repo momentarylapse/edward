@@ -230,6 +230,13 @@ public:
 	vector get_cursor();
 	vector get_cursor(const vector &depth_reference);
 
+	enum class CoordinateMode {
+		GLOBAL,
+		CAMERA
+	};
+	CoordinateMode edit_coordinate_mode;
+	void set_edit_coordinate_mode(CoordinateMode mode);
+
 
 	Array<Window*> win;
 
