@@ -10,6 +10,7 @@
 #include "ModeMaterial.h"
 #include "../../Data/Material/DataMaterial.h"
 #include "Dialog/MaterialPropertiesDialog.h"
+#include "Dialog/ShaderGraphDialog.h"
 #include "../../Data/Model/DataModel.h"
 #include "../../Data/Model/Geometry/GeometryCube.h"
 #include "../../Data/Model/Geometry/GeometryBall.h"
@@ -35,7 +36,8 @@ ModeMaterial::ModeMaterial() :
 	geo = NULL;
 	subscribe(data);
 
-	AppearanceDialog = NULL;
+	appearance_dialog = NULL;
+	shader_graph_dialog = NULL;
 
 	for (int i=1; i<=__MATERIAL_MAX_TEXTURES; i++) {
 		string f = "3f,3fn";
@@ -100,19 +102,19 @@ void ModeMaterial::on_command(const string & id) {
 		data->redo();
 
 	if (id == "material_shape_smooth")
-		SetShapeSmooth(!shape_smooth);
+		set_shape_smooth(!shape_smooth);
 	if (id == "material_shape_cube")
-		SetShapeType("cube");
+		set_shape_type("cube");
 	if (id == "material_shape_ball")
-		SetShapeType("ball");
+		set_shape_type("ball");
 	if (id == "material_shape_torus")
-		SetShapeType("torus");
+		set_shape_type("torus");
 	if (id == "material_shape_torusknot")
-		SetShapeType("torusknot");
+		set_shape_type("torusknot");
 	if (id == "material_shape_icosahedron")
-		SetShapeType("icosahedron");
+		set_shape_type("icosahedron");
 	if (id == "material_shape_teapot")
-		SetShapeType("teapot");
+		set_shape_type("teapot");
 }
 
 
@@ -164,25 +166,28 @@ void ModeMaterial::on_start() {
 
 	multi_view->set_allow_select(false);
 
-	AppearanceDialog = new MaterialPropertiesDialog(ed, data);
-	ed->set_side_panel(AppearanceDialog);
+	shader_graph_dialog = new ShaderGraphDialog(ed, data);
+	shader_graph_dialog->show();
 
-	UpdateShape();
+	appearance_dialog = new MaterialPropertiesDialog(ed, data);
+	ed->set_side_panel(appearance_dialog);
+
+	update_shape();
 }
 
-void ModeMaterial::SetShapeType(const string &type) {
+void ModeMaterial::set_shape_type(const string &type) {
 	shape_type = type;
 	hui::Config.set_str("MaterialShapeType", shape_type);
-	UpdateShape();
+	update_shape();
 }
 
-void ModeMaterial::SetShapeSmooth(bool smooth) {
+void ModeMaterial::set_shape_smooth(bool smooth) {
 	shape_smooth = smooth;
 	hui::Config.set_bool("MaterialShapeSmooth", shape_smooth);
-	UpdateShape();
+	update_shape();
 }
 
-void ModeMaterial::UpdateShape() {
+void ModeMaterial::update_shape() {
 	bool needs_opt_view = !geo;
 	if (geo)
 		delete(geo);

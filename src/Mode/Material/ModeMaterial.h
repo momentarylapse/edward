@@ -12,6 +12,7 @@
 #include "../../Data/Material/DataMaterial.h"
 
 class MaterialPropertiesDialog;
+class ShaderGraphDialog;
 class Geometry;
 namespace nix {
 	class VertexBuffer;
@@ -42,15 +43,16 @@ public:
 	bool optimize_view() override;
 
 	nix::VertexBuffer *MaterialVB[MATERIAL_MAX_TEXTURES + 1];
-	MaterialPropertiesDialog *AppearanceDialog;
+	MaterialPropertiesDialog *appearance_dialog;
+	ShaderGraphDialog *shader_graph_dialog;
 
 	string shape_type;
 	bool shape_smooth;
 	Geometry *geo;
 
-	void SetShapeType(const string &type);
-	void SetShapeSmooth(bool smooth);
-	void UpdateShape();
+	void set_shape_type(const string &type);
+	void set_shape_smooth(bool smooth);
+	void update_shape();
 };
 
 extern ModeMaterial* mode_material;
