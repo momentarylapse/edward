@@ -10,6 +10,8 @@
 
 #include "../../lib/base/base.h"
 
+class color;
+
 
 enum class ShaderValueType {
 	FLOAT,
@@ -32,6 +34,8 @@ public:
 		ShaderValueType type;
 		string name;
 		string value;
+		color get_color() const;
+		void set_color(const color &c);
 	};
 	Array<Parameter> params;
 
@@ -48,9 +52,12 @@ public:
 	ShaderGraph();
 	~ShaderGraph();
 
-	string build() const;
+	string build_fragment_source() const;
+	string build_source() const;
 
 	Array<ShaderNode*> nodes;
+
+	Array<ShaderNode*> sorted() const;
 
 	struct Link {
 		ShaderNode *source;
@@ -61,9 +68,13 @@ public:
 	Array<Link> links;
 
 	ShaderNode *add(const string &type, int x, int y);
-	void connect(ShaderNode *s, int sp, ShaderNode *d, int dp);
+	void remove(ShaderNode *n);
 
+	void connect(ShaderNode *s, int sp, ShaderNode *d, int dp);
+	void unconnect(ShaderNode *s, int sp, ShaderNode *d, int dp);
 	Link *find_source(ShaderNode *d, int dp) const;
+
+	bool has_dependency(ShaderNode *s, ShaderNode *d) const;
 };
 
 #endif /* SRC_DATA_MATERIAL_SHADERGRAPH_H_ */
