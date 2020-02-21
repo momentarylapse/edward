@@ -30,29 +30,30 @@ public:
 	void on_key_down();
 
 	void on_update();
+	void on_reset();
 
 	struct HoverData {
+		enum class Type {
+			NONE,
+			NODE,
+			PORT_IN,
+			PORT_OUT,
+			PARAMETER
+		};
+		Type type;
 		ShaderNode *node;
-		int port_in, port_out;
+		int port;
 		int param;
 		HoverData();
 	};
 	HoverData hover;
+	HoverData selection;
 	HoverData get_hover();
 
 	DataMaterial *data;
 	ShaderGraph *graph;
 
-	ShaderNode *node_moving;
 	int move_dx, move_dy;
-
-	struct NewLinkData {
-		ShaderNode *node;
-		int port;
-		bool is_source;
-		NewLinkData();
-	};
-	NewLinkData new_link;
 
 	hui::Menu *popup;
 };

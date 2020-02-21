@@ -11,7 +11,7 @@
 #include "../../lib/file/msg.h"
 
 
-const Array<string> ShaderGraph::NODE_TYPES = {"Color", "Texture", "ColorMultiply", "Output", "BasicLighting", "RandomFloat", "RandomColor", "ColorRed"};
+const Array<string> ShaderGraph::NODE_TYPES = {"Color", "Vector", "Texture", "Position", "Normals", "UV", "MultiplyColor", "Output", "BasicLighting", "RandomFloat", "RandomColor", "ColorRed", "RescaleVector", "RescaleVector2"};
 
 string shader_value_type_to_str(ShaderValueType t) {
 	if (t == ShaderValueType::INT)
@@ -22,6 +22,8 @@ string shader_value_type_to_str(ShaderValueType t) {
 		return "color";
 	if (t == ShaderValueType::VEC3)
 		return "vec3";
+	if (t == ShaderValueType::VEC2)
+		return "vec2";
 	return "???";
 }
 
@@ -30,17 +32,29 @@ void _build_node(ShaderNode *n) {
 	if (n->type == "Color") {
 		n->params.add({ShaderValueType::COLOR, "value", "#ffffffff"});
 		n->output.add({ShaderValueType::COLOR, "value"});
+	} else if (n->type == "Vector") {
+		n->params.add({ShaderValueType::FLOAT, "x", "0.0", "range=-1:1"});
+		n->params.add({ShaderValueType::FLOAT, "y", "0.0", "range=-1:1"});
+		n->params.add({ShaderValueType::FLOAT, "z", "1.0", "range=-1:1"});
+		n->output.add({ShaderValueType::VEC3, "value"});
 	} else if (n->type == "Output") {
 		n->params.add({ShaderValueType::COLOR, "color", "#ff0000ff"});
 	} else if (n->type == "Texture") {
-		n->output.add({ShaderValueType::COLOR, "value"});
+		n->params.add({ShaderValueType::VEC2, "uv", "-mesh-"});
+		n->output.add({ShaderValueType::COLOR, "color"});
+	} else if (n->type == "Normals") {
+		n->output.add({ShaderValueType::VEC3, "normals"});
+	} else if (n->type == "UV") {
+		n->output.add({ShaderValueType::VEC2, "uv"});
+	} else if (n->type == "Position") {
+		n->output.add({ShaderValueType::VEC3, "pos"});
 	} else if (n->type == "MultiplyColor") {
 		n->params.add({ShaderValueType::COLOR, "a", "#ffffffff"});
 		n->params.add({ShaderValueType::COLOR, "b", "#ffffffff"});
 		n->output.add({ShaderValueType::COLOR, "out"});
 	} else if (n->type == "ColorRed") {
 		n->params.add({ShaderValueType::COLOR, "in", "#ffffffff"});
-		n->output.add({ShaderValueType::COLOR, "out"});
+		n->output.add({ShaderValueType::FLOAT, "out"});
 	} else if (n->type == "RandomColor") {
 		n->output.add({ShaderValueType::COLOR, "out"});
 		n->funcs.add("rand");
@@ -49,12 +63,23 @@ void _build_node(ShaderNode *n) {
 		n->output.add({ShaderValueType::FLOAT, "out"});
 		n->funcs.add("rand");
 		n->funcs.add("noise2d");
+	} else if (n->type == "RescaleVector") {
+		n->params.add({ShaderValueType::VEC3, "in", "vec3(0,0,0)"});
+		n->params.add({ShaderValueType::FLOAT, "scale", "1.0", "range=-2:2"});
+		n->params.add({ShaderValueType::FLOAT, "offset", "0.0", "range=-10:10"});
+		n->output.add({ShaderValueType::VEC3, "out"});
+	} else if (n->type == "RescaleVector2") {
+		n->params.add({ShaderValueType::VEC2, "in", "vec2(0,0)"});
+		n->params.add({ShaderValueType::FLOAT, "scale", "1.0", "range=-2:2"});
+		n->params.add({ShaderValueType::FLOAT, "offset", "0.0", "range=-10:10"});
+		n->output.add({ShaderValueType::VEC2, "out"});
 	} else if (n->type == "BasicLighting") {
 		n->params.add({ShaderValueType::COLOR, "diffuse", "#ffffffff"});
-		n->params.add({ShaderValueType::FLOAT, "ambient", "0.2"});
-		n->params.add({ShaderValueType::FLOAT, "specular", "0.3"});
-		n->params.add({ShaderValueType::FLOAT, "shininess", "10.0"});
+		n->params.add({ShaderValueType::FLOAT, "ambient", "0.3", "range=0:1"});
+		n->params.add({ShaderValueType::FLOAT, "specular", "0.1", "range=0:1"});
+		n->params.add({ShaderValueType::FLOAT, "shininess", "10.0", "range=0:50"});
 		n->params.add({ShaderValueType::COLOR, "emission", "#000000ff"});
+		n->params.add({ShaderValueType::VEC3, "normals", "-mesh-"});
 		n->output.add({ShaderValueType::COLOR, "out"});
 		n->funcs.add("basic_lighting");
 	}
@@ -64,6 +89,14 @@ ShaderGraph::ShaderGraph() {
 }
 
 ShaderGraph::~ShaderGraph() {
+	clear();
+}
+
+void ShaderGraph::clear() {
+	links.clear();
+	for (auto *n: nodes)
+		delete n;
+	nodes.clear();
 }
 
 ShaderNode::ShaderNode(const string &_type, int _x, int _y) {
@@ -81,13 +114,39 @@ bool ShaderGraph::has_dependency(ShaderNode *s, ShaderNode *d) const {
 	return false;
 }
 
+int get_dep_depth(const ShaderGraph *g, ShaderNode *n, int level) {
+	// detect loops
+	if (level > g->nodes.num)
+		return -1;
+	// recursion
+	for (auto *m: g->nodes)
+		if (g->has_dependency(m, n))
+			return get_dep_depth(g, m, level + 1);
+	return level;
+}
+
 Array<ShaderNode*> ShaderGraph::sorted() const {
-	Array<ShaderNode*> snodes = nodes;
+	Array<ShaderNode*> snodes;
+
+	/*Array<int> dep_depth;
+	for (auto *n: nodes)
+		dep_depth.add(get_dep_depth(this, n, 0));
+	msg_write(ia2s(dep_depth));*/
+
+	for (int l=0; l<nodes.num; l++) {
+		for (auto *n: nodes) {
+			int ll = get_dep_depth(this, n, 0);
+			if (ll == l)
+				snodes.add(n);
+		}
+	}
+
+
 
 	for (int i=0; i<snodes.num; i++)
 		for (int j=i+1; j<snodes.num; j++) {
 			if (has_dependency(snodes[j], snodes[i])) {
-				snodes.swap(i, j);
+				msg_error("failed to sort");
 			}
 		}
 
@@ -95,13 +154,17 @@ Array<ShaderNode*> ShaderGraph::sorted() const {
 }
 
 string sg_build_constant(ShaderNode::Parameter &p) {
-	if (p.type == ShaderValueType::INT)
+	if (p.type == ShaderValueType::INT) {
 		return p.value;
-	if (p.type == ShaderValueType::FLOAT)
+	} else if (p.type == ShaderValueType::FLOAT) {
 		return p.value;
-	if (p.type == ShaderValueType::COLOR) {
+	} else if (p.type == ShaderValueType::COLOR) {
 		color c = p.get_color();
 		return format("vec4(%.2f, %.2f, %.2f, %.2f)", c.r, c.g, c.b, c.a);
+	} else if (p.type == ShaderValueType::VEC2) {
+		return p.value;
+	} else if (p.type == ShaderValueType::VEC3) {
+		return p.value;
 	}
 	return "???";
 }
@@ -131,6 +194,7 @@ struct TempVar {
 	string name;
 	ShaderNode *source;
 	int port;
+	ShaderValueType type;
 };
 
 string create_temp(Array<TempVar> &temps, ShaderNode *source, int port) {
@@ -138,21 +202,42 @@ string create_temp(Array<TempVar> &temps, ShaderNode *source, int port) {
 	t.name = format("tmp%d", temps.num + 1);
 	t.source = source;
 	t.port = port;
+	t.type = source->output[port].type;
 	temps.add(t);
 	return t.name;
 }
 
-string find_temp(Array<TempVar> &temps, ShaderNode *source, int port) {
+string cast(const string &v, ShaderValueType ts, ShaderValueType td) {
+	if (ts == ShaderValueType::COLOR and td == ShaderValueType::VEC3)
+		return v + ".xyz";
+	if (ts == ShaderValueType::VEC3 and td == ShaderValueType::COLOR)
+		return "vec4(" + v + ", 1.0)";
+	return v;
+}
+
+bool can_cast(ShaderValueType ts, ShaderValueType td) {
+	if (ts == td)
+		return true;
+	if (ts == ShaderValueType::COLOR and td == ShaderValueType::VEC3)
+		return true;
+	if (ts == ShaderValueType::VEC3 and td == ShaderValueType::COLOR)
+		return true;
+	return false;
+}
+
+string find_temp(Array<TempVar> &temps, ShaderNode *source, int port, ShaderValueType wanted_type) {
 	for (auto &t: temps)
 		if (t.source == source and t.port == port)
-			return t.name;
+			return cast(t.name, t.type, wanted_type);
 	return "???";
 }
 
-string sg_build_value(const ShaderGraph *g, Array<TempVar> &temps, ShaderNode *n, int i) {
+string sg_build_value(const ShaderGraph *g, Array<TempVar> &temps, ShaderNode *n, int i, const string &internal = "") {
 	auto l = g->find_source(n, i);
 	if (l)
-		return find_temp(temps, l->source, l->source_port);
+		return find_temp(temps, l->source, l->source_port, n->params[i].type);
+	if (internal != "")
+		return internal;
 	return sg_build_constant(n->params[i]);
 }
 
@@ -221,18 +306,36 @@ string ShaderGraph::build_fragment_source() const {
 		} else if (n->type == "Color") {
 			string t = create_temp(temps, n, 0);
 			source += "\tvec4 " + t + " = " + sg_build_constant(n->params[0]) + ";\n";
+		} else if (n->type == "Vector") {
+			string t = create_temp(temps, n, 0);
+			source += "\tvec3 " + t + " = vec3(" + sg_build_value(this, temps, n, 0) + ", " + sg_build_value(this, temps, n, 1) + ", " + sg_build_value(this, temps, n, 2) + ");\n";
 		} else if (n->type == "Texture") {
 			string t = create_temp(temps, n, 0);
-			source += "\tvec4 " + t + " = texture(tex0, fragmentTexCoord);\n";
+			source += "\tvec4 " + t + " = texture(tex0, " + sg_build_value(this, temps, n, 0, "fragmentTexCoord") + ");\n";
+		} else if (n->type == "Normals") {
+			string t = create_temp(temps, n, 0);
+			source += "\tvec3 " + t + " = normalize(fragmentNormal);\n";
+		} else if (n->type == "Position") {
+			string t = create_temp(temps, n, 0);
+			source += "\tvec3 " + t + " = fragmentPos;\n";
+		} else if (n->type == "UV") {
+			string t = create_temp(temps, n, 0);
+			source += "\tvec2 " + t + " = fragmentTexCoord;\n";
 		} else if (n->type == "MultiplyColor") {
 			string t = create_temp(temps, n, 0);
 			source += "\tvec4 " + t + " = " + sg_build_value(this, temps, n, 0) + " * " + sg_build_value(this, temps, n, 1) + ";\n";
 		} else if (n->type == "ColorRed") {
 			string t = create_temp(temps, n, 0);
 			source += "\tfloat " + t + " = " + sg_build_value(this, temps, n, 0) + ".r;\n";
+		} else if (n->type == "RescaleVector") {
+			string t = create_temp(temps, n, 0);
+			source += "\tvec3 " + t + " = " + sg_build_value(this, temps, n, 0) + " * " + sg_build_value(this, temps, n, 1) + " + " + sg_build_value(this, temps, n, 2) + ";\n";
+		} else if (n->type == "RescaleVector2") {
+			string t = create_temp(temps, n, 0);
+			source += "\tvec2 " + t + " = " + sg_build_value(this, temps, n, 0) + " * " + sg_build_value(this, temps, n, 1) + " + " + sg_build_value(this, temps, n, 2) + ";\n";
 		} else if (n->type == "BasicLighting") {
 			string t = create_temp(temps, n, 0);
-			source += "\tvec4 " + t + " = basic_lighting(fragmentNormal, " + sg_build_value(this, temps, n, 0) + ", " + sg_build_value(this, temps, n, 1) + ", " + sg_build_value(this, temps, n, 2) + ", " + sg_build_value(this, temps, n, 3) + ", " + sg_build_value(this, temps, n, 4) + ");\n";
+			source += "\tvec4 " + t + " = basic_lighting(" + sg_build_value(this, temps, n, 5, "fragmentNormal") + ", " + sg_build_value(this, temps, n, 0) + ", " + sg_build_value(this, temps, n, 1) + ", " + sg_build_value(this, temps, n, 2) + ", " + sg_build_value(this, temps, n, 3) + ", " + sg_build_value(this, temps, n, 4) + ");\n";
 		} else if (n->type == "RandomFloat") {
 			string t = create_temp(temps, n, 0);
 			source += "\tfloat " + t + " = noise2d(fragmentTexCoord);\n";
@@ -243,6 +346,9 @@ string ShaderGraph::build_fragment_source() const {
 			"	" + t + ".g = noise2d(fragmentTexCoord);\n"
 			"	" + t + ".b = noise2d(fragmentTexCoord);\n"
 			"	" + t + ".a = 1.0;\n";
+		} else {
+			source += " unhandled node " + n->type + "\n";
+
 		}
 	}
 	source += "}\n";
@@ -300,6 +406,8 @@ ShaderNode* ShaderGraph::add(const string &type, int x, int y) {
 }
 
 void ShaderGraph::connect(ShaderNode *s, int sp, ShaderNode *d, int dp) {
+	if (!can_cast(s->output[sp].type, d->params[dp].type))
+		return;
 	unconnect(s, sp, nullptr, -1);
 	unconnect(nullptr, -1, d, dp);
 	Link l;

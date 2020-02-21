@@ -15,7 +15,7 @@
 #include "../../../lib/nix/nix.h"
 
 
-const int NODE_WIDTH = 160;
+const int NODE_WIDTH = 170;
 const int NODE_HEADER_HEIGHT = 25;
 const int NODE_PORT_HEIGHT = 20;
 
@@ -25,7 +25,6 @@ ShaderGraphDialog::ShaderGraphDialog(hui::Window *parent, DataMaterial *_data) :
 {
 	data = _data;
 
-	node_moving = nullptr;
 	move_dx = move_dy = -1;
 	graph = new ShaderGraph();
 	//graph->add("Basic", 300, 50);
@@ -61,6 +60,8 @@ ShaderGraphDialog::ShaderGraphDialog(hui::Window *parent, DataMaterial *_data) :
 			graph->add(graph->NODE_TYPES[i], 400, 200);
 		});
 	}
+	popup->add("Reset", "reset");
+	event("reset", [=]{ on_reset(); });
 
 	on_update();
 }
@@ -93,18 +94,20 @@ rect node_get_in_rect(ShaderNode *n, int i) {
 }
 
 rect node_area(ShaderNode *n) {
-	int h = NODE_HEADER_HEIGHT + n->params.num * NODE_PORT_HEIGHT + n->output.num * NODE_PORT_HEIGHT + 15;
-	return rect(n->x, n->x + NODE_WIDTH, n->y, n->y + h);
+	int h = NODE_HEADER_HEIGHT + n->params.num * NODE_PORT_HEIGHT + n->output.num * NODE_PORT_HEIGHT + 8;
+	return rect(n->x, n->x + NODE_WIDTH, n->y-5, n->y + h);
 }
 
 void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 	p->set_color(scheme.GRID);
+	p->set_roundness(12);
 	p->draw_rect(node_area(n));
+	p->set_roundness(0);
 
 	p->set_color(scheme.TEXT);
 	if (n == hover.node)
 		p->set_color(scheme.hoverify(scheme.TEXT));
-	p->set_font_size(15);
+	p->set_font_size(16);
 	p->draw_str(n->x + NODE_WIDTH / 2 - p->get_str_width(n->type) / 2, n->y+3, n->type);
 
 	p->set_font_size(10);
@@ -116,7 +119,9 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 		p->draw_str(n->x + 10, y-2, pp.name);// + ": " + shader_value_type_to_str(pp.type));
 		if (pp.type == ShaderValueType::COLOR) {
 			p->set_color(pp.get_color());
+			p->set_roundness(6);
 			p->draw_rect(node_get_param_rect(n, i));
+			p->set_roundness(0);
 		}
 		p->set_color(scheme.TEXT);
 		if (graph->find_source(n, i))
@@ -126,7 +131,7 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 		p->draw_str(n->x + NODE_WIDTH / 2, y-2, pp.value);
 
 		p->set_color(scheme.TEXT);
-		if (n == hover.node and i == hover.port_in)
+		if (hover.type == HoverData::Type::PORT_IN and n == hover.node and i == hover.port)
 			p->set_color(scheme.hoverify(scheme.TEXT));
 		p->draw_circle(n->x - 5, y, 5);
 	}
@@ -136,7 +141,7 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 		float y = node_get_out_y(n, i);
 		p->set_color(scheme.TEXT);
 		p->draw_str(n->x + 40, y-2, "out: " + pp.name);// + ": " + shader_value_type_to_str(pp.type));
-		if (n == hover.node and i == hover.port_out)
+		if (hover.type == HoverData::Type::PORT_OUT and n == hover.node and i == hover.port)
 			p->set_color(scheme.hoverify(scheme.TEXT));
 		p->draw_circle(n->x + NODE_WIDTH + 5, y, 5);
 	}
@@ -157,14 +162,15 @@ void ShaderGraphDialog::on_draw(Painter *p) {
 				l.dest->x - 5, node_get_in_y(l.dest, l.dest_port));
 	}
 
-	if (new_link.node) {
+	if (selection.type == HoverData::Type::PORT_OUT) {
 		auto e = hui::GetEvent();
 		p->set_color(Red);
-		p->draw_str(20,20,format("%d %d   ->  %d %d", new_link.port, new_link.is_source, hover.port_in, hover.port_out));
-		if (new_link.is_source)
-			p->draw_line(new_link.node->x + NODE_WIDTH + 5, node_get_out_y(new_link.node, new_link.port), e->mx, e->my);
-		else
-			p->draw_line(new_link.node->x - 5, node_get_in_y(new_link.node, new_link.port), e->mx, e->my);
+		p->draw_line(selection.node->x + NODE_WIDTH + 5, node_get_out_y(selection.node, selection.port), e->mx, e->my);
+	}
+	if (selection.type == HoverData::Type::PORT_IN) {
+		auto e = hui::GetEvent();
+		p->set_color(Red);
+		p->draw_line(selection.node->x - 5, node_get_in_y(selection.node, selection.port), e->mx, e->my);
 	}
 
 	/*p->set_font_size(9);
@@ -175,9 +181,9 @@ void ShaderGraphDialog::on_draw(Painter *p) {
 void ShaderGraphDialog::on_key_down() {
 	auto e = hui::GetEvent();
 	if (e->key_code == hui::KEY_DELETE)
-		if (node_moving) {
-			graph->remove(node_moving);
-			node_moving = nullptr;
+		if (selection.node) {
+			graph->remove(selection.node);
+			selection = HoverData();
 			on_update();
 		}
 	redraw("area");
@@ -186,58 +192,74 @@ void ShaderGraphDialog::on_key_down() {
 void ShaderGraphDialog::on_left_button_down() {
 	auto e = hui::GetEvent();
 	hover = get_hover();
-	if (hover.node) {
-		if (hover.port_in >= 0) {
-			graph->unconnect(nullptr, -1, hover.node, hover.port_in);
-			on_update();
-			new_link.node = hover.node;
-			new_link.port = hover.port_in;
-			new_link.is_source = false;
-		} else if (hover.port_out >= 0) {
-			graph->unconnect(hover.node, hover.port_out, nullptr, -1);
-			on_update();
-			new_link.node = hover.node;
-			new_link.port = hover.port_out;
-			new_link.is_source = true;
-		} else if (hover.param >= 0) {
-			auto &pp = hover.node->params[hover.param];
-			if (pp.type == ShaderValueType::COLOR) {
-				color col = pp.get_color();
-				if (hui::SelectColor(this, col)) {
-					pp.set_color(hui::Color);
-					on_update();
-				}
+	selection = hover;
+	if (selection.type == HoverData::Type::PORT_IN) {
+		graph->unconnect(nullptr, -1, selection.node, selection.port);
+		on_update();
+	} else if (selection.type == HoverData::Type::PORT_OUT) {
+		graph->unconnect(selection.node, selection.port, nullptr, -1);
+		on_update();
+	} else if (selection.type == HoverData::Type::PARAMETER) {
+		auto &pp = selection.node->params[selection.param];
+		if (pp.type == ShaderValueType::FLOAT) {
+			if (pp.options.head(6) == "range=") {
+				auto xx = pp.options.substr(6,-1).explode(":");
+				float _min = xx[0]._float();
+				float _max = xx[1]._float();
+				rect r = node_get_param_rect(selection.node, selection.port);
+				float f = _min + (_max - _min) * (e->mx - r.x1) / r.width();
+				pp.value = f2s(f, 3);
 			}
-		} else {
-			node_moving = hover.node;
-			move_dx = e->mx - hover.node->x;
-			move_dy = e->my - hover.node->y;
+		} else if (pp.type == ShaderValueType::COLOR) {
+			color col = pp.get_color();
+			if (hui::SelectColor(this, col)) {
+				pp.set_color(hui::Color);
+				on_update();
+			}
 		}
+	} else if (selection.type == HoverData::Type::NODE) {
+		move_dx = e->mx - selection.node->x;
+		move_dy = e->my - selection.node->y;
 	}
 	redraw("area");
 }
 
 void ShaderGraphDialog::on_left_button_up() {
-	if (new_link.node) {
-		if (new_link.is_source and hover.node and hover.port_in >= 0) {
-			graph->connect(new_link.node, new_link.port, hover.node, hover.port_in);
-			on_update();
-		} else if (!new_link.is_source and hover.node and hover.port_out >= 0) {
-			graph->connect(hover.node, hover.port_out, new_link.node, new_link.port);
+	if (selection.type == HoverData::Type::PORT_OUT and hover.type == HoverData::Type::PORT_IN) {
+		graph->connect(selection.node, selection.port, hover.node, hover.port);
+		on_update();
+	} else if (selection.type == HoverData::Type::PORT_IN and hover.type == HoverData::Type::PORT_OUT) {
+		graph->connect(hover.node, hover.port, selection.node, selection.port);
+		on_update();
+	} else if (selection.type == HoverData::Type::PARAMETER) {
+		auto &pp = selection.node->params[selection.param];
+		if (pp.type == ShaderValueType::FLOAT) {
 			on_update();
 		}
 	}
-	node_moving = nullptr;
-	new_link = NewLinkData();
+	selection = HoverData();
 	redraw("area");
 }
 
 void ShaderGraphDialog::on_mouse_move() {
 	auto e = hui::GetEvent();
-	hover = get_hover();
-	if (node_moving) {
-		node_moving->x = e->mx - move_dx;
-		node_moving->y = e->my - move_dy;
+	if (selection.type == HoverData::Type::NODE) {
+		selection.node->x = e->mx - move_dx;
+		selection.node->y = e->my - move_dy;
+	} else if (selection.type == HoverData::Type::PARAMETER) {
+		auto &pp = selection.node->params[selection.param];
+		if (pp.type == ShaderValueType::FLOAT) {
+			if (pp.options.head(6) == "range=") {
+				auto xx = pp.options.substr(6,-1).explode(":");
+				float _min = xx[0]._float();
+				float _max = xx[1]._float();
+				rect r = node_get_param_rect(hover.node, hover.port);
+				float f = _min + (_max - _min) * clampf((e->mx - r.x1) / r.width(), 0, 1);
+				pp.value = f2s(f, 3);
+			}
+		}
+	} else {
+		hover = get_hover();
 	}
 	redraw("area");
 }
@@ -257,13 +279,20 @@ void ShaderGraphDialog::on_update() {
 	}
 }
 
+void ShaderGraphDialog::on_reset() {
+	graph->clear();
+	graph->add("Output", 450, 50);
+	on_update();
+}
+
 void ShaderGraphDialog::on_right_button_down() {
 	popup->open_popup(this);
 }
 
 ShaderGraphDialog::HoverData::HoverData() {
+	type = Type::NONE;
 	node = nullptr;
-	port_in = port_out = param = -1;
+	port = param = -1;
 }
 
 ShaderGraphDialog::HoverData ShaderGraphDialog::get_hover() {
@@ -272,22 +301,26 @@ ShaderGraphDialog::HoverData ShaderGraphDialog::get_hover() {
 	auto e = hui::GetEvent();
 	for (auto *n: graph->nodes) {
 		if (node_area(n).inside(e->mx, e->my)) {
+			h.type = h.Type::NODE;
 			h.node = n;
 		}
 		for (int i=0; i<n->params.num; i++) {
 			if (node_get_in_rect(n, i).inside(e->mx, e->my)) {
+				h.type = h.Type::PORT_IN;
 				h.node = n;
-				h.port_in = i;
+				h.port = i;
 			}
 			if (node_get_param_rect(n, i).inside(e->mx, e->my)) {
+				h.type = h.Type::PARAMETER;
 				h.node = n;
 				h.param = i;
 			}
 		}
 		for (int i=0; i<n->output.num; i++)
 			if (node_get_out_rect(n, i).inside(e->mx, e->my)) {
+				h.type = h.Type::PORT_OUT;
 				h.node = n;
-				h.port_out = i;
+				h.port = i;
 			}
 
 	}
@@ -295,8 +328,3 @@ ShaderGraphDialog::HoverData ShaderGraphDialog::get_hover() {
 	return h;
 }
 
-ShaderGraphDialog::NewLinkData::NewLinkData() {
-	is_source = false;
-	node = nullptr;
-	port = -1;
-}

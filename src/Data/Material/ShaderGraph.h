@@ -16,6 +16,7 @@ class color;
 enum class ShaderValueType {
 	FLOAT,
 	INT,
+	VEC2,
 	VEC3,
 	COLOR
 };
@@ -34,6 +35,7 @@ public:
 		ShaderValueType type;
 		string name;
 		string value;
+		string options;
 		color get_color() const;
 		void set_color(const color &c);
 	};
@@ -53,6 +55,8 @@ class ShaderGraph {
 public:
 	ShaderGraph();
 	~ShaderGraph();
+
+	void clear();
 
 	string build_fragment_source() const;
 	string build_source() const;
