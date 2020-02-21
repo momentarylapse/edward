@@ -15,11 +15,10 @@
 #include "../../../lib/nix/nix.h"
 
 
-const int NODE_WIDTH = 150;
+const int NODE_WIDTH = 160;
 const int NODE_HEADER_HEIGHT = 25;
 const int NODE_PORT_HEIGHT = 20;
 
-const Array<string> NODE_TYPES = {"Color", "Texture", "ColorMultiply", "Output"};
 
 ShaderGraphDialog::ShaderGraphDialog(hui::Window *parent, DataMaterial *_data) :
 	hui::Dialog("Shader Graph", 1000, 600, parent, true)
@@ -33,16 +32,17 @@ ShaderGraphDialog::ShaderGraphDialog(hui::Window *parent, DataMaterial *_data) :
 	//graph->add("Texture", 100, 50);
 
 	auto n1 = graph->add("Texture", 50, 50);
-	auto n2 = graph->add("Color", 50, 300);
-	auto n3 = graph->add("ColorMultiply", 250, 150);
-	auto n4 = graph->add("Output", 450, 50);
-	graph->connect(n1, 0, n3, 0);
-	graph->connect(n2, 0, n3, 1);
-	graph->connect(n3, 0, n4, 0);
+	auto n2 = graph->add("BasicLighting", 250, 100);
+	auto n3 = graph->add("Output", 450, 50);
+	graph->connect(n1, 0, n2, 0);
+	graph->connect(n2, 0, n3, 0);
 
 	from_source("Grid grid '' vertical\n"\
-			"\tDrawingArea area '' grabfocus expandx expandy\n"\
+			"\tGrid ? ''\n"
+			"\t\tDrawingArea area '' grabfocus expandx expandy\n"\
+			"\t\tMultilineEdit source '' disabled\n"\
 			"\tGrid bb '' buttonbar\n"\
+			"\t\tCheckBox show-source 'Show source'\n"
 			"\t\tButton update 'Update'");
 	event_xp("area", "hui:draw", [=](Painter *p){ on_draw(p); });
 	//event_x("area", "hui:mouse-move", [=]{ on_mouse_move(); });
@@ -50,12 +50,15 @@ ShaderGraphDialog::ShaderGraphDialog(hui::Window *parent, DataMaterial *_data) :
 	//event_x("area", "hui:left-button-up", [=]{ on_left_button_up(); });
 	//event_x("area", "hui:key-down", [=]{ on_key_down(); });
 	event("update", [=]{ on_update(); });
+	event("show-source", [=]{ hide_control("source", !is_checked("")); });
+
+	hide_control("source", true);
 
 	popup = new hui::Menu();
-	for (int i=0; i<NODE_TYPES.num; i++) {
-		popup->add(NODE_TYPES[i], "add-node-" + i2s(i));
+	for (int i=0; i<graph->NODE_TYPES.num; i++) {
+		popup->add(graph->NODE_TYPES[i], "add-node-" + i2s(i));
 		event("add-node-" + i2s(i), [=]{
-			graph->add(NODE_TYPES[i], 400, 200);
+			graph->add(graph->NODE_TYPES[i], 400, 200);
 		});
 	}
 
@@ -90,7 +93,7 @@ rect node_get_in_rect(ShaderNode *n, int i) {
 }
 
 rect node_area(ShaderNode *n) {
-	int h = NODE_HEADER_HEIGHT + n->params.num * NODE_PORT_HEIGHT + n->output.num * NODE_PORT_HEIGHT;
+	int h = NODE_HEADER_HEIGHT + n->params.num * NODE_PORT_HEIGHT + n->output.num * NODE_PORT_HEIGHT + 15;
 	return rect(n->x, n->x + NODE_WIDTH, n->y, n->y + h);
 }
 
@@ -104,13 +107,13 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 	p->set_font_size(15);
 	p->draw_str(n->x + NODE_WIDTH / 2 - p->get_str_width(n->type) / 2, n->y+3, n->type);
 
-	p->set_font_size(11);
+	p->set_font_size(10);
 
 	// in
 	foreachi (auto &pp, n->params, i) {
 		p->set_color(scheme.TEXT);
 		float y = node_get_in_y(n, i);
-		p->draw_str(n->x + 20, y, pp.name);// + ": " + shader_value_type_to_str(pp.type));
+		p->draw_str(n->x + 10, y-2, pp.name);// + ": " + shader_value_type_to_str(pp.type));
 		if (pp.type == ShaderValueType::COLOR) {
 			p->set_color(pp.get_color());
 			p->draw_rect(node_get_param_rect(n, i));
@@ -120,7 +123,7 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 			p->set_color(ColorInterpolate(scheme.TEXT, scheme.GRID, 0.5f));
 		if (n == hover.node and i == hover.param)
 			p->set_color(scheme.hoverify(scheme.TEXT));
-		p->draw_str(n->x + NODE_WIDTH / 2, y, pp.value);
+		p->draw_str(n->x + NODE_WIDTH / 2, y-2, pp.value);
 
 		p->set_color(scheme.TEXT);
 		if (n == hover.node and i == hover.port_in)
@@ -132,7 +135,7 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 	foreachi (auto &pp, n->output, i) {
 		float y = node_get_out_y(n, i);
 		p->set_color(scheme.TEXT);
-		p->draw_str(n->x + 40, y, "out: " + pp.name);// + ": " + shader_value_type_to_str(pp.type));
+		p->draw_str(n->x + 40, y-2, "out: " + pp.name);// + ": " + shader_value_type_to_str(pp.type));
 		if (n == hover.node and i == hover.port_out)
 			p->set_color(scheme.hoverify(scheme.TEXT));
 		p->draw_circle(n->x + NODE_WIDTH + 5, y, 5);
@@ -164,9 +167,9 @@ void ShaderGraphDialog::on_draw(Painter *p) {
 			p->draw_line(new_link.node->x - 5, node_get_in_y(new_link.node, new_link.port), e->mx, e->my);
 	}
 
-	p->set_font_size(11);
+	/*p->set_font_size(9);
 	p->set_color(scheme.TEXT);
-	p->draw_str(600, 10, graph->build_fragment_source());
+	p->draw_str(600, 10, graph->build_fragment_source());*/
 }
 
 void ShaderGraphDialog::on_key_down() {
@@ -175,6 +178,7 @@ void ShaderGraphDialog::on_key_down() {
 		if (node_moving) {
 			graph->remove(node_moving);
 			node_moving = nullptr;
+			on_update();
 		}
 	redraw("area");
 }
@@ -185,11 +189,13 @@ void ShaderGraphDialog::on_left_button_down() {
 	if (hover.node) {
 		if (hover.port_in >= 0) {
 			graph->unconnect(nullptr, -1, hover.node, hover.port_in);
+			on_update();
 			new_link.node = hover.node;
 			new_link.port = hover.port_in;
 			new_link.is_source = false;
 		} else if (hover.port_out >= 0) {
 			graph->unconnect(hover.node, hover.port_out, nullptr, -1);
+			on_update();
 			new_link.node = hover.node;
 			new_link.port = hover.port_out;
 			new_link.is_source = true;
@@ -199,6 +205,7 @@ void ShaderGraphDialog::on_left_button_down() {
 				color col = pp.get_color();
 				if (hui::SelectColor(this, col)) {
 					pp.set_color(hui::Color);
+					on_update();
 				}
 			}
 		} else {
@@ -214,8 +221,10 @@ void ShaderGraphDialog::on_left_button_up() {
 	if (new_link.node) {
 		if (new_link.is_source and hover.node and hover.port_in >= 0) {
 			graph->connect(new_link.node, new_link.port, hover.node, hover.port_in);
+			on_update();
 		} else if (!new_link.is_source and hover.node and hover.port_out >= 0) {
 			graph->connect(hover.node, hover.port_out, new_link.node, new_link.port);
+			on_update();
 		}
 	}
 	node_moving = nullptr;
@@ -235,13 +244,16 @@ void ShaderGraphDialog::on_mouse_move() {
 
 void ShaderGraphDialog::on_update() {
 	string source = graph->build_source();
-	msg_write(source);
-	auto s = nix::Shader::create(source);
-	if (s) {
+	set_string("source", graph->build_fragment_source());
+	//msg_write(source);
+	try {
+		auto s = nix::Shader::create(source);
 		//delete data->appearance.shader;
 		data->appearance.shader = s;
 		//data->notify();
 		mode_material->multi_view->force_redraw();
+	} catch (Exception &e) {
+		this->set_info_text(e.message(), {"error", "allow-close"});
 	}
 }
 

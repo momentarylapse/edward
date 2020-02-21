@@ -45,6 +45,8 @@ public:
 		string name;
 	};
 	Array<Port> output;
+
+	Array<string> funcs;
 };
 
 class ShaderGraph {
@@ -75,6 +77,8 @@ public:
 	Link *find_source(ShaderNode *d, int dp) const;
 
 	bool has_dependency(ShaderNode *s, ShaderNode *d) const;
+
+	static const Array<string> NODE_TYPES;
 };
 
 #endif /* SRC_DATA_MATERIAL_SHADERGRAPH_H_ */
