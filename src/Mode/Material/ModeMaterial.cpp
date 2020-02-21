@@ -27,6 +27,8 @@ const float MATERIAL_RADIUS2 = 50;
 
 ModeMaterial *mode_material = NULL;
 
+#define __MATERIAL_MAX_TEXTURES		4
+
 ModeMaterial::ModeMaterial() :
 	Mode("Material", NULL, new DataMaterial, ed->multi_view_3d, "menu_material")
 {
@@ -35,7 +37,7 @@ ModeMaterial::ModeMaterial() :
 
 	AppearanceDialog = NULL;
 
-	for (int i=1; i<=MATERIAL_MAX_TEXTURES/2; i++) {
+	for (int i=1; i<=__MATERIAL_MAX_TEXTURES; i++) {
 		string f = "3f,3fn";
 		for (int j=0; j<i; j++)
 			f += ",2f";
@@ -200,7 +202,7 @@ void ModeMaterial::UpdateShape() {
 	if (shape_smooth)
 		geo->smoothen();
 
-	for (int i=1; i<=MATERIAL_MAX_TEXTURES; i++) {
+	for (int i=1; i<=__MATERIAL_MAX_TEXTURES; i++) {
 		geo->build(MaterialVB[i]);
 	}
 	on_update_menu();

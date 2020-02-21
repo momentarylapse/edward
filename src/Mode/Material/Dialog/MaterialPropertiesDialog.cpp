@@ -27,37 +27,37 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 	data = _data;
 
 	// dialog
-	event("mat_add_texture_level", std::bind(&MaterialPropertiesDialog::OnAddTextureLevel, this));
-	event("mat_textures", std::bind(&MaterialPropertiesDialog::OnTextures, this));
-	event_x("mat_textures", "hui:select", std::bind(&MaterialPropertiesDialog::OnTexturesSelect, this));
-	event("mat_delete_texture_level", std::bind(&MaterialPropertiesDialog::OnDeleteTextureLevel, this));
-	event("mat_empty_texture_level", std::bind(&MaterialPropertiesDialog::OnEmptyTextureLevel, this));
-	event("transparency_mode:none", std::bind(&MaterialPropertiesDialog::OnTransparencyMode, this));
-	event("transparency_mode:function", std::bind(&MaterialPropertiesDialog::OnTransparencyMode, this));
-	event("transparency_mode:color_key", std::bind(&MaterialPropertiesDialog::OnTransparencyMode, this));
-	event("transparency_mode:factor", std::bind(&MaterialPropertiesDialog::OnTransparencyMode, this));
-	event("reflection_mode:none", std::bind(&MaterialPropertiesDialog::OnReflectionMode, this));
-	event("reflection_mode:cube_static", std::bind(&MaterialPropertiesDialog::OnReflectionMode, this));
-	event("reflection_mode:cube_dynamic", std::bind(&MaterialPropertiesDialog::OnReflectionMode, this));
-	event("reflection_textures", std::bind(&MaterialPropertiesDialog::OnReflectionTextures, this));
-	event("find_shader", std::bind(&MaterialPropertiesDialog::OnFindShader, this));
+	event("mat_add_texture_level", [=]{ OnAddTextureLevel(); });
+	event("mat_textures", [=]{ OnTextures(); });
+	event_x("mat_textures", "hui:select", [=]{ OnTexturesSelect(); });
+	event("mat_delete_texture_level", [=]{ OnDeleteTextureLevel(); });
+	event("mat_empty_texture_level", [=]{ OnEmptyTextureLevel(); });
+	event("transparency_mode:none", [=]{ OnTransparencyMode(); });
+	event("transparency_mode:function", [=]{ OnTransparencyMode(); });
+	event("transparency_mode:color_key", [=]{ OnTransparencyMode(); });
+	event("transparency_mode:factor", [=]{ OnTransparencyMode(); });
+	event("reflection_mode:none", [=]{ OnReflectionMode(); });
+	event("reflection_mode:cube_static", [=]{ OnReflectionMode(); });
+	event("reflection_mode:cube_dynamic", [=]{ OnReflectionMode(); });
+	event("reflection_textures", [=]{ OnReflectionTextures(); });
+	event("find_shader", [=]{ OnFindShader(); });
 
 
-	event("mat_am", std::bind(&MaterialPropertiesDialog::ApplyData, this));
-	event("mat_di", std::bind(&MaterialPropertiesDialog::ApplyData, this));
-	event("mat_sp", std::bind(&MaterialPropertiesDialog::ApplyData, this));
-	event("mat_em", std::bind(&MaterialPropertiesDialog::ApplyData, this));
-	event("mat_shininess", std::bind(&MaterialPropertiesDialog::ApplyDataDelayed, this));
+	event("mat_am", [=]{ ApplyData(); });
+	event("mat_di", [=]{ ApplyData(); });
+	event("mat_sp", [=]{ ApplyData(); });
+	event("mat_em", [=]{ ApplyData(); });
+	event("mat_shininess", [=]{ ApplyDataDelayed(); });
 
-	event("alpha_factor", std::bind(&MaterialPropertiesDialog::ApplyDataDelayed, this));
-	event("alpha_source", std::bind(&MaterialPropertiesDialog::ApplyDataDelayed, this));
-	event("alpha_dest", std::bind(&MaterialPropertiesDialog::ApplyDataDelayed, this));
-	event("alpha_z_buffer", std::bind(&MaterialPropertiesDialog::ApplyData, this));
+	event("alpha_factor", [=]{ ApplyDataDelayed(); });
+	event("alpha_source", [=]{ ApplyDataDelayed(); });
+	event("alpha_dest", [=]{ ApplyDataDelayed(); });
+	event("alpha_z_buffer", [=]{ ApplyData(); });
 
-	event("rcjump", std::bind(&MaterialPropertiesDialog::ApplyPhysDataDelayed, this));
-	event("rcstatic", std::bind(&MaterialPropertiesDialog::ApplyPhysDataDelayed, this));
-	event("rcsliding", std::bind(&MaterialPropertiesDialog::ApplyPhysDataDelayed, this));
-	event("rcroll", std::bind(&MaterialPropertiesDialog::ApplyPhysDataDelayed, this));
+	event("rcjump", [=]{ ApplyPhysDataDelayed(); });
+	event("rcstatic", [=]{ ApplyPhysDataDelayed(); });
+	event("rcsliding", [=]{ ApplyPhysDataDelayed(); });
+	event("rcroll", [=]{ ApplyPhysDataDelayed(); });
 
 	expand("material_dialog_grp_color", 0, true);
 
@@ -283,7 +283,7 @@ void MaterialPropertiesDialog::ApplyData()
 void MaterialPropertiesDialog::ApplyDataDelayed()
 {
 	apply_queue_depth ++;
-	hui::RunLater(0.5f, std::bind(&MaterialPropertiesDialog::ApplyData, this));
+	hui::RunLater(0.5f, [=]{ ApplyData(); });
 }
 
 void MaterialPropertiesDialog::ApplyPhysData()
@@ -303,7 +303,7 @@ void MaterialPropertiesDialog::ApplyPhysData()
 void MaterialPropertiesDialog::ApplyPhysDataDelayed()
 {
 	apply_phys_queue_depth ++;
-	hui::RunLater(0.5f, std::bind(&MaterialPropertiesDialog::ApplyPhysData, this));
+	hui::RunLater(0.5f, [=]{ ApplyPhysData(); });
 }
 
 void MaterialPropertiesDialog::RefillReflTexView()
