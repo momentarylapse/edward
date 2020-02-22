@@ -165,7 +165,10 @@ void ModeMaterial::on_command(const string & id) {
 void ModeMaterial::on_draw_win(MultiView::Window *win) {
 	data->apply_for_rendering();
 	nix::SetShader(shader);
-	nix::SetTextures(textures);
+	auto tex = textures;
+	tex.resize(4);
+	tex.add(cube_map);
+	nix::SetTextures(tex);
 	nix::SetFog(FOG_EXP, 0,10000,0.001f, Blue);
 
 	nix::DrawTriangles(MaterialVB[max(data->appearance.texture_files.num, 1)]);

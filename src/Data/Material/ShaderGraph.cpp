@@ -16,12 +16,12 @@ const Array<string> ShaderGraph::NODE_TYPES = {
 	"--Constant",
 		"Color", "Vector",
 	"--Mesh",
-		"Texture", "CubeMap", "Position", "Normals", "UV",
+		"Texture", "Reflection", "Position", "Normals", "UV",
 	"--Parameters",
 		"MaterialDiffuse", "MaterialSpecular", "MaterialEmission",
 	"--Operations",
-		"MultiplyColor",
-		"ColorRed", "VectorZ", "RescaleVector", "RescaleVector2", "RescaleFloat",
+		"Multiply", "Mix", "Add",
+		"Brightness", "VectorZ", "RescaleVector", "RescaleVector2", "RescaleFloat",
 		"BasicLighting", "Fog",
 	"--Output",
 		"Output",
@@ -44,6 +44,7 @@ string shader_value_type_to_str(ShaderValueType t) {
 
 
 void _build_node(ShaderNode *n) {
+
 	if (n->type == "Color") {
 		n->params.add({ShaderValueType::COLOR, "value", "#ffffffff"});
 		n->output.add({ShaderValueType::COLOR, "value"});
@@ -59,10 +60,12 @@ void _build_node(ShaderNode *n) {
 		n->output.add({ShaderValueType::COLOR, "color"});
 		n->dependencies.add("texture");
 		n->dependencies.add("uv");
-	} else if (n->type == "CubeMap") {
+	} else if (n->type == "Reflection") {
 		n->output.add({ShaderValueType::COLOR, "color"});
 		n->dependencies.add("cubemap");
 		n->dependencies.add("normal");
+		n->dependencies.add("pos");
+		n->dependencies.add("matview");
 	} else if (n->type == "Normals") {
 		n->output.add({ShaderValueType::VEC3, "normals"});
 		n->dependencies.add("normal");
@@ -72,13 +75,22 @@ void _build_node(ShaderNode *n) {
 	} else if (n->type == "Position") {
 		n->output.add({ShaderValueType::VEC3, "pos"});
 		n->dependencies.add("pos");
-	} else if (n->type == "MultiplyColor") {
+	} else if (n->type == "Multiply") {
 		n->params.add({ShaderValueType::COLOR, "a", "#ffffffff"});
 		n->params.add({ShaderValueType::COLOR, "b", "#ffffffff"});
 		n->output.add({ShaderValueType::COLOR, "out"});
-	} else if (n->type == "ColorRed") {
+	} else if (n->type == "Mix") {
+		n->params.add({ShaderValueType::COLOR, "a", "#ffffffff"});
+		n->params.add({ShaderValueType::COLOR, "b", "#000000ff"});
+		n->params.add({ShaderValueType::FLOAT, "factor", "0.5", "range=0:1"});
+		n->output.add({ShaderValueType::COLOR, "out"});
+	} else if (n->type == "Add") {
+		n->params.add({ShaderValueType::COLOR, "a", "#000000ff"});
+		n->params.add({ShaderValueType::COLOR, "b", "#000000ff"});
+		n->output.add({ShaderValueType::COLOR, "out"});
+	} else if (n->type == "Brightness") {
 		n->params.add({ShaderValueType::COLOR, "in", "#ffffffff"});
-		n->output.add({ShaderValueType::FLOAT, "r"});
+		n->output.add({ShaderValueType::FLOAT, "brightness"});
 	} else if (n->type == "VectorZ") {
 		n->params.add({ShaderValueType::VEC3, "in", "vec3(0,0,0)"});
 		n->output.add({ShaderValueType::FLOAT, "z"});
@@ -409,6 +421,15 @@ string build_helper_vars(const Set<string> &vars) {
 		source +=
 			"uniform sampler2D tex0;\n";
 	}
+	if (vars.contains("cubemap")) {
+		source +=
+			"uniform samplerCube tex4;\n";
+	}
+	if (vars.contains("matview")) {
+		source +=
+			"uniform mat4 mat_v;\n";
+	}
+
 	return source;
 }
 
@@ -475,6 +496,9 @@ string ShaderGraph::build_fragment_source() const {
 		} else if (n->type == "Texture") {
 			string t = create_temp(temps, n, 0);
 			source += "\tvec4 " + t + " = texture(tex0, " + sg_build_value(this, temps, n, 0, "in_uv") + ");\n";
+		} else if (n->type == "Reflection") {
+			string t = create_temp(temps, n, 0);
+			source += "\tvec4 " + t + " = texture(tex4, (transpose(mat_v) * vec4(reflect(normalize(in_pos), normalize(in_normal)), 0)).xyz);\n";
 		} else if (n->type == "Normals") {
 			string t = create_temp(temps, n, 0);
 			source += "\tvec3 " + t + " = normalize(in_normal);\n";
@@ -490,12 +514,22 @@ string ShaderGraph::build_fragment_source() const {
 		} else if (n->type == "MaterialEmission") {
 			string t = create_temp(temps, n, 0);
 			source += "\tvec4 " + t + " = " + sg_build_value(this, temps, n, 5, "material.emission") + ";\n";
-		} else if (n->type == "MultiplyColor") {
+		} else if (n->type == "Multiply") {
 			string t = create_temp(temps, n, 0);
 			source += "\tvec4 " + t + " = " + sg_build_value(this, temps, n, 0) + " * " + sg_build_value(this, temps, n, 1) + ";\n";
-		} else if (n->type == "ColorRed") {
+		} else if (n->type == "Add") {
 			string t = create_temp(temps, n, 0);
-			source += "\tfloat " + t + " = " + sg_build_value(this, temps, n, 0) + ".r;\n";
+			source += "\tvec4 " + t + " = " + sg_build_value(this, temps, n, 0) + " + " + sg_build_value(this, temps, n, 1) + ";\n";
+		} else if (n->type == "Mix") {
+			string t = create_temp(temps, n, 0);
+			string tt = create_temp(temps, n, -1, ShaderValueType::FLOAT);
+			source += "\tfloat " + tt + " = " + sg_build_value(this, temps, n, 2) + ";\n";
+			source += "\tvec4 " + t + " = (1 - " + tt + ") * " + sg_build_value(this, temps, n, 0) + " + " + tt + " * "+ sg_build_value(this, temps, n, 1) + ";\n";
+		} else if (n->type == "Brightness") {
+			string tt = create_temp(temps, n, -1, ShaderValueType::COLOR);
+			string t = create_temp(temps, n, 0);
+			source += "\tvec4 " + tt + " = " + sg_build_value(this, temps, n, 0) + ";\n";
+			source += "\tfloat " + t + " = 0.2126 * " + tt + ".r + 0.7152 * " + tt + ".g + 0.0722 * " + tt + ".b;\n";
 		} else if (n->type == "VectorZ") {
 			string t = create_temp(temps, n, 0);
 			source += "\tfloat " + t + " = " + sg_build_value(this, temps, n, 0) + ".z;\n";
