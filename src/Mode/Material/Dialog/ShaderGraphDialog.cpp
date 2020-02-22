@@ -7,6 +7,7 @@
 
 #include "ShaderGraphDialog.h"
 #include "../ModeMaterial.h"
+#include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
 #include "../../../MultiView/ColorScheme.h"
 #include "../../../Data/Material/DataMaterial.h"
@@ -274,7 +275,7 @@ void ShaderGraphDialog::on_update() {
 		//data->notify();
 		mode_material->multi_view->force_redraw();
 	} catch (Exception &e) {
-		win->set_info_text(e.message(), {"error", "allow-close"});
+		ed->error_box(e.message());
 	}
 }
 

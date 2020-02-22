@@ -48,7 +48,7 @@ public:
 	};
 	Array<Port> output;
 
-	Array<string> funcs;
+	Array<string> dependencies;
 };
 
 class ShaderGraph {

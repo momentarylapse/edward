@@ -42,12 +42,17 @@ void _build_node(ShaderNode *n) {
 	} else if (n->type == "Texture") {
 		n->params.add({ShaderValueType::VEC2, "uv", "-mesh-"});
 		n->output.add({ShaderValueType::COLOR, "color"});
+		n->dependencies.add("texture");
+		n->dependencies.add("uv");
 	} else if (n->type == "Normals") {
 		n->output.add({ShaderValueType::VEC3, "normals"});
+		n->dependencies.add("normal");
 	} else if (n->type == "UV") {
 		n->output.add({ShaderValueType::VEC2, "uv"});
+		n->dependencies.add("uv");
 	} else if (n->type == "Position") {
 		n->output.add({ShaderValueType::VEC3, "pos"});
+		n->dependencies.add("pos");
 	} else if (n->type == "MultiplyColor") {
 		n->params.add({ShaderValueType::COLOR, "a", "#ffffffff"});
 		n->params.add({ShaderValueType::COLOR, "b", "#ffffffff"});
@@ -57,12 +62,14 @@ void _build_node(ShaderNode *n) {
 		n->output.add({ShaderValueType::FLOAT, "out"});
 	} else if (n->type == "RandomColor") {
 		n->output.add({ShaderValueType::COLOR, "out"});
-		n->funcs.add("rand");
-		n->funcs.add("noise2d");
+		n->dependencies.add("rand");
+		n->dependencies.add("noise2d");
+		n->dependencies.add("uv");
 	} else if (n->type == "RandomFloat") {
 		n->output.add({ShaderValueType::FLOAT, "out"});
-		n->funcs.add("rand");
-		n->funcs.add("noise2d");
+		n->dependencies.add("rand");
+		n->dependencies.add("noise2d");
+		n->dependencies.add("uv");
 	} else if (n->type == "RescaleVector") {
 		n->params.add({ShaderValueType::VEC3, "in", "vec3(0,0,0)"});
 		n->params.add({ShaderValueType::FLOAT, "scale", "1.0", "range=-2:2"});
@@ -81,7 +88,11 @@ void _build_node(ShaderNode *n) {
 		n->params.add({ShaderValueType::COLOR, "emission", "#000000ff"});
 		n->params.add({ShaderValueType::VEC3, "normals", "-mesh-"});
 		n->output.add({ShaderValueType::COLOR, "out"});
-		n->funcs.add("basic_lighting");
+		n->dependencies.add("basic_lighting");
+		n->dependencies.add("light");
+		n->dependencies.add("material");
+		n->dependencies.add("pos");
+		n->dependencies.add("normal");
 	}
 }
 
@@ -241,6 +252,42 @@ string sg_build_value(const ShaderGraph *g, Array<TempVar> &temps, ShaderNode *n
 	return sg_build_constant(n->params[i]);
 }
 
+string build_helper_vars(const Set<string> &vars) {
+	string source;
+	if (vars.contains("light")) {
+		source +=
+			"struct Light { vec4 color; vec3 pos; float radius, harshness; };\n"
+			"uniform Light light;\n";
+	}
+	if (vars.contains("fog")) {
+		source +=
+			"struct Fog { vec4 color; float density; };\n"
+			"uniform Fog fog;\n";
+	}
+	if (vars.contains("material")) {
+		source +=
+			"struct Material { vec4 ambient, diffusive, specular, emission; float shininess; };\n"
+			"uniform Material material;\n";
+	}
+	if (vars.contains("normal")) {
+		source +=
+			"layout(location = 0) in vec3 in_normal;\n";
+	}
+	if (vars.contains("uv")) {
+		source +=
+			"layout(location = 1) in vec2 in_uv;\n";
+	}
+	if (vars.contains("pos")) {
+		source +=
+			"layout(location = 2) in vec3 in_pos;\n";
+	}
+	if (vars.contains("texture")) {
+		source +=
+			"uniform sampler2D tex0;\n";
+	}
+	return source;
+}
+
 string build_helper_functions(const Set<string> &funcs) {
 	string source;
 	if (funcs.contains("rand")) {
@@ -265,7 +312,7 @@ string build_helper_functions(const Set<string> &funcs) {
 		"	r *= diffuse;\n"
 		"	r += emission;\n"
 		"	if ((d > 0) && (material.shininess > 1)) {\n"
-		"		vec3 e = normalize(fragmentPos); // eye dir\n"
+		"		vec3 e = normalize(in_pos); // eye dir\n"
 		"		vec3 rl = reflect(l, n);\n"
 		"		float ee = max(-dot(e, rl), 0);\n"
 		"		r += specular * light.color * light.harshness * pow(ee, shininess);\n"
@@ -278,25 +325,18 @@ string build_helper_functions(const Set<string> &funcs) {
 
 string ShaderGraph::build_fragment_source() const {
 	string source = "#version 330 core\n"
-			"struct Fog { vec4 color; float density; };\n"
-			"struct Material { vec4 ambient, diffusive, specular, emission; float shininess; };\n"
-			"struct Light { vec4 color; vec3 pos; float radius, harshness; };\n"
-			"uniform Material material;\n"
-			"uniform Light light;\n"
-			"uniform Fog fog;\n"
-			"in vec3 fragmentNormal;\n"
-			"in vec2 fragmentTexCoord;\n"
-			"in vec3 fragmentPos;\n"
-			"out vec4 out_color;\n"
-			"uniform sampler2D tex0;\n";
+			"#extension GL_ARB_separate_shader_objects : enable\n"
+			"out vec4 out_color;\n";
 
-	Set<string> funcs;
+	Set<string> dependencies;
 	for (auto *n: nodes)
-		for (string &f: n->funcs)
-			funcs.add(f);
+		for (string &f: n->dependencies)
+			dependencies.add(f);
+
 	Array<TempVar> temps;
 
-	source += build_helper_functions(funcs);
+	source += build_helper_vars(dependencies);
+	source += build_helper_functions(dependencies);
 
 	source += "\nvoid main() {\n";
 
@@ -311,16 +351,16 @@ string ShaderGraph::build_fragment_source() const {
 			source += "\tvec3 " + t + " = vec3(" + sg_build_value(this, temps, n, 0) + ", " + sg_build_value(this, temps, n, 1) + ", " + sg_build_value(this, temps, n, 2) + ");\n";
 		} else if (n->type == "Texture") {
 			string t = create_temp(temps, n, 0);
-			source += "\tvec4 " + t + " = texture(tex0, " + sg_build_value(this, temps, n, 0, "fragmentTexCoord") + ");\n";
+			source += "\tvec4 " + t + " = texture(tex0, " + sg_build_value(this, temps, n, 0, "in_uv") + ");\n";
 		} else if (n->type == "Normals") {
 			string t = create_temp(temps, n, 0);
-			source += "\tvec3 " + t + " = normalize(fragmentNormal);\n";
+			source += "\tvec3 " + t + " = normalize(in_normal);\n";
 		} else if (n->type == "Position") {
 			string t = create_temp(temps, n, 0);
-			source += "\tvec3 " + t + " = fragmentPos;\n";
+			source += "\tvec3 " + t + " = in_pos;\n";
 		} else if (n->type == "UV") {
 			string t = create_temp(temps, n, 0);
-			source += "\tvec2 " + t + " = fragmentTexCoord;\n";
+			source += "\tvec2 " + t + " = in_uv;\n";
 		} else if (n->type == "MultiplyColor") {
 			string t = create_temp(temps, n, 0);
 			source += "\tvec4 " + t + " = " + sg_build_value(this, temps, n, 0) + " * " + sg_build_value(this, temps, n, 1) + ";\n";
@@ -335,16 +375,16 @@ string ShaderGraph::build_fragment_source() const {
 			source += "\tvec2 " + t + " = " + sg_build_value(this, temps, n, 0) + " * " + sg_build_value(this, temps, n, 1) + " + " + sg_build_value(this, temps, n, 2) + ";\n";
 		} else if (n->type == "BasicLighting") {
 			string t = create_temp(temps, n, 0);
-			source += "\tvec4 " + t + " = basic_lighting(" + sg_build_value(this, temps, n, 5, "fragmentNormal") + ", " + sg_build_value(this, temps, n, 0) + ", " + sg_build_value(this, temps, n, 1) + ", " + sg_build_value(this, temps, n, 2) + ", " + sg_build_value(this, temps, n, 3) + ", " + sg_build_value(this, temps, n, 4) + ");\n";
+			source += "\tvec4 " + t + " = basic_lighting(" + sg_build_value(this, temps, n, 5, "in_normal") + ", " + sg_build_value(this, temps, n, 0) + ", " + sg_build_value(this, temps, n, 1) + ", " + sg_build_value(this, temps, n, 2) + ", " + sg_build_value(this, temps, n, 3) + ", " + sg_build_value(this, temps, n, 4) + ");\n";
 		} else if (n->type == "RandomFloat") {
 			string t = create_temp(temps, n, 0);
-			source += "\tfloat " + t + " = noise2d(fragmentTexCoord);\n";
+			source += "\tfloat " + t + " = noise2d(in_uv);\n";
 		} else if (n->type == "RandomColor") {
 			string t = create_temp(temps, n, 0);
 			source += "\tvec4 " + t + ";\n"
-			"	" + t + ".r = noise2d(fragmentTexCoord);\n"
-			"	" + t + ".g = noise2d(fragmentTexCoord);\n"
-			"	" + t + ".b = noise2d(fragmentTexCoord);\n"
+			"	" + t + ".r = noise2d(in_uv);\n"
+			"	" + t + ".g = noise2d(in_uv);\n"
+			"	" + t + ".b = noise2d(in_uv);\n"
 			"	" + t + ".a = 1.0;\n";
 		} else {
 			source += " unhandled node " + n->type + "\n";
@@ -359,20 +399,21 @@ string ShaderGraph::build_source() const {
 	string pre =
 			"<VertexShader>\n"
 			"#version 330 core\n"
+			"#extension GL_ARB_separate_shader_objects : enable\n"
 			"uniform mat4 mat_mvp;\n"
 			"uniform mat4 mat_m;\n"
 			"uniform mat4 mat_v;\n"
-			"layout(location = 0) in vec3 inPosition;\n"
-			"layout(location = 1) in vec3 inNormal;\n"
-			"layout(location = 2) in vec2 inTexCoord;\n"
-			"out vec3 fragmentNormal;\n"
-			"out vec2 fragmentTexCoord;\n"
-			"out vec3 fragmentPos; // camera space\n"
+			"layout(location = 0) in vec3 in_position;\n"
+			"layout(location = 1) in vec3 in_normal;\n"
+			"layout(location = 2) in vec2 in_uv;\n"
+			"layout(location = 0) out vec3 out_normal;\n"
+			"layout(location = 1) out vec2 out_uv;\n"
+			"layout(location = 2) out vec3 out_pos; // camera space\n"
 			"void main() {\n"
-			"	gl_Position = mat_mvp * vec4(inPosition,1);\n"
-			"	fragmentNormal = (mat_v * mat_m * vec4(inNormal,0)).xyz;\n"
-			"	fragmentTexCoord = inTexCoord;\n"
-			"	fragmentPos = (mat_v * mat_m * vec4(inPosition,1)).xyz;\n"
+			"	gl_Position = mat_mvp * vec4(in_position,1);\n"
+			"	out_normal = (mat_v * mat_m * vec4(in_normal,0)).xyz;\n"
+			"	out_uv = in_uv;\n"
+			"	out_pos = (mat_v * mat_m * vec4(in_position,1)).xyz;\n"
 			"}\n"
 			"</VertexShader>\n"
 			"<FragmentShader>\n";
