@@ -57,6 +57,10 @@ public:
 	~ShaderGraph();
 
 	void clear();
+	void make_default();
+
+	void load(const string &filename);
+	void save(const string &filename);
 
 	string build_fragment_source() const;
 	string build_source() const;

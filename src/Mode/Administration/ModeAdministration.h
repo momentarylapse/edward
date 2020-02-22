@@ -17,8 +17,8 @@ public:
 	ModeAdministration();
 	virtual ~ModeAdministration();
 
-	void _new() override;
-	bool open() override;
+	void _new();
+	bool open();
 
 	void on_start() override;
 	void on_end() override;

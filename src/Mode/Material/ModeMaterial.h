@@ -35,16 +35,23 @@ public:
 	void on_update_menu() override;
 
 
-	void _new() override;
-	bool open() override;
-	bool save() override;
-	bool save_as() override;
+	void _new();
+	bool open();
+	bool save();
+	bool save_as();
 
 	bool optimize_view() override;
 
 	nix::VertexBuffer *MaterialVB[MATERIAL_MAX_TEXTURES + 1];
 	MaterialPropertiesDialog *appearance_dialog;
 	ShaderGraphDialog *shader_graph_dialog;
+
+
+	Array<nix::Texture*> textures;
+	nix::CubeMap *cube_map;
+	nix::Shader *shader;
+	void update_textures();
+	void update_shader();
 
 	string shape_type;
 	bool shape_smooth;

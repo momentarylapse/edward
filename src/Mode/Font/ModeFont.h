@@ -35,10 +35,10 @@ public:
 	void on_data_update();
 
 
-	void _new() override;
-	bool open() override;
-	bool save() override;
-	bool save_as() override;
+	void _new();
+	bool open();
+	bool save();
+	bool save_as();
 
 	void Import();
 	bool optimize_view();

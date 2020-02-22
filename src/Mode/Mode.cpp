@@ -72,33 +72,6 @@ bool ModeBase::equal_roots(ModeBase *m) {
 	return get_root() == m->get_root();
 }
 
-void ModeBase::_new() {
-	if (parent)
-		parent->_new();
-}
-
-bool ModeBase::save() {
-	if (parent)
-		return parent->save();
-	return true;
-}
-
-
-
-bool ModeBase::save_as() {
-	if (parent)
-		return parent->save_as();
-	return true;
-}
-
-
-
-bool ModeBase::open() {
-	if (parent)
-		return parent->open();
-	return true;
-}
-
 
 
 

@@ -36,10 +36,10 @@ public:
 
 	void loadData();
 
-	void _new() override;
-	bool open() override;
-	bool save() override;
-	bool save_as() override;
+	void _new();
+	bool open();
+	bool save();
+	bool save_as();
 
 	void previewStart();
 	void previewStop();

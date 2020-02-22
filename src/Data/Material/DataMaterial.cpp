@@ -6,6 +6,7 @@
  */
 
 #include "DataMaterial.h"
+#include "ShaderGraph.h"
 #include "../../Storage/Storage.h"
 #include "../../lib/nix/nix.h"
 
@@ -14,22 +15,18 @@
 DataMaterial::DataMaterial() :
 	Data(FD_MATERIAL)
 {
-	appearance.shader = NULL;
-	appearance.cube_map = new nix::CubeMap(128);
-
+	appearance.shader_graph = new ShaderGraph();
 	reset();
 }
 
 DataMaterial::~DataMaterial() {
 	reset();
+	delete appearance.shader_graph;
 }
-
-
 
 
 void DataMaterial::AppearanceData::reset() {
 	texture_files.clear();
-	textures.clear();
 
 	ambient = White;
 	diffuse = White;
@@ -49,11 +46,11 @@ void DataMaterial::AppearanceData::reset() {
 		reflection_texture_file[i] = "";
 
 
-	shader_file.clear();
-}
-
-nix::Shader *DataMaterial::AppearanceData::get_shader() const {
-	return nix::Shader::load(shader_file);
+	shader_file = "";
+	shader_graph->make_default();
+	shader_code = shader_graph->build_source();
+	shader_from_graph = false;
+	is_default_shader = true;
 }
 
 
@@ -77,10 +74,6 @@ void DataMaterial::SoundData::Reset() {
 void DataMaterial::reset() {
 	filename = "";
 
-	if (appearance.shader)
-		appearance.shader->unref();
-	appearance.shader = NULL;
-
 	appearance.reset();
 	physics.Reset();
 	Sound.Reset();
@@ -90,7 +83,7 @@ void DataMaterial::reset() {
 	notify();
 }
 
-void DataMaterial::ApplyForRendering() {
+void DataMaterial::apply_for_rendering() {
 	nix::SetMaterial(appearance.ambient, appearance.diffuse, appearance.specular, appearance.shininess, appearance.emissive);
 
 	nix::SetAlpha(ALPHA_NONE);
@@ -106,42 +99,8 @@ void DataMaterial::ApplyForRendering() {
 		nix::SetAlpha(appearance.alpha_factor);
 		nix::SetZ(false, false);
 	}
-
-	nix::SetShader(appearance.shader);
-
-	nix::SetTextures(appearance.textures);
 }
 
-void create_fake_dynamic_cube_map(nix::CubeMap *cube_map) {
-	Image im;
-	int size = cube_map->width;
-	im.create(size, size, White);
-	for (int i=0; i<size; i++)
-		for (int j=0; j<size; j++) {
-			float f = 0.2;
-			if ((i % 16) == 0 or (j % 16) == 0)
-				f = 0.5;
-			if ((i % 64) == 0 or (j % 64) == 0)
-				f = 1;
-			im.set_pixel(i, j, color(1, f, f, f));
-		}
-	for (int i=0;i<6;i++)
-		cube_map->overwrite_side(i, im);
-}
-
-void DataMaterial::UpdateTextures() {
-	appearance.textures.clear();
-	for (string &tf: appearance.texture_files)
-		appearance.textures.add(nix::LoadTexture(tf));
-	if (appearance.reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC) {
-		create_fake_dynamic_cube_map(appearance.cube_map);
-		appearance.textures.add(appearance.cube_map);
-	} else if (appearance.reflection_mode == REFLECTION_CUBE_MAP_STATIC) {
-		for (int i=0;i<6;i++)
-			appearance.cube_map->fill_side(i, nix::LoadTexture(appearance.reflection_texture_file[i]));
-		appearance.textures.add(appearance.cube_map);
-	}
-}
 
 
 

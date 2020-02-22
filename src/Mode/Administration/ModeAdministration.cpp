@@ -38,8 +38,7 @@ void ModeAdministration::on_end()
 	delete(dialog);
 }
 
-void ModeAdministration::on_command(const string& id)
-{
+void ModeAdministration::on_command(const string& id) {
 	if (id == "export_game")
 		ExportGame();
 	if (id == "rudimentary_configuration")

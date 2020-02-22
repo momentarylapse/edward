@@ -81,7 +81,6 @@ void ModeModel::on_command(const string & id) {
 	if (id == "export_to_json")
 		export_save_json();
 
-	// TODO -> edward?
 	if (id == "undo")
 		data->undo();
 	if (id == "redo")

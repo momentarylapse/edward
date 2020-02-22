@@ -25,10 +25,10 @@ public:
 	void on_update_menu() override;
 
 
-	void _new() override;
-	bool open() override;
-	bool save() override;
-	bool save_as() override;
+	void _new();
+	bool open();
+	bool save();
+	bool save_as();
 
 	bool import_open_3ds();
 	bool import_load_3ds(const string &filename);

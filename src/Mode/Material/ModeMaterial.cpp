@@ -9,6 +9,7 @@
 #include "../../Storage/Storage.h"
 #include "ModeMaterial.h"
 #include "../../Data/Material/DataMaterial.h"
+#include "../../Data/Material/ShaderGraph.h"
 #include "Dialog/MaterialPropertiesDialog.h"
 #include "Dialog/ShaderGraphDialog.h"
 #include "../../Data/Model/DataModel.h"
@@ -35,6 +36,9 @@ ModeMaterial::ModeMaterial() :
 {
 	geo = NULL;
 
+	shader = NULL;
+	cube_map = NULL;
+
 	appearance_dialog = NULL;
 	shader_graph_dialog = NULL;
 	shader_edit_mode = ShaderEditMode::NONE;
@@ -53,8 +57,29 @@ void ModeMaterial::_new() {
 }
 
 
+bool test_save_extras(DataMaterial *data) {
+	if (data->appearance.is_default_shader)
+		return true;
+
+	string dir = storage->dialog_dir[FD_SHADERFILE];
+	if (data->appearance.shader_file == "") {
+		if (!hui::FileDialogSave(ed, "Shader...", dir, "*.shader", "*.shader"))
+			return false;
+		data->appearance.shader_file = hui::Filename.substr(dir.num, -1);
+	}
+
+	FileWriteText(dir + data->appearance.shader_file, data->appearance.shader_code);
+
+	if (data->appearance.shader_from_graph)
+		data->appearance.shader_graph->save(dir + data->appearance.shader_file + ".graph");
+	return true;
+}
+
+
 
 bool ModeMaterial::save() {
+	if (!test_save_extras(data))
+		return false;
 	return storage->auto_save(data);
 }
 
@@ -66,10 +91,34 @@ void ModeMaterial::on_draw() {
 
 
 void ModeMaterial::on_data_update() {
-	data->UpdateTextures();
-	if (data->appearance.shader)
-		data->appearance.shader->unref();
-	data->appearance.shader = data->appearance.get_shader();
+	update_textures();
+	update_shader();
+}
+
+void ModeMaterial::update_textures() {
+	textures.clear();
+
+	for (string &tf: data->appearance.texture_files)
+		textures.add(nix::LoadTexture(tf));
+	/*if (appearance.reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC) {
+		create_fake_dynamic_cube_map(cube_map);
+		textures.add(cube_map);
+	} else if (appearance.reflection_mode == REFLECTION_CUBE_MAP_STATIC) {
+		for (int i=0;i<6;i++)
+			temp.cube_map->fill_side(i, nix::LoadTexture(appearance.reflection_texture_file[i]));
+		temp.textures.add(temp.cube_map);
+	}*/
+}
+
+void ModeMaterial::update_shader() {
+	if (shader != nix::default_shader_3d)
+		delete shader;
+	try {
+		shader = nix::Shader::create(data->appearance.shader_code);
+	} catch (Exception &e) {
+		ed->error_box(e.message());
+		shader = nix::default_shader_3d;
+	}
 }
 
 
@@ -114,7 +163,9 @@ void ModeMaterial::on_command(const string & id) {
 
 
 void ModeMaterial::on_draw_win(MultiView::Window *win) {
-	data->ApplyForRendering();
+	data->apply_for_rendering();
+	nix::SetShader(shader);
+	nix::SetTextures(textures);
 
 	nix::DrawTriangles(MaterialVB[max(data->appearance.texture_files.num, 1)]);
 
@@ -137,10 +188,6 @@ bool ModeMaterial::open() {
 
 
 void ModeMaterial::on_end() {
-	if (geo)
-		delete geo;
-	for (int i=1; i<=__MATERIAL_MAX_TEXTURES; i++)
-		delete MaterialVB[i];
 
 	ed->set_side_panel(nullptr);
 	ed->set_bottom_panel(nullptr);
@@ -148,14 +195,44 @@ void ModeMaterial::on_end() {
 	auto *t = ed->toolbar[hui::TOOLBAR_TOP];
 	t->reset();
 	t->enable(false);
-}
 
+	if (geo)
+		delete geo;
+
+	for (int i=1; i<=__MATERIAL_MAX_TEXTURES; i++)
+		delete MaterialVB[i];
+
+	if (shader != nix::default_shader_3d)
+		delete shader;
+	shader = NULL;
+
+	delete cube_map;
+	cube_map = NULL;
+}
 
 
 bool ModeMaterial::save_as() {
+	if (!test_save_extras(data))
+		return false;
 	return storage->save_as(data);
 }
 
+void create_fake_dynamic_cube_map(nix::CubeMap *cube_map) {
+	Image im;
+	int size = cube_map->width;
+	im.create(size, size, White);
+	for (int i=0; i<size; i++)
+		for (int j=0; j<size; j++) {
+			float f = 0.2;
+			if ((i % 16) == 0 or (j % 16) == 0)
+				f = 0.5;
+			if ((i % 64) == 0 or (j % 64) == 0)
+				f = 1;
+			im.set_pixel(i, j, color(1, f, f, f));
+		}
+	for (int i=0;i<6;i++)
+		cube_map->overwrite_side(i, im);
+}
 
 
 void ModeMaterial::on_start() {
@@ -164,7 +241,13 @@ void ModeMaterial::on_start() {
 	t->reset();
 	t->enable(false);
 
+
+	shader = nix::default_shader_3d;
+	cube_map = new nix::CubeMap(128);
+	create_fake_dynamic_cube_map(cube_map);
+
 	data->subscribe(this, [=]{ on_data_update(); });
+	on_data_update();
 
 	shader_edit_mode = ShaderEditMode::NONE;
 

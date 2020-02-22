@@ -631,8 +631,9 @@ bool Edward::allow_termination()
 		return false;
 	if (answer == "hui:no")
 		return true;
-	bool saved = cur_mode->save();
-	return saved;
+	//bool saved = cur_mode->save();
+	//return saved;
+	return false;
 }
 
 string Edward::get_tex_image(nix::Texture *tex)

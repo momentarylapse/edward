@@ -64,12 +64,6 @@ public:
 	bool equal_roots(ModeBase *m);
 	virtual Data *get_data() = 0;
 
-
-	virtual void _new();
-	virtual bool open();
-	virtual bool save();
-	virtual bool save_as();
-
 	string name;
 
 	ModeBase *parent;

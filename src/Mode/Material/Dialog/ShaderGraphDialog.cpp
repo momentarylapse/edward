@@ -25,15 +25,7 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 	data = _data;
 
 	move_dx = move_dy = -1;
-	graph = new ShaderGraph();
-	//graph->add("Basic", 300, 50);
-	//graph->add("Texture", 100, 50);
-
-	auto n1 = graph->add("Texture", 50, 50);
-	auto n2 = graph->add("BasicLighting", 250, 100);
-	auto n3 = graph->add("Output", 450, 50);
-	graph->connect(n1, 0, n2, 0);
-	graph->connect(n2, 0, n3, 0);
+	graph = data->appearance.shader_graph;
 
 	from_source("Grid grid '' vertical\n"\
 			"\tGrid ? ''\n"
@@ -62,12 +54,9 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 	}
 	popup->add("Reset", "reset");
 	event("reset", [=]{ on_reset(); });
-
-	on_update();
 }
 
 ShaderGraphDialog::~ShaderGraphDialog() {
-	delete graph;
 }
 
 int node_get_in_y(ShaderNode *n, int i) {
@@ -148,8 +137,8 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 }
 
 void ShaderGraphDialog::on_draw(Painter *p) {
-	int w = p->width;
-	int h = p->height;
+	//int w = p->width;
+	//int h = p->height;
 	p->set_color(scheme.BACKGROUND);
 	p->draw_rect(p->area());
 
@@ -266,9 +255,17 @@ void ShaderGraphDialog::on_mouse_move() {
 
 void ShaderGraphDialog::on_update() {
 	string source = graph->build_source();
-	set_string("source", graph->build_fragment_source());
+	data->appearance.shader_code = source;
+	set_string("source", source);
 	//msg_write(source);
-	try {
+
+	data->appearance.shader_from_graph = true;
+	data->appearance.is_default_shader = false;
+	data->reset_history(); // TODO: actions
+	data->notify(data->MESSAGE_CHANGE);
+
+
+	/*try {
 		auto s = nix::Shader::create(source);
 		//delete data->appearance.shader;
 		data->appearance.shader = s;
@@ -276,7 +273,7 @@ void ShaderGraphDialog::on_update() {
 		mode_material->multi_view->force_redraw();
 	} catch (Exception &e) {
 		ed->error_box(e.message());
-	}
+	}*/
 }
 
 void ShaderGraphDialog::on_reset() {

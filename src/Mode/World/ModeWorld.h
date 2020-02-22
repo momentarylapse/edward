@@ -32,10 +32,10 @@ public:
 	void on_draw_win(MultiView::Window *win) override;
 
 
-	void _new() override;
-	bool open() override;
-	bool save() override;
-	bool save_as() override;
+	void _new();
+	bool open();
+	bool save();
+	bool save_as();
 
 	bool optimize_view() override;
 

@@ -11,27 +11,26 @@
 #include "../Data.h"
 #include "../../x/material.h"
 
-namespace nix{
+namespace nix {
 	class Texture;
 	class CubeMap;
 	class Shader;
 };
 
-class DataMaterial: public Data
-{
+class ShaderGraph;
+
+class DataMaterial: public Data {
 public:
 	DataMaterial();
 	virtual ~DataMaterial();
 
 	void reset() override;
 
-	void ApplyForRendering();
-	void UpdateTextures();
+	void apply_for_rendering();
 
 
 	struct AppearanceData {
 		// properties
-		Array<nix::Texture*> textures;
 		Array<string> texture_files;
 
 		// color
@@ -47,14 +46,15 @@ public:
 		int reflection_mode, reflection_size;
 		float reflection_density;
 		string reflection_texture_file[6];
-		nix::CubeMap *cube_map;
 
 		// shader
 		string shader_file;
-		nix::Shader *shader;
+		string shader_code;
+		ShaderGraph *shader_graph;
+		bool shader_from_graph;
+		bool is_default_shader;
 
 		void reset();
-		nix::Shader *get_shader() const;
 	};
 
 	AppearanceData appearance;

@@ -9,6 +9,7 @@
 #include "../../lib/base/set.h"
 #include "../../lib/image/color.h"
 #include "../../lib/file/msg.h"
+#include "../../lib/xfile/xml.h"
 
 
 const Array<string> ShaderGraph::NODE_TYPES = {"Color", "Vector", "Texture", "Position", "Normals", "UV", "MultiplyColor", "Output", "BasicLighting", "RandomFloat", "RandomColor", "ColorRed", "RescaleVector", "RescaleVector2"};
@@ -108,6 +109,81 @@ void ShaderGraph::clear() {
 	for (auto *n: nodes)
 		delete n;
 	nodes.clear();
+}
+
+void ShaderGraph::make_default() {
+	clear();
+
+	auto n1 = add("Texture", 50, 50);
+	auto n2 = add("BasicLighting", 250, 100);
+	auto n3 = add("Output", 450, 50);
+	connect(n1, 0, n2, 0);
+	connect(n2, 0, n3, 0);
+}
+
+int sg_node_index(ShaderGraph *g, ShaderNode *n) {
+	foreachi (auto *nn, g->nodes, i)
+		if (nn == n)
+			return i;
+	return -1;
+}
+
+// who needs sanity checks?!?!?
+void ShaderGraph::load(const string &filename) {
+	clear();
+	msg_write("loading graph..." + filename);
+
+	xml::Parser p;
+	p.load(filename);
+	if (p.elements.num < 0)
+		return;
+	for (auto &e: p.elements[0].elements[0].elements) {
+		string type = e.value("type");
+		int x = e.value("x")._int();
+		int y = e.value("y")._int();
+		auto *n = new ShaderNode(type, x, y);
+		for (auto &pp: n->params)
+			pp.value = e.value(pp.name);
+		nodes.add(n);
+	}
+	for (auto &e: p.elements[0].elements[1].elements) {
+		Link l;
+		l.source = nodes[e.value("source")._int()];
+		l.source_port = e.value("sourceport")._int();
+		l.dest = nodes[e.value("dest")._int()];
+		l.dest_port = e.value("destport")._int();
+		links.add(l);
+	}
+}
+
+void ShaderGraph::save(const string &filename) {
+	msg_write("saving graph... " + filename);
+	xml::Parser p;
+	xml::Element root = {"ShaderGraph"};
+	xml::Element enodes = {"Nodes"};
+	for (auto *n: nodes) {
+		xml::Element e = {"Node"};
+		e.add_attribute("type", n->type);
+		e.add_attribute("x", i2s(n->x));
+		e.add_attribute("y", i2s(n->y));
+		for (auto &p: n->params) {
+			e.add_attribute(p.name, p.value);
+		}
+		enodes.add(e);
+	}
+	xml::Element elinks = {"Links"};
+	for (auto &l: links) {
+		xml::Element e = xml::Element("Link");
+		e.add_attribute("source", i2s(sg_node_index(this, l.source)));
+		e.add_attribute("sourceport", i2s(l.source_port));
+		e.add_attribute("dest", i2s(sg_node_index(this, l.dest)));
+		e.add_attribute("destport", i2s(l.dest_port));
+		elinks.add(e);
+	}
+	root.add(enodes);
+	root.add(elinks);
+	p.elements.add(root);
+	p.save(filename);
 }
 
 ShaderNode::ShaderNode(const string &_type, int _x, int _y) {
