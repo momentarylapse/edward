@@ -50,18 +50,15 @@ ModeWorldCamera::ModeWorldCamera(ModeBase *_parent, Data *_data) :
 	inter_ang = new Interpolator<vector>(Interpolator<vector>::TYPE_ANGULAR_LERP);
 }
 
-ModeWorldCamera::~ModeWorldCamera()
-{
-	delete(inter_pos);
-	delete(inter_ang);
+ModeWorldCamera::~ModeWorldCamera() {
+	delete inter_pos;
+	delete inter_ang;
 }
 
-void ModeWorldCamera::on_start()
-{
+void ModeWorldCamera::on_start() {
 	// timeline....
 	dialog = new CameraDialog(this);
-	ed->embed(dialog, "vgrid", 0, 1);
-	//ed->set_side_panel(dialog);
+	ed->set_bottom_panel(dialog);
 
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("world-camera-toolbar");
 
@@ -79,18 +76,16 @@ void ModeWorldCamera::on_start()
 	loadData();
 }
 
-void ModeWorldCamera::on_end()
-{
+void ModeWorldCamera::on_end() {
 	Observer::unsubscribe(data);
 	Observer::unsubscribe(multi_view);
-	//ed->set_side_panel(nullptr);
-	delete dialog;
+	ed->set_bottom_panel(nullptr);
+
 	multi_view->clear_data(data);
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("world-edit-toolbar"); // ...
 }
 
-void ModeWorldCamera::addPoint()
-{
+void ModeWorldCamera::addPoint() {
 	ed->set_mode(new ModeWorldCameraCreatePoint(ed->cur_mode));
 }
 

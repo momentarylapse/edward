@@ -86,7 +86,7 @@ void ModeModelAnimation::on_start() {
 	ed->set_side_panel(dialog);
 
 	timeline = new ModelAnimationTimelinePanel;
-	ed->embed(timeline, "vgrid", 0, 1);
+	ed->set_bottom_panel(timeline);
 
 	Observer::subscribe(this, MESSAGE_SET_FRAME);
 	Observer::subscribe(data);
@@ -99,8 +99,7 @@ void ModeModelAnimation::on_start() {
 	//ed->set_mode(mode_model_animation_none);
 }
 
-int ModeModelAnimation::getFirstMove()
-{
+int ModeModelAnimation::getFirstMove() {
 	foreachi(ModelMove &m, data->move, i)
 		if (m.frame.num > 0)
 			return i;
@@ -108,8 +107,7 @@ int ModeModelAnimation::getFirstMove()
 }
 
 
-void ModeModelAnimation::on_update_menu()
-{
+void ModeModelAnimation::on_update_menu() {
 }
 
 
@@ -119,7 +117,7 @@ void ModeModelAnimation::on_end() {
 	Observer::unsubscribe(data);
 	Observer::unsubscribe(this);
 	ed->set_side_panel(nullptr);
-	delete timeline;
+	ed->set_bottom_panel(nullptr);
 }
 
 

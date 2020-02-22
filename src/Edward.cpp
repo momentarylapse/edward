@@ -133,7 +133,7 @@ Edward::Edward(Array<string> arg) :
 	no_mode = new ModeNone;
 	cur_mode = no_mode;
 	side_panel = nullptr;
-	prev_side_panel = nullptr;
+	bottom_panel = nullptr;
 
 	progress = new Progress;
 
@@ -688,6 +688,21 @@ void Edward::set_side_panel(hui::Panel *panel) {
 		side_panel = panel;
 		ed->embed(panel, "side-bar-grid", 0, 0);
 		reveal("side-bar-revealer", true);
+	}
+}
+
+void Edward::set_bottom_panel(hui::Panel *panel) {
+	if (bottom_panel) {
+		// close
+		//reveal("side-bar-revealer", false);
+		delete bottom_panel;
+		bottom_panel = nullptr;
+	}
+	if (panel) {
+		// open
+		bottom_panel = panel;
+		ed->embed(panel, "vgrid", 0, 1);
+		//reveal("side-bar-revealer", true);
 	}
 }
 
