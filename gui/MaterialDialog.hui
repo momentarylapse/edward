@@ -18,7 +18,7 @@ Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 				ColorButton mat_em ""
 		Expander material_dialog_grp_textures "Textures"
 			Grid ? ""
-				ListView mat_textures "Level\\Texture" format=tit select-single
+				ListView mat_textures "Level\\\\Texture" format=tit select-single
 				---|
 				Grid ? ""
 					Button mat_add_texture_level "new level" image=hui:add

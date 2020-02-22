@@ -2217,7 +2217,7 @@ material-toolbar
 
 0
 0
-6
+10
 Item
 new
 image=icons/toolbar/new.png
@@ -2252,6 +2252,30 @@ Item
 redo
 image=icons/toolbar/redo.png
 5
+0
+0
+Separator
+
+
+6
+0
+0
+Item
+shader-mode-none
+image=hui:edit,checkable
+7
+0
+0
+Item
+shader-mode-graph
+image=hui:edit,checkable
+8
+0
+0
+Item
+shader-mode-code
+image=hui:edit,checkable
+9
 0
 0
 # Resource
@@ -9704,7 +9728,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-962
+965
 # Text
 /ambient
 Ambient:
@@ -10180,6 +10204,15 @@ Number of photons
 lightmap_dialog/lmt_spacial_resolution
 Spacial resolution
 
+material-toolbar/shader-mode-code
+Shader code
+
+material-toolbar/shader-mode-graph
+Shader graph
+
+material-toolbar/shader-mode-none
+Material
+
 material_dialog/alpha_dest
 Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha
 
@@ -10199,7 +10232,7 @@ material_dialog/mat_empty_texture_level
 Empty
 
 material_dialog/mat_textures
-Level\\Texture
+Level\\\\Texture
 
 material_dialog/material_dialog
 Material appearance

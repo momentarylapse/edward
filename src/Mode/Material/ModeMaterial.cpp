@@ -34,25 +34,16 @@ ModeMaterial::ModeMaterial() :
 	Mode("Material", NULL, new DataMaterial, ed->multi_view_3d, "menu_material")
 {
 	geo = NULL;
-	data->subscribe(this, [=]{ on_data_update(); });
 
 	appearance_dialog = NULL;
 	shader_graph_dialog = NULL;
-
-	for (int i=1; i<=__MATERIAL_MAX_TEXTURES; i++) {
-		string f = "3f,3fn";
-		for (int j=0; j<i; j++)
-			f += ",2f";
-		MaterialVB[i] = new nix::VertexBuffer(f);
-	}
+	shader_edit_mode = ShaderEditMode::NONE;
 
 	shape_type = hui::Config.get_str("MaterialShapeType", "teapot");
 	shape_smooth = hui::Config.get_bool("MaterialShapeSmooth", true);
 }
 
 ModeMaterial::~ModeMaterial() {
-	if (geo)
-		delete geo;
 }
 
 void ModeMaterial::_new() {
@@ -112,6 +103,13 @@ void ModeMaterial::on_command(const string & id) {
 		set_shape_type("icosahedron");
 	if (id == "material_shape_teapot")
 		set_shape_type("teapot");
+
+	if (id == "shader-mode-none")
+		set_shader_edit_mode(ShaderEditMode::NONE);
+	if (id == "shader-mode-graph")
+		set_shader_edit_mode(ShaderEditMode::GRAPH);
+	if (id == "shader-mode-code")
+		set_shader_edit_mode(ShaderEditMode::CODE);
 }
 
 
@@ -139,9 +137,15 @@ bool ModeMaterial::open() {
 
 
 void ModeMaterial::on_end() {
-	ed->set_side_panel(nullptr);
+	if (geo)
+		delete geo;
+	for (int i=1; i<=__MATERIAL_MAX_TEXTURES; i++)
+		delete MaterialVB[i];
 
-	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
+	ed->set_side_panel(nullptr);
+	ed->set_bottom_panel(nullptr);
+
+	auto *t = ed->toolbar[hui::TOOLBAR_TOP];
 	t->reset();
 	t->enable(false);
 }
@@ -160,11 +164,22 @@ void ModeMaterial::on_start() {
 	t->reset();
 	t->enable(false);
 
+	data->subscribe(this, [=]{ on_data_update(); });
+
+	shader_edit_mode = ShaderEditMode::NONE;
+
+	for (int i=1; i<=__MATERIAL_MAX_TEXTURES; i++) {
+		string f = "3f,3fn";
+		for (int j=0; j<i; j++)
+			f += ",2f";
+		MaterialVB[i] = new nix::VertexBuffer(f);
+	}
+
+	shape_type = hui::Config.get_str("MaterialShapeType", "teapot");
+	shape_smooth = hui::Config.get_bool("MaterialShapeSmooth", true);
+
 
 	multi_view->set_allow_select(false);
-
-	shader_graph_dialog = new ShaderGraphDialog(ed, data);
-	shader_graph_dialog->show();
 
 	appearance_dialog = new MaterialPropertiesDialog(ed, data);
 	ed->set_side_panel(appearance_dialog);
@@ -222,6 +237,21 @@ bool ModeMaterial::optimize_view() {
 	return true;
 }
 
+void ModeMaterial::set_shader_edit_mode(ShaderEditMode mode) {
+	if (mode == shader_edit_mode)
+		return;
+
+	if (shader_edit_mode == ShaderEditMode::GRAPH) {
+		ed->set_bottom_panel(nullptr);
+	}
+	shader_edit_mode = mode;
+	if (shader_edit_mode == ShaderEditMode::GRAPH) {
+		shader_graph_dialog = new ShaderGraphDialog(data);
+		ed->set_bottom_panel(shader_graph_dialog);
+	}
+	on_update_menu();
+}
+
 void ModeMaterial::on_update_menu() {
 	ed->check("material_shape_smooth", shape_smooth);
 	ed->check("material_shape_cube", shape_type == "cube");
@@ -230,6 +260,10 @@ void ModeMaterial::on_update_menu() {
 	ed->check("material_shape_torusknot", shape_type == "torusknot");
 	ed->check("material_shape_teapot", shape_type == "teapot");
 	ed->check("material_shape_icosahedron", shape_type == "icosahedron");
+
+	ed->check("shader-mode-none", shader_edit_mode == ShaderEditMode::NONE);
+	ed->check("shader-mode-graph", shader_edit_mode == ShaderEditMode::GRAPH);
+	ed->check("shader-mode-code", shader_edit_mode == ShaderEditMode::CODE);
 }
 
 

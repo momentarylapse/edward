@@ -5,3 +5,7 @@ Toolbar material-toolbar ""
 	Separator
 	Item /undo "Undo" image=icons/toolbar/undo.png
 	Item /redo "Redo" image=icons/toolbar/redo.png
+	Separator
+	Item shader-mode-none "Material" image=hui:edit checkable
+	Item shader-mode-graph "Shader graph" image=hui:edit checkable
+	Item shader-mode-code "Shader code" image=hui:edit checkable

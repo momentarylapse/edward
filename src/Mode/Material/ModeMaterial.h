@@ -50,6 +50,14 @@ public:
 	bool shape_smooth;
 	Geometry *geo;
 
+	enum class ShaderEditMode {
+		NONE,
+		GRAPH,
+		CODE
+	} shader_edit_mode;
+	void set_shader_edit_mode(ShaderEditMode mode);
+
+
 	void set_shape_type(const string &type);
 	void set_shape_smooth(bool smooth);
 	void update_shape();

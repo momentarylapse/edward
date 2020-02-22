@@ -20,9 +20,7 @@ const int NODE_HEADER_HEIGHT = 25;
 const int NODE_PORT_HEIGHT = 20;
 
 
-ShaderGraphDialog::ShaderGraphDialog(hui::Window *parent, DataMaterial *_data) :
-	hui::Dialog("Shader Graph", 1000, 600, parent, true)
-{
+ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 	data = _data;
 
 	move_dx = move_dy = -1;
@@ -44,10 +42,11 @@ ShaderGraphDialog::ShaderGraphDialog(hui::Window *parent, DataMaterial *_data) :
 			"\t\tCheckBox show-source 'Show source'\n"
 			"\t\tButton update 'Update'");
 	event_xp("area", "hui:draw", [=](Painter *p){ on_draw(p); });
-	//event_x("area", "hui:mouse-move", [=]{ on_mouse_move(); });
-	//event_x("area", "hui:left-button-down", [=]{ on_left_button_down(); });
-	//event_x("area", "hui:left-button-up", [=]{ on_left_button_up(); });
-	//event_x("area", "hui:key-down", [=]{ on_key_down(); });
+	event_x("area", "hui:mouse-move", [=]{ on_mouse_move(); });
+	event_x("area", "hui:left-button-down", [=]{ on_left_button_down(); });
+	event_x("area", "hui:left-button-up", [=]{ on_left_button_up(); });
+	event_x("area", "hui:right-button-down", [=]{ on_right_button_down(); });
+	event_x("area", "hui:key-down", [=]{ on_key_down(); });
 	event("update", [=]{ on_update(); });
 	event("show-source", [=]{ hide_control("source", !is_checked("")); });
 
@@ -212,7 +211,7 @@ void ShaderGraphDialog::on_left_button_down() {
 			}
 		} else if (pp.type == ShaderValueType::COLOR) {
 			color col = pp.get_color();
-			if (hui::SelectColor(this, col)) {
+			if (hui::SelectColor(win, col)) {
 				pp.set_color(hui::Color);
 				on_update();
 			}
@@ -275,7 +274,7 @@ void ShaderGraphDialog::on_update() {
 		//data->notify();
 		mode_material->multi_view->force_redraw();
 	} catch (Exception &e) {
-		this->set_info_text(e.message(), {"error", "allow-close"});
+		win->set_info_text(e.message(), {"error", "allow-close"});
 	}
 }
 

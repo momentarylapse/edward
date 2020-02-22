@@ -644,7 +644,9 @@ string Edward::get_tex_image(nix::Texture *tex)
 	if (tex){
 		Image im;
 		tex->read(im);
-		img = hui::SetImage(&im);
+		auto *small = im.scale(48, 48);
+		img = hui::SetImage(small);
+		delete small;
 	}else{
 		Image empty;
 		empty.create(48, 48, White);

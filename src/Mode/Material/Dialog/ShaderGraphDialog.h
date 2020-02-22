@@ -14,14 +14,14 @@ class DataMaterial;
 class ShaderGraph;
 class ShaderNode;
 
-class ShaderGraphDialog : public hui::Dialog {
+class ShaderGraphDialog : public hui::Panel {
 public:
-	ShaderGraphDialog(hui::Window *parent, DataMaterial *data);
+	ShaderGraphDialog(DataMaterial *data);
 	virtual ~ShaderGraphDialog();
 
 	void draw_node(Painter *p, ShaderNode *n);
 
-	void on_draw(Painter *p) override;
+	void on_draw(Painter *p);
 
 	void on_left_button_down();
 	void on_left_button_up();
