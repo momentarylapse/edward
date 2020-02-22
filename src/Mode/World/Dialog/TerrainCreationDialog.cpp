@@ -10,8 +10,7 @@
 #include "../../../Storage/Storage.h"
 
 TerrainCreationDialog::TerrainCreationDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data) :
-	hui::Dialog("new_terrain_dialog", 400, 300, _parent, _allow_parent),
-	Observer("TerrainCreationDialog")
+	hui::Dialog("new_terrain_dialog", 400, 300, _parent, _allow_parent)
 {
 	from_resource("new_terrain_dialog");
 	data = _data;
@@ -27,14 +26,11 @@ TerrainCreationDialog::TerrainCreationDialog(hui::Window *_parent, bool _allow_p
 	event("terrain_x", std::bind(&TerrainCreationDialog::OnSizeChange, this));
 	event("terrain_y", std::bind(&TerrainCreationDialog::OnSizeChange, this));
 
-	subscribe(data);
-
 	LoadData();
 }
 
 TerrainCreationDialog::~TerrainCreationDialog()
 {
-	unsubscribe(data);
 }
 
 void TerrainCreationDialog::ApplyData()
@@ -54,10 +50,6 @@ void TerrainCreationDialog::LoadData()
 }
 
 
-
-void TerrainCreationDialog::on_update(Observable *o, const string &message)
-{
-}
 
 
 

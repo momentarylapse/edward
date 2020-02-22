@@ -13,17 +13,12 @@
 
 class DataModel;
 
-class ModeModelAnimationNone: public Mode<DataModel>
-{
+class ModeModelAnimationNone: public Mode<DataModel> {
 public:
 	ModeModelAnimationNone(ModeBase *parent);
-	virtual ~ModeModelAnimationNone();
 
 	void on_start() override;
 	void on_end() override;
-
-	void on_update(Observable *o, const string &message) override;
-	void on_update_menu() override;
 
 	void on_draw_win(MultiView::Window *win) override;
 };

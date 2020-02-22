@@ -20,8 +20,6 @@
 #include "../../x/model.h"
 #include "../../x/object.h"
 #include "../../x/terrain.h"
-#include "Dialog/SelectionPropertiesDialog.h"
-#include "Dialog/ObjectPropertiesDialog.h"
 #include "Dialog/TerrainPropertiesDialog.h"
 #include "Dialog/TerrainHeightmapDialog.h"
 #include "Dialog/LightmapDialog.h"
@@ -50,7 +48,7 @@ ModeWorld *mode_world = NULL;
 
 const bool LIST_SHOW_SCRIPTS = false;
 
-class WorldObjectListPanel : public hui::Panel, Observer {
+class WorldObjectListPanel : public hui::Panel {
 public:
 	ModeWorld *world;
 	DataWorld *data;
@@ -63,7 +61,7 @@ public:
 	bool allow_sel_change_signal;
 	hui::Menu *popup;
 
-	WorldObjectListPanel(ModeWorld *w) : Observer("WorldObjectListPanel") {
+	WorldObjectListPanel(ModeWorld *w) {
 		from_resource("world-object-list-dialog");
 
 		popup = hui::CreateResourceMenu("world-object-list-popup");
@@ -72,8 +70,6 @@ public:
 		data = world->data;
 		editing = -1;
 		allow_sel_change_signal = true;
-		subscribe(data, data->MESSAGE_CHANGE);
-		subscribe(w->multi_view, w->multi_view->MESSAGE_SELECTION_CHANGE);
 		event_x("list", "hui:select", [=]{ on_list_select(); });
 		event_x("list", "hui:right-button-down", [=]{ on_list_right_click(); });
 		event("sun_enabled", [=]{ on_change(); });
@@ -84,20 +80,17 @@ public:
 		event("script-edit", [=]{ on_script_edit(); });
 
 		fill_list();
-	}
-	~WorldObjectListPanel() {
-		unsubscribe(world->multi_view);
-		unsubscribe(data);
-		delete popup;
-	}
 
-	void on_update(Observable *o, const string &m) override {
-		if (o == data) {
-			fill_list();
-		} else if (o == world->multi_view) {
+		data->subscribe(this, [=]{ fill_list(); }, data->MESSAGE_CHANGE);
+		w->multi_view->subscribe(this, [=] {
 			if (allow_sel_change_signal)
 				selection_from_world();
-		}
+		}, w->multi_view->MESSAGE_SELECTION_CHANGE);
+	}
+	~WorldObjectListPanel() {
+		world->multi_view->unsubscribe(this);
+		data->unsubscribe(this);
+		delete popup;
 	}
 
 	string light_type(WorldLight &l) {
@@ -121,10 +114,11 @@ public:
 			add_string("list", "Light\\" + light_type(l));
 			list_indices.add({MVD_WORLD_LIGHT, i});
 		}
-		if (LIST_SHOW_SCRIPTS)
+		if (LIST_SHOW_SCRIPTS) {
 		foreachi (auto &s, data->meta_data.scripts, i) {
 			add_string("list", "Script\\" + s.filename);
 			list_indices.add({MVD_WORLD_SCRIPT, i});
+		}
 		}
 		foreachi (auto &t, data->Terrains, i) {
 			add_string("list", "Terrain\\" + t.filename);
@@ -314,7 +308,7 @@ public:
 
 ModeWorld::ModeWorld() :
 	Mode<DataWorld>("World", NULL, new DataWorld, ed->multi_view_3d, "menu_world") {
-	subscribe(data);
+	data->subscribe(this, [=]{ data->UpdateData(); });
 
 	world_dialog = nullptr;
 	dialog = nullptr;
@@ -328,6 +322,7 @@ ModeWorld::ModeWorld() :
 }
 
 ModeWorld::~ModeWorld() {
+	data->unsubscribe(this);
 }
 
 bool ModeWorld::save_as() {
@@ -525,16 +520,6 @@ bool WorldTerrain::overlap_rect(MultiView::Window *win, const rect &r) {
 bool ModeWorld::save() {
 	return storage->auto_save(data);
 }
-
-
-void ModeWorld::on_update(Observable *o, const string &message) {
-	if (o == data) {
-		data->UpdateData();
-	} else if (o == multi_view) {
-		// selection
-	}
-}
-
 
 
 
@@ -810,53 +795,16 @@ void ModeWorld::ExecutePropertiesDialog() {
 	if (num_o + num_t == 0) {
 		// nothing selected -> world
 		ExecuteWorldPropertiesDialog();
-	} else if ((num_o == 1) and (num_t == 0)) {
-		// single object -> object
-		foreachi(WorldObject &o, data->Objects, i)
-			if (o.is_selected)
-				ExecuteObjectPropertiesDialog(i);
 	} else if ((num_o == 0) and (num_t == 1)) {
 		// single terrain -> terrain
 		foreachi(WorldTerrain &t, data->Terrains, i)
 			if (t.is_selected)
 				ExecuteTerrainPropertiesDialog(i);
 	} else {
-		// multiple selections -> choose
-		ExecuteSelectionPropertiesDialog();
 	}
 }
 
 
-
-void ModeWorld::ExecuteSelectionPropertiesDialog() {
-	//ExecuteWorldPropertiesDialog();
-	int sel_type, sel_index;
-
-	auto *dlg = new SelectionPropertiesDialog(ed, false, data, &sel_type, &sel_index);
-	dlg->run();
-
-	if (sel_type >= 0) {
-		if (sel_type == FD_WORLD) {
-			ExecuteWorldPropertiesDialog();
-		} else if (sel_type == FD_MODEL) {
-			ExecuteObjectPropertiesDialog(sel_index);
-		} else if (sel_type==FD_TERRAIN) {
-			ExecuteTerrainPropertiesDialog(sel_index);
-		}/*if (sel_type == FDCameraFlight) {
-			CamPointDialogIndex=PropertySelectionIndex[PropertySelectionChosen];
-			ExecuteCamPointDialog();
-		}*/
-	}
-	delete dlg;
-}
-
-
-
-void ModeWorld::ExecuteObjectPropertiesDialog(int index) {
-	auto *dlg = new ObjectPropertiesDialog(ed, false, data, index);
-	dlg->run();
-	delete dlg;
-}
 
 
 

@@ -27,7 +27,7 @@ public:
 	void on_end() override;
 
 	void on_command(const string &id) override;
-	void on_update(Observable *o, const string &message) override;
+	void on_data_update();
 
 	void on_draw() override;
 	void on_draw_win(MultiView::Window *win) override;

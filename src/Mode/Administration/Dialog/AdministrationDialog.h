@@ -9,20 +9,16 @@
 #define ADMINISTRATIONDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
-#include "../../../Stuff/Observer.h"
 class DataAdministration;
 class AdminFile;
 class AdminFileList;
 
-class AdministrationDialog: public hui::Dialog, public Observer
-{
+class AdministrationDialog: public hui::Dialog {
 public:
 	AdministrationDialog(hui::Window *_parent, bool _allow_parent, DataAdministration *_data);
 	virtual ~AdministrationDialog();
 
 	void LoadData();
-
-	void on_update(Observable *o, const string &message) override;
 
 	void OnClose();
 	void OnExit();

@@ -15,8 +15,7 @@
 
 class TerrainDeformBrushPanel;
 
-class ModeWorldTerrain: public ModeCreation<DataWorld>, public hui::EventHandler
-{
+class ModeWorldTerrain: public ModeCreation<DataWorld> {
 public:
 	ModeWorldTerrain(ModeBase *_parent);
 	virtual ~ModeWorldTerrain();

@@ -13,8 +13,7 @@
 
 class DataModel;
 
-class ModeModelSkeleton: public Mode<DataModel>
-{
+class ModeModelSkeleton: public Mode<DataModel> {
 public:
 	ModeModelSkeleton(ModeBase *_parent);
 
@@ -22,7 +21,6 @@ public:
 	void on_end() override;
 
 	void on_command(const string &id) override;
-	void on_update(Observable *o, const string &message) override;
 	void on_update_menu() override;
 	void on_set_multi_view() override;
 

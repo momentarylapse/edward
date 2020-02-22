@@ -13,9 +13,7 @@
 
 bool SettingDialogData=true;
 
-FontDialog::FontDialog(DataFont *_data) :
-	Observer("FontDialog")
-{
+FontDialog::FontDialog(DataFont *_data) {
 	from_resource("font_dialog");
 	data = _data;
 	SettingData = false;
@@ -35,14 +33,13 @@ FontDialog::FontDialog(DataFont *_data) :
 	event("width", std::bind(&FontDialog::OnWidth, this));
 	event("text", std::bind(&FontDialog::OnText, this));
 
-	subscribe(data);
+	data->subscribe(this, [=]{ LoadData(); });
 
 	LoadData();
 }
 
-FontDialog::~FontDialog()
-{
-	unsubscribe(data);
+FontDialog::~FontDialog() {
+	data->unsubscribe(this);
 }
 
 void FontDialog::LoadData()
@@ -124,11 +121,6 @@ void FontDialog::OnWidth()
 {
 	glyph.Width = get_int("");
 	ApplyGlyphData();
-}
-
-void FontDialog::on_update(Observable *o, const string &message)
-{
-	LoadData();
 }
 
 string FontDialog::GetSampleText()

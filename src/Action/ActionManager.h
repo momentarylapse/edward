@@ -16,8 +16,7 @@ class Data;
 class Action;
 class ActionGroup;
 
-class ActionManager : public Observable
-{
+class ActionManager : public Observable<VirtualBase> {
 	friend class Action;
 public:
 	ActionManager(Data *_data);

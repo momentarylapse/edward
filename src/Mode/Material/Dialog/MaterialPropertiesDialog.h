@@ -10,10 +10,8 @@
 
 #include "../../../lib/hui/hui.h"
 #include "../../../Data/Material/DataMaterial.h"
-#include "../../../Stuff/Observer.h"
 
-class MaterialPropertiesDialog: public hui::Panel, public Observer
-{
+class MaterialPropertiesDialog: public hui::Panel {
 public:
 	MaterialPropertiesDialog(hui::Window *_parent, DataMaterial *_data);
 	virtual ~MaterialPropertiesDialog();
@@ -37,7 +35,7 @@ public:
 	void RefillReflTexView();
 	void FillTextureList();
 
-	void on_update(Observable *o, const string &message) override;
+	void on_data_update();
 
 
 private:

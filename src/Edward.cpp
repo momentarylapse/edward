@@ -113,7 +113,6 @@ void Edward::idle_function()
 }
 
 Edward::Edward(Array<string> arg) :
-	Observer("Edward"),
 	hui::Window(AppName, 800, 600)
 {
 	set_border_width(0);
@@ -203,13 +202,11 @@ Edward::Edward(Array<string> arg) :
 	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;
 	mworld->FFVBinaryMap = true;*/
 
-	// subscribe to all data to automatically redraw...
-	subscribe(mode_model->data);
-	subscribe(mode_material->data);
-	subscribe(mode_world->data);
-	subscribe(mode_font->data);
-	subscribe(multi_view_2d);
-	subscribe(multi_view_3d);
+	//subscribe(multi_view_2d);
+	multi_view_3d->subscribe(this, [=]{ update_menu(); }, multi_view_3d->MESSAGE_SETTINGS_CHANGE);
+	multi_view_3d->subscribe(this, [=]{ cur_mode->on_selection_change(); update_menu(); }, multi_view_3d->MESSAGE_SELECTION_CHANGE);
+	multi_view_3d->subscribe(this, [=]{ cur_mode->on_view_stage_change(); update_menu(); }, multi_view_3d->MESSAGE_VIEWSTAGE_CHANGE);
+	multi_view_3d->subscribe(this, [=]{ cur_mode->multi_view->force_redraw(); });
 
 	plugins = new PluginManager();
 
@@ -217,27 +214,26 @@ Edward::Edward(Array<string> arg) :
 		mode_model->_new();
 
 
-	event("hui:close", std::bind(&Edward::on_close, this));
-	event("exit", std::bind(&Edward::on_close, this));
-	event("*", std::bind(&Edward::on_event, this));
-	event("what_the_fuck", std::bind(&Edward::on_about, this));
-	event("send_bug_report", std::bind(&Edward::on_send_bug_report, this));
-	event("execute_plugin", std::bind(&Edward::on_execute_plugin, this));
-	event("abort_creation_mode", std::bind(&Edward::on_abort_creation_mode, this));
-	event_x("nix-area", "hui:draw-gl", std::bind(&Edward::on_draw_gl, this));
+	event("hui:close", [=]{ on_close(); });
+	event("exit", [=]{ on_close(); });
+	event("*", [=]{ on_event(); });
+	event("what_the_fuck", [=]{ on_about(); });
+	event("send_bug_report", [=]{ on_send_bug_report(); });
+	event("execute_plugin", [=]{ on_execute_plugin(); });
+	event("abort_creation_mode", [=]{ on_abort_creation_mode(); });
+	event_x("nix-area", "hui:draw-gl", [=]{ on_draw_gl(); });
 	set_key_code("abort_creation_mode", hui::KEY_ESCAPE, "hui:cancel");
 
-	//hui::SetIdleFunction(std::bind(&Edward::idleFunction, this));
+	//hui::SetIdleFunction([=]{ idleFunction(); });
 	hui::RunLater(0.010f, [=]{ cur_mode->multi_view->force_redraw(); });
 	hui::RunLater(0.100f, [=]{ optimize_current_view(); });
 }
 
-Edward::~Edward()
-{
+Edward::~Edward() {
 }
 
-void Edward::on_destroy()
-{
+void Edward::on_destroy() {
+	// auto unsubscribe()...
 	delete plugins;
 	delete multi_view_2d;
 	delete multi_view_3d;
@@ -373,8 +369,7 @@ bool mode_switch_allowed(ModeBase *m)
 	return ed->allow_termination();
 }
 
-void Edward::set_mode(ModeBase *m)
-{
+void Edward::set_mode(ModeBase *m) {
 	if (cur_mode == m)
 		return;
 	if (!mode_switch_allowed(m))
@@ -386,14 +381,16 @@ void Edward::set_mode(ModeBase *m)
 		return;
 
 	cur_mode->on_leave();
-	if (cur_mode->get_data())
-		unsubscribe(cur_mode->get_data()->action_manager);
+	if (cur_mode->get_data()) {
+		cur_mode->get_data()->unsubscribe(this);
+		cur_mode->get_data()->action_manager->unsubscribe(this);
+	}
 
 	m = mode_queue[0];
-	while(m){
+	while (m) {
 
 		// close current modes
-		while(cur_mode){
+		while (cur_mode) {
 			if (cur_mode->is_ancestor_of(m))
 				break;
 			msg_write("end " + cur_mode->name);
@@ -407,7 +404,7 @@ void Edward::set_mode(ModeBase *m)
 		//multi_view_2d->ResetMouseAction();
 
 		// start new modes
-		while(cur_mode != m){
+		while (cur_mode != m) {
 			cur_mode = cur_mode->get_next_child_to(m);
 			msg_write("start " + cur_mode->name);
 			if (cur_mode->multi_view)
@@ -427,8 +424,25 @@ void Edward::set_mode(ModeBase *m)
 	set_menu(hui::CreateResourceMenu(cur_mode->menu_id));
 	update_menu();
 	cur_mode->on_enter(); // ????
-	if (cur_mode->get_data())
-		subscribe(cur_mode->get_data()->action_manager);
+	if (cur_mode->get_data()) {
+		cur_mode->get_data()->subscribe(this, [=]{
+			cur_mode->multi_view->force_redraw();
+			update_menu();
+		}, Data::MESSAGE_SELECTION);
+		cur_mode->get_data()->subscribe(this, [=]{
+			cur_mode->on_set_multi_view();
+			cur_mode->multi_view->force_redraw();
+			update_menu();
+		}, Data::MESSAGE_CHANGE);
+		auto *am = cur_mode->get_data()->action_manager;
+		am->subscribe(this, [=]{
+			error_box(format(_("Action failed: %s\nReason: %s"), am->error_location.c_str(), am->error_message.c_str()));
+		}, am->MESSAGE_FAILED);
+		am->subscribe(this, [=]{
+			set_message(_("Saved!"));
+			update_menu();
+		}, am->MESSAGE_SAVED);
+	}
 
 	cur_mode->multi_view->force_redraw();
 }
@@ -439,43 +453,7 @@ void Edward::on_about()
 void Edward::on_send_bug_report()
 {}//	hui::SendBugReport();	}
 
-void Edward::on_update(Observable *o, const string &message)
-{
-	//msg_write(o->getName() + " - " + message);
-	if (o->get_name() == "MultiView"){
-		if (message == multi_view_3d->MESSAGE_SETTINGS_CHANGE){
-			update_menu();
-		}else if (message == multi_view_3d->MESSAGE_SELECTION_CHANGE){
-			cur_mode->on_selection_change();
-			update_menu();
-		}else if (message == multi_view_3d->MESSAGE_VIEWSTAGE_CHANGE){
-			cur_mode->on_view_stage_change();
-			update_menu();
-		}
-		cur_mode->multi_view->force_redraw();
-	}else if (o->get_name() == "ActionManager"){
-		ActionManager *am = dynamic_cast<ActionManager*>(o);
-		if (message == am->MESSAGE_FAILED){
-			error_box(format(_("Action failed: %s\nReason: %s"), am->error_location.c_str(), am->error_message.c_str()));
-		}else if (message == am->MESSAGE_SAVED){
-			set_message(_("Saved!"));
-			update_menu();
-		}
-	}else if (dynamic_cast<Data*>(o)){
-		if (message != Data::MESSAGE_SELECTION)
-			cur_mode->on_set_multi_view();
-		// data...
-		cur_mode->multi_view->force_redraw();
-		//if (message != o->MESSAGE_CHANGE)
-		update_menu();
-	}else{
-		cur_mode->multi_view->force_redraw();
-		update_menu();
-	}
-}
-
-void Edward::on_execute_plugin()
-{
+void Edward::on_execute_plugin() {
 	string temp = storage->dialog_dir[FD_SCRIPT];
 	if (app->installed)
 		storage->dialog_dir[FD_SCRIPT] = app->directory_static + "Plugins/";
@@ -559,7 +537,7 @@ void Edward::set_message(const string &message)
 	msg_write(message);
 	message_str.add(message);
 	cur_mode->multi_view->force_redraw();
-	hui::RunLater(2.0f, std::bind(&Edward::remove_message, this));
+	hui::RunLater(2.0f, [=]{ remove_message(); });
 }
 
 

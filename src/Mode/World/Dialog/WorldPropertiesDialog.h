@@ -10,9 +10,8 @@
 
 #include "../../../lib/hui/hui.h"
 #include "../../../Data/World/DataWorld.h"
-#include "../../../Stuff/Observer.h"
 
-class WorldPropertiesDialog: public hui::Dialog, public Observer {
+class WorldPropertiesDialog: public hui::Dialog {
 public:
 	WorldPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data);
 	virtual ~WorldPropertiesDialog();
@@ -39,7 +38,6 @@ public:
 	void on_ok();
 	void on_close();
 
-	void on_update(Observable *o, const string &message) override;
 	void restart();
 
 	bool active;

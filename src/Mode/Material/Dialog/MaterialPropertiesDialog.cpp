@@ -20,9 +20,7 @@ namespace nix{
 	extern string shader_error; // -> nix
 };
 
-MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMaterial *_data):
-	Observer("MaterialPropertiesDialog")
-{
+MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMaterial *_data) {
 	from_resource("material_dialog");
 	data = _data;
 
@@ -66,7 +64,7 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 	apply_queue_depth = 0;
 	apply_phys_queue_depth = 0;
 	LoadData();
-	subscribe(data);
+	data->subscribe(this, [=]{ on_data_update(); });
 }
 
 void MaterialPropertiesDialog::LoadData()
@@ -118,26 +116,23 @@ void MaterialPropertiesDialog::LoadData()
 	set_string("shader_file", temp.shader_file);
 
 
-    set_float("rcjump", temp_phys.friction_jump);
-    set_float("rcstatic", temp_phys.friction_static);
-    set_float("rcsliding", temp_phys.friction_sliding);
-    set_float("rcroll", temp_phys.friction_rolling);
+	set_float("rcjump", temp_phys.friction_jump);
+	set_float("rcstatic", temp_phys.friction_static);
+	set_float("rcsliding", temp_phys.friction_sliding);
+	set_float("rcroll", temp_phys.friction_rolling);
 }
 
-MaterialPropertiesDialog::~MaterialPropertiesDialog()
-{
-	unsubscribe(data);
+MaterialPropertiesDialog::~MaterialPropertiesDialog() {
+	data->unsubscribe(this);
 }
 
-void MaterialPropertiesDialog::on_update(Observable *o, const string &message)
-{
+void MaterialPropertiesDialog::on_data_update() {
 	temp = data->appearance;
 	temp_phys = data->physics;
 	LoadData();
 }
 
-void MaterialPropertiesDialog::OnAddTextureLevel()
-{
+void MaterialPropertiesDialog::OnAddTextureLevel() {
 	if (temp.texture_files.num >= MATERIAL_MAX_TEXTURES){
 		ed->error_box(format(_("Only %d texture levels allowed!"), MATERIAL_MAX_TEXTURES));
 		return;
@@ -146,11 +141,10 @@ void MaterialPropertiesDialog::OnAddTextureLevel()
 	ApplyData();
 }
 
-void MaterialPropertiesDialog::OnTextures()
-{
+void MaterialPropertiesDialog::OnTextures() {
 	int sel = get_int("");
 	if ((sel >= 0) and (sel < temp.texture_files.num))
-		if (storage->file_dialog(FD_TEXTURE, false, true)){
+		if (storage->file_dialog(FD_TEXTURE, false, true)) {
 			temp.texture_files[sel] = storage->dialog_file;
 			ApplyData();
 			//mmaterial->Texture[sel] = MetaLoadTexture(mmaterial->TextureFile[sel]);
@@ -158,35 +152,31 @@ void MaterialPropertiesDialog::OnTextures()
 		}
 }
 
-void MaterialPropertiesDialog::OnTexturesSelect()
-{
+void MaterialPropertiesDialog::OnTexturesSelect() {
 	int sel = get_int("");
 	enable("mat_delete_texture_level", (sel >= 0) and (sel < temp.texture_files.num));
 	enable("mat_empty_texture_level", (sel >= 0) and (sel < temp.texture_files.num));
 }
 
-void MaterialPropertiesDialog::OnDeleteTextureLevel()
-{
+void MaterialPropertiesDialog::OnDeleteTextureLevel() {
 	int sel = get_int("mat_textures");
-	if (sel >= 0){
+	if (sel >= 0) {
 		temp.texture_files.erase(sel);
 		ApplyData();
 		FillTextureList();
 	}
 }
 
-void MaterialPropertiesDialog::OnEmptyTextureLevel()
-{
+void MaterialPropertiesDialog::OnEmptyTextureLevel() {
 	int sel = get_int("mat_textures");
-	if (sel >= 0){
+	if (sel >= 0) {
 		temp.texture_files[sel] = "";
 		ApplyData();
 		FillTextureList();
 	}
 }
 
-void MaterialPropertiesDialog::OnTransparencyMode()
-{
+void MaterialPropertiesDialog::OnTransparencyMode() {
 	if (is_checked("transparency_mode:function"))
 		temp.transparency_mode = TRANSPARENCY_FUNCTIONS;
 	else if (is_checked("transparency_mode:color_key"))
@@ -201,8 +191,7 @@ void MaterialPropertiesDialog::OnTransparencyMode()
 	ApplyData();
 }
 
-void MaterialPropertiesDialog::OnReflectionMode()
-{
+void MaterialPropertiesDialog::OnReflectionMode() {
 	if (is_checked("reflection_mode:cube_static"))
 		temp.reflection_mode = REFLECTION_CUBE_MAP_STATIC;
 	else if (is_checked("reflection_mode:cube_dynamic"))
@@ -215,18 +204,17 @@ void MaterialPropertiesDialog::OnReflectionMode()
 	ApplyData();
 }
 
-void MaterialPropertiesDialog::OnReflectionTextures()
-{
+void MaterialPropertiesDialog::OnReflectionTextures() {
 	int sel=get_int("");
-	if (storage->file_dialog(FD_TEXTURE,false,true)){
+	if (storage->file_dialog(FD_TEXTURE,false,true)) {
 		temp.reflection_texture_file[sel] = storage->dialog_file;
-		if ((sel==0) and (temp.reflection_texture_file[0].find(".") >= 0)){
+		if ((sel==0) and (temp.reflection_texture_file[0].find(".") >= 0)) {
 			int p=temp.reflection_texture_file[0].find(".");
-			for (int i=1;i<6;i++){
+			for (int i=1;i<6;i++) {
 				string tf;
 				tf = temp.reflection_texture_file[0];
 				tf[p-1]=temp.reflection_texture_file[0][p-1]+i;
-				if (file_test_existence(nix::texture_dir + tf)){
+				if (file_test_existence(nix::texture_dir + tf)) {
 					temp.reflection_texture_file[i] = tf;
 				}
 			}
@@ -237,15 +225,13 @@ void MaterialPropertiesDialog::OnReflectionTextures()
 	}
 }
 
-bool TestShaderFile(const string &filename)
-{
-	nix::Shader *shader = nix::Shader::load(filename);
+bool TestShaderFile(const string &filename) {
+	auto *shader = nix::Shader::load(filename);
 	shader->unref();
 	return shader;
 }
 
-void MaterialPropertiesDialog::OnFindShader()
-{
+void MaterialPropertiesDialog::OnFindShader() {
 	if (storage->file_dialog(FD_SHADERFILE,false,true)){
 		if (TestShaderFile(storage->dialog_file)){
 			set_string("shader_file", storage->dialog_file);
@@ -256,8 +242,7 @@ void MaterialPropertiesDialog::OnFindShader()
 	}
 }
 
-void MaterialPropertiesDialog::ApplyData()
-{
+void MaterialPropertiesDialog::ApplyData() {
 	if (apply_queue_depth > 0)
 		apply_queue_depth --;
 	if (apply_queue_depth > 0)
@@ -280,14 +265,12 @@ void MaterialPropertiesDialog::ApplyData()
 	data->execute(new ActionMaterialEditAppearance(temp));
 }
 
-void MaterialPropertiesDialog::ApplyDataDelayed()
-{
+void MaterialPropertiesDialog::ApplyDataDelayed() {
 	apply_queue_depth ++;
 	hui::RunLater(0.5f, [=]{ ApplyData(); });
 }
 
-void MaterialPropertiesDialog::ApplyPhysData()
-{
+void MaterialPropertiesDialog::ApplyPhysData() {
 	if (apply_phys_queue_depth> 0)
 		apply_phys_queue_depth --;
 	if (apply_phys_queue_depth > 0)
@@ -300,14 +283,12 @@ void MaterialPropertiesDialog::ApplyPhysData()
 	data->execute(new ActionMaterialEditPhysics(temp_phys));
 }
 
-void MaterialPropertiesDialog::ApplyPhysDataDelayed()
-{
+void MaterialPropertiesDialog::ApplyPhysDataDelayed() {
 	apply_phys_queue_depth ++;
 	hui::RunLater(0.5f, [=]{ ApplyPhysData(); });
 }
 
-void MaterialPropertiesDialog::RefillReflTexView()
-{
+void MaterialPropertiesDialog::RefillReflTexView() {
 	reset("reflection_textures");
 	add_string("reflection_textures", " + X\\" + temp.reflection_texture_file[0]);
 	add_string("reflection_textures", " - X\\" + temp.reflection_texture_file[1]);
@@ -317,10 +298,9 @@ void MaterialPropertiesDialog::RefillReflTexView()
 	add_string("reflection_textures", " - Z\\" + temp.reflection_texture_file[5]);
 }
 
-void MaterialPropertiesDialog::FillTextureList()
-{
+void MaterialPropertiesDialog::FillTextureList() {
 	reset("mat_textures");
-	for (int i=0;i<temp.texture_files.num;i++){
+	for (int i=0;i<temp.texture_files.num;i++) {
 		nix::Texture *tex = nix::LoadTexture(temp.texture_files[i]);
 		string img = ed->get_tex_image(tex);
 		add_string("mat_textures", format("Tex[%d]\\%s\\%s", i, img.c_str(), file_secure(temp.texture_files[i]).c_str()));

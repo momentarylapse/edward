@@ -22,16 +22,12 @@ ModeFont *mode_font = NULL;
 ModeFont::ModeFont() :
 	Mode("Font", NULL, new DataFont, ed->multi_view_2d, "menu_font")
 {
-	subscribe(data);
-
 	font = new Gui::Font;
 
 	dialog = NULL;
 }
 
-ModeFont::~ModeFont()
-{
-	unsubscribe(data);
+ModeFont::~ModeFont() {
 }
 
 
@@ -58,11 +54,11 @@ void ModeFont::on_left_button_down()
 
 
 
-void ModeFont::on_end()
-{
+void ModeFont::on_end() {
+	data->unsubscribe(this);
 	ed->set_side_panel(nullptr);
 
-	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
+	auto *t = ed->toolbar[hui::TOOLBAR_TOP];
 	t->reset();
 	t->enable(false);
 }
@@ -155,7 +151,9 @@ void ModeFont::on_start()
 	dialog = new FontDialog(data);
 	ed->set_side_panel(dialog);
 
-	on_update(data, "");
+
+	data->subscribe(this, [=]{ on_data_update(); });
+	on_data_update();
 }
 
 
@@ -166,8 +164,7 @@ void ModeFont::on_mouse_move()
 
 
 
-void ModeFont::on_update(Observable *o, const string &message)
-{
+void ModeFont::on_data_update() {
 	data->UpdateTexture();
 	data->ApplyFont(font);
 }

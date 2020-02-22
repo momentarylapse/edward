@@ -10,8 +10,7 @@
 #include "../../../Storage/Storage.h"
 
 TerrainHeightmapDialog::TerrainHeightmapDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data) :
-	hui::Dialog("terrain_heightmap_dialog", 400, 300, _parent, _allow_parent),
-	Observer("TerrainHeightmapDialog")
+	hui::Dialog("terrain_heightmap_dialog", 400, 300, _parent, _allow_parent)
 {
 	from_resource("terrain_heightmap_dialog");
 	data = _data;
@@ -29,8 +28,6 @@ TerrainHeightmapDialog::TerrainHeightmapDialog(hui::Window *_parent, bool _allow
 
 	enable("ok", false);
 
-	subscribe(data);
-
 	stretch_x = 1;
 	stretch_z = 1;
 	LoadData();
@@ -38,7 +35,6 @@ TerrainHeightmapDialog::TerrainHeightmapDialog(hui::Window *_parent, bool _allow
 
 TerrainHeightmapDialog::~TerrainHeightmapDialog()
 {
-	unsubscribe(data);
 }
 
 void TerrainHeightmapDialog::ApplyData()
@@ -67,10 +63,6 @@ void TerrainHeightmapDialog::OnFindFilter()
 }
 
 
-
-void TerrainHeightmapDialog::on_update(Observable *o, const string &message)
-{
-}
 
 
 

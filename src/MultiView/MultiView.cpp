@@ -49,8 +49,7 @@ void MultiView::Selection::reset() {
 	data = NULL;
 }
 
-MultiView::MultiView(bool mode3d) :
-	Observable("MultiView") {
+MultiView::MultiView(bool mode3d) {
 
 	view_stage = 0;
 	grid_enabled = true;

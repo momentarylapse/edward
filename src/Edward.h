@@ -11,7 +11,6 @@
 #include "lib/hui/hui.h"
 #include "lib/base/map.h"
 #include "Mode/Mode.h"
-#include "Stuff/Observer.h"
 #include "Stuff/Progress.h"
 #include "Stuff/PluginManager.h"
 
@@ -45,7 +44,7 @@ enum {
 };
 
 
-class Edward : public Observer, public hui::Window {
+class Edward : public hui::Window {
 public:
 	Edward(Array<string> arg);
 	virtual ~Edward();
@@ -62,7 +61,6 @@ public:
 	void on_send_bug_report();
 	void set_mode(ModeBase *m);
 
-	void on_update(Observable *o, const string &message);
 	void on_command(const string &id);
 	void on_close();
 

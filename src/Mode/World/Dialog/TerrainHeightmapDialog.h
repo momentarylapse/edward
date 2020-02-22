@@ -10,9 +10,8 @@
 
 #include "../../../lib/hui/hui.h"
 #include "../../../Data/World/DataWorld.h"
-#include "../../../Stuff/Observer.h"
 
-class TerrainHeightmapDialog: public hui::Dialog, public Observer
+class TerrainHeightmapDialog: public hui::Dialog
 {
 public:
 	TerrainHeightmapDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data);
@@ -27,8 +26,6 @@ public:
 	void OnPreviewDraw(Painter *p);
 	void OnOk();
 	void OnClose();
-
-	void on_update(Observable *o, const string &message) override;
 
 private:
 	DataWorld *data;

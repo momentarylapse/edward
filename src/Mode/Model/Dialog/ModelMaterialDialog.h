@@ -9,12 +9,10 @@
 #define MODELMATERIALDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
-#include "../../../Stuff/Observer.h"
 #include "../../../Data/Model/ModelMaterial.h"
 class DataModel;
 
-class ModelMaterialDialog: public hui::Panel, public Observer
-{
+class ModelMaterialDialog: public hui::Panel {
 public:
 	ModelMaterialDialog(DataModel *_data, bool full=true);
 	virtual ~ModelMaterialDialog();
@@ -45,8 +43,6 @@ public:
 	void on_transparency_mode();
 
 	void fill_texture_list();
-
-	void on_update(Observable *o, const string &message) override;
 
 private:
 	DataModel *data;

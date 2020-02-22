@@ -46,10 +46,6 @@ void ModeAdministration::on_command(const string& id)
 		BasicSettings();
 }
 
-void ModeAdministration::on_update(Observable* o, const string &message)
-{
-}
-
 void ModeAdministration::BasicSettings()
 {
 	ConfigurationDialog *dlg = new ConfigurationDialog(hui::CurWindow, data, false);

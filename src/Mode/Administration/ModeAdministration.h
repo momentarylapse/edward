@@ -24,7 +24,6 @@ public:
 	void on_end() override;
 
 	void on_command(const string &id) override;
-	void on_update(Observable *o, const string &message) override;
 
 	void BasicSettings();
 	void ExportGame();

@@ -12,9 +12,7 @@
 #include "../Animation/ModeModelAnimation.h"
 
 
-ModelAnimationDialog::ModelAnimationDialog(DataModel *_data) :
-	Observer("ModelAnimationDialog")
-{
+ModelAnimationDialog::ModelAnimationDialog(DataModel *_data) {
 	from_resource("animation_dialog");
 	data = _data;
 
@@ -37,8 +35,9 @@ ModelAnimationDialog::ModelAnimationDialog(DataModel *_data) :
 	event("sim_start", [=]{ on_simulation_play(); });
 	event("sim_stop", [=]{ on_simulation_stop(); });
 
-	subscribe(data);
-	subscribe(mode_model_animation);
+	data->subscribe(this, [=]{ load_data(); });
+	mode_model_animation->state.subscribe(this, [=]{ load_data(); });
+	//fillAnimation();
 
 	popup = hui::CreateResourceMenu("model-animation-list-popup");
 
@@ -46,8 +45,8 @@ ModelAnimationDialog::ModelAnimationDialog(DataModel *_data) :
 }
 
 ModelAnimationDialog::~ModelAnimationDialog() {
-	unsubscribe(mode_model_animation);
-	unsubscribe(data);
+	mode_model_animation->state.unsubscribe(this);
+	data->unsubscribe(this);
 }
 
 void ModelAnimationDialog::load_data() {
@@ -194,14 +193,6 @@ void ModelAnimationDialog::on_simulation_stop() {
 	mode_model_animation->update_animation();
 }
 
-void ModelAnimationDialog::on_update(Observable *o, const string &message) {
-	if (o == data) {
-		load_data();
-	} else {
-		load_data();
-		//fillAnimation();
-	}
-}
 
 int ModelAnimationDialog::get_first_free_index() {
 	foreachi(ModelMove &m, data->move, i)

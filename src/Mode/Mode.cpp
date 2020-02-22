@@ -8,9 +8,7 @@
 #include "Mode.h"
 #include "../MultiView/MultiView.h"
 
-ModeBase::ModeBase(const string &_name, ModeBase *_parent, MultiView::MultiView *_multi_view, const string &_menu) :
-	Observer(_name)
-{
+ModeBase::ModeBase(const string &_name, ModeBase *_parent, MultiView::MultiView *_multi_view, const string &_menu) {
 	parent = _parent;
 	name = _name;
 	multi_view = _multi_view;
@@ -19,26 +17,22 @@ ModeBase::ModeBase(const string &_name, ModeBase *_parent, MultiView::MultiView 
 		menu = parent->menu;*/
 }
 
-ModeBase::~ModeBase()
-{
+ModeBase::~ModeBase() {
 }
 
-void ModeBase::on_update_menu_recursive()
-{
+void ModeBase::on_update_menu_recursive() {
 	if (parent)
 		parent->on_update_menu_recursive();
 	on_update_menu();
 }
 
-void ModeBase::on_command_recursive(const string &id)
-{
+void ModeBase::on_command_recursive(const string &id) {
 	if (parent)
 		parent->on_command_recursive(id);
 	on_command(id);
 }
 
-void ModeBase::optimize_view_recursice()
-{
+void ModeBase::optimize_view_recursice() {
 	if (optimize_view())
 		return;
 	if (parent)
@@ -47,15 +41,13 @@ void ModeBase::optimize_view_recursice()
 
 
 
-ModeBase *ModeBase::get_root()
-{
+ModeBase *ModeBase::get_root() {
 	if (parent)
 		return parent->get_root();
 	return this;
 }
 
-bool ModeBase::is_ancestor_of(ModeBase *m)
-{
+bool ModeBase::is_ancestor_of(ModeBase *m) {
 	if (m == this)
 		return true;
 	if (m->parent)
@@ -64,9 +56,8 @@ bool ModeBase::is_ancestor_of(ModeBase *m)
 }
 
 
-ModeBase *ModeBase::get_next_child_to(ModeBase *target)
-{
-	while(target){
+ModeBase *ModeBase::get_next_child_to(ModeBase *target) {
+	while(target) {
 		if (this == target->parent)
 			return target;
 		target = target->parent;
@@ -75,21 +66,18 @@ ModeBase *ModeBase::get_next_child_to(ModeBase *target)
 }
 
 
-bool ModeBase::equal_roots(ModeBase *m)
-{
+bool ModeBase::equal_roots(ModeBase *m) {
 	if (!m)
 		return false;
 	return get_root() == m->get_root();
 }
 
-void ModeBase::_new()
-{
+void ModeBase::_new() {
 	if (parent)
 		parent->_new();
 }
 
-bool ModeBase::save()
-{
+bool ModeBase::save() {
 	if (parent)
 		return parent->save();
 	return true;
@@ -97,8 +85,7 @@ bool ModeBase::save()
 
 
 
-bool ModeBase::save_as()
-{
+bool ModeBase::save_as() {
 	if (parent)
 		return parent->save_as();
 	return true;
@@ -106,8 +93,7 @@ bool ModeBase::save_as()
 
 
 
-bool ModeBase::open()
-{
+bool ModeBase::open() {
 	if (parent)
 		return parent->open();
 	return true;

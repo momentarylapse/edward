@@ -9,7 +9,6 @@
 #define SRC_MODE_MODEL_DIALOG_MODELANIMATIONTIMELINEPANEL_H_
 
 #include "../../../lib/hui/hui.h"
-#include "../../../Stuff/Observer.h"
 
 class TimeLineParasite
 {
@@ -21,8 +20,7 @@ public:
 	virtual void on_timeline_draw(Painter *p){}
 };
 
-class ModelAnimationTimelinePanel : public hui::Panel, public Observer
-{
+class ModelAnimationTimelinePanel : public hui::Panel {
 public:
 	ModelAnimationTimelinePanel();
 	virtual ~ModelAnimationTimelinePanel();
@@ -38,8 +36,6 @@ public:
 	float sample2screen(float x);
 	string get_time_str_fuzzy(double t, double dt);
 	void update_hover();
-
-	void on_update(Observable *o, const string &message) override;
 
 	float mx;
 	int hover;

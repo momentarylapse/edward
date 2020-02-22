@@ -12,10 +12,9 @@
 
 class ModelMaterialDialog;
 
-class ModeModelMeshMaterial: public Mode<DataModel>, public Observable {
+class ModeModelMeshMaterial: public Mode<DataModel> {
 public:
 	ModeModelMeshMaterial(ModeBase *parent);
-	virtual ~ModeModelMeshMaterial();
 	void on_start() override;
 	void on_end() override;
 

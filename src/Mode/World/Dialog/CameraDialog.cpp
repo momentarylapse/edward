@@ -12,26 +12,24 @@
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
 
-CameraDialog::CameraDialog(ModeWorldCamera *_mode) :
-	Observer("CameraDialog")
-{
+CameraDialog::CameraDialog(ModeWorldCamera *_mode) {
 	from_resource("world_camera_dialog");
 	mode = _mode;
 	data = mode->data;
 
-	event_xp("cam_area", "hui:draw", std::bind(&CameraDialog::OnAreaDraw, this, std::placeholders::_1));
-	event_x("cam_area", "hui:left-button-down", std::bind(&CameraDialog::OnAreaLeftButtonDown, this));
-	event_x("cam_area", "hui:left-button-up", std::bind(&CameraDialog::OnAreaLeftButtonUp, this));
-	event_x("cam_area", "hui:mouse-move", std::bind(&CameraDialog::OnAreaMouseMove, this));
-	event_x("cam_area", "hui:mouse-wheel", std::bind(&CameraDialog::OnAreaMouseWheel, this));
-	event("add_point", std::bind(&CameraDialog::OnAddPoint, this));
-	event("delete_point", std::bind(&CameraDialog::OnDeletePoint, this));
-	event("cam_edit_vel", std::bind(&CameraDialog::OnCamEditVel, this));
-	event("cam_edit_ang", std::bind(&CameraDialog::OnCamEditAng, this));
-	event("cam_preview", std::bind(&CameraDialog::OnCamPreview, this));
-	event("cam_stop", std::bind(&CameraDialog::OnCamStop, this));
+	event_xp("cam_area", "hui:draw", [=](Painter *p){ OnAreaDraw(p); });
+	event_x("cam_area", "hui:left-button-down", [=]{ OnAreaLeftButtonDown(); });
+	event_x("cam_area", "hui:left-button-up", [=]{ OnAreaLeftButtonUp(); });
+	event_x("cam_area", "hui:mouse-move", [=]{ OnAreaMouseMove(); });
+	event_x("cam_area", "hui:mouse-wheel", [=]{ OnAreaMouseWheel(); });
+	event("add_point", [=]{ OnAddPoint(); });
+	event("delete_point", [=]{ OnDeletePoint(); });
+	event("cam_edit_vel", [=]{ OnCamEditVel(); });
+	event("cam_edit_ang", [=]{ OnCamEditAng(); });
+	event("cam_preview", [=]{ OnCamPreview(); });
+	event("cam_stop", [=]{ OnCamStop(); });
 
-	event("hui:close", std::bind(&CameraDialog::OnCloseDialog, this));
+	event("hui:close", [=]{ OnCloseDialog(); });
 
 	enable("cam_stop", false);
 
@@ -43,17 +41,17 @@ CameraDialog::CameraDialog(ModeWorldCamera *_mode) :
 
 	mt_action = NULL;
 
-	subscribe(data);
-	subscribe(mode->multi_view);
-	subscribe(mode);
+	data->subscribe(this, [=]{ LoadData(); });
+	mode->multi_view->subscribe(this, [=]{ LoadData(); });
+	//mode->subscribe(this, [=]{ LoadData(); });
+
 	LoadData();
 }
 
-CameraDialog::~CameraDialog()
-{
-	unsubscribe(mode);
-	unsubscribe(mode->multi_view);
-	unsubscribe(data);
+CameraDialog::~CameraDialog() {
+	//unsubscribe(mode->unsu);
+	mode->multi_view->unsubscribe(this);
+	data->unsubscribe(this);
 }
 
 
@@ -282,10 +280,3 @@ void CameraDialog::OnCamStop()
 	mode->previewStop();
 }
 
-
-void CameraDialog::on_update(Observable *o, const string &message)
-{
-	/*if (message == data->MESSAGE_CHANGE)*/{
-		LoadData();
-	}
-}

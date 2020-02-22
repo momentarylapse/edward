@@ -19,11 +19,10 @@
 
 ModeModelAnimation *mode_model_animation = NULL;
 
-const string ModeModelAnimation::MESSAGE_SET_FRAME = "SetFrame";
+const string ModeModelAnimation::State::MESSAGE_SET_FRAME = "SetFrame";
 
 ModeModelAnimation::ModeModelAnimation(ModeBase *_parent) :
-	Mode<DataModel>("ModelAnimation", _parent, ed->multi_view_3d, "menu_move"),
-	Observable("ModelAnimation")
+	Mode<DataModel>("ModelAnimation", _parent, ed->multi_view_3d, "menu_move")
 {
 	mode_model_animation_none = new ModeModelAnimationNone(this);
 	mode_model_animation_skeleton = new ModeModelAnimationSkeleton(this);
@@ -88,8 +87,8 @@ void ModeModelAnimation::on_start() {
 	timeline = new ModelAnimationTimelinePanel;
 	ed->set_bottom_panel(timeline);
 
-	Observer::subscribe(this, MESSAGE_SET_FRAME);
-	Observer::subscribe(data);
+
+	data->subscribe(this, [=]{ on_update(); });
 	mode_model->allow_selection_modes(false);
 
 	timer.reset();
@@ -114,8 +113,7 @@ void ModeModelAnimation::on_update_menu() {
 
 void ModeModelAnimation::on_end() {
 	hui::CancelRunner(runner);
-	Observer::unsubscribe(data);
-	Observer::unsubscribe(this);
+	data->unsubscribe(this);
 	ed->set_side_panel(nullptr);
 	ed->set_bottom_panel(nullptr);
 }
@@ -141,7 +139,8 @@ void ModeModelAnimation::set_current_move(int move_no) {
 void ModeModelAnimation::set_current_frame(int frame_no) {
 	current_frame = loopi(frame_no, 0, cur_move()->frame.num - 1);
 	//updateAnimation();
-	notify(MESSAGE_SET_FRAME);
+	state.notify(state.MESSAGE_SET_FRAME);
+	on_update();
 }
 
 void ModeModelAnimation::set_current_frame_next() {
@@ -181,7 +180,7 @@ void ModeModelAnimation::update_animation() {
 	mode_model_mesh->update_vertex_buffers(vertex);
 	mode_model_mesh->fill_selection_buffer(vertex);
 
-	notify();
+	state.notify();
 	multi_view->force_redraw();
 }
 
@@ -242,7 +241,7 @@ ModelMove* ModeModelAnimation::cur_move() {
 	return empty_move;
 }
 
-void ModeModelAnimation::on_update(Observable *o, const string &message) {
+void ModeModelAnimation::on_update() {
 	// consistency check
 	if (((current_move >= 0) and (cur_move()->frame.num == 0)) or (current_move >= data->move.num))
 		set_current_move(getFirstMove());

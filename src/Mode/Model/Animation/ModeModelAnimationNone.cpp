@@ -18,34 +18,18 @@ ModeModelAnimationNone::ModeModelAnimationNone(ModeBase* _parent) :
 {
 }
 
-ModeModelAnimationNone::~ModeModelAnimationNone()
-{
-}
-
-void ModeModelAnimationNone::on_start()
-{
+void ModeModelAnimationNone::on_start() {
 	multi_view->clear_data(data);
 
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
-	on_update(data, "");
-}
-
-void ModeModelAnimationNone::on_end()
-{
-	multi_view->clear_data(data);
-}
-
-void ModeModelAnimationNone::on_update(Observable* o, const string &message)
-{
 	mode_model_mesh->fill_selection_buffer(mode_model_animation->vertex);
 }
 
-void ModeModelAnimationNone::on_update_menu()
-{
+void ModeModelAnimationNone::on_end() {
+	multi_view->clear_data(data);
 }
 
-void ModeModelAnimationNone::on_draw_win(MultiView::Window *win)
-{
+void ModeModelAnimationNone::on_draw_win(MultiView::Window *win) {
 	mode_model_mesh->on_draw_win(win);
 }
 

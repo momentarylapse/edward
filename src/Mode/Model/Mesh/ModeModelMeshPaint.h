@@ -12,10 +12,9 @@
 
 class PaintBrushPanel;
 
-class ModeModelMeshPaint: public Mode<DataModel>, public Observable {
+class ModeModelMeshPaint: public Mode<DataModel> {
 public:
 	ModeModelMeshPaint(ModeBase *parent);
-	virtual ~ModeModelMeshPaint();
 	void on_start() override;
 	void on_end() override;
 

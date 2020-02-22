@@ -22,8 +22,7 @@
 #include <assert.h>
 
 AdministrationDialog::AdministrationDialog(hui::Window* _parent, bool _allow_parent, DataAdministration *_data):
-	hui::Dialog("ad_dialog", 400, 300, _parent, _allow_parent),
-	Observer("AdministrationDialog")
+	hui::Dialog("ad_dialog", 400, 300, _parent, _allow_parent)
 {
 	from_resource("ad_dialog");
 	data = _data;
@@ -45,25 +44,18 @@ AdministrationDialog::AdministrationDialog(hui::Window* _parent, bool _allow_par
 	event("ad_export_game", std::bind(&AdministrationDialog::OnExportGame, this));
 
 	LoadData();
-	subscribe(data);
+	data->subscribe(this, [=]{ LoadData(); });
 }
 
-AdministrationDialog::~AdministrationDialog()
-{
-	unsubscribe(data);
+AdministrationDialog::~AdministrationDialog() {
+	data->unsubscribe(this);
 }
 
-void AdministrationDialog::LoadData()
-{
+void AdministrationDialog::LoadData() {
 	FillAdminList(0, "file_list_cur");
 	FillAdminList(1, "file_list_all");
 	FillAdminList(4, "file_list_super");
 	FillAdminList(5, "file_list_missing");
-}
-
-void AdministrationDialog::on_update(Observable* o, const string &message)
-{
-	LoadData();
 }
 
 

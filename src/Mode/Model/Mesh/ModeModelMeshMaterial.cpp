@@ -15,12 +15,8 @@
 ModeModelMeshMaterial *mode_model_mesh_material = NULL;
 
 ModeModelMeshMaterial::ModeModelMeshMaterial(ModeBase *_parent) :
-			Mode<DataModel>("ModelMeshMaterial", _parent, ed->multi_view_3d, "menu_model"),
-		Observable("ModelMeshMaterial") {
+			Mode<DataModel>("ModelMeshMaterial", _parent, ed->multi_view_3d, "menu_model") {
 	dialog = nullptr;
-}
-
-ModeModelMeshMaterial::~ModeModelMeshMaterial() {
 }
 
 void ModeModelMeshMaterial::on_start() {
@@ -28,7 +24,7 @@ void ModeModelMeshMaterial::on_start() {
 	dialog = new ModelMaterialDialog(data);
 	ed->set_side_panel(dialog);
 
-	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
+	auto *t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
 	multi_view->set_allow_action(false);

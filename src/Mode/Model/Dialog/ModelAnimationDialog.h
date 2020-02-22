@@ -9,11 +9,9 @@
 #define MODELANIMATIONDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
-#include "../../../Stuff/Observer.h"
 class DataModel;
 
-class ModelAnimationDialog: public hui::Panel, public Observer
-{
+class ModelAnimationDialog: public hui::Panel {
 public:
 	ModelAnimationDialog(DataModel *_data);
 	virtual ~ModelAnimationDialog();
@@ -37,8 +35,6 @@ public:
 	void on_parameter();
 	void on_simulation_play();
 	void on_simulation_stop();
-
-	void on_update(Observable *o, const string &message) override;
 
 	int get_selected_animation();
 

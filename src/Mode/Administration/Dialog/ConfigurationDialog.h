@@ -9,7 +9,6 @@
 #define CONFIGURATIONDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
-#include "../../../Stuff/Observer.h"
 class DataAdministration;
 
 class ConfigurationDialog: public hui::Dialog {

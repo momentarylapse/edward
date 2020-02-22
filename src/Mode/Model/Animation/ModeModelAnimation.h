@@ -15,19 +15,22 @@ class DataModel;
 class ModelAnimationDialog;
 class ModelAnimationTimelinePanel;
 
-class ModeModelAnimation: public Mode<DataModel>, public Observable
-{
+class ModeModelAnimation: public Mode<DataModel> {
 public:
 	ModeModelAnimation(ModeBase *parent);
 	virtual ~ModeModelAnimation();
 
-	static const string MESSAGE_SET_FRAME;
+	class State : public Observable<VirtualBase> {
+	public:
+		static const string MESSAGE_SET_FRAME;
+		~State() {}
+	} state;
 
 	void on_start() override;
 	void on_end() override;
 
 	void on_command(const string &id) override;
-	void on_update(Observable *o, const string &message) override;
+	void on_update();
 	void on_update_menu() override;
 
 	ModelAnimationDialog *dialog;

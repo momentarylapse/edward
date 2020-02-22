@@ -10,9 +10,8 @@
 
 #include "../../../lib/hui/hui.h"
 #include "../../../Data/World/DataWorld.h"
-#include "../../../Stuff/Observer.h"
 
-class TerrainCreationDialog: public hui::Dialog, public Observer
+class TerrainCreationDialog: public hui::Dialog
 {
 public:
 	TerrainCreationDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data);
@@ -25,8 +24,6 @@ public:
 	void OnSizeChange();
 	void OnOk();
 	void OnClose();
-
-	void on_update(Observable *o, const string &message) override;
 
 private:
 	DataWorld *data;

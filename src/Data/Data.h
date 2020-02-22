@@ -15,9 +15,8 @@
 
 class ActionManager;
 class Action;
-class Observable;
 
-class Data : public Observable {
+class Data : public Observable<VirtualBase> {
 public:
 	Data(int _type);
 	virtual ~Data();
@@ -33,8 +32,8 @@ public:
 	void undo();
 	void redo();
 
-	virtual void on_post_action_update(){}
-	virtual bool test_sanity(const string &loc){	return true;	}
+	virtual void on_post_action_update() {}
+	virtual bool test_sanity(const string &loc) { return true; }
 
 	string filename;
 	int file_time;

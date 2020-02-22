@@ -18,8 +18,7 @@ class CameraDialog;
 template<class T>
 class Interpolator;
 
-class ModeWorldCamera: public Mode<DataCamera>, public Observable
-{
+class ModeWorldCamera: public Mode<DataCamera> {
 public:
 	ModeWorldCamera(ModeBase *_parent, Data *_data);
 	virtual ~ModeWorldCamera();
@@ -36,8 +35,6 @@ public:
 	void deletePoint();
 
 	void loadData();
-
-	void on_update(Observable *obs, const string &message) override;
 
 	void _new() override;
 	bool open() override;

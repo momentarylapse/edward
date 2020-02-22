@@ -36,8 +36,7 @@ ModeWorldCamera *mode_world_camera = NULL;
 }*/
 
 ModeWorldCamera::ModeWorldCamera(ModeBase *_parent, Data *_data) :
-	Mode<DataCamera>("WorldCamera", _parent, _data, ed->multi_view_3d, "menu_world"),
-	Observable("WorldCamera")
+	Mode<DataCamera>("WorldCamera", _parent, _data, ed->multi_view_3d, "menu_world")
 {
 	edit_vel = false;
 	edit_ang = false;
@@ -71,14 +70,15 @@ void ModeWorldCamera::on_start() {
 
 	multi_view->reset_mouse_action();
 
-	Observer::subscribe(data);
-	Observer::subscribe(multi_view);
+	data->subscribe(this, [=]{
+		data->UpdateVel();
+		loadData();
+	}, data->MESSAGE_CHANGE);
 	loadData();
 }
 
 void ModeWorldCamera::on_end() {
-	Observer::unsubscribe(data);
-	Observer::unsubscribe(multi_view);
+	data->unsubscribe(this);
 	ed->set_bottom_panel(nullptr);
 
 	multi_view->clear_data(data);
@@ -117,14 +117,14 @@ void ModeWorldCamera::setEditVel(bool edit)
 {
 	edit_vel = edit;
 	loadData();
-	notify();
+	//notify();
 }
 
 void ModeWorldCamera::setEditAng(bool edit)
 {
 	edit_ang = edit;
 	loadData();
-	notify();
+	//notify();
 }
 
 void ModeWorldCamera::previewStart()
@@ -132,8 +132,8 @@ void ModeWorldCamera::previewStart()
 	preview_time = 0;
 	preview = true;
 	multi_view->cam.ignore_radius = true;
-	hui::RunLater(0.020f, std::bind(&ModeWorldCamera::previewUpdate, this));
-	notify();
+	hui::RunLater(0.020f, [=]{ previewUpdate(); });
+	//notify();
 }
 
 void ModeWorldCamera::previewStop()
@@ -141,7 +141,7 @@ void ModeWorldCamera::previewStop()
 	preview = false;
 	multi_view->cam.ignore_radius = false;
 	multi_view->force_redraw();
-	notify();
+	//notify();
 }
 
 void ModeWorldCamera::previewUpdate()
@@ -155,8 +155,8 @@ void ModeWorldCamera::previewUpdate()
 	if (preview_time > duration)
 		previewStop();
 	if (preview)
-		hui::RunLater(0.050f, std::bind(&ModeWorldCamera::previewUpdate, this));
-	notify();
+		hui::RunLater(0.050f, [=]{ previewUpdate(); });
+	//notify();
 }
 
 void ModeWorldCamera::on_command(const string &id)
@@ -180,14 +180,6 @@ void ModeWorldCamera::on_update_menu()
 {
 	ed->enable("cam_undo", data->action_manager->undoable());
 	ed->enable("cam_redo", data->action_manager->redoable());
-}
-
-void ModeWorldCamera::on_update(Observable *o, const string &message)
-{
-	if (message == data->MESSAGE_CHANGE){
-		data->UpdateVel();
-		loadData();
-	}
 }
 
 void ModeWorldCamera::loadData()

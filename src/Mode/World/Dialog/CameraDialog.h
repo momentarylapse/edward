@@ -9,14 +9,12 @@
 #define CAMERADIALOG_H_
 
 #include "../../../lib/hui/hui.h"
-#include "../../../Stuff/Observer.h"
 
 class DataCamera;
 class ModeWorldCamera;
 class ActionCameraMoveTimeSelection;
 
-class CameraDialog: public hui::Panel, public Observer
-{
+class CameraDialog: public hui::Panel {
 public:
 	CameraDialog(ModeWorldCamera *mode);
 	virtual ~CameraDialog();
@@ -41,8 +39,6 @@ public:
 	void LoadData();
 
 	void UpdateTimePos();
-
-	void on_update(Observable *o, const string &message) override;
 
 	DataCamera *data;
 	ModeWorldCamera *mode;

@@ -11,8 +11,7 @@
 #include "../../../Edward.h"
 
 ModelEasifyDialog::ModelEasifyDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data):
-	hui::Dialog("easify_dialog", 400, 300, _parent, _allow_parent),
-	Observer("ModelEasifyDialog")
+	hui::Dialog("easify_dialog", 400, 300, _parent, _allow_parent)
 {
 	from_resource("easify_dialog");
 
@@ -61,11 +60,6 @@ void ModelEasifyDialog::OnOk()
 {
 	data->easify(factor);
 	destroy();
-}
-
-void ModelEasifyDialog::on_update(Observable* o, const string &message)
-{
-	LoadData();
 }
 
 

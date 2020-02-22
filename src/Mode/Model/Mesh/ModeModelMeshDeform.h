@@ -12,7 +12,7 @@
 
 class DeformBrushPanel;
 
-class ModeModelMeshDeform: public Mode<DataModel>, public Observable {
+class ModeModelMeshDeform: public Mode<DataModel> {
 public:
 	ModeModelMeshDeform(ModeBase *parent);
 	virtual ~ModeModelMeshDeform();

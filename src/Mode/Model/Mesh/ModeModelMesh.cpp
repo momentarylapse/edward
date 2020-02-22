@@ -50,8 +50,8 @@
 
 ModeModelMesh *mode_model_mesh = NULL;
 
-const string ModeModelMesh::MESSAGE_CURRENT_MATERIAL_CHANGE = "CurrentMaterialChange";
-const string ModeModelMesh::MESSAGE_CURRENT_SKIN_CHANGE = "CurrentSkinChange";
+const string ModeModelMesh::State::MESSAGE_CURRENT_MATERIAL_CHANGE = "CurrentMaterialChange";
+const string ModeModelMesh::State::MESSAGE_CURRENT_SKIN_CHANGE = "CurrentSkinChange";
 
 
 
@@ -63,8 +63,7 @@ string vb_format(int num_tex) {
 }
 
 ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
-	Mode<DataModel>("ModelMesh", _parent, ed->multi_view_3d, "menu_model"),
-	Observable("ModelMesh") {
+	Mode<DataModel>("ModelMesh", _parent, ed->multi_view_3d, "menu_model") {
 
 	selection_mode = NULL;
 	current_material = 0;
@@ -90,19 +89,15 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	mode_model_mesh_paint = new ModeModelMeshPaint(this);
 
 	selection_mode = selection_mode_polygon;
-
-	Observer::subscribe(data);
-	//Observer::subscribe(multi_view);
 }
 
 ModeModelMesh::~ModeModelMesh() {
-	Observer::unsubscribe(data);
 }
 
 void ModeModelMesh::on_start() {
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-mesh-toolbar");
 
-	//subscribe(data);
+	data->subscribe(this, [=]{ on_data_update(); });
 
 	update_vertex_buffers(data->mesh->vertex);
 
@@ -118,7 +113,7 @@ void ModeModelMesh::on_enter() {
 }
 
 void ModeModelMesh::on_end() {
-	//unsubscribe(data);
+	data->unsubscribe(this);
 
 	auto *t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
@@ -285,7 +280,7 @@ void ModeModelMesh::on_draw_win(MultiView::Window *win) {
 
 
 
-void ModeModelMesh::on_update(Observable *o, const string &message) {
+void ModeModelMesh::on_data_update() {
 	// consistency checks
 	if (current_material >= data->material.num)
 		set_current_material(data->material.num - 1);
@@ -518,7 +513,7 @@ void ModeModelMesh::set_current_material(int index) {
 	if (current_material == index)
 		return;
 	current_material = index;
-	notify(MESSAGE_CURRENT_MATERIAL_CHANGE);
+	state.notify(state.MESSAGE_CURRENT_MATERIAL_CHANGE);
 	mode_model_mesh_texture->set_current_texture_level(0);
 }
 
@@ -538,7 +533,7 @@ void ModeModelMesh::set_current_skin(int index) {
 
 	selection_mode->update_multi_view();
 	update_vertex_buffers(data->mesh->vertex);
-	notify(MESSAGE_CURRENT_SKIN_CHANGE);
+	state.notify(state.MESSAGE_CURRENT_SKIN_CHANGE);
 }
 
 void ModeModelMesh::draw_effects(MultiView::Window *win) {
@@ -708,14 +703,14 @@ void ModeModelMesh::set_selection_mode(MeshSelectionMode *mode) {
 	selection_mode = mode;
 	mode->on_start();
 	mode->update_multi_view();
-	notify();
+	state.notify();
 	multi_view->force_redraw();
 	ed->update_menu(); // TODO
 }
 
 void ModeModelMesh::toggle_select_cw() {
 	select_cw = !select_cw;
-	notify();
+	state.notify();
 	ed->update_menu();
 }
 

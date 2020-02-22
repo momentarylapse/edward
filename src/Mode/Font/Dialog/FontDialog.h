@@ -10,9 +10,8 @@
 
 #include "../../../lib/hui/hui.h"
 #include "../../../Data/Font/DataFont.h"
-#include "../../../Stuff/Observer.h"
 
-class FontDialog: public hui::Panel, public Observer
+class FontDialog: public hui::Panel
 {
 public:
 	FontDialog(DataFont *_data);
@@ -36,8 +35,6 @@ public:
 	void OnText();
 
 	string GetSampleText();
-
-	void on_update(Observable *o, const string &message) override;
 
 private:
 	DataFont *data;

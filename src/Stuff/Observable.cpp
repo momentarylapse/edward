@@ -6,102 +6,161 @@
  */
 
 #include "Observable.h"
-#include "Observer.h"
-
-const string Observable::MESSAGE_ALL = "";
-const string Observable::MESSAGE_CHANGE = "Change";
-const string Observable::MESSAGE_DELETE = "Delete";
-const bool Observable::DEBUG_MESSAGES = false;
+#include <functional>
+//#include <typeinfo>
+#include "../lib/kaba/kaba.h"
 
 
-struct ObserverRequest
-{
-	ObserverRequest(){}
-	ObserverRequest(Observer *o, const string &_message)
-	{
-		observer = o;
-		message = &_message;
+static const int MESSAGE_DEBUG_LEVEL = 0;
+
+static string dummy_string;
+
+bool split_num_string(const string &n, string &out, int &after) {
+	out = n;
+	if (n[0] < '0' or n[0] > '9')
+		return false;
+	if (n[1] >= '0' and n[1] <= '9') {
+		int num = n.head(2)._int();
+		out = n.substr(2, num);
+		after = num + 2;
+		return true;
 	}
-	Observer* observer;
-	const string *message;
-};
+	int num = n.head(1)._int();
+	out = n.substr(1, num);
+	after = num + 1;
+	return true;
+}
 
-typedef ObserverRequest Notification;
+string printify(const string &n) {
+	string out;
+	int after;
+	if (!split_num_string(n,  out, after))
+		return n;
+	if (after < n.num) {
+		if (n[after] == 'I') {
+			int after2;
+			string out2;
+			if (!split_num_string(n.substr(after+1, -1),  out2, after2))
+				return n + format("----a %d", after);
+			return out + "<" + out2 + ">";
+		} else {
+			return n + format("----b %d", after);
+		}
+	}
+	return out;
+}
+
+static string get_obs_name(VirtualBase *o) {
+	if (!o)
+		return "<null>";
+	string pp;
+	if (MESSAGE_DEBUG_LEVEL >= 4)
+		pp = "(" + p2s(o) + ")";
+	auto *c = Kaba::GetDynamicType(o);
+	if (c)
+		return "<kaba:" + c->name + ">" + pp;
+	return printify(typeid(*o).name()) + pp;
+}
+
+ObservableData::Subscription::Subscription() {
+	observer = nullptr;
+	message = nullptr;
+}
+
+ObservableData::Subscription::Subscription(VirtualBase *o, const string *_message, const ObservableData::Callback &_callback, const ObservableData::CallbackP &_callback_p) {
+	observer = o;
+	message = _message;
+	callback = _callback;
+	callback_p = _callback_p;
+}
+
+ObservableData::Notification::Notification() {
+	observer = nullptr;
+	message = nullptr;
+}
+
+ObservableData::Notification::Notification(VirtualBase *o, const string *_message, const ObservableData::Callback &_callback, const ObservableData::CallbackP &_callback_p) {
+	observer = o;
+	message = _message;
+	callback = _callback;
+	callback_p = _callback_p;
+}
 
 
-Observable::Observable(const string &name)
-{
+ObservableData::ObservableData() {
+	me = nullptr; // it is only useful, when set by subscribe anyways...
 	notify_level = 0;
-	observable_name = name;
+	cur_message = nullptr;
 }
 
-Observable::~Observable()
-{
-	notify(MESSAGE_DELETE);
+ObservableData::~ObservableData() {
+	if (MESSAGE_DEBUG_LEVEL >= 2)
+		msg_write("~ObservableData");
+	if (me) {
+		if (MESSAGE_DEBUG_LEVEL >= 2)
+			msg_write("notify... " + get_obs_name(me));
+		//notify(me->MESSAGE_DELETE);
+		notify(Observable<VirtualBase>::MESSAGE_DELETE);
+	}
 }
 
-void Observable::add_observer(Observer *o, const string &message)
-{
-	requests.add(ObserverRequest(o, message));
+// in case an object is "out of service" but still needs to be kept in memory
+void ObservableData::fake_death() {
+	notify(Observable<VirtualBase>::MESSAGE_DELETE);
+	subscriptions.clear();
 }
 
-void Observable::remove_observer(Observer *o)
-{
-	for (int i=requests.num-1; i>=0; i--)
-		if (requests[i].observer == o){
-			requests.erase(i);
+
+void ObservableData::subscribe(VirtualBase *_me, VirtualBase *observer, const ObservableData::Callback &callback, const ObservableData::CallbackP &callback_p, const string &message) {
+	subscriptions.add(ObservableData::Subscription(observer, &message, callback, callback_p));
+	me = _me;
+	if (MESSAGE_DEBUG_LEVEL >= 2)
+		msg_write("subscribe:  " + get_obs_name(me) + "  <<  (" + message + ")  <<  " + get_obs_name(observer));
+}
+
+void ObservableData::unsubscribe(VirtualBase *observer) {
+	if (MESSAGE_DEBUG_LEVEL >= 2)
+		msg_write("unsubscribe:  " + get_obs_name(me) + "  <<  " + get_obs_name(observer));
+	for (int i=subscriptions.num-1; i>=0; i--)
+		if (subscriptions[i].observer == observer) {
+			subscriptions.erase(i);
 		}
 }
 
-void Observable::add_wrapped_observer(void* handler, void* func)
-{
-	Observer *o = new ObserverWrapper(handler, func);
-	add_observer(o, MESSAGE_ALL);
-}
+void ObservableData::notify_send() {
+	if (!me) {
+		message_queue.clear();
+		return;
+	}
 
-void Observable::remove_wrapped_observer(void* handler)
-{
-	foreachi(ObserverRequest &r, requests, i)
-		if (dynamic_cast<ObserverWrapper*>(r.observer)){
-			if (dynamic_cast<ObserverWrapper*>(r.observer)->handler == handler){
-				delete(r.observer);
-				requests.erase(i);
-				break;
-			}
-		}
-}
-
-
-
-string Observable::get_name()
-{	return observable_name;	}
-
-void Observable::notify_send()
-{
 	Array<Notification> notifications;
 
 	// decide whom to send what
-	for (const string *m: message_queue){
-		//msg_write("send " + observable_name + ": " + *m);
-		for (ObserverRequest &r: requests){
-			if ((r.message == m) or (r.message == &MESSAGE_ALL))
-				notifications.add(Notification(r.observer, *m));
+	for (const string *m: message_queue) {
+		//msg_write("send " + observable_name + ": " + queue[i]);
+		for (auto &r: subscriptions) {
+			if ((*r.message == *m) or (*r.message == Observable<VirtualBase>::MESSAGE_ANY))
+				notifications.add(Notification(r.observer, m, r.callback, r.callback_p));
 		}
 	}
 
 	message_queue.clear();
 
 	// send
-	for (Notification &n: notifications){
-		if (DEBUG_MESSAGES)
-			msg_write("send " + get_name() + "/" + *n.message + "  >>  " + n.observer->get_name());
-		n.observer->on_update(this, *n.message);
+	for (auto &n: notifications) {
+		if (MESSAGE_DEBUG_LEVEL >= 1)
+			msg_write("send " + get_obs_name(me) + "  ---" + *n.message + "--->>  " + get_obs_name(n.observer));
+		//n.callback();
+		cur_message = n.message;
+		if (n.callback)
+			n.callback();
+		else if (n.callback_p)
+			n.callback_p(me);
 	}
 }
 
 
-void Observable::notify_enqueue(const string &message)
-{
+void ObservableData::notify_enqueue(const string &message) {
 	// already enqueued?
 	for (const string *m: message_queue)
 		if (&message == m)
@@ -111,26 +170,20 @@ void Observable::notify_enqueue(const string &message)
 	message_queue.add(&message);
 }
 
-void Observable::notify_begin()
-{
+void ObservableData::notify_begin() {
 	notify_level ++;
-	//msg_write("notify ++");
 }
 
-void Observable::notify_end()
-{
+void ObservableData::notify_end() {
 	notify_level --;
-	//msg_write("notify --");
 	if (notify_level == 0)
 		notify_send();
 }
 
 
-void Observable::notify(const string &message)
-{
+void ObservableData::notify(const string &message) {
 	notify_enqueue(message);
 	if (notify_level == 0)
 		notify_send();
 }
-
 

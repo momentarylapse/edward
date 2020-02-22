@@ -31,28 +31,29 @@ void ModeModelSkeletonAttachVertices::on_start() {
 	mode_model_mesh->selection_mode->update_multi_view();
 	multi_view->set_allow_action(false);
 
-	subscribe(data);
-	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
-	on_update(data, "");
-	on_update(multi_view, "");
+	data->subscribe(this, [=]{ on_data_change(); });
+	multi_view->subscribe(this, [=]{ on_update_selection(); }, multi_view->MESSAGE_SELECTION_CHANGE);
+
+	on_data_change();
+	on_update_selection();
 }
 
 void ModeModelSkeletonAttachVertices::on_end() {
-	unsubscribe(data);
-	unsubscribe(multi_view);
+	data->unsubscribe(this);
+	multi_view->unsubscribe(this);
 
 	mode_model->allow_selection_modes(false);
 
-	parent->on_update(data, "");
+	//parent->on_update(data, "");
 }
 
-void ModeModelSkeletonAttachVertices::on_update(Observable *o, const string &message) {
-	if (o == data) {
-		mode_model_mesh->selection_mode->update_multi_view();
-	} else if (o == multi_view) {
-		mode_model_mesh->selection_mode->update_selection();
-		mode_model_mesh->fill_selection_buffer(data->edit_mesh->vertex);
-	}
+void ModeModelSkeletonAttachVertices::on_data_change() {
+	mode_model_mesh->selection_mode->update_multi_view();
+}
+
+void ModeModelSkeletonAttachVertices::on_update_selection() {
+	mode_model_mesh->selection_mode->update_selection();
+	mode_model_mesh->fill_selection_buffer(data->edit_mesh->vertex);
 }
 
 void ModeModelSkeletonAttachVertices::on_command(const string &id) {

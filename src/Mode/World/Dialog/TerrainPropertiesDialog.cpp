@@ -17,8 +17,7 @@
 string file_secure(const string &filename); // -> ModelPropertiesDialog
 
 TerrainPropertiesDialog::TerrainPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data, int _index) :
-	hui::Dialog("terrain_dialog", 400, 300, _parent, _allow_parent),
-	Observer("TerrainPropertiesDialog")
+	hui::Dialog("terrain_dialog", 400, 300, _parent, _allow_parent)
 {
 	from_resource("terrain_dialog");
 	data = _data;
@@ -42,14 +41,14 @@ TerrainPropertiesDialog::TerrainPropertiesDialog(hui::Window *_parent, bool _all
 	event("default_material", [=]{ OnDefaultMaterial(); });
 	event("terrain_save_as", [=]{ OnSaveAs(); });
 
-	subscribe(data);
+	data->subscribe(this, [=]{ update_data(); });
 
-	on_update(data, "");
+	update_data();
 }
 
 TerrainPropertiesDialog::~TerrainPropertiesDialog()
 {
-	unsubscribe(data);
+	data->unsubscribe(this);
 }
 
 void TerrainPropertiesDialog::ApplyData()
@@ -210,9 +209,8 @@ void TerrainPropertiesDialog::OnClearTextureLevel()
 	FillTextureList();
 }
 
-void TerrainPropertiesDialog::on_update(Observable *o, const string &message)
-{
-	if (index >= data->Terrains.num){
+void TerrainPropertiesDialog::update_data() {
+	if (index >= data->Terrains.num) {
 		destroy();
 		return;
 	}
@@ -224,7 +222,7 @@ void TerrainPropertiesDialog::on_update(Observable *o, const string &message)
 	temp.NumZ = t->num_z;
 	temp.Pattern = t->pattern;
 	temp.NumTextures = t->material->textures.num;
-	for (int i=0;i<temp.NumTextures;i++){
+	for (int i=0; i<temp.NumTextures; i++) {
 		temp.TextureFile[i] = t->texture_file[i];
 		temp.TextureScale[i] = t->texture_scale[i];
 	}
@@ -234,8 +232,7 @@ void TerrainPropertiesDialog::on_update(Observable *o, const string &message)
 
 
 
-void TerrainPropertiesDialog::OnOk()
-{
+void TerrainPropertiesDialog::OnOk() {
 	ApplyData();
 	destroy();
 }

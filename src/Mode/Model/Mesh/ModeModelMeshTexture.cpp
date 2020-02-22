@@ -16,13 +16,12 @@
 #include "ModeModelMeshTexture.h"
 #include "../Dialog/ModelMaterialDialog.h"
 
-const string ModeModelMeshTexture::MESSAGE_TEXTURE_LEVEL_CHANGE = "TextureLevelChange";
+const string ModeModelMeshTexture::State::MESSAGE_TEXTURE_LEVEL_CHANGE = "TextureLevelChange";
 
 ModeModelMeshTexture *mode_model_mesh_texture = NULL;
 
 ModeModelMeshTexture::ModeModelMeshTexture(ModeBase *_parent) :
-	Mode<DataModel>("ModelMeshTexture", _parent, ed->multi_view_2d, "menu_model"),
-	Observable("ModelMeshTexture")
+	Mode<DataModel>("ModelMeshTexture", _parent, ed->multi_view_2d, "menu_model")
 {
 	current_texture_level = 0;
 	dialog = nullptr;
@@ -71,8 +70,13 @@ void ModeModelMeshTexture::on_start() {
 
 	fetchData();
 
-	Observer::subscribe(data);
-	Observer::subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
+	data->subscribe(this, [=]{ on_data_skin_change(); }, data->MESSAGE_SKIN_CHANGE);
+	data->subscribe(this, [=]{ on_data_change(); }, data->MESSAGE_CHANGE);
+	multi_view->subscribe(this, [=]{
+		//data->SelectionTrianglesFromVertices();
+		//data->SelectionSurfacesFromTriangles();
+		//mode_model_mesh_triangle->FillSelectionBuffers();
+	}, multi_view->MESSAGE_SELECTION_CHANGE);
 
 	/*ed->SetTarget("root_table", 0);
 	ed->AddControlTable("", 1, 0, 1, 5, "side_table");
@@ -86,8 +90,8 @@ void ModeModelMeshTexture::on_start() {
 
 
 void ModeModelMeshTexture::on_end() {
-	Observer::unsubscribe(data);
-	Observer::unsubscribe(multi_view);
+	data->unsubscribe(this);
+	multi_view->unsubscribe(this);
 	skin_vertex.clear();
 	ed->set_side_panel(nullptr);
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-mesh-toolbar"); // -> mesh
@@ -200,35 +204,24 @@ void ModeModelMeshTexture::set_current_texture_level(int level) {
 	//	return;
 	current_texture_level = level;
 	fetchData();
-	notify(MESSAGE_TEXTURE_LEVEL_CHANGE);
+	state.notify(state.MESSAGE_TEXTURE_LEVEL_CHANGE);
 	multi_view->force_redraw();
 }
 
-void ModeModelMeshTexture::on_update(Observable *o, const string &message)
-{
+void ModeModelMeshTexture::on_data_skin_change() {
+	int svi = 0;
+	for (ModelPolygon &t: data->mesh->polygon) {
+		if (t.material != mode_model_mesh->current_material)
+			continue;
+		for (int k=0;k<t.side.num;k++)
+			skin_vertex[svi ++].pos = t.side[k].skin_vertex[current_texture_level];
+	}
+}
+
+void ModeModelMeshTexture::on_data_change() {
 	// consistency checks
 	if (current_texture_level >= data->material[mode_model_mesh->current_material]->texture_levels.num)
 		set_current_texture_level(data->material[mode_model_mesh->current_material]->texture_levels.num - 1);
-
-	if (o == data){
-
-		if (message == DataModel::MESSAGE_SKIN_CHANGE){
-			int svi = 0;
-			for (ModelPolygon &t: data->mesh->polygon){
-				if (t.material != mode_model_mesh->current_material)
-					continue;
-				for (int k=0;k<t.side.num;k++)
-					skin_vertex[svi ++].pos = t.side[k].skin_vertex[current_texture_level];
-			}
-		}else if (message == data->MESSAGE_CHANGE){
-
-			fetchData();
-		}
-	}else if (o == multi_view){
-		//data->SelectionTrianglesFromVertices();
-		//data->SelectionSurfacesFromTriangles();
-	}
-	//mode_model_mesh_triangle->FillSelectionBuffers();
 }
 
 

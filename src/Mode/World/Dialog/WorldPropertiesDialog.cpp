@@ -20,8 +20,7 @@
 #define WorldFogDec				6
 
 WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data) :
-	hui::Dialog("world_dialog", 400, 300, _parent, _allow_parent),
-	Observer("WorldPropertiesDialog")
+	hui::Dialog("world_dialog", 400, 300, _parent, _allow_parent)
 {
 	from_resource("world_dialog");
 	data = _data;
@@ -52,7 +51,10 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	event("edit_script_vars", [=]{ on_edit_script_vars(); });
 	event("edit_script", [=]{ on_edit_script(); });
 
-	subscribe(data);
+	data->subscribe(this, [=]{
+		temp = data->meta_data;
+		load_data();
+	});
 
 	temp = data->meta_data;
 	load_data();
@@ -60,7 +62,7 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 
 WorldPropertiesDialog::~WorldPropertiesDialog() {
 	mode_world->world_dialog = NULL;
-	unsubscribe(data);
+	data->unsubscribe(this);
 	delete popup_skybox;
 	delete popup_script;
 }
@@ -91,7 +93,7 @@ void WorldPropertiesDialog::on_script_right_click() {
 
 
 void WorldPropertiesDialog::on_close() {
-	unsubscribe(data);
+	data->unsubscribe(this);
 	hide();
 	active = false;
 }
@@ -267,11 +269,6 @@ void WorldPropertiesDialog::fill_skybox_list() {
 
 
 
-void WorldPropertiesDialog::on_update(Observable *o, const string &message) {
-	temp = data->meta_data;
-	load_data();
-}
-
 
 
 void WorldPropertiesDialog::fill_script_list() {
@@ -315,7 +312,10 @@ void WorldPropertiesDialog::on_ok() {
 }
 
 void WorldPropertiesDialog::restart() {
-	subscribe(data);
+	data->subscribe(this, [=] {
+		temp = data->meta_data;
+		load_data();
+	});
 
 	temp = data->meta_data;
 	load_data();

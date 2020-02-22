@@ -14,9 +14,7 @@
 const string ActionManager::MESSAGE_FAILED = "Failed";
 const string ActionManager::MESSAGE_SAVED = "Saved";
 
-ActionManager::ActionManager(Data *_data) :
-	Observable("ActionManager")
-{
+ActionManager::ActionManager(Data *_data) {
 	data = _data;
 	cur_pos = 0;
 	save_pos = 0;
@@ -27,13 +25,11 @@ ActionManager::ActionManager(Data *_data) :
 	cur_level = 0;
 }
 
-ActionManager::~ActionManager()
-{
+ActionManager::~ActionManager() {
 	reset();
 }
 
-void ActionManager::reset()
-{
+void ActionManager::reset() {
 	for (Action *a: action)
 		delete(a);
 	action.clear();
@@ -46,13 +42,11 @@ void ActionManager::reset()
 	_preview = NULL;
 }
 
-void ActionManager::enable(bool _enabled)
-{
+void ActionManager::enable(bool _enabled) {
 	enabled = _enabled;
 }
 
-void ActionManager::add(Action *a)
-{
+void ActionManager::add(Action *a) {
 	if (!enabled)
 		return;
 	// truncate history

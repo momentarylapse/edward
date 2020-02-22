@@ -9,58 +9,46 @@
 
 const string Data::MESSAGE_SELECTION = "Selection";
 
-Data::Data(int _type) :
-	Observable("Data")
-{
+Data::Data(int _type) {
 	type = _type;
 	action_manager = new ActionManager(this);
 	file_time = 0;
 	binary_file_format = false;
 }
 
-Data::~Data()
-{
-	delete(action_manager);
+Data::~Data() {
+	delete action_manager;
 }
 
 
 
-void Data::begin_action_group(const string &name)
-{
+void Data::begin_action_group(const string &name) {
 	action_manager->begin_group(name);
 }
 
-void Data::end_action_group()
-{
+void Data::end_action_group() {
 	action_manager->end_group();
 }
 
-void Data::redo()
-{
+void Data::redo() {
 	action_manager->redo();
 }
 
 
 
-void Data::undo()
-{
+void Data::undo() {
 	action_manager->undo();
 }
 
 
 
-void *Data::execute(Action *a)
-{
+void *Data::execute(Action *a) {
 	return action_manager->execute(a);
 }
 
 
-
-void Data::reset_history()
-{
+void Data::reset_history() {
 	action_manager->reset();
 }
-
-
 
 

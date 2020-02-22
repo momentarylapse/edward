@@ -31,7 +31,7 @@ Action::~Action()
 
 const string &Action::message()
 {
-	return Observable::MESSAGE_CHANGE;
+	return Observable<VirtualBase>::MESSAGE_CHANGE;
 }
 
 void* Action::execute_logged(Data* d)

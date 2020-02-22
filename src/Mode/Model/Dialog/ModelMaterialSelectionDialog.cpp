@@ -18,8 +18,7 @@ string file_secure(const string &filename);
 string render_material(ModelMaterial *m);
 
 ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data):
-	hui::Dialog("model_material_selection_dialog", 400, 300, _parent, _allow_parent),
-	Observer("ModelMaterialSelectionDialog")
+	hui::Dialog("model_material_selection_dialog", 400, 300, _parent, _allow_parent)
 {
 	from_resource("model_material_selection_dialog");
 	data = _data;
@@ -38,11 +37,11 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(hui::Window *_parent,
 
 	answer = NULL;
 
-	subscribe(data);
+	data->subscribe(this, [=]{ fill_material_list(); });
 }
 
 ModelMaterialSelectionDialog::~ModelMaterialSelectionDialog() {
-	unsubscribe(data);
+	data->unsubscribe(this);
 	delete popup_materials;
 }
 
@@ -105,9 +104,5 @@ void ModelMaterialSelectionDialog::on_material_edit() {
 	hui::ErrorBox(win, "", _("not implemented yet"));
 }
 
-void ModelMaterialSelectionDialog::on_update(Observable *o, const string &message)
-{
-	fill_material_list();
-}
 
 

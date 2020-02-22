@@ -19,14 +19,23 @@
 string file_secure(const string &filename);
 string render_material(ModelMaterial *m);
 
-ModelMaterialDialog::ModelMaterialDialog(DataModel *_data, bool full) :
-	Observer("ModelMaterialDialog") {
+ModelMaterialDialog::ModelMaterialDialog(DataModel *_data, bool full) {
 	from_resource("model_material_dialog");
 
 	data = _data;
-	subscribe(data);
-	subscribe(mode_model_mesh, mode_model_mesh->MESSAGE_CURRENT_MATERIAL_CHANGE);
-	subscribe(mode_model_mesh_texture, mode_model_mesh_texture->MESSAGE_TEXTURE_LEVEL_CHANGE);
+
+
+	data->subscribe(this, [=]{
+		if (apply_queue_depth == 0)
+			load_data();
+	}, data->MESSAGE_MATERIAL_CHANGE);
+	data->subscribe(this, [=]{
+		if (apply_queue_depth == 0)
+			load_data();
+	}, data->MESSAGE_TEXTURE_CHANGE);
+
+	mode_model_mesh->state.subscribe(this, [=]{ load_data(); }, mode_model_mesh->state.MESSAGE_CURRENT_MATERIAL_CHANGE);
+	mode_model_mesh_texture->state.subscribe(this, [=]{ load_data(); }, mode_model_mesh_texture->state.MESSAGE_TEXTURE_LEVEL_CHANGE);
 
 	popup_materials = hui::CreateResourceMenu("model-material-list-popup");
 	popup_textures = hui::CreateResourceMenu("model-texture-list-popup");
@@ -76,9 +85,9 @@ ModelMaterialDialog::ModelMaterialDialog(DataModel *_data, bool full) :
 }
 
 ModelMaterialDialog::~ModelMaterialDialog() {
-	unsubscribe(mode_model_mesh_texture);
-	unsubscribe(mode_model_mesh);
-	unsubscribe(data);
+	mode_model_mesh_texture->state.unsubscribe(this);
+	mode_model_mesh->state.unsubscribe(this);
+	data->unsubscribe(this);
 
 	delete popup_materials;
 	delete popup_textures;
@@ -366,18 +375,3 @@ void ModelMaterialDialog::on_textures_right_click() {
 	popup_textures->enable("texture-level-scale", n>=0);
 	popup_textures->open_popup(this);
 }
-
-void ModelMaterialDialog::on_update(Observable *o, const string &message) {
-	if (o == mode_model_mesh) {
-		load_data();
-	} else if (o == mode_model_mesh_texture) {
-		load_data();
-	} else if (o == data and message == data->MESSAGE_MATERIAL_CHANGE) {
-		if (apply_queue_depth == 0)
-			load_data();
-	} else if (o == data and message == data->MESSAGE_TEXTURE_CHANGE) {
-		if (apply_queue_depth == 0)
-			load_data();
-	}
-}
-

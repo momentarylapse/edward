@@ -404,7 +404,6 @@ sources = [
 	'src/Storage/Format/FormatWorld.cpp',
 	'src/Storage/Storage.cpp',
 	'src/Stuff/Observable.cpp',
-	'src/Stuff/Observer.cpp',
 	'src/Stuff/PluginManager.cpp',
 	'src/Stuff/Progress.cpp',
 	'src/x/camera.cpp',

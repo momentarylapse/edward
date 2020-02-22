@@ -86,7 +86,7 @@ extern nix::Shader *shader_lines_3d_colored;
 extern nix::Shader *shader_lines_3d_colored_wide;
 
 
-class MultiView : public Observable {
+class MultiView : public Observable<VirtualBase> {
 public:
 	MultiView(bool _mode3d);
 	virtual ~MultiView();

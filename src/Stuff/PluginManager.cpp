@@ -77,9 +77,6 @@ void PluginManager::init() {
 	Kaba::declare_class_element("Mode.name", &ModeBase::name);
 	Kaba::declare_class_element("Mode.multi_view", &ModeBase::multi_view);
 
-	Kaba::declare_class_size("Observable", sizeof(Observable));
-	//Kaba::declare_class_element("Observable.observable_name", offsetof(Observable, observable_name));
-
 	Kaba::declare_class_size("Data", sizeof(Data));
 	Kaba::declare_class_element("Data.filename", &Data::filename);
 	Kaba::declare_class_element("Data.file_time", &Data::file_time);

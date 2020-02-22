@@ -56,8 +56,7 @@ public:
 };
 
 ModeModelMeshDeform::ModeModelMeshDeform(ModeBase *_parent) :
-			Mode<DataModel>("ModelMeshDeform", _parent, ed->multi_view_3d, "menu_model"),
-		Observable("ModelMeshDeform") {
+		Mode<DataModel>("ModelMeshDeform", _parent, ed->multi_view_3d, "menu_model") {
 	dialog = nullptr;
 	brushing = false;
 	distance = 1;

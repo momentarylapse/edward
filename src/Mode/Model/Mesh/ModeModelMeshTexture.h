@@ -16,17 +16,21 @@ class DataModel;
 class ModelMaterialDialog;
 class ModelSkinVertexDummy;
 
-class ModeModelMeshTexture: public Mode<DataModel>, public Observable
-{
+class ModeModelMeshTexture: public Mode<DataModel> {
 public:
 	ModeModelMeshTexture(ModeBase *parent);
 
-	static const string MESSAGE_TEXTURE_LEVEL_CHANGE;
+	class State : public Observable<VirtualBase> {
+	public:
+		static const string MESSAGE_TEXTURE_LEVEL_CHANGE;
+		~State(){}
+	} state;
 
 	void on_start() override;
 	void on_end() override;
 
-	void on_update(Observable *o, const string &message) override;
+	void on_data_skin_change();
+	void on_data_change();
 
 	void on_draw() override;
 	void on_draw_win(MultiView::Window *win) override;

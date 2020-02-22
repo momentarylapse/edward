@@ -227,14 +227,10 @@ public:
 
 
 ModeModelMeshPaint::ModeModelMeshPaint(ModeBase *_parent) :
-		Mode<DataModel>("ModelMeshPaint", _parent, ed->multi_view_3d, "menu_model"),
-		Observable("ModelMeshPaint") {
+		Mode<DataModel>("ModelMeshPaint", _parent, ed->multi_view_3d, "menu_model") {
 	dialog = nullptr;
 	brushing = false;
 	distance = 1;
-}
-
-ModeModelMeshPaint::~ModeModelMeshPaint() {
 }
 
 void ModeModelMeshPaint::on_start() {

@@ -18,20 +18,24 @@ namespace nix {
 };
 class MeshSelectionMode;
 
-class ModeModelMesh: public Mode<DataModel>, public Observable {
+class ModeModelMesh: public Mode<DataModel> {
 public:
 	ModeModelMesh(ModeBase *parent);
 	virtual ~ModeModelMesh();
 
-	static const string MESSAGE_CURRENT_MATERIAL_CHANGE;
-	static const string MESSAGE_CURRENT_SKIN_CHANGE;
+	class State : public Observable<VirtualBase> {
+	public:
+		static const string MESSAGE_CURRENT_MATERIAL_CHANGE;
+		static const string MESSAGE_CURRENT_SKIN_CHANGE;
+		~State(){}
+	} state;
 
 	void on_start() override;
 	void on_enter() override;
 	void on_end() override;
 
 	void on_command(const string &id) override;
-	void on_update(Observable *o, const string &message) override;
+	void on_data_update();
 	void on_update_menu() override;
 	void on_selection_change() override;
 	void on_view_stage_change() override;

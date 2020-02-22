@@ -16,8 +16,7 @@ namespace Gui{
 	class Font;
 }
 
-class ModeFont: public Mode<DataFont>
-{
+class ModeFont: public Mode<DataFont> {
 public:
 	ModeFont();
 	virtual ~ModeFont();
@@ -28,11 +27,12 @@ public:
 	void on_mouse_move() override;
 	void on_left_button_down() override;
 	void on_command(const string &id) override;
-	void on_update(Observable *o, const string &message) override;
 	void on_update_menu() override;
 
 	void on_draw() override;
 	void on_draw_win(MultiView::Window *win) override;
+
+	void on_data_update();
 
 
 	void _new() override;

@@ -11,8 +11,7 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
-class ModeModelSkeletonAttachVertices: public ModeCreation<DataModel>
-{
+class ModeModelSkeletonAttachVertices: public ModeCreation<DataModel> {
 public:
 	ModeModelSkeletonAttachVertices(ModeBase *_parent, int _bone_index);
 
@@ -25,7 +24,8 @@ public:
 
 	void on_set_multi_view() override;
 
-	void on_update(Observable *o, const string &message) override;
+	void on_data_change();
+	void on_update_selection();
 
 private:
 	int bone_index;

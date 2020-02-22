@@ -28,14 +28,14 @@ void ModeModelAnimationVertex::on_start() {
 
 	chooseMouseFunction(MultiView::ACTION_SELECT);
 
-	subscribe(data);
-	subscribe(multi_view, multi_view->MESSAGE_SELECTION_CHANGE);
-	on_update(data, "");
+	data->subscribe(this, [=]{ on_data_change(); });
+	multi_view->subscribe(this, [=]{ mode_model_mesh->selection_mode->update_selection(); }, multi_view->MESSAGE_SELECTION_CHANGE);
+	on_data_change();
 }
 
 void ModeModelAnimationVertex::on_end() {
-	unsubscribe(data);
-	unsubscribe(multi_view);
+	data->unsubscribe(this);
+	multi_view->unsubscribe(this);
 	data->mesh->set_show_vertices(data->mesh->vertex);
 	mode_model_mesh->fill_selection_buffer(data->mesh->vertex);
 }
@@ -60,13 +60,9 @@ void ModeModelAnimationVertex::chooseMouseFunction(int f) {
 	multi_view->set_mouse_action("ActionModelAnimationTransformVertices", mouse_action, false);
 }
 
-void ModeModelAnimationVertex::on_update(Observable* o, const string &message) {
-	if (o == data) {
-		data->mesh->set_show_vertices(mode_model_animation->vertex);
-		mode_model_mesh->selection_mode->update_multi_view();
-	} else if (o == multi_view) {
-		mode_model_mesh->selection_mode->update_selection();
-	}
+void ModeModelAnimationVertex::on_data_change() {
+	data->mesh->set_show_vertices(mode_model_animation->vertex);
+	mode_model_mesh->selection_mode->update_multi_view();
 }
 
 void ModeModelAnimationVertex::on_update_menu() {

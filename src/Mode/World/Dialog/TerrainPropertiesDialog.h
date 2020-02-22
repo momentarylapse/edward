@@ -10,10 +10,8 @@
 
 #include "../../../lib/hui/hui.h"
 #include "../../../Data/World/DataWorld.h"
-#include "../../../Stuff/Observer.h"
 
-class TerrainPropertiesDialog: public hui::Dialog, public Observer
-{
+class TerrainPropertiesDialog: public hui::Dialog {
 public:
 	TerrainPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data, int _index);
 	virtual ~TerrainPropertiesDialog();
@@ -36,7 +34,7 @@ public:
 	void OnOk();
 	void OnClose();
 
-	void on_update(Observable *o, const string &message) override;
+	void update_data();
 
 private:
 	DataWorld *data;

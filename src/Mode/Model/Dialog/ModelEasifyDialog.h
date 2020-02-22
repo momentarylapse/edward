@@ -9,11 +9,9 @@
 #define MODELEASIFYDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
-#include "../../../Stuff/Observer.h"
 class DataModel;
 
-class ModelEasifyDialog: public hui::Dialog, public Observer
-{
+class ModelEasifyDialog: public hui::Dialog {
 public:
 	ModelEasifyDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data);
 	virtual ~ModelEasifyDialog();
@@ -24,8 +22,6 @@ public:
 	void OnQualitySlider();
 	void OnClose();
 	void OnOk();
-
-	void on_update(Observable *o, const string &message) override;
 
 private:
 	DataModel *data;

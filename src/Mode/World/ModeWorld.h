@@ -25,7 +25,6 @@ public:
 	void on_leave() override;
 
 	void on_command(const string &id) override;
-	void on_update(Observable *o, const string &message) override;
 	void on_update_menu() override;
 	void on_set_multi_view() override;
 
@@ -46,9 +45,7 @@ public:
 	void apply_heightmap();
 
 	void ExecutePropertiesDialog();
-	void ExecuteSelectionPropertiesDialog();
 	void ExecuteWorldPropertiesDialog();
-	void ExecuteObjectPropertiesDialog(int index);
 	void ExecuteTerrainPropertiesDialog(int index);
 	void ExecuteLightmapDialog();
 	WorldPropertiesDialog *world_dialog;

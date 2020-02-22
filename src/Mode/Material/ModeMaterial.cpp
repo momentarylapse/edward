@@ -34,7 +34,7 @@ ModeMaterial::ModeMaterial() :
 	Mode("Material", NULL, new DataMaterial, ed->multi_view_3d, "menu_material")
 {
 	geo = NULL;
-	subscribe(data);
+	data->subscribe(this, [=]{ on_data_update(); });
 
 	appearance_dialog = NULL;
 	shader_graph_dialog = NULL;
@@ -52,11 +52,10 @@ ModeMaterial::ModeMaterial() :
 
 ModeMaterial::~ModeMaterial() {
 	if (geo)
-		delete(geo);
+		delete geo;
 }
 
-void ModeMaterial::_new()
-{
+void ModeMaterial::_new() {
 	data->reset();
 	optimize_view();
 	ed->set_mode(mode_material);
@@ -75,13 +74,11 @@ void ModeMaterial::on_draw() {
 
 
 
-void ModeMaterial::on_update(Observable *o, const string &message) {
-	if (o == data) {
-		data->UpdateTextures();
-		if (data->appearance.shader)
-			data->appearance.shader->unref();
-		data->appearance.shader = data->appearance.get_shader();
-	}
+void ModeMaterial::on_data_update() {
+	data->UpdateTextures();
+	if (data->appearance.shader)
+		data->appearance.shader->unref();
+	data->appearance.shader = data->appearance.get_shader();
 }
 
 
