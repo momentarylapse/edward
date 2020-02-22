@@ -159,17 +159,7 @@ void FormatMaterial::_load(const string &filename, DataMaterial *data, bool deep
 	}
 
 	if (deep) {
-		if (data->appearance.shader_file != "") {
-			data->appearance.shader_code = FileReadText(nix::shader_dir + data->appearance.shader_file);
-			if (file_test_existence(nix::shader_dir + data->appearance.shader_file + ".graph")) {
-				data->appearance.shader_from_graph = true;
-				data->appearance.shader_graph->load(nix::shader_dir + data->appearance.shader_file + ".graph");
-			}
-			data->appearance.is_default_shader = false;
-		} else {
-			data->appearance.shader_graph->make_default();
-			data->appearance.shader_code = data->appearance.shader_graph->build_source();
-		}
+		data->appearance.update_shader_from_file();
 	}
 
 	delete(f);

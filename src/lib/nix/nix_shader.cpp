@@ -385,7 +385,7 @@ void Shader::set_default_data() {
 	set_data(location[LOCATION_LIGHT_RADIUS], &lights[0].radius, 4);
 
 	set_color(location[LOCATION_FOG_COLOR], fog._color);
-	set_data(location[LOCATION_FOG_DENSITY], &fog.density, 4);
+	set_float(location[LOCATION_FOG_DENSITY], fog.density);
 }
 
 void Shader::dispatch(int nx, int ny, int nz) {

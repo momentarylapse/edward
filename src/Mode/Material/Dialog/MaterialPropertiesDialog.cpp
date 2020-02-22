@@ -235,6 +235,8 @@ void MaterialPropertiesDialog::OnFindShader() {
 	if (storage->file_dialog(FD_SHADERFILE,false,true)){
 		if (TestShaderFile(storage->dialog_file)){
 			set_string("shader_file", storage->dialog_file);
+			temp.shader_file = get_string("shader_file");
+			temp.update_shader_from_file();
 			ApplyData();
 		}else{
 			ed->error_box(_("Error in shader file:\n") + nix::shader_error);
@@ -259,8 +261,6 @@ void MaterialPropertiesDialog::ApplyData() {
 
 	temp.reflection_density = get_int("reflection_density");
 	temp.reflection_size = 64 << get_int("reflection_size");
-
-	temp.shader_file = get_string("shader_file");
 
 	data->execute(new ActionMaterialEditAppearance(temp));
 }

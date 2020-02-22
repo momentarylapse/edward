@@ -46,11 +46,18 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 	hide_control("source", true);
 
 	popup = new hui::Menu();
+	hui::Menu *sub = nullptr;
 	for (int i=0; i<graph->NODE_TYPES.num; i++) {
-		popup->add(graph->NODE_TYPES[i], "add-node-" + i2s(i));
-		event("add-node-" + i2s(i), [=]{
-			graph->add(graph->NODE_TYPES[i], 400, 200);
-		});
+		string s = graph->NODE_TYPES[i];
+		if (s[0] == '-') {
+			sub = new hui::Menu();
+			popup->add_sub_menu(s.replace("-", ""), "", sub);
+		} else {
+			sub->add(graph->NODE_TYPES[i], "add-node-" + i2s(i));
+			event("add-node-" + i2s(i), [=]{
+				graph->add(graph->NODE_TYPES[i], 400, 200);
+			});
+		}
 	}
 	popup->add("Reset", "reset");
 	event("reset", [=]{ on_reset(); });
@@ -162,9 +169,10 @@ void ShaderGraphDialog::on_draw(Painter *p) {
 		p->draw_line(selection.node->x - 5, node_get_in_y(selection.node, selection.port), e->mx, e->my);
 	}
 
-	/*p->set_font_size(9);
-	p->set_color(scheme.TEXT);
-	p->draw_str(600, 10, graph->build_fragment_source());*/
+	p->set_font_size(13);
+	p->set_color(Red);
+	if (!data->appearance.shader_from_graph)
+		p->draw_str(20, 20, "not from graph!");
 }
 
 void ShaderGraphDialog::on_key_down() {
@@ -257,23 +265,11 @@ void ShaderGraphDialog::on_update() {
 	string source = graph->build_source();
 	data->appearance.shader_code = source;
 	set_string("source", source);
-	//msg_write(source);
 
 	data->appearance.shader_from_graph = true;
 	data->appearance.is_default_shader = false;
 	data->reset_history(); // TODO: actions
 	data->notify(data->MESSAGE_CHANGE);
-
-
-	/*try {
-		auto s = nix::Shader::create(source);
-		//delete data->appearance.shader;
-		data->appearance.shader = s;
-		//data->notify();
-		mode_material->multi_view->force_redraw();
-	} catch (Exception &e) {
-		ed->error_box(e.message());
-	}*/
 }
 
 void ShaderGraphDialog::on_reset() {

@@ -49,7 +49,7 @@ void DataMaterial::AppearanceData::reset() {
 	shader_file = "";
 	shader_graph->make_default();
 	shader_code = shader_graph->build_source();
-	shader_from_graph = false;
+	shader_from_graph = true;
 	is_default_shader = true;
 }
 
@@ -98,6 +98,25 @@ void DataMaterial::apply_for_rendering() {
 	} else if (appearance.transparency_mode == TRANSPARENCY_FACTOR) {
 		nix::SetAlpha(appearance.alpha_factor);
 		nix::SetZ(false, false);
+	}
+}
+
+void DataMaterial::AppearanceData::update_shader_from_file() {
+	if (shader_file != "") {
+		shader_code = FileReadText(nix::shader_dir + shader_file);
+		if (file_test_existence(nix::shader_dir + shader_file + ".graph")) {
+			shader_graph->load(nix::shader_dir + shader_file + ".graph");
+			shader_code = shader_graph->build_source();
+			shader_from_graph = true;
+		} else {
+			shader_from_graph = false;
+		}
+		is_default_shader = false;
+	} else {
+		shader_graph->make_default();
+		shader_code = shader_graph->build_source();
+		shader_from_graph = true;
+		is_default_shader = true;
 	}
 }
 

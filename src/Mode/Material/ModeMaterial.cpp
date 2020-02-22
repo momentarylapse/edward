@@ -166,10 +166,12 @@ void ModeMaterial::on_draw_win(MultiView::Window *win) {
 	data->apply_for_rendering();
 	nix::SetShader(shader);
 	nix::SetTextures(textures);
+	nix::SetFog(FOG_EXP, 0,10000,0.001f, Blue);
 
 	nix::DrawTriangles(MaterialVB[max(data->appearance.texture_files.num, 1)]);
 
 
+	nix::EnableFog(false);
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetZ(true,true);
 }
