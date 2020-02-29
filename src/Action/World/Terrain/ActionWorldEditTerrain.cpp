@@ -50,7 +50,7 @@ void *ActionWorldEditTerrain::execute(Data *d)
 	t->num_z = data.NumZ;
 	t->pattern = data.Pattern;*/
 	t->material_file = data.MaterialFile;
-	t->material->copy_from(NULL, LoadMaterial(t->material_file), false);
+	//t->material->copy_from(NULL, LoadMaterial(t->material_file), false);
 	t->material->textures.resize(data.NumTextures);
 	for (int i=0;i<t->material->textures.num;i++){
 		t->texture_file[i] = data.TextureFile[i];
@@ -59,10 +59,10 @@ void *ActionWorldEditTerrain::execute(Data *d)
 	}
 
 	// update
-	if (old_data.NumTextures != data.NumTextures){
+	/*if (old_data.NumTextures != data.NumTextures){
 		delete(t->vertex_buffer);
 		t->vertex_buffer = new nix::OldVertexBuffer(data.NumTextures);
-	}
+	}*/
 	t->force_redraw = true;
 
 	data = old_data;

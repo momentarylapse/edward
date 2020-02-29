@@ -41,7 +41,7 @@ void ModeModelMeshCreateCylinderSnake::on_start() {
 	dialog->hide_control("type:physical", true);
 	ed->set_side_panel(dialog);
 
-	bool physical = (mode_model_mesh->current_skin == SKIN_PHYSICAL);
+	bool physical = (mode_model_mesh->current_skin == MESH_PHYSICAL);
 	if (physical)
 		dialog->enable("*", false);
 

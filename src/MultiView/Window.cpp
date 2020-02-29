@@ -21,6 +21,7 @@ namespace nix {
 }
 void _draw_str(float x, float y, const string &d);
 
+
 namespace MultiView {
 
 
@@ -439,9 +440,7 @@ void Window::draw() {
 
 	nix::SetZ(true, true);
 	// light
-	vector dir = cam->ang * vector::EZ;
-	nix::SetLightDirectional(multi_view->light, dir, White, 0.7f);
-	nix::EnableLight(multi_view->light, true);
+	multi_view->set_light(cam->ang * vector::EZ, White, 0.7f);
 	nix::SetMaterial(Black,White,Black,0,White);//Black);
 	set_color(White);
 

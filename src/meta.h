@@ -15,78 +15,79 @@
 class Model;
 class Object;
 class Terrain;
-namespace Light{
-	class Light;
-}
+class Light;
 
-namespace Gui{
+
+
+
+namespace Gui {
 	class Font;
 }
 
-class EngineData
-{
+class EngineData {
 public:
-	string AppName, Version;
-	bool Debug, ShowTimings, ConsoleEnabled, WireMode;
-	bool Record;
-	float DetailLevel;
-	float DetailFactorInv;
-	int ShadowLevel;
-	bool ShadowLowerDetail;
-	Light::Light *ShadowLight;
-	color ShadowColor;
+	EngineData();
+
+	string app_name, version;
+	bool debug, show_timings, console_enabled, wire_mode;
+	float detail_level;
+	float detail_factor_inv;
+	int shadow_level;
+	bool shadow_lower_detail;
+	Light *shadow_light;
+	color shadow_color;
 	
-	int Multisampling;
+	int multisampling;
 	bool CullingEnabled, SortingEnabled, ZBufferEnabled;
-	bool ResettingGame;
-	Gui::Font *DefaultFont;
-	string InitialWorldFile, SecondWorldFile;
-	bool PhysicsEnabled, CollisionsEnabled;
-	int MirrorLevelMax;
+	bool resetting_game;
+	Gui::Font *default_font;
+	string initial_world_file, second_world_file;
+	bool physics_enabled, collisions_enabled;
+	int mirror_level_max;
 	
-	int NumRealColTests;
+	int num_real_col_tests;
 	
-	float FpsMax, FpsMin;
-	float TimeScale, Elapsed, ElapsedRT;
+	float fps_max, fps_min;
+	float time_scale, elapsed, elapsed_rt;
 
-	bool FirstFrame;
-	bool GameRunning;
+	bool first_frame;
+	bool game_running;
 
-	bool FileErrorsAreCritical;
+	bool file_errors_are_critical;
+
+	void set_dirs(const string &texture_dir, const string &map_dir, const string &object_dir, const string &sound_dir, const string &script_dir, const string &material_dir, const string &font_dir);
+
+	string map_dir, sound_dir, script_dir, object_dir;
 };
-extern EngineData Engine;
+extern EngineData engine;
+
+
+
+class TemplateDataScriptVariable {
+public:
+	string name, value;
+};
+
+class TemplateDataScript {
+public:
+	string filename;
+	Array<TemplateDataScriptVariable> variables;
+};
 
 
 typedef void str_float_func(const string&,float);
 
 
-void MetaInit();
-void MetaEnd();
 void MetaReset();
 void MetaCalcMove();
 
-// data to Meta
-void MetaSetDirs(const string &texture_dir, const string &map_dir, const string &object_dir, const string &sound_dir, const string &script_dir, const string &material_dir, const string &font_dir);
 
 
-// game data
-extern string MapDir, SoundDir, ScriptDir;
-
-enum{
-	ErrorLoadingWorld,
-	ErrorLoadingMap,
-	ErrorLoadingModel,
-	ErrorLoadingObject,
-	ErrorLoadingItem,
-	ErrorLoadingScript
-};
-
-enum{
+enum {
 	ScriptLocationCalcMovePrae,
 	ScriptLocationCalcMovePost,
 	ScriptLocationRenderPrae,
-	ScriptLocationRenderPost1,
-	ScriptLocationRenderPost2,
+	ScriptLocationRenderPost,
 	ScriptLocationGetInputPrae,
 	ScriptLocationGetInputPost,
 	ScriptLocationNetworkSend,
@@ -97,27 +98,22 @@ enum{
 	ScriptLocationWorldDelete,
 	ScriptLocationOnKeyDown,
 	ScriptLocationOnKeyUp,
-	ScriptLocationOnKey,
 	ScriptLocationOnLeftButtonDown,
 	ScriptLocationOnLeftButtonUp,
-	ScriptLocationOnLeftButton,
 	ScriptLocationOnMiddleButtonDown,
 	ScriptLocationOnMiddleButtonUp,
-	ScriptLocationOnMiddleButton,
 	ScriptLocationOnRightButtonDown,
 	ScriptLocationOnRightButtonUp,
-	ScriptLocationOnRightButton,
 };
 
 
 
-class XContainer : public hui::EventHandler
-{
+class XContainer : public hui::EventHandler {
 public:
 	virtual ~XContainer(){}
-	virtual void _cdecl OnIterate(float dt){}
-	virtual void _cdecl OnInit(){}
-	virtual void _cdecl OnDelete(){}
+	virtual void _cdecl on_iterate(float dt){}
+	virtual void _cdecl on_init(){}
+	virtual void _cdecl on_delete(){}
 };
 
 

@@ -72,7 +72,7 @@ Font *_cdecl LoadFont(const string &filename)
 			return ff;
 	File *f = FileOpenText(FontDir + filename + ".xfont");
 	if (!f)
-		return Engine.DefaultFont;
+		return engine.default_font;
 	int ffv=f->ReadFileFormatVersion();
 	if (ffv==2){
 		Font *font = new Font;

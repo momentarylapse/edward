@@ -11,15 +11,13 @@
 #include "../../Action.h"
 #include "../../../Data/World/DataWorld.h"
 
-class ActionWorldTerrainBrushExtrude : public Action
-{
+class ActionWorldTerrainBrushExtrude : public Action {
 public:
 	ActionWorldTerrainBrushExtrude(int _index, const vector &pos, float radius, float depth);
-	virtual ~ActionWorldTerrainBrushExtrude();
 	string name(){	return "WorldTerrainBrushExtrude";	}
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	vector pos;

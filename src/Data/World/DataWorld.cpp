@@ -10,7 +10,6 @@
 #include "../../Edward.h"
 #include "../../Storage/Storage.h"
 #include "../../x/object.h"
-#include "../../x/model_manager.h"
 #include "../../x/terrain.h"
 #include "../../x/world.h"
 #include "../../meta.h"
@@ -20,6 +19,7 @@
 #include "../../Action/World/ActionWorldDeleteSelection.h"
 #include "../../lib/nix/nix.h"
 #include "../../MultiView/MultiView.h"
+#include "../../x/ModelManager.h"
 
 
 void WorldObject::update_data() {
@@ -27,7 +27,7 @@ void WorldObject::update_data() {
 		return;
 	object->pos = pos;
 	object->ang = quaternion::rotation_v(ang);
-	object->UpdateMatrix();
+	object->update_matrix();
 }
 
 bool WorldTerrain::load(const vector &_pos, const string &_filename, bool deep) {
@@ -35,11 +35,11 @@ bool WorldTerrain::load(const vector &_pos, const string &_filename, bool deep) 
 	is_selected = false;
 	is_special = false;
 
-	filename = _filename.substr(MapDir.num, -1);
+	filename = _filename.substr(engine.map_dir.num, -1);
 	filename.resize(filename.num - 4);
 
 	terrain = new Terrain();
-	bool Error = !terrain->Load(filename, _pos, deep);
+	bool Error = !terrain->load(filename, _pos, deep);
 
 	if (Error) {
 		delete(terrain);
@@ -50,7 +50,7 @@ bool WorldTerrain::load(const vector &_pos, const string &_filename, bool deep) 
 }
 
 bool WorldTerrain::save(const string &_filename) {
-	filename = _filename.substr(MapDir.num, -1);
+	filename = _filename.substr(engine.map_dir.num, -1);
 	filename.resize(filename.num - 4);
 
 
@@ -179,8 +179,8 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 
 	for (WorldObject &o: Objects)
 		if (o.object){
-			vector min2 = o.pos - vector(1,1,1) * o.object->radius;
-			vector max2 = o.pos + vector(1,1,1) * o.object->radius;
+			vector min2 = o.pos - vector(1,1,1) * o.object->prop.radius;
+			vector max2 = o.pos + vector(1,1,1) * o.object->prop.radius;
 			if (!found_any){
 				min = min2;
 				max = max2;

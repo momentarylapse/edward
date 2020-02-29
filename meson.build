@@ -413,7 +413,7 @@ sources = [
 	'src/x/font.cpp',
 	'src/x/material.cpp',
 	'src/x/model.cpp',
-	'src/x/model_manager.cpp',
+	'src/x/ModelManager.cpp',
 	'src/x/object.cpp',
 	'src/x/terrain.cpp',
 	'src/x/world.cpp',

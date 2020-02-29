@@ -24,10 +24,10 @@
 #include "x/world.h"
 #include "x/camera.h"
 #include "meta.h"
-#include "x/model_manager.h"
 #include "x/font.h"
 #include "lib/kaba/kaba.h"
 #include "lib/nix/nix.h"
+#include "x/ModelManager.h"
 
 Edward *ed = NULL;
 EdwardApp *app = NULL;
@@ -168,7 +168,7 @@ Edward::Edward(Array<string> arg) :
 	nix::Init();
 	drawing_helper_init();
 
-	MetaInit();
+	MaterialInit();
 	CameraInit();
 	GodInit();
 
@@ -468,7 +468,7 @@ void Edward::on_execute_plugin() {
 
 void Edward::on_draw_gl() {
 	auto e = hui::GetEvent();
-	nix::SetViewport(e->column, e->row);
+	nix::SetViewport(rect(0, e->column, 0, e->row));
 
 	if (cur_mode->multi_view)
 		cur_mode->multi_view->on_draw();

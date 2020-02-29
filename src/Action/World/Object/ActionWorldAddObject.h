@@ -11,15 +11,13 @@
 #include "../../Action.h"
 #include "../../../lib/math/math.h"
 
-class ActionWorldAddObject : public Action
-{
+class ActionWorldAddObject : public Action {
 public:
 	ActionWorldAddObject(const string &_filename, const vector &_pos, const vector &_ang = v_0);
-	virtual ~ActionWorldAddObject();
 	string name(){	return "WorldAddObject";	}
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	string filename;

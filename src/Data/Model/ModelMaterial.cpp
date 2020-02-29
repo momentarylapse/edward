@@ -87,10 +87,10 @@ void ModelMaterial::makeConsistent()
 {
 	material = LoadMaterial(filename);
 
-	if (material->reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC){
-		if (!material->cube_map)
-			material->cube_map = new nix::CubeMap(material->cube_map_size);
-		create_fake_dynamic_cube_map(material->cube_map);
+	if (material->reflection.mode == REFLECTION_CUBE_MAP_DYNAMIC){
+	//	if (!material->cube_map)
+	//		material->cube_map = new nix::CubeMap(material->cube_map_size);
+	//	create_fake_dynamic_cube_map(material->cube_map);
 	}
 
 	checkTextures();
@@ -103,11 +103,11 @@ void ModelMaterial::checkTransparency()
 	if (alpha.mode == TRANSPARENCY_DEFAULT)
 		alpha.user = false;
 	if (!alpha.user){
-		alpha.mode = material->transparency_mode;
-		alpha.source = material->alpha_source;
-		alpha.destination = material->alpha_destination;
-		alpha.factor	= material->alpha_factor;
-		alpha.zbuffer = material->alpha_z_buffer;
+		alpha.mode = material->alpha.mode;
+		alpha.source = material->alpha.source;
+		alpha.destination = material->alpha.destination;
+		alpha.factor	= material->alpha.factor;
+		alpha.zbuffer = material->alpha.z_buffer;
 	}
 }
 
@@ -179,8 +179,8 @@ void ModelMaterial::applyForRendering()
 	Array<nix::Texture*> tex;
 	for (auto *t: texture_levels)
 		tex.add(t->texture);
-	if (material->cube_map)
-		tex.add(material->cube_map);
+//	if (material->cube_map)
+//		tex.add(material->cube_map);
 	nix::SetTextures(tex);
 }
 

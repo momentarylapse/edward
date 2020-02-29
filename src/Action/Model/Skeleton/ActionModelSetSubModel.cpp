@@ -7,14 +7,15 @@
 
 #include "ActionModelSetSubModel.h"
 #include "../../../Data/Model/DataModel.h"
-#include "../../../x/model_manager.h"
 #include <assert.h>
+
+#include "../../../x/ModelManager.h"
 
 ActionModelSetSubModel::ActionModelSetSubModel(int _index, const string& _filename)
 {
 	index = _index;
 	filename = _filename;
-	model = LoadModel(filename);
+	model = ModelManager::load(filename);
 }
 
 ActionModelSetSubModel::~ActionModelSetSubModel()

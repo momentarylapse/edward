@@ -7,11 +7,11 @@
 
 #include "FormatWorld.h"
 #include "../../Edward.h"
-#include "../../x/model_manager.h"
 #include "../../x/model.h"
 #include "../../x/object.h"
 #include "../../x/world.h"
 #include "../../meta.h"
+#include "../../x/ModelManager.h"
 
 FormatWorld::FormatWorld() : TypedFormat<DataWorld>(FD_WORLD, "world", _("World"), Flag::CANONICAL_READ_WRITE) {
 }
@@ -141,13 +141,13 @@ void FormatWorld::_load(const string &filename, DataWorld *data, bool deep) {
 	if (deep){
 		for (int i=0;i<data->Terrains.num;i++){
 			ed->progress->set(_("Terrains"), (float)i / (float)data->Terrains.num / 2.0f);
-			data->Terrains[i].load(data->Terrains[i].pos, MapDir + data->Terrains[i].filename + ".map", true);
+			data->Terrains[i].load(data->Terrains[i].pos, engine.map_dir + data->Terrains[i].filename + ".map", true);
 		}
 		for (int i=0;i<data->Objects.num;i++){
 			//ed->progress->set(format(_("Object %d / %d"), i, data->Objects.num), (float)i / (float)data->Objects.num / 2.0f + 0.5f);
-			data->Objects[i].object = (Object*)LoadModel(data->Objects[i].filename);
+			data->Objects[i].object = (Object*)ModelManager::load(data->Objects[i].filename);
 			data->Objects[i].object->pos = data->Objects[i].pos;
-			data->Objects[i].object->ang = quaternion::rotation_v(data->Objects[i].ang);
+			data->Objects[i].object->ang = quaternion::rotation(data->Objects[i].ang);
 //			if (Objects[i].object)
 //				GodRegisterModel(Objects[i].object);
 		}

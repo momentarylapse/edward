@@ -8,16 +8,11 @@
 #include "ActionWorldTerrainBrushExtrude.h"
 #include "../../../x/terrain.h"
 
-ActionWorldTerrainBrushExtrude::ActionWorldTerrainBrushExtrude(int _index, const vector &_pos, float _radius, float _depth)
-{
+ActionWorldTerrainBrushExtrude::ActionWorldTerrainBrushExtrude(int _index, const vector &_pos, float _radius, float _depth) {
 	index = _index;
 	pos = _pos;
 	radius = _radius;
 	depth = _depth;
-}
-
-ActionWorldTerrainBrushExtrude::~ActionWorldTerrainBrushExtrude()
-{
 }
 
 void* ActionWorldTerrainBrushExtrude::execute(Data* d)
@@ -36,7 +31,7 @@ void* ActionWorldTerrainBrushExtrude::execute(Data* d)
 			//t->vertex[i].y =  t->pos.y + t->height[i];
 		}
 	}
-	t->Update(-1, -1, -1, -1, -1);
+	t->update(-1, -1, -1, -1, -1);
 
 	return NULL;
 }
@@ -48,5 +43,5 @@ void ActionWorldTerrainBrushExtrude::undo(Data* d)
 
 	foreachi(int vi, v_index, ii)
 		t->height[vi] = old_height[ii];
-	t->Update(-1, -1, -1, -1, -1);
+	t->update(-1, -1, -1, -1, -1);
 }

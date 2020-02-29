@@ -11,7 +11,7 @@
 #include "../../Data/Model/ModelPolygon.h"
 #include "../../Mode/Model/ModeModel.h"
 #include "../../Edward.h"
-#include "../../x/model_manager.h"
+#include "../../x/ModelManager.h"
 
 FormatModel::FormatModel() : TypedFormat<DataModel>(FD_MODEL, "model", _("Model"), Flag::CANONICAL_READ_WRITE) {
 }
@@ -182,7 +182,7 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 			b.pos += data->bone[b.parent].pos;
 		b.model_file = f->read_str();
 		if (deep)
-			b.model = LoadModel(b.model_file);
+			b.model = ModelManager::load(b.model_file);
 		b.const_pos = false;
 		b.is_selected = b.m_old = false;
 	}
@@ -512,8 +512,12 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 		if (b.parent >= 0)
 			b.pos += data->bone[b.parent].pos;
 		b.model_file = f->read_str();
-		if (deep)
-			b.model = LoadModel(b.model_file);
+		try{
+			if (deep)
+			b.model = ModelManager::load(b.model_file);
+		} catch(Exception &e) {
+			msg_error(e.message());
+		}
 		b.const_pos = false;
 		b.is_selected = b.m_old = false;
 	}

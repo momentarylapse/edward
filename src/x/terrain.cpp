@@ -8,13 +8,14 @@
 \*----------------------------------------------------------------------------*/
 
 #include "terrain.h"
+//#include "../lib/vulkan/vulkan.h"
 #include "../lib/nix/nix.h"
 #include "material.h"
 #include "world.h"
 #include "camera.h"
 #ifdef _X_ALLOW_X_
 #include "../meta.h"
-#include "../fx/light.h"
+//#include "../fx/light.h"
 #endif
 
 #define Index(x,z)		((x)*(num_z+1)+(z))
@@ -33,17 +34,19 @@ void Terrain::reset()
 
 Terrain::Terrain()
 {
-	material = new Material;
+	material = NULL;
+	ubo = nullptr;
+//	dset = nullptr;
 	reset();
 }
 
 Terrain::Terrain(const string &_filename_, const vector &_pos_)
 {
-	material = new Material;
-	Load(_filename_, _pos_);
+	material = NULL;
+	load(_filename_, _pos_);
 }
 
-bool Terrain::Load(const string &_filename_, const vector &_pos_, bool deep)
+bool Terrain::load(const string &_filename_, const vector &_pos_, bool deep)
 {
 	msg_write("loading terrain: " + _filename_);
 	msg_right();
@@ -51,7 +54,7 @@ bool Terrain::Load(const string &_filename_, const vector &_pos_, bool deep)
 	reset();
 
 	filename = _filename_;
-	File *f = FileOpen(MapDir + filename + ".map");
+	File *f = FileOpen(engine.map_dir + filename + ".map");
 	if (f){
 
 		int ffv = f->ReadFileFormatVersion();
@@ -80,15 +83,13 @@ bool Terrain::Load(const string &_filename_, const vector &_pos_, bool deep)
 			// Material
 			material_file = f->read_str();
 			if (deep){
+				material = LoadMaterial(material_file);
 
 				// load textures
-				material->textures.resize(num_textures);
+				if (num_textures > material->textures.num)
+					material->textures.resize(num_textures);
 				for (int i=0;i<num_textures;i++)
 					material->textures[i] = nix::LoadTexture(texture_file[i]);
-
-				// material file
-				Material *material_from_file = LoadMaterial(material_file);
-				material->copy_from(NULL, material_from_file, false);
 
 				// height
 				for (int x=0;x<num_x+1;x++)
@@ -98,7 +99,7 @@ bool Terrain::Load(const string &_filename_, const vector &_pos_, bool deep)
 					for (int z=0;z<num_z/32+1;z++)
 						partition[x][z] = -1;
 
-				vertex_buffer = new nix::OldVertexBuffer(num_textures);
+				vertex_buffer = new nix::VertexBuffer("3f,3f,2f");
 			}
 		}else{
 			msg_error(format("wrong file format: %d (4 expected)",ffv));
@@ -111,27 +112,32 @@ bool Terrain::Load(const string &_filename_, const vector &_pos_, bool deep)
 		// generate normal vectors
 		pos = _pos_;
 		if (deep)
-			Update(-1, -1, -1, -1, TerrainUpdateAll);
+			update(-1, -1, -1, -1, TerrainUpdateAll);
 		// bounding box
 		min = pos;
 		max = pos + vector(pattern.x * num_x, 0, pattern.z * num_z);
 
 		changed = false;
 		force_redraw = true;
-	}else
+	}else{
 		error = true;
+	}
 	msg_left();
 	return !error;
 }
 
-Terrain::~Terrain()
-{
-	delete(vertex_buffer);
-	delete(material);
+Terrain::~Terrain() {
+#if HAS_LIB_VULKAN
+	if (dset)
+		delete dset;
+	delete ubo;
+#endif
+	delete vertex_buffer;
+	delete material;
 }
 
 // die Normalen-Vektoren in einem bestimmten Abschnitt der Karte neu berechnen
-void Terrain::Update(int x1,int x2,int z1,int z2,int mode)
+void Terrain::update(int x1,int x2,int z1,int z2,int mode)
 {
 	if (x1<0)		x1=0;
 	if (x2<0)		x2=num_x;
@@ -215,21 +221,18 @@ float Terrain::gimme_height(const vector &p) // liefert die interpolierte Hoehe 
 	return he+pos.y;
 }
 
-float Terrain::gimme_height_n(const vector &p, vector &n)
-{
-	float he=gimme_height(p);
-	vector vdx=vector(pattern.x, dhx,0            );
-	vector vdz=vector(0        ,-dhz,pattern.z);
-	n=vector::cross(vdz,vdx);
-	n.normalize();
+float Terrain::gimme_height_n(const vector &p, vector &n) {
+	float he = gimme_height(p);
+	vector vdx = vector(pattern.x, dhx,0        );
+	vector vdz = vector(0        ,-dhz,pattern.z);
+	n = vector::cross(vdz, vdx).normalized();
 	return he;
 }
 
 // Daten fuer das Darstellen des Bodens
-void Terrain::CalcDetail()
-{
+void Terrain::calc_detail() {
 	for (int x1=0;x1<(num_x-1)/32+1;x1++)
-		for (int z1=0;z1<(num_z-1)/32+1;z1++){
+		for (int z1=0;z1<(num_z-1)/32+1;z1++) {
 			int lx=(x1*32>num_x-32)?(num_x%32):32;
 			int lz=(z1*32>num_z-32)?(num_z%32):32;
 			int x0=x1*32;
@@ -268,7 +271,7 @@ inline void add_edge(int &num, int e0, int e1)
 
 // for collision detection:
 //    get a part of the terrain
-void Terrain::GetTriangleHull(TriangleHull *h, vector &_pos_, float _radius_)
+void Terrain::get_triangle_hull(TriangleHull *h, vector &_pos_, float _radius_)
 {
 	h->p = &vertex[0];
 	h->index = TempVertexIndex;
@@ -367,7 +370,7 @@ inline bool TracePattern(Terrain *t, const vector &p1,const vector &p2, TraceDat
 	return true;
 }
 
-bool Terrain::Trace(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test)
+bool Terrain::trace(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test)
 {
 	float dmin = range + 1;
 	vector c;
@@ -451,13 +454,154 @@ bool Terrain::Trace(const vector &p1, const vector &p2, const vector &dir, float
 	return false;
 }
 
-void Terrain::Draw()
-{
+void Terrain::build_vertex_buffer() {
+	//Array<vulkan::Vertex1> vertices;
+	Array<vector> p,n;
+	Array<float> uv;
+
+	// number of 32-blocks (including the partially filled ones)
+	int nx = ( num_x - 1 ) / 32 + 1;
+	int nz = ( num_z - 1 ) / 32 + 1;
+	/*nx=num_x/32;
+	nz=num_z/32;*/
+
+	// loop through the 32-blocks
+	for (int x1=0;x1<nx;x1++)
+		for (int z1=0;z1<nz;z1++){
+
+			// block size?    (32 or cut off...)
+			int lx = ( x1 * 32 > num_x - 32 ) ? ( num_x % 32 ) : 32;
+			int lz = ( z1 * 32 > num_z - 32 ) ? ( num_z % 32 ) : 32;
+
+			// start
+			int x0=x1*32;
+			int z0=z1*32;
+			int e=partition[x1][z1];
+			if (e<0)	continue;
+
+			// loop through the squares
+			for (int x=x0;x<=x0+lx-e;x+=e)
+				for (int z=z0;z<=z0+lz-e;z+=e){
+					// x,z "real" pattern indices
+
+					// vertices
+					vector va=vertex[Index(x  ,z  )];
+					vector vb=vertex[Index(x+e,z  )];
+					vector vc=vertex[Index(x  ,z+e)];
+					vector vd=vertex[Index(x+e,z+e)];
+
+					// normal vectors
+					vector na=normal[Index(x  ,z  )];
+					vector nb=normal[Index(x+e,z  )];
+					vector nc=normal[Index(x  ,z+e)];
+					vector nd=normal[Index(x+e,z+e)];
+
+					// left border correction
+					if (x==x0)		if (x1>0){ int p=partition[x1-1][z1];	if (p>0)	if (e<p){
+						int a0=p*int(z/p);
+						if (a0+p<=num_z){
+							float t0=float(z%p)/(float)p;
+							float t1=t0+float(e)/float(p);
+							va=vertex[Index(x,a0)]*(1-t0)+vertex[Index(x,a0+p)]*t0;
+							na=normal[Index(x,a0)]*(1-t0)+normal[Index(x,a0+p)]*t0;
+							vc=vertex[Index(x,a0)]*(1-t1)+vertex[Index(x,a0+p)]*t1;
+							nc=normal[Index(x,a0)]*(1-t1)+normal[Index(x,a0+p)]*t1;
+						}
+					}}
+
+					// right border correction
+					if (x==x0+32-e)	if (x1<nx-1){ int p=partition[x1+1][z1];	if (p>0)	if (e<p){
+						int a0=p*int(z/p);
+						if (a0+p<num_x){
+							float t0=float(z%p)/(float)p;
+							float t1=t0+float(e)/float(p);
+							vb=vertex[Index(x+e,a0)]*(1-t0)+vertex[Index(x+e,a0+p)]*t0;
+							nb=normal[Index(x+e,a0)]*(1-t0)+normal[Index(x+e,a0+p)]*t0;
+							vd=vertex[Index(x+e,a0)]*(1-t1)+vertex[Index(x+e,a0+p)]*t1;
+							nd=normal[Index(x+e,a0)]*(1-t1)+normal[Index(x+e,a0+p)]*t1;
+						}
+					}}
+
+					// bottom border correction
+					if (z==z0)		if (z1>0){ int p=partition[x1][z1-1];	if (p>0)	if (e<p){
+						int a0=p*int(x/p);
+						if (a0+p<=num_x){
+							float t0=float(x%p)/(float)p;
+							float t1=t0+float(e)/float(p);
+							va=vertex[Index(a0,z)]*(1-t0)+vertex[Index(a0+p,z)]*t0;
+							na=normal[Index(a0,z)]*(1-t0)+normal[Index(a0+p,z)]*t0;
+							vb=vertex[Index(a0,z)]*(1-t1)+vertex[Index(a0+p,z)]*t1;
+							nb=normal[Index(a0,z)]*(1-t1)+normal[Index(a0+p,z)]*t1;
+						}
+					}}
+
+					// top border correction
+					if (z==z0+32-e)		if (z1<nz-1){ int p=partition[x1][z1+1];	if (p>0)	if (e<p){
+						int a0=p*int(x/p);
+						if (a0+p<num_z){
+							float t0=float(x%p)/(float)p;
+							float t1=t0+float(e)/float(p);
+							vc=vertex[Index(a0,z+e)]*(1-t0)+vertex[Index(a0+p,z+e)]*t0;
+							nc=normal[Index(a0,z+e)]*(1-t0)+normal[Index(a0+p,z+e)]*t0;
+							vd=vertex[Index(a0,z+e)]*(1-t1)+vertex[Index(a0+p,z+e)]*t1;
+							nd=normal[Index(a0,z+e)]*(1-t1)+normal[Index(a0+p,z+e)]*t1;
+						}
+					}}
+
+					// multitexturing
+					float ta[8],tb[8],tc[8],td[8];
+					for (int i=0;i<material->textures.num;i++){
+						ta[i*2]=(float) x   *texture_scale[i].x,	ta[i*2+1]=(float) z   *texture_scale[i].z;
+						tb[i*2]=(float)(x+e)*texture_scale[i].x,	tb[i*2+1]=(float) z   *texture_scale[i].z;
+						tc[i*2]=(float) x   *texture_scale[i].x,	tc[i*2+1]=(float)(z+e)*texture_scale[i].z;
+						td[i*2]=(float)(x+e)*texture_scale[i].x,	td[i*2+1]=(float)(z+e)*texture_scale[i].z;
+					}
+
+					/*vertices.add({va,na,ta[0],ta[1]});
+					vertices.add({vc,nc,tc[0],tc[1]});
+					vertices.add({vd,nd,td[0],td[1]});
+					vertices.add({va,na,ta[0],ta[1]});
+					vertices.add({vd,nd,td[0],td[1]});
+					vertices.add({vb,nb,tb[0],tb[1]});*/
+					p.add(va);	n.add(na);	uv.add(ta[0]);	uv.add(ta[1]);
+					p.add(vc);	n.add(nc);	uv.add(tc[0]);	uv.add(tc[1]);
+					p.add(vd);	n.add(nd);	uv.add(td[0]);	uv.add(td[1]);
+					p.add(va);	n.add(na);	uv.add(ta[0]);	uv.add(ta[1]);
+					p.add(vd);	n.add(nd);	uv.add(td[0]);	uv.add(td[1]);
+					p.add(vb);	n.add(nb);	uv.add(tb[0]);	uv.add(tb[1]);
+
+#if 0
+					// add to buffer
+					if (material->textures.num==1){
+						vertex_buffer->addTria(va,na,ta[0],ta[1],
+												vc,nc,tc[0],tc[1],
+												vd,nd,td[0],td[1]);
+						vertex_buffer->addTria(va,na,ta[0],ta[1],
+												vd,nd,td[0],td[1],
+												vb,nb,tb[0],tb[1]);
+					}else{
+						vertex_buffer->addTriaM(va,na,ta,
+												vc,nc,tc,
+												vd,nd,td);
+						vertex_buffer->addTriaM(va,na,ta,
+												vd,nd,td,
+												vb,nb,tb);
+					}
+#endif
+				}
+		}
+//	vertex_buffer->build1(vertices);
+	vertex_buffer->update(0, p);
+	vertex_buffer->update(1, n);
+	vertex_buffer->update(2, uv);
+}
+
+void Terrain::draw() {
 	redraw = false;
 	// c d
 	// a b
 	// (acd),(adb)
-	CalcDetail(); // how detailed shall it be?
+	calc_detail(); // how detailed shall it be?
 
 
 	// do we have to recreate the terrain?
@@ -470,127 +614,10 @@ void Terrain::Draw()
 					redraw = true;
 
 	// recreate (in vertex buffer)
-	if (redraw){
-		vertex_buffer->clear();
+	if (redraw)
+		build_vertex_buffer();
 
-		// number of 32-blocks (including the partially filled ones)
-		int nx = ( num_x - 1 ) / 32 + 1;
-		int nz = ( num_z - 1 ) / 32 + 1;
-		/*nx=num_x/32;
-		nz=num_z/32;*/
-
-		// loop through the 32-blocks
-		for (int x1=0;x1<nx;x1++)
-			for (int z1=0;z1<nz;z1++){
-
-				// block size?    (32 or cut off...)
-				int lx = ( x1 * 32 > num_x - 32 ) ? ( num_x % 32 ) : 32;
-				int lz = ( z1 * 32 > num_z - 32 ) ? ( num_z % 32 ) : 32;
-
-				// start
-				int x0=x1*32;
-				int z0=z1*32;
-				int e=partition[x1][z1];
-				if (e<0)	continue;
-
-				// loop through the squares
-				for (int x=x0;x<=x0+lx-e;x+=e)
-					for (int z=z0;z<=z0+lz-e;z+=e){
-						// x,z "real" pattern indices
-
-						// vertices
-						vector va=vertex[Index(x  ,z  )];
-						vector vb=vertex[Index(x+e,z  )];
-						vector vc=vertex[Index(x  ,z+e)];
-						vector vd=vertex[Index(x+e,z+e)];
-
-						// normal vectors
-						vector na=normal[Index(x  ,z  )];
-						vector nb=normal[Index(x+e,z  )];
-						vector nc=normal[Index(x  ,z+e)];
-						vector nd=normal[Index(x+e,z+e)];
-
-						// left border correction
-						if (x==x0)		if (x1>0){ int p=partition[x1-1][z1];	if (p>0)	if (e<p){
-							int a0=p*int(z/p);
-							if (a0+p<=num_z){
-								float t0=float(z%p)/(float)p;
-								float t1=t0+float(e)/float(p);
-								va=vertex[Index(x,a0)]*(1-t0)+vertex[Index(x,a0+p)]*t0;
-								na=normal[Index(x,a0)]*(1-t0)+normal[Index(x,a0+p)]*t0;
-								vc=vertex[Index(x,a0)]*(1-t1)+vertex[Index(x,a0+p)]*t1;
-								nc=normal[Index(x,a0)]*(1-t1)+normal[Index(x,a0+p)]*t1;
-							}
-						}}
-
-						// right border correction
-						if (x==x0+32-e)	if (x1<nx-1){ int p=partition[x1+1][z1];	if (p>0)	if (e<p){
-							int a0=p*int(z/p);
-							if (a0+p<num_x){
-								float t0=float(z%p)/(float)p;
-								float t1=t0+float(e)/float(p);
-								vb=vertex[Index(x+e,a0)]*(1-t0)+vertex[Index(x+e,a0+p)]*t0;
-								nb=normal[Index(x+e,a0)]*(1-t0)+normal[Index(x+e,a0+p)]*t0;
-								vd=vertex[Index(x+e,a0)]*(1-t1)+vertex[Index(x+e,a0+p)]*t1;
-								nd=normal[Index(x+e,a0)]*(1-t1)+normal[Index(x+e,a0+p)]*t1;
-							}
-						}}
-
-						// bottom border correction
-						if (z==z0)		if (z1>0){ int p=partition[x1][z1-1];	if (p>0)	if (e<p){
-							int a0=p*int(x/p);
-							if (a0+p<=num_x){
-								float t0=float(x%p)/(float)p;
-								float t1=t0+float(e)/float(p);
-								va=vertex[Index(a0,z)]*(1-t0)+vertex[Index(a0+p,z)]*t0;
-								na=normal[Index(a0,z)]*(1-t0)+normal[Index(a0+p,z)]*t0;
-								vb=vertex[Index(a0,z)]*(1-t1)+vertex[Index(a0+p,z)]*t1;
-								nb=normal[Index(a0,z)]*(1-t1)+normal[Index(a0+p,z)]*t1;
-							}
-						}}
-
-						// top border correction
-						if (z==z0+32-e)		if (z1<nz-1){ int p=partition[x1][z1+1];	if (p>0)	if (e<p){
-							int a0=p*int(x/p);
-							if (a0+p<num_z){
-								float t0=float(x%p)/(float)p;
-								float t1=t0+float(e)/float(p);
-								vc=vertex[Index(a0,z+e)]*(1-t0)+vertex[Index(a0+p,z+e)]*t0;
-								nc=normal[Index(a0,z+e)]*(1-t0)+normal[Index(a0+p,z+e)]*t0;
-								vd=vertex[Index(a0,z+e)]*(1-t1)+vertex[Index(a0+p,z+e)]*t1;
-								nd=normal[Index(a0,z+e)]*(1-t1)+normal[Index(a0+p,z+e)]*t1;
-							}
-						}}
-
-						// multitexturing
-						float ta[8],tb[8],tc[8],td[8];
-						for (int i=0;i<material->textures.num;i++){
-							ta[i*2]=(float) x   *texture_scale[i].x,	ta[i*2+1]=(float) z   *texture_scale[i].z;
-							tb[i*2]=(float)(x+e)*texture_scale[i].x,	tb[i*2+1]=(float) z   *texture_scale[i].z;
-							tc[i*2]=(float) x   *texture_scale[i].x,	tc[i*2+1]=(float)(z+e)*texture_scale[i].z;
-							td[i*2]=(float)(x+e)*texture_scale[i].x,	td[i*2+1]=(float)(z+e)*texture_scale[i].z;
-						}
-
-						// add to buffer
-						if (material->textures.num==1){
-							vertex_buffer->addTria(va,na,ta[0],ta[1],
-													vc,nc,tc[0],tc[1],
-													vd,nd,td[0],td[1]);
-							vertex_buffer->addTria(va,na,ta[0],ta[1],
-													vd,nd,td[0],td[1],
-													vb,nb,tb[0],tb[1]);
-						}else{
-							vertex_buffer->addTriaM(va,na,ta,
-													vc,nc,tc,
-													vd,nd,td);
-							vertex_buffer->addTriaM(va,na,ta,
-													vd,nd,td,
-													vb,nb,tb);
-						}
-					}
-			}
-	}
-
+#if 0
 #ifdef _X_ALLOW_X_
 	Light::Apply(cur_cam->pos);
 #endif
@@ -600,6 +627,7 @@ void Terrain::Draw()
 	// the actual drawing
 	nix::SetWorldMatrix(matrix::ID);
 	nix::Draw3D(vertex_buffer);
+#endif
 
 	pos_old = cur_cam->pos;
 	force_redraw = false;

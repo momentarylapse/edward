@@ -9,9 +9,9 @@
 \*----------------------------------------------------------------------------*/
 #include "object.h"
 #include "world.h"
+#include "material.h"
 #include "../meta.h"
 #include "../lib/file/file.h"
-
 
 static int num_insane=0;
 
@@ -52,20 +52,20 @@ Object::Object()
 {
 	//msg_right();
 	//msg_write("terrain object");
-	reset();
-	name = "-terrain-";
+	material.add(new Material);
+	script_data.name = "-terrain-";
 	visible = false;
-	mass = 10000.0f;
-	mass_inv = 0;
-	radius = 30000000;
-	theta_0 = matrix3::ID;
-	theta = matrix3::ID;
-	memset(&theta_inv, 0, sizeof(theta_inv));
+	physics_data.mass = 10000.0f;
+	physics_data.mass_inv = 0;
+	prop.radius = 30000000;
+	physics_data.theta_0 = matrix3::ID;
+	physics_data.theta = matrix3::ID;
+	memset(&physics_data.theta_inv, 0, sizeof(physics_data.theta_inv));
 	_matrix = matrix::ID;
 	//theta = theta * 10000000.0f;
-	g_factor = 1;
-	active_physics = false;
-	passive_physics = true;
+	physics_data.g_factor = 1;
+	physics_data.active = false;
+	physics_data.passive = true;
 	rotating = false;
 	frozen = true;
 	time_till_freeze = -1;
@@ -75,11 +75,10 @@ Object::Object()
 	//msg_left();
 }
 
-void Object::AddForce(const vector &f, const vector &rho)
-{
-	if (Engine.Elapsed<=0)
+void Object::add_force(const vector &f, const vector &rho) {
+	if (engine.elapsed<=0)
 		return;
-	if (!active_physics)
+	if (!physics_data.active)
 		return;
 	force_ext += f;
 	torque_ext += vector::cross(rho, f);
@@ -89,48 +88,46 @@ void Object::AddForce(const vector &f, const vector &rho)
 	unfreeze(this);
 }
 
-void Object::AddTorque(const vector &t)
-{
-	if (Engine.Elapsed<=0)
+void Object::add_torque(const vector &t) {
+	if (engine.elapsed <= 0)
 		return;
-	if (!active_physics)
+	if (!physics_data.active)
 		return;
 	torque_ext += t;
 	//TestVectorSanity(Torque,"Torque addt");
 	unfreeze(this);
 }
 
-void Object::MakeVisible(bool _visible_)
-{
+void Object::make_visible(bool _visible_) {
 	if (_visible_ == visible)
 		return;
 	if (_visible_)
-		GodRegisterModel((Model*)this);
+		world.register_model(this);
 	else
-		GodUnregisterModel((Model*)this);
+		world.unregister_model(this);
 	visible = _visible_;
 }
 
-void Object::DoPhysics()
+void Object::do_physics(float dt)
 {
-	if (Engine.Elapsed<=0)
+	if (dt <= 0)
 		return;
 	
 
-	if (_vec_length_fuzzy_(force_int) * mass_inv > AccThreshold)
+	if (_vec_length_fuzzy_(force_int) * physics_data.mass_inv > AccThreshold)
 	{unfreeze(this);}
 
-	if ((active_physics) && (!frozen)){
+	if ((physics_data.active) and (!frozen)){
 
 		if (inf_v(pos))	msg_error("inf   CalcMove Pos  1");
 		if (inf_v(vel))	msg_error("inf   CalcMove Vel  1");
 
 			// linear acceleration
-			acc = force_int * mass_inv;
+			acc = force_int * physics_data.mass_inv;
 
 			// integrate the equations of motion.... "euler method"
-			vel += acc * Engine.Elapsed;
-			pos += vel * Engine.Elapsed;
+			vel += acc * dt;
+			pos += vel * dt;
 
 		if (inf_v(acc))	msg_error("inf   CalcMove Acc");
 		if (inf_v(vel))	msg_error("inf   CalcMove Vel  2");
@@ -139,28 +136,28 @@ void Object::DoPhysics()
 		//}
 
 		// rotation
-		if ((rot != v_0) || (torque_int != v_0)){
+		if ((rot != v_0) or (torque_int != v_0)){
 
 			quaternion q_dot, q_w;
 			q_w = quaternion( 0, rot );
 			q_dot = 0.5f * q_w * ang;
-			ang += q_dot * Engine.Elapsed;
+			ang += q_dot * dt;
 			ang.normalize();
 
 			#ifdef _realistic_calculation_
-				vector L = theta * rot + torque_int * Engine.Elapsed;
-				UpdateTheta();
-				rot = theta_inv * L;
+				vector L = physics_data.theta * rot + torque_int * dt;
+				update_theta();
+				rot = physics_data.theta_inv * L;
 			#else
 				UpdateTheta();
-				rot += theta_inv * torque_int * Engine.Elapsed;
+				rot += theta_inv * torque_int * dt;
 			#endif
 		}
 	}
 
 	// new orientation
-	UpdateMatrix();
-	UpdateTheta();
+	update_matrix();
+	update_theta();
 
 	_ResetPhysAbsolute_();
 
@@ -169,10 +166,10 @@ void Object::DoPhysics()
 
 	// did anything change?
 	moved = false;
-	//if ((Pos!=Pos_old)||(ang!=ang_old))
-	//if ( (vel_surf!=v_0) || (VecLengthFuzzy(Pos-Pos_old)>2.0f*Elapsed) )//||(VecAng!=ang_old))
-	if (active_physics){
-		if ( (vel_surf != v_0) || (_vec_length_fuzzy_(vel) > VelThreshold) || (_vec_length_fuzzy_(rot) * radius > VelThreshold))
+	//if ((Pos!=Pos_old)or(ang!=ang_old))
+	//if ( (vel_surf!=v_0) or (VecLengthFuzzy(Pos-Pos_old)>2.0f*Elapsed) )//or(VecAng!=ang_old))
+	if (physics_data.active){
+		if ( (vel_surf != v_0) or (_vec_length_fuzzy_(vel) > VelThreshold) or (_vec_length_fuzzy_(rot) * prop.radius > VelThreshold))
 			moved = true;
 	}else{
 		frozen = true;
@@ -186,7 +183,7 @@ void Object::DoPhysics()
 		unfreeze(this);
 		on_ground=false;
 	}else if (!frozen){
-		time_till_freeze -= Engine.Elapsed;
+		time_till_freeze -= dt;
 		if (time_till_freeze < 0){
 			frozen = true;
 			force_ext = torque_ext = v_0;
@@ -198,36 +195,31 @@ void Object::DoPhysics()
 
 
 // rotate inertia tensor into world coordinates
-void Object::UpdateTheta()
-{
-	if (active_physics){
-		matrix3 r,r_inv;
-		r = matrix3::rotation_q( ang);
-		r_inv = r.transpose();
-		theta = (r * theta_0 * r_inv);
-		theta_inv = theta.inverse();
+void Object::update_theta() {
+	if (physics_data.active){
+		auto r = matrix3::rotation_q( ang);
+		auto r_inv = r.transpose();
+		physics_data.theta = (r * physics_data.theta_0 * r_inv);
+		physics_data.theta_inv = physics_data.theta.inverse();
 	}else{
 		// Theta and ThetaInv already = identity
-		memset(&theta_inv, 0, sizeof(matrix3));
+		memset(&physics_data.theta_inv, 0, sizeof(matrix3));
 	}
 }
 
-void Object::UpdateMatrix()
-{
-	auto rot = matrix::rotation_q( ang);
-	auto trans = matrix::translation( pos);
+void Object::update_matrix() {
+	auto rot = matrix::rotation_q(ang);
+	auto trans = matrix::translation(pos);
 	_matrix = trans * rot;
 }
 
 // scripts have to call this after 
-void Object::UpdateData()
-{
+void Object::update_data() {
 	unfreeze(this);
-	if (!active_physics){
-		UpdateMatrix();
-		UpdateTheta();
+	if (!physics_data.active){
+		update_matrix();
+		update_theta();
 	}
 
 	// set ode data..
 }
-

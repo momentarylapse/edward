@@ -17,7 +17,6 @@
 #include "../../Edward.h"
 #include "../../Storage/Storage.h"
 #include "../../MultiView/MultiView.h"
-#include "../../x/model_manager.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelAddVertex.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelNearifyVertices.h"
 #include "../../Action/Model/Mesh/Vertex/ActionModelCollapseVertices.h"
@@ -59,6 +58,7 @@
 #include "../../Action/Model/Skeleton/ActionModelDeleteBoneSelection.h"
 #include "../../Action/Model/Skeleton/ActionModelReconnectBone.h"
 #include "../../Action/Model/Skeleton/ActionModelSetSubModel.h"
+#include "../../x/ModelManager.h"
 
 const string DataModel::MESSAGE_SKIN_CHANGE = "SkinChange";
 const string DataModel::MESSAGE_MATERIAL_CHANGE = "MaterialChange";

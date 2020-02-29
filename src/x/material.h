@@ -7,54 +7,53 @@
 #define MATERIAL_MAX_TEXTURES		8
 
 class Model;
-namespace nix{
+namespace nix {
 	class Texture;
-	class CubeMap;
+	//class CubeMap;
 	class Shader;
-};
+}
 
 
 // visual and physical properties
-class Material
-{
+class Material {
 public:
 	// name of the material
 	string name;
 
-	// textures
 	Array<nix::Texture*> textures;
+	nix::Shader *shader;
 
 	// light
 	color ambient, diffuse, specular, emission;
 	float shininess;
 
-	// transparency
-	int transparency_mode;
-	int alpha_source, alpha_destination;
-	float alpha_factor;
-	bool alpha_z_buffer;
+	struct Transparency {
+		int mode;
+		int source, destination;
+		float factor;
+		bool z_buffer;
+	} alpha;
 
-	// reflection
-	int reflection_mode;
-	float reflection_density;
-	nix::CubeMap *cube_map;
-	int cube_map_size;
+	struct Reflection {
+		int mode;
+		float density;
+		//CubeMap *cube_map;
+		nix::Texture *cube_map;
+		int cube_map_size;
+	} reflection;
 
-	// shader
-	nix::Shader *shader;
-
-	// friction
-	float rc_jump, rc_static, rc_sliding, rc_rolling;
+	struct Friction {
+		float jump, _static, sliding, rolling;
+	} friction;
 
 	Material();
 	~Material();
-	void apply();
-	void copy_from(Model *model, Material *m, bool user_colors);
+	Material *copy();
 };
 
 
 // types of transparency
-enum{
+enum {
 	TRANSPARENCY_NONE,
 	TRANSPARENCY_FUNCTIONS,
 	TRANSPARENCY_COLOR_KEY_HARD,
@@ -64,8 +63,7 @@ enum{
 };
 
 // types of reflection
-enum
-{
+enum {
 	REFLECTION_NONE,
 	REFLECTION_METAL,
 	REFLECTION_MIRROR,

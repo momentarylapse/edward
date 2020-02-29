@@ -195,7 +195,7 @@ void Storage::set_root_directory(const string &_directory, bool compact_mode) {
 		dialog_dir[i] = root_dir_kind[i];
 	}
 
-	MetaSetDirs(root_dir_kind[FD_TEXTURE],
+	engine.set_dirs(root_dir_kind[FD_TEXTURE],
 			root_dir_kind[FD_WORLD],
 			root_dir_kind[FD_MODEL],
 			root_dir_kind[FD_SOUND],

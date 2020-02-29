@@ -67,7 +67,7 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 
 	selection_mode = NULL;
 	current_material = 0;
-	current_skin = SKIN_HIGH;
+	current_skin = MESH_HIGH;
 
 	// vertex buffers
 	vb_marked = new nix::VertexBuffer(vb_format(1));
@@ -247,9 +247,9 @@ void ModeModelMesh::on_command(const string & id) {
 		edit_effects();
 
 	if (id == "detail_physical")
-		set_current_skin(SKIN_PHYSICAL);
+		set_current_skin(MESH_PHYSICAL);
 	if (id == "detail_high")
-		set_current_skin(SKIN_HIGH);
+		set_current_skin(MESH_HIGH);
 }
 
 
@@ -269,7 +269,7 @@ void ModeModelMesh::on_draw_win(MultiView::Window *win) {
 
 	mode_model_skeleton->draw_skeleton(win, data->bone, true);
 
-	if (current_skin == SKIN_PHYSICAL)
+	if (current_skin == MESH_PHYSICAL)
 		draw_physical(win);
 
 	draw_selection(win);
@@ -339,10 +339,10 @@ void ModeModelMesh::on_update_menu() {
 	ed->check("mirror", mouse_action == MultiView::ACTION_MIRROR);
 	ed->check("lock_action", lock_action);
 
-	ed->check("detail_physical", current_skin == SKIN_PHYSICAL);
-	ed->check("detail_high", current_skin == SKIN_HIGH);
-	ed->check("detail_2", current_skin == SKIN_MEDIUM);
-	ed->check("detail_3", current_skin == SKIN_LOW);
+	ed->check("detail_physical", current_skin == MESH_PHYSICAL);
+	ed->check("detail_high", current_skin == MESH_HIGH);
+	ed->check("detail_2", current_skin == MESH_MEDIUM);
+	ed->check("detail_3", current_skin == MESH_LOW);
 }
 
 bool ModeModelMesh::optimize_view() {
@@ -522,7 +522,7 @@ void ModeModelMesh::set_current_skin(int index) {
 		return;
 
 	data->edit_mesh = data->mesh;
-	if (index == SKIN_PHYSICAL) {
+	if (index == MESH_PHYSICAL) {
 		data->edit_mesh = data->phys_mesh;
 		data->phys_mesh->set_show_vertices(data->phys_mesh->vertex);
 	}

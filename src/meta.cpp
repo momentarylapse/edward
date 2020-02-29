@@ -24,21 +24,26 @@
 \*----------------------------------------------------------------------------*/
 #include "lib/file/file.h"
 #include "meta.h"
+//#include "lib/vulkan/vulkan.h"
 #include "lib/nix/nix.h"
 #include "lib/kaba/kaba.h"
 #ifdef _X_ALLOW_X_
 #include "world/model.h"
+#if 0
 #include "world/model_manager.h"
+#endif
 #include "world/material.h"
 #include "world/world.h"
 #include "world/camera.h"
+#if 0
 #include "gui/gui.h"
 #include "gui/font.h"
 #include "fx/fx.h"
+#endif
 #else // for use in Edward
 #include "x/material.h"
 #include "x/model.h"
-#include "x/model_manager.h"
+#include "x/ModelManager.h"
 #include "x/font.h"
 #endif
 
@@ -47,98 +52,100 @@
 
 // game configuration
 
-EngineData Engine;
+EngineData engine;
 
 
-Array<XContainer*> MetaDeleteStuffList;
+Array<XContainer*> meta_delete_stuff_list;
 
 bool AllowXContainer = true;
 
 
 
-// game data
-string MapDir, ScriptDir;
 
+EngineData::EngineData() {
+	default_font = NULL;
 
-void MetaInit()
-{
-	Engine.DefaultFont = NULL;
+	ZBufferEnabled = true;
+	CullingEnabled = false;
+	SortingEnabled = false;
+	console_enabled = false;
+	show_timings = false;
+	debug = false;
 
-	Engine.ZBufferEnabled = true;
-	Engine.CullingEnabled = false;
-	Engine.SortingEnabled = false;
-	Engine.ConsoleEnabled = false;
-	Engine.ResettingGame = false;
+	shadow_light = 0;
+	shadow_lower_detail = false;
+	shadow_color = color(0.5f, 0, 0, 0);
+	shadow_level = 0;
 
-	Engine.FpsMax = 60;
-	Engine.FpsMin = 10;
+	fps_max = 60;
+	fps_min = 15;
 
-	Engine.DetailLevel = 100;
-	Engine.DetailFactorInv = 1.0f;
-	Engine.MirrorLevelMax = 1;
-	
-	Engine.TimeScale = 1.0f;
-	Engine.FileErrorsAreCritical = false;
+	detail_level = 100;
+	detail_factor_inv = 1.0f;
+	mirror_level_max = 1;
+	multisampling = 1;
 
-	Engine.FirstFrame = false;
-	Engine.GameRunning = false;
+	wire_mode = false;
+	physics_enabled = false;
+	collisions_enabled = false;
+	elapsed = elapsed_rt = 0;
 
-	ModelManagerReset();
-	MaterialInit();
+	time_scale = 1.0f;
+	file_errors_are_critical = false;
+
+	num_real_col_tests = 0;
+	resetting_game = false;
+	first_frame = false;
+	game_running = false;
 }
 
-void MetaEnd()
-{
-	MetaReset();
-	MaterialEnd();
-}
 
-void MetaReset()
-{
-	MetaDeleteStuffList.clear();
+void MetaReset() {
+	meta_delete_stuff_list.clear();
 
-	ModelToIgnore = NULL;
+#if 0
 	if (Gui::Fonts.num > 0)
 		Engine.DefaultFont = Gui::Fonts[0];
-	Engine.ShadowLight = 0;
-	Engine.ShadowLowerDetail = false;
-	Engine.ShadowColor = color(0.5f, 0, 0, 0);
-
-	ModelManagerReset();
-	MaterialReset();
+#endif
+	engine.shadow_light = 0;
+	engine.shadow_lower_detail = false;
+	engine.shadow_color = color(0.5f, 0, 0, 0);
 }
 
-void MetaSetDirs(const string &texture_dir, const string &map_dir, const string &object_dir, const string &sound_dir, const string &script_dir, const string &material_dir, const string &font_dir)
-{
+void EngineData::set_dirs(const string &texture_dir, const string &_map_dir, const string &_object_dir, const string &_sound_dir, const string &_script_dir, const string &material_dir, const string &font_dir) {
+#if LIB_HAS_VULKAN
+	vulkan::Texture::directory = texture_dir;
+	vulkan::Shader::directory = material_dir;
+#endif
 	nix::texture_dir = texture_dir;
 	nix::shader_dir = material_dir;
-	MapDir = map_dir;
-	ObjectDir = object_dir;
-	SoundDir = sound_dir;
-	ScriptDir = script_dir;
+
+	map_dir = _map_dir;
+	object_dir = _object_dir;
+	sound_dir = _sound_dir;
+	script_dir = _script_dir;
 	MaterialDir = material_dir;
+#if 0
 	Gui::FontDir = font_dir;
+#endif
 	Kaba::config.directory = script_dir;
 }
 
-void MetaCalcMove()
-{
+void MetaCalcMove() {
 /*	for (int i=0;i<NumTextures;i++)
 		NixTextureVideoMove(Texture[i],Elapsed);*/
-	 msg_todo("MetaCalcMove...");
+	msg_todo("MetaCalcMove...");
 	
-	Engine.DetailFactorInv = 100.0f/(float)Engine.DetailLevel;
+	engine.detail_factor_inv = 100.0f/(float)engine.detail_level;
 }
 
 
-void MetaDeleteLater(XContainer *p)
-{
-	MetaDeleteStuffList.add(p);
+void MetaDeleteLater(XContainer *p) {
+	meta_delete_stuff_list.add(p);
 }
 
-void MetaDeleteSelection()
-{
-	for (int i=0;i<MetaDeleteStuffList.num;i++)
-		delete(MetaDeleteStuffList[i]);
-	MetaDeleteStuffList.clear();
+void MetaDeleteSelection() {
+	for (auto *p: meta_delete_stuff_list)
+		delete p;
+	meta_delete_stuff_list.clear();
 }

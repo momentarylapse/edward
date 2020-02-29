@@ -55,7 +55,6 @@ MultiView::MultiView(bool mode3d) {
 	grid_enabled = true;
 	wire_mode = false;
 	snap_to_grid = false;
-	light = -1;
 	light_enabled = false;
 	whole_window = true;
 	this->mode3d = mode3d;
@@ -79,12 +78,13 @@ MultiView::MultiView(bool mode3d) {
 
 	allow_infinite_scrolling = hui::Config.get_bool("MultiView.InfiniteScrolling", false);
 
+	ubo_light = new nix::UniformBuffer();
+
 	if (mode3d) {
 		win.add(new Window(this, VIEW_BACK));
 		win.add(new Window(this, VIEW_LEFT));
 		win.add(new Window(this, VIEW_TOP));
 		win.add(new Window(this, VIEW_PERSPECTIVE));
-		light = 0;
 
 		// Menu
 		menu = new hui::Menu;
@@ -101,7 +101,6 @@ MultiView::MultiView(bool mode3d) {
 		menu->add(_("Perspective"), "view_perspective");
 	} else {
 		win.add(new Window(this, VIEW_2D));
-		light = -1;
 	}
 	action_con = new ActionController(this);
 	cam_con = new CameraController(this);
@@ -1137,6 +1136,16 @@ void MultiView::reset_message_3d() {
 	message3d.clear();
 }
 
+void MultiView::set_light(const vector &dir, const color &col, float harshness) {
+	nix::SimpleDirectionalLight l;
+	l.dir = dir;
+	l.col = col;
+	l.radius = -1;
+	l.harshness =harshness;
+	ubo_light->update(&l, sizeof(l));
+	nix::BindUniform(ubo_light, 0);
+}
 
+}
+;
 
-};

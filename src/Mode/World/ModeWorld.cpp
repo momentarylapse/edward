@@ -415,16 +415,16 @@ float WorldObject::hover_distance(MultiView::Window *win, const vector &mv, vect
 	int d = o->_detail_;
 	if ((d<0)or(d>2))
 		return -1;
-	for (int i=0;i<o->skin[d]->vertex.num;i++) {
-		tmv[i] = o->_matrix * o->skin[d]->vertex[i];
+	for (int i=0;i<o->mesh[d]->vertex.num;i++) {
+		tmv[i] = o->_matrix * o->mesh[d]->vertex[i];
 		pmv[i] = win->project(tmv[i]);
 	}
 	float z_min=1;
 	for (int mm=0;mm<o->material.num;mm++)
-	for (int i=0;i<o->skin[d]->sub[mm].num_triangles;i++) {
-		vector a=pmv[o->skin[d]->sub[mm].triangle_index[i*3  ]];
-		vector b=pmv[o->skin[d]->sub[mm].triangle_index[i*3+1]];
-		vector c=pmv[o->skin[d]->sub[mm].triangle_index[i*3+2]];
+	for (int i=0;i<o->mesh[d]->sub[mm].num_triangles;i++) {
+		vector a=pmv[o->mesh[d]->sub[mm].triangle_index[i*3  ]];
+		vector b=pmv[o->mesh[d]->sub[mm].triangle_index[i*3+1]];
+		vector c=pmv[o->mesh[d]->sub[mm].triangle_index[i*3+2]];
 		if ((a.z<=0)or(b.z<=0)or(c.z<=0)or(a.z>=1)or(b.z>=1)or(c.z>=1))
 			continue;
 		float f,g;
@@ -435,9 +435,9 @@ float WorldObject::hover_distance(MultiView::Window *win, const vector &mv, vect
 			float z=az + f*(bz-az) + g*(cz-az);
 			if (z<z_min) {
 				z_min=z;
-				tp=tmv[o->skin[d]->sub[mm].triangle_index[i*3  ]]
-					+ f*(tmv[o->skin[d]->sub[mm].triangle_index[i*3+1]]-tmv[o->skin[d]->sub[mm].triangle_index[i*3  ]])
-					+ g*(tmv[o->skin[d]->sub[mm].triangle_index[i*3+2]]-tmv[o->skin[d]->sub[mm].triangle_index[i*3  ]]);
+				tp=tmv[o->mesh[d]->sub[mm].triangle_index[i*3  ]]
+					+ f*(tmv[o->mesh[d]->sub[mm].triangle_index[i*3+1]]-tmv[o->mesh[d]->sub[mm].triangle_index[i*3  ]])
+					+ g*(tmv[o->mesh[d]->sub[mm].triangle_index[i*3+2]]-tmv[o->mesh[d]->sub[mm].triangle_index[i*3  ]]);
 			}
 		}
 	}
@@ -453,18 +453,18 @@ bool WorldObject::in_rect(MultiView::Window *win, const rect &r) {
 	if ((d<0)or(d>2))
 		return false;
 	vector min, max;
-	for (int i=0;i<m->skin[d]->vertex.num;i++) {
-		tmv[i] = m->_matrix * m->skin[d]->vertex[i];
+	for (int i=0;i<m->mesh[d]->vertex.num;i++) {
+		tmv[i] = m->_matrix * m->mesh[d]->vertex[i];
 		pmv[i] = win->project(tmv[i]);
 		if (r.inside(pmv[i].x, pmv[i].y))
 			return true;
 	}
 	return false;
 	for (int mm=0;mm<m->material.num;mm++)
-	for (int i=0;i<m->skin[d]->sub[mm].num_triangles;i++) {
-		vector a=pmv[m->skin[d]->sub[mm].triangle_index[i*3  ]];
-		vector b=pmv[m->skin[d]->sub[mm].triangle_index[i*3+1]];
-		vector c=pmv[m->skin[d]->sub[mm].triangle_index[i*3+2]];
+	for (int i=0;i<m->mesh[d]->sub[mm].num_triangles;i++) {
+		vector a=pmv[m->mesh[d]->sub[mm].triangle_index[i*3  ]];
+		vector b=pmv[m->mesh[d]->sub[mm].triangle_index[i*3+1]];
+		vector c=pmv[m->mesh[d]->sub[mm].triangle_index[i*3+2]];
 		if ((a.z<=0)or(b.z<=0)or(c.z<=0)or(a.z>=1)or(b.z>=1)or(c.z>=1))
 			continue;
 		if (i==0)
@@ -492,7 +492,7 @@ float WorldTerrain::hover_distance(MultiView::Window *win, const vector &mv, vec
 	vector a = win->unproject(mv);
 	vector b = win->unproject(mv, win->cam->pos + win->get_direction() * r);
 	TraceData td;
-	bool hit = t->Trace(a, b, v_0, r, td, false);
+	bool hit = t->trace(a, b, v_0, r, td, false);
 	tp = td.point;
 	z = win->project(tp).z;
 	return hit ? 0 : -1;
@@ -580,40 +580,29 @@ void DrawSelectionObject(Model *o, float alpha, const color &c) {
 	int d = o->_detail_;
 	if ((d<0) or (d>3))
 		return;
+	nix::SetWorldMatrix(o->_matrix);
+	nix::SetAlpha(ALPHA_MATERIAL);
 	for (int i=0;i<o->material.num;i++) {
 		Array<nix::Texture*> tex;
-		for (int j=0; j<o->material[i].textures.num; j++)
+		for (int j=0; j<o->material[i]->textures.num; j++)
 			tex.add(NULL);
 		nix::SetTextures(tex);
-		nix::SetAlpha(ALPHA_MATERIAL);
 		nix::SetMaterial(Black, color(alpha, 0, 0, 0), Black, 0, c);
-		o->JustDraw(i, d);
+		//o->just_draw(i, d);
+		nix::DrawTriangles(o->mesh[0]->sub[i].vertex_buffer);
 	}
+	nix::SetAlpha(ALPHA_NONE);
 }
 
 void DrawTerrainColored(Terrain *t, const color &c, float alpha) {
 	nix::SetAlpha(ALPHA_MATERIAL);
 
-	// save terrain data
-	Material *temp = t->material;
+	nix::SetMaterial(Black, color(alpha, 0, 0, 0), Black, 0, c);
 
-	// alter data
-	Material *m = &mode_world->temp_material;
-	m->ambient = Black;
-	m->diffuse = color(alpha, 0, 0, 0);
-	m->specular = Black;
-	m->emission = c;
-	m->shader = NULL;
-	m->textures.resize(t->material->textures.num);
-	for (int i=0;i<t->material->textures.num;i++)
-		m->textures[i] = NULL;
+	nix::SetWorldMatrix(matrix::ID);
+	t->draw();
+	nix::DrawTriangles(t->vertex_buffer);
 
-	t->material = m;
-
-	t->Draw();
-
-	// restore data
-	t->material = temp;
 
 	nix::SetAlpha(ALPHA_NONE);
 }
@@ -626,9 +615,8 @@ void apply_lighting(DataWorld *w) {
 	nix::EnableFog(m.FogEnabled);
 	for (auto &ll: w->lights)
 		if (ll.mode == LightMode::DIRECTIONAL) {
-			nix::SetLightDirectional(ed->multi_view_3d->light, -ll.ang.ang2dir(), ll.col, ll.harshness);
-			nix::EnableLight(ed->multi_view_3d->light, ll.enabled);
-			//nix::SetAmbientLight(ll.ambient());
+			// FIXME: should point ALONG light rays!
+			ed->multi_view_3d->set_light(-ll.ang.ang2dir(), ll.col, ll.harshness);
 		}
 }
 
@@ -652,13 +640,20 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 
 // terrain
 	nix::SetWire(multi_view->wire_mode);
+	nix::SetShader(nix::default_shader_3d);
 	foreachi(WorldTerrain &t, data->Terrains, i) {
 		if (!t.terrain)
 			continue;
 		if (t.view_stage < multi_view->view_stage)
 			continue;
 
-		t.terrain->Draw();
+		// prepare...
+		t.terrain->draw();
+
+		auto mat = t.terrain->material;
+		nix::SetMaterial(mat->ambient, mat->diffuse, mat->specular, mat->shininess, mat->emission);
+		nix::SetTextures(mat->textures);
+		nix::DrawTriangles(t.terrain->vertex_buffer);
 
 		if (t.is_selected)
 			DrawTerrainColored(t.terrain, Red, TSelectionAlpha);
@@ -675,9 +670,15 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		if (o.view_stage < multi_view->view_stage)
 			continue;
 		if (o.object) {
-			for (int i=0;i<o.object->material.num;i++)
-				o.object->material[i].shader = NULL;
-			o.object->Draw(0, false, false);
+			nix::SetWorldMatrix(matrix::translation(o.pos) * matrix::rotation(o.ang));
+			for (int i=0;i<o.object->material.num;i++) {
+				auto mat = o.object->material[i];
+				mat->shader = NULL;
+				nix::SetMaterial(mat->ambient, mat->diffuse, mat->specular, mat->shininess, mat->emission);
+				nix::SetTextures(mat->textures);
+				nix::DrawTriangles(o.object->mesh[0]->sub[i].vertex_buffer);
+			}
+			//o.object->draw(0, false, false);
 			o.object->_detail_ = 0;
 		}
 	}

@@ -16,25 +16,19 @@
 class Object : public Model
 {
 public:
-//	Object(const char *filename, const char *name, const vector &pos);
-//	Object(Model *model);
 	Object();
 //	~Object();
-	void UpdateMatrix();
+	void update_matrix();
 
-	void _cdecl UpdateData(); // script...
+	void _cdecl update_data(); // script...
 
-	void UpdateTheta();
-//	void SetMaterial(Material *material, int mode);
-//	void ObjectCalcMove();
-	void DoPhysics();
-//	CObject *CuttingPlane(plane pl);
-//	void CorrectVel(Object *partner);
+	void update_theta();
+	void do_physics(float dt);
 
-	void _cdecl AddForce(const vector &f, const vector &rho);
-	void _cdecl AddTorque(const vector &t);
+	void _cdecl add_force(const vector &f, const vector &rho);
+	void _cdecl add_torque(const vector &t);
 
-	void _cdecl MakeVisible(bool visible);
+	void _cdecl make_visible(bool visible);
 };
 
 

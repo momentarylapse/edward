@@ -61,7 +61,7 @@ void ModeModelMeshCreateBall::on_start() {
 	dialog->event("type:sphere", [=]{ onTypeSphere(); });
 	ed->set_side_panel(dialog);
 
-	bool physical = (mode_model_mesh->current_skin == SKIN_PHYSICAL);
+	bool physical = (mode_model_mesh->current_skin == MESH_PHYSICAL);
 	if (physical)
 		dialog->enable("*", false);
 
@@ -100,7 +100,7 @@ void ModeModelMeshCreateBall::updateGeometry() {
 
 void ModeModelMeshCreateBall::on_left_button_up() {
 	if (pos_chosen) {
-		if (mode_model_mesh->current_skin == SKIN_PHYSICAL) {
+		if (mode_model_mesh->current_skin == MESH_PHYSICAL) {
 			ModelVertex v;
 			v.pos = pos;
 			ModelBall b;

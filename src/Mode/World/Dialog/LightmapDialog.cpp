@@ -12,9 +12,9 @@
 #include "../../../Data/World/Lightmap/LightmapRayTracing.h"
 #include "../../../Data/World/Lightmap/LightmapRadiosity.h"
 #include "../../../Data/World/DataWorld.h"
-#include "../../../x/model_manager.h"
 #include "../../../Edward.h"
 #include "../../../Storage/Storage.h"
+#include "../../../x/ModelManager.h"
 
 LightmapDialog::LightmapDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data) :
 	hui::Dialog("", 400, 400, _parent, _allow_parent)

@@ -15,6 +15,7 @@ class Data;
 
 namespace nix {
 	class Shader;
+	class UniformBuffer;
 }
 
 namespace MultiView {
@@ -122,11 +123,12 @@ public:
 	bool whole_window;
 	rect area;
 
-	int light;
-
 	bool wire_mode;
 	bool grid_enabled;
 	bool light_enabled;
+
+	nix::UniformBuffer *ubo_light;
+	void set_light(const vector &dir, const color &col, float harshness);
 
 	bool snap_to_grid;
 

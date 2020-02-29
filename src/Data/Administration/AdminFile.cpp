@@ -16,9 +16,9 @@
 #include "../../Storage/Storage.h"
 #include "../../meta.h"
 #include "../../x/terrain.h"
-#include "../../x/model_manager.h"
 #include "../../x/font.h"
 #include "../../lib/kaba/kaba.h"
+#include "../../x/ModelManager.h"
 
 AdminFile::AdminFile()
 {
@@ -196,7 +196,7 @@ void AdminFile::check(AdminFileList &list)
 	Array<s_admin_link> l;
 	if (Kind==FD_WORLD){
 		DataWorld w;
-		if (storage->load(MapDir + Name, &w, false)){
+		if (storage->load(engine.map_dir + Name, &w, false)){
 			Time = w.file_time;
 			for (int i=0;i<w.Terrains.num;i++)
 				add_possible_link(l, FD_TERRAIN, w.Terrains[i].filename);
@@ -210,7 +210,7 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FD_TERRAIN){
 		WorldTerrain t;
-		if (t.load(v_0, MapDir + Name, false)){
+		if (t.load(v_0, engine.map_dir + Name, false)){
 			Time = 0; // TODO
 			for (int i=0;i<t.terrain->material->textures.num;i++)
 				add_possible_link(l, FD_TEXTURE, t.terrain->texture_file[i]);
@@ -219,7 +219,7 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FD_MODEL){
 		DataModel m;
-		if (storage->load(ObjectDir + Name, &m, false)){
+		if (storage->load(engine.object_dir + Name, &m, false)){
 			Time = m.file_time;
 			for (int i=0;i<m.bone.num;i++)
 				add_possible_link(l, FD_MODEL, m.bone[i].model_file);

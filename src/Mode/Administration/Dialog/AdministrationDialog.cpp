@@ -12,7 +12,6 @@
 #include "../../../Edward.h"
 #include "../../../Storage/Storage.h"
 #include "../../../meta.h"
-#include "../../../x/model_manager.h"
 #include "../../../x/font.h"
 #include "../../../Mode/Model/ModeModel.h"
 #include "../../../Mode/Material/ModeMaterial.h"
@@ -20,6 +19,8 @@
 #include "../../../Mode/Font/ModeFont.h"
 #include "../ModeAdministration.h"
 #include <assert.h>
+
+#include "../../../x/ModelManager.h"
 
 AdministrationDialog::AdministrationDialog(hui::Window* _parent, bool _allow_parent, DataAdministration *_data):
 	hui::Dialog("ad_dialog", 400, 300, _parent, _allow_parent)
@@ -234,7 +235,7 @@ void AdministrationDialog::OnEdit()
 				mode_administration->BasicSettings();
 			break;
 		case FD_MODEL:
-			if (storage->load(ObjectDir + a->Name, mode_model->data, true))
+			if (storage->load(engine.object_dir + a->Name, mode_model->data, true))
 				ed->set_mode(mode_model);
 			break;
 		case FD_MATERIAL:
@@ -246,7 +247,7 @@ void AdministrationDialog::OnEdit()
 				ed->set_mode(mode_font);
 			break;
 		case FD_WORLD:
-			if (storage->load(MapDir + a->Name, mode_world->data, true))
+			if (storage->load(engine.map_dir + a->Name, mode_world->data, true))
 				ed->set_mode(mode_world);
 			break;
 		case FD_TERRAIN:

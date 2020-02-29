@@ -48,7 +48,7 @@ void *ActionWorldMoveSelection::execute(Data *d) {
 		} else if (type[ii] == MVD_WORLD_TERRAIN) {
 			w->Terrains[i].pos = mat * old_data[ii];
 			w->Terrains[i].terrain->pos = w->Terrains[i].pos;
-			w->Terrains[i].terrain->Update(-1, -1, -1, -1, TerrainUpdateVertices);
+			w->Terrains[i].terrain->update(-1, -1, -1, -1, TerrainUpdateVertices);
 		} else if (type[ii] == MVD_WORLD_LIGHT) {
 			w->lights[i].pos = mat * old_data[ii];
 		} else if (type[ii] == MVD_WORLD_CAMERA) {
@@ -68,7 +68,7 @@ void ActionWorldMoveSelection::undo(Data *d) {
 		} else if (type[ii] == MVD_WORLD_TERRAIN) {
 			w->Terrains[i].pos = old_data[ii];
 			w->Terrains[i].terrain->pos = w->Terrains[i].pos;
-			w->Terrains[i].terrain->Update(-1, -1, -1, -1, TerrainUpdateVertices);
+			w->Terrains[i].terrain->update(-1, -1, -1, -1, TerrainUpdateVertices);
 		} else if (type[ii] == MVD_WORLD_LIGHT) {
 			w->lights[i].pos = old_data[ii];
 		} else if (type[ii] == MVD_WORLD_CAMERA) {

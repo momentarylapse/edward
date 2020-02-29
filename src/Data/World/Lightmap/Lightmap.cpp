@@ -12,11 +12,11 @@
 #include "../../../Stuff/Progress.h"
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Data/World/DataWorld.h"
-#include "../../../x/model_manager.h"
 #include "../../../x/terrain.h"
 #include "../../../meta.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../Storage/Storage.h"
+#include "../../../x/ModelManager.h"
 
 
 Lightmap::Histogram::Histogram(Array<float> &e)
@@ -135,8 +135,8 @@ bool Lightmap::RenderTextures()
 {
 	ed->progress->start_cancelable(_("calculating texture"), 0);
 	dir_create(nix::texture_dir + data->texture_out_dir);
-	dir_create(ObjectDir + data->model_out_dir);
-	dir_create(MapDir + data->model_out_dir);
+	dir_create(engine.object_dir + data->model_out_dir);
+	dir_create(engine.map_dir + data->model_out_dir);
 
 	PrepareTextureRendering();
 
@@ -174,7 +174,7 @@ bool Lightmap::RenderTextures()
 			mat->col.user = true;
 		}
 		m.new_name = data->model_out_dir + i2s(mid);
-		storage->save(ObjectDir + m.new_name + ".model", m.orig);
+		storage->save(engine.object_dir + m.new_name + ".model", m.orig);
 	}
 
 	foreachi(LightmapData::Terrain &t, data->Terrains, tid){
@@ -204,7 +204,7 @@ bool Lightmap::RenderTextures()
 		t.orig->texture_scale[t.orig->material->textures.num] = vector(1.0f / t.orig->num_x, 0, 1.0f / t.orig->num_z);
 		t.orig->material->textures.add(NULL);
 		t.new_name = data->model_out_dir + i2s(tid);
-		data->source_world->Terrains[tid].save(MapDir + t.new_name + ".map");
+		data->source_world->Terrains[tid].save(engine.map_dir + t.new_name + ".map");
 	}
 
 	CreateNewWorld();
@@ -226,6 +226,6 @@ void Lightmap::CreateNewWorld()
 	for (LightmapData::Model &m: data->Models)
 		w.Objects[m.object_index].filename = m.new_name;
 
-	storage->save(MapDir + data->new_world_name + ".world", &w);
+	storage->save(engine.map_dir + data->new_world_name + ".world", &w);
 }
 

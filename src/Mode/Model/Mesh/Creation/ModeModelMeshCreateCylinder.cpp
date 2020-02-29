@@ -42,7 +42,7 @@ void ModeModelMeshCreateCylinder::on_start() {
 
 	ed->set_side_panel(dialog);
 
-	bool physical = (mode_model_mesh->current_skin == SKIN_PHYSICAL);
+	bool physical = (mode_model_mesh->current_skin == MESH_PHYSICAL);
 	if (physical)
 		dialog->enable("*", false);
 
@@ -94,7 +94,7 @@ void ModeModelMeshCreateCylinder::on_mouse_move() {
 
 void ModeModelMeshCreateCylinder::on_left_button_up() {
 	if (pos.num == 2) {
-		bool physical = (mode_model_mesh->current_skin == SKIN_PHYSICAL);
+		bool physical = (mode_model_mesh->current_skin == MESH_PHYSICAL);
 
 		if (physical) {
 			ModelCylinder c;

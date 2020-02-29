@@ -8,8 +8,9 @@
 #include "ActionWorldDeleteObject.h"
 #include "../../../Data/World/DataWorld.h"
 #include "../../../x/object.h"
-#include "../../../x/model_manager.h"
 #include <assert.h>
+
+#include "../../../x/ModelManager.h"
 
 ActionWorldDeleteObject::ActionWorldDeleteObject(int _index)
 {

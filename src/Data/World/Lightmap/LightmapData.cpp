@@ -11,9 +11,10 @@
 #include "../../../Data/Model/ModelMesh.h"
 #include "../../../Data/Model/ModelPolygon.h"
 #include "../../../x/object.h"
-#include "../../../x/model_manager.h"
 #include "../../../x/terrain.h"
+#include "../../../meta.h"
 #include "../../../Storage/Storage.h"
+#include "../../../x/ModelManager.h"
 
 bool LightmapData::Triangle::intersect(const Ray &r, vector &cp) const
 {
@@ -54,8 +55,8 @@ void LightmapData::Init(DataWorld *w)
 
 	// load data
 	foreachi(WorldObject &o, w->Objects, i)
-		if ((o.is_selected) && (!o.object->active_physics)){
-			o.object->UpdateMatrix();
+		if ((o.is_selected) && (!o.object->physics_data.active)){
+			o.object->update_matrix();
 			AddModel(o.filename, o.object->_matrix, i);
 		}
 	foreachi(WorldTerrain &t, w->Terrains, i)
@@ -163,7 +164,7 @@ void LightmapData::AddModel(const string &filename, matrix &mat, int object_inde
 
 	DataModel *m = new DataModel();
 	mod.orig = m;
-	storage->load(ObjectDir + filename + ".model", m);
+	storage->load(engine.object_dir + filename + ".model", m);
 
 
 	mod.new_name = format("Lightmap/%s/%s_%d", world_name_small.c_str(), mod.orig_name.c_str(), mod.id);

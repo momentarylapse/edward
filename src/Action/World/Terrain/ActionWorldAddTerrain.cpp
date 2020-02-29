@@ -69,12 +69,12 @@ void *ActionWorldAddTerrain::execute(Data *d)
 		t.terrain->texture_scale[0].x = 1.0f / num_x;
 		t.terrain->texture_scale[0].y = 0;
 		t.terrain->texture_scale[0].z = 1.0f / num_z;
-		t.terrain->material->copy_from(NULL, LoadMaterial(""), false);
+		//t.terrain->material->copy_from(NULL, LoadMaterial(""), false);
 		for (int x=0;x<num_x/32+1;x++)
 			for (int z=0;z<num_z/32+1;z++)
 				t.terrain->partition[x][z] = -1;
-		t.terrain->vertex_buffer = new nix::OldVertexBuffer(1);
-		t.terrain->Update(-1, -1, -1, -1, TerrainUpdateAll);
+		t.terrain->vertex_buffer = new nix::VertexBuffer("3f,3f,2f");
+		t.terrain->update(-1, -1, -1, -1, TerrainUpdateAll);
 		// bounding box
 		t.terrain->min = pos;
 		t.terrain->max = pos + size;

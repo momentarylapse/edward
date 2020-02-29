@@ -28,16 +28,21 @@
 #include "../lib/base/base.h"
 #include "../lib/math/math.h"
 
+
 class Model;
-namespace Fx{
-class Effect;
-};
+namespace Fx {
+	class Effect;
+}
 class Material;
 class TraceData;
 class Terrain;
-namespace nix{
-	class OldVertexBuffer;
-};
+class TemplateDataScriptVariable;
+namespace nix {
+	class VertexBuffer;
+}
+namespace Kaba {
+	class Script;
+}
 
 
 #define MODEL_MAX_POLY_FACES			32
@@ -47,70 +52,43 @@ namespace nix{
 
 
 
-template <class T>
-class CopyAsRefArray : public Array<T>
-{
-	public:
-		void operator = (const CopyAsRefArray<T> &a)
-		{
-			this->set_ref(a);
-		}
-		void forget()
-		{
-			Array<T>::data = NULL;
-			Array<T>::allocated = 0;
-			Array<T>::num = 0;
-		}
-		void make_own()
-		{
-			T *dd = (T*)Array<T>::data;
-			int n = Array<T>::num;
-			forget();
-			Array<T>::resize(n);
-			for (int i=0;i<Array<T>::num;i++)
-				(*this)[i] = dd[i];
-		}
-};
-
-
-class SubSkin
-{
+class SubMesh {
 public:
 	int num_triangles;
-	
+
 	// vertices
-	CopyAsRefArray<int> triangle_index;
-	
+	Array<int> triangle_index;
+
 	// texture mapping
-	CopyAsRefArray<float> skin_vertex;
+	Array<float> skin_vertex;
 
 	// normals
-	CopyAsRefArray<vector> normal;
+	Array<vector> normal;
 
-	nix::OldVertexBuffer *vertex_buffer;
+	nix::VertexBuffer *vertex_buffer;
 
 	// refill the vertex buffer etc...
 	bool force_update;
 };
 
 // visual skin
-class Skin
-{
+class Mesh {
 public:
-	CopyAsRefArray<int> bone_index; // skeletal reference
-	CopyAsRefArray<vector> vertex;
+	Array<int> bone_index; // skeletal reference
+	Array<vector> vertex;
 
-	CopyAsRefArray<SubSkin> sub;
-	
+	Array<SubMesh> sub;
+
 	// bounding box
 	vector min, max;
 
-	bool copy_as_ref;
+	Model *owner;
+
+	Mesh* copy(Model *new_owner);
 };
 
 // the face of a polyhedron (=> a polygon)
-class ConvexPolyhedronFace
-{
+class ConvexPolyhedronFace {
 public:
 	int num_vertices;
 	int index[MODEL_MAX_POLY_VERTICES_PER_FACE];
@@ -118,8 +96,7 @@ public:
 };
 
 // a convex polyhedron (for the physical skin)
-class ConvexPolyhedron
-{
+class ConvexPolyhedron {
 public:
 	int num_faces;
 	ConvexPolyhedronFace face[MODEL_MAX_POLY_FACES];
@@ -138,21 +115,26 @@ public:
 };
 
 // a ball (for the physical skin)
-class Ball
-{
+class Ball {
 public:
 	int index;
 	float radius;
 };
 
-// data for collision detection
-class PhysicalSkin
-{
+// a cylinder (for the physical skin)
+class Cylinder {
 public:
-	int num_vertices;
-	int *bone_nr;
-	vector *vertex; // original vertices
-	vector *vertex_dyn; // here the animated vertices are stored before collision detection
+	int index[2];
+	float radius;
+	bool round;
+};
+
+// data for collision detection
+class PhysicalMesh {
+public:
+	Array<int> bone_nr;
+	Array<vector> vertex; // original vertices
+	Array<vector> vertex_dyn; // here the animated vertices are stored before collision detection
 
 	/*int num_triangles;
 	unsigned short *triangle_index;*/
@@ -160,25 +142,23 @@ public:
 	/*int NumEdges;
 	unsigned short *EdgeIndex;*/
 
-	int num_balls;
-	Ball *ball;
+	Array<Ball> balls;
 
-	int num_polys;
-	ConvexPolyhedron *poly;
+	Array<Cylinder> cylinders;
+
+	Array<ConvexPolyhedron> poly;
 };
 
 // physical skin, but in world coordinates
-class PhysicalSkinAbsolute
-{
+class PhysicalMeshAbsolute {
 public:
 	bool is_ok;
-	vector *p;
-	plane *pl;
+	Array<vector> p;
+	Array<plane> pl;
 };
 
 // single animation
-class Move
-{
+class Move {
 public:
 	int type; // skeletal/vertex
 	int num_frames;
@@ -190,46 +170,44 @@ public:
 };
 
 // a list of animations
-class MetaMove
-{
+class MetaMove {
 public:
+	MetaMove();
 	// universal animation data
-	int num_moves;
-	Move *move;
+	Array<Move> move;
 
 	int num_frames_skeleton, num_frames_vertex;
 
+
 	// skeletal animation data
-	vector *skel_dpos; //   [frame * num_bones + bone]
-	quaternion *skel_ang; //   [frame * num_bones + bone]
+	//Array<Array<vector>> skel_dpos; //   [frame,bone]
+	//Array<Array<quaternion>> skel_ang; //   [frame,bone]
+	vector *skel_dpos;
+	quaternion *skel_ang;
 
 	// vertex animation data
-	struct{
-		vector *dpos; // vertex animation data   [frame * num_vertices + vertex]
-	}skin[4];
-	void reset()
-	{	memset(this, 0, sizeof(MetaMove));	}
+	struct {
+		//Array<Array<vector>> dpos; // vertex animation data   [frame,vertex]
+		vector* dpos;
+	} mesh[4];
 };
 
 // types of animation
-enum
-{
+enum {
 	MOVE_TYPE_NONE,
 	MOVE_TYPE_VERTEX,
 	MOVE_TYPE_SKELETAL
 };
 
 // commands for animation (move operations)
-class MoveOperation
-{
+class MoveOperation {
 public:
 	int move, operation;
 	float time, param1, param2;
 };
 
 // to store data to create effects (when copying models)
-class ModelEffectData
-{
+class ModelEffectData {
 public:
 	int vertex;
 	int type;
@@ -238,8 +216,7 @@ public:
 	color am, di, sp;
 };
 
-class Bone
-{
+class Bone {
 public:
 	int parent;
 	vector pos;
@@ -250,72 +227,64 @@ public:
 	vector cur_pos;
 };
 
-enum{
-	SKIN_HIGH,
-	SKIN_MEDIUM,
-	SKIN_LOW,
-	MODEL_NUM_SKINS
+enum {
+	MESH_HIGH,
+	MESH_MEDIUM,
+	MESH_LOW,
+	MODEL_NUM_MESHES
 };
-#define SKIN_DYNAMIC					8
-#define SKIN_DYNAMIC_VIEW_HIGH			(SKIN_DYNAMIC | SKIN_HIGH)
-#define SKIN_DYNAMIC_VIEW_MEDIUM		(SKIN_DYNAMIC | SKIN_MEDIUM)
-#define SKIN_DYNAMIC_VIEW_LOW			(SKIN_DYNAMIC | SKIN_LOW)
-#define SKIN_PHYSICAL					42
-#define SKIN_DYNAMIC_PHYSICAL			43
+#define MESH_DYNAMIC					8
+#define MESH_DYNAMIC_VIEW_HIGH			(MESH_DYNAMIC | MESH_HIGH)
+#define MESH_DYNAMIC_VIEW_MEDIUM		(MESH_DYNAMIC | MESH_MEDIUM)
+#define MESH_DYNAMIC_VIEW_LOW			(MESH_DYNAMIC | MESH_LOW)
+#define MESH_PHYSICAL					42
+#define MESH_DYNAMIC_PHYSICAL			43
 
-class ModelTemplate
-{
+class ModelTemplate {
 public:
 	string filename, script_filename;
+	Array<TemplateDataScriptVariable> variables;
 	Model *model;
 	Array<ModelEffectData> fx;
-	void *script;
+	Array<string> bone_model_filename;
+	Array<string> inventory_filename;
+	Kaba::Script *script;
 
-	ModelTemplate(Model *m)
-	{
-		filename = "";
-		script_filename = "";
-		fx.clear();
-		script = NULL;
-		model = m;
-	}
+	ModelTemplate(Model *m);
 };
 
-class Model : public VirtualBase
-{
+class Model : public VirtualBase {
 public:
-	Model(const string &filename);
 	Model();
-	void Load(const string &filename);
-	Model *GetCopy(bool allow_script_init);
-	void ResetData();
-	void _cdecl MakeEditable();
-	void SetMaterial(Material *material, int mode);
+	~Model() override;
+
+	void _cdecl __init__();
+	void _cdecl __delete__() override;
+
+	void load(const string &filename);
+	Model *copy(Model *pre_allocated = NULL);
+	void reset_data();
+	void _cdecl make_editable();
 	//void Update();
-	void reset();
-	virtual ~Model();
-	void DeleteBaseModel();
 
 	static bool AllowDeleteRecursive;
 
-	void _cdecl __init__();
-	virtual void _cdecl __delete__();
-
 	// animate me
-	void CalcMove(float elapsed);
+	void do_animation(float elapsed);
 
 	// skeleton
 	vector _cdecl _GetBonePos(int index);
 	void _cdecl SetBoneModel(int index, Model *sub);
 
 	// animation
-	vector _cdecl GetVertex(int index,int skin);
+	vector _cdecl GetVertex(int index,int mesh);
 
 	// helper functions for collision detection
 	void _UpdatePhysAbsolute_();
 	void _ResetPhysAbsolute_();
 
 	bool _cdecl Trace(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test);
+	bool _cdecl TraceMesh(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test);
 
 	// animation
 	void _cdecl ResetAnimation();
@@ -327,46 +296,55 @@ public:
 	void _cdecl EndEdit(int detail);
 
 	// drawing
-	void Draw(int detail, bool set_fx, bool allow_shadow);
-	void JustDraw(int material, int detail);
+	void update_vertex_buffer(int mat_no, int detail);
+	void draw(int detail, bool set_fx, bool allow_shadow);
+	void draw_simple(int material, int detail);
 
 	// visible skins (shared)
-	Skin *skin[MODEL_NUM_SKINS];
-	bool skin_is_reference[MODEL_NUM_SKINS];
-	// material (shared)
-	CopyAsRefArray<Material> material;
-	bool material_is_reference;
+	Mesh *mesh[MODEL_NUM_MESHES];
+	bool mesh_is_reference[MODEL_NUM_MESHES];
+
+	// material (own)
+	Array<Material*> material;
+
 	// dynamical data (own)
-	vector *vertex_dyn[MODEL_NUM_SKINS]; // here the animated vertices are stored before rendering
-	vector *normal_dyn[MODEL_NUM_SKINS];
+	Array<vector> vertex_dyn[MODEL_NUM_MESHES]; // here the animated vertices are stored before rendering
+	Array<vector> normal_dyn[MODEL_NUM_MESHES];
 	
 	// physical skin (shared)
-	PhysicalSkin *phys;
+	PhysicalMesh *phys;
 	bool phys_is_reference;
-	PhysicalSkinAbsolute phys_absolute;
+	PhysicalMeshAbsolute phys_absolute;
 
 	// properties
-	float detail_dist[MODEL_NUM_SKINS];
-	float radius;
-	vector min, max; // "bounding box"
-	matrix3 theta_0, theta, theta_inv;
-	bool test_collisions;
-	bool allow_shadow;
-	bool flexible;
-	bool is_copy, error;
+	struct Properties {
+		float detail_dist[MODEL_NUM_MESHES];
+		float radius;
+		vector min, max; // "bounding box"
+		bool allow_shadow;
+		bool flexible;
+	} prop;
+
+	bool is_copy;
 
 	// physics
-	float mass, mass_inv, g_factor;
-	bool active_physics, passive_physics;
+	struct PhysicsData {
+		float mass, mass_inv, g_factor;
+		matrix3 theta_0, theta, theta_inv;
+		bool active, passive;
+		bool test_collisions;
+	} physics_data;
 
 	// script data (own)
-	string name, description;
-	Array<Model*> inventary;
-	Array<float> script_var;
+	struct ScriptData {
+		string name, description;
+		Array<Model*> inventary;
+		Array<float> var;
+	} script_data;
 
 	int object_id;
 	Model *parent;
-	Model *_cdecl GetRoot();
+	Model *_cdecl root();
 	bool on_ground, visible, rotating, moved, frozen;
 	float time_till_freeze;
 	int ground_id;
@@ -381,15 +359,13 @@ public:
 	vector force_int, torque_int;
 	vector force_ext, torque_ext;
 
-	float rc_jump, rc_static, rc_sliding, rc_rolling;
-
 	// template (shared)
 	ModelTemplate *_template;
-	string _cdecl GetFilename();
+	string _cdecl filename();
 
 	// engine data
 	bool registered;
-	bool _detail_needed_[MODEL_NUM_SKINS]; // per frame
+	bool _detail_needed_[MODEL_NUM_MESHES]; // per frame
 	int _detail_; // per view (more than once a frame...)
 
 	// effects (own)
@@ -397,27 +373,28 @@ public:
 
 	// skeleton (own)
 	Array<Bone> bone;
-	vector *bone_pos_0;
+	Array<vector> bone_pos_0;
 
 	// move operations
-	int num_move_operations;
-	MoveOperation move_operation[MODEL_MAX_MOVE_OPS];
-	MetaMove *meta_move;
+	struct AnimationData {
+		int num_operations;
+		MoveOperation operation[MODEL_MAX_MOVE_OPS];
+		MetaMove *meta;
+	} anim;
 
 	/*dBodyID*/ void* body_id;
 	/*dGeomID*/ void* geom_id;
 
-	virtual void _cdecl OnInit(){}
-	virtual void _cdecl OnDelete(){}
-	virtual void _cdecl OnCollideM(Model *o){}
-	virtual void _cdecl OnCollideT(Terrain *t){}
-	virtual void _cdecl OnIterate(float dt){}
+	virtual void _cdecl on_init(){}
+	virtual void _cdecl on_delete(){}
+	virtual void _cdecl on_collide_m(Model *o){}
+	virtual void _cdecl on_collide_t(Terrain *t){}
+	virtual void _cdecl on_iterate(float dt){}
 };
 
 
 // types of shading/normal vectors
-enum
-{
+enum {
 	NORMAL_MODE_SMOOTH,
 	NORMAL_MODE_HARD,
 	NORMAL_MODE_SMOOTH_EDGES,
@@ -428,8 +405,7 @@ enum
 
 
 // move operations
-enum
-{
+enum {
 	MOVE_OP_SET,			// overwrite
 	MOVE_OP_SET_NEW_KEYED,	// overwrite, if current doesn't equal 0
 	MOVE_OP_SET_OLD_KEYED,	// overwrite, if last equals 0
@@ -438,7 +414,7 @@ enum
 	MOVE_OP_MIX_2_FACTOR	// w = w_old * a     + w_new * b
 };
 
-enum{
+enum {
 	FX_TYPE_SCRIPT,
 	FX_TYPE_SOUND,
 	FX_TYPE_LIGHT,
