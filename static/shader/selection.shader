@@ -1,53 +1,50 @@
 <VertexShader>
 #version 330 core
+#extension GL_ARB_separate_shader_objects : enable
 
 uniform mat4 mat_mvp;
 uniform mat4 mat_m;
 uniform mat4 mat_v;
 
-layout(location = 0) in vec3 inPosition;
-layout(location = 1) in vec3 inNormal;
+layout(location = 0) in vec3 in_position;
+layout(location = 1) in vec3 in_normal;
 
-out vec3 fragmentNormal;
+layout(location = 0) out vec3 out_normal;
 
-void main()
-{
-	gl_Position = mat_mvp * vec4(inPosition,1);
-	fragmentNormal = (mat_v * mat_m * vec4(inNormal,0)).xyz;
+void main() {
+	gl_Position = mat_mvp * vec4(in_position,1);
+	out_normal = (mat_v * mat_m * vec4(in_normal,0)).xyz;
 }
 
 </VertexShader>
 <FragmentShader>
 #version 330 core
+#extension GL_ARB_separate_shader_objects : enable
 
-struct Material
-{
+struct Material {
 	vec4 ambient, diffusive, specular, emission;
 	float shininess;
 };
 
-struct Light
-{
+struct Light {
 	vec4 color;
-	vec3 pos;
-	float radius, ambient, specular;
+	vec4 dir;
+	float radius, harshness;
 };
 
 uniform Material material;
-uniform Light light;
+uniform LightBlock { Light light; };
 
-in vec3 fragmentNormal;
-
+layout(location = 0) in vec3 in_normal;
 out vec4 color;
 
-void main()
-{
-	vec3 n = normalize(fragmentNormal);
-	vec3 l = light.pos;
+void main() {
+	vec3 n = normalize(in_normal);
+	vec3 l = light.dir.xyz;
 	float d = max(-dot(n, l), 0);
 	color = material.emission;
-	color += material.ambient * light.color * light.ambient;
-	color += material.diffusive* light.color * d;
+	color += material.ambient * light.color * (1 - light.harshness);
+	color += material.diffusive * light.color * d * light.harshness;
 	color.a = material.diffusive.a;
 }
 

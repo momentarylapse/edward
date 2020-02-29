@@ -118,8 +118,10 @@ MultiView::MultiView(bool mode3d) {
 		shader_lines_3d_colored = nix::Shader::load(app->directory_static + "shader/lines-3d-colored.shader");
 	if (!shader_lines_3d_colored_wide)
 		shader_lines_3d_colored_wide = nix::Shader::load(app->directory_static + "shader/lines-3d-colored-wide.shader");
-	if (!shader_selection)
+	if (!shader_selection) {
 		shader_selection = nix::Shader::load(app->directory_static + "shader/selection.shader");
+		shader_selection->link_uniform_block("LightBlock", 0);
+	}
 
 	reset();
 }
