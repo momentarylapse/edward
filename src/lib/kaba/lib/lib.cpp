@@ -30,7 +30,7 @@
 
 namespace Kaba{
 
-string LibVersion = "0.17.12.1";
+string LibVersion = "0.17.14.0";
 
 
 const string IDENTIFIER_CLASS = "class";
@@ -698,7 +698,8 @@ void SIAddStatements() {
 void SIAddXCommands();
 void SIAddPackageBase();
 void SIAddPackageKaba();
-void SIAddPackageFile();
+void SIAddPackageTime();
+void SIAddPackageOS();
 void SIAddPackageMath();
 void SIAddPackageThread();
 void SIAddPackageHui();
@@ -762,7 +763,8 @@ void init(Asm::InstructionSet instruction_set, Abi abi, bool allow_std_lib) {
 	SIAddPackageBase();
 	SIAddPackageKaba();
 	SIAddPackageMath();
-	SIAddPackageFile();
+	SIAddPackageTime();
+	SIAddPackageOS();
 	SIAddPackageImage();
 	SIAddPackageHui();
 	SIAddPackageNix();
@@ -796,19 +798,7 @@ void init(Asm::InstructionSet instruction_set, Abi abi, bool allow_std_lib) {
 
 
 	// consistency checks
-#ifndef NDEBUG
-	for (auto *p: Packages)
-		for (auto *c: p->classes()) {
-			if (c->is_super_array()) {
-				if (!c->get_default_constructor() or !c->get_assign() or !c->get_destructor())
-					msg_error("SUPER ARRAY INCONSISTENT: " + c->name);
-			}
-			// x package failing
-			/*for (auto *f: c->functions)
-				if (f->needs_overriding and (f->name != IDENTIFIER_FUNC_SUBARRAY))
-					msg_error(f->signature());*/
-		}
-#endif
+	// -> now done by regression tests!
 }
 
 void reset_external_data() {
