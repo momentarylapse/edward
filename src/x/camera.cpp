@@ -40,8 +40,7 @@ void CameraReset() {
 }
 
 void Camera::reset() {
-
-	zoom = 1.0f;
+	fov = pi / 4;
 	exposure = 1.0f;
 	bloom_radius = 10;
 	bloom_factor = 0.2f;
@@ -110,7 +109,7 @@ void Camera::on_iterate(float dt) {
 }
 
 void Camera::set_view(float aspect_ratio) {
-	m_projection = matrix::perspective(pi/4 * zoom, aspect_ratio, min_depth, max_depth);
+	m_projection = matrix::perspective(fov, aspect_ratio, min_depth, max_depth);
 	m_projection = m_projection * matrix::rotation_x(pi);
 	m_view = matrix::rotation_q(ang).transpose() * matrix::translation(-pos);
 

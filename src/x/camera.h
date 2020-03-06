@@ -31,7 +31,7 @@ public:
 	
 	vector pos;
 	quaternion ang;
-	float zoom;
+	float fov;
 	float exposure;
 	float bloom_radius;
 	float bloom_factor;

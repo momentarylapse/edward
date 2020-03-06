@@ -3,7 +3,18 @@ Dialog world-object-list-dialog "" width=400 height=300
 		Group g-list "List"
 			ListView list "Type\\Name" expandx
 		Group g-camera "Camera"
-			Grid ? "" vertical
+			Grid ? ""
+				Text t-cam-fov "Field of view:"
+				SpinButton cam-fov "" range=0:180:0.1 "tooltip=vertical viewing angle" expandx
+				---|
+				Text t-cam-exposure "Exposure:"
+				SpinButton cam-exposure "" range=0:10:0.01 "tooltip=brightness scale"
+				---|
+				Text t-cam-min-depth "Min depth:"
+				SpinButton cam-min-depth "" range=0:100000000:0.1 "tooltip=near clipping plane"
+				---|
+				Text t-cam-max-depth "Max depth:"
+				SpinButton cam-max-depth "" range=0:100000000:0.1 "tooltip=far clipping plane"
 		Group g-script "Script"
 			Grid ? "" vertical
 				Grid ? ""

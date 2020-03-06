@@ -57,6 +57,20 @@ public:
 	vector pos, ang, vel, rot;
 };
 
+class LevelDataLight {
+public:
+	bool enabled;
+	vector pos, ang;
+	color _color;
+	float radius, harshness;
+};
+
+class LevelDataCamera {
+public:
+	vector pos, ang;
+	float fov, min_depth, max_depth, exposure;
+};
+
 class LevelDataScript {
 public:
 	string filename;
@@ -72,15 +86,14 @@ public:
 	Array<string> skybox_filename;
 	Array<vector> skybox_ang;
 	color background_color;
-	Array<LevelDataObject> object;
-	Array<LevelDataTerrain> terrain;
+	Array<LevelDataObject> objects;
+	Array<LevelDataTerrain> terrains;
 	int ego_index;
 	Array<LevelDataScript> scripts;
 	
-	bool sun_enabled;
-	color sun_color[3];
-	vector sun_ang;
-	color ambient;
+	Array<LevelDataLight> lights;
+
+	Array<LevelDataCamera> cameras;
 
 	bool physics_enabled;
 	vector gravity;
@@ -130,11 +143,9 @@ public:
 	string filename;
 	color background;
 	Array<Model*> skybox;
-	color ambient;
 	Fog fog;
 
 	Array<Light*> lights;
-	Light *sun;
 	void add_light(Light *l);
 
 	ParticleManager *particle_manager;

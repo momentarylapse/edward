@@ -92,8 +92,12 @@ public:
 
 class WorldCamera: public MultiView::SingleData {
 public:
+	WorldCamera();
 	string name;
 	vector ang;
+	float fov;
+	float min_depth, max_depth;
+	float exposure;
 };
 
 enum class LightMode {

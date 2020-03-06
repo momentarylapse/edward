@@ -9126,9 +9126,57 @@ g-camera
 1
 Grid
 ?
-vertical
+
 0
 0
+8
+Text
+t-cam-fov
+
+0
+0
+0
+SpinButton
+cam-fov
+range=0:180:0.1,expandx
+1
+0
+0
+Text
+t-cam-exposure
+
+0
+1
+0
+SpinButton
+cam-exposure
+range=0:10:0.01
+1
+1
+0
+Text
+t-cam-min-depth
+
+0
+2
+0
+SpinButton
+cam-min-depth
+range=0:100000000:0.1
+1
+2
+0
+Text
+t-cam-max-depth
+
+0
+3
+0
+SpinButton
+cam-max-depth
+range=0:100000000:0.1
+1
+3
 0
 Group
 g-script
@@ -9728,7 +9776,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-965
+973
 # Text
 /ambient
 Ambient:
@@ -12358,6 +12406,18 @@ add object
 world-edit-toolbar/terrain_create
 add terrain
 
+world-object-list-dialog/cam-exposure
+
+brightness scale
+world-object-list-dialog/cam-fov
+
+vertical viewing angle
+world-object-list-dialog/cam-max-depth
+
+far clipping plane
+world-object-list-dialog/cam-min-depth
+
+near clipping plane
 world-object-list-dialog/g-camera
 Camera
 
@@ -12393,6 +12453,18 @@ directional\\point
 
 world-object-list-dialog/t-ang
 Orientation
+
+world-object-list-dialog/t-cam-exposure
+Exposure:
+
+world-object-list-dialog/t-cam-fov
+Field of view:
+
+world-object-list-dialog/t-cam-max-depth
+Max depth:
+
+world-object-list-dialog/t-cam-min-depth
+Min depth:
 
 world-object-list-dialog/t-color
 Color:

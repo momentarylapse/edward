@@ -20,6 +20,8 @@
 #include "material.h"
 #include "terrain.h"
 
+#include "../lib/xfile/xml.h"
+
 #ifdef _X_ALLOW_X_
 #include "../fx/Light.h"
 #include "../fx/Particle.h"
@@ -217,7 +219,6 @@ void GodEnd() {
 World::World() {
 //	ubo_light = nullptr;
 //	ubo_fog = nullptr;
-	sun = nullptr;
 
 	//world.particle_manager = new ParticleManager();
 
@@ -268,7 +269,6 @@ void World::reset() {
 	
 
 	// initial data for empty world...
-	ambient = color(1,0.4f,0.4f,0.4f);
 	fog._color = White;
 	fog.mode = 0;//FOG_EXP;
 	fog.distance = 10000;
@@ -309,18 +309,15 @@ void World::reset() {
 
 void LevelData::reset() {
 	world_filename = "";
-	terrain.clear();
-	object.clear();
+	terrains.clear();
+	objects.clear();
 	skybox_filename.clear();
 	skybox_ang.clear();
 	scripts.clear();
 
 	ego_index = -1;
 	background_color = Gray;
-	sun_enabled = false;
-	//sun_color[3];
-	sun_ang = vector(1, 0, 0);
-	ambient = color(1, 0.4f, 0.4f, 0.4f);
+	lights.clear();
 
 	gravity = v_0;
 	fog.enabled = false;
@@ -351,14 +348,14 @@ bool World::load(const LevelData &ld) {
 	gravity = ld.gravity;
 	fog = ld.fog;
 
-	// set up light (sun and ambient)
-	ambient = ld.ambient;
-
 #ifdef _X_ALLOW_X_
-	sun = new Light(v_0, ld.sun_ang.ang2dir(), ld.sun_color[1], -1, -1);
-	sun->enabled = ld.sun_enabled;
+	for (auto &l: ld.lights) {
+		auto *ll = new Light(l.pos, l.ang.ang2dir(), l._color, l.radius, -1);
+		ll->harshness = l.harshness;
+		ll->enabled = l.enabled;
+		add_light(ll);
+	}
 #endif
-	add_light(sun);
 
 	// skybox
 	skybox.resize(ld.skybox_filename.num);
@@ -369,14 +366,24 @@ bool World::load(const LevelData &ld) {
 	}
 	background = ld.background_color;
 
+	for (auto &c: ld.cameras) {
+		cam->pos = c.pos;
+		cam->ang = quaternion::rotation(c.ang);
+		cam->min_depth = c.min_depth;
+		cam->max_depth = c.max_depth;
+		cam->exposure = c.exposure;
+		cam->fov = c.fov;
+		break;
+	}
+
 	// objects
 	ego = NULL;
 	objects.clear(); // make sure the "missing" objects are NULL
-	objects.resize(ld.object.num);
-	num_reserved_objects = ld.object.num;
-	foreachi(auto &o, ld.object, i)
+	objects.resize(ld.objects.num);
+	num_reserved_objects = ld.objects.num;
+	foreachi(auto &o, ld.objects, i)
 		if (o.filename.num > 0){
-			auto q = quaternion::rotation_v(o.ang);
+			auto q = quaternion::rotation(o.ang);
 			Object *oo = create_object(o.filename, o.name, o.pos, q, i);
 			ok &= (oo >= 0);
 			if (oo){
@@ -386,13 +393,13 @@ bool World::load(const LevelData &ld) {
 			if (ld.ego_index == i)
 				ego = oo;
 			if (i % 5 == 0)
-				DrawSplashScreen("Objects", (float)i / (float)ld.object.num / 5 * 3);
+				DrawSplashScreen("Objects", (float)i / (float)ld.objects.num / 5 * 3);
 		}
 	add_all_objects_to_lists = true;
 
 	// terrains
-	foreachi(auto &t, ld.terrain, i){
-		DrawSplashScreen("Terrain...", 0.6f + (float)i / (float)ld.terrain.num * 0.4f);
+	foreachi(auto &t, ld.terrains, i){
+		DrawSplashScreen("Terrain...", 0.6f + (float)i / (float)ld.terrains.num * 0.4f);
 		Terrain *tt = create_terrain(t.filename, t.pos);
 		ok &= !tt->error;
 	}
@@ -412,155 +419,96 @@ Terrain *World::create_terrain(const string &filename, const vector &pos) {
 	return tt;
 }
 
+static vector s2v(const string &s) {
+	auto x = s.explode(" ");
+	return vector(x[0]._float(), x[1]._float(), x[2]._float());
+}
+
+// RGBA
+static color s2c(const string &s) {
+	auto x = s.explode(" ");
+	return color(x[3]._float(), x[0]._float(), x[1]._float(), x[2]._float());
+}
+
 bool LevelData::load(const string &filename) {
 	world_filename = filename;
 
-// read world file
-//   and put the data into LevelData
-	File *f = FileOpenText(engine.map_dir + filename + ".world");
-
-	int ffv = f->ReadFileFormatVersion();
-	if (ffv != 10){
-		delete(f);
-		throw Exception(format("wrong file format: %d (10 expected)", ffv));
-	}
-	bool ok = true;
-	reset();
-
-	// Terrains
-	f->read_comment();
-	int n = f->read_int();
-	for (int i=0;i<n;i++){
-		LevelDataTerrain t;
-		t.filename = f->read_str();
-		f->read_vector(&t.pos);
-		terrain.add(t);
-	}
-
-	// Gravity
-	f->read_comment();
-	f->read_vector(&gravity);
-
-	// EgoIndex
-	f->read_comment();
-	ego_index = f->read_int();
-
-	// Background
-	f->read_comment();
-	background_color = ReadColor4(f);
-	n = f->read_int();
-	for (int i=0;i<n;i++){
-		skybox_filename.add(f->read_str());
-		skybox_ang.add(v_0);
-	}
-
-	// Fog
-	f->read_comment();
-	fog.enabled = f->read_bool();
-	fog.mode = f->read_word();
-	fog.start = f->read_float();
-	fog.end = f->read_float();
-	fog.distance = 1.0f / f->read_float();
-	fog._color = ReadColor4(f);
-
-	// Music
-	f->read_comment();
-	n = f->read_int();
-	for (int i=0; i<n; i++)
-		/*world.MusicFieldGlobal.MusicFile[i] =*/ f->read_str();
-
-	// Objects
-	f->read_comment();
-	n = f->read_int();
-	for (int i=0;i<n;i++){
-		LevelDataObject o;
-		o.filename = f->read_str();
-		o.name = f->read_str();
-		f->read_vector(&o.pos);
-		f->read_vector(&o.ang);
-		o.vel = v_0;
-		o.rot = v_0;
-		object.add(o);
-	}
-
-	// Scripts
-	f->read_comment();
-	n = f->read_int();
-	for (int i=0;i<n;i++){
-		LevelDataScript s;
-		s.filename = f->read_str();
-		int nr = f->read_int();
-		for (int j=0;j<nr;j++){
-			TemplateDataScriptVariable v;
-			v.name = f->read_str().lower().replace("_", "");
-			v.value = f->read_str();
-			s.variables.add(v);
-		}
-		scripts.add(s);
-	}
-
-	// ScriptVars
-	f->read_comment();
-	n = f->read_int();
-	for (int i=0;i<n;i++)
-		f->read_float();
-
-	// light
-	if (f->read_str() != "#"){
-		// Sun
-		sun_enabled = f->read_bool();
-		for (int i=0;i<3;i++)
-			sun_color[i] = ReadColor3(f);
-		sun_ang.x = f->read_float();
-		sun_ang.y = f->read_float();
-		sun_ang.z = 0;
-
-		f->read_comment();
-		ambient = ReadColor3(f);
-		if (f->read_str() != "#"){
-			physics_enabled = f->read_bool();
+	xml::Parser p;
+	p.load(engine.map_dir + filename + ".world");
+	auto *meta = p.elements[0].find("meta");
+	if (meta) {
+		for (auto &e: meta->elements) {
+			if (e.tag == "background") {
+				background_color = s2c(e.value("color"));
+			} else if (e.tag == "skybox") {
+				skybox_filename.add(e.value("file"));
+				skybox_ang.add(v_0);
+			} else if (e.tag == "physics") {
+				physics_enabled = e.value("enabled")._bool();
+				gravity = s2v(e.value("gravity"));
+			} else if (e.tag == "fog") {
+				fog.enabled = e.value("enabled")._bool();
+				fog.mode = e.value("mode")._int();
+				fog.start = e.value("start")._float();
+				fog.end = e.value("end")._float();
+				fog.distance = 1.0f / e.value("density")._float();
+				fog._color = s2c(e.value("color"));
+			} else if (e.tag == "script") {
+				LevelDataScript s;
+				s.filename = e.value("file");
+				for (auto &ee: e.elements) {
+					TemplateDataScriptVariable v;
+					v.name = ee.value("name").lower().replace("_", "");
+					v.value = ee.value("value");
+					s.variables.add(v);
+				}
+				scripts.add(s);
+			}
 		}
 	}
 
-	// Fields
-	/*NumMusicFields=0;
-	f->read_comment()
-	int NumFields=f->read_int();
-	for (int i=0;i<NumFields;i++){
-		vector min,max;
-		int kind=f->read_int();
-		min.x=(float)f->read_int();
-		min.y=(float)f->read_int();
-		min.z=(float)f->read_int();
-		max.x=(float)f->read_int();
-		max.y=(float)f->read_int();
-		max.z=(float)f->read_int();
-		if (kind==FieldKindLight){
-			bool sunenabled;
-			color ambient;
-			sunenabled=f->read_bool();
-			float r=(float)f->read_int()/255.0f;
-			float g=(float)f->read_int()/255.0f;
-			float b=(float)f->read_int()/255.0f;
-			ambient=color(0,r,g,b);
-			fx->AddLighField(min,max,sunenabled,ambient);
-		}
-		if (kind==FieldKindMusic){
-			MusicField[NumMusicFields].PosMin=min;
-			MusicField[NumMusicFields].PosMax=max;
-			MusicField[NumMusicFields].NumMusicFiles=f->read_int();
-			for (int n=0;n<MusicField[NumMusicFields].NumMusicFiles;n++)
-				strcpy(MusicField[NumMusicFields].MusicFile[n],f->read_str());
-			NumMusicFields++;
-		}
-	}*/
-	// Politics
-	// Groups
-	// Waypoints
 
-	FileClose(f);
-	//world.MusicFieldGlobal.NumMusicFiles = 0;
-	return ok;
+	auto *cont = p.elements[0].find("3d");
+	if (cont) {
+		for (auto &e: cont->elements) {
+			if (e.tag == "camera") {
+				LevelDataCamera c;
+				c.pos = s2v(e.value("pos"));
+				c.ang = s2v(e.value("ang"));
+				c.fov = e.value("fov", f2s(pi/4, 3))._float();
+				c.min_depth = e.value("minDepth", "1")._float();
+				c.max_depth = e.value("maxDepth", "10000")._float();
+				c.exposure = e.value("exposure", "1")._float();
+				cameras.add(c);
+			} else if (e.tag == "light") {
+				LevelDataLight l;
+				l.radius = e.value("radius")._float();
+				l.harshness = e.value("harshness")._float();
+				l._color = s2c(e.value("color"));
+				l.ang = s2v(e.value("ang"));
+				if (e.value("type") == "directional")
+					l.radius = -1;
+				l.enabled = e.value("enabled", "true")._bool();
+				lights.add(l);
+			} else if (e.tag == "terrain") {
+				LevelDataTerrain t;
+				t.filename = e.value("file");
+				t.pos = s2v(e.value("pos"));
+				terrains.add(t);
+			} else if (e.tag == "object") {
+				LevelDataObject o;
+				o.filename = e.value("file");
+				o.name = e.value("name");
+				o.pos = s2v(e.value("pos"));
+				o.ang = s2v(e.value("ang"));
+				o.vel = v_0;
+				o.rot = v_0;
+				objects.add(o);
+			}
+		}
+	}
+
+	return true;
 }
 
 bool GodLoadWorld(const string &filename) {

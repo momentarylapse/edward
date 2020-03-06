@@ -77,6 +77,10 @@ public:
 		event("sun_col", [=]{ on_change(); });
 		event("harshness", [=]{ on_change(); });
 		event("radius", [=]{ on_change(); });
+		event("cam-fov", [=]{ on_change(); });
+		event("cam-min-depth", [=]{ on_change(); });
+		event("cam-max-depth", [=]{ on_change(); });
+		event("cam-exposure", [=]{ on_change(); });
 		event("script-edit", [=]{ on_script_edit(); });
 
 		fill_list();
@@ -270,6 +274,10 @@ public:
 			set_float("ang_z", l.ang.z * 180.0f / pi);
 		} else if (ii.type == MVD_WORLD_CAMERA) {
 			auto &c = data->cameras[ii.index];
+			set_float("cam-fov", c.fov * 180.0f / pi);
+			set_float("cam-min-depth", c.min_depth);
+			set_float("cam-max-depth", c.max_depth);
+			set_float("cam-exposure", c.exposure);
 			set_float("pos_x", c.pos.x);
 			set_float("pos_y", c.pos.y);
 			set_float("pos_z", c.pos.z);
@@ -289,6 +297,14 @@ public:
 			l.harshness = get_float("harshness");
 			l.radius = get_float("radius");
 			l.col = get_color("sun_col");
+			world->multi_view->force_redraw();
+		}
+		if (ii.type == MVD_WORLD_CAMERA) {
+			auto &c = data->cameras[ii.index];
+			c.fov = get_float("cam-fov") * pi / 180.0f;
+			c.min_depth = get_float("cam-min-depth");
+			c.max_depth = get_float("cam-max-depth");
+			c.exposure = get_float("cam-exposure");
 			world->multi_view->force_redraw();
 		}
 	}
@@ -719,8 +735,9 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		set_line_width(3);
 		auto q = quaternion::rotation_v(c.ang);
 		float r = win->cam->radius * 0.1f;
-		vector ex = q * vector::EX * r * 0.5f;
-		vector ey = q * vector::EY * r * 0.33f;
+		float rr = r * tan(c.fov / 2);
+		vector ex = q * vector::EX * rr * 1.333f;
+		vector ey = q * vector::EY * rr;
 		vector ez = q * vector::EZ * r;
 		draw_line(c.pos, c.pos + ez + ex + ey);
 		draw_line(c.pos, c.pos + ez - ex + ey);

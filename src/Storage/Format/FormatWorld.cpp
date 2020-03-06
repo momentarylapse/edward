@@ -119,6 +119,10 @@ void FormatWorld::_load_xml(const string &filename, DataWorld *data, bool deep) 
 				WorldCamera c;
 				c.pos = s2v(e.value("pos"));
 				c.ang = s2v(e.value("ang"));
+				c.fov = e.value("fov", f2s(pi/4, 3))._float();
+				c.min_depth = e.value("minDepth", "1")._float();
+				c.max_depth = e.value("maxDepth", "10000")._float();
+				c.exposure = e.value("exposure", "1")._float();
 				data->cameras.add(c);
 			} else if (e.tag == "light") {
 				WorldLight l;
@@ -315,7 +319,11 @@ void FormatWorld::_save(const string &filename, DataWorld *data) {
 	for (auto &c: data->cameras) {
 		auto e = xml::Element("camera")
 		.witha("pos", v2s(c.pos))
-		.witha("ang", v2s(c.ang));
+		.witha("ang", v2s(c.ang))
+		.witha("fov", f2s(c.fov, 3))
+		.witha("minDepth", f2s(c.min_depth, 3))
+		.witha("maxDepth", f2s(c.max_depth, 3))
+		.witha("exposure", f2s(c.exposure, 3));
 		cont.add(e);
 	}
 
