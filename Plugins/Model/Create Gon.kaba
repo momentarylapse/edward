@@ -5,7 +5,7 @@ const float R = 50.0
 const float height = 20.0
 
 void main()
-	int nv = data_model.vertex.num
+	int nv = len(data_model.mesh.vertex)
 	
 	data_model.BeginActionGroup("CreateGon")
 	

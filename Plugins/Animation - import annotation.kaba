@@ -1,5 +1,5 @@
 use hui
-use file
+use os
 use "api.kaba"
 use "helper.kaba"
 
@@ -11,7 +11,7 @@ quaternion xang(vector ang)
 	vector ax = vector.EZ
 	if l > 0
 		ax = ang / l
-	return quaternion.rotation_a(ax, l)
+	return quaternion(ax, l)
 
 float pain(vector[] va, vector[] vb, vector ang)
 	let q = xang(ang)

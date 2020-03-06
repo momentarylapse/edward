@@ -702,11 +702,36 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 			continue;
 
 		set_color(color(1, 0.9f, 0.6f, 0.3f));
+		if (l.is_selected)
+			set_color(Red);
 		set_line_width(5);
 		draw_line(l.pos, l.pos - l.ang.ang2dir() * win->cam->radius * 0.1f);
 		set_line_width(1.0f);
 	}
 
+	for (auto &c: data->cameras) {
+		if (c.view_stage < multi_view->view_stage)
+			continue;
+
+		set_color(color(1, 0.9f, 0.6f, 0.3f));
+		if (c.is_selected)
+			set_color(Red);
+		set_line_width(3);
+		auto q = quaternion::rotation_v(c.ang);
+		float r = win->cam->radius * 0.1f;
+		vector ex = q * vector::EX * r * 0.5f;
+		vector ey = q * vector::EY * r * 0.33f;
+		vector ez = q * vector::EZ * r;
+		draw_line(c.pos, c.pos + ez + ex + ey);
+		draw_line(c.pos, c.pos + ez - ex + ey);
+		draw_line(c.pos, c.pos + ez + ex - ey);
+		draw_line(c.pos, c.pos + ez - ex - ey);
+		draw_line(c.pos + ez + ex + ey, c.pos + ez - ex + ey);
+		draw_line(c.pos + ez - ex + ey, c.pos + ez - ex - ey);
+		draw_line(c.pos + ez - ex - ey, c.pos + ez + ex - ey);
+		draw_line(c.pos + ez + ex - ey, c.pos + ez + ex + ey);
+		set_line_width(1.0f);
+	}
 
 	nix::SetZ(true,true);
 	nix::EnableFog(false);
