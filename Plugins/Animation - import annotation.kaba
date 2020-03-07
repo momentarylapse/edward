@@ -127,12 +127,12 @@ void _import(string filename)
 		DoSingleMainLoop()
 		#HuiSleep(0.001)
 	data_model.EndActionGroup()
-	delete f
-	delete dlg
+	del f
+	del dlg
 
 void main()
 	_import("/home/michi/Projekte/mocap/digest-smooth")
 	return
-	if !FileDialogOpen(edward, "", "", "*", "*")
+	if not FileDialogOpen(edward, "", "", "*", "*")
 		return
 	_import(HuiFilename)

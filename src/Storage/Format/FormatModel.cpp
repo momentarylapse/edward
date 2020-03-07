@@ -377,6 +377,8 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 	for (int j=0;j<data->phys_mesh->vertex.num;j++)
 		f->read_vector(&data->phys_mesh->vertex[j].pos);
 
+	msg_write("phys vert: " + i2s(data->phys_mesh->vertex.num));
+
 	// triangles
 	f->read_int();
 
@@ -390,16 +392,18 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 	// polys
 	int num_polys = f->read_int();
 	for (int i=0; i<num_polys; i++){
-		//msg_write("POLYHEDRON! " + format("%d/%d", i, num_polys));
+		msg_write("POLYHEDRON! " + format("%d/%d", i, num_polys));
 
 		Array<Array<int>> vv;
 		int NumFaces = f->read_int();
+		msg_write("  faces: " + i2s(NumFaces));
 		for (int k=0;k<NumFaces;k++){
 			int nv = f->read_int();
 			Array<int> vertex;
 			for (int l=0;l<nv;l++) {
 				vertex.add(f->read_int());
 			}
+			msg_write(ia2s(vertex));
 			vv.add(vertex);
 			// plane xyzd
 			f->read_float();
@@ -435,6 +439,7 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 					//msg_write("clone vertex");
 					int nv = data->phys_mesh->vertex.num;
 					relink.append({v, nv});
+					msg_write(format("  relink %d  %d", v, nv));
 					data->phys_mesh->add_vertex(data->phys_mesh->vertex[v].pos, 0, 0);
 					v = nv;
 				}
@@ -442,9 +447,10 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 		}
 		for (auto &_vv: vv) {
 			Array<vector> sv;
-			sv.resize(_vv.num);
+			sv.resize(_vv.num * MATERIAL_MAX_TEXTURES);//data->material[0]->texture_levels.num);
 			//msg_write(ia2s(_vv));
 			try{
+				msg_write(" + poly " + ia2s(_vv));
 				data->phys_mesh->_addPolygon(_vv, 0, sv);
 			}catch(GeometryException &e) {
 				msg_error(e.message);
@@ -811,6 +817,52 @@ void FormatModel::_load(const string &filename, DataModel *data, bool deep) {
 		data->on_post_action_update();
 }
 
+Set<int> get_all_poly_vert(DataModel *m) {
+	Set<int> all_vert;
+	for (auto &p: m->phys_mesh->polygon)
+		for (auto &f: p.side)
+			all_vert.add(f.vertex);
+	return all_vert;
+}
+
+Array<Set<int>> split_conv_polyhedra(DataModel *m) {
+	auto all_vert = get_all_poly_vert(m);
+
+	Array<Set<int>> surf;
+
+	while(all_vert.num > 0) {
+		msg_write("----surf");
+		Set<int> cur;
+		cur.add(all_vert.pop());
+		int n = 0;
+		while (cur.num > n) {
+			n = cur.num;
+
+			for (auto &e: m->phys_mesh->edge) {
+				if (cur.contains(e.vertex[0]) and all_vert.contains(e.vertex[1])) {
+					cur.add(e.vertex[1]);
+					all_vert.erase(e.vertex[1]);
+				}
+				if (cur.contains(e.vertex[1]) and all_vert.contains(e.vertex[0])) {
+					cur.add(e.vertex[0]);
+					all_vert.erase(e.vertex[0]);
+				}
+			}
+		}
+		msg_write(ia2s(cur));
+		surf.add(cur);
+	}
+	return surf;
+}
+
+Array<ModelPolygon> conv_poly_poly(DataModel *m, const Set<int> &v) {
+	Array<ModelPolygon> poly;
+	for (auto &p: m->phys_mesh->polygon)
+		if (v.contains(p.side[0].vertex))
+			poly.add(p);
+	return poly;
+}
+
 void FormatModel::_save(const string &filename, DataModel *data) {
 	if (DataModelAllowUpdating){
 		/*if (AutoGenerateSkin[1])
@@ -910,35 +962,43 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 		f->write_float(b.radius);
 	}
 
-	f->write_int(0);
-	/*f->write_int(data->phys_mesh->polyhedron.num);
-	for (auto &p: data->phys_mesh->polyhedron) {
-		f->write_int(p.NumFaces);
-		for (int k=0;k<p.NumFaces;k++){
-			f->write_int(p.Face[k].NumVertices);
-			for (int l=0;l<p.Face[k].NumVertices;l++)
-				f->write_int(p.Face[k].Index[l]);
-			f->write_float(p.Face[k].Plane.n.x);
-			f->write_float(p.Face[k].Plane.n.y);
-			f->write_float(p.Face[k].Plane.n.z);
-			f->write_float(p.Face[k].Plane.d);
+	auto surf = split_conv_polyhedra(data);
+	f->write_int(surf.num);
+	for (auto &pp: surf) {
+		auto p = conv_poly_poly(data, pp);
+
+		f->write_int(p.num);
+		for (int k=0;k<p.num;k++){
+			f->write_int(p[k].side.num);
+			for (int l=0;l<p[k].side.num;l++)
+				f->write_int(p[k].side[l].vertex);
+			f->write_float(0); // plane a,b,c,d
+			f->write_float(0);
+			f->write_float(0);
+			f->write_float(0);
 		}
-		f->write_int(p.NumSVertices);
+		/*f->write_int(p.NumSVertices);
 		for (int k=0;k<p.NumSVertices;k++)
 			f->write_int(p.SIndex[k]);
 		f->write_int(p.NumEdges);
 		for (int k=0;k<p.NumEdges;k++){
 			f->write_int(p.EdgeIndex[k*2 + 0]);
 			f->write_int(p.EdgeIndex[k*2 + 1]);
-		}
+		}*/
+		f->write_int(0);
+		f->write_int(0);
+
 		// topology
-		for (int k=0;k<p.NumFaces;k++)
+		/*for (int k=0;k<p.NumFaces;k++)
 			for (int l=0;l<p.NumFaces;l++)
 				f->write_int(p.FacesJoiningEdge[k * p.NumFaces + l]);
 		for (int k=0;k<p.NumEdges;k++)
 			for (int l=0;l<p.NumFaces;l++)
-				f->write_bool(p.EdgeOnFace[k * p.NumFaces + l]);
-	}*/
+				f->write_bool(p.EdgeOnFace[k * p.NumFaces + l]);*/
+		for (int k=0;k<p.num;k++)
+			for (int l=0;l<p.num;l++)
+					f->write_int(0);
+	}
 
 // skin
 	for (int i=1;i<4;i++){
